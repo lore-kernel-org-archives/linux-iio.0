@@ -1,87 +1,91 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-5.csi.cam.ac.uk ([131.111.8.135]:54352 "EHLO
-	ppsw-5.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754381Ab0BWWyX convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Feb 2010 17:54:23 -0500
-Date: 23 Feb 2010 22:54:20 +0000
-From: "J.I. Cameron" <jic23@cam.ac.uk>
-To: Sven-Thorsten Dietrich <sdietrich@novell.com>
-Cc: Greg KH <gregkh@suse.de>, lindner_marek@yahoo.de,
-	siwu@hrz.tu-chemnitz.de, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] staging drivers use spin_lock_init()
-Message-ID: <Prayer.1.3.2.1002232254200.5956@hermes-2.csi.cam.ac.uk>
-In-Reply-To: <1266962359.3234.40.camel@sven.thebigcorporation.com>
-References: <1266962359.3234.40.camel@sven.thebigcorporation.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
-	format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@cam.ac.uk>
+Message-ID: <4B82679F.3000807@cam.ac.uk>
+Date: Mon, 22 Feb 2010 11:16:47 +0000
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
+To: "Song, Barry" <Barry.Song@analog.com>
+CC: jic23@hermes.cam.ac.uk, manuel.stahl@iis.fraunhofer.de,
+ uclinux-dist-devel@blackfin.uclinux.org, linux-iio@vger.kernel.org
+Subject: Re: IIO ring buffer
+References: <0F1B54C89D5F954D8535DB252AF412FA05A222FC@chinexm1.ad.analog.com>
+In-Reply-To: <0F1B54C89D5F954D8535DB252AF412FA05A222FC@chinexm1.ad.analog.com>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-On Feb 23 2010, Sven-Thorsten Dietrich wrote:
+Hi All,
 
->Subject: Convert driver-staging to use spin_lock_init()
->
->This fixes some RT-triggered compile errors and typos.
->
->Against 2.6.33-rc8. Push upstream as you see appropriate.
->
->Thanks.
->
->Signed-off-by: Sven-Thorsten Dietrich <sdietrich@novell.com>
-For the two IIO patches, 
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+Just for reference as I'll be doing a proper announcement later.
+We now have linux-iio@vger.kernel.org as a mailing list for the project.
+Unless others have tracked it down it currently only has me as a member
+though and I'm waiting for confirmation from marc.info of an archive.
 
-Thanks for the fix!
+> Hi Jonathan,
+> Now users depend on iio ring events(IIO_EVENT_CODE_RING_50/75/100_FULL)
+> to read data:
+>                 read_size = fread(&dat, 1, sizeof(struct
+> iio_event_data),
+>                                   fp_ev);
+>                 switch (dat.id) {
+>                 case IIO_EVENT_CODE_RING_100_FULL:
+>                         toread = RingLength;
+>                         break;
+>                 case IIO_EVENT_CODE_RING_75_FULL:
+>                         toread = RingLength*3/4;
+>                         break;
+>                 case IIO_EVENT_CODE_RING_50_FULL:
+>                         toread = RingLength/2;
+>                         break;
+>                 default:
+>                         printf("Unexpecteded event code\n");
+>                         continue;
+>                 }   
+>                 read_size = read(fp,
+>                                  data,
+>                                  toread*size_from_scanmode(NumVals,
+> scan_ts));
+>                 if (read_size == -EAGAIN) {
+>                         printf("nothing available \n");
+>                         continue;
+>                 }   
+> And iio ring access node doesn't support blocking io too.  It seems we
+> lost to let users read data once ring is not empty. And some users maybe
+> not care about iio ring events at all, but just want to read data like a
+> input or audio driver. So how about adding the following support in iio
+> ring:
+> 1. add NOT EMPTY event in IIO event nodes
+Not keen.  It might lead to a storm of events (at least it might in a 
+cleverer ring buffer implementation or during a blocking read).  Actually
+in this particular case it probably wouldn't do any harm.
+> 2. add blocking io support in read function of IIO access nodes
+That I agree would be a good idea.  If we support poll/select on the buffer access
+chrdev then we will get the same effect per having a not empty event and cleaner
+semantics for anyone not interested in the other events. Not to mention I expect
+we will soon have alternative ring buffer implementations that don't supply any
+events at all and hence don't event have the relevant chrdev.
+
+As things are, you can quite happily read whenever you like.  Now you mention it,
+that example code is somewhat missleading! The issue with
+this ring buffer implementation is the handling of a true blocking read is complex
+as at any given time you aren't guaranteed to get what you asked for even if it was
+there when you started the read. It should be possible to work around that though.
+
+It's possible this functionality might be better added to an alternative ring buffer
+implementation. Be vary wary of that ring implementation in general! I am and I wrote it.
+> If you agree with that, I can begin to add these and send you a patch.
+> And a problem I don't know is what you and other people have changed to
+> Greg's staging tree, and I am not sure what tree the patch should be
+> againest. 
+Nothing has changed in this region of the code.  In fact I think all that
+has gone into Greg's tree is a clean up patch form Mark Brown making a few
+functions static. Right now I'm still getting the max1363 driver into
+a state where it will be possible to do the ABI changes.
+> 
+> For long term plan, is it possible for ring common level to handle more
+> common work to avoid code repeating in different drivers?
+I'm certainly happy for that to be the case if it becomes apparent which functionality
+is shared.  I haven't seen any substantial cases as yet, but then I may well be missing
+things so feel free to submit suggestions (or as ever the better option of patches).
+
+Thanks,
 
 Jonathan
-
->Index: linux-2.6.32-slert-devel/drivers/staging/batman-adv/device.c
->===================================================================
->--- linux-2.6.32-slert-devel.orig/drivers/staging/batman-adv/device.c
->+++ linux-2.6.32-slert-devel/drivers/staging/batman-adv/device.c
->@@ -118,9 +118,9 @@ int bat_device_open(struct inode *inode,
-> 
-> 	INIT_LIST_HEAD(&device_client->queue_list);
-> 	device_client->queue_len = 0;
-> 	device_client->index = i;
->-	device_client->lock = __SPIN_LOCK_UNLOCKED(device_client->lock);
->+	spin_lock_init(&device_client->lock);
-> 	init_waitqueue_head(&device_client->queue_wait);
-> 
-> 	file->private_data = device_client;
-> 
->Index: linux-2.6.32-slert-devel/drivers/staging/iio/ring_generic.h
->===================================================================
->--- linux-2.6.32-slert-devel.orig/drivers/staging/iio/ring_generic.h
->+++ linux-2.6.32-slert-devel/drivers/staging/iio/ring_generic.h
->@@ -145,10 +145,9 @@ static inline void __iio_init_ring_buffe
-> 	ring->bpd = bytes_per_datum;
-> 	ring->length = length;
-> 	ring->loopcount = 0;
-> 	ring->shared_ev_pointer.ev_p = 0;
->-	ring->shared_ev_pointer.lock =
->-		__SPIN_LOCK_UNLOCKED(ring->shared_ev_pointer->loc);
->+	spin_lock_init(&ring->shared_ev_pointer.lock);
-> }
-> 
-> /**
->  * struct iio_scan_el - an individual element of a scan diff -u -r 
-> linux-2.6.32.orig/drivers/staging/iio/ring_sw.c 
-> linux-2.6.32.orig-bak/drivers/staging/iio/ring_sw.c --- 
-> linux-2.6.32.orig/drivers/staging/iio/ring_sw.c 2009-12-02 
-> 19:51:21.000000000 -0800 +++ 
-> linux-2.6.32.orig-bak/drivers/staging/iio/ring_sw.c 2010-02-22 
-> 19:04:42.171671961 -0800 @@ -21,7 +21,7 @@
-> 		return -EINVAL;
-> 
-> 	__iio_init_ring_buffer(&ring->buf, bytes_per_datum, length);
->-	ring->use_lock = __SPIN_LOCK_UNLOCKED((ring)->use_lock);
->+	spin_lock_init(&ring->use_lock);
-> 	ring->data = kmalloc(length*ring->buf.bpd, GFP_KERNEL);
-> 	ring->read_p = 0;
-> 	ring->write_p = 0;
->
->
->
-
