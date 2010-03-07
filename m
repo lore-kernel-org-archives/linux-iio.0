@@ -1,238 +1,54 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-7.csi.cam.ac.uk ([131.111.8.137]:44990 "EHLO
-	ppsw-7.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753412Ab0CHPj0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Mar 2010 10:39:26 -0500
-Message-ID: <4B951AA9.50108@cam.ac.uk>
-Date: Mon, 08 Mar 2010 15:41:29 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"uclinux-dist-devel@blackfin.uclinux.org"
-	<uclinux-dist-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH] iio-trig-gpio:Remove redundant gpio_request
-References: <544AC56F16B56944AEC3BD4E3D5917712D6B1D944D@LIMKCMBX1.ad.analog.com> <4B94D847.1040209@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D5917712D6B1D94C9@LIMKCMBX1.ad.analog.com> <4B94F7CE.9030703@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D5917712D6B1D9521@LIMKCMBX1.ad.analog.com> <544AC56F16B56944AEC3BD4E3D5917712D6B1D956D@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917712D6B1D956D@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: 07 Mar 2010 12:39:26 +0000
+From: "J.I. Cameron" <jic23@cam.ac.uk>
+To: linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+Subject: [RFC] IIO event naming.
+Message-ID: <Prayer.1.3.2.1003071239260.10684@hermes-2.csi.cam.ac.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; format=flowed; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/08/10 14:47, Hennerich, Michael wrote:
-> Hennerich, Michael wrote on 2010-03-08:
->> Jonathan Cameron wrote on 2010-03-08:
->>> On 03/08/10 11:38, Hennerich, Michael wrote:
->>>> Hi Jonathan,
->>>> Jonathan Cameron wrote on 2010-03-08:
->>>>> Hi Michael,
->>>>>
->>>>> I'm wondering about this one.  Are you sure all platforms have the
->>>>> correct gpio setup when doing the request_irq? (those that need it
->>>>> obviously, basically the question is whether all platforms default to
->>>>> having gpio's as inputs).
->>>>>
->>>>> If the do there is certainly a lot of redundant code about based on a
->>>>> quick bit of grepping. (loads of it in arm/mach-pxa for starters). In
->>>>> that particular case all gpio's are configured as inputs, but I'm not
->>>>> sure other platforms are so well behaved.
->>>>>
->>>>>
->>>>> Unless I'm completely wrong that means we have run into a rather
->>>>> general issue.
->>>>
->>>> By no means - you have to first configure a GPIO_IRQ as GPIO-Input and
->>>> then as IRQ. irq_type takes care of it. In your case you gave the
->>>> IRQF_TRIGGER_RISING flag with request_irq(). In case such a
->>>> IRQF_TRIGGER_XXX flag is present the common IRQ infrastructure will
->>>> call the associated irq_chips irq_type() function. This function is
->>>> supposed to take care for all of it.(GPIO input, setting the level,
->>>> edge and polarity)
->>>>
->>>> As an alternative you can request_irq() without the
->>>> IRQF_TRIGGER_XXX
->>> flags and use set_irq_type() anytime later, or even in advance.
->>> Ah fair enough. Thanks for cleaning that up for me.
->>>
->>> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
->>>
->>> Please send it on to Greg KH
->>
->> Shall I change the driver to loop on while(irq_res != NULL)?
->> And get the irqflags from the platform data struct resource?
-> 
-> What do you think about this one?
-> 
-> Example Platform Data:
-> 
-> #if defined(CONFIG_IIO_GPIO_TRIGGER) || \
->         defined(CONFIG_IIO_GPIO_TRIGGER_MODULE)
-> 
-> static struct resource iio_gpio_trigger_resources[] = {
->         [0] = {
->                 .start  = IRQ_PF5,
->                 .end    = IRQ_PF5,
->                 .flags  = IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHEDGE,
->         },
->         [1] = {
->                 .start  = IRQ_PF2,
->                 .end    = IRQ_PF3,
->                 .flags  = IORESOURCE_IRQ | IORESOURCE_IRQ_LOWEDGE,
->         },
-> };
-> 
-> static struct platform_device iio_gpio_trigger = {
->         .name = "iio_gpio_trigger",
->         .num_resources = ARRAY_SIZE(iio_gpio_trigger_resources),
->         .resource = iio_gpio_trigger_resources,
-> };
-> #endif
-That seems sensible.
-> 
-> This way allows you to specify different GPIO Edge/Polarity behavior as well as GPIO-IRQ sequences.
-> Patch below is an top of my previous one.
-> I wonder I we should change all references to gpio completely (replace with irq), since this driver can also be used with any other system IRQ as well.
-Hmm.. Could do I guess.  The intention was always to fill out the driver
-so one could control the rising, falling choices from userspace, but
-as we can do that with an interrupt that works just as well.
+Dear All,
 
-Would clean things up.
+Whilst converting the current mainline IIO accelerometer drivers over to
+the new api proposed (latest version http://lkml.org/lkml/2010/2/5/205 )
+it has become apparent that the suggested naming choices for accelerometer
+threshold events (will also be relevant to other senor types) are unclear.
 
-The patch below looks good to me.
+We proposed control interfaces named as:
+  /sys/.../device[n]:event[m]/accel_x0_thresh[_high|_low]
+
+Firstly with hindsight the high / low designation isn't clear. Does it 
+refer to the direction of the threshold? (value falling or rising) or
+to the actual value lying on either side of the origin?  (what I actually
+meant)  Secondly how do we indicate a threshold based on magnitude rather
+than absolute value? 
+
+What I have come up with is:
+
+accel_x0_mag[_pos|_neg|_either][_rising|_falling|_crossing]
+
+By defining the threshold in terms of a magnitude in conjunction with
+terms specifying which magnitude it refers to, is the only simply way
+I can think of covering all the cases.
+
+[_pos|_neg|_either] refers to the two directions of acceleration where
+_either covers the general magnitude case.
+
+[_rising|_falling|_crossing] refers to whether our threshold is on the
+acceleration magnitude in the specified direction triggering an interrupt
+if it is rising, falling or either of the above.
+
+What do people think about this naming convention?  Are there any similar
+situations elsewhere in the kernel from which we can learn?
+
+Obviously all of the above will apply to the different event types, it is
+merely easier in someways to grasp the issue when dealing with something
+as concrete as acceleration.
+
+Thanks,
 
 Jonathan
-> 
-> 
-> ===================================================================
-> --- drivers/staging/iio/trigger/iio-trig-gpio.c (revision 8415)
-> +++ drivers/staging/iio/trigger/iio-trig-gpio.c (working copy)
-> @@ -57,64 +57,73 @@
->         .attrs = iio_gpio_trigger_attrs,
->  };
-> 
-> -static int iio_gpio_trigger_probe(struct platform_device *dev)
-> +static int iio_gpio_trigger_probe(struct platform_device *pdev)
->  {
-> -       int *pdata = dev->dev.platform_data;
-> +       int *pdata = pdev->dev.platform_data;
->         struct iio_gpio_trigger_info *trig_info;
->         struct iio_trigger *trig, *trig2;
-> -       int i, irq, ret = 0;
-> -       if (!pdata) {
-> -               printk(KERN_ERR "No IIO gpio trigger platform data found\n");
-> -               goto error_ret;
-> -       }
-> -       for (i = 0;; i++) {
-> -               if (!gpio_is_valid(pdata[i]))
-> +       unsigned long irqflags;
-> +       struct resource *irq_res;
-> +       int irq, ret = 0, irq_res_cnt = 0;
-> +       unsigned gpio;
-> +
-> +       do {
-> +               irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, irq_res_cnt);
-> +
-> +               if (irq_res == NULL) {
-> +                       if (irq_res_cnt == 0)
-> +                               dev_err(&pdev->dev, "No GPIO IRQs specified");
->                         break;
-> -               trig = iio_allocate_trigger();
-> -               if (!trig) {
-> -                       ret = -ENOMEM;
-> -                       goto error_free_completed_registrations;
->                 }
-> +               irqflags = irq_res->flags & IRQF_TRIGGER_MASK;
-> 
-> -               trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
-> -               if (!trig_info) {
-> -                       ret = -ENOMEM;
-> -                       goto error_put_trigger;
-> -               }
-> -               trig->control_attrs = &iio_gpio_trigger_attr_group;
-> -               trig->private_data = trig_info;
-> -               trig_info->gpio = pdata[i];
-> -               trig->owner = THIS_MODULE;
-> -               trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL);
-> -               if (!trig->name) {
-> -                       ret = -ENOMEM;
-> -                       goto error_free_trig_info;
-> -               }
-> -               snprintf((char *)trig->name,
-> -                        IIO_TRIGGER_NAME_LENGTH,
-> -                        "gpiotrig%d",
-> -                        pdata[i]);
-> +               for (irq = irq_res->start; irq <= irq_res->end; irq++) {
-> +                       gpio = irq_to_gpio(irq);
-> +                       if (!gpio_is_valid(gpio))
-> +                               break;
-> +                       trig = iio_allocate_trigger();
-> +                       if (!trig) {
-> +                               ret = -ENOMEM;
-> +                               goto error_free_completed_registrations;
-> +                       }
-> 
-> -               irq = gpio_to_irq(trig_info->gpio);
-> -               if (irq < 0) {
-> -                       ret = irq;
-> -                       goto error_free_name;
-> +                       trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
-> +                       if (!trig_info) {
-> +                               ret = -ENOMEM;
-> +                               goto error_put_trigger;
-> +                       }
-> +                       trig->control_attrs = &iio_gpio_trigger_attr_group;
-> +                       trig->private_data = trig_info;
-> +                       trig_info->gpio = gpio;
-> +                       trig->owner = THIS_MODULE;
-> +                       trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL);
-> +                       if (!trig->name) {
-> +                               ret = -ENOMEM;
-> +                               goto error_free_trig_info;
-> +                       }
-> +                       snprintf((char *)trig->name,
-> +                                IIO_TRIGGER_NAME_LENGTH,
-> +                                "gpiotrig%d",
-> +                                gpio);
-> +
-> +                       ret = request_irq(irq, iio_gpio_trigger_poll,
-> +                                         irqflags,
-> +                                         trig->name,
-> +                                         trig);
-> +                       if (ret)
-> +                               goto error_free_name;
-> +
-> +                       ret = iio_trigger_register(trig);
-> +                       if (ret)
-> +                               goto error_release_irq;
-> +
-> +                       list_add_tail(&trig->alloc_list, &iio_gpio_trigger_list);
->                 }
-> 
-> -               ret = request_irq(irq, iio_gpio_trigger_poll,
-> -                                 IRQF_TRIGGER_RISING,
-> -                                 trig->name,
-> -                                 trig);
-> -               if (ret)
-> -                       goto error_free_name;
-> +               irq_res_cnt++;
-> +       } while (irq_res != NULL);
-> 
-> -               ret = iio_trigger_register(trig);
-> -               if (ret)
-> -                       goto error_release_irq;
-> 
-> -               list_add_tail(&trig->alloc_list, &iio_gpio_trigger_list);
-> -
-> -       }
->         return 0;
-> 
->  /* First clean up the partly allocated trigger */
-> @@ -143,7 +152,7 @@
->         return ret;
->  }
-> 
-> -static int iio_gpio_trigger_remove(struct platform_device *dev)
-> +static int iio_gpio_trigger_remove(struct platform_device *pdev)
->  {
->         struct iio_trigger *trig, *trig2;
->         struct iio_gpio_trigger_info *trig_info;
 
+p.s. Sorry I haven't cc'd those who have previously expressed interest in
+these areas.  I don't have access to my address book from this machine.
