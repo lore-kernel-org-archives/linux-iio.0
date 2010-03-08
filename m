@@ -1,66 +1,92 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-0.csi.cam.ac.uk ([131.111.8.130]:37897 "EHLO
-	ppsw-0.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753302Ab0CWNnn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Mar 2010 09:43:43 -0400
-Message-ID: <4BA8C622.6090505@cam.ac.uk>
-Date: Tue, 23 Mar 2010 13:46:10 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
 CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"uclinux-dist-devel@blackfin.uclinux.org"
 	<uclinux-dist-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH] iio_trigger_find_by_name: Skip trailing newline if available
-References: <544AC56F16B56944AEC3BD4E3D5917712D6B1D944F@LIMKCMBX1.ad.analog.com> <4BA7D50D.2080202@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D5917712E5660F259@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917712E5660F259@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Mon, 8 Mar 2010 09:31:22 +0000
+Subject: [PATCH] iio-trig-gpio:Remove redundant gpio_request
+Message-ID: <544AC56F16B56944AEC3BD4E3D5917712D6B1D944D@LIMKCMBX1.ad.analog.com>
+Content-Type: text/plain; charset="iso-8859-1"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/23/10 12:23, Hennerich, Michael wrote:
-> Jonathan Cameron wrote on 2010-03-22:
->> On 03/08/10 09:31, Hennerich, Michael wrote:
->>> Skip trailing newline if available.
->>>
->>> From: Michael Hennerich <Michael.Hennerich@analog.com>
->>
->> Dear Michael,
->>
->> Just found this one whilst trying to sort out a clean iio tree.
->> (sorry I completely failed to reply originally)
->>
->> Anyhow, I agree with the principal that we should be ignoring the
->> newline.  Actually we should be ignoring whitespace before and after
->> the string we are actually after.
-> 
-> Well - in most cases people use #echo so there shouldn't be a problem with white space before and after.
-> However the newline is going to bug in case you don't use #echo -n.
-> I've seen many sysfs_set functions also stripping the '\n' from the string.
-Actually most uses beyond the debugging drivers stage are likely to be via
-userspace libraries, but admittedly these aren't going to have excess white
-space so it doesn't matter!
+Remove redundant gpio_request.
+The GPIO used as trigger IRQ, is also requested as gpio, but actually never=
+ read.
+On some platforms a GPIO requested as IRQ can't be requested as GPIO as wel=
+l.
+
+From: Michael Hennerich <Michael.Hennerich@analog.com>
+
+Index: drivers/staging/iio/trigger/iio-trig-gpio.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- drivers/staging/iio/trigger/iio-trig-gpio.c (revision 8368)
++++ drivers/staging/iio/trigger/iio-trig-gpio.c (working copy)
+@@ -94,18 +94,11 @@
+                         IIO_TRIGGER_NAME_LENGTH,
+                         "gpiotrig%d",
+                         pdata[i]);
+-               ret =3D gpio_request(trig_info->gpio, trig->name);
+-               if (ret)
+-                       goto error_free_name;
+
+-               ret =3D gpio_direction_input(trig_info->gpio);
+-               if (ret)
+-                       goto error_release_gpio;
+-
+                irq =3D gpio_to_irq(trig_info->gpio);
+                if (irq < 0) {
+                        ret =3D irq;
+-                       goto error_release_gpio;
++                       goto error_free_name;
+                }
+
+                ret =3D request_irq(irq, iio_gpio_trigger_poll,
+@@ -113,7 +106,7 @@
+                                  trig->name,
+                                  trig);
+                if (ret)
+-                       goto error_release_gpio;
++                       goto error_free_name;
+
+                ret =3D iio_trigger_register(trig);
+                if (ret)
+@@ -127,8 +120,6 @@
+ /* First clean up the partly allocated trigger */
+ error_release_irq:
+        free_irq(irq, trig);
+-error_release_gpio:
+-       gpio_free(trig_info->gpio);
+ error_free_name:
+        kfree(trig->name);
+ error_free_trig_info:
+@@ -143,7 +134,6 @@
+                                 alloc_list) {
+                trig_info =3D trig->private_data;
+                free_irq(gpio_to_irq(trig_info->gpio), trig);
+-               gpio_free(trig_info->gpio);
+                kfree(trig->name);
+                kfree(trig_info);
+                iio_trigger_unregister(trig);
+@@ -166,7 +156,6 @@
+                trig_info =3D trig->private_data;
+                iio_trigger_unregister(trig);
+                free_irq(gpio_to_irq(trig_info->gpio), trig);
+-               gpio_free(trig_info->gpio);
+                kfree(trig->name);
+                kfree(trig_info);
+                iio_put_trigger(trig);
 
 
-> 
->> Perhaps a cleaner approach is to
->> use sscanf to pull out the string alone?
-> 
-> sscanf() is certainly a alternative here.
-> 
->> I don't think we need to
->> allow for whitespace in the trigger name (though obviously it should
->> be documented if we do not).  Technically I believe (via the
->> convenient lwn article last week on the topic) we should ignore white
->> space but return -EINVAL if there is say one word, some white space
->> and then another word...  Not sure if there is a particularly clean
->> way to do that however.
->>
->> What do you think?
-> 
-> I agree - Don't allow whitespace in the trigger name.
 
-Alright, I don't really care how we do it, though agree dealing with the newline
-is useful, so please send this onto Greg KH (if you haven't?) 
-
-Jonathan
+------------------------------------------------------------------
+********* Analog Devices GmbH              Open Platform Solutions
+**  *****
+**     ** Wilhelm-Wagenfeld-Strasse 6
+**  ***** D-80807 Munich
+********* Germany
+Registergericht M=FCnchen HRB 40368,  Gesch=E4ftsf=FChrer: Thomas Wessel, W=
+illiam A. Martin, Margaret K. Seif
