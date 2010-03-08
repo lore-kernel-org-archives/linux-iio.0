@@ -1,92 +1,129 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-6.csi.cam.ac.uk ([131.111.8.136]:46521 "EHLO
+	ppsw-6.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753361Ab0CHK4J (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Mar 2010 05:56:09 -0500
+Message-ID: <4B94D847.1040209@cam.ac.uk>
+Date: Mon, 08 Mar 2010 10:58:15 +0000
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
+To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
 CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"uclinux-dist-devel@blackfin.uclinux.org"
 	<uclinux-dist-devel@blackfin.uclinux.org>
-Date: Mon, 8 Mar 2010 09:31:22 +0000
-Subject: [PATCH] iio-trig-gpio:Remove redundant gpio_request
-Message-ID: <544AC56F16B56944AEC3BD4E3D5917712D6B1D944D@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset="iso-8859-1"
-MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio-trig-gpio:Remove redundant gpio_request
+References: <544AC56F16B56944AEC3BD4E3D5917712D6B1D944D@LIMKCMBX1.ad.analog.com>
+In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917712D6B1D944D@LIMKCMBX1.ad.analog.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Remove redundant gpio_request.
-The GPIO used as trigger IRQ, is also requested as gpio, but actually never=
- read.
-On some platforms a GPIO requested as IRQ can't be requested as GPIO as wel=
-l.
+Hi Michael,
 
-From: Michael Hennerich <Michael.Hennerich@analog.com>
+I'm wondering about this one.  Are you sure all platforms=20
+have the correct gpio setup when doing the request_irq?
+(those that need it obviously, basically the question is whether
+all platforms default to having gpio's as inputs).
 
-Index: drivers/staging/iio/trigger/iio-trig-gpio.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- drivers/staging/iio/trigger/iio-trig-gpio.c (revision 8368)
-+++ drivers/staging/iio/trigger/iio-trig-gpio.c (working copy)
-@@ -94,18 +94,11 @@
-                         IIO_TRIGGER_NAME_LENGTH,
-                         "gpiotrig%d",
-                         pdata[i]);
--               ret =3D gpio_request(trig_info->gpio, trig->name);
--               if (ret)
--                       goto error_free_name;
-
--               ret =3D gpio_direction_input(trig_info->gpio);
--               if (ret)
--                       goto error_release_gpio;
--
-                irq =3D gpio_to_irq(trig_info->gpio);
-                if (irq < 0) {
-                        ret =3D irq;
--                       goto error_release_gpio;
-+                       goto error_free_name;
-                }
-
-                ret =3D request_irq(irq, iio_gpio_trigger_poll,
-@@ -113,7 +106,7 @@
-                                  trig->name,
-                                  trig);
-                if (ret)
--                       goto error_release_gpio;
-+                       goto error_free_name;
-
-                ret =3D iio_trigger_register(trig);
-                if (ret)
-@@ -127,8 +120,6 @@
- /* First clean up the partly allocated trigger */
- error_release_irq:
-        free_irq(irq, trig);
--error_release_gpio:
--       gpio_free(trig_info->gpio);
- error_free_name:
-        kfree(trig->name);
- error_free_trig_info:
-@@ -143,7 +134,6 @@
-                                 alloc_list) {
-                trig_info =3D trig->private_data;
-                free_irq(gpio_to_irq(trig_info->gpio), trig);
--               gpio_free(trig_info->gpio);
-                kfree(trig->name);
-                kfree(trig_info);
-                iio_trigger_unregister(trig);
-@@ -166,7 +156,6 @@
-                trig_info =3D trig->private_data;
-                iio_trigger_unregister(trig);
-                free_irq(gpio_to_irq(trig_info->gpio), trig);
--               gpio_free(trig_info->gpio);
-                kfree(trig->name);
-                kfree(trig_info);
-                iio_put_trigger(trig);
+If the do there is certainly a lot of redundant code about
+based on a quick bit of grepping. (loads of it in arm/mach-pxa
+for starters).  In that particular case all gpio's are configured
+as inputs, but I'm not sure other platforms are so well behaved.
 
 
+Unless I'm completely wrong that means we have run into a
+rather general issue.
 
-------------------------------------------------------------------
-********* Analog Devices GmbH              Open Platform Solutions
-**  *****
-**     ** Wilhelm-Wagenfeld-Strasse 6
-**  ***** D-80807 Munich
-********* Germany
-Registergericht M=FCnchen HRB 40368,  Gesch=E4ftsf=FChrer: Thomas Wessel, W=
-illiam A. Martin, Margaret K. Seif
+Also, if this is fine, the right fix is probably to have the interrupt =
+as the
+platform data parameter rather than the gpio.  It makes the code more g=
+eneral
+and moves a lot of these direction issues etc into the board specific a=
+reas
+rather than here.
+
+Also, CC Greg KH on any patches like this which are fixes.
+
+Jonathan
+
+> Remove redundant gpio_request.
+> The GPIO used as trigger IRQ, is also requested as gpio, but actually=
+ never read.
+> On some platforms a GPIO requested as IRQ can't be requested as GPIO =
+as well.
+>=20
+> From: Michael Hennerich <Michael.Hennerich@analog.com>
+>=20
+> Index: drivers/staging/iio/trigger/iio-trig-gpio.c
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> --- drivers/staging/iio/trigger/iio-trig-gpio.c (revision 8368)
+> +++ drivers/staging/iio/trigger/iio-trig-gpio.c (working copy)
+> @@ -94,18 +94,11 @@
+>                          IIO_TRIGGER_NAME_LENGTH,
+>                          "gpiotrig%d",
+>                          pdata[i]);
+> -               ret =3D gpio_request(trig_info->gpio, trig->name);
+> -               if (ret)
+> -                       goto error_free_name;
+>=20
+> -               ret =3D gpio_direction_input(trig_info->gpio);
+> -               if (ret)
+> -                       goto error_release_gpio;
+> -
+>                 irq =3D gpio_to_irq(trig_info->gpio);
+>                 if (irq < 0) {
+>                         ret =3D irq;
+> -                       goto error_release_gpio;
+> +                       goto error_free_name;
+>                 }
+>=20
+>                 ret =3D request_irq(irq, iio_gpio_trigger_poll,
+> @@ -113,7 +106,7 @@
+>                                   trig->name,
+>                                   trig);
+>                 if (ret)
+> -                       goto error_release_gpio;
+> +                       goto error_free_name;
+>=20
+>                 ret =3D iio_trigger_register(trig);
+>                 if (ret)
+> @@ -127,8 +120,6 @@
+>  /* First clean up the partly allocated trigger */
+>  error_release_irq:
+>         free_irq(irq, trig);
+> -error_release_gpio:
+> -       gpio_free(trig_info->gpio);
+>  error_free_name:
+>         kfree(trig->name);
+>  error_free_trig_info:
+> @@ -143,7 +134,6 @@
+>                                  alloc_list) {
+>                 trig_info =3D trig->private_data;
+>                 free_irq(gpio_to_irq(trig_info->gpio), trig);
+> -               gpio_free(trig_info->gpio);
+>                 kfree(trig->name);
+>                 kfree(trig_info);
+>                 iio_trigger_unregister(trig);
+> @@ -166,7 +156,6 @@
+>                 trig_info =3D trig->private_data;
+>                 iio_trigger_unregister(trig);
+>                 free_irq(gpio_to_irq(trig_info->gpio), trig);
+> -               gpio_free(trig_info->gpio);
+>                 kfree(trig->name);
+>                 kfree(trig_info);
+>                 iio_put_trigger(trig);
+>=20
+>=20
+>=20
+> ------------------------------------------------------------------
+> ********* Analog Devices GmbH              Open Platform Solutions
+> **  *****
+> **     ** Wilhelm-Wagenfeld-Strasse 6
+> **  ***** D-80807 Munich
+> ********* Germany
+> Registergericht M=FCnchen HRB 40368,  Gesch=E4ftsf=FChrer: Thomas Wes=
+sel, William A. Martin, Margaret K. Seif
+>=20
+
