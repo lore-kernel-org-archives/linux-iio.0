@@ -1,144 +1,228 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-7.csi.cam.ac.uk ([131.111.8.137]:53789 "EHLO
-	ppsw-7.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752154Ab0CIPod (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Mar 2010 10:44:33 -0500
-Message-ID: <4B966D65.8050100@cam.ac.uk>
-Date: Tue, 09 Mar 2010 15:46:45 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>, "gregkh@suse.de" <gregkh@suse.de>
 CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"uclinux-dist-devel@blackfin.uclinux.org"
 	<uclinux-dist-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH] IIO:sysfs.h: Use static declaration
-References: <544AC56F16B56944AEC3BD4E3D5917712D6B1D97D2@LIMKCMBX1.ad.analog.com> <4B966962.7010104@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D5917712D6B1D97E9@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917712D6B1D97E9@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Tue, 9 Mar 2010 09:35:56 +0000
+Subject: [PATCH] iio-trig-gpio:Remove redundant gpio_request
+Message-ID: <544AC56F16B56944AEC3BD4E3D5917712D6B1D96B4@LIMKCMBX1.ad.analog.com>
+Content-Type: text/plain; charset="iso-8859-1"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/09/10 15:39, Hennerich, Michael wrote:
-> Hi Jonathan,
->=20
-> Jonathan Cameron wrote on 2010-03-09:
->> On 03/09/10 15:13, Hennerich, Michael wrote:
->>> Shouldn't those be better declared 'static'?
->>
->> No. Convention is to do that when calling the macro as then it is
->> explicit in the relevant place.  Now if any of the calls are missing
->> the static keyword, that would be an error.
->=20
-> I don't mind - as long as they are declared static.
-> Because I'm seeing collisions with your driver - that doesn't declare=
- it's common attributes static.
->=20
-> What about this patch?
-That's where they should be.... Actually I have a vague recollection th=
-at
-there is already a patch doing these in Greg's tree.  Also, not
-worth pushing upstream as huge changes going into this driver shortly.
-Of these, only name still exists.
+Remove redundant gpio_request:
+The GPIO used as trigger IRQ, is also requested as gpio, but actually never=
+ read.
 
-Jonathan
->=20
-> Index: drivers/staging/iio/adc/max1363_core.c
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- drivers/staging/iio/adc/max1363_core.c      (revision 8430)
-> +++ drivers/staging/iio/adc/max1363_core.c      (working copy)
-> @@ -446,12 +446,12 @@
->         return ret;
->  }
->=20
-> -IIO_DEV_ATTR_AVAIL_SCAN_MODES(max1363_show_av_scan_modes);
-> -IIO_DEV_ATTR_SCAN_MODE(S_IRUGO | S_IWUSR,
-> +static IIO_DEV_ATTR_AVAIL_SCAN_MODES(max1363_show_av_scan_modes);
-> +static IIO_DEV_ATTR_SCAN_MODE(S_IRUGO | S_IWUSR,
->                        max1363_show_scan_mode,
->                        max1363_store_scan_mode);
->=20
-> -IIO_DEV_ATTR_SCAN(max1363_scan);
-> +static IIO_DEV_ATTR_SCAN(max1363_scan);
->=20
->  static ssize_t max1363_show_name(struct device *dev,
->                                  struct device_attribute *attr,
-> @@ -462,7 +462,7 @@
->         return sprintf(buf, "%s\n", st->chip_info->name);
->  }
->=20
-> -IIO_DEVICE_ATTR(name, S_IRUGO, max1363_show_name, NULL, 0);
-> +static IIO_DEVICE_ATTR(name, S_IRUGO, max1363_show_name, NULL, 0);
->=20
->  /*name export */
->=20
-> -Michael
->=20
->=20
->>
->> I've cheated a bit on the event equivalent as they define a pair of
->> structures.  Keep meaning to ask on how to do things like that
->> properly (don't suppose anyone knows?)
->>
->> On another note, I'm getting increasingly tempted to drop the device
->> specific headers and move over to a more hwmon like fix naming at
->> review.  With new api they are huge and sometimes actually add code
->> rather than saving it.  Not that it effects these particularly macro=
-s.
->>
->>
->>
->>>
->>>
->>> Index: drivers/staging/iio/sysfs.h
->>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>> --- drivers/staging/iio/sysfs.h (revision 8430)
->>> +++ drivers/staging/iio/sysfs.h (working copy)
->>> @@ -95,16 +95,16 @@
->>>                         .val2 =3D _val2 }
->>>  #define IIO_DEVICE_ATTR(_name, _mode, _show, _store, _addr)    \
->>> -       struct iio_dev_attr iio_dev_attr_##_name                \
->>> +       static struct iio_dev_attr iio_dev_attr_##_name         \
->>>         =3D IIO_ATTR(_name, _mode, _show, _store, _addr)
->>>
->>>  #define IIO_DEVICE_ATTR_2(_name, _mode, _show, _store, _addr,
->>> _val2) \ -       struct iio_dev_attr iio_dev_attr_##_name \ +
->>> static struct iio_dev_attr iio_dev_attr_##_name
->> \
->>>         =3D IIO_ATTR_2(_name, _mode, _show, _store, _addr, _val2)
->>>  #define IIO_CONST_ATTR(_name, _string)
->> \
->>> -       struct iio_const_attr iio_const_attr_##_name \ +       stat=
-ic
->>> struct iio_const_attr iio_const_attr_##_name
->> \
->>>         =3D { .string =3D _string,
->> \
->>>             .dev_attr =3D __ATTR(_name, S_IRUGO, iio_read_const_att=
-r,
->>> NULL)}
->>>
->>>
->>> ------------------------------------------------------------------
->>> ********* Analog Devices GmbH              Open Platform Solutions
->>> **  *****
->>> **     ** Wilhelm-Wagenfeld-Strasse 6
->>> **  ***** D-80807 Munich
->>> ********* Germany
->>> Registergericht M=FCnchen HRB 40368,  Gesch=E4ftsf=FChrer: Thomas W=
-essel,
->>> William A. Martin, Margaret K. Seif
->>>
->>>
-> Greetings,
-> Michael
->=20
-> Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-> Sitz der Gesellschaft Muenchen, Registergericht Muenchen HRB 4036 Ges=
-chaeftsfuehrer Thomas Wessel, William A. Martin, Margaret Seif
->=20
->=20
+Use platform resource facility to get IRQs numbers and flags.
+Make sure this driver can be used with any system IRQ, not necessarily limi=
+ted to GPIO-IRQs.
+Use dev_err(dev...) and friends instead of printk(KERN_ERR...)
 
+From: Michael Hennerich <Michael.Hennerich@analog.com>
+
+Index: drivers/staging/iio/trigger/iio-trig-gpio.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- drivers/staging/iio/trigger/iio-trig-gpio.c (revision 7916)
++++ drivers/staging/iio/trigger/iio-trig-gpio.c (working copy)
+@@ -13,7 +13,6 @@
+  * TODO:
+  *
+  * Add board config elements to allow specification of startup settings.
+- * Add configuration settings (irq type etc)
+  */
+
+ #include <linux/kernel.h>
+@@ -30,7 +29,7 @@
+
+ struct iio_gpio_trigger_info {
+        struct mutex in_use;
+-       int gpio;
++       unsigned int irq;
+ };
+ /*
+  * Need to reference count these triggers and only enable gpio interrupts
+@@ -57,78 +56,77 @@
+        .attrs =3D iio_gpio_trigger_attrs,
+ };
+
+-static int iio_gpio_trigger_probe(struct platform_device *dev)
++static int iio_gpio_trigger_probe(struct platform_device *pdev)
+ {
+-       int *pdata =3D dev->dev.platform_data;
+        struct iio_gpio_trigger_info *trig_info;
+        struct iio_trigger *trig, *trig2;
+-       int i, irq, ret =3D 0;
+-       if (!pdata) {
+-               printk(KERN_ERR "No IIO gpio trigger platform data found\n"=
+);
+-               goto error_ret;
+-       }
+-       for (i =3D 0;; i++) {
+-               if (!gpio_is_valid(pdata[i]))
++       unsigned long irqflags;
++       struct resource *irq_res;
++       int irq, ret =3D 0, irq_res_cnt =3D 0;
++
++       do {
++               irq_res =3D platform_get_resource(pdev,
++                               IORESOURCE_IRQ, irq_res_cnt);
++
++               if (irq_res =3D=3D NULL) {
++                       if (irq_res_cnt =3D=3D 0)
++                               dev_err(&pdev->dev, "No GPIO IRQs specified=
+");
+                        break;
+-               trig =3D iio_allocate_trigger();
+-               if (!trig) {
+-                       ret =3D -ENOMEM;
+-                       goto error_free_completed_registrations;
+                }
++               irqflags =3D (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SH=
+ARED;
+
+-               trig_info =3D kzalloc(sizeof(*trig_info), GFP_KERNEL);
+-               if (!trig_info) {
+-                       ret =3D -ENOMEM;
+-                       goto error_put_trigger;
+-               }
+-               trig->control_attrs =3D &iio_gpio_trigger_attr_group;
+-               trig->private_data =3D trig_info;
+-               trig_info->gpio =3D pdata[i];
+-               trig->owner =3D THIS_MODULE;
+-               trig->name =3D kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL)=
+;
+-               if (!trig->name) {
+-                       ret =3D -ENOMEM;
+-                       goto error_free_trig_info;
+-               }
+-               snprintf((char *)trig->name,
+-                        IIO_TRIGGER_NAME_LENGTH,
+-                        "gpiotrig%d",
+-                        pdata[i]);
+-               ret =3D gpio_request(trig_info->gpio, trig->name);
+-               if (ret)
+-                       goto error_free_name;
++               for (irq =3D irq_res->start; irq <=3D irq_res->end; irq++) =
+{
+
+-               ret =3D gpio_direction_input(trig_info->gpio);
+-               if (ret)
+-                       goto error_release_gpio;
++                       trig =3D iio_allocate_trigger();
++                       if (!trig) {
++                               ret =3D -ENOMEM;
++                               goto error_free_completed_registrations;
++                       }
+
+-               irq =3D gpio_to_irq(trig_info->gpio);
+-               if (irq < 0) {
+-                       ret =3D irq;
+-                       goto error_release_gpio;
+-               }
++                       trig_info =3D kzalloc(sizeof(*trig_info), GFP_KERNE=
+L);
++                       if (!trig_info) {
++                               ret =3D -ENOMEM;
++                               goto error_put_trigger;
++                       }
++                       trig->control_attrs =3D &iio_gpio_trigger_attr_grou=
+p;
++                       trig->private_data =3D trig_info;
++                       trig_info->irq =3D irq;
++                       trig->owner =3D THIS_MODULE;
++                       trig->name =3D kmalloc(IIO_TRIGGER_NAME_LENGTH,
++                                       GFP_KERNEL);
++                       if (!trig->name) {
++                               ret =3D -ENOMEM;
++                               goto error_free_trig_info;
++                       }
++                       snprintf((char *)trig->name,
++                                IIO_TRIGGER_NAME_LENGTH,
++                                "irqtrig%d", irq);
+
+-               ret =3D request_irq(irq, iio_gpio_trigger_poll,
+-                                 IRQF_TRIGGER_RISING,
+-                                 trig->name,
+-                                 trig);
+-               if (ret)
+-                       goto error_release_gpio;
++                       ret =3D request_irq(irq, iio_gpio_trigger_poll,
++                                         irqflags, trig->name, trig);
++                       if (ret) {
++                               dev_err(&pdev->dev,
++                                       "request IRQ-%d failed", irq);
++                               goto error_free_name;
++                       }
+
+-               ret =3D iio_trigger_register(trig);
+-               if (ret)
+-                       goto error_release_irq;
++                       ret =3D iio_trigger_register(trig);
++                       if (ret)
++                               goto error_release_irq;
+
+-               list_add_tail(&trig->alloc_list, &iio_gpio_trigger_list);
++                       list_add_tail(&trig->alloc_list,
++                                       &iio_gpio_trigger_list);
++               }
+
+-       }
++               irq_res_cnt++;
++       } while (irq_res !=3D NULL);
++
++
+        return 0;
+
+ /* First clean up the partly allocated trigger */
+ error_release_irq:
+        free_irq(irq, trig);
+-error_release_gpio:
+-       gpio_free(trig_info->gpio);
+ error_free_name:
+        kfree(trig->name);
+ error_free_trig_info:
+@@ -142,18 +140,16 @@
+                                 &iio_gpio_trigger_list,
+                                 alloc_list) {
+                trig_info =3D trig->private_data;
+-               free_irq(gpio_to_irq(trig_info->gpio), trig);
+-               gpio_free(trig_info->gpio);
++               free_irq(gpio_to_irq(trig_info->irq), trig);
+                kfree(trig->name);
+                kfree(trig_info);
+                iio_trigger_unregister(trig);
+        }
+
+-error_ret:
+        return ret;
+ }
+
+-static int iio_gpio_trigger_remove(struct platform_device *dev)
++static int iio_gpio_trigger_remove(struct platform_device *pdev)
+ {
+        struct iio_trigger *trig, *trig2;
+        struct iio_gpio_trigger_info *trig_info;
+@@ -165,8 +161,7 @@
+                                 alloc_list) {
+                trig_info =3D trig->private_data;
+                iio_trigger_unregister(trig);
+-               free_irq(gpio_to_irq(trig_info->gpio), trig);
+-               gpio_free(trig_info->gpio);
++               free_irq(trig_info->irq, trig);
+                kfree(trig->name);
+                kfree(trig_info);
+                iio_put_trigger(trig);
+
+
+------------------------------------------------------------------
+********* Analog Devices GmbH              Open Platform Solutions
+**  *****
+**     ** Wilhelm-Wagenfeld-Strasse 6
+**  ***** D-80807 Munich
+********* Germany
+Registergericht M=FCnchen HRB 40368,  Gesch=E4ftsf=FChrer: Thomas Wessel, W=
+illiam A. Martin, Margaret K. Seif
