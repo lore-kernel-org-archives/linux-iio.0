@@ -1,47 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-1.csi.cam.ac.uk ([131.111.8.131]:60717 "EHLO
-	ppsw-1.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752537Ab0CVMD4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Mar 2010 08:03:56 -0400
-Message-ID: <4BA75D3E.1050008@cam.ac.uk>
-Date: Mon, 22 Mar 2010 12:06:22 +0000
+Received: from ppsw-6.csi.cam.ac.uk ([131.111.8.136]:39051 "EHLO
+	ppsw-6.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933424Ab0CKRuy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 11 Mar 2010 12:50:54 -0500
+Message-ID: <4B99288C.3080601@cam.ac.uk>
+Date: Thu, 11 Mar 2010 17:29:48 +0000
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: lewin <dlewin@free.fr>,
+To: Greg KH <greg@kroah.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: SPI Driver
-References: <4BA552E2.4070308@free.fr>
-In-Reply-To: <4BA552E2.4070308@free.fr>
+Subject: [PATCH] staging:iio:lis3l02dq - incorrect ws used in container of
+ call.
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/20/10 22:57, lewin wrote:
-> Dear Sir,
-> 
-> I've seen that you wrote some drivers for accelerometers and would like
-> to ask
-> you if you did anything for an Analog Devices like ADIS16209 ?
-I've not personally looked at that particular chip.  Recently
-Analog Devices have been doing a lot of work on driver support
-for their own chips.  For now most of this work has been going on in
-the blackfin repositories.
 
-http://blackfin.uclinux.org/gf/project/linux-kernel/scmsvn/?action=browse&path=%2Ftrunk%2Fdrivers%2Fstaging%2Fiio%2F
+Signed-of-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ The word oops comes to mind.  Original patch to merge the two work queues
+ in here (prior to Greg taking them into staging) changed the top half to
+ only use one of them and the bottom half to assume it was the other.
 
-Doesn't look like they have looked at that particular chip as yet though.
+ Currently causes a NULL pointer dereference if you enable any of the events
+ on an lis3l02dq. Just goes to show I need a few more regression tests.
 
-I've also cc'd the linux-iio mailing list as anyone working on such
-a driver is probably subscribed. (for others I'm just waiting on 
-an archive being set up for that list before doing a formal announcement).
-> If yes, please tell me where to find it. Elsewhere, may I ask you
-> advices to write one.
-> I'm a programer but lost with drivers. My intention is to read this A.D.
-> sensor's data from a FriendlyArm board (S3C2440 too).
-We will certainly be happy to assist.  The best bet is to look at existing
-drivers and make sure you fully understand what they are up to.  Then it
-is usually mostly a case of cut and paste!
+ drivers/staging/iio/accel/lis3l02dq_core.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-Thanks,
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+index f008837..56ab337 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+@@ -617,7 +617,7 @@ static int lis3l02dq_thresh_handler_th(struct iio_dev *dev_info,
+ static void lis3l02dq_thresh_handler_bh_no_check(struct work_struct *work_s)
+ {
+ 	struct iio_work_cont *wc
+-		= container_of(work_s, struct iio_work_cont, ws_nocheck);
++		= container_of(work_s, struct iio_work_cont, ws);
+ 	struct lis3l02dq_state *st = wc->st;
+ 	u8 t;
+ 
+-- 
+1.6.4.4
 
-Jonathan
