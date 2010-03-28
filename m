@@ -1,50 +1,94 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-0.csi.cam.ac.uk ([131.111.8.130]:43974 "EHLO
-	ppsw-0.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752764Ab0C3Qmc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Mar 2010 12:42:32 -0400
-Message-ID: <4BB22A90.6070801@cam.ac.uk>
-Date: Tue, 30 Mar 2010 17:45:04 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	Greg Kroah-Hartman <gregkh@suse.de>
-Subject: [PATCH] Fix staging:iio:ring_sw: Fix incorrect test on successful
- read of last value, causes infinite loop
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 00/13] Staging: IIO: ABI changes round 1, V1
+Date: Sun, 28 Mar 2010 21:41:06 +0100
+Message-Id: <1269808879-28838-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
+Dear All,
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
+This is the first set of patches related to the new abi as discussed on
+lkml http://lkml.org/lkml/2010/2/5/205  I will post them more generally
+(i.e. lkml) in a week ammended as appropriate.  Note these will cause
+extensive breakage in any drivers not currently in the mainline tree
+(so most of them :) but hopefully the changes required are fairly minimal.
 
- This is a bad one. The test means that almost no reads of the last
- value ever succeed!  Result is an infinite loop.
+Practical issues lead to a few minor changes.  Firstly the 'scan_elements'
+directory still exists in the main device directory. This is mainly
+because moving it into the buffer0 directory will add complexity
+to handling the addition of multiple choices of buffer type.
 
- Another one for the 'oops' category.
+One other question that came up during this, was how to name triggers
+that are associated closely with a device.  Those trigger not associated
+with a device should be named trigger0 etc with their own idr to handle
+numbering.  But for those cases where there is a device, should they
+be device[n]:trigger0 or device[n]:trigger[m] where m is based on the
+the trigger idr?  At the moment they are still all as trigger[m]
+in /sys/bus/iio/devices but this obviously doesn't give quite as much
+info as is available for all the other elements associated with a given
+physical device?
 
- Patch is post the spin lock fix:
- [PATCH] Staging: IIO: Fix uses of spinlocks prior to init in ring implementations
+I'm afraid the ordering of these patches is a little random but as they
+are here they shouldn't cause any breakage and I'd rather not waste time
+putting them in a more sensible order.
 
+Note the changes to max1363 are large. This is mainly because the driver
+previously used a completely different means of controlling scan elements
+to all others and hence that code needed a thorough rewrite.  This probably
+still needs more work, but is informative to others in its current
+state.
 
- drivers/staging/iio/ring_sw.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+Note these patches are against 2.6.34-rc2 and as such do not include a
+number of fixes that people have set out and which are in Greg's
+and Andrew's trees at the moment.
 
-diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
-index 7dff2bf..5abba8c 100644
---- a/drivers/staging/iio/ring_sw.c
-+++ b/drivers/staging/iio/ring_sw.c
-@@ -296,7 +296,7 @@ again:
- 		return -EAGAIN;
- 	memcpy(data, last_written_p_copy, ring->buf.bpd);
- 
--	if (unlikely(ring->last_written_p >= last_written_p_copy))
-+	if (unlikely(ring->last_written_p != last_written_p_copy))
- 		goto again;
- 
- 	iio_unmark_sw_rb_in_use(&ring->buf);
--- 
-1.6.4.4
+Thanks,
 
+Jonathan
+
+Jonathan Cameron (13):
+  staging:iio: Add new in_raw definitions for adc channels.
+  staging:iio: Add new attrs for sampling frequency available and
+    temp_raw
+  iio:staging:accelerometers move towards the new abi
+  staging:iio: Support functions for scan mask matching
+  staging: iio: Move from class to bus
+  staging:iio: Move event attributes into the event[n] device in sysfs
+  staging:iio: Clean out unused IIO_SCAN_EL and add IIO_SCAN_NAMED_EL_C
+  staging:iio:max1363 move to new abi.
+  staging:iio: Documentation, update iio_utils.h for the move to a bus
+  staging:iio: ABI documentation (partial)
+  staging:iio: Directory name changes to match new ABI.
+  staging:iio:tsl2563: change lux to illuminanc0_input to match new abi
+  staging:iio: Remove naming via IDR's where no longer necessary under
+    new abi.
+
+ drivers/staging/iio/Documentation/iio_utils.h     |   31 +-
+ drivers/staging/iio/Documentation/sysfs-class-iio |  265 +++++++
+ drivers/staging/iio/accel/accel.h                 |    8 +-
+ drivers/staging/iio/accel/kxsd9.c                 |   88 ++-
+ drivers/staging/iio/accel/lis3l02dq.h             |    4 -
+ drivers/staging/iio/accel/lis3l02dq_core.c        |  175 +++---
+ drivers/staging/iio/accel/lis3l02dq_ring.c        |   10 +-
+ drivers/staging/iio/accel/sca3000.h               |    2 +
+ drivers/staging/iio/accel/sca3000_core.c          |  174 +++---
+ drivers/staging/iio/accel/sca3000_ring.c          |   33 +-
+ drivers/staging/iio/adc/Kconfig                   |    1 +
+ drivers/staging/iio/adc/Makefile                  |    2 +-
+ drivers/staging/iio/adc/adc.h                     |   12 +
+ drivers/staging/iio/adc/max1363.h                 |  122 ++--
+ drivers/staging/iio/adc/max1363_core.c            |  762 ++++++++++++---------
+ drivers/staging/iio/adc/max1363_ring.c            |   67 ++-
+ drivers/staging/iio/chrdev.h                      |    2 +-
+ drivers/staging/iio/iio.h                         |   46 ++-
+ drivers/staging/iio/industrialio-core.c           |   58 +-
+ drivers/staging/iio/industrialio-ring.c           |   63 +--
+ drivers/staging/iio/industrialio-trigger.c        |    2 +-
+ drivers/staging/iio/light/tsl2563.c               |    4 +-
+ drivers/staging/iio/ring_generic.h                |   42 +-
+ drivers/staging/iio/ring_sw.c                     |    2 +-
+ drivers/staging/iio/sysfs.h                       |   15 +-
+ 25 files changed, 1244 insertions(+), 746 deletions(-)
+ create mode 100644 drivers/staging/iio/Documentation/sysfs-class-iio
