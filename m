@@ -1,63 +1,75 @@
 Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4BB20B3B.3090107@cam.ac.uk>
-Date: Tue, 30 Mar 2010 15:31:23 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 08/13] staging:iio:max1363 move to new abi.
-References: <1269808879-28838-1-git-send-email-jic23@cam.ac.uk> <1269808879-28838-2-git-send-email-jic23@cam.ac.uk> <1269808879-28838-3-git-send-email-jic23@cam.ac.uk> <1269808879-28838-4-git-send-email-jic23@cam.ac.uk> <1269808879-28838-5-git-send-email-jic23@cam.ac.uk> <1269808879-28838-6-git-send-email-jic23@cam.ac.uk> <1269808879-28838-7-git-send-email-jic23@cam.ac.uk> <1269808879-28838-8-git-send-email-jic23@cam.ac.uk> <1269808879-28838-9-git-send-email-jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 09/13] staging:iio: Documentation, update iio_utils.h for the move to a bus
+Date: Sun, 28 Mar 2010 21:41:15 +0100
+Message-Id: <1269808879-28838-10-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1269808879-28838-9-git-send-email-jic23@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <1269808879-28838-1-git-send-email-jic23@cam.ac.uk>
+ <1269808879-28838-2-git-send-email-jic23@cam.ac.uk>
+ <1269808879-28838-3-git-send-email-jic23@cam.ac.uk>
+ <1269808879-28838-4-git-send-email-jic23@cam.ac.uk>
+ <1269808879-28838-5-git-send-email-jic23@cam.ac.uk>
+ <1269808879-28838-6-git-send-email-jic23@cam.ac.uk>
+ <1269808879-28838-7-git-send-email-jic23@cam.ac.uk>
+ <1269808879-28838-8-git-send-email-jic23@cam.ac.uk>
+ <1269808879-28838-9-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-...
-> +static ssize_t max1363_read_single_channel(struct device *dev,
-> +				   struct device_attribute *attr,
-> +				   char *buf)
-> +{
-> +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> +	struct max1363_state *st = iio_dev_get_devdata(dev_info);
-> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> +	struct i2c_client *client = st->client;
-> +	int ret = 0, len = 0;
-> +	s32 data ;
-> +	char rxbuf[2];
-> +	long mask;
-> +
-> +	mutex_lock(&dev_info->mlock);
-> +	/* If ring buffer capture is occuring, query the buffer */
-> +	if (iio_ring_enabled(dev_info)) {
-> +		mask = max1363_mode_table[this_attr->address].modemask;
-> +		data = max1363_single_channel_from_ring(mask, st);
-> +		if (data < 0) {
-> +			ret = data;
-> +			goto error_ret;
-> +		}
-> +	} else {
-> +		/* Check to see if current scan mode is correct */
-> +		if (st->current_mode !=
-> +		    &max1363_mode_table[this_attr->address]) {
-> +			/* Update scan mode if needed */
-> +			st->current_mode
-> +				= &max1363_mode_table[this_attr->address];
-> +			ret = max1363_set_scan_mode(st);
-> +			if (ret)
-> +				goto error_ret;
-> +		}
-> +		/* Get reading */
-> +		data = i2c_master_recv(client, rxbuf, 2);
-> +		if (data < 0) {
-> +			ret = data;
-> +			goto error_ret;
-> +		}
-> +		data = rxbuf[1];
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/Documentation/iio_utils.h |   31 ++++++++++++++++++++++++-
+ 1 files changed, 30 insertions(+), 1 deletions(-)
 
-This is clearly wrong.  I'm only reading the lower 8 bits of the relevant channel.
-Trivial fix, so I'll roll it into next version.  For reference that series will also have
-patches add the remaining devices listed to be added to this driver on the iioutils wiki.
-
-
-Jonathan
-
-....
+diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
+index 74d3124..d24006a 100644
+--- a/drivers/staging/iio/Documentation/iio_utils.h
++++ b/drivers/staging/iio/Documentation/iio_utils.h
+@@ -47,7 +47,7 @@ inline char *find_ring_subelement(const char *directory, const char *subelement)
+ 
+ char *find_type_by_name(const char *name, const char *type)
+ {
+-	const char *iio_dir = "/sys/class/iio/";
++	const char *iio_dir = "/sys/bus/iio/devices/";
+ 	const struct dirent *ent;
+ 	int cnt, pos, pos2;
+ 
+@@ -112,6 +112,35 @@ int write_sysfs_int(char *filename, char *basedir, int val)
+ 	return 0;
+ }
+ 
++int write_sysfs_int_and_verify(char *filename, char *basedir, int val)
++{
++	int ret;
++	FILE  *sysfsfp;
++	char temp[100];
++	int test;
++
++	sprintf(temp, "%s%s", basedir, filename);
++	sysfsfp = fopen(temp, "w");
++	if (sysfsfp == NULL)
++		return -1;
++	fprintf(sysfsfp, "%d", val);
++	fclose(sysfsfp);
++
++	sysfsfp = fopen(temp, "r");
++	if (sysfsfp == NULL)
++		return -1;
++	fscanf(sysfsfp, "%d", &test);
++	if (test != val) {
++		printf("Possible failure in int write %d to %s%s\n",
++		       val,
++		       basedir,
++		       filename);
++		return -1;
++	}
++
++	return 0;
++}
++
+ /**
+  * write_sysfs_string_and_verify() - string write, readback and verify
+  * @filename: name of file to write to
+-- 
+1.6.4.4
