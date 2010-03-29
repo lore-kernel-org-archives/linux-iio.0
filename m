@@ -1,298 +1,87 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-1.csi.cam.ac.uk ([131.111.8.131]:55204 "EHLO
+	ppsw-1.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752004Ab0C2NxB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 29 Mar 2010 09:53:01 -0400
+Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:52171)
+	by ppsw-1.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.151]:25)
+	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-AES256-SHA:256)
+	id 1NwFOm-00020R-4W (Exim 4.70) for linux-iio@vger.kernel.org
+	(return-path <jic23@cam.ac.uk>); Mon, 29 Mar 2010 14:53:00 +0100
+Message-ID: <4BB0B14F.7070700@cam.ac.uk>
+Date: Mon, 29 Mar 2010 14:55:27 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
 To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 10/13] staging:iio: ABI documentation (partial)
-Date: Sun, 28 Mar 2010 21:41:16 +0100
-Message-Id: <1269808879-28838-11-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1269808879-28838-10-git-send-email-jic23@cam.ac.uk>
-References: <1269808879-28838-1-git-send-email-jic23@cam.ac.uk>
- <1269808879-28838-2-git-send-email-jic23@cam.ac.uk>
- <1269808879-28838-3-git-send-email-jic23@cam.ac.uk>
- <1269808879-28838-4-git-send-email-jic23@cam.ac.uk>
- <1269808879-28838-5-git-send-email-jic23@cam.ac.uk>
- <1269808879-28838-6-git-send-email-jic23@cam.ac.uk>
- <1269808879-28838-7-git-send-email-jic23@cam.ac.uk>
- <1269808879-28838-8-git-send-email-jic23@cam.ac.uk>
- <1269808879-28838-9-git-send-email-jic23@cam.ac.uk>
- <1269808879-28838-10-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 10/13] staging:iio: ABI documentation (partial)
+References: <1269808879-28838-1-git-send-email-jic23@cam.ac.uk> <1269808879-28838-2-git-send-email-jic23@cam.ac.uk> <1269808879-28838-3-git-send-email-jic23@cam.ac.uk> <1269808879-28838-4-git-send-email-jic23@cam.ac.uk> <1269808879-28838-5-git-send-email-jic23@cam.ac.uk> <1269808879-28838-6-git-send-email-jic23@cam.ac.uk> <1269808879-28838-7-git-send-email-jic23@cam.ac.uk> <1269808879-28838-8-git-send-email-jic23@cam.ac.uk> <1269808879-28838-9-git-send-email-jic23@cam.ac.uk> <1269808879-28838-10-git-send-email-jic23@cam.ac.uk> <1269808879-28838-11-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1269808879-28838-11-git-send-email-jic23@cam.ac.uk>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/Documentation/sysfs-class-iio |  265 +++++++++++++++++++++
- 1 files changed, 265 insertions(+), 0 deletions(-)
+In the great tradition of replying to ones own patches...
+...
+> +
+> +What:		/sys/.../device[n]/device[n]:event[m]
+> +KernelVersion:	2.6.35
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Configuration of which hardware generated events are passed up to
+> +		userspace. Some of these are a bit complex to generalize so this
+> +		section is a work in progress.
+> +
+> +What:		/sys/.../device[n]:event[m]/dev
+> +KernelVersion:	2.6.35
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		major:minor character device numbers for the event line.
+> +
+> +Taking accel_x0 as an example
+> +
+> +What:		/sys/.../device[n]:event[m]/accel_x0_thresh[_high|_low]
+> +KernelVersion:	2.6.35
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Event generated when accel_x0 passes a threshold in correction direction
+> +		(or stays beyond one). If direction isn't specified, either triggers it.
+> +		Note driver will assume last p events requested are enabled where p is
+> +		however many it supports.  So if you want to be sure you have
+> +		set what you think you have, check the contents of these. Drivers
+> +		may have to buffer any parameters so that they are consistent when a
+> +		given event type is enabled a future point (and not those for whatever
+> +		alarm was previously enabled).
+> +
+> +What:		/sys/.../device[n]:event[m]/accel_x0_roc[_high|_low]
+> +KernelVersion:	2.6.35
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Same as above but based on the first differential of the value.
+> +
+> +
+> +What:		/sys/.../device[n]:event[m]/accel_x0[_thresh|_roc][_high|_low]_period
+> +KernelVersion:	2.6.35
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		A period of time (microsecs) for which the condition must be broken
+> +		before an interrupt is triggered. Applies to all alarms if type is not
+> +		specified.
+> +
+> +What:		/sys/.../device[n]:event[m]/accel_x0[_thresh|_roc][_high|_low]_value
+> +KernelVersion:	2.6.35
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		The actual value of the threshold in raw device units obtained by
+> +		 reverse application of scale and offfset to the acceleration in m/s^2.
+> +
 
-diff --git a/drivers/staging/iio/Documentation/sysfs-class-iio b/drivers/staging/iio/Documentation/sysfs-class-iio
-new file mode 100644
-index 0000000..0da560d
---- /dev/null
-+++ b/drivers/staging/iio/Documentation/sysfs-class-iio
-@@ -0,0 +1,265 @@
-+
-+What:		/sys/bus/iio/devices/device[n]
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Hardware chip or device accessed by on communication port.
-+		Corresponds to a grouping of sensor channels.
-+
-+What:		/sys/bus/iio/devices/trigger[n]
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		An event driven driver of data capture to an in kernel buffer.
-+		May be provided by a device driver that also has an IIO device
-+		based on hardware generated events (e.g. data ready) or
-+		provided by a separate driver for other hardware (e.g.
-+		periodic timer, gpio or high resolution timer).
-+		Contains trigger type specific elements. These do not
-+		generalize well and hence are not documented in this file.
-+
-+What:		/sys/bus/iio/devices/device[n]:buffer
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+	        Link to /sys/class/iio/device[n]/device[n]:buffer. n indicates the
-+		device with which this buffer buffer is associated.
-+
-+What:		/sys/.../device[n]/name
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Description of the physical chip / device. Typically a part
-+		number.
-+
-+What:		/sys/.../device[n]/in[_name][m]_raw
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw (unscaled no bias removal etc) voltage measurement from
-+		channel m. name is used in special cases where this does
-+		not correspond to externally available input (e.g. supply
-+		voltage monitoring in which case the file is in_supply_raw).
-+
-+What:		/sys/.../device[n]/in[_name][m]_offset
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		If known for a device, offset to be added to in[m]_raw prior
-+		to scaling by volt[m]_scale in order to obtain voltage in
-+		millivolts.  Not present if the offset is always 0 or unknown.
-+		If m is not present, then voltage offset applies to all in
-+		channels. May be writable if a variable offset is controlled
-+		by the device. Note that this is different to calibbias which
-+		is for devices that apply offsets to compensate for variation
-+		between different instances of the part, typically adjusted by
-+		using some hardware supported calibration procedure.
-+
-+What:		/sys/.../device[n]/in[_name][m]_offset_available
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		If a small number of discrete offset values are available, this
-+		will be a space separated list.  If these are independant (but
-+		options the same) for individual offsets then m should not be
-+		present.
-+
-+What:		/sys/.../device[n]/in[_name][m]_offset_[min|max]
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		If a more or less continuous range of voltage offsets are supported
-+		then these specify the minimum and maximum.  If shared by all
-+		in channels then m is not present.
-+
-+What:		/sys/.../device[n]/in[_name][m]_calibbias
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Hardware applied calibration offset. (assumed to fix production
-+		inaccuracies)
-+
-+What		/sys/.../device[n]/in[_name][m]_calibscale
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Hardware applied calibration scale factor. (assumed to fix production
-+		inaccuracies)
-+
-+What:		/sys/.../device[n]/in[_name][m]_scale
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		If known for a device, scale to be applied to volt[m]_raw post
-+		addition of volt[m]_offset in order to obtain the measured voltage
-+		in millivolts.  If shared across all in channels then m is not present.
-+
-+What:		/sys/.../device[n]/in[m]-in[o]_raw
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw (unscaled) differential voltage measurement equivalent to
-+		channel m - channel o where these channel numbers apply to the physically
-+		equivalent inputs when non differential readings are separately available.
-+		In differential only parts, then all that is required is a consistent
-+		labelling.
-+
-+What:		/sys/.../device[n]/accel[_x|_y|_z][m]_raw
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Acceleration in direction x, y or z (may be arbitrarily assigned
-+		but should match other such assignments on device)
-+		channel m (not present if only one accelerometer channel at
-+		this orientation). Has all of the equivalent parameters as per in[m].
-+		Units after application of scale and offset are m/s^2.
-+
-+What:		/sys/.../device[n]/gyro[_x|_y|_z][m]_raw
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Angular velocity about axis x, y or z (may be arbitrarily assigned)
-+		channel m (not present if only one gyroscope at this orientation).
-+		Data converted by application of offset then scale to
-+		radians per second. Has all the equivalent parameters as per in[m].
-+
-+What:		/sys/.../device[n]/mag[_x|_y|_z][m]_raw
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Magnetic field along axis x, y or z (may be arbitrarily assigned)
-+		channel m (not present if only one magnetometer at this orientation).
-+		Data converted by application of offset then scale to Gauss
-+		Has all the equivalent modifiers as per in[m].
-+
-+What:		/sys/.../device[n]/device[n]:event[m]
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Configuration of which hardware generated events are passed up to
-+		userspace. Some of these are a bit complex to generalize so this
-+		section is a work in progress.
-+
-+What:		/sys/.../device[n]:event[m]/dev
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		major:minor character device numbers for the event line.
-+
-+Taking accel_x0 as an example
-+
-+What:		/sys/.../device[n]:event[m]/accel_x0_thresh[_high|_low]
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Event generated when accel_x0 passes a threshold in correction direction
-+		(or stays beyond one). If direction isn't specified, either triggers it.
-+		Note driver will assume last p events requested are enabled where p is
-+		however many it supports.  So if you want to be sure you have
-+		set what you think you have, check the contents of these. Drivers
-+		may have to buffer any parameters so that they are consistent when a
-+		given event type is enabled a future point (and not those for whatever
-+		alarm was previously enabled).
-+
-+What:		/sys/.../device[n]:event[m]/accel_x0_roc[_high|_low]
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Same as above but based on the first differential of the value.
-+
-+
-+What:		/sys/.../device[n]:event[m]/accel_x0[_thresh|_roc][_high|_low]_period
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		A period of time (microsecs) for which the condition must be broken
-+		before an interrupt is triggered. Applies to all alarms if type is not
-+		specified.
-+
-+What:		/sys/.../device[n]:event[m]/accel_x0[_thresh|_roc][_high|_low]_value
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		The actual value of the threshold in raw device units obtained by
-+		 reverse application of scale and offfset to the acceleration in m/s^2.
-+
-+What:		/sys/.../device[n]/scan_elements
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Directory containing interfaces for elements that will be captured
-+		for a single triggered sample set in the buffer.
-+
-+What:		/sys/.../device[n]/scan_elements/[m]_accel_x0_en
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Scan element control for triggered data capture. m implies the
-+		ordering within the buffer. Next the type is specified with
-+		modifier and channel number as per the sysfs single channel
-+		access above.
-+
-+What:		/sys/.../device[n]/scan_elements/accel[_x0]_precision
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Scan element precision within the buffer. Note that the
-+		data alignment must restrictions must be read from within
-+		buffer to work out full data alignment for data read
-+		via buffer_access chrdev. _x0 dropped if shared across all
-+		acceleration channels.
-+
-+What:		/sys/.../device[n]/scan_elements/accel[_x0]_shift
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		A bit shift (to right) that must be applied prior to
-+		extracting the bits specified by accel[_x0]_precision.
-+
-+What:		/sys/.../device[n]/device[n]:buffer:event/dev
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Buffer for device n event character device major:minor numbers.
-+
-+What:		/sys/.../device[n]/device[n]:buffer:access/dev
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Buffer for device n access character device o major:minor numbers.
-+
-+What:		/sys/.../device[n]:buffer/trigger
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		The name of the trigger source being used, as per string given
-+		in /sys/class/iio/trigger[n]/name.
-+
-+What:		/sys/.../device[n]:buffer/length
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Number of scans contained by the buffer.
-+
-+What:		/sys/.../device[n]:buffer/bps
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Bytes per scan.  Due to alignment fun, the scan may be larger
-+		than implied directly by the scan_element parameters.
-+
-+What:		/sys/.../device[n]:buffer/enable
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Actually start the buffer capture up.  Will start trigger
-+		if first device and appropriate.
-+
-+What:		/sys/.../device[n]:buffer/alignment
-+KernelVersion:	2.6.35
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Minimum data alignment.  Scan elements larger than this are aligned
-+		to the nearest power of 2 times this.  (may not be true in weird
-+		hardware buffers that pack data well)
-+
--- 
-1.6.4.4
+These names don't actually conform to those I sent out out in the RFC following the the main
+ABI posting and just for a complete inconsistency the naming in lis3l02dq doesn't conform
+to either version.  I haven't yet checked the other drivers, but I would guess they are a random
+mix of the various options as well.
+
+Oops.
+
+I'll fix this up for V2.
+
+Jonathan
