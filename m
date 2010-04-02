@@ -1,60 +1,48 @@
-Return-Path: <greg@kroah.com>
-Date: Thu, 22 Apr 2010 16:37:41 -0700
-From: Greg KH <greg@kroah.com>
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-Cc: "gregkh@suse.de" <gregkh@suse.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"uclinux-dist-devel@blackfin.uclinux.org" <uclinux-dist-devel@blackfin.uclinux.org>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH] iio-trig-gpio:Remove redundant gpio_request
-Message-ID: <20100422233741.GA4414@kroah.com>
-References: <544AC56F16B56944AEC3BD4E3D5917712D6B1D9767@LIMKCMBX1.ad.analog.com>
+Return-Path: <sonic.adi@gmail.com>
+Subject: [PATCH] IIO: struct iio_dev_attr should be defined as static.
+From: sonic zhang <sonic.adi@gmail.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Linux Kernel <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Date: Fri, 2 Apr 2010 10:55:48 +0800
+Message-ID: <1270176948.3847.1.camel@eight.analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917712D6B1D9767@LIMKCMBX1.ad.analog.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Mar 09, 2010 at 12:58:29PM +0000, Hennerich, Michael wrote:
-> 
-> Remove redundant gpio_request:
-> The GPIO used as trigger IRQ, is also requested as gpio, but actually never read.
-> 
-> Use platform resource facility to get IRQs numbers and flags.
-> Make sure this driver can be used with any system IRQ, not necessarily limited to GPIO-IRQs.
-> Use dev_err(dev...) and friends instead of printk(KERN_ERR...)
-> 
-> 
-> Signed-off-by: Michael Hennerich <Michael.Hennerich@analog.com>
-> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> 
-> 
-> Index: drivers/staging/iio/trigger/iio-trig-gpio.c
-> ===================================================================
-> --- drivers/staging/iio/trigger/iio-trig-gpio.c (revision 7916)
-> +++ drivers/staging/iio/trigger/iio-trig-gpio.c (working copy)
-> @@ -13,7 +13,6 @@
->   * TODO:
->   *
->   * Add board config elements to allow specification of startup settings.
-> - * Add configuration settings (irq type etc)
->   */
-> 
->  #include <linux/kernel.h>
-> @@ -30,7 +29,7 @@
-> 
->  struct iio_gpio_trigger_info {
->         struct mutex in_use;
-> -       int gpio;
-> +       unsigned int irq;
 
-Your email client turned the tabs into spaces, and made this patch
-unappliable.  Can you fix this and resend your other patches as well
-(they also had the same problem.)
+Otherwise link errors "multiple definition of `iio_dev_attr_mode'"
+are reported when compile multiple different iio drivers with the
+same attribute name.
 
-Take a look at Documentation/SubmittingPatches for how to do this
-correctly (you also need to make the diff one level down).
+Signed-off-by: Sonic Zhang <sonic.adi@gmail.com>
+---
+ drivers/staging/iio/sysfs.h |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-thanks,
-
-greg k-h
+diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
+index e501e13..39d207e 100644
+--- a/drivers/staging/iio/sysfs.h
++++ b/drivers/staging/iio/sysfs.h
+@@ -95,16 +95,16 @@ struct iio_const_attr {
+ 			.val2 = _val2 }
+ 
+ #define IIO_DEVICE_ATTR(_name, _mode, _show, _store, _addr)	\
+-	struct iio_dev_attr iio_dev_attr_##_name		\
++	static struct iio_dev_attr iio_dev_attr_##_name		\
+ 	= IIO_ATTR(_name, _mode, _show, _store, _addr)
+ 
+ 
+ #define IIO_DEVICE_ATTR_2(_name, _mode, _show, _store, _addr, _val2)	\
+-	struct iio_dev_attr iio_dev_attr_##_name			\
++	static struct iio_dev_attr iio_dev_attr_##_name			\
+ 	= IIO_ATTR_2(_name, _mode, _show, _store, _addr, _val2)
+ 
+ #define IIO_CONST_ATTR(_name, _string)					\
+-	struct iio_const_attr iio_const_attr_##_name			\
++	static struct iio_const_attr iio_const_attr_##_name			\
+ 	= { .string = _string,						\
+ 	    .dev_attr = __ATTR(_name, S_IRUGO, iio_read_const_attr, NULL)}
+ 
+-- 
+1.6.0
