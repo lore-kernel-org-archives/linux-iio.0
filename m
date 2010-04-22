@@ -1,68 +1,60 @@
 Return-Path: <greg@kroah.com>
-Subject: patch staging-iio-function-iio_get_new_idr_val-return-negative-value-if-fails.patch added to gregkh-2.6 tree
-To: sonic.adi@gmail.com,gregkh@suse.de,greg@kroah.com,jic23@cam.ac.uk,linux-iio@vger.kernel.org,linux-kernel@vger.kernel.org
-From: <gregkh@suse.de>
-Date: Thu, 22 Apr 2010 17:13:20 -0700
-In-Reply-To: <4BA76219.4030606@cam.ac.uk>
-Message-ID: <12719816003115@kroah.org>
+Date: Thu, 22 Apr 2010 16:37:41 -0700
+From: Greg KH <greg@kroah.com>
+To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+Cc: "gregkh@suse.de" <gregkh@suse.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	"uclinux-dist-devel@blackfin.uclinux.org" <uclinux-dist-devel@blackfin.uclinux.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH] iio-trig-gpio:Remove redundant gpio_request
+Message-ID: <20100422233741.GA4414@kroah.com>
+References: <544AC56F16B56944AEC3BD4E3D5917712D6B1D9767@LIMKCMBX1.ad.analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ANSI_X3.4-1968
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917712D6B1D9767@LIMKCMBX1.ad.analog.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+On Tue, Mar 09, 2010 at 12:58:29PM +0000, Hennerich, Michael wrote:
+> 
+> Remove redundant gpio_request:
+> The GPIO used as trigger IRQ, is also requested as gpio, but actually never read.
+> 
+> Use platform resource facility to get IRQs numbers and flags.
+> Make sure this driver can be used with any system IRQ, not necessarily limited to GPIO-IRQs.
+> Use dev_err(dev...) and friends instead of printk(KERN_ERR...)
+> 
+> 
+> Signed-off-by: Michael Hennerich <Michael.Hennerich@analog.com>
+> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+> 
+> 
+> Index: drivers/staging/iio/trigger/iio-trig-gpio.c
+> ===================================================================
+> --- drivers/staging/iio/trigger/iio-trig-gpio.c (revision 7916)
+> +++ drivers/staging/iio/trigger/iio-trig-gpio.c (working copy)
+> @@ -13,7 +13,6 @@
+>   * TODO:
+>   *
+>   * Add board config elements to allow specification of startup settings.
+> - * Add configuration settings (irq type etc)
+>   */
+> 
+>  #include <linux/kernel.h>
+> @@ -30,7 +29,7 @@
+> 
+>  struct iio_gpio_trigger_info {
+>         struct mutex in_use;
+> -       int gpio;
+> +       unsigned int irq;
 
-This is a note to let you know that I've just added the patch titled
+Your email client turned the tabs into spaces, and made this patch
+unappliable.  Can you fix this and resend your other patches as well
+(they also had the same problem.)
 
-    Subject: staging: iio: Function iio_get_new_idr_val() return negative=
- value if fails.
+Take a look at Documentation/SubmittingPatches for how to do this
+correctly (you also need to make the diff one level down).
 
-to my gregkh-2.6 tree.  Its filename is
+thanks,
 
-    staging-iio-function-iio_get_new_idr_val-return-negative-value-if-fai=
-ls.patch
-
-This tree can be found at=20
-    http://www.kernel.org/pub/linux/kernel/people/gregkh/gregkh-2.6/patch=
-es/
-
-
->>From jic23@cam.ac.uk  Thu Apr 22 16:40:17 2010
-From: Sonic Zhang <sonic.adi@gmail.com>
-Date: Mon, 22 Mar 2010 12:27:05 +0000
-Subject: staging: iio: Function iio_get_new_idr_val() return negative val=
-ue if fails.
-To: sonic zhang <sonic.adi@gmail.com>
-Cc: Linux Kernel <linux-kernel@vger.kernel.org>,  linux-iio <linux-iio@vg=
-er.kernel.org>, Greg KH <greg@kroah.com>
-Message-ID: <4BA76219.4030606@cam.ac.uk>
-
-
-Function iio_get_new_idr_val() return negative value if fails.
-So, only error when ret < 0 in iio_device_register_eventset().
-
-Signed-off-by: Sonic Zhang <sonic.adi@gmail.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- drivers/staging/iio/industrialio-core.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -537,6 +537,7 @@ static void iio_device_unregister_sysfs(
- 	sysfs_remove_group(&dev_info->dev.kobj, dev_info->attrs);
- }
-=20
-+/* This function return negative value if fails. */
- int iio_get_new_idr_val(struct idr *this_idr)
- {
- 	int ret;
-@@ -660,7 +661,7 @@ static int iio_device_register_eventset(
- 	for (i =3D 0; i < dev_info->num_interrupt_lines; i++) {
- 		dev_info->event_interfaces[i].owner =3D dev_info->driver_module;
- 		ret =3D iio_get_new_idr_val(&iio_event_idr);
--		if (ret)
-+		if (ret < 0)
- 			goto error_free_setup_ev_ints;
- 		else
- 			dev_info->event_interfaces[i].id =3D ret;
+greg k-h
