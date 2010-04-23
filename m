@@ -1,84 +1,60 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-7.csi.cam.ac.uk ([131.111.8.137]:59714 "EHLO
-	ppsw-7.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753279Ab0DFL15 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 6 Apr 2010 07:27:57 -0400
-Message-ID: <4BBB1B58.2000405@cam.ac.uk>
-Date: Tue, 06 Apr 2010 12:30:32 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <greg@kroah.com>
+Subject: patch staging-iio-ring_sw-fix-incorrect-test-on-successful-read-of-last-value-causes-infinite-loop.patch added to gregkh-2.6 tree
+To: jic23@cam.ac.uk,gregkh@suse.de,linux-iio@vger.kernel.org
+From: <gregkh@suse.de>
+Date: Thu, 22 Apr 2010 17:13:21 -0700
+In-Reply-To: <4BB22A90.6070801@cam.ac.uk>
+Message-ID: <1271981601503@kroah.org>
 MIME-Version: 1.0
-To: sonic zhang <sonic.adi@gmail.com>
-CC: Linux Kernel <linux-kernel@vger.kernel.org>,
-	linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] IIO: struct iio_dev_attr should be defined as static.
-References: <1270176948.3847.1.camel@eight.analog.com>
-In-Reply-To: <1270176948.3847.1.camel@eight.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
-
-On 04/02/10 03:55, sonic zhang wrote:
-> 
-> Otherwise link errors "multiple definition of `iio_dev_attr_mode'"
-> are reported when compile multiple different iio drivers with the
-> same attribute name.
-
-Hi Sonic,
-
-Sorry for slow response had long weekend away from all computers!
-
-NAK.  The right place to do this is in the call of the macro, not
-in the macro itself. See the many examples in hwmon....
-
-So 
-
-static IIO_DEVICE_ATTR(accel_x, .... etc
-
-This makes it explicit in the drivers.
-
-There were a few calls that were missing this in the mainline driver
-set but I think they are all fixed in patches that have gone to Greg
-for merging. (Michael Hennerich's patch - the second one in the thread
-[PATCH] IIO:sysfs.h: Use static declaration.
-The first was as per your patch).
-
-iirc there are a few exceptions where the static is in the header
-due to the macro defining a pair of static structures.  Not sure if
-there is a cleaner way to handle that.
-
-Thanks,
-
-Jonathan
+Content-Type: text/plain; charset=ANSI_X3.4-1968
+List-ID: <linux-iio@vger.kernel.org>
 
 
-> 
-> Signed-off-by: Sonic Zhang <sonic.adi@gmail.com>
-> ---
->  drivers/staging/iio/sysfs.h |    6 +++---
->  1 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
-> index e501e13..39d207e 100644
-> --- a/drivers/staging/iio/sysfs.h
-> +++ b/drivers/staging/iio/sysfs.h
-> @@ -95,16 +95,16 @@ struct iio_const_attr {
->  			.val2 = _val2 }
->  
->  #define IIO_DEVICE_ATTR(_name, _mode, _show, _store, _addr)	\
-> -	struct iio_dev_attr iio_dev_attr_##_name		\
-> +	static struct iio_dev_attr iio_dev_attr_##_name		\
->  	= IIO_ATTR(_name, _mode, _show, _store, _addr)
->  
->  
->  #define IIO_DEVICE_ATTR_2(_name, _mode, _show, _store, _addr, _val2)	\
-> -	struct iio_dev_attr iio_dev_attr_##_name			\
-> +	static struct iio_dev_attr iio_dev_attr_##_name			\
->  	= IIO_ATTR_2(_name, _mode, _show, _store, _addr, _val2)
->  
->  #define IIO_CONST_ATTR(_name, _string)					\
-> -	struct iio_const_attr iio_const_attr_##_name			\
-> +	static struct iio_const_attr iio_const_attr_##_name			\
->  	= { .string = _string,						\
->  	    .dev_attr = __ATTR(_name, S_IRUGO, iio_read_const_attr, NULL)}
->  
+This is a note to let you know that I've just added the patch titled
 
+    Subject: staging: iio: ring_sw: Fix incorrect test on successful read=
+ of last value, causes infinite loop
+
+to my gregkh-2.6 tree.  Its filename is
+
+    staging-iio-ring_sw-fix-incorrect-test-on-successful-read-of-last-val=
+ue-causes-infinite-loop.patch
+
+This tree can be found at=20
+    http://www.kernel.org/pub/linux/kernel/people/gregkh/gregkh-2.6/patch=
+es/
+
+
+>>From jic23@cam.ac.uk  Thu Apr 22 16:41:09 2010
+From: Jonathan Cameron <jic23@cam.ac.uk>
+Date: Tue, 30 Mar 2010 17:45:04 +0100
+Subject: staging: iio: ring_sw: Fix incorrect test on successful read of =
+last value, causes infinite loop
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Greg Kroah-H=
+artman <gregkh@suse.de>
+Message-ID: <4BB22A90.6070801@cam.ac.uk>
+
+
+This is a bad one. The test means that almost no reads of the last
+value ever succeed!  Result is an infinite loop.
+
+Another one for the 'oops' category.
+
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/staging/iio/ring_sw.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/staging/iio/ring_sw.c
++++ b/drivers/staging/iio/ring_sw.c
+@@ -293,7 +293,7 @@ again:
+ 		return -EAGAIN;
+ 	memcpy(data, last_written_p_copy, ring->buf.bpd);
+=20
+-	if (unlikely(ring->last_written_p >=3D last_written_p_copy))
++	if (unlikely(ring->last_written_p !=3D last_written_p_copy))
+ 		goto again;
+=20
+ 	iio_unmark_sw_rb_in_use(&ring->buf);
