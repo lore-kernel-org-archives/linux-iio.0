@@ -1,93 +1,112 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:34213 "EHLO
-	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752940Ab0D0JYZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Apr 2010 05:24:25 -0400
-Message-ID: <4BD6ADFA.4050500@cam.ac.uk>
-Date: Tue, 27 Apr 2010 10:27:22 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Song, Barry" <Barry.Song@analog.com>
-CC: linux-iio@vger.kernel.org, "Zhang, Sonic" <Sonic.Zhang@analog.com>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Subject: Re: IIO driver merge plans (for next merge window)
-References: <4BD5F4A8.7020309@cam.ac.uk> <0F1B54C89D5F954D8535DB252AF412FA048553F4@chinexm1.ad.analog.com>
-In-Reply-To: <0F1B54C89D5F954D8535DB252AF412FA048553F4@chinexm1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 00/19 V2] staging:iio: ABi changes round 1
+Date: Mon, 26 Apr 2010 21:07:51 +0100
+Message-Id: <1272312490-9791-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/27/10 04:20, Song, Barry wrote:
-> Drivers that passed debugging and testing on hardware can be pushed
-> to mainline. By now, ADIS16300 and ADIS16400 drivers are on the
-> list. But the problem is they are based on old abi, will you change
-> codes to match new abi? If no, we can update codes after you merge
-> the new abi into mainline.
+Note:  Due to a stupid error I didn't initially send this to
+linux-iio.  As it is a large patch set I'd rahter not resend
+to LKML so please add the cc manually to replies.
 
-Sure.  I'll take a look at those and see what the best merge technique
-is.  Hopefully we can tack those on to the end of the abi patch series
-and do it in two stages.
+Dear All,
+
+The original patch set was sent to iio-linux@vger.kernel.org
+back in March.
+
+Principally this updated set includes a number of minor fixes
+based on additional testing.  One or two of these patches are
+outright fixes that have been picked up by Greg in the meantime.
+Conversely this is based on mainline as of yesterday, so does not
+include all of the fixes that are in Greg's for next tree.
+
+If people are in happy with these I will do a clean set suitable
+for direct use by Greg KH.
+
+New stuff in here includes some additional support in the max1363
+driver.  This could do with a bit of testing, but these parts are
+extremely similar to those already supported so there should be
+no major issues.  Also included is a substantially rewritten example.
+
+Next on my list for IIO is adding a couple of new buffer
+implentations, particularly playing with the new FIFO implementation.
+
+As can be seen below the bulk of this set is a fairly substantial
+rewrite of max1363 required to have this device meet the new abi
+as it did not previously meet the last (undocumented) api!
+
+There are still some issues with the api, particularly for naming
+of event parameters, but those will be ironed out in a second round
+of patches.
+
+For convenience these are in a temporary git repository at
+
+git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio-new-abi.git
+
+Note that tree also includes some fixes and board support necessary
+for testing this patch set (if you have the platforms I do anyway)
+
+As ever all coments welcome.  If quite reasonably people don't have
+time to look at the full set, please do offer comments on any you
+do have time to read!
+
+Thanks,
 
 Jonathan
-> Thanks
-> Barry
-> 
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
-> Sent: Tue 4/27/2010 4:16 AM
-> To: linux-iio@vger.kernel.org
-> Cc: Song, Barry; Zhang, Sonic; Hennerich, Michael; Manuel Stahl
-> Subject: IIO driver merge plans (for next merge window)
->  
-> Hi All,
-> 
-> It is getting to that point of the kernel development cycle where we
-> want to start thinking about which drivers to push out to Greg in
-> plenty of time for the next merge window.  If possible I'd like to
-> see some of them moving over to the new abi.  However, given we are
-> in staging anyway, we can always merge them first and change them
-> later!  Obviously the question of whether the abi changes merge
-> in time is down to what feedback they generate so that may further
-> complicate things.
-> 
-> I see there are loads from Analog in the blackfin tree and based on
-> a quick glance at the source they are all in pretty good state.  The
-> only holes I can see are possibly in documentation and that is probably
-> more a case of adding things to the abi docs (in my latest patch set)
-> than anything else.
-> 
-> Barry, Sonic, Michael, what are your current plans for mainlining?
-> (as much as staging is mainline anyway)
-> 
-> I see you guys have started adding ring support.  How are you finding
-> that element?  I'm still far from sure we have gotten that bit right
-> yet!  I'm going to have a play with the new FIFO implementation and
-> see if that provides at the very least and easier to review alternative
-> to the current buffer.
-> 
-> Would also be great to start merging DAC and DDS support from your tree and
-> finally justify the output element of IIO.
-> 
-> I know Manuel has a couple of drivers as well. Sorry to anyone I have
-> forgotten.  Please post your drivers!
-> 
-> If people want assistance with moving over to the new abi, then I'm happy
-> to convert drivers, but obviously would need people to test that I haven't
-> broken anything in the process.
-> 
-> With a bit of luck I'll clean up a few half written drivers I have
-> and perhaps look at pulling in the other light sensors now that ALS
-> has bitten the dust.
-> 
-> Looking forward to seeing lots of drivers!
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> p.s. If anyone has a chance to glance over the latest patch set, that would
-> be great.
-> 
-> 
 
+Jonathan Cameron (19):
+  staging:iio: Add new in_raw definitions for adc channels.
+  staging:iio: Add new attrs for sampling frequency available and
+    temp_raw
+  iio:staging:accelerometers move towards the new abi
+  staging:iio: Support functions for scan mask matching
+  staging: iio: Move from class to bus
+  staging:iio: Move event attributes into the event[n] device in sysfs
+  staging:iio: Clean out unused IIO_SCAN_EL and add IIO_SCAN_NAMED_EL_C
+  staging:iio:max1363 move to new abi.
+  staging:iio: Documentation, update iio_utils.h for the move to a bus
+  staging:iio: ABI documentation (partial)
+  staging:iio: Directory name changes to match new ABI.
+  staging:iio:tsl2563: change lux to illuminanc0_input to match new abi
+  staging:iio: Remove naming via IDR's where no longer necessary under
+    new abi.
+  staging:iio:max1363 add support for max11606-max11617
+  staging:iio:max1363 add support for 8 bit equivalent devices,
+    max1036-9, max11600-5
+  Staging: IIO: Fix uses of spinlocks prior to init in ring
+    implementations
+  staging:iio:ring_sw: Fix incorrect test on successful read of last
+    value, causes infinite loop
+  staging:iio:tsl2563 add a name attribute under the iio
+  staging:iio:Documentation: Rewrite example for new abi.
+
+ drivers/staging/iio/Documentation/iio_utils.h      |  266 +++--
+ .../iio/Documentation/lis3l02dqbuffersimple.c      |  237 +++--
+ drivers/staging/iio/Documentation/sysfs-class-iio  |  285 +++++
+ drivers/staging/iio/accel/accel.h                  |    8 +-
+ drivers/staging/iio/accel/kxsd9.c                  |   88 +-
+ drivers/staging/iio/accel/lis3l02dq.h              |    4 -
+ drivers/staging/iio/accel/lis3l02dq_core.c         |  175 ++--
+ drivers/staging/iio/accel/lis3l02dq_ring.c         |   10 +-
+ drivers/staging/iio/accel/sca3000.h                |    2 +
+ drivers/staging/iio/accel/sca3000_core.c           |  174 ++--
+ drivers/staging/iio/accel/sca3000_ring.c           |   33 +-
+ drivers/staging/iio/adc/Kconfig                    |   11 +-
+ drivers/staging/iio/adc/Makefile                   |    2 +-
+ drivers/staging/iio/adc/adc.h                      |   12 +
+ drivers/staging/iio/adc/max1363.h                  |  122 +--
+ drivers/staging/iio/adc/max1363_core.c             | 1109 ++++++++++++++------
+ drivers/staging/iio/adc/max1363_ring.c             |   80 +-
+ drivers/staging/iio/chrdev.h                       |    2 +-
+ drivers/staging/iio/iio.h                          |   47 +-
+ drivers/staging/iio/industrialio-core.c            |   58 +-
+ drivers/staging/iio/industrialio-ring.c            |   66 +-
+ drivers/staging/iio/industrialio-trigger.c         |    2 +-
+ drivers/staging/iio/light/tsl2563.c                |   16 +-
+ drivers/staging/iio/ring_generic.h                 |   50 +-
+ drivers/staging/iio/ring_sw.c                      |   23 +-
+ drivers/staging/iio/sysfs.h                        |   15 +-
+ 26 files changed, 1955 insertions(+), 942 deletions(-)
+ create mode 100644 drivers/staging/iio/Documentation/sysfs-class-iio
