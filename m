@@ -1,22 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:59550 "EHLO
-	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753417Ab0DZUNm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Apr 2010 16:13:42 -0400
-Message-ID: <4BD5F4A8.7020309@cam.ac.uk>
-Date: Mon, 26 Apr 2010 21:16:40 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "Song, Barry" <Barry.Song@analog.com>,
-	"Zhang, Sonic" <Sonic.Zhang@analog.com>,
+Return-Path: <Barry.Song@analog.com>
+From: "Song, Barry" <Barry.Song@analog.com>
+Cc: "Zhang, Sonic" <Sonic.Zhang@analog.com>,
 	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Subject: IIO driver merge plans (for next merge window)
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	"Manuel Stahl" <manuel.stahl@iis.fraunhofer.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Subject: RE: IIO driver merge plans (for next merge window)
+Date: Tue, 27 Apr 2010 11:20:36 +0800
+Message-ID: <0F1B54C89D5F954D8535DB252AF412FA048553F4@chinexm1.ad.analog.com>
+References: <4BD5F4A8.7020309@cam.ac.uk>
+To: "Jonathan Cameron" <jic23@cam.ac.uk>,
+	<linux-iio@vger.kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
+Drivers that passed debugging and testing on hardware can be pushed to =
+mainline. By now, ADIS16300 and ADIS16400 drivers are on the list.
+But the problem is they are based on old abi, will you change codes to =
+match new abi? If no, we can update codes after you merge the new abi =
+into mainline.
+
+Thanks
+Barry
+
+-----Original Message-----
+From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
+Sent: Tue 4/27/2010 4:16 AM
+To: linux-iio@vger.kernel.org
+Cc: Song, Barry; Zhang, Sonic; Hennerich, Michael; Manuel Stahl
+Subject: IIO driver merge plans (for next merge window)
+=20
 Hi All,
 
 It is getting to that point of the kernel development cycle where we
@@ -43,14 +55,17 @@ yet!  I'm going to have a play with the new FIFO implementation and
 see if that provides at the very least and easier to review alternative
 to the current buffer.
 
-Would also be great to start merging DAC and DDS support from your tree and
+Would also be great to start merging DAC and DDS support from your tree =
+and
 finally justify the output element of IIO.
 
 I know Manuel has a couple of drivers as well. Sorry to anyone I have
 forgotten.  Please post your drivers!
 
-If people want assistance with moving over to the new abi, then I'm happy
-to convert drivers, but obviously would need people to test that I haven't
+If people want assistance with moving over to the new abi, then I'm =
+happy
+to convert drivers, but obviously would need people to test that I =
+haven't
 broken anything in the process.
 
 With a bit of luck I'll clean up a few half written drivers I have
@@ -63,5 +78,6 @@ Thanks,
 
 Jonathan
 
-p.s. If anyone has a chance to glance over the latest patch set, that would
+p.s. If anyone has a chance to glance over the latest patch set, that =
+would
 be great.
