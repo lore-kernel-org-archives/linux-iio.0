@@ -2,103 +2,157 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: gregkh@suse.de
 Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 04/20] staging:iio: Support functions for scan mask matching
-Date: Tue,  4 May 2010 14:42:59 +0100
-Message-Id: <1272980595-11033-5-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1272980595-11033-4-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 05/20] staging: iio: Move from class to bus
+Date: Tue,  4 May 2010 14:43:00 +0100
+Message-Id: <1272980595-11033-6-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1272980595-11033-5-git-send-email-jic23@cam.ac.uk>
 References: <1272980595-11033-1-git-send-email-jic23@cam.ac.uk>
  <1272980595-11033-2-git-send-email-jic23@cam.ac.uk>
  <1272980595-11033-3-git-send-email-jic23@cam.ac.uk>
  <1272980595-11033-4-git-send-email-jic23@cam.ac.uk>
+ <1272980595-11033-5-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/iio.h |   45 +++++++++++++++++++++++++++++++++++++++++----
- 1 files changed, 41 insertions(+), 4 deletions(-)
+ drivers/staging/iio/iio.h                  |    2 +-
+ drivers/staging/iio/industrialio-core.c    |   28 +++++++++++-----------------
+ drivers/staging/iio/industrialio-ring.c    |    2 +-
+ drivers/staging/iio/industrialio-trigger.c |    2 +-
+ drivers/staging/iio/ring_sw.c              |    2 +-
+ 5 files changed, 15 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index 71dbfe1..a12072a 100644
+index a12072a..fcee47c 100644
 --- a/drivers/staging/iio/iio.h
 +++ b/drivers/staging/iio/iio.h
-@@ -96,6 +96,7 @@ void iio_remove_event_from_list(struct iio_event_handler_list *el,
-  *			control method is used
-  * @scan_count:	[INTERN] the number of elements in the current scan mode
-  * @scan_mask:		[INTERN] bitmask used in masking scan mode elements
-+ * @available_scan_masks: [DRIVER] optional array of allowed bitmasks
-  * @scan_timestamp:	[INTERN] does the scan mode include a timestamp
-  * @trig:		[INTERN] current device trigger (ring buffer modes)
-  * @pollfunc:		[DRIVER] function run on trigger being recieved
-@@ -122,7 +123,8 @@ struct iio_dev {
- 	struct attribute_group		*scan_el_attrs;
- 	int				scan_count;
+@@ -377,7 +377,7 @@ void iio_deallocate_chrdev(struct iio_handler *handler);
+ #define IIO_UNSIGNED(a) (a)
  
--	u16				scan_mask;
-+	u32				scan_mask;
-+	u32				*available_scan_masks;
- 	bool				scan_timestamp;
- 	struct iio_trigger		*trig;
- 	struct iio_poll_func		*pollfunc;
-@@ -132,22 +134,57 @@ struct iio_dev {
-  * These are mainly provided to allow for a change of implementation if a device
-  * has a large number of scan elements
-  */
--#define IIO_MAX_SCAN_LENGTH 15
-+#define IIO_MAX_SCAN_LENGTH 31
-+
-+/* note 0 used as error indicator as it doesn't make sense. */
-+static inline u32 iio_scan_mask_match(u32 *av_masks, u32 mask)
-+{
-+	while (*av_masks) {
-+		if (!(~*av_masks & mask))
-+			return *av_masks;
-+		av_masks++;
-+	}
-+	return 0;
-+}
+ extern dev_t iio_devt;
+-extern struct class iio_class;
++extern struct bus_type iio_bus_type;
  
- static inline int iio_scan_mask_query(struct iio_dev *dev_info, int bit)
- {
-+	u32 mask;
-+
- 	if (bit > IIO_MAX_SCAN_LENGTH)
- 		return -EINVAL;
-+
-+	if (!dev_info->scan_mask)
-+		return 0;
-+
-+	if (dev_info->available_scan_masks)
-+		mask = iio_scan_mask_match(dev_info->available_scan_masks,
-+					dev_info->scan_mask);
- 	else
--		return !!(dev_info->scan_mask & (1 << bit));
-+		mask = dev_info->scan_mask;
-+
-+	if (!mask)
-+		return -EINVAL;
-+
-+	return !!(mask & (1 << bit));
+ /**
+  * iio_put_device() - reference counted deallocation of struct device
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 7c9a12e..ad830b6 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -42,16 +42,10 @@ dev_t iio_devt;
+ EXPORT_SYMBOL(iio_devt);
+ 
+ #define IIO_DEV_MAX 256
+-static char *iio_devnode(struct device *dev, mode_t *mode)
+-{
+-	return kasprintf(GFP_KERNEL, "iio/%s", dev_name(dev));
+-}
+-
+-struct class iio_class = {
++struct bus_type iio_bus_type = {
+ 	.name = "iio",
+-	.devnode = iio_devnode,
  };
+-EXPORT_SYMBOL(iio_class);
++EXPORT_SYMBOL(iio_bus_type);
  
- static inline int iio_scan_mask_set(struct iio_dev *dev_info, int bit)
+ void __iio_change_event(struct iio_detected_event_list *ev,
+ 			int ev_code,
+@@ -405,7 +399,7 @@ int iio_setup_ev_int(struct iio_event_interface *ev_int,
  {
-+	u32 mask;
-+	u32 trialmask = dev_info->scan_mask | (1 << bit);
-+
- 	if (bit > IIO_MAX_SCAN_LENGTH)
- 		return -EINVAL;
--	dev_info->scan_mask |= (1 << bit);
-+	if (dev_info->available_scan_masks) {
-+		mask = iio_scan_mask_match(dev_info->available_scan_masks,
-+					trialmask);
-+		if (!mask)
-+			return -EINVAL;
-+	}
-+	dev_info->scan_mask = trialmask;
- 	dev_info->scan_count++;
-+
+ 	int ret, minor;
+ 
+-	ev_int->dev.class = &iio_class;
++	ev_int->dev.bus = &iio_bus_type;
+ 	ev_int->dev.parent = dev;
+ 	ev_int->dev.type = &iio_event_type;
+ 	device_initialize(&ev_int->dev);
+@@ -478,23 +472,23 @@ static int __init iio_init(void)
+ {
+ 	int ret;
+ 
+-	/* Create sysfs class */
+-	ret  = class_register(&iio_class);
++	/* Register sysfs bus */
++	ret  = bus_register(&iio_bus_type);
+ 	if (ret < 0) {
+ 		printk(KERN_ERR
+-		       "%s could not create sysfs class\n",
++		       "%s could not register bus type\n",
+ 			__FILE__);
+ 		goto error_nothing;
+ 	}
+ 
+ 	ret = iio_dev_init();
+ 	if (ret < 0)
+-		goto error_unregister_class;
++		goto error_unregister_bus_type;
+ 
  	return 0;
- };
  
+-error_unregister_class:
+-	class_unregister(&iio_class);
++error_unregister_bus_type:
++	bus_unregister(&iio_bus_type);
+ error_nothing:
+ 	return ret;
+ }
+@@ -502,7 +496,7 @@ error_nothing:
+ static void __exit iio_exit(void)
+ {
+ 	iio_dev_exit();
+-	class_unregister(&iio_class);
++	bus_unregister(&iio_bus_type);
+ }
+ 
+ static int iio_device_register_sysfs(struct iio_dev *dev_info)
+@@ -768,7 +762,7 @@ struct iio_dev *iio_allocate_device(void)
+ 
+ 	if (dev) {
+ 		dev->dev.type = &iio_dev_type;
+-		dev->dev.class = &iio_class;
++		dev->dev.bus = &iio_bus_type;
+ 		device_initialize(&dev->dev);
+ 		dev_set_drvdata(&dev->dev, (void *)dev);
+ 		mutex_init(&dev->mlock);
+diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
+index 5f48632..690df91 100644
+--- a/drivers/staging/iio/industrialio-ring.c
++++ b/drivers/staging/iio/industrialio-ring.c
+@@ -210,7 +210,7 @@ __iio_request_ring_buffer_access_chrdev(struct iio_ring_buffer *buf,
+ 	buf->access_handler.flags = 0;
+ 
+ 	buf->access_dev.parent = &buf->dev;
+-	buf->access_dev.class = &iio_class;
++	buf->access_dev.bus = &iio_bus_type;
+ 	buf->access_dev.type = &iio_ring_access_type;
+ 	device_initialize(&buf->access_dev);
+ 
+diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
+index 3c8f6ff..918b0fd 100644
+--- a/drivers/staging/iio/industrialio-trigger.c
++++ b/drivers/staging/iio/industrialio-trigger.c
+@@ -365,7 +365,7 @@ struct iio_trigger *iio_allocate_trigger(void)
+ 	trig = kzalloc(sizeof *trig, GFP_KERNEL);
+ 	if (trig) {
+ 		trig->dev.type = &iio_trig_type;
+-		trig->dev.class = &iio_class;
++		trig->dev.bus = &iio_bus_type;
+ 		device_initialize(&trig->dev);
+ 		dev_set_drvdata(&trig->dev, (void *)trig);
+ 		spin_lock_init(&trig->pollfunc_list_lock);
+diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
+index e9570e3..f8de45d 100644
+--- a/drivers/staging/iio/ring_sw.c
++++ b/drivers/staging/iio/ring_sw.c
+@@ -419,7 +419,7 @@ struct iio_ring_buffer *iio_sw_rb_allocate(struct iio_dev *indio_dev)
+ 	buf->dev.type = &iio_sw_ring_type;
+ 	device_initialize(&buf->dev);
+ 	buf->dev.parent = &indio_dev->dev;
+-	buf->dev.class = &iio_class;
++	buf->dev.bus = &iio_bus_type;
+ 	dev_set_drvdata(&buf->dev, (void *)buf);
+ 
+ 	return buf;
 -- 
 1.6.4.4
