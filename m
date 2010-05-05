@@ -2,146 +2,212 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 3/6] staging:iio:adis16300 clean out some unused code
-Date: Wed,  5 May 2010 23:25:43 +0100
-Message-Id: <1273098346-4184-4-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 2/6] staging:iio  Break up gyro.h and move to new abi
+Date: Wed,  5 May 2010 23:25:42 +0100
+Message-Id: <1273098346-4184-3-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1273098346-4184-1-git-send-email-jic23@cam.ac.uk>
 References: <1273098346-4184-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/imu/adis16300.h      |    9 ----
- drivers/staging/iio/imu/adis16300_core.c |   70 +-----------------------------
- 2 files changed, 2 insertions(+), 77 deletions(-)
+ drivers/staging/iio/accel/inclinometer.h  |   23 +++++++++++++++
+ drivers/staging/iio/gyro/gyro.h           |   43 +++--------------------------
+ drivers/staging/iio/imu/adis16300_core.c  |   11 ++++---
+ drivers/staging/iio/imu/adis16400_core.c  |   16 +++++-----
+ drivers/staging/iio/magnetometer/magnet.h |   12 ++++----
+ 5 files changed, 47 insertions(+), 58 deletions(-)
 
-diff --git a/drivers/staging/iio/imu/adis16300.h b/drivers/staging/iio/imu/adis16300.h
-index 77d890d..1c7ea5c 100644
---- a/drivers/staging/iio/imu/adis16300.h
-+++ b/drivers/staging/iio/imu/adis16300.h
-@@ -115,21 +115,12 @@ struct adis16300_state {
- 	struct mutex			buf_lock;
- };
+diff --git a/drivers/staging/iio/accel/inclinometer.h b/drivers/staging/iio/accel/inclinometer.h
+new file mode 100644
+index 0000000..5b49f83
+--- /dev/null
++++ b/drivers/staging/iio/accel/inclinometer.h
+@@ -0,0 +1,23 @@
++/*
++ * Inclinometer related attributes
++ */
++#include "../sysfs.h"
++
++#define IIO_DEV_ATTR_INCLI_X(_show, _addr)			\
++	IIO_DEVICE_ATTR(incli_x_raw, S_IRUGO, _show, NULL, _addr)
++
++#define IIO_DEV_ATTR_INCLI_Y(_show, _addr)			\
++	IIO_DEVICE_ATTR(incli_y_raw, S_IRUGO, _show, NULL, _addr)
++
++#define IIO_DEV_ATTR_INCLI_Z(_show, _addr)			\
++	IIO_DEVICE_ATTR(incli_z_raw, S_IRUGO, _show, NULL, _addr)
++
++#define IIO_DEV_ATTR_INCLI_X_OFFSET(_mode, _show, _store, _addr) \
++	IIO_DEVICE_ATTR(incli_x_offset, _mode, _show, _store, _addr)
++
++#define IIO_DEV_ATTR_INCLI_Y_OFFSET(_mode, _show, _store, _addr) \
++	IIO_DEVICE_ATTR(incli_y_offset, _mode, _show, _store, _addr)
++
++#define IIO_DEV_ATTR_INCLI_Z_OFFSET(_mode, _show, _store, _addr) \
++	IIO_DEVICE_ATTR(incli_z_offset, _mode, _show, _store, _addr)
++
+diff --git a/drivers/staging/iio/gyro/gyro.h b/drivers/staging/iio/gyro/gyro.h
+index 7c4dcf2..16f6ffa 100644
+--- a/drivers/staging/iio/gyro/gyro.h
++++ b/drivers/staging/iio/gyro/gyro.h
+@@ -28,49 +28,14 @@
+ 	IIO_DEVICE_ATTR(gyro_scale, S_IRUGO, _show, _store, _addr)
  
--int adis16300_spi_write_reg_8(struct device *dev,
--			      u8 reg_address,
--			      u8 val);
+ #define IIO_DEV_ATTR_GYRO(_show, _addr)			\
+-	IIO_DEVICE_ATTR(gyro, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(gyro_raw, S_IRUGO, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_GYRO_X(_show, _addr)			\
+-	IIO_DEVICE_ATTR(gyro_x, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(gyro_x_raw, S_IRUGO, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_GYRO_Y(_show, _addr)			\
+-	IIO_DEVICE_ATTR(gyro_y, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(gyro_y_raw, S_IRUGO, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_GYRO_Z(_show, _addr)			\
+-	IIO_DEVICE_ATTR(gyro_z, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(gyro_z_raw, S_IRUGO, _show, NULL, _addr)
+ 
+-#define IIO_DEV_ATTR_TEMP_X(_show, _addr)			\
+-	IIO_DEVICE_ATTR(temp_x, S_IRUGO, _show, NULL, _addr)
 -
- int adis16300_spi_read_burst(struct device *dev, u8 *rx);
- 
--int adis16300_spi_read_sequence(struct device *dev,
--				      u8 *tx, u8 *rx, int num);
+-#define IIO_DEV_ATTR_TEMP_Y(_show, _addr)			\
+-	IIO_DEVICE_ATTR(temp_y, S_IRUGO, _show, NULL, _addr)
 -
- int adis16300_set_irq(struct device *dev, bool enable);
- 
- int adis16300_reset(struct device *dev);
- 
--int adis16300_stop_device(struct device *dev);
+-#define IIO_DEV_ATTR_TEMP_Z(_show, _addr)			\
+-	IIO_DEVICE_ATTR(temp_z, S_IRUGO, _show, NULL, _addr)
 -
- int adis16300_check_status(struct device *dev);
- 
- #ifdef CONFIG_IIO_RING_BUFFER
+-#define IIO_DEV_ATTR_INCLI_X(_show, _addr)			\
+-	IIO_DEVICE_ATTR(incli_x, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_INCLI_Y(_show, _addr)			\
+-	IIO_DEVICE_ATTR(incli_y, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_INCLI_Z(_show, _addr)			\
+-	IIO_DEVICE_ATTR(incli_z, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_INCLI_X_OFFSET(_mode, _show, _store, _addr) \
+-	IIO_DEVICE_ATTR(incli_x_offset, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_INCLI_Y_OFFSET(_mode, _show, _store, _addr) \
+-	IIO_DEVICE_ATTR(incli_y_offset, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_INCLI_Z_OFFSET(_mode, _show, _store, _addr) \
+-	IIO_DEVICE_ATTR(incli_z_offset, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ROT(_show, _addr)                    \
+-	IIO_DEVICE_ATTR(rot, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ROT_OFFSET(_mode, _show, _store, _addr) \
+-	IIO_DEVICE_ATTR(rot_offset, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ANGL(_show, _addr)                         \
+-	IIO_DEVICE_ATTR(angl, S_IRUGO, _show, NULL, _addr)
 diff --git a/drivers/staging/iio/imu/adis16300_core.c b/drivers/staging/iio/imu/adis16300_core.c
-index b923ecc..5a7e5ef 100644
+index 9f5f8cb..b923ecc 100644
 --- a/drivers/staging/iio/imu/adis16300_core.c
 +++ b/drivers/staging/iio/imu/adis16300_core.c
-@@ -40,7 +40,7 @@
-  * @reg_address: the address of the register to be written
-  * @val: the value to write
-  **/
--int adis16300_spi_write_reg_8(struct device *dev,
-+static int adis16300_spi_write_reg_8(struct device *dev,
- 		u8 reg_address,
- 		u8 val)
- {
-@@ -202,55 +202,6 @@ int adis16300_spi_read_burst(struct device *dev, u8 *rx)
- 	return ret;
- }
+@@ -21,6 +21,7 @@
+ #include "../iio.h"
+ #include "../sysfs.h"
+ #include "../accel/accel.h"
++#include "../accel/inclinometer.h"
+ #include "../gyro/gyro.h"
+ #include "../adc/adc.h"
  
--/**
-- * adis16300_spi_read_sequence() - read a sequence of 16-bit registers
-- * @dev: device associated with child of actual device (iio_dev or iio_trig)
-- * @tx: register addresses in bytes 0,2,4,6... (min size is 2*num bytes)
-- * @rx: somewhere to pass back the value read (min size is 2*num bytes)
-- **/
--int adis16300_spi_read_sequence(struct device *dev,
--		u8 *tx, u8 *rx, int num)
--{
--	struct spi_message msg;
--	struct spi_transfer *xfers;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct adis16300_state *st = iio_dev_get_devdata(indio_dev);
--	int ret, i;
--
--	xfers = kzalloc(num + 1, GFP_KERNEL);
--	if (xfers == NULL) {
--		dev_err(&st->us->dev, "memory alloc failed");
--		ret = -ENOMEM;
--		goto error_ret;
--	}
--
--	/* tx: |add1|addr2|addr3|...|addrN |zero|
--	 * rx: |zero|res1 |res2 |...|resN-1|resN| */
--	spi_message_init(&msg);
--	for (i = 0; i < num + 1; i++) {
--		if (i > 0)
--			xfers[i].rx_buf = st->rx + 2*(i - 1);
--		if (i < num)
--			xfers[i].tx_buf = st->tx + 2*i;
--		xfers[i].bits_per_word = 8;
--		xfers[i].len = 2;
--		xfers[i].cs_change = 1;
--		spi_message_add_tail(&xfers[i], &msg);
--	}
--
--	mutex_lock(&st->buf_lock);
--
--	ret = spi_sync(st->us, &msg);
--	if (ret)
--		dev_err(&st->us->dev, "problem when reading sequence");
--
--	mutex_unlock(&st->buf_lock);
--	kfree(xfers);
--
--error_ret:
--	return ret;
--}
--
- static ssize_t adis16300_spi_read_signed(struct device *dev,
- 		struct device_attribute *attr,
- 		char *buf,
-@@ -458,7 +409,7 @@ int adis16300_reset(struct device *dev)
- }
+@@ -613,7 +614,7 @@ static IIO_DEV_ATTR_INCLI_Y(adis16300_read_13bit_signed,
+ 		ADIS16300_YINCLI_OUT);
+ static IIO_CONST_ATTR(incli_scale, "0.044 d");
  
- /* Power down the device */
--int adis16300_stop_device(struct device *dev)
-+static int adis16300_stop_device(struct device *dev)
- {
- 	int ret;
- 	u16 val = ADIS16300_SLP_CNT_POWER_OFF;
-@@ -470,23 +421,6 @@ int adis16300_stop_device(struct device *dev)
- 	return ret;
- }
+-static IIO_DEV_ATTR_TEMP(adis16300_read_12bit_signed);
++static IIO_DEV_ATTR_TEMP_RAW(adis16300_read_12bit_signed);
+ static IIO_CONST_ATTR(temp_offset, "198.16 K");
+ static IIO_CONST_ATTR(temp_scale, "0.14 K");
  
--int adis16300_self_test(struct device *dev)
--{
--	int ret;
--	ret = adis16300_spi_write_reg_16(dev,
--			ADIS16300_MSC_CTRL,
--			ADIS16300_MSC_CTRL_MEM_TEST);
--	if (ret) {
--		dev_err(dev, "problem starting self test");
--		goto err_ret;
--	}
--
--	adis16300_check_status(dev);
--
--err_ret:
--	return ret;
--}
--
- int adis16300_check_status(struct device *dev)
- {
- 	u16 status;
+@@ -645,16 +646,16 @@ static struct attribute *adis16300_attributes[] = {
+ 	&iio_dev_attr_accel_z_offset.dev_attr.attr,
+ 	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+ 	&iio_const_attr_in_supply_scale.dev_attr.attr,
+-	&iio_dev_attr_gyro_x.dev_attr.attr,
++	&iio_dev_attr_gyro_x_raw.dev_attr.attr,
+ 	&iio_const_attr_gyro_scale.dev_attr.attr,
+ 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_y_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_z_raw.dev_attr.attr,
+ 	&iio_const_attr_accel_scale.dev_attr.attr,
+-	&iio_dev_attr_incli_x.dev_attr.attr,
+-	&iio_dev_attr_incli_y.dev_attr.attr,
++	&iio_dev_attr_incli_x_raw.dev_attr.attr,
++	&iio_dev_attr_incli_y_raw.dev_attr.attr,
+ 	&iio_const_attr_incli_scale.dev_attr.attr,
+-	&iio_dev_attr_temp.dev_attr.attr,
++	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_dev_attr_in0_raw.dev_attr.attr,
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index 27e4a73..868c526 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -626,7 +626,7 @@ static IIO_DEV_ATTR_MAGN_Z(adis16400_read_14bit_signed,
+ static IIO_CONST_ATTR(magn_scale, "0.0005 Gs");
+ 
+ 
+-static IIO_DEV_ATTR_TEMP(adis16400_read_12bit_signed);
++static IIO_DEV_ATTR_TEMP_RAW(adis16400_read_12bit_signed);
+ static IIO_CONST_ATTR(temp_offset, "198.16 K");
+ static IIO_CONST_ATTR(temp_scale, "0.14 K");
+ 
+@@ -658,19 +658,19 @@ static struct attribute *adis16400_attributes[] = {
+ 	&iio_dev_attr_accel_z_offset.dev_attr.attr,
+ 	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+ 	&iio_const_attr_in_supply_scale.dev_attr.attr,
+-	&iio_dev_attr_gyro_x.dev_attr.attr,
+-	&iio_dev_attr_gyro_y.dev_attr.attr,
+-	&iio_dev_attr_gyro_z.dev_attr.attr,
++	&iio_dev_attr_gyro_x_raw.dev_attr.attr,
++	&iio_dev_attr_gyro_y_raw.dev_attr.attr,
++	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
+ 	&iio_const_attr_gyro_scale.dev_attr.attr,
+ 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_y_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_z_raw.dev_attr.attr,
+ 	&iio_const_attr_accel_scale.dev_attr.attr,
+-	&iio_dev_attr_magn_x.dev_attr.attr,
+-	&iio_dev_attr_magn_y.dev_attr.attr,
+-	&iio_dev_attr_magn_z.dev_attr.attr,
++	&iio_dev_attr_magn_x_raw.dev_attr.attr,
++	&iio_dev_attr_magn_y_raw.dev_attr.attr,
++	&iio_dev_attr_magn_z_raw.dev_attr.attr,
+ 	&iio_const_attr_magn_scale.dev_attr.attr,
+-	&iio_dev_attr_temp.dev_attr.attr,
++	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_dev_attr_in0_raw.dev_attr.attr,
+diff --git a/drivers/staging/iio/magnetometer/magnet.h b/drivers/staging/iio/magnetometer/magnet.h
+index 6f6c6ed..6433830 100644
+--- a/drivers/staging/iio/magnetometer/magnet.h
++++ b/drivers/staging/iio/magnetometer/magnet.h
+@@ -21,11 +21,11 @@
+ #define IIO_DEV_ATTR_MAGN_Z_GAIN(_mode, _show, _store, _addr)		\
+ 	IIO_DEVICE_ATTR(magn_z_gain, _mode, _show, _store, _addr)
+ 
+-#define IIO_DEV_ATTR_MAGN_X(_show, _addr)			\
+-	IIO_DEVICE_ATTR(magn_x, S_IRUGO, _show, NULL, _addr)
++#define IIO_DEV_ATTR_MAGN_X(_show, _addr)				\
++	IIO_DEVICE_ATTR(magn_x_raw, S_IRUGO, _show, NULL, _addr)
+ 
+-#define IIO_DEV_ATTR_MAGN_Y(_show, _addr)			\
+-	IIO_DEVICE_ATTR(magn_y, S_IRUGO, _show, NULL, _addr)
++#define IIO_DEV_ATTR_MAGN_Y(_show, _addr)				\
++	IIO_DEVICE_ATTR(magn_y_raw, S_IRUGO, _show, NULL, _addr)
+ 
+-#define IIO_DEV_ATTR_MAGN_Z(_show, _addr)			\
+-	IIO_DEVICE_ATTR(magn_z, S_IRUGO, _show, NULL, _addr)
++#define IIO_DEV_ATTR_MAGN_Z(_show, _addr)				\
++	IIO_DEVICE_ATTR(magn_z_raw, S_IRUGO, _show, NULL, _addr)
 -- 
 1.7.0.4
