@@ -1,128 +1,105 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:48890 "EHLO
-	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757494Ab0EFKLa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 May 2010 06:11:30 -0400
-Message-ID: <4BE29673.8030101@cam.ac.uk>
-Date: Thu, 06 May 2010 11:14:11 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Barry Song <21cnbao@gmail.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 6/6] staging:iio:imu remove unecessary empty defs for
- 	event attributes.
-References: <1273098346-4184-1-git-send-email-jic23@cam.ac.uk> 	<1273098346-4184-7-git-send-email-jic23@cam.ac.uk> <t2z3c17e3571005052027i5d79afb3of2d16e49e47583fd@mail.gmail.com>
-In-Reply-To: <t2z3c17e3571005052027i5d79afb3of2d16e49e47583fd@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 5/6] staging:iio:adis16400 clean out some unused code
+Date: Wed,  5 May 2010 23:25:45 +0100
+Message-Id: <1273098346-4184-6-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1273098346-4184-1-git-send-email-jic23@cam.ac.uk>
+References: <1273098346-4184-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/06/10 04:27, Barry Song wrote:
-> Does this patch work in the newest tree? In our current tree, it will
-> cause kernel panic in iio_register_interrupt_line() due to NULL
-> pointer.
-Yikes.  That's a bug if it does. If nothing else it should kick out an error
-rather than a kernel panic as it is clearly something that might be the case
-in half developed drivers.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/imu/adis16400.h      |    9 -----
+ drivers/staging/iio/imu/adis16400_core.c |   49 ------------------------------
+ 2 files changed, 0 insertions(+), 58 deletions(-)
 
-Ah, I missed the fact you were calling iio_register_interrupt_line, which to
-my mind makes no sense in this driver.  Here, you aren't actually using the
-interrupt for any events.  I think some confusion has occured in the interaction
-between the trigger and the event lines (due to some decidedly dubious function
-names on my part!).
-
-A trigger irq can be handled separately (as per iio-trig-gpio).
-That would mean you weren't calling the iio_register_interrupt_line function
-at all and is what I'd tend to expect for a line without additional events.
-
-As it doesn't make sense to have an 'interrupt line' (which is actually an event line)
-available unless there are actual events that might come down it, I didn't allow for
-this in the code.
-
-The question on these devices is whether to support the trigger and events sharing
-a line, or whether we just assume that several of the available interrupt lines are
-connected and the event comes down one of them?
-
-The approach used in the lis3l02dq (where I think the approach used here probably
-started) is necessary as it only has one interrupt line.  IIRC it is a mutually
-exclusive line at that, you either get events or data rdy according to the settings.
-
-Thanks for spotting this one.  Goes to show that even seemingly inocuous patches
-can cause trouble!
-
-Jonathan
-> -barry
-> 
-> On Thu, May 6, 2010 at 6:25 AM, Jonathan Cameron <jic23@cam.ac.uk> wrote:
->>
->> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
->> ---
->>  drivers/staging/iio/imu/adis16300_core.c |   10 ----------
->>  drivers/staging/iio/imu/adis16400_core.c |   10 ----------
->>  2 files changed, 0 insertions(+), 20 deletions(-)
->>
->> diff --git a/drivers/staging/iio/imu/adis16300_core.c b/drivers/staging/iio/imu/adis16300_core.c
->> index 5a7e5ef..54e3e51 100644
->> --- a/drivers/staging/iio/imu/adis16300_core.c
->> +++ b/drivers/staging/iio/imu/adis16300_core.c
->> @@ -566,14 +566,6 @@ static IIO_CONST_ATTR_AVAIL_SAMP_FREQ("409 546 819 1638");
->>
->>  static IIO_CONST_ATTR(name, "adis16300");
->>
->> -static struct attribute *adis16300_event_attributes[] = {
->> -       NULL
->> -};
->> -
->> -static struct attribute_group adis16300_event_attribute_group = {
->> -       .attrs = adis16300_event_attributes,
->> -};
->> -
->>  static struct attribute *adis16300_attributes[] = {
->>        &iio_dev_attr_accel_x_offset.dev_attr.attr,
->>        &iio_dev_attr_accel_y_offset.dev_attr.attr,
->> @@ -637,8 +629,6 @@ static int __devinit adis16300_probe(struct spi_device *spi)
->>        }
->>
->>        st->indio_dev->dev.parent = &spi->dev;
->> -       st->indio_dev->num_interrupt_lines = 1;
->> -       st->indio_dev->event_attrs = &adis16300_event_attribute_group;
->>        st->indio_dev->attrs = &adis16300_attribute_group;
->>        st->indio_dev->dev_data = (void *)(st);
->>        st->indio_dev->driver_module = THIS_MODULE;
->> diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
->> index 2c10072..34c0ee5 100644
->> --- a/drivers/staging/iio/imu/adis16400_core.c
->> +++ b/drivers/staging/iio/imu/adis16400_core.c
->> @@ -595,14 +595,6 @@ static IIO_CONST_ATTR_AVAIL_SAMP_FREQ("409 546 819 1638");
->>
->>  static IIO_CONST_ATTR(name, "adis16400");
->>
->> -static struct attribute *adis16400_event_attributes[] = {
->> -       NULL
->> -};
->> -
->> -static struct attribute_group adis16400_event_attribute_group = {
->> -       .attrs = adis16400_event_attributes,
->> -};
->> -
->>  static struct attribute *adis16400_attributes[] = {
->>        &iio_dev_attr_accel_x_offset.dev_attr.attr,
->>        &iio_dev_attr_accel_y_offset.dev_attr.attr,
->> @@ -669,8 +661,6 @@ static int __devinit adis16400_probe(struct spi_device *spi)
->>        }
->>
->>        st->indio_dev->dev.parent = &spi->dev;
->> -       st->indio_dev->num_interrupt_lines = 1;
->> -       st->indio_dev->event_attrs = &adis16400_event_attribute_group;
->>        st->indio_dev->attrs = &adis16400_attribute_group;
->>        st->indio_dev->dev_data = (void *)(st);
->>        st->indio_dev->driver_module = THIS_MODULE;
->> --
->> 1.7.0.4
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
+index a8062f6..5a69a7a 100644
+--- a/drivers/staging/iio/imu/adis16400.h
++++ b/drivers/staging/iio/imu/adis16400.h
+@@ -147,21 +147,12 @@ struct adis16400_state {
+ 	struct mutex			buf_lock;
+ };
+ 
+-int adis16400_spi_write_reg_8(struct device *dev,
+-			      u8 reg_address,
+-			      u8 val);
+-
+ int adis16400_spi_read_burst(struct device *dev, u8 *rx);
+ 
+-int adis16400_spi_read_sequence(struct device *dev,
+-				      u8 *tx, u8 *rx, int num);
+-
+ int adis16400_set_irq(struct device *dev, bool enable);
+ 
+ int adis16400_reset(struct device *dev);
+ 
+-int adis16400_stop_device(struct device *dev);
+-
+ int adis16400_check_status(struct device *dev);
+ 
+ #ifdef CONFIG_IIO_RING_BUFFER
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index 868c526..2c10072 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -209,55 +209,6 @@ int adis16400_spi_read_burst(struct device *dev, u8 *rx)
+ 	return ret;
+ }
+ 
+-/**
+- * adis16400_spi_read_sequence() - read a sequence of 16-bit registers
+- * @dev: device associated with child of actual device (iio_dev or iio_trig)
+- * @tx: register addresses in bytes 0,2,4,6... (min size is 2*num bytes)
+- * @rx: somewhere to pass back the value read (min size is 2*num bytes)
+- **/
+-int adis16400_spi_read_sequence(struct device *dev,
+-		u8 *tx, u8 *rx, int num)
+-{
+-	struct spi_message msg;
+-	struct spi_transfer *xfers;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct adis16400_state *st = iio_dev_get_devdata(indio_dev);
+-	int ret, i;
+-
+-	xfers = kzalloc(num + 1, GFP_KERNEL);
+-	if (xfers == NULL) {
+-		dev_err(&st->us->dev, "memory alloc failed");
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-
+-	/* tx: |add1|addr2|addr3|...|addrN |zero|
+-	 * rx: |zero|res1 |res2 |...|resN-1|resN| */
+-	spi_message_init(&msg);
+-	for (i = 0; i < num + 1; i++) {
+-		if (i > 0)
+-			xfers[i].rx_buf = st->rx + 2*(i - 1);
+-		if (i < num)
+-			xfers[i].tx_buf = st->tx + 2*i;
+-		xfers[i].bits_per_word = 8;
+-		xfers[i].len = 2;
+-		xfers[i].cs_change = 1;
+-		spi_message_add_tail(&xfers[i], &msg);
+-	}
+-
+-	mutex_lock(&st->buf_lock);
+-
+-	ret = spi_sync(st->us, &msg);
+-	if (ret)
+-		dev_err(&st->us->dev, "problem when reading sequence");
+-
+-	mutex_unlock(&st->buf_lock);
+-	kfree(xfers);
+-
+-error_ret:
+-	return ret;
+-}
+-
+ static ssize_t adis16400_spi_read_signed(struct device *dev,
+ 		struct device_attribute *attr,
+ 		char *buf,
+-- 
+1.7.0.4
