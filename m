@@ -2,44 +2,74 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 0/6] IIO cleanups
-Date: Wed,  5 May 2010 23:25:40 +0100
-Message-Id: <1273098346-4184-1-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 6/6] staging:iio:imu remove unecessary empty defs for event attributes.
+Date: Wed,  5 May 2010 23:25:46 +0100
+Message-Id: <1273098346-4184-7-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1273098346-4184-1-git-send-email-jic23@cam.ac.uk>
+References: <1273098346-4184-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Dear all these are mostly the promised incremental patches to move
-the adis16400 and adis16300 drivers to the new abi.  Also in here
-are some dead code removal.  Usual principal that code that isn't
-used should not be there until it is needed.  Both the drivers
-were in very good condition, so I've only touched them in superficial
-ways.  Thanks Barry.
-
-I do not think there is anything controversial in these so if I
-don't hear any shouts I'll send them to Greg tomorrow.
-
-Note I know there are plenty of other bit not meeting the abi
-(and probably some more typos in the abi itself) but these were
-the low hanging fruit today.
-
-Jonathan
-
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
+ drivers/staging/iio/imu/adis16300_core.c |   10 ----------
+ drivers/staging/iio/imu/adis16400_core.c |   10 ----------
+ 2 files changed, 0 insertions(+), 20 deletions(-)
 
-Jonathan Cameron (6):
-  staging:iio:Documentation fixes
-  staging:iio  Break up gyro.h and move to new abi
-  staging:iio:adis16300 clean out some unused code
-  staging:iio:Documentation update to add incli and switch to magn
-  staging:iio:adis16400 clean out some unused code
-  staging:iio:imu remove unecessary empty defs for event attributes.
-
- drivers/staging/iio/Documentation/sysfs-class-iio |   17 +++-
- drivers/staging/iio/accel/inclinometer.h          |   23 +++++
- drivers/staging/iio/gyro/gyro.h                   |   43 +---------
- drivers/staging/iio/imu/adis16300.h               |    9 --
- drivers/staging/iio/imu/adis16300_core.c          |   91 ++-------------------
- drivers/staging/iio/imu/adis16400.h               |    9 --
- drivers/staging/iio/imu/adis16400_core.c          |   75 ++---------------
- drivers/staging/iio/magnetometer/magnet.h         |   12 ++--
- 8 files changed, 62 insertions(+), 217 deletions(-)
- create mode 100644 drivers/staging/iio/accel/inclinometer.h
+diff --git a/drivers/staging/iio/imu/adis16300_core.c b/drivers/staging/iio/imu/adis16300_core.c
+index 5a7e5ef..54e3e51 100644
+--- a/drivers/staging/iio/imu/adis16300_core.c
++++ b/drivers/staging/iio/imu/adis16300_core.c
+@@ -566,14 +566,6 @@ static IIO_CONST_ATTR_AVAIL_SAMP_FREQ("409 546 819 1638");
+ 
+ static IIO_CONST_ATTR(name, "adis16300");
+ 
+-static struct attribute *adis16300_event_attributes[] = {
+-	NULL
+-};
+-
+-static struct attribute_group adis16300_event_attribute_group = {
+-	.attrs = adis16300_event_attributes,
+-};
+-
+ static struct attribute *adis16300_attributes[] = {
+ 	&iio_dev_attr_accel_x_offset.dev_attr.attr,
+ 	&iio_dev_attr_accel_y_offset.dev_attr.attr,
+@@ -637,8 +629,6 @@ static int __devinit adis16300_probe(struct spi_device *spi)
+ 	}
+ 
+ 	st->indio_dev->dev.parent = &spi->dev;
+-	st->indio_dev->num_interrupt_lines = 1;
+-	st->indio_dev->event_attrs = &adis16300_event_attribute_group;
+ 	st->indio_dev->attrs = &adis16300_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+ 	st->indio_dev->driver_module = THIS_MODULE;
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index 2c10072..34c0ee5 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -595,14 +595,6 @@ static IIO_CONST_ATTR_AVAIL_SAMP_FREQ("409 546 819 1638");
+ 
+ static IIO_CONST_ATTR(name, "adis16400");
+ 
+-static struct attribute *adis16400_event_attributes[] = {
+-	NULL
+-};
+-
+-static struct attribute_group adis16400_event_attribute_group = {
+-	.attrs = adis16400_event_attributes,
+-};
+-
+ static struct attribute *adis16400_attributes[] = {
+ 	&iio_dev_attr_accel_x_offset.dev_attr.attr,
+ 	&iio_dev_attr_accel_y_offset.dev_attr.attr,
+@@ -669,8 +661,6 @@ static int __devinit adis16400_probe(struct spi_device *spi)
+ 	}
+ 
+ 	st->indio_dev->dev.parent = &spi->dev;
+-	st->indio_dev->num_interrupt_lines = 1;
+-	st->indio_dev->event_attrs = &adis16400_event_attribute_group;
+ 	st->indio_dev->attrs = &adis16400_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+ 	st->indio_dev->driver_module = THIS_MODULE;
+-- 
+1.7.0.4
