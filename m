@@ -1,108 +1,125 @@
-Return-Path: <21cnbao@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-32.csi.cam.ac.uk ([131.111.8.132]:46723 "EHLO
+	ppsw-32.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760403Ab0EEPR0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 May 2010 11:17:26 -0400
+Message-ID: <4BE18CAD.5090506@cam.ac.uk>
+Date: Wed, 05 May 2010 16:20:13 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-In-Reply-To: <4BD6ADFA.4050500@cam.ac.uk>
-References: <4BD5F4A8.7020309@cam.ac.uk> <0F1B54C89D5F954D8535DB252AF412FA048553F4@chinexm1.ad.analog.com>
-	<4BD6ADFA.4050500@cam.ac.uk>
-From: Barry Song <21cnbao@gmail.com>
-Date: Wed, 5 May 2010 15:37:08 +0800
-Message-ID: <i2g3c17e3571005050037qbcc3ebc8h47aaa087913bf15d@mail.gmail.com>
-Subject: Re: IIO driver merge plans (for next merge window)
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: "Song, Barry" <Barry.Song@analog.com>, linux-iio@vger.kernel.org,
+To: Barry Song <21cnbao@gmail.com>
+CC: "Song, Barry" <Barry.Song@analog.com>, linux-iio@vger.kernel.org,
 	"Zhang, Sonic" <Sonic.Zhang@analog.com>,
 	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
 	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Subject: Re: IIO driver merge plans (for next merge window)
+References: <4BD5F4A8.7020309@cam.ac.uk> <0F1B54C89D5F954D8535DB252AF412FA048553F4@chinexm1.ad.analog.com> 	<4BD6ADFA.4050500@cam.ac.uk> <i2g3c17e3571005050037qbcc3ebc8h47aaa087913bf15d@mail.gmail.com>
+In-Reply-To: <i2g3c17e3571005050037qbcc3ebc8h47aaa087913bf15d@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Just note adis16209 is in the tested list too:
-drivers/staging/iio/accel/
+On 05/05/10 08:37, Barry Song wrote:
+> Just note adis16209 is in the tested list too:
+> drivers/staging/iio/accel/
 
-On Tue, Apr 27, 2010 at 5:27 PM, Jonathan Cameron <jic23@cam.ac.uk> wrote:
-> On 04/27/10 04:20, Song, Barry wrote:
->> Drivers that passed debugging and testing on hardware can be pushed
->> to mainline. By now, ADIS16300 and ADIS16400 drivers are on the
->> list. But the problem is they are based on old abi, will you change
->> codes to match new abi? If no, we can update codes after you merge
->> the new abi into mainline.
->
-> Sure. =C2=A0I'll take a look at those and see what the best merge techniq=
-ue
-> is. =C2=A0Hopefully we can tack those on to the end of the abi patch seri=
-es
-> and do it in two stages.
->
-> Jonathan
->> Thanks
->> Barry
+Cool, I've done a quick import on top of Greg's tree and it all seems good.
+(required half a dozen name changes and some addition dependencies in Kconfig).
+
+How do you guys want to handle mainlining drivers from now on.  I know Michael
+has requested a merge of the iio changes from Greg's tree into yours so as to
+fix everything up in one go.  Do you want to wait for that and then send them
+on, or if not I can keep doing quick merges of necessary change and forwarding
+to Greg as you tell me they are tested?
+
+The best option to me, would be if you guys started by initially posting the
+drivers to linux-iio so we can clean any big issues up before they hit the tree.
+Then either after making any requested changes or getting a few positive responses
+(or a lack of response for a few days - which is acceptable here given we are still
+in staging!) send them on to Greg KH for the actual merge.  For this one I will
+start the ball rolling by posting this particular driver to linux-iio (and commenting
+on it myself later today).
+
+Jonathan
+> 
+> On Tue, Apr 27, 2010 at 5:27 PM, Jonathan Cameron <jic23@cam.ac.uk> wrote:
+>> On 04/27/10 04:20, Song, Barry wrote:
+>>> Drivers that passed debugging and testing on hardware can be pushed
+>>> to mainline. By now, ADIS16300 and ADIS16400 drivers are on the
+>>> list. But the problem is they are based on old abi, will you change
+>>> codes to match new abi? If no, we can update codes after you merge
+>>> the new abi into mainline.
 >>
->> -----Original Message-----
->> From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
->> Sent: Tue 4/27/2010 4:16 AM
->> To: linux-iio@vger.kernel.org
->> Cc: Song, Barry; Zhang, Sonic; Hennerich, Michael; Manuel Stahl
->> Subject: IIO driver merge plans (for next merge window)
->>
->> Hi All,
->>
->> It is getting to that point of the kernel development cycle where we
->> want to start thinking about which drivers to push out to Greg in
->> plenty of time for the next merge window. =C2=A0If possible I'd like to
->> see some of them moving over to the new abi. =C2=A0However, given we are
->> in staging anyway, we can always merge them first and change them
->> later! =C2=A0Obviously the question of whether the abi changes merge
->> in time is down to what feedback they generate so that may further
->> complicate things.
->>
->> I see there are loads from Analog in the blackfin tree and based on
->> a quick glance at the source they are all in pretty good state. =C2=A0Th=
-e
->> only holes I can see are possibly in documentation and that is probably
->> more a case of adding things to the abi docs (in my latest patch set)
->> than anything else.
->>
->> Barry, Sonic, Michael, what are your current plans for mainlining?
->> (as much as staging is mainline anyway)
->>
->> I see you guys have started adding ring support. =C2=A0How are you findi=
-ng
->> that element? =C2=A0I'm still far from sure we have gotten that bit righ=
-t
->> yet! =C2=A0I'm going to have a play with the new FIFO implementation and
->> see if that provides at the very least and easier to review alternative
->> to the current buffer.
->>
->> Would also be great to start merging DAC and DDS support from your tree =
-and
->> finally justify the output element of IIO.
->>
->> I know Manuel has a couple of drivers as well. Sorry to anyone I have
->> forgotten. =C2=A0Please post your drivers!
->>
->> If people want assistance with moving over to the new abi, then I'm happ=
-y
->> to convert drivers, but obviously would need people to test that I haven=
-'t
->> broken anything in the process.
->>
->> With a bit of luck I'll clean up a few half written drivers I have
->> and perhaps look at pulling in the other light sensors now that ALS
->> has bitten the dust.
->>
->> Looking forward to seeing lots of drivers!
->>
->> Thanks,
+>> Sure.  I'll take a look at those and see what the best merge technique
+>> is.  Hopefully we can tack those on to the end of the abi patch series
+>> and do it in two stages.
 >>
 >> Jonathan
+>>> Thanks
+>>> Barry
+>>>
+>>> -----Original Message-----
+>>> From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
+>>> Sent: Tue 4/27/2010 4:16 AM
+>>> To: linux-iio@vger.kernel.org
+>>> Cc: Song, Barry; Zhang, Sonic; Hennerich, Michael; Manuel Stahl
+>>> Subject: IIO driver merge plans (for next merge window)
+>>>
+>>> Hi All,
+>>>
+>>> It is getting to that point of the kernel development cycle where we
+>>> want to start thinking about which drivers to push out to Greg in
+>>> plenty of time for the next merge window.  If possible I'd like to
+>>> see some of them moving over to the new abi.  However, given we are
+>>> in staging anyway, we can always merge them first and change them
+>>> later!  Obviously the question of whether the abi changes merge
+>>> in time is down to what feedback they generate so that may further
+>>> complicate things.
+>>>
+>>> I see there are loads from Analog in the blackfin tree and based on
+>>> a quick glance at the source they are all in pretty good state.  The
+>>> only holes I can see are possibly in documentation and that is probably
+>>> more a case of adding things to the abi docs (in my latest patch set)
+>>> than anything else.
+>>>
+>>> Barry, Sonic, Michael, what are your current plans for mainlining?
+>>> (as much as staging is mainline anyway)
+>>>
+>>> I see you guys have started adding ring support.  How are you finding
+>>> that element?  I'm still far from sure we have gotten that bit right
+>>> yet!  I'm going to have a play with the new FIFO implementation and
+>>> see if that provides at the very least and easier to review alternative
+>>> to the current buffer.
+>>>
+>>> Would also be great to start merging DAC and DDS support from your tree and
+>>> finally justify the output element of IIO.
+>>>
+>>> I know Manuel has a couple of drivers as well. Sorry to anyone I have
+>>> forgotten.  Please post your drivers!
+>>>
+>>> If people want assistance with moving over to the new abi, then I'm happy
+>>> to convert drivers, but obviously would need people to test that I haven't
+>>> broken anything in the process.
+>>>
+>>> With a bit of luck I'll clean up a few half written drivers I have
+>>> and perhaps look at pulling in the other light sensors now that ALS
+>>> has bitten the dust.
+>>>
+>>> Looking forward to seeing lots of drivers!
+>>>
+>>> Thanks,
+>>>
+>>> Jonathan
+>>>
+>>> p.s. If anyone has a chance to glance over the latest patch set, that would
+>>> be great.
+>>>
+>>>
 >>
->> p.s. If anyone has a chance to glance over the latest patch set, that wo=
-uld
->> be great.
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >>
->>
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =C2=A0http://vger.kernel.org/majordomo-info.html
->
+> 
+
