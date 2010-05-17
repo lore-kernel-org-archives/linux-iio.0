@@ -2,89 +2,463 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 2/3] staging:iio:max1363 trivial code and comment cleanups.
-Date: Mon, 17 May 2010 22:35:49 +0100
-Message-Id: <1274132150-29256-3-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 1/3] staging:iio:max1363 use device_id instead of searching on name again
+Date: Mon, 17 May 2010 22:35:48 +0100
+Message-Id: <1274132150-29256-2-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1274132150-29256-1-git-send-email-jic23@cam.ac.uk>
 References: <1274132150-29256-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/max1363_core.c |    4 ++--
- drivers/staging/iio/adc/max1363_ring.c |   10 +++++-----
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/staging/iio/adc/max1363.h      |    3 +-
+ drivers/staging/iio/adc/max1363_core.c |  152 +++++++++++++++-----------------
+ 2 files changed, 75 insertions(+), 80 deletions(-)
 
+diff --git a/drivers/staging/iio/adc/max1363.h b/drivers/staging/iio/adc/max1363.h
+index 72cf367..eb20c68 100644
+--- a/drivers/staging/iio/adc/max1363.h
++++ b/drivers/staging/iio/adc/max1363.h
+@@ -179,7 +179,6 @@ enum max1363_modes {
+  * @default_mode:	the scan mode in which the chip starts up
+  */
+ struct max1363_chip_info {
+-	const char			*name;
+ 	u8				num_inputs;
+ 	u8				bits;
+ 	u16				int_vref_mv;
+@@ -199,6 +198,7 @@ struct max1363_chip_info {
+  * @setupbyte:		cache of current device setup byte
+  * @configbyte:		cache of current device config byte
+  * @chip_info:		chip model specific constants, available modes etc
++ * @name:		part name. Copy of id->device_name
+  * @current_mode:	the scan mode of this chip
+  * @requestedmask:	a valid requested set of channels
+  * @poll_work:		bottom half of polling interrupt handler
+@@ -211,6 +211,7 @@ struct max1363_state {
+ 	char				setupbyte;
+ 	char				configbyte;
+ 	const struct max1363_chip_info	*chip_info;
++	char				*name;
+ 	const struct max1363_mode	*current_mode;
+ 	u32				requestedmask;
+ 	struct work_struct		poll_work;
 diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
-index d2a8cfa..1a25888 100644
+index 20e2674..d2a8cfa 100644
 --- a/drivers/staging/iio/adc/max1363_core.c
 +++ b/drivers/staging/iio/adc/max1363_core.c
-@@ -48,7 +48,7 @@
- 	IIO_SCAN_EL_C(in##number, number, IIO_UNSIGNED(16), 0, NULL);
- #define MAX1363_SCAN_EL_D(p, n, number)					\
- 	IIO_SCAN_NAMED_EL_C(in##p##m##in##n, in##p-in##n,		\
--			number, IIO_SIGNED(16), 0 , NULL);
-+			number, IIO_SIGNED(16), 0, NULL);
- 
- static MAX1363_SCAN_EL(0);
- static MAX1363_SCAN_EL(1);
-@@ -167,7 +167,7 @@ static int max1363_write_basic_config(struct i2c_client *client,
- 				      unsigned char d2)
+@@ -305,7 +305,7 @@ static ssize_t max1363_show_name(struct device *dev,
  {
- 	int ret;
--	u8 *tx_buf = kmalloc(2 , GFP_KERNEL);
-+	u8 *tx_buf = kmalloc(2, GFP_KERNEL);
- 
- 	if (!tx_buf)
- 		return -ENOMEM;
-diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
-index 56688dc..a69d1ec 100644
---- a/drivers/staging/iio/adc/max1363_ring.c
-+++ b/drivers/staging/iio/adc/max1363_ring.c
-@@ -68,7 +68,7 @@ error_ret:
+ 	struct iio_dev *dev_info = dev_get_drvdata(dev);
+ 	struct max1363_state *st = iio_dev_get_devdata(dev_info);
+-	return sprintf(buf, "%s\n", st->chip_info->name);
++	return sprintf(buf, "%s\n", st->name);
  }
  
- /**
-- * max1363_ring_preenable() setup the parameters of the ring before enabling
-+ * max1363_ring_preenable() - setup the parameters of the ring before enabling
-  *
-  * The complex nature of the setting of the nuber of bytes per datum is due
-  * to this driver currently ensuring that the timestamp is stored at an 8
-@@ -106,7 +106,7 @@ static int max1363_ring_preenable(struct iio_dev *indio_dev)
- }
+ static IIO_DEVICE_ATTR(name, S_IRUGO, max1363_show_name, NULL, 0);
+@@ -552,8 +552,7 @@ enum { max1361,
  
- /**
-- * max1363_ring_postenable() typical ring post enable
-+ * max1363_ring_postenable() - typical ring post enable
-  *
-  * Only not moved into the core for the hardware ring buffer cases
-  * that are more sophisticated.
-@@ -120,7 +120,7 @@ static int max1363_ring_postenable(struct iio_dev *indio_dev)
- }
+ /* max1363 and max1368 tested - rest from data sheet */
+ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+-	{
+-		.name = "max1361",
++	[max1361] = {
+ 		.num_inputs = 4,
+ 		.bits = 10,
+ 		.int_vref_mv = 2048,
+@@ -563,8 +562,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max1362",
++	},
++	[max1362] = {
+ 		.num_inputs = 4,
+ 		.bits = 10,
+ 		.int_vref_mv = 4096,
+@@ -574,8 +573,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max1363",
++	},
++	[max1363] = {
+ 		.num_inputs = 4,
+ 		.bits = 12,
+ 		.int_vref_mv = 2048,
+@@ -585,8 +584,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max1364",
++	},
++	[max1364] = {
+ 		.num_inputs = 4,
+ 		.bits = 12,
+ 		.int_vref_mv = 4096,
+@@ -596,8 +595,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max1036",
++	},
++	[max1036] = {
+ 		.num_inputs = 4,
+ 		.bits = 8,
+ 		.int_vref_mv = 4096,
+@@ -606,8 +605,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max1037",
++	},
++	[max1037] = {
+ 		.num_inputs = 4,
+ 		.bits = 8,
+ 		.int_vref_mv = 2048,
+@@ -616,8 +615,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max1038",
++	},
++	[max1038] = {
+ 		.num_inputs = 12,
+ 		.bits = 8,
+ 		.int_vref_mv = 4096,
+@@ -626,8 +625,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.dev_attrs = &max1238_dev_attr_group,
+ 		.scan_attrs = &max1238_scan_el_group,
+-	}, {
+-		.name = "max1039",
++	},
++	[max1039] = {
+ 		.num_inputs = 12,
+ 		.bits = 8,
+ 		.int_vref_mv = 2048,
+@@ -636,8 +635,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.dev_attrs = &max1238_dev_attr_group,
+ 		.scan_attrs = &max1238_scan_el_group,
+-	}, {
+-		.name = "max1136",
++	},
++	[max1136] = {
+ 		.num_inputs = 4,
+ 		.bits = 10,
+ 		.int_vref_mv = 4096,
+@@ -646,8 +645,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max1137",
++	},
++	[max1137] = {
+ 		.num_inputs = 4,
+ 		.bits = 10,
+ 		.int_vref_mv = 2048,
+@@ -656,8 +655,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max1138",
++	},
++	[max1138] = {
+ 		.num_inputs = 12,
+ 		.bits = 10,
+ 		.int_vref_mv = 4096,
+@@ -666,8 +665,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.dev_attrs = &max1238_dev_attr_group,
+ 		.scan_attrs = &max1238_scan_el_group,
+-	}, {
+-		.name = "max1139",
++	},
++	[max1139] = {
+ 		.num_inputs = 12,
+ 		.bits = 10,
+ 		.int_vref_mv = 2048,
+@@ -676,8 +675,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.dev_attrs = &max1238_dev_attr_group,
+ 		.scan_attrs = &max1238_scan_el_group,
+-	}, {
+-		.name = "max1236",
++	},
++	[max1236] = {
+ 		.num_inputs = 4,
+ 		.bits = 12,
+ 		.int_vref_mv = 4096,
+@@ -686,8 +685,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max1237",
++	},
++	[max1237] = {
+ 		.num_inputs = 4,
+ 		.bits = 12,
+ 		.int_vref_mv = 2048,
+@@ -696,8 +695,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max1238",
++	},
++	[max1238] = {
+ 		.num_inputs = 12,
+ 		.bits = 12,
+ 		.int_vref_mv = 4096,
+@@ -706,8 +705,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.dev_attrs = &max1238_dev_attr_group,
+ 		.scan_attrs = &max1238_scan_el_group,
+-	}, {
+-		.name = "max1239",
++	},
++	[max1239] = {
+ 		.num_inputs = 12,
+ 		.bits = 12,
+ 		.int_vref_mv = 2048,
+@@ -716,8 +715,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.dev_attrs = &max1238_dev_attr_group,
+ 		.scan_attrs = &max1238_scan_el_group,
+-	}, {
+-		.name = "max11600",
++	},
++	[max11600] = {
+ 		.num_inputs = 4,
+ 		.bits = 8,
+ 		.int_vref_mv = 4096,
+@@ -726,8 +725,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max11601",
++	},
++	[max11601] = {
+ 		.num_inputs = 4,
+ 		.bits = 8,
+ 		.int_vref_mv = 2048,
+@@ -736,8 +735,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max11602",
++	},
++	[max11602] = {
+ 		.num_inputs = 8,
+ 		.bits = 8,
+ 		.int_vref_mv = 4096,
+@@ -746,8 +745,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to7,
+ 		.dev_attrs = &max11608_dev_attr_group,
+ 		.scan_attrs = &max11608_scan_el_group,
+-	}, {
+-		.name = "max11603",
++	},
++	[max11603] = {
+ 		.num_inputs = 8,
+ 		.bits = 8,
+ 		.int_vref_mv = 2048,
+@@ -756,8 +755,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to7,
+ 		.dev_attrs = &max11608_dev_attr_group,
+ 		.scan_attrs = &max11608_scan_el_group,
+-	}, {
+-		.name = "max11604",
++	},
++	[max11604] = {
+ 		.num_inputs = 12,
+ 		.bits = 8,
+ 		.int_vref_mv = 4098,
+@@ -766,8 +765,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.dev_attrs = &max1238_dev_attr_group,
+ 		.scan_attrs = &max1238_scan_el_group,
+-	}, {
+-		.name = "max11605",
++	},
++	[max11605] = {
+ 		.num_inputs = 12,
+ 		.bits = 8,
+ 		.int_vref_mv = 2048,
+@@ -776,8 +775,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.dev_attrs = &max1238_dev_attr_group,
+ 		.scan_attrs = &max1238_scan_el_group,
+-	}, {
+-		.name = "max11606",
++	},
++	[max11606] = {
+ 		.num_inputs = 4,
+ 		.bits = 10,
+ 		.int_vref_mv = 4096,
+@@ -786,8 +785,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max11607",
++	},
++	[max11607] = {
+ 		.num_inputs = 4,
+ 		.bits = 10,
+ 		.int_vref_mv = 2048,
+@@ -796,8 +795,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max11608",
++	},
++	[max11608] = {
+ 		.num_inputs = 8,
+ 		.bits = 10,
+ 		.int_vref_mv = 4096,
+@@ -806,8 +805,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to7,
+ 		.dev_attrs = &max11608_dev_attr_group,
+ 		.scan_attrs = &max11608_scan_el_group,
+-	}, {
+-		.name = "max11609",
++	},
++	[max11609] = {
+ 		.num_inputs = 8,
+ 		.bits = 10,
+ 		.int_vref_mv = 2048,
+@@ -816,8 +815,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to7,
+ 		.dev_attrs = &max11608_dev_attr_group,
+ 		.scan_attrs = &max11608_scan_el_group,
+-	}, {
+-		.name = "max11610",
++	},
++	[max11610] = {
+ 		.num_inputs = 12,
+ 		.bits = 10,
+ 		.int_vref_mv = 4098,
+@@ -826,8 +825,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.dev_attrs = &max1238_dev_attr_group,
+ 		.scan_attrs = &max1238_scan_el_group,
+-	}, {
+-		.name = "max11611",
++	},
++	[max11611] = {
+ 		.num_inputs = 12,
+ 		.bits = 10,
+ 		.int_vref_mv = 2048,
+@@ -836,8 +835,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.dev_attrs = &max1238_dev_attr_group,
+ 		.scan_attrs = &max1238_scan_el_group,
+-	}, {
+-		.name = "max11612",
++	},
++	[max11612] = {
+ 		.num_inputs = 4,
+ 		.bits = 12,
+ 		.int_vref_mv = 4096,
+@@ -846,8 +845,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max11613",
++	},
++	[max11613] = {
+ 		.num_inputs = 4,
+ 		.bits = 12,
+ 		.int_vref_mv = 2048,
+@@ -856,8 +855,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to3,
+ 		.dev_attrs = &max1363_dev_attr_group,
+ 		.scan_attrs = &max1363_scan_el_group,
+-	}, {
+-		.name = "max11614",
++	},
++	[max11614] = {
+ 		.num_inputs = 8,
+ 		.bits = 12,
+ 		.int_vref_mv = 4096,
+@@ -866,8 +865,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to7,
+ 		.dev_attrs = &max11608_dev_attr_group,
+ 		.scan_attrs = &max11608_scan_el_group,
+-	}, {
+-		.name = "max11615",
++	},
++	[max11615] = {
+ 		.num_inputs = 8,
+ 		.bits = 12,
+ 		.int_vref_mv = 2048,
+@@ -876,8 +875,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to7,
+ 		.dev_attrs = &max11608_dev_attr_group,
+ 		.scan_attrs = &max11608_scan_el_group,
+-	}, {
+-		.name = "max11616",
++	},
++	[max11616] = {
+ 		.num_inputs = 12,
+ 		.bits = 12,
+ 		.int_vref_mv = 4098,
+@@ -886,8 +885,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.dev_attrs = &max1238_dev_attr_group,
+ 		.scan_attrs = &max1238_scan_el_group,
+-	}, {
+-		.name = "max11617",
++	},
++	[max11617] = {
+ 		.num_inputs = 12,
+ 		.bits = 12,
+ 		.int_vref_mv = 2048,
+@@ -931,18 +930,12 @@ static int __devinit max1363_probe(struct i2c_client *client,
+ 	atomic_set(&st->protect_ring, 0);
  
- /**
-- * max1363_ring_predisable() runs just prior to ring buffer being disabled
-+ * max1363_ring_predisable() - runs just prior to ring buffer being disabled
-  *
-  * Typical predisable function which ensures that no trigger events can
-  * occur before we disable the ring buffer (and hence would have no idea
-@@ -136,7 +136,7 @@ static int max1363_ring_predisable(struct iio_dev *indio_dev)
- }
- 
- /**
-- * max1363_poll_func_th() th of trigger launched polling to ring buffer
-+ * max1363_poll_func_th() - th of trigger launched polling to ring buffer
-  *
-  * As sampling only occurs on i2c comms occuring, leave timestamping until
-  * then.  Some triggers will generate their own time stamp.  Currently
-@@ -151,7 +151,7 @@ static void max1363_poll_func_th(struct iio_dev *indio_dev)
- 	return;
- }
- /**
-- * max1363_poll_bh_to_ring() bh of trigger launched polling to ring buffer
-+ * max1363_poll_bh_to_ring() - bh of trigger launched polling to ring buffer
-  * @work_s:	the work struct through which this was scheduled
-  *
-  * Currently there is no option in this driver to disable the saving of
+ 	/* Find the chip model specific data */
+-	for (i = 0; i < ARRAY_SIZE(max1363_chip_info_tbl); i++)
+-		if (!strcmp(max1363_chip_info_tbl[i].name, id->name)) {
+-			st->chip_info = &max1363_chip_info_tbl[i];
+-			break;
+-		};
+-	/* Unsupported chip */
+-	if (!st->chip_info) {
+-		dev_err(&client->dev, "%s is not supported\n", id->name);
+-		ret = -ENODEV;
++	st->chip_info = &max1363_chip_info_tbl[id->driver_data];
++	st->name = kstrdup(id->name, GFP_KERNEL);
++	if (st->name == NULL) {
++		ret = -ENOMEM;
+ 		goto error_free_st;
+ 	}
+-
+ 	st->reg = regulator_get(&client->dev, "vcc");
+ 	if (!IS_ERR(st->reg)) {
+ 		ret = regulator_enable(st->reg);
+@@ -1010,6 +1003,7 @@ error_disable_reg:
+ error_put_reg:
+ 	if (!IS_ERR(st->reg))
+ 		regulator_put(st->reg);
++	kfree(st->name);
+ error_free_st:
+ 	i2c_set_clientdata(client, NULL);
+ 	kfree(st);
 -- 
 1.7.0.4
