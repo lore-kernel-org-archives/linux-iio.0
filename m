@@ -4,21 +4,17 @@ To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Barry Song <Barry.Song@analog.com>,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH V2] staging:iio: adis16350 and similar IMU driver
-Date: Mon, 17 May 2010 11:40:20 +0100
-Message-Id: <1274092820-8485-1-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH] staging:iio: adis16360 imu driver
+Date: Mon, 17 May 2010 11:32:04 +0100
+Message-Id: <1274092324-8298-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Barry Song <Barry.Song@analog.com>
 
 Signed-off-by: Barry Song <Barry.Song@analog.com>
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+
 ---
-
-This version has the right part number in the commit message.
-Whilst technically the part I listed last time is also supported
-by the driver, the commit message might have caused confusion.
-
 Another driver from Barry at Analog.  Again, I've lifted
 if from the blackfin tree and done the usual sparse
 and checkpatch fixes + the abi changes.  I actually
