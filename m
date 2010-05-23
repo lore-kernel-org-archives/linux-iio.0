@@ -1,280 +1,214 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:54951 "EHLO
-	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753593Ab0EWKCh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 23 May 2010 06:02:37 -0400
-Message-ID: <4BF8FDD4.6020104@cam.ac.uk>
-Date: Sun, 23 May 2010 11:05:08 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Mike Frysinger <vapier@gentoo.org>
-CC: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+Return-Path: <vapier@gentoo.org>
+From: Mike Frysinger <vapier@gentoo.org>
+To: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Cc: devel@driverdev.osuosl.org,
 	Greg Kroah-Hartman <gregkh@suse.de>
-Subject: Re: [PATCH] staging:iio: kill off spurious semicolons
-References: <1274598630-12160-1-git-send-email-vapier@gentoo.org>
-In-Reply-To: <1274598630-12160-1-git-send-email-vapier@gentoo.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH] staging: iio: standardize kconfig/makefile spacing/style
+Date: Sun, 23 May 2010 03:00:02 -0400
+Message-Id: <1274598002-8978-1-git-send-email-vapier@gentoo.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/23/10 08:10, Mike Frysinger wrote:
-> A bunch of IIO files contain spurious semicolons after function
-> definitions and case statements and if statements.  Guess people
-> really like this thing, but kill them anyways so they'll stop
-> spreading via copy & paste with new drivers.
-> 
-> Signed-off-by: Mike Frysinger <vapier@gentoo.org>
-Combination of my bad coding style a while ago and never getting
-round to cleaning up.  A number of these are in a series of clean
-up patches I haven't sent out yet, but you found more than me, so
-I'll merge my changes on top of this.
+Standardize the spacing/style across the IIO build files:
+	- comment block in Kconfigs
+	- newlines at ends of files
+	- trailing lines at ends of files
+	- indent with one tab, not spaces or mixed
 
-Thanks,
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ drivers/staging/iio/Makefile         |    3 +-
+ drivers/staging/iio/accel/Kconfig    |   50 +++++++++++++++++-----------------
+ drivers/staging/iio/accel/Makefile   |    3 +-
+ drivers/staging/iio/adc/Makefile     |    2 +-
+ drivers/staging/iio/gyro/Makefile    |    2 +-
+ drivers/staging/iio/imu/Kconfig      |    8 +++---
+ drivers/staging/iio/imu/Makefile     |    3 +-
+ drivers/staging/iio/light/Kconfig    |    1 -
+ drivers/staging/iio/trigger/Makefile |    3 +-
+ 9 files changed, 38 insertions(+), 37 deletions(-)
 
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/accel/lis3l02dq.h    |   19 ++++++++++++-------
->  drivers/staging/iio/accel/sca3000.h      |   14 +++++++++-----
->  drivers/staging/iio/accel/sca3000_core.c |   14 +++++++-------
->  drivers/staging/iio/adc/max1363.h        |   14 ++++++++------
->  drivers/staging/iio/adc/max1363_core.c   |    4 ++--
->  drivers/staging/iio/adc/max1363_ring.c   |    4 ++--
->  6 files changed, 40 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
-> index e76a979..0ffa0bb 100644
-> --- a/drivers/staging/iio/accel/lis3l02dq.h
-> +++ b/drivers/staging/iio/accel/lis3l02dq.h
-> @@ -199,11 +199,13 @@ int lis3l02dq_initialize_ring(struct iio_ring_buffer *ring);
->  void lis3l02dq_uninitialize_ring(struct iio_ring_buffer *ring);
->  #else /* CONFIG_IIO_RING_BUFFER */
->  
-> -static inline void lis3l02dq_remove_trigger(struct iio_dev *indio_dev) {};
-> +static inline void lis3l02dq_remove_trigger(struct iio_dev *indio_dev)
-> +{
-> +}
->  static inline int lis3l02dq_probe_trigger(struct iio_dev *indio_dev)
->  {
->  	return 0;
-> -};
-> +}
->  
->  static inline ssize_t
->  lis3l02dq_read_accel_from_ring(struct device *dev,
-> @@ -211,18 +213,21 @@ lis3l02dq_read_accel_from_ring(struct device *dev,
->  			       char *buf)
->  {
->  	return 0;
-> -};
-> +}
->  
->  static int lis3l02dq_configure_ring(struct iio_dev *indio_dev)
->  {
->  	return 0;
-> -};
-> +}
->  static inline void lis3l02dq_unconfigure_ring(struct iio_dev *indio_dev)
-> -{};
-> +{
-> +}
->  static inline int lis3l02dq_initialize_ring(struct iio_ring_buffer *ring)
->  {
->  	return 0;
-> -};
-> -static inline void lis3l02dq_uninitialize_ring(struct iio_ring_buffer *ring) {};
-> +}
-> +static inline void lis3l02dq_uninitialize_ring(struct iio_ring_buffer *ring)
-> +{
-> +}
->  #endif /* CONFIG_IIO_RING_BUFFER */
->  #endif /* SPI_LIS3L02DQ_H_ */
-> diff --git a/drivers/staging/iio/accel/sca3000.h b/drivers/staging/iio/accel/sca3000.h
-> index e532199..09d9470 100644
-> --- a/drivers/staging/iio/accel/sca3000.h
-> +++ b/drivers/staging/iio/accel/sca3000.h
-> @@ -242,7 +242,7 @@ static inline int sca3000_11bit_convert(uint8_t msb, uint8_t lsb)
->  	val |= (val & (1 << 12)) ? 0xE000 : 0;
->  
->  	return val;
-> -};
-> +}
->  
->  static inline int sca3000_13bit_convert(uint8_t msb, uint8_t lsb)
->  {
-> @@ -253,7 +253,7 @@ static inline int sca3000_13bit_convert(uint8_t msb, uint8_t lsb)
->  	val |= (val & (1 << 12)) ? 0xE000 : 0;
->  
->  	return val;
-> -};
-> +}
->  
->  
->  #ifdef CONFIG_IIO_RING_BUFFER
-> @@ -286,15 +286,19 @@ void sca3000_unconfigure_ring(struct iio_dev *indio_dev);
->  void sca3000_ring_int_process(u8 val, struct iio_ring_buffer *ring);
->  
->  #else
-> -static inline void sca3000_register_ring_funcs(struct iio_dev *indio_dev) {};
-> +static inline void sca3000_register_ring_funcs(struct iio_dev *indio_dev)
-> +{
-> +}
->  
->  static inline
->  int sca3000_register_ring_access_and_init(struct iio_dev *indio_dev)
->  {
->  	return 0;
-> -};
-> +}
->  
-> -static inline void sca3000_ring_int_process(u8 val, void *ring) {};
-> +static inline void sca3000_ring_int_process(u8 val, void *ring)
-> +{
-> +}
->  
->  #endif
->  
-> diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-> index d4f82c3..b78b6b6 100644
-> --- a/drivers/staging/iio/accel/sca3000_core.c
-> +++ b/drivers/staging/iio/accel/sca3000_core.c
-> @@ -387,7 +387,7 @@ sca3000_show_available_measurement_modes(struct device *dev,
->  	case SCA3000_OP_MODE_BYPASS:
->  		len += sprintf(buf + len, ", 1 - bypass mode");
->  		break;
-> -	};
-> +	}
->  	switch (st->info->option_mode_2) {
->  	case SCA3000_OP_MODE_WIDE:
->  		len += sprintf(buf + len, ", 2 - wide mode");
-> @@ -433,7 +433,7 @@ sca3000_show_measurement_mode(struct device *dev,
->  		case SCA3000_OP_MODE_BYPASS:
->  			len += sprintf(buf + len, "1 - bypass mode\n");
->  			break;
-> -		};
-> +		}
->  		break;
->  	case SCA3000_MEAS_MODE_OP_2:
->  		switch (st->info->option_mode_2) {
-> @@ -442,7 +442,7 @@ sca3000_show_measurement_mode(struct device *dev,
->  			break;
->  		}
->  		break;
-> -	};
-> +	}
->  
->  error_ret:
->  	mutex_unlock(&st->lock);
-> @@ -559,7 +559,7 @@ static ssize_t sca3000_read_av_freq(struct device *dev,
->  			       st->info->option_mode_2_freq/2,
->  			       st->info->option_mode_2_freq/4);
->  		break;
-> -	};
-> +	}
->  	kfree(rx);
->  	return len;
->  error_ret:
-> @@ -590,7 +590,7 @@ static inline int __sca3000_get_base_freq(struct sca3000_state *st,
->  	case SCA3000_MEAS_MODE_OP_2:
->  		*base_freq = info->option_mode_2_freq;
->  		break;
-> -	};
-> +	}
->  	kfree(rx);
->  error_ret:
->  	return ret;
-> @@ -627,8 +627,8 @@ static ssize_t sca3000_read_frequency(struct device *dev,
->  		case 0x02:
->  			len = sprintf(buf, "%d\n", base_freq/4);
->  			break;
-> -	};
-> -			kfree(rx);
-> +	}
-> +	kfree(rx);
->  	return len;
->  error_ret_mut:
->  	mutex_unlock(&st->lock);
-> diff --git a/drivers/staging/iio/adc/max1363.h b/drivers/staging/iio/adc/max1363.h
-> index 72cf367..6da468b 100644
-> --- a/drivers/staging/iio/adc/max1363.h
-> +++ b/drivers/staging/iio/adc/max1363.h
-> @@ -147,7 +147,7 @@ enum max1363_channels {
->  	max1363_in1min0, max1363_in3min2,
->  	max1363_in5min4, max1363_in7min6,
->  	max1363_in9min8, max1363_in11min10,
-> -	};
-> +};
->  
->  /* This must be maintained along side the max1363_mode_table in max1363_core */
->  enum max1363_modes {
-> @@ -237,25 +237,27 @@ void max1363_uninitialize_ring(struct iio_ring_buffer *ring);
->  
->  static inline void max1363_uninitialize_ring(struct iio_ring_buffer *ring)
->  {
-> -};
-> +}
->  
->  static inline int max1363_initialize_ring(struct iio_ring_buffer *ring)
->  {
->  	return 0;
-> -};
-> +}
->  
->  int max1363_single_channel_from_ring(long mask, struct max1363_state *st)
->  {
->  	return -EINVAL;
-> -};
-> +}
->  
->  
->  static inline int
->  max1363_register_ring_funcs_and_init(struct iio_dev *indio_dev)
->  {
->  	return 0;
-> -};
-> +}
->  
-> -static inline void max1363_ring_cleanup(struct iio_dev *indio_dev) {};
-> +static inline void max1363_ring_cleanup(struct iio_dev *indio_dev)
-> +{
-> +}
->  #endif /* CONFIG_MAX1363_RING_BUFFER */
->  #endif /* _MAX1363_H_ */
-> diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
-> index 20e2674..cb5b572 100644
-> --- a/drivers/staging/iio/adc/max1363_core.c
-> +++ b/drivers/staging/iio/adc/max1363_core.c
-> @@ -148,7 +148,7 @@ const struct max1363_mode
->  			      mask))
->  				return &max1363_mode_table[ci->mode_list[i]];
->  	return NULL;
-> -};
-> +}
->  
->  static ssize_t max1363_show_precision(struct device *dev,
->  				struct device_attribute *attr,
-> @@ -935,7 +935,7 @@ static int __devinit max1363_probe(struct i2c_client *client,
->  		if (!strcmp(max1363_chip_info_tbl[i].name, id->name)) {
->  			st->chip_info = &max1363_chip_info_tbl[i];
->  			break;
-> -		};
-> +		}
->  	/* Unsupported chip */
->  	if (!st->chip_info) {
->  		dev_err(&client->dev, "%s is not supported\n", id->name);
-> diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
-> index 56688dc..a49b3d7 100644
-> --- a/drivers/staging/iio/adc/max1363_ring.c
-> +++ b/drivers/staging/iio/adc/max1363_ring.c
-> @@ -262,9 +262,9 @@ void max1363_ring_cleanup(struct iio_dev *indio_dev)
->  void max1363_uninitialize_ring(struct iio_ring_buffer *ring)
->  {
->  	iio_ring_buffer_unregister(ring);
-> -};
-> +}
->  
->  int max1363_initialize_ring(struct iio_ring_buffer *ring)
->  {
->  	return iio_ring_buffer_register(ring, 0);
-> -};
-> +}
-
+diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
+index 3502b39..fff717e 100644
+--- a/drivers/staging/iio/Makefile
++++ b/drivers/staging/iio/Makefile
+@@ -14,5 +14,4 @@ obj-y += adc/
+ obj-y += gyro/
+ obj-y += imu/
+ obj-y += light/
+-
+-obj-y += trigger/
+\ No newline at end of file
++obj-y += trigger/
+diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
+index b4e57d1..5926c03 100644
+--- a/drivers/staging/iio/accel/Kconfig
++++ b/drivers/staging/iio/accel/Kconfig
+@@ -4,29 +4,29 @@
+ comment "Accelerometers"
+ 
+ config ADIS16209
+-       tristate "Analog Devices ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer"
+-       depends on SPI
+-       select IIO_TRIGGER if IIO_RING_BUFFER
+-       select IIO_SW_RING if IIO_RING_BUFFER
+-       help
+-         Say yes here to build support for Analog Devices adis16209 dual-axis digital inclinometer
+-	 and accelerometer.
++	tristate "Analog Devices ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer"
++	depends on SPI
++	select IIO_TRIGGER if IIO_RING_BUFFER
++	select IIO_SW_RING if IIO_RING_BUFFER
++	help
++	  Say yes here to build support for Analog Devices adis16209 dual-axis digital inclinometer
++	  and accelerometer.
+ 
+ config ADIS16220
+-       tristate "Analog Devices ADIS16220 Programmable Digital Vibration Sensor driver"
+-       depends on SPI
+-       help
+-         Say yes here to build support for Analog Devices adis16220 programmable
+-         digital vibration sensor.
++	tristate "Analog Devices ADIS16220 Programmable Digital Vibration Sensor"
++	depends on SPI
++	help
++	  Say yes here to build support for Analog Devices adis16220 programmable
++	  digital vibration sensor.
+ 
+ config ADIS16240
+-       tristate "Analog Devices ADIS16240 Programmable Impact Sensor and Recorder"
+-       depends on SPI
+-       select IIO_TRIGGER if IIO_RING_BUFFER
+-       select IIO_SW_RING if IIO_RING_BUFFER
+-       help
+-         Say yes here to build support for Analog Devices adis16240 programmable
+-	 impact Sensor and recorder.
++	tristate "Analog Devices ADIS16240 Programmable Impact Sensor and Recorder"
++	depends on SPI
++	select IIO_TRIGGER if IIO_RING_BUFFER
++	select IIO_SW_RING if IIO_RING_BUFFER
++	help
++	  Say yes here to build support for Analog Devices adis16240 programmable
++	  impact Sensor and recorder.
+ 
+ config KXSD9
+ 	tristate "Kionix KXSD9 Accelerometer Driver"
+@@ -46,9 +46,9 @@ config LIS3L02DQ
+ 	  and an event interface via a character device.
+ 
+ config SCA3000
+-       depends on IIO_RING_BUFFER
+-       depends on SPI
+-       tristate "VTI SCA3000 series accelerometers"
+-       help
+-         Say yes here to build support for the VTI SCA3000 series of SPI
+-	 accelerometers. These devices use a hardware ring buffer.
+\ No newline at end of file
++	depends on IIO_RING_BUFFER
++	depends on SPI
++	tristate "VTI SCA3000 series accelerometers"
++	help
++	  Say yes here to build support for the VTI SCA3000 series of SPI
++	  accelerometers. These devices use a hardware ring buffer.
+diff --git a/drivers/staging/iio/accel/Makefile b/drivers/staging/iio/accel/Makefile
+index c34b136..ff84703 100644
+--- a/drivers/staging/iio/accel/Makefile
++++ b/drivers/staging/iio/accel/Makefile
+@@ -1,6 +1,7 @@
+ #
+ # Makefile for industrial I/O accelerometer drivers
+ #
++
+ adis16209-y             := adis16209_core.o
+ adis16209-$(CONFIG_IIO_RING_BUFFER) += adis16209_ring.o adis16209_trigger.o
+ obj-$(CONFIG_ADIS16209) += adis16209.o
+@@ -19,4 +20,4 @@ lis3l02dq-$(CONFIG_IIO_RING_BUFFER) += lis3l02dq_ring.o
+ obj-$(CONFIG_LIS3L02DQ)	+= lis3l02dq.o
+ 
+ sca3000-y		:= sca3000_core.o sca3000_ring.o
+-obj-$(CONFIG_SCA3000)	+= sca3000.o
+\ No newline at end of file
++obj-$(CONFIG_SCA3000)	+= sca3000.o
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index 18c9376..688510f 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -1,4 +1,4 @@
+-
++#
+ # Makefile for industrial I/O ADC drivers
+ #
+ 
+diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
+index 6d2c547..b5f0dc0 100644
+--- a/drivers/staging/iio/gyro/Makefile
++++ b/drivers/staging/iio/gyro/Makefile
+@@ -1,4 +1,4 @@
+-
++#
+ # Makefile for digital gyroscope sensor drivers
+ #
+ 
+diff --git a/drivers/staging/iio/imu/Kconfig b/drivers/staging/iio/imu/Kconfig
+index 6308d6f..48a712e 100644
+--- a/drivers/staging/iio/imu/Kconfig
++++ b/drivers/staging/iio/imu/Kconfig
+@@ -24,10 +24,10 @@ config ADIS16350
+ 
+ config ADIS16400
+ 	tristate "Analog Devices ADIS16400/5 IMU SPI driver"
+- 	depends on SPI
++	depends on SPI
+ 	select IIO_SW_RING
+ 	select IIO_RING_BUFFER
+ 	select IIO_TRIGGER
+- 	help
+- 	  Say yes here to build support for Analog Devices adis16400/5 triaxial
+- 	  inertial sensor with Magnetometer.
+\ No newline at end of file
++	help
++	  Say yes here to build support for Analog Devices adis16400/5 triaxial
++	  inertial sensor with Magnetometer.
+diff --git a/drivers/staging/iio/imu/Makefile b/drivers/staging/iio/imu/Makefile
+index 31df735..f3b450b 100644
+--- a/drivers/staging/iio/imu/Makefile
++++ b/drivers/staging/iio/imu/Makefile
+@@ -1,6 +1,7 @@
+ #
+ # Makefile for Inertial Measurement Units
+ #
++
+ adis16300-y             := adis16300_core.o
+ adis16300-$(CONFIG_IIO_RING_BUFFER) += adis16300_ring.o adis16300_trigger.o
+ obj-$(CONFIG_ADIS16300) += adis16300.o
+@@ -11,4 +12,4 @@ obj-$(CONFIG_ADIS16350) += adis16350.o
+ 
+ adis16400-y             := adis16400_core.o
+ adis16400-$(CONFIG_IIO_RING_BUFFER) += adis16400_ring.o adis16400_trigger.o
+-obj-$(CONFIG_ADIS16400) += adis16400.o
+\ No newline at end of file
++obj-$(CONFIG_ADIS16400) += adis16400.o
+diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
+index 80cb6e5..3ddc478 100644
+--- a/drivers/staging/iio/light/Kconfig
++++ b/drivers/staging/iio/light/Kconfig
+@@ -12,4 +12,3 @@ config SENSORS_TSL2563
+ 
+ 	 This driver can also be built as a module.  If so, the module
+ 	 will be called tsl2563.
+-
+diff --git a/drivers/staging/iio/trigger/Makefile b/drivers/staging/iio/trigger/Makefile
+index e5f96d2..10aeca5 100644
+--- a/drivers/staging/iio/trigger/Makefile
++++ b/drivers/staging/iio/trigger/Makefile
+@@ -1,5 +1,6 @@
+ #
+ # Makefile for triggers not associated with iio-devices
+ #
++
+ obj-$(CONFIG_IIO_PERIODIC_RTC_TRIGGER) += iio-trig-periodic-rtc.o
+-obj-$(CONFIG_IIO_GPIO_TRIGGER) += iio-trig-gpio.o
+\ No newline at end of file
++obj-$(CONFIG_IIO_GPIO_TRIGGER) += iio-trig-gpio.o
+-- 
+1.7.1
