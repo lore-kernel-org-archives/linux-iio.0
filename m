@@ -1,33 +1,41 @@
 Return-Path: <21cnbao@gmail.com>
-From: Barry Song <21cnbao@gmail.com>
-To: gregkh@suse.de, jic23@cam.ac.uk
-CC: linux-iio@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org,
-        Barry Song <21cnbao@gmail.com>
-Subject: [PATCH] iio-utils: fix memory overflow for dynamically allocateded memory to hold filename
-Date: Mon, 24 May 2010 17:30:18 +0800
-Message-ID: <1274693418-23372-1-git-send-email-21cnbao@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1274693418-23372-1-git-send-email-21cnbao@gmail.com>
+References: <1274693418-23372-1-git-send-email-21cnbao@gmail.com>
+From: Barry Song <21cnbao@gmail.com>
+Date: Mon, 24 May 2010 17:36:08 +0800
+Message-ID: <AANLkTikmQdy2_PJF9yJwLi68m2tHQuHAf22m8RP6VRPC@mail.gmail.com>
+Subject: Re: [PATCH] iio-utils: fix memory overflow for dynamically
+	allocateded memory to hold filename
+To: gregkh@suse.de, jic23@cam.ac.uk
+Cc: linux-iio@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org,
+	Barry Song <21cnbao@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Barry Song <21cnbao@gmail.com>
----
- drivers/staging/iio/Documentation/iio_utils.h |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
-index 6411bf9..a4555e6 100644
---- a/drivers/staging/iio/Documentation/iio_utils.h
-+++ b/drivers/staging/iio/Documentation/iio_utils.h
-@@ -64,8 +64,7 @@ inline int find_type_by_name(const char *name, const char *type)
- 						+ strlen(type)
- 						+ 1
- 						+ numstrlen
--						+ 1
--						+ IIO_MAX_NAME_LENGTH);
-+						+ 1);
- 				if (filename == NULL)
- 					return -ENOMEM;
- 				sprintf(filename, "%s%s%d/name",
--- 
-1.5.6.3
+U29ycnksIHBscyBpZ25vcmUgdGhpcyBvbmUuIEkgbWFkZSBhIG1pcy1vcGVyYXRpb24gSXQgaXMg
+YWN0dWFsOgotCQkJCQkJKyAxKTsKKwkJCQkJCSsgMQorCQkJCQkJKyBJSU9fTUFYX05BTUVfTEVO
+R1RIKTsKCmkgd2lsbCByZS1zZW5kIGl0LgoKT24gTW9uLCBNYXkgMjQsIDIwMTAgYXQgNTozMCBQ
+TSwgQmFycnkgU29uZyA8MjFjbmJhb0BnbWFpbC5jb20+IHdyb3RlOgo+IFNpZ25lZC1vZmYtYnk6
+IEJhcnJ5IFNvbmcgPDIxY25iYW9AZ21haWwuY29tPgo+IC0tLQo+IMKgZHJpdmVycy9zdGFnaW5n
+L2lpby9Eb2N1bWVudGF0aW9uL2lpb191dGlscy5oIHwgwqAgwqAzICstLQo+IMKgMSBmaWxlcyBj
+aGFuZ2VkLCAxIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCj4KPiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9zdGFnaW5nL2lpby9Eb2N1bWVudGF0aW9uL2lpb191dGlscy5oIGIvZHJpdmVycy9z
+dGFnaW5nL2lpby9Eb2N1bWVudGF0aW9uL2lpb191dGlscy5oCj4gaW5kZXggNjQxMWJmOS4uYTQ1
+NTVlNiAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL0RvY3VtZW50YXRpb24vaWlv
+X3V0aWxzLmgKPiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL0RvY3VtZW50YXRpb24vaWlvX3V0
+aWxzLmgKPiBAQCAtNjQsOCArNjQsNyBAQCBpbmxpbmUgaW50IGZpbmRfdHlwZV9ieV9uYW1lKGNv
+bnN0IGNoYXIgKm5hbWUsIGNvbnN0IGNoYXIgKnR5cGUpCj4gwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqArIHN0cmxl
+bih0eXBlKQo+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgKyAxCj4gwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqArIG51bXN0cmxlbgo+
+IC0gwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgKyAxCj4gLSDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCArIElJT19NQVhfTkFNRV9MRU5HVEgp
+Owo+ICsgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgKyAxKTsKPiDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoGlmIChmaWxlbmFtZSA9PSBOVUxMKQo+IMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgcmV0dXJuIC1FTk9NRU07
+Cj4gwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqBzcHJpbnRm
+KGZpbGVuYW1lLCAiJXMlcyVkL25hbWUiLAo+IC0tCj4gMS41LjYuMwo+Cj4K
