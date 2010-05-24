@@ -1,44 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-31.csi.cam.ac.uk ([131.111.8.131]:54390 "EHLO
-	ppsw-31.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756267Ab0EYKFO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 25 May 2010 06:05:14 -0400
-Message-ID: <4BFBA15D.2040607@cam.ac.uk>
-Date: Tue, 25 May 2010 11:07:25 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Barry Song <21cnbao@gmail.com>
-CC: gregkh@suse.de, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3] iio-utils: fix memory overflow for dynamically allocateded
- memory to hold filename
-References: <1274780404-17963-1-git-send-email-21cnbao@gmail.com>
-In-Reply-To: <1274780404-17963-1-git-send-email-21cnbao@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [RFC PATCH 00/11] Mixed bag of IIO patches.
+Date: Mon, 24 May 2010 22:02:45 +0100
+Message-Id: <1274734976-7941-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/25/10 10:40, Barry Song wrote:
-> Signed-off-by: Barry Song <21cnbao@gmail.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+I will probably break these up into a couple of separate series
+at a later date given some are fixes and others extensions
+of drivers.
 
-Thanks Barry!
-> ---
->  drivers/staging/iio/Documentation/iio_utils.h |    3 +--
->  1 files changed, 1 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
-> index a4555e6..014f668 100644
-> --- a/drivers/staging/iio/Documentation/iio_utils.h
-> +++ b/drivers/staging/iio/Documentation/iio_utils.h
-> @@ -62,9 +62,8 @@ inline int find_type_by_name(const char *name, const char *type)
->  					1) != 0) {
->  				filename = malloc(strlen(iio_dir)
->  						+ strlen(type)
-> -						+ 1
->  						+ numstrlen
-> -						+ 1);
-> +						+ 6);
->  				if (filename == NULL)
->  					return -ENOMEM;
->  				sprintf(filename, "%s%s%d/name",
+The first couple of patces are updated version of various ones
+previously posted ot the list.
 
+The last couple add event support to tsl2563 and max1363
+(a company who will remain nameless forgot some pull ups
+on their sensor board so I've only recently modified one
+to actually have working interrupt lines for these two parts)
+
+Technically both these devices support smbus alert but for
+now I'm handling the interrupt as a conventional interrupt
+as I'll need to look at adding smbus alert support to the i2c
+driver in question first.
+(Also note it's rather oddly inverted on the board in question
+so for most people the interrupts are inverted in the driver
+currently.)
+
+Incidentally if someone wants to see a chip that does everything
+in almost as pathological a way as possible, please have a close
+read of the max1363 data sheet.
+
+The only change likely to effect other drivers was getting
+rid of the iio_work_cont. It was one of those 'general'
+elements that turned out to not actually occur terribly
+often. I know of no current true users including none in
+the blackfin tree (though last time I checked you had a lot
+of them defined and unused!)
+
+Jonathan Cameron (11):
+  staging:iio:max1363 use device_id instead of searching on name again
+  staging:iio:max1363 trivial code and comment cleanups.
+  staging:iio:lis3l02dq cleanups
+  staging:iio:kxsd9 remove unnecessary includes
+  staging:iio: Remove used iio_work_cont definition and all references
+  staging:iio: Remove unnecessary event_idr and all references
+  staging:iio: Code cleanups
+  staging:iio: Fix IIO_EVENT_ATTR initialization of list head
+  staging:iio: tsl2563 abi fixes and interrupt handling
+  staging:iio: Add ability to have event attributes with awkward names
+  staging:iio:max1363 add theshold event support
+
+ drivers/staging/iio/accel/adis16209.h      |    3 -
+ drivers/staging/iio/accel/adis16220.h      |    1 -
+ drivers/staging/iio/accel/adis16240.h      |    2 -
+ drivers/staging/iio/accel/kxsd9.c          |    6 -
+ drivers/staging/iio/accel/lis3l02dq.h      |    4 +-
+ drivers/staging/iio/accel/lis3l02dq_core.c |   25 +-
+ drivers/staging/iio/accel/lis3l02dq_ring.c |    8 -
+ drivers/staging/iio/adc/adc.h              |    3 +
+ drivers/staging/iio/adc/max1363.h          |   46 +-
+ drivers/staging/iio/adc/max1363_core.c     |  854 +++++++++++++++++++++++++---
+ drivers/staging/iio/adc/max1363_ring.c     |   10 +-
+ drivers/staging/iio/chrdev.h               |    3 -
+ drivers/staging/iio/gyro/adis16260.h       |    2 -
+ drivers/staging/iio/iio.h                  |   51 +--
+ drivers/staging/iio/imu/adis16300.h        |    2 -
+ drivers/staging/iio/imu/adis16300_core.c   |    8 -
+ drivers/staging/iio/imu/adis16350.h        |    2 -
+ drivers/staging/iio/imu/adis16400.h        |    2 -
+ drivers/staging/iio/imu/adis16400_core.c   |    8 -
+ drivers/staging/iio/industrialio-core.c    |   22 +-
+ drivers/staging/iio/industrialio-ring.c    |    4 +-
+ drivers/staging/iio/industrialio-trigger.c |    3 +-
+ drivers/staging/iio/light/light.h          |    7 +-
+ drivers/staging/iio/light/tsl2563.c        |  389 ++++++++++---
+ drivers/staging/iio/sysfs.h                |   14 +-
+ 25 files changed, 1127 insertions(+), 352 deletions(-)
