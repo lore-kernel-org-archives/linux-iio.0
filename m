@@ -1,92 +1,148 @@
-Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4C25EDD3.2080503@cam.ac.uk>
-Date: Sat, 26 Jun 2010 13:08:51 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <21cnbao@gmail.com>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [RFC PATCH 00/11] Mixed bag of IIO patches.
-References: <1274734976-7941-1-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1274734976-7941-1-git-send-email-jic23@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+In-Reply-To: <4B82679F.3000807@cam.ac.uk>
+References: <0F1B54C89D5F954D8535DB252AF412FA05A222FC@chinexm1.ad.analog.com>
+	<4B82679F.3000807@cam.ac.uk>
+From: Barry Song <21cnbao@gmail.com>
+Date: Wed, 2 Jun 2010 16:01:41 +0800
+Message-ID: <AANLkTimmdhiZXBCTVvMNyjdf6n59wrWkLXPY1HkB14-p@mail.gmail.com>
+Subject: Re: [Uclinux-dist-devel] IIO ring buffer
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: "Song, Barry" <Barry.Song@analog.com>, linux-iio@vger.kernel.org,
+	uclinux-dist-devel@blackfin.uclinux.org, manuel.stahl@iis.fraunhofer.de,
+	jic23@hermes.cam.ac.uk
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/24/10 22:02, Jonathan Cameron wrote:
+On Mon, Feb 22, 2010 at 7:16 PM, Jonathan Cameron <jic23@cam.ac.uk> wrote:
+> Hi All,
+>
+> Just for reference as I'll be doing a proper announcement later.
+> We now have linux-iio@vger.kernel.org as a mailing list for the project.
+> Unless others have tracked it down it currently only has me as a member
+> though and I'm waiting for confirmation from marc.info of an archive.
+>
+>> Hi Jonathan,
+>> Now users depend on iio ring events(IIO_EVENT_CODE_RING_50/75/100_FULL)
+>> to read data:
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 read_size =3D fr=
+ead(&dat, 1, sizeof(struct
+>> iio_event_data),
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 fp_ev);
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 switch (dat.id) =
+{
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 case IIO_EVENT_C=
+ODE_RING_100_FULL:
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 toread =3D RingLength;
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 break;
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 case IIO_EVENT_C=
+ODE_RING_75_FULL:
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 toread =3D RingLength*3/4;
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 break;
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 case IIO_EVENT_C=
+ODE_RING_50_FULL:
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 toread =3D RingLength/2;
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 break;
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 default:
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 printf("Unexpecteded event code\n");
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 continue;
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 read_size =3D re=
+ad(fp,
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0data,
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0toread*size_from_scanmode(N=
+umVals,
+>> scan_ts));
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (read_size =
+=3D=3D -EAGAIN) {
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 printf("nothing available \n");
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 continue;
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }
+>> And iio ring access node doesn't support blocking io too. =C2=A0It seems=
+ we
+>> lost to let users read data once ring is not empty. And some users maybe
+>> not care about iio ring events at all, but just want to read data like a
+>> input or audio driver. So how about adding the following support in iio
+>> ring:
+>> 1. add NOT EMPTY event in IIO event nodes
+> Not keen. =C2=A0It might lead to a storm of events (at least it might in =
+a
+> cleverer ring buffer implementation or during a blocking read). =C2=A0Act=
+ually
+> in this particular case it probably wouldn't do any harm.
+>> 2. add blocking io support in read function of IIO access nodes
+> That I agree would be a good idea. =C2=A0If we support poll/select on the=
+ buffer access
+> chrdev then we will get the same effect per having a not empty event and =
+cleaner
+> semantics for anyone not interested in the other events. Not to mention I=
+ expect
+> we will soon have alternative ring buffer implementations that don't supp=
+ly any
+> events at all and hence don't event have the relevant chrdev.
+>
+> As things are, you can quite happily read whenever you like. =C2=A0Now yo=
+u mention it,
+> that example code is somewhat missleading! The issue with
+> this ring buffer implementation is the handling of a true blocking read i=
+s complex
+> as at any given time you aren't guaranteed to get what you asked for even=
+ if it was
+> there when you started the read. It should be possible to work around tha=
+t though.
+>
+> It's possible this functionality might be better added to an alternative =
+ring buffer
+> implementation. Be vary wary of that ring implementation in general! I am=
+ and I wrote it.
+>> If you agree with that, I can begin to add these and send you a patch.
+>> And a problem I don't know is what you and other people have changed to
+>> Greg's staging tree, and I am not sure what tree the patch should be
+>> againest.
+> Nothing has changed in this region of the code. =C2=A0In fact I think all=
+ that
+> has gone into Greg's tree is a clean up patch form Mark Brown making a fe=
+w
+> functions static. Right now I'm still getting the max1363 driver into
+> a state where it will be possible to do the ABI changes.
+>>
+>> For long term plan, is it possible for ring common level to handle more
+>> common work to avoid code repeating in different drivers?
+> I'm certainly happy for that to be the case if it becomes apparent which =
+functionality
+> is shared. =C2=A0I haven't seen any substantial cases as yet, but then I =
+may well be missing
+> things so feel free to submit suggestions (or as ever the better option o=
+f patches).
 
-As it has been a month, I've sent these on to Greg KH.
+Now we have many drivers using SW ring with same
+preenable(),postenable(),predisable(),
+initialize_ring(),uninitialize_ring(),poll_func(),probe_trigger(),
+remove_trigger(). Can we move them to IIO common layer as a base class
+methods. And the derived class can overload them if they have special
+implement? Most devices just use the common layer and don't need to
+copy codes.
 
-Thanks,
-
-Jonathan
-> I will probably break these up into a couple of separate series
-> at a later date given some are fixes and others extensions
-> of drivers.
-> 
-> The first couple of patces are updated version of various ones
-> previously posted ot the list.
-> 
-> The last couple add event support to tsl2563 and max1363
-> (a company who will remain nameless forgot some pull ups
-> on their sensor board so I've only recently modified one
-> to actually have working interrupt lines for these two parts)
-> 
-> Technically both these devices support smbus alert but for
-> now I'm handling the interrupt as a conventional interrupt
-> as I'll need to look at adding smbus alert support to the i2c
-> driver in question first.
-> (Also note it's rather oddly inverted on the board in question
-> so for most people the interrupts are inverted in the driver
-> currently.)
-> 
-> Incidentally if someone wants to see a chip that does everything
-> in almost as pathological a way as possible, please have a close
-> read of the max1363 data sheet.
-> 
-> The only change likely to effect other drivers was getting
-> rid of the iio_work_cont. It was one of those 'general'
-> elements that turned out to not actually occur terribly
-> often. I know of no current true users including none in
-> the blackfin tree (though last time I checked you had a lot
-> of them defined and unused!)
-> 
-> Jonathan Cameron (11):
->   staging:iio:max1363 use device_id instead of searching on name again
->   staging:iio:max1363 trivial code and comment cleanups.
->   staging:iio:lis3l02dq cleanups
->   staging:iio:kxsd9 remove unnecessary includes
->   staging:iio: Remove used iio_work_cont definition and all references
->   staging:iio: Remove unnecessary event_idr and all references
->   staging:iio: Code cleanups
->   staging:iio: Fix IIO_EVENT_ATTR initialization of list head
->   staging:iio: tsl2563 abi fixes and interrupt handling
->   staging:iio: Add ability to have event attributes with awkward names
->   staging:iio:max1363 add theshold event support
-> 
->  drivers/staging/iio/accel/adis16209.h      |    3 -
->  drivers/staging/iio/accel/adis16220.h      |    1 -
->  drivers/staging/iio/accel/adis16240.h      |    2 -
->  drivers/staging/iio/accel/kxsd9.c          |    6 -
->  drivers/staging/iio/accel/lis3l02dq.h      |    4 +-
->  drivers/staging/iio/accel/lis3l02dq_core.c |   25 +-
->  drivers/staging/iio/accel/lis3l02dq_ring.c |    8 -
->  drivers/staging/iio/adc/adc.h              |    3 +
->  drivers/staging/iio/adc/max1363.h          |   46 +-
->  drivers/staging/iio/adc/max1363_core.c     |  854 +++++++++++++++++++++++++---
->  drivers/staging/iio/adc/max1363_ring.c     |   10 +-
->  drivers/staging/iio/chrdev.h               |    3 -
->  drivers/staging/iio/gyro/adis16260.h       |    2 -
->  drivers/staging/iio/iio.h                  |   51 +--
->  drivers/staging/iio/imu/adis16300.h        |    2 -
->  drivers/staging/iio/imu/adis16300_core.c   |    8 -
->  drivers/staging/iio/imu/adis16350.h        |    2 -
->  drivers/staging/iio/imu/adis16400.h        |    2 -
->  drivers/staging/iio/imu/adis16400_core.c   |    8 -
->  drivers/staging/iio/industrialio-core.c    |   22 +-
->  drivers/staging/iio/industrialio-ring.c    |    4 +-
->  drivers/staging/iio/industrialio-trigger.c |    3 +-
->  drivers/staging/iio/light/light.h          |    7 +-
->  drivers/staging/iio/light/tsl2563.c        |  389 ++++++++++---
->  drivers/staging/iio/sysfs.h                |   14 +-
->  25 files changed, 1127 insertions(+), 352 deletions(-)
-> 
-> 
+>
+> Thanks,
+>
+> Jonathan
+>
+> _______________________________________________
+> Uclinux-dist-devel mailing list
+> Uclinux-dist-devel@blackfin.uclinux.org
+> https://blackfin.uclinux.org/mailman/listinfo/uclinux-dist-devel
+>
