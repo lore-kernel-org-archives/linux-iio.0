@@ -1,185 +1,92 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-30.csi.cam.ac.uk ([131.111.8.130]:43617 "EHLO
-	ppsw-30.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754309Ab0FDK7E (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 Jun 2010 06:59:04 -0400
-Message-ID: <4C08DC93.7080005@cam.ac.uk>
-Date: Fri, 04 Jun 2010 11:59:31 +0100
+Return-Path: <jic23@cam.ac.uk>
+Message-ID: <4C25EDD3.2080503@cam.ac.uk>
+Date: Sat, 26 Jun 2010 13:08:51 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: Barry Song <21cnbao@gmail.com>
-CC: gregkh@suse.de, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] adis16209/220/240/350: tuning spi delay to make hardware
- more stable
-References: <1275643194-25328-1-git-send-email-21cnbao@gmail.com> <1275643194-25328-2-git-send-email-21cnbao@gmail.com> <1275643194-25328-3-git-send-email-21cnbao@gmail.com> <1275643194-25328-4-git-send-email-21cnbao@gmail.com>
-In-Reply-To: <1275643194-25328-4-git-send-email-21cnbao@gmail.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [RFC PATCH 00/11] Mixed bag of IIO patches.
+References: <1274734976-7941-1-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1274734976-7941-1-git-send-email-jic23@cam.ac.uk>
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-This clearly also fixes an incorrect message.   Obviously that is trivial
-but it isn't apparent in commit message or comments.
-> Signed-off-by: Barry Song <21cnbao@gmail.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/accel/adis16209_core.c |    6 ++++--
->  drivers/staging/iio/accel/adis16220_core.c |   12 ++++++------
->  drivers/staging/iio/accel/adis16240_core.c |    8 ++++----
->  drivers/staging/iio/imu/adis16350_core.c   |    8 ++++----
->  4 files changed, 19 insertions(+), 17 deletions(-)
+On 05/24/10 22:02, Jonathan Cameron wrote:
+
+As it has been a month, I've sent these on to Greg KH.
+
+Thanks,
+
+Jonathan
+> I will probably break these up into a couple of separate series
+> at a later date given some are fixes and others extensions
+> of drivers.
 > 
-> diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-> index ac375c5..94491a1 100644
-> --- a/drivers/staging/iio/accel/adis16209_core.c
-> +++ b/drivers/staging/iio/accel/adis16209_core.c
-> @@ -76,11 +76,13 @@ static int adis16209_spi_write_reg_16(struct device *dev,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> +			.delay_usecs = 30,
->  		}, {
->  			.tx_buf = st->tx + 2,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> +			.delay_usecs = 30,
->  		},
->  	};
->  
-> @@ -120,13 +122,13 @@ static int adis16209_spi_read_reg_16(struct device *dev,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 20,
-> +			.delay_usecs = 30,
->  		}, {
->  			.rx_buf = st->rx,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 20,
-> +			.delay_usecs = 30,
->  		},
->  	};
->  
-> diff --git a/drivers/staging/iio/accel/adis16220_core.c b/drivers/staging/iio/accel/adis16220_core.c
-> index 6de439f..fffa49c 100644
-> --- a/drivers/staging/iio/accel/adis16220_core.c
-> +++ b/drivers/staging/iio/accel/adis16220_core.c
-> @@ -72,13 +72,13 @@ static int adis16220_spi_write_reg_16(struct device *dev,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		}, {
->  			.tx_buf = st->tx + 2,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		},
->  	};
->  
-> @@ -118,13 +118,13 @@ static int adis16220_spi_read_reg_16(struct device *dev,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		}, {
->  			.rx_buf = st->rx,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		},
->  	};
->  
-> @@ -291,9 +291,9 @@ static int adis16220_check_status(struct device *dev)
->  	if (status & ADIS16220_DIAG_STAT_FLASH_UPT)
->  		dev_err(dev, "Flash update failed\n");
->  	if (status & ADIS16220_DIAG_STAT_POWER_HIGH)
-> -		dev_err(dev, "Power supply above 5.25V\n");
-> +		dev_err(dev, "Power supply above 3.625V\n");
->  	if (status & ADIS16220_DIAG_STAT_POWER_LOW)
-> -		dev_err(dev, "Power supply below 4.75V\n");
-> +		dev_err(dev, "Power supply below 3.15V\n");
->  
->  error_ret:
->  	return ret;
-> diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-> index 54fd6d7..731bca6 100644
-> --- a/drivers/staging/iio/accel/adis16240_core.c
-> +++ b/drivers/staging/iio/accel/adis16240_core.c
-> @@ -74,13 +74,13 @@ static int adis16240_spi_write_reg_16(struct device *dev,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		}, {
->  			.tx_buf = st->tx + 2,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		},
->  	};
->  
-> @@ -120,13 +120,13 @@ static int adis16240_spi_read_reg_16(struct device *dev,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		}, {
->  			.rx_buf = st->rx,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		},
->  	};
->  
-> diff --git a/drivers/staging/iio/imu/adis16350_core.c b/drivers/staging/iio/imu/adis16350_core.c
-> index 0edde73..0bb19a9 100644
-> --- a/drivers/staging/iio/imu/adis16350_core.c
-> +++ b/drivers/staging/iio/imu/adis16350_core.c
-> @@ -75,13 +75,13 @@ static int adis16350_spi_write_reg_16(struct device *dev,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		}, {
->  			.tx_buf = st->tx + 2,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		},
->  	};
->  
-> @@ -121,13 +121,13 @@ static int adis16350_spi_read_reg_16(struct device *dev,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		}, {
->  			.rx_buf = st->rx,
->  			.bits_per_word = 8,
->  			.len = 2,
->  			.cs_change = 1,
-> -			.delay_usecs = 25,
-> +			.delay_usecs = 35,
->  		},
->  	};
->  
-
+> The first couple of patces are updated version of various ones
+> previously posted ot the list.
+> 
+> The last couple add event support to tsl2563 and max1363
+> (a company who will remain nameless forgot some pull ups
+> on their sensor board so I've only recently modified one
+> to actually have working interrupt lines for these two parts)
+> 
+> Technically both these devices support smbus alert but for
+> now I'm handling the interrupt as a conventional interrupt
+> as I'll need to look at adding smbus alert support to the i2c
+> driver in question first.
+> (Also note it's rather oddly inverted on the board in question
+> so for most people the interrupts are inverted in the driver
+> currently.)
+> 
+> Incidentally if someone wants to see a chip that does everything
+> in almost as pathological a way as possible, please have a close
+> read of the max1363 data sheet.
+> 
+> The only change likely to effect other drivers was getting
+> rid of the iio_work_cont. It was one of those 'general'
+> elements that turned out to not actually occur terribly
+> often. I know of no current true users including none in
+> the blackfin tree (though last time I checked you had a lot
+> of them defined and unused!)
+> 
+> Jonathan Cameron (11):
+>   staging:iio:max1363 use device_id instead of searching on name again
+>   staging:iio:max1363 trivial code and comment cleanups.
+>   staging:iio:lis3l02dq cleanups
+>   staging:iio:kxsd9 remove unnecessary includes
+>   staging:iio: Remove used iio_work_cont definition and all references
+>   staging:iio: Remove unnecessary event_idr and all references
+>   staging:iio: Code cleanups
+>   staging:iio: Fix IIO_EVENT_ATTR initialization of list head
+>   staging:iio: tsl2563 abi fixes and interrupt handling
+>   staging:iio: Add ability to have event attributes with awkward names
+>   staging:iio:max1363 add theshold event support
+> 
+>  drivers/staging/iio/accel/adis16209.h      |    3 -
+>  drivers/staging/iio/accel/adis16220.h      |    1 -
+>  drivers/staging/iio/accel/adis16240.h      |    2 -
+>  drivers/staging/iio/accel/kxsd9.c          |    6 -
+>  drivers/staging/iio/accel/lis3l02dq.h      |    4 +-
+>  drivers/staging/iio/accel/lis3l02dq_core.c |   25 +-
+>  drivers/staging/iio/accel/lis3l02dq_ring.c |    8 -
+>  drivers/staging/iio/adc/adc.h              |    3 +
+>  drivers/staging/iio/adc/max1363.h          |   46 +-
+>  drivers/staging/iio/adc/max1363_core.c     |  854 +++++++++++++++++++++++++---
+>  drivers/staging/iio/adc/max1363_ring.c     |   10 +-
+>  drivers/staging/iio/chrdev.h               |    3 -
+>  drivers/staging/iio/gyro/adis16260.h       |    2 -
+>  drivers/staging/iio/iio.h                  |   51 +--
+>  drivers/staging/iio/imu/adis16300.h        |    2 -
+>  drivers/staging/iio/imu/adis16300_core.c   |    8 -
+>  drivers/staging/iio/imu/adis16350.h        |    2 -
+>  drivers/staging/iio/imu/adis16400.h        |    2 -
+>  drivers/staging/iio/imu/adis16400_core.c   |    8 -
+>  drivers/staging/iio/industrialio-core.c    |   22 +-
+>  drivers/staging/iio/industrialio-ring.c    |    4 +-
+>  drivers/staging/iio/industrialio-trigger.c |    3 +-
+>  drivers/staging/iio/light/light.h          |    7 +-
+>  drivers/staging/iio/light/tsl2563.c        |  389 ++++++++++---
+>  drivers/staging/iio/sysfs.h                |   14 +-
+>  25 files changed, 1127 insertions(+), 352 deletions(-)
+> 
+> 
