@@ -1,42 +1,51 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-32.csi.cam.ac.uk ([131.111.8.132]:49448 "EHLO
-	ppsw-32.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755956Ab0FYPwS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jun 2010 11:52:18 -0400
-From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org
-Cc: Barry.Song@analog.com, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 2/6] staging:iio:lis3l02dq remove unused set_ring_length function
-Date: Fri, 25 Jun 2010 16:55:10 +0100
-Message-Id: <1277481314-31717-3-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1277481314-31717-2-git-send-email-jic23@cam.ac.uk>
+Return-Path: <21cnbao@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <1277481314-31717-3-git-send-email-jic23@cam.ac.uk>
 References: <1277481314-31717-1-git-send-email-jic23@cam.ac.uk>
- <1277481314-31717-2-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	<1277481314-31717-2-git-send-email-jic23@cam.ac.uk> <1277481314-31717-3-git-send-email-jic23@cam.ac.uk>
+From: Barry Song <21cnbao@gmail.com>
+Date: Wed, 30 Jun 2010 12:21:32 +0800
+Message-ID: <AANLkTil-mtacW-cCMOJhGMvYjxXg4K1vd9Tcx7ZUC17u@mail.gmail.com>
+Subject: Re: [PATCH 2/6] staging:iio:lis3l02dq remove unused set_ring_length
+	function
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Barry.Song@analog.com
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/accel/lis3l02dq_ring.c |    8 --------
- 1 files changed, 0 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index 69e2787..a33599d 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -591,12 +591,4 @@ void lis3l02dq_uninitialize_ring(struct iio_ring_buffer *ring)
- 	iio_ring_buffer_unregister(ring);
- }
- 
--int lis3l02dq_set_ring_length(struct iio_dev *indio_dev, int length)
--{
--	/* Set sensible defaults for the ring buffer */
--	if (indio_dev->ring->access.set_length)
--		return indio_dev->ring->access.set_length(indio_dev->ring, 500);
--	return 0;
--}
+On Fri, Jun 25, 2010 at 11:55 PM, Jonathan Cameron <jic23@cam.ac.uk> wrote:
+> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Acked-by: Barry Song <21cnbao@gmail.com>
+> ---
+> =C2=A0drivers/staging/iio/accel/lis3l02dq_ring.c | =C2=A0 =C2=A08 -------=
 -
- 
--- 
-1.6.4.4
-
+> =C2=A01 files changed, 0 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging=
+/iio/accel/lis3l02dq_ring.c
+> index 69e2787..a33599d 100644
+> --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
+> +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+> @@ -591,12 +591,4 @@ void lis3l02dq_uninitialize_ring(struct iio_ring_buf=
+fer *ring)
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0iio_ring_buffer_unregister(ring);
+> =C2=A0}
+>
+> -int lis3l02dq_set_ring_length(struct iio_dev *indio_dev, int length)
+> -{
+> - =C2=A0 =C2=A0 =C2=A0 /* Set sensible defaults for the ring buffer */
+> - =C2=A0 =C2=A0 =C2=A0 if (indio_dev->ring->access.set_length)
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return indio_dev->ring=
+->access.set_length(indio_dev->ring, 500);
+> - =C2=A0 =C2=A0 =C2=A0 return 0;
+> -}
+> -
+>
+> --
+> 1.6.4.4
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at =C2=A0http://vger.kernel.org/majordomo-info.html
+>
