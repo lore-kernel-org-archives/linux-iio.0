@@ -1,672 +1,584 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:33593 "EHLO
-	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756882Ab0F3Tt4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Jun 2010 15:49:56 -0400
-Message-ID: <4C2BA065.8040903@cam.ac.uk>
-Date: Wed, 30 Jun 2010 20:52:05 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Datta, Shubhrajyoti" <shubhrajyoti@ti.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"sfking@fdwdc.com" <sfking@fdwdc.com>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-Subject: Re: [RFC][PATCH]add Honeywell hmc5843 3-Axis Magnetometer (digital
- compass) driver.
-References: <0680EC522D0CC943BC586913CF3768C003B3553F73@dbde02.ent.ti.com> <0680EC522D0CC943BC586913CF3768C003B3602F54@dbde02.ent.ti.com>
-In-Reply-To: <0680EC522D0CC943BC586913CF3768C003B3602F54@dbde02.ent.ti.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: barry.song@analog.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 4/5 v2] staging:iio:lis3l02dq use iio_sw_ring_helper_state and funcs
+Date: Wed, 30 Jun 2010 17:07:54 +0100
+Message-Id: <1277914075-14762-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
 
-Welcome to iio!
+ Couple of silly bugs fixed and this has now actually been tested!
 
-This is only an initial pass.. I haven't read the datasheet yet!
+ drivers/staging/iio/accel/lis3l02dq.h      |   11 +-
+ drivers/staging/iio/accel/lis3l02dq_core.c |  116 +++++++++++++----------
+ drivers/staging/iio/accel/lis3l02dq_ring.c |  137 +++++++++++-----------------
+ 3 files changed, 124 insertions(+), 140 deletions(-)
 
-I think your email client has eaten the tabs, so please fix this
-before resending.  There are also a few suspiciously long lines
-implying the need to run checkpatch over this and fix everything
-it throws up.
-
-A fair number of questions / comments below, but they are all
-fairly trivial.  
-
-> Adding support for the Honeywell HMC5843. The interface to the device is i2c.
-> 
-> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
-> ---
->  drivers/staging/iio/magnetometer/Kconfig   |   17 +
->  drivers/staging/iio/magnetometer/Makefile  |    5 +
->  drivers/staging/iio/magnetometer/hmc5843.c |  499 ++++++++++++++++++++++++++++
->  3 files changed, 521 insertions(+), 0 deletions(-)
->  create mode 100644 drivers/staging/iio/magnetometer/Kconfig
->  create mode 100644 drivers/staging/iio/magnetometer/Makefile
->  create mode 100644 drivers/staging/iio/magnetometer/hmc5843.c
-> 
-> diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
-> new file mode 100644
-> index 0000000..6beda8c
-> --- /dev/null
-> +++ b/drivers/staging/iio/magnetometer/Kconfig
-> @@ -0,0 +1,17 @@
-> +#
-> +# Magnetometer sensors
-> +#
-> +comment "Magnetometer sensors"
-Single blank line probably...
-> +
-> +
-> +config SENSORS_HMC5843
-> +       tristate "Honeywell HMC5843 3-Axis Magnetometer"
-> +       depends on I2C && SYSFS
-loose the sysfs as it should be handled before this menu option is seen
-
-> +#      select INPUT_POLLDEV
-left over commented to be removed.
-
-> +       help
-> +         Say Y here to add support for the Honeywell HMC 5843 3-Axis
-> +         Magnetometer (digital compass).
-> +
-> +         To compile this driver as a module, choose M here: the module
-> +         will be called hmc5843
-> +
-> diff --git a/drivers/staging/iio/magnetometer/Makefile b/drivers/staging/iio/magnetometer/Makefile
-> new file mode 100644
-> index 0000000..f9bfb2e
-> --- /dev/null
-> +++ b/drivers/staging/iio/magnetometer/Makefile
-> @@ -0,0 +1,5 @@
-> +#
-> +# Makefile for industrial I/O Magnetometer sensors
-> +#
-> +
-> +obj-$(CONFIG_SENSORS_HMC5843)  += hmc5843.o
-> diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-> new file mode 100644
-> index 0000000..fc3dda9
-> --- /dev/null
-> +++ b/drivers/staging/iio/magnetometer/hmc5843.c
-> @@ -0,0 +1,499 @@
-> +/*  Copyright (c) 2010  Shubhrajyoti Datta <shubhrajyoti@ti.com>
-> +
-> +    This program is free software; you can redistribute it and/or modify
-> +    it under the terms of the GNU General Public License as published by
-> +    the Free Software Foundation; either version 2 of the License, or
-> +    (at your option) any later version.
-> +
-> +    This program is distributed in the hope that it will be useful,
-> +    but WITHOUT ANY WARRANTY; without even the implied warranty of
-> +    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> +    GNU General Public License for more details.
-> +
-> +    You should have received a copy of the GNU General Public License
-> +    along with this program; if not, write to the Free Software
-> +    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-> +*/
-> +
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/i2c.h>
-> +#include <linux/slab.h>
-To make life easy when we merge iio it would be great to group 
-all the iio headers together.  Good practice anyway to group
-headers where it makes sense.
-> +#include "../iio.h"
-> +#include <linux/types.h>
-> +#include "../sysfs.h"
-> +#include "magnet.h"
-> +
-> +#define HMC5843_I2C_ADDRESS                    0x1E
-> +
-> +#define HMC5843_CONFIG_REG_A                   0x00
-> +#define HMC5843_CONFIG_REG_B                   0x01
-> +#define HMC5843_MODE_REG                       0x02
-> +#define HMC5843_DATA_OUT_X_MSB_REG             0x03
-> +#define HMC5843_DATA_OUT_X_LSB_REG             0x04
-> +#define HMC5843_DATA_OUT_Y_MSB_REG             0x05
-> +#define HMC5843_DATA_OUT_Y_LSB_REG             0x06
-> +#define HMC5843_DATA_OUT_Z_MSB_REG             0x07
-> +#define HMC5843_DATA_OUT_Z_LSB_REG             0x08
-> +#define HMC5843_STATUS_REG                     0x09
-> +#define HMC5843_ID_REG_A                       0x0A
-> +#define HMC5843_ID_REG_B                       0x0B
-> +#define HMC5843_ID_REG_C                       0x0C
-> +
-> +
-> +#define HMC5843_ID_REG_LENGTH                  0x03
-> +#define HMC5843_ID_STRING                      "H43"
-> +
-> +/*
-> + * Range settings in  (+-)Ga
-> + * */
-> +#define RANGE_GAIN_OFFSET                      0x05
-> +
-> +#define        RANGE_0_7                               0x00
-> +#define        RANGE_1_0                               0x01 /* default */
-> +#define        RANGE_1_5                               0x02
-> +#define        RANGE_2_0                               0x03
-> +#define        RANGE_3_2                               0x04
-> +#define        RANGE_3_8                               0x05
-> +#define        RANGE_4_5                               0x06
-> +#define        RANGE_6_5                               0x07 /* Not recommended */
-> +
-> +/*
-> + * Device status
-> + */
-> +#define        DATA_READY                              0x01
-> +#define        DATA_OUTPUT_LOCK                        0x02
-> +#define        VOLTAGE_REGULATOR_ENABLED               0x04
-> +
-> +/*
-> + * Mode register configuration
-> + */
-> +#define        MODE_CONVERSION_CONTINUOUS              0x00
-> +#define        MODE_CONVERSION_SINGLE                  0x01
-> +#define        MODE_IDLE                               0x02
-> +#define        MODE_SLEEP                              0x03
-> +
-> +/* Minimum Data Output Rate in 1/10 Hz  */
-> +#define RATE_OFFSET                            0x02
-> +#define        RATE_5                                  0x00
-> +#define        RATE_10                                 0x01
-> +#define        RATE_20                                 0x02
-> +#define        RATE_50                                 0x03
-> +#define        RATE_100                                0x04
-> +#define        RATE_200                                0x05
-> +#define        RATE_500                                0x06
-> +#define        RATE_NOT_USED                           0x07
-> +
-> +/*
-> + * Device Configutration
-> + */
-> +#define        CONF_NORMAL                             0x00
-> +#define        CONF_POSITIVE_BIAS                      0x01
-> +#define        CONF_NEGATIVE_BIAS                      0x02
-> +#define        CONF_NOT_USED                           0x03
-> +
-> +static const int regval_to_counts_per_mg[] = {
-> +       1620,   /* RANGE_0_7 */
-> +       1300,
-> +       970,
-> +       780,
-> +       530,
-> +       460,
-> +       390,
-> +       280     /* RANGE_6_5 */
-> +};
-> +static const int regval_to_input_field_mg[] = {
-> +       700,
-> +       1000,
-> +       1500,
-> +       2000,
-> +       3200,
-> +       3800,
-> +       4500,
-> +       6500
-> +};
-> +
-> +/* Addresses to scan: 0x1E */
-> +static const unsigned short normal_i2c[] = { HMC5843_I2C_ADDRESS,
-> +                                                       I2C_CLIENT_END };
-> +
-> +/* Each client has this additional data */
-> +struct hmc5843_data {
-> +       struct iio_dev  *indio_dev;
-> +       u8              rate;
-> +       u8              meas_conf;
-> +       u8              operating_mode;
-> +       u8              range;
-> +       s16             data[3];
-> +};
-> +
-I think a bit of simple function reordering should remove necessity
-for this function def.
-> +static void hmc5843_init_client(struct i2c_client *client);
-> +
-> +static s32 hmc5843_set_operating_mode(struct i2c_client *client,
-> +                                      u8 operating_mode)
-> +{
-> +       /* The lower two bits contain the current conversion mode */
-> +       return i2c_smbus_write_byte_data(client,
-> +                                       HMC5843_MODE_REG,
-> +                                       (operating_mode & 0x03));
-> +}
-> +
-> +/* API for setting the measurmet configuration to
-bonus space before comma
-> + * Normal , Positive bias and Negitive bias
-> + */
-Can you give more details on this please?  Does this have a predictable
-effect on what one needs to do to work out actual numbers in userspace
-from the raw values the driver is producing?
-> +static s32 hmc5843_set_meas_conf(struct i2c_client *client,
-> +                                     u8 meas_conf)
-> +{
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +       u8 reg_val;
-> +       reg_val = (meas_conf & 0x03) |  (data->rate << RATE_OFFSET);
-> +       return  i2c_smbus_write_byte_data(client, HMC5843_CONFIG_REG_A, reg_val);
-> +}
-> +
-Please avoid magic numbers.  What you want is a pair of attributes:
-
-* sampling_frequency_available which is a constant string listing
-of those frequencies that are available (in hz).
-* sampling_frequency which then matches against the actual value
-list and figures out what the internal representation is.
-
-I'm afraid rigorous inforcement of trying to avoid magic numbers
-is vital if we are ever going to have general userspace code.
-> +static s32 hmc5843_set_rate(struct i2c_client *client,
-> +                               u8 rate)
-> +{
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +       u8 reg_val;
-nitpick: line break here please
-> +       reg_val = (data->meas_conf) |  (rate << RATE_OFFSET);
-> +       if (rate >= RATE_NOT_USED) {
-> +               dev_err(&client->dev,
-> +                       "This data output rate is not supported \n");
-> +               return -EINVAL;
-> +       }
-> +       return i2c_smbus_write_byte_data(client, HMC5843_CONFIG_REG_A, reg_val);
-> +}
-> +
-> +static ssize_t hmc5843_read_measurement(struct device *dev,
-> +               struct device_attribute *attr,
-> +               char *buf)
-> +{
-nitpick: move comment up to above the function.
-> +       /* Return the measurement value from the  specified channel */
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       s16 coordinate_val;
-> +       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> +       s32 result;
-nitpick: New line after defs and before code.
-> +       result = i2c_smbus_read_byte_data(client, HMC5843_STATUS_REG);
-> +       while (!(result & DATA_READY))
-> +               result = i2c_smbus_read_byte_data(client, HMC5843_STATUS_REG);
-> +
-> +       result = i2c_smbus_read_word_data(client, this_attr->address);
-> +       if (result > 0) {
- as coordinate_val is an s16 which not type cast to that?
-> +               coordinate_val  = (int)swab16((u16)result);
-curious line break below...
-> +               return sprintf(buf, "%d\n",
-> +                               coordinate_val);
-So, this is a raw value? (e.g. it will need scaling in userspace)
-> +       }
-> +       return result;
-> +}
-> +static IIO_DEV_ATTR_MAGN_X(hmc5843_read_measurement,
-> +               HMC5843_DATA_OUT_X_MSB_REG);
-> +static IIO_DEV_ATTR_MAGN_Y(hmc5843_read_measurement,
-> +               HMC5843_DATA_OUT_Y_MSB_REG);
-> +static IIO_DEV_ATTR_MAGN_Z(hmc5843_read_measurement,
-> +               HMC5843_DATA_OUT_Z_MSB_REG);
-> +
-This definitely need some documentation please!
-Also, as per other functions, please prefix name with hmc5843
-to make name clashes extremely unlikely.  Applies to quite a few
-of the functions that follow.
-> +static ssize_t show_operating_mode(struct device *dev,
-> +                                       struct device_attribute *attr,
-> +                                       char *buf)
-> +{
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +       return sprintf(buf, "%d\n", data->operating_mode);
-> +}
-nitpick: new line between functions please.
-> +static ssize_t set_operating_mode(struct device *dev,
-> +                               struct device_attribute *attr,
-> +                               const char *buf,
-> +                               size_t count)
-> +{
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> +       unsigned long operating_mode = 0;
-> +       s32 status;
-> +
-> +       strict_strtoul(buf, 10, &operating_mode);
-> +       dev_dbg(dev, "set Conversion mode to %lu\n", operating_mode);
-> +       if (operating_mode > MODE_SLEEP)
-> +                       return -EINVAL;
-> +
-> +       status = i2c_smbus_write_byte_data(client, this_attr->address,
-> +                                       operating_mode);
-> +       if (status)
-> +               return -EINVAL;
-> +
-> +       data->operating_mode = operating_mode;
-> +       return count;
-> +}
-> +static IIO_DEVICE_ATTR(operating_mode,
-> +                       S_IWUSR | S_IRUGO,
-> +                       show_operating_mode,
-> +                       set_operating_mode,
-> +                       HMC5843_MODE_REG);
-> +
-> +static ssize_t show_measurement_configuration(struct device *dev,
-> +                                               struct device_attribute *attr,
-> +                                               char *buf)
-> +{
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +       return sprintf(buf, "%d\n", data->meas_conf);
-> +}
-> +
-> +static ssize_t set_measurement_configuration(struct device *dev,
-> +                                               struct device_attribute *attr,
-> +                                               const char *buf,
-> +                                               size_t count)
-> +{
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +       unsigned long meas_conf = 0;
-> +       strict_strtoul(buf, 10, &meas_conf);
-> +       dev_dbg(dev, "set mode to %lu\n", meas_conf);
-
-What about other errors from i2c_smbus call?
-> +       if (hmc5843_set_meas_conf(client, meas_conf) == -EINVAL)
-> +               return -EINVAL;
-> +       data->meas_conf = meas_conf;
-I wonder if you need some locking to ensure the cached values are equal
-to those on the device (nothing prevents 2 calls to the function at the
-same time).
-> +       return count;
-> +}
-Please provide some documentation for this.
-> +static IIO_DEVICE_ATTR(meas_conf,
-> +                       S_IWUSR | S_IRUGO,
-> +                       show_measurement_configuration,
-> +                       set_measurement_configuration,
-> +                       0);
-> +
-
-Moving this one to next to set_rate will give more readable code.
-> +static ssize_t show_rate(struct device *dev,
-> +                       struct device_attribute *attr, char *buf)
-> +{
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-Please consider error from i2c_smbus call.
-> +       u32 rate = (i2c_smbus_read_byte_data(client,  this_attr->address) & 0x1C) >> RATE_OFFSET;
-> +       return sprintf(buf, "%d\n", rate);
-> +}
-> +
-> +static ssize_t set_rate(struct device *dev, struct device_attribute *attr,
-> +                       const char *buf, size_t count)
-> +{
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +       unsigned long rate = 0;
-> +       strict_strtoul(buf, 10, &rate);
-please handle return value.
-> +
-> +       dev_dbg(dev, "set rate to %lu\n", rate);
-> +       if (hmc5843_set_rate(client, rate) == -EINVAL)
-> +               return -EINVAL;
-> +       data->rate = rate;
-> +       return count;
-> +}
-sampling_frequency please. No idea why we went with that, but
-there are quite a few drivers using it now.
-> +static IIO_DEVICE_ATTR(rate, S_IWUSR | S_IRUGO, show_rate,
-> +                       set_rate, HMC5843_CONFIG_REG_A);
-> +
-> +static ssize_t show_range(struct device *dev,
-> +                               struct device_attribute *attr,
-> +                               char *buf)
-> +{
-> +       u8 range;
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +
-> +       range = data->range;
-I know this occurs elsewhere in the subsystem (it's on my
-todo list to cull them!), as per hwmon whose abi we lifted
-please don't output units, it just makes userspace code
-more fiddly.
-
-> +       return sprintf(buf, " %dmGa\n", regval_to_input_field_mg[range]);
-> +}
-> +
-
-Can you describe this interface please?  Looks suspiciously
-like some magic numbers to me which is curious as you seem to have
-nice real numbers for the show range value above.
-You may want a magn_xyz_range_available listing the options,
-or to round up to an available value.  Actually if it applies to
-all channels, then supress the xyz.  The abi only allows all or
-one for each channel (which may effect each other).
-> +static ssize_t set_range(struct device *dev,
-> +                       struct device_attribute *attr,
-> +                       const char *buf,
-> +                       size_t count)
-> +{
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +       unsigned long range = 0;
-> +
-> +       strict_strtoul(buf, 10, &range);
-> +       dev_dbg(dev, "set range to %lu\n", range);
-> +
-> +       if (range > RANGE_6_5)
-> +               return -EINVAL;
-> +
-> +       data->range = range;
-> +       range = range << RANGE_GAIN_OFFSET;
-> +       if (i2c_smbus_write_byte_data(client, this_attr->address, range) ==
-> +                                                                       -EINVAL)
-> +               return -EINVAL;
-> +
-> +       return count;
-> +}
-> +
-
-To match similar bits of the abi, can we call this one magn_range
-as it applies to all magn channels.
-> +static IIO_DEVICE_ATTR(magn_xyz_range,
-> +                       S_IWUSR | S_IRUGO,
-> +                       show_range,
-> +                       set_range,
-> +                       HMC5843_CONFIG_REG_B);
-> +
-> +static ssize_t show_gain(struct device *dev,
-> +                       struct device_attribute *attr,
-> +                       char *buf)
-> +{
-> +       struct i2c_client *client = to_i2c_client(dev);
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +       return sprintf(buf, "%d\n", regval_to_counts_per_mg[data->range]);
-> +}
-
-Same here. If it applies to all, supress the channel names. So magn_gain
-> +static IIO_DEVICE_ATTR(magn_xyz_gain, S_IRUGO, show_gain, NULL , 0);
-> +
-> +
-> +static struct attribute *hmc5843_attributes[] = {
-> +       &iio_dev_attr_meas_conf.dev_attr.attr,
-> +       &iio_dev_attr_operating_mode.dev_attr.attr,
-> +       &iio_dev_attr_rate.dev_attr.attr,
-> +       &iio_dev_attr_magn_xyz_range.dev_attr.attr,
-> +       &iio_dev_attr_magn_xyz_gain.dev_attr.attr,
-> +       &iio_dev_attr_magn_x_raw.dev_attr.attr,
-> +       &iio_dev_attr_magn_y_raw.dev_attr.attr,
-> +       &iio_dev_attr_magn_z_raw.dev_attr.attr,
-> +       NULL
-> +};
-> +
-> +static const struct attribute_group hmc5843_group = {
-> +       .attrs = hmc5843_attributes,
-> +};
-> +
-> +static int hmc5843_detect(struct i2c_client *client,
-> +                         struct i2c_board_info *info)
-> +{
-> +       unsigned char id_str[HMC5843_ID_REG_LENGTH];
-> +
-> +       if (client->addr != HMC5843_I2C_ADDRESS)
-> +               return -ENODEV;
-> +
-> +       if (i2c_smbus_read_i2c_block_data(client, HMC5843_ID_REG_A,
-> +                               HMC5843_ID_REG_LENGTH, id_str)
-> +                       != HMC5843_ID_REG_LENGTH)
-> +               return -ENODEV;
-> +
-> +       if (0 != strncmp(id_str, HMC5843_ID_STRING, HMC5843_ID_REG_LENGTH))
-> +               return -ENODEV;
-> +
-> +       return 0;
-> +}
-> +
-one new line please
-> +
-> +static int hmc5843_probe(struct i2c_client *client,
-> +                        const struct i2c_device_id *id)
-> +{
-> +       struct hmc5843_data *data;
-> +       int err = 0;
-> +
-> +       data = kzalloc(sizeof(struct hmc5843_data), GFP_KERNEL);
-> +       if (!data) {
-> +               err = -ENOMEM;
-> +               goto exit;
-> +       }
-> +
-> +       /* default settings at probe */
-> +
-> +       data->meas_conf = CONF_NORMAL;
-> +       data->range = RANGE_1_0;
-> +       data->operating_mode = MODE_CONVERSION_CONTINUOUS;
-> +
-> +       i2c_set_clientdata(client, data);
-> +
-> +       /* Initialize the HMC5843 chip */
-> +       hmc5843_init_client(client);
-> +
-> +       data->indio_dev = iio_allocate_device();
-> +       if (!data->indio_dev) 
-if this fails, please return -ENOMEM;  Currently you return sucess!
-> +               goto exit_free;
-> +       data->indio_dev->attrs = &hmc5843_group;
-> +       data->indio_dev->dev.parent = &client->dev;
-> +       data->indio_dev->dev_data = (void *)(data);
-> +       data->indio_dev->driver_module = THIS_MODULE;
-> +       data->indio_dev->modes = INDIO_DIRECT_MODE;
-> +       err = iio_device_register(data->indio_dev);
-> +       if (err)
-> +               goto exit_free;
-> +       /* Register sysfs hooks */
-please use the iio register stuff for this as per other drivers.
-(basically set data->indio_dev->attrs = &hmc5843_group before iio_device_register
-call and it will all be handled for you.
-> +       err = sysfs_create_group(&client->dev.kobj, &hmc5843_group);
-> +       if (err)
-> +               goto exit_free2;
-> +
-> +       return 0;
-> +exit_free2:
-> +       iio_device_unregister(data->indio_dev);
-> +exit_free:
-> +       kfree(data);
-> +exit:
-> +       return err;
-> +}
-> +
-> +static int hmc5843_remove(struct i2c_client *client)
-> +{
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +        /*  sleep mode to save power */
-> +       hmc5843_set_operating_mode(client, MODE_SLEEP);
-> +       iio_device_unregister(data->indio_dev);
-
- make the change above and you won't need to do this
-> +       sysfs_remove_group(&client->dev.kobj, &hmc5843_group);
-> +       kfree(i2c_get_clientdata(client));
-> +       return 0;
-> +}
-> +
-> +/* Called when we have found a new HMC5843. */
-> +static void hmc5843_init_client(struct i2c_client *client)
-> +{
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +       hmc5843_set_meas_conf(client, data->meas_conf);
-> +       hmc5843_set_rate(client, data->rate);
-> +       hmc5843_set_operating_mode(client, data->operating_mode);
-> +       i2c_smbus_write_byte_data(client, HMC5843_CONFIG_REG_B, data->range);
-> +       pr_info("HMC5843 initialized\n");
-> +}
-> +
-> +static int hmc5843_suspend(struct i2c_client *client, pm_message_t mesg)
-> +{
-> +       hmc5843_set_operating_mode(client, MODE_SLEEP);
-> +       pr_info("HMC5843 suspended\n");
-> +       return 0;
-> +}
-> +
-> +static int hmc5843_resume(struct i2c_client *client)
-> +{
-> +       struct hmc5843_data *data = i2c_get_clientdata(client);
-> +       hmc5843_set_operating_mode(client, data->operating_mode);
-probably uncessary noise in debug for an in mainline driver
-(obviously very handy during development!)
-> +       pr_info("HMC5843 resumed\n");
-> +       return 0;
-> +}
-> +
-> +static const struct i2c_device_id hmc5843_id[] = {
-> +       { "hmc5843", 0 },
-> +       { }
-> +};
-> +
-> +static struct i2c_driver hmc5843_driver = {
-> +       .driver = {
-> +               .name   = "hmc5843",
-> +       },
-> +       .id_table       = hmc5843_id,
-> +       .probe          = hmc5843_probe,
-> +       .remove         = hmc5843_remove,
-> +       .detect         = hmc5843_detect,
-> +       .address_list   = normal_i2c,
-> +       .suspend        = hmc5843_suspend,
-> +       .resume         = hmc5843_resume,
-> +};
-> +
-> +static int __init hmc5843_init(void)
-> +{
-loose this debug printk
-> +       printk(KERN_INFO "init!\n");
-> +       return i2c_add_driver(&hmc5843_driver);
-> +}
-> +
-> +static void __exit hmc5843_exit(void)
-> +{
-loose this debug printk
-> +       printk(KERN_INFO "exit!\n");
-> +       i2c_del_driver(&hmc5843_driver);
-> +}
-> +
-> +MODULE_AUTHOR("Shubhrajyoti Datta <shubhrajyoti@ti.com");
-> +MODULE_DESCRIPTION("HMC5843 driver");
-> +MODULE_LICENSE("GPL");
-> +
-> +module_init(hmc5843_init);
-> +module_exit(hmc5843_exit);
-> --
-> 1.5.4.7
-> 
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
+index 6de172e..44669ee 100644
+--- a/drivers/staging/iio/accel/lis3l02dq.h
++++ b/drivers/staging/iio/accel/lis3l02dq.h
+@@ -148,30 +148,29 @@ Form of high byte dependant on justification set in ctrl reg */
+ #define LIS3L02DQ_MAX_RX 12
+ /**
+  * struct lis3l02dq_state - device instance specific data
++ * @helper:		data and func pointer allowing generic functions
+  * @us:			actual spi_device
+- * @work_trigger_to_ring: bh for triggered event handling
+  * @work_thresh:	bh for threshold events
+  * @inter:		used to check if new interrupt has been triggered
+- * @last_timestamp:	passing timestamp from th to bh of interrupt handler
+- * @indio_dev:		industrial I/O device structure
+  * @trig:		data ready trigger registered with iio
+  * @tx:			transmit buffer
+  * @rx:			recieve buffer
+  * @buf_lock:		mutex to protect tx and rx
+  **/
+ struct lis3l02dq_state {
++	struct iio_sw_ring_helper_state	help;
+ 	struct spi_device		*us;
+-	struct work_struct		work_trigger_to_ring;
+ 	struct work_struct		work_thresh;
+ 	bool				inter;
+-	s64				last_timestamp;
+-	struct iio_dev			*indio_dev;
+ 	struct iio_trigger		*trig;
+ 	u8				*tx;
+ 	u8				*rx;
+ 	struct mutex			buf_lock;
+ };
+ 
++#define lis3l02dq_h_to_s(_h)				\
++	container_of(_h, struct lis3l02dq_state, help)
++
+ int lis3l02dq_spi_read_reg_8(struct device *dev,
+ 			     u8 reg_address,
+ 			     u8 *val);
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+index f86ffb8..2ce8d11 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+@@ -28,6 +28,8 @@
+ #include "../iio.h"
+ #include "../sysfs.h"
+ #include "../ring_generic.h"
++#include "../ring_sw.h"
++
+ #include "accel.h"
+ 
+ #include "lis3l02dq.h"
+@@ -48,7 +50,9 @@ int lis3l02dq_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
+ 	int ret;
+ 	struct spi_message msg;
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct lis3l02dq_state *st = iio_dev_get_devdata(indio_dev);
++	struct iio_sw_ring_helper_state *h = iio_dev_get_devdata(indio_dev); 
++	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
++
+ 	struct spi_transfer xfer = {
+ 		.tx_buf = st->tx,
+ 		.rx_buf = st->rx,
+@@ -83,7 +87,9 @@ int lis3l02dq_spi_write_reg_8(struct device *dev,
+ 	int ret;
+ 	struct spi_message msg;
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct lis3l02dq_state *st = iio_dev_get_devdata(indio_dev);
++	struct iio_sw_ring_helper_state *h
++		= iio_dev_get_devdata(indio_dev);
++	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
+ 	struct spi_transfer xfer = {
+ 		.tx_buf = st->tx,
+ 		.bits_per_word = 8,
+@@ -117,7 +123,9 @@ static int lis3l02dq_spi_write_reg_s16(struct device *dev,
+ 	int ret;
+ 	struct spi_message msg;
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct lis3l02dq_state *st = iio_dev_get_devdata(indio_dev);
++	struct iio_sw_ring_helper_state *h
++		= iio_dev_get_devdata(indio_dev);
++	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
+ 	struct spi_transfer xfers[] = { {
+ 			.tx_buf = st->tx,
+ 			.bits_per_word = 8,
+@@ -159,7 +167,9 @@ static int lis3l02dq_spi_read_reg_s16(struct device *dev,
+ {
+ 	struct spi_message msg;
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct lis3l02dq_state *st = iio_dev_get_devdata(indio_dev);
++	struct iio_sw_ring_helper_state *h
++		= iio_dev_get_devdata(indio_dev);
++	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
+ 	int ret;
+ 	struct spi_transfer xfers[] = { {
+ 			.tx_buf = st->tx,
+@@ -412,7 +422,7 @@ static int lis3l02dq_initial_setup(struct lis3l02dq_state *st)
+ 
+ 	val = LIS3L02DQ_DEFAULT_CTRL1;
+ 	/* Write suitable defaults to ctrl1 */
+-	ret = lis3l02dq_spi_write_reg_8(&st->indio_dev->dev,
++	ret = lis3l02dq_spi_write_reg_8(&st->help.indio_dev->dev,
+ 					LIS3L02DQ_REG_CTRL_1_ADDR,
+ 					&val);
+ 	if (ret) {
+@@ -420,7 +430,7 @@ static int lis3l02dq_initial_setup(struct lis3l02dq_state *st)
+ 		goto err_ret;
+ 	}
+ 	/* Repeat as sometimes doesn't work first time?*/
+-	ret = lis3l02dq_spi_write_reg_8(&st->indio_dev->dev,
++	ret = lis3l02dq_spi_write_reg_8(&st->help.indio_dev->dev,
+ 					LIS3L02DQ_REG_CTRL_1_ADDR,
+ 					&val);
+ 	if (ret) {
+@@ -430,17 +440,17 @@ static int lis3l02dq_initial_setup(struct lis3l02dq_state *st)
+ 
+ 	/* Read back to check this has worked acts as loose test of correct
+ 	 * chip */
+-	ret = lis3l02dq_spi_read_reg_8(&st->indio_dev->dev,
++	ret = lis3l02dq_spi_read_reg_8(&st->help.indio_dev->dev,
+ 				       LIS3L02DQ_REG_CTRL_1_ADDR,
+ 				       &valtest);
+ 	if (ret || (valtest != val)) {
+-		dev_err(&st->indio_dev->dev, "device not playing ball");
++		dev_err(&st->help.indio_dev->dev, "device not playing ball");
+ 		ret = -EINVAL;
+ 		goto err_ret;
+ 	}
+ 
+ 	val = LIS3L02DQ_DEFAULT_CTRL2;
+-	ret = lis3l02dq_spi_write_reg_8(&st->indio_dev->dev,
++	ret = lis3l02dq_spi_write_reg_8(&st->help.indio_dev->dev,
+ 					LIS3L02DQ_REG_CTRL_2_ADDR,
+ 					&val);
+ 	if (ret) {
+@@ -449,7 +459,7 @@ static int lis3l02dq_initial_setup(struct lis3l02dq_state *st)
+ 	}
+ 
+ 	val = LIS3L02DQ_REG_WAKE_UP_CFG_LATCH_SRC;
+-	ret = lis3l02dq_spi_write_reg_8(&st->indio_dev->dev,
++	ret = lis3l02dq_spi_write_reg_8(&st->help.indio_dev->dev,
+ 					LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+ 					&val);
+ 	if (ret)
+@@ -595,15 +605,17 @@ error_mutex_unlock:
+ }
+ 
+ 
+-static int lis3l02dq_thresh_handler_th(struct iio_dev *dev_info,
++static int lis3l02dq_thresh_handler_th(struct iio_dev *indio_dev,
+ 				       int index,
+ 				       s64 timestamp,
+ 				       int no_test)
+ {
+-	struct lis3l02dq_state *st = dev_info->dev_data;
++	struct iio_sw_ring_helper_state *h
++		= iio_dev_get_devdata(indio_dev);
++	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
+ 
+ 	/* Stash the timestamp somewhere convenient for the bh */
+-	st->last_timestamp = timestamp;
++	h->last_timestamp = timestamp;
+ 	schedule_work(&st->work_thresh);
+ 
+ 	return 0;
+@@ -621,43 +633,43 @@ static void lis3l02dq_thresh_handler_bh_no_check(struct work_struct *work_s)
+ 
+ 	u8 t;
+ 
+-	lis3l02dq_spi_read_reg_8(&st->indio_dev->dev,
++	lis3l02dq_spi_read_reg_8(&st->help.indio_dev->dev,
+ 				 LIS3L02DQ_REG_WAKE_UP_SRC_ADDR,
+ 				 &t);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_HIGH)
+-		iio_push_event(st->indio_dev, 0,
++		iio_push_event(st->help.indio_dev, 0,
+ 			       IIO_EVENT_CODE_ACCEL_Z_HIGH,
+-			       st->last_timestamp);
++			       st->help.last_timestamp);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_LOW)
+-		iio_push_event(st->indio_dev, 0,
++		iio_push_event(st->help.indio_dev, 0,
+ 			       IIO_EVENT_CODE_ACCEL_Z_LOW,
+-			       st->last_timestamp);
++			       st->help.last_timestamp);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_HIGH)
+-		iio_push_event(st->indio_dev, 0,
++		iio_push_event(st->help.indio_dev, 0,
+ 			       IIO_EVENT_CODE_ACCEL_Y_HIGH,
+-			       st->last_timestamp);
++			       st->help.last_timestamp);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_LOW)
+-		iio_push_event(st->indio_dev, 0,
++		iio_push_event(st->help.indio_dev, 0,
+ 			       IIO_EVENT_CODE_ACCEL_Y_LOW,
+-			       st->last_timestamp);
++			       st->help.last_timestamp);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_HIGH)
+-		iio_push_event(st->indio_dev, 0,
++		iio_push_event(st->help.indio_dev, 0,
+ 			       IIO_EVENT_CODE_ACCEL_X_HIGH,
+-			       st->last_timestamp);
++			       st->help.last_timestamp);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_LOW)
+-		iio_push_event(st->indio_dev, 0,
++		iio_push_event(st->help.indio_dev, 0,
+ 			       IIO_EVENT_CODE_ACCEL_X_LOW,
+-			       st->last_timestamp);
++			       st->help.last_timestamp);
+ 	/* reenable the irq */
+ 	enable_irq(st->us->irq);
+ 	/* Ack and allow for new interrupts */
+-	lis3l02dq_spi_read_reg_8(&st->indio_dev->dev,
++	lis3l02dq_spi_read_reg_8(&st->help.indio_dev->dev,
+ 				 LIS3L02DQ_REG_WAKE_UP_ACK_ADDR,
+ 				 &t);
+ 
+@@ -769,30 +781,30 @@ static int __devinit lis3l02dq_probe(struct spi_device *spi)
+ 	st->us = spi;
+ 	mutex_init(&st->buf_lock);
+ 	/* setup the industrialio driver allocated elements */
+-	st->indio_dev = iio_allocate_device();
+-	if (st->indio_dev == NULL) {
++	st->help.indio_dev = iio_allocate_device();
++	if (st->help.indio_dev == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_free_tx;
+ 	}
+ 
+-	st->indio_dev->dev.parent = &spi->dev;
+-	st->indio_dev->num_interrupt_lines = 1;
+-	st->indio_dev->event_attrs = &lis3l02dq_event_attribute_group;
+-	st->indio_dev->attrs = &lis3l02dq_attribute_group;
+-	st->indio_dev->dev_data = (void *)(st);
+-	st->indio_dev->driver_module = THIS_MODULE;
+-	st->indio_dev->modes = INDIO_DIRECT_MODE;
++	st->help.indio_dev->dev.parent = &spi->dev;
++	st->help.indio_dev->num_interrupt_lines = 1;
++	st->help.indio_dev->event_attrs = &lis3l02dq_event_attribute_group;
++	st->help.indio_dev->attrs = &lis3l02dq_attribute_group;
++	st->help.indio_dev->dev_data = (void *)(&st->help);
++	st->help.indio_dev->driver_module = THIS_MODULE;
++	st->help.indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-	ret = lis3l02dq_configure_ring(st->indio_dev);
++	ret = lis3l02dq_configure_ring(st->help.indio_dev);
+ 	if (ret)
+ 		goto error_free_dev;
+ 
+-	ret = iio_device_register(st->indio_dev);
++	ret = iio_device_register(st->help.indio_dev);
+ 	if (ret)
+ 		goto error_unreg_ring_funcs;
+ 	regdone = 1;
+ 
+-	ret = iio_ring_buffer_register(st->indio_dev->ring, 0);
++	ret = iio_ring_buffer_register(st->help.indio_dev->ring, 0);
+ 	if (ret) {
+ 		printk(KERN_ERR "failed to initialize the ring\n");
+ 		goto error_unreg_ring_funcs;
+@@ -801,14 +813,14 @@ static int __devinit lis3l02dq_probe(struct spi_device *spi)
+ 	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0) {
+ 		st->inter = 0;
+ 		ret = iio_register_interrupt_line(spi->irq,
+-						  st->indio_dev,
++						  st->help.indio_dev,
+ 						  0,
+ 						  IRQF_TRIGGER_RISING,
+ 						  "lis3l02dq");
+ 		if (ret)
+ 			goto error_uninitialize_ring;
+ 
+-		ret = lis3l02dq_probe_trigger(st->indio_dev);
++		ret = lis3l02dq_probe_trigger(st->help.indio_dev);
+ 		if (ret)
+ 			goto error_unregister_line;
+ 	}
+@@ -820,20 +832,20 @@ static int __devinit lis3l02dq_probe(struct spi_device *spi)
+ 	return 0;
+ 
+ error_remove_trigger:
+-	if (st->indio_dev->modes & INDIO_RING_TRIGGERED)
+-		lis3l02dq_remove_trigger(st->indio_dev);
++	if (st->help.indio_dev->modes & INDIO_RING_TRIGGERED)
++		lis3l02dq_remove_trigger(st->help.indio_dev);
+ error_unregister_line:
+-	if (st->indio_dev->modes & INDIO_RING_TRIGGERED)
+-		iio_unregister_interrupt_line(st->indio_dev, 0);
++	if (st->help.indio_dev->modes & INDIO_RING_TRIGGERED)
++		iio_unregister_interrupt_line(st->help.indio_dev, 0);
+ error_uninitialize_ring:
+-	iio_ring_buffer_unregister(st->indio_dev->ring);
++	iio_ring_buffer_unregister(st->help.indio_dev->ring);
+ error_unreg_ring_funcs:
+-	lis3l02dq_unconfigure_ring(st->indio_dev);
++	lis3l02dq_unconfigure_ring(st->help.indio_dev);
+ error_free_dev:
+ 	if (regdone)
+-		iio_device_unregister(st->indio_dev);
++		iio_device_unregister(st->help.indio_dev);
+ 	else
+-		iio_free_device(st->indio_dev);
++		iio_free_device(st->help.indio_dev);
+ error_free_tx:
+ 	kfree(st->tx);
+ error_free_rx:
+@@ -848,7 +860,9 @@ error_ret:
+ static int lis3l02dq_stop_device(struct iio_dev *indio_dev)
+ {
+ 	int ret;
+-	struct lis3l02dq_state *st = indio_dev->dev_data;
++	struct iio_sw_ring_helper_state *h
++		= iio_dev_get_devdata(indio_dev);
++	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
+ 	u8 val = 0;
+ 
+ 	mutex_lock(&indio_dev->mlock);
+@@ -875,7 +889,7 @@ static int lis3l02dq_remove(struct spi_device *spi)
+ {
+ 	int ret;
+ 	struct lis3l02dq_state *st = spi_get_drvdata(spi);
+-	struct iio_dev *indio_dev = st->indio_dev;
++	struct iio_dev *indio_dev = st->help.indio_dev;
+ 
+ 	ret = lis3l02dq_stop_device(indio_dev);
+ 	if (ret)
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index 2c11209..dd840ee 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -105,11 +105,13 @@ static struct attribute_group lis3l02dq_scan_el_group = {
+  **/
+ static void lis3l02dq_poll_func_th(struct iio_dev *indio_dev, s64 time)
+ {
+-	struct lis3l02dq_state *st = iio_dev_get_devdata(indio_dev);
+-	st->last_timestamp = time;
+-	schedule_work(&st->work_trigger_to_ring);
+-	/* Indicate that this interrupt is being handled */
++	struct iio_sw_ring_helper_state *h
++		= iio_dev_get_devdata(indio_dev);
++	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
++	/* in this case we need to slightly extend the helper function */
++	iio_sw_poll_func_th(indio_dev, time);
+ 
++	/* Indicate that this interrupt is being handled */
+ 	/* Technically this is trigger related, but without this
+ 	 * handler running there is currently now way for the interrupt
+ 	 * to clear.
+@@ -120,15 +122,16 @@ static void lis3l02dq_poll_func_th(struct iio_dev *indio_dev, s64 time)
+ /**
+  * lis3l02dq_data_rdy_trig_poll() the event handler for the data rdy trig
+  **/
+-static int lis3l02dq_data_rdy_trig_poll(struct iio_dev *dev_info,
++static int lis3l02dq_data_rdy_trig_poll(struct iio_dev *indio_dev,
+ 				       int index,
+ 				       s64 timestamp,
+ 				       int no_test)
+ {
+-	struct lis3l02dq_state *st = iio_dev_get_devdata(dev_info);
+-	struct iio_trigger *trig = st->trig;
++	struct iio_sw_ring_helper_state *h
++		= iio_dev_get_devdata(indio_dev);
++	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
+ 
+-	iio_trigger_poll(trig, timestamp);
++	iio_trigger_poll(st->trig, timestamp);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -212,7 +215,7 @@ static int lis3l02dq_read_all(struct lis3l02dq_state *st, u8 *rx_array)
+ 	struct spi_message msg;
+ 	int ret, i, j = 0;
+ 
+-	xfers = kzalloc((st->indio_dev->scan_count) * 2
++	xfers = kzalloc((st->help.indio_dev->scan_count) * 2
+ 			* sizeof(*xfers), GFP_KERNEL);
+ 	if (!xfers)
+ 		return -ENOMEM;
+@@ -220,7 +223,7 @@ static int lis3l02dq_read_all(struct lis3l02dq_state *st, u8 *rx_array)
+ 	mutex_lock(&st->buf_lock);
+ 
+ 	for (i = 0; i < ARRAY_SIZE(read_all_tx_array)/4; i++) {
+-		if (st->indio_dev->scan_mask & (1 << i)) {
++		if (st->help.indio_dev->scan_mask & (1 << i)) {
+ 			/* lower byte */
+ 			xfers[j].tx_buf = st->tx + 2*j;
+ 			st->tx[2*j] = read_all_tx_array[i*4];
+@@ -248,7 +251,7 @@ static int lis3l02dq_read_all(struct lis3l02dq_state *st, u8 *rx_array)
+ 	 * values in alternate bytes
+ 	 */
+ 	spi_message_init(&msg);
+-	for (j = 0; j < st->indio_dev->scan_count * 2; j++)
++	for (j = 0; j < st->help.indio_dev->scan_count * 2; j++)
+ 		spi_message_add_tail(&xfers[j], &msg);
+ 
+ 	ret = spi_sync(st->us, &msg);
+@@ -258,62 +261,35 @@ static int lis3l02dq_read_all(struct lis3l02dq_state *st, u8 *rx_array)
+ 	return ret;
+ }
+ 
+-
+-/* Whilst this makes a lot of calls to iio_sw_ring functions - it is to device
+- * specific to be rolled into the core.
+- */
+ static void lis3l02dq_trigger_bh_to_ring(struct work_struct *work_s)
+ {
+-	struct lis3l02dq_state *st
+-		= container_of(work_s, struct lis3l02dq_state,
+-			       work_trigger_to_ring);
+-
+-	u8 *rx_array;
+-	int i = 0;
+-	u16 *data;
+-	size_t datasize = st->indio_dev
+-		->ring->access.get_bpd(st->indio_dev->ring);
+-
+-	data = kmalloc(datasize , GFP_KERNEL);
+-	if (data == NULL) {
+-		dev_err(&st->us->dev, "memory alloc failed in ring bh");
+-		return;
+-	}
+-	/* Due to interleaved nature of transmission this buffer must be
+-	 * twice the number of bytes, or 4 times the number of channels
+-	 */
+-	rx_array = kmalloc(4 * (st->indio_dev->scan_count), GFP_KERNEL);
+-	if (rx_array == NULL) {
+-		dev_err(&st->us->dev, "memory alloc failed in ring bh");
+-		kfree(data);
+-		return;
+-	}
+-
+-	/* whilst trigger specific, if this read does nto occur the data
+-	   ready interrupt will not be cleared.  Need to add a mechanism
+-	   to provide a dummy read function if this is not triggering on
+-	   the data ready function but something else is.
+-	*/
++	struct iio_sw_ring_helper_state *h
++		= container_of(work_s, struct iio_sw_ring_helper_state,
++			work_trigger_to_ring);
++	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);	
+ 	st->inter = 0;
++	iio_sw_trigger_bh_to_ring(work_s);
++}
+ 
+-	if (st->indio_dev->scan_count)
+-		if (lis3l02dq_read_all(st, rx_array) >= 0)
+-			for (; i < st->indio_dev->scan_count; i++)
+-				data[i] = combine_8_to_16(rx_array[i*4+1],
+-							  rx_array[i*4+3]);
+-	/* Guaranteed to be aligned with 8 byte boundary */
+-	if (st->indio_dev->scan_timestamp)
+-		*((s64 *)(data + ((i + 3)/4)*4)) = st->last_timestamp;
+-
+-	st->indio_dev->ring->access.store_to(st->indio_dev->ring,
+-					    (u8 *)data,
+-					    st->last_timestamp);
+-
+-	iio_trigger_notify_done(st->indio_dev->trig);
++static int lis3l02dq_get_ring_element(struct iio_sw_ring_helper_state *h,
++				u8 *buf)
++{
++	int ret, i;
++	u8 *rx_array ;
++	s16 *data = (s16 *)buf;
++	
++	rx_array = kzalloc(4 * (h->indio_dev->scan_count), GFP_KERNEL);
++	if (rx_array == NULL)
++		return -ENOMEM;
++	ret = lis3l02dq_read_all(lis3l02dq_h_to_s(h), rx_array);
++	if (ret < 0)
++		return ret;
++	for (i = 0; i < h->indio_dev->scan_count; i++)
++		data[i] = combine_8_to_16(rx_array[i*4+1],
++					rx_array[i*4+3]);
+ 	kfree(rx_array);
+-	kfree(data);
+ 
+-	return;
++	return i*sizeof(data[0]);
+ }
+ 
+ /* Caller responsible for locking as necessary. */
+@@ -387,7 +363,7 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 	struct lis3l02dq_state *st = trig->private_data;
+ 	int ret = 0;
+ 	u8 t;
+-	__lis3l02dq_write_data_ready_config(&st->indio_dev->dev,
++	__lis3l02dq_write_data_ready_config(&st->help.indio_dev->dev,
+ 					    &iio_event_data_rdy_trig,
+ 					    state);
+ 	if (state == false) {
+@@ -397,7 +373,7 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 		/* Clear any outstanding ready events */
+ 		ret = lis3l02dq_read_all(st, NULL);
+ 	}
+-	lis3l02dq_spi_read_reg_8(&st->indio_dev->dev,
++	lis3l02dq_spi_read_reg_8(&st->help.indio_dev->dev,
+ 				 LIS3L02DQ_REG_WAKE_UP_SRC_ADDR,
+ 				 &t);
+ 	return ret;
+@@ -500,12 +476,12 @@ void lis3l02dq_unconfigure_ring(struct iio_dev *indio_dev)
+ 
+ int lis3l02dq_configure_ring(struct iio_dev *indio_dev)
+ {
+-	int ret = 0;
+-	struct lis3l02dq_state *st = indio_dev->dev_data;
+-	struct iio_ring_buffer *ring;
+-	INIT_WORK(&st->work_trigger_to_ring, lis3l02dq_trigger_bh_to_ring);
++	int ret;
++	struct iio_sw_ring_helper_state *h = iio_dev_get_devdata(indio_dev);
++	
++	INIT_WORK(&h->work_trigger_to_ring, lis3l02dq_trigger_bh_to_ring);
+ 	/* Set default scan mode */
+-
++	h->get_ring_element = &lis3l02dq_get_ring_element;
+ 	iio_scan_mask_set(indio_dev, iio_scan_el_accel_x.number);
+ 	iio_scan_mask_set(indio_dev, iio_scan_el_accel_y.number);
+ 	iio_scan_mask_set(indio_dev, iio_scan_el_accel_z.number);
+@@ -513,19 +489,17 @@ int lis3l02dq_configure_ring(struct iio_dev *indio_dev)
+ 
+ 	indio_dev->scan_el_attrs = &lis3l02dq_scan_el_group;
+ 
+-	ring = iio_sw_rb_allocate(indio_dev);
+-	if (!ring) {
+-		ret = -ENOMEM;
+-		return ret;
+-	}
+-	indio_dev->ring = ring;
++	indio_dev->ring = iio_sw_rb_allocate(indio_dev);
++	if (!indio_dev->ring)
++		return -ENOMEM;
++
+ 	/* Effectively select the ring buffer implementation */
+-	iio_ring_sw_register_funcs(&ring->access);
+-	ring->bpe = 2;
+-	ring->preenable = &iio_sw_ring_preenable;
+-	ring->postenable = &iio_triggered_ring_postenable;
+-	ring->predisable = &iio_triggered_ring_predisable;
+-	ring->owner = THIS_MODULE;
++	iio_ring_sw_register_funcs(&indio_dev->ring->access);
++	indio_dev->ring->bpe = 2;
++	indio_dev->ring->preenable = &iio_sw_ring_preenable;
++	indio_dev->ring->postenable = &iio_triggered_ring_postenable;
++	indio_dev->ring->predisable = &iio_triggered_ring_predisable;
++	indio_dev->ring->owner = THIS_MODULE;
+ 
+ 	ret = iio_alloc_pollfunc(indio_dev, NULL, &lis3l02dq_poll_func_th);
+ 	if (ret)
+@@ -537,6 +511,3 @@ error_iio_sw_rb_free:
+ 	iio_sw_rb_free(indio_dev->ring);
+ 	return ret;
+ }
+-
+-
+-
+-- 
+1.7.0.4
