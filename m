@@ -3,244 +3,288 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: gregkh@suse.de
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 02/12] staging:iio: Add and convert drivers to use iio_alloc_pollfunc
-Date: Sun, 11 Jul 2010 16:39:09 +0100
-Message-Id: <1278862759-19028-3-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 01/12] staging:iio: Use kasprintf to allocate and fill trig->name
+Date: Sun, 11 Jul 2010 16:39:08 +0100
+Message-Id: <1278862759-19028-2-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1278862759-19028-1-git-send-email-jic23@cam.ac.uk>
 References: <1278862759-19028-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
-Acked-by: Barry Song <21cnbao@gmail.com>
 ---
- drivers/staging/iio/accel/adis16209_ring.c |   11 ++++-------
- drivers/staging/iio/accel/adis16240_ring.c |   11 ++++-------
- drivers/staging/iio/accel/lis3l02dq_ring.c |    9 +++------
- drivers/staging/iio/adc/max1363_ring.c     |    9 ++-------
- drivers/staging/iio/gyro/adis16260_ring.c  |   11 ++++-------
- drivers/staging/iio/imu/adis16300_ring.c   |   11 ++++-------
- drivers/staging/iio/imu/adis16350_ring.c   |   11 ++++-------
- drivers/staging/iio/imu/adis16400_ring.c   |   11 ++++-------
- drivers/staging/iio/industrialio-trigger.c |   13 +++++++++++++
- drivers/staging/iio/trigger.h              |    5 ++++-
- 10 files changed, 46 insertions(+), 56 deletions(-)
+ drivers/staging/iio/accel/adis16209_trigger.c      |    7 +++----
+ drivers/staging/iio/accel/adis16240_trigger.c      |    7 +++----
+ drivers/staging/iio/accel/lis3l02dq_ring.c         |    8 ++++----
+ drivers/staging/iio/gyro/adis16260_trigger.c       |    7 +++----
+ drivers/staging/iio/imu/adis16300_trigger.c        |    7 +++----
+ drivers/staging/iio/imu/adis16350_trigger.c        |    7 +++----
+ drivers/staging/iio/imu/adis16400_trigger.c        |    7 +++----
+ drivers/staging/iio/industrialio-trigger.c         |    9 +++------
+ drivers/staging/iio/trigger.h                      |    4 ----
+ drivers/staging/iio/trigger/iio-trig-gpio.c        |    9 ++-------
+ .../staging/iio/trigger/iio-trig-periodic-rtc.c    |   12 +++---------
+ 11 files changed, 30 insertions(+), 54 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
-index 8959ad8..e8f7264 100644
---- a/drivers/staging/iio/accel/adis16209_ring.c
-+++ b/drivers/staging/iio/accel/adis16209_ring.c
-@@ -241,13 +241,10 @@ int adis16209_configure_ring(struct iio_dev *indio_dev)
- 	ring->predisable = &adis16209_data_rdy_ring_predisable;
- 	ring->owner = THIS_MODULE;
+diff --git a/drivers/staging/iio/accel/adis16209_trigger.c b/drivers/staging/iio/accel/adis16209_trigger.c
+index 4a0507c..cd901a4 100644
+--- a/drivers/staging/iio/accel/adis16209_trigger.c
++++ b/drivers/staging/iio/accel/adis16209_trigger.c
+@@ -83,14 +83,13 @@ int adis16209_probe_trigger(struct iio_dev *indio_dev)
+ 	struct adis16209_state *st = indio_dev->dev_data;
  
--	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
--		goto error_iio_sw_rb_free;;
--	}
--	indio_dev->pollfunc->poll_func_main = &adis16209_poll_func_th;
--	indio_dev->pollfunc->private_data = indio_dev;
-+	ret = iio_alloc_pollfunc(indio_dev, NULL, &adis16209_poll_func_th);
-+	if (ret)
-+		goto error_iio_sw_rb_free;
-+
- 	indio_dev->modes |= INDIO_RING_TRIGGERED;
- 	return 0;
+ 	st->trig = iio_allocate_trigger();
+-	st->trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL);
++	st->trig->name = kasprintf(GFP_KERNEL,
++				   "adis16209-dev%d",
++				   indio_dev->id);
+ 	if (!st->trig->name) {
+ 		ret = -ENOMEM;
+ 		goto error_free_trig;
+ 	}
+-	snprintf((char *)st->trig->name,
+-		 IIO_TRIGGER_NAME_LENGTH,
+-		 "adis16209-dev%d", indio_dev->id);
+ 	st->trig->dev.parent = &st->us->dev;
+ 	st->trig->owner = THIS_MODULE;
+ 	st->trig->private_data = st;
+diff --git a/drivers/staging/iio/accel/adis16240_trigger.c b/drivers/staging/iio/accel/adis16240_trigger.c
+index df1312e..d58b405 100644
+--- a/drivers/staging/iio/accel/adis16240_trigger.c
++++ b/drivers/staging/iio/accel/adis16240_trigger.c
+@@ -83,14 +83,13 @@ int adis16240_probe_trigger(struct iio_dev *indio_dev)
+ 	struct adis16240_state *st = indio_dev->dev_data;
  
-diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
-index 490d80e..ab52bcf 100644
---- a/drivers/staging/iio/accel/adis16240_ring.c
-+++ b/drivers/staging/iio/accel/adis16240_ring.c
-@@ -229,13 +229,10 @@ int adis16240_configure_ring(struct iio_dev *indio_dev)
- 	ring->predisable = &adis16240_data_rdy_ring_predisable;
- 	ring->owner = THIS_MODULE;
- 
--	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
--		goto error_iio_sw_rb_free;;
--	}
--	indio_dev->pollfunc->poll_func_main = &adis16240_poll_func_th;
--	indio_dev->pollfunc->private_data = indio_dev;
-+	ret = iio_alloc_pollfunc(indio_dev, NULL, &adis16240_poll_func_th);
-+	if (ret)
-+		goto error_iio_sw_rb_free;
-+
- 	indio_dev->modes |= INDIO_RING_TRIGGERED;
- 	return 0;
- 
+ 	st->trig = iio_allocate_trigger();
+-	st->trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL);
++	st->trig->name = kasprintf(GFP_KERNEL,
++				   "adis16240-dev%d",
++				   indio_dev->id);
+ 	if (!st->trig->name) {
+ 		ret = -ENOMEM;
+ 		goto error_free_trig;
+ 	}
+-	snprintf((char *)st->trig->name,
+-		 IIO_TRIGGER_NAME_LENGTH,
+-		 "adis16240-dev%d", indio_dev->id);
+ 	st->trig->dev.parent = &st->us->dev;
+ 	st->trig->owner = THIS_MODULE;
+ 	st->trig->private_data = st;
 diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index a33599d..38c7340 100644
+index 6b0b124..a33599d 100644
 --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
 +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -566,13 +566,9 @@ int lis3l02dq_configure_ring(struct iio_dev *indio_dev)
- 	ring->predisable = &lis3l02dq_data_rdy_ring_predisable;
- 	ring->owner = THIS_MODULE;
+@@ -495,14 +495,14 @@ int lis3l02dq_probe_trigger(struct iio_dev *indio_dev)
+ 	if (!state->trig)
+ 		return -ENOMEM;
  
--	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
-+	ret = iio_alloc_pollfunc(indio_dev, NULL, &lis3l02dq_poll_func_th);
-+	if (ret)
- 		goto error_iio_sw_rb_free;;
--	}
--	indio_dev->pollfunc->poll_func_main = &lis3l02dq_poll_func_th;
--	indio_dev->pollfunc->private_data = indio_dev;
- 	indio_dev->modes |= INDIO_RING_TRIGGERED;
- 	return 0;
- 
-@@ -592,3 +588,4 @@ void lis3l02dq_uninitialize_ring(struct iio_ring_buffer *ring)
- }
- 
- 
-+
-diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
-index b30d680..60f0a44 100644
---- a/drivers/staging/iio/adc/max1363_ring.c
-+++ b/drivers/staging/iio/adc/max1363_ring.c
-@@ -223,14 +223,9 @@ int max1363_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+-	state->trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL);
++	state->trig->name = kasprintf(GFP_KERNEL,
++				      "lis3l02dq-dev%d",
++				      indio_dev->id);
+ 	if (!state->trig->name) {
+ 		ret = -ENOMEM;
+ 		goto error_free_trig;
  	}
- 	/* Effectively select the ring buffer implementation */
- 	iio_ring_sw_register_funcs(&st->indio_dev->ring->access);
--	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
-+	ret = iio_alloc_pollfunc(indio_dev, NULL, &max1363_poll_func_th);
-+	if (ret)
- 		goto error_deallocate_sw_rb;
--	}
--	/* Configure the polling function called on trigger interrupts */
--	indio_dev->pollfunc->poll_func_main = &max1363_poll_func_th;
--	indio_dev->pollfunc->private_data = indio_dev;
- 
- 	/* Ring buffer functions - here trigger setup related */
- 	indio_dev->ring->postenable = &max1363_ring_postenable;
-diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
-index 2fe7f02..bf3c2e8 100644
---- a/drivers/staging/iio/gyro/adis16260_ring.c
-+++ b/drivers/staging/iio/gyro/adis16260_ring.c
-@@ -231,13 +231,10 @@ int adis16260_configure_ring(struct iio_dev *indio_dev)
- 	ring->predisable = &adis16260_data_rdy_ring_predisable;
- 	ring->owner = THIS_MODULE;
- 
--	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
--		goto error_iio_sw_rb_free;;
--	}
--	indio_dev->pollfunc->poll_func_main = &adis16260_poll_func_th;
--	indio_dev->pollfunc->private_data = indio_dev;
-+	ret = iio_alloc_pollfunc(indio_dev, NULL, &adis16260_poll_func_th);
-+	if (ret)
-+		goto error_iio_sw_rb_free;
+-	snprintf((char *)state->trig->name,
+-		 IIO_TRIGGER_NAME_LENGTH,
+-		 "lis3l02dq-dev%d", indio_dev->id);
 +
- 	indio_dev->modes |= INDIO_RING_TRIGGERED;
- 	return 0;
+ 	state->trig->dev.parent = &state->us->dev;
+ 	state->trig->owner = THIS_MODULE;
+ 	state->trig->private_data = state;
+diff --git a/drivers/staging/iio/gyro/adis16260_trigger.c b/drivers/staging/iio/gyro/adis16260_trigger.c
+index b3c5659..54afd9e 100644
+--- a/drivers/staging/iio/gyro/adis16260_trigger.c
++++ b/drivers/staging/iio/gyro/adis16260_trigger.c
+@@ -83,14 +83,13 @@ int adis16260_probe_trigger(struct iio_dev *indio_dev)
+ 	struct adis16260_state *st = indio_dev->dev_data;
  
-diff --git a/drivers/staging/iio/imu/adis16300_ring.c b/drivers/staging/iio/imu/adis16300_ring.c
-index 17ceb72..de39187 100644
---- a/drivers/staging/iio/imu/adis16300_ring.c
-+++ b/drivers/staging/iio/imu/adis16300_ring.c
-@@ -256,13 +256,10 @@ int adis16300_configure_ring(struct iio_dev *indio_dev)
- 	ring->predisable = &adis16300_data_rdy_ring_predisable;
- 	ring->owner = THIS_MODULE;
+ 	st->trig = iio_allocate_trigger();
+-	st->trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL);
++	st->trig->name = kasprintf(GFP_KERNEL,
++				   "adis16260-dev%d",
++				   indio_dev->id);
+ 	if (!st->trig->name) {
+ 		ret = -ENOMEM;
+ 		goto error_free_trig;
+ 	}
+-	snprintf((char *)st->trig->name,
+-		 IIO_TRIGGER_NAME_LENGTH,
+-		 "adis16260-dev%d", indio_dev->id);
+ 	st->trig->dev.parent = &st->us->dev;
+ 	st->trig->owner = THIS_MODULE;
+ 	st->trig->private_data = st;
+diff --git a/drivers/staging/iio/imu/adis16300_trigger.c b/drivers/staging/iio/imu/adis16300_trigger.c
+index 54edb20..a55f383 100644
+--- a/drivers/staging/iio/imu/adis16300_trigger.c
++++ b/drivers/staging/iio/imu/adis16300_trigger.c
+@@ -86,14 +86,13 @@ int adis16300_probe_trigger(struct iio_dev *indio_dev)
+ 	struct adis16300_state *st = indio_dev->dev_data;
  
--	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
--		goto error_iio_sw_rb_free;;
--	}
--	indio_dev->pollfunc->poll_func_main = &adis16300_poll_func_th;
--	indio_dev->pollfunc->private_data = indio_dev;
-+	ret = iio_alloc_pollfunc(indio_dev, NULL, &adis16300_poll_func_th);
-+	if (ret)
-+		goto error_iio_sw_rb_free;
-+
- 	indio_dev->modes |= INDIO_RING_TRIGGERED;
- 	return 0;
+ 	st->trig = iio_allocate_trigger();
+-	st->trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL);
++	st->trig->name = kasprintf(GFP_KERNEL,
++				   "adis16300-dev%d",
++				   indio_dev->id);
+ 	if (!st->trig->name) {
+ 		ret = -ENOMEM;
+ 		goto error_free_trig;
+ 	}
+-	snprintf((char *)st->trig->name,
+-		 IIO_TRIGGER_NAME_LENGTH,
+-		 "adis16300-dev%d", indio_dev->id);
+ 	st->trig->dev.parent = &st->us->dev;
+ 	st->trig->owner = THIS_MODULE;
+ 	st->trig->private_data = st;
+diff --git a/drivers/staging/iio/imu/adis16350_trigger.c b/drivers/staging/iio/imu/adis16350_trigger.c
+index 1ffa75d..fbe246a 100644
+--- a/drivers/staging/iio/imu/adis16350_trigger.c
++++ b/drivers/staging/iio/imu/adis16350_trigger.c
+@@ -86,14 +86,13 @@ int adis16350_probe_trigger(struct iio_dev *indio_dev)
+ 	struct adis16350_state *st = indio_dev->dev_data;
  
-diff --git a/drivers/staging/iio/imu/adis16350_ring.c b/drivers/staging/iio/imu/adis16350_ring.c
-index 2a0a465..be9ce31 100644
---- a/drivers/staging/iio/imu/adis16350_ring.c
-+++ b/drivers/staging/iio/imu/adis16350_ring.c
-@@ -261,13 +261,10 @@ int adis16350_configure_ring(struct iio_dev *indio_dev)
- 	ring->predisable = &adis16350_data_rdy_ring_predisable;
- 	ring->owner = THIS_MODULE;
+ 	st->trig = iio_allocate_trigger();
+-	st->trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL);
++	st->trig->name = kasprintf(GFP_KERNEL,
++				   "adis16350-dev%d",
++				   indio_dev->id);
+ 	if (!st->trig->name) {
+ 		ret = -ENOMEM;
+ 		goto error_free_trig;
+ 	}
+-	snprintf((char *)st->trig->name,
+-		 IIO_TRIGGER_NAME_LENGTH,
+-		 "adis16350-dev%d", indio_dev->id);
+ 	st->trig->dev.parent = &st->us->dev;
+ 	st->trig->owner = THIS_MODULE;
+ 	st->trig->private_data = st;
+diff --git a/drivers/staging/iio/imu/adis16400_trigger.c b/drivers/staging/iio/imu/adis16400_trigger.c
+index 3b3250a..bf7c603 100644
+--- a/drivers/staging/iio/imu/adis16400_trigger.c
++++ b/drivers/staging/iio/imu/adis16400_trigger.c
+@@ -86,14 +86,13 @@ int adis16400_probe_trigger(struct iio_dev *indio_dev)
+ 	struct adis16400_state *st = indio_dev->dev_data;
  
--	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
--		goto error_iio_sw_rb_free;;
--	}
--	indio_dev->pollfunc->poll_func_main = &adis16350_poll_func_th;
--	indio_dev->pollfunc->private_data = indio_dev;
-+	ret = iio_alloc_pollfunc(indio_dev, NULL, &adis16350_poll_func_th);
-+	if (ret)
-+		goto error_iio_sw_rb_free;
-+
- 	indio_dev->modes |= INDIO_RING_TRIGGERED;
- 	return 0;
- 
-diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
-index 5d94cdc..da24384 100644
---- a/drivers/staging/iio/imu/adis16400_ring.c
-+++ b/drivers/staging/iio/imu/adis16400_ring.c
-@@ -268,13 +268,10 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
- 	ring->predisable = &adis16400_data_rdy_ring_predisable;
- 	ring->owner = THIS_MODULE;
- 
--	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
--		goto error_iio_sw_rb_free;;
--	}
--	indio_dev->pollfunc->poll_func_main = &adis16400_poll_func_th;
--	indio_dev->pollfunc->private_data = indio_dev;
-+	ret = iio_alloc_pollfunc(indio_dev, NULL, &adis16400_poll_func_th);
-+	if (ret)
-+		goto error_iio_sw_rb_free;
-+
- 	indio_dev->modes |= INDIO_RING_TRIGGERED;
- 	return 0;
- 
+ 	st->trig = iio_allocate_trigger();
+-	st->trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL);
++	st->trig->name = kasprintf(GFP_KERNEL,
++				   "adis16400-dev%d",
++				   indio_dev->id);
+ 	if (!st->trig->name) {
+ 		ret = -ENOMEM;
+ 		goto error_free_trig;
+ 	}
+-	snprintf((char *)st->trig->name,
+-		 IIO_TRIGGER_NAME_LENGTH,
+-		 "adis16400-dev%d", indio_dev->id);
+ 	st->trig->dev.parent = &st->us->dev;
+ 	st->trig->owner = THIS_MODULE;
+ 	st->trig->private_data = st;
 diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
-index 92e6006..ea97e11 100644
+index ef088a4..92e6006 100644
 --- a/drivers/staging/iio/industrialio-trigger.c
 +++ b/drivers/staging/iio/industrialio-trigger.c
-@@ -398,3 +398,16 @@ int iio_device_unregister_trigger_consumer(struct iio_dev *dev_info)
+@@ -295,10 +295,9 @@ static ssize_t iio_trigger_read_current(struct device *dev,
+ 	struct iio_dev *dev_info = dev_get_drvdata(dev);
+ 	int len = 0;
+ 	if (dev_info->trig)
+-		len = snprintf(buf,
+-			       IIO_TRIGGER_NAME_LENGTH,
+-			       "%s\n",
+-			       dev_info->trig->name);
++		len = sprintf(buf,
++			      "%s\n",
++			      dev_info->trig->name);
+ 	return len;
  }
- EXPORT_SYMBOL(iio_device_unregister_trigger_consumer);
  
-+int iio_alloc_pollfunc(struct iio_dev *indio_dev,
-+		       void (*immediate)(struct iio_dev *indio_dev),
-+		       void (*main)(struct iio_dev  *private_data))
-+{
-+	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
-+	if (indio_dev->pollfunc == NULL)
-+		return -ENOMEM;
-+	indio_dev->pollfunc->poll_func_immediate = immediate;
-+	indio_dev->pollfunc->poll_func_main = main;
-+	indio_dev->pollfunc->private_data = indio_dev;
-+	return 0;
-+}
-+EXPORT_SYMBOL(iio_alloc_pollfunc);
+@@ -323,8 +322,6 @@ static ssize_t iio_trigger_write_current(struct device *dev,
+ 	}
+ 	mutex_unlock(&dev_info->mlock);
+ 
+-	len = len < IIO_TRIGGER_NAME_LENGTH ? len : IIO_TRIGGER_NAME_LENGTH;
+-
+ 	dev_info->trig = iio_trigger_find_by_name(buf, len);
+ 	if (oldtrig && dev_info->trig != oldtrig)
+ 		iio_put_trigger(oldtrig);
 diff --git a/drivers/staging/iio/trigger.h b/drivers/staging/iio/trigger.h
-index 89610b5..10e9732 100644
+index 784e7b6..89610b5 100644
 --- a/drivers/staging/iio/trigger.h
 +++ b/drivers/staging/iio/trigger.h
-@@ -148,9 +148,12 @@ struct iio_poll_func {
+@@ -8,10 +8,6 @@
+  */
+ #ifndef _IIO_TRIGGER_H_
+ #define _IIO_TRIGGER_H_
+-#define IIO_TRIGGER_NAME_LENGTH 20
+-#define IIO_TRIGGER_ID_PREFIX "iio:trigger"
+-#define IIO_TRIGGER_ID_FORMAT IIO_TRIGGER_ID_PREFIX "%d"
+-
  
+ /**
+  * struct iio_trigger - industrial I/O trigger device
+diff --git a/drivers/staging/iio/trigger/iio-trig-gpio.c b/drivers/staging/iio/trigger/iio-trig-gpio.c
+index 1da285d..3c0614e 100644
+--- a/drivers/staging/iio/trigger/iio-trig-gpio.c
++++ b/drivers/staging/iio/trigger/iio-trig-gpio.c
+@@ -93,16 +93,11 @@ static int iio_gpio_trigger_probe(struct platform_device *pdev)
+ 			trig->private_data = trig_info;
+ 			trig_info->irq = irq;
+ 			trig->owner = THIS_MODULE;
+-			trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH,
+-					GFP_KERNEL);
+-			if (!trig->name) {
++			trig->name = kasprintf(GFP_KERNEL, "irqtrig%d", irq);
++			if (trig->name == NULL) {
+ 				ret = -ENOMEM;
+ 				goto error_free_trig_info;
+ 			}
+-			snprintf((char *)trig->name,
+-				 IIO_TRIGGER_NAME_LENGTH,
+-				 "irqtrig%d", irq);
+-
+ 			ret = request_irq(irq, iio_gpio_trigger_poll,
+ 					  irqflags, trig->name, trig);
+ 			if (ret) {
+diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+index 4ee3ae1..d8c58cb 100644
+--- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
++++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+@@ -25,7 +25,6 @@ static DEFINE_MUTEX(iio_prtc_trigger_list_lock);
+ struct iio_prtc_trigger_info {
+ 	struct rtc_device *rtc;
+ 	int frequency;
+-	char *name;
+ 	struct rtc_task task;
  };
  
-+int iio_alloc_pollfunc(struct iio_dev *indio_dev,
-+		       void (*immediate)(struct iio_dev *indio_dev),
-+		       void (*main)(struct iio_dev  *private_data));
+@@ -78,8 +77,7 @@ static ssize_t iio_trig_periodic_read_name(struct device *dev,
+ 					   char *buf)
+ {
+ 	struct iio_trigger *trig = dev_get_drvdata(dev);
+-	struct iio_prtc_trigger_info *trig_info = trig->private_data;
+-	return sprintf(buf, "%s\n", trig_info->name);
++	return sprintf(buf, "%s\n", trig->name);
+ }
+ 
+ static DEVICE_ATTR(name, S_IRUGO,
+@@ -129,16 +127,12 @@ static int iio_trig_periodic_rtc_probe(struct platform_device *dev)
+ 		trig->private_data = trig_info;
+ 		trig->owner = THIS_MODULE;
+ 		trig->set_trigger_state = &iio_trig_periodic_rtc_set_state;
+-		trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL);
++		trig->name = kasprintf(GFP_KERNEL, "periodic%s", pdata[i]);
+ 		if (trig->name == NULL) {
+ 			ret = -ENOMEM;
+ 			goto error_free_trig_info;
+ 		}
+-		snprintf((char *)trig->name,
+-			 IIO_TRIGGER_NAME_LENGTH,
+-			 "periodic%s",
+-			 pdata[i]);
+-		trig_info->name = (char *)trig->name;
 +
- struct iio_trigger *iio_allocate_trigger(void);
- 
- void iio_free_trigger(struct iio_trigger *trig);
- 
--
- #endif /* _IIO_TRIGGER_H_ */
+ 		/* RTC access */
+ 		trig_info->rtc
+ 			= rtc_class_open(pdata[i]);
 -- 
 1.7.0.4
