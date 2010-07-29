@@ -5,90 +5,30 @@ Cc: Randy Dunlap <randy.dunlap@oracle.com>,
 	akpm@linux-foundation.org,
 	linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 2/6] staging:iio:lis3l02dq add a thresh_timestamp field to state for no ring case
-Date: Thu, 29 Jul 2010 17:50:47 +0100
-Message-Id: <1280422251-13572-3-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 1/6] staging:iio: iio_sw_ring_helper_state - add dummy case for no buffer builds.
+Date: Thu, 29 Jul 2010 17:50:46 +0100
+Message-Id: <1280422251-13572-2-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1280422251-13572-1-git-send-email-jic23@cam.ac.uk>
 References: <1280422251-13572-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/lis3l02dq.h      |    2 ++
- drivers/staging/iio/accel/lis3l02dq_core.c |   14 +++++++-------
- 2 files changed, 9 insertions(+), 7 deletions(-)
+ drivers/staging/iio/ring_sw.h |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
-index 44669ee..6e73055 100644
---- a/drivers/staging/iio/accel/lis3l02dq.h
-+++ b/drivers/staging/iio/accel/lis3l02dq.h
-@@ -151,6 +151,7 @@ Form of high byte dependant on justification set in ctrl reg */
-  * @helper:		data and func pointer allowing generic functions
-  * @us:			actual spi_device
-  * @work_thresh:	bh for threshold events
-+ * @thresh_timestamp:	timestamp for threshold interrupts.
-  * @inter:		used to check if new interrupt has been triggered
-  * @trig:		data ready trigger registered with iio
-  * @tx:			transmit buffer
-@@ -161,6 +162,7 @@ struct lis3l02dq_state {
- 	struct iio_sw_ring_helper_state	help;
- 	struct spi_device		*us;
- 	struct work_struct		work_thresh;
-+	s64				thresh_timestamp;
- 	bool				inter;
- 	struct iio_trigger		*trig;
- 	u8				*tx;
-diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
-index b04f498..0ee9337 100644
---- a/drivers/staging/iio/accel/lis3l02dq_core.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_core.c
-@@ -615,7 +615,7 @@ static int lis3l02dq_thresh_handler_th(struct iio_dev *indio_dev,
- 	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
- 
- 	/* Stash the timestamp somewhere convenient for the bh */
--	h->last_timestamp = timestamp;
-+	st->thresh_timestamp = timestamp;
- 	schedule_work(&st->work_thresh);
- 
- 	return 0;
-@@ -640,32 +640,32 @@ static void lis3l02dq_thresh_handler_bh_no_check(struct work_struct *work_s)
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_HIGH)
- 		iio_push_event(st->help.indio_dev, 0,
- 			       IIO_EVENT_CODE_ACCEL_Z_HIGH,
--			       st->help.last_timestamp);
-+			       st->thresh_timestamp);
- 
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_LOW)
- 		iio_push_event(st->help.indio_dev, 0,
- 			       IIO_EVENT_CODE_ACCEL_Z_LOW,
--			       st->help.last_timestamp);
-+			       st->thresh_timestamp);
- 
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_HIGH)
- 		iio_push_event(st->help.indio_dev, 0,
- 			       IIO_EVENT_CODE_ACCEL_Y_HIGH,
--			       st->help.last_timestamp);
-+			       st->thresh_timestamp);
- 
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_LOW)
- 		iio_push_event(st->help.indio_dev, 0,
- 			       IIO_EVENT_CODE_ACCEL_Y_LOW,
--			       st->help.last_timestamp);
-+			       st->thresh_timestamp);
- 
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_HIGH)
- 		iio_push_event(st->help.indio_dev, 0,
- 			       IIO_EVENT_CODE_ACCEL_X_HIGH,
--			       st->help.last_timestamp);
-+			       st->thresh_timestamp);
- 
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_LOW)
- 		iio_push_event(st->help.indio_dev, 0,
- 			       IIO_EVENT_CODE_ACCEL_X_LOW,
--			       st->help.last_timestamp);
-+			       st->thresh_timestamp);
- 	/* reenable the irq */
- 	enable_irq(st->us->irq);
- 	/* Ack and allow for new interrupts */
+diff --git a/drivers/staging/iio/ring_sw.h b/drivers/staging/iio/ring_sw.h
+index 0194e7f..7c27e2c 100644
+--- a/drivers/staging/iio/ring_sw.h
++++ b/drivers/staging/iio/ring_sw.h
+@@ -222,5 +222,8 @@ void iio_sw_trigger_bh_to_ring(struct work_struct *work_s);
+ #else /* CONFIG_IIO_RING_BUFFER*/
+ static inline void iio_ring_sw_register_funcs(struct iio_ring_access_funcs *ra)
+ {};
++struct iio_sw_ring_helper_state {
++	struct iio_dev			*indio_dev;
++};
+ #endif /* !CONFIG_IIO_RING_BUFFER */
+ #endif /* _IIO_RING_SW_H_ */
 -- 
 1.7.1
