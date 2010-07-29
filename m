@@ -5,30 +5,32 @@ Cc: Randy Dunlap <randy.dunlap@oracle.com>,
 	akpm@linux-foundation.org,
 	linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 5/6] staging:iio:ring_sw  remove unnecessary function stub.
-Date: Thu, 29 Jul 2010 17:50:50 +0100
-Message-Id: <1280422251-13572-6-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 4/6] staging:iio:ring_sw  Add select of triggers to avoid build issue.
+Date: Thu, 29 Jul 2010 17:50:49 +0100
+Message-Id: <1280422251-13572-5-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1280422251-13572-1-git-send-email-jic23@cam.ac.uk>
 References: <1280422251-13572-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
+Currently all drivers that use ring_sw use triggers and I am yet
+to see a good reason for any driver not doing so.
+
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/ring_sw.h |    2 --
- 1 files changed, 0 insertions(+), 2 deletions(-)
+ drivers/staging/iio/Kconfig |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/staging/iio/ring_sw.h b/drivers/staging/iio/ring_sw.h
-index 7c27e2c..61f1ed6 100644
---- a/drivers/staging/iio/ring_sw.h
-+++ b/drivers/staging/iio/ring_sw.h
-@@ -220,8 +220,6 @@ void iio_sw_poll_func_th(struct iio_dev *indio_dev, s64 time);
- void iio_sw_trigger_bh_to_ring(struct work_struct *work_s);
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index 569b938..ed48815 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -21,6 +21,7 @@ config IIO_RING_BUFFER
+ if IIO_RING_BUFFER
  
- #else /* CONFIG_IIO_RING_BUFFER*/
--static inline void iio_ring_sw_register_funcs(struct iio_ring_access_funcs *ra)
--{};
- struct iio_sw_ring_helper_state {
- 	struct iio_dev			*indio_dev;
- };
+ config IIO_SW_RING
++       select IIO_TRIGGER
+ 	tristate "Industrial I/O lock free software ring"
+ 	help
+ 	  Example software ring buffer implementation.  The design aim
 -- 
 1.7.1
