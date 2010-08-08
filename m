@@ -1,46 +1,43 @@
 Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org
-Cc: Barry.Song@analog.com,
-	m_brugger@web.de,
-	mensch0815@googlemail.com,
+To: vapier@gentoo.org
+Cc: barry.song@analog.com,
+	uclinux-dist-devel@blackfin.uclinux.org,
+	linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 1/2] staging:iio:adis16260 add id table support
-Date: Wed, 11 Aug 2010 15:12:18 +0100
-Message-Id: <1281535939-7190-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1281535939-7190-1-git-send-email-jic23@cam.ac.uk>
-References: <1281535939-7190-1-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 0/3] staging:iio: abi updates for new drivers from Analog.
+Date: Sun,  8 Aug 2010 16:08:15 +0100
+Message-Id: <1281280098-11111-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/gyro/adis16260_core.c |    7 +++++++
- 1 files changed, 7 insertions(+), 0 deletions(-)
+Here are the 3 abi update patches needed to make the drivers
+Mike posted to work with the current mainline kernel.
 
-diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-index 134dfaa..cf9d9c6 100644
---- a/drivers/staging/iio/gyro/adis16260_core.c
-+++ b/drivers/staging/iio/gyro/adis16260_core.c
-@@ -633,6 +633,12 @@ err_ret:
- 	return ret;
- }
- 
-+static const struct spi_device_id adis16260_id[] = {
-+	{"adis16260", 0},
-+	{"adis16265", 0},
-+	{}
-+};
-+
- static struct spi_driver adis16260_driver = {
- 	.driver = {
- 		.name = "adis16260",
-@@ -640,6 +646,7 @@ static struct spi_driver adis16260_driver = {
- 	},
- 	.probe = adis16260_probe,
- 	.remove = __devexit_p(adis16260_remove),
-+	.id_table = adis16260_id,
- };
- 
- static __init int adis16260_init(void)
--- 
-1.7.1
+These (or equivalent) will need to get merged into the underlying
+drivers before they are sent on to Greg KH.
+
+For reference these were against staging-next with the patches
+Mike sent applied.
+
+Thanks,
+
+Jonathan
+
+Jonathan Cameron (3):
+  staging:iio:adis16201 update driver to compile with mainline abi.
+  staging:iio:adis16203 update driver to compile with mainline abi.
+  staging:iio:adis16204 update driver to compile with mainline abi.
+
+ drivers/staging/iio/accel/adis16201.h         |    2 --
+ drivers/staging/iio/accel/adis16201_core.c    |   19 +++++++++----------
+ drivers/staging/iio/accel/adis16201_ring.c    |    4 ++--
+ drivers/staging/iio/accel/adis16201_trigger.c |   10 ++++------
+ drivers/staging/iio/accel/adis16203.h         |    2 --
+ drivers/staging/iio/accel/adis16203_core.c    |   19 +++++++++----------
+ drivers/staging/iio/accel/adis16203_ring.c    |    4 ++--
+ drivers/staging/iio/accel/adis16203_trigger.c |   10 ++++------
+ drivers/staging/iio/accel/adis16204.h         |    2 --
+ drivers/staging/iio/accel/adis16204_core.c    |   19 +++++++++----------
+ drivers/staging/iio/accel/adis16204_ring.c    |    4 ++--
+ drivers/staging/iio/accel/adis16204_trigger.c |   10 ++++------
+ 12 files changed, 45 insertions(+), 60 deletions(-)
