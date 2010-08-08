@@ -1,34 +1,151 @@
-Return-Path: <vapier.adi@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <4C612549.7050305@cam.ac.uk>
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: vapier@gentoo.org
+Cc: barry.song@analog.com,
+	uclinux-dist-devel@blackfin.uclinux.org,
+	linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 3/3] staging:iio:adis16204 update driver to compile with mainline abi.
+Date: Sun,  8 Aug 2010 16:08:18 +0100
+Message-Id: <1281280098-11111-4-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1281280098-11111-1-git-send-email-jic23@cam.ac.uk>
 References: <1281280098-11111-1-git-send-email-jic23@cam.ac.uk>
- <AANLkTikjsmcCp2w-6ALb68_NVA2Pzx-fcEa_8uUiouBy@mail.gmail.com> <4C612549.7050305@cam.ac.uk>
-From: Mike Frysinger <vapier.adi@gmail.com>
-Date: Tue, 10 Aug 2010 23:41:45 -0400
-Message-ID: <AANLkTin2hzuuB8F62gz8FvC3+pKj-_crPf1Ms-XFKqi-@mail.gmail.com>
-Subject: Re: [Uclinux-dist-devel] [PATCH 0/3] staging:iio: abi updates for new
- drivers from Analog.
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org,
-	barry.song@analog.com, "Zhang, Sonic" <Sonic.Zhang@analog.com>
-Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Aug 10, 2010 at 06:09, Jonathan Cameron wrote:
-> If anyone is looking at the ad7816 driver at the mo, can I just make a fe=
-w
-> quick comments. (I was glancing at it anyway given Mike's pointer to it a=
-bove).
-> Feel free to ignore these for now but I thought I'd send them as I was re=
-ading it anyway!
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/accel/adis16204.h         |    2 --
+ drivers/staging/iio/accel/adis16204_core.c    |   19 +++++++++----------
+ drivers/staging/iio/accel/adis16204_ring.c    |    4 ++--
+ drivers/staging/iio/accel/adis16204_trigger.c |   10 ++++------
+ 4 files changed, 15 insertions(+), 20 deletions(-)
 
-ive logged this into our tracker so it doesnt get missed
-
-> Incidentally I'm happy to give earlier feedback on drivers before you are=
- ready to send
-> them for a merge if it would smooth things later. =C2=A0Just send them to=
- linux-iio and mark
-> them as say 'not ready for merge' so no one picks them up!
-
-rgr
--mike
+diff --git a/drivers/staging/iio/accel/adis16204.h b/drivers/staging/iio/accel/adis16204.h
+index fdd121c..e9ed7cb 100644
+--- a/drivers/staging/iio/accel/adis16204.h
++++ b/drivers/staging/iio/accel/adis16204.h
+@@ -68,7 +68,6 @@
+  * struct adis16204_state - device instance specific data
+  * @us:			actual spi_device
+  * @work_trigger_to_ring: bh for triggered event handling
+- * @work_cont_thresh: CLEAN
+  * @inter:		used to check if new interrupt has been triggered
+  * @last_timestamp:	passing timestamp from th to bh of interrupt handler
+  * @indio_dev:		industrial I/O device structure
+@@ -80,7 +79,6 @@
+ struct adis16204_state {
+ 	struct spi_device		*us;
+ 	struct work_struct		work_trigger_to_ring;
+-	struct iio_work_cont		work_cont_thresh;
+ 	s64				last_timestamp;
+ 	struct iio_dev			*indio_dev;
+ 	struct iio_trigger		*trig;
+diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
+index 94a3111..25ce8dc 100644
+--- a/drivers/staging/iio/accel/adis16204_core.c
++++ b/drivers/staging/iio/accel/adis16204_core.c
+@@ -21,7 +21,6 @@
+ #include "../iio.h"
+ #include "../sysfs.h"
+ #include "accel.h"
+-#include "../imu/volt.h"
+ #include "../gyro/gyro.h"
+ #include "../adc/adc.h"
+ 
+@@ -394,12 +393,12 @@ err_ret:
+ 	return ret;
+ }
+ 
+-static IIO_DEV_ATTR_VOLT(supply, adis16204_read_12bit_unsigned,
++static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16204_read_12bit_unsigned,
+ 		ADIS16204_SUPPLY_OUT);
+-static IIO_CONST_ATTR(volt_supply_scale, "0.00122");
+-static IIO_DEV_ATTR_VOLT(aux, adis16204_read_12bit_unsigned,
++static IIO_CONST_ATTR(in_supply_scale, "0.00122");
++static IIO_DEV_ATTR_IN_RAW(0, adis16204_read_12bit_unsigned,
+ 		ADIS16204_AUX_ADC);
+-static IIO_CONST_ATTR(volt_aux_scale, "0.00061");
++static IIO_CONST_ATTR(in0_scale, "0.00061");
+ 
+ static IIO_DEV_ATTR_ACCEL_X(adis16204_read_14bit_signed,
+ 		ADIS16204_XACCL_OUT);
+@@ -429,7 +428,7 @@ static IIO_DEV_ATTR_TEMP(adis16204_read_temp);
+ static IIO_CONST_ATTR(temp_offset, "25");
+ static IIO_CONST_ATTR(temp_scale, "-0.47");
+ 
+-static IIO_DEV_ATTR_RESET(adis16204_write_reset);
++static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16204_write_reset, 0);
+ 
+ static IIO_CONST_ATTR(name, "adis16204");
+ 
+@@ -442,15 +441,15 @@ static struct attribute_group adis16204_event_attribute_group = {
+ };
+ 
+ static struct attribute *adis16204_attributes[] = {
+-	&iio_dev_attr_volt_supply.dev_attr.attr,
+-	&iio_const_attr_volt_supply_scale.dev_attr.attr,
++	&iio_dev_attr_in_supply_raw.dev_attr.attr,
++	&iio_const_attr_in_supply_scale.dev_attr.attr,
+ 	&iio_dev_attr_temp.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+ 	&iio_const_attr_name.dev_attr.attr,
+-	&iio_dev_attr_volt_aux.dev_attr.attr,
+-	&iio_const_attr_volt_aux_scale.dev_attr.attr,
++	&iio_dev_attr_in0_raw.dev_attr.attr,
++	&iio_const_attr_in0_scale.dev_attr.attr,
+ 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_y_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_xy.dev_attr.attr,
+diff --git a/drivers/staging/iio/accel/adis16204_ring.c b/drivers/staging/iio/accel/adis16204_ring.c
+index e7f88b3..0264a50 100644
+--- a/drivers/staging/iio/accel/adis16204_ring.c
++++ b/drivers/staging/iio/accel/adis16204_ring.c
+@@ -59,10 +59,10 @@ static struct attribute_group adis16204_scan_el_group = {
+  * adis16204_poll_func_th() top half interrupt handler called by trigger
+  * @private_data:	iio_dev
+  **/
+-static void adis16204_poll_func_th(struct iio_dev *indio_dev)
++static void adis16204_poll_func_th(struct iio_dev *indio_dev, s64 timestamp)
+ {
+ 	struct adis16204_state *st = iio_dev_get_devdata(indio_dev);
+-	st->last_timestamp = indio_dev->trig->timestamp;
++	st->last_timestamp = timestamp;
+ 	schedule_work(&st->work_trigger_to_ring);
+ }
+ 
+diff --git a/drivers/staging/iio/accel/adis16204_trigger.c b/drivers/staging/iio/accel/adis16204_trigger.c
+index 2bc05dc..8e9db90 100644
+--- a/drivers/staging/iio/accel/adis16204_trigger.c
++++ b/drivers/staging/iio/accel/adis16204_trigger.c
+@@ -23,8 +23,7 @@ static int adis16204_data_rdy_trig_poll(struct iio_dev *dev_info,
+ 	struct adis16204_state *st = iio_dev_get_devdata(dev_info);
+ 	struct iio_trigger *trig = st->trig;
+ 
+-	trig->timestamp = timestamp;
+-	iio_trigger_poll(trig);
++	iio_trigger_poll(trig, timestamp);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -83,14 +82,13 @@ int adis16204_probe_trigger(struct iio_dev *indio_dev)
+ 	struct adis16204_state *st = indio_dev->dev_data;
+ 
+ 	st->trig = iio_allocate_trigger();
+-	st->trig->name = kmalloc(IIO_TRIGGER_NAME_LENGTH, GFP_KERNEL);
++	st->trig->name = kasprintf(GFP_KERNEL,
++				"adis16204-dev%d",
++				indio_dev->id);
+ 	if (!st->trig->name) {
+ 		ret = -ENOMEM;
+ 		goto error_free_trig;
+ 	}
+-	snprintf((char *)st->trig->name,
+-		 IIO_TRIGGER_NAME_LENGTH,
+-		 "adis16204-dev%d", indio_dev->id);
+ 	st->trig->dev.parent = &st->us->dev;
+ 	st->trig->owner = THIS_MODULE;
+ 	st->trig->private_data = st;
+-- 
+1.7.0.4
