@@ -1,43 +1,33 @@
-Return-Path: <jic23@cam.ac.uk>
-From: Jonathan Cameron <jic23@cam.ac.uk>
-To: vapier@gentoo.org
-Cc: barry.song@analog.com,
-	uclinux-dist-devel@blackfin.uclinux.org,
-	linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 0/3] staging:iio: abi updates for new drivers from Analog.
-Date: Sun,  8 Aug 2010 16:08:15 +0100
-Message-Id: <1281280098-11111-1-git-send-email-jic23@cam.ac.uk>
+Return-Path: <vapier.adi@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <1281280098-11111-1-git-send-email-jic23@cam.ac.uk>
+References: <1281280098-11111-1-git-send-email-jic23@cam.ac.uk>
+From: Mike Frysinger <vapier.adi@gmail.com>
+Date: Tue, 10 Aug 2010 02:55:08 -0400
+Message-ID: <AANLkTikjsmcCp2w-6ALb68_NVA2Pzx-fcEa_8uUiouBy@mail.gmail.com>
+Subject: Re: [Uclinux-dist-devel] [PATCH 0/3] staging:iio: abi updates for new
+	drivers from Analog.
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org,
+	barry.song@analog.com
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Here are the 3 abi update patches needed to make the drivers
-Mike posted to work with the current mainline kernel.
+On Sun, Aug 8, 2010 at 11:08, Jonathan Cameron wrote:
+> Here are the 3 abi update patches needed to make the drivers
+> Mike posted to work with the current mainline kernel.
 
-These (or equivalent) will need to get merged into the underlying
-drivers before they are sent on to Greg KH.
+thanks, i merged your changes into our tree and was able to extend
+them to another driver (gyro/adis16261).  we did have a tracker item
+open to cull imu/volt.h usage, but it wasnt fixed yet as you noticed
+;).
 
-For reference these were against staging-next with the patches
-Mike sent applied.
+question about iio_work_cont though ... we have some drivers using that field.
+static void ad7816_interrupt_bh(struct work_struct *work_s)
+{
+    struct iio_work_cont *wc = to_iio_work_cont_no_check(work_s);
+    struct ad7816_chip_info *chip = wc->st;
 
-Thanks,
-
-Jonathan
-
-Jonathan Cameron (3):
-  staging:iio:adis16201 update driver to compile with mainline abi.
-  staging:iio:adis16203 update driver to compile with mainline abi.
-  staging:iio:adis16204 update driver to compile with mainline abi.
-
- drivers/staging/iio/accel/adis16201.h         |    2 --
- drivers/staging/iio/accel/adis16201_core.c    |   19 +++++++++----------
- drivers/staging/iio/accel/adis16201_ring.c    |    4 ++--
- drivers/staging/iio/accel/adis16201_trigger.c |   10 ++++------
- drivers/staging/iio/accel/adis16203.h         |    2 --
- drivers/staging/iio/accel/adis16203_core.c    |   19 +++++++++----------
- drivers/staging/iio/accel/adis16203_ring.c    |    4 ++--
- drivers/staging/iio/accel/adis16203_trigger.c |   10 ++++------
- drivers/staging/iio/accel/adis16204.h         |    2 --
- drivers/staging/iio/accel/adis16204_core.c    |   19 +++++++++----------
- drivers/staging/iio/accel/adis16204_ring.c    |    4 ++--
- drivers/staging/iio/accel/adis16204_trigger.c |   10 ++++------
- 12 files changed, 45 insertions(+), 60 deletions(-)
+i'm guessing the ad7816_chip_info.iio_work_cont should be converted to
+a work_struct ?
+-mike
