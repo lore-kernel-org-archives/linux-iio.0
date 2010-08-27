@@ -1,250 +1,300 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:42582 "EHLO
-	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753515Ab0H0OUA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Aug 2010 10:20:00 -0400
-Message-ID: <4C77CA90.2030806@cam.ac.uk>
-Date: Fri, 27 Aug 2010 15:24:16 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <manuel.stahl9ab33xy531iis.fraunhofer.de@bounce.antispameurope.com>
+Message-ID: <4C77CC28.6020604@iis.fraunhofer.de>
+Date: Fri, 27 Aug 2010 16:31:04 +0200
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-	"Song, Barry" <Barry.Song@analog.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"uclinux-dist-devel@blackfin.uclinux.org"
-	<uclinux-dist-devel@blackfin.uclinux.org>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: "Song, Barry" <Barry.Song@analog.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "uclinux-dist-devel@blackfin.uclinux.org" <uclinux-dist-devel@blackfin.uclinux.org>
 Subject: Re: [IIO] Cleanup userspace
-References: <4C777E16.6040708@iis.fraunhofer.de> <4C77AC01.3090204@cam.ac.uk> <4C77B68B.4060805@iis.fraunhofer.de>
-In-Reply-To: <4C77B68B.4060805@iis.fraunhofer.de>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+References: <4C777E16.6040708@iis.fraunhofer.de> <4C77AC01.3090204@cam.ac.uk> <4C77B68B.4060805@iis.fraunhofer.de> <4C77CA90.2030806@cam.ac.uk>
+In-Reply-To: <4C77CA90.2030806@cam.ac.uk>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha1; boundary="------------ms050401060300090206050304"
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Manuel,
-> 
-> Am 27.08.2010 14:13, schrieb Jonathan Cameron:
+This is a cryptographically signed message in MIME format.
+
+--------------ms050401060300090206050304
+Content-Type: multipart/mixed;
+ boundary="------------010408010002020403020108"
+
+This is a multi-part message in MIME format.
+--------------010408010002020403020108
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+
+Hi Jonathan,
+
+Am 27.08.2010 16:24, schrieb Jonathan Cameron:
+
+>>> As things currently stand these are in iio:device[n]/scan_elements. I=
+ guess we could move
+>>> them into iio:device[n]/buffer0  It is a bit of a pain in code as the=
+ buffer directory is
+>>> completely managed by the buffer implementation rather than the drive=
+r. Still I guess this
+>>> could be passed to the buffer initialization code.  Things are a bit =
+tricky as there are
+>>> other attributes caused by the buffer it self. It cleans up the abi a=
+t the cost of further
+>>> messing up the separation between buffer implementation and device dr=
+iver and some complexity
+>>> in driver.  It would be easier to move the scan_elements directory in=
+to the buffer directory?
+>>> Perhaps that is the better option?
+>>> What do others think on this?
+>>
+>> I have no problem with moving the whole directory.
+> Cool.  I'll have a look to see how clean we can make the move.  It is g=
+oing to break
+> a lot of drivers in the Analog devices tree so it might be worth delayi=
+ng it for now
+> (perhaps updating the abi and saying the old location is deprecated).
+
+Indeed I did that for the last few hours. A patch is coming on Monday.
+
+
+>>>> - Endianess of the buffers:
+>>>>     * Device specific? Then we need a sysfs file to publish this inf=
+o.
+>>>>     * CPU native byte order?
+>>> It is currently cpu native for all software ring buffers. Agreed this=
+ may
+>>> change and hardware buffers may do either.  So you are quite right, w=
+e
+>>> need an attribute for this.  So I guess we support 3 options, cpu nat=
+ive, big endian,
+>>> little endian. So what shall we call it?
 >>>
->>> The points I'd like to clean up are:
->>> - We currently have plenty of (optional) information per channel:
->>>    * the raw value
->>>    * an offset and scale to apply in user software
->>>    * calibration offset and gain applied in the device
->>>    * enable and bit size (not implemented yet) in the ring buffer
->>>
->>>    Should we put all that stuff into a channel directory?
->>>    |- /sys/bus/iio/device0/accel_x/
->>>       |- raw_value
->>>       |- offset
->>>       |- scale
->>>       |- calib_offset
->>>       |- calib_scale
->> Maybe...
+>>> byte_order - [big little native]  Mostly read only, though sooner or =
+later I expect
+>>> we will get some device that allows this to be controlled.
 >>
->> The disadvantages are:
->> * Breaks the abi compatibility we have been trying to maintain with hwmon.
->> * Lots more attribute groups (actually this is an advantage in some places where
->>    we have a driver covering devices with different numbers of channels)
->> * Cannot share attributes of the above types - e.g. often the offset and scale
->>    apply to all channels.  The abi allows this to be specified by a single attribute.
->>    It also allows say all acceleration offsets to be given by simply accel_offset.
-> Actually we still could have these shared files or a shared directory:
->     |- /sys/bus/iio/device0/accel/
->        |- offset
->        |- scale
->     |- /sys/bus/iio/device0/accel_x/
->        |- raw_value
->     |- /sys/bus/iio/device0/accel_y/
->        |- raw_value
-> 
-> Not that nice, I have to agree. Another idea would be to use some other separator, like ':'. Then it's also clear for the human user, what's the name and what's the postfix:
->     |- /sys/bus/iio/device0/accel_x:raw
->     |- /sys/bus/iio/device0/accel_x:offset
->     |- /sys/bus/iio/device0/accel_x:scale
-That would be nice, but breaks with hwmon style...  Given average user is going to be using your tools anyway
-I don't think this being that readable is critical.
-> 
-> 
->> Advantages:
->> * It looks nicer to a human reader. (though anyone can deploy "ls *accel_x*" to get much the same.
->> * Possibly some minor simplifications in library code. (fairly trivial I would expect?)
-> 
-> Yes, that's not too complicated now. We just have to define the postfixes somewhere. Right now, adis16400 uses _offset for the internal calibration offset and _scale for user space scaling.
-> 
->> Note that a similar level of complexity exists for the event interfaces.
->> ..zip..
-> 
-> I'm not so familiar with the event stuff, but I don't think we need
-> to make it consistent, if there are different arguments for the one
-> or the other solution. Yet we should use the same seperator, so if we
-> switch to ':' in the channels, we should also switch in the event
-> interface.
-Firstly, the situation is so similar I think we would need to change both
-just to avoid confusion from anyone looking at the files.  Also I'd imagine
-it will allow some code to be shared in the userspace utils.
+>> Do we really need native? I think the driver can figure out what the n=
+ative order is, and just give that one (even at compile time).
+> Good point.
+>> Another possibility is to let the driver always convert to native.
+> Bad idea.  In a hw ring buffer case that adds a lot of overhead for str=
+aight logging applications where we just want
+> to store what the data is rather than do anything with it live.
+>   At least that's what most userspace software want's to have. I recent=
+ly sent a patch for sca3000 to the linux-iio list.
+> Strange, those never made it to my inbox.  I'm guessing my iio subscrip=
+tion must have borked.  I'll get them
+> from the archive.
+>
+> On those patches, I'm happy to ack the first (not sure when that bug sn=
+uck in and I'm not in a possition
+> to test the fix today).
+>
+> As per this discussion I'd rather avoid the data munging of the second.=
+ That's a job for userspace.
+> Obviously we'll be needing the stuff you specify below for that though.=
 
-Second, I still think the issues with breaking hwmon consistency make this a bad idea
-(and that stuff is from Greg KH + I think Andrew Morton is in favour of such unifying
-based on discussions elswhere)  Keep both of them happy is going to make our eventual
-move out of staging easier.
-> 
-> 
->>>    The enable and bit size are maybe buffer specific and could go
->>>    into the buffer directory.
->> We could do this now I guess (couldn't before the max1363 was switched to the current abi)
+
+OK, will be my next task.
+
+>>> Probably not using the current ring buffer. As you say a big issue is=
+ how
+>>> to describe a packed storage particularly if not all of it is packed.=
+
+>>> (so say 2 x 11 bit readings in 3 bytes - for say a 4 channel device, =
+this is a better
+>>> bet than packing it tightly into 44 bits.)  So far we haven't had a h=
+ardware
+>>> ring device giving us packed data, but I'm sure one will turn up and =
+force
+>>> this element sometime in the future.  I think we leave this until a u=
+ser comes
+>>> along then pin it down then. I agree it is definitely something we ne=
+ed to consider,
+>>> just not now!  Still if you want to lay out some guidance for discuss=
+ion feel
+>>> free.
 >>
->> As things currently stand these are in iio:device[n]/scan_elements. I guess we could move
->> them into iio:device[n]/buffer0  It is a bit of a pain in code as the buffer directory is
->> completely managed by the buffer implementation rather than the driver. Still I guess this
->> could be passed to the buffer initialization code.  Things are a bit tricky as there are
->> other attributes caused by the buffer it self. It cleans up the abi at the cost of further
->> messing up the separation between buffer implementation and device driver and some complexity
->> in driver.  It would be easier to move the scan_elements directory into the buffer directory?
->> Perhaps that is the better option?
->> What do others think on this?
-> 
-> I have no problem with moving the whole directory.
-Cool.  I'll have a look to see how clean we can make the move.  It is going to break
-a lot of drivers in the Analog devices tree so it might be worth delaying it for now
-(perhaps updating the abi and saying the old location is deprecated).
-> 
->>> - The trigger is also an iio device so I'd prefer to have:
->>>    |- /sys/bus/iio/iio0 (can be empty, if it's a pure trigger)
->>>    |- /sys/bus/iio/iio0:trigger0
->> I did think about this one (note it was marked as to be considered in the last abi
->> discussion). The only reason to have the iio0 directory is if it tells us
->> something.  Currently the iio:device0 is the top level device.
->> Is your intent that iio0 will have children of iio0:device0 and iio0:trigger0 etc?
->> Thus it won't be empty under any circumstances. It will always contain at least
->> iio0:device0 or iio0:trigger0
-> 
-> I just thought of renaming device<n> to iio<n> but we can also move the whole device directory. In 'lsiio' I have a structure like:
-Ah, fair enough. Ah. I see you proposed the name change in a previous email to the list.  Sorry
-as stated below my subscription clearly died for a few days! To what you state there I'd
-rather we just added iio: to the beginning of all the naming. 
-
-The question that arises is whether triggers and the base device should be at the same
-level as it is perfectly possible to have a driver implementing one and not the other.
-Perhaps we do want to introduce a top level grouping above them both?  So have iio[n]
-containing either or both of trigger0 and device0 with the names under dev being
-iio3:device0:buffer0:access0 etc?
-> 
-> Device 000: <name>
->   <channel_group> (if available)
->     <channel>
->         :
->   <channel_group> (if available)
->     <channel>
->         :
-> 
->   buffer<n>       (if available)
->     bytes per datum: <bpd>,     length: 64
->     event:  /dev/device0:buffer0:event0
->     access: /dev/device0:buffer0:access0
-> 
->   trigger<m>: <trigger_name>  (if available)
-> 
-> So for a single trigger it would be:
-Ah I see.  I don't want to see the gpio triggers sharing a directory.
-It implies a connection between them when they are no more connected
-than two separate instances of an accelerometer.  The gpios in question
-may even be on completely different physical chips.
-> 
-> # lsiio -v
-> Device 000: gpio_trigger
->   trigger0: irqtrig30
->   trigger1: irqtrig45
->   trigger2: irqtrig51
-> 
-> or in sysfs:
->     |- /sys/bus/iio/iio0/
->        |- name
->        |- iio0:trigger0
->           |- name
->        |- iio0:trigger1
->           |- name
->        |- iio0:trigger2
->           |- name
-> 
-> 
->>> - Consitent names in ABI and code:
->>>    * bps: 'bits per sample' or 'bytes per scan'?
->> Yup, that's why bpd was introduced in the code.
->>>    * bpd: 'bytes per datum' but named bps in user space
->> Hmm. there does seem to be some confusion still around this.
->> Given we also have bpse (bits per scan element) the confusion gets even worse.
->> Perhaps the right option is to loose the acronyms entirely and have it long hand
->> both in core code (drivers don't really matter for this) and the userspace abi?
-> 
-> OK, I'll prepare a patch.
-Excellent. Beware that these turn up a fair bit in the docs as well.
-> 
->>> - Endianess of the buffers:
->>>    * Device specific? Then we need a sysfs file to publish this info.
->>>    * CPU native byte order?
->> It is currently cpu native for all software ring buffers. Agreed this may
->> change and hardware buffers may do either.  So you are quite right, we
->> need an attribute for this.  So I guess we support 3 options, cpu native, big endian,
->> little endian. So what shall we call it?
+>> OK, no packed buffers for now, but we should implement variable
+>> sample sizes for standard types. Indeed we already have this for the
+>> timestamp, which is always 64 bit.
+>
+> Agreed. These ought to be in there and will be needed
+>
+>> To be compatible with future extensions we could have:
+>>    |- /sys/bus/iio/ii0/buffer0/scan_elements/
+>>       |- accel_x:en    (0 or 1)
+>>       |- accel_x:type  (i.e. s14/16, see *)
+>>       |- accel_x:index
 >>
->> byte_order - [big little native]  Mostly read only, though sooner or later I expect
->> we will get some device that allows this to be controlled.
-> 
-> Do we really need native? I think the driver can figure out what the native order is, and just give that one (even at compile time).
-Good point.
-> Another possibility is to let the driver always convert to native.
-Bad idea.  In a hw ring buffer case that adds a lot of overhead for straight logging applications where we just want
-to store what the data is rather than do anything with it live.
- At least that's what most userspace software want's to have. I recently sent a patch for sca3000 to the linux-iio list.
-Strange, those never made it to my inbox.  I'm guessing my iio subscription must have borked.  I'll get them
-from the archive.
+>
+>> * s14/16 means signed 14 bits, stored in 16 bits, right aligned. If
+>> it's left aligned we can just modify the scale attribute and give the
+>> 16 bit interpretation in <channel>:raw.
+> That is quite a neat way of doing it though I'm not sure 'type' is the
+> ideal name.  My immediate thought is that type would be 'acceleration'!=
 
-On those patches, I'm happy to ack the first (not sure when that bug snuck in and I'm not in a possition
-to test the fix today).
+> We definitely want this on list.  We'd also want to drop the precision
+> attribute as that will just confuse things.
 
-As per this discussion I'd rather avoid the data munging of the second. That's a job for userspace.
-Obviously we'll be needing the stuff you specify below for that though.
-> 
->>>    * Allow packed buffers for samples with fractional sizes?
->> Probably not using the current ring buffer. As you say a big issue is how
->> to describe a packed storage particularly if not all of it is packed.
->> (so say 2 x 11 bit readings in 3 bytes - for say a 4 channel device, this is a better
->> bet than packing it tightly into 44 bits.)  So far we haven't had a hardware
->> ring device giving us packed data, but I'm sure one will turn up and force
->> this element sometime in the future.  I think we leave this until a user comes
->> along then pin it down then. I agree it is definitely something we need to consider,
->> just not now!  Still if you want to lay out some guidance for discussion feel
->> free.
-> 
-> OK, no packed buffers for now, but we should implement variable
-> sample sizes for standard types. Indeed we already have this for the
-> timestamp, which is always 64 bit.
+I'm open for any other name.
 
-Agreed. These ought to be in there and will be needed 
+>> I don't like the index prefix any more, even I had proposed this
+>> once. This is because for devices with more than 10 channels
+>> (adis16400) we have to get a leading 0 in the name to maintain
+>> alphabetical sorting, which is nearly impossible with the current
+>> macros.
+> Does alphabetical sorting really matter? + Doesn't putting 01 etc
+> in the macro give the right name?  I thought it was stringified in the
+> first step (could be wrong, that macro stuff always gives me a headache=
+).
+> We definitely need the prefix or equivalent so this is worth clearing u=
+p.
 
-> To be compatible with future extensions we could have:
->   |- /sys/bus/iio/ii0/buffer0/scan_elements/
->      |- accel_x:en    (0 or 1)
->      |- accel_x:type  (i.e. s14/16, see *)
->      |- accel_x:index
-> 
+If it doesn't sort alphabetically, there no point in having a prefix. It =
 
-> * s14/16 means signed 14 bits, stored in 16 bits, right aligned. If
-> it's left aligned we can just modify the scale attribute and give the
-> 16 bit interpretation in <channel>:raw.
-That is quite a neat way of doing it though I'm not sure 'type' is the
-ideal name.  My immediate thought is that type would be 'acceleration'!
-We definitely want this on list.  We'd also want to drop the precision
-attribute as that will just confuse things.
+was thought as a helper for the human user. Currently the number is a=20
+preprocessor definition and used both as prefix and as number. If=20
+there's a 0 in front, it will be interpreted as octal number.
 
-> I don't like the index prefix any more, even I had proposed this
-> once. This is because for devices with more than 10 channels
-> (adis16400) we have to get a leading 0 in the name to maintain
-> alphabetical sorting, which is nearly impossible with the current
-> macros.
-Does alphabetical sorting really matter? + Doesn't putting 01 etc
-in the macro give the right name?  I thought it was stringified in the
-first step (could be wrong, that macro stuff always gives me a headache).
-We definitely need the prefix or equivalent so this is worth clearing up.
+Regards,
+--=20
+Dipl.-Inf. Manuel Stahl
+Fraunhofer-Institut f=C3=BCr Integrierte Schaltungen IIS
+- Leistungsoptimierte Systeme -
+Nordostpark 93                Telefon  +49 (0)911/58061-6419
+90411 N=C3=BCrnberg                Fax      +49 (0)911/58061-6398
+http://www.iis.fraunhofer.de  manuel.stahl@iis.fraunhofer.de
 
-Thanks,
+--------------010408010002020403020108
+Content-Type: text/x-vcard; charset=utf-8;
+ name="manuel_stahl.vcf"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="manuel_stahl.vcf"
 
-Jonathan
+YmVnaW46dmNhcmQNCmZuOk1hbnVlbCBTdGFobA0KbjpTdGFobDtNYW51ZWwNCmVtYWlsO2lu
+dGVybmV0Om1hbnVlbC5zdGFobEBpaXMuZnJhdW5ob2Zlci5kZQ0KdGVsO3dvcms6KzQ5IDkx
+MSA1ODA2MS02NDE5DQp4LW1vemlsbGEtaHRtbDpGQUxTRQ0KdmVyc2lvbjoyLjENCmVuZDp2
+Y2FyZA0KDQo=
+--------------010408010002020403020108--
+
+--------------ms050401060300090206050304
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIUWDCC
+BC4wggMWoAMCAQICAgEMMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
+ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
+MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNzEyMDUxNTE4NTha
+Fw0xOTA2MzAyMzU5NTlaMGcxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpGcmF1bmhvZmVyMSEw
+HwYDVQQLExhGcmF1bmhvZmVyIENvcnBvcmF0ZSBQS0kxIDAeBgNVBAMTF0ZyYXVuaG9mZXIg
+Um9vdCBDQSAyMDA3MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwz0eyWWNW4g3
+9z7BIbZU3rA6VxsaHO6YCHQBWm+13zZXK0RFzvNGE2V2lZhUx6iFFW4SpBfoC+EhpzE9Kd3/
+o9ZP0rSJ/WNK2qtT71kFtE/iOyqRmcDLZVeBozCTkA7Jvf0VMjIIpEh8VgXyuzaJ4kjCb0uS
+DCVFvq0+1McB7bHIErQwCG6nb396IKe7tOU1gFQsGY/ZS8Adq0P4YRSU+7AdXbeR7GLAkdFe
+3acLsy0fZjkYPK4EFOXSfTbZss2nE7DMRZ1WBFFxMzZcL11RE55PSJAOl1pLcNu5edmh1pTI
+ktCl+2C/La2ecQAXhsD9SGadFEwFTkzRcUQL0HoPsQIDAQABo4HZMIHWMB8GA1UdIwQYMBaA
+FDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB/wQEAwIBBjAdBgNVHQ4EFgQUL0VCHjEF
+gNVw2PgdV8tbetU9nPcwEgYDVR0TAQH/BAgwBgEB/wIBATBwBgNVHR8EaTBnMGWgY6Bhhl9o
+dHRwOi8vcGtpLnRlbGVzZWMuZGUvY2dpLWJpbi9zZXJ2aWNlL2FmX0Rvd25sb2FkQVJMLmNy
+bD8tY3JsX2Zvcm1hdD1YXzUwOSYtaXNzdWVyPURUX1JPT1RfQ0FfMjANBgkqhkiG9w0BAQUF
+AAOCAQEAGrdMejzl3cJjst6GJU5FYkz08o9fXdfljc4O1/WU4YuTMTanmiPnZ+FSwVoY1pnh
+gGQ4D0o1M11meijcOH83cs1SdW4Qjmx9jPcp63fCuRkF1Lc9YbroBRLUUGJT7yJUYvxNAcNe
+1A2DdGlR1TyerNukK3xthJbTcU3P1S1xo5LEP1XPmz0jdwdX6cjOHZe2M/uRl2CWD/f23m8l
+kBKrGUfVRCOuwZI1KL8qQ14P6gdd0kTQhYLjErxH6iyt+PBBUn02uiKfeqAy70u8+ToHtinG
+fThfNVV+OPI/fLPuLW4heF+5E8/v3mWAyCX1Zi1USq3O2S4OMM+AM6eLGXLqQTCCBMYwggOu
+oAMCAQICCmEdMxkAAAAAAAMwDQYJKoZIhvcNAQEFBQAwZzELMAkGA1UEBhMCREUxEzARBgNV
+BAoTCkZyYXVuaG9mZXIxITAfBgNVBAsTGEZyYXVuaG9mZXIgQ29ycG9yYXRlIFBLSTEgMB4G
+A1UEAxMXRnJhdW5ob2ZlciBSb290IENBIDIwMDcwHhcNMDcxMjEyMTQ0OTM1WhcNMTkwNjMw
+MjM1OTU5WjBnMQswCQYDVQQGEwJERTETMBEGA1UEChMKRnJhdW5ob2ZlcjEhMB8GA1UECxMY
+RnJhdW5ob2ZlciBDb3Jwb3JhdGUgUEtJMSAwHgYDVQQDExdGcmF1bmhvZmVyIFVzZXIgQ0Eg
+MjAwNzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMJ0EFHLddGB8Ss1nVqCOq+S
+rs0C/K7I+yB3Dv9oEhWQSadnfGgkX/oOJhplPkqeCQrTh08zEYprVaJLTaVPVhvjx3h5+KML
+3lVGZIfajA89TolhLwk+ml29VbqV5nLhNrSwdZy157b6dCu5JffxvpO5wXCn95Z/TLyLdeux
+gVHs/MnhczvmBbBRS+Ow9UoKn+PZvyYmUEdOHg8cA5PGFaRP9q88q734VnlI+W4+y7BoN5wt
+uqVrqWbbpOQ2sHYo9riv3b+x5WdsMrVieKGApQ/dNvgB5vuuAchRnsANZHgpAiPCzP7/QFYY
+qk2undcxEXwPgo72oifB3uQZ3xHOV/cCAwEAAaOCAXIwggFuMBIGA1UdEwEB/wQIMAYBAf8C
+AQAwHQYDVR0OBBYEFE8dr4jKbbiqHAn5xdER7Vm0k/oLMA4GA1UdDwEB/wQEAwIBBjAfBgNV
+HSMEGDAWgBQvRUIeMQWA1XDY+B1Xy1t61T2c9zB1BgNVHR8EbjBsMGqgaKBmhjFodHRwOi8v
+Y3JsLnBraS5mcmF1bmhvZmVyLmRlL2ZoZy1yb290LWNhLTIwMDcuY3JshjFodHRwOi8vY3Js
+LmZyYXVuaG9mZXItcGtpLmRlL2ZoZy1yb290LWNhLTIwMDcuY3JsMIGQBggrBgEFBQcBAQSB
+gzCBgDA+BggrBgEFBQcwAoYyaHR0cDovL2NlcnQucGtpLmZyYXVuaG9mZXIuZGUvZmhnLXJv
+b3QtY2EtMjAwNy5jZXIwPgYIKwYBBQUHMAKGMmh0dHA6Ly9jZXJ0LmZyYXVuaG9mZXItcGtp
+LmRlL2ZoZy1yb290LWNhLTIwMDcuY2VyMA0GCSqGSIb3DQEBBQUAA4IBAQAAd2yMM/nuVwQl
+ysuIOeZOTKTOwpZLGYZNuERXwpWpEDfsMFUxX/Wetbu1a1qhd+x6SyXY4V1CzcFDOGF3wA7b
+yIV/6dyC53I9luZTjy9zjUsjLZucD4jeNja3QEu39sQsYsuE3MTfFFJgr/NeAFMHVkkHGx3l
+VXb+F3J3+9xeXHk/wB/yIKd/RIiMMTT4+a+ra2MTCsYAe4kgJ0vz2TXYGN8tujjCgsUUbwfJ
+C9wrOiCJMNJM1i7sUVqVKIoswW7h5QpWUNu1E4RAsDEz7depXCYaAIwPprEIkr0dE63zqHhm
+M4egS7iGmBfNQohUO6jJOWNcJ9dIxqc0c/4WUHg8MIIFpDCCBIygAwIBAgIKXts1tgAAAACh
+VTANBgkqhkiG9w0BAQUFADBnMQswCQYDVQQGEwJERTETMBEGA1UEChMKRnJhdW5ob2ZlcjEh
+MB8GA1UECxMYRnJhdW5ob2ZlciBDb3Jwb3JhdGUgUEtJMSAwHgYDVQQDExdGcmF1bmhvZmVy
+IFVzZXIgQ0EgMjAwNzAeFw0wOTEyMDkxNDQ3MTlaFw0xNTEyMDgxNDQ3MTlaMFgxCzAJBgNV
+BAYTAkRFMRMwEQYDVQQKEwpGcmF1bmhvZmVyMQwwCgYDVQQLEwNJSVMxDzANBgNVBAsTBlBl
+b3BsZTEVMBMGA1UEAxMMTWFudWVsIFN0YWhsMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
+CgKCAQEAyc3xmHk19YZAmko+jIM52UsU0keIMlZuSsQvl7HCAGEzifKcfmrR6EX1lYPUKVZJ
+BpqMSG3jyA4GW6gR/7cwz0IbnwFPC40KHPODRVIWDIJbZrP6zl+hF+G6/ZTe7ttPahSNhfeq
+wkhQZJYQwoxEPoaODFpgQ8St+WRRkgfi3jvjuUIddgWV4NyVAm6m5fmF9a6iv20e+ZSW0As7
+brNVf4Xvl5+y58MWniD3hjryz2OsqH1+NrFk8dxPjR4z3tWfty4x4J5af1z25tKX3xnJtx6Q
+l61FI1UlSUqR3DHxkmLY7RRCccxtpwOES2YgmBBpJzrxCJ+cYwVJIVHR7I/3qwIDAQABo4IC
+XzCCAlswDgYDVR0PAQH/BAQDAgbAMCkGA1UdEQQiMCCBHm1hbnVlbC5zdGFobEBpaXMuZnJh
+dW5ob2Zlci5kZTAdBgNVHQ4EFgQUbNwp94oWTogPsGGtBT3dcKtNhXUwHwYDVR0jBBgwFoAU
+Tx2viMptuKocCfnF0RHtWbST+gswdQYDVR0fBG4wbDBqoGigZoYxaHR0cDovL2NybC5wa2ku
+ZnJhdW5ob2Zlci5kZS9maGctdXNlci1jYS0yMDA3LmNybIYxaHR0cDovL2NybC5mcmF1bmhv
+ZmVyLXBraS5kZS9maGctdXNlci1jYS0yMDA3LmNybDCCAQoGCCsGAQUFBwEBBIH9MIH6MD4G
+CCsGAQUFBzAChjJodHRwOi8vY2VydC5wa2kuZnJhdW5ob2Zlci5kZS9maGctdXNlci1jYS0y
+MDA3LmNlcjA+BggrBgEFBQcwAoYyaHR0cDovL2NlcnQuZnJhdW5ob2Zlci1wa2kuZGUvZmhn
+LXVzZXItY2EtMjAwNy5jZXIwOwYIKwYBBQUHMAGGL2h0dHA6Ly9maGctdXNlci1jYS0yMDA3
+Lm9jc3AucGtpLmZyYXVuaG9mZXIuZGUvMDsGCCsGAQUFBzABhi9odHRwOi8vZmhnLXVzZXIt
+Y2EtMjAwNy5vY3NwLmZyYXVuaG9mZXItcGtpLmRlLzATBgNVHSUEDDAKBggrBgEFBQcDBDBE
+BgNVHSAEPTA7MDkGCysGAQQBhgpQAwEBMCowKAYIKwYBBQUHAgEWHGh0dHA6Ly9wa2kuZnJh
+dW5ob2Zlci5kZS9jcC8wDQYJKoZIhvcNAQEFBQADggEBACWdlXdPPIhNtjC0aYQgGYQ9+e0N
+XHqtaQsxgzZ2D4Rp34VeuZPWkF/YMDXgxB9sarzCO4WcBxz0QWjWiQOtAYzPc+2U3C3Pyw6Y
+Mc0yxSpg6R602Hy/O1aNn7XZ50gujpIjuwo0fAFhg8OI63uolkgKAYyoUcTRHc4Z4kwb8bgg
++5a56lKIqBwTweqd2VaNnW0FCfk5bJsaw2j3bHnWkS2D9BWt0U+t+/zCqMYT9E38vTP57kho
+vpb44u+8m6Xaaorn3bCK2WzHH5HZp/mVEZ6TZw+mJ+Ltjrcnz+9JAFYZxtpSpZN/k1zRM0P6
+6CKxV9JfFqwQJnso0LtpcfLFGuMwggWwMIIEmKADAgECAgpe2zMWAAAAAKFUMA0GCSqGSIb3
+DQEBBQUAMGcxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpGcmF1bmhvZmVyMSEwHwYDVQQLExhG
+cmF1bmhvZmVyIENvcnBvcmF0ZSBQS0kxIDAeBgNVBAMTF0ZyYXVuaG9mZXIgVXNlciBDQSAy
+MDA3MB4XDTA5MTIwOTE0NDcxOVoXDTE1MTIwODE0NDcxOVowWDELMAkGA1UEBhMCREUxEzAR
+BgNVBAoTCkZyYXVuaG9mZXIxDDAKBgNVBAsTA0lJUzEPMA0GA1UECxMGUGVvcGxlMRUwEwYD
+VQQDEwxNYW51ZWwgU3RhaGwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC18idY
+1AthSSVhkq1AFUnVfm5pzin5dEuixfJs+PaEQah9OWHYqSCxvXYL/58MtfpCsMl8HpIUsnuh
+O4GPDjdxawgLSItU/LCF5/cmdc6swyi2efJC5QviHJ/aB/MbD3TKl9aGQXE0K85/iS4KQT2c
+GM8uvWhF3yNNJIuauJ8BMX55vyelXT1rsldiGsBwKQ2PRcoM24jdtw/4DigsImSAkV6rxgg7
+CeV92wE1trfx7OOoK9PPgAE9D95oiZz25f2MH7NnD4Wzo+73chdoQnhPZHNBojcxdyg+Rf3O
+PCuKfXLYdTgEzEFGNFIwojaKoJ2ws1t2z3O62h7Tye0EMBtTAgMBAAGjggJrMIICZzAOBgNV
+HQ8BAf8EBAMCBDAwKQYDVR0RBCIwIIEebWFudWVsLnN0YWhsQGlpcy5mcmF1bmhvZmVyLmRl
+MB0GA1UdDgQWBBR3QN2wMBSsk+rxgVGtX5Plvb9tNzAfBgNVHSMEGDAWgBRPHa+Iym24qhwJ
++cXREe1ZtJP6CzB1BgNVHR8EbjBsMGqgaKBmhjFodHRwOi8vY3JsLnBraS5mcmF1bmhvZmVy
+LmRlL2ZoZy11c2VyLWNhLTIwMDcuY3JshjFodHRwOi8vY3JsLmZyYXVuaG9mZXItcGtpLmRl
+L2ZoZy11c2VyLWNhLTIwMDcuY3JsMIIBCgYIKwYBBQUHAQEEgf0wgfowPgYIKwYBBQUHMAKG
+Mmh0dHA6Ly9jZXJ0LnBraS5mcmF1bmhvZmVyLmRlL2ZoZy11c2VyLWNhLTIwMDcuY2VyMD4G
+CCsGAQUFBzAChjJodHRwOi8vY2VydC5mcmF1bmhvZmVyLXBraS5kZS9maGctdXNlci1jYS0y
+MDA3LmNlcjA7BggrBgEFBQcwAYYvaHR0cDovL2ZoZy11c2VyLWNhLTIwMDcub2NzcC5wa2ku
+ZnJhdW5ob2Zlci5kZS8wOwYIKwYBBQUHMAGGL2h0dHA6Ly9maGctdXNlci1jYS0yMDA3Lm9j
+c3AuZnJhdW5ob2Zlci1wa2kuZGUvMB8GA1UdJQQYMBYGCisGAQQBgjcKAwQGCCsGAQUFBwME
+MEQGA1UdIAQ9MDswOQYLKwYBBAGGClADAQEwKjAoBggrBgEFBQcCARYcaHR0cDovL3BraS5m
+cmF1bmhvZmVyLmRlL2NwLzANBgkqhkiG9w0BAQUFAAOCAQEAIny6T0ZtZyrpF4dLpcM6G07I
+HDC4cdGFLqfnqRLfMLwgdgxACPkYB8VbApcGKiSxcXaZEaz8CLLMrdwXkta1o+ZA6dz90Y1T
+dYlvHvdsuhGeIkNwlJoGwlf4Ts4+7pi2d7sbYX3GFSzD3KcBn6DJp71pl4+MEcvkwVVaBKCw
++ohHssiRmG40fYAmdxBqPmjGyer4PftJdkvZQqmhqVDFp1NTJU9k/CQaIB24iSnuXfjHi1+z
+Lz4flTgIGuN6lNAKGGt51kBl+WGy8olUDuyMwFAP7f1WIK4OWKWK0SbmMeDZtdN/aEpRRQ6l
+0QATNFeFf1cK8auS+lRgG7lj74w/KzGCA24wggNqAgEBMHUwZzELMAkGA1UEBhMCREUxEzAR
+BgNVBAoTCkZyYXVuaG9mZXIxITAfBgNVBAsTGEZyYXVuaG9mZXIgQ29ycG9yYXRlIFBLSTEg
+MB4GA1UEAxMXRnJhdW5ob2ZlciBVc2VyIENBIDIwMDcCCl7bNbYAAAAAoVUwCQYFKw4DAhoF
+AKCCAc4wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTAwODI3
+MTQzMTA0WjAjBgkqhkiG9w0BCQQxFgQU2CkBKxPoEeiFCF8r4CmNCBIkDkIwXwYJKoZIhvcN
+AQkPMVIwUDALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqG
+SIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMIGEBgkrBgEEAYI3EAQxdzB1MGcx
+CzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpGcmF1bmhvZmVyMSEwHwYDVQQLExhGcmF1bmhvZmVy
+IENvcnBvcmF0ZSBQS0kxIDAeBgNVBAMTF0ZyYXVuaG9mZXIgVXNlciBDQSAyMDA3Agpe2zMW
+AAAAAKFUMIGGBgsqhkiG9w0BCRACCzF3oHUwZzELMAkGA1UEBhMCREUxEzARBgNVBAoTCkZy
+YXVuaG9mZXIxITAfBgNVBAsTGEZyYXVuaG9mZXIgQ29ycG9yYXRlIFBLSTEgMB4GA1UEAxMX
+RnJhdW5ob2ZlciBVc2VyIENBIDIwMDcCCl7bMxYAAAAAoVQwDQYJKoZIhvcNAQEBBQAEggEA
+KXKhpr5uqNh669XDNB3yMLDBdQ2GIJgjo0AvMDFMR2L8b8lAMCIWOSAB87Gl5o9kZ5FyHYsB
+09trGLGN4jdAW1aXsiQv0PoHaz2cp59damW+fEU5iB3CGKFU+pPtk/6kmeG9fqpy8ENcfYeN
+UQ42ovjn3zAzo7cFtJnwWzLz+3yUR4CAwzwNDnDuqijmCI9UYb2/0wxkj2JCKXyWsBVBPxNa
+qpTGeBg2FRN34/jdXP1KBkqhtW32SpICSYH823DzVJwnpkW6Q884iHbr98zu1s84Fjk/fxve
+f/r1jq1cdnW+B6keyVdE6mDCR4lO3+RVlsoHNkNHK+r373JSZefrbgAAAAAAAA==
+--------------ms050401060300090206050304--
