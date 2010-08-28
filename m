@@ -1,41 +1,30 @@
-Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4C7D48D4.8070106@cam.ac.uk>
-Date: Tue, 31 Aug 2010 19:24:20 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:34165 "EHLO
+	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752705Ab0H1OAc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Aug 2010 10:00:32 -0400
+Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:54869)
+	by ppsw-33.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.159]:25)
+	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
+	id 1OpLfa-0006dW-hy (Exim 4.72) for linux-iio@vger.kernel.org
+	(return-path <jic23@hermes.cam.ac.uk>); Sat, 28 Aug 2010 14:42:06 +0100
+Message-ID: <4C791329.5050702@jic23.retrosnub.co.uk>
+Date: Sat, 28 Aug 2010 14:46:17 +0100
+From: Jonathan Cameron <kernel@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
- "Song, Barry" <Barry.Song@analog.com>
-Subject: Re: Using uinput
-References: <4C7BEF39.2030507@cam.ac.uk>
-In-Reply-To: <4C7BEF39.2030507@cam.ac.uk>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: magnetometer discussion
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/30/10 18:49, Jonathan Cameron wrote:
-> Hi All,
-> 
-> In a thread to do with the cma3000 accelerometer on lkml Dmitry (input maintainer)
-> in passing mentioned that an iio to input bridge might exist in userspace
-> using uinput.
-> 
-> Looks to me like this might kill two birds with one stone for us.
-> 
-> * Would finally provide a route for all those who want their sensor
->   drivers in input because they want to use them for games.
-> * Would provide a fairly good test of the generality of the user space interfaces.
-> 
-> What do people think of this rather than an in kernel bridge?
-> 
-> Given it would trivially have access to all of the info on what the sensor is producing
-> it actually looks much easier to do than the kernel bridge (which was going to need
-> a userspace configuration element or a lot of changes to our internal structure).
-> 
-If anyone is curious, I just cc'd the list in on the mega lkml thread because
-my post includes a quick and dirty hacked together bridge.  It works.
+Hi all,
 
-Annoying my test platform is currently rather unstable (stargate2).
-Git bisect fun tomorrow.
+Just a heads up that another abi discussion is taking
+place in response to the thread.
+
+[PATCH 0/3] ak8974 / ami305 magnetometer driver
+
+http://lkml.org/lkml/2010/8/27/182
 
 Jonathan
