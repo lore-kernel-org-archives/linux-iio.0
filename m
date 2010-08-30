@@ -1,1334 +1,528 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-31.csi.cam.ac.uk ([131.111.8.131]:50895 "EHLO
-	ppsw-31.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752488Ab0H3OEj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Aug 2010 10:04:39 -0400
-Message-ID: <4C7BBB97.1050501@cam.ac.uk>
-Date: Mon, 30 Aug 2010 15:09:27 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: linux-iio@vger.kernel.org, "Song, Barry" <Barry.Song@analog.com>
-Subject: Re: [PATCH 2/2] staging:iio move scan_elements into ring buffer
-References: <4C77D52A.6090606@cam.ac.uk> <1283165728-2231-2-git-send-email-manuel.stahl@iis.fraunhofer.de> <4C7BAAF1.7050501@cam.ac.uk> <4C7BB41C.7000907@iis.fraunhofer.de>
-In-Reply-To: <4C7BB41C.7000907@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from relay04-haj2.antispameurope.com ([83.246.65.54]:52022 "EHLO
+	relay04-haj2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754784Ab0H3Kzc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Aug 2010 06:55:32 -0400
+Received: from iis.fhg.de (iis.iis.fhg.de [153.96.172.2])
+	by relay04-haj2.antispameurope.com (ASE-Secure-MTA) with SMTP id 8FDBB5EC21D
+	for <linux-iio@vger.kernel.org>; Mon, 30 Aug 2010 12:55:28 +0200 (CEST)
+Received: from smtp02.iis.fraunhofer.de (mailserv02.iis.fraunhofer.de [153.96.171.52])
+	by iis.fhg.de (8.8.5/) with ESMTP id MAA07414
+	for <linux-iio@vger.kernel.org>; Mon, 30 Aug 2010 12:55:28 +0200 (MET DST)
+Received: from ix1064.iis.fraunhofer.de (ix1064.iis.fhg.de [10.12.75.146])
+	by smtp02.iis.fraunhofer.de (Postfix) with ESMTP id 6C78F200A083
+	for <linux-iio@vger.kernel.org>; Mon, 30 Aug 2010 12:55:28 +0200 (CEST)
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+To: linux-iio@vger.kernel.org
+Subject: [PATCH 1/2] staging:iio rename ring attributes
+Date: Mon, 30 Aug 2010 12:55:27 +0200
+Message-Id: <1283165728-2231-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <4C77D52A.6090606@cam.ac.uk>
+References: <4C77D52A.6090606@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/30/10 14:37, Manuel Stahl wrote:
-> Am 30.08.2010 14:58, schrieb Jonathan Cameron:
->> On 08/30/10 11:55, Manuel Stahl wrote:
->>> Signed-off-by: Manuel Stahl<manuel.stahl@iis.fraunhofer.de>
->>
->> On more complex patches like this, could you verify which devices
->> you have tested against? Given the nature of that patch it
->> probably doesn't matter that much, but it's nice to save people
->> from wondering if they need to test on devices you have already
->> tried it with.
-> 
-> I have an sca3000 and an adis16405 to test with. The patch was made against v26.36-rc2 and compiled fine for all drivers in staging.
-Cool.  Just add that detail to the patch description so it's there
-for the records.
-> 
->> This one certainly turned out to be more complex that I was
->> anticipating! Mostly movement of code so easy enough to
->> review.
->>
->> In one place as commented you made a change that obscured exactly
->> which bits your patch was changing. (see below).  I have nothing
->> against what you did, but would rather not have seen it in this
->> patch as it obscures what you are doing and that is never a good
->> idea! (in lis3l02dq_configure_ring).
-> 
-> I just wanted to have the same structure as for the adisXXXXX devices. Then maybe future changes can be done easier with find and replace.
-That's fine.  The ideal would have been to have this as a really basic
-prequel patch to the rest of the series.  The basic principle is to
-keep a patch to a single purpose.  So patch one is to bring the driver
-into line with the others in the tree (and arguably clean it up).
-Patch two then makes the changes on top of that.  The easier things
-are for reviewers, the faster you'll get a response!
-> 
->> There is also a movement of available_scan_masks in the iio_dev
->> structure that is unexplained.  It doesn't matter in the slightest
->> but is an odd thing to do without reason.
-> 
-> Oh, this was an accident. I also moved available_scan_masks and realised afterwards that it's not buffer but device dependant.
-Ah, easily done!  The only way to catch this sort of unnecessary change
-is to do a reasonably close read of the resulting patch.
-> 
->> Neither of the above matter, they are just things I picked up
->> on whilst reviewing.
-> 
-> The next patch will be a sync of docu and device ABI. Will again break most analog drivers, but should be doable by find and replace ;)
-Excellent.
-> 
->> Thanks for doing this!
->>
->> More than happy to add
->>
->> Signed-off-by: Jonathan Cameron<jic23@cam.ac.uk>
->>
->> Please forward to Greg KH (assuming no one shouts - might be worth
->> holding this one for a day or so given it effects a lot of drivers)
->>
->> Again, sorry to the Analog guys, this one is going to thoroughly break
->> you tree when it hits it.  Still better now than later when it effects
->> even more drivers.
->>
->> Note this also needs a patch updating the documentation.
->>
->>
->>> ---
->>>   drivers/staging/iio/accel/adis16209_ring.c |   41 ++++++------
->>>   drivers/staging/iio/accel/adis16240_ring.c |   33 +++++-----
->>>   drivers/staging/iio/accel/lis3l02dq_ring.c |   62 +++++++++--------
->>>   drivers/staging/iio/accel/sca3000_ring.c   |    2 +-
->>>   drivers/staging/iio/adc/max1363_core.c     |    1 -
->>>   drivers/staging/iio/adc/max1363_ring.c     |   18 +++--
->>>   drivers/staging/iio/gyro/adis16260_ring.c  |   31 ++++-----
->>>   drivers/staging/iio/iio.h                  |  102 +---------------------------
->>>   drivers/staging/iio/imu/adis16300_ring.c   |   43 ++++++------
->>>   drivers/staging/iio/imu/adis16350_ring.c   |   47 ++++++-------
->>>   drivers/staging/iio/imu/adis16400_ring.c   |   49 +++++++-------
->>>   drivers/staging/iio/industrialio-core.c    |   12 ---
->>>   drivers/staging/iio/industrialio-ring.c    |   28 ++++++--
->>>   drivers/staging/iio/ring_generic.h         |  100 +++++++++++++++++++++++++++
->>>   drivers/staging/iio/ring_sw.c              |   25 ++++---
->>>   15 files changed, 298 insertions(+), 296 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
->>> index d40b95f..120bf91 100644
->>> --- a/drivers/staging/iio/accel/adis16209_ring.c
->>> +++ b/drivers/staging/iio/accel/adis16209_ring.c
->>> @@ -115,11 +115,11 @@ static void adis16209_trigger_bh_to_ring(struct work_struct *work_s)
->>>       struct adis16209_state *st
->>>           = container_of(work_s, struct adis16209_state,
->>>                      work_trigger_to_ring);
->>> +    struct iio_ring_buffer *ring = st->indio_dev->ring;
->>>
->>>       int i = 0;
->>>       s16 *data;
->>> -    size_t datasize = st->indio_dev
->>> -        ->ring->access.get_bytes_per_datum(st->indio_dev->ring);
->>> +    size_t datasize = ring->access.get_bytes_per_datum(ring);
->>>
->>>       data = kmalloc(datasize , GFP_KERNEL);
->>>       if (data == NULL) {
->>> @@ -127,19 +127,19 @@ static void adis16209_trigger_bh_to_ring(struct work_struct *work_s)
->>>           return;
->>>       }
->>>
->>> -    if (st->indio_dev->scan_count)
->>> +    if (ring->scan_count)
->>>           if (adis16209_read_ring_data(&st->indio_dev->dev, st->rx)>= 0)
->>> -            for (; i<  st->indio_dev->scan_count; i++)
->>> +            for (; i<  ring->scan_count; i++)
->>>                   data[i] = be16_to_cpup(
->>>                       (__be16 *)&(st->rx[i*2]));
->>>
->>>       /* Guaranteed to be aligned with 8 byte boundary */
->>> -    if (st->indio_dev->scan_timestamp)
->>> +    if (ring->scan_timestamp)
->>>           *((s64 *)(data + ((i + 3)/4)*4)) = st->last_timestamp;
->>>
->>> -    st->indio_dev->ring->access.store_to(st->indio_dev->ring,
->>> -                        (u8 *)data,
->>> -                        st->last_timestamp);
->>> +    ring->access.store_to(ring,
->>> +                  (u8 *)data,
->>> +                  st->last_timestamp);
->>>
->>>       iio_trigger_notify_done(st->indio_dev->trig);
->>>       kfree(data);
->>> @@ -159,19 +159,6 @@ int adis16209_configure_ring(struct iio_dev *indio_dev)
->>>       struct adis16209_state *st = indio_dev->dev_data;
->>>       struct iio_ring_buffer *ring;
->>>       INIT_WORK(&st->work_trigger_to_ring, adis16209_trigger_bh_to_ring);
->>> -    /* Set default scan mode */
->>> -
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_supply.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_rot.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_y.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_temp.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_aux_adc.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_incli_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_incli_y.number);
->>> -    indio_dev->scan_timestamp = true;
->>> -
->>> -    indio_dev->scan_el_attrs =&adis16209_scan_el_group;
->>>
->>>       ring = iio_sw_rb_allocate(indio_dev);
->>>       if (!ring) {
->>> @@ -182,11 +169,23 @@ int adis16209_configure_ring(struct iio_dev *indio_dev)
->>>       /* Effectively select the ring buffer implementation */
->>>       iio_ring_sw_register_funcs(&ring->access);
->>>       ring->bpe = 2;
->>> +    ring->scan_el_attrs =&adis16209_scan_el_group;
->>> +    ring->scan_timestamp = true;
->>>       ring->preenable =&iio_sw_ring_preenable;
->>>       ring->postenable =&iio_triggered_ring_postenable;
->>>       ring->predisable =&iio_triggered_ring_predisable;
->>>       ring->owner = THIS_MODULE;
->>>
->>> +    /* Set default scan mode */
->>> +    iio_scan_mask_set(ring, iio_scan_el_supply.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_rot.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_y.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_temp.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_aux_adc.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_incli_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_incli_y.number);
->>> +
->>>       ret = iio_alloc_pollfunc(indio_dev, NULL,&adis16209_poll_func_th);
->>>       if (ret)
->>>           goto error_iio_sw_rb_free;
->>> diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
->>> index 462d452..581d0e5 100644
->>> --- a/drivers/staging/iio/accel/adis16240_ring.c
->>> +++ b/drivers/staging/iio/accel/adis16240_ring.c
->>> @@ -107,11 +107,11 @@ static void adis16240_trigger_bh_to_ring(struct work_struct *work_s)
->>>       struct adis16240_state *st
->>>           = container_of(work_s, struct adis16240_state,
->>>                   work_trigger_to_ring);
->>> +    struct iio_ring_buffer *ring = st->indio_dev->ring;
->>>
->>>       int i = 0;
->>>       s16 *data;
->>> -    size_t datasize = st->indio_dev
->>> -        ->ring->access.get_bytes_per_datum(st->indio_dev->ring);
->>> +    size_t datasize = ring->access.get_bytes_per_datum(ring);
->>>
->>>       data = kmalloc(datasize , GFP_KERNEL);
->>>       if (data == NULL) {
->>> @@ -119,17 +119,17 @@ static void adis16240_trigger_bh_to_ring(struct work_struct *work_s)
->>>           return;
->>>       }
->>>
->>> -    if (st->indio_dev->scan_count)
->>> +    if (ring->scan_count)
->>>           if (adis16240_read_ring_data(&st->indio_dev->dev, st->rx)>= 0)
->>> -            for (; i<  st->indio_dev->scan_count; i++)
->>> +            for (; i<  ring->scan_count; i++)
->>>                   data[i] = be16_to_cpup(
->>>                       (__be16 *)&(st->rx[i*2]));
->>>
->>>       /* Guaranteed to be aligned with 8 byte boundary */
->>> -    if (st->indio_dev->scan_timestamp)
->>> +    if (ring->scan_timestamp)
->>>           *((s64 *)(data + ((i + 3)/4)*4)) = st->last_timestamp;
->>>
->>> -    st->indio_dev->ring->access.store_to(st->indio_dev->ring,
->>> +    ring->access.store_to(ring,
->>>               (u8 *)data,
->>>               st->last_timestamp);
->>>
->>> @@ -151,17 +151,6 @@ int adis16240_configure_ring(struct iio_dev *indio_dev)
->>>       struct adis16240_state *st = indio_dev->dev_data;
->>>       struct iio_ring_buffer *ring;
->>>       INIT_WORK(&st->work_trigger_to_ring, adis16240_trigger_bh_to_ring);
->>> -    /* Set default scan mode */
->>> -
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_supply.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_y.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_z.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_temp.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_aux_adc.number);
->>> -    indio_dev->scan_timestamp = true;
->>> -
->>> -    indio_dev->scan_el_attrs =&adis16240_scan_el_group;
->>>
->>>       ring = iio_sw_rb_allocate(indio_dev);
->>>       if (!ring) {
->>> @@ -172,11 +161,21 @@ int adis16240_configure_ring(struct iio_dev *indio_dev)
->>>       /* Effectively select the ring buffer implementation */
->>>       iio_ring_sw_register_funcs(&ring->access);
->>>       ring->bpe = 2;
->>> +    ring->scan_el_attrs =&adis16240_scan_el_group;
->>> +    ring->scan_timestamp = true;
->>>       ring->preenable =&iio_sw_ring_preenable;
->>>       ring->postenable =&iio_triggered_ring_postenable;
->>>       ring->predisable =&iio_triggered_ring_predisable;
->>>       ring->owner = THIS_MODULE;
->>>
->>> +    /* Set default scan mode */
->>> +    iio_scan_mask_set(ring, iio_scan_el_supply.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_y.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_z.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_temp.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_aux_adc.number);
->>> +
->>>       ret = iio_alloc_pollfunc(indio_dev, NULL,&adis16240_poll_func_th);
->>>       if (ret)
->>>           goto error_iio_sw_rb_free;
->>> diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
->>> index 4c1b36a..a68a381 100644
->>> --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
->>> +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
->>> @@ -150,38 +150,40 @@ ssize_t lis3l02dq_read_accel_from_ring(struct device *dev,
->>>       int ret, len = 0, i = 0;
->>>       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->>>       struct iio_dev *dev_info = dev_get_drvdata(dev);
->>> +    struct iio_ring_buffer *ring = dev_info->ring;
->>> +    struct attribute_group *scan_el_attrs = ring->scan_el_attrs;
->>>       s16 *data;
->>>
->>> -    while (dev_info->scan_el_attrs->attrs[i]) {
->>> +    while (scan_el_attrs->attrs[i]) {
->>>           el = to_iio_scan_el((struct device_attribute *)
->>> -                    (dev_info->scan_el_attrs->attrs[i]));
->>> +                    (scan_el_attrs->attrs[i]));
->>>           /* label is in fact the address */
->>>           if (el->label == this_attr->address)
->>>               break;
->>>           i++;
->>>       }
->>> -    if (!dev_info->scan_el_attrs->attrs[i]) {
->>> +    if (!scan_el_attrs->attrs[i]) {
->>>           ret = -EINVAL;
->>>           goto error_ret;
->>>       }
->>>       /* If this element is in the scan mask */
->>> -    ret = iio_scan_mask_query(dev_info, el->number);
->>> +    ret = iio_scan_mask_query(ring, el->number);
->>>       if (ret<  0)
->>>           goto error_ret;
->>>       if (ret) {
->>> -        data = kmalloc(dev_info->ring->access.get_bytes_per_datum(dev_info->ring),
->>> +        data = kmalloc(ring->access.get_bytes_per_datum(ring),
->>>                      GFP_KERNEL);
->>>           if (data == NULL)
->>>               return -ENOMEM;
->>> -        ret = dev_info->ring->access.read_last(dev_info->ring,
->>> -                              (u8 *)data);
->>> +        ret = ring->access.read_last(ring,
->>> +                    (u8 *)data);
->>>           if (ret)
->>>               goto error_free_data;
->>>       } else {
->>>           ret = -EINVAL;
->>>           goto error_ret;
->>>       }
->>> -    len = iio_scan_mask_count_to_right(dev_info, el->number);
->>> +    len = iio_scan_mask_count_to_right(ring, el->number);
->>>       if (len<  0) {
->>>           ret = len;
->>>           goto error_free_data;
->>> @@ -211,11 +213,12 @@ static const u8 read_all_tx_array[] = {
->>>    **/
->>>   static int lis3l02dq_read_all(struct lis3l02dq_state *st, u8 *rx_array)
->>>   {
->>> +    struct iio_ring_buffer *ring = st->help.indio_dev->ring;
->>>       struct spi_transfer *xfers;
->>>       struct spi_message msg;
->>>       int ret, i, j = 0;
->>>
->>> -    xfers = kzalloc((st->help.indio_dev->scan_count) * 2
->>> +    xfers = kzalloc((ring->scan_count) * 2
->>>               * sizeof(*xfers), GFP_KERNEL);
->>>       if (!xfers)
->>>           return -ENOMEM;
->>> @@ -223,7 +226,7 @@ static int lis3l02dq_read_all(struct lis3l02dq_state *st, u8 *rx_array)
->>>       mutex_lock(&st->buf_lock);
->>>
->>>       for (i = 0; i<  ARRAY_SIZE(read_all_tx_array)/4; i++) {
->>> -        if (st->help.indio_dev->scan_mask&  (1<<  i)) {
->>> +        if (ring->scan_mask&  (1<<  i)) {
->>>               /* lower byte */
->>>               xfers[j].tx_buf = st->tx + 2*j;
->>>               st->tx[2*j] = read_all_tx_array[i*4];
->>> @@ -251,7 +254,7 @@ static int lis3l02dq_read_all(struct lis3l02dq_state *st, u8 *rx_array)
->>>        * values in alternate bytes
->>>        */
->>>       spi_message_init(&msg);
->>> -    for (j = 0; j<  st->help.indio_dev->scan_count * 2; j++)
->>> +    for (j = 0; j<  ring->scan_count * 2; j++)
->>>           spi_message_add_tail(&xfers[j],&msg);
->>>
->>>       ret = spi_sync(st->us,&msg);
->>> @@ -279,13 +282,13 @@ static int lis3l02dq_get_ring_element(struct iio_sw_ring_helper_state *h,
->>>       u8 *rx_array ;
->>>       s16 *data = (s16 *)buf;
->>>
->>> -    rx_array = kzalloc(4 * (h->indio_dev->scan_count), GFP_KERNEL);
->>> +    rx_array = kzalloc(4 * (h->indio_dev->ring->scan_count), GFP_KERNEL);
->>>       if (rx_array == NULL)
->>>           return -ENOMEM;
->>>       ret = lis3l02dq_read_all(lis3l02dq_h_to_s(h), rx_array);
->>>       if (ret<  0)
->>>           return ret;
->>> -    for (i = 0; i<  h->indio_dev->scan_count; i++)
->>> +    for (i = 0; i<  h->indio_dev->ring->scan_count; i++)
->>>           data[i] = combine_8_to_16(rx_array[i*4+1],
->>>                       rx_array[i*4+3]);
->>>       kfree(rx_array);
->>> @@ -479,28 +482,29 @@ int lis3l02dq_configure_ring(struct iio_dev *indio_dev)
->>>   {
->>>       int ret;
->>>       struct iio_sw_ring_helper_state *h = iio_dev_get_devdata(indio_dev);
->>> -
->>> +    struct iio_ring_buffer *ring;
->>>       INIT_WORK(&h->work_trigger_to_ring, lis3l02dq_trigger_bh_to_ring);
->>> -    /* Set default scan mode */
->>>       h->get_ring_element =&lis3l02dq_get_ring_element;
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_y.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_z.number);
->>> -    indio_dev->scan_timestamp = true;
->>> -
->>> -    indio_dev->scan_el_attrs =&lis3l02dq_scan_el_group;
->>>
->>> -    indio_dev->ring = iio_sw_rb_allocate(indio_dev);
->>> -    if (!indio_dev->ring)
->> Personally I'd have done this directly into indio_dev->ring
->> as it would have reduced the lines changed count and kept
->> your changes more apparent.  Still doesn't really matter and
->> not worth respining the patch.
->>> +    ring = iio_sw_rb_allocate(indio_dev);
->>> +    if (!ring)
->>>           return -ENOMEM;
->>>
->>> +    indio_dev->ring = ring;
->>>       /* Effectively select the ring buffer implementation */
->>> -    iio_ring_sw_register_funcs(&indio_dev->ring->access);
->>> -    indio_dev->ring->bpe = 2;
->>> -    indio_dev->ring->preenable =&iio_sw_ring_preenable;
->>> -    indio_dev->ring->postenable =&iio_triggered_ring_postenable;
->>> -    indio_dev->ring->predisable =&iio_triggered_ring_predisable;
->>> -    indio_dev->ring->owner = THIS_MODULE;
->>> +    iio_ring_sw_register_funcs(&ring->access);
->>> +    ring->bpe = 2;
->>> +    ring->scan_el_attrs =&lis3l02dq_scan_el_group;
->>> +    ring->scan_timestamp = true;
->>> +    ring->preenable =&iio_sw_ring_preenable;
->>> +    ring->postenable =&iio_triggered_ring_postenable;
->>> +    ring->predisable =&iio_triggered_ring_predisable;
->>> +    ring->owner = THIS_MODULE;
->>> +
->>> +    /* Set default scan mode */
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_y.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_z.number);
->>>
->>>       ret = iio_alloc_pollfunc(indio_dev, NULL,&lis3l02dq_poll_func_th);
->>>       if (ret)
->>> diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
->>> index eff5b9a..6d19d15 100644
->>> --- a/drivers/staging/iio/accel/sca3000_ring.c
->>> +++ b/drivers/staging/iio/accel/sca3000_ring.c
->>> @@ -264,12 +264,12 @@ static inline void sca3000_rb_free(struct iio_ring_buffer *r)
->>>
->>>   int sca3000_configure_ring(struct iio_dev *indio_dev)
->>>   {
->>> -    indio_dev->scan_el_attrs =&sca3000_scan_el_group;
->>>       indio_dev->ring = sca3000_rb_allocate(indio_dev);
->>>       if (indio_dev->ring == NULL)
->>>           return -ENOMEM;
->>>       indio_dev->modes |= INDIO_RING_HARDWARE_BUFFER;
->>>
->>> +    indio_dev->ring->scan_el_attrs =&sca3000_scan_el_group;
->>>       indio_dev->ring->access.rip_lots =&sca3000_rip_hw_rb;
->>>       indio_dev->ring->access.get_length =&sca3000_ring_get_length;
->>>       indio_dev->ring->access.get_bytes_per_datum =&sca3000_ring_get_bytes_per_datum;
->>> diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
->>> index 6435e50..1dc428f 100644
->>> --- a/drivers/staging/iio/adc/max1363_core.c
->>> +++ b/drivers/staging/iio/adc/max1363_core.c
->>> @@ -1631,7 +1631,6 @@ static int __devinit max1363_probe(struct i2c_client *client,
->>>       st->indio_dev->attrs = st->chip_info->dev_attrs;
->>>
->>>       /* Todo: this shouldn't be here. */
->>> -    st->indio_dev->scan_el_attrs = st->chip_info->scan_attrs;
->>>       st->indio_dev->dev_data = (void *)(st);
->>>       st->indio_dev->driver_module = THIS_MODULE;
->>>       st->indio_dev->modes = INDIO_DIRECT_MODE;
->>> diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
->>> index edac0ba..1d6ce54 100644
->>> --- a/drivers/staging/iio/adc/max1363_ring.c
->>> +++ b/drivers/staging/iio/adc/max1363_ring.c
->>> @@ -30,6 +30,7 @@
->>>   /* Todo: test this */
->>>   int max1363_single_channel_from_ring(long mask, struct max1363_state *st)
->>>   {
->>> +    struct iio_ring_buffer *ring = st->indio_dev->ring;
->>>       unsigned long numvals;
->>>       int count = 0, ret;
->>>       u8 *ring_data;
->>> @@ -44,8 +45,7 @@ int max1363_single_channel_from_ring(long mask, struct max1363_state *st)
->>>           ret = -ENOMEM;
->>>           goto error_ret;
->>>       }
->>> -    ret = st->indio_dev->ring->access.read_last(st->indio_dev->ring,
->>> -                        ring_data);
->>> +    ret = ring->access.read_last(ring, ring_data);
->>>       if (ret)
->>>           goto error_free_ring_data;
->>>       /* Need a count of channels prior to this one */
->>> @@ -77,6 +77,7 @@ error_ret:
->>>   static int max1363_ring_preenable(struct iio_dev *indio_dev)
->>>   {
->>>       struct max1363_state *st = indio_dev->dev_data;
->>> +    struct iio_ring_buffer *ring = indio_dev->ring;
->>>       size_t d_size;
->>>       unsigned long numvals;
->>>
->>> @@ -84,7 +85,7 @@ static int max1363_ring_preenable(struct iio_dev *indio_dev)
->>>        * Need to figure out the current mode based upon the requested
->>>        * scan mask in iio_dev
->>>        */
->>> -    st->current_mode = max1363_match_mode(st->indio_dev->scan_mask,
->>> +    st->current_mode = max1363_match_mode(ring->scan_mask,
->>>                       st->chip_info);
->>>       if (!st->current_mode)
->>>           return -EINVAL;
->>> @@ -92,14 +93,14 @@ static int max1363_ring_preenable(struct iio_dev *indio_dev)
->>>       max1363_set_scan_mode(st);
->>>
->>>       numvals = hweight_long(st->current_mode->modemask);
->>> -    if (indio_dev->ring->access.set_bytes_per_datum) {
->>> +    if (ring->access.set_bytes_per_datum) {
->>>           if (st->chip_info->bits != 8)
->>>               d_size = numvals*2 + sizeof(s64);
->>>           else
->>>               d_size = numvals + sizeof(s64);
->>>           if (d_size % 8)
->>>               d_size += 8 - (d_size % 8);
->>> -        indio_dev->ring->access.set_bytes_per_datum(indio_dev->ring, d_size);
->>> +        ring->access.set_bytes_per_datum(ring, d_size);
->>>       }
->>>
->>>       return 0;
->>> @@ -135,7 +136,7 @@ static void max1363_poll_bh_to_ring(struct work_struct *work_s)
->>>       struct max1363_state *st = container_of(work_s, struct max1363_state,
->>>                             poll_work);
->>>       struct iio_dev *indio_dev = st->indio_dev;
->>> -    struct iio_sw_ring_buffer *ring = iio_to_sw_ring(indio_dev->ring);
->>> +    struct iio_sw_ring_buffer *sw_ring = iio_to_sw_ring(indio_dev->ring);
->>>       s64 time_ns;
->>>       __u8 *rxbuf;
->>>       int b_sent;
->>> @@ -175,7 +176,7 @@ static void max1363_poll_bh_to_ring(struct work_struct *work_s)
->>>
->>>       memcpy(rxbuf + d_size - sizeof(s64),&time_ns, sizeof(time_ns));
->>>
->>> -    indio_dev->ring->access.store_to(&ring->buf, rxbuf, time_ns);
->>> +    indio_dev->ring->access.store_to(&sw_ring->buf, rxbuf, time_ns);
->>>   done:
->>>       kfree(rxbuf);
->>>       atomic_dec(&st->protect_ring);
->>> @@ -193,12 +194,13 @@ int max1363_register_ring_funcs_and_init(struct iio_dev *indio_dev)
->>>           goto error_ret;
->>>       }
->>>       /* Effectively select the ring buffer implementation */
->>> -    iio_ring_sw_register_funcs(&st->indio_dev->ring->access);
->>> +    iio_ring_sw_register_funcs(&indio_dev->ring->access);
->>>       ret = iio_alloc_pollfunc(indio_dev, NULL,&max1363_poll_func_th);
->>>       if (ret)
->>>           goto error_deallocate_sw_rb;
->>>
->>>       /* Ring buffer functions - here trigger setup related */
->>> +    indio_dev->ring->scan_el_attrs = st->chip_info->scan_attrs;
->>>       indio_dev->ring->postenable =&iio_triggered_ring_postenable;
->>>       indio_dev->ring->preenable =&max1363_ring_preenable;
->>>       indio_dev->ring->predisable =&iio_triggered_ring_predisable;
->>> diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
->>> index 055d5e8..0334860 100644
->>> --- a/drivers/staging/iio/gyro/adis16260_ring.c
->>> +++ b/drivers/staging/iio/gyro/adis16260_ring.c
->>> @@ -110,11 +110,11 @@ static void adis16260_trigger_bh_to_ring(struct work_struct *work_s)
->>>       struct adis16260_state *st
->>>           = container_of(work_s, struct adis16260_state,
->>>                   work_trigger_to_ring);
->>> +    struct iio_ring_buffer *ring = st->indio_dev->ring;
->>>
->>>       int i = 0;
->>>       s16 *data;
->>> -    size_t datasize = st->indio_dev
->>> -        ->ring->access.get_bytes_per_datum(st->indio_dev->ring);
->>> +    size_t datasize = ring->access.get_bytes_per_datum(ring);
->>>
->>>       data = kmalloc(datasize , GFP_KERNEL);
->>>       if (data == NULL) {
->>> @@ -122,17 +122,17 @@ static void adis16260_trigger_bh_to_ring(struct work_struct *work_s)
->>>           return;
->>>       }
->>>
->>> -    if (st->indio_dev->scan_count)
->>> +    if (ring->scan_count)
->>>           if (adis16260_read_ring_data(&st->indio_dev->dev, st->rx)>= 0)
->>> -            for (; i<  st->indio_dev->scan_count; i++)
->>> +            for (; i<  ring->scan_count; i++)
->>>                   data[i] = be16_to_cpup(
->>>                       (__be16 *)&(st->rx[i*2]));
->>>
->>>       /* Guaranteed to be aligned with 8 byte boundary */
->>> -    if (st->indio_dev->scan_timestamp)
->>> +    if (ring->scan_timestamp)
->>>           *((s64 *)(data + ((i + 3)/4)*4)) = st->last_timestamp;
->>>
->>> -    st->indio_dev->ring->access.store_to(st->indio_dev->ring,
->>> +    ring->access.store_to(ring,
->>>               (u8 *)data,
->>>               st->last_timestamp);
->>>
->>> @@ -154,16 +154,6 @@ int adis16260_configure_ring(struct iio_dev *indio_dev)
->>>       struct adis16260_state *st = indio_dev->dev_data;
->>>       struct iio_ring_buffer *ring;
->>>       INIT_WORK(&st->work_trigger_to_ring, adis16260_trigger_bh_to_ring);
->>> -    /* Set default scan mode */
->>> -
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_supply.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_gyro.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_aux_adc.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_temp.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_angl.number);
->>> -    indio_dev->scan_timestamp = true;
->>> -
->>> -    indio_dev->scan_el_attrs =&adis16260_scan_el_group;
->>>
->>>       ring = iio_sw_rb_allocate(indio_dev);
->>>       if (!ring) {
->>> @@ -174,11 +164,20 @@ int adis16260_configure_ring(struct iio_dev *indio_dev)
->>>       /* Effectively select the ring buffer implementation */
->>>       iio_ring_sw_register_funcs(&ring->access);
->>>       ring->bpe = 2;
->>> +    ring->scan_el_attrs =&adis16260_scan_el_group;
->>> +    ring->scan_timestamp = true;
->>>       ring->preenable =&iio_sw_ring_preenable;
->>>       ring->postenable =&iio_triggered_ring_postenable;
->>>       ring->predisable =&iio_triggered_ring_predisable;
->>>       ring->owner = THIS_MODULE;
->>>
->>> +    /* Set default scan mode */
->>> +    iio_scan_mask_set(ring, iio_scan_el_supply.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_gyro.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_aux_adc.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_temp.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_angl.number);
->>> +
->>>       ret = iio_alloc_pollfunc(indio_dev, NULL,&adis16260_poll_func_th);
->>>       if (ret)
->>>           goto error_iio_sw_rb_free;
->>> diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
->>> index 9d0ca12..3a4e8c3 100644
->>> --- a/drivers/staging/iio/iio.h
->>> +++ b/drivers/staging/iio/iio.h
->>> @@ -87,15 +87,10 @@ void iio_remove_event_from_list(struct iio_event_handler_list *el,
->>>    * @event_attrs:    [DRIVER] event control attributes
->>>    * @event_conf_attrs:    [DRIVER] event configuration attributes
->>>    * @event_interfaces:    [INTERN] event chrdevs associated with interrupt lines
->>> + * @available_scan_masks: [DRIVER] optional array of allowed bitmasks
->>>    * @ring:        [DRIVER] any ring buffer present
->>>    * @mlock:        [INTERN] lock used to prevent simultaneous device state
->>>    *            changes
->>> - * @scan_el_attrs:    [DRIVER] control of scan elements if that scan mode
->>> - *            control method is used
->>> - * @scan_count:    [INTERN] the number of elements in the current scan mode
->>> - * @scan_mask:        [INTERN] bitmask used in masking scan mode elements
->>> - * @available_scan_masks: [DRIVER] optional array of allowed bitmasks
->>> - * @scan_timestamp:    [INTERN] does the scan mode include a timestamp
->>>    * @trig:        [INTERN] current device trigger (ring buffer modes)
->>>    * @pollfunc:        [DRIVER] function run on trigger being recieved
->>>    **/
->>> @@ -115,107 +110,14 @@ struct iio_dev {
->>>
->>>       struct iio_event_interface    *event_interfaces;
->>>
->> Why move this element?
->>> +    u32                *available_scan_masks;
->>>       struct iio_ring_buffer        *ring;
->>>       struct mutex            mlock;
->>>
->>> -    struct attribute_group        *scan_el_attrs;
->>> -    int                scan_count;
->>> -
->>> -    u32                scan_mask;
->>> -    u32                *available_scan_masks;
->>> -    bool                scan_timestamp;
->>>       struct iio_trigger        *trig;
->>>       struct iio_poll_func        *pollfunc;
->>>   };
->>>
->>> -/*
->>> - * These are mainly provided to allow for a change of implementation if a device
->>> - * has a large number of scan elements
->>> - */
->>> -#define IIO_MAX_SCAN_LENGTH 31
->>> -
->>> -/* note 0 used as error indicator as it doesn't make sense. */
->>> -static inline u32 iio_scan_mask_match(u32 *av_masks, u32 mask)
->>> -{
->>> -    while (*av_masks) {
->>> -        if (!(~*av_masks&  mask))
->>> -            return *av_masks;
->>> -        av_masks++;
->>> -    }
->>> -    return 0;
->>> -}
->>> -
->>> -static inline int iio_scan_mask_query(struct iio_dev *dev_info, int bit)
->>> -{
->>> -    u32 mask;
->>> -
->>> -    if (bit>  IIO_MAX_SCAN_LENGTH)
->>> -        return -EINVAL;
->>> -
->>> -    if (!dev_info->scan_mask)
->>> -        return 0;
->>> -
->>> -    if (dev_info->available_scan_masks)
->>> -        mask = iio_scan_mask_match(dev_info->available_scan_masks,
->>> -                    dev_info->scan_mask);
->>> -    else
->>> -        mask = dev_info->scan_mask;
->>> -
->>> -    if (!mask)
->>> -        return -EINVAL;
->>> -
->>> -    return !!(mask&  (1<<  bit));
->>> -};
->>> -
->>> -static inline int iio_scan_mask_set(struct iio_dev *dev_info, int bit)
->>> -{
->>> -    u32 mask;
->>> -    u32 trialmask = dev_info->scan_mask | (1<<  bit);
->>> -
->>> -    if (bit>  IIO_MAX_SCAN_LENGTH)
->>> -        return -EINVAL;
->>> -    if (dev_info->available_scan_masks) {
->>> -        mask = iio_scan_mask_match(dev_info->available_scan_masks,
->>> -                    trialmask);
->>> -        if (!mask)
->>> -            return -EINVAL;
->>> -    }
->>> -    dev_info->scan_mask = trialmask;
->>> -    dev_info->scan_count++;
->>> -
->>> -    return 0;
->>> -};
->>> -
->>> -static inline int iio_scan_mask_clear(struct iio_dev *dev_info, int bit)
->>> -{
->>> -    if (bit>  IIO_MAX_SCAN_LENGTH)
->>> -        return -EINVAL;
->>> -    dev_info->scan_mask&= ~(1<<  bit);
->>> -    dev_info->scan_count--;
->>> -    return 0;
->>> -};
->>> -
->>> -/**
->>> - * iio_scan_mask_count_to_right() - how many scan elements occur before here
->>> - * @dev_info: the iio_device whose scan mode we are querying
->>> - * @bit: which number scan element is this
->>> - **/
->>> -static inline int iio_scan_mask_count_to_right(struct iio_dev *dev_info,
->>> -                        int bit)
->>> -{
->>> -    int count = 0;
->>> -    int mask = (1<<  bit);
->>> -    if (bit>  IIO_MAX_SCAN_LENGTH)
->>> -        return -EINVAL;
->>> -    while (mask) {
->>> -        mask>>= 1;
->>> -        if (mask&  dev_info->scan_mask)
->>> -            count++;
->>> -    }
->>> -
->>> -    return count;
->>> -}
->>> -
->>>   /**
->>>    * iio_device_register() - register a device with the IIO subsystem
->>>    * @dev_info:        Device structure filled by the device driver
->>> diff --git a/drivers/staging/iio/imu/adis16300_ring.c b/drivers/staging/iio/imu/adis16300_ring.c
->>> index 854183c..742cad6 100644
->>> --- a/drivers/staging/iio/imu/adis16300_ring.c
->>> +++ b/drivers/staging/iio/imu/adis16300_ring.c
->>> @@ -134,11 +134,11 @@ static void adis16300_trigger_bh_to_ring(struct work_struct *work_s)
->>>       struct adis16300_state *st
->>>           = container_of(work_s, struct adis16300_state,
->>>                      work_trigger_to_ring);
->>> +    struct iio_ring_buffer *ring = st->indio_dev->ring;
->>>
->>>       int i = 0;
->>>       s16 *data;
->>> -    size_t datasize = st->indio_dev
->>> -        ->ring->access.get_bytes_per_datum(st->indio_dev->ring);
->>> +    size_t datasize = ring->access.get_bytes_per_datum(ring);
->>>
->>>       data = kmalloc(datasize , GFP_KERNEL);
->>>       if (data == NULL) {
->>> @@ -146,19 +146,19 @@ static void adis16300_trigger_bh_to_ring(struct work_struct *work_s)
->>>           return;
->>>       }
->>>
->>> -    if (st->indio_dev->scan_count)
->>> +    if (ring->scan_count)
->>>           if (adis16300_spi_read_burst(&st->indio_dev->dev, st->rx)>= 0)
->>> -            for (; i<  st->indio_dev->scan_count; i++)
->>> +            for (; i<  ring->scan_count; i++)
->>>                   data[i] = be16_to_cpup(
->>>                       (__be16 *)&(st->rx[i*2]));
->>>
->>>       /* Guaranteed to be aligned with 8 byte boundary */
->>> -    if (st->indio_dev->scan_timestamp)
->>> +    if (ring->scan_timestamp)
->>>           *((s64 *)(data + ((i + 3)/4)*4)) = st->last_timestamp;
->>>
->>> -    st->indio_dev->ring->access.store_to(st->indio_dev->ring,
->>> -                        (u8 *)data,
->>> -                        st->last_timestamp);
->>> +    ring->access.store_to(ring,
->>> +            (u8 *)data,
->>> +            st->last_timestamp);
->>>
->>>       iio_trigger_notify_done(st->indio_dev->trig);
->>>       kfree(data);
->>> @@ -178,20 +178,6 @@ int adis16300_configure_ring(struct iio_dev *indio_dev)
->>>       struct adis16300_state *st = indio_dev->dev_data;
->>>       struct iio_ring_buffer *ring;
->>>       INIT_WORK(&st->work_trigger_to_ring, adis16300_trigger_bh_to_ring);
->>> -    /* Set default scan mode */
->>> -
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_supply.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_gyro_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_y.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_z.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_temp.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_adc_0.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_incli_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_incli_y.number);
->>> -    indio_dev->scan_timestamp = true;
->>> -
->>> -    indio_dev->scan_el_attrs =&adis16300_scan_el_group;
->>>
->>>       ring = iio_sw_rb_allocate(indio_dev);
->>>       if (!ring) {
->>> @@ -202,11 +188,24 @@ int adis16300_configure_ring(struct iio_dev *indio_dev)
->>>       /* Effectively select the ring buffer implementation */
->>>       iio_ring_sw_register_funcs(&ring->access);
->>>       ring->bpe = 2;
->>> +    ring->scan_el_attrs =&adis16300_scan_el_group;
->>> +    ring->scan_timestamp = true;
->>>       ring->preenable =&iio_sw_ring_preenable;
->>>       ring->postenable =&iio_triggered_ring_postenable;
->>>       ring->predisable =&iio_triggered_ring_predisable;
->>>       ring->owner = THIS_MODULE;
->>>
->>> +    /* Set default scan mode */
->>> +    iio_scan_mask_set(ring, iio_scan_el_supply.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_gyro_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_y.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_z.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_temp.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_adc_0.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_incli_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_incli_y.number);
->>> +
->>>       ret = iio_alloc_pollfunc(indio_dev, NULL,&adis16300_poll_func_th);
->>>       if (ret)
->>>           goto error_iio_sw_rb_free;
->>> diff --git a/drivers/staging/iio/imu/adis16350_ring.c b/drivers/staging/iio/imu/adis16350_ring.c
->>> index 9620cbe..a0b80e4 100644
->>> --- a/drivers/staging/iio/imu/adis16350_ring.c
->>> +++ b/drivers/staging/iio/imu/adis16350_ring.c
->>> @@ -134,11 +134,11 @@ static void adis16350_trigger_bh_to_ring(struct work_struct *work_s)
->>>       struct adis16350_state *st
->>>           = container_of(work_s, struct adis16350_state,
->>>                      work_trigger_to_ring);
->>> +    struct iio_ring_buffer *ring = st->indio_dev->ring;
->>>
->>>       int i = 0;
->>>       s16 *data;
->>> -    size_t datasize = st->indio_dev
->>> -        ->ring->access.get_bytes_per_datum(st->indio_dev->ring);
->>> +    size_t datasize = ring->access.get_bytes_per_datum(ring);
->>>
->>>       data = kmalloc(datasize , GFP_KERNEL);
->>>       if (data == NULL) {
->>> @@ -146,19 +146,19 @@ static void adis16350_trigger_bh_to_ring(struct work_struct *work_s)
->>>           return;
->>>       }
->>>
->>> -    if (st->indio_dev->scan_count)
->>> +    if (ring->scan_count)
->>>           if (adis16350_spi_read_burst(&st->indio_dev->dev, st->rx)>= 0)
->>> -            for (; i<  st->indio_dev->scan_count; i++)
->>> +            for (; i<  ring->scan_count; i++)
->>>                   data[i] = be16_to_cpup(
->>>                       (__be16 *)&(st->rx[i*2]));
->>>
->>>       /* Guaranteed to be aligned with 8 byte boundary */
->>> -    if (st->indio_dev->scan_timestamp)
->>> +    if (ring->scan_timestamp)
->>>           *((s64 *)(data + ((i + 3)/4)*4)) = st->last_timestamp;
->>>
->>> -    st->indio_dev->ring->access.store_to(st->indio_dev->ring,
->>> -                        (u8 *)data,
->>> -                        st->last_timestamp);
->>> +    ring->access.store_to(ring,
->>> +            (u8 *)data,
->>> +            st->last_timestamp);
->>>
->>>       iio_trigger_notify_done(st->indio_dev->trig);
->>>       kfree(data);
->>> @@ -178,22 +178,6 @@ int adis16350_configure_ring(struct iio_dev *indio_dev)
->>>       struct adis16350_state *st = indio_dev->dev_data;
->>>       struct iio_ring_buffer *ring;
->>>       INIT_WORK(&st->work_trigger_to_ring, adis16350_trigger_bh_to_ring);
->>> -    /* Set default scan mode */
->>> -
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_supply.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_gyro_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_gyro_y.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_gyro_z.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_y.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_z.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_temp_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_temp_y.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_temp_z.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_adc_0.number);
->>> -    indio_dev->scan_timestamp = true;
->>> -
->>> -    indio_dev->scan_el_attrs =&adis16350_scan_el_group;
->>>
->>>       ring = iio_sw_rb_allocate(indio_dev);
->>>       if (!ring) {
->>> @@ -204,11 +188,26 @@ int adis16350_configure_ring(struct iio_dev *indio_dev)
->>>       /* Effectively select the ring buffer implementation */
->>>       iio_ring_sw_register_funcs(&ring->access);
->>>       ring->bpe = 2;
->>> +    ring->scan_el_attrs =&adis16350_scan_el_group;
->>> +    ring->scan_timestamp = true;
->>>       ring->preenable =&iio_sw_ring_preenable;
->>>       ring->postenable =&iio_triggered_ring_postenable;
->>>       ring->predisable =&iio_triggered_ring_predisable;
->>>       ring->owner = THIS_MODULE;
->>>
->>> +    /* Set default scan mode */
->>> +    iio_scan_mask_set(ring, iio_scan_el_supply.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_gyro_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_gyro_y.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_gyro_z.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_y.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_z.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_temp_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_temp_y.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_temp_z.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_adc_0.number);
->>> +
->>>       ret = iio_alloc_pollfunc(indio_dev, NULL,&adis16350_poll_func_th);
->>>       if (ret)
->>>           goto error_iio_sw_rb_free;
->>> diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
->>> index c8e2316..667f77b 100644
->>> --- a/drivers/staging/iio/imu/adis16400_ring.c
->>> +++ b/drivers/staging/iio/imu/adis16400_ring.c
->>> @@ -143,11 +143,11 @@ static void adis16400_trigger_bh_to_ring(struct work_struct *work_s)
->>>       struct adis16400_state *st
->>>           = container_of(work_s, struct adis16400_state,
->>>                      work_trigger_to_ring);
->>> +    struct iio_ring_buffer *ring = st->indio_dev->ring;
->>>
->>>       int i = 0;
->>>       s16 *data;
->>> -    size_t datasize = st->indio_dev
->>> -        ->ring->access.get_bytes_per_datum(st->indio_dev->ring);
->>> +    size_t datasize = ring->access.get_bytes_per_datum(ring);
->>>
->>>       data = kmalloc(datasize , GFP_KERNEL);
->>>       if (data == NULL) {
->>> @@ -155,19 +155,19 @@ static void adis16400_trigger_bh_to_ring(struct work_struct *work_s)
->>>           return;
->>>       }
->>>
->>> -    if (st->indio_dev->scan_count)
->>> +    if (ring->scan_count)
->>>           if (adis16400_spi_read_burst(&st->indio_dev->dev, st->rx)>= 0)
->>> -            for (; i<  st->indio_dev->scan_count; i++)
->>> +            for (; i<  ring->scan_count; i++)
->>>                   data[i]    = be16_to_cpup(
->>>                       (__be16 *)&(st->rx[i*2]));
->>>
->>>       /* Guaranteed to be aligned with 8 byte boundary */
->>> -    if (st->indio_dev->scan_timestamp)
->>> +    if (ring->scan_timestamp)
->>>           *((s64 *)(data + ((i + 3)/4)*4)) = st->last_timestamp;
->>>
->>> -    st->indio_dev->ring->access.store_to(st->indio_dev->ring,
->>> -                        (u8 *)data,
->>> -                        st->last_timestamp);
->>> +    ring->access.store_to(ring,
->>> +            (u8 *) data,
->>> +            st->last_timestamp);
->>>
->>>       iio_trigger_notify_done(st->indio_dev->trig);
->>>       kfree(data);
->>> @@ -187,23 +187,6 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
->>>       struct adis16400_state *st = indio_dev->dev_data;
->>>       struct iio_ring_buffer *ring;
->>>       INIT_WORK(&st->work_trigger_to_ring, adis16400_trigger_bh_to_ring);
->>> -    /* Set default scan mode */
->>> -
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_supply.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_gyro_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_gyro_y.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_gyro_z.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_y.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_accel_z.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_magn_x.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_magn_y.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_magn_z.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_temp.number);
->>> -    iio_scan_mask_set(indio_dev, iio_scan_el_adc_0.number);
->>> -    indio_dev->scan_timestamp = true;
->>> -
->>> -    indio_dev->scan_el_attrs =&adis16400_scan_el_group;
->>>
->>>       ring = iio_sw_rb_allocate(indio_dev);
->>>       if (!ring) {
->>> @@ -214,11 +197,27 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
->>>       /* Effectively select the ring buffer implementation */
->>>       iio_ring_sw_register_funcs(&ring->access);
->>>       ring->bpe = 2;
->>> +    ring->scan_el_attrs =&adis16400_scan_el_group;
->>> +    ring->scan_timestamp = true;
->>>       ring->preenable =&iio_sw_ring_preenable;
->>>       ring->postenable =&iio_triggered_ring_postenable;
->>>       ring->predisable =&iio_triggered_ring_predisable;
->>>       ring->owner = THIS_MODULE;
->>>
->>> +    /* Set default scan mode */
->>> +    iio_scan_mask_set(ring, iio_scan_el_supply.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_gyro_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_gyro_y.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_gyro_z.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_y.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_accel_z.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_magn_x.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_magn_y.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_magn_z.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_temp.number);
->>> +    iio_scan_mask_set(ring, iio_scan_el_adc_0.number);
->>> +
->>>       ret = iio_alloc_pollfunc(indio_dev, NULL,&adis16400_poll_func_th);
->>>       if (ret)
->>>           goto error_iio_sw_rb_free;
->>> diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
->>> index dd4d87a..5c0e56a 100644
->>> --- a/drivers/staging/iio/industrialio-core.c
->>> +++ b/drivers/staging/iio/industrialio-core.c
->>> @@ -507,24 +507,12 @@ static int iio_device_register_sysfs(struct iio_dev *dev_info)
->>>           goto error_ret;
->>>       }
->>>
->>> -    if (dev_info->scan_el_attrs) {
->>> -        ret = sysfs_create_group(&dev_info->dev.kobj,
->>> -                     dev_info->scan_el_attrs);
->>> -        if (ret)
->>> -            dev_err(&dev_info->dev,
->>> -                "Failed to add sysfs scan els\n");
->>> -    }
->>> -
->>>   error_ret:
->>>       return ret;
->>>   }
->>>
->>>   static void iio_device_unregister_sysfs(struct iio_dev *dev_info)
->>>   {
->>> -    if (dev_info->scan_el_attrs)
->>> -        sysfs_remove_group(&dev_info->dev.kobj,
->>> -                   dev_info->scan_el_attrs);
->>> -
->>>       sysfs_remove_group(&dev_info->dev.kobj, dev_info->attrs);
->>>   }
->>>
->>> diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
->>> index 610c2b6..148ca5c 100644
->>> --- a/drivers/staging/iio/industrialio-ring.c
->>> +++ b/drivers/staging/iio/industrialio-ring.c
->>> @@ -279,6 +279,16 @@ int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id)
->>>       if (ret)
->>>           goto error_free_ring_buffer_event_chrdev;
->>>
->>> +    if (ring->scan_el_attrs) {
->>> +        ret = sysfs_create_group(&ring->dev.kobj,
->>> +                     ring->scan_el_attrs);
->>> +        if (ret) {
->>> +            dev_err(&ring->dev,
->>> +                "Failed to add sysfs scan elements\n");
->>> +            goto error_free_ring_buffer_event_chrdev;
->>> +        }
->>> +    }
->>> +
->>>       return ret;
->>>   error_free_ring_buffer_event_chrdev:
->>>       __iio_free_ring_buffer_event_chrdev(ring);
->>> @@ -291,6 +301,10 @@ EXPORT_SYMBOL(iio_ring_buffer_register);
->>>
->>>   void iio_ring_buffer_unregister(struct iio_ring_buffer *ring)
->>>   {
->>> +    if (ring->scan_el_attrs)
->>> +        sysfs_remove_group(&ring->dev.kobj,
->>> +                   ring->scan_el_attrs);
->>> +
->>>       __iio_free_ring_buffer_access_chrdev(ring);
->>>       __iio_free_ring_buffer_event_chrdev(ring);
->>>       device_del(&ring->dev);
->>> @@ -468,7 +482,7 @@ ssize_t iio_scan_el_show(struct device *dev,
->>>       struct iio_dev *indio_dev = dev_get_drvdata(dev);
->>>       struct iio_scan_el *this_el = to_iio_scan_el(attr);
->>>
->>> -    ret = iio_scan_mask_query(indio_dev, this_el->number);
->>> +    ret = iio_scan_mask_query(indio_dev->ring, this_el->number);
->>>       if (ret<  0)
->>>           return ret;
->>>       return sprintf(buf, "%d\n", ret);
->>> @@ -491,19 +505,17 @@ ssize_t iio_scan_el_store(struct device *dev,
->>>           ret = -EBUSY;
->>>           goto error_ret;
->>>       }
->>> -    ret = iio_scan_mask_query(indio_dev, this_el->number);
->>> +    ret = iio_scan_mask_query(indio_dev->ring, this_el->number);
->>>       if (ret<  0)
->>>           goto error_ret;
->>>       if (!state&&  ret) {
->>> -        ret = iio_scan_mask_clear(indio_dev, this_el->number);
->>> +        ret = iio_scan_mask_clear(indio_dev->ring, this_el->number);
->>>           if (ret)
->>>               goto error_ret;
->>> -        indio_dev->scan_count--;
->>>       } else if (state&&  !ret) {
->>> -        ret = iio_scan_mask_set(indio_dev, this_el->number);
->>> +        ret = iio_scan_mask_set(indio_dev->ring, this_el->number);
->>>           if (ret)
->>>               goto error_ret;
->>> -        indio_dev->scan_count++;
->>>       }
->>>       if (this_el->set_state)
->>>           ret = this_el->set_state(this_el, indio_dev, state);
->>> @@ -520,7 +532,7 @@ ssize_t iio_scan_el_ts_show(struct device *dev,
->>>                   char *buf)
->>>   {
->>>       struct iio_dev *indio_dev = dev_get_drvdata(dev);
->>> -    return sprintf(buf, "%d\n", indio_dev->scan_timestamp);
->>> +    return sprintf(buf, "%d\n", indio_dev->ring->scan_timestamp);
->>>   }
->>>   EXPORT_SYMBOL(iio_scan_el_ts_show);
->>>
->>> @@ -538,7 +550,7 @@ ssize_t iio_scan_el_ts_store(struct device *dev,
->>>           ret = -EBUSY;
->>>           goto error_ret;
->>>       }
->>> -    indio_dev->scan_timestamp = state;
->>> +    indio_dev->ring->scan_timestamp = state;
->>>   error_ret:
->>>       mutex_unlock(&indio_dev->mlock);
->>>
->>> diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
->>> index ac017b1..6124353 100644
->>> --- a/drivers/staging/iio/ring_generic.h
->>> +++ b/drivers/staging/iio/ring_generic.h
->>> @@ -102,6 +102,11 @@ struct iio_ring_access_funcs {
->>>    * @bytes_per_datum    [DEVICE] size of individual datum including timestamp
->>>    * @bpe:        [DEVICE] size of individual channel value
->>>    * @loopcount:        [INTERN] number of times the ring has looped
->>> + * @scan_el_attrs:    [DRIVER] control of scan elements if that scan mode
->>> + *            control method is used
->>> + * @scan_count:    [INTERN] the number of elements in the current scan mode
->>> + * @scan_mask:        [INTERN] bitmask used in masking scan mode elements
->>> + * @scan_timestamp:    [INTERN] does the scan mode include a timestamp
->>>    * @access_handler:    [INTERN] chrdev access handling
->>>    * @ev_int:        [INTERN] chrdev interface for the event chrdev
->>>    * @shared_ev_pointer:    [INTERN] the shared event pointer to allow escalation of
->>> @@ -124,6 +129,10 @@ struct iio_ring_buffer {
->>>       int                bytes_per_datum;
->>>       int                bpe;
->>>       int                loopcount;
->>> +    struct attribute_group        *scan_el_attrs;
->>> +    int                scan_count;
->>> +    u32                scan_mask;
->>> +    bool                scan_timestamp;
->>>       struct iio_handler        access_handler;
->>>       struct iio_event_interface    ev_int;
->>>       struct iio_shared_ev_pointer    shared_ev_pointer;
->>> @@ -258,6 +267,97 @@ ssize_t iio_scan_el_ts_show(struct device *dev, struct device_attribute *attr,
->>>                      iio_scan_el_ts_store),    \
->>>       }
->>>
->>> +/*
->>> + * These are mainly provided to allow for a change of implementation if a device
->>> + * has a large number of scan elements
->>> + */
->>> +#define IIO_MAX_SCAN_LENGTH 31
->>> +
->>> +/* note 0 used as error indicator as it doesn't make sense. */
->>> +static inline u32 iio_scan_mask_match(u32 *av_masks, u32 mask)
->>> +{
->>> +    while (*av_masks) {
->>> +        if (!(~*av_masks&  mask))
->>> +            return *av_masks;
->>> +        av_masks++;
->>> +    }
->>> +    return 0;
->>> +}
->>> +
->>> +static inline int iio_scan_mask_query(struct iio_ring_buffer *ring, int bit)
->>> +{
->>> +    struct iio_dev *dev_info = ring->indio_dev;
->>> +    u32 mask;
->>> +
->>> +    if (bit>  IIO_MAX_SCAN_LENGTH)
->>> +        return -EINVAL;
->>> +
->>> +    if (!ring->scan_mask)
->>> +        return 0;
->>> +
->>> +    if (dev_info->available_scan_masks)
->>> +        mask = iio_scan_mask_match(dev_info->available_scan_masks,
->>> +                    ring->scan_mask);
->>> +    else
->>> +        mask = ring->scan_mask;
->>> +
->>> +    if (!mask)
->>> +        return -EINVAL;
->>> +
->>> +    return !!(mask&  (1<<  bit));
->>> +};
->>> +
->>> +static inline int iio_scan_mask_set(struct iio_ring_buffer *ring, int bit)
->>> +{
->>> +    struct iio_dev *dev_info = ring->indio_dev;
->>> +    u32 mask;
->>> +    u32 trialmask = ring->scan_mask | (1<<  bit);
->>> +
->>> +    if (bit>  IIO_MAX_SCAN_LENGTH)
->>> +        return -EINVAL;
->>> +    if (dev_info->available_scan_masks) {
->>> +        mask = iio_scan_mask_match(dev_info->available_scan_masks,
->>> +                    trialmask);
->>> +        if (!mask)
->>> +            return -EINVAL;
->>> +    }
->>> +    ring->scan_mask = trialmask;
->>> +    ring->scan_count++;
->>> +
->>> +    return 0;
->>> +};
->>> +
->>> +static inline int iio_scan_mask_clear(struct iio_ring_buffer *ring, int bit)
->>> +{
->>> +    if (bit>  IIO_MAX_SCAN_LENGTH)
->>> +        return -EINVAL;
->>> +    ring->scan_mask&= ~(1<<  bit);
->>> +    ring->scan_count--;
->>> +    return 0;
->>> +};
->>> +
->>> +/**
->>> + * iio_scan_mask_count_to_right() - how many scan elements occur before here
->>> + * @dev_info: the iio_device whose scan mode we are querying
->>> + * @bit: which number scan element is this
->>> + **/
->>> +static inline int iio_scan_mask_count_to_right(struct iio_ring_buffer *ring,
->>> +                        int bit)
->>> +{
->>> +    int count = 0;
->>> +    int mask = (1<<  bit);
->>> +    if (bit>  IIO_MAX_SCAN_LENGTH)
->>> +        return -EINVAL;
->>> +    while (mask) {
->>> +        mask>>= 1;
->>> +        if (mask&  ring->scan_mask)
->>> +            count++;
->>> +    }
->>> +
->>> +    return count;
->>> +}
->>> +
->>> +
->>>   static inline void iio_put_ring_buffer(struct iio_ring_buffer *ring)
->>>   {
->>>       put_device(&ring->dev);
->>> diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
->>> index 99efb6b..52624ac 100644
->>> --- a/drivers/staging/iio/ring_sw.c
->>> +++ b/drivers/staging/iio/ring_sw.c
->>> @@ -435,23 +435,24 @@ EXPORT_SYMBOL(iio_sw_rb_free);
->>>
->>>   int iio_sw_ring_preenable(struct iio_dev *indio_dev)
->>>   {
->>> +    struct iio_ring_buffer *ring = indio_dev->ring;
->>>       size_t size;
->>>       dev_dbg(&indio_dev->dev, "%s\n", __func__);
->>>       /* Check if there are any scan elements enabled, if not fail*/
->>> -    if (!(indio_dev->scan_count || indio_dev->scan_timestamp))
->>> +    if (!(ring->scan_count || ring->scan_timestamp))
->>>           return -EINVAL;
->>> -    if (indio_dev->scan_timestamp)
->>> -        if (indio_dev->scan_count)
->>> +    if (ring->scan_timestamp)
->>> +        if (ring->scan_count)
->>>               /* Timestamp (aligned to s64) and data */
->>> -            size = (((indio_dev->scan_count * indio_dev->ring->bpe)
->>> +            size = (((ring->scan_count * ring->bpe)
->>>                       + sizeof(s64) - 1)
->>>                   &  ~(sizeof(s64) - 1))
->>>                   + sizeof(s64);
->>>           else /* Timestamp only  */
->>>               size = sizeof(s64);
->>>       else /* Data only */
->>> -        size = indio_dev->scan_count * indio_dev->ring->bpe;
->>> -    indio_dev->ring->access.set_bytes_per_datum(indio_dev->ring, size);
->>> +        size = ring->scan_count * ring->bpe;
->>> +    ring->access.set_bytes_per_datum(ring, size);
->>>
->>>       return 0;
->>>   }
->>> @@ -462,9 +463,9 @@ void iio_sw_trigger_bh_to_ring(struct work_struct *work_s)
->>>       struct iio_sw_ring_helper_state *st
->>>           = container_of(work_s, struct iio_sw_ring_helper_state,
->>>               work_trigger_to_ring);
->>> +    struct iio_ring_buffer *ring = st->indio_dev->ring;
->>>       int len = 0;
->>> -    size_t datasize = st->indio_dev
->>> -        ->ring->access.get_bytes_per_datum(st->indio_dev->ring);
->>> +    size_t datasize = ring->access.get_bytes_per_datum(ring);
->>>       char *data = kmalloc(datasize, GFP_KERNEL);
->>>
->>>       if (data == NULL) {
->>> @@ -473,16 +474,16 @@ void iio_sw_trigger_bh_to_ring(struct work_struct *work_s)
->>>           return;
->>>       }
->>>
->>> -    if (st->indio_dev->scan_count)
->>> +    if (ring->scan_count)
->>>           len = st->get_ring_element(st, data);
->>>
->>>         /* Guaranteed to be aligned with 8 byte boundary */
->>> -    if (st->indio_dev->scan_timestamp)
->>> +    if (ring->scan_timestamp)
->>>           *(s64 *)(((phys_addr_t)data + len
->>>                   + sizeof(s64) - 1)&  ~(sizeof(s64) - 1))
->>>               = st->last_timestamp;
->>> -      st->indio_dev->ring->access.store_to(st->indio_dev->ring,
->>> -                    (u8 *)data,
->>> +    ring->access.store_to(ring,
->>> +            (u8 *)data,
->>>               st->last_timestamp);
->>>
->>>       iio_trigger_notify_done(st->indio_dev->trig);
->>
-> 
-> 
+bps -> bytes_per_datum
+ring_enable -> enable
+
+Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+---
+ drivers/staging/iio/accel/adis16209_ring.c |    2 +-
+ drivers/staging/iio/accel/adis16240_ring.c |    2 +-
+ drivers/staging/iio/accel/lis3l02dq_ring.c |    2 +-
+ drivers/staging/iio/accel/sca3000_ring.c   |   10 ++--
+ drivers/staging/iio/adc/max1363_ring.c     |    4 +-
+ drivers/staging/iio/gyro/adis16260_ring.c  |    2 +-
+ drivers/staging/iio/imu/adis16300_ring.c   |    2 +-
+ drivers/staging/iio/imu/adis16350_ring.c   |    2 +-
+ drivers/staging/iio/imu/adis16400_ring.c   |    2 +-
+ drivers/staging/iio/industrialio-ring.c    |    8 ++--
+ drivers/staging/iio/ring_generic.h         |   22 +++++-----
+ drivers/staging/iio/ring_sw.c              |   58 ++++++++++++++--------------
+ drivers/staging/iio/ring_sw.h              |   12 +++---
+ 13 files changed, 64 insertions(+), 64 deletions(-)
+
+diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
+index 25fde65..d40b95f 100644
+--- a/drivers/staging/iio/accel/adis16209_ring.c
++++ b/drivers/staging/iio/accel/adis16209_ring.c
+@@ -119,7 +119,7 @@ static void adis16209_trigger_bh_to_ring(struct work_struct *work_s)
+ 	int i = 0;
+ 	s16 *data;
+ 	size_t datasize = st->indio_dev
+-		->ring->access.get_bpd(st->indio_dev->ring);
++		->ring->access.get_bytes_per_datum(st->indio_dev->ring);
+ 
+ 	data = kmalloc(datasize , GFP_KERNEL);
+ 	if (data == NULL) {
+diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
+index cd69a2e..462d452 100644
+--- a/drivers/staging/iio/accel/adis16240_ring.c
++++ b/drivers/staging/iio/accel/adis16240_ring.c
+@@ -111,7 +111,7 @@ static void adis16240_trigger_bh_to_ring(struct work_struct *work_s)
+ 	int i = 0;
+ 	s16 *data;
+ 	size_t datasize = st->indio_dev
+-		->ring->access.get_bpd(st->indio_dev->ring);
++		->ring->access.get_bytes_per_datum(st->indio_dev->ring);
+ 
+ 	data = kmalloc(datasize , GFP_KERNEL);
+ 	if (data == NULL) {
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index a960a8f..4c1b36a 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -169,7 +169,7 @@ ssize_t lis3l02dq_read_accel_from_ring(struct device *dev,
+ 	if (ret < 0)
+ 		goto error_ret;
+ 	if (ret) {
+-		data = kmalloc(dev_info->ring->access.get_bpd(dev_info->ring),
++		data = kmalloc(dev_info->ring->access.get_bytes_per_datum(dev_info->ring),
+ 			       GFP_KERNEL);
+ 		if (data == NULL)
+ 			return -ENOMEM;
+diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
+index 8e8c068..eff5b9a 100644
+--- a/drivers/staging/iio/accel/sca3000_ring.c
++++ b/drivers/staging/iio/accel/sca3000_ring.c
+@@ -100,7 +100,7 @@ static int sca3000_ring_get_length(struct iio_ring_buffer *r)
+ }
+ 
+ /* only valid if resolution is kept at 11bits */
+-static int sca3000_ring_get_bpd(struct iio_ring_buffer *r)
++static int sca3000_ring_get_bytes_per_datum(struct iio_ring_buffer *r)
+ {
+ 	return 6;
+ }
+@@ -111,7 +111,7 @@ static void sca3000_ring_release(struct device *dev)
+ }
+ 
+ static IIO_RING_ENABLE_ATTR;
+-static IIO_RING_BPS_ATTR;
++static IIO_RING_BYTES_PER_DATUM_ATTR;
+ static IIO_RING_LENGTH_ATTR;
+ 
+ /**
+@@ -218,8 +218,8 @@ static struct attribute_group sca3000_scan_el_group = {
+  */
+ static struct attribute *sca3000_ring_attributes[] = {
+ 	&dev_attr_length.attr,
+-	&dev_attr_bps.attr,
+-	&dev_attr_ring_enable.attr,
++	&dev_attr_bytes_per_datum.attr,
++	&dev_attr_enable.attr,
+ 	NULL,
+ };
+ 
+@@ -272,7 +272,7 @@ int sca3000_configure_ring(struct iio_dev *indio_dev)
+ 
+ 	indio_dev->ring->access.rip_lots = &sca3000_rip_hw_rb;
+ 	indio_dev->ring->access.get_length = &sca3000_ring_get_length;
+-	indio_dev->ring->access.get_bpd = &sca3000_ring_get_bpd;
++	indio_dev->ring->access.get_bytes_per_datum = &sca3000_ring_get_bytes_per_datum;
+ 
+ 	return 0;
+ }
+diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
+index 786b17a..edac0ba 100644
+--- a/drivers/staging/iio/adc/max1363_ring.c
++++ b/drivers/staging/iio/adc/max1363_ring.c
+@@ -92,14 +92,14 @@ static int max1363_ring_preenable(struct iio_dev *indio_dev)
+ 	max1363_set_scan_mode(st);
+ 
+ 	numvals = hweight_long(st->current_mode->modemask);
+-	if (indio_dev->ring->access.set_bpd) {
++	if (indio_dev->ring->access.set_bytes_per_datum) {
+ 		if (st->chip_info->bits != 8)
+ 			d_size = numvals*2 + sizeof(s64);
+ 		else
+ 			d_size = numvals + sizeof(s64);
+ 		if (d_size % 8)
+ 			d_size += 8 - (d_size % 8);
+-		indio_dev->ring->access.set_bpd(indio_dev->ring, d_size);
++		indio_dev->ring->access.set_bytes_per_datum(indio_dev->ring, d_size);
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
+index 9ef7f90..055d5e8 100644
+--- a/drivers/staging/iio/gyro/adis16260_ring.c
++++ b/drivers/staging/iio/gyro/adis16260_ring.c
+@@ -114,7 +114,7 @@ static void adis16260_trigger_bh_to_ring(struct work_struct *work_s)
+ 	int i = 0;
+ 	s16 *data;
+ 	size_t datasize = st->indio_dev
+-		->ring->access.get_bpd(st->indio_dev->ring);
++		->ring->access.get_bytes_per_datum(st->indio_dev->ring);
+ 
+ 	data = kmalloc(datasize , GFP_KERNEL);
+ 	if (data == NULL) {
+diff --git a/drivers/staging/iio/imu/adis16300_ring.c b/drivers/staging/iio/imu/adis16300_ring.c
+index fc93160..854183c 100644
+--- a/drivers/staging/iio/imu/adis16300_ring.c
++++ b/drivers/staging/iio/imu/adis16300_ring.c
+@@ -138,7 +138,7 @@ static void adis16300_trigger_bh_to_ring(struct work_struct *work_s)
+ 	int i = 0;
+ 	s16 *data;
+ 	size_t datasize = st->indio_dev
+-		->ring->access.get_bpd(st->indio_dev->ring);
++		->ring->access.get_bytes_per_datum(st->indio_dev->ring);
+ 
+ 	data = kmalloc(datasize , GFP_KERNEL);
+ 	if (data == NULL) {
+diff --git a/drivers/staging/iio/imu/adis16350_ring.c b/drivers/staging/iio/imu/adis16350_ring.c
+index e053e9a..9620cbe 100644
+--- a/drivers/staging/iio/imu/adis16350_ring.c
++++ b/drivers/staging/iio/imu/adis16350_ring.c
+@@ -138,7 +138,7 @@ static void adis16350_trigger_bh_to_ring(struct work_struct *work_s)
+ 	int i = 0;
+ 	s16 *data;
+ 	size_t datasize = st->indio_dev
+-		->ring->access.get_bpd(st->indio_dev->ring);
++		->ring->access.get_bytes_per_datum(st->indio_dev->ring);
+ 
+ 	data = kmalloc(datasize , GFP_KERNEL);
+ 	if (data == NULL) {
+diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
+index 949db76..c8e2316 100644
+--- a/drivers/staging/iio/imu/adis16400_ring.c
++++ b/drivers/staging/iio/imu/adis16400_ring.c
+@@ -147,7 +147,7 @@ static void adis16400_trigger_bh_to_ring(struct work_struct *work_s)
+ 	int i = 0;
+ 	s16 *data;
+ 	size_t datasize = st->indio_dev
+-		->ring->access.get_bpd(st->indio_dev->ring);
++		->ring->access.get_bytes_per_datum(st->indio_dev->ring);
+ 
+ 	data = kmalloc(datasize , GFP_KERNEL);
+ 	if (data == NULL) {
+diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
+index 6ab578e..610c2b6 100644
+--- a/drivers/staging/iio/industrialio-ring.c
++++ b/drivers/staging/iio/industrialio-ring.c
+@@ -338,20 +338,20 @@ EXPORT_SYMBOL(iio_read_ring_length);
+ }
+ EXPORT_SYMBOL(iio_write_ring_length);
+ 
+-ssize_t iio_read_ring_bps(struct device *dev,
++ssize_t iio_read_ring_bytes_per_datum(struct device *dev,
+ 			  struct device_attribute *attr,
+ 			  char *buf)
+ {
+ 	int len = 0;
+ 	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
+ 
+-	if (ring->access.get_bpd)
++	if (ring->access.get_bytes_per_datum)
+ 		len = sprintf(buf, "%d\n",
+-			      ring->access.get_bpd(ring));
++			      ring->access.get_bytes_per_datum(ring));
+ 
+ 	return len;
+ }
+-EXPORT_SYMBOL(iio_read_ring_bps);
++EXPORT_SYMBOL(iio_read_ring_bytes_per_datum);
+ 
+ ssize_t iio_store_ring_enable(struct device *dev,
+ 			      struct device_attribute *attr,
+diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
+index a872d39..ac017b1 100644
+--- a/drivers/staging/iio/ring_generic.h
++++ b/drivers/staging/iio/ring_generic.h
+@@ -52,8 +52,8 @@ int iio_push_or_escallate_ring_event(struct iio_ring_buffer *ring_buf,
+  *			change.
+  * @request_update:	if a parameter change has been marked, update underlying
+  *			storage.
+- * @get_bpd:		get current bytes per datum
+- * @set_bpd:		set number of bytes per datum
++ * @get_bytes_per_datum:		get current bytes per datum
++ * @set_bytes_per_datum:		set number of bytes per datum
+  * @get_length:		get number of datums in ring
+  * @set_length:		set number of datums in ring
+  * @is_enabled:		query if ring is currently being used
+@@ -81,8 +81,8 @@ struct iio_ring_access_funcs {
+ 	int (*mark_param_change)(struct iio_ring_buffer *ring);
+ 	int (*request_update)(struct iio_ring_buffer *ring);
+ 
+-	int (*get_bpd)(struct iio_ring_buffer *ring);
+-	int (*set_bpd)(struct iio_ring_buffer *ring, size_t bpd);
++	int (*get_bytes_per_datum)(struct iio_ring_buffer *ring);
++	int (*set_bytes_per_datum)(struct iio_ring_buffer *ring, size_t bpd);
+ 	int (*get_length)(struct iio_ring_buffer *ring);
+ 	int (*set_length)(struct iio_ring_buffer *ring, int length);
+ 
+@@ -99,7 +99,7 @@ struct iio_ring_access_funcs {
+  * @id:			unique id number
+  * @access_id:		device id number
+  * @length:		[DEVICE] number of datums in ring
+- * @bpd:		[DEVICE] size of individual datum including timestamp
++ * @bytes_per_datum	[DEVICE] size of individual datum including timestamp
+  * @bpe:		[DEVICE] size of individual channel value
+  * @loopcount:		[INTERN] number of times the ring has looped
+  * @access_handler:	[INTERN] chrdev access handling
+@@ -121,7 +121,7 @@ struct iio_ring_buffer {
+ 	int				id;
+ 	int				access_id;
+ 	int				length;
+-	int				bpd;
++	int				bytes_per_datum;
+ 	int				bpe;
+ 	int				loopcount;
+ 	struct iio_handler		access_handler;
+@@ -146,7 +146,7 @@ void iio_ring_buffer_init(struct iio_ring_buffer *ring,
+ static inline void __iio_update_ring_buffer(struct iio_ring_buffer *ring,
+ 					    int bytes_per_datum, int length)
+ {
+-	ring->bpd = bytes_per_datum;
++	ring->bytes_per_datum = bytes_per_datum;
+ 	ring->length = length;
+ 	ring->loopcount = 0;
+ }
+@@ -277,7 +277,7 @@ ssize_t iio_write_ring_length(struct device *dev,
+ 			      struct device_attribute *attr,
+ 			      const char *buf,
+ 			      size_t len);
+-ssize_t iio_read_ring_bps(struct device *dev,
++ssize_t iio_read_ring_bytes_per_datum(struct device *dev,
+ 			  struct device_attribute *attr,
+ 			  char *buf);
+ ssize_t iio_store_ring_enable(struct device *dev,
+@@ -290,9 +290,9 @@ ssize_t iio_show_ring_enable(struct device *dev,
+ #define IIO_RING_LENGTH_ATTR DEVICE_ATTR(length, S_IRUGO | S_IWUSR,	\
+ 					 iio_read_ring_length,		\
+ 					 iio_write_ring_length)
+-#define IIO_RING_BPS_ATTR DEVICE_ATTR(bps, S_IRUGO | S_IWUSR,	\
+-				      iio_read_ring_bps, NULL)
+-#define IIO_RING_ENABLE_ATTR DEVICE_ATTR(ring_enable, S_IRUGO | S_IWUSR, \
++#define IIO_RING_BYTES_PER_DATUM_ATTR DEVICE_ATTR(bytes_per_datum, S_IRUGO | S_IWUSR,	\
++				      iio_read_ring_bytes_per_datum, NULL)
++#define IIO_RING_ENABLE_ATTR DEVICE_ATTR(enable, S_IRUGO | S_IWUSR, \
+ 					 iio_show_ring_enable,		\
+ 					 iio_store_ring_enable)
+ #else /* CONFIG_IIO_RING_BUFFER */
+diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
+index e2f01c6..99efb6b 100644
+--- a/drivers/staging/iio/ring_sw.c
++++ b/drivers/staging/iio/ring_sw.c
+@@ -21,7 +21,7 @@ static inline int __iio_allocate_sw_ring_buffer(struct iio_sw_ring_buffer *ring,
+ 	if ((length == 0) || (bytes_per_datum == 0))
+ 		return -EINVAL;
+ 	__iio_update_ring_buffer(&ring->buf, bytes_per_datum, length);
+-	ring->data = kmalloc(length*ring->buf.bpd, GFP_ATOMIC);
++	ring->data = kmalloc(length*ring->buf.bytes_per_datum, GFP_ATOMIC);
+ 	ring->read_p = NULL;
+ 	ring->write_p = NULL;
+ 	ring->last_written_p = NULL;
+@@ -77,10 +77,10 @@ static int iio_store_to_sw_ring(struct iio_sw_ring_buffer *ring,
+ 		 * as long as the read pointer is valid before this
+ 		 * passes it - guaranteed as set later in this function.
+ 		 */
+-		ring->half_p = ring->data - ring->buf.length*ring->buf.bpd/2;
++		ring->half_p = ring->data - ring->buf.length*ring->buf.bytes_per_datum/2;
+ 	}
+ 	/* Copy data to where ever the current write pointer says */
+-	memcpy(ring->write_p, data, ring->buf.bpd);
++	memcpy(ring->write_p, data, ring->buf.bytes_per_datum);
+ 	barrier();
+ 	/* Update the pointer used to get most recent value.
+ 	 * Always valid as either points to latest or second latest value.
+@@ -91,9 +91,9 @@ static int iio_store_to_sw_ring(struct iio_sw_ring_buffer *ring,
+ 	/* temp_ptr used to ensure we never have an invalid pointer
+ 	 * it may be slightly lagging, but never invalid
+ 	 */
+-	temp_ptr = ring->write_p + ring->buf.bpd;
++	temp_ptr = ring->write_p + ring->buf.bytes_per_datum;
+ 	/* End of ring, back to the beginning */
+-	if (temp_ptr == ring->data + ring->buf.length*ring->buf.bpd)
++	if (temp_ptr == ring->data + ring->buf.length*ring->buf.bytes_per_datum)
+ 		temp_ptr = ring->data;
+ 	/* Update the write pointer
+ 	 * always valid as long as this is the only function able to write.
+@@ -112,9 +112,9 @@ static int iio_store_to_sw_ring(struct iio_sw_ring_buffer *ring,
+ 	 */
+ 	else if (ring->write_p == ring->read_p) {
+ 		change_test_ptr = ring->read_p;
+-		temp_ptr = change_test_ptr + ring->buf.bpd;
++		temp_ptr = change_test_ptr + ring->buf.bytes_per_datum;
+ 		if (temp_ptr
+-		    == ring->data + ring->buf.length*ring->buf.bpd) {
++		    == ring->data + ring->buf.length*ring->buf.bytes_per_datum) {
+ 			temp_ptr = ring->data;
+ 		}
+ 		/* We are moving pointer on one because the ring is full.  Any
+@@ -135,8 +135,8 @@ static int iio_store_to_sw_ring(struct iio_sw_ring_buffer *ring,
+ 	/* There are definite 'issues' with this and chances of
+ 	 * simultaneous read */
+ 	/* Also need to use loop count to ensure this only happens once */
+-	ring->half_p += ring->buf.bpd;
+-	if (ring->half_p == ring->data + ring->buf.length*ring->buf.bpd)
++	ring->half_p += ring->buf.bytes_per_datum;
++	if (ring->half_p == ring->data + ring->buf.length*ring->buf.bytes_per_datum)
+ 		ring->half_p = ring->data;
+ 	if (ring->half_p == ring->read_p) {
+ 		spin_lock(&ring->buf.shared_ev_pointer.lock);
+@@ -164,15 +164,15 @@ int iio_rip_sw_rb(struct iio_ring_buffer *r,
+ 	 *  read something that is not a whole number of bpds.
+ 	 * Return an error.
+ 	 */
+-	if (count % ring->buf.bpd) {
++	if (count % ring->buf.bytes_per_datum) {
+ 		ret = -EINVAL;
+ 		printk(KERN_INFO "Ring buffer read request not whole number of"
+-		       "samples: Request bytes %zd, Current bpd %d\n",
+-		       count, ring->buf.bpd);
++		       "samples: Request bytes %zd, Current bytes per datum %d\n",
++		       count, ring->buf.bytes_per_datum);
+ 		goto error_ret;
+ 	}
+ 	/* Limit size to whole of ring buffer */
+-	bytes_to_rip = min((size_t)(ring->buf.bpd*ring->buf.length), count);
++	bytes_to_rip = min((size_t)(ring->buf.bytes_per_datum*ring->buf.length), count);
+ 
+ 	*data = kmalloc(bytes_to_rip, GFP_KERNEL);
+ 	if (*data == NULL) {
+@@ -214,7 +214,7 @@ int iio_rip_sw_rb(struct iio_ring_buffer *r,
+ 	} else {
+ 		/* going through 'end' of ring buffer */
+ 		max_copied = ring->data
+-			+ ring->buf.length*ring->buf.bpd - initial_read_p;
++			+ ring->buf.length*ring->buf.bytes_per_datum - initial_read_p;
+ 		memcpy(*data, initial_read_p, max_copied);
+ 		/* possible we are done if we align precisely with end */
+ 		if (max_copied == bytes_to_rip)
+@@ -240,7 +240,7 @@ int iio_rip_sw_rb(struct iio_ring_buffer *r,
+ 	if (initial_read_p <= current_read_p)
+ 		*dead_offset = current_read_p - initial_read_p;
+ 	else
+-		*dead_offset = ring->buf.length*ring->buf.bpd
++		*dead_offset = ring->buf.length*ring->buf.bytes_per_datum
+ 			- (initial_read_p - current_read_p);
+ 
+ 	/* possible issue if the initial write has been lapped or indeed
+@@ -293,7 +293,7 @@ again:
+ 	/* Check there is anything here */
+ 	if (last_written_p_copy == NULL)
+ 		return -EAGAIN;
+-	memcpy(data, last_written_p_copy, ring->buf.bpd);
++	memcpy(data, last_written_p_copy, ring->buf.bytes_per_datum);
+ 
+ 	if (unlikely(ring->last_written_p != last_written_p_copy))
+ 		goto again;
+@@ -322,7 +322,7 @@ int iio_request_update_sw_rb(struct iio_ring_buffer *r)
+ 		goto error_ret;
+ 	}
+ 	__iio_free_sw_ring_buffer(ring);
+-	ret = __iio_allocate_sw_ring_buffer(ring, ring->buf.bpd,
++	ret = __iio_allocate_sw_ring_buffer(ring, ring->buf.bytes_per_datum,
+ 					    ring->buf.length);
+ error_ret:
+ 	spin_unlock(&ring->use_lock);
+@@ -330,23 +330,23 @@ error_ret:
+ }
+ EXPORT_SYMBOL(iio_request_update_sw_rb);
+ 
+-int iio_get_bpd_sw_rb(struct iio_ring_buffer *r)
++int iio_get_bytes_per_datum_sw_rb(struct iio_ring_buffer *r)
+ {
+ 	struct iio_sw_ring_buffer *ring = iio_to_sw_ring(r);
+-	return ring->buf.bpd;
++	return ring->buf.bytes_per_datum;
+ }
+-EXPORT_SYMBOL(iio_get_bpd_sw_rb);
++EXPORT_SYMBOL(iio_get_bytes_per_datum_sw_rb);
+ 
+-int iio_set_bpd_sw_rb(struct iio_ring_buffer *r, size_t bpd)
++int iio_set_bytes_per_datum_sw_rb(struct iio_ring_buffer *r, size_t bpd)
+ {
+-	if (r->bpd != bpd) {
+-		r->bpd = bpd;
++	if (r->bytes_per_datum != bpd) {
++		r->bytes_per_datum = bpd;
+ 		if (r->access.mark_param_change)
+ 			r->access.mark_param_change(r);
+ 	}
+ 	return 0;
+ }
+-EXPORT_SYMBOL(iio_set_bpd_sw_rb);
++EXPORT_SYMBOL(iio_set_bytes_per_datum_sw_rb);
+ 
+ int iio_get_length_sw_rb(struct iio_ring_buffer *r)
+ {
+@@ -380,14 +380,14 @@ static void iio_sw_rb_release(struct device *dev)
+ }
+ 
+ static IIO_RING_ENABLE_ATTR;
+-static IIO_RING_BPS_ATTR;
++static IIO_RING_BYTES_PER_DATUM_ATTR;
+ static IIO_RING_LENGTH_ATTR;
+ 
+ /* Standard set of ring buffer attributes */
+ static struct attribute *iio_ring_attributes[] = {
+ 	&dev_attr_length.attr,
+-	&dev_attr_bps.attr,
+-	&dev_attr_ring_enable.attr,
++	&dev_attr_bytes_per_datum.attr,
++	&dev_attr_enable.attr,
+ 	NULL,
+ };
+ 
+@@ -451,7 +451,7 @@ int iio_sw_ring_preenable(struct iio_dev *indio_dev)
+ 			size = sizeof(s64);
+ 	else /* Data only */
+ 		size = indio_dev->scan_count * indio_dev->ring->bpe;
+-	indio_dev->ring->access.set_bpd(indio_dev->ring, size);
++	indio_dev->ring->access.set_bytes_per_datum(indio_dev->ring, size);
+ 
+ 	return 0;
+ }
+@@ -464,7 +464,7 @@ void iio_sw_trigger_bh_to_ring(struct work_struct *work_s)
+ 			work_trigger_to_ring);
+ 	int len = 0;
+ 	size_t datasize = st->indio_dev
+-		->ring->access.get_bpd(st->indio_dev->ring);
++		->ring->access.get_bytes_per_datum(st->indio_dev->ring);
+ 	char *data = kmalloc(datasize, GFP_KERNEL);
+ 
+ 	if (data == NULL) {
+diff --git a/drivers/staging/iio/ring_sw.h b/drivers/staging/iio/ring_sw.h
+index 61f1ed6..ad03d83 100644
+--- a/drivers/staging/iio/ring_sw.h
++++ b/drivers/staging/iio/ring_sw.h
+@@ -121,19 +121,19 @@ int iio_mark_update_needed_sw_rb(struct iio_ring_buffer *r);
+ 
+ 
+ /**
+- * iio_get_bpd_sw_rb() - get the datum size in bytes
++ * iio_get_bytes_per_datum_sw_rb() - get the datum size in bytes
+  * @r:		pointer to a software ring buffer created by an
+  *		iio_create_sw_rb call
+  **/
+-int iio_get_bpd_sw_rb(struct iio_ring_buffer *r);
++int iio_get_bytes_per_datum_sw_rb(struct iio_ring_buffer *r);
+ 
+ /**
+- * iio_set_bpd_sw_rb() - set the datum size in bytes
++ * iio_set_bytes_per_datum_sw_rb() - set the datum size in bytes
+  * @r:		pointer to a software ring buffer created by an
+  *		iio_create_sw_rb call
+  * @bpd:	bytes per datum value
+  **/
+-int iio_set_bpd_sw_rb(struct iio_ring_buffer *r, size_t bpd);
++int iio_set_bytes_per_datum_sw_rb(struct iio_ring_buffer *r, size_t bpd);
+ 
+ /**
+  * iio_get_length_sw_rb() - get how many datums the rb may contain
+@@ -166,8 +166,8 @@ static inline void iio_ring_sw_register_funcs(struct iio_ring_access_funcs *ra)
+ 	ra->mark_param_change = &iio_mark_update_needed_sw_rb;
+ 	ra->request_update = &iio_request_update_sw_rb;
+ 
+-	ra->get_bpd = &iio_get_bpd_sw_rb;
+-	ra->set_bpd = &iio_set_bpd_sw_rb;
++	ra->get_bytes_per_datum = &iio_get_bytes_per_datum_sw_rb;
++	ra->set_bytes_per_datum = &iio_set_bytes_per_datum_sw_rb;
+ 
+ 	ra->get_length = &iio_get_length_sw_rb;
+ 	ra->set_length = &iio_set_length_sw_rb;
+-- 
+1.7.0.6
 
