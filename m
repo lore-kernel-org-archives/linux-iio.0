@@ -1,80 +1,133 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-30.csi.cam.ac.uk ([131.111.8.130]:59185 "EHLO
-	ppsw-30.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754076Ab0IDQxE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Sep 2010 12:53:04 -0400
-Message-ID: <4C827A98.5020409@cam.ac.uk>
-Date: Sat, 04 Sep 2010 17:58:00 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 0/9] Trivial fixes
-References: <1283353083-31313-1-git-send-email-jic23@cam.ac.uk> <4C7F5BB3.8060504@iis.fraunhofer.de>
-In-Reply-To: <4C7F5BB3.8060504@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 9/9] staging:iio:documentation - partial update to make more of it true.
+Date: Wed,  1 Sep 2010 15:58:03 +0100
+Message-Id: <1283353083-31313-10-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1283353083-31313-1-git-send-email-jic23@cam.ac.uk>
+References: <1283353083-31313-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/02/10 09:09, Manuel Stahl wrote:
-> Fairly good patches, you can add my signed-off.
-cool, I added your Ack and sent them all to Greg
-with that double is fixed.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/Documentation/overview.txt     |   17 +++---
+ .../{sysfs-class-iio => sysfs-bus-iio}             |    0
+ drivers/staging/iio/Documentation/userspace.txt    |   54 +-------------------
+ 3 files changed, 10 insertions(+), 61 deletions(-)
 
-Thanks
-
-Jonathan
-> 
-> Am 01.09.2010 16:57, schrieb Jonathan Cameron:
->> Hi All,
->>
->> This is a pretty simple clean up set.  Mostly removes
->> some dead code in various places and cleans up the documentation
->> somewhat.
->>
->> Please take a quick look.
->>
->> Jonathan
->>
->> Jonathan Cameron (9):
->>    staging:iio: convert idr to ida as pointer never provided
->>    staging:iio: simplify logic in iio_interrupt_handler
->>    staging:iio: unecessary header removal and kernel doc clean up
->>    staging:iio: Remove long dead function definitions from headers
->>    staging:iio: Remove deprecated ATTR_TEMP in favour of ATTR_TEMP_RAW
->>    staging:iio: Make use of the convenient IIO_TRIGGER_NAME_ATTR macro
->>    staging:iio: remove odd structure definition.
->>    staging:iio: lis3l02dqbuffersimple.c bring example up to date.
->>    staging:iio:documentation - partial update to make more of it true.
->>
->>   .../iio/Documentation/lis3l02dqbuffersimple.c      |    4 +-
->>   drivers/staging/iio/Documentation/overview.txt     |   17 ++--
->>   .../{sysfs-class-iio =>  sysfs-bus-iio}             |    0
->>   drivers/staging/iio/Documentation/userspace.txt    |   54 +------------
->>   drivers/staging/iio/accel/adis16209_core.c         |    4 +-
->>   drivers/staging/iio/accel/adis16209_trigger.c      |    2 +-
->>   drivers/staging/iio/accel/adis16240_trigger.c      |    2 +-
->>   drivers/staging/iio/accel/lis3l02dq_ring.c         |    3 +-
->>   drivers/staging/iio/chrdev.h                       |    2 -
->>   drivers/staging/iio/gyro/adis16260_trigger.c       |    2 +-
->>   drivers/staging/iio/iio.h                          |    8 +-
->>   drivers/staging/iio/imu/adis16300_trigger.c        |    2 +-
->>   drivers/staging/iio/imu/adis16350_trigger.c        |    2 +-
->>   drivers/staging/iio/imu/adis16400_trigger.c        |    2 +-
->>   drivers/staging/iio/industrialio-core.c            |   76 ++++++++----------
->>   drivers/staging/iio/industrialio-ring.c            |   11 +--
->>   drivers/staging/iio/ring_generic.h                 |   69 ++++++++++++++--
->>   drivers/staging/iio/sysfs.h                        |   83 --------------------
->>   drivers/staging/iio/trigger.h                      |    6 +-
->>   drivers/staging/iio/trigger/iio-trig-gpio.c        |    2 +-
->>   .../staging/iio/trigger/iio-trig-periodic-rtc.c    |   12 +---
->>   21 files changed, 127 insertions(+), 236 deletions(-)
->>   rename drivers/staging/iio/Documentation/{sysfs-class-iio =>  sysfs-bus-iio} (100%)
->>
->> -- 
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> 
-
+diff --git a/drivers/staging/iio/Documentation/overview.txt b/drivers/staging/iio/Documentation/overview.txt
+index cc6ecad..d97106c 100644
+--- a/drivers/staging/iio/Documentation/overview.txt
++++ b/drivers/staging/iio/Documentation/overview.txt
+@@ -1,8 +1,8 @@
+ Overview of IIO
+ 
+-The Industrial I/O subsytem is intended to provide support for devices
+-that in some sense are analog to digital convertors (ADCs). As many
+-actual devices combine some ADCs with digital to analog convertors
++The Industrial I/O subsystem is intended to provide support for devices
++that in some sense are analog to digital converters (ADCs). As many
++actual devices combine some ADCs with digital to analog converters
+ (DACs) the intention is to add that functionality at a future date
+ (hence the name).
+ 
+@@ -46,18 +46,17 @@ external signal (trigger).  These triggers might be a data ready
+ signal, a gpio line connected to some external system or an on
+ processor periodic interrupt.  A single trigger may initialize data
+ capture or reading from a number of sensors.  These triggers are
+-used in iio to fill software ring buffers acting in a very similar
++used in IIO to fill software ring buffers acting in a very similar
+ fashion to the hardware buffers described above.
+ 
+ Other documentation:
+ 
+-userspace.txt - overview of ring buffer reading from userspace
++userspace.txt - overview of ring buffer reading from userspace.
+ 
+-device.txt - elemennts of a typical device driver.
++device.txt - elements of a typical device driver.
+ 
+ trigger.txt - elements of a typical trigger driver.
+ 
+-ring.txt - additional elements required for ring buffer support
+-
+-
++ring.txt - additional elements required for ring buffer support.
+ 
++sysfs-bus-iio - abi documentation file.
+diff --git a/drivers/staging/iio/Documentation/sysfs-class-iio b/drivers/staging/iio/Documentation/sysfs-bus-iio
+similarity index 100%
+rename from drivers/staging/iio/Documentation/sysfs-class-iio
+rename to drivers/staging/iio/Documentation/sysfs-bus-iio
+diff --git a/drivers/staging/iio/Documentation/userspace.txt b/drivers/staging/iio/Documentation/userspace.txt
+index 8bba2fa..ff06e5d 100644
+--- a/drivers/staging/iio/Documentation/userspace.txt
++++ b/drivers/staging/iio/Documentation/userspace.txt
+@@ -1,62 +1,12 @@
+ Userspace access to IIO
+ 
+-Example, ST Microelectronics LIS3L02DQ accelerometer.
+-
+-Typical sysfs entries (pruned for clarity)
+-
+-/sys/class/iio
+-  device0 - iio_dev related elements
+-    name - driver specific identifier (here lis3l02dq)
+-    accel_x_raw - polled (or from ring) raw readout of acceleration
+-    accel_x_offset - offset to be applied to the raw reading
+-    accel_x_scale - scale to be applied to the raw reading and offset
+-    accel_x_calibbias - hardware offset (calibration)
+-    accel_x_calibscale - hardware gain (calibration)
+-
+-    sampling_frequency_available - what options are there
+-    sampling_frequency - control of internal sampling frequency
+-    device - link to underlying hardware device
+-    uevent - udev related element
+-
+-    thresh - unified threshold used for detection on all axis
+-    event_line0_sources - which events are enabled
+-      accel_x_high - enable x axis high threshold event
+-      accel_x_low - enable x axis low threshold event
+-
+-    event_line0 - event interface
+-      dev - major:minor for the chrdev (note major allocation dynamic)
+-    trigger - consumer attachement
+-      current_trigger - name based association with a trigger
+-    device0:buffer0 - ring buffer interface
+-      bytes_per_datum - byptes per complete datum (read only),
+-                        dependant on scan element selection
+-      length - (rw) specificy length fo software ring buffer (typically ro in hw case)
+-      enable - turn the ring on. If its the first to be enabled attached to this
+-               trigger will also enable the trigger.
+-      device0:buffer0:access0
+-        dev - major:minor for ring buffer access chrdev
+-      device0:buffer0:event0
+-        dev - major:minor for ring buffer event chrdev
+-      scan_elements - controls which channels will be stored in the ring buffer
+-        accel_x_en
+-        accel_y_en
+-        timestamp_en
+-
+-  trigger0 - data ready trigger elements
+-    name - unqiue name of trigger
++The sysfs attributes are documented in sysfs-bus-iio.
+ 
+ Udev will create the following entries under /dev by default:
+ 
+ device0:buffer0:access0 - ring access chrdev
+ device0:buffer0:event0 - ring event chrdev
+-event_line0 - general event chrdev.
+-
+-For the example code we assume the following rules have been used to ensure
+-unique and consistent naming of these for the lis3l02dq in question:
+-
+-KERNEL="ring_event_line*", ID="spi1.0", DRIVER="lis3l02dq", NAME="iio/lis3l02dq_ring_event"
+-KERNEL="event_line*", ID="spi1.0", DRIVER="lis3l02dq", NAME="iio/lis3l02dq_event"
+-KERNEL="ring_access*", ID="spi1.0", DRIVER="lis3l02dq", NAME="iio/lis3l02dq_ring_access"
++device0:event0 - general event chrdev.
+ 
+ The files, lis3l02dqbuffersimple.c and iio_utils.h in this directory provide an example
+ of how to use the ring buffer and event interfaces.
+-- 
+1.7.1
