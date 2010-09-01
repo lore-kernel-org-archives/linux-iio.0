@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-32.csi.cam.ac.uk ([131.111.8.132]:56701 "EHLO
+Received: from ppsw-32.csi.cam.ac.uk ([131.111.8.132]:56700 "EHLO
 	ppsw-32.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755364Ab0IAOxW (ORCPT
+	with ESMTP id S1755351Ab0IAOxW (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Sep 2010 10:53:22 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 6/9] staging:iio: Make use of the convenient IIO_TRIGGER_NAME_ATTR macro
-Date: Wed,  1 Sep 2010 15:58:00 +0100
-Message-Id: <1283353083-31313-7-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 5/9] staging:iio: Remove deprecated ATTR_TEMP in favour of ATTR_TEMP_RAW
+Date: Wed,  1 Sep 2010 15:57:59 +0100
+Message-Id: <1283353083-31313-6-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1283353083-31313-1-git-send-email-jic23@cam.ac.uk>
 References: <1283353083-31313-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
@@ -16,145 +16,50 @@ List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/adis16209_trigger.c      |    2 +-
- drivers/staging/iio/accel/adis16240_trigger.c      |    2 +-
- drivers/staging/iio/accel/lis3l02dq_ring.c         |    3 ++-
- drivers/staging/iio/gyro/adis16260_trigger.c       |    2 +-
- drivers/staging/iio/imu/adis16300_trigger.c        |    2 +-
- drivers/staging/iio/imu/adis16350_trigger.c        |    2 +-
- drivers/staging/iio/imu/adis16400_trigger.c        |    2 +-
- drivers/staging/iio/trigger/iio-trig-gpio.c        |    2 +-
- .../staging/iio/trigger/iio-trig-periodic-rtc.c    |   12 +-----------
- 9 files changed, 10 insertions(+), 19 deletions(-)
+ drivers/staging/iio/accel/adis16209_core.c |    4 ++--
+ drivers/staging/iio/sysfs.h                |    7 -------
+ 2 files changed, 2 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16209_trigger.c b/drivers/staging/iio/accel/adis16209_trigger.c
-index 1487eff..d2980dc 100644
---- a/drivers/staging/iio/accel/adis16209_trigger.c
-+++ b/drivers/staging/iio/accel/adis16209_trigger.c
-@@ -30,7 +30,7 @@ static int adis16209_data_rdy_trig_poll(struct iio_dev *dev_info,
+diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
+index 9ee523a..ab39885 100644
+--- a/drivers/staging/iio/accel/adis16209_core.c
++++ b/drivers/staging/iio/accel/adis16209_core.c
+@@ -421,7 +421,7 @@ static IIO_CONST_ATTR(incli_scale, "0.00043633231");
+ static IIO_DEVICE_ATTR(rot_raw, S_IRUGO, adis16209_read_14bit_signed,
+ 		       NULL, ADIS16209_ROT_OUT);
  
- IIO_EVENT_SH(data_rdy_trig, &adis16209_data_rdy_trig_poll);
+-static IIO_DEV_ATTR_TEMP(adis16209_read_temp);
++static IIO_DEV_ATTR_TEMP_RAW(adis16209_read_temp);
+ static IIO_CONST_ATTR_TEMP_OFFSET("25");
+ static IIO_CONST_ATTR_TEMP_SCALE("-0.47");
  
--static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-+static IIO_TRIGGER_NAME_ATTR;
+@@ -440,7 +440,7 @@ static struct attribute_group adis16209_event_attribute_group = {
+ static struct attribute *adis16209_attributes[] = {
+ 	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+ 	&iio_const_attr_in_supply_scale.dev_attr.attr,
+-	&iio_dev_attr_temp.dev_attr.attr,
++	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
+index 96cc3a7..b531dc1 100644
+--- a/drivers/staging/iio/sysfs.h
++++ b/drivers/staging/iio/sysfs.h
+@@ -161,13 +161,6 @@ struct iio_const_attr {
+ #define IIO_DEV_ATTR_HW_RING_ENABLE(_show, _store)			\
+ 	IIO_DEVICE_ATTR(hw_ring_enable, S_IRUGO | S_IWUSR, _show, _store, 0)
  
- static struct attribute *adis16209_trigger_attrs[] = {
- 	&dev_attr_name.attr,
-diff --git a/drivers/staging/iio/accel/adis16240_trigger.c b/drivers/staging/iio/accel/adis16240_trigger.c
-index 2ba71fd..6cb8681 100644
---- a/drivers/staging/iio/accel/adis16240_trigger.c
-+++ b/drivers/staging/iio/accel/adis16240_trigger.c
-@@ -30,7 +30,7 @@ static int adis16240_data_rdy_trig_poll(struct iio_dev *dev_info,
- 
- IIO_EVENT_SH(data_rdy_trig, &adis16240_data_rdy_trig_poll);
- 
--static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-+static IIO_TRIGGER_NAME_ATTR;
- 
- static struct attribute *adis16240_trigger_attrs[] = {
- 	&dev_attr_name.attr,
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index a68a381..f26c0fe 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -382,7 +382,8 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 				 &t);
- 	return ret;
- }
--static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-+
-+static IIO_TRIGGER_NAME_ATTR;
- 
- static struct attribute *lis3l02dq_trigger_attrs[] = {
- 	&dev_attr_name.attr,
-diff --git a/drivers/staging/iio/gyro/adis16260_trigger.c b/drivers/staging/iio/gyro/adis16260_trigger.c
-index de01537..4a744c1 100644
---- a/drivers/staging/iio/gyro/adis16260_trigger.c
-+++ b/drivers/staging/iio/gyro/adis16260_trigger.c
-@@ -30,7 +30,7 @@ static int adis16260_data_rdy_trig_poll(struct iio_dev *dev_info,
- 
- IIO_EVENT_SH(data_rdy_trig, &adis16260_data_rdy_trig_poll);
- 
--static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-+static IIO_TRIGGER_NAME_ATTR;
- 
- static struct attribute *adis16260_trigger_attrs[] = {
- 	&dev_attr_name.attr,
-diff --git a/drivers/staging/iio/imu/adis16300_trigger.c b/drivers/staging/iio/imu/adis16300_trigger.c
-index 64036cd..d6677b6 100644
---- a/drivers/staging/iio/imu/adis16300_trigger.c
-+++ b/drivers/staging/iio/imu/adis16300_trigger.c
-@@ -30,7 +30,7 @@ static int adis16300_data_rdy_trig_poll(struct iio_dev *dev_info,
- 
- IIO_EVENT_SH(data_rdy_trig, &adis16300_data_rdy_trig_poll);
- 
--static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-+static IIO_TRIGGER_NAME_ATTR;
- 
- static struct attribute *adis16300_trigger_attrs[] = {
- 	&dev_attr_name.attr,
-diff --git a/drivers/staging/iio/imu/adis16350_trigger.c b/drivers/staging/iio/imu/adis16350_trigger.c
-index 76edccc..739b7ec 100644
---- a/drivers/staging/iio/imu/adis16350_trigger.c
-+++ b/drivers/staging/iio/imu/adis16350_trigger.c
-@@ -30,7 +30,7 @@ static int adis16350_data_rdy_trig_poll(struct iio_dev *dev_info,
- 
- IIO_EVENT_SH(data_rdy_trig, &adis16350_data_rdy_trig_poll);
- 
--static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-+static IIO_TRIGGER_NAME_ATTR;
- 
- static struct attribute *adis16350_trigger_attrs[] = {
- 	&dev_attr_name.attr,
-diff --git a/drivers/staging/iio/imu/adis16400_trigger.c b/drivers/staging/iio/imu/adis16400_trigger.c
-index aafe601..36b5ff5 100644
---- a/drivers/staging/iio/imu/adis16400_trigger.c
-+++ b/drivers/staging/iio/imu/adis16400_trigger.c
-@@ -30,7 +30,7 @@ static int adis16400_data_rdy_trig_poll(struct iio_dev *dev_info,
- 
- IIO_EVENT_SH(data_rdy_trig, &adis16400_data_rdy_trig_poll);
- 
--static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-+static IIO_TRIGGER_NAME_ATTR;
- 
- static struct attribute *adis16400_trigger_attrs[] = {
- 	&dev_attr_name.attr,
-diff --git a/drivers/staging/iio/trigger/iio-trig-gpio.c b/drivers/staging/iio/trigger/iio-trig-gpio.c
-index f93cc91..2ce95e9 100644
---- a/drivers/staging/iio/trigger/iio-trig-gpio.c
-+++ b/drivers/staging/iio/trigger/iio-trig-gpio.c
-@@ -47,7 +47,7 @@ static irqreturn_t iio_gpio_trigger_poll(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
--static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-+static IIO_TRIGGER_NAME_ATTR;
- 
- static struct attribute *iio_gpio_trigger_attrs[] = {
- 	&dev_attr_name.attr,
-diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-index b0b52f8..24f174e 100644
---- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-+++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-@@ -72,17 +72,7 @@ error_ret:
- 	return ret;
- }
- 
--static ssize_t iio_trig_periodic_read_name(struct device *dev,
--					   struct device_attribute *attr,
--					   char *buf)
--{
--	struct iio_trigger *trig = dev_get_drvdata(dev);
--	return sprintf(buf, "%s\n", trig->name);
--}
+-/**
+- * IIO_DEV_ATTR_TEMP - many sensors have auxiliary temperature sensors
+- * @_show: output method for the attribute
+- **/
+-#define IIO_DEV_ATTR_TEMP(_show)			\
+-	IIO_DEVICE_ATTR(temp, S_IRUGO, _show, NULL, 0)
 -
--static DEVICE_ATTR(name, S_IRUGO,
--	    iio_trig_periodic_read_name,
--	    NULL);
-+static IIO_TRIGGER_NAME_ATTR;
- static DEVICE_ATTR(frequency, S_IRUGO | S_IWUSR,
- 	    iio_trig_periodic_read_freq,
- 	    iio_trig_periodic_write_freq);
+ #define IIO_DEV_ATTR_TEMP_RAW(_show)			\
+ 	IIO_DEVICE_ATTR(temp_raw, S_IRUGO, _show, NULL, 0)
+ 
 -- 
 1.7.1
 
