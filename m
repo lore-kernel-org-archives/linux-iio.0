@@ -1,153 +1,249 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-32.csi.cam.ac.uk ([131.111.8.132]:56699 "EHLO
-	ppsw-32.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755344Ab0IAOxW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Sep 2010 10:53:22 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 4/9] staging:iio: Remove long dead function definitions from headers
-Date: Wed,  1 Sep 2010 15:57:58 +0100
-Message-Id: <1283353083-31313-5-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 3/9] staging:iio: unecessary header removal and kernel doc clean up
+Date: Wed,  1 Sep 2010 15:57:57 +0100
+Message-Id: <1283353083-31313-4-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1283353083-31313-1-git-send-email-jic23@cam.ac.uk>
 References: <1283353083-31313-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/chrdev.h |    2 -
- drivers/staging/iio/sysfs.h  |   76 ------------------------------------------
- 2 files changed, 0 insertions(+), 78 deletions(-)
+ drivers/staging/iio/industrialio-ring.c |   11 ++---
+ drivers/staging/iio/ring_generic.h      |   69 +++++++++++++++++++++++++++----
+ 2 files changed, 65 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/staging/iio/chrdev.h b/drivers/staging/iio/chrdev.h
-index fd23bd1..98d1a2c 100644
---- a/drivers/staging/iio/chrdev.h
-+++ b/drivers/staging/iio/chrdev.h
-@@ -73,7 +73,6 @@ struct iio_shared_ev_pointer {
-  * @det_events:		list of detected events
-  * @max_events:		maximum number of events before new ones are dropped
-  * @current_events:	number of events in detected list
-- * @attr:		this chrdev's minor number sysfs attribute
-  * @owner:		ensure the driver module owns the file, not iio
-  * @private:		driver specific data
-  * @_name:		used internally to store the sysfs name for minor id
-@@ -88,7 +87,6 @@ struct iio_event_interface {
- 	struct iio_detected_event_list		det_events;
- 	int					max_events;
- 	int					current_events;
--	struct iio_chrdev_minor_attr		attr;
- 	struct module				*owner;
- 	void					*private;
- 	char					_name[35];
-diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
-index a4d4bb6..96cc3a7 100644
---- a/drivers/staging/iio/sysfs.h
-+++ b/drivers/staging/iio/sysfs.h
-@@ -30,27 +30,6 @@ struct iio_event_attr {
- 	container_of(_dev_attr, struct iio_event_attr, dev_attr)
+diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
+index f3c87ed..8c2f3fa 100644
+--- a/drivers/staging/iio/industrialio-ring.c
++++ b/drivers/staging/iio/industrialio-ring.c
+@@ -15,10 +15,8 @@
+  */
+ #include <linux/kernel.h>
+ #include <linux/device.h>
+-#include <linux/interrupt.h>
+ #include <linux/fs.h>
+ #include <linux/poll.h>
+-#include <linux/module.h>
+ #include <linux/cdev.h>
+ #include <linux/slab.h>
+ 
+@@ -53,7 +51,7 @@ int iio_push_or_escallate_ring_event(struct iio_ring_buffer *ring_buf,
+ EXPORT_SYMBOL(iio_push_or_escallate_ring_event);
  
  /**
-- * struct iio_chrdev_minor_attr - simple attribute to allow reading of chrdev
-- *				minor number
-- * @dev_attr:	underlying device attribute
-- * @minor:	the minor number
-- */
--struct iio_chrdev_minor_attr {
--	struct device_attribute dev_attr;
--	int minor;
--};
--
--void
--__init_iio_chrdev_minor_attr(struct iio_chrdev_minor_attr *minor_attr,
--			   const char *name,
--			   struct module *owner,
--			   int id);
--
--
--#define to_iio_chrdev_minor_attr(_dev_attr) \
--	container_of(_dev_attr, struct iio_chrdev_minor_attr, dev_attr);
--
--/**
-  * struct iio_dev_attr - iio specific device attribute
-  * @dev_attr:	underlying device attribute
-  * @address:	associated register address
-@@ -89,11 +68,6 @@ struct iio_const_attr {
- 	{ .dev_attr = __ATTR(_name, _mode, _show, _store),	\
- 	  .address = _addr }
- 
--#define IIO_ATTR_2(_name, _mode, _show, _store, _addr, _val2)	\
--	{ .dev_attr = __ATTR(_name, _mode, _show, _store),	\
--			.address = _addr,			\
--			.val2 = _val2 }
--
- #define IIO_DEVICE_ATTR(_name, _mode, _show, _store, _addr)	\
- 	struct iio_dev_attr iio_dev_attr_##_name		\
- 	= IIO_ATTR(_name, _mode, _show, _store, _addr)
-@@ -167,40 +141,6 @@ struct iio_const_attr {
- 	IIO_CONST_ATTR(sampling_frequency_available, _string)
+- * iio_ring_open() chrdev file open for ring buffer access
++ * iio_ring_open() - chrdev file open for ring buffer access
+  *
+  * This function relies on all ring buffer implementations having an
+  * iio_ring_buffer as their first element.
+@@ -72,7 +70,7 @@ static int iio_ring_open(struct inode *inode, struct file *filp)
+ }
  
  /**
-- * IIO_DEV_ATTR_SCAN_MODE - select a scan mode
-- * @_mode: sysfs file mode/permissions
-- * @_show: output method for the attribute
-- * @_store: input method for the attribute
-- *
-- * This is used when only certain combinations of inputs may be read in one
-- * scan.
-- **/
--#define IIO_DEV_ATTR_SCAN_MODE(_mode, _show, _store)		\
--	IIO_DEVICE_ATTR(scan_mode, _mode, _show, _store, 0)
--
--/**
-- * IIO_DEV_ATTR_AVAIL_SCAN_MODES - list available scan modes
-- * @_show: output method for the attribute
-- **/
--#define IIO_DEV_ATTR_AVAIL_SCAN_MODES(_show)				\
--	IIO_DEVICE_ATTR(available_scan_modes, S_IRUGO, _show, NULL, 0)
--
--/**
-- * IIO_DEV_ATTR_SCAN - result of scan of multiple channels
-- * @_show: output method for the attribute
-- **/
--#define IIO_DEV_ATTR_SCAN(_show)		\
--	IIO_DEVICE_ATTR(scan, S_IRUGO, _show, NULL, 0);
--
--/**
-- * IIO_DEV_ATTR_INPUT - direct read of a single input channel
-- * @_number: input channel number
-- * @_show: output method for the attribute
-- **/
--#define IIO_DEV_ATTR_INPUT(_number, _show)				\
--	IIO_DEVICE_ATTR(in##_number, S_IRUGO, _show, NULL, _number)
--
--/**
-  * IIO_DEV_ATTR_SW_RING_ENABLE - enable software ring buffer
-  * @_show: output method for the attribute
-  * @_store: input method for the attribute
-@@ -222,22 +162,6 @@ struct iio_const_attr {
- 	IIO_DEVICE_ATTR(hw_ring_enable, S_IRUGO | S_IWUSR, _show, _store, 0)
+- * iio_ring_release() -chrdev file close ring buffer access
++ * iio_ring_release() - chrdev file close ring buffer access
+  *
+  * This function relies on all ring buffer implementations having an
+  * iio_ring_buffer as their first element.
+@@ -91,7 +89,7 @@ static int iio_ring_release(struct inode *inode, struct file *filp)
+ }
  
  /**
-- * IIO_DEV_ATTR_BPSE - set number of bits per scan element
-- * @_mode: sysfs file mode/permissions
-- * @_show: output method for the attribute
-- * @_store: input method for the attribute
-- **/
--#define IIO_DEV_ATTR_BPSE(_mode, _show, _store)		\
--	IIO_DEVICE_ATTR(bpse, _mode, _show, _store, 0)
--
--/**
-- * IIO_DEV_ATTR_BPSE_AVAILABLE - number of bits per scan element supported
-- * @_show: output method for the attribute
-- **/
--#define IIO_DEV_ATTR_BPSE_AVAILABLE(_show)				\
--	IIO_DEVICE_ATTR(bpse_available, S_IRUGO, _show, NULL, 0)
--
--/**
-  * IIO_DEV_ATTR_TEMP - many sensors have auxiliary temperature sensors
-  * @_show: output method for the attribute
+- * iio_ring_rip_outer() chrdev read for ring buffer access
++ * iio_ring_rip_outer() - chrdev read for ring buffer access
+  *
+  * This function relies on all ring buffer implementations having an
+  * iio_ring _bufer as their first element.
+@@ -136,8 +134,9 @@ static const struct file_operations iio_ring_fileops = {
+ };
+ 
+ /**
+- * __iio_request_ring_buffer_event_chrdev() allocate ring event chrdev
++ * __iio_request_ring_buffer_event_chrdev() - allocate ring event chrdev
+  * @buf:	ring buffer whose event chrdev we are allocating
++ * @id:		id of this ring buffer (typically 0)
+  * @owner:	the module who owns the ring buffer (for ref counting)
+  * @dev:	device with which the chrdev is associated
   **/
+diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
+index 6124353..af355d8 100644
+--- a/drivers/staging/iio/ring_generic.h
++++ b/drivers/staging/iio/ring_generic.h
+@@ -13,9 +13,7 @@
+ 
+ #ifdef CONFIG_IIO_RING_BUFFER
+ 
+-struct iio_handler;
+ struct iio_ring_buffer;
+-struct iio_dev;
+ 
+ /**
+  * iio_push_ring_event() - ring buffer specific push to event chrdev
+@@ -52,8 +50,8 @@ int iio_push_or_escallate_ring_event(struct iio_ring_buffer *ring_buf,
+  *			change.
+  * @request_update:	if a parameter change has been marked, update underlying
+  *			storage.
+- * @get_bytes_per_datum:		get current bytes per datum
+- * @set_bytes_per_datum:		set number of bytes per datum
++ * @get_bytes_per_datum:get current bytes per datum
++ * @set_bytes_per_datum:set number of bytes per datum
+  * @get_length:		get number of datums in ring
+  * @set_length:		set number of datums in ring
+  * @is_enabled:		query if ring is currently being used
+@@ -99,7 +97,7 @@ struct iio_ring_access_funcs {
+  * @id:			unique id number
+  * @access_id:		device id number
+  * @length:		[DEVICE] number of datums in ring
+- * @bytes_per_datum	[DEVICE] size of individual datum including timestamp
++ * @bytes_per_datum:	[DEVICE] size of individual datum including timestamp
+  * @bpe:		[DEVICE] size of individual channel value
+  * @loopcount:		[INTERN] number of times the ring has looped
+  * @scan_el_attrs:	[DRIVER] control of scan elements if that scan mode
+@@ -143,6 +141,12 @@ struct iio_ring_buffer {
+ 	int				(*postdisable)(struct iio_dev *);
+ 
+ };
++
++/**
++ * iio_ring_buffer_init() - Initialize the buffer structure
++ * @ring: buffer to be initialized
++ * @dev_info: the iio device the buffer is assocated with
++ **/
+ void iio_ring_buffer_init(struct iio_ring_buffer *ring,
+ 			  struct iio_dev *dev_info);
+ 
+@@ -201,7 +205,7 @@ struct iio_scan_el {
+ ssize_t iio_scan_el_store(struct device *dev, struct device_attribute *attr,
+ 			  const char *buf, size_t len);
+ /**
+- * iio_scal_el_show() -	sysfs interface to query whether a scan element is
++ * iio_scan_el_show() -	sysfs interface to query whether a scan element is
+  *			is enabled or not
+  * @dev: the target device
+  * @attr: the device attribute that is being processed
+@@ -210,9 +214,16 @@ ssize_t iio_scan_el_store(struct device *dev, struct device_attribute *attr,
+ ssize_t iio_scan_el_show(struct device *dev, struct device_attribute *attr,
+ 			 char *buf);
+ 
++/**
++ * iio_scan_el_ts_store() - sysfs interface to set whether a timestamp is included
++ *			    in the scan.
++ **/
+ ssize_t iio_scan_el_ts_store(struct device *dev, struct device_attribute *attr,
+ 			     const char *buf, size_t len);
+-
++/**
++ * iio_scan_el_ts_show() - sysfs interface to query if a timestamp is included
++ *			   in the scan.
++ **/
+ ssize_t iio_scan_el_ts_show(struct device *dev, struct device_attribute *attr,
+ 			    char *buf);
+ /**
+@@ -256,6 +267,7 @@ ssize_t iio_scan_el_ts_show(struct device *dev, struct device_attribute *attr,
+ 	__IIO_SCAN_NAMED_EL_C(_name, _string, _number, _bits, _label, _cf)
+ /**
+  * IIO_SCAN_EL_TIMESTAMP - declare a special scan element for timestamps
++ * @number: specify where in the scan order this is stored.
+  *
+  * Odd one out. Handled slightly differently from other scan elements.
+  **/
+@@ -307,6 +319,11 @@ static inline int iio_scan_mask_query(struct iio_ring_buffer *ring, int bit)
+ 	return !!(mask & (1 << bit));
+ };
+ 
++/**
++ * iio_scan_mask_set() - set particular bit in the scan mask
++ * @ring: the ring buffer whose scan mask we are interested in
++ * @bit: the bit to be set.
++ **/
+ static inline int iio_scan_mask_set(struct iio_ring_buffer *ring, int bit)
+ {
+ 	struct iio_dev *dev_info = ring->indio_dev;
+@@ -327,6 +344,11 @@ static inline int iio_scan_mask_set(struct iio_ring_buffer *ring, int bit)
+ 	return 0;
+ };
+ 
++/**
++ * iio_scan_mask_clear() - clear a particular element from the scan mask
++ * @ring: the ring buffer whose scan mask we are interested in
++ * @bit: the bit to clear
++ **/
+ static inline int iio_scan_mask_clear(struct iio_ring_buffer *ring, int bit)
+ {
+ 	if (bit > IIO_MAX_SCAN_LENGTH)
+@@ -338,7 +360,7 @@ static inline int iio_scan_mask_clear(struct iio_ring_buffer *ring, int bit)
+ 
+ /**
+  * iio_scan_mask_count_to_right() - how many scan elements occur before here
+- * @dev_info: the iio_device whose scan mode we are querying
++ * @ring: the ring buffer whose scan mask we interested in
+  * @bit: which number scan element is this
+  **/
+ static inline int iio_scan_mask_count_to_right(struct iio_ring_buffer *ring,
+@@ -357,7 +379,10 @@ static inline int iio_scan_mask_count_to_right(struct iio_ring_buffer *ring,
+ 	return count;
+ }
+ 
+-
++/**
++ * iio_put_ring_buffer() - notify done with buffer
++ * @ring: the buffer we are done with.
++ **/
+ static inline void iio_put_ring_buffer(struct iio_ring_buffer *ring)
+ {
+ 	put_device(&ring->dev);
+@@ -367,23 +392,49 @@ static inline void iio_put_ring_buffer(struct iio_ring_buffer *ring)
+ 	container_of(d, struct iio_ring_buffer, dev)
+ #define access_dev_to_iio_ring_buffer(d)			\
+ 	container_of(d, struct iio_ring_buffer, access_dev)
++
++/**
++ * iio_ring_buffer_register() - register the buffer with IIO core
++ * @ring: the buffer to be registered
++ * @id: the id of the buffer (typically 0)
++ **/
+ int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id);
++
++/**
++ * iio_ring_buffer_unregister() - unregister the buffer from IIO core
++ * @ring: the buffer to be unregistered
++ **/
+ void iio_ring_buffer_unregister(struct iio_ring_buffer *ring);
+ 
++/**
++ * iio_read_ring_length() - attr func to get number of datums in the buffer
++ **/
+ ssize_t iio_read_ring_length(struct device *dev,
+ 			     struct device_attribute *attr,
+ 			     char *buf);
++/**
++ * iio_write_ring_length() - attr func to set number of datums in the buffer
++ **/
+ ssize_t iio_write_ring_length(struct device *dev,
+ 			      struct device_attribute *attr,
+ 			      const char *buf,
+ 			      size_t len);
++/**
++ * iio_read_ring_bytes_per_datum() - attr for number of bytes in whole datum
++ **/
+ ssize_t iio_read_ring_bytes_per_datum(struct device *dev,
+ 			  struct device_attribute *attr,
+ 			  char *buf);
++/**
++ * iio_store_ring_enable() - attr to turn the buffer on
++ **/
+ ssize_t iio_store_ring_enable(struct device *dev,
+ 			      struct device_attribute *attr,
+ 			      const char *buf,
+ 			      size_t len);
++/**
++ * iio_show_ring_enable() - attr to see if the buffer is on
++ **/
+ ssize_t iio_show_ring_enable(struct device *dev,
+ 			     struct device_attribute *attr,
+ 			     char *buf);
 -- 
 1.7.1
-
