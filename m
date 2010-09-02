@@ -1,131 +1,208 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-32.csi.cam.ac.uk ([131.111.8.132]:37141 "EHLO
-	ppsw-32.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754415Ab0IDQiy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Sep 2010 12:38:54 -0400
-Message-ID: <4C827747.7070209@cam.ac.uk>
-Date: Sat, 04 Sep 2010 17:43:51 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] staging:iio:trigger match leds trigger ABI
-References: <1283441854-31560-1-git-send-email-manuel.stahl@iis.fraunhofer.de> <Prayer.1.3.3.1009021714490.10022@hermes-1.csi.cam.ac.uk> <4C7FD38A.8090305@iis.fraunhofer.de>
-In-Reply-To: <4C7FD38A.8090305@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from relay04-haj2.antispameurope.com ([83.246.65.54]:42285 "EHLO
+	relay04-haj2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752057Ab0IBPhx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 2 Sep 2010 11:37:53 -0400
+Received: from iis.fhg.de (iis.iis.fhg.de [153.96.172.2])
+	by relay04-haj2.antispameurope.com (ASE-Secure-MTA) with SMTP id F326D5EC41E
+	for <linux-iio@vger.kernel.org>; Thu,  2 Sep 2010 17:37:50 +0200 (CEST)
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+To: linux-iio@vger.kernel.org
+Cc: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Subject: [PATCH 2/2] staging:iio:sca3000 change mode ABI to list style
+Date: Thu,  2 Sep 2010 17:37:34 +0200
+Message-Id: <1283441854-31560-2-git-send-email-manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <1283441854-31560-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+References: <1283441854-31560-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/02/10 17:40, Manuel Stahl wrote:
-> Am 02.09.2010 18:14, schrieb J.I. Cameron:
->> Hi Manuel,
->>
->> More explanation would be good.
->>
->> This falls into the debate of using a single sysfs param to list
->> available options with the selected one highlighted in the list
->> (what you have here)
->>
->> For every other element of iio we have gone with the separate attribute
->> listing what is available.
-> 
-> I think it makes a big difference if the attribute accepts names or
-> numbers. With names, a list is always handy. The first time I tried
-> to use a different trigger than the device's own, I was totally lost.
-> I couldn't figure out which names are valid and which are not.
-You should just be able to look at names of the registered triggers in
-their individual directories.
-> 
->> I'm also a little dubious about this as it massively
->> crosses over between different drivers (basically it gives an alternative
->> way of listing all triggers currently on the system). Obviously this is
->> to a certain extent true of led triggers as well, but there are relatively
->> few of them (as far as I know?)
-> 
-> I think the led subsystem is not the only one using the list style.
-> Just have to lookup where I found other uses.
-It is quite common.  It was an issue highlighted in an lwn article
-a while back... http://lwn.net/Articles/378884/
-> 
->> We could easily have hundreds of triggers on a complex sensor rig. That
->> makes for a very bit attribute indeed.
-> 
-> The same could happen to led triggers...
-True.  I can't see it happening any time soon, but it might.
-> 
->> So this is a nice idea, but in practice I'm not yet convinced it is
->> actually
->> a good idea in practice. This may be one to bounce up to lkml for a wider
->> set of opinions.
-> 
-> Yes, let's here what other think about it. Was more like a proposal
-> patch to see what it will look like and how useful it is.
-> 
->>>
->>> Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de> ---
->>> drivers/staging/iio/industrialio-trigger.c | 27
->>> ++++++++++++++++++++------- 1 files changed, 20 insertions(+), 7
->>> deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/industrialio-trigger.c
->>> b/drivers/staging/iio/industrialio-trigger.c index 57dd923..25ee00f
->>> 100644 --- a/drivers/staging/iio/industrialio-trigger.c +++
->>> b/drivers/staging/iio/industrialio-trigger.c @@ -293,11 +293,25 @@
->>> static ssize_t iio_trigger_read_current(struct device *dev,
->>> char *buf)
->>> {
->>> struct iio_dev *dev_info = dev_get_drvdata(dev);
->>> + struct iio_trigger *trig;
->>> int len = 0;
->>> - if (dev_info->trig)
->>> - len = sprintf(buf,
->>> - "%s\n",
->>> - dev_info->trig->name);
->>> +
->>> + if (!dev_info->trig)
->>> + len += sprintf(buf+len, "[none]");
->> spaces round the +? I have a vague feeling checkpatch is fussy about that.
->>> + else
->>> + len += sprintf(buf+len, "none ");
->>> +
->>> + mutex_lock(&iio_trigger_list_lock);
->>> + list_for_each_entry(trig, &iio_trigger_list, list) {
->> what is the point of this?
->>> + if (dev_info->trig && !strcmp(dev_info->trig->name,
->>> + trig->name))
->>> + len += sprintf(buf+len, " [%s]", trig->name);
->>> + else
->>> + len += sprintf(buf+len, " %s", trig->name);
->> At very least these need some protection to prevent a buffer overrun.
->>> + }
->>> + mutex_unlock(&iio_trigger_list_lock);
->>> +
->>> + len += sprintf(len+buf, "\n");
->>> return len;
->>> }
->>>
->>> @@ -331,17 +345,16 @@ static ssize_t iio_trigger_write_current(struct
->>> device *dev,
->>> return len;
->>> }
->>>
->>> -static DEVICE_ATTR(current_trigger, S_IRUGO | S_IWUSR,
->>> +static DEVICE_ATTR(trigger, S_IRUGO | S_IWUSR,
->>> iio_trigger_read_current,
->>> iio_trigger_write_current);
->>>
->>> static struct attribute *iio_trigger_consumer_attrs[] = {
->>> - &dev_attr_current_trigger.attr,
->>> + &dev_attr_trigger.attr,
->>> NULL,
->>> };
->>>
->>> static const struct attribute_group iio_trigger_consumer_attr_group = {
->>> - .name = "trigger",
->>> .attrs = iio_trigger_consumer_attrs,
->>> };
->>>
->>>
-> 
-> 
+
+Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+---
+ drivers/staging/iio/accel/sca3000_core.c |  125 ++++++++++++++----------------
+ 1 files changed, 58 insertions(+), 67 deletions(-)
+
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index 0eb2c4c..e86c1ca 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -364,39 +364,14 @@ error_ret:
+ 	return ret ? ret : len;
+ }
+ 
+-/**
+- * sca3000_show_available_measurement_modes() display available modes
+- *
+- * This is all read from chip specific data in the driver. Not all
+- * of the sca3000 series support modes other than normal.
+- **/
+-static ssize_t
+-sca3000_show_available_measurement_modes(struct device *dev,
+-					 struct device_attribute *attr,
+-					 char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct sca3000_state *st = dev_info->dev_data;
+-	int len = 0;
+-
+-	len += sprintf(buf + len, "0 - normal mode");
+-	switch (st->info->option_mode_1) {
+-	case SCA3000_OP_MODE_NARROW:
+-		len += sprintf(buf + len, ", 1 - narrow mode");
+-		break;
+-	case SCA3000_OP_MODE_BYPASS:
+-		len += sprintf(buf + len, ", 1 - bypass mode");
+-		break;
+-	}
+-	switch (st->info->option_mode_2) {
+-	case SCA3000_OP_MODE_WIDE:
+-		len += sprintf(buf + len, ", 2 - wide mode");
+-		break;
+-	}
+-	/* always supported */
+-	len += sprintf(buf + len, " 3 - motion detection\n");
+ 
+-	return len;
++static inline
++ssize_t sca3000_add_item(char *buf, char *name, int enabled)
++{
++	if (enabled)
++		return sprintf(buf, "[%s] ", name);
++	else
++		return sprintf(buf, "%s ", name);
+ }
+ 
+ /**
+@@ -418,31 +393,24 @@ sca3000_show_measurement_mode(struct device *dev,
+ 		goto error_ret;
+ 	/* mask bottom 2 bits - only ones that are relevant */
+ 	rx[1] &= 0x03;
+-	switch (rx[1]) {
+-	case SCA3000_MEAS_MODE_NORMAL:
+-		len += sprintf(buf + len, "0 - normal mode\n");
+-		break;
+-	case SCA3000_MEAS_MODE_MOT_DET:
+-		len += sprintf(buf + len, "3 - motion detection\n");
++
++	len += sca3000_add_item(buf+len, "normal", rx[1] == SCA3000_MEAS_MODE_NORMAL);
++	switch (st->info->option_mode_1) {
++	case SCA3000_OP_MODE_NARROW:
++		len += sca3000_add_item(buf+len, "narrow", rx[1] == SCA3000_MEAS_MODE_OP_1);
+ 		break;
+-	case SCA3000_MEAS_MODE_OP_1:
+-		switch (st->info->option_mode_1) {
+-		case SCA3000_OP_MODE_NARROW:
+-			len += sprintf(buf + len, "1 - narrow mode\n");
+-			break;
+-		case SCA3000_OP_MODE_BYPASS:
+-			len += sprintf(buf + len, "1 - bypass mode\n");
+-			break;
+-		}
++	case SCA3000_OP_MODE_BYPASS:
++		len += sca3000_add_item(buf+len, "bypass", rx[1] == SCA3000_MEAS_MODE_OP_1);
+ 		break;
+-	case SCA3000_MEAS_MODE_OP_2:
+-		switch (st->info->option_mode_2) {
+-		case SCA3000_OP_MODE_WIDE:
+-			len += sprintf(buf + len, "2 - wide mode\n");
+-			break;
+-		}
++	}
++	switch (st->info->option_mode_2) {
++	case SCA3000_OP_MODE_WIDE:
++		len += sca3000_add_item(buf+len, "wide", rx[1] == SCA3000_MEAS_MODE_OP_2);
+ 		break;
+ 	}
++	/* always supported */
++	len += sca3000_add_item(buf+len, "motion", rx[1] == SCA3000_MEAS_MODE_MOT_DET);
++	len += sprintf(buf+len, "\n");
+ 
+ error_ret:
+ 	mutex_unlock(&st->lock);
+@@ -461,15 +429,47 @@ sca3000_store_measurement_mode(struct device *dev,
+ {
+ 	struct iio_dev *dev_info = dev_get_drvdata(dev);
+ 	struct sca3000_state *st = dev_info->dev_data;
++	const char *mode;
+ 	int ret;
+ 	u8 *rx;
+-	int mask = 0x03;
+-	long val;
++	int mask = 0x03, val = 0;
+ 
+ 	mutex_lock(&st->lock);
+-	ret = strict_strtol(buf, 10, &val);
+-	if (ret)
+-		goto error_ret;
++
++	if (!strncmp(buf, "normal", len)) {
++		val = SCA3000_MEAS_MODE_NORMAL;
++		goto proceed;
++	}
++	switch (st->info->option_mode_1) {
++	case SCA3000_OP_MODE_NARROW:
++		mode = "narrow";
++		break;
++	case SCA3000_OP_MODE_BYPASS:
++		mode = "bypass";
++		break;
++	}
++	if (!strncmp(buf, mode, len)) {
++		val = SCA3000_MEAS_MODE_OP_1;
++		goto proceed;
++	}
++
++	switch (st->info->option_mode_2) {
++	case SCA3000_OP_MODE_WIDE:
++		if (!strncmp(buf, "wide", len)) {
++			val = SCA3000_MEAS_MODE_OP_1;
++			goto proceed;
++		}
++	}
++	/* always supported */
++	if (!strncmp(buf, "motion", len)) {
++		val = SCA3000_MEAS_MODE_MOT_DET;
++		goto proceed;
++	}
++
++	ret = -EINVAL;
++	goto error_ret;
++
++proceed:
+ 	ret = sca3000_read_data(st, SCA3000_REG_ADDR_MODE, &rx, 1);
+ 	if (ret)
+ 		goto error_ret;
+@@ -491,13 +491,6 @@ error_ret:
+ }
+ 
+ 
+-/* Not even vaguely standard attributes so defined here rather than
+- * in the relevant IIO core headers
+- */
+-static IIO_DEVICE_ATTR(measurement_mode_available, S_IRUGO,
+-		       sca3000_show_available_measurement_modes,
+-		       NULL, 0);
+-
+ static IIO_DEVICE_ATTR(measurement_mode, S_IRUGO | S_IWUSR,
+ 		       sca3000_show_measurement_mode,
+ 		       sca3000_store_measurement_mode,
+@@ -799,7 +792,6 @@ static struct attribute *sca3000_attributes[] = {
+ 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_y_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_z_raw.dev_attr.attr,
+-	&iio_dev_attr_measurement_mode_available.dev_attr.attr,
+ 	&iio_dev_attr_measurement_mode.dev_attr.attr,
+ 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+@@ -813,7 +805,6 @@ static struct attribute *sca3000_attributes_with_temp[] = {
+ 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_y_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_z_raw.dev_attr.attr,
+-	&iio_dev_attr_measurement_mode_available.dev_attr.attr,
+ 	&iio_dev_attr_measurement_mode.dev_attr.attr,
+ 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+-- 
+1.7.0.6
 
