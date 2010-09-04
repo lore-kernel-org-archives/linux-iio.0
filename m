@@ -1,69 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay03-haj2.antispameurope.com ([83.246.65.53]:60982 "EHLO
-	relay03-haj2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751989Ab0IBHYc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 2 Sep 2010 03:24:32 -0400
-Message-ID: <4C7F512B.1000800@iis.fraunhofer.de>
-Date: Thu, 02 Sep 2010 09:24:27 +0200
-From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Return-Path: <jic23@cam.ac.uk>
+Message-ID: <4C828138.6060406@cam.ac.uk>
+Date: Sat, 04 Sep 2010 18:26:16 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: Andrew Chew <AChew@nvidia.com>
-CC: "'linux-iio@vger.kernel.org'" <linux-iio@vger.kernel.org>
-Subject: Re: IIO magnetometer attributes
-References: <643E69AA4436674C8F39DCC2C05F763816B85AD08D@HQMAIL03.nvidia.com> <4C7E2DB6.9090104@cam.ac.uk> <643E69AA4436674C8F39DCC2C05F763816B85AD094@HQMAIL03.nvidia.com>
-In-Reply-To: <643E69AA4436674C8F39DCC2C05F763816B85AD094@HQMAIL03.nvidia.com>
-Content-Type: multipart/mixed;
- boundary="------------050407070100020507030703"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "uclinux-dist-devel@blackfin.uclinux.org" <uclinux-dist-devel@blackfin.uclinux.org>
+Subject: Re: [IIO] Cleanup userspace
+References: <4C777E16.6040708@iis.fraunhofer.de> <4C77AC01.3090204@cam.ac.uk> <4C77B68B.4060805@iis.fraunhofer.de> <4C77CA90.2030806@cam.ac.uk> <4C77CC28.6020604@iis.fraunhofer.de> <4C77D52A.6090606@cam.ac.uk>
+In-Reply-To: <4C77D52A.6090606@cam.ac.uk>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-This is a multi-part message in MIME format.
---------------050407070100020507030703
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-MIME-Autoconverted: from 8bit to quoted-printable by iis.fhg.de id JAA00901
+On 08/27/10 16:09, Jonathan Cameron wrote:
+> ...
+>>>
+>>> Agreed. These ought to be in there and will be needed
+>>>
+>>>> To be compatible with future extensions we could have:
+>>>>    |- /sys/bus/iio/ii0/buffer0/scan_elements/
+>>>>       |- accel_x:en    (0 or 1)
+>>>>       |- accel_x:type  (i.e. s14/16, see *)
+>>>>       |- accel_x:index
+>>>>
+>>>
+>>>> * s14/16 means signed 14 bits, stored in 16 bits, right aligned. If
+>>>> it's left aligned we can just modify the scale attribute and give the
+>>>> 16 bit interpretation in <channel>:raw.
+>>> That is quite a neat way of doing it though I'm not sure 'type' is the
+>>> ideal name.  My immediate thought is that type would be 'acceleration'!
+>>> We definitely want this on list.  We'd also want to drop the precision
+>>> attribute as that will just confuse things.
+>>
+>> I'm open for any other name.
+> Lets see if anyone else has a suggestion...
 
-Am 01.09.2010 23:25, schrieb Andrew Chew:
->> The documentation had slipped until a large set of patches
->> from Manuel Stahl
->> that Greg KH pulled into staging this morning.  Hopefully the
->> code and docs
->> now match rather better!
->
-> Where's the repository that you're talking about, that has this updated=
- documentation?  I did a pull of the kernel.org .35 git, as well as kerne=
-l.org's mainline, and don't see any updates to this documentation.
+actually, having thought about it a bit more (and as no one else chipped in)
+I'm happy to go with type as you suggested. It's a nice clear interface.
+It should be obvious to anyone looking at the value that it is about the size
+of the element (even if they don't immediately follow the /16 bit).
+Perhaps we should run this past lkml to see if anyone has a suggestion?
 
-In linux-next of course:
-http://git.kernel.org/?p=3Dlinux/kernel/git/next/linux-next.git;a=3Dhisto=
-ry;f=3Ddrivers/staging/iio;hb=3DHEAD
-
-The patches are also sent to linux-iio@vger.kernel.org
-
-Regards,
---=20
-Dipl.-Inf. Manuel Stahl
-Fraunhofer-Institut f=FCr Integrierte Schaltungen IIS
-- Leistungsoptimierte Systeme -
-Nordostpark 93                Telefon  +49 (0)911/58061-6419
-90411 N=FCrnberg                Fax      +49 (0)911/58061-6398
-http://www.iis.fraunhofer.de  manuel.stahl@iis.fraunhofer.de
-
---------------050407070100020507030703
-Content-Type: text/x-vcard; charset=utf-8;
- name="manuel_stahl.vcf"
-Content-Disposition: attachment;
- filename="manuel_stahl.vcf"
-Content-Transfer-Encoding: 7bit
-
-begin:vcard
-fn:Manuel Stahl
-n:Stahl;Manuel
-email;internet:manuel.stahl@iis.fraunhofer.de
-tel;work:+49 911 58061-6419
-x-mozilla-html:FALSE
-version:2.1
-end:vcard
-
-
---------------050407070100020507030703--
+Manuel, it's your idea so you get to write the email ;)
