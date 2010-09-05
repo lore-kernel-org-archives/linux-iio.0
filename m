@@ -1,216 +1,181 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-30.csi.cam.ac.uk ([131.111.8.130]:38726 "EHLO
-	ppsw-30.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754583Ab0IFLpi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 Sep 2010 07:45:38 -0400
-Message-ID: <4C84D58F.1010005@cam.ac.uk>
-Date: Mon, 06 Sep 2010 12:50:39 +0100
+Received: from ppsw-32.csi.cam.ac.uk ([131.111.8.132]:38054 "EHLO
+	ppsw-32.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750921Ab0IEWUe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Sep 2010 18:20:34 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: linux-iio@vger.kernel.org,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH 2/4] staging:iio:adis16350 move datardy trigger to straight
- interrupt.
-References: <1283725218-15157-1-git-send-email-jic23@cam.ac.uk> <1283725218-15157-3-git-send-email-jic23@cam.ac.uk> <4C84A297.2030207@iis.fraunhofer.de>
-In-Reply-To: <4C84A297.2030207@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-15
+To: linux-iio@vger.kernel.org
+Cc: manuel.stahl@iis.fraunhofer.de, drivers@analog.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 1/4] staging:iio:adis16350 add non burst buffer fill and fix burst logic
+Date: Sun,  5 Sep 2010 23:20:15 +0100
+Message-Id: <1283725218-15157-2-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1283725218-15157-1-git-send-email-jic23@cam.ac.uk>
+References: <1283725218-15157-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/06/10 09:13, Manuel Stahl wrote:
-> Am 06.09.2010 00:20, schrieb Jonathan Cameron:
->> The use of the interface for the trigger was lifted from the
->> lis3l02dq.  There it is needed because the same physical line
->> is used for data ready and event interrupts.  Her it isn't
->> so we can simplify things.
-> 
-> I guess this patch has to be applied to all other adis devices as well.
-Agreed, that was on my todo list ;)
-> 
->>
->> Signed-off-by: Jonathan Cameron<jic23@cam.ac.uk>
->> ---
->>   drivers/staging/iio/imu/adis16350_core.c    |   27 ++------------
->>   drivers/staging/iio/imu/adis16350_trigger.c |   52 ++++++++-------------------
->>   2 files changed, 18 insertions(+), 61 deletions(-)
->>
->> diff --git a/drivers/staging/iio/imu/adis16350_core.c b/drivers/staging/iio/imu/adis16350_core.c
->> index d8181f9..e500a5c 100644
->> --- a/drivers/staging/iio/imu/adis16350_core.c
->> +++ b/drivers/staging/iio/imu/adis16350_core.c
->> @@ -583,14 +583,6 @@ static const struct attribute_group adis16350_attribute_group = {
->>       .attrs = adis16350_attributes,
->>   };
->>
->> -static struct attribute *adis16350_event_attributes[] = {
->> -    NULL,
->> -};
->> -
->> -static struct attribute_group adis16350_event_attribute_group = {
->> -    .attrs = adis16350_event_attributes,
->> -};
->> -
->>   static int __devinit adis16350_probe(struct spi_device *spi)
->>   {
->>       int ret, regdone = 0;
->> @@ -624,8 +616,6 @@ static int __devinit adis16350_probe(struct spi_device *spi)
->>       }
->>
->>       st->indio_dev->dev.parent =&spi->dev;
->> -    st->indio_dev->num_interrupt_lines = 1;
->> -    st->indio_dev->event_attrs =&adis16350_event_attribute_group;
->>       st->indio_dev->attrs =&adis16350_attribute_group;
->>       st->indio_dev->dev_data = (void *)(st);
->>       st->indio_dev->driver_module = THIS_MODULE;
->> @@ -647,17 +637,9 @@ static int __devinit adis16350_probe(struct spi_device *spi)
->>       }
->>
->>       if (spi->irq) {
->> -        ret = iio_register_interrupt_line(spi->irq,
->> -                st->indio_dev,
->> -                0,
->> -                IRQF_TRIGGER_RISING,
->> -                "adis16350");
->> -        if (ret)
->> -            goto error_uninitialize_ring;
->> -
->>           ret = adis16350_probe_trigger(st->indio_dev);
->>           if (ret)
->> -            goto error_unregister_line;
->> +            goto error_uninitialize_ring;
->>       }
->>
->>       /* Get the device into a sane initial state */
->> @@ -667,10 +649,8 @@ static int __devinit adis16350_probe(struct spi_device *spi)
->>       return 0;
->>
->>   error_remove_trigger:
->> -    adis16350_remove_trigger(st->indio_dev);
->> -error_unregister_line:
->>       if (spi->irq)
->> -        iio_unregister_interrupt_line(st->indio_dev, 0);
->> +        adis16350_remove_trigger(st->indio_dev);
->>   error_uninitialize_ring:
->>       iio_ring_buffer_unregister(st->indio_dev->ring);
->>   error_unreg_ring_funcs:
->> @@ -702,9 +682,8 @@ static int adis16350_remove(struct spi_device *spi)
->>
->>       flush_scheduled_work();
->>
->> -    adis16350_remove_trigger(indio_dev);
->>       if (spi->irq)
->> -        iio_unregister_interrupt_line(indio_dev, 0);
->> +        adis16350_remove_trigger(indio_dev);
->>
->>       iio_ring_buffer_unregister(indio_dev->ring);
->>       iio_device_unregister(indio_dev);
->> diff --git a/drivers/staging/iio/imu/adis16350_trigger.c b/drivers/staging/iio/imu/adis16350_trigger.c
->> index 739b7ec..7f26de8 100644
->> --- a/drivers/staging/iio/imu/adis16350_trigger.c
->> +++ b/drivers/staging/iio/imu/adis16350_trigger.c
->> @@ -13,23 +13,14 @@
->>   #include "adis16350.h"
->>
->>   /**
->> - * adis16350_data_rdy_trig_poll() the event handler for the data rdy trig
->> + * adis16350_data_rdy_trig_poll() the interrupt th for the data rdy trig
->>    **/
->> -static int adis16350_data_rdy_trig_poll(struct iio_dev *dev_info,
->> -                       int index,
->> -                       s64 timestamp,
->> -                       int no_test)
->> +static irqreturn_t adis16350_data_rdy_trig_poll(int irq, void *private)
->>   {
->> -    struct adis16350_state *st = iio_dev_get_devdata(dev_info);
->> -    struct iio_trigger *trig = st->trig;
->> -
->> -    iio_trigger_poll(trig, timestamp);
->> -
->> +    iio_trigger_poll(private, iio_get_time_ns());
->>       return IRQ_HANDLED;
->>   }
->>
->> -IIO_EVENT_SH(data_rdy_trig,&adis16350_data_rdy_trig_poll);
->> -
->>   static IIO_TRIGGER_NAME_ATTR;
->>
->>   static struct attribute *adis16350_trigger_attrs[] = {
->> @@ -53,36 +44,16 @@ static int adis16350_data_rdy_trigger_set_state(struct iio_trigger *trig,
->>
->>       dev_dbg(&indio_dev->dev, "%s (%d)\n", __func__, state);
->>       ret = adis16350_set_irq(&st->indio_dev->dev, state);
->> -    if (state == false) {
->> -        iio_remove_event_from_list(&iio_event_data_rdy_trig,
->> -                    &indio_dev->interrupts[0]
->> -                       ->ev_list);
->> -        /* possible quirk with handler currently worked around
->> -           by ensuring the work queue is empty */
->> +    if (state == false)
->>           flush_scheduled_work();
->> -    } else {
->> -        iio_add_event_to_list(&iio_event_data_rdy_trig,
->> -                &indio_dev->interrupts[0]->ev_list);
->> -    }
->> -    return ret;
->> -}
->>
->> -/**
->> - * adis16350_trig_try_reen() try renabling irq for data rdy trigger
->> - * @trig:    the datardy trigger
->> - **/
->> -static int adis16350_trig_try_reen(struct iio_trigger *trig)
->> -{
->> -    struct adis16350_state *st = trig->private_data;
->> -    enable_irq(st->us->irq);
->> -    /* irq reenabled so success! */
->> -    return 0;
->> +    return ret;
->>   }
->>
->>   int adis16350_probe_trigger(struct iio_dev *indio_dev)
->>   {
->>       int ret;
->> -    struct adis16350_state *st = indio_dev->dev_data;
->> +    struct adis16350_state *st = iio_dev_get_devdata(indio_dev);
->>
->>       st->trig = iio_allocate_trigger();
->>       st->trig->name = kasprintf(GFP_KERNEL,
->> @@ -96,7 +67,6 @@ int adis16350_probe_trigger(struct iio_dev *indio_dev)
->>       st->trig->owner = THIS_MODULE;
->>       st->trig->private_data = st;
->>       st->trig->set_trigger_state =&adis16350_data_rdy_trigger_set_state;
->> -    st->trig->try_reenable =&adis16350_trig_try_reen;
->>       st->trig->control_attrs =&adis16350_trigger_attr_group;
->>       ret = iio_trigger_register(st->trig);
->>
->> @@ -105,8 +75,15 @@ int adis16350_probe_trigger(struct iio_dev *indio_dev)
->>       if (ret)
->>           goto error_free_trig_name;
->>
->> +    ret = request_irq(st->us->irq, adis16350_data_rdy_trig_poll,
->> +            IRQF_TRIGGER_RISING, st->trig->name, st->trig);
->> +    if (ret)
->> +        goto error_trigger_unregister;
->> +
->>       return 0;
->>
->> +error_trigger_unregister:
->> +    iio_trigger_unregister(st->trig);
->>   error_free_trig_name:
->>       kfree(st->trig->name);
->>   error_free_trig:
->> @@ -117,8 +94,9 @@ error_free_trig:
->>
->>   void adis16350_remove_trigger(struct iio_dev *indio_dev)
->>   {
->> -    struct adis16350_state *state = indio_dev->dev_data;
->> +    struct adis16350_state *state = iio_dev_get_devdata(indio_dev);
->>
->> +    free_irq(state->us->irq, state->trig);
->>       iio_trigger_unregister(state->trig);
->>       kfree(state->trig->name);
->>       iio_free_trigger(state->trig);
-> 
-> 
+If the adis16350 etc support burst mode it is undocumented and does
+not seem to work. Hence this adds an alternate read function.
+It also fixes the logic for cases where not all channels are
+present in the burst path.
+
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/imu/adis16350.h      |    2 +
+ drivers/staging/iio/imu/adis16350_core.c |    9 ++--
+ drivers/staging/iio/imu/adis16350_ring.c |   75 +++++++++++++++++++++++++++---
+ 3 files changed, 75 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/staging/iio/imu/adis16350.h b/drivers/staging/iio/imu/adis16350.h
+index b00001e..07d3eeb 100644
+--- a/drivers/staging/iio/imu/adis16350.h
++++ b/drivers/staging/iio/imu/adis16350.h
+@@ -107,6 +107,7 @@
+  * @tx:			transmit buffer
+  * @rx:			recieve buffer
+  * @buf_lock:		mutex to protect tx and rx
++ * @burst_available:	does the device support burst reading
+  **/
+ struct adis16350_state {
+ 	struct spi_device		*us;
+@@ -117,6 +118,7 @@ struct adis16350_state {
+ 	u8				*tx;
+ 	u8				*rx;
+ 	struct mutex			buf_lock;
++	unsigned int			burst_available:1;
+ };
+ 
+ int adis16350_set_irq(struct device *dev, bool enable);
+diff --git a/drivers/staging/iio/imu/adis16350_core.c b/drivers/staging/iio/imu/adis16350_core.c
+index cc33843..d8181f9 100644
+--- a/drivers/staging/iio/imu/adis16350_core.c
++++ b/drivers/staging/iio/imu/adis16350_core.c
+@@ -615,6 +615,7 @@ static int __devinit adis16350_probe(struct spi_device *spi)
+ 	}
+ 	st->us = spi;
+ 	mutex_init(&st->buf_lock);
++	st->burst_available = spi_get_device_id(spi)->driver_data;
+ 	/* setup the industrialio driver allocated elements */
+ 	st->indio_dev = iio_allocate_device();
+ 	if (st->indio_dev == NULL) {
+@@ -722,10 +723,10 @@ static const struct spi_device_id adis16350_id[] = {
+ 	{"adis16350", 0},
+ 	{"adis16354", 0},
+ 	{"adis16355", 0},
+-	{"adis16360", 0},
+-	{"adis16362", 0},
+-	{"adis16364", 0},
+-	{"adis16365", 0},
++	{"adis16360", 1},
++	{"adis16362", 1},
++	{"adis16364", 1},
++	{"adis16365", 1},
+ 	{}
+ };
+ 
+diff --git a/drivers/staging/iio/imu/adis16350_ring.c b/drivers/staging/iio/imu/adis16350_ring.c
+index aefbae5..1970247 100644
+--- a/drivers/staging/iio/imu/adis16350_ring.c
++++ b/drivers/staging/iio/imu/adis16350_ring.c
+@@ -126,6 +126,56 @@ static int adis16350_spi_read_burst(struct device *dev, u8 *rx)
+ 	return ret;
+ }
+ 
++static const u16 read_all_tx_array[] = {
++	be16_to_cpu(ADIS16350_READ_REG(ADIS16350_SUPPLY_OUT)),
++	be16_to_cpu(ADIS16350_READ_REG(ADIS16350_XGYRO_OUT)),
++	be16_to_cpu(ADIS16350_READ_REG(ADIS16350_YGYRO_OUT)),
++	be16_to_cpu(ADIS16350_READ_REG(ADIS16350_ZGYRO_OUT)),
++	be16_to_cpu(ADIS16350_READ_REG(ADIS16350_XACCL_OUT)),
++	be16_to_cpu(ADIS16350_READ_REG(ADIS16350_YACCL_OUT)),
++	be16_to_cpu(ADIS16350_READ_REG(ADIS16350_ZACCL_OUT)),
++	be16_to_cpu(ADIS16350_READ_REG(ADIS16350_XTEMP_OUT)),
++	be16_to_cpu(ADIS16350_READ_REG(ADIS16350_YTEMP_OUT)),
++	be16_to_cpu(ADIS16350_READ_REG(ADIS16350_ZTEMP_OUT)),
++	be16_to_cpu(ADIS16350_READ_REG(ADIS16350_AUX_ADC)),
++};
++
++static int adis16350_spi_read_all(struct device *dev, u16 *rx_array)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct adis16350_state *st = iio_dev_get_devdata(indio_dev);
++
++	struct spi_message msg;
++	int i, j = 0, ret;
++	struct spi_transfer *xfers;
++
++	xfers = kzalloc(sizeof(*xfers)*
++			st->indio_dev->ring->scan_count + 1,
++		GFP_KERNEL);
++	if (xfers == NULL)
++		return -ENOMEM;
++
++	for (i = 0; i < ARRAY_SIZE(read_all_tx_array); i++)
++		if (st->indio_dev->ring->scan_mask & (1 << i)) {
++			xfers[j].tx_buf = &read_all_tx_array[i];
++			xfers[j].bits_per_word = 16;
++			xfers[j].len = 2;
++			xfers[j + 1].rx_buf = rx_array + j;
++			j++;
++		}
++	xfers[j].bits_per_word = 16;
++	xfers[j].len = 2;
++
++	spi_message_init(&msg);
++	for (j = 0; j < st->indio_dev->ring->scan_count + 1; j++)
++		spi_message_add_tail(&xfers[j], &msg);
++
++	ret = spi_sync(st->us, &msg);
++	kfree(xfers);
++
++	return ret;
++}
++
+ /* Whilst this makes a lot of calls to iio_sw_ring functions - it is to device
+  * specific to be rolled into the core.
+  */
+@@ -136,22 +186,33 @@ static void adis16350_trigger_bh_to_ring(struct work_struct *work_s)
+ 			       work_trigger_to_ring);
+ 	struct iio_ring_buffer *ring = st->indio_dev->ring;
+ 
+-	int i = 0;
++	int i = 0, j = 0;
+ 	s16 *data;
+ 	size_t datasize = ring->access.get_bytes_per_datum(ring);
+ 
+-	data = kmalloc(datasize , GFP_KERNEL);
++	data = kmalloc(datasize, GFP_KERNEL);
+ 	if (data == NULL) {
+ 		dev_err(&st->us->dev, "memory alloc failed in ring bh");
+ 		return;
+ 	}
+ 
+-	if (ring->scan_count)
+-		if (adis16350_spi_read_burst(&st->indio_dev->dev, st->rx) >= 0)
++	if (ring->scan_count) {
++		if (st->burst_available) {
++			if (adis16350_spi_read_burst(&st->indio_dev->dev,
++							st->rx) < 0)
++				return;
++		for (; i < ring->scan_count; i++)
++			if (st->indio_dev->ring->scan_mask & (1 << i))
++				data[j++] = le16_to_cpup(
++					(__le16 *)&(st->rx[i*2]));
++		} else {
++			if (adis16350_spi_read_all(&st->indio_dev->dev,
++							(u16 *)st->rx) < 0)
++				return;
+ 			for (; i < ring->scan_count; i++)
+-				data[i] = be16_to_cpup(
+-					(__be16 *)&(st->rx[i*2]));
+-
++				data[i] = *(u16 *)&(st->rx[i*2]);
++		}
++	}
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+ 	if (ring->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = st->last_timestamp;
+-- 
+1.7.0.4
 
