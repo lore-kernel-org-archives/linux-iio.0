@@ -1,86 +1,53 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:37264 "EHLO
-	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751321Ab0IFO6X (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 Sep 2010 10:58:23 -0400
-Message-ID: <4C8502BB.4070509@cam.ac.uk>
-Date: Mon, 06 Sep 2010 16:03:23 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Alan Cox <alan@lxorguk.ukuu.org.uk>
-CC: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jean Delvare <khali@linux-fr.org>, Greg KH <greg@kroah.com>,
-	Mike Frysinger <vapier.adi@gmail.com>
-Subject: Re: [IIO] Proposal for sysfs attributes
-References: <4C84A93B.2050507@iis.fraunhofer.de>	<4C84E64D.4040600@jic23.retrosnub.co.uk>	<20100906143256.6b49825d@lxorguk.ukuu.org.uk>	<4C84F80C.2050702@cam.ac.uk> <20100906154800.53522fc7@lxorguk.ukuu.org.uk>
-In-Reply-To: <20100906154800.53522fc7@lxorguk.ukuu.org.uk>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: manuel.stahl@iis.fraunhofer.de,
+	drivers@analog.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [RFC PATCH 0/4] staging:iio:adis16350 various updates and fixes
+Date: Sun,  5 Sep 2010 23:20:14 +0100
+Message-Id: <1283725218-15157-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Alan,
->> I'm afraid I have lost you here.  Why restrict to powers of 10?  The buffered
->> route is going to ship whatever the chip actually produces.
-> 
-> Then I don't see the point of IIO over a million random misc API's of the
-> week. Giving 50,000 interfaces the same name doesn't actually achieve
-> anything or solve any real problems.
-> 
-> The job of the OS is to provide an *abstraction*. If IIO won't do that I
-> don't see the point of IIO.
-Sorry, I think we are talking at cross purposes here. IIO does provide an abstraction.
-Otherwise as you say it would be pointless.
+The first patch fixes a bug in the current driver.  It assumes
+all devices supported can do burst reads.  At least if the data
+sheets are to be believed this is only available in the newer
+models.
 
-The values in the buffer are raw data off the chip. It tends to be already in the most
-compact form and we guarantee no loss of accuracy this way.  How accurate you make
-further processing is in the hands of the userspace code.
+Patch 2 fixes an issue that has snuck into a number of drivers.
+The use of an event for the trigger code on lis3l02dq was needed
+because it uses the same physical line for datardy and threshold
+interrupts (though not at the same time).  This device has two
+physical lines. In my view it is reasonable to assume anyone wanting
+both datardy triggering and events can select at compile time which
+comes out of which pin (or if only one pin is connected, they can
+set what it does.) Right now I haven't put the platform data in place
+to do this.  This needs to be tested before I send this patch set
+to Greg.
 
-The abstraction comes in combination with the sysfs attributes that describe
-what that format raw format is and tell userspace how to convert it to a standard
-format. The combination of the two (and a suitable userspace library, perhaps provided
-by us, perhaps by someone else), give you the nice consistent interface you desire.
-Manuel is working on such a library and hence has been finding all the inconsistencies
-and missing information in the current abi.
+Patch 3 puts in event support.  It's complex, but then what the
+device has some complex abilities. Still if anyone can see any
+simplifications without breaking the interface I would definitely
+like to hear them!
 
-The second question Manuel raised was about exactly how we describe this data stream.
-The current abi has proven cumbersome and hasn't covered all cases, so he was seeking
-to propose a slight adjustment to fix this.
+Patch 4 is trivial fix picked up by sparse whilst checking
+the other patches.
 
-For sysfs attributes, (accel_x_raw + accel_x_offset) * accel_x_scale will always give
-you a value in m/s^2.  accel_x_input is also in m/s^2 if that is provided instead.
-With accelerometers and many other sensor, accel_x_offset is often 0 and hence we
-don't bother providing it.  The offset and scale are fixed values unless userspace
-has intervened to change them (e.g. in multirange sensors).  Thus they need only be
-read once at start up.  If it proves necessary we can use the sysfs select stuff
-to allow userspace to be notified of a change caused by other userspace code.
+Thanks,
 
-With the buffer and Manuel's proposal:  The data corresponding to accel_x_raw is
-extracted in binary form using the type attributes (of it and all previous elements
-in the capture).  This can then be converted in exactly the same way as the above
-sysfs approach.  Hence my favouring of what I understood by your option 2.
-If what you are interested in doing is brute force logging, or an algorithm that
-can be performed in the raw data space, then you don't want to do this conversion at all.
-The cost of converting this data may seem minor to you, but take into account that
-some of the devices within the scope of IIO produce a 'lot' of data.
+Jonathan Cameron (4):
+  staging:iio:adis16350 add non burst buffer fill and fix burst logic
+  staging:iio:adis16350 move datardy trigger to straight interrupt.
+  staging:iio:adis16350 Add optional event support
+  staging:iio:adis16350 add missing registration of temp_offset attr
 
-Obviously we are currently limiting the _raw approach to devices with linear conversions
-to SI units. What we do about high speed devices with more complex conversion functions
-is still and open question.  Right now no one has suggested adding any.  We'll deal
-with that when it becomes relevant.
-
-> 
-> The current situation is
-> 
-> 	Random gadget added with own API
-> 	Qt sensors module is written for said gadget
-> 
-> IIO is offering no improvement if it won't abstract in a controlled
-> fashion.
-I agree that would be the case, but the whole point is to provide this
-abstraction!
-
-Jonathan
-
-
+ drivers/staging/iio/adc/adc.h               |    8 ++-
+ drivers/staging/iio/gyro/gyro.h             |   31 +++++++---
+ drivers/staging/iio/imu/Kconfig             |    7 ++
+ drivers/staging/iio/imu/Makefile            |    1 +
+ drivers/staging/iio/imu/adis16350.h         |   64 +++++++++++++++++----
+ drivers/staging/iio/imu/adis16350_core.c    |   54 +++++++----------
+ drivers/staging/iio/imu/adis16350_ring.c    |   85 +++++++++++++++++++++++----
+ drivers/staging/iio/imu/adis16350_trigger.c |   52 +++++------------
+ drivers/staging/iio/sysfs.h                 |   17 +++++-
+ 9 files changed, 216 insertions(+), 103 deletions(-)
