@@ -1,53 +1,213 @@
-Return-Path: <jic23@cam.ac.uk>
-From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org
-Cc: manuel.stahl@iis.fraunhofer.de,
-	drivers@analog.com,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [RFC PATCH 0/4] staging:iio:adis16350 various updates and fixes
-Date: Sun,  5 Sep 2010 23:20:14 +0100
-Message-Id: <1283725218-15157-1-git-send-email-jic23@cam.ac.uk>
+Return-Path: <manuel.stahl9ab33xy531iis.fraunhofer.de@bounce.antispameurope.com>
+Message-ID: <4C84ADBD.1080000@iis.fraunhofer.de>
+Date: Mon, 06 Sep 2010 11:00:45 +0200
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [RFC PATCH 0/4] staging:iio:adis16350 various updates and fixes
+References: <1283725218-15157-1-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1283725218-15157-1-git-send-email-jic23@cam.ac.uk>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha1; boundary="------------ms080204010208060203040708"
 List-ID: <linux-iio@vger.kernel.org>
 
-The first patch fixes a bug in the current driver.  It assumes
-all devices supported can do burst reads.  At least if the data
-sheets are to be believed this is only available in the newer
-models.
+This is a cryptographically signed message in MIME format.
 
-Patch 2 fixes an issue that has snuck into a number of drivers.
-The use of an event for the trigger code on lis3l02dq was needed
-because it uses the same physical line for datardy and threshold
-interrupts (though not at the same time).  This device has two
-physical lines. In my view it is reasonable to assume anyone wanting
-both datardy triggering and events can select at compile time which
-comes out of which pin (or if only one pin is connected, they can
-set what it does.) Right now I haven't put the platform data in place
-to do this.  This needs to be tested before I send this patch set
-to Greg.
+--------------ms080204010208060203040708
+Content-Type: multipart/mixed;
+ boundary="------------010205020100090305090208"
 
-Patch 3 puts in event support.  It's complex, but then what the
-device has some complex abilities. Still if anyone can see any
-simplifications without breaking the interface I would definitely
-like to hear them!
+This is a multi-part message in MIME format.
+--------------010205020100090305090208
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-Patch 4 is trivial fix picked up by sparse whilst checking
-the other patches.
+Am 06.09.2010 00:20, schrieb Jonathan Cameron:
+>
+> Patch 3 puts in event support.  It's complex, but then what the
+> device has some complex abilities. Still if anyone can see any
+> simplifications without breaking the interface I would definitely
+> like to hear them!
 
-Thanks,
+> @@ -36,3 +36,9 @@
+>
+>  #define IIO_EVENT_CODE_IN_HIGH_THRESH(a) (IIO_EVENT_CODE_ADC_BASE  + a=
+)
+>  #define IIO_EVENT_CODE_IN_LOW_THRESH(a) (IIO_EVENT_CODE_ADC_BASE  + a =
++ 32)
+> +#define IIO_EVENT_CODE_IN_HIGH_ROC(a) (IIO_EVENT_CODE_ADC_BASE  + a + =
+64)
+> +#define IIO_EVENT_CODE_IN_LOW_ROC(a) (IIO_EVENT_CODE_ADC_BASE  + a + 9=
+6)
+> +#define IIO_EVENT_CODE_IN_SUPPLY_HIGH (IIO_EVENT_CODE_ADC_BASE + 97)
+> +#define IIO_EVENT_CODE_IN_SUPPLY_LOW (IIO_EVENT_CODE_ADC_BASE + 98)
+> +#define IIO_EVENT_CODE_IN_SUPPLY_ROC_HIGH (IIO_EVENT_CODE_ADC_BASE + 9=
+9)
+> +#define IIO_EVENT_CODE_IN_SUPPLY_ROC_LOW (IIO_EVENT_CODE_ADC_BASE + 10=
+0)
 
-Jonathan Cameron (4):
-  staging:iio:adis16350 add non burst buffer fill and fix burst logic
-  staging:iio:adis16350 move datardy trigger to straight interrupt.
-  staging:iio:adis16350 Add optional event support
-  staging:iio:adis16350 add missing registration of temp_offset attr
+What about putting some more structure in the event codes.
+Maybe <type_id> <channel> <event_id> each in it's own byte, where
+<type_id> is one of accel, gyro, ...
+<channel> is one of x, y, z
+<event_id> is one of high_thresh, low_thresh, ...
+maybe even a defined bit for high or low, one for thresh or roc, ...
 
- drivers/staging/iio/adc/adc.h               |    8 ++-
- drivers/staging/iio/gyro/gyro.h             |   31 +++++++---
- drivers/staging/iio/imu/Kconfig             |    7 ++
- drivers/staging/iio/imu/Makefile            |    1 +
- drivers/staging/iio/imu/adis16350.h         |   64 +++++++++++++++++----
- drivers/staging/iio/imu/adis16350_core.c    |   54 +++++++----------
- drivers/staging/iio/imu/adis16350_ring.c    |   85 +++++++++++++++++++++++----
- drivers/staging/iio/imu/adis16350_trigger.c |   52 +++++------------
- drivers/staging/iio/sysfs.h                 |   17 +++++-
- 9 files changed, 216 insertions(+), 103 deletions(-)
+Then we don't need a big event table, but can figure out all parts=20
+independently.
+
+Could we generate some of the event attributes in sysfs on the fly? Like =
+
+have an attribute alarm0_input, where we can write in a list of channels =
+
+and then only generate the limit attributes for these channels.
+
+Regards,
+--=20
+Dipl.-Inf. Manuel Stahl
+Fraunhofer-Institut f=FCr Integrierte Schaltungen IIS
+- Leistungsoptimierte Systeme -
+Nordostpark 93                Telefon  +49 (0)911/58061-6419
+90411 N=FCrnberg                Fax      +49 (0)911/58061-6398
+http://www.iis.fraunhofer.de  manuel.stahl@iis.fraunhofer.de
+
+--------------010205020100090305090208
+Content-Type: text/x-vcard; charset=utf-8;
+ name="manuel_stahl.vcf"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="manuel_stahl.vcf"
+
+begin:vcard
+fn:Manuel Stahl
+n:Stahl;Manuel
+email;internet:manuel.stahl@iis.fraunhofer.de
+tel;work:+49 911 58061-6419
+x-mozilla-html:FALSE
+version:2.1
+end:vcard
+
+
+--------------010205020100090305090208--
+
+--------------ms080204010208060203040708
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIUWDCC
+BC4wggMWoAMCAQICAgEMMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
+ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
+MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNzEyMDUxNTE4NTha
+Fw0xOTA2MzAyMzU5NTlaMGcxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpGcmF1bmhvZmVyMSEw
+HwYDVQQLExhGcmF1bmhvZmVyIENvcnBvcmF0ZSBQS0kxIDAeBgNVBAMTF0ZyYXVuaG9mZXIg
+Um9vdCBDQSAyMDA3MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwz0eyWWNW4g3
+9z7BIbZU3rA6VxsaHO6YCHQBWm+13zZXK0RFzvNGE2V2lZhUx6iFFW4SpBfoC+EhpzE9Kd3/
+o9ZP0rSJ/WNK2qtT71kFtE/iOyqRmcDLZVeBozCTkA7Jvf0VMjIIpEh8VgXyuzaJ4kjCb0uS
+DCVFvq0+1McB7bHIErQwCG6nb396IKe7tOU1gFQsGY/ZS8Adq0P4YRSU+7AdXbeR7GLAkdFe
+3acLsy0fZjkYPK4EFOXSfTbZss2nE7DMRZ1WBFFxMzZcL11RE55PSJAOl1pLcNu5edmh1pTI
+ktCl+2C/La2ecQAXhsD9SGadFEwFTkzRcUQL0HoPsQIDAQABo4HZMIHWMB8GA1UdIwQYMBaA
+FDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB/wQEAwIBBjAdBgNVHQ4EFgQUL0VCHjEF
+gNVw2PgdV8tbetU9nPcwEgYDVR0TAQH/BAgwBgEB/wIBATBwBgNVHR8EaTBnMGWgY6Bhhl9o
+dHRwOi8vcGtpLnRlbGVzZWMuZGUvY2dpLWJpbi9zZXJ2aWNlL2FmX0Rvd25sb2FkQVJMLmNy
+bD8tY3JsX2Zvcm1hdD1YXzUwOSYtaXNzdWVyPURUX1JPT1RfQ0FfMjANBgkqhkiG9w0BAQUF
+AAOCAQEAGrdMejzl3cJjst6GJU5FYkz08o9fXdfljc4O1/WU4YuTMTanmiPnZ+FSwVoY1pnh
+gGQ4D0o1M11meijcOH83cs1SdW4Qjmx9jPcp63fCuRkF1Lc9YbroBRLUUGJT7yJUYvxNAcNe
+1A2DdGlR1TyerNukK3xthJbTcU3P1S1xo5LEP1XPmz0jdwdX6cjOHZe2M/uRl2CWD/f23m8l
+kBKrGUfVRCOuwZI1KL8qQ14P6gdd0kTQhYLjErxH6iyt+PBBUn02uiKfeqAy70u8+ToHtinG
+fThfNVV+OPI/fLPuLW4heF+5E8/v3mWAyCX1Zi1USq3O2S4OMM+AM6eLGXLqQTCCBMYwggOu
+oAMCAQICCmEdMxkAAAAAAAMwDQYJKoZIhvcNAQEFBQAwZzELMAkGA1UEBhMCREUxEzARBgNV
+BAoTCkZyYXVuaG9mZXIxITAfBgNVBAsTGEZyYXVuaG9mZXIgQ29ycG9yYXRlIFBLSTEgMB4G
+A1UEAxMXRnJhdW5ob2ZlciBSb290IENBIDIwMDcwHhcNMDcxMjEyMTQ0OTM1WhcNMTkwNjMw
+MjM1OTU5WjBnMQswCQYDVQQGEwJERTETMBEGA1UEChMKRnJhdW5ob2ZlcjEhMB8GA1UECxMY
+RnJhdW5ob2ZlciBDb3Jwb3JhdGUgUEtJMSAwHgYDVQQDExdGcmF1bmhvZmVyIFVzZXIgQ0Eg
+MjAwNzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMJ0EFHLddGB8Ss1nVqCOq+S
+rs0C/K7I+yB3Dv9oEhWQSadnfGgkX/oOJhplPkqeCQrTh08zEYprVaJLTaVPVhvjx3h5+KML
+3lVGZIfajA89TolhLwk+ml29VbqV5nLhNrSwdZy157b6dCu5JffxvpO5wXCn95Z/TLyLdeux
+gVHs/MnhczvmBbBRS+Ow9UoKn+PZvyYmUEdOHg8cA5PGFaRP9q88q734VnlI+W4+y7BoN5wt
+uqVrqWbbpOQ2sHYo9riv3b+x5WdsMrVieKGApQ/dNvgB5vuuAchRnsANZHgpAiPCzP7/QFYY
+qk2undcxEXwPgo72oifB3uQZ3xHOV/cCAwEAAaOCAXIwggFuMBIGA1UdEwEB/wQIMAYBAf8C
+AQAwHQYDVR0OBBYEFE8dr4jKbbiqHAn5xdER7Vm0k/oLMA4GA1UdDwEB/wQEAwIBBjAfBgNV
+HSMEGDAWgBQvRUIeMQWA1XDY+B1Xy1t61T2c9zB1BgNVHR8EbjBsMGqgaKBmhjFodHRwOi8v
+Y3JsLnBraS5mcmF1bmhvZmVyLmRlL2ZoZy1yb290LWNhLTIwMDcuY3JshjFodHRwOi8vY3Js
+LmZyYXVuaG9mZXItcGtpLmRlL2ZoZy1yb290LWNhLTIwMDcuY3JsMIGQBggrBgEFBQcBAQSB
+gzCBgDA+BggrBgEFBQcwAoYyaHR0cDovL2NlcnQucGtpLmZyYXVuaG9mZXIuZGUvZmhnLXJv
+b3QtY2EtMjAwNy5jZXIwPgYIKwYBBQUHMAKGMmh0dHA6Ly9jZXJ0LmZyYXVuaG9mZXItcGtp
+LmRlL2ZoZy1yb290LWNhLTIwMDcuY2VyMA0GCSqGSIb3DQEBBQUAA4IBAQAAd2yMM/nuVwQl
+ysuIOeZOTKTOwpZLGYZNuERXwpWpEDfsMFUxX/Wetbu1a1qhd+x6SyXY4V1CzcFDOGF3wA7b
+yIV/6dyC53I9luZTjy9zjUsjLZucD4jeNja3QEu39sQsYsuE3MTfFFJgr/NeAFMHVkkHGx3l
+VXb+F3J3+9xeXHk/wB/yIKd/RIiMMTT4+a+ra2MTCsYAe4kgJ0vz2TXYGN8tujjCgsUUbwfJ
+C9wrOiCJMNJM1i7sUVqVKIoswW7h5QpWUNu1E4RAsDEz7depXCYaAIwPprEIkr0dE63zqHhm
+M4egS7iGmBfNQohUO6jJOWNcJ9dIxqc0c/4WUHg8MIIFpDCCBIygAwIBAgIKXts1tgAAAACh
+VTANBgkqhkiG9w0BAQUFADBnMQswCQYDVQQGEwJERTETMBEGA1UEChMKRnJhdW5ob2ZlcjEh
+MB8GA1UECxMYRnJhdW5ob2ZlciBDb3Jwb3JhdGUgUEtJMSAwHgYDVQQDExdGcmF1bmhvZmVy
+IFVzZXIgQ0EgMjAwNzAeFw0wOTEyMDkxNDQ3MTlaFw0xNTEyMDgxNDQ3MTlaMFgxCzAJBgNV
+BAYTAkRFMRMwEQYDVQQKEwpGcmF1bmhvZmVyMQwwCgYDVQQLEwNJSVMxDzANBgNVBAsTBlBl
+b3BsZTEVMBMGA1UEAxMMTWFudWVsIFN0YWhsMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
+CgKCAQEAyc3xmHk19YZAmko+jIM52UsU0keIMlZuSsQvl7HCAGEzifKcfmrR6EX1lYPUKVZJ
+BpqMSG3jyA4GW6gR/7cwz0IbnwFPC40KHPODRVIWDIJbZrP6zl+hF+G6/ZTe7ttPahSNhfeq
+wkhQZJYQwoxEPoaODFpgQ8St+WRRkgfi3jvjuUIddgWV4NyVAm6m5fmF9a6iv20e+ZSW0As7
+brNVf4Xvl5+y58MWniD3hjryz2OsqH1+NrFk8dxPjR4z3tWfty4x4J5af1z25tKX3xnJtx6Q
+l61FI1UlSUqR3DHxkmLY7RRCccxtpwOES2YgmBBpJzrxCJ+cYwVJIVHR7I/3qwIDAQABo4IC
+XzCCAlswDgYDVR0PAQH/BAQDAgbAMCkGA1UdEQQiMCCBHm1hbnVlbC5zdGFobEBpaXMuZnJh
+dW5ob2Zlci5kZTAdBgNVHQ4EFgQUbNwp94oWTogPsGGtBT3dcKtNhXUwHwYDVR0jBBgwFoAU
+Tx2viMptuKocCfnF0RHtWbST+gswdQYDVR0fBG4wbDBqoGigZoYxaHR0cDovL2NybC5wa2ku
+ZnJhdW5ob2Zlci5kZS9maGctdXNlci1jYS0yMDA3LmNybIYxaHR0cDovL2NybC5mcmF1bmhv
+ZmVyLXBraS5kZS9maGctdXNlci1jYS0yMDA3LmNybDCCAQoGCCsGAQUFBwEBBIH9MIH6MD4G
+CCsGAQUFBzAChjJodHRwOi8vY2VydC5wa2kuZnJhdW5ob2Zlci5kZS9maGctdXNlci1jYS0y
+MDA3LmNlcjA+BggrBgEFBQcwAoYyaHR0cDovL2NlcnQuZnJhdW5ob2Zlci1wa2kuZGUvZmhn
+LXVzZXItY2EtMjAwNy5jZXIwOwYIKwYBBQUHMAGGL2h0dHA6Ly9maGctdXNlci1jYS0yMDA3
+Lm9jc3AucGtpLmZyYXVuaG9mZXIuZGUvMDsGCCsGAQUFBzABhi9odHRwOi8vZmhnLXVzZXIt
+Y2EtMjAwNy5vY3NwLmZyYXVuaG9mZXItcGtpLmRlLzATBgNVHSUEDDAKBggrBgEFBQcDBDBE
+BgNVHSAEPTA7MDkGCysGAQQBhgpQAwEBMCowKAYIKwYBBQUHAgEWHGh0dHA6Ly9wa2kuZnJh
+dW5ob2Zlci5kZS9jcC8wDQYJKoZIhvcNAQEFBQADggEBACWdlXdPPIhNtjC0aYQgGYQ9+e0N
+XHqtaQsxgzZ2D4Rp34VeuZPWkF/YMDXgxB9sarzCO4WcBxz0QWjWiQOtAYzPc+2U3C3Pyw6Y
+Mc0yxSpg6R602Hy/O1aNn7XZ50gujpIjuwo0fAFhg8OI63uolkgKAYyoUcTRHc4Z4kwb8bgg
++5a56lKIqBwTweqd2VaNnW0FCfk5bJsaw2j3bHnWkS2D9BWt0U+t+/zCqMYT9E38vTP57kho
+vpb44u+8m6Xaaorn3bCK2WzHH5HZp/mVEZ6TZw+mJ+Ltjrcnz+9JAFYZxtpSpZN/k1zRM0P6
+6CKxV9JfFqwQJnso0LtpcfLFGuMwggWwMIIEmKADAgECAgpe2zMWAAAAAKFUMA0GCSqGSIb3
+DQEBBQUAMGcxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpGcmF1bmhvZmVyMSEwHwYDVQQLExhG
+cmF1bmhvZmVyIENvcnBvcmF0ZSBQS0kxIDAeBgNVBAMTF0ZyYXVuaG9mZXIgVXNlciBDQSAy
+MDA3MB4XDTA5MTIwOTE0NDcxOVoXDTE1MTIwODE0NDcxOVowWDELMAkGA1UEBhMCREUxEzAR
+BgNVBAoTCkZyYXVuaG9mZXIxDDAKBgNVBAsTA0lJUzEPMA0GA1UECxMGUGVvcGxlMRUwEwYD
+VQQDEwxNYW51ZWwgU3RhaGwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC18idY
+1AthSSVhkq1AFUnVfm5pzin5dEuixfJs+PaEQah9OWHYqSCxvXYL/58MtfpCsMl8HpIUsnuh
+O4GPDjdxawgLSItU/LCF5/cmdc6swyi2efJC5QviHJ/aB/MbD3TKl9aGQXE0K85/iS4KQT2c
+GM8uvWhF3yNNJIuauJ8BMX55vyelXT1rsldiGsBwKQ2PRcoM24jdtw/4DigsImSAkV6rxgg7
+CeV92wE1trfx7OOoK9PPgAE9D95oiZz25f2MH7NnD4Wzo+73chdoQnhPZHNBojcxdyg+Rf3O
+PCuKfXLYdTgEzEFGNFIwojaKoJ2ws1t2z3O62h7Tye0EMBtTAgMBAAGjggJrMIICZzAOBgNV
+HQ8BAf8EBAMCBDAwKQYDVR0RBCIwIIEebWFudWVsLnN0YWhsQGlpcy5mcmF1bmhvZmVyLmRl
+MB0GA1UdDgQWBBR3QN2wMBSsk+rxgVGtX5Plvb9tNzAfBgNVHSMEGDAWgBRPHa+Iym24qhwJ
++cXREe1ZtJP6CzB1BgNVHR8EbjBsMGqgaKBmhjFodHRwOi8vY3JsLnBraS5mcmF1bmhvZmVy
+LmRlL2ZoZy11c2VyLWNhLTIwMDcuY3JshjFodHRwOi8vY3JsLmZyYXVuaG9mZXItcGtpLmRl
+L2ZoZy11c2VyLWNhLTIwMDcuY3JsMIIBCgYIKwYBBQUHAQEEgf0wgfowPgYIKwYBBQUHMAKG
+Mmh0dHA6Ly9jZXJ0LnBraS5mcmF1bmhvZmVyLmRlL2ZoZy11c2VyLWNhLTIwMDcuY2VyMD4G
+CCsGAQUFBzAChjJodHRwOi8vY2VydC5mcmF1bmhvZmVyLXBraS5kZS9maGctdXNlci1jYS0y
+MDA3LmNlcjA7BggrBgEFBQcwAYYvaHR0cDovL2ZoZy11c2VyLWNhLTIwMDcub2NzcC5wa2ku
+ZnJhdW5ob2Zlci5kZS8wOwYIKwYBBQUHMAGGL2h0dHA6Ly9maGctdXNlci1jYS0yMDA3Lm9j
+c3AuZnJhdW5ob2Zlci1wa2kuZGUvMB8GA1UdJQQYMBYGCisGAQQBgjcKAwQGCCsGAQUFBwME
+MEQGA1UdIAQ9MDswOQYLKwYBBAGGClADAQEwKjAoBggrBgEFBQcCARYcaHR0cDovL3BraS5m
+cmF1bmhvZmVyLmRlL2NwLzANBgkqhkiG9w0BAQUFAAOCAQEAIny6T0ZtZyrpF4dLpcM6G07I
+HDC4cdGFLqfnqRLfMLwgdgxACPkYB8VbApcGKiSxcXaZEaz8CLLMrdwXkta1o+ZA6dz90Y1T
+dYlvHvdsuhGeIkNwlJoGwlf4Ts4+7pi2d7sbYX3GFSzD3KcBn6DJp71pl4+MEcvkwVVaBKCw
++ohHssiRmG40fYAmdxBqPmjGyer4PftJdkvZQqmhqVDFp1NTJU9k/CQaIB24iSnuXfjHi1+z
+Lz4flTgIGuN6lNAKGGt51kBl+WGy8olUDuyMwFAP7f1WIK4OWKWK0SbmMeDZtdN/aEpRRQ6l
+0QATNFeFf1cK8auS+lRgG7lj74w/KzGCA24wggNqAgEBMHUwZzELMAkGA1UEBhMCREUxEzAR
+BgNVBAoTCkZyYXVuaG9mZXIxITAfBgNVBAsTGEZyYXVuaG9mZXIgQ29ycG9yYXRlIFBLSTEg
+MB4GA1UEAxMXRnJhdW5ob2ZlciBVc2VyIENBIDIwMDcCCl7bNbYAAAAAoVUwCQYFKw4DAhoF
+AKCCAc4wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTAwOTA2
+MDkwMDQ1WjAjBgkqhkiG9w0BCQQxFgQUj7niUJua3G+pZOckHKDM4GmETXswXwYJKoZIhvcN
+AQkPMVIwUDALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqG
+SIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMIGEBgkrBgEEAYI3EAQxdzB1MGcx
+CzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpGcmF1bmhvZmVyMSEwHwYDVQQLExhGcmF1bmhvZmVy
+IENvcnBvcmF0ZSBQS0kxIDAeBgNVBAMTF0ZyYXVuaG9mZXIgVXNlciBDQSAyMDA3Agpe2zMW
+AAAAAKFUMIGGBgsqhkiG9w0BCRACCzF3oHUwZzELMAkGA1UEBhMCREUxEzARBgNVBAoTCkZy
+YXVuaG9mZXIxITAfBgNVBAsTGEZyYXVuaG9mZXIgQ29ycG9yYXRlIFBLSTEgMB4GA1UEAxMX
+RnJhdW5ob2ZlciBVc2VyIENBIDIwMDcCCl7bMxYAAAAAoVQwDQYJKoZIhvcNAQEBBQAEggEA
+Fot8AfHocuokeFPLmWoCCkiOm35HvkZr/rtX7t8mhsZ0738h33hdOMQe9nZEKjGqpmaVv8MT
+9WkBrBWxLWr9cOgOUsp+KpsC8hovFypaCUdUqUF4Q3Uir8V5zIu4wbiyqAyInE2u0k7HJJFo
+UtaVxJbF0l1BqGYqwuhDOxu2h+Efio/Jzhb/RfCTMtq9jMK3trQeVVP1S04bfaQ1kHcEdmmm
+rXhUW6ap8Bkw7E+7EjmwXUVrd8pGtx0j5LIzQSRNmdjS4R9nr34rHYdof6UAMrikJBmptcxS
+9ZEJa3/SB91lsdJgau+9wh2YFUNaCzhVsNdn6Wovif9YLsnFae00fwAAAAAAAA==
+--------------ms080204010208060203040708--
