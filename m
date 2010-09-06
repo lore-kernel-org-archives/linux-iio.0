@@ -1,182 +1,320 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:44634 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751019Ab0I2Nwi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Sep 2010 09:52:38 -0400
-Message-ID: <4CA344A5.80205@cam.ac.uk>
-Date: Wed, 29 Sep 2010 14:52:37 +0100
+Received: from ppsw-30.csi.cam.ac.uk ([131.111.8.130]:56645 "EHLO
+	ppsw-30.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751436Ab0IFPLa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 Sep 2010 11:11:30 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: matthias <mensch0815@googlemail.com>
-CC: linux-iio@vger.kernel.org, drivers@analog.com,
-	Nicolas Ferre <nicolas.ferre@atmel.com>,
-	David Brownell <dbrownell@users.sourceforge.net>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	spi-devel-general@lists.sourceforge.net
-Subject: Re: [PATCH 0/2 V2] Adding support for adis16250/5 to adis16260 driver.
-References: <1283786178-6466-1-git-send-email-jic23@cam.ac.uk>	<4C94B4A6.2060001@cam.ac.uk>	<AANLkTinQ04UmbBvakGQBeSap0PCh3VrWmhhobLh0u9Qj@mail.gmail.com>	<4CA0C7AB.8060905@cam.ac.uk> <AANLkTikXMycs_eaRGA4Va=uaBo_qyx3S3m0Y43Gt+qAz@mail.gmail.com>
-In-Reply-To: <AANLkTikXMycs_eaRGA4Va=uaBo_qyx3S3m0Y43Gt+qAz@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To: linux-iio@vger.kernel.org
+Cc: m_brugger@web.de, Michael.Hennerich@analog.com,
+	Robin.Getz@analog.com, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 2/2] staging:iio:adis16260 add suppport for adis16255 and adis16250.
+Date: Mon,  6 Sep 2010 16:16:18 +0100
+Message-Id: <1283786178-6466-3-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1283786178-6466-1-git-send-email-jic23@cam.ac.uk>
+References: <1283786178-6466-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Matthias
+Unusual element is addition of 'negate' and 'axis' platform data
+to ensure we support all the functionality of the adis16255 driver
+currently in staging.
 
-Lots of additional cc's as I think I know what the problem is and I
-think it's an spi issue rather than an IIO one.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/gyro/Kconfig                   |    8 +-
+ drivers/staging/iio/gyro/adis16260.h               |    3 +
+ drivers/staging/iio/gyro/adis16260_core.c          |  132 ++++++++++++++------
+ drivers/staging/iio/gyro/adis16260_platform_data.h |   19 +++
+ drivers/staging/iio/gyro/gyro.h                    |    9 ++
+ 5 files changed, 129 insertions(+), 42 deletions(-)
 
-> 
-> after a long stuggle, I got a working kernel version for my board
-> running as I need it.
-> I tried both the staging/adis16255 and the staging/iio/gyro driver.
-> 
-> The latter doesn't work.
-> "adis16260 spi1.1: problem when reading 16 bit register 0x34
-> iio device0: disable irq failed"
-That is the first actual comms with the chip, so it is likely to be a
-general issue rather than due to that particular call.
-> 
-> A quick look in the code of staging/adis16255 and the data sheet tells
-> me, that you have to read from the higher register address but we read
-> from the lower one.
-> So I changed the value to 0x35, but it doesn't work either.
-Quoting from the data sheet (it is present on the sheets for both chips).
-
-"Each register has two addresses (upper, lower), but either one can be used
-to access its entire 16 bits of data."
-
-It could be there is something special about that register I'm not seeing
-though...
-> 
-> Well in the end I copied "my" read version from staging/adis16255 and
-> put a read call in the probe function (because it is the easiest way
-> to get spi_device structure).
-> Then it seems to work, with higher and lower byte.
-Ok, that gives us something to work against which is very helpful!
-> So my conclusion is, that something went wrong when you casacade and
-> discascade (sorry for the poor english), from spi_device through
-> adis16260_state to device.
-> Sounds stange to me, as it works with the adis16260 chip, right?
-As far as I know. It's possible something strange happened in a merge
-at some point though.
-> So maybe it's because I use avr32 architecture?
-
-Having done a bit of digging and made sure that (up to the fact I don't
-have the part) everything runs normally on my board, I'm beginning to
-suspect you are correct. There are some subtle differences in the setup
-between your code and Barry's.
-
-Looking about, the avr32's seem to use the atmel_spi driver?
-
-Ah got it (I think)...
-
-In drivers/spi/atmel_spi.c atmel_spi_transfer we have:
-
-		/* FIXME implement these protocol options!! */
-		if (xfer->bits_per_word || xfer->speed_hz) {
-			dev_dbg(&spi->dev, "no protocol options yet\n");
-			return -ENOPROTOOPT;
-		}
-
-Personally I'd have at least sanity checked if the parameters were trying
-to change anything before dumping out.  Also, surely that's a case for
-something screaming a little louder given it is an out and out device
-killing problem? I think the default is 8 bit?  I think the reason it
-is in Barry's driver is a legacy issue to do with the fact that these
-are actually 16bit transfers pretending to be 8 bits ones...  Actually
-now I look at it, I'm not sure why he didn't use 16 bit ones in that
-function in the first place!
-
-Not sure we need it in our drivers, but I'm guessing there may be some
-spi master driver out there somewhere that defaults to something other than
-8 bit? (have vague recollection of seeing an email about this... perhaps
-someone who plays more with spi bus drivers?)
-
-> 
-> So I don't know if we should dig deeper. The problem is, that I don't
-> have too much time to do it...
-Sorry it is proving such a pain for you to test!
-> What do you think?
-I have cc'd spi people and the atmel_spi maintainer to see what we think
-is the correct fix for this. For the purposes of this discussion
-(though it's isn't quite what Matthias is working with) the driver in
-question is drivers/staging/iio/gyro/adis16260_core.c
-
-
-Thanks again for testing.
-
-Jonathan
-
-> Regards,
-> Matthias
-> 
-> 2010/9/27 Jonathan Cameron <jic23@cam.ac.uk>:
->> On 09/18/10 16:48, matthias wrote:
->>> Hi Jonathan,
->>>
->>> sorry for not answering yet. I was on vacation and next week I won't
->>> be able to test the driver. Will try to do it asap....
->>>
->>> Matthias
->>
->> Hi Matthias,
->>
->> I'm afraid quite a bit has changed over the last few weeks. Feel free to test
->> this patch set.  The changes since then are merely renames of a couple of
->> attributes and a lot of stuff for event handling that doesn't effect this
->> driver.
->>
->> If not, I'm hosting a *temporary* git tree with all my various queued up changes
->> at:
->>
->> http://git.kernel.org/?p=linux/kernel/git/jic23/iio_temp.git
->>
->> Seems excessive to post this set again until I hear back from you!
->>
->> Thanks,
->>
->> Jonathan
->>
->> p.s. Switched to drivers@analog.com address as that now seems to work.
->>
->>>
->>> 2010/9/18 Jonathan Cameron <jic23@cam.ac.uk>:
->>>> On 09/06/10 16:16, Jonathan Cameron wrote:
->>>>> Mainly a rebase, but a couple of attribute naming fixes as well.
->>>>>
->>>>> Note I don't have one of these so if anyone could test that would
->>>>> be great!
->>>>>
->>>>> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
->>>>>
->>>>> Jonathan Cameron (2):
->>>>>   staging:iio:adis16260 add id table support
->>>>>   staging:iio:adis16260 add suppport for adis16255 and adis16250.
->>>>>
->>>>>  drivers/staging/iio/gyro/Kconfig                   |    8 +-
->>>>>  drivers/staging/iio/gyro/adis16260.h               |    3 +
->>>>>  drivers/staging/iio/gyro/adis16260_core.c          |  139 ++++++++++++++------
->>>>>  drivers/staging/iio/gyro/adis16260_platform_data.h |   19 +++
->>>>>  drivers/staging/iio/gyro/gyro.h                    |    9 ++
->>>>>  5 files changed, 136 insertions(+), 42 deletions(-)
->>>>>  create mode 100644 drivers/staging/iio/gyro/adis16260_platform_data.h
->>>>>
->>>>>
->>>> Whilst I haven't tested these (don't have the hardware) I don't think there
->>>> is anything controversial, so my intent is to push these to Greg before the
->>>> next merge window.  This is primarily to remove the duplication we currently
->>>> have with two drivers that effectively cover the same parts.
->>>>
->>>> Thanks,
->>>>
->>>> Jonathan
->>>>
->>>
->>>
->>>
->>
->>
-> 
-> 
-> 
+diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
+index c404361..4dabd7f 100644
+--- a/drivers/staging/iio/gyro/Kconfig
++++ b/drivers/staging/iio/gyro/Kconfig
+@@ -4,10 +4,12 @@
+ comment "Digital gyroscope sensors"
+ 
+ config ADIS16260
+-	tristate "Analog Devices ADIS16260/5 Digital Gyroscope Sensor SPI driver"
++
++	tristate "Analog Devices ADIS16260 and similar Digital Gyroscope Sensor SPI driver"
+ 	depends on SPI
+ 	select IIO_TRIGGER if IIO_RING_BUFFER
+ 	select IIO_SW_RING if IIO_RING_BUFFER
+ 	help
+-	  Say yes here to build support for Analog Devices adis16260/5
+-	  programmable digital gyroscope sensor.
++	  Say yes here to build support for Analog Devices adis16250,
++	  adis16255, adis16260 and adis16265 programmable digital
++	  gyroscope sensors.
+diff --git a/drivers/staging/iio/gyro/adis16260.h b/drivers/staging/iio/gyro/adis16260.h
+index 812440a..c1fd436 100644
+--- a/drivers/staging/iio/gyro/adis16260.h
++++ b/drivers/staging/iio/gyro/adis16260.h
+@@ -1,5 +1,6 @@
+ #ifndef SPI_ADIS16260_H_
+ #define SPI_ADIS16260_H_
++#include "adis16260_platform_data.h"
+ 
+ #define ADIS16260_STARTUP_DELAY	220 /* ms */
+ 
+@@ -92,6 +93,7 @@
+  * @tx:			transmit buffer
+  * @rx:			recieve buffer
+  * @buf_lock:		mutex to protect tx and rx
++ * @negate:		negate the scale parameter
+  **/
+ struct adis16260_state {
+ 	struct spi_device		*us;
+@@ -102,6 +104,7 @@ struct adis16260_state {
+ 	u8				*tx;
+ 	u8				*rx;
+ 	struct mutex			buf_lock;
++	unsigned			negate:1;
+ };
+ 
+ int adis16260_set_irq(struct device *dev, bool enable);
+diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
+index 36e5757..790971f 100644
+--- a/drivers/staging/iio/gyro/adis16260_core.c
++++ b/drivers/staging/iio/gyro/adis16260_core.c
+@@ -134,8 +134,6 @@ static int adis16260_spi_read_reg_16(struct device *dev,
+ 	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADIS16260_READ_REG(lower_reg_address);
+ 	st->tx[1] = 0;
+-	st->tx[2] = 0;
+-	st->tx[3] = 0;
+ 
+ 	spi_message_init(&msg);
+ 	spi_message_add_tail(&xfers[0], &msg);
+@@ -293,6 +291,22 @@ static ssize_t adis16260_write_frequency(struct device *dev,
+ 	return ret ? ret : len;
+ }
+ 
++static ssize_t adis16260_read_gyro_scale(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct adis16260_state *st = iio_dev_get_devdata(indio_dev);
++	ssize_t ret = 0;
++
++	if (st->negate)
++		ret = sprintf(buf, "-");
++	/* Take the iio_dev status lock */
++	ret += sprintf(buf + ret, "%s\n", "0.00127862821");
++
++	return ret;
++}
++
+ static int adis16260_reset(struct device *dev)
+ {
+ 	int ret;
+@@ -447,18 +461,6 @@ static IIO_DEV_ATTR_IN_NAMED_RAW(supply,
+ 				ADIS16260_SUPPLY_OUT);
+ static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.0018315");
+ 
+-static IIO_DEV_ATTR_GYRO(adis16260_read_14bit_signed,
+-		ADIS16260_GYRO_OUT);
+-static IIO_CONST_ATTR_GYRO_SCALE("0.00127862821");
+-static IIO_DEV_ATTR_GYRO_CALIBSCALE(S_IWUSR | S_IRUGO,
+-		adis16260_read_14bit_signed,
+-		adis16260_write_16bit,
+-		ADIS16260_GYRO_SCALE);
+-static IIO_DEV_ATTR_GYRO_CALIBBIAS(S_IWUSR | S_IRUGO,
+-		adis16260_read_12bit_signed,
+-		adis16260_write_16bit,
+-		ADIS16260_GYRO_OFF);
+-
+ static IIO_DEV_ATTR_TEMP_RAW(adis16260_read_12bit_unsigned);
+ static IIO_CONST_ATTR_TEMP_OFFSET("25");
+ static IIO_CONST_ATTR_TEMP_SCALE("0.1453");
+@@ -470,8 +472,6 @@ static IIO_CONST_ATTR(in0_scale, "0.0006105");
+ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+ 		adis16260_read_frequency,
+ 		adis16260_write_frequency);
+-static IIO_DEV_ATTR_ANGL(adis16260_read_14bit_signed,
+-		ADIS16260_ANGL_OUT);
+ 
+ static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16260_write_reset, 0);
+ 
+@@ -487,38 +487,69 @@ static struct attribute_group adis16260_event_attribute_group = {
+ 	.attrs = adis16260_event_attributes,
+ };
+ 
+-static struct attribute *adis16260_attributes[] = {
+-	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+-	&iio_const_attr_in_supply_scale.dev_attr.attr,
+-	&iio_dev_attr_gyro_raw.dev_attr.attr,
+-	&iio_const_attr_gyro_scale.dev_attr.attr,
+-	&iio_dev_attr_gyro_calibscale.dev_attr.attr,
+-	&iio_dev_attr_gyro_calibbias.dev_attr.attr,
+-	&iio_dev_attr_angl_raw.dev_attr.attr,
+-	&iio_dev_attr_temp_raw.dev_attr.attr,
+-	&iio_const_attr_temp_offset.dev_attr.attr,
+-	&iio_const_attr_temp_scale.dev_attr.attr,
+-	&iio_dev_attr_in0_raw.dev_attr.attr,
+-	&iio_const_attr_in0_scale.dev_attr.attr,
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+-	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+-	&iio_dev_attr_reset.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+-	NULL
+-};
++#define ADIS16260_GYRO_ATTR_SET(axis)					\
++	IIO_DEV_ATTR_GYRO##axis(adis16260_read_14bit_signed,		\
++				ADIS16260_GYRO_OUT);			\
++	static IIO_DEV_ATTR_GYRO##axis##_SCALE(S_IRUGO,			\
++					adis16260_read_gyro_scale,	\
++					NULL,				\
++					0);				\
++	static IIO_DEV_ATTR_GYRO##axis##_CALIBSCALE(S_IRUGO | S_IWUSR,	\
++					adis16260_read_12bit_unsigned,	\
++					adis16260_write_16bit,		\
++					ADIS16260_GYRO_SCALE);		\
++	static IIO_DEV_ATTR_GYRO##axis##_CALIBBIAS(S_IWUSR | S_IRUGO,	\
++					adis16260_read_12bit_signed,	\
++					adis16260_write_16bit,		\
++					ADIS16260_GYRO_OFF);		\
++	static IIO_DEV_ATTR_ANGL##axis(adis16260_read_14bit_signed,	\
++				       ADIS16260_ANGL_OUT);
++
++static ADIS16260_GYRO_ATTR_SET();
++static ADIS16260_GYRO_ATTR_SET(_X);
++static ADIS16260_GYRO_ATTR_SET(_Y);
++static ADIS16260_GYRO_ATTR_SET(_Z);
++
++#define ADIS16260_ATTR_GROUP(axis)						\
++	struct attribute *adis16260_attributes##axis[] = {		\
++		&iio_dev_attr_in_supply_raw.dev_attr.attr,		\
++		&iio_const_attr_in_supply_scale.dev_attr.attr,		\
++		&iio_dev_attr_gyro##axis##_raw.dev_attr.attr,		\
++		&iio_dev_attr_gyro##axis##_scale.dev_attr.attr,		\
++		&iio_dev_attr_gyro##axis##_calibscale.dev_attr.attr,	\
++		&iio_dev_attr_gyro##axis##_calibbias.dev_attr.attr,	\
++		&iio_dev_attr_angl##axis##_raw.dev_attr.attr,		\
++		&iio_dev_attr_temp_raw.dev_attr.attr,			\
++		&iio_const_attr_temp_offset.dev_attr.attr,		\
++		&iio_const_attr_temp_scale.dev_attr.attr,		\
++		&iio_dev_attr_in0_raw.dev_attr.attr,			\
++		&iio_const_attr_in0_scale.dev_attr.attr,		\
++		&iio_dev_attr_sampling_frequency.dev_attr.attr,		\
++		&iio_const_attr_sampling_frequency_available.dev_attr.attr, \
++		&iio_dev_attr_reset.dev_attr.attr,			\
++		&iio_const_attr_name.dev_attr.attr,			\
++		NULL							\
++	};								\
++	static const struct attribute_group adis16260_attribute_group##axis = {	\
++		.attrs = adis16260_attributes##axis,			\
++	};
+ 
+-static const struct attribute_group adis16260_attribute_group = {
+-	.attrs = adis16260_attributes,
+-};
++static ADIS16260_ATTR_GROUP();
++static ADIS16260_ATTR_GROUP(_x);
++static ADIS16260_ATTR_GROUP(_y);
++static ADIS16260_ATTR_GROUP(_z);
+ 
+ static int __devinit adis16260_probe(struct spi_device *spi)
+ {
+ 	int ret, regdone = 0;
++	struct adis16260_platform_data *pd = spi->dev.platform_data;
+ 	struct adis16260_state *st = kzalloc(sizeof *st, GFP_KERNEL);
+ 	if (!st) {
+ 		ret =  -ENOMEM;
+ 		goto error_ret;
+ 	}
++	if (pd)
++		st->negate = pd->negate;
+ 	/* this is only used for removal purposes */
+ 	spi_set_drvdata(spi, st);
+ 
+@@ -545,7 +576,24 @@ static int __devinit adis16260_probe(struct spi_device *spi)
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->num_interrupt_lines = 1;
+ 	st->indio_dev->event_attrs = &adis16260_event_attribute_group;
+-	st->indio_dev->attrs = &adis16260_attribute_group;
++	if (pd && pd->direction)
++		switch (pd->direction) {
++		case 'x':
++			st->indio_dev->attrs = &adis16260_attribute_group_x;
++			break;
++		case 'y':
++			st->indio_dev->attrs = &adis16260_attribute_group_y;
++			break;
++		case 'z':
++			st->indio_dev->attrs = &adis16260_attribute_group_z;
++			break;
++		default:
++			st->indio_dev->attrs = &adis16260_attribute_group;
++			break;
++		}
++	else
++		st->indio_dev->attrs = &adis16260_attribute_group;
++
+ 	st->indio_dev->dev_data = (void *)(st);
+ 	st->indio_dev->driver_module = THIS_MODULE;
+ 	st->indio_dev->modes = INDIO_DIRECT_MODE;
+@@ -635,9 +683,15 @@ err_ret:
+ 	return ret;
+ }
+ 
++/*
++ * These parts do not need to differentiated until someone adds
++ * support for the on chip filtering.
++ */
+ static const struct spi_device_id adis16260_id[] = {
+ 	{"adis16260", 0},
+ 	{"adis16265", 0},
++	{"adis16250", 0},
++	{"adis16255", 0},
+ 	{}
+ };
+ 
+diff --git a/drivers/staging/iio/gyro/adis16260_platform_data.h b/drivers/staging/iio/gyro/adis16260_platform_data.h
+new file mode 100644
+index 0000000..12802e9
+--- /dev/null
++++ b/drivers/staging/iio/gyro/adis16260_platform_data.h
+@@ -0,0 +1,19 @@
++/*
++ * ADIS16260 Programmable Digital Gyroscope Sensor Driver Platform Data
++ *
++ * Based on adis16255.h Matthia Brugger <m_brugger&web.de>
++ *
++ * Copyright (C) 2010 Fraunhofer Institute for Integrated Circuits
++  *
++ * Licensed under the GPL-2 or later.
++ */
++
++/**
++ * struct adis16260_platform_data - instance specific data
++ * @direction: x y or z
++ * @negate: flag to indicate value should be inverted.
++ **/
++struct adis16260_platform_data {
++	char direction;
++	unsigned negate:1;
++};
+diff --git a/drivers/staging/iio/gyro/gyro.h b/drivers/staging/iio/gyro/gyro.h
+index 98b837b..cc5355b 100644
+--- a/drivers/staging/iio/gyro/gyro.h
++++ b/drivers/staging/iio/gyro/gyro.h
+@@ -71,3 +71,12 @@
+ 
+ #define IIO_DEV_ATTR_ANGL(_show, _addr)                         \
+ 	IIO_DEVICE_ATTR(angl_raw, S_IRUGO, _show, NULL, _addr)
++
++#define IIO_DEV_ATTR_ANGL_X(_show, _addr)                         \
++	IIO_DEVICE_ATTR(angl_x_raw, S_IRUGO, _show, NULL, _addr)
++
++#define IIO_DEV_ATTR_ANGL_Y(_show, _addr)                         \
++	IIO_DEVICE_ATTR(angl_y_raw, S_IRUGO, _show, NULL, _addr)
++
++#define IIO_DEV_ATTR_ANGL_Z(_show, _addr)                         \
++	IIO_DEVICE_ATTR(angl_z_raw, S_IRUGO, _show, NULL, _addr)
+-- 
+1.7.1
 
