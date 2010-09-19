@@ -1,78 +1,56 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:49438 "EHLO
-	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756491Ab0ITOHz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Sep 2010 10:07:55 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-To: manuel.stahl@iis.fraunhofer.de, linux-iio@vger.kernel.org
-Cc: drivers@analog.com, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 01/22] staging:iio:lis3l02dq add _type attributes for all scan elements
-Date: Mon, 20 Sep 2010 15:12:46 +0100
-Message-Id: <1284991987-12407-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1284991987-12407-1-git-send-email-jic23@cam.ac.uk>
-References: <1284991987-12407-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: manuel.stahl@iis.fraunhofer.de,
+	linux-iio@vger.kernel.org
+Cc: drivers@analog.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 00/10] staging:iio: implement _type attrs for scan elements
+Date: Sun, 19 Sep 2010 18:04:24 +0100
+Message-Id: <1284915874-24911-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Also, adds a macro to make defining such attributes simple.
+Implementation of Manuel Stahl's suggested interface to describe how
+a given scan element is stored in the buffer.
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/accel/lis3l02dq_ring.c |    4 ++++
- drivers/staging/iio/ring_generic.h         |   11 ++++++++++-
- 2 files changed, 14 insertions(+), 1 deletions(-)
+The final patch removes the previous partial implementation of related
+functionality.
 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index f26c0fe..28a54f1 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -84,13 +84,17 @@ static IIO_SCAN_EL_C(accel_y, 1, IIO_SIGNED(16),
- static IIO_SCAN_EL_C(accel_z, 2, IIO_SIGNED(16),
- 		     LIS3L02DQ_REG_OUT_Z_L_ADDR,
- 		     &lis3l02dq_scan_el_set_state);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(accel, s, 12, 16);
- static IIO_SCAN_EL_TIMESTAMP(3);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
- 
- static struct attribute *lis3l02dq_scan_el_attrs[] = {
- 	&iio_scan_el_accel_x.dev_attr.attr,
- 	&iio_scan_el_accel_y.dev_attr.attr,
- 	&iio_scan_el_accel_z.dev_attr.attr,
-+	&iio_const_attr_accel_type.dev_attr.attr,
- 	&iio_scan_el_timestamp.dev_attr.attr,
-+	&iio_const_attr_timestamp_type.dev_attr.attr,
- 	NULL,
- };
- 
-diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
-index 7b29cd5..692b967 100644
---- a/drivers/staging/iio/ring_generic.h
-+++ b/drivers/staging/iio/ring_generic.h
-@@ -247,7 +247,7 @@ ssize_t iio_scan_el_ts_show(struct device *dev, struct device_attribute *attr,
- 		.bit_count = _bits,					\
- 		.label = _label,					\
- 		.set_state = _controlfunc,				\
--	}
-+	}	  
- 
- #define IIO_SCAN_EL_C(_name, _number, _bits, _label, _controlfunc)	\
- 	__IIO_SCAN_EL_C(_name, _number, _bits, _label, _controlfunc)
-@@ -279,6 +279,15 @@ ssize_t iio_scan_el_ts_show(struct device *dev, struct device_attribute *attr,
- 				   iio_scan_el_ts_store),	\
- 	}
- 
-+/**
-+ * IIO_CONST_ATTR_SCAN_EL_TYPE - attr to specify the data format of a scan el
-+ * @name: the scan el name (may be more general and cover a set of scan elements
-+ * @_sign: either s or u for signed or unsigned
-+ * @_bits: number of actual bits occuplied by the value
-+ * @_storagebits: number of bits _bits is padded to when read out of buffer
-+ **/
-+#define IIO_CONST_ATTR_SCAN_EL_TYPE(_name, _sign, _bits, _storagebits) \
-+	IIO_CONST_ATTR(_name##_type, #_sign#_bits"/"#_storagebits);
- /*
-  * These are mainly provided to allow for a change of implementation if a device
-  * has a large number of scan elements
+This is done off a combination of what was marked in the drivers and
+datasheets.  Where the in driver elements disagree with the datasheet
+I have assumed a bug (be it one that did not previously have any affect)
+and gone with the datasheet.
+
+In one case, I don't believe the datasheet so have asked the manufacturer
+to confirm.
+
+This is applied on a clean version of staging-next as I would like to
+merge this asap and hence do not want to have it dependant on the
+two large adis related patch sets I have posted to the mailining list.
+Clearly those will both need to be rebased.
+
+Jonathan Cameron (10):
+  staging:iio:lis3l02dq add _type attributes for all scan elements
+  staging:iio:max1363 add _type attributes for all scan elements
+  staging:iio:adis16209 add _type attributes for all scan elements
+  staging:iio:adis16240 add _type attributes for all scan elements
+  staging:iio:sca3000 add _type attributes for all scan elements
+  staging:iio:adis16260 add _type attributes for all scan elements
+  staging:iio:adis16300 add _type attributes for all scan elements
+  staging:iio:adis16350 add _type attributes for all scan elements
+  staging:iio:adis16400 add _type attributes for all scan elements
+  staging:iio: Remove unused bit_count from struct iio_scan_el
+
+ drivers/staging/iio/accel/adis16209_ring.c |   36 ++++---
+ drivers/staging/iio/accel/adis16240_ring.c |   27 +++--
+ drivers/staging/iio/accel/lis3l02dq_ring.c |   10 ++-
+ drivers/staging/iio/accel/sca3000_ring.c   |   52 +++++-----
+ drivers/staging/iio/adc/max1363_core.c     |  154 +++++++++++++++++-----------
+ drivers/staging/iio/gyro/adis16260_ring.c  |   27 +++--
+ drivers/staging/iio/imu/adis16300_ring.c   |   39 +++++---
+ drivers/staging/iio/imu/adis16350_ring.c   |   44 ++++----
+ drivers/staging/iio/imu/adis16400_ring.c   |   50 +++++----
+ drivers/staging/iio/ring_generic.h         |   17 +--
+ 10 files changed, 261 insertions(+), 195 deletions(-)
+
 -- 
 1.7.2.2
-
