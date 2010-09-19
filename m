@@ -4,57 +4,98 @@ To: manuel.stahl@iis.fraunhofer.de,
 	linux-iio@vger.kernel.org
 Cc: drivers@analog.com,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 06/10] staging:iio:adis16260 add _type attributes for all scan elements
-Date: Sun, 19 Sep 2010 18:04:30 +0100
-Message-Id: <1284915874-24911-7-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 05/10] staging:iio:sca3000 add _type attributes for all scan elements
+Date: Sun, 19 Sep 2010 18:04:29 +0100
+Message-Id: <1284915874-24911-6-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1284915874-24911-1-git-send-email-jic23@cam.ac.uk>
 References: <1284915874-24911-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/gyro/adis16260_ring.c |   13 ++++++++++++-
- 1 files changed, 12 insertions(+), 1 deletions(-)
+ drivers/staging/iio/accel/sca3000_ring.c |   46 +++++++++++++----------------
+ 1 files changed, 21 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
-index 659a672..c852575 100644
---- a/drivers/staging/iio/gyro/adis16260_ring.c
-+++ b/drivers/staging/iio/gyro/adis16260_ring.c
-@@ -19,24 +19,35 @@
+diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
+index c93f85c..15b91e1 100644
+--- a/drivers/staging/iio/accel/sca3000_ring.c
++++ b/drivers/staging/iio/accel/sca3000_ring.c
+@@ -145,7 +145,10 @@ static ssize_t sca3000_show_ring_bpse(struct device *dev,
+ 	ret = sca3000_read_data(st, SCA3000_REG_ADDR_MODE, &rx, 1);
+ 	if (ret)
+ 		goto error_ret;
+-	len = sprintf(buf, "%d\n", (rx[1] & SCA3000_RING_BUF_8BIT) ? 8 : 11);
++	if (rx[1] & SCA3000_RING_BUF_8BIT)
++		len = sprintf(buf, "s8/8\n");
++	else
++		len = sprintf(buf, "s11/16\n");
+ 	kfree(rx);
+ error_ret:
+ 	mutex_unlock(&st->lock);
+@@ -169,30 +172,23 @@ static ssize_t sca3000_store_ring_bpse(struct device *dev,
+ 	struct sca3000_state *st = indio_dev->dev_data;
+ 	int ret;
+ 	u8 *rx;
+-	long val;
+-	ret = strict_strtol(buf, 10, &val);
+-	if (ret)
+-		return ret;
  
- static IIO_SCAN_EL_C(in_supply, ADIS16260_SCAN_SUPPLY, IIO_UNSIGNED(12),
- 		ADIS16260_SUPPLY_OUT, NULL);
-+static IIO_CONST_ATTR(in_supply_type, "u12/16");
- static IIO_SCAN_EL_C(gyro, ADIS16260_SCAN_GYRO, IIO_SIGNED(14),
- 		ADIS16260_GYRO_OUT, NULL);
-+static IIO_CONST_ATTR(gyro_type, "s14/16");
- static IIO_SCAN_EL_C(in0, ADIS16260_SCAN_AUX_ADC, IIO_SIGNED(14),
- 		ADIS16260_AUX_ADC, NULL);
-+static IIO_CONST_ATTR(in0_type, "u12/16");
- static IIO_SCAN_EL_C(temp, ADIS16260_SCAN_TEMP, IIO_UNSIGNED(12),
- 		ADIS16260_TEMP_OUT, NULL);
-+static IIO_CONST_ATTR(temp_type, "u12/16");
- static IIO_SCAN_EL_C(angl, ADIS16260_SCAN_ANGL, IIO_UNSIGNED(12),
- 		ADIS16260_ANGL_OUT, NULL);
--
-+static IIO_CONST_ATTR(angl_type, "u14/16");
- static IIO_SCAN_EL_TIMESTAMP(5);
-+static IIO_CONST_ATTR(timestamp_type, "s64/64");
+ 	mutex_lock(&st->lock);
  
- static struct attribute *adis16260_scan_el_attrs[] = {
- 	&iio_scan_el_in_supply.dev_attr.attr,
-+	&iio_const_attr_in_supply_type.dev_attr.attr,
- 	&iio_scan_el_gyro.dev_attr.attr,
-+	&iio_const_attr_gyro_type.dev_attr.attr,
- 	&iio_scan_el_in0.dev_attr.attr,
-+	&iio_const_attr_in0_type.dev_attr.attr,
- 	&iio_scan_el_temp.dev_attr.attr,
-+	&iio_const_attr_temp_type.dev_attr.attr,
- 	&iio_scan_el_angl.dev_attr.attr,
-+	&iio_const_attr_angl_type.dev_attr.attr,
- 	&iio_scan_el_timestamp.dev_attr.attr,
-+	&iio_const_attr_timestamp_type.dev_attr.attr,
- 	NULL,
+ 	ret = sca3000_read_data(st, SCA3000_REG_ADDR_MODE, &rx, 1);
+-	if (!ret)
+-		switch (val) {
+-		case 8:
+-			ret = sca3000_write_reg(st, SCA3000_REG_ADDR_MODE,
+-						rx[1] | SCA3000_RING_BUF_8BIT);
+-			st->bpse = 8;
+-			break;
+-		case 11:
+-			ret = sca3000_write_reg(st, SCA3000_REG_ADDR_MODE,
+-						rx[1] & ~SCA3000_RING_BUF_8BIT);
+-			st->bpse = 11;
+-			break;
+-		default:
+-			ret = -EINVAL;
+-			break;
+-		}
++	if (ret)
++		goto error_ret;
++	if (strncmp(buf, "s8/8", 4) == 0) {
++		ret = sca3000_write_reg(st, SCA3000_REG_ADDR_MODE,
++					rx[1] | SCA3000_RING_BUF_8BIT);
++		st->bpse = 8;
++	} else if (strncmp(buf, "s11/16", 5) == 0) {
++		ret = sca3000_write_reg(st, SCA3000_REG_ADDR_MODE,
++					rx[1] & ~SCA3000_RING_BUF_8BIT);
++		st->bpse = 11;
++	} else
++		ret = -EINVAL;
++error_ret:
+ 	mutex_unlock(&st->lock);
+ 
+ 	return ret ? ret : len;
+@@ -201,8 +197,8 @@ static ssize_t sca3000_store_ring_bpse(struct device *dev,
+ static IIO_SCAN_EL_C(accel_x, 0, 0, 0, NULL);
+ static IIO_SCAN_EL_C(accel_y, 1, 0, 0, NULL);
+ static IIO_SCAN_EL_C(accel_z, 2, 0, 0, NULL);
+-static IIO_CONST_ATTR(accel_precision_available, "8 11");
+-static IIO_DEVICE_ATTR(accel_precision,
++static IIO_CONST_ATTR(accel_type_available, "s8/8 s11/16");
++static IIO_DEVICE_ATTR(accel_type,
+ 		       S_IRUGO | S_IWUSR,
+ 		       sca3000_show_ring_bpse,
+ 		       sca3000_store_ring_bpse,
+@@ -212,8 +208,8 @@ static struct attribute *sca3000_scan_el_attrs[] = {
+ 	&iio_scan_el_accel_x.dev_attr.attr,
+ 	&iio_scan_el_accel_y.dev_attr.attr,
+ 	&iio_scan_el_accel_z.dev_attr.attr,
+-	&iio_const_attr_accel_precision_available.dev_attr.attr,
+-	&iio_dev_attr_accel_precision.dev_attr.attr,
++	&iio_const_attr_accel_type_available.dev_attr.attr,
++	&iio_dev_attr_accel_type.dev_attr.attr,
+ 	NULL
  };
  
 -- 
