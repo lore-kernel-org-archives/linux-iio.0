@@ -1,127 +1,420 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:47580 "EHLO
-	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755570Ab0ITKNj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Sep 2010 06:13:39 -0400
-Message-ID: <4C97350E.6020209@cam.ac.uk>
-Date: Mon, 20 Sep 2010 11:18:54 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: linux-iio@vger.kernel.org, drivers@analog.com
-Subject: Re: [PATCH 00/10] staging:iio: implement _type attrs for scan elements
-References: <1284915874-24911-1-git-send-email-jic23@cam.ac.uk> <4C97207D.8090109@iis.fraunhofer.de>
-In-Reply-To: <4C97207D.8090109@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: manuel.stahl@iis.fraunhofer.de,
+	linux-iio@vger.kernel.org
+Cc: drivers@analog.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 10/10] staging:iio: Remove unused bit_count from struct iio_scan_el
+Date: Sun, 19 Sep 2010 18:04:34 +0100
+Message-Id: <1284915874-24911-11-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1284915874-24911-1-git-send-email-jic23@cam.ac.uk>
+References: <1284915874-24911-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/20/10 09:51, Manuel Stahl wrote:
-> Hi Jonathan,
-> 
-> basically I like the patches. Just a few things:
-> 
-> - I know you prefer the IIO_CONST_ATTR instead of sophisticated
-> macros. But if we do want to change the format, we have to modify all
-> drivers again. So I'd like to see a macro like
-> IIO_SCAN_EL_TYPE(_name_, signed/unsigned, _actual_size_,
-> _storage_size_).
-Ultimately we are rapidly approaching the point where the interfaces
-are going to be near enough locked in stone for all time (or at least
-we'll have to replicate any attributes we change and maintain both
-for about a year). Still what you suggest is nice and clear.  I'll amend
-it slightly to:
+The job this was intended to do (never implemented) is now done
+by explicit definition of _type attributes in all drivers
 
-IIO_CONST_ATTR_SCAN_EL_TYPE because this isn't always constant. For the non
-const version it'll need to be driver specific so I'd rather leave that local
-to the drivers.  So how about:
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/accel/adis16209_ring.c |   21 ++++++----------
+ drivers/staging/iio/accel/adis16240_ring.c |   17 ++++--------
+ drivers/staging/iio/accel/lis3l02dq_ring.c |    6 ++--
+ drivers/staging/iio/accel/sca3000_ring.c   |    6 ++--
+ drivers/staging/iio/adc/max1363_core.c     |    7 ++---
+ drivers/staging/iio/gyro/adis16260_ring.c  |   14 ++++-------
+ drivers/staging/iio/imu/adis16300_ring.c   |   25 +++++++------------
+ drivers/staging/iio/imu/adis16350_ring.c   |   32 ++++++++----------------
+ drivers/staging/iio/imu/adis16400_ring.c   |   35 +++++++++------------------
+ drivers/staging/iio/ring_generic.h         |   17 ++++--------
+ 10 files changed, 66 insertions(+), 114 deletions(-)
 
-/**
- * IIO_CONST_ATTR_SCAN_EL_TYPE - attr to specify the data format of a scan el
- * @name: the scan el name (may be more general and cover a set of scan elements
- * @_sign: either s or u for signed or unsigned
- * @_bits: number of actual bits occuplied by the value
- * @_storagebits: number of bits _bits is padded to when read out of buffer
- **/
-#define IIO_CONST_ATTR_SCAN_EL_TYPE(_name, _sign, _bits, _storagebits) \
-	IIO_CONST_ATTR(_name##_type, #_sign#_bits"/"#_storagebits);
-
-Not completely flexible as it doesn't allow us to change how the signed, unsigned bit
-is printed, but it's short and simple.  Also, I don't have to go change all the
-previous usage of these attributes as they have the same names ;)
-> 
-> - From "Proposal for sysfs attributes":
->>> One additional point here.  What we currently have that the enable
->>> > parameters are currently [m]_accel_x_en etc with m being an indicator
->>> > of the position of a parameter within the buffer.  Note not all channels
->>> > are enabled at a time.  For all devices we have so far, the ordering
->>> > is fixed, so this naming is constant.  Basically we roll the accel_x_index
->>> > attribute into the naming of the enable attribute.  Manuel, could you summarize
->>> > what you have against that approach? (I'm not particularly tied to it, but
->>> > it is in place and it does work).
->> Any response to this question Manuel?  Basically this question asks whether
->> we want to explicitly tell userspace what the ordering is, or instead provide
->> it with sufficient info to trivially figure it out itself.  I'm inclined to leave
->> this job to user space.
-> No input yet. After thinking again about the "one value per sysfs
-> attribute" mantra, I think people won't accept to read values from
-> the attribute's name instead of using read/write ops. 
-Fair point. Lets keep this uncontroversial and have that additional attribute
-you suggested.  I'll do this as another set as it'll keep the patches nice and
-clean and easy to review.
-
-> I have no
-> preference wether we recalculate the index depending on the enabled
-> status.
-I'm definitely against and as only us two are contributing to the discussion,
-lets not recalculate them.
-> 
-> 
-> 
-> Am 19.09.2010 19:04, schrieb Jonathan Cameron:
->> Implementation of Manuel Stahl's suggested interface to describe how
->> a given scan element is stored in the buffer.
->>
->> The final patch removes the previous partial implementation of related
->> functionality.
->>
->> This is done off a combination of what was marked in the drivers and
->> datasheets.  Where the in driver elements disagree with the datasheet
->> I have assumed a bug (be it one that did not previously have any affect)
->> and gone with the datasheet.
->>
->> In one case, I don't believe the datasheet so have asked the manufacturer
->> to confirm.
->>
->> This is applied on a clean version of staging-next as I would like to
->> merge this asap and hence do not want to have it dependant on the
->> two large adis related patch sets I have posted to the mailining list.
->> Clearly those will both need to be rebased.
->>
->> Jonathan Cameron (10):
->>    staging:iio:lis3l02dq add _type attributes for all scan elements
->>    staging:iio:max1363 add _type attributes for all scan elements
->>    staging:iio:adis16209 add _type attributes for all scan elements
->>    staging:iio:adis16240 add _type attributes for all scan elements
->>    staging:iio:sca3000 add _type attributes for all scan elements
->>    staging:iio:adis16260 add _type attributes for all scan elements
->>    staging:iio:adis16300 add _type attributes for all scan elements
->>    staging:iio:adis16350 add _type attributes for all scan elements
->>    staging:iio:adis16400 add _type attributes for all scan elements
->>    staging:iio: Remove unused bit_count from struct iio_scan_el
->>
->>   drivers/staging/iio/accel/adis16209_ring.c |   36 ++++---
->>   drivers/staging/iio/accel/adis16240_ring.c |   27 +++--
->>   drivers/staging/iio/accel/lis3l02dq_ring.c |   10 ++-
->>   drivers/staging/iio/accel/sca3000_ring.c   |   52 +++++-----
->>   drivers/staging/iio/adc/max1363_core.c     |  154 +++++++++++++++++-----------
->>   drivers/staging/iio/gyro/adis16260_ring.c  |   27 +++--
->>   drivers/staging/iio/imu/adis16300_ring.c   |   39 +++++---
->>   drivers/staging/iio/imu/adis16350_ring.c   |   44 ++++----
->>   drivers/staging/iio/imu/adis16400_ring.c   |   50 +++++----
->>   drivers/staging/iio/ring_generic.h         |   17 +--
->>   10 files changed, 261 insertions(+), 195 deletions(-)
->>
-> 
-> 
-
+diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
+index a1b2058..3b2d485 100644
+--- a/drivers/staging/iio/accel/adis16209_ring.c
++++ b/drivers/staging/iio/accel/adis16209_ring.c
+@@ -17,27 +17,22 @@
+ #include "../trigger.h"
+ #include "adis16209.h"
+ 
+-static IIO_SCAN_EL_C(in_supply, ADIS16209_SCAN_SUPPLY, IIO_UNSIGNED(14),
++static IIO_SCAN_EL_C(in_supply, ADIS16209_SCAN_SUPPLY,
+ 		     ADIS16209_SUPPLY_OUT, NULL);
+ static IIO_CONST_ATTR(in_supply_type, "u14/16");
+-static IIO_SCAN_EL_C(accel_x, ADIS16209_SCAN_ACC_X, IIO_SIGNED(14),
+-		     ADIS16209_XACCL_OUT, NULL);
+-static IIO_SCAN_EL_C(accel_y, ADIS16209_SCAN_ACC_Y, IIO_SIGNED(14),
+-		     ADIS16209_YACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_x, ADIS16209_SCAN_ACC_X, ADIS16209_XACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_y, ADIS16209_SCAN_ACC_Y, ADIS16209_YACCL_OUT, NULL);
+ static IIO_CONST_ATTR(accel_type, "s14/16");
+-static IIO_SCAN_EL_C(in0, ADIS16209_SCAN_AUX_ADC, IIO_UNSIGNED(12),
+-		     ADIS16209_AUX_ADC, NULL);
++static IIO_SCAN_EL_C(in0, ADIS16209_SCAN_AUX_ADC, ADIS16209_AUX_ADC, NULL);
+ static IIO_CONST_ATTR(in0_type, "u12/16");
+-static IIO_SCAN_EL_C(temp, ADIS16209_SCAN_TEMP, IIO_UNSIGNED(12),
+-		     ADIS16209_TEMP_OUT, NULL);
++static IIO_SCAN_EL_C(temp, ADIS16209_SCAN_TEMP, ADIS16209_TEMP_OUT, NULL);
+ static IIO_CONST_ATTR(temp_type, "u12/16");
+-static IIO_SCAN_EL_C(incli_x, ADIS16209_SCAN_INCLI_X, IIO_SIGNED(14),
++static IIO_SCAN_EL_C(incli_x, ADIS16209_SCAN_INCLI_X,
+ 		     ADIS16209_XINCL_OUT, NULL);
+-static IIO_SCAN_EL_C(incli_y, ADIS16209_SCAN_INCLI_Y, IIO_SIGNED(14),
++static IIO_SCAN_EL_C(incli_y, ADIS16209_SCAN_INCLI_Y,
+ 		     ADIS16209_YINCL_OUT, NULL);
+ static IIO_CONST_ATTR(incli_type, "s14/16");
+-static IIO_SCAN_EL_C(rot, ADIS16209_SCAN_ROT, IIO_SIGNED(14),
+-		     ADIS16209_ROT_OUT, NULL);
++static IIO_SCAN_EL_C(rot, ADIS16209_SCAN_ROT, ADIS16209_ROT_OUT, NULL);
+ static IIO_CONST_ATTR(rot_type, "s14/16");
+ static IIO_SCAN_EL_TIMESTAMP(8);
+ static IIO_CONST_ATTR(timestamp_type, "s64/64");
+diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
+index ac0560f..579a9138 100644
+--- a/drivers/staging/iio/accel/adis16240_ring.c
++++ b/drivers/staging/iio/accel/adis16240_ring.c
+@@ -17,21 +17,16 @@
+ #include "../trigger.h"
+ #include "adis16240.h"
+ 
+-static IIO_SCAN_EL_C(in_supply, ADIS16240_SCAN_SUPPLY, IIO_UNSIGNED(10),
++static IIO_SCAN_EL_C(in_supply, ADIS16240_SCAN_SUPPLY,
+ 		ADIS16240_SUPPLY_OUT, NULL);
+ static IIO_CONST_ATTR(in_supply_type, "u10/16");
+-static IIO_SCAN_EL_C(accel_x, ADIS16240_SCAN_ACC_X, IIO_SIGNED(10),
+-		ADIS16240_XACCL_OUT, NULL);
+-static IIO_SCAN_EL_C(accel_y, ADIS16240_SCAN_ACC_Y, IIO_SIGNED(10),
+-		ADIS16240_YACCL_OUT, NULL);
+-static IIO_SCAN_EL_C(accel_z, ADIS16240_SCAN_ACC_Z, IIO_SIGNED(10),
+-		ADIS16240_ZACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_x, ADIS16240_SCAN_ACC_X, ADIS16240_XACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_y, ADIS16240_SCAN_ACC_Y, ADIS16240_YACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_z, ADIS16240_SCAN_ACC_Z, ADIS16240_ZACCL_OUT, NULL);
+ static IIO_CONST_ATTR(accel_type, "s10/16");
+-static IIO_SCAN_EL_C(in0, ADIS16240_SCAN_AUX_ADC, IIO_UNSIGNED(10),
+-		ADIS16240_AUX_ADC, NULL);
++static IIO_SCAN_EL_C(in0, ADIS16240_SCAN_AUX_ADC, ADIS16240_AUX_ADC, NULL);
+ static IIO_CONST_ATTR(in0_type, "u10/16");
+-static IIO_SCAN_EL_C(temp, ADIS16240_SCAN_TEMP, IIO_UNSIGNED(10),
+-		ADIS16240_TEMP_OUT, NULL);
++static IIO_SCAN_EL_C(temp, ADIS16240_SCAN_TEMP, ADIS16240_TEMP_OUT, NULL);
+ static IIO_CONST_ATTR(temp_type, "u10/16");
+ 
+ static IIO_SCAN_EL_TIMESTAMP(6);
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index 6c37c3b..f0ef553 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -75,13 +75,13 @@ error_ret:
+ 	return ret;
+ 
+ }
+-static IIO_SCAN_EL_C(accel_x, 0, IIO_SIGNED(16),
++static IIO_SCAN_EL_C(accel_x, 0,
+ 		     LIS3L02DQ_REG_OUT_X_L_ADDR,
+ 		     &lis3l02dq_scan_el_set_state);
+-static IIO_SCAN_EL_C(accel_y, 1, IIO_SIGNED(16),
++static IIO_SCAN_EL_C(accel_y, 1,
+ 		     LIS3L02DQ_REG_OUT_Y_L_ADDR,
+ 		     &lis3l02dq_scan_el_set_state);
+-static IIO_SCAN_EL_C(accel_z, 2, IIO_SIGNED(16),
++static IIO_SCAN_EL_C(accel_z, 2,
+ 		     LIS3L02DQ_REG_OUT_Z_L_ADDR,
+ 		     &lis3l02dq_scan_el_set_state);
+ static IIO_CONST_ATTR(accel_type, "s12/16");
+diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
+index 15b91e1..003097d 100644
+--- a/drivers/staging/iio/accel/sca3000_ring.c
++++ b/drivers/staging/iio/accel/sca3000_ring.c
+@@ -194,9 +194,9 @@ error_ret:
+ 	return ret ? ret : len;
+ }
+ 
+-static IIO_SCAN_EL_C(accel_x, 0, 0, 0, NULL);
+-static IIO_SCAN_EL_C(accel_y, 1, 0, 0, NULL);
+-static IIO_SCAN_EL_C(accel_z, 2, 0, 0, NULL);
++static IIO_SCAN_EL_C(accel_x, 0, 0, NULL);
++static IIO_SCAN_EL_C(accel_y, 1, 0, NULL);
++static IIO_SCAN_EL_C(accel_z, 2, 0, NULL);
+ static IIO_CONST_ATTR(accel_type_available, "s8/8 s11/16");
+ static IIO_DEVICE_ATTR(accel_type,
+ 		       S_IRUGO | S_IWUSR,
+diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
+index 40039e6..d59a8d2 100644
+--- a/drivers/staging/iio/adc/max1363_core.c
++++ b/drivers/staging/iio/adc/max1363_core.c
+@@ -42,11 +42,10 @@
+ /* Here we claim all are 16 bits. This currently does no harm and saves
+  * us a lot of scan element listings */
+ 
+-#define MAX1363_SCAN_EL(number)						\
+-	IIO_SCAN_EL_C(in##number, number, IIO_UNSIGNED(16), 0, NULL);
++#define MAX1363_SCAN_EL(number)				\
++	IIO_SCAN_EL_C(in##number, number, 0, NULL);
+ #define MAX1363_SCAN_EL_D(p, n, number)					\
+-	IIO_SCAN_NAMED_EL_C(in##p##m##in##n, in##p-in##n,		\
+-			number, IIO_SIGNED(16), 0, NULL);
++	IIO_SCAN_NAMED_EL_C(in##p##m##in##n, in##p-in##n, number, 0, NULL);
+ 
+ static MAX1363_SCAN_EL(0);
+ static MAX1363_SCAN_EL(1);
+diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
+index c852575..6cc860b 100644
+--- a/drivers/staging/iio/gyro/adis16260_ring.c
++++ b/drivers/staging/iio/gyro/adis16260_ring.c
+@@ -17,20 +17,16 @@
+ #include "../trigger.h"
+ #include "adis16260.h"
+ 
+-static IIO_SCAN_EL_C(in_supply, ADIS16260_SCAN_SUPPLY, IIO_UNSIGNED(12),
++static IIO_SCAN_EL_C(in_supply, ADIS16260_SCAN_SUPPLY,
+ 		ADIS16260_SUPPLY_OUT, NULL);
+ static IIO_CONST_ATTR(in_supply_type, "u12/16");
+-static IIO_SCAN_EL_C(gyro, ADIS16260_SCAN_GYRO, IIO_SIGNED(14),
+-		ADIS16260_GYRO_OUT, NULL);
++static IIO_SCAN_EL_C(gyro, ADIS16260_SCAN_GYRO, ADIS16260_GYRO_OUT, NULL);
+ static IIO_CONST_ATTR(gyro_type, "s14/16");
+-static IIO_SCAN_EL_C(in0, ADIS16260_SCAN_AUX_ADC, IIO_SIGNED(14),
+-		ADIS16260_AUX_ADC, NULL);
++static IIO_SCAN_EL_C(in0, ADIS16260_SCAN_AUX_ADC, ADIS16260_AUX_ADC, NULL);
+ static IIO_CONST_ATTR(in0_type, "u12/16");
+-static IIO_SCAN_EL_C(temp, ADIS16260_SCAN_TEMP, IIO_UNSIGNED(12),
+-		ADIS16260_TEMP_OUT, NULL);
++static IIO_SCAN_EL_C(temp, ADIS16260_SCAN_TEMP, ADIS16260_TEMP_OUT, NULL);
+ static IIO_CONST_ATTR(temp_type, "u12/16");
+-static IIO_SCAN_EL_C(angl, ADIS16260_SCAN_ANGL, IIO_UNSIGNED(12),
+-		ADIS16260_ANGL_OUT, NULL);
++static IIO_SCAN_EL_C(angl, ADIS16260_SCAN_ANGL, ADIS16260_ANGL_OUT, NULL);
+ static IIO_CONST_ATTR(angl_type, "u14/16");
+ static IIO_SCAN_EL_TIMESTAMP(5);
+ static IIO_CONST_ATTR(timestamp_type, "s64/64");
+diff --git a/drivers/staging/iio/imu/adis16300_ring.c b/drivers/staging/iio/imu/adis16300_ring.c
+index f805f9e..c9ff6b3 100644
+--- a/drivers/staging/iio/imu/adis16300_ring.c
++++ b/drivers/staging/iio/imu/adis16300_ring.c
+@@ -17,40 +17,33 @@
+ #include "../trigger.h"
+ #include "adis16300.h"
+ 
+-static IIO_SCAN_EL_C(in_supply, ADIS16300_SCAN_SUPPLY, IIO_UNSIGNED(14),
++static IIO_SCAN_EL_C(in_supply, ADIS16300_SCAN_SUPPLY,
+ 		     ADIS16300_SUPPLY_OUT, NULL);
+ static IIO_CONST_ATTR(in_supply_type, "u12/16");
+ 
+-static IIO_SCAN_EL_C(gyro_x, ADIS16300_SCAN_GYRO_X, IIO_SIGNED(14),
+-		     ADIS16300_XGYRO_OUT, NULL);
++static IIO_SCAN_EL_C(gyro_x, ADIS16300_SCAN_GYRO_X, ADIS16300_XGYRO_OUT, NULL);
+ static IIO_CONST_ATTR(gyro_type, "s14/16");
+ 
+-static IIO_SCAN_EL_C(accel_x, ADIS16300_SCAN_ACC_X, IIO_SIGNED(14),
+-		     ADIS16300_XACCL_OUT, NULL);
+-static IIO_SCAN_EL_C(accel_y, ADIS16300_SCAN_ACC_Y, IIO_SIGNED(14),
+-		     ADIS16300_YACCL_OUT, NULL);
+-static IIO_SCAN_EL_C(accel_z, ADIS16300_SCAN_ACC_Z, IIO_SIGNED(14),
+-		     ADIS16300_ZACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_x, ADIS16300_SCAN_ACC_X, ADIS16300_XACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_y, ADIS16300_SCAN_ACC_Y, ADIS16300_YACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_z, ADIS16300_SCAN_ACC_Z, ADIS16300_ZACCL_OUT, NULL);
+ static IIO_CONST_ATTR(accel_type, "s14/16");
+ 
+-static IIO_SCAN_EL_C(temp, ADIS16300_SCAN_TEMP, IIO_UNSIGNED(12),
+-		     ADIS16300_TEMP_OUT, NULL);
++static IIO_SCAN_EL_C(temp, ADIS16300_SCAN_TEMP, ADIS16300_TEMP_OUT, NULL);
+ static IIO_CONST_ATTR(temp_type, "s12/16");
+ 
+-static IIO_SCAN_EL_C(in0, ADIS16300_SCAN_ADC_0, IIO_UNSIGNED(12),
+-		     ADIS16300_AUX_ADC, NULL);
++static IIO_SCAN_EL_C(in0, ADIS16300_SCAN_ADC_0, ADIS16300_AUX_ADC, NULL);
+ static IIO_CONST_ATTR(in0_type, "u12/16");
+ 
+-static IIO_SCAN_EL_C(incli_x, ADIS16300_SCAN_INCLI_X, IIO_SIGNED(12),
++static IIO_SCAN_EL_C(incli_x, ADIS16300_SCAN_INCLI_X,
+ 		     ADIS16300_XINCLI_OUT, NULL);
+-static IIO_SCAN_EL_C(incli_y, ADIS16300_SCAN_INCLI_Y, IIO_SIGNED(12),
++static IIO_SCAN_EL_C(incli_y, ADIS16300_SCAN_INCLI_Y,
+ 		     ADIS16300_YINCLI_OUT, NULL);
+ static IIO_CONST_ATTR(incli_type, "s13/16");
+ 
+ static IIO_SCAN_EL_TIMESTAMP(9);
+ static IIO_CONST_ATTR(timestamp_type, "s64/64");
+ 
+-
+ static struct attribute *adis16300_scan_el_attrs[] = {
+ 	&iio_scan_el_in_supply.dev_attr.attr,
+ 	&iio_const_attr_in_supply_type.dev_attr.attr,
+diff --git a/drivers/staging/iio/imu/adis16350_ring.c b/drivers/staging/iio/imu/adis16350_ring.c
+index d9b1260..8f90a66 100644
+--- a/drivers/staging/iio/imu/adis16350_ring.c
++++ b/drivers/staging/iio/imu/adis16350_ring.c
+@@ -17,36 +17,26 @@
+ #include "../trigger.h"
+ #include "adis16350.h"
+ 
+-static IIO_SCAN_EL_C(in_supply, ADIS16350_SCAN_SUPPLY, IIO_UNSIGNED(12),
++static IIO_SCAN_EL_C(in_supply, ADIS16350_SCAN_SUPPLY,
+ 		ADIS16350_SUPPLY_OUT, NULL);
+ static IIO_CONST_ATTR(in_supply_type, "u12/16");
+ 
+-static IIO_SCAN_EL_C(gyro_x, ADIS16350_SCAN_GYRO_X, IIO_SIGNED(14),
+-		ADIS16350_XGYRO_OUT, NULL);
+-static IIO_SCAN_EL_C(gyro_y, ADIS16350_SCAN_GYRO_Y, IIO_SIGNED(14),
+-		ADIS16350_YGYRO_OUT, NULL);
+-static IIO_SCAN_EL_C(gyro_z, ADIS16350_SCAN_GYRO_Z, IIO_SIGNED(14),
+-		ADIS16350_ZGYRO_OUT, NULL);
++static IIO_SCAN_EL_C(gyro_x, ADIS16350_SCAN_GYRO_X, ADIS16350_XGYRO_OUT, NULL);
++static IIO_SCAN_EL_C(gyro_y, ADIS16350_SCAN_GYRO_Y, ADIS16350_YGYRO_OUT, NULL);
++static IIO_SCAN_EL_C(gyro_z, ADIS16350_SCAN_GYRO_Z, ADIS16350_ZGYRO_OUT, NULL);
+ static IIO_CONST_ATTR(gyro_type, "s14/16");
+ 
+-static IIO_SCAN_EL_C(accel_x, ADIS16350_SCAN_ACC_X, IIO_SIGNED(14),
+-		ADIS16350_XACCL_OUT, NULL);
+-static IIO_SCAN_EL_C(accel_y, ADIS16350_SCAN_ACC_Y, IIO_SIGNED(14),
+-		ADIS16350_YACCL_OUT, NULL);
+-static IIO_SCAN_EL_C(accel_z, ADIS16350_SCAN_ACC_Z, IIO_SIGNED(14),
+-		ADIS16350_ZACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_x, ADIS16350_SCAN_ACC_X, ADIS16350_XACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_y, ADIS16350_SCAN_ACC_Y, ADIS16350_YACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_z, ADIS16350_SCAN_ACC_Z, ADIS16350_ZACCL_OUT, NULL);
+ static IIO_CONST_ATTR(accel_type, "s14/16");
+ 
+-static IIO_SCAN_EL_C(temp_x, ADIS16350_SCAN_TEMP_X, IIO_SIGNED(12),
+-		ADIS16350_XTEMP_OUT, NULL);
+-static IIO_SCAN_EL_C(temp_y, ADIS16350_SCAN_TEMP_Y, IIO_SIGNED(12),
+-		ADIS16350_YTEMP_OUT, NULL);
+-static IIO_SCAN_EL_C(temp_z, ADIS16350_SCAN_TEMP_Z, IIO_SIGNED(12),
+-		ADIS16350_ZTEMP_OUT, NULL);
++static IIO_SCAN_EL_C(temp_x, ADIS16350_SCAN_TEMP_X, ADIS16350_XTEMP_OUT, NULL);
++static IIO_SCAN_EL_C(temp_y, ADIS16350_SCAN_TEMP_Y, ADIS16350_YTEMP_OUT, NULL);
++static IIO_SCAN_EL_C(temp_z, ADIS16350_SCAN_TEMP_Z, ADIS16350_ZTEMP_OUT, NULL);
+ static IIO_CONST_ATTR(temp_type, "s12/16");
+ 
+-static IIO_SCAN_EL_C(in0, ADIS16350_SCAN_ADC_0, IIO_UNSIGNED(12),
+-		ADIS16350_AUX_ADC, NULL);
++static IIO_SCAN_EL_C(in0, ADIS16350_SCAN_ADC_0, ADIS16350_AUX_ADC, NULL);
+ static IIO_CONST_ATTR(in0_type, "u12/16");
+ 
+ static IIO_SCAN_EL_TIMESTAMP(11);
+diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
+index 05bf7fc..f2509db 100644
+--- a/drivers/staging/iio/imu/adis16400_ring.c
++++ b/drivers/staging/iio/imu/adis16400_ring.c
+@@ -17,40 +17,29 @@
+ #include "../trigger.h"
+ #include "adis16400.h"
+ 
+-static IIO_SCAN_EL_C(in_supply, ADIS16400_SCAN_SUPPLY, IIO_SIGNED(14),
++static IIO_SCAN_EL_C(in_supply, ADIS16400_SCAN_SUPPLY,
+ 		     ADIS16400_SUPPLY_OUT, NULL);
+ static IIO_CONST_ATTR(in_supply_type, "u14/16");
+ 
+-static IIO_SCAN_EL_C(gyro_x, ADIS16400_SCAN_GYRO_X, IIO_SIGNED(14),
+-		     ADIS16400_XGYRO_OUT, NULL);
+-static IIO_SCAN_EL_C(gyro_y, ADIS16400_SCAN_GYRO_Y, IIO_SIGNED(14),
+-		     ADIS16400_YGYRO_OUT, NULL);
+-static IIO_SCAN_EL_C(gyro_z, ADIS16400_SCAN_GYRO_Z, IIO_SIGNED(14),
+-		     ADIS16400_ZGYRO_OUT, NULL);
++static IIO_SCAN_EL_C(gyro_x, ADIS16400_SCAN_GYRO_X, ADIS16400_XGYRO_OUT, NULL);
++static IIO_SCAN_EL_C(gyro_y, ADIS16400_SCAN_GYRO_Y, ADIS16400_YGYRO_OUT, NULL);
++static IIO_SCAN_EL_C(gyro_z, ADIS16400_SCAN_GYRO_Z, ADIS16400_ZGYRO_OUT, NULL);
+ static IIO_CONST_ATTR(gyro_type, "s14/16");
+ 
+-static IIO_SCAN_EL_C(accel_x, ADIS16400_SCAN_ACC_X, IIO_SIGNED(14),
+-		     ADIS16400_XACCL_OUT, NULL);
+-static IIO_SCAN_EL_C(accel_y, ADIS16400_SCAN_ACC_Y, IIO_SIGNED(14),
+-		     ADIS16400_YACCL_OUT, NULL);
+-static IIO_SCAN_EL_C(accel_z, ADIS16400_SCAN_ACC_Z, IIO_SIGNED(14),
+-		     ADIS16400_ZACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_x, ADIS16400_SCAN_ACC_X, ADIS16400_XACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_y, ADIS16400_SCAN_ACC_Y, ADIS16400_YACCL_OUT, NULL);
++static IIO_SCAN_EL_C(accel_z, ADIS16400_SCAN_ACC_Z, ADIS16400_ZACCL_OUT, NULL);
+ static IIO_CONST_ATTR(accel_type, "s14/16");
+ 
+-static IIO_SCAN_EL_C(magn_x, ADIS16400_SCAN_MAGN_X, IIO_SIGNED(14),
+-		     ADIS16400_XMAGN_OUT, NULL);
+-static IIO_SCAN_EL_C(magn_y, ADIS16400_SCAN_MAGN_Y, IIO_SIGNED(14),
+-		     ADIS16400_YMAGN_OUT, NULL);
+-static IIO_SCAN_EL_C(magn_z, ADIS16400_SCAN_MAGN_Z, IIO_SIGNED(14),
+-		     ADIS16400_ZMAGN_OUT, NULL);
++static IIO_SCAN_EL_C(magn_x, ADIS16400_SCAN_MAGN_X, ADIS16400_XMAGN_OUT, NULL);
++static IIO_SCAN_EL_C(magn_y, ADIS16400_SCAN_MAGN_Y, ADIS16400_YMAGN_OUT, NULL);
++static IIO_SCAN_EL_C(magn_z, ADIS16400_SCAN_MAGN_Z, ADIS16400_ZMAGN_OUT, NULL);
+ static IIO_CONST_ATTR(magn_type, "s14/16");
+ 
+-static IIO_SCAN_EL_C(temp, ADIS16400_SCAN_TEMP, IIO_SIGNED(12),
+-		     ADIS16400_TEMP_OUT, NULL);
++static IIO_SCAN_EL_C(temp, ADIS16400_SCAN_TEMP, ADIS16400_TEMP_OUT, NULL);
+ static IIO_CONST_ATTR(temp_type, "s12/16");
+ 
+-static IIO_SCAN_EL_C(in0, ADIS16400_SCAN_ADC_0, IIO_SIGNED(12),
+-		     ADIS16400_AUX_ADC, NULL);
++static IIO_SCAN_EL_C(in0, ADIS16400_SCAN_ADC_0, ADIS16400_AUX_ADC, NULL);
+ static IIO_CONST_ATTR(in0_type, "u12/16");
+ 
+ static IIO_SCAN_EL_TIMESTAMP(12);
+diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
+index 7b29cd5..198cfe2 100644
+--- a/drivers/staging/iio/ring_generic.h
++++ b/drivers/staging/iio/ring_generic.h
+@@ -168,7 +168,6 @@ static inline void __iio_update_ring_buffer(struct iio_ring_buffer *ring,
+  * struct iio_scan_el - an individual element of a scan
+  * @dev_attr:		control attribute (if directly controllable)
+  * @number:		unique identifier of element (used for bit mask)
+- * @bit_count:		number of bits in scan element
+  * @label:		useful data for the scan el (often reg address)
+  * @set_state:		for some devices datardy signals are generated
+  *			for any enabled lines.  This allows unwanted lines
+@@ -177,7 +176,6 @@ static inline void __iio_update_ring_buffer(struct iio_ring_buffer *ring,
+ struct iio_scan_el {
+ 	struct device_attribute		dev_attr;
+ 	unsigned int			number;
+-	int				bit_count;
+ 	unsigned int			label;
+ 
+ 	int (*set_state)(struct iio_scan_el *scanel,
+@@ -232,39 +230,36 @@ ssize_t iio_scan_el_ts_show(struct device *dev, struct device_attribute *attr,
+  * @_name:	identifying name. Resulting struct is iio_scan_el_##_name,
+  *		sysfs element, _name##_en.
+  * @_number:	unique id number for the scan element.
+- * @_bits:	number of bits in the scan element result (used in mixed bit
+  *		length devices).
+  * @_label:	indentification variable used by drivers.  Often a reg address.
+  * @_controlfunc: function used to notify hardware of whether state changes
+  **/
+-#define __IIO_SCAN_EL_C(_name, _number, _bits, _label, _controlfunc)	\
++#define __IIO_SCAN_EL_C(_name, _number, _label, _controlfunc)	\
+ 	struct iio_scan_el iio_scan_el_##_name = {			\
+ 		.dev_attr = __ATTR(_number##_##_name##_en,		\
+ 				   S_IRUGO | S_IWUSR,			\
+ 				   iio_scan_el_show,			\
+ 				   iio_scan_el_store),			\
+ 		.number =  _number,					\
+-		.bit_count = _bits,					\
+ 		.label = _label,					\
+ 		.set_state = _controlfunc,				\
+ 	}
+ 
+-#define IIO_SCAN_EL_C(_name, _number, _bits, _label, _controlfunc)	\
+-	__IIO_SCAN_EL_C(_name, _number, _bits, _label, _controlfunc)
++#define IIO_SCAN_EL_C(_name, _number, _label, _controlfunc)	\
++	__IIO_SCAN_EL_C(_name, _number, _label, _controlfunc)
+ 
+-#define __IIO_SCAN_NAMED_EL_C(_name, _string, _number, _bits, _label, _cf) \
++#define __IIO_SCAN_NAMED_EL_C(_name, _string, _number, _label, _cf) \
+ 	struct iio_scan_el iio_scan_el_##_name = {			\
+ 		.dev_attr = __ATTR(_number##_##_string##_en,		\
+ 				   S_IRUGO | S_IWUSR,			\
+ 				   iio_scan_el_show,			\
+ 				   iio_scan_el_store),			\
+ 		.number =  _number,					\
+-		.bit_count = _bits,					\
+ 		.label = _label,					\
+ 		.set_state = _cf,					\
+ 	}
+-#define IIO_SCAN_NAMED_EL_C(_name, _string, _number, _bits, _label, _cf) \
+-	__IIO_SCAN_NAMED_EL_C(_name, _string, _number, _bits, _label, _cf)
++#define IIO_SCAN_NAMED_EL_C(_name, _string, _number, _label, _cf) \
++	__IIO_SCAN_NAMED_EL_C(_name, _string, _number, _label, _cf)
+ /**
+  * IIO_SCAN_EL_TIMESTAMP - declare a special scan element for timestamps
+  * @number: specify where in the scan order this is stored.
+-- 
+1.7.2.2
