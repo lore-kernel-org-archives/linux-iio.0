@@ -1,45 +1,84 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:60407 "EHLO
-	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755761Ab0IUNjW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Sep 2010 09:39:22 -0400
-Message-ID: <4C98B6C7.9040200@cam.ac.uk>
-Date: Tue, 21 Sep 2010 14:44:39 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: linux-iio@vger.kernel.org, drivers@analog.com
-Subject: Re: [PATCH 00/22 V2ish] staging:iio: implement _type (v2) and _index
- for scan elements
-References: <1284991987-12407-1-git-send-email-jic23@cam.ac.uk> <4C977C26.2020602@iis.fraunhofer.de>
-In-Reply-To: <4C977C26.2020602@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: manuel.stahl@iis.fraunhofer.de,
+	linux-iio@vger.kernel.org
+Cc: drivers@analog.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 22/22] staging:iio:sysfs abi documentation. Add _type and _index attrs
+Date: Mon, 20 Sep 2010 15:13:07 +0100
+Message-Id: <1284991987-12407-23-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1284991987-12407-1-git-send-email-jic23@cam.ac.uk>
+References: <1284991987-12407-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/20/10 16:22, Manuel Stahl wrote:
-> Am 20.09.2010 16:12, schrieb Jonathan Cameron:
->> This set combines v2 of the addtion of _type attrs and v1 for that
->> of _index attrs.  With both of these present all current buffer data
->> layouts are fully described.
->>
->> The _type attr patches have been updated as per Manuel's suggestion
->> (using the variant I posted earlier today for constant _type)
->> I have left those drivers with variable formats to specify their
->> own functions locally.  These may be worth combining into some core
->> functionality in the future.
->>
->> Manuel, if you are happy can I have your sign off on these
->> (as it was your idea!)
-> 
-> Sure, do that!
-Done and sent on to Greg KH.
+Also remove no unused precision attr.
 
-Given it is just an interface change, I didn't wait for Acks from
-others.  I wanted to merge these asap as whilst compact, they
-will mean rebasing pretty much every other set I've posted recently.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/Documentation/sysfs-bus-iio |   40 ++++++++++++++++-------
+ 1 files changed, 28 insertions(+), 12 deletions(-)
 
-Next, to start a flame war on lkml about naming of event related sysfs
-parameters.
-
-Jonathan
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio b/drivers/staging/iio/Documentation/sysfs-bus-iio
+index c137020..62becc0 100644
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
+@@ -266,24 +266,41 @@ Description:
+ 		Directory containing interfaces for elements that will be captured
+ 		for a single triggered sample set in the buffer.
+ 
+-What:		/sys/.../device[n]/buffer/scan_elements/[m]_accel_x0_en
++What:		/sys/.../device[n]/buffer/scan_elements/accel_x0_en
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Scan element control for triggered data capture. m implies the
+-		ordering within the buffer. Next the type is specified with
+-		modifier and channel number as per the sysfs single channel
+-		access above.
++		Scan element control for triggered data capture.
+ 
+-What:		/sys/.../device[n]/buffer/scan_elements/accel[_x0]_precision
++What:		/sys/.../device[n]/buffer/scan_elements/accel[_x0]_type
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Scan element precision within the buffer. Note that the
+-		data alignment must restrictions must be read from within
+-		buffer to work out full data alignment for data read
+-		via buffer_access chrdev. _x0 dropped if shared across all
+-		acceleration channels.
++		Description of the scan element data storage within the buffer
++		and hence the form in which it is read from userspace.
++		Form is [s|u]bits/storagebits.  s or u specifies if signed
++		(2's complement) or unsigned. bits is the number of bits of
++		data and storagebits is the space (after padding) that it
++		occupies in the buffer.  Note that some devices will have
++		additional information in the unused bits so to get a clean
++		value, the bits value must be used to mask the buffer output
++		value appropriately.  The storagebits value also specifies the
++		data alignment.  So s48/64 will be a signed 48 bit integer
++		stored in a 64 bit location aligned to a a64 bit boundary.
++		For other storage combinations this attribute will be extended
++		appropriately.
++
++What:		/sys/.../device[n]/buffer/scan_elements/accel[_x0]_index
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		A single positive integer specifying the position of this
++		scan element in the buffer. Note these are not dependant on
++		what is enabled and may not be contiguous. Thus for userspace
++		to establish the full layout these must be used in conjunction
++		with all _en attributes to establish which channels are present,
++		and the relevant _type attributes to establish the data storage
++		format.
+ 
+ What:		/sys/.../device[n]/buffer/scan_elements/accel[_x0]_shift
+ KernelVersion:	2.6.37
+@@ -291,4 +308,3 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		A bit shift (to right) that must be applied prior to
+ 		extracting the bits specified by accel[_x0]_precision.
+-
+-- 
+1.7.2.2
