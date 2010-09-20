@@ -1,76 +1,213 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:49431 "EHLO
+Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:49436 "EHLO
 	ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756474Ab0ITOHz (ORCPT
+	with ESMTP id S1756478Ab0ITOHz (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Sep 2010 10:07:55 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: manuel.stahl@iis.fraunhofer.de, linux-iio@vger.kernel.org
 Cc: drivers@analog.com, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 03/22] staging:iio:adis16209 add _type attributes for all scan elements
-Date: Mon, 20 Sep 2010 15:12:48 +0100
-Message-Id: <1284991987-12407-4-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 02/22] staging:iio:max1363 add _type attributes for all scan elements
+Date: Mon, 20 Sep 2010 15:12:47 +0100
+Message-Id: <1284991987-12407-3-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1284991987-12407-1-git-send-email-jic23@cam.ac.uk>
 References: <1284991987-12407-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+As both signed and unsigned in attributes exist, each element must
+be fully specified.
+
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/adis16209_ring.c |   15 ++++++++++++++-
- 1 files changed, 14 insertions(+), 1 deletions(-)
+ drivers/staging/iio/adc/max1363_core.c |  147 ++++++++++++++++++++------------
+ 1 files changed, 92 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
-index 3eb1d55..6837f8b 100644
---- a/drivers/staging/iio/accel/adis16209_ring.c
-+++ b/drivers/staging/iio/accel/adis16209_ring.c
-@@ -19,33 +19,46 @@
+diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
+index 1dc428f..40039e6 100644
+--- a/drivers/staging/iio/adc/max1363_core.c
++++ b/drivers/staging/iio/adc/max1363_core.c
+@@ -148,17 +148,57 @@ const struct max1363_mode
+ 	return NULL;
+ }
  
- static IIO_SCAN_EL_C(in_supply, ADIS16209_SCAN_SUPPLY, IIO_UNSIGNED(14),
- 		     ADIS16209_SUPPLY_OUT, NULL);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(in_supply, u, 14, 16)
- static IIO_SCAN_EL_C(accel_x, ADIS16209_SCAN_ACC_X, IIO_SIGNED(14),
- 		     ADIS16209_XACCL_OUT, NULL);
- static IIO_SCAN_EL_C(accel_y, ADIS16209_SCAN_ACC_Y, IIO_SIGNED(14),
- 		     ADIS16209_YACCL_OUT, NULL);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(accel, s, 14, 16);
- static IIO_SCAN_EL_C(in0, ADIS16209_SCAN_AUX_ADC, IIO_UNSIGNED(12),
- 		     ADIS16209_AUX_ADC, NULL);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(in0, u, 12, 16);
- static IIO_SCAN_EL_C(temp, ADIS16209_SCAN_TEMP, IIO_UNSIGNED(12),
- 		     ADIS16209_TEMP_OUT, NULL);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(temp, u, 12, 16);
- static IIO_SCAN_EL_C(incli_x, ADIS16209_SCAN_INCLI_X, IIO_SIGNED(14),
- 		     ADIS16209_XINCL_OUT, NULL);
- static IIO_SCAN_EL_C(incli_y, ADIS16209_SCAN_INCLI_Y, IIO_SIGNED(14),
- 		     ADIS16209_YINCL_OUT, NULL);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(incli, s, 14, 16);
- static IIO_SCAN_EL_C(rot, ADIS16209_SCAN_ROT, IIO_SIGNED(14),
- 		     ADIS16209_ROT_OUT, NULL);
--
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(rot, s, 14, 16);
- static IIO_SCAN_EL_TIMESTAMP(8);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
+-static ssize_t max1363_show_precision(struct device *dev,
++static ssize_t max1363_show_precision_u(struct device *dev,
+ 				struct device_attribute *attr,
+ 				char *buf)
+ {
+ 	struct iio_dev *dev_info = dev_get_drvdata(dev);
+ 	struct max1363_state *st = iio_dev_get_devdata(dev_info);
+-	return sprintf(buf, "%d\n", st->chip_info->bits);
++	return sprintf(buf, "u%d/16\n", st->chip_info->bits);
+ }
  
- static struct attribute *adis16209_scan_el_attrs[] = {
- 	&iio_scan_el_in_supply.dev_attr.attr,
-+	&iio_const_attr_in_supply_type.dev_attr.attr,
- 	&iio_scan_el_accel_x.dev_attr.attr,
- 	&iio_scan_el_accel_y.dev_attr.attr,
-+	&iio_const_attr_accel_type.dev_attr.attr,
- 	&iio_scan_el_in0.dev_attr.attr,
-+	&iio_const_attr_in0_type.dev_attr.attr,
- 	&iio_scan_el_temp.dev_attr.attr,
-+	&iio_const_attr_temp_type.dev_attr.attr,
- 	&iio_scan_el_incli_x.dev_attr.attr,
- 	&iio_scan_el_incli_y.dev_attr.attr,
-+	&iio_const_attr_incli_type.dev_attr.attr,
- 	&iio_scan_el_rot.dev_attr.attr,
-+	&iio_const_attr_rot_type.dev_attr.attr,
- 	&iio_scan_el_timestamp.dev_attr.attr,
-+	&iio_const_attr_timestamp_type.dev_attr.attr,
+-static IIO_DEVICE_ATTR(in_precision, S_IRUGO, max1363_show_precision,
+-		       NULL, 0);
++static ssize_t max1363_show_precision_s(struct device *dev,
++				struct device_attribute *attr,
++				char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct max1363_state *st = iio_dev_get_devdata(dev_info);
++	return sprintf(buf, "s%d/16\n", st->chip_info->bits);
++}
++
++#define MAX1363_SCAN_TYPE(n)						\
++	DEVICE_ATTR(in##n##_type, S_IRUGO,				\
++		    max1363_show_precision_u, NULL);
++#define MAX1363_SCAN_TYPE_D(p, n)					\
++	struct device_attribute dev_attr_in##p##m##in##n##_type =	\
++		__ATTR(in##p-in##n##_type, S_IRUGO,			\
++		       max1363_show_precision_s, NULL);
++
++static MAX1363_SCAN_TYPE(0);
++static MAX1363_SCAN_TYPE(1);
++static MAX1363_SCAN_TYPE(2);
++static MAX1363_SCAN_TYPE(3);
++static MAX1363_SCAN_TYPE(4);
++static MAX1363_SCAN_TYPE(5);
++static MAX1363_SCAN_TYPE(6);
++static MAX1363_SCAN_TYPE(7);
++static MAX1363_SCAN_TYPE(8);
++static MAX1363_SCAN_TYPE(9);
++static MAX1363_SCAN_TYPE(10);
++static MAX1363_SCAN_TYPE(11);
++
++static MAX1363_SCAN_TYPE_D(0, 1);
++static MAX1363_SCAN_TYPE_D(2, 3);
++static MAX1363_SCAN_TYPE_D(4, 5);
++static MAX1363_SCAN_TYPE_D(6, 7);
++static MAX1363_SCAN_TYPE_D(8, 9);
++static MAX1363_SCAN_TYPE_D(10, 11);
++static MAX1363_SCAN_TYPE_D(1, 0);
++static MAX1363_SCAN_TYPE_D(3, 2);
++static MAX1363_SCAN_TYPE_D(5, 4);
++static MAX1363_SCAN_TYPE_D(7, 6);
++static MAX1363_SCAN_TYPE_D(9, 8);
++static MAX1363_SCAN_TYPE_D(11, 10);
+ 
+ static int max1363_write_basic_config(struct i2c_client *client,
+ 				      unsigned char d1,
+@@ -345,15 +385,14 @@ static struct attribute_group max1363_dev_attr_group = {
+ };
+ 
+ static struct attribute *max1363_scan_el_attrs[] = {
+-	&iio_scan_el_in0.dev_attr.attr,
+-	&iio_scan_el_in1.dev_attr.attr,
+-	&iio_scan_el_in2.dev_attr.attr,
+-	&iio_scan_el_in3.dev_attr.attr,
+-	&iio_scan_el_in0min1.dev_attr.attr,
+-	&iio_scan_el_in2min3.dev_attr.attr,
+-	&iio_scan_el_in1min0.dev_attr.attr,
+-	&iio_scan_el_in3min2.dev_attr.attr,
+-	&iio_dev_attr_in_precision.dev_attr.attr,
++	&iio_scan_el_in0.dev_attr.attr,	&dev_attr_in0_type.attr,
++	&iio_scan_el_in1.dev_attr.attr,	&dev_attr_in1_type.attr,
++	&iio_scan_el_in2.dev_attr.attr,	&dev_attr_in2_type.attr,
++	&iio_scan_el_in3.dev_attr.attr,	&dev_attr_in3_type.attr,
++	&iio_scan_el_in0min1.dev_attr.attr,	&dev_attr_in0min1_type.attr,
++	&iio_scan_el_in2min3.dev_attr.attr,	&dev_attr_in2min3_type.attr,
++	&iio_scan_el_in1min0.dev_attr.attr,	&dev_attr_in1min0_type.attr,
++	&iio_scan_el_in3min2.dev_attr.attr,	&dev_attr_in3min2_type.attr,
  	NULL,
  };
  
+@@ -419,31 +458,30 @@ static struct attribute_group max1238_dev_attr_group = {
+ };
+ 
+ static struct attribute *max1238_scan_el_attrs[] = {
+-	&iio_scan_el_in0.dev_attr.attr,
+-	&iio_scan_el_in1.dev_attr.attr,
+-	&iio_scan_el_in2.dev_attr.attr,
+-	&iio_scan_el_in3.dev_attr.attr,
+-	&iio_scan_el_in4.dev_attr.attr,
+-	&iio_scan_el_in5.dev_attr.attr,
+-	&iio_scan_el_in6.dev_attr.attr,
+-	&iio_scan_el_in7.dev_attr.attr,
+-	&iio_scan_el_in8.dev_attr.attr,
+-	&iio_scan_el_in9.dev_attr.attr,
+-	&iio_scan_el_in10.dev_attr.attr,
+-	&iio_scan_el_in11.dev_attr.attr,
+-	&iio_scan_el_in0min1.dev_attr.attr,
+-	&iio_scan_el_in2min3.dev_attr.attr,
+-	&iio_scan_el_in4min5.dev_attr.attr,
+-	&iio_scan_el_in6min7.dev_attr.attr,
+-	&iio_scan_el_in8min9.dev_attr.attr,
+-	&iio_scan_el_in10min11.dev_attr.attr,
+-	&iio_scan_el_in1min0.dev_attr.attr,
+-	&iio_scan_el_in3min2.dev_attr.attr,
+-	&iio_scan_el_in5min4.dev_attr.attr,
+-	&iio_scan_el_in7min6.dev_attr.attr,
+-	&iio_scan_el_in9min8.dev_attr.attr,
+-	&iio_scan_el_in11min10.dev_attr.attr,
+-	&iio_dev_attr_in_precision.dev_attr.attr,
++	&iio_scan_el_in0.dev_attr.attr,	&dev_attr_in0_type.attr,
++	&iio_scan_el_in1.dev_attr.attr,	&dev_attr_in1_type.attr,
++	&iio_scan_el_in2.dev_attr.attr,	&dev_attr_in2_type.attr,
++	&iio_scan_el_in3.dev_attr.attr,	&dev_attr_in3_type.attr,
++	&iio_scan_el_in4.dev_attr.attr,	&dev_attr_in4_type.attr,
++	&iio_scan_el_in5.dev_attr.attr,	&dev_attr_in5_type.attr,
++	&iio_scan_el_in6.dev_attr.attr,	&dev_attr_in6_type.attr,
++	&iio_scan_el_in7.dev_attr.attr,	&dev_attr_in7_type.attr,
++	&iio_scan_el_in8.dev_attr.attr,	&dev_attr_in8_type.attr,
++	&iio_scan_el_in9.dev_attr.attr,	&dev_attr_in9_type.attr,
++	&iio_scan_el_in10.dev_attr.attr,	&dev_attr_in10_type.attr,
++	&iio_scan_el_in11.dev_attr.attr,	&dev_attr_in11_type.attr,
++	&iio_scan_el_in0min1.dev_attr.attr,	&dev_attr_in0min1_type.attr,
++	&iio_scan_el_in2min3.dev_attr.attr,	&dev_attr_in2min3_type.attr,
++	&iio_scan_el_in4min5.dev_attr.attr,	&dev_attr_in4min5_type.attr,
++	&iio_scan_el_in6min7.dev_attr.attr,	&dev_attr_in6min7_type.attr,
++	&iio_scan_el_in8min9.dev_attr.attr,	&dev_attr_in8min9_type.attr,
++	&iio_scan_el_in10min11.dev_attr.attr,	&dev_attr_in10min11_type.attr,
++	&iio_scan_el_in1min0.dev_attr.attr,	&dev_attr_in1min0_type.attr,
++	&iio_scan_el_in3min2.dev_attr.attr,	&dev_attr_in3min2_type.attr,
++	&iio_scan_el_in5min4.dev_attr.attr,	&dev_attr_in5min4_type.attr,
++	&iio_scan_el_in7min6.dev_attr.attr,	&dev_attr_in7min6_type.attr,
++	&iio_scan_el_in9min8.dev_attr.attr,	&dev_attr_in9min8_type.attr,
++	&iio_scan_el_in11min10.dev_attr.attr,	&dev_attr_in11min10_type.attr,
+ 	NULL,
+ };
+ 
+@@ -498,23 +536,22 @@ static struct attribute_group max11608_dev_attr_group = {
+ };
+ 
+ static struct attribute *max11608_scan_el_attrs[] = {
+-	&iio_scan_el_in0.dev_attr.attr,
+-	&iio_scan_el_in1.dev_attr.attr,
+-	&iio_scan_el_in2.dev_attr.attr,
+-	&iio_scan_el_in3.dev_attr.attr,
+-	&iio_scan_el_in4.dev_attr.attr,
+-	&iio_scan_el_in5.dev_attr.attr,
+-	&iio_scan_el_in6.dev_attr.attr,
+-	&iio_scan_el_in7.dev_attr.attr,
+-	&iio_scan_el_in0min1.dev_attr.attr,
+-	&iio_scan_el_in2min3.dev_attr.attr,
+-	&iio_scan_el_in4min5.dev_attr.attr,
+-	&iio_scan_el_in6min7.dev_attr.attr,
+-	&iio_scan_el_in1min0.dev_attr.attr,
+-	&iio_scan_el_in3min2.dev_attr.attr,
+-	&iio_scan_el_in5min4.dev_attr.attr,
+-	&iio_scan_el_in7min6.dev_attr.attr,
+-	&iio_dev_attr_in_precision.dev_attr.attr,
++	&iio_scan_el_in0.dev_attr.attr,	&dev_attr_in0_type.attr,
++	&iio_scan_el_in1.dev_attr.attr,	&dev_attr_in1_type.attr,
++	&iio_scan_el_in2.dev_attr.attr,	&dev_attr_in2_type.attr,
++	&iio_scan_el_in3.dev_attr.attr,	&dev_attr_in3_type.attr,
++	&iio_scan_el_in4.dev_attr.attr,	&dev_attr_in4_type.attr,
++	&iio_scan_el_in5.dev_attr.attr,	&dev_attr_in5_type.attr,
++	&iio_scan_el_in6.dev_attr.attr,	&dev_attr_in6_type.attr,
++	&iio_scan_el_in7.dev_attr.attr,	&dev_attr_in7_type.attr,
++	&iio_scan_el_in0min1.dev_attr.attr,	&dev_attr_in0min1_type.attr,
++	&iio_scan_el_in2min3.dev_attr.attr,	&dev_attr_in2min3_type.attr,
++	&iio_scan_el_in4min5.dev_attr.attr,	&dev_attr_in4min5_type.attr,
++	&iio_scan_el_in6min7.dev_attr.attr,	&dev_attr_in6min7_type.attr,
++	&iio_scan_el_in1min0.dev_attr.attr,	&dev_attr_in1min0_type.attr,
++	&iio_scan_el_in3min2.dev_attr.attr,	&dev_attr_in3min2_type.attr,
++	&iio_scan_el_in5min4.dev_attr.attr,	&dev_attr_in5min4_type.attr,
++	&iio_scan_el_in7min6.dev_attr.attr,	&dev_attr_in7min6_type.attr,
+ };
+ 
+ static struct attribute_group max11608_scan_el_group = {
 -- 
 1.7.2.2
 
