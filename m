@@ -1,119 +1,113 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-31.csi.cam.ac.uk ([131.111.8.131]:43449 "EHLO
-	ppsw-31.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755638Ab0IWQ3N (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Sep 2010 12:29:13 -0400
-Message-ID: <4C9B819A.1030609@cam.ac.uk>
-Date: Thu, 23 Sep 2010 17:34:34 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: RFC: Building event codes from the event type.
-References: <4C9B5191.9050407@cam.ac.uk> <4C9B7DC9.8000109@cam.ac.uk> <4C9B7D5C.8040400@iis.fraunhofer.de>
-In-Reply-To: <4C9B7D5C.8040400@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: manuel.stahl@iis.fraunhofer.de,
+	linux-iio@vger.kernel.org
+Cc: drivers@analog.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [RFC PATCH 0/8 V2] staging:iio:imu driver merges, fixes and new features.
+Date: Wed, 22 Sep 2010 12:47:44 +0100
+Message-Id: <1285156073-6327-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/23/10 17:16, Manuel Stahl wrote:
-> Am 23.09.2010 18:18, schrieb Jonathan Cameron:
->> On 09/23/10 14:09, Jonathan Cameron wrote:
->>>
->>> This proposal is based on an observation of Manuel's that
->>> we could construct all of our event codes in a much more
->>> logical fashion by breaking them up into a series of bit
->>> fields within the event code.
->>>
->>> So lets define this as a structure for the purposes of this
->>> discussion.  The eventual implementation would probably be
->>> done with macros.
->>>
->>> I'm assuming it makes sense to have a single 32bit number
->>> as the event code. Sorry for the abuse of kernel doc.
->>> I have no idea how one actually documents unions or structures
->>> within structures.
->>>
->>> /**
->>>   * iio_event_code - structure representing an event
->>>   * @sensor_type: 256 codes for different classes of sensors
->>>   *   - accel, gyro, in, light etc.
->>>   * @directedornot: Tells us whether the modifier is for a sensor
->>>   *   with axes or one where this doesn't make sense.
->>>   * @modifier: identify which channel
->>>   *    @directed: modifier for sensor where an axis makes sense
->>>   *        @direction: 16 different directions, x, y, z + compound
->>>   *                    versions x|y|z x|y x|z y|z x&y&z x&y x&z y&z
->>>   *        @number: allow up to 8 sensors in a given direction if
->>>   *                  it is a sensor where direction makes sense.
->>>   *    @number: for sensor where axis doesn't make sense allow 128 channels
->>>   * @type: thresh, mag, roc + specific things like free fall etc.
->>>   * @direction: falling or rising or either.  (so there are some spare bits here).
->>>   **/
->>> struct iio_event_code {
->>>     unsigned sensor_type:8;
->>>     union {
->>>         unsigned directedornot:1;
->>>         struct {          
->>>         unsigned direction:4;
->>>         unsigned number:3;
->>>         } directed;
->>>         unsigned number:7;
->>>     } modifer;
->>>     unsigned type:8;
->>>     unsigned direction:8;
->>> };
->>>
->>> So would people be happy with this rough approach. + please comment on the
->>> exact layout and in particular point out classes of event that do not fit.
->>>
->>> The interpretation of everything after sensor_type for buffer events will
->>> probably have to be separately defined. It would complicate this too much.
->>>
->>> Given the resounding silence that followed my recent post asking for wider
->>> opinions on naming of such events (to lkml), I'll probably just get on with
->>> implementing the scheme we suggested there for naming the attributes etc.
->>>
->> Given I had a little time this afternoon and I'm fairly sure we will end up
->> with something similar to the above I started implementing it.
->>
->> One particular lesson came to mind. If we allow particular channels to have
->> 'names' then we must also oblige them to have an associated number. We don't
->> want to get into the game of having a huge list of label to event code conversions.
->>
->> So taking what we currently have in tree...
->>
->> in_supply ->  in0_supply (and move in0 to in1)
->> intensity_both ->  intensity0_both
->> intensity_ir ->  intensity1_ir
->> etc.
->>
-> 
-> Guess we could also use the scan_element ordering as unique number.
-Some drivers that do events don't have any concept of scans.  They don't implement
-any of the buffer code. Also, most buffer implementing drivers can be built without
-support for the buffers which would again mean that these aren't available.
+V2:
 
-However, just from a consistency point of view I'm keen to keep the ordering of a
-given type of element the same through out the driver (hence moving in0 to in1
-in the adis drivers to allow in0_supply to exist).
+This is an updated version of the series incoporating the issues Manuel
+pointed out and the addition of the adis16367 support (which is trivial).
+Adding the adis16385 is more complex due to different types for the various
+inputs.  I'm not inclined to do that one without access to physical hardware
+or someone willing to do testing.
 
-So I suggest a small abi 'clarification' to enforce the following:
-If the label isn't our conventional _x, _y, _z then it must also be numbered.
+Rebased on top of the _type and _index series which is now in staging-next.
 
-We can introduce other such labels if appropriate but they will fall into the orientation
-category above.
+Still RFC as Manuel is tracking down an issue with buffered reading on an
+adis16400. Probably associated with the burst reading changes (I have
+no burst capable devices so could not test that part).
 
-Another thing I found useful was to define orientation codes for x_or_y_or_z and x_and_y_and_z
-Using these, classic motion detection interrupts become thresholds with direction of rising
-and orientation of x_or_y_or_z, free fall detection becomes a threshold with direction of falling
-and orientation of x_and_y_and_z. Some of our drivers will also want to have _period and _meanperiod
-added to more fully describe how these detectors are implemented. Its nice not treating these
-as special cases with 'magic' going on inside.
+There are a few more things missing from these drivers that I intend to
+add at a later date.  The soft and hard iron calibration elements of the
+adis16400 magnetometer aren't currently exported and no drivers support
+changing the range of the gyroscopes.
 
-We will need a special case for input type events though such as 'tap' and 'double tap'.
-We don't have anything implementing them in the tree so I haven't done it as yet.
+All comments welcome and thanks to Manuel for testing the previous
+generation.  I've updated the copyright info to indicate the original
+source of a lot of this code (which is hidden otherwise as the adis16400
+driver no longer separately exists).
 
-Thanks,
+V1:
 
-Jonathan
+This is an RFC for two reasons. Firstly I haven't tested this as
+fully yet and will do so before merging.  I will do a whole
+lot more testing on the adis16350 that I have.  Coverage of the
+adis16300 and adis16400 would be great if anyone can do so.
+I also haven't done full testing on all the build combinations yet.
+(there is at least one known issue to clean up!)
+Secondly the event patch in particularly has some elements not seen
+elsewhere before that I would like people to consider.
+
+Right now, only the adis16350 and adis16360 famillies are supported
+by the event support patch.  I'll add support for the other parts
+at a later date unless someone else beats me to it (hint!).  Note
+this patch now actually contains the adis16350_event.c file that
+was missing previously.
+
+There is one effective change to all but the adis16400 ABIs.
+When we originally proposed the [m]_<type>_<modifier>_en
+attributes for scan modes I very carefully stated that the index
+[m] for a given device would not necessarily cover all values between
+0 and the highest present.  It was exactly this possible driver
+merge that motivated that arguement. By allowing indexes to be
+missed, we can have single drivers supporting various subsets of
+sensor elements.  Here the devices are such that some interleaving
+is possible.  This reduces the storage required for the event code,
+so I have done it where possible.  Note the addition
+of new devices to this driver in future may change this again!
+
+As ever, all comments welcome.  Any tested-bys with a part number
+would be particularly welcome.
+
+Should be trivial to add the adis16367 and adis16385 to this driver.
+Does anyone have one of these parts to test?
+
+Jonathan Cameron (7):
+  staging:iio:adis16350 add non burst buffer fill and fix burst logic
+  staging:iio:adis16350 move datardy trigger to straight interrupt.
+  staging:iio:adis16350 Add optional event support
+  staging:iio:adis16350 add missing registration of temp_offset attr
+  staging:iio:adis16300 merge into adis16350 driver
+  staging:iio:adis16400 merge into adis16350 driver
+  staging:iio:adis16350 add support for the adis16367
+
+Manuel Stahl (1):
+  staging:iio:adis16350 bug in spi bus speed setup
+
+ drivers/staging/iio/adc/adc.h               |    8 +-
+ drivers/staging/iio/gyro/gyro.h             |   31 +-
+ drivers/staging/iio/imu/Kconfig             |   30 +-
+ drivers/staging/iio/imu/Makefile            |    9 +-
+ drivers/staging/iio/imu/adis16300.h         |  184 -------
+ drivers/staging/iio/imu/adis16300_core.c    |  756 ---------------------------
+ drivers/staging/iio/imu/adis16300_ring.c    |  238 ---------
+ drivers/staging/iio/imu/adis16300_trigger.c |  125 -----
+ drivers/staging/iio/imu/adis16350.h         |  117 ++++-
+ drivers/staging/iio/imu/adis16350_core.c    |  335 +++++++++++--
+ drivers/staging/iio/imu/adis16350_event.c   |  499 ++++++++++++++++++
+ drivers/staging/iio/imu/adis16350_ring.c    |  215 +++++++-
+ drivers/staging/iio/imu/adis16350_trigger.c |   40 +-
+ drivers/staging/iio/imu/adis16400.h         |  208 --------
+ drivers/staging/iio/imu/adis16400_core.c    |  752 --------------------------
+ drivers/staging/iio/imu/adis16400_ring.c    |  248 ---------
+ drivers/staging/iio/imu/adis16400_trigger.c |  125 -----
+ drivers/staging/iio/sysfs.h                 |   17 +-
+ 18 files changed, 1161 insertions(+), 2776 deletions(-)
+ delete mode 100644 drivers/staging/iio/imu/adis16300.h
+ delete mode 100644 drivers/staging/iio/imu/adis16300_core.c
+ delete mode 100644 drivers/staging/iio/imu/adis16300_ring.c
+ delete mode 100644 drivers/staging/iio/imu/adis16300_trigger.c
+ create mode 100644 drivers/staging/iio/imu/adis16350_event.c
+ delete mode 100644 drivers/staging/iio/imu/adis16400.h
+ delete mode 100644 drivers/staging/iio/imu/adis16400_core.c
+ delete mode 100644 drivers/staging/iio/imu/adis16400_ring.c
+ delete mode 100644 drivers/staging/iio/imu/adis16400_trigger.c
+
+-- 
+1.7.2.2
