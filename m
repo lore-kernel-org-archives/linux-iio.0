@@ -1,90 +1,108 @@
-Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4C9B7DC9.8000109@cam.ac.uk>
-Date: Thu, 23 Sep 2010 17:18:17 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <manuel.stahl9ab33xy531iis.fraunhofer.de@bounce.antispameurope.com>
+Message-ID: <4C9B7D5C.8040400@iis.fraunhofer.de>
+Date: Thu, 23 Sep 2010 18:16:28 +0200
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 MIME-Version: 1.0
 To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Subject: Re: RFC: Building event codes from the event type.
-References: <4C9B5191.9050407@cam.ac.uk>
-In-Reply-To: <4C9B5191.9050407@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4C9B5191.9050407@cam.ac.uk> <4C9B7DC9.8000109@cam.ac.uk>
+In-Reply-To: <4C9B7DC9.8000109@cam.ac.uk>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On 09/23/10 14:09, Jonathan Cameron wrote:
-> 
-> This proposal is based on an observation of Manuel's that
-> we could construct all of our event codes in a much more
-> logical fashion by breaking them up into a series of bit
-> fields within the event code.
-> 
-> So lets define this as a structure for the purposes of this
-> discussion.  The eventual implementation would probably be
-> done with macros.
-> 
-> I'm assuming it makes sense to have a single 32bit number
-> as the event code. Sorry for the abuse of kernel doc.
-> I have no idea how one actually documents unions or structures
-> within structures. 
-> 
-> /**
->  * iio_event_code - structure representing an event
->  * @sensor_type: 256 codes for different classes of sensors
->  *   - accel, gyro, in, light etc.
->  * @directedornot: Tells us whether the modifier is for a sensor
->  *   with axes or one where this doesn't make sense.
->  * @modifier: identify which channel 
->  *    @directed: modifier for sensor where an axis makes sense
->  *        @direction: 16 different directions, x, y, z + compound
->  *                    versions x|y|z x|y x|z y|z x&y&z x&y x&z y&z
->  *        @number: allow up to 8 sensors in a given direction if
->  *                  it is a sensor where direction makes sense.
->  *    @number: for sensor where axis doesn't make sense allow 128 channels
->  * @type: thresh, mag, roc + specific things like free fall etc.
->  * @direction: falling or rising or either.  (so there are some spare bits here).
->  **/  
-> struct iio_event_code {
-> 	unsigned sensor_type:8;
-> 	union {
-> 		unsigned directedornot:1;
-> 		struct {   		
-> 		unsigned direction:4;
-> 		unsigned number:3;
-> 		} directed;
-> 		unsigned number:7; 
-> 	} modifer;
-> 	unsigned type:8;
-> 	unsigned direction:8;
-> };
-> 
-> So would people be happy with this rough approach. + please comment on the
-> exact layout and in particular point out classes of event that do not fit.
-> 
-> The interpretation of everything after sensor_type for buffer events will
-> probably have to be separately defined. It would complicate this too much.
-> 
-> Given the resounding silence that followed my recent post asking for wider
-> opinions on naming of such events (to lkml), I'll probably just get on with
-> implementing the scheme we suggested there for naming the attributes etc.
-> 
-Given I had a little time this afternoon and I'm fairly sure we will end up
-with something similar to the above I started implementing it.
+Am 23.09.2010 18:18, schrieb Jonathan Cameron:
+> On 09/23/10 14:09, Jonathan Cameron wrote:
+>>
+>> This proposal is based on an observation of Manuel's that
+>> we could construct all of our event codes in a much more
+>> logical fashion by breaking them up into a series of bit
+>> fields within the event code.
+>>
+>> So lets define this as a structure for the purposes of this
+>> discussion.  The eventual implementation would probably be
+>> done with macros.
+>>
+>> I'm assuming it makes sense to have a single 32bit number
+>> as the event code. Sorry for the abuse of kernel doc.
+>> I have no idea how one actually documents unions or structures
+>> within structures.
+>>
+>> /**
+>>   * iio_event_code - structure representing an event
+>>   * @sensor_type: 256 codes for different classes of sensors
+>>   *   - accel, gyro, in, light etc.
+>>   * @directedornot: Tells us whether the modifier is for a sensor
+>>   *   with axes or one where this doesn't make sense.
+>>   * @modifier: identify which channel
+>>   *    @directed: modifier for sensor where an axis makes sense
+>>   *        @direction: 16 different directions, x, y, z + compound
+>>   *                    versions x|y|z x|y x|z y|z x&y&z x&y x&z y&z
+>>   *        @number: allow up to 8 sensors in a given direction if
+>>   *                  it is a sensor where direction makes sense.
+>>   *    @number: for sensor where axis doesn't make sense allow 128 cha=
+nnels
+>>   * @type: thresh, mag, roc + specific things like free fall etc.
+>>   * @direction: falling or rising or either.  (so there are some spare=
+ bits here).
+>>   **/
+>> struct iio_event_code {
+>> 	unsigned sensor_type:8;
+>> 	union {
+>> 		unsigned directedornot:1;
+>> 		struct {   	=09
+>> 		unsigned direction:4;
+>> 		unsigned number:3;
+>> 		} directed;
+>> 		unsigned number:7;
+>> 	} modifer;
+>> 	unsigned type:8;
+>> 	unsigned direction:8;
+>> };
+>>
+>> So would people be happy with this rough approach. + please comment on=
+ the
+>> exact layout and in particular point out classes of event that do not =
+fit.
+>>
+>> The interpretation of everything after sensor_type for buffer events w=
+ill
+>> probably have to be separately defined. It would complicate this too m=
+uch.
+>>
+>> Given the resounding silence that followed my recent post asking for w=
+ider
+>> opinions on naming of such events (to lkml), I'll probably just get on=
+ with
+>> implementing the scheme we suggested there for naming the attributes e=
+tc.
+>>
+> Given I had a little time this afternoon and I'm fairly sure we will en=
+d up
+> with something similar to the above I started implementing it.
+>
+> One particular lesson came to mind. If we allow particular channels to =
+have
+> 'names' then we must also oblige them to have an associated number. We =
+don't
+> want to get into the game of having a huge list of label to event code =
+conversions.
+>
+> So taking what we currently have in tree...
+>
+> in_supply ->  in0_supply (and move in0 to in1)
+> intensity_both ->  intensity0_both
+> intensity_ir ->  intensity1_ir
+> etc.
+>
 
-One particular lesson came to mind. If we allow particular channels to have
-'names' then we must also oblige them to have an associated number. We don't
-want to get into the game of having a huge list of label to event code conversions.
+Guess we could also use the scan_element ordering as unique number.
 
-So taking what we currently have in tree...
-
-in_supply -> in0_supply (and move in0 to in1)
-intensity_both -> intensity0_both
-intensity_ir -> intensity1_ir
-etc.
-
-Anyone mind me doing this?
-
-Jonathan
-
-
-> 
+Regards,
+--=20
+Dipl.-Inf. Manuel Stahl
+Fraunhofer-Institut f=FCr Integrierte Schaltungen IIS
+- Leistungsoptimierte Systeme -
+Nordostpark 93                Telefon  +49 (0)911/58061-6419
+90411 N=FCrnberg                Fax      +49 (0)911/58061-6398
+http://www.iis.fraunhofer.de  manuel.stahl@iis.fraunhofer.de
