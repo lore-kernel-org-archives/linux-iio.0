@@ -1,58 +1,50 @@
-Return-Path: <21cnbao@gmail.com>
+Return-Path: <manuel.stahl9ab33xy531iis.fraunhofer.de@bounce.antispameurope.com>
+Message-ID: <4CA48125.7020605@iis.fraunhofer.de>
+Date: Thu, 30 Sep 2010 14:23:01 +0200
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 MIME-Version: 1.0
-In-Reply-To: <4C56AD80.6050403@cam.ac.uk>
-References: <4C56AD80.6050403@cam.ac.uk>
-From: Barry Song <21cnbao@gmail.com>
-Date: Thu, 5 Aug 2010 12:04:13 +0800
-Message-ID: <AANLkTik9tF-89fVZEA_dFO31=yC72qYs=e9jyyE6tnFB@mail.gmail.com>
-Subject: Re: IIO merge plans for 2.6.36
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [IIO] Bug in IIO_DEV_ATTR_TEMP_RAW
+Content-Type: multipart/mixed;
+ boundary="------------040400000605010807050308"
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Aug 2, 2010 at 7:35 PM, Jonathan Cameron <jic23@cam.ac.uk> wrote:
->
-> Hi All,
->
-> It is a bit late for this, but I was wondering if anyone had any drivers
-> queued up for merge in the window that just opened? =C2=A0I know there ar=
-e
-> quite a few in the Blackfin tree, but no idea where you guys are on testi=
-ng
-> etc... =C2=A0As ever I'm happy to assist with bringing them up to date ag=
-ainst
-> our current tree, but mostly don't have test hardware.
-I think one of our customers has used ADE7758 driver, report one bug
-and prove it can work in the customer's application field. Then it was
-tested now.
-We have merged this fix to our trunk head.
-You may refer to:
-http://blackfin.uclinux.org/gf/forummessage/91823
+This is a multi-part message in MIME format.
+--------------040400000605010807050308
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-MIME-Autoconverted: from 8bit to quoted-printable by iis.fhg.de id OAA00874
 
->
-> Personally my only patches not in Greg's tree are adding event support
-> to the adis16350 driver. =C2=A0That's not ready and some bits are controv=
-ersial
-> so I'm quite happy to delay that one for next time round.
->
-> Thanks to Barry in particularly for a lot of cleanup work this cycle. =C2=
-=A0Sorry
-> I stalled the trigger elements of that, but I want to see how things pan =
-out
-> for a few more fully functional drivers before we dive into that pit of w=
-orms!
->
-> I think my main focus for the next round will be on cleaning up the event
-> handling side of things and perhaps some work on making more of the core
-> optional for drivers operating in (or only supporting) only sysfs interfa=
-ces.
->
-> If things get quiet enough, I'll start taking a look at adding a higher p=
-erformance
-> buffering solution.
->
-> Cheers,
->
-> Jonathan
->
+Hi,
+
+just saw that some devices use IIO_DEV_ATTR_TEMP_RAW with a generic read=20
+function but there is no parameter to pass in the register address.
+
+Regards,
+--=20
+Manuel Stahl
+Fraunhofer-Institut IIS
+Leistungsoptimierte Systeme
+
+Nordostpark 93
+D90411 N=C3=BCrnberg
+Telefon  +49 (0)911/58061-6419
+Fax      +49 (0)911/58061-6398
+E-Mail   manuel.stahl@iis.fraunhofer.de
+
+http://www.iis.fraunhofer.de
+http://www.smart-power.fraunhofer.de
+
+--------------040400000605010807050308
+Content-Type: text/x-vcard; charset=utf-8;
+ name="manuel_stahl.vcf"
+Content-Disposition: attachment;
+ filename="manuel_stahl.vcf"
+Content-Transfer-Encoding: base64
+
+YmVnaW46dmNhcmQNCmZuOk1hbnVlbCBTdGFobA0KbjpTdGFobDtNYW51ZWwNCmVtYWlsO2lu
+dGVybmV0Om1hbnVlbC5zdGFobEBpaXMuZnJhdW5ob2Zlci5kZQ0KdGVsO3dvcms6KzQ5IDkx
+MSA1ODA2MS02NDE5DQp4LW1vemlsbGEtaHRtbDpGQUxTRQ0KdmVyc2lvbjoyLjENCmVuZDp2
+Y2FyZA0KDQo=
+--------------040400000605010807050308--
