@@ -1,134 +1,102 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:51780 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755955Ab0JDPwi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Oct 2010 11:52:38 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
-Cc: manuel.stahl@iis.fraunhofer.de,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 10/16] staging:iio:sca3000 event attribute name updates
-Date: Mon,  4 Oct 2010 16:57:59 +0100
-Message-Id: <1286207885-26689-11-git-send-email-jic23@cam.ac.uk>
+Cc: manuel.stahl@iis.fraunhofer.de, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 09/16] staging:iio:lis3l02dq event attribute renames
+Date: Mon,  4 Oct 2010 16:57:58 +0100
+Message-Id: <1286207885-26689-10-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1286207885-26689-1-git-send-email-jic23@cam.ac.uk>
 References: <1286207885-26689-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/sca3000_core.c |   43 +++++++++++++++++------------
- drivers/staging/iio/sysfs.h              |    4 +++
- 2 files changed, 29 insertions(+), 18 deletions(-)
+ drivers/staging/iio/accel/lis3l02dq_core.c |   28 ++++++++++++++--------------
+ 1 files changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-index b5fa51f..5b06dea 100644
---- a/drivers/staging/iio/accel/sca3000_core.c
-+++ b/drivers/staging/iio/accel/sca3000_core.c
-@@ -774,19 +774,19 @@ static ssize_t sca3000_write_thresh(struct device *dev,
- 	return ret ? ret : len;
- }
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+index f52a0f5..c4b4ab7 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+@@ -497,7 +497,7 @@ static LIS3L02DQ_UNSIGNED_ATTR(accel_y_calibscale,
+ static LIS3L02DQ_UNSIGNED_ATTR(accel_z_calibscale,
+ 			       LIS3L02DQ_REG_GAIN_Z_ADDR);
  
--static IIO_DEVICE_ATTR(accel_x_mag_either_rising_value,
-+static IIO_DEVICE_ATTR(accel_x_raw_mag_rising_value,
- 		S_IRUGO | S_IWUSR,
- 		sca3000_show_thresh,
- 		sca3000_write_thresh,
- 		SCA3000_REG_CTRL_SEL_MD_X_TH);
+-static IIO_DEVICE_ATTR(accel_mag_either_rising_value,
++static IIO_DEVICE_ATTR(accel_raw_mag_value,
+ 		       S_IWUSR | S_IRUGO,
+ 		       lis3l02dq_read_16bit_signed,
+ 		       lis3l02dq_write_16bit_signed,
+@@ -703,37 +703,37 @@ static void lis3l02dq_thresh_handler_bh_no_check(struct work_struct *work_s)
+ /* A shared handler for a number of threshold types */
+ IIO_EVENT_SH(threshold, &lis3l02dq_thresh_handler_th);
  
--static IIO_DEVICE_ATTR(accel_y_mag_either_rising_value,
-+static IIO_DEVICE_ATTR(accel_y_raw_mag_rising_value,
- 		S_IRUGO | S_IWUSR,
- 		sca3000_show_thresh,
- 		sca3000_write_thresh,
- 		SCA3000_REG_CTRL_SEL_MD_Y_TH);
+-IIO_EVENT_ATTR_SH(accel_x_mag_pos_rising_en,
++IIO_EVENT_ATTR_SH(accel_x_thresh_rising_en,
+ 		  iio_event_threshold,
+ 		  lis3l02dq_read_interrupt_config,
+ 		  lis3l02dq_write_interrupt_config,
+ 		  LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_X_HIGH);
  
--static IIO_DEVICE_ATTR(accel_z_mag_either_rising_value,
-+static IIO_DEVICE_ATTR(accel_z_raw_mag_rising_value,
- 		S_IRUGO | S_IWUSR,
- 		sca3000_show_thresh,
- 		sca3000_write_thresh,
-@@ -1172,25 +1172,31 @@ exit_point:
- IIO_EVENT_SH(all, &sca3000_handler_th);
+-IIO_EVENT_ATTR_SH(accel_y_mag_pos_rising_en,
++IIO_EVENT_ATTR_SH(accel_y_thresh_rising_en,
+ 		  iio_event_threshold,
+ 		  lis3l02dq_read_interrupt_config,
+ 		  lis3l02dq_write_interrupt_config,
+ 		  LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Y_HIGH);
  
- /* Free fall detector related event attribute */
--IIO_EVENT_ATTR_FREE_FALL_DETECT_SH(iio_event_all,
--				   sca3000_query_free_fall_mode,
--				   sca3000_set_free_fall_mode,
--				   0)
-+IIO_EVENT_ATTR_NAMED_SH(accel_xayaz_mag_falling_en,
-+			accel_x&y&z_mag_falling_en,
-+			iio_event_all,
-+			sca3000_query_free_fall_mode,
-+			sca3000_set_free_fall_mode,
-+			0);
-+
-+IIO_CONST_ATTR_NAMED(accel_xayaz_mag_falling_period,
-+		     accel_x&y&z_mag_falling_period,
-+		     "0.226");
+-IIO_EVENT_ATTR_SH(accel_z_mag_pos_rising_en,
++IIO_EVENT_ATTR_SH(accel_z_thresh_rising_en,
+ 		  iio_event_threshold,
+ 		  lis3l02dq_read_interrupt_config,
+ 		  lis3l02dq_write_interrupt_config,
+ 		  LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Z_HIGH);
  
- /* Motion detector related event attributes */
--IIO_EVENT_ATTR_SH(accel_x_mag_either_rising_en,
-+IIO_EVENT_ATTR_SH(accel_x_mag_rising_en,
- 		  iio_event_all,
- 		  sca3000_query_mo_det,
- 		  sca3000_set_mo_det,
- 		  SCA3000_MD_CTRL_OR_X);
+-IIO_EVENT_ATTR_SH(accel_x_mag_neg_rising_en,
++IIO_EVENT_ATTR_SH(accel_x_thresh_falling_en,
+ 		  iio_event_threshold,
+ 		  lis3l02dq_read_interrupt_config,
+ 		  lis3l02dq_write_interrupt_config,
+ 		  LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_X_LOW);
  
--IIO_EVENT_ATTR_SH(accel_y_mag_either_rising_en,
-+IIO_EVENT_ATTR_SH(accel_y_mag_rising_en,
- 		  iio_event_all,
- 		  sca3000_query_mo_det,
- 		  sca3000_set_mo_det,
- 		  SCA3000_MD_CTRL_OR_Y);
+-IIO_EVENT_ATTR_SH(accel_y_mag_neg_rising_en,
++IIO_EVENT_ATTR_SH(accel_y_thresh_falling_en,
+ 		  iio_event_threshold,
+ 		  lis3l02dq_read_interrupt_config,
+ 		  lis3l02dq_write_interrupt_config,
+ 		  LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Y_LOW);
  
--IIO_EVENT_ATTR_SH(accel_z_mag_either_rising_en,
-+IIO_EVENT_ATTR_SH(accel_z_mag_rising_en,
- 		  iio_event_all,
- 		  sca3000_query_mo_det,
- 		  sca3000_set_mo_det,
-@@ -1208,15 +1214,16 @@ IIO_EVENT_ATTR_RING_75_FULL_SH(iio_event_all,
- 			       SCA3000_INT_MASK_RING_THREE_QUARTER);
+-IIO_EVENT_ATTR_SH(accel_z_mag_neg_rising_en,
++IIO_EVENT_ATTR_SH(accel_z_thresh_falling_en,
+ 		  iio_event_threshold,
+ 		  lis3l02dq_read_interrupt_config,
+ 		  lis3l02dq_write_interrupt_config,
+@@ -741,13 +741,13 @@ IIO_EVENT_ATTR_SH(accel_z_mag_neg_rising_en,
  
- static struct attribute *sca3000_event_attributes[] = {
--	&iio_event_attr_free_fall.dev_attr.attr,
--	&iio_event_attr_accel_x_mag_either_rising_en.dev_attr.attr,
--	&iio_event_attr_accel_y_mag_either_rising_en.dev_attr.attr,
--	&iio_event_attr_accel_z_mag_either_rising_en.dev_attr.attr,
-+	&iio_event_attr_accel_xayaz_mag_falling_en.dev_attr.attr,
-+	&iio_const_attr_accel_xayaz_mag_falling_period.dev_attr.attr,
-+	&iio_event_attr_accel_x_mag_rising_en.dev_attr.attr,
-+	&iio_dev_attr_accel_x_raw_mag_rising_value.dev_attr.attr,
-+	&iio_event_attr_accel_y_mag_rising_en.dev_attr.attr,
-+	&iio_dev_attr_accel_y_raw_mag_rising_value.dev_attr.attr,
-+	&iio_event_attr_accel_z_mag_rising_en.dev_attr.attr,
-+	&iio_dev_attr_accel_z_raw_mag_rising_value.dev_attr.attr,
- 	&iio_event_attr_ring_50_full.dev_attr.attr,
- 	&iio_event_attr_ring_75_full.dev_attr.attr,
--	&iio_dev_attr_accel_x_mag_either_rising_value.dev_attr.attr,
--	&iio_dev_attr_accel_y_mag_either_rising_value.dev_attr.attr,
--	&iio_dev_attr_accel_z_mag_either_rising_value.dev_attr.attr,
- 	NULL,
+ 
+ static struct attribute *lis3l02dq_event_attributes[] = {
+-	&iio_event_attr_accel_x_mag_pos_rising_en.dev_attr.attr,
+-	&iio_event_attr_accel_y_mag_pos_rising_en.dev_attr.attr,
+-	&iio_event_attr_accel_z_mag_pos_rising_en.dev_attr.attr,
+-	&iio_event_attr_accel_x_mag_neg_rising_en.dev_attr.attr,
+-	&iio_event_attr_accel_y_mag_neg_rising_en.dev_attr.attr,
+-	&iio_event_attr_accel_z_mag_neg_rising_en.dev_attr.attr,
+-	&iio_dev_attr_accel_mag_either_rising_value.dev_attr.attr,
++	&iio_event_attr_accel_x_thresh_rising_en.dev_attr.attr,
++	&iio_event_attr_accel_y_thresh_rising_en.dev_attr.attr,
++	&iio_event_attr_accel_z_thresh_rising_en.dev_attr.attr,
++	&iio_event_attr_accel_x_thresh_falling_en.dev_attr.attr,
++	&iio_event_attr_accel_y_thresh_falling_en.dev_attr.attr,
++	&iio_event_attr_accel_z_thresh_falling_en.dev_attr.attr,
++	&iio_dev_attr_accel_raw_mag_value.dev_attr.attr,
+ 	NULL
  };
  
-@@ -1374,7 +1381,7 @@ static int __devinit __sca3000_probe(struct spi_device *spi,
- 		 * might be worthwhile.
- 		 */
- 		iio_add_event_to_list(
--			iio_event_attr_accel_z_mag_either_rising_en.listel,
-+			iio_event_attr_accel_z_mag_rising_en.listel,
- 			&st->indio_dev
- 			->interrupts[0]->ev_list);
- 	}
-diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
-index 5da6ca6..ee91a95 100644
---- a/drivers/staging/iio/sysfs.h
-+++ b/drivers/staging/iio/sysfs.h
-@@ -85,6 +85,10 @@ struct iio_const_attr {
- 	= { .string = _string,						\
- 	    .dev_attr = __ATTR(_name, S_IRUGO, iio_read_const_attr, NULL)}
- 
-+#define IIO_CONST_ATTR_NAMED(_vname, _name, _string)			\
-+	struct iio_const_attr iio_const_attr_##_vname			\
-+	= { .string = _string,						\
-+	    .dev_attr = __ATTR(_name, S_IRUGO, iio_read_const_attr, NULL)}
- /* Generic attributes of onetype or another */
- 
- /**
 -- 
 1.7.2.2
+
