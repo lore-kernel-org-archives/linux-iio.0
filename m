@@ -1,1038 +1,595 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:51882 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756355Ab0JDPwn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Oct 2010 11:52:43 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
-Cc: manuel.stahl@iis.fraunhofer.de,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 16/16] staging:iio: update example application.
-Date: Mon,  4 Oct 2010 16:58:05 +0100
-Message-Id: <1286207885-26689-17-git-send-email-jic23@cam.ac.uk>
+Cc: manuel.stahl@iis.fraunhofer.de, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 15/16] staging:iio:adc add numbers to naming of all adc channels as needed to associate events with them.
+Date: Mon,  4 Oct 2010 16:58:04 +0100
+Message-Id: <1286207885-26689-16-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1286207885-26689-1-git-send-email-jic23@cam.ac.uk>
 References: <1286207885-26689-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The application is now considerably more generic and should cope
-with all devices in tree.  The process function will need to be
-extended to handle other type values as needed.
+Given event codes are associated by number not name, all adc channels
+including those with names need to have numbers.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/Documentation/generic_buffer.c |  318 ++++++++++++++++
- drivers/staging/iio/Documentation/iio_utils.h      |  396 +++++++++++++++++++-
- .../iio/Documentation/lis3l02dqbuffersimple.c      |  238 ------------
- 3 files changed, 709 insertions(+), 243 deletions(-)
+ drivers/staging/iio/accel/adis16209_core.c |   16 ++++++++--------
+ drivers/staging/iio/accel/adis16220_core.c |   14 +++++++-------
+ drivers/staging/iio/accel/adis16240_core.c |   12 ++++++------
+ drivers/staging/iio/adc/adc.h              |   12 ++++++------
+ drivers/staging/iio/gyro/adis16260_core.c  |   16 ++++++++--------
+ drivers/staging/iio/imu/adis16300_core.c   |   16 ++++++++--------
+ drivers/staging/iio/imu/adis16300_ring.c   |   24 ++++++++++++------------
+ drivers/staging/iio/imu/adis16350_core.c   |   16 ++++++++--------
+ drivers/staging/iio/imu/adis16350_ring.c   |   24 ++++++++++++------------
+ drivers/staging/iio/imu/adis16400_core.c   |   16 ++++++++--------
+ drivers/staging/iio/imu/adis16400_ring.c   |   24 ++++++++++++------------
+ 11 files changed, 95 insertions(+), 95 deletions(-)
 
-diff --git a/drivers/staging/iio/Documentation/generic_buffer.c b/drivers/staging/iio/Documentation/generic_buffer.c
-new file mode 100644
-index 0000000..df23aeb
---- /dev/null
-+++ b/drivers/staging/iio/Documentation/generic_buffer.c
-@@ -0,0 +1,318 @@
-+/* Industrialio buffer test code.
-+ *
-+ * Copyright (c) 2008 Jonathan Cameron
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ *
-+ * This program is primarily intended as an example application.
-+ * Reads the current buffer setup from sysfs and starts a short capture
-+ * from the specified device, pretty printing the result after appropriate
-+ * conversion.
-+ *
-+ * Command line parameters
-+ * generic_buffer -n <device_name> -t <trigger_name>
-+ * If trigger name is not specified the program assumes you want a dataready
-+ * trigger associated with the device and goes looking for it.
-+ *
-+ */
-+
-+#include <unistd.h>
-+#include <dirent.h>
-+#include <fcntl.h>
-+#include <stdio.h>
-+#include <errno.h>
-+#include <sys/stat.h>
-+#include <sys/dir.h>
-+#include <linux/types.h>
-+#include "iio_utils.h"
-+
-+const int buf_len = 128;
-+const int num_loops = 2;
-+
-+/**
-+ * size_from_channelarray() - calculate the storage size of a scan
-+ * @channels: the channel info array
-+ * @num_channels: size of the channel info array
-+ *
-+ * Has the side effect of filling the channels[i].location values used
-+ * in processing the buffer output.
-+ **/
-+int size_from_channelarray(struct iio_channel_info *channels, int num_channels)
-+{
-+	int bytes = 0;
-+	int i = 0;
-+	while (i < num_channels) {
-+		if (bytes % channels[i].bytes == 0)
-+			channels[i].location = bytes;
-+		else
-+			channels[i].location = bytes - bytes%channels[i].bytes
-+				+ channels[i].bytes;
-+		bytes = channels[i].location + channels[i].bytes;
-+		i++;
-+	}
-+	return bytes;
-+}
-+
-+/**
-+ * process_scan() - print out the values in SI units
-+ * @data:		pointer to the start of the scan
-+ * @infoarray:		information about the channels. Note
-+ *  size_from_channelarray must have been called first to fill the
-+ *  location offsets.
-+ * @num_channels:	the number of active channels
-+ **/
-+void process_scan(char *data,
-+		  struct iio_channel_info *infoarray,
-+		  int num_channels)
-+{
-+	int k;
-+	for (k = 0; k < num_channels; k++)
-+		switch (infoarray[k].bytes) {
-+			/* only a few cases implemented so far */
-+		case 2:
-+			if (infoarray[k].is_signed) {
-+				int16_t val = *(int16_t *)
-+					(data
-+					 + infoarray[k].location);
-+				if ((val >> infoarray[k].bits_used) & 1)
-+					val = (val & infoarray[k].mask) |
-+						~infoarray[k].mask;
-+				printf("%05f ", ((float)val +
-+						 infoarray[k].offset)*
-+				       infoarray[k].scale);
-+			} else {
-+				uint16_t val = *(uint16_t *)
-+					(data +
-+					 infoarray[k].location);
-+				val = (val & infoarray[k].mask);
-+				printf("%05f ", ((float)val +
-+						 infoarray[k].offset)*
-+				       infoarray[k].scale);
-+			}
-+			break;
-+		case 8:
-+			if (infoarray[k].is_signed) {
-+				int64_t val = *(int64_t *)
-+					(data +
-+					 infoarray[k].location);
-+				if ((val >> infoarray[k].bits_used) & 1)
-+					val = (val & infoarray[k].mask) |
-+						~infoarray[k].mask;
-+				/* special case for timestamp */
-+				if (infoarray[k].scale == 1.0f &&
-+				    infoarray[k].offset == 0.0f)
-+					printf(" %lld", val);
-+				else
-+					printf("%05f ", ((float)val +
-+							 infoarray[k].offset)*
-+					       infoarray[k].scale);
-+			}
-+			break;
-+		default:
-+			break;
-+		}
-+	printf("\n");
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	int ret, c, i, j, toread;
-+
-+	FILE *fp_ev;
-+	int fp;
-+
-+	int num_channels;
-+	char *trigger_name = NULL, *device_name = NULL;
-+	char *dev_dir_name, *buf_dir_name;
-+
-+	int datardytrigger = 1;
-+	char *data;
-+	size_t read_size;
-+	struct iio_event_data dat;
-+	int dev_num, trig_num;
-+	char *buffer_access, *buffer_event;
-+	int scan_size;
-+
-+	struct iio_channel_info *infoarray;
-+
-+	while ((c = getopt(argc, argv, "t:n:")) != -1) {
-+		switch (c) {
-+		case 'n':
-+			device_name = optarg;
-+			break;
-+		case 't':
-+			trigger_name = optarg;
-+			datardytrigger = 0;
-+			break;
-+		case '?':
-+			return -1;
-+		}
-+	}
-+
-+	/* Find the device requested */
-+	dev_num = find_type_by_name(device_name, "device");
-+	if (dev_num < 0) {
-+		printf("Failed to find the %s\n", device_name);
-+		ret = -ENODEV;
-+		goto error_ret;
-+	}
-+	printf("iio device number being used is %d\n", dev_num);
-+
-+	asprintf(&dev_dir_name, "%sdevice%d", iio_dir, dev_num);
-+	if (trigger_name == NULL) {
-+		/*
-+		 * Build the trigger name. If it is device associated it's
-+		 * name is <device_name>_dev[n] where n matches the device
-+		 * number found above
-+		 */
-+		ret = asprintf(&trigger_name,
-+			       "%s-dev%d", device_name, dev_num);
-+		if (ret < 0) {
-+			ret = -ENOMEM;
-+			goto error_ret;
-+		}
-+	}
-+
-+	/* Verify the trigger exists */
-+	trig_num = find_type_by_name(trigger_name, "trigger");
-+	if (trig_num < 0) {
-+		printf("Failed to find the trigger %s\n", trigger_name);
-+		ret = -ENODEV;
-+		goto error_free_triggername;
-+	}
-+	printf("iio trigger number being used is %d\n", trig_num);
-+
-+	/*
-+	 * Parse the files in scan_elements to identify what channels are
-+	 * present
-+	 */
-+	ret = build_channel_array(dev_dir_name, &infoarray, &num_channels);
-+	if (ret) {
-+		printf("Problem reading scan element information \n");
-+		goto error_free_triggername;
-+	}
-+
-+	/*
-+	 * Construct the directory name for the associated buffer.
-+	 * As we know that the lis3l02dq has only one buffer this may
-+	 * be built rather than found.
-+	 */
-+	ret = asprintf(&buf_dir_name, "%sdevice%d:buffer0", iio_dir, dev_num);
-+	if (ret < 0) {
-+		ret = -ENOMEM;
-+		goto error_free_triggername;
-+	}
-+	printf("%s %s\n", dev_dir_name, trigger_name);
-+	/* Set the device trigger to be the data rdy trigger found above */
-+	ret = write_sysfs_string_and_verify("trigger/current_trigger",
-+					dev_dir_name,
-+					trigger_name);
-+	if (ret < 0) {
-+		printf("Failed to write current_trigger file\n");
-+		goto error_free_buf_dir_name;
-+	}
-+
-+	/* Setup ring buffer parameters */
-+	ret = write_sysfs_int("length", buf_dir_name, buf_len);
-+	if (ret < 0)
-+		goto error_free_buf_dir_name;
-+
-+	/* Enable the buffer */
-+	ret = write_sysfs_int("enable", buf_dir_name, 1);
-+	if (ret < 0)
-+		goto error_free_buf_dir_name;
-+	scan_size = size_from_channelarray(infoarray, num_channels);
-+	data = malloc(scan_size*buf_len);
-+	if (!data) {
-+		ret = -ENOMEM;
-+		goto error_free_buf_dir_name;
-+	}
-+
-+	ret = asprintf(&buffer_access,
-+		       "/dev/device%d:buffer0:access0",
-+		       dev_num);
-+	if (ret < 0) {
-+		ret = -ENOMEM;
-+		goto error_free_data;
-+	}
-+
-+	ret = asprintf(&buffer_event, "/dev/device%d:buffer0:event0", dev_num);
-+	if (ret < 0) {
-+		ret = -ENOMEM;
-+		goto error_free_buffer_access;
-+	}
-+	/* Attempt to open non blocking the access dev */
-+	fp = open(buffer_access, O_RDONLY | O_NONBLOCK);
-+	if (fp == -1) { /*If it isn't there make the node */
-+		printf("Failed to open %s\n", buffer_access);
-+		ret = -errno;
-+		goto error_free_buffer_event;
-+	}
-+	/* Attempt to open the event access dev (blocking this time) */
-+	fp_ev = fopen(buffer_event, "rb");
-+	if (fp_ev == NULL) {
-+		printf("Failed to open %s\n", buffer_event);
-+		ret = -errno;
-+		goto error_close_buffer_access;
-+	}
-+
-+	/* Wait for events 10 times */
-+	for (j = 0; j < num_loops; j++) {
-+		read_size = fread(&dat, 1, sizeof(struct iio_event_data),
-+				  fp_ev);
-+		switch (dat.id) {
-+		case IIO_EVENT_CODE_RING_100_FULL:
-+			toread = buf_len;
-+			break;
-+		case IIO_EVENT_CODE_RING_75_FULL:
-+			toread = buf_len*3/4;
-+			break;
-+		case IIO_EVENT_CODE_RING_50_FULL:
-+			toread = buf_len/2;
-+			break;
-+		default:
-+			printf("Unexpecteded event code\n");
-+			continue;
-+		}
-+		read_size = read(fp,
-+				 data,
-+				 toread*scan_size);
-+		if (read_size == -EAGAIN) {
-+			printf("nothing available\n");
-+			continue;
-+		}
-+		for (i = 0; i < read_size/scan_size; i++)
-+			process_scan(data + scan_size*i,
-+				     infoarray,
-+				     num_channels);
-+	}
-+
-+	/* Stop the ring buffer */
-+	ret = write_sysfs_int("enable", buf_dir_name, 0);
-+	if (ret < 0)
-+		goto error_close_buffer_event;
-+
-+	/* Disconnect from the trigger - just write a dummy name.*/
-+	write_sysfs_string("trigger/current_trigger",
-+			dev_dir_name, "NULL");
-+
-+error_close_buffer_event:
-+	fclose(fp_ev);
-+error_close_buffer_access:
-+	close(fp);
-+error_free_data:
-+	free(data);
-+error_free_buffer_access:
-+	free(buffer_access);
-+error_free_buffer_event:
-+	free(buffer_event);
-+error_free_buf_dir_name:
-+	free(buf_dir_name);
-+error_free_triggername:
-+	if (datardytrigger)
-+		free(trigger_name);
-+error_ret:
-+	return ret;
-+}
-diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
-index 014f668..0372424 100644
---- a/drivers/staging/iio/Documentation/iio_utils.h
-+++ b/drivers/staging/iio/Documentation/iio_utils.h
-@@ -10,12 +10,23 @@
- /* Made up value to limit allocation sizes */
- #include <string.h>
- #include <stdlib.h>
-+#include <ctype.h>
-+#include <stdio.h>
-+#include <stdint.h>
- 
- #define IIO_MAX_NAME_LENGTH 30
- 
--#define IIO_EVENT_CODE_RING_50_FULL 200
--#define IIO_EVENT_CODE_RING_75_FULL 201
--#define IIO_EVENT_CODE_RING_100_FULL 202
-+#define IIO_EV_CLASS_BUFFER		0
-+#define IIO_BUFFER_EVENT_CODE(code)		\
-+	(IIO_EV_CLASS_BUFFER | (code << 8))
-+
-+#define IIO_EVENT_CODE_RING_50_FULL	IIO_BUFFER_EVENT_CODE(0)
-+#define IIO_EVENT_CODE_RING_75_FULL	IIO_BUFFER_EVENT_CODE(1)
-+#define IIO_EVENT_CODE_RING_100_FULL	IIO_BUFFER_EVENT_CODE(2)
-+
-+
-+#define FORMAT_SCAN_ELEMENTS_DIR "%s:buffer0/scan_elements"
-+#define FORMAT_TYPE_FILE "%s_type"
- 
- const char *iio_dir = "/sys/bus/iio/devices/";
- 
-@@ -25,6 +36,380 @@ struct iio_event_data {
- };
- 
- /**
-+ * iioutils_break_up_name() - extract generic name from full channel name
-+ * @full_name: the full channel name
-+ * @generic_name: the output generic channel name
-+ **/
-+static int iioutils_break_up_name(const char *full_name,
-+				  char **generic_name)
-+{
-+	char *current;
-+	char *w, *r;
-+	char *working;
-+	current = strdup(full_name);
-+	working = strtok(current, "_\0");
-+	w = working;
-+	r = working;
-+
-+	while(*r != '\0') {
-+		if (!isdigit(*r)) {
-+			*w = *r;
-+			w++;
-+		}
-+		r++;
-+	}
-+	*w = '\0';
-+	*generic_name = strdup(working);
-+	free(current);
-+
-+	return 0;
-+}
-+
-+/**
-+ * struct iio_channel_info - information about a given channel
-+ * @name: channel name
-+ * @generic_name: general name for channel type
-+ * @scale: scale factor to be applied for conversion to si units
-+ * @offset: offset to be applied for conversion to si units
-+ * @index: the channel index in the buffer output
-+ * @bytes: number of bytes occupied in buffer output
-+ * @mask: a bit mask for the raw output
-+ * @is_signed: is the raw value stored signed
-+ * @enabled: is this channel enabled
-+ **/
-+struct iio_channel_info {
-+	char *name;
-+	char *generic_name;
-+	float scale;
-+	float offset;
-+	unsigned index;
-+	unsigned bytes;
-+	unsigned bits_used;
-+	uint64_t mask;
-+	unsigned is_signed;
-+	unsigned enabled;
-+	unsigned location;
-+};
-+
-+/**
-+ * iioutils_get_type() - find and process _type attribute data
-+ * @is_signed: output whether channel is signed
-+ * @bytes: output how many bytes the channel storage occupies
-+ * @mask: output a bit mask for the raw data
-+ * @device_dir: the iio device directory
-+ * @name: the channel name
-+ * @generic_name: the channel type name
-+ **/
-+inline int iioutils_get_type(unsigned *is_signed,
-+			     unsigned *bytes,
-+			     unsigned *bits_used,
-+			     uint64_t *mask,
-+			     const char *device_dir,
-+			     const char *name,
-+			     const char *generic_name)
-+{
-+	FILE *sysfsfp;
-+	int ret;
-+	DIR *dp;
-+	char *scan_el_dir, *builtname, *builtname_generic, *filename = 0;
-+	char signchar;
-+	unsigned sizeint, padint;
-+	const struct dirent *ent;
-+
-+	ret = asprintf(&scan_el_dir, FORMAT_SCAN_ELEMENTS_DIR, device_dir);
-+	if (ret < 0) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+	ret = asprintf(&builtname, FORMAT_TYPE_FILE, name);
-+	if (ret < 0) {
-+		ret = -ENOMEM;
-+		goto error_free_scan_el_dir;
-+	}
-+	ret = asprintf(&builtname_generic, FORMAT_TYPE_FILE, generic_name);
-+	if (ret < 0) {
-+		ret = -ENOMEM;
-+		goto error_free_builtname;
-+	}
-+
-+	dp = opendir(scan_el_dir);
-+	if (dp == NULL) {
-+		ret = -errno;
-+		goto error_free_builtname_generic;
-+	}
-+	while (ent = readdir(dp), ent != NULL)
-+		/*
-+		 * Do we allow devices to override a generic name with
-+		 * a specific one?
-+		 */
-+		if ((strcmp(builtname, ent->d_name) == 0) ||
-+		    (strcmp(builtname_generic, ent->d_name) == 0)) {
-+			ret = asprintf(&filename,
-+				       "%s/%s", scan_el_dir, ent->d_name);
-+			if (ret < 0) {
-+				ret = -ENOMEM;
-+				goto error_closedir;
-+			}
-+			sysfsfp = fopen(filename, "r");
-+			if (sysfsfp == NULL) {
-+				printf("failed to open %s\n", filename);
-+				ret = -errno;
-+				goto error_free_filename;
-+			}
-+			fscanf(sysfsfp,
-+			       "%c%u/%u", &signchar, bits_used, &padint);
-+			*bytes = padint / 8;
-+			if (sizeint == 64)
-+				*mask = ~0;
-+			else
-+				*mask = (1 << *bits_used) - 1;
-+			if (signchar == 's')
-+				*is_signed = 1;
-+			else
-+				*is_signed = 0;
-+		}
-+error_free_filename:
-+	if (filename)
-+		free(filename);
-+error_closedir:
-+	closedir(dp);
-+error_free_builtname_generic:
-+	free(builtname_generic);
-+error_free_builtname:
-+	free(builtname);
-+error_free_scan_el_dir:
-+	free(scan_el_dir);
-+error_ret:
-+	return ret;
-+}
-+
-+inline int iioutils_get_param_float(float *output,
-+				    const char *param_name,
-+				    const char *device_dir,
-+				    const char *name,
-+				    const char *generic_name)
-+{
-+	FILE *sysfsfp;
-+	int ret;
-+	DIR *dp;
-+	char *builtname, *builtname_generic;
-+	char *filename = NULL;
-+	const struct dirent *ent;
-+
-+	ret = asprintf(&builtname, "%s_%s", name, param_name);
-+	if (ret < 0) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+	ret = asprintf(&builtname_generic,
-+		       "%s_%s", generic_name, param_name);
-+	if (ret < 0) {
-+		ret = -ENOMEM;
-+		goto error_free_builtname;
-+	}
-+	dp = opendir(device_dir);
-+	if (dp == NULL) {
-+		ret = -errno;
-+		goto error_free_builtname_generic;
-+	}
-+	while (ent = readdir(dp), ent != NULL)
-+		if ((strcmp(builtname, ent->d_name) == 0) ||
-+		    (strcmp(builtname_generic, ent->d_name) == 0)) {
-+			ret = asprintf(&filename,
-+				       "%s/%s", device_dir, ent->d_name);
-+			if (ret < 0) {
-+				ret = -ENOMEM;
-+				goto error_closedir;
-+			}
-+			sysfsfp = fopen(filename, "r");
-+			if (!sysfsfp) {
-+				ret = -errno;
-+				goto error_free_filename;
-+			}
-+			fscanf(sysfsfp, "%f", output);
-+			break;
-+		}
-+error_free_filename:
-+	if (filename)
-+		free(filename);
-+error_closedir:
-+	closedir(dp);
-+error_free_builtname_generic:
-+	free(builtname_generic);
-+error_free_builtname:
-+	free(builtname);
-+error_ret:
-+	return ret;
-+}
-+
-+
-+/**
-+ * build_channel_array() - function to figure out what channels are present
-+ * @device_dir: the IIO device directory in sysfs
-+ * @
-+ **/
-+inline int build_channel_array(const char *device_dir,
-+			      struct iio_channel_info **ci_array,
-+			      int *counter)
-+{
-+	DIR *dp;
-+	FILE *sysfsfp;
-+	int count = 0, temp, i;
-+	struct iio_channel_info *current;
-+	int ret;
-+	const struct dirent *ent;
-+	char *scan_el_dir;
-+	char *filename;
-+
-+	*counter = 0;
-+	ret = asprintf(&scan_el_dir, FORMAT_SCAN_ELEMENTS_DIR, device_dir);
-+	if (ret < 0) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+	dp = opendir(scan_el_dir);
-+	if (dp == NULL) {
-+		ret = -errno;
-+		goto error_free_name;
-+	}
-+	while (ent = readdir(dp), ent != NULL)
-+		if (strcmp(ent->d_name + strlen(ent->d_name) - strlen("_en"),
-+			   "_en") == 0) {
-+			ret = asprintf(&filename,
-+				       "%s/%s", scan_el_dir, ent->d_name);
-+			if (ret < 0) {
-+				ret = -ENOMEM;
-+				goto error_close_dir;
-+			}
-+			sysfsfp = fopen(filename, "r");
-+			if (sysfsfp == NULL) {
-+				ret = -errno;
-+				free(filename);
-+				goto error_close_dir;
-+			}
-+			fscanf(sysfsfp, "%u", &ret);
-+			if (ret == 1)
-+				(*counter)++;
-+			fclose(sysfsfp);
-+			free(filename);
-+		}
-+	*ci_array = malloc(sizeof(**ci_array)*(*counter));
-+	if (*ci_array == NULL) {
-+		ret = -ENOMEM;
-+		goto error_close_dir;
-+	}
-+	seekdir(dp, 0);
-+	while (ent = readdir(dp), ent != NULL) {
-+		if (strcmp(ent->d_name + strlen(ent->d_name) - strlen("_en"),
-+			   "_en") == 0) {
-+			current = &(*ci_array)[count++];
-+			ret = asprintf(&filename,
-+				       "%s/%s", scan_el_dir, ent->d_name);
-+			if (ret < 0) {
-+				ret = -ENOMEM;
-+				/* decrement count to avoid freeing name */
-+				count--;
-+				goto error_cleanup_array;
-+			}
-+			sysfsfp = fopen(filename, "r");
-+			if (sysfsfp == NULL) {
-+				free(filename);
-+				ret = -errno;
-+				goto error_cleanup_array;
-+			}
-+			fscanf(sysfsfp, "%u", &current->enabled);
-+			fclose(sysfsfp);
-+			free(filename);
-+			current->scale = 1.0;
-+			current->offset = 0;
-+			current->name = strndup(ent->d_name,
-+						strlen(ent->d_name) -
-+						strlen("_en"));
-+			if (current->name == NULL) {
-+				free(filename);
-+				ret = -ENOMEM;
-+				goto error_cleanup_array;
-+			}
-+			/* Get the generic and specific name elements */
-+			ret = iioutils_break_up_name(current->name,
-+						     &current->generic_name);
-+			if (ret) {
-+				free(filename);
-+				goto error_cleanup_array;
-+			}
-+			ret = asprintf(&filename,
-+				       "%s/%s_index",
-+				       scan_el_dir,
-+				       current->name);
-+			if (ret < 0) {
-+				free(filename);
-+				ret = -ENOMEM;
-+				goto error_cleanup_array;
-+			}
-+			sysfsfp = fopen(filename, "r");
-+			fscanf(sysfsfp, "%u", &current->index);
-+			fclose(sysfsfp);
-+			free(filename);
-+			/* Find the scale */
-+			ret = iioutils_get_param_float(&current->scale,
-+						       "scale",
-+						       device_dir,
-+						       current->name,
-+						       current->generic_name);
-+			if (ret < 0)
-+				goto error_cleanup_array;
-+			ret = iioutils_get_param_float(&current->offset,
-+						       "offset",
-+						       device_dir,
-+						       current->name,
-+						       current->generic_name);
-+			if (ret < 0)
-+				goto error_cleanup_array;
-+			ret = iioutils_get_type(&current->is_signed,
-+						&current->bytes,
-+						&current->bits_used,
-+						&current->mask,
-+						device_dir,
-+						current->name,
-+						current->generic_name);
-+		}
-+	}
-+	/* reorder so that the array is in index order*/
-+	current = malloc(sizeof(**ci_array)**counter);
-+	if (current == NULL) {
-+		ret = -ENOMEM;
-+		goto error_cleanup_array;
-+	}
-+	closedir(dp);
-+	count = 0;
-+	temp = 0;
-+	while (count < *counter)
-+		for (i = 0; i < *counter; i++)
-+			if ((*ci_array)[i].index == temp) {
-+				memcpy(&current[count++],
-+				       &(*ci_array)[i],
-+				       sizeof(*current));
-+				temp++;
-+				break;
-+			}
-+	free(*ci_array);
-+	*ci_array = current;
-+
-+	return 0;
-+
-+error_cleanup_array:
-+	for (i = count - 1;  i >= 0; i++)
-+		free((*ci_array)[i].name);
-+	free(*ci_array);
-+error_close_dir:
-+	closedir(dp);
-+error_free_name:
-+	free(scan_el_dir);
-+error_ret:
-+	return ret;
-+}
-+
-+/**
-  * find_type_by_name() - function to match top level types by name
-  * @name: top level type instance name
-  * @type: the type of top level instance being sort
-@@ -40,7 +425,6 @@ inline int find_type_by_name(const char *name, const char *type)
- 	DIR *dp;
- 	char thisname[IIO_MAX_NAME_LENGTH];
- 	char *filename;
--	struct stat Stat;
- 
- 	dp = opendir(iio_dir);
- 	if (dp == NULL) {
-@@ -134,7 +518,7 @@ int write_sysfs_int_and_verify(char *filename, char *basedir, int val)
- 
- int _write_sysfs_string(char *filename, char *basedir, char *val, int verify)
- {
--	int ret;
-+	int ret = 0;
- 	FILE  *sysfsfp;
- 	char *temp = malloc(strlen(basedir) + strlen(filename) + 2);
- 	if (temp == NULL) {
-@@ -153,6 +537,7 @@ int _write_sysfs_string(char *filename, char *basedir, char *val, int verify)
- 	if (verify) {
- 		sysfsfp = fopen(temp, "r");
- 		if (sysfsfp == NULL) {
-+			printf("could not open file to verify\n");
- 			ret = -errno;
- 			goto error_free;
- 		}
-@@ -173,6 +558,7 @@ error_free:
- 
+diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
+index ab39885..e4ac956 100644
+--- a/drivers/staging/iio/accel/adis16209_core.c
++++ b/drivers/staging/iio/accel/adis16209_core.c
+@@ -391,12 +391,12 @@ err_ret:
  	return ret;
  }
-+
- /**
-  * write_sysfs_string_and_verify() - string write, readback and verify
-  * @filename: name of file to write to
-diff --git a/drivers/staging/iio/Documentation/lis3l02dqbuffersimple.c b/drivers/staging/iio/Documentation/lis3l02dqbuffersimple.c
-deleted file mode 100644
-index 2fc3fd8..0000000
---- a/drivers/staging/iio/Documentation/lis3l02dqbuffersimple.c
-+++ /dev/null
-@@ -1,238 +0,0 @@
--/* Industrialio ring buffer with a lis3l02dq accelerometer
-- *
-- * Copyright (c) 2008 Jonathan Cameron
-- *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of the GNU General Public License version 2 as published by
-- * the Free Software Foundation.
-- *
-- * This program is primarily intended as an example application.
-- */
--
--#include <dirent.h>
--#include <fcntl.h>
--#include <stdio.h>
--#include <errno.h>
--#include <sys/stat.h>
--#include <sys/dir.h>
--#include <linux/types.h>
--#include "iio_utils.h"
--
--const char *device_name = "lis3l02dq";
--const char *trigger_name_base = "lis3l02dq-dev";
--const int num_vals = 3;
--const int scan_ts = 1;
--const int buf_len = 128;
--const int num_loops = 10;
--
--/*
-- * Could get this from ring bps, but only after starting the ring
-- * which is a bit late for it to be useful.
-- *
-- * Todo: replace with much more generic version based on scan_elements
-- * directory.
-- */
--int size_from_scanmode(int num_vals, int timestamp)
--{
--	if (num_vals && timestamp)
--		return 16;
--	else if (timestamp)
--		return 8;
--	else
--		return num_vals*2;
--}
--
--int main(int argc, char **argv)
--{
--	int ret;
--	int i, j, k, toread;
--	FILE *fp_ev;
--	int fp;
--
--	char *trigger_name, *dev_dir_name, *buf_dir_name;
--	char *data;
--	size_t read_size;
--	struct iio_event_data dat;
--	int dev_num, trig_num;
--
--	char *buffer_access, *buffer_event;
--	const char *iio_dir = "/sys/bus/iio/devices/";
--	int scan_size;
--	float gain = 1;
--
--
--	/* Find out which iio device is the accelerometer. */
--	dev_num = find_type_by_name(device_name, "device");
--	if (dev_num < 0) {
--		printf("Failed to find the %s\n", device_name);
--		ret = -ENODEV;
--		goto error_ret;
--	}
--	printf("iio device number being used is %d\n", dev_num);
--	asprintf(&dev_dir_name, "%sdevice%d", iio_dir, dev_num);
--
--	/*
--	 * Build the trigger name.
--	 * In this case we want the lis3l02dq's data ready trigger
--	 * for this lis3l02dq. The naming is lis3l02dq_dev[n], where
--	 * n matches the device number found above.
--	 */
--	ret = asprintf(&trigger_name, "%s%d", trigger_name_base, dev_num);
--	if (ret < 0) {
--		ret = -ENOMEM;
--		goto error_free_dev_dir_name;
--	}
--
--	/*
--	 * Find the trigger by name.
--	 * This is techically unecessary here as we only need to
--	 * refer to the trigger by name and that name is already
--	 * known.
--	 */
--	trig_num = find_type_by_name(trigger_name, "trigger");
--	if (trig_num < 0) {
--		printf("Failed to find the %s\n", trigger_name);
--		ret = -ENODEV;
--		goto error_free_triggername;
--	}
--	printf("iio trigger number being used is %d\n", trig_num);
--
--	/*
--	 * Read in the scale value - in a more generic case, first
--	 * check for accel_scale, then the indivual channel scales
--	 */
--	ret = read_sysfs_float("accel_scale", dev_dir_name, &gain);
--	if (ret)
--		goto error_free_triggername;;
--
--	/*
--	 * Construct the directory name for the associated buffer.
--	 * As we know that the lis3l02dq has only one buffer this may
--	 * be built rather than found.
--	 */
--	ret = asprintf(&buf_dir_name, "%sdevice%d:buffer0", iio_dir, dev_num);
--	if (ret < 0) {
--		ret = -ENOMEM;
--		goto error_free_triggername;
--	}
--	/* Set the device trigger to be the data rdy trigger found above */
--	ret = write_sysfs_string_and_verify("trigger/current_trigger",
--					dev_dir_name,
--					trigger_name);
--	if (ret < 0) {
--		printf("Failed to write current_trigger file\n");
--		goto error_free_buf_dir_name;
--	}
--
--	/* Setup ring buffer parameters */
--	ret = write_sysfs_int("length", buf_dir_name, buf_len);
--	if (ret < 0)
--		goto error_free_buf_dir_name;
--
--	/* Enable the buffer */
--	ret = write_sysfs_int("enable", buf_dir_name, 1);
--	if (ret < 0)
--		goto error_free_buf_dir_name;
--
--	data = malloc(size_from_scanmode(num_vals, scan_ts)*buf_len);
--	if (!data) {
--		ret = -ENOMEM;
--		goto error_free_buf_dir_name;
--	}
--
--	ret = asprintf(&buffer_access,
--		       "/dev/device%d:buffer0:access0",
--		       dev_num);
--	if (ret < 0) {
--		ret = -ENOMEM;
--		goto error_free_data;
--	}
--
--	ret = asprintf(&buffer_event, "/dev/device%d:buffer0:event0", dev_num);
--	if (ret < 0) {
--		ret = -ENOMEM;
--		goto error_free_data;
--	}
--	/* Attempt to open non blocking the access dev */
--	fp = open(buffer_access, O_RDONLY | O_NONBLOCK);
--	if (fp == -1) { /*If it isn't there make the node */
--		printf("Failed to open %s\n", buffer_access);
--		ret = -errno;
--		goto error_free_buffer_event;
--	}
--	/* Attempt to open the event access dev (blocking this time) */
--	fp_ev = fopen(buffer_event, "rb");
--	if (fp_ev == NULL) {
--		printf("Failed to open %s\n", buffer_event);
--		ret = -errno;
--		goto error_close_buffer_access;
--	}
--
--	/* Wait for events 10 times */
--	for (j = 0; j < num_loops; j++) {
--		read_size = fread(&dat, 1, sizeof(struct iio_event_data),
--				  fp_ev);
--		switch (dat.id) {
--		case IIO_EVENT_CODE_RING_100_FULL:
--			toread = buf_len;
--			break;
--		case IIO_EVENT_CODE_RING_75_FULL:
--			toread = buf_len*3/4;
--			break;
--		case IIO_EVENT_CODE_RING_50_FULL:
--			toread = buf_len/2;
--			break;
--		default:
--			printf("Unexpecteded event code\n");
--			continue;
--		}
--		read_size = read(fp,
--				 data,
--				 toread*size_from_scanmode(num_vals, scan_ts));
--		if (read_size == -EAGAIN) {
--			printf("nothing available\n");
--			continue;
--		}
--		scan_size = size_from_scanmode(num_vals, scan_ts);
--		for (i = 0; i < read_size/scan_size; i++) {
--			for (k = 0; k < num_vals; k++) {
--				__s16 val = *(__s16 *)(&data[i*scan_size
--							     + (k)*2]);
--				printf("%05f ", (float)val*gain);
--			}
--			printf(" %lld\n",
--			       *(__s64 *)(&data[(i + 1)
--						*size_from_scanmode(num_vals,
--								    scan_ts)
--						- sizeof(__s64)]));
--		}
--	}
--
--	/* Stop the ring buffer */
--	ret = write_sysfs_int("enable", buf_dir_name, 0);
--	if (ret < 0)
--		goto error_close_buffer_event;
--
--	/* Disconnect from the trigger - just write a dummy name.*/
--	write_sysfs_string("trigger/current_trigger",
--			dev_dir_name, "NULL");
--
--error_close_buffer_event:
--	fclose(fp_ev);
--error_close_buffer_access:
--	close(fp);
--error_free_data:
--	free(data);
--error_free_buffer_access:
--	free(buffer_access);
--error_free_buffer_event:
--	free(buffer_event);
--error_free_buf_dir_name:
--	free(buf_dir_name);
--error_free_triggername:
--	free(trigger_name);
--error_free_dev_dir_name:
--	free(dev_dir_name);
--error_ret:
--	return ret;
--}
+ 
+-static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16209_read_14bit_unsigned,
++static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16209_read_14bit_unsigned,
+ 		ADIS16209_SUPPLY_OUT);
+-static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.30518");
+-static IIO_DEV_ATTR_IN_RAW(0, adis16209_read_12bit_unsigned,
++static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.30518");
++static IIO_DEV_ATTR_IN_RAW(1, adis16209_read_12bit_unsigned,
+ 		ADIS16209_AUX_ADC);
+-static IIO_CONST_ATTR(in0_scale, "0.6105");
++static IIO_CONST_ATTR(in1_scale, "0.6105");
+ 
+ static IIO_DEV_ATTR_ACCEL_X(adis16209_read_14bit_signed,
+ 		ADIS16209_XACCL_OUT);
+@@ -438,15 +438,15 @@ static struct attribute_group adis16209_event_attribute_group = {
+ };
+ 
+ static struct attribute *adis16209_attributes[] = {
+-	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+-	&iio_const_attr_in_supply_scale.dev_attr.attr,
++	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
++	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+ 	&iio_const_attr_name.dev_attr.attr,
+-	&iio_dev_attr_in0_raw.dev_attr.attr,
+-	&iio_const_attr_in0_scale.dev_attr.attr,
++	&iio_dev_attr_in1_raw.dev_attr.attr,
++	&iio_const_attr_in1_scale.dev_attr.attr,
+ 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_y_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_x_calibbias.dev_attr.attr,
+diff --git a/drivers/staging/iio/accel/adis16220_core.c b/drivers/staging/iio/accel/adis16220_core.c
+index 032616e..c86d149 100644
+--- a/drivers/staging/iio/accel/adis16220_core.c
++++ b/drivers/staging/iio/accel/adis16220_core.c
+@@ -485,9 +485,9 @@ static struct bin_attribute adc2_bin = {
+ 	.size = ADIS16220_CAPTURE_SIZE,
+ };
+ 
+-static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16220_read_12bit_unsigned,
++static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16220_read_12bit_unsigned,
+ 		ADIS16220_CAPT_SUPPLY);
+-static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.0012207");
++static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.0012207");
+ static IIO_DEV_ATTR_ACCEL(adis16220_read_16bit, ADIS16220_CAPT_BUFA);
+ static IIO_DEVICE_ATTR(accel_peak_raw, S_IRUGO, adis16220_read_16bit,
+ 		NULL, ADIS16220_CAPT_PEAKA);
+@@ -500,8 +500,8 @@ static IIO_DEV_ATTR_TEMP_RAW(adis16220_read_12bit_unsigned);
+ static IIO_CONST_ATTR_TEMP_OFFSET("25");
+ static IIO_CONST_ATTR_TEMP_SCALE("-0.47");
+ 
+-static IIO_DEV_ATTR_IN_RAW(0, adis16220_read_16bit, ADIS16220_CAPT_BUF1);
+-static IIO_DEV_ATTR_IN_RAW(1, adis16220_read_16bit, ADIS16220_CAPT_BUF2);
++static IIO_DEV_ATTR_IN_RAW(1, adis16220_read_16bit, ADIS16220_CAPT_BUF1);
++static IIO_DEV_ATTR_IN_RAW(2, adis16220_read_16bit, ADIS16220_CAPT_BUF2);
+ 
+ static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL,
+ 		adis16220_write_reset, 0);
+@@ -524,15 +524,15 @@ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("100200");
+ static IIO_CONST_ATTR_NAME("adis16220");
+ 
+ static struct attribute *adis16220_attributes[] = {
+-	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+-	&iio_const_attr_in_supply_scale.dev_attr.attr,
++	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
++	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+ 	&iio_dev_attr_accel_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_offset.dev_attr.attr,
+ 	&iio_dev_attr_accel_peak_raw.dev_attr.attr,
+ 	&iio_const_attr_accel_scale.dev_attr.attr,
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+-	&iio_dev_attr_in0_raw.dev_attr.attr,
+ 	&iio_dev_attr_in1_raw.dev_attr.attr,
++	&iio_dev_attr_in2_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
+index 49e172a..d11d164 100644
+--- a/drivers/staging/iio/accel/adis16240_core.c
++++ b/drivers/staging/iio/accel/adis16240_core.c
+@@ -376,11 +376,11 @@ err_ret:
+ 	return ret;
+ }
+ 
+-static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16240_read_10bit_unsigned,
++static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16240_read_10bit_unsigned,
+ 		ADIS16240_SUPPLY_OUT);
+-static IIO_DEV_ATTR_IN_RAW(0, adis16240_read_10bit_signed,
++static IIO_DEV_ATTR_IN_RAW(1, adis16240_read_10bit_signed,
+ 		ADIS16240_AUX_ADC);
+-static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.00488");
++static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.00488");
+ 
+ static IIO_CONST_ATTR_ACCEL_SCALE("0.50406181");
+ static IIO_CONST_ATTR(accel_peak_scale, "6.6292954");
+@@ -433,9 +433,9 @@ static struct attribute_group adis16240_event_attribute_group = {
+ };
+ 
+ static struct attribute *adis16240_attributes[] = {
+-	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+-	&iio_const_attr_in_supply_scale.dev_attr.attr,
+-	&iio_dev_attr_in0_raw.dev_attr.attr,
++	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
++	&iio_const_attr_in0_supply_scale.dev_attr.attr,
++	&iio_dev_attr_in1_raw.dev_attr.attr,
+ 	&iio_const_attr_accel_scale.dev_attr.attr,
+ 	&iio_const_attr_accel_peak_scale.dev_attr.attr,
+ 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+diff --git a/drivers/staging/iio/adc/adc.h b/drivers/staging/iio/adc/adc.h
+index 4f13427..40c5949 100644
+--- a/drivers/staging/iio/adc/adc.h
++++ b/drivers/staging/iio/adc/adc.h
+@@ -16,8 +16,8 @@
+ #define IIO_DEV_ATTR_IN_RAW(_num, _show, _addr)				\
+ 	IIO_DEVICE_ATTR(in##_num##_raw, S_IRUGO, _show, NULL, _addr)
+ 
+-#define IIO_DEV_ATTR_IN_NAMED_RAW(_name, _show, _addr)			\
+-	IIO_DEVICE_ATTR(in_##_name##_raw, S_IRUGO, _show, NULL, _addr)
++#define IIO_DEV_ATTR_IN_NAMED_RAW(_num, _name, _show, _addr)		\
++	IIO_DEVICE_ATTR(in##_num##_##_name##_raw, S_IRUGO, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_IN_DIFF_RAW(_nump, _numn, _show, _addr)		\
+ 	IIO_DEVICE_ATTR_NAMED(in##_nump##min##_numn##_raw,		\
+@@ -28,11 +28,11 @@
+ 			      _addr)
+ 
+ 
+-#define IIO_CONST_ATTR_IN_NAMED_OFFSET(_name, _string)			\
+-	IIO_CONST_ATTR(in_##_name##_offset, _string)
++#define IIO_CONST_ATTR_IN_NAMED_OFFSET(_num, _name, _string)	\
++	IIO_CONST_ATTR(in##_num##_##_name##_offset, _string)
+ 
+-#define IIO_CONST_ATTR_IN_NAMED_SCALE(_name, _string)			\
+-	IIO_CONST_ATTR(in_##_name##_scale, _string)
++#define IIO_CONST_ATTR_IN_NAMED_SCALE(_num, _name, _string)	\
++	IIO_CONST_ATTR(in##_num##_##_name##_scale, _string)
+ 
+ #define IIO_EVENT_CODE_IN_HIGH_THRESH(a)				\
+ 	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, a, IIO_EV_TYPE_THRESH,	\
+diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
+index c1ad0c8..7d7716e 100644
+--- a/drivers/staging/iio/gyro/adis16260_core.c
++++ b/drivers/staging/iio/gyro/adis16260_core.c
+@@ -442,10 +442,10 @@ err_ret:
+ 	return ret;
+ }
+ 
+-static IIO_DEV_ATTR_IN_NAMED_RAW(supply,
++static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply,
+ 				adis16260_read_12bit_unsigned,
+ 				ADIS16260_SUPPLY_OUT);
+-static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.0018315");
++static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.0018315");
+ 
+ static IIO_DEV_ATTR_GYRO(adis16260_read_14bit_signed,
+ 		ADIS16260_GYRO_OUT);
+@@ -463,9 +463,9 @@ static IIO_DEV_ATTR_TEMP_RAW(adis16260_read_12bit_unsigned);
+ static IIO_CONST_ATTR_TEMP_OFFSET("25");
+ static IIO_CONST_ATTR_TEMP_SCALE("0.1453");
+ 
+-static IIO_DEV_ATTR_IN_RAW(0, adis16260_read_12bit_unsigned,
++static IIO_DEV_ATTR_IN_RAW(1, adis16260_read_12bit_unsigned,
+ 		ADIS16260_AUX_ADC);
+-static IIO_CONST_ATTR(in0_scale, "0.0006105");
++static IIO_CONST_ATTR(in1_scale, "0.0006105");
+ 
+ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+ 		adis16260_read_frequency,
+@@ -488,8 +488,8 @@ static struct attribute_group adis16260_event_attribute_group = {
+ };
+ 
+ static struct attribute *adis16260_attributes[] = {
+-	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+-	&iio_const_attr_in_supply_scale.dev_attr.attr,
++	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
++	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+ 	&iio_dev_attr_gyro_raw.dev_attr.attr,
+ 	&iio_const_attr_gyro_scale.dev_attr.attr,
+ 	&iio_dev_attr_gyro_calibscale.dev_attr.attr,
+@@ -498,8 +498,8 @@ static struct attribute *adis16260_attributes[] = {
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+-	&iio_dev_attr_in0_raw.dev_attr.attr,
+-	&iio_const_attr_in0_scale.dev_attr.attr,
++	&iio_dev_attr_in1_raw.dev_attr.attr,
++	&iio_const_attr_in1_scale.dev_attr.attr,
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+diff --git a/drivers/staging/iio/imu/adis16300_core.c b/drivers/staging/iio/imu/adis16300_core.c
+index 3ed86cc..7ad13f4 100644
+--- a/drivers/staging/iio/imu/adis16300_core.c
++++ b/drivers/staging/iio/imu/adis16300_core.c
+@@ -523,9 +523,9 @@ static IIO_DEV_ATTR_ACCEL_Z_CALIBBIAS(S_IWUSR | S_IRUGO,
+ 		adis16300_write_16bit,
+ 		ADIS16300_ZACCL_OFF);
+ 
+-static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16300_read_14bit_unsigned,
++static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16300_read_14bit_unsigned,
+ 			   ADIS16300_SUPPLY_OUT);
+-static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.00242");
++static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.00242");
+ 
+ static IIO_DEV_ATTR_GYRO_X(adis16300_read_14bit_signed,
+ 		ADIS16300_XGYRO_OUT);
+@@ -549,9 +549,9 @@ static IIO_DEV_ATTR_TEMP_RAW(adis16300_read_12bit_unsigned);
+ static IIO_CONST_ATTR_TEMP_OFFSET("198.16");
+ static IIO_CONST_ATTR_TEMP_SCALE("0.14");
+ 
+-static IIO_DEV_ATTR_IN_RAW(0, adis16300_read_12bit_unsigned,
++static IIO_DEV_ATTR_IN_RAW(1, adis16300_read_12bit_unsigned,
+ 		ADIS16300_AUX_ADC);
+-static IIO_CONST_ATTR(in0_scale, "0.000806");
++static IIO_CONST_ATTR(in1_scale, "0.000806");
+ 
+ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+ 		adis16300_read_frequency,
+@@ -576,8 +576,8 @@ static struct attribute *adis16300_attributes[] = {
+ 	&iio_dev_attr_accel_x_calibbias.dev_attr.attr,
+ 	&iio_dev_attr_accel_y_calibbias.dev_attr.attr,
+ 	&iio_dev_attr_accel_z_calibbias.dev_attr.attr,
+-	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+-	&iio_const_attr_in_supply_scale.dev_attr.attr,
++	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
++	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+ 	&iio_dev_attr_gyro_x_raw.dev_attr.attr,
+ 	&iio_const_attr_gyro_scale.dev_attr.attr,
+ 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+@@ -590,8 +590,8 @@ static struct attribute *adis16300_attributes[] = {
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+-	&iio_dev_attr_in0_raw.dev_attr.attr,
+-	&iio_const_attr_in0_scale.dev_attr.attr,
++	&iio_dev_attr_in1_raw.dev_attr.attr,
++	&iio_const_attr_in1_scale.dev_attr.attr,
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+diff --git a/drivers/staging/iio/imu/adis16300_ring.c b/drivers/staging/iio/imu/adis16300_ring.c
+index 6af6ba5..114fdf4 100644
+--- a/drivers/staging/iio/imu/adis16300_ring.c
++++ b/drivers/staging/iio/imu/adis16300_ring.c
+@@ -17,9 +17,9 @@
+ #include "../trigger.h"
+ #include "adis16300.h"
+ 
+-static IIO_SCAN_EL_C(in_supply, ADIS16300_SCAN_SUPPLY,
++static IIO_SCAN_EL_C(in0_supply, ADIS16300_SCAN_SUPPLY,
+ 		     ADIS16300_SUPPLY_OUT, NULL);
+-static IIO_CONST_ATTR_SCAN_EL_TYPE(in_supply, u, 12, 16);
++static IIO_CONST_ATTR_SCAN_EL_TYPE(in0_supply, u, 12, 16);
+ static IIO_SCAN_EL_C(gyro_x, ADIS16300_SCAN_GYRO_X, ADIS16300_XGYRO_OUT, NULL);
+ static IIO_CONST_ATTR_SCAN_EL_TYPE(gyro, s, 14, 16);
+ 
+@@ -31,8 +31,8 @@ static IIO_CONST_ATTR_SCAN_EL_TYPE(accel, s, 14, 16);
+ static IIO_SCAN_EL_C(temp, ADIS16300_SCAN_TEMP, ADIS16300_TEMP_OUT, NULL);
+ static IIO_CONST_ATTR_SCAN_EL_TYPE(temp, s, 12, 16);
+ 
+-static IIO_SCAN_EL_C(in0, ADIS16300_SCAN_ADC_0, ADIS16300_AUX_ADC, NULL);
+-static IIO_CONST_ATTR_SCAN_EL_TYPE(in0, u, 12, 16);
++static IIO_SCAN_EL_C(in1, ADIS16300_SCAN_ADC_0, ADIS16300_AUX_ADC, NULL);
++static IIO_CONST_ATTR_SCAN_EL_TYPE(in1, u, 12, 16);
+ 
+ static IIO_SCAN_EL_C(incli_x, ADIS16300_SCAN_INCLI_X,
+ 		     ADIS16300_XINCLI_OUT, NULL);
+@@ -44,9 +44,9 @@ static IIO_SCAN_EL_TIMESTAMP(9);
+ static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
+ 
+ static struct attribute *adis16300_scan_el_attrs[] = {
+-	&iio_scan_el_in_supply.dev_attr.attr,
+-	&iio_const_attr_in_supply_index.dev_attr.attr,
+-	&iio_const_attr_in_supply_type.dev_attr.attr,
++	&iio_scan_el_in0_supply.dev_attr.attr,
++	&iio_const_attr_in0_supply_index.dev_attr.attr,
++	&iio_const_attr_in0_supply_type.dev_attr.attr,
+ 	&iio_scan_el_gyro_x.dev_attr.attr,
+ 	&iio_const_attr_gyro_x_index.dev_attr.attr,
+ 	&iio_const_attr_gyro_type.dev_attr.attr,
+@@ -65,9 +65,9 @@ static struct attribute *adis16300_scan_el_attrs[] = {
+ 	&iio_scan_el_incli_y.dev_attr.attr,
+ 	&iio_const_attr_incli_y_index.dev_attr.attr,
+ 	&iio_const_attr_incli_type.dev_attr.attr,
+-	&iio_scan_el_in0.dev_attr.attr,
+-	&iio_const_attr_in0_index.dev_attr.attr,
+-	&iio_const_attr_in0_type.dev_attr.attr,
++	&iio_scan_el_in1.dev_attr.attr,
++	&iio_const_attr_in1_index.dev_attr.attr,
++	&iio_const_attr_in1_type.dev_attr.attr,
+ 	&iio_scan_el_timestamp.dev_attr.attr,
+ 	&iio_const_attr_timestamp_index.dev_attr.attr,
+ 	&iio_const_attr_timestamp_type.dev_attr.attr,
+@@ -214,13 +214,13 @@ int adis16300_configure_ring(struct iio_dev *indio_dev)
+ 	ring->owner = THIS_MODULE;
+ 
+ 	/* Set default scan mode */
+-	iio_scan_mask_set(ring, iio_scan_el_in_supply.number);
++	iio_scan_mask_set(ring, iio_scan_el_in0_supply.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_gyro_x.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_accel_x.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_accel_y.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_accel_z.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_temp.number);
+-	iio_scan_mask_set(ring, iio_scan_el_in0.number);
++	iio_scan_mask_set(ring, iio_scan_el_in1.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_incli_x.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_incli_y.number);
+ 
+diff --git a/drivers/staging/iio/imu/adis16350_core.c b/drivers/staging/iio/imu/adis16350_core.c
+index cc33843..97c1ec8 100644
+--- a/drivers/staging/iio/imu/adis16350_core.c
++++ b/drivers/staging/iio/imu/adis16350_core.c
+@@ -505,9 +505,9 @@ static IIO_DEV_ATTR_ACCEL_Z_CALIBBIAS(S_IWUSR | S_IRUGO,
+ 		adis16350_write_16bit,
+ 		ADIS16350_ZACCL_OFF);
+ 
+-static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16350_read_12bit_unsigned,
++static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16350_read_12bit_unsigned,
+ 		ADIS16350_SUPPLY_OUT);
+-static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.002418");
++static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.002418");
+ 
+ static IIO_DEV_ATTR_GYRO_X(adis16350_read_14bit_signed,
+ 		ADIS16350_XGYRO_OUT);
+@@ -534,9 +534,9 @@ static IIO_DEVICE_ATTR(temp_z_raw, S_IRUGO, adis16350_read_12bit_signed,
+ static IIO_CONST_ATTR_TEMP_SCALE("0.14534");
+ static IIO_CONST_ATTR_TEMP_OFFSET("198.16");
+ 
+-static IIO_DEV_ATTR_IN_RAW(0, adis16350_read_12bit_unsigned,
++static IIO_DEV_ATTR_IN_RAW(1, adis16350_read_12bit_unsigned,
+ 		ADIS16350_AUX_ADC);
+-static IIO_CONST_ATTR(in0_scale, "0.000806");
++static IIO_CONST_ATTR(in1_scale, "0.000806");
+ 
+ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+ 		adis16350_read_frequency,
+@@ -556,8 +556,8 @@ static struct attribute *adis16350_attributes[] = {
+ 	&iio_dev_attr_accel_x_calibbias.dev_attr.attr,
+ 	&iio_dev_attr_accel_y_calibbias.dev_attr.attr,
+ 	&iio_dev_attr_accel_z_calibbias.dev_attr.attr,
+-	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+-	&iio_const_attr_in_supply_scale.dev_attr.attr,
++	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
++	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+ 	&iio_dev_attr_gyro_x_raw.dev_attr.attr,
+ 	&iio_dev_attr_gyro_y_raw.dev_attr.attr,
+ 	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
+@@ -570,8 +570,8 @@ static struct attribute *adis16350_attributes[] = {
+ 	&iio_dev_attr_temp_y_raw.dev_attr.attr,
+ 	&iio_dev_attr_temp_z_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+-	&iio_dev_attr_in0_raw.dev_attr.attr,
+-	&iio_const_attr_in0_scale.dev_attr.attr,
++	&iio_dev_attr_in1_raw.dev_attr.attr,
++	&iio_const_attr_in1_scale.dev_attr.attr,
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+diff --git a/drivers/staging/iio/imu/adis16350_ring.c b/drivers/staging/iio/imu/adis16350_ring.c
+index b2c8f43..56b70cf 100644
+--- a/drivers/staging/iio/imu/adis16350_ring.c
++++ b/drivers/staging/iio/imu/adis16350_ring.c
+@@ -17,9 +17,9 @@
+ #include "../trigger.h"
+ #include "adis16350.h"
+ 
+-static IIO_SCAN_EL_C(in_supply, ADIS16350_SCAN_SUPPLY,
++static IIO_SCAN_EL_C(in0_supply, ADIS16350_SCAN_SUPPLY,
+ 		ADIS16350_SUPPLY_OUT, NULL);
+-static IIO_CONST_ATTR_SCAN_EL_TYPE(in_supply, u, 12, 16);
++static IIO_CONST_ATTR_SCAN_EL_TYPE(in0_supply, u, 12, 16);
+ 
+ static IIO_SCAN_EL_C(gyro_x, ADIS16350_SCAN_GYRO_X, ADIS16350_XGYRO_OUT, NULL);
+ static IIO_SCAN_EL_C(gyro_y, ADIS16350_SCAN_GYRO_Y, ADIS16350_YGYRO_OUT, NULL);
+@@ -36,16 +36,16 @@ static IIO_SCAN_EL_C(temp_y, ADIS16350_SCAN_TEMP_Y, ADIS16350_YTEMP_OUT, NULL);
+ static IIO_SCAN_EL_C(temp_z, ADIS16350_SCAN_TEMP_Z, ADIS16350_ZTEMP_OUT, NULL);
+ static IIO_CONST_ATTR_SCAN_EL_TYPE(temp, s, 12, 16);
+ 
+-static IIO_SCAN_EL_C(in0, ADIS16350_SCAN_ADC_0, ADIS16350_AUX_ADC, NULL);
+-static IIO_CONST_ATTR_SCAN_EL_TYPE(in0, u, 12, 16);
++static IIO_SCAN_EL_C(in1, ADIS16350_SCAN_ADC_0, ADIS16350_AUX_ADC, NULL);
++static IIO_CONST_ATTR_SCAN_EL_TYPE(in1, u, 12, 16);
+ 
+ static IIO_SCAN_EL_TIMESTAMP(11);
+ static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
+ 
+ static struct attribute *adis16350_scan_el_attrs[] = {
+-	&iio_scan_el_in_supply.dev_attr.attr,
+-	&iio_const_attr_in_supply_index.dev_attr.attr,
+-	&iio_const_attr_in_supply_type.dev_attr.attr,
++	&iio_scan_el_in0_supply.dev_attr.attr,
++	&iio_const_attr_in0_supply_index.dev_attr.attr,
++	&iio_const_attr_in0_supply_type.dev_attr.attr,
+ 	&iio_scan_el_gyro_x.dev_attr.attr,
+ 	&iio_const_attr_gyro_x_index.dev_attr.attr,
+ 	&iio_scan_el_gyro_y.dev_attr.attr,
+@@ -67,9 +67,9 @@ static struct attribute *adis16350_scan_el_attrs[] = {
+ 	&iio_scan_el_temp_z.dev_attr.attr,
+ 	&iio_const_attr_temp_z_index.dev_attr.attr,
+ 	&iio_const_attr_temp_type.dev_attr.attr,
+-	&iio_scan_el_in0.dev_attr.attr,
+-	&iio_const_attr_in0_index.dev_attr.attr,
+-	&iio_const_attr_in0_type.dev_attr.attr,
++	&iio_scan_el_in1.dev_attr.attr,
++	&iio_const_attr_in1_index.dev_attr.attr,
++	&iio_const_attr_in1_type.dev_attr.attr,
+ 	&iio_scan_el_timestamp.dev_attr.attr,
+ 	&iio_const_attr_timestamp_index.dev_attr.attr,
+ 	&iio_const_attr_timestamp_type.dev_attr.attr,
+@@ -210,7 +210,7 @@ int adis16350_configure_ring(struct iio_dev *indio_dev)
+ 	ring->owner = THIS_MODULE;
+ 
+ 	/* Set default scan mode */
+-	iio_scan_mask_set(ring, iio_scan_el_in_supply.number);
++	iio_scan_mask_set(ring, iio_scan_el_in0_supply.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_gyro_x.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_gyro_y.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_gyro_z.number);
+@@ -220,7 +220,7 @@ int adis16350_configure_ring(struct iio_dev *indio_dev)
+ 	iio_scan_mask_set(ring, iio_scan_el_temp_x.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_temp_y.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_temp_z.number);
+-	iio_scan_mask_set(ring, iio_scan_el_in0.number);
++	iio_scan_mask_set(ring, iio_scan_el_in1.number);
+ 
+ 	ret = iio_alloc_pollfunc(indio_dev, NULL, &adis16350_poll_func_th);
+ 	if (ret)
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index 5f1643a..cfb108a 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -505,9 +505,9 @@ static ADIS16400_DEV_ATTR_CALIBBIAS(ACCEL_Y, ADIS16400_XACCL_OFF);
+ static ADIS16400_DEV_ATTR_CALIBBIAS(ACCEL_Z, ADIS16400_XACCL_OFF);
+ 
+ 
+-static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16400_read_14bit_signed,
++static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16400_read_14bit_signed,
+ 		ADIS16400_SUPPLY_OUT);
+-static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.002418 V");
++static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.002418 V");
+ 
+ static IIO_DEV_ATTR_GYRO_X(adis16400_read_14bit_signed,
+ 		ADIS16400_XGYRO_OUT);
+@@ -538,9 +538,9 @@ static IIO_DEV_ATTR_TEMP_RAW(adis16400_read_12bit_signed);
+ static IIO_CONST_ATTR_TEMP_OFFSET("198.16 K");
+ static IIO_CONST_ATTR_TEMP_SCALE("0.14 K");
+ 
+-static IIO_DEV_ATTR_IN_RAW(0, adis16400_read_12bit_unsigned,
++static IIO_DEV_ATTR_IN_RAW(1, adis16400_read_12bit_unsigned,
+ 		ADIS16400_AUX_ADC);
+-static IIO_CONST_ATTR(in0_scale, "0.000806 V");
++static IIO_CONST_ATTR(in1_scale, "0.000806 V");
+ 
+ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+ 		adis16400_read_frequency,
+@@ -567,8 +567,8 @@ static struct attribute *adis16400_attributes[] = {
+ 	&iio_dev_attr_accel_x_calibbias.dev_attr.attr,
+ 	&iio_dev_attr_accel_y_calibbias.dev_attr.attr,
+ 	&iio_dev_attr_accel_z_calibbias.dev_attr.attr,
+-	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+-	&iio_const_attr_in_supply_scale.dev_attr.attr,
++	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
++	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+ 	&iio_dev_attr_gyro_x_raw.dev_attr.attr,
+ 	&iio_dev_attr_gyro_y_raw.dev_attr.attr,
+ 	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
+@@ -584,8 +584,8 @@ static struct attribute *adis16400_attributes[] = {
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+-	&iio_dev_attr_in0_raw.dev_attr.attr,
+-	&iio_const_attr_in0_scale.dev_attr.attr,
++	&iio_dev_attr_in1_raw.dev_attr.attr,
++	&iio_const_attr_in1_scale.dev_attr.attr,
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
+index 1de858c..33293fb 100644
+--- a/drivers/staging/iio/imu/adis16400_ring.c
++++ b/drivers/staging/iio/imu/adis16400_ring.c
+@@ -17,9 +17,9 @@
+ #include "../trigger.h"
+ #include "adis16400.h"
+ 
+-static IIO_SCAN_EL_C(in_supply, ADIS16400_SCAN_SUPPLY,
++static IIO_SCAN_EL_C(in0_supply, ADIS16400_SCAN_SUPPLY,
+ 		     ADIS16400_SUPPLY_OUT, NULL);
+-static IIO_CONST_ATTR_SCAN_EL_TYPE(in_supply, u, 14, 16);
++static IIO_CONST_ATTR_SCAN_EL_TYPE(in0_supply, u, 14, 16);
+ 
+ static IIO_SCAN_EL_C(gyro_x, ADIS16400_SCAN_GYRO_X, ADIS16400_XGYRO_OUT, NULL);
+ static IIO_SCAN_EL_C(gyro_y, ADIS16400_SCAN_GYRO_Y, ADIS16400_YGYRO_OUT, NULL);
+@@ -39,16 +39,16 @@ static IIO_CONST_ATTR_SCAN_EL_TYPE(magn, s, 14, 16);
+ static IIO_SCAN_EL_C(temp, ADIS16400_SCAN_TEMP, ADIS16400_TEMP_OUT, NULL);
+ static IIO_CONST_ATTR_SCAN_EL_TYPE(temp, s, 12, 16);
+ 
+-static IIO_SCAN_EL_C(in0, ADIS16400_SCAN_ADC_0, ADIS16400_AUX_ADC, NULL);
+-static IIO_CONST_ATTR_SCAN_EL_TYPE(in0, u, 12, 16);
++static IIO_SCAN_EL_C(in1, ADIS16400_SCAN_ADC_0, ADIS16400_AUX_ADC, NULL);
++static IIO_CONST_ATTR_SCAN_EL_TYPE(in1, u, 12, 16);
+ 
+ static IIO_SCAN_EL_TIMESTAMP(12);
+ static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
+ 
+ static struct attribute *adis16400_scan_el_attrs[] = {
+-	&iio_scan_el_in_supply.dev_attr.attr,
+-	&iio_const_attr_in_supply_index.dev_attr.attr,
+-	&iio_const_attr_in_supply_type.dev_attr.attr,
++	&iio_scan_el_in0_supply.dev_attr.attr,
++	&iio_const_attr_in0_supply_index.dev_attr.attr,
++	&iio_const_attr_in0_supply_type.dev_attr.attr,
+ 	&iio_scan_el_gyro_x.dev_attr.attr,
+ 	&iio_const_attr_gyro_x_index.dev_attr.attr,
+ 	&iio_scan_el_gyro_y.dev_attr.attr,
+@@ -73,9 +73,9 @@ static struct attribute *adis16400_scan_el_attrs[] = {
+ 	&iio_scan_el_temp.dev_attr.attr,
+ 	&iio_const_attr_temp_index.dev_attr.attr,
+ 	&iio_const_attr_temp_type.dev_attr.attr,
+-	&iio_scan_el_in0.dev_attr.attr,
+-	&iio_const_attr_in0_index.dev_attr.attr,
+-	&iio_const_attr_in0_type.dev_attr.attr,
++	&iio_scan_el_in1.dev_attr.attr,
++	&iio_const_attr_in1_index.dev_attr.attr,
++	&iio_const_attr_in1_type.dev_attr.attr,
+ 	&iio_scan_el_timestamp.dev_attr.attr,
+ 	&iio_const_attr_timestamp_index.dev_attr.attr,
+ 	&iio_const_attr_timestamp_type.dev_attr.attr,
+@@ -222,7 +222,7 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
+ 	ring->owner = THIS_MODULE;
+ 
+ 	/* Set default scan mode */
+-	iio_scan_mask_set(ring, iio_scan_el_in_supply.number);
++	iio_scan_mask_set(ring, iio_scan_el_in0_supply.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_gyro_x.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_gyro_y.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_gyro_z.number);
+@@ -233,7 +233,7 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
+ 	iio_scan_mask_set(ring, iio_scan_el_magn_y.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_magn_z.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_temp.number);
+-	iio_scan_mask_set(ring, iio_scan_el_in0.number);
++	iio_scan_mask_set(ring, iio_scan_el_in1.number);
+ 
+ 	ret = iio_alloc_pollfunc(indio_dev, NULL, &adis16400_poll_func_th);
+ 	if (ret)
 -- 
 1.7.2.2
+
