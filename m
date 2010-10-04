@@ -1,48 +1,70 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:51777 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751773Ab0JDPwi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Oct 2010 11:52:38 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
-Cc: manuel.stahl@iis.fraunhofer.de,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 03/16] staging:iio:adc events update to new numbering system
-Date: Mon,  4 Oct 2010 16:57:52 +0100
-Message-Id: <1286207885-26689-4-git-send-email-jic23@cam.ac.uk>
+Cc: manuel.stahl@iis.fraunhofer.de, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 02/16] staging:iio:events define macros for new event code system
+Date: Mon,  4 Oct 2010 16:57:51 +0100
+Message-Id: <1286207885-26689-3-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1286207885-26689-1-git-send-email-jic23@cam.ac.uk>
 References: <1286207885-26689-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
+
+These are step one of moving to a systematic numbering for event
+codes.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/adc.h |    8 ++++++--
- drivers/staging/iio/sysfs.h   |    1 -
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ drivers/staging/iio/sysfs.h |   32 ++++++++++++++++++++++++++++++++
+ 1 files changed, 32 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/adc.h b/drivers/staging/iio/adc/adc.h
-index 953b5ce..4f13427 100644
---- a/drivers/staging/iio/adc/adc.h
-+++ b/drivers/staging/iio/adc/adc.h
-@@ -34,5 +34,9 @@
- #define IIO_CONST_ATTR_IN_NAMED_SCALE(_name, _string)			\
- 	IIO_CONST_ATTR(in_##_name##_scale, _string)
- 
--#define IIO_EVENT_CODE_IN_HIGH_THRESH(a) (IIO_EVENT_CODE_ADC_BASE  + a)
--#define IIO_EVENT_CODE_IN_LOW_THRESH(a) (IIO_EVENT_CODE_ADC_BASE  + a + 32)
-+#define IIO_EVENT_CODE_IN_HIGH_THRESH(a)				\
-+	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, a, IIO_EV_TYPE_THRESH,	\
-+			     IIO_EV_DIR_RISING)
-+#define IIO_EVENT_CODE_IN_LOW_THRESH(a)				     \
-+	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, a, IIO_EV_TYPE_THRESH, \
-+			     IIO_EV_DIR_FALLING)
 diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
-index 7707f8f..491c904 100644
+index b531dc1..7707f8f 100644
 --- a/drivers/staging/iio/sysfs.h
 +++ b/drivers/staging/iio/sysfs.h
-@@ -285,7 +285,6 @@ struct iio_const_attr {
+@@ -249,6 +249,38 @@ struct iio_const_attr {
+ #define IIO_EVENT_ATTR_DATA_RDY(_show, _store, _mask, _handler) \
+ 	IIO_EVENT_ATTR(data_rdy, _show, _store, _mask, _handler)
+ 
++#define IIO_EV_CLASS_BUFFER		0
++#define IIO_EV_CLASS_IN			1
++#define IIO_EV_CLASS_ACCEL		2
++#define IIO_EV_CLASS_GYRO		3
++#define IIO_EV_CLASS_MAGN		4
++#define IIO_EV_CLASS_LIGHT		5
++#define IIO_EV_CLASS_PROXIMITY		6
++
++#define IIO_EV_MOD_X			0
++#define IIO_EV_MOD_Y			1
++#define IIO_EV_MOD_Z			2
++
++#define IIO_EV_TYPE_THRESH		0
++#define IIO_EV_TYPE_MAG			1
++#define IIO_EV_TYPE_ROC			2
++
++#define IIO_EV_DIR_EITHER		0
++#define IIO_EV_DIR_RISING		1
++#define IIO_EV_DIR_FALLING		2
++
++#define IIO_EVENT_CODE(channelclass, orient_bit, number,		\
++		       modifier, type, direction)			\
++	(channelclass | (orient_bit << 8) | ((number) << 9) |		\
++	 ((modifier) << 13) | ((type) << 16) | ((direction) << 24))
++
++#define IIO_MOD_EVENT_CODE(channelclass, number, modifier,		\
++			   type, direction)				\
++	IIO_EVENT_CODE(channelclass, 1, number, modifier, type, direction)
++
++#define IIO_UNMOD_EVENT_CODE(channelclass, number, type, direction)	\
++	IIO_EVENT_CODE(channelclass, 0, number, 0, type, direction)
++
+ #define IIO_EVENT_CODE_DATA_RDY		100
  #define IIO_EVENT_CODE_RING_BASE	200
  #define IIO_EVENT_CODE_ACCEL_BASE	300
- #define IIO_EVENT_CODE_GYRO_BASE	400
--#define IIO_EVENT_CODE_ADC_BASE		500
- #define IIO_EVENT_CODE_MISC_BASE	600
- #define IIO_EVENT_CODE_LIGHT_BASE	700
- 
 -- 
 1.7.2.2
+
