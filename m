@@ -3,96 +3,132 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: manuel.stahl@iis.fraunhofer.de,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 12/16] staging:iio:tsl2563 event attribute name updates
-Date: Mon,  4 Oct 2010 16:58:01 +0100
-Message-Id: <1286207885-26689-13-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 11/16] staging:iio:accel remove deprecated and misleading event macros.
+Date: Mon,  4 Oct 2010 16:58:00 +0100
+Message-Id: <1286207885-26689-12-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1286207885-26689-1-git-send-email-jic23@cam.ac.uk>
 References: <1286207885-26689-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Patch also renames the two raw channels to add numbers
-so that we know to which channel the event code applies.
-
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/light/tsl2563.c |   28 ++++++++++++++--------------
- 1 files changed, 14 insertions(+), 14 deletions(-)
+ drivers/staging/iio/accel/accel.h |  107 -------------------------------------
+ 1 files changed, 0 insertions(+), 107 deletions(-)
 
-diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
-index 98149e1..dadae75 100644
---- a/drivers/staging/iio/light/tsl2563.c
-+++ b/drivers/staging/iio/light/tsl2563.c
-@@ -584,14 +584,14 @@ static ssize_t tsl2563_calib_store(struct device *dev,
- 	return len;
- }
+diff --git a/drivers/staging/iio/accel/accel.h b/drivers/staging/iio/accel/accel.h
+index 3b6be2e..f5f61b2 100644
+--- a/drivers/staging/iio/accel/accel.h
++++ b/drivers/staging/iio/accel/accel.h
+@@ -65,110 +65,3 @@
+ #define IIO_DEV_ATTR_ACCEL_Z(_show, _addr)			\
+ 	IIO_DEVICE_ATTR(accel_z_raw, S_IRUGO, _show, NULL, _addr)
  
--static IIO_DEVICE_ATTR(intensity_both_raw, S_IRUGO,
-+static IIO_DEVICE_ATTR(intensity0_both_raw, S_IRUGO,
- 		tsl2563_adc_show, NULL, 0);
--static IIO_DEVICE_ATTR(intensity_ir_raw, S_IRUGO,
-+static IIO_DEVICE_ATTR(intensity1_ir_raw, S_IRUGO,
- 		tsl2563_adc_show, NULL, 1);
- static DEVICE_ATTR(illuminance0_input, S_IRUGO, tsl2563_lux_show, NULL);
--static IIO_DEVICE_ATTR(intensity_both_calibgain, S_IRUGO | S_IWUSR,
-+static IIO_DEVICE_ATTR(intensity0_both_calibgain, S_IRUGO | S_IWUSR,
- 		tsl2563_calib_show, tsl2563_calib_store, 0);
--static IIO_DEVICE_ATTR(intensity_ir_calibgain, S_IRUGO | S_IWUSR,
-+static IIO_DEVICE_ATTR(intensity1_ir_calibgain, S_IRUGO | S_IWUSR,
- 		tsl2563_calib_show, tsl2563_calib_store, 1);
- 
- static ssize_t tsl2563_show_name(struct device *dev,
-@@ -606,11 +606,11 @@ static ssize_t tsl2563_show_name(struct device *dev,
- static DEVICE_ATTR(name, S_IRUGO, tsl2563_show_name, NULL);
- 
- static struct attribute *tsl2563_attributes[] = {
--	&iio_dev_attr_intensity_both_raw.dev_attr.attr,
--	&iio_dev_attr_intensity_ir_raw.dev_attr.attr,
-+	&iio_dev_attr_intensity0_both_raw.dev_attr.attr,
-+	&iio_dev_attr_intensity1_ir_raw.dev_attr.attr,
- 	&dev_attr_illuminance0_input.attr,
--	&iio_dev_attr_intensity_both_calibgain.dev_attr.attr,
--	&iio_dev_attr_intensity_ir_calibgain.dev_attr.attr,
-+	&iio_dev_attr_intensity0_both_calibgain.dev_attr.attr,
-+	&iio_dev_attr_intensity1_ir_calibgain.dev_attr.attr,
- 	&dev_attr_name.attr,
- 	NULL
- };
-@@ -673,13 +673,13 @@ error_ret:
- 	return ret < 0 ? ret : len;
- }
- 
--static IIO_DEVICE_ATTR(intensity_both_thresh_high_value,
-+static IIO_DEVICE_ATTR(intensity0_both_raw_thresh_rising_value,
- 		S_IRUGO | S_IWUSR,
- 		tsl2563_read_thresh,
- 		tsl2563_write_thresh,
- 		TSL2563_REG_HIGHLOW);
- 
--static IIO_DEVICE_ATTR(intensity_both_thresh_low_value,
-+static IIO_DEVICE_ATTR(intensity0_both_raw_thresh_falling_value,
- 		S_IRUGO | S_IWUSR,
- 		tsl2563_read_thresh,
- 		tsl2563_write_thresh,
-@@ -791,16 +791,16 @@ error_ret:
- 	return (ret < 0) ? ret : len;
- }
- 
--IIO_EVENT_ATTR(intensity_both_thresh_both_en,
-+IIO_EVENT_ATTR(intensity0_both_thresh_en,
- 	tsl2563_read_interrupt_config,
- 	tsl2563_write_interrupt_config,
- 	0,
- 	tsl2563_int_th);
- 
- static struct attribute *tsl2563_event_attributes[] = {
--	&iio_event_attr_intensity_both_thresh_both_en.dev_attr.attr,
--	&iio_dev_attr_intensity_both_thresh_high_value.dev_attr.attr,
--	&iio_dev_attr_intensity_both_thresh_low_value.dev_attr.attr,
-+	&iio_event_attr_intensity0_both_thresh_en.dev_attr.attr,
-+	&iio_dev_attr_intensity0_both_raw_thresh_rising_value.dev_attr.attr,
-+	&iio_dev_attr_intensity0_both_raw_thresh_falling_value.dev_attr.attr,
- 	NULL,
- };
- 
+-/* Thresholds are somewhat chip dependent - may need quite a few defs here */
+-/* For unified thresholds (shared across all directions */
+-
+-/**
+- * IIO_DEV_ATTR_ACCEL_THRESH: unified threshold
+- * @_mode: read/write
+- * @_show: read detector threshold value
+- * @_store: write detector threshold value
+- * @_addr: driver specific data, typically a register address
+- *
+- * This one is for cases where as single threshold covers all directions
+- **/
+-#define IIO_DEV_ATTR_ACCEL_THRESH(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(thresh, _mode, _show, _store, _addr)
+-
+-/**
+- * IIO_DEV_ATTR_ACCEL_THRESH_X: independant direction threshold, x axis
+- * @_mode: readable / writable
+- * @_show: read x axis detector threshold value
+- * @_store: write x axis detector threshold value
+- * @_addr: device driver dependant, typically a register address
+- **/
+-#define IIO_DEV_ATTR_ACCEL_THRESH_X(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(thresh_accel_x, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_THRESH_Y(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(thresh_accel_y, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_THRESH_Z(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(thresh_accel_z, _mode, _show, _store, _addr)
+-
+-/**
+- * IIO_EVENT_ATTR_ACCEL_X_HIGH: threshold event, x acceleration
+- * @_show: read x acceleration high threshold
+- * @_store: write x acceleration high threshold
+- * @_mask: device dependant, typically a bit mask
+- * @_handler: the iio_handler associated with this attribute
+- **/
+-#define IIO_EVENT_ATTR_ACCEL_X_HIGH(_show, _store, _mask, _handler)	\
+-	IIO_EVENT_ATTR(accel_x_high, _show, _store, _mask, _handler)
+-
+-/**
+- * IIO_EVENT_ATTR_ACCEL_X_HIGH_SH: threshold event, x accel high, shared handler
+- * @_evlist: event list used to share the handler
+- * @_show: attribute read
+- * @_store: attribute write
+- * @_mask: driver specific data, typically a bit mask
+- **/
+-#define IIO_EVENT_ATTR_ACCEL_X_HIGH_SH(_evlist, _show, _store, _mask)	\
+-	IIO_EVENT_ATTR_SH(accel_x_high, _evlist, _show, _store, _mask)
+-
+-/**
+- * IIO_EVENT_CODE_ACCEL_X_HIGH - event code for x axis high accel threshold
+- **/
+-#define IIO_EVENT_ATTR_ACCEL_Y_HIGH(_show, _store, _mask, _handler)	\
+-	IIO_EVENT_ATTR(accel_y_high, _show, _store, _mask, _handler)
+-
+-#define IIO_EVENT_ATTR_ACCEL_Y_HIGH_SH(_evlist, _show, _store, _mask)	\
+-	IIO_EVENT_ATTR_SH(accel_y_high, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_ACCEL_Z_HIGH(_show, _store, _mask, _handler)	\
+-	IIO_EVENT_ATTR(accel_z_high, _show, _store, _mask, _handler)
+-
+-#define IIO_EVENT_ATTR_ACCEL_Z_HIGH_SH(_evlist, _show, _store, _mask)	\
+-	IIO_EVENT_ATTR_SH(accel_z_high, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_ACCEL_X_LOW(_show, _store, _mask, _handler)	\
+-	IIO_EVENT_ATTR(accel_x_low, _show, _store, _mask, _handler)
+-
+-#define IIO_EVENT_ATTR_ACCEL_X_LOW_SH(_evlist, _show, _store, _mask)	\
+-	IIO_EVENT_ATTR_SH(accel_x_low, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_ACCEL_Y_LOW(_show, _store, _mask, _handler) \
+-	IIO_EVENT_ATTR(accel_y_low, _show, _store, _mask, _handler)
+-
+-#define IIO_EVENT_ATTR_ACCEL_Y_LOW_SH(_evlist, _show, _store, _mask)\
+-	IIO_EVENT_ATTR_SH(accel_y_low, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_ACCEL_Z_LOW(_show, _store, _mask, _handler)	\
+-	IIO_EVENT_ATTR(accel_z_low, _show, _store, _mask, _handler)
+-
+-#define IIO_EVENT_ATTR_ACCEL_Z_LOW_SH(_evlist, _show, _store, _mask)	\
+-	IIO_EVENT_ATTR_SH(accel_z_low, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_FREE_FALL_DETECT(_show, _store, _mask, _handler)	\
+-	IIO_EVENT_ATTR(free_fall, _show, _store, _mask, _handler)
+-
+-#define IIO_EVENT_ATTR_FREE_FALL_DETECT_SH(_evlist, _show, _store, _mask) \
+-	IIO_EVENT_ATTR_SH(free_fall, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_ACCEL_X_ROC_HIGH_SH(_evlist, _show, _store, _mask) \
+-	IIO_EVENT_ATTR_SH(accel_x_roc_high, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_ACCEL_X_ROC_LOW_SH(_evlist, _show, _store, _mask) \
+-	IIO_EVENT_ATTR_SH(accel_x_roc_low, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_ACCEL_Y_ROC_HIGH_SH(_evlist, _show, _store, _mask) \
+-	IIO_EVENT_ATTR_SH(accel_y_roc_high, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_ACCEL_Y_ROC_LOW_SH(_evlist, _show, _store, _mask) \
+-	IIO_EVENT_ATTR_SH(accel_y_roc_low, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_ACCEL_Z_ROC_HIGH_SH(_evlist, _show, _store, _mask) \
+-	IIO_EVENT_ATTR_SH(accel_z_roc_high, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_ACCEL_Z_ROC_LOW_SH(_evlist, _show, _store, _mask) \
+-	IIO_EVENT_ATTR_SH(accel_z_roc_low, _evlist, _show, _store, _mask)
 -- 
 1.7.2.2
