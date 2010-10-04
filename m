@@ -1,6 +1,6 @@
 Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4CAEFD65.3030408@cam.ac.uk>
-Date: Fri, 08 Oct 2010 12:15:49 +0100
+Message-ID: <4CA9FA25.4080605@cam.ac.uk>
+Date: Mon, 04 Oct 2010 17:00:37 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
 To: Jonathan Cameron <jic23@cam.ac.uk>
@@ -11,14 +11,9 @@ In-Reply-To: <1286207885-26689-1-git-send-email-jic23@cam.ac.uk>
 Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-No comments so I'm assuming everyone is happy.
-
-The timestamp fix has already gone to Greg.
-I have just sent the rest of this series.
-
-Thanks,
-
-Jonathan
+On 10/04/10 16:57, Jonathan Cameron wrote:
+> Dear All,
+> 
 > The first half of this patch series is primarily concerned with
 > converting all the event codes to a constructed form (rather
 > than a fairly randomly ordered list of codes).  This change
@@ -48,6 +43,16 @@ Jonathan
 >   on these are promising. Waiting for the spi guys to reply to an
 >   enquirey about whether it is every wrong to overspecify the nature
 >   of a message.
+
+Couple of other things I forgot to mention:
+* The new analog adc drivers will need some changes to meet the abi. That
+can occur separately from this series.
+* I've put a tree containing all my current working series at:
+http://git.kernel.org/?p=linux/kernel/git/jic23/iio_temp.git;a=summary
+
+please don't base of it.  I'm forcing updates on this as I make changes to
+the above series!
+
 > 
 > Jonathan Cameron (16):
 >   staging:iio: timestamp_en naming typo fix.
