@@ -1,595 +1,331 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:51882 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756355Ab0JDPwn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Oct 2010 11:52:43 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
-Cc: manuel.stahl@iis.fraunhofer.de, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 15/16] staging:iio:adc add numbers to naming of all adc channels as needed to associate events with them.
-Date: Mon,  4 Oct 2010 16:58:04 +0100
-Message-Id: <1286207885-26689-16-git-send-email-jic23@cam.ac.uk>
+Cc: manuel.stahl@iis.fraunhofer.de,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 14/16] staging:iio:events update documentation to match new abi.
+Date: Mon,  4 Oct 2010 16:58:03 +0100
+Message-Id: <1286207885-26689-15-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1286207885-26689-1-git-send-email-jic23@cam.ac.uk>
 References: <1286207885-26689-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
-
-Given event codes are associated by number not name, all adc channels
-including those with names need to have numbers.
+List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/adis16209_core.c |   16 ++++++++--------
- drivers/staging/iio/accel/adis16220_core.c |   14 +++++++-------
- drivers/staging/iio/accel/adis16240_core.c |   12 ++++++------
- drivers/staging/iio/adc/adc.h              |   12 ++++++------
- drivers/staging/iio/gyro/adis16260_core.c  |   16 ++++++++--------
- drivers/staging/iio/imu/adis16300_core.c   |   16 ++++++++--------
- drivers/staging/iio/imu/adis16300_ring.c   |   24 ++++++++++++------------
- drivers/staging/iio/imu/adis16350_core.c   |   16 ++++++++--------
- drivers/staging/iio/imu/adis16350_ring.c   |   24 ++++++++++++------------
- drivers/staging/iio/imu/adis16400_core.c   |   16 ++++++++--------
- drivers/staging/iio/imu/adis16400_ring.c   |   24 ++++++++++++------------
- 11 files changed, 95 insertions(+), 95 deletions(-)
+ drivers/staging/iio/Documentation/sysfs-bus-iio |  192 ++++++++++++++++-------
+ 1 files changed, 136 insertions(+), 56 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-index ab39885..e4ac956 100644
---- a/drivers/staging/iio/accel/adis16209_core.c
-+++ b/drivers/staging/iio/accel/adis16209_core.c
-@@ -391,12 +391,12 @@ err_ret:
- 	return ret;
- }
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio b/drivers/staging/iio/Documentation/sysfs-bus-iio
+index 62becc0..fdb017a 100644
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
+@@ -1,4 +1,3 @@
+-
+ What:		/sys/bus/iio/devices/device[n]
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+@@ -22,8 +21,8 @@ What:		/sys/bus/iio/devices/device[n]:buffer
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-	        Link to /sys/class/iio/device[n]/device[n]:buffer. n indicates the
+-		device with which this buffer buffer is associated.
++		Link to /sys/class/iio/device[n]/device[n]:buffer. n indicates
++		the device with which this buffer buffer is associated.
  
--static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16209_read_14bit_unsigned,
-+static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16209_read_14bit_unsigned,
- 		ADIS16209_SUPPLY_OUT);
--static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.30518");
--static IIO_DEV_ATTR_IN_RAW(0, adis16209_read_12bit_unsigned,
-+static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.30518");
-+static IIO_DEV_ATTR_IN_RAW(1, adis16209_read_12bit_unsigned,
- 		ADIS16209_AUX_ADC);
--static IIO_CONST_ATTR(in0_scale, "0.6105");
-+static IIO_CONST_ATTR(in1_scale, "0.6105");
+ What:		/sys/.../device[n]/name
+ KernelVersion:	2.6.35
+@@ -52,7 +51,7 @@ Description:
+ 		When the internal sampling clock can only take a small
+ 		discrete set of values, this file lists those availale.
  
- static IIO_DEV_ATTR_ACCEL_X(adis16209_read_14bit_signed,
- 		ADIS16209_XACCL_OUT);
-@@ -438,15 +438,15 @@ static struct attribute_group adis16209_event_attribute_group = {
- };
+-What:		/sys/.../device[n]/in[_name][m]_raw
++What:		/sys/.../device[n]/in[m][_name]_raw
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -60,8 +59,11 @@ Description:
+ 		channel m. name is used in special cases where this does
+ 		not correspond to externally available input (e.g. supply
+ 		voltage monitoring in which case the file is in_supply_raw).
++		If the device supports events on this channel then m must be
++		specified (even on named channels) so as to allow the source
++		of event codes to be identified.
  
- static struct attribute *adis16209_attributes[] = {
--	&iio_dev_attr_in_supply_raw.dev_attr.attr,
--	&iio_const_attr_in_supply_scale.dev_attr.attr,
-+	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
-+	&iio_const_attr_in0_supply_scale.dev_attr.attr,
- 	&iio_dev_attr_temp_raw.dev_attr.attr,
- 	&iio_const_attr_temp_offset.dev_attr.attr,
- 	&iio_const_attr_temp_scale.dev_attr.attr,
- 	&iio_dev_attr_reset.dev_attr.attr,
- 	&iio_const_attr_name.dev_attr.attr,
--	&iio_dev_attr_in0_raw.dev_attr.attr,
--	&iio_const_attr_in0_scale.dev_attr.attr,
-+	&iio_dev_attr_in1_raw.dev_attr.attr,
-+	&iio_const_attr_in1_scale.dev_attr.attr,
- 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
- 	&iio_dev_attr_accel_y_raw.dev_attr.attr,
- 	&iio_dev_attr_accel_x_calibbias.dev_attr.attr,
-diff --git a/drivers/staging/iio/accel/adis16220_core.c b/drivers/staging/iio/accel/adis16220_core.c
-index 032616e..c86d149 100644
---- a/drivers/staging/iio/accel/adis16220_core.c
-+++ b/drivers/staging/iio/accel/adis16220_core.c
-@@ -485,9 +485,9 @@ static struct bin_attribute adc2_bin = {
- 	.size = ADIS16220_CAPTURE_SIZE,
- };
+-What:		/sys/.../device[n]/in[_name][m]_offset
++What:		/sys/.../device[n]/in[m][_name]_offset
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -75,7 +77,7 @@ Description:
+ 		between different instances of the part, typically adjusted by
+ 		using some hardware supported calibration procedure.
  
--static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16220_read_12bit_unsigned,
-+static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16220_read_12bit_unsigned,
- 		ADIS16220_CAPT_SUPPLY);
--static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.0012207");
-+static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.0012207");
- static IIO_DEV_ATTR_ACCEL(adis16220_read_16bit, ADIS16220_CAPT_BUFA);
- static IIO_DEVICE_ATTR(accel_peak_raw, S_IRUGO, adis16220_read_16bit,
- 		NULL, ADIS16220_CAPT_PEAKA);
-@@ -500,8 +500,8 @@ static IIO_DEV_ATTR_TEMP_RAW(adis16220_read_12bit_unsigned);
- static IIO_CONST_ATTR_TEMP_OFFSET("25");
- static IIO_CONST_ATTR_TEMP_SCALE("-0.47");
+-What:		/sys/.../device[n]/in[_name][m]_offset_available
++What:		/sys/.../device[n]/in[m][_name]_offset_available
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -84,45 +86,46 @@ Description:
+ 		options the same) for individual offsets then m should not be
+ 		present.
  
--static IIO_DEV_ATTR_IN_RAW(0, adis16220_read_16bit, ADIS16220_CAPT_BUF1);
--static IIO_DEV_ATTR_IN_RAW(1, adis16220_read_16bit, ADIS16220_CAPT_BUF2);
-+static IIO_DEV_ATTR_IN_RAW(1, adis16220_read_16bit, ADIS16220_CAPT_BUF1);
-+static IIO_DEV_ATTR_IN_RAW(2, adis16220_read_16bit, ADIS16220_CAPT_BUF2);
+-What:		/sys/.../device[n]/in[_name][m]_offset_[min|max]
++What:		/sys/.../device[n]/in[m][_name]_offset_[min|max]
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		If a more or less continuous range of voltage offsets are supported
+-		then these specify the minimum and maximum.  If shared by all
+-		in channels then m is not present.
++		If a more or less continuous range of voltage offsets are
++		supported then these specify the minimum and maximum.  If shared
++		by all in channels then m is not present.
  
- static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL,
- 		adis16220_write_reset, 0);
-@@ -524,15 +524,15 @@ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("100200");
- static IIO_CONST_ATTR_NAME("adis16220");
+-What:		/sys/.../device[n]/in[_name][m]_calibbias
++What:		/sys/.../device[n]/in[m][_name]_calibbias
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Hardware applied calibration offset. (assumed to fix production
+ 		inaccuracies)
  
- static struct attribute *adis16220_attributes[] = {
--	&iio_dev_attr_in_supply_raw.dev_attr.attr,
--	&iio_const_attr_in_supply_scale.dev_attr.attr,
-+	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
-+	&iio_const_attr_in0_supply_scale.dev_attr.attr,
- 	&iio_dev_attr_accel_raw.dev_attr.attr,
- 	&iio_dev_attr_accel_offset.dev_attr.attr,
- 	&iio_dev_attr_accel_peak_raw.dev_attr.attr,
- 	&iio_const_attr_accel_scale.dev_attr.attr,
- 	&iio_dev_attr_temp_raw.dev_attr.attr,
--	&iio_dev_attr_in0_raw.dev_attr.attr,
- 	&iio_dev_attr_in1_raw.dev_attr.attr,
-+	&iio_dev_attr_in2_raw.dev_attr.attr,
- 	&iio_const_attr_temp_offset.dev_attr.attr,
- 	&iio_const_attr_temp_scale.dev_attr.attr,
- 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-index 49e172a..d11d164 100644
---- a/drivers/staging/iio/accel/adis16240_core.c
-+++ b/drivers/staging/iio/accel/adis16240_core.c
-@@ -376,11 +376,11 @@ err_ret:
- 	return ret;
- }
+-What		/sys/.../device[n]/in[_name][m]_calibscale
++What		/sys/.../device[n]/in[m][_name]_calibscale
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Hardware applied calibration scale factor. (assumed to fix production
+-		inaccuracies)
++		Hardware applied calibration scale factor. (assumed to fix
++		production inaccuracies)
  
--static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16240_read_10bit_unsigned,
-+static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16240_read_10bit_unsigned,
- 		ADIS16240_SUPPLY_OUT);
--static IIO_DEV_ATTR_IN_RAW(0, adis16240_read_10bit_signed,
-+static IIO_DEV_ATTR_IN_RAW(1, adis16240_read_10bit_signed,
- 		ADIS16240_AUX_ADC);
--static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.00488");
-+static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.00488");
+-What:		/sys/.../device[n]/in[_name][m]_scale
++What:		/sys/.../device[n]/in[m][_name]_scale
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		If known for a device, scale to be applied to volt[m]_raw post
+ 		addition of in[_name][m]_offset in order to obtain the measured
+-		voltage	in millivolts.  If shared across all in channels then			m is not present.
++		voltage in millivolts.  If shared across all in channels then
++		m is not present.
  
- static IIO_CONST_ATTR_ACCEL_SCALE("0.50406181");
- static IIO_CONST_ATTR(accel_peak_scale, "6.6292954");
-@@ -433,9 +433,9 @@ static struct attribute_group adis16240_event_attribute_group = {
- };
+ What:		/sys/.../device[n]/in[m]-in[o]_raw
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Raw (unscaled) differential voltage measurement equivalent to
+-		channel m - channel o where these channel numbers apply to the physically
+-		equivalent inputs when non differential readings are separately available.
+-		In differential only parts, then all that is required is a consistent
+-		labelling.
++		channel m - channel o where these channel numbers apply to the
++		physically equivalent inputs when non differential readings are
++		separately available. In differential only parts, then all that
++		is required is a consistent labelling.
  
- static struct attribute *adis16240_attributes[] = {
--	&iio_dev_attr_in_supply_raw.dev_attr.attr,
--	&iio_const_attr_in_supply_scale.dev_attr.attr,
--	&iio_dev_attr_in0_raw.dev_attr.attr,
-+	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
-+	&iio_const_attr_in0_supply_scale.dev_attr.attr,
-+	&iio_dev_attr_in1_raw.dev_attr.attr,
- 	&iio_const_attr_accel_scale.dev_attr.attr,
- 	&iio_const_attr_accel_peak_scale.dev_attr.attr,
- 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
-diff --git a/drivers/staging/iio/adc/adc.h b/drivers/staging/iio/adc/adc.h
-index 4f13427..40c5949 100644
---- a/drivers/staging/iio/adc/adc.h
-+++ b/drivers/staging/iio/adc/adc.h
-@@ -16,8 +16,8 @@
- #define IIO_DEV_ATTR_IN_RAW(_num, _show, _addr)				\
- 	IIO_DEVICE_ATTR(in##_num##_raw, S_IRUGO, _show, NULL, _addr)
+ What:		/sys/.../device[n]/accel[_x|_y|_z][m]_raw
+ KernelVersion:	2.6.35
+@@ -131,17 +134,19 @@ Description:
+ 		Acceleration in direction x, y or z (may be arbitrarily assigned
+ 		but should match other such assignments on device)
+ 		channel m (not present if only one accelerometer channel at
+-		this orientation). Has all of the equivalent parameters as per in[m].
+-		Units after application of scale and offset are m/s^2.
++		this orientation). Has all of the equivalent parameters as per
++		in[m]. Units after application of scale and offset are m/s^2.
  
--#define IIO_DEV_ATTR_IN_NAMED_RAW(_name, _show, _addr)			\
--	IIO_DEVICE_ATTR(in_##_name##_raw, S_IRUGO, _show, NULL, _addr)
-+#define IIO_DEV_ATTR_IN_NAMED_RAW(_num, _name, _show, _addr)		\
-+	IIO_DEVICE_ATTR(in##_num##_##_name##_raw, S_IRUGO, _show, NULL, _addr)
+ What:		/sys/.../device[n]/gyro[_x|_y|_z][m]_raw
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Angular velocity about axis x, y or z (may be arbitrarily assigned)
+-		channel m (not present if only one gyroscope at this orientation).
++		Angular velocity about axis x, y or z (may be arbitrarily
++		assigned) channel m (not present if only one gyroscope at
++		this orientation).
+ 		Data converted by application of offset then scale to
+-		radians per second. Has all the equivalent parameters as per in[m].
++		radians per second. Has all the equivalent parameters as
++		per in[m].
  
- #define IIO_DEV_ATTR_IN_DIFF_RAW(_nump, _numn, _show, _addr)		\
- 	IIO_DEVICE_ATTR_NAMED(in##_nump##min##_numn##_raw,		\
-@@ -28,11 +28,11 @@
- 			      _addr)
+ What:		/sys/.../device[n]/incli[_x|_y|_z][m]_raw
+ KernelVersion:	2.6.35
+@@ -156,10 +161,11 @@ What:		/sys/.../device[n]/magn[_x|_y|_z][m]_raw
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Magnetic field along axis x, y or z (may be arbitrarily assigned)
+-		channel m (not present if only one magnetometer at this orientation).
+-		Data converted by application of offset then scale to Gauss.
+-		Has all the equivalent modifiers as per in[m].
++		Magnetic field along axis x, y or z (may be arbitrarily
++		assigned) channel m (not present if only one magnetometer
++		at this orientation).  Data converted by application of
++		offset then scale to Gauss. Has all the equivalent modifiers
++		as per in[m].
  
+ What:		/sys/.../device[n]/device[n]:event[m]
+ KernelVersion:	2.6.35
+@@ -177,40 +183,114 @@ Description:
  
--#define IIO_CONST_ATTR_IN_NAMED_OFFSET(_name, _string)			\
--	IIO_CONST_ATTR(in_##_name##_offset, _string)
-+#define IIO_CONST_ATTR_IN_NAMED_OFFSET(_num, _name, _string)	\
-+	IIO_CONST_ATTR(in##_num##_##_name##_offset, _string)
+ Taking accel_x0 as an example
  
--#define IIO_CONST_ATTR_IN_NAMED_SCALE(_name, _string)			\
--	IIO_CONST_ATTR(in_##_name##_scale, _string)
-+#define IIO_CONST_ATTR_IN_NAMED_SCALE(_num, _name, _string)	\
-+	IIO_CONST_ATTR(in##_num##_##_name##_scale, _string)
+-What:		/sys/.../device[n]:event[m]/accel_x0_thresh[_high|_low]_en
+-KernelVersion:	2.6.35
++What:		/sys/.../device[n]:event[m]/accel_x0_thresh[_rising|_falling]_en
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Event generated when accel_x0 passes a threshold in the specfied
++		(_rising|_falling) direction. If the direction is not specified,
++		then either the device will report an event which ever direction
++		a single threshold value is called in (e.g.
++		accel_x0_<raw|input>_thresh_value) or
++		accel_x0_<raw|input>_thresh_rising_value and
++		accel_x0_<raw|input>_thresh_falling_value may take different
++		values, but the device can only enable both thresholds or
++		neither.
++		Note the driver will assume the last p events requested are
++		to be enabled where p is however many it supports (which may
++		vary depending on the exact set requested. So if you want to be
++		sure you have set what you think you have, check the contents of
++		these attributes after everything is configured. Drivers may
++		have to buffer any parameters so that they are consistent when
++		a given event type is enabled a future point (and not those for
++		whatever event was previously enabled).
++
++What:		/sys/.../accel_x0_<raw|input>_thresh[_rising|_falling]_value
++KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Event generated when accel_x0 passes a threshold in correction direction
+-		(or stays beyond one). If direction isn't specified, either triggers it.
+-		Note driver will assume last p events requested are enabled where p is
+-		however many it supports.  So if you want to be sure you have
+-		set what you think you have, check the contents of these. Drivers
+-		may have to buffer any parameters so that they are consistent when a
+-		given event type is enabled a future point (and not those for whatever
+-		alarm was previously enabled).
++		Specifies the value of threshold that the device is comparing
++		against for the events enabled by
++		accel_x0_<raw|input>_thresh[_rising|falling]_en.
++		If seperate exist for the two directions, but direction is
++		not specified for this attribute, then a single threshold value
++		applies to both directions.
++		The raw or input element of the name indicates whether the
++		value is in raw device units or in processed units (as _raw
++		and _input do on sysfs direct channel read attributes).
  
- #define IIO_EVENT_CODE_IN_HIGH_THRESH(a)				\
- 	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, a, IIO_EV_TYPE_THRESH,	\
-diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-index c1ad0c8..7d7716e 100644
---- a/drivers/staging/iio/gyro/adis16260_core.c
-+++ b/drivers/staging/iio/gyro/adis16260_core.c
-@@ -442,10 +442,10 @@ err_ret:
- 	return ret;
- }
+-What:		/sys/.../device[n]:event[m]/accel_x0_roc[_high|_low]_en
+-KernelVersion:	2.6.35
++What:		/sys/.../accel_x0_thresh[_rising|_falling]_meanperiod
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Period of time (in seconds) over which the raw channel value
++		is averaged before being compared with the threshold set in
++		accel_x0_thresh[_rising|_falling]_meanperiod.  If direction is
++		not specified then this mean period applies to both directions.
++
++What:		/sys/.../accel_x0_thresh[_rising|_falling]_period
++KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Same as above but based on the first differential of the value.
++		Period of time (in seconds) for which the threshold must be
++		passed before an event is generated. If direction is not
++		specified then this period applies to both directions.
  
--static IIO_DEV_ATTR_IN_NAMED_RAW(supply,
-+static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply,
- 				adis16260_read_12bit_unsigned,
- 				ADIS16260_SUPPLY_OUT);
--static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.0018315");
-+static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.0018315");
++What:		/sys/.../device[n]:event[m]/accel_x0_mag[_rising|_falling]_en
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Similar to accel_x0_thresh[_rising|_falling]_en, but here the
++		magnitude of the channel is compared to the threshold, not its
++		signed value.
  
- static IIO_DEV_ATTR_GYRO(adis16260_read_14bit_signed,
- 		ADIS16260_GYRO_OUT);
-@@ -463,9 +463,9 @@ static IIO_DEV_ATTR_TEMP_RAW(adis16260_read_12bit_unsigned);
- static IIO_CONST_ATTR_TEMP_OFFSET("25");
- static IIO_CONST_ATTR_TEMP_SCALE("0.1453");
+-What:		/sys/.../device[n]:event[m]/accel_x0[_thresh|_roc][_high|_low]_period
+-KernelVersion:	2.6.35
++What:		/sys/.../accel_x0_<raw|input>_mag[_rising|_falling]_value
++KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		A period of time (microsecs) for which the condition must be broken
+-		before an interrupt is triggered. Applies to all alarms if type is not
+-		specified.
++		The value to which the magnitude of the channel is compared.
  
--static IIO_DEV_ATTR_IN_RAW(0, adis16260_read_12bit_unsigned,
-+static IIO_DEV_ATTR_IN_RAW(1, adis16260_read_12bit_unsigned,
- 		ADIS16260_AUX_ADC);
--static IIO_CONST_ATTR(in0_scale, "0.0006105");
-+static IIO_CONST_ATTR(in1_scale, "0.0006105");
+-What:		/sys/.../device[n]:event[m]/accel_x0[_thresh|_roc][_high|_low]_value
+-KernelVersion:	2.6.35
++What:		/sys/.../accel_x0_mag[_rising|_falling]_meanperiod
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Period of time (in seconds) over which the value of the channel
++		is averaged before being compared to the threshold
++
++What:		/sys/.../accel_x0_mag[_rising|_falling]_period
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Period of time (in seconds) for which the condition must be true
++		before an event occurs.
++
++What:		/sys/.../device[n]:event[m]/accel_x0_roc[_rising|_falling]_en
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Similar to accel_x0_thresh[_rising|_falling]_en, but here the
++		first differential is compared with the threshold.
++
++What:		/sys/.../accel_x0_<raw|input>_roc[_rising|_falling]_value
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		The value to which the first differential of the channel is
++		compared.
++
++What:		/sys/.../accel_x0_roc[_rising|_falling]_meanperiod
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Period of time (in seconds) over which the value of the channel
++		is averaged before being compared to the threshold
++
++What:		/sys/.../accel_x0_roc[_rising|_falling]_period
++KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		The actual value of the threshold in raw device units obtained by
+-		 reverse application of scale and offfset to the acceleration in m/s^2.
++		Period of time (in seconds) for which the condition must be true
++		before an event occurs.
  
- static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
- 		adis16260_read_frequency,
-@@ -488,8 +488,8 @@ static struct attribute_group adis16260_event_attribute_group = {
- };
+ What:		/sys/.../device[n]/device[n]:buffer:event/dev
+ KernelVersion:	2.6.35
+@@ -255,16 +335,16 @@ What:		/sys/.../device[n]:buffer/alignment
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Minimum data alignment.  Scan elements larger than this are aligned
+-		to the nearest power of 2 times this.  (may not be true in weird
+-		hardware buffers that pack data well)
++		Minimum data alignment.  Scan elements larger than this are
++		aligned to the nearest power of 2 times this.  (may not be
++		true in weird hardware buffers that pack data well)
  
- static struct attribute *adis16260_attributes[] = {
--	&iio_dev_attr_in_supply_raw.dev_attr.attr,
--	&iio_const_attr_in_supply_scale.dev_attr.attr,
-+	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
-+	&iio_const_attr_in0_supply_scale.dev_attr.attr,
- 	&iio_dev_attr_gyro_raw.dev_attr.attr,
- 	&iio_const_attr_gyro_scale.dev_attr.attr,
- 	&iio_dev_attr_gyro_calibscale.dev_attr.attr,
-@@ -498,8 +498,8 @@ static struct attribute *adis16260_attributes[] = {
- 	&iio_dev_attr_temp_raw.dev_attr.attr,
- 	&iio_const_attr_temp_offset.dev_attr.attr,
- 	&iio_const_attr_temp_scale.dev_attr.attr,
--	&iio_dev_attr_in0_raw.dev_attr.attr,
--	&iio_const_attr_in0_scale.dev_attr.attr,
-+	&iio_dev_attr_in1_raw.dev_attr.attr,
-+	&iio_const_attr_in1_scale.dev_attr.attr,
- 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
- 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
- 	&iio_dev_attr_reset.dev_attr.attr,
-diff --git a/drivers/staging/iio/imu/adis16300_core.c b/drivers/staging/iio/imu/adis16300_core.c
-index 3ed86cc..7ad13f4 100644
---- a/drivers/staging/iio/imu/adis16300_core.c
-+++ b/drivers/staging/iio/imu/adis16300_core.c
-@@ -523,9 +523,9 @@ static IIO_DEV_ATTR_ACCEL_Z_CALIBBIAS(S_IWUSR | S_IRUGO,
- 		adis16300_write_16bit,
- 		ADIS16300_ZACCL_OFF);
+ What:		/sys/.../device[n]/buffer/scan_elements
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Directory containing interfaces for elements that will be captured
+-		for a single triggered sample set in the buffer.
++		Directory containing interfaces for elements that will be
++		captured for a single triggered sample set in the buffer.
  
--static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16300_read_14bit_unsigned,
-+static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16300_read_14bit_unsigned,
- 			   ADIS16300_SUPPLY_OUT);
--static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.00242");
-+static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.00242");
- 
- static IIO_DEV_ATTR_GYRO_X(adis16300_read_14bit_signed,
- 		ADIS16300_XGYRO_OUT);
-@@ -549,9 +549,9 @@ static IIO_DEV_ATTR_TEMP_RAW(adis16300_read_12bit_unsigned);
- static IIO_CONST_ATTR_TEMP_OFFSET("198.16");
- static IIO_CONST_ATTR_TEMP_SCALE("0.14");
- 
--static IIO_DEV_ATTR_IN_RAW(0, adis16300_read_12bit_unsigned,
-+static IIO_DEV_ATTR_IN_RAW(1, adis16300_read_12bit_unsigned,
- 		ADIS16300_AUX_ADC);
--static IIO_CONST_ATTR(in0_scale, "0.000806");
-+static IIO_CONST_ATTR(in1_scale, "0.000806");
- 
- static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
- 		adis16300_read_frequency,
-@@ -576,8 +576,8 @@ static struct attribute *adis16300_attributes[] = {
- 	&iio_dev_attr_accel_x_calibbias.dev_attr.attr,
- 	&iio_dev_attr_accel_y_calibbias.dev_attr.attr,
- 	&iio_dev_attr_accel_z_calibbias.dev_attr.attr,
--	&iio_dev_attr_in_supply_raw.dev_attr.attr,
--	&iio_const_attr_in_supply_scale.dev_attr.attr,
-+	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
-+	&iio_const_attr_in0_supply_scale.dev_attr.attr,
- 	&iio_dev_attr_gyro_x_raw.dev_attr.attr,
- 	&iio_const_attr_gyro_scale.dev_attr.attr,
- 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
-@@ -590,8 +590,8 @@ static struct attribute *adis16300_attributes[] = {
- 	&iio_dev_attr_temp_raw.dev_attr.attr,
- 	&iio_const_attr_temp_offset.dev_attr.attr,
- 	&iio_const_attr_temp_scale.dev_attr.attr,
--	&iio_dev_attr_in0_raw.dev_attr.attr,
--	&iio_const_attr_in0_scale.dev_attr.attr,
-+	&iio_dev_attr_in1_raw.dev_attr.attr,
-+	&iio_const_attr_in1_scale.dev_attr.attr,
- 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
- 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
- 	&iio_dev_attr_reset.dev_attr.attr,
-diff --git a/drivers/staging/iio/imu/adis16300_ring.c b/drivers/staging/iio/imu/adis16300_ring.c
-index 6af6ba5..114fdf4 100644
---- a/drivers/staging/iio/imu/adis16300_ring.c
-+++ b/drivers/staging/iio/imu/adis16300_ring.c
-@@ -17,9 +17,9 @@
- #include "../trigger.h"
- #include "adis16300.h"
- 
--static IIO_SCAN_EL_C(in_supply, ADIS16300_SCAN_SUPPLY,
-+static IIO_SCAN_EL_C(in0_supply, ADIS16300_SCAN_SUPPLY,
- 		     ADIS16300_SUPPLY_OUT, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(in_supply, u, 12, 16);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(in0_supply, u, 12, 16);
- static IIO_SCAN_EL_C(gyro_x, ADIS16300_SCAN_GYRO_X, ADIS16300_XGYRO_OUT, NULL);
- static IIO_CONST_ATTR_SCAN_EL_TYPE(gyro, s, 14, 16);
- 
-@@ -31,8 +31,8 @@ static IIO_CONST_ATTR_SCAN_EL_TYPE(accel, s, 14, 16);
- static IIO_SCAN_EL_C(temp, ADIS16300_SCAN_TEMP, ADIS16300_TEMP_OUT, NULL);
- static IIO_CONST_ATTR_SCAN_EL_TYPE(temp, s, 12, 16);
- 
--static IIO_SCAN_EL_C(in0, ADIS16300_SCAN_ADC_0, ADIS16300_AUX_ADC, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(in0, u, 12, 16);
-+static IIO_SCAN_EL_C(in1, ADIS16300_SCAN_ADC_0, ADIS16300_AUX_ADC, NULL);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(in1, u, 12, 16);
- 
- static IIO_SCAN_EL_C(incli_x, ADIS16300_SCAN_INCLI_X,
- 		     ADIS16300_XINCLI_OUT, NULL);
-@@ -44,9 +44,9 @@ static IIO_SCAN_EL_TIMESTAMP(9);
- static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
- 
- static struct attribute *adis16300_scan_el_attrs[] = {
--	&iio_scan_el_in_supply.dev_attr.attr,
--	&iio_const_attr_in_supply_index.dev_attr.attr,
--	&iio_const_attr_in_supply_type.dev_attr.attr,
-+	&iio_scan_el_in0_supply.dev_attr.attr,
-+	&iio_const_attr_in0_supply_index.dev_attr.attr,
-+	&iio_const_attr_in0_supply_type.dev_attr.attr,
- 	&iio_scan_el_gyro_x.dev_attr.attr,
- 	&iio_const_attr_gyro_x_index.dev_attr.attr,
- 	&iio_const_attr_gyro_type.dev_attr.attr,
-@@ -65,9 +65,9 @@ static struct attribute *adis16300_scan_el_attrs[] = {
- 	&iio_scan_el_incli_y.dev_attr.attr,
- 	&iio_const_attr_incli_y_index.dev_attr.attr,
- 	&iio_const_attr_incli_type.dev_attr.attr,
--	&iio_scan_el_in0.dev_attr.attr,
--	&iio_const_attr_in0_index.dev_attr.attr,
--	&iio_const_attr_in0_type.dev_attr.attr,
-+	&iio_scan_el_in1.dev_attr.attr,
-+	&iio_const_attr_in1_index.dev_attr.attr,
-+	&iio_const_attr_in1_type.dev_attr.attr,
- 	&iio_scan_el_timestamp.dev_attr.attr,
- 	&iio_const_attr_timestamp_index.dev_attr.attr,
- 	&iio_const_attr_timestamp_type.dev_attr.attr,
-@@ -214,13 +214,13 @@ int adis16300_configure_ring(struct iio_dev *indio_dev)
- 	ring->owner = THIS_MODULE;
- 
- 	/* Set default scan mode */
--	iio_scan_mask_set(ring, iio_scan_el_in_supply.number);
-+	iio_scan_mask_set(ring, iio_scan_el_in0_supply.number);
- 	iio_scan_mask_set(ring, iio_scan_el_gyro_x.number);
- 	iio_scan_mask_set(ring, iio_scan_el_accel_x.number);
- 	iio_scan_mask_set(ring, iio_scan_el_accel_y.number);
- 	iio_scan_mask_set(ring, iio_scan_el_accel_z.number);
- 	iio_scan_mask_set(ring, iio_scan_el_temp.number);
--	iio_scan_mask_set(ring, iio_scan_el_in0.number);
-+	iio_scan_mask_set(ring, iio_scan_el_in1.number);
- 	iio_scan_mask_set(ring, iio_scan_el_incli_x.number);
- 	iio_scan_mask_set(ring, iio_scan_el_incli_y.number);
- 
-diff --git a/drivers/staging/iio/imu/adis16350_core.c b/drivers/staging/iio/imu/adis16350_core.c
-index cc33843..97c1ec8 100644
---- a/drivers/staging/iio/imu/adis16350_core.c
-+++ b/drivers/staging/iio/imu/adis16350_core.c
-@@ -505,9 +505,9 @@ static IIO_DEV_ATTR_ACCEL_Z_CALIBBIAS(S_IWUSR | S_IRUGO,
- 		adis16350_write_16bit,
- 		ADIS16350_ZACCL_OFF);
- 
--static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16350_read_12bit_unsigned,
-+static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16350_read_12bit_unsigned,
- 		ADIS16350_SUPPLY_OUT);
--static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.002418");
-+static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.002418");
- 
- static IIO_DEV_ATTR_GYRO_X(adis16350_read_14bit_signed,
- 		ADIS16350_XGYRO_OUT);
-@@ -534,9 +534,9 @@ static IIO_DEVICE_ATTR(temp_z_raw, S_IRUGO, adis16350_read_12bit_signed,
- static IIO_CONST_ATTR_TEMP_SCALE("0.14534");
- static IIO_CONST_ATTR_TEMP_OFFSET("198.16");
- 
--static IIO_DEV_ATTR_IN_RAW(0, adis16350_read_12bit_unsigned,
-+static IIO_DEV_ATTR_IN_RAW(1, adis16350_read_12bit_unsigned,
- 		ADIS16350_AUX_ADC);
--static IIO_CONST_ATTR(in0_scale, "0.000806");
-+static IIO_CONST_ATTR(in1_scale, "0.000806");
- 
- static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
- 		adis16350_read_frequency,
-@@ -556,8 +556,8 @@ static struct attribute *adis16350_attributes[] = {
- 	&iio_dev_attr_accel_x_calibbias.dev_attr.attr,
- 	&iio_dev_attr_accel_y_calibbias.dev_attr.attr,
- 	&iio_dev_attr_accel_z_calibbias.dev_attr.attr,
--	&iio_dev_attr_in_supply_raw.dev_attr.attr,
--	&iio_const_attr_in_supply_scale.dev_attr.attr,
-+	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
-+	&iio_const_attr_in0_supply_scale.dev_attr.attr,
- 	&iio_dev_attr_gyro_x_raw.dev_attr.attr,
- 	&iio_dev_attr_gyro_y_raw.dev_attr.attr,
- 	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
-@@ -570,8 +570,8 @@ static struct attribute *adis16350_attributes[] = {
- 	&iio_dev_attr_temp_y_raw.dev_attr.attr,
- 	&iio_dev_attr_temp_z_raw.dev_attr.attr,
- 	&iio_const_attr_temp_scale.dev_attr.attr,
--	&iio_dev_attr_in0_raw.dev_attr.attr,
--	&iio_const_attr_in0_scale.dev_attr.attr,
-+	&iio_dev_attr_in1_raw.dev_attr.attr,
-+	&iio_const_attr_in1_scale.dev_attr.attr,
- 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
- 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
- 	&iio_dev_attr_reset.dev_attr.attr,
-diff --git a/drivers/staging/iio/imu/adis16350_ring.c b/drivers/staging/iio/imu/adis16350_ring.c
-index b2c8f43..56b70cf 100644
---- a/drivers/staging/iio/imu/adis16350_ring.c
-+++ b/drivers/staging/iio/imu/adis16350_ring.c
-@@ -17,9 +17,9 @@
- #include "../trigger.h"
- #include "adis16350.h"
- 
--static IIO_SCAN_EL_C(in_supply, ADIS16350_SCAN_SUPPLY,
-+static IIO_SCAN_EL_C(in0_supply, ADIS16350_SCAN_SUPPLY,
- 		ADIS16350_SUPPLY_OUT, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(in_supply, u, 12, 16);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(in0_supply, u, 12, 16);
- 
- static IIO_SCAN_EL_C(gyro_x, ADIS16350_SCAN_GYRO_X, ADIS16350_XGYRO_OUT, NULL);
- static IIO_SCAN_EL_C(gyro_y, ADIS16350_SCAN_GYRO_Y, ADIS16350_YGYRO_OUT, NULL);
-@@ -36,16 +36,16 @@ static IIO_SCAN_EL_C(temp_y, ADIS16350_SCAN_TEMP_Y, ADIS16350_YTEMP_OUT, NULL);
- static IIO_SCAN_EL_C(temp_z, ADIS16350_SCAN_TEMP_Z, ADIS16350_ZTEMP_OUT, NULL);
- static IIO_CONST_ATTR_SCAN_EL_TYPE(temp, s, 12, 16);
- 
--static IIO_SCAN_EL_C(in0, ADIS16350_SCAN_ADC_0, ADIS16350_AUX_ADC, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(in0, u, 12, 16);
-+static IIO_SCAN_EL_C(in1, ADIS16350_SCAN_ADC_0, ADIS16350_AUX_ADC, NULL);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(in1, u, 12, 16);
- 
- static IIO_SCAN_EL_TIMESTAMP(11);
- static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
- 
- static struct attribute *adis16350_scan_el_attrs[] = {
--	&iio_scan_el_in_supply.dev_attr.attr,
--	&iio_const_attr_in_supply_index.dev_attr.attr,
--	&iio_const_attr_in_supply_type.dev_attr.attr,
-+	&iio_scan_el_in0_supply.dev_attr.attr,
-+	&iio_const_attr_in0_supply_index.dev_attr.attr,
-+	&iio_const_attr_in0_supply_type.dev_attr.attr,
- 	&iio_scan_el_gyro_x.dev_attr.attr,
- 	&iio_const_attr_gyro_x_index.dev_attr.attr,
- 	&iio_scan_el_gyro_y.dev_attr.attr,
-@@ -67,9 +67,9 @@ static struct attribute *adis16350_scan_el_attrs[] = {
- 	&iio_scan_el_temp_z.dev_attr.attr,
- 	&iio_const_attr_temp_z_index.dev_attr.attr,
- 	&iio_const_attr_temp_type.dev_attr.attr,
--	&iio_scan_el_in0.dev_attr.attr,
--	&iio_const_attr_in0_index.dev_attr.attr,
--	&iio_const_attr_in0_type.dev_attr.attr,
-+	&iio_scan_el_in1.dev_attr.attr,
-+	&iio_const_attr_in1_index.dev_attr.attr,
-+	&iio_const_attr_in1_type.dev_attr.attr,
- 	&iio_scan_el_timestamp.dev_attr.attr,
- 	&iio_const_attr_timestamp_index.dev_attr.attr,
- 	&iio_const_attr_timestamp_type.dev_attr.attr,
-@@ -210,7 +210,7 @@ int adis16350_configure_ring(struct iio_dev *indio_dev)
- 	ring->owner = THIS_MODULE;
- 
- 	/* Set default scan mode */
--	iio_scan_mask_set(ring, iio_scan_el_in_supply.number);
-+	iio_scan_mask_set(ring, iio_scan_el_in0_supply.number);
- 	iio_scan_mask_set(ring, iio_scan_el_gyro_x.number);
- 	iio_scan_mask_set(ring, iio_scan_el_gyro_y.number);
- 	iio_scan_mask_set(ring, iio_scan_el_gyro_z.number);
-@@ -220,7 +220,7 @@ int adis16350_configure_ring(struct iio_dev *indio_dev)
- 	iio_scan_mask_set(ring, iio_scan_el_temp_x.number);
- 	iio_scan_mask_set(ring, iio_scan_el_temp_y.number);
- 	iio_scan_mask_set(ring, iio_scan_el_temp_z.number);
--	iio_scan_mask_set(ring, iio_scan_el_in0.number);
-+	iio_scan_mask_set(ring, iio_scan_el_in1.number);
- 
- 	ret = iio_alloc_pollfunc(indio_dev, NULL, &adis16350_poll_func_th);
- 	if (ret)
-diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-index 5f1643a..cfb108a 100644
---- a/drivers/staging/iio/imu/adis16400_core.c
-+++ b/drivers/staging/iio/imu/adis16400_core.c
-@@ -505,9 +505,9 @@ static ADIS16400_DEV_ATTR_CALIBBIAS(ACCEL_Y, ADIS16400_XACCL_OFF);
- static ADIS16400_DEV_ATTR_CALIBBIAS(ACCEL_Z, ADIS16400_XACCL_OFF);
- 
- 
--static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16400_read_14bit_signed,
-+static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16400_read_14bit_signed,
- 		ADIS16400_SUPPLY_OUT);
--static IIO_CONST_ATTR_IN_NAMED_SCALE(supply, "0.002418 V");
-+static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.002418 V");
- 
- static IIO_DEV_ATTR_GYRO_X(adis16400_read_14bit_signed,
- 		ADIS16400_XGYRO_OUT);
-@@ -538,9 +538,9 @@ static IIO_DEV_ATTR_TEMP_RAW(adis16400_read_12bit_signed);
- static IIO_CONST_ATTR_TEMP_OFFSET("198.16 K");
- static IIO_CONST_ATTR_TEMP_SCALE("0.14 K");
- 
--static IIO_DEV_ATTR_IN_RAW(0, adis16400_read_12bit_unsigned,
-+static IIO_DEV_ATTR_IN_RAW(1, adis16400_read_12bit_unsigned,
- 		ADIS16400_AUX_ADC);
--static IIO_CONST_ATTR(in0_scale, "0.000806 V");
-+static IIO_CONST_ATTR(in1_scale, "0.000806 V");
- 
- static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
- 		adis16400_read_frequency,
-@@ -567,8 +567,8 @@ static struct attribute *adis16400_attributes[] = {
- 	&iio_dev_attr_accel_x_calibbias.dev_attr.attr,
- 	&iio_dev_attr_accel_y_calibbias.dev_attr.attr,
- 	&iio_dev_attr_accel_z_calibbias.dev_attr.attr,
--	&iio_dev_attr_in_supply_raw.dev_attr.attr,
--	&iio_const_attr_in_supply_scale.dev_attr.attr,
-+	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
-+	&iio_const_attr_in0_supply_scale.dev_attr.attr,
- 	&iio_dev_attr_gyro_x_raw.dev_attr.attr,
- 	&iio_dev_attr_gyro_y_raw.dev_attr.attr,
- 	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
-@@ -584,8 +584,8 @@ static struct attribute *adis16400_attributes[] = {
- 	&iio_dev_attr_temp_raw.dev_attr.attr,
- 	&iio_const_attr_temp_offset.dev_attr.attr,
- 	&iio_const_attr_temp_scale.dev_attr.attr,
--	&iio_dev_attr_in0_raw.dev_attr.attr,
--	&iio_const_attr_in0_scale.dev_attr.attr,
-+	&iio_dev_attr_in1_raw.dev_attr.attr,
-+	&iio_const_attr_in1_scale.dev_attr.attr,
- 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
- 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
- 	&iio_dev_attr_reset.dev_attr.attr,
-diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
-index 1de858c..33293fb 100644
---- a/drivers/staging/iio/imu/adis16400_ring.c
-+++ b/drivers/staging/iio/imu/adis16400_ring.c
-@@ -17,9 +17,9 @@
- #include "../trigger.h"
- #include "adis16400.h"
- 
--static IIO_SCAN_EL_C(in_supply, ADIS16400_SCAN_SUPPLY,
-+static IIO_SCAN_EL_C(in0_supply, ADIS16400_SCAN_SUPPLY,
- 		     ADIS16400_SUPPLY_OUT, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(in_supply, u, 14, 16);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(in0_supply, u, 14, 16);
- 
- static IIO_SCAN_EL_C(gyro_x, ADIS16400_SCAN_GYRO_X, ADIS16400_XGYRO_OUT, NULL);
- static IIO_SCAN_EL_C(gyro_y, ADIS16400_SCAN_GYRO_Y, ADIS16400_YGYRO_OUT, NULL);
-@@ -39,16 +39,16 @@ static IIO_CONST_ATTR_SCAN_EL_TYPE(magn, s, 14, 16);
- static IIO_SCAN_EL_C(temp, ADIS16400_SCAN_TEMP, ADIS16400_TEMP_OUT, NULL);
- static IIO_CONST_ATTR_SCAN_EL_TYPE(temp, s, 12, 16);
- 
--static IIO_SCAN_EL_C(in0, ADIS16400_SCAN_ADC_0, ADIS16400_AUX_ADC, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(in0, u, 12, 16);
-+static IIO_SCAN_EL_C(in1, ADIS16400_SCAN_ADC_0, ADIS16400_AUX_ADC, NULL);
-+static IIO_CONST_ATTR_SCAN_EL_TYPE(in1, u, 12, 16);
- 
- static IIO_SCAN_EL_TIMESTAMP(12);
- static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
- 
- static struct attribute *adis16400_scan_el_attrs[] = {
--	&iio_scan_el_in_supply.dev_attr.attr,
--	&iio_const_attr_in_supply_index.dev_attr.attr,
--	&iio_const_attr_in_supply_type.dev_attr.attr,
-+	&iio_scan_el_in0_supply.dev_attr.attr,
-+	&iio_const_attr_in0_supply_index.dev_attr.attr,
-+	&iio_const_attr_in0_supply_type.dev_attr.attr,
- 	&iio_scan_el_gyro_x.dev_attr.attr,
- 	&iio_const_attr_gyro_x_index.dev_attr.attr,
- 	&iio_scan_el_gyro_y.dev_attr.attr,
-@@ -73,9 +73,9 @@ static struct attribute *adis16400_scan_el_attrs[] = {
- 	&iio_scan_el_temp.dev_attr.attr,
- 	&iio_const_attr_temp_index.dev_attr.attr,
- 	&iio_const_attr_temp_type.dev_attr.attr,
--	&iio_scan_el_in0.dev_attr.attr,
--	&iio_const_attr_in0_index.dev_attr.attr,
--	&iio_const_attr_in0_type.dev_attr.attr,
-+	&iio_scan_el_in1.dev_attr.attr,
-+	&iio_const_attr_in1_index.dev_attr.attr,
-+	&iio_const_attr_in1_type.dev_attr.attr,
- 	&iio_scan_el_timestamp.dev_attr.attr,
- 	&iio_const_attr_timestamp_index.dev_attr.attr,
- 	&iio_const_attr_timestamp_type.dev_attr.attr,
-@@ -222,7 +222,7 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
- 	ring->owner = THIS_MODULE;
- 
- 	/* Set default scan mode */
--	iio_scan_mask_set(ring, iio_scan_el_in_supply.number);
-+	iio_scan_mask_set(ring, iio_scan_el_in0_supply.number);
- 	iio_scan_mask_set(ring, iio_scan_el_gyro_x.number);
- 	iio_scan_mask_set(ring, iio_scan_el_gyro_y.number);
- 	iio_scan_mask_set(ring, iio_scan_el_gyro_z.number);
-@@ -233,7 +233,7 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
- 	iio_scan_mask_set(ring, iio_scan_el_magn_y.number);
- 	iio_scan_mask_set(ring, iio_scan_el_magn_z.number);
- 	iio_scan_mask_set(ring, iio_scan_el_temp.number);
--	iio_scan_mask_set(ring, iio_scan_el_in0.number);
-+	iio_scan_mask_set(ring, iio_scan_el_in1.number);
- 
- 	ret = iio_alloc_pollfunc(indio_dev, NULL, &adis16400_poll_func_th);
- 	if (ret)
+ What:		/sys/.../device[n]/buffer/scan_elements/accel_x0_en
+ KernelVersion:	2.6.37
 -- 
 1.7.2.2
-
