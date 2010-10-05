@@ -1,48 +1,46 @@
-Return-Path: <joe@perches.com>
-Subject: Re: [PATCH v2] iio: light: Adding driver for ISL29018 ALS
-From: Joe Perches <joe@perches.com>
-To: rklein@nvidia.com
-Cc: jic23@cam.ac.uk, achew@nvidia.com, olof@lixom.net,
- linux-i2c@vger.kernel.org,  linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, ldewangan@nvidia.com
-In-Reply-To: <1286313561-6456-1-git-send-email-rklein@nvidia.com>
+Return-Path: <rklein@nvidia.com>
+From: Rhyland Klein <rklein@nvidia.com>
+To: Joe Perches <joe@perches.com>
+CC: "jic23@cam.ac.uk" <jic23@cam.ac.uk>, Andrew Chew <AChew@nvidia.com>,
+	"olof@lixom.net" <olof@lixom.net>, "linux-i2c@vger.kernel.org"
+	<linux-i2c@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, Laxman Dewangan <ldewangan@nvidia.com>
+Date: Tue, 5 Oct 2010 14:36:41 -0700
+Subject: RE: [PATCH v2] iio: light: Adding driver for ISL29018 ALS
+Message-ID: <E88A1D35AF5437468E5B14C7C4BA61C702D2D2620A@HQMAIL01.nvidia.com>
 References: <1286313561-6456-1-git-send-email-rklein@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 05 Oct 2010 14:35:17 -0700
-Message-ID: <1286314517.2156.50.camel@Joe-Laptop>
-Mime-Version: 1.0
+ <1286314517.2156.50.camel@Joe-Laptop>
+In-Reply-To: <1286314517.2156.50.camel@Joe-Laptop>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 2010-10-05 at 14:19 -0700, rklein@nvidia.com wrote:
-> Adding support for the ISL 29018 ambient light and proximity sensor.
-
-Trivial comments below.
-
-> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-[]
-> +static int isl29018_set_range(struct i2c_client *client, unsigned long range,
-> +		unsigned int *new_range)
-> +{
-> +	unsigned long supp_ranges[] = {1000, 4000, 16000, 64000};
-
-static const
-
-> +static int isl29018_set_resolution(struct i2c_client *client,
-> +			unsigned long adcbit, unsigned int *conf_adc_bit)
-> +{
-> +	unsigned long supp_adcbit[] = {16, 12, 8, 4};
-
-here too
-
-> +static int isl29018_chip_init(struct i2c_client *client)
-> +{
-> +	struct isl29018_chip *chip = i2c_get_clientdata(client);
-> +	int status;
-> +	int i;
-> +	int new_adc_bit;
-> +	unsigned int new_range;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(chip->reg_cache); i++)
-> +		chip->reg_cache[i] = 0;
-
-memset?
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKb2UgUGVyY2hlcyBbbWFpbHRv
+OmpvZUBwZXJjaGVzLmNvbV0NCj4gU2VudDogVHVlc2RheSwgT2N0b2JlciAwNSwgMjAxMCAyOjM1
+IFBNDQo+IFRvOiBSaHlsYW5kIEtsZWluDQo+IENjOiBqaWMyM0BjYW0uYWMudWs7IEFuZHJldyBD
+aGV3OyBvbG9mQGxpeG9tLm5ldDsgbGludXgtDQo+IGkyY0B2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4
+LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0KPiBpaW9Admdlci5rZXJuZWwub3JnOyBM
+YXhtYW4gRGV3YW5nYW4NCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2Ml0gaWlvOiBsaWdodDogQWRk
+aW5nIGRyaXZlciBmb3IgSVNMMjkwMTggQUxTDQo+IA0KPiBPbiBUdWUsIDIwMTAtMTAtMDUgYXQg
+MTQ6MTkgLTA3MDAsIHJrbGVpbkBudmlkaWEuY29tIHdyb3RlOg0KPiA+IEFkZGluZyBzdXBwb3J0
+IGZvciB0aGUgSVNMIDI5MDE4IGFtYmllbnQgbGlnaHQgYW5kIHByb3hpbWl0eSBzZW5zb3IuDQo+
+IA0KPiBUcml2aWFsIGNvbW1lbnRzIGJlbG93Lg0KPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9zdGFnaW5nL2lpby9saWdodC9pc2wyOTAxOC5jDQo+IGIvZHJpdmVycy9zdGFnaW5nL2lpby9s
+aWdodC9pc2wyOTAxOC5jDQo+IFtdDQo+ID4gK3N0YXRpYyBpbnQgaXNsMjkwMThfc2V0X3Jhbmdl
+KHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQsIHVuc2lnbmVkIGxvbmcNCj4gcmFuZ2UsDQo+ID4g
+KwkJdW5zaWduZWQgaW50ICpuZXdfcmFuZ2UpDQo+ID4gK3sNCj4gPiArCXVuc2lnbmVkIGxvbmcg
+c3VwcF9yYW5nZXNbXSA9IHsxMDAwLCA0MDAwLCAxNjAwMCwgNjQwMDB9Ow0KPiANCj4gc3RhdGlj
+IGNvbnN0DQoNCldpbGwgY2hhbmdlLg0KDQo+IA0KPiA+ICtzdGF0aWMgaW50IGlzbDI5MDE4X3Nl
+dF9yZXNvbHV0aW9uKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQsDQo+ID4gKwkJCXVuc2lnbmVk
+IGxvbmcgYWRjYml0LCB1bnNpZ25lZCBpbnQgKmNvbmZfYWRjX2JpdCkNCj4gPiArew0KPiA+ICsJ
+dW5zaWduZWQgbG9uZyBzdXBwX2FkY2JpdFtdID0gezE2LCAxMiwgOCwgNH07DQo+IA0KPiBoZXJl
+IHRvbw0KDQpUaGlzIHRvby4NCg0KPiANCj4gPiArc3RhdGljIGludCBpc2wyOTAxOF9jaGlwX2lu
+aXQoc3RydWN0IGkyY19jbGllbnQgKmNsaWVudCkNCj4gPiArew0KPiA+ICsJc3RydWN0IGlzbDI5
+MDE4X2NoaXAgKmNoaXAgPSBpMmNfZ2V0X2NsaWVudGRhdGEoY2xpZW50KTsNCj4gPiArCWludCBz
+dGF0dXM7DQo+ID4gKwlpbnQgaTsNCj4gPiArCWludCBuZXdfYWRjX2JpdDsNCj4gPiArCXVuc2ln
+bmVkIGludCBuZXdfcmFuZ2U7DQo+ID4gKw0KPiA+ICsJZm9yIChpID0gMDsgaSA8IEFSUkFZX1NJ
+WkUoY2hpcC0+cmVnX2NhY2hlKTsgaSsrKQ0KPiA+ICsJCWNoaXAtPnJlZ19jYWNoZVtpXSA9IDA7
+DQo+IA0KPiBtZW1zZXQ/DQo+IA0KDQpJIGNvdWxkIHVzZSBtZW1zZXQsIGV4Y2VwdCB0aGlzIGlz
+IG9ubHkgNCByZWdpc3RlcnMgPSAzMiBieXRlcywgc28gSSBkb24ndCB0aGluayB0aGF0IGlzIHJl
+YWxseSB3b3J0aCBpdCBkbyB5b3U/DQoNCg==
