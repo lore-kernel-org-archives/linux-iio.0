@@ -1,81 +1,100 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:51816 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752309Ab0JEMTw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Oct 2010 08:19:52 -0400
-Message-ID: <4CAB1935.5090505@cam.ac.uk>
-Date: Tue, 05 Oct 2010 13:25:25 +0100
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:33083 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758000Ab0JEKK6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Oct 2010 06:10:58 -0400
+Message-ID: <4CAAFAFE.7000002@cam.ac.uk>
+Date: Tue, 05 Oct 2010 11:16:30 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Drivers <Drivers@analog.com>
-Subject: Re: IIO_CONST_ATTR_SCAN_EL_TYPE add result shift?
-References: <544AC56F16B56944AEC3BD4E3D5917712F0DB8ACA8@LIMKCMBX1.ad.analog.com> <4CAB0EF0.3010606@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D5917712F0DB8ACC8@LIMKCMBX1.ad.analog.com> <4CAB13DC.9080600@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D5917712F0DB8ACD2@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917712F0DB8ACD2@LIMKCMBX1.ad.analog.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+CC: Jean Delvare <khali@linux-fr.org>, linux-input@vger.kernel.org,
+	LM Sensors <lm-sensors@lm-sensors.org>,
+	Takashi Iwai <tiwai@suse.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Eric Piel <eric.piel@tremplin-utc.net>,
+	Frank Seidel <frank@f-seidel.de>
+Subject: Re: Accelerometer drivers in drivers/hwmon
+References: <20100925132330.4ee5e6a7@endymion.delvare> <20101004180333.GD8321@core.coreip.homeip.net>
+In-Reply-To: <20101004180333.GD8321@core.coreip.homeip.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/05/10 13:06, Hennerich, Michael wrote:
-> Jonathan Cameron wrote on 2010-10-05:
->> On 10/05/10 12:52, Hennerich, Michael wrote:
->>> Jonathan Cameron wrote on 2010-10-05:
->>>> On 10/05/10 12:24, Hennerich, Michael wrote:
->>>>> /**
->>>>>  * IIO_CONST_ATTR_SCAN_EL_TYPE - attr to specify the data format
->>>>> of a  scan el * @name: the scan el name (may be more general and
->>>>> cover a set  of scan elements * @_sign: either s or u for signed
->>>>> or unsigned *
->>>>>  @_bits: number of actual bits occuplied by the value *
->>>>>  @_storagebits: number of bits _bits is padded to when read out of
->>>>>  buffer  **/
->>>>> #define IIO_CONST_ATTR_SCAN_EL_TYPE(_name, _sign, _bits,
->>>>> _storagebits) \
->>>>>         IIO_CONST_ATTR(_name##_type,
->>>>> #_sign#_bits"/"#_storagebits); There are cases where bits <
->>>>> storagebits and the result is not alligned to the LSB. Lets say we
->>>>> have an 10-bit ADC. The output is stored in a 16-bit word, with
->>>>> four leading zeros, then the 10-bit datum, followed by 2 don't care bits.
->>>>>
->>>>> So it would be good to provide an additional shift value?
->>>>> Or how shall we handle these cases?
->>>> This was discussed in the original debate and we simply proposed
->>>> leaving it until we had a user.  So the question is how to describe
->>>> the shift.
->>>>
->>>> So taking your example, how about:
->>>>
->>>> u10/16>>2
->>>>
->>>> Where the shift is optional.
->>>>
->>>> Other suggestions welcome given I made that up with 2 seconds
->> thought.
->>>
->>> I think this is sufficient. I can only think about right shifts being
->>> useful. This notation would consistently allow both, that's why I like
->>> it. It would be decidedly odd for right shift to make sense.
->>>
->>> A bit off topic - some common defines for signed/unsigned types might
->>> also be useful.
->>>
->>> #define IIO_SCAN_EL_TYPE_SIGNED         's' #define
->>> IIO_SCAN_EL_TYPE_UNSIGNED       'u' Fine with me.
-> 
-> Shall we add the shift option to the existing macro?
-> Or shall we create a new one? How would you name it?
-Create a new one (as this is optional and as of yet, not that common)
-IIO_CONST_ATTR_SCAN_EL_TYPE_WITH_SHIFT should do the job.
+Hi all,
 
+I've cc'd a few more relevant people and linux-iio as the below
+attribute discussion may result in minor changes there.
+> Hi Jean,
+> 
+> On Sat, Sep 25, 2010 at 01:23:30PM +0200, Jean Delvare wrote:
+>> Hi Dmitry,
+>>
+>> I would like to kick the following 5 drivers out of drivers/hwmon: ams,
+>> hdaps, hp_accel, lis3lv02d and applesmc. These are primarily
+>> accelerometer devices, so the drivers do not belong to hwmon.
+>>
+>> ams, hdaps, hp_accel and lis3lv02d don't even register a hwmon device.
+>> They are pure accelerometer drivers as far as I can see. Would you take
+>> them in drivers/input/misc?
+>>
+>> applesmc is more complex, it's a multifunction device. Maybe it would
+>> better go to drivers/macintosh, where the other thermal management
+>> drivers for mac machines live.
+>>
+>> If you don't want hdaps and hp_accel, they might also fit under
+>> drivers/platform/x86. There are quite a few laptop-specific drivers
+>> living there already.
+>>
+>> If nobody wants these drivers, drivers/misc is yet another option. I'm
+>> open to suggestions. Virtually anything which moves these drivers
+>> outside of drivers/hwmon will make me happy.
+>>
+> 
+> I looked over the drivers and none of them (with possible exception of
+> lis3lv02d) are pure input devices either. I think the best course of
+> action would be to move ams, applesmc, hdaps and hp_accel into
+> drivers/*/platform (I'd say drivers/x86/platform except that I think
+> apple one might not be x86 only).
+> 
+> lis3lv02d could ether go into drivers/misc or stay where it is for the
+> time being, pending resolution on overall IIO/Input/accelerometers
+> decision. I'd take it in input/misc but accelerometer guys need to
+> decide on common sysfs layout for such devices.
+Actually not so much a problem for that driver seeing as it provides very
+few sysfs interfaces...   Lets take a quick look at what is there and see
+if we can resolve this question nice and quickly.
 
-> 
-> Greetings,
-> Michael
-> 
-> Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-> Sitz der Gesellschaft Muenchen, Registergericht Muenchen HRB 4036 Geschaeftsfuehrer Thomas Wessel, William A. Martin, Margaret Seif
-> 
-> 
-> 
+selftest - device specific so consistency doesn't matter - and it's a perfectly
+	   good name anyway!
+
+position  - (I suspect this is a somewhat misleading name)
+	  I could be wrong but I doubt anyone is using this interface for
+	  cases where they care if they get a consistent set of readings,
+	  I'd advocate splitting that one up into three separate attributes.
+	  Whilst a single attribute is just fine if you know exactly what the
+	  device you are using is, it really doesn't generalize well to devices
+	  that aren't 3d accelerometers or have addition sensor types.
+	  We can quite happily maintain the 'position' interface as well though
+	  for compatibility reasons.  I'd just add, accel_x_input, accel_y_input
+	  and accel_z_input.
+
+rate -  here we have a subtle and largerly irrelevant difference.
+	IIO uses sampling_frequency but rate is just as valid.  We just came
+	from a more data capture terminology whereas I guess rate is more common
+	when considering data streams?  If I'm playing devil's advocate I guess
+	rate might imply a data rate and hence people might interpret it as being
+	in bytes per second.  Then again I'm sure sampling_frequency can also be
+	misinterpreted!
+
+This is a large complex driver which is definitely in input in a sense (even if
+it is located elsewhere in the tree). Until someone is using one of these parts
+in a circumstance where they need the other bits of IIO it doesn't to my mind
+make sense to do a complete rewrite.  There are a lot of bells and whistles in
+here that we would need to support that aren't even vaguely of interest for
+things other than input usage.  These are very much input oriented devices
+(supporting things like 'click' detection. Hence I'd encourage you to pick
+this one up for input. The misc option is fine with me as well.
+
+Jonathan
 
