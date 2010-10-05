@@ -1,61 +1,65 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:40387 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752381Ab0JENze (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Oct 2010 09:55:34 -0400
-Message-ID: <4CAB2FA3.6030005@cam.ac.uk>
-Date: Tue, 05 Oct 2010 15:01:07 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Michael Hennerich <michael.hennerich@analog.com>
-CC: linux-iio@vger.kernel.org, drivers@analog.com
-Subject: Re: [PATCH] staging: iio: ring_generic: provide IIO_CONST_ATTR_SCAN_EL_TYPE_WITH_SHIFT
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Drivers
+	<Drivers@analog.com>
+Date: Tue, 5 Oct 2010 15:11:59 +0100
+Subject: RE: [PATCH] staging: iio: ring_generic: provide
+ IIO_CONST_ATTR_SCAN_EL_TYPE_WITH_SHIFT
+Message-ID: <544AC56F16B56944AEC3BD4E3D5917712F0DB8AD8B@LIMKCMBX1.ad.analog.com>
 References: <1286283606-6849-1-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1286283606-6849-1-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+ <4CAB2FA3.6030005@cam.ac.uk>
+In-Reply-To: <4CAB2FA3.6030005@cam.ac.uk>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/05/10 14:00, Michael Hennerich wrote:
-> 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+Jonathan Cameron wrote on 2010-10-05:
+> On 10/05/10 14:00, Michael Hennerich wrote:
+>>
+>> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+>
+> Send it to Greg with the first user... Also need to update the
+> documentation in sysfs-bus-iio to cover this, but that can be a
+> separate patch.
+>
+> Jonathan
 
-Send it to Greg with the first user... Also need to update the
-documentation in sysfs-bus-iio to cover this, but that can be
-a separate patch.
+Hi Jonathan,
 
-Jonathan
-> ---
->  drivers/staging/iio/ring_generic.h |   17 +++++++++++++++++
->  1 files changed, 17 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
-> index abd52ea..728aa41 100644
-> --- a/drivers/staging/iio/ring_generic.h
-> +++ b/drivers/staging/iio/ring_generic.h
-> @@ -292,6 +292,23 @@ ssize_t iio_scan_el_ts_show(struct device *dev, struct device_attribute *attr,
->   **/
->  #define IIO_CONST_ATTR_SCAN_EL_TYPE(_name, _sign, _bits, _storagebits) \
->  	IIO_CONST_ATTR(_name##_type, #_sign#_bits"/"#_storagebits);
-> +
-> +/**
-> + * IIO_CONST_ATTR_SCAN_EL_TYPE_WITH_SHIFT - attr to specify the data format of a scan el
-> + * @name: the scan el name (may be more general and cover a set of scan elements
-> + * @_sign: either s or u for signed or unsigned
-> + * @_bits: number of actual bits occuplied by the value
-> + * @_storagebits: number of bits _bits is padded to when read out of buffer
-> + * @_shiftbits: number of bits _shiftbits the result must be shifted
-> + **/
-> +#define IIO_CONST_ATTR_SCAN_EL_TYPE_WITH_SHIFT(_name, _sign, _bits, \
-> +					       _storagebits, _shiftbits) \
-> +	IIO_CONST_ATTR(_name##_type, #_sign#_bits"/"#_storagebits \
-> +		       ">>"#_shiftbits);
-> +
-> +#define IIO_SCAN_EL_TYPE_SIGNED         's'
-> +#define IIO_SCAN_EL_TYPE_UNSIGNED       'u'
-> +
->  /*
->   * These are mainly provided to allow for a change of implementation if a device
->   * has a large number of scan elements
+I wonder why the documentation is specific to accel?
+I think that can be many things...
 
+What:           /sys/.../device[n]/buffer/scan_elements/accel[_x0]_type
+KernelVersion:  2.6.37
+Contact:        linux-iio@vger.kernel.org
+Description:
+                Description of the scan element data storage within the buf=
+fer
+                and hence the form in which it is read from userspace.
+                Form is [s|u]bits/storagebits.  s or u specifies if signed
+                (2's complement) or unsigned. bits is the number of bits of
+                data and storagebits is the space (after padding) that it
+                occupies in the buffer.  Note that some devices will have
+                additional information in the unused bits so to get a clean
+                value, the bits value must be used to mask the buffer outpu=
+t
+                value appropriately.  The storagebits value also specifies =
+the
+                data alignment.  So s48/64 will be a signed 48 bit integer
+                stored in a 64 bit location aligned to a a64 bit boundary.
+                For other storage combinations this attribute will be exten=
+ded
+                appropriately.
+
+
+
+
+
+Greetings,
+Michael
+
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft Muenchen, Registergericht Muenchen HRB 4036 Geschaeft=
+sfuehrer Thomas Wessel, William A. Martin, Margaret Seif
