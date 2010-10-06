@@ -1,39 +1,35 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:32808 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756602Ab0JFP2e (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 6 Oct 2010 11:28:34 -0400
-Date: Wed, 6 Oct 2010 08:22:16 -0700
-From: Greg KH <greg@kroah.com>
-To: michael.hennerich@analog.com
-Cc: drivers@analog.com, linux-iio@vger.kernel.org, jic23@cam.ac.uk
-Subject: Re: [PATCH] staging: iio: adc: max1363: prevent buffer overflow
-Message-ID: <20101006152216.GB6622@kroah.com>
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Greg KH <greg@kroah.com>
+CC: Drivers <Drivers@analog.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "jic23@cam.ac.uk" <jic23@cam.ac.uk>
+Date: Wed, 6 Oct 2010 16:52:56 +0100
+Subject: RE: [PATCH] staging: iio: adc: max1363: prevent buffer overflow
+Message-ID: <544AC56F16B56944AEC3BD4E3D5917712F35A0FD62@LIMKCMBX1.ad.analog.com>
 References: <1286374537-16612-1-git-send-email-michael.hennerich@analog.com>
+ <20101006152216.GB6622@kroah.com>
+In-Reply-To: <20101006152216.GB6622@kroah.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1286374537-16612-1-git-send-email-michael.hennerich@analog.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Oct 06, 2010 at 04:15:37PM +0200, michael.hennerich@analog.com =
-wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
->=20
-> ring->access.read_last() reads the entire datum from
-> the ring including padding and time stamp.
->=20
-> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-
-I applied this, but now you get the following warning:
-	drivers/staging/iio/adc/max1363_ring.c: In function =E2=80=98max1363_s=
-ingle_channel_from_ring=E2=80=99:
-	drivers/staging/iio/adc/max1363_ring.c:34:16: warning: unused variable=
- =E2=80=98numvals=E2=80=99
-
-care to fix that now as well?
-
-thanks,
-
-greg k-h
+R3JlZyBLSCB3cm90ZSBvbiAyMDEwLTEwLTA2Og0KPiBPbiBXZWQsIE9jdCAwNiwgMjAxMCBhdCAw
+NDoxNTozN1BNICswMjAwLCBtaWNoYWVsLmhlbm5lcmljaEBhbmFsb2cuY29tDQo+IHdyb3RlOg0K
+Pj4gRnJvbTogTWljaGFlbCBIZW5uZXJpY2ggPG1pY2hhZWwuaGVubmVyaWNoQGFuYWxvZy5jb20+
+DQo+Pg0KPj4gcmluZy0+YWNjZXNzLnJlYWRfbGFzdCgpIHJlYWRzIHRoZSBlbnRpcmUgZGF0dW0g
+ZnJvbQ0KPj4gdGhlIHJpbmcgaW5jbHVkaW5nIHBhZGRpbmcgYW5kIHRpbWUgc3RhbXAuDQo+Pg0K
+Pj4gQWNrZWQtYnk6IEpvbmF0aGFuIENhbWVyb24gPGppYzIzQGNhbS5hYy51az4NCj4+IFNpZ25l
+ZC1vZmYtYnk6IE1pY2hhZWwgSGVubmVyaWNoIDxtaWNoYWVsLmhlbm5lcmljaEBhbmFsb2cuY29t
+Pg0KPg0KPiBJIGFwcGxpZWQgdGhpcywgYnV0IG5vdyB5b3UgZ2V0IHRoZSBmb2xsb3dpbmcgd2Fy
+bmluZzoNCj4gICAgICAgZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvbWF4MTM2M19yaW5nLmM6IElu
+IGZ1bmN0aW9uDQo+IOKAmG1heDEzNjNfc2luZ2xlX2NoYW5uZWxfZnJvbV9yaW5n4oCZOg0KPiAg
+ICAgICBkcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9tYXgxMzYzX3JpbmcuYzozNDoxNjogd2Fybmlu
+ZzogdW51c2VkIHZhcmlhYmxlDQo+IOKAmG51bXZhbHPigJkNCj4NCj4gY2FyZSB0byBmaXggdGhh
+dCBub3cgYXMgd2VsbD8NCj4NCj4gdGhhbmtzLA0KPg0KPiBncmVnIGstaA0KDQpUaGFua3MgLQ0K
+SSBzaG91bGQgYmV0dGVyIGhpdCB0aGUgc2F2ZSBidXR0b24gYmVmb3JlIHNlbmRpbmcgcGF0Y2hl
+cy4NCkknbGwgc2VuZCBhbiBpbmNyZW1lbnRhbCBwYXRjaCB0byByZW1vdmUgbnVtdmFscy4NCg0K
+DQpHcmVldGluZ3MsDQpNaWNoYWVsDQoNCkFuYWxvZyBEZXZpY2VzIEdtYkggICAgICBXaWxoZWxt
+LVdhZ2VuZmVsZC1TdHIuIDYgICAgICA4MDgwNyBNdWVuY2hlbg0KU2l0eiBkZXIgR2VzZWxsc2No
+YWZ0IE11ZW5jaGVuLCBSZWdpc3RlcmdlcmljaHQgTXVlbmNoZW4gSFJCIDQwMzYgR2VzY2hhZWZ0
+c2Z1ZWhyZXIgVGhvbWFzIFdlc3NlbCwgV2lsbGlhbSBBLiBNYXJ0aW4sIE1hcmdhcmV0IFNlaWYN
+Cg0KDQo=
