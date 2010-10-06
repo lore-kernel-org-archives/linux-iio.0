@@ -1,35 +1,62 @@
 Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Greg KH <greg@kroah.com>
-CC: Drivers <Drivers@analog.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "jic23@cam.ac.uk" <jic23@cam.ac.uk>
-Date: Wed, 6 Oct 2010 16:52:56 +0100
-Subject: RE: [PATCH] staging: iio: adc: max1363: prevent buffer overflow
-Message-ID: <544AC56F16B56944AEC3BD4E3D5917712F35A0FD62@LIMKCMBX1.ad.analog.com>
-References: <1286374537-16612-1-git-send-email-michael.hennerich@analog.com>
- <20101006152216.GB6622@kroah.com>
-In-Reply-To: <20101006152216.GB6622@kroah.com>
-Content-Type: text/plain; charset="utf-8"
+From: <michael.hennerich@analog.com>
+To: greg@kroah.com
+CC: drivers@analog.com, linux-iio@vger.kernel.org, jic23@cam.ac.uk,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] staging: iio: adc: ad799x: Address iio list feedback
+Date: Wed, 6 Oct 2010 10:25:49 +0200
+Message-ID: <1286353549-12852-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-R3JlZyBLSCB3cm90ZSBvbiAyMDEwLTEwLTA2Og0KPiBPbiBXZWQsIE9jdCAwNiwgMjAxMCBhdCAw
-NDoxNTozN1BNICswMjAwLCBtaWNoYWVsLmhlbm5lcmljaEBhbmFsb2cuY29tDQo+IHdyb3RlOg0K
-Pj4gRnJvbTogTWljaGFlbCBIZW5uZXJpY2ggPG1pY2hhZWwuaGVubmVyaWNoQGFuYWxvZy5jb20+
-DQo+Pg0KPj4gcmluZy0+YWNjZXNzLnJlYWRfbGFzdCgpIHJlYWRzIHRoZSBlbnRpcmUgZGF0dW0g
-ZnJvbQ0KPj4gdGhlIHJpbmcgaW5jbHVkaW5nIHBhZGRpbmcgYW5kIHRpbWUgc3RhbXAuDQo+Pg0K
-Pj4gQWNrZWQtYnk6IEpvbmF0aGFuIENhbWVyb24gPGppYzIzQGNhbS5hYy51az4NCj4+IFNpZ25l
-ZC1vZmYtYnk6IE1pY2hhZWwgSGVubmVyaWNoIDxtaWNoYWVsLmhlbm5lcmljaEBhbmFsb2cuY29t
-Pg0KPg0KPiBJIGFwcGxpZWQgdGhpcywgYnV0IG5vdyB5b3UgZ2V0IHRoZSBmb2xsb3dpbmcgd2Fy
-bmluZzoNCj4gICAgICAgZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvbWF4MTM2M19yaW5nLmM6IElu
-IGZ1bmN0aW9uDQo+IOKAmG1heDEzNjNfc2luZ2xlX2NoYW5uZWxfZnJvbV9yaW5n4oCZOg0KPiAg
-ICAgICBkcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9tYXgxMzYzX3JpbmcuYzozNDoxNjogd2Fybmlu
-ZzogdW51c2VkIHZhcmlhYmxlDQo+IOKAmG51bXZhbHPigJkNCj4NCj4gY2FyZSB0byBmaXggdGhh
-dCBub3cgYXMgd2VsbD8NCj4NCj4gdGhhbmtzLA0KPg0KPiBncmVnIGstaA0KDQpUaGFua3MgLQ0K
-SSBzaG91bGQgYmV0dGVyIGhpdCB0aGUgc2F2ZSBidXR0b24gYmVmb3JlIHNlbmRpbmcgcGF0Y2hl
-cy4NCkknbGwgc2VuZCBhbiBpbmNyZW1lbnRhbCBwYXRjaCB0byByZW1vdmUgbnVtdmFscy4NCg0K
-DQpHcmVldGluZ3MsDQpNaWNoYWVsDQoNCkFuYWxvZyBEZXZpY2VzIEdtYkggICAgICBXaWxoZWxt
-LVdhZ2VuZmVsZC1TdHIuIDYgICAgICA4MDgwNyBNdWVuY2hlbg0KU2l0eiBkZXIgR2VzZWxsc2No
-YWZ0IE11ZW5jaGVuLCBSZWdpc3RlcmdlcmljaHQgTXVlbmNoZW4gSFJCIDQwMzYgR2VzY2hhZWZ0
-c2Z1ZWhyZXIgVGhvbWFzIFdlc3NlbCwgV2lsbGlhbSBBLiBNYXJ0aW4sIE1hcmdhcmV0IFNlaWYN
-Cg0KDQo=
+From: Michael Hennerich <michael.hennerich@analog.com>
+
+Address feedback from Shubhrajyoti Datta:
+	Cast return value
+Michael Hennerich:
+	Use i2c_smbus_read_byte_data()
+	Fix return value check
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/adc/ad799x_core.c |   11 +++++------
+ 1 files changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index dca3f2a..2589856 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -65,13 +65,13 @@ static int ad799x_i2c_read8(struct ad799x_state *st, u8 reg, u8 *data)
+ 	struct i2c_client *client = st->client;
+ 	int ret = 0;
+ 
+-	ret = i2c_smbus_read_word_data(client, reg);
++	ret = i2c_smbus_read_byte_data(client, reg);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "I2C read error\n");
+ 		return ret;
+ 	}
+ 
+-	*data = ret;
++	*data = (u8)ret;
+ 
+ 	return 0;
+ }
+@@ -182,11 +182,10 @@ static ssize_t ad799x_read_single_channel(struct device *dev,
+ 	mask = 1 << this_attr->address;
+ 	/* If ring buffer capture is occuring, query the buffer */
+ 	if (iio_ring_enabled(dev_info)) {
+-		data = ad799x_single_channel_from_ring(st, mask);
+-		if (data < 0) {
+-			ret = data;
++		data = ret = ad799x_single_channel_from_ring(st, mask);
++		if (ret < 0)
+ 			goto error_ret;
+-		}
++		ret = 0;
+ 	} else {
+ 		switch (st->id) {
+ 		case ad7991:
+-- 
+1.6.0.2
