@@ -1,19 +1,19 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate03.nvidia.com ([216.228.121.140]:17675 "EHLO
-	hqemgate03.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752065Ab0JGWsr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Oct 2010 18:48:47 -0400
+Return-Path: <rklein@nvidia.com>
 From: rklein@nvidia.com
 To: greg@kroah.com
-Cc: jic23@cam.ac.uk, joe@perches.com, achew@nvidia.com, olof@lixom.net,
-	linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, ldewangan@nvidia.com,
+Cc: jic23@cam.ac.uk,
+	joe@perches.com,
+	achew@nvidia.com,
+	olof@lixom.net,
+	linux-i2c@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	ldewangan@nvidia.com,
 	Rhyland Klein <rklein@nvidia.com>
-Subject: [PATCH v6] iio: light: Adding driver for ISL29018 ALS
-Date: Thu,  7 Oct 2010 15:48:09 -0700
-Message-Id: <1286491689-13068-1-git-send-email-rklein@nvidia.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH v5] iio: light: Adding driver for ISL29018 ALS
+Date: Thu,  7 Oct 2010 12:48:03 -0700
+Message-Id: <1286480883-25589-1-git-send-email-rklein@nvidia.com>
+List-ID: <linux-iio@vger.kernel.org>
 
 From: Rhyland Klein <rklein@nvidia.com>
 
@@ -27,7 +27,6 @@ Addressed comments from reviews by Jonathan Cameron and Joe Perches
   * Change loops initialization to memset for extensibility.
     * used sizeof() instead of ARRAY_SIZE() to be safer
   * Added a property to list available adc ranges
-  * Fixed warnings and property names.
 
 Signed-off-by: Rhyland Klein <rklein@nvidia.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
@@ -141,7 +140,7 @@ index 30f3300..9142c0e 100644
 +obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
 diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
 new file mode 100644
-index 0000000..f919cc1
+index 0000000..c83f39f
 --- /dev/null
 +++ b/drivers/staging/iio/light/isl29018.c
 @@ -0,0 +1,563 @@
@@ -566,7 +565,7 @@ index 0000000..f919cc1
 +					show_resolution, store_resolution, 0);
 +static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_supression,
 +					S_IRUGO | S_IWUSR,
-+					show_prox_infrared_supression,
++					show_prox_infrared_suppression,
 +					store_prox_infrared_supression, 0);
 +static IIO_DEVICE_ATTR(illuminance0_input, S_IRUGO, show_lux, NULL, 0);
 +static IIO_DEVICE_ATTR(intensity_infrared_raw, S_IRUGO, show_ir, NULL, 0);
@@ -574,13 +573,12 @@ index 0000000..f919cc1
 +static IIO_DEVICE_ATTR(name, S_IRUGO, show_name, NULL, 0);
 +
 +#define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
-+#define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
 +static struct attribute *isl29018_attributes[] = {
 +	ISL29018_DEV_ATTR(name),
 +	ISL29018_DEV_ATTR(range),
-+	ISL29018_CONST_ATTR(range_available),
++	ISL29018_DEV_ATTR(range_available),
 +	ISL29018_DEV_ATTR(adc_resolution),
-+	ISL29018_CONST_ATTR(adc_resolution_available),
++	ISL29018_DEV_ATTR(adc_resolution_available),
 +	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_supression),
 +	ISL29018_DEV_ATTR(illuminance0_input),
 +	ISL29018_DEV_ATTR(intensity_infrared_raw),
@@ -596,6 +594,7 @@ index 0000000..f919cc1
 +{
 +	struct isl29018_chip *chip = i2c_get_clientdata(client);
 +	int status;
++	int i;
 +	int new_adc_bit;
 +	unsigned int new_range;
 +
@@ -710,4 +709,3 @@ index 0000000..f919cc1
 +MODULE_LICENSE("GPL");
 -- 
 1.7.0.4
-
