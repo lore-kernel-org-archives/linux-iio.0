@@ -1,217 +1,47 @@
-Return-Path: <glikely@secretlab.ca>
-Sender: Grant Likely <glikely@secretlab.ca>
-Date: Fri, 8 Oct 2010 12:29:43 -0600
-From: Grant Likely <grant.likely@secretlab.ca>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: matthias <mensch0815@googlemail.com>, linux-iio@vger.kernel.org,
-	drivers@analog.com, Nicolas Ferre <nicolas.ferre@atmel.com>,
-	David Brownell <dbrownell@users.sourceforge.net>,
-	spi-devel-general@lists.sourceforge.net
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from nm30-vm0.bullet.mail.ne1.yahoo.com ([98.138.91.69]:22991 "HELO
+	nm30-vm0.bullet.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1759990Ab0JIBkc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Oct 2010 21:40:32 -0400
 Subject: Re: [PATCH 0/2 V2] Adding support for adis16250/5 to adis16260
  driver.
-Message-ID: <20101008182943.GJ3863@angua.secretlab.ca>
+From: David Brownell <david-b@pacbell.net>
+To: Grant Likely <grant.likely@secretlab.ca>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>, drivers@analog.com,
+	David Brownell <dbrownell@users.sourceforge.net>,
+	linux-iio@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>,
+	matthias <mensch0815@googlemail.com>,
+	spi-devel-general@lists.sourceforge.net
+In-Reply-To: <20101008182943.GJ3863@angua.secretlab.ca>
 References: <1283786178-6466-1-git-send-email-jic23@cam.ac.uk>
- <4C94B4A6.2060001@cam.ac.uk>
- <AANLkTinQ04UmbBvakGQBeSap0PCh3VrWmhhobLh0u9Qj@mail.gmail.com>
- <4CA0C7AB.8060905@cam.ac.uk>
- <AANLkTikXMycs_eaRGA4Va=uaBo_qyx3S3m0Y43Gt+qAz@mail.gmail.com>
- <4CA344A5.80205@cam.ac.uk>
- <4CAEFEF4.4040506@cam.ac.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <4CAEFEF4.4040506@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+	 <4C94B4A6.2060001@cam.ac.uk>
+	 <AANLkTinQ04UmbBvakGQBeSap0PCh3VrWmhhobLh0u9Qj@mail.gmail.com>
+	 <4CA0C7AB.8060905@cam.ac.uk>
+	 <AANLkTikXMycs_eaRGA4Va=uaBo_qyx3S3m0Y43Gt+qAz@mail.gmail.com>
+	 <4CA344A5.80205@cam.ac.uk> <4CAEFEF4.4040506@cam.ac.uk>
+	 <20101008182943.GJ3863@angua.secretlab.ca>
+Content-Type: text/plain; charset="ISO-8859-1"
+Date: Fri, 08 Oct 2010 13:12:00 -0700
+Message-ID: <1286568720.1723.4.camel@helium>
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, Oct 08, 2010 at 12:22:28PM +0100, Jonathan Cameron wrote:
-> *bump* For anyone from spi side of things.
-> 
-> Quick summary of question (hence top post :)
-> Is it ever wrong to over specify elements of a transfer?
-> We have a driver that (for historical reasons) specifies
-> that a particular transfer is 8 bit.
-> 	.bits_per_word = 8,
-> 
-> This causes issues with the atmel spi driver which sees that
-> the value is specified and hence fails the transfer.
-> 
-> Who needs to fix?
+On Fri, 2010-10-08 at 12:29 -0600, Grant Likely wrote:
+> On Fri, Oct 08, 2010 at 12:22:28PM +0100, Jonathan Cameron wrote:
 
-Sounds to me like the Atmel SPI driver is deficient.
+> > Is it ever wrong to over specify elements of a transfer?
 
-g.
+I wouldn't say that's even possible.
 
-> 
-> Obviously we can work around by dropping the specification that it
-> is 8 bits per word.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> On 09/29/10 14:52, Jonathan Cameron wrote:
-> > Hi Matthias
+> > We have a driver that (for historical reasons) specifies
+> > that a particular transfer is 8 bit.
+> > 	.bits_per_word = 8,
 > > 
-> > Lots of additional cc's as I think I know what the problem is and I
-> > think it's an spi issue rather than an IIO one.
-> > 
-> >>
-> >> after a long stuggle, I got a working kernel version for my board
-> >> running as I need it.
-> >> I tried both the staging/adis16255 and the staging/iio/gyro driver.
-> >>
-> >> The latter doesn't work.
-> >> "adis16260 spi1.1: problem when reading 16 bit register 0x34
-> >> iio device0: disable irq failed"
-> > That is the first actual comms with the chip, so it is likely to be a
-> > general issue rather than due to that particular call.
-> >>
-> >> A quick look in the code of staging/adis16255 and the data sheet tells
-> >> me, that you have to read from the higher register address but we read
-> >> from the lower one.
-> >> So I changed the value to 0x35, but it doesn't work either.
-> > Quoting from the data sheet (it is present on the sheets for both chips).
-> > 
-> > "Each register has two addresses (upper, lower), but either one can be used
-> > to access its entire 16 bits of data."
-> > 
-> > It could be there is something special about that register I'm not seeing
-> > though...
-> >>
-> >> Well in the end I copied "my" read version from staging/adis16255 and
-> >> put a read call in the probe function (because it is the easiest way
-> >> to get spi_device structure).
-> >> Then it seems to work, with higher and lower byte.
-> > Ok, that gives us something to work against which is very helpful!
-> >> So my conclusion is, that something went wrong when you casacade and
-> >> discascade (sorry for the poor english), from spi_device through
-> >> adis16260_state to device.
-> >> Sounds stange to me, as it works with the adis16260 chip, right?
-> > As far as I know. It's possible something strange happened in a merge
-> > at some point though.
-> >> So maybe it's because I use avr32 architecture?
-> > 
-> > Having done a bit of digging and made sure that (up to the fact I don't
-> > have the part) everything runs normally on my board, I'm beginning to
-> > suspect you are correct. There are some subtle differences in the setup
-> > between your code and Barry's.
-> > 
-> > Looking about, the avr32's seem to use the atmel_spi driver?
-> > 
-> > Ah got it (I think)...
-> > 
-> > In drivers/spi/atmel_spi.c atmel_spi_transfer we have:
-> > 
-> > 		/* FIXME implement these protocol options!! */
-> > 		if (xfer->bits_per_word || xfer->speed_hz) {
-> > 			dev_dbg(&spi->dev, "no protocol options yet\n");
-> > 			return -ENOPROTOOPT;
-> > 		}
-> > 
-> > Personally I'd have at least sanity checked if the parameters were trying
-> > to change anything before dumping out.  Also, surely that's a case for
-> > something screaming a little louder given it is an out and out device
-> > killing problem? I think the default is 8 bit?  I think the reason it
-> > is in Barry's driver is a legacy issue to do with the fact that these
-> > are actually 16bit transfers pretending to be 8 bits ones...  Actually
-> > now I look at it, I'm not sure why he didn't use 16 bit ones in that
-> > function in the first place!
-> > 
-> > Not sure we need it in our drivers, but I'm guessing there may be some
-> > spi master driver out there somewhere that defaults to something other than
-> > 8 bit? (have vague recollection of seeing an email about this... perhaps
-> > someone who plays more with spi bus drivers?)
-> > 
-> >>
-> >> So I don't know if we should dig deeper. The problem is, that I don't
-> >> have too much time to do it...
-> > Sorry it is proving such a pain for you to test!
-> >> What do you think?
-> > I have cc'd spi people and the atmel_spi maintainer to see what we think
-> > is the correct fix for this. For the purposes of this discussion
-> > (though it's isn't quite what Matthias is working with) the driver in
-> > question is drivers/staging/iio/gyro/adis16260_core.c
-> > 
-> > 
-> > Thanks again for testing.
-> > 
-> > Jonathan
-> > 
-> >> Regards,
-> >> Matthias
-> >>
-> >> 2010/9/27 Jonathan Cameron <jic23@cam.ac.uk>:
-> >>> On 09/18/10 16:48, matthias wrote:
-> >>>> Hi Jonathan,
-> >>>>
-> >>>> sorry for not answering yet. I was on vacation and next week I won't
-> >>>> be able to test the driver. Will try to do it asap....
-> >>>>
-> >>>> Matthias
-> >>>
-> >>> Hi Matthias,
-> >>>
-> >>> I'm afraid quite a bit has changed over the last few weeks. Feel free to test
-> >>> this patch set.  The changes since then are merely renames of a couple of
-> >>> attributes and a lot of stuff for event handling that doesn't effect this
-> >>> driver.
-> >>>
-> >>> If not, I'm hosting a *temporary* git tree with all my various queued up changes
-> >>> at:
-> >>>
-> >>> http://git.kernel.org/?p=linux/kernel/git/jic23/iio_temp.git
-> >>>
-> >>> Seems excessive to post this set again until I hear back from you!
-> >>>
-> >>> Thanks,
-> >>>
-> >>> Jonathan
-> >>>
-> >>> p.s. Switched to drivers@analog.com address as that now seems to work.
-> >>>
-> >>>>
-> >>>> 2010/9/18 Jonathan Cameron <jic23@cam.ac.uk>:
-> >>>>> On 09/06/10 16:16, Jonathan Cameron wrote:
-> >>>>>> Mainly a rebase, but a couple of attribute naming fixes as well.
-> >>>>>>
-> >>>>>> Note I don't have one of these so if anyone could test that would
-> >>>>>> be great!
-> >>>>>>
-> >>>>>> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
-> >>>>>>
-> >>>>>> Jonathan Cameron (2):
-> >>>>>>   staging:iio:adis16260 add id table support
-> >>>>>>   staging:iio:adis16260 add suppport for adis16255 and adis16250.
-> >>>>>>
-> >>>>>>  drivers/staging/iio/gyro/Kconfig                   |    8 +-
-> >>>>>>  drivers/staging/iio/gyro/adis16260.h               |    3 +
-> >>>>>>  drivers/staging/iio/gyro/adis16260_core.c          |  139 ++++++++++++++------
-> >>>>>>  drivers/staging/iio/gyro/adis16260_platform_data.h |   19 +++
-> >>>>>>  drivers/staging/iio/gyro/gyro.h                    |    9 ++
-> >>>>>>  5 files changed, 136 insertions(+), 42 deletions(-)
-> >>>>>>  create mode 100644 drivers/staging/iio/gyro/adis16260_platform_data.h
-> >>>>>>
-> >>>>>>
-> >>>>> Whilst I haven't tested these (don't have the hardware) I don't think there
-> >>>>> is anything controversial, so my intent is to push these to Greg before the
-> >>>>> next merge window.  This is primarily to remove the duplication we currently
-> >>>>> have with two drivers that effectively cover the same parts.
-> >>>>>
-> >>>>> Thanks,
-> >>>>>
-> >>>>> Jonathan
-> >>>>>
-> >>>>
-> >>>>
-> >>>>
-> >>>
-> >>>
-> >>
-> >>
-> >>
-> > 
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > 
-> 
+> > This causes issues with the atmel spi driver which sees that
+> > the value is specified and hence fails the transfer.
+
+
+Specifying 8 there means the same as specifying zero.
+
+
