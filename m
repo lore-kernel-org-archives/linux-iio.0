@@ -1,89 +1,203 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Drivers
-	<Drivers@analog.com>
-Date: Mon, 4 Oct 2010 13:13:27 +0100
-Subject: RE: [PATCH] staging: iio: adc: Enable driver support for ad799x AD
- converters
-Message-ID: <544AC56F16B56944AEC3BD4E3D5917712F0DB8A910@LIMKCMBX1.ad.analog.com>
-References: <1285926110-6678-1-git-send-email-michael.hennerich@analog.com>
- <1285926110-6678-2-git-send-email-michael.hennerich@analog.com>
- <4CA5CF74.6030606@cam.ac.uk>
- <544AC56F16B56944AEC3BD4E3D5917712F0DB8A636@LIMKCMBX1.ad.analog.com>
- <4CA60343.9050106@cam.ac.uk>
- <544AC56F16B56944AEC3BD4E3D5917712F0DB8A799@LIMKCMBX1.ad.analog.com>
- <4CA9A4DC.3020609@cam.ac.uk>
-In-Reply-To: <4CA9A4DC.3020609@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <jic23@cam.ac.uk>
+Message-ID: <4CAEFEF4.4040506@cam.ac.uk>
+Date: Fri, 08 Oct 2010 12:22:28 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: matthias <mensch0815@googlemail.com>, linux-iio@vger.kernel.org,
+ drivers@analog.com, Nicolas Ferre <nicolas.ferre@atmel.com>,
+ David Brownell <dbrownell@users.sourceforge.net>,
+ Grant Likely <grant.likely@secretlab.ca>,
+ spi-devel-general@lists.sourceforge.net
+Subject: Re: [PATCH 0/2 V2] Adding support for adis16250/5 to adis16260 driver.
+References: <1283786178-6466-1-git-send-email-jic23@cam.ac.uk>	<4C94B4A6.2060001@cam.ac.uk>	<AANLkTinQ04UmbBvakGQBeSap0PCh3VrWmhhobLh0u9Qj@mail.gmail.com>	<4CA0C7AB.8060905@cam.ac.uk> <AANLkTikXMycs_eaRGA4Va=uaBo_qyx3S3m0Y43Gt+qAz@mail.gmail.com> <4CA344A5.80205@cam.ac.uk>
+In-Reply-To: <4CA344A5.80205@cam.ac.uk>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron wrote on 2010-10-04:
-> ...
+*bump* For anyone from spi side of things.
+
+Quick summary of question (hence top post :)
+Is it ever wrong to over specify elements of a transfer?
+We have a driver that (for historical reasons) specifies
+that a particular transfer is 8 bit.
+	.bits_per_word = 8,
+
+This causes issues with the atmel spi driver which sees that
+the value is specified and hence fails the transfer.
+
+Who needs to fix?
+
+Obviously we can work around by dropping the specification that it
+is 8 bits per word.
+
+Thanks,
+
+Jonathan
+
+On 09/29/10 14:52, Jonathan Cameron wrote:
+> Hi Matthias
+> 
+> Lots of additional cc's as I think I know what the problem is and I
+> think it's an spi issue rather than an IIO one.
+> 
+>>
+>> after a long stuggle, I got a working kernel version for my board
+>> running as I need it.
+>> I tried both the staging/adis16255 and the staging/iio/gyro driver.
+>>
+>> The latter doesn't work.
+>> "adis16260 spi1.1: problem when reading 16 bit register 0x34
+>> iio device0: disable irq failed"
+> That is the first actual comms with the chip, so it is likely to be a
+> general issue rather than due to that particular call.
+>>
+>> A quick look in the code of staging/adis16255 and the data sheet tells
+>> me, that you have to read from the higher register address but we read
+>> from the lower one.
+>> So I changed the value to 0x35, but it doesn't work either.
+> Quoting from the data sheet (it is present on the sheets for both chips).
+> 
+> "Each register has two addresses (upper, lower), but either one can be used
+> to access its entire 16 bits of data."
+> 
+> It could be there is something special about that register I'm not seeing
+> though...
+>>
+>> Well in the end I copied "my" read version from staging/adis16255 and
+>> put a read call in the probe function (because it is the easiest way
+>> to get spi_device structure).
+>> Then it seems to work, with higher and lower byte.
+> Ok, that gives us something to work against which is very helpful!
+>> So my conclusion is, that something went wrong when you casacade and
+>> discascade (sorry for the poor english), from spi_device through
+>> adis16260_state to device.
+>> Sounds stange to me, as it works with the adis16260 chip, right?
+> As far as I know. It's possible something strange happened in a merge
+> at some point though.
+>> So maybe it's because I use avr32 architecture?
+> 
+> Having done a bit of digging and made sure that (up to the fact I don't
+> have the part) everything runs normally on my board, I'm beginning to
+> suspect you are correct. There are some subtle differences in the setup
+> between your code and Barry's.
+> 
+> Looking about, the avr32's seem to use the atmel_spi driver?
+> 
+> Ah got it (I think)...
+> 
+> In drivers/spi/atmel_spi.c atmel_spi_transfer we have:
+> 
+> 		/* FIXME implement these protocol options!! */
+> 		if (xfer->bits_per_word || xfer->speed_hz) {
+> 			dev_dbg(&spi->dev, "no protocol options yet\n");
+> 			return -ENOPROTOOPT;
+> 		}
+> 
+> Personally I'd have at least sanity checked if the parameters were trying
+> to change anything before dumping out.  Also, surely that's a case for
+> something screaming a little louder given it is an out and out device
+> killing problem? I think the default is 8 bit?  I think the reason it
+> is in Barry's driver is a legacy issue to do with the fact that these
+> are actually 16bit transfers pretending to be 8 bits ones...  Actually
+> now I look at it, I'm not sure why he didn't use 16 bit ones in that
+> function in the first place!
+> 
+> Not sure we need it in our drivers, but I'm guessing there may be some
+> spi master driver out there somewhere that defaults to something other than
+> 8 bit? (have vague recollection of seeing an email about this... perhaps
+> someone who plays more with spi bus drivers?)
+> 
+>>
+>> So I don't know if we should dig deeper. The problem is, that I don't
+>> have too much time to do it...
+> Sorry it is proving such a pain for you to test!
+>> What do you think?
+> I have cc'd spi people and the atmel_spi maintainer to see what we think
+> is the correct fix for this. For the purposes of this discussion
+> (though it's isn't quite what Matthias is working with) the driver in
+> question is drivers/staging/iio/gyro/adis16260_core.c
+> 
+> 
+> Thanks again for testing.
+> 
+> Jonathan
+> 
+>> Regards,
+>> Matthias
+>>
+>> 2010/9/27 Jonathan Cameron <jic23@cam.ac.uk>:
+>>> On 09/18/10 16:48, matthias wrote:
 >>>> Hi Jonathan,
 >>>>
->>>> We have a few more iio drivers in our repository. Over the next
->>>> couple of weeks I'm trying to get them out. Excellent.
+>>>> sorry for not answering yet. I was on vacation and next week I won't
+>>>> be able to test the driver. Will try to do it asap....
 >>>>
->>>>> because I would like it to go in before the event clean up series
->>>>> currently sat in my tree. That way I can update this one at the
->>>>> same time.
+>>>> Matthias
+>>>
+>>> Hi Matthias,
+>>>
+>>> I'm afraid quite a bit has changed over the last few weeks. Feel free to test
+>>> this patch set.  The changes since then are merely renames of a couple of
+>>> attributes and a lot of stuff for event handling that doesn't effect this
+>>> driver.
+>>>
+>>> If not, I'm hosting a *temporary* git tree with all my various queued up changes
+>>> at:
+>>>
+>>> http://git.kernel.org/?p=linux/kernel/git/jic23/iio_temp.git
+>>>
+>>> Seems excessive to post this set again until I hear back from you!
+>>>
+>>> Thanks,
+>>>
+>>> Jonathan
+>>>
+>>> p.s. Switched to drivers@analog.com address as that now seems to work.
+>>>
 >>>>
->>>> Oops - this patch was already against your tree:
->>>> http://git.kernel.org/?p=3Dlinux/kernel/git/jic23/iio_temp.git
+>>>> 2010/9/18 Jonathan Cameron <jic23@cam.ac.uk>:
+>>>>> On 09/06/10 16:16, Jonathan Cameron wrote:
+>>>>>> Mainly a rebase, but a couple of attribute naming fixes as well.
+>>>>>>
+>>>>>> Note I don't have one of these so if anyone could test that would
+>>>>>> be great!
+>>>>>>
+>>>>>> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+>>>>>>
+>>>>>> Jonathan Cameron (2):
+>>>>>>   staging:iio:adis16260 add id table support
+>>>>>>   staging:iio:adis16260 add suppport for adis16255 and adis16250.
+>>>>>>
+>>>>>>  drivers/staging/iio/gyro/Kconfig                   |    8 +-
+>>>>>>  drivers/staging/iio/gyro/adis16260.h               |    3 +
+>>>>>>  drivers/staging/iio/gyro/adis16260_core.c          |  139 ++++++++++++++------
+>>>>>>  drivers/staging/iio/gyro/adis16260_platform_data.h |   19 +++
+>>>>>>  drivers/staging/iio/gyro/gyro.h                    |    9 ++
+>>>>>>  5 files changed, 136 insertions(+), 42 deletions(-)
+>>>>>>  create mode 100644 drivers/staging/iio/gyro/adis16260_platform_data.h
+>>>>>>
+>>>>>>
+>>>>> Whilst I haven't tested these (don't have the hardware) I don't think there
+>>>>> is anything controversial, so my intent is to push these to Greg before the
+>>>>> next merge window.  This is primarily to remove the duplication we currently
+>>>>> have with two drivers that effectively cover the same parts.
+>>>>>
+>>>>> Thanks,
+>>>>>
+>>>>> Jonathan
+>>>>>
 >>>>
->>>> Need to check if it works on Greg's staging.
->>> Ah. Shouldn't be too bad.  That's what I get for putting temporary
->>> trees up - that one only exists for testing the adis16260 and
->>> adis16350 driver changes.
+>>>>
+>>>>
+>>>
+>>>
 >>
->> Well - it looks bad. It basically errors on everything I changed in
->> order to make it work on your temp tree. I'll send Greg my original
->> version...
-> Are you sure this was against staging-next branch of the staging-next
-> tree? (which is where Greg will merge this)  Far as I can see all the
-> changes since that in my temp tree are to do with the event code
-> cleanups and I don't think that would generate most of these.  The
-> index an type changes + the rearrangement of the buffer code has been
-> merged for a while.
->
->
-> It applies and builds as is.  git's am checking throws up
-> /home/jic23/src/kernel/staging-next-2.6/.git/rebase-apply/patch:610:
-> trailing whitespace.
->                                 i & 0x1 ?
-> and sparse gives drivers/staging/iio/adc/ad799x_core.c: In function
-> 'ad799x_interrupt_bh': drivers/staging/iio/adc/ad799x_core.c:391:
-> warning: suggest parentheses around + or - inside shift
-> drivers/staging/iio/adc/ad799x_core.c:392: warning: right shift count
->> =3D width of type
-> drivers/staging/iio/adc/ad799x_core.c:392: warning: suggest
-> parentheses around + or - inside shift
->
-> both of which are probably worth fixing.
-
-Do you think adding parentheses around (i) is going to fix the issue?
-Or does the MACRO needs some fixing?
-
-
--                               i & 0x1 ?
--                               IIO_EVENT_CODE_IN_HIGH_THRESH(i >> 1) :
--                               IIO_EVENT_CODE_IN_LOW_THRESH(i >> 1),
-+                               i & 0x1 ?
-+                               IIO_EVENT_CODE_IN_HIGH_THRESH((i) >> 1) :
-+                               IIO_EVENT_CODE_IN_LOW_THRESH((i) >> 1),
-
-
-I tried using sparse - however in my environment it doesn't pick up proper =
-kernel includes.
-Do you know how to use sparse with cross compile? Or do you use the include=
-s installed on your host?
-
-
-Greetings,
-Michael
-
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft Muenchen, Registergericht Muenchen HRB 4036 Geschaeft=
-sfuehrer Thomas Wessel, William A. Martin, Margaret Seif
+>>
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
