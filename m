@@ -1,94 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:39847 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754842Ab0JNTlc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Oct 2010 15:41:32 -0400
-Message-ID: <4CB75E48.2050901@cam.ac.uk>
-Date: Thu, 14 Oct 2010 20:47:20 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: greg@kroah.com
+CC: linux-iio@vger.kernel.org, drivers@analog.com, jic23@cam.ac.uk,
+        device-drivers-devel@blackfin.uclinux.org, randy.dunlap@oracle.com,
+        devel@driverdev.osuosl.org, sfr@canb.auug.org.au,
+        linux-next@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] staging: iio: ad7476: fix !CONFIG_IIO_RING_BUFFER build issue reported by Randy Dunlap
+Date: Thu, 14 Oct 2010 10:17:18 +0200
+Message-ID: <1287044238-20220-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: Matthias Brugger <matthias.bgg@gmail.com>
-CC: linux-iio@vger.kernel.org, matthias <mensch0815@googlemail.com>
-Subject: Re: [RFC 1/2] iio - add support for digital barometer devices
-References: <4CB745C8.4050804@gmail.com>
-In-Reply-To: <4CB745C8.4050804@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/14/10 19:02, Matthias Brugger wrote:
-> ---
->  drivers/staging/iio/Kconfig            |    1 +
->  drivers/staging/iio/Makefile           |    1 +
->  drivers/staging/iio/barometer/Kconfig  |    5 +++++
->  drivers/staging/iio/barometer/Makefile |    4 ++++
->  drivers/staging/iio/barometer/baro.h   |    8 ++++++++
->  5 files changed, 19 insertions(+), 0 deletions(-)
->  create mode 100644 drivers/staging/iio/barometer/Kconfig
->  create mode 100644 drivers/staging/iio/barometer/Makefile
->  create mode 100644 drivers/staging/iio/barometer/baro.h
-> 
-> diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
-> index ed48815..d5ca09a 100644
-> --- a/drivers/staging/iio/Kconfig
-> +++ b/drivers/staging/iio/Kconfig
-> @@ -46,6 +46,7 @@ source "drivers/staging/iio/gyro/Kconfig"
->  source "drivers/staging/iio/imu/Kconfig"
->  source "drivers/staging/iio/light/Kconfig"
->  source "drivers/staging/iio/magnetometer/Kconfig"
-> +source "drivers/staging/iio/barometer/Kconfig"
->  
->  source "drivers/staging/iio/trigger/Kconfig"
->  
-> diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
-> index e909674..73112b2 100644
-> --- a/drivers/staging/iio/Makefile
-> +++ b/drivers/staging/iio/Makefile
-> @@ -16,3 +16,4 @@ obj-y += imu/
->  obj-y += light/
->  obj-y += trigger/
->  obj-y += magnetometer/
-> +obj-y += barometer/
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-One for me to fix, but we should probably put these in alphabetical order.  Tends to make
-for fewer merge conflicts than adding new ones at the end.
-> diff --git a/drivers/staging/iio/barometer/Kconfig b/drivers/staging/iio/barometer/Kconfig
-> new file mode 100644
-> index 0000000..588325c
-> --- /dev/null
-> +++ b/drivers/staging/iio/barometer/Kconfig
-> @@ -0,0 +1,5 @@
-> +#
-> +# IIO Digital Barometer Sensor drivers configuration
-> +#
-> +comment "Digital barometer sensors"
-> +
-> diff --git a/drivers/staging/iio/barometer/Makefile b/drivers/staging/iio/barometer/Makefile
-> new file mode 100644
-> index 0000000..2963d72
-> --- /dev/null
-> +++ b/drivers/staging/iio/barometer/Makefile
-> @@ -0,0 +1,4 @@
-> +#
-> +# Makefile for digital gyroscope sensor drivers
-You are going to want to change that comment :)
-> +#
-> +
-> diff --git a/drivers/staging/iio/barometer/baro.h b/drivers/staging/iio/barometer/baro.h
-> new file mode 100644
-> index 0000000..e3b73a1
-> --- /dev/null
-> +++ b/drivers/staging/iio/barometer/baro.h
-> @@ -0,0 +1,8 @@
-> +
-> +#include "../sysfs.h"
-> +
-> +/* Barometer types of attribute */
-> +
-> +#define IIO_DEV_ATTR_BARO_PRESSURE(_mode, _show, _store, _addr)	\
-> +	IIO_DEVICE_ATTR(baro_pressure, _mode, _show, NULL, _addr)
-> +
-It think I recall the fact that Kconfig has issues with empty Makefiles,
-so this will need to be merged into your second patch.  This stuff always
-goes in with the first driver to need it.
+Fix function function decalration
+Enable CONFIG_IIO_RING_BUFFER for the ad7476 driver
 
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/adc/Kconfig  |    3 +++
+ drivers/staging/iio/adc/ad7476.h |    4 +---
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 81a7d45..acb6767 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -50,6 +50,9 @@ config AD799X_RING_BUFFER
+ config AD7476
+ 	tristate "Analog Devices AD7475/6/7/8 AD7466/7/8 and AD7495 ADC driver"
+ 	depends on SPI
++	select IIO_RING_BUFFER	
++	select IIO_SW_RING
++	select IIO_TRIGGER 	
+ 	help
+ 	  Say yes here to build support for Analog Devices
+ 	  AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468, AD7495
+diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
+index 6e4a85b..b51b49e 100644
+--- a/drivers/staging/iio/adc/ad7476.h
++++ b/drivers/staging/iio/adc/ad7476.h
+@@ -59,9 +59,7 @@ int ad7476_scan_from_ring(struct ad7476_state *st);
+ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+ void ad7476_ring_cleanup(struct iio_dev *indio_dev);
+ #else /* CONFIG_IIO_RING_BUFFER */
+-static inline ssize_t ad7476_scan_from_ring(struct device *dev,
+-					     struct device_attribute *attr,
+-					     char *buf)
++static inline int ad7476_scan_from_ring(struct ad7476_state *st)
+ {
+ 	return 0;
+ }
+-- 
+1.6.0.2
