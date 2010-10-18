@@ -1,315 +1,671 @@
-Return-Path: <matthias.bgg9ab33xy531gmail.com@bounce.antispameurope.com>
-Message-ID: <4CBDD2F3.4070800@gmail.com>
-Date: Tue, 19 Oct 2010 19:18:43 +0200
-From: Matthias Brugger <matthias.bgg@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:39807 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755092Ab0JRNoB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Oct 2010 09:44:01 -0400
+Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:41190)
+	by ppsw-51.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.158]:25)
+	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
+	id 1P7q0N-0001el-Yy (Exim 4.72) for linux-iio@vger.kernel.org
+	(return-path <jic23@cam.ac.uk>); Mon, 18 Oct 2010 14:43:59 +0100
+Message-ID: <4CBC5083.50002@cam.ac.uk>
+Date: Mon, 18 Oct 2010 14:49:55 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: linux-iio@vger.kernel.org, shubhrajyoti@ti.com,
-        matthias <mensch0815@googlemail.com>
-Subject: [PATCH] iio - bmp085 most issues done
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Documentation reorganization.
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch handles with most of the issues mentioned.
+Hi all, I've pasted the following in directly as diffs of these files are somewhat
+hard to comment on and it's more or less rewritten.
 
-Hope I did it right, with patch submission like this.
+The basic principal here was to move towards cleanly documenting every
+attribute we have.  This involved firstly moving to X Y Z for numeric
+indexing and adding multiple What: lines to the file to list everything.
+Basically we want people to be able to grep when they come across an
+attribute and wonder what it does.  There are a few omissions in here
+at the moment (rot, angl, hyst) but those are mainly because I'm not quite
+sure what they are and haven't datasheet dived as yet.  I have also cut
+out a few things that we agreed interfaces for but which are not currently
+used by any drivers (meanperiod for example)
 
-Signed-off-by: Matthias Brugger <m_brugger@web.de>
----
- drivers/staging/iio/barometer/baro.h   |    2 +-
- drivers/staging/iio/barometer/bmp085.c |   56
-++++++++++---------------------
- drivers/staging/iio/barometer/bmp085.h |   37 ++++++++++++++++++++-
- 3 files changed, 55 insertions(+), 40 deletions(-)
+A couple of our drivers aren't currently compliant with this spec
+(including some of mine ;)  The other addition that will come is that
+of inY_thresh_above_en and inY_thresh_below_en.  This was suggested
+in a sensor outside iio that is matching our abi (more or less)
+and seems a sensible and clear way of handling 'level' type interrupts
+(that is those that will retrigger if the interrupt is cleared and they
+are still true).
 
-diff --git a/drivers/staging/iio/barometer/baro.h
-b/drivers/staging/iio/barometer/baro.h
-index e3b73a1..a25e4cd 100644
---- a/drivers/staging/iio/barometer/baro.h
-+++ b/drivers/staging/iio/barometer/baro.h
-@@ -4,5 +4,5 @@
- /* Barometer types of attribute */
+All comments welcome!  Lets get this nice and clean once and for all.
+I haven't rolled in the light sensor attributes as yet, but will look
+at how simple that is after we have the current content cleaned up.
 
- #define IIO_DEV_ATTR_BARO_PRESSURE(_mode, _show, _store, _addr)	\
--	IIO_DEVICE_ATTR(baro_pressure, _mode, _show, NULL, _addr)
-+	IIO_DEVICE_ATTR(baro_pressure_input, _mode, _show, NULL, _addr)
+Thanks,
 
-diff --git a/drivers/staging/iio/barometer/bmp085.c
-b/drivers/staging/iio/barometer/bmp085.c
-index 67dac39..580bd57 100644
---- a/drivers/staging/iio/barometer/bmp085.c
-+++ b/drivers/staging/iio/barometer/bmp085.c
-@@ -37,7 +37,7 @@ module_param(oss, int , S_IRUSR);
- MODULE_PARM_DESC(oss, "Oversampling setting [0-3]");
+Jonathan
 
- /***********************************************************************=
-***
-- * Calcualtion of temperature and pressure
-+ * Calculation of temperature and pressure
 
-*************************************************************************=
-*/
- static short bmp085_calc_temperature(struct i2c_client *client,
- 	       unsigned long ut)
-@@ -90,17 +90,6 @@ static long bmp085_calc_pressure(struct
-i2c_client *client, unsigned long up)
-  * Digital interface to sensor
+...
 
-*************************************************************************=
-*/
+What:		/sys/bus/iio/devices/deviceX
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Hardware chip or device accessed by on communication port.
+		Corresponds to a grouping of sensor channels. X is the IIO
+		index of the device.
 
--static ssize_t bmp085_read(struct i2c_client *client, u8 reg,
-size_t count,
--	       unsigned char *buffer)
--{
--	int rc;
--	rc =3D i2c_smbus_read_i2c_block_data(client, reg, count, buffer);
--	if (rc < 0)
--			return -EIO;
--
--	return count;
--}
--
- static short bmp085_read_temp(struct i2c_client *client)
- {
- 	s32 ret;
-@@ -117,8 +106,9 @@ static short bmp085_read_temp(struct i2c_client
-*client)
- 		return ret;
- 	}
+What:		/sys/bus/iio/devices/triggerX
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		An event driven driver of data capture to an in kernel buffer.
+		May be provided by a device driver that also has an IIO device
+		based on hardware generated events (e.g. data ready) or
+		provided by a separate driver for other hardware (e.g.
+		periodic timer, gpio or high resolution timer).
+		Contains trigger type specific elements. These do not
+		generalize well and hence are not documented in this file.
+		X is the IIO index of the trigger.
 
--	mdelay(5);
--	ret =3D bmp085_read(client, BMP085_REG_CONV, 2, data->data);
-+	msleep(5);
-+	ret =3D i2c_smbus_read_i2c_block_data(client, BMP085_REG_CONV, 2,
-+			data->data);
- 	if (ret < 0) {
- 		dev_warn(&client->dev, "reading ut failed, value is %#x\n"
- 				, ret);
-@@ -139,7 +129,6 @@ static long bmp085_read_pressure(struct
-i2c_client *client)
- 	u8 xlsb, ret1, ret2;
- 	long pressure;
- 	u8 reg;
--	/* TODO should be 4.5, 7.5, 13.5, 25.5 ms */
- 	int time_delay[4] =3D {5, 8, 14, 26};
- 	struct bmp085_data *data =3D i2c_get_clientdata(client);
+What:		/sys/bus/iio/devices/deviceX:buffer
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Link to /sys/class/iio/deviceX/deviceX:buffer. X indicates
+		the device with which this buffer buffer is associated.
 
-@@ -163,7 +152,7 @@ static long bmp085_read_pressure(struct
-i2c_client *client)
- 	if (ret < 0)
- 		return ret;
+What:		/sys/bus/iio/devices/deviceX/name
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Description of the physical chip / device for device X.
+		Typically a part number.
 
--	mdelay(time_delay[data->oss]);
-+	msleep(time_delay[data->oss]);
+What:		/sys/bus/iio/devices/deviceX/sampling_frequency
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Some devices have internal clocks.  This parameter sets the
+		resulting sampling frequency.  In many devices this
+		parameter has an effect on input filters etc rather than
+		simply controlling when the input is sampled.  As this
+		effects datardy triggers, hardware buffers and the sysfs
+		direct access interfaces, it may be found in any of the
+		relevant directories.  If it effects all of the above
+		then it is to be found in the base device directory as here.
 
- 	mutex_lock(&data->bmp085_lock);
- 	ret1 =3D i2c_smbus_read_byte_data(client, 0xf6);
-@@ -176,7 +165,6 @@ static long bmp085_read_pressure(struct
-i2c_client *client)
- 	data->up =3D up;
+What:		/sys/bus/iio/devices/deviceX/sampling_frequency_available
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		When the internal sampling clock can only take a small
+		discrete set of values, this file lists those available.
 
- 	pressure =3D bmp085_calc_pressure(client, up);
--	data->pressure =3D pressure;
+What:		/sys/bus/iio/devices/deviceX/inY_raw
+What:		/sys/bus/iio/devices/deviceX/inY_supply_raw
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Raw (unscaled no bias removal etc) voltage measurement from
+		channel Y. In special cases where the channel does not
+		correspond to externally available input one of the named
+		versions may be used. The number must always be specified and
+		unique to allow association with event codes.
 
- 	return pressure;
- }
-@@ -199,13 +187,13 @@ static ssize_t barometer_show_temp(struct
-device *dev,
+What:		/sys/bus/iio/devices/deviceX/inY-inZ_raw
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Raw (unscaled) differential voltage measurement equivalent to
+		channel Y - channel Z where these channel numbers apply to the
+		physically equivalent inputs when non differential readings are
+		separately available. In differential only parts, then all that
+		is required is a consistent labeling.
 
- 	data->temp =3D status;
+What:		/sys/bus/iio/devices/deviceX/temp_raw
+What:		/sys/bus/iio/devices/deviceX/temp_x_raw
+What:		/sys/bus/iio/devices/deviceX/temp_y_raw
+What:		/sys/bus/iio/devices/deviceX/temp_z_raw
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Raw (unscaled no bias removal etc) temperature measurement.
+		It an axis is specified it generally means that the temperature
+		sensor is associated with one part of a compound device (e.g.
+		a gyroscope axis).
 
--	return sprintf(buf, "%ld\n", data->temp);
-+	return sprintf(buf, "%d\n", data->temp);
- }
- static IIO_DEV_ATTR_TEMP_RAW(barometer_show_temp);
+What:		/sys/bus/iio/devices/deviceX/accel_x_raw
+What:		/sys/bus/iio/devices/deviceX/accel_y_raw
+What:		/sys/bus/iio/devices/deviceX/accel_z_raw
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Acceleration in direction x, y or z (may be arbitrarily assigned
+		but should match other such assignments on device)
+		channel m (not present if only one accelerometer channel at
+		this orientation). Has all of the equivalent parameters as per
+		inY. Units after application of scale and offset are m/s^2.
 
- /**
-- * In standard mode, the temperature has to be reat every second
-before the
-- * pressure can be reat. We leave this semantics to the userspace,
-if later
-+ * In standard mode, the temperature has to be read every second
-before the
-+ * pressure can be read. We leave this semantics to the userspace,
-if later
-  * on a trigger based reading will be implemented, this should be
-taken into
-  * account.
-  */
-@@ -213,7 +201,7 @@ static ssize_t barometer_show_pressure(struct
-device *dev,
- 		struct device_attribute *da, char *buf)
- {
- 	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
--	struct bmp085_data *data =3D indio_dev->dev_data;
-+	struct bmp085_data *data =3D iio_dev_get_devdata(indio_dev);
- 	struct i2c_client *client =3D data->client;
- 	long status;
+What:		/sys/bus/iio/devices/deviceX/gyro_x_raw
+What:		/sys/bus/iio/devices/deviceX/gyro_y_raw
+What:		/sys/bus/iio/devices/deviceX/gyro_z_raw
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Angular velocity about axis x, y or z (may be arbitrarily
+		assigned) Data converted by application of offset then scale to
+		radians per second. Has all the equivalent parameters as
+		per inY.
 
-@@ -231,7 +219,7 @@ static ssize_t barometer_show_id_version(struct
-device *dev,
- 		struct device_attribute *da, char *buf)
- {
- 	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
--	struct bmp085_data *data =3D indio_dev->dev_data;
-+	struct bmp085_data *data =3D iio_dev_get_devdata(indio_dev);
+What:		/sys/bus/iio/devices/deviceX/incli_x_raw
+What:		/sys/bus/iio/devices/deviceX/incli_y_raw
+What:		/sys/bus/iio/devices/deviceX/incli_z_raw
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Inclination raw reading about axis x, y or z (may be
+		arbitrarily assigned). Data converted by application of offset
+		and scale to Degrees.
 
- 	return sprintf(buf, "%x_%x\n", data->chip_id, data->chip_version);
- }
-@@ -241,7 +229,7 @@ static ssize_t barometer_show_oss(struct device
-*dev,
- 		struct device_attribute *da, char *buf)
- {
- 	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
--	struct bmp085_data *data =3D indio_dev->dev_data;
-+	struct bmp085_data *data =3D iio_dev_get_devdata(indio_dev);
+What:		/sys/bus/iio/devices/deviceX/magn_x_raw
+What:		/sys/bus/iio/devices/deviceX/magn_y_raw
+What:		/sys/bus/iio/devices/deviceX/magn_z_raw
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Magnetic field along axis x, y or z (may be arbitrarily
+		assigned) channel m (not present if only one magnetometer
+		at this orientation).  Data converted by application of
+		offset then scale to Gauss. Has all the equivalent modifiers
+		as per inY.
 
- 	return sprintf(buf, "%d\n", data->oss);
- }
-@@ -251,7 +239,7 @@ static IIO_CONST_ATTR_TEMP_SCALE("0.1");
+What:		/sys/bus/iio/devices/deviceX/accel_x_peak_raw
+What:		/sys/bus/iio/devices/deviceX/accel_y_peak_raw
+What:		/sys/bus/iio/devices/deviceX/accel_z_peak_raw
+KernelVersion:	2.6.36
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Some devices provide a store of the highest value seen since
+		some reset condition.  These attributes allow access to this
+		and are otherwise the direct equivalent of the
+		<type>Y[_name]_raw attributes.
 
- static struct attribute *bmp085_attributes[] =3D {
- 	&iio_dev_attr_temp_raw.dev_attr.attr,
--	&iio_dev_attr_baro_pressure.dev_attr.attr,
-+	&iio_dev_attr_baro_pressure_input.dev_attr.attr,
- 	&iio_dev_attr_revision.dev_attr.attr,
- 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
- 	&iio_const_attr_temp_scale.dev_attr.attr,
-@@ -271,15 +259,17 @@ static int bmp085_init_client(struct
-i2c_client *client)
- 	struct bmp085_data *data =3D i2c_get_clientdata(client);
- 	int i;
+What:		/sys/bus/iio/devices/deviceX/accel_xyz_squared_peak_raw
+KernelVersion:	2.6.36
+Contact:	linux-iio@vger.kernel.org
+Description:
+		A computed peak value based on the sum squared magnitude of
+		the underlying value in the specified directions.
 
--	i =3D bmp085_read(client, BMP085_REG_CHIP_ID, 1, &data->chip_id);
-+	i =3D i2c_smbus_read_i2c_block_data(client, BMP085_REG_CHIP_ID, 1,
-+			&data->chip_id);
- 	if (i < 0)
- 		dev_warn(&client->dev, "Chip ID not read\n");
+What:		/sys/bus/iio/devices/deviceX/accel_offset
+What:		/sys/bus/iio/devices/deviceX/temp_offset
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		If known for a device, offset to be added to <type>[Y]_raw prior
+		to scaling by <type>[Y]_scale in order to obtain value in the
+		<type> units as specified in <type>[y]_raw documentation.
+		Not present if the offset is always 0 or unknown. If Y is not
+		present, then the offset applies to all in channels of <type>.
+		May be writable if a variable offset can be applied on the
+		device. Note that this is different to calibbias which
+		is for devices (or drivers) that apply offsets to compensate
+		for variation between different instances of the part, typically
+		adjusted by using some hardware supported calibration procedure.
 
--	i =3D bmp085_read(client, BMP085_REG_VERSION, 1, &data->chip_version);
-+	i =3D i2c_smbus_read_i2c_block_data(client, BMP085_REG_VERSION, 1,
-+			&data->chip_version);
- 	if (i < 0)
- 		dev_warn(&client->dev, "Version not read\n");
+What:		/sys/bus/iio/devices/deviceX/inY_scale
+What:		/sys/bus/iio/devices/deviceX/inY_supply_scale
+What:		/sys/bus/iio/devices/deviceX/in_scale
+What:		/sys/bus/iio/devices/deviceX/accel_scale
+What:		/sys/bus/iio/devices/deviceX/accel_peak_scale
+What:		/sys/bus/iio/devices/deviceX/gyro_scale
+What:		/sys/bus/iio/devices/deviceX/magn_scale
+What:		/sys/bus/iio/devices/deviceX/magn_x_scale
+What:		/sys/bus/iio/devices/deviceX/magn_y_scale
+What:		/sys/bus/iio/devices/deviceX/magn_z_scale
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		If known for a device, scale to be applied to <type>Y[_name]_raw
+		post addition of <type>[Y][_name]_offset in order to obtain the
+		measured value in <type> units as specified in
+		<type>[Y][_name]_raw documentation..  If shared across all in
+		channels then Y is not present and the value is called
+		<type>[Y][_name]_scale. The peak modifier means this value
+		is applied to <type>Y[_name]_peak_raw values.
 
--	i =3D bmp085_read(client, BMP085_REG_PROM, BMP085_PROM_LENGTH,
-+	i =3D i2c_smbus_read_i2c_block_data(client, BMP085_REG_PROM,
-BMP085_PROM_LENGTH,
- 			data->data);
- 	if (i < 0)
- 		dev_warn(&client->dev, "Unable to read %d bytes from address "
-@@ -300,13 +290,11 @@ static int bmp085_init_client(struct
-i2c_client *client)
- 	return 0;
- }
+What:		/sys/bus/iio/devices/deviceX/accel_x_calibbias
+What:		/sys/bus/iio/devices/deviceX/accel_y_calibbias
+What:		/sys/bus/iio/devices/deviceX/accel_z_calibbias
+What:		/sys/bus/iio/devices/deviceX/gyro_x_calibbias
+What:		/sys/bus/iio/devices/deviceX/gyro_y_calibbias
+What:		/sys/bus/iio/devices/deviceX/gyro_z_calibbias
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Hardware applied calibration offset. (assumed to fix production
+		inaccuracies). If shared across all channels, <type>_calibbias
+		is used.
 
--static struct i2c_driver bmp085_drv;
- static int bmp085_probe(struct i2c_client *client,
- 		const struct i2c_device_id *id)
- {
- 	struct i2c_adapter *adapter =3D to_i2c_adapter(client->dev.parent);
- 	struct bmp085_data *data;
--	struct bmp085_data *data2;
- 	int status =3D 0;
+What		/sys/bus/iio/devices/deviceX/inY_calibscale
+What		/sys/bus/iio/devices/deviceX/inY_supply_calibscale
+What		/sys/bus/iio/devices/deviceX/in_calibscale
+What		/sys/bus/iio/devices/deviceX/accel_x_calibscale
+What		/sys/bus/iio/devices/deviceX/accel_y_calibscale
+What		/sys/bus/iio/devices/deviceX/accel_z_calibscale
+What		/sys/bus/iio/devices/deviceX/gyro_x_calibscale
+What		/sys/bus/iio/devices/deviceX/gyro_y_calibscale
+What		/sys/bus/iio/devices/deviceX/gyro_z_calibscale
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Hardware applied calibration scale factor. (assumed to fix
+		production inaccuracies).  If shared across all channels,
+		<type>_calibscale is used.
 
- 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA |
-@@ -326,12 +314,11 @@ static int bmp085_probe(struct i2c_client *client,
+What:		/sys/bus/iio/devices/deviceX/accel_scale_available
+KernelVersion:	2.635
+Contact:	linux-iio@vger.kernel.org
+Description:
+		If a discrete set of scale values are available, they
+		are listed in this attribute.
 
- 	data->client =3D client;
- 	i2c_set_clientdata(client, data);
--	data2 =3D i2c_get_clientdata(client);
+What:		/sys/bus/iio/devices/deviceX/deviceX:eventY
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Configuration of which hardware generated events are passed up
+		to user-space.
 
- 	/* Initialize the BMP085 chip */
- 	bmp085_init_client(client);
+What:		/sys/bus/iio/devices/deviceX:event/dev
+What:		/sys/bus/iio/devices/deviceX:eventY/dev
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		major:minor character device numbers for the event line Y of
+		device X.
 
--	__mutex_init(&data->bmp085_lock, "bmp085_lock", NULL);
-+	mutex_init(&data->bmp085_lock);
+What:		/sys/.../deviceX:eventY/accel_x_thresh_rising_en
+What:		/sys/.../deviceX:eventY/accel_x_thresh_falling_en
+What:		/sys/.../deviceX:eventY/accel_y_thresh_rising_en
+What:		/sys/.../deviceX:eventY/accel_y_thresh_falling_en
+What:		/sys/.../deviceX:eventY/accel_z_thresh_rising_en
+What:		/sys/.../deviceX:eventY/accel_z_thresh_falling_en
+What:		/sys/.../deviceX:eventY/gyro_x_thresh_rising_en
+What:		/sys/.../deviceX:eventY/gyro_x_thresh_falling_en
+What:		/sys/.../deviceX:eventY/gyro_y_thresh_rising_en
+What:		/sys/.../deviceX:eventY/gyro_y_thresh_falling_en
+What:		/sys/.../deviceX:eventY/gyro_z_thresh_rising_en
+What:		/sys/.../deviceX:eventY/gyro_z_thresh_falling_en
+What:		/sys/.../deviceX:eventY/magn_x_thresh_rising_en
+What:		/sys/.../deviceX:eventY/magn_x_thresh_falling_en
+What:		/sys/.../deviceX:eventY/magn_y_thresh_rising_en
+What:		/sys/.../deviceX:eventY/magn_y_thresh_falling_en
+What:		/sys/.../deviceX:eventY/magn_z_thresh_rising_en
+What:		/sys/.../deviceX:eventY/magn_z_thresh_falling_en
+What:		/sys/.../deviceX:eventY/inZ_supply_thresh_rising_en
+What:		/sys/.../deviceX:eventY/inZ_supply_thresh_falling_en
+What:		/sys/.../deviceX:eventY/inZ_thresh_rising_en
+What:		/sys/.../deviceX:eventY/inZ_thresh_falling_en
+What:		/sys/.../deviceX:eventY/temp_thresh_rising_en
+What:		/sys/.../deviceX:eventY/temp_thresh_falling_en
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Event generated when channel passes a threshold in the specified
+		(_rising|_falling) direction. If the direction is not specified,
+		then either the device will report an event which ever direction
+		a single threshold value is called in (e.g.
+		<type>[Z][_name]_<raw|input>_thresh_value) or
+		<type>[Z][_name]_<raw|input>_thresh_rising_value and
+		<type>[Z][_name]_<raw|input>_thresh_falling_value may take
+		different values, but the device can only enable both thresholds
+		or neither.
+		Note the driver will assume the last p events requested are
+		to be enabled where p is however many it supports (which may
+		vary depending on the exact set requested. So if you want to be
+		sure you have set what you think you have, check the contents of
+		these attributes after everything is configured. Drivers may
+		have to buffer any parameters so that they are consistent when
+		a given event type is enabled a future point (and not those for
+		whatever event was previously enabled).
 
- 	/* Register with IIO */
- 	data->indio_dev =3D iio_allocate_device();
-@@ -350,8 +337,6 @@ static int bmp085_probe(struct i2c_client *client,
- 	if (status < 0)
- 		goto err_iio;
+What:		/sys/.../deviceX:eventY/accel_x_roc_rising_en
+What:		/sys/.../deviceX:eventY/accel_x_roc_falling_en
+What:		/sys/.../deviceX:eventY/accel_y_roc_rising_en
+What:		/sys/.../deviceX:eventY/accel_y_roc_falling_en
+What:		/sys/.../deviceX:eventY/accel_z_roc_rising_en
+What:		/sys/.../deviceX:eventY/accel_z_roc_falling_en
+What:		/sys/.../deviceX:eventY/gyro_x_roc_rising_en
+What:		/sys/.../deviceX:eventY/gyro_x_roc_falling_en
+What:		/sys/.../deviceX:eventY/gyro_y_roc_rising_en
+What:		/sys/.../deviceX:eventY/gyro_y_roc_falling_en
+What:		/sys/.../deviceX:eventY/gyro_z_roc_rising_en
+What:		/sys/.../deviceX:eventY/gyro_z_roc_falling_en
+What:		/sys/.../deviceX:eventY/magn_x_roc_rising_en
+What:		/sys/.../deviceX:eventY/magn_x_roc_falling_en
+What:		/sys/.../deviceX:eventY/magn_y_roc_rising_en
+What:		/sys/.../deviceX:eventY/magn_y_roc_falling_en
+What:		/sys/.../deviceX:eventY/magn_z_roc_rising_en
+What:		/sys/.../deviceX:eventY/magn_z_roc_falling_en
+What:		/sys/.../deviceX:eventY/inZ_supply_roc_rising_en
+What:		/sys/.../deviceX:eventY/inZ_supply_roc_falling_en
+What:		/sys/.../deviceX:eventY/inZ_roc_rising_en
+What:		/sys/.../deviceX:eventY/inZ_roc_falling_en
+What:		/sys/.../deviceX:eventY/temp_roc_rising_en
+What:		/sys/.../deviceX:eventY/temp_roc_falling_en
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Event generated when channel passes a threshold on the rate of
+		change (1st differential) in the specified (_rising|_falling)
+		direction. If the direction is not specified, then either the
+		device will report an event which ever direction a single
+		threshold value is called in (e.g.
+		<type>[Z][_name]_<raw|input>_roc_value) or
+		<type>[Z][_name]_<raw|input>_roc_rising_value and
+		<type>[Z][_name]_<raw|input>_roc_falling_value may take
+		different values, but the device can only enable both rate of
+		change thresholds or neither.
+		Note the driver will assume the last p events requested are
+		to be enabled where p is however many it supports (which may
+		vary depending on the exact set requested. So if you want to be
+		sure you have set what you think you have, check the contents of
+		these attributes after everything is configured. Drivers may
+		have to buffer any parameters so that they are consistent when
+		a given event type is enabled a future point (and not those for
+		whatever event was previously enabled).
 
--	dev_info(&client->dev, "driver enabled\n");
--
- 	return 0;
+What:		/sys/.../deviceX:eventY/accel_x_raw_thresh_rising_value
+What:		/sys/.../deviceX:eventY/accel_x_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/accel_y_raw_thresh_rising_value
+What:		/sys/.../deviceX:eventY/accel_y_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/accel_z_raw_thresh_rising_value
+What:		/sys/.../deviceX:eventY/accel_z_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/gyro_x_raw_thresh_rising_value
+What:		/sys/.../deviceX:eventY/gyro_x_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/gyro_y_raw_thresh_rising_value
+What:		/sys/.../deviceX:eventY/gyro_y_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/gyro_z_raw_thresh_rising_value
+What:		/sys/.../deviceX:eventY/gyro_z_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/magn_x_raw_thresh_rising_value
+What:		/sys/.../deviceX:eventY/magn_x_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/magn_y_raw_thresh_rising_value
+What:		/sys/.../deviceX:eventY/magn_y_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/magn_z_raw_thresh_rising_value
+What:		/sys/.../deviceX:eventY/magn_z_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/inZ_supply_raw_thresh_rising_value
+What:		/sys/.../deviceX:eventY/inZ_supply_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/inZ_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/inZ_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/temp_raw_thresh_falling_value
+What:		/sys/.../deviceX:eventY/temp_raw_thresh_falling_value
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Specifies the value of threshold that the device is comparing
+		against for the events enabled by
+		<type>Z[_name]_thresh[_rising|falling]_en.
+		If separate attributes  exist for the two directions, but
+		direction is not specified for this attribute, then a single
+		threshold value applies to both directions.
+		The raw or input element of the name indicates whether the
+		value is in raw device units or in processed units (as _raw
+		and _input do on sysfs direct channel read attributes).
 
- err_iio:
-@@ -365,16 +350,11 @@ static int __devexit bmp085_remove(struct
-i2c_client *client)
- {
- 	struct bmp085_data *data =3D i2c_get_clientdata(client);
+What:		/sys/.../deviceX:eventY/accel_x_raw_roc_rising_value
+What:		/sys/.../deviceX:eventY/accel_x_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/accel_y_raw_roc_rising_value
+What:		/sys/.../deviceX:eventY/accel_y_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/accel_z_raw_roc_rising_value
+What:		/sys/.../deviceX:eventY/accel_z_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/gyro_x_raw_roc_rising_value
+What:		/sys/.../deviceX:eventY/gyro_x_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/gyro_y_raw_roc_rising_value
+What:		/sys/.../deviceX:eventY/gyro_y_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/gyro_z_raw_roc_rising_value
+What:		/sys/.../deviceX:eventY/gyro_z_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/magn_x_raw_roc_rising_value
+What:		/sys/.../deviceX:eventY/magn_x_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/magn_y_raw_roc_rising_value
+What:		/sys/.../deviceX:eventY/magn_y_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/magn_z_raw_roc_rising_value
+What:		/sys/.../deviceX:eventY/magn_z_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/inZ_supply_raw_roc_rising_value
+What:		/sys/.../deviceX:eventY/inZ_supply_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/inZ_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/inZ_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/temp_raw_roc_falling_value
+What:		/sys/.../deviceX:eventY/temp_raw_roc_falling_value
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Specifies the value of rate of change threshold that the
+		device is comparing against for the events enabled by
+		<type>[Z][_name]_roc[_rising|falling]_en.
+		If separate attributes exist for the two directions,
+		but direction is not specified for this attribute,
+		then a single threshold value applies to both directions.
+		The raw or input element of the name indicates whether the
+		value is in raw device units or in processed units (as _raw
+		and _input do on sysfs direct channel read attributes).
 
--	if (mutex_is_locked(&data->bmp085_lock))
--		mutex_unlock(&data->bmp085_lock);
--
- 	iio_device_unregister(data->indio_dev);
- 	iio_free_device(data->indio_dev);
+What:		/sys/.../deviceX:eventY/accel_x_thresh_rising_period
+What:		/sys/.../deviceX:eventY/accel_x_thresh_falling_period
+hat:		/sys/.../deviceX:eventY/accel_x_roc_rising_period
+What:		/sys/.../deviceX:eventY/accel_x_roc_falling_period
+What:		/sys/.../deviceX:eventY/accel_y_thresh_rising_period
+What:		/sys/.../deviceX:eventY/accel_y_thresh_falling_period
+What:		/sys/.../deviceX:eventY/accel_y_roc_rising_period
+What:		/sys/.../deviceX:eventY/accel_y_roc_falling_period
+What:		/sys/.../deviceX:eventY/accel_z_thresh_rising_period
+What:		/sys/.../deviceX:eventY/accel_z_thresh_falling_period
+What:		/sys/.../deviceX:eventY/accel_z_roc_rising_period
+What:		/sys/.../deviceX:eventY/accel_z_roc_falling_period
+What:		/sys/.../deviceX:eventY/gyro_x_thresh_rising_period
+What:		/sys/.../deviceX:eventY/gyro_x_thresh_falling_period
+What:		/sys/.../deviceX:eventY/gyro_x_roc_rising_period
+What:		/sys/.../deviceX:eventY/gyro_x_roc_falling_period
+What:		/sys/.../deviceX:eventY/gyro_y_thresh_rising_period
+What:		/sys/.../deviceX:eventY/gyro_y_thresh_falling_period
+What:		/sys/.../deviceX:eventY/gyro_y_roc_rising_period
+What:		/sys/.../deviceX:eventY/gyro_y_roc_falling_period
+What:		/sys/.../deviceX:eventY/gyro_z_thresh_rising_period
+What:		/sys/.../deviceX:eventY/gyro_z_thresh_falling_period
+What:		/sys/.../deviceX:eventY/gyro_z_roc_rising_period
+What:		/sys/.../deviceX:eventY/gyro_z_roc_falling_period
+What:		/sys/.../deviceX:eventY/magn_x_thresh_rising_period
+What:		/sys/.../deviceX:eventY/magn_x_thresh_falling_period
+What:		/sys/.../deviceX:eventY/magn_x_roc_rising_period
+What:		/sys/.../deviceX:eventY/magn_x_roc_falling_period
+What:		/sys/.../deviceX:eventY/magn_y_thresh_rising_period
+What:		/sys/.../deviceX:eventY/magn_y_thresh_falling_period
+What:		/sys/.../deviceX:eventY/magn_y_roc_rising_period
+What:		/sys/.../deviceX:eventY/magn_y_roc_falling_period
+What:		/sys/.../deviceX:eventY/magn_z_thresh_rising_period
+What:		/sys/.../deviceX:eventY/magn_z_thresh_falling_period
+What:		/sys/.../deviceX:eventY/magn_z_roc_rising_period
+What:		/sys/.../deviceX:eventY/magn_z_roc_falling_period
+What:		/sys/.../deviceX:eventY/inZ_supply_thresh_rising_period
+What:		/sys/.../deviceX:eventY/inZ_supply_thresh_falling_period
+What:		/sys/.../deviceX:eventY/inz_supply_roc_rising_period
+What:		/sys/.../deviceX:eventY/inZ_supply_roc_falling_period
+What:		/sys/.../deviceX:eventY/inZ_thresh_rising_period
+What:		/sys/.../deviceX:eventY/inZ_thresh_falling_period
+What:		/sys/.../deviceX:eventY/inZ_roc_rising_period
+What:		/sys/.../deviceX:eventY/inZ_roc_falling_period
+What:		/sys/.../deviceX:eventY/temp_thresh_rising_period
+What:		/sys/.../deviceX:eventY/temp_thresh_falling_period
+What:		/sys/.../deviceX:eventY/temp_roc_rising_period
+What:		/sys/.../deviceX:eventY/temp_roc_falling_period
+What:		/sys/.../deviceX:eventY/accel_x&y&z_mag_falling_period
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Period of time (in seconds) for which the condition must be
+		met before an event is generated. If direction is not
+		specified then this period applies to both directions.
 
- 	kfree(data);
+What:		/sys/.../deviceX:eventY/accel_mag_en
+What:		/sys/.../deviceX:eventY/accel_mag_rising_en
+What:		/sys/.../deviceX:eventY/accel_mag_falling_en
+What:		/sys/.../deviceX:eventY/accel_x_mag_en
+What:		/sys/.../deviceX:eventY/accel_x_mag_rising_en
+What:		/sys/.../deviceX:eventY/accel_x_mag_falling_en
+What:		/sys/.../deviceX:eventY/accel_y_mag_en
+What:		/sys/.../deviceX:eventY/accel_y_mag_rising_en
+What:		/sys/.../deviceX:eventY/accel_y_mag_falling_en
+What:		/sys/.../deviceX:eventY/accel_z_mag_en
+What:		/sys/.../deviceX:eventY/accel_z_mag_rising_en
+What:		/sys/.../deviceX:eventY/accel_z_mag_falling_en
+What:		/sys/.../deviceX:eventY/accel_x&y&z_mag_rising_en
+What:		/sys/.../deviceX:eventY/accel_x&y&z_mag_falling_en
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Similar to accel_x_thresh[_rising|_falling]_en, but here the
+		magnitude of the channel is compared to the threshold, not its
+		signed value.
 
--	dev_info(&client->dev, "driver removed\n");
--
- 	return 0;
- }
+What:		/sys/.../accel_raw_mag_value
+What:		/sys/.../accel_x_raw_mag_rising_value
+What:		/sys/.../accel_y_raw_mag_rising_value
+What:		/sys/.../accel_z_raw_mag_rising_value
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		The value to which the magnitude of the channel is compared. If
+		number or direction is not specified, applies to all channels of
+		this type.
 
-diff --git a/drivers/staging/iio/barometer/bmp085.h
-b/drivers/staging/iio/barometer/bmp085.h
-index 5ed2fb1..aec2ee4 100644
---- a/drivers/staging/iio/barometer/bmp085.h
-+++ b/drivers/staging/iio/barometer/bmp085.h
-@@ -35,6 +35,41 @@
- #define BMP085_REG_VERSION	0xD1
- #define BMP085_CHIP_ID		0x55
+What:		/sys/bus/iio/devices/deviceX:buffer:event/dev
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Buffer for device X event character device major:minor numbers.
 
-+/*
-+ * data structure for every sensor
-+ *
-+ * @client		i2c client
-+ * @ indio_dev		iio device representation
-+ *
-+ * @bmp085_lock		mutex to synchronize parallel reads and writes
-+ *
-+ * @oss			oversampling setting, determines how accurate the chip works
-+ * @temp		holding actual temperature in 0.1=B0C
-+ * @pressure		holding actual pressure in pascal
-+ *
-+ * @ac1			calibration value read at start-up
-+ * @ac2			calibration value read at start-up
-+ * @ac3			calibration value read at start-up
-+ * @ac4			calibration value read at start-up
-+ * @ac5			calibration value read at start-up
-+ * @ac6			calibration value read at start-up
-+ *
-+ * @b1			calibration value read at start-up
-+ * @b2			calibration value read at start-up
-+ * @b3			calibration value read at start-up
-+ *
-+ * @mb			calibration value read at start-up
-+ * @mc			calibration value read at start-up
-+ * @md			calibration value read at start-up
-+ *
-+ * @ut			raw data to compute temperature
-+ * @up			raw data to compute pressure
-+ *
-+ * @chip_id		id of the chip
-+ * @chip_version	version of the chip
-+ *
-+ * @data		array to read initial calib data as a bulk
-+ */
- struct bmp085_data {
- 	struct i2c_client *client;
- 	struct iio_dev *indio_dev;
-@@ -42,7 +77,7 @@ struct bmp085_data {
- 	struct mutex bmp085_lock;
+What:		/sys/bus/iio/devices/deviceX:buffer:access/dev
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Buffer for device X access character device major:minor numbers.
 
- 	int oss;
--	long temp;
-+	s16 temp;
- 	long pressure;
+What:		/sys/bus/iio/devices/deviceX:buffer/trigger
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		The name of the trigger source being used, as per string given
+		in /sys/class/iio/triggerY/name.
 
- 	short ac1;
---=20
-1.5.6.5
+What:		/sys/bus/iio/devices/deviceX:buffer/length
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Number of scans contained by the buffer.
+
+What:		/sys/bus/iio/devices/deviceX:buffer/bytes_per_datum
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Bytes per scan.  Due to alignment fun, the scan may be larger
+		than implied directly by the scan_element parameters.
+
+What:		/sys/bus/iio/devices/deviceX:buffer/enable
+KernelVersion:	2.6.35
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Actually start the buffer capture up.  Will start trigger
+		if first device and appropriate.
+
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Directory containing interfaces for elements that will be
+		captured for a single triggered sample set in the buffer.
+
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/accel_x_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/accel_y_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/accel_z_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/gyro_x_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/gyro_y_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/gyro_z_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/magn_x_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/magn_y_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/magn_z_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/timestamp_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/inY_supply_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/inY_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/inY-inZ_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/incli_x_en
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/incli_y_en
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Scan element control for triggered data capture.
+
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/accel_type
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/gyro_type
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/magn_type
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/incli_type
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/inY_type
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/in-in_type
+What:		/sys/.../deviceX:buffer/scan_elements/inY_supply_type
+What:		/sys/.../deviceX:buffer/scan_elements/timestamp_type
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		Description of the scan element data storage within the buffer
+		and hence the form in which it is read from user-space.
+		Form is [s|u]bits/storagebits[>>shift].  s or u specifies if
+		signed (2's complement) or unsigned. bits is the number of bits
+		of data and storagebits is the space (after padding) that it
+		occupies in the buffer. shift if specified, is the shift that
+		needs to be applied prior to masking out unused bits. Some
+		devices put their data in the middle of the transfered elements
+		with additional information on both sides.  Note that some
+		devices will have additional information in the unused bits
+		so to get a clean value, the bits value must be used to mask
+		the buffer output value appropriately.  The storagebits value
+		also specifies the data alignment.  So s48/64>>2 will be a
+		signed 48 bit integer stored in a 64 bit location aligned to
+		a a64 bit boundary. To obtain the clean value, shift right 2
+		and apply a mask to zero the top 16 bits of the result.
+		For other storage combinations this attribute will be extended
+		appropriately.
+
+What:		/sys/.../deviceX:buffer/scan_elements/accel_type_available
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		If the type parameter can take one of a small set of values,
+		this attribute lists them.
+
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/inY_index
+What:		/sys/.../deviceX:buffer/scan_elements/inY_supply_index
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/accel_x_index
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/accel_y_index
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/accel_z_index
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/gyro_x_index
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/gyro_y_index
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/gyro_z_index
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/magn_x_index
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/magn_y_index
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/magn_z_index
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/incli_x_index
+What:		/sys/bus/iio/devices/deviceX:buffer/scan_elements/incli_y_index
+What:		/sys/.../deviceX:buffer/scan_elements/timestamp_index
+KernelVersion:	2.6.37
+Contact:	linux-iio@vger.kernel.org
+Description:
+		A single positive integer specifying the position of this
+		scan element in the buffer. Note these are not dependent on
+		what is enabled and may not be contiguous. Thus for user-space
+		to establish the full layout these must be used in conjunction
+		with all _en attributes to establish which channels are present,
+		and the relevant _type attributes to establish the data storage
+		format.
