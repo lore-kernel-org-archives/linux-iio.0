@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
 Cc: device-drivers-devel@blackfin.uclinux.org,
 	Sonic Zhang <sonic.zhang@analog.com>
-Subject: [PATCH 10/14] staging: iio: adc: new driver for ADT75 temperature sensors
-Date: Sat, 23 Oct 2010 16:29:13 -0400
-Message-Id: <1287865757-1031-10-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 09/14] staging: iio: adc: new driver for AD7816 devices
+Date: Sat, 23 Oct 2010 16:29:12 -0400
+Message-Id: <1287865757-1031-9-git-send-email-vapier@gentoo.org>
 In-Reply-To: <1287865757-1031-1-git-send-email-vapier@gentoo.org>
 References: <1287865757-1031-1-git-send-email-vapier@gentoo.org>
 List-ID: <linux-iio@vger.kernel.org>
@@ -18,42 +18,42 @@ Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
  drivers/staging/iio/adc/Kconfig  |    7 +
  drivers/staging/iio/adc/Makefile |    1 +
- drivers/staging/iio/adc/adt75.c  |  734 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 742 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/adc/adt75.c
+ drivers/staging/iio/adc/ad7816.c |  538 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 546 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/ad7816.c
 
 diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index 303485a..5c7f042 100644
+index 780c2c5..303485a 100644
 --- a/drivers/staging/iio/adc/Kconfig
 +++ b/drivers/staging/iio/adc/Kconfig
-@@ -100,3 +100,10 @@ config AD7816
+@@ -93,3 +93,10 @@ config AD774X
  	help
- 	  Say yes here to build support for Analog Devices AD7816/7/8
- 	  temperature sensors and ADC.
+ 	  Say yes here to build support for Analog Devices capacitive sensors.
+ 	  (ad7745, ad7746, ad7747) Provides direct access via sysfs.
 +
-+config ADT75
-+	tristate "Analog Devices ADT75 temperature sensor driver"
-+	depends on I2C
++config AD7816
++	tristate "Analog Devices AD7816/7/8 temperature sensor and ADC driver"
++	depends on SPI
 +	help
-+	  Say yes here to build support for Analog Devices ADT75
-+	  temperature sensors.
++	  Say yes here to build support for Analog Devices AD7816/7/8
++	  temperature sensors and ADC.
 diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
-index cdd3929..e88dfc4 100644
+index ac2663a..cdd3929 100644
 --- a/drivers/staging/iio/adc/Makefile
 +++ b/drivers/staging/iio/adc/Makefile
-@@ -19,3 +19,4 @@ obj-$(CONFIG_AD7416) += ad7416.o
+@@ -18,3 +18,4 @@ obj-$(CONFIG_AD7414) += ad7414.o
+ obj-$(CONFIG_AD7416) += ad7416.o
  obj-$(CONFIG_AD7476) += ad7476.o
  obj-$(CONFIG_AD774X) += ad774x.o
- obj-$(CONFIG_AD7816) += ad7816.o
-+obj-$(CONFIG_ADT75) += adt75.o
-diff --git a/drivers/staging/iio/adc/adt75.c b/drivers/staging/iio/adc/adt75.c
++obj-$(CONFIG_AD7816) += ad7816.o
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
 new file mode 100644
-index 0000000..d685fa0
+index 0000000..b459311
 --- /dev/null
-+++ b/drivers/staging/iio/adc/adt75.c
-@@ -0,0 +1,734 @@
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -0,0 +1,538 @@
 +/*
-+ * ADT75 digital temperature sensor driver supporting ADT75
++ * AD7816 digital temperature sensor driver supporting AD7816/7/8
 + *
 + * Copyright 2010 Analog Devices Inc.
 + *
@@ -68,289 +68,276 @@ index 0000000..d685fa0
 +#include <linux/slab.h>
 +#include <linux/sysfs.h>
 +#include <linux/list.h>
-+#include <linux/i2c.h>
++#include <linux/spi/spi.h>
 +#include <linux/rtc.h>
 +
 +#include "../iio.h"
 +#include "../sysfs.h"
 +
 +/*
-+ * ADT75 registers definition
++ * AD7816 config masks
 + */
-+
-+#define ADT75_TEMPERATURE		0
-+#define ADT75_CONFIG			1
-+#define ADT75_T_HYST			2
-+#define ADT75_T_OS			3
-+#define ADT75_ONESHOT			4
++#define AD7816_FULL			0x1
++#define AD7816_PD			0x2
++#define AD7816_CS_MASK			0x7
++#define AD7816_CS_MAX			0x4
 +
 +/*
-+ * ADT75 config
++ * AD7816 temperature masks
 + */
-+#define ADT75_PD			0x1
-+#define ADT75_OS_INT			0x2
-+#define ADT75_OS_POLARITY		0x4
-+#define ADT75_FAULT_QUEUE_MASK		0x18
-+#define ADT75_FAULT_QUEUE_OFFSET	3
-+#define ADT75_SMBUS_ALART		0x8
-+
-+/*
-+ * ADT75 masks
-+ */
-+#define ADT75_VALUE_SIGN		0x800
-+#define ADT75_VALUE_OFFSET		4
-+#define ADT75_VALUE_FLOAT_OFFSET	4
-+#define ADT75_VALUE_FLOAT_MASK		0xF
++#define AD7816_VALUE_OFFSET		6
++#define AD7816_BOUND_VALUE_BASE		0x8
++#define AD7816_BOUND_VALUE_MIN		-95
++#define AD7816_BOUND_VALUE_MAX		152
++#define AD7816_TEMP_FLOAT_OFFSET	2
++#define AD7816_TEMP_FLOAT_MASK		0x3
 +
 +
 +/*
-+ * struct adt75_chip_info - chip specifc information
++ * struct ad7816_chip_info - chip specifc information
 + */
 +
-+struct adt75_chip_info {
++struct ad7816_chip_info {
 +	const char *name;
-+	struct i2c_client *client;
++	struct spi_device *spi_dev;
 +	struct iio_dev *indio_dev;
 +	struct work_struct thresh_work;
 +	s64 last_timestamp;
-+	u8  config;
++	u16 rdwr_pin;
++	u16 convert_pin;
++	u16 busy_pin;
++	u8  oti_data[AD7816_CS_MAX+1];
++	u8  channel_id;	/* 0 always be temperature */
++	u8  mode;
 +};
 +
 +/*
-+ * adt75 register access by I2C
++ * ad7816 data access by SPI
 + */
-+
-+static int adt75_i2c_read(struct adt75_chip_info *chip, u8 reg, u8 *data)
++static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
 +{
-+	struct i2c_client *client = chip->client;
-+	int ret = 0, len;
-+
-+	ret = i2c_smbus_write_byte(client, reg);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "I2C read register address error\n");
-+		return ret;
-+	}
-+
-+	if (reg == ADT75_CONFIG || reg == ADT75_ONESHOT)
-+		len = 1;
-+	else
-+		len = 2;
-+
-+	ret = i2c_master_recv(client, data, len);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "I2C read error\n");
-+		return ret;
-+	}
-+
-+	return ret;
-+}
-+
-+static int adt75_i2c_write(struct adt75_chip_info *chip, u8 reg, u8 data)
-+{
-+	struct i2c_client *client = chip->client;
++	struct spi_device *spi_dev = chip->spi_dev;
 +	int ret = 0;
 +
-+	if (reg == ADT75_CONFIG || reg == ADT75_ONESHOT)
-+		ret = i2c_smbus_write_byte_data(client, reg, data);
-+	else
-+		ret = i2c_smbus_write_word_data(client, reg, data);
++	gpio_set_value(chip->rdwr_pin, 1);
++	gpio_set_value(chip->rdwr_pin, 0);
++	ret = spi_write(spi_dev, &chip->channel_id, sizeof(chip->channel_id));
++	if (ret < 0) {
++		dev_err(&spi_dev->dev, "SPI channel setting error\n");
++		return ret;
++	}
++	gpio_set_value(chip->rdwr_pin, 1);
 +
-+	if (ret < 0)
-+		dev_err(&client->dev, "I2C write error\n");
++
++	if (chip->mode == AD7816_PD) { /* operating mode 2 */
++		gpio_set_value(chip->convert_pin, 1);
++		gpio_set_value(chip->convert_pin, 0);
++	} else { /* operating mode 1 */
++		gpio_set_value(chip->convert_pin, 0);
++		gpio_set_value(chip->convert_pin, 1);
++	}
++
++	while (gpio_get_value(chip->busy_pin))
++		cpu_relax();
++
++	gpio_set_value(chip->rdwr_pin, 0);
++	gpio_set_value(chip->rdwr_pin, 1);
++	ret = spi_read(spi_dev, (u8 *)data, sizeof(*data));
++	if (ret < 0) {
++		dev_err(&spi_dev->dev, "SPI data read error\n");
++		return ret;
++	}
++
++	*data = be16_to_cpu(*data);
 +
 +	return ret;
 +}
 +
-+static ssize_t adt75_show_mode(struct device *dev,
++static int ad7816_spi_write(struct ad7816_chip_info *chip, u8 data)
++{
++	struct spi_device *spi_dev = chip->spi_dev;
++	int ret = 0;
++
++	gpio_set_value(chip->rdwr_pin, 1);
++	gpio_set_value(chip->rdwr_pin, 0);
++	ret = spi_write(spi_dev, &data, sizeof(data));
++	if (ret < 0)
++		dev_err(&spi_dev->dev, "SPI oti data write error\n");
++
++	return ret;
++}
++
++static ssize_t ad7816_show_mode(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
++	struct ad7816_chip_info *chip = dev_info->dev_data;
 +
-+	if (chip->config & ADT75_PD)
++	if (chip->mode)
 +		return sprintf(buf, "power-save\n");
 +	else
 +		return sprintf(buf, "full\n");
 +}
 +
-+static ssize_t adt75_store_mode(struct device *dev,
++static ssize_t ad7816_store_mode(struct device *dev,
 +		struct device_attribute *attr,
 +		const char *buf,
 +		size_t len)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
-+	int ret;
-+	u8 config;
++	struct ad7816_chip_info *chip = dev_info->dev_data;
 +
-+	ret = adt75_i2c_read(chip, ADT75_CONFIG, &chip->config);
-+	if (ret)
-+		return -EIO;
++	if (strcmp(buf, "full")) {
++		gpio_set_value(chip->rdwr_pin, 1);
++		chip->mode = AD7816_FULL;
++	} else {
++		gpio_set_value(chip->rdwr_pin, 0);
++		chip->mode = AD7816_PD;
++	}
 +
-+	config = chip->config & ~ADT75_PD;
-+	if (!strcmp(buf, "full"))
-+		config |= ADT75_PD;
-+
-+	ret = adt75_i2c_write(chip, ADT75_CONFIG, config);
-+	if (ret)
-+		return -EIO;
-+
-+	chip->config = config;
-+
-+	return ret;
++	return len;
 +}
 +
 +static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR,
-+		adt75_show_mode,
-+		adt75_store_mode,
++		ad7816_show_mode,
++		ad7816_store_mode,
 +		0);
 +
-+static ssize_t adt75_show_available_modes(struct device *dev,
++static ssize_t ad7816_show_available_modes(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
-+	return sprintf(buf, "full\npower-down\n");
++	return sprintf(buf, "full\npower-save\n");
 +}
 +
-+static IIO_DEVICE_ATTR(available_modes, S_IRUGO, adt75_show_available_modes, NULL, 0);
++static IIO_DEVICE_ATTR(available_modes, S_IRUGO, ad7816_show_available_modes, NULL, 0);
 +
-+static ssize_t adt75_show_oneshot(struct device *dev,
++static ssize_t ad7816_show_channel(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
++	struct ad7816_chip_info *chip = dev_info->dev_data;
 +
-+	return sprintf(buf, "%d\n", !!(chip->config & ADT75_ONESHOT));
++	return sprintf(buf, "%d\n", chip->channel_id);
 +}
 +
-+static ssize_t adt75_store_oneshot(struct device *dev,
++static ssize_t ad7816_store_channel(struct device *dev,
 +		struct device_attribute *attr,
 +		const char *buf,
 +		size_t len)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
-+	unsigned long data = 0;
++	struct ad7816_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
 +	int ret;
-+	u8 config;
 +
 +	ret = strict_strtoul(buf, 10, &data);
 +	if (ret)
 +		return -EINVAL;
 +
++	if (data > AD7816_CS_MAX && data != AD7816_CS_MASK) {
++		dev_err(&chip->spi_dev->dev, "Invalid channel id %lu for %s.\n",
++			data, chip->name);
++		return -EINVAL;
++	} else if (strcmp(chip->name, "ad7818") == 0 && data > 1) {
++		dev_err(&chip->spi_dev->dev,
++			"Invalid channel id %lu for ad7818.\n", data);
++		return -EINVAL;
++	} else if (strcmp(chip->name, "ad7816") == 0 && data > 0) {
++		dev_err(&chip->spi_dev->dev,
++			"Invalid channel id %lu for ad7816.\n", data);
++		return -EINVAL;
++	}
 +
-+	ret = adt75_i2c_read(chip, ADT75_CONFIG, &chip->config);
-+	if (ret)
-+		return -EIO;
++	chip->channel_id = data;
 +
-+	config = chip->config & ~ADT75_ONESHOT;
-+	if (data)
-+		config |= ADT75_ONESHOT;
-+
-+	ret = adt75_i2c_write(chip, ADT75_CONFIG, config);
-+	if (ret)
-+		return -EIO;
-+
-+	chip->config = config;
-+
-+	return ret;
++	return len;
 +}
 +
-+static IIO_DEVICE_ATTR(oneshot, S_IRUGO | S_IWUSR,
-+		adt75_show_oneshot,
-+		adt75_store_oneshot,
++static IIO_DEVICE_ATTR(channel, S_IRUGO | S_IWUSR,
++		ad7816_show_channel,
++		ad7816_store_channel,
 +		0);
 +
-+static ssize_t adt75_show_value(struct device *dev,
++
++static ssize_t ad7816_show_value(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
++	struct ad7816_chip_info *chip = dev_info->dev_data;
 +	u16 data;
-+	char sign = ' ';
++	s8 value;
 +	int ret;
 +
-+	if (chip->config & ADT75_PD) {
-+		dev_err(dev, "Can't read value in power-down mode.\n");
-+		return -EIO;
-+	}
-+
-+	if (chip->config & ADT75_ONESHOT) {
-+		/* write to active converter */
-+		ret = i2c_smbus_write_byte(chip->client, ADT75_ONESHOT);
-+		if (ret)
-+			return -EIO;
-+	}
-+
-+	ret = adt75_i2c_read(chip, ADT75_TEMPERATURE, (u8 *)&data);
++	ret = ad7816_spi_read(chip, &data);
 +	if (ret)
 +		return -EIO;
 +
-+	data = swab16(data) >> ADT75_VALUE_OFFSET;
-+	if (data & ADT75_VALUE_SIGN) {
-+		/* convert supplement to positive value */
-+		data = (ADT75_VALUE_SIGN << 1) - data;
-+		sign = '-';
-+	}
++	data >>= AD7816_VALUE_OFFSET;
 +
-+	return sprintf(buf, "%c%d.%.4d\n", sign,
-+		(data >> ADT75_VALUE_FLOAT_OFFSET),
-+		(data & ADT75_VALUE_FLOAT_MASK) * 625);
++	if (chip->channel_id == 0) {
++		value = (s8)((data >> AD7816_TEMP_FLOAT_OFFSET) - 103);
++		data &= AD7816_TEMP_FLOAT_MASK;
++		if (value < 0)
++			data = (1 << AD7816_TEMP_FLOAT_OFFSET) - data;
++		return sprintf(buf, "%d.%.2d\n", value, data * 25);
++	} else
++		return sprintf(buf, "%u\n", data);
 +}
 +
-+static IIO_DEVICE_ATTR(value, S_IRUGO, adt75_show_value, NULL, 0);
++static IIO_DEVICE_ATTR(value, S_IRUGO, ad7816_show_value, NULL, 0);
 +
-+static ssize_t adt75_show_name(struct device *dev,
++static ssize_t ad7816_show_name(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
++	struct ad7816_chip_info *chip = dev_info->dev_data;
 +	return sprintf(buf, "%s\n", chip->name);
 +}
 +
-+static IIO_DEVICE_ATTR(name, S_IRUGO, adt75_show_name, NULL, 0);
++static IIO_DEVICE_ATTR(name, S_IRUGO, ad7816_show_name, NULL, 0);
 +
-+static struct attribute *adt75_attributes[] = {
++static struct attribute *ad7816_attributes[] = {
 +	&iio_dev_attr_available_modes.dev_attr.attr,
 +	&iio_dev_attr_mode.dev_attr.attr,
-+	&iio_dev_attr_oneshot.dev_attr.attr,
++	&iio_dev_attr_channel.dev_attr.attr,
 +	&iio_dev_attr_value.dev_attr.attr,
 +	&iio_dev_attr_name.dev_attr.attr,
 +	NULL,
 +};
 +
-+static const struct attribute_group adt75_attribute_group = {
-+	.attrs = adt75_attributes,
++static const struct attribute_group ad7816_attribute_group = {
++	.attrs = ad7816_attributes,
 +};
 +
 +/*
 + * temperature bound events
 + */
 +
-+#define IIO_EVENT_CODE_ADT75_OTI    (IIO_EVENT_CODE_DEVICE_SPECIFIC + 1)
++#define IIO_EVENT_CODE_AD7816_OTI    (IIO_EVENT_CODE_DEVICE_SPECIFIC + 1)
 +
-+static void adt75_interrupt_bh(struct work_struct *work_s)
++static void ad7816_interrupt_bh(struct work_struct *work_s)
 +{
-+	struct adt75_chip_info *chip =
-+		container_of(work_s, struct adt75_chip_info, thresh_work);
++	struct ad7816_chip_info *chip =
++		container_of(work_s, struct ad7816_chip_info, thresh_work);
 +
-+	enable_irq(chip->client->irq);
++	enable_irq(chip->spi_dev->irq);
 +
 +	iio_push_event(chip->indio_dev, 0,
-+			IIO_EVENT_CODE_ADT75_OTI,
++			IIO_EVENT_CODE_AD7816_OTI,
 +			chip->last_timestamp);
 +}
 +
-+static int adt75_interrupt(struct iio_dev *dev_info,
++static int ad7816_interrupt(struct iio_dev *dev_info,
 +		int index,
 +		s64 timestamp,
 +		int no_test)
 +{
-+	struct adt75_chip_info *chip = dev_info->dev_data;
++	struct ad7816_chip_info *chip = dev_info->dev_data;
 +
 +	chip->last_timestamp = timestamp;
 +	schedule_work(&chip->thresh_work);
@@ -358,325 +345,142 @@ index 0000000..d685fa0
 +	return 0;
 +}
 +
-+IIO_EVENT_SH(adt75, &adt75_interrupt);
++IIO_EVENT_SH(ad7816, &ad7816_interrupt);
 +
-+static ssize_t adt75_show_oti_mode(struct device *dev,
++static ssize_t ad7816_show_oti(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
-+	int ret;
++	struct ad7816_chip_info *chip = dev_info->dev_data;
++	int value;
 +
-+	/* retrive ALART status */
-+	ret = adt75_i2c_read(chip, ADT75_CONFIG, &chip->config);
-+	if (ret)
-+		return -EIO;
-+
-+	if (chip->config & ADT75_OS_INT)
-+		return sprintf(buf, "interrupt\n");
-+	else
-+		return sprintf(buf, "comparator\n");
-+}
-+
-+static ssize_t adt75_set_oti_mode(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
-+	int ret;
-+	u8 config;
-+
-+	/* retrive ALART status */
-+	ret = adt75_i2c_read(chip, ADT75_CONFIG, &chip->config);
-+	if (ret)
-+		return -EIO;
-+
-+	config = chip->config & ~ADT75_OS_INT;
-+	if (strcmp(buf, "comparator") != 0)
-+		config |= ADT75_OS_INT;
-+
-+	ret = adt75_i2c_write(chip, ADT75_CONFIG, config);
-+	if (ret)
-+		return -EIO;
-+
-+	chip->config = config;
-+
-+	return ret;
-+}
-+
-+static ssize_t adt75_show_available_oti_modes(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	return sprintf(buf, "comparator\ninterrupt\n");
-+}
-+
-+static ssize_t adt75_show_smbus_alart(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
-+	int ret;
-+
-+	/* retrive ALART status */
-+	ret = adt75_i2c_read(chip, ADT75_CONFIG, &chip->config);
-+	if (ret)
-+		return -EIO;
-+
-+	return sprintf(buf, "%d\n", !!(chip->config & ADT75_SMBUS_ALART));
-+}
-+
-+static ssize_t adt75_set_smbus_alart(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
-+	unsigned long data = 0;
-+	int ret;
-+	u8 config;
-+
-+	ret = strict_strtoul(buf, 10, &data);
-+	if (ret)
++	if (chip->channel_id > AD7816_CS_MAX) {
++		dev_err(dev, "Invalid oti channel id %d.\n", chip->channel_id);
 +		return -EINVAL;
-+
-+	/* retrive ALART status */
-+	ret = adt75_i2c_read(chip, ADT75_CONFIG, &chip->config);
-+	if (ret)
-+		return -EIO;
-+
-+	config = chip->config & ~ADT75_SMBUS_ALART;
-+	if (data)
-+		config |= ADT75_SMBUS_ALART;
-+
-+	ret = adt75_i2c_write(chip, ADT75_CONFIG, config);
-+	if (ret)
-+		return -EIO;
-+
-+	chip->config = config;
-+
-+	return ret;
++	} else if (chip->channel_id == 0) {
++		value = AD7816_BOUND_VALUE_MIN +
++			(chip->oti_data[chip->channel_id] -
++			AD7816_BOUND_VALUE_BASE);
++		return sprintf(buf, "%d\n", value);
++	} else
++		return sprintf(buf, "%u\n", chip->oti_data[chip->channel_id]);
 +}
 +
-+static ssize_t adt75_show_fault_queue(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
-+	int ret;
-+
-+	/* retrive ALART status */
-+	ret = adt75_i2c_read(chip, ADT75_CONFIG, &chip->config);
-+	if (ret)
-+		return -EIO;
-+
-+	return sprintf(buf, "%d\n", (chip->config & ADT75_FAULT_QUEUE_MASK) >>
-+				ADT75_FAULT_QUEUE_OFFSET);
-+}
-+
-+static ssize_t adt75_set_fault_queue(struct device *dev,
++static inline ssize_t ad7816_set_oti(struct device *dev,
 +		struct device_attribute *attr,
 +		const char *buf,
 +		size_t len)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
-+	unsigned long data;
++	struct ad7816_chip_info *chip = dev_info->dev_data;
++	long value;
++	u8 data;
 +	int ret;
-+	u8 config;
 +
-+	ret = strict_strtoul(buf, 10, &data);
-+	if (ret || data > 3)
++	ret = strict_strtol(buf, 10, &value);
++
++	if (chip->channel_id > AD7816_CS_MAX) {
++		dev_err(dev, "Invalid oti channel id %d.\n", chip->channel_id);
 +		return -EINVAL;
++	} else if (chip->channel_id == 0) {
++		if (ret || value < AD7816_BOUND_VALUE_MIN ||
++			value > AD7816_BOUND_VALUE_MAX)
++			return -EINVAL;
 +
-+	/* retrive ALART status */
-+	ret = adt75_i2c_read(chip, ADT75_CONFIG, &chip->config);
-+	if (ret)
-+		return -EIO;
++		data = (u8)(value - AD7816_BOUND_VALUE_MIN +
++			AD7816_BOUND_VALUE_BASE);
++	} else {
++		if (ret || value < AD7816_BOUND_VALUE_BASE || value > 255)
++			return -EINVAL;
 +
-+	config = chip->config & ~ADT75_FAULT_QUEUE_MASK;
-+	config |= (data << ADT75_FAULT_QUEUE_OFFSET);
-+	ret = adt75_i2c_write(chip, ADT75_CONFIG, config);
-+	if (ret)
-+		return -EIO;
-+
-+	chip->config = config;
-+
-+	return ret;
-+}
-+static inline ssize_t adt75_show_t_bound(struct device *dev,
-+		struct device_attribute *attr,
-+		u8 bound_reg,
-+		char *buf)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
-+	u16 data;
-+	char sign = ' ';
-+	int ret;
-+
-+	ret = adt75_i2c_read(chip, bound_reg, (u8 *)&data);
-+	if (ret)
-+		return -EIO;
-+
-+	data = swab16(data) >> ADT75_VALUE_OFFSET;
-+	if (data & ADT75_VALUE_SIGN) {
-+		/* convert supplement to positive value */
-+		data = (ADT75_VALUE_SIGN << 1) - data;
-+		sign = '-';
++		data = (u8)value;
 +	}
 +
-+	return sprintf(buf, "%c%d.%.4d\n", sign,
-+		(data >> ADT75_VALUE_FLOAT_OFFSET),
-+		(data & ADT75_VALUE_FLOAT_MASK) * 625);
-+}
-+
-+static inline ssize_t adt75_set_t_bound(struct device *dev,
-+		struct device_attribute *attr,
-+		u8 bound_reg,
-+		const char *buf,
-+		size_t len)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct adt75_chip_info *chip = dev_info->dev_data;
-+	long tmp1, tmp2;
-+	u16 data;
-+	char *pos;
-+	int ret;
-+
-+	pos = strchr(buf, '.');
-+
-+	ret = strict_strtol(buf, 10, &tmp1);
-+
-+	if (ret || tmp1 > 127 || tmp1 < -128)
-+		return -EINVAL;
-+
-+	if (pos) {
-+		len = strlen(pos);
-+		if (len > ADT75_VALUE_FLOAT_OFFSET)
-+			len = ADT75_VALUE_FLOAT_OFFSET;
-+		pos[len] = 0;
-+		ret = strict_strtol(pos, 10, &tmp2);
-+
-+		if (!ret)
-+			tmp2 = (tmp2 / 625) * 625;
-+	}
-+
-+	if (tmp1 < 0)
-+		data = (u16)(-tmp1);
-+	else
-+		data = (u16)tmp1;
-+	data = (data << ADT75_VALUE_FLOAT_OFFSET) | (tmp2 & ADT75_VALUE_FLOAT_MASK);
-+	if (tmp1 < 0)
-+		/* convert positive value to supplyment */
-+		data = (ADT75_VALUE_SIGN << 1) - data;
-+	data <<= ADT75_VALUE_OFFSET;
-+	data = swab16(data);
-+
-+	ret = adt75_i2c_write(chip, bound_reg, (u8)data);
++	ret = ad7816_spi_write(chip, data);
 +	if (ret)
 +		return -EIO;
 +
-+	return ret;
++	chip->oti_data[chip->channel_id] = data;
++
++	return len;
 +}
 +
-+static ssize_t adt75_show_t_os(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	return adt75_show_t_bound(dev, attr,
-+			ADT75_T_OS, buf);
-+}
++IIO_EVENT_ATTR_SH(oti, iio_event_ad7816,
++		ad7816_show_oti, ad7816_set_oti, 0);
 +
-+static inline ssize_t adt75_set_t_os(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	return adt75_set_t_bound(dev, attr,
-+			ADT75_T_OS, buf, len);
-+}
-+
-+static ssize_t adt75_show_t_hyst(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	return adt75_show_t_bound(dev, attr,
-+			ADT75_T_HYST, buf);
-+}
-+
-+static inline ssize_t adt75_set_t_hyst(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	return adt75_set_t_bound(dev, attr,
-+			ADT75_T_HYST, buf, len);
-+}
-+
-+IIO_EVENT_ATTR_SH(oti_mode, iio_event_adt75,
-+		adt75_show_oti_mode, adt75_set_oti_mode, 0);
-+IIO_EVENT_ATTR_SH(available_oti_modes, iio_event_adt75,
-+		adt75_show_available_oti_modes, NULL, 0);
-+IIO_EVENT_ATTR_SH(smbus_alart, iio_event_adt75,
-+		adt75_show_smbus_alart, adt75_set_smbus_alart, 0);
-+IIO_EVENT_ATTR_SH(fault_queue, iio_event_adt75,
-+		adt75_show_fault_queue, adt75_set_fault_queue, 0);
-+IIO_EVENT_ATTR_SH(t_os, iio_event_adt75,
-+		adt75_show_t_os, adt75_set_t_os, 0);
-+IIO_EVENT_ATTR_SH(t_hyst, iio_event_adt75,
-+		adt75_show_t_hyst, adt75_set_t_hyst, 0);
-+
-+static struct attribute *adt75_event_attributes[] = {
-+	&iio_event_attr_oti_mode.dev_attr.attr,
-+	&iio_event_attr_available_oti_modes.dev_attr.attr,
-+	&iio_event_attr_smbus_alart.dev_attr.attr,
-+	&iio_event_attr_fault_queue.dev_attr.attr,
-+	&iio_event_attr_t_os.dev_attr.attr,
-+	&iio_event_attr_t_hyst.dev_attr.attr,
++static struct attribute *ad7816_event_attributes[] = {
++	&iio_event_attr_oti.dev_attr.attr,
 +	NULL,
 +};
 +
-+static struct attribute_group adt75_event_attribute_group = {
-+	.attrs = adt75_event_attributes,
++static struct attribute_group ad7816_event_attribute_group = {
++	.attrs = ad7816_event_attributes,
 +};
 +
 +/*
 + * device probe and remove
 + */
 +
-+static int __devinit adt75_probe(struct i2c_client *client,
-+		const struct i2c_device_id *id)
++static int __devinit ad7816_probe(struct spi_device *spi_dev)
 +{
-+	struct adt75_chip_info *chip;
++	struct ad7816_chip_info *chip;
++	unsigned short *pins = spi_dev->dev.platform_data;
 +	int ret = 0;
++	int i;
 +
-+	chip = kzalloc(sizeof(struct adt75_chip_info), GFP_KERNEL);
++	if (!pins) {
++		dev_err(&spi_dev->dev, "No necessary GPIO platform data.\n");
++		return -EINVAL;
++	}
++
++	chip = kzalloc(sizeof(struct ad7816_chip_info), GFP_KERNEL);
 +
 +	if (chip == NULL)
 +		return -ENOMEM;
 +
 +	/* this is only used for device removal purposes */
-+	i2c_set_clientdata(client, chip);
++	dev_set_drvdata(&spi_dev->dev, chip);
 +
-+	chip->client = client;
-+	chip->name = id->name;
++	chip->spi_dev = spi_dev;
++	chip->name = spi_dev->modalias;
++	for (i = 0; i <= AD7816_CS_MAX; i++)
++		chip->oti_data[i] = 203;
++	chip->rdwr_pin = pins[0];
++	chip->convert_pin = pins[1];
++	chip->busy_pin = pins[2];
++
++	ret = gpio_request(chip->rdwr_pin, chip->name);
++	if (ret) {
++		dev_err(&spi_dev->dev, "Fail to request rdwr gpio PIN %d.\n",
++			chip->rdwr_pin);
++		goto error_free_chip;
++	}
++	gpio_direction_input(chip->rdwr_pin);
++	ret = gpio_request(chip->convert_pin, chip->name);
++	if (ret) {
++		dev_err(&spi_dev->dev, "Fail to request convert gpio PIN %d.\n",
++			chip->convert_pin);
++		goto error_free_gpio_rdwr;
++	}
++	gpio_direction_input(chip->convert_pin);
++	ret = gpio_request(chip->busy_pin, chip->name);
++	if (ret) {
++		dev_err(&spi_dev->dev, "Fail to request busy gpio PIN %d.\n",
++			chip->busy_pin);
++		goto error_free_gpio_convert;
++	}
++	gpio_direction_input(chip->busy_pin);
 +
 +	chip->indio_dev = iio_allocate_device();
 +	if (chip->indio_dev == NULL) {
 +		ret = -ENOMEM;
-+		goto error_free_chip;
++		goto error_free_gpio;
 +	}
 +
-+	chip->indio_dev->dev.parent = &client->dev;
-+	chip->indio_dev->attrs = &adt75_attribute_group;
-+	chip->indio_dev->event_attrs = &adt75_event_attribute_group;
++	chip->indio_dev->dev.parent = &spi_dev->dev;
++	chip->indio_dev->attrs = &ad7816_attribute_group;
++	chip->indio_dev->event_attrs = &ad7816_event_attribute_group;
 +	chip->indio_dev->dev_data = (void *)chip;
 +	chip->indio_dev->driver_module = THIS_MODULE;
 +	chip->indio_dev->num_interrupt_lines = 1;
@@ -686,105 +490,105 @@ index 0000000..d685fa0
 +	if (ret)
 +		goto error_free_dev;
 +
-+	if (client->irq > 0) {
-+		ret = iio_register_interrupt_line(client->irq,
++	if (spi_dev->irq) {
++		/* Only low trigger is supported in ad7816/7/8 */
++		spi_dev->irq_flags &= ~IRQF_TRIGGER_MASK;
++		spi_dev->irq_flags |= IRQF_TRIGGER_LOW;
++
++		ret = iio_register_interrupt_line(spi_dev->irq,
 +				chip->indio_dev,
 +				0,
-+				client->irq_flags,
++				spi_dev->irq_flags,
 +				chip->name);
 +		if (ret)
 +			goto error_unreg_dev;
 +
 +		/*
-+		 * The event handler list element refer to iio_event_adt75.
++		 * The event handler list element refer to iio_event_ad7816.
 +		 * All event attributes bind to the same event handler.
 +		 * So, only register event handler once.
 +		 */
-+		iio_add_event_to_list(&iio_event_adt75,
++		iio_add_event_to_list(&iio_event_ad7816,
 +				&chip->indio_dev->interrupts[0]->ev_list);
 +
-+		INIT_WORK(&chip->thresh_work, adt75_interrupt_bh);
-+
-+		ret = adt75_i2c_read(chip, ADT75_CONFIG, &chip->config);
-+		if (ret) {
-+			ret = -EIO;
-+			goto error_unreg_irq;
-+		}
-+
-+		if (client->irq_flags & IRQF_TRIGGER_HIGH)
-+			chip->config |= ADT75_OS_POLARITY;
-+		else
-+			chip->config &= ~ADT75_OS_POLARITY;
-+
-+		ret = adt75_i2c_write(chip, ADT75_CONFIG, chip->config);
-+		if (ret) {
-+			ret = -EIO;
-+			goto error_unreg_irq;
-+		}
++		INIT_WORK(&chip->thresh_work, ad7816_interrupt_bh);
 +	}
 +
-+	dev_info(&client->dev, "%s temperature sensor registered.\n",
-+			 id->name);
++	dev_info(&spi_dev->dev, "%s temperature sensor and ADC registered.\n",
++			 chip->name);
 +
 +	return 0;
-+error_unreg_irq:
-+	iio_unregister_interrupt_line(chip->indio_dev, 0);
++
 +error_unreg_dev:
 +	iio_device_unregister(chip->indio_dev);
 +error_free_dev:
 +	iio_free_device(chip->indio_dev);
++error_free_gpio:
++	gpio_free(chip->busy_pin);
++error_free_gpio_convert:
++	gpio_free(chip->convert_pin);
++error_free_gpio_rdwr:
++	gpio_free(chip->rdwr_pin);
 +error_free_chip:
 +	kfree(chip);
 +
 +	return ret;
 +}
 +
-+static int __devexit adt75_remove(struct i2c_client *client)
++static int __devexit ad7816_remove(struct spi_device *spi_dev)
 +{
-+	struct adt75_chip_info *chip = i2c_get_clientdata(client);
++	struct ad7816_chip_info *chip = dev_get_drvdata(&spi_dev->dev);
 +	struct iio_dev *indio_dev = chip->indio_dev;
 +
-+	if (client->irq)
++	dev_set_drvdata(&spi_dev->dev, NULL);
++	if (spi_dev->irq)
 +		iio_unregister_interrupt_line(indio_dev, 0);
 +	iio_device_unregister(indio_dev);
 +	iio_free_device(chip->indio_dev);
++	gpio_free(chip->busy_pin);
++	gpio_free(chip->convert_pin);
++	gpio_free(chip->rdwr_pin);
 +	kfree(chip);
 +
 +	return 0;
 +}
 +
-+static const struct i2c_device_id adt75_id[] = {
-+	{ "adt75", 0 },
++static const struct spi_device_id ad7816_id[] = {
++	{ "ad7816", 0 },
++	{ "ad7817", 0 },
++	{ "ad7818", 0 },
 +	{}
 +};
 +
-+MODULE_DEVICE_TABLE(i2c, adt75_id);
++MODULE_DEVICE_TABLE(spi, ad7816_id);
 +
-+static struct i2c_driver adt75_driver = {
++static struct spi_driver ad7816_driver = {
 +	.driver = {
-+		.name = "adt75",
++		.name = "ad7816",
++		.bus = &spi_bus_type,
++		.owner = THIS_MODULE,
 +	},
-+	.probe = adt75_probe,
-+	.remove = __devexit_p(adt75_remove),
-+	.id_table = adt75_id,
++	.probe = ad7816_probe,
++	.remove = __devexit_p(ad7816_remove),
++	.id_table = ad7816_id,
 +};
 +
-+static __init int adt75_init(void)
++static __init int ad7816_init(void)
 +{
-+	return i2c_add_driver(&adt75_driver);
++	return spi_register_driver(&ad7816_driver);
 +}
 +
-+static __exit void adt75_exit(void)
++static __exit void ad7816_exit(void)
 +{
-+	i2c_del_driver(&adt75_driver);
++	spi_unregister_driver(&ad7816_driver);
 +}
 +
 +MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices ADT75 digital"
++MODULE_DESCRIPTION("Analog Devices AD7816/7/8 digital"
 +			" temperature sensor driver");
 +MODULE_LICENSE("GPL v2");
 +
-+module_init(adt75_init);
-+module_exit(adt75_exit);
++module_init(ad7816_init);
++module_exit(ad7816_exit);
 -- 
 1.7.3.2
