@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
 Cc: device-drivers-devel@blackfin.uclinux.org,
 	Cliff Cai <cliff.cai@analog.com>
-Subject: [PATCH 11/19] staging: iio: dds: new driver for AD9951 devices
-Date: Sat, 23 Oct 2010 17:53:55 -0400
-Message-Id: <1287870843-19835-11-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 10/19] staging: iio: dds: new driver for AD9910 devices
+Date: Sat, 23 Oct 2010 17:53:54 -0400
+Message-Id: <1287870843-19835-10-git-send-email-vapier@gentoo.org>
 In-Reply-To: <1287870843-19835-1-git-send-email-vapier@gentoo.org>
 References: <1287870843-19835-1-git-send-email-vapier@gentoo.org>
 List-ID: <linux-iio@vger.kernel.org>
@@ -18,42 +18,42 @@ Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
  drivers/staging/iio/dds/Kconfig  |    7 +
  drivers/staging/iio/dds/Makefile |    1 +
- drivers/staging/iio/dds/ad9951.c |  253 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 261 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/dds/ad9951.c
+ drivers/staging/iio/dds/ad9910.c |  453 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 461 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/dds/ad9910.c
 
 diff --git a/drivers/staging/iio/dds/Kconfig b/drivers/staging/iio/dds/Kconfig
-index 518d0c1..d045ed6 100644
+index dee31eb..518d0c1 100644
 --- a/drivers/staging/iio/dds/Kconfig
 +++ b/drivers/staging/iio/dds/Kconfig
-@@ -37,3 +37,10 @@ config AD9910
+@@ -30,3 +30,10 @@ config AD9852
  	help
  	  Say yes here to build support for Analog Devices DDS chip
- 	  ad9910, provides direct access via sysfs.
+ 	  ad9852/4, provides direct access via sysfs.
 +
-+config AD9951
-+	tristate "Analog Devices ad9951 driver"
++config AD9910
++	tristate "Analog Devices ad9910 driver"
 +	depends on SPI
 +	help
 +	  Say yes here to build support for Analog Devices DDS chip
-+	  ad9951, provides direct access via sysfs.
++	  ad9910, provides direct access via sysfs.
 diff --git a/drivers/staging/iio/dds/Makefile b/drivers/staging/iio/dds/Makefile
-index d249b81..6f274ac 100644
+index e344e8d..d249b81 100644
 --- a/drivers/staging/iio/dds/Makefile
 +++ b/drivers/staging/iio/dds/Makefile
-@@ -7,3 +7,4 @@ obj-$(CONFIG_AD9832) += ad9832.o
+@@ -6,3 +6,4 @@ obj-$(CONFIG_AD5930) += ad5930.o
+ obj-$(CONFIG_AD9832) += ad9832.o
  obj-$(CONFIG_AD9850) += ad9850.o
  obj-$(CONFIG_AD9852) += ad9852.o
- obj-$(CONFIG_AD9910) += ad9910.o
-+obj-$(CONFIG_AD9951) += ad9951.o
-diff --git a/drivers/staging/iio/dds/ad9951.c b/drivers/staging/iio/dds/ad9951.c
++obj-$(CONFIG_AD9910) += ad9910.o
+diff --git a/drivers/staging/iio/dds/ad9910.c b/drivers/staging/iio/dds/ad9910.c
 new file mode 100644
-index 0000000..71236a0
+index 0000000..b7565af
 --- /dev/null
-+++ b/drivers/staging/iio/dds/ad9951.c
-@@ -0,0 +1,253 @@
++++ b/drivers/staging/iio/dds/ad9910.c
+@@ -0,0 +1,453 @@
 +/*
-+ * Driver for ADI Direct Digital Synthesis ad9951
++ * Driver for ADI Direct Digital Synthesis ad9910
 + *
 + * Copyright (c) 2010 Analog Devices Inc.
 + *
@@ -72,44 +72,103 @@ index 0000000..71236a0
 +#include "../iio.h"
 +#include "../sysfs.h"
 +
-+#define DRV_NAME "ad9951"
++#define DRV_NAME "ad9910"
 +
 +#define CFR1 0x0
 +#define CFR2 0x1
++#define CFR3 0x2
++
++#define AUXDAC 0x3
++#define IOUPD 0x4
++#define FTW 0x7
++#define POW 0x8
++#define ASF 0x9
++#define MULTC 0x0A
++#define DIG_RAMPL 0x0B
++#define DIG_RAMPS 0x0C
++#define DIG_RAMPR 0x0D
++#define SIN_TONEP0 0x0E
++#define SIN_TONEP1 0x0F
++#define SIN_TONEP2 0x10
++#define SIN_TONEP3 0x11
++#define SIN_TONEP4 0x12
++#define SIN_TONEP5 0x13
++#define SIN_TONEP6 0x14
++#define SIN_TONEP7 0x15
++
++#define RAM_ENABLE	(1 << 7)
++
++#define MANUAL_OSK	(1 << 7)
++#define INVSIC		(1 << 6)
++#define DDS_SINEOP	(1)
 +
 +#define AUTO_OSK	(1)
 +#define OSKEN		(1 << 1)
 +#define LOAD_ARR	(1 << 2)
-+
-+#define AUTO_SYNC	(1 << 7)
++#define CLR_PHA		(1 << 3)
++#define CLR_DIG		(1 << 4)
++#define ACLR_PHA	(1 << 5)
++#define ACLR_DIG	(1 << 6)
++#define LOAD_LRR	(1 << 7)
 +
 +#define LSB_FST		(1)
 +#define SDIO_IPT	(1 << 1)
-+#define CLR_PHA		(1 << 2)
-+#define SINE_OPT	(1 << 4)
-+#define ACLR_PHA	(1 << 5)
++#define EXT_PWD		(1 << 3)
++#define ADAC_PWD	(1 << 4)
++#define REFCLK_PWD	(1 << 5)
++#define DAC_PWD		(1 << 6)
++#define DIG_PWD		(1 << 7)
 +
-+#define VCO_RANGE	(1 << 2)
++#define ENA_AMP		(1)
++#define READ_FTW	(1)
++#define DIGR_LOW	(1 << 1)
++#define DIGR_HIGH	(1 << 2)
++#define DIGR_ENA	(1 << 3)
++#define SYNCCLK_ENA	(1 << 6)
++#define ITER_IOUPD	(1 << 7)
 +
-+#define CRS_OPT		(1 << 1)
-+#define HMANU_SYNC	(1 << 2)
-+#define HSPD_SYNC	(1 << 3)
++#define TX_ENA		(1 << 1)
++#define PDCLK_INV	(1 << 2)
++#define PDCLK_ENB	(1 << 3)
++
++#define PARA_ENA	(1 << 4)
++#define SYNC_DIS	(1 << 5)
++#define DATA_ASS	(1 << 6)
++#define MATCH_ENA	(1 << 7)
++
++#define PLL_ENA		(1)
++#define PFD_RST		(1 << 2)
++#define REFCLK_RST	(1 << 6)
++#define REFCLK_BYP	(1 << 7)
 +
 +/* Register format: 1 byte addr + value */
-+struct ad9951_config {
-+	u8 asf[3];
-+	u8 arr[2];
-+	u8 ftw0[5];
-+	u8 ftw1[3];
++struct ad9910_config {
++	u8 auxdac[5];
++	u8 ioupd[5];
++	u8 ftw[5];
++	u8 pow[3];
++	u8 asf[5];
++	u8 multc[5];
++	u8 dig_rampl[9];
++	u8 dig_ramps[9];
++	u8 dig_rampr[5];
++	u8 sin_tonep0[9];
++	u8 sin_tonep1[9];
++	u8 sin_tonep2[9];
++	u8 sin_tonep3[9];
++	u8 sin_tonep4[9];
++	u8 sin_tonep5[9];
++	u8 sin_tonep6[9];
++	u8 sin_tonep7[9];
 +};
 +
-+struct ad9951_state {
++struct ad9910_state {
 +	struct mutex lock;
 +	struct iio_dev *idev;
 +	struct spi_device *sdev;
 +};
 +
-+static ssize_t ad9951_set_parameter(struct device *dev,
++static ssize_t ad9910_set_parameter(struct device *dev,
 +					struct device_attribute *attr,
 +					const char *buf,
 +					size_t len)
@@ -117,22 +176,12 @@ index 0000000..71236a0
 +	struct spi_message msg;
 +	struct spi_transfer xfer;
 +	int ret;
-+	struct ad9951_config *config = (struct ad9951_config *)buf;
++	struct ad9910_config *config = (struct ad9910_config *)buf;
 +	struct iio_dev *idev = dev_get_drvdata(dev);
-+	struct ad9951_state *st = idev->dev_data;
++	struct ad9910_state *st = idev->dev_data;
 +
-+	xfer.len = 3;
-+	xfer.tx_buf = &config->asf[0];
-+	mutex_lock(&st->lock);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	xfer.len = 2;
-+	xfer.tx_buf = &config->arr[0];
++	xfer.len = 5;
++	xfer.tx_buf = &config->auxdac[0];
 +	mutex_lock(&st->lock);
 +
 +	spi_message_init(&msg);
@@ -142,7 +191,17 @@ index 0000000..71236a0
 +		goto error_ret;
 +
 +	xfer.len = 5;
-+	xfer.tx_buf = &config->ftw0[0];
++	xfer.tx_buf = &config->ioupd[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++
++	xfer.len = 5;
++	xfer.tx_buf = &config->ftw[0];
 +	mutex_lock(&st->lock);
 +
 +	spi_message_init(&msg);
@@ -152,7 +211,130 @@ index 0000000..71236a0
 +		goto error_ret;
 +
 +	xfer.len = 3;
-+	xfer.tx_buf = &config->ftw1[0];
++	xfer.tx_buf = &config->pow[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++
++	xfer.len = 5;
++	xfer.tx_buf = &config->asf[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++
++	xfer.len = 5;
++	xfer.tx_buf = &config->multc[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++
++	xfer.len = 9;
++	xfer.tx_buf = &config->dig_rampl[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++
++	xfer.len = 9;
++	xfer.tx_buf = &config->dig_ramps[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++
++	xfer.len = 5;
++	xfer.tx_buf = &config->dig_rampr[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++
++	xfer.len = 9;
++	xfer.tx_buf = &config->sin_tonep0[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++	xfer.len = 9;
++	xfer.tx_buf = &config->sin_tonep1[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++	xfer.len = 9;
++	xfer.tx_buf = &config->sin_tonep2[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++	xfer.len = 9;
++	xfer.tx_buf = &config->sin_tonep3[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++	xfer.len = 9;
++	xfer.tx_buf = &config->sin_tonep4[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++	xfer.len = 9;
++	xfer.tx_buf = &config->sin_tonep5[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++	xfer.len = 9;
++	xfer.tx_buf = &config->sin_tonep6[0];
++	mutex_lock(&st->lock);
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++	xfer.len = 9;
++	xfer.tx_buf = &config->sin_tonep7[0];
 +	mutex_lock(&st->lock);
 +
 +	spi_message_init(&msg);
@@ -166,9 +348,9 @@ index 0000000..71236a0
 +	return ret ? ret : len;
 +}
 +
-+static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad9951_set_parameter, 0);
++static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad9910_set_parameter, 0);
 +
-+static void ad9951_init(struct ad9951_state *st)
++static void ad9910_init(struct ad9910_state *st)
 +{
 +	struct spi_message msg;
 +	struct spi_transfer xfer;
@@ -177,8 +359,8 @@ index 0000000..71236a0
 +
 +	cfr[0] = CFR1;
 +	cfr[1] = 0;
-+	cfr[2] = LSB_FST | CLR_PHA | SINE_OPT | ACLR_PHA;
-+	cfr[3] = AUTO_OSK | OSKEN | LOAD_ARR;
++	cfr[2] = MANUAL_OSK | INVSIC | DDS_SINEOP;
++	cfr[3] = AUTO_OSK | OSKEN | ACLR_PHA | ACLR_DIG | LOAD_LRR;
 +	cfr[4] = 0;
 +
 +	mutex_lock(&st->lock);
@@ -193,13 +375,31 @@ index 0000000..71236a0
 +		goto error_ret;
 +
 +	cfr[0] = CFR2;
-+	cfr[1] = VCO_RANGE;
-+	cfr[2] = HSPD_SYNC;
-+	cfr[3] = 0;
++	cfr[1] = ENA_AMP;
++	cfr[2] = READ_FTW | DIGR_ENA | ITER_IOUPD;
++	cfr[3] = TX_ENA | PDCLK_INV | PDCLK_ENB;
++	cfr[4] = PARA_ENA;
 +
 +	mutex_lock(&st->lock);
 +
-+	xfer.len = 4;
++	xfer.len = 5;
++	xfer.tx_buf = &cfr;
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->sdev, &msg);
++	if (ret)
++		goto error_ret;
++
++	cfr[0] = CFR3;
++	cfr[1] = PLL_ENA;
++	cfr[2] = 0;
++	cfr[3] = REFCLK_RST | REFCLK_BYP;
++	cfr[4] = 0;
++
++	mutex_lock(&st->lock);
++
++	xfer.len = 5;
 +	xfer.tx_buf = &cfr;
 +
 +	spi_message_init(&msg);
@@ -215,19 +415,19 @@ index 0000000..71236a0
 +
 +}
 +
-+static struct attribute *ad9951_attributes[] = {
++static struct attribute *ad9910_attributes[] = {
 +	&iio_dev_attr_dds.dev_attr.attr,
 +	NULL,
 +};
 +
-+static const struct attribute_group ad9951_attribute_group = {
++static const struct attribute_group ad9910_attribute_group = {
 +	.name = DRV_NAME,
-+	.attrs = ad9951_attributes,
++	.attrs = ad9910_attributes,
 +};
 +
-+static int __devinit ad9951_probe(struct spi_device *spi)
++static int __devinit ad9910_probe(struct spi_device *spi)
 +{
-+	struct ad9951_state *st;
++	struct ad9910_state *st;
 +	int ret = 0;
 +
 +	st = kzalloc(sizeof(*st), GFP_KERNEL);
@@ -249,7 +449,7 @@ index 0000000..71236a0
 +	st->idev->num_interrupt_lines = 0;
 +	st->idev->event_attrs = NULL;
 +
-+	st->idev->attrs = &ad9951_attribute_group;
++	st->idev->attrs = &ad9910_attribute_group;
 +	st->idev->dev_data = (void *)(st);
 +	st->idev->driver_module = THIS_MODULE;
 +	st->idev->modes = INDIO_DIRECT_MODE;
@@ -261,7 +461,7 @@ index 0000000..71236a0
 +	spi->mode = SPI_MODE_3;
 +	spi->bits_per_word = 8;
 +	spi_setup(spi);
-+	ad9951_init(st);
++	ad9910_init(st);
 +	return 0;
 +
 +error_free_dev:
@@ -272,9 +472,9 @@ index 0000000..71236a0
 +	return ret;
 +}
 +
-+static int __devexit ad9951_remove(struct spi_device *spi)
++static int __devexit ad9910_remove(struct spi_device *spi)
 +{
-+	struct ad9951_state *st = spi_get_drvdata(spi);
++	struct ad9910_state *st = spi_get_drvdata(spi);
 +
 +	iio_device_unregister(st->idev);
 +	kfree(st);
@@ -282,28 +482,28 @@ index 0000000..71236a0
 +	return 0;
 +}
 +
-+static struct spi_driver ad9951_driver = {
++static struct spi_driver ad9910_driver = {
 +	.driver = {
 +		.name = DRV_NAME,
 +		.owner = THIS_MODULE,
 +	},
-+	.probe = ad9951_probe,
-+	.remove = __devexit_p(ad9951_remove),
++	.probe = ad9910_probe,
++	.remove = __devexit_p(ad9910_remove),
 +};
 +
-+static __init int ad9951_spi_init(void)
++static __init int ad9910_spi_init(void)
 +{
-+	return spi_register_driver(&ad9951_driver);
++	return spi_register_driver(&ad9910_driver);
 +}
-+module_init(ad9951_spi_init);
++module_init(ad9910_spi_init);
 +
-+static __exit void ad9951_spi_exit(void)
++static __exit void ad9910_spi_exit(void)
 +{
-+	spi_unregister_driver(&ad9951_driver);
++	spi_unregister_driver(&ad9910_driver);
 +}
-+module_exit(ad9951_spi_exit);
++module_exit(ad9910_spi_exit);
 +
 +MODULE_AUTHOR("Cliff Cai");
-+MODULE_DESCRIPTION("Analog Devices ad9951 driver");
++MODULE_DESCRIPTION("Analog Devices ad9910 driver");
 -- 
 1.7.3.2
