@@ -1,126 +1,1007 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:51035 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751692Ab0JYKWv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Oct 2010 06:22:51 -0400
-Message-ID: <4CC55BDE.70508@cam.ac.uk>
-Date: Mon, 25 Oct 2010 11:28:46 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Guenter Roeck <guenter.roeck@ericsson.com>
-CC: Mike Frysinger <vapier@gentoo.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>,
+Return-Path: <vapier@gentoo.org>
+From: Mike Frysinger <vapier@gentoo.org>
+To: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Cc: device-drivers-devel@blackfin.uclinux.org,
 	Sonic Zhang <sonic.zhang@analog.com>
-Subject: Re: [PATCH 12/14] staging: iio: adc: new driver for ADT7408 temperature
- sensors
-References: <1287865757-1031-1-git-send-email-vapier@gentoo.org> <1287865757-1031-12-git-send-email-vapier@gentoo.org> <4CC4B8F8.7010005@cam.ac.uk> <20101024234735.GB15616@ericsson.com>
-In-Reply-To: <20101024234735.GB15616@ericsson.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH 11/14] staging: iio: adc: new driver for ADT7310 temperature sensors
+Date: Sat, 23 Oct 2010 16:29:14 -0400
+Message-Id: <1287865757-1031-11-git-send-email-vapier@gentoo.org>
+In-Reply-To: <1287865757-1031-1-git-send-email-vapier@gentoo.org>
+References: <1287865757-1031-1-git-send-email-vapier@gentoo.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/25/10 00:47, Guenter Roeck wrote:
-> On Sun, Oct 24, 2010 at 06:53:44PM -0400, Jonathan Cameron wrote:
->> On 10/23/10 21:29, Mike Frysinger wrote:
->>> From: Sonic Zhang <sonic.zhang@analog.com>
->> Here we enter new territory. This device is already
->> supported in hwmon.  Do we have a usecase that is not
->> covered by that driver?
->>
->> If this is only for hardware monitoring by Guenter (cc'd) can
->> perhaps advise on how to support everything you have here...
->>
-> 
-> device_id and manufactory_id (shouldn't that be manufacturer_id ?) don't provide
-> much value since they are (or could be) already part of the device name.
-Agreed, they'll get dropped whatever happens to this driver. It's far from
-clean as it currently stands.
-> 
-> "capability" reflects a raw register value. I would be opposed to any attribute
-> like that, since it does not mean anything beyond the driver for that specific chip.
-Agreed, that's certainly not staying there as is.  The intent is to merge
-this series (36 drivers in all) into staging and clean up there.  Analog have
-given commitments that they will put the man power on it.
-> The data it provides might make sense in the driver documentation, but what
-> is anyone supposed to do with the returned hex value ? That kind of ABI really
-> does not make any sense. If the reported values are really valuable enough to be
-> reported, a real abi (eg tempX_accuracy and tempX_resolution) would be much better.
-> 
-> For "power-save" (or "power-down" ?) and "full" mode I am not sure
-> why suspend/resume isn't used instead. Is that some new upcoming ABI ?
-Nope, it's a dirty hack instead of using the runtime pm (which to be fair is still
-in relatively early days)  It'll go in the clean up (as for that matter will
-any 'mode' type attributes as they never standardize well.). 
-> 
->> I'm personally not against having drivers in IIO for devices
->> supported elsewhere, but the requirements for justification
->> are rather higher. Also care is needed to ensure no issues with
->> platform data etc.
->>
->> Guenter, for your information we have a set of temp drivers coming,
->> as a small element of a larger set, from Analog's tree. Those
->> I've reviewed so far have wanted to use IIO's event infrastructure
->> (which is much more general than hwmon's handling of alarms)
->> or have been suitably high performance devices with general
->> adc's to satisfy me that they clearly have uses beyond
->> hardware monitoring.
->>
-> There should be a generic part and a specific part for such generic devices.
-> The generic part can be in mfd or somewhere suitable (such as iio), but
-> the hwmon part should reside in hwmon.
-Tricky to agree on the divide.  Note we do match your interfaces anyway
-(where they exist). The only exception to this is your alarm interfaces which
-are way too restrictive (as one would expect they only cover cases that make
-sense for hardware monitoring!)
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-We have numerous devices (including accelerometers, which you are quite rightly trying to
-get out of hwmon) that have a voltage supply monitor channel.  It might seem obvious
-that we should add a hwmon element to this but the value is only of interest alongside
-the measurements from gyroscopes etc.  Typically it will be captured and buffered at
-a couple of Khz which really doesn't make it fit into the scope of hwmon.  Anyone who
-uses $400 of IMU as their voltage monitor gets to deal with the consequences.
-> 
-> The worst thing to do would be to duplicate functionality as it is proposed here.
-> That can only create chaos.
-It's an interesting boundary for what should go where and as per the discussions
-about accelerometers going into input, I think it has to be decided based on what
-people are using the device for.
-> 
-> If the event mechanism in hwmon is deemed insufficient enough to cause drivers
-> to move elsewhere, maybe event mechanism in hwmon should be improved instead.
-This comes back to the reason IIO started in the first place.  
-hwmon is for hardware monitoring and hence has a different set of requirements from
-generic sensing.  Basically you want to do things slowly.  There is no earthly point
-in monitoring at 1MHz.  The problem lies in chips that sit on the edge.  There are plenty
-of high end ADCs running at 1Hz or less to track some battery voltage or similar. If that's
-what they are used for then I agree they should be in hwmon.  If you want to do high
-speed capture or fast event capture then it is a non starter.  There is a reason IIO
-is a whole lot more complex than hwmon. Requirements demand it.
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ drivers/staging/iio/adc/Kconfig   |    7 +
+ drivers/staging/iio/adc/Makefile  |    1 +
+ drivers/staging/iio/adc/adt7310.c |  951 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 959 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/adt7310.c
 
-> Or, even better, if there is a really need for a more detailed / improved event
-> mechanism, there should be a single event subsystem that works for both iio
-> and hwmon.
-That's the equivalent of Linus' argument that all devices should use input's event
-subsystem. It's massive overkill unless you want sophisticated amalgamation and filtering
-of the incoming event stream. Also input are worried about bloat in their event structures
-so are very much against adding anything that isn't a true human input device.
-There may be some scope for sharing at some level but I don't think the whole event
-mechanism can realistically be shared.  The requirements are simply too different.
-For reference the way we handle the conversion from IIO events (which are more specific
-and streamlined than input ones - their events include standard data, for reasons of
-overhead our data goes a different route) for the odd device that sits at the boundary
-of IIO and input is a userspace loopback tool via uinput (proof of concept only at this stage).
-> 
-> In short, if the hwmon ABI is deemed to be insufficient to support today's devices,
-> for whaever reason, it needs to get fixed. Moving hwmon drivers elsewhere to
-> avoid its perceived (or real) limitations should be an absolute no.
-I agree. The issue here is where we draw the divide. I am very dubious about this particular
-driver going in IIO simply because it doesn't seem to need any of the stuff that we exist
-for.  Others are far less clear.
-
-Jonathan
-> Guenter
-> 
-
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 5c7f042..5d13918 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -107,3 +107,10 @@ config ADT75
+ 	help
+ 	  Say yes here to build support for Analog Devices ADT75
+ 	  temperature sensors.
++
++config ADT7408
++	tristate "Analog Devices ADT7408 temperature sensor driver"
++	depends on I2C
++	help
++	  Say yes here to build support for Analog Devices ADT7408
++	  temperature sensors.
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index e88dfc4..6c11363 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -20,3 +20,4 @@ obj-$(CONFIG_AD7476) += ad7476.o
+ obj-$(CONFIG_AD774X) += ad774x.o
+ obj-$(CONFIG_AD7816) += ad7816.o
+ obj-$(CONFIG_ADT75) += adt75.o
++obj-$(CONFIG_ADT7310) += adt7310.o
+diff --git a/drivers/staging/iio/adc/adt7310.c b/drivers/staging/iio/adc/adt7310.c
+new file mode 100644
+index 0000000..cb53506
+--- /dev/null
++++ b/drivers/staging/iio/adc/adt7310.c
+@@ -0,0 +1,951 @@
++/*
++ * ADT7310 digital temperature sensor driver supporting ADT7310
++ *
++ * Copyright 2010 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++#include <linux/interrupt.h>
++#include <linux/gpio.h>
++#include <linux/workqueue.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/list.h>
++#include <linux/spi/spi.h>
++#include <linux/rtc.h>
++
++#include "../iio.h"
++#include "../sysfs.h"
++
++/*
++ * ADT7310 registers definition
++ */
++
++#define ADT7310_STATUS			0
++#define ADT7310_CONFIG			1
++#define ADT7310_TEMPERATURE		2
++#define ADT7310_ID			3
++#define ADT7310_T_CRIT			4
++#define ADT7310_T_HYST			5
++#define ADT7310_T_ALARM_HIGH		6
++#define ADT7310_T_ALARM_LOW		7
++
++/*
++ * ADT7310 status
++ */
++#define ADT7310_STAT_T_LOW		0x10
++#define ADT7310_STAT_T_HIGH		0x20
++#define ADT7310_STAT_T_CRIT		0x40
++#define ADT7310_STAT_NOT_RDY		0x80
++
++/*
++ * ADT7310 config
++ */
++#define ADT7310_FAULT_QUEUE_MASK	0x3
++#define ADT7310_CT_POLARITY		0x4
++#define ADT7310_INT_POLARITY		0x8
++#define ADT7310_EVENT_MODE		0x10
++#define ADT7310_MODE_MASK		0x60
++#define ADT7310_ONESHOT			0x20
++#define ADT7310_SPS			0x40
++#define ADT7310_PD			0x60
++#define ADT7310_RESOLUTION		0x80
++
++/*
++ * ADT7310 masks
++ */
++#define ADT7310_T16_VALUE_SIGN			0x8000
++#define ADT7310_T16_VALUE_FLOAT_OFFSET		7
++#define ADT7310_T16_VALUE_FLOAT_MASK		0x7F
++#define ADT7310_T13_VALUE_SIGN			0x1000
++#define ADT7310_T13_VALUE_OFFSET		3
++#define ADT7310_T13_VALUE_FLOAT_OFFSET		4
++#define ADT7310_T13_VALUE_FLOAT_MASK		0xF
++#define ADT7310_T_HYST_MASK			0xF
++#define ADT7310_DEVICE_ID_MASK			0x7
++#define ADT7310_MANUFACTORY_ID_MASK		0xF8
++#define ADT7310_MANUFACTORY_ID_OFFSET		3
++
++
++#define ADT7310_CMD_REG_MASK			0x28
++#define ADT7310_CMD_REG_OFFSET			3
++#define ADT7310_CMD_READ			0x40
++#define ADT7310_CMD_CON_READ			0x4
++
++#define ADT7310_IRQS				2
++
++/*
++ * struct adt7310_chip_info - chip specifc information
++ */
++
++struct adt7310_chip_info {
++	const char *name;
++	struct spi_device *spi_dev;
++	struct iio_dev *indio_dev;
++	struct work_struct thresh_work;
++	s64 last_timestamp;
++	u8  config;
++};
++
++/*
++ * adt7310 register access by SPI
++ */
++
++static int adt7310_spi_read_word(struct adt7310_chip_info *chip, u8 reg, u16 *data)
++{
++	struct spi_device *spi_dev = chip->spi_dev;
++	u8 command = (reg << ADT7310_CMD_REG_OFFSET) & ADT7310_CMD_REG_MASK;
++	int ret = 0;
++
++	command |= ADT7310_CMD_READ;
++	ret = spi_write(spi_dev, &command, sizeof(command));
++	if (ret < 0) {
++		dev_err(&spi_dev->dev, "SPI write command error\n");
++		return ret;
++	}
++
++	ret = spi_read(spi_dev, (u8 *)data, sizeof(*data));
++	if (ret < 0) {
++		dev_err(&spi_dev->dev, "SPI read word error\n");
++		return ret;
++	}
++
++	*data = be16_to_cpu(*data);
++
++	return 0;
++}
++
++static int adt7310_spi_write_word(struct adt7310_chip_info *chip, u8 reg, u16 data)
++{
++	struct spi_device *spi_dev = chip->spi_dev;
++	u8 buf[3];
++	int ret = 0;
++
++	buf[0] = (reg << ADT7310_CMD_REG_OFFSET) & ADT7310_CMD_REG_MASK;
++	buf[1] = (u8)(data >> 8);
++	buf[2] = (u8)(data & 0xFF);
++
++	ret = spi_write(spi_dev, buf, 3);
++	if (ret < 0) {
++		dev_err(&spi_dev->dev, "SPI write word error\n");
++		return ret;
++	}
++
++	return ret;
++}
++
++static int adt7310_spi_read_byte(struct adt7310_chip_info *chip, u8 reg, u8 *data)
++{
++	struct spi_device *spi_dev = chip->spi_dev;
++	u8 command = (reg << ADT7310_CMD_REG_OFFSET) & ADT7310_CMD_REG_MASK;
++	int ret = 0;
++
++	command |= ADT7310_CMD_READ;
++	ret = spi_write(spi_dev, &command, sizeof(command));
++	if (ret < 0) {
++		dev_err(&spi_dev->dev, "SPI write command error\n");
++		return ret;
++	}
++
++	ret = spi_read(spi_dev, data, sizeof(*data));
++	if (ret < 0) {
++		dev_err(&spi_dev->dev, "SPI read byte error\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static int adt7310_spi_write_byte(struct adt7310_chip_info *chip, u8 reg, u8 data)
++{
++	struct spi_device *spi_dev = chip->spi_dev;
++	u8 buf[2];
++	int ret = 0;
++
++	buf[0] = (reg << ADT7310_CMD_REG_OFFSET) & ADT7310_CMD_REG_MASK;
++	buf[1] = data;
++
++	ret = spi_write(spi_dev, buf, 2);
++	if (ret < 0) {
++		dev_err(&spi_dev->dev, "SPI write byte error\n");
++		return ret;
++	}
++
++	return ret;
++}
++
++static ssize_t adt7310_show_mode(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	u8 config;
++
++	config = chip->config & ADT7310_MODE_MASK;
++
++	switch (config) {
++	case ADT7310_PD:
++		return sprintf(buf, "power-down\n");
++	case ADT7310_ONESHOT:
++		return sprintf(buf, "one-shot\n");
++	case ADT7310_SPS:
++		return sprintf(buf, "sps\n");
++	default:
++		return sprintf(buf, "full\n");
++	}
++}
++
++static ssize_t adt7310_store_mode(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	u16 config;
++	int ret;
++
++	ret = adt7310_spi_read_byte(chip, ADT7310_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	config = chip->config & (~ADT7310_MODE_MASK);
++	if (strcmp(buf, "power-down"))
++		config |= ADT7310_PD;
++	else if (strcmp(buf, "one-shot"))
++		config |= ADT7310_ONESHOT;
++	else if (strcmp(buf, "sps"))
++		config |= ADT7310_SPS;
++
++	ret = adt7310_spi_write_byte(chip, ADT7310_CONFIG, config);
++	if (ret)
++		return -EIO;
++
++	chip->config = config;
++
++	return len;
++}
++
++static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR,
++		adt7310_show_mode,
++		adt7310_store_mode,
++		0);
++
++static ssize_t adt7310_show_available_modes(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return sprintf(buf, "full\none-shot\nsps\npower-down\n");
++}
++
++static IIO_DEVICE_ATTR(available_modes, S_IRUGO, adt7310_show_available_modes, NULL, 0);
++
++static ssize_t adt7310_show_resolution(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	int ret;
++	int bits;
++
++	ret = adt7310_spi_read_byte(chip, ADT7310_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	if (chip->config & ADT7310_RESOLUTION)
++		bits = 16;
++	else
++		bits = 13;
++
++	return sprintf(buf, "%d bits\n", bits);
++}
++
++static ssize_t adt7310_store_resolution(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	u16 config;
++	int ret;
++
++	ret = strict_strtoul(buf, 10, &data);
++	if (ret)
++		return -EINVAL;
++
++	ret = adt7310_spi_read_byte(chip, ADT7310_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	config = chip->config & (~ADT7310_RESOLUTION);
++	if (data)
++		config |= ADT7310_RESOLUTION;
++
++	ret = adt7310_spi_write_byte(chip, ADT7310_CONFIG, config);
++	if (ret)
++		return -EIO;
++
++	chip->config = config;
++
++	return len;
++}
++
++static IIO_DEVICE_ATTR(resolution, S_IRUGO | S_IWUSR,
++		adt7310_show_resolution,
++		adt7310_store_resolution,
++		0);
++
++static ssize_t adt7310_show_id(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	u8 id;
++	int ret;
++
++	ret = adt7310_spi_read_byte(chip, ADT7310_ID, &id);
++	if (ret)
++		return -EIO;
++
++	return sprintf(buf, "device id: 0x%x\nmanufactory id: 0x%x\n",
++			id & ADT7310_DEVICE_ID_MASK,
++			(id & ADT7310_MANUFACTORY_ID_MASK) >> ADT7310_MANUFACTORY_ID_OFFSET);
++}
++
++static IIO_DEVICE_ATTR(id, S_IRUGO | S_IWUSR,
++		adt7310_show_id,
++		NULL,
++		0);
++
++static ssize_t adt7310_convert_temperature(struct adt7310_chip_info *chip,
++		u16 data, char *buf)
++{
++	char sign = ' ';
++
++	if (chip->config & ADT7310_RESOLUTION) {
++		if (data & ADT7310_T16_VALUE_SIGN) {
++			/* convert supplement to positive value */
++			data = (u16)((ADT7310_T16_VALUE_SIGN << 1) - (u32)data);
++			sign = '-';
++		}
++		return sprintf(buf, "%c%d.%.7d\n", sign,
++				(data >> ADT7310_T16_VALUE_FLOAT_OFFSET),
++				(data & ADT7310_T16_VALUE_FLOAT_MASK) * 78125);
++	} else {
++		if (data & ADT7310_T13_VALUE_SIGN) {
++			/* convert supplement to positive value */
++			data >>= ADT7310_T13_VALUE_OFFSET;
++			data = (ADT7310_T13_VALUE_SIGN << 1) - data;
++			sign = '-';
++		}
++		return sprintf(buf, "%c%d.%.4d\n", sign,
++				(data >> ADT7310_T13_VALUE_FLOAT_OFFSET),
++				(data & ADT7310_T13_VALUE_FLOAT_MASK) * 625);
++	}
++}
++
++static ssize_t adt7310_show_value(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	u8 status;
++	u16 data;
++	int ret, i = 0;
++
++	do {
++		ret = adt7310_spi_read_byte(chip, ADT7310_STATUS, &status);
++		if (ret)
++			return -EIO;
++		i++;
++		if (i == 10000)
++			return -EIO;
++	} while (status & ADT7310_STAT_NOT_RDY);
++
++	ret = adt7310_spi_read_word(chip, ADT7310_TEMPERATURE, &data);
++	if (ret)
++		return -EIO;
++
++	return adt7310_convert_temperature(chip, data, buf);
++}
++
++static IIO_DEVICE_ATTR(value, S_IRUGO, adt7310_show_value, NULL, 0);
++
++static ssize_t adt7310_show_name(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	return sprintf(buf, "%s\n", chip->name);
++}
++
++static IIO_DEVICE_ATTR(name, S_IRUGO, adt7310_show_name, NULL, 0);
++
++static struct attribute *adt7310_attributes[] = {
++	&iio_dev_attr_available_modes.dev_attr.attr,
++	&iio_dev_attr_mode.dev_attr.attr,
++	&iio_dev_attr_resolution.dev_attr.attr,
++	&iio_dev_attr_id.dev_attr.attr,
++	&iio_dev_attr_value.dev_attr.attr,
++	&iio_dev_attr_name.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group adt7310_attribute_group = {
++	.attrs = adt7310_attributes,
++};
++
++/*
++ * temperature bound events
++ */
++
++#define IIO_EVENT_CODE_ADT7310_ABOVE_ALARM    (IIO_EVENT_CODE_DEVICE_SPECIFIC + 1)
++#define IIO_EVENT_CODE_ADT7310_BELLOW_ALARM    (IIO_EVENT_CODE_DEVICE_SPECIFIC + 2)
++#define IIO_EVENT_CODE_ADT7310_ABOVE_CRIT    (IIO_EVENT_CODE_DEVICE_SPECIFIC + 3)
++
++static void adt7310_interrupt_bh(struct work_struct *work_s)
++{
++	struct adt7310_chip_info *chip =
++		container_of(work_s, struct adt7310_chip_info, thresh_work);
++	u8 status;
++
++	if (adt7310_spi_read_byte(chip, ADT7310_STATUS, &status))
++		return;
++
++	if (status & ADT7310_STAT_T_HIGH)
++		iio_push_event(chip->indio_dev, 0,
++			IIO_EVENT_CODE_ADT7310_ABOVE_ALARM,
++			chip->last_timestamp);
++	if (status & ADT7310_STAT_T_LOW)
++		iio_push_event(chip->indio_dev, 0,
++			IIO_EVENT_CODE_ADT7310_BELLOW_ALARM,
++			chip->last_timestamp);
++	if (status & ADT7310_STAT_T_CRIT)
++		iio_push_event(chip->indio_dev, 0,
++			IIO_EVENT_CODE_ADT7310_ABOVE_CRIT,
++			chip->last_timestamp);
++}
++
++static int adt7310_interrupt(struct iio_dev *dev_info,
++		int index,
++		s64 timestamp,
++		int no_test)
++{
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++
++	chip->last_timestamp = timestamp;
++	schedule_work(&chip->thresh_work);
++
++	return 0;
++}
++
++IIO_EVENT_SH(adt7310, &adt7310_interrupt);
++IIO_EVENT_SH(adt7310_ct, &adt7310_interrupt);
++
++static ssize_t adt7310_show_event_mode(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	int ret;
++
++	ret = adt7310_spi_read_byte(chip, ADT7310_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	if (chip->config & ADT7310_EVENT_MODE)
++		return sprintf(buf, "interrupt\n");
++	else
++		return sprintf(buf, "comparator\n");
++}
++
++static ssize_t adt7310_set_event_mode(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	u16 config;
++	int ret;
++
++	ret = adt7310_spi_read_byte(chip, ADT7310_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	config = chip->config &= ~ADT7310_EVENT_MODE;
++	if (strcmp(buf, "comparator") != 0)
++		config |= ADT7310_EVENT_MODE;
++
++	ret = adt7310_spi_write_byte(chip, ADT7310_CONFIG, config);
++	if (ret)
++		return -EIO;
++
++	chip->config = config;
++
++	return len;
++}
++
++static ssize_t adt7310_show_available_event_modes(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return sprintf(buf, "comparator\ninterrupt\n");
++}
++
++static ssize_t adt7310_show_fault_queue(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	int ret;
++
++	ret = adt7310_spi_read_byte(chip, ADT7310_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	return sprintf(buf, "%d\n", chip->config & ADT7310_FAULT_QUEUE_MASK);
++}
++
++static ssize_t adt7310_set_fault_queue(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	int ret;
++	u8 config;
++
++	ret = strict_strtoul(buf, 10, &data);
++	if (ret || data > 3)
++		return -EINVAL;
++
++	ret = adt7310_spi_read_byte(chip, ADT7310_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	config = chip->config & ~ADT7310_FAULT_QUEUE_MASK;
++	config |= data;
++	ret = adt7310_spi_write_byte(chip, ADT7310_CONFIG, config);
++	if (ret)
++		return -EIO;
++
++	chip->config = config;
++
++	return len;
++}
++
++static inline ssize_t adt7310_show_t_bound(struct device *dev,
++		struct device_attribute *attr,
++		u8 bound_reg,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	u16 data;
++	int ret;
++
++	ret = adt7310_spi_read_word(chip, bound_reg, &data);
++	if (ret)
++		return -EIO;
++
++	return adt7310_convert_temperature(chip, data, buf);
++}
++
++static inline ssize_t adt7310_set_t_bound(struct device *dev,
++		struct device_attribute *attr,
++		u8 bound_reg,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	long tmp1, tmp2;
++	u16 data;
++	char *pos;
++	int ret;
++
++	pos = strchr(buf, '.');
++
++	ret = strict_strtol(buf, 10, &tmp1);
++
++	if (ret || tmp1 > 127 || tmp1 < -128)
++		return -EINVAL;
++
++	if (pos) {
++		len = strlen(pos);
++
++		if (chip->config & ADT7310_RESOLUTION) {
++			if (len > ADT7310_T16_VALUE_FLOAT_OFFSET)
++				len = ADT7310_T16_VALUE_FLOAT_OFFSET;
++			pos[len] = 0;
++			ret = strict_strtol(pos, 10, &tmp2);
++
++			if (!ret)
++				tmp2 = (tmp2 / 78125) * 78125;
++		} else {
++			if (len > ADT7310_T13_VALUE_FLOAT_OFFSET)
++				len = ADT7310_T13_VALUE_FLOAT_OFFSET;
++			pos[len] = 0;
++			ret = strict_strtol(pos, 10, &tmp2);
++
++			if (!ret)
++				tmp2 = (tmp2 / 625) * 625;
++		}
++	}
++
++	if (tmp1 < 0)
++		data = (u16)(-tmp1);
++	else
++		data = (u16)tmp1;
++
++	if (chip->config & ADT7310_RESOLUTION) {
++		data = (data << ADT7310_T16_VALUE_FLOAT_OFFSET) |
++			(tmp2 & ADT7310_T16_VALUE_FLOAT_MASK);
++
++		if (tmp1 < 0)
++			/* convert positive value to supplyment */
++			data = (u16)((ADT7310_T16_VALUE_SIGN << 1) - (u32)data);
++	} else {
++		data = (data << ADT7310_T13_VALUE_FLOAT_OFFSET) |
++			(tmp2 & ADT7310_T13_VALUE_FLOAT_MASK);
++
++		if (tmp1 < 0)
++			/* convert positive value to supplyment */
++			data = (ADT7310_T13_VALUE_SIGN << 1) - data;
++		data <<= ADT7310_T13_VALUE_OFFSET;
++	}
++
++	ret = adt7310_spi_write_word(chip, bound_reg, data);
++	if (ret)
++		return -EIO;
++
++	return len;
++}
++
++static ssize_t adt7310_show_t_alarm_high(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return adt7310_show_t_bound(dev, attr,
++			ADT7310_T_ALARM_HIGH, buf);
++}
++
++static inline ssize_t adt7310_set_t_alarm_high(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	return adt7310_set_t_bound(dev, attr,
++			ADT7310_T_ALARM_HIGH, buf, len);
++}
++
++static ssize_t adt7310_show_t_alarm_low(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return adt7310_show_t_bound(dev, attr,
++			ADT7310_T_ALARM_LOW, buf);
++}
++
++static inline ssize_t adt7310_set_t_alarm_low(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	return adt7310_set_t_bound(dev, attr,
++			ADT7310_T_ALARM_LOW, buf, len);
++}
++
++static ssize_t adt7310_show_t_crit(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return adt7310_show_t_bound(dev, attr,
++			ADT7310_T_CRIT, buf);
++}
++
++static inline ssize_t adt7310_set_t_crit(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	return adt7310_set_t_bound(dev, attr,
++			ADT7310_T_CRIT, buf, len);
++}
++
++static ssize_t adt7310_show_t_hyst(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	int ret;
++	u8 t_hyst;
++
++	ret = adt7310_spi_read_byte(chip, ADT7310_T_HYST, &t_hyst);
++	if (ret)
++		return -EIO;
++
++	return sprintf(buf, "%d\n", t_hyst & ADT7310_T_HYST_MASK);
++}
++
++static inline ssize_t adt7310_set_t_hyst(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7310_chip_info *chip = dev_info->dev_data;
++	int ret;
++	unsigned long data;
++	u8 t_hyst;
++
++	ret = strict_strtol(buf, 10, &data);
++
++	if (ret || data > ADT7310_T_HYST_MASK)
++		return -EINVAL;
++
++	t_hyst = (u8)data;
++
++	ret = adt7310_spi_write_byte(chip, ADT7310_T_HYST, t_hyst);
++	if (ret)
++		return -EIO;
++
++	return len;
++}
++
++IIO_EVENT_ATTR_SH(event_mode, iio_event_adt7310,
++		adt7310_show_event_mode, adt7310_set_event_mode, 0);
++IIO_EVENT_ATTR_SH(available_event_modes, iio_event_adt7310,
++		adt7310_show_available_event_modes, NULL, 0);
++IIO_EVENT_ATTR_SH(fault_queue, iio_event_adt7310,
++		adt7310_show_fault_queue, adt7310_set_fault_queue, 0);
++IIO_EVENT_ATTR_SH(t_alarm_high, iio_event_adt7310,
++		adt7310_show_t_alarm_high, adt7310_set_t_alarm_high, 0);
++IIO_EVENT_ATTR_SH(t_alarm_low, iio_event_adt7310,
++		adt7310_show_t_alarm_low, adt7310_set_t_alarm_low, 0);
++IIO_EVENT_ATTR_SH(t_crit, iio_event_adt7310_ct,
++		adt7310_show_t_crit, adt7310_set_t_crit, 0);
++IIO_EVENT_ATTR_SH(t_hyst, iio_event_adt7310,
++		adt7310_show_t_hyst, adt7310_set_t_hyst, 0);
++
++static struct attribute *adt7310_event_int_attributes[] = {
++	&iio_event_attr_event_mode.dev_attr.attr,
++	&iio_event_attr_available_event_modes.dev_attr.attr,
++	&iio_event_attr_fault_queue.dev_attr.attr,
++	&iio_event_attr_t_alarm_high.dev_attr.attr,
++	&iio_event_attr_t_alarm_low.dev_attr.attr,
++	&iio_event_attr_t_hyst.dev_attr.attr,
++	NULL,
++};
++
++static struct attribute *adt7310_event_ct_attributes[] = {
++	&iio_event_attr_event_mode.dev_attr.attr,
++	&iio_event_attr_available_event_modes.dev_attr.attr,
++	&iio_event_attr_fault_queue.dev_attr.attr,
++	&iio_event_attr_t_crit.dev_attr.attr,
++	&iio_event_attr_t_hyst.dev_attr.attr,
++	NULL,
++};
++
++static struct attribute_group adt7310_event_attribute_group[ADT7310_IRQS] = {
++	{
++		.attrs = adt7310_event_int_attributes,
++	},
++	{
++		.attrs = adt7310_event_ct_attributes,
++	}
++};
++
++/*
++ * device probe and remove
++ */
++
++static int __devinit adt7310_probe(struct spi_device *spi_dev)
++{
++	struct adt7310_chip_info *chip;
++	int ret = 0;
++	unsigned long *adt7310_platform_data = spi_dev->dev.platform_data;
++
++	chip = kzalloc(sizeof(struct adt7310_chip_info), GFP_KERNEL);
++
++	if (chip == NULL)
++		return -ENOMEM;
++
++	/* this is only used for device removal purposes */
++	dev_set_drvdata(&spi_dev->dev, chip);
++
++	chip->spi_dev = spi_dev;
++	chip->name = spi_dev->modalias;
++
++	chip->indio_dev = iio_allocate_device();
++	if (chip->indio_dev == NULL) {
++		ret = -ENOMEM;
++		goto error_free_chip;
++	}
++
++	chip->indio_dev->dev.parent = &spi_dev->dev;
++	chip->indio_dev->attrs = &adt7310_attribute_group;
++	chip->indio_dev->event_attrs = adt7310_event_attribute_group;
++	chip->indio_dev->dev_data = (void *)chip;
++	chip->indio_dev->driver_module = THIS_MODULE;
++	chip->indio_dev->num_interrupt_lines = ADT7310_IRQS;
++	chip->indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = iio_device_register(chip->indio_dev);
++	if (ret)
++		goto error_free_dev;
++
++	/* CT critcal temperature event. line 0 */
++	if (spi_dev->irq) {
++		if (adt7310_platform_data[2])
++			spi_dev->irq_flags = adt7310_platform_data[2];
++		ret = iio_register_interrupt_line(spi_dev->irq,
++				chip->indio_dev,
++				0,
++				spi_dev->irq_flags,
++				chip->name);
++		if (ret)
++			goto error_unreg_dev;
++
++		/*
++		 * The event handler list element refer to iio_event_adt7310.
++		 * All event attributes bind to the same event handler.
++		 * One event handler can only be added to one event list.
++		 */
++		iio_add_event_to_list(&iio_event_adt7310,
++				&chip->indio_dev->interrupts[0]->ev_list);
++	}
++
++	/* INT bound temperature alarm event. line 1 */
++	if (adt7310_platform_data[0]) {
++		ret = iio_register_interrupt_line(adt7310_platform_data[0],
++				chip->indio_dev,
++				1,
++				adt7310_platform_data[1],
++				chip->name);
++		if (ret)
++			goto error_unreg_ct_irq;
++
++		/*
++		 * The event handler list element refer to iio_event_adt7310.
++		 * All event attributes bind to the same event handler.
++		 * One event handler can only be added to one event list.
++		 */
++		iio_add_event_to_list(&iio_event_adt7310_ct,
++				&chip->indio_dev->interrupts[1]->ev_list);
++	}
++
++	if (spi_dev->irq && adt7310_platform_data[0]) {
++		INIT_WORK(&chip->thresh_work, adt7310_interrupt_bh);
++
++		ret = adt7310_spi_read_byte(chip, ADT7310_CONFIG, &chip->config);
++		if (ret) {
++			ret = -EIO;
++			goto error_unreg_int_irq;
++		}
++
++		if (spi_dev->irq_flags & IRQF_TRIGGER_HIGH)
++			chip->config |= ADT7310_CT_POLARITY;
++		else
++			chip->config &= ~ADT7310_CT_POLARITY;
++
++		if (adt7310_platform_data[1] & IRQF_TRIGGER_HIGH)
++			chip->config |= ADT7310_INT_POLARITY;
++		else
++			chip->config &= ~ADT7310_INT_POLARITY;
++
++		ret = adt7310_spi_write_byte(chip, ADT7310_CONFIG, chip->config);
++		if (ret) {
++			ret = -EIO;
++			goto error_unreg_int_irq;
++		}
++	}
++
++	dev_info(&spi_dev->dev, "%s temperature sensor registered.\n",
++			chip->name);
++
++	return 0;
++
++error_unreg_int_irq:
++	iio_unregister_interrupt_line(chip->indio_dev, 1);
++error_unreg_ct_irq:
++	iio_unregister_interrupt_line(chip->indio_dev, 0);
++error_unreg_dev:
++	iio_device_unregister(chip->indio_dev);
++error_free_dev:
++	iio_free_device(chip->indio_dev);
++error_free_chip:
++	kfree(chip);
++
++	return ret;
++}
++
++static int __devexit adt7310_remove(struct spi_device *spi_dev)
++{
++	struct adt7310_chip_info *chip = dev_get_drvdata(&spi_dev->dev);
++	struct iio_dev *indio_dev = chip->indio_dev;
++	unsigned long *adt7310_platform_data = spi_dev->dev.platform_data;
++
++	dev_set_drvdata(&spi_dev->dev, NULL);
++	if (adt7310_platform_data[0])
++		iio_unregister_interrupt_line(indio_dev, 1);
++	if (spi_dev->irq)
++		iio_unregister_interrupt_line(indio_dev, 0);
++	iio_device_unregister(indio_dev);
++	iio_free_device(chip->indio_dev);
++	kfree(chip);
++
++	return 0;
++}
++
++static const struct spi_device_id adt7310_id[] = {
++	{ "adt7310", 0 },
++	{}
++};
++
++MODULE_DEVICE_TABLE(spi, adt7310_id);
++
++static struct spi_driver adt7310_driver = {
++	.driver = {
++		.name = "adt7310",
++		.bus = &spi_bus_type,
++		.owner = THIS_MODULE,
++	},
++	.probe = adt7310_probe,
++	.remove = __devexit_p(adt7310_remove),
++	.id_table = adt7310_id,
++};
++
++static __init int adt7310_init(void)
++{
++	return spi_register_driver(&adt7310_driver);
++}
++
++static __exit void adt7310_exit(void)
++{
++	spi_unregister_driver(&adt7310_driver);
++}
++
++MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
++MODULE_DESCRIPTION("Analog Devices ADT7310 digital"
++			" temperature sensor driver");
++MODULE_LICENSE("GPL v2");
++
++module_init(adt7310_init);
++module_exit(adt7310_exit);
+-- 
+1.7.3.2
