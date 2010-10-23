@@ -4,121 +4,180 @@ To: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
 Cc: device-drivers-devel@blackfin.uclinux.org,
 	Barry Song <barry.song@analog.com>
-Subject: [PATCH 05/19] staging: iio: dac: new output driver for AD5624R devices
-Date: Sat, 23 Oct 2010 17:53:49 -0400
-Message-Id: <1287870843-19835-5-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 04/19] staging: iio: gyro: new driver ADIS16130 digital output gyros
+Date: Sat, 23 Oct 2010 17:53:48 -0400
+Message-Id: <1287870843-19835-4-git-send-email-vapier@gentoo.org>
 In-Reply-To: <1287870843-19835-1-git-send-email-vapier@gentoo.org>
 References: <1287870843-19835-1-git-send-email-vapier@gentoo.org>
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Barry Song <barry.song@analog.com>
 
-This is used to convert digital streams into voltages.
-
 Signed-off-by: Barry Song <barry.song@analog.com>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
- drivers/staging/iio/Kconfig           |    1 +
- drivers/staging/iio/Makefile          |    1 +
- drivers/staging/iio/dac/Kconfig       |   11 ++
- drivers/staging/iio/dac/Makefile      |    5 +
- drivers/staging/iio/dac/ad5624r.h     |   21 +++
- drivers/staging/iio/dac/ad5624r_spi.c |  313 +++++++++++++++++++++++++++++++++
- drivers/staging/iio/dac/dac.h         |    6 +
- 7 files changed, 358 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/dac/Kconfig
- create mode 100644 drivers/staging/iio/dac/Makefile
- create mode 100644 drivers/staging/iio/dac/ad5624r.h
- create mode 100644 drivers/staging/iio/dac/ad5624r_spi.c
- create mode 100644 drivers/staging/iio/dac/dac.h
+ drivers/staging/iio/gyro/Kconfig          |    7 +
+ drivers/staging/iio/gyro/Makefile         |    3 +
+ drivers/staging/iio/gyro/adis16130.h      |  108 ++++++++++
+ drivers/staging/iio/gyro/adis16130_core.c |  313 +++++++++++++++++++++++++++++
+ 4 files changed, 431 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/gyro/adis16130.h
+ create mode 100644 drivers/staging/iio/gyro/adis16130_core.c
 
-diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
-index b8bb5f1..773c301 100644
---- a/drivers/staging/iio/Kconfig
-+++ b/drivers/staging/iio/Kconfig
-@@ -43,6 +43,7 @@ config IIO_TRIGGER
- source "drivers/staging/iio/accel/Kconfig"
- source "drivers/staging/iio/adc/Kconfig"
- source "drivers/staging/iio/addac/Kconfig"
-+source "drivers/staging/iio/dac/Kconfig"
- source "drivers/staging/iio/gyro/Kconfig"
- source "drivers/staging/iio/imu/Kconfig"
- source "drivers/staging/iio/light/Kconfig"
-diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
-index 0111647..15eba01 100644
---- a/drivers/staging/iio/Makefile
-+++ b/drivers/staging/iio/Makefile
-@@ -12,6 +12,7 @@ obj-$(CONFIG_IIO_SW_RING) += ring_sw.o
- obj-y += accel/
- obj-y += adc/
- obj-y += addac/
-+obj-y += dac/
- obj-y += gyro/
- obj-y += imu/
- obj-y += light/
-diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
-new file mode 100644
-index 0000000..583df78
---- /dev/null
-+++ b/drivers/staging/iio/dac/Kconfig
-@@ -0,0 +1,11 @@
-+#
-+# DAC drivers
-+#
-+comment "Digital to analog convertors"
-+
-+config AD5624R_SPI
-+	tristate "Analog Devices AD5624/44/64R DAC spi driver"
+diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
+index 97fe8bc..398d111 100644
+--- a/drivers/staging/iio/gyro/Kconfig
++++ b/drivers/staging/iio/gyro/Kconfig
+@@ -17,6 +17,13 @@ config ADIS16080
+ 	  Say yes here to build support for Analog Devices adis16080/100 Yaw Rate
+ 	  Gyroscope with SPI.
+ 
++config ADIS16130
++	tristate "Analog Devices ADIS16130 High Precision Angular Rate Sensor driver"
 +	depends on SPI
 +	help
-+	  Say yes here to build support for Analog Devices AD5624R, AD5644R and
-+	  AD5664R convertors (DAC). This driver uses the common SPI interface.
-diff --git a/drivers/staging/iio/dac/Makefile b/drivers/staging/iio/dac/Makefile
++	  Say yes here to build support for Analog Devices ADIS16130 High Precision
++	  Angular Rate Sensor driver.
++
+ config ADIS16260
+ 	tristate "Analog Devices ADIS16260/5 Digital Gyroscope Sensor SPI driver"
+ 	depends on SPI
+diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
+index fcc697f..307d723 100644
+--- a/drivers/staging/iio/gyro/Makefile
++++ b/drivers/staging/iio/gyro/Makefile
+@@ -8,6 +8,9 @@ obj-$(CONFIG_ADIS16060) += adis16060.o
+ adis16080-y             := adis16080_core.o
+ obj-$(CONFIG_ADIS16080) += adis16080.o
+ 
++adis16130-y             := adis16130_core.o
++obj-$(CONFIG_ADIS16130) += adis16130.o
++
+ adis16260-y             := adis16260_core.o
+ adis16260-$(CONFIG_IIO_RING_BUFFER) += adis16260_ring.o adis16260_trigger.o
+ obj-$(CONFIG_ADIS16260) += adis16260.o
+diff --git a/drivers/staging/iio/gyro/adis16130.h b/drivers/staging/iio/gyro/adis16130.h
 new file mode 100644
-index 0000000..7ddf05d
+index 0000000..c04f534
 --- /dev/null
-+++ b/drivers/staging/iio/dac/Makefile
-@@ -0,0 +1,5 @@
-+#
-+# Makefile for industrial I/O DAC drivers
-+#
++++ b/drivers/staging/iio/gyro/adis16130.h
+@@ -0,0 +1,108 @@
++#ifndef SPI_ADIS16130_H_
++#define SPI_ADIS16130_H_
 +
-+obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
-diff --git a/drivers/staging/iio/dac/ad5624r.h b/drivers/staging/iio/dac/ad5624r.h
++#define ADIS16130_CON         0x0
++#define ADIS16130_CON_RD      (1 << 6)
++#define ADIS16130_IOP         0x1
++#define ADIS16130_IOP_ALL_RDY (1 << 3) /* 1 = data-ready signal low when unread data on all channels; */
++#define ADIS16130_IOP_SYNC    (1 << 0) /* 1 = synchronization enabled */
++#define ADIS16130_RATEDATA    0x8 /* Gyroscope output, rate of rotation */
++#define ADIS16130_TEMPDATA    0xA /* Temperature output */
++#define ADIS16130_RATECS      0x28 /* Gyroscope channel setup */
++#define ADIS16130_RATECS_EN   (1 << 3) /* 1 = channel enable; */
++#define ADIS16130_TEMPCS      0x2A /* Temperature channel setup */
++#define ADIS16130_TEMPCS_EN   (1 << 3)
++#define ADIS16130_RATECONV    0x30
++#define ADIS16130_TEMPCONV    0x32
++#define ADIS16130_MODE        0x38
++#define ADIS16130_MODE_24BIT  (1 << 1) /* 1 = 24-bit resolution; */
++
++#define ADIS16130_MAX_TX     4
++#define ADIS16130_MAX_RX     4
++
++/**
++ * struct adis16130_state - device instance specific data
++ * @us:			actual spi_device to write data
++ * @work_trigger_to_ring: bh for triggered event handling
++ * @inter:		used to check if new interrupt has been triggered
++ * @last_timestamp:	passing timestamp from th to bh of interrupt handler
++ * @indio_dev:		industrial I/O device structure
++ * @trig:		data ready trigger registered with iio
++ * @tx:			transmit buffer
++ * @rx:			recieve buffer
++ * @buf_lock:		mutex to protect tx and rx
++ **/
++struct adis16130_state {
++	struct spi_device		*us;
++	struct work_struct		work_trigger_to_ring;
++	s64				last_timestamp;
++	struct iio_dev			*indio_dev;
++	struct iio_trigger		*trig;
++	u8				*tx;
++	u8				*rx;
++	u32                             mode; /* 1: 24bits mode 0:16bits mode */
++	struct mutex			buf_lock;
++};
++
++#ifdef CONFIG_IIO_RING_BUFFER
++/* At the moment triggers are only used for ring buffer
++ * filling. This may change!
++ */
++
++enum adis16130_scan {
++	ADIS16130_SCAN_GYRO,
++	ADIS16130_SCAN_TEMP,
++};
++
++void adis16130_remove_trigger(struct iio_dev *indio_dev);
++int adis16130_probe_trigger(struct iio_dev *indio_dev);
++
++ssize_t adis16130_read_data_from_ring(struct device *dev,
++				      struct device_attribute *attr,
++				      char *buf);
++
++
++int adis16130_configure_ring(struct iio_dev *indio_dev);
++void adis16130_unconfigure_ring(struct iio_dev *indio_dev);
++
++int adis16130_initialize_ring(struct iio_ring_buffer *ring);
++void adis16130_uninitialize_ring(struct iio_ring_buffer *ring);
++#else /* CONFIG_IIO_RING_BUFFER */
++
++static inline void adis16130_remove_trigger(struct iio_dev *indio_dev)
++{
++}
++
++static inline int adis16130_probe_trigger(struct iio_dev *indio_dev)
++{
++	return 0;
++}
++
++static inline ssize_t
++adis16130_read_data_from_ring(struct device *dev,
++			      struct device_attribute *attr,
++			      char *buf)
++{
++	return 0;
++}
++
++static int adis16130_configure_ring(struct iio_dev *indio_dev)
++{
++	return 0;
++}
++
++static inline void adis16130_unconfigure_ring(struct iio_dev *indio_dev)
++{
++}
++
++static inline int adis16130_initialize_ring(struct iio_ring_buffer *ring)
++{
++	return 0;
++}
++
++static inline void adis16130_uninitialize_ring(struct iio_ring_buffer *ring)
++{
++}
++
++#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* SPI_ADIS16130_H_ */
+diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
 new file mode 100644
-index 0000000..ce518be
+index 0000000..51c0011
 --- /dev/null
-+++ b/drivers/staging/iio/dac/ad5624r.h
-@@ -0,0 +1,21 @@
-+#ifndef SPI_AD5624R_H_
-+#define SPI_AD5624R_H_
-+
-+#define AD5624R_DAC_CHANNELS	4
-+
-+#define AD5624R_ADDR_DAC0	0x0
-+#define AD5624R_ADDR_DAC1	0x1
-+#define AD5624R_ADDR_DAC2	0x2
-+#define AD5624R_ADDR_DAC3	0x3
-+#define AD5624R_ADDR_ALL_DAC	0x7
-+
-+#define AD5624R_CMD_WRITE_INPUT_N             0x0
-+#define AD5624R_CMD_UPDATE_DAC_N              0x1
-+#define AD5624R_CMD_WRITE_INPUT_N_UPDATE_ALL  0x2
-+#define AD5624R_CMD_WRITE_INPUT_N_UPDATE_N    0x3
-+#define AD5624R_CMD_POWERDOWN_DAC             0x4
-+#define AD5624R_CMD_RESET                     0x5
-+#define AD5624R_CMD_LDAC_SETUP                0x6
-+#define AD5624R_CMD_INTERNAL_REFER_SETUP      0x7
-+
-+#endif
-diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
-new file mode 100644
-index 0000000..705ff50
---- /dev/null
-+++ b/drivers/staging/iio/dac/ad5624r_spi.c
++++ b/drivers/staging/iio/gyro/adis16130_core.c
 @@ -0,0 +1,313 @@
 +/*
-+ * AD5624R, AD5644R, AD5664R Digital to analog convertors spi driver
++ * ADIS16130 Digital Output, High Precision Angular Rate Sensor driver
 + *
 + * Copyright 2010 Analog Devices Inc.
 + *
@@ -126,321 +185,309 @@ index 0000000..705ff50
 + */
 +
 +#include <linux/interrupt.h>
++#include <linux/irq.h>
 +#include <linux/gpio.h>
-+#include <linux/fs.h>
++#include <linux/delay.h>
++#include <linux/mutex.h>
 +#include <linux/device.h>
 +#include <linux/kernel.h>
 +#include <linux/spi/spi.h>
 +#include <linux/slab.h>
 +#include <linux/sysfs.h>
-+#include <linux/delay.h>
++#include <linux/list.h>
 +
 +#include "../iio.h"
 +#include "../sysfs.h"
-+#include "dac.h"
-+#include "ad5624r.h"
++#include "gyro.h"
++#include "../adc/adc.h"
 +
-+/**
-+ * struct ad5624r_state - device related storage
-+ * @indio_dev:	associated industrial IO device
-+ * @us:		spi device
-+ **/
-+struct ad5624r_state {
-+	struct iio_dev *indio_dev;
-+	struct spi_device *us;
-+	int data_len;
-+	int ldac_mode;
-+	int dac_power_mode[AD5624R_DAC_CHANNELS];
-+	int internal_ref;
-+};
++#include "adis16130.h"
 +
-+static int ad5624r_spi_write(struct spi_device *spi, u8 cmd, u8 addr, u16 val, u8 len)
++#define DRIVER_NAME		"adis16130"
++
++struct adis16130_state *adis16130_st;
++
++int adis16130_spi_write(struct device *dev, u8 reg_addr,
++		u8 val)
 +{
-+	struct spi_transfer t;
-+	struct spi_message m;
-+	u32 data;
-+	u8 msg[3];
-+
-+	/*
-+	 * The input shift register is 24 bits wide. The first two bits are don't care bits.
-+	 * The next three are the command bits, C2 to C0, followed by the 3-bit DAC address,
-+	 * A2 to A0, and then the 16-, 14-, 12-bit data-word. The data-word comprises the 16-,
-+	 * 14-, 12-bit input code followed by 0, 2, or 4 don't care bits, for the AD5664R,
-+	 * AD5644R, and AD5624R, respectively.
-+	 */
-+	data = (0 << 22) | (cmd << 19) | (addr << 16) | (val << (16 - len));
-+	msg[0] = data >> 16;
-+	msg[1] = data >> 8;
-+	msg[2] = data;
-+
-+	spi_message_init(&m);
-+	memset(&t, 0, (sizeof t));
-+	t.tx_buf = &msg[0];
-+	t.len = 3;
-+
-+	spi_message_add_tail(&t, &m);
-+	spi_sync(spi, &m);
-+
-+	return len;
-+}
-+
-+static ssize_t ad5624r_write_dac(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	long readin;
 +	int ret;
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5624r_state *st = indio_dev->dev_data;
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct adis16130_state *st = iio_dev_get_devdata(indio_dev);
 +
-+	ret = strict_strtol(buf, 10, &readin);
-+	if (ret)
-+		return ret;
++	mutex_lock(&st->buf_lock);
++	st->tx[0] = reg_addr;
++	st->tx[1] = val;
 +
-+	ad5624r_spi_write(st->us, AD5624R_CMD_WRITE_INPUT_N_UPDATE_N,
-+			this_attr->address, readin, st->data_len);
-+	return ret ? ret : len;
++	ret = spi_write(st->us, st->tx, 2);
++	mutex_unlock(&st->buf_lock);
++
++	return ret;
 +}
 +
-+static ssize_t ad5624r_read_ldac_mode(struct device *dev,
++int adis16130_spi_read(struct device *dev, u8 reg_addr,
++		u32 *val)
++{
++	int ret;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct adis16130_state *st = iio_dev_get_devdata(indio_dev);
++
++	mutex_lock(&st->buf_lock);
++
++	st->tx[0] = ADIS16130_CON_RD | reg_addr;
++	if (st->mode)
++		ret = spi_read(st->us, st->rx, 4);
++	else
++		ret = spi_read(st->us, st->rx, 3);
++
++	if (ret == 0) {
++		if (st->mode)
++			*val = (st->rx[1] << 16) | (st->rx[2] << 8) | st->rx[3];
++		else
++			*val = (st->rx[1] << 8) | st->rx[2];
++	}
++
++	mutex_unlock(&st->buf_lock);
++
++	return ret;
++}
++
++static ssize_t adis16130_gyro_read(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5624r_state *st = indio_dev->dev_data;
++	u32 val;
++	ssize_t ret;
 +
-+	return sprintf(buf, "%x\n", st->ldac_mode);
-+}
++	/* Take the iio_dev status lock */
++	mutex_lock(&indio_dev->mlock);
++	ret =  adis16130_spi_read(dev, ADIS16130_RATEDATA, &val);
++	mutex_unlock(&indio_dev->mlock);
 +
-+static ssize_t ad5624r_write_ldac_mode(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	long readin;
-+	int ret;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5624r_state *st = indio_dev->dev_data;
-+
-+	ret = strict_strtol(buf, 16, &readin);
-+	if (ret)
++	if (ret == 0)
++		return sprintf(buf, "%d\n", val);
++	else
 +		return ret;
-+
-+	ad5624r_spi_write(st->us, AD5624R_CMD_LDAC_SETUP, 0, readin & 0xF, 16);
-+	st->ldac_mode = readin & 0xF;
-+
-+	return ret ? ret : len;
 +}
 +
-+static ssize_t ad5624r_read_dac_power_mode(struct device *dev,
++static ssize_t adis16130_temp_read(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5624r_state *st = indio_dev->dev_data;
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	u32 val;
++	ssize_t ret;
 +
-+	return sprintf(buf, "%d\n", st->dac_power_mode[this_attr->address]);
-+}
++	/* Take the iio_dev status lock */
++	mutex_lock(&indio_dev->mlock);
++	ret =  adis16130_spi_read(dev, ADIS16130_TEMPDATA, &val);
++	mutex_unlock(&indio_dev->mlock);
 +
-+static ssize_t ad5624r_write_dac_power_mode(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	long readin;
-+	int ret;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5624r_state *st = indio_dev->dev_data;
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+
-+	ret = strict_strtol(buf, 10, &readin);
-+	if (ret)
++	if (ret == 0)
++		return sprintf(buf, "%d\n", val);
++	else
 +		return ret;
-+
-+	ad5624r_spi_write(st->us, AD5624R_CMD_POWERDOWN_DAC, 0,
-+			((readin & 0x3) << 4) | (1 << this_attr->address), 16);
-+
-+	st->dac_power_mode[this_attr->address] = readin & 0x3;
-+
-+	return ret ? ret : len;
 +}
 +
-+static ssize_t ad5624r_read_internal_ref_mode(struct device *dev,
++static ssize_t adis16130_bitsmode_read(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5624r_state *st = indio_dev->dev_data;
++	struct adis16130_state *st = iio_dev_get_devdata(indio_dev);
 +
-+	return sprintf(buf, "%d\n", st->internal_ref);
++	return sprintf(buf, "%d\n", st->mode);
 +}
 +
-+static ssize_t ad5624r_write_internal_ref_mode(struct device *dev,
++static ssize_t adis16130_bitsmode_write(struct device *dev,
 +		struct device_attribute *attr,
 +		const char *buf,
 +		size_t len)
 +{
-+	long readin;
 +	int ret;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5624r_state *st = indio_dev->dev_data;
++	long val;
 +
-+	ret = strict_strtol(buf, 10, &readin);
++	ret = strict_strtol(buf, 16, &val);
 +	if (ret)
-+		return ret;
++		goto error_ret;
++	ret = adis16130_spi_write(dev, ADIS16130_MODE, !!val);
 +
-+	ad5624r_spi_write(st->us, AD5624R_CMD_INTERNAL_REFER_SETUP, 0, !!readin, 16);
-+
-+	st->internal_ref = !!readin;
-+
++error_ret:
 +	return ret ? ret : len;
 +}
 +
-+static IIO_DEV_ATTR_DAC(0, ad5624r_write_dac, AD5624R_ADDR_DAC0);
-+static IIO_DEV_ATTR_DAC(1, ad5624r_write_dac, AD5624R_ADDR_DAC1);
-+static IIO_DEV_ATTR_DAC(2, ad5624r_write_dac, AD5624R_ADDR_DAC2);
-+static IIO_DEV_ATTR_DAC(3, ad5624r_write_dac, AD5624R_ADDR_DAC3);
++static IIO_DEV_ATTR_TEMP(adis16130_temp_read);
 +
-+static IIO_DEVICE_ATTR(ldac_mode, S_IRUGO | S_IWUSR, ad5624r_read_ldac_mode,
-+		ad5624r_write_ldac_mode, 0);
-+static IIO_DEVICE_ATTR(internal_ref, S_IRUGO | S_IWUSR, ad5624r_read_internal_ref_mode,
-+		ad5624r_write_internal_ref_mode, 0);
++static IIO_CONST_ATTR(name, "adis16130");
 +
-+#define IIO_DEV_ATTR_DAC_POWER_MODE(_num, _show, _store, _addr)			\
-+	IIO_DEVICE_ATTR(dac_power_mode_##_num, S_IRUGO | S_IWUSR, _show, _store, _addr)
++static IIO_DEV_ATTR_GYRO(adis16130_gyro_read,
++		ADIS16130_RATEDATA);
 +
-+static IIO_DEV_ATTR_DAC_POWER_MODE(0, ad5624r_read_dac_power_mode, ad5624r_write_dac_power_mode, 0);
-+static IIO_DEV_ATTR_DAC_POWER_MODE(1, ad5624r_read_dac_power_mode, ad5624r_write_dac_power_mode, 1);
-+static IIO_DEV_ATTR_DAC_POWER_MODE(2, ad5624r_read_dac_power_mode, ad5624r_write_dac_power_mode, 2);
-+static IIO_DEV_ATTR_DAC_POWER_MODE(3, ad5624r_read_dac_power_mode, ad5624r_write_dac_power_mode, 3);
++#define IIO_DEV_ATTR_BITS_MODE(_mode, _show, _store, _addr)	\
++	IIO_DEVICE_ATTR(bits_mode, _mode, _show, _store, _addr)
 +
-+static struct attribute *ad5624r_attributes[] = {
-+	&iio_dev_attr_dac_0.dev_attr.attr,
-+	&iio_dev_attr_dac_1.dev_attr.attr,
-+	&iio_dev_attr_dac_2.dev_attr.attr,
-+	&iio_dev_attr_dac_3.dev_attr.attr,
-+	&iio_dev_attr_dac_power_mode_0.dev_attr.attr,
-+	&iio_dev_attr_dac_power_mode_1.dev_attr.attr,
-+	&iio_dev_attr_dac_power_mode_2.dev_attr.attr,
-+	&iio_dev_attr_dac_power_mode_3.dev_attr.attr,
-+	&iio_dev_attr_ldac_mode.dev_attr.attr,
-+	&iio_dev_attr_internal_ref.dev_attr.attr,
-+	NULL,
++static IIO_DEV_ATTR_BITS_MODE(S_IWUSR | S_IRUGO, adis16130_bitsmode_read, adis16130_bitsmode_write,
++			ADIS16130_MODE);
++
++static struct attribute *adis16130_event_attributes[] = {
++	NULL
 +};
 +
-+static const struct attribute_group ad5624r_attribute_group = {
-+	.attrs = ad5624r_attributes,
++static struct attribute_group adis16130_event_attribute_group = {
++	.attrs = adis16130_event_attributes,
 +};
 +
-+static int __devinit ad5624r_probe(struct spi_device *spi)
++static struct attribute *adis16130_attributes[] = {
++	&iio_dev_attr_temp.dev_attr.attr,
++	&iio_const_attr_name.dev_attr.attr,
++	&iio_dev_attr_gyro_raw.dev_attr.attr,
++	&iio_dev_attr_bits_mode.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group adis16130_attribute_group = {
++	.attrs = adis16130_attributes,
++};
++
++static int __devinit adis16130_probe(struct spi_device *spi)
 +{
-+
-+	struct ad5624r_state *st;
-+	int ret = 0;
-+	char *chip_name = spi->dev.platform_data;
-+
-+	if (!chip_name)
-+		return -ENODEV;
-+
-+	st = kzalloc(sizeof(*st), GFP_KERNEL);
-+	if (st == NULL) {
-+		ret = -ENOMEM;
++	int ret, regdone = 0;
++	struct adis16130_state *st = kzalloc(sizeof *st, GFP_KERNEL);
++	if (!st) {
++		ret =  -ENOMEM;
 +		goto error_ret;
 +	}
++	/* this is only used for removal purposes */
 +	spi_set_drvdata(spi, st);
 +
-+	if (strcmp(chip_name, "ad5624r") == 0)
-+		st->data_len = 12;
-+	else if (strcmp(chip_name, "ad5644r") == 0)
-+		st->data_len = 14;
-+	else if (strcmp(chip_name, "ad5664r") == 0)
-+		st->data_len = 16;
-+	else {
-+		dev_err(&spi->dev, "not supported chip type\n");
-+		ret = -EINVAL;
-+		goto error_ret;
-+	}
-+
-+	st->us = spi;
-+	st->indio_dev = iio_allocate_device();
-+	if (st->indio_dev == NULL) {
++	/* Allocate the comms buffers */
++	st->rx = kzalloc(sizeof(*st->rx)*ADIS16130_MAX_RX, GFP_KERNEL);
++	if (st->rx == NULL) {
 +		ret = -ENOMEM;
 +		goto error_free_st;
 +	}
-+	st->indio_dev->dev.parent = &spi->dev;
-+	st->indio_dev->num_interrupt_lines = 0;
-+	st->indio_dev->event_attrs = NULL;
++	st->tx = kzalloc(sizeof(*st->tx)*ADIS16130_MAX_TX, GFP_KERNEL);
++	if (st->tx == NULL) {
++		ret = -ENOMEM;
++		goto error_free_rx;
++	}
++	st->us = spi;
++	mutex_init(&st->buf_lock);
++	/* setup the industrialio driver allocated elements */
++	st->indio_dev = iio_allocate_device();
++	if (st->indio_dev == NULL) {
++		ret = -ENOMEM;
++		goto error_free_tx;
++	}
 +
-+	st->indio_dev->attrs = &ad5624r_attribute_group;
++	st->indio_dev->dev.parent = &spi->dev;
++	st->indio_dev->num_interrupt_lines = 1;
++	st->indio_dev->event_attrs = &adis16130_event_attribute_group;
++	st->indio_dev->attrs = &adis16130_attribute_group;
 +	st->indio_dev->dev_data = (void *)(st);
 +	st->indio_dev->driver_module = THIS_MODULE;
 +	st->indio_dev->modes = INDIO_DIRECT_MODE;
++	st->mode = 1;
 +
-+	ret = iio_device_register(st->indio_dev);
++	ret = adis16130_configure_ring(st->indio_dev);
 +	if (ret)
 +		goto error_free_dev;
 +
-+	spi->mode = SPI_MODE_0;
-+	spi_setup(spi);
++	ret = iio_device_register(st->indio_dev);
++	if (ret)
++		goto error_unreg_ring_funcs;
++	regdone = 1;
 +
++	ret = adis16130_initialize_ring(st->indio_dev->ring);
++	if (ret) {
++		printk(KERN_ERR "failed to initialize the ring\n");
++		goto error_unreg_ring_funcs;
++	}
++
++	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0) {
++		ret = iio_register_interrupt_line(spi->irq,
++				st->indio_dev,
++				0,
++				IRQF_TRIGGER_RISING,
++				"adis16130");
++		if (ret)
++			goto error_uninitialize_ring;
++
++		ret = adis16130_probe_trigger(st->indio_dev);
++		if (ret)
++			goto error_unregister_line;
++	}
++
++	adis16130_st = st;
 +	return 0;
 +
++error_unregister_line:
++	if (st->indio_dev->modes & INDIO_RING_TRIGGERED)
++		iio_unregister_interrupt_line(st->indio_dev, 0);
++error_uninitialize_ring:
++	adis16130_uninitialize_ring(st->indio_dev->ring);
++error_unreg_ring_funcs:
++	adis16130_unconfigure_ring(st->indio_dev);
 +error_free_dev:
-+	iio_free_device(st->indio_dev);
++	if (regdone)
++		iio_device_unregister(st->indio_dev);
++	else
++		iio_free_device(st->indio_dev);
++error_free_tx:
++	kfree(st->tx);
++error_free_rx:
++	kfree(st->rx);
 +error_free_st:
 +	kfree(st);
 +error_ret:
 +	return ret;
 +}
 +
-+static int __devexit ad5624r_remove(struct spi_device *spi)
++/* fixme, confirm ordering in this function */
++static int adis16130_remove(struct spi_device *spi)
 +{
-+	struct ad5624r_state *st = spi_get_drvdata(spi);
++	struct adis16130_state *st = spi_get_drvdata(spi);
++	struct iio_dev *indio_dev = st->indio_dev;
 +
-+	iio_device_unregister(st->indio_dev);
++	flush_scheduled_work();
++
++	adis16130_remove_trigger(indio_dev);
++	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0)
++		iio_unregister_interrupt_line(indio_dev, 0);
++
++	adis16130_uninitialize_ring(indio_dev->ring);
++	adis16130_unconfigure_ring(indio_dev);
++	iio_device_unregister(indio_dev);
++	kfree(st->tx);
++	kfree(st->rx);
 +	kfree(st);
 +
 +	return 0;
 +}
 +
-+static struct spi_driver ad5624r_driver = {
++static struct spi_driver adis16130_driver = {
 +	.driver = {
-+		.name = "ad5624r",
++		.name = "adis16130",
 +		.owner = THIS_MODULE,
 +	},
-+	.probe = ad5624r_probe,
-+	.remove = __devexit_p(ad5624r_remove),
++	.probe = adis16130_probe,
++	.remove = __devexit_p(adis16130_remove),
 +};
 +
-+static __init int ad5624r_spi_init(void)
++static __init int adis16130_init(void)
 +{
-+	return spi_register_driver(&ad5624r_driver);
++	return spi_register_driver(&adis16130_driver);
 +}
-+module_init(ad5624r_spi_init);
++module_init(adis16130_init);
 +
-+static __exit void ad5624r_spi_exit(void)
++static __exit void adis16130_exit(void)
 +{
-+	spi_unregister_driver(&ad5624r_driver);
++	spi_unregister_driver(&adis16130_driver);
 +}
-+module_exit(ad5624r_spi_exit);
++module_exit(adis16130_exit);
 +
 +MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
-+MODULE_DESCRIPTION("Analog Devices AD5624/44/64R DAC spi driver");
++MODULE_DESCRIPTION("Analog Devices ADIS16130 High Precision Angular Rate Sensor driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/drivers/staging/iio/dac/dac.h b/drivers/staging/iio/dac/dac.h
-new file mode 100644
-index 0000000..55005ee
---- /dev/null
-+++ b/drivers/staging/iio/dac/dac.h
-@@ -0,0 +1,6 @@
-+/*
-+ * dac.h - sysfs attributes associated with DACs
-+ */
-+
-+#define IIO_DEV_ATTR_DAC(_num, _store, _addr)			\
-+	IIO_DEVICE_ATTR(dac_##_num, S_IWUSR, NULL, _store, _addr)
 -- 
 1.7.3.2
