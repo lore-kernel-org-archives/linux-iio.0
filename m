@@ -4,57 +4,88 @@ To: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
 Cc: device-drivers-devel@blackfin.uclinux.org,
 	Graf Yang <graf.yang@analog.com>
-Subject: [PATCH 18/19] staging: iio: resolver: new driver for AD2S1200/1205 devices
-Date: Sat, 23 Oct 2010 17:54:02 -0400
-Message-Id: <1287870843-19835-18-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 17/19] staging: iio: resolver: new driver for AD2S90 devices
+Date: Sat, 23 Oct 2010 17:54:01 -0400
+Message-Id: <1287870843-19835-17-git-send-email-vapier@gentoo.org>
 In-Reply-To: <1287870843-19835-1-git-send-email-vapier@gentoo.org>
 References: <1287870843-19835-1-git-send-email-vapier@gentoo.org>
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Graf Yang <graf.yang@analog.com>
 
+This also kicks off the new resolver subsection.
+
 Signed-off-by: Graf Yang <graf.yang@analog.com>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
- drivers/staging/iio/resolver/Kconfig    |    8 +
- drivers/staging/iio/resolver/Makefile   |    1 +
- drivers/staging/iio/resolver/ad2s120x.c |  309 +++++++++++++++++++++++++++++++
- 3 files changed, 318 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/resolver/ad2s120x.c
+ drivers/staging/iio/Kconfig           |    1 +
+ drivers/staging/iio/Makefile          |    1 +
+ drivers/staging/iio/resolver/Kconfig  |   11 +++
+ drivers/staging/iio/resolver/Makefile |    5 +
+ drivers/staging/iio/resolver/ad2s90.c |  158 +++++++++++++++++++++++++++++++++
+ 5 files changed, 176 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/resolver/Kconfig
+ create mode 100644 drivers/staging/iio/resolver/Makefile
+ create mode 100644 drivers/staging/iio/resolver/ad2s90.c
 
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index ffe8912..e2ac07d 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -50,6 +50,7 @@ source "drivers/staging/iio/imu/Kconfig"
+ source "drivers/staging/iio/light/Kconfig"
+ source "drivers/staging/iio/magnetometer/Kconfig"
+ source "drivers/staging/iio/meter/Kconfig"
++source "drivers/staging/iio/resolver/Kconfig"
+ source "drivers/staging/iio/trigger/Kconfig"
+ 
+ endif # IIO
+diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
+index 5b449a1..f9b5fb2 100644
+--- a/drivers/staging/iio/Makefile
++++ b/drivers/staging/iio/Makefile
+@@ -19,4 +19,5 @@ obj-y += imu/
+ obj-y += light/
+ obj-y += magnetometer/
+ obj-y += meter/
++obj-y += resolver/
+ obj-y += trigger/
 diff --git a/drivers/staging/iio/resolver/Kconfig b/drivers/staging/iio/resolver/Kconfig
-index 05b15a9..32df73a 100644
---- a/drivers/staging/iio/resolver/Kconfig
+new file mode 100644
+index 0000000..05b15a9
+--- /dev/null
 +++ b/drivers/staging/iio/resolver/Kconfig
-@@ -9,3 +9,11 @@ config AD2S90
- 	help
- 	  Say yes here to build support for Analog Devices spi resolver
- 	  to digital converters, ad2s90, provides direct access via sysfs.
+@@ -0,0 +1,11 @@
++#
++# Resolver/Synchro drivers
++#
++comment "Resolver to digital converters"
 +
-+config AD2S120X
-+	tristate "Analog Devices ad2s120x driver"
++config AD2S90
++	tristate "Analog Devices ad2s90 driver"
 +	depends on SPI
 +	help
 +	  Say yes here to build support for Analog Devices spi resolver
-+	  to digital converters, ad2s1200 and ad2s1205, provides direct access
-+	  via sysfs.
++	  to digital converters, ad2s90, provides direct access via sysfs.
 diff --git a/drivers/staging/iio/resolver/Makefile b/drivers/staging/iio/resolver/Makefile
-index 067fa70..b2b3cc1 100644
---- a/drivers/staging/iio/resolver/Makefile
-+++ b/drivers/staging/iio/resolver/Makefile
-@@ -3,3 +3,4 @@
- #
- 
- obj-$(CONFIG_AD2S90) += ad2s90.o
-+obj-$(CONFIG_AD2S120X) += ad2s120x.o
-diff --git a/drivers/staging/iio/resolver/ad2s120x.c b/drivers/staging/iio/resolver/ad2s120x.c
 new file mode 100644
-index 0000000..1534815
+index 0000000..067fa70
 --- /dev/null
-+++ b/drivers/staging/iio/resolver/ad2s120x.c
-@@ -0,0 +1,309 @@
++++ b/drivers/staging/iio/resolver/Makefile
+@@ -0,0 +1,5 @@
++#
++# Makefile for Resolver/Synchro drivers
++#
++
++obj-$(CONFIG_AD2S90) += ad2s90.o
+diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
+new file mode 100644
+index 0000000..ff1bb23
+--- /dev/null
++++ b/drivers/staging/iio/resolver/ad2s90.c
+@@ -0,0 +1,158 @@
 +/*
-+ * ad2s120x.c simple support for the ADI Resolver to Digital Converters: AD2S1200/1205
++ * ad2s90.c simple support for the ADI Resolver to Digital Converters: AD2S90
 + *
 + * Copyright (c) 2010-2010 Analog Devices Inc.
 + *
@@ -69,219 +100,71 @@ index 0000000..1534815
 +#include <linux/spi/spi.h>
 +#include <linux/slab.h>
 +#include <linux/sysfs.h>
-+#include <linux/delay.h>
-+#include <linux/gpio.h>
 +
 +#include "../iio.h"
 +#include "../sysfs.h"
 +
-+#define DRV_NAME "ad2s120x"
++#define DRV_NAME "ad2s90"
 +
-+/* input pin sample and rdvel is controlled by driver */
-+#define AD2S120X_PN	2
-+
-+/* input clock on serial interface */
-+#define AD2S120X_HZ	8192000
-+/* clock period in nano second */
-+#define AD2S120X_TSCLK	(1000000000/AD2S120X_HZ)
-+
-+struct ad2s120x_state {
++struct ad2s90_state {
 +	struct mutex lock;
 +	struct iio_dev *idev;
 +	struct spi_device *sdev;
-+	unsigned short sample;
-+	unsigned short rdvel;
 +	u8 rx[2];
 +	u8 tx[2];
 +};
 +
-+static ssize_t ad2s120x_show_pos_vel(struct device *dev,
++static ssize_t ad2s90_show_angular(struct device *dev,
 +			struct device_attribute *attr, char *buf)
 +{
 +	struct spi_message msg;
 +	struct spi_transfer xfer;
-+	int ret = 0;
++	int ret;
 +	ssize_t len = 0;
-+	u16 pos;
-+	s16 vel;
-+	u8 status;
++	u16 val;
 +	struct iio_dev *idev = dev_get_drvdata(dev);
-+	struct ad2s120x_state *st = idev->dev_data;
++	struct ad2s90_state *st = idev->dev_data;
 +
 +	xfer.len = 1;
 +	xfer.tx_buf = st->tx;
 +	xfer.rx_buf = st->rx;
 +	mutex_lock(&st->lock);
 +
-+	gpio_set_value(st->sample, 0);
-+	/* delay (6 * AD2S120X_TSCLK + 20) nano seconds */
-+	udelay(1);
-+	gpio_set_value(st->sample, 1);
-+
 +	spi_message_init(&msg);
 +	spi_message_add_tail(&xfer, &msg);
 +	ret = spi_sync(st->sdev, &msg);
 +	if (ret)
 +		goto error_ret;
-+	status = st->rx[1];
-+	pos = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
-+	len = sprintf(buf, "%d %c%c%c%c ", pos,
-+				(status & 0x8) ? 'P' : 'V',
-+				(status & 0x4) ? 'd' : '_',
-+				(status & 0x2) ? 'l' : '_',
-+				(status & 0x1) ? '1' : '0');
-+
-+	/* delay 18 ns */
-+	/* ndelay(18); */
-+
-+	gpio_set_value(st->rdvel, 0);
-+	/* ndelay(5);*/
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+	status = st->rx[1];
-+	vel = (st->rx[0] & 0x80) ? 0xf000 : 0;
-+	vel |= (((s16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
-+	len += sprintf(buf + len, "%d %c%c%c%c\n", vel,
-+				(status & 0x8) ? 'P' : 'V',
-+				(status & 0x4) ? 'd' : '_',
-+				(status & 0x2) ? 'l' : '_',
-+				(status & 0x1) ? '1' : '0');
++	val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
++	len = sprintf(buf, "%d\n", val);
 +error_ret:
-+	gpio_set_value(st->rdvel, 1);
-+	/* delay (2 * AD2S120X_TSCLK + 20) ns for sample pulse */
-+	udelay(1);
 +	mutex_unlock(&st->lock);
 +
 +	return ret ? ret : len;
 +}
 +
-+static ssize_t ad2s120x_show_pos(struct device *dev,
-+			struct device_attribute *attr, char *buf)
-+{
-+	struct spi_message msg;
-+	struct spi_transfer xfer;
-+	int ret = 0;
-+	ssize_t len = 0;
-+	u16 pos;
-+	u8 status;
-+	struct iio_dev *idev = dev_get_drvdata(dev);
-+	struct ad2s120x_state *st = idev->dev_data;
-+
-+	xfer.len = 1;
-+	xfer.tx_buf = st->tx;
-+	xfer.rx_buf = st->rx;
-+	mutex_lock(&st->lock);
-+
-+	gpio_set_value(st->sample, 0);
-+	/* delay (6 * AD2S120X_TSCLK + 20) nano seconds */
-+	udelay(1);
-+	gpio_set_value(st->sample, 1);
-+	gpio_set_value(st->rdvel, 1);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+	status = st->rx[1];
-+	pos = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
-+	len = sprintf(buf, "%d %c%c%c%c ", pos,
-+				(status & 0x8) ? 'P' : 'V',
-+				(status & 0x4) ? 'd' : '_',
-+				(status & 0x2) ? 'l' : '_',
-+				(status & 0x1) ? '1' : '0');
-+error_ret:
-+	/* delay (2 * AD2S120X_TSCLK + 20) ns for sample pulse */
-+	udelay(1);
-+	mutex_unlock(&st->lock);
-+
-+	return ret ? ret : len;
-+}
-+
-+static ssize_t ad2s120x_show_vel(struct device *dev,
-+			struct device_attribute *attr, char *buf)
-+{
-+	struct spi_message msg;
-+	struct spi_transfer xfer;
-+	int ret = 0;
-+	ssize_t len = 0;
-+	s16 vel;
-+	u8 status;
-+	struct iio_dev *idev = dev_get_drvdata(dev);
-+	struct ad2s120x_state *st = idev->dev_data;
-+
-+	xfer.len = 1;
-+	xfer.tx_buf = st->tx;
-+	xfer.rx_buf = st->rx;
-+	mutex_lock(&st->lock);
-+
-+	gpio_set_value(st->sample, 0);
-+	/* delay (6 * AD2S120X_TSCLK + 20) nano seconds */
-+	udelay(1);
-+	gpio_set_value(st->sample, 1);
-+
-+	gpio_set_value(st->rdvel, 0);
-+	/* ndelay(5);*/
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+	status = st->rx[1];
-+	vel = (st->rx[0] & 0x80) ? 0xf000 : 0;
-+	vel |= (((s16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
-+	len += sprintf(buf + len, "%d %c%c%c%c\n", vel,
-+				(status & 0x8) ? 'P' : 'V',
-+				(status & 0x4) ? 'd' : '_',
-+				(status & 0x2) ? 'l' : '_',
-+				(status & 0x1) ? '1' : '0');
-+error_ret:
-+	gpio_set_value(st->rdvel, 1);
-+	/* delay (2 * AD2S120X_TSCLK + 20) ns for sample pulse */
-+	udelay(1);
-+	mutex_unlock(&st->lock);
-+
-+	return ret ? ret : len;
-+}
++#define IIO_DEV_ATTR_SIMPLE_RESOLVER(_show) \
++	IIO_DEVICE_ATTR(angular, S_IRUGO, _show, NULL, NULL)
 +
 +static IIO_CONST_ATTR(description,
-+	"12-Bit R/D Converter with Reference Oscillator");
-+static IIO_DEVICE_ATTR(pos_vel, S_IRUGO, ad2s120x_show_pos_vel, NULL, 0);
-+static IIO_DEVICE_ATTR(pos, S_IRUGO, ad2s120x_show_pos, NULL, 0);
-+static IIO_DEVICE_ATTR(vel, S_IRUGO, ad2s120x_show_vel, NULL, 0);
++	"Low Cost, Complete 12-Bit Resolver-to-Digital Converter");
++static IIO_DEV_ATTR_SIMPLE_RESOLVER(ad2s90_show_angular);
 +
-+static struct attribute *ad2s120x_attributes[] = {
++static struct attribute *ad2s90_attributes[] = {
 +	&iio_const_attr_description.dev_attr.attr,
-+	&iio_dev_attr_pos_vel.dev_attr.attr,
-+	&iio_dev_attr_pos.dev_attr.attr,
-+	&iio_dev_attr_vel.dev_attr.attr,
++	&iio_dev_attr_angular.dev_attr.attr,
 +	NULL,
 +};
 +
-+static const struct attribute_group ad2s120x_attribute_group = {
++static const struct attribute_group ad2s90_attribute_group = {
 +	.name = DRV_NAME,
-+	.attrs = ad2s120x_attributes,
++	.attrs = ad2s90_attributes,
 +};
 +
-+static int __devinit ad2s120x_probe(struct spi_device *spi)
++static int __devinit ad2s90_probe(struct spi_device *spi)
 +{
-+	struct ad2s120x_state *st;
-+	int pn, ret = 0;
-+	unsigned short *pins = spi->dev.platform_data;
-+
-+	for (pn = 0; pn < AD2S120X_PN; pn++) {
-+		if (gpio_request(pins[pn], DRV_NAME)) {
-+			pr_err("%s: request gpio pin %d failed\n",
-+						DRV_NAME, pins[pn]);
-+			goto error_ret;
-+		}
-+		gpio_direction_output(pins[pn], 1);
-+	}
++	struct ad2s90_state *st;
++	int ret = 0;
 +
 +	st = kzalloc(sizeof(*st), GFP_KERNEL);
 +	if (st == NULL) {
@@ -292,8 +175,6 @@ index 0000000..1534815
 +
 +	mutex_init(&st->lock);
 +	st->sdev = spi;
-+	st->sample = pins[0];
-+	st->rdvel = pins[1];
 +
 +	st->idev = iio_allocate_device();
 +	if (st->idev == NULL) {
@@ -304,7 +185,7 @@ index 0000000..1534815
 +	st->idev->num_interrupt_lines = 0;
 +	st->idev->event_attrs = NULL;
 +
-+	st->idev->attrs = &ad2s120x_attribute_group;
++	st->idev->attrs = &ad2s90_attribute_group;
 +	st->idev->dev_data = (void *)(st);
 +	st->idev->driver_module = THIS_MODULE;
 +	st->idev->modes = INDIO_DIRECT_MODE;
@@ -313,7 +194,8 @@ index 0000000..1534815
 +	if (ret)
 +		goto error_free_dev;
 +
-+	spi->max_speed_hz = AD2S120X_HZ;
++	/* need 600ns between CS and the first falling edge of SCLK */
++	spi->max_speed_hz = 830000;
 +	spi->mode = SPI_MODE_3;
 +	spi_setup(spi);
 +
@@ -324,14 +206,12 @@ index 0000000..1534815
 +error_free_st:
 +	kfree(st);
 +error_ret:
-+	for (--pn; pn >= 0; pn--)
-+		gpio_free(pins[pn]);
 +	return ret;
 +}
 +
-+static int __devexit ad2s120x_remove(struct spi_device *spi)
++static int __devexit ad2s90_remove(struct spi_device *spi)
 +{
-+	struct ad2s120x_state *st = spi_get_drvdata(spi);
++	struct ad2s90_state *st = spi_get_drvdata(spi);
 +
 +	iio_device_unregister(st->idev);
 +	kfree(st);
@@ -339,28 +219,28 @@ index 0000000..1534815
 +	return 0;
 +}
 +
-+static struct spi_driver ad2s120x_driver = {
++static struct spi_driver ad2s90_driver = {
 +	.driver = {
 +		.name = DRV_NAME,
 +		.owner = THIS_MODULE,
 +	},
-+	.probe = ad2s120x_probe,
-+	.remove = __devexit_p(ad2s120x_remove),
++	.probe = ad2s90_probe,
++	.remove = __devexit_p(ad2s90_remove),
 +};
 +
-+static __init int ad2s120x_spi_init(void)
++static __init int ad2s90_spi_init(void)
 +{
-+	return spi_register_driver(&ad2s120x_driver);
++	return spi_register_driver(&ad2s90_driver);
 +}
-+module_init(ad2s120x_spi_init);
++module_init(ad2s90_spi_init);
 +
-+static __exit void ad2s120x_spi_exit(void)
++static __exit void ad2s90_spi_exit(void)
 +{
-+	spi_unregister_driver(&ad2s120x_driver);
++	spi_unregister_driver(&ad2s90_driver);
 +}
-+module_exit(ad2s120x_spi_exit);
++module_exit(ad2s90_spi_exit);
 +
 +MODULE_AUTHOR("Graff Yang <graff.yang@gmail.com>");
-+MODULE_DESCRIPTION("Analog Devices AD2S1200/1205 Resolver to Digital SPI driver");
++MODULE_DESCRIPTION("Analog Devices AD2S90 Resolver to Digital SPI driver");
 -- 
 1.7.3.2
