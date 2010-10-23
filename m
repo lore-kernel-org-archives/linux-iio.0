@@ -1,1181 +1,1225 @@
-Return-Path: <vapier@gentoo.org>
-From: Mike Frysinger <vapier@gentoo.org>
-To: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Cc: device-drivers-devel@blackfin.uclinux.org,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:47462 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751751Ab0JWRRG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Oct 2010 13:17:06 -0400
+Message-ID: <4CC319F2.8080607@cam.ac.uk>
+Date: Sat, 23 Oct 2010 18:22:58 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
+To: Mike Frysinger <vapier@gentoo.org>
+CC: linux-iio@vger.kernel.org,
+	device-drivers-devel@blackfin.uclinux.org,
 	Barry Song <barry.song@analog.com>
-Subject: [PATCH 2/3] staging: iio: new adis16203 driver
-Date: Sat, 23 Oct 2010 06:49:22 -0400
-Message-Id: <1287830963-18377-2-git-send-email-vapier@gentoo.org>
-In-Reply-To: <1287830963-18377-1-git-send-email-vapier@gentoo.org>
-References: <1287830963-18377-1-git-send-email-vapier@gentoo.org>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 2/3] staging: iio: new adis16203 driver
+References: <1287830963-18377-1-git-send-email-vapier@gentoo.org> <1287830963-18377-2-git-send-email-vapier@gentoo.org>
+In-Reply-To: <1287830963-18377-2-git-send-email-vapier@gentoo.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Barry Song <barry.song@analog.com>
+On 10/23/10 11:49, Mike Frysinger wrote:
+> From: Barry Song <barry.song@analog.com>
+> 
+> IIO driver for Programmable 360 Degrees Inclinometer adis16203 parts.
+> 
 
-IIO driver for Programmable 360 Degrees Inclinometer adis16203 parts.
+Again, nice clean driver. Comments are pretty much the same as for the
+previous review, so please transfer those over (so I can be lazy :)
 
-Signed-off-by: Barry Song <barry.song@analog.com>
-Signed-off-by: Mike Frysinger <vapier@gentoo.org>
----
- drivers/staging/iio/accel/Kconfig             |    9 +
- drivers/staging/iio/accel/Makefile            |    4 +
- drivers/staging/iio/accel/adis16203.h         |  143 +++++++
- drivers/staging/iio/accel/adis16203_core.c    |  568 +++++++++++++++++++++++++
- drivers/staging/iio/accel/adis16203_ring.c    |  255 +++++++++++
- drivers/staging/iio/accel/adis16203_trigger.c |  122 ++++++
- 6 files changed, 1101 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/accel/adis16203.h
- create mode 100644 drivers/staging/iio/accel/adis16203_core.c
- create mode 100644 drivers/staging/iio/accel/adis16203_ring.c
- create mode 100644 drivers/staging/iio/accel/adis16203_trigger.c
+Looking at this driver, it 'may' make sense to merge it with the
+16201 driver at a later date.  There are clearly some differences, but
+a lot of similarities as well.  That can happen whenever anyone has
+the time and inclination to do it.  It will be vaguely similar to
+the adis16300/350/400 merge that is in progress currently.  Looks
+to me like Analog carefully kept most register addresses the same
+across these two parts (where they overlap).
 
-diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
-index 0b87557..cc057c6 100644
---- a/drivers/staging/iio/accel/Kconfig
-+++ b/drivers/staging/iio/accel/Kconfig
-@@ -12,6 +12,15 @@ config ADIS16201
- 	  Say yes here to build support for Analog Devices adis16201 dual-axis
- 	  digital inclinometer and accelerometer.
- 
-+config ADIS16203
-+	tristate "Analog Devices ADIS16203 Programmable 360 Degrees Inclinometer"
-+	depends on SPI
-+	select IIO_TRIGGER if IIO_RING_BUFFER
-+	select IIO_SW_RING if IIO_RING_BUFFER
-+	help
-+	  Say yes here to build support for Analog Devices adis16203 Programmable
-+	  360 Degrees Inclinometer.
-+
- config ADIS16209
- 	tristate "Analog Devices ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer"
- 	depends on SPI
-diff --git a/drivers/staging/iio/accel/Makefile b/drivers/staging/iio/accel/Makefile
-index 4a22a01..76cc92f 100644
---- a/drivers/staging/iio/accel/Makefile
-+++ b/drivers/staging/iio/accel/Makefile
-@@ -6,6 +6,10 @@ adis16201-y             := adis16201_core.o
- adis16201-$(CONFIG_IIO_RING_BUFFER) += adis16201_ring.o adis16201_trigger.o
- obj-$(CONFIG_ADIS16201) += adis16201.o
- 
-+adis16203-y             := adis16203_core.o
-+adis16203-$(CONFIG_IIO_RING_BUFFER) += adis16203_ring.o adis16203_trigger.o
-+obj-$(CONFIG_ADIS16203) += adis16203.o
-+
- adis16209-y             := adis16209_core.o
- adis16209-$(CONFIG_IIO_RING_BUFFER) += adis16209_ring.o adis16209_trigger.o
- obj-$(CONFIG_ADIS16209) += adis16209.o
-diff --git a/drivers/staging/iio/accel/adis16203.h b/drivers/staging/iio/accel/adis16203.h
-new file mode 100644
-index 0000000..f0a1d01
---- /dev/null
-+++ b/drivers/staging/iio/accel/adis16203.h
-@@ -0,0 +1,143 @@
-+#ifndef SPI_ADIS16203_H_
-+#define SPI_ADIS16203_H_
-+
-+#define ADIS16203_STARTUP_DELAY	220 /* ms */
-+
-+#define ADIS16203_READ_REG(a)    a
-+#define ADIS16203_WRITE_REG(a) ((a) | 0x80)
-+
-+#define ADIS16203_FLASH_CNT      0x00 /* Flash memory write count */
-+#define ADIS16203_SUPPLY_OUT     0x02 /* Output, power supply */
-+#define ADIS16203_AUX_ADC        0x08 /* Output, auxiliary ADC input */
-+#define ADIS16203_TEMP_OUT       0x0A /* Output, temperature */
-+#define ADIS16203_XINCL_OUT      0x0C /* Output, x-axis inclination */
-+#define ADIS16203_YINCL_OUT      0x0E /* Output, y-axis inclination */
-+#define ADIS16203_INCL_NULL      0x18 /* Incline null calibration */
-+#define ADIS16203_ALM_MAG1       0x20 /* Alarm 1 amplitude threshold */
-+#define ADIS16203_ALM_MAG2       0x22 /* Alarm 2 amplitude threshold */
-+#define ADIS16203_ALM_SMPL1      0x24 /* Alarm 1, sample period */
-+#define ADIS16203_ALM_SMPL2      0x26 /* Alarm 2, sample period */
-+#define ADIS16203_ALM_CTRL       0x28 /* Alarm control */
-+#define ADIS16203_AUX_DAC        0x30 /* Auxiliary DAC data */
-+#define ADIS16203_GPIO_CTRL      0x32 /* General-purpose digital input/output control */
-+#define ADIS16203_MSC_CTRL       0x34 /* Miscellaneous control */
-+#define ADIS16203_SMPL_PRD       0x36 /* Internal sample period (rate) control */
-+#define ADIS16203_AVG_CNT        0x38 /* Operation, filter configuration */
-+#define ADIS16203_SLP_CNT        0x3A /* Operation, sleep mode control */
-+#define ADIS16203_DIAG_STAT      0x3C /* Diagnostics, system status register */
-+#define ADIS16203_GLOB_CMD       0x3E /* Operation, system command register */
-+
-+#define ADIS16203_OUTPUTS        5
-+
-+/* MSC_CTRL */
-+#define ADIS16203_MSC_CTRL_PWRUP_SELF_TEST	(1 << 10) /* Self-test at power-on: 1 = disabled, 0 = enabled */
-+#define ADIS16203_MSC_CTRL_REVERSE_ROT_EN	(1 << 9)  /* Reverses rotation of both inclination outputs */
-+#define ADIS16203_MSC_CTRL_SELF_TEST_EN	        (1 << 8)  /* Self-test enable */
-+#define ADIS16203_MSC_CTRL_DATA_RDY_EN	        (1 << 2)  /* Data-ready enable: 1 = enabled, 0 = disabled */
-+#define ADIS16203_MSC_CTRL_ACTIVE_HIGH	        (1 << 1)  /* Data-ready polarity: 1 = active high, 0 = active low */
-+#define ADIS16203_MSC_CTRL_DATA_RDY_DIO1	(1 << 0)  /* Data-ready line selection: 1 = DIO1, 0 = DIO0 */
-+
-+/* DIAG_STAT */
-+#define ADIS16203_DIAG_STAT_ALARM2        (1<<9) /* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
-+#define ADIS16203_DIAG_STAT_ALARM1        (1<<8) /* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
-+#define ADIS16203_DIAG_STAT_SELFTEST_FAIL (1<<5) /* Self-test diagnostic error flag */
-+#define ADIS16203_DIAG_STAT_SPI_FAIL	  (1<<3) /* SPI communications failure */
-+#define ADIS16203_DIAG_STAT_FLASH_UPT	  (1<<2) /* Flash update failure */
-+#define ADIS16203_DIAG_STAT_POWER_HIGH	  (1<<1) /* Power supply above 3.625 V */
-+#define ADIS16203_DIAG_STAT_POWER_LOW	  (1<<0) /* Power supply below 3.15 V */
-+
-+/* GLOB_CMD */
-+#define ADIS16203_GLOB_CMD_SW_RESET	(1<<7)
-+#define ADIS16203_GLOB_CMD_CLEAR_STAT	(1<<4)
-+#define ADIS16203_GLOB_CMD_FACTORY_CAL	(1<<1)
-+
-+#define ADIS16203_MAX_TX 24
-+#define ADIS16203_MAX_RX 24
-+
-+#define ADIS16203_ERROR_ACTIVE          (1<<14)
-+
-+/**
-+ * struct adis16203_state - device instance specific data
-+ * @us:			actual spi_device
-+ * @work_trigger_to_ring: bh for triggered event handling
-+ * @inter:		used to check if new interrupt has been triggered
-+ * @last_timestamp:	passing timestamp from th to bh of interrupt handler
-+ * @indio_dev:		industrial I/O device structure
-+ * @trig:		data ready trigger registered with iio
-+ * @tx:			transmit buffer
-+ * @rx:			recieve buffer
-+ * @buf_lock:		mutex to protect tx and rx
-+ **/
-+struct adis16203_state {
-+	struct spi_device		*us;
-+	struct work_struct		work_trigger_to_ring;
-+	s64				last_timestamp;
-+	struct iio_dev			*indio_dev;
-+	struct iio_trigger		*trig;
-+	u8				*tx;
-+	u8				*rx;
-+	struct mutex			buf_lock;
-+};
-+
-+int adis16203_set_irq(struct device *dev, bool enable);
-+
-+#ifdef CONFIG_IIO_RING_BUFFER
-+enum adis16203_scan {
-+	ADIS16203_SCAN_SUPPLY,
-+	ADIS16203_SCAN_AUX_ADC,
-+	ADIS16203_SCAN_TEMP,
-+	ADIS16203_SCAN_INCLI_X,
-+	ADIS16203_SCAN_INCLI_Y,
-+};
-+
-+void adis16203_remove_trigger(struct iio_dev *indio_dev);
-+int adis16203_probe_trigger(struct iio_dev *indio_dev);
-+
-+ssize_t adis16203_read_data_from_ring(struct device *dev,
-+				      struct device_attribute *attr,
-+				      char *buf);
-+
-+int adis16203_configure_ring(struct iio_dev *indio_dev);
-+void adis16203_unconfigure_ring(struct iio_dev *indio_dev);
-+
-+int adis16203_initialize_ring(struct iio_ring_buffer *ring);
-+void adis16203_uninitialize_ring(struct iio_ring_buffer *ring);
-+#else /* CONFIG_IIO_RING_BUFFER */
-+
-+static inline void adis16203_remove_trigger(struct iio_dev *indio_dev)
-+{
-+}
-+
-+static inline int adis16203_probe_trigger(struct iio_dev *indio_dev)
-+{
-+	return 0;
-+}
-+
-+static inline ssize_t
-+adis16203_read_data_from_ring(struct device *dev,
-+			      struct device_attribute *attr,
-+			      char *buf)
-+{
-+	return 0;
-+}
-+
-+static int adis16203_configure_ring(struct iio_dev *indio_dev)
-+{
-+	return 0;
-+}
-+
-+static inline void adis16203_unconfigure_ring(struct iio_dev *indio_dev)
-+{
-+}
-+
-+static inline int adis16203_initialize_ring(struct iio_ring_buffer *ring)
-+{
-+	return 0;
-+}
-+
-+static inline void adis16203_uninitialize_ring(struct iio_ring_buffer *ring)
-+{
-+}
-+
-+#endif /* CONFIG_IIO_RING_BUFFER */
-+#endif /* SPI_ADIS16203_H_ */
-diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
-new file mode 100644
-index 0000000..81eeb05
---- /dev/null
-+++ b/drivers/staging/iio/accel/adis16203_core.c
-@@ -0,0 +1,568 @@
-+/*
-+ * ADIS16203 Programmable Digital Vibration Sensor driver
-+ *
-+ * Copyright 2010 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2 or later.
-+ */
-+
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/gpio.h>
-+#include <linux/delay.h>
-+#include <linux/mutex.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/spi/spi.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
-+#include <linux/list.h>
-+
-+#include "../iio.h"
-+#include "../sysfs.h"
-+#include "accel.h"
-+#include "inclinometer.h"
-+#include "../gyro/gyro.h"
-+#include "../adc/adc.h"
-+
-+#include "adis16203.h"
-+
-+#define DRIVER_NAME		"adis16203"
-+
-+static int adis16203_check_status(struct device *dev);
-+
-+/**
-+ * adis16203_spi_write_reg_8() - write single byte to a register
-+ * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @reg_address: the address of the register to be written
-+ * @val: the value to write
-+ **/
-+static int adis16203_spi_write_reg_8(struct device *dev,
-+		u8 reg_address,
-+		u8 val)
-+{
-+	int ret;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16203_state *st = iio_dev_get_devdata(indio_dev);
-+
-+	mutex_lock(&st->buf_lock);
-+	st->tx[0] = ADIS16203_WRITE_REG(reg_address);
-+	st->tx[1] = val;
-+
-+	ret = spi_write(st->us, st->tx, 2);
-+	mutex_unlock(&st->buf_lock);
-+
-+	return ret;
-+}
-+
-+/**
-+ * adis16203_spi_write_reg_16() - write 2 bytes to a pair of registers
-+ * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @reg_address: the address of the lower of the two registers. Second register
-+ *               is assumed to have address one greater.
-+ * @val: value to be written
-+ **/
-+static int adis16203_spi_write_reg_16(struct device *dev,
-+		u8 lower_reg_address,
-+		u16 value)
-+{
-+	int ret;
-+	struct spi_message msg;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16203_state *st = iio_dev_get_devdata(indio_dev);
-+	struct spi_transfer xfers[] = {
-+		{
-+			.tx_buf = st->tx,
-+			.bits_per_word = 8,
-+			.len = 2,
-+			.cs_change = 1,
-+		}, {
-+			.tx_buf = st->tx + 2,
-+			.bits_per_word = 8,
-+			.len = 2,
-+			.cs_change = 1,
-+		},
-+	};
-+
-+	mutex_lock(&st->buf_lock);
-+	st->tx[0] = ADIS16203_WRITE_REG(lower_reg_address);
-+	st->tx[1] = value & 0xFF;
-+	st->tx[2] = ADIS16203_WRITE_REG(lower_reg_address + 1);
-+	st->tx[3] = (value >> 8) & 0xFF;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfers[0], &msg);
-+	spi_message_add_tail(&xfers[1], &msg);
-+	ret = spi_sync(st->us, &msg);
-+	mutex_unlock(&st->buf_lock);
-+
-+	return ret;
-+}
-+
-+/**
-+ * adis16203_spi_read_reg_16() - read 2 bytes from a 16-bit register
-+ * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @reg_address: the address of the lower of the two registers. Second register
-+ *               is assumed to have address one greater.
-+ * @val: somewhere to pass back the value read
-+ **/
-+static int adis16203_spi_read_reg_16(struct device *dev,
-+		u8 lower_reg_address,
-+		u16 *val)
-+{
-+	struct spi_message msg;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16203_state *st = iio_dev_get_devdata(indio_dev);
-+	int ret;
-+	struct spi_transfer xfers[] = {
-+		{
-+			.tx_buf = st->tx,
-+			.bits_per_word = 8,
-+			.len = 2,
-+			.cs_change = 1,
-+			.delay_usecs = 20,
-+		}, {
-+			.rx_buf = st->rx,
-+			.bits_per_word = 8,
-+			.len = 2,
-+			.cs_change = 1,
-+			.delay_usecs = 20,
-+		},
-+	};
-+
-+	mutex_lock(&st->buf_lock);
-+	st->tx[0] = ADIS16203_READ_REG(lower_reg_address);
-+	st->tx[1] = 0;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfers[0], &msg);
-+	spi_message_add_tail(&xfers[1], &msg);
-+	ret = spi_sync(st->us, &msg);
-+	if (ret) {
-+		dev_err(&st->us->dev, "problem when reading 16 bit register 0x%02X",
-+				lower_reg_address);
-+		goto error_ret;
-+	}
-+	*val = (st->rx[0] << 8) | st->rx[1];
-+
-+error_ret:
-+	mutex_unlock(&st->buf_lock);
-+	return ret;
-+}
-+
-+static ssize_t adis16203_read_12bit_unsigned(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	int ret;
-+	u16 val = 0;
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+
-+	ret = adis16203_spi_read_reg_16(dev, this_attr->address, &val);
-+	if (ret)
-+		return ret;
-+
-+	if (val & ADIS16203_ERROR_ACTIVE)
-+		adis16203_check_status(dev);
-+
-+	return sprintf(buf, "%u\n", val & 0x0FFF);
-+}
-+
-+static ssize_t adis16203_read_temp(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	ssize_t ret;
-+	u16 val;
-+
-+	/* Take the iio_dev status lock */
-+	mutex_lock(&indio_dev->mlock);
-+
-+	ret = adis16203_spi_read_reg_16(dev, ADIS16203_TEMP_OUT, (u16 *)&val);
-+	if (ret)
-+		goto error_ret;
-+
-+	if (val & ADIS16203_ERROR_ACTIVE)
-+		adis16203_check_status(dev);
-+
-+	val &= 0xFFF;
-+	ret = sprintf(buf, "%d\n", val);
-+
-+error_ret:
-+	mutex_unlock(&indio_dev->mlock);
-+	return ret;
-+}
-+
-+static ssize_t adis16203_read_14bit_signed(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	s16 val = 0;
-+	ssize_t ret;
-+
-+	mutex_lock(&indio_dev->mlock);
-+
-+	ret = adis16203_spi_read_reg_16(dev, this_attr->address, (u16 *)&val);
-+	if (!ret) {
-+		if (val & ADIS16203_ERROR_ACTIVE)
-+			adis16203_check_status(dev);
-+
-+		val = ((s16)(val << 2) >> 2);
-+		ret = sprintf(buf, "%d\n", val);
-+	}
-+
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret;
-+}
-+
-+static ssize_t adis16203_write_16bit(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int ret;
-+	long val;
-+
-+	ret = strict_strtol(buf, 10, &val);
-+	if (ret)
-+		goto error_ret;
-+	ret = adis16203_spi_write_reg_16(dev, this_attr->address, val);
-+
-+error_ret:
-+	return ret ? ret : len;
-+}
-+
-+static int adis16203_reset(struct device *dev)
-+{
-+	int ret;
-+	ret = adis16203_spi_write_reg_8(dev,
-+			ADIS16203_GLOB_CMD,
-+			ADIS16203_GLOB_CMD_SW_RESET);
-+	if (ret)
-+		dev_err(dev, "problem resetting device");
-+
-+	return ret;
-+}
-+
-+static ssize_t adis16203_write_reset(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf, size_t len)
-+{
-+	if (len < 1)
-+		return -EINVAL;
-+	switch (buf[0]) {
-+	case '1':
-+	case 'y':
-+	case 'Y':
-+		return adis16203_reset(dev);
-+	}
-+	return -EINVAL;
-+}
-+
-+int adis16203_set_irq(struct device *dev, bool enable)
-+{
-+	int ret = 0;
-+	u16 msc;
-+
-+	ret = adis16203_spi_read_reg_16(dev, ADIS16203_MSC_CTRL, &msc);
-+	if (ret)
-+		goto error_ret;
-+
-+	msc |= ADIS16203_MSC_CTRL_ACTIVE_HIGH;
-+	msc &= ~ADIS16203_MSC_CTRL_DATA_RDY_DIO1;
-+	if (enable)
-+		msc |= ADIS16203_MSC_CTRL_DATA_RDY_EN;
-+	else
-+		msc &= ~ADIS16203_MSC_CTRL_DATA_RDY_EN;
-+
-+	ret = adis16203_spi_write_reg_16(dev, ADIS16203_MSC_CTRL, msc);
-+
-+error_ret:
-+	return ret;
-+}
-+
-+static int adis16203_check_status(struct device *dev)
-+{
-+	u16 status;
-+	int ret;
-+
-+	ret = adis16203_spi_read_reg_16(dev, ADIS16203_DIAG_STAT, &status);
-+	if (ret < 0) {
-+		dev_err(dev, "Reading status failed\n");
-+		goto error_ret;
-+	}
-+	ret = status & 0x1F;
-+
-+	if (status & ADIS16203_DIAG_STAT_SELFTEST_FAIL)
-+		dev_err(dev, "Self test failure\n");
-+	if (status & ADIS16203_DIAG_STAT_SPI_FAIL)
-+		dev_err(dev, "SPI failure\n");
-+	if (status & ADIS16203_DIAG_STAT_FLASH_UPT)
-+		dev_err(dev, "Flash update failed\n");
-+	if (status & ADIS16203_DIAG_STAT_POWER_HIGH)
-+		dev_err(dev, "Power supply above 3.625V\n");
-+	if (status & ADIS16203_DIAG_STAT_POWER_LOW)
-+		dev_err(dev, "Power supply below 3.15V\n");
-+
-+error_ret:
-+	return ret;
-+}
-+
-+static int adis16203_self_test(struct device *dev)
-+{
-+	int ret;
-+	ret = adis16203_spi_write_reg_16(dev,
-+			ADIS16203_MSC_CTRL,
-+			ADIS16203_MSC_CTRL_SELF_TEST_EN);
-+	if (ret) {
-+		dev_err(dev, "problem starting self test");
-+		goto err_ret;
-+	}
-+
-+	adis16203_check_status(dev);
-+
-+err_ret:
-+	return ret;
-+}
-+
-+static int adis16203_initial_setup(struct adis16203_state *st)
-+{
-+	int ret;
-+	struct device *dev = &st->indio_dev->dev;
-+
-+	/* Disable IRQ */
-+	ret = adis16203_set_irq(dev, false);
-+	if (ret) {
-+		dev_err(dev, "disable irq failed");
-+		goto err_ret;
-+	}
-+
-+	/* Do self test */
-+	ret = adis16203_self_test(dev);
-+	if (ret) {
-+		dev_err(dev, "self test failure");
-+		goto err_ret;
-+	}
-+
-+	/* Read status register to check the result */
-+	ret = adis16203_check_status(dev);
-+	if (ret) {
-+		adis16203_reset(dev);
-+		dev_err(dev, "device not playing ball -> reset");
-+		msleep(ADIS16203_STARTUP_DELAY);
-+		ret = adis16203_check_status(dev);
-+		if (ret) {
-+			dev_err(dev, "giving up");
-+			goto err_ret;
-+		}
-+	}
-+
-+	printk(KERN_INFO DRIVER_NAME ": at CS%d (irq %d)\n",
-+			st->us->chip_select, st->us->irq);
-+
-+err_ret:
-+	return ret;
-+}
-+
-+static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16203_read_12bit_unsigned,
-+		ADIS16203_SUPPLY_OUT);
-+static IIO_CONST_ATTR(in_supply_scale, "0.00122");
-+static IIO_DEV_ATTR_IN_RAW(0, adis16203_read_12bit_unsigned,
-+		ADIS16203_AUX_ADC);
-+static IIO_CONST_ATTR(in0_scale, "0.00061");
-+
-+static IIO_DEV_ATTR_INCLI_X(adis16203_read_14bit_signed,
-+		ADIS16203_XINCL_OUT);
-+static IIO_DEV_ATTR_INCLI_Y(adis16203_read_14bit_signed,
-+		ADIS16203_YINCL_OUT);
-+static IIO_DEV_ATTR_INCLI_X_OFFSET(S_IWUSR | S_IRUGO,
-+		adis16203_read_14bit_signed,
-+		adis16203_write_16bit,
-+		ADIS16203_INCL_NULL);
-+static IIO_CONST_ATTR(incli_scale, "0.025");
-+
-+static IIO_DEV_ATTR_TEMP(adis16203_read_temp);
-+static IIO_CONST_ATTR(temp_offset, "25");
-+static IIO_CONST_ATTR(temp_scale, "-0.47");
-+
-+static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16203_write_reset, 0);
-+
-+static IIO_CONST_ATTR(name, "adis16203");
-+
-+static struct attribute *adis16203_event_attributes[] = {
-+	NULL
-+};
-+
-+static struct attribute_group adis16203_event_attribute_group = {
-+	.attrs = adis16203_event_attributes,
-+};
-+
-+static struct attribute *adis16203_attributes[] = {
-+	&iio_dev_attr_in_supply_raw.dev_attr.attr,
-+	&iio_const_attr_in_supply_scale.dev_attr.attr,
-+	&iio_dev_attr_temp.dev_attr.attr,
-+	&iio_const_attr_temp_offset.dev_attr.attr,
-+	&iio_const_attr_temp_scale.dev_attr.attr,
-+	&iio_dev_attr_reset.dev_attr.attr,
-+	&iio_const_attr_name.dev_attr.attr,
-+	&iio_dev_attr_in0_raw.dev_attr.attr,
-+	&iio_const_attr_in0_scale.dev_attr.attr,
-+	&iio_dev_attr_incli_x_raw.dev_attr.attr,
-+	&iio_dev_attr_incli_y_raw.dev_attr.attr,
-+	&iio_dev_attr_incli_x_offset.dev_attr.attr,
-+	&iio_const_attr_incli_scale.dev_attr.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group adis16203_attribute_group = {
-+	.attrs = adis16203_attributes,
-+};
-+
-+static int __devinit adis16203_probe(struct spi_device *spi)
-+{
-+	int ret, regdone = 0;
-+	struct adis16203_state *st = kzalloc(sizeof *st, GFP_KERNEL);
-+	if (!st) {
-+		ret =  -ENOMEM;
-+		goto error_ret;
-+	}
-+	/* this is only used for removal purposes */
-+	spi_set_drvdata(spi, st);
-+
-+	/* Allocate the comms buffers */
-+	st->rx = kzalloc(sizeof(*st->rx)*ADIS16203_MAX_RX, GFP_KERNEL);
-+	if (st->rx == NULL) {
-+		ret = -ENOMEM;
-+		goto error_free_st;
-+	}
-+	st->tx = kzalloc(sizeof(*st->tx)*ADIS16203_MAX_TX, GFP_KERNEL);
-+	if (st->tx == NULL) {
-+		ret = -ENOMEM;
-+		goto error_free_rx;
-+	}
-+	st->us = spi;
-+	mutex_init(&st->buf_lock);
-+	/* setup the industrialio driver allocated elements */
-+	st->indio_dev = iio_allocate_device();
-+	if (st->indio_dev == NULL) {
-+		ret = -ENOMEM;
-+		goto error_free_tx;
-+	}
-+
-+	st->indio_dev->dev.parent = &spi->dev;
-+	st->indio_dev->num_interrupt_lines = 1;
-+	st->indio_dev->event_attrs = &adis16203_event_attribute_group;
-+	st->indio_dev->attrs = &adis16203_attribute_group;
-+	st->indio_dev->dev_data = (void *)(st);
-+	st->indio_dev->driver_module = THIS_MODULE;
-+	st->indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = adis16203_configure_ring(st->indio_dev);
-+	if (ret)
-+		goto error_free_dev;
-+
-+	ret = iio_device_register(st->indio_dev);
-+	if (ret)
-+		goto error_unreg_ring_funcs;
-+	regdone = 1;
-+
-+	ret = adis16203_initialize_ring(st->indio_dev->ring);
-+	if (ret) {
-+		printk(KERN_ERR "failed to initialize the ring\n");
-+		goto error_unreg_ring_funcs;
-+	}
-+
-+	if (spi->irq) {
-+		ret = iio_register_interrupt_line(spi->irq,
-+				st->indio_dev,
-+				0,
-+				IRQF_TRIGGER_RISING,
-+				"adis16203");
-+		if (ret)
-+			goto error_uninitialize_ring;
-+
-+		ret = adis16203_probe_trigger(st->indio_dev);
-+		if (ret)
-+			goto error_unregister_line;
-+	}
-+
-+	/* Get the device into a sane initial state */
-+	ret = adis16203_initial_setup(st);
-+	if (ret)
-+		goto error_remove_trigger;
-+	return 0;
-+
-+error_remove_trigger:
-+	adis16203_remove_trigger(st->indio_dev);
-+error_unregister_line:
-+	if (spi->irq)
-+		iio_unregister_interrupt_line(st->indio_dev, 0);
-+error_uninitialize_ring:
-+	adis16203_uninitialize_ring(st->indio_dev->ring);
-+error_unreg_ring_funcs:
-+	adis16203_unconfigure_ring(st->indio_dev);
-+error_free_dev:
-+	if (regdone)
-+		iio_device_unregister(st->indio_dev);
-+	else
-+		iio_free_device(st->indio_dev);
-+error_free_tx:
-+	kfree(st->tx);
-+error_free_rx:
-+	kfree(st->rx);
-+error_free_st:
-+	kfree(st);
-+error_ret:
-+	return ret;
-+}
-+
-+static int adis16203_remove(struct spi_device *spi)
-+{
-+	struct adis16203_state *st = spi_get_drvdata(spi);
-+	struct iio_dev *indio_dev = st->indio_dev;
-+
-+	flush_scheduled_work();
-+
-+	adis16203_remove_trigger(indio_dev);
-+	if (spi->irq)
-+		iio_unregister_interrupt_line(indio_dev, 0);
-+
-+	adis16203_uninitialize_ring(indio_dev->ring);
-+	iio_device_unregister(indio_dev);
-+	adis16203_unconfigure_ring(indio_dev);
-+	kfree(st->tx);
-+	kfree(st->rx);
-+	kfree(st);
-+
-+	return 0;
-+}
-+
-+static struct spi_driver adis16203_driver = {
-+	.driver = {
-+		.name = "adis16203",
-+		.owner = THIS_MODULE,
-+	},
-+	.probe = adis16203_probe,
-+	.remove = __devexit_p(adis16203_remove),
-+};
-+
-+static __init int adis16203_init(void)
-+{
-+	return spi_register_driver(&adis16203_driver);
-+}
-+module_init(adis16203_init);
-+
-+static __exit void adis16203_exit(void)
-+{
-+	spi_unregister_driver(&adis16203_driver);
-+}
-+module_exit(adis16203_exit);
-+
-+MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
-+MODULE_DESCRIPTION("Analog Devices ADIS16203 Programmable Digital Vibration Sensor driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
-new file mode 100644
-index 0000000..77166a0
---- /dev/null
-+++ b/drivers/staging/iio/accel/adis16203_ring.c
-@@ -0,0 +1,255 @@
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/gpio.h>
-+#include <linux/workqueue.h>
-+#include <linux/mutex.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/spi/spi.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
-+#include <linux/list.h>
-+
-+#include "../iio.h"
-+#include "../sysfs.h"
-+#include "../ring_sw.h"
-+#include "accel.h"
-+#include "../trigger.h"
-+#include "adis16203.h"
-+
-+/**
-+ * combine_8_to_16() utility function to munge to u8s into u16
-+ **/
-+static inline u16 combine_8_to_16(u8 lower, u8 upper)
-+{
-+	u16 _lower = lower;
-+	u16 _upper = upper;
-+	return _lower | (_upper << 8);
-+}
-+
-+static IIO_SCAN_EL_C(supply, ADIS16203_SCAN_SUPPLY, IIO_UNSIGNED(12),
-+		     ADIS16203_SUPPLY_OUT, NULL);
-+static IIO_SCAN_EL_C(aux_adc, ADIS16203_SCAN_AUX_ADC, IIO_UNSIGNED(12),
-+		     ADIS16203_AUX_ADC, NULL);
-+static IIO_SCAN_EL_C(temp, ADIS16203_SCAN_TEMP, IIO_UNSIGNED(12),
-+		     ADIS16203_TEMP_OUT, NULL);
-+static IIO_SCAN_EL_C(incli_x, ADIS16203_SCAN_INCLI_X, IIO_SIGNED(14),
-+		     ADIS16203_XINCL_OUT, NULL);
-+static IIO_SCAN_EL_C(incli_y, ADIS16203_SCAN_INCLI_Y, IIO_SIGNED(14),
-+		     ADIS16203_YINCL_OUT, NULL);
-+
-+static IIO_SCAN_EL_TIMESTAMP(5);
-+
-+static struct attribute *adis16203_scan_el_attrs[] = {
-+	&iio_scan_el_supply.dev_attr.attr,
-+	&iio_scan_el_aux_adc.dev_attr.attr,
-+	&iio_scan_el_temp.dev_attr.attr,
-+	&iio_scan_el_incli_x.dev_attr.attr,
-+	&iio_scan_el_incli_y.dev_attr.attr,
-+	&iio_scan_el_timestamp.dev_attr.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group adis16203_scan_el_group = {
-+	.attrs = adis16203_scan_el_attrs,
-+	.name = "scan_elements",
-+};
-+
-+/**
-+ * adis16203_poll_func_th() top half interrupt handler called by trigger
-+ * @private_data:	iio_dev
-+ **/
-+static void adis16203_poll_func_th(struct iio_dev *indio_dev, s64 timestamp)
-+{
-+	struct adis16203_state *st = iio_dev_get_devdata(indio_dev);
-+	st->last_timestamp = timestamp;
-+	schedule_work(&st->work_trigger_to_ring);
-+}
-+
-+/**
-+ * adis16203_read_ring_data() read data registers which will be placed into ring
-+ * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @rx: somewhere to pass back the value read
-+ **/
-+static int adis16203_read_ring_data(struct device *dev, u8 *rx)
-+{
-+	struct spi_message msg;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16203_state *st = iio_dev_get_devdata(indio_dev);
-+	struct spi_transfer xfers[ADIS16203_OUTPUTS + 1];
-+	int ret;
-+	int i;
-+
-+	mutex_lock(&st->buf_lock);
-+
-+	spi_message_init(&msg);
-+
-+	memset(xfers, 0, sizeof(xfers));
-+	for (i = 0; i <= ADIS16203_OUTPUTS; i++) {
-+		xfers[i].bits_per_word = 8;
-+		xfers[i].cs_change = 1;
-+		xfers[i].len = 2;
-+		xfers[i].delay_usecs = 20;
-+		xfers[i].tx_buf = st->tx + 2 * i;
-+		if (i < 1) /* SUPPLY_OUT: 0x02, AUX_ADC: 0x08 */
-+			st->tx[2 * i] = ADIS16203_READ_REG(ADIS16203_SUPPLY_OUT + 2 * i);
-+		else
-+			st->tx[2 * i] = ADIS16203_READ_REG(ADIS16203_SUPPLY_OUT + 2 * i + 6);
-+		st->tx[2 * i + 1] = 0;
-+		if (i >= 1)
-+			xfers[i].rx_buf = rx + 2 * (i - 1);
-+		spi_message_add_tail(&xfers[i], &msg);
-+	}
-+
-+	ret = spi_sync(st->us, &msg);
-+	if (ret)
-+		dev_err(&st->us->dev, "problem when burst reading");
-+
-+	mutex_unlock(&st->buf_lock);
-+
-+	return ret;
-+}
-+
-+/* Whilst this makes a lot of calls to iio_sw_ring functions - it is to device
-+ * specific to be rolled into the core.
-+ */
-+static void adis16203_trigger_bh_to_ring(struct work_struct *work_s)
-+{
-+	struct adis16203_state *st
-+		= container_of(work_s, struct adis16203_state,
-+			       work_trigger_to_ring);
-+
-+	int i = 0;
-+	s16 *data;
-+	size_t datasize = st->indio_dev
-+		->ring->access.get_bpd(st->indio_dev->ring);
-+
-+	data = kmalloc(datasize , GFP_KERNEL);
-+	if (data == NULL) {
-+		dev_err(&st->us->dev, "memory alloc failed in ring bh");
-+		return;
-+	}
-+
-+	if (st->indio_dev->scan_count)
-+		if (adis16203_read_ring_data(&st->indio_dev->dev, st->rx) >= 0)
-+			for (; i < st->indio_dev->scan_count; i++) {
-+				data[i] = combine_8_to_16(st->rx[i*2+1],
-+							  st->rx[i*2]);
-+			}
-+
-+	/* Guaranteed to be aligned with 8 byte boundary */
-+	if (st->indio_dev->scan_timestamp)
-+		*((s64 *)(data + ((i + 3)/4)*4)) = st->last_timestamp;
-+
-+	st->indio_dev->ring->access.store_to(st->indio_dev->ring,
-+					    (u8 *)data,
-+					    st->last_timestamp);
-+
-+	iio_trigger_notify_done(st->indio_dev->trig);
-+	kfree(data);
-+
-+	return;
-+}
-+
-+/* in these circumstances is it better to go with unaligned packing and
-+ * deal with the cost?*/
-+static int adis16203_data_rdy_ring_preenable(struct iio_dev *indio_dev)
-+{
-+	size_t size;
-+	dev_dbg(&indio_dev->dev, "%s\n", __func__);
-+	/* Check if there are any scan elements enabled, if not fail*/
-+	if (!(indio_dev->scan_count || indio_dev->scan_timestamp))
-+		return -EINVAL;
-+
-+	if (indio_dev->ring->access.set_bpd) {
-+		if (indio_dev->scan_timestamp)
-+			if (indio_dev->scan_count)
-+				/* Timestamp and data, let timestamp aligned with sizeof(s64) */
-+				size = (((indio_dev->scan_count * sizeof(s16)) + sizeof(s64) - 1) & ~(sizeof(s64) - 1))
-+					+ sizeof(s64);
-+			else /* Timestamp only  */
-+				size = sizeof(s64);
-+		else /* Data only */
-+			size = indio_dev->scan_count*sizeof(s16);
-+		indio_dev->ring->access.set_bpd(indio_dev->ring, size);
-+	}
-+
-+	return 0;
-+}
-+
-+static int adis16203_data_rdy_ring_postenable(struct iio_dev *indio_dev)
-+{
-+	return indio_dev->trig
-+		? iio_trigger_attach_poll_func(indio_dev->trig,
-+					       indio_dev->pollfunc)
-+		: 0;
-+}
-+
-+static int adis16203_data_rdy_ring_predisable(struct iio_dev *indio_dev)
-+{
-+	return indio_dev->trig
-+		? iio_trigger_dettach_poll_func(indio_dev->trig,
-+						indio_dev->pollfunc)
-+		: 0;
-+}
-+
-+void adis16203_unconfigure_ring(struct iio_dev *indio_dev)
-+{
-+	kfree(indio_dev->pollfunc);
-+	iio_sw_rb_free(indio_dev->ring);
-+}
-+
-+int adis16203_configure_ring(struct iio_dev *indio_dev)
-+{
-+	int ret = 0;
-+	struct adis16203_state *st = indio_dev->dev_data;
-+	struct iio_ring_buffer *ring;
-+	INIT_WORK(&st->work_trigger_to_ring, adis16203_trigger_bh_to_ring);
-+	/* Set default scan mode */
-+
-+	iio_scan_mask_set(indio_dev, iio_scan_el_supply.number);
-+	iio_scan_mask_set(indio_dev, iio_scan_el_temp.number);
-+	iio_scan_mask_set(indio_dev, iio_scan_el_aux_adc.number);
-+	iio_scan_mask_set(indio_dev, iio_scan_el_incli_x.number);
-+	iio_scan_mask_set(indio_dev, iio_scan_el_incli_y.number);
-+	indio_dev->scan_timestamp = true;
-+
-+	indio_dev->scan_el_attrs = &adis16203_scan_el_group;
-+
-+	ring = iio_sw_rb_allocate(indio_dev);
-+	if (!ring) {
-+		ret = -ENOMEM;
-+		return ret;
-+	}
-+	indio_dev->ring = ring;
-+	/* Effectively select the ring buffer implementation */
-+	iio_ring_sw_register_funcs(&ring->access);
-+	ring->preenable = &adis16203_data_rdy_ring_preenable;
-+	ring->postenable = &adis16203_data_rdy_ring_postenable;
-+	ring->predisable = &adis16203_data_rdy_ring_predisable;
-+	ring->owner = THIS_MODULE;
-+
-+	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
-+	if (indio_dev->pollfunc == NULL) {
-+		ret = -ENOMEM;
-+		goto error_iio_sw_rb_free;;
-+	}
-+	indio_dev->pollfunc->poll_func_main = &adis16203_poll_func_th;
-+	indio_dev->pollfunc->private_data = indio_dev;
-+	indio_dev->modes |= INDIO_RING_TRIGGERED;
-+	return 0;
-+
-+error_iio_sw_rb_free:
-+	iio_sw_rb_free(indio_dev->ring);
-+	return ret;
-+}
-+
-+int adis16203_initialize_ring(struct iio_ring_buffer *ring)
-+{
-+	return iio_ring_buffer_register(ring, 0);
-+}
-+
-+void adis16203_uninitialize_ring(struct iio_ring_buffer *ring)
-+{
-+	iio_ring_buffer_unregister(ring);
-+}
-diff --git a/drivers/staging/iio/accel/adis16203_trigger.c b/drivers/staging/iio/accel/adis16203_trigger.c
-new file mode 100644
-index 0000000..50be51c
---- /dev/null
-+++ b/drivers/staging/iio/accel/adis16203_trigger.c
-@@ -0,0 +1,122 @@
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/mutex.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/sysfs.h>
-+#include <linux/list.h>
-+#include <linux/spi/spi.h>
-+
-+#include "../iio.h"
-+#include "../sysfs.h"
-+#include "../trigger.h"
-+#include "adis16203.h"
-+
-+/**
-+ * adis16203_data_rdy_trig_poll() the event handler for the data rdy trig
-+ **/
-+static int adis16203_data_rdy_trig_poll(struct iio_dev *dev_info,
-+				       int index,
-+				       s64 timestamp,
-+				       int no_test)
-+{
-+	struct adis16203_state *st = iio_dev_get_devdata(dev_info);
-+	struct iio_trigger *trig = st->trig;
-+
-+	iio_trigger_poll(trig, timestamp);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+IIO_EVENT_SH(data_rdy_trig, &adis16203_data_rdy_trig_poll);
-+
-+static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-+
-+static struct attribute *adis16203_trigger_attrs[] = {
-+	&dev_attr_name.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group adis16203_trigger_attr_group = {
-+	.attrs = adis16203_trigger_attrs,
-+};
-+
-+/**
-+ * adis16203_data_rdy_trigger_set_state() set datardy interrupt state
-+ **/
-+static int adis16203_data_rdy_trigger_set_state(struct iio_trigger *trig,
-+						bool state)
-+{
-+	struct adis16203_state *st = trig->private_data;
-+	struct iio_dev *indio_dev = st->indio_dev;
-+	int ret = 0;
-+
-+	dev_dbg(&indio_dev->dev, "%s (%d)\n", __func__, state);
-+	ret = adis16203_set_irq(&st->indio_dev->dev, state);
-+	if (state == false) {
-+		iio_remove_event_from_list(&iio_event_data_rdy_trig,
-+					   &indio_dev->interrupts[0]
-+					   ->ev_list);
-+		flush_scheduled_work();
-+	} else {
-+		iio_add_event_to_list(&iio_event_data_rdy_trig,
-+				      &indio_dev->interrupts[0]->ev_list);
-+	}
-+	return ret;
-+}
-+
-+/**
-+ * adis16203_trig_try_reen() try renabling irq for data rdy trigger
-+ * @trig:	the datardy trigger
-+ **/
-+static int adis16203_trig_try_reen(struct iio_trigger *trig)
-+{
-+	struct adis16203_state *st = trig->private_data;
-+	enable_irq(st->us->irq);
-+	return 0;
-+}
-+
-+int adis16203_probe_trigger(struct iio_dev *indio_dev)
-+{
-+	int ret;
-+	struct adis16203_state *st = indio_dev->dev_data;
-+
-+	st->trig = iio_allocate_trigger();
-+	st->trig->name = kasprintf(GFP_KERNEL,
-+				"adis16203-dev%d",
-+				indio_dev->id);
-+	if (!st->trig->name) {
-+		ret = -ENOMEM;
-+		goto error_free_trig;
-+	}
-+	st->trig->dev.parent = &st->us->dev;
-+	st->trig->owner = THIS_MODULE;
-+	st->trig->private_data = st;
-+	st->trig->set_trigger_state = &adis16203_data_rdy_trigger_set_state;
-+	st->trig->try_reenable = &adis16203_trig_try_reen;
-+	st->trig->control_attrs = &adis16203_trigger_attr_group;
-+	ret = iio_trigger_register(st->trig);
-+
-+	/* select default trigger */
-+	indio_dev->trig = st->trig;
-+	if (ret)
-+		goto error_free_trig_name;
-+
-+	return 0;
-+
-+error_free_trig_name:
-+	kfree(st->trig->name);
-+error_free_trig:
-+	iio_free_trigger(st->trig);
-+
-+	return ret;
-+}
-+
-+void adis16203_remove_trigger(struct iio_dev *indio_dev)
-+{
-+	struct adis16203_state *state = indio_dev->dev_data;
-+
-+	iio_trigger_unregister(state->trig);
-+	kfree(state->trig->name);
-+	iio_free_trigger(state->trig);
-+}
--- 
-1.7.3.2
+I clearly didn't review pervious one thoroughly enough as I missed
+some issues with naming of and missing attributes for the scan_elements
+group.  We have to have appropriate index and type attributes for
+all those channels for userspace to have any idea what to do with
+them. Please fix this before sending on.  Otherwise I'm happy with this
+patch and will be away for a while so please send on to Greg KH
+(and with the changes requested feel free to add
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+as long as it builds fine against staging-next)
+
+> Signed-off-by: Barry Song <barry.song@analog.com>
+> Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+> ---
+>  drivers/staging/iio/accel/Kconfig             |    9 +
+>  drivers/staging/iio/accel/Makefile            |    4 +
+>  drivers/staging/iio/accel/adis16203.h         |  143 +++++++
+>  drivers/staging/iio/accel/adis16203_core.c    |  568 +++++++++++++++++++++++++
+>  drivers/staging/iio/accel/adis16203_ring.c    |  255 +++++++++++
+>  drivers/staging/iio/accel/adis16203_trigger.c |  122 ++++++
+>  6 files changed, 1101 insertions(+), 0 deletions(-)
+>  create mode 100644 drivers/staging/iio/accel/adis16203.h
+>  create mode 100644 drivers/staging/iio/accel/adis16203_core.c
+>  create mode 100644 drivers/staging/iio/accel/adis16203_ring.c
+>  create mode 100644 drivers/staging/iio/accel/adis16203_trigger.c
+> 
+> diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
+> index 0b87557..cc057c6 100644
+> --- a/drivers/staging/iio/accel/Kconfig
+> +++ b/drivers/staging/iio/accel/Kconfig
+> @@ -12,6 +12,15 @@ config ADIS16201
+>  	  Say yes here to build support for Analog Devices adis16201 dual-axis
+>  	  digital inclinometer and accelerometer.
+>  
+> +config ADIS16203
+> +	tristate "Analog Devices ADIS16203 Programmable 360 Degrees Inclinometer"
+> +	depends on SPI
+> +	select IIO_TRIGGER if IIO_RING_BUFFER
+> +	select IIO_SW_RING if IIO_RING_BUFFER
+> +	help
+> +	  Say yes here to build support for Analog Devices adis16203 Programmable
+> +	  360 Degrees Inclinometer.
+> +
+>  config ADIS16209
+>  	tristate "Analog Devices ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer"
+>  	depends on SPI
+> diff --git a/drivers/staging/iio/accel/Makefile b/drivers/staging/iio/accel/Makefile
+> index 4a22a01..76cc92f 100644
+> --- a/drivers/staging/iio/accel/Makefile
+> +++ b/drivers/staging/iio/accel/Makefile
+> @@ -6,6 +6,10 @@ adis16201-y             := adis16201_core.o
+>  adis16201-$(CONFIG_IIO_RING_BUFFER) += adis16201_ring.o adis16201_trigger.o
+>  obj-$(CONFIG_ADIS16201) += adis16201.o
+>  
+> +adis16203-y             := adis16203_core.o
+> +adis16203-$(CONFIG_IIO_RING_BUFFER) += adis16203_ring.o adis16203_trigger.o
+> +obj-$(CONFIG_ADIS16203) += adis16203.o
+> +
+>  adis16209-y             := adis16209_core.o
+>  adis16209-$(CONFIG_IIO_RING_BUFFER) += adis16209_ring.o adis16209_trigger.o
+>  obj-$(CONFIG_ADIS16209) += adis16209.o
+> diff --git a/drivers/staging/iio/accel/adis16203.h b/drivers/staging/iio/accel/adis16203.h
+> new file mode 100644
+> index 0000000..f0a1d01
+> --- /dev/null
+> +++ b/drivers/staging/iio/accel/adis16203.h
+> @@ -0,0 +1,143 @@
+> +#ifndef SPI_ADIS16203_H_
+> +#define SPI_ADIS16203_H_
+> +
+> +#define ADIS16203_STARTUP_DELAY	220 /* ms */
+> +
+> +#define ADIS16203_READ_REG(a)    a
+> +#define ADIS16203_WRITE_REG(a) ((a) | 0x80)
+> +
+> +#define ADIS16203_FLASH_CNT      0x00 /* Flash memory write count */
+> +#define ADIS16203_SUPPLY_OUT     0x02 /* Output, power supply */
+> +#define ADIS16203_AUX_ADC        0x08 /* Output, auxiliary ADC input */
+> +#define ADIS16203_TEMP_OUT       0x0A /* Output, temperature */
+> +#define ADIS16203_XINCL_OUT      0x0C /* Output, x-axis inclination */
+> +#define ADIS16203_YINCL_OUT      0x0E /* Output, y-axis inclination */
+> +#define ADIS16203_INCL_NULL      0x18 /* Incline null calibration */
+> +#define ADIS16203_ALM_MAG1       0x20 /* Alarm 1 amplitude threshold */
+> +#define ADIS16203_ALM_MAG2       0x22 /* Alarm 2 amplitude threshold */
+> +#define ADIS16203_ALM_SMPL1      0x24 /* Alarm 1, sample period */
+> +#define ADIS16203_ALM_SMPL2      0x26 /* Alarm 2, sample period */
+> +#define ADIS16203_ALM_CTRL       0x28 /* Alarm control */
+> +#define ADIS16203_AUX_DAC        0x30 /* Auxiliary DAC data */
+> +#define ADIS16203_GPIO_CTRL      0x32 /* General-purpose digital input/output control */
+> +#define ADIS16203_MSC_CTRL       0x34 /* Miscellaneous control */
+> +#define ADIS16203_SMPL_PRD       0x36 /* Internal sample period (rate) control */
+> +#define ADIS16203_AVG_CNT        0x38 /* Operation, filter configuration */
+> +#define ADIS16203_SLP_CNT        0x3A /* Operation, sleep mode control */
+> +#define ADIS16203_DIAG_STAT      0x3C /* Diagnostics, system status register */
+> +#define ADIS16203_GLOB_CMD       0x3E /* Operation, system command register */
+> +
+> +#define ADIS16203_OUTPUTS        5
+> +
+> +/* MSC_CTRL */
+> +#define ADIS16203_MSC_CTRL_PWRUP_SELF_TEST	(1 << 10) /* Self-test at power-on: 1 = disabled, 0 = enabled */
+> +#define ADIS16203_MSC_CTRL_REVERSE_ROT_EN	(1 << 9)  /* Reverses rotation of both inclination outputs */
+> +#define ADIS16203_MSC_CTRL_SELF_TEST_EN	        (1 << 8)  /* Self-test enable */
+> +#define ADIS16203_MSC_CTRL_DATA_RDY_EN	        (1 << 2)  /* Data-ready enable: 1 = enabled, 0 = disabled */
+> +#define ADIS16203_MSC_CTRL_ACTIVE_HIGH	        (1 << 1)  /* Data-ready polarity: 1 = active high, 0 = active low */
+> +#define ADIS16203_MSC_CTRL_DATA_RDY_DIO1	(1 << 0)  /* Data-ready line selection: 1 = DIO1, 0 = DIO0 */
+> +
+> +/* DIAG_STAT */
+> +#define ADIS16203_DIAG_STAT_ALARM2        (1<<9) /* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
+> +#define ADIS16203_DIAG_STAT_ALARM1        (1<<8) /* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
+> +#define ADIS16203_DIAG_STAT_SELFTEST_FAIL (1<<5) /* Self-test diagnostic error flag */
+> +#define ADIS16203_DIAG_STAT_SPI_FAIL	  (1<<3) /* SPI communications failure */
+> +#define ADIS16203_DIAG_STAT_FLASH_UPT	  (1<<2) /* Flash update failure */
+> +#define ADIS16203_DIAG_STAT_POWER_HIGH	  (1<<1) /* Power supply above 3.625 V */
+> +#define ADIS16203_DIAG_STAT_POWER_LOW	  (1<<0) /* Power supply below 3.15 V */
+> +
+> +/* GLOB_CMD */
+> +#define ADIS16203_GLOB_CMD_SW_RESET	(1<<7)
+> +#define ADIS16203_GLOB_CMD_CLEAR_STAT	(1<<4)
+> +#define ADIS16203_GLOB_CMD_FACTORY_CAL	(1<<1)
+> +
+> +#define ADIS16203_MAX_TX 24
+These two are too large, I think based on quick glance that they
+should be 12 and 10.  Please check
+> +#define ADIS16203_MAX_RX 24
+> +
+> +#define ADIS16203_ERROR_ACTIVE          (1<<14)
+> +
+> +/**
+> + * struct adis16203_state - device instance specific data
+> + * @us:			actual spi_device
+> + * @work_trigger_to_ring: bh for triggered event handling
+> + * @inter:		used to check if new interrupt has been triggered
+> + * @last_timestamp:	passing timestamp from th to bh of interrupt handler
+> + * @indio_dev:		industrial I/O device structure
+> + * @trig:		data ready trigger registered with iio
+> + * @tx:			transmit buffer
+> + * @rx:			recieve buffer
+> + * @buf_lock:		mutex to protect tx and rx
+> + **/
+> +struct adis16203_state {
+> +	struct spi_device		*us;
+> +	struct work_struct		work_trigger_to_ring;
+> +	s64				last_timestamp;
+> +	struct iio_dev			*indio_dev;
+> +	struct iio_trigger		*trig;
+> +	u8				*tx;
+> +	u8				*rx;
+> +	struct mutex			buf_lock;
+> +};
+> +
+> +int adis16203_set_irq(struct device *dev, bool enable);
+> +
+> +#ifdef CONFIG_IIO_RING_BUFFER
+> +enum adis16203_scan {
+> +	ADIS16203_SCAN_SUPPLY,
+> +	ADIS16203_SCAN_AUX_ADC,
+> +	ADIS16203_SCAN_TEMP,
+> +	ADIS16203_SCAN_INCLI_X,
+> +	ADIS16203_SCAN_INCLI_Y,
+> +};
+> +
+> +void adis16203_remove_trigger(struct iio_dev *indio_dev);
+> +int adis16203_probe_trigger(struct iio_dev *indio_dev);
+> +
+> +ssize_t adis16203_read_data_from_ring(struct device *dev,
+> +				      struct device_attribute *attr,
+> +				      char *buf);
+> +
+> +int adis16203_configure_ring(struct iio_dev *indio_dev);
+> +void adis16203_unconfigure_ring(struct iio_dev *indio_dev);
+> +
+> +int adis16203_initialize_ring(struct iio_ring_buffer *ring);
+> +void adis16203_uninitialize_ring(struct iio_ring_buffer *ring);
+> +#else /* CONFIG_IIO_RING_BUFFER */
+> +
+> +static inline void adis16203_remove_trigger(struct iio_dev *indio_dev)
+> +{
+> +}
+> +
+> +static inline int adis16203_probe_trigger(struct iio_dev *indio_dev)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline ssize_t
+> +adis16203_read_data_from_ring(struct device *dev,
+> +			      struct device_attribute *attr,
+> +			      char *buf)
+> +{
+> +	return 0;
+> +}
+> +
+> +static int adis16203_configure_ring(struct iio_dev *indio_dev)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline void adis16203_unconfigure_ring(struct iio_dev *indio_dev)
+> +{
+> +}
+> +
+> +static inline int adis16203_initialize_ring(struct iio_ring_buffer *ring)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline void adis16203_uninitialize_ring(struct iio_ring_buffer *ring)
+> +{
+> +}
+> +
+> +#endif /* CONFIG_IIO_RING_BUFFER */
+> +#endif /* SPI_ADIS16203_H_ */
+> diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
+> new file mode 100644
+> index 0000000..81eeb05
+> --- /dev/null
+> +++ b/drivers/staging/iio/accel/adis16203_core.c
+> @@ -0,0 +1,568 @@
+> +/*
+> + * ADIS16203 Programmable Digital Vibration Sensor driver
+> + *
+> + * Copyright 2010 Analog Devices Inc.
+> + *
+> + * Licensed under the GPL-2 or later.
+> + */
+> +
+> +#include <linux/interrupt.h>
+> +#include <linux/irq.h>
+> +#include <linux/gpio.h>
+> +#include <linux/delay.h>
+> +#include <linux/mutex.h>
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/list.h>
+> +
+> +#include "../iio.h"
+> +#include "../sysfs.h"
+> +#include "accel.h"
+> +#include "inclinometer.h"
+> +#include "../gyro/gyro.h"
+> +#include "../adc/adc.h"
+> +
+> +#include "adis16203.h"
+> +
+Used only once (and that's not all that useful!).
+Move into where it is used or remove entirely.
+
+> +#define DRIVER_NAME		"adis16203"
+> +
+> +static int adis16203_check_status(struct device *dev);
+> +
+> +/**
+> + * adis16203_spi_write_reg_8() - write single byte to a register
+> + * @dev: device associated with child of actual device (iio_dev or iio_trig)
+> + * @reg_address: the address of the register to be written
+> + * @val: the value to write
+> + **/
+> +static int adis16203_spi_write_reg_8(struct device *dev,
+> +		u8 reg_address,
+> +		u8 val)
+> +{
+> +	int ret;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct adis16203_state *st = iio_dev_get_devdata(indio_dev);
+> +
+> +	mutex_lock(&st->buf_lock);
+> +	st->tx[0] = ADIS16203_WRITE_REG(reg_address);
+> +	st->tx[1] = val;
+> +
+> +	ret = spi_write(st->us, st->tx, 2);
+> +	mutex_unlock(&st->buf_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + * adis16203_spi_write_reg_16() - write 2 bytes to a pair of registers
+> + * @dev: device associated with child of actual device (iio_dev or iio_trig)
+> + * @reg_address: the address of the lower of the two registers. Second register
+> + *               is assumed to have address one greater.
+> + * @val: value to be written
+> + **/
+> +static int adis16203_spi_write_reg_16(struct device *dev,
+> +		u8 lower_reg_address,
+> +		u16 value)
+> +{
+> +	int ret;
+> +	struct spi_message msg;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct adis16203_state *st = iio_dev_get_devdata(indio_dev);
+> +	struct spi_transfer xfers[] = {
+> +		{
+> +			.tx_buf = st->tx,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+> +			.cs_change = 1,
+> +		}, {
+> +			.tx_buf = st->tx + 2,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+> +			.cs_change = 1,
+> +		},
+> +	};
+> +
+> +	mutex_lock(&st->buf_lock);
+> +	st->tx[0] = ADIS16203_WRITE_REG(lower_reg_address);
+> +	st->tx[1] = value & 0xFF;
+> +	st->tx[2] = ADIS16203_WRITE_REG(lower_reg_address + 1);
+> +	st->tx[3] = (value >> 8) & 0xFF;
+> +
+> +	spi_message_init(&msg);
+> +	spi_message_add_tail(&xfers[0], &msg);
+> +	spi_message_add_tail(&xfers[1], &msg);
+> +	ret = spi_sync(st->us, &msg);
+> +	mutex_unlock(&st->buf_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + * adis16203_spi_read_reg_16() - read 2 bytes from a 16-bit register
+> + * @dev: device associated with child of actual device (iio_dev or iio_trig)
+> + * @reg_address: the address of the lower of the two registers. Second register
+> + *               is assumed to have address one greater.
+> + * @val: somewhere to pass back the value read
+> + **/
+> +static int adis16203_spi_read_reg_16(struct device *dev,
+> +		u8 lower_reg_address,
+> +		u16 *val)
+> +{
+> +	struct spi_message msg;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct adis16203_state *st = iio_dev_get_devdata(indio_dev);
+> +	int ret;
+> +	struct spi_transfer xfers[] = {
+> +		{
+> +			.tx_buf = st->tx,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+> +			.cs_change = 1,
+> +			.delay_usecs = 20,
+> +		}, {
+> +			.rx_buf = st->rx,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+> +			.cs_change = 1,
+> +			.delay_usecs = 20,
+> +		},
+> +	};
+> +
+> +	mutex_lock(&st->buf_lock);
+> +	st->tx[0] = ADIS16203_READ_REG(lower_reg_address);
+> +	st->tx[1] = 0;
+> +
+> +	spi_message_init(&msg);
+> +	spi_message_add_tail(&xfers[0], &msg);
+> +	spi_message_add_tail(&xfers[1], &msg);
+> +	ret = spi_sync(st->us, &msg);
+> +	if (ret) {
+> +		dev_err(&st->us->dev, "problem when reading 16 bit register 0x%02X",
+> +				lower_reg_address);
+> +		goto error_ret;
+> +	}
+> +	*val = (st->rx[0] << 8) | st->rx[1];
+> +
+> +error_ret:
+> +	mutex_unlock(&st->buf_lock);
+> +	return ret;
+> +}
+> +
+> +static ssize_t adis16203_read_12bit_unsigned(struct device *dev,
+> +		struct device_attribute *attr,
+> +		char *buf)
+> +{
+> +	int ret;
+> +	u16 val = 0;
+> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> +
+> +	ret = adis16203_spi_read_reg_16(dev, this_attr->address, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (val & ADIS16203_ERROR_ACTIVE)
+> +		adis16203_check_status(dev);
+> +
+> +	return sprintf(buf, "%u\n", val & 0x0FFF);
+> +}
+> +
+> +static ssize_t adis16203_read_temp(struct device *dev,
+> +		struct device_attribute *attr,
+> +		char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	ssize_t ret;
+> +	u16 val;
+> +
+> +	/* Take the iio_dev status lock */
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	ret = adis16203_spi_read_reg_16(dev, ADIS16203_TEMP_OUT, (u16 *)&val);
+> +	if (ret)
+> +		goto error_ret;
+> +
+> +	if (val & ADIS16203_ERROR_ACTIVE)
+> +		adis16203_check_status(dev);
+> +
+> +	val &= 0xFFF;
+> +	ret = sprintf(buf, "%d\n", val);
+> +
+> +error_ret:
+> +	mutex_unlock(&indio_dev->mlock);
+> +	return ret;
+> +}
+> +
+> +static ssize_t adis16203_read_14bit_signed(struct device *dev,
+> +		struct device_attribute *attr,
+> +		char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> +	s16 val = 0;
+> +	ssize_t ret;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	ret = adis16203_spi_read_reg_16(dev, this_attr->address, (u16 *)&val);
+> +	if (!ret) {
+> +		if (val & ADIS16203_ERROR_ACTIVE)
+> +			adis16203_check_status(dev);
+> +
+> +		val = ((s16)(val << 2) >> 2);
+> +		ret = sprintf(buf, "%d\n", val);
+> +	}
+> +
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static ssize_t adis16203_write_16bit(struct device *dev,
+> +		struct device_attribute *attr,
+> +		const char *buf,
+> +		size_t len)
+> +{
+> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> +	int ret;
+> +	long val;
+> +
+> +	ret = strict_strtol(buf, 10, &val);
+> +	if (ret)
+> +		goto error_ret;
+> +	ret = adis16203_spi_write_reg_16(dev, this_attr->address, val);
+> +
+> +error_ret:
+> +	return ret ? ret : len;
+> +}
+> +
+> +static int adis16203_reset(struct device *dev)
+> +{
+> +	int ret;
+> +	ret = adis16203_spi_write_reg_8(dev,
+> +			ADIS16203_GLOB_CMD,
+> +			ADIS16203_GLOB_CMD_SW_RESET);
+> +	if (ret)
+> +		dev_err(dev, "problem resetting device");
+> +
+> +	return ret;
+> +}
+> +
+> +static ssize_t adis16203_write_reset(struct device *dev,
+> +		struct device_attribute *attr,
+> +		const char *buf, size_t len)
+> +{
+> +	if (len < 1)
+> +		return -EINVAL;
+> +	switch (buf[0]) {
+> +	case '1':
+> +	case 'y':
+> +	case 'Y':
+> +		return adis16203_reset(dev);
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +int adis16203_set_irq(struct device *dev, bool enable)
+> +{
+> +	int ret = 0;
+> +	u16 msc;
+> +
+> +	ret = adis16203_spi_read_reg_16(dev, ADIS16203_MSC_CTRL, &msc);
+> +	if (ret)
+> +		goto error_ret;
+> +
+> +	msc |= ADIS16203_MSC_CTRL_ACTIVE_HIGH;
+> +	msc &= ~ADIS16203_MSC_CTRL_DATA_RDY_DIO1;
+> +	if (enable)
+> +		msc |= ADIS16203_MSC_CTRL_DATA_RDY_EN;
+> +	else
+> +		msc &= ~ADIS16203_MSC_CTRL_DATA_RDY_EN;
+> +
+> +	ret = adis16203_spi_write_reg_16(dev, ADIS16203_MSC_CTRL, msc);
+> +
+> +error_ret:
+> +	return ret;
+> +}
+> +
+> +static int adis16203_check_status(struct device *dev)
+> +{
+> +	u16 status;
+> +	int ret;
+> +
+> +	ret = adis16203_spi_read_reg_16(dev, ADIS16203_DIAG_STAT, &status);
+> +	if (ret < 0) {
+> +		dev_err(dev, "Reading status failed\n");
+> +		goto error_ret;
+> +	}
+> +	ret = status & 0x1F;
+> +
+> +	if (status & ADIS16203_DIAG_STAT_SELFTEST_FAIL)
+> +		dev_err(dev, "Self test failure\n");
+> +	if (status & ADIS16203_DIAG_STAT_SPI_FAIL)
+> +		dev_err(dev, "SPI failure\n");
+> +	if (status & ADIS16203_DIAG_STAT_FLASH_UPT)
+> +		dev_err(dev, "Flash update failed\n");
+> +	if (status & ADIS16203_DIAG_STAT_POWER_HIGH)
+> +		dev_err(dev, "Power supply above 3.625V\n");
+> +	if (status & ADIS16203_DIAG_STAT_POWER_LOW)
+> +		dev_err(dev, "Power supply below 3.15V\n");
+> +
+> +error_ret:
+> +	return ret;
+> +}
+> +
+> +static int adis16203_self_test(struct device *dev)
+> +{
+> +	int ret;
+> +	ret = adis16203_spi_write_reg_16(dev,
+> +			ADIS16203_MSC_CTRL,
+> +			ADIS16203_MSC_CTRL_SELF_TEST_EN);
+> +	if (ret) {
+> +		dev_err(dev, "problem starting self test");
+> +		goto err_ret;
+> +	}
+> +
+> +	adis16203_check_status(dev);
+> +
+> +err_ret:
+> +	return ret;
+> +}
+> +
+> +static int adis16203_initial_setup(struct adis16203_state *st)
+> +{
+> +	int ret;
+> +	struct device *dev = &st->indio_dev->dev;
+> +
+> +	/* Disable IRQ */
+> +	ret = adis16203_set_irq(dev, false);
+> +	if (ret) {
+> +		dev_err(dev, "disable irq failed");
+> +		goto err_ret;
+> +	}
+> +
+> +	/* Do self test */
+> +	ret = adis16203_self_test(dev);
+> +	if (ret) {
+> +		dev_err(dev, "self test failure");
+> +		goto err_ret;
+> +	}
+> +
+> +	/* Read status register to check the result */
+> +	ret = adis16203_check_status(dev);
+> +	if (ret) {
+> +		adis16203_reset(dev);
+> +		dev_err(dev, "device not playing ball -> reset");
+> +		msleep(ADIS16203_STARTUP_DELAY);
+> +		ret = adis16203_check_status(dev);
+> +		if (ret) {
+> +			dev_err(dev, "giving up");
+> +			goto err_ret;
+> +		}
+> +	}
+> +
+> +	printk(KERN_INFO DRIVER_NAME ": at CS%d (irq %d)\n",
+> +			st->us->chip_select, st->us->irq);
+> +
+> +err_ret:
+> +	return ret;
+> +}
+> +
+> +static IIO_DEV_ATTR_IN_NAMED_RAW(supply, adis16203_read_12bit_unsigned,
+> +		ADIS16203_SUPPLY_OUT);
+> +static IIO_CONST_ATTR(in_supply_scale, "0.00122");
+> +static IIO_DEV_ATTR_IN_RAW(0, adis16203_read_12bit_unsigned,
+> +		ADIS16203_AUX_ADC);
+> +static IIO_CONST_ATTR(in0_scale, "0.00061");
+> +
+> +static IIO_DEV_ATTR_INCLI_X(adis16203_read_14bit_signed,
+> +		ADIS16203_XINCL_OUT);
+> +static IIO_DEV_ATTR_INCLI_Y(adis16203_read_14bit_signed,
+> +		ADIS16203_YINCL_OUT);
+> +static IIO_DEV_ATTR_INCLI_X_OFFSET(S_IWUSR | S_IRUGO,
+> +		adis16203_read_14bit_signed,
+> +		adis16203_write_16bit,
+> +		ADIS16203_INCL_NULL);
+> +static IIO_CONST_ATTR(incli_scale, "0.025");
+> +
+> +static IIO_DEV_ATTR_TEMP(adis16203_read_temp);
+> +static IIO_CONST_ATTR(temp_offset, "25");
+> +static IIO_CONST_ATTR(temp_scale, "-0.47");
+> +
+> +static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16203_write_reset, 0);
+> +
+> +static IIO_CONST_ATTR(name, "adis16203");
+> +
+> +static struct attribute *adis16203_event_attributes[] = {
+> +	NULL
+> +};
+> +
+> +static struct attribute_group adis16203_event_attribute_group = {
+> +	.attrs = adis16203_event_attributes,
+> +};
+> +
+> +static struct attribute *adis16203_attributes[] = {
+> +	&iio_dev_attr_in_supply_raw.dev_attr.attr,
+> +	&iio_const_attr_in_supply_scale.dev_attr.attr,
+> +	&iio_dev_attr_temp.dev_attr.attr,
+> +	&iio_const_attr_temp_offset.dev_attr.attr,
+> +	&iio_const_attr_temp_scale.dev_attr.attr,
+> +	&iio_dev_attr_reset.dev_attr.attr,
+> +	&iio_const_attr_name.dev_attr.attr,
+> +	&iio_dev_attr_in0_raw.dev_attr.attr,
+> +	&iio_const_attr_in0_scale.dev_attr.attr,
+> +	&iio_dev_attr_incli_x_raw.dev_attr.attr,
+> +	&iio_dev_attr_incli_y_raw.dev_attr.attr,
+> +	&iio_dev_attr_incli_x_offset.dev_attr.attr,
+> +	&iio_const_attr_incli_scale.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group adis16203_attribute_group = {
+> +	.attrs = adis16203_attributes,
+> +};
+> +
+> +static int __devinit adis16203_probe(struct spi_device *spi)
+> +{
+> +	int ret, regdone = 0;
+> +	struct adis16203_state *st = kzalloc(sizeof *st, GFP_KERNEL);
+> +	if (!st) {
+> +		ret =  -ENOMEM;
+> +		goto error_ret;
+> +	}
+> +	/* this is only used for removal purposes */
+> +	spi_set_drvdata(spi, st);
+> +
+> +	/* Allocate the comms buffers */
+> +	st->rx = kzalloc(sizeof(*st->rx)*ADIS16203_MAX_RX, GFP_KERNEL);
+> +	if (st->rx == NULL) {
+> +		ret = -ENOMEM;
+> +		goto error_free_st;
+> +	}
+> +	st->tx = kzalloc(sizeof(*st->tx)*ADIS16203_MAX_TX, GFP_KERNEL);
+> +	if (st->tx == NULL) {
+> +		ret = -ENOMEM;
+> +		goto error_free_rx;
+> +	}
+> +	st->us = spi;
+> +	mutex_init(&st->buf_lock);
+> +	/* setup the industrialio driver allocated elements */
+> +	st->indio_dev = iio_allocate_device();
+> +	if (st->indio_dev == NULL) {
+> +		ret = -ENOMEM;
+> +		goto error_free_tx;
+> +	}
+> +
+> +	st->indio_dev->dev.parent = &spi->dev;
+> +	st->indio_dev->num_interrupt_lines = 1;
+> +	st->indio_dev->event_attrs = &adis16203_event_attribute_group;
+> +	st->indio_dev->attrs = &adis16203_attribute_group;
+> +	st->indio_dev->dev_data = (void *)(st);
+> +	st->indio_dev->driver_module = THIS_MODULE;
+> +	st->indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	ret = adis16203_configure_ring(st->indio_dev);
+> +	if (ret)
+> +		goto error_free_dev;
+> +
+> +	ret = iio_device_register(st->indio_dev);
+> +	if (ret)
+> +		goto error_unreg_ring_funcs;
+> +	regdone = 1;
+> +
+> +	ret = adis16203_initialize_ring(st->indio_dev->ring);
+> +	if (ret) {
+> +		printk(KERN_ERR "failed to initialize the ring\n");
+> +		goto error_unreg_ring_funcs;
+> +	}
+> +
+> +	if (spi->irq) {
+> +		ret = iio_register_interrupt_line(spi->irq,
+> +				st->indio_dev,
+> +				0,
+> +				IRQF_TRIGGER_RISING,
+> +				"adis16203");
+> +		if (ret)
+> +			goto error_uninitialize_ring;
+> +
+> +		ret = adis16203_probe_trigger(st->indio_dev);
+> +		if (ret)
+> +			goto error_unregister_line;
+> +	}
+> +
+> +	/* Get the device into a sane initial state */
+> +	ret = adis16203_initial_setup(st);
+> +	if (ret)
+> +		goto error_remove_trigger;
+> +	return 0;
+> +
+> +error_remove_trigger:
+> +	adis16203_remove_trigger(st->indio_dev);
+> +error_unregister_line:
+> +	if (spi->irq)
+> +		iio_unregister_interrupt_line(st->indio_dev, 0);
+> +error_uninitialize_ring:
+> +	adis16203_uninitialize_ring(st->indio_dev->ring);
+> +error_unreg_ring_funcs:
+> +	adis16203_unconfigure_ring(st->indio_dev);
+> +error_free_dev:
+> +	if (regdone)
+> +		iio_device_unregister(st->indio_dev);
+> +	else
+> +		iio_free_device(st->indio_dev);
+> +error_free_tx:
+> +	kfree(st->tx);
+> +error_free_rx:
+> +	kfree(st->rx);
+> +error_free_st:
+> +	kfree(st);
+> +error_ret:
+> +	return ret;
+> +}
+> +
+> +static int adis16203_remove(struct spi_device *spi)
+> +{
+> +	struct adis16203_state *st = spi_get_drvdata(spi);
+> +	struct iio_dev *indio_dev = st->indio_dev;
+> +
+> +	flush_scheduled_work();
+> +
+> +	adis16203_remove_trigger(indio_dev);
+> +	if (spi->irq)
+> +		iio_unregister_interrupt_line(indio_dev, 0);
+> +
+> +	adis16203_uninitialize_ring(indio_dev->ring);
+> +	iio_device_unregister(indio_dev);
+> +	adis16203_unconfigure_ring(indio_dev);
+> +	kfree(st->tx);
+> +	kfree(st->rx);
+> +	kfree(st);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct spi_driver adis16203_driver = {
+> +	.driver = {
+> +		.name = "adis16203",
+> +		.owner = THIS_MODULE,
+> +	},
+> +	.probe = adis16203_probe,
+> +	.remove = __devexit_p(adis16203_remove),
+> +};
+> +
+> +static __init int adis16203_init(void)
+> +{
+> +	return spi_register_driver(&adis16203_driver);
+> +}
+> +module_init(adis16203_init);
+> +
+> +static __exit void adis16203_exit(void)
+> +{
+> +	spi_unregister_driver(&adis16203_driver);
+> +}
+> +module_exit(adis16203_exit);
+> +
+> +MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+> +MODULE_DESCRIPTION("Analog Devices ADIS16203 Programmable Digital Vibration Sensor driver");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
+> new file mode 100644
+> index 0000000..77166a0
+> --- /dev/null
+> +++ b/drivers/staging/iio/accel/adis16203_ring.c
+> @@ -0,0 +1,255 @@
+> +#include <linux/interrupt.h>
+> +#include <linux/irq.h>
+> +#include <linux/gpio.h>
+> +#include <linux/workqueue.h>
+> +#include <linux/mutex.h>
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/list.h>
+> +
+> +#include "../iio.h"
+> +#include "../sysfs.h"
+> +#include "../ring_sw.h"
+> +#include "accel.h"
+> +#include "../trigger.h"
+> +#include "adis16203.h"
+> +
+> +/**
+> + * combine_8_to_16() utility function to munge to u8s into u16
+> + **/
+> +static inline u16 combine_8_to_16(u8 lower, u8 upper)
+> +{
+> +	u16 _lower = lower;
+> +	u16 _upper = upper;
+> +	return _lower | (_upper << 8);
+> +}
+> +
+> +static IIO_SCAN_EL_C(supply, ADIS16203_SCAN_SUPPLY, IIO_UNSIGNED(12),
+> +		     ADIS16203_SUPPLY_OUT, NULL);
+> +static IIO_SCAN_EL_C(aux_adc, ADIS16203_SCAN_AUX_ADC, IIO_UNSIGNED(12),
+> +		     ADIS16203_AUX_ADC, NULL);
+> +static IIO_SCAN_EL_C(temp, ADIS16203_SCAN_TEMP, IIO_UNSIGNED(12),
+> +		     ADIS16203_TEMP_OUT, NULL);
+> +static IIO_SCAN_EL_C(incli_x, ADIS16203_SCAN_INCLI_X, IIO_SIGNED(14),
+> +		     ADIS16203_XINCL_OUT, NULL);
+> +static IIO_SCAN_EL_C(incli_y, ADIS16203_SCAN_INCLI_Y, IIO_SIGNED(14),
+> +		     ADIS16203_YINCL_OUT, NULL);
+> +
+> +static IIO_SCAN_EL_TIMESTAMP(5);
+> +
+> +static struct attribute *adis16203_scan_el_attrs[] = {
+> +	&iio_scan_el_supply.dev_attr.attr,
+Guess I missed this in the other review, but this naming isn't right.
+We don't allow aux_adc as a scan element, it's either in0 or
+in1 (depending on whether we have in0_supply - which is needed to
+associate events if anyone ever adds event support to this driver.).
+
+I also failed to notice the absence in index and type for each of
+these parameters both of which are obligatory now.
+
+
+> +	&iio_scan_el_aux_adc.dev_attr.attr,
+> +	&iio_scan_el_temp.dev_attr.attr,
+> +	&iio_scan_el_incli_x.dev_attr.attr,
+> +	&iio_scan_el_incli_y.dev_attr.attr,
+> +	&iio_scan_el_timestamp.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static struct attribute_group adis16203_scan_el_group = {
+> +	.attrs = adis16203_scan_el_attrs,
+> +	.name = "scan_elements",
+> +};
+> +
+> +/**
+> + * adis16203_poll_func_th() top half interrupt handler called by trigger
+> + * @private_data:	iio_dev
+> + **/
+> +static void adis16203_poll_func_th(struct iio_dev *indio_dev, s64 timestamp)
+> +{
+> +	struct adis16203_state *st = iio_dev_get_devdata(indio_dev);
+> +	st->last_timestamp = timestamp;
+> +	schedule_work(&st->work_trigger_to_ring);
+> +}
+> +
+> +/**
+> + * adis16203_read_ring_data() read data registers which will be placed into ring
+> + * @dev: device associated with child of actual device (iio_dev or iio_trig)
+> + * @rx: somewhere to pass back the value read
+> + **/
+> +static int adis16203_read_ring_data(struct device *dev, u8 *rx)
+> +{
+> +	struct spi_message msg;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct adis16203_state *st = iio_dev_get_devdata(indio_dev);
+> +	struct spi_transfer xfers[ADIS16203_OUTPUTS + 1];
+> +	int ret;
+> +	int i;
+> +
+> +	mutex_lock(&st->buf_lock);
+> +
+> +	spi_message_init(&msg);
+> +
+> +	memset(xfers, 0, sizeof(xfers));
+> +	for (i = 0; i <= ADIS16203_OUTPUTS; i++) {
+> +		xfers[i].bits_per_word = 8;
+> +		xfers[i].cs_change = 1;
+> +		xfers[i].len = 2;
+> +		xfers[i].delay_usecs = 20;
+> +		xfers[i].tx_buf = st->tx + 2 * i;
+> +		if (i < 1) /* SUPPLY_OUT: 0x02, AUX_ADC: 0x08 */
+> +			st->tx[2 * i] = ADIS16203_READ_REG(ADIS16203_SUPPLY_OUT + 2 * i);
+> +		else
+> +			st->tx[2 * i] = ADIS16203_READ_REG(ADIS16203_SUPPLY_OUT + 2 * i + 6);
+> +		st->tx[2 * i + 1] = 0;
+> +		if (i >= 1)
+> +			xfers[i].rx_buf = rx + 2 * (i - 1);
+> +		spi_message_add_tail(&xfers[i], &msg);
+> +	}
+> +
+> +	ret = spi_sync(st->us, &msg);
+> +	if (ret)
+> +		dev_err(&st->us->dev, "problem when burst reading");
+> +
+> +	mutex_unlock(&st->buf_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +/* Whilst this makes a lot of calls to iio_sw_ring functions - it is to device
+> + * specific to be rolled into the core.
+> + */
+> +static void adis16203_trigger_bh_to_ring(struct work_struct *work_s)
+> +{
+> +	struct adis16203_state *st
+> +		= container_of(work_s, struct adis16203_state,
+> +			       work_trigger_to_ring);
+> +
+> +	int i = 0;
+> +	s16 *data;
+> +	size_t datasize = st->indio_dev
+> +		->ring->access.get_bpd(st->indio_dev->ring);
+> +
+> +	data = kmalloc(datasize , GFP_KERNEL);
+> +	if (data == NULL) {
+> +		dev_err(&st->us->dev, "memory alloc failed in ring bh");
+> +		return;
+> +	}
+> +
+> +	if (st->indio_dev->scan_count)
+> +		if (adis16203_read_ring_data(&st->indio_dev->dev, st->rx) >= 0)
+> +			for (; i < st->indio_dev->scan_count; i++) {
+> +				data[i] = combine_8_to_16(st->rx[i*2+1],
+> +							  st->rx[i*2]);
+> +			}
+> +
+> +	/* Guaranteed to be aligned with 8 byte boundary */
+> +	if (st->indio_dev->scan_timestamp)
+> +		*((s64 *)(data + ((i + 3)/4)*4)) = st->last_timestamp;
+> +
+> +	st->indio_dev->ring->access.store_to(st->indio_dev->ring,
+> +					    (u8 *)data,
+> +					    st->last_timestamp);
+> +
+> +	iio_trigger_notify_done(st->indio_dev->trig);
+> +	kfree(data);
+> +
+> +	return;
+> +}
+> +
+> +/* in these circumstances is it better to go with unaligned packing and
+> + * deal with the cost?*/
+> +static int adis16203_data_rdy_ring_preenable(struct iio_dev *indio_dev)
+> +{
+> +	size_t size;
+> +	dev_dbg(&indio_dev->dev, "%s\n", __func__);
+> +	/* Check if there are any scan elements enabled, if not fail*/
+> +	if (!(indio_dev->scan_count || indio_dev->scan_timestamp))
+> +		return -EINVAL;
+> +
+> +	if (indio_dev->ring->access.set_bpd) {
+> +		if (indio_dev->scan_timestamp)
+> +			if (indio_dev->scan_count)
+> +				/* Timestamp and data, let timestamp aligned with sizeof(s64) */
+> +				size = (((indio_dev->scan_count * sizeof(s16)) + sizeof(s64) - 1) & ~(sizeof(s64) - 1))
+> +					+ sizeof(s64);
+> +			else /* Timestamp only  */
+> +				size = sizeof(s64);
+> +		else /* Data only */
+> +			size = indio_dev->scan_count*sizeof(s16);
+> +		indio_dev->ring->access.set_bpd(indio_dev->ring, size);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+As before, there are generic helpers for these now.
+> +static int adis16203_data_rdy_ring_postenable(struct iio_dev *indio_dev)
+> +{
+> +	return indio_dev->trig
+> +		? iio_trigger_attach_poll_func(indio_dev->trig,
+> +					       indio_dev->pollfunc)
+> +		: 0;
+> +}
+> +
+> +static int adis16203_data_rdy_ring_predisable(struct iio_dev *indio_dev)
+> +{
+> +	return indio_dev->trig
+> +		? iio_trigger_dettach_poll_func(indio_dev->trig,
+> +						indio_dev->pollfunc)
+> +		: 0;
+> +}
+> +
+> +void adis16203_unconfigure_ring(struct iio_dev *indio_dev)
+> +{
+> +	kfree(indio_dev->pollfunc);
+> +	iio_sw_rb_free(indio_dev->ring);
+> +}
+> +
+> +int adis16203_configure_ring(struct iio_dev *indio_dev)
+> +{
+> +	int ret = 0;
+> +	struct adis16203_state *st = indio_dev->dev_data;
+> +	struct iio_ring_buffer *ring;
+> +	INIT_WORK(&st->work_trigger_to_ring, adis16203_trigger_bh_to_ring);
+> +	/* Set default scan mode */
+> +
+> +	iio_scan_mask_set(indio_dev, iio_scan_el_supply.number);
+> +	iio_scan_mask_set(indio_dev, iio_scan_el_temp.number);
+> +	iio_scan_mask_set(indio_dev, iio_scan_el_aux_adc.number);
+> +	iio_scan_mask_set(indio_dev, iio_scan_el_incli_x.number);
+> +	iio_scan_mask_set(indio_dev, iio_scan_el_incli_y.number);
+> +	indio_dev->scan_timestamp = true;
+> +
+> +	indio_dev->scan_el_attrs = &adis16203_scan_el_group;
+> +
+> +	ring = iio_sw_rb_allocate(indio_dev);
+> +	if (!ring) {
+> +		ret = -ENOMEM;
+> +		return ret;
+> +	}
+> +	indio_dev->ring = ring;
+> +	/* Effectively select the ring buffer implementation */
+> +	iio_ring_sw_register_funcs(&ring->access);
+> +	ring->preenable = &adis16203_data_rdy_ring_preenable;
+> +	ring->postenable = &adis16203_data_rdy_ring_postenable;
+> +	ring->predisable = &adis16203_data_rdy_ring_predisable;
+> +	ring->owner = THIS_MODULE;
+> +
+> +	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
+> +	if (indio_dev->pollfunc == NULL) {
+> +		ret = -ENOMEM;
+> +		goto error_iio_sw_rb_free;;
+> +	}
+> +	indio_dev->pollfunc->poll_func_main = &adis16203_poll_func_th;
+> +	indio_dev->pollfunc->private_data = indio_dev;
+> +	indio_dev->modes |= INDIO_RING_TRIGGERED;
+> +	return 0;
+> +
+> +error_iio_sw_rb_free:
+> +	iio_sw_rb_free(indio_dev->ring);
+> +	return ret;
+> +}
+> +
+> +int adis16203_initialize_ring(struct iio_ring_buffer *ring)
+> +{
+> +	return iio_ring_buffer_register(ring, 0);
+> +}
+> +
+> +void adis16203_uninitialize_ring(struct iio_ring_buffer *ring)
+> +{
+> +	iio_ring_buffer_unregister(ring);
+> +}
+> diff --git a/drivers/staging/iio/accel/adis16203_trigger.c b/drivers/staging/iio/accel/adis16203_trigger.c
+> new file mode 100644
+> index 0000000..50be51c
+> --- /dev/null
+> +++ b/drivers/staging/iio/accel/adis16203_trigger.c
+> @@ -0,0 +1,122 @@
+> +#include <linux/interrupt.h>
+> +#include <linux/irq.h>
+> +#include <linux/mutex.h>
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/list.h>
+> +#include <linux/spi/spi.h>
+> +
+> +#include "../iio.h"
+> +#include "../sysfs.h"
+> +#include "../trigger.h"
+> +#include "adis16203.h"
+> +
+> +/**
+> + * adis16203_data_rdy_trig_poll() the event handler for the data rdy trig
+> + **/
+> +static int adis16203_data_rdy_trig_poll(struct iio_dev *dev_info,
+> +				       int index,
+> +				       s64 timestamp,
+> +				       int no_test)
+> +{
+> +	struct adis16203_state *st = iio_dev_get_devdata(dev_info);
+> +	struct iio_trigger *trig = st->trig;
+> +
+> +	iio_trigger_poll(trig, timestamp);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +IIO_EVENT_SH(data_rdy_trig, &adis16203_data_rdy_trig_poll);
+> +
+> +static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
+> +
+> +static struct attribute *adis16203_trigger_attrs[] = {
+> +	&dev_attr_name.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group adis16203_trigger_attr_group = {
+> +	.attrs = adis16203_trigger_attrs,
+> +};
+> +
+> +/**
+> + * adis16203_data_rdy_trigger_set_state() set datardy interrupt state
+> + **/
+> +static int adis16203_data_rdy_trigger_set_state(struct iio_trigger *trig,
+> +						bool state)
+> +{
+> +	struct adis16203_state *st = trig->private_data;
+> +	struct iio_dev *indio_dev = st->indio_dev;
+> +	int ret = 0;
+> +
+> +	dev_dbg(&indio_dev->dev, "%s (%d)\n", __func__, state);
+> +	ret = adis16203_set_irq(&st->indio_dev->dev, state);
+> +	if (state == false) {
+> +		iio_remove_event_from_list(&iio_event_data_rdy_trig,
+> +					   &indio_dev->interrupts[0]
+> +					   ->ev_list);
+> +		flush_scheduled_work();
+> +	} else {
+> +		iio_add_event_to_list(&iio_event_data_rdy_trig,
+> +				      &indio_dev->interrupts[0]->ev_list);
+> +	}
+> +	return ret;
+> +}
+> +
+> +/**
+> + * adis16203_trig_try_reen() try renabling irq for data rdy trigger
+> + * @trig:	the datardy trigger
+> + **/
+> +static int adis16203_trig_try_reen(struct iio_trigger *trig)
+> +{
+> +	struct adis16203_state *st = trig->private_data;
+> +	enable_irq(st->us->irq);
+> +	return 0;
+> +}
+> +
+> +int adis16203_probe_trigger(struct iio_dev *indio_dev)
+> +{
+> +	int ret;
+> +	struct adis16203_state *st = indio_dev->dev_data;
+> +
+> +	st->trig = iio_allocate_trigger();
+> +	st->trig->name = kasprintf(GFP_KERNEL,
+> +				"adis16203-dev%d",
+> +				indio_dev->id);
+> +	if (!st->trig->name) {
+> +		ret = -ENOMEM;
+> +		goto error_free_trig;
+> +	}
+> +	st->trig->dev.parent = &st->us->dev;
+> +	st->trig->owner = THIS_MODULE;
+> +	st->trig->private_data = st;
+> +	st->trig->set_trigger_state = &adis16203_data_rdy_trigger_set_state;
+> +	st->trig->try_reenable = &adis16203_trig_try_reen;
+> +	st->trig->control_attrs = &adis16203_trigger_attr_group;
+> +	ret = iio_trigger_register(st->trig);
+> +
+> +	/* select default trigger */
+> +	indio_dev->trig = st->trig;
+> +	if (ret)
+> +		goto error_free_trig_name;
+> +
+> +	return 0;
+> +
+> +error_free_trig_name:
+> +	kfree(st->trig->name);
+> +error_free_trig:
+> +	iio_free_trigger(st->trig);
+> +
+> +	return ret;
+> +}
+> +
+> +void adis16203_remove_trigger(struct iio_dev *indio_dev)
+> +{
+> +	struct adis16203_state *state = indio_dev->dev_data;
+> +
+> +	iio_trigger_unregister(state->trig);
+> +	kfree(state->trig->name);
+> +	iio_free_trigger(state->trig);
+> +}
+
