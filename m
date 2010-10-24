@@ -4,58 +4,92 @@ To: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
 Cc: device-drivers-devel@blackfin.uclinux.org,
 	Cliff Cai <cliff.cai@analog.com>
-Subject: [PATCH 24/36] staging: iio: dds: new driver for AD9832/3/4/5 devices
-Date: Sun, 24 Oct 2010 17:22:26 -0400
-Message-Id: <1287955358-3153-25-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 23/36] staging: iio: dds: new driver for AD5930/2 devices
+Date: Sun, 24 Oct 2010 17:22:25 -0400
+Message-Id: <1287955358-3153-24-git-send-email-vapier@gentoo.org>
 In-Reply-To: <1287955358-3153-1-git-send-email-vapier@gentoo.org>
 References: <1287955358-3153-1-git-send-email-vapier@gentoo.org>
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Cliff Cai <cliff.cai@analog.com>
 
+This is the initial driver in the new Direct Digital Synthesis section.
+
 Signed-off-by: Cliff Cai <cliff.cai@analog.com>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
- drivers/staging/iio/dds/Kconfig  |    7 +
- drivers/staging/iio/dds/Makefile |    1 +
- drivers/staging/iio/dds/ad9832.c |  266 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 274 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/dds/ad9832.c
+ drivers/staging/iio/Kconfig      |    1 +
+ drivers/staging/iio/Makefile     |    1 +
+ drivers/staging/iio/dds/Kconfig  |   11 +++
+ drivers/staging/iio/dds/Makefile |    5 +
+ drivers/staging/iio/dds/ad5930.c |  170 ++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 188 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/dds/Kconfig
+ create mode 100644 drivers/staging/iio/dds/Makefile
+ create mode 100644 drivers/staging/iio/dds/ad5930.c
 
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index 773c301..5e5bc47 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -44,6 +44,7 @@ source "drivers/staging/iio/accel/Kconfig"
+ source "drivers/staging/iio/adc/Kconfig"
+ source "drivers/staging/iio/addac/Kconfig"
+ source "drivers/staging/iio/dac/Kconfig"
++source "drivers/staging/iio/dds/Kconfig"
+ source "drivers/staging/iio/gyro/Kconfig"
+ source "drivers/staging/iio/imu/Kconfig"
+ source "drivers/staging/iio/light/Kconfig"
+diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
+index 15eba01..766a5d1 100644
+--- a/drivers/staging/iio/Makefile
++++ b/drivers/staging/iio/Makefile
+@@ -13,6 +13,7 @@ obj-y += accel/
+ obj-y += adc/
+ obj-y += addac/
+ obj-y += dac/
++obj-y += dds/
+ obj-y += gyro/
+ obj-y += imu/
+ obj-y += light/
 diff --git a/drivers/staging/iio/dds/Kconfig b/drivers/staging/iio/dds/Kconfig
-index d32bebc..c9fae1d 100644
---- a/drivers/staging/iio/dds/Kconfig
+new file mode 100644
+index 0000000..d32bebc
+--- /dev/null
 +++ b/drivers/staging/iio/dds/Kconfig
-@@ -9,3 +9,10 @@ config AD5930
- 	help
- 	  Say yes here to build support for Analog Devices DDS chip
- 	  ad5930/ad5932, provides direct access via sysfs.
+@@ -0,0 +1,11 @@
++#
++# Direct Digital Synthesis drivers
++#
++comment "Direct Digital Synthesis"
 +
-+config AD9832
-+	tristate "Analog Devices ad9832/3/4/5 driver"
++config AD5930
++	tristate "Analog Devices ad5930/5932 driver"
 +	depends on SPI
 +	help
 +	  Say yes here to build support for Analog Devices DDS chip
-+	  ad9832/3/4/5, provides direct access via sysfs.
++	  ad5930/ad5932, provides direct access via sysfs.
 diff --git a/drivers/staging/iio/dds/Makefile b/drivers/staging/iio/dds/Makefile
-index 110f289..d0f17f0 100644
---- a/drivers/staging/iio/dds/Makefile
-+++ b/drivers/staging/iio/dds/Makefile
-@@ -3,3 +3,4 @@
- #
- 
- obj-$(CONFIG_AD5930) += ad5930.o
-+obj-$(CONFIG_AD9832) += ad9832.o
-diff --git a/drivers/staging/iio/dds/ad9832.c b/drivers/staging/iio/dds/ad9832.c
 new file mode 100644
-index 0000000..217f329
+index 0000000..110f289
 --- /dev/null
-+++ b/drivers/staging/iio/dds/ad9832.c
-@@ -0,0 +1,266 @@
++++ b/drivers/staging/iio/dds/Makefile
+@@ -0,0 +1,5 @@
++#
++# Makefile for Direct Digital Synthesis drivers
++#
++
++obj-$(CONFIG_AD5930) += ad5930.o
+diff --git a/drivers/staging/iio/dds/ad5930.c b/drivers/staging/iio/dds/ad5930.c
+new file mode 100644
+index 0000000..f80039c
+--- /dev/null
++++ b/drivers/staging/iio/dds/ad5930.c
+@@ -0,0 +1,170 @@
 +/*
-+ * Driver for ADI Direct Digital Synthesis ad9832
++ * Driver for ADI Direct Digital Synthesis ad5930
 + *
-+ * Copyright (c) 2010 Analog Devices Inc.
++ * Copyright (c) 2010-2010 Analog Devices Inc.
 + *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License version 2 as
@@ -72,56 +106,28 @@ index 0000000..217f329
 +#include "../iio.h"
 +#include "../sysfs.h"
 +
-+#define DRV_NAME "ad9832"
++#define DRV_NAME "ad5930"
 +
 +#define value_mask (u16)0xf000
-+#define cmd_shift 12
-+#define add_shift 8
-+#define SYNC (1 << 13)
-+#define SELSRC (1 << 12)
-+#define SLEEP (1 << 13)
-+#define RESET (1 << 12)
-+#define CLR (1 << 11)
++#define addr_shift 12
 +
-+#define ADD_FREQ0LL 0x0
-+#define ADD_FREQ0HL 0x1
-+#define ADD_FREQ0LM 0x2
-+#define ADD_FREQ0HM 0x3
-+#define ADD_FREQ1LL 0x4
-+#define ADD_FREQ1HL 0x5
-+#define ADD_FREQ1LM 0x6
-+#define ADD_FREQ1HM 0x7
-+#define ADD_PHASE0L 0x8
-+#define ADD_PHASE0H 0x9
-+#define ADD_PHASE1L 0xa
-+#define ADD_PHASE1H 0xb
-+#define ADD_PHASE2L 0xc
-+#define ADD_PHASE2H 0xd
-+#define ADD_PHASE3L 0xe
-+#define ADD_PHASE3H 0xf
-+
-+#define CMD_PHA8BITSW 0x1
-+#define CMD_PHA16BITSW 0x0
-+#define CMD_FRE8BITSW 0x3
-+#define CMD_FRE16BITSW 0x2
-+#define CMD_SELBITSCTL 0x6
-+
-+struct ad9832_setting {
-+	u16 freq0[4];
-+	u16 freq1[4];
-+	u16 phase0[2];
-+	u16 phase1[2];
-+	u16 phase2[2];
-+	u16 phase3[2];
++/* Register format: 4 bits addr + 12 bits value */
++struct ad5903_config {
++	u16 control;
++	u16 incnum;
++	u16 frqdelt[2];
++	u16 incitvl;
++	u16 buritvl;
++	u16 strtfrq[2];
 +};
 +
-+struct ad9832_state {
++struct ad5930_state {
 +	struct mutex lock;
 +	struct iio_dev *idev;
 +	struct spi_device *sdev;
 +};
 +
-+static ssize_t ad9832_set_parameter(struct device *dev,
++static ssize_t ad5930_set_parameter(struct device *dev,
 +					struct device_attribute *attr,
 +					const char *buf,
 +					size_t len)
@@ -129,30 +135,21 @@ index 0000000..217f329
 +	struct spi_message msg;
 +	struct spi_transfer xfer;
 +	int ret;
-+	struct ad9832_setting config;
++	struct ad5903_config *config = (struct ad5903_config *)buf;
 +	struct iio_dev *idev = dev_get_drvdata(dev);
-+	struct ad9832_state *st = idev->dev_data;
++	struct ad5930_state *st = idev->dev_data;
 +
-+	config.freq0[0] = (CMD_FRE8BITSW << add_shift | ADD_FREQ0LL << add_shift | buf[0]);
-+	config.freq0[1] = (CMD_FRE16BITSW << add_shift | ADD_FREQ0HL << add_shift | buf[1]);
-+	config.freq0[2] = (CMD_FRE8BITSW << add_shift | ADD_FREQ0LM << add_shift | buf[2]);
-+	config.freq0[3] = (CMD_FRE16BITSW << add_shift | ADD_FREQ0HM << add_shift | buf[3]);
-+	config.freq1[0] = (CMD_FRE8BITSW << add_shift | ADD_FREQ1LL << add_shift | buf[4]);
-+	config.freq1[1] = (CMD_FRE16BITSW << add_shift | ADD_FREQ1HL << add_shift | buf[5]);
-+	config.freq1[2] = (CMD_FRE8BITSW << add_shift | ADD_FREQ1LM << add_shift | buf[6]);
-+	config.freq1[3] = (CMD_FRE16BITSW << add_shift | ADD_FREQ1HM << add_shift | buf[7]);
++	config->control = (config->control & ~value_mask);
++	config->incnum = (config->control & ~value_mask) | (1 << addr_shift);
++	config->frqdelt[0] = (config->control & ~value_mask) | (2 << addr_shift);
++	config->frqdelt[1] = (config->control & ~value_mask) | 3 << addr_shift;
++	config->incitvl = (config->control & ~value_mask) | 4 << addr_shift;
++	config->buritvl = (config->control & ~value_mask) | 8 << addr_shift;
++	config->strtfrq[0] = (config->control & ~value_mask) | 0xc << addr_shift;
++	config->strtfrq[1] = (config->control & ~value_mask) | 0xd << addr_shift;
 +
-+	config.phase0[0] = (CMD_PHA8BITSW << add_shift | ADD_PHASE0L << add_shift | buf[9]);
-+	config.phase0[1] = (CMD_PHA16BITSW << add_shift | ADD_PHASE0H << add_shift | buf[10]);
-+	config.phase1[0] = (CMD_PHA8BITSW << add_shift | ADD_PHASE1L << add_shift | buf[11]);
-+	config.phase1[1] = (CMD_PHA16BITSW << add_shift | ADD_PHASE1H << add_shift | buf[12]);
-+	config.phase2[0] = (CMD_PHA8BITSW << add_shift | ADD_PHASE2L << add_shift | buf[13]);
-+	config.phase2[1] = (CMD_PHA16BITSW << add_shift | ADD_PHASE2H << add_shift | buf[14]);
-+	config.phase3[0] = (CMD_PHA8BITSW << add_shift | ADD_PHASE3L << add_shift | buf[15]);
-+	config.phase3[1] = (CMD_PHA16BITSW << add_shift | ADD_PHASE3H << add_shift | buf[16]);
-+
-+	xfer.len = 2 * len;
-+	xfer.tx_buf = &config;
++	xfer.len = len;
++	xfer.tx_buf = config;
 +	mutex_lock(&st->lock);
 +
 +	spi_message_init(&msg);
@@ -166,80 +163,21 @@ index 0000000..217f329
 +	return ret ? ret : len;
 +}
 +
-+static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad9832_set_parameter, 0);
++static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad5930_set_parameter, 0);
 +
-+static struct attribute *ad9832_attributes[] = {
++static struct attribute *ad5930_attributes[] = {
 +	&iio_dev_attr_dds.dev_attr.attr,
 +	NULL,
 +};
 +
-+static const struct attribute_group ad9832_attribute_group = {
++static const struct attribute_group ad5930_attribute_group = {
 +	.name = DRV_NAME,
-+	.attrs = ad9832_attributes,
++	.attrs = ad5930_attributes,
 +};
 +
-+static void ad9832_init(struct ad9832_state *st)
++static int __devinit ad5930_probe(struct spi_device *spi)
 +{
-+	struct spi_message msg;
-+	struct spi_transfer xfer;
-+	int ret;
-+	u16 config = 0;
-+
-+	config = 0x3 << 14 | SLEEP | RESET | CLR;
-+
-+	mutex_lock(&st->lock);
-+
-+	xfer.len = 2;
-+	xfer.tx_buf = &config;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	config = 0x2 << 14 | SYNC | SELSRC;
-+	xfer.len = 2;
-+	xfer.tx_buf = &config;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	config = CMD_SELBITSCTL << cmd_shift;
-+	xfer.len = 2;
-+	xfer.tx_buf = &config;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	config = 0x3 << 14;
-+
-+	mutex_lock(&st->lock);
-+
-+	xfer.len = 2;
-+	xfer.tx_buf = &config;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+error_ret:
-+	mutex_unlock(&st->lock);
-+
-+
-+
-+}
-+
-+static int __devinit ad9832_probe(struct spi_device *spi)
-+{
-+	struct ad9832_state *st;
++	struct ad5930_state *st;
 +	int ret = 0;
 +
 +	st = kzalloc(sizeof(*st), GFP_KERNEL);
@@ -261,7 +199,7 @@ index 0000000..217f329
 +	st->idev->num_interrupt_lines = 0;
 +	st->idev->event_attrs = NULL;
 +
-+	st->idev->attrs = &ad9832_attribute_group;
++	st->idev->attrs = &ad5930_attribute_group;
 +	st->idev->dev_data = (void *)(st);
 +	st->idev->driver_module = THIS_MODULE;
 +	st->idev->modes = INDIO_DIRECT_MODE;
@@ -273,7 +211,7 @@ index 0000000..217f329
 +	spi->mode = SPI_MODE_3;
 +	spi->bits_per_word = 16;
 +	spi_setup(spi);
-+	ad9832_init(st);
++
 +	return 0;
 +
 +error_free_dev:
@@ -284,9 +222,9 @@ index 0000000..217f329
 +	return ret;
 +}
 +
-+static int __devexit ad9832_remove(struct spi_device *spi)
++static int __devexit ad5930_remove(struct spi_device *spi)
 +{
-+	struct ad9832_state *st = spi_get_drvdata(spi);
++	struct ad5930_state *st = spi_get_drvdata(spi);
 +
 +	iio_device_unregister(st->idev);
 +	kfree(st);
@@ -294,29 +232,29 @@ index 0000000..217f329
 +	return 0;
 +}
 +
-+static struct spi_driver ad9832_driver = {
++static struct spi_driver ad5930_driver = {
 +	.driver = {
 +		.name = DRV_NAME,
 +		.owner = THIS_MODULE,
 +	},
-+	.probe = ad9832_probe,
-+	.remove = __devexit_p(ad9832_remove),
++	.probe = ad5930_probe,
++	.remove = __devexit_p(ad5930_remove),
 +};
 +
-+static __init int ad9832_spi_init(void)
++static __init int ad5930_spi_init(void)
 +{
-+	return spi_register_driver(&ad9832_driver);
++	return spi_register_driver(&ad5930_driver);
 +}
-+module_init(ad9832_spi_init);
++module_init(ad5930_spi_init);
 +
-+static __exit void ad9832_spi_exit(void)
++static __exit void ad5930_spi_exit(void)
 +{
-+	spi_unregister_driver(&ad9832_driver);
++	spi_unregister_driver(&ad5930_driver);
 +}
-+module_exit(ad9832_spi_exit);
++module_exit(ad5930_spi_exit);
 +
 +MODULE_AUTHOR("Cliff Cai");
-+MODULE_DESCRIPTION("Analog Devices ad9832 driver");
++MODULE_DESCRIPTION("Analog Devices ad5930 driver");
 +MODULE_LICENSE("GPL v2");
 -- 
 1.7.3.2
