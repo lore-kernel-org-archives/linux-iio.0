@@ -1,55 +1,669 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:57042 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750816Ab0JYNyl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Oct 2010 09:54:41 -0400
-Message-ID: <4CC58D85.3000503@cam.ac.uk>
-Date: Mon, 25 Oct 2010 15:00:37 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: Mike Frysinger <vapier@gentoo.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>,
-	"Zhang, Sonic" <Sonic.Zhang@analog.com>
-Subject: Re: BUILD ISSUE: Re: [PATCH 07/36] staging: iio: adc: new driver
- for AD7291 devices
-References: <1287955358-3153-1-git-send-email-vapier@gentoo.org> <1287955358-3153-8-git-send-email-vapier@gentoo.org> <4CC58904.9010401@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D59177130945B1C0A@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D59177130945B1C0A@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <vapier@gentoo.org>
+From: Mike Frysinger <vapier@gentoo.org>
+To: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Cc: device-drivers-devel@blackfin.uclinux.org,
+	Barry Song <barry.song@analog.com>
+Subject: [PATCH 06/36] staging: iio: adc: new driver for AD7152/3 devices
+Date: Sun, 24 Oct 2010 17:22:08 -0400
+Message-Id: <1287955358-3153-7-git-send-email-vapier@gentoo.org>
+In-Reply-To: <1287955358-3153-1-git-send-email-vapier@gentoo.org>
+References: <1287955358-3153-1-git-send-email-vapier@gentoo.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/25/10 14:40, Hennerich, Michael wrote:
-> Jonathan Cameron wrote on 2010-10-25:
->> On 10/24/10 22:22, Mike Frysinger wrote:
->>> From: Sonic Zhang <sonic.zhang@analog.com>
->> Build test results (cross compiled for arm) on top of staging-next
->>
->> drivers/staging/iio/adc/ad7291.c: In function 'ad7291_probe':
->> drivers/staging/iio/adc/ad7291.c:951: error: 'struct i2c_client' has
->> no member named 'irq_flags'
->> drivers/staging/iio/adc/ad7291.c:966: error: 'struct i2c_client' has
->> no member named 'irq_flags'
->>
->> Google tells me you guys have posted a patch adding this a couple of
->> weeks back.  Doesn't
->> look like Jean liked it...   If it is merging you need to tell Greg
->> that there is a dependency
->> on it when you send him the merge request. Otherwise just remove the
->> usage and rely on it happening in board setup code. Personally I agree
->> with what the patch was trying to do, but if it isn't merging we don't
->> want to hold this driver up waiting for it.
-> 
-> Ok - I remove it for now.
-> 
-> Actually we've added irq_flags to both i2c and spi board info.
-> There were a few people who commented positively on both patches.
-> Feel free to send your cents as well.
-Grep the whole set. There are quite a few users.
+From: Barry Song <barry.song@analog.com>
 
-Jonathan
-> 
-> -Michael
-> 
+Signed-off-by: Barry Song <barry.song@analog.com>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ drivers/staging/iio/adc/Kconfig  |    7 +
+ drivers/staging/iio/adc/Makefile |    1 +
+ drivers/staging/iio/adc/ad7152.c |  610 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 618 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/ad7152.c
+
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 51b9cc6..7f03571 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -34,6 +34,13 @@ config AD7150
+ 	  Say yes here to build support for Analog Devices capacitive sensors.
+ 	  (ad7150, ad7151, ad7156) Provides direct access via sysfs.
+ 
++config AD7152
++	tristate "Analog Devices ad7152/3 capacitive sensor driver"
++	depends on I2C
++	help
++	  Say yes here to build support for Analog Devices capacitive sensors.
++	  (ad7152, ad7153) Provides direct access via sysfs.
++
+ config AD799X
+ 	tristate "Analog Devices AD799x ADC driver"
+ 	depends on I2C
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index 51b39aa..a134754 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -16,3 +16,4 @@ ad7476-$(CONFIG_IIO_RING_BUFFER) += ad7476_ring.o
+ obj-$(CONFIG_AD7476) += ad7476.o
+ 
+ obj-$(CONFIG_AD7150) += ad7150.o
++obj-$(CONFIG_AD7152) += ad7152.o
+diff --git a/drivers/staging/iio/adc/ad7152.c b/drivers/staging/iio/adc/ad7152.c
+new file mode 100644
+index 0000000..3612350
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7152.c
+@@ -0,0 +1,610 @@
++/*
++ * AD7152 capacitive sensor driver supporting AD7152/3
++ *
++ * Copyright 2010 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++#include <linux/interrupt.h>
++#include <linux/gpio.h>
++#include <linux/workqueue.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/list.h>
++#include <linux/i2c.h>
++#include <linux/rtc.h>
++
++#include "../iio.h"
++#include "../sysfs.h"
++
++/*
++ * AD7152 registers definition
++ */
++
++#define AD7152_STATUS              0
++#define AD7152_STATUS_RDY1         (1 << 0)
++#define AD7152_STATUS_RDY2         (1 << 1)
++#define AD7152_CH1_DATA_HIGH       1
++#define AD7152_CH1_DATA_LOW        2
++#define AD7152_CH2_DATA_HIGH       3
++#define AD7152_CH2_DATA_LOW        4
++#define AD7152_CH1_OFFS_HIGH       5
++#define AD7152_CH1_OFFS_LOW        6
++#define AD7152_CH2_OFFS_HIGH       7
++#define AD7152_CH2_OFFS_LOW        8
++#define AD7152_CH1_GAIN_HIGH       9
++#define AD7152_CH1_GAIN_LOW        10
++#define AD7152_CH1_SETUP           11
++#define AD7152_CH2_GAIN_HIGH       12
++#define AD7152_CH2_GAIN_LOW        13
++#define AD7152_CH2_SETUP           14
++#define AD7152_CFG                 15
++#define AD7152_RESEVERD            16
++#define AD7152_CAPDAC_POS          17
++#define AD7152_CAPDAC_NEG          18
++#define AD7152_CFG2                26
++
++#define AD7152_MAX_CONV_MODE       6
++
++/*
++ * struct ad7152_chip_info - chip specifc information
++ */
++
++struct ad7152_chip_info {
++	const char *name;
++	struct i2c_client *client;
++	struct iio_dev *indio_dev;
++	u16 ch1_offset;     /* Channel 1 offset calibration coefficient */
++	u16 ch1_gain;       /* Channel 1 gain coefficient */
++	u8  ch1_setup;
++	u16 ch2_offset;     /* Channel 2 offset calibration coefficient */
++	u16 ch2_gain;       /* Channel 1 gain coefficient */
++	u8  ch2_setup;
++	u8  filter_rate_setup; /* Capacitive channel digital filter setup; conversion time/update rate setup per channel */
++	char *conversion_mode;
++};
++
++struct ad7152_conversion_mode {
++	char *name;
++	u8 reg_cfg;
++};
++
++struct ad7152_conversion_mode ad7152_conv_mode_table[AD7152_MAX_CONV_MODE] = {
++	{ "idle", 0 },
++	{ "continuous-conversion", 1 },
++	{ "single-conversion", 2 },
++	{ "power-down", 3 },
++	{ "offset-calibration", 5 },
++	{ "gain-calibration", 6 },
++};
++
++/*
++ * ad7152 register access by I2C
++ */
++
++static int ad7152_i2c_read(struct ad7152_chip_info *chip, u8 reg, u8 *data, int len)
++{
++	struct i2c_client *client = chip->client;
++	int ret = 0;
++
++	ret = i2c_master_send(client, &reg, 1);
++	if (ret < 0) {
++		dev_err(&client->dev, "I2C write error\n");
++		return ret;
++	}
++
++	ret = i2c_master_recv(client, data, len);
++	if (ret < 0) {
++		dev_err(&client->dev, "I2C read error\n");
++		return ret;
++	}
++
++	return ret;
++}
++
++static int ad7152_i2c_write(struct ad7152_chip_info *chip, u8 reg, u8 data)
++{
++	struct i2c_client *client = chip->client;
++	int ret = 0;
++
++	u8 tx[2] = {
++		reg,
++		data,
++	};
++
++	ret = i2c_master_send(client, tx, 2);
++	if (ret < 0)
++		dev_err(&client->dev, "I2C write error\n");
++
++	return ret;
++}
++
++/*
++ * sysfs nodes
++ */
++
++#define IIO_DEV_ATTR_AVAIL_CONVERSION_MODES(_show)				\
++	IIO_DEVICE_ATTR(available_conversion_modes, S_IRUGO, _show, NULL, 0)
++#define IIO_DEV_ATTR_CONVERSION_MODE(_mode, _show, _store)              \
++	IIO_DEVICE_ATTR(conversion_mode, _mode, _show, _store, 0)
++#define IIO_DEV_ATTR_CH1_OFFSET(_mode, _show, _store)		\
++	IIO_DEVICE_ATTR(ch1_offset, _mode, _show, _store, 0)
++#define IIO_DEV_ATTR_CH2_OFFSET(_mode, _show, _store)		\
++	IIO_DEVICE_ATTR(ch2_offset, _mode, _show, _store, 0)
++#define IIO_DEV_ATTR_CH1_GAIN(_mode, _show, _store)		\
++	IIO_DEVICE_ATTR(ch1_gain, _mode, _show, _store, 0)
++#define IIO_DEV_ATTR_CH2_GAIN(_mode, _show, _store)		\
++	IIO_DEVICE_ATTR(ch2_gain, _mode, _show, _store, 0)
++#define IIO_DEV_ATTR_CH1_VALUE(_show)		\
++	IIO_DEVICE_ATTR(ch1_value, S_IRUGO, _show, NULL, 0)
++#define IIO_DEV_ATTR_CH2_VALUE(_show)		\
++	IIO_DEVICE_ATTR(ch2_value, S_IRUGO, _show, NULL, 0)
++#define IIO_DEV_ATTR_CH1_SETUP(_mode, _show, _store)		\
++	IIO_DEVICE_ATTR(ch1_setup, _mode, _show, _store, 0)
++#define IIO_DEV_ATTR_CH2_SETUP(_mode, _show, _store)              \
++	IIO_DEVICE_ATTR(ch2_setup, _mode, _show, _store, 0)
++#define IIO_DEV_ATTR_FILTER_RATE_SETUP(_mode, _show, _store)              \
++	IIO_DEVICE_ATTR(filter_rate_setup, _mode, _show, _store, 0)
++
++static ssize_t ad7152_show_conversion_modes(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	int i;
++	int len = 0;
++
++	for (i = 0; i < AD7152_MAX_CONV_MODE; i++)
++		len += sprintf(buf + len, "%s\n", ad7152_conv_mode_table[i].name);
++
++	return len;
++}
++
++static IIO_DEV_ATTR_AVAIL_CONVERSION_MODES(ad7152_show_conversion_modes);
++
++static ssize_t ad7152_show_ch1_value(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++	u8 data[2];
++
++	ad7152_i2c_read(chip, AD7152_CH1_DATA_HIGH, data, 2);
++	return sprintf(buf, "%d\n", ((int)data[0] << 8) | data[1]);
++}
++
++static IIO_DEV_ATTR_CH1_VALUE(ad7152_show_ch1_value);
++
++static ssize_t ad7152_show_ch2_value(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++	u8 data[2];
++
++	ad7152_i2c_read(chip, AD7152_CH2_DATA_HIGH, data, 2);
++	return sprintf(buf, "%d\n", ((int)data[0] << 8) | data[1]);
++}
++
++static IIO_DEV_ATTR_CH2_VALUE(ad7152_show_ch2_value);
++
++static ssize_t ad7152_show_conversion_mode(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++
++	return sprintf(buf, "%s\n", chip->conversion_mode);
++}
++
++static ssize_t ad7152_store_conversion_mode(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++	u8 cfg;
++	int i;
++
++	ad7152_i2c_read(chip, AD7152_CFG, &cfg, 1);
++
++	for (i = 0; i < AD7152_MAX_CONV_MODE; i++) {
++		if (strncmp(buf, ad7152_conv_mode_table[i].name,
++				strlen(ad7152_conv_mode_table[i].name) - 1) == 0) {
++			chip->conversion_mode = ad7152_conv_mode_table[i].name;
++			cfg |= 0x18 | ad7152_conv_mode_table[i].reg_cfg;
++			ad7152_i2c_write(chip, AD7152_CFG, cfg);
++			return len;
++		}
++	}
++
++	dev_err(dev, "not supported conversion mode\n");
++
++	return -EINVAL;
++}
++
++static IIO_DEV_ATTR_CONVERSION_MODE(S_IRUGO | S_IWUSR,
++		ad7152_show_conversion_mode,
++		ad7152_store_conversion_mode);
++
++static ssize_t ad7152_show_ch1_offset(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++
++	return sprintf(buf, "%d\n", chip->ch1_offset);
++}
++
++static ssize_t ad7152_store_ch1_offset(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	int ret;
++
++	ret = strict_strtoul(buf, 10, &data);
++
++	if ((!ret) && (data < 0x10000)) {
++		ad7152_i2c_write(chip, AD7152_CH1_OFFS_HIGH, data >> 8);
++		ad7152_i2c_write(chip, AD7152_CH1_OFFS_LOW, data);
++		chip->ch1_offset = data;
++		return len;
++	}
++
++	return -EINVAL;
++}
++
++static IIO_DEV_ATTR_CH1_OFFSET(S_IRUGO | S_IWUSR,
++		ad7152_show_ch1_offset,
++		ad7152_store_ch1_offset);
++
++static ssize_t ad7152_show_ch2_offset(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++
++	return sprintf(buf, "%d\n", chip->ch2_offset);
++}
++
++static ssize_t ad7152_store_ch2_offset(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	int ret;
++
++	ret = strict_strtoul(buf, 10, &data);
++
++	if ((!ret) && (data < 0x10000)) {
++		ad7152_i2c_write(chip, AD7152_CH2_OFFS_HIGH, data >> 8);
++		ad7152_i2c_write(chip, AD7152_CH2_OFFS_LOW, data);
++		chip->ch2_offset = data;
++		return len;
++	}
++
++	return -EINVAL;
++}
++
++static IIO_DEV_ATTR_CH2_OFFSET(S_IRUGO | S_IWUSR,
++		ad7152_show_ch2_offset,
++		ad7152_store_ch2_offset);
++
++static ssize_t ad7152_show_ch1_gain(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++
++	return sprintf(buf, "%d\n", chip->ch1_gain);
++}
++
++static ssize_t ad7152_store_ch1_gain(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	int ret;
++
++	ret = strict_strtoul(buf, 10, &data);
++
++	if ((!ret) && (data < 0x10000)) {
++		ad7152_i2c_write(chip, AD7152_CH1_GAIN_HIGH, data >> 8);
++		ad7152_i2c_write(chip, AD7152_CH1_GAIN_LOW, data);
++		chip->ch1_gain = data;
++		return len;
++	}
++
++	return -EINVAL;
++}
++
++static IIO_DEV_ATTR_CH1_GAIN(S_IRUGO | S_IWUSR,
++		ad7152_show_ch1_gain,
++		ad7152_store_ch1_gain);
++
++static ssize_t ad7152_show_ch2_gain(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++
++	return sprintf(buf, "%d\n", chip->ch2_gain);
++}
++
++static ssize_t ad7152_store_ch2_gain(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	int ret;
++
++	ret = strict_strtoul(buf, 10, &data);
++
++	if ((!ret) && (data < 0x10000)) {
++		ad7152_i2c_write(chip, AD7152_CH2_GAIN_HIGH, data >> 8);
++		ad7152_i2c_write(chip, AD7152_CH2_GAIN_LOW, data);
++		chip->ch2_gain = data;
++		return len;
++	}
++
++	return -EINVAL;
++}
++
++static IIO_DEV_ATTR_CH2_GAIN(S_IRUGO | S_IWUSR,
++		ad7152_show_ch2_gain,
++		ad7152_store_ch2_gain);
++
++static ssize_t ad7152_show_ch1_setup(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++
++	return sprintf(buf, "0x%02x\n", chip->ch1_setup);
++}
++
++static ssize_t ad7152_store_ch1_setup(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	int ret;
++
++	ret = strict_strtoul(buf, 10, &data);
++
++	if ((!ret) && (data < 0x100)) {
++		ad7152_i2c_write(chip, AD7152_CH1_SETUP, data);
++		chip->ch1_setup = data;
++		return len;
++	}
++
++	return -EINVAL;
++}
++
++static IIO_DEV_ATTR_CH1_SETUP(S_IRUGO | S_IWUSR,
++		ad7152_show_ch1_setup,
++		ad7152_store_ch1_setup);
++
++static ssize_t ad7152_show_ch2_setup(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++
++	return sprintf(buf, "0x%02x\n", chip->ch2_setup);
++}
++
++static ssize_t ad7152_store_ch2_setup(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	int ret;
++
++	ret = strict_strtoul(buf, 10, &data);
++
++	if ((!ret) && (data < 0x100)) {
++		ad7152_i2c_write(chip, AD7152_CH2_SETUP, data);
++		chip->ch2_setup = data;
++		return len;
++	}
++
++	return -EINVAL;
++}
++
++static IIO_DEV_ATTR_CH2_SETUP(S_IRUGO | S_IWUSR,
++		ad7152_show_ch2_setup,
++		ad7152_store_ch2_setup);
++
++static ssize_t ad7152_show_filter_rate_setup(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++
++	return sprintf(buf, "0x%02x\n", chip->filter_rate_setup);
++}
++
++static ssize_t ad7152_store_filter_rate_setup(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	int ret;
++
++	ret = strict_strtoul(buf, 10, &data);
++
++	if ((!ret) && (data < 0x100)) {
++		ad7152_i2c_write(chip, AD7152_CFG2, data);
++		chip->filter_rate_setup = data;
++		return len;
++	}
++
++	return -EINVAL;
++}
++
++static IIO_DEV_ATTR_FILTER_RATE_SETUP(S_IRUGO | S_IWUSR,
++		ad7152_show_filter_rate_setup,
++		ad7152_store_filter_rate_setup);
++
++static ssize_t ad7152_show_name(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7152_chip_info *chip = dev_info->dev_data;
++	return sprintf(buf, "%s\n", chip->name);
++}
++
++static IIO_DEVICE_ATTR(name, S_IRUGO, ad7152_show_name, NULL, 0);
++
++static struct attribute *ad7152_attributes[] = {
++	&iio_dev_attr_available_conversion_modes.dev_attr.attr,
++	&iio_dev_attr_conversion_mode.dev_attr.attr,
++	&iio_dev_attr_ch1_gain.dev_attr.attr,
++	&iio_dev_attr_ch2_gain.dev_attr.attr,
++	&iio_dev_attr_ch1_offset.dev_attr.attr,
++	&iio_dev_attr_ch2_offset.dev_attr.attr,
++	&iio_dev_attr_ch1_value.dev_attr.attr,
++	&iio_dev_attr_ch2_value.dev_attr.attr,
++	&iio_dev_attr_ch1_setup.dev_attr.attr,
++	&iio_dev_attr_ch2_setup.dev_attr.attr,
++	&iio_dev_attr_filter_rate_setup.dev_attr.attr,
++	&iio_dev_attr_name.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ad7152_attribute_group = {
++	.attrs = ad7152_attributes,
++};
++
++/*
++ * device probe and remove
++ */
++
++static int __devinit ad7152_probe(struct i2c_client *client,
++		const struct i2c_device_id *id)
++{
++	int ret = 0;
++	struct ad7152_chip_info *chip = kzalloc(sizeof(*chip), GFP_KERNEL);
++	if (chip == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++
++	/* this is only used for device removal purposes */
++	i2c_set_clientdata(client, chip);
++
++	chip->client = client;
++	chip->name = id->name;
++
++	chip->indio_dev = iio_allocate_device();
++	if (chip->indio_dev == NULL) {
++		ret = -ENOMEM;
++		goto error_free_chip;
++	}
++
++	/* Echipabilish that the iio_dev is a child of the i2c device */
++	chip->indio_dev->dev.parent = &client->dev;
++	chip->indio_dev->attrs = &ad7152_attribute_group;
++	chip->indio_dev->dev_data = (void *)(chip);
++	chip->indio_dev->driver_module = THIS_MODULE;
++	chip->indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = iio_device_register(chip->indio_dev);
++	if (ret)
++		goto error_free_dev;
++
++	dev_err(&client->dev, "%s capacitive sensor registered\n", id->name);
++
++	return 0;
++
++error_free_dev:
++	iio_free_device(chip->indio_dev);
++error_free_chip:
++	kfree(chip);
++error_ret:
++	return ret;
++}
++
++static int __devexit ad7152_remove(struct i2c_client *client)
++{
++	struct ad7152_chip_info *chip = i2c_get_clientdata(client);
++	struct iio_dev *indio_dev = chip->indio_dev;
++
++	if (client->irq && gpio_is_valid(irq_to_gpio(client->irq)) > 0)
++		iio_unregister_interrupt_line(indio_dev, 0);
++	iio_device_unregister(indio_dev);
++	kfree(chip);
++
++	return 0;
++}
++
++static const struct i2c_device_id ad7152_id[] = {
++	{ "ad7152", 0 },
++	{ "ad7153", 0 },
++	{}
++};
++
++MODULE_DEVICE_TABLE(i2c, ad7152_id);
++
++static struct i2c_driver ad7152_driver = {
++	.driver = {
++		.name = "ad7152",
++	},
++	.probe = ad7152_probe,
++	.remove = __devexit_p(ad7152_remove),
++	.id_table = ad7152_id,
++};
++
++static __init int ad7152_init(void)
++{
++	return i2c_add_driver(&ad7152_driver);
++}
++
++static __exit void ad7152_exit(void)
++{
++	i2c_del_driver(&ad7152_driver);
++}
++
++MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
++MODULE_DESCRIPTION("Analog Devices ad7152/3 capacitive sensor driver");
++MODULE_LICENSE("GPL v2");
++
++module_init(ad7152_init);
++module_exit(ad7152_exit);
+-- 
+1.7.3.2
