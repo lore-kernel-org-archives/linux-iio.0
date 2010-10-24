@@ -3,58 +3,60 @@ From: Mike Frysinger <vapier@gentoo.org>
 To: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
 Cc: device-drivers-devel@blackfin.uclinux.org,
-	Barry Song <barry.song@analog.com>
-Subject: [PATCH 12/36] staging: iio: adc: new driver for AD7745/6/7 devices
-Date: Sun, 24 Oct 2010 17:22:14 -0400
-Message-Id: <1287955358-3153-13-git-send-email-vapier@gentoo.org>
+	Sonic Zhang <sonic.zhang@analog.com>
+Subject: [PATCH 11/36] staging: iio: adc: new driver for AD7416/7/8 devices
+Date: Sun, 24 Oct 2010 17:22:13 -0400
+Message-Id: <1287955358-3153-12-git-send-email-vapier@gentoo.org>
 In-Reply-To: <1287955358-3153-1-git-send-email-vapier@gentoo.org>
 References: <1287955358-3153-1-git-send-email-vapier@gentoo.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Barry Song <barry.song@analog.com>
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-Signed-off-by: Barry Song <barry.song@analog.com>
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
  drivers/staging/iio/adc/Kconfig  |    7 +
- drivers/staging/iio/adc/Makefile |    2 +
- drivers/staging/iio/adc/ad774x.c |  719 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 728 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/adc/ad774x.c
+ drivers/staging/iio/adc/Makefile |    1 +
+ drivers/staging/iio/adc/ad7416.c |  777 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 785 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/ad7416.c
 
 diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index e1ba2a0..6f2d3ec 100644
+index 5093901..e1ba2a0 100644
 --- a/drivers/staging/iio/adc/Kconfig
 +++ b/drivers/staging/iio/adc/Kconfig
-@@ -110,3 +110,10 @@ config AD7476
+@@ -69,6 +69,13 @@ config AD7414
+ 	  Say yes here to build support for Analog Devices AD7414 and AD7415
+ 	  temperature sensors.
  
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad7476.
-+
-+config AD774X
-+	tristate "Analog Devices ad7745/6/7 capacitive sensor driver"
++config AD7416
++	tristate "Analog Devices AD7416/7/8 temperature sensor and ADC driver"
 +	depends on I2C
 +	help
-+	  Say yes here to build support for Analog Devices capacitive sensors.
-+	  (ad7745, ad7746, ad7747) Provides direct access via sysfs.
++	  Say yes here to build support for Analog Devices AD74167/8
++	  temperature sensors and ADC.
++
+ config AD799X
+ 	tristate "Analog Devices AD799x ADC driver"
+ 	depends on I2C
 diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
-index 9e0ce8e..db55ae0 100644
+index 0e6c1ae..9e0ce8e 100644
 --- a/drivers/staging/iio/adc/Makefile
 +++ b/drivers/staging/iio/adc/Makefile
-@@ -22,3 +22,5 @@ obj-$(CONFIG_AD7298) += ad7298.o
+@@ -21,3 +21,4 @@ obj-$(CONFIG_AD7291) += ad7291.o
+ obj-$(CONFIG_AD7298) += ad7298.o
  obj-$(CONFIG_AD7314) += ad7314.o
  obj-$(CONFIG_AD7414) += ad7414.o
- obj-$(CONFIG_AD7416) += ad7416.o
-+obj-$(CONFIG_AD7476) += ad7476.o
-+obj-$(CONFIG_AD774X) += ad774x.o
-diff --git a/drivers/staging/iio/adc/ad774x.c b/drivers/staging/iio/adc/ad774x.c
++obj-$(CONFIG_AD7416) += ad7416.o
+diff --git a/drivers/staging/iio/adc/ad7416.c b/drivers/staging/iio/adc/ad7416.c
 new file mode 100644
-index 0000000..d9c19da
+index 0000000..03007e5
 --- /dev/null
-+++ b/drivers/staging/iio/adc/ad774x.c
-@@ -0,0 +1,719 @@
++++ b/drivers/staging/iio/adc/ad7416.c
+@@ -0,0 +1,777 @@
 +/*
-+ * AD774X capacitive sensor driver supporting AD7745/6/7
++ * AD7416 digital temperature sensor driver supporting AD7416/7/8
 + *
 + * Copyright 2010 Analog Devices Inc.
 + *
@@ -76,83 +78,88 @@ index 0000000..d9c19da
 +#include "../sysfs.h"
 +
 +/*
-+ * AD774X registers definition
++ * AD7416 registers definition
 + */
-+
-+#define AD774X_STATUS              0
-+#define AD774X_STATUS_RDY          (1 << 2)
-+#define AD774X_STATUS_RDYVT        (1 << 1)
-+#define AD774X_STATUS_RDYCAP       (1 << 0)
-+#define AD774X_CAP_DATA_HIGH       1
-+#define AD774X_CAP_DATA_MID        2
-+#define AD774X_CAP_DATA_LOW        3
-+#define AD774X_VT_DATA_HIGH        4
-+#define AD774X_VT_DATA_MID         5
-+#define AD774X_VT_DATA_LOW         6
-+#define AD774X_CAP_SETUP           7
-+#define AD774X_VT_SETUP            8
-+#define AD774X_EXEC_SETUP          9
-+#define AD774X_CFG                 10
-+#define AD774X_CAPDACA             11
-+#define AD774X_CAPDACB             12
-+#define AD774X_CAP_OFFH            13
-+#define AD774X_CAP_OFFL            14
-+#define AD774X_CAP_GAINH           15
-+#define AD774X_CAP_GAINL           16
-+#define AD774X_VOLT_GAINH          17
-+#define AD774X_VOLT_GAINL          18
-+
-+#define AD774X_MAX_CONV_MODE       6
++#define AD7416_TEMPERATURE		0
++#define AD7416_CONFIG			1
++#define AD7416_T_OTI			2
++#define AD7416_T_HYST			3
++#define AD7416_ADC_VALUE		4
++#define AD7416_CONFIG2			5
 +
 +/*
-+ * struct ad774x_chip_info - chip specifc information
++ * AD7416 config
++ */
++#define AD7416_PD			0x1
++#define AD7416_OTI_INT			0x2
++#define AD7416_OTI_POLARITY		0x4
++#define AD7416_FAULT_QUEUE_MASK		0x18
++#define AD7416_FAULT_QUEUE_OFFSET	3
++#define AD7416_CS_MASK			0xE0
++#define AD7416_CS_OFFSET		5
++
++/*
++ * AD7416 config
++ */
++#define AD7416_CONVERT			0x80
++
++/*
++ * AD7416 mode
++ */
++#define AD7416_MODE_FULL		0
++#define AD7416_MODE_SHUTDOWN		1
++#define AD7416_MODE_CONVERT		2
++
++/*
++ * AD7416/7/8 channel maks
++ */
++#define AD7416_CHANNEL_MASK	0x1
++#define AD7417_CHANNEL_MASK	0x1F
++#define AD7418_CHANNEL_MASK	0x11
++
++/*
++ * AD7416 masks
++ */
++#define AD7416_VALUE_SIGN	0x200
++#define AD7416_VALUE_OFFSET	6
++#define AD7416_BOUND_VALUE_SIGN	0x100
++
++
++/*
++ * struct ad7416_chip_info - chip specifc information
 + */
 +
-+struct ad774x_chip_info {
++struct ad7416_chip_info {
 +	const char *name;
 +	struct i2c_client *client;
 +	struct iio_dev *indio_dev;
 +	struct work_struct thresh_work;
-+	bool inter;
 +	s64 last_timestamp;
-+	u16 cap_offs;                   /* Capacitive offset */
-+	u16 cap_gain;                   /* Capacitive gain calibration */
-+	u16 volt_gain;                  /* Voltage gain calibration */
-+	u8  cap_setup;
-+	u8  vt_setup;
-+	u8  exec_setup;
-+
-+	char *conversion_mode;
-+};
-+
-+struct ad774x_conversion_mode {
-+	char *name;
-+	u8 reg_cfg;
-+};
-+
-+struct ad774x_conversion_mode ad774x_conv_mode_table[AD774X_MAX_CONV_MODE] = {
-+	{ "idle", 0 },
-+	{ "continuous-conversion", 1 },
-+	{ "single-conversion", 2 },
-+	{ "power-down", 3 },
-+	{ "offset-calibration", 5 },
-+	{ "gain-calibration", 6 },
++	u16 convert_pin;
++	u8  mode;
++	u8  channel_id;	/* 0 always be temperature */
++	u8  channel_mask;
 +};
 +
 +/*
-+ * ad774x register access by I2C
++ * ad7416 register access by I2C
 + */
 +
-+static int ad774x_i2c_read(struct ad774x_chip_info *chip, u8 reg, u8 *data, int len)
++static int ad7416_i2c_read(struct ad7416_chip_info *chip, u8 reg, u8 *data)
 +{
 +	struct i2c_client *client = chip->client;
-+	int ret = 0;
++	int ret = 0, len;
 +
-+	ret = i2c_master_send(client, &reg, 1);
++	ret = i2c_smbus_write_byte(client, reg);
 +	if (ret < 0) {
-+		dev_err(&client->dev, "I2C write error\n");
++		dev_err(&client->dev, "I2C read register address error\n");
 +		return ret;
 +	}
++
++	if (reg == AD7416_CONFIG || reg == AD7416_CONFIG2)
++		len = 1;
++	else
++		len = 2;
 +
 +	ret = i2c_master_recv(client, data, len);
 +	if (ret < 0) {
@@ -163,457 +170,265 @@ index 0000000..d9c19da
 +	return ret;
 +}
 +
-+static int ad774x_i2c_write(struct ad774x_chip_info *chip, u8 reg, u8 data)
++static int ad7416_i2c_write(struct ad7416_chip_info *chip, u8 reg, u8 data)
 +{
 +	struct i2c_client *client = chip->client;
 +	int ret = 0;
 +
-+	u8 tx[2] = {
-+		reg,
-+		data,
-+	};
-+
-+	ret = i2c_master_send(client, tx, 2);
++	ret = i2c_smbus_write_byte_data(client, reg, data);
 +	if (ret < 0)
 +		dev_err(&client->dev, "I2C write error\n");
 +
 +	return ret;
 +}
 +
-+/*
-+ * sysfs nodes
-+ */
-+
-+#define IIO_DEV_ATTR_AVAIL_CONVERSION_MODES(_show)				\
-+	IIO_DEVICE_ATTR(available_conversion_modes, S_IRUGO, _show, NULL, 0)
-+#define IIO_DEV_ATTR_CONVERSION_MODE(_mode, _show, _store)              \
-+	IIO_DEVICE_ATTR(conversion_mode, _mode, _show, _store, 0)
-+#define IIO_DEV_ATTR_CAP_SETUP(_mode, _show, _store)		\
-+	IIO_DEVICE_ATTR(cap_setup, _mode, _show, _store, 0)
-+#define IIO_DEV_ATTR_VT_SETUP(_mode, _show, _store)              \
-+	IIO_DEVICE_ATTR(vt_setup, _mode, _show, _store, 0)
-+#define IIO_DEV_ATTR_EXEC_SETUP(_mode, _show, _store)              \
-+	IIO_DEVICE_ATTR(exec_setup, _mode, _show, _store, 0)
-+#define IIO_DEV_ATTR_VOLT_GAIN(_mode, _show, _store)		\
-+	IIO_DEVICE_ATTR(volt_gain, _mode, _show, _store, 0)
-+#define IIO_DEV_ATTR_CAP_OFFS(_mode, _show, _store)		\
-+	IIO_DEVICE_ATTR(cap_offs, _mode, _show, _store, 0)
-+#define IIO_DEV_ATTR_CAP_GAIN(_mode, _show, _store)		\
-+	IIO_DEVICE_ATTR(cap_gain, _mode, _show, _store, 0)
-+#define IIO_DEV_ATTR_DACA_VALUE(_show)		\
-+	IIO_DEVICE_ATTR(daca_value, S_IRUGO, _show, NULL, 0)
-+#define IIO_DEV_ATTR_DACB_VALUE(_show)		\
-+	IIO_DEVICE_ATTR(dacb_value, S_IRUGO, _show, NULL, 0)
-+#define IIO_DEV_ATTR_CAP_DATA(_show)		\
-+	IIO_DEVICE_ATTR(cap_data, S_IRUGO, _show, NULL, 0)
-+#define IIO_DEV_ATTR_VT_DATA(_show)		\
-+	IIO_DEVICE_ATTR(vt_data, S_IRUGO, _show, NULL, 0)
-+
-+static ssize_t ad774x_show_conversion_modes(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	int i;
-+	int len = 0;
-+
-+	for (i = 0; i < AD774X_MAX_CONV_MODE; i++)
-+		len += sprintf(buf + len, "%s\n", ad774x_conv_mode_table[i].name);
-+
-+	return len;
-+}
-+
-+static IIO_DEV_ATTR_AVAIL_CONVERSION_MODES(ad774x_show_conversion_modes);
-+
-+static ssize_t ad774x_show_conversion_mode(struct device *dev,
++static ssize_t ad7416_show_mode(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
++	struct ad7416_chip_info *chip = dev_info->dev_data;
 +
-+	return sprintf(buf, "%s\n", chip->conversion_mode);
++	switch (chip->mode) {
++	case AD7416_MODE_SHUTDOWN:
++		return sprintf(buf, "power-save\n");
++	case AD7416_MODE_CONVERT:
++		return sprintf(buf, "convert\n");
++	default:
++		return sprintf(buf, "full\n");
++	}
 +}
 +
-+static ssize_t ad774x_store_conversion_mode(struct device *dev,
++static ssize_t ad7416_store_mode(struct device *dev,
 +		struct device_attribute *attr,
 +		const char *buf,
 +		size_t len)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+	u8 cfg;
-+	int i;
++	struct ad7416_chip_info *chip = dev_info->dev_data;
++	u8 config, config2;
++	int ret;
 +
-+	ad774x_i2c_read(chip, AD774X_CFG, &cfg, 1);
++	ret = ad7416_i2c_read(chip, AD7416_CONFIG, &config);
++	if (ret)
++		return -EIO;
 +
-+	for (i = 0; i < AD774X_MAX_CONV_MODE; i++) {
-+		if (strncmp(buf, ad774x_conv_mode_table[i].name,
-+				strlen(ad774x_conv_mode_table[i].name) - 1) == 0) {
-+			chip->conversion_mode = ad774x_conv_mode_table[i].name;
-+			cfg |= 0x18 | ad774x_conv_mode_table[i].reg_cfg;
-+			ad774x_i2c_write(chip, AD774X_CFG, cfg);
-+			return len;
++	ret = ad7416_i2c_read(chip, AD7416_CONFIG2, &config2);
++	if (ret)
++		return -EIO;
++
++	if (strcmp(buf, "full")) {
++		config2 &= ~AD7416_CONVERT;
++		config &= ~AD7416_PD;
++
++		ret = ad7416_i2c_write(chip, AD7416_CONFIG, config);
++		if (ret)
++			return -EIO;
++
++		if (chip->mode == AD7416_MODE_CONVERT) {
++			ret = ad7416_i2c_write(chip, AD7416_CONFIG2, config2);
++			if (ret)
++				return -EIO;
 +		}
++
++		chip->mode = AD7416_MODE_FULL;
++	} else if (chip->convert_pin && strcmp(buf, "convert")) {
++		config2 |= AD7416_CONVERT;
++
++		ret = ad7416_i2c_write(chip, AD7416_CONFIG2, config2);
++		if (ret)
++			return -EIO;
++
++		chip->mode = AD7416_MODE_CONVERT;
++	} else {
++		config |= AD7416_PD;
++		config2 &= ~AD7416_CONVERT;
++
++		ret = ad7416_i2c_write(chip, AD7416_CONFIG, config);
++		if (ret)
++			return -EIO;
++
++		if (chip->mode == AD7416_MODE_CONVERT) {
++			ret = ad7416_i2c_write(chip, AD7416_CONFIG2, config2);
++			if (ret)
++				return -EIO;
++		}
++
++		chip->mode = AD7416_MODE_SHUTDOWN;
 +	}
 +
-+	dev_err(dev, "not supported conversion mode\n");
-+
-+	return -EINVAL;
++	return ret;
 +}
 +
-+static IIO_DEV_ATTR_CONVERSION_MODE(S_IRUGO | S_IWUSR,
-+		ad774x_show_conversion_mode,
-+		ad774x_store_conversion_mode);
++static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR,
++		ad7416_show_mode,
++		ad7416_store_mode,
++		0);
 +
-+static ssize_t ad774x_show_daca_value(struct device *dev,
++static ssize_t ad7416_show_available_modes(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+	u8 data;
++	struct ad7416_chip_info *chip = dev_info->dev_data;
 +
-+	ad774x_i2c_read(chip, AD774X_CAPDACA, &data, 1);
-+
-+	return sprintf(buf, "%02x\n", data);
++	if (chip->convert_pin)
++		return sprintf(buf, "full\npower-save\nconvert\n");
++	else
++		return sprintf(buf, "full\npower-save\n");
 +}
 +
-+static IIO_DEV_ATTR_DACA_VALUE(ad774x_show_daca_value);
++static IIO_DEVICE_ATTR(available_modes, S_IRUGO, ad7416_show_available_modes, NULL, 0);
 +
-+static ssize_t ad774x_show_dacb_value(struct device *dev,
++static ssize_t ad7416_show_channel(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+	u8 data;
++	struct ad7416_chip_info *chip = dev_info->dev_data;
 +
-+	ad774x_i2c_read(chip, AD774X_CAPDACB, &data, 1);
-+
-+	return sprintf(buf, "%02x\n", data);
++	return sprintf(buf, "%d\n", chip->channel_id);
 +}
 +
-+static IIO_DEV_ATTR_DACB_VALUE(ad774x_show_dacb_value);
-+
-+static ssize_t ad774x_show_cap_setup(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+
-+	return sprintf(buf, "0x%02x\n", chip->cap_setup);
-+}
-+
-+static ssize_t ad774x_store_cap_setup(struct device *dev,
++static ssize_t ad7416_store_channel(struct device *dev,
 +		struct device_attribute *attr,
 +		const char *buf,
 +		size_t len)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
++	struct ad7416_chip_info *chip = dev_info->dev_data;
 +	unsigned long data;
++	u8 channel_mask;
++	u8 config;
 +	int ret;
 +
 +	ret = strict_strtoul(buf, 10, &data);
++	if (ret)
++		return -EINVAL;
 +
-+	if ((!ret) && (data < 0x100)) {
-+		ad774x_i2c_write(chip, AD774X_CAP_SETUP, data);
-+		chip->cap_setup = data;
-+		return len;
-+	}
++	channel_mask = 1 << data;
++	if (!(channel_mask & chip->channel_mask)) {
++		dev_err(&chip->client->dev, "Invalid channel id %lu.\n", data);
++		dev_err(&chip->client->dev, "Available channel mask 0x%x.\n",
++				chip->channel_mask);
++		return -EINVAL;
++	} else if (data == chip->channel_id)
++		return ret;
 +
++	ret = ad7416_i2c_read(chip, AD7416_CONFIG, &config);
++	if (ret)
++		return -EIO;
 +
-+	return -EINVAL;
++	config |= ((data << AD7416_CS_OFFSET) && AD7416_CS_MASK);
++	ret = ad7416_i2c_write(chip, AD7416_CONFIG, config);
++	if (ret)
++		return -EIO;
++
++	return ret;
 +}
 +
-+static IIO_DEV_ATTR_CAP_SETUP(S_IRUGO | S_IWUSR,
-+		ad774x_show_cap_setup,
-+		ad774x_store_cap_setup);
++static IIO_DEVICE_ATTR(channel, S_IRUGO | S_IWUSR,
++		ad7416_show_channel,
++		ad7416_store_channel,
++		0);
 +
-+static ssize_t ad774x_show_vt_setup(struct device *dev,
++
++static ssize_t ad7416_show_value(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+
-+	return sprintf(buf, "0x%02x\n", chip->vt_setup);
-+}
-+
-+static ssize_t ad774x_store_vt_setup(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+	unsigned long data;
++	struct ad7416_chip_info *chip = dev_info->dev_data;
++	u16 data;
++	char sign = ' ';
 +	int ret;
 +
-+	ret = strict_strtoul(buf, 10, &data);
-+
-+	if ((!ret) && (data < 0x100)) {
-+		ad774x_i2c_write(chip, AD774X_VT_SETUP, data);
-+		chip->vt_setup = data;
-+		return len;
++	if (chip->mode == AD7416_MODE_SHUTDOWN) {
++		/* write to active converter */
++		ret = i2c_smbus_write_byte(chip->client, AD7416_TEMPERATURE);
++		if (ret)
++			return -EIO;
++	} else if (chip->mode == AD7416_MODE_CONVERT) {
++		gpio_set_value(chip->convert_pin, 1);
++		gpio_set_value(chip->convert_pin, 0);
 +	}
 +
-+	return -EINVAL;
-+}
++	if (chip->channel_id == 0) {
++		ret = ad7416_i2c_read(chip, AD7416_TEMPERATURE, (u8 *)&data);
++		if (ret)
++			return -EIO;
 +
-+static IIO_DEV_ATTR_VT_SETUP(S_IRUGO | S_IWUSR,
-+		ad774x_show_vt_setup,
-+		ad774x_store_vt_setup);
++		data = swab16(data);
++		data >>= AD7416_VALUE_OFFSET;
++		if (data & AD7416_VALUE_SIGN) {
++			data = (AD7416_VALUE_SIGN << 1) - data;
++			sign = '-';
++		}
 +
-+static ssize_t ad774x_show_exec_setup(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
++		return sprintf(buf, "%c%d.%.2d\n", sign, (data >> 2),
++			 (data & 3) * 25);
++	} else {
++		ret = ad7416_i2c_read(chip, AD7416_ADC_VALUE, (u8 *)&data);
++		if (ret)
++			return -EIO;
 +
-+	return sprintf(buf, "0x%02x\n", chip->exec_setup);
-+}
++		data = swab16(data);
++		data >>= AD7416_VALUE_OFFSET;
 +
-+static ssize_t ad774x_store_exec_setup(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+	unsigned long data;
-+	int ret;
-+
-+	ret = strict_strtoul(buf, 10, &data);
-+
-+	if ((!ret) && (data < 0x100)) {
-+		ad774x_i2c_write(chip, AD774X_EXEC_SETUP, data);
-+		chip->exec_setup = data;
-+		return len;
++		return sprintf(buf, "%u\n", data);
 +	}
-+
-+	return -EINVAL;
 +}
 +
-+static IIO_DEV_ATTR_EXEC_SETUP(S_IRUGO | S_IWUSR,
-+		ad774x_show_exec_setup,
-+		ad774x_store_exec_setup);
++static IIO_DEVICE_ATTR(value, S_IRUGO, ad7416_show_value, NULL, 0);
 +
-+static ssize_t ad774x_show_volt_gain(struct device *dev,
++static ssize_t ad7416_show_name(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+
-+	return sprintf(buf, "%d\n", chip->volt_gain);
-+}
-+
-+static ssize_t ad774x_store_volt_gain(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+	unsigned long data;
-+	int ret;
-+
-+	ret = strict_strtoul(buf, 10, &data);
-+
-+	if ((!ret) && (data < 0x10000)) {
-+		ad774x_i2c_write(chip, AD774X_VOLT_GAINH, data >> 8);
-+		ad774x_i2c_write(chip, AD774X_VOLT_GAINL, data);
-+		chip->volt_gain = data;
-+		return len;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static IIO_DEV_ATTR_VOLT_GAIN(S_IRUGO | S_IWUSR,
-+		ad774x_show_volt_gain,
-+		ad774x_store_volt_gain);
-+
-+static ssize_t ad774x_show_cap_data(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+	unsigned long data;
-+	char tmp[3];
-+
-+	ad774x_i2c_read(chip, AD774X_CAP_DATA_HIGH, tmp, 3);
-+	data = ((int)tmp[0] << 16) | ((int)tmp[1] << 8) | (int)tmp[2];
-+
-+	return sprintf(buf, "%ld\n", data);
-+}
-+
-+static IIO_DEV_ATTR_CAP_DATA(ad774x_show_cap_data);
-+
-+static ssize_t ad774x_show_vt_data(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+	unsigned long data;
-+	char tmp[3];
-+
-+	ad774x_i2c_read(chip, AD774X_VT_DATA_HIGH, tmp, 3);
-+	data = ((int)tmp[0] << 16) | ((int)tmp[1] << 8) | (int)tmp[2];
-+
-+	return sprintf(buf, "%ld\n", data);
-+}
-+
-+static IIO_DEV_ATTR_VT_DATA(ad774x_show_vt_data);
-+
-+static ssize_t ad774x_show_cap_offs(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+
-+	return sprintf(buf, "%d\n", chip->cap_offs);
-+}
-+
-+static ssize_t ad774x_store_cap_offs(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+	unsigned long data;
-+	int ret;
-+
-+	ret = strict_strtoul(buf, 10, &data);
-+
-+	if ((!ret) && (data < 0x10000)) {
-+		ad774x_i2c_write(chip, AD774X_CAP_OFFH, data >> 8);
-+		ad774x_i2c_write(chip, AD774X_CAP_OFFL, data);
-+		chip->cap_offs = data;
-+		return len;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static IIO_DEV_ATTR_CAP_OFFS(S_IRUGO | S_IWUSR,
-+		ad774x_show_cap_offs,
-+		ad774x_store_cap_offs);
-+
-+static ssize_t ad774x_show_cap_gain(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+
-+	return sprintf(buf, "%d\n", chip->cap_gain);
-+}
-+
-+static ssize_t ad774x_store_cap_gain(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
-+	unsigned long data;
-+	int ret;
-+
-+	ret = strict_strtoul(buf, 10, &data);
-+
-+	if ((!ret) && (data < 0x10000)) {
-+		ad774x_i2c_write(chip, AD774X_CAP_GAINH, data >> 8);
-+		ad774x_i2c_write(chip, AD774X_CAP_GAINL, data);
-+		chip->cap_gain = data;
-+		return len;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static IIO_DEV_ATTR_CAP_GAIN(S_IRUGO | S_IWUSR,
-+		ad774x_show_cap_gain,
-+		ad774x_store_cap_gain);
-+
-+static ssize_t ad774x_show_name(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
++	struct ad7416_chip_info *chip = dev_info->dev_data;
 +	return sprintf(buf, "%s\n", chip->name);
 +}
 +
-+static IIO_DEVICE_ATTR(name, S_IRUGO, ad774x_show_name, NULL, 0);
++static IIO_DEVICE_ATTR(name, S_IRUGO, ad7416_show_name, NULL, 0);
 +
-+static struct attribute *ad774x_attributes[] = {
-+	&iio_dev_attr_available_conversion_modes.dev_attr.attr,
-+	&iio_dev_attr_conversion_mode.dev_attr.attr,
-+	&iio_dev_attr_cap_setup.dev_attr.attr,
-+	&iio_dev_attr_vt_setup.dev_attr.attr,
-+	&iio_dev_attr_exec_setup.dev_attr.attr,
-+	&iio_dev_attr_cap_offs.dev_attr.attr,
-+	&iio_dev_attr_cap_gain.dev_attr.attr,
-+	&iio_dev_attr_volt_gain.dev_attr.attr,
-+	&iio_dev_attr_cap_data.dev_attr.attr,
-+	&iio_dev_attr_daca_value.dev_attr.attr,
-+	&iio_dev_attr_dacb_value.dev_attr.attr,
++static struct attribute *ad7416_attributes[] = {
++	&iio_dev_attr_available_modes.dev_attr.attr,
++	&iio_dev_attr_mode.dev_attr.attr,
++	&iio_dev_attr_channel.dev_attr.attr,
++	&iio_dev_attr_value.dev_attr.attr,
 +	&iio_dev_attr_name.dev_attr.attr,
 +	NULL,
 +};
 +
-+static const struct attribute_group ad774x_attribute_group = {
-+	.attrs = ad774x_attributes,
++static const struct attribute_group ad7416_attribute_group = {
++	.attrs = ad7416_attributes,
 +};
 +
 +/*
-+ * data ready events
++ * temperature bound events
 + */
 +
-+#define IIO_EVENT_CODE_CAP_RDY     IIO_BUFFER_EVENT_CODE(0)
-+#define IIO_EVENT_CODE_VT_RDY      IIO_BUFFER_EVENT_CODE(1)
++#define IIO_EVENT_CODE_AD7416_OTI    IIO_BUFFER_EVENT_CODE(0)
 +
-+#define IIO_EVENT_ATTR_CAP_RDY_SH(_evlist, _show, _store, _mask)	\
-+	IIO_EVENT_ATTR_SH(cap_rdy, _evlist, _show, _store, _mask)
-+
-+#define IIO_EVENT_ATTR_VT_RDY_SH(_evlist, _show, _store, _mask)	\
-+	IIO_EVENT_ATTR_SH(vt_rdy, _evlist, _show, _store, _mask)
-+
-+static void ad774x_interrupt_handler_bh(struct work_struct *work_s)
++static void ad7416_interrupt_bh(struct work_struct *work_s)
 +{
-+	struct ad774x_chip_info *chip =
-+		container_of(work_s, struct ad774x_chip_info, thresh_work);
-+	u8 int_status;
++	struct ad7416_chip_info *chip =
++		container_of(work_s, struct ad7416_chip_info, thresh_work);
 +
 +	enable_irq(chip->client->irq);
 +
-+	ad774x_i2c_read(chip, AD774X_STATUS, &int_status, 1);
-+
-+	if (int_status & AD774X_STATUS_RDYCAP)
-+		iio_push_event(chip->indio_dev, 0,
-+				IIO_EVENT_CODE_CAP_RDY,
-+				chip->last_timestamp);
-+
-+	if (int_status & AD774X_STATUS_RDYVT)
-+		iio_push_event(chip->indio_dev, 0,
-+				IIO_EVENT_CODE_VT_RDY,
-+				chip->last_timestamp);
++	iio_push_event(chip->indio_dev, 0,
++			IIO_EVENT_CODE_AD7416_OTI,
++			chip->last_timestamp);
 +}
 +
-+static int ad774x_interrupt_handler_th(struct iio_dev *dev_info,
++static int ad7416_interrupt(struct iio_dev *dev_info,
 +		int index,
 +		s64 timestamp,
 +		int no_test)
 +{
-+	struct ad774x_chip_info *chip = dev_info->dev_data;
++	struct ad7416_chip_info *chip = dev_info->dev_data;
 +
 +	chip->last_timestamp = timestamp;
 +	schedule_work(&chip->thresh_work);
@@ -621,59 +436,278 @@ index 0000000..d9c19da
 +	return 0;
 +}
 +
-+IIO_EVENT_SH(data_rdy, &ad774x_interrupt_handler_th);
++IIO_EVENT_SH(ad7416, &ad7416_interrupt);
 +
-+static ssize_t ad774x_query_out_mode(struct device *dev,
++static ssize_t ad7416_show_oti_mode(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
-+	/*
-+	 * AD774X provides one /RDY pin, which can be used as interrupt
-+	 * but the pin is not configurable
-+	 */
-+	return sprintf(buf, "1\n");
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7416_chip_info *chip = dev_info->dev_data;
++	u8 config;
++	int ret;
++
++	/* retrive ALART status */
++	ret = ad7416_i2c_read(chip, AD7416_CONFIG, &config);
++	if (ret)
++		return -EIO;
++
++	if (config & AD7416_OTI_INT)
++		return sprintf(buf, "interrupt\n");
++	else
++		return sprintf(buf, "comparator\n");
 +}
 +
-+static ssize_t ad774x_set_out_mode(struct device *dev,
++static ssize_t ad7416_set_oti_mode(struct device *dev,
 +		struct device_attribute *attr,
 +		const char *buf,
 +		size_t len)
 +{
-+	return len;
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7416_chip_info *chip = dev_info->dev_data;
++	u8 config;
++	int ret;
++
++	/* retrive ALART status */
++	ret = ad7416_i2c_read(chip, AD7416_CONFIG, &config);
++	if (ret)
++		return -EIO;
++
++	if (strcmp(buf, "comparator") == 0)
++		ret = ad7416_i2c_write(chip, AD7416_CONFIG,
++			config & ~AD7416_OTI_INT);
++	else
++		ret = ad7416_i2c_write(chip, AD7416_CONFIG,
++			config | AD7416_OTI_INT);
++	if (ret)
++		return -EIO;
++
++	return ret;
 +}
 +
-+IIO_EVENT_ATTR_CAP_RDY_SH(iio_event_data_rdy, ad774x_query_out_mode, ad774x_set_out_mode, 0);
-+IIO_EVENT_ATTR_VT_RDY_SH(iio_event_data_rdy, ad774x_query_out_mode, ad774x_set_out_mode, 0);
++static ssize_t ad7416_show_available_oti_modes(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return sprintf(buf, "comparator\ninterrupt\n");
++}
 +
-+static struct attribute *ad774x_event_attributes[] = {
-+	&iio_event_attr_cap_rdy.dev_attr.attr,
-+	&iio_event_attr_vt_rdy.dev_attr.attr,
++static ssize_t ad7416_show_fault_queue(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7416_chip_info *chip = dev_info->dev_data;
++	u8 config;
++	int ret;
++
++	/* retrive ALART status */
++	ret = ad7416_i2c_read(chip, AD7416_CONFIG, &config);
++	if (ret)
++		return -EIO;
++
++	return sprintf(buf, "%d\n", (config & AD7416_FAULT_QUEUE_MASK) >>
++			AD7416_FAULT_QUEUE_OFFSET);
++}
++
++static ssize_t ad7416_set_fault_queue(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7416_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	u8 config;
++	int ret;
++
++	ret = strict_strtoul(buf, 10, &data);
++	if (ret || data > 3)
++		return -EINVAL;
++
++	/* retrive ALART status */
++	ret = ad7416_i2c_read(chip, AD7416_CONFIG, &config);
++	if (ret)
++		return -EIO;
++
++	config &= ~AD7416_FAULT_QUEUE_MASK;
++	config |= (data << AD7416_FAULT_QUEUE_OFFSET);
++	ret = ad7416_i2c_write(chip, AD7416_CONFIG, config);
++	if (ret)
++		return -EIO;
++
++	return ret;
++}
++static inline ssize_t ad7416_show_t_bound(struct device *dev,
++		struct device_attribute *attr,
++		u8 bound_reg,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7416_chip_info *chip = dev_info->dev_data;
++	u16 data;
++	s16 value;
++	int ret;
++
++	ret = ad7416_i2c_read(chip, bound_reg, (u8 *)&data);
++	if (ret)
++		return -EIO;
++
++	data = swab16(data);
++	data >>= (AD7416_VALUE_OFFSET + 1);
++
++	if (chip->channel_id == 0) {
++		if (data & AD7416_BOUND_VALUE_SIGN) {
++			value = (s16)(data&(~AD7416_BOUND_VALUE_SIGN));
++			value = value - AD7416_BOUND_VALUE_SIGN;
++		} else
++			value = (s16)data;
++
++		return sprintf(buf, "%d\n", value >> 1);
++	} else
++		return sprintf(buf, "%u\n", data);
++}
++
++static inline ssize_t ad7416_set_t_bound(struct device *dev,
++		struct device_attribute *attr,
++		u8 bound_reg,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7416_chip_info *chip = dev_info->dev_data;
++	long value;
++	u16 data;
++	int ret;
++
++	if (chip->channel_id == 0) {
++		ret = strict_strtol(buf, 10, &value);
++
++		if (ret || value < -128 || value > 127)
++			return -EINVAL;
++		if (value < 0)
++			value = (AD7416_BOUND_VALUE_SIGN + value) |
++				AD7416_BOUND_VALUE_SIGN;
++
++		data = (u16)value << 1;
++	} else {
++		ret = strict_strtoul(buf, 10, &value);
++
++		if (ret || value > 511 || value < 0)
++			return -EINVAL;
++
++		data = (u16)value;
++	}
++
++	data <<= (AD7416_VALUE_OFFSET + 1);
++	data = swab16(data);
++	ret = ad7416_i2c_write(chip, bound_reg, (u8)data);
++	if (ret)
++		return -EIO;
++
++	return ret;
++}
++
++static ssize_t ad7416_show_t_oti(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return ad7416_show_t_bound(dev, attr,
++			AD7416_T_OTI, buf);
++}
++
++static inline ssize_t ad7416_set_t_oti(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	return ad7416_set_t_bound(dev, attr,
++			AD7416_T_OTI, buf, len);
++}
++
++static ssize_t ad7416_show_t_hyst(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return ad7416_show_t_bound(dev, attr,
++			AD7416_T_HYST, buf);
++}
++
++static inline ssize_t ad7416_set_t_hyst(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	return ad7416_set_t_bound(dev, attr,
++			AD7416_T_HYST, buf, len);
++}
++
++IIO_EVENT_ATTR_SH(oti_mode, iio_event_ad7416,
++		ad7416_show_oti_mode, ad7416_set_oti_mode, 0);
++IIO_EVENT_ATTR_SH(available_oti_modes, iio_event_ad7416,
++		ad7416_show_available_oti_modes, NULL, 0);
++IIO_EVENT_ATTR_SH(fault_queue, iio_event_ad7416,
++		ad7416_show_fault_queue, ad7416_set_fault_queue, 0);
++IIO_EVENT_ATTR_SH(t_oti, iio_event_ad7416,
++		ad7416_show_t_oti, ad7416_set_t_oti, 0);
++IIO_EVENT_ATTR_SH(t_hyst, iio_event_ad7416,
++		ad7416_show_t_hyst, ad7416_set_t_hyst, 0);
++
++static struct attribute *ad7416_event_attributes[] = {
++	&iio_event_attr_oti_mode.dev_attr.attr,
++	&iio_event_attr_available_oti_modes.dev_attr.attr,
++	&iio_event_attr_fault_queue.dev_attr.attr,
++	&iio_event_attr_t_oti.dev_attr.attr,
++	&iio_event_attr_t_hyst.dev_attr.attr,
 +	NULL,
 +};
 +
-+static struct attribute_group ad774x_event_attribute_group = {
-+	.attrs = ad774x_event_attributes,
++static struct attribute_group ad7416_event_attribute_group = {
++	.attrs = ad7416_event_attributes,
 +};
 +
 +/*
 + * device probe and remove
 + */
 +
-+static int __devinit ad774x_probe(struct i2c_client *client,
++static int __devinit ad7416_probe(struct i2c_client *client,
 +		const struct i2c_device_id *id)
 +{
-+	int ret = 0, regdone = 0;
-+	struct ad774x_chip_info *chip = kzalloc(sizeof(*chip), GFP_KERNEL);
-+	if (chip == NULL) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
++	struct ad7416_chip_info *chip;
++	unsigned long convert_pin = (unsigned long)client->dev.platform_data;
++	int ret = 0;
++	u8 config;
++
++	chip = kzalloc(sizeof(struct ad7416_chip_info), GFP_KERNEL);
++
++	if (chip == NULL)
++		return -ENOMEM;
 +
 +	/* this is only used for device removal purposes */
 +	i2c_set_clientdata(client, chip);
 +
 +	chip->client = client;
 +	chip->name = id->name;
++	if (strcmp(chip->name, "ad7418") == 0) {
++		chip->channel_mask = AD7418_CHANNEL_MASK;
++		if (convert_pin) {
++			ret = gpio_request(convert_pin, chip->name);
++			if (!ret) {
++				chip->convert_pin = (u16)convert_pin;
++				gpio_set_value(chip->convert_pin, 0);
++			}
++		}
++	} else if (strcmp(chip->name, "ad7417") == 0) {
++		chip->channel_mask = AD7417_CHANNEL_MASK;
++		if (convert_pin) {
++			ret = gpio_request(convert_pin, chip->name);
++			if (!ret) {
++				chip->convert_pin = (u16)convert_pin;
++				gpio_set_value(chip->convert_pin, 0);
++			}
++		}
++	} else
++		chip->channel_mask = AD7416_CHANNEL_MASK;
 +
 +	chip->indio_dev = iio_allocate_device();
 +	if (chip->indio_dev == NULL) {
@@ -681,11 +715,10 @@ index 0000000..d9c19da
 +		goto error_free_chip;
 +	}
 +
-+	/* Echipabilish that the iio_dev is a child of the i2c device */
 +	chip->indio_dev->dev.parent = &client->dev;
-+	chip->indio_dev->attrs = &ad774x_attribute_group;
-+	chip->indio_dev->event_attrs = &ad774x_event_attribute_group;
-+	chip->indio_dev->dev_data = (void *)(chip);
++	chip->indio_dev->attrs = &ad7416_attribute_group;
++	chip->indio_dev->event_attrs = &ad7416_event_attribute_group;
++	chip->indio_dev->dev_data = (void *)chip;
 +	chip->indio_dev->driver_module = THIS_MODULE;
 +	chip->indio_dev->num_interrupt_lines = 1;
 +	chip->indio_dev->modes = INDIO_DIRECT_MODE;
@@ -693,84 +726,111 @@ index 0000000..d9c19da
 +	ret = iio_device_register(chip->indio_dev);
 +	if (ret)
 +		goto error_free_dev;
-+	regdone = 1;
 +
-+	if (client->irq && gpio_is_valid(irq_to_gpio(client->irq)) > 0) {
++	if (client->irq) {
 +		ret = iio_register_interrupt_line(client->irq,
 +				chip->indio_dev,
 +				0,
-+				IRQF_TRIGGER_FALLING,
-+				"ad774x");
++				client->irq_flags,
++				chip->name);
 +		if (ret)
-+			goto error_free_dev;
++			goto error_unreg_dev;
 +
-+		iio_add_event_to_list(iio_event_attr_cap_rdy.listel,
++		/*
++		 * The event handler list element refer to iio_event_ad7416.
++		 * All event attributes bind to the same event handler.
++		 * So, only register event handler once.
++		 */
++		iio_add_event_to_list(&iio_event_ad7416,
 +				&chip->indio_dev->interrupts[0]->ev_list);
 +
-+		INIT_WORK(&chip->thresh_work, ad774x_interrupt_handler_bh);
++		INIT_WORK(&chip->thresh_work, ad7416_interrupt_bh);
++
++		ret = ad7416_i2c_read(chip, AD7416_CONFIG, &config);
++		if (ret) {
++			ret = -EIO;
++			goto error_unreg_irq;
++		}
++
++		if (client->irq_flags & IRQF_TRIGGER_HIGH)
++			ret = ad7416_i2c_write(chip, AD7416_CONFIG,
++				config | AD7416_OTI_POLARITY);
++		else
++			ret = ad7416_i2c_write(chip, AD7416_CONFIG,
++				config & ~AD7416_OTI_POLARITY);
++		if (ret) {
++			ret = -EIO;
++			goto error_unreg_irq;
++		}
 +	}
 +
-+	dev_err(&client->dev, "%s capacitive sensor registered, irq: %d\n", id->name, client->irq);
++	dev_info(&client->dev, "%s temperature sensor and ADC registered.\n",
++			 id->name);
 +
 +	return 0;
 +
++error_unreg_irq:
++	iio_unregister_interrupt_line(chip->indio_dev, 0);
++error_unreg_dev:
++	iio_device_unregister(chip->indio_dev);
 +error_free_dev:
-+	if (regdone)
-+		iio_device_unregister(chip->indio_dev);
-+	else
-+		iio_free_device(chip->indio_dev);
++	iio_free_device(chip->indio_dev);
 +error_free_chip:
 +	kfree(chip);
-+error_ret:
++
 +	return ret;
 +}
 +
-+static int __devexit ad774x_remove(struct i2c_client *client)
++static int __devexit ad7416_remove(struct i2c_client *client)
 +{
-+	struct ad774x_chip_info *chip = i2c_get_clientdata(client);
++	struct ad7416_chip_info *chip = i2c_get_clientdata(client);
 +	struct iio_dev *indio_dev = chip->indio_dev;
 +
-+	if (client->irq && gpio_is_valid(irq_to_gpio(client->irq)) > 0)
++	if (client->irq)
 +		iio_unregister_interrupt_line(indio_dev, 0);
 +	iio_device_unregister(indio_dev);
++	iio_free_device(chip->indio_dev);
++	if (chip->convert_pin)
++		gpio_free(chip->convert_pin);
 +	kfree(chip);
 +
 +	return 0;
 +}
 +
-+static const struct i2c_device_id ad774x_id[] = {
-+	{ "ad7745", 0 },
-+	{ "ad7746", 0 },
-+	{ "ad7747", 0 },
++static const struct i2c_device_id ad7416_id[] = {
++	{ "ad7416", 0 },
++	{ "ad7417", 0 },
++	{ "ad7418", 0 },
 +	{}
 +};
 +
-+MODULE_DEVICE_TABLE(i2c, ad774x_id);
++MODULE_DEVICE_TABLE(i2c, ad7416_id);
 +
-+static struct i2c_driver ad774x_driver = {
++static struct i2c_driver ad7416_driver = {
 +	.driver = {
-+		.name = "ad774x",
++		.name = "ad7416",
 +	},
-+	.probe = ad774x_probe,
-+	.remove = __devexit_p(ad774x_remove),
-+	.id_table = ad774x_id,
++	.probe = ad7416_probe,
++	.remove = __devexit_p(ad7416_remove),
++	.id_table = ad7416_id,
 +};
 +
-+static __init int ad774x_init(void)
++static __init int ad7416_init(void)
 +{
-+	return i2c_add_driver(&ad774x_driver);
++	return i2c_add_driver(&ad7416_driver);
 +}
 +
-+static __exit void ad774x_exit(void)
++static __exit void ad7416_exit(void)
 +{
-+	i2c_del_driver(&ad774x_driver);
++	i2c_del_driver(&ad7416_driver);
 +}
 +
-+MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
-+MODULE_DESCRIPTION("Analog Devices ad7745/6/7 capacitive sensor driver");
++MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
++MODULE_DESCRIPTION("Analog Devices AD7416/7/8 digital"
++			" temperature sensor driver");
 +MODULE_LICENSE("GPL v2");
 +
-+module_init(ad774x_init);
-+module_exit(ad774x_exit);
++module_init(ad7416_init);
++module_exit(ad7416_exit);
 -- 
 1.7.3.2
