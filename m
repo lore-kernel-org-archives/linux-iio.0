@@ -1,52 +1,74 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Guenter Roeck <guenter.roeck@ericsson.com>, Jonathan Cameron
-	<jic23@cam.ac.uk>
-CC: Mike Frysinger <vapier@gentoo.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>, "Zhang, Sonic"
-	<Sonic.Zhang@analog.com>
-Date: Mon, 25 Oct 2010 17:18:25 +0100
-Subject: RE: [PATCH 12/14] staging: iio: adc: new driver for ADT7408
+Return-Path: <groeck@ericsson.com>
+Date: Sun, 24 Oct 2010 16:47:35 -0700
+From: Guenter Roeck <guenter.roeck@ericsson.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Mike Frysinger <vapier@gentoo.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "device-drivers-devel@blackfin.uclinux.org" <device-drivers-devel@blackfin.uclinux.org>,
+        Sonic Zhang <sonic.zhang@analog.com>
+Subject: Re: [PATCH 12/14] staging: iio: adc: new driver for ADT7408
  temperature sensors
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177130945B1C56@LIMKCMBX1.ad.analog.com>
+Message-ID: <20101024234735.GB15616@ericsson.com>
 References: <1287865757-1031-1-git-send-email-vapier@gentoo.org>
  <1287865757-1031-12-git-send-email-vapier@gentoo.org>
- <4CC4B8F8.7010005@cam.ac.uk> <20101025004650.GA15907@ericsson.com>
- <4CC55CD2.1020501@cam.ac.uk> <20101025111943.GA16863@ericsson.com>
- <4CC56D50.3000804@cam.ac.uk> <20101025141235.GA18016@ericsson.com>
-In-Reply-To: <20101025141235.GA18016@ericsson.com>
-Content-Type: text/plain; charset="us-ascii"
+ <4CC4B8F8.7010005@cam.ac.uk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <4CC4B8F8.7010005@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Guenter Roeck wrote on 2010-10-25:
-> On Mon, Oct 25, 2010 at 07:43:12AM -0400, Jonathan Cameron wrote:
-> [ ... ]
->
->>> I did not refer to the chips with generic ADC sensors.
->>> The chips I referred to are AD7414/15, ADT75, ADT7310, ADT7408,
->>> and ADT7410, though I may have missed some.
->> You clearly got further through the set than I have so far! (I'd
->> only come across the first 2 of those)  Agreed, all of these appear
->> to be temperature only and at a quick look they are typically slow
->> and low resolution so that set definitely want to be in hwmon.
->>
->> For those parts with actual hwmon drivers, ad7414/15 and adt7408 (based
->> on a quick grep unless Guenter has others queued). Lets drop them for
->> now from the merge.
->>
->
-> Nothing queued here. Not that I would mind doing the driver
-> conversions for ADT7310 and ADT7410 if needed, but I would need HW
-> (eval boards) for testing.
+On Sun, Oct 24, 2010 at 06:53:44PM -0400, Jonathan Cameron wrote:
+> On 10/23/10 21:29, Mike Frysinger wrote:
+> > From: Sonic Zhang <sonic.zhang@analog.com>
+> Here we enter new territory. This device is already
+> supported in hwmon.  Do we have a usecase that is not
+> covered by that driver?
+> 
+> If this is only for hardware monitoring by Guenter (cc'd) can
+> perhaps advise on how to support everything you have here...
+> 
 
-I'm sure that I can get you the EVAL-ADT7X10EBZ board.
-Please send me your shipping address off list.
+device_id and manufactory_id (shouldn't that be manufacturer_id ?) don't provide
+much value since they are (or could be) already part of the device name.
 
-Greetings,
-Michael
+"capability" reflects a raw register value. I would be opposed to any attribute
+like that, since it does not mean anything beyond the driver for that specific chip.
+The data it provides might make sense in the driver documentation, but what
+is anyone supposed to do with the returned hex value ? That kind of ABI really
+does not make any sense. If the reported values are really valuable enough to be
+reported, a real abi (eg tempX_accuracy and tempX_resolution) would be much better.
 
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft Muenchen, Registergericht Muenchen HRB 4036 Geschaeft=
-sfuehrer Thomas Wessel, William A. Martin, Margaret Seif
+For "power-save" (or "power-down" ?) and "full" mode I am not sure
+why suspend/resume isn't used instead. Is that some new upcoming ABI ?
+
+> I'm personally not against having drivers in IIO for devices
+> supported elsewhere, but the requirements for justification
+> are rather higher. Also care is needed to ensure no issues with
+> platform data etc.
+> 
+> Guenter, for your information we have a set of temp drivers coming,
+> as a small element of a larger set, from Analog's tree. Those
+> I've reviewed so far have wanted to use IIO's event infrastructure
+> (which is much more general than hwmon's handling of alarms)
+> or have been suitably high performance devices with general
+> adc's to satisfy me that they clearly have uses beyond
+> hardware monitoring.
+> 
+There should be a generic part and a specific part for such generic devices.
+The generic part can be in mfd or somewhere suitable (such as iio), but
+the hwmon part should reside in hwmon.
+
+The worst thing to do would be to duplicate functionality as it is proposed here.
+That can only create chaos.
+
+If the event mechanism in hwmon is deemed insufficient enough to cause drivers
+to move elsewhere, maybe event mechanism in hwmon should be improved instead.
+Or, even better, if there is a really need for a more detailed / improved event
+mechanism, there should be a single event subsystem that works for both iio
+and hwmon.
+
+In short, if the hwmon ABI is deemed to be insufficient to support today's devices,
+for whaever reason, it needs to get fixed. Moving hwmon drivers elsewhere to
+avoid its perceived (or real) limitations should be an absolute no.
+
+Guenter
