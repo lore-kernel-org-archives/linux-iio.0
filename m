@@ -1,143 +1,140 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:53858 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752091Ab0JYJ7J (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Oct 2010 05:59:09 -0400
-Message-ID: <4CC55650.5030304@cam.ac.uk>
-Date: Mon, 25 Oct 2010 11:05:04 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: Mike Frysinger <vapier@gentoo.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Mike Frysinger <vapier@gentoo.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "device-drivers-devel@blackfin.uclinux.org"
 	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [Device-drivers-devel] [PATCH 00/36] staging: iio: ADI drivers
+Date: Mon, 25 Oct 2010 11:40:05 +0100
+Subject: RE: [Device-drivers-devel] [PATCH 00/36] staging: iio: ADI drivers
  for staging-next
-References: <1287955358-3153-1-git-send-email-vapier@gentoo.org> <4CC4C2B8.2@cam.ac.uk> <AANLkTi=p3ArLzC_qz85emJeXytpnR2F9pzeG647Qj2Ek@mail.gmail.com> <544AC56F16B56944AEC3BD4E3D59177130945B1B3C@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D59177130945B1B3C@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Message-ID: <544AC56F16B56944AEC3BD4E3D59177130945B1B8B@LIMKCMBX1.ad.analog.com>
+References: <1287955358-3153-1-git-send-email-vapier@gentoo.org>
+ <4CC4C2B8.2@cam.ac.uk>
+ <AANLkTi=p3ArLzC_qz85emJeXytpnR2F9pzeG647Qj2Ek@mail.gmail.com>
+ <544AC56F16B56944AEC3BD4E3D59177130945B1B3C@LIMKCMBX1.ad.analog.com>
+ <4CC55650.5030304@cam.ac.uk>
+In-Reply-To: <4CC55650.5030304@cam.ac.uk>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/25/10 09:39, Hennerich, Michael wrote:
-> Mike Frysinger wrote on 2010-10-25:
->> On Sun, Oct 24, 2010 at 19:35, Jonathan Cameron wrote:
->>> On 10/24/10 22:22, Mike Frysinger wrote:
->>>> I've rebased all the drivers onto staging-next.  I've only fixed the
->>>> API breakage due to the changes made after 2.6.36 (and fixed a few
->>>> warnings). I've also run checkpatch across these.
->>>>
->>>> I have not however addressed any real feedback Jonathan has provided
->>>> with regards to driver correctness or direction.  That stuff I'm
->>>> leaving up to Michael Hennerich since it's his job and he actually
->>>> understands this.
->>>>
->>>> Where possible, I'd like to have drivers merged so as to avoid another
->>>> round of "new API just broke all your drivers".  We will still look
->>>> into feedback given, but we'd like to focus on that rather than random
->>>> `sed` changes as API names change.
->>>>
->>>> This patchset supersedes all other "new driver" patches I've posted
->>>> in the last 48 hours.
->>>
->>> As we are still in staging, I'm happy to see these merge into IIO with
->>> some provisos (this wouldn't be acceptable anywhere else in the kernel
->>> tree).
->>>
->>> * We will be breaking abi's and probably even config symbol names
->>> cleaning these up.  So if your customers start complaining you get to
->>> explain why to them :)
->>
->> it wont be an issue.  we make it clear to people who use the IIO stuff
->> that this is in heavy development and people have been OK with that.
->>
->>> * We sought out some test coverage for these. I want someone I can poke
->>> if we  get a bug report, happy to use a generic address as long as
->>> someone is able  to respond in reasonable time! (no complaints so far
->>> with Analog, but this is  a lot of new devices for someone to have
->>> wired up somewhere)
->>
->> i can add a MAINTAINERS entry for all ADI IIO drivers if that's
->> sufficient.  any question about using Linux and an ADI part we are
->> happy to answer.
-> 
-> We will actively support these drivers. I'm currently in progress building up
-> a team, which will ensure that these drivers are tested and maintained over time.
-Excellent news.  There is a pretty strong feeling (from Greg KH) that 
-MAINTAINERS entries don't exist for stuff in staging.
-
-However, adding something like
-
-Contact: Drivers@analog.com for ADI drivers
-
-to the main TODO file would probably be a good idea. Not necessary if Analog people
-monitor linux-iio though as every driver problem should also be copied to there.
-> 
->>> * If Randy or any one else reports build issues with weird
->>> combinations, someone
->>>  other than me quickly fixes them.
->>
->> i think the MAINTAINERS would cover this too
->>
->>> * I want some proper proposals of abi's for the new classes of device.
->>> Lets debate  these on list. I would probably get round to doing this
->>> myself eventually, but  if someone who knows the device class does it,
->>> things will proceed much faster.  I've never used a resolver and had to
->>> google what they were ;)  Having poorly defined abi's has bitten us a
->>> few times in the past and tends to  put others off using the subsystem.
->>>  So lets at least bash out what they should  be even if it takes a
->>> little while to bring the drivers up to date.
->>
->> that'd be for Michael Hennerich
-> 
-> We can start debating and refining on the exact API, to use.
-> However I like to do so once these drivers have merged.
-Agreed. Now you have confirmed the follow up support will be there,
-I'm happy to see them merged now and fixed later.
-> The ones likely subject to change we can mark as EXPERIMENTAL.
-> Or even print a warning using dev_warn() on probe.
-Either works for me.
-> 
->>> * As per standard staging rules, I will ask Greg to drop any driver
->>> that no one is
->>>  willing to support.  I will give plenty of warning of course!
->>
->> np
->>
->>> * Some of the temp chips might want to be in hwmon. I would like to
->>> see an open
->>>  discussion across both lists of whether then should be in IIO or
->> there (or both).
->>
->> there has been discussion in the past in this regard.  but i dont
->> recall where it occurred.
-Sure. Now Hwmon is again under active maintenance it's probably time to reopen
-the discussion.
->>
->>> The negatives of merging this set as is are that people might copy code
->>> with issues we haven't fixed yet.  Such is life I guess. We could put a
->>> big note in the TODO file, but then, who reads that?
->> we have a tracker where we log all device driver feedback and assign to
->> developers:
->>   https://blackfin.uclinux.org/gf/project/device-drivers/tracker/
-Cool. That works fine.  Perhaps we can put that in the headers of the drivers
-or mention it in TODO in the top level directory.
-
-There's also a rather under advertised equivalent at:
-http://sourceforge.net/apps/trac/iioutils/
-that I've been most using to remind myself of changes that need doing rather
-than as a formal system. Note this tracker covers userspace tools as well
-(those few that exist) I'll talk to you guys first before adding any specific
-ADI driver related ones to there.  The current ADI related ones are event support
-for the adis16350 and merging adis16300 and adis16400 drivers into that one.
-There is a bug somewhere in my changes to the burst mode (reported by Manuel).
-Unfortunately I can't test as my part for that one is an adis16350 which doesn't
-do burst reads.  The other is addition of adis16250 and similar support into the
-adis16260 driver which is dependent on testing from the author of the existing
-adis16250 driver that is in staging but outside IIO.
-
-I'm looking forward to seeing the nice large section you guys will have in LWN's
-kernel section under new drivers. Not often people merge 36 in one go.
-
-Jonathan
+Sm9uYXRoYW4gQ2FtZXJvbiB3cm90ZSBvbiAyMDEwLTEwLTI1Og0KPiBPbiAxMC8yNS8xMCAwOToz
+OSwgSGVubmVyaWNoLCBNaWNoYWVsIHdyb3RlOg0KPj4gTWlrZSBGcnlzaW5nZXIgd3JvdGUgb24g
+MjAxMC0xMC0yNToNCj4+PiBPbiBTdW4sIE9jdCAyNCwgMjAxMCBhdCAxOTozNSwgSm9uYXRoYW4g
+Q2FtZXJvbiB3cm90ZToNCj4+Pj4gT24gMTAvMjQvMTAgMjI6MjIsIE1pa2UgRnJ5c2luZ2VyIHdy
+b3RlOg0KPj4+Pj4gSSd2ZSByZWJhc2VkIGFsbCB0aGUgZHJpdmVycyBvbnRvIHN0YWdpbmctbmV4
+dC4gIEkndmUgb25seSBmaXhlZA0KPj4+Pj4gdGhlIEFQSSBicmVha2FnZSBkdWUgdG8gdGhlIGNo
+YW5nZXMgbWFkZSBhZnRlciAyLjYuMzYgKGFuZCBmaXhlZA0KPj4+Pj4gYSBmZXcgd2FybmluZ3Mp
+LiBJJ3ZlIGFsc28gcnVuIGNoZWNrcGF0Y2ggYWNyb3NzIHRoZXNlLg0KPj4+Pj4NCj4+Pj4+IEkg
+aGF2ZSBub3QgaG93ZXZlciBhZGRyZXNzZWQgYW55IHJlYWwgZmVlZGJhY2sgSm9uYXRoYW4gaGFz
+IHByb3ZpZGVkDQo+Pj4+PiB3aXRoIHJlZ2FyZHMgdG8gZHJpdmVyIGNvcnJlY3RuZXNzIG9yIGRp
+cmVjdGlvbi4gIFRoYXQgc3R1ZmYgSSdtDQo+Pj4+PiBsZWF2aW5nIHVwIHRvIE1pY2hhZWwgSGVu
+bmVyaWNoIHNpbmNlIGl0J3MgaGlzIGpvYiBhbmQgaGUgYWN0dWFsbHkNCj4+Pj4+IHVuZGVyc3Rh
+bmRzIHRoaXMuDQo+Pj4+Pg0KPj4+Pj4gV2hlcmUgcG9zc2libGUsIEknZCBsaWtlIHRvIGhhdmUg
+ZHJpdmVycyBtZXJnZWQgc28gYXMgdG8gYXZvaWQNCj4+Pj4+IGFub3RoZXIgcm91bmQgb2YgIm5l
+dyBBUEkganVzdCBicm9rZSBhbGwgeW91ciBkcml2ZXJzIi4gIFdlIHdpbGwNCj4+Pj4+IHN0aWxs
+IGxvb2sgaW50byBmZWVkYmFjayBnaXZlbiwgYnV0IHdlJ2QgbGlrZSB0byBmb2N1cyBvbiB0aGF0
+DQo+Pj4+PiByYXRoZXIgdGhhbiByYW5kb20gYHNlZGAgY2hhbmdlcyBhcyBBUEkgbmFtZXMgY2hh
+bmdlLg0KPj4+Pj4NCj4+Pj4+IFRoaXMgcGF0Y2hzZXQgc3VwZXJzZWRlcyBhbGwgb3RoZXIgIm5l
+dyBkcml2ZXIiIHBhdGNoZXMgSSd2ZSBwb3N0ZWQNCj4+Pj4+IGluIHRoZSBsYXN0IDQ4IGhvdXJz
+Lg0KPj4+Pg0KPj4+PiBBcyB3ZSBhcmUgc3RpbGwgaW4gc3RhZ2luZywgSSdtIGhhcHB5IHRvIHNl
+ZSB0aGVzZSBtZXJnZSBpbnRvIElJTw0KPj4+PiB3aXRoIHNvbWUgcHJvdmlzb3MgKHRoaXMgd291
+bGRuJ3QgYmUgYWNjZXB0YWJsZSBhbnl3aGVyZSBlbHNlIGluIHRoZQ0KPj4+PiBrZXJuZWwgdHJl
+ZSkuDQo+Pj4+DQo+Pj4+ICogV2Ugd2lsbCBiZSBicmVha2luZyBhYmkncyBhbmQgcHJvYmFibHkg
+ZXZlbiBjb25maWcgc3ltYm9sIG5hbWVzDQo+Pj4+IGNsZWFuaW5nIHRoZXNlIHVwLiAgU28gaWYg
+eW91ciBjdXN0b21lcnMgc3RhcnQgY29tcGxhaW5pbmcgeW91IGdldA0KPj4+PiB0byBleHBsYWlu
+IHdoeSB0byB0aGVtIDopDQo+Pj4NCj4+PiBpdCB3b250IGJlIGFuIGlzc3VlLiAgd2UgbWFrZSBp
+dCBjbGVhciB0byBwZW9wbGUgd2hvIHVzZSB0aGUgSUlPIHN0dWZmDQo+Pj4gdGhhdCB0aGlzIGlz
+IGluIGhlYXZ5IGRldmVsb3BtZW50IGFuZCBwZW9wbGUgaGF2ZSBiZWVuIE9LIHdpdGggdGhhdC4N
+Cj4+Pg0KPj4+PiAqIFdlIHNvdWdodCBvdXQgc29tZSB0ZXN0IGNvdmVyYWdlIGZvciB0aGVzZS4g
+SSB3YW50IHNvbWVvbmUgSSBjYW4NCj4+Pj4gcG9rZSBpZiB3ZSAgZ2V0IGEgYnVnIHJlcG9ydCwg
+aGFwcHkgdG8gdXNlIGEgZ2VuZXJpYyBhZGRyZXNzIGFzIGxvbmcNCj4+Pj4gYXMgc29tZW9uZSBp
+cyBhYmxlICB0byByZXNwb25kIGluIHJlYXNvbmFibGUgdGltZSEgKG5vIGNvbXBsYWludHMgc28N
+Cj4+Pj4gZmFyIHdpdGggQW5hbG9nLCBidXQgdGhpcyBpcyAgYSBsb3Qgb2YgbmV3IGRldmljZXMg
+Zm9yIHNvbWVvbmUgdG8NCj4+Pj4gaGF2ZSB3aXJlZCB1cCBzb21ld2hlcmUpDQo+Pj4NCj4+PiBp
+IGNhbiBhZGQgYSBNQUlOVEFJTkVSUyBlbnRyeSBmb3IgYWxsIEFESSBJSU8gZHJpdmVycyBpZiB0
+aGF0J3MNCj4+PiBzdWZmaWNpZW50LiAgYW55IHF1ZXN0aW9uIGFib3V0IHVzaW5nIExpbnV4IGFu
+ZCBhbiBBREkgcGFydCB3ZSBhcmUNCj4+PiBoYXBweSB0byBhbnN3ZXIuDQo+Pg0KPj4gV2Ugd2ls
+bCBhY3RpdmVseSBzdXBwb3J0IHRoZXNlIGRyaXZlcnMuIEknbSBjdXJyZW50bHkgaW4gcHJvZ3Jl
+c3MNCj4+IGJ1aWxkaW5nIHVwIGEgdGVhbSwgd2hpY2ggd2lsbCBlbnN1cmUgdGhhdCB0aGVzZSBk
+cml2ZXJzIGFyZSB0ZXN0ZWQNCj4gYW5kIG1haW50YWluZWQgb3ZlciB0aW1lLg0KPiBFeGNlbGxl
+bnQgbmV3cy4gIFRoZXJlIGlzIGEgcHJldHR5IHN0cm9uZyBmZWVsaW5nIChmcm9tIEdyZWcgS0gp
+IHRoYXQNCj4gTUFJTlRBSU5FUlMgZW50cmllcyBkb24ndCBleGlzdCBmb3Igc3R1ZmYgaW4gc3Rh
+Z2luZy4NCj4NCj4gSG93ZXZlciwgYWRkaW5nIHNvbWV0aGluZyBsaWtlDQo+DQo+IENvbnRhY3Q6
+IERyaXZlcnNAYW5hbG9nLmNvbSBmb3IgQURJIGRyaXZlcnMNCg0KSSB0aGluayBkZXZpY2UtZHJp
+dmVycy1kZXZlbEBibGFja2Zpbi51Y2xpbnV4Lm9yZyBpcyBwcm9iYWJseSBiZXR0ZXIuDQpUaGlz
+IGxpc3QgaXMgcHVibGljLCB3aGlsZSBvbmx5IEFESSBpbnRlcm5hbCBzdGFmZiBjYW4gc3Vic2Ny
+aWJlIHRvDQpEcml2ZXJzQGFuYWxvZy5jb20uDQoNCkV2ZXJ5b25lIHdvcmtpbmcgb24gTGludXgg
+ZHJpdmVycyBhdCBBREkgYXJlIHN1YnNjcmliZWQgdG8gYm90aCBsaXN0cy4NCg0KPiB0byB0aGUg
+bWFpbiBUT0RPIGZpbGUgd291bGQgcHJvYmFibHkgYmUgYSBnb29kIGlkZWEuIE5vdCBuZWNlc3Nh
+cnkgaWYNCj4gQW5hbG9nIHBlb3BsZSBtb25pdG9yIGxpbnV4LWlpbyB0aG91Z2ggYXMgZXZlcnkg
+ZHJpdmVyIHByb2JsZW0gc2hvdWxkDQo+IGFsc28gYmUgY29waWVkIHRvIHRoZXJlLg0KPj4NCj4+
+Pj4gKiBJZiBSYW5keSBvciBhbnkgb25lIGVsc2UgcmVwb3J0cyBidWlsZCBpc3N1ZXMgd2l0aCB3
+ZWlyZA0KPj4+PiBjb21iaW5hdGlvbnMsIHNvbWVvbmUgIG90aGVyIHRoYW4gbWUgcXVpY2tseSBm
+aXhlcyB0aGVtLg0KPj4+DQo+Pj4gaSB0aGluayB0aGUgTUFJTlRBSU5FUlMgd291bGQgY292ZXIg
+dGhpcyB0b28NCj4+Pg0KPj4+PiAqIEkgd2FudCBzb21lIHByb3BlciBwcm9wb3NhbHMgb2YgYWJp
+J3MgZm9yIHRoZSBuZXcgY2xhc3NlcyBvZg0KPj4+PiBkZXZpY2UuIExldHMgZGViYXRlICB0aGVz
+ZSBvbiBsaXN0LiBJIHdvdWxkIHByb2JhYmx5IGdldCByb3VuZCB0bw0KPj4+PiBkb2luZyB0aGlz
+IG15c2VsZiBldmVudHVhbGx5LCBidXQgIGlmIHNvbWVvbmUgd2hvIGtub3dzIHRoZSBkZXZpY2UN
+Cj4+Pj4gY2xhc3MgZG9lcyBpdCwgdGhpbmdzIHdpbGwgcHJvY2VlZCBtdWNoIGZhc3Rlci4gIEkn
+dmUgbmV2ZXIgdXNlZCBhDQo+Pj4+IHJlc29sdmVyIGFuZCBoYWQgdG8gZ29vZ2xlIHdoYXQgdGhl
+eSB3ZXJlIDspICBIYXZpbmcgcG9vcmx5IGRlZmluZWQNCj4+Pj4gYWJpJ3MgaGFzIGJpdHRlbiB1
+cyBhIGZldyB0aW1lcyBpbiB0aGUgcGFzdCBhbmQgdGVuZHMgdG8gIHB1dCBvdGhlcnMNCj4+Pj4g
+b2ZmDQo+IHVzaW5nIHRoZSBzdWJzeXN0ZW0uDQo+Pj4+ICBTbyBsZXRzIGF0IGxlYXN0IGJhc2gg
+b3V0IHdoYXQgdGhleSBzaG91bGQgIGJlIGV2ZW4gaWYgaXQgdGFrZXMgYQ0KPj4+PiBsaXR0bGUg
+d2hpbGUgdG8gYnJpbmcgdGhlIGRyaXZlcnMgdXAgdG8gZGF0ZS4NCj4+Pg0KPj4+IHRoYXQnZCBi
+ZSBmb3IgTWljaGFlbCBIZW5uZXJpY2gNCj4+DQo+PiBXZSBjYW4gc3RhcnQgZGViYXRpbmcgYW5k
+IHJlZmluaW5nIG9uIHRoZSBleGFjdCBBUEksIHRvIHVzZS4NCj4+IEhvd2V2ZXIgSSBsaWtlIHRv
+IGRvIHNvIG9uY2UgdGhlc2UgZHJpdmVycyBoYXZlIG1lcmdlZC4NCj4gQWdyZWVkLiBOb3cgeW91
+IGhhdmUgY29uZmlybWVkIHRoZSBmb2xsb3cgdXAgc3VwcG9ydCB3aWxsIGJlIHRoZXJlLA0KPiBJ
+J20gaGFwcHkgdG8gc2VlIHRoZW0gbWVyZ2VkIG5vdyBhbmQgZml4ZWQgbGF0ZXIuDQo+PiBUaGUg
+b25lcyBsaWtlbHkgc3ViamVjdCB0byBjaGFuZ2Ugd2UgY2FuIG1hcmsgYXMgRVhQRVJJTUVOVEFM
+LiBPciBldmVuDQo+PiBwcmludCBhIHdhcm5pbmcgdXNpbmcgZGV2X3dhcm4oKSBvbiBwcm9iZS4g
+RWl0aGVyIHdvcmtzIGZvciBtZS4NCj4+DQo+Pj4+ICogQXMgcGVyIHN0YW5kYXJkIHN0YWdpbmcg
+cnVsZXMsIEkgd2lsbCBhc2sgR3JlZyB0byBkcm9wIGFueQ0KPj4+PiBkcml2ZXIgdGhhdCBubyBv
+bmUgaXMgIHdpbGxpbmcgdG8gc3VwcG9ydC4gIEkgd2lsbCBnaXZlIHBsZW50eSBvZg0KPj4+PiB3
+YXJuaW5nIG9mIGNvdXJzZSENCj4+Pg0KPj4+IG5wDQo+Pj4NCj4+Pj4gKiBTb21lIG9mIHRoZSB0
+ZW1wIGNoaXBzIG1pZ2h0IHdhbnQgdG8gYmUgaW4gaHdtb24uIEkgd291bGQgbGlrZQ0KPj4+PiB0
+byBzZWUgYW4gb3BlbiAgZGlzY3Vzc2lvbiBhY3Jvc3MgYm90aCBsaXN0cyBvZiB3aGV0aGVyIHRo
+ZW4NCj4+Pj4gc2hvdWxkIGJlIGluIElJTyBvcg0KPj4+IHRoZXJlIChvciBib3RoKS4NCj4+Pg0K
+Pj4+IHRoZXJlIGhhcyBiZWVuIGRpc2N1c3Npb24gaW4gdGhlIHBhc3QgaW4gdGhpcyByZWdhcmQu
+ICBidXQgaSBkb250DQo+Pj4gcmVjYWxsIHdoZXJlIGl0IG9jY3VycmVkLg0KPiBTdXJlLiBOb3cg
+SHdtb24gaXMgYWdhaW4gdW5kZXIgYWN0aXZlIG1haW50ZW5hbmNlIGl0J3MgcHJvYmFibHkgdGlt
+ZQ0KPiB0byByZW9wZW4gdGhlIGRpc2N1c3Npb24uDQo+Pj4NCj4+Pj4gVGhlIG5lZ2F0aXZlcyBv
+ZiBtZXJnaW5nIHRoaXMgc2V0IGFzIGlzIGFyZSB0aGF0IHBlb3BsZSBtaWdodCBjb3B5DQo+Pj4+
+IGNvZGUgd2l0aCBpc3N1ZXMgd2UgaGF2ZW4ndCBmaXhlZCB5ZXQuICBTdWNoIGlzIGxpZmUgSSBn
+dWVzcy4gV2UNCj4+Pj4gY291bGQgcHV0IGEgYmlnIG5vdGUgaW4gdGhlIFRPRE8gZmlsZSwgYnV0
+IHRoZW4sIHdobyByZWFkcyB0aGF0Pw0KPj4+IHdlIGhhdmUgYSB0cmFja2VyIHdoZXJlIHdlIGxv
+ZyBhbGwgZGV2aWNlIGRyaXZlciBmZWVkYmFjayBhbmQNCj4+PiBhc3NpZ24gdG8NCj4+PiBkZXZl
+bG9wZXJzOg0KPj4+ICAgaHR0cHM6Ly9ibGFja2Zpbi51Y2xpbnV4Lm9yZy9nZi9wcm9qZWN0L2Rl
+dmljZS1kcml2ZXJzL3RyYWNrZXIvDQo+IENvb2wuIFRoYXQgd29ya3MgZmluZS4gIFBlcmhhcHMg
+d2UgY2FuIHB1dCB0aGF0IGluIHRoZSBoZWFkZXJzIG9mIHRoZQ0KPiBkcml2ZXJzIG9yIG1lbnRp
+b24gaXQgaW4gVE9ETyBpbiB0aGUgdG9wIGxldmVsIGRpcmVjdG9yeS4NCg0KT2sgd2lsbCBkby4N
+Cg0KPiBUaGVyZSdzIGFsc28gYSByYXRoZXIgdW5kZXIgYWR2ZXJ0aXNlZCBlcXVpdmFsZW50IGF0
+Og0KPiBodHRwOi8vc291cmNlZm9yZ2UubmV0L2FwcHMvdHJhYy9paW91dGlscy8gdGhhdCBJJ3Zl
+IGJlZW4gbW9zdCB1c2luZyB0bw0KPiByZW1pbmQgbXlzZWxmIG9mIGNoYW5nZXMgdGhhdCBuZWVk
+IGRvaW5nIHJhdGhlciB0aGFuIGFzIGEgZm9ybWFsIHN5c3RlbS4NCj4gTm90ZSB0aGlzIHRyYWNr
+ZXIgY292ZXJzIHVzZXJzcGFjZSB0b29scyBhcyB3ZWxsICh0aG9zZSBmZXcgdGhhdCBleGlzdCkN
+Cj4gSSdsbCB0YWxrIHRvIHlvdSBndXlzIGZpcnN0IGJlZm9yZSBhZGRpbmcgYW55IHNwZWNpZmlj
+IEFESSBkcml2ZXINCj4gcmVsYXRlZCBvbmVzIHRvIHRoZXJlLg0KDQpJIHRoaW5rIGl0IHdvdWxk
+IGJlIGdvb2QgaWYgeW91IGNvdWxkIHJlZ2lzdGVyIGFuIGFjY291bnQgb24gaHR0cDovL2JsYWNr
+ZmluLnVjbGludXgub3JnDQpBbmQgSSBhZGQgeW91IHRvIHRoZSBkZXZpY2UtZHJpdmVycyBwcm9q
+ZWN0Lg0KVGhpcyB3YXkgeW91IGNhbiB1cGRhdGUgb3IgY3JlYXRlIG5ldyB0cmFja2VyIGlzc3Vl
+cywgd2UgYm90aCBjYW4gYXZvaWQgdGhhdCB0aGluZ3MgZ2V0IGxvc3QuDQoNCj4gVGhlIGN1cnJl
+bnQgQURJIHJlbGF0ZWQgb25lcyBhcmUgZXZlbnQgc3VwcG9ydA0KPiBmb3IgdGhlIGFkaXMxNjM1
+MCBhbmQgbWVyZ2luZyBhZGlzMTYzMDAgYW5kIGFkaXMxNjQwMCBkcml2ZXJzIGludG8gdGhhdA0K
+PiBvbmUuIFRoZXJlIGlzIGEgYnVnIHNvbWV3aGVyZSBpbiBteSBjaGFuZ2VzIHRvIHRoZSBidXJz
+dCBtb2RlIChyZXBvcnRlZA0KPiBieSBNYW51ZWwpLiBVbmZvcnR1bmF0ZWx5IEkgY2FuJ3QgdGVz
+dCBhcyBteSBwYXJ0IGZvciB0aGF0IG9uZSBpcyBhbg0KPiBhZGlzMTYzNTAgd2hpY2ggZG9lc24n
+dCBkbyBidXJzdCByZWFkcy4gIFRoZSBvdGhlciBpcyBhZGRpdGlvbiBvZg0KPiBhZGlzMTYyNTAg
+YW5kIHNpbWlsYXIgc3VwcG9ydCBpbnRvIHRoZSBhZGlzMTYyNjAgZHJpdmVyIHdoaWNoIGlzDQo+
+IGRlcGVuZGVudCBvbiB0ZXN0aW5nIGZyb20gdGhlIGF1dGhvciBvZiB0aGUgZXhpc3RpbmcgYWRp
+czE2MjUwIGRyaXZlcg0KPiB0aGF0IGlzIGluIHN0YWdpbmcgYnV0IG91dHNpZGUgSUlPLg0KPg0K
+PiBJJ20gbG9va2luZyBmb3J3YXJkIHRvIHNlZWluZyB0aGUgbmljZSBsYXJnZSBzZWN0aW9uIHlv
+dSBndXlzIHdpbGwNCj4gaGF2ZSBpbiBMV04ncyBrZXJuZWwgc2VjdGlvbiB1bmRlciBuZXcgZHJp
+dmVycy4gTm90IG9mdGVuIHBlb3BsZSBtZXJnZQ0KPiAzNiBpbiBvbmUgZ28uDQo+DQo+IEpvbmF0
+aGFuDQoNCkdyZWV0aW5ncywNCk1pY2hhZWwNCg0KQW5hbG9nIERldmljZXMgR21iSCAgICAgIFdp
+bGhlbG0tV2FnZW5mZWxkLVN0ci4gNiAgICAgIDgwODA3IE11ZW5jaGVuDQpTaXR6IGRlciBHZXNl
+bGxzY2hhZnQgTXVlbmNoZW4sIFJlZ2lzdGVyZ2VyaWNodCBNdWVuY2hlbiBIUkIgNDAzNiBHZXNj
+aGFlZnRzZnVlaHJlciBUaG9tYXMgV2Vzc2VsLCBXaWxsaWFtIEEuIE1hcnRpbiwgTWFyZ2FyZXQg
+U2VpZg0KDQoNCg==
