@@ -1,92 +1,47 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Mike Frysinger <vapier@gentoo.org>, Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Date: Mon, 25 Oct 2010 09:39:24 +0100
-Subject: RE: [Device-drivers-devel] [PATCH 00/36] staging: iio: ADI drivers
- for staging-next
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177130945B1B3C@LIMKCMBX1.ad.analog.com>
-References: <1287955358-3153-1-git-send-email-vapier@gentoo.org>
- <4CC4C2B8.2@cam.ac.uk>
- <AANLkTi=p3ArLzC_qz85emJeXytpnR2F9pzeG647Qj2Ek@mail.gmail.com>
-In-Reply-To: <AANLkTi=p3ArLzC_qz85emJeXytpnR2F9pzeG647Qj2Ek@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <vapier.adi@gmail.com>
 MIME-Version: 1.0
+Sender: vapier.adi@gmail.com
+In-Reply-To: <544AC56F16B56944AEC3BD4E3D59177130945B1B3C@LIMKCMBX1.ad.analog.com>
+References: <1287955358-3153-1-git-send-email-vapier@gentoo.org>
+ <4CC4C2B8.2@cam.ac.uk> <AANLkTi=p3ArLzC_qz85emJeXytpnR2F9pzeG647Qj2Ek@mail.gmail.com>
+ <544AC56F16B56944AEC3BD4E3D59177130945B1B3C@LIMKCMBX1.ad.analog.com>
+From: Mike Frysinger <vapier@gentoo.org>
+Date: Mon, 25 Oct 2010 20:53:02 -0400
+Message-ID: <AANLkTimDSo6CbrfEiosK6mhsjk97pmsii0G=OkBFm8g=@mail.gmail.com>
+Subject: Re: [Device-drivers-devel] [PATCH 00/36] staging: iio: ADI drivers
+ for staging-next
+To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"device-drivers-devel@blackfin.uclinux.org" <device-drivers-devel@blackfin.uclinux.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-TWlrZSBGcnlzaW5nZXIgd3JvdGUgb24gMjAxMC0xMC0yNToNCj4gT24gU3VuLCBPY3QgMjQsIDIw
-MTAgYXQgMTk6MzUsIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6DQo+PiBPbiAxMC8yNC8xMCAyMjoy
-MiwgTWlrZSBGcnlzaW5nZXIgd3JvdGU6DQo+Pj4gSSd2ZSByZWJhc2VkIGFsbCB0aGUgZHJpdmVy
-cyBvbnRvIHN0YWdpbmctbmV4dC4gIEkndmUgb25seSBmaXhlZCB0aGUNCj4+PiBBUEkgYnJlYWth
-Z2UgZHVlIHRvIHRoZSBjaGFuZ2VzIG1hZGUgYWZ0ZXIgMi42LjM2IChhbmQgZml4ZWQgYSBmZXcN
-Cj4+PiB3YXJuaW5ncykuIEkndmUgYWxzbyBydW4gY2hlY2twYXRjaCBhY3Jvc3MgdGhlc2UuDQo+
-Pj4NCj4+PiBJIGhhdmUgbm90IGhvd2V2ZXIgYWRkcmVzc2VkIGFueSByZWFsIGZlZWRiYWNrIEpv
-bmF0aGFuIGhhcyBwcm92aWRlZA0KPj4+IHdpdGggcmVnYXJkcyB0byBkcml2ZXIgY29ycmVjdG5l
-c3Mgb3IgZGlyZWN0aW9uLiAgVGhhdCBzdHVmZiBJJ20NCj4+PiBsZWF2aW5nIHVwIHRvIE1pY2hh
-ZWwgSGVubmVyaWNoIHNpbmNlIGl0J3MgaGlzIGpvYiBhbmQgaGUgYWN0dWFsbHkNCj4+PiB1bmRl
-cnN0YW5kcyB0aGlzLg0KPj4+DQo+Pj4gV2hlcmUgcG9zc2libGUsIEknZCBsaWtlIHRvIGhhdmUg
-ZHJpdmVycyBtZXJnZWQgc28gYXMgdG8gYXZvaWQgYW5vdGhlcg0KPj4+IHJvdW5kIG9mICJuZXcg
-QVBJIGp1c3QgYnJva2UgYWxsIHlvdXIgZHJpdmVycyIuICBXZSB3aWxsIHN0aWxsIGxvb2sNCj4+
-PiBpbnRvIGZlZWRiYWNrIGdpdmVuLCBidXQgd2UnZCBsaWtlIHRvIGZvY3VzIG9uIHRoYXQgcmF0
-aGVyIHRoYW4gcmFuZG9tDQo+Pj4gYHNlZGAgY2hhbmdlcyBhcyBBUEkgbmFtZXMgY2hhbmdlLg0K
-Pj4+DQo+Pj4gVGhpcyBwYXRjaHNldCBzdXBlcnNlZGVzIGFsbCBvdGhlciAibmV3IGRyaXZlciIg
-cGF0Y2hlcyBJJ3ZlIHBvc3RlZA0KPj4+IGluIHRoZSBsYXN0IDQ4IGhvdXJzLg0KPj4NCj4+IEFz
-IHdlIGFyZSBzdGlsbCBpbiBzdGFnaW5nLCBJJ20gaGFwcHkgdG8gc2VlIHRoZXNlIG1lcmdlIGlu
-dG8gSUlPIHdpdGgNCj4+IHNvbWUgcHJvdmlzb3MgKHRoaXMgd291bGRuJ3QgYmUgYWNjZXB0YWJs
-ZSBhbnl3aGVyZSBlbHNlIGluIHRoZSBrZXJuZWwNCj4+IHRyZWUpLg0KPj4NCj4+ICogV2Ugd2ls
-bCBiZSBicmVha2luZyBhYmkncyBhbmQgcHJvYmFibHkgZXZlbiBjb25maWcgc3ltYm9sIG5hbWVz
-DQo+PiBjbGVhbmluZyB0aGVzZSB1cC4gIFNvIGlmIHlvdXIgY3VzdG9tZXJzIHN0YXJ0IGNvbXBs
-YWluaW5nIHlvdSBnZXQgdG8NCj4+IGV4cGxhaW4gd2h5IHRvIHRoZW0gOikNCj4NCj4gaXQgd29u
-dCBiZSBhbiBpc3N1ZS4gIHdlIG1ha2UgaXQgY2xlYXIgdG8gcGVvcGxlIHdobyB1c2UgdGhlIElJ
-TyBzdHVmZg0KPiB0aGF0IHRoaXMgaXMgaW4gaGVhdnkgZGV2ZWxvcG1lbnQgYW5kIHBlb3BsZSBo
-YXZlIGJlZW4gT0sgd2l0aCB0aGF0Lg0KPg0KPj4gKiBXZSBzb3VnaHQgb3V0IHNvbWUgdGVzdCBj
-b3ZlcmFnZSBmb3IgdGhlc2UuIEkgd2FudCBzb21lb25lIEkgY2FuIHBva2UNCj4+IGlmIHdlICBn
-ZXQgYSBidWcgcmVwb3J0LCBoYXBweSB0byB1c2UgYSBnZW5lcmljIGFkZHJlc3MgYXMgbG9uZyBh
-cw0KPj4gc29tZW9uZSBpcyBhYmxlICB0byByZXNwb25kIGluIHJlYXNvbmFibGUgdGltZSEgKG5v
-IGNvbXBsYWludHMgc28gZmFyDQo+PiB3aXRoIEFuYWxvZywgYnV0IHRoaXMgaXMgIGEgbG90IG9m
-IG5ldyBkZXZpY2VzIGZvciBzb21lb25lIHRvIGhhdmUNCj4+IHdpcmVkIHVwIHNvbWV3aGVyZSkN
-Cj4NCj4gaSBjYW4gYWRkIGEgTUFJTlRBSU5FUlMgZW50cnkgZm9yIGFsbCBBREkgSUlPIGRyaXZl
-cnMgaWYgdGhhdCdzDQo+IHN1ZmZpY2llbnQuICBhbnkgcXVlc3Rpb24gYWJvdXQgdXNpbmcgTGlu
-dXggYW5kIGFuIEFESSBwYXJ0IHdlIGFyZQ0KPiBoYXBweSB0byBhbnN3ZXIuDQoNCldlIHdpbGwg
-YWN0aXZlbHkgc3VwcG9ydCB0aGVzZSBkcml2ZXJzLiBJJ20gY3VycmVudGx5IGluIHByb2dyZXNz
-IGJ1aWxkaW5nIHVwDQphIHRlYW0sIHdoaWNoIHdpbGwgZW5zdXJlIHRoYXQgdGhlc2UgZHJpdmVy
-cyBhcmUgdGVzdGVkIGFuZCBtYWludGFpbmVkIG92ZXIgdGltZS4NCg0KPj4gKiBJZiBSYW5keSBv
-ciBhbnkgb25lIGVsc2UgcmVwb3J0cyBidWlsZCBpc3N1ZXMgd2l0aCB3ZWlyZA0KPj4gY29tYmlu
-YXRpb25zLCBzb21lb25lDQo+PiAgb3RoZXIgdGhhbiBtZSBxdWlja2x5IGZpeGVzIHRoZW0uDQo+
-DQo+IGkgdGhpbmsgdGhlIE1BSU5UQUlORVJTIHdvdWxkIGNvdmVyIHRoaXMgdG9vDQo+DQo+PiAq
-IEkgd2FudCBzb21lIHByb3BlciBwcm9wb3NhbHMgb2YgYWJpJ3MgZm9yIHRoZSBuZXcgY2xhc3Nl
-cyBvZiBkZXZpY2UuDQo+PiBMZXRzIGRlYmF0ZSAgdGhlc2Ugb24gbGlzdC4gSSB3b3VsZCBwcm9i
-YWJseSBnZXQgcm91bmQgdG8gZG9pbmcgdGhpcw0KPj4gbXlzZWxmIGV2ZW50dWFsbHksIGJ1dCAg
-aWYgc29tZW9uZSB3aG8ga25vd3MgdGhlIGRldmljZSBjbGFzcyBkb2VzIGl0LA0KPj4gdGhpbmdz
-IHdpbGwgcHJvY2VlZCBtdWNoIGZhc3Rlci4gIEkndmUgbmV2ZXIgdXNlZCBhIHJlc29sdmVyIGFu
-ZCBoYWQgdG8NCj4+IGdvb2dsZSB3aGF0IHRoZXkgd2VyZSA7KSAgSGF2aW5nIHBvb3JseSBkZWZp
-bmVkIGFiaSdzIGhhcyBiaXR0ZW4gdXMgYQ0KPj4gZmV3IHRpbWVzIGluIHRoZSBwYXN0IGFuZCB0
-ZW5kcyB0byAgcHV0IG90aGVycyBvZmYgdXNpbmcgdGhlIHN1YnN5c3RlbS4NCj4+ICBTbyBsZXRz
-IGF0IGxlYXN0IGJhc2ggb3V0IHdoYXQgdGhleSBzaG91bGQgIGJlIGV2ZW4gaWYgaXQgdGFrZXMg
-YQ0KPj4gbGl0dGxlIHdoaWxlIHRvIGJyaW5nIHRoZSBkcml2ZXJzIHVwIHRvIGRhdGUuDQo+DQo+
-IHRoYXQnZCBiZSBmb3IgTWljaGFlbCBIZW5uZXJpY2gNCg0KV2UgY2FuIHN0YXJ0IGRlYmF0aW5n
-IGFuZCByZWZpbmluZyBvbiB0aGUgZXhhY3QgQVBJLCB0byB1c2UuDQpIb3dldmVyIEkgbGlrZSB0
-byBkbyBzbyBvbmNlIHRoZXNlIGRyaXZlcnMgaGF2ZSBtZXJnZWQuDQpUaGUgb25lcyBsaWtlbHkg
-c3ViamVjdCB0byBjaGFuZ2Ugd2UgY2FuIG1hcmsgYXMgRVhQRVJJTUVOVEFMLg0KT3IgZXZlbiBw
-cmludCBhIHdhcm5pbmcgdXNpbmcgZGV2X3dhcm4oKSBvbiBwcm9iZS4NCg0KPj4gKiBBcyBwZXIg
-c3RhbmRhcmQgc3RhZ2luZyBydWxlcywgSSB3aWxsIGFzayBHcmVnIHRvIGRyb3AgYW55IGRyaXZl
-cg0KPj4gdGhhdCBubyBvbmUgaXMNCj4+ICB3aWxsaW5nIHRvIHN1cHBvcnQuICBJIHdpbGwgZ2l2
-ZSBwbGVudHkgb2Ygd2FybmluZyBvZiBjb3Vyc2UhDQo+DQo+IG5wDQo+DQo+PiAqIFNvbWUgb2Yg
-dGhlIHRlbXAgY2hpcHMgbWlnaHQgd2FudCB0byBiZSBpbiBod21vbi4gSSB3b3VsZCBsaWtlIHRv
-DQo+PiBzZWUgYW4gb3Blbg0KPj4gIGRpc2N1c3Npb24gYWNyb3NzIGJvdGggbGlzdHMgb2Ygd2hl
-dGhlciB0aGVuIHNob3VsZCBiZSBpbiBJSU8gb3INCj4gdGhlcmUgKG9yIGJvdGgpLg0KPg0KPiB0
-aGVyZSBoYXMgYmVlbiBkaXNjdXNzaW9uIGluIHRoZSBwYXN0IGluIHRoaXMgcmVnYXJkLiAgYnV0
-IGkgZG9udA0KPiByZWNhbGwgd2hlcmUgaXQgb2NjdXJyZWQuDQo+DQo+PiBUaGUgbmVnYXRpdmVz
-IG9mIG1lcmdpbmcgdGhpcyBzZXQgYXMgaXMgYXJlIHRoYXQgcGVvcGxlIG1pZ2h0IGNvcHkgY29k
-ZQ0KPj4gd2l0aCBpc3N1ZXMgd2UgaGF2ZW4ndCBmaXhlZCB5ZXQuICBTdWNoIGlzIGxpZmUgSSBn
-dWVzcy4gV2UgY291bGQgcHV0IGENCj4+IGJpZyBub3RlIGluIHRoZSBUT0RPIGZpbGUsIGJ1dCB0
-aGVuLCB3aG8gcmVhZHMgdGhhdD8NCj4gd2UgaGF2ZSBhIHRyYWNrZXIgd2hlcmUgd2UgbG9nIGFs
-bCBkZXZpY2UgZHJpdmVyIGZlZWRiYWNrIGFuZCBhc3NpZ24gdG8NCj4gZGV2ZWxvcGVyczoNCj4g
-ICBodHRwczovL2JsYWNrZmluLnVjbGludXgub3JnL2dmL3Byb2plY3QvZGV2aWNlLWRyaXZlcnMv
-dHJhY2tlci8NCj4gLW1pa2UNCg0KR3JlZXRpbmdzLA0KTWljaGFlbA0KDQpBbmFsb2cgRGV2aWNl
-cyBHbWJIICAgICAgV2lsaGVsbS1XYWdlbmZlbGQtU3RyLiA2ICAgICAgODA4MDcgTXVlbmNoZW4N
-ClNpdHogZGVyIEdlc2VsbHNjaGFmdCBNdWVuY2hlbiwgUmVnaXN0ZXJnZXJpY2h0IE11ZW5jaGVu
-IEhSQiA0MDM2IEdlc2NoYWVmdHNmdWVocmVyIFRob21hcyBXZXNzZWwsIFdpbGxpYW0gQS4gTWFy
-dGluLCBNYXJnYXJldCBTZWlmDQoNCg0K
+On Mon, Oct 25, 2010 at 04:39, Hennerich, Michael wrote:
+> Mike Frysinger wrote on 2010-10-25:
+>> On Sun, Oct 24, 2010 at 19:35, Jonathan Cameron wrote:
+>>> * I want some proper proposals of abi's for the new classes of device.
+>>> Lets debate =C2=A0these on list. I would probably get round to doing th=
+is
+>>> myself eventually, but =C2=A0if someone who knows the device class does=
+ it,
+>>> things will proceed much faster. =C2=A0I've never used a resolver and h=
+ad to
+>>> google what they were ;) =C2=A0Having poorly defined abi's has bitten u=
+s a
+>>> few times in the past and tends to =C2=A0put others off using the subsy=
+stem.
+>>> =C2=A0So lets at least bash out what they should =C2=A0be even if it ta=
+kes a
+>>> little while to bring the drivers up to date.
+>>
+>> that'd be for Michael Hennerich
+>
+> We can start debating and refining on the exact API, to use.
+> However I like to do so once these drivers have merged.
+> The ones likely subject to change we can mark as EXPERIMENTAL.
+> Or even print a warning using dev_warn() on probe.
+
+i dont think that's necessary.  we're already in the staging area
+which is labeled as "worse" than EXPERIMENTAL.
+-mike
