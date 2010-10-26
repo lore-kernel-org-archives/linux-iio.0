@@ -5,9 +5,9 @@ To: linux-iio@vger.kernel.org,
 Cc: device-drivers-devel@blackfin.uclinux.org,
 	Barry Song <barry.song@analog.com>,
 	Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 19/36] staging: iio: gyro: new driver for ADIS16060 digital output gyros
-Date: Tue, 26 Oct 2010 14:17:29 -0400
-Message-Id: <1288117066-18055-20-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 18/36] staging: iio: gyro: new driver for ADIS16251 devices
+Date: Tue, 26 Oct 2010 14:17:28 -0400
+Message-Id: <1288117066-18055-19-git-send-email-vapier@gentoo.org>
 In-Reply-To: <1288117066-18055-1-git-send-email-vapier@gentoo.org>
 References: <1288117066-18055-1-git-send-email-vapier@gentoo.org>
 List-ID: <linux-iio@vger.kernel.org>
@@ -19,68 +19,134 @@ Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
- drivers/staging/iio/gyro/Kconfig          |    7 +
+ drivers/staging/iio/gyro/Kconfig          |   10 +
  drivers/staging/iio/gyro/Makefile         |    3 +
- drivers/staging/iio/gyro/adis16060.h      |  101 +++++++++
- drivers/staging/iio/gyro/adis16060_core.c |  319 +++++++++++++++++++++++++++++
- 4 files changed, 430 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/gyro/adis16060.h
- create mode 100644 drivers/staging/iio/gyro/adis16060_core.c
+ drivers/staging/iio/gyro/adis16251.h      |  185 +++++++
+ drivers/staging/iio/gyro/adis16251_core.c |  777 +++++++++++++++++++++++++++++
+ drivers/staging/iio/sysfs.h               |    6 +
+ 5 files changed, 981 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/gyro/adis16251.h
+ create mode 100644 drivers/staging/iio/gyro/adis16251_core.c
 
 diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
-index c7a7d29..77c0fe8 100644
+index d1dde82..c7a7d29 100644
 --- a/drivers/staging/iio/gyro/Kconfig
 +++ b/drivers/staging/iio/gyro/Kconfig
-@@ -3,6 +3,13 @@
- #
- comment "Digital gyroscope sensors"
+@@ -14,3 +14,13 @@ config ADIS16260
  
-+config ADIS16060
-+	tristate "Analog Devices ADIS16060 Yaw Rate Gyroscope with SPI driver"
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called adis16260.
++
++config ADIS16251
++	tristate "Analog Devices ADIS16251 Digital Gyroscope Sensor SPI driver"
 +	depends on SPI
 +	help
-+	  Say yes here to build support for Analog Devices adis16060 wide bandwidth
-+	  yaw rate gyroscope with SPI.
++	  Say yes here to build support for Analog Devices adis16261 programmable
++	  digital gyroscope sensor.
 +
- config ADIS16260
- 	tristate "Analog Devices ADIS16260 ADIS16265 Digital Gyroscope Sensor SPI driver"
- 	depends on SPI
++	  This driver can also be built as a module.  If so, the module
++	  will be called adis16251.
 diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
-index 8a592d8..e2c4acb 100644
+index b5f0dc0..8a592d8 100644
 --- a/drivers/staging/iio/gyro/Makefile
 +++ b/drivers/staging/iio/gyro/Makefile
-@@ -2,6 +2,9 @@
- # Makefile for digital gyroscope sensor drivers
- #
- 
-+adis16060-y             := adis16060_core.o
-+obj-$(CONFIG_ADIS16060) += adis16060.o
-+
+@@ -5,3 +5,6 @@
  adis16260-y             := adis16260_core.o
  adis16260-$(CONFIG_IIO_RING_BUFFER) += adis16260_ring.o adis16260_trigger.o
  obj-$(CONFIG_ADIS16260) += adis16260.o
-diff --git a/drivers/staging/iio/gyro/adis16060.h b/drivers/staging/iio/gyro/adis16060.h
++
++adis16251-y             := adis16251_core.o
++obj-$(CONFIG_ADIS16251) += adis16251.o
+diff --git a/drivers/staging/iio/gyro/adis16251.h b/drivers/staging/iio/gyro/adis16251.h
 new file mode 100644
-index 0000000..5c00e53
+index 0000000..999db49
 --- /dev/null
-+++ b/drivers/staging/iio/gyro/adis16060.h
-@@ -0,0 +1,101 @@
-+#ifndef SPI_ADIS16060_H_
-+#define SPI_ADIS16060_H_
++++ b/drivers/staging/iio/gyro/adis16251.h
+@@ -0,0 +1,185 @@
++#ifndef SPI_ADIS16251_H_
++#define SPI_ADIS16251_H_
 +
-+#define ADIS16060_GYRO       0x20 /* Measure Angular Rate (Gyro) */
-+#define ADIS16060_SUPPLY_OUT 0x10 /* Measure Temperature */
-+#define ADIS16060_AIN2       0x80 /* Measure AIN2 */
-+#define ADIS16060_AIN1       0x40 /* Measure AIN1 */
-+#define ADIS16060_TEMP_OUT   0x22 /* Set Positive Self-Test and Output for Angular Rate */
-+#define ADIS16060_ANGL_OUT   0x21 /* Set Negative Self-Test and Output for Angular Rate */
++#define ADIS16251_STARTUP_DELAY	220 /* ms */
 +
-+#define ADIS16060_MAX_TX     3
-+#define ADIS16060_MAX_RX     3
++#define ADIS16251_READ_REG(a)    a
++#define ADIS16251_WRITE_REG(a) ((a) | 0x80)
++
++#define ADIS16251_ENDURANCE  0x00 /* Flash memory write count */
++#define ADIS16251_SUPPLY_OUT 0x02 /* Power supply measurement */
++#define ADIS16251_GYRO_OUT   0x04 /* X-axis gyroscope output */
++#define ADIS16251_AUX_ADC    0x0A /* analog input channel measurement */
++#define ADIS16251_TEMP_OUT   0x0C /* internal temperature measurement */
++#define ADIS16251_ANGL_OUT   0x0E /* angle displacement */
++#define ADIS16251_GYRO_OFF   0x14 /* Calibration, offset/bias adjustment */
++#define ADIS16251_GYRO_SCALE 0x16 /* Calibration, scale adjustment */
++#define ADIS16251_ALM_MAG1   0x20 /* Alarm 1 magnitude/polarity setting */
++#define ADIS16251_ALM_MAG2   0x22 /* Alarm 2 magnitude/polarity setting */
++#define ADIS16251_ALM_SMPL1  0x24 /* Alarm 1 dynamic rate of change setting */
++#define ADIS16251_ALM_SMPL2  0x26 /* Alarm 2 dynamic rate of change setting */
++#define ADIS16251_ALM_CTRL   0x28 /* Alarm control */
++#define ADIS16251_AUX_DAC    0x30 /* Auxiliary DAC data */
++#define ADIS16251_GPIO_CTRL  0x32 /* Control, digital I/O line */
++#define ADIS16251_MSC_CTRL   0x34 /* Control, data ready, self-test settings */
++#define ADIS16251_SMPL_PRD   0x36 /* Control, internal sample rate */
++#define ADIS16251_SENS_AVG   0x38 /* Control, dynamic range, filtering */
++#define ADIS16251_SLP_CNT    0x3A /* Control, sleep mode initiation */
++#define ADIS16251_DIAG_STAT  0x3C /* Diagnostic, error flags */
++#define ADIS16251_GLOB_CMD   0x3E /* Control, global commands */
++
++#define ADIS16251_ERROR_ACTIVE			(1<<14)
++#define ADIS16251_NEW_DATA			(1<<14)
++
++/* MSC_CTRL */
++#define ADIS16251_MSC_CTRL_INT_SELF_TEST	(1<<10) /* Internal self-test enable */
++#define ADIS16251_MSC_CTRL_NEG_SELF_TEST	(1<<9)
++#define ADIS16251_MSC_CTRL_POS_SELF_TEST	(1<<8)
++#define ADIS16251_MSC_CTRL_DATA_RDY_EN		(1<<2)
++#define ADIS16251_MSC_CTRL_DATA_RDY_POL_HIGH	(1<<1)
++#define ADIS16251_MSC_CTRL_DATA_RDY_DIO2	(1<<0)
++
++/* SMPL_PRD */
++#define ADIS16251_SMPL_PRD_TIME_BASE	(1<<7) /* Time base (tB): 0 = 1.953 ms, 1 = 60.54 ms */
++#define ADIS16251_SMPL_PRD_DIV_MASK	0x7F
++
++/* SLP_CNT */
++#define ADIS16251_SLP_CNT_POWER_OFF     0x80
++
++/* DIAG_STAT */
++#define ADIS16251_DIAG_STAT_ALARM2	(1<<9)
++#define ADIS16251_DIAG_STAT_ALARM1	(1<<8)
++#define ADIS16251_DIAG_STAT_SELF_TEST	(1<<5)
++#define ADIS16251_DIAG_STAT_OVERFLOW	(1<<4)
++#define ADIS16251_DIAG_STAT_SPI_FAIL	(1<<3)
++#define ADIS16251_DIAG_STAT_FLASH_UPT	(1<<2)
++#define ADIS16251_DIAG_STAT_POWER_HIGH	(1<<1)
++#define ADIS16251_DIAG_STAT_POWER_LOW	(1<<0)
++
++#define ADIS16251_DIAG_STAT_ERR_MASK (ADIS16261_DIAG_STAT_ALARM2 | \
++				      ADIS16261_DIAG_STAT_ALARM1 | \
++				      ADIS16261_DIAG_STAT_SELF_TEST | \
++				      ADIS16261_DIAG_STAT_OVERFLOW | \
++				      ADIS16261_DIAG_STAT_SPI_FAIL | \
++				      ADIS16261_DIAG_STAT_FLASH_UPT | \
++				      ADIS16261_DIAG_STAT_POWER_HIGH | \
++				      ADIS16261_DIAG_STAT_POWER_LOW)
++
++/* GLOB_CMD */
++#define ADIS16251_GLOB_CMD_SW_RESET	(1<<7)
++#define ADIS16251_GLOB_CMD_FLASH_UPD	(1<<3)
++#define ADIS16251_GLOB_CMD_DAC_LATCH	(1<<2)
++#define ADIS16251_GLOB_CMD_FAC_CALIB	(1<<1)
++#define ADIS16251_GLOB_CMD_AUTO_NULL	(1<<0)
++
++#define ADIS16251_MAX_TX 24
++#define ADIS16251_MAX_RX 24
++
++#define ADIS16251_SPI_SLOW	(u32)(300 * 1000)
++#define ADIS16251_SPI_BURST	(u32)(1000 * 1000)
++#define ADIS16251_SPI_FAST	(u32)(2000 * 1000)
 +
 +/**
-+ * struct adis16060_state - device instance specific data
-+ * @us_w:			actual spi_device to write data
++ * struct adis16251_state - device instance specific data
++ * @us:			actual spi_device
 + * @work_trigger_to_ring: bh for triggered event handling
 + * @inter:		used to check if new interrupt has been triggered
 + * @last_timestamp:	passing timestamp from th to bh of interrupt handler
@@ -90,9 +156,8 @@ index 0000000..5c00e53
 + * @rx:			recieve buffer
 + * @buf_lock:		mutex to protect tx and rx
 + **/
-+struct adis16060_state {
-+	struct spi_device		*us_w;
-+	struct spi_device		*us_r;
++struct adis16251_state {
++	struct spi_device		*us;
 +	struct work_struct		work_trigger_to_ring;
 +	s64				last_timestamp;
 +	struct iio_dev			*indio_dev;
@@ -102,78 +167,95 @@ index 0000000..5c00e53
 +	struct mutex			buf_lock;
 +};
 +
++int adis16251_spi_write_reg_8(struct device *dev,
++			      u8 reg_address,
++			      u8 val);
++
++int adis16251_spi_read_burst(struct device *dev, u8 *rx);
++
++int adis16251_spi_read_sequence(struct device *dev,
++				      u8 *tx, u8 *rx, int num);
++
++int adis16251_set_irq(struct device *dev, bool enable);
++
++int adis16251_reset(struct device *dev);
++
++int adis16251_stop_device(struct device *dev);
++
++int adis16251_check_status(struct device *dev);
++
 +#if defined(CONFIG_IIO_RING_BUFFER) && defined(THIS_HAS_RING_BUFFER_SUPPORT)
 +/* At the moment triggers are only used for ring buffer
 + * filling. This may change!
 + */
 +
-+enum adis16060_scan {
-+	ADIS16060_SCAN_GYRO,
-+	ADIS16060_SCAN_TEMP,
-+	ADIS16060_SCAN_ADC_1,
-+	ADIS16060_SCAN_ADC_2,
++enum adis16251_scan {
++	ADIS16251_SCAN_SUPPLY,
++	ADIS16251_SCAN_GYRO,
++	ADIS16251_SCAN_TEMP,
++	ADIS16251_SCAN_ADC_0,
 +};
 +
-+void adis16060_remove_trigger(struct iio_dev *indio_dev);
-+int adis16060_probe_trigger(struct iio_dev *indio_dev);
++void adis16251_remove_trigger(struct iio_dev *indio_dev);
++int adis16251_probe_trigger(struct iio_dev *indio_dev);
 +
-+ssize_t adis16060_read_data_from_ring(struct device *dev,
++ssize_t adis16251_read_data_from_ring(struct device *dev,
 +				      struct device_attribute *attr,
 +				      char *buf);
 +
 +
-+int adis16060_configure_ring(struct iio_dev *indio_dev);
-+void adis16060_unconfigure_ring(struct iio_dev *indio_dev);
++int adis16251_configure_ring(struct iio_dev *indio_dev);
++void adis16251_unconfigure_ring(struct iio_dev *indio_dev);
 +
-+int adis16060_initialize_ring(struct iio_ring_buffer *ring);
-+void adis16060_uninitialize_ring(struct iio_ring_buffer *ring);
++int adis16251_initialize_ring(struct iio_ring_buffer *ring);
++void adis16251_uninitialize_ring(struct iio_ring_buffer *ring);
 +#else /* CONFIG_IIO_RING_BUFFER */
 +
-+static inline void adis16060_remove_trigger(struct iio_dev *indio_dev)
++static inline void adis16251_remove_trigger(struct iio_dev *indio_dev)
 +{
 +}
 +
-+static inline int adis16060_probe_trigger(struct iio_dev *indio_dev)
++static inline int adis16251_probe_trigger(struct iio_dev *indio_dev)
 +{
 +	return 0;
 +}
 +
 +static inline ssize_t
-+adis16060_read_data_from_ring(struct device *dev,
++adis16251_read_data_from_ring(struct device *dev,
 +			      struct device_attribute *attr,
 +			      char *buf)
 +{
 +	return 0;
 +}
 +
-+static int adis16060_configure_ring(struct iio_dev *indio_dev)
++static int adis16251_configure_ring(struct iio_dev *indio_dev)
 +{
 +	return 0;
 +}
 +
-+static inline void adis16060_unconfigure_ring(struct iio_dev *indio_dev)
++static inline void adis16251_unconfigure_ring(struct iio_dev *indio_dev)
 +{
 +}
 +
-+static inline int adis16060_initialize_ring(struct iio_ring_buffer *ring)
++static inline int adis16251_initialize_ring(struct iio_ring_buffer *ring)
 +{
 +	return 0;
 +}
 +
-+static inline void adis16060_uninitialize_ring(struct iio_ring_buffer *ring)
++static inline void adis16251_uninitialize_ring(struct iio_ring_buffer *ring)
 +{
 +}
 +
 +#endif /* CONFIG_IIO_RING_BUFFER */
-+#endif /* SPI_ADIS16060_H_ */
-diff --git a/drivers/staging/iio/gyro/adis16060_core.c b/drivers/staging/iio/gyro/adis16060_core.c
++#endif /* SPI_ADIS16251_H_ */
+diff --git a/drivers/staging/iio/gyro/adis16251_core.c b/drivers/staging/iio/gyro/adis16251_core.c
 new file mode 100644
-index 0000000..fc48aca
+index 0000000..a0d400f
 --- /dev/null
-+++ b/drivers/staging/iio/gyro/adis16060_core.c
-@@ -0,0 +1,319 @@
++++ b/drivers/staging/iio/gyro/adis16251_core.c
+@@ -0,0 +1,777 @@
 +/*
-+ * ADIS16060 Wide Bandwidth Yaw Rate Gyroscope with SPI driver
++ * ADIS16251 Programmable Digital Gyroscope Sensor Driver
 + *
 + * Copyright 2010 Analog Devices Inc.
 + *
@@ -197,122 +279,609 @@ index 0000000..fc48aca
 +#include "gyro.h"
 +#include "../adc/adc.h"
 +
-+#include "adis16060.h"
++#include "adis16251.h"
 +
-+#define DRIVER_NAME		"adis16060"
++#define DRIVER_NAME		"adis16251"
 +
-+struct adis16060_state *adis16060_st;
++/* At the moment the spi framework doesn't allow global setting of cs_change.
++ * It's in the likely to be added comment at the top of spi.h.
++ * This means that use cannot be made of spi_write etc.
++ */
 +
-+int adis16060_spi_write(struct device *dev,
++/**
++ * adis16251_spi_write_reg_8() - write single byte to a register
++ * @dev: device associated with child of actual device (iio_dev or iio_trig)
++ * @reg_address: the address of the register to be written
++ * @val: the value to write
++ **/
++int adis16251_spi_write_reg_8(struct device *dev,
++		u8 reg_address,
 +		u8 val)
 +{
 +	int ret;
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16060_state *st = iio_dev_get_devdata(indio_dev);
++	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
 +
 +	mutex_lock(&st->buf_lock);
-+	st->tx[0] = 0;
-+	st->tx[1] = 0;
-+	st->tx[2] = val; /* The last 8 bits clocked in are latched */
++	st->tx[0] = ADIS16251_WRITE_REG(reg_address);
++	st->tx[1] = val;
 +
-+	ret = spi_write(st->us_w, st->tx, 3);
++	ret = spi_write(st->us, st->tx, 2);
 +	mutex_unlock(&st->buf_lock);
 +
 +	return ret;
 +}
 +
-+int adis16060_spi_read(struct device *dev,
-+		u16 *val)
++/**
++ * adis16251_spi_write_reg_16() - write 2 bytes to a pair of registers
++ * @dev: device associated with child of actual device (iio_dev or iio_trig)
++ * @reg_address: the address of the lower of the two registers. Second register
++ *               is assumed to have address one greater.
++ * @val: value to be written
++ **/
++static int adis16251_spi_write_reg_16(struct device *dev,
++		u8 lower_reg_address,
++		u16 value)
 +{
 +	int ret;
++	struct spi_message msg;
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16060_state *st = iio_dev_get_devdata(indio_dev);
++	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
++	struct spi_transfer xfers[] = {
++		{
++			.tx_buf = st->tx,
++			.bits_per_word = 8,
++			.len = 2,
++			.cs_change = 1,
++		}, {
++			.tx_buf = st->tx + 2,
++			.bits_per_word = 8,
++			.len = 2,
++			.cs_change = 1,
++		},
++	};
 +
 +	mutex_lock(&st->buf_lock);
++	st->tx[0] = ADIS16251_WRITE_REG(lower_reg_address);
++	st->tx[1] = value & 0xFF;
++	st->tx[2] = ADIS16251_WRITE_REG(lower_reg_address + 1);
++	st->tx[3] = (value >> 8) & 0xFF;
 +
-+	ret = spi_read(st->us_r, st->rx, 3);
-+
-+	/* The internal successive approximation ADC begins the conversion process
-+	 * on the falling edge of MSEL1 and starts to place data MSB first on the
-+	 * DOUT line at the 6th falling edge of SCLK
-+	 */
-+	if (ret == 0)
-+		*val = ((st->rx[0] & 0x3) << 12) | (st->rx[1] << 4) | ((st->rx[2] >> 4) & 0xF);
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers[0], &msg);
++	spi_message_add_tail(&xfers[1], &msg);
++	ret = spi_sync(st->us, &msg);
 +	mutex_unlock(&st->buf_lock);
 +
 +	return ret;
 +}
 +
-+static ssize_t adis16060_read(struct device *dev,
++/**
++ * adis16251_spi_read_reg_16() - read 2 bytes from a 16-bit register
++ * @dev: device associated with child of actual device (iio_dev or iio_trig)
++ * @reg_address: the address of the lower of the two registers. Second register
++ *               is assumed to have address one greater.
++ * @val: somewhere to pass back the value read
++ **/
++static int adis16251_spi_read_reg_16(struct device *dev,
++		u8 lower_reg_address,
++		u16 *val)
++{
++	struct spi_message msg;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
++	int ret;
++	struct spi_transfer xfers[] = {
++		{
++			.tx_buf = st->tx,
++			.bits_per_word = 8,
++			.len = 2,
++			.cs_change = 1,
++		}, {
++			.rx_buf = st->rx,
++			.bits_per_word = 8,
++			.len = 2,
++			.cs_change = 1,
++		},
++	};
++
++	mutex_lock(&st->buf_lock);
++	st->tx[0] = ADIS16251_READ_REG(lower_reg_address);
++	st->tx[1] = 0;
++	st->tx[2] = 0;
++	st->tx[3] = 0;
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers[0], &msg);
++	spi_message_add_tail(&xfers[1], &msg);
++	ret = spi_sync(st->us, &msg);
++	if (ret) {
++		dev_err(&st->us->dev, "problem when reading 16 bit register 0x%02X",
++				lower_reg_address);
++		goto error_ret;
++	}
++	*val = (st->rx[0] << 8) | st->rx[1];
++
++error_ret:
++	mutex_unlock(&st->buf_lock);
++	return ret;
++}
++
++/**
++ * adis16251_spi_read_burst() - read all data registers
++ * @dev: device associated with child of actual device (iio_dev or iio_trig)
++ * @rx: somewhere to pass back the value read (min size is 24 bytes)
++ **/
++int adis16251_spi_read_burst(struct device *dev, u8 *rx)
++{
++	struct spi_message msg;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
++	u32 old_speed_hz = st->us->max_speed_hz;
++	int ret;
++
++	struct spi_transfer xfers[] = {
++		{
++			.tx_buf = st->tx,
++			.bits_per_word = 8,
++			.len = 2,
++			.cs_change = 0,
++		}, {
++			.rx_buf = rx,
++			.bits_per_word = 8,
++			.len = 24,
++			.cs_change = 1,
++		},
++	};
++
++	mutex_lock(&st->buf_lock);
++	st->tx[0] = ADIS16251_READ_REG(ADIS16251_GLOB_CMD);
++	st->tx[1] = 0;
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers[0], &msg);
++	spi_message_add_tail(&xfers[1], &msg);
++
++	st->us->max_speed_hz = min(ADIS16251_SPI_BURST, old_speed_hz);
++	spi_setup(st->us);
++
++	ret = spi_sync(st->us, &msg);
++	if (ret)
++		dev_err(&st->us->dev, "problem when burst reading");
++
++	st->us->max_speed_hz = old_speed_hz;
++	spi_setup(st->us);
++	mutex_unlock(&st->buf_lock);
++	return ret;
++}
++
++/**
++ * adis16251_spi_read_sequence() - read a sequence of 16-bit registers
++ * @dev: device associated with child of actual device (iio_dev or iio_trig)
++ * @tx: register addresses in bytes 0,2,4,6... (min size is 2*num bytes)
++ * @rx: somewhere to pass back the value read (min size is 2*num bytes)
++ **/
++int adis16251_spi_read_sequence(struct device *dev,
++		u8 *tx, u8 *rx, int num)
++{
++	struct spi_message msg;
++	struct spi_transfer *xfers;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
++	int ret, i;
++
++	xfers = kzalloc(num + 1, GFP_KERNEL);
++	if (xfers == NULL) {
++		dev_err(&st->us->dev, "memory alloc failed");
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++
++	/* tx: |add1|addr2|addr3|...|addrN |zero|
++	 * rx: |zero|res1 |res2 |...|resN-1|resN| */
++	spi_message_init(&msg);
++	for (i = 0; i < num + 1; i++) {
++		if (i > 0)
++			xfers[i].rx_buf = st->rx + 2*(i - 1);
++		if (i < num)
++			xfers[i].tx_buf = st->tx + 2*i;
++		xfers[i].bits_per_word = 8;
++		xfers[i].len = 2;
++		xfers[i].cs_change = 1;
++		spi_message_add_tail(&xfers[i], &msg);
++	}
++
++	mutex_lock(&st->buf_lock);
++
++	ret = spi_sync(st->us, &msg);
++	if (ret)
++		dev_err(&st->us->dev, "problem when reading sequence");
++
++	mutex_unlock(&st->buf_lock);
++	kfree(xfers);
++
++error_ret:
++	return ret;
++}
++
++static ssize_t adis16251_spi_read_signed(struct device *dev,
++		struct device_attribute *attr,
++		char *buf,
++		unsigned bits)
++{
++	int ret;
++	s16 val = 0;
++	unsigned shift = 16 - bits;
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++
++	ret = adis16251_spi_read_reg_16(dev, this_attr->address, (u16 *)&val);
++	if (ret)
++		return ret;
++
++	if (val & ADIS16251_ERROR_ACTIVE)
++		adis16251_check_status(dev);
++	val = ((s16)(val << shift) >> shift);
++	return sprintf(buf, "%d\n", val);
++}
++
++static ssize_t adis16251_read_12bit_unsigned(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	int ret;
++	u16 val = 0;
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++
++	ret = adis16251_spi_read_reg_16(dev, this_attr->address, &val);
++	if (ret)
++		return ret;
++
++	if (val & ADIS16251_ERROR_ACTIVE)
++		adis16251_check_status(dev);
++
++	return sprintf(buf, "%u\n", val & 0x0FFF);
++}
++
++static ssize_t adis16251_read_14bit_signed(struct device *dev,
 +		struct device_attribute *attr,
 +		char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	u16 val;
 +	ssize_t ret;
 +
 +	/* Take the iio_dev status lock */
 +	mutex_lock(&indio_dev->mlock);
-+	ret =  adis16060_spi_read(dev, &val);
++	ret =  adis16251_spi_read_signed(dev, attr, buf, 14);
 +	mutex_unlock(&indio_dev->mlock);
 +
-+	if (ret == 0)
-+		return sprintf(buf, "%d\n", val);
-+	else
-+		return ret;
++	return ret;
 +}
 +
-+static ssize_t adis16060_write(struct device *dev,
++static ssize_t adis16251_read_12bit_signed(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	ssize_t ret;
++
++	/* Take the iio_dev status lock */
++	mutex_lock(&indio_dev->mlock);
++	ret =  adis16251_spi_read_signed(dev, attr, buf, 12);
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static ssize_t adis16251_write_16bit(struct device *dev,
 +		struct device_attribute *attr,
 +		const char *buf,
 +		size_t len)
 +{
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
 +	int ret;
 +	long val;
 +
-+	ret = strict_strtol(buf, 16, &val);
++	ret = strict_strtol(buf, 10, &val);
 +	if (ret)
 +		goto error_ret;
-+	ret = adis16060_spi_write(dev, val);
++	ret = adis16251_spi_write_reg_16(dev, this_attr->address, val);
 +
 +error_ret:
 +	return ret ? ret : len;
 +}
 +
-+#define IIO_DEV_ATTR_IN(_show)				\
-+	IIO_DEVICE_ATTR(in, S_IRUGO, _show, NULL, 0)
++static ssize_t adis16251_read_frequency(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	int ret, len = 0;
++	u16 t;
++	int sps;
++	ret = adis16251_spi_read_reg_16(dev,
++			ADIS16251_SMPL_PRD,
++			&t);
++	if (ret)
++		return ret;
++	sps =  (t & ADIS16251_SMPL_PRD_TIME_BASE) ? 8 : 256;
++	sps /= (t & ADIS16251_SMPL_PRD_DIV_MASK) + 1;
++	len = sprintf(buf, "%d SPS\n", sps);
++	return len;
++}
 +
-+#define IIO_DEV_ATTR_OUT(_store)				\
-+	IIO_DEVICE_ATTR(out, S_IRUGO, NULL, _store, 0)
++static ssize_t adis16251_write_frequency(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
++	long val;
++	int ret;
++	u8 t;
 +
-+static IIO_DEV_ATTR_IN(adis16060_read);
-+static IIO_DEV_ATTR_OUT(adis16060_write);
++	ret = strict_strtol(buf, 10, &val);
++	if (ret)
++		return ret;
 +
-+static IIO_CONST_ATTR(name, "adis16060");
++	mutex_lock(&indio_dev->mlock);
 +
-+static struct attribute *adis16060_event_attributes[] = {
++	t = (256 / val);
++	if (t > 0)
++		t--;
++	t &= ADIS16251_SMPL_PRD_DIV_MASK;
++	if ((t & ADIS16251_SMPL_PRD_DIV_MASK) >= 0x0A)
++		st->us->max_speed_hz = ADIS16251_SPI_SLOW;
++	else
++		st->us->max_speed_hz = ADIS16251_SPI_FAST;
++
++	ret = adis16251_spi_write_reg_8(dev,
++			ADIS16251_SMPL_PRD,
++			t);
++
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret ? ret : len;
++}
++
++static ssize_t adis16251_write_reset(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf, size_t len)
++{
++	if (len < 1)
++		return -1;
++	switch (buf[0]) {
++	case '1':
++	case 'y':
++	case 'Y':
++		return adis16251_reset(dev);
++	}
++	return -1;
++}
++
++
++
++int adis16251_set_irq(struct device *dev, bool enable)
++{
++	int ret;
++	u16 msc;
++	ret = adis16251_spi_read_reg_16(dev, ADIS16251_MSC_CTRL, &msc);
++	if (ret)
++		goto error_ret;
++
++	msc |= ADIS16251_MSC_CTRL_DATA_RDY_POL_HIGH;
++	if (enable)
++		msc |= ADIS16251_MSC_CTRL_DATA_RDY_EN;
++	else
++		msc &= ~ADIS16251_MSC_CTRL_DATA_RDY_EN;
++
++	ret = adis16251_spi_write_reg_16(dev, ADIS16251_MSC_CTRL, msc);
++	if (ret)
++		goto error_ret;
++
++error_ret:
++	return ret;
++}
++
++int adis16251_reset(struct device *dev)
++{
++	int ret;
++	ret = adis16251_spi_write_reg_8(dev,
++			ADIS16251_GLOB_CMD,
++			ADIS16251_GLOB_CMD_SW_RESET);
++	if (ret)
++		dev_err(dev, "problem resetting device");
++
++	return ret;
++}
++
++/* Power down the device */
++int adis16251_stop_device(struct device *dev)
++{
++	int ret;
++	u16 val = ADIS16251_SLP_CNT_POWER_OFF;
++
++	ret = adis16251_spi_write_reg_16(dev, ADIS16251_SLP_CNT, val);
++	if (ret)
++		dev_err(dev, "problem with turning device off: SLP_CNT");
++
++	return ret;
++}
++
++static int adis16251_self_test(struct device *dev)
++{
++	int ret;
++
++	ret = adis16251_spi_write_reg_16(dev,
++			ADIS16251_MSC_CTRL,
++			ADIS16251_MSC_CTRL_INT_SELF_TEST);
++	if (ret) {
++		dev_err(dev, "problem starting self test");
++		goto err_ret;
++	}
++
++	adis16251_check_status(dev);
++
++err_ret:
++	return ret;
++}
++
++int adis16251_check_status(struct device *dev)
++{
++	u16 status;
++	int ret;
++
++	ret = adis16251_spi_read_reg_16(dev, ADIS16251_DIAG_STAT, &status);
++
++	if (ret < 0) {
++		dev_err(dev, "Reading status failed\n");
++		goto error_ret;
++	}
++
++	if (!(status & ADIS16251_DIAG_STAT_ERR_MASK)) {
++		ret = 0;
++		goto error_ret;
++	}
++
++	ret = -EFAULT;
++
++	if (status & ADIS16251_DIAG_STAT_ALARM2)
++		dev_err(dev, "Alarm 2 active\n");
++	if (status & ADIS16251_DIAG_STAT_ALARM1)
++		dev_err(dev, "Alarm 1 active\n");
++	if (status & ADIS16251_DIAG_STAT_SELF_TEST)
++		dev_err(dev, "Self test error\n");
++	if (status & ADIS16251_DIAG_STAT_OVERFLOW)
++		dev_err(dev, "Sensor overrange\n");
++	if (status & ADIS16251_DIAG_STAT_SPI_FAIL)
++		dev_err(dev, "SPI failure\n");
++	if (status & ADIS16251_DIAG_STAT_FLASH_UPT)
++		dev_err(dev, "Flash update failed\n");
++	if (status & ADIS16251_DIAG_STAT_POWER_HIGH)
++		dev_err(dev, "Power supply above 5.25V\n");
++	if (status & ADIS16251_DIAG_STAT_POWER_LOW)
++		dev_err(dev, "Power supply below 4.75V\n");
++
++error_ret:
++	return ret;
++}
++
++static int adis16251_initial_setup(struct adis16251_state *st)
++{
++	int ret;
++	u16 smp_prd;
++	struct device *dev = &st->indio_dev->dev;
++
++	/* use low spi speed for init */
++	st->us->max_speed_hz = ADIS16251_SPI_SLOW;
++	st->us->mode = SPI_MODE_3;
++	spi_setup(st->us);
++
++	/* Disable IRQ */
++	ret = adis16251_set_irq(dev, false);
++	if (ret) {
++		dev_err(dev, "disable irq failed");
++		goto err_ret;
++	}
++
++	/* Do self test */
++
++	/* Read status register to check the result */
++	ret = adis16251_check_status(dev);
++	if (ret) {
++		adis16251_reset(dev);
++		dev_err(dev, "device not playing ball -> reset");
++		msleep(ADIS16251_STARTUP_DELAY);
++		ret = adis16251_check_status(dev);
++		if (ret) {
++			dev_err(dev, "giving up");
++			goto err_ret;
++		}
++	}
++
++	printk(KERN_INFO DRIVER_NAME ": at CS%d (irq %d)\n",
++			st->us->chip_select, st->us->irq);
++
++	/* use high spi speed if possible */
++	ret = adis16251_spi_read_reg_16(dev, ADIS16251_SMPL_PRD, &smp_prd);
++	if (!ret && (smp_prd & ADIS16251_SMPL_PRD_DIV_MASK) < 0x0A) {
++		st->us->max_speed_hz = ADIS16251_SPI_SLOW;
++		spi_setup(st->us);
++	}
++
++err_ret:
++	return ret;
++}
++
++static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16251_read_12bit_signed,
++		ADIS16251_SUPPLY_OUT);
++static IIO_CONST_ATTR(in0_supply_scale, "0.0018315");
++
++static IIO_DEV_ATTR_GYRO(adis16251_read_14bit_signed,
++		ADIS16251_GYRO_OUT);
++static IIO_DEV_ATTR_GYRO_SCALE(S_IWUSR | S_IRUGO,
++		adis16251_read_12bit_signed,
++		adis16251_write_16bit,
++		ADIS16251_GYRO_SCALE);
++static IIO_DEV_ATTR_GYRO_OFFSET(S_IWUSR | S_IRUGO,
++		adis16251_read_12bit_signed,
++		adis16251_write_16bit,
++		ADIS16251_GYRO_OFF);
++
++static IIO_DEV_ATTR_TEMP_RAW(adis16251_read_12bit_signed);
++static IIO_CONST_ATTR(temp_offset, "25 K");
++static IIO_CONST_ATTR(temp_scale, "0.1453 K");
++
++static IIO_DEV_ATTR_IN_NAMED_RAW(1, aux, adis16251_read_12bit_unsigned,
++		ADIS16251_AUX_ADC);
++static IIO_CONST_ATTR(in1_aux_scale, "0.0006105");
++
++static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
++		adis16251_read_frequency,
++		adis16251_write_frequency);
++static IIO_DEV_ATTR_ANGL(adis16251_read_14bit_signed,
++		ADIS16251_ANGL_OUT);
++
++static IIO_DEV_ATTR_RESET(adis16251_write_reset);
++
++static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("0.129 ~ 256");
++
++static IIO_CONST_ATTR(name, "adis16251");
++
++static struct attribute *adis16251_event_attributes[] = {
 +	NULL
 +};
 +
-+static struct attribute_group adis16060_event_attribute_group = {
-+	.attrs = adis16060_event_attributes,
++static struct attribute_group adis16251_event_attribute_group = {
++	.attrs = adis16251_event_attributes,
 +};
 +
-+static struct attribute *adis16060_attributes[] = {
-+	&iio_dev_attr_in.dev_attr.attr,
-+	&iio_dev_attr_out.dev_attr.attr,
++static struct attribute *adis16251_attributes[] = {
++	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
++	&iio_const_attr_in0_supply_scale.dev_attr.attr,
++	&iio_dev_attr_gyro_raw.dev_attr.attr,
++	&iio_dev_attr_gyro_scale.dev_attr.attr,
++	&iio_dev_attr_gyro_offset.dev_attr.attr,
++	&iio_dev_attr_angl_raw.dev_attr.attr,
++	&iio_dev_attr_temp_raw.dev_attr.attr,
++	&iio_const_attr_temp_offset.dev_attr.attr,
++	&iio_const_attr_temp_scale.dev_attr.attr,
++	&iio_dev_attr_in1_aux_raw.dev_attr.attr,
++	&iio_const_attr_in1_aux_scale.dev_attr.attr,
++	&iio_dev_attr_sampling_frequency.dev_attr.attr,
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	&iio_dev_attr_reset.dev_attr.attr,
 +	&iio_const_attr_name.dev_attr.attr,
 +	NULL
 +};
 +
-+static const struct attribute_group adis16060_attribute_group = {
-+	.attrs = adis16060_attributes,
++static const struct attribute_group adis16251_attribute_group = {
++	.attrs = adis16251_attributes,
 +};
 +
-+static int __devinit adis16060_r_probe(struct spi_device *spi)
++static int __devinit adis16251_probe(struct spi_device *spi)
 +{
 +	int ret, regdone = 0;
-+	struct adis16060_state *st = kzalloc(sizeof *st, GFP_KERNEL);
++	struct adis16251_state *st = kzalloc(sizeof *st, GFP_KERNEL);
 +	if (!st) {
 +		ret =  -ENOMEM;
 +		goto error_ret;
@@ -321,17 +890,17 @@ index 0000000..fc48aca
 +	spi_set_drvdata(spi, st);
 +
 +	/* Allocate the comms buffers */
-+	st->rx = kzalloc(sizeof(*st->rx)*ADIS16060_MAX_RX, GFP_KERNEL);
++	st->rx = kzalloc(sizeof(*st->rx)*ADIS16251_MAX_RX, GFP_KERNEL);
 +	if (st->rx == NULL) {
 +		ret = -ENOMEM;
 +		goto error_free_st;
 +	}
-+	st->tx = kzalloc(sizeof(*st->tx)*ADIS16060_MAX_TX, GFP_KERNEL);
++	st->tx = kzalloc(sizeof(*st->tx)*ADIS16251_MAX_TX, GFP_KERNEL);
 +	if (st->tx == NULL) {
 +		ret = -ENOMEM;
 +		goto error_free_rx;
 +	}
-+	st->us_r = spi;
++	st->us = spi;
 +	mutex_init(&st->buf_lock);
 +	/* setup the industrialio driver allocated elements */
 +	st->indio_dev = iio_allocate_device();
@@ -342,13 +911,13 @@ index 0000000..fc48aca
 +
 +	st->indio_dev->dev.parent = &spi->dev;
 +	st->indio_dev->num_interrupt_lines = 1;
-+	st->indio_dev->event_attrs = &adis16060_event_attribute_group;
-+	st->indio_dev->attrs = &adis16060_attribute_group;
++	st->indio_dev->event_attrs = &adis16251_event_attribute_group;
++	st->indio_dev->attrs = &adis16251_attribute_group;
 +	st->indio_dev->dev_data = (void *)(st);
 +	st->indio_dev->driver_module = THIS_MODULE;
 +	st->indio_dev->modes = INDIO_DIRECT_MODE;
 +
-+	ret = adis16060_configure_ring(st->indio_dev);
++	ret = adis16251_configure_ring(st->indio_dev);
 +	if (ret)
 +		goto error_free_dev;
 +
@@ -357,7 +926,7 @@ index 0000000..fc48aca
 +		goto error_unreg_ring_funcs;
 +	regdone = 1;
 +
-+	ret = adis16060_initialize_ring(st->indio_dev->ring);
++	ret = adis16251_initialize_ring(st->indio_dev->ring);
 +	if (ret) {
 +		printk(KERN_ERR "failed to initialize the ring\n");
 +		goto error_unreg_ring_funcs;
@@ -368,25 +937,31 @@ index 0000000..fc48aca
 +				st->indio_dev,
 +				0,
 +				IRQF_TRIGGER_RISING,
-+				"adis16060");
++				"adis16251");
 +		if (ret)
 +			goto error_uninitialize_ring;
 +
-+		ret = adis16060_probe_trigger(st->indio_dev);
++		ret = adis16251_probe_trigger(st->indio_dev);
 +		if (ret)
 +			goto error_unregister_line;
 +	}
 +
-+	adis16060_st = st;
++	/* Get the device into a sane initial state */
++	ret = adis16251_initial_setup(st);
++	if (ret)
++		goto error_remove_trigger;
 +	return 0;
 +
++error_remove_trigger:
++	if (st->indio_dev->modes & INDIO_RING_TRIGGERED)
++		adis16251_remove_trigger(st->indio_dev);
 +error_unregister_line:
 +	if (st->indio_dev->modes & INDIO_RING_TRIGGERED)
 +		iio_unregister_interrupt_line(st->indio_dev, 0);
 +error_uninitialize_ring:
-+	adis16060_uninitialize_ring(st->indio_dev->ring);
++	adis16251_uninitialize_ring(st->indio_dev->ring);
 +error_unreg_ring_funcs:
-+	adis16060_unconfigure_ring(st->indio_dev);
++	adis16251_unconfigure_ring(st->indio_dev);
 +error_free_dev:
 +	if (regdone)
 +		iio_device_unregister(st->indio_dev);
@@ -403,93 +978,75 @@ index 0000000..fc48aca
 +}
 +
 +/* fixme, confirm ordering in this function */
-+static int adis16060_r_remove(struct spi_device *spi)
++static int adis16251_remove(struct spi_device *spi)
 +{
-+	struct adis16060_state *st = spi_get_drvdata(spi);
++	int ret;
++	struct adis16251_state *st = spi_get_drvdata(spi);
 +	struct iio_dev *indio_dev = st->indio_dev;
++
++	ret = adis16251_stop_device(&(indio_dev->dev));
++	if (ret)
++		goto err_ret;
 +
 +	flush_scheduled_work();
 +
-+	adis16060_remove_trigger(indio_dev);
++	adis16251_remove_trigger(indio_dev);
 +	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0)
 +		iio_unregister_interrupt_line(indio_dev, 0);
 +
-+	adis16060_uninitialize_ring(indio_dev->ring);
-+	adis16060_unconfigure_ring(indio_dev);
++	adis16251_uninitialize_ring(indio_dev->ring);
++	adis16251_unconfigure_ring(indio_dev);
 +	iio_device_unregister(indio_dev);
 +	kfree(st->tx);
 +	kfree(st->rx);
 +	kfree(st);
 +
 +	return 0;
-+}
 +
-+static int __devinit adis16060_w_probe(struct spi_device *spi)
-+{
-+	int ret;
-+	struct adis16060_state *st = adis16060_st;
-+	if (!st) {
-+		ret =  -ENODEV;
-+		goto error_ret;
-+	}
-+	spi_set_drvdata(spi, st);
-+	st->us_w = spi;
-+	return 0;
-+
-+error_ret:
++err_ret:
 +	return ret;
 +}
 +
-+static int adis16060_w_remove(struct spi_device *spi)
-+{
-+	return 0;
-+}
-+
-+static struct spi_driver adis16060_r_driver = {
++static struct spi_driver adis16251_driver = {
 +	.driver = {
-+		.name = "adis16060_r",
++		.name = "adis16251",
 +		.owner = THIS_MODULE,
 +	},
-+	.probe = adis16060_r_probe,
-+	.remove = __devexit_p(adis16060_r_remove),
++	.probe = adis16251_probe,
++	.remove = __devexit_p(adis16251_remove),
 +};
 +
-+static struct spi_driver adis16060_w_driver = {
-+	.driver = {
-+		.name = "adis16060_w",
-+		.owner = THIS_MODULE,
-+	},
-+	.probe = adis16060_w_probe,
-+	.remove = __devexit_p(adis16060_w_remove),
-+};
-+
-+static __init int adis16060_init(void)
++static __init int adis16251_init(void)
 +{
-+	int ret;
-+
-+	ret = spi_register_driver(&adis16060_r_driver);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = spi_register_driver(&adis16060_w_driver);
-+	if (ret < 0) {
-+		spi_unregister_driver(&adis16060_r_driver);
-+		return ret;
-+	}
-+
-+	return 0;
++	return spi_register_driver(&adis16251_driver);
 +}
-+module_init(adis16060_init);
++module_init(adis16251_init);
 +
-+static __exit void adis16060_exit(void)
++static __exit void adis16251_exit(void)
 +{
-+	spi_unregister_driver(&adis16060_w_driver);
-+	spi_unregister_driver(&adis16060_r_driver);
++	spi_unregister_driver(&adis16251_driver);
 +}
-+module_exit(adis16060_exit);
++module_exit(adis16251_exit);
 +
 +MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
-+MODULE_DESCRIPTION("Analog Devices ADIS16060 Yaw Rate Gyroscope with SPI driver");
++MODULE_DESCRIPTION("Analog Devices ADIS16251 Digital Gyroscope Sensor SPI driver");
 +MODULE_LICENSE("GPL v2");
+diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
+index ee91a95..18bdaac 100644
+--- a/drivers/staging/iio/sysfs.h
++++ b/drivers/staging/iio/sysfs.h
+@@ -108,6 +108,12 @@ struct iio_const_attr {
+ 	IIO_DEVICE_ATTR(name, S_IRUGO, _show, NULL, 0)
+ 
+ /**
++ * IIO_DEV_ATTR_RESET: resets the device
++ **/
++#define IIO_DEV_ATTR_RESET(_store)			\
++	IIO_DEVICE_ATTR(reset, S_IWUGO, NULL, _store, 0)
++
++/**
+  * IIO_CONST_ATTR_NAME - constant identifier
+  * @_string: the name
+  **/
 -- 
 1.7.3.2
