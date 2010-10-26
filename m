@@ -3,259 +3,60 @@ From: Mike Frysinger <vapier@gentoo.org>
 To: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
 Cc: device-drivers-devel@blackfin.uclinux.org,
-	Barry Song <barry.song@analog.com>,
+	Sonic Zhang <sonic.zhang@analog.com>,
 	Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 18/36] staging: iio: gyro: new driver for ADIS16251 devices
-Date: Tue, 26 Oct 2010 14:17:28 -0400
-Message-Id: <1288117066-18055-19-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 17/36] staging: iio: adc: new driver for ADT7410 temperature sensors
+Date: Tue, 26 Oct 2010 14:17:27 -0400
+Message-Id: <1288117066-18055-18-git-send-email-vapier@gentoo.org>
 In-Reply-To: <1288117066-18055-1-git-send-email-vapier@gentoo.org>
 References: <1288117066-18055-1-git-send-email-vapier@gentoo.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Barry Song <barry.song@analog.com>
+From: Sonic Zhang <sonic.zhang@analog.com>
 
-Signed-off-by: Barry Song <barry.song@analog.com>
+Signed-off-by: Sonic Zhang <sonic.zhang@analog.com>
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
- drivers/staging/iio/gyro/Kconfig          |   10 +
- drivers/staging/iio/gyro/Makefile         |    3 +
- drivers/staging/iio/gyro/adis16251.h      |  185 +++++++
- drivers/staging/iio/gyro/adis16251_core.c |  777 +++++++++++++++++++++++++++++
- drivers/staging/iio/sysfs.h               |    6 +
- 5 files changed, 981 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/gyro/adis16251.h
- create mode 100644 drivers/staging/iio/gyro/adis16251_core.c
+ drivers/staging/iio/adc/Kconfig   |    7 +
+ drivers/staging/iio/adc/Makefile  |    1 +
+ drivers/staging/iio/adc/adt7410.c |  915 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 923 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/adt7410.c
 
-diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
-index d1dde82..c7a7d29 100644
---- a/drivers/staging/iio/gyro/Kconfig
-+++ b/drivers/staging/iio/gyro/Kconfig
-@@ -14,3 +14,13 @@ config ADIS16260
- 
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called adis16260.
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index cd35526..9ca6565 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -127,3 +127,10 @@ config ADT7310
+ 	help
+ 	  Say yes here to build support for Analog Devices ADT7310
+ 	  temperature sensors.
 +
-+config ADIS16251
-+	tristate "Analog Devices ADIS16251 Digital Gyroscope Sensor SPI driver"
-+	depends on SPI
++config ADT7410
++	tristate "Analog Devices ADT7410 temperature sensor driver"
++	depends on I2C
 +	help
-+	  Say yes here to build support for Analog Devices adis16261 programmable
-+	  digital gyroscope sensor.
-+
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called adis16251.
-diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
-index b5f0dc0..8a592d8 100644
---- a/drivers/staging/iio/gyro/Makefile
-+++ b/drivers/staging/iio/gyro/Makefile
-@@ -5,3 +5,6 @@
- adis16260-y             := adis16260_core.o
- adis16260-$(CONFIG_IIO_RING_BUFFER) += adis16260_ring.o adis16260_trigger.o
- obj-$(CONFIG_ADIS16260) += adis16260.o
-+
-+adis16251-y             := adis16251_core.o
-+obj-$(CONFIG_ADIS16251) += adis16251.o
-diff --git a/drivers/staging/iio/gyro/adis16251.h b/drivers/staging/iio/gyro/adis16251.h
++	  Say yes here to build support for Analog Devices ADT7410
++	  temperature sensors.
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index 6067b66..a7dce6b 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -24,3 +24,4 @@ obj-$(CONFIG_AD7745) += ad7745.o
+ obj-$(CONFIG_AD7816) += ad7816.o
+ obj-$(CONFIG_ADT75) += adt75.o
+ obj-$(CONFIG_ADT7310) += adt7310.o
++obj-$(CONFIG_ADT7410) += adt7410.o
+diff --git a/drivers/staging/iio/adc/adt7410.c b/drivers/staging/iio/adc/adt7410.c
 new file mode 100644
-index 0000000..999db49
+index 0000000..c345f27
 --- /dev/null
-+++ b/drivers/staging/iio/gyro/adis16251.h
-@@ -0,0 +1,185 @@
-+#ifndef SPI_ADIS16251_H_
-+#define SPI_ADIS16251_H_
-+
-+#define ADIS16251_STARTUP_DELAY	220 /* ms */
-+
-+#define ADIS16251_READ_REG(a)    a
-+#define ADIS16251_WRITE_REG(a) ((a) | 0x80)
-+
-+#define ADIS16251_ENDURANCE  0x00 /* Flash memory write count */
-+#define ADIS16251_SUPPLY_OUT 0x02 /* Power supply measurement */
-+#define ADIS16251_GYRO_OUT   0x04 /* X-axis gyroscope output */
-+#define ADIS16251_AUX_ADC    0x0A /* analog input channel measurement */
-+#define ADIS16251_TEMP_OUT   0x0C /* internal temperature measurement */
-+#define ADIS16251_ANGL_OUT   0x0E /* angle displacement */
-+#define ADIS16251_GYRO_OFF   0x14 /* Calibration, offset/bias adjustment */
-+#define ADIS16251_GYRO_SCALE 0x16 /* Calibration, scale adjustment */
-+#define ADIS16251_ALM_MAG1   0x20 /* Alarm 1 magnitude/polarity setting */
-+#define ADIS16251_ALM_MAG2   0x22 /* Alarm 2 magnitude/polarity setting */
-+#define ADIS16251_ALM_SMPL1  0x24 /* Alarm 1 dynamic rate of change setting */
-+#define ADIS16251_ALM_SMPL2  0x26 /* Alarm 2 dynamic rate of change setting */
-+#define ADIS16251_ALM_CTRL   0x28 /* Alarm control */
-+#define ADIS16251_AUX_DAC    0x30 /* Auxiliary DAC data */
-+#define ADIS16251_GPIO_CTRL  0x32 /* Control, digital I/O line */
-+#define ADIS16251_MSC_CTRL   0x34 /* Control, data ready, self-test settings */
-+#define ADIS16251_SMPL_PRD   0x36 /* Control, internal sample rate */
-+#define ADIS16251_SENS_AVG   0x38 /* Control, dynamic range, filtering */
-+#define ADIS16251_SLP_CNT    0x3A /* Control, sleep mode initiation */
-+#define ADIS16251_DIAG_STAT  0x3C /* Diagnostic, error flags */
-+#define ADIS16251_GLOB_CMD   0x3E /* Control, global commands */
-+
-+#define ADIS16251_ERROR_ACTIVE			(1<<14)
-+#define ADIS16251_NEW_DATA			(1<<14)
-+
-+/* MSC_CTRL */
-+#define ADIS16251_MSC_CTRL_INT_SELF_TEST	(1<<10) /* Internal self-test enable */
-+#define ADIS16251_MSC_CTRL_NEG_SELF_TEST	(1<<9)
-+#define ADIS16251_MSC_CTRL_POS_SELF_TEST	(1<<8)
-+#define ADIS16251_MSC_CTRL_DATA_RDY_EN		(1<<2)
-+#define ADIS16251_MSC_CTRL_DATA_RDY_POL_HIGH	(1<<1)
-+#define ADIS16251_MSC_CTRL_DATA_RDY_DIO2	(1<<0)
-+
-+/* SMPL_PRD */
-+#define ADIS16251_SMPL_PRD_TIME_BASE	(1<<7) /* Time base (tB): 0 = 1.953 ms, 1 = 60.54 ms */
-+#define ADIS16251_SMPL_PRD_DIV_MASK	0x7F
-+
-+/* SLP_CNT */
-+#define ADIS16251_SLP_CNT_POWER_OFF     0x80
-+
-+/* DIAG_STAT */
-+#define ADIS16251_DIAG_STAT_ALARM2	(1<<9)
-+#define ADIS16251_DIAG_STAT_ALARM1	(1<<8)
-+#define ADIS16251_DIAG_STAT_SELF_TEST	(1<<5)
-+#define ADIS16251_DIAG_STAT_OVERFLOW	(1<<4)
-+#define ADIS16251_DIAG_STAT_SPI_FAIL	(1<<3)
-+#define ADIS16251_DIAG_STAT_FLASH_UPT	(1<<2)
-+#define ADIS16251_DIAG_STAT_POWER_HIGH	(1<<1)
-+#define ADIS16251_DIAG_STAT_POWER_LOW	(1<<0)
-+
-+#define ADIS16251_DIAG_STAT_ERR_MASK (ADIS16261_DIAG_STAT_ALARM2 | \
-+				      ADIS16261_DIAG_STAT_ALARM1 | \
-+				      ADIS16261_DIAG_STAT_SELF_TEST | \
-+				      ADIS16261_DIAG_STAT_OVERFLOW | \
-+				      ADIS16261_DIAG_STAT_SPI_FAIL | \
-+				      ADIS16261_DIAG_STAT_FLASH_UPT | \
-+				      ADIS16261_DIAG_STAT_POWER_HIGH | \
-+				      ADIS16261_DIAG_STAT_POWER_LOW)
-+
-+/* GLOB_CMD */
-+#define ADIS16251_GLOB_CMD_SW_RESET	(1<<7)
-+#define ADIS16251_GLOB_CMD_FLASH_UPD	(1<<3)
-+#define ADIS16251_GLOB_CMD_DAC_LATCH	(1<<2)
-+#define ADIS16251_GLOB_CMD_FAC_CALIB	(1<<1)
-+#define ADIS16251_GLOB_CMD_AUTO_NULL	(1<<0)
-+
-+#define ADIS16251_MAX_TX 24
-+#define ADIS16251_MAX_RX 24
-+
-+#define ADIS16251_SPI_SLOW	(u32)(300 * 1000)
-+#define ADIS16251_SPI_BURST	(u32)(1000 * 1000)
-+#define ADIS16251_SPI_FAST	(u32)(2000 * 1000)
-+
-+/**
-+ * struct adis16251_state - device instance specific data
-+ * @us:			actual spi_device
-+ * @work_trigger_to_ring: bh for triggered event handling
-+ * @inter:		used to check if new interrupt has been triggered
-+ * @last_timestamp:	passing timestamp from th to bh of interrupt handler
-+ * @indio_dev:		industrial I/O device structure
-+ * @trig:		data ready trigger registered with iio
-+ * @tx:			transmit buffer
-+ * @rx:			recieve buffer
-+ * @buf_lock:		mutex to protect tx and rx
-+ **/
-+struct adis16251_state {
-+	struct spi_device		*us;
-+	struct work_struct		work_trigger_to_ring;
-+	s64				last_timestamp;
-+	struct iio_dev			*indio_dev;
-+	struct iio_trigger		*trig;
-+	u8				*tx;
-+	u8				*rx;
-+	struct mutex			buf_lock;
-+};
-+
-+int adis16251_spi_write_reg_8(struct device *dev,
-+			      u8 reg_address,
-+			      u8 val);
-+
-+int adis16251_spi_read_burst(struct device *dev, u8 *rx);
-+
-+int adis16251_spi_read_sequence(struct device *dev,
-+				      u8 *tx, u8 *rx, int num);
-+
-+int adis16251_set_irq(struct device *dev, bool enable);
-+
-+int adis16251_reset(struct device *dev);
-+
-+int adis16251_stop_device(struct device *dev);
-+
-+int adis16251_check_status(struct device *dev);
-+
-+#if defined(CONFIG_IIO_RING_BUFFER) && defined(THIS_HAS_RING_BUFFER_SUPPORT)
-+/* At the moment triggers are only used for ring buffer
-+ * filling. This may change!
-+ */
-+
-+enum adis16251_scan {
-+	ADIS16251_SCAN_SUPPLY,
-+	ADIS16251_SCAN_GYRO,
-+	ADIS16251_SCAN_TEMP,
-+	ADIS16251_SCAN_ADC_0,
-+};
-+
-+void adis16251_remove_trigger(struct iio_dev *indio_dev);
-+int adis16251_probe_trigger(struct iio_dev *indio_dev);
-+
-+ssize_t adis16251_read_data_from_ring(struct device *dev,
-+				      struct device_attribute *attr,
-+				      char *buf);
-+
-+
-+int adis16251_configure_ring(struct iio_dev *indio_dev);
-+void adis16251_unconfigure_ring(struct iio_dev *indio_dev);
-+
-+int adis16251_initialize_ring(struct iio_ring_buffer *ring);
-+void adis16251_uninitialize_ring(struct iio_ring_buffer *ring);
-+#else /* CONFIG_IIO_RING_BUFFER */
-+
-+static inline void adis16251_remove_trigger(struct iio_dev *indio_dev)
-+{
-+}
-+
-+static inline int adis16251_probe_trigger(struct iio_dev *indio_dev)
-+{
-+	return 0;
-+}
-+
-+static inline ssize_t
-+adis16251_read_data_from_ring(struct device *dev,
-+			      struct device_attribute *attr,
-+			      char *buf)
-+{
-+	return 0;
-+}
-+
-+static int adis16251_configure_ring(struct iio_dev *indio_dev)
-+{
-+	return 0;
-+}
-+
-+static inline void adis16251_unconfigure_ring(struct iio_dev *indio_dev)
-+{
-+}
-+
-+static inline int adis16251_initialize_ring(struct iio_ring_buffer *ring)
-+{
-+	return 0;
-+}
-+
-+static inline void adis16251_uninitialize_ring(struct iio_ring_buffer *ring)
-+{
-+}
-+
-+#endif /* CONFIG_IIO_RING_BUFFER */
-+#endif /* SPI_ADIS16251_H_ */
-diff --git a/drivers/staging/iio/gyro/adis16251_core.c b/drivers/staging/iio/gyro/adis16251_core.c
-new file mode 100644
-index 0000000..a0d400f
---- /dev/null
-+++ b/drivers/staging/iio/gyro/adis16251_core.c
-@@ -0,0 +1,777 @@
++++ b/drivers/staging/iio/adc/adt7410.c
+@@ -0,0 +1,915 @@
 +/*
-+ * ADIS16251 Programmable Digital Gyroscope Sensor Driver
++ * ADT7410 digital temperature sensor driver supporting ADT7410
 + *
 + * Copyright 2010 Analog Devices Inc.
 + *
@@ -263,790 +64,911 @@ index 0000000..a0d400f
 + */
 +
 +#include <linux/interrupt.h>
-+#include <linux/irq.h>
 +#include <linux/gpio.h>
-+#include <linux/delay.h>
-+#include <linux/mutex.h>
++#include <linux/workqueue.h>
 +#include <linux/device.h>
 +#include <linux/kernel.h>
-+#include <linux/spi/spi.h>
 +#include <linux/slab.h>
 +#include <linux/sysfs.h>
 +#include <linux/list.h>
++#include <linux/i2c.h>
++#include <linux/rtc.h>
 +
 +#include "../iio.h"
 +#include "../sysfs.h"
-+#include "gyro.h"
-+#include "../adc/adc.h"
 +
-+#include "adis16251.h"
-+
-+#define DRIVER_NAME		"adis16251"
-+
-+/* At the moment the spi framework doesn't allow global setting of cs_change.
-+ * It's in the likely to be added comment at the top of spi.h.
-+ * This means that use cannot be made of spi_write etc.
++/*
++ * ADT7410 registers definition
 + */
 +
-+/**
-+ * adis16251_spi_write_reg_8() - write single byte to a register
-+ * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @reg_address: the address of the register to be written
-+ * @val: the value to write
-+ **/
-+int adis16251_spi_write_reg_8(struct device *dev,
-+		u8 reg_address,
-+		u8 val)
++#define ADT7410_TEMPERATURE		0
++#define ADT7410_STATUS			2
++#define ADT7410_CONFIG			3
++#define ADT7410_T_ALARM_HIGH		4
++#define ADT7410_T_ALARM_LOW		6
++#define ADT7410_T_CRIT			8
++#define ADT7410_T_HYST			0xA
++#define ADT7410_ID			0xB
++#define ADT7410_RESET			0x2F
++
++/*
++ * ADT7410 status
++ */
++#define ADT7410_STAT_T_LOW		0x10
++#define ADT7410_STAT_T_HIGH		0x20
++#define ADT7410_STAT_T_CRIT		0x40
++#define ADT7410_STAT_NOT_RDY		0x80
++
++/*
++ * ADT7410 config
++ */
++#define ADT7410_FAULT_QUEUE_MASK	0x3
++#define ADT7410_CT_POLARITY		0x4
++#define ADT7410_INT_POLARITY		0x8
++#define ADT7410_EVENT_MODE		0x10
++#define ADT7410_MODE_MASK		0x60
++#define ADT7410_ONESHOT			0x20
++#define ADT7410_SPS			0x40
++#define ADT7410_PD			0x60
++#define ADT7410_RESOLUTION		0x80
++
++/*
++ * ADT7410 masks
++ */
++#define ADT7410_T16_VALUE_SIGN			0x8000
++#define ADT7410_T16_VALUE_FLOAT_OFFSET		7
++#define ADT7410_T16_VALUE_FLOAT_MASK		0x7F
++#define ADT7410_T13_VALUE_SIGN			0x1000
++#define ADT7410_T13_VALUE_OFFSET		3
++#define ADT7410_T13_VALUE_FLOAT_OFFSET		4
++#define ADT7410_T13_VALUE_FLOAT_MASK		0xF
++#define ADT7410_T_HYST_MASK			0xF
++#define ADT7410_DEVICE_ID_MASK			0xF
++#define ADT7410_MANUFACTORY_ID_MASK		0xF0
++#define ADT7410_MANUFACTORY_ID_OFFSET		4
++
++#define ADT7410_IRQS				2
++
++/*
++ * struct adt7410_chip_info - chip specifc information
++ */
++
++struct adt7410_chip_info {
++	const char *name;
++	struct i2c_client *client;
++	struct iio_dev *indio_dev;
++	struct work_struct thresh_work;
++	s64 last_timestamp;
++	u8  config;
++};
++
++/*
++ * adt7410 register access by I2C
++ */
++
++static int adt7410_i2c_read_word(struct adt7410_chip_info *chip, u8 reg, u16 *data)
 +{
-+	int ret;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
++	struct i2c_client *client = chip->client;
++	int ret = 0;
 +
-+	mutex_lock(&st->buf_lock);
-+	st->tx[0] = ADIS16251_WRITE_REG(reg_address);
-+	st->tx[1] = val;
-+
-+	ret = spi_write(st->us, st->tx, 2);
-+	mutex_unlock(&st->buf_lock);
-+
-+	return ret;
-+}
-+
-+/**
-+ * adis16251_spi_write_reg_16() - write 2 bytes to a pair of registers
-+ * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @reg_address: the address of the lower of the two registers. Second register
-+ *               is assumed to have address one greater.
-+ * @val: value to be written
-+ **/
-+static int adis16251_spi_write_reg_16(struct device *dev,
-+		u8 lower_reg_address,
-+		u16 value)
-+{
-+	int ret;
-+	struct spi_message msg;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
-+	struct spi_transfer xfers[] = {
-+		{
-+			.tx_buf = st->tx,
-+			.bits_per_word = 8,
-+			.len = 2,
-+			.cs_change = 1,
-+		}, {
-+			.tx_buf = st->tx + 2,
-+			.bits_per_word = 8,
-+			.len = 2,
-+			.cs_change = 1,
-+		},
-+	};
-+
-+	mutex_lock(&st->buf_lock);
-+	st->tx[0] = ADIS16251_WRITE_REG(lower_reg_address);
-+	st->tx[1] = value & 0xFF;
-+	st->tx[2] = ADIS16251_WRITE_REG(lower_reg_address + 1);
-+	st->tx[3] = (value >> 8) & 0xFF;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfers[0], &msg);
-+	spi_message_add_tail(&xfers[1], &msg);
-+	ret = spi_sync(st->us, &msg);
-+	mutex_unlock(&st->buf_lock);
-+
-+	return ret;
-+}
-+
-+/**
-+ * adis16251_spi_read_reg_16() - read 2 bytes from a 16-bit register
-+ * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @reg_address: the address of the lower of the two registers. Second register
-+ *               is assumed to have address one greater.
-+ * @val: somewhere to pass back the value read
-+ **/
-+static int adis16251_spi_read_reg_16(struct device *dev,
-+		u8 lower_reg_address,
-+		u16 *val)
-+{
-+	struct spi_message msg;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
-+	int ret;
-+	struct spi_transfer xfers[] = {
-+		{
-+			.tx_buf = st->tx,
-+			.bits_per_word = 8,
-+			.len = 2,
-+			.cs_change = 1,
-+		}, {
-+			.rx_buf = st->rx,
-+			.bits_per_word = 8,
-+			.len = 2,
-+			.cs_change = 1,
-+		},
-+	};
-+
-+	mutex_lock(&st->buf_lock);
-+	st->tx[0] = ADIS16251_READ_REG(lower_reg_address);
-+	st->tx[1] = 0;
-+	st->tx[2] = 0;
-+	st->tx[3] = 0;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfers[0], &msg);
-+	spi_message_add_tail(&xfers[1], &msg);
-+	ret = spi_sync(st->us, &msg);
-+	if (ret) {
-+		dev_err(&st->us->dev, "problem when reading 16 bit register 0x%02X",
-+				lower_reg_address);
-+		goto error_ret;
-+	}
-+	*val = (st->rx[0] << 8) | st->rx[1];
-+
-+error_ret:
-+	mutex_unlock(&st->buf_lock);
-+	return ret;
-+}
-+
-+/**
-+ * adis16251_spi_read_burst() - read all data registers
-+ * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @rx: somewhere to pass back the value read (min size is 24 bytes)
-+ **/
-+int adis16251_spi_read_burst(struct device *dev, u8 *rx)
-+{
-+	struct spi_message msg;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
-+	u32 old_speed_hz = st->us->max_speed_hz;
-+	int ret;
-+
-+	struct spi_transfer xfers[] = {
-+		{
-+			.tx_buf = st->tx,
-+			.bits_per_word = 8,
-+			.len = 2,
-+			.cs_change = 0,
-+		}, {
-+			.rx_buf = rx,
-+			.bits_per_word = 8,
-+			.len = 24,
-+			.cs_change = 1,
-+		},
-+	};
-+
-+	mutex_lock(&st->buf_lock);
-+	st->tx[0] = ADIS16251_READ_REG(ADIS16251_GLOB_CMD);
-+	st->tx[1] = 0;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfers[0], &msg);
-+	spi_message_add_tail(&xfers[1], &msg);
-+
-+	st->us->max_speed_hz = min(ADIS16251_SPI_BURST, old_speed_hz);
-+	spi_setup(st->us);
-+
-+	ret = spi_sync(st->us, &msg);
-+	if (ret)
-+		dev_err(&st->us->dev, "problem when burst reading");
-+
-+	st->us->max_speed_hz = old_speed_hz;
-+	spi_setup(st->us);
-+	mutex_unlock(&st->buf_lock);
-+	return ret;
-+}
-+
-+/**
-+ * adis16251_spi_read_sequence() - read a sequence of 16-bit registers
-+ * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @tx: register addresses in bytes 0,2,4,6... (min size is 2*num bytes)
-+ * @rx: somewhere to pass back the value read (min size is 2*num bytes)
-+ **/
-+int adis16251_spi_read_sequence(struct device *dev,
-+		u8 *tx, u8 *rx, int num)
-+{
-+	struct spi_message msg;
-+	struct spi_transfer *xfers;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
-+	int ret, i;
-+
-+	xfers = kzalloc(num + 1, GFP_KERNEL);
-+	if (xfers == NULL) {
-+		dev_err(&st->us->dev, "memory alloc failed");
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+
-+	/* tx: |add1|addr2|addr3|...|addrN |zero|
-+	 * rx: |zero|res1 |res2 |...|resN-1|resN| */
-+	spi_message_init(&msg);
-+	for (i = 0; i < num + 1; i++) {
-+		if (i > 0)
-+			xfers[i].rx_buf = st->rx + 2*(i - 1);
-+		if (i < num)
-+			xfers[i].tx_buf = st->tx + 2*i;
-+		xfers[i].bits_per_word = 8;
-+		xfers[i].len = 2;
-+		xfers[i].cs_change = 1;
-+		spi_message_add_tail(&xfers[i], &msg);
-+	}
-+
-+	mutex_lock(&st->buf_lock);
-+
-+	ret = spi_sync(st->us, &msg);
-+	if (ret)
-+		dev_err(&st->us->dev, "problem when reading sequence");
-+
-+	mutex_unlock(&st->buf_lock);
-+	kfree(xfers);
-+
-+error_ret:
-+	return ret;
-+}
-+
-+static ssize_t adis16251_spi_read_signed(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf,
-+		unsigned bits)
-+{
-+	int ret;
-+	s16 val = 0;
-+	unsigned shift = 16 - bits;
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+
-+	ret = adis16251_spi_read_reg_16(dev, this_attr->address, (u16 *)&val);
-+	if (ret)
-+		return ret;
-+
-+	if (val & ADIS16251_ERROR_ACTIVE)
-+		adis16251_check_status(dev);
-+	val = ((s16)(val << shift) >> shift);
-+	return sprintf(buf, "%d\n", val);
-+}
-+
-+static ssize_t adis16251_read_12bit_unsigned(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	int ret;
-+	u16 val = 0;
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+
-+	ret = adis16251_spi_read_reg_16(dev, this_attr->address, &val);
-+	if (ret)
-+		return ret;
-+
-+	if (val & ADIS16251_ERROR_ACTIVE)
-+		adis16251_check_status(dev);
-+
-+	return sprintf(buf, "%u\n", val & 0x0FFF);
-+}
-+
-+static ssize_t adis16251_read_14bit_signed(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	ssize_t ret;
-+
-+	/* Take the iio_dev status lock */
-+	mutex_lock(&indio_dev->mlock);
-+	ret =  adis16251_spi_read_signed(dev, attr, buf, 14);
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret;
-+}
-+
-+static ssize_t adis16251_read_12bit_signed(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	ssize_t ret;
-+
-+	/* Take the iio_dev status lock */
-+	mutex_lock(&indio_dev->mlock);
-+	ret =  adis16251_spi_read_signed(dev, attr, buf, 12);
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret;
-+}
-+
-+static ssize_t adis16251_write_16bit(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int ret;
-+	long val;
-+
-+	ret = strict_strtol(buf, 10, &val);
-+	if (ret)
-+		goto error_ret;
-+	ret = adis16251_spi_write_reg_16(dev, this_attr->address, val);
-+
-+error_ret:
-+	return ret ? ret : len;
-+}
-+
-+static ssize_t adis16251_read_frequency(struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	int ret, len = 0;
-+	u16 t;
-+	int sps;
-+	ret = adis16251_spi_read_reg_16(dev,
-+			ADIS16251_SMPL_PRD,
-+			&t);
-+	if (ret)
-+		return ret;
-+	sps =  (t & ADIS16251_SMPL_PRD_TIME_BASE) ? 8 : 256;
-+	sps /= (t & ADIS16251_SMPL_PRD_DIV_MASK) + 1;
-+	len = sprintf(buf, "%d SPS\n", sps);
-+	return len;
-+}
-+
-+static ssize_t adis16251_write_frequency(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16251_state *st = iio_dev_get_devdata(indio_dev);
-+	long val;
-+	int ret;
-+	u8 t;
-+
-+	ret = strict_strtol(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	mutex_lock(&indio_dev->mlock);
-+
-+	t = (256 / val);
-+	if (t > 0)
-+		t--;
-+	t &= ADIS16251_SMPL_PRD_DIV_MASK;
-+	if ((t & ADIS16251_SMPL_PRD_DIV_MASK) >= 0x0A)
-+		st->us->max_speed_hz = ADIS16251_SPI_SLOW;
-+	else
-+		st->us->max_speed_hz = ADIS16251_SPI_FAST;
-+
-+	ret = adis16251_spi_write_reg_8(dev,
-+			ADIS16251_SMPL_PRD,
-+			t);
-+
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret ? ret : len;
-+}
-+
-+static ssize_t adis16251_write_reset(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf, size_t len)
-+{
-+	if (len < 1)
-+		return -1;
-+	switch (buf[0]) {
-+	case '1':
-+	case 'y':
-+	case 'Y':
-+		return adis16251_reset(dev);
-+	}
-+	return -1;
-+}
-+
-+
-+
-+int adis16251_set_irq(struct device *dev, bool enable)
-+{
-+	int ret;
-+	u16 msc;
-+	ret = adis16251_spi_read_reg_16(dev, ADIS16251_MSC_CTRL, &msc);
-+	if (ret)
-+		goto error_ret;
-+
-+	msc |= ADIS16251_MSC_CTRL_DATA_RDY_POL_HIGH;
-+	if (enable)
-+		msc |= ADIS16251_MSC_CTRL_DATA_RDY_EN;
-+	else
-+		msc &= ~ADIS16251_MSC_CTRL_DATA_RDY_EN;
-+
-+	ret = adis16251_spi_write_reg_16(dev, ADIS16251_MSC_CTRL, msc);
-+	if (ret)
-+		goto error_ret;
-+
-+error_ret:
-+	return ret;
-+}
-+
-+int adis16251_reset(struct device *dev)
-+{
-+	int ret;
-+	ret = adis16251_spi_write_reg_8(dev,
-+			ADIS16251_GLOB_CMD,
-+			ADIS16251_GLOB_CMD_SW_RESET);
-+	if (ret)
-+		dev_err(dev, "problem resetting device");
-+
-+	return ret;
-+}
-+
-+/* Power down the device */
-+int adis16251_stop_device(struct device *dev)
-+{
-+	int ret;
-+	u16 val = ADIS16251_SLP_CNT_POWER_OFF;
-+
-+	ret = adis16251_spi_write_reg_16(dev, ADIS16251_SLP_CNT, val);
-+	if (ret)
-+		dev_err(dev, "problem with turning device off: SLP_CNT");
-+
-+	return ret;
-+}
-+
-+static int adis16251_self_test(struct device *dev)
-+{
-+	int ret;
-+
-+	ret = adis16251_spi_write_reg_16(dev,
-+			ADIS16251_MSC_CTRL,
-+			ADIS16251_MSC_CTRL_INT_SELF_TEST);
-+	if (ret) {
-+		dev_err(dev, "problem starting self test");
-+		goto err_ret;
-+	}
-+
-+	adis16251_check_status(dev);
-+
-+err_ret:
-+	return ret;
-+}
-+
-+int adis16251_check_status(struct device *dev)
-+{
-+	u16 status;
-+	int ret;
-+
-+	ret = adis16251_spi_read_reg_16(dev, ADIS16251_DIAG_STAT, &status);
-+
++	ret = i2c_smbus_read_word_data(client, reg);
 +	if (ret < 0) {
-+		dev_err(dev, "Reading status failed\n");
-+		goto error_ret;
++		dev_err(&client->dev, "I2C read error\n");
++		return ret;
 +	}
 +
-+	if (!(status & ADIS16251_DIAG_STAT_ERR_MASK)) {
-+		ret = 0;
-+		goto error_ret;
-+	}
++	*data = swab16((u16)ret);
 +
-+	ret = -EFAULT;
++	return 0;
++}
 +
-+	if (status & ADIS16251_DIAG_STAT_ALARM2)
-+		dev_err(dev, "Alarm 2 active\n");
-+	if (status & ADIS16251_DIAG_STAT_ALARM1)
-+		dev_err(dev, "Alarm 1 active\n");
-+	if (status & ADIS16251_DIAG_STAT_SELF_TEST)
-+		dev_err(dev, "Self test error\n");
-+	if (status & ADIS16251_DIAG_STAT_OVERFLOW)
-+		dev_err(dev, "Sensor overrange\n");
-+	if (status & ADIS16251_DIAG_STAT_SPI_FAIL)
-+		dev_err(dev, "SPI failure\n");
-+	if (status & ADIS16251_DIAG_STAT_FLASH_UPT)
-+		dev_err(dev, "Flash update failed\n");
-+	if (status & ADIS16251_DIAG_STAT_POWER_HIGH)
-+		dev_err(dev, "Power supply above 5.25V\n");
-+	if (status & ADIS16251_DIAG_STAT_POWER_LOW)
-+		dev_err(dev, "Power supply below 4.75V\n");
++static int adt7410_i2c_write_word(struct adt7410_chip_info *chip, u8 reg, u16 data)
++{
++	struct i2c_client *client = chip->client;
++	int ret = 0;
 +
-+error_ret:
++	ret = i2c_smbus_write_word_data(client, reg, swab16(data));
++	if (ret < 0)
++		dev_err(&client->dev, "I2C write error\n");
++
 +	return ret;
 +}
 +
-+static int adis16251_initial_setup(struct adis16251_state *st)
++static int adt7410_i2c_read_byte(struct adt7410_chip_info *chip, u8 reg, u8 *data)
 +{
-+	int ret;
-+	u16 smp_prd;
-+	struct device *dev = &st->indio_dev->dev;
++	struct i2c_client *client = chip->client;
++	int ret = 0;
 +
-+	/* use low spi speed for init */
-+	st->us->max_speed_hz = ADIS16251_SPI_SLOW;
-+	st->us->mode = SPI_MODE_3;
-+	spi_setup(st->us);
-+
-+	/* Disable IRQ */
-+	ret = adis16251_set_irq(dev, false);
-+	if (ret) {
-+		dev_err(dev, "disable irq failed");
-+		goto err_ret;
++	ret = i2c_smbus_read_byte_data(client, reg);
++	if (ret < 0) {
++		dev_err(&client->dev, "I2C read error\n");
++		return ret;
 +	}
 +
-+	/* Do self test */
++	*data = (u8)ret;
 +
-+	/* Read status register to check the result */
-+	ret = adis16251_check_status(dev);
-+	if (ret) {
-+		adis16251_reset(dev);
-+		dev_err(dev, "device not playing ball -> reset");
-+		msleep(ADIS16251_STARTUP_DELAY);
-+		ret = adis16251_check_status(dev);
-+		if (ret) {
-+			dev_err(dev, "giving up");
-+			goto err_ret;
++	return 0;
++}
++
++static int adt7410_i2c_write_byte(struct adt7410_chip_info *chip, u8 reg, u8 data)
++{
++	struct i2c_client *client = chip->client;
++	int ret = 0;
++
++	ret = i2c_smbus_write_byte_data(client, reg, data);
++	if (ret < 0)
++		dev_err(&client->dev, "I2C write error\n");
++
++	return ret;
++}
++
++static ssize_t adt7410_show_mode(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	u8 config;
++
++	config = chip->config & ADT7410_MODE_MASK;
++
++	switch (config) {
++	case ADT7410_PD:
++		return sprintf(buf, "power-down\n");
++	case ADT7410_ONESHOT:
++		return sprintf(buf, "one-shot\n");
++	case ADT7410_SPS:
++		return sprintf(buf, "sps\n");
++	default:
++		return sprintf(buf, "full\n");
++	}
++}
++
++static ssize_t adt7410_store_mode(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	u16 config;
++	int ret;
++
++	ret = adt7410_i2c_read_byte(chip, ADT7410_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	config = chip->config & (~ADT7410_MODE_MASK);
++	if (strcmp(buf, "power-down"))
++		config |= ADT7410_PD;
++	else if (strcmp(buf, "one-shot"))
++		config |= ADT7410_ONESHOT;
++	else if (strcmp(buf, "sps"))
++		config |= ADT7410_SPS;
++
++	ret = adt7410_i2c_write_byte(chip, ADT7410_CONFIG, config);
++	if (ret)
++		return -EIO;
++
++	chip->config = config;
++
++	return ret;
++}
++
++static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR,
++		adt7410_show_mode,
++		adt7410_store_mode,
++		0);
++
++static ssize_t adt7410_show_available_modes(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return sprintf(buf, "full\none-shot\nsps\npower-down\n");
++}
++
++static IIO_DEVICE_ATTR(available_modes, S_IRUGO, adt7410_show_available_modes, NULL, 0);
++
++static ssize_t adt7410_show_resolution(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	int ret;
++	int bits;
++
++	ret = adt7410_i2c_read_byte(chip, ADT7410_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	if (chip->config & ADT7410_RESOLUTION)
++		bits = 16;
++	else
++		bits = 13;
++
++	return sprintf(buf, "%d bits\n", bits);
++}
++
++static ssize_t adt7410_store_resolution(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	u16 config;
++	int ret;
++
++	ret = strict_strtoul(buf, 10, &data);
++	if (ret)
++		return -EINVAL;
++
++	ret = adt7410_i2c_read_byte(chip, ADT7410_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	config = chip->config & (~ADT7410_RESOLUTION);
++	if (data)
++		config |= ADT7410_RESOLUTION;
++
++	ret = adt7410_i2c_write_byte(chip, ADT7410_CONFIG, config);
++	if (ret)
++		return -EIO;
++
++	chip->config = config;
++
++	return ret;
++}
++
++static IIO_DEVICE_ATTR(resolution, S_IRUGO | S_IWUSR,
++		adt7410_show_resolution,
++		adt7410_store_resolution,
++		0);
++
++static ssize_t adt7410_show_id(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	u8 id;
++	int ret;
++
++	ret = adt7410_i2c_read_byte(chip, ADT7410_ID, &id);
++	if (ret)
++		return -EIO;
++
++	return sprintf(buf, "device id: 0x%x\nmanufactory id: 0x%x\n",
++			id & ADT7410_DEVICE_ID_MASK,
++			(id & ADT7410_MANUFACTORY_ID_MASK) >> ADT7410_MANUFACTORY_ID_OFFSET);
++}
++
++static IIO_DEVICE_ATTR(id, S_IRUGO | S_IWUSR,
++		adt7410_show_id,
++		NULL,
++		0);
++
++static ssize_t adt7410_convert_temperature(struct adt7410_chip_info *chip,
++		u16 data, char *buf)
++{
++	char sign = ' ';
++
++	if (chip->config & ADT7410_RESOLUTION) {
++		if (data & ADT7410_T16_VALUE_SIGN) {
++			/* convert supplement to positive value */
++			data = (u16)((ADT7410_T16_VALUE_SIGN << 1) - (u32)data);
++			sign = '-';
++		}
++		return sprintf(buf, "%c%d.%.7d\n", sign,
++				(data >> ADT7410_T16_VALUE_FLOAT_OFFSET),
++				(data & ADT7410_T16_VALUE_FLOAT_MASK) * 78125);
++	} else {
++		if (data & ADT7410_T13_VALUE_SIGN) {
++			/* convert supplement to positive value */
++			data >>= ADT7410_T13_VALUE_OFFSET;
++			data = (ADT7410_T13_VALUE_SIGN << 1) - data;
++			sign = '-';
++		}
++		return sprintf(buf, "%c%d.%.4d\n", sign,
++				(data >> ADT7410_T13_VALUE_FLOAT_OFFSET),
++				(data & ADT7410_T13_VALUE_FLOAT_MASK) * 625);
++	}
++}
++
++static ssize_t adt7410_show_value(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	u8 status;
++	u16 data;
++	int ret, i = 0;
++
++	do {
++		ret = adt7410_i2c_read_byte(chip, ADT7410_STATUS, &status);
++		if (ret)
++			return -EIO;
++		i++;
++		if (i == 10000)
++			return -EIO;
++	} while (status & ADT7410_STAT_NOT_RDY);
++
++	ret = adt7410_i2c_read_word(chip, ADT7410_TEMPERATURE, &data);
++	if (ret)
++		return -EIO;
++
++	return adt7410_convert_temperature(chip, data, buf);
++}
++
++static IIO_DEVICE_ATTR(value, S_IRUGO, adt7410_show_value, NULL, 0);
++
++static ssize_t adt7410_show_name(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	return sprintf(buf, "%s\n", chip->name);
++}
++
++static IIO_DEVICE_ATTR(name, S_IRUGO, adt7410_show_name, NULL, 0);
++
++static struct attribute *adt7410_attributes[] = {
++	&iio_dev_attr_available_modes.dev_attr.attr,
++	&iio_dev_attr_mode.dev_attr.attr,
++	&iio_dev_attr_resolution.dev_attr.attr,
++	&iio_dev_attr_id.dev_attr.attr,
++	&iio_dev_attr_value.dev_attr.attr,
++	&iio_dev_attr_name.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group adt7410_attribute_group = {
++	.attrs = adt7410_attributes,
++};
++
++/*
++ * temperature bound events
++ */
++
++#define IIO_EVENT_CODE_ADT7410_ABOVE_ALARM    IIO_BUFFER_EVENT_CODE(0)
++#define IIO_EVENT_CODE_ADT7410_BELLOW_ALARM   IIO_BUFFER_EVENT_CODE(1)
++#define IIO_EVENT_CODE_ADT7410_ABOVE_CRIT     IIO_BUFFER_EVENT_CODE(2)
++
++static void adt7410_interrupt_bh(struct work_struct *work_s)
++{
++	struct adt7410_chip_info *chip =
++		container_of(work_s, struct adt7410_chip_info, thresh_work);
++	u8 status;
++
++	if (adt7410_i2c_read_byte(chip, ADT7410_STATUS, &status))
++		return;
++
++	enable_irq(chip->client->irq);
++
++	if (status & ADT7410_STAT_T_HIGH)
++		iio_push_event(chip->indio_dev, 0,
++			IIO_EVENT_CODE_ADT7410_ABOVE_ALARM,
++			chip->last_timestamp);
++	if (status & ADT7410_STAT_T_LOW)
++		iio_push_event(chip->indio_dev, 0,
++			IIO_EVENT_CODE_ADT7410_BELLOW_ALARM,
++			chip->last_timestamp);
++	if (status & ADT7410_STAT_T_CRIT)
++		iio_push_event(chip->indio_dev, 0,
++			IIO_EVENT_CODE_ADT7410_ABOVE_CRIT,
++			chip->last_timestamp);
++}
++
++static int adt7410_interrupt(struct iio_dev *dev_info,
++		int index,
++		s64 timestamp,
++		int no_test)
++{
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++
++	chip->last_timestamp = timestamp;
++	schedule_work(&chip->thresh_work);
++
++	return 0;
++}
++
++IIO_EVENT_SH(adt7410, &adt7410_interrupt);
++IIO_EVENT_SH(adt7410_ct, &adt7410_interrupt);
++
++static ssize_t adt7410_show_event_mode(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	int ret;
++
++	ret = adt7410_i2c_read_byte(chip, ADT7410_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	if (chip->config & ADT7410_EVENT_MODE)
++		return sprintf(buf, "interrupt\n");
++	else
++		return sprintf(buf, "comparator\n");
++}
++
++static ssize_t adt7410_set_event_mode(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	u16 config;
++	int ret;
++
++	ret = adt7410_i2c_read_byte(chip, ADT7410_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	config = chip->config &= ~ADT7410_EVENT_MODE;
++	if (strcmp(buf, "comparator") != 0)
++		config |= ADT7410_EVENT_MODE;
++
++	ret = adt7410_i2c_write_byte(chip, ADT7410_CONFIG, config);
++	if (ret)
++		return -EIO;
++
++	chip->config = config;
++
++	return ret;
++}
++
++static ssize_t adt7410_show_available_event_modes(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return sprintf(buf, "comparator\ninterrupt\n");
++}
++
++static ssize_t adt7410_show_fault_queue(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	int ret;
++
++	ret = adt7410_i2c_read_byte(chip, ADT7410_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	return sprintf(buf, "%d\n", chip->config & ADT7410_FAULT_QUEUE_MASK);
++}
++
++static ssize_t adt7410_set_fault_queue(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	unsigned long data;
++	int ret;
++	u8 config;
++
++	ret = strict_strtoul(buf, 10, &data);
++	if (ret || data > 3)
++		return -EINVAL;
++
++	ret = adt7410_i2c_read_byte(chip, ADT7410_CONFIG, &chip->config);
++	if (ret)
++		return -EIO;
++
++	config = chip->config & ~ADT7410_FAULT_QUEUE_MASK;
++	config |= data;
++	ret = adt7410_i2c_write_byte(chip, ADT7410_CONFIG, config);
++	if (ret)
++		return -EIO;
++
++	chip->config = config;
++
++	return ret;
++}
++
++static inline ssize_t adt7410_show_t_bound(struct device *dev,
++		struct device_attribute *attr,
++		u8 bound_reg,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	u16 data;
++	int ret;
++
++	ret = adt7410_i2c_read_word(chip, bound_reg, &data);
++	if (ret)
++		return -EIO;
++
++	return adt7410_convert_temperature(chip, data, buf);
++}
++
++static inline ssize_t adt7410_set_t_bound(struct device *dev,
++		struct device_attribute *attr,
++		u8 bound_reg,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	long tmp1, tmp2;
++	u16 data;
++	char *pos;
++	int ret;
++
++	pos = strchr(buf, '.');
++
++	ret = strict_strtol(buf, 10, &tmp1);
++
++	if (ret || tmp1 > 127 || tmp1 < -128)
++		return -EINVAL;
++
++	if (pos) {
++		len = strlen(pos);
++
++		if (chip->config & ADT7410_RESOLUTION) {
++			if (len > ADT7410_T16_VALUE_FLOAT_OFFSET)
++				len = ADT7410_T16_VALUE_FLOAT_OFFSET;
++			pos[len] = 0;
++			ret = strict_strtol(pos, 10, &tmp2);
++
++			if (!ret)
++				tmp2 = (tmp2 / 78125) * 78125;
++		} else {
++			if (len > ADT7410_T13_VALUE_FLOAT_OFFSET)
++				len = ADT7410_T13_VALUE_FLOAT_OFFSET;
++			pos[len] = 0;
++			ret = strict_strtol(pos, 10, &tmp2);
++
++			if (!ret)
++				tmp2 = (tmp2 / 625) * 625;
 +		}
 +	}
 +
-+	printk(KERN_INFO DRIVER_NAME ": at CS%d (irq %d)\n",
-+			st->us->chip_select, st->us->irq);
++	if (tmp1 < 0)
++		data = (u16)(-tmp1);
++	else
++		data = (u16)tmp1;
 +
-+	/* use high spi speed if possible */
-+	ret = adis16251_spi_read_reg_16(dev, ADIS16251_SMPL_PRD, &smp_prd);
-+	if (!ret && (smp_prd & ADIS16251_SMPL_PRD_DIV_MASK) < 0x0A) {
-+		st->us->max_speed_hz = ADIS16251_SPI_SLOW;
-+		spi_setup(st->us);
++	if (chip->config & ADT7410_RESOLUTION) {
++		data = (data << ADT7410_T16_VALUE_FLOAT_OFFSET) |
++			(tmp2 & ADT7410_T16_VALUE_FLOAT_MASK);
++
++		if (tmp1 < 0)
++			/* convert positive value to supplyment */
++			data = (u16)((ADT7410_T16_VALUE_SIGN << 1) - (u32)data);
++	} else {
++		data = (data << ADT7410_T13_VALUE_FLOAT_OFFSET) |
++			(tmp2 & ADT7410_T13_VALUE_FLOAT_MASK);
++
++		if (tmp1 < 0)
++			/* convert positive value to supplyment */
++			data = (ADT7410_T13_VALUE_SIGN << 1) - data;
++		data <<= ADT7410_T13_VALUE_OFFSET;
 +	}
 +
-+err_ret:
++	ret = adt7410_i2c_write_word(chip, bound_reg, data);
++	if (ret)
++		return -EIO;
++
 +	return ret;
 +}
 +
-+static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16251_read_12bit_signed,
-+		ADIS16251_SUPPLY_OUT);
-+static IIO_CONST_ATTR(in0_supply_scale, "0.0018315");
-+
-+static IIO_DEV_ATTR_GYRO(adis16251_read_14bit_signed,
-+		ADIS16251_GYRO_OUT);
-+static IIO_DEV_ATTR_GYRO_SCALE(S_IWUSR | S_IRUGO,
-+		adis16251_read_12bit_signed,
-+		adis16251_write_16bit,
-+		ADIS16251_GYRO_SCALE);
-+static IIO_DEV_ATTR_GYRO_OFFSET(S_IWUSR | S_IRUGO,
-+		adis16251_read_12bit_signed,
-+		adis16251_write_16bit,
-+		ADIS16251_GYRO_OFF);
-+
-+static IIO_DEV_ATTR_TEMP_RAW(adis16251_read_12bit_signed);
-+static IIO_CONST_ATTR(temp_offset, "25 K");
-+static IIO_CONST_ATTR(temp_scale, "0.1453 K");
-+
-+static IIO_DEV_ATTR_IN_NAMED_RAW(1, aux, adis16251_read_12bit_unsigned,
-+		ADIS16251_AUX_ADC);
-+static IIO_CONST_ATTR(in1_aux_scale, "0.0006105");
-+
-+static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-+		adis16251_read_frequency,
-+		adis16251_write_frequency);
-+static IIO_DEV_ATTR_ANGL(adis16251_read_14bit_signed,
-+		ADIS16251_ANGL_OUT);
-+
-+static IIO_DEV_ATTR_RESET(adis16251_write_reset);
-+
-+static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("0.129 ~ 256");
-+
-+static IIO_CONST_ATTR(name, "adis16251");
-+
-+static struct attribute *adis16251_event_attributes[] = {
-+	NULL
-+};
-+
-+static struct attribute_group adis16251_event_attribute_group = {
-+	.attrs = adis16251_event_attributes,
-+};
-+
-+static struct attribute *adis16251_attributes[] = {
-+	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
-+	&iio_const_attr_in0_supply_scale.dev_attr.attr,
-+	&iio_dev_attr_gyro_raw.dev_attr.attr,
-+	&iio_dev_attr_gyro_scale.dev_attr.attr,
-+	&iio_dev_attr_gyro_offset.dev_attr.attr,
-+	&iio_dev_attr_angl_raw.dev_attr.attr,
-+	&iio_dev_attr_temp_raw.dev_attr.attr,
-+	&iio_const_attr_temp_offset.dev_attr.attr,
-+	&iio_const_attr_temp_scale.dev_attr.attr,
-+	&iio_dev_attr_in1_aux_raw.dev_attr.attr,
-+	&iio_const_attr_in1_aux_scale.dev_attr.attr,
-+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-+	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_reset.dev_attr.attr,
-+	&iio_const_attr_name.dev_attr.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group adis16251_attribute_group = {
-+	.attrs = adis16251_attributes,
-+};
-+
-+static int __devinit adis16251_probe(struct spi_device *spi)
++static ssize_t adt7410_show_t_alarm_high(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
 +{
-+	int ret, regdone = 0;
-+	struct adis16251_state *st = kzalloc(sizeof *st, GFP_KERNEL);
-+	if (!st) {
-+		ret =  -ENOMEM;
-+		goto error_ret;
-+	}
-+	/* this is only used for removal purposes */
-+	spi_set_drvdata(spi, st);
++	return adt7410_show_t_bound(dev, attr,
++			ADT7410_T_ALARM_HIGH, buf);
++}
 +
-+	/* Allocate the comms buffers */
-+	st->rx = kzalloc(sizeof(*st->rx)*ADIS16251_MAX_RX, GFP_KERNEL);
-+	if (st->rx == NULL) {
-+		ret = -ENOMEM;
-+		goto error_free_st;
++static inline ssize_t adt7410_set_t_alarm_high(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	return adt7410_set_t_bound(dev, attr,
++			ADT7410_T_ALARM_HIGH, buf, len);
++}
++
++static ssize_t adt7410_show_t_alarm_low(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return adt7410_show_t_bound(dev, attr,
++			ADT7410_T_ALARM_LOW, buf);
++}
++
++static inline ssize_t adt7410_set_t_alarm_low(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	return adt7410_set_t_bound(dev, attr,
++			ADT7410_T_ALARM_LOW, buf, len);
++}
++
++static ssize_t adt7410_show_t_crit(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	return adt7410_show_t_bound(dev, attr,
++			ADT7410_T_CRIT, buf);
++}
++
++static inline ssize_t adt7410_set_t_crit(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	return adt7410_set_t_bound(dev, attr,
++			ADT7410_T_CRIT, buf, len);
++}
++
++static ssize_t adt7410_show_t_hyst(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	int ret;
++	u8 t_hyst;
++
++	ret = adt7410_i2c_read_byte(chip, ADT7410_T_HYST, &t_hyst);
++	if (ret)
++		return -EIO;
++
++	return sprintf(buf, "%d\n", t_hyst & ADT7410_T_HYST_MASK);
++}
++
++static inline ssize_t adt7410_set_t_hyst(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct adt7410_chip_info *chip = dev_info->dev_data;
++	int ret;
++	unsigned long data;
++	u8 t_hyst;
++
++	ret = strict_strtol(buf, 10, &data);
++
++	if (ret || data > ADT7410_T_HYST_MASK)
++		return -EINVAL;
++
++	t_hyst = (u8)data;
++
++	ret = adt7410_i2c_write_byte(chip, ADT7410_T_HYST, t_hyst);
++	if (ret)
++		return -EIO;
++
++	return ret;
++}
++
++IIO_EVENT_ATTR_SH(event_mode, iio_event_adt7410,
++		adt7410_show_event_mode, adt7410_set_event_mode, 0);
++IIO_EVENT_ATTR_SH(available_event_modes, iio_event_adt7410,
++		adt7410_show_available_event_modes, NULL, 0);
++IIO_EVENT_ATTR_SH(fault_queue, iio_event_adt7410,
++		adt7410_show_fault_queue, adt7410_set_fault_queue, 0);
++IIO_EVENT_ATTR_SH(t_alarm_high, iio_event_adt7410,
++		adt7410_show_t_alarm_high, adt7410_set_t_alarm_high, 0);
++IIO_EVENT_ATTR_SH(t_alarm_low, iio_event_adt7410,
++		adt7410_show_t_alarm_low, adt7410_set_t_alarm_low, 0);
++IIO_EVENT_ATTR_SH(t_crit, iio_event_adt7410_ct,
++		adt7410_show_t_crit, adt7410_set_t_crit, 0);
++IIO_EVENT_ATTR_SH(t_hyst, iio_event_adt7410,
++		adt7410_show_t_hyst, adt7410_set_t_hyst, 0);
++
++static struct attribute *adt7410_event_int_attributes[] = {
++	&iio_event_attr_event_mode.dev_attr.attr,
++	&iio_event_attr_available_event_modes.dev_attr.attr,
++	&iio_event_attr_fault_queue.dev_attr.attr,
++	&iio_event_attr_t_alarm_high.dev_attr.attr,
++	&iio_event_attr_t_alarm_low.dev_attr.attr,
++	&iio_event_attr_t_hyst.dev_attr.attr,
++	NULL,
++};
++
++static struct attribute *adt7410_event_ct_attributes[] = {
++	&iio_event_attr_event_mode.dev_attr.attr,
++	&iio_event_attr_available_event_modes.dev_attr.attr,
++	&iio_event_attr_fault_queue.dev_attr.attr,
++	&iio_event_attr_t_crit.dev_attr.attr,
++	&iio_event_attr_t_hyst.dev_attr.attr,
++	NULL,
++};
++
++static struct attribute_group adt7410_event_attribute_group[ADT7410_IRQS] = {
++	{
++		.attrs = adt7410_event_int_attributes,
++	},
++	{
++		.attrs = adt7410_event_ct_attributes,
 +	}
-+	st->tx = kzalloc(sizeof(*st->tx)*ADIS16251_MAX_TX, GFP_KERNEL);
-+	if (st->tx == NULL) {
++};
++
++/*
++ * device probe and remove
++ */
++
++static int __devinit adt7410_probe(struct i2c_client *client,
++		const struct i2c_device_id *id)
++{
++	struct adt7410_chip_info *chip;
++	int ret = 0;
++	unsigned long *adt7410_platform_data = client->dev.platform_data;
++
++	chip = kzalloc(sizeof(struct adt7410_chip_info), GFP_KERNEL);
++
++	if (chip == NULL)
++		return -ENOMEM;
++
++	/* this is only used for device removal purposes */
++	i2c_set_clientdata(client, chip);
++
++	chip->client = client;
++	chip->name = id->name;
++
++	chip->indio_dev = iio_allocate_device();
++	if (chip->indio_dev == NULL) {
 +		ret = -ENOMEM;
-+		goto error_free_rx;
-+	}
-+	st->us = spi;
-+	mutex_init(&st->buf_lock);
-+	/* setup the industrialio driver allocated elements */
-+	st->indio_dev = iio_allocate_device();
-+	if (st->indio_dev == NULL) {
-+		ret = -ENOMEM;
-+		goto error_free_tx;
++		goto error_free_chip;
 +	}
 +
-+	st->indio_dev->dev.parent = &spi->dev;
-+	st->indio_dev->num_interrupt_lines = 1;
-+	st->indio_dev->event_attrs = &adis16251_event_attribute_group;
-+	st->indio_dev->attrs = &adis16251_attribute_group;
-+	st->indio_dev->dev_data = (void *)(st);
-+	st->indio_dev->driver_module = THIS_MODULE;
-+	st->indio_dev->modes = INDIO_DIRECT_MODE;
++	chip->indio_dev->dev.parent = &client->dev;
++	chip->indio_dev->attrs = &adt7410_attribute_group;
++	chip->indio_dev->event_attrs = adt7410_event_attribute_group;
++	chip->indio_dev->dev_data = (void *)chip;
++	chip->indio_dev->driver_module = THIS_MODULE;
++	chip->indio_dev->num_interrupt_lines = ADT7410_IRQS;
++	chip->indio_dev->modes = INDIO_DIRECT_MODE;
 +
-+	ret = adis16251_configure_ring(st->indio_dev);
++	ret = iio_device_register(chip->indio_dev);
 +	if (ret)
 +		goto error_free_dev;
 +
-+	ret = iio_device_register(st->indio_dev);
-+	if (ret)
-+		goto error_unreg_ring_funcs;
-+	regdone = 1;
-+
-+	ret = adis16251_initialize_ring(st->indio_dev->ring);
-+	if (ret) {
-+		printk(KERN_ERR "failed to initialize the ring\n");
-+		goto error_unreg_ring_funcs;
-+	}
-+
-+	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0) {
-+		ret = iio_register_interrupt_line(spi->irq,
-+				st->indio_dev,
++	/* CT critcal temperature event. line 0 */
++	if (client->irq) {
++		ret = iio_register_interrupt_line(client->irq,
++				chip->indio_dev,
 +				0,
-+				IRQF_TRIGGER_RISING,
-+				"adis16251");
++				IRQF_TRIGGER_LOW,
++				chip->name);
 +		if (ret)
-+			goto error_uninitialize_ring;
++			goto error_unreg_dev;
 +
-+		ret = adis16251_probe_trigger(st->indio_dev);
-+		if (ret)
-+			goto error_unregister_line;
++		/*
++		 * The event handler list element refer to iio_event_adt7410.
++		 * All event attributes bind to the same event handler.
++		 * One event handler can only be added to one event list.
++		 */
++		iio_add_event_to_list(&iio_event_adt7410,
++				&chip->indio_dev->interrupts[0]->ev_list);
 +	}
 +
-+	/* Get the device into a sane initial state */
-+	ret = adis16251_initial_setup(st);
-+	if (ret)
-+		goto error_remove_trigger;
++	/* INT bound temperature alarm event. line 1 */
++	if (adt7410_platform_data[0]) {
++		ret = iio_register_interrupt_line(adt7410_platform_data[0],
++				chip->indio_dev,
++				1,
++				adt7410_platform_data[1],
++				chip->name);
++		if (ret)
++			goto error_unreg_ct_irq;
++
++		/*
++		 * The event handler list element refer to iio_event_adt7410.
++		 * All event attributes bind to the same event handler.
++		 * One event handler can only be added to one event list.
++		 */
++		iio_add_event_to_list(&iio_event_adt7410_ct,
++				&chip->indio_dev->interrupts[1]->ev_list);
++	}
++
++	if (client->irq && adt7410_platform_data[0]) {
++		INIT_WORK(&chip->thresh_work, adt7410_interrupt_bh);
++
++		ret = adt7410_i2c_read_byte(chip, ADT7410_CONFIG, &chip->config);
++		if (ret) {
++			ret = -EIO;
++			goto error_unreg_int_irq;
++		}
++
++		/* set irq polarity low level */
++		chip->config &= ~ADT7410_CT_POLARITY;
++
++		if (adt7410_platform_data[1] & IRQF_TRIGGER_HIGH)
++			chip->config |= ADT7410_INT_POLARITY;
++		else
++			chip->config &= ~ADT7410_INT_POLARITY;
++
++		ret = adt7410_i2c_write_byte(chip, ADT7410_CONFIG, chip->config);
++		if (ret) {
++			ret = -EIO;
++			goto error_unreg_int_irq;
++		}
++	}
++
++	dev_info(&client->dev, "%s temperature sensor registered.\n",
++			 id->name);
++
 +	return 0;
 +
-+error_remove_trigger:
-+	if (st->indio_dev->modes & INDIO_RING_TRIGGERED)
-+		adis16251_remove_trigger(st->indio_dev);
-+error_unregister_line:
-+	if (st->indio_dev->modes & INDIO_RING_TRIGGERED)
-+		iio_unregister_interrupt_line(st->indio_dev, 0);
-+error_uninitialize_ring:
-+	adis16251_uninitialize_ring(st->indio_dev->ring);
-+error_unreg_ring_funcs:
-+	adis16251_unconfigure_ring(st->indio_dev);
++error_unreg_int_irq:
++	iio_unregister_interrupt_line(chip->indio_dev, 1);
++error_unreg_ct_irq:
++	iio_unregister_interrupt_line(chip->indio_dev, 0);
++error_unreg_dev:
++	iio_device_unregister(chip->indio_dev);
 +error_free_dev:
-+	if (regdone)
-+		iio_device_unregister(st->indio_dev);
-+	else
-+		iio_free_device(st->indio_dev);
-+error_free_tx:
-+	kfree(st->tx);
-+error_free_rx:
-+	kfree(st->rx);
-+error_free_st:
-+	kfree(st);
-+error_ret:
++	iio_free_device(chip->indio_dev);
++error_free_chip:
++	kfree(chip);
++
 +	return ret;
 +}
 +
-+/* fixme, confirm ordering in this function */
-+static int adis16251_remove(struct spi_device *spi)
++static int __devexit adt7410_remove(struct i2c_client *client)
 +{
-+	int ret;
-+	struct adis16251_state *st = spi_get_drvdata(spi);
-+	struct iio_dev *indio_dev = st->indio_dev;
++	struct adt7410_chip_info *chip = i2c_get_clientdata(client);
++	struct iio_dev *indio_dev = chip->indio_dev;
++	unsigned long *adt7410_platform_data = client->dev.platform_data;
 +
-+	ret = adis16251_stop_device(&(indio_dev->dev));
-+	if (ret)
-+		goto err_ret;
-+
-+	flush_scheduled_work();
-+
-+	adis16251_remove_trigger(indio_dev);
-+	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0)
++	if (adt7410_platform_data[0])
++		iio_unregister_interrupt_line(indio_dev, 1);
++	if (client->irq)
 +		iio_unregister_interrupt_line(indio_dev, 0);
-+
-+	adis16251_uninitialize_ring(indio_dev->ring);
-+	adis16251_unconfigure_ring(indio_dev);
 +	iio_device_unregister(indio_dev);
-+	kfree(st->tx);
-+	kfree(st->rx);
-+	kfree(st);
++	iio_free_device(chip->indio_dev);
++	kfree(chip);
 +
 +	return 0;
-+
-+err_ret:
-+	return ret;
 +}
 +
-+static struct spi_driver adis16251_driver = {
-+	.driver = {
-+		.name = "adis16251",
-+		.owner = THIS_MODULE,
-+	},
-+	.probe = adis16251_probe,
-+	.remove = __devexit_p(adis16251_remove),
++static const struct i2c_device_id adt7410_id[] = {
++	{ "adt7410", 0 },
++	{}
 +};
 +
-+static __init int adis16251_init(void)
-+{
-+	return spi_register_driver(&adis16251_driver);
-+}
-+module_init(adis16251_init);
++MODULE_DEVICE_TABLE(i2c, adt7410_id);
 +
-+static __exit void adis16251_exit(void)
-+{
-+	spi_unregister_driver(&adis16251_driver);
-+}
-+module_exit(adis16251_exit);
++static struct i2c_driver adt7410_driver = {
++	.driver = {
++		.name = "adt7410",
++	},
++	.probe = adt7410_probe,
++	.remove = __devexit_p(adt7410_remove),
++	.id_table = adt7410_id,
++};
 +
-+MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
-+MODULE_DESCRIPTION("Analog Devices ADIS16251 Digital Gyroscope Sensor SPI driver");
++static __init int adt7410_init(void)
++{
++	return i2c_add_driver(&adt7410_driver);
++}
++
++static __exit void adt7410_exit(void)
++{
++	i2c_del_driver(&adt7410_driver);
++}
++
++MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
++MODULE_DESCRIPTION("Analog Devices ADT7410 digital"
++			" temperature sensor driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
-index ee91a95..18bdaac 100644
---- a/drivers/staging/iio/sysfs.h
-+++ b/drivers/staging/iio/sysfs.h
-@@ -108,6 +108,12 @@ struct iio_const_attr {
- 	IIO_DEVICE_ATTR(name, S_IRUGO, _show, NULL, 0)
- 
- /**
-+ * IIO_DEV_ATTR_RESET: resets the device
-+ **/
-+#define IIO_DEV_ATTR_RESET(_store)			\
-+	IIO_DEVICE_ATTR(reset, S_IWUGO, NULL, _store, 0)
 +
-+/**
-  * IIO_CONST_ATTR_NAME - constant identifier
-  * @_string: the name
-  **/
++module_init(adt7410_init);
++module_exit(adt7410_exit);
 -- 
 1.7.3.2
