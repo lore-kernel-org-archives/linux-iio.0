@@ -5,9 +5,9 @@ To: linux-iio@vger.kernel.org,
 Cc: device-drivers-devel@blackfin.uclinux.org,
 	Cliff Cai <cliff.cai@analog.com>,
 	Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 26/36] staging: iio: dds: new driver for AD9852/4 devices
-Date: Tue, 26 Oct 2010 14:17:36 -0400
-Message-Id: <1288117066-18055-27-git-send-email-vapier@gentoo.org>
+Subject: [PATCH 25/36] staging: iio: dds: new driver for AD9850/1 devices
+Date: Tue, 26 Oct 2010 14:17:35 -0400
+Message-Id: <1288117066-18055-26-git-send-email-vapier@gentoo.org>
 In-Reply-To: <1288117066-18055-1-git-send-email-vapier@gentoo.org>
 References: <1288117066-18055-1-git-send-email-vapier@gentoo.org>
 List-ID: <linux-iio@vger.kernel.org>
@@ -19,46 +19,46 @@ Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
 ---
- drivers/staging/iio/dds/Kconfig  |    7 +
+ drivers/staging/iio/dds/Kconfig  |    7 ++
  drivers/staging/iio/dds/Makefile |    1 +
- drivers/staging/iio/dds/ad9852.c |  314 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 322 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/dds/ad9852.c
+ drivers/staging/iio/dds/ad9850.c |  156 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 164 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/dds/ad9850.c
 
 diff --git a/drivers/staging/iio/dds/Kconfig b/drivers/staging/iio/dds/Kconfig
-index d42bc4c..dee31eb 100644
+index c9fae1d..d42bc4c 100644
 --- a/drivers/staging/iio/dds/Kconfig
 +++ b/drivers/staging/iio/dds/Kconfig
-@@ -23,3 +23,10 @@ config AD9850
+@@ -16,3 +16,10 @@ config AD9832
  	help
  	  Say yes here to build support for Analog Devices DDS chip
- 	  ad9850/1, provides direct access via sysfs.
+ 	  ad9832/3/4/5, provides direct access via sysfs.
 +
-+config AD9852
-+	tristate "Analog Devices ad9852/4 driver"
++config AD9850
++	tristate "Analog Devices ad9850/1 driver"
 +	depends on SPI
 +	help
 +	  Say yes here to build support for Analog Devices DDS chip
-+	  ad9852/4, provides direct access via sysfs.
++	  ad9850/1, provides direct access via sysfs.
 diff --git a/drivers/staging/iio/dds/Makefile b/drivers/staging/iio/dds/Makefile
-index 791db74..e344e8d 100644
+index d0f17f0..791db74 100644
 --- a/drivers/staging/iio/dds/Makefile
 +++ b/drivers/staging/iio/dds/Makefile
-@@ -5,3 +5,4 @@
+@@ -4,3 +4,4 @@
+ 
  obj-$(CONFIG_AD5930) += ad5930.o
  obj-$(CONFIG_AD9832) += ad9832.o
- obj-$(CONFIG_AD9850) += ad9850.o
-+obj-$(CONFIG_AD9852) += ad9852.o
-diff --git a/drivers/staging/iio/dds/ad9852.c b/drivers/staging/iio/dds/ad9852.c
++obj-$(CONFIG_AD9850) += ad9850.o
+diff --git a/drivers/staging/iio/dds/ad9850.c b/drivers/staging/iio/dds/ad9850.c
 new file mode 100644
-index 0000000..0a41d25
+index 0000000..b259bfe
 --- /dev/null
-+++ b/drivers/staging/iio/dds/ad9852.c
-@@ -0,0 +1,314 @@
++++ b/drivers/staging/iio/dds/ad9850.c
+@@ -0,0 +1,156 @@
 +/*
-+ * Driver for ADI Direct Digital Synthesis ad9852
++ * Driver for ADI Direct Digital Synthesis ad9850
 + *
-+ * Copyright (c) 2010 Analog Devices Inc.
++ * Copyright (c) 2010-2010 Analog Devices Inc.
 + *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License version 2 as
@@ -75,51 +75,23 @@ index 0000000..0a41d25
 +#include "../iio.h"
 +#include "../sysfs.h"
 +
-+#define DRV_NAME "ad9852"
++#define DRV_NAME "ad9850"
 +
-+#define addr_phaad1 0x0
-+#define addr_phaad2 0x1
-+#define addr_fretu1 0x2
-+#define addr_fretu2 0x3
-+#define addr_delfre 0x4
-+#define addr_updclk 0x5
-+#define addr_ramclk 0x6
-+#define addr_contrl 0x7
-+#define addr_optskm 0x8
-+#define addr_optskr 0xa
-+#define addr_dacctl 0xb
++#define value_mask (u16)0xf000
++#define addr_shift 12
 +
-+#define COMPPD		(1 << 4)
-+#define REFMULT2	(1 << 2)
-+#define BYPPLL		(1 << 5)
-+#define PLLRANG		(1 << 6)
-+#define IEUPCLK		(1)
-+#define OSKEN		(1 << 5)
-+
-+#define read_bit	(1 << 7)
-+
-+/* Register format: 1 byte addr + value */
-+struct ad9852_config {
-+	u8 phajst0[3];
-+	u8 phajst1[3];
-+	u8 fretun1[6];
-+	u8 fretun2[6];
-+	u8 dltafre[6];
-+	u8 updtclk[5];
-+	u8 ramprat[4];
++/* Register format: 4 bits addr + 12 bits value */
++struct ad9850_config {
 +	u8 control[5];
-+	u8 outpskm[3];
-+	u8 outpskr[2];
-+	u8 daccntl[3];
 +};
 +
-+struct ad9852_state {
++struct ad9850_state {
 +	struct mutex lock;
 +	struct iio_dev *idev;
 +	struct spi_device *sdev;
 +};
 +
-+static ssize_t ad9852_set_parameter(struct device *dev,
++static ssize_t ad9850_set_parameter(struct device *dev,
 +					struct device_attribute *attr,
 +					const char *buf,
 +					size_t len)
@@ -127,111 +99,12 @@ index 0000000..0a41d25
 +	struct spi_message msg;
 +	struct spi_transfer xfer;
 +	int ret;
-+	struct ad9852_config *config = (struct ad9852_config *)buf;
++	struct ad9850_config *config = (struct ad9850_config *)buf;
 +	struct iio_dev *idev = dev_get_drvdata(dev);
-+	struct ad9852_state *st = idev->dev_data;
++	struct ad9850_state *st = idev->dev_data;
 +
-+	xfer.len = 3;
-+	xfer.tx_buf = &config->phajst0[0];
-+	mutex_lock(&st->lock);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	xfer.len = 3;
-+	xfer.tx_buf = &config->phajst1[0];
-+	mutex_lock(&st->lock);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	xfer.len = 6;
-+	xfer.tx_buf = &config->fretun1[0];
-+	mutex_lock(&st->lock);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	xfer.len = 6;
-+	xfer.tx_buf = &config->fretun2[0];
-+	mutex_lock(&st->lock);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	xfer.len = 6;
-+	xfer.tx_buf = &config->dltafre[0];
-+	mutex_lock(&st->lock);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	xfer.len = 5;
-+	xfer.tx_buf = &config->updtclk[0];
-+	mutex_lock(&st->lock);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	xfer.len = 4;
-+	xfer.tx_buf = &config->ramprat[0];
-+	mutex_lock(&st->lock);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	xfer.len = 5;
-+	xfer.tx_buf = &config->control[0];
-+	mutex_lock(&st->lock);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	xfer.len = 3;
-+	xfer.tx_buf = &config->outpskm[0];
-+	mutex_lock(&st->lock);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+	xfer.len = 2;
-+	xfer.tx_buf = &config->outpskr[0];
-+	mutex_lock(&st->lock);
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+	xfer.len = 3;
-+	xfer.tx_buf = &config->daccntl[0];
++	xfer.len = len;
++	xfer.tx_buf = config;
 +	mutex_lock(&st->lock);
 +
 +	spi_message_init(&msg);
@@ -245,52 +118,21 @@ index 0000000..0a41d25
 +	return ret ? ret : len;
 +}
 +
-+static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad9852_set_parameter, 0);
++static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad9850_set_parameter, 0);
 +
-+static void ad9852_init(struct ad9852_state *st)
-+{
-+	struct spi_message msg;
-+	struct spi_transfer xfer;
-+	int ret;
-+	u8 config[5];
-+
-+	config[0] = addr_contrl;
-+	config[1] = COMPPD;
-+	config[2] = REFMULT2 | BYPPLL | PLLRANG;
-+	config[3] = IEUPCLK;
-+	config[4] = OSKEN;
-+
-+	mutex_lock(&st->lock);
-+
-+	xfer.len = 5;
-+	xfer.tx_buf = &config;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+	ret = spi_sync(st->sdev, &msg);
-+	if (ret)
-+		goto error_ret;
-+
-+error_ret:
-+	mutex_unlock(&st->lock);
-+
-+
-+
-+}
-+
-+static struct attribute *ad9852_attributes[] = {
++static struct attribute *ad9850_attributes[] = {
 +	&iio_dev_attr_dds.dev_attr.attr,
 +	NULL,
 +};
 +
-+static const struct attribute_group ad9852_attribute_group = {
++static const struct attribute_group ad9850_attribute_group = {
 +	.name = DRV_NAME,
-+	.attrs = ad9852_attributes,
++	.attrs = ad9850_attributes,
 +};
 +
-+static int __devinit ad9852_probe(struct spi_device *spi)
++static int __devinit ad9850_probe(struct spi_device *spi)
 +{
-+	struct ad9852_state *st;
++	struct ad9850_state *st;
 +	int ret = 0;
 +
 +	st = kzalloc(sizeof(*st), GFP_KERNEL);
@@ -312,7 +154,7 @@ index 0000000..0a41d25
 +	st->idev->num_interrupt_lines = 0;
 +	st->idev->event_attrs = NULL;
 +
-+	st->idev->attrs = &ad9852_attribute_group;
++	st->idev->attrs = &ad9850_attribute_group;
 +	st->idev->dev_data = (void *)(st);
 +	st->idev->driver_module = THIS_MODULE;
 +	st->idev->modes = INDIO_DIRECT_MODE;
@@ -322,9 +164,9 @@ index 0000000..0a41d25
 +		goto error_free_dev;
 +	spi->max_speed_hz = 2000000;
 +	spi->mode = SPI_MODE_3;
-+	spi->bits_per_word = 8;
++	spi->bits_per_word = 16;
 +	spi_setup(spi);
-+	ad9852_init(st);
++
 +	return 0;
 +
 +error_free_dev:
@@ -335,9 +177,9 @@ index 0000000..0a41d25
 +	return ret;
 +}
 +
-+static int __devexit ad9852_remove(struct spi_device *spi)
++static int __devexit ad9850_remove(struct spi_device *spi)
 +{
-+	struct ad9852_state *st = spi_get_drvdata(spi);
++	struct ad9850_state *st = spi_get_drvdata(spi);
 +
 +	iio_device_unregister(st->idev);
 +	kfree(st);
@@ -345,29 +187,29 @@ index 0000000..0a41d25
 +	return 0;
 +}
 +
-+static struct spi_driver ad9852_driver = {
++static struct spi_driver ad9850_driver = {
 +	.driver = {
 +		.name = DRV_NAME,
 +		.owner = THIS_MODULE,
 +	},
-+	.probe = ad9852_probe,
-+	.remove = __devexit_p(ad9852_remove),
++	.probe = ad9850_probe,
++	.remove = __devexit_p(ad9850_remove),
 +};
 +
-+static __init int ad9852_spi_init(void)
++static __init int ad9850_spi_init(void)
 +{
-+	return spi_register_driver(&ad9852_driver);
++	return spi_register_driver(&ad9850_driver);
 +}
-+module_init(ad9852_spi_init);
++module_init(ad9850_spi_init);
 +
-+static __exit void ad9852_spi_exit(void)
++static __exit void ad9850_spi_exit(void)
 +{
-+	spi_unregister_driver(&ad9852_driver);
++	spi_unregister_driver(&ad9850_driver);
 +}
-+module_exit(ad9852_spi_exit);
++module_exit(ad9850_spi_exit);
 +
 +MODULE_AUTHOR("Cliff Cai");
-+MODULE_DESCRIPTION("Analog Devices ad9852 driver");
++MODULE_DESCRIPTION("Analog Devices ad9850 driver");
 +MODULE_LICENSE("GPL v2");
 -- 
 1.7.3.2
