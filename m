@@ -1,58 +1,74 @@
-Return-Path: <vapier.adi@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:48574 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754958Ab0KAKuG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Nov 2010 06:50:06 -0400
+Message-ID: <4CCE9CC2.5090401@cam.ac.uk>
+Date: Mon, 01 Nov 2010 10:56:02 +0000
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-Sender: vapier.adi@gmail.com
-In-Reply-To: <AANLkTikuw2AYhWpbV8kHq9uJdx1+HYLEkP1HTF+4-_7y@mail.gmail.com>
-References: <1288117066-18055-1-git-send-email-vapier@gentoo.org>
- <AANLkTi=-YOdnuQczTD85e7YKuf+OsEbvi4OF6rQnRo7F@mail.gmail.com>
- <4CCEB02D.7090002@cam.ac.uk> <AANLkTikuw2AYhWpbV8kHq9uJdx1+HYLEkP1HTF+4-_7y@mail.gmail.com>
-From: Mike Frysinger <vapier@gentoo.org>
-Date: Fri, 12 Nov 2010 13:02:16 -0500
-Message-ID: <AANLkTimVNS=GL-Y40vOSBGt=iWj5JasdKQWOGnBBfJ=z@mail.gmail.com>
-Subject: Re: [Device-drivers-devel] [PATCH 00/36 v2] staging: iio: ADI drivers
- for staging-next
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, device-drivers-devel@blackfin.uclinux.org
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Guenter Roeck <guenter.roeck@ericsson.com>
+CC: "Zhang, Sonic" <Sonic.Zhang@analog.com>,
+	Mike Frysinger <vapier@gentoo.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>
+Subject: Re: [PATCH 12/14] staging: iio: adc: new driver for ADT7408 temperature
+ sensors
+References: <1287865757-1031-1-git-send-email-vapier@gentoo.org> <1287865757-1031-12-git-send-email-vapier@gentoo.org> <4CC4B8F8.7010005@cam.ac.uk> <DB904C5425BA6F4E8424B3B51A1414D16578B22370@NWD2CMBX1.ad.analog.com> <4CC69C32.9030205@cam.ac.uk> <20101026143307.GB22667@ericsson.com>
+In-Reply-To: <20101026143307.GB22667@ericsson.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Nov 2, 2010 at 03:40, Mike Frysinger wrote:
-> On Mon, Nov 1, 2010 at 08:18, Jonathan Cameron wrote:
->> On 10/28/10 02:44, Mike Frysinger wrote:
->>> On Tue, Oct 26, 2010 at 14:17, Mike Frysinger wrote:
->>>> Hopefully there shouldn't be any roadblocks now before pushing to Greg=
-KH.
->>>> I'll do so in a day or two if there aren't any issues.
+On 10/26/10 15:33, Guenter Roeck wrote:
+> On Tue, Oct 26, 2010 at 05:15:30AM -0400, Jonathan Cameron wrote:
+>> On 10/26/10 04:27, Zhang, Sonic wrote:
 >>>
->>> ive bounced it over to him now
+>>>
+>>>> -----Original Message-----
+>>>> From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
+>>>> Sent: Monday, October 25, 2010 6:54 AM
+>>>> To: Mike Frysinger
+>>>> Cc: linux-iio@vger.kernel.org;
+>>>> device-drivers-devel@blackfin.uclinux.org; Zhang, Sonic; Guenter Roeck
+>>>> Subject: Re: [PATCH 12/14] staging: iio: adc: new driver for
+>>>> ADT7408 temperature sensors
+>>>>
+>>>> On 10/23/10 21:29, Mike Frysinger wrote:
+>>>>> From: Sonic Zhang <sonic.zhang@analog.com>
+>>>> Here we enter new territory. This device is already supported
+>>>> in hwmon.  Do we have a usecase that is not covered by that driver?
+>>>>
+>>>
+>>> I don't find a way to get event notification other than poll in hwmon
+>>> framework. So, I move all temperature devic with interrupt available
+>>> to IIO framework.
 >>
->> I'm guessing this lot *just* missed the merge window. =C2=A0Despite all =
-Mike's
->> hard work they were proposed for merging very late so we can't really co=
-mplain!
->>
->> Anyhow, this is not necessarily a bad thing as it will mean they sit in
->> staging-next for a couple of months and we can do a lot of needed cleani=
-ng up
->> before the next merge window. =C2=A0The trick is probably going to be to=
- synchronize
->> this chunk of the blackfin tree against staging-next so that we can appl=
-y any
->> accepted/reviewed patches to both trees as we move forward.
->>
->> I can set up an additional 'in between' tree if that is helpful? (kernel=
-.org hosted)
->> It would contain whatever we have sent on to Greg KH but based against m=
-ainline
->> rather than linux-next (with no rebasing but with merges to move with th=
-e release
->> candidates as they appear). Hence it would effectively be iio-next thoug=
-h formally
->> that role will still be handled by Greg's staging-next tree.
->
-> as long as the patches are in staging-next, i think things are fine.
-> with the bulk of the code merged, what we have left should be a lot
-> easier to sync/work on.
+>> Whilst it isn't often done (and is a little clunky). It is possible to select
+>> on sysfs attributes much like any other file. I'm sure Guenter can tell us
+>> if any current hwmon devices are doing this?
+> 
+> One can always use sysfs_notify(). Not sure I understand what is clunky about it.
+> gpio-fan uses it, and I have used it as well in an internal driver. Works pretty well.
+> 
+> I thought that is what was meant with "poll" [ie poll (2)], and somehow considered
+> to not be good enough. Would be nice to know the reasons, though, and how iio does
+> better than that. Maybe I need to spend some time reading the iio documentation.
+As a quick and dirty summary.  IIO does it roughly the same way as input, be it heavily
+stripped down. Character device rather than sysfs for events.
 
-greg has pulled things into his staging-next tree, so hopefully we can
-get back to focusing on technical details and not API thrashing now :)
--mike
+This is from memory, but I think the main issue with sysfs_notify is that, whilst you can
+poll on any file, all of those in a given directory will wake up on a call of sysfs_notify.
+In devices with one or two alarms that is probably fine as you can just read them all,
+but we have devices with 10s of different alarms.  Hence you don't want to be reading lots
+of files to find out what is going on.  A single alarm file would be fine if only one could
+trigger simultaneously, but that's rarely the case.  Any sort of 'what alarm has triggered'
+mask is clunky and difficult to generalize.
+
+We try to use sysfs for what it is good at (low bandwidth direct reading from devices and
+configuration of those devices) and character devices for the high bandwidth stuff.
+
+Jonathan
+
+
