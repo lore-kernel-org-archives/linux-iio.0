@@ -1,50 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:35564 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757322Ab0KJXtP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Nov 2010 18:49:15 -0500
-Date: 10 Nov 2010 23:20:56 +0000
-From: "J.I. Cameron" <jic23@cam.ac.uk>
-To: Greg KH <greg@kroah.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>,
-	Greg Kroah-Hartman <gregkh@suse.de>,
-	devel@driverdev.osuosl.org, linux-iio@vger.kernel.org,
-	mensch0815@gmail.com
-Subject: Re: [PATCH] iio - add support for bmp085 barometer
-Message-ID: <Prayer.1.3.3.1011102320560.4446@hermes-2.csi.cam.ac.uk>
-In-Reply-To: <20101109234953.GA9001@kroah.com>
-References: <4CCADE59.9070702@gmail.com>
- <20101109234953.GA9001@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=ISO-8859-1
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:49716 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755651Ab0KAMMw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Nov 2010 08:12:52 -0400
+Message-ID: <4CCEB02D.7090002@cam.ac.uk>
+Date: Mon, 01 Nov 2010 12:18:53 +0000
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
+To: Mike Frysinger <vapier@gentoo.org>
+CC: linux-iio@vger.kernel.org,
+	device-drivers-devel@blackfin.uclinux.org
+Subject: Re: [Device-drivers-devel] [PATCH 00/36 v2] staging: iio: ADI drivers
+ for staging-next
+References: <1288117066-18055-1-git-send-email-vapier@gentoo.org> <AANLkTi=-YOdnuQczTD85e7YKuf+OsEbvi4OF6rQnRo7F@mail.gmail.com>
+In-Reply-To: <AANLkTi=-YOdnuQczTD85e7YKuf+OsEbvi4OF6rQnRo7F@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Nov 9 2010, Greg KH wrote:
+On 10/28/10 02:44, Mike Frysinger wrote:
+> On Tue, Oct 26, 2010 at 14:17, Mike Frysinger wrote:
+>> Hopefully there shouldn't be any roadblocks now before pushing to GregKH.
+>> I'll do so in a day or two if there aren't any issues.
+> 
+> ive bounced it over to him now
+> -mike
+> 
+I'm guessing this lot *just* missed the merge window.  Despite all Mike's
+hard work they were proposed for merging very late so we can't really complain!
 
->On Fri, Oct 29, 2010 at 04:46:49PM +0200, Matthias Brugger wrote:
->> This patch adds support for the Bosch Sensortec bmp085 digital
->> barometer to the iio subsystem.
->> 
->> Signed-off-by: Matthias Brugger <m_brugger@web.de>
->> ---
->>  drivers/staging/iio/Kconfig            |    1 +
->>  drivers/staging/iio/Makefile           |    1 +
->>  drivers/staging/iio/barometer/Kconfig  |   12 +
->>  drivers/staging/iio/barometer/Makefile |    5 +
->>  drivers/staging/iio/barometer/baro.h   |    8 +
->>  drivers/staging/iio/barometer/bmp085.c |  398
->> ++++++++++++++++++++++++++++++++
->
->The patch is line-wrapped and can't be applied :(
->
->Care to get Jonathan's ack and resend it in a format I can apply it in?
->
->thanks,
->
-Sorry, I'm out and about until end of next week (conference in Queenstown
-New Zealand, it's a hard life)
+Anyhow, this is not necessarily a bad thing as it will mean they sit in
+staging-next for a couple of months and we can do a lot of needed cleaning up
+before the next merge window.  The trick is probably going to be to synchronize
+this chunk of the blackfin tree against staging-next so that we can apply any
+accepted/reviewed patches to both trees as we move forward.
 
-So may be a little while before I get to this.
+I can set up an additional 'in between' tree if that is helpful? (kernel.org hosted)
+It would contain whatever we have sent on to Greg KH but based against mainline
+rather than linux-next (with no rebasing but with merges to move with the release
+candidates as they appear). Hence it would effectively be iio-next though formally
+that role will still be handled by Greg's staging-next tree.
 
 Jonathan
+
