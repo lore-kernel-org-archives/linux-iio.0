@@ -1,90 +1,95 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:51604 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754314Ab0KSOFV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Nov 2010 09:05:21 -0500
-Message-ID: <4CE685A7.5080909@cam.ac.uk>
-Date: Fri, 19 Nov 2010 14:11:51 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: michael.hennerich@analog.com
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: jic23@cam.ac.uk
 CC: linux-iio@vger.kernel.org, drivers@analog.com,
-	device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH 3/3] staging: iio: dac: Use spi_device_id
-References: <1290170090-31015-1-git-send-email-michael.hennerich@analog.com> <1290170090-31015-3-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1290170090-31015-3-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+        device-drivers-devel@blackfin.uclinux.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 2/3] staging: iio: dac: Use spi_write() and handle return value
+Date: Fri, 19 Nov 2010 13:34:49 +0100
+Message-ID: <1290170090-31015-2-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1290170090-31015-1-git-send-email-michael.hennerich@analog.com>
+References: <1290170090-31015-1-git-send-email-michael.hennerich@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/19/10 12:34, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> 
-Nice clean up.
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/dac/ad5624r_spi.c |   25 +++++++++----------------
->  1 files changed, 9 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
-> index 17588b4..b7c1661 100644
-> --- a/drivers/staging/iio/dac/ad5624r_spi.c
-> +++ b/drivers/staging/iio/dac/ad5624r_spi.c
-> @@ -209,13 +209,8 @@ static const struct attribute_group ad5624r_attribute_group = {
->  
->  static int __devinit ad5624r_probe(struct spi_device *spi)
->  {
-> -
->  	struct ad5624r_state *st;
->  	int ret = 0;
-> -	char *chip_name = spi->dev.platform_data;
-> -
-> -	if (!chip_name)
-> -		return -ENODEV;
->  
->  	st = kzalloc(sizeof(*st), GFP_KERNEL);
->  	if (st == NULL) {
-> @@ -224,17 +219,7 @@ static int __devinit ad5624r_probe(struct spi_device *spi)
->  	}
->  	spi_set_drvdata(spi, st);
->  
-> -	if (strcmp(chip_name, "ad5624r") == 0)
-> -		st->data_len = 12;
-> -	else if (strcmp(chip_name, "ad5644r") == 0)
-> -		st->data_len = 14;
-> -	else if (strcmp(chip_name, "ad5664r") == 0)
-> -		st->data_len = 16;
-> -	else {
-> -		dev_err(&spi->dev, "not supported chip type\n");
-> -		ret = -EINVAL;
-> -		goto error_ret;
-> -	}
-> +	st->data_len = spi_get_device_id(spi)->driver_data;
->  
->  	st->us = spi;
->  	st->indio_dev = iio_allocate_device();
-> @@ -278,6 +263,13 @@ static int __devexit ad5624r_remove(struct spi_device *spi)
->  	return 0;
->  }
->  
-> +static const struct spi_device_id ad5624r_id[] = {
-> +	{"ad5624r", 12},
-> +	{"ad5644r", 14},
-> +	{"ad5664r", 16},
-> +	{}
-> +};
-> +
->  static struct spi_driver ad5624r_driver = {
->  	.driver = {
->  		.name = "ad5624r",
-> @@ -285,6 +277,7 @@ static struct spi_driver ad5624r_driver = {
->  	},
->  	.probe = ad5624r_probe,
->  	.remove = __devexit_p(ad5624r_remove),
-> +	.id_table = ad5624r_id,
->  };
->  
->  static __init int ad5624r_spi_init(void)
+From: Michael Hennerich <michael.hennerich@analog.com>
 
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/dac/ad5624r_spi.c |   23 +++++++----------------
+ 1 files changed, 7 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
+index c0d7de9..17588b4 100644
+--- a/drivers/staging/iio/dac/ad5624r_spi.c
++++ b/drivers/staging/iio/dac/ad5624r_spi.c
+@@ -35,10 +35,9 @@ struct ad5624r_state {
+ 	int internal_ref;
+ };
+ 
+-static int ad5624r_spi_write(struct spi_device *spi, u8 cmd, u8 addr, u16 val, u8 len)
++static int ad5624r_spi_write(struct spi_device *spi,
++			     u8 cmd, u8 addr, u16 val, u8 len)
+ {
+-	struct spi_transfer t;
+-	struct spi_message m;
+ 	u32 data;
+ 	u8 msg[3];
+ 
+@@ -54,15 +53,7 @@ static int ad5624r_spi_write(struct spi_device *spi, u8 cmd, u8 addr, u16 val, u
+ 	msg[1] = data >> 8;
+ 	msg[2] = data;
+ 
+-	spi_message_init(&m);
+-	memset(&t, 0, (sizeof t));
+-	t.tx_buf = &msg[0];
+-	t.len = 3;
+-
+-	spi_message_add_tail(&t, &m);
+-	spi_sync(spi, &m);
+-
+-	return len;
++	return spi_write(spi, msg, 3);
+ }
+ 
+ static ssize_t ad5624r_write_dac(struct device *dev,
+@@ -80,7 +71,7 @@ static ssize_t ad5624r_write_dac(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	ad5624r_spi_write(st->us, AD5624R_CMD_WRITE_INPUT_N_UPDATE_N,
++	ret = ad5624r_spi_write(st->us, AD5624R_CMD_WRITE_INPUT_N_UPDATE_N,
+ 			this_attr->address, readin, st->data_len);
+ 	return ret ? ret : len;
+ }
+@@ -109,7 +100,7 @@ static ssize_t ad5624r_write_ldac_mode(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	ad5624r_spi_write(st->us, AD5624R_CMD_LDAC_SETUP, 0, readin & 0xF, 16);
++	ret = ad5624r_spi_write(st->us, AD5624R_CMD_LDAC_SETUP, 0, readin & 0xF, 16);
+ 	st->ldac_mode = readin & 0xF;
+ 
+ 	return ret ? ret : len;
+@@ -141,7 +132,7 @@ static ssize_t ad5624r_write_dac_power_mode(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	ad5624r_spi_write(st->us, AD5624R_CMD_POWERDOWN_DAC, 0,
++	ret = ad5624r_spi_write(st->us, AD5624R_CMD_POWERDOWN_DAC, 0,
+ 			((readin & 0x3) << 4) | (1 << this_attr->address), 16);
+ 
+ 	st->dac_power_mode[this_attr->address] = readin & 0x3;
+@@ -173,7 +164,7 @@ static ssize_t ad5624r_write_internal_ref_mode(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	ad5624r_spi_write(st->us, AD5624R_CMD_INTERNAL_REFER_SETUP, 0, !!readin, 16);
++	ret = ad5624r_spi_write(st->us, AD5624R_CMD_INTERNAL_REFER_SETUP, 0, !!readin, 16);
+ 
+ 	st->internal_ref = !!readin;
+ 
+-- 
+1.6.0.2
