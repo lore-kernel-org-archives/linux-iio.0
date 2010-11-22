@@ -4,336 +4,775 @@ To: greg@kroah.com
 CC: linux-iio@vger.kernel.org, drivers@analog.com, jic23@cam.ac.uk,
         device-drivers-devel@blackfin.uclinux.org,
         Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH] staging: iio: dac: ad5446: Enable driver support for AD5620/AD5640/AD5660 DA converters
-Date: Tue, 23 Nov 2010 11:14:16 +0100
-Message-ID: <1290507256-31535-1-git-send-email-michael.hennerich@analog.com>
+Subject: [PATCH v2] staging: iio: adc: Enable driver support for ad7887 AD converter
+Date: Mon, 22 Nov 2010 14:35:32 +0100
+Message-ID: <1290432932-31232-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-Initial support for single channel, 12-/14-/16-Bit nanoDAC with On-Chip Reference
+Enable support for AD7887:  SPI Micropower, 2-Channel, 125 kSPS, 12-Bit ADC
 
-staging: iio: dac: ad5446: Fix according to review feedback
+staging: iio: adc: Fix according to review feedback
 
 Review feedback by Jonathan Cameron:
-	Use kernel doc style to document headers.
-	Turn data into a union
-	Add some comments for clarity
+	Combine statements.
+	Document struct members.
+	Remove redundant variable initialization.
+	Simplify multichannel scan from ring logic.
+	Fix coding style.
+
+[v2]
+staging: iio: adc: ad7887: Fix typos
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/dac/Kconfig  |    6 +-
- drivers/staging/iio/dac/ad5446.c |  120 ++++++++++++++++++++++++++++++++------
- drivers/staging/iio/dac/ad5446.h |   72 +++++++++++++++++++---
- 3 files changed, 167 insertions(+), 31 deletions(-)
+ drivers/staging/iio/adc/Kconfig       |   14 ++
+ drivers/staging/iio/adc/Makefile      |    4 +
+ drivers/staging/iio/adc/ad7887.h      |  105 +++++++++++
+ drivers/staging/iio/adc/ad7887_core.c |  305 +++++++++++++++++++++++++++++++++
+ drivers/staging/iio/adc/ad7887_ring.c |  266 ++++++++++++++++++++++++++++
+ 5 files changed, 694 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/ad7887.h
+ create mode 100644 drivers/staging/iio/adc/ad7887_core.c
+ create mode 100644 drivers/staging/iio/adc/ad7887_ring.c
 
-diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
-index 9c497cc..9191bd2 100644
---- a/drivers/staging/iio/dac/Kconfig
-+++ b/drivers/staging/iio/dac/Kconfig
-@@ -11,11 +11,11 @@ config AD5624R_SPI
- 	  AD5664R convertors (DAC). This driver uses the common SPI interface.
-
- config AD5446
--	tristate "Analog Devices AD5444, AD5446 and AD5541A, AD5512A DAC SPI driver"
-+	tristate "Analog Devices AD5444/6, AD5620/40/60 and AD5541A/12A DAC SPI driver"
- 	depends on SPI
- 	help
--	  Say yes here to build support for Analog Devices AD5444, AD5446
--	  and AD5541A, AD5512A DACs.
-+	  Say yes here to build support for Analog Devices AD5444, AD5446,
-+	  AD5620, AD5640, AD5660 and AD5541A, AD5512A DACs.
-
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 9ca6565..86869cd 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -97,6 +97,20 @@ config AD7476
  	  To compile this driver as a module, choose M here: the
- 	  module will be called ad5446.
-diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
-index ac3165b..4d65d27 100644
---- a/drivers/staging/iio/dac/ad5446.c
-+++ b/drivers/staging/iio/dac/ad5446.c
-@@ -23,6 +23,31 @@
+ 	  module will be called ad7476.
 
- #include "ad5446.h"
-
-+static void ad5446_store_sample(struct ad5446_state *st, unsigned val)
-+{
-+	st->data.d16 = cpu_to_be16(AD5446_LOAD |
-+					(val << st->chip_info->left_shift));
-+}
++config AD7887
++	tristate "Analog Devices AD7887 ADC driver"
++	depends on SPI
++	select IIO_RING_BUFFER
++	select IIO_SW_RING
++	select IIO_TRIGGER
++	help
++	  Say yes here to build support for Analog Devices
++	  AD7887 SPI analog to digital convertor (ADC).
++	  If unsure, say N (but it's safe to say "Y").
 +
-+static void ad5542_store_sample(struct ad5446_state *st, unsigned val)
-+{
-+	st->data.d16 = cpu_to_be16(val << st->chip_info->left_shift);
-+}
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7887.
 +
-+static void ad5620_store_sample(struct ad5446_state *st, unsigned val)
-+{
-+	st->data.d16 = cpu_to_be16(AD5620_LOAD |
-+					(val << st->chip_info->left_shift));
-+}
+ config AD7745
+ 	tristate "Analog Devices AD7745, AD7746 AD7747 capacitive sensor driver"
+ 	depends on I2C
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index a7dce6b..6f231a2 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -15,6 +15,10 @@ ad7476-y := ad7476_core.o
+ ad7476-$(CONFIG_IIO_RING_BUFFER) += ad7476_ring.o
+ obj-$(CONFIG_AD7476) += ad7476.o
+
++ad7887-y := ad7887_core.o
++ad7887-$(CONFIG_IIO_RING_BUFFER) += ad7887_ring.o
++obj-$(CONFIG_AD7887) += ad7887.o
 +
-+static void ad5660_store_sample(struct ad5446_state *st, unsigned val)
-+{
-+	val |= AD5660_LOAD;
-+	st->data.d24[0] = (val >> 16) & 0xFF;
-+	st->data.d24[1] = (val >> 8) & 0xFF;
-+	st->data.d24[2] = val & 0xFF;
-+}
-+
- static ssize_t ad5446_write(struct device *dev,
- 		struct device_attribute *attr,
- 		const char *buf,
-@@ -43,18 +68,7 @@ static ssize_t ad5446_write(struct device *dev,
- 	}
-
- 	mutex_lock(&dev_info->mlock);
--	switch (spi_get_device_id(st->spi)->driver_data) {
--	case ID_AD5444:
--	case ID_AD5446:
--			st->data = cpu_to_be16(AD5446_LOAD |
--					(val << st->chip_info->left_shift));
--			break;
--	case ID_AD5542A:
--	case ID_AD5512A:
--			st->data = cpu_to_be16(val << st->chip_info->left_shift);
--			break;
--	}
--
-+	st->chip_info->store_sample(st, val);
- 	ret = spi_sync(st->spi, &st->msg);
- 	mutex_unlock(&dev_info->mlock);
-
-@@ -105,24 +119,76 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
- 		.storagebits = 16,
- 		.left_shift = 2,
- 		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
-+		.store_sample = ad5446_store_sample,
- 	},
- 	[ID_AD5446] = {
- 		.bits = 14,
- 		.storagebits = 16,
- 		.left_shift = 0,
- 		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
-+		.store_sample = ad5446_store_sample,
- 	},
- 	[ID_AD5542A] = {
- 		.bits = 16,
- 		.storagebits = 16,
- 		.left_shift = 0,
- 		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
-+		.store_sample = ad5542_store_sample,
- 	},
- 	[ID_AD5512A] = {
- 		.bits = 12,
- 		.storagebits = 16,
- 		.left_shift = 4,
- 		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
-+		.store_sample = ad5542_store_sample,
-+	},
-+	[ID_AD5620_2500] = {
-+		.bits = 12,
-+		.storagebits = 16,
-+		.left_shift = 2,
-+		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
-+		.int_vref_mv = 2500,
-+		.store_sample = ad5620_store_sample,
-+	},
-+	[ID_AD5620_1250] = {
-+		.bits = 12,
-+		.storagebits = 16,
-+		.left_shift = 2,
-+		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
-+		.int_vref_mv = 1250,
-+		.store_sample = ad5620_store_sample,
-+	},
-+	[ID_AD5640_2500] = {
-+		.bits = 14,
-+		.storagebits = 16,
-+		.left_shift = 0,
-+		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
-+		.int_vref_mv = 2500,
-+		.store_sample = ad5620_store_sample,
-+	},
-+	[ID_AD5640_1250] = {
-+		.bits = 14,
-+		.storagebits = 16,
-+		.left_shift = 0,
-+		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
-+		.int_vref_mv = 1250,
-+		.store_sample = ad5620_store_sample,
-+	},
-+	[ID_AD5660_2500] = {
-+		.bits = 16,
-+		.storagebits = 24,
-+		.left_shift = 0,
-+		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
-+		.int_vref_mv = 2500,
-+		.store_sample = ad5660_store_sample,
-+	},
-+	[ID_AD5660_1250] = {
-+		.bits = 16,
-+		.storagebits = 24,
-+		.left_shift = 0,
-+		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
-+		.int_vref_mv = 1250,
-+		.store_sample = ad5660_store_sample,
- 	},
- };
-
-@@ -168,16 +234,28 @@ static int __devinit ad5446_probe(struct spi_device *spi)
-
- 	/* Setup default message */
-
--	st->xfer.tx_buf = &st->data,
--	st->xfer.len = 2,
-+	st->xfer.tx_buf = &st->data;
-+	st->xfer.len = st->chip_info->storagebits / 8;
-
- 	spi_message_init(&st->msg);
- 	spi_message_add_tail(&st->xfer, &st->msg);
-
--	if (voltage_uv)
--		st->vref_mv = voltage_uv / 1000;
--	else
--		dev_warn(&spi->dev, "reference voltage unspecified\n");
-+	switch (spi_get_device_id(spi)->driver_data) {
-+		case ID_AD5620_2500:
-+		case ID_AD5620_1250:
-+		case ID_AD5640_2500:
-+		case ID_AD5640_1250:
-+		case ID_AD5660_2500:
-+		case ID_AD5660_1250:
-+			st->vref_mv = st->chip_info->int_vref_mv;
-+			break;
-+		default:
-+			if (voltage_uv)
-+				st->vref_mv = voltage_uv / 1000;
-+			else
-+				dev_warn(&spi->dev,
-+					 "reference voltage unspecified\n");
-+	}
-
- 	ret = iio_device_register(st->indio_dev);
- 	if (ret)
-@@ -217,6 +295,12 @@ static const struct spi_device_id ad5446_id[] = {
- 	{"ad5446", ID_AD5446},
- 	{"ad5542a", ID_AD5542A},
- 	{"ad5512a", ID_AD5512A},
-+	{"ad5620-2500", ID_AD5620_2500}, /* AD5620/40/60: */
-+	{"ad5620-1250", ID_AD5620_1250}, /* part numbers may look differently */
-+	{"ad5640-2500", ID_AD5640_2500},
-+	{"ad5640-1250", ID_AD5640_1250},
-+	{"ad5660-2500", ID_AD5660_2500},
-+	{"ad5660-1250", ID_AD5660_1250},
- 	{}
- };
-
-diff --git a/drivers/staging/iio/dac/ad5446.h b/drivers/staging/iio/dac/ad5446.h
-index 24a9cda..ca795a9 100644
---- a/drivers/staging/iio/dac/ad5446.h
-+++ b/drivers/staging/iio/dac/ad5446.h
-@@ -5,8 +5,8 @@
-  *
-  * Licensed under the GPL-2 or later.
-  */
--#ifndef IIO_ADC_AD5446_H_
--#define IIO_ADC_AD5446_H_
-+#ifndef IIO_DAC_AD5446_H_
-+#define IIO_DAC_AD5446_H_
-
- /* DAC Control Bits */
-
-@@ -15,14 +15,30 @@
- #define AD5446_NOP		(0x2 << 14) /* No operation */
- #define AD5446_CLK_RISING	(0x3 << 14) /* Clock data on rising edge */
-
-+#define AD5620_LOAD		(0x0 << 14) /* Load and update Norm Operation*/
-+#define AD5620_PWRDWN_1k	(0x1 << 14) /* Power-down: 1kOhm to GND */
-+#define AD5620_PWRDWN_100k	(0x2 << 14) /* Power-down: 100kOhm to GND */
-+#define AD5620_PWRDWN_TRISTATE	(0x3 << 14) /* Power-down: Three-state */
-+
-+#define AD5660_LOAD		(0x0 << 16) /* Load and update Norm Operation*/
-+#define AD5660_PWRDWN_1k	(0x1 << 16) /* Power-down: 1kOhm to GND */
-+#define AD5660_PWRDWN_100k	(0x2 << 16) /* Power-down: 100kOhm to GND */
-+#define AD5660_PWRDWN_TRISTATE	(0x3 << 16) /* Power-down: Three-state */
-+
- #define RES_MASK(bits)	((1 << (bits)) - 1)
-
--struct ad5446_chip_info {
--	u8				bits;		/* number of DAC bits */
--	u8				storagebits;	/* number of bits written to the DAC */
--	u8				left_shift;	/* number of bits the datum must be shifted */
--	char				sign;		/* [s]igned or [u]nsigned */
--};
-+/**
-+ * struct ad5446_state - driver instance specific data
-+ * @indio_dev:		the industrial I/O device
-+ * @spi:		spi_device
-+ * @chip_info:		chip model specific constants, available modes etc
-+ * @reg:		supply regulator
-+ * @poll_work:		bottom half of polling interrupt handler
-+ * @vref_mv:		actual reference voltage used
-+ * @xfer:		default spi transfer
-+ * @msg:		default spi message
-+ * @data:		spi transmit buffer
+ obj-$(CONFIG_AD7150) += ad7150.o
+ obj-$(CONFIG_AD7152) += ad7152.o
+ obj-$(CONFIG_AD7291) += ad7291.o
+diff --git a/drivers/staging/iio/adc/ad7887.h b/drivers/staging/iio/adc/ad7887.h
+new file mode 100644
+index 0000000..8c2a218
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7887.h
+@@ -0,0 +1,105 @@
++/*
++ * AD7887 SPI ADC driver
++ *
++ * Copyright 2010 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2 or later.
 + */
-
- struct ad5446_state {
- 	struct iio_dev			*indio_dev;
-@@ -33,14 +49,50 @@ struct ad5446_state {
- 	unsigned short			vref_mv;
- 	struct spi_transfer		xfer;
- 	struct spi_message		msg;
--	unsigned short			data;
-+	union {
-+		unsigned short		d16;
-+		unsigned char		d24[3];
-+	} data;
++#ifndef IIO_ADC_AD7887_H_
++#define IIO_ADC_AD7887_H_
++
++#define AD7887_REF_DIS		(1 << 5) /* on-chip reference disable */
++#define AD7887_DUAL		(1 << 4) /* dual-channel mode */
++#define AD7887_CH_AIN1		(1 << 3) /* convert on channel 1, DUAL=1 */
++#define AD7887_CH_AIN0		(0 << 3) /* convert on channel 0, DUAL=0,1 */
++#define AD7887_PM_MODE1		(0)	 /* CS based shutdown */
++#define AD7887_PM_MODE2		(1)	 /* full on */
++#define AD7887_PM_MODE3		(2)	 /* auto shutdown after conversion */
++#define AD7887_PM_MODE4		(3)	 /* standby mode */
++
++enum ad7887_channels {
++	AD7887_CH0,
++	AD7887_CH0_CH1,
++	AD7887_CH1,
 +};
 +
-+/**
-+ * struct ad5446_chip_info - chip specifc information
-+ * @bits:		accuracy of the DAC in bits
-+ * @storagebits:	number of bits written to the DAC
-+ * @left_shift:		number of bits the datum must be shifted
-+ * @sign:		data representation [s]igned or [u]nsigned
-+ * @int_vref_mv:	AD5620/40/60: the internal reference voltage
-+ * @store_sample:	chip specifc helper function to store the datum
++#define RES_MASK(bits)	((1 << (bits)) - 1) /* TODO: move this into a common header */
++
++/*
++ * TODO: struct ad7887_platform_data needs to go into include/linux/iio
 + */
 +
-+struct ad5446_chip_info {
-+	u8				bits;
-+	u8				storagebits;
-+	u8				left_shift;
-+	char				sign;
++struct ad7887_platform_data {
++	/* External Vref voltage applied */
++	u16				vref_mv;
++	/*
++	 * AD7887:
++	 * In single channel mode en_dual = flase, AIN1/Vref pins assumes its
++	 * Vref function. In dual channel mode en_dual = true, AIN1 becomes the
++	 * second input channel, and Vref is internally connected to Vdd.
++	 */
++	bool				en_dual;
++	/*
++	 * AD7887:
++	 * use_onchip_ref = true, the Vref is internally connected to the 2.500V
++	 * Voltage reference. If use_onchip_ref = false, the reference voltage
++	 * is supplied by AIN1/Vref
++	 */
++	bool				use_onchip_ref;
++};
++
++struct ad7887_chip_info {
++	u8				bits;		/* number of ADC bits */
++	u8				storagebits;	/* number of bits read from the ADC */
++	u8				left_shift;	/* number of bits the sample must be shifted */
++	char				sign;		/* [s]igned or [u]nsigned */
++	u16				int_vref_mv;	/* internal reference voltage */
++};
++
++struct ad7887_state {
++	struct iio_dev			*indio_dev;
++	struct spi_device		*spi;
++	const struct ad7887_chip_info	*chip_info;
++	struct regulator		*reg;
++	struct work_struct		poll_work;
++	atomic_t			protect_ring;
 +	u16				int_vref_mv;
-+	void (*store_sample)		(struct ad5446_state *st, unsigned val);
- };
-
-+/**
-+ * ad5446_supported_device_ids:
-+ * The AD5620/40/60 parts are available in different fixed internal reference
-+ * voltage options. The actual part numbers may look differently
-+ * (and a bit cryptic), however this style is used to make clear which
-+ * parts are supported here.
++	bool				en_dual;
++	struct spi_transfer		xfer[4];
++	struct spi_message		msg[3];
++	struct spi_message		*ring_msg;
++	unsigned char			tx_cmd_buf[8];
++
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++
++	unsigned char			data[4] ____cacheline_aligned;
++};
++
++enum ad7887_supported_device_ids {
++	ID_AD7887
++};
++
++#ifdef CONFIG_IIO_RING_BUFFER
++int ad7887_scan_from_ring(struct ad7887_state *st, long mask);
++int ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev);
++void ad7887_ring_cleanup(struct iio_dev *indio_dev);
++#else /* CONFIG_IIO_RING_BUFFER */
++static inline int ad7887_scan_from_ring(struct ad7887_state *st, long mask)
++{
++	return 0;
++}
++
++static inline int
++ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev)
++{
++	return 0;
++}
++
++static inline void ad7887_ring_cleanup(struct iio_dev *indio_dev)
++{
++}
++#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* IIO_ADC_AD7887_H_ */
+diff --git a/drivers/staging/iio/adc/ad7887_core.c b/drivers/staging/iio/adc/ad7887_core.c
+new file mode 100644
+index 0000000..6859089
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7887_core.c
+@@ -0,0 +1,305 @@
++/*
++ * AD7887 SPI ADC driver
++ *
++ * Copyright 2010 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2 or later.
 + */
 +
- enum ad5446_supported_device_ids {
- 	ID_AD5444,
- 	ID_AD5446,
- 	ID_AD5542A,
- 	ID_AD5512A,
-+	ID_AD5620_2500,
-+	ID_AD5620_1250,
-+	ID_AD5640_2500,
-+	ID_AD5640_1250,
-+	ID_AD5660_2500,
-+	ID_AD5660_1250,
- };
-
--#endif /* IIO_ADC_AD5446_H_ */
-+#endif /* IIO_DAC_AD5446_H_ */
++#include <linux/interrupt.h>
++#include <linux/workqueue.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/list.h>
++#include <linux/spi/spi.h>
++#include <linux/regulator/consumer.h>
++#include <linux/err.h>
++
++#include "../iio.h"
++#include "../sysfs.h"
++#include "../ring_generic.h"
++#include "adc.h"
++
++#include "ad7887.h"
++
++static int ad7887_scan_direct(struct ad7887_state *st, unsigned ch)
++{
++	int ret = spi_sync(st->spi, &st->msg[ch]);
++	if (ret)
++		return ret;
++
++	return (st->data[(ch * 2)] << 8) | st->data[(ch * 2) + 1];
++}
++
++static ssize_t ad7887_scan(struct device *dev,
++			    struct device_attribute *attr,
++			    char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7887_state *st = dev_info->dev_data;
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	int ret;
++
++	mutex_lock(&dev_info->mlock);
++	if (iio_ring_enabled(dev_info))
++		ret = ad7887_scan_from_ring(st, 1 << this_attr->address);
++	else
++		ret = ad7887_scan_direct(st, this_attr->address);
++	mutex_unlock(&dev_info->mlock);
++
++	if (ret < 0)
++		return ret;
++
++	return sprintf(buf, "%d\n", (ret >> st->chip_info->left_shift) &
++		       RES_MASK(st->chip_info->bits));
++}
++static IIO_DEV_ATTR_IN_RAW(0, ad7887_scan, 0);
++static IIO_DEV_ATTR_IN_RAW(1, ad7887_scan, 1);
++
++static ssize_t ad7887_show_scale(struct device *dev,
++				struct device_attribute *attr,
++				char *buf)
++{
++	/* Driver currently only support internal vref */
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7887_state *st = iio_dev_get_devdata(dev_info);
++	/* Corresponds to Vref / 2^(bits) */
++	unsigned int scale_uv = (st->int_vref_mv * 1000) >> st->chip_info->bits;
++
++	return sprintf(buf, "%d.%d\n", scale_uv / 1000, scale_uv % 1000);
++}
++static IIO_DEVICE_ATTR(in_scale, S_IRUGO, ad7887_show_scale, NULL, 0);
++
++static ssize_t ad7887_show_name(struct device *dev,
++				 struct device_attribute *attr,
++				 char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7887_state *st = iio_dev_get_devdata(dev_info);
++
++	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
++}
++static IIO_DEVICE_ATTR(name, S_IRUGO, ad7887_show_name, NULL, 0);
++
++static struct attribute *ad7887_attributes[] = {
++	&iio_dev_attr_in0_raw.dev_attr.attr,
++	&iio_dev_attr_in1_raw.dev_attr.attr,
++	&iio_dev_attr_in_scale.dev_attr.attr,
++	&iio_dev_attr_name.dev_attr.attr,
++	NULL,
++};
++
++static mode_t ad7887_attr_is_visible(struct kobject *kobj,
++				     struct attribute *attr, int n)
++{
++	struct device *dev = container_of(kobj, struct device, kobj);
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7887_state *st = iio_dev_get_devdata(dev_info);
++
++	mode_t mode = attr->mode;
++
++	if ((attr == &iio_dev_attr_in1_raw.dev_attr.attr) && !st->en_dual)
++			mode = 0;
++
++	return mode;
++}
++
++static const struct attribute_group ad7887_attribute_group = {
++	.attrs = ad7887_attributes,
++	.is_visible = ad7887_attr_is_visible,
++};
++
++static const struct ad7887_chip_info ad7887_chip_info_tbl[] = {
++	/*
++	 * More devices added in future
++	 */
++	[ID_AD7887] = {
++		.bits = 12,
++		.storagebits = 16,
++		.left_shift = 0,
++		.sign = IIO_SCAN_EL_TYPE_UNSIGNED,
++		.int_vref_mv = 2500,
++	},
++};
++
++static int __devinit ad7887_probe(struct spi_device *spi)
++{
++	struct ad7887_platform_data *pdata = spi->dev.platform_data;
++	struct ad7887_state *st;
++	int ret, voltage_uv = 0;
++
++	st = kzalloc(sizeof(*st), GFP_KERNEL);
++	if (st == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++
++	st->reg = regulator_get(&spi->dev, "vcc");
++	if (!IS_ERR(st->reg)) {
++		ret = regulator_enable(st->reg);
++		if (ret)
++			goto error_put_reg;
++
++		voltage_uv = regulator_get_voltage(st->reg);
++	}
++
++	st->chip_info =
++		&ad7887_chip_info_tbl[spi_get_device_id(spi)->driver_data];
++
++	spi_set_drvdata(spi, st);
++
++	atomic_set(&st->protect_ring, 0);
++	st->spi = spi;
++
++	st->indio_dev = iio_allocate_device();
++	if (st->indio_dev == NULL) {
++		ret = -ENOMEM;
++		goto error_disable_reg;
++	}
++
++	/* Estabilish that the iio_dev is a child of the spi device */
++	st->indio_dev->dev.parent = &spi->dev;
++	st->indio_dev->attrs = &ad7887_attribute_group;
++	st->indio_dev->dev_data = (void *)(st);
++	st->indio_dev->driver_module = THIS_MODULE;
++	st->indio_dev->modes = INDIO_DIRECT_MODE;
++
++	/* Setup default message */
++
++	st->tx_cmd_buf[0] = AD7887_CH_AIN0 | AD7887_PM_MODE4 |
++			    ((pdata && pdata->use_onchip_ref) ?
++			    0 : AD7887_REF_DIS);
++
++	st->xfer[0].rx_buf = &st->data[0];
++	st->xfer[0].tx_buf = &st->tx_cmd_buf[0];
++	st->xfer[0].len = 2;
++
++	spi_message_init(&st->msg[AD7887_CH0]);
++	spi_message_add_tail(&st->xfer[0], &st->msg[AD7887_CH0]);
++
++	if (pdata && pdata->en_dual) {
++		st->tx_cmd_buf[0] |= AD7887_DUAL | AD7887_REF_DIS;
++
++		st->tx_cmd_buf[2] = AD7887_CH_AIN1 | AD7887_DUAL |
++				    AD7887_REF_DIS | AD7887_PM_MODE4;
++		st->tx_cmd_buf[4] = AD7887_CH_AIN0 | AD7887_DUAL |
++				    AD7887_REF_DIS | AD7887_PM_MODE4;
++		st->tx_cmd_buf[6] = AD7887_CH_AIN1 | AD7887_DUAL |
++				    AD7887_REF_DIS | AD7887_PM_MODE4;
++
++		st->xfer[1].rx_buf = &st->data[0];
++		st->xfer[1].tx_buf = &st->tx_cmd_buf[2];
++		st->xfer[1].len = 2;
++
++		st->xfer[2].rx_buf = &st->data[2];
++		st->xfer[2].tx_buf = &st->tx_cmd_buf[4];
++		st->xfer[2].len = 2;
++
++		spi_message_init(&st->msg[AD7887_CH0_CH1]);
++		spi_message_add_tail(&st->xfer[1], &st->msg[AD7887_CH0_CH1]);
++		spi_message_add_tail(&st->xfer[2], &st->msg[AD7887_CH0_CH1]);
++
++		st->xfer[3].rx_buf = &st->data[0];
++		st->xfer[3].tx_buf = &st->tx_cmd_buf[6];
++		st->xfer[3].len = 2;
++
++		spi_message_init(&st->msg[AD7887_CH1]);
++		spi_message_add_tail(&st->xfer[3], &st->msg[AD7887_CH1]);
++
++		st->en_dual = true;
++
++		if (pdata && pdata->vref_mv)
++			st->int_vref_mv = pdata->vref_mv;
++		else if (voltage_uv)
++			st->int_vref_mv = voltage_uv / 1000;
++		else
++			dev_warn(&spi->dev, "reference voltage unspecified\n");
++
++	} else {
++		if (pdata && pdata->vref_mv)
++			st->int_vref_mv = pdata->vref_mv;
++		else if (pdata && pdata->use_onchip_ref)
++			st->int_vref_mv = st->chip_info->int_vref_mv;
++		else
++			dev_warn(&spi->dev, "reference voltage unspecified\n");
++	}
++
++
++	ret = ad7887_register_ring_funcs_and_init(st->indio_dev);
++	if (ret)
++		goto error_free_device;
++
++	ret = iio_device_register(st->indio_dev);
++	if (ret)
++		goto error_free_device;
++
++	ret = iio_ring_buffer_register(st->indio_dev->ring, 0);
++	if (ret)
++		goto error_cleanup_ring;
++	return 0;
++
++error_cleanup_ring:
++	ad7887_ring_cleanup(st->indio_dev);
++	iio_device_unregister(st->indio_dev);
++error_free_device:
++	iio_free_device(st->indio_dev);
++error_disable_reg:
++	if (!IS_ERR(st->reg))
++		regulator_disable(st->reg);
++error_put_reg:
++	if (!IS_ERR(st->reg))
++		regulator_put(st->reg);
++	kfree(st);
++error_ret:
++	return ret;
++}
++
++static int ad7887_remove(struct spi_device *spi)
++{
++	struct ad7887_state *st = spi_get_drvdata(spi);
++	struct iio_dev *indio_dev = st->indio_dev;
++	iio_ring_buffer_unregister(indio_dev->ring);
++	ad7887_ring_cleanup(indio_dev);
++	iio_device_unregister(indio_dev);
++	if (!IS_ERR(st->reg)) {
++		regulator_disable(st->reg);
++		regulator_put(st->reg);
++	}
++	kfree(st);
++	return 0;
++}
++
++static const struct spi_device_id ad7887_id[] = {
++	{"ad7887", ID_AD7887},
++	{}
++};
++
++static struct spi_driver ad7887_driver = {
++	.driver = {
++		.name	= "ad7887",
++		.bus	= &spi_bus_type,
++		.owner	= THIS_MODULE,
++	},
++	.probe		= ad7887_probe,
++	.remove		= __devexit_p(ad7887_remove),
++	.id_table	= ad7887_id,
++};
++
++static int __init ad7887_init(void)
++{
++	return spi_register_driver(&ad7887_driver);
++}
++module_init(ad7887_init);
++
++static void __exit ad7887_exit(void)
++{
++	spi_unregister_driver(&ad7887_driver);
++}
++module_exit(ad7887_exit);
++
++MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
++MODULE_DESCRIPTION("Analog Devices AD7887 ADC");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("spi:ad7887");
+diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
+new file mode 100644
+index 0000000..6b9cb1f
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7887_ring.c
+@@ -0,0 +1,266 @@
++/*
++ * Copyright 2010 Analog Devices Inc.
++ * Copyright (C) 2008 Jonathan Cameron
++ *
++ * Licensed under the GPL-2 or later.
++ *
++ * ad7887_ring.c
++ */
++
++#include <linux/interrupt.h>
++#include <linux/gpio.h>
++#include <linux/workqueue.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/list.h>
++#include <linux/spi/spi.h>
++
++#include "../iio.h"
++#include "../ring_generic.h"
++#include "../ring_sw.h"
++#include "../trigger.h"
++#include "../sysfs.h"
++
++#include "ad7887.h"
++
++static IIO_SCAN_EL_C(in0, 0, 0, NULL);
++static IIO_SCAN_EL_C(in1, 1, 0, NULL);
++
++static ssize_t ad7887_show_type(struct device *dev,
++				struct device_attribute *attr,
++				char *buf)
++{
++	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = ring->indio_dev;
++	struct ad7887_state *st = indio_dev->dev_data;
++
++	return sprintf(buf, "%c%d/%d>>%d\n", st->chip_info->sign,
++		       st->chip_info->bits, st->chip_info->storagebits,
++		       st->chip_info->left_shift);
++}
++static IIO_DEVICE_ATTR(in_type, S_IRUGO, ad7887_show_type, NULL, 0);
++
++static struct attribute *ad7887_scan_el_attrs[] = {
++	&iio_scan_el_in0.dev_attr.attr,
++	&iio_const_attr_in0_index.dev_attr.attr,
++	&iio_scan_el_in1.dev_attr.attr,
++	&iio_const_attr_in1_index.dev_attr.attr,
++	&iio_dev_attr_in_type.dev_attr.attr,
++	NULL,
++};
++
++static mode_t ad7887_scan_el_attr_is_visible(struct kobject *kobj,
++				     struct attribute *attr, int n)
++{
++	struct device *dev = container_of(kobj, struct device, kobj);
++	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = ring->indio_dev;
++	struct ad7887_state *st = indio_dev->dev_data;
++
++	mode_t mode = attr->mode;
++
++	if ((attr == &iio_scan_el_in1.dev_attr.attr) ||
++		(attr == &iio_const_attr_in1_index.dev_attr.attr))
++		if (!st->en_dual)
++			mode = 0;
++
++	return mode;
++}
++
++static struct attribute_group ad7887_scan_el_group = {
++	.name = "scan_elements",
++	.attrs = ad7887_scan_el_attrs,
++	.is_visible = ad7887_scan_el_attr_is_visible,
++};
++
++int ad7887_scan_from_ring(struct ad7887_state *st, long mask)
++{
++	struct iio_ring_buffer *ring = st->indio_dev->ring;
++	int count = 0, ret;
++	u16 *ring_data;
++
++	if (!(ring->scan_mask & mask)) {
++		ret = -EBUSY;
++		goto error_ret;
++	}
++
++	ring_data = kmalloc(ring->access.get_bytes_per_datum(ring), GFP_KERNEL);
++	if (ring_data == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++	ret = ring->access.read_last(ring, (u8 *) ring_data);
++	if (ret)
++		goto error_free_ring_data;
++
++	/* for single channel scan the result is stored with zero offset */
++	if ((ring->scan_mask == ((1 << 1) | (1 << 0))) && (mask == (1 << 1)))
++		count = 1;
++
++	ret = be16_to_cpu(ring_data[count]);
++
++error_free_ring_data:
++	kfree(ring_data);
++error_ret:
++	return ret;
++}
++
++/**
++ * ad7887_ring_preenable() setup the parameters of the ring before enabling
++ *
++ * The complex nature of the setting of the nuber of bytes per datum is due
++ * to this driver currently ensuring that the timestamp is stored at an 8
++ * byte boundary.
++ **/
++static int ad7887_ring_preenable(struct iio_dev *indio_dev)
++{
++	struct ad7887_state *st = indio_dev->dev_data;
++	struct iio_ring_buffer *ring = indio_dev->ring;
++	size_t d_size;
++
++	if (indio_dev->ring->access.set_bytes_per_datum) {
++		d_size = st->chip_info->storagebits / 8 + sizeof(s64);
++		if (d_size % 8)
++			d_size += 8 - (d_size % 8);
++		indio_dev->ring->access.set_bytes_per_datum(indio_dev->ring,
++							    d_size);
++	}
++
++	switch (ring->scan_mask) {
++	case (1 << 0):
++		st->ring_msg = &st->msg[AD7887_CH0];
++		break;
++	case (1 << 1):
++		st->ring_msg = &st->msg[AD7887_CH1];
++		/* Dummy read: push CH1 setting down to hardware */
++		spi_sync(st->spi, st->ring_msg);
++		break;
++	case ((1 << 1) | (1 << 0)):
++		st->ring_msg = &st->msg[AD7887_CH0_CH1];
++		break;
++	}
++
++	return 0;
++}
++
++static int ad7887_ring_postdisable(struct iio_dev *indio_dev)
++{
++	struct ad7887_state *st = indio_dev->dev_data;
++
++	/* dummy read: restore default CH0 settin */
++	return spi_sync(st->spi, &st->msg[AD7887_CH0]);
++}
++
++/**
++ * ad7887_poll_func_th() th of trigger launched polling to ring buffer
++ *
++ * As sampling only occurs on spi comms occuring, leave timestamping until
++ * then.  Some triggers will generate their own time stamp.  Currently
++ * there is no way of notifying them when no one cares.
++ **/
++static void ad7887_poll_func_th(struct iio_dev *indio_dev, s64 time)
++{
++	struct ad7887_state *st = indio_dev->dev_data;
++
++	schedule_work(&st->poll_work);
++	return;
++}
++/**
++ * ad7887_poll_bh_to_ring() bh of trigger launched polling to ring buffer
++ * @work_s:	the work struct through which this was scheduled
++ *
++ * Currently there is no option in this driver to disable the saving of
++ * timestamps within the ring.
++ * I think the one copy of this at a time was to avoid problems if the
++ * trigger was set far too high and the reads then locked up the computer.
++ **/
++static void ad7887_poll_bh_to_ring(struct work_struct *work_s)
++{
++	struct ad7887_state *st = container_of(work_s, struct ad7887_state,
++						  poll_work);
++	struct iio_dev *indio_dev = st->indio_dev;
++	struct iio_sw_ring_buffer *sw_ring = iio_to_sw_ring(indio_dev->ring);
++	struct iio_ring_buffer *ring = indio_dev->ring;
++	s64 time_ns;
++	__u8 *buf;
++	int b_sent;
++	size_t d_size;
++
++	unsigned int bytes = ring->scan_count * st->chip_info->storagebits / 8;
++
++	/* Ensure the timestamp is 8 byte aligned */
++	d_size = bytes + sizeof(s64);
++	if (d_size % sizeof(s64))
++		d_size += sizeof(s64) - (d_size % sizeof(s64));
++
++	/* Ensure only one copy of this function running at a time */
++	if (atomic_inc_return(&st->protect_ring) > 1)
++		return;
++
++	buf = kzalloc(d_size, GFP_KERNEL);
++	if (buf == NULL)
++		return;
++
++	b_sent = spi_sync(st->spi, st->ring_msg);
++	if (b_sent)
++		goto done;
++
++	time_ns = iio_get_time_ns();
++
++	memcpy(buf, st->data, bytes);
++	memcpy(buf + d_size - sizeof(s64), &time_ns, sizeof(time_ns));
++
++	indio_dev->ring->access.store_to(&sw_ring->buf, buf, time_ns);
++done:
++	kfree(buf);
++	atomic_dec(&st->protect_ring);
++}
++
++int ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev)
++{
++	struct ad7887_state *st = indio_dev->dev_data;
++	int ret;
++
++	indio_dev->ring = iio_sw_rb_allocate(indio_dev);
++	if (!indio_dev->ring) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++	/* Effectively select the ring buffer implementation */
++	iio_ring_sw_register_funcs(&indio_dev->ring->access);
++	ret = iio_alloc_pollfunc(indio_dev, NULL, &ad7887_poll_func_th);
++	if (ret)
++		goto error_deallocate_sw_rb;
++
++	/* Ring buffer functions - here trigger setup related */
++
++	indio_dev->ring->preenable = &ad7887_ring_preenable;
++	indio_dev->ring->postenable = &iio_triggered_ring_postenable;
++	indio_dev->ring->predisable = &iio_triggered_ring_predisable;
++	indio_dev->ring->postdisable = &ad7887_ring_postdisable;
++	indio_dev->ring->scan_el_attrs = &ad7887_scan_el_group;
++
++	INIT_WORK(&st->poll_work, &ad7887_poll_bh_to_ring);
++
++	/* Flag that polled ring buffering is possible */
++	indio_dev->modes |= INDIO_RING_TRIGGERED;
++	return 0;
++error_deallocate_sw_rb:
++	iio_sw_rb_free(indio_dev->ring);
++error_ret:
++	return ret;
++}
++
++void ad7887_ring_cleanup(struct iio_dev *indio_dev)
++{
++	/* ensure that the trigger has been detached */
++	if (indio_dev->trig) {
++		iio_put_trigger(indio_dev->trig);
++		iio_trigger_dettach_poll_func(indio_dev->trig,
++					      indio_dev->pollfunc);
++	}
++	kfree(indio_dev->pollfunc);
++	iio_sw_rb_free(indio_dev->ring);
++}
 --
 1.6.0.2
