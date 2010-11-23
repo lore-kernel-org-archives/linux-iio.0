@@ -1,42 +1,29 @@
-Return-Path: <hemanthv@ti.com>
-Message-ID: <20E08A7079E04279971AFD632B5A00A9@wipblrx0099946>
-From: "Hemanth V" <hemanthv@ti.com>
-To: "Jonathan Cameron" <jic23@cam.ac.uk>, "Dmitry Torokhov" <dtor@mail.ru>
-Cc: "LKML" <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>,
-        "Manuel Stahl" <manuel.stahl@iis.fraunhofer.de>,
-        "Jean Delvare" <khali@linux-fr.org>, "Greg KH" <greg@kroah.com>,
-        "Alan Cox" <alan@lxorguk.ukuu.org.uk>,
-        "Andrew Morton" <akpm@linux-foundation.org>, <drivers@analog.com>,
-        <achew@nvidia.com>, "Donggeun Kim" <dg77.kim@samsung.com>
-References: <4C98C7FE.4050305@cam.ac.uk> <03d301cb5bd4$152287d0$LocalHost@wipblrx0099946> <4C9C927B.1010500@cam.ac.uk> <4CA06714.8080008@cam.ac.uk> <4CA46126.7020104@cam.ac.uk>
-Subject: Re: Sensor event related attribute naming.
-Date: Mon, 8 Nov 2010 19:37:03 +0530
+Return-Path: <jic23@cam.ac.uk>
+Message-ID: <4CEBFE4B.4070500@cam.ac.uk>
+Date: Tue, 23 Nov 2010 17:47:55 +0000
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	format=flowed;
-	charset="iso-8859-1";
-	reply-type=original
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: matthias <mensch0815@googlemail.com>, linux-iio@vger.kernel.org,
+ m_brugger@web.de, drivers@analog.com
+Subject: Re: [PATCH 0/2 V2] Adding support for adis16250/5 to adis16260 driver.
+References: <1283786178-6466-1-git-send-email-jic23@cam.ac.uk>	<4C94B4A6.2060001@cam.ac.uk> <AANLkTinQ04UmbBvakGQBeSap0PCh3VrWmhhobLh0u9Qj@mail.gmail.com> <4CA0C7AB.8060905@cam.ac.uk>
+In-Reply-To: <4CA0C7AB.8060905@cam.ac.uk>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
------ Original Message ----- 
-From: "Jonathan Cameron" <jic23@cam.ac.uk>
-To: "Jonathan Cameron" <jic23@cam.ac.uk>
-Sent: Thursday, September 30, 2010 3:36 PM
-Subject: Re: Sensor event related attribute naming.
+On 09/27/10 17:34, Jonathan Cameron wrote:
+> On 09/18/10 16:48, matthias wrote:
+>> Hi Jonathan,
+>>
+>> sorry for not answering yet. I was on vacation and next week I won't
+>> be able to test the driver. Will try to do it asap....
+>>
+...
 
+Matthias has now tracked down and fixed the issues he was having
+(all outside this driver) and kindly tested and acked this patch set.
+As such I've sent it on to Greg KH.  Would imagine it will show up
+in staging next fairly shortly.
 
-> Given the lack of further comment, I went ahead and implemented the above 
-> naming
-> scheme for IIO. As the above discussion with Hemanth shows, there are some 
-> corner cases
-> that will need futher thought in the future.
->
-
-Jonathan, haven't seen many comments on this. Do u think the reason
-might be that these interfaces are hidden behind a HAL layer like in android 
-and
-might not be a burning issue for many people.
-
-Thanks
-Hemanth
+Jonathan
