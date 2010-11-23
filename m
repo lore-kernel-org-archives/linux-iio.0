@@ -1,138 +1,133 @@
-Return-Path: <jic23@cam.ac.uk>
-From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org
-Cc: device-drivers-devel@blackfin.uclinux.org,
-	matthias.bgg@gmail.com,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 1/3] staging:iio:gyro:adis16260 Make memory test dependant on being adis1626x
-Date: Wed, 24 Nov 2010 18:47:59 +0000
-Message-Id: <1290624481-5522-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1290624481-5522-1-git-send-email-jic23@cam.ac.uk>
-References: <1290624481-5522-1-git-send-email-jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: greg@kroah.com
+CC: linux-iio@vger.kernel.org, drivers@analog.com, jic23@cam.ac.uk,
+        device-drivers-devel@blackfin.uclinux.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] staging: iio: dac: ad5446: Remove unused sign member from chip specific information structure
+Date: Tue, 23 Nov 2010 11:40:13 +0100
+Message-ID: <1290508813-8599-1-git-send-email-michael.hennerich@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Careful reading of datasheet as part of adding adis16251 support.
-The adis16250 and adis16255 drivers don't support this functionality.
-It is undocumented what will happen if the test is performed, but I suspect
-the test bit just happens to be zero.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Remove unused sign member from chip specific information structure
+Fix typos
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/gyro/adis16260.h      |   10 ++++++
- drivers/staging/iio/gyro/adis16260_core.c |   44 ++++++++++++++++++++--------
- 2 files changed, 41 insertions(+), 13 deletions(-)
+ drivers/staging/iio/dac/ad5446.c |   10 ----------
+ drivers/staging/iio/dac/ad5446.h |    6 ++----
+ 2 files changed, 2 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/staging/iio/gyro/adis16260.h b/drivers/staging/iio/gyro/adis16260.h
-index c1fd4364..e45af81 100644
---- a/drivers/staging/iio/gyro/adis16260.h
-+++ b/drivers/staging/iio/gyro/adis16260.h
-@@ -83,6 +83,14 @@
- #define ADIS16260_SPI_FAST	(u32)(2000 * 1000)
- 
- /**
-+ * struct adis16160_chip_info - variant specific information
-+ * @memcheck: if the part supports the memory check test
-+ **/
-+struct adis16260_chip_info {
-+	unsigned memcheck:1;
-+};
-+
-+/**
-  * struct adis16260_state - device instance specific data
-  * @us:			actual spi_device
-  * @work_trigger_to_ring: bh for triggered event handling
-@@ -94,6 +102,7 @@
-  * @rx:			recieve buffer
-  * @buf_lock:		mutex to protect tx and rx
-  * @negate:		negate the scale parameter
-+ * @info:		chip variant specific info
-  **/
- struct adis16260_state {
- 	struct spi_device		*us;
-@@ -105,6 +114,7 @@ struct adis16260_state {
- 	u8				*rx;
- 	struct mutex			buf_lock;
- 	unsigned			negate:1;
-+	const struct adis16260_chip_info	*info;
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index 4d65d27..e3387cd 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -118,35 +118,30 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
+ 		.bits = 12,
+ 		.storagebits = 16,
+ 		.left_shift = 2,
+-		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
+ 		.store_sample = ad5446_store_sample,
+ 	},
+ 	[ID_AD5446] = {
+ 		.bits = 14,
+ 		.storagebits = 16,
+ 		.left_shift = 0,
+-		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
+ 		.store_sample = ad5446_store_sample,
+ 	},
+ 	[ID_AD5542A] = {
+ 		.bits = 16,
+ 		.storagebits = 16,
+ 		.left_shift = 0,
+-		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
+ 		.store_sample = ad5542_store_sample,
+ 	},
+ 	[ID_AD5512A] = {
+ 		.bits = 12,
+ 		.storagebits = 16,
+ 		.left_shift = 4,
+-		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
+ 		.store_sample = ad5542_store_sample,
+ 	},
+ 	[ID_AD5620_2500] = {
+ 		.bits = 12,
+ 		.storagebits = 16,
+ 		.left_shift = 2,
+-		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
+ 		.int_vref_mv = 2500,
+ 		.store_sample = ad5620_store_sample,
+ 	},
+@@ -154,7 +149,6 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
+ 		.bits = 12,
+ 		.storagebits = 16,
+ 		.left_shift = 2,
+-		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
+ 		.int_vref_mv = 1250,
+ 		.store_sample = ad5620_store_sample,
+ 	},
+@@ -162,7 +156,6 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
+ 		.bits = 14,
+ 		.storagebits = 16,
+ 		.left_shift = 0,
+-		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
+ 		.int_vref_mv = 2500,
+ 		.store_sample = ad5620_store_sample,
+ 	},
+@@ -170,7 +163,6 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
+ 		.bits = 14,
+ 		.storagebits = 16,
+ 		.left_shift = 0,
+-		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
+ 		.int_vref_mv = 1250,
+ 		.store_sample = ad5620_store_sample,
+ 	},
+@@ -178,7 +170,6 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
+ 		.bits = 16,
+ 		.storagebits = 24,
+ 		.left_shift = 0,
+-		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
+ 		.int_vref_mv = 2500,
+ 		.store_sample = ad5660_store_sample,
+ 	},
+@@ -186,7 +177,6 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
+ 		.bits = 16,
+ 		.storagebits = 24,
+ 		.left_shift = 0,
+-		.sign = 'u', /* IIO_SCAN_EL_TYPE_UNSIGNED */
+ 		.int_vref_mv = 1250,
+ 		.store_sample = ad5660_store_sample,
+ 	},
+diff --git a/drivers/staging/iio/dac/ad5446.h b/drivers/staging/iio/dac/ad5446.h
+index ca795a9..902542e 100644
+--- a/drivers/staging/iio/dac/ad5446.h
++++ b/drivers/staging/iio/dac/ad5446.h
+@@ -56,20 +56,18 @@ struct ad5446_state {
  };
  
- int adis16260_set_irq(struct device *dev, bool enable);
-diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-index 045e27d..c7753db 100644
---- a/drivers/staging/iio/gyro/adis16260_core.c
-+++ b/drivers/staging/iio/gyro/adis16260_core.c
-@@ -28,6 +28,20 @@
- 
- #define DRIVER_NAME		"adis16260"
- 
-+enum adis16260_variants {
-+	adis16260,
-+	adis16250,
-+};
-+
-+static const struct adis16260_chip_info adis16260_chips[] = {
-+	[adis16260] = {
-+		.memcheck = 1,
-+	},
-+	[adis16250] = {
-+		.memcheck = 0,
-+	},
-+};
-+
- static int adis16260_check_status(struct device *dev);
- 
  /**
-@@ -371,16 +385,19 @@ static int adis16260_stop_device(struct device *dev)
- 
- static int adis16260_self_test(struct device *dev)
- {
--	int ret;
--	ret = adis16260_spi_write_reg_16(dev,
--			ADIS16260_MSC_CTRL,
--			ADIS16260_MSC_CTRL_MEM_TEST);
--	if (ret) {
--		dev_err(dev, "problem starting self test");
--		goto err_ret;
--	}
--
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct adis16260_state *st = iio_dev_get_devdata(indio_dev);
-+	int ret = 0;
-+	if (st->info->memcheck) {
-+		ret = adis16260_spi_write_reg_16(dev,
-+						 ADIS16260_MSC_CTRL,
-+						 ADIS16260_MSC_CTRL_MEM_TEST);
-+		if (ret) {
-+			dev_err(dev, "problem starting self test");
-+			goto err_ret;
-+		}
- 	adis16260_check_status(dev);
-+	}
- 
- err_ret:
- 	return ret;
-@@ -549,6 +566,7 @@ static int __devinit adis16260_probe(struct spi_device *spi)
- 		ret =  -ENOMEM;
- 		goto error_ret;
- 	}
-+	st->info = &adis16260_chips[spi_get_device_id(spi)->driver_data];
- 	if (pd)
- 		st->negate = pd->negate;
- 	/* this is only used for removal purposes */
-@@ -689,10 +707,10 @@ err_ret:
-  * support for the on chip filtering.
+- * struct ad5446_chip_info - chip specifc information
++ * struct ad5446_chip_info - chip specific information
+  * @bits:		accuracy of the DAC in bits
+  * @storagebits:	number of bits written to the DAC
+  * @left_shift:		number of bits the datum must be shifted
+- * @sign:		data representation [s]igned or [u]nsigned
+  * @int_vref_mv:	AD5620/40/60: the internal reference voltage
+- * @store_sample:	chip specifc helper function to store the datum
++ * @store_sample:	chip specific helper function to store the datum
   */
- static const struct spi_device_id adis16260_id[] = {
--	{"adis16260", 0},
--	{"adis16265", 0},
--	{"adis16250", 0},
--	{"adis16255", 0},
-+	{"adis16260", adis16260},
-+	{"adis16265", adis16260},
-+	{"adis16250", adis16250},
-+	{"adis16255", adis16250},
- 	{}
- };
  
+ struct ad5446_chip_info {
+ 	u8				bits;
+ 	u8				storagebits;
+ 	u8				left_shift;
+-	char				sign;
+ 	u16				int_vref_mv;
+ 	void (*store_sample)		(struct ad5446_state *st, unsigned val);
+ };
 -- 
-1.7.2.2
+1.6.0.2
