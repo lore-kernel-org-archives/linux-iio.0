@@ -1,215 +1,186 @@
-Return-Path: <shubhrajyoti@ti.com>
-From: "Datta, Shubhrajyoti" <shubhrajyoti@ti.com>
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC: Drivers <Drivers@analog.com>, "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-        "device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Date: Fri, 3 Dec 2010 17:03:42 +0530
-Subject: RE: [RFC 3/3] IIO: DDS: AD9833 / AD9834 driver
-Message-ID: <0680EC522D0CC943BC586913CF3768C0041390E05A@dbde02.ent.ti.com>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+CC: drivers@analog.com, jic23@cam.ac.uk,
+        device-drivers-devel@blackfin.uclinux.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [RFC 2/3] IIO: dds.h convenience macros
+Date: Thu, 2 Dec 2010 13:21:28 +0100
+Message-ID: <1291292489-32362-3-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1291292489-32362-1-git-send-email-michael.hennerich@analog.com>
 References: <1291292489-32362-1-git-send-email-michael.hennerich@analog.com>
- <1291292489-32362-4-git-send-email-michael.hennerich@analog.com>
- <0680EC522D0CC943BC586913CF3768C0041390DDE7@dbde02.ent.ti.com>
- <544AC56F16B56944AEC3BD4E3D591771312F08227A@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D591771312F08227A@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Michel,
-Just a thought not a comment. However I think error handling could be dealt=
- later.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-> -----Original Message-----
-> From: Hennerich, Michael [mailto:Michael.Hennerich@analog.com]
-> Sent: Friday, December 03, 2010 4:13 PM
-> To: Datta, Shubhrajyoti; linux-iio@vger.kernel.org; linux-
-> kernel@vger.kernel.org
-> Cc: Drivers; jic23@cam.ac.uk; device-drivers-devel@blackfin.uclinux.org
-> Subject: RE: [RFC 3/3] IIO: DDS: AD9833 / AD9834 driver
->=20
-> > Datta, Shubhrajyoti wrote on 2010-12-02:
-> > > -----Original Message-----
-> > > From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-
-> > > owner@vger.kernel.org] On Behalf Of michael.hennerich@analog.com
-> > > Sent: Thursday, December 02, 2010 5:51 PM
-> > > To: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
-> > > Cc: drivers@analog.com; jic23@cam.ac.uk; device-drivers-
-> > > devel@blackfin.uclinux.org; Michael Hennerich
-> > > Subject: [RFC 3/3] IIO: DDS: AD9833 / AD9834 driver
-> > >
-> > > From: Michael Hennerich <michael.hennerich@analog.com>
-> > >
-> > > Example driver using the proposed ABI
-> > >
-> > > Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-> > > ---
-> > >  drivers/staging/iio/dds/Kconfig  |    7 +
-> > >  drivers/staging/iio/dds/Makefile |    1 +
-> > >  drivers/staging/iio/dds/ad9834.c |  483
-> > > ++++++++++++++++++++++++++++++++++++++
-> > >  drivers/staging/iio/dds/ad9834.h |  112 +++++++++
-> > >  4 files changed, 603 insertions(+), 0 deletions(-)
-> > >  create mode 100644 drivers/staging/iio/dds/ad9834.c
-> > >  create mode 100644 drivers/staging/iio/dds/ad9834.h
-> > >
-> > > diff --git a/drivers/staging/iio/dds/Kconfig
-> > > b/drivers/staging/iio/dds/Kconfig
-> > > index 7969be2..4c9cce3 100644
-> > > --- a/drivers/staging/iio/dds/Kconfig
-> > > +++ b/drivers/staging/iio/dds/Kconfig
-> > > @@ -17,6 +17,13 @@ config AD9832
-> > >         Say yes here to build support for Analog Devices DDS chip
-> > >         ad9832 and ad9835, provides direct access via sysfs.
-> > >
-> > > +config AD9834
-> > > +     tristate "Analog Devices ad9833/4/ driver"
-> > > +     depends on SPI
-> > > +     help
-> > > +       Say yes here to build support for Analog Devices DDS chip
-> > > +       AD9833 and AD9834, provides direct access via sysfs.
-> > > +
-> > >  config AD9850
-> > >       tristate "Analog Devices ad9850/1 driver"
-> > >       depends on SPI
-> > > diff --git a/drivers/staging/iio/dds/Makefile
-> > > b/drivers/staging/iio/dds/Makefile
-> > > index 6f274ac..1477461 100644
-> > > --- a/drivers/staging/iio/dds/Makefile
-> > > +++ b/drivers/staging/iio/dds/Makefile
-> > > @@ -4,6 +4,7 @@
-> > >
-> > >  obj-$(CONFIG_AD5930) +=3D ad5930.o
-> > >  obj-$(CONFIG_AD9832) +=3D ad9832.o
-> > > +obj-$(CONFIG_AD9834) +=3D ad9834.o
-> > >  obj-$(CONFIG_AD9850) +=3D ad9850.o
-> > >  obj-$(CONFIG_AD9852) +=3D ad9852.o
-> > >  obj-$(CONFIG_AD9910) +=3D ad9910.o
-> > > diff --git a/drivers/staging/iio/dds/ad9834.c
-> > > b/drivers/staging/iio/dds/ad9834.c
-> > > new file mode 100644
-> > > index 0000000..eb1fabf
-> > > --- /dev/null
-> > > +++ b/drivers/staging/iio/dds/ad9834.c
-> > > @@ -0,0 +1,483 @@
-> > > +/*
-> > > + * AD9834 SPI DAC driver
-> > > + *
-> > > + * Copyright 2010 Analog Devices Inc.
-> > > + *
-> > > + * Licensed under the GPL-2 or later.
-> > > + */
-> > > +
-> > > +#include <linux/interrupt.h>
-> > > +#include <linux/workqueue.h>
-> > > +#include <linux/device.h>
-> > > +#include <linux/kernel.h>
-> > > +#include <linux/slab.h>
-> > > +#include <linux/sysfs.h>
-> > > +#include <linux/list.h>
-> > > +#include <linux/spi/spi.h>
-> > > +#include <linux/regulator/consumer.h>
-> > > +#include <linux/err.h>
-> > > +#include <asm/div64.h>
-> > > +
-> > > +#include "../iio.h"
-> > > +#include "../sysfs.h"
-> > > +#include "dds.h"
-> > > +
-> > > +#include "ad9834.h"
-> > > +
-> > > +static unsigned int ad9834_calc_freqreg(unsigned long mclk, unsigned
-> > long
-> > > fout)
-> > > +{
-> > > +     unsigned long long freqreg =3D (u64) fout * (u64) (1 <<
-> > > AD9834_FREQ_BITS);
-> > > +     do_div(freqreg, mclk);
-> > > +     return freqreg;
-> > > +}
-> > > +
-> > > +static int ad9834_write_frequency(struct ad9834_state *st,
-> > > +                               unsigned long addr, unsigned long
-> > fout)
-> > > +{
-> > > +     unsigned long regval;
-> > > +
-> > > +     if (fout > (st->mclk / 2))
-> > > +             return -EINVAL;
-> > > +
-> > > +     regval =3D ad9834_calc_freqreg(st->mclk, fout);
-> > > +
-> > > +     st->freq_data[0] =3D cpu_to_be16(addr | (regval &
-> > > +                                    RES_MASK(AD9834_FREQ_BITS /
-> > 2)));
-> > > +     st->freq_data[1] =3D cpu_to_be16(addr | ((regval >>
-> > > +                                    (AD9834_FREQ_BITS / 2)) &
-> > > +                                    RES_MASK(AD9834_FREQ_BITS /
-> > 2)));
-> > > +
-> > > +     return spi_sync(st->spi, &st->freq_msg);;
-> > > +}
-> > > +
-> > > +static int ad9834_write_phase(struct ad9834_state *st,
-> > > +                               unsigned long addr, unsigned long
-> > phase)
-> > > +{
-> > > +     if (phase > (1 << AD9834_PHASE_BITS))
-> > > +             return -EINVAL;
-> > > +     st->data =3D cpu_to_be16(addr | phase);
-> > > +
-> > > +     return spi_sync(st->spi, &st->msg);
-> > > +}
-> > > +
-> > > +static ssize_t ad9834_write(struct device *dev,
-> > > +             struct device_attribute *attr,
-> > > +             const char *buf,
-> > > +             size_t len)
-> > > +{
-> > > +     struct iio_dev *dev_info =3D dev_get_drvdata(dev);
-> > > +     struct ad9834_state *st =3D dev_info->dev_data;
-> > > +     struct iio_dev_attr *this_attr =3D to_iio_dev_attr(attr);
-> > > +     int ret;
-> > > +     long val;
-> > > +
-> > > +     ret =3D strict_strtol(buf, 10, &val);
-> > > +     if (ret)
-> > > +             goto error_ret;
-> > Could we do some bounds check.
-> The functions called with val as argument from the switch cases below, do
-> some bound checking, where necessary.
-> It's questionable whether these simple enable switch cases, should return
-> with
-> error if someone writes something other than 0 or 1.
+Attributes considered as common between various DDS devices
 
-In that case we could we at least consider ret =3D strict_strtoul(buf, 10, =
-&val);
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/dds/dds.h |  153 +++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 153 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/dds/dds.h
 
-> > > +
-> > > +     mutex_lock(&dev_info->mlock);
-> > > +     switch (this_attr->address) {
-> > > +     case AD9834_REG_FREQ0:
-> > > +     case AD9834_REG_FREQ1:
-> > > +             ret =3D ad9834_write_frequency(st, this_attr->address,
-> > val);
-> > > +             break;
-> > > +     case AD9834_REG_PHASE0:
-> > > +     case AD9834_REG_PHASE1:
-> > > +             ret =3D ad9834_write_phase(st, this_attr->address, val)=
-;
-> > > +             break;
-> > > +
-> > > +     case AD9834_OPBITEN:
-> > > +             if (st->control & AD9834_MODE) {
-> > > +                     ret =3D -EINVAL;  /* AD9843 reserved mode */
-> > > +                     break;
-> > > +             }
-> > > +
-> > > +             if (val)
-> > > +                     st->control &=3D ~AD9834_OPBITEN;
-> > > +             else
-> > > +                     st->control |=3D AD9834_OPBITEN;
-Here you check for something other than 0 if the user passes -1 then it may=
- go through.
+diff --git a/drivers/staging/iio/dds/dds.h b/drivers/staging/iio/dds/dds.h
+new file mode 100644
+index 0000000..e171b33
+--- /dev/null
++++ b/drivers/staging/iio/dds/dds.h
+@@ -0,0 +1,153 @@
++/*
++ * dds.h - sysfs attributes associated with DDS devices
++ *
++ * Copyright (c) 2010 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_freqY
++ * Description:
++ * Stores frequency into tuning word register Y.
++ * There can be more than one ddsX_freqY file, which allows for pin controlled
++ * FSK Frequency Shift Keying (ddsX_pincontrol_freq_en is active) or the user
++ * can control the desired active tuning word by writing Y to the
++ * ddsX_freqsymbol file.
++ */
++
++#define IIO_DEV_ATTR_FREQ(_device, _num, _store, _addr)			\
++	IIO_DEVICE_ATTR(dds##_device##_freq##_num, S_IWUSR, NULL, _store, _addr)
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_freq_scaleY
++ * Description:
++ * Scale to be applied to ddsX_freqY in order to obtain the
++ * desired value in Hz. If shared across all frequency registers
++ * Y is not present.
++ */
++
++#define IIO_CONST_ATTR_FREQ_SCALE(_device, _string)			\
++	IIO_CONST_ATTR(dds##_device##_freq_scale, _string)
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_freqsymbol
++ * Description:
++ * Specifies the active output frequency tuning word. The value corresponds
++ * to the Y in ddsX_freqY. To exit this mode the user can write
++ * ddsX_pincontrol_freq_en or ddsX_out_disable file.
++ */
++
++#define IIO_DEV_ATTR_FREQSYMBOL(_device, _store, _addr)			\
++	IIO_DEVICE_ATTR(dds##_device##_freqsymbol,			\
++			S_IWUSR, NULL, _store, _addr);
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_phaseY
++ * Description:
++ * Stores phase into phase register Y.
++ * There can be more than one ddsX_phaseY file, which allows for pin controlled
++ * PSK Phase Shift Keying (ddsX_pincontrol_phase_en is active) or the user can
++ * control the desired phase Y which is added to the phase accumulator output
++ * by writing Y to the en_phase file.
++ */
++
++#define IIO_DEV_ATTR_PHASE(_device, _num, _store, _addr)		\
++	IIO_DEVICE_ATTR(dds##_device##_phase##_num,			\
++			S_IWUSR, NULL, _store, _addr)
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_phase_scaleY
++ * Description:
++ * Scale to be applied to ddsX_phaseY in order to obtain the
++ * desired value in rad. If shared across all phase registers
++ * Y is not present.
++ */
++
++#define IIO_CONST_ATTR_PHASE_SCALE(_device, _string)			\
++	IIO_CONST_ATTR(dds##_device##_phase_scale, _string)
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_phasesymbol
++ * Description:
++ * Specifies the active phase Y which is added to the phase accumulator output.
++ * The value corresponds to the Y in ddsX_phaseY. To exit this mode the user
++ * can write ddsX_pincontrol_phase_en or disable file.
++ */
++
++#define IIO_DEV_ATTR_PHASESYMBOL(_device, _store, _addr)		\
++	IIO_DEVICE_ATTR(dds##_device##_phasesymbol,			\
++			S_IWUSR, NULL, _store, _addr);
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_pincontrol_en
++ * Description:
++ * Both, the active frequency and phase is controlled by the respective
++ * phase and frequency control inputs.
++ */
++
++#define IIO_DEV_ATTR_PINCONTROL_EN(_device, _store, _addr)		\
++	IIO_DEVICE_ATTR(dds##_device##_pincontrol_en,			\
++			S_IWUSR, NULL, _store, _addr);
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_pincontrol_freq_en
++ * Description:
++ * The active frequency is controlled by the respective
++ * frequency control/select inputs.
++ */
++
++#define IIO_DEV_ATTR_PINCONTROL_FREQ_EN(_device, _store, _addr)		\
++	IIO_DEVICE_ATTR(dds##_device##_pincontrol_freq_en,		\
++			S_IWUSR, NULL, _store, _addr);
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_pincontrol_phase_en
++ * Description:
++ * The active phase is controlled by the respective
++ * phase control/select inputs.
++ */
++
++#define IIO_DEV_ATTR_PINCONTROL_PHASE_EN(_device, _store, _addr)	\
++	IIO_DEVICE_ATTR(dds##_device##_pincontrol_phase_en,		\
++			S_IWUSR, NULL, _store, _addr);
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_out_disable
++ * Description:
++ * Disables any signal generation on all outputs.
++ */
++
++#define IIO_DEV_ATTR_OUT_DISABLE(_device, _store, _addr)		\
++	IIO_DEVICE_ATTR(dds##_device##_out_disable,			\
++			S_IWUSR, NULL, _store, _addr);
++
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_outY_disable
++ * Description:
++ * Disables any signal generation on output Y.
++ */
++
++#define IIO_DEV_ATTR_OUTY_DISABLE(_device, _output, _store, _addr)	\
++	IIO_DEVICE_ATTR(dds##_device##_out##_output##_disable,		\
++	S_IWUSR, NULL, _store, _addr);
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_outY_wavetype
++ * Description:
++ * Specifies the output waveform. (sine, triangle, ramp, square, ...)
++ * For a list of available output waveform options read available_output_modes.
++ */
++#define IIO_DEV_ATTR_OUT_WAVETYPE(_device, _output, _store, _addr)	\
++	IIO_DEVICE_ATTR(dds##_device##_out##_output##_wavetype,		\
++			S_IWUSR, NULL, _store, _addr);
++
++/**
++ * /sys/bus/iio/devices/deviceX/ddsX_outY_available_wavetypes
++ * Description:
++ * Lists all available output waveform options.
++ */
++#define IIO_CONST_ATTR_OUT_AVAILABLE_WAVETYPES(_device, _output, _modes)\
++	IIO_CONST_ATTR(dds##_device##_out##_output##_available_wavetypes,\
++			_modes);
+--
+1.6.0.2
