@@ -1,101 +1,138 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:49581 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751359Ab0LQNCI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 17 Dec 2010 08:02:08 -0500
-Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:33291)
-	by ppsw-52.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.159]:25)
-	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
-	id 1PTZwk-00022z-Fd (Exim 4.72) for linux-iio@vger.kernel.org
-	(return-path <jic23@cam.ac.uk>); Fri, 17 Dec 2010 13:02:06 +0000
-Message-ID: <4D0B5F5A.5000300@cam.ac.uk>
-Date: Fri, 17 Dec 2010 13:02:18 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: greg@kroah.com, jic23@cam.ac.uk
+CC: linux-iio@vger.kernel.org, drivers@analog.com,
+        device-drivers-devel@blackfin.uclinux.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 1/3] IIO: Direct digital synthesis abi documentation
+Date: Tue, 14 Dec 2010 17:04:00 +0100
+Message-ID: <1292342642-4503-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Discussion: Place of threaded interupts in IIO
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi All,
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Given the timing of the writing of most of the IIO core was 
-prior to threaded interrupts hitting the mainstream we didn't
-use them originally. I suspect that the large numbers of old style
-interrupts that we have is going to be a bit of a blocker when we
-move out of staging so have been thinking about what to do about it.
+Changes since RFC/v1:
+IIO: Apply list review feedback:
 
-This email is intended to get some initial thoughts from others
-(some of home are hopefully more familiar with the ins and outs
-of threaded interrupts than I am!)
+Apply list review feedback:
+	Restructure documentation according to list feedback.
+	Rename attributes to fit IIO convention used in other drivers.
+	Fix typos.
+	Provide ddsX_out_enable as opposed to ddsX_out_disable
 
-As I understand it, the primary point of threaded interrupts is
-to replace bottom half handlers (conventionally done on using
-work queues) with kernel threads that are woken on the interrupt.
-The reason is that kernel threads can be pre empted whereas work
-queue items can not.
+Changes since v2:
+IIO: sysfs-bus-iio-dds: Apply more list review feedback
 
-We have two common types of interrupt in IIO.
+	Fix mixture of X and [n] notation for indices.
+	Fix some wording in the descriptions.
 
-* Event interrupts (threshold detectors etc). I think these should
-  be trivial to convert to threaded irq's.  For those that need
-  timestamps we will still need a top half handler to grab that
-  but it should be easy enough to do.
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ .../staging/iio/Documentation/sysfs-bus-iio-dds    |   93 ++++++++++++++++++++
+ 1 files changed, 93 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-dds
 
-* Trigger interrupts - These are more complex.
-
-For those not that familiar with the trigger infrastructure let
-me run through its intent and give an outline of how it currently works.
-
-Our current triggers fall into two classes:
-1) Those associated with a device - data ready signals typically
-2) Those independent of a device - gpio, timer (and when we get
-   round to it a userspace trigger).
-
-For simplicity (and because I have actual use cases for it with inertial
-sensor rigs) we treat both of these classes the same.
-
-Any trigger can have a number of devices registered with it.  This
-allows for, as near a possible, simultaneous reading from a number
-of devices.
-
-There are two activation lists and each device can register in one or
-both of these. The first 'fast' queue is intended for devices that
-have a 'latch' or 'capture' signal typically consisting of a gpio
-linked pin.  (no in tree users, but hardware with this
-is common enough). Basically the intent is this list launches true
-top half elements.
-
-The second 'slow' queue currently queues up work queue items to read
-from each of the devices.  This is the part that corresponds to the
-area threaded interrupts cover.
-
-Currently the infrastructure is nice and clean and more or less looks
-the same as drivers doing their own handling of the relevant interrupts.
-
-The problem lies in the fact each actual interrupt can effectively
-call multiple bottom halves.
-
-So to my mind two solutions exist.
-1) A single thread per trigger.  Everything prior to the work queue
-calls is moved into a handler that goes in the 'fast' list which stays
-in our top half handler.  The work queue bits are called one after
-another in the bottom half.
-
-2) Allow each consumer to attach it's own thread to the trigger
-controller and basically implement our own variant of the core threaded
-interrupt code that allows for a list of threads rather than a single one.
-
-I rather like the idea of 2.  It might even end up with different
-devices being queried from different processor cores simultaneously
-which is quite cute.  The question is whether a simple enough
-implementation is possible that the originators of the threaded interrupt
-code would be happy with it (as it bypasses or would mean additions to their
-core code).
-
-I wanted to get the opinions of those familiar with the IIO tree
-before opening the question up to a wider audience (including those who
-wrote the threaded interrupt code).
-
-Jonathan
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-dds b/drivers/staging/iio/Documentation/sysfs-bus-iio-dds
+new file mode 100644
+index 0000000..ffdd547
+--- /dev/null
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-dds
+@@ -0,0 +1,93 @@
++
++What:		/sys/bus/iio/devices/.../ddsX_freqY
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Stores frequency into tuning word Y.
++		There will be more than one ddsX_freqY file, which allows for
++		pin controlled FSK Frequency Shift Keying
++		(ddsX_pincontrol_freq_en is active) or the user can control
++		the desired active tuning word by writing Y to the
++		ddsX_freqsymbol file.
++
++What:		/sys/bus/iio/devices/.../ddsX_freqY_scale
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Scale to be applied to ddsX_freqY in order to obtain the
++		desired value in Hz. If shared across all frequency registers
++		Y is not present. It is also possible X is not present if
++		shared across all channels.
++
++What:		/sys/bus/iio/devices/.../ddsX_freqsymbol
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Specifies the active output frequency tuning word. The value
++		corresponds to the Y in ddsX_freqY. To exit this mode the user
++		can write ddsX_pincontrol_freq_en or ddsX_out_enable file.
++
++What:		/sys/bus/iio/devices/.../ddsX_phaseY
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Stores phase into Y.
++		There will be more than one ddsX_phaseY file, which allows for
++		pin controlled PSK Phase Shift Keying
++		(ddsX_pincontrol_phase_en is active) or the user can
++		control the desired phase Y which is added to the phase
++		accumulator output by writing Y to the en_phase file.
++
++What:		/sys/bus/iio/devices/.../ddsX_phaseY_scale
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Scale to be applied to ddsX_phaseY in order to obtain the
++		desired value in rad. If shared across all phase registers
++		Y is not present. It is also possible X is not present if
++		shared across all channels.
++
++What:		/sys/bus/iio/devices/.../ddsX_phasesymbol
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Specifies the active phase Y which is added to the phase
++		accumulator output. The value corresponds to the Y in
++		ddsX_phaseY. To exit this mode the user can write
++		ddsX_pincontrol_phase_en or disable file.
++
++What:		/sys/bus/iio/devices/.../ddsX_pincontrol_en
++What:		/sys/bus/iio/devices/.../ddsX_pincontrol_freq_en
++What:		/sys/bus/iio/devices/.../ddsX_pincontrol_phase_en
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		ddsX_pincontrol_en: Both, the active frequency and phase is
++		controlled by the respective phase and frequency control inputs.
++		In case the device in question allows to independent controls,
++		then there are dedicated files (ddsX_pincontrol_freq_en,
++		ddsX_pincontrol_phase_en).
++
++What:		/sys/bus/iio/devices/.../ddsX_out_enable
++What:		/sys/bus/iio/devices/.../ddsX_outY_enable
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		ddsX_outY_enable controls signal generation on output Y of
++		channel X. Y may be suppressed if all channels are
++		controlled together.
++
++What:		/sys/bus/iio/devices/.../ddsX_outY_wavetype
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Specifies the output waveform.
++		(sine, triangle, ramp, square, ...)
++		For a list of available output waveform options read
++		available_output_modes.
++
++What:		/sys/bus/iio/devices/.../ddsX_outY_wavetype_available
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Lists all available output waveform options.
+--
+1.6.0.2
