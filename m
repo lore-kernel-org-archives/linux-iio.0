@@ -1,14 +1,12 @@
 Return-Path: <Michael.Hennerich@analog.com>
 From: <michael.hennerich@analog.com>
-To: greg@kroah.com, jic23@cam.ac.uk
-CC: linux-iio@vger.kernel.org, drivers@analog.com,
+To: linux-iio@vger.kernel.org, jic23@cam.ac.uk
+CC: linux-kernel@vger.kernel.org, drivers@analog.com,
         device-drivers-devel@blackfin.uclinux.org,
         Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 2/3] IIO: dds.h convenience macros
-Date: Tue, 14 Dec 2010 17:04:01 +0100
-Message-ID: <1292342642-4503-2-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1292342642-4503-1-git-send-email-michael.hennerich@analog.com>
-References: <1292342642-4503-1-git-send-email-michael.hennerich@analog.com>
+Subject: [PATCH 1/3] IIO: Direct digital synthesis abi documentation
+Date: Tue, 14 Dec 2010 15:54:20 +0100
+Message-ID: <1292338462-4299-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
@@ -16,143 +14,125 @@ List-ID: <linux-iio@vger.kernel.org>
 From: Michael Hennerich <michael.hennerich@analog.com>
 
 Changes since RFC/v1:
-IIO: Apply list review feedback
+IIO: Apply list review feedback:
 
 Apply list review feedback:
+	Restructure documentation according to list feedback.
 	Rename attributes to fit IIO convention used in other drivers.
-	Provide ddsX_out_enable as opposed to ddsX_out_disable.
 	Fix typos.
+	Provide ddsX_out_enable as opposed to ddsX_out_disable
 
 Changes since v2:
-IIO: dds.h: Apply more list review feedback
+IIO: sysfs-bus-iio-dds: Apply more list review feedback
 
 	Fix mixture of X and [n] notation for indices.
-	Remove duplicated descriptions.
-	Add store methods to some dds convenience macros.
+	Fix some wording in the descriptions.
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Reviewed-by: Jonathan Cameron <jic23@cam.ac.uk>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/dds/dds.h |  110 +++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 110 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/dds/dds.h
+ .../staging/iio/Documentation/sysfs-bus-iio-dds    |   93 ++++++++++++++++++++
+ 1 files changed, 93 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-dds
 
-diff --git a/drivers/staging/iio/dds/dds.h b/drivers/staging/iio/dds/dds.h
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-dds b/drivers/staging/iio/Documentation/sysfs-bus-iio-dds
 new file mode 100644
-index 0000000..d8ac3a9
+index 0000000..ffdd547
 --- /dev/null
-+++ b/drivers/staging/iio/dds/dds.h
-@@ -0,0 +1,110 @@
-+/*
-+ * dds.h - sysfs attributes associated with DDS devices
-+ *
-+ * Copyright (c) 2010 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2 or later.
-+ */
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-dds
+@@ -0,0 +1,93 @@
 +
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_freqY
-+ */
++What:		/sys/bus/iio/devices/.../ddsX_freqY
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Stores frequency into tuning word Y.
++		There will be more than one ddsX_freqY file, which allows for
++		pin controlled FSK Frequency Shift Keying
++		(ddsX_pincontrol_freq_en is active) or the user can control
++		the desired active tuning word by writing Y to the
++		ddsX_freqsymbol file.
 +
-+#define IIO_DEV_ATTR_FREQ(_channel, _num, _mode, _show, _store, _addr)	\
-+	IIO_DEVICE_ATTR(dds##_channel##_freq##_num,			\
-+			_mode, _show, _store, _addr)
++What:		/sys/bus/iio/devices/.../ddsX_freqY_scale
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Scale to be applied to ddsX_freqY in order to obtain the
++		desired value in Hz. If shared across all frequency registers
++		Y is not present. It is also possible X is not present if
++		shared across all channels.
 +
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_freqY_scale
-+ */
++What:		/sys/bus/iio/devices/.../ddsX_freqsymbol
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Specifies the active output frequency tuning word. The value
++		corresponds to the Y in ddsX_freqY. To exit this mode the user
++		can write ddsX_pincontrol_freq_en or ddsX_out_enable file.
 +
-+#define IIO_CONST_ATTR_FREQ_SCALE(_channel, _string)			\
-+	IIO_CONST_ATTR(dds##_channel##_freq_scale, _string)
++What:		/sys/bus/iio/devices/.../ddsX_phaseY
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Stores phase into Y.
++		There will be more than one ddsX_phaseY file, which allows for
++		pin controlled PSK Phase Shift Keying
++		(ddsX_pincontrol_phase_en is active) or the user can
++		control the desired phase Y which is added to the phase
++		accumulator output by writing Y to the en_phase file.
 +
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_freqsymbol
-+ */
++What:		/sys/bus/iio/devices/.../ddsX_phaseY_scale
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Scale to be applied to ddsX_phaseY in order to obtain the
++		desired value in rad. If shared across all phase registers
++		Y is not present. It is also possible X is not present if
++		shared across all channels.
 +
-+#define IIO_DEV_ATTR_FREQSYMBOL(_channel, _mode, _show, _store, _addr)	\
-+	IIO_DEVICE_ATTR(dds##_channel##_freqsymbol,			\
-+			_mode, _show, _store, _addr);
++What:		/sys/bus/iio/devices/.../ddsX_phasesymbol
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Specifies the active phase Y which is added to the phase
++		accumulator output. The value corresponds to the Y in
++		ddsX_phaseY. To exit this mode the user can write
++		ddsX_pincontrol_phase_en or disable file.
 +
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_phaseY
-+ */
++What:		/sys/bus/iio/devices/.../ddsX_pincontrol_en
++What:		/sys/bus/iio/devices/.../ddsX_pincontrol_freq_en
++What:		/sys/bus/iio/devices/.../ddsX_pincontrol_phase_en
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		ddsX_pincontrol_en: Both, the active frequency and phase is
++		controlled by the respective phase and frequency control inputs.
++		In case the device in question allows to independent controls,
++		then there are dedicated files (ddsX_pincontrol_freq_en,
++		ddsX_pincontrol_phase_en).
 +
-+#define IIO_DEV_ATTR_PHASE(_channel, _num, _mode, _show, _store, _addr)	\
-+	IIO_DEVICE_ATTR(dds##_channel##_phase##_num,			\
-+			_mode, _show, _store, _addr)
++What:		/sys/bus/iio/devices/.../ddsX_out_enable
++What:		/sys/bus/iio/devices/.../ddsX_outY_enable
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		ddsX_outY_enable controls signal generation on output Y of
++		channel X. Y may be suppressed if all channels are
++		controlled together.
 +
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_phaseY_scale
-+ */
++What:		/sys/bus/iio/devices/.../ddsX_outY_wavetype
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Specifies the output waveform.
++		(sine, triangle, ramp, square, ...)
++		For a list of available output waveform options read
++		available_output_modes.
 +
-+#define IIO_CONST_ATTR_PHASE_SCALE(_channel, _string)			\
-+	IIO_CONST_ATTR(dds##_channel##_phase_scale, _string)
-+
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_phasesymbol
-+ */
-+
-+#define IIO_DEV_ATTR_PHASESYMBOL(_channel, _mode, _show, _store, _addr)	\
-+	IIO_DEVICE_ATTR(dds##_channel##_phasesymbol,			\
-+			_mode, _show, _store, _addr);
-+
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_pincontrol_en
-+ */
-+
-+#define IIO_DEV_ATTR_PINCONTROL_EN(_channel, _mode, _show, _store, _addr)\
-+	IIO_DEVICE_ATTR(dds##_channel##_pincontrol_en,			\
-+			_mode, _show, _store, _addr);
-+
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_pincontrol_freq_en
-+ */
-+
-+#define IIO_DEV_ATTR_PINCONTROL_FREQ_EN(_channel, _mode, _show, _store, _addr)\
-+	IIO_DEVICE_ATTR(dds##_channel##_pincontrol_freq_en,		\
-+			_mode, _show, _store, _addr);
-+
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_pincontrol_phase_en
-+ */
-+
-+#define IIO_DEV_ATTR_PINCONTROL_PHASE_EN(_channel, _mode, _show, _store, _addr)\
-+	IIO_DEVICE_ATTR(dds##_channel##_pincontrol_phase_en,		\
-+			_mode, _show, _store, _addr);
-+
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_out_enable
-+ */
-+
-+#define IIO_DEV_ATTR_OUT_ENABLE(_channel, _mode, _show, _store, _addr)	\
-+	IIO_DEVICE_ATTR(dds##_channel##_out_enable,			\
-+			_mode, _show, _store, _addr);
-+
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_outY_enable
-+ */
-+
-+#define IIO_DEV_ATTR_OUTY_ENABLE(_channel, _output,			\
-+			_mode, _show, _store, _addr)			\
-+	IIO_DEVICE_ATTR(dds##_channel##_out##_output##_enable,		\
-+			_mode, _show, _store, _addr);
-+
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_outY_wavetype
-+ */
-+
-+#define IIO_DEV_ATTR_OUT_WAVETYPE(_channel, _output, _store, _addr)	\
-+	IIO_DEVICE_ATTR(dds##_channel##_out##_output##_wavetype,	\
-+			S_IWUSR, NULL, _store, _addr);
-+
-+/**
-+ * /sys/bus/iio/devices/.../ddsX_outY_wavetype_available
-+ */
-+
-+#define IIO_CONST_ATTR_OUT_WAVETYPES_AVAILABLE(_channel, _output, _modes)\
-+	IIO_CONST_ATTR(dds##_channel##_out##_output##_wavetype_available,\
-+			_modes);
++What:		/sys/bus/iio/devices/.../ddsX_outY_wavetype_available
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Lists all available output waveform options.
 --
 1.6.0.2
