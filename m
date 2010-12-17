@@ -1,77 +1,52 @@
-Return-Path: <Robin.Getz@analog.com>
-From: Robin Getz <robin.getz@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>, abbotti@mev.co.uk,
-        fmhess@users.sourceforge.net
-Subject: IIO and Comedi
-Date: Fri, 17 Dec 2010 15:13:02 -0500
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        comedi_list@googlegroups.com, greg@kroah.com
+Return-Path: <greg@kroah.com>
+Date: Fri, 17 Dec 2010 12:33:06 -0800
+From: Greg KH <greg@kroah.com>
+To: Robin Getz <robin.getz@analog.com>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>, abbotti@mev.co.uk,
+	fmhess@users.sourceforge.net,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	comedi_list@googlegroups.com
+Subject: Re: IIO and Comedi
+Message-ID: <20101217203306.GA13671@kroah.com>
+References: <201012171513.03045.robin.getz@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Message-ID: <201012171513.03045.robin.getz@analog.com>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <201012171513.03045.robin.getz@analog.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-I'm just trying to rationalise something in my head...
+On Fri, Dec 17, 2010 at 03:13:02PM -0500, Robin Getz wrote:
+> I'm just trying to rationalise something in my head...
+> 
+> In staging, there exists both iio, and comedi - which both seem to do similar 
+> things (capture/create external analog signals), just with different 
+> busses -- which is really different platforms (Desktop - PCI, PCIe vs 
+> embedded - I2C, SPI, SoC, etc).
+> 
+> ./staging/iio
+> ./staging/comedi
+> 
+> the problem (to me) is two different userspace interfaces.
+> 
+> For userspace, for those "typical" applications - oscilloscope, generator, 
+> strip chart recorder, etc - it would be nice to have a common userspace lib 
+> between the two - so I can prototype on a desktop via PCI DAQ card, and run 
+> on my embedded system with a SPI converter.
 
-In staging, there exists both iio, and comedi - which both seem to do simil=
-ar=20
-things (capture/create external analog signals), just with different=20
-busses -- which is really different platforms (Desktop - PCI, PCIe vs=20
-embedded - I2C, SPI, SoC, etc).
+I totally agree.
 
-=2E/staging/iio
-=2E/staging/comedi
+> I can't be the only one asking if there any desire to unify these before they 
+> are moved to mainline (out of staging). If there isn't - that's OK too.
 
-the problem (to me) is two different userspace interfaces.
+There's a desire to figure out a standardized kernel/user api for these
+types of devices, if they are similar.
 
-=46or userspace, for those "typical" applications - oscilloscope, generator=
-,=20
-strip chart recorder, etc - it would be nice to have a common userspace lib=
-=20
-between the two - so I can prototype on a desktop via PCI DAQ card, and run=
-=20
-on my embedded system with a SPI converter.
+But, we also have to be mindful of the many years of applications that
+rely on the comedi libraries.  comedi has been around since the 2.0
+days, so ideally if we can keep the userspace library from having to
+change its external api, we can do what we want with the kernel side.
 
-I can't be the only one asking if there any desire to unify these before th=
-ey=20
-are moved to mainline (out of staging). If there isn't - that's OK too.
+So, any work you might want to do in this area is most appreciated.
 
-Thanks
-=2DRobin
+thanks,
 
-
-=46or those not familiar with the other:
-
-=46rom ./staging/iio/Documentation
-=2D-----------------------------------
-Overview of IIO
-
-The Industrial I/O subsytem is intended to provide support for devices
-that in some sense are analog to digital convertors (ADCs). As many
-actual devices combine some ADCs with digital to analog convertors
-(DACs) the intention is to add that functionality at a future date
-(hence the name).
-
-The aim is to fill the gap between the somewhat similar hwmon and
-input subsystems.  Hwmon is very much directed at low sample rate
-sensors used in applications such as fan speed control and temperature
-measurement.  Input is, as it's name suggests focused on input
-devices. In some cases there is considerable overlap between these and
-IIO.
-
-A typical device falling into this category would be connected via SPI
-or I2C.
-=2D----------------------------------
-
-and from:
-http://www.comedi.org/doc/index.html#INTRODUCTION
-
-=2D----------------------------------
-Comedi is a free software project that develops drivers, tools, and librari=
-es=20
-for various forms of data acquisition: reading and writing of analog signal=
-s;=20
-reading and writing of digital inputs/outputs; pulse and frequency counting=
-;=20
-pulse generation; reading encoders; etc.
-=2D----------------------------------
+greg k-h
