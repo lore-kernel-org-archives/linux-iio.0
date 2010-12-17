@@ -1,93 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:45706 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754534Ab0LQOtd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 17 Dec 2010 09:49:33 -0500
-Message-ID: <4D0B7888.6050007@cam.ac.uk>
-Date: Fri, 17 Dec 2010 14:49:44 +0000
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:49581 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751359Ab0LQNCI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 17 Dec 2010 08:02:08 -0500
+Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:33291)
+	by ppsw-52.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.159]:25)
+	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
+	id 1PTZwk-00022z-Fd (Exim 4.72) for linux-iio@vger.kernel.org
+	(return-path <jic23@cam.ac.uk>); Fri, 17 Dec 2010 13:02:06 +0000
+Message-ID: <4D0B5F5A.5000300@cam.ac.uk>
+Date: Fri, 17 Dec 2010 13:02:18 +0000
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: different ring buffer usage scenario
-References: <544AC56F16B56944AEC3BD4E3D591771324BEA42CB@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D591771324BEA42CB@LIMKCMBX1.ad.analog.com>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Discussion: Place of threaded interupts in IIO
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/17/10 13:47, Hennerich, Michael wrote:
-> Hi Jonathan,
-> 
-> I'm currently working on a high speed ADC driver, that requires a different ring buffer use case scenario.
-> Let me explain a little bit the setup. I'm running Linux on a Microblaze softcore inside an Virtex6 FPGA.
-> Part of the system is a peripheral interface block, we call it the ADC Interface Module (AIM).
-> External to the FPGA we connect a single channel high speed ADC AD9649, to the AIM signals.
-> 
-> The AIM features a FIFO, with watermark interrupt capabilities. There are two modes that need to be supported.
-> Continues Sampling Mode and Single Shot Sample Mode. In Single Shot Sample Mode, the user reads an arbitrary
-> Number of samples from the ADC, and then the sampling stops. This mode does not need to have a ringbuffer at all.
-> A simple chardev might be sufficient.
-> 
-> Any objections creating a driver private chardev?
-None at all.
-Is it appropriate to maintain the interfaces and buffer description we have for those where there
-is a buffer involved?  I think those interfaces are flexible enough... If not we probably
-want to make it so they are.
+Hi All,
 
-I did think of creating a pass through buffer that would effectively allow other devices
-to simulate this behaviour. Basically to the core it would look like a buffer, but it
-would only store one scan and then only if someone has the chrdev open. It would support select type
-calls. This would be needed for the input bridge to no apply any delay to the data stream.
+Given the timing of the writing of most of the IIO core was 
+prior to threaded interrupts hitting the mainstream we didn't
+use them originally. I suspect that the large numbers of old style
+interrupts that we have is going to be a bit of a blocker when we
+move out of staging so have been thinking about what to do about it.
 
-Not actually done any work on it though.
-> 
-> In Continues Sampling Mode we store continuously data into the ringbuffer, and assume that userspace reader can catch up.
-> Now looking at the existing sw_ring, we don't need the scan element
-> concepts, no timestamps and bytes_per_datum is going to be used in a
-> different fashion.
-Interface wise I'd still like to see the attrs indicate the scan elements etc (though there will only
-be one).  That way the userspace code can work with this alongside devices that need that support.
-The scan element attributes should obviously be read only.
-Certainly no need to support timestamps. Just don't add the relevant scan element attribute.
-> Ideally bytes_per_datum defaults to the ADC width.
-The datum in this case corresponds to a single reading so I think that would be the case.
-> However right now it is used to set the number of bytes stored into the ring by a call to ring->access.store_to().
-> bytes_per_datum currently must be constant while the ring is enabled.
-> However we need to store an arbitrary number of elements into the buffer.
-Ah, I see what you mean. You need a store_n rather than a store_1 facility on the buffer.
-> 
-> Following example:
-> The AIM internal fifo can hold 512 elements, we set the fifo almost
-> full watermark to 400 elements. In the ISR we read the number of
-> elements that are currently in the fifo. This number will be > the
-> fifo almost full watermark (e.g. 400 elements) but likely less than
-> the fifo size.
-(aside) As a practical point of view I'd be inclined to not bother checking what
-is there.  Just read your 400 then wait for the interrupt to occur again. I would
-think that will be sufficient to ensure you don't loose data.
-> 
-> Do you think it is possible to modify iio_store_to_sw_ring(), without breaking the implementation, to support this kind of use?
-Lets add a new function for this rather than modifying the current one.
-If we add an op to those in the generic buffer structure we can have some buffer implementations support
-this and some not.
+This email is intended to get some initial thoughts from others
+(some of home are hopefully more familiar with the ins and outs
+of threaded interrupts than I am!)
 
-We really need to replace that ring buffer. I haven't looked at how the unified
-ring buffer code (from tracing etc) is going recently. Kfifo would work but is
-a little clunky for our normal use cases.
+As I understand it, the primary point of threaded interrupts is
+to replace bottom half handlers (conventionally done on using
+work queues) with kernel threads that are woken on the interrupt.
+The reason is that kernel threads can be pre empted whereas work
+queue items can not.
 
-In the meantime I don't think there is any fundamental reason why we can't do
-a iio_store_to_sw_ring_n. It does get a bit more complex though as we will
-have write sets of records that overlap the loop point of the ring.
+We have two common types of interrupt in IIO.
 
-This particular case fits rather better than our normal ones into using the kfifo
-buffers.  The advantage is we know our record length and it never changes so we
-can cleanly use kfifo_in and friends to handle your case.  I did post a proof
-of concept for using kfifo a while back but it used dynamic records and hence
-wouldn't be suitable here.  Looks like that should be revisited. Perhaps we can get
-reasonable support and performance by just using a single byte fifo element and
-handling record sizes ourselves.
+* Event interrupts (threshold detectors etc). I think these should
+  be trivial to convert to threaded irq's.  For those that need
+  timestamps we will still need a top half handler to grab that
+  but it should be easy enough to do.
+
+* Trigger interrupts - These are more complex.
+
+For those not that familiar with the trigger infrastructure let
+me run through its intent and give an outline of how it currently works.
+
+Our current triggers fall into two classes:
+1) Those associated with a device - data ready signals typically
+2) Those independent of a device - gpio, timer (and when we get
+   round to it a userspace trigger).
+
+For simplicity (and because I have actual use cases for it with inertial
+sensor rigs) we treat both of these classes the same.
+
+Any trigger can have a number of devices registered with it.  This
+allows for, as near a possible, simultaneous reading from a number
+of devices.
+
+There are two activation lists and each device can register in one or
+both of these. The first 'fast' queue is intended for devices that
+have a 'latch' or 'capture' signal typically consisting of a gpio
+linked pin.  (no in tree users, but hardware with this
+is common enough). Basically the intent is this list launches true
+top half elements.
+
+The second 'slow' queue currently queues up work queue items to read
+from each of the devices.  This is the part that corresponds to the
+area threaded interrupts cover.
+
+Currently the infrastructure is nice and clean and more or less looks
+the same as drivers doing their own handling of the relevant interrupts.
+
+The problem lies in the fact each actual interrupt can effectively
+call multiple bottom halves.
+
+So to my mind two solutions exist.
+1) A single thread per trigger.  Everything prior to the work queue
+calls is moved into a handler that goes in the 'fast' list which stays
+in our top half handler.  The work queue bits are called one after
+another in the bottom half.
+
+2) Allow each consumer to attach it's own thread to the trigger
+controller and basically implement our own variant of the core threaded
+interrupt code that allows for a list of threads rather than a single one.
+
+I rather like the idea of 2.  It might even end up with different
+devices being queried from different processor cores simultaneously
+which is quite cute.  The question is whether a simple enough
+implementation is possible that the originators of the threaded interrupt
+code would be happy with it (as it bypasses or would mean additions to their
+core code).
+
+I wanted to get the opinions of those familiar with the IIO tree
+before opening the question up to a wider audience (including those who
+wrote the threaded interrupt code).
 
 Jonathan
