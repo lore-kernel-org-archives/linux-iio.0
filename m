@@ -1,198 +1,77 @@
-Return-Path: <jic23@cam.ac.uk>
-From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org
-Cc: Michael.Hennerich@analog.com,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 1/5] staging:iio:buffering  move the copy to user on rip down into implementations
-Date: Sun, 19 Dec 2010 20:33:41 +0000
-Message-Id: <1292790825-19156-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1292790825-19156-1-git-send-email-jic23@cam.ac.uk>
-References: <1292790825-19156-1-git-send-email-jic23@cam.ac.uk>
+Return-Path: <Robin.Getz@analog.com>
+From: Robin Getz <robin.getz@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>, abbotti@mev.co.uk,
+        fmhess@users.sourceforge.net
+Subject: IIO and Comedi
+Date: Fri, 17 Dec 2010 15:13:02 -0500
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        comedi_list@googlegroups.com, greg@kroah.com
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Message-ID: <201012171513.03045.robin.getz@analog.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The current interface is not as adaptable as it should be. Moving
-this complexity into the implementations makes it easier to add
-new implementations.
+I'm just trying to rationalise something in my head...
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/industrialio-ring.c |   23 ++---------------------
- drivers/staging/iio/ring_generic.h      |    2 +-
- drivers/staging/iio/ring_sw.c           |   29 ++++++++++++++++++-----------
- drivers/staging/iio/ring_sw.h           |    4 ++--
- 4 files changed, 23 insertions(+), 35 deletions(-)
+In staging, there exists both iio, and comedi - which both seem to do simil=
+ar=20
+things (capture/create external analog signals), just with different=20
+busses -- which is really different platforms (Desktop - PCI, PCIe vs=20
+embedded - I2C, SPI, SoC, etc).
 
-diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
-index 9a98fcd..40256e7 100644
---- a/drivers/staging/iio/industrialio-ring.c
-+++ b/drivers/staging/iio/industrialio-ring.c
-@@ -16,7 +16,6 @@
- #include <linux/kernel.h>
- #include <linux/device.h>
- #include <linux/fs.h>
--#include <linux/poll.h>
- #include <linux/cdev.h>
- #include <linux/slab.h>
- 
-@@ -98,31 +97,13 @@ static ssize_t iio_ring_rip_outer(struct file *filp, char __user *buf,
- 				  size_t count, loff_t *f_ps)
- {
- 	struct iio_ring_buffer *rb = filp->private_data;
--	int ret, dead_offset, copied;
-+	int ret, dead_offset;
- 	u8 *data;
- 	/* rip lots must exist. */
- 	if (!rb->access.rip_lots)
- 		return -EINVAL;
--	copied = rb->access.rip_lots(rb, count, &data, &dead_offset);
-+	ret = rb->access.rip_lots(rb, count, buf, &dead_offset);
- 
--	if (copied <= 0) {
--		ret = copied;
--		goto error_ret;
--	}
--	if (copy_to_user(buf, data + dead_offset, copied))  {
--		ret =  -EFAULT;
--		goto error_free_data_cpy;
--	}
--	/* In clever ring buffer designs this may not need to be freed.
--	 * When such a design exists I'll add this to ring access funcs.
--	 */
--	kfree(data);
--
--	return copied;
--
--error_free_data_cpy:
--	kfree(data);
--error_ret:
- 	return ret;
- }
- 
-diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
-index 8ecb189..f21ac09 100644
---- a/drivers/staging/iio/ring_generic.h
-+++ b/drivers/staging/iio/ring_generic.h
-@@ -73,7 +73,7 @@ struct iio_ring_access_funcs {
- 	int (*read_last)(struct iio_ring_buffer *ring, u8 *data);
- 	int (*rip_lots)(struct iio_ring_buffer *ring,
- 			size_t count,
--			u8 **data,
-+			char __user *buf,
- 			int *dead_offset);
- 
- 	int (*mark_param_change)(struct iio_ring_buffer *ring);
-diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
-index 52624ac..302278c 100644
---- a/drivers/staging/iio/ring_sw.c
-+++ b/drivers/staging/iio/ring_sw.c
-@@ -12,6 +12,7 @@
- #include <linux/module.h>
- #include <linux/device.h>
- #include <linux/workqueue.h>
-+#include <linux/poll.h>
- #include "ring_sw.h"
- #include "trigger.h"
- 
-@@ -152,11 +153,12 @@ error_ret:
- }
- 
- int iio_rip_sw_rb(struct iio_ring_buffer *r,
--		  size_t count, u8 **data, int *dead_offset)
-+		  size_t count, char __user *buf, int *dead_offset)
- {
- 	struct iio_sw_ring_buffer *ring = iio_to_sw_ring(r);
- 
- 	u8 *initial_read_p, *initial_write_p, *current_read_p, *end_read_p;
-+	u8 *data;
- 	int ret, max_copied;
- 	int bytes_to_rip;
- 
-@@ -174,8 +176,8 @@ int iio_rip_sw_rb(struct iio_ring_buffer *r,
- 	/* Limit size to whole of ring buffer */
- 	bytes_to_rip = min((size_t)(ring->buf.bytes_per_datum*ring->buf.length), count);
- 
--	*data = kmalloc(bytes_to_rip, GFP_KERNEL);
--	if (*data == NULL) {
-+	data = kmalloc(bytes_to_rip, GFP_KERNEL);
-+	if (data == NULL) {
- 		ret = -ENOMEM;
- 		goto error_ret;
- 	}
-@@ -204,30 +206,30 @@ int iio_rip_sw_rb(struct iio_ring_buffer *r,
- 	if (initial_write_p >= initial_read_p + bytes_to_rip) {
- 		/* write_p is greater than necessary, all is easy */
- 		max_copied = bytes_to_rip;
--		memcpy(*data, initial_read_p, max_copied);
-+		memcpy(data, initial_read_p, max_copied);
- 		end_read_p = initial_read_p + max_copied;
- 	} else if (initial_write_p > initial_read_p) {
- 		/*not enough data to cpy */
- 		max_copied = initial_write_p - initial_read_p;
--		memcpy(*data, initial_read_p, max_copied);
-+		memcpy(data, initial_read_p, max_copied);
- 		end_read_p = initial_write_p;
- 	} else {
- 		/* going through 'end' of ring buffer */
- 		max_copied = ring->data
- 			+ ring->buf.length*ring->buf.bytes_per_datum - initial_read_p;
--		memcpy(*data, initial_read_p, max_copied);
-+		memcpy(data, initial_read_p, max_copied);
- 		/* possible we are done if we align precisely with end */
- 		if (max_copied == bytes_to_rip)
- 			end_read_p = ring->data;
- 		else if (initial_write_p
- 			 > ring->data + bytes_to_rip - max_copied) {
- 			/* enough data to finish */
--			memcpy(*data + max_copied, ring->data,
-+			memcpy(data + max_copied, ring->data,
- 			       bytes_to_rip - max_copied);
- 			max_copied = bytes_to_rip;
- 			end_read_p = ring->data + (bytes_to_rip - max_copied);
- 		} else {  /* not enough data */
--			memcpy(*data + max_copied, ring->data,
-+			memcpy(data + max_copied, ring->data,
- 			       initial_write_p - ring->data);
- 			max_copied += initial_write_p - ring->data;
- 			end_read_p = initial_write_p;
-@@ -264,11 +266,16 @@ int iio_rip_sw_rb(struct iio_ring_buffer *r,
- 	while (ring->read_p != end_read_p)
- 		ring->read_p = end_read_p;
- 
--	return max_copied - *dead_offset;
--
-+	ret = max_copied - *dead_offset;
-+	
-+	if (copy_to_user(buf, data + *dead_offset, ret))  {
-+		ret =  -EFAULT;
-+		goto error_free_data_cpy;
-+	}
- error_free_data_cpy:
--	kfree(*data);
-+	kfree(data);
- error_ret:
-+
- 	return ret;
- }
- EXPORT_SYMBOL(iio_rip_sw_rb);
-diff --git a/drivers/staging/iio/ring_sw.h b/drivers/staging/iio/ring_sw.h
-index ad03d83..13341c1 100644
---- a/drivers/staging/iio/ring_sw.h
-+++ b/drivers/staging/iio/ring_sw.h
-@@ -96,13 +96,13 @@ int iio_store_to_sw_rb(struct iio_ring_buffer *r, u8 *data, s64 timestamp);
-  * iio_rip_sw_rb() - attempt to read data from the ring buffer
-  * @r:			ring buffer instance
-  * @count:		number of datum's to try and read
-- * @data:		where the data will be stored.
-+ * @buf:		userspace buffer into which data is copied
-  * @dead_offset:	how much of the stored data was possibly invalidated by
-  *			the end of the copy.
-  **/
- int iio_rip_sw_rb(struct iio_ring_buffer *r,
- 		  size_t count,
--		  u8 **data,
-+		  char __user *buf,
- 		  int *dead_offset);
- 
- /**
--- 
-1.7.0.4
+=2E/staging/iio
+=2E/staging/comedi
+
+the problem (to me) is two different userspace interfaces.
+
+=46or userspace, for those "typical" applications - oscilloscope, generator=
+,=20
+strip chart recorder, etc - it would be nice to have a common userspace lib=
+=20
+between the two - so I can prototype on a desktop via PCI DAQ card, and run=
+=20
+on my embedded system with a SPI converter.
+
+I can't be the only one asking if there any desire to unify these before th=
+ey=20
+are moved to mainline (out of staging). If there isn't - that's OK too.
+
+Thanks
+=2DRobin
+
+
+=46or those not familiar with the other:
+
+=46rom ./staging/iio/Documentation
+=2D-----------------------------------
+Overview of IIO
+
+The Industrial I/O subsytem is intended to provide support for devices
+that in some sense are analog to digital convertors (ADCs). As many
+actual devices combine some ADCs with digital to analog convertors
+(DACs) the intention is to add that functionality at a future date
+(hence the name).
+
+The aim is to fill the gap between the somewhat similar hwmon and
+input subsystems.  Hwmon is very much directed at low sample rate
+sensors used in applications such as fan speed control and temperature
+measurement.  Input is, as it's name suggests focused on input
+devices. In some cases there is considerable overlap between these and
+IIO.
+
+A typical device falling into this category would be connected via SPI
+or I2C.
+=2D----------------------------------
+
+and from:
+http://www.comedi.org/doc/index.html#INTRODUCTION
+
+=2D----------------------------------
+Comedi is a free software project that develops drivers, tools, and librari=
+es=20
+for various forms of data acquisition: reading and writing of analog signal=
+s;=20
+reading and writing of digital inputs/outputs; pulse and frequency counting=
+;=20
+pulse generation; reading encoders; etc.
+=2D----------------------------------
