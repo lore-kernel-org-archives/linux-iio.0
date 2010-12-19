@@ -1,57 +1,87 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:59442 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932451Ab0LSUdw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Dec 2010 15:33:52 -0500
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
-Cc: Michael.Hennerich@analog.com, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [RFC PATCH 0/5] Add kfifo based buffer implementation
-Date: Sun, 19 Dec 2010 20:33:40 +0000
-Message-Id: <1292790825-19156-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: Michael.Hennerich@analog.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 5/5] staging:iio: buffer example - add lots more runtime parameters
+Date: Sun, 19 Dec 2010 20:33:45 +0000
+Message-Id: <1292790825-19156-6-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1292790825-19156-1-git-send-email-jic23@cam.ac.uk>
+References: <1292790825-19156-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-This set is an update of the proof of concept I wrote a while back.
-This time around I've simply used a byte stream buffer rather than
-variable record sizes.  The first patch pushes some of the
-exiting buffer code down into the ring_sw implementation to
-make it simpler to provide other implementations.
+Add ability to control delay for event free buffers
+Add ability to control length of buffer
+Add ability to control how many read cycles occur
 
-What you gain by picking kfifo:
-* Clean fast code for the underlying buffer.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/Documentation/generic_buffer.c |   22 +++++++++++++++----
+ 1 files changed, 17 insertions(+), 5 deletions(-)
 
-What you loose:
-* Events - userspace has to 'know' how often to read the buffer
-  so as to not loose data.
-
-Obvious difference is it is a fifo rather than a ring buffer.
-
-This buffer should also lend itself to a simple implementation
-of a store_n function which should be useful for devices with
-a hardware ring which we then want to feed into a software one.
-
-Jonathan Cameron (5):
-  staging:iio:buffering  move the copy to user on rip down into
-    implementations
-  staging:iio:kfifo buffer implementation
-  staging:iio:lis3l02dq allow buffer implementation selection
-  staging:iio: update example to handle case with no ring events
-  staging:iio: buffer example - add lots more runtime parameters
-
- drivers/staging/iio/Documentation/generic_buffer.c |   63 +++++--
- drivers/staging/iio/Kconfig                        |    6 +
- drivers/staging/iio/Makefile                       |    1 +
- drivers/staging/iio/accel/Kconfig                  |   23 +++-
- drivers/staging/iio/accel/lis3l02dq.h              |   10 +
- drivers/staging/iio/accel/lis3l02dq_ring.c         |    9 +-
- drivers/staging/iio/industrialio-ring.c            |   23 +--
- drivers/staging/iio/kfifo_buf.c                    |  196 ++++++++++++++++++++
- drivers/staging/iio/kfifo_buf.h                    |   56 ++++++
- drivers/staging/iio/ring_generic.h                 |    2 +-
- drivers/staging/iio/ring_sw.c                      |   29 ++-
- drivers/staging/iio/ring_sw.h                      |    4 +-
- 12 files changed, 363 insertions(+), 59 deletions(-)
- create mode 100644 drivers/staging/iio/kfifo_buf.c
- create mode 100644 drivers/staging/iio/kfifo_buf.h
-
+diff --git a/drivers/staging/iio/Documentation/generic_buffer.c b/drivers/staging/iio/Documentation/generic_buffer.c
+index 0befcb8..771b236 100644
+--- a/drivers/staging/iio/Documentation/generic_buffer.c
++++ b/drivers/staging/iio/Documentation/generic_buffer.c
+@@ -29,9 +29,6 @@
+ #include <string.h>
+ #include "iio_utils.h"
+ 
+-const int buf_len = 128;
+-const int num_loops = 2;
+-
+ /**
+  * size_from_channelarray() - calculate the storage size of a scan
+  * @channels: the channel info array
+@@ -119,6 +116,11 @@ void process_scan(char *data,
+ 
+ int main(int argc, char **argv)
+ {
++	unsigned long num_loops = 2;
++	unsigned long timedelay = 1000000;
++	unsigned long buf_len = 128;
++
++
+ 	int ret, c, i, j, toread;
+ 
+ 	FILE *fp_ev;
+@@ -136,10 +138,11 @@ int main(int argc, char **argv)
+ 	char *buffer_access, *buffer_event;
+ 	int scan_size;
+ 	int noevents = 0;
++	char *dummy;
+ 
+ 	struct iio_channel_info *infoarray;
+ 
+-	while ((c = getopt(argc, argv, "et:n:")) != -1) {
++	while ((c = getopt(argc, argv, "l:w:c:et:n:")) != -1) {
+ 		switch (c) {
+ 		case 'n':
+ 			device_name = optarg;
+@@ -151,6 +154,15 @@ int main(int argc, char **argv)
+ 		case 'e':
+ 			noevents = 1;
+ 			break;
++		case 'c':
++			num_loops = strtoul(optarg, &dummy, 10);
++			break;
++		case 'w':
++			timedelay = strtoul(optarg, &dummy, 10);
++			break;
++		case 'l':
++			buf_len = strtoul(optarg, &dummy, 10);
++			break;
+ 		case '?':
+ 			return -1;
+ 		}
+@@ -285,7 +297,7 @@ int main(int argc, char **argv)
+ 				continue;
+ 			}
+ 		} else {
+-			usleep(1000);
++			usleep(timedelay);
+ 			toread = 64;
+ 		}
+ 
+-- 
+1.7.0.4
