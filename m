@@ -1,35 +1,31 @@
-Return-Path: <greg@kroah.com>
-Date: Thu, 13 Jan 2011 08:49:38 -0800
-From: Greg KH <greg@kroah.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Roland Stigge <rst@work-microwave.de>, linux-iio@vger.kernel.org,
-	Roland Stigge <stigge@antcom.de>
-Subject: Re: [PATCH] iio: Fixpoint formatted output bugfix
-Message-ID: <20110113164938.GA27468@kroah.com>
-References: <1294908733-20354-1-git-send-email-rst@work-microwave.de>
- <4D2EDD50.7060508@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from antcom.de ([188.40.178.216]:54967 "EHLO chuck.antcom.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757316Ab1AMRlJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 13 Jan 2011 12:41:09 -0500
+Message-ID: <4D2F3933.1050401@antcom.de>
+Date: Thu, 13 Jan 2011 18:41:07 +0100
+From: Roland Stigge <stigge@antcom.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <4D2EDD50.7060508@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+To: Greg KH <greg@kroah.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	Roland Stigge <rst@work-microwave.de>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: Fixpoint formatted output bugfix
+References: <1294908733-20354-1-git-send-email-rst@work-microwave.de> <4D2EDD50.7060508@cam.ac.uk> <20110113164938.GA27468@kroah.com>
+In-Reply-To: <20110113164938.GA27468@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Jan 13, 2011 at 11:09:04AM +0000, Jonathan Cameron wrote:
-> On 01/13/11 08:52, Roland Stigge wrote:
-> > From: Roland Stigge <stigge@antcom.de>
-> > 
-> > Fix some ADC drivers' _scale interface to correct fixpoint formatted output
-> > 
-> > Signed-off-by: Roland Stigge <stigge@antcom.de>
-> > Acked-by: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-> Acked-by: "Jonathan Cameron <jic23@cam.ac.uk>"
+On 01/13/2011 05:49 PM, Greg KH wrote:
+>> Greg, this is a simple bug fix. The ad7476 and ad799x are in 2.6.37
+>> so it would be good to push this to stable as well.
+>> Do you want a broken out patch with just those two in it?
 > 
-> Greg, this is a simple bug fix. The ad7476 and ad799x are in 2.6.37
-> so it would be good to push this to stable as well.
-> Do you want a broken out patch with just those two in it?
+> Yes, that would be great to have, can you split this into 2 different
+> patches so I can handle it that way easier?
 
-Yes, that would be great to have, can you split this into 2 different
-patches so I can handle it that way easier?
+I'm sending the 2.6.37 version in a separate patch.
 
-thanks,
-
-greg k-h
+Roland
