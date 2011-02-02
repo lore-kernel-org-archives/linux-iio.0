@@ -1,12 +1,12 @@
 Return-Path: <Michael.Hennerich@analog.com>
 From: <michael.hennerich@analog.com>
-To: jic23@cam.ac.uk
+To: greg@kroah.com, jic23@cam.ac.uk
 CC: linux-iio@vger.kernel.org, drivers@analog.com,
         device-drivers-devel@blackfin.uclinux.org,
         Michael Hennerich <michael.hennerich@analog.com>
 Subject: [PATCH] IIO: TRIGGER: New sysfs based trigger
-Date: Thu, 3 Feb 2011 11:10:36 +0100
-Message-ID: <1296727836-7176-1-git-send-email-michael.hennerich@analog.com>
+Date: Wed, 2 Feb 2011 20:21:08 +0100
+Message-ID: <1296674468-24251-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
@@ -19,41 +19,15 @@ automated testing or in situations, where other trigger methods
 are not applicable. For example no RTC or spare GPIOs.
 Last but not least we can allow user space applications to produce triggers.
 
-IIO: TRIGGER: Apply review feedback by Greg Kroah-Hartman
-
-Changes since v1:
-
-Add sysfs documentation.
-Change license notice.
-Add module alias.
-
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- .../iio/Documentation/sysfs-bus-iio-trigger-sysfs  |   11 ++
- drivers/staging/iio/trigger/Kconfig                |    6 +
- drivers/staging/iio/trigger/Makefile               |    1 +
- drivers/staging/iio/trigger/iio-trig-sysfs.c       |  108 ++++++++++++++++++++
- 4 files changed, 126 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
+ drivers/staging/iio/trigger/Kconfig          |    6 ++
+ drivers/staging/iio/trigger/Makefile         |    1 +
+ drivers/staging/iio/trigger/iio-trig-sysfs.c |  108 ++++++++++++++++++++++++++
+ 3 files changed, 115 insertions(+), 0 deletions(-)
  create mode 100644 drivers/staging/iio/trigger/iio-trig-sysfs.c
 
-diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs b/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
-new file mode 100644
-index 0000000..5235e6c
---- /dev/null
-+++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
-@@ -0,0 +1,11 @@
-+What:		/sys/bus/iio/devices/triggerX/trigger_now
-+KernelVersion:	2.6.38
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This file is provided by the iio-trig-sysfs stand-alone trigger
-+		driver. Writing this file with any value triggers an event
-+		driven driver, associated with this trigger, to capture data
-+		into an in kernel buffer. This approach can be valuable during
-+		automated testing or in situations, where other trigger methods
-+		are not applicable. For example no RTC or spare GPIOs.
-+		X is the IIO index of the trigger.
 diff --git a/drivers/staging/iio/trigger/Kconfig b/drivers/staging/iio/trigger/Kconfig
 index d842a58..c185e47 100644
 --- a/drivers/staging/iio/trigger/Kconfig
@@ -80,15 +54,16 @@ index 10aeca5..504b9c0 100644
 +obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
 diff --git a/drivers/staging/iio/trigger/iio-trig-sysfs.c b/drivers/staging/iio/trigger/iio-trig-sysfs.c
 new file mode 100644
-index 0000000..127a2a3
+index 0000000..3434f3c
 --- /dev/null
 +++ b/drivers/staging/iio/trigger/iio-trig-sysfs.c
 @@ -0,0 +1,108 @@
 +/*
 + * Copyright 2011 Analog Devices Inc.
 + *
-+ * Licensed under the GPL-2.
++ * Licensed under the GPL-2 or later.
 + *
++ * iio-trig-sysfs.c
 + */
 +
 +#include <linux/kernel.h>
@@ -191,6 +166,5 @@ index 0000000..127a2a3
 +MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
 +MODULE_DESCRIPTION("Sysfs based trigger for the iio subsystem");
 +MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:iio-trig-sysfs");
 -- 
 1.6.0.2
