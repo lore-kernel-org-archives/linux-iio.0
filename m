@@ -1,184 +1,88 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:42267 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754417Ab1BBSPF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 Feb 2011 13:15:05 -0500
-Message-ID: <4D49A0F4.5040408@cam.ac.uk>
-Date: Wed, 02 Feb 2011 18:22:44 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org, drivers@analog.com,
-	device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH] IIO: TRIGGER: New sysfs based trigger
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Drivers
+	<Drivers@analog.com>, "device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>
+Date: Wed, 2 Feb 2011 19:21:36 +0000
+Subject: RE: [PATCH] IIO: TRIGGER: New sysfs based trigger
+Message-ID: <544AC56F16B56944AEC3BD4E3D591771324C1659B8@LIMKCMBX1.ad.analog.com>
 References: <1296653448-10841-1-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1296653448-10841-1-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+ <4D49A0F4.5040408@cam.ac.uk>
+In-Reply-To: <4D49A0F4.5040408@cam.ac.uk>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/02/11 13:30, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> This patch adds a new trigger that can be invoked by writing
-> the sysfs file: trigger_now. This approach can be valuable during
-> automated testing or in situations, where other trigger methods
-> are not applicable. For example no RTC or spare GPIOs.
-> Last but not least we can allow user space applications to produce triggers.
-Excellent.  Very handy for testing as you say.
+Jonathan Cameron wrote on 2011-02-02:
+> On 02/02/11 13:30, michael.hennerich@analog.com wrote:
+>> From: Michael Hennerich <michael.hennerich@analog.com>
+>>
+>> This patch adds a new trigger that can be invoked by writing the sysfs
+>> file: trigger_now. This approach can be valuable during automated
+>> testing or in situations, where other trigger methods are not
+>> applicable. For example no RTC or spare GPIOs. Last but not least we
+>> can allow user space applications to produce
+> triggers.
+> Excellent.  Very handy for testing as you say.
+>
+> If we really want to commonly use this from userspace we will want a
+> means of registering more than one such trigger but this does fine for
+> test rigs. To do multiple triggers with this we could either just take
+> a module parameter or have a 'request_trigger' attribute under some
+> parent device.
+> Still that's a question for another day.  The current functionality is
+> enough to be getting on with.
 
-If we really want to commonly use this from userspace we will want a means
-of registering more than one such trigger but this does fine for test
-rigs. To do multiple triggers with this we could either just take a module
-parameter or have a 'request_trigger' attribute under some parent device.
-Still that's a question for another day.  The current functionality is
-enough to be getting on with.
-> 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/trigger/Kconfig          |    6 ++
->  drivers/staging/iio/trigger/Makefile         |    1 +
->  drivers/staging/iio/trigger/iio-trig-sysfs.c |  108 ++++++++++++++++++++++++++
->  3 files changed, 115 insertions(+), 0 deletions(-)
->  create mode 100644 drivers/staging/iio/trigger/iio-trig-sysfs.c
-> 
-> diff --git a/drivers/staging/iio/trigger/Kconfig b/drivers/staging/iio/trigger/Kconfig
-> index d842a58..c185e47 100644
-> --- a/drivers/staging/iio/trigger/Kconfig
-> +++ b/drivers/staging/iio/trigger/Kconfig
-> @@ -18,4 +18,10 @@ config IIO_GPIO_TRIGGER
->  	help
->  	  Provides support for using GPIO pins as IIO triggers.
->  
-> +config IIO_SYSFS_TRIGGER
-> +	tristate "SYSFS trigger"
-> +	depends on SYSFS
-> +	help
-> +	  Provides support for using SYSFS entry as IIO triggers.
-> +
->  endif # IIO_TRIGGER
-> diff --git a/drivers/staging/iio/trigger/Makefile b/drivers/staging/iio/trigger/Makefile
-> index 10aeca5..504b9c0 100644
-> --- a/drivers/staging/iio/trigger/Makefile
-> +++ b/drivers/staging/iio/trigger/Makefile
-> @@ -4,3 +4,4 @@
->  
->  obj-$(CONFIG_IIO_PERIODIC_RTC_TRIGGER) += iio-trig-periodic-rtc.o
->  obj-$(CONFIG_IIO_GPIO_TRIGGER) += iio-trig-gpio.o
-> +obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
-> diff --git a/drivers/staging/iio/trigger/iio-trig-sysfs.c b/drivers/staging/iio/trigger/iio-trig-sysfs.c
-> new file mode 100644
-> index 0000000..3434f3c
-> --- /dev/null
-> +++ b/drivers/staging/iio/trigger/iio-trig-sysfs.c
-> @@ -0,0 +1,108 @@
-> +/*
-> + * Copyright 2011 Analog Devices Inc.
-> + *
-> + * Licensed under the GPL-2 or later.
-> + *
-> + * iio-trig-sysfs.c
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +
-> +#include "../iio.h"
-> +#include "../trigger.h"
-> +
-> +static ssize_t iio_sysfs_trigger_poll(struct device *dev,
-> +		struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_trigger *trig = dev_get_drvdata(dev);
-> +	iio_trigger_poll(trig, 0);
-> +
-> +	return count;
-> +}
-> +
-> +static DEVICE_ATTR(trigger_now, S_IWUSR, NULL, iio_sysfs_trigger_poll);
-> +static IIO_TRIGGER_NAME_ATTR;
-> +
-> +static struct attribute *iio_sysfs_trigger_attrs[] = {
-> +	&dev_attr_trigger_now.attr,
-> +	&dev_attr_name.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group iio_sysfs_trigger_attr_group = {
-> +	.attrs = iio_sysfs_trigger_attrs,
-> +};
-> +
-> +static int __devinit iio_sysfs_trigger_probe(struct platform_device *pdev)
-> +{
-> +	struct iio_trigger *trig;
-> +	int ret;
-> +
-> +	trig = iio_allocate_trigger();
-> +	if (!trig) {
-> +		ret = -ENOMEM;
-> +		goto out1;
-> +	}
-> +
-> +	trig->control_attrs = &iio_sysfs_trigger_attr_group;
-> +	trig->owner = THIS_MODULE;
-> +	trig->name = kasprintf(GFP_KERNEL, "sysfstrig%d", pdev->id);
-> +	if (trig->name == NULL) {
-> +		ret = -ENOMEM;
-> +		goto out2;
-> +	}
-> +
-> +	ret = iio_trigger_register(trig);
-> +	if (ret)
-> +		goto out3;
-> +
-> +	platform_set_drvdata(pdev, trig);
-> +
-> +	return 0;
-> +out3:
-> +	kfree(trig->name);
-> +out2:
-> +	iio_put_trigger(trig);
-> +out1:
-> +
-> +	return ret;
-> +}
-> +
-> +static int __devexit iio_sysfs_trigger_remove(struct platform_device *pdev)
-> +{
-> +	struct iio_trigger *trig = platform_get_drvdata(pdev);
-> +
-> +	iio_trigger_unregister(trig);
-> +	kfree(trig->name);
-> +	iio_put_trigger(trig);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver iio_sysfs_trigger_driver = {
-> +	.driver = {
-> +		.name = "iio_sysfs_trigger",
-> +		.owner = THIS_MODULE,
-> +	},
-> +	.probe = iio_sysfs_trigger_probe,
-> +	.remove = __devexit_p(iio_sysfs_trigger_remove),
-> +};
-> +
-> +static int __init iio_sysfs_trig_init(void)
-> +{
-> +	return platform_driver_register(&iio_sysfs_trigger_driver);
-> +}
-> +module_init(iio_sysfs_trig_init);
-> +
-> +static void __exit iio_sysfs_trig_exit(void)
-> +{
-> +	platform_driver_unregister(&iio_sysfs_trigger_driver);
-> +}
-> +module_exit(iio_sysfs_trig_exit);
-> +
-> +MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-> +MODULE_DESCRIPTION("Sysfs based trigger for the iio subsystem");
-> +MODULE_LICENSE("GPL v2");
+Well - you can register as many triggers as you want.
+This is what platform_device.id is for.
 
+See example below -
+
+static struct platform_device iio_sysfs_trigger =3D {
+        .name           =3D "iio_sysfs_trigger",
+        .id             =3D 0,
+        .dev =3D {
+                .platform_data =3D NULL,
+        },
+};
+
+static struct platform_device iio_sysfs_trigger1 =3D {
+        .name           =3D "iio_sysfs_trigger",
+        .id             =3D 1,
+        .dev =3D {
+                .platform_data =3D NULL,
+        },
+};
+
+
+        &bfin_dpmc,
+
+static struct platform_device *my_devices[] __initdata =3D {
+
+#if defined(CONFIG_IIO_SYSFS_TRIGGER) || defined(CONFIG_IIO_SYSFS_TRIGGER _=
+MODULE)
+        &iio_sysfs_trigger,
+        &iio_sysfs_trigger1,
+#endif
+}
+
+In the driver use:
+
+> +     trig->name =3D kasprintf(GFP_KERNEL, "sysfstrig%d", pdev->id);
+
+What the gpio trigger driver does is not necessary
+- it only replicates functionality already provided by the platform device =
+bus.
+
+-Michael
+
+
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368; Gesch=
+aeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret=
+ Seif
