@@ -1,146 +1,137 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:58690 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751377Ab1BDO4a (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 Feb 2011 09:56:30 -0500
-Message-ID: <4D4C139D.9090700@cam.ac.uk>
-Date: Fri, 04 Feb 2011 14:56:29 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Drivers <Drivers@analog.com>,
-	"device-drivers-devel@blackfin.uclinux.org"
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Drivers
+	<Drivers@analog.com>, "device-drivers-devel@blackfin.uclinux.org"
 	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH] IIO: ADC: New driver for AD7606/AD7606-6/AD7606-4
-References: <1296744691-24320-1-git-send-email-michael.hennerich@analog.com> <4D4B1208.3080604@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D591771324C1BA54D@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D591771324C1BA54D@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Fri, 4 Feb 2011 13:48:06 +0000
+Subject: RE: [PATCH] IIO: ADC: New driver for AD7606/AD7606-6/AD7606-4
+Message-ID: <544AC56F16B56944AEC3BD4E3D591771324C1BA4F2@LIMKCMBX1.ad.analog.com>
+References: <1296744691-24320-1-git-send-email-michael.hennerich@analog.com>
+ <4D4B1208.3080604@cam.ac.uk>
+In-Reply-To: <4D4B1208.3080604@cam.ac.uk>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/04/11 14:27, Hennerich, Michael wrote:
->> From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
->> On 02/03/11 14:51, michael.hennerich@analog.com wrote:
->>> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> [--snip--]
-> 
->>> +
->>> +What:              /sys/bus/iio/devices/deviceX/range_available
->>> +KernelVersion:     2.6.38
->>> +Contact:   linux-iio@vger.kernel.org
->>> +Description:
->>> +           Hardware dependent supported vales for ADC Full Scale
->> Range.
->>> +
->>> +What:              /sys/bus/iio/devices/deviceX/oversampling
->>> +KernelVersion:     2.6.38
->>> +Contact:   linux-iio@vger.kernel.org
->>> +Description:
->>> +           Hardware dependent ADC oversamplimg.
->> Typo.
->>> Controls the sampling ratio
->>> +           of the digital filter if available.
->> What are the units?  The obvious choice is a multiplier, but could be
->> frequency.
->> Either way, needs to be specified here.
-> 
-> 'Ratio' or 'rate' is the best you can use here.
-> http://mathworld.wolfram.com/Oversampling.html
-Then lets call it oversampling_ratio and make this very obvious.
-> 
->>> +
->>> +What:              /sys/bus/iio/devices/deviceX/oversampling_available
->>> +KernelVersion:     2.6.38
->>> +Contact:   linux-iio@vger.kernel.org
->>> +Description:
->>> +           Hardware dependent supported vales
->> values (and should probably be Hardware dependent values supported by
->> the
->> oversampling filter.)
->>> by the oversampling filter.
->>> +
-<snip>
+Jonathan Cameron wrote on 2011-02-03:
+> On 02/03/11 14:51, michael.hennerich@analog.com wrote:
+>> From: Michael Hennerich <michael.hennerich@analog.com>
+>>
+>> This patch adds support for the:
+>> AD7606/AD7606-6/AD7606-4 8/6/4-Channel Data Acquisition system (DAS)
+>> with 16-Bit, Bipolar, Simultaneous Sampling ADC.
+>
+> Hi Michael,
+>
+> Another nice clean driver, various points inline with the code.
+>
+> With the parallel interface, I'll admit I've not seen one of these
+> before so my questions may be somewhat uninformed ;) On that note I'd
+> also like to have some more eyes on that element if possible.
+> (looks fine to me)
+>
+> The big one is whether the assumption that all such interfaces are
+> going to be memory mappable is reasonable or whether there should be
+> some abstraction in below the driver?
 
->>> index 0000000..21e5af8
->>> --- /dev/null
->>> +++ b/drivers/staging/iio/adc/ad7606_core.c
->>> @@ -0,0 +1,560 @@
->>> +/*
->>> + * AD7606 SPI ADC driver
->>> + *
->>> + * Copyright 2011 Analog Devices Inc.
->>> + *
->>> + * Licensed under the GPL-2.
->>> + */
->>> +
->>> +#include <linux/interrupt.h>
->>> +#include <linux/workqueue.h>
->>> +#include <linux/device.h>
->>> +#include <linux/kernel.h>
->>> +#include <linux/slab.h>
->>> +#include <linux/sysfs.h>
->>> +#include <linux/list.h>
->>> +#include <linux/regulator/consumer.h>
->>> +#include <linux/err.h>
->>> +#include <linux/gpio.h>
->>> +#include <linux/delay.h>
->>> +
->>> +#include "../iio.h"
->>> +#include "../sysfs.h"
->>> +#include "../ring_generic.h"
->>> +#include "adc.h"
->>> +
->>> +#include "ad7606.h"
->>> +
->>> +int ad7606_reset(struct ad7606_state *st)
->>> +{
->>> +   if (st->have_reset) {
->>> +           gpio_set_value(st->pdata->gpio_reset, 1);
->>> +           ndelay(100); /* t_reset >= 100ns */
->> could it be a sleep?
-> 
-> Only 100ns are required!
-> Why would I go to sleep?
-Fair point.
-> 
-> 
->>> +           gpio_set_value(st->pdata->gpio_reset, 0);
->>> +           return 0;
->>> +   }
->>> +
->>> +   return -ENODEV;
->>> +}
->>> +
->>> +static int ad7606_scan_direct(struct ad7606_state *st, unsigned ch)
->>> +{
->>> +   int ret;
->>> +
->>> +   gpio_set_value(st->pdata->gpio_convst, 1);
->>> +   st->done = false;
->>> +
->>> +   ret = wait_event_interruptible(st->wq_data_avail, st->done);
->>> +   if (ret)
->>> +           goto error_ret;
->>> +
->>> +   if (st->have_frstdata) {
->>> +           st->bops->read_block(st->dev, 1, st->data);
->>> +           if (!gpio_get_value(st->pdata->gpio_frstdata)) {
->>> +                   /* This should never happen */
->>                       As below.... does it and if so why?
-> 
-> In case it happens we're out of sync.
-> 
-> Most people won't use FRSTDATA checks at all.
-> 
-> However some signal glitch caused perhaps by some electrostatic
-> discharge, could cause an extra read or clock.
-> This allows recovery.
-Can you add that to the comment please for future readers of the code.
-> 
->>> +                   ad7606_reset(st);
->>> +                   ret = -EIO;
->>> +                   goto error_ret;
->>> +           }
-<snip>
+If these parallel interfaces are memory mappable or not depends on the
+device in question. In general there are two types of interfaces.
+One with just a parallel bus and a clock. Or ones with a parallel bus and
+chip/memory select and read/write strobes. Later ones doesn't differ in any=
+ form from
+a external Flash, USB or NIC/MACPHY, and are therefore memory mappable.
+The asynchronous parallel bus timing requirements by the device must match =
+the capabilities of the
+processor. Most processors allow you to set the timings for setup, access a=
+nd hold cycles.
+
+The AD7606 is not very demanding here, and easily connects to any host feat=
+uring such interface.
+
+Additional abstraction doesn't make sense for memory mapped.
+
+However some parts have a parallel interface with only a clock.
+These devices typically connect to some special Machine/Host dependant peri=
+pheral.
+For example - on Blackfin it would be the PPI (Parallel Peripheral Interfac=
+e)
+
+http://en.wikipedia.org/wiki/Parallel_Peripheral_Interface
+
+OMAP calls it Universal Parallel Port (uPP), and so on.
+These are not abstracted by a standard bus in Linux.
+
+Bus abstraction here makes absolute sense...
+
+
+> I'd like to see some more
+> documentation on the requirements of that interface, even if just a
+> quick explanation for those not familiar with this sort of interface
+> within the kernel.
+
+Memory mapped parallel interfaces are nothing new.
+They actually become rare. And the datasheet of the device in question
+is typically the documentation.
+
+
+>>
+>> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+>> ---
+>>  drivers/staging/iio/Documentation/sysfs-bus-iio |   25 +
+>>  drivers/staging/iio/adc/Kconfig                 |   27 ++
+>>  drivers/staging/iio/adc/Makefile                |    6 +
+>>  drivers/staging/iio/adc/ad7606.h                |  119 +++++
+>>  drivers/staging/iio/adc/ad7606_core.c           |  560
+>>  +++++++++++++++++++++++ drivers/staging/iio/adc/ad7606_par.c
+>>   |  191 ++++++++ drivers/staging/iio/adc/ad7606_ring.c           |
+>>  261 +++++++++++ drivers/staging/iio/adc/ad7606_spi.c            |  133
+>>  ++++++ 8 files changed, 1322 insertions(+), 0 deletions(-)  create mode
+>> 100644 drivers/staging/iio/adc/ad7606.h  create mode 100644
+>> drivers/staging/iio/adc/ad7606_core.c
+>>  create mode 100644 drivers/staging/iio/adc/ad7606_par.c
+>>  create mode 100644 drivers/staging/iio/adc/ad7606_ring.c
+>>  create mode 100644 drivers/staging/iio/adc/ad7606_spi.c
+>> diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio
+>> b/drivers/staging/iio/Documentation/sysfs-bus-iio
+>> index 8e5d8d1..b415019 100644
+>> --- a/drivers/staging/iio/Documentation/sysfs-bus-iio
+>> +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
+>> @@ -53,6 +53,31 @@ Description:
+>>              When the internal sampling clock can only take a small
+>>              discrete set of values, this file lists those available.
+>> +What:               /sys/bus/iio/devices/deviceX/range
+>> +KernelVersion:      2.6.38
+>> +Contact:    linux-iio@vger.kernel.org
+>> +Description:
+>> +            Hardware dependent ADC Full Scale Range.
+> Could you give an illustrative example of a usecase where this is
+> necessary?
+
+The AD7606 features true bipolar analog inputs (ranges are +/-10 and +/- 5V=
+olt)
+While being powered from a single 5Volt supply.
+
+The range is selected by a special logic input strobe.
+
+> I'm generally a bit dubious about the obviously considerable
+> overlap between this and the _scale and _type attributes.  I guess
+> having them yoked together as you have here works out fine.  We might
+> want to set a preference though. Perhaps always have _scale as the
+> controlable option and range as the dependant value?
+
+In this case range directly influences the maximum voltage that
+can be applied to the inputs. Setting range however also influences the sca=
+le.
+Since +/- 10 Volt are now distributed over 16-bit resolution.
+Actually there is a bug in my scale implementation, since the ABS value is =
+20V.
+
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Mar=
+garet Seif
