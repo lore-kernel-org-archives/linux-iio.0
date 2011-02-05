@@ -1,59 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:60071 "EHLO
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:60073 "EHLO
 	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752795Ab1BERwP (ORCPT
+	with ESMTP id S1752819Ab1BERwP (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Feb 2011 12:52:15 -0500
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: mensch0815@googlemail.com,
 	device-drivers-devel@blackfin.uclinux.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 2/5] staging:iio:gyro:adis16080 unused stub removal and cleanup
-Date: Sat,  5 Feb 2011 17:52:02 +0000
-Message-Id: <1296928325-14967-3-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 1/5] staging:iio:gyro:adis16060 cleanup and dead code removal
+Date: Sat,  5 Feb 2011 17:52:01 +0000
+Message-Id: <1296928325-14967-2-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1296928325-14967-1-git-send-email-jic23@cam.ac.uk>
 References: <1296928325-14967-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Removed stubs related to buffering and triggering. Put them back
+when they are actually needed.
+Fixed line length issues.
+Made a number of functions static as no longer in header.
+
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/gyro/adis16080.h      |   84 +++-------------------------
- drivers/staging/iio/gyro/adis16080_core.c |   54 ++-----------------
- 2 files changed, 14 insertions(+), 124 deletions(-)
+ drivers/staging/iio/gyro/adis16060.h      |   70 -----------------------------
+ drivers/staging/iio/gyro/adis16060_core.c |   59 +++++-------------------
+ 2 files changed, 13 insertions(+), 116 deletions(-)
 
-diff --git a/drivers/staging/iio/gyro/adis16080.h b/drivers/staging/iio/gyro/adis16080.h
-index 3fcbe67..f4e3851 100644
---- a/drivers/staging/iio/gyro/adis16080.h
-+++ b/drivers/staging/iio/gyro/adis16080.h
-@@ -1,14 +1,19 @@
- #ifndef SPI_ADIS16080_H_
- #define SPI_ADIS16080_H_
- 
--#define ADIS16080_DIN_CODE   4 /* Output data format setting. 0: Twos complement. 1: Offset binary. */
-+/* Output data format setting. 0: Twos complement. 1: Offset binary. */
-+#define ADIS16080_DIN_CODE   4
- #define ADIS16080_DIN_GYRO   (0 << 10) /* Gyroscope output */
- #define ADIS16080_DIN_TEMP   (1 << 10) /* Temperature output */
- #define ADIS16080_DIN_AIN1   (2 << 10)
- #define ADIS16080_DIN_AIN2   (3 << 10)
--#define ADIS16080_DIN_WRITE  (1 << 15) /* 1: Write contents on DIN to control register.
--					* 0: No changes to control register.
--					*/
-+
-+/*
-+ * 1: Write contents on DIN to control register.
-+ * 0: No changes to control register.
-+ */
-+
-+#define ADIS16080_DIN_WRITE  (1 << 15)
- 
- #define ADIS16080_MAX_TX     2
- #define ADIS16080_MAX_RX     2
-@@ -16,87 +21,16 @@
+diff --git a/drivers/staging/iio/gyro/adis16060.h b/drivers/staging/iio/gyro/adis16060.h
+index 5c00e53..e85121b 100644
+--- a/drivers/staging/iio/gyro/adis16060.h
++++ b/drivers/staging/iio/gyro/adis16060.h
+@@ -14,11 +14,7 @@
  /**
-  * struct adis16080_state - device instance specific data
-  * @us:			actual spi_device to write data
+  * struct adis16060_state - device instance specific data
+  * @us_w:			actual spi_device to write data
 - * @work_trigger_to_ring: bh for triggered event handling
 - * @inter:		used to check if new interrupt has been triggered
 - * @last_timestamp:	passing timestamp from th to bh of interrupt handler
@@ -62,9 +43,10 @@ index 3fcbe67..f4e3851 100644
   * @tx:			transmit buffer
   * @rx:			recieve buffer
   * @buf_lock:		mutex to protect tx and rx
-  **/
- struct adis16080_state {
- 	struct spi_device		*us;
+@@ -26,76 +22,10 @@
+ struct adis16060_state {
+ 	struct spi_device		*us_w;
+ 	struct spi_device		*us_r;
 -	struct work_struct		work_trigger_to_ring;
 -	s64				last_timestamp;
  	struct iio_dev			*indio_dev;
@@ -73,98 +55,119 @@ index 3fcbe67..f4e3851 100644
  	u8				*rx;
  	struct mutex			buf_lock;
  };
--
+ 
 -#if defined(CONFIG_IIO_RING_BUFFER) && defined(THIS_HAS_RING_BUFFER_SUPPORT)
 -/* At the moment triggers are only used for ring buffer
 - * filling. This may change!
 - */
 -
--enum adis16080_scan {
--	ADIS16080_SCAN_GYRO,
--	ADIS16080_SCAN_TEMP,
--	ADIS16080_SCAN_ADC_1,
--	ADIS16080_SCAN_ADC_2,
+-enum adis16060_scan {
+-	ADIS16060_SCAN_GYRO,
+-	ADIS16060_SCAN_TEMP,
+-	ADIS16060_SCAN_ADC_1,
+-	ADIS16060_SCAN_ADC_2,
 -};
 -
--void adis16080_remove_trigger(struct iio_dev *indio_dev);
--int adis16080_probe_trigger(struct iio_dev *indio_dev);
+-void adis16060_remove_trigger(struct iio_dev *indio_dev);
+-int adis16060_probe_trigger(struct iio_dev *indio_dev);
 -
--ssize_t adis16080_read_data_from_ring(struct device *dev,
+-ssize_t adis16060_read_data_from_ring(struct device *dev,
 -				      struct device_attribute *attr,
 -				      char *buf);
 -
 -
--int adis16080_configure_ring(struct iio_dev *indio_dev);
--void adis16080_unconfigure_ring(struct iio_dev *indio_dev);
+-int adis16060_configure_ring(struct iio_dev *indio_dev);
+-void adis16060_unconfigure_ring(struct iio_dev *indio_dev);
 -
--int adis16080_initialize_ring(struct iio_ring_buffer *ring);
--void adis16080_uninitialize_ring(struct iio_ring_buffer *ring);
+-int adis16060_initialize_ring(struct iio_ring_buffer *ring);
+-void adis16060_uninitialize_ring(struct iio_ring_buffer *ring);
 -#else /* CONFIG_IIO_RING_BUFFER */
 -
--static inline void adis16080_remove_trigger(struct iio_dev *indio_dev)
+-static inline void adis16060_remove_trigger(struct iio_dev *indio_dev)
 -{
 -}
 -
--static inline int adis16080_probe_trigger(struct iio_dev *indio_dev)
+-static inline int adis16060_probe_trigger(struct iio_dev *indio_dev)
 -{
 -	return 0;
 -}
 -
 -static inline ssize_t
--adis16080_read_data_from_ring(struct device *dev,
+-adis16060_read_data_from_ring(struct device *dev,
 -			      struct device_attribute *attr,
 -			      char *buf)
 -{
 -	return 0;
 -}
 -
--static int adis16080_configure_ring(struct iio_dev *indio_dev)
+-static int adis16060_configure_ring(struct iio_dev *indio_dev)
 -{
 -	return 0;
 -}
 -
--static inline void adis16080_unconfigure_ring(struct iio_dev *indio_dev)
+-static inline void adis16060_unconfigure_ring(struct iio_dev *indio_dev)
 -{
 -}
 -
--static inline int adis16080_initialize_ring(struct iio_ring_buffer *ring)
+-static inline int adis16060_initialize_ring(struct iio_ring_buffer *ring)
 -{
 -	return 0;
 -}
 -
--static inline void adis16080_uninitialize_ring(struct iio_ring_buffer *ring)
+-static inline void adis16060_uninitialize_ring(struct iio_ring_buffer *ring)
 -{
 -}
 -
 -#endif /* CONFIG_IIO_RING_BUFFER */
- #endif /* SPI_ADIS16080_H_ */
-diff --git a/drivers/staging/iio/gyro/adis16080_core.c b/drivers/staging/iio/gyro/adis16080_core.c
-index 0efb768..252080b 100644
---- a/drivers/staging/iio/gyro/adis16080_core.c
-+++ b/drivers/staging/iio/gyro/adis16080_core.c
-@@ -25,11 +25,7 @@
+ #endif /* SPI_ADIS16060_H_ */
+diff --git a/drivers/staging/iio/gyro/adis16060_core.c b/drivers/staging/iio/gyro/adis16060_core.c
+index fc48aca..11f51f2 100644
+--- a/drivers/staging/iio/gyro/adis16060_core.c
++++ b/drivers/staging/iio/gyro/adis16060_core.c
+@@ -25,11 +25,9 @@
  
- #include "adis16080.h"
+ #include "adis16060.h"
  
--#define DRIVER_NAME		"adis16080"
+-#define DRIVER_NAME		"adis16060"
++static struct adis16060_state *adis16060_st;
+ 
+-struct adis16060_state *adis16060_st;
 -
--struct adis16080_state *adis16080_st;
--
--int adis16080_spi_write(struct device *dev,
-+static int adis16080_spi_write(struct device *dev,
- 		u16 val)
+-int adis16060_spi_write(struct device *dev,
++static int adis16060_spi_write(struct device *dev,
+ 		u8 val)
  {
  	int ret;
-@@ -46,7 +42,7 @@ int adis16080_spi_write(struct device *dev,
+@@ -47,7 +45,7 @@ int adis16060_spi_write(struct device *dev,
  	return ret;
  }
  
--int adis16080_spi_read(struct device *dev,
-+static int adis16080_spi_read(struct device *dev,
+-int adis16060_spi_read(struct device *dev,
++static int adis16060_spi_read(struct device *dev,
  		u16 *val)
  {
  	int ret;
-@@ -69,7 +65,7 @@ static ssize_t adis16080_read(struct device *dev,
+@@ -58,12 +56,15 @@ int adis16060_spi_read(struct device *dev,
+ 
+ 	ret = spi_read(st->us_r, st->rx, 3);
+ 
+-	/* The internal successive approximation ADC begins the conversion process
+-	 * on the falling edge of MSEL1 and starts to place data MSB first on the
+-	 * DOUT line at the 6th falling edge of SCLK
++	/* The internal successive approximation ADC begins the
++	 * conversion process on the falling edge of MSEL1 and
++	 * starts to place data MSB first on the DOUT line at
++	 * the 6th falling edge of SCLK
+ 	 */
+ 	if (ret == 0)
+-		*val = ((st->rx[0] & 0x3) << 12) | (st->rx[1] << 4) | ((st->rx[2] >> 4) & 0xF);
++		*val = ((st->rx[0] & 0x3) << 12) |
++			(st->rx[1] << 4) |
++			((st->rx[2] >> 4) & 0xF);
+ 	mutex_unlock(&st->buf_lock);
+ 
+ 	return ret;
+@@ -74,7 +75,7 @@ static ssize_t adis16060_read(struct device *dev,
  		char *buf)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
@@ -173,11 +176,11 @@ index 0efb768..252080b 100644
  	ssize_t ret;
  
  	/* Take the iio_dev status lock */
-@@ -169,45 +165,13 @@ static int __devinit adis16080_probe(struct spi_device *spi)
+@@ -174,45 +175,14 @@ static int __devinit adis16060_r_probe(struct spi_device *spi)
  	st->indio_dev->driver_module = THIS_MODULE;
  	st->indio_dev->modes = INDIO_DIRECT_MODE;
  
--	ret = adis16080_configure_ring(st->indio_dev);
+-	ret = adis16060_configure_ring(st->indio_dev);
 -	if (ret)
 -		goto error_free_dev;
 -
@@ -187,7 +190,7 @@ index 0efb768..252080b 100644
 +		goto error_free_dev;
  	regdone = 1;
  
--	ret = adis16080_initialize_ring(st->indio_dev->ring);
+-	ret = adis16060_initialize_ring(st->indio_dev->ring);
 -	if (ret) {
 -		printk(KERN_ERR "failed to initialize the ring\n");
 -		goto error_unreg_ring_funcs;
@@ -198,49 +201,47 @@ index 0efb768..252080b 100644
 -				st->indio_dev,
 -				0,
 -				IRQF_TRIGGER_RISING,
--				"adis16080");
+-				"adis16060");
 -		if (ret)
 -			goto error_uninitialize_ring;
 -
--		ret = adis16080_probe_trigger(st->indio_dev);
+-		ret = adis16060_probe_trigger(st->indio_dev);
 -		if (ret)
 -			goto error_unregister_line;
 -	}
 -
--	adis16080_st = st;
+ 	adis16060_st = st;
  	return 0;
  
 -error_unregister_line:
 -	if (st->indio_dev->modes & INDIO_RING_TRIGGERED)
 -		iio_unregister_interrupt_line(st->indio_dev, 0);
 -error_uninitialize_ring:
--	adis16080_uninitialize_ring(st->indio_dev->ring);
+-	adis16060_uninitialize_ring(st->indio_dev->ring);
 -error_unreg_ring_funcs:
--	adis16080_unconfigure_ring(st->indio_dev);
+-	adis16060_unconfigure_ring(st->indio_dev);
  error_free_dev:
  	if (regdone)
  		iio_device_unregister(st->indio_dev);
-@@ -229,14 +193,6 @@ static int adis16080_remove(struct spi_device *spi)
- 	struct adis16080_state *st = spi_get_drvdata(spi);
- 	struct iio_dev *indio_dev = st->indio_dev;
+@@ -236,12 +206,9 @@ static int adis16060_r_remove(struct spi_device *spi)
  
--	flush_scheduled_work();
--
--	adis16080_remove_trigger(indio_dev);
--	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0)
--		iio_unregister_interrupt_line(indio_dev, 0);
--
--	adis16080_uninitialize_ring(indio_dev->ring);
--	adis16080_unconfigure_ring(indio_dev);
+ 	flush_scheduled_work();
+ 
+-	adis16060_remove_trigger(indio_dev);
+ 	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0)
+ 		iio_unregister_interrupt_line(indio_dev, 0);
+ 
+-	adis16060_uninitialize_ring(indio_dev->ring);
+-	adis16060_unconfigure_ring(indio_dev);
  	iio_device_unregister(indio_dev);
  	kfree(st->tx);
  	kfree(st->rx);
-@@ -267,5 +223,5 @@ static __exit void adis16080_exit(void)
- module_exit(adis16080_exit);
+@@ -315,5 +282,5 @@ static __exit void adis16060_exit(void)
+ module_exit(adis16060_exit);
  
  MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
--MODULE_DESCRIPTION("Analog Devices ADIS16080/100 Yaw Rate Gyroscope with SPI driver");
-+MODULE_DESCRIPTION("Analog Devices ADIS16080/100 Yaw Rate Gyroscope Driver");
+-MODULE_DESCRIPTION("Analog Devices ADIS16060 Yaw Rate Gyroscope with SPI driver");
++MODULE_DESCRIPTION("Analog Devices ADIS16060 Yaw Rate Gyroscope Driver");
  MODULE_LICENSE("GPL v2");
 -- 
 1.7.3.4
