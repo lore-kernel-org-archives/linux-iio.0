@@ -1,38 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:50857 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755187Ab1BIXBS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 9 Feb 2011 18:01:18 -0500
-Date: Wed, 9 Feb 2011 14:58:24 -0800
-From: Greg KH <greg@kroah.com>
-To: michael.hennerich@analog.com
-Cc: jic23@cam.ac.uk, linux-iio@vger.kernel.org, drivers@analog.com,
-	device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH] Staging: IIO: TRIGGER: New sysfs based trigger
-Message-ID: <20110209225824.GA23566@kroah.com>
-References: <1297073146-10411-1-git-send-email-michael.hennerich@analog.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1297073146-10411-1-git-send-email-michael.hennerich@analog.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org
+Cc: device-drivers-devel@blackfin.uclinux.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 0/4] staging:iio:meter clean up and dead code removal.
+Date: Sat,  5 Feb 2011 19:34:15 +0000
+Message-Id: <1296934459-15760-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Feb 07, 2011 at 11:05:46AM +0100, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> This patch adds a new trigger that can be invoked by writing
-> the sysfs file: trigger_now. This approach can be valuable during
-> automated testing or in situations, where other trigger methods
-> are not applicable. For example no RTC or spare GPIOs.
-> Last but not least we can allow user space applications to produce triggers.
-> 
-> IIO: TRIGGER: Apply review feedback by Greg Kroah-Hartman
+This is very much the starting point for bashing the meter drivers into
+shape.  For now I've just removed most of the unused code and stubs.
 
-Well, I don't really like it, as I still don't know, as a distro
-maintainer, if I need to enable this or not, and there's no auto-load
-capability, but hey, my distro(s) don't enable these drivers anyway, so
-I don't have to worry about it :)
+I have also cleaned up spi bus handling.  I may well have gotten that
+bit wrong so please do take a look.  In some cases this involved turning
+one transfer into two so as to clarify what the code was doing.  This
+may cause issues if the spi bus drivers don't play the game properly or
+as if I got the conversion wrong.
 
-thanks,
+Next job is to pin down, standardise and document the sysfs interface
+for these parts.  Anyone care to take this on?
 
-greg k-h
+Note I have currently left the ade7758 driver alone
+as it is by far the most complex and didn't suffer the large amount of
+dead code to be found in the others.
+
+All comments as ever welcome.  I'd also like to know what test
+coverage we have on these parts.
+
+Thanks,
+
+Jonathan
+
+Jonathan Cameron (4):
+  staging:iio:meter remove stubs from ade7753.
+  staging:iio:meter remove stubs from ade7754.
+  staging:iio:meter remove stubs from ade7759.
+  staging:iio:meter remove stubs from ade7854.
+
+ drivers/staging/iio/meter/ade7753.c     |  200 +++++++------------------------
+ drivers/staging/iio/meter/ade7753.h     |   64 ----------
+ drivers/staging/iio/meter/ade7754.c     |  165 ++++---------------------
+ drivers/staging/iio/meter/ade7754.h     |   67 ----------
+ drivers/staging/iio/meter/ade7759.c     |  163 +++++---------------------
+ drivers/staging/iio/meter/ade7759.h     |   65 ----------
+ drivers/staging/iio/meter/ade7854-spi.c |  120 ++++++++++---------
+ drivers/staging/iio/meter/ade7854.c     |   78 ++----------
+ drivers/staging/iio/meter/ade7854.h     |   69 -----------
+ 9 files changed, 175 insertions(+), 816 deletions(-)
+
+-- 
+1.7.3.4
