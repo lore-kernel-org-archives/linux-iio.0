@@ -4,761 +4,1409 @@ To: jic23@cam.ac.uk
 CC: linux-iio@vger.kernel.org, drivers@analog.com,
         device-drivers-devel@blackfin.uclinux.org,
         Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH] IIO: DDS: AD9832 / AD9835 driver
-Date: Tue, 8 Feb 2011 16:08:49 +0100
-Message-ID: <1297177729-6821-1-git-send-email-michael.hennerich@analog.com>
+Subject: [PATCH] IIO: ADC: New driver for AD7606/AD7606-6/AD7606-4
+Date: Mon, 7 Feb 2011 14:29:27 +0100
+Message-ID: <1297085367-27208-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-This is a complete rewrite of the AD9832/35 driver.
-Purpose was to move this driver to the recently
-created API for such devices.
+This patch adds support for the:
+AD7606/AD7606-6/AD7606-4 8/6/4-Channel Data Acquisition
+system (DAS) with 16-Bit, Bipolar, Simultaneous Sampling ADC.
+
+Changes since V1:
+IIO: ADC: New driver for AD7606/AD7606-6/AD7606-4: Apply review feedback
+
+Rename sysfs node oversampling to oversampling_ratio.
+Kconfig: Add GPIOLIB dependency.
+Use range in mV to better match HWMON.
+Rename ad7606_check_oversampling.
+Fix various comments and style.
+Reorder is_visible cases.
+Use new gpio_request_one/array and friends.
+Drop check for SPI max_speed_hz.
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Reviewed-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/dds/Kconfig  |    5 +-
- drivers/staging/iio/dds/ad9832.c |  491 ++++++++++++++++++++++++--------------
- drivers/staging/iio/dds/ad9832.h |  138 +++++++++++
- 3 files changed, 450 insertions(+), 184 deletions(-)
- create mode 100644 drivers/staging/iio/dds/ad9832.h
+ drivers/staging/iio/Documentation/sysfs-bus-iio |   25 +
+ drivers/staging/iio/adc/Kconfig                 |   28 ++
+ drivers/staging/iio/adc/Makefile                |    6 +
+ drivers/staging/iio/adc/ad7606.h                |  117 +++++
+ drivers/staging/iio/adc/ad7606_core.c           |  549 +++++++++++++++++++++++
+ drivers/staging/iio/adc/ad7606_par.c            |  188 ++++++++
+ drivers/staging/iio/adc/ad7606_ring.c           |  259 +++++++++++
+ drivers/staging/iio/adc/ad7606_spi.c            |  126 ++++++
+ 8 files changed, 1298 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/ad7606.h
+ create mode 100644 drivers/staging/iio/adc/ad7606_core.c
+ create mode 100644 drivers/staging/iio/adc/ad7606_par.c
+ create mode 100644 drivers/staging/iio/adc/ad7606_ring.c
+ create mode 100644 drivers/staging/iio/adc/ad7606_spi.c
 
-diff --git a/drivers/staging/iio/dds/Kconfig b/drivers/staging/iio/dds/Kconfig
-index a047da6..06b6f3a 100644
---- a/drivers/staging/iio/dds/Kconfig
-+++ b/drivers/staging/iio/dds/Kconfig
-@@ -15,7 +15,10 @@ config AD9832
- 	depends on SPI
- 	help
- 	  Say yes here to build support for Analog Devices DDS chip
--	  ad9832 and ad9835, provides direct access via sysfs.
-+	  AD9832 and AD9835, provides direct access via sysfs.
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio b/drivers/staging/iio/Documentation/sysfs-bus-iio
+index 8e5d8d1..4116abc 100644
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
+@@ -53,6 +53,31 @@ Description:
+ 		When the internal sampling clock can only take a small
+ 		discrete set of values, this file lists those available.
+
++What:		/sys/bus/iio/devices/deviceX/range
++KernelVersion:	2.6.38
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware dependent ADC Full Scale Range.
++
++What:		/sys/bus/iio/devices/deviceX/range_available
++KernelVersion:	2.6.38
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware dependent supported vales for ADC Full Scale Range.
++
++What:		/sys/bus/iio/devices/deviceX/oversampling_ratio
++KernelVersion:	2.6.38
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware dependent ADC oversampling. Controls the sampling ratio
++		of the digital filter if available.
++
++What:		/sys/bus/iio/devices/deviceX/oversampling_ratio_available
++KernelVersion:	2.6.38
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware dependent values supported by the oversampling filter.
++
+ What:		/sys/bus/iio/devices/deviceX/inY_raw
+ What:		/sys/bus/iio/devices/deviceX/inY_supply_raw
+ KernelVersion:	2.6.35
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 86869cd..c622a6c 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -62,6 +62,34 @@ config AD7314
+ 	  Say yes here to build support for Analog Devices AD7314
+ 	  temperature sensors.
+
++config AD7606
++	tristate "Analog Devices AD7606 ADC driver"
++	depends on GPIOLIB
++	select IIO_RING_BUFFER
++	select IIO_TRIGGER
++	select IIO_SW_RING
++	help
++	  Say yes here to build support for Analog Devices:
++	  ad7606, ad7606-6, ad7606-4 analog to digital convertors (ADC).
 +
 +	  To compile this driver as a module, choose M here: the
-+	  module will be called ad9832.
- 
- config AD9834
- 	tristate "Analog Devices ad9833/4/ driver"
-diff --git a/drivers/staging/iio/dds/ad9832.c b/drivers/staging/iio/dds/ad9832.c
-index e911893..15a74f2 100644
---- a/drivers/staging/iio/dds/ad9832.c
-+++ b/drivers/staging/iio/dds/ad9832.c
-@@ -1,228 +1,341 @@
- /*
-- * Driver for ADI Direct Digital Synthesis ad9832
-+ * AD9832 SPI DDS driver
-  *
-- * Copyright (c) 2010 Analog Devices Inc.
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 as
-- * published by the Free Software Foundation.
++	  module will be called ad7606.
++
++config AD7606_IFACE_PARALLEL
++	bool "parallel interface support"
++	depends on AD7606
++	help
++	  Say yes here to include parallel interface support on the AD7606
++	  ADC driver.
++
++config AD7606_IFACE_SPI
++	bool "spi interface support"
++	depends on AD7606
++	depends on SPI
++	help
++	  Say yes here to include parallel interface support on the AD7606
++	  ADC driver.
++
+ config AD799X
+ 	tristate "Analog Devices AD799x ADC driver"
+ 	depends on I2C
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index 6f231a2..cb73346 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -7,6 +7,12 @@ max1363-y += max1363_ring.o
+
+ obj-$(CONFIG_MAX1363) += max1363.o
+
++ad7606-y := ad7606_core.o
++ad7606-$(CONFIG_IIO_RING_BUFFER) += ad7606_ring.o
++ad7606-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
++ad7606-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
++obj-$(CONFIG_AD7606) += ad7606.o
++
+ ad799x-y := ad799x_core.o
+ ad799x-$(CONFIG_AD799X_RING_BUFFER) += ad799x_ring.o
+ obj-$(CONFIG_AD799X) += ad799x.o
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+new file mode 100644
+index 0000000..338bade
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -0,0 +1,117 @@
++/*
++ * AD7606 ADC driver
++ *
 + * Copyright 2011 Analog Devices Inc.
-  *
++ *
 + * Licensed under the GPL-2.
-  */
--#include <linux/types.h>
--#include <linux/mutex.h>
++ */
++
++#ifndef IIO_ADC_AD7606_H_
++#define IIO_ADC_AD7606_H_
++
++/*
++ * TODO: struct ad7606_platform_data needs to go into include/linux/iio
++ */
++
++/**
++ * struct ad7606_platform_data - platform/board specifc information
++ * @default_os:		default oversampling value {0, 2, 4, 8, 16, 32, 64}
++ * @default_range:	default range +/-{5000, 10000} mVolt
++ * @gpio_convst:	number of gpio connected to the CONVST pin
++ * @gpio_reset:		gpio connected to the RESET pin, if not used set to -1
++ * @gpio_range:		gpio connected to the RANGE pin, if not used set to -1
++ * @gpio_os0:		gpio connected to the OS0 pin, if not used set to -1
++ * @gpio_os1:		gpio connected to the OS1 pin, if not used set to -1
++ * @gpio_os2:		gpio connected to the OS2 pin, if not used set to -1
++ * @gpio_frstdata:	gpio connected to the FRSTDAT pin, if not used set to -1
++ * @gpio_stby:		gpio connected to the STBY pin, if not used set to -1
++ */
++
++struct ad7606_platform_data {
++	unsigned			default_os;
++	unsigned			default_range;
++	unsigned			gpio_convst;
++	unsigned			gpio_reset;
++	unsigned			gpio_range;
++	unsigned			gpio_os0;
++	unsigned			gpio_os1;
++	unsigned			gpio_os2;
++	unsigned			gpio_frstdata;
++	unsigned			gpio_stby;
++};
++
++/**
++ * struct ad7606_chip_info - chip specifc information
++ * @name:		indentification string for chip
++ * @bits:		accuracy of the adc in bits
++ * @bits:		output coding [s]igned or [u]nsigned
++ * @int_vref_mv:	the internal reference voltage
++ * @num_channels:	number of physical inputs on chip
++ */
++
++struct ad7606_chip_info {
++	char				name[10];
++	u8				bits;
++	char				sign;
++	u16				int_vref_mv;
++	unsigned			num_channels;
++};
++
++/**
++ * struct ad7606_state - driver instance specific data
++ */
++
++struct ad7606_state {
++	struct iio_dev			*indio_dev;
++	struct device			*dev;
++	const struct ad7606_chip_info	*chip_info;
++	struct ad7606_platform_data	*pdata;
++	struct regulator		*reg;
++	struct work_struct		poll_work;
++	wait_queue_head_t		wq_data_avail;
++	atomic_t			protect_ring;
++	size_t				d_size;
++	const struct ad7606_bus_ops	*bops;
++	int				irq;
++	unsigned			id;
++	unsigned			range;
++	unsigned			oversampling;
++	bool				done;
++	bool				have_frstdata;
++	bool				have_os;
++	bool				have_stby;
++	bool				have_reset;
++	bool				have_range;
++	void __iomem			*base_address;
++
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++
++	unsigned short			data[8] ____cacheline_aligned;
++};
++
++struct ad7606_bus_ops {
++	/* more methods added in future? */
++	int (*read_block)(struct device *, int, void *);
++};
++
++void ad7606_suspend(struct ad7606_state *st);
++void ad7606_resume(struct ad7606_state *st);
++struct ad7606_state *ad7606_probe(struct device *dev, int irq,
++			      void __iomem *base_address, unsigned id,
++			      const struct ad7606_bus_ops *bops);
++int ad7606_remove(struct ad7606_state *st);
++int ad7606_reset(struct ad7606_state *st);
++
++enum ad7606_supported_device_ids {
++	ID_AD7606_8,
++	ID_AD7606_6,
++	ID_AD7606_4
++};
++
++int ad7606_scan_from_ring(struct ad7606_state *st, unsigned ch);
++int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev);
++void ad7606_ring_cleanup(struct iio_dev *indio_dev);
++#endif /* IIO_ADC_AD7606_H_ */
+diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+new file mode 100644
+index 0000000..65481e1
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7606_core.c
+@@ -0,0 +1,549 @@
++/*
++ * AD7606 SPI ADC driver
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
 +
 +#include <linux/interrupt.h>
 +#include <linux/workqueue.h>
- #include <linux/device.h>
--#include <linux/spi/spi.h>
++#include <linux/device.h>
 +#include <linux/kernel.h>
- #include <linux/slab.h>
- #include <linux/sysfs.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
 +#include <linux/list.h>
-+#include <linux/spi/spi.h>
 +#include <linux/regulator/consumer.h>
 +#include <linux/err.h>
-+#include <asm/div64.h>
- 
- #include "../iio.h"
- #include "../sysfs.h"
-+#include "dds.h"
- 
--#define DRV_NAME "ad9832"
--
--#define value_mask (u16)0xf000
--#define cmd_shift 12
--#define add_shift 8
--#define AD9832_SYNC (1 << 13)
--#define AD9832_SELSRC (1 << 12)
--#define AD9832_SLEEP (1 << 13)
--#define AD9832_RESET (1 << 12)
--#define AD9832_CLR (1 << 11)
--
--#define ADD_FREQ0LL 0x0
--#define ADD_FREQ0HL 0x1
--#define ADD_FREQ0LM 0x2
--#define ADD_FREQ0HM 0x3
--#define ADD_FREQ1LL 0x4
--#define ADD_FREQ1HL 0x5
--#define ADD_FREQ1LM 0x6
--#define ADD_FREQ1HM 0x7
--#define ADD_PHASE0L 0x8
--#define ADD_PHASE0H 0x9
--#define ADD_PHASE1L 0xa
--#define ADD_PHASE1H 0xb
--#define ADD_PHASE2L 0xc
--#define ADD_PHASE2H 0xd
--#define ADD_PHASE3L 0xe
--#define ADD_PHASE3H 0xf
--
--#define CMD_PHA8BITSW 0x1
--#define CMD_PHA16BITSW 0x0
--#define CMD_FRE8BITSW 0x3
--#define CMD_FRE16BITSW 0x2
--#define CMD_SELBITSCTL 0x6
--
--struct ad9832_setting {
--	u16 freq0[4];
--	u16 freq1[4];
--	u16 phase0[2];
--	u16 phase1[2];
--	u16 phase2[2];
--	u16 phase3[2];
--};
-+#include "ad9832.h"
- 
--struct ad9832_state {
--	struct mutex lock;
--	struct iio_dev *idev;
--	struct spi_device *sdev;
--};
--
--static ssize_t ad9832_set_parameter(struct device *dev,
--					struct device_attribute *attr,
--					const char *buf,
--					size_t len)
-+static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsigned long fout)
- {
--	struct spi_message msg;
--	struct spi_transfer xfer;
--	int ret;
--	struct ad9832_setting config;
--	struct iio_dev *idev = dev_get_drvdata(dev);
--	struct ad9832_state *st = idev->dev_data;
--
--	config.freq0[0] = (CMD_FRE8BITSW << add_shift | ADD_FREQ0LL << add_shift | buf[0]);
--	config.freq0[1] = (CMD_FRE16BITSW << add_shift | ADD_FREQ0HL << add_shift | buf[1]);
--	config.freq0[2] = (CMD_FRE8BITSW << add_shift | ADD_FREQ0LM << add_shift | buf[2]);
--	config.freq0[3] = (CMD_FRE16BITSW << add_shift | ADD_FREQ0HM << add_shift | buf[3]);
--	config.freq1[0] = (CMD_FRE8BITSW << add_shift | ADD_FREQ1LL << add_shift | buf[4]);
--	config.freq1[1] = (CMD_FRE16BITSW << add_shift | ADD_FREQ1HL << add_shift | buf[5]);
--	config.freq1[2] = (CMD_FRE8BITSW << add_shift | ADD_FREQ1LM << add_shift | buf[6]);
--	config.freq1[3] = (CMD_FRE16BITSW << add_shift | ADD_FREQ1HM << add_shift | buf[7]);
--
--	config.phase0[0] = (CMD_PHA8BITSW << add_shift | ADD_PHASE0L << add_shift | buf[9]);
--	config.phase0[1] = (CMD_PHA16BITSW << add_shift | ADD_PHASE0H << add_shift | buf[10]);
--	config.phase1[0] = (CMD_PHA8BITSW << add_shift | ADD_PHASE1L << add_shift | buf[11]);
--	config.phase1[1] = (CMD_PHA16BITSW << add_shift | ADD_PHASE1H << add_shift | buf[12]);
--	config.phase2[0] = (CMD_PHA8BITSW << add_shift | ADD_PHASE2L << add_shift | buf[13]);
--	config.phase2[1] = (CMD_PHA16BITSW << add_shift | ADD_PHASE2H << add_shift | buf[14]);
--	config.phase3[0] = (CMD_PHA8BITSW << add_shift | ADD_PHASE3L << add_shift | buf[15]);
--	config.phase3[1] = (CMD_PHA16BITSW << add_shift | ADD_PHASE3H << add_shift | buf[16]);
--
--	xfer.len = 2 * len;
--	xfer.tx_buf = &config;
--	mutex_lock(&st->lock);
--
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfer, &msg);
--	ret = spi_sync(st->sdev, &msg);
--	if (ret)
--		goto error_ret;
--error_ret:
--	mutex_unlock(&st->lock);
-+	unsigned long long freqreg = (u64) fout *
-+				     (u64) ((u64) 1L << AD9832_FREQ_BITS);
-+	do_div(freqreg, mclk);
-+	return freqreg;
-+}
- 
--	return ret ? ret : len;
-+static int ad9832_write_frequency(struct ad9832_state *st,
-+				  unsigned addr, unsigned long fout)
++#include <linux/gpio.h>
++#include <linux/delay.h>
++
++#include "../iio.h"
++#include "../sysfs.h"
++#include "../ring_generic.h"
++#include "adc.h"
++
++#include "ad7606.h"
++
++int ad7606_reset(struct ad7606_state *st)
 +{
-+	unsigned long regval;
-+
-+	if (fout > (st->mclk / 2))
-+		return -EINVAL;
-+
-+	regval = ad9832_calc_freqreg(st->mclk, fout);
-+
-+	st->freq_data[0] = cpu_to_be16((AD9832_CMD_FRE8BITSW << CMD_SHIFT) |
-+					(addr << ADD_SHIFT) |
-+					((regval >> 24) & 0xFF));
-+	st->freq_data[1] = cpu_to_be16((AD9832_CMD_FRE16BITSW << CMD_SHIFT) |
-+					((addr - 1) << ADD_SHIFT) |
-+					((regval >> 16) & 0xFF));
-+	st->freq_data[2] = cpu_to_be16((AD9832_CMD_FRE8BITSW << CMD_SHIFT) |
-+					((addr - 2) << ADD_SHIFT) |
-+					((regval >> 8) & 0xFF));
-+	st->freq_data[3] = cpu_to_be16((AD9832_CMD_FRE16BITSW << CMD_SHIFT) |
-+					((addr - 3) << ADD_SHIFT) |
-+					((regval >> 0) & 0xFF));
-+
-+	return spi_sync(st->spi, &st->freq_msg);;
- }
- 
--static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad9832_set_parameter, 0);
-+static int ad9832_write_phase(struct ad9832_state *st,
-+				  unsigned long addr, unsigned long phase)
-+{
-+	if (phase > (1 << AD9832_PHASE_BITS))
-+		return -EINVAL;
- 
--static struct attribute *ad9832_attributes[] = {
--	&iio_dev_attr_dds.dev_attr.attr,
--	NULL,
--};
-+	st->phase_data[0] = cpu_to_be16((AD9832_CMD_PHA8BITSW << CMD_SHIFT) |
-+					(addr << ADD_SHIFT) |
-+					((phase >> 8) & 0xFF));
-+	st->phase_data[1] = cpu_to_be16((AD9832_CMD_PHA16BITSW << CMD_SHIFT) |
-+					((addr - 1) << ADD_SHIFT) |
-+					(phase & 0xFF));
- 
--static const struct attribute_group ad9832_attribute_group = {
--	.name = DRV_NAME,
--	.attrs = ad9832_attributes,
--};
-+	return spi_sync(st->spi, &st->phase_msg);
-+}
- 
--static void ad9832_init(struct ad9832_state *st)
-+static ssize_t ad9832_write(struct device *dev,
-+		struct device_attribute *attr,
-+		const char *buf,
-+		size_t len)
- {
--	struct spi_message msg;
--	struct spi_transfer xfer;
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad9832_state *st = dev_info->dev_data;
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int ret;
--	u16 config = 0;
--
--	config = 0x3 << 14 | AD9832_SLEEP | AD9832_RESET | AD9832_CLR;
-+	long val;
- 
--	mutex_lock(&st->lock);
--
--	xfer.len = 2;
--	xfer.tx_buf = &config;
--
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfer, &msg);
--	ret = spi_sync(st->sdev, &msg);
-+	ret = strict_strtoul(buf, 10, &val);
- 	if (ret)
- 		goto error_ret;
- 
--	config = 0x2 << 14 | AD9832_SYNC | AD9832_SELSRC;
--	xfer.len = 2;
--	xfer.tx_buf = &config;
-+	mutex_lock(&dev_info->mlock);
-+	switch (this_attr->address) {
-+	case AD9832_FREQ0HM:
-+	case AD9832_FREQ1HM:
-+		ret = ad9832_write_frequency(st, this_attr->address, val);
-+		break;
-+	case AD9832_PHASE0H:
-+	case AD9832_PHASE1H:
-+	case AD9832_PHASE2H:
-+	case AD9832_PHASE3H:
-+		ret = ad9832_write_phase(st, this_attr->address, val);
-+		break;
-+	case AD9832_PINCTRL_EN:
-+		if (val)
-+			st->ctrl_ss &= ~AD9832_SELSRC;
-+		else
-+			st->ctrl_ss |= AD9832_SELSRC;
-+		st->data = cpu_to_be16((AD9832_CMD_SYNCSELSRC << CMD_SHIFT) |
-+					st->ctrl_ss);
-+		ret = spi_sync(st->spi, &st->msg);
-+		break;
-+	case AD9832_FREQ_SYM:
-+		if (val == 1)
-+			st->ctrl_fp |= AD9832_FREQ;
-+		else if (val == 0)
-+			st->ctrl_fp &= ~AD9832_FREQ;
-+		else {
-+			ret = -EINVAL;
-+			break;
-+		}
-+		st->data = cpu_to_be16((AD9832_CMD_FPSELECT << CMD_SHIFT) |
-+					st->ctrl_fp);
-+		ret = spi_sync(st->spi, &st->msg);
-+		break;
-+	case AD9832_PHASE_SYM:
-+		if (val < 0 || val > 3) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+
-+		st->ctrl_fp &= ~AD9832_PHASE(3);
-+		st->ctrl_fp |= AD9832_PHASE(val);
-+
-+		st->data = cpu_to_be16((AD9832_CMD_FPSELECT << CMD_SHIFT) |
-+					st->ctrl_fp);
-+		ret = spi_sync(st->spi, &st->msg);
-+		break;
-+	case AD9832_OUTPUT_EN:
-+		if (val)
-+			st->ctrl_src &= ~(AD9832_RESET | AD9832_SLEEP |
-+					AD9832_CLR);
-+		else
-+			st->ctrl_src |= AD9832_RESET;
-+
-+		st->data = cpu_to_be16((AD9832_CMD_SLEEPRESCLR << CMD_SHIFT) |
-+					st->ctrl_src);
-+		ret = spi_sync(st->spi, &st->msg);
-+		break;
-+	default:
-+		ret = -ENODEV;
++	if (st->have_reset) {
++		gpio_set_value(st->pdata->gpio_reset, 1);
++		ndelay(100); /* t_reset >= 100ns */
++		gpio_set_value(st->pdata->gpio_reset, 0);
++		return 0;
 +	}
-+	mutex_unlock(&dev_info->mlock);
- 
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfer, &msg);
--	ret = spi_sync(st->sdev, &msg);
--	if (ret)
--		goto error_ret;
-+error_ret:
-+	return ret ? ret : len;
++
++	return -ENODEV;
 +}
- 
--	config = CMD_SELBITSCTL << cmd_shift;
--	xfer.len = 2;
--	xfer.tx_buf = &config;
-+static ssize_t ad9832_show_name(struct device *dev,
++
++static int ad7606_scan_direct(struct ad7606_state *st, unsigned ch)
++{
++	int ret;
++
++	gpio_set_value(st->pdata->gpio_convst, 1);
++	st->done = false;
++
++	ret = wait_event_interruptible(st->wq_data_avail, st->done);
++	if (ret)
++		goto error_ret;
++
++	if (st->have_frstdata) {
++		st->bops->read_block(st->dev, 1, st->data);
++		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
++			/* This should never happen */
++			ad7606_reset(st);
++			ret = -EIO;
++			goto error_ret;
++		}
++		st->bops->read_block(st->dev,
++			st->chip_info->num_channels - 1, &st->data[1]);
++	} else {
++		st->bops->read_block(st->dev,
++			st->chip_info->num_channels, st->data);
++	}
++
++	ret = st->data[ch];
++
++error_ret:
++	gpio_set_value(st->pdata->gpio_convst, 0);
++
++	return ret;
++}
++
++static ssize_t ad7606_scan(struct device *dev,
++			    struct device_attribute *attr,
++			    char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7606_state *st = dev_info->dev_data;
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	int ret;
++
++	mutex_lock(&dev_info->mlock);
++	if (iio_ring_enabled(dev_info))
++		ret = ad7606_scan_from_ring(st, this_attr->address);
++	else
++		ret = ad7606_scan_direct(st, this_attr->address);
++	mutex_unlock(&dev_info->mlock);
++
++	if (ret < 0)
++		return ret;
++
++	return sprintf(buf, "%d\n", (short) ret);
++}
++
++static IIO_DEV_ATTR_IN_RAW(0, ad7606_scan, 0);
++static IIO_DEV_ATTR_IN_RAW(1, ad7606_scan, 1);
++static IIO_DEV_ATTR_IN_RAW(2, ad7606_scan, 2);
++static IIO_DEV_ATTR_IN_RAW(3, ad7606_scan, 3);
++static IIO_DEV_ATTR_IN_RAW(4, ad7606_scan, 4);
++static IIO_DEV_ATTR_IN_RAW(5, ad7606_scan, 5);
++static IIO_DEV_ATTR_IN_RAW(6, ad7606_scan, 6);
++static IIO_DEV_ATTR_IN_RAW(7, ad7606_scan, 7);
++
++static ssize_t ad7606_show_scale(struct device *dev,
++				struct device_attribute *attr,
++				char *buf)
++{
++	/* Driver currently only support internal vref */
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7606_state *st = iio_dev_get_devdata(dev_info);
++	unsigned int scale_uv = (st->range * 1000 * 2) >> st->chip_info->bits;
++
++	return sprintf(buf, "%d.%03d\n", scale_uv / 1000, scale_uv % 1000);
++}
++static IIO_DEVICE_ATTR(in_scale, S_IRUGO, ad7606_show_scale, NULL, 0);
++
++static ssize_t ad7606_show_name(struct device *dev,
 +				 struct device_attribute *attr,
 +				 char *buf)
 +{
 +	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad9832_state *st = iio_dev_get_devdata(dev_info);
- 
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfer, &msg);
--	ret = spi_sync(st->sdev, &msg);
--	if (ret)
--		goto error_ret;
-+	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
++	struct ad7606_state *st = iio_dev_get_devdata(dev_info);
++
++	return sprintf(buf, "%s\n", st->chip_info->name);
 +}
-+static IIO_DEVICE_ATTR(name, S_IRUGO, ad9832_show_name, NULL, 0);
- 
--	config = 0x3 << 14;
-+/**
-+ * see dds.h for further information
-+ */
- 
--	xfer.len = 2;
--	xfer.tx_buf = &config;
-+static IIO_DEV_ATTR_FREQ(0, 0, S_IWUSR, NULL, ad9832_write, AD9832_FREQ0HM);
-+static IIO_DEV_ATTR_FREQ(0, 1, S_IWUSR, NULL, ad9832_write, AD9832_FREQ1HM);
-+static IIO_DEV_ATTR_FREQSYMBOL(0, S_IWUSR, NULL, ad9832_write, AD9832_FREQ_SYM);
-+static IIO_CONST_ATTR_FREQ_SCALE(0, "1"); /* 1Hz */
- 
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfer, &msg);
--	ret = spi_sync(st->sdev, &msg);
--	if (ret)
--		goto error_ret;
--error_ret:
--	mutex_unlock(&st->lock);
-+static IIO_DEV_ATTR_PHASE(0, 0, S_IWUSR, NULL, ad9832_write, AD9832_PHASE0H);
-+static IIO_DEV_ATTR_PHASE(0, 1, S_IWUSR, NULL, ad9832_write, AD9832_PHASE1H);
-+static IIO_DEV_ATTR_PHASE(0, 2, S_IWUSR, NULL, ad9832_write, AD9832_PHASE2H);
-+static IIO_DEV_ATTR_PHASE(0, 3, S_IWUSR, NULL, ad9832_write, AD9832_PHASE3H);
-+static IIO_DEV_ATTR_PHASESYMBOL(0, S_IWUSR, NULL,
-+				ad9832_write, AD9832_PHASE_SYM);
-+static IIO_CONST_ATTR_PHASE_SCALE(0, "0.0015339808"); /* 2PI/2^12 rad*/
- 
-+static IIO_DEV_ATTR_PINCONTROL_EN(0, S_IWUSR, NULL,
-+				ad9832_write, AD9832_PINCTRL_EN);
-+static IIO_DEV_ATTR_OUT_ENABLE(0, S_IWUSR, NULL,
-+				ad9832_write, AD9832_OUTPUT_EN);
- 
-+static struct attribute *ad9832_attributes[] = {
-+	&iio_dev_attr_dds0_freq0.dev_attr.attr,
-+	&iio_dev_attr_dds0_freq1.dev_attr.attr,
-+	&iio_const_attr_dds0_freq_scale.dev_attr.attr,
-+	&iio_dev_attr_dds0_phase0.dev_attr.attr,
-+	&iio_dev_attr_dds0_phase1.dev_attr.attr,
-+	&iio_dev_attr_dds0_phase2.dev_attr.attr,
-+	&iio_dev_attr_dds0_phase3.dev_attr.attr,
-+	&iio_const_attr_dds0_phase_scale.dev_attr.attr,
-+	&iio_dev_attr_dds0_pincontrol_en.dev_attr.attr,
-+	&iio_dev_attr_dds0_freqsymbol.dev_attr.attr,
-+	&iio_dev_attr_dds0_phasesymbol.dev_attr.attr,
-+	&iio_dev_attr_dds0_out_enable.dev_attr.attr,
-+	&iio_dev_attr_name.dev_attr.attr,
-+	NULL,
-+};
- 
--}
-+static const struct attribute_group ad9832_attribute_group = {
-+	.attrs = ad9832_attributes,
-+};
- 
- static int __devinit ad9832_probe(struct spi_device *spi)
- {
-+	struct ad9832_platform_data *pdata = spi->dev.platform_data;
- 	struct ad9832_state *st;
--	int ret = 0;
++
++static IIO_DEVICE_ATTR(name, S_IRUGO, ad7606_show_name, NULL, 0);
++
++static ssize_t ad7606_show_range(struct device *dev,
++			struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7606_state *st = iio_dev_get_devdata(dev_info);
++
++	return sprintf(buf, "%u\n", st->range);
++}
++
++static ssize_t ad7606_store_range(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t count)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7606_state *st = iio_dev_get_devdata(dev_info);
++	unsigned long lval;
++
++	if (strict_strtoul(buf, 10, &lval))
++		return -EINVAL;
++	if (!(lval == 5000 || lval == 10000)) {
++		dev_err(dev, "range is not supported\n");
++		return -EINVAL;
++	}
++	mutex_lock(&dev_info->mlock);
++	gpio_set_value(st->pdata->gpio_range, lval == 10000);
++	st->range = lval;
++	mutex_unlock(&dev_info->mlock);
++
++	return count;
++}
++
++static IIO_DEVICE_ATTR(range, S_IRUGO | S_IWUSR, \
++		       ad7606_show_range, ad7606_store_range, 0);
++static IIO_CONST_ATTR(range_available, "5000 10000");
++
++static ssize_t ad7606_show_oversampling_ratio(struct device *dev,
++			struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7606_state *st = iio_dev_get_devdata(dev_info);
++
++	return sprintf(buf, "%u\n", st->oversampling);
++}
++
++static int ad7606_oversampling_get_index(unsigned val)
++{
++	unsigned char supported[] = {0, 2, 4, 8, 16, 32, 64};
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(supported); i++)
++		if (val == supported[i])
++			return i;
++
++	return -EINVAL;
++}
++
++static ssize_t ad7606_store_oversampling_ratio(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t count)
++{
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7606_state *st = iio_dev_get_devdata(dev_info);
++	unsigned long lval;
 +	int ret;
 +
-+	if (!pdata) {
-+		dev_dbg(&spi->dev, "no platform data?\n");
-+		return -ENODEV;
-+	}
- 
- 	st = kzalloc(sizeof(*st), GFP_KERNEL);
- 	if (st == NULL) {
- 		ret = -ENOMEM;
- 		goto error_ret;
- 	}
++	if (strict_strtoul(buf, 10, &lval))
++		return -EINVAL;
 +
-+	st->reg = regulator_get(&spi->dev, "vcc");
++	ret = ad7606_oversampling_get_index(lval);
++	if (ret < 0) {
++		dev_err(dev, "oversampling %lu is not supported\n", lval);
++		return ret;
++	}
++
++	mutex_lock(&dev_info->mlock);
++	gpio_set_value(st->pdata->gpio_os0, (ret >> 0) & 1);
++	gpio_set_value(st->pdata->gpio_os1, (ret >> 1) & 1);
++	gpio_set_value(st->pdata->gpio_os1, (ret >> 2) & 1);
++	st->oversampling = lval;
++	mutex_unlock(&dev_info->mlock);
++
++	return count;
++}
++
++static IIO_DEVICE_ATTR(oversampling_ratio, S_IRUGO | S_IWUSR,
++		       ad7606_show_oversampling_ratio,
++		       ad7606_store_oversampling_ratio, 0);
++static IIO_CONST_ATTR(oversampling_ratio_available, "0 2 4 8 16 32 64");
++
++static struct attribute *ad7606_attributes[] = {
++	&iio_dev_attr_in0_raw.dev_attr.attr,
++	&iio_dev_attr_in1_raw.dev_attr.attr,
++	&iio_dev_attr_in2_raw.dev_attr.attr,
++	&iio_dev_attr_in3_raw.dev_attr.attr,
++	&iio_dev_attr_in4_raw.dev_attr.attr,
++	&iio_dev_attr_in5_raw.dev_attr.attr,
++	&iio_dev_attr_in6_raw.dev_attr.attr,
++	&iio_dev_attr_in7_raw.dev_attr.attr,
++	&iio_dev_attr_in_scale.dev_attr.attr,
++	&iio_dev_attr_name.dev_attr.attr,
++	&iio_dev_attr_range.dev_attr.attr,
++	&iio_const_attr_range_available.dev_attr.attr,
++	&iio_dev_attr_oversampling_ratio.dev_attr.attr,
++	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
++	NULL,
++};
++
++static mode_t ad7606_attr_is_visible(struct kobject *kobj,
++				     struct attribute *attr, int n)
++{
++	struct device *dev = container_of(kobj, struct device, kobj);
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad7606_state *st = iio_dev_get_devdata(dev_info);
++
++	mode_t mode = attr->mode;
++
++	if (st->chip_info->num_channels <= 6 &&
++		(attr == &iio_dev_attr_in7_raw.dev_attr.attr ||
++		attr == &iio_dev_attr_in6_raw.dev_attr.attr))
++		mode = 0;
++	else if (st->chip_info->num_channels <= 4 &&
++		(attr == &iio_dev_attr_in5_raw.dev_attr.attr ||
++		attr == &iio_dev_attr_in4_raw.dev_attr.attr))
++		mode = 0;
++	else if (!st->have_os &&
++		(attr == &iio_dev_attr_oversampling_ratio.dev_attr.attr ||
++		attr ==
++		&iio_const_attr_oversampling_ratio_available.dev_attr.attr))
++		mode = 0;
++	else if (!st->have_range &&
++		(attr == &iio_dev_attr_range.dev_attr.attr ||
++		attr == &iio_const_attr_range_available.dev_attr.attr))
++			mode = 0;
++
++	return mode;
++}
++
++static const struct attribute_group ad7606_attribute_group = {
++	.attrs = ad7606_attributes,
++	.is_visible = ad7606_attr_is_visible,
++};
++
++static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
++	/*
++	 * More devices added in future
++	 */
++	[ID_AD7606_8] = {
++		.name = "ad7606",
++		.bits = 16,
++		.sign = IIO_SCAN_EL_TYPE_SIGNED,
++		.int_vref_mv = 2500,
++		.num_channels = 8,
++	},
++	[ID_AD7606_6] = {
++		.name = "ad7606-6",
++		.bits = 16,
++		.sign = IIO_SCAN_EL_TYPE_SIGNED,
++		.int_vref_mv = 2500,
++		.num_channels = 6,
++	},
++	[ID_AD7606_4] = {
++		.name = "ad7606-4",
++		.bits = 16,
++		.sign = IIO_SCAN_EL_TYPE_SIGNED,
++		.int_vref_mv = 2500,
++		.num_channels = 4,
++	},
++};
++
++static int ad7606_request_gpios(struct ad7606_state *st)
++{
++	struct gpio gpio_array[3] = {
++		[0] = {
++			.gpio =  st->pdata->gpio_os0,
++			.flags = GPIOF_DIR_OUT | ((st->oversampling & 1) ?
++				 GPIOF_INIT_HIGH : GPIOF_INIT_LOW),
++			.label = "AD7606_OS0",
++		},
++		[1] = {
++			.gpio =  st->pdata->gpio_os1,
++			.flags = GPIOF_DIR_OUT | ((st->oversampling & 2) ?
++				 GPIOF_INIT_HIGH : GPIOF_INIT_LOW),
++			.label = "AD7606_OS1",
++		},
++		[2] = {
++			.gpio =  st->pdata->gpio_os2,
++			.flags = GPIOF_DIR_OUT | ((st->oversampling & 4) ?
++				 GPIOF_INIT_HIGH : GPIOF_INIT_LOW),
++			.label = "AD7606_OS2",
++		},
++	};
++	int ret;
++
++	ret = gpio_request_one(st->pdata->gpio_convst, GPIOF_OUT_INIT_LOW,
++			       "AD7606_CONVST");
++	if (ret) {
++		dev_err(st->dev, "failed to request GPIO CONVST\n");
++		return ret;
++	}
++
++	ret = gpio_request_array(gpio_array, ARRAY_SIZE(gpio_array));
++	if (!ret) {
++		st->have_os = true;
++	}
++
++	ret = gpio_request_one(st->pdata->gpio_reset, GPIOF_OUT_INIT_LOW,
++			       "AD7606_RESET");
++	if (!ret)
++		st->have_reset = true;
++
++	ret = gpio_request_one(st->pdata->gpio_range, GPIOF_DIR_OUT |
++			       ((st->range == 10000) ? GPIOF_INIT_HIGH :
++			       	GPIOF_INIT_LOW), "AD7606_RANGE");
++	if (!ret)
++		st->have_range = true;
++
++	ret = gpio_request_one(st->pdata->gpio_stby, GPIOF_OUT_INIT_HIGH,
++			       "AD7606_STBY");
++	if (!ret)
++		st->have_stby = true;
++
++	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
++		ret = gpio_request_one(st->pdata->gpio_frstdata, GPIOF_IN,
++				       "AD7606_FRSTDATA");
++		if (!ret)
++			st->have_frstdata = true;
++	}
++
++	return 0;
++}
++
++static void ad7606_free_gpios(struct ad7606_state *st)
++{
++	if (st->have_range)
++		gpio_free(st->pdata->gpio_range);
++
++	if (st->have_stby)
++		gpio_free(st->pdata->gpio_stby);
++
++	if (st->have_os) {
++		gpio_free(st->pdata->gpio_os0);
++		gpio_free(st->pdata->gpio_os1);
++		gpio_free(st->pdata->gpio_os2);
++	}
++
++	if (st->have_reset)
++		gpio_free(st->pdata->gpio_reset);
++
++	if (st->have_frstdata)
++		gpio_free(st->pdata->gpio_frstdata);
++
++	gpio_free(st->pdata->gpio_convst);
++}
++
++/**
++ *  Interrupt handler
++ */
++static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
++{
++	struct ad7606_state *st = dev_id;
++
++	if (iio_ring_enabled(st->indio_dev)) {
++		if (!work_pending(&st->poll_work))
++			schedule_work(&st->poll_work);
++	} else {
++		st->done = true;
++		wake_up_interruptible(&st->wq_data_avail);
++	}
++
++	return IRQ_HANDLED;
++};
++
++struct ad7606_state *ad7606_probe(struct device *dev, int irq,
++			      void __iomem *base_address,
++			      unsigned id,
++			      const struct ad7606_bus_ops *bops)
++{
++	struct ad7606_platform_data *pdata = dev->platform_data;
++	struct ad7606_state *st;
++	int ret;
++
++	st = kzalloc(sizeof(*st), GFP_KERNEL);
++	if (st == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++
++	st->dev = dev;
++	st->id = id;
++	st->irq = irq;
++	st->bops = bops;
++	st->base_address = base_address;
++	st->range = pdata->default_range == 10000 ? 10000 : 5000;
++
++	ret = ad7606_oversampling_get_index(pdata->default_os);
++	if (ret < 0) {
++		dev_warn(dev, "oversampling %d is not supported\n",
++			 pdata->default_os);
++		st->oversampling = 0;
++	} else {
++		st->oversampling = pdata->default_os;
++	}
++
++	st->reg = regulator_get(dev, "vcc");
 +	if (!IS_ERR(st->reg)) {
 +		ret = regulator_enable(st->reg);
 +		if (ret)
 +			goto error_put_reg;
 +	}
 +
-+	st->mclk = pdata->mclk;
++	st->pdata = pdata;
++	st->chip_info = &ad7606_chip_info_tbl[id];
 +
- 	spi_set_drvdata(spi, st);
- 
--	mutex_init(&st->lock);
--	st->sdev = spi;
-+	st->spi = spi;
-+	st->devid = spi_get_device_id(spi)->driver_data;
- 
--	st->idev = iio_allocate_device();
--	if (st->idev == NULL) {
++	atomic_set(&st->protect_ring, 0);
++
 +	st->indio_dev = iio_allocate_device();
 +	if (st->indio_dev == NULL) {
- 		ret = -ENOMEM;
--		goto error_free_st;
++		ret = -ENOMEM;
 +		goto error_disable_reg;
- 	}
--	st->idev->dev.parent = &spi->dev;
--	st->idev->num_interrupt_lines = 0;
--	st->idev->event_attrs = NULL;
- 
--	st->idev->attrs = &ad9832_attribute_group;
--	st->idev->dev_data = (void *)(st);
--	st->idev->driver_module = THIS_MODULE;
--	st->idev->modes = INDIO_DIRECT_MODE;
-+	st->indio_dev->dev.parent = &spi->dev;
-+	st->indio_dev->attrs = &ad9832_attribute_group;
-+	st->indio_dev->dev_data = (void *) st;
++	}
++
++	st->indio_dev->dev.parent = dev;
++	st->indio_dev->attrs = &ad7606_attribute_group;
++	st->indio_dev->dev_data = (void *)(st);
 +	st->indio_dev->driver_module = THIS_MODULE;
 +	st->indio_dev->modes = INDIO_DIRECT_MODE;
 +
-+	/* Setup default messages */
++	init_waitqueue_head(&st->wq_data_avail);
 +
-+	st->xfer.tx_buf = &st->data;
-+	st->xfer.len = 2;
-+
-+	spi_message_init(&st->msg);
-+	spi_message_add_tail(&st->xfer, &st->msg);
-+
-+	st->freq_xfer[0].tx_buf = &st->freq_data[0];
-+	st->freq_xfer[0].len = 2;
-+	st->freq_xfer[0].cs_change = 1;
-+	st->freq_xfer[1].tx_buf = &st->freq_data[1];
-+	st->freq_xfer[1].len = 2;
-+	st->freq_xfer[1].cs_change = 1;
-+	st->freq_xfer[2].tx_buf = &st->freq_data[2];
-+	st->freq_xfer[2].len = 2;
-+	st->freq_xfer[2].cs_change = 1;
-+	st->freq_xfer[3].tx_buf = &st->freq_data[3];
-+	st->freq_xfer[3].len = 2;
-+
-+	spi_message_init(&st->freq_msg);
-+	spi_message_add_tail(&st->freq_xfer[0], &st->freq_msg);
-+	spi_message_add_tail(&st->freq_xfer[1], &st->freq_msg);
-+	spi_message_add_tail(&st->freq_xfer[2], &st->freq_msg);
-+	spi_message_add_tail(&st->freq_xfer[3], &st->freq_msg);
-+
-+	st->phase_xfer[0].tx_buf = &st->phase_data[0];
-+	st->phase_xfer[0].len = 2;
-+	st->phase_xfer[0].cs_change = 1;
-+	st->phase_xfer[1].tx_buf = &st->phase_data[1];
-+	st->phase_xfer[1].len = 2;
-+
-+	spi_message_init(&st->phase_msg);
-+	spi_message_add_tail(&st->phase_xfer[0], &st->phase_msg);
-+	spi_message_add_tail(&st->phase_xfer[1], &st->phase_msg);
-+
-+	st->ctrl_src = AD9832_SLEEP | AD9832_RESET | AD9832_CLR;
-+	st->data = cpu_to_be16((AD9832_CMD_SLEEPRESCLR << CMD_SHIFT) |
-+					st->ctrl_src);
-+	ret = spi_sync(st->spi, &st->msg);
-+	if (ret) {
-+		dev_err(&spi->dev, "device init failed\n");
-+		goto error_free_device;
-+	}
- 
--	ret = iio_device_register(st->idev);
-+	ret = ad9832_write_frequency(st, AD9832_FREQ0HM, pdata->freq0);
- 	if (ret)
--		goto error_free_dev;
--	spi->max_speed_hz = 2000000;
--	spi->mode = SPI_MODE_3;
--	spi->bits_per_word = 16;
--	spi_setup(spi);
--	ad9832_init(st);
-+		goto error_free_device;
-+
-+	ret = ad9832_write_frequency(st, AD9832_FREQ1HM, pdata->freq1);
++	ret = ad7606_request_gpios(st);
 +	if (ret)
 +		goto error_free_device;
 +
-+	ret = ad9832_write_phase(st, AD9832_PHASE0H, pdata->phase0);
++	ret = ad7606_reset(st);
 +	if (ret)
-+		goto error_free_device;
++		dev_warn(st->dev, "failed to RESET: no RESET GPIO specified\n");
 +
-+	ret = ad9832_write_phase(st, AD9832_PHASE1H, pdata->phase1);
++	ret = request_irq(st->irq, ad7606_interrupt,
++		IRQF_TRIGGER_FALLING, st->chip_info->name, st);
 +	if (ret)
-+		goto error_free_device;
++		goto error_free_gpios;
 +
-+	ret = ad9832_write_phase(st, AD9832_PHASE2H, pdata->phase2);
++	ret = ad7606_register_ring_funcs_and_init(st->indio_dev);
 +	if (ret)
-+		goto error_free_device;
-+
-+	ret = ad9832_write_phase(st, AD9832_PHASE3H, pdata->phase3);
-+	if (ret)
-+		goto error_free_device;
++		goto error_free_irq;
 +
 +	ret = iio_device_register(st->indio_dev);
 +	if (ret)
-+		goto error_free_device;
++		goto error_free_irq;
 +
- 	return 0;
- 
--error_free_dev:
--	iio_free_device(st->idev);
--error_free_st:
++	ret = iio_ring_buffer_register(st->indio_dev->ring, 0);
++	if (ret)
++		goto error_cleanup_ring;
++
++	return st;
++
++error_cleanup_ring:
++	ad7606_ring_cleanup(st->indio_dev);
++	iio_device_unregister(st->indio_dev);
++
++error_free_irq:
++	free_irq(st->irq, st);
++
++error_free_gpios:
++	ad7606_free_gpios(st);
++
 +error_free_device:
 +	iio_free_device(st->indio_dev);
++
 +error_disable_reg:
 +	if (!IS_ERR(st->reg))
 +		regulator_disable(st->reg);
 +error_put_reg:
 +	if (!IS_ERR(st->reg))
 +		regulator_put(st->reg);
- 	kfree(st);
- error_ret:
- 	return ret;
-@@ -232,33 +345,45 @@ static int __devexit ad9832_remove(struct spi_device *spi)
- {
- 	struct ad9832_state *st = spi_get_drvdata(spi);
- 
--	iio_device_unregister(st->idev);
-+	iio_device_unregister(st->indio_dev);
++	kfree(st);
++error_ret:
++	return ERR_PTR(ret);
++}
++
++int ad7606_remove(struct ad7606_state *st)
++{
++	struct iio_dev *indio_dev = st->indio_dev;
++	iio_ring_buffer_unregister(indio_dev->ring);
++	ad7606_ring_cleanup(indio_dev);
++	iio_device_unregister(indio_dev);
++	free_irq(st->irq, st);
 +	if (!IS_ERR(st->reg)) {
 +		regulator_disable(st->reg);
 +		regulator_put(st->reg);
 +	}
- 	kfree(st);
--
- 	return 0;
- }
- 
-+static const struct spi_device_id ad9832_id[] = {
-+	{"ad9832", ID_AD9832},
-+	{"ad9835", ID_AD9835},
++
++	ad7606_free_gpios(st);
++
++	kfree(st);
++	return 0;
++}
++
++void ad7606_suspend(struct ad7606_state *st)
++{
++	if (st->have_stby) {
++		if (st->have_range)
++			gpio_set_value(st->pdata->gpio_range, 1);
++		gpio_set_value(st->pdata->gpio_stby, 0);
++	}
++}
++
++void ad7606_resume(struct ad7606_state *st)
++{
++	if (st->have_stby) {
++		if (st->have_range)
++			gpio_set_value(st->pdata->gpio_range,
++					st->range == 10000);
++
++		gpio_set_value(st->pdata->gpio_stby, 1);
++		ad7606_reset(st);
++	}
++}
++
++MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
++MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
+new file mode 100644
+index 0000000..43a554c
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7606_par.c
+@@ -0,0 +1,188 @@
++/*
++ * AD7606 Parallel Interface ADC driver
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/types.h>
++#include <linux/err.h>
++#include <linux/io.h>
++
++#include "ad7606.h"
++
++static int ad7606_par16_read_block(struct device *dev,
++				 int count, void *buf)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct ad7606_state *st = platform_get_drvdata(pdev);
++
++	insw((unsigned long) st->base_address, buf, count);
++
++	return 0;
++}
++
++static const struct ad7606_bus_ops ad7606_par16_bops = {
++	.read_block	= ad7606_par16_read_block,
++};
++
++static int ad7606_par8_read_block(struct device *dev,
++				 int count, void *buf)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct ad7606_state *st = platform_get_drvdata(pdev);
++
++	insb((unsigned long) st->base_address, buf, count * 2);
++
++	return 0;
++}
++
++static const struct ad7606_bus_ops ad7606_par8_bops = {
++	.read_block	= ad7606_par8_read_block,
++};
++
++static int __devinit ad7606_par_probe(struct platform_device *pdev)
++{
++	struct resource *res;
++	struct ad7606_state *st;
++	void __iomem *addr;
++	resource_size_t remap_size;
++	int ret, irq;
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		dev_err(&pdev->dev, "no irq\n");
++		return -ENODEV;
++	}
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -ENODEV;
++
++	remap_size = resource_size(res);
++
++	/* Request the regions */
++	if (!request_mem_region(res->start, remap_size, "iio-ad7606")) {
++		ret = -EBUSY;
++		goto out1;
++	}
++	addr = ioremap(res->start, remap_size);
++	if (!addr) {
++		ret = -ENOMEM;
++		goto out1;
++	}
++
++	st = ad7606_probe(&pdev->dev, irq, addr,
++			  platform_get_device_id(pdev)->driver_data,
++			  remap_size > 1 ? &ad7606_par16_bops :
++			  &ad7606_par8_bops);
++
++	if (IS_ERR(st))  {
++		ret = PTR_ERR(st);
++		goto out2;
++	}
++
++	platform_set_drvdata(pdev, st);
++
++	return 0;
++
++out2:
++	iounmap(addr);
++out1:
++	release_mem_region(res->start, remap_size);
++
++	return ret;
++}
++
++static int __devexit ad7606_par_remove(struct platform_device *pdev)
++{
++	struct ad7606_state *st = platform_get_drvdata(pdev);
++	struct resource *res;
++
++	ad7606_remove(st);
++
++	iounmap(st->base_address);
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	release_mem_region(res->start, resource_size(res));
++
++	platform_set_drvdata(pdev, NULL);
++
++	return 0;
++}
++
++#ifdef CONFIG_PM
++static int ad7606_par_suspend(struct device *dev)
++{
++	struct ad7606_state *st = dev_get_drvdata(dev);
++
++	ad7606_suspend(st);
++
++	return 0;
++}
++
++static int ad7606_par_resume(struct device *dev)
++{
++	struct ad7606_state *st = dev_get_drvdata(dev);
++
++	ad7606_resume(st);
++
++	return 0;
++}
++
++static const struct dev_pm_ops ad7606_pm_ops = {
++	.suspend = ad7606_par_suspend,
++	.resume  = ad7606_par_resume,
++};
++#define AD7606_PAR_PM_OPS (&ad7606_pm_ops)
++
++#else
++#define AD7606_PAR_PM_OPS NULL
++#endif  /* CONFIG_PM */
++
++static struct platform_device_id ad7606_driver_ids[] = {
++	{
++		.name		= "ad7606-8",
++		.driver_data	= ID_AD7606_8,
++	}, {
++		.name		= "ad7606-6",
++		.driver_data	= ID_AD7606_6,
++	}, {
++		.name		= "ad7606-4",
++		.driver_data	= ID_AD7606_4,
++	},
++	{ }
++};
++
++MODULE_DEVICE_TABLE(platform, ad7606_driver_ids);
++
++static struct platform_driver ad7606_driver = {
++	.probe = ad7606_par_probe,
++	.remove	= __devexit_p(ad7606_par_remove),
++	.id_table = ad7606_driver_ids,
++	.driver = {
++		.name	 = "ad7606",
++		.owner	= THIS_MODULE,
++		.pm    = AD7606_PAR_PM_OPS,
++	},
++};
++
++static int __init ad7606_init(void)
++{
++	return platform_driver_register(&ad7606_driver);
++}
++
++static void __exit ad7606_cleanup(void)
++{
++	platform_driver_unregister(&ad7606_driver);
++}
++
++module_init(ad7606_init);
++module_exit(ad7606_cleanup);
++
++MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
++MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("platform:ad7606_par");
+diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+new file mode 100644
+index 0000000..3506ef6
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7606_ring.c
+@@ -0,0 +1,259 @@
++/*
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ *
++ */
++
++#include <linux/interrupt.h>
++#include <linux/gpio.h>
++#include <linux/workqueue.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++
++#include "../iio.h"
++#include "../ring_generic.h"
++#include "../ring_sw.h"
++#include "../trigger.h"
++#include "../sysfs.h"
++
++#include "ad7606.h"
++
++static IIO_SCAN_EL_C(in0, 0, 0, NULL);
++static IIO_SCAN_EL_C(in1, 1, 0, NULL);
++static IIO_SCAN_EL_C(in2, 2, 0, NULL);
++static IIO_SCAN_EL_C(in3, 3, 0, NULL);
++static IIO_SCAN_EL_C(in4, 4, 0, NULL);
++static IIO_SCAN_EL_C(in5, 5, 0, NULL);
++static IIO_SCAN_EL_C(in6, 6, 0, NULL);
++static IIO_SCAN_EL_C(in7, 7, 0, NULL);
++
++static ssize_t ad7606_show_type(struct device *dev,
++				struct device_attribute *attr,
++				char *buf)
++{
++	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = ring->indio_dev;
++	struct ad7606_state *st = indio_dev->dev_data;
++
++	return sprintf(buf, "%c%d/%d\n", st->chip_info->sign,
++		       st->chip_info->bits, st->chip_info->bits);
++}
++static IIO_DEVICE_ATTR(in_type, S_IRUGO, ad7606_show_type, NULL, 0);
++
++static struct attribute *ad7606_scan_el_attrs[] = {
++	&iio_scan_el_in0.dev_attr.attr,
++	&iio_const_attr_in0_index.dev_attr.attr,
++	&iio_scan_el_in1.dev_attr.attr,
++	&iio_const_attr_in1_index.dev_attr.attr,
++	&iio_scan_el_in2.dev_attr.attr,
++	&iio_const_attr_in2_index.dev_attr.attr,
++	&iio_scan_el_in3.dev_attr.attr,
++	&iio_const_attr_in3_index.dev_attr.attr,
++	&iio_scan_el_in4.dev_attr.attr,
++	&iio_const_attr_in4_index.dev_attr.attr,
++	&iio_scan_el_in5.dev_attr.attr,
++	&iio_const_attr_in5_index.dev_attr.attr,
++	&iio_scan_el_in6.dev_attr.attr,
++	&iio_const_attr_in6_index.dev_attr.attr,
++	&iio_scan_el_in7.dev_attr.attr,
++	&iio_const_attr_in7_index.dev_attr.attr,
++	&iio_dev_attr_in_type.dev_attr.attr,
++	NULL,
++};
++
++static mode_t ad7606_scan_el_attr_is_visible(struct kobject *kobj,
++				     struct attribute *attr, int n)
++{
++	struct device *dev = container_of(kobj, struct device, kobj);
++	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = ring->indio_dev;
++	struct ad7606_state *st = indio_dev->dev_data;
++
++	mode_t mode = attr->mode;
++
++	if (st->chip_info->num_channels <= 6 &&
++		(attr == &iio_scan_el_in7.dev_attr.attr ||
++		attr == &iio_const_attr_in7_index.dev_attr.attr ||
++		attr == &iio_scan_el_in6.dev_attr.attr ||
++		attr == &iio_const_attr_in6_index.dev_attr.attr))
++		mode = 0;
++	else if (st->chip_info->num_channels <= 4 &&
++		(attr == &iio_scan_el_in5.dev_attr.attr ||
++		attr == &iio_const_attr_in5_index.dev_attr.attr ||
++		attr == &iio_scan_el_in4.dev_attr.attr ||
++		attr == &iio_const_attr_in4_index.dev_attr.attr))
++		mode = 0;
++
++	return mode;
++}
++
++static struct attribute_group ad7606_scan_el_group = {
++	.name = "scan_elements",
++	.attrs = ad7606_scan_el_attrs,
++	.is_visible = ad7606_scan_el_attr_is_visible,
++};
++
++int ad7606_scan_from_ring(struct ad7606_state *st, unsigned ch)
++{
++	struct iio_ring_buffer *ring = st->indio_dev->ring;
++	int ret;
++	u16 *ring_data;
++
++	ring_data = kmalloc(ring->access.get_bytes_per_datum(ring), GFP_KERNEL);
++	if (ring_data == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++	ret = ring->access.read_last(ring, (u8 *) ring_data);
++	if (ret)
++		goto error_free_ring_data;
++
++	ret = ring_data[ch];
++
++error_free_ring_data:
++	kfree(ring_data);
++error_ret:
++	return ret;
++}
++
++/**
++ * ad7606_ring_preenable() setup the parameters of the ring before enabling
++ *
++ * The complex nature of the setting of the nuber of bytes per datum is due
++ * to this driver currently ensuring that the timestamp is stored at an 8
++ * byte boundary.
++ **/
++static int ad7606_ring_preenable(struct iio_dev *indio_dev)
++{
++	struct ad7606_state *st = indio_dev->dev_data;
++	struct iio_ring_buffer *ring = indio_dev->ring;
++	size_t d_size;
++
++	d_size = st->chip_info->num_channels *
++		 st->chip_info->bits / 8 + sizeof(s64);
++
++	if (d_size % sizeof(s64))
++		d_size += sizeof(s64) - (d_size % sizeof(s64));
++
++	if (ring->access.set_bytes_per_datum)
++		ring->access.set_bytes_per_datum(ring, d_size);
++
++	st->d_size = d_size;
++
++	return 0;
++}
++
++/**
++ * ad7606_poll_func_th() th of trigger launched polling to ring buffer
++ *
++ **/
++static void ad7606_poll_func_th(struct iio_dev *indio_dev, s64 time)
++{
++	struct ad7606_state *st = indio_dev->dev_data;
++	gpio_set_value(st->pdata->gpio_convst, 1);
++
++	return;
++}
++/**
++ * ad7606_poll_bh_to_ring() bh of trigger launched polling to ring buffer
++ * @work_s:	the work struct through which this was scheduled
++ *
++ * Currently there is no option in this driver to disable the saving of
++ * timestamps within the ring.
++ * I think the one copy of this at a time was to avoid problems if the
++ * trigger was set far too high and the reads then locked up the computer.
++ **/
++static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
++{
++	struct ad7606_state *st = container_of(work_s, struct ad7606_state,
++						poll_work);
++	struct iio_dev *indio_dev = st->indio_dev;
++	struct iio_sw_ring_buffer *sw_ring = iio_to_sw_ring(indio_dev->ring);
++	struct iio_ring_buffer *ring = indio_dev->ring;
++	s64 time_ns;
++	__u8 *buf;
++
++	/* Ensure only one copy of this function running at a time */
++	if (atomic_inc_return(&st->protect_ring) > 1)
++		return;
++
++	buf = kzalloc(st->d_size, GFP_KERNEL);
++	if (buf == NULL)
++		return;
++
++	if (st->have_frstdata) {
++		st->bops->read_block(st->dev, 1, buf);
++		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
++			/* This should never happen. However
++			 * some signal glitch caused by bad PCB desgin or
++			 * electrostatic discharge, could cause an extra read
++			 * or clock. This allows recovery.
++			 */
++			ad7606_reset(st);
++			goto done;
++		}
++		st->bops->read_block(st->dev,
++			st->chip_info->num_channels - 1, buf + 2);
++	} else {
++		st->bops->read_block(st->dev,
++			st->chip_info->num_channels, buf);
++	}
++
++	time_ns = iio_get_time_ns();
++	memcpy(buf + st->d_size - sizeof(s64), &time_ns, sizeof(time_ns));
++
++	ring->access.store_to(&sw_ring->buf, buf, time_ns);
++done:
++	gpio_set_value(st->pdata->gpio_convst, 0);
++	kfree(buf);
++	atomic_dec(&st->protect_ring);
++}
++
++int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
++{
++	struct ad7606_state *st = indio_dev->dev_data;
++	int ret;
++
++	indio_dev->ring = iio_sw_rb_allocate(indio_dev);
++	if (!indio_dev->ring) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++
++	/* Effectively select the ring buffer implementation */
++	iio_ring_sw_register_funcs(&indio_dev->ring->access);
++	ret = iio_alloc_pollfunc(indio_dev, NULL, &ad7606_poll_func_th);
++	if (ret)
++		goto error_deallocate_sw_rb;
++
++	/* Ring buffer functions - here trigger setup related */
++
++	indio_dev->ring->preenable = &ad7606_ring_preenable;
++	indio_dev->ring->postenable = &iio_triggered_ring_postenable;
++	indio_dev->ring->predisable = &iio_triggered_ring_predisable;
++	indio_dev->ring->scan_el_attrs = &ad7606_scan_el_group;
++
++	INIT_WORK(&st->poll_work, &ad7606_poll_bh_to_ring);
++
++	/* Flag that polled ring buffering is possible */
++	indio_dev->modes |= INDIO_RING_TRIGGERED;
++	return 0;
++error_deallocate_sw_rb:
++	iio_sw_rb_free(indio_dev->ring);
++error_ret:
++	return ret;
++}
++
++void ad7606_ring_cleanup(struct iio_dev *indio_dev)
++{
++	if (indio_dev->trig) {
++		iio_put_trigger(indio_dev->trig);
++		iio_trigger_dettach_poll_func(indio_dev->trig,
++					      indio_dev->pollfunc);
++	}
++	kfree(indio_dev->pollfunc);
++	iio_sw_rb_free(indio_dev->ring);
++}
+diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
+new file mode 100644
+index 0000000..d738491
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7606_spi.c
+@@ -0,0 +1,126 @@
++/*
++ * AD7606 SPI ADC driver
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/types.h>
++#include <linux/err.h>
++#include "ad7606.h"
++
++#define MAX_SPI_FREQ_HZ		23500000	/* VDRIVE above 4.75 V */
++
++static int ad7606_spi_read_block(struct device *dev,
++				 int count, void *buf)
++{
++	struct spi_device *spi = to_spi_device(dev);
++	int i, ret;
++	unsigned short *data = buf;
++
++	ret = spi_read(spi, (u8 *)buf, count * 2);
++	if (ret < 0) {
++		dev_err(&spi->dev, "SPI read error\n");
++		return ret;
++	}
++
++	for (i = 0; i < count; i++)
++		data[i] = be16_to_cpu(data[i]);
++
++	return 0;
++}
++
++static const struct ad7606_bus_ops ad7606_spi_bops = {
++	.read_block	= ad7606_spi_read_block,
++};
++
++static int __devinit ad7606_spi_probe(struct spi_device *spi)
++{
++	struct ad7606_state *st;
++
++	st = ad7606_probe(&spi->dev, spi->irq, NULL,
++			   spi_get_device_id(spi)->driver_data,
++			   &ad7606_spi_bops);
++
++	if (IS_ERR(st))
++		return PTR_ERR(st);
++
++	spi_set_drvdata(spi, st);
++
++	return 0;
++}
++
++static int __devexit ad7606_spi_remove(struct spi_device *spi)
++{
++	struct ad7606_state *st = dev_get_drvdata(&spi->dev);
++
++	return ad7606_remove(st);
++}
++
++#ifdef CONFIG_PM
++static int ad7606_spi_suspend(struct device *dev)
++{
++	struct ad7606_state *st = dev_get_drvdata(dev);
++
++	ad7606_suspend(st);
++
++	return 0;
++}
++
++static int ad7606_spi_resume(struct device *dev)
++{
++	struct ad7606_state *st = dev_get_drvdata(dev);
++
++	ad7606_resume(st);
++
++	return 0;
++}
++
++static const struct dev_pm_ops ad7606_pm_ops = {
++	.suspend = ad7606_spi_suspend,
++	.resume  = ad7606_spi_resume,
++};
++#define AD7606_SPI_PM_OPS (&ad7606_pm_ops)
++
++#else
++#define AD7606_SPI_PM_OPS NULL
++#endif
++
++static const struct spi_device_id ad7606_id[] = {
++	{"ad7606-8", ID_AD7606_8},
++	{"ad7606-6", ID_AD7606_6},
++	{"ad7606-4", ID_AD7606_4},
 +	{}
 +};
 +
- static struct spi_driver ad9832_driver = {
- 	.driver = {
--		.name = DRV_NAME,
--		.owner = THIS_MODULE,
-+		.name	= "ad9832",
-+		.bus	= &spi_bus_type,
-+		.owner	= THIS_MODULE,
- 	},
--	.probe = ad9832_probe,
--	.remove = __devexit_p(ad9832_remove),
-+	.probe		= ad9832_probe,
-+	.remove		= __devexit_p(ad9832_remove),
-+	.id_table	= ad9832_id,
- };
- 
--static __init int ad9832_spi_init(void)
-+static int __init ad9832_init(void)
- {
- 	return spi_register_driver(&ad9832_driver);
- }
--module_init(ad9832_spi_init);
-+module_init(ad9832_init);
- 
--static __exit void ad9832_spi_exit(void)
-+static void __exit ad9832_exit(void)
- {
- 	spi_unregister_driver(&ad9832_driver);
- }
--module_exit(ad9832_spi_exit);
-+module_exit(ad9832_exit);
- 
--MODULE_AUTHOR("Cliff Cai");
--MODULE_DESCRIPTION("Analog Devices ad9832 driver");
++static struct spi_driver ad7606_driver = {
++	.driver = {
++		.name = "ad7606",
++		.bus = &spi_bus_type,
++		.owner = THIS_MODULE,
++		.pm    = AD7606_SPI_PM_OPS,
++	},
++	.probe = ad7606_spi_probe,
++	.remove = __devexit_p(ad7606_spi_remove),
++	.id_table = ad7606_id,
++};
++
++static int __init ad7606_spi_init(void)
++{
++	return spi_register_driver(&ad7606_driver);
++}
++module_init(ad7606_spi_init);
++
++static void __exit ad7606_spi_exit(void)
++{
++	spi_unregister_driver(&ad7606_driver);
++}
++module_exit(ad7606_spi_exit);
++
 +MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-+MODULE_DESCRIPTION("Analog Devices AD9832/AD9835 DDS");
- MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("spi:ad9832");
-diff --git a/drivers/staging/iio/dds/ad9832.h b/drivers/staging/iio/dds/ad9832.h
-new file mode 100644
-index 0000000..94acb7b
---- /dev/null
-+++ b/drivers/staging/iio/dds/ad9832.h
-@@ -0,0 +1,138 @@
-+/*
-+ * AD9832 SPI DDS driver
-+ *
-+ * Copyright 2010 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2 or later.
-+ */
-+#ifndef IIO_DDS_AD9832_H_
-+#define IIO_DDS_AD9832_H_
-+
-+/* Registers */
-+
-+#define AD9832_FREQ0LL 0x0
-+#define AD9832_FREQ0HL 0x1
-+#define AD9832_FREQ0LM 0x2
-+#define AD9832_FREQ0HM 0x3
-+#define AD9832_FREQ1LL 0x4
-+#define AD9832_FREQ1HL 0x5
-+#define AD9832_FREQ1LM 0x6
-+#define AD9832_FREQ1HM 0x7
-+#define AD9832_PHASE0L 0x8
-+#define AD9832_PHASE0H 0x9
-+#define AD9832_PHASE1L 0xA
-+#define AD9832_PHASE1H 0xB
-+#define AD9832_PHASE2L 0xC
-+#define AD9832_PHASE2H 0xD
-+#define AD9832_PHASE3L 0xE
-+#define AD9832_PHASE3H 0xF
-+
-+/* None Registers */
-+
-+#define AD9832_PHASE_SYM	0x10
-+#define AD9832_FREQ_SYM		0x11
-+#define AD9832_PINCTRL_EN	0x12
-+#define AD9832_OUTPUT_EN	0x13
-+
-+/* Command Control Bits */
-+
-+#define AD9832_CMD_PHA8BITSW	0x1
-+#define AD9832_CMD_PHA16BITSW	0x0
-+#define AD9832_CMD_FRE8BITSW	0x3
-+#define AD9832_CMD_FRE16BITSW	0x2
-+#define AD9832_CMD_FPSELECT	0x6
-+#define AD9832_CMD_SYNCSELSRC	0x8
-+#define AD9832_CMD_SLEEPRESCLR	0xC
-+
-+#define AD9832_FREQ	(1 << 11)
-+#define AD9832_PHASE(x)	(((x) & 3) << 9)
-+#define AD9832_SYNC	(1 << 13)
-+#define AD9832_SELSRC	(1 << 12)
-+#define AD9832_SLEEP	(1 << 13)
-+#define AD9832_RESET	(1 << 12)
-+#define AD9832_CLR	(1 << 11)
-+#define CMD_SHIFT	12
-+#define ADD_SHIFT	8
-+#define AD9832_FREQ_BITS	32
-+#define AD9832_PHASE_BITS	12
-+#define RES_MASK(bits)	((1 << (bits)) - 1)
-+
-+/**
-+ * struct ad9832_state - driver instance specific data
-+ * @indio_dev:		the industrial I/O device
-+ * @spi:		spi_device
-+ * @reg:		supply regulator
-+ * @mclk:		external master clock
-+ * @ctrl_fp:		cached frequency/phase control word
-+ * @ctrl_ss:		cached sync/selsrc control word
-+ * @ctrl_src:		cached sleep/reset/clr word
-+ * @xfer:		default spi transfer
-+ * @msg:		default spi message
-+ * @freq_xfer:		tuning word spi transfer
-+ * @freq_msg:		tuning word spi message
-+ * @phase_xfer:		tuning word spi transfer
-+ * @phase_msg:		tuning word spi message
-+ * @data:		spi transmit buffer
-+ * @phase_data:		tuning word spi transmit buffer
-+ * @freq_data:		tuning word spi transmit buffer
-+ */
-+
-+struct ad9832_state {
-+	struct iio_dev			*indio_dev;
-+	struct spi_device		*spi;
-+	struct regulator		*reg;
-+	unsigned int			mclk;
-+	unsigned short			ctrl_fp;
-+	unsigned short			ctrl_ss;
-+	unsigned short			ctrl_src;
-+	unsigned short			devid;
-+	struct spi_transfer		xfer;
-+	struct spi_message		msg;
-+	struct spi_transfer		freq_xfer[4];
-+	struct spi_message		freq_msg;
-+	struct spi_transfer		phase_xfer[2];
-+	struct spi_message		phase_msg;
-+	/*
-+	 * DMA (thus cache coherency maintenance) requires the
-+	 * transfer buffers to live in their own cache lines.
-+	 */
-+	unsigned short			data ____cacheline_aligned;
-+	unsigned short			phase_data[2] ;
-+	unsigned short			freq_data[4] ;
-+};
-+
-+/*
-+ * TODO: struct ad7887_platform_data needs to go into include/linux/iio
-+ */
-+
-+/**
-+ * struct ad9832_platform_data - platform specific information
-+ * @mclk:		master clock in Hz
-+ * @freq0:		power up freq0 tuning word in Hz
-+ * @freq1:		power up freq1 tuning word in Hz
-+ * @phase0:		power up phase0 value [0..4095] correlates with 0..2PI
-+ * @phase1:		power up phase1 value [0..4095] correlates with 0..2PI
-+ * @phase2:		power up phase2 value [0..4095] correlates with 0..2PI
-+ * @phase3:		power up phase3 value [0..4095] correlates with 0..2PI
-+ */
-+
-+struct ad9832_platform_data {
-+	unsigned int		mclk;
-+	unsigned long		freq0;
-+	unsigned long		freq1;
-+	unsigned short		phase0;
-+	unsigned short		phase1;
-+	unsigned short		phase2;
-+	unsigned short		phase3;
-+};
-+
-+/**
-+ * ad9832_supported_device_ids:
-+ */
-+
-+enum ad9832_supported_device_ids {
-+	ID_AD9832,
-+	ID_AD9835,
-+};
-+
-+#endif /* IIO_DDS_AD9832_H_ */
--- 
++MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("spi:ad7606_spi");
+--
 1.6.0.2
