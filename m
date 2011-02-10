@@ -1,73 +1,61 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from kroah.org ([198.145.64.141]:50865 "EHLO coco.kroah.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755187Ab1BIXBV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 9 Feb 2011 18:01:21 -0500
-Date: Wed, 9 Feb 2011 15:00:58 -0800
-From: Greg KH <greg@kroah.com>
-To: michael.hennerich@analog.com
-Cc: jic23@cam.ac.uk, linux-iio@vger.kernel.org, drivers@analog.com,
-	device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH] Staging: IIO: ADC: New driver for
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Greg KH <greg@kroah.com>
+CC: "jic23@cam.ac.uk" <jic23@cam.ac.uk>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, Drivers <Drivers@analog.com>,
+	"device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>
+Date: Thu, 10 Feb 2011 08:32:29 +0000
+Subject: RE: [PATCH] Staging: IIO: ADC: New driver for
  AD7606/AD7606-6/AD7606-4
-Message-ID: <20110209230058.GA32064@kroah.com>
+Message-ID: <544AC56F16B56944AEC3BD4E3D591771324C21D432@LIMKCMBX1.ad.analog.com>
 References: <1297253238-1865-1-git-send-email-michael.hennerich@analog.com>
+ <20110209230058.GA32064@kroah.com>
+In-Reply-To: <20110209230058.GA32064@kroah.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1297253238-1865-1-git-send-email-michael.hennerich@analog.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Feb 09, 2011 at 01:07:18PM +0100, michael.hennerich@analog.com =
-wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
->=20
-> This patch adds support for the:
-> AD7606/AD7606-6/AD7606-4 8/6/4-Channel Data Acquisition
-> system (DAS) with 16-Bit, Bipolar, Simultaneous Sampling ADC.
->=20
-> Changes since V1:
-> IIO: ADC: New driver for AD7606/AD7606-6/AD7606-4: Apply review feedb=
-ack
->=20
-> Rename sysfs node oversampling to oversampling_ratio.
-> Kconfig: Add GPIOLIB dependency.
-> Use range in mV to better match HWMON.
-> Rename ad7606_check_oversampling.
-> Fix various comments and style.
-> Reorder is_visible cases.
-> Use new gpio_request_one/array and friends.
-> Drop check for SPI max_speed_hz.
->=20
-> Changes since V2:
-> IIO: ADC: New driver for AD7606/AD7606-6/AD7606-4: Apply review feedb=
-ack
->=20
-> Documentation: specify unit
-> Avoid raise condition in ad7606_scan_direct()
-> Check return value of bus ops read_block()
-
-This patch fails to build here:
-
-drivers/staging/iio/adc/ad7606_core.c: In function =E2=80=98ad7606_scan=
-_direct=E2=80=99:
-drivers/staging/iio/adc/ad7606_core.c:47:8: error: =E2=80=98TASK_INTERR=
-UPTIBLE=E2=80=99 undeclared (first use in this function)
-drivers/staging/iio/adc/ad7606_core.c:47:8: note: each undeclared ident=
-ifier is reported only once for each function it appears in
-drivers/staging/iio/adc/ad7606_core.c:47:2: error: implicit declaration=
- of function =E2=80=98signal_pending=E2=80=99
-drivers/staging/iio/adc/ad7606_core.c:47:2: error: implicit declaration=
- of function =E2=80=98schedule=E2=80=99
-drivers/staging/iio/adc/ad7606_core.c: In function =E2=80=98ad7606_inte=
-rrupt=E2=80=99:
-drivers/staging/iio/adc/ad7606_core.c:400:3: error: =E2=80=98TASK_INTER=
-RUPTIBLE=E2=80=99 undeclared (first use in this function)
-make[4]: *** [drivers/staging/iio/adc/ad7606_core.o] Error 1
-
-
-Care to actually test build it next time?  :(
-
-thanks,
-
-greg k-h
+R3JlZyBLSCB3cm90ZSBvbiAyMDExLTAyLTEwOg0KPiBPbiBXZWQsIEZlYiAwOSwgMjAxMSBhdCAw
+MTowNzoxOFBNICswMTAwLCBtaWNoYWVsLmhlbm5lcmljaEBhbmFsb2cuY29tDQo+IHdyb3RlOg0K
+Pj4gRnJvbTogTWljaGFlbCBIZW5uZXJpY2ggPG1pY2hhZWwuaGVubmVyaWNoQGFuYWxvZy5jb20+
+DQo+Pg0KPj4gVGhpcyBwYXRjaCBhZGRzIHN1cHBvcnQgZm9yIHRoZToNCj4+IEFENzYwNi9BRDc2
+MDYtNi9BRDc2MDYtNCA4LzYvNC1DaGFubmVsIERhdGEgQWNxdWlzaXRpb24gc3lzdGVtIChEQVMp
+DQo+PiB3aXRoIDE2LUJpdCwgQmlwb2xhciwgU2ltdWx0YW5lb3VzIFNhbXBsaW5nIEFEQy4NCj4+
+DQo+PiBDaGFuZ2VzIHNpbmNlIFYxOg0KPj4gSUlPOiBBREM6IE5ldyBkcml2ZXIgZm9yIEFENzYw
+Ni9BRDc2MDYtNi9BRDc2MDYtNDogQXBwbHkgcmV2aWV3DQo+PiBmZWVkYmFjaw0KPj4NCj4+IFJl
+bmFtZSBzeXNmcyBub2RlIG92ZXJzYW1wbGluZyB0byBvdmVyc2FtcGxpbmdfcmF0aW8uDQo+PiBL
+Y29uZmlnOiBBZGQgR1BJT0xJQiBkZXBlbmRlbmN5Lg0KPj4gVXNlIHJhbmdlIGluIG1WIHRvIGJl
+dHRlciBtYXRjaCBIV01PTi4NCj4+IFJlbmFtZSBhZDc2MDZfY2hlY2tfb3ZlcnNhbXBsaW5nLg0K
+Pj4gRml4IHZhcmlvdXMgY29tbWVudHMgYW5kIHN0eWxlLg0KPj4gUmVvcmRlciBpc192aXNpYmxl
+IGNhc2VzLg0KPj4gVXNlIG5ldyBncGlvX3JlcXVlc3Rfb25lL2FycmF5IGFuZCBmcmllbmRzLg0K
+Pj4gRHJvcCBjaGVjayBmb3IgU1BJIG1heF9zcGVlZF9oei4NCj4+DQo+PiBDaGFuZ2VzIHNpbmNl
+IFYyOg0KPj4gSUlPOiBBREM6IE5ldyBkcml2ZXIgZm9yIEFENzYwNi9BRDc2MDYtNi9BRDc2MDYt
+NDogQXBwbHkgcmV2aWV3DQo+PiBmZWVkYmFjaw0KPj4NCj4+IERvY3VtZW50YXRpb246IHNwZWNp
+ZnkgdW5pdA0KPj4gQXZvaWQgcmFpc2UgY29uZGl0aW9uIGluIGFkNzYwNl9zY2FuX2RpcmVjdCgp
+IENoZWNrIHJldHVybiB2YWx1ZSBvZg0KPj4gYnVzIG9wcyByZWFkX2Jsb2NrKCkNCj4NCj4gVGhp
+cyBwYXRjaCBmYWlscyB0byBidWlsZCBoZXJlOg0KPg0KPiBkcml2ZXJzL3N0YWdpbmcvaWlvL2Fk
+Yy9hZDc2MDZfY29yZS5jOiBJbiBmdW5jdGlvbiDigJhhZDc2MDZfc2Nhbl9kaXJlY3TigJk6DQo+
+IGRyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNl9jb3JlLmM6NDc6ODogZXJyb3I6IOKAmFRB
+U0tfSU5URVJSVVBUSUJMReKAmQ0KPiB1bmRlY2xhcmVkIChmaXJzdCB1c2UgaW4gdGhpcyBmdW5j
+dGlvbikNCj4gZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2X2NvcmUuYzo0Nzo4OiBub3Rl
+OiBlYWNoIHVuZGVjbGFyZWQNCj4gaWRlbnRpZmllciBpcyByZXBvcnRlZCBvbmx5IG9uY2UgZm9y
+IGVhY2ggZnVuY3Rpb24gaXQgYXBwZWFycyBpbg0KPiBkcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9h
+ZDc2MDZfY29yZS5jOjQ3OjI6IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbg0KPiBvZiBmdW5j
+dGlvbiDigJhzaWduYWxfcGVuZGluZ+KAmSBkcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc2MDZf
+Y29yZS5jOjQ3OjI6DQo+IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBvZiBmdW5jdGlvbiDi
+gJhzY2hlZHVsZeKAmQ0KPiBkcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc2MDZfY29yZS5jOiBJ
+biBmdW5jdGlvbiDigJhhZDc2MDZfaW50ZXJydXB04oCZOg0KPiBkcml2ZXJzL3N0YWdpbmcvaWlv
+L2FkYy9hZDc2MDZfY29yZS5jOjQwMDozOiBlcnJvcjog4oCYVEFTS19JTlRFUlJVUFRJQkxF4oCZ
+DQo+IHVuZGVjbGFyZWQgKGZpcnN0IHVzZSBpbiB0aGlzIGZ1bmN0aW9uKSBtYWtlWzRdOiAqKioN
+Cj4gW2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNl9jb3JlLm9dIEVycm9yIDENCj4NCj4N
+Cj4gQ2FyZSB0byBhY3R1YWxseSB0ZXN0IGJ1aWxkIGl0IG5leHQgdGltZT8gIDooDQoNCkhpIEdy
+ZWcsDQoNCkJlbGlldmUgaXQgb3Igbm90IC0gSSB0ZXN0ZWQgdGhpcyBwYXRjaCBhbmQgaXQgYnVp
+bGRzIGp1c3QgZmluZSBvbiB0aGUgYXJjaCBJJ20gdXNpbmcuDQpHdWVzcyBzb21lIGFyY2ggc3Bl
+Y2lmaWMgaGVhZGVyIGluY2x1ZGVzIGxpbnV4L3NjaGVkLmguDQoNCkJlZm9yZSBzdWJtaXR0aW5n
+LCB3aWxsIGJ1aWxkIHRlc3QgdGhpbmdzIG9uIHg4NiBpbiBmdXR1cmVzIGFzIHdlbGwuDQoNCkdy
+ZWV0aW5ncywNCk1pY2hhZWwNCg0KLS0NCkFuYWxvZyBEZXZpY2VzIEdtYkggICAgICBXaWxoZWxt
+LVdhZ2VuZmVsZC1TdHIuIDYgICAgICA4MDgwNyBNdWVuY2hlbg0KU2l0eiBkZXIgR2VzZWxsc2No
+YWZ0OiBNdWVuY2hlbjsgUmVnaXN0ZXJnZXJpY2h0OiBNdWVuY2hlbiBIUkIgNDAzNjg7IEdlc2No
+YWVmdHNmdWVocmVyOkRyLkNhcnN0ZW4gU3Vja3JvdywgVGhvbWFzIFdlc3NlbCwgV2lsbGlhbSBB
+LiBNYXJ0aW4sIE1hcmdhcmV0IFNlaWYNCg0K
