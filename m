@@ -1,25 +1,25 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:40767 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757380Ab1BKPyU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Feb 2011 10:54:20 -0500
-Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:48540)
-	by ppsw-52.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.159]:25)
-	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
-	id 1PnvK7-0001ZW-E2 (Exim 4.72) for linux-iio@vger.kernel.org
-	(return-path <jic23@cam.ac.uk>); Fri, 11 Feb 2011 15:54:19 +0000
-Message-ID: <4D555BB6.4020206@cam.ac.uk>
-Date: Fri, 11 Feb 2011 15:54:30 +0000
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Out of office until 21st Feb
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [RFC PATCH 0/2] ade7854 beginning of cleanup.
+Date: Fri, 11 Feb 2011 15:39:14 +0000
+Message-Id: <1297438756-26920-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Limited email access if any until a week on Monday.
+This is an RFC because of the macro usage in the second patch. For starters
+I haven't actually checked I got those write beyond build testing!
 
-Thanks,
+Just wondering what peoples opinions are on that sort of Macro usage
+before I head too far in that direction.
 
-Jonathan
+Jonathan Cameron (2):
+  staging:iio:meter:ade7854 move to spi_write and spi_write_the_read
+  staging:iio:meter:ade7854 spi - use macros for the whole series of
+    nearly     identical read and write functions.
+
+ drivers/staging/iio/meter/ade7854-spi.c |  339 +++++--------------------------
+ 1 files changed, 56 insertions(+), 283 deletions(-)
+
+-- 
+1.7.3.4
