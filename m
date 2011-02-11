@@ -1,102 +1,93 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:35841 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755478Ab1BKNJ5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Feb 2011 08:09:57 -0500
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 0/5] staging:IIO: kfifo based fifo implementation.
-Date: Fri, 11 Feb 2011 13:09:08 +0000
-Message-Id: <1297429753-6606-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 5/5] staging:iio: buffer example - add lots more runtime parameters
+Date: Fri, 11 Feb 2011 13:09:13 +0000
+Message-Id: <1297429753-6606-6-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1297429753-6606-1-git-send-email-jic23@cam.ac.uk>
+References: <1297429753-6606-1-git-send-email-jic23@cam.ac.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Greg,
+Add ability to control delay for event free buffers
+Add ability to control length of buffer
+Add ability to control how many read cycles occur
 
-This patch set has been on linux-iio for a couple of months.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Tested-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/Documentation/generic_buffer.c |   22 +++++++++++++++----
+ 1 files changed, 17 insertions(+), 5 deletions(-)
 
-The intent in IIO was always to provide a number of buffer implementations
-so that one could select the one that provides the features needed
-for a particular application.  Sadly far too many drivers have
-become attached to ring_sw which is to put it lightly, somewhat
-dubious (seems to work but I wouldn't guarantee that and I wrote
-it).  Anyhow, kfifo isn't ideal for every application, but it
-makes a good starting point and opens up the possiblity of
-other implementations.
-
-What is a sensible default for a given driver is down to the
-indvidual driver writers.
-
-The first patch is a spot of restructuring needed to push down
-some code into the sw_ring that should never have been in the core
-(oops).
-
-The lis3l02dq driver has been used as an example of the changes
-need in drivers to add support for additional buffer implementations.
-
-Final two patches are extensions of the example code. The first just
-allows for event less buffers (such as this one) and the second adds
-more arguements to make the whole example a bit more useful.
-
-The changes since V1 are all pretty trivial:
-
-* Additional help in Kconfig to illustrate when one might want to use kfifo.
-* Logic fix for lis3l02dq Kconfig to ensure an empty buffer menu doesn't
-  appear when buffers are completely disabled.
-* Fix sparse warnings.
-
-Please consider merging.
-
-Some cleanup to the core will occur in a futures set (for example
-stopping creation of an event chrdev for buffers that can't produce
-any events).
-
-Thanks,
-
-Jonathan
-
-V1 description:
-
-This set is an update of the proof of concept I wrote a while back.
-This time around I've simply used a byte stream buffer rather than
-variable record sizes.  The first patch pushes some of the
-exiting buffer code down into the ring_sw implementation to
-make it simpler to provide other implementations.
-
-What you gain by picking kfifo:
-* Clean fast code for the underlying buffer.
-
-What you loose:
-* Events - userspace has to 'know' how often to read the buffer
-  so as to not loose data.
-
-Obvious difference is it is a fifo rather than a ring buffer.
-
-This buffer should also lend itself to a simple implementation
-of a store_n function which should be useful for devices with
-a hardware ring which we then want to feed into a software one.
-
-
-Jonathan Cameron (5):
-  staging:iio:buffering move the copy to user on rip down into
-    implementations
-  staging:iio:kfifo buffer implementation
-  staging:iio:lis3l02dq allow buffer implementation selection
-  staging:iio: update example to handle case with no ring events
-  staging:iio: buffer example - add lots more runtime parameters
-
- drivers/staging/iio/Documentation/generic_buffer.c |   63 +++++--
- drivers/staging/iio/Kconfig                        |    9 +
- drivers/staging/iio/Makefile                       |    1 +
- drivers/staging/iio/accel/Kconfig                  |   23 +++-
- drivers/staging/iio/accel/lis3l02dq.h              |   10 +
- drivers/staging/iio/accel/lis3l02dq_ring.c         |    9 +-
- drivers/staging/iio/industrialio-ring.c            |   25 +---
- drivers/staging/iio/kfifo_buf.c                    |  196 ++++++++++++++++++++
- drivers/staging/iio/kfifo_buf.h                    |   56 ++++++
- drivers/staging/iio/ring_generic.h                 |    2 +-
- drivers/staging/iio/ring_sw.c                      |   27 ++-
- drivers/staging/iio/ring_sw.h                      |    4 +-
- 12 files changed, 366 insertions(+), 59 deletions(-)
- create mode 100644 drivers/staging/iio/kfifo_buf.c
- create mode 100644 drivers/staging/iio/kfifo_buf.h
-
+diff --git a/drivers/staging/iio/Documentation/generic_buffer.c b/drivers/staging/iio/Documentation/generic_buffer.c
+index 0befcb8..771b236 100644
+--- a/drivers/staging/iio/Documentation/generic_buffer.c
++++ b/drivers/staging/iio/Documentation/generic_buffer.c
+@@ -29,9 +29,6 @@
+ #include <string.h>
+ #include "iio_utils.h"
+ 
+-const int buf_len = 128;
+-const int num_loops = 2;
+-
+ /**
+  * size_from_channelarray() - calculate the storage size of a scan
+  * @channels: the channel info array
+@@ -119,6 +116,11 @@ void process_scan(char *data,
+ 
+ int main(int argc, char **argv)
+ {
++	unsigned long num_loops = 2;
++	unsigned long timedelay = 1000000;
++	unsigned long buf_len = 128;
++
++
+ 	int ret, c, i, j, toread;
+ 
+ 	FILE *fp_ev;
+@@ -136,10 +138,11 @@ int main(int argc, char **argv)
+ 	char *buffer_access, *buffer_event;
+ 	int scan_size;
+ 	int noevents = 0;
++	char *dummy;
+ 
+ 	struct iio_channel_info *infoarray;
+ 
+-	while ((c = getopt(argc, argv, "et:n:")) != -1) {
++	while ((c = getopt(argc, argv, "l:w:c:et:n:")) != -1) {
+ 		switch (c) {
+ 		case 'n':
+ 			device_name = optarg;
+@@ -151,6 +154,15 @@ int main(int argc, char **argv)
+ 		case 'e':
+ 			noevents = 1;
+ 			break;
++		case 'c':
++			num_loops = strtoul(optarg, &dummy, 10);
++			break;
++		case 'w':
++			timedelay = strtoul(optarg, &dummy, 10);
++			break;
++		case 'l':
++			buf_len = strtoul(optarg, &dummy, 10);
++			break;
+ 		case '?':
+ 			return -1;
+ 		}
+@@ -285,7 +297,7 @@ int main(int argc, char **argv)
+ 				continue;
+ 			}
+ 		} else {
+-			usleep(1000);
++			usleep(timedelay);
+ 			toread = 64;
+ 		}
+ 
 -- 
 1.7.3.4
+
