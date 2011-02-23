@@ -1,327 +1,92 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from nwd2mail10.analog.com ([137.71.25.55]:4806 "EHLO
-	nwd2mail10.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752319Ab1BWLl3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Feb 2011 06:41:29 -0500
+Return-Path: <Michael.Hennerich@analog.com>
 From: <michael.hennerich@analog.com>
 To: greg@kroah.com, jic23@cam.ac.uk
 CC: linux-iio@vger.kernel.org, drivers@analog.com,
-	device-drivers-devel@blackfin.uclinux.org,
-	Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH] IIO: trigger: New Blackfin specific trigger driver iio-trig-bfin-timer
-Date: Wed, 23 Feb 2011 12:33:12 +0100
-Message-ID: <1298460792-20972-1-git-send-email-michael.hennerich@analog.com>
+        device-drivers-devel@blackfin.uclinux.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] IIO: DAC: Add support for the AD5543/AD5553
+Date: Wed, 23 Feb 2011 10:45:47 +0100
+Message-ID: <1298454347-31089-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-This driver allows any Blackfin system timer to be used as IIO trigger.
-It supports trigger rates from 0 to 100kHz in Hz resolution.
+Add support for the AD5543/AD5553 SPI 16-/14-Bit DACs
+Fix typo in kconfig description
 
 Changes since V1:
-IIO: trigger: Apply review feedback
-
-Add comment explaining Blackfin hardware timer configurations
-Fix frequency_store, don't return -EINVAL for frequency set to 0
+reorder Kconfig help text
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/trigger/Kconfig               |   10 +
- drivers/staging/iio/trigger/Makefile              |    1 +
- drivers/staging/iio/trigger/iio-trig-bfin-timer.c |  252 +++++++++++++++++++++
- 3 files changed, 263 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+ drivers/staging/iio/dac/Kconfig  |    4 ++--
+ drivers/staging/iio/dac/ad5446.c |   12 ++++++++++++
+ drivers/staging/iio/dac/ad5446.h |    2 ++
+ 3 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/trigger/Kconfig b/drivers/staging/iio/trigger/Kconfig
-index 3a82013..c33777e 100644
---- a/drivers/staging/iio/trigger/Kconfig
-+++ b/drivers/staging/iio/trigger/Kconfig
-@@ -28,4 +28,14 @@ config IIO_SYSFS_TRIGGER
+diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
+index 2120904..3c72871 100644
+--- a/drivers/staging/iio/dac/Kconfig
++++ b/drivers/staging/iio/dac/Kconfig
+@@ -11,11 +11,11 @@ config AD5624R_SPI
+ 	  AD5664R convertors (DAC). This driver uses the common SPI interface.
+
+ config AD5446
+-	tristate "Analog Devices AD5444/6, AD5620/40/60 and AD5541A/12A DAC SPI driver"
++	tristate "Analog Devices AD5444/6, AD5620/40/60 and AD5542A/12A DAC SPI driver"
+ 	depends on SPI
+ 	help
+ 	  Say yes here to build support for Analog Devices AD5444, AD5446,
+-	  AD5620, AD5640, AD5660 and AD5541A, AD5512A DACs.
++	  AD5512A, AD5542A, AD5543, AD5553, AD5620, AD5640, AD5660 DACs.
+
  	  To compile this driver as a module, choose M here: the
- 	  module will be called iio-trig-sysfs.
-
-+config IIO_BFIN_TMR_TRIGGER
-+	tristate "Blackfin TIMER trigger"
-+	depends on BLACKFIN
-+	help
-+	  Provides support for using a Blackfin timer as IIO triggers.
-+	  If unsure, say N (but it's safe to say "Y").
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called iio-trig-bfin-timer.
-+
- endif # IIO_TRIGGER
-diff --git a/drivers/staging/iio/trigger/Makefile b/drivers/staging/iio/trigger/Makefile
-index 504b9c0..b088b57 100644
---- a/drivers/staging/iio/trigger/Makefile
-+++ b/drivers/staging/iio/trigger/Makefile
-@@ -5,3 +5,4 @@
- obj-$(CONFIG_IIO_PERIODIC_RTC_TRIGGER) += iio-trig-periodic-rtc.o
- obj-$(CONFIG_IIO_GPIO_TRIGGER) += iio-trig-gpio.o
- obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
-+obj-$(CONFIG_IIO_BFIN_TMR_TRIGGER) += iio-trig-bfin-timer.o
-diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-new file mode 100644
-index 0000000..583bef0
---- /dev/null
-+++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-@@ -0,0 +1,252 @@
-+/*
-+ * Copyright 2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ *
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/delay.h>
-+
-+#include <asm/gptimers.h>
-+
-+#include "../iio.h"
-+#include "../trigger.h"
-+
-+struct bfin_timer {
-+	unsigned short id, bit;
-+	unsigned long irqbit;
-+	int irq;
-+};
-+
-+/*
-+ * this covers all hardware timer configurations on
-+ * all Blackfin derivatives out there today
-+ */
-+
-+static struct bfin_timer iio_bfin_timer_code[MAX_BLACKFIN_GPTIMERS] = {
-+	{TIMER0_id,  TIMER0bit,  TIMER_STATUS_TIMIL0,  IRQ_TIMER0},
-+	{TIMER1_id,  TIMER1bit,  TIMER_STATUS_TIMIL1,  IRQ_TIMER1},
-+	{TIMER2_id,  TIMER2bit,  TIMER_STATUS_TIMIL2,  IRQ_TIMER2},
-+#if (MAX_BLACKFIN_GPTIMERS > 3)
-+	{TIMER3_id,  TIMER3bit,  TIMER_STATUS_TIMIL3,  IRQ_TIMER3},
-+	{TIMER4_id,  TIMER4bit,  TIMER_STATUS_TIMIL4,  IRQ_TIMER4},
-+	{TIMER5_id,  TIMER5bit,  TIMER_STATUS_TIMIL5,  IRQ_TIMER5},
-+	{TIMER6_id,  TIMER6bit,  TIMER_STATUS_TIMIL6,  IRQ_TIMER6},
-+	{TIMER7_id,  TIMER7bit,  TIMER_STATUS_TIMIL7,  IRQ_TIMER7},
-+#endif
-+#if (MAX_BLACKFIN_GPTIMERS > 8)
-+	{TIMER8_id,  TIMER8bit,  TIMER_STATUS_TIMIL8,  IRQ_TIMER8},
-+	{TIMER9_id,  TIMER9bit,  TIMER_STATUS_TIMIL9,  IRQ_TIMER9},
-+	{TIMER10_id, TIMER10bit, TIMER_STATUS_TIMIL10, IRQ_TIMER10},
-+#if (MAX_BLACKFIN_GPTIMERS > 11)
-+	{TIMER11_id, TIMER11bit, TIMER_STATUS_TIMIL11, IRQ_TIMER11},
-+#endif
-+#endif
-+};
-+
-+struct bfin_tmr_state {
-+	struct iio_trigger *trig;
-+	struct bfin_timer *t;
-+	unsigned timer_num;
-+	int irq;
-+};
-+
-+static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
-+		struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct iio_trigger *trig = dev_get_drvdata(dev);
-+	struct bfin_tmr_state *st = trig->private_data;
-+	long val;
-+	int ret;
-+
-+	ret = strict_strtoul(buf, 10, &val);
-+	if (ret)
-+		goto error_ret;
-+
-+	if (val > 100000) {
-+		ret = -EINVAL;
-+		goto error_ret;
-+	}
-+
-+	disable_gptimers(st->t->bit);
-+
-+	if (!val)
-+		goto error_ret;
-+
-+	val = get_sclk() / val;
-+	if (val <= 4) {
-+		ret = -EINVAL;
-+		goto error_ret;
-+	}
-+
-+	set_gptimer_period(st->t->id, val);
-+	set_gptimer_pwidth(st->t->id, 1);
-+	enable_gptimers(st->t->bit);
-+
-+error_ret:
-+	return ret ? ret : count;
-+}
-+
-+static ssize_t iio_bfin_tmr_frequency_show(struct device *dev,
-+				 struct device_attribute *attr,
-+				 char *buf)
-+{
-+	struct iio_trigger *trig = dev_get_drvdata(dev);
-+	struct bfin_tmr_state *st = trig->private_data;
-+
-+	return sprintf(buf, "%lu\n",
-+			get_sclk() / get_gptimer_period(st->t->id));
-+}
-+
-+static DEVICE_ATTR(frequency, S_IRUGO | S_IWUSR, iio_bfin_tmr_frequency_show,
-+		   iio_bfin_tmr_frequency_store);
-+static IIO_TRIGGER_NAME_ATTR;
-+
-+static struct attribute *iio_bfin_tmr_trigger_attrs[] = {
-+	&dev_attr_frequency.attr,
-+	&dev_attr_name.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group iio_bfin_tmr_trigger_attr_group = {
-+	.attrs = iio_bfin_tmr_trigger_attrs,
-+};
-+
-+
-+static irqreturn_t iio_bfin_tmr_trigger_isr(int irq, void *devid)
-+{
-+	struct bfin_tmr_state *st = devid;
-+
-+	clear_gptimer_intr(st->t->id);
-+	iio_trigger_poll(st->trig, 0);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int iio_bfin_tmr_get_number(int irq)
-+{
-+	int i;
-+
-+	for (i = 0; i < MAX_BLACKFIN_GPTIMERS; i++)
-+		if (iio_bfin_timer_code[i].irq == irq)
-+			return i;
-+
-+	return -ENODEV;
-+}
-+
-+static int __devinit iio_bfin_tmr_trigger_probe(struct platform_device *pdev)
-+{
-+	struct bfin_tmr_state *st;
-+	int ret;
-+
-+	st = kzalloc(sizeof(*st), GFP_KERNEL);
-+	if (st == NULL) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+
-+	st->irq = platform_get_irq(pdev, 0);
-+	if (!st->irq) {
-+		dev_err(&pdev->dev, "No IRQs specified");
-+		ret = -ENODEV;
-+		goto out1;
-+	}
-+
-+	ret = iio_bfin_tmr_get_number(st->irq);
-+	if (ret < 0)
-+		goto out1;
-+
-+	st->timer_num = ret;
-+	st->t = &iio_bfin_timer_code[st->timer_num];
-+
-+	st->trig = iio_allocate_trigger();
-+	if (!st->trig) {
-+		ret = -ENOMEM;
-+		goto out1;
-+	}
-+
-+	st->trig->private_data = st;
-+	st->trig->control_attrs = &iio_bfin_tmr_trigger_attr_group;
-+	st->trig->owner = THIS_MODULE;
-+	st->trig->name = kasprintf(GFP_KERNEL, "bfintmr%d", st->timer_num);
-+	if (st->trig->name == NULL) {
-+		ret = -ENOMEM;
-+		goto out2;
-+	}
-+
-+	ret = iio_trigger_register(st->trig);
-+	if (ret)
-+		goto out3;
-+
-+	ret = request_irq(st->irq, iio_bfin_tmr_trigger_isr,
-+			  0, st->trig->name, st);
-+	if (ret) {
-+		dev_err(&pdev->dev,
-+			"request IRQ-%d failed", st->irq);
-+		goto out4;
-+	}
-+
-+	set_gptimer_config(st->t->id, OUT_DIS | PWM_OUT | PERIOD_CNT | IRQ_ENA);
-+
-+	dev_info(&pdev->dev, "iio trigger Blackfin TMR%d, IRQ-%d",
-+		 st->timer_num, st->irq);
-+	platform_set_drvdata(pdev, st);
-+
-+	return 0;
-+out4:
-+	iio_trigger_unregister(st->trig);
-+out3:
-+	kfree(st->trig->name);
-+out2:
-+	iio_put_trigger(st->trig);
-+out1:
-+	kfree(st);
-+out:
-+	return ret;
-+}
-+
-+static int __devexit iio_bfin_tmr_trigger_remove(struct platform_device *pdev)
-+{
-+	struct bfin_tmr_state *st = platform_get_drvdata(pdev);
-+
-+	disable_gptimers(st->t->bit);
-+	free_irq(st->irq, st);
-+	iio_trigger_unregister(st->trig);
-+	kfree(st->trig->name);
-+	iio_put_trigger(st->trig);
-+	kfree(st);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver iio_bfin_tmr_trigger_driver = {
-+	.driver = {
-+		.name = "iio_bfin_tmr_trigger",
-+		.owner = THIS_MODULE,
+ 	  module will be called ad5446.
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index 0f87eca..dcec297 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -132,12 +132,24 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
+ 		.left_shift = 0,
+ 		.store_sample = ad5542_store_sample,
+ 	},
++	[ID_AD5543] = {
++		.bits = 16,
++		.storagebits = 16,
++		.left_shift = 0,
++		.store_sample = ad5542_store_sample,
 +	},
-+	.probe = iio_bfin_tmr_trigger_probe,
-+	.remove = __devexit_p(iio_bfin_tmr_trigger_remove),
-+};
-+
-+static int __init iio_bfin_tmr_trig_init(void)
-+{
-+	return platform_driver_register(&iio_bfin_tmr_trigger_driver);
-+}
-+module_init(iio_bfin_tmr_trig_init);
-+
-+static void __exit iio_bfin_tmr_trig_exit(void)
-+{
-+	platform_driver_unregister(&iio_bfin_tmr_trigger_driver);
-+}
-+module_exit(iio_bfin_tmr_trig_exit);
-+
-+MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-+MODULE_DESCRIPTION("Blackfin system timer based trigger for the iio subsystem");
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:iio-trig-bfin-timer");
+ 	[ID_AD5512A] = {
+ 		.bits = 12,
+ 		.storagebits = 16,
+ 		.left_shift = 4,
+ 		.store_sample = ad5542_store_sample,
+ 	},
++	[ID_AD5553] = {
++		.bits = 14,
++		.storagebits = 16,
++		.left_shift = 0,
++		.store_sample = ad5542_store_sample,
++	},
+ 	[ID_AD5620_2500] = {
+ 		.bits = 12,
+ 		.storagebits = 16,
+diff --git a/drivers/staging/iio/dac/ad5446.h b/drivers/staging/iio/dac/ad5446.h
+index 902542e..0cb9c14 100644
+--- a/drivers/staging/iio/dac/ad5446.h
++++ b/drivers/staging/iio/dac/ad5446.h
+@@ -84,7 +84,9 @@ enum ad5446_supported_device_ids {
+ 	ID_AD5444,
+ 	ID_AD5446,
+ 	ID_AD5542A,
++	ID_AD5543,
+ 	ID_AD5512A,
++	ID_AD5553,
+ 	ID_AD5620_2500,
+ 	ID_AD5620_1250,
+ 	ID_AD5640_2500,
 --
 1.6.0.2
-
