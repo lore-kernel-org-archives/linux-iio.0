@@ -1,92 +1,33 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: <michael.hennerich@analog.com>
-To: greg@kroah.com, jic23@cam.ac.uk
-CC: linux-iio@vger.kernel.org, drivers@analog.com,
-        device-drivers-devel@blackfin.uclinux.org,
-        Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH] IIO: DAC: Add support for the AD5543/AD5553
-Date: Wed, 23 Feb 2011 10:45:47 +0100
-Message-ID: <1298454347-31089-1-git-send-email-michael.hennerich@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-iy0-f174.google.com ([209.85.210.174]:43256 "EHLO
+	mail-iy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750767Ab1BWFE4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Feb 2011 00:04:56 -0500
+Received: by iyb26 with SMTP id 26so2532965iyb.19
+        for <linux-iio@vger.kernel.org>; Tue, 22 Feb 2011 21:04:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Date: Tue, 22 Feb 2011 23:04:54 -0600
+Message-ID: <AANLkTimo3XLdHdHYgO9M1zFfL_ogzqtwLPgPEUf6uX12@mail.gmail.com>
+Subject: Latest git tree for linux-iio?
+From: Bill Gatliff <bgat@billgatliff.com>
+To: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+Guys:
 
-Add support for the AD5543/AD5553 SPI 16-/14-Bit DACs
-Fix typo in kconfig description
 
-Changes since V1:
-reorder Kconfig help text
+Is there a recent git tree somewhere for the linux-iio framework?  The
+one under jic23 on git.kernel.org shows an age of three months, and
+doesn't seem to have a Documentation/iio directory either--- which
+makes me thing it's the wrong stuff...
 
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/dac/Kconfig  |    4 ++--
- drivers/staging/iio/dac/ad5446.c |   12 ++++++++++++
- drivers/staging/iio/dac/ad5446.h |    2 ++
- 3 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
-index 2120904..3c72871 100644
---- a/drivers/staging/iio/dac/Kconfig
-+++ b/drivers/staging/iio/dac/Kconfig
-@@ -11,11 +11,11 @@ config AD5624R_SPI
- 	  AD5664R convertors (DAC). This driver uses the common SPI interface.
+Thanks!
 
- config AD5446
--	tristate "Analog Devices AD5444/6, AD5620/40/60 and AD5541A/12A DAC SPI driver"
-+	tristate "Analog Devices AD5444/6, AD5620/40/60 and AD5542A/12A DAC SPI driver"
- 	depends on SPI
- 	help
- 	  Say yes here to build support for Analog Devices AD5444, AD5446,
--	  AD5620, AD5640, AD5660 and AD5541A, AD5512A DACs.
-+	  AD5512A, AD5542A, AD5543, AD5553, AD5620, AD5640, AD5660 DACs.
 
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad5446.
-diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
-index 0f87eca..dcec297 100644
---- a/drivers/staging/iio/dac/ad5446.c
-+++ b/drivers/staging/iio/dac/ad5446.c
-@@ -132,12 +132,24 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
- 		.left_shift = 0,
- 		.store_sample = ad5542_store_sample,
- 	},
-+	[ID_AD5543] = {
-+		.bits = 16,
-+		.storagebits = 16,
-+		.left_shift = 0,
-+		.store_sample = ad5542_store_sample,
-+	},
- 	[ID_AD5512A] = {
- 		.bits = 12,
- 		.storagebits = 16,
- 		.left_shift = 4,
- 		.store_sample = ad5542_store_sample,
- 	},
-+	[ID_AD5553] = {
-+		.bits = 14,
-+		.storagebits = 16,
-+		.left_shift = 0,
-+		.store_sample = ad5542_store_sample,
-+	},
- 	[ID_AD5620_2500] = {
- 		.bits = 12,
- 		.storagebits = 16,
-diff --git a/drivers/staging/iio/dac/ad5446.h b/drivers/staging/iio/dac/ad5446.h
-index 902542e..0cb9c14 100644
---- a/drivers/staging/iio/dac/ad5446.h
-+++ b/drivers/staging/iio/dac/ad5446.h
-@@ -84,7 +84,9 @@ enum ad5446_supported_device_ids {
- 	ID_AD5444,
- 	ID_AD5446,
- 	ID_AD5542A,
-+	ID_AD5543,
- 	ID_AD5512A,
-+	ID_AD5553,
- 	ID_AD5620_2500,
- 	ID_AD5620_1250,
- 	ID_AD5640_2500,
---
-1.6.0.2
+b.g.
+-- 
+Bill Gatliff
+bgat@billgatliff.com
