@@ -1,41 +1,50 @@
-Return-Path: <greg@kroah.com>
-Date: Thu, 24 Feb 2011 11:40:16 -0800
-From: Greg KH <greg@kroah.com>
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-Cc: "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Drivers <Drivers@analog.com>,
-	"device-drivers-devel@blackfin.uclinux.org" <device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH 1/6] IIO: Documentation: generic_buffer example: Avoid
- NULL pointer dereference
-Message-ID: <20110224194016.GA19605@kroah.com>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: greg@kroah.com, jic23@cam.ac.uk
+CC: linux-iio@vger.kernel.org, drivers@analog.com,
+        device-drivers-devel@blackfin.uclinux.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 5/6] IIO: Documentation: iio_utils: fix mask generation
+Date: Thu, 24 Feb 2011 16:34:54 +0100
+Message-ID: <1298561694-6930-5-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1298561694-6930-1-git-send-email-michael.hennerich@analog.com>
 References: <1298561694-6930-1-git-send-email-michael.hennerich@analog.com>
- <20110224191930.GB21403@kroah.com>
- <544AC56F16B56944AEC3BD4E3D59177133FA5C01BB@LIMKCMBX1.ad.analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D59177133FA5C01BB@LIMKCMBX1.ad.analog.com>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Feb 24, 2011 at 07:28:11PM +0000, Hennerich, Michael wrote:
-> Greg KH wrote on 2011-02-24:
-> > On Thu, Feb 24, 2011 at 04:34:50PM +0100, michael.hennerich@analog.com
-> > wrote:
-> >> From: Michael Hennerich <michael.hennerich@analog.com>
-> >
-> > I only received 5 patches here, not six, missing the 6/6 patch.  Did
-> > it get lost somewhere?
-> >
-> > thanks,
-> >
-> > greg k-h
-> 
-> No - I temporarily restrained it - Sorry I shouldn't made it part of the sequence.
-> [PATCH 6/6] IIO: Documentation: iio_utils: fix channel array generation.
-> 
-> Was not yet Acked-by Jonathan and I got indication that he likes to test it and or
-> try to push it's alternative implementation.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Ok, just worried I missed a patch somewhere, thanks for the response.
+Variable sizeint is used uninitialized.
+Remove sizeint completely and use bits_used instead.
 
-greg k-h
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/Documentation/iio_utils.h |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
+index bde2313..1b33c04 100644
+--- a/drivers/staging/iio/Documentation/iio_utils.h
++++ b/drivers/staging/iio/Documentation/iio_utils.h
+@@ -113,7 +113,7 @@ inline int iioutils_get_type(unsigned *is_signed,
+ 	DIR *dp;
+ 	char *scan_el_dir, *builtname, *builtname_generic, *filename = 0;
+ 	char signchar;
+-	unsigned sizeint, padint;
++	unsigned padint;
+ 	const struct dirent *ent;
+
+ 	ret = asprintf(&scan_el_dir, FORMAT_SCAN_ELEMENTS_DIR, device_dir);
+@@ -159,7 +159,7 @@ inline int iioutils_get_type(unsigned *is_signed,
+ 			fscanf(sysfsfp,
+ 			       "%c%u/%u", &signchar, bits_used, &padint);
+ 			*bytes = padint / 8;
+-			if (sizeint == 64)
++			if (*bits_used == 64)
+ 				*mask = ~0;
+ 			else
+ 				*mask = (1 << *bits_used) - 1;
+--
+1.6.0.2
