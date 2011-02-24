@@ -1,39 +1,29 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: <michael.hennerich@analog.com>
-To: greg@kroah.com, jic23@cam.ac.uk
-CC: linux-iio@vger.kernel.org, drivers@analog.com,
-        device-drivers-devel@blackfin.uclinux.org,
-        Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 1/6] IIO: Documentation: generic_buffer example: Avoid NULL pointer dereference
-Date: Thu, 24 Feb 2011 16:34:50 +0100
-Message-ID: <1298561694-6930-1-git-send-email-michael.hennerich@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from kroah.org ([198.145.64.141]:57591 "EHLO coco.kroah.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756359Ab1BXTTy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 24 Feb 2011 14:19:54 -0500
+Date: Thu, 24 Feb 2011 11:19:30 -0800
+From: Greg KH <greg@kroah.com>
+To: michael.hennerich@analog.com
+Cc: jic23@cam.ac.uk, linux-iio@vger.kernel.org, drivers@analog.com,
+	device-drivers-devel@blackfin.uclinux.org
+Subject: Re: [PATCH 1/6] IIO: Documentation: generic_buffer example: Avoid
+ NULL pointer dereference
+Message-ID: <20110224191930.GB21403@kroah.com>
+References: <1298561694-6930-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1298561694-6930-1-git-send-email-michael.hennerich@analog.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+On Thu, Feb 24, 2011 at 04:34:50PM +0100, michael.hennerich@analog.com wrote:
+> From: Michael Hennerich <michael.hennerich@analog.com>
 
-In case optarg n is not given return/exit
+I only received 5 patches here, not six, missing the 6/6 patch.  Did it
+get lost somewhere?
 
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/Documentation/generic_buffer.c |    3 +++
- 1 files changed, 3 insertions(+), 0 deletions(-)
+thanks,
 
-diff --git a/drivers/staging/iio/Documentation/generic_buffer.c b/drivers/staging/iio/Documentation/generic_buffer.c
-index 771b236..3cc18ab 100644
---- a/drivers/staging/iio/Documentation/generic_buffer.c
-+++ b/drivers/staging/iio/Documentation/generic_buffer.c
-@@ -168,6 +168,9 @@ int main(int argc, char **argv)
- 		}
- 	}
-
-+	if (device_name == NULL)
-+		return -1;
-+
- 	/* Find the device requested */
- 	dev_num = find_type_by_name(device_name, "device");
- 	if (dev_num < 0) {
---
-1.6.0.2
+greg k-h
