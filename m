@@ -1,123 +1,333 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:39116 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751158Ab1AMMq6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Jan 2011 07:46:58 -0500
-Message-ID: <4D2EF5FA.40607@cam.ac.uk>
-Date: Thu, 13 Jan 2011 12:54:18 +0000
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: different ring buffer usage scenario
-References: <544AC56F16B56944AEC3BD4E3D591771324BEA42CB@LIMKCMBX1.ad.analog.com> <4D0B7888.6050007@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D591771324BFF3F3A@LIMKCMBX1.ad.analog.com> <4D2EE0BA.2090603@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D591771324BFF4041@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D591771324BFF4041@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: device-drivers-devel@blackfin.uclinux.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH] staging:iio:gyro: adis16130 cleanup, move to abi and bug fixes.
+Date: Fri, 25 Feb 2011 17:45:31 +0000
+Message-Id: <1298655931-16896-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 01/13/11 12:17, Hennerich, Michael wrote:
-> Jonathan Cameron wrote on 2011-01-13:
->> On 01/13/11 09:20, Hennerich, Michael wrote:
->>> Jonathan Cameron wrote on 2010-12-17:
->>>> On 12/17/10 13:47, Hennerich, Michael wrote:
->>>>> Hi Jonathan,
->>>>>
->>>>> I'm currently working on a high speed ADC driver, that requires a
->>>>> different ring buffer use case scenario. Let me explain a little bit
->>>>> the setup. I'm running Linux on a Microblaze softcore inside an
->>>>> Virtex6 FPGA. Part of the system is a peripheral interface block, we
->>>>> call it the ADC Interface Module (AIM). External to the FPGA we
->>>>> connect a single channel high speed ADC AD9649, to the AIM signals.
->>>>>
->>>>> The AIM features a FIFO, with watermark interrupt capabilities.
->>>>> There are two modes that need to be supported. Continues Sampling
->>>>> Mode and Single Shot Sample Mode. In Single Shot Sample Mode, the
->>>>> user reads an arbitrary Number of samples from the
->>>> ADC, and then the sampling stops. This mode does not need to have a
->>>> ringbuffer at all.
->>>>> A simple chardev might be sufficient.
->>>>>
->>>>> Any objections creating a driver private chardev?
->>>> None at all.
->>>> Is it appropriate to maintain the interfaces and buffer description
->>>> we have for those where there is a buffer involved?  I think those
->>>> interfaces are flexible enough... If not we probably want to make
->>>> it so they are.
->>>>
->>>> I did think of creating a pass through buffer that would effectively
->>>> allow other devices to simulate this behaviour. Basically to the core
->>>> it would look like a buffer, but it would only store one scan and then
->>>> only if someone has the chrdev open. It would support select type
->>>> calls. This would be needed for the input bridge to no apply any delay
->>>> to the data stream.
->>>>
->>>> Not actually done any work on it though.
->>>
->>> Hi Jonathan,
->>>
->>> For a project I'm currently working on I need such a pass through
->>> buffer.
->>>
->>> The requirements I have are pretty basic. When user space reads x
->>> number of elements
->>>> From the buffer, the generic pass through buffer implementation
->>>> calls a registered
->>> function in the ADC driver, that may sleep until the requested
->>> amount of elements are available.
->>>
->>> I wonder if you have something in the make already?
->> Interesting, that's not a case I'd thought of previously.
->>
->> You could get fairly close by using the ring buffer with 2x the number
->> of elements then do a blocking read on the event (for a 50% full
->> event). It would be a bit ugly if the number x changes regularly
->> though so far from ideal.
-> 
-> That's not what I need.
-> User space triggers the sampling process by reading from the buffer chardev.
-> The device samples @ 20MHz, so the time the read() may sleep is in the
-> range of micro seconds. My idea is basically to use the infrastructure in
-> industrialio-ring.c to allocate the buffer_access_chrdev.
-> Theoretically I don't need the buffer_event_chrdev at all, but in order to keep consistency
-> I should send a 100_FULL event.
-I wouldn't bother. Not all buffer types send events anyway. We certainly don't guarantee them.
-> 
->> So all in all it will probably need a custom buffer.  Quickest option
->> is probably to use the kfifo implementation and play games in the rip
->> lots function. Depending on how big x typically is, you could either
->> add a waitqueue that makes iio_rip_kfifo wake up every time any new
->> data is added to the kfifo,
-> 
-> Data is added to the buffer in one shot - I receive sampling done interrupt,
-> and then may use Core or DMA to transfer the data from the device internal fifo
-> to some local buffer which is then copied to the user.
-> For now the maximum number of samples that can be read in one shot must be less or equal
-> the hardware fifo size.
-Sounds sensible.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/gyro/adis16130.h      |   42 --------
+ drivers/staging/iio/gyro/adis16130_core.c |  148 +++++++++++++---------------
+ 2 files changed, 69 insertions(+), 121 deletions(-)
 
-> 
->> or you could set a value in the buffer and
->> check how many elements are in the buffer in iio_store_to_kfifo and
->> only signal iio_rip_kfifo when it is bigger than your threshold. I
->> guess you may want to flush the kfifo as well though that will IIRC
->> require some careful locking. Might actually be quicker to just eat
->> the existing contents at the beginning of iio_rip_kfifo (if ugly).
->>
->> I think this would need to be a separate implementation from kfifo,
->> but I guess you could do it as a couple of 'variant functions' and
->> supply a separate iio_kfifo_register_funcs in the header.
->>
->> Should be relatively straight forward to get something that works. I'm
->> sure there are more efficient ways of doing it, but this is probably
->> the easiest to implement.
-> 
-> Well - I think I don't need an additional software fifo at all.
-> The device I'm interfacing has a built-in
-> FIFO, and some controls that allow me the set the number of samples that are captured.
-> I'll probably do something similar to the sca3000_ring.c driver, and add my own buffer
-> implementation.
-That is probably the best bet.
-
+diff --git a/drivers/staging/iio/gyro/adis16130.h b/drivers/staging/iio/gyro/adis16130.h
+deleted file mode 100644
+index 9efc4c7..0000000
+--- a/drivers/staging/iio/gyro/adis16130.h
++++ /dev/null
+@@ -1,42 +0,0 @@
+-#ifndef SPI_ADIS16130_H_
+-#define SPI_ADIS16130_H_
+-
+-#define ADIS16130_CON         0x0
+-#define ADIS16130_CON_RD      (1 << 6)
+-#define ADIS16130_IOP         0x1
+-
+-/* 1 = data-ready signal low when unread data on all channels; */
+-#define ADIS16130_IOP_ALL_RDY (1 << 3)
+-#define ADIS16130_IOP_SYNC    (1 << 0) /* 1 = synchronization enabled */
+-#define ADIS16130_RATEDATA    0x8 /* Gyroscope output, rate of rotation */
+-#define ADIS16130_TEMPDATA    0xA /* Temperature output */
+-#define ADIS16130_RATECS      0x28 /* Gyroscope channel setup */
+-#define ADIS16130_RATECS_EN   (1 << 3) /* 1 = channel enable; */
+-#define ADIS16130_TEMPCS      0x2A /* Temperature channel setup */
+-#define ADIS16130_TEMPCS_EN   (1 << 3)
+-#define ADIS16130_RATECONV    0x30
+-#define ADIS16130_TEMPCONV    0x32
+-#define ADIS16130_MODE        0x38
+-#define ADIS16130_MODE_24BIT  (1 << 1) /* 1 = 24-bit resolution; */
+-
+-#define ADIS16130_MAX_TX     4
+-#define ADIS16130_MAX_RX     4
+-
+-/**
+- * struct adis16130_state - device instance specific data
+- * @us:			actual spi_device to write data
+- * @indio_dev:		industrial I/O device structure
+- * @tx:			transmit buffer
+- * @rx:			recieve buffer
+- * @buf_lock:		mutex to protect tx and rx
+- **/
+-struct adis16130_state {
+-	struct spi_device		*us;
+-	struct iio_dev			*indio_dev;
+-	u8				*tx;
+-	u8				*rx;
+-	u32                             mode; /* 1: 24bits mode 0:16bits mode */
+-	struct mutex			buf_lock;
+-};
+-
+-#endif /* SPI_ADIS16130_H_ */
+diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
+index 04d81d4..70e2831 100644
+--- a/drivers/staging/iio/gyro/adis16130_core.c
++++ b/drivers/staging/iio/gyro/adis16130_core.c
+@@ -6,9 +6,6 @@
+  * Licensed under the GPL-2 or later.
+  */
+ 
+-#include <linux/interrupt.h>
+-#include <linux/irq.h>
+-#include <linux/gpio.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+@@ -23,7 +20,39 @@
+ #include "gyro.h"
+ #include "../adc/adc.h"
+ 
+-#include "adis16130.h"
++#define ADIS16130_CON         0x0
++#define ADIS16130_CON_RD      (1 << 6)
++#define ADIS16130_IOP         0x1
++
++/* 1 = data-ready signal low when unread data on all channels; */
++#define ADIS16130_IOP_ALL_RDY (1 << 3)
++#define ADIS16130_IOP_SYNC    (1 << 0) /* 1 = synchronization enabled */
++#define ADIS16130_RATEDATA    0x8 /* Gyroscope output, rate of rotation */
++#define ADIS16130_TEMPDATA    0xA /* Temperature output */
++#define ADIS16130_RATECS      0x28 /* Gyroscope channel setup */
++#define ADIS16130_RATECS_EN   (1 << 3) /* 1 = channel enable; */
++#define ADIS16130_TEMPCS      0x2A /* Temperature channel setup */
++#define ADIS16130_TEMPCS_EN   (1 << 3)
++#define ADIS16130_RATECONV    0x30
++#define ADIS16130_TEMPCONV    0x32
++#define ADIS16130_MODE        0x38
++#define ADIS16130_MODE_24BIT  (1 << 1) /* 1 = 24-bit resolution; */
++
++/**
++ * struct adis16130_state - device instance specific data
++ * @us:			actual spi_device to write data
++ * @indio_dev:		industrial I/O device structure
++ * @mode:		24 bits (1) or 16 bits (0)
++ * @buf_lock:		mutex to protect tx and rx
++ * @buf:		unified tx/rx buffer
++ **/
++struct adis16130_state {
++	struct spi_device		*us;
++	struct iio_dev			*indio_dev;
++	u32                             mode;
++	struct mutex			buf_lock;
++	u8				buf[4] ____cacheline_aligned;
++};
+ 
+ static int adis16130_spi_write(struct device *dev, u8 reg_addr,
+ 		u8 val)
+@@ -33,10 +62,10 @@ static int adis16130_spi_write(struct device *dev, u8 reg_addr,
+ 	struct adis16130_state *st = iio_dev_get_devdata(indio_dev);
+ 
+ 	mutex_lock(&st->buf_lock);
+-	st->tx[0] = reg_addr;
+-	st->tx[1] = val;
++	st->buf[0] = reg_addr;
++	st->buf[1] = val;
+ 
+-	ret = spi_write(st->us, st->tx, 2);
++	ret = spi_write(st->us, st->buf, 2);
+ 	mutex_unlock(&st->buf_lock);
+ 
+ 	return ret;
+@@ -51,17 +80,19 @@ static int adis16130_spi_read(struct device *dev, u8 reg_addr,
+ 
+ 	mutex_lock(&st->buf_lock);
+ 
+-	st->tx[0] = ADIS16130_CON_RD | reg_addr;
++	st->buf[0] = ADIS16130_CON_RD | reg_addr;
+ 	if (st->mode)
+-		ret = spi_read(st->us, st->rx, 4);
++		ret = spi_read(st->us, st->buf, 4);
+ 	else
+-		ret = spi_read(st->us, st->rx, 3);
++		ret = spi_read(st->us, st->buf, 3);
+ 
+ 	if (ret == 0) {
+ 		if (st->mode)
+-			*val = (st->rx[1] << 16) | (st->rx[2] << 8) | st->rx[3];
++			*val = (st->buf[1] << 16) |
++				(st->buf[2] << 8) |
++				st->buf[3];
+ 		else
+-			*val = (st->rx[1] << 8) | st->rx[2];
++			*val = (st->buf[1] << 8) | st->buf[2];
+ 	}
+ 
+ 	mutex_unlock(&st->buf_lock);
+@@ -69,36 +100,18 @@ static int adis16130_spi_read(struct device *dev, u8 reg_addr,
+ 	return ret;
+ }
+ 
+-static ssize_t adis16130_gyro_read(struct device *dev,
++static ssize_t adis16130_val_read(struct device *dev,
+ 		struct device_attribute *attr,
+ 		char *buf)
+ {
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	u32 val;
+ 	ssize_t ret;
+ 
+ 	/* Take the iio_dev status lock */
+ 	mutex_lock(&indio_dev->mlock);
+-	ret =  adis16130_spi_read(dev, ADIS16130_RATEDATA, &val);
+-	mutex_unlock(&indio_dev->mlock);
+-
+-	if (ret == 0)
+-		return sprintf(buf, "%d\n", val);
+-	else
+-		return ret;
+-}
+-
+-static ssize_t adis16130_temp_read(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	u32 val;
+-	ssize_t ret;
+-
+-	/* Take the iio_dev status lock */
+-	mutex_lock(&indio_dev->mlock);
+-	ret =  adis16130_spi_read(dev, ADIS16130_TEMPDATA, &val);
++	ret =  adis16130_spi_read(dev, this_attr->address, &val);
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+ 	if (ret == 0)
+@@ -114,7 +127,10 @@ static ssize_t adis16130_bitsmode_read(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct adis16130_state *st = iio_dev_get_devdata(indio_dev);
+ 
+-	return sprintf(buf, "%d\n", st->mode);
++	if (st->mode == 1)
++		return sprintf(buf, "s24\n");
++	else
++		return sprintf(buf, "s16\n");
+ }
+ 
+ static ssize_t adis16130_bitsmode_write(struct device *dev,
+@@ -123,44 +139,38 @@ static ssize_t adis16130_bitsmode_write(struct device *dev,
+ 		size_t len)
+ {
+ 	int ret;
+-	long val;
++	u8 val;
+ 
+-	ret = strict_strtol(buf, 16, &val);
+-	if (ret)
+-		goto error_ret;
+-	ret = adis16130_spi_write(dev, ADIS16130_MODE, !!val);
++	if (sysfs_streq(buf, "s16"))
++		val = 0;
++	else if (sysfs_streq(buf, "s24"))
++		val = 1;
++	else
++		return -EINVAL;
++
++	ret = adis16130_spi_write(dev, ADIS16130_MODE, val);
+ 
+-error_ret:
+ 	return ret ? ret : len;
+ }
+-
+-static IIO_DEV_ATTR_TEMP_RAW(adis16130_temp_read);
++static IIO_DEVICE_ATTR(temp_raw, S_IRUGO, adis16130_val_read, NULL,
++		      ADIS16130_TEMPDATA);
+ 
+ static IIO_CONST_ATTR(name, "adis16130");
+ 
+-static IIO_DEV_ATTR_GYRO(adis16130_gyro_read,
+-		ADIS16130_RATEDATA);
+-
+-#define IIO_DEV_ATTR_BITS_MODE(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(bits_mode, _mode, _show, _store, _addr)
++static IIO_DEV_ATTR_GYRO_Z(adis16130_val_read, ADIS16130_RATEDATA);
+ 
+-static IIO_DEV_ATTR_BITS_MODE(S_IWUSR | S_IRUGO, adis16130_bitsmode_read,
++static IIO_DEVICE_ATTR(gyro_z_type, S_IWUSR | S_IRUGO, adis16130_bitsmode_read,
+ 			adis16130_bitsmode_write,
+ 			ADIS16130_MODE);
+ 
+-static struct attribute *adis16130_event_attributes[] = {
+-	NULL
+-};
+-
+-static struct attribute_group adis16130_event_attribute_group = {
+-	.attrs = adis16130_event_attributes,
+-};
++static IIO_CONST_ATTR(gyro_z_type_available, "s16 s24");
+ 
+ static struct attribute *adis16130_attributes[] = {
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_name.dev_attr.attr,
+-	&iio_dev_attr_gyro_raw.dev_attr.attr,
+-	&iio_dev_attr_bits_mode.dev_attr.attr,
++	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
++	&iio_dev_attr_gyro_z_type.dev_attr.attr,
++	&iio_const_attr_gyro_z_type_available.dev_attr.attr,
+ 	NULL
+ };
+ 
+@@ -178,30 +188,16 @@ static int __devinit adis16130_probe(struct spi_device *spi)
+ 	}
+ 	/* this is only used for removal purposes */
+ 	spi_set_drvdata(spi, st);
+-
+-	/* Allocate the comms buffers */
+-	st->rx = kzalloc(sizeof(*st->rx)*ADIS16130_MAX_RX, GFP_KERNEL);
+-	if (st->rx == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_st;
+-	}
+-	st->tx = kzalloc(sizeof(*st->tx)*ADIS16130_MAX_TX, GFP_KERNEL);
+-	if (st->tx == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_rx;
+-	}
+ 	st->us = spi;
+ 	mutex_init(&st->buf_lock);
+ 	/* setup the industrialio driver allocated elements */
+ 	st->indio_dev = iio_allocate_device();
+ 	if (st->indio_dev == NULL) {
+ 		ret = -ENOMEM;
+-		goto error_free_tx;
++		goto error_free_st;
+ 	}
+ 
+ 	st->indio_dev->dev.parent = &spi->dev;
+-	st->indio_dev->num_interrupt_lines = 1;
+-	st->indio_dev->event_attrs = &adis16130_event_attribute_group;
+ 	st->indio_dev->attrs = &adis16130_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+ 	st->indio_dev->driver_module = THIS_MODULE;
+@@ -216,10 +212,6 @@ static int __devinit adis16130_probe(struct spi_device *spi)
+ 
+ error_free_dev:
+ 	iio_free_device(st->indio_dev);
+-error_free_tx:
+-	kfree(st->tx);
+-error_free_rx:
+-	kfree(st->rx);
+ error_free_st:
+ 	kfree(st);
+ error_ret:
+@@ -233,8 +225,6 @@ static int adis16130_remove(struct spi_device *spi)
+ 	struct iio_dev *indio_dev = st->indio_dev;
+ 
+ 	iio_device_unregister(indio_dev);
+-	kfree(st->tx);
+-	kfree(st->rx);
+ 	kfree(st);
+ 
+ 	return 0;
+@@ -262,5 +252,5 @@ static __exit void adis16130_exit(void)
+ module_exit(adis16130_exit);
+ 
+ MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+-MODULE_DESCRIPTION("Analog Devices ADIS16130 High Precision Angular Rate Sensor driver");
++MODULE_DESCRIPTION("Analog Devices ADIS16130 High Precision Angular Rate");
+ MODULE_LICENSE("GPL v2");
+-- 
+1.7.3.4
