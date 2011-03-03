@@ -1,104 +1,133 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:51789 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752626Ab1CHKxz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Mar 2011 05:53:55 -0500
-Message-ID: <4D760AF6.7030809@cam.ac.uk>
-Date: Tue, 08 Mar 2011 10:54:46 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: greg@kroah.com, jic23@cam.ac.uk
+CC: linux-iio@vger.kernel.org, drivers@analog.com,
+        device-drivers-devel@blackfin.uclinux.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] IIO: Documentation: iio_utils: fix channel array generation.
+Date: Thu, 3 Mar 2011 16:50:03 +0100
+Message-ID: <1299167403-18017-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: Thomas Gleixner <tglx@linutronix.de>
-CC: LKML <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: Moving staging:iio over to threaded interrupts.
-References: <4D6FCC99.6090202@cam.ac.uk> <alpine.LFD.2.00.1103081055160.2787@localhost6.localdomain6>
-In-Reply-To: <alpine.LFD.2.00.1103081055160.2787@localhost6.localdomain6>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/08/11 10:30, Thomas Gleixner wrote:
-> On Thu, 3 Mar 2011, Jonathan Cameron wrote:
->> So to my mind two solutions exist.
->> 1) A single thread per trigger.  Everything prior to the work queue
->> calls is moved into a handler that goes in the 'fast' list which stays
->> in our top half handler.  The work queue bits are called one after
->> another in the bottom half.
->>
->> 2) Allow each consumer to attach it's own thread to the trigger
->> controller and basically implement our own variant of the core threaded
->> interrupt code that allows for a list of threads rather than a single one.
->>
->> I rather like the idea of 2.  It might even end up with different
->> devices being queried from different processor cores simultaneously
->> which is quite cute.  The question is whether a simple enough
->> implementation is possible that the originators of the threaded interrupt
->> code would be happy with it (as it bypasses or would mean additions to their
->> core code).
-> 
-> Don't implement another threading model. Look at the trigger irq as a
-> demultiplexing interrupt. So if you have several consumers of a single
-> trigger, then you can implement a pseudo irq_chip and register the sub
-> devices as separate interrupts.
-> 
-> That means your main trigger interrupt would look like this:
-> 
-> irqreturn_t hardirq_handler(int irq, void *dev)
-> {
->      iio_trigger_dev *idev = dev;
->      int i;
-> 
->      store_state_as_necessary(idev);
-> 
->      for (i = 0; i < idev->nr_subirqs; i++) {
->      	    if (idev->subirqs[i].enabled)
-> 		generic_handle_irq(idev->subirq_base + i);
->      }
-> }
-> 
-> And you'd have an irq_chip implementation which does:
-> 
-> static void subirq_mask(struct irq_data *d)
-> {
->      iio_trigger_dev *idev = irq_data_get_irq_chip_data(d);
->      int idx = d->irq - idev->subirq_base;
-> 
->      idev->subirqs[idx].enabled = false;
-> }
-> 
-> static void subirq_unmask(struct irq_data *d)
-> {
->      iio_trigger_dev *idev = irq_data_get_irq_chip_data(d);
->      int idx = d->irq - idev->subirq_base;
-> 
->      idev->subirqs[idx].enabled = true;
-> }
-> 
-> static struct irq_chip subirq_chip = {
->        .name = "iiochip",
->        .mask = subirq_mask,
->        .unmask = subirq_unmask,
-> };
-> 
-> init()
-> {
-> 	for_each_subirq(i)
-> 		irq_set_chip_and_handler(i, &subirq_chip, handle_simple_irq);
-> }
-> 
-> So now you can request the interrupts for your subdevices with
-> request_irq or request_threaded_irq.
-> 
-> You can also implement #1 this way, you just mark the sub device
-> interrupts as IRQ_NESTED_THREAD, and then call the handlers from the
-> main trigger irq thread.
-Excellent.  I hadn't thought of doing it that way at all and it certainly looks
-like a much cleaner option than what we have now let alone the mess I was suggesting
-above.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Will have a go at implementing this asap.
+The previous implementation flawed, in case some channels are not enabled.
+The sorted array would then include channel information of disabled channels,
+And misses the enabled ones, when the count is reached.
+More troublesome, the loop would not even terminate.
 
-Thanks for the advice,
+The fix is twofold:
 
-Jonathan
+First we skip channels that are not enabled.
+Then we use a tested bubble sort algorithm to sort the array.
+Since we already allocated exactly the number of bytes we need.
+We can exercise bubble sort on the original memory.
+In all cases I've seen, the array is already sorted, so this sort
+terminates immediately.
 
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/Documentation/iio_utils.h |   53 ++++++++++++++----------
+ 1 files changed, 31 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
+index 1b33c04..da10b4e 100644
+--- a/drivers/staging/iio/Documentation/iio_utils.h
++++ b/drivers/staging/iio/Documentation/iio_utils.h
+@@ -242,6 +242,25 @@ error_ret:
+ 	return ret;
+ }
+
++/**
++ * bsort_channel_array_by_index() - reorder so that the array is in index order
++ *
++ **/
++
++inline void bsort_channel_array_by_index(struct iio_channel_info **ci_array, int cnt)
++{
++
++	struct iio_channel_info temp;
++	int x,y;
++
++	for(x=0; x<cnt; x++)
++		for(y=0; y<(cnt - 1); y++)
++			if((*ci_array)[y].index > (*ci_array)[y+1].index) {
++				temp = (*ci_array)[y+1];
++				(*ci_array)[y+1] = (*ci_array)[y];
++				(*ci_array)[y] = temp;
++			}
++}
+
+ /**
+  * build_channel_array() - function to figure out what channels are present
+@@ -254,7 +273,7 @@ inline int build_channel_array(const char *device_dir,
+ {
+ 	DIR *dp;
+ 	FILE *sysfsfp;
+-	int count = 0, temp, i;
++	int count, temp, i;
+ 	struct iio_channel_info *current;
+ 	int ret;
+ 	const struct dirent *ent;
+@@ -290,11 +309,10 @@ inline int build_channel_array(const char *device_dir,
+ 			fscanf(sysfsfp, "%u", &ret);
+ 			if (ret == 1)
+ 				(*counter)++;
+-			count++;
+ 			fclose(sysfsfp);
+ 			free(filename);
+ 		}
+-	*ci_array = malloc(sizeof(**ci_array)*count);
++	*ci_array = malloc(sizeof(**ci_array) * (*counter));
+ 	if (*ci_array == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_close_dir;
+@@ -321,6 +339,13 @@ inline int build_channel_array(const char *device_dir,
+ 			}
+ 			fscanf(sysfsfp, "%u", &current->enabled);
+ 			fclose(sysfsfp);
++
++			if (!current->enabled) {
++				free(filename);
++				count--;
++				continue;
++			}
++
+ 			current->scale = 1.0;
+ 			current->offset = 0;
+ 			current->name = strndup(ent->d_name,
+@@ -375,26 +400,10 @@ inline int build_channel_array(const char *device_dir,
+ 						current->generic_name);
+ 		}
+ 	}
+-	/* reorder so that the array is in index order*/
+-	current = malloc(sizeof(**ci_array)*(*counter));
+-	if (current == NULL) {
+-		ret = -ENOMEM;
+-		goto error_cleanup_array;
+-	}
++
+ 	closedir(dp);
+-	count = 0;
+-	temp = 0;
+-	while (count < *counter)
+-		for (i = 0; i < *counter; i++)
+-			if ((*ci_array)[i].index == temp) {
+-				memcpy(&current[count++],
+-				       &(*ci_array)[i],
+-				       sizeof(*current));
+-				temp++;
+-				break;
+-			}
+-	free(*ci_array);
+-	*ci_array = current;
++	/* reorder so that the array is in index order */
++	bsort_channel_array_by_index(ci_array, *counter);
+
+ 	return 0;
+
+--
+1.6.0.2
