@@ -1,27 +1,34 @@
-Return-Path: <marten.svanfeldt@gmail.com>
-Message-ID: <4D7471F8.5050603@gmail.com>
-Date: Mon, 07 Mar 2011 13:49:44 +0800
-From: Marten Svanfeldt <marten.svanfeldt@gmail.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "Hennerich, Michael" <Michael.Hennerich@analog.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: High frequency software trigger
-References: <4D709432.90003@gmail.com> <544AC56F16B56944AEC3BD4E3D59177133FA70B26C@LIMKCMBX1.ad.analog.com> <4D70BFCD.40605@gmail.com> <4D70C8AA.4090300@cam.ac.uk>
-In-Reply-To: <4D70C8AA.4090300@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:47719 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758451Ab1CCRlJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2011 12:41:09 -0500
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org
+Cc: manuel.stahl@iis.fraunhofer.de, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 0/2] staging:iio:lis3l02dq cs_change fix and cleanups.
+Date: Thu,  3 Mar 2011 17:41:39 +0000
+Message-Id: <1299174101-1030-1-git-send-email-jic23@cam.ac.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2011-03-04 19:10, Jonathan Cameron wrote:
-> I'm only superficially familiar with the abilities of hrtimers.
-> Perhaps you could post your current code as an RFC so we can get an idea of exactly
-> how this would work?
+Both of these were originally part of Manuel's patch set.
+The cleanup changes in the second patch are rather more extensive
+than Manuel suggested due to change in the return value needing
+to be appropriately handled.
 
-Right now my work is a mix of driver interfacing code and triggering, 
-being the result of hacking away during my thesis work. I will try to 
-write a cleaner hrtimers based trigger during the next week(s) and send 
-it for review, with the limit of not having access to our target 
-platform right now so testing will be limited.
+Thanks,
 
-Regards
-Marten Svanfeldt
+Jonathan
+
+Manuel Stahl (2):
+  staging:iio:lis3l02dq fix spi cs_change behaviour
+  staging:iio:lis3l02dq use standard functions where possible.
+
+ drivers/staging/iio/accel/lis3l02dq_core.c |   53 +++++++--------------------
+ drivers/staging/iio/accel/lis3l02dq_ring.c |    4 +-
+ 2 files changed, 16 insertions(+), 41 deletions(-)
+
+-- 
+1.7.3.4
+
