@@ -1,28 +1,35 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:58631 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754836Ab1CHNxY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Mar 2011 08:53:24 -0500
-Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:36641)
-	by ppsw-52.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.159]:25)
-	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
-	id 1PwxLn-0007Jm-E0 (Exim 4.72) for linux-iio@vger.kernel.org
-	(return-path <jic23@cam.ac.uk>); Tue, 08 Mar 2011 13:53:23 +0000
-Message-ID: <4D763507.2090003@cam.ac.uk>
-Date: Tue, 08 Mar 2011 13:54:15 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+Date: Tue, 8 Mar 2011 13:59:41 +0000
+Subject: RE: Build iio as built in rather than module.
+Message-ID: <544AC56F16B56944AEC3BD4E3D59177133FA8775EF@LIMKCMBX1.ad.analog.com>
+References: <4D763507.2090003@cam.ac.uk>
+In-Reply-To: <4D763507.2090003@cam.ac.uk>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Build iio as built in rather than module.
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Just a heads up.  Right now on a stargate 2 (pxa) I can't boot if
-IIO is built in rather than the module I normally use.
+Jonathan Cameron wrote on 2011-03-08:
+> Just a heads up.  Right now on a stargate 2 (pxa) I can't boot if IIO
+> is built in rather than the module I normally use.
+>
+> Chasing down exactly why now.  Annoyingly this is occurring before any
+> messages at all come out on the serial console so may take a while to
+> track down.
+>
+> Jonathan
 
-Chasing down exactly why now.  Annoyingly this is occurring before
-any messages at all come out on the serial console so may take a while
-to track down.
+Works ok on Blackfin - however one thing I noticed a while ago.
+In case IIO device drivers are build statically into the kernel,
+udev/mdev and friends doesn't generate the device nodes on the fly.
 
-Jonathan
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368; Gesch=
+aeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret=
+ Seif
