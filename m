@@ -1,12 +1,12 @@
 Return-Path: <Michael.Hennerich@analog.com>
 From: <michael.hennerich@analog.com>
-To: greg@kroah.com, jic23@cam.ac.uk
+To: jic23@cam.ac.uk
 CC: linux-iio@vger.kernel.org, drivers@analog.com,
         device-drivers-devel@blackfin.uclinux.org,
         Michael Hennerich <michael.hennerich@analog.com>
 Subject: [PATCH] IIO:DAC: AD5624R: Update to IIO ABI
-Date: Wed, 9 Mar 2011 16:01:45 +0100
-Message-ID: <1299682905-29253-1-git-send-email-michael.hennerich@analog.com>
+Date: Tue, 8 Mar 2011 15:15:00 +0100
+Message-ID: <1299593700-10724-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
@@ -24,36 +24,28 @@ Add option to specify external reference voltage via the regulator framework.
 Add mandatory name attribute
 Add mandatory out_scale attribute
 
-Changes since V1:
-Refine outY_powerdown_mode description
-Remove bonus white line
-
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/Documentation/sysfs-bus-iio |   32 +++
+ drivers/staging/iio/Documentation/sysfs-bus-iio |   29 +++
  drivers/staging/iio/dac/ad5624r.h               |   89 +++++++--
- drivers/staging/iio/dac/ad5624r_spi.c           |  241 ++++++++++++++---------
- 3 files changed, 251 insertions(+), 111 deletions(-)
+ drivers/staging/iio/dac/ad5624r_spi.c           |  242 ++++++++++++++---------
+ 3 files changed, 249 insertions(+), 111 deletions(-)
 
 diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio b/drivers/staging/iio/Documentation/sysfs-bus-iio
-index 8058fcb..4915aee 100644
+index 8058fcb..f97fb99 100644
 --- a/drivers/staging/iio/Documentation/sysfs-bus-iio
 +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
-@@ -271,6 +271,38 @@ Description:
+@@ -271,6 +271,35 @@ Description:
  		where a single output sets the value for multiple channels
  		simultaneously.
-
+ 
 +What:		/sys/bus/iio/devices/deviceX/outY_powerdown_mode
 +What:		/sys/bus/iio/devices/deviceX/out_powerdown_mode
 +KernelVersion:	2.6.38
 +Contact:	linux-iio@vger.kernel.org
 +Description:
 +		Specifies the output powerdown mode.
-+		DAC output stage is disconnected from the amplifier and
-+		1kohm_to_gnd: connected to ground via an 1kOhm resistor
-+		100kohm_to_gnd: connected to ground via an 100kOhm resistor
-+		three_state: left floating
++		(three_state, ...)
 +		For a list of available output power down options read
 +		outX_powerdown_mode_available. If Y is not present the
 +		mode is shared across all outputs.
@@ -93,10 +85,10 @@ index ce518be..c16df4e 100644
 + */
  #ifndef SPI_AD5624R_H_
  #define SPI_AD5624R_H_
-
+ 
 -#define AD5624R_DAC_CHANNELS	4
 +#define AD5624R_DAC_CHANNELS			4
-
+ 
 -#define AD5624R_ADDR_DAC0	0x0
 -#define AD5624R_ADDR_DAC1	0x1
 -#define AD5624R_ADDR_DAC2	0x2
@@ -107,7 +99,7 @@ index ce518be..c16df4e 100644
 +#define AD5624R_ADDR_DAC2			0x2
 +#define AD5624R_ADDR_DAC3			0x3
 +#define AD5624R_ADDR_ALL_DAC			0x7
-
+ 
 -#define AD5624R_CMD_WRITE_INPUT_N             0x0
 -#define AD5624R_CMD_UPDATE_DAC_N              0x1
 -#define AD5624R_CMD_WRITE_INPUT_N_UPDATE_ALL  0x2
@@ -124,7 +116,7 @@ index ce518be..c16df4e 100644
 +#define AD5624R_CMD_RESET			0x5
 +#define AD5624R_CMD_LDAC_SETUP			0x6
 +#define AD5624R_CMD_INTERNAL_REFER_SETUP	0x7
-
+ 
 -#endif
 +#define AD5624R_LDAC_PWRDN_NONE			0x0
 +#define AD5624R_LDAC_PWRDN_1K			0x1
@@ -180,7 +172,7 @@ index ce518be..c16df4e 100644
 +
 +#endif /* SPI_AD5624R_H_ */
 diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
-index 2b1c6dd..0f97ce0 100644
+index 2b1c6dd..afb4501 100644
 --- a/drivers/staging/iio/dac/ad5624r_spi.c
 +++ b/drivers/staging/iio/dac/ad5624r_spi.c
 @@ -1,9 +1,9 @@
@@ -193,7 +185,7 @@ index 2b1c6dd..0f97ce0 100644
 - * Licensed under the GPL-2 or later.
 + * Licensed under the GPL-2.
   */
-
+ 
  #include <linux/interrupt.h>
 @@ -14,25 +14,38 @@
  #include <linux/spi/spi.h>
@@ -201,12 +193,12 @@ index 2b1c6dd..0f97ce0 100644
  #include <linux/sysfs.h>
 -#include <linux/delay.h>
 +#include <linux/regulator/consumer.h>
-
+ 
  #include "../iio.h"
  #include "../sysfs.h"
  #include "dac.h"
  #include "ad5624r.h"
-
+ 
 -/**
 - * struct ad5624r_state - device related storage
 - * @indio_dev:	associated industrial IO device
@@ -245,11 +237,11 @@ index 2b1c6dd..0f97ce0 100644
 +		.int_vref_mv = 2500,
 +	},
  };
-
+ 
  static int ad5624r_spi_write(struct spi_device *spi,
 @@ -42,11 +55,12 @@ static int ad5624r_spi_write(struct spi_device *spi,
  	u8 msg[3];
-
+ 
  	/*
 -	 * The input shift register is 24 bits wide. The first two bits are don't care bits.
 -	 * The next three are the command bits, C2 to C0, followed by the 3-bit DAC address,
@@ -267,27 +259,27 @@ index 2b1c6dd..0f97ce0 100644
  	msg[0] = data >> 16;
 @@ -71,40 +85,43 @@ static ssize_t ad5624r_write_dac(struct device *dev,
  		return ret;
-
+ 
  	ret = ad5624r_spi_write(st->us, AD5624R_CMD_WRITE_INPUT_N_UPDATE_N,
 -				this_attr->address, readin, st->data_len);
 +				this_attr->address, readin,
 +				st->chip_info->bits);
  	return ret ? ret : len;
  }
-
+ 
 -static ssize_t ad5624r_read_ldac_mode(struct device *dev,
 +static ssize_t ad5624r_read_powerdown_mode(struct device *dev,
  				      struct device_attribute *attr, char *buf)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
  	struct ad5624r_state *st = indio_dev->dev_data;
-
+ 
 -	return sprintf(buf, "%x\n", st->ldac_mode);
 +	char mode[][15] = {"", "1kohm_to_gnd", "100kohm_to_gnd", "three_state"};
 +
 +	return sprintf(buf, "%s\n", mode[st->pwr_down_mode]);
  }
-
+ 
 -static ssize_t ad5624r_write_ldac_mode(struct device *dev,
 +static ssize_t ad5624r_write_powerdown_mode(struct device *dev,
  				       struct device_attribute *attr,
@@ -298,7 +290,7 @@ index 2b1c6dd..0f97ce0 100644
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
  	struct ad5624r_state *st = indio_dev->dev_data;
 +	int ret;
-
+ 
 -	ret = strict_strtol(buf, 16, &readin);
 -	if (ret)
 -		return ret;
@@ -314,10 +306,10 @@ index 2b1c6dd..0f97ce0 100644
 +		st->pwr_down_mode = AD5624R_LDAC_PWRDN_3STATE;
 +	else
 +		ret = -EINVAL;
-
+ 
  	return ret ? ret : len;
  }
-
+ 
 -static ssize_t ad5624r_read_dac_power_mode(struct device *dev,
 +static ssize_t ad5624r_read_dac_powerdown(struct device *dev,
  					   struct device_attribute *attr,
@@ -326,21 +318,21 @@ index 2b1c6dd..0f97ce0 100644
 @@ -112,10 +129,11 @@ static ssize_t ad5624r_read_dac_power_mode(struct device *dev,
  	struct ad5624r_state *st = indio_dev->dev_data;
  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-
+ 
 -	return sprintf(buf, "%d\n", st->dac_power_mode[this_attr->address]);
 +	return sprintf(buf, "%d\n",
 +			!!(st->pwr_down_mask & (1 << this_attr->address)));
  }
-
+ 
 -static ssize_t ad5624r_write_dac_power_mode(struct device *dev,
 +static ssize_t ad5624r_write_dac_powerdown(struct device *dev,
  					    struct device_attribute *attr,
  					    const char *buf, size_t len)
  {
-@@ -129,80 +147,82 @@ static ssize_t ad5624r_write_dac_power_mode(struct device *dev,
+@@ -129,80 +147,83 @@ static ssize_t ad5624r_write_dac_power_mode(struct device *dev,
  	if (ret)
  		return ret;
-
+ 
 -	ret = ad5624r_spi_write(st->us, AD5624R_CMD_POWERDOWN_DAC, 0,
 -				((readin & 0x3) << 4) |
 -				(1 << this_attr->address), 16);
@@ -350,15 +342,15 @@ index 2b1c6dd..0f97ce0 100644
 +		st->pwr_down_mask &= ~(1 << this_attr->address);
 +	else
 +		ret = -EINVAL;
-
+ 
 -	st->dac_power_mode[this_attr->address] = readin & 0x3;
 +	ret = ad5624r_spi_write(st->us, AD5624R_CMD_POWERDOWN_DAC, 0,
 +				(st->pwr_down_mode << 4) |
 +				st->pwr_down_mask, 16);
-
+ 
  	return ret ? ret : len;
  }
-
+ 
 -static ssize_t ad5624r_read_internal_ref_mode(struct device *dev,
 -					      struct device_attribute *attr,
 -					      char *buf)
@@ -372,12 +364,12 @@ index 2b1c6dd..0f97ce0 100644
 +	struct ad5624r_state *st = iio_dev_get_devdata(dev_info);
 +	/* Corresponds to Vref / 2^(bits) */
 +	unsigned int scale_uv = (st->vref_mv * 1000) >> st->chip_info->bits;
-
+ 
 -	return sprintf(buf, "%d\n", st->internal_ref);
 +	return sprintf(buf, "%d.%03d\n", scale_uv / 1000, scale_uv % 1000);
  }
 +static IIO_DEVICE_ATTR(out_scale, S_IRUGO, ad5624r_show_scale, NULL, 0);
-
+ 
 -static ssize_t ad5624r_write_internal_ref_mode(struct device *dev,
 -					       struct device_attribute *attr,
 -					       const char *buf, size_t len)
@@ -389,28 +381,29 @@ index 2b1c6dd..0f97ce0 100644
 -	int ret;
 -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
 -	struct ad5624r_state *st = indio_dev->dev_data;
-+	struct iio_dev *dev_info = dev_get_drvdata(dev);
-+	struct ad5624r_state *st = iio_dev_get_devdata(dev_info);
-
+-
 -	ret = strict_strtol(buf, 10, &readin);
 -	if (ret)
 -		return ret;
 -
 -	ret = ad5624r_spi_write(st->us, AD5624R_CMD_INTERNAL_REFER_SETUP, 0,
 -				!!readin, 16);
--
++	struct iio_dev *dev_info = dev_get_drvdata(dev);
++	struct ad5624r_state *st = iio_dev_get_devdata(dev_info);
+ 
 -	st->internal_ref = !!readin;
 -
 -	return ret ? ret : len;
 +	return sprintf(buf, "%s\n", spi_get_device_id(st->us)->name);
  }
 +static IIO_DEVICE_ATTR(name, S_IRUGO, ad5624r_show_name, NULL, 0);
-
++
+ 
  static IIO_DEV_ATTR_OUT_RAW(0, ad5624r_write_dac, AD5624R_ADDR_DAC0);
  static IIO_DEV_ATTR_OUT_RAW(1, ad5624r_write_dac, AD5624R_ADDR_DAC1);
  static IIO_DEV_ATTR_OUT_RAW(2, ad5624r_write_dac, AD5624R_ADDR_DAC2);
  static IIO_DEV_ATTR_OUT_RAW(3, ad5624r_write_dac, AD5624R_ADDR_DAC3);
-
+ 
 -static IIO_DEVICE_ATTR(ldac_mode, S_IRUGO | S_IWUSR, ad5624r_read_ldac_mode,
 -		       ad5624r_write_ldac_mode, 0);
 -static IIO_DEVICE_ATTR(internal_ref, S_IRUGO | S_IWUSR,
@@ -419,12 +412,16 @@ index 2b1c6dd..0f97ce0 100644
 +static IIO_DEVICE_ATTR(out_powerdown_mode, S_IRUGO |
 +			S_IWUSR, ad5624r_read_powerdown_mode,
 +			ad5624r_write_powerdown_mode, 0);
-
--#define IIO_DEV_ATTR_DAC_POWER_MODE(_num, _show, _store, _addr)			\
--	IIO_DEVICE_ATTR(dac_power_mode_##_num, S_IRUGO | S_IWUSR, _show, _store, _addr)
++
 +static IIO_CONST_ATTR(out_powerdown_mode_available,
 +			"1kohm_to_gnd 100kohm_to_gnd three_state");
-
+ 
+-#define IIO_DEV_ATTR_DAC_POWER_MODE(_num, _show, _store, _addr)			\
+-	IIO_DEVICE_ATTR(dac_power_mode_##_num, S_IRUGO | S_IWUSR, _show, _store, _addr)
++#define IIO_DEV_ATTR_DAC_POWERDOWN(_num, _show, _store, _addr)		\
++	IIO_DEVICE_ATTR(out##_num##_powerdown,				\
++			S_IRUGO | S_IWUSR, _show, _store, _addr)
+ 
 -static IIO_DEV_ATTR_DAC_POWER_MODE(0, ad5624r_read_dac_power_mode,
 -				   ad5624r_write_dac_power_mode, 0);
 -static IIO_DEV_ATTR_DAC_POWER_MODE(1, ad5624r_read_dac_power_mode,
@@ -433,10 +430,6 @@ index 2b1c6dd..0f97ce0 100644
 -				   ad5624r_write_dac_power_mode, 2);
 -static IIO_DEV_ATTR_DAC_POWER_MODE(3, ad5624r_read_dac_power_mode,
 -				   ad5624r_write_dac_power_mode, 3);
-+#define IIO_DEV_ATTR_DAC_POWERDOWN(_num, _show, _store, _addr)		\
-+	IIO_DEVICE_ATTR(out##_num##_powerdown,				\
-+			S_IRUGO | S_IWUSR, _show, _store, _addr)
-+
 +static IIO_DEV_ATTR_DAC_POWERDOWN(0, ad5624r_read_dac_powerdown,
 +				   ad5624r_write_dac_powerdown, 0);
 +static IIO_DEV_ATTR_DAC_POWERDOWN(1, ad5624r_read_dac_powerdown,
@@ -445,7 +438,7 @@ index 2b1c6dd..0f97ce0 100644
 +				   ad5624r_write_dac_powerdown, 2);
 +static IIO_DEV_ATTR_DAC_POWERDOWN(3, ad5624r_read_dac_powerdown,
 +				   ad5624r_write_dac_powerdown, 3);
-
+ 
  static struct attribute *ad5624r_attributes[] = {
  	&iio_dev_attr_out0_raw.dev_attr.attr,
  	&iio_dev_attr_out1_raw.dev_attr.attr,
@@ -467,20 +460,20 @@ index 2b1c6dd..0f97ce0 100644
 +	&iio_dev_attr_name.dev_attr.attr,
  	NULL,
  };
-
-@@ -213,7 +233,7 @@ static const struct attribute_group ad5624r_attribute_group = {
+ 
+@@ -213,7 +234,7 @@ static const struct attribute_group ad5624r_attribute_group = {
  static int __devinit ad5624r_probe(struct spi_device *spi)
  {
  	struct ad5624r_state *st;
 -	int ret = 0;
 +	int ret, voltage_uv = 0;
-
+ 
  	st = kzalloc(sizeof(*st), GFP_KERNEL);
  	if (st == NULL) {
-@@ -222,18 +242,30 @@ static int __devinit ad5624r_probe(struct spi_device *spi)
+@@ -222,18 +243,30 @@ static int __devinit ad5624r_probe(struct spi_device *spi)
  	}
  	spi_set_drvdata(spi, st);
-
+ 
 -	st->data_len = spi_get_device_id(spi)->driver_data;
 +	st->reg = regulator_get(&spi->dev, "vcc");
 +	if (!IS_ERR(st->reg)) {
@@ -498,7 +491,7 @@ index 2b1c6dd..0f97ce0 100644
 +		st->vref_mv = voltage_uv / 1000;
 +	else
 +		st->vref_mv = st->chip_info->int_vref_mv;
-
+ 
  	st->us = spi;
  	st->indio_dev = iio_allocate_device();
  	if (st->indio_dev == NULL) {
@@ -513,19 +506,19 @@ index 2b1c6dd..0f97ce0 100644
  	st->indio_dev->attrs = &ad5624r_attribute_group;
  	st->indio_dev->dev_data = (void *)(st);
  	st->indio_dev->driver_module = THIS_MODULE;
-@@ -243,14 +275,22 @@ static int __devinit ad5624r_probe(struct spi_device *spi)
+@@ -243,14 +276,22 @@ static int __devinit ad5624r_probe(struct spi_device *spi)
  	if (ret)
  		goto error_free_dev;
-
+ 
 -	spi->mode = SPI_MODE_0;
 -	spi_setup(spi);
 +	ret = ad5624r_spi_write(spi, AD5624R_CMD_INTERNAL_REFER_SETUP, 0,
 +				!!voltage_uv, 16);
 +	if (ret)
 +		goto error_free_dev;
-
+ 
  	return 0;
-
+ 
  error_free_dev:
  	iio_free_device(st->indio_dev);
 -error_free_st:
@@ -539,9 +532,9 @@ index 2b1c6dd..0f97ce0 100644
  	kfree(st);
  error_ret:
  	return ret;
-@@ -261,15 +301,24 @@ static int __devexit ad5624r_remove(struct spi_device *spi)
+@@ -261,15 +302,24 @@ static int __devexit ad5624r_remove(struct spi_device *spi)
  	struct ad5624r_state *st = spi_get_drvdata(spi);
-
+ 
  	iio_device_unregister(st->indio_dev);
 +
 +	if (!IS_ERR(st->reg)) {
@@ -550,10 +543,10 @@ index 2b1c6dd..0f97ce0 100644
 +	}
 +
  	kfree(st);
-
+ 
  	return 0;
  }
-
+ 
  static const struct spi_device_id ad5624r_id[] = {
 -	{"ad5624r", 12},
 -	{"ad5644r", 14},
@@ -566,6 +559,6 @@ index 2b1c6dd..0f97ce0 100644
 +	{"ad5664r5", ID_AD5664R5},
  	{}
  };
-
---
+ 
+-- 
 1.6.0.2
