@@ -1,262 +1,186 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:43939 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752341Ab1CXUJR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Mar 2011 16:09:17 -0400
-Message-ID: <4D8BA53A.4090307@cam.ac.uk>
-Date: Thu, 24 Mar 2011 20:10:34 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: greg@kroah.com, jic23@cam.ac.uk
+CC: linux-iio@vger.kernel.org, stable@kernel.org, drivers@analog.com,
+        device-drivers-devel@blackfin.uclinux.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] IIO: IMU: ADIS16400: Fix miscellaneous issues
+Date: Thu, 10 Mar 2011 17:28:26 +0100
+Message-ID: <1299774506-8620-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: Jon Brenner <jbrenner@TAOSinc.com>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2.6.38-rc7]TAOS 258x: Device Driver
-References: <1300131941.17298.17.camel@jonz-ubuntu> <4D87A1D6.2080306@cam.ac.uk> <B4B07CCC7B7A084E989CF9386538EA1D63A83B@exchsrvr.taosinc.com> <4D89D441.9030600@cam.ac.uk> <B4B07CCC7B7A084E989CF9386538EA1D63A93D@exchsrvr.taosinc.com> <4D8B27DF.5060608@cam.ac.uk> <B4B07CCC7B7A084E989CF9386538EA1D63A9D6@exchsrvr.taosinc.com>
-In-Reply-To: <B4B07CCC7B7A084E989CF9386538EA1D63A9D6@exchsrvr.taosinc.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/24/11 19:04, Jon Brenner wrote:
-> Hi Jonathan,
-> The remaining issue that I am still trying to resolve is dealing with a
-> proper ABI for the device integration time.
-> If 'illuminance0_sampling_frequency' is not the proper ABI, should I
-> create a new ABI 
-> called illuminance0_integration_time and add it to the
-> sys-bus-iio-lisgt-tsl2583 document as you had me do with
-> /sys/bus/iio/devices/device[n]/lux_table?
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Hmm. It really isn't fitting well in sampling frequency is it?
-Obviously it is connected to the frequency at which one can sample,
-but isn't quite the same.
+Fix up SPI messages cs_change behavior
+Add delay after self test
+Fix product ID check, skip embedded revision number.
+Fix addresses of GYRO and ACCEL calibration offset.
+Make sure only enabled scan_elements are pushed into the ring
 
-Throw an email to linux-iio proposing such an attribute and lets
-see what people come back with. This sort of integration time
-is pretty specific to light sensors so for now add it to the
-light docs - it is however a general thing on light sensors
-so we want something that isn't device specific.
+Changes since V1:
+fix white space issues
 
-Make sure it is in sensible units though (seconds).
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/imu/adis16400.h      |    5 +++--
+ drivers/staging/iio/imu/adis16400_core.c |   21 +++++++++++----------
+ drivers/staging/iio/imu/adis16400_ring.c |   12 +++++++-----
+ 3 files changed, 21 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
+index 6ff33e1..172b09c 100644
+--- a/drivers/staging/iio/imu/adis16400.h
++++ b/drivers/staging/iio/imu/adis16400.h
+@@ -17,7 +17,8 @@
+ #ifndef SPI_ADIS16400_H_
+ #define SPI_ADIS16400_H_
+
+-#define ADIS16400_STARTUP_DELAY	220 /* ms */
++#define ADIS16400_STARTUP_DELAY	290 /* ms */
++#define ADIS16400_MTEST_DELAY 90 /* ms */
+
+ #define ADIS16400_READ_REG(a)    a
+ #define ADIS16400_WRITE_REG(a) ((a) | 0x80)
+@@ -67,7 +68,7 @@
+ #define ADIS16400_AUX_DAC   0x4A /* Auxiliary DAC data */
+
+ #define ADIS16400_PRODUCT_ID 0x56 /* Product identifier */
+-#define ADIS16400_PRODUCT_ID_DEFAULT 0x4015	/* Datasheet says 0x4105, I get 0x4015 */
++#define ADIS16400_PRODUCT_ID_DEFAULT 0x4000
+
+ #define ADIS16400_ERROR_ACTIVE			(1<<14)
+ #define ADIS16400_NEW_DATA			(1<<14)
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index cfb108a..098df8c 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -6,6 +6,7 @@
+  *
+  * Copyright (c) 2009 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+  * Copyright (c) 2007 Jonathan Cameron <jic23@cam.ac.uk>
++ * Copyright (c) 2011 Analog Devices Inc.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+@@ -93,7 +94,6 @@ static int adis16400_spi_write_reg_16(struct device *dev,
+ 			.tx_buf = st->tx + 2,
+ 			.bits_per_word = 8,
+ 			.len = 2,
+-			.cs_change = 1,
+ 		},
+ 	};
+
+@@ -137,7 +137,6 @@ static int adis16400_spi_read_reg_16(struct device *dev,
+ 			.rx_buf = st->rx,
+ 			.bits_per_word = 8,
+ 			.len = 2,
+-			.cs_change = 1,
+ 		},
+ 	};
+
+@@ -375,7 +374,7 @@ static int adis16400_self_test(struct device *dev)
+ 		dev_err(dev, "problem starting self test");
+ 		goto err_ret;
+ 	}
+-
++	msleep(ADIS16400_MTEST_DELAY);
+ 	adis16400_check_status(dev);
+
+ err_ret:
+@@ -454,6 +453,7 @@ static int adis16400_initial_setup(struct adis16400_state *st)
+ 		goto err_ret;
+ 	}
+
++
+ 	/* Read status register to check the result */
+ 	ret = adis16400_check_status(dev);
+ 	if (ret) {
+@@ -471,10 +471,11 @@ static int adis16400_initial_setup(struct adis16400_state *st)
+ 	if (ret)
+ 		goto err_ret;
+
+-	if (prod_id != ADIS16400_PRODUCT_ID_DEFAULT)
++	if ((prod_id & 0xF000) != ADIS16400_PRODUCT_ID_DEFAULT)
+ 		dev_warn(dev, "unknown product id");
+
+-	printk(KERN_INFO DRIVER_NAME ": prod_id 0x%04x at CS%d (irq %d)\n",
++
++	dev_info(dev, ": prod_id 0x%04x at CS%d (irq %d)\n",
+ 			prod_id, st->us->chip_select, st->us->irq);
+
+ 	/* use high spi speed if possible */
+@@ -497,12 +498,12 @@ err_ret:
+ 			_reg)
+
+ static ADIS16400_DEV_ATTR_CALIBBIAS(GYRO_X, ADIS16400_XGYRO_OFF);
+-static ADIS16400_DEV_ATTR_CALIBBIAS(GYRO_Y, ADIS16400_XGYRO_OFF);
+-static ADIS16400_DEV_ATTR_CALIBBIAS(GYRO_Z, ADIS16400_XGYRO_OFF);
++static ADIS16400_DEV_ATTR_CALIBBIAS(GYRO_Y, ADIS16400_YGYRO_OFF);
++static ADIS16400_DEV_ATTR_CALIBBIAS(GYRO_Z, ADIS16400_ZGYRO_OFF);
+
+ static ADIS16400_DEV_ATTR_CALIBBIAS(ACCEL_X, ADIS16400_XACCL_OFF);
+-static ADIS16400_DEV_ATTR_CALIBBIAS(ACCEL_Y, ADIS16400_XACCL_OFF);
+-static ADIS16400_DEV_ATTR_CALIBBIAS(ACCEL_Z, ADIS16400_XACCL_OFF);
++static ADIS16400_DEV_ATTR_CALIBBIAS(ACCEL_Y, ADIS16400_YACCL_OFF);
++static ADIS16400_DEV_ATTR_CALIBBIAS(ACCEL_Z, ADIS16400_ZACCL_OFF);
 
 
+ static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16400_read_14bit_signed,
+@@ -647,7 +648,7 @@ static int __devinit adis16400_probe(struct spi_device *spi)
 
+ 	ret = iio_ring_buffer_register(st->indio_dev->ring, 0);
+ 	if (ret) {
+-		printk(KERN_ERR "failed to initialize the ring\n");
++		dev_err(&spi->dev, "failed to initialize the ring\n");
+ 		goto error_unreg_ring_funcs;
+ 	}
 
-> 
-> Jon
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@cam.ac.uk] 
-> Sent: Thursday, March 24, 2011 6:16 AM
-> To: Jon Brenner
-> Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH 2.6.38-rc7]TAOS 258x: Device Driver
-> 
-> On 03/23/11 22:38, Jon Brenner wrote:
->> Hi Jonathan,
->> Below are a few comments/questions to your latest response.
->> Any direction is greatly appreciated.
->>
->> Jon
-> No chance you can persuade your email client to do conventional
-> indenting?  Ah well, I guess this works more or less.
-> 
->>>
->>> ----- snip ------------
->>>> +	if ((ch0 >= chip->als_saturation) || (ch1 >= 
->>>> +chip->als_saturation))
->>> would be easier to read if you set ret to lux max here an avoid 
->>> jumping into the if statement below.
->>> NO - TSL258X_LUX_CALC_OVER_FLOW NEEDS TO PASSED UP.  
->>> 	MUTEX NEEDS TO BE UNLOCKED. 
->>> 	THEN RETURN.
->> Sorry, should have said jump to out_unlock having set ret = 
->> LUX_CALC_OVER_FLOW;
->>
->> Just makes for marginally cleaner program flow to my mind (though I
-> don't really care about this one).
->>
->> I UNDERSTAND BUT I FORGOT TO MENTION THAT IN ADDITION TO THE ABOVE,
-> ALSO NEEDS TO UPDATE THE ALS_CUR_INFO STRUCT.
->> SO, ALL SAID - EASIER TO SIMPLY JUMP TO RETURN_MAX, AS THIS IS ALL
-> DONE THERE.
-> Fair enough.  Was just personal preference anyway!
-> ...
->>
->>>> +	/* NOW enable the ADC
->>>
->>>
->>> ----- snip ------------
->>> I still wonder if there isn't a way of avoiding this index issue.
->>> It's horrible and really feels like something we ought to able to 
->>> handle reasonably well...
->>> BECAUSE THE CH0 AND CH1 DIVERGE AT HIGH GAINS -- INDEX IS BETTER THAN
-> 
->>> USING CHO OR CH1 VALUE ( AS EITHER ONE OVER THE OTHER WOULD BE WRONG 
->>> :-{ )
->> I can see your point to a certain extent.  The counter argument is
-> that doing it with an index precludes ever touching this with any
-> remotely general purpose user space code.  Given it's an internal gain
-> anyway is the precise value that critical?  Basically is user space ever
-> going to care about the difference between those those values?
->>
->> Another option would be to have a gain for each channel as separate
-> attributes (clearly writing to one would change the other).
->>
->> I SEE YOUR POINT TOO - BUT WHAT ELSE CAN I DO (ASIDE FROM A SEPARATE
-> GAIN FOR EACH CHANNEL - WHICH WOULD BE CONFUSING TO MANAGE)?
->> I GUESS I COULD BUCKETIZE ANYTHING > GAIN 16 - BUT THAT SEEMS RATHER
-> KLUDGED?
->> AGAIN SEEMS LIKE MOST REASONABLE (FOR NOW ANYWAY) IS AN INDEX.
-> It may be reasonable, but it isn't generalizable which means it probably
-> isn't viable long term.  The parameter simply won't be used by anything
-> that isn't custom coded
-> for this particular sensor.   Even Taos' next generation of sensors
-> probably won't
-> have an index which has the same effect.
-> 
-> If it can be coherently blugeoned into existing interfaces, then we
-> should do so.
-> There are quite a few other bits of IIO interface where changing one
-> value will effect others.  This means (and we could emphasise it more)
-> that there are sets of values user space MUST check after making a given
-> change if it wants to know the full device state.  Believe me, things
-> are much more complex with devices that do partial scans of channels
-> only in some combinations!
-> 
->>> Just to confirm, is this a frequency in Hz? If it is can we renaming 
->>> it to taos_als_frequency_show to avoid confusing me?
->>>
->>> THIS IS THE INTERNAL ALS INTEGRATION TIME FOR THE ADC CHANNELS I SHOE
-> 
->>> HORNED IT INTO SAMPLING FREQUENCY TO HELP ALEVIATE THE ABI ANGST
->> That's good but it does have to match the units specified in the ABI
-> as well.
->>
->> OK - MAYBE I'M MISSING SOME INFO.
->> ALL I HAVE FOR THE ABI IS THIS:
->> what:		/sys/bus/iio/devices/deviceX/sampling_frequency
->> KernelVersion:	2.6.35
->> Contact:	linux-iio@vger.kernel.org
->> Description:
->> 		Some devices have internal clocks.  This parameter sets
-> the
->> 		resulting sampling frequency.  In many devices this
->> 		parameter has an effect on input filters etc rather than
->> 		simply controlling when the input is sampled.  As this
->> 		effects datardy triggers, hardware buffers and the sysfs
->> 		direct access interfaces, it may be found in any of the
->> 		relevant directories.  If it effects all of the above
->> 		then it is to be found in the base device directory as
-> here.
->>
->> SO I AM UNSURE OF WHAT UNITS NEED TO MATCH?
-> Fair point. That documentation is clearly lacking. One for the TODO
-> list.
-> Anyhow, it does say sampling frequency so the units can't be a measure
-> of time.  What it should say is 'in Hz' somewhere.
->>
->>>
->>>> +static ssize_t taos_als_time_show(struct device *dev,
->>>> +    struct device_attribute *attr, char *buf) {
->>>> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->>>> +	struct tsl2583_chip *chip = indio_dev->dev_data;
->>>> +
->>>> +	return sprintf(buf, "%d\n", chip->taos_settings.als_time); }
->>>
->>> ----- snip ------------
->>> scale as a stand alone attribute isn't defined. Please document this.
->>> Looking at what you do with it, it's another factor effecting the 
->>> overal gain on the reading that reaches userspace.  Ideally you'd 
->>> roll this into your calibscale parameter, but I can see that would 
->>> get complex to manage. Will have a think about this. In devices with 
->>> a simple conversion function (adc's etc) we handle this by leaving 
->>> this software value be applied by userspace (and output it as
-> in_scale).
->>> The issue here that as far as userspace is concerned both of your 
->>> scales have been applied before it sees the data and at different 
->>> more or less random looking points in the calculation.
->>>
->>> Actually, looking at the calculation you could output 
->>> illuminance0_raw and let userspace apply a multiplier based on your 
->>> trim value and offset
->>> +0.5?  If you want to hold trim in driver then just implement
->>> read and write to
->>>
->>> illuminance0_scale
->>> and have read only
->>> illuminance0_offset (rather tediously for this device, offset is 
->>> applied before scale, so you'll need to divide 0.5 by whatever your
-> trim is).
->>>
->>> We'll have to do pin down how to do this before moving out of staging
-> 
->>> so best to get it right now.
->>>
->>> CHANGED TO ILLUMINANCE0_SCALE
->>>
->>> LIFE WOULE BE NICE IF WE COULD JUST PASS THE RAW DATA UP TO USERSPACE
-> 
->>> BUT WE HAVE CUSTOMERS WHO REQUIRE IT TO COME UP CALCULATED WITH THE 
->>> MULTIPLIER FACTORED IN
->> Sure. It's a fiddly calculation so I can kind of see their point.
->> These light sensors are all a pain :)
->> SO - WE ARE OK?
-> Err. I've kind of lost track, but I think so.  Will take one last look
-> at your next revision!  Sounds like it may have some interesting new
-> features anyway given the other thread!
->>>
->>> ----- snip ------------
->>>> +	for (i = 0; i < MAX_DEVICE_REGS; i++) {
->>>> +		ret = i2c_smbus_write_byte(clientp,
->>>> +				(TSL258X_CMD_REG | (TSL258X_CNTRL +
-> i)));
->>>> +		if (ret < 0) {
->>>> +			dev_err(&clientp->dev, "i2c_smbus_write_byte()
-> to cmd "
->>>> +				"reg failed in taos_probe(), err =
-> %d\n", ret);
->>>> +			goto fail1;
->>>> +		}
->>>> +		buf[i] = i2c_smbus_read_byte(clientp);
->>>   error handling for this read?
->>> VALUE IS UNIMPORTANT - BUT MAKING SURE WE CAN JUST READ ALL 32
-> REGISTER LOCATIONS IS..
-> That's fine, but you haven't verified that if you don't check for a
-> negative return from that read.
-> 
-> AGREED  - ADDED CHECK FOR NEGATIVE RETURN
-> 
->>>
->>> ----- snip ------------
->>>
->>>> +	}
->>>> +	if (!taos_skate_device(buf)) {
->>>> +		dev_info(&clientp->dev, "i2c device found but does not
-> match "
->>>> +			"expected id in taos_probe()\n");
->>>> +		goto fail1;
->>>> +	} else {
->>> The sort of debug info you want to get rid of for production drivers.
-> 
->>> Doesn't tell anyone anything helpful.
->>> NO - DO NOT AGREE - IF A CUSTOMER EXPECTS ONE DEVICE BUT HAS SOMEHOW 
->>> INSTALLED A DIFFERENT ONE AT PRODUCTION TIME, THIS WILL HELP IDENTIFY
-> THE ISSUE.
->>> (IE. WANTED A TAOS ALS DEVICE BUT INSTALLED A TAOS PROX/ALS DEVICE) 
->>> FIRST PART INDICATES THAT.  SECOND PART IS CONFIRMATION THAT DEVICE
-> WAS IDENTIFIED TO SYSTEM.
->>
->> I'm happy with the error one. Just don't see the point in saying
-> 'everything is as expected'.
->> The mere absence of the error indicates that just fine!
->> AGREED - REMOVED 2ND PART (THE OK MESSAGE)
-> Cool
-> 
-> Coming together nicely.
-> 
-> Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
+index 33293fb..da28cb4 100644
+--- a/drivers/staging/iio/imu/adis16400_ring.c
++++ b/drivers/staging/iio/imu/adis16400_ring.c
+@@ -122,12 +122,10 @@ static int adis16400_spi_read_burst(struct device *dev, u8 *rx)
+ 			.tx_buf = st->tx,
+ 			.bits_per_word = 8,
+ 			.len = 2,
+-			.cs_change = 0,
+ 		}, {
+ 			.rx_buf = rx,
+ 			.bits_per_word = 8,
+ 			.len = 24,
+-			.cs_change = 1,
+ 		},
+ 	};
 
+@@ -162,9 +160,10 @@ static void adis16400_trigger_bh_to_ring(struct work_struct *work_s)
+ 			       work_trigger_to_ring);
+ 	struct iio_ring_buffer *ring = st->indio_dev->ring;
+
+-	int i = 0;
++	int i = 0, j;
+ 	s16 *data;
+ 	size_t datasize = ring->access.get_bytes_per_datum(ring);
++	unsigned long mask = ring->scan_mask;
+
+ 	data = kmalloc(datasize , GFP_KERNEL);
+ 	if (data == NULL) {
+@@ -174,9 +173,12 @@ static void adis16400_trigger_bh_to_ring(struct work_struct *work_s)
+
+ 	if (ring->scan_count)
+ 		if (adis16400_spi_read_burst(&st->indio_dev->dev, st->rx) >= 0)
+-			for (; i < ring->scan_count; i++)
++			for (; i < ring->scan_count; i++) {
++				j = __ffs(mask);
++				mask &= ~(1 << j);
+ 				data[i]	= be16_to_cpup(
+-					(__be16 *)&(st->rx[i*2]));
++					(__be16 *)&(st->rx[j*2]));
++			}
+
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+ 	if (ring->scan_timestamp)
+--
+1.6.0.2
