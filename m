@@ -1,11 +1,11 @@
 Return-Path: <greg@kroah.com>
-Date: Mon, 14 Mar 2011 11:49:48 -0700
+Date: Thu, 10 Mar 2011 10:18:25 -0800
 From: Greg KH <greg@kroah.com>
 To: michael.hennerich@analog.com
 Cc: jic23@cam.ac.uk, linux-iio@vger.kernel.org, drivers@analog.com,
 	stable@kernel.org, device-drivers-devel@blackfin.uclinux.org
 Subject: Re: [stable] [PATCH] IIO: IMU: ADIS16400: Fix miscellaneous issues
-Message-ID: <20110314184948.GA21004@kroah.com>
+Message-ID: <20110310181825.GA27171@kroah.com>
 References: <1299774506-8620-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -23,15 +23,15 @@ On Thu, Mar 10, 2011 at 05:28:26PM +0100, michael.hennerich@analog.com wrote:
 > 
 > Changes since V1:
 > fix white space issues
+> 
+> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 
-In looking at this further, this should be broken up into one patch per
-thing, like all good kernel patches should be.
+Hint, blindly adding stable@kernel.org in the Cc: list when sending out
+a patch is NOT the way to get patches into the stable kernel releases.
 
-Especially as you are wanting this to go into the stable tree.
-
-So, please resend this and only mark the ones you feel are needed in
-stable, with the proper "Cc: stable <stable@kernel.org>" in the
-signed-off-by area.
+Please read Documentation/stable_kernel_rules.txt for how to do it
+correctly.
 
 thanks,
 
