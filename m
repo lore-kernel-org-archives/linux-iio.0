@@ -1,1327 +1,845 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:51041 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750698Ab1CITN1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Mar 2011 14:13:27 -0500
-Message-ID: <4D77D18A.2030009@cam.ac.uk>
-Date: Wed, 09 Mar 2011 19:14:18 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <jbrenner@TAOSinc.com>
 MIME-Version: 1.0
-To: Jon Brenner <jbrenner@taosinc.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: Linux Kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2.6.38-rc7]TAOS 258x: Device Driver
-References: <1299634342.1785.20.camel@jonz-ubuntu>
-In-Reply-To: <1299634342.1785.20.camel@jonz-ubuntu>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain;
+	charset="UTF-8"
+Subject: RE: [PATCH 2.6.38-rc7]TAOS 258x: Device Driver
+Date: Fri, 11 Mar 2011 19:16:54 -0600
+Message-ID: <B4B07CCC7B7A084E989CF9386538EA1D639FBF@exchsrvr.taosinc.com>
+In-Reply-To: <4D77D18A.2030009@cam.ac.uk>
+References: <1299634342.1785.20.camel@jonz-ubuntu> <4D77D18A.2030009@cam.ac.uk>
+From: "Jon Brenner" <jbrenner@TAOSinc.com>
+To: "Jonathan Cameron" <jic23@cam.ac.uk>,
+	<linux-iio@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/09/11 01:32, Jon Brenner wrote:
-> From: J. August Brenner <jbrenner@taosinc.com>
-> 
-> This driver supports the TAOS tsl258x family of ALS sensors.
-> This driver provides ALS data (lux), and device configuration via
-> isysfs/iio.
-> More significantly, this driver provides the capability to be fed 'glass
-> coefficients' to accommodate varying system designs (bezels, faceplates,
-> etc.).  
-> 
-Jon, 
-
-Please cc all the relevant subsystem lists...(done)
-
-Sorry to say I'm pretty militant about attribute names.
-My job is to ensure we end up with a generalizable set,
-consistent across lots of different sensor types.  That
-consistency does restrict what is acceptable a lot more
-than would be true if we were only interested in light
-sensors.  That's not say I'm not happy to have futher
-discussions on these points.
-
-Otherwise, getting there. Various comments inline.
-
-> Signed-off-by: Jon August Brenner <jbrenner@taosinc.com>
-> 
-> ---
-> 
->>>From 5b8364f9828dbad5fbfff96385e3fc2a6a6d56ed Mon Sep 17 00:00:00 2001
-> From: Jon Brenner <jbrenner@taosinc.com>
-> Date: Tue, 8 Mar 2011 18:37:13 -0600
-> Subject: [PATCH] TAOS driver for the tsl258x family of devices.
-This should be in the patch body.  Guessing output of git format-patch?
-It's for use with git send-email and forms the email header.
- 
-> ---
->  Makefile                                           |    2 +-
->  .../staging/iio/Documentation/sysfs-bus-iio-light  |   63 ++
->  drivers/staging/iio/light/Kconfig                  |    7 +
->  drivers/staging/iio/light/Makefile                 |    1 +
->  drivers/staging/iio/light/tsl258x.c                | 1010 ++++++++++++++++++++
->  5 files changed, 1082 insertions(+), 1 deletions(-)
-> 
-> diff --git a/Makefile b/Makefile
-> index 26d7d82..2f7d922 100644
-> --- a/Makefile
-> +++ b/Makefile
-This shouldn't be in a driver patch.
-> @@ -1,7 +1,7 @@
->  VERSION = 2
->  PATCHLEVEL = 6
->  SUBLEVEL = 38
-> -EXTRAVERSION = -rc6
-> +EXTRAVERSION = -rc7
->  NAME = Flesh-Eating Bats with Fangs
->  
->  # *DOCUMENTATION*
-> diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-> index 5d84856..5affc2a 100644
-> --- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-> +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-> @@ -62,3 +62,66 @@ Description:
->  		sensing mode. This value should be the output from a reading
->  		and if expressed in SI units, should include _input. If this
->  		value is not in SI units, then it should include _raw.
-> +		
-> +What:		/sys/bus/iio/devices/device[n]/device_state
-> +KernelVersion:	2.6.37
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This property gets/sets the TAOS tsl258x power state.
-This certainly looks more general than that. It's not light sensor specific
-so should be in sysfs-bus-iio rather than the light related doc.  Having said
-that it's also a rather non specific description / name.
-
-I've been generally pushing against having this sort of power control as
-an explicit attribute in the iio abi simply because the right way to handle
-this is probably runtime power management.  We did let a few drivers do
-this early on simply because they predated runtime PM.  That framework has
-the advantage that it also allows for the bus to be turned off if no
-devices on it need to be talked to. It may be time to reopen the previous
-discussion of how to allow userspace to explicitly say it doesn't care
-if a device is powered up...
-
-> +
-> +What:		/sys/bus/iio/devices/device[n]/als_gain
-> +KernelVersion:	2.6.37
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This property gets/sets the TAOS tsl258x analog gain settings
-> +		of the device.
-Again, please get the mention of particular part out of the description.
-Although it isn't explicitly specified (yet) for light sensors, we do have
-an equivalent (I think) of this assuming it is a linear relationship?
-(google found me a datasheet so at least superficially I think it is).
-That attribute is illuminance_calibscale (calib bit means it is applied
-on device or in driver rather than telling userspace what needs to be
-applied by it). (yikes, just noticed that this is wrong in tsl2563 where
-we have calibgain due to some inconsistency on my part a while back).
-
-Also avoid 'magic' numbers as seen here.  There are a finite range of
-possible values, so have an extra attributes - here illuminance_calibscale_available
-which is read only and gives the string "1 8 16 111" and make illuminance_calibscale
-return -EINVAL if the value written is not one of these. sysfs_streq is really
-handy for this sort of matching.
-
-> +
-> +What:		/sys/bus/iio/devices/device[n]/als_time
-> +KernelVersion:	2.6.37
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This property gets/sets the TAOS tsl258x ADC channel integration
-> +		time in 2.7ms increments.
-Again, this is more general than just working for the tsl258x driver. That 2.7ms
-isn't though.  Please make this a value in millisecs (fixed point) then deal
-with conversion to this base in the driver.  On this one, it is closely related
-to the 'period' attributes that exist for various events. Perhaps illuminance_period
-is a more consistent name?
-> +
-> +What:		/sys/bus/iio/devices/device[n]/als_trim
-> +KernelVersion:	2.6.37
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This property gets/sets the TAOS tsl258x ADC active gain scale.
-This one needs more detail before I can comment. I can't figure out what it
-actually is!
-> +		
-> +What:		/sys/bus/iio/devices/device[n]/als_target
-> +KernelVersion:	2.6.37
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This property gets/sets the TAOS tsl258x ADC last known external
-> +		lux measurement used in calibration.
-als_target -> illuminance0_target
-lux -> illuminance.
-What units?
-Sounds more general than the tsl258x to me so perhaps say that chip is an example
-of its use?
-> +		
-> +What:		/sys/bus/iio/devices/device[n]/lux
-> +KernelVersion:	2.6.37
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This property gets the TAOS tsl258x calculated lux value.
-Sorry, lux is a unit. Attributes are named after what is being measured.  Hence
-illuminance.  Might seem reasonable to use the unit, but then what would we
-do for acceleration (m/s^2)?  I guess we can reopen this debate again if you are
-really attached to lux...  Also needs to be illuminance0_input.  The input specifices
-that it is in the base unit (lux) rather than raw. We stick to this form
-to maintain compatiblity with hwmon which has been around a lot longer than us!
-> +
-> +What:		/sys/bus/iio/devices/device[n]/lux_table
-> +KernelVersion:	2.6.37
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This property gets/sets the TAOS tsl258x lux table of coefficients
-> +		that are used to calculate lux.
-> +		
-> +What:		/sys/bus/iio/devices/device[n]/reg_offset
-> +KernelVersion:	2.6.37
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This property gets/sets an index the TAOS tsl258x internel register
-> +		for r/w of selected register.
-Sorry, not letting direct register write attributes in.  What do you need these
-for?  Can it really not be replaced by more informative attributes?
-> +		
-> +What:		/sys/bus/iio/devices/device[n]/reg_offset
-> +KernelVersion:	2.6.37
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This property gets/sets an TAOS tsl258x internel register value
-> +		indexed by reg_offset.
-> +
-Extra empty lines. Please remove.  Also please run checkpatch over this patch. I think
-there are some extra tabs on these lines that won't have gotten through that.
-> +
-> +		
-> \ No newline at end of file
-> diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-> index 36d8bbe..ae499b8 100644
-> --- a/drivers/staging/iio/light/Kconfig
-> +++ b/drivers/staging/iio/light/Kconfig
-> @@ -13,6 +13,13 @@ config SENSORS_TSL2563
->  	 This driver can also be built as a module.  If so, the module
->  	 will be called tsl2563.
->  
-> +config TAOS_258x
-> +	tristate "TAOS TSL258x device driver"
-> +	default m
-> +	help
-> +	  Provides support for the TAOS tsl258x family of devices.
-> +	  Access ALS data/control via sysfs/iio.
-Please list devices.  People tend to grep the tree for the part number of the
-device that they actually have hence it is useful to have them all explicitly
-listed here.  In combination with the id table listing them all this also tends
-to tell people if the developer thinks it will work with the part they have.
-> +
->  config SENSORS_ISL29018
->          tristate "ISL 29018 light and proximity sensor"
->          depends on I2C
-> diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
-> index 9142c0e..4395db8 100644
-> --- a/drivers/staging/iio/light/Makefile
-> +++ b/drivers/staging/iio/light/Makefile
-> @@ -3,4 +3,5 @@
->  #
->  
->  obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
-> +obj-$(CONFIG_TAOS_258x)	+= tsl258x.o
->  obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
-> diff --git a/drivers/staging/iio/light/tsl258x.c b/drivers/staging/iio/light/tsl258x.c
-> new file mode 100644
-> index 0000000..225d85b
-> --- /dev/null
-> +++ b/drivers/staging/iio/light/tsl258x.c
-> @@ -0,0 +1,1010 @@
-> +/*
-> + * Device driver for monitoring ambient light intensity (lux)
-> + * within the TAOS tsl258x family of devices
-> + *
-> + * Copyright (c) 2011, TAOS Corporation.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + *
-> + * You should have received a copy of the GNU General Public License along
-> + * with this program; if not, write to the Free Software Foundation, Inc.,
-> + * 51 Franklin Street, Fifth Floor, Boston, MA	02110-1301, USA.
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/i2c.h>
-> +#include <linux/errno.h>
-> +#include <linux/delay.h>
-> +#include <linux/string.h>
-> +#include <linux/mutex.h>
-> +#include "../iio.h"
-> +
-> +#define DEVICE_ID			"tsl258x"
-> +
-> +#define MAX_DEVICE_REGS		32
-> +
-I'm guessing this is an internal part name?  If possible please replace
-with the numbers people will see on datasheets.
-> +/* Triton register offsets */
-> +#define	TAOS_REG_MAX		8
-> +
-> +/* Device Registers and Masks */
-> +#define TSL258X_CNTRL			0x00
-This needs a a comment.  Why two regs with the same address?
-> +#define TSL258X_STATUS			0x00
-> +#define TSL258X_ALS_TIME		0X01
-> +#define TSL258X_INTERRUPT		0x02
-> +#define TSL258X_GAIN			0x07
-> +#define TSL258X_REVID			0x11
-> +#define TSL258X_CHIPID			0x12
-
-Cryptic name and never used. Please remove.
-> +#define TSL258X_SMB_4			0x13
-> +#define TSL258X_ALS_CHAN0LO		0x14
-> +#define TSL258X_ALS_CHAN0HI		0x15
-> +#define TSL258X_ALS_CHAN1LO		0x16
-> +#define TSL258X_ALS_CHAN1HI		0x17
-> +#define TSL258X_TMR_LO			0x18
-> +#define TSL258X_TMR_HI			0x19
-> +
-> +/* Skate cmd reg masks */
-> +#define TSL258X_CMD_REG		0x80
-> +#define TSL258X_CMD_BYTE_RW		0x00
-
-This name confuses me.  Looks like it sets word protocol so why the block bit?
-Also not used so could just get rid of it.
-> +#define TSL258X_CMD_WORD_BLK_RW	0x20
-> +#define TSL258X_CMD_SPL_FN		0x60
-
-Nitpick. Later reference to INT have an _ after them. Perhaps add one for consistency?
-> +#define TSL258X_CMD_ALS_INTCLR		0X01
-> +
-Err. Skate?
-> +/* Skate cntrl reg masks */
-Not used and rather pointless.  Default would be to assume writing 0
-cleared a register?  (or does this mean something else?)
-> +#define TSL258X_CNTL_REG_CLEAR		0x00
-> +#define TSL258X_CNTL_ALS_INT_ENBL	0x10
-> +#define TSL258X_CNTL_WAIT_TMR_ENBL	0x08
-> +#define TSL258X_CNTL_ADC_ENBL		0x02
-> +#define TSL258X_CNTL_PWRON		0x01
-> +#define TSL258X_CNTL_ALSPON_ENBL	0x03
-Define this in terms of PWRON and ADC_ENBL to make it clear what it is.
-
-> +#define TSL258X_CNTL_INTALSPON_ENBL	0x13
-also define this in terms of its sub parts.
-> +
-> +/* Skate status reg masks */
-> +#define TSL258X_STA_ADCVALID		0x01
-> +#define TSL258X_STA_ALSINTR		0x10
-> +#define TSL258X_STA_ADCINTR		0x10
-> +
-> +/* Lux constants */
-> +#define	MAX_LUX			65535
-Err. Rename that unless it really does mean 65535 lux
-> +
-> +enum {
-> +	TAOS_CHIP_UNKNOWN = 0, TAOS_CHIP_WORKING = 1, TAOS_CHIP_SLEEP = 2
-> +} TAOS_CHIP_WORKING_STATUS;
-> +
-> +/* Per-device data */
-> +struct taos_als_info {
-> +	u16 als_ch0;
-> +	u16 als_ch1;
-> +	u16 lux;
-> +};
-> +
-> +struct taos_settings {
-> +	int als_time;
-> +	int als_gain;
-> +	int als_gain_trim;
-> +	int als_cal_target;
-> +};
-> +
-> +struct tsl258x_chip {
-> +	struct mutex als_mutex;
-> +	struct i2c_client *client;
-> +	struct iio_dev *iio_dev;
-> +	struct delayed_work update_lux;
-> +	unsigned int addr;
-> +	char taos_id;
-> +	char valid;
-> +	unsigned long last_updated;
-> +	struct taos_als_info als_cur_info;
-> +	struct taos_settings taos_settings;
-> +	int als_time_scale;
-> +	int als_saturation;
-> +	int taos_chip_status;
-> +	u8 taos_config[8];
-> +};
-> +
-> +static int taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val,
-> +	unsigned int len);
-> +static int taos_i2c_write_command(struct i2c_client *client, u8 reg);
-> +
-> +/*
-> + * Initial values for device - this values can/will be changed by driver.
-> + * and applications as needed.
-> + * These values are dynamic.
-> + */
-> +static const u8 taos_config[8] = {
-> +		0x00, 0xee, 0x00, 0x03, 0x00, 0xFF, 0xFF, 0x00
-> +}; /*	cntrl atime intC  Athl0 Athl1 Athh0 Athh1 gain */
-> +
-> +struct taos_lux {
-> +	unsigned int ratio;
-> +	unsigned int ch0;
-> +	unsigned int ch1;
-> +};
-> +
-> +/* This structure is intentionally large to accommodate updates via sysfs. */
-> +/* Sized to 11 = max 10 segments + 1 termination segment */
-Any chance of two sensors on one device, each of which has different
-values for this?
-
-> +struct taos_lux taos_device_lux[11] = {
-> +	{  9830,  8520, 15729 },
-> +	{ 12452, 10807, 23344 },
-> +	{ 14746,  6383, 11705 },
-> +	{ 17695,  4063,  6554 },
-> +};
-> +
-> +struct taos_lux taos_lux;
-> +
-> +struct gainadj {
-> +	s16 ch0;
-> +	s16 ch1;
-> +};
-> +
-> +/* Index = (0 - 3) Used to validate the gain selection index */
-> +static const struct gainadj gainadj[] = {
-> +	{ 1, 1 },
-> +	{ 8, 8 },
-> +	{ 16, 16 },
-That's 'interesting'.  This will make the calibscale discussion above more
-complex.  I guess no userspace is going to care about the precise internal
-multipliers so a 'rough' value would probably do in that attribute. What
-do you think?
-> +	{ 107, 115 }
-> +};
-> +
-> +/*
-> + * Provides initial operational parameter defaults.
-> + * These defaults may be changed through the device's sysfs files.
-> + */
-> +static void taos_defaults(struct tsl258x_chip *chip)
-> +{
-> +	/* Operational parameters */
-> +	chip->taos_settings.als_time = 450;
-> +	/* must be a multiple of 50mS */
-> +	chip->taos_settings.als_gain = 2;
-> +	/* this is actually an index into the gain table */
-> +	/* assume clear glass as default */
-> +	chip->taos_settings.als_gain_trim = 1000;
-> +	/* default gain trim to account for aperture effects */
-> +	chip->taos_settings.als_cal_target = 130;
-> +	/* Known external ALS reading used for calibration */
-> +
-> +	/* Initialize ALS data to defaults */
-> +	chip->als_cur_info.als_ch0 = 0;
-> +	chip->als_cur_info.als_ch1 = 0;
-> +	chip->als_cur_info.lux = 0;
-Already zero via the memset (soon to be kzalloc) hence don't bother
-setting these three.
-> +}
-> +
-> +/*
-> + * Read a number of bytes starting at register (reg) location.
-> + * Return 0, or i2c_smbus_write_byte ERROR code.
-> + */
-> +static int
-> +taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val, unsigned int len)
-> +{
-> +	int ret;
-> +	int i;
-> +
-> +	for (i = 0; i < len; i++) {
-> +		/* select register to write */
-> +		ret = i2c_smbus_write_byte(client, (TSL258X_CMD_REG | reg));
-> +		if (ret < 0) {
-> +			dev_err(&client->dev, "taos_i2c_read failed to write"
-> +				" register %x\n", reg);
-> +			return ret;
-> +		}
-> +		/* read the data */
-> +		*val = i2c_smbus_read_byte(client);
-I'd use val[i] without this increment for clarity.
-> +		val++;
-> +		if ((reg & 0x1f) == 0x1f)
-Can this ever occcur in the driver?  I would imagine it is a bug if it does
-as you'll read back a different number of values than you expect to do.
-If not it's an over enthusiastic bit of debug code so get rid of it.
-> +			break;
-> +		reg++;
-> +	}
-> +	return 0;
-> +}
-> +
-> +/*
-> + * This function is used to send a command to device command/control register
-> + * All bytes sent using this command have their MSBit set - it's a command!
-> + * Return 0, or i2c_smbus_write_byte error code.
-> + */
-> +static int taos_i2c_write_command(struct i2c_client *client, u8 reg)
-> +{
-> +	int ret;
-> +
-> +	/* write the data */
-> +	ret = i2c_smbus_write_byte(client, (reg |= TSL258X_CMD_REG));
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "FAILED: i2c_smbus_write_byte\n");
-> +		return ret;
-> +	}
-> +	return 0;
-> +}
-> +
-> +/*
-> + * Reads and calculates current lux value.
-> + * The raw ch0 and ch1 values of the ambient light sensed in the last
-> + * integration cycle are read from the device.
-> + * Time scale factor array values are adjusted based on the integration time.
-> + * The raw values are multiplied by a scale factor, and device gain is obtained
-> + * using gain index. Limit checks are done next, then the ratio of a multiple
-> + * of ch1 value, to the ch0 value, is calculated. The array taos_device_lux[]
-> + * declared above is then scanned to find the first ratio value that is just
-> + * above the ratio we just calculated. The ch0 and ch1 multiplier constants in
-> + * the array are then used along with the time scale factor array values, to
-> + * calculate the lux.
-> + */
-> +static int taos_get_lux(struct i2c_client *client)
-> +{
-> +	u32 ch0, ch1; /* separated ch0/ch1 data from device */
-> +	u32 lux; /* raw lux calculated from device data */
-And here we have a great example of why lux is a bad name for this.
-lux could only ever have units of lux.
-> +	u32 ratio;
-> +	u8 buf[5];
-> +	struct taos_lux *p;
-> +	struct tsl258x_chip *chip = i2c_get_clientdata(client);
-> +	int i, ret;
-> +	u32 ch0lux = 0;
-> +	u32 ch1lux = 0;
-> +
-> +	if (mutex_trylock(&chip->als_mutex) == 0) {
-> +		dev_info(&client->dev, "taos_get_lux device is busy\n");
-> +		return chip->als_cur_info.lux; /* busy, so return LAST VALUE */
-> +	}
-> +
-> +	if (chip->taos_chip_status != TAOS_CHIP_WORKING) {
-> +		/* device is not enabled */
-> +		dev_err(&client->dev, "taos_get_lux device is not enabled\n");
-> +		ret = -ENODEV;
--EBUSY probably. The device exists, it's just turned off.
-
-> +		goto out_unlock;
-> +	}
-> +
-> +	ret = taos_i2c_read(client, (TSL258X_CMD_REG), &buf[0], 1);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "taos_get_lux failed to read CMD_REG\n");
-> +		goto out_unlock;
-> +	}
-> +	/* is data new & valid */
-> +	if (!(buf[0] & TSL258X_STA_ADCINTR)) {
-> +		dev_err(&client->dev, "taos_get_lux data not valid\n");
-  I'd error out at this point. Something has gone wrong and you want to
-indicate it to your userspace code.
-> +		ret = chip->als_cur_info.lux; /* return LAST VALUE */
-> +		goto out_unlock;
-> +	}
-> +
-> +	for (i = 0; i < 4; i++) {
-> +		int reg = TSL258X_CMD_REG | (TSL258X_ALS_CHAN0LO + i);
-> +		ret = taos_i2c_read(client, reg, &buf[i], 1);
-> +		if (ret < 0) {
-> +			dev_err(&client->dev, "taos_get_lux failed to read"
-> +				" register %x\n", reg);
-> +			goto out_unlock;
-> +		}
-> +	}
-> +
-> +	/* clear status, really interrupt status (interrupts are off), but
-> +	 * we use the bit anyway */
-> +	ret = taos_i2c_write_command(client,
-> +		TSL258X_CMD_REG | TSL258X_CMD_SPL_FN | TSL258X_CMD_ALS_INTCLR);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev,
- This is the one case where checkpatch warnings should be ignored.
-Please keep strings like this on a single line as people who see them
-in a log will grep for them in the source code.  Artificial breaks
-like this make them a lot harder to find!
-
-> +		"taos_i2c_write_command failed in "
-> +		"taos_get_lux, err = %d\n", ret);
-> +		goto out_unlock; /* have no data, so return failure */
-> +	}
-> +
-> +	/* extract ALS/lux data */
-Should be the relevant endian conversion function.  be16tocpu or similar
-(haven't thought about which).  That way it's free on one endianness of
-machine.
-> +	ch0 = (buf[1] << 8) | buf[0];
-> +	ch1 = (buf[3] << 8) | buf[2];
-> +
-> +	chip->als_cur_info.als_ch0 = ch0;
-> +	chip->als_cur_info.als_ch1 = ch1;
-> +
-> +	if ((ch0 >= chip->als_saturation) || (ch1 >= chip->als_saturation))
-> +		goto return_max;
-> +
-> +	if (ch0 == 0) {
-> +		/* have no data, so return LAST VALUE */
-> +		ret = chip->als_cur_info.lux = 0;
-> +		goto out_unlock;
-> +	}
-> +	/* calculate ratio */
-> +	ratio = (ch1 << 15) / ch0;
-> +	/* convert to unscaled lux using the pointer to the table */
-> +	for (p = (struct taos_lux *) taos_device_lux;
-> +	     p->ratio != 0 && p->ratio < ratio; p++)
-> +		;
-> +
-> +	if (p->ratio == 0) {
-> +		lux = 0;
-> +	} else {
-> +		ch0lux = ((ch0 * p->ch0) +
-> +			  (gainadj[chip->taos_settings.als_gain].ch0 >> 1))
-> +			 / gainadj[chip->taos_settings.als_gain].ch0;
-> +		ch1lux = ((ch1 * p->ch1) +
-> +			  (gainadj[chip->taos_settings.als_gain].ch1 >> 1))
-> +			 / gainadj[chip->taos_settings.als_gain].ch1;
-> +		lux = ch0lux - ch1lux;
-> +	}
-> +
-> +	/* note: lux is 31 bit max at this point */
-> +	if (ch1lux > ch0lux) {
-> +		dev_dbg(&client->dev, "No Data - Return last value\n");
-Again, do we want userspace to know the sensor isn't returning valid values?
-> +		ret = chip->als_cur_info.lux = 0;
-> +		goto out_unlock;
-> +	}
-> +
-> +	/* adjust for active time scale */
-> +	if (chip->als_time_scale == 0)
-> +		lux = 0;
-> +	else
-> +		lux = (lux + (chip->als_time_scale >> 1)) /
-> +			chip->als_time_scale;
-> +
-> +	/* adjust for active gain scale */
-> +	lux >>= 13; /* tables have factor of 8192 builtin for accuracy */
-> +	lux = (lux * chip->taos_settings.als_gain_trim + 500) / 1000;
-> +	if (lux > MAX_LUX) { /* check for overflow */
-> +return_max:
-> +		lux = MAX_LUX;
-Really the right thing to do?  Surely you want to return an out of range
-error? Perhaps ERANGE so userspace knows the value is garbage.
-> +	}
-> +
-> +	/* Update the structure with the latest VALID lux. */
-> +	chip->als_cur_info.lux = lux;
-> +	ret = lux;
-> +
-> +out_unlock:
-> +	mutex_unlock(&chip->als_mutex);
-> +	return ret;
-> +}
-> +
-> +/*
-> + * Obtain single reading and calculate the als_gain_trim (later used
-> + * to derive actual lux).
-> + * Return updated gain_trim value.
-> + */
-> +int taos_als_calibrate(struct i2c_client *client)
-> +{
-> +	struct tsl258x_chip *chip = i2c_get_clientdata(client);
-> +	u8 reg_val;
-> +	unsigned int gain_trim_val;
-> +	int ret;
-> +	int lux_val;
-> +
-> +	ret = i2c_smbus_write_byte(client, (TSL258X_CMD_REG | TSL258X_CNTRL));
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "taos_als_calibrate failed to reach the"
-Again, don't break this sort of string up however much checkpatch rants at you.
-> +			" CNTRL register, ret=%d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	reg_val = i2c_smbus_read_byte(client);
-> +	if ((reg_val & (TSL258X_CNTL_ADC_ENBL | TSL258X_CNTL_PWRON))
-> +			!= (TSL258X_CNTL_ADC_ENBL | TSL258X_CNTL_PWRON)) {
-> +		dev_err(&client->dev, "taos_als_calibrate failed because the"
-> +			" device is not powered on with ADC enabled\n");
-> +		return -ENODATA;
-> +	}
-> +
-> +	ret = i2c_smbus_write_byte(client, (TSL258X_CMD_REG | TSL258X_STATUS));
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "taos_als_calibrate failed to reach the"
-> +			" STATUS register, ret=%d\n", ret);
-> +		return ret;
-> +	}
-> +	reg_val = i2c_smbus_read_byte(client);
-> +
-> +	if ((reg_val & TSL258X_STA_ADCVALID) != TSL258X_STA_ADCVALID) {
-> +		dev_err(&client->dev, "taos_als_calibrate failed because the"
-> +			" STATUS did not indicate ADC valid.\n");
-> +		return -ENODATA;
-> +	}
-> +	lux_val = taos_get_lux(client);
-> +	if (lux_val < 0) {
-> +		dev_err(&client->dev, "taos_als_calibrate failed to get lux\n");
-> +		return lux_val;
-> +	}
-> +	gain_trim_val = (unsigned int) (((chip->taos_settings.als_cal_target)
-> +			* chip->taos_settings.als_gain_trim) / lux_val);
-> +
-> +	dev_info(&client->dev, "taos_settings.als_cal_target = %d\n"
-> +		"taos_settings.als_gain_trim = %d\nlux_val = %d\n",
-> +		chip->taos_settings.als_cal_target,
-> +		chip->taos_settings.als_gain_trim,
-> +		lux_val);
-> +
-> +	if ((gain_trim_val < 250) || (gain_trim_val > 4000)) {
-> +		dev_err(&client->dev, "taos_als_calibrate failed because"
-> +			"trim_val of %d is out of range\n", gain_trim_val);
-> +		return -ENODATA;
-> +	}
-> +	chip->taos_settings.als_gain_trim = (int) gain_trim_val;
-> +
-> +	return (int) gain_trim_val;
-> +}
-> +
-> +/*
-> + * Turn the device on.
-> + * Configuration must be set before calling this function.
-> + */
-> +static int taos_chip_on(struct i2c_client *client)
-> +{
-> +	int i;
-> +	int ret = 0;
-> +	u8 *uP;
-> +	u8 utmp;
-> +	int als_count;
-> +	int als_time;
-> +	struct tsl258x_chip *chip = i2c_get_clientdata(client);
-> +
-and?
-> +	/* and make sure we're not already on */
-> +	if (chip->taos_chip_status == TAOS_CHIP_WORKING) {
-> +		/* if forcing a register update - turn off, then on */
-> +		dev_info(&client->dev, "device is already enabled\n");
-Not sure what the right error is here, but should be more specific than
-that.
-> +		return -1;
-> +	}
-> +
-> +	/* determine als integration regster */
-> +	als_count = (chip->taos_settings.als_time * 100 + 135) / 270;
-> +	if (als_count == 0)
-> +		als_count = 1; /* ensure at least one cycle */
-> +
-> +
-> +	/* convert back to time (encompasses overrides) */
-> +	als_time = (als_count * 27 + 5) / 10;
-> +	chip->taos_config[TSL258X_ALS_TIME] = 256 - als_count;
-> +
-> +
-Bonus blank lines.  One is plenty to break up code.
-> +	/* Set the gain based on taos_settings struct */
-> +	chip->taos_config[TSL258X_GAIN] = chip->taos_settings.als_gain;
-> +
-> +
-> +	/* set globals re scaling and saturation */
-They aren't globals
-> +	chip->als_saturation = als_count * 922; /* 90% of full scale */
-> +	chip->als_time_scale = (als_time + 25) / 50;
-> +
-> +	/* SKATE Specific power-on / adc enable sequence
-> +	 * Power on the device 1st. */
-> +	utmp = TSL258X_CNTL_PWRON;
-> +	ret = i2c_smbus_write_byte_data(client, TSL258X_CMD_REG | TSL258X_CNTRL,
-> +					utmp);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "taos_chip_on failed on CNTRL reg.\n");
-> +		return -1;
-> +	}
-> +
-> +	/* Use the following shadow copy for our delay before enabling ADC.
-> +	 * Write all the registers. */
-> +	for (i = 0, uP = chip->taos_config; i < TAOS_REG_MAX; i++) {
-> +		ret = i2c_smbus_write_byte_data(client, TSL258X_CMD_REG + i,
-> +						*uP++);
-> +		if (ret < 0) {
-> +			dev_err(&client->dev,
-> +				"taos_chip_on failed on reg %d.\n", i);
-> +			return -1;
-> +		}
-> +	}
-> +
-> +	mdelay(3);
-> +	/* NOW enable the ADC
-> +	 * initialize the desired mode of operation */
-> +	utmp = TSL258X_CNTL_PWRON | TSL258X_CNTL_ADC_ENBL;
-> +	ret = i2c_smbus_write_byte_data(client, TSL258X_CMD_REG | TSL258X_CNTRL,
-> +					utmp);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "taos_chip_on failed on 2nd CTRL reg.\n");
-> +		return -1;
-> +	}
-> +	chip->taos_chip_status = TAOS_CHIP_WORKING;
-Comment is rather obvious...
-
-> +	return ret; /* returns result of last i2cwrite */
-> +}
-> +
-> +/* Turn the device OFF. */
-> +static int taos_chip_off(struct i2c_client *client)
-> +{
-> +	struct tsl258x_chip *chip = i2c_get_clientdata(client);
-> +	int ret;
-> +	u8 utmp;
-> +
-> +	/* turn device off */
-> +	chip->taos_chip_status = TAOS_CHIP_SLEEP;
-> +	utmp = 0x00;
-> +	ret = i2c_smbus_write_byte_data(client, TSL258X_CMD_REG | TSL258X_CNTRL,
-> +					utmp);
-> +	return ret;
-> +}
-> +
-> +/* Sysfs Interface Functions */
-> +static ssize_t taos_device_id(struct device *dev,
-> +    struct device_attribute *attr, char *buf)
-> +{
-> +	return sprintf(buf, "%s\n", DEVICE_ID);
-> +}
-> +
-> +static ssize_t taos_power_state_show(struct device *dev,
-> +    struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +
-> +	return sprintf(buf, "%d\n", chip->taos_chip_status);
-> +}
-> +
-> +static ssize_t taos_power_state_store(struct device *dev,
-> +    struct device_attribute *attr, const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +	unsigned long value;
-> +
-> +	if (strict_strtoul(buf, 0, &value))
-> +		return -EINVAL;
-> +
-> +	if (value == 0)
-> +		taos_chip_off(chip->client);
-> +	else
-> +		taos_chip_on(chip->client);
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t taos_gain_show(struct device *dev,
-> +    struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +
-> +	return sprintf(buf, "%d\n", chip->taos_settings.als_gain);
-> +}
-> +
-> +static ssize_t taos_gain_store(struct device *dev,
-> +    struct device_attribute *attr, const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +	unsigned long value;
-> +	if (strict_strtoul(buf, 0, &value))
-> +		return -EINVAL;
-> +	if (value) {
-> +		if (value > 4) {
-> +			dev_err(dev, "Invalid Gain Index\n");
-> +			return -1;
-EINVAL
-> +		} else {
-> +			chip->taos_settings.als_gain = value;
-> +		}
-So this sets the value in the local cache.  When does it get written to the
-device?
-> +	}
-> +	return len;
-> +}
-> +
-> +static ssize_t taos_als_time_show(struct device *dev,
-> +    struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +
-> +	return sprintf(buf, "%d\n", chip->taos_settings.als_time);
-> +}
-> +
-> +static ssize_t taos_als_time_store(struct device *dev,
-> +    struct device_attribute *attr, const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +	unsigned long value;
-> +
-> +	if (strict_strtoul(buf, 0, &value))
-> +		return -EINVAL;
-> +
-> +	if (value)
-> +		chip->taos_settings.als_time = value;
-else? It's not been sucessfuly set so return -EINVAL
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t taos_als_trim_show(struct device *dev,
-> +    struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +
-> +	return sprintf(buf, "%d\n", chip->taos_settings.als_gain_trim);
-> +}
-> +
-> +static ssize_t taos_als_trim_store(struct device *dev,
-> +    struct device_attribute *attr, const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +	unsigned long value;
-> +
-> +	if (strict_strtoul(buf, 0, &value))
-> +		return -EINVAL;
-> +
-> +	if (value)
-> +		chip->taos_settings.als_gain_trim = value;
-else return -EINVAL
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t taos_als_cal_target_show(struct device *dev,
-> +    struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +
-> +	return sprintf(buf, "%d\n", chip->taos_settings.als_cal_target);
-> +}
-> +
-> +static ssize_t taos_als_cal_target_store(struct device *dev,
-> +    struct device_attribute *attr, const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +	unsigned long value;
-> +
-> +	if (strict_strtoul(buf, 0, &value))
-> +		return -EINVAL;
-> +
-> +	if (value)
-> +		chip->taos_settings.als_cal_target = value;
-again, else return -EINVAL;  Userspace really wants to know this failed.
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t taos_lux_show(struct device *dev, struct device_attribute *attr,
-> +    char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +	int lux = 0;
-no need to assign.
-> +
-> +	lux = taos_get_lux(chip->client);
-> +
-> +	return sprintf(buf, "%d\n", lux);
-> +}
-> +
-> +static ssize_t taos_do_calibrate(struct device *dev,
-> +    struct device_attribute *attr, const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +	unsigned long value;
-> +
-> +	if (strict_strtoul(buf, 0, &value))
-> +		return -EINVAL;
-> +
-> +	if (value == 1)
-> +		taos_als_calibrate(chip->client);
-else return -EINVAL;
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t taos_luxtable_show(struct device *dev,
-> +    struct device_attribute *attr, char *buf)
-> +{
-> +	int i;
-> +	int offset = 0;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(taos_device_lux); i++) {
-> +		offset += sprintf(buf + offset, "%d,%d,%d,",
-> +				  taos_device_lux[i].ratio,
-> +				  taos_device_lux[i].ch0,
-> +				  taos_device_lux[i].ch1);
-> +		if (taos_device_lux[i].ratio == 0) {
-> +			/* We just printed the first "0" entry.
-> +			 * Now get rid of the extra "," and break. */
-> +			offset--;
-> +			break;
-> +		}
-> +	}
-> +
-> +	offset += sprintf(buf + offset, "\n");
-> +	return offset;
-> +}
-> +
-> +static ssize_t taos_luxtable_store(struct device *dev,
-> +    struct device_attribute *attr, const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +#define MAX_LUX_TABLE_FIELDS 33
-I'd loose this define.
-> +	int value[MAX_LUX_TABLE_FIELDS];
-> +	int n;
-> +
-> +	get_options(buf, ARRAY_SIZE(value), value);
-> +
-> +	/* We now have an array of ints starting at value[1], and
-> +	 * enumerated by value[0].
-> +	 * We expect each group of three ints is one table entry,
-> +	 * and the last table entry is all 0.
-> +	 */
-> +	n = value[0];
-  prefer to see ARRAY_SIZE(value) than the define.  
-> +	if ((n % 3) || n < 6 || n > (MAX_LUX_TABLE_FIELDS - 3)) {
-> +		dev_info(dev, "LUX TABLE INPUT ERROR 1 Value[0]=%d\n", n);
-> +		return -EINVAL;
-> +	}
-> +	if ((value[(n - 2)] | value[(n - 1)] | value[n]) != 0) {
-> +		dev_info(dev, "LUX TABLE INPUT ERROR 2 Value[0]=%d\n", n);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (chip->taos_chip_status == TAOS_CHIP_WORKING)
-> +		taos_chip_off(chip->client);
-> +
-> +	/* Zero out the table */
-> +	memset(taos_device_lux, 0, sizeof(taos_device_lux));
-> +	memcpy(taos_device_lux, &value[1], (value[0] * 4));
-> +
-> +	taos_chip_on(chip->client);
-> +
-> +	return len;
-> +}
-> +
-> +static u8 reg_index;
-> +
-As stated above these need to go before we take this driver.
-> +/* Sets a pointer to a register for R/W via sysfs */
-> +static ssize_t taos_reg_offset_show(struct device *dev,
-> +    struct device_attribute *attr, char *buf)
-> +{
-> +      return sprintf(buf, "%d\n", reg_index);
-> +      return 0;
-> +}
-> +
-> +static ssize_t taos_reg_offset_store(struct device *dev,
-> +    struct device_attribute *attr, const char *buf, size_t len)
-> +{
-> +	unsigned long value;
-> +	if (strict_strtoul(buf, 0, &value))
-> +		return -EINVAL;
-> +
-> +	if (value > MAX_DEVICE_REGS) {
-> +		dev_err(dev, "register offset exceeds MAX\n");
-> +		return -1;
-> +	} else {
-> +		reg_index = value;
-> +	}
-> +return len;
-> +}
-> +
-> +/* R/W a register for R/W via sysfs */
-> +static ssize_t taos_reg_show(struct device *dev,
-> +    struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +
-> +	u8 value = 0;
-> +	int ret = 0;
-> +
-> +	ret = i2c_smbus_write_byte(chip->client,
-> +		(TSL258X_CMD_REG | reg_index));
-> +	if (ret < 0) {
-> +		dev_err(dev, "i2c_smbus_write_byte to cmd reg failed "
-> +			"in taos_reg_offset_show(), err = %d\n", ret);
-> +		return ret;
-> +	}
-> +	value = i2c_smbus_read_byte(chip->client);
-> +	return sprintf(buf, "%d\n", value);
-> +
-> +return 0;
-> +}
-> +
-> +static ssize_t taos_reg_store(struct device *dev,
-> +    struct device_attribute *attr, const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct tsl258x_chip *chip = indio_dev->dev_data;
-> +
-> +	unsigned long value = 0;
-> +	int ret = 0;
-> +
-> +	if (strict_strtoul(buf, 0, &value))
-> +		return -EINVAL;
-> +
-> +	ret = i2c_smbus_write_byte_data(chip->client,
-> +		(TSL258X_CMD_REG | reg_index), value);
-> +	if (ret < 0) {
-> +		dev_err(dev, "i2c_smbus_write_byte_data failed in "
-> +			"taos_reg_store()\n");
-> +		return ret;
-> +	}
-> +
-> +return len;
-> +}
-> +
-> +static DEVICE_ATTR(name, S_IRUGO, taos_device_id, NULL);
-> +static DEVICE_ATTR(device_state, S_IRUGO | S_IWUSR,
-> +		taos_power_state_show, taos_power_state_store);
-> +static DEVICE_ATTR(als_gain, S_IRUGO | S_IWUSR,
-> +		taos_gain_show, taos_gain_store);
-> +static DEVICE_ATTR(als_time, S_IRUGO | S_IWUSR,
-> +		taos_als_time_show, taos_als_time_store);
-> +static DEVICE_ATTR(als_trim, S_IRUGO | S_IWUSR,
-> +		taos_als_trim_show, taos_als_trim_store);
-> +static DEVICE_ATTR(als_target, S_IRUGO | S_IWUSR,
-> +		taos_als_cal_target_show, taos_als_cal_target_store);
-> +static DEVICE_ATTR(lux, S_IRUGO, taos_lux_show, NULL);
-> +static DEVICE_ATTR(calibrate, S_IWUSR, NULL, taos_do_calibrate);
-> +static DEVICE_ATTR(lux_table, S_IRUGO | S_IWUSR,
-> +		taos_luxtable_show, taos_luxtable_store);
-> +static DEVICE_ATTR(reg_offset, S_IRUGO | S_IWUSR,
-> +      taos_reg_offset_show,
-> +      taos_reg_offset_store);
-> +static DEVICE_ATTR(reg, S_IRUGO | S_IWUSR,
-> +      taos_reg_show,
-> +      taos_reg_store);
-> +
-> +
-> +static struct attribute *sysfs_attrs_ctrl[] = {
-> +	&dev_attr_name.attr,
-> +	&dev_attr_device_state.attr,
-> +	&dev_attr_als_gain.attr,
-> +	&dev_attr_als_time.attr,
-> +	&dev_attr_als_trim.attr,
-> +	&dev_attr_als_target.attr,
-> +	&dev_attr_lux.attr,
-> +	&dev_attr_calibrate.attr,
-> +	&dev_attr_lux_table.attr,
-Spaces instead of tab here.
-> +    &dev_attr_reg_offset.attr,
-> +    &dev_attr_reg.attr,
-> +	NULL
-> +};
-> +
-> +static struct attribute_group tsl258x_attribute_group = {
-> +	.attrs = sysfs_attrs_ctrl,
-> +};
-> +
-> +/* Use the default register values to identify the Taos device */
-> +static int taos_skate_device(unsigned char *bufp)
-> +{
-> +	if (((bufp[TSL258X_CHIPID] & 0xf0) == 0x90))
-> +		/* tsl258x */
-> +		return 1;
-> +	/* else unknown */
-> +	return 0;
-> +}
-> +
-> +/*
-> + * Client probe function - When a valid device is found, the driver's device
-> + * data structure is updated, and initialization completes successfully.
-> + */
-> +static int __devinit taos_probe(struct i2c_client *clientp,
-> +		      const struct i2c_device_id *idp)
-> +{
-> +	int i, ret = 0;
-> +	unsigned char buf[MAX_DEVICE_REGS];
-> +	static struct tsl258x_chip *chip;
-> +
-> +	if (!i2c_check_functionality(clientp->adapter,
-> +		I2C_FUNC_SMBUS_BYTE_DATA)) {
-> +		dev_err(&clientp->dev,
-> +			"taos_probe() - i2c smbus byte data "
-> +			"functions unsupported\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +	if (!i2c_check_functionality(clientp->adapter,
-> +		I2C_FUNC_SMBUS_WORD_DATA)) {
-> +		dev_warn(&clientp->dev,
-> +			"taos_probe() - i2c smbus word data "
-> +			"functions unsupported\n");
-> +	}
-> +	if (!i2c_check_functionality(clientp->adapter,
-> +		I2C_FUNC_SMBUS_BLOCK_DATA)) {
-> +		dev_err(&clientp->dev,
-> +			"taos_probe() - i2c smbus block data "
-> +			"functions unsupported\n");
-> +	}
-> +
-> +	chip = kmalloc(sizeof(struct tsl258x_chip), GFP_KERNEL);
-> +	if (!chip) {
-> +		dev_err(&clientp->dev, "taos_device_drvr: kmalloc for "
-> +			"struct tsl258x_chip failed in taos_probe()\n");
-> +		return -ENOMEM;
-> +	}
-> +	memset(chip, 0, sizeof(struct tsl258x_chip));
-Use kzalloc instead of kmalloc then you don't need the memset.
-
-> +	chip->client = clientp;
-> +	i2c_set_clientdata(clientp, chip);
-> +
-> +	mutex_init(&chip->als_mutex);
-> +	chip->taos_chip_status = TAOS_CHIP_UNKNOWN; /* uninitialized to start */
-> +	memcpy(chip->taos_config, taos_config, sizeof(chip->taos_config));
-> +
-> +	for (i = 0; i < MAX_DEVICE_REGS; i++) {
-> +		ret = i2c_smbus_write_byte(clientp,
-> +				(TSL258X_CMD_REG | (TSL258X_CNTRL + i)));
-> +		if (ret < 0) {
-> +			dev_err(&clientp->dev, "i2c_smbus_write_byte() to cmd "
-> +				"reg failed in taos_probe(), err = %d\n", ret);
-> +			goto fail1;
-> +		}
-> +		buf[i] = i2c_smbus_read_byte(clientp);
-> +	}
-> +	if (!taos_skate_device(buf)) {
-> +		dev_info(&clientp->dev, "i2c device found but does not match "
-> +			"expected id in taos_probe()\n");
-> +		goto fail1;
-> +	} else {
-> +		dev_info(&clientp->dev, "i2c device match in probe\n");
-> +	}
-> +	ret = i2c_smbus_write_byte(clientp, (TSL258X_CMD_REG | TSL258X_CNTRL));
-> +	if (ret < 0) {
-> +		dev_err(&clientp->dev, "i2c_smbus_write_byte() to cmd reg "
-> +			"failed in taos_probe(), err = %d\n", ret);
-> +		goto fail1;
-> +	}
-> +	chip->valid = 0;
-> +
-> +	chip->iio_dev = iio_allocate_device();
-> +	if (!chip->iio_dev) {
-> +		ret = -ENOMEM;
-> +		dev_err(&clientp->dev, "iio allocation failed\n");
-> +		goto fail1;
-> +	}
-> +
-> +	chip->iio_dev->attrs = &tsl258x_attribute_group;
-> +	chip->iio_dev->dev.parent = &clientp->dev;
-> +	chip->iio_dev->dev_data = (void *)(chip);
-> +	chip->iio_dev->driver_module = THIS_MODULE;
-> +	chip->iio_dev->modes = INDIO_DIRECT_MODE;
-> +	ret = iio_device_register(chip->iio_dev);
-> +	if (ret) {
-> +		dev_err(&clientp->dev, "iio registration failed\n");
-> +		goto fail1;
-> +	}
-> +
-> +	/* Load up the V2 defaults (these are hard coded defaults for now) */
-> +	taos_defaults(chip);
-> +
-> +	/* Make sure the chip is on */
-> +	taos_chip_on(clientp);
-> +
-> +	dev_info(&clientp->dev, "Light sensor found.\n");
-> +	return 0;
-> +
-> +fail1:
-> +	kfree(chip);
-> +
-> +	return ret;
-> +}
-> +
-> +static int __devexit taos_remove(struct i2c_client *client)
-> +{
-> +	struct tsl258x_chip *chip = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(chip->iio_dev);
-> +
-> +	kfree(chip);
-> +	return 0;
-> +}
-> +
-> +static struct i2c_device_id taos_idtable[] = {
-> +	{ DEVICE_ID, 0 },
-> +	{}
-Please can we have an explicit list if ID's here.  If a person has
-a tsl2580 then they'll want to say that in their board file.
-
-On that note, I skipped this originally as there were bigger fish
-to fry, but can we be sure that there will never be a value of x
-that this driver won't work for?  If not, please follow convention
-and pick your favourite part number from the range and replace all
-x's in the driver appropriately.  Too many part manufacturers have
-really weird naming schemes that tend to break wild cards like this!
-
-
-> +};
-> +MODULE_DEVICE_TABLE(i2c, taos_idtable);
-> +
-> +/* Driver definition */
-> +static struct i2c_driver taos_driver = {
-> +	.driver = {
-> +		.name = "tsl258x",
-> +	},
-> +	.id_table = taos_idtable,
-> +	.probe = taos_probe,
-> +	.remove = __devexit_p(taos_remove),
-> +};
-> +
-> +static int __init taos_init(void)
-> +{
-> +	return i2c_add_driver(&taos_driver);
-> +}
-> +
-> +static void __exit taos_exit(void)
-> +{
-> +	i2c_del_driver(&taos_driver);
-> +}
-> +
-> +module_init(taos_init);
-> +module_exit(taos_exit);
-> +
-> +MODULE_AUTHOR("J. August Brenner<jbrenner@taosinc.com>");
-> +MODULE_DESCRIPTION("TAOS tsl258x ambient light sensor driver");
-> +MODULE_LICENSE("GPL");
-> +
-
+Sm9oYXRoYW4gLCBldCBhbC4sDQpUaGFuayB5b3UgZm9yIHRha2luZyB0aGUgdGltZSB0byByZXZp
+ZXcuDQpQbGVhc2Ugc2VlIHJlc3BvbnNlIChJTiBBTEwgQ0FQUykgdG8gdmFyaW91cyBjb21tZW50
+cyBpbmxpbmUuIA0KDQpKb24gQnJlbm5lcg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZy
+b206IEpvbmF0aGFuIENhbWVyb24gW21haWx0bzpqaWMyM0BjYW0uYWMudWtdIA0KU2VudDogV2Vk
+bmVzZGF5LCBNYXJjaCAwOSwgMjAxMSAxOjE0IFBNDQpUbzogSm9uIEJyZW5uZXI7IGxpbnV4LWlp
+b0B2Z2VyLmtlcm5lbC5vcmcNCkNjOiBMaW51eCBLZXJuZWwNClN1YmplY3Q6IFJlOiBbUEFUQ0gg
+Mi42LjM4LXJjN11UQU9TIDI1OHg6IERldmljZSBEcml2ZXINCg0KT24gMDMvMDkvMTEgMDE6MzIs
+IEpvbiBCcmVubmVyIHdyb3RlOg0KPiBGcm9tOiBKLiBBdWd1c3QgQnJlbm5lciA8amJyZW5uZXJA
+dGFvc2luYy5jb20+DQo+IA0KPiBUaGlzIGRyaXZlciBzdXBwb3J0cyB0aGUgVEFPUyB0c2wyNTh4
+IGZhbWlseSBvZiBBTFMgc2Vuc29ycy4NCj4gVGhpcyBkcml2ZXIgcHJvdmlkZXMgQUxTIGRhdGEg
+KGx1eCksIGFuZCBkZXZpY2UgY29uZmlndXJhdGlvbiB2aWEgDQo+IGlzeXNmcy9paW8uDQo+IE1v
+cmUgc2lnbmlmaWNhbnRseSwgdGhpcyBkcml2ZXIgcHJvdmlkZXMgdGhlIGNhcGFiaWxpdHkgdG8g
+YmUgZmVkIA0KPiAnZ2xhc3MgY29lZmZpY2llbnRzJyB0byBhY2NvbW1vZGF0ZSB2YXJ5aW5nIHN5
+c3RlbSBkZXNpZ25zIChiZXplbHMsIA0KPiBmYWNlcGxhdGVzLCBldGMuKS4NCj4gDQpKb24sIA0K
+DQpQbGVhc2UgY2MgYWxsIHRoZSByZWxldmFudCBzdWJzeXN0ZW0gbGlzdHMuLi4oZG9uZSkNCg0K
+U29ycnkgdG8gc2F5IEknbSBwcmV0dHkgbWlsaXRhbnQgYWJvdXQgYXR0cmlidXRlIG5hbWVzLg0K
+TXkgam9iIGlzIHRvIGVuc3VyZSB3ZSBlbmQgdXAgd2l0aCBhIGdlbmVyYWxpemFibGUgc2V0LCBj
+b25zaXN0ZW50IGFjcm9zcyBsb3RzIG9mIGRpZmZlcmVudCBzZW5zb3IgdHlwZXMuICBUaGF0IGNv
+bnNpc3RlbmN5IGRvZXMgcmVzdHJpY3Qgd2hhdCBpcyBhY2NlcHRhYmxlIGEgbG90IG1vcmUgdGhh
+biB3b3VsZCBiZSB0cnVlIGlmIHdlIHdlcmUgb25seSBpbnRlcmVzdGVkIGluIGxpZ2h0IHNlbnNv
+cnMuICBUaGF0J3Mgbm90IHNheSBJJ20gbm90IGhhcHB5IHRvIGhhdmUgZnV0aGVyIGRpc2N1c3Np
+b25zIG9uIHRoZXNlIHBvaW50cy4NCg0KT3RoZXJ3aXNlLCBnZXR0aW5nIHRoZXJlLiBWYXJpb3Vz
+IGNvbW1lbnRzIGlubGluZS4NCg0KPiBTaWduZWQtb2ZmLWJ5OiBKb24gQXVndXN0IEJyZW5uZXIg
+PGpicmVubmVyQHRhb3NpbmMuY29tPg0KPiANCj4gLS0tDQo+IA0KPj5Gcm9tIDViODM2NGY5ODI4
+ZGJhZDVmYmZmZjk2Mzg1ZTNmYzJhNmE2ZDU2ZWQgTW9uIFNlcCAxNyAwMDowMDowMCAyMDAxDQo+
+IEZyb206IEpvbiBCcmVubmVyIDxqYnJlbm5lckB0YW9zaW5jLmNvbT4NCj4gRGF0ZTogVHVlLCA4
+IE1hciAyMDExIDE4OjM3OjEzIC0wNjAwDQo+IFN1YmplY3Q6IFtQQVRDSF0gVEFPUyBkcml2ZXIg
+Zm9yIHRoZSB0c2wyNTh4IGZhbWlseSBvZiBkZXZpY2VzLg0KVGhpcyBzaG91bGQgYmUgaW4gdGhl
+IHBhdGNoIGJvZHkuICBHdWVzc2luZyBvdXRwdXQgb2YgZ2l0IGZvcm1hdC1wYXRjaD8NCkl0J3Mg
+Zm9yIHVzZSB3aXRoIGdpdCBzZW5kLWVtYWlsIGFuZCBmb3JtcyB0aGUgZW1haWwgaGVhZGVyLg0K
+IA0KV0lMTCBCRSBSRU1PVkVEIEZST00gTkVYVCBQQVRDSCBTVUJNSVNTSU9OIC0gRk9MTE9XSU5H
+IFRISVMgUkVTUE9OU0UgVE8gQ09NTUVOVA0KDQo+IC0tLQ0KPiAgTWFrZWZpbGUgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAyICstDQo+ICAuLi4vc3RhZ2lu
+Zy9paW8vRG9jdW1lbnRhdGlvbi9zeXNmcy1idXMtaWlvLWxpZ2h0ICB8ICAgNjMgKysNCj4gIGRy
+aXZlcnMvc3RhZ2luZy9paW8vbGlnaHQvS2NvbmZpZyAgICAgICAgICAgICAgICAgIHwgICAgNyAr
+DQo+ICBkcml2ZXJzL3N0YWdpbmcvaWlvL2xpZ2h0L01ha2VmaWxlICAgICAgICAgICAgICAgICB8
+ICAgIDEgKw0KPiAgZHJpdmVycy9zdGFnaW5nL2lpby9saWdodC90c2wyNTh4LmMgICAgICAgICAg
+ICAgICAgfCAxMDEwICsrKysrKysrKysrKysrKysrKysrDQo+ICA1IGZpbGVzIGNoYW5nZWQsIDEw
+ODIgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9NYWtl
+ZmlsZSBiL01ha2VmaWxlDQo+IGluZGV4IDI2ZDdkODIuLjJmN2Q5MjIgMTAwNjQ0DQo+IC0tLSBh
+L01ha2VmaWxlDQo+ICsrKyBiL01ha2VmaWxlDQpUaGlzIHNob3VsZG4ndCBiZSBpbiBhIGRyaXZl
+ciBwYXRjaC4NCj4gQEAgLTEsNyArMSw3IEBADQo+ICBWRVJTSU9OID0gMg0KPiAgUEFUQ0hMRVZF
+TCA9IDYNCj4gIFNVQkxFVkVMID0gMzgNCj4gLUVYVFJBVkVSU0lPTiA9IC1yYzYNCj4gK0VYVFJB
+VkVSU0lPTiA9IC1yYzcNCj4gIE5BTUUgPSBGbGVzaC1FYXRpbmcgQmF0cyB3aXRoIEZhbmdzDQo+
+ICANCj4gICMgKkRPQ1VNRU5UQVRJT04qDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcv
+aWlvL0RvY3VtZW50YXRpb24vc3lzZnMtYnVzLWlpby1saWdodCANCj4gYi9kcml2ZXJzL3N0YWdp
+bmcvaWlvL0RvY3VtZW50YXRpb24vc3lzZnMtYnVzLWlpby1saWdodA0KPiBpbmRleCA1ZDg0ODU2
+Li41YWZmYzJhIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL0RvY3VtZW50YXRp
+b24vc3lzZnMtYnVzLWlpby1saWdodA0KPiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL0RvY3Vt
+ZW50YXRpb24vc3lzZnMtYnVzLWlpby1saWdodA0KPiBAQCAtNjIsMyArNjIsNjYgQEAgRGVzY3Jp
+cHRpb246DQo+ICAJCXNlbnNpbmcgbW9kZS4gVGhpcyB2YWx1ZSBzaG91bGQgYmUgdGhlIG91dHB1
+dCBmcm9tIGEgcmVhZGluZw0KPiAgCQlhbmQgaWYgZXhwcmVzc2VkIGluIFNJIHVuaXRzLCBzaG91
+bGQgaW5jbHVkZSBfaW5wdXQuIElmIHRoaXMNCj4gIAkJdmFsdWUgaXMgbm90IGluIFNJIHVuaXRz
+LCB0aGVuIGl0IHNob3VsZCBpbmNsdWRlIF9yYXcuDQo+ICsJCQ0KPiArV2hhdDoJCS9zeXMvYnVz
+L2lpby9kZXZpY2VzL2RldmljZVtuXS9kZXZpY2Vfc3RhdGUNCj4gK0tlcm5lbFZlcnNpb246CTIu
+Ni4zNw0KPiArQ29udGFjdDoJbGludXgtaWlvQHZnZXIua2VybmVsLm9yZw0KPiArRGVzY3JpcHRp
+b246DQo+ICsJCVRoaXMgcHJvcGVydHkgZ2V0cy9zZXRzIHRoZSBUQU9TIHRzbDI1OHggcG93ZXIg
+c3RhdGUuDQpUaGlzIGNlcnRhaW5seSBsb29rcyBtb3JlIGdlbmVyYWwgdGhhbiB0aGF0LiBJdCdz
+IG5vdCBsaWdodCBzZW5zb3Igc3BlY2lmaWMgc28gc2hvdWxkIGJlIGluIHN5c2ZzLWJ1cy1paW8g
+cmF0aGVyIHRoYW4gdGhlIGxpZ2h0IHJlbGF0ZWQgZG9jLiAgSGF2aW5nIHNhaWQgdGhhdCBpdCdz
+IGFsc28gYSByYXRoZXIgbm9uIHNwZWNpZmljIGRlc2NyaXB0aW9uIC8gbmFtZS4NCg0KSSd2ZSBi
+ZWVuIGdlbmVyYWxseSBwdXNoaW5nIGFnYWluc3QgaGF2aW5nIHRoaXMgc29ydCBvZiBwb3dlciBj
+b250cm9sIGFzIGFuIGV4cGxpY2l0IGF0dHJpYnV0ZSBpbiB0aGUgaWlvIGFiaSBzaW1wbHkgYmVj
+YXVzZSB0aGUgcmlnaHQgd2F5IHRvIGhhbmRsZSB0aGlzIGlzIHByb2JhYmx5IHJ1bnRpbWUgcG93
+ZXIgbWFuYWdlbWVudC4gIFdlIGRpZCBsZXQgYSBmZXcgZHJpdmVycyBkbyB0aGlzIGVhcmx5IG9u
+IHNpbXBseSBiZWNhdXNlIHRoZXkgcHJlZGF0ZWQgcnVudGltZSBQTS4gIFRoYXQgZnJhbWV3b3Jr
+IGhhcyB0aGUgYWR2YW50YWdlIHRoYXQgaXQgYWxzbyBhbGxvd3MgZm9yIHRoZSBidXMgdG8gYmUg
+dHVybmVkIG9mZiBpZiBubyBkZXZpY2VzIG9uIGl0IG5lZWQgdG8gYmUgdGFsa2VkIHRvLiBJdCBt
+YXkgYmUgdGltZSB0byByZW9wZW4gdGhlIHByZXZpb3VzIGRpc2N1c3Npb24gb2YgaG93IHRvIGFs
+bG93IHVzZXJzcGFjZSB0byBleHBsaWNpdGx5IHNheSBpdCBkb2Vzbid0IGNhcmUgaWYgYSBkZXZp
+Y2UgaXMgcG93ZXJlZCB1cC4uLg0KDQpNT1ZFRCBUTyBTWVNGUy1CVVMtSUlPIERPQy4NCkNIQU5H
+RUQgVE8gUE9XRVJfU1RBVEUNCk5FRUQgQUJJTElUWSBGUk9NIFVTRVJTIFNQQUNFIFRPIFRVUk4g
+REVWSUNFIE9OL09GRiAoQUxMT1dTIFVTRVJTIFRPIENIQU5HRSBNVUxUSVBMRSBOT01JTkFMIE9Q
+UyBUSEVOIE9GRi9PTiB2cyBPRkYvT04gRk9SIEVBQ0ggQ0hBTkdFKQ0KUkVNT1ZFRCAiVEFPUyB0
+c2wyNThYIiBGUk9NIEFMTCBET0NVTUVOVEFUSU9OIFJFRkVSRU5DRVMuDQoNCg0KPiArDQo+ICtX
+aGF0OgkJL3N5cy9idXMvaWlvL2RldmljZXMvZGV2aWNlW25dL2Fsc19nYWluDQo+ICtLZXJuZWxW
+ZXJzaW9uOgkyLjYuMzcNCj4gK0NvbnRhY3Q6CWxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmcNCj4g
+K0Rlc2NyaXB0aW9uOg0KPiArCQlUaGlzIHByb3BlcnR5IGdldHMvc2V0cyB0aGUgVEFPUyB0c2wy
+NTh4IGFuYWxvZyBnYWluIHNldHRpbmdzDQo+ICsJCW9mIHRoZSBkZXZpY2UuDQpBZ2FpbiwgcGxl
+YXNlIGdldCB0aGUgbWVudGlvbiBvZiBwYXJ0aWN1bGFyIHBhcnQgb3V0IG9mIHRoZSBkZXNjcmlw
+dGlvbi4NCkFsdGhvdWdoIGl0IGlzbid0IGV4cGxpY2l0bHkgc3BlY2lmaWVkICh5ZXQpIGZvciBs
+aWdodCBzZW5zb3JzLCB3ZSBkbyBoYXZlIGFuIGVxdWl2YWxlbnQgKEkgdGhpbmspIG9mIHRoaXMg
+YXNzdW1pbmcgaXQgaXMgYSBsaW5lYXIgcmVsYXRpb25zaGlwPw0KKGdvb2dsZSBmb3VuZCBtZSBh
+IGRhdGFzaGVldCBzbyBhdCBsZWFzdCBzdXBlcmZpY2lhbGx5IEkgdGhpbmsgaXQgaXMpLg0KVGhh
+dCBhdHRyaWJ1dGUgaXMgaWxsdW1pbmFuY2VfY2FsaWJzY2FsZSAoY2FsaWIgYml0IG1lYW5zIGl0
+IGlzIGFwcGxpZWQgb24gZGV2aWNlIG9yIGluIGRyaXZlciByYXRoZXIgdGhhbiB0ZWxsaW5nIHVz
+ZXJzcGFjZSB3aGF0IG5lZWRzIHRvIGJlIGFwcGxpZWQgYnkgaXQpLiAoeWlrZXMsIGp1c3Qgbm90
+aWNlZCB0aGF0IHRoaXMgaXMgd3JvbmcgaW4gdHNsMjU2MyB3aGVyZSB3ZSBoYXZlIGNhbGliZ2Fp
+biBkdWUgdG8gc29tZSBpbmNvbnNpc3RlbmN5IG9uIG15IHBhcnQgYSB3aGlsZSBiYWNrKS4NCg0K
+RE9ORSAtIENIQU5HRUQgTkFNRSBUTyBJTExVTUFOQ0VfQ0FMSUJTQ0FMRQ0KUkVNT1ZFRCBUSElT
+IFRFWFQgRlJPTSBET0MNCg0KQWxzbyBhdm9pZCAnbWFnaWMnIG51bWJlcnMgYXMgc2VlbiBoZXJl
+LiAgVGhlcmUgYXJlIGEgZmluaXRlIHJhbmdlIG9mIHBvc3NpYmxlIHZhbHVlcywgc28gaGF2ZSBh
+biBleHRyYSBhdHRyaWJ1dGVzIC0gaGVyZSBpbGx1bWluYW5jZV9jYWxpYnNjYWxlX2F2YWlsYWJs
+ZSB3aGljaCBpcyByZWFkIG9ubHkgYW5kIGdpdmVzIHRoZSBzdHJpbmcgIjEgOCAxNiAxMTEiIGFu
+ZCBtYWtlIGlsbHVtaW5hbmNlX2NhbGlic2NhbGUgcmV0dXJuIC1FSU5WQUwgaWYgdGhlIHZhbHVl
+IHdyaXR0ZW4gaXMgbm90IG9uZSBvZiB0aGVzZS4gc3lzZnNfc3RyZXEgaXMgcmVhbGx5IGhhbmR5
+IGZvciB0aGlzIHNvcnQgb2YgbWF0Y2hpbmcuDQoNCk9rIC0gSE9XRVZFUiwgV0lUSCBSRVNQRUNU
+IFRPIFRISVM6IE9OTFkgQUxMT1dFRCBWQUxVRVMgQVJFIDAtMwkgKElOREVYIFJBVEhFUiBUSEFO
+IFNDQUxFIEZBQ1RPUiAgLSBTSU5DRSBXRSdSRSBVU0lORyBBIDIgUEFSVC9DSEFOTkVMIFNDQUxF
+KSANCkFEREVEIElMTFVNSU5BTkNFX0NBTElCU0NBTEVfQVZBSUxBQkxFDQoNCg0KPiArDQo+ICtX
+aGF0OgkJL3N5cy9idXMvaWlvL2RldmljZXMvZGV2aWNlW25dL2Fsc190aW1lDQo+ICtLZXJuZWxW
+ZXJzaW9uOgkyLjYuMzcNCj4gK0NvbnRhY3Q6CWxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmcNCj4g
+K0Rlc2NyaXB0aW9uOg0KPiArCQlUaGlzIHByb3BlcnR5IGdldHMvc2V0cyB0aGUgVEFPUyB0c2wy
+NTh4IEFEQyBjaGFubmVsIGludGVncmF0aW9uDQo+ICsJCXRpbWUgaW4gMi43bXMgaW5jcmVtZW50
+cy4NCkFnYWluLCB0aGlzIGlzIG1vcmUgZ2VuZXJhbCB0aGFuIGp1c3Qgd29ya2luZyBmb3IgdGhl
+IHRzbDI1OHggZHJpdmVyLiBUaGF0IDIuN21zIGlzbid0IHRob3VnaC4gIFBsZWFzZSBtYWtlIHRo
+aXMgYSB2YWx1ZSBpbiBtaWxsaXNlY3MgKGZpeGVkIHBvaW50KSB0aGVuIGRlYWwgd2l0aCBjb252
+ZXJzaW9uIHRvIHRoaXMgYmFzZSBpbiB0aGUgZHJpdmVyLiAgT24gdGhpcyBvbmUsIGl0IGlzIGNs
+b3NlbHkgcmVsYXRlZCB0byB0aGUgJ3BlcmlvZCcgYXR0cmlidXRlcyB0aGF0IGV4aXN0IGZvciB2
+YXJpb3VzIGV2ZW50cy4gUGVyaGFwcyBpbGx1bWluYW5jZV9wZXJpb2QgaXMgYSBtb3JlIGNvbnNp
+c3RlbnQgbmFtZT8NCg0KQ0hBTkdFRCBUTyBTQU1QTElOR19GUkVRVUVOQ1kNClJFTU9WRUQgRk9S
+IExJR0hUIERPQyANCkFEREVEIFNBTVBMSU5HX0ZSRVFVRU5DWV9BVkFJTElBQkxFDQoNCj4gKw0K
+PiArV2hhdDoJCS9zeXMvYnVzL2lpby9kZXZpY2VzL2RldmljZVtuXS9hbHNfdHJpbQ0KPiArS2Vy
+bmVsVmVyc2lvbjoJMi42LjM3DQo+ICtDb250YWN0OglsaW51eC1paW9Admdlci5rZXJuZWwub3Jn
+DQo+ICtEZXNjcmlwdGlvbjoNCj4gKwkJVGhpcyBwcm9wZXJ0eSBnZXRzL3NldHMgdGhlIFRBT1Mg
+dHNsMjU4eCBBREMgYWN0aXZlIGdhaW4gc2NhbGUuDQpUaGlzIG9uZSBuZWVkcyBtb3JlIGRldGFp
+bCBiZWZvcmUgSSBjYW4gY29tbWVudC4gSSBjYW4ndCBmaWd1cmUgb3V0IHdoYXQgaXQgYWN0dWFs
+bHkgaXMhDQoNCkNIQU5HRUQgVE8gU0NBTEUNClJFTU9WRUQgRlJPTSBMSUdIVCBET0MNCg0KPiAr
+CQkNCj4gK1doYXQ6CQkvc3lzL2J1cy9paW8vZGV2aWNlcy9kZXZpY2Vbbl0vYWxzX3RhcmdldA0K
+PiArS2VybmVsVmVyc2lvbjoJMi42LjM3DQo+ICtDb250YWN0OglsaW51eC1paW9Admdlci5rZXJu
+ZWwub3JnDQo+ICtEZXNjcmlwdGlvbjoNCj4gKwkJVGhpcyBwcm9wZXJ0eSBnZXRzL3NldHMgdGhl
+IFRBT1MgdHNsMjU4eCBBREMgbGFzdCBrbm93biBleHRlcm5hbA0KPiArCQlsdXggbWVhc3VyZW1l
+bnQgdXNlZCBpbiBjYWxpYnJhdGlvbi4NCmFsc190YXJnZXQgLT4gaWxsdW1pbmFuY2UwX3Rhcmdl
+dA0KDQpDSEFOR0VEIFRPIElMTFVNSU5BTkNFMF9JTlBVVF9UQVJHRVQNCg0KbHV4IC0+IGlsbHVt
+aW5hbmNlLg0KV2hhdCB1bml0cz8NClNvdW5kcyBtb3JlIGdlbmVyYWwgdGhhbiB0aGUgdHNsMjU4
+eCB0byBtZSBzbyBwZXJoYXBzIHNheSB0aGF0IGNoaXAgaXMgYW4gZXhhbXBsZSBvZiBpdHMgdXNl
+Pw0KPiArCQkNCj4gK1doYXQ6CQkvc3lzL2J1cy9paW8vZGV2aWNlcy9kZXZpY2Vbbl0vbHV4DQo+
+ICtLZXJuZWxWZXJzaW9uOgkyLjYuMzcNCj4gK0NvbnRhY3Q6CWxpbnV4LWlpb0B2Z2VyLmtlcm5l
+bC5vcmcNCj4gK0Rlc2NyaXB0aW9uOg0KPiArCQlUaGlzIHByb3BlcnR5IGdldHMgdGhlIFRBT1Mg
+dHNsMjU4eCBjYWxjdWxhdGVkIGx1eCB2YWx1ZS4NClNvcnJ5LCBsdXggaXMgYSB1bml0LiBBdHRy
+aWJ1dGVzIGFyZSBuYW1lZCBhZnRlciB3aGF0IGlzIGJlaW5nIG1lYXN1cmVkLiAgSGVuY2UgaWxs
+dW1pbmFuY2UuICBNaWdodCBzZWVtIHJlYXNvbmFibGUgdG8gdXNlIHRoZSB1bml0LCBidXQgdGhl
+biB3aGF0IHdvdWxkIHdlIGRvIGZvciBhY2NlbGVyYXRpb24gKG0vc14yKT8gIEkgZ3Vlc3Mgd2Ug
+Y2FuIHJlb3BlbiB0aGlzIGRlYmF0ZSBhZ2FpbiBpZiB5b3UgYXJlIHJlYWxseSBhdHRhY2hlZCB0
+byBsdXguLi4gIEFsc28gbmVlZHMgdG8gYmUgaWxsdW1pbmFuY2UwX2lucHV0LiAgVGhlIGlucHV0
+IHNwZWNpZmljZXMgdGhhdCBpdCBpcyBpbiB0aGUgYmFzZSB1bml0IChsdXgpIHJhdGhlciB0aGFu
+IHJhdy4gV2Ugc3RpY2sgdG8gdGhpcyBmb3JtIHRvIG1haW50YWluIGNvbXBhdGlibGl0eSB3aXRo
+IGh3bW9uIHdoaWNoIGhhcyBiZWVuIGFyb3VuZCBhIGxvdCBsb25nZXIgdGhhbiB1cyENCg0KDQog
+Q0hBTkdFRCBUTyBJTExVTUlOQU5DRTBfVEFSR0VUDQoNCj4gKw0KPiArV2hhdDoJCS9zeXMvYnVz
+L2lpby9kZXZpY2VzL2RldmljZVtuXS9sdXhfdGFibGUNCj4gK0tlcm5lbFZlcnNpb246CTIuNi4z
+Nw0KPiArQ29udGFjdDoJbGludXgtaWlvQHZnZXIua2VybmVsLm9yZw0KPiArRGVzY3JpcHRpb246
+DQo+ICsJCVRoaXMgcHJvcGVydHkgZ2V0cy9zZXRzIHRoZSBUQU9TIHRzbDI1OHggbHV4IHRhYmxl
+IG9mIGNvZWZmaWNpZW50cw0KPiArCQl0aGF0IGFyZSB1c2VkIHRvIGNhbGN1bGF0ZSBsdXguDQo+
+ICsJCQ0KDQoNCj4gK1doYXQ6CQkvc3lzL2J1cy9paW8vZGV2aWNlcy9kZXZpY2Vbbl0vcmVnX29m
+ZnNldA0KPiArS2VybmVsVmVyc2lvbjoJMi42LjM3DQo+ICtDb250YWN0OglsaW51eC1paW9Admdl
+ci5rZXJuZWwub3JnDQo+ICtEZXNjcmlwdGlvbjoNCj4gKwkJVGhpcyBwcm9wZXJ0eSBnZXRzL3Nl
+dHMgYW4gaW5kZXggdGhlIFRBT1MgdHNsMjU4eCBpbnRlcm5lbCByZWdpc3Rlcg0KPiArCQlmb3Ig
+ci93IG9mIHNlbGVjdGVkIHJlZ2lzdGVyLg0KU29ycnksIG5vdCBsZXR0aW5nIGRpcmVjdCByZWdp
+c3RlciB3cml0ZSBhdHRyaWJ1dGVzIGluLiAgV2hhdCBkbyB5b3UgbmVlZCB0aGVzZSBmb3I/ICBD
+YW4gaXQgcmVhbGx5IG5vdCBiZSByZXBsYWNlZCBieSBtb3JlIGluZm9ybWF0aXZlIGF0dHJpYnV0
+ZXM/DQo+ICsJCQ0KDQpSRU1PVkVEIFJFTU9WRUQgUkVHSVNURVIgUi9XIEFUVFJJQlVURSBGVU5D
+VElPTlMgIEZST00gRE9DICYgQ09ERQ0KDQo+ICtXaGF0OgkJL3N5cy9idXMvaWlvL2RldmljZXMv
+ZGV2aWNlW25dL3JlZ19vZmZzZXQNCj4gK0tlcm5lbFZlcnNpb246CTIuNi4zNw0KPiArQ29udGFj
+dDoJbGludXgtaWlvQHZnZXIua2VybmVsLm9yZw0KPiArRGVzY3JpcHRpb246DQo+ICsJCVRoaXMg
+cHJvcGVydHkgZ2V0cy9zZXRzIGFuIFRBT1MgdHNsMjU4eCBpbnRlcm5lbCByZWdpc3RlciB2YWx1
+ZQ0KPiArCQlpbmRleGVkIGJ5IHJlZ19vZmZzZXQuDQo+ICsNCg0KUkVNT1ZFRCBBTEwgUkVHSVNU
+RVIgUkVBRCAvIFdSSVRFIEFUVFJJQlVURSBBQkkgRlVOQ1RJT05TDQoNCkV4dHJhIGVtcHR5IGxp
+bmVzLiBQbGVhc2UgcmVtb3ZlLiAgQWxzbyBwbGVhc2UgcnVuIGNoZWNrcGF0Y2ggb3ZlciB0aGlz
+IHBhdGNoLiBJIHRoaW5rIHRoZXJlIGFyZSBzb21lIGV4dHJhIHRhYnMgb24gdGhlc2UgbGluZXMg
+dGhhdCB3b24ndCBoYXZlIGdvdHRlbiB0aHJvdWdoIHRoYXQuDQo+ICsNCj4gKwkJDQo+IFwgTm8g
+bmV3bGluZSBhdCBlbmQgb2YgZmlsZQ0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lp
+by9saWdodC9LY29uZmlnIA0KPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8vbGlnaHQvS2NvbmZpZw0K
+PiBpbmRleCAzNmQ4YmJlLi5hZTQ5OWI4IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcv
+aWlvL2xpZ2h0L0tjb25maWcNCj4gKysrIGIvZHJpdmVycy9zdGFnaW5nL2lpby9saWdodC9LY29u
+ZmlnDQo+IEBAIC0xMyw2ICsxMywxMyBAQCBjb25maWcgU0VOU09SU19UU0wyNTYzDQo+ICAJIFRo
+aXMgZHJpdmVyIGNhbiBhbHNvIGJlIGJ1aWx0IGFzIGEgbW9kdWxlLiAgSWYgc28sIHRoZSBtb2R1
+bGUNCj4gIAkgd2lsbCBiZSBjYWxsZWQgdHNsMjU2My4NCj4gIA0KPiArY29uZmlnIFRBT1NfMjU4
+eA0KPiArCXRyaXN0YXRlICJUQU9TIFRTTDI1OHggZGV2aWNlIGRyaXZlciINCj4gKwlkZWZhdWx0
+IG0NCj4gKwloZWxwDQo+ICsJICBQcm92aWRlcyBzdXBwb3J0IGZvciB0aGUgVEFPUyB0c2wyNTh4
+IGZhbWlseSBvZiBkZXZpY2VzLg0KPiArCSAgQWNjZXNzIEFMUyBkYXRhL2NvbnRyb2wgdmlhIHN5
+c2ZzL2lpby4NClBsZWFzZSBsaXN0IGRldmljZXMuICBQZW9wbGUgdGVuZCB0byBncmVwIHRoZSB0
+cmVlIGZvciB0aGUgcGFydCBudW1iZXIgb2YgdGhlIGRldmljZSB0aGF0IHRoZXkgYWN0dWFsbHkg
+aGF2ZSBoZW5jZSBpdCBpcyB1c2VmdWwgdG8gaGF2ZSB0aGVtIGFsbCBleHBsaWNpdGx5IGxpc3Rl
+ZCBoZXJlLiAgSW4gY29tYmluYXRpb24gd2l0aCB0aGUgaWQgdGFibGUgbGlzdGluZyB0aGVtIGFs
+bCB0aGlzIGFsc28gdGVuZHMgdG8gdGVsbCBwZW9wbGUgaWYgdGhlIGRldmVsb3BlciB0aGlua3Mg
+aXQgd2lsbCB3b3JrIHdpdGggdGhlIHBhcnQgdGhleSBoYXZlLg0KT0sgLSBDSEFOR0VEIFRPIHRz
+bDI1ODEgDQo+ICsNCj4gIGNvbmZpZyBTRU5TT1JTX0lTTDI5MDE4DQo+ICAgICAgICAgIHRyaXN0
+YXRlICJJU0wgMjkwMTggbGlnaHQgYW5kIHByb3hpbWl0eSBzZW5zb3IiDQo+ICAgICAgICAgIGRl
+cGVuZHMgb24gSTJDDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2xpZ2h0L01h
+a2VmaWxlIA0KPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8vbGlnaHQvTWFrZWZpbGUNCj4gaW5kZXgg
+OTE0MmMwZS4uNDM5NWRiOCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lpby9saWdo
+dC9NYWtlZmlsZQ0KPiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2xpZ2h0L01ha2VmaWxlDQo+
+IEBAIC0zLDQgKzMsNSBAQA0KPiAgIw0KPiAgDQo+ICBvYmotJChDT05GSUdfU0VOU09SU19UU0wy
+NTYzKQkrPSB0c2wyNTYzLm8NCj4gK29iai0kKENPTkZJR19UQU9TXzI1OHgpCSs9IHRzbDI1OHgu
+bw0KPiAgb2JqLSQoQ09ORklHX1NFTlNPUlNfSVNMMjkwMTgpCSs9IGlzbDI5MDE4Lm8NCj4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vbGlnaHQvdHNsMjU4eC5jIA0KPiBiL2RyaXZl
+cnMvc3RhZ2luZy9paW8vbGlnaHQvdHNsMjU4eC5jDQo+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+
+IGluZGV4IDAwMDAwMDAuLjIyNWQ4NWINCj4gLS0tIC9kZXYvbnVsbA0KPiArKysgYi9kcml2ZXJz
+L3N0YWdpbmcvaWlvL2xpZ2h0L3RzbDI1OHguYw0KPiBAQCAtMCwwICsxLDEwMTAgQEANCj4gKy8q
+DQo+ICsgKiBEZXZpY2UgZHJpdmVyIGZvciBtb25pdG9yaW5nIGFtYmllbnQgbGlnaHQgaW50ZW5z
+aXR5IChsdXgpDQo+ICsgKiB3aXRoaW4gdGhlIFRBT1MgdHNsMjU4eCBmYW1pbHkgb2YgZGV2aWNl
+cw0KPiArICoNCj4gKyAqIENvcHlyaWdodCAoYykgMjAxMSwgVEFPUyBDb3Jwb3JhdGlvbi4NCj4g
+KyAqDQo+ICsgKiBUaGlzIHByb2dyYW0gaXMgZnJlZSBzb2Z0d2FyZTsgeW91IGNhbiByZWRpc3Ry
+aWJ1dGUgaXQgYW5kL29yIA0KPiArbW9kaWZ5DQo+ICsgKiBpdCB1bmRlciB0aGUgdGVybXMgb2Yg
+dGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGFzIHB1Ymxpc2hlZCANCj4gK2J5DQo+ICsg
+KiB0aGUgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9uOyBlaXRoZXIgdmVyc2lvbiAyIG9mIHRoZSBM
+aWNlbnNlLCBvcg0KPiArICogKGF0IHlvdXIgb3B0aW9uKSBhbnkgbGF0ZXIgdmVyc2lvbi4NCj4g
+KyAqDQo+ICsgKiBUaGlzIHByb2dyYW0gaXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBp
+dCB3aWxsIGJlIHVzZWZ1bCwgDQo+ICtidXQgV0lUSE9VVA0KPiArICogQU5ZIFdBUlJBTlRZOyB3
+aXRob3V0IGV2ZW4gdGhlIGltcGxpZWQgd2FycmFudHkgb2YgTUVSQ0hBTlRBQklMSVRZIA0KPiAr
+b3INCj4gKyAqIEZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFLiAgU2VlIHRoZSBHTlUg
+R2VuZXJhbCBQdWJsaWMgDQo+ICtMaWNlbnNlIGZvcg0KPiArICogbW9yZSBkZXRhaWxzLg0KPiAr
+ICoNCj4gKyAqIFlvdSBzaG91bGQgaGF2ZSByZWNlaXZlZCBhIGNvcHkgb2YgdGhlIEdOVSBHZW5l
+cmFsIFB1YmxpYyBMaWNlbnNlIA0KPiArYWxvbmcNCj4gKyAqIHdpdGggdGhpcyBwcm9ncmFtOyBp
+ZiBub3QsIHdyaXRlIHRvIHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIEluYy4sDQo+ICsg
+KiA1MSBGcmFua2xpbiBTdHJlZXQsIEZpZnRoIEZsb29yLCBCb3N0b24sIE1BCTAyMTEwLTEzMDEs
+IFVTQS4NCj4gKyAqLw0KPiArDQo+ICsjaW5jbHVkZSA8bGludXgva2VybmVsLmg+DQo+ICsjaW5j
+bHVkZSA8bGludXgvaTJjLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvZXJybm8uaD4NCj4gKyNpbmNs
+dWRlIDxsaW51eC9kZWxheS5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L3N0cmluZy5oPg0KPiArI2lu
+Y2x1ZGUgPGxpbnV4L211dGV4Lmg+DQo+ICsjaW5jbHVkZSAiLi4vaWlvLmgiDQo+ICsNCj4gKyNk
+ZWZpbmUgREVWSUNFX0lECQkJInRzbDI1OHgiDQo+ICsNCj4gKyNkZWZpbmUgTUFYX0RFVklDRV9S
+RUdTCQkzMg0KPiArDQpJJ20gZ3Vlc3NpbmcgdGhpcyBpcyBhbiBpbnRlcm5hbCBwYXJ0IG5hbWU/
+ICBJZiBwb3NzaWJsZSBwbGVhc2UgcmVwbGFjZSB3aXRoIHRoZSBudW1iZXJzIHBlb3BsZSB3aWxs
+IHNlZSBvbiBkYXRhc2hlZXRzLg0KQ0hBTkdFRCBUTyBUU0wyNTgzDQoNCj4gKy8qIFRyaXRvbiBy
+ZWdpc3RlciBvZmZzZXRzICovDQo+ICsjZGVmaW5lCVRBT1NfUkVHX01BWAkJOA0KPiArDQo+ICsv
+KiBEZXZpY2UgUmVnaXN0ZXJzIGFuZCBNYXNrcyAqLw0KPiArI2RlZmluZSBUU0wyNThYX0NOVFJM
+CQkJMHgwMA0KVGhpcyBuZWVkcyBhIGEgY29tbWVudC4gIFdoeSB0d28gcmVncyB3aXRoIHRoZSBz
+YW1lIGFkZHJlc3M/IAktCURPTkUgIC0gUkVNT1ZFRCBTVEFUVVMNCj4gKyNkZWZpbmUgVFNMMjU4
+WF9TVEFUVVMJCQkweDAwDQo+ICsjZGVmaW5lIFRTTDI1OFhfQUxTX1RJTUUJCTBYMDENCj4gKyNk
+ZWZpbmUgVFNMMjU4WF9JTlRFUlJVUFQJCTB4MDINCj4gKyNkZWZpbmUgVFNMMjU4WF9HQUlOCQkJ
+MHgwNw0KPiArI2RlZmluZSBUU0wyNThYX1JFVklECQkJMHgxMQ0KPiArI2RlZmluZSBUU0wyNThY
+X0NISVBJRAkJCTB4MTINCg0KQ3J5cHRpYyBuYW1lIGFuZCBuZXZlciB1c2VkLiBQbGVhc2UgcmVt
+b3ZlLgkJCS0JRE9ORSAtIFJFTU9WRUQNCj4gKyNkZWZpbmUgVFNMMjU4WF9TTUJfNAkJCTB4MTMN
+Cj4gKyNkZWZpbmUgVFNMMjU4WF9BTFNfQ0hBTjBMTwkJMHgxNA0KPiArI2RlZmluZSBUU0wyNThY
+X0FMU19DSEFOMEhJCQkweDE1DQo+ICsjZGVmaW5lIFRTTDI1OFhfQUxTX0NIQU4xTE8JCTB4MTYN
+Cj4gKyNkZWZpbmUgVFNMMjU4WF9BTFNfQ0hBTjFISQkJMHgxNw0KPiArI2RlZmluZSBUU0wyNThY
+X1RNUl9MTwkJCTB4MTgNCj4gKyNkZWZpbmUgVFNMMjU4WF9UTVJfSEkJCQkweDE5DQo+ICsNCj4g
+Ky8qIFNrYXRlIGNtZCByZWcgbWFza3MgKi8NCj4gKyNkZWZpbmUgVFNMMjU4WF9DTURfUkVHCQkw
+eDgwDQo+ICsjZGVmaW5lIFRTTDI1OFhfQ01EX0JZVEVfUlcJCTB4MDANCg0KVGhpcyBuYW1lIGNv
+bmZ1c2VzIG1lLiAgTG9va3MgbGlrZSBpdCBzZXRzIHdvcmQgcHJvdG9jb2wgc28gd2h5IHRoZSBi
+bG9jayBiaXQ/CS0gRE9ORSBSRU1PVkVEIEJMSw0KQWxzbyBub3QgdXNlZCBzbyBjb3VsZCBqdXN0
+IGdldCByaWQgb2YgaXQuDQo+ICsjZGVmaW5lIFRTTDI1OFhfQ01EX1dPUkRfQkxLX1JXCTB4MjAN
+Cj4gKyNkZWZpbmUgVFNMMjU4WF9DTURfU1BMX0ZOCQkweDYwDQoNCk5pdHBpY2suIExhdGVyIHJl
+ZmVyZW5jZSB0byBJTlQgaGF2ZSBhbiBfIGFmdGVyIHRoZW0uIFBlcmhhcHMgYWRkIG9uZSBmb3Ig
+Y29uc2lzdGVuY3k/IC0gRE9ORQ0KDQo+ICsjZGVmaW5lIFRTTDI1OFhfQ01EX0FMU19JTlRDTFIJ
+CTBYMDENCj4gKw0KRXJyLiBTa2F0ZT8NCj4gKy8qIFNrYXRlIGNudHJsIHJlZyBtYXNrcyAqLw0K
+Tm90IHVzZWQgYW5kIHJhdGhlciBwb2ludGxlc3MuICBEZWZhdWx0IHdvdWxkIGJlIHRvIGFzc3Vt
+ZSB3cml0aW5nIDAgY2xlYXJlZCBhIHJlZ2lzdGVyPyAgKG9yIGRvZXMgdGhpcyBtZWFuIHNvbWV0
+aGluZyBlbHNlPykJIC0gRE9ORQ0KDQo+ICsjZGVmaW5lIFRTTDI1OFhfQ05UTF9SRUdfQ0xFQVIJ
+CTB4MDANCj4gKyNkZWZpbmUgVFNMMjU4WF9DTlRMX0FMU19JTlRfRU5CTAkweDEwDQo+ICsjZGVm
+aW5lIFRTTDI1OFhfQ05UTF9XQUlUX1RNUl9FTkJMCTB4MDgNCj4gKyNkZWZpbmUgVFNMMjU4WF9D
+TlRMX0FEQ19FTkJMCQkweDAyDQo+ICsjZGVmaW5lIFRTTDI1OFhfQ05UTF9QV1JPTgkJMHgwMQ0K
+PiArI2RlZmluZSBUU0wyNThYX0NOVExfQUxTUE9OX0VOQkwJMHgwMw0KRGVmaW5lIHRoaXMgaW4g
+dGVybXMgb2YgUFdST04gYW5kIEFEQ19FTkJMIHRvIG1ha2UgaXQgY2xlYXIgd2hhdCBpdCBpcy4J
+LSBDSEFOR0VEIE5BTUUgUFdSX09OIChQT1dFUiBPTiBWUyBFTkFCTElORyBUSEUgQURDIEFSRSBE
+SUZGRVJFTlQpDQoNCj4gKyNkZWZpbmUgVFNMMjU4WF9DTlRMX0lOVEFMU1BPTl9FTkJMCTB4MTMJ
+CS0gUkVNT1ZFRA0KYWxzbyBkZWZpbmUgdGhpcyBpbiB0ZXJtcyBvZiBpdHMgc3ViIHBhcnRzLg0K
+PiArDQo+ICsvKiBTa2F0ZSBzdGF0dXMgcmVnIG1hc2tzICovDQo+ICsjZGVmaW5lIFRTTDI1OFhf
+U1RBX0FEQ1ZBTElECQkweDAxDQo+ICsjZGVmaW5lIFRTTDI1OFhfU1RBX0FMU0lOVFIJCTB4MTAN
+Cj4gKyNkZWZpbmUgVFNMMjU4WF9TVEFfQURDSU5UUgkJMHgxMA0KPiArDQo+ICsvKiBMdXggY29u
+c3RhbnRzICovDQo+ICsjZGVmaW5lCU1BWF9MVVgJCQk2NTUzNQkJLURPTkUgTkFNRSBDSEFOR0VE
+DQpFcnIuIFJlbmFtZSB0aGF0IHVubGVzcyBpdCByZWFsbHkgZG9lcyBtZWFuIDY1NTM1IGx1eA0K
+PiArDQo+ICtlbnVtIHsNCj4gKwlUQU9TX0NISVBfVU5LTk9XTiA9IDAsIFRBT1NfQ0hJUF9XT1JL
+SU5HID0gMSwgVEFPU19DSElQX1NMRUVQID0gMiB9IA0KPiArVEFPU19DSElQX1dPUktJTkdfU1RB
+VFVTOw0KPiArDQo+ICsvKiBQZXItZGV2aWNlIGRhdGEgKi8NCj4gK3N0cnVjdCB0YW9zX2Fsc19p
+bmZvIHsNCj4gKwl1MTYgYWxzX2NoMDsNCj4gKwl1MTYgYWxzX2NoMTsNCj4gKwl1MTYgbHV4Ow0K
+PiArfTsNCj4gKw0KPiArc3RydWN0IHRhb3Nfc2V0dGluZ3Mgew0KPiArCWludCBhbHNfdGltZTsN
+Cj4gKwlpbnQgYWxzX2dhaW47DQo+ICsJaW50IGFsc19nYWluX3RyaW07DQo+ICsJaW50IGFsc19j
+YWxfdGFyZ2V0Ow0KPiArfTsNCj4gKw0KPiArc3RydWN0IHRzbDI1OHhfY2hpcCB7DQo+ICsJc3Ry
+dWN0IG11dGV4IGFsc19tdXRleDsNCj4gKwlzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50Ow0KPiAr
+CXN0cnVjdCBpaW9fZGV2ICppaW9fZGV2Ow0KPiArCXN0cnVjdCBkZWxheWVkX3dvcmsgdXBkYXRl
+X2x1eDsNCj4gKwl1bnNpZ25lZCBpbnQgYWRkcjsNCj4gKwljaGFyIHRhb3NfaWQ7DQo+ICsJY2hh
+ciB2YWxpZDsNCj4gKwl1bnNpZ25lZCBsb25nIGxhc3RfdXBkYXRlZDsNCj4gKwlzdHJ1Y3QgdGFv
+c19hbHNfaW5mbyBhbHNfY3VyX2luZm87DQo+ICsJc3RydWN0IHRhb3Nfc2V0dGluZ3MgdGFvc19z
+ZXR0aW5nczsNCj4gKwlpbnQgYWxzX3RpbWVfc2NhbGU7DQo+ICsJaW50IGFsc19zYXR1cmF0aW9u
+Ow0KPiArCWludCB0YW9zX2NoaXBfc3RhdHVzOw0KPiArCXU4IHRhb3NfY29uZmlnWzhdOw0KPiAr
+fTsNCj4gKw0KPiArc3RhdGljIGludCB0YW9zX2kyY19yZWFkKHN0cnVjdCBpMmNfY2xpZW50ICpj
+bGllbnQsIHU4IHJlZywgdTggKnZhbCwNCj4gKwl1bnNpZ25lZCBpbnQgbGVuKTsNCj4gK3N0YXRp
+YyBpbnQgdGFvc19pMmNfd3JpdGVfY29tbWFuZChzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50LCB1
+OCByZWcpOw0KPiArDQo+ICsvKg0KPiArICogSW5pdGlhbCB2YWx1ZXMgZm9yIGRldmljZSAtIHRo
+aXMgdmFsdWVzIGNhbi93aWxsIGJlIGNoYW5nZWQgYnkgZHJpdmVyLg0KPiArICogYW5kIGFwcGxp
+Y2F0aW9ucyBhcyBuZWVkZWQuDQo+ICsgKiBUaGVzZSB2YWx1ZXMgYXJlIGR5bmFtaWMuDQo+ICsg
+Ki8NCj4gK3N0YXRpYyBjb25zdCB1OCB0YW9zX2NvbmZpZ1s4XSA9IHsNCj4gKwkJMHgwMCwgMHhl
+ZSwgMHgwMCwgMHgwMywgMHgwMCwgMHhGRiwgMHhGRiwgMHgwMA0KPiArfTsgLyoJY250cmwgYXRp
+bWUgaW50QyAgQXRobDAgQXRobDEgQXRoaDAgQXRoaDEgZ2FpbiAqLw0KPiArDQo+ICtzdHJ1Y3Qg
+dGFvc19sdXggew0KPiArCXVuc2lnbmVkIGludCByYXRpbzsNCj4gKwl1bnNpZ25lZCBpbnQgY2gw
+Ow0KPiArCXVuc2lnbmVkIGludCBjaDE7DQo+ICt9Ow0KPiArDQo+ICsvKiBUaGlzIHN0cnVjdHVy
+ZSBpcyBpbnRlbnRpb25hbGx5IGxhcmdlIHRvIGFjY29tbW9kYXRlIHVwZGF0ZXMgdmlhIA0KPiAr
+c3lzZnMuICovDQo+ICsvKiBTaXplZCB0byAxMSA9IG1heCAxMCBzZWdtZW50cyArIDEgdGVybWlu
+YXRpb24gc2VnbWVudCAqLw0KQW55IGNoYW5jZSBvZiB0d28gc2Vuc29ycyBvbiBvbmUgZGV2aWNl
+LCBlYWNoIG9mIHdoaWNoIGhhcyBkaWZmZXJlbnQgdmFsdWVzIGZvciB0aGlzPwktICBOTyAsIExV
+WCBUQUJMRSBJUyBGT1IgR0xBU1MgTk9UIERFVklDRQ0KDQo+ICtzdHJ1Y3QgdGFvc19sdXggdGFv
+c19kZXZpY2VfbHV4WzExXSA9IHsNCj4gKwl7ICA5ODMwLCAgODUyMCwgMTU3MjkgfSwNCj4gKwl7
+IDEyNDUyLCAxMDgwNywgMjMzNDQgfSwNCj4gKwl7IDE0NzQ2LCAgNjM4MywgMTE3MDUgfSwNCj4g
+Kwl7IDE3Njk1LCAgNDA2MywgIDY1NTQgfSwNCj4gK307DQo+ICsNCj4gK3N0cnVjdCB0YW9zX2x1
+eCB0YW9zX2x1eDsNCj4gKw0KPiArc3RydWN0IGdhaW5hZGogew0KPiArCXMxNiBjaDA7DQo+ICsJ
+czE2IGNoMTsNCj4gK307DQo+ICsNCj4gKy8qIEluZGV4ID0gKDAgLSAzKSBVc2VkIHRvIHZhbGlk
+YXRlIHRoZSBnYWluIHNlbGVjdGlvbiBpbmRleCAqLyANCj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3Qg
+Z2FpbmFkaiBnYWluYWRqW10gPSB7DQo+ICsJeyAxLCAxIH0sDQo+ICsJeyA4LCA4IH0sDQo+ICsJ
+eyAxNiwgMTYgfSwNClRoYXQncyAnaW50ZXJlc3RpbmcnLiAgVGhpcyB3aWxsIG1ha2UgdGhlIGNh
+bGlic2NhbGUgZGlzY3Vzc2lvbiBhYm92ZSBtb3JlIGNvbXBsZXguICBJIGd1ZXNzIG5vIHVzZXJz
+cGFjZSBpcyBnb2luZyB0byBjYXJlIGFib3V0IHRoZSBwcmVjaXNlIGludGVybmFsIG11bHRpcGxp
+ZXJzIHNvIGEgJ3JvdWdoJyB2YWx1ZSB3b3VsZCBwcm9iYWJseSBkbyBpbiB0aGF0IGF0dHJpYnV0
+ZS4gV2hhdCBkbyB5b3UgdGhpbms/DQpUSElTIEFDQ09NTU9EQVRFUyBBIERJRkZFUkVOVElBTCBD
+SEFSQUNURVJJU1RJQyAoSU4gVEhJUyBGQU1JTFkgT0YgREVWSUNFKSAgQkVUV0VFTiBBREMgQ0hB
+Tk5FTFMgQVQgSElHSEVSIEdBSU4uICBUSElTIElTIEFOIElOVEVSTkFML0RSSVZFUiBDQUxDVUxB
+VElPTi4gIFVTRVJTUEFDRSBTSU1QTFkgU0VMRUNUUyBHQUlOIElOREVYIDAgLSAzLiAgDQo+ICsJ
+eyAxMDcsIDExNSB9DQo+ICt9Ow0KPiArDQo+ICsvKg0KPiArICogUHJvdmlkZXMgaW5pdGlhbCBv
+cGVyYXRpb25hbCBwYXJhbWV0ZXIgZGVmYXVsdHMuDQo+ICsgKiBUaGVzZSBkZWZhdWx0cyBtYXkg
+YmUgY2hhbmdlZCB0aHJvdWdoIHRoZSBkZXZpY2UncyBzeXNmcyBmaWxlcy4NCj4gKyAqLw0KPiAr
+c3RhdGljIHZvaWQgdGFvc19kZWZhdWx0cyhzdHJ1Y3QgdHNsMjU4eF9jaGlwICpjaGlwKSB7DQo+
+ICsJLyogT3BlcmF0aW9uYWwgcGFyYW1ldGVycyAqLw0KPiArCWNoaXAtPnRhb3Nfc2V0dGluZ3Mu
+YWxzX3RpbWUgPSA0NTA7DQo+ICsJLyogbXVzdCBiZSBhIG11bHRpcGxlIG9mIDUwbVMgKi8NCj4g
+KwljaGlwLT50YW9zX3NldHRpbmdzLmFsc19nYWluID0gMjsNCj4gKwkvKiB0aGlzIGlzIGFjdHVh
+bGx5IGFuIGluZGV4IGludG8gdGhlIGdhaW4gdGFibGUgKi8NCj4gKwkvKiBhc3N1bWUgY2xlYXIg
+Z2xhc3MgYXMgZGVmYXVsdCAqLw0KPiArCWNoaXAtPnRhb3Nfc2V0dGluZ3MuYWxzX2dhaW5fdHJp
+bSA9IDEwMDA7DQo+ICsJLyogZGVmYXVsdCBnYWluIHRyaW0gdG8gYWNjb3VudCBmb3IgYXBlcnR1
+cmUgZWZmZWN0cyAqLw0KPiArCWNoaXAtPnRhb3Nfc2V0dGluZ3MuYWxzX2NhbF90YXJnZXQgPSAx
+MzA7DQo+ICsJLyogS25vd24gZXh0ZXJuYWwgQUxTIHJlYWRpbmcgdXNlZCBmb3IgY2FsaWJyYXRp
+b24gKi8NCj4gKw0KPiArCS8qIEluaXRpYWxpemUgQUxTIGRhdGEgdG8gZGVmYXVsdHMgKi8NCj4g
+KwljaGlwLT5hbHNfY3VyX2luZm8uYWxzX2NoMCA9IDA7DQo+ICsJY2hpcC0+YWxzX2N1cl9pbmZv
+LmFsc19jaDEgPSAwOw0KPiArCWNoaXAtPmFsc19jdXJfaW5mby5sdXggPSAwOw0KQWxyZWFkeSB6
+ZXJvIHZpYSB0aGUgbWVtc2V0IChzb29uIHRvIGJlIGt6YWxsb2MpIGhlbmNlIGRvbid0IGJvdGhl
+ciBzZXR0aW5nIHRoZXNlIHRocmVlLgktIERPTkUNCj4gK30NCj4gKw0KPiArLyoNCj4gKyAqIFJl
+YWQgYSBudW1iZXIgb2YgYnl0ZXMgc3RhcnRpbmcgYXQgcmVnaXN0ZXIgKHJlZykgbG9jYXRpb24u
+DQo+ICsgKiBSZXR1cm4gMCwgb3IgaTJjX3NtYnVzX3dyaXRlX2J5dGUgRVJST1IgY29kZS4NCj4g
+KyAqLw0KPiArc3RhdGljIGludA0KPiArdGFvc19pMmNfcmVhZChzdHJ1Y3QgaTJjX2NsaWVudCAq
+Y2xpZW50LCB1OCByZWcsIHU4ICp2YWwsIHVuc2lnbmVkIA0KPiAraW50IGxlbikgew0KPiArCWlu
+dCByZXQ7DQo+ICsJaW50IGk7DQo+ICsNCj4gKwlmb3IgKGkgPSAwOyBpIDwgbGVuOyBpKyspIHsN
+Cj4gKwkJLyogc2VsZWN0IHJlZ2lzdGVyIHRvIHdyaXRlICovDQo+ICsJCXJldCA9IGkyY19zbWJ1
+c193cml0ZV9ieXRlKGNsaWVudCwgKFRTTDI1OFhfQ01EX1JFRyB8IHJlZykpOw0KPiArCQlpZiAo
+cmV0IDwgMCkgew0KPiArCQkJZGV2X2VycigmY2xpZW50LT5kZXYsICJ0YW9zX2kyY19yZWFkIGZh
+aWxlZCB0byB3cml0ZSINCj4gKwkJCQkiIHJlZ2lzdGVyICV4XG4iLCByZWcpOw0KPiArCQkJcmV0
+dXJuIHJldDsNCj4gKwkJfQ0KPiArCQkvKiByZWFkIHRoZSBkYXRhICovDQo+ICsJCSp2YWwgPSBp
+MmNfc21idXNfcmVhZF9ieXRlKGNsaWVudCk7DQpJJ2QgdXNlIHZhbFtpXSB3aXRob3V0IHRoaXMg
+aW5jcmVtZW50IGZvciBjbGFyaXR5Lg0KPiArCQl2YWwrKzsNCj4gKwkJaWYgKChyZWcgJiAweDFm
+KSA9PSAweDFmKQ0KQ2FuIHRoaXMgZXZlciBvY2NjdXIgaW4gdGhlIGRyaXZlcj8gIEkgd291bGQg
+aW1hZ2luZSBpdCBpcyBhIGJ1ZyBpZiBpdCBkb2VzIGFzIHlvdSdsbCByZWFkIGJhY2sgYSBkaWZm
+ZXJlbnQgbnVtYmVyIG9mIHZhbHVlcyB0aGFuIHlvdSBleHBlY3QgdG8gZG8uCS0gRE9ORSBSRU1P
+VkVEDQpJZiBub3QgaXQncyBhbiBvdmVyIGVudGh1c2lhc3RpYyBiaXQgb2YgZGVidWcgY29kZSBz
+byBnZXQgcmlkIG9mIGl0Lg0KPiArCQkJYnJlYWs7DQo+ICsJCXJlZysrOw0KPiArCX0NCj4gKwly
+ZXR1cm4gMDsNCj4gK30NCj4gKw0KPiArLyoNCj4gKyAqIFRoaXMgZnVuY3Rpb24gaXMgdXNlZCB0
+byBzZW5kIGEgY29tbWFuZCB0byBkZXZpY2UgY29tbWFuZC9jb250cm9sIA0KPiArcmVnaXN0ZXIN
+Cj4gKyAqIEFsbCBieXRlcyBzZW50IHVzaW5nIHRoaXMgY29tbWFuZCBoYXZlIHRoZWlyIE1TQml0
+IHNldCAtIGl0J3MgYSBjb21tYW5kIQ0KPiArICogUmV0dXJuIDAsIG9yIGkyY19zbWJ1c193cml0
+ZV9ieXRlIGVycm9yIGNvZGUuDQo+ICsgKi8NCj4gK3N0YXRpYyBpbnQgdGFvc19pMmNfd3JpdGVf
+Y29tbWFuZChzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50LCB1OCByZWcpIA0KPiArew0KPiArCWlu
+dCByZXQ7DQo+ICsNCj4gKwkvKiB3cml0ZSB0aGUgZGF0YSAqLw0KPiArCXJldCA9IGkyY19zbWJ1
+c193cml0ZV9ieXRlKGNsaWVudCwgKHJlZyB8PSBUU0wyNThYX0NNRF9SRUcpKTsNCj4gKwlpZiAo
+cmV0IDwgMCkgew0KPiArCQlkZXZfZXJyKCZjbGllbnQtPmRldiwgIkZBSUxFRDogaTJjX3NtYnVz
+X3dyaXRlX2J5dGVcbiIpOw0KPiArCQlyZXR1cm4gcmV0Ow0KPiArCX0NCj4gKwlyZXR1cm4gMDsN
+Cj4gK30NCj4gKw0KPiArLyoNCj4gKyAqIFJlYWRzIGFuZCBjYWxjdWxhdGVzIGN1cnJlbnQgbHV4
+IHZhbHVlLg0KPiArICogVGhlIHJhdyBjaDAgYW5kIGNoMSB2YWx1ZXMgb2YgdGhlIGFtYmllbnQg
+bGlnaHQgc2Vuc2VkIGluIHRoZSBsYXN0DQo+ICsgKiBpbnRlZ3JhdGlvbiBjeWNsZSBhcmUgcmVh
+ZCBmcm9tIHRoZSBkZXZpY2UuDQo+ICsgKiBUaW1lIHNjYWxlIGZhY3RvciBhcnJheSB2YWx1ZXMg
+YXJlIGFkanVzdGVkIGJhc2VkIG9uIHRoZSBpbnRlZ3JhdGlvbiB0aW1lLg0KPiArICogVGhlIHJh
+dyB2YWx1ZXMgYXJlIG11bHRpcGxpZWQgYnkgYSBzY2FsZSBmYWN0b3IsIGFuZCBkZXZpY2UgZ2Fp
+biANCj4gK2lzIG9idGFpbmVkDQo+ICsgKiB1c2luZyBnYWluIGluZGV4LiBMaW1pdCBjaGVja3Mg
+YXJlIGRvbmUgbmV4dCwgdGhlbiB0aGUgcmF0aW8gb2YgYSANCj4gK211bHRpcGxlDQo+ICsgKiBv
+ZiBjaDEgdmFsdWUsIHRvIHRoZSBjaDAgdmFsdWUsIGlzIGNhbGN1bGF0ZWQuIFRoZSBhcnJheSAN
+Cj4gK3Rhb3NfZGV2aWNlX2x1eFtdDQo+ICsgKiBkZWNsYXJlZCBhYm92ZSBpcyB0aGVuIHNjYW5u
+ZWQgdG8gZmluZCB0aGUgZmlyc3QgcmF0aW8gdmFsdWUgdGhhdCANCj4gK2lzIGp1c3QNCj4gKyAq
+IGFib3ZlIHRoZSByYXRpbyB3ZSBqdXN0IGNhbGN1bGF0ZWQuIFRoZSBjaDAgYW5kIGNoMSBtdWx0
+aXBsaWVyIA0KPiArY29uc3RhbnRzIGluDQo+ICsgKiB0aGUgYXJyYXkgYXJlIHRoZW4gdXNlZCBh
+bG9uZyB3aXRoIHRoZSB0aW1lIHNjYWxlIGZhY3RvciBhcnJheSANCj4gK3ZhbHVlcywgdG8NCj4g
+KyAqIGNhbGN1bGF0ZSB0aGUgbHV4Lg0KPiArICovDQo+ICtzdGF0aWMgaW50IHRhb3NfZ2V0X2x1
+eChzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50KSB7DQo+ICsJdTMyIGNoMCwgY2gxOyAvKiBzZXBh
+cmF0ZWQgY2gwL2NoMSBkYXRhIGZyb20gZGV2aWNlICovDQo+ICsJdTMyIGx1eDsgLyogcmF3IGx1
+eCBjYWxjdWxhdGVkIGZyb20gZGV2aWNlIGRhdGEgKi8NCkFuZCBoZXJlIHdlIGhhdmUgYSBncmVh
+dCBleGFtcGxlIG9mIHdoeSBsdXggaXMgYSBiYWQgbmFtZSBmb3IgdGhpcy4NCmx1eCBjb3VsZCBv
+bmx5IGV2ZXIgaGF2ZSB1bml0cyBvZiBsdXguCQkJCQlPSyAtIEdPVCBZT1VSIFBPSU5UIA0KPiAr
+CXUzMiByYXRpbzsNCj4gKwl1OCBidWZbNV07DQo+ICsJc3RydWN0IHRhb3NfbHV4ICpwOw0KPiAr
+CXN0cnVjdCB0c2wyNTh4X2NoaXAgKmNoaXAgPSBpMmNfZ2V0X2NsaWVudGRhdGEoY2xpZW50KTsN
+Cj4gKwlpbnQgaSwgcmV0Ow0KPiArCXUzMiBjaDBsdXggPSAwOw0KPiArCXUzMiBjaDFsdXggPSAw
+Ow0KPiArDQo+ICsJaWYgKG11dGV4X3RyeWxvY2soJmNoaXAtPmFsc19tdXRleCkgPT0gMCkgew0K
+PiArCQlkZXZfaW5mbygmY2xpZW50LT5kZXYsICJ0YW9zX2dldF9sdXggZGV2aWNlIGlzIGJ1c3lc
+biIpOw0KPiArCQlyZXR1cm4gY2hpcC0+YWxzX2N1cl9pbmZvLmx1eDsgLyogYnVzeSwgc28gcmV0
+dXJuIExBU1QgVkFMVUUgKi8NCj4gKwl9DQo+ICsNCj4gKwlpZiAoY2hpcC0+dGFvc19jaGlwX3N0
+YXR1cyAhPSBUQU9TX0NISVBfV09SS0lORykgew0KPiArCQkvKiBkZXZpY2UgaXMgbm90IGVuYWJs
+ZWQgKi8NCj4gKwkJZGV2X2VycigmY2xpZW50LT5kZXYsICJ0YW9zX2dldF9sdXggZGV2aWNlIGlz
+IG5vdCBlbmFibGVkXG4iKTsNCj4gKwkJcmV0ID0gLUVOT0RFVjsNCi1FQlVTWSBwcm9iYWJseS4g
+VGhlIGRldmljZSBleGlzdHMsIGl0J3MganVzdCB0dXJuZWQgb2ZmLgkJCQktIERPTkUgQ0hBTkdF
+RA0KDQo+ICsJCWdvdG8gb3V0X3VubG9jazsNCj4gKwl9DQo+ICsNCj4gKwlyZXQgPSB0YW9zX2ky
+Y19yZWFkKGNsaWVudCwgKFRTTDI1OFhfQ01EX1JFRyksICZidWZbMF0sIDEpOw0KPiArCWlmIChy
+ZXQgPCAwKSB7DQo+ICsJCWRldl9lcnIoJmNsaWVudC0+ZGV2LCAidGFvc19nZXRfbHV4IGZhaWxl
+ZCB0byByZWFkIENNRF9SRUdcbiIpOw0KPiArCQlnb3RvIG91dF91bmxvY2s7DQo+ICsJfQ0KPiAr
+CS8qIGlzIGRhdGEgbmV3ICYgdmFsaWQgKi8NCj4gKwlpZiAoIShidWZbMF0gJiBUU0wyNThYX1NU
+QV9BRENJTlRSKSkgew0KPiArCQlkZXZfZXJyKCZjbGllbnQtPmRldiwgInRhb3NfZ2V0X2x1eCBk
+YXRhIG5vdCB2YWxpZFxuIik7DQogIEknZCBlcnJvciBvdXQgYXQgdGhpcyBwb2ludC4gU29tZXRo
+aW5nIGhhcyBnb25lIHdyb25nIGFuZCB5b3Ugd2FudCB0byBpbmRpY2F0ZSBpdCB0byB5b3VyIHVz
+ZXJzcGFjZSBjb2RlLgkJLSBOTzogQURDIE1BWSBKVVNUIE5PVCBIQVZFIEZJTklTSEVELiAgSUYg
+VVNFUlNQQUNFIElTIFBPTExJTkcgQkVUVEVSIFRPIFBBU1MgQkFDSyBQUkVWSU9VUyBWQUxVRSBU
+SEFOIFRPIEVSUk9SDQoJCQkJCQkJCQkJCQkJCS0gQkFTRUQgT04gQ1VTVE9NRVIgRkVFREJBQ0sN
+Cj4gKwkJcmV0ID0gY2hpcC0+YWxzX2N1cl9pbmZvLmx1eDsgLyogcmV0dXJuIExBU1QgVkFMVUUg
+Ki8NCj4gKwkJZ290byBvdXRfdW5sb2NrOw0KPiArCX0NCj4gKw0KPiArCWZvciAoaSA9IDA7IGkg
+PCA0OyBpKyspIHsNCj4gKwkJaW50IHJlZyA9IFRTTDI1OFhfQ01EX1JFRyB8IChUU0wyNThYX0FM
+U19DSEFOMExPICsgaSk7DQo+ICsJCXJldCA9IHRhb3NfaTJjX3JlYWQoY2xpZW50LCByZWcsICZi
+dWZbaV0sIDEpOw0KPiArCQlpZiAocmV0IDwgMCkgew0KPiArCQkJZGV2X2VycigmY2xpZW50LT5k
+ZXYsICJ0YW9zX2dldF9sdXggZmFpbGVkIHRvIHJlYWQiDQo+ICsJCQkJIiByZWdpc3RlciAleFxu
+IiwgcmVnKTsNCj4gKwkJCWdvdG8gb3V0X3VubG9jazsNCj4gKwkJfQ0KPiArCX0NCj4gKw0KPiAr
+CS8qIGNsZWFyIHN0YXR1cywgcmVhbGx5IGludGVycnVwdCBzdGF0dXMgKGludGVycnVwdHMgYXJl
+IG9mZiksIGJ1dA0KPiArCSAqIHdlIHVzZSB0aGUgYml0IGFueXdheSAqLw0KPiArCXJldCA9IHRh
+b3NfaTJjX3dyaXRlX2NvbW1hbmQoY2xpZW50LA0KPiArCQlUU0wyNThYX0NNRF9SRUcgfCBUU0wy
+NThYX0NNRF9TUExfRk4gfCBUU0wyNThYX0NNRF9BTFNfSU5UQ0xSKTsNCj4gKwlpZiAocmV0IDwg
+MCkgew0KPiArCQlkZXZfZXJyKCZjbGllbnQtPmRldiwNCiBUaGlzIGlzIHRoZSBvbmUgY2FzZSB3
+aGVyZSBjaGVja3BhdGNoIHdhcm5pbmdzIHNob3VsZCBiZSBpZ25vcmVkLg0KUGxlYXNlIGtlZXAg
+c3RyaW5ncyBsaWtlIHRoaXMgb24gYSBzaW5nbGUgbGluZSBhcyBwZW9wbGUgd2hvIHNlZSB0aGVt
+IGluIGEgbG9nIHdpbGwgZ3JlcCBmb3IgdGhlbSBpbiB0aGUgc291cmNlIGNvZGUuICBBcnRpZmlj
+aWFsIGJyZWFrcyBsaWtlIHRoaXMgbWFrZSB0aGVtIGEgbG90IGhhcmRlciB0byBmaW5kISAtIERP
+TkUNCg0KPiArCQkidGFvc19pMmNfd3JpdGVfY29tbWFuZCBmYWlsZWQgaW4gIg0KPiArCQkidGFv
+c19nZXRfbHV4LCBlcnIgPSAlZFxuIiwgcmV0KTsNCj4gKwkJZ290byBvdXRfdW5sb2NrOyAvKiBo
+YXZlIG5vIGRhdGEsIHNvIHJldHVybiBmYWlsdXJlICovDQo+ICsJfQ0KPiArDQo+ICsJLyogZXh0
+cmFjdCBBTFMvbHV4IGRhdGEgKi8NClNob3VsZCBiZSB0aGUgcmVsZXZhbnQgZW5kaWFuIGNvbnZl
+cnNpb24gZnVuY3Rpb24uICBiZTE2dG9jcHUgb3Igc2ltaWxhciAoaGF2ZW4ndCB0aG91Z2h0IGFi
+b3V0IHdoaWNoKS4gIFRoYXQgd2F5IGl0J3MgZnJlZSBvbiBvbmUgZW5kaWFubmVzcyBvZiBtYWNo
+aW5lLg0KPiArCWNoMCA9IChidWZbMV0gPDwgOCkgfCBidWZbMF07DQo+ICsJY2gxID0gKGJ1Zlsz
+XSA8PCA4KSB8IGJ1ZlsyXTsNCj4gKw0KPiArCWNoaXAtPmFsc19jdXJfaW5mby5hbHNfY2gwID0g
+Y2gwOw0KPiArCWNoaXAtPmFsc19jdXJfaW5mby5hbHNfY2gxID0gY2gxOw0KPiArDQo+ICsJaWYg
+KChjaDAgPj0gY2hpcC0+YWxzX3NhdHVyYXRpb24pIHx8IChjaDEgPj0gY2hpcC0+YWxzX3NhdHVy
+YXRpb24pKQ0KPiArCQlnb3RvIHJldHVybl9tYXg7DQo+ICsNCj4gKwlpZiAoY2gwID09IDApIHsN
+Cj4gKwkJLyogaGF2ZSBubyBkYXRhLCBzbyByZXR1cm4gTEFTVCBWQUxVRSAqLw0KPiArCQlyZXQg
+PSBjaGlwLT5hbHNfY3VyX2luZm8ubHV4ID0gMDsNCj4gKwkJZ290byBvdXRfdW5sb2NrOw0KPiAr
+CX0NCj4gKwkvKiBjYWxjdWxhdGUgcmF0aW8gKi8NCj4gKwlyYXRpbyA9IChjaDEgPDwgMTUpIC8g
+Y2gwOw0KPiArCS8qIGNvbnZlcnQgdG8gdW5zY2FsZWQgbHV4IHVzaW5nIHRoZSBwb2ludGVyIHRv
+IHRoZSB0YWJsZSAqLw0KPiArCWZvciAocCA9IChzdHJ1Y3QgdGFvc19sdXggKikgdGFvc19kZXZp
+Y2VfbHV4Ow0KPiArCSAgICAgcC0+cmF0aW8gIT0gMCAmJiBwLT5yYXRpbyA8IHJhdGlvOyBwKysp
+DQo+ICsJCTsNCj4gKw0KPiArCWlmIChwLT5yYXRpbyA9PSAwKSB7DQo+ICsJCWx1eCA9IDA7DQo+
+ICsJfSBlbHNlIHsNCj4gKwkJY2gwbHV4ID0gKChjaDAgKiBwLT5jaDApICsNCj4gKwkJCSAgKGdh
+aW5hZGpbY2hpcC0+dGFvc19zZXR0aW5ncy5hbHNfZ2Fpbl0uY2gwID4+IDEpKQ0KPiArCQkJIC8g
+Z2FpbmFkaltjaGlwLT50YW9zX3NldHRpbmdzLmFsc19nYWluXS5jaDA7DQo+ICsJCWNoMWx1eCA9
+ICgoY2gxICogcC0+Y2gxKSArDQo+ICsJCQkgIChnYWluYWRqW2NoaXAtPnRhb3Nfc2V0dGluZ3Mu
+YWxzX2dhaW5dLmNoMSA+PiAxKSkNCj4gKwkJCSAvIGdhaW5hZGpbY2hpcC0+dGFvc19zZXR0aW5n
+cy5hbHNfZ2Fpbl0uY2gxOw0KPiArCQlsdXggPSBjaDBsdXggLSBjaDFsdXg7DQo+ICsJfQ0KPiAr
+DQo+ICsJLyogbm90ZTogbHV4IGlzIDMxIGJpdCBtYXggYXQgdGhpcyBwb2ludCAqLw0KPiArCWlm
+IChjaDFsdXggPiBjaDBsdXgpIHsNCj4gKwkJZGV2X2RiZygmY2xpZW50LT5kZXYsICJObyBEYXRh
+IC0gUmV0dXJuIGxhc3QgdmFsdWVcbiIpOw0KQWdhaW4sIGRvIHdlIHdhbnQgdXNlcnNwYWNlIHRv
+IGtub3cgdGhlIHNlbnNvciBpc24ndCByZXR1cm5pbmcgdmFsaWQgdmFsdWVzPwktIE5PIC0gTk9U
+IE5FQ0VTU0FSTFkgLSBKVVNUIE1FQU5TIENIMSAoSVIpIFdFTlQgSElHSEVSIFRIQU4gQ0gwIChW
+SVNBQkxFKSANCj4gKwkJcmV0ID0gY2hpcC0+YWxzX2N1cl9pbmZvLmx1eCA9IDA7DQo+ICsJCWdv
+dG8gb3V0X3VubG9jazsNCj4gKwl9DQo+ICsNCj4gKwkvKiBhZGp1c3QgZm9yIGFjdGl2ZSB0aW1l
+IHNjYWxlICovDQo+ICsJaWYgKGNoaXAtPmFsc190aW1lX3NjYWxlID09IDApDQo+ICsJCWx1eCA9
+IDA7DQo+ICsJZWxzZQ0KPiArCQlsdXggPSAobHV4ICsgKGNoaXAtPmFsc190aW1lX3NjYWxlID4+
+IDEpKSAvDQo+ICsJCQljaGlwLT5hbHNfdGltZV9zY2FsZTsNCj4gKw0KPiArCS8qIGFkanVzdCBm
+b3IgYWN0aXZlIGdhaW4gc2NhbGUgKi8NCj4gKwlsdXggPj49IDEzOyAvKiB0YWJsZXMgaGF2ZSBm
+YWN0b3Igb2YgODE5MiBidWlsdGluIGZvciBhY2N1cmFjeSAqLw0KPiArCWx1eCA9IChsdXggKiBj
+aGlwLT50YW9zX3NldHRpbmdzLmFsc19nYWluX3RyaW0gKyA1MDApIC8gMTAwMDsNCj4gKwlpZiAo
+bHV4ID4gTUFYX0xVWCkgeyAvKiBjaGVjayBmb3Igb3ZlcmZsb3cgKi8NCj4gK3JldHVybl9tYXg6
+DQo+ICsJCWx1eCA9IE1BWF9MVVg7DQpSZWFsbHkgdGhlIHJpZ2h0IHRoaW5nIHRvIGRvPyAgU3Vy
+ZWx5IHlvdSB3YW50IHRvIHJldHVybiBhbiBvdXQgb2YgcmFuZ2UgZXJyb3I/IFBlcmhhcHMgRVJB
+TkdFIHNvIHVzZXJzcGFjZSBrbm93cyB0aGUgdmFsdWUgaXMgZ2FyYmFnZS4gLSBOTyAtIENPVUxE
+IEJFIERVRSBUTyBTQVRVUkFUSU9OIC0gSU4gV0hJQ0ggQ0FTRSBVU0VSU1BBQ0UgU09VTEQgS05P
+VyBJVCdTIEFUIExJTUlULg0KPiArCX0NCj4gKw0KPiArCS8qIFVwZGF0ZSB0aGUgc3RydWN0dXJl
+IHdpdGggdGhlIGxhdGVzdCBWQUxJRCBsdXguICovDQo+ICsJY2hpcC0+YWxzX2N1cl9pbmZvLmx1
+eCA9IGx1eDsNCj4gKwlyZXQgPSBsdXg7DQo+ICsNCj4gK291dF91bmxvY2s6DQo+ICsJbXV0ZXhf
+dW5sb2NrKCZjaGlwLT5hbHNfbXV0ZXgpOw0KPiArCXJldHVybiByZXQ7DQo+ICt9DQo+ICsNCj4g
+Ky8qDQo+ICsgKiBPYnRhaW4gc2luZ2xlIHJlYWRpbmcgYW5kIGNhbGN1bGF0ZSB0aGUgYWxzX2dh
+aW5fdHJpbSAobGF0ZXIgdXNlZA0KPiArICogdG8gZGVyaXZlIGFjdHVhbCBsdXgpLg0KPiArICog
+UmV0dXJuIHVwZGF0ZWQgZ2Fpbl90cmltIHZhbHVlLg0KPiArICovDQo+ICtpbnQgdGFvc19hbHNf
+Y2FsaWJyYXRlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQpIHsNCj4gKwlzdHJ1Y3QgdHNsMjU4
+eF9jaGlwICpjaGlwID0gaTJjX2dldF9jbGllbnRkYXRhKGNsaWVudCk7DQo+ICsJdTggcmVnX3Zh
+bDsNCj4gKwl1bnNpZ25lZCBpbnQgZ2Fpbl90cmltX3ZhbDsNCj4gKwlpbnQgcmV0Ow0KPiArCWlu
+dCBsdXhfdmFsOw0KPiArDQo+ICsJcmV0ID0gaTJjX3NtYnVzX3dyaXRlX2J5dGUoY2xpZW50LCAo
+VFNMMjU4WF9DTURfUkVHIHwgVFNMMjU4WF9DTlRSTCkpOw0KPiArCWlmIChyZXQgPCAwKSB7DQo+
+ICsJCWRldl9lcnIoJmNsaWVudC0+ZGV2LCAidGFvc19hbHNfY2FsaWJyYXRlIGZhaWxlZCB0byBy
+ZWFjaCB0aGUiDQpBZ2FpbiwgZG9uJ3QgYnJlYWsgdGhpcyBzb3J0IG9mIHN0cmluZyB1cCBob3dl
+dmVyIG11Y2ggY2hlY2twYXRjaCByYW50cyBhdCB5b3UuCQkJLSBPSyAtIEpVU1QgUkVNRU1CRVIg
+WU9VIFNBSUQgU08NCj4gKwkJCSIgQ05UUkwgcmVnaXN0ZXIsIHJldD0lZFxuIiwgcmV0KTsNCj4g
+KwkJcmV0dXJuIHJldDsNCj4gKwl9DQo+ICsNCj4gKwlyZWdfdmFsID0gaTJjX3NtYnVzX3JlYWRf
+Ynl0ZShjbGllbnQpOw0KPiArCWlmICgocmVnX3ZhbCAmIChUU0wyNThYX0NOVExfQURDX0VOQkwg
+fCBUU0wyNThYX0NOVExfUFdST04pKQ0KPiArCQkJIT0gKFRTTDI1OFhfQ05UTF9BRENfRU5CTCB8
+IFRTTDI1OFhfQ05UTF9QV1JPTikpIHsNCj4gKwkJZGV2X2VycigmY2xpZW50LT5kZXYsICJ0YW9z
+X2Fsc19jYWxpYnJhdGUgZmFpbGVkIGJlY2F1c2UgdGhlIg0KPiArCQkJIiBkZXZpY2UgaXMgbm90
+IHBvd2VyZWQgb24gd2l0aCBBREMgZW5hYmxlZFxuIik7DQo+ICsJCXJldHVybiAtRU5PREFUQTsN
+Cj4gKwl9DQo+ICsNCj4gKwlyZXQgPSBpMmNfc21idXNfd3JpdGVfYnl0ZShjbGllbnQsIChUU0wy
+NThYX0NNRF9SRUcgfCBUU0wyNThYX1NUQVRVUykpOw0KPiArCWlmIChyZXQgPCAwKSB7DQo+ICsJ
+CWRldl9lcnIoJmNsaWVudC0+ZGV2LCAidGFvc19hbHNfY2FsaWJyYXRlIGZhaWxlZCB0byByZWFj
+aCB0aGUiDQo+ICsJCQkiIFNUQVRVUyByZWdpc3RlciwgcmV0PSVkXG4iLCByZXQpOw0KPiArCQly
+ZXR1cm4gcmV0Ow0KPiArCX0NCj4gKwlyZWdfdmFsID0gaTJjX3NtYnVzX3JlYWRfYnl0ZShjbGll
+bnQpOw0KPiArDQo+ICsJaWYgKChyZWdfdmFsICYgVFNMMjU4WF9TVEFfQURDVkFMSUQpICE9IFRT
+TDI1OFhfU1RBX0FEQ1ZBTElEKSB7DQo+ICsJCWRldl9lcnIoJmNsaWVudC0+ZGV2LCAidGFvc19h
+bHNfY2FsaWJyYXRlIGZhaWxlZCBiZWNhdXNlIHRoZSINCj4gKwkJCSIgU1RBVFVTIGRpZCBub3Qg
+aW5kaWNhdGUgQURDIHZhbGlkLlxuIik7DQo+ICsJCXJldHVybiAtRU5PREFUQTsNCj4gKwl9DQo+
+ICsJbHV4X3ZhbCA9IHRhb3NfZ2V0X2x1eChjbGllbnQpOw0KPiArCWlmIChsdXhfdmFsIDwgMCkg
+ew0KPiArCQlkZXZfZXJyKCZjbGllbnQtPmRldiwgInRhb3NfYWxzX2NhbGlicmF0ZSBmYWlsZWQg
+dG8gZ2V0IGx1eFxuIik7DQo+ICsJCXJldHVybiBsdXhfdmFsOw0KPiArCX0NCj4gKwlnYWluX3Ry
+aW1fdmFsID0gKHVuc2lnbmVkIGludCkgKCgoY2hpcC0+dGFvc19zZXR0aW5ncy5hbHNfY2FsX3Rh
+cmdldCkNCj4gKwkJCSogY2hpcC0+dGFvc19zZXR0aW5ncy5hbHNfZ2Fpbl90cmltKSAvIGx1eF92
+YWwpOw0KPiArDQo+ICsJZGV2X2luZm8oJmNsaWVudC0+ZGV2LCAidGFvc19zZXR0aW5ncy5hbHNf
+Y2FsX3RhcmdldCA9ICVkXG4iDQo+ICsJCSJ0YW9zX3NldHRpbmdzLmFsc19nYWluX3RyaW0gPSAl
+ZFxubHV4X3ZhbCA9ICVkXG4iLA0KPiArCQljaGlwLT50YW9zX3NldHRpbmdzLmFsc19jYWxfdGFy
+Z2V0LA0KPiArCQljaGlwLT50YW9zX3NldHRpbmdzLmFsc19nYWluX3RyaW0sDQo+ICsJCWx1eF92
+YWwpOw0KPiArDQo+ICsJaWYgKChnYWluX3RyaW1fdmFsIDwgMjUwKSB8fCAoZ2Fpbl90cmltX3Zh
+bCA+IDQwMDApKSB7DQo+ICsJCWRldl9lcnIoJmNsaWVudC0+ZGV2LCAidGFvc19hbHNfY2FsaWJy
+YXRlIGZhaWxlZCBiZWNhdXNlIg0KPiArCQkJInRyaW1fdmFsIG9mICVkIGlzIG91dCBvZiByYW5n
+ZVxuIiwgZ2Fpbl90cmltX3ZhbCk7DQo+ICsJCXJldHVybiAtRU5PREFUQTsNCj4gKwl9DQo+ICsJ
+Y2hpcC0+dGFvc19zZXR0aW5ncy5hbHNfZ2Fpbl90cmltID0gKGludCkgZ2Fpbl90cmltX3ZhbDsN
+Cj4gKw0KPiArCXJldHVybiAoaW50KSBnYWluX3RyaW1fdmFsOw0KPiArfQ0KPiArDQo+ICsvKg0K
+PiArICogVHVybiB0aGUgZGV2aWNlIG9uLg0KPiArICogQ29uZmlndXJhdGlvbiBtdXN0IGJlIHNl
+dCBiZWZvcmUgY2FsbGluZyB0aGlzIGZ1bmN0aW9uLg0KPiArICovDQo+ICtzdGF0aWMgaW50IHRh
+b3NfY2hpcF9vbihzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50KSB7DQo+ICsJaW50IGk7DQo+ICsJ
+aW50IHJldCA9IDA7DQo+ICsJdTggKnVQOw0KPiArCXU4IHV0bXA7DQo+ICsJaW50IGFsc19jb3Vu
+dDsNCj4gKwlpbnQgYWxzX3RpbWU7DQo+ICsJc3RydWN0IHRzbDI1OHhfY2hpcCAqY2hpcCA9IGky
+Y19nZXRfY2xpZW50ZGF0YShjbGllbnQpOw0KPiArDQphbmQ/DQo+ICsJLyogYW5kIG1ha2Ugc3Vy
+ZSB3ZSdyZSBub3QgYWxyZWFkeSBvbiAqLw0KPiArCWlmIChjaGlwLT50YW9zX2NoaXBfc3RhdHVz
+ID09IFRBT1NfQ0hJUF9XT1JLSU5HKSB7DQo+ICsJCS8qIGlmIGZvcmNpbmcgYSByZWdpc3RlciB1
+cGRhdGUgLSB0dXJuIG9mZiwgdGhlbiBvbiAqLw0KPiArCQlkZXZfaW5mbygmY2xpZW50LT5kZXYs
+ICJkZXZpY2UgaXMgYWxyZWFkeSBlbmFibGVkXG4iKTsNCk5vdCBzdXJlIHdoYXQgdGhlIHJpZ2h0
+IGVycm9yIGlzIGhlcmUsIGJ1dCBzaG91bGQgYmUgbW9yZSBzcGVjaWZpYyB0aGFuIHRoYXQuCS0g
+T0sgLSAgQlVUICBNRVNTQUdFIFRPIElORElDQVRFIElULCBVU0VSU1BBQ0UgQ09VTEQgSEFWRSBC
+RUVOIFRSWUlORyBUTyBUVVJOIElUIE9OIEZPUiBBIE5VTUJFUiBPRiBSRUFTT05TDQo+ICsJCXJl
+dHVybiAtMTsNCj4gKwl9DQo+ICsNCj4gKwkvKiBkZXRlcm1pbmUgYWxzIGludGVncmF0aW9uIHJl
+Z3N0ZXIgKi8NCj4gKwlhbHNfY291bnQgPSAoY2hpcC0+dGFvc19zZXR0aW5ncy5hbHNfdGltZSAq
+IDEwMCArIDEzNSkgLyAyNzA7DQo+ICsJaWYgKGFsc19jb3VudCA9PSAwKQ0KPiArCQlhbHNfY291
+bnQgPSAxOyAvKiBlbnN1cmUgYXQgbGVhc3Qgb25lIGN5Y2xlICovDQo+ICsNCj4gKw0KPiArCS8q
+IGNvbnZlcnQgYmFjayB0byB0aW1lIChlbmNvbXBhc3NlcyBvdmVycmlkZXMpICovDQo+ICsJYWxz
+X3RpbWUgPSAoYWxzX2NvdW50ICogMjcgKyA1KSAvIDEwOw0KPiArCWNoaXAtPnRhb3NfY29uZmln
+W1RTTDI1OFhfQUxTX1RJTUVdID0gMjU2IC0gYWxzX2NvdW50Ow0KPiArDQo+ICsNCkJvbnVzIGJs
+YW5rIGxpbmVzLiAgT25lIGlzIHBsZW50eSB0byBicmVhayB1cCBjb2RlLgkJCQktIEZJWEVEDQo+
+ICsJLyogU2V0IHRoZSBnYWluIGJhc2VkIG9uIHRhb3Nfc2V0dGluZ3Mgc3RydWN0ICovDQo+ICsJ
+Y2hpcC0+dGFvc19jb25maWdbVFNMMjU4WF9HQUlOXSA9IGNoaXAtPnRhb3Nfc2V0dGluZ3MuYWxz
+X2dhaW47DQo+ICsNCj4gKw0KPiArCS8qIHNldCBnbG9iYWxzIHJlIHNjYWxpbmcgYW5kIHNhdHVy
+YXRpb24gKi8NClRoZXkgYXJlbid0IGdsb2JhbHMJCQkJCQkJCS0gQ09SUkVDVCBDSEFOR0VEIENP
+TU1FTlQNCj4gKwljaGlwLT5hbHNfc2F0dXJhdGlvbiA9IGFsc19jb3VudCAqIDkyMjsgLyogOTAl
+IG9mIGZ1bGwgc2NhbGUgKi8NCj4gKwljaGlwLT5hbHNfdGltZV9zY2FsZSA9IChhbHNfdGltZSAr
+IDI1KSAvIDUwOw0KPiArDQo+ICsJLyogU0tBVEUgU3BlY2lmaWMgcG93ZXItb24gLyBhZGMgZW5h
+YmxlIHNlcXVlbmNlDQo+ICsJICogUG93ZXIgb24gdGhlIGRldmljZSAxc3QuICovDQo+ICsJdXRt
+cCA9IFRTTDI1OFhfQ05UTF9QV1JPTjsNCj4gKwlyZXQgPSBpMmNfc21idXNfd3JpdGVfYnl0ZV9k
+YXRhKGNsaWVudCwgVFNMMjU4WF9DTURfUkVHIHwgVFNMMjU4WF9DTlRSTCwNCj4gKwkJCQkJdXRt
+cCk7DQo+ICsJaWYgKHJldCA8IDApIHsNCj4gKwkJZGV2X2VycigmY2xpZW50LT5kZXYsICJ0YW9z
+X2NoaXBfb24gZmFpbGVkIG9uIENOVFJMIHJlZy5cbiIpOw0KPiArCQlyZXR1cm4gLTE7DQo+ICsJ
+fQ0KPiArDQo+ICsJLyogVXNlIHRoZSBmb2xsb3dpbmcgc2hhZG93IGNvcHkgZm9yIG91ciBkZWxh
+eSBiZWZvcmUgZW5hYmxpbmcgQURDLg0KPiArCSAqIFdyaXRlIGFsbCB0aGUgcmVnaXN0ZXJzLiAq
+Lw0KPiArCWZvciAoaSA9IDAsIHVQID0gY2hpcC0+dGFvc19jb25maWc7IGkgPCBUQU9TX1JFR19N
+QVg7IGkrKykgew0KPiArCQlyZXQgPSBpMmNfc21idXNfd3JpdGVfYnl0ZV9kYXRhKGNsaWVudCwg
+VFNMMjU4WF9DTURfUkVHICsgaSwNCj4gKwkJCQkJCSp1UCsrKTsNCj4gKwkJaWYgKHJldCA8IDAp
+IHsNCj4gKwkJCWRldl9lcnIoJmNsaWVudC0+ZGV2LA0KPiArCQkJCSJ0YW9zX2NoaXBfb24gZmFp
+bGVkIG9uIHJlZyAlZC5cbiIsIGkpOw0KPiArCQkJcmV0dXJuIC0xOw0KPiArCQl9DQo+ICsJfQ0K
+PiArDQo+ICsJbWRlbGF5KDMpOw0KPiArCS8qIE5PVyBlbmFibGUgdGhlIEFEQw0KPiArCSAqIGlu
+aXRpYWxpemUgdGhlIGRlc2lyZWQgbW9kZSBvZiBvcGVyYXRpb24gKi8NCj4gKwl1dG1wID0gVFNM
+MjU4WF9DTlRMX1BXUk9OIHwgVFNMMjU4WF9DTlRMX0FEQ19FTkJMOw0KPiArCXJldCA9IGkyY19z
+bWJ1c193cml0ZV9ieXRlX2RhdGEoY2xpZW50LCBUU0wyNThYX0NNRF9SRUcgfCBUU0wyNThYX0NO
+VFJMLA0KPiArCQkJCQl1dG1wKTsNCj4gKwlpZiAocmV0IDwgMCkgew0KPiArCQlkZXZfZXJyKCZj
+bGllbnQtPmRldiwgInRhb3NfY2hpcF9vbiBmYWlsZWQgb24gMm5kIENUUkwgcmVnLlxuIik7DQo+
+ICsJCXJldHVybiAtMTsNCj4gKwl9DQo+ICsJY2hpcC0+dGFvc19jaGlwX3N0YXR1cyA9IFRBT1Nf
+Q0hJUF9XT1JLSU5HOw0KQ29tbWVudCBpcyByYXRoZXIgb2J2aW91cy4uLgkJCQkJCS0gRE9ORSBS
+RU1PVkVEIENPTU1FTlQNCg0KPiArCXJldHVybiByZXQ7IC8qIHJldHVybnMgcmVzdWx0IG9mIGxh
+c3QgaTJjd3JpdGUgKi8gfQ0KPiArDQo+ICsvKiBUdXJuIHRoZSBkZXZpY2UgT0ZGLiAqLw0KPiAr
+c3RhdGljIGludCB0YW9zX2NoaXBfb2ZmKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQpIHsNCj4g
+KwlzdHJ1Y3QgdHNsMjU4eF9jaGlwICpjaGlwID0gaTJjX2dldF9jbGllbnRkYXRhKGNsaWVudCk7
+DQo+ICsJaW50IHJldDsNCj4gKwl1OCB1dG1wOw0KPiArDQo+ICsJLyogdHVybiBkZXZpY2Ugb2Zm
+ICovDQo+ICsJY2hpcC0+dGFvc19jaGlwX3N0YXR1cyA9IFRBT1NfQ0hJUF9TTEVFUDsNCj4gKwl1
+dG1wID0gMHgwMDsNCj4gKwlyZXQgPSBpMmNfc21idXNfd3JpdGVfYnl0ZV9kYXRhKGNsaWVudCwg
+VFNMMjU4WF9DTURfUkVHIHwgVFNMMjU4WF9DTlRSTCwNCj4gKwkJCQkJdXRtcCk7DQo+ICsJcmV0
+dXJuIHJldDsNCj4gK30NCj4gKw0KPiArLyogU3lzZnMgSW50ZXJmYWNlIEZ1bmN0aW9ucyAqLw0K
+PiArc3RhdGljIHNzaXplX3QgdGFvc19kZXZpY2VfaWQoc3RydWN0IGRldmljZSAqZGV2LA0KPiAr
+ICAgIHN0cnVjdCBkZXZpY2VfYXR0cmlidXRlICphdHRyLCBjaGFyICpidWYpIHsNCj4gKwlyZXR1
+cm4gc3ByaW50ZihidWYsICIlc1xuIiwgREVWSUNFX0lEKTsgfQ0KPiArDQo+ICtzdGF0aWMgc3Np
+emVfdCB0YW9zX3Bvd2VyX3N0YXRlX3Nob3coc3RydWN0IGRldmljZSAqZGV2LA0KPiArICAgIHN0
+cnVjdCBkZXZpY2VfYXR0cmlidXRlICphdHRyLCBjaGFyICpidWYpIHsNCj4gKwlzdHJ1Y3QgaWlv
+X2RldiAqaW5kaW9fZGV2ID0gZGV2X2dldF9kcnZkYXRhKGRldik7DQo+ICsJc3RydWN0IHRzbDI1
+OHhfY2hpcCAqY2hpcCA9IGluZGlvX2Rldi0+ZGV2X2RhdGE7DQo+ICsNCj4gKwlyZXR1cm4gc3By
+aW50ZihidWYsICIlZFxuIiwgY2hpcC0+dGFvc19jaGlwX3N0YXR1cyk7IH0NCj4gKw0KPiArc3Rh
+dGljIHNzaXplX3QgdGFvc19wb3dlcl9zdGF0ZV9zdG9yZShzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+
+ICsgICAgc3RydWN0IGRldmljZV9hdHRyaWJ1dGUgKmF0dHIsIGNvbnN0IGNoYXIgKmJ1Ziwgc2l6
+ZV90IGxlbikgew0KPiArCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYgPSBkZXZfZ2V0X2RydmRh
+dGEoZGV2KTsNCj4gKwlzdHJ1Y3QgdHNsMjU4eF9jaGlwICpjaGlwID0gaW5kaW9fZGV2LT5kZXZf
+ZGF0YTsNCj4gKwl1bnNpZ25lZCBsb25nIHZhbHVlOw0KPiArDQo+ICsJaWYgKHN0cmljdF9zdHJ0
+b3VsKGJ1ZiwgMCwgJnZhbHVlKSkNCj4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+ICsNCj4gKwlpZiAo
+dmFsdWUgPT0gMCkNCj4gKwkJdGFvc19jaGlwX29mZihjaGlwLT5jbGllbnQpOw0KPiArCWVsc2UN
+Cj4gKwkJdGFvc19jaGlwX29uKGNoaXAtPmNsaWVudCk7DQo+ICsNCj4gKwlyZXR1cm4gbGVuOw0K
+PiArfQ0KPiArDQo+ICtzdGF0aWMgc3NpemVfdCB0YW9zX2dhaW5fc2hvdyhzdHJ1Y3QgZGV2aWNl
+ICpkZXYsDQo+ICsgICAgc3RydWN0IGRldmljZV9hdHRyaWJ1dGUgKmF0dHIsIGNoYXIgKmJ1Zikg
+ew0KPiArCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsN
+Cj4gKwlzdHJ1Y3QgdHNsMjU4eF9jaGlwICpjaGlwID0gaW5kaW9fZGV2LT5kZXZfZGF0YTsNCj4g
+Kw0KPiArCXJldHVybiBzcHJpbnRmKGJ1ZiwgIiVkXG4iLCBjaGlwLT50YW9zX3NldHRpbmdzLmFs
+c19nYWluKTsgfQ0KPiArDQo+ICtzdGF0aWMgc3NpemVfdCB0YW9zX2dhaW5fc3RvcmUoc3RydWN0
+IGRldmljZSAqZGV2LA0KPiArICAgIHN0cnVjdCBkZXZpY2VfYXR0cmlidXRlICphdHRyLCBjb25z
+dCBjaGFyICpidWYsIHNpemVfdCBsZW4pIHsNCj4gKwlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2
+ID0gZGV2X2dldF9kcnZkYXRhKGRldik7DQo+ICsJc3RydWN0IHRzbDI1OHhfY2hpcCAqY2hpcCA9
+IGluZGlvX2Rldi0+ZGV2X2RhdGE7DQo+ICsJdW5zaWduZWQgbG9uZyB2YWx1ZTsNCj4gKwlpZiAo
+c3RyaWN0X3N0cnRvdWwoYnVmLCAwLCAmdmFsdWUpKQ0KPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4g
+KwlpZiAodmFsdWUpIHsNCj4gKwkJaWYgKHZhbHVlID4gNCkgew0KPiArCQkJZGV2X2VycihkZXYs
+ICJJbnZhbGlkIEdhaW4gSW5kZXhcbiIpOw0KPiArCQkJcmV0dXJuIC0xOw0KRUlOVkFMDQo+ICsJ
+CX0gZWxzZSB7DQo+ICsJCQljaGlwLT50YW9zX3NldHRpbmdzLmFsc19nYWluID0gdmFsdWU7DQo+
+ICsJCX0NClNvIHRoaXMgc2V0cyB0aGUgdmFsdWUgaW4gdGhlIGxvY2FsIGNhY2hlLiAgV2hlbiBk
+b2VzIGl0IGdldCB3cml0dGVuIHRvIHRoZSBkZXZpY2U/CS0gRVZFUllUSU1FIENISVBfT04gSVMg
+Q0FMTEVEDQo+ICsJfQ0KPiArCXJldHVybiBsZW47DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBzc2l6
+ZV90IHRhb3NfYWxzX3RpbWVfc2hvdyhzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+ICsgICAgc3RydWN0
+IGRldmljZV9hdHRyaWJ1dGUgKmF0dHIsIGNoYXIgKmJ1Zikgew0KPiArCXN0cnVjdCBpaW9fZGV2
+ICppbmRpb19kZXYgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsNCj4gKwlzdHJ1Y3QgdHNsMjU4eF9j
+aGlwICpjaGlwID0gaW5kaW9fZGV2LT5kZXZfZGF0YTsNCj4gKw0KPiArCXJldHVybiBzcHJpbnRm
+KGJ1ZiwgIiVkXG4iLCBjaGlwLT50YW9zX3NldHRpbmdzLmFsc190aW1lKTsgfQ0KPiArDQo+ICtz
+dGF0aWMgc3NpemVfdCB0YW9zX2Fsc190aW1lX3N0b3JlKHN0cnVjdCBkZXZpY2UgKmRldiwNCj4g
+KyAgICBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZSAqYXR0ciwgY29uc3QgY2hhciAqYnVmLCBzaXpl
+X3QgbGVuKSB7DQo+ICsJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IGRldl9nZXRfZHJ2ZGF0
+YShkZXYpOw0KPiArCXN0cnVjdCB0c2wyNTh4X2NoaXAgKmNoaXAgPSBpbmRpb19kZXYtPmRldl9k
+YXRhOw0KPiArCXVuc2lnbmVkIGxvbmcgdmFsdWU7DQo+ICsNCj4gKwlpZiAoc3RyaWN0X3N0cnRv
+dWwoYnVmLCAwLCAmdmFsdWUpKQ0KPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gKw0KPiArCWlmICh2
+YWx1ZSkNCj4gKwkJY2hpcC0+dGFvc19zZXR0aW5ncy5hbHNfdGltZSA9IHZhbHVlOw0KZWxzZT8g
+SXQncyBub3QgYmVlbiBzdWNlc3NmdWx5IHNldCBzbyByZXR1cm4gLUVJTlZBTAkJLSBET05FDQo+
+ICsNCj4gKwlyZXR1cm4gbGVuOw0KPiArfQ0KPiArDQo+ICtzdGF0aWMgc3NpemVfdCB0YW9zX2Fs
+c190cmltX3Nob3coc3RydWN0IGRldmljZSAqZGV2LA0KPiArICAgIHN0cnVjdCBkZXZpY2VfYXR0
+cmlidXRlICphdHRyLCBjaGFyICpidWYpIHsNCj4gKwlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2
+ID0gZGV2X2dldF9kcnZkYXRhKGRldik7DQo+ICsJc3RydWN0IHRzbDI1OHhfY2hpcCAqY2hpcCA9
+IGluZGlvX2Rldi0+ZGV2X2RhdGE7DQo+ICsNCj4gKwlyZXR1cm4gc3ByaW50ZihidWYsICIlZFxu
+IiwgY2hpcC0+dGFvc19zZXR0aW5ncy5hbHNfZ2Fpbl90cmltKTsNCj4gK30NCj4gKw0KPiArc3Rh
+dGljIHNzaXplX3QgdGFvc19hbHNfdHJpbV9zdG9yZShzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+ICsg
+ICAgc3RydWN0IGRldmljZV9hdHRyaWJ1dGUgKmF0dHIsIGNvbnN0IGNoYXIgKmJ1Ziwgc2l6ZV90
+IGxlbikgew0KPiArCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYgPSBkZXZfZ2V0X2RydmRhdGEo
+ZGV2KTsNCj4gKwlzdHJ1Y3QgdHNsMjU4eF9jaGlwICpjaGlwID0gaW5kaW9fZGV2LT5kZXZfZGF0
+YTsNCj4gKwl1bnNpZ25lZCBsb25nIHZhbHVlOw0KPiArDQo+ICsJaWYgKHN0cmljdF9zdHJ0b3Vs
+KGJ1ZiwgMCwgJnZhbHVlKSkNCj4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+ICsNCj4gKwlpZiAodmFs
+dWUpDQo+ICsJCWNoaXAtPnRhb3Nfc2V0dGluZ3MuYWxzX2dhaW5fdHJpbSA9IHZhbHVlOw0KZWxz
+ZSByZXR1cm4gLUVJTlZBTAkJCQkJCQktIFVOTEVTUyBJJ00gTUlTU0lORyBTT01FVEhJTkcsIFRB
+S0VOIENBUkUgSU4gSU4gJ0lGJyBBQk9WRQ0KPiArDQo+ICsJcmV0dXJuIGxlbjsNCj4gK30NCj4g
+Kw0KPiArc3RhdGljIHNzaXplX3QgdGFvc19hbHNfY2FsX3RhcmdldF9zaG93KHN0cnVjdCBkZXZp
+Y2UgKmRldiwNCj4gKyAgICBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZSAqYXR0ciwgY2hhciAqYnVm
+KSB7DQo+ICsJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IGRldl9nZXRfZHJ2ZGF0YShkZXYp
+Ow0KPiArCXN0cnVjdCB0c2wyNTh4X2NoaXAgKmNoaXAgPSBpbmRpb19kZXYtPmRldl9kYXRhOw0K
+PiArDQo+ICsJcmV0dXJuIHNwcmludGYoYnVmLCAiJWRcbiIsIGNoaXAtPnRhb3Nfc2V0dGluZ3Mu
+YWxzX2NhbF90YXJnZXQpOw0KPiArfQ0KPiArDQo+ICtzdGF0aWMgc3NpemVfdCB0YW9zX2Fsc19j
+YWxfdGFyZ2V0X3N0b3JlKHN0cnVjdCBkZXZpY2UgKmRldiwNCj4gKyAgICBzdHJ1Y3QgZGV2aWNl
+X2F0dHJpYnV0ZSAqYXR0ciwgY29uc3QgY2hhciAqYnVmLCBzaXplX3QgbGVuKSB7DQo+ICsJc3Ry
+dWN0IGlpb19kZXYgKmluZGlvX2RldiA9IGRldl9nZXRfZHJ2ZGF0YShkZXYpOw0KPiArCXN0cnVj
+dCB0c2wyNTh4X2NoaXAgKmNoaXAgPSBpbmRpb19kZXYtPmRldl9kYXRhOw0KPiArCXVuc2lnbmVk
+IGxvbmcgdmFsdWU7DQo+ICsNCj4gKwlpZiAoc3RyaWN0X3N0cnRvdWwoYnVmLCAwLCAmdmFsdWUp
+KQ0KPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gKw0KPiArCWlmICh2YWx1ZSkNCj4gKwkJY2hpcC0+
+dGFvc19zZXR0aW5ncy5hbHNfY2FsX3RhcmdldCA9IHZhbHVlOw0KYWdhaW4sIGVsc2UgcmV0dXJu
+IC1FSU5WQUw7ICBVc2Vyc3BhY2UgcmVhbGx5IHdhbnRzIHRvIGtub3cgdGhpcyBmYWlsZWQuCQkt
+IFRBS0VOIENBUkUgSU4gSU4gJ0lGJyBBQk9WRQ0KPiArDQo+ICsJcmV0dXJuIGxlbjsNCj4gK30N
+Cj4gKw0KPiArc3RhdGljIHNzaXplX3QgdGFvc19sdXhfc2hvdyhzdHJ1Y3QgZGV2aWNlICpkZXYs
+IHN0cnVjdCBkZXZpY2VfYXR0cmlidXRlICphdHRyLA0KPiArICAgIGNoYXIgKmJ1ZikNCj4gK3sN
+Cj4gKwlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2ID0gZGV2X2dldF9kcnZkYXRhKGRldik7DQo+
+ICsJc3RydWN0IHRzbDI1OHhfY2hpcCAqY2hpcCA9IGluZGlvX2Rldi0+ZGV2X2RhdGE7DQo+ICsJ
+aW50IGx1eCA9IDA7DQpubyBuZWVkIHRvIGFzc2lnbi4JCQkJCQkJCS0gRE9ORQ0KPiArDQo+ICsJ
+bHV4ID0gdGFvc19nZXRfbHV4KGNoaXAtPmNsaWVudCk7DQo+ICsNCj4gKwlyZXR1cm4gc3ByaW50
+ZihidWYsICIlZFxuIiwgbHV4KTsNCj4gK30NCj4gKw0KPiArc3RhdGljIHNzaXplX3QgdGFvc19k
+b19jYWxpYnJhdGUoc3RydWN0IGRldmljZSAqZGV2LA0KPiArICAgIHN0cnVjdCBkZXZpY2VfYXR0
+cmlidXRlICphdHRyLCBjb25zdCBjaGFyICpidWYsIHNpemVfdCBsZW4pIHsNCj4gKwlzdHJ1Y3Qg
+aWlvX2RldiAqaW5kaW9fZGV2ID0gZGV2X2dldF9kcnZkYXRhKGRldik7DQo+ICsJc3RydWN0IHRz
+bDI1OHhfY2hpcCAqY2hpcCA9IGluZGlvX2Rldi0+ZGV2X2RhdGE7DQo+ICsJdW5zaWduZWQgbG9u
+ZyB2YWx1ZTsNCj4gKw0KPiArCWlmIChzdHJpY3Rfc3RydG91bChidWYsIDAsICZ2YWx1ZSkpDQo+
+ICsJCXJldHVybiAtRUlOVkFMOw0KPiArDQo+ICsJaWYgKHZhbHVlID09IDEpDQo+ICsJCXRhb3Nf
+YWxzX2NhbGlicmF0ZShjaGlwLT5jbGllbnQpOw0KZWxzZSByZXR1cm4gLUVJTlZBTDsJCQkJCQkJ
+CS0gVEFLRU4gQ0FSRSBJTiBJTiAnSUYnIEFCT1ZFDQo+ICsNCj4gKwlyZXR1cm4gbGVuOw0KPiAr
+fQ0KPiArDQo+ICtzdGF0aWMgc3NpemVfdCB0YW9zX2x1eHRhYmxlX3Nob3coc3RydWN0IGRldmlj
+ZSAqZGV2LA0KPiArICAgIHN0cnVjdCBkZXZpY2VfYXR0cmlidXRlICphdHRyLCBjaGFyICpidWYp
+IHsNCj4gKwlpbnQgaTsNCj4gKwlpbnQgb2Zmc2V0ID0gMDsNCj4gKw0KPiArCWZvciAoaSA9IDA7
+IGkgPCBBUlJBWV9TSVpFKHRhb3NfZGV2aWNlX2x1eCk7IGkrKykgew0KPiArCQlvZmZzZXQgKz0g
+c3ByaW50ZihidWYgKyBvZmZzZXQsICIlZCwlZCwlZCwiLA0KPiArCQkJCSAgdGFvc19kZXZpY2Vf
+bHV4W2ldLnJhdGlvLA0KPiArCQkJCSAgdGFvc19kZXZpY2VfbHV4W2ldLmNoMCwNCj4gKwkJCQkg
+IHRhb3NfZGV2aWNlX2x1eFtpXS5jaDEpOw0KPiArCQlpZiAodGFvc19kZXZpY2VfbHV4W2ldLnJh
+dGlvID09IDApIHsNCj4gKwkJCS8qIFdlIGp1c3QgcHJpbnRlZCB0aGUgZmlyc3QgIjAiIGVudHJ5
+Lg0KPiArCQkJICogTm93IGdldCByaWQgb2YgdGhlIGV4dHJhICIsIiBhbmQgYnJlYWsuICovDQo+
+ICsJCQlvZmZzZXQtLTsNCj4gKwkJCWJyZWFrOw0KPiArCQl9DQo+ICsJfQ0KPiArDQo+ICsJb2Zm
+c2V0ICs9IHNwcmludGYoYnVmICsgb2Zmc2V0LCAiXG4iKTsNCj4gKwlyZXR1cm4gb2Zmc2V0Ow0K
+PiArfQ0KPiArDQo+ICtzdGF0aWMgc3NpemVfdCB0YW9zX2x1eHRhYmxlX3N0b3JlKHN0cnVjdCBk
+ZXZpY2UgKmRldiwNCj4gKyAgICBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZSAqYXR0ciwgY29uc3Qg
+Y2hhciAqYnVmLCBzaXplX3QgbGVuKSB7DQo+ICsJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9
+IGRldl9nZXRfZHJ2ZGF0YShkZXYpOw0KPiArCXN0cnVjdCB0c2wyNTh4X2NoaXAgKmNoaXAgPSBp
+bmRpb19kZXYtPmRldl9kYXRhOyAjZGVmaW5lIA0KPiArTUFYX0xVWF9UQUJMRV9GSUVMRFMgMzMJ
+CQkJCQkJLSBET05FDQpJJ2QgbG9vc2UgdGhpcyBkZWZpbmUuDQo+ICsJaW50IHZhbHVlW01BWF9M
+VVhfVEFCTEVfRklFTERTXTsNCj4gKwlpbnQgbjsNCj4gKw0KPiArCWdldF9vcHRpb25zKGJ1Ziwg
+QVJSQVlfU0laRSh2YWx1ZSksIHZhbHVlKTsNCj4gKw0KPiArCS8qIFdlIG5vdyBoYXZlIGFuIGFy
+cmF5IG9mIGludHMgc3RhcnRpbmcgYXQgdmFsdWVbMV0sIGFuZA0KPiArCSAqIGVudW1lcmF0ZWQg
+YnkgdmFsdWVbMF0uDQo+ICsJICogV2UgZXhwZWN0IGVhY2ggZ3JvdXAgb2YgdGhyZWUgaW50cyBp
+cyBvbmUgdGFibGUgZW50cnksDQo+ICsJICogYW5kIHRoZSBsYXN0IHRhYmxlIGVudHJ5IGlzIGFs
+bCAwLg0KPiArCSAqLw0KPiArCW4gPSB2YWx1ZVswXTsNCiAgcHJlZmVyIHRvIHNlZSBBUlJBWV9T
+SVpFKHZhbHVlKSB0aGFuIHRoZSBkZWZpbmUuICAJCQkJLSBBR1JFRUQgLSBET05FDQo+ICsJaWYg
+KChuICUgMykgfHwgbiA8IDYgfHwgbiA+IChNQVhfTFVYX1RBQkxFX0ZJRUxEUyAtIDMpKSB7DQo+
+ICsJCWRldl9pbmZvKGRldiwgIkxVWCBUQUJMRSBJTlBVVCBFUlJPUiAxIFZhbHVlWzBdPSVkXG4i
+LCBuKTsNCj4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+ICsJfQ0KPiArCWlmICgodmFsdWVbKG4gLSAy
+KV0gfCB2YWx1ZVsobiAtIDEpXSB8IHZhbHVlW25dKSAhPSAwKSB7DQo+ICsJCWRldl9pbmZvKGRl
+diwgIkxVWCBUQUJMRSBJTlBVVCBFUlJPUiAyIFZhbHVlWzBdPSVkXG4iLCBuKTsNCj4gKwkJcmV0
+dXJuIC1FSU5WQUw7DQo+ICsJfQ0KPiArDQo+ICsJaWYgKGNoaXAtPnRhb3NfY2hpcF9zdGF0dXMg
+PT0gVEFPU19DSElQX1dPUktJTkcpDQo+ICsJCXRhb3NfY2hpcF9vZmYoY2hpcC0+Y2xpZW50KTsN
+Cj4gKw0KPiArCS8qIFplcm8gb3V0IHRoZSB0YWJsZSAqLw0KPiArCW1lbXNldCh0YW9zX2Rldmlj
+ZV9sdXgsIDAsIHNpemVvZih0YW9zX2RldmljZV9sdXgpKTsNCj4gKwltZW1jcHkodGFvc19kZXZp
+Y2VfbHV4LCAmdmFsdWVbMV0sICh2YWx1ZVswXSAqIDQpKTsNCj4gKw0KPiArCXRhb3NfY2hpcF9v
+bihjaGlwLT5jbGllbnQpOw0KPiArDQo+ICsJcmV0dXJuIGxlbjsNCj4gK30NCj4gKw0KPiArc3Rh
+dGljIHU4IHJlZ19pbmRleDsNCj4gKw0KQXMgc3RhdGVkIGFib3ZlIHRoZXNlIG5lZWQgdG8gZ28g
+YmVmb3JlIHdlIHRha2UgdGhpcyBkcml2ZXIuCQkJLSBET05FICAtIEJVVCBUSEVTRSBXRVJFIE5F
+RURFRCBCWSBVU0VSU1BBQ0UgQVBQIEZPUiBDUkVBVElORyBORVcgTFVYIEVRVUFUSU9OIENPRUZG
+cyBQUklPUiBUTyBQUk9EVUNUSU9ODQoJCQkJCQkJCQkJCU5FVkVSIFRIRSBMRVNTIC0gR09ORS4N
+Cj4gKy8qIFNldHMgYSBwb2ludGVyIHRvIGEgcmVnaXN0ZXIgZm9yIFIvVyB2aWEgc3lzZnMgKi8g
+c3RhdGljIHNzaXplX3QgDQo+ICt0YW9zX3JlZ19vZmZzZXRfc2hvdyhzdHJ1Y3QgZGV2aWNlICpk
+ZXYsDQo+ICsgICAgc3RydWN0IGRldmljZV9hdHRyaWJ1dGUgKmF0dHIsIGNoYXIgKmJ1Zikgew0K
+PiArICAgICAgcmV0dXJuIHNwcmludGYoYnVmLCAiJWRcbiIsIHJlZ19pbmRleCk7DQo+ICsgICAg
+ICByZXR1cm4gMDsNCj4gK30NCj4gKw0KPiArc3RhdGljIHNzaXplX3QgdGFvc19yZWdfb2Zmc2V0
+X3N0b3JlKHN0cnVjdCBkZXZpY2UgKmRldiwNCj4gKyAgICBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0
+ZSAqYXR0ciwgY29uc3QgY2hhciAqYnVmLCBzaXplX3QgbGVuKSB7DQo+ICsJdW5zaWduZWQgbG9u
+ZyB2YWx1ZTsNCj4gKwlpZiAoc3RyaWN0X3N0cnRvdWwoYnVmLCAwLCAmdmFsdWUpKQ0KPiArCQly
+ZXR1cm4gLUVJTlZBTDsNCj4gKw0KPiArCWlmICh2YWx1ZSA+IE1BWF9ERVZJQ0VfUkVHUykgew0K
+PiArCQlkZXZfZXJyKGRldiwgInJlZ2lzdGVyIG9mZnNldCBleGNlZWRzIE1BWFxuIik7DQo+ICsJ
+CXJldHVybiAtMTsNCj4gKwl9IGVsc2Ugew0KPiArCQlyZWdfaW5kZXggPSB2YWx1ZTsNCj4gKwl9
+DQo+ICtyZXR1cm4gbGVuOw0KPiArfQ0KPiArDQo+ICsvKiBSL1cgYSByZWdpc3RlciBmb3IgUi9X
+IHZpYSBzeXNmcyAqLyBzdGF0aWMgc3NpemVfdCANCj4gK3Rhb3NfcmVnX3Nob3coc3RydWN0IGRl
+dmljZSAqZGV2LA0KPiArICAgIHN0cnVjdCBkZXZpY2VfYXR0cmlidXRlICphdHRyLCBjaGFyICpi
+dWYpIHsNCj4gKwlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2ID0gZGV2X2dldF9kcnZkYXRhKGRl
+dik7DQo+ICsJc3RydWN0IHRzbDI1OHhfY2hpcCAqY2hpcCA9IGluZGlvX2Rldi0+ZGV2X2RhdGE7
+DQo+ICsNCj4gKwl1OCB2YWx1ZSA9IDA7DQo+ICsJaW50IHJldCA9IDA7DQo+ICsNCj4gKwlyZXQg
+PSBpMmNfc21idXNfd3JpdGVfYnl0ZShjaGlwLT5jbGllbnQsDQo+ICsJCShUU0wyNThYX0NNRF9S
+RUcgfCByZWdfaW5kZXgpKTsNCj4gKwlpZiAocmV0IDwgMCkgew0KPiArCQlkZXZfZXJyKGRldiwg
+ImkyY19zbWJ1c193cml0ZV9ieXRlIHRvIGNtZCByZWcgZmFpbGVkICINCj4gKwkJCSJpbiB0YW9z
+X3JlZ19vZmZzZXRfc2hvdygpLCBlcnIgPSAlZFxuIiwgcmV0KTsNCj4gKwkJcmV0dXJuIHJldDsN
+Cj4gKwl9DQo+ICsJdmFsdWUgPSBpMmNfc21idXNfcmVhZF9ieXRlKGNoaXAtPmNsaWVudCk7DQo+
+ICsJcmV0dXJuIHNwcmludGYoYnVmLCAiJWRcbiIsIHZhbHVlKTsNCj4gKw0KPiArcmV0dXJuIDA7
+DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBzc2l6ZV90IHRhb3NfcmVnX3N0b3JlKHN0cnVjdCBkZXZp
+Y2UgKmRldiwNCj4gKyAgICBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZSAqYXR0ciwgY29uc3QgY2hh
+ciAqYnVmLCBzaXplX3QgbGVuKSB7DQo+ICsJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IGRl
+dl9nZXRfZHJ2ZGF0YShkZXYpOw0KPiArCXN0cnVjdCB0c2wyNTh4X2NoaXAgKmNoaXAgPSBpbmRp
+b19kZXYtPmRldl9kYXRhOw0KPiArDQo+ICsJdW5zaWduZWQgbG9uZyB2YWx1ZSA9IDA7DQo+ICsJ
+aW50IHJldCA9IDA7DQo+ICsNCj4gKwlpZiAoc3RyaWN0X3N0cnRvdWwoYnVmLCAwLCAmdmFsdWUp
+KQ0KPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gKw0KPiArCXJldCA9IGkyY19zbWJ1c193cml0ZV9i
+eXRlX2RhdGEoY2hpcC0+Y2xpZW50LA0KPiArCQkoVFNMMjU4WF9DTURfUkVHIHwgcmVnX2luZGV4
+KSwgdmFsdWUpOw0KPiArCWlmIChyZXQgPCAwKSB7DQo+ICsJCWRldl9lcnIoZGV2LCAiaTJjX3Nt
+YnVzX3dyaXRlX2J5dGVfZGF0YSBmYWlsZWQgaW4gIg0KPiArCQkJInRhb3NfcmVnX3N0b3JlKClc
+biIpOw0KPiArCQlyZXR1cm4gcmV0Ow0KPiArCX0NCj4gKw0KPiArcmV0dXJuIGxlbjsNCj4gK30N
+Cj4gKw0KPiArc3RhdGljIERFVklDRV9BVFRSKG5hbWUsIFNfSVJVR08sIHRhb3NfZGV2aWNlX2lk
+LCBOVUxMKTsgc3RhdGljIA0KPiArREVWSUNFX0FUVFIoZGV2aWNlX3N0YXRlLCBTX0lSVUdPIHwg
+U19JV1VTUiwNCj4gKwkJdGFvc19wb3dlcl9zdGF0ZV9zaG93LCB0YW9zX3Bvd2VyX3N0YXRlX3N0
+b3JlKTsgc3RhdGljIA0KPiArREVWSUNFX0FUVFIoYWxzX2dhaW4sIFNfSVJVR08gfCBTX0lXVVNS
+LA0KPiArCQl0YW9zX2dhaW5fc2hvdywgdGFvc19nYWluX3N0b3JlKTsNCj4gK3N0YXRpYyBERVZJ
+Q0VfQVRUUihhbHNfdGltZSwgU19JUlVHTyB8IFNfSVdVU1IsDQo+ICsJCXRhb3NfYWxzX3RpbWVf
+c2hvdywgdGFvc19hbHNfdGltZV9zdG9yZSk7IHN0YXRpYyANCj4gK0RFVklDRV9BVFRSKGFsc190
+cmltLCBTX0lSVUdPIHwgU19JV1VTUiwNCj4gKwkJdGFvc19hbHNfdHJpbV9zaG93LCB0YW9zX2Fs
+c190cmltX3N0b3JlKTsgc3RhdGljIA0KPiArREVWSUNFX0FUVFIoYWxzX3RhcmdldCwgU19JUlVH
+TyB8IFNfSVdVU1IsDQo+ICsJCXRhb3NfYWxzX2NhbF90YXJnZXRfc2hvdywgdGFvc19hbHNfY2Fs
+X3RhcmdldF9zdG9yZSk7IHN0YXRpYyANCj4gK0RFVklDRV9BVFRSKGx1eCwgU19JUlVHTywgdGFv
+c19sdXhfc2hvdywgTlVMTCk7IHN0YXRpYyANCj4gK0RFVklDRV9BVFRSKGNhbGlicmF0ZSwgU19J
+V1VTUiwgTlVMTCwgdGFvc19kb19jYWxpYnJhdGUpOyBzdGF0aWMgDQo+ICtERVZJQ0VfQVRUUihs
+dXhfdGFibGUsIFNfSVJVR08gfCBTX0lXVVNSLA0KPiArCQl0YW9zX2x1eHRhYmxlX3Nob3csIHRh
+b3NfbHV4dGFibGVfc3RvcmUpOyBzdGF0aWMgDQo+ICtERVZJQ0VfQVRUUihyZWdfb2Zmc2V0LCBT
+X0lSVUdPIHwgU19JV1VTUiwNCj4gKyAgICAgIHRhb3NfcmVnX29mZnNldF9zaG93LA0KPiArICAg
+ICAgdGFvc19yZWdfb2Zmc2V0X3N0b3JlKTsNCj4gK3N0YXRpYyBERVZJQ0VfQVRUUihyZWcsIFNf
+SVJVR08gfCBTX0lXVVNSLA0KPiArICAgICAgdGFvc19yZWdfc2hvdywNCj4gKyAgICAgIHRhb3Nf
+cmVnX3N0b3JlKTsNCj4gKw0KPiArDQo+ICtzdGF0aWMgc3RydWN0IGF0dHJpYnV0ZSAqc3lzZnNf
+YXR0cnNfY3RybFtdID0gew0KPiArCSZkZXZfYXR0cl9uYW1lLmF0dHIsDQo+ICsJJmRldl9hdHRy
+X2RldmljZV9zdGF0ZS5hdHRyLA0KPiArCSZkZXZfYXR0cl9hbHNfZ2Fpbi5hdHRyLA0KPiArCSZk
+ZXZfYXR0cl9hbHNfdGltZS5hdHRyLA0KPiArCSZkZXZfYXR0cl9hbHNfdHJpbS5hdHRyLA0KPiAr
+CSZkZXZfYXR0cl9hbHNfdGFyZ2V0LmF0dHIsDQo+ICsJJmRldl9hdHRyX2x1eC5hdHRyLA0KPiAr
+CSZkZXZfYXR0cl9jYWxpYnJhdGUuYXR0ciwNCj4gKwkmZGV2X2F0dHJfbHV4X3RhYmxlLmF0dHIs
+DQpTcGFjZXMgaW5zdGVhZCBvZiB0YWIgaGVyZS4NCj4gKyAgICAmZGV2X2F0dHJfcmVnX29mZnNl
+dC5hdHRyLA0KPiArICAgICZkZXZfYXR0cl9yZWcuYXR0ciwNCj4gKwlOVUxMDQo+ICt9Ow0KPiAr
+DQo+ICtzdGF0aWMgc3RydWN0IGF0dHJpYnV0ZV9ncm91cCB0c2wyNTh4X2F0dHJpYnV0ZV9ncm91
+cCA9IHsNCj4gKwkuYXR0cnMgPSBzeXNmc19hdHRyc19jdHJsLA0KPiArfTsNCj4gKw0KPiArLyog
+VXNlIHRoZSBkZWZhdWx0IHJlZ2lzdGVyIHZhbHVlcyB0byBpZGVudGlmeSB0aGUgVGFvcyBkZXZp
+Y2UgKi8gDQo+ICtzdGF0aWMgaW50IHRhb3Nfc2thdGVfZGV2aWNlKHVuc2lnbmVkIGNoYXIgKmJ1
+ZnApIHsNCj4gKwlpZiAoKChidWZwW1RTTDI1OFhfQ0hJUElEXSAmIDB4ZjApID09IDB4OTApKQ0K
+PiArCQkvKiB0c2wyNTh4ICovDQo+ICsJCXJldHVybiAxOw0KPiArCS8qIGVsc2UgdW5rbm93biAq
+Lw0KPiArCXJldHVybiAwOw0KPiArfQ0KPiArDQo+ICsvKg0KPiArICogQ2xpZW50IHByb2JlIGZ1
+bmN0aW9uIC0gV2hlbiBhIHZhbGlkIGRldmljZSBpcyBmb3VuZCwgdGhlIGRyaXZlcidzIA0KPiAr
+ZGV2aWNlDQo+ICsgKiBkYXRhIHN0cnVjdHVyZSBpcyB1cGRhdGVkLCBhbmQgaW5pdGlhbGl6YXRp
+b24gY29tcGxldGVzIHN1Y2Nlc3NmdWxseS4NCj4gKyAqLw0KPiArc3RhdGljIGludCBfX2Rldmlu
+aXQgdGFvc19wcm9iZShzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50cCwNCj4gKwkJICAgICAgY29u
+c3Qgc3RydWN0IGkyY19kZXZpY2VfaWQgKmlkcCkgew0KPiArCWludCBpLCByZXQgPSAwOw0KPiAr
+CXVuc2lnbmVkIGNoYXIgYnVmW01BWF9ERVZJQ0VfUkVHU107DQo+ICsJc3RhdGljIHN0cnVjdCB0
+c2wyNTh4X2NoaXAgKmNoaXA7DQo+ICsNCj4gKwlpZiAoIWkyY19jaGVja19mdW5jdGlvbmFsaXR5
+KGNsaWVudHAtPmFkYXB0ZXIsDQo+ICsJCUkyQ19GVU5DX1NNQlVTX0JZVEVfREFUQSkpIHsNCj4g
+KwkJZGV2X2VycigmY2xpZW50cC0+ZGV2LA0KPiArCQkJInRhb3NfcHJvYmUoKSAtIGkyYyBzbWJ1
+cyBieXRlIGRhdGEgIg0KPiArCQkJImZ1bmN0aW9ucyB1bnN1cHBvcnRlZFxuIik7DQo+ICsJCXJl
+dHVybiAtRU9QTk9UU1VQUDsNCj4gKwl9DQo+ICsJaWYgKCFpMmNfY2hlY2tfZnVuY3Rpb25hbGl0
+eShjbGllbnRwLT5hZGFwdGVyLA0KPiArCQlJMkNfRlVOQ19TTUJVU19XT1JEX0RBVEEpKSB7DQo+
+ICsJCWRldl93YXJuKCZjbGllbnRwLT5kZXYsDQo+ICsJCQkidGFvc19wcm9iZSgpIC0gaTJjIHNt
+YnVzIHdvcmQgZGF0YSAiDQo+ICsJCQkiZnVuY3Rpb25zIHVuc3VwcG9ydGVkXG4iKTsNCj4gKwl9
+DQo+ICsJaWYgKCFpMmNfY2hlY2tfZnVuY3Rpb25hbGl0eShjbGllbnRwLT5hZGFwdGVyLA0KPiAr
+CQlJMkNfRlVOQ19TTUJVU19CTE9DS19EQVRBKSkgew0KPiArCQlkZXZfZXJyKCZjbGllbnRwLT5k
+ZXYsDQo+ICsJCQkidGFvc19wcm9iZSgpIC0gaTJjIHNtYnVzIGJsb2NrIGRhdGEgIg0KPiArCQkJ
+ImZ1bmN0aW9ucyB1bnN1cHBvcnRlZFxuIik7DQo+ICsJfQ0KPiArDQo+ICsJY2hpcCA9IGttYWxs
+b2Moc2l6ZW9mKHN0cnVjdCB0c2wyNTh4X2NoaXApLCBHRlBfS0VSTkVMKTsNCj4gKwlpZiAoIWNo
+aXApIHsNCj4gKwkJZGV2X2VycigmY2xpZW50cC0+ZGV2LCAidGFvc19kZXZpY2VfZHJ2cjoga21h
+bGxvYyBmb3IgIg0KPiArCQkJInN0cnVjdCB0c2wyNTh4X2NoaXAgZmFpbGVkIGluIHRhb3NfcHJv
+YmUoKVxuIik7DQo+ICsJCXJldHVybiAtRU5PTUVNOw0KPiArCX0NCj4gKwltZW1zZXQoY2hpcCwg
+MCwgc2l6ZW9mKHN0cnVjdCB0c2wyNTh4X2NoaXApKTsNClVzZSBremFsbG9jIGluc3RlYWQgb2Yg
+a21hbGxvYyB0aGVuIHlvdSBkb24ndCBuZWVkIHRoZSBtZW1zZXQuCQkJLSBHUkVBVCAtIERPTkUN
+Cg0KPiArCWNoaXAtPmNsaWVudCA9IGNsaWVudHA7DQo+ICsJaTJjX3NldF9jbGllbnRkYXRhKGNs
+aWVudHAsIGNoaXApOw0KPiArDQo+ICsJbXV0ZXhfaW5pdCgmY2hpcC0+YWxzX211dGV4KTsNCj4g
+KwljaGlwLT50YW9zX2NoaXBfc3RhdHVzID0gVEFPU19DSElQX1VOS05PV047IC8qIHVuaW5pdGlh
+bGl6ZWQgdG8gc3RhcnQgKi8NCj4gKwltZW1jcHkoY2hpcC0+dGFvc19jb25maWcsIHRhb3NfY29u
+ZmlnLCBzaXplb2YoY2hpcC0+dGFvc19jb25maWcpKTsNCj4gKw0KPiArCWZvciAoaSA9IDA7IGkg
+PCBNQVhfREVWSUNFX1JFR1M7IGkrKykgew0KPiArCQlyZXQgPSBpMmNfc21idXNfd3JpdGVfYnl0
+ZShjbGllbnRwLA0KPiArCQkJCShUU0wyNThYX0NNRF9SRUcgfCAoVFNMMjU4WF9DTlRSTCArIGkp
+KSk7DQo+ICsJCWlmIChyZXQgPCAwKSB7DQo+ICsJCQlkZXZfZXJyKCZjbGllbnRwLT5kZXYsICJp
+MmNfc21idXNfd3JpdGVfYnl0ZSgpIHRvIGNtZCAiDQo+ICsJCQkJInJlZyBmYWlsZWQgaW4gdGFv
+c19wcm9iZSgpLCBlcnIgPSAlZFxuIiwgcmV0KTsNCj4gKwkJCWdvdG8gZmFpbDE7DQo+ICsJCX0N
+Cj4gKwkJYnVmW2ldID0gaTJjX3NtYnVzX3JlYWRfYnl0ZShjbGllbnRwKTsNCj4gKwl9DQo+ICsJ
+aWYgKCF0YW9zX3NrYXRlX2RldmljZShidWYpKSB7DQo+ICsJCWRldl9pbmZvKCZjbGllbnRwLT5k
+ZXYsICJpMmMgZGV2aWNlIGZvdW5kIGJ1dCBkb2VzIG5vdCBtYXRjaCAiDQo+ICsJCQkiZXhwZWN0
+ZWQgaWQgaW4gdGFvc19wcm9iZSgpXG4iKTsNCj4gKwkJZ290byBmYWlsMTsNCj4gKwl9IGVsc2Ug
+ew0KPiArCQlkZXZfaW5mbygmY2xpZW50cC0+ZGV2LCAiaTJjIGRldmljZSBtYXRjaCBpbiBwcm9i
+ZVxuIik7DQo+ICsJfQ0KPiArCXJldCA9IGkyY19zbWJ1c193cml0ZV9ieXRlKGNsaWVudHAsIChU
+U0wyNThYX0NNRF9SRUcgfCBUU0wyNThYX0NOVFJMKSk7DQo+ICsJaWYgKHJldCA8IDApIHsNCj4g
+KwkJZGV2X2VycigmY2xpZW50cC0+ZGV2LCAiaTJjX3NtYnVzX3dyaXRlX2J5dGUoKSB0byBjbWQg
+cmVnICINCj4gKwkJCSJmYWlsZWQgaW4gdGFvc19wcm9iZSgpLCBlcnIgPSAlZFxuIiwgcmV0KTsN
+Cj4gKwkJZ290byBmYWlsMTsNCj4gKwl9DQo+ICsJY2hpcC0+dmFsaWQgPSAwOw0KPiArDQo+ICsJ
+Y2hpcC0+aWlvX2RldiA9IGlpb19hbGxvY2F0ZV9kZXZpY2UoKTsNCj4gKwlpZiAoIWNoaXAtPmlp
+b19kZXYpIHsNCj4gKwkJcmV0ID0gLUVOT01FTTsNCj4gKwkJZGV2X2VycigmY2xpZW50cC0+ZGV2
+LCAiaWlvIGFsbG9jYXRpb24gZmFpbGVkXG4iKTsNCj4gKwkJZ290byBmYWlsMTsNCj4gKwl9DQo+
+ICsNCj4gKwljaGlwLT5paW9fZGV2LT5hdHRycyA9ICZ0c2wyNTh4X2F0dHJpYnV0ZV9ncm91cDsN
+Cj4gKwljaGlwLT5paW9fZGV2LT5kZXYucGFyZW50ID0gJmNsaWVudHAtPmRldjsNCj4gKwljaGlw
+LT5paW9fZGV2LT5kZXZfZGF0YSA9ICh2b2lkICopKGNoaXApOw0KPiArCWNoaXAtPmlpb19kZXYt
+PmRyaXZlcl9tb2R1bGUgPSBUSElTX01PRFVMRTsNCj4gKwljaGlwLT5paW9fZGV2LT5tb2RlcyA9
+IElORElPX0RJUkVDVF9NT0RFOw0KPiArCXJldCA9IGlpb19kZXZpY2VfcmVnaXN0ZXIoY2hpcC0+
+aWlvX2Rldik7DQo+ICsJaWYgKHJldCkgew0KPiArCQlkZXZfZXJyKCZjbGllbnRwLT5kZXYsICJp
+aW8gcmVnaXN0cmF0aW9uIGZhaWxlZFxuIik7DQo+ICsJCWdvdG8gZmFpbDE7DQo+ICsJfQ0KPiAr
+DQo+ICsJLyogTG9hZCB1cCB0aGUgVjIgZGVmYXVsdHMgKHRoZXNlIGFyZSBoYXJkIGNvZGVkIGRl
+ZmF1bHRzIGZvciBub3cpICovDQo+ICsJdGFvc19kZWZhdWx0cyhjaGlwKTsNCj4gKw0KPiArCS8q
+IE1ha2Ugc3VyZSB0aGUgY2hpcCBpcyBvbiAqLw0KPiArCXRhb3NfY2hpcF9vbihjbGllbnRwKTsN
+Cj4gKw0KPiArCWRldl9pbmZvKCZjbGllbnRwLT5kZXYsICJMaWdodCBzZW5zb3IgZm91bmQuXG4i
+KTsNCj4gKwlyZXR1cm4gMDsNCj4gKw0KPiArZmFpbDE6DQo+ICsJa2ZyZWUoY2hpcCk7DQo+ICsN
+Cj4gKwlyZXR1cm4gcmV0Ow0KPiArfQ0KPiArDQo+ICtzdGF0aWMgaW50IF9fZGV2ZXhpdCB0YW9z
+X3JlbW92ZShzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50KSB7DQo+ICsJc3RydWN0IHRzbDI1OHhf
+Y2hpcCAqY2hpcCA9IGkyY19nZXRfY2xpZW50ZGF0YShjbGllbnQpOw0KPiArDQo+ICsJaWlvX2Rl
+dmljZV91bnJlZ2lzdGVyKGNoaXAtPmlpb19kZXYpOw0KPiArDQo+ICsJa2ZyZWUoY2hpcCk7DQo+
+ICsJcmV0dXJuIDA7DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBzdHJ1Y3QgaTJjX2RldmljZV9pZCB0
+YW9zX2lkdGFibGVbXSA9IHsNCj4gKwl7IERFVklDRV9JRCwgMCB9LA0KPiArCXt9DQpQbGVhc2Ug
+Y2FuIHdlIGhhdmUgYW4gZXhwbGljaXQgbGlzdCBpZiBJRCdzIGhlcmUuICBJZiBhIHBlcnNvbiBo
+YXMgYSB0c2wyNTgwIHRoZW4gdGhleSdsbCB3YW50IHRvIHNheSB0aGF0IGluIHRoZWlyIGJvYXJk
+IGZpbGUuIC0gRE9ORSBJTkNMVURFUyBBTEwgRkFNSUxZIERFVklDRVMNCg0KT24gdGhhdCBub3Rl
+LCBJIHNraXBwZWQgdGhpcyBvcmlnaW5hbGx5IGFzIHRoZXJlIHdlcmUgYmlnZ2VyIGZpc2ggdG8g
+ZnJ5LCBidXQgY2FuIHdlIGJlIHN1cmUgdGhhdCB0aGVyZSB3aWxsIG5ldmVyIGJlIGEgdmFsdWUg
+b2YgeCB0aGF0IHRoaXMgZHJpdmVyIHdvbid0IHdvcmsgZm9yPyAgSWYgbm90LCBwbGVhc2UgZm9s
+bG93IGNvbnZlbnRpb24gYW5kIHBpY2sgeW91ciBmYXZvdXJpdGUgcGFydCBudW1iZXIgZnJvbSB0
+aGUgcmFuZ2UgYW5kIHJlcGxhY2UgYWxsIHgncyBpbiB0aGUgZHJpdmVyIGFwcHJvcHJpYXRlbHku
+ICBUb28gbWFueSBwYXJ0IG1hbnVmYWN0dXJlcnMgaGF2ZSByZWFsbHkgd2VpcmQgbmFtaW5nIHNj
+aGVtZXMgdGhhdCB0ZW5kIHRvIGJyZWFrIHdpbGQgY2FyZHMgbGlrZSB0aGlzIQ0KDQpET05FIC0g
+RFJJVkVSIE5BTUUgVE8gVFNMMjU4MyAtIEFMU08gU1VQUE9SVFMgMjU4MCw4MSAtIEFTIFNUQVRF
+RCBJTiBLQ09ORklHIEhFTFANCg0KDQo+ICt9Ow0KPiArTU9EVUxFX0RFVklDRV9UQUJMRShpMmMs
+IHRhb3NfaWR0YWJsZSk7DQo+ICsNCj4gKy8qIERyaXZlciBkZWZpbml0aW9uICovDQo+ICtzdGF0
+aWMgc3RydWN0IGkyY19kcml2ZXIgdGFvc19kcml2ZXIgPSB7DQo+ICsJLmRyaXZlciA9IHsNCj4g
+KwkJLm5hbWUgPSAidHNsMjU4eCIsDQo+ICsJfSwNCj4gKwkuaWRfdGFibGUgPSB0YW9zX2lkdGFi
+bGUsDQo+ICsJLnByb2JlID0gdGFvc19wcm9iZSwNCj4gKwkucmVtb3ZlID0gX19kZXZleGl0X3Ao
+dGFvc19yZW1vdmUpLA0KPiArfTsNCj4gKw0KPiArc3RhdGljIGludCBfX2luaXQgdGFvc19pbml0
+KHZvaWQpDQo+ICt7DQo+ICsJcmV0dXJuIGkyY19hZGRfZHJpdmVyKCZ0YW9zX2RyaXZlcik7IH0N
+Cj4gKw0KPiArc3RhdGljIHZvaWQgX19leGl0IHRhb3NfZXhpdCh2b2lkKQ0KPiArew0KPiArCWky
+Y19kZWxfZHJpdmVyKCZ0YW9zX2RyaXZlcik7DQo+ICt9DQo+ICsNCj4gK21vZHVsZV9pbml0KHRh
+b3NfaW5pdCk7DQo+ICttb2R1bGVfZXhpdCh0YW9zX2V4aXQpOw0KPiArDQo+ICtNT0RVTEVfQVVU
+SE9SKCJKLiBBdWd1c3QgQnJlbm5lcjxqYnJlbm5lckB0YW9zaW5jLmNvbT4iKTsgDQo+ICtNT0RV
+TEVfREVTQ1JJUFRJT04oIlRBT1MgdHNsMjU4eCBhbWJpZW50IGxpZ2h0IHNlbnNvciBkcml2ZXIi
+KTsgDQo+ICtNT0RVTEVfTElDRU5TRSgiR1BMIik7DQo+ICsNCg0K
