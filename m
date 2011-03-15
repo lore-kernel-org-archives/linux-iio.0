@@ -1,81 +1,67 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.171]:64597 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932348Ab1COQum (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2011 12:50:42 -0400
-From: Arnd Bergmann <arnd@arndb.de>
+Return-Path: <broonie@sirena.org.uk>
+Date: Tue, 15 Mar 2011 12:51:49 +0000
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
 To: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH] Add STMicroelectronics LPS001WP pressure sensor device driver into misc
-Date: Tue, 15 Mar 2011 17:50:33 +0100
-Cc: Jean Delvare <khali@linux-fr.org>,
-	mems applications <mems.applications@st.com>,
-	rdunlap@xenotime.net, carmine.iascone@st.com, matteo.dameno@st.com,
+Cc: Arnd Bergmann <arnd@arndb.de>, Jean Delvare <khali@linux-fr.org>,
+	mems applications <mems.applications@st.com>, rdunlap@xenotime.net,
+	carmine.iascone@st.com, matteo.dameno@st.com,
 	rubini@ipvvis.unipv.it, linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Guenter Roeck <guenter.roeck@ericsson.com>,
 	Greg KH <greg@kroah.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <1300128906-1066-1-git-send-email-matteo.dameno@st.com> <201103151429.29460.arnd@arndb.de> <4D7F7C04.50909@cam.ac.uk>
-In-Reply-To: <4D7F7C04.50909@cam.ac.uk>
+Subject: Re: [PATCH] Add STMicroelectronics LPS001WP pressure sensor device
+	driver into misc
+Message-ID: <20110315125149.GC17277@sirena.org.uk>
+References: <1300128906-1066-1-git-send-email-matteo.dameno@st.com> <20110314224244.3d6d23ba@endymion.delvare> <4D7EA38F.5070002@cam.ac.uk> <201103151038.40559.arnd@arndb.de> <4D7F4944.4070507@cam.ac.uk>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Message-Id: <201103151750.33179.arnd@arndb.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <4D7F4944.4070507@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tuesday 15 March 2011, Jonathan Cameron wrote:
-> On 03/15/11 13:29, Arnd Bergmann wrote:
-> > On Tuesday 15 March 2011, Jonathan Cameron wrote:
-> >> An interesting idea though I'm not entirely sure how it would
-> >> work in practice.
-> >> Two options occurred whilst cycling in this morning.
-> >> 1) Spit functionality out in staging. This would give a core
-> >> set that is basically the sysfs only stuff.  To do that we'd
-> >> have to define a struct iio_dev_basic and make it an element
-> >> of the iio_dev.  Prior to that we'd probably need to make pretty
-> >> much all accesses into iio_dev via macros / inline functions 
-> >> which would not be a trivial undertaking.
-> > 
-> > I think if you try to maintain compatibility between the
-> > basic drivers and the complex stuff in the same tree, you
-> > won't be able to gain much. Any major changes to address the TODO
-> > items would still potentially impact all drivers.
->
-> True though the todo's I know about shouldn't cause trouble for
-> the simple drivers.
+On Tue, Mar 15, 2011 at 11:11:00AM +0000, Jonathan Cameron wrote:
+> On 03/15/11 09:38, Arnd Bergmann wrote:
 
-Ok. If that's the case, it may be simpler to just get the
-core into shape for merging, and then do one driver at a
-time, but leave all other drivers in staging.
+[Reflowed Jonathan's text into 80 columns for legibility.]
 
-However, without having looked at the code, I would still
-assume that it's not that easy and you will actually break
-drivers by fixing the core.
+> > Do you think it would help to split the iio codebase into a smaller part
+> > for the relatively clean drivers that can be put into shape for
+> > drivers/iio, and the bulk of the code that stays in staging for a bit
+> > longer, until it gets converted to the new one in small chunks?
 
-> >> That would leave the ugly drivers in staging to pull over
-> >> as they get fixed up.
-> > 
-> > Yes. Or, with my variant, leave a copy of the core as well.
->
-> Sure, depending on what is left there.  If we have moved all of the
-> above across then there the non staging version should do everything
-> the staging version does..
+> 1) Spit functionality out in staging. This would give a core set that
+> is basically the sysfs only stuff.  To do that we'd have to define a
+> struct iio_dev_basic and make it an element of the iio_dev.  Prior to
+> that we'd probably need to make pretty much all accesses into iio_dev
+> via macros / inline functions which would not be a trivial
+> undertaking.
 
-Yes. If they still have a compatible in-kernel API.
- 
-> > Then leave the complex drivers until you have the infrastructure
-> > for them in the new core version.
-> Then the key thing is going to be convincing people that there is
-> a reason for a lot of what will go in early on, but they'll need to
-> look at staging to see why... I guess the version going into mainline
-> may need a lot of comments in the code.  Note for some whole classes
-> of devices there are only 'complex' drivers.
+> Then we could switch those drivers doing the minimum to the _basic
+> form.  At that point we could perhaps attempt to move a couple of
+> drivers and the abi docs out of staging.
 
-Well, all the code is in the kernel in the staging drivers, so
-any reviewer can look there to see how it's used. You can always
-point to a specific driver in the changelog as an example when
-a core component gets posted for review in order to have it
-in the mainline tree.
+> The disadvantages of this that come to mind are: * Makes the path to
+> driver addition that I'd prefer trickier.  You write a basic sysfs
+> only driver first, then add on stuff like events and buffering as
+> separate patches. We could go the other way around like v4l2-subdev
+> and have a base structure with the option of pointers to structures
+> offering different combinations of features.  * Not many of the
+> drivers I'd consider to be ready to go at the moment are actually in
+> this _basic class. 
 
-	Arnd
+For what it's worth I have a few drivers I'd like to do which fall into
+this category.  I've been put off working on them by the fact that I'm
+not seeing a route out of staging for the subsystem.
+
+> 2) Basically make a copy.  This would look like the original patch set did when we went
+
+A third option is just to lift everything out of staging roughly as it
+is now with anything that definitely needs redoing dropped, addressing
+any review comments for mainline but not doing much else, and then
+resume working on adding additional stuff.  It sounds like the userspace
+interfaces that are there at present are mostly OK and most of the
+issues are in-kernel?
+
+You could perhaps have a Kconfig control for disabling any experimental
+features in the API if you want to give people hints about areas that
+are likely to churn.
