@@ -1,107 +1,181 @@
-Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4D823B26.400@cam.ac.uk>
-Date: Thu, 17 Mar 2011 16:47:34 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
+Return-Path: <arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: Arnd Bergmann <arnd@arndb.de>, Kay Sievers <kay.sievers@vrfy.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+Subject: Re: IIO comments
+Date: Wed, 16 Mar 2011 16:15:30 +0100
+Cc: Kay Sievers <kay.sievers@vrfy.org>,
+ linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
  Greg KH <greg@kroah.com>,
  Jean Delvare <khali@linux-fr.org>,
  Guenter Roeck <guenter.roeck@ericsson.com>
-Subject: Re: IIO comments
-References: <201103152215.20059.arnd@arndb.de> <201103171447.17960.arnd@arndb.de> <4D821DE2.4050707@cam.ac.uk> <201103171603.35700.arnd@arndb.de> <4D823AF8.8070408@cam.ac.uk>
-In-Reply-To: <4D823AF8.8070408@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <201103152215.20059.arnd@arndb.de> <201103161433.31303.arnd@arndb.de> <4D80CE2E.9000407@cam.ac.uk>
+In-Reply-To: <4D80CE2E.9000407@cam.ac.uk>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Message-Id: <201103161615.30799.arnd@arndb.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 03/17/11 16:46, Jonathan Cameron wrote:
-> On 03/17/11 15:03, Arnd Bergmann wrote:
->> On Thursday 17 March 2011, Jonathan Cameron wrote:
->>> On 03/17/11 13:47, Arnd Bergmann wrote:
->>
->>>> What about hardware devices that have multiple unrelated streams
->>>> of buffered input data?
->>>
->>> Certainly plausible, but so far the only ones I've seen that actually
->>> do this are really just two bits of silicon in the same plastic
->>> package.  They tend to use different i2c addresses or spi chip
->>> selects anyway so as far as the kernel is concerned are completely
->>> separate.  You are correct that any device which truly has different
->>> streams of data would indeed need more than one device.
->>
->> Ok.
->>
->>>>>> * One chardev for each iio device
->>>>>
->>>>> currently 1-3. (event line, buffer access, buffer event)
->>>>
->>>> It would be really nice to unify this, as I said. What
->>>> are the reasons why you think it cannot or should not be
->>>> done?
->>>
->>> Simplicity perhaps, but I'll definitely give your suggestions
->>> a go and see where we end up. 
->>
->> Since I haven't fully understood the distinction between the
->> three chardevs, it may of course turn out a bad idea, but I
->> think it would simplify the core code if you could assume
->> that every iio device has exactly one chardev interface,
->> so you could give them the same unique number and manage
->> the life time together.
-> It simplifies that corner, but I'm a little worried that it
-> will add a lot of interlinks between the currently fairly
-> disconnected elements that go through a character device.
-> 
-> If we can keep those links to a minimum (which I think
-> we can, but haven't tried yet!) it will be a sensible move.
-> 
->>
->>>>>> * Use epoll to wait for data and/or out-of-band messages
->>>>>> * Use chrdev read to get events from the buffer
->>>>>
->>>>> and data?
->>>>
->>>> I mean get the data associated with the event. The event
->>>> itself as you said does not have any data, so we would not
->>>> need to read it, just to use poll()/epoll() in order to
->>>> wait for it.
->>>
->>> Sure. But devices can do a heck of a lot of different events.
->>> (certainly 10's or maybe more).  I'm not immediately clear
->>> on how to handle this via poll etc.  This is probably just
->>> because I've never tried though!
->>
->> (e)poll can generally distinguish between very few types of
->> activity: data for reading available, space for writing available,
->> out-of-band events (to be read with e.g. ioctl) and errors.
->>
->> If you want to wait for multiple equal types of events for
->> one hardware device, it would be logical to have multiple 
->> character devices for them, so a user could open and wait
->> for some of them independent of the others.
->>
->> Intuitively, I would also expect these to be separate iio
->> devices for the same hardware (each with one chardev), but
->> there may be good reasons why that is not possible.
-> For reasons above, 
+On Wednesday 16 March 2011, Jonathan Cameron wrote:
+> On 03/16/11 13:33, Arnd Bergmann wrote:
+> > On Wednesday 16 March 2011, Jonathan Cameron wrote:
+> >
+> > It's certainly more work for the subsystem, but the intention
+> > is to simplify the individual drivers, to make things scale
+> > better as many more drivers get added.
+>
+> I'm yet to be convinced this simplifies things. We basically move
+> from one form of big table in the drivers to another and add complexity
+> to the core.  I'd be fine with that complexity if it actually simplified
+> the drivers, but I'm not sure it does.  Perhaps the only way to really
+> answer that is to actually try doing it with a few drivers and see
+> where we end up.
 
-Actually in the other branch of the thread. sorry!
-> there can only be one iio device per
-> physical hardware.  We could define some other intermediate
-> representation similar to the bus structure we currently have,
-> but then I'm not sure where we gain.
+Yes. I'm pretty sure it's possible to do better than the current
+interface, but don't have a way to prove it.
+ 
+> >> * Whatever you pick also immediately becomes restrictive as the main
+> >> class has to be updated to handle any new elements.
+> > 
+> > I believe that's a good thing, we want to limit the number
+> > of different interfaces that people come up with. If two
+> > drivers are similar enough, they should probably use the
+> > same one.
+>
+> Limiting them is fine, but there are still an awful lot of
+> them - so we still end up with big and ugly tables.
+
+So we should find a way to make it a nice and small table
+instead ;-)
+
+> Again currently enforcement of interface is done by review.
+
+I believe enforcing the rules using the compiler is always
+better than by review, if all other factors are the same.
+ 
+> > It also makes it easier to verify that all attributes are
+> > documented properly, because the documentation only has
+> > to be matched with a single file, not with every single
+> > driver.
+> That would be a gain.  However, the real thing you need
+> to check with use of an attribute is not it's naming
+> (which is a trivial match against the docs), but that
+> the units of whatever is returned are correct. Thus you
+> end up looking closely at the docs alongside every driver
+> anyway and trawling through datasheets.
+
+Are you currently printing the unit as part of the
+attribute output? If that gets handled by the core,
+any driver that tries to use something else would
+simply be considered a bug.
+
+> > It also forces out-of-tree modules to use the same interfaces
+> > that other drivers are using. If someone has hardware for
+> > something new, it will only have an interface to talk to
+> > after it has been discussed and documented in mainline.
 > 
-> As we only care about single reader cases here,
-> the reader can simply configure which events it is interested
-> in to be the only ones produced.  A good chunk of the sysfs
-> interface is concerned with doing this.
+> The question this brings up is how to do we then handle the one
+> of a kind interface elements?   However general our spec
+> there are always things we don't really want in the core
+> as they will only ever be used by one specific driver.
 > 
-> The ioctl approach you suggest can then be used to query what
-> actually occurred.
+> Right now we operate a policy which says all elements must
+> be documented, but those that are not 'general' shouldn't go
+> in the main doc files.  Things can move to general the moment
+> we find a second device using them. (sometimes we are wrong
+> in thinking something is so obscure no one else will ever
+> want it).  Note these obscure elements don't get supported by
+> any remotely standard userspace code.  Take the TOAS 258x driver
+> from Jobn Brenner for example.  That has one nasty calibration
+> attribute. Try as we might we really haven't managed to
+> blugeon that one into a 'standard' form (it's the coefficients
+> of a magic transfer function which takes into account the exact
+> glass window over the sensor). Normally we'd argue this should
+> be platform data, but Jon has real users where devices that are
+> otherwise identical have different glass - hence it must be
+> runtime controlled.
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> The moment we put a route in for registering additional attributes
+> the out-of-tree argument is weakened.
+
+Would it help to have multiple types of interfaces (I suppose
+you already do), each with their own table?
+
+This way you could enforce that all drivers of one type use
+exactly the same specification, but also make it possible
+to have new types, even those that have only one driver by
+design.
+
+In the case of the TOAS 258x driver (I can't find that in the
+tree), I fear that would still have to become a standard attribute
+of some sort.
+
+> >  
+> > The whole point would be to avoid duplication, so maybe something
+> > a little smarter is needed, but the current code duplicates the
+> > definition of attributes to every driver, and I'm sure we can
+> > find a solution that requires less code.
+> A little less perhaps, but it's still going to be a big table, just of
+> subtly different things.
+> > 
+> > In many cases, you should be able to replace a long switch statement
+> > by a table driven approach inside of the driver.
+> > 
+> I think the only way to answer this is to do a quick implementation of
+> this and see how well it works.
 > 
+> I'll have a crack at this sometime soon with a representative set of
+> drivers and see how it goes.
+
+Ok, cool! Just send out the drivers as you get there, and maybe someone
+has ideas to simplify them further if you're not happy with the
+result.
+
+> > 
+> > If you only have the two, you might be able to handle them both
+> > in the poll function, where the regular case means POLLIN
+> > or POLLRDNORM, while the threshold interrupt gets turned
+> > into POLLPRI or POLLRDBAND.
+> > 
+> > I'm not sure if that covers all cases you are interested in,
+> > but it sounds like a useful simplification. It also makes
+> > it possible for user programs to only wait for one type of
+> > event.
+> I will need to have a play and get back to you on this.
+> 
+> I don't suppose there is anything similar to this in kernel
+> I could take a look at?  Its not an area I'm even remotely
+> familiar with. Right now I don't see exactly how this helps us
+> with the 'out of band' messages not colliding with the main data
+> flow.
+
+One way to deal with out of band data (if it's more than just
+a flag) is to have an ioctl function that returns structured
+data, while the regular read function returns the buffered
+input stream.
+
+> > Doesn't epoll handle the event escalation with its edge triggered
+> > mode? Basically you can get notified every time that there is
+> > more to be read.
+> We also need to know how much more this is to be read.  So at the
+> moment, if a 50% full turns up and isn't picked up by userspace
+> before a 75% full event, the 50% is escalated to become a 75%
+> event which userspace then receives.  To be honest I'm tempted,
+> for now at least to drop this functionality.  It has few users
+> and makes the events system considerably more complex.  We can
+> think about how / whether to introduce it later.
+
+Yes, good point. I also don't get the use case of this. Why would
+user space not just always read all data that is available?
+
+> Yup, the dynamic route to creation is what I favour.  As you say
+> this needs fixing up before going out of staging.  We definitely
+> need these for a bridge to input to implement polled input devices.
+> 
+> I'll put a todo in place for that element in staging so we don't
+> forget.
+
+ok
+
+	Arnd
