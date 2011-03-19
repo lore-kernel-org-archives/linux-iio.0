@@ -1,60 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:47316 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751247Ab1CUNsa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Mar 2011 09:48:30 -0400
-Message-ID: <4D875776.7050008@cam.ac.uk>
-Date: Mon, 21 Mar 2011 13:49:42 +0000
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:46193 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754818Ab1CSRPP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 19 Mar 2011 13:15:15 -0400
+Message-ID: <4D84E4E7.3080108@cam.ac.uk>
+Date: Sat, 19 Mar 2011 17:16:23 +0000
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: Mike Frysinger <vapier.adi@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Drivers <Drivers@analog.com>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [Device-drivers-devel] [PATCH] IIO: DDS: Remove deficient drivers.
-References: <1300712210-7978-1-git-send-email-michael.hennerich@analog.com> <AANLkTim7Wpjr+p52C+eW2_rdxtX9HEvUjsGYgDbaJbU-@mail.gmail.com> <544AC56F16B56944AEC3BD4E3D591771375431588C@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D591771375431588C@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=UTF-8
+To: Thomas Gleixner <tglx@linutronix.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Exporting a few bits of irq infrastructure.
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/21/11 13:15, Hennerich, Michael wrote:
-> Mike Frysinger wrote on 2011-03-21:
->> On Mon, Mar 21, 2011 at 08:56,  <michael.hennerich@analog.com> wrote:
->>> From: Michael Hennerich <michael.hennerich@analog.com>
->>>
->>> These drivers don't conform with the API for such devices.
->>> Therefore they are temporarily removed until they are fixed up
->> anytime later.
->>
->> this is the staging tree ... wouldnt it be easier to leave them alone
->> until they get fixed ?
->> -mike
-> 
-> We want to move out of staging in the near future.
-> There is no simple fix for them. A fix is to rewrite them from scratch.
-> The only thing in common a fixed driver would share with the existing one, is the file name.
-> No point in keeping them as bad examples.
-Your call I guess.  Though the move out of staging is going to leave quite
-a few drivers behind in the first instance anyway so I wouldn't worry about that.
-Usual staging removal cases are:
-1) It doesn't work and no one cares (no idea)
-2) No one is working on it (arguably true here)
-3) It's been replaced by something better (not yet)
+Hi Thomas,
 
-The move is probably going to be more a case of submitting a fresh parallel version
-of the core to mainline, then porting individual drivers across.
+Just a quick enquiry.  Is there a reason to not allow
+exporting the symbols handle_simple_irq and irq_to_desc?
+Or is it simply a case that there is not normally a reason
+for having irq chips registered via modules?
 
-The issues raised by Arnd for starters are going to cause quite a few changes (and
-he's just the first person from outside of normal IIO people to take a look).
-I'll keep the old core api's in the staging version, but we won't want them in
-the non staging version.
+My implementation of what I think you were suggesting the other
+day for handling our IIO triggers registers a separate irq
+chip for each trigger (currently with a compile time number
+of irq's per trigger).  These are allocated from a pool set
+up in a boards platform init code. The device drivers can then query to
+get the next available irq for a given trigger and request
+that.  Some trigggers are entirely instantiated based on
+a request form userspace (or should be anyway - see Arnd's observations
+on iio-trig-sysfs).  This could be done with a layer of indirection, but
+that would be annoyingly fiddly!
 
-In the short term I'm working on a set that will completely change how the sysfs
-stuff is registered.  Not entirely convinced it is the way to go yet, but it does
-look fairly promising.  If we do decide to go with that, in some form, I don't
-propose moving the whole driver set over to it before we start moving out of staging.
+Anyhow, right now the patch is dependent on (cut out of a larger patch)
+
+iff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index baa5c4a..eb3d53b 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -487,6 +487,7 @@ handle_simple_irq(unsigned int irq, struct irq_desc *desc)
+ out_unlock:
+ 	raw_spin_unlock(&desc->lock);
+ }
++EXPORT_SYMBOL_GPL(handle_simple_irq);
+ 
+ /**
+  *	handle_level_irq - Level type irq handler
+diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
+index 282f202..d3765e2 100644
+--- a/kernel/irq/irqdesc.c
++++ b/kernel/irq/irqdesc.c
+@@ -109,6 +109,7 @@ struct irq_desc *irq_to_desc(unsigned int irq)
+ {
+ 	return radix_tree_lookup(&irq_desc_tree, irq);
+ }
++EXPORT_SYMBOL(irq_to_desc);
+ 
+ static void delete_irq_desc(unsigned int irq)
+ {
+-- 
+1.7.3.4
+
+
+We also need set_irq_flags in arch/arm/kernel/irq.c I think, but for
+that I clearly need to also ask the arm guys so lets sort the two above
+first.
+
+Thanks,
 
 Jonathan
