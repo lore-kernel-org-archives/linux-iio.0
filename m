@@ -1,23 +1,35 @@
-Return-Path: <vapier.adi@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <1300712210-7978-1-git-send-email-michael.hennerich@analog.com>
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Mike Frysinger <vapier.adi@gmail.com>
+CC: "jic23@cam.ac.uk" <jic23@cam.ac.uk>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, Drivers <Drivers@analog.com>,
+	"device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>
+Date: Mon, 21 Mar 2011 13:15:35 +0000
+Subject: RE: [Device-drivers-devel] [PATCH] IIO: DDS: Remove deficient
+ drivers.
+Message-ID: <544AC56F16B56944AEC3BD4E3D591771375431588C@LIMKCMBX1.ad.analog.com>
 References: <1300712210-7978-1-git-send-email-michael.hennerich@analog.com>
-From: Mike Frysinger <vapier.adi@gmail.com>
-Date: Mon, 21 Mar 2011 09:07:09 -0400
-Message-ID: <AANLkTim7Wpjr+p52C+eW2_rdxtX9HEvUjsGYgDbaJbU-@mail.gmail.com>
-Subject: Re: [Device-drivers-devel] [PATCH] IIO: DDS: Remove deficient drivers.
-To: michael.hennerich@analog.com
-Cc: jic23@cam.ac.uk, linux-iio@vger.kernel.org, drivers@analog.com,
-	device-drivers-devel@blackfin.uclinux.org
-Content-Type: text/plain; charset=UTF-8
+ <AANLkTim7Wpjr+p52C+eW2_rdxtX9HEvUjsGYgDbaJbU-@mail.gmail.com>
+In-Reply-To: <AANLkTim7Wpjr+p52C+eW2_rdxtX9HEvUjsGYgDbaJbU-@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Mar 21, 2011 at 08:56,  <michael.hennerich@analog.com> wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
->
-> These drivers don't conform with the API for such devices.
-> Therefore they are temporarily removed until they are fixed up anytime later.
-
-this is the staging tree ... wouldnt it be easier to leave them alone
-until they get fixed ?
--mike
+TWlrZSBGcnlzaW5nZXIgd3JvdGUgb24gMjAxMS0wMy0yMToNCj4gT24gTW9uLCBNYXIgMjEsIDIw
+MTEgYXQgMDg6NTYsICA8bWljaGFlbC5oZW5uZXJpY2hAYW5hbG9nLmNvbT4gd3JvdGU6DQo+PiBG
+cm9tOiBNaWNoYWVsIEhlbm5lcmljaCA8bWljaGFlbC5oZW5uZXJpY2hAYW5hbG9nLmNvbT4NCj4+
+DQo+PiBUaGVzZSBkcml2ZXJzIGRvbid0IGNvbmZvcm0gd2l0aCB0aGUgQVBJIGZvciBzdWNoIGRl
+dmljZXMuDQo+PiBUaGVyZWZvcmUgdGhleSBhcmUgdGVtcG9yYXJpbHkgcmVtb3ZlZCB1bnRpbCB0
+aGV5IGFyZSBmaXhlZCB1cA0KPiBhbnl0aW1lIGxhdGVyLg0KPg0KPiB0aGlzIGlzIHRoZSBzdGFn
+aW5nIHRyZWUgLi4uIHdvdWxkbnQgaXQgYmUgZWFzaWVyIHRvIGxlYXZlIHRoZW0gYWxvbmUNCj4g
+dW50aWwgdGhleSBnZXQgZml4ZWQgPw0KPiAtbWlrZQ0KDQpXZSB3YW50IHRvIG1vdmUgb3V0IG9m
+IHN0YWdpbmcgaW4gdGhlIG5lYXIgZnV0dXJlLg0KVGhlcmUgaXMgbm8gc2ltcGxlIGZpeCBmb3Ig
+dGhlbS4gQSBmaXggaXMgdG8gcmV3cml0ZSB0aGVtIGZyb20gc2NyYXRjaC4NClRoZSBvbmx5IHRo
+aW5nIGluIGNvbW1vbiBhIGZpeGVkIGRyaXZlciB3b3VsZCBzaGFyZSB3aXRoIHRoZSBleGlzdGlu
+ZyBvbmUsIGlzIHRoZSBmaWxlIG5hbWUuDQpObyBwb2ludCBpbiBrZWVwaW5nIHRoZW0gYXMgYmFk
+IGV4YW1wbGVzLg0KDQpHcmVldGluZ3MsDQpNaWNoYWVsDQoNCi0tDQpBbmFsb2cgRGV2aWNlcyBH
+bWJIICAgICAgV2lsaGVsbS1XYWdlbmZlbGQtU3RyLiA2ICAgICAgODA4MDcgTXVlbmNoZW4NClNp
+dHogZGVyIEdlc2VsbHNjaGFmdDogTXVlbmNoZW47IFJlZ2lzdGVyZ2VyaWNodDogTXVlbmNoZW4g
+SFJCIDQwMzY4OyBHZXNjaGFlZnRzZnVlaHJlcjpEci5DYXJzdGVuIFN1Y2tyb3csIFRob21hcyBX
+ZXNzZWwsIFdpbGxpYW0gQS4gTWFydGluLCBNYXJnYXJldCBTZWlmDQoNCg0K
