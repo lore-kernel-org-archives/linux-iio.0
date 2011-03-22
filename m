@@ -1,70 +1,127 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: "Cai, Cliff" <Cliff.Cai@analog.com>, Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Drivers
-	<Drivers@analog.com>, "device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>, Cliff Cai <cliff@analog.com>
-Date: Tue, 22 Mar 2011 08:16:53 +0000
-Subject: RE: [PATCH RESEND v2]IIO driver for Analog Devices Digital Output
- Gyroscope ADXRS450
-Message-ID: <544AC56F16B56944AEC3BD4E3D5917713754315B05@LIMKCMBX1.ad.analog.com>
-References: <1300526846-27183-1-git-send-email-cliff.cai@analog.com>
- <4D878D8B.6070902@cam.ac.uk>
- <DB904C5425BA6F4E8424B3B51A1414D167E03359CD@NWD2CMBX1.ad.analog.com>
-In-Reply-To: <DB904C5425BA6F4E8424B3B51A1414D167E03359CD@NWD2CMBX1.ad.analog.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:41229 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753967Ab1CVKlZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2011 06:41:25 -0400
+Message-ID: <4D887D1E.90503@cam.ac.uk>
+Date: Tue, 22 Mar 2011 10:42:38 +0000
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+CC: "Cai, Cliff" <Cliff.Cai@analog.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Drivers <Drivers@analog.com>,
+	"device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>,
+	Cliff Cai <cliff@analog.com>
+Subject: Re: [PATCH RESEND v2]IIO driver for Analog Devices Digital Output
+ Gyroscope ADXRS450
+References: <1300526846-27183-1-git-send-email-cliff.cai@analog.com> <4D878D8B.6070902@cam.ac.uk> <DB904C5425BA6F4E8424B3B51A1414D167E03359CD@NWD2CMBX1.ad.analog.com> <544AC56F16B56944AEC3BD4E3D5917713754315B05@LIMKCMBX1.ad.analog.com>
+In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917713754315B05@LIMKCMBX1.ad.analog.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Q2FpLCBDbGlmZiB3cm90ZSBvbiAyMDExLTAzLTIyOg0KPg0KPg0KPj4gLS0tLS1PcmlnaW5hbCBN
-ZXNzYWdlLS0tLS0NCj4+IEZyb206IEpvbmF0aGFuIENhbWVyb24gW21haWx0bzpqaWMyM0BjYW0u
-YWMudWtdDQo+PiBTZW50OiAyMDEx5bm0M+aciDIy5pelIDE6NDANCj4+IFRvOiBDYWksIENsaWZm
-DQo+PiBDYzogbGludXgtaWlvQHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2Vy
-bmVsLm9yZzsgRHJpdmVyczsNCj4+IGRldmljZS1kcml2ZXJzLWRldmVsQGJsYWNrZmluLnVjbGlu
-dXgub3JnOyBDbGlmZiBDYWkNCj4+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggUkVTRU5EIHYyXUlJTyBk
-cml2ZXIgZm9yIEFuYWxvZyBEZXZpY2VzIERpZ2l0YWwNCj4+IE91dHB1dCBHeXJvc2NvcGUgQURY
-UlM0NTANCj4+DQo+PiBPbiAwMy8xOS8xMSAwOToyNywgY2xpZmYuY2FpQGFuYWxvZy5jb20gd3Jv
-dGU6DQo+Pj4gRnJvbTogQ2xpZmYgQ2FpIDxjbGlmZi5jYWlAYW5hbG9nLmNvbT4NCj4+Pg0KPj4+
-IENoYW5nZSB2Mjp2MToNCj4+Pg0KPj4+IE1ha2UgbW9kaWZpY2F0aW9uIGFjY29yZGluZyB0byBN
-aWNoYWVsIEhlbm5lcmljaCdzIGNvbW1lbnRzLA0KPj4+IGNvcnJlY3QgdGhlIHNwaSB0cmFuc2Zl
-ciB3YXksdXNlIGV4aXN0aW5nIHN5c2ZzIGludGVyZmFjZXMuDQo+PiBIaSBDbGlmZiwNCj4+DQo+
-PiBBcyB5b3UgYXJlIHByb3Bvc2luZyBhIGNvdXBsZSBvZiBuZXcgaW50ZXJmYWNlcyB3ZSBuZWVk
-IHRvIGhhdmUNCj4+IGRvY3VtZW50YXRpb24gZm9yIHRoZW0uIFRoZXkgYXJlIHF1YWQgYW5kIGR5
-bmFtaWNfbnVsbF9jb3JyZWN0aW9uLiBXZQ0KPj4gbmVlZCB0byBmaXJzdCBlc3RhYmxpc2ggd2hl
-dGhlciB0aGV5IGFyZSBvZiBnZW5lcmFsIHV0aWxpdHkgYW5kIGhlbmNlDQo+PiBzaG91bGQgYmUg
-aW4gdGhlIG1haW4gYWJpIGRvYy4gVGhlIHF1YWRyYXR1cmUgb25lIGlzbid0IHNvbWV0aGluZyBJ
-J3ZlDQo+PiBzZWVuIGJlZm9yZS4gSXMgaXQgY29tbW9uIGluIGd5cm9zPw0KPg0KPiBJJ20gbm90
-IHN1cmUgYWJvdXQgdGhpcy4NCj4gTWljaGFlbCxkbyB5b3UgaGF2ZSBhbnkgaWRlYXM/DQoNClRo
-ZSBBRFhSUzQ1MCBpcyBhIHF1aXRlIG5ldyBwYXJ0IGFuZCBmZWF0dXJlcyBhIG5ldyBzZW5zb3Ig
-ZGVzaWduIC0NClNvIEkgZG9uJ3QgdGhpbmsgdGhlIHF1YWRyYXR1cmUgZXJyb3IgaXMgdG8gZGF0
-ZSB2ZXJ5IGNvbW1vbi4NCkl0IG1pZ2h0IGJlY29tZSBpbiBmdXR1cmUuLi4NCg0KRnJvbSB0aGUg
-ZGF0YXNoZWV0Og0KDQoiVGhlIHF1YWQgc2Vuc29yIGRlc2lnbiByZWplY3RzIGxpbmVhciBhbmQg
-YW5ndWxhcg0KYWNjZWxlcmF0aW9uLCBpbmNsdWRpbmcgZXh0ZXJuYWwgZy1mb3JjZXMgYW5kIHZp
-YnJhdGlvbi4gVGhpcyBpcw0KYWNoaWV2ZWQgYnkgbWVjaGFuaWNhbGx5IGNvdXBsaW5nIHRoZSBm
-b3VyIHNlbnNpbmcgc3RydWN0dXJlcw0Kc3VjaCB0aGF0IGV4dGVybmFsIGctZm9yY2VzIGFwcGVh
-ciBhcyBjb21tb24tbW9kZSBzaWduYWxzDQp0aGF0IGNhbiBiZSByZW1vdmVkIGJ5IHRoZSBmdWxs
-eSBkaWZmZXJlbnRpYWwgYXJjaGl0ZWN0dXJlIGltcGxlbWVudGVkIGluIHRoZSBBRFhSUzQ1MC4i
-DQoNCiJUaGUgcXVhZCBtZW1vcnkgcmVnaXN0ZXJzIGNvbnRhaW4gYSB2YWx1ZSBjb3JyZXNwb25k
-aW5nIHRvIHRoZSBhbW91bnQgb2YNCnF1YWRyYXR1cmUgZXJyb3IgcHJlc2VudCBpbiB0aGUgZGV2
-aWNlIGF0IGEgZ2l2ZW4gdGltZS4NClF1YWRyYXR1cmUgY2FuIGJlIGxpa2VuZWQgdG8gYSBtZWFz
-dXJlbWVudCBvZiB0aGUgZXJyb3Igb2YgdGhlIG1vdGlvbiBvZiB0aGUNCnJlc29uYXRvciBzdHJ1
-Y3R1cmUsIGFuZCBjYW4gYmUgY2F1c2VkIGJ5IHN0cmVzc2VzIGFuZCBhZ2luZyBlZmZlY3RzLg0K
-VGhlIHF1YWRyYXR1cmUgZGF0YSBpcyBmaWx0ZXJlZCB0byA4MCBIeiBhbmQgY2FuIGJlIHJlYWQg
-ZnJlcXVlbnRseSB0bw0KZGV0ZWN0IHN1ZGRlbiBzaGlmdHMgaW4gdGhlIGxldmVsIG9mIHF1YWRy
-YXR1cmUuDQpUaGUgZGF0YSBpcyBwcmVzZW50ZWQgYXMgYSAxNi1iaXQsIHR3b3MgY29tcGxlbWVu
-dCBudW1iZXIuIg0KDQo+DQo+PiBEeW5hbWljIG51bGwgY29ycmVjdGlvbiBsb29rcyBsaWtlIGl0
-IHNob3VsZCBiZSBneXJvX3pfY2FsaWJiaWFzIHRvDQo+PiBtZSBidXQgSSBjb3VsZCBiZSB3cm9u
-Zy4gIFRoZSBkb2Mgc2F5cyAiDQo+PiBUaGUgdXNlciBjYW4gbWFrZSBzbWFsbCBhZGp1c3RtZW50
-cyB0byB0aGUgcmF0ZW91dCBvZiB0aGUgZGV2aWNlIGJ5DQo+PiBhc3NlcnRpbmcgdGhlc2UgYml0
-cy4gVGhpcyAxMC1iaXQgcmVnaXN0ZXIgYWxsb3dzIHRoZSB1c2VyIHRvIGFkanVzdA0KPj4gdGhl
-IHN0YXRpYyByYXRlb3V0IG9mIHRoZSBkZXZpY2UgYnkgdXAgdG8gwrE2LjTCsC9zZWMuDQo+PiAi
-DQo+Pg0KPj4gd2hpY2ggbWFrZXMgbWUgdGhpbmsgaXQgaXMgYW4gaW50ZXJuYWxseSBhcHBsaWVk
-IG9mZnNldCBvbiB0aGUgb3V0cHV0DQo+PiBzaWduYWwgYW5kIGhlbmNlIGNhbGliYmlhcyBpbiBv
-dXIgYWJpLg0KPg0KPiBUaGFua3MNCj4NCj4+IE90aGVyIHRoYW4gdGhhdCwgdmFyaW91cyBtaW5v
-ciBuaXRwaWNrcyBpbmxpbmUuDQo+Pg0KPj4gSm9uYXRoYW4NCg0KR3JlZXRpbmdzLA0KTWljaGFl
-bA0KDQotLQ0KQW5hbG9nIERldmljZXMgR21iSCAgICAgIFdpbGhlbG0tV2FnZW5mZWxkLVN0ci4g
-NiAgICAgIDgwODA3IE11ZW5jaGVuDQpTaXR6IGRlciBHZXNlbGxzY2hhZnQ6IE11ZW5jaGVuOyBS
-ZWdpc3RlcmdlcmljaHQ6IE11ZW5jaGVuIEhSQiA0MDM2ODsgR2VzY2hhZWZ0c2Z1ZWhyZXI6RHIu
-Q2Fyc3RlbiBTdWNrcm93LCBUaG9tYXMgV2Vzc2VsLCBXaWxsaWFtIEEuIE1hcnRpbiwgTWFyZ2Fy
-ZXQgU2VpZg0KDQo=
+On 03/22/11 08:16, Hennerich, Michael wrote:
+> Cai, Cliff wrote on 2011-03-22:
+>>
+>>
+>>> -----Original Message-----
+>>> From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
+>>> Sent: 2011=E5=B9=B43=E6=9C=8822=E6=97=A5 1:40
+>>> To: Cai, Cliff
+>>> Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org; Driver=
+s;
+>>> device-drivers-devel@blackfin.uclinux.org; Cliff Cai
+>>> Subject: Re: [PATCH RESEND v2]IIO driver for Analog Devices Digital
+>>> Output Gyroscope ADXRS450
+>>>
+>>> On 03/19/11 09:27, cliff.cai@analog.com wrote:
+>>>> From: Cliff Cai <cliff.cai@analog.com>
+>>>>
+>>>> Change v2:v1:
+>>>>
+>>>> Make modification according to Michael Hennerich's comments,
+>>>> correct the spi transfer way,use existing sysfs interfaces.
+>>> Hi Cliff,
+>>>
+>>> As you are proposing a couple of new interfaces we need to have
+>>> documentation for them. They are quad and dynamic_null_correction. =
+We
+>>> need to first establish whether they are of general utility and hen=
+ce
+>>> should be in the main abi doc. The quadrature one isn't something I=
+'ve
+>>> seen before. Is it common in gyros?
+>>
+>> I'm not sure about this.
+>> Michael,do you have any ideas?
+>=20
+> The ADXRS450 is a quite new part and features a new sensor design -
+> So I don't think the quadrature error is to date very common.
+> It might become in future...
+>=20
+> From the datasheet:
+>=20
+> "The quad sensor design rejects linear and angular
+> acceleration, including external g-forces and vibration. This is
+> achieved by mechanically coupling the four sensing structures
+> such that external g-forces appear as common-mode signals
+> that can be removed by the fully differential architecture implemente=
+d in the ADXRS450."
+>=20
+> "The quad memory registers contain a value corresponding to the amoun=
+t of
+> quadrature error present in the device at a given time.
+> Quadrature can be likened to a measurement of the error of the motion=
+ of the
+> resonator structure, and can be caused by stresses and aging effects.
+> The quadrature data is filtered to 80 Hz and can be read frequently t=
+o
+> detect sudden shifts in the level of quadrature.
+> The data is presented as a 16-bit, twos complement number."
+>=20
+Cool. So what is a good general name for this?  I guess from this descr=
+iption
+if it were in a multi axis device you would have this measure for each =
+axis?
+
+So perhaps gyro_z_quadrature_correction_raw?  This thing also looks
+rather similar to a dynamically changing calibbias. Perhaps we need ano=
+ther
+term for a general dynamic linear (I think this is linear) correction i=
+nside
+a device?
+
+Perhaps go with a gyro specific term for now and wait to see if we get
+many more parts with this feature...
+>>
+>>> Dynamic null correction looks like it should be gyro_z_calibbias to
+>>> me but I could be wrong.  The doc says "
+>>> The user can make small adjustments to the rateout of the device by
+>>> asserting these bits. This 10-bit register allows the user to adjus=
+t
+>>> the static rateout of the device by up to =C2=B16.4=C2=B0/sec.
+>>> "
+>>>
+>>> which makes me think it is an internally applied offset on the outp=
+ut
+>>> signal and hence calibbias in our abi.
+>>
+>> Thanks
+>>
+>>> Other than that, various minor nitpicks inline.
+>>>
+>>> Jonathan
+>=20
+> Greetings,
+> Michael
+>=20
+> --
+> Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+> Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;=
+ Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin=
+, Margaret Seif
+>=20
+
