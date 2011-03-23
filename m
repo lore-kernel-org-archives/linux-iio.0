@@ -1,42 +1,27 @@
-Return-Path: <Cliff.Cai@analog.com>
-From: <cliff.cai@analog.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-CC: drivers@analog.com, jic23@cam.ac.uk,
-        device-drivers-devel@blackfin.uclinux.org,
-        Cliff Cai <cliff.cai@analog.com>
-Subject: [PATCH 2/2 RESEND v2] Add ABI document for gyro quadrature correction
-Date: Thu, 24 Mar 2011 14:03:03 +0800
-Message-ID: <1300946583-1715-2-git-send-email-cliff.cai@analog.com>
-In-Reply-To: <1300946583-1715-1-git-send-email-cliff.cai@analog.com>
-References: <1300946583-1715-1-git-send-email-cliff.cai@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:61406 "EHLO
+	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S932625Ab1CWTpS convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Mar 2011 15:45:18 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;
+	charset="us-ascii"
+Subject: Interrupt_req vs. iio_register_interrupt_line
+Date: Wed, 23 Mar 2011 14:45:17 -0500
+Message-ID: <B4B07CCC7B7A084E989CF9386538EA1D63A8EA@exchsrvr.taosinc.com>
+From: "Jon Brenner" <jbrenner@TAOSinc.com>
+To: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Cliff Cai <cliff.cai@analog.com>
+Hello,
+Can someone please explain the purpose / advantage of using:
+'iio_register_interrupt_line' vs. just using using 'request_irq'?
+It appears that the iio_register_interrupt_line uses request_irq anyway.
+Can direct me to iio documentation that would present this.lin
 
-Change v2:v1:
-	Fix typo
+Thanks!
+Jon
 
-Signed-off-by: Cliff Cai <cliff.cai@analog.com>
----
- drivers/staging/iio/Documentation/sysfs-bus-iio |    7 +++++++
- 1 files changed, 7 insertions(+), 0 deletions(-)
+jbrenner@taosinc.com
 
-diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio b/drivers/staging/iio/Documentation/sysfs-bus-iio
-index 4915aee..824a56c 100644
---- a/drivers/staging/iio/Documentation/sysfs-bus-iio
-+++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
-@@ -698,3 +698,10 @@ Description:
- 		with all _en attributes to establish which channels are present,
- 		and the relevant _type attributes to establish the data storage
- 		format.
-+
-+What:		/sys/bus/iio/devices/deviceX/gyro_z_quadrature_correction_raw
-+KernelVersion:	2.6.38
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This attribute is used to read the amount of quadrature error
-+		present in the device at a given time.
--- 
-1.7.1
