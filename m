@@ -1,126 +1,212 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:44474 "EHLO
-	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752127Ab1CWBHc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2011 21:07:32 -0400
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:57583 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756237Ab1CWLF1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Mar 2011 07:05:27 -0400
+Message-ID: <4D89D441.9030600@cam.ac.uk>
+Date: Wed, 23 Mar 2011 11:06:41 +0000
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="UTF-8"
-Subject: RE: [PATCH 2.6.38-rc7]TAOS 258x: Device Driver
-Date: Tue, 22 Mar 2011 20:07:30 -0500
-Message-ID: <B4B07CCC7B7A084E989CF9386538EA1D63A83B@exchsrvr.taosinc.com>
-In-Reply-To: <4D87A1D6.2080306@cam.ac.uk>
-References: <1300131941.17298.17.camel@jonz-ubuntu> <4D87A1D6.2080306@cam.ac.uk>
-From: "Jon Brenner" <jbrenner@TAOSinc.com>
-To: "Jonathan Cameron" <jic23@cam.ac.uk>
-Cc: "linux-iio" <linux-iio@vger.kernel.org>,
-	"Linux Kernel" <linux-kernel@vger.kernel.org>
+To: Jon Brenner <jbrenner@TAOSinc.com>
+CC: linux-iio <linux-iio@vger.kernel.org>,
+	Linux Kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2.6.38-rc7]TAOS 258x: Device Driver
+References: <1300131941.17298.17.camel@jonz-ubuntu> <4D87A1D6.2080306@cam.ac.uk> <B4B07CCC7B7A084E989CF9386538EA1D63A83B@exchsrvr.taosinc.com>
+In-Reply-To: <B4B07CCC7B7A084E989CF9386538EA1D63A83B@exchsrvr.taosinc.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Sm9uYXRoYW4sIGV0IGFsLA0KDQpBZ2FpbiwgdGhhbmsgeW91IGZvciB0YWtpbmcgdGhlIHRpbWUg
-dG8gcmV2aWV3IHRoZSBsYXRlc3Qgc3VibWlzc2lvbi4NCkkgaGF2ZSBpbXBsZW1lbnRlZCBhbGwg
-cmVjb21tZW5kYXRpb25zIG1hZGUgKHdpdGggdGhlIGV4Y2VwdGlvbnMgbm90ZWQgYmVsb3cpLg0K
-DQpJIGhhdmUgYWxzbyBhZGRlZCB0d28gbmV3IGZ1bmN0aW9ucyAobm90IHNlZW4gaGVyZSk6DQon
-dGFvc19zdXNwZW5kJywgYW5kICd0YW9zX3Jlc3VtZScNCg0KVGhlc2UgY2hhbmdlcyBhbmQgY29t
-bWVudHMgd2lsbCBiZSBzdWJtaXR0ZWQgaW4gdGhlIG5leHQgcGF0Y2ggW1BBVENIIFYzXSBzdWJt
-aXNzaW9uIHdoaWNoIEkgd2lsbCBzdWJtaXQgc2hvcnRseSAoYWZ0ZXIgdGVzdGluZy92ZXJpZmlj
-YXRpb24pLiANCg0KUmVzcGVjdGZ1bGx5LA0KSm9uIA0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2Ut
-LS0tLQ0KQXMgSSBwbSdkIHlvdSB0aGUgb3RoZXIgZGF5LCBwbGVhc2UgcmVtZW1iZXIgdG8gbWFr
-ZSB2ZXJzaW9uIG9mIHBhdGNoIGNsZWFyIGluIHRpdGxlLCBhbmQgaW5jbHVkZSBkZXRhaWxzIG9m
-IHdoYXQgaGFzIGNoYW5nZWQgc2luY2UgcHJldmlvdXMgdmVyc2lvbi4NCk9LIC0gTkVYVCBQQVRD
-SCBXSUxMIElORElDQVRFIFZFUlNJT04gMw0KDQpXSUxMIFJFTU9WRSBTRU5TT1JTXyBQUkVGSVgg
-RlJPTSBLQ09ORklHICYgTUFLRUZJTEUNCg0KQURERUQvTU9WRUQvQ1JFQVRFRCBET0NVTUVOVEFU
-SU9OIEFTIFJFQ09NTUVOREVEDQoNCi0tLS0tIHNuaXAgLS0tLS0tLS0tLS0tDQo+ICsvKg0KPiAr
-ICogUHJvdmlkZXMgaW5pdGlhbCBvcGVyYXRpb25hbCBwYXJhbWV0ZXIgZGVmYXVsdHMuDQo+ICsg
-KiBUaGVzZSBkZWZhdWx0cyBtYXkgYmUgY2hhbmdlZCB0aHJvdWdoIHRoZSBkZXZpY2UncyBzeXNm
-cyBmaWxlcy4NCj4gKyAqLw0KSG93IGFib3V0IHBhc2luZyBpbiB0YW9zX3NldHRpbmdzIGFuZCBt
-YWtpbmcgYWxsIG9mIHRoaXMgZnVuYyBhIGJpdCBtb3JlIHJlYWRhYmxlPw0KUFJFRkVSIFRPIFVT
-RSBERUZBVUxUUyBNRVRIT0QNCg0KPiArc3RhdGljIHZvaWQgdGFvc19kZWZhdWx0cyhzdHJ1Y3Qg
-dHNsMjU4M19jaGlwICpjaGlwKSB7DQo+ICsJLyogT3BlcmF0aW9uYWwgcGFyYW1ldGVycyAqLw0K
-PiArCWNoaXAtPnRhb3Nfc2V0dGluZ3MuYWxzX3RpbWUgPSA0NTA7DQo+ICsJLyogbXVzdCBiZSBh
-IG11bHRpcGxlIG9mIDUwbVMgKi8NCj4gKwljaGlwLT50YW9zX3NldHRpbmdzLmFsc19nYWluID0g
-MjsNCj4gKwkvKiB0aGlzIGlzIGFjdHVhbGx5IGFuIGluZGV4IGludG8gdGhlIGdhaW4gdGFibGUg
-Ki8NCj4gKwkvKiBhc3N1bWUgY2xlYXIgZ2xhc3MgYXMgZGVmYXVsdCAqLw0KPiArCWNoaXAtPnRh
-b3Nfc2V0dGluZ3MuYWxzX2dhaW5fdHJpbSA9IDEwMDA7DQo+ICsJLyogZGVmYXVsdCBnYWluIHRy
-aW0gdG8gYWNjb3VudCBmb3IgYXBlcnR1cmUgZWZmZWN0cyAqLw0KPiArCWNoaXAtPnRhb3Nfc2V0
-dGluZ3MuYWxzX2NhbF90YXJnZXQgPSAxMzA7DQo+ICsJLyogS25vd24gZXh0ZXJuYWwgQUxTIHJl
-YWRpbmcgdXNlZCBmb3IgY2FsaWJyYXRpb24gKi8gfQ0KPiArDQoNCi0tLS0tIHNuaXAgLS0tLS0t
-LS0tLS0tDQo+ICsJaWYgKChjaDAgPj0gY2hpcC0+YWxzX3NhdHVyYXRpb24pIHx8IChjaDEgPj0g
-Y2hpcC0+YWxzX3NhdHVyYXRpb24pKQ0Kd291bGQgYmUgZWFzaWVyIHRvIHJlYWQgaWYgeW91IHNl
-dCByZXQgdG8gbHV4IG1heCBoZXJlIGFuIGF2b2lkIGp1bXBpbmcgaW50bw0KdGhlIGlmIHN0YXRl
-bWVudCBiZWxvdy4NCk5PIC0gVFNMMjU4WF9MVVhfQ0FMQ19PVkVSX0ZMT1cgTkVFRFMgVE8gUEFT
-U0VEIFVQLiAgDQoJTVVURVggTkVFRFMgVE8gQkUgVU5MT0NLRUQuIA0KCVRIRU4gUkVUVVJOLg0K
-PiArCQlnb3RvIHJldHVybl9tYXg7DQoNCi0tLS0tIHNuaXAgLS0tLS0tLS0tLS0tDQomdGFvc19k
-ZXZpY2VfbHV4WzBdIHBlcmhhcHM/DQpOTyAtIENBU1QgTUFLRVMgSVQgTU9SRSBPQlZJT1VTIC0g
-YXQgbGVhc3QgdG8gbWUgOy0pDQo+ICsJZm9yIChwID0gKHN0cnVjdCB0YW9zX2x1eCAqKSB0YW9z
-X2RldmljZV9sdXg7DQoNCi0tLS0tIHNuaXAgLS0tLS0tLS0tLS0tDQo+ICsNCklmIG5vdCB0aW1l
-IGNyaXRpY2FsIGxlc3QgbWFrZSB0aGF0IGEgc2xlZXAuDQpOTyAtIFRJTUUgSVMgUkVRVUlSRUQg
-Rk9SIERFVklDRSBUTyBTRVRUTEUgQkVUV0VFTiBQT1dFUk9OIEFORCBBREMgRU5BQkxFIC0gRE9O
-J1QgV0FOVCBUTyBNQUtFIElUIEFOWSBMT05HRVIgVEhBTiBORUNFU1NBUlkuDQo+ICsJbWRlbGF5
-KDMpOw0KPiArCS8qIE5PVyBlbmFibGUgdGhlIEFEQw0KDQoNCi0tLS0tIHNuaXAgLS0tLS0tLS0t
-LS0tDQpJIHN0aWxsIHdvbmRlciBpZiB0aGVyZSBpc24ndCBhIHdheSBvZiBhdm9pZGluZyB0aGlz
-IGluZGV4IGlzc3VlLg0KSXQncyBob3JyaWJsZSBhbmQgcmVhbGx5IGZlZWxzIGxpa2Ugc29tZXRo
-aW5nIHdlIG91Z2h0IHRvIGFibGUNCnRvIGhhbmRsZSByZWFzb25hYmx5IHdlbGwuLi4NCkJFQ0FV
-U0UgVEhFIENIMCBBTkQgQ0gxIERJVkVSR0UgQVQgSElHSCBHQUlOUyAtLSBJTkRFWCBJUyBCRVRU
-RVIgVEhBTiBVU0lORyBDSE8gT1IgQ0gxIFZBTFVFIA0KKCBBUyBFSVRIRVIgT05FIE9WRVIgVEhF
-IE9USEVSIFdPVUxEIEJFIFdST05HIDoteyApDQo+ICsJaWYgKHZhbHVlID4gMykgew0KPiArCQlk
-ZXZfZXJyKGRldiwgIkludmFsaWQgR2FpbiBJbmRleDogRW50ZXIgMC0zXG4iKTsNCj4gKwkJcmV0
-dXJuIC0xOw0KPiArCX0gZWxzZSB7DQo+ICsJCWNoaXAtPnRhb3Nfc2V0dGluZ3MuYWxzX2dhaW4g
-PSB2YWx1ZTsNCj4gKwl9DQo+ICsJcmV0dXJuIGxlbjsNCj4gK30NCg0KLS0tLS0gc25pcCAtLS0t
-LS0tLS0tLS0NCkp1c3QgdG8gY29uZmlybSwgaXMgdGhpcyBhIGZyZXF1ZW5jeSBpbiBIej8gSWYg
-aXQgaXMNCmNhbiB3ZSByZW5hbWluZyBpdCB0byB0YW9zX2Fsc19mcmVxdWVuY3lfc2hvdyB0bw0K
-YXZvaWQgY29uZnVzaW5nIG1lPw0KDQpUSElTIElTIFRIRSBJTlRFUk5BTCBBTFMgSU5URUdSQVRJ
-T04gVElNRSBGT1IgVEhFIEFEQyBDSEFOTkVMUw0KSSBTSE9FIEhPUk5FRCBJVCBJTlRPIFNBTVBM
-SU5HIEZSRVFVRU5DWSBUTyBIRUxQIEFMRVZJQVRFIFRIRSBBQkkgQU5HU1QNCg0KPiArc3RhdGlj
-IHNzaXplX3QgdGFvc19hbHNfdGltZV9zaG93KHN0cnVjdCBkZXZpY2UgKmRldiwNCj4gKyAgICBz
-dHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZSAqYXR0ciwgY2hhciAqYnVmKQ0KPiArew0KPiArCXN0cnVj
-dCBpaW9fZGV2ICppbmRpb19kZXYgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsNCj4gKwlzdHJ1Y3Qg
-dHNsMjU4M19jaGlwICpjaGlwID0gaW5kaW9fZGV2LT5kZXZfZGF0YTsNCj4gKw0KPiArCXJldHVy
-biBzcHJpbnRmKGJ1ZiwgIiVkXG4iLCBjaGlwLT50YW9zX3NldHRpbmdzLmFsc190aW1lKTsNCj4g
-K30NCg0KLS0tLS0gc25pcCAtLS0tLS0tLS0tLS0NCnNjYWxlIGFzIGEgc3RhbmQgYWxvbmUgYXR0
-cmlidXRlIGlzbid0IGRlZmluZWQuIFBsZWFzZSBkb2N1bWVudCB0aGlzLg0KTG9va2luZyBhdCB3
-aGF0IHlvdSBkbyB3aXRoIGl0LCBpdCdzIGFub3RoZXIgZmFjdG9yIGVmZmVjdGluZyB0aGUgb3Zl
-cmFsDQpnYWluIG9uIHRoZSByZWFkaW5nIHRoYXQgcmVhY2hlcyB1c2Vyc3BhY2UuICBJZGVhbGx5
-IHlvdSdkIHJvbGwgdGhpcw0KaW50byB5b3VyIGNhbGlic2NhbGUgcGFyYW1ldGVyLCBidXQgSSBj
-YW4gc2VlIHRoYXQgd291bGQgZ2V0IGNvbXBsZXgNCnRvIG1hbmFnZS4gV2lsbCBoYXZlIGEgdGhp
-bmsgYWJvdXQgdGhpcy4gSW4gZGV2aWNlcyB3aXRoIGEgc2ltcGxlIGNvbnZlcnNpb24NCmZ1bmN0
-aW9uIChhZGMncyBldGMpIHdlIGhhbmRsZSB0aGlzIGJ5IGxlYXZpbmcgdGhpcyBzb2Z0d2FyZSB2
-YWx1ZQ0KYmUgYXBwbGllZCBieSB1c2Vyc3BhY2UgKGFuZCBvdXRwdXQgaXQgYXMgaW5fc2NhbGUp
-LiBUaGUgaXNzdWUgaGVyZSB0aGF0DQphcyBmYXIgYXMgdXNlcnNwYWNlIGlzIGNvbmNlcm5lZCBi
-b3RoIG9mIHlvdXIgc2NhbGVzIGhhdmUgYmVlbiBhcHBsaWVkIGJlZm9yZQ0KaXQgc2VlcyB0aGUg
-ZGF0YSBhbmQgYXQgZGlmZmVyZW50IG1vcmUgb3IgbGVzcyByYW5kb20gbG9va2luZyBwb2ludHMg
-aW4NCnRoZSBjYWxjdWxhdGlvbi4NCg0KQWN0dWFsbHksIGxvb2tpbmcgYXQgdGhlIGNhbGN1bGF0
-aW9uIHlvdSBjb3VsZCBvdXRwdXQgaWxsdW1pbmFuY2UwX3Jhdw0KYW5kIGxldCB1c2Vyc3BhY2Ug
-YXBwbHkgYSBtdWx0aXBsaWVyIGJhc2VkIG9uIHlvdXIgdHJpbSB2YWx1ZSBhbmQgb2Zmc2V0DQor
-MC41PyAgSWYgeW91IHdhbnQgdG8gaG9sZCB0cmltIGluIGRyaXZlciB0aGVuIGp1c3QgaW1wbGVt
-ZW50DQpyZWFkIGFuZCB3cml0ZSB0bw0KDQppbGx1bWluYW5jZTBfc2NhbGUNCmFuZCBoYXZlIHJl
-YWQgb25seQ0KaWxsdW1pbmFuY2UwX29mZnNldCAocmF0aGVyIHRlZGlvdXNseSBmb3IgdGhpcyBk
-ZXZpY2UsIG9mZnNldCBpcyBhcHBsaWVkDQpiZWZvcmUgc2NhbGUsIHNvIHlvdSdsbCBuZWVkIHRv
-IGRpdmlkZSAwLjUgYnkgd2hhdGV2ZXIgeW91ciB0cmltIGlzKS4NCg0KV2UnbGwgaGF2ZSB0byBk
-byBwaW4gZG93biBob3cgdG8gZG8gdGhpcyBiZWZvcmUgbW92aW5nIG91dCBvZiBzdGFnaW5nDQpz
-byBiZXN0IHRvIGdldCBpdCByaWdodCBub3cuDQoNCkNIQU5HRUQgVE8gSUxMVU1JTkFOQ0UwX1ND
-QUxFDQoNCkxJRkUgV09VTEUgQkUgTklDRSBJRiBXRSBDT1VMRCBKVVNUIFBBU1MgVEhFIFJBVyBE
-QVRBIFVQIFRPIFVTRVJTUEFDRQ0KQlVUIFdFIEhBVkUgQ1VTVE9NRVJTIFdITyBSRVFVSVJFIElU
-IFRPIENPTUUgVVAgQ0FMQ1VMQVRFRCBXSVRIDQpUSEUgTVVMVElQTElFUiBGQUNUT1JFRCBJTg0K
-DQotLS0tLSBzbmlwIC0tLS0tLS0tLS0tLQ0KPiArCWZvciAoaSA9IDA7IGkgPCBNQVhfREVWSUNF
-X1JFR1M7IGkrKykgew0KPiArCQlyZXQgPSBpMmNfc21idXNfd3JpdGVfYnl0ZShjbGllbnRwLA0K
-PiArCQkJCShUU0wyNThYX0NNRF9SRUcgfCAoVFNMMjU4WF9DTlRSTCArIGkpKSk7DQo+ICsJCWlm
-IChyZXQgPCAwKSB7DQo+ICsJCQlkZXZfZXJyKCZjbGllbnRwLT5kZXYsICJpMmNfc21idXNfd3Jp
-dGVfYnl0ZSgpIHRvIGNtZCAiDQo+ICsJCQkJInJlZyBmYWlsZWQgaW4gdGFvc19wcm9iZSgpLCBl
-cnIgPSAlZFxuIiwgcmV0KTsNCj4gKwkJCWdvdG8gZmFpbDE7DQo+ICsJCX0NCj4gKwkJYnVmW2ld
-ID0gaTJjX3NtYnVzX3JlYWRfYnl0ZShjbGllbnRwKTsNCiAgZXJyb3IgaGFuZGxpbmcgZm9yIHRo
-aXMgcmVhZD8NClZBTFVFIElTIFVOSU1QT1JUQU5UIC0gQlVUIE1BS0lORyBTVVJFIFdFIENBTiBK
-VVNUIFJFQUQgQUxMIDMyIFJFR0lTVEVSIExPQ0FUSU9OUyBJUy4uDQoNCi0tLS0tIHNuaXAgLS0t
-LS0tLS0tLS0tDQoNCj4gKwl9DQo+ICsJaWYgKCF0YW9zX3NrYXRlX2RldmljZShidWYpKSB7DQo+
-ICsJCWRldl9pbmZvKCZjbGllbnRwLT5kZXYsICJpMmMgZGV2aWNlIGZvdW5kIGJ1dCBkb2VzIG5v
-dCBtYXRjaCAiDQo+ICsJCQkiZXhwZWN0ZWQgaWQgaW4gdGFvc19wcm9iZSgpXG4iKTsNCj4gKwkJ
-Z290byBmYWlsMTsNCj4gKwl9IGVsc2Ugew0KVGhlIHNvcnQgb2YgZGVidWcgaW5mbyB5b3Ugd2Fu
-dCB0byBnZXQgcmlkIG9mIGZvciBwcm9kdWN0aW9uIGRyaXZlcnMuICBEb2Vzbid0DQp0ZWxsIGFu
-eW9uZSBhbnl0aGluZyBoZWxwZnVsLg0KTk8gLSBETyBOT1QgQUdSRUUgLSBJRiBBIENVU1RPTUVS
-IEVYUEVDVFMgT05FIERFVklDRSBCVVQgSEFTIFNPTUVIT1cgSU5TVEFMTEVEIEEgRElGRkVSRU5U
-IE9ORQ0KQVQgUFJPRFVDVElPTiBUSU1FLCBUSElTIFdJTEwgSEVMUCBJREVOVElGWSBUSEUgSVNT
-VUUuICANCihJRS4gV0FOVEVEIEEgVEFPUyBBTFMgREVWSUNFIEJVVCBJTlNUQUxMRUQgQSBUQU9T
-IFBST1gvQUxTIERFVklDRSkNCkZJUlNUIFBBUlQgSU5ESUNBVEVTIFRIQVQuICBTRUNPTkQgUEFS
-VCBJUyBDT05GSVJNQVRJT04gVEhBVCBERVZJQ0UgV0FTIElERU5USUZJRUQgVE8gU1lTVEVNLg0K
-DQoNCg0K
+On 03/23/11 01:07, Jon Brenner wrote:
+> Jonathan, et al,
+> 
+> Again, thank you for taking the time to review the latest submission.
+> I have implemented all recommendations made (with the exceptions noted below).
+> 
+> I have also added two new functions (not seen here):
+> 'taos_suspend', and 'taos_resume'
+> 
+> These changes and comments will be submitted in the next patch [PATCH V3] submission which I will submit shortly (after testing/verification). 
+> 
+> Respectfully,
+> Jon 
+> 
+> -----Original Message-----
+> As I pm'd you the other day, please remember to make version of patch clear in title, and include details of what has changed since previous version.
+> OK - NEXT PATCH WILL INDICATE VERSION 3
+> 
+> WILL REMOVE SENSORS_ PREFIX FROM KCONFIG & MAKEFILE
+> 
+> ADDED/MOVED/CREATED DOCUMENTATION AS RECOMMENDED
+> 
+> ----- snip ------------
+>> +/*
+>> + * Provides initial operational parameter defaults.
+>> + * These defaults may be changed through the device's sysfs files.
+>> + */
+> How about pasing in taos_settings and making all of this func a bit more readable?
+> PREFER TO USE DEFAULTS METHOD
+Ah, I didn't make clear what I meant here. It was simply an
+observation that having
+
+static void taos_defaults(struct taos_settings *settings)
+{
+	settings->als_time = 450;
+etc.
+} 
+
+would be easier to read.
+> 
+>> +static void taos_defaults(struct tsl2583_chip *chip) {
+>> +	/* Operational parameters */
+>> +	chip->taos_settings.als_time = 450;
+>> +	/* must be a multiple of 50mS */
+>> +	chip->taos_settings.als_gain = 2;
+>> +	/* this is actually an index into the gain table */
+>> +	/* assume clear glass as default */
+>> +	chip->taos_settings.als_gain_trim = 1000;
+>> +	/* default gain trim to account for aperture effects */
+>> +	chip->taos_settings.als_cal_target = 130;
+>> +	/* Known external ALS reading used for calibration */ }
+>> +
+> 
+> ----- snip ------------
+>> +	if ((ch0 >= chip->als_saturation) || (ch1 >= chip->als_saturation))
+> would be easier to read if you set ret to lux max here an avoid jumping into
+> the if statement below.
+> NO - TSL258X_LUX_CALC_OVER_FLOW NEEDS TO PASSED UP.  
+> 	MUTEX NEEDS TO BE UNLOCKED. 
+> 	THEN RETURN.
+Sorry, should have said jump to out_unlock having set ret = LUX_CALC_OVER_FLOW;
+
+Just makes for marginally cleaner program flow to my mind (though I don't
+really care about this one).
+
+
+>> +		goto return_max;
+> 
+> ----- snip ------------
+> &taos_device_lux[0] perhaps?
+> NO - CAST MAKES IT MORE OBVIOUS - at least to me ;-)
+>> +	for (p = (struct taos_lux *) taos_device_lux;
+> 
+> ----- snip ------------
+>> +
+> If not time critical lest make that a sleep.
+> NO - TIME IS REQUIRED FOR DEVICE TO SETTLE BETWEEN POWERON AND ADC ENABLE - DON'T WANT TO MAKE IT ANY LONGER THAN NECESSARY.
+But do you want to spin the processor during this time instead of getting on with something useful?
+I guess it depends on how critical speed is in the taos_chip_on function. I'd say this
+device is slow enough that a possible extra delay doesn't really matter.
+>> +	mdelay(3);
+>> +	/* NOW enable the ADC
+> 
+> 
+> ----- snip ------------
+> I still wonder if there isn't a way of avoiding this index issue.
+> It's horrible and really feels like something we ought to able
+> to handle reasonably well...
+> BECAUSE THE CH0 AND CH1 DIVERGE AT HIGH GAINS -- INDEX IS BETTER THAN USING CHO OR CH1 VALUE 
+> ( AS EITHER ONE OVER THE OTHER WOULD BE WRONG :-{ )
+I can see your point to a certain extent.  The counter argument is that doing
+it with an index precludes ever touching this with any remotely general purpose
+user space code.  Given it's an internal gain anyway is the precise value that
+critical?  Basically is user space ever going to care about the difference between
+those those values?
+
+Another option would be to have a gain for each channel as separate attributes
+(clearly writing to one would change the other).
+
+>> +	if (value > 3) {
+>> +		dev_err(dev, "Invalid Gain Index: Enter 0-3\n");
+>> +		return -1;
+>> +	} else {
+>> +		chip->taos_settings.als_gain = value;
+>> +	}
+>> +	return len;
+>> +}
+> 
+> ----- snip ------------
+> Just to confirm, is this a frequency in Hz? If it is
+> can we renaming it to taos_als_frequency_show to
+> avoid confusing me?
+> 
+> THIS IS THE INTERNAL ALS INTEGRATION TIME FOR THE ADC CHANNELS
+> I SHOE HORNED IT INTO SAMPLING FREQUENCY TO HELP ALEVIATE THE ABI ANGST
+That's good but it does have to match the units specified in the ABI
+as well.
+> 
+>> +static ssize_t taos_als_time_show(struct device *dev,
+>> +    struct device_attribute *attr, char *buf)
+>> +{
+>> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>> +	struct tsl2583_chip *chip = indio_dev->dev_data;
+>> +
+>> +	return sprintf(buf, "%d\n", chip->taos_settings.als_time);
+>> +}
+> 
+> ----- snip ------------
+> scale as a stand alone attribute isn't defined. Please document this.
+> Looking at what you do with it, it's another factor effecting the overal
+> gain on the reading that reaches userspace.  Ideally you'd roll this
+> into your calibscale parameter, but I can see that would get complex
+> to manage. Will have a think about this. In devices with a simple conversion
+> function (adc's etc) we handle this by leaving this software value
+> be applied by userspace (and output it as in_scale). The issue here that
+> as far as userspace is concerned both of your scales have been applied before
+> it sees the data and at different more or less random looking points in
+> the calculation.
+> 
+> Actually, looking at the calculation you could output illuminance0_raw
+> and let userspace apply a multiplier based on your trim value and offset
+> +0.5?  If you want to hold trim in driver then just implement
+> read and write to
+> 
+> illuminance0_scale
+> and have read only
+> illuminance0_offset (rather tediously for this device, offset is applied
+> before scale, so you'll need to divide 0.5 by whatever your trim is).
+> 
+> We'll have to do pin down how to do this before moving out of staging
+> so best to get it right now.
+> 
+> CHANGED TO ILLUMINANCE0_SCALE
+> 
+> LIFE WOULE BE NICE IF WE COULD JUST PASS THE RAW DATA UP TO USERSPACE
+> BUT WE HAVE CUSTOMERS WHO REQUIRE IT TO COME UP CALCULATED WITH
+> THE MULTIPLIER FACTORED IN
+Sure. It's a fiddly calculation so I can kind of see their point.
+These light sensors are all a pain :)
+> 
+> ----- snip ------------
+>> +	for (i = 0; i < MAX_DEVICE_REGS; i++) {
+>> +		ret = i2c_smbus_write_byte(clientp,
+>> +				(TSL258X_CMD_REG | (TSL258X_CNTRL + i)));
+>> +		if (ret < 0) {
+>> +			dev_err(&clientp->dev, "i2c_smbus_write_byte() to cmd "
+>> +				"reg failed in taos_probe(), err = %d\n", ret);
+>> +			goto fail1;
+>> +		}
+>> +		buf[i] = i2c_smbus_read_byte(clientp);
+>   error handling for this read?
+> VALUE IS UNIMPORTANT - BUT MAKING SURE WE CAN JUST READ ALL 32 REGISTER LOCATIONS IS..
+> 
+> ----- snip ------------
+> 
+>> +	}
+>> +	if (!taos_skate_device(buf)) {
+>> +		dev_info(&clientp->dev, "i2c device found but does not match "
+>> +			"expected id in taos_probe()\n");
+>> +		goto fail1;
+>> +	} else {
+> The sort of debug info you want to get rid of for production drivers.  Doesn't
+> tell anyone anything helpful.
+> NO - DO NOT AGREE - IF A CUSTOMER EXPECTS ONE DEVICE BUT HAS SOMEHOW INSTALLED A DIFFERENT ONE
+> AT PRODUCTION TIME, THIS WILL HELP IDENTIFY THE ISSUE.  
+> (IE. WANTED A TAOS ALS DEVICE BUT INSTALLED A TAOS PROX/ALS DEVICE)
+> FIRST PART INDICATES THAT.  SECOND PART IS CONFIRMATION THAT DEVICE WAS IDENTIFIED TO SYSTEM.
+
+I'm happy with the error one. Just don't see the point in saying 'everything is as expected'.
+The mere absence of the error indicates that just fine!
+
+Jonathan
+
