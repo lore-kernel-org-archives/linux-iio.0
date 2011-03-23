@@ -1,56 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:59140 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751417Ab1CXLC6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Mar 2011 07:02:58 -0400
-Message-ID: <4D8B252E.8020405@cam.ac.uk>
-Date: Thu, 24 Mar 2011 11:04:14 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Cliff.Cai@analog.com>
+From: <cliff.cai@analog.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+CC: drivers@analog.com, jic23@cam.ac.uk,
+        device-drivers-devel@blackfin.uclinux.org,
+        Cliff Cai <cliff.cai@analog.com>
+Subject: [PATCH 1/3] Add MACRO for gyro quadrature correction
+Date: Wed, 23 Mar 2011 17:15:25 +0800
+Message-ID: <1300871727-32239-1-git-send-email-cliff.cai@analog.com>
 MIME-Version: 1.0
-To: Jon Brenner <jbrenner@TAOSinc.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: Interrupt_req vs. iio_register_interrupt_line
-References: <B4B07CCC7B7A084E989CF9386538EA1D63A8EA@exchsrvr.taosinc.com>
-In-Reply-To: <B4B07CCC7B7A084E989CF9386538EA1D63A8EA@exchsrvr.taosinc.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/23/11 19:45, Jon Brenner wrote:
-> Hello,
-> Can someone please explain the purpose / advantage of using:
-> 'iio_register_interrupt_line' vs. just using using 'request_irq'?
-> It appears that the iio_register_interrupt_line uses request_irq.
-The main difference is the fact that iio_register_interrupt_line
-wraps up a call to iio_allocate_interrupt. That function sets up the
-event list handling. The event lists are then used to keep track of
-which events are turned on.
+From: Cliff Cai <cliff.cai@analog.com>
 
-Hence it's pretty much a convenience wrapper to cut down on code
-repetition.  Allows us to change the internal handling of that
-stuff without having to edit lots of drivers ;) That stuff really
-comes into it's own when you have events where you cannot identify
-them without querying multiple registers.  It is probably overkill
-if all your events are of the shared handler variety.
+Add gyro_z_quadrature_correction_raw define.
 
-Avoiding the various convenience functions in general is fine with
-me, but beware the core code is going to change a fair bit as we try
-to move out of staging and this may well become harder to do.
-(see the channel registration code just as soon as I finish writing it!)
+Signed-off-by: Cliff Cai <cliff.cai@analog.com>
+---
+ drivers/staging/iio/gyro/gyro.h |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
-
-> Can direct me to iio documentation that would present this.lin
-Err.  The code?  Not great I know, but that stuff is likely to change and
-any documentation is unlikely to be kept up to date. Sorry!
-> 
-> Thanks!
-> Jon
-> 
-> jbrenner@taosinc.com
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+diff --git a/drivers/staging/iio/gyro/gyro.h b/drivers/staging/iio/gyro/gyro.h
+index b4ea5bf..b549561 100644
+--- a/drivers/staging/iio/gyro/gyro.h
++++ b/drivers/staging/iio/gyro/gyro.h
+@@ -57,6 +57,9 @@
+ #define IIO_DEV_ATTR_GYRO_Z_CALIBSCALE(_mode, _show, _store, _addr)		\
+ 	IIO_DEVICE_ATTR(gyro_z_calibscale, _mode, _show, _store, _addr)
+ 
++#define IIO_DEV_ATTR_GYRO_Z_QUADRATURE_CORRECTION(_show, _addr)		\
++	IIO_DEVICE_ATTR(gyro_z_quadrature_correction_raw, S_IRUGO, _show, NULL, _addr)
++
+ #define IIO_DEV_ATTR_GYRO(_show, _addr)			\
+ 	IIO_DEVICE_ATTR(gyro_raw, S_IRUGO, _show, NULL, _addr)
+ 
+-- 
+1.7.1
