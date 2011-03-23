@@ -1,700 +1,419 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:36063 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753896Ab1CURjQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Mar 2011 13:39:16 -0400
-Message-ID: <4D878D8B.6070902@cam.ac.uk>
-Date: Mon, 21 Mar 2011 17:40:27 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: cliff.cai@analog.com
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	drivers@analog.com, device-drivers-devel@blackfin.uclinux.org,
-	Cliff Cai <cliff@analog.com>
-Subject: Re: [PATCH RESEND v2]IIO driver for Analog Devices Digital Output
+Return-Path: <Cliff.Cai@analog.com>
+From: "Cai, Cliff" <Cliff.Cai@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Drivers
+	<Drivers@analog.com>, "device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>, Cliff Cai <cliff@analog.com>
+Date: Wed, 23 Mar 2011 06:22:29 -0400
+Subject: RE: [PATCH RESEND v2]IIO driver for Analog Devices Digital Output
  Gyroscope ADXRS450
+Message-ID: <DB904C5425BA6F4E8424B3B51A1414D167E0335EA6@NWD2CMBX1.ad.analog.com>
 References: <1300526846-27183-1-git-send-email-cliff.cai@analog.com>
-In-Reply-To: <1300526846-27183-1-git-send-email-cliff.cai@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+ <4D878D8B.6070902@cam.ac.uk>
+In-Reply-To: <4D878D8B.6070902@cam.ac.uk>
+Content-Type: text/plain; charset="gb2312"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/19/11 09:27, cliff.cai@analog.com wrote:
-> From: Cliff Cai <cliff.cai@analog.com>
->=20
-> Change v2:v1:
->=20
-> Make modification according to Michael Hennerich's comments,
-> correct the spi transfer way,use existing sysfs interfaces.
-Hi Cliff,
-
-As you are proposing a couple of new interfaces we need to have documen=
-tation
-for them. They are quad and dynamic_null_correction.
-We need to first establish whether they are of general utility and henc=
-e
-should be in the main abi doc. The quadrature one isn't something I've
-seen before. Is it common in gyros?
-
-Dynamic null correction looks like it should be gyro_z_calibbias to me
-but I could be wrong.  The doc says
-"
-The user can make small adjustments to the rateout of the device by ass=
-erting
-these bits. This 10-bit register allows the user to adjust the static
-rateout of the device by up to =B16.4=B0/sec.
-"
-
-which makes me think it is an internally applied offset on the output s=
-ignal
-and hence calibbias in our abi.
-
-Other than that, various minor nitpicks inline.
-
-Jonathan
-
-
->=20
-> Signed-off-by: Cliff Cai<cliff@analog.com>
-> ---
->  drivers/staging/iio/gyro/Kconfig         |   10 +
->  drivers/staging/iio/gyro/Makefile        |    3 +
->  drivers/staging/iio/gyro/adxrs450.h      |   59 ++++
->  drivers/staging/iio/gyro/adxrs450_core.c |  471 ++++++++++++++++++++=
-++++++++++
->  4 files changed, 543 insertions(+), 0 deletions(-)
->  create mode 100644 drivers/staging/iio/gyro/adxrs450.h
->  create mode 100644 drivers/staging/iio/gyro/adxrs450_core.c
->=20
-> diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/g=
-yro/Kconfig
-> index 236f15f..3432967 100644
-> --- a/drivers/staging/iio/gyro/Kconfig
-> +++ b/drivers/staging/iio/gyro/Kconfig
-> @@ -45,3 +45,13 @@ config ADIS16251
-> =20
->  	  This driver can also be built as a module.  If so, the module
->  	  will be called adis16251.
-> +
-> +config ADXRS450
-> +	tristate "Analog Devices ADXRS450 Digital Output Gyroscope SPI driv=
-er"
-> +	depends on SPI
-> +	help
-> +	  Say yes here to build support for Analog Devices ADXRS450 program=
-mable
-> +	  digital output gyroscope.
-> +
-> +	  This driver can also be built as a module.  If so, the module
-> +	  will be called adxrs450.
-> diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/=
-gyro/Makefile
-> index 2764c15..2212240 100644
-> --- a/drivers/staging/iio/gyro/Makefile
-> +++ b/drivers/staging/iio/gyro/Makefile
-> @@ -17,3 +17,6 @@ obj-$(CONFIG_ADIS16260) +=3D adis16260.o
-> =20
->  adis16251-y             :=3D adis16251_core.o
->  obj-$(CONFIG_ADIS16251) +=3D adis16251.o
-> +
-> +adxrs450-y             :=3D adxrs450_core.o
-> +obj-$(CONFIG_ADXRS450) +=3D adxrs450.o
-> diff --git a/drivers/staging/iio/gyro/adxrs450.h b/drivers/staging/ii=
-o/gyro/adxrs450.h
-> new file mode 100644
-> index 0000000..4633ef9
-> --- /dev/null
-> +++ b/drivers/staging/iio/gyro/adxrs450.h
-> @@ -0,0 +1,59 @@
-> +#ifndef SPI_ADXRS450_H_
-> +#define SPI_ADXRS450_H_
-> +
-> +#define ADXRS450_STARTUP_DELAY	50 /* ms */
-> +
-> +/* The MSB for the spi commands */
-> +#define ADXRS450_SENSOR_DATA    0x20
-> +#define ADXRS450_WRITE_DATA	0x40
-> +#define ADXRS450_READ_DATA	0x80
-> +
-> +#define ADXRS450_RATE1	0x00	/* Rate Registers */
-> +#define ADXRS450_TEMP1	0x02	/* Temperature Registers */
-> +#define ADXRS450_LOCST1	0x04	/* Low CST Memory Registers */
-> +#define ADXRS450_HICST1	0x06	/* High CST Memory Registers */
-> +#define ADXRS450_QUAD1	0x08	/* Quad Memory Registers */
-> +#define ADXRS450_FAULT1	0x0A	/* Fault Registers */
-> +#define ADXRS450_PID1	0x0C	/* Part ID Register 1 */
-> +#define ADXRS450_PID0	0x0D	/* Part ID Register 0 */
-> +#define ADXRS450_SNH	0x0E	/* Serial Number Registers, 4 bytes */
-> +#define ADXRS450_SNL	0x10
-> +#define ADXRS450_DNC1	0x12	/* Dynamic Null Correction Registers */
-> +/* Check bits */
-> +#define ADXRS450_P	0x01
-> +#define ADXRS450_CHK	0x02
-> +#define ADXRS450_CST	0x04
-> +#define ADXRS450_PWR	0x08
-> +#define ADXRS450_POR	0x10
-> +#define ADXRS450_NVM	0x20
-> +#define ADXRS450_Q	0x40
-> +#define ADXRS450_PLL	0x80
-> +#define ADXRS450_UV	0x100
-> +#define ADXRS450_OV	0x200
-> +#define ADXRS450_AMP	0x400
-> +#define ADXRS450_FAIL	0x800
-> +
-> +#define ADXRS450_WRERR_MASK	(0x7 << 29)
-> +
-> +#define ADXRS450_MAX_RX 8
-> +#define ADXRS450_MAX_TX 8
-> +
-> +#define ADXRS450_GET_ST(a)	((a >> 26) & 0x3)
-> +
-> +/**
-> + * struct adxrs450_state - device instance specific data
-> + * @us:			actual spi_device
-> + * @indio_dev:		industrial I/O device structure
-> + * @tx:			transmit buffer
-> + * @rx:			recieve buffer
-> + * @buf_lock:		mutex to protect tx and rx
-> + **/
-> +struct adxrs450_state {
-> +	struct spi_device		*us;
-> +	struct iio_dev			*indio_dev;
-> +	u8				*tx;
-> +	u8				*rx;
-> +	struct mutex			buf_lock;
-> +};
-> +
-> +#endif /* SPI_ADXRS450_H_ */
-> diff --git a/drivers/staging/iio/gyro/adxrs450_core.c b/drivers/stagi=
-ng/iio/gyro/adxrs450_core.c
-> new file mode 100644
-> index 0000000..f4f9d49
-> --- /dev/null
-> +++ b/drivers/staging/iio/gyro/adxrs450_core.c
-> @@ -0,0 +1,471 @@
-> +/*
-> + * ADXRS450 Digital Output Gyroscope Driver
-> + *
-> + * Copyright 2010 Analog Devices Inc.
-> + *
-> + * Licensed under the GPL-2 or later.
-> + */
-> +
-> +#include <linux/interrupt.h>
-> +#include <linux/irq.h>
-> +#include <linux/gpio.h>
-> +#include <linux/delay.h>
-> +#include <linux/mutex.h>
-> +#include <linux/device.h>
-> +#include <linux/kernel.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +#include <linux/list.h>
-> +
-> +#include "../iio.h"
-> +#include "../sysfs.h"
-> +#include "gyro.h"
-> +#include "../adc/adc.h"
-> +
-> +#include "adxrs450.h"
-> +
-This is only used in one place, I'd hard code it there.
-> +#define DRIVER_NAME		"ADXRS450"
-> +
-> +/**
-> + * adxrs450_spi_read_reg_16() - read 2 bytes from a register pair
-> + * @dev: device associated with child of actual device (iio_dev or i=
-io_trig)
-> + * @reg_address: the address of the lower of the two registers,which=
- should be an even address,
-> + * Second register's address is reg_address + 1.
-> + * @val: somewhere to pass back the value read
-> + **/
-> +static int adxrs450_spi_read_reg_16(struct device *dev,
-> +		u8 reg_address,
-> +		u16 *val)
-> +{
-> +	struct spi_message msg;
-> +	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-> +	struct adxrs450_state *st =3D iio_dev_get_devdata(indio_dev);
-> +	int ret;
-  The array only has one element. Please make it not be an array.
-> +	struct spi_transfer xfers[] =3D {
-> +		{
-> +			.tx_buf =3D st->tx,
-> +			.rx_buf =3D st->rx,
-> +			.bits_per_word =3D 8,
-> +			.len =3D 4,
-> +		},
-> +	};
-> +	/* Needs to send the command twice to get the wanted value */
-> +	mutex_lock(&st->buf_lock);
-> +	st->tx[0] =3D ADXRS450_READ_DATA | reg_address >> 7;
-> +	st->tx[1] =3D reg_address << 1;
-> +	st->tx[2] =3D 0;
-> +	st->tx[3] =3D 0;
-> +	spi_message_init(&msg);
-> +	spi_message_add_tail(&xfers[0], &msg);
-> +	ret =3D spi_sync(st->us, &msg);
-> +	if (ret) {
-> +		dev_err(&st->us->dev, "problem while reading 16 bit register 0x%02=
-x\n",
-> +				reg_address);
-> +		goto error_ret;
-> +	}
-> +
-> +	spi_message_init(&msg);
-> +	spi_message_add_tail(&xfers[0], &msg);
-> +	ret =3D spi_sync(st->us, &msg);
-> +	if (ret) {
-> +		dev_err(&st->us->dev, "problem while reading 16 bit register 0x%02=
-x\n",
-> +				reg_address);
-> +		goto error_ret;
-> +	}
-> +
-> +	*val =3D (st->rx[1] & 0x1f) << 11 | st->rx[2] << 3 | (st->rx[3] & 0=
-xe0) >> 5;
-> +
-> +error_ret:
-> +	mutex_unlock(&st->buf_lock);
-> +	return ret;
-> +}
-> +
-> +/**
-> + * adxrs450_spi_write_reg_16() - write 2 bytes data to a register pa=
-ir
-> + * @dev: device associated with child of actual device (iio_dev or i=
-io_trig)
-If it's an iio_trig, casting it to an iio_dev will give you somewhat in=
-terresting
-results!
-> + * @reg_address: the address of the lower of the two registers,which=
- should be an even address,
-> + * Second register's address is reg_address + 1.
-> + * @val: value to be written.
-> + **/
-> +static int adxrs450_spi_write_reg_16(struct device *dev,
-> +		u8 reg_address,
-> +		u16 *val)
-> +{
-> +	struct spi_message msg;
-> +	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-> +	struct adxrs450_state *st =3D iio_dev_get_devdata(indio_dev);
-> +	int ret;
-Again, shouldn't be an array.
-> +	struct spi_transfer xfers[] =3D {
-> +		{
-> +			.tx_buf =3D st->tx,
-> +			.rx_buf =3D st->rx,
-> +			.bits_per_word =3D 8,
-> +			.len =3D 4,
-> +		},
-> +	};
-> +
-> +	mutex_lock(&st->buf_lock);
-> +	st->tx[0] =3D ADXRS450_WRITE_DATA | reg_address >> 7;
-> +	st->tx[1] =3D reg_address << 1 | *val >> 15;
-> +	st->tx[2] =3D *val >> 7;
-> +	st->tx[3] =3D *val << 1;
-> +	spi_message_init(&msg);
-> +	spi_message_add_tail(&xfers[0], &msg);
-> +	ret =3D spi_sync(st->us, &msg);
-> +	if (ret) {
-> +		dev_err(&st->us->dev, "problem while writing 16 bit register 0x%02=
-x\n",
-> +				reg_address);
-> +		goto error_ret;
-only going to next line so don't need the goto and as a result no need =
-for the brackets
-either.
-> +	}
-> +
-> +error_ret:
-> +	mutex_unlock(&st->buf_lock);
-> +	return ret;
-> +}
-> +
-> +/**
-> + * adxrs450_spi_sensor_data() - read 2 bytes sensor data
-> + * @dev: device associated with child of actual device (iio_dev or i=
-io_trig)
-> + * @val: somewhere to pass back the value read
-> + **/
-> +static int adxrs450_spi_sensor_data(struct device *dev, u16 *val)
-> +{
-> +	struct spi_message msg;
-> +	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-> +	struct adxrs450_state *st =3D iio_dev_get_devdata(indio_dev);
-> +	int ret;
-Same array comment.
-> +	struct spi_transfer xfers[] =3D {
-> +		{
-> +			.tx_buf =3D st->tx,
-> +			.rx_buf =3D st->rx,
-> +			.bits_per_word =3D 8,
-> +			.len =3D 4,
-> +		}
-> +	};
-> +
-> +	mutex_lock(&st->buf_lock);
-> +	st->tx[0] =3D ADXRS450_SENSOR_DATA;
-> +	st->tx[1] =3D 0;
-> +	st->tx[2] =3D 0;
-> +	st->tx[3] =3D 0;
-> +
-> +	spi_message_init(&msg);
-> +	spi_message_add_tail(&xfers[0], &msg);
-> +	ret =3D spi_sync(st->us, &msg);
-> +	if (ret) {
-> +		dev_err(&st->us->dev, "Problem while reading sensor data\n");
-> +		goto error_ret;
-> +	}
-> +
-> +	spi_message_init(&msg);
-> +	spi_message_add_tail(&xfers[0], &msg);
-> +	ret =3D spi_sync(st->us, &msg);
-> +	if (ret) {
-> +		dev_err(&st->us->dev, "Problem while reading sensor data\n");
-> +		goto error_ret;
-> +	}
-> +
-> +	*val =3D (st->rx[0] & 0x03) << 14 | st->rx[1] << 6 | (st->rx[2] & 0=
-xfc) >> 2;
-> +error_ret:
-> +	mutex_unlock(&st->buf_lock);
-> +	return ret;
-> +}
-> +
-
-This looks to only be called from initial setup. Might as well just
-make it take an adxrs450_state directly and save the careful indirectio=
-n
-that is currently going on to ensure it gets the same dev as the other =
-write
-functions.
-> +/**
-> + * adxrs450_spi_initial() - use for initializing procedure.
-> + * @dev: device associated with child of actual device (iio_dev or i=
-io_trig)
-> + * @val: somewhere to pass back the value read
-> + **/
-> +static int adxrs450_spi_initial(struct device *dev,
-> +		u32 *val, char chk)
-> +{
-> +	struct spi_message msg;
-> +	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-> +	struct adxrs450_state *st =3D iio_dev_get_devdata(indio_dev);
-> +	int ret;
-Another unneeded array.
-> +	struct spi_transfer xfers[] =3D {
-> +		{
-> +			.tx_buf =3D st->tx,
-> +			.rx_buf =3D st->rx,
-> +			.bits_per_word =3D 8,
-> +			.len =3D 4,
-> +		},
-> +	};
-> +
-> +	mutex_lock(&st->buf_lock);
-> +	st->tx[0] =3D ADXRS450_SENSOR_DATA;
-> +	st->tx[1] =3D 0;
-> +	st->tx[2] =3D 0;
-> +	st->tx[3] =3D 0;
-> +	if (chk)
-> +		st->tx[3] |=3D (ADXRS450_CHK | ADXRS450_P);
-> +	spi_message_init(&msg);
-> +	spi_message_add_tail(&xfers[0], &msg);
-> +	ret =3D spi_sync(st->us, &msg);
-> +	if (ret) {
-> +		dev_err(&st->us->dev, "Problem while reading initializing data\n")=
-;
-> +		goto error_ret;
-> +	}
-> +
-Looks like an endinaness conversion to me. be32tocpu.
-
-> +	*val =3D st->rx[0] << 24 | st->rx[1] << 16 | st->rx[2] << 8 | st->r=
-x[3];
-> +
-> +error_ret:
-> +	mutex_unlock(&st->buf_lock);
-> +	return ret;
-> +}
-> +
-> +static ssize_t adxrs450_read_temp(struct device *dev,
-> +		struct device_attribute *attr,
-> +		char *buf)
-> +{
-> +	int ret, len =3D 0;
-No need to initialize len.
-> +	u16 t;
-> +	ret =3D adxrs450_spi_read_reg_16(dev,
-> +			ADXRS450_TEMP1,
-> +			&t);
-> +	if (ret)
-> +		return ret;
-> +	len =3D sprintf(buf, "%d\n", t);
-> +	return len;
-> +}
-> +
-> +static ssize_t adxrs450_read_quad(struct device *dev,
-> +		struct device_attribute *attr,
-> +		char *buf)
-> +{
-> +	int ret, len =3D 0;
-Same for this len
-> +	u16 t;
-> +	ret =3D adxrs450_spi_read_reg_16(dev,
-> +			ADXRS450_QUAD1,
-> +			&t);
-> +	if (ret)
-> +		return ret;
-> +	len =3D sprintf(buf, "%d\n", t);
-> +	return len;
-> +}
-> +
-> +static ssize_t adxrs450_write_dnc(struct device *dev,
-> +		struct device_attribute *attr,
-> +		const char *buf,
-> +		size_t len)
-> +{
-> +	int ret;
-> +	u16 val;
-> +
-> +	if (len =3D=3D 0 || len > 2)
-> +		return -EINVAL;
-> +	memcpy(&val, buf, len);
-> +	ret =3D adxrs450_spi_write_reg_16(dev,
-> +			ADXRS450_DNC1,
-> +			&val);
-Err, so what is meant to be written to this?  Looks like you'll be
-dumping a random single character in to the register...
-Documentation would clear this up.
-
-> +	return ret ? ret : len;
-> +}
-> +
-> +static ssize_t adxrs450_read_sensor_data(struct device *dev,
-> +		struct device_attribute *attr,
-> +		char *buf)
-> +{
-> +	int ret, len =3D 0;
-another unneeded init of len
-> +	u16 t;
-> +
-> +	ret =3D adxrs450_spi_sensor_data(dev, &t);
-> +	if (ret)
-> +		return ret;
-> +
-> +	len =3D sprintf(buf, "%d\n", t);
-> +	return len;
-> +}
-> +
-> +/* Recommended Startup Sequence by spec */
-> +static int adxrs450_initial_setup(struct adxrs450_state *st)
-> +{
-> +	u32 t;
-> +	u16 data;
-> +	int ret;
-> +	struct device *dev =3D &st->indio_dev->dev;
-> +
-> +	msleep(ADXRS450_STARTUP_DELAY*2);
-> +	ret =3D adxrs450_spi_initial(dev, &t, 1);
-> +	if (ret)
-> +		return ret;
-> +	if (t !=3D 0x01) {
-> +		dev_err(&st->us->dev, "The initial response is not correct!\n");
-> +		return -ENODEV;
-> +
-> +	}
-> +
-> +	msleep(ADXRS450_STARTUP_DELAY);
-> +	ret =3D adxrs450_spi_initial(dev, &t, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	msleep(ADXRS450_STARTUP_DELAY);
-> +	ret =3D adxrs450_spi_initial(dev, &t, 0);
-> +	if (ret)
-> +		return ret;
-> +	if (((t & 0xff) | 0x01) !=3D 0xff || ADXRS450_GET_ST(t) !=3D 2) {
-> +		dev_err(&st->us->dev, "The second response is not correct!\n");
-> +		return -EIO;
-> +
-> +	}
-> +	ret =3D adxrs450_spi_initial(dev, &t, 0);
-> +	if (ret)
-> +		return ret;
-> +	if (((t & 0xff) | 0x01) !=3D 0xff || ADXRS450_GET_ST(t) !=3D 2) {
-> +		dev_err(&st->us->dev, "The third response is not correct!\n");
-> +		return -EIO;
-> +
-> +	}
-> +	ret =3D adxrs450_spi_read_reg_16(dev, ADXRS450_FAULT1, &data);
-> +	if (ret)
-> +		return ret;
-> +	if (data & 0x0fff) {
-> +		dev_err(&st->us->dev, "The device is not in normal status!\n");
-> +		return -EINVAL;
-> +	}
-> +	ret =3D adxrs450_spi_read_reg_16(dev, ADXRS450_PID1, &data);
-> +	if (ret)
-> +		return ret;
-> +	dev_info(&st->us->dev, "The Part ID is 0x%x\n", data);
-> +
-> +	ret =3D adxrs450_spi_read_reg_16(dev, ADXRS450_SNL, &data);
-> +	if (ret)
-> +		return ret;
-> +	t =3D data;
-> +	ret =3D adxrs450_spi_read_reg_16(dev, ADXRS450_SNH, &data);
-> +	if (ret)
-> +		return ret;
-> +	t |=3D data << 16;
-> +	dev_info(&st->us->dev, "The Serial Number is 0x%x\n", t);
-> +
-> +	dev_info(&st->us->dev, "%s at CS%d\n", DRIVER_NAME,
-> +			st->us->chip_select);
-Not really useful info to the average reader of the log. Please
-clean this one out.
-> +
-> +	return 0;
-> +}
-> +
-I note there are two versions of this chip (from datasheet). We
-should probably support changing this axis according to which
-one we have.  Z is out of chip plane. The other two are arbitrary
-if we only have 1 axis on the chip.
-> +static IIO_DEV_ATTR_GYRO_Z(adxrs450_read_sensor_data, 0);
-> +static IIO_DEV_ATTR_TEMP_RAW(adxrs450_read_temp);
-> +static IIO_DEVICE_ATTR(quad, S_IRUGO,
-> +		adxrs450_read_quad, NULL, 0);
-> +static IIO_DEVICE_ATTR(dynamic_null_correction, S_IWUGO,
-IWUSR please. People get nervous for any greater permissions
-than that.
-> +		NULL, adxrs450_write_dnc, 0);
-> +static IIO_CONST_ATTR(name, "adxrs450");
-> +
-> +static struct attribute *adxrs450_attributes[] =3D {
-bonus blank line here. Please remove.
-> +
-> +	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
-> +	&iio_dev_attr_temp_raw.dev_attr.attr,
-> +	&iio_dev_attr_quad.dev_attr.attr,
-> +	&iio_dev_attr_dynamic_null_correction.dev_attr.attr,
-> +	&iio_const_attr_name.dev_attr.attr,
-> +	NULL
-> +};
-> +
-> +static const struct attribute_group adxrs450_attribute_group =3D {
-> +	.attrs =3D adxrs450_attributes,
-> +};
-> +
-> +static int __devinit adxrs450_probe(struct spi_device *spi)
-> +{
-> +	int ret, regdone =3D 0;
-> +	struct adxrs450_state *st =3D kzalloc(sizeof *st, GFP_KERNEL);
-> +	if (!st) {
-> +		ret =3D  -ENOMEM;
-> +		goto error_ret;
-> +	}
-> +	/* This is only used for removal purposes */
-> +	spi_set_drvdata(spi, st);
-> +
-> +	/* Allocate the comms buffers */
-> +	st->rx =3D kzalloc(sizeof(*st->rx)*ADXRS450_MAX_RX, GFP_KERNEL);
-> +	if (st->rx =3D=3D NULL) {
-> +		ret =3D -ENOMEM;
-> +		goto error_free_st;
-> +	}
-> +	st->tx =3D kzalloc(sizeof(*st->tx)*ADXRS450_MAX_TX, GFP_KERNEL);
-> +	if (st->tx =3D=3D NULL) {
-> +		ret =3D -ENOMEM;
-> +		goto error_free_rx;
-> +	}
-> +	st->us =3D spi;
-> +	mutex_init(&st->buf_lock);
-> +	/* setup the industrialio driver allocated elements */
-> +	st->indio_dev =3D iio_allocate_device();
-> +	if (st->indio_dev =3D=3D NULL) {
-> +		ret =3D -ENOMEM;
-> +		goto error_free_tx;
-> +	}
-> +
-> +	st->indio_dev->dev.parent =3D &spi->dev;
-> +	st->indio_dev->attrs =3D &adxrs450_attribute_group;
-> +	st->indio_dev->dev_data =3D (void *)(st);
-> +	st->indio_dev->driver_module =3D THIS_MODULE;
-> +	st->indio_dev->modes =3D INDIO_DIRECT_MODE;
-> +
-> +	ret =3D iio_device_register(st->indio_dev);
-> +	if (ret)
-> +		goto error_free_dev;
-> +	regdone =3D 1;
-> +
-> +	/* Get the device into a sane initial state */
-> +	ret =3D adxrs450_initial_setup(st);
-> +	if (ret)
-> +		goto error_initial;
-> +	return 0;
-> +
-> +error_initial:
-> +error_free_dev:
-> +	if (regdone)
-> +		iio_device_unregister(st->indio_dev);
-> +	else
-> +		iio_free_device(st->indio_dev);
-> +error_free_tx:
-> +	kfree(st->tx);
-> +error_free_rx:
-> +	kfree(st->rx);
-> +error_free_st:
-> +	kfree(st);
-> +error_ret:
-> +	return ret;
-> +}
-> +
-> +/* fixme, confirm ordering in this function */
-> +static int adxrs450_remove(struct spi_device *spi)
-> +{
-> +	struct adxrs450_state *st =3D spi_get_drvdata(spi);
-
-Might as well just go with
-
-iio_device_unregister(st->indio_dev);
-> +	struct iio_dev *indio_dev =3D st->indio_dev;
-> +
-> +	iio_device_unregister(indio_dev);
-> +	kfree(st->tx);
-> +	kfree(st->rx);
-> +	kfree(st);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct spi_driver adxrs450_driver =3D {
-> +	.driver =3D {
-> +		.name =3D "adxrs450",
-> +		.owner =3D THIS_MODULE,
-> +	},
-> +	.probe =3D adxrs450_probe,
-> +	.remove =3D __devexit_p(adxrs450_remove),
-> +};
-> +
-> +static __init int adxrs450_init(void)
-> +{
-> +	return spi_register_driver(&adxrs450_driver);
-> +}
-> +module_init(adxrs450_init);
-> +
-> +static __exit void adxrs450_exit(void)
-> +{
-> +	spi_unregister_driver(&adxrs450_driver);
-> +}
-> +module_exit(adxrs450_exit);
-> +
-> +MODULE_AUTHOR("Cliff Cai <cliff.cai@analog.com>");
-> +MODULE_DESCRIPTION("Analog Devices ADXRS450 Gyroscope SPI driver");
-> +MODULE_LICENSE("GPL v2");
-
+DQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IEpvbmF0aGFuIENhbWVyb24g
+W21haWx0bzpqaWMyM0BjYW0uYWMudWtdDQo+U2VudDogMjAxMcTqM9TCMjLI1SAxOjQwDQo+VG86
+IENhaSwgQ2xpZmYNCj5DYzogbGludXgtaWlvQHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVs
+QHZnZXIua2VybmVsLm9yZzsNCj5Ecml2ZXJzOyBkZXZpY2UtZHJpdmVycy1kZXZlbEBibGFja2Zp
+bi51Y2xpbnV4Lm9yZzsgQ2xpZmYgQ2FpDQo+U3ViamVjdDogUmU6IFtQQVRDSCBSRVNFTkQgdjJd
+SUlPIGRyaXZlciBmb3IgQW5hbG9nIERldmljZXMNCj5EaWdpdGFsIE91dHB1dCBHeXJvc2NvcGUg
+QURYUlM0NTANCj4NCj5PbiAwMy8xOS8xMSAwOToyNywgY2xpZmYuY2FpQGFuYWxvZy5jb20gd3Jv
+dGU6DQo+PiBGcm9tOiBDbGlmZiBDYWkgPGNsaWZmLmNhaUBhbmFsb2cuY29tPg0KPj4NCj4+IENo
+YW5nZSB2Mjp2MToNCj4+DQo+PiBNYWtlIG1vZGlmaWNhdGlvbiBhY2NvcmRpbmcgdG8gTWljaGFl
+bCBIZW5uZXJpY2gncyBjb21tZW50cywgY29ycmVjdA0KPj4gdGhlIHNwaSB0cmFuc2ZlciB3YXks
+dXNlIGV4aXN0aW5nIHN5c2ZzIGludGVyZmFjZXMuDQo+SGkgQ2xpZmYsDQo+DQo+QXMgeW91IGFy
+ZSBwcm9wb3NpbmcgYSBjb3VwbGUgb2YgbmV3IGludGVyZmFjZXMgd2UgbmVlZCB0bw0KPmhhdmUg
+ZG9jdW1lbnRhdGlvbiBmb3IgdGhlbS4gVGhleSBhcmUgcXVhZCBhbmQgZHluYW1pY19udWxsX2Nv
+cnJlY3Rpb24uDQo+V2UgbmVlZCB0byBmaXJzdCBlc3RhYmxpc2ggd2hldGhlciB0aGV5IGFyZSBv
+ZiBnZW5lcmFsIHV0aWxpdHkNCj5hbmQgaGVuY2Ugc2hvdWxkIGJlIGluIHRoZSBtYWluIGFiaSBk
+b2MuIFRoZSBxdWFkcmF0dXJlIG9uZQ0KPmlzbid0IHNvbWV0aGluZyBJJ3ZlIHNlZW4gYmVmb3Jl
+LiBJcyBpdCBjb21tb24gaW4gZ3lyb3M/DQo+DQo+RHluYW1pYyBudWxsIGNvcnJlY3Rpb24gbG9v
+a3MgbGlrZSBpdCBzaG91bGQgYmUNCj5neXJvX3pfY2FsaWJiaWFzIHRvIG1lIGJ1dCBJIGNvdWxk
+IGJlIHdyb25nLiAgVGhlIGRvYyBzYXlzICINCj5UaGUgdXNlciBjYW4gbWFrZSBzbWFsbCBhZGp1
+c3RtZW50cyB0byB0aGUgcmF0ZW91dCBvZiB0aGUNCj5kZXZpY2UgYnkgYXNzZXJ0aW5nIHRoZXNl
+IGJpdHMuIFRoaXMgMTAtYml0IHJlZ2lzdGVyIGFsbG93cw0KPnRoZSB1c2VyIHRvIGFkanVzdCB0
+aGUgc3RhdGljIHJhdGVvdXQgb2YgdGhlIGRldmljZSBieSB1cCB0byChwDYuNKHjL3NlYy4NCj4i
+DQo+DQo+d2hpY2ggbWFrZXMgbWUgdGhpbmsgaXQgaXMgYW4gaW50ZXJuYWxseSBhcHBsaWVkIG9m
+ZnNldCBvbiB0aGUNCj5vdXRwdXQgc2lnbmFsIGFuZCBoZW5jZSBjYWxpYmJpYXMgaW4gb3VyIGFi
+aS4NCj4NCj5PdGhlciB0aGFuIHRoYXQsIHZhcmlvdXMgbWlub3Igbml0cGlja3MgaW5saW5lLg0K
+Pg0KPkpvbmF0aGFuDQo+DQo+DQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogQ2xpZmYgQ2FpPGNsaWZm
+QGFuYWxvZy5jb20+DQo+PiAtLS0NCj4+ICBkcml2ZXJzL3N0YWdpbmcvaWlvL2d5cm8vS2NvbmZp
+ZyAgICAgICAgIHwgICAxMCArDQo+PiAgZHJpdmVycy9zdGFnaW5nL2lpby9neXJvL01ha2VmaWxl
+ICAgICAgICB8ICAgIDMgKw0KPj4gIGRyaXZlcnMvc3RhZ2luZy9paW8vZ3lyby9hZHhyczQ1MC5o
+ICAgICAgfCAgIDU5ICsrKysNCj4+ICBkcml2ZXJzL3N0YWdpbmcvaWlvL2d5cm8vYWR4cnM0NTBf
+Y29yZS5jIHwgIDQ3MQ0KPj4gKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+PiAgNCBm
+aWxlcyBjaGFuZ2VkLCA1NDMgaW5zZXJ0aW9ucygrKSwgMCBkZWxldGlvbnMoLSkgIGNyZWF0ZSBt
+b2RlDQo+PiAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL2lpby9neXJvL2FkeHJzNDUwLmgNCj4+ICBj
+cmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL2lpby9neXJvL2FkeHJzNDUwX2NvcmUu
+Yw0KPj4NCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2d5cm8vS2NvbmZpZw0K
+Pj4gYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2d5cm8vS2NvbmZpZw0KPj4gaW5kZXggMjM2ZjE1Zi4u
+MzQzMjk2NyAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9paW8vZ3lyby9LY29uZmln
+DQo+PiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2d5cm8vS2NvbmZpZw0KPj4gQEAgLTQ1LDMg
+KzQ1LDEzIEBAIGNvbmZpZyBBRElTMTYyNTENCj4+DQo+PiAgICAgICAgVGhpcyBkcml2ZXIgY2Fu
+IGFsc28gYmUgYnVpbHQgYXMgYSBtb2R1bGUuICBJZiBzbywgdGhlIG1vZHVsZQ0KPj4gICAgICAg
+IHdpbGwgYmUgY2FsbGVkIGFkaXMxNjI1MS4NCj4+ICsNCj4+ICtjb25maWcgQURYUlM0NTANCj4+
+ICsgICAgdHJpc3RhdGUgIkFuYWxvZyBEZXZpY2VzIEFEWFJTNDUwIERpZ2l0YWwgT3V0cHV0DQo+
+R3lyb3Njb3BlIFNQSSBkcml2ZXIiDQo+PiArICAgIGRlcGVuZHMgb24gU1BJDQo+PiArICAgIGhl
+bHANCj4+ICsgICAgICBTYXkgeWVzIGhlcmUgdG8gYnVpbGQgc3VwcG9ydCBmb3IgQW5hbG9nIERl
+dmljZXMNCj5BRFhSUzQ1MCBwcm9ncmFtbWFibGUNCj4+ICsgICAgICBkaWdpdGFsIG91dHB1dCBn
+eXJvc2NvcGUuDQo+PiArDQo+PiArICAgICAgVGhpcyBkcml2ZXIgY2FuIGFsc28gYmUgYnVpbHQg
+YXMgYSBtb2R1bGUuICBJZiBzbywgdGhlIG1vZHVsZQ0KPj4gKyAgICAgIHdpbGwgYmUgY2FsbGVk
+IGFkeHJzNDUwLg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vZ3lyby9NYWtl
+ZmlsZQ0KPj4gYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2d5cm8vTWFrZWZpbGUNCj4+IGluZGV4IDI3
+NjRjMTUuLjIyMTIyNDAgMTAwNjQ0DQo+PiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2d5cm8v
+TWFrZWZpbGUNCj4+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vZ3lyby9NYWtlZmlsZQ0KPj4g
+QEAgLTE3LDMgKzE3LDYgQEAgb2JqLSQoQ09ORklHX0FESVMxNjI2MCkgKz0gYWRpczE2MjYwLm8N
+Cj4+DQo+PiAgYWRpczE2MjUxLXkgICAgICAgICAgICAgOj0gYWRpczE2MjUxX2NvcmUubw0KPj4g
+IG9iai0kKENPTkZJR19BRElTMTYyNTEpICs9IGFkaXMxNjI1MS5vDQo+PiArDQo+PiArYWR4cnM0
+NTAteSAgICAgICAgICAgICA6PSBhZHhyczQ1MF9jb3JlLm8NCj4+ICtvYmotJChDT05GSUdfQURY
+UlM0NTApICs9IGFkeHJzNDUwLm8NCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlv
+L2d5cm8vYWR4cnM0NTAuaA0KPj4gYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2d5cm8vYWR4cnM0NTAu
+aA0KPj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4+IGluZGV4IDAwMDAwMDAuLjQ2MzNlZjkNCj4+
+IC0tLSAvZGV2L251bGwNCj4+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vZ3lyby9hZHhyczQ1
+MC5oDQo+PiBAQCAtMCwwICsxLDU5IEBADQo+PiArI2lmbmRlZiBTUElfQURYUlM0NTBfSF8NCj4+
+ICsjZGVmaW5lIFNQSV9BRFhSUzQ1MF9IXw0KPj4gKw0KPj4gKyNkZWZpbmUgQURYUlM0NTBfU1RB
+UlRVUF9ERUxBWSAgICAgIDUwIC8qIG1zICovDQo+PiArDQo+PiArLyogVGhlIE1TQiBmb3IgdGhl
+IHNwaSBjb21tYW5kcyAqLw0KPj4gKyNkZWZpbmUgQURYUlM0NTBfU0VOU09SX0RBVEEgICAgMHgy
+MA0KPj4gKyNkZWZpbmUgQURYUlM0NTBfV1JJVEVfREFUQSAweDQwDQo+PiArI2RlZmluZSBBRFhS
+UzQ1MF9SRUFEX0RBVEEgIDB4ODANCj4+ICsNCj4+ICsjZGVmaW5lIEFEWFJTNDUwX1JBVEUxICAg
+ICAgMHgwMCAgICAvKiBSYXRlIFJlZ2lzdGVycyAqLw0KPj4gKyNkZWZpbmUgQURYUlM0NTBfVEVN
+UDEgICAgICAweDAyICAgIC8qIFRlbXBlcmF0dXJlIFJlZ2lzdGVycyAqLw0KPj4gKyNkZWZpbmUg
+QURYUlM0NTBfTE9DU1QxICAgICAweDA0ICAgIC8qIExvdyBDU1QgTWVtb3J5IFJlZ2lzdGVycyAq
+Lw0KPj4gKyNkZWZpbmUgQURYUlM0NTBfSElDU1QxICAgICAweDA2ICAgIC8qIEhpZ2ggQ1NUIE1l
+bW9yeSBSZWdpc3RlcnMgKi8NCj4+ICsjZGVmaW5lIEFEWFJTNDUwX1FVQUQxICAgICAgMHgwOCAg
+ICAvKiBRdWFkIE1lbW9yeSBSZWdpc3RlcnMgKi8NCj4+ICsjZGVmaW5lIEFEWFJTNDUwX0ZBVUxU
+MSAgICAgMHgwQSAgICAvKiBGYXVsdCBSZWdpc3RlcnMgKi8NCj4+ICsjZGVmaW5lIEFEWFJTNDUw
+X1BJRDEgICAgICAgMHgwQyAgICAvKiBQYXJ0IElEIFJlZ2lzdGVyIDEgKi8NCj4+ICsjZGVmaW5l
+IEFEWFJTNDUwX1BJRDAgICAgICAgMHgwRCAgICAvKiBQYXJ0IElEIFJlZ2lzdGVyIDAgKi8NCj4+
+ICsjZGVmaW5lIEFEWFJTNDUwX1NOSCAgICAgICAgMHgwRSAgICAvKiBTZXJpYWwgTnVtYmVyDQo+
+UmVnaXN0ZXJzLCA0IGJ5dGVzICovDQo+PiArI2RlZmluZSBBRFhSUzQ1MF9TTkwgICAgICAgIDB4
+MTANCj4+ICsjZGVmaW5lIEFEWFJTNDUwX0ROQzEgICAgICAgMHgxMiAgICAvKiBEeW5hbWljIE51
+bGwNCj5Db3JyZWN0aW9uIFJlZ2lzdGVycyAqLw0KPj4gKy8qIENoZWNrIGJpdHMgKi8NCj4+ICsj
+ZGVmaW5lIEFEWFJTNDUwX1AgIDB4MDENCj4+ICsjZGVmaW5lIEFEWFJTNDUwX0NISyAgICAgICAg
+MHgwMg0KPj4gKyNkZWZpbmUgQURYUlM0NTBfQ1NUICAgICAgICAweDA0DQo+PiArI2RlZmluZSBB
+RFhSUzQ1MF9QV1IgICAgICAgIDB4MDgNCj4+ICsjZGVmaW5lIEFEWFJTNDUwX1BPUiAgICAgICAg
+MHgxMA0KPj4gKyNkZWZpbmUgQURYUlM0NTBfTlZNICAgICAgICAweDIwDQo+PiArI2RlZmluZSBB
+RFhSUzQ1MF9RICAweDQwDQo+PiArI2RlZmluZSBBRFhSUzQ1MF9QTEwgICAgICAgIDB4ODANCj4+
+ICsjZGVmaW5lIEFEWFJTNDUwX1VWIDB4MTAwDQo+PiArI2RlZmluZSBBRFhSUzQ1MF9PViAweDIw
+MA0KPj4gKyNkZWZpbmUgQURYUlM0NTBfQU1QICAgICAgICAweDQwMA0KPj4gKyNkZWZpbmUgQURY
+UlM0NTBfRkFJTCAgICAgICAweDgwMA0KPj4gKw0KPj4gKyNkZWZpbmUgQURYUlM0NTBfV1JFUlJf
+TUFTSyAoMHg3IDw8IDI5KQ0KPj4gKw0KPj4gKyNkZWZpbmUgQURYUlM0NTBfTUFYX1JYIDgNCj4+
+ICsjZGVmaW5lIEFEWFJTNDUwX01BWF9UWCA4DQo+PiArDQo+PiArI2RlZmluZSBBRFhSUzQ1MF9H
+RVRfU1QoYSkgICgoYSA+PiAyNikgJiAweDMpDQo+PiArDQo+PiArLyoqDQo+PiArICogc3RydWN0
+IGFkeHJzNDUwX3N0YXRlIC0gZGV2aWNlIGluc3RhbmNlIHNwZWNpZmljIGRhdGENCj4+ICsgKiBA
+dXM6ICAgICAgICAgICAgICAgICAgICAgYWN0dWFsIHNwaV9kZXZpY2UNCj4+ICsgKiBAaW5kaW9f
+ZGV2OiAgICAgICAgICAgICAgaW5kdXN0cmlhbCBJL08gZGV2aWNlIHN0cnVjdHVyZQ0KPj4gKyAq
+IEB0eDogICAgICAgICAgICAgICAgICAgICB0cmFuc21pdCBidWZmZXINCj4+ICsgKiBAcng6ICAg
+ICAgICAgICAgICAgICAgICAgcmVjaWV2ZSBidWZmZXINCj4+ICsgKiBAYnVmX2xvY2s6ICAgICAg
+ICAgICAgICAgbXV0ZXggdG8gcHJvdGVjdCB0eCBhbmQgcngNCj4+ICsgKiovDQo+PiArc3RydWN0
+IGFkeHJzNDUwX3N0YXRlIHsNCj4+ICsgICAgc3RydWN0IHNwaV9kZXZpY2UgICAgICAgICAgICAg
+ICAqdXM7DQo+PiArICAgIHN0cnVjdCBpaW9fZGV2ICAgICAgICAgICAgICAgICAgKmluZGlvX2Rl
+djsNCj4+ICsgICAgdTggICAgICAgICAgICAgICAgICAgICAgICAgICAgICAqdHg7DQo+PiArICAg
+IHU4ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKnJ4Ow0KPj4gKyAgICBzdHJ1Y3QgbXV0
+ZXggICAgICAgICAgICAgICAgICAgIGJ1Zl9sb2NrOw0KPj4gK307DQo+PiArDQo+PiArI2VuZGlm
+IC8qIFNQSV9BRFhSUzQ1MF9IXyAqLw0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9p
+aW8vZ3lyby9hZHhyczQ1MF9jb3JlLmMNCj4+IGIvZHJpdmVycy9zdGFnaW5nL2lpby9neXJvL2Fk
+eHJzNDUwX2NvcmUuYw0KPj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4+IGluZGV4IDAwMDAwMDAu
+LmY0ZjlkNDkNCj4+IC0tLSAvZGV2L251bGwNCj4+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9paW8v
+Z3lyby9hZHhyczQ1MF9jb3JlLmMNCj4+IEBAIC0wLDAgKzEsNDcxIEBADQo+PiArLyoNCj4+ICsg
+KiBBRFhSUzQ1MCBEaWdpdGFsIE91dHB1dCBHeXJvc2NvcGUgRHJpdmVyDQo+PiArICoNCj4+ICsg
+KiBDb3B5cmlnaHQgMjAxMCBBbmFsb2cgRGV2aWNlcyBJbmMuDQo+PiArICoNCj4+ICsgKiBMaWNl
+bnNlZCB1bmRlciB0aGUgR1BMLTIgb3IgbGF0ZXIuDQo+PiArICovDQo+PiArDQo+PiArI2luY2x1
+ZGUgPGxpbnV4L2ludGVycnVwdC5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9pcnEuaD4NCj4+ICsj
+aW5jbHVkZSA8bGludXgvZ3Bpby5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9kZWxheS5oPg0KPj4g
+KyNpbmNsdWRlIDxsaW51eC9tdXRleC5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9kZXZpY2UuaD4N
+Cj4+ICsjaW5jbHVkZSA8bGludXgva2VybmVsLmg+DQo+PiArI2luY2x1ZGUgPGxpbnV4L3NwaS9z
+cGkuaD4NCj4+ICsjaW5jbHVkZSA8bGludXgvc2xhYi5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9z
+eXNmcy5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9saXN0Lmg+DQo+PiArDQo+PiArI2luY2x1ZGUg
+Ii4uL2lpby5oIg0KPj4gKyNpbmNsdWRlICIuLi9zeXNmcy5oIg0KPj4gKyNpbmNsdWRlICJneXJv
+LmgiDQo+PiArI2luY2x1ZGUgIi4uL2FkYy9hZGMuaCINCj4+ICsNCj4+ICsjaW5jbHVkZSAiYWR4
+cnM0NTAuaCINCj4+ICsNCj5UaGlzIGlzIG9ubHkgdXNlZCBpbiBvbmUgcGxhY2UsIEknZCBoYXJk
+IGNvZGUgaXQgdGhlcmUuDQo+PiArI2RlZmluZSBEUklWRVJfTkFNRSAgICAgICAgICJBRFhSUzQ1
+MCINCj4+ICsNCj4+ICsvKioNCj4+ICsgKiBhZHhyczQ1MF9zcGlfcmVhZF9yZWdfMTYoKSAtIHJl
+YWQgMiBieXRlcyBmcm9tIGEgcmVnaXN0ZXIgcGFpcg0KPj4gKyAqIEBkZXY6IGRldmljZSBhc3Nv
+Y2lhdGVkIHdpdGggY2hpbGQgb2YgYWN0dWFsIGRldmljZSAoaWlvX2RldiBvcg0KPj4gK2lpb190
+cmlnKQ0KPj4gKyAqIEByZWdfYWRkcmVzczogdGhlIGFkZHJlc3Mgb2YgdGhlIGxvd2VyIG9mIHRo
+ZSB0d28NCj5yZWdpc3RlcnMsd2hpY2gNCj4+ICtzaG91bGQgYmUgYW4gZXZlbiBhZGRyZXNzLA0K
+Pj4gKyAqIFNlY29uZCByZWdpc3RlcidzIGFkZHJlc3MgaXMgcmVnX2FkZHJlc3MgKyAxLg0KPj4g
+KyAqIEB2YWw6IHNvbWV3aGVyZSB0byBwYXNzIGJhY2sgdGhlIHZhbHVlIHJlYWQgICoqLyBzdGF0
+aWMgaW50DQo+PiArYWR4cnM0NTBfc3BpX3JlYWRfcmVnXzE2KHN0cnVjdCBkZXZpY2UgKmRldiwN
+Cj4+ICsgICAgICAgICAgICB1OCByZWdfYWRkcmVzcywNCj4+ICsgICAgICAgICAgICB1MTYgKnZh
+bCkNCj4+ICt7DQo+PiArICAgIHN0cnVjdCBzcGlfbWVzc2FnZSBtc2c7DQo+PiArICAgIHN0cnVj
+dCBpaW9fZGV2ICppbmRpb19kZXYgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsNCj4+ICsgICAgc3Ry
+dWN0IGFkeHJzNDUwX3N0YXRlICpzdCA9IGlpb19kZXZfZ2V0X2RldmRhdGEoaW5kaW9fZGV2KTsN
+Cj4+ICsgICAgaW50IHJldDsNCj4gIFRoZSBhcnJheSBvbmx5IGhhcyBvbmUgZWxlbWVudC4gUGxl
+YXNlIG1ha2UgaXQgbm90IGJlIGFuIGFycmF5Lg0KPj4gKyAgICBzdHJ1Y3Qgc3BpX3RyYW5zZmVy
+IHhmZXJzW10gPSB7DQo+PiArICAgICAgICAgICAgew0KPj4gKyAgICAgICAgICAgICAgICAgICAg
+LnR4X2J1ZiA9IHN0LT50eCwNCj4+ICsgICAgICAgICAgICAgICAgICAgIC5yeF9idWYgPSBzdC0+
+cngsDQo+PiArICAgICAgICAgICAgICAgICAgICAuYml0c19wZXJfd29yZCA9IDgsDQo+PiArICAg
+ICAgICAgICAgICAgICAgICAubGVuID0gNCwNCj4+ICsgICAgICAgICAgICB9LA0KPj4gKyAgICB9
+Ow0KPj4gKyAgICAvKiBOZWVkcyB0byBzZW5kIHRoZSBjb21tYW5kIHR3aWNlIHRvIGdldCB0aGUg
+d2FudGVkIHZhbHVlICovDQo+PiArICAgIG11dGV4X2xvY2soJnN0LT5idWZfbG9jayk7DQo+PiAr
+ICAgIHN0LT50eFswXSA9IEFEWFJTNDUwX1JFQURfREFUQSB8IHJlZ19hZGRyZXNzID4+IDc7DQo+
+PiArICAgIHN0LT50eFsxXSA9IHJlZ19hZGRyZXNzIDw8IDE7DQo+PiArICAgIHN0LT50eFsyXSA9
+IDA7DQo+PiArICAgIHN0LT50eFszXSA9IDA7DQo+PiArICAgIHNwaV9tZXNzYWdlX2luaXQoJm1z
+Zyk7DQo+PiArICAgIHNwaV9tZXNzYWdlX2FkZF90YWlsKCZ4ZmVyc1swXSwgJm1zZyk7DQo+PiAr
+ICAgIHJldCA9IHNwaV9zeW5jKHN0LT51cywgJm1zZyk7DQo+PiArICAgIGlmIChyZXQpIHsNCj4+
+ICsgICAgICAgICAgICBkZXZfZXJyKCZzdC0+dXMtPmRldiwgInByb2JsZW0gd2hpbGUgcmVhZGlu
+ZyAxNg0KPmJpdCByZWdpc3RlciAweCUwMnhcbiIsDQo+PiArICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIHJlZ19hZGRyZXNzKTsNCj4+ICsgICAgICAgICAgICBnb3RvIGVycm9yX3JldDsNCj4+
+ICsgICAgfQ0KPj4gKw0KPj4gKyAgICBzcGlfbWVzc2FnZV9pbml0KCZtc2cpOw0KPj4gKyAgICBz
+cGlfbWVzc2FnZV9hZGRfdGFpbCgmeGZlcnNbMF0sICZtc2cpOw0KPj4gKyAgICByZXQgPSBzcGlf
+c3luYyhzdC0+dXMsICZtc2cpOw0KPj4gKyAgICBpZiAocmV0KSB7DQo+PiArICAgICAgICAgICAg
+ZGV2X2Vycigmc3QtPnVzLT5kZXYsICJwcm9ibGVtIHdoaWxlIHJlYWRpbmcgMTYNCj5iaXQgcmVn
+aXN0ZXIgMHglMDJ4XG4iLA0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICByZWdfYWRk
+cmVzcyk7DQo+PiArICAgICAgICAgICAgZ290byBlcnJvcl9yZXQ7DQo+PiArICAgIH0NCj4+ICsN
+Cj4+ICsgICAgKnZhbCA9IChzdC0+cnhbMV0gJiAweDFmKSA8PCAxMSB8IHN0LT5yeFsyXSA8PCAz
+IHwgKHN0LT5yeFszXSAmDQo+PiArMHhlMCkgPj4gNTsNCj4+ICsNCj4+ICtlcnJvcl9yZXQ6DQo+
+PiArICAgIG11dGV4X3VubG9jaygmc3QtPmJ1Zl9sb2NrKTsNCj4+ICsgICAgcmV0dXJuIHJldDsN
+Cj4+ICt9DQo+PiArDQo+PiArLyoqDQo+PiArICogYWR4cnM0NTBfc3BpX3dyaXRlX3JlZ18xNigp
+IC0gd3JpdGUgMiBieXRlcyBkYXRhIHRvIGEgcmVnaXN0ZXINCj4+ICtwYWlyDQo+PiArICogQGRl
+djogZGV2aWNlIGFzc29jaWF0ZWQgd2l0aCBjaGlsZCBvZiBhY3R1YWwgZGV2aWNlIChpaW9fZGV2
+IG9yDQo+PiAraWlvX3RyaWcpDQo+SWYgaXQncyBhbiBpaW9fdHJpZywgY2FzdGluZyBpdCB0byBh
+biBpaW9fZGV2IHdpbGwgZ2l2ZSB5b3UNCj5zb21ld2hhdCBpbnRlcnJlc3RpbmcgcmVzdWx0cyEN
+Cj4+ICsgKiBAcmVnX2FkZHJlc3M6IHRoZSBhZGRyZXNzIG9mIHRoZSBsb3dlciBvZiB0aGUgdHdv
+DQo+cmVnaXN0ZXJzLHdoaWNoDQo+PiArc2hvdWxkIGJlIGFuIGV2ZW4gYWRkcmVzcywNCj4+ICsg
+KiBTZWNvbmQgcmVnaXN0ZXIncyBhZGRyZXNzIGlzIHJlZ19hZGRyZXNzICsgMS4NCj4+ICsgKiBA
+dmFsOiB2YWx1ZSB0byBiZSB3cml0dGVuLg0KPj4gKyAqKi8NCj4+ICtzdGF0aWMgaW50IGFkeHJz
+NDUwX3NwaV93cml0ZV9yZWdfMTYoc3RydWN0IGRldmljZSAqZGV2LA0KPj4gKyAgICAgICAgICAg
+IHU4IHJlZ19hZGRyZXNzLA0KPj4gKyAgICAgICAgICAgIHUxNiAqdmFsKQ0KPj4gK3sNCj4+ICsg
+ICAgc3RydWN0IHNwaV9tZXNzYWdlIG1zZzsNCj4+ICsgICAgc3RydWN0IGlpb19kZXYgKmluZGlv
+X2RldiA9IGRldl9nZXRfZHJ2ZGF0YShkZXYpOw0KPj4gKyAgICBzdHJ1Y3QgYWR4cnM0NTBfc3Rh
+dGUgKnN0ID0gaWlvX2Rldl9nZXRfZGV2ZGF0YShpbmRpb19kZXYpOw0KPj4gKyAgICBpbnQgcmV0
+Ow0KPkFnYWluLCBzaG91bGRuJ3QgYmUgYW4gYXJyYXkuDQo+PiArICAgIHN0cnVjdCBzcGlfdHJh
+bnNmZXIgeGZlcnNbXSA9IHsNCj4+ICsgICAgICAgICAgICB7DQo+PiArICAgICAgICAgICAgICAg
+ICAgICAudHhfYnVmID0gc3QtPnR4LA0KPj4gKyAgICAgICAgICAgICAgICAgICAgLnJ4X2J1ZiA9
+IHN0LT5yeCwNCj4+ICsgICAgICAgICAgICAgICAgICAgIC5iaXRzX3Blcl93b3JkID0gOCwNCj4+
+ICsgICAgICAgICAgICAgICAgICAgIC5sZW4gPSA0LA0KPj4gKyAgICAgICAgICAgIH0sDQo+PiAr
+ICAgIH07DQo+PiArDQo+PiArICAgIG11dGV4X2xvY2soJnN0LT5idWZfbG9jayk7DQo+PiArICAg
+IHN0LT50eFswXSA9IEFEWFJTNDUwX1dSSVRFX0RBVEEgfCByZWdfYWRkcmVzcyA+PiA3Ow0KPj4g
+KyAgICBzdC0+dHhbMV0gPSByZWdfYWRkcmVzcyA8PCAxIHwgKnZhbCA+PiAxNTsNCj4+ICsgICAg
+c3QtPnR4WzJdID0gKnZhbCA+PiA3Ow0KPj4gKyAgICBzdC0+dHhbM10gPSAqdmFsIDw8IDE7DQo+
+PiArICAgIHNwaV9tZXNzYWdlX2luaXQoJm1zZyk7DQo+PiArICAgIHNwaV9tZXNzYWdlX2FkZF90
+YWlsKCZ4ZmVyc1swXSwgJm1zZyk7DQo+PiArICAgIHJldCA9IHNwaV9zeW5jKHN0LT51cywgJm1z
+Zyk7DQo+PiArICAgIGlmIChyZXQpIHsNCj4+ICsgICAgICAgICAgICBkZXZfZXJyKCZzdC0+dXMt
+PmRldiwgInByb2JsZW0gd2hpbGUgd3JpdGluZyAxNg0KPmJpdCByZWdpc3RlciAweCUwMnhcbiIs
+DQo+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJlZ19hZGRyZXNzKTsNCj4+ICsgICAg
+ICAgICAgICBnb3RvIGVycm9yX3JldDsNCj5vbmx5IGdvaW5nIHRvIG5leHQgbGluZSBzbyBkb24n
+dCBuZWVkIHRoZSBnb3RvIGFuZCBhcyBhIHJlc3VsdA0KPm5vIG5lZWQgZm9yIHRoZSBicmFja2V0
+cyBlaXRoZXIuDQo+PiArICAgIH0NCj4+ICsNCj4+ICtlcnJvcl9yZXQ6DQo+PiArICAgIG11dGV4
+X3VubG9jaygmc3QtPmJ1Zl9sb2NrKTsNCj4+ICsgICAgcmV0dXJuIHJldDsNCj4+ICt9DQo+PiAr
+DQo+PiArLyoqDQo+PiArICogYWR4cnM0NTBfc3BpX3NlbnNvcl9kYXRhKCkgLSByZWFkIDIgYnl0
+ZXMgc2Vuc29yIGRhdGENCj4+ICsgKiBAZGV2OiBkZXZpY2UgYXNzb2NpYXRlZCB3aXRoIGNoaWxk
+IG9mIGFjdHVhbCBkZXZpY2UgKGlpb19kZXYgb3INCj4+ICtpaW9fdHJpZykNCj4+ICsgKiBAdmFs
+OiBzb21ld2hlcmUgdG8gcGFzcyBiYWNrIHRoZSB2YWx1ZSByZWFkICAqKi8gc3RhdGljIGludA0K
+Pj4gK2FkeHJzNDUwX3NwaV9zZW5zb3JfZGF0YShzdHJ1Y3QgZGV2aWNlICpkZXYsIHUxNiAqdmFs
+KSB7DQo+PiArICAgIHN0cnVjdCBzcGlfbWVzc2FnZSBtc2c7DQo+PiArICAgIHN0cnVjdCBpaW9f
+ZGV2ICppbmRpb19kZXYgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsNCj4+ICsgICAgc3RydWN0IGFk
+eHJzNDUwX3N0YXRlICpzdCA9IGlpb19kZXZfZ2V0X2RldmRhdGEoaW5kaW9fZGV2KTsNCj4+ICsg
+ICAgaW50IHJldDsNCj5TYW1lIGFycmF5IGNvbW1lbnQuDQo+PiArICAgIHN0cnVjdCBzcGlfdHJh
+bnNmZXIgeGZlcnNbXSA9IHsNCj4+ICsgICAgICAgICAgICB7DQo+PiArICAgICAgICAgICAgICAg
+ICAgICAudHhfYnVmID0gc3QtPnR4LA0KPj4gKyAgICAgICAgICAgICAgICAgICAgLnJ4X2J1ZiA9
+IHN0LT5yeCwNCj4+ICsgICAgICAgICAgICAgICAgICAgIC5iaXRzX3Blcl93b3JkID0gOCwNCj4+
+ICsgICAgICAgICAgICAgICAgICAgIC5sZW4gPSA0LA0KPj4gKyAgICAgICAgICAgIH0NCj4+ICsg
+ICAgfTsNCj4+ICsNCj4+ICsgICAgbXV0ZXhfbG9jaygmc3QtPmJ1Zl9sb2NrKTsNCj4+ICsgICAg
+c3QtPnR4WzBdID0gQURYUlM0NTBfU0VOU09SX0RBVEE7DQo+PiArICAgIHN0LT50eFsxXSA9IDA7
+DQo+PiArICAgIHN0LT50eFsyXSA9IDA7DQo+PiArICAgIHN0LT50eFszXSA9IDA7DQo+PiArDQo+
+PiArICAgIHNwaV9tZXNzYWdlX2luaXQoJm1zZyk7DQo+PiArICAgIHNwaV9tZXNzYWdlX2FkZF90
+YWlsKCZ4ZmVyc1swXSwgJm1zZyk7DQo+PiArICAgIHJldCA9IHNwaV9zeW5jKHN0LT51cywgJm1z
+Zyk7DQo+PiArICAgIGlmIChyZXQpIHsNCj4+ICsgICAgICAgICAgICBkZXZfZXJyKCZzdC0+dXMt
+PmRldiwgIlByb2JsZW0gd2hpbGUgcmVhZGluZw0KPnNlbnNvciBkYXRhXG4iKTsNCj4+ICsgICAg
+ICAgICAgICBnb3RvIGVycm9yX3JldDsNCj4+ICsgICAgfQ0KPj4gKw0KPj4gKyAgICBzcGlfbWVz
+c2FnZV9pbml0KCZtc2cpOw0KPj4gKyAgICBzcGlfbWVzc2FnZV9hZGRfdGFpbCgmeGZlcnNbMF0s
+ICZtc2cpOw0KPj4gKyAgICByZXQgPSBzcGlfc3luYyhzdC0+dXMsICZtc2cpOw0KPj4gKyAgICBp
+ZiAocmV0KSB7DQo+PiArICAgICAgICAgICAgZGV2X2Vycigmc3QtPnVzLT5kZXYsICJQcm9ibGVt
+IHdoaWxlIHJlYWRpbmcNCj5zZW5zb3IgZGF0YVxuIik7DQo+PiArICAgICAgICAgICAgZ290byBl
+cnJvcl9yZXQ7DQo+PiArICAgIH0NCj4+ICsNCj4+ICsgICAgKnZhbCA9IChzdC0+cnhbMF0gJiAw
+eDAzKSA8PCAxNCB8IHN0LT5yeFsxXSA8PCA2IHwgKHN0LT5yeFsyXSAmDQo+PiArMHhmYykgPj4g
+MjsNCj4+ICtlcnJvcl9yZXQ6DQo+PiArICAgIG11dGV4X3VubG9jaygmc3QtPmJ1Zl9sb2NrKTsN
+Cj4+ICsgICAgcmV0dXJuIHJldDsNCj4+ICt9DQo+PiArDQo+DQo+VGhpcyBsb29rcyB0byBvbmx5
+IGJlIGNhbGxlZCBmcm9tIGluaXRpYWwgc2V0dXAuIE1pZ2h0IGFzIHdlbGwNCj5qdXN0IG1ha2Ug
+aXQgdGFrZSBhbiBhZHhyczQ1MF9zdGF0ZSBkaXJlY3RseSBhbmQgc2F2ZSB0aGUNCj5jYXJlZnVs
+IGluZGlyZWN0aW9uIHRoYXQgaXMgY3VycmVudGx5IGdvaW5nIG9uIHRvIGVuc3VyZSBpdA0KPmdl
+dHMgdGhlIHNhbWUgZGV2IGFzIHRoZSBvdGhlciB3cml0ZSBmdW5jdGlvbnMuDQo+PiArLyoqDQo+
+PiArICogYWR4cnM0NTBfc3BpX2luaXRpYWwoKSAtIHVzZSBmb3IgaW5pdGlhbGl6aW5nIHByb2Nl
+ZHVyZS4NCj4+ICsgKiBAZGV2OiBkZXZpY2UgYXNzb2NpYXRlZCB3aXRoIGNoaWxkIG9mIGFjdHVh
+bCBkZXZpY2UgKGlpb19kZXYgb3INCj4+ICtpaW9fdHJpZykNCj4+ICsgKiBAdmFsOiBzb21ld2hl
+cmUgdG8gcGFzcyBiYWNrIHRoZSB2YWx1ZSByZWFkICAqKi8gc3RhdGljIGludA0KPj4gK2FkeHJz
+NDUwX3NwaV9pbml0aWFsKHN0cnVjdCBkZXZpY2UgKmRldiwNCj4+ICsgICAgICAgICAgICB1MzIg
+KnZhbCwgY2hhciBjaGspDQo+PiArew0KPj4gKyAgICBzdHJ1Y3Qgc3BpX21lc3NhZ2UgbXNnOw0K
+Pj4gKyAgICBzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2ID0gZGV2X2dldF9kcnZkYXRhKGRldik7
+DQo+PiArICAgIHN0cnVjdCBhZHhyczQ1MF9zdGF0ZSAqc3QgPSBpaW9fZGV2X2dldF9kZXZkYXRh
+KGluZGlvX2Rldik7DQo+PiArICAgIGludCByZXQ7DQo+QW5vdGhlciB1bm5lZWRlZCBhcnJheS4N
+Cj4+ICsgICAgc3RydWN0IHNwaV90cmFuc2ZlciB4ZmVyc1tdID0gew0KPj4gKyAgICAgICAgICAg
+IHsNCj4+ICsgICAgICAgICAgICAgICAgICAgIC50eF9idWYgPSBzdC0+dHgsDQo+PiArICAgICAg
+ICAgICAgICAgICAgICAucnhfYnVmID0gc3QtPnJ4LA0KPj4gKyAgICAgICAgICAgICAgICAgICAg
+LmJpdHNfcGVyX3dvcmQgPSA4LA0KPj4gKyAgICAgICAgICAgICAgICAgICAgLmxlbiA9IDQsDQo+
+PiArICAgICAgICAgICAgfSwNCj4+ICsgICAgfTsNCj4+ICsNCj4+ICsgICAgbXV0ZXhfbG9jaygm
+c3QtPmJ1Zl9sb2NrKTsNCj4+ICsgICAgc3QtPnR4WzBdID0gQURYUlM0NTBfU0VOU09SX0RBVEE7
+DQo+PiArICAgIHN0LT50eFsxXSA9IDA7DQo+PiArICAgIHN0LT50eFsyXSA9IDA7DQo+PiArICAg
+IHN0LT50eFszXSA9IDA7DQo+PiArICAgIGlmIChjaGspDQo+PiArICAgICAgICAgICAgc3QtPnR4
+WzNdIHw9IChBRFhSUzQ1MF9DSEsgfCBBRFhSUzQ1MF9QKTsNCj4+ICsgICAgc3BpX21lc3NhZ2Vf
+aW5pdCgmbXNnKTsNCj4+ICsgICAgc3BpX21lc3NhZ2VfYWRkX3RhaWwoJnhmZXJzWzBdLCAmbXNn
+KTsNCj4+ICsgICAgcmV0ID0gc3BpX3N5bmMoc3QtPnVzLCAmbXNnKTsNCj4+ICsgICAgaWYgKHJl
+dCkgew0KPj4gKyAgICAgICAgICAgIGRldl9lcnIoJnN0LT51cy0+ZGV2LCAiUHJvYmxlbSB3aGls
+ZSByZWFkaW5nDQo+aW5pdGlhbGl6aW5nIGRhdGFcbiIpOw0KPj4gKyAgICAgICAgICAgIGdvdG8g
+ZXJyb3JfcmV0Ow0KPj4gKyAgICB9DQo+PiArDQo+TG9va3MgbGlrZSBhbiBlbmRpbmFuZXNzIGNv
+bnZlcnNpb24gdG8gbWUuIGJlMzJ0b2NwdS4NCj4NCj4+ICsgICAgKnZhbCA9IHN0LT5yeFswXSA8
+PCAyNCB8IHN0LT5yeFsxXSA8PCAxNiB8IHN0LT5yeFsyXSA8PCA4IHwNCj4+ICtzdC0+cnhbM107
+DQo+PiArDQo+PiArZXJyb3JfcmV0Og0KPj4gKyAgICBtdXRleF91bmxvY2soJnN0LT5idWZfbG9j
+ayk7DQo+PiArICAgIHJldHVybiByZXQ7DQo+PiArfQ0KPj4gKw0KPj4gK3N0YXRpYyBzc2l6ZV90
+IGFkeHJzNDUwX3JlYWRfdGVtcChzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+PiArICAgICAgICAgICAg
+c3RydWN0IGRldmljZV9hdHRyaWJ1dGUgKmF0dHIsDQo+PiArICAgICAgICAgICAgY2hhciAqYnVm
+KQ0KPj4gK3sNCj4+ICsgICAgaW50IHJldCwgbGVuID0gMDsNCj5ObyBuZWVkIHRvIGluaXRpYWxp
+emUgbGVuLg0KPj4gKyAgICB1MTYgdDsNCj4+ICsgICAgcmV0ID0gYWR4cnM0NTBfc3BpX3JlYWRf
+cmVnXzE2KGRldiwNCj4+ICsgICAgICAgICAgICAgICAgICAgIEFEWFJTNDUwX1RFTVAxLA0KPj4g
+KyAgICAgICAgICAgICAgICAgICAgJnQpOw0KPj4gKyAgICBpZiAocmV0KQ0KPj4gKyAgICAgICAg
+ICAgIHJldHVybiByZXQ7DQo+PiArICAgIGxlbiA9IHNwcmludGYoYnVmLCAiJWRcbiIsIHQpOw0K
+Pj4gKyAgICByZXR1cm4gbGVuOw0KPj4gK30NCj4+ICsNCj4+ICtzdGF0aWMgc3NpemVfdCBhZHhy
+czQ1MF9yZWFkX3F1YWQoc3RydWN0IGRldmljZSAqZGV2LA0KPj4gKyAgICAgICAgICAgIHN0cnVj
+dCBkZXZpY2VfYXR0cmlidXRlICphdHRyLA0KPj4gKyAgICAgICAgICAgIGNoYXIgKmJ1ZikNCj4+
+ICt7DQo+PiArICAgIGludCByZXQsIGxlbiA9IDA7DQo+U2FtZSBmb3IgdGhpcyBsZW4NCj4+ICsg
+ICAgdTE2IHQ7DQo+PiArICAgIHJldCA9IGFkeHJzNDUwX3NwaV9yZWFkX3JlZ18xNihkZXYsDQo+
+PiArICAgICAgICAgICAgICAgICAgICBBRFhSUzQ1MF9RVUFEMSwNCj4+ICsgICAgICAgICAgICAg
+ICAgICAgICZ0KTsNCj4+ICsgICAgaWYgKHJldCkNCj4+ICsgICAgICAgICAgICByZXR1cm4gcmV0
+Ow0KPj4gKyAgICBsZW4gPSBzcHJpbnRmKGJ1ZiwgIiVkXG4iLCB0KTsNCj4+ICsgICAgcmV0dXJu
+IGxlbjsNCj4+ICt9DQo+PiArDQo+PiArc3RhdGljIHNzaXplX3QgYWR4cnM0NTBfd3JpdGVfZG5j
+KHN0cnVjdCBkZXZpY2UgKmRldiwNCj4+ICsgICAgICAgICAgICBzdHJ1Y3QgZGV2aWNlX2F0dHJp
+YnV0ZSAqYXR0ciwNCj4+ICsgICAgICAgICAgICBjb25zdCBjaGFyICpidWYsDQo+PiArICAgICAg
+ICAgICAgc2l6ZV90IGxlbikNCj4+ICt7DQo+PiArICAgIGludCByZXQ7DQo+PiArICAgIHUxNiB2
+YWw7DQo+PiArDQo+PiArICAgIGlmIChsZW4gPT0gMCB8fCBsZW4gPiAyKQ0KPj4gKyAgICAgICAg
+ICAgIHJldHVybiAtRUlOVkFMOw0KPj4gKyAgICBtZW1jcHkoJnZhbCwgYnVmLCBsZW4pOw0KPj4g
+KyAgICByZXQgPSBhZHhyczQ1MF9zcGlfd3JpdGVfcmVnXzE2KGRldiwNCj4+ICsgICAgICAgICAg
+ICAgICAgICAgIEFEWFJTNDUwX0ROQzEsDQo+PiArICAgICAgICAgICAgICAgICAgICAmdmFsKTsN
+Cj5FcnIsIHNvIHdoYXQgaXMgbWVhbnQgdG8gYmUgd3JpdHRlbiB0byB0aGlzPyAgTG9va3MgbGlr
+ZQ0KPnlvdSdsbCBiZSBkdW1waW5nIGEgcmFuZG9tIHNpbmdsZSBjaGFyYWN0ZXIgaW4gdG8gdGhl
+IHJlZ2lzdGVyLi4uDQo+RG9jdW1lbnRhdGlvbiB3b3VsZCBjbGVhciB0aGlzIHVwLg0KPg0KPj4g
+KyAgICByZXR1cm4gcmV0ID8gcmV0IDogbGVuOw0KPj4gK30NCj4+ICsNCj4+ICtzdGF0aWMgc3Np
+emVfdCBhZHhyczQ1MF9yZWFkX3NlbnNvcl9kYXRhKHN0cnVjdCBkZXZpY2UgKmRldiwNCj4+ICsg
+ICAgICAgICAgICBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZSAqYXR0ciwNCj4+ICsgICAgICAgICAg
+ICBjaGFyICpidWYpDQo+PiArew0KPj4gKyAgICBpbnQgcmV0LCBsZW4gPSAwOw0KPmFub3RoZXIg
+dW5uZWVkZWQgaW5pdCBvZiBsZW4NCj4+ICsgICAgdTE2IHQ7DQo+PiArDQo+PiArICAgIHJldCA9
+IGFkeHJzNDUwX3NwaV9zZW5zb3JfZGF0YShkZXYsICZ0KTsNCj4+ICsgICAgaWYgKHJldCkNCj4+
+ICsgICAgICAgICAgICByZXR1cm4gcmV0Ow0KPj4gKw0KPj4gKyAgICBsZW4gPSBzcHJpbnRmKGJ1
+ZiwgIiVkXG4iLCB0KTsNCj4+ICsgICAgcmV0dXJuIGxlbjsNCj4+ICt9DQo+PiArDQo+PiArLyog
+UmVjb21tZW5kZWQgU3RhcnR1cCBTZXF1ZW5jZSBieSBzcGVjICovIHN0YXRpYyBpbnQNCj4+ICth
+ZHhyczQ1MF9pbml0aWFsX3NldHVwKHN0cnVjdCBhZHhyczQ1MF9zdGF0ZSAqc3QpIHsNCj4+ICsg
+ICAgdTMyIHQ7DQo+PiArICAgIHUxNiBkYXRhOw0KPj4gKyAgICBpbnQgcmV0Ow0KPj4gKyAgICBz
+dHJ1Y3QgZGV2aWNlICpkZXYgPSAmc3QtPmluZGlvX2Rldi0+ZGV2Ow0KPj4gKw0KPj4gKyAgICBt
+c2xlZXAoQURYUlM0NTBfU1RBUlRVUF9ERUxBWSoyKTsNCj4+ICsgICAgcmV0ID0gYWR4cnM0NTBf
+c3BpX2luaXRpYWwoZGV2LCAmdCwgMSk7DQo+PiArICAgIGlmIChyZXQpDQo+PiArICAgICAgICAg
+ICAgcmV0dXJuIHJldDsNCj4+ICsgICAgaWYgKHQgIT0gMHgwMSkgew0KPj4gKyAgICAgICAgICAg
+IGRldl9lcnIoJnN0LT51cy0+ZGV2LCAiVGhlIGluaXRpYWwgcmVzcG9uc2UgaXMNCj5ub3QgY29y
+cmVjdCFcbiIpOw0KPj4gKyAgICAgICAgICAgIHJldHVybiAtRU5PREVWOw0KPj4gKw0KPj4gKyAg
+ICB9DQo+PiArDQo+PiArICAgIG1zbGVlcChBRFhSUzQ1MF9TVEFSVFVQX0RFTEFZKTsNCj4+ICsg
+ICAgcmV0ID0gYWR4cnM0NTBfc3BpX2luaXRpYWwoZGV2LCAmdCwgMCk7DQo+PiArICAgIGlmIChy
+ZXQpDQo+PiArICAgICAgICAgICAgcmV0dXJuIHJldDsNCj4+ICsNCj4+ICsgICAgbXNsZWVwKEFE
+WFJTNDUwX1NUQVJUVVBfREVMQVkpOw0KPj4gKyAgICByZXQgPSBhZHhyczQ1MF9zcGlfaW5pdGlh
+bChkZXYsICZ0LCAwKTsNCj4+ICsgICAgaWYgKHJldCkNCj4+ICsgICAgICAgICAgICByZXR1cm4g
+cmV0Ow0KPj4gKyAgICBpZiAoKCh0ICYgMHhmZikgfCAweDAxKSAhPSAweGZmIHx8IEFEWFJTNDUw
+X0dFVF9TVCh0KSAhPSAyKSB7DQo+PiArICAgICAgICAgICAgZGV2X2Vycigmc3QtPnVzLT5kZXYs
+ICJUaGUgc2Vjb25kIHJlc3BvbnNlIGlzDQo+bm90IGNvcnJlY3QhXG4iKTsNCj4+ICsgICAgICAg
+ICAgICByZXR1cm4gLUVJTzsNCj4+ICsNCj4+ICsgICAgfQ0KPj4gKyAgICByZXQgPSBhZHhyczQ1
+MF9zcGlfaW5pdGlhbChkZXYsICZ0LCAwKTsNCj4+ICsgICAgaWYgKHJldCkNCj4+ICsgICAgICAg
+ICAgICByZXR1cm4gcmV0Ow0KPj4gKyAgICBpZiAoKCh0ICYgMHhmZikgfCAweDAxKSAhPSAweGZm
+IHx8IEFEWFJTNDUwX0dFVF9TVCh0KSAhPSAyKSB7DQo+PiArICAgICAgICAgICAgZGV2X2Vycigm
+c3QtPnVzLT5kZXYsICJUaGUgdGhpcmQgcmVzcG9uc2UgaXMNCj5ub3QgY29ycmVjdCFcbiIpOw0K
+Pj4gKyAgICAgICAgICAgIHJldHVybiAtRUlPOw0KPj4gKw0KPj4gKyAgICB9DQo+PiArICAgIHJl
+dCA9IGFkeHJzNDUwX3NwaV9yZWFkX3JlZ18xNihkZXYsIEFEWFJTNDUwX0ZBVUxUMSwgJmRhdGEp
+Ow0KPj4gKyAgICBpZiAocmV0KQ0KPj4gKyAgICAgICAgICAgIHJldHVybiByZXQ7DQo+PiArICAg
+IGlmIChkYXRhICYgMHgwZmZmKSB7DQo+PiArICAgICAgICAgICAgZGV2X2Vycigmc3QtPnVzLT5k
+ZXYsICJUaGUgZGV2aWNlIGlzIG5vdCBpbg0KPm5vcm1hbCBzdGF0dXMhXG4iKTsNCj4+ICsgICAg
+ICAgICAgICByZXR1cm4gLUVJTlZBTDsNCj4+ICsgICAgfQ0KPj4gKyAgICByZXQgPSBhZHhyczQ1
+MF9zcGlfcmVhZF9yZWdfMTYoZGV2LCBBRFhSUzQ1MF9QSUQxLCAmZGF0YSk7DQo+PiArICAgIGlm
+IChyZXQpDQo+PiArICAgICAgICAgICAgcmV0dXJuIHJldDsNCj4+ICsgICAgZGV2X2luZm8oJnN0
+LT51cy0+ZGV2LCAiVGhlIFBhcnQgSUQgaXMgMHgleFxuIiwgZGF0YSk7DQo+PiArDQo+PiArICAg
+IHJldCA9IGFkeHJzNDUwX3NwaV9yZWFkX3JlZ18xNihkZXYsIEFEWFJTNDUwX1NOTCwgJmRhdGEp
+Ow0KPj4gKyAgICBpZiAocmV0KQ0KPj4gKyAgICAgICAgICAgIHJldHVybiByZXQ7DQo+PiArICAg
+IHQgPSBkYXRhOw0KPj4gKyAgICByZXQgPSBhZHhyczQ1MF9zcGlfcmVhZF9yZWdfMTYoZGV2LCBB
+RFhSUzQ1MF9TTkgsICZkYXRhKTsNCj4+ICsgICAgaWYgKHJldCkNCj4+ICsgICAgICAgICAgICBy
+ZXR1cm4gcmV0Ow0KPj4gKyAgICB0IHw9IGRhdGEgPDwgMTY7DQo+PiArICAgIGRldl9pbmZvKCZz
+dC0+dXMtPmRldiwgIlRoZSBTZXJpYWwgTnVtYmVyIGlzIDB4JXhcbiIsIHQpOw0KPj4gKw0KPj4g
+KyAgICBkZXZfaW5mbygmc3QtPnVzLT5kZXYsICIlcyBhdCBDUyVkXG4iLCBEUklWRVJfTkFNRSwN
+Cj4+ICsgICAgICAgICAgICAgICAgICAgIHN0LT51cy0+Y2hpcF9zZWxlY3QpOw0KPk5vdCByZWFs
+bHkgdXNlZnVsIGluZm8gdG8gdGhlIGF2ZXJhZ2UgcmVhZGVyIG9mIHRoZSBsb2cuDQo+UGxlYXNl
+IGNsZWFuIHRoaXMgb25lIG91dC4NCj4+ICsNCj4+ICsgICAgcmV0dXJuIDA7DQo+PiArfQ0KPj4g
+Kw0KPkkgbm90ZSB0aGVyZSBhcmUgdHdvIHZlcnNpb25zIG9mIHRoaXMgY2hpcCAoZnJvbSBkYXRh
+c2hlZXQpLg0KPldlIHNob3VsZCBwcm9iYWJseSBzdXBwb3J0IGNoYW5naW5nIHRoaXMgYXhpcyBh
+Y2NvcmRpbmcgdG8NCj53aGljaCBvbmUgd2UgaGF2ZS4gIFogaXMgb3V0IG9mIGNoaXAgcGxhbmUu
+IFRoZSBvdGhlciB0d28gYXJlDQo+YXJiaXRyYXJ5IGlmIHdlIG9ubHkgaGF2ZSAxIGF4aXMgb24g
+dGhlIGNoaXAuDQoNCkN1cnJlbnRseSxJIGRvbid0IGtub3cgdGhlIHdheSB0byB0ZWxsIHdoYXQg
+a2luZCBwYWNrYWdlIHRoZSBkZXZpY2UgaGFzLg0KU28sanVzdCBrZWVwIHRoZSBaLWF4aXMgb25l
+Lg0KDQoNCkNsaWZmDQoNCj4+ICtzdGF0aWMgSUlPX0RFVl9BVFRSX0dZUk9fWihhZHhyczQ1MF9y
+ZWFkX3NlbnNvcl9kYXRhLCAwKTsgc3RhdGljDQo+PiArSUlPX0RFVl9BVFRSX1RFTVBfUkFXKGFk
+eHJzNDUwX3JlYWRfdGVtcCk7DQo+PiArc3RhdGljIElJT19ERVZJQ0VfQVRUUihxdWFkLCBTX0lS
+VUdPLA0KPj4gKyAgICAgICAgICAgIGFkeHJzNDUwX3JlYWRfcXVhZCwgTlVMTCwgMCk7DQo+PiAr
+c3RhdGljIElJT19ERVZJQ0VfQVRUUihkeW5hbWljX251bGxfY29ycmVjdGlvbiwgU19JV1VHTywN
+Cj5JV1VTUiBwbGVhc2UuIFBlb3BsZSBnZXQgbmVydm91cyBmb3IgYW55IGdyZWF0ZXIgcGVybWlz
+c2lvbnMgdGhhbiB0aGF0Lg0KPj4gKyAgICAgICAgICAgIE5VTEwsIGFkeHJzNDUwX3dyaXRlX2Ru
+YywgMCk7DQo+PiArc3RhdGljIElJT19DT05TVF9BVFRSKG5hbWUsICJhZHhyczQ1MCIpOw0KPj4g
+Kw0KPj4gK3N0YXRpYyBzdHJ1Y3QgYXR0cmlidXRlICphZHhyczQ1MF9hdHRyaWJ1dGVzW10gPSB7
+DQo+Ym9udXMgYmxhbmsgbGluZSBoZXJlLiBQbGVhc2UgcmVtb3ZlLg0KPj4gKw0KPj4gKyAgICAm
+aWlvX2Rldl9hdHRyX2d5cm9fel9yYXcuZGV2X2F0dHIuYXR0ciwNCj4+ICsgICAgJmlpb19kZXZf
+YXR0cl90ZW1wX3Jhdy5kZXZfYXR0ci5hdHRyLA0KPj4gKyAgICAmaWlvX2Rldl9hdHRyX3F1YWQu
+ZGV2X2F0dHIuYXR0ciwNCj4+ICsgICAgJmlpb19kZXZfYXR0cl9keW5hbWljX251bGxfY29ycmVj
+dGlvbi5kZXZfYXR0ci5hdHRyLA0KPj4gKyAgICAmaWlvX2NvbnN0X2F0dHJfbmFtZS5kZXZfYXR0
+ci5hdHRyLA0KPj4gKyAgICBOVUxMDQo+PiArfTsNCj4+ICsNCj4+ICtzdGF0aWMgY29uc3Qgc3Ry
+dWN0IGF0dHJpYnV0ZV9ncm91cCBhZHhyczQ1MF9hdHRyaWJ1dGVfZ3JvdXAgPSB7DQo+PiArICAg
+IC5hdHRycyA9IGFkeHJzNDUwX2F0dHJpYnV0ZXMsDQo+PiArfTsNCj4+ICsNCj4+ICtzdGF0aWMg
+aW50IF9fZGV2aW5pdCBhZHhyczQ1MF9wcm9iZShzdHJ1Y3Qgc3BpX2RldmljZSAqc3BpKSB7DQo+
+PiArICAgIGludCByZXQsIHJlZ2RvbmUgPSAwOw0KPj4gKyAgICBzdHJ1Y3QgYWR4cnM0NTBfc3Rh
+dGUgKnN0ID0ga3phbGxvYyhzaXplb2YgKnN0LCBHRlBfS0VSTkVMKTsNCj4+ICsgICAgaWYgKCFz
+dCkgew0KPj4gKyAgICAgICAgICAgIHJldCA9ICAtRU5PTUVNOw0KPj4gKyAgICAgICAgICAgIGdv
+dG8gZXJyb3JfcmV0Ow0KPj4gKyAgICB9DQo+PiArICAgIC8qIFRoaXMgaXMgb25seSB1c2VkIGZv
+ciByZW1vdmFsIHB1cnBvc2VzICovDQo+PiArICAgIHNwaV9zZXRfZHJ2ZGF0YShzcGksIHN0KTsN
+Cj4+ICsNCj4+ICsgICAgLyogQWxsb2NhdGUgdGhlIGNvbW1zIGJ1ZmZlcnMgKi8NCj4+ICsgICAg
+c3QtPnJ4ID0ga3phbGxvYyhzaXplb2YoKnN0LT5yeCkqQURYUlM0NTBfTUFYX1JYLCBHRlBfS0VS
+TkVMKTsNCj4+ICsgICAgaWYgKHN0LT5yeCA9PSBOVUxMKSB7DQo+PiArICAgICAgICAgICAgcmV0
+ID0gLUVOT01FTTsNCj4+ICsgICAgICAgICAgICBnb3RvIGVycm9yX2ZyZWVfc3Q7DQo+PiArICAg
+IH0NCj4+ICsgICAgc3QtPnR4ID0ga3phbGxvYyhzaXplb2YoKnN0LT50eCkqQURYUlM0NTBfTUFY
+X1RYLCBHRlBfS0VSTkVMKTsNCj4+ICsgICAgaWYgKHN0LT50eCA9PSBOVUxMKSB7DQo+PiArICAg
+ICAgICAgICAgcmV0ID0gLUVOT01FTTsNCj4+ICsgICAgICAgICAgICBnb3RvIGVycm9yX2ZyZWVf
+cng7DQo+PiArICAgIH0NCj4+ICsgICAgc3QtPnVzID0gc3BpOw0KPj4gKyAgICBtdXRleF9pbml0
+KCZzdC0+YnVmX2xvY2spOw0KPj4gKyAgICAvKiBzZXR1cCB0aGUgaW5kdXN0cmlhbGlvIGRyaXZl
+ciBhbGxvY2F0ZWQgZWxlbWVudHMgKi8NCj4+ICsgICAgc3QtPmluZGlvX2RldiA9IGlpb19hbGxv
+Y2F0ZV9kZXZpY2UoKTsNCj4+ICsgICAgaWYgKHN0LT5pbmRpb19kZXYgPT0gTlVMTCkgew0KPj4g
+KyAgICAgICAgICAgIHJldCA9IC1FTk9NRU07DQo+PiArICAgICAgICAgICAgZ290byBlcnJvcl9m
+cmVlX3R4Ow0KPj4gKyAgICB9DQo+PiArDQo+PiArICAgIHN0LT5pbmRpb19kZXYtPmRldi5wYXJl
+bnQgPSAmc3BpLT5kZXY7DQo+PiArICAgIHN0LT5pbmRpb19kZXYtPmF0dHJzID0gJmFkeHJzNDUw
+X2F0dHJpYnV0ZV9ncm91cDsNCj4+ICsgICAgc3QtPmluZGlvX2Rldi0+ZGV2X2RhdGEgPSAodm9p
+ZCAqKShzdCk7DQo+PiArICAgIHN0LT5pbmRpb19kZXYtPmRyaXZlcl9tb2R1bGUgPSBUSElTX01P
+RFVMRTsNCj4+ICsgICAgc3QtPmluZGlvX2Rldi0+bW9kZXMgPSBJTkRJT19ESVJFQ1RfTU9ERTsN
+Cj4+ICsNCj4+ICsgICAgcmV0ID0gaWlvX2RldmljZV9yZWdpc3RlcihzdC0+aW5kaW9fZGV2KTsN
+Cj4+ICsgICAgaWYgKHJldCkNCj4+ICsgICAgICAgICAgICBnb3RvIGVycm9yX2ZyZWVfZGV2Ow0K
+Pj4gKyAgICByZWdkb25lID0gMTsNCj4+ICsNCj4+ICsgICAgLyogR2V0IHRoZSBkZXZpY2UgaW50
+byBhIHNhbmUgaW5pdGlhbCBzdGF0ZSAqLw0KPj4gKyAgICByZXQgPSBhZHhyczQ1MF9pbml0aWFs
+X3NldHVwKHN0KTsNCj4+ICsgICAgaWYgKHJldCkNCj4+ICsgICAgICAgICAgICBnb3RvIGVycm9y
+X2luaXRpYWw7DQo+PiArICAgIHJldHVybiAwOw0KPj4gKw0KPj4gK2Vycm9yX2luaXRpYWw6DQo+
+PiArZXJyb3JfZnJlZV9kZXY6DQo+PiArICAgIGlmIChyZWdkb25lKQ0KPj4gKyAgICAgICAgICAg
+IGlpb19kZXZpY2VfdW5yZWdpc3RlcihzdC0+aW5kaW9fZGV2KTsNCj4+ICsgICAgZWxzZQ0KPj4g
+KyAgICAgICAgICAgIGlpb19mcmVlX2RldmljZShzdC0+aW5kaW9fZGV2KTsNCj4+ICtlcnJvcl9m
+cmVlX3R4Og0KPj4gKyAgICBrZnJlZShzdC0+dHgpOw0KPj4gK2Vycm9yX2ZyZWVfcng6DQo+PiAr
+ICAgIGtmcmVlKHN0LT5yeCk7DQo+PiArZXJyb3JfZnJlZV9zdDoNCj4+ICsgICAga2ZyZWUoc3Qp
+Ow0KPj4gK2Vycm9yX3JldDoNCj4+ICsgICAgcmV0dXJuIHJldDsNCj4+ICt9DQo+PiArDQo+PiAr
+LyogZml4bWUsIGNvbmZpcm0gb3JkZXJpbmcgaW4gdGhpcyBmdW5jdGlvbiAqLyBzdGF0aWMgaW50
+DQo+PiArYWR4cnM0NTBfcmVtb3ZlKHN0cnVjdCBzcGlfZGV2aWNlICpzcGkpIHsNCj4+ICsgICAg
+c3RydWN0IGFkeHJzNDUwX3N0YXRlICpzdCA9IHNwaV9nZXRfZHJ2ZGF0YShzcGkpOw0KPg0KPk1p
+Z2h0IGFzIHdlbGwganVzdCBnbyB3aXRoDQo+DQo+aWlvX2RldmljZV91bnJlZ2lzdGVyKHN0LT5p
+bmRpb19kZXYpOw0KPj4gKyAgICBzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2ID0gc3QtPmluZGlv
+X2RldjsNCj4+ICsNCj4+ICsgICAgaWlvX2RldmljZV91bnJlZ2lzdGVyKGluZGlvX2Rldik7DQo+
+PiArICAgIGtmcmVlKHN0LT50eCk7DQo+PiArICAgIGtmcmVlKHN0LT5yeCk7DQo+PiArICAgIGtm
+cmVlKHN0KTsNCj4+ICsNCj4+ICsgICAgcmV0dXJuIDA7DQo+PiArfQ0KPj4gKw0KPj4gK3N0YXRp
+YyBzdHJ1Y3Qgc3BpX2RyaXZlciBhZHhyczQ1MF9kcml2ZXIgPSB7DQo+PiArICAgIC5kcml2ZXIg
+PSB7DQo+PiArICAgICAgICAgICAgLm5hbWUgPSAiYWR4cnM0NTAiLA0KPj4gKyAgICAgICAgICAg
+IC5vd25lciA9IFRISVNfTU9EVUxFLA0KPj4gKyAgICB9LA0KPj4gKyAgICAucHJvYmUgPSBhZHhy
+czQ1MF9wcm9iZSwNCj4+ICsgICAgLnJlbW92ZSA9IF9fZGV2ZXhpdF9wKGFkeHJzNDUwX3JlbW92
+ZSksIH07DQo+PiArDQo+PiArc3RhdGljIF9faW5pdCBpbnQgYWR4cnM0NTBfaW5pdCh2b2lkKSB7
+DQo+PiArICAgIHJldHVybiBzcGlfcmVnaXN0ZXJfZHJpdmVyKCZhZHhyczQ1MF9kcml2ZXIpOw0K
+Pj4gK30NCj4+ICttb2R1bGVfaW5pdChhZHhyczQ1MF9pbml0KTsNCj4+ICsNCj4+ICtzdGF0aWMg
+X19leGl0IHZvaWQgYWR4cnM0NTBfZXhpdCh2b2lkKSB7DQo+PiArICAgIHNwaV91bnJlZ2lzdGVy
+X2RyaXZlcigmYWR4cnM0NTBfZHJpdmVyKTsNCj4+ICt9DQo+PiArbW9kdWxlX2V4aXQoYWR4cnM0
+NTBfZXhpdCk7DQo+PiArDQo+PiArTU9EVUxFX0FVVEhPUigiQ2xpZmYgQ2FpIDxjbGlmZi5jYWlA
+YW5hbG9nLmNvbT4iKTsNCj4+ICtNT0RVTEVfREVTQ1JJUFRJT04oIkFuYWxvZyBEZXZpY2VzIEFE
+WFJTNDUwIEd5cm9zY29wZSBTUEkgZHJpdmVyIik7DQo+PiArTU9EVUxFX0xJQ0VOU0UoIkdQTCB2
+MiIpOw0KPg0KPg0K
