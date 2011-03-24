@@ -1,240 +1,262 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:22779 "EHLO
-	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S933797Ab1CXTEz convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Mar 2011 15:04:55 -0400
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:43939 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752341Ab1CXUJR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Mar 2011 16:09:17 -0400
+Message-ID: <4D8BA53A.4090307@cam.ac.uk>
+Date: Thu, 24 Mar 2011 20:10:34 +0000
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Subject: RE: [PATCH 2.6.38-rc7]TAOS 258x: Device Driver
-Date: Thu, 24 Mar 2011 14:04:52 -0500
-Message-ID: <B4B07CCC7B7A084E989CF9386538EA1D63A9D6@exchsrvr.taosinc.com>
-In-Reply-To: <4D8B27DF.5060608@cam.ac.uk>
-References: <1300131941.17298.17.camel@jonz-ubuntu> <4D87A1D6.2080306@cam.ac.uk> <B4B07CCC7B7A084E989CF9386538EA1D63A83B@exchsrvr.taosinc.com> <4D89D441.9030600@cam.ac.uk> <B4B07CCC7B7A084E989CF9386538EA1D63A93D@exchsrvr.taosinc.com> <4D8B27DF.5060608@cam.ac.uk>
-From: "Jon Brenner" <jbrenner@TAOSinc.com>
-To: "Jonathan Cameron" <jic23@cam.ac.uk>
-Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+To: Jon Brenner <jbrenner@TAOSinc.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2.6.38-rc7]TAOS 258x: Device Driver
+References: <1300131941.17298.17.camel@jonz-ubuntu> <4D87A1D6.2080306@cam.ac.uk> <B4B07CCC7B7A084E989CF9386538EA1D63A83B@exchsrvr.taosinc.com> <4D89D441.9030600@cam.ac.uk> <B4B07CCC7B7A084E989CF9386538EA1D63A93D@exchsrvr.taosinc.com> <4D8B27DF.5060608@cam.ac.uk> <B4B07CCC7B7A084E989CF9386538EA1D63A9D6@exchsrvr.taosinc.com>
+In-Reply-To: <B4B07CCC7B7A084E989CF9386538EA1D63A9D6@exchsrvr.taosinc.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
-The remaining issue that I am still trying to resolve is dealing with a
-proper ABI for the device integration time.
-If 'illuminance0_sampling_frequency' is not the proper ABI, should I
-create a new ABI 
-called illuminance0_integration_time and add it to the
-sys-bus-iio-lisgt-tsl2583 document as you had me do with
-/sys/bus/iio/devices/device[n]/lux_table?
-
-Jon
------Original Message-----
-From: Jonathan Cameron [mailto:jic23@cam.ac.uk] 
-Sent: Thursday, March 24, 2011 6:16 AM
-To: Jon Brenner
-Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2.6.38-rc7]TAOS 258x: Device Driver
-
-On 03/23/11 22:38, Jon Brenner wrote:
+On 03/24/11 19:04, Jon Brenner wrote:
 > Hi Jonathan,
-> Below are a few comments/questions to your latest response.
-> Any direction is greatly appreciated.
+> The remaining issue that I am still trying to resolve is dealing with a
+> proper ABI for the device integration time.
+> If 'illuminance0_sampling_frequency' is not the proper ABI, should I
+> create a new ABI 
+> called illuminance0_integration_time and add it to the
+> sys-bus-iio-lisgt-tsl2583 document as you had me do with
+> /sys/bus/iio/devices/device[n]/lux_table?
+
+Hmm. It really isn't fitting well in sampling frequency is it?
+Obviously it is connected to the frequency at which one can sample,
+but isn't quite the same.
+
+Throw an email to linux-iio proposing such an attribute and lets
+see what people come back with. This sort of integration time
+is pretty specific to light sensors so for now add it to the
+light docs - it is however a general thing on light sensors
+so we want something that isn't device specific.
+
+Make sure it is in sensible units though (seconds).
+
+
+
+
 > 
 > Jon
-No chance you can persuade your email client to do conventional
-indenting?  Ah well, I guess this works more or less.
-
->>
->> ----- snip ------------
->>> +	if ((ch0 >= chip->als_saturation) || (ch1 >= 
->>> +chip->als_saturation))
->> would be easier to read if you set ret to lux max here an avoid 
->> jumping into the if statement below.
->> NO - TSL258X_LUX_CALC_OVER_FLOW NEEDS TO PASSED UP.  
->> 	MUTEX NEEDS TO BE UNLOCKED. 
->> 	THEN RETURN.
-> Sorry, should have said jump to out_unlock having set ret = 
-> LUX_CALC_OVER_FLOW;
+> -----Original Message-----
+> From: Jonathan Cameron [mailto:jic23@cam.ac.uk] 
+> Sent: Thursday, March 24, 2011 6:16 AM
+> To: Jon Brenner
+> Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH 2.6.38-rc7]TAOS 258x: Device Driver
 > 
-> Just makes for marginally cleaner program flow to my mind (though I
-don't really care about this one).
+> On 03/23/11 22:38, Jon Brenner wrote:
+>> Hi Jonathan,
+>> Below are a few comments/questions to your latest response.
+>> Any direction is greatly appreciated.
+>>
+>> Jon
+> No chance you can persuade your email client to do conventional
+> indenting?  Ah well, I guess this works more or less.
 > 
-> I UNDERSTAND BUT I FORGOT TO MENTION THAT IN ADDITION TO THE ABOVE,
-ALSO NEEDS TO UPDATE THE ALS_CUR_INFO STRUCT.
-> SO, ALL SAID - EASIER TO SIMPLY JUMP TO RETURN_MAX, AS THIS IS ALL
-DONE THERE.
-Fair enough.  Was just personal preference anyway!
-...
+>>>
+>>> ----- snip ------------
+>>>> +	if ((ch0 >= chip->als_saturation) || (ch1 >= 
+>>>> +chip->als_saturation))
+>>> would be easier to read if you set ret to lux max here an avoid 
+>>> jumping into the if statement below.
+>>> NO - TSL258X_LUX_CALC_OVER_FLOW NEEDS TO PASSED UP.  
+>>> 	MUTEX NEEDS TO BE UNLOCKED. 
+>>> 	THEN RETURN.
+>> Sorry, should have said jump to out_unlock having set ret = 
+>> LUX_CALC_OVER_FLOW;
+>>
+>> Just makes for marginally cleaner program flow to my mind (though I
+> don't really care about this one).
+>>
+>> I UNDERSTAND BUT I FORGOT TO MENTION THAT IN ADDITION TO THE ABOVE,
+> ALSO NEEDS TO UPDATE THE ALS_CUR_INFO STRUCT.
+>> SO, ALL SAID - EASIER TO SIMPLY JUMP TO RETURN_MAX, AS THIS IS ALL
+> DONE THERE.
+> Fair enough.  Was just personal preference anyway!
+> ...
+>>
+>>>> +	/* NOW enable the ADC
+>>>
+>>>
+>>> ----- snip ------------
+>>> I still wonder if there isn't a way of avoiding this index issue.
+>>> It's horrible and really feels like something we ought to able to 
+>>> handle reasonably well...
+>>> BECAUSE THE CH0 AND CH1 DIVERGE AT HIGH GAINS -- INDEX IS BETTER THAN
 > 
->>> +	/* NOW enable the ADC
+>>> USING CHO OR CH1 VALUE ( AS EITHER ONE OVER THE OTHER WOULD BE WRONG 
+>>> :-{ )
+>> I can see your point to a certain extent.  The counter argument is
+> that doing it with an index precludes ever touching this with any
+> remotely general purpose user space code.  Given it's an internal gain
+> anyway is the precise value that critical?  Basically is user space ever
+> going to care about the difference between those those values?
 >>
+>> Another option would be to have a gain for each channel as separate
+> attributes (clearly writing to one would change the other).
 >>
->> ----- snip ------------
->> I still wonder if there isn't a way of avoiding this index issue.
->> It's horrible and really feels like something we ought to able to 
->> handle reasonably well...
->> BECAUSE THE CH0 AND CH1 DIVERGE AT HIGH GAINS -- INDEX IS BETTER THAN
-
->> USING CHO OR CH1 VALUE ( AS EITHER ONE OVER THE OTHER WOULD BE WRONG 
->> :-{ )
-> I can see your point to a certain extent.  The counter argument is
-that doing it with an index precludes ever touching this with any
-remotely general purpose user space code.  Given it's an internal gain
-anyway is the precise value that critical?  Basically is user space ever
-going to care about the difference between those those values?
+>> I SEE YOUR POINT TOO - BUT WHAT ELSE CAN I DO (ASIDE FROM A SEPARATE
+> GAIN FOR EACH CHANNEL - WHICH WOULD BE CONFUSING TO MANAGE)?
+>> I GUESS I COULD BUCKETIZE ANYTHING > GAIN 16 - BUT THAT SEEMS RATHER
+> KLUDGED?
+>> AGAIN SEEMS LIKE MOST REASONABLE (FOR NOW ANYWAY) IS AN INDEX.
+> It may be reasonable, but it isn't generalizable which means it probably
+> isn't viable long term.  The parameter simply won't be used by anything
+> that isn't custom coded
+> for this particular sensor.   Even Taos' next generation of sensors
+> probably won't
+> have an index which has the same effect.
 > 
-> Another option would be to have a gain for each channel as separate
-attributes (clearly writing to one would change the other).
+> If it can be coherently blugeoned into existing interfaces, then we
+> should do so.
+> There are quite a few other bits of IIO interface where changing one
+> value will effect others.  This means (and we could emphasise it more)
+> that there are sets of values user space MUST check after making a given
+> change if it wants to know the full device state.  Believe me, things
+> are much more complex with devices that do partial scans of channels
+> only in some combinations!
 > 
-> I SEE YOUR POINT TOO - BUT WHAT ELSE CAN I DO (ASIDE FROM A SEPARATE
-GAIN FOR EACH CHANNEL - WHICH WOULD BE CONFUSING TO MANAGE)?
-> I GUESS I COULD BUCKETIZE ANYTHING > GAIN 16 - BUT THAT SEEMS RATHER
-KLUDGED?
-> AGAIN SEEMS LIKE MOST REASONABLE (FOR NOW ANYWAY) IS AN INDEX.
-It may be reasonable, but it isn't generalizable which means it probably
-isn't viable long term.  The parameter simply won't be used by anything
-that isn't custom coded
-for this particular sensor.   Even Taos' next generation of sensors
-probably won't
-have an index which has the same effect.
-
-If it can be coherently blugeoned into existing interfaces, then we
-should do so.
-There are quite a few other bits of IIO interface where changing one
-value will effect others.  This means (and we could emphasise it more)
-that there are sets of values user space MUST check after making a given
-change if it wants to know the full device state.  Believe me, things
-are much more complex with devices that do partial scans of channels
-only in some combinations!
-
->> Just to confirm, is this a frequency in Hz? If it is can we renaming 
->> it to taos_als_frequency_show to avoid confusing me?
->>
->> THIS IS THE INTERNAL ALS INTEGRATION TIME FOR THE ADC CHANNELS I SHOE
-
->> HORNED IT INTO SAMPLING FREQUENCY TO HELP ALEVIATE THE ABI ANGST
-> That's good but it does have to match the units specified in the ABI
-as well.
+>>> Just to confirm, is this a frequency in Hz? If it is can we renaming 
+>>> it to taos_als_frequency_show to avoid confusing me?
+>>>
+>>> THIS IS THE INTERNAL ALS INTEGRATION TIME FOR THE ADC CHANNELS I SHOE
 > 
-> OK - MAYBE I'M MISSING SOME INFO.
-> ALL I HAVE FOR THE ABI IS THIS:
-> what:		/sys/bus/iio/devices/deviceX/sampling_frequency
-> KernelVersion:	2.6.35
-> Contact:	linux-iio@vger.kernel.org
-> Description:
-> 		Some devices have internal clocks.  This parameter sets
-the
-> 		resulting sampling frequency.  In many devices this
-> 		parameter has an effect on input filters etc rather than
-> 		simply controlling when the input is sampled.  As this
-> 		effects datardy triggers, hardware buffers and the sysfs
-> 		direct access interfaces, it may be found in any of the
-> 		relevant directories.  If it effects all of the above
-> 		then it is to be found in the base device directory as
-here.
+>>> HORNED IT INTO SAMPLING FREQUENCY TO HELP ALEVIATE THE ABI ANGST
+>> That's good but it does have to match the units specified in the ABI
+> as well.
+>>
+>> OK - MAYBE I'M MISSING SOME INFO.
+>> ALL I HAVE FOR THE ABI IS THIS:
+>> what:		/sys/bus/iio/devices/deviceX/sampling_frequency
+>> KernelVersion:	2.6.35
+>> Contact:	linux-iio@vger.kernel.org
+>> Description:
+>> 		Some devices have internal clocks.  This parameter sets
+> the
+>> 		resulting sampling frequency.  In many devices this
+>> 		parameter has an effect on input filters etc rather than
+>> 		simply controlling when the input is sampled.  As this
+>> 		effects datardy triggers, hardware buffers and the sysfs
+>> 		direct access interfaces, it may be found in any of the
+>> 		relevant directories.  If it effects all of the above
+>> 		then it is to be found in the base device directory as
+> here.
+>>
+>> SO I AM UNSURE OF WHAT UNITS NEED TO MATCH?
+> Fair point. That documentation is clearly lacking. One for the TODO
+> list.
+> Anyhow, it does say sampling frequency so the units can't be a measure
+> of time.  What it should say is 'in Hz' somewhere.
+>>
+>>>
+>>>> +static ssize_t taos_als_time_show(struct device *dev,
+>>>> +    struct device_attribute *attr, char *buf) {
+>>>> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>>>> +	struct tsl2583_chip *chip = indio_dev->dev_data;
+>>>> +
+>>>> +	return sprintf(buf, "%d\n", chip->taos_settings.als_time); }
+>>>
+>>> ----- snip ------------
+>>> scale as a stand alone attribute isn't defined. Please document this.
+>>> Looking at what you do with it, it's another factor effecting the 
+>>> overal gain on the reading that reaches userspace.  Ideally you'd 
+>>> roll this into your calibscale parameter, but I can see that would 
+>>> get complex to manage. Will have a think about this. In devices with 
+>>> a simple conversion function (adc's etc) we handle this by leaving 
+>>> this software value be applied by userspace (and output it as
+> in_scale).
+>>> The issue here that as far as userspace is concerned both of your 
+>>> scales have been applied before it sees the data and at different 
+>>> more or less random looking points in the calculation.
+>>>
+>>> Actually, looking at the calculation you could output 
+>>> illuminance0_raw and let userspace apply a multiplier based on your 
+>>> trim value and offset
+>>> +0.5?  If you want to hold trim in driver then just implement
+>>> read and write to
+>>>
+>>> illuminance0_scale
+>>> and have read only
+>>> illuminance0_offset (rather tediously for this device, offset is 
+>>> applied before scale, so you'll need to divide 0.5 by whatever your
+> trim is).
+>>>
+>>> We'll have to do pin down how to do this before moving out of staging
 > 
-> SO I AM UNSURE OF WHAT UNITS NEED TO MATCH?
-Fair point. That documentation is clearly lacking. One for the TODO
-list.
-Anyhow, it does say sampling frequency so the units can't be a measure
-of time.  What it should say is 'in Hz' somewhere.
+>>> so best to get it right now.
+>>>
+>>> CHANGED TO ILLUMINANCE0_SCALE
+>>>
+>>> LIFE WOULE BE NICE IF WE COULD JUST PASS THE RAW DATA UP TO USERSPACE
 > 
->>
->>> +static ssize_t taos_als_time_show(struct device *dev,
->>> +    struct device_attribute *attr, char *buf) {
->>> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->>> +	struct tsl2583_chip *chip = indio_dev->dev_data;
->>> +
->>> +	return sprintf(buf, "%d\n", chip->taos_settings.als_time); }
->>
->> ----- snip ------------
->> scale as a stand alone attribute isn't defined. Please document this.
->> Looking at what you do with it, it's another factor effecting the 
->> overal gain on the reading that reaches userspace.  Ideally you'd 
->> roll this into your calibscale parameter, but I can see that would 
->> get complex to manage. Will have a think about this. In devices with 
->> a simple conversion function (adc's etc) we handle this by leaving 
->> this software value be applied by userspace (and output it as
-in_scale).
->> The issue here that as far as userspace is concerned both of your 
->> scales have been applied before it sees the data and at different 
->> more or less random looking points in the calculation.
->>
->> Actually, looking at the calculation you could output 
->> illuminance0_raw and let userspace apply a multiplier based on your 
->> trim value and offset
->> +0.5?  If you want to hold trim in driver then just implement
->> read and write to
->>
->> illuminance0_scale
->> and have read only
->> illuminance0_offset (rather tediously for this device, offset is 
->> applied before scale, so you'll need to divide 0.5 by whatever your
-trim is).
->>
->> We'll have to do pin down how to do this before moving out of staging
-
->> so best to get it right now.
->>
->> CHANGED TO ILLUMINANCE0_SCALE
->>
->> LIFE WOULE BE NICE IF WE COULD JUST PASS THE RAW DATA UP TO USERSPACE
-
->> BUT WE HAVE CUSTOMERS WHO REQUIRE IT TO COME UP CALCULATED WITH THE 
->> MULTIPLIER FACTORED IN
-> Sure. It's a fiddly calculation so I can kind of see their point.
-> These light sensors are all a pain :)
-> SO - WE ARE OK?
-Err. I've kind of lost track, but I think so.  Will take one last look
-at your next revision!  Sounds like it may have some interesting new
-features anyway given the other thread!
->>
->> ----- snip ------------
->>> +	for (i = 0; i < MAX_DEVICE_REGS; i++) {
->>> +		ret = i2c_smbus_write_byte(clientp,
->>> +				(TSL258X_CMD_REG | (TSL258X_CNTRL +
-i)));
->>> +		if (ret < 0) {
->>> +			dev_err(&clientp->dev, "i2c_smbus_write_byte()
-to cmd "
->>> +				"reg failed in taos_probe(), err =
-%d\n", ret);
->>> +			goto fail1;
->>> +		}
->>> +		buf[i] = i2c_smbus_read_byte(clientp);
->>   error handling for this read?
->> VALUE IS UNIMPORTANT - BUT MAKING SURE WE CAN JUST READ ALL 32
-REGISTER LOCATIONS IS..
-That's fine, but you haven't verified that if you don't check for a
-negative return from that read.
-
-AGREED  - ADDED CHECK FOR NEGATIVE RETURN
-
->>
->> ----- snip ------------
->>
->>> +	}
->>> +	if (!taos_skate_device(buf)) {
->>> +		dev_info(&clientp->dev, "i2c device found but does not
-match "
->>> +			"expected id in taos_probe()\n");
->>> +		goto fail1;
->>> +	} else {
->> The sort of debug info you want to get rid of for production drivers.
-
->> Doesn't tell anyone anything helpful.
->> NO - DO NOT AGREE - IF A CUSTOMER EXPECTS ONE DEVICE BUT HAS SOMEHOW 
->> INSTALLED A DIFFERENT ONE AT PRODUCTION TIME, THIS WILL HELP IDENTIFY
-THE ISSUE.
->> (IE. WANTED A TAOS ALS DEVICE BUT INSTALLED A TAOS PROX/ALS DEVICE) 
->> FIRST PART INDICATES THAT.  SECOND PART IS CONFIRMATION THAT DEVICE
-WAS IDENTIFIED TO SYSTEM.
+>>> BUT WE HAVE CUSTOMERS WHO REQUIRE IT TO COME UP CALCULATED WITH THE 
+>>> MULTIPLIER FACTORED IN
+>> Sure. It's a fiddly calculation so I can kind of see their point.
+>> These light sensors are all a pain :)
+>> SO - WE ARE OK?
+> Err. I've kind of lost track, but I think so.  Will take one last look
+> at your next revision!  Sounds like it may have some interesting new
+> features anyway given the other thread!
+>>>
+>>> ----- snip ------------
+>>>> +	for (i = 0; i < MAX_DEVICE_REGS; i++) {
+>>>> +		ret = i2c_smbus_write_byte(clientp,
+>>>> +				(TSL258X_CMD_REG | (TSL258X_CNTRL +
+> i)));
+>>>> +		if (ret < 0) {
+>>>> +			dev_err(&clientp->dev, "i2c_smbus_write_byte()
+> to cmd "
+>>>> +				"reg failed in taos_probe(), err =
+> %d\n", ret);
+>>>> +			goto fail1;
+>>>> +		}
+>>>> +		buf[i] = i2c_smbus_read_byte(clientp);
+>>>   error handling for this read?
+>>> VALUE IS UNIMPORTANT - BUT MAKING SURE WE CAN JUST READ ALL 32
+> REGISTER LOCATIONS IS..
+> That's fine, but you haven't verified that if you don't check for a
+> negative return from that read.
 > 
-> I'm happy with the error one. Just don't see the point in saying
-'everything is as expected'.
-> The mere absence of the error indicates that just fine!
-> AGREED - REMOVED 2ND PART (THE OK MESSAGE)
-Cool
+> AGREED  - ADDED CHECK FOR NEGATIVE RETURN
+> 
+>>>
+>>> ----- snip ------------
+>>>
+>>>> +	}
+>>>> +	if (!taos_skate_device(buf)) {
+>>>> +		dev_info(&clientp->dev, "i2c device found but does not
+> match "
+>>>> +			"expected id in taos_probe()\n");
+>>>> +		goto fail1;
+>>>> +	} else {
+>>> The sort of debug info you want to get rid of for production drivers.
+> 
+>>> Doesn't tell anyone anything helpful.
+>>> NO - DO NOT AGREE - IF A CUSTOMER EXPECTS ONE DEVICE BUT HAS SOMEHOW 
+>>> INSTALLED A DIFFERENT ONE AT PRODUCTION TIME, THIS WILL HELP IDENTIFY
+> THE ISSUE.
+>>> (IE. WANTED A TAOS ALS DEVICE BUT INSTALLED A TAOS PROX/ALS DEVICE) 
+>>> FIRST PART INDICATES THAT.  SECOND PART IS CONFIRMATION THAT DEVICE
+> WAS IDENTIFIED TO SYSTEM.
+>>
+>> I'm happy with the error one. Just don't see the point in saying
+> 'everything is as expected'.
+>> The mere absence of the error indicates that just fine!
+>> AGREED - REMOVED 2ND PART (THE OK MESSAGE)
+> Cool
+> 
+> Coming together nicely.
+> 
+> Jonathan
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
-Coming together nicely.
-
-Jonathan
