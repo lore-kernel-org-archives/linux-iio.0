@@ -1,42 +1,39 @@
-Return-Path: <Cliff.Cai@analog.com>
-From: <cliff.cai@analog.com>
-To: gregkh@suse.de
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, jic23@cam.ac.uk,
-        device-drivers-devel@blackfin.uclinux.org,
-        Cliff Cai <cliff.cai@analog.com>
-Subject: [PATCH 2/2] Add ABI document for gyro quadrature correction
-Date: Fri, 25 Mar 2011 12:05:58 +0800
-Message-ID: <1301025958-2175-2-git-send-email-cliff.cai@analog.com>
-In-Reply-To: <1301025958-2175-1-git-send-email-cliff.cai@analog.com>
-References: <1301025958-2175-1-git-send-email-cliff.cai@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:24846 "EHLO
+	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S934262Ab1CXUwl convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Mar 2011 16:52:41 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;
+	charset="us-ascii"
+Subject: Proposed interface for Light Sensor ADC integration time
+Date: Thu, 24 Mar 2011 15:52:41 -0500
+Message-ID: <B4B07CCC7B7A084E989CF9386538EA1D63AA02@exchsrvr.taosinc.com>
+From: "Jon Brenner" <jbrenner@TAOSinc.com>
+To: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Cliff Cai <cliff.cai@analog.com>
+All,
+I have been trying to find/fit an appropriate ABI for a light sensor
+(ALS type) device driver, user accessible parameter.
+The parameter of discussion is the device ADC 'integration time'.
+This integration time is typically specified in ms.
 
-Add ABI document for gyro quadrature correction.
+I have considered 'illuminance0_sampling_frequency', but somehow it
+doesn't seem to fit as sampling frequency implies number of samples to
+be taken vs the internal ADC charge time itself.
+ADC integration time when used in conjunction with other tunable
+parameters affords the user ability to maximize resolution over response
+time, and thus a valuable interface particularly in ALS/PROX devices .
 
-Signed-off-by: Cliff Cai <cliff.cai@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/Documentation/sysfs-bus-iio |    7 +++++++
- 1 files changed, 7 insertions(+), 0 deletions(-)
+The intention is to create an attribute that is more or less generic for
+light sensor devices.
 
-diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio b/drivers/staging/iio/Documentation/sysfs-bus-iio
-index 4915aee..824a56c 100644
---- a/drivers/staging/iio/Documentation/sysfs-bus-iio
-+++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
-@@ -698,3 +698,10 @@ Description:
- 		with all _en attributes to establish which channels are present,
- 		and the relevant _type attributes to establish the data storage
- 		format.
-+
-+What:		/sys/bus/iio/devices/deviceX/gyro_z_quadrature_correction_raw
-+KernelVersion:	2.6.38
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This attribute is used to read the amount of quadrature error
-+		present in the device at a given time.
--- 
-1.7.1
+I would like to propose;
+For ALS devices - illuminance0_integration_time.
+For PROX devices - proximity-integration time.
+
+Your comments are welcome, and thanks for your consideration! 
+
+Jon
