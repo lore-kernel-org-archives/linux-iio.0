@@ -1,39 +1,85 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:24846 "EHLO
-	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S934262Ab1CXUwl convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Mar 2011 16:52:41 -0400
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Subject: Proposed interface for Light Sensor ADC integration time
-Date: Thu, 24 Mar 2011 15:52:41 -0500
-Message-ID: <B4B07CCC7B7A084E989CF9386538EA1D63AA02@exchsrvr.taosinc.com>
-From: "Jon Brenner" <jbrenner@TAOSinc.com>
-To: <linux-iio@vger.kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org
+Cc: arnd@arndb.de,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [RFC PATCH 0/3] Experimenting with channel specification structures.
+Date: Thu, 24 Mar 2011 20:05:22 +0000
+Message-Id: <1300997125-2896-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-All,
-I have been trying to find/fit an appropriate ABI for a light sensor
-(ALS type) device driver, user accessible parameter.
-The parameter of discussion is the device ADC 'integration time'.
-This integration time is typically specified in ms.
+Hi All,
 
-I have considered 'illuminance0_sampling_frequency', but somehow it
-doesn't seem to fit as sampling frequency implies number of samples to
-be taken vs the internal ADC charge time itself.
-ADC integration time when used in conjunction with other tunable
-parameters affords the user ability to maximize resolution over response
-time, and thus a valuable interface particularly in ALS/PROX devices .
+This set came out a suggestion of Arnd Bergmann that we look into
+alternatives to the huge attribute tables that dominate some of the
+current drivers (max1363 may be the worst).
 
-The intention is to create an attribute that is more or less generic for
-light sensor devices.
+To that end, what we have in this set is an initial stab at
+at using an iio_chan_spec structure to specify an awful lot
+about a given channel.
 
-I would like to propose;
-For ALS devices - illuminance0_integration_time.
-For PROX devices - proximity-integration time.
+Advantages I can see from this experiement
 
-Your comments are welcome, and thanks for your consideration! 
+1) Simple drivers are more consise.
+2) It is infact possible to do this for a lot of cases (I had
+my doubts ;)
+3) It gives us many of the rigid constraints that the many
+   attribute macros now handle in a nice clean form.
 
-Jon
+Disadvantages:
+
+1) The core code is rather more complex than I'd like.
+2) There are cases I haven't yet worked out how to handle properly
+   - for example, our lis3l02dq used to output accel_mag_value
+   as the threshold value is shared across all high and low threshold
+   interrupts.  Right now I have no way of specifying this level
+   of control for the events lines.
+   Also the use of shared event handlers is clunky to say the least.
+   This may go away when we rethink the event system though.
+3) Putting hard requirements on numeric formatting of some
+   parameters is a pain. If nothing else I need to write a fixed point
+   input function.
+
+Anyhow, all comments welcome. Personally I'm currently in favour of
+this approach, but we will need routes around it for the 'odd'
+cases.  The trick is going to be limiting what we let through that
+way to the absolute minimum of extremely device specific stuff.
+
+Lots still to do here, and I need to take on one of the devices
+where 'naming' the channels is important such as a light sensor...
+
+At least in theory this set shouldn't 'break' anything.
+
+Note it is on top of the general fixes I sent out last week.
+
+Jonathan
+
+
+p.s. Despite Arnd's original thread going to lkml I've kept this
+on list for now (+ Arnd of course!) because I want to pin it down
+a bit more before throwing it out more generally. Basically
+this is big and ugly and I'm a wimp ;)
+
+Jonathan Cameron (3):
+  staging:iio: allow channels to be set up using a table of
+    iio_channel_spec structures.
+  staging:iio:lis3l02dq - experimental move to new channel_spec
+    approach.
+  staging:iio:max1363 - experimental move to channel_spec registration.
+
+ drivers/staging/iio/accel/lis3l02dq.h      |   13 +-
+ drivers/staging/iio/accel/lis3l02dq_core.c |  525 +++++-------
+ drivers/staging/iio/accel/lis3l02dq_ring.c |  228 ++---
+ drivers/staging/iio/adc/max1363.h          |    8 +-
+ drivers/staging/iio/adc/max1363_core.c     | 1277 +++++++++++-----------------
+ drivers/staging/iio/adc/max1363_ring.c     |    1 -
+ drivers/staging/iio/chrdev.h               |    3 +
+ drivers/staging/iio/iio.h                  |  157 ++++
+ drivers/staging/iio/industrialio-core.c    |  535 ++++++++++++-
+ drivers/staging/iio/industrialio-ring.c    |  188 ++++-
+ drivers/staging/iio/ring_generic.h         |   19 +
+ drivers/staging/iio/sysfs.h                |   31 +-
+ 12 files changed, 1693 insertions(+), 1292 deletions(-)
+
+-- 
+1.7.3.4
