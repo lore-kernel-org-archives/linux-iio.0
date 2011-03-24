@@ -1,12 +1,12 @@
 Return-Path: <Michael.Hennerich@analog.com>
 From: <michael.hennerich@analog.com>
-To: greg@kroah.com
-CC: linux-iio@vger.kernel.org, drivers@analog.com, jic23@cam.ac.uk,
+To: jic23@cam.ac.uk
+CC: linux-iio@vger.kernel.org, drivers@analog.com,
         device-drivers-devel@blackfin.uclinux.org,
         Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH] IIO: ADC: New driver for the AD7780 / AD7781 24-bit Sigma-Delta ADC
-Date: Thu, 24 Mar 2011 19:37:00 +0100
-Message-ID: <1300991820-9785-1-git-send-email-michael.hennerich@analog.com>
+Subject: [PATCH] IIO: ADC: New driver for the AD7880 / AD7781 24-bit Sigma-Delta ADC
+Date: Thu, 24 Mar 2011 16:52:17 +0100
+Message-ID: <1300981937-8675-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
@@ -22,7 +22,6 @@ Add comment explaining power down reset (PDRST) GPIO handling
 and dual function DOUT/RDY interrupt usage.
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
  drivers/staging/iio/adc/Kconfig  |   11 ++
  drivers/staging/iio/adc/Makefile |    1 +
