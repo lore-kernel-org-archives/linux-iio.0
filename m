@@ -1,85 +1,63 @@
-Return-Path: <jic23@cam.ac.uk>
-From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org
-Cc: arnd@arndb.de,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [RFC PATCH 0/3] Experimenting with channel specification structures.
-Date: Thu, 24 Mar 2011 20:05:22 +0000
-Message-Id: <1300997125-2896-1-git-send-email-jic23@cam.ac.uk>
+Return-Path: <arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [RFC PATCH 0/3] Experimenting with channel specification structures.
+Date: Fri, 25 Mar 2011 16:03:57 +0100
+Cc: linux-iio@vger.kernel.org
+References: <1300997125-2896-1-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1300997125-2896-1-git-send-email-jic23@cam.ac.uk>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="iso-8859-15"
+Message-Id: <201103251603.58220.arnd@arndb.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi All,
+On Thursday 24 March 2011, Jonathan Cameron wrote:
+> Advantages I can see from this experiement
+> 
+> 1) Simple drivers are more consise.
+> 2) It is infact possible to do this for a lot of cases (I had
+> my doubts ;)
+> 3) It gives us many of the rigid constraints that the many
+>    attribute macros now handle in a nice clean form.
 
-This set came out a suggestion of Arnd Bergmann that we look into
-alternatives to the huge attribute tables that dominate some of the
-current drivers (max1363 may be the worst).
+Very nice!
 
-To that end, what we have in this set is an initial stab at
-at using an iio_chan_spec structure to specify an awful lot
-about a given channel.
+> Disadvantages:
+> 
+> 1) The core code is rather more complex than I'd like.
 
-Advantages I can see from this experiement
+Yes, but I think not overly so. Moving complexity from the drivers
+into the core should almost always be worth it in the long run.
 
-1) Simple drivers are more consise.
-2) It is infact possible to do this for a lot of cases (I had
-my doubts ;)
-3) It gives us many of the rigid constraints that the many
-   attribute macros now handle in a nice clean form.
+Remember that people who write the drivers should not need to
+worry about many of the complexities of kernel hacking, such
+as sysfs attributes or character devices. The more of that you
+can do in the core, the less work you have helping your downstream
+developers.
 
-Disadvantages:
+> 2) There are cases I haven't yet worked out how to handle properly
+>    - for example, our lis3l02dq used to output accel_mag_value
+>    as the threshold value is shared across all high and low threshold
+>    interrupts.  Right now I have no way of specifying this level
+>    of control for the events lines.
+>    Also the use of shared event handlers is clunky to say the least.
+>    This may go away when we rethink the event system though.
 
-1) The core code is rather more complex than I'd like.
-2) There are cases I haven't yet worked out how to handle properly
-   - for example, our lis3l02dq used to output accel_mag_value
-   as the threshold value is shared across all high and low threshold
-   interrupts.  Right now I have no way of specifying this level
-   of control for the events lines.
-   Also the use of shared event handlers is clunky to say the least.
-   This may go away when we rethink the event system though.
-3) Putting hard requirements on numeric formatting of some
-   parameters is a pain. If nothing else I need to write a fixed point
-   input function.
+I think reworking the way that event buffers work is quite
+central here, although mostly orthogonal to the rework of the
+internal API.
 
-Anyhow, all comments welcome. Personally I'm currently in favour of
-this approach, but we will need routes around it for the 'odd'
-cases.  The trick is going to be limiting what we let through that
-way to the absolute minimum of extremely device specific stuff.
+> 3) Putting hard requirements on numeric formatting of some
+>    parameters is a pain. If nothing else I need to write a fixed point
+>    input function.
 
-Lots still to do here, and I need to take on one of the devices
-where 'naming' the channels is important such as a light sensor...
+Yes, but at least you only need to write it once ;-)
 
-At least in theory this set shouldn't 'break' anything.
+> p.s. Despite Arnd's original thread going to lkml I've kept this
+> on list for now (+ Arnd of course!) because I want to pin it down
+> a bit more before throwing it out more generally. 
 
-Note it is on top of the general fixes I sent out last week.
+Fair enough.
 
-Jonathan
-
-
-p.s. Despite Arnd's original thread going to lkml I've kept this
-on list for now (+ Arnd of course!) because I want to pin it down
-a bit more before throwing it out more generally. Basically
-this is big and ugly and I'm a wimp ;)
-
-Jonathan Cameron (3):
-  staging:iio: allow channels to be set up using a table of
-    iio_channel_spec structures.
-  staging:iio:lis3l02dq - experimental move to new channel_spec
-    approach.
-  staging:iio:max1363 - experimental move to channel_spec registration.
-
- drivers/staging/iio/accel/lis3l02dq.h      |   13 +-
- drivers/staging/iio/accel/lis3l02dq_core.c |  525 +++++-------
- drivers/staging/iio/accel/lis3l02dq_ring.c |  228 ++---
- drivers/staging/iio/adc/max1363.h          |    8 +-
- drivers/staging/iio/adc/max1363_core.c     | 1277 +++++++++++-----------------
- drivers/staging/iio/adc/max1363_ring.c     |    1 -
- drivers/staging/iio/chrdev.h               |    3 +
- drivers/staging/iio/iio.h                  |  157 ++++
- drivers/staging/iio/industrialio-core.c    |  535 ++++++++++++-
- drivers/staging/iio/industrialio-ring.c    |  188 ++++-
- drivers/staging/iio/ring_generic.h         |   19 +
- drivers/staging/iio/sysfs.h                |   31 +-
- 12 files changed, 1693 insertions(+), 1292 deletions(-)
-
--- 
-1.7.3.4
+	Arnd
