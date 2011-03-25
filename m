@@ -1,395 +1,575 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:24922 "EHLO
-	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1750980Ab1C2PIM convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Mar 2011 11:08:12 -0400
+Return-Path: <Cliff.Cai@analog.com>
+From: <cliff.cai@analog.com>
+To: gregkh@suse.de
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, jic23@cam.ac.uk,
+        device-drivers-devel@blackfin.uclinux.org,
+        Cliff Cai <cliff.cai@analog.com>
+Subject: [PATCH 1/2] IIO driver for Analog Devices Digital Output Gyroscope ADXRS450
+Date: Fri, 25 Mar 2011 12:05:57 +0800
+Message-ID: <1301025958-2175-1-git-send-email-cliff.cai@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Subject: RE: [PATCH V3]TAOS 258x: Device Driver
-Date: Tue, 29 Mar 2011 10:08:09 -0500
-Message-ID: <B4B07CCC7B7A084E989CF9386538EA1D69ACCD@exchsrvr.taosinc.com>
-In-Reply-To: <a3971e1f0d7d9d86b13f09015574b69e@mail.gmail.com>
-References: <1301089260.29448.22.camel@jonz-ubuntu> <4D8E1F9B.9080302@ti.com> <1301338247.1830.6.camel@jonz-ubuntu> <a3971e1f0d7d9d86b13f09015574b69e@mail.gmail.com>
-From: "Jon Brenner" <jbrenner@TAOSinc.com>
-To: "Shubhrajyoti Datta" <shubhrajyoti@ti.com>
-Cc: "Jonathan Cameron" <jic23@cam.ac.uk>,
-	"linux-iio" <linux-iio@vger.kernel.org>,
-	"Linux Kernel" <linux-kernel@vger.kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
+From: Cliff Cai <cliff.cai@analog.com>
 
+Add new IIO driver for Analog Devices digital output gyroscope ADXRS450
 
------Original Message-----
-From: Shubhrajyoti Datta [mailto:shubhrajyoti@ti.com] 
-Sent: Tuesday, March 29, 2011 12:38 AM
-To: Jon Brenner
-Cc: Jonathan Cameron; linux-iio; Linux Kernel
-Subject: RE: [PATCH V3]TAOS 258x: Device Driver
+Signed-off-by: Cliff Cai <cliff.cai@analog.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/gyro/Kconfig         |   10 +
+ drivers/staging/iio/gyro/Makefile        |    3 +
+ drivers/staging/iio/gyro/adxrs450.h      |   58 ++++
+ drivers/staging/iio/gyro/adxrs450_core.c |  446 ++++++++++++++++++++++++++++++
+ 4 files changed, 517 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/gyro/adxrs450.h
+ create mode 100644 drivers/staging/iio/gyro/adxrs450_core.c
 
-> -----Original Message-----
-> From: Jon Brenner [mailto:jbrenner@TAOSinc.com]
-> Sent: Tuesday, March 29, 2011 12:21 AM
-> To: Shubhrajyoti
-> Cc: Jonathan Cameron; linux-iio; Linux Kernel
-> Subject: Re: [PATCH V3]TAOS 258x: Device Driver
->
-> HI Shubhrajyoti:
-> Thanks for taking time to review the code.
-> Please see my response to your comments throughout.
->
->
-> Jon
->
-> On Sat, 2011-03-26 at 22:47 +0530, Shubhrajyoti wrote:
-> > Hi Jon,
-> > Some minor comments.
-> >
-> > On Saturday 26 March 2011 03:11 AM, Jon Brenner wrote:
-> > > [PATCH v3] for TAOS tsl2580/81/83 Device driver
-> > >
-> > > Added suspend/resume functions.
-> > > Changed attribute names to match existing where applicable and 
-> > > updated
-> or documented new ABI as discussed.
-> > > Changed integration time ABI from using index (0 to 3) to use 
-> > > actual
-> gain values (1x,8x, etc.).
-> > > Removed various unused variables, declarations, and functions.
-> > > Revised code to accommodate different endianess (le16_to_cpu).
-> > > Updated error return codes in various functions.
-> > > Changed from mdelay to msleep after determining that longer wait 
-> > > would
-> be acceptable.
-> > >
-> > > Signed-off-by:Jon August Brenner<jbrenner@taosinc.com>
-> > >
-> > > ---
-> > >   drivers/staging/iio/Documentation/sysfs-bus-iio    |    6 +
-> > >   .../staging/iio/Documentation/sysfs-bus-iio-light  |   13 +
-> > >   .../iio/Documentation/sysfs-bus-iio-light-tsl2583  |   20 +
-> > >   drivers/staging/iio/light/Kconfig                  |    9 +
-> > >   drivers/staging/iio/light/Makefile                 |    1 +
-> > >   drivers/staging/iio/light/tsl2583.c                |  962
-> ++++++++++++++++++++
-> > >   6 files changed, 1011 insertions(+), 0 deletions(-)
-> > >
-> > > diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio
-> b/drivers/staging/iio/Documentation/sysfs-bus-iio
-> > > index 2dde97d..6a86ad2 100644
-> > > --- a/drivers/staging/iio/Documentation/sysfs-bus-iio
-> > > +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
-> > > @@ -6,6 +6,12 @@ Description:
-> > >   		Corresponds to a grouping of sensor channels. X
-is the
-> IIO
-> > >   		index of the device.
-> > >
-> > > +What:		/sys/bus/iio/devices/device[n]/power_state
-> > > +KernelVersion:	2.6.37
-> > > +Contact:	linux-iio@vger.kernel.org
-> > > +Description:
-> > > +		This property gets/sets the device power state.
-> > > +
-> > >   What:		/sys/bus/iio/devices/triggerX
-> > >   KernelVersion:	2.6.35
-> > >   Contact:	linux-iio@vger.kernel.org
-> > > diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-> b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-> > > index 5d84856..21d2774 100644
-> > > --- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-> > > +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-> > > @@ -62,3 +62,16 @@ Description:
-> > >   		sensing mode. This value should be the output
-from a
-> reading
-> > >   		and if expressed in SI units, should include
-_input. If
-> this
-> > >   		value is not in SI units, then it should include
-_raw.
-> > > +
-> > > +What:
-/sys/bus/iio/devices/device[n]/illuminance0_target
-> > > +KernelVersion:	2.6.37
-> > > +Contact:	linux-iio@vger.kernel.org
-> > > +Description:
-> > > +		This property gets/sets the last known external
-> > > +		lux measurement used in/for calibration.
-> > > +
-> > > +What:
-> 	/sys/bus/iio/devices/device[n]/illuminance0_integration_time
-> > > +KernelVersion:	2.6.37
-> > > +Contact:	linux-iio@vger.kernel.org
-> > > +Description:
-> > > +		This property gets/sets the sensors ADC analog
-integration
-> time.
-> > > diff --git 
-> > > a/drivers/staging/iio/Documentation/sysfs-bus-iio-light-
-> tsl2583 
-> b/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
-> > > new file mode 100644
-> > > index 0000000..660781d
-> > > --- /dev/null
-> > > +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl258
-> > > +++ 3
-> > > @@ -0,0 +1,20 @@
-> > > +What:		/sys/bus/iio/devices/device[n]/lux_table
-> > > +KernelVersion:	2.6.37
-> > > +Contact:	linux-iio@vger.kernel.org
-> > > +Description:
-> > > +		This property gets/sets the table of coefficients
-> > > +		used in calculating illuminance in lux.
-> > > +
-> > > +What:
-/sys/bus/iio/devices/device[n]/illuminance0_calibrate
-> > > +KernelVersion:	2.6.37
-> > > +Contact:	linux-iio@vger.kernel.org
-> > > +Description:
-> > > +		This property causes an internal calibration of the als
-gain
-> trim
-> > > +		value which is later used in calculating illuminance in
-lux.
-> > > +
-> > > +What:
-/sys/bus/iio/devices/device[n]/illuminance0_input_target
-> > > +KernelVersion:	2.6.37
-> > > +Contact:	linux-iio@vger.kernel.org
-> > > +Description:
-> > > +		This property is the known externally illuminance (in
-lux).
-> > > +		It is used in the process of calibrating the device
-accuracy.
-> > > diff --git a/drivers/staging/iio/light/Kconfig
-> b/drivers/staging/iio/light/Kconfig
-> > > index 36d8bbe..55c146c 100644
-> > > --- a/drivers/staging/iio/light/Kconfig
-> > > +++ b/drivers/staging/iio/light/Kconfig
-> > > @@ -13,6 +13,15 @@ config SENSORS_TSL2563
-> > >   	 This driver can also be built as a module.  If so, the
-module
-> > >   	 will be called tsl2563.
-> > >
-> > > +config TSL2583
-> > > +	tristate "TAOS TSL2580, TSL2581, and TSL2583 light-to-digital
-> converters"
-> > > +	depends on I2C
-> > > +	help
-> > > +	  Y = in kernel.
-> > > +	  M = as module.
-> > > +	  Provides support for the TAOS tsl2580, tsl2581, and tsl2583
-> devices.
-> > > +	  Access ALS data via iio, sysfs.
-> > > +
-> > >   config SENSORS_ISL29018
-> > >           tristate "ISL 29018 light and proximity sensor"
-> > >           depends on I2C
-> > > diff --git a/drivers/staging/iio/light/Makefile
-> b/drivers/staging/iio/light/Makefile
-> > > index 9142c0e..8a10815 100644
-> > > --- a/drivers/staging/iio/light/Makefile
-> > > +++ b/drivers/staging/iio/light/Makefile
-> > > @@ -3,4 +3,5 @@
-> > >   #
-> > >
-> > >   obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
-> > > +obj-$(CONFIG_TSL2583)	+= tsl2583.o
-> > >   obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
-> > > diff --git a/drivers/staging/iio/light/tsl2583.c
-> b/drivers/staging/iio/light/tsl2583.c
-> > > new file mode 100644
-> > > index 0000000..013a742
-> > > --- /dev/null
-> > > +++ b/drivers/staging/iio/light/tsl2583.c
-> > > @@ -0,0 +1,962 @@
-> > > +/*
-> > > + * Device driver for monitoring ambient light intensity (lux)
-> > > + * within the TAOS tsl258x family of devices (tsl2580, tsl2581).
-> > > + *
-> > > + * Copyright (c) 2011, TAOS Corporation.
-> > > + *
-> > > + * This program is free software; you can redistribute it and/or
-> modify
-> > > + * it under the terms of the GNU General Public License as 
-> > > + published
-> by
-> > > + * the Free Software Foundation; either version 2 of the License,
-
-> > > + or
-> > > + * (at your option) any later version.
-> > > + *
-> > > + * This program is distributed in the hope that it will be 
-> > > + useful,
-> but WITHOUT
-> > > + * ANY WARRANTY; without even the implied warranty of 
-> > > + MERCHANTABILITY
-> or
-> > > + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
-> License for
-> > > + * more details.
-> > > + *
-> > > + * You should have received a copy of the GNU General Public 
-> > > + License
-> along
-> > > + * with this program; if not, write to the Free Software 
-> > > + Foundation,
-> Inc.,
-> > > + * 51 Franklin Street, Fifth Floor, Boston, MA	02110-1301, USA.
-> > > + */
-> > > +
-> > > +#include<linux/kernel.h>
-> > > +#include<linux/i2c.h>
-> > > +#include<linux/errno.h>
-> > > +#include<linux/delay.h>
-> > > +#include<linux/string.h>
-> > > +#include<linux/mutex.h>
-> > > +#include<linux/unistd.h>
-> > > +#include "../iio.h"
-> > > +
-> > > +
-> > > +#define TSL258X_MAX_DEVICE_REGS		32
-> > > +
-> > > +/* Triton register offsets */
-> > > +#define	TSL258X_REG_MAX		8
-> > > +
-> > > +/* Device Registers and Masks */
-> > > +#define TSL258X_CNTRL			0x00
-> > > +#define TSL258X_ALS_TIME		0X01
-> > > +#define TSL258X_INTERRUPT		0x02
-> > > +#define TSL258X_GAIN			0x07
-> > > +#define TSL258X_REVID			0x11
-> > > +#define TSL258X_CHIPID			0x12
-> > > +#define TSL258X_ALS_CHAN0LO		0x14
-> > > +#define TSL258X_ALS_CHAN0HI		0x15
-> > > +#define TSL258X_ALS_CHAN1LO		0x16
-> > > +#define TSL258X_ALS_CHAN1HI		0x17
-> > > +#define TSL258X_TMR_LO			0x18
-> > > +#define TSL258X_TMR_HI			0x19
-> > > +
-> > > +/* tsl2583 cmd reg masks */
-> > > +#define TSL258X_CMD_REG			0x80
-> > > +#define TSL258X_CMD_SPL_FN		0x60
-> > > +#define TSL258X_CMD_ALS_INT_CLR	0X01
-> > > +
-> > > +/* tsl2583 cntrl reg masks */
-> > > +#define TSL258X_CNTL_ADC_ENBL	0x02
-> > > +#define TSL258X_CNTL_PWR_ON		0x01
-> > > +
-> > > +/* tsl2583 status reg masks */
-> > > +#define TSL258X_STA_ADC_VALID	0x01
-> > > +#define TSL258X_STA_ADC_INTR	0x10
-> > > +
-> > > +/* Lux calculation constants */
-> > > +#define	TSL258X_LUX_CALC_OVER_FLOW		65535
-> > > +
-> > > +enum {
-> > > +	TSL258X_CHIP_UNKNOWN = 0,
-> > > +	TSL258X_CHIP_WORKING = 1,
-> > > +	TSL258X_CHIP_SUSPENDED = 2
-> > > +} TSL258X_CHIP_WORKING_STATUS;
-> > > +
-> > > +/* Per-device data */
-> > > +struct taos_als_info {
-> > > +	u16 als_ch0;
-> > > +	u16 als_ch1;
-> > > +	u16 lux;
-> > > +};
-> > > +
-> > > +struct taos_settings {
-> > > +	int als_time;
-> > > +	int als_gain;
-> > > +	int als_gain_trim;
-> > > +	int als_cal_target;
-> > > +};
-> > > +
-> > > +struct tsl2583_chip {
-> > > +	struct mutex als_mutex;
-> > > +	struct i2c_client *client;
-> > > +	struct iio_dev *iio_dev;
-> > > +	struct taos_als_info als_cur_info;
-> > > +	struct taos_settings taos_settings;
-> > > +	int als_time_scale;
-> > > +	int als_saturation;
-> > > +	int taos_chip_status;
-> > > +	u8 taos_config[8];
-> > > +};
-> > > +
-> > > +/*
-> > > + * Initial values for device - this values can/will be changed by
-> driver.
-> > > + * and applications as needed.
-> > > + * These values are dynamic.
-> > > + */
-> > > +static const u8 taos_config[8] = {
-> > > +		0x00, 0xee, 0x00, 0x03, 0x00, 0xFF, 0xFF, 0x00
-> > > +}; /*	cntrl atime intC  Athl0 Athl1 Athh0 Athh1 gain */
-> > > +
-> > > +struct taos_lux {
-> > > +	unsigned int ratio;
-> > > +	unsigned int ch0;
-> > > +	unsigned int ch1;
-> > > +};
-> > > +
-> > > +/* This structure is intentionally large to accommodate updates 
-> > > +via
-> sysfs. */
-> > > +/* Sized to 11 = max 10 segments + 1 termination segment */
-> > > +/* Assumption is is one and only one type of glass used  */ 
-> > > +struct taos_lux taos_device_lux[11] = {
-> > > +	{  9830,  8520, 15729 },
-> > > +	{ 12452, 10807, 23344 },
-> > > +	{ 14746,  6383, 11705 },
-> > > +	{ 17695,  4063,  6554 },
-> > > +};
-> > > +
-> > > +struct gainadj {
-> > > +	s16 ch0;
-> > > +	s16 ch1;
-> > > +};
-> > > +
-> > > +/* Index = (0 - 3) Used to validate the gain selection index */ 
-> > > +static const struct gainadj gainadj[] = {
-> > > +	{ 1, 1 },
-> > > +	{ 8, 8 },
-> > > +	{ 16, 16 },
-> > > +	{ 107, 115 }
-> > > +};
-> > > +
-> > > +/*
-> > > + * Provides initial operational parameter defaults.
-> > > + * These defaults may be changed through the device's sysfs
-files.
-> > > + */
-> > > +static void taos_defaults(struct tsl2583_chip *chip) {
-> > > +	/* Operational parameters */
-> > > +	chip->taos_settings.als_time = 450;
-> > > +	/* must be a multiple of 50mS */
-> > > +	chip->taos_settings.als_gain = 2;
-> > > +	/* this is actually an index into the gain table */
-> > > +	/* assume clear glass as default */
-> > > +	chip->taos_settings.als_gain_trim = 1000;
-> > > +	/* default gain trim to account for aperture effects */
-> > > +	chip->taos_settings.als_cal_target = 130;
-> > > +	/* Known external ALS reading used for calibration */ }
-> > > +
-> > > +/*
-> > > + * Read a number of bytes starting at register (reg) location.
-> > > + * Return 0, or i2c_smbus_write_byte ERROR code.
-> > > + */
-> > Could we use i2c_smbus_read_block_data ?
-> NO -Many controllers no longer seem to support block mode read/write.
-> To use block mode reads could exclude some.
-By controller you mean the i2c controller?
-(ie. - msg from older driver)
-taos 0-0039: taos_probe() - i2c smbus block data functions unsupported
-
->
-> > > +static int
-> > > +taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val, 
-> > > +unsigned
-> int len)
-> > > +{
-> > > +	int ret;
+diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
+index 8b78fa0..ae2e7d3 100644
+--- a/drivers/staging/iio/gyro/Kconfig
++++ b/drivers/staging/iio/gyro/Kconfig
+@@ -35,3 +35,13 @@ config ADIS16260
+ 
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called adis16260.
++
++config ADXRS450
++	tristate "Analog Devices ADXRS450 Digital Output Gyroscope SPI driver"
++	depends on SPI
++	help
++	  Say yes here to build support for Analog Devices ADXRS450 programmable
++	  digital output gyroscope.
++
++	  This driver can also be built as a module.  If so, the module
++	  will be called adxrs450.
+diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
+index 2764c15..2212240 100644
+--- a/drivers/staging/iio/gyro/Makefile
++++ b/drivers/staging/iio/gyro/Makefile
+@@ -17,3 +17,6 @@ obj-$(CONFIG_ADIS16260) += adis16260.o
+ 
+ adis16251-y             := adis16251_core.o
+ obj-$(CONFIG_ADIS16251) += adis16251.o
++
++adxrs450-y             := adxrs450_core.o
++obj-$(CONFIG_ADXRS450) += adxrs450.o
+diff --git a/drivers/staging/iio/gyro/adxrs450.h b/drivers/staging/iio/gyro/adxrs450.h
+new file mode 100644
+index 0000000..c92f694
+--- /dev/null
++++ b/drivers/staging/iio/gyro/adxrs450.h
+@@ -0,0 +1,58 @@
++#ifndef SPI_ADXRS450_H_
++#define SPI_ADXRS450_H_
++
++#define ADXRS450_STARTUP_DELAY	50 /* ms */
++
++/* The MSB for the spi commands */
++#define ADXRS450_SENSOR_DATA    0x20
++#define ADXRS450_WRITE_DATA	0x40
++#define ADXRS450_READ_DATA	0x80
++
++#define ADXRS450_RATE1	0x00	/* Rate Registers */
++#define ADXRS450_TEMP1	0x02	/* Temperature Registers */
++#define ADXRS450_LOCST1	0x04	/* Low CST Memory Registers */
++#define ADXRS450_HICST1	0x06	/* High CST Memory Registers */
++#define ADXRS450_QUAD1	0x08	/* Quad Memory Registers */
++#define ADXRS450_FAULT1	0x0A	/* Fault Registers */
++#define ADXRS450_PID1	0x0C	/* Part ID Register 1 */
++#define ADXRS450_SNH	0x0E	/* Serial Number Registers, 4 bytes */
++#define ADXRS450_SNL	0x10
++#define ADXRS450_DNC1	0x12	/* Dynamic Null Correction Registers */
++/* Check bits */
++#define ADXRS450_P	0x01
++#define ADXRS450_CHK	0x02
++#define ADXRS450_CST	0x04
++#define ADXRS450_PWR	0x08
++#define ADXRS450_POR	0x10
++#define ADXRS450_NVM	0x20
++#define ADXRS450_Q	0x40
++#define ADXRS450_PLL	0x80
++#define ADXRS450_UV	0x100
++#define ADXRS450_OV	0x200
++#define ADXRS450_AMP	0x400
++#define ADXRS450_FAIL	0x800
++
++#define ADXRS450_WRERR_MASK	(0x7 << 29)
++
++#define ADXRS450_MAX_RX 4
++#define ADXRS450_MAX_TX 4
++
++#define ADXRS450_GET_ST(a)	((a >> 26) & 0x3)
++
++/**
++ * struct adxrs450_state - device instance specific data
++ * @us:			actual spi_device
++ * @indio_dev:		industrial I/O device structure
++ * @tx:			transmit buffer
++ * @rx:			recieve buffer
++ * @buf_lock:		mutex to protect tx and rx
++ **/
++struct adxrs450_state {
++	struct spi_device		*us;
++	struct iio_dev			*indio_dev;
++	u8				*tx;
++	u8				*rx;
++	struct mutex			buf_lock;
++};
++
++#endif /* SPI_ADXRS450_H_ */
+diff --git a/drivers/staging/iio/gyro/adxrs450_core.c b/drivers/staging/iio/gyro/adxrs450_core.c
+new file mode 100644
+index 0000000..2014e5c
+--- /dev/null
++++ b/drivers/staging/iio/gyro/adxrs450_core.c
+@@ -0,0 +1,446 @@
++/*
++ * ADXRS450 Digital Output Gyroscope Driver
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/gpio.h>
++#include <linux/delay.h>
++#include <linux/mutex.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/spi/spi.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/list.h>
++
++#include "../iio.h"
++#include "../sysfs.h"
++#include "gyro.h"
++#include "../adc/adc.h"
++
++#include "adxrs450.h"
++
++/**
++ * adxrs450_spi_read_reg_16() - read 2 bytes from a register pair
++ * @dev: device associated with child of actual iio_dev
++ * @reg_address: the address of the lower of the two registers,which should be an even address,
++ * Second register's address is reg_address + 1.
++ * @val: somewhere to pass back the value read
++ **/
++static int adxrs450_spi_read_reg_16(struct device *dev,
++		u8 reg_address,
++		u16 *val)
++{
++	struct spi_message msg;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct adxrs450_state *st = iio_dev_get_devdata(indio_dev);
++	int ret;
++	struct spi_transfer xfers = {
++		.tx_buf = st->tx,
++		.rx_buf = st->rx,
++		.bits_per_word = 8,
++		.len = 4,
++	};
++	/* Needs to send the command twice to get the wanted value */
++	mutex_lock(&st->buf_lock);
++	st->tx[0] = ADXRS450_READ_DATA | reg_address >> 7;
++	st->tx[1] = reg_address << 1;
++	st->tx[2] = 0;
++	st->tx[3] = 0;
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers, &msg);
++	ret = spi_sync(st->us, &msg);
++	if (ret) {
++		dev_err(&st->us->dev, "problem while reading 16 bit register 0x%02x\n",
++				reg_address);
++		goto error_ret;
++	}
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers, &msg);
++	ret = spi_sync(st->us, &msg);
++	if (ret) {
++		dev_err(&st->us->dev, "problem while reading 16 bit register 0x%02x\n",
++				reg_address);
++		goto error_ret;
++	}
++
++	*val = (st->rx[1] & 0x1f) << 11 | st->rx[2] << 3 | (st->rx[3] & 0xe0) >> 5;
++
++error_ret:
++	mutex_unlock(&st->buf_lock);
++	return ret;
++}
++
++/**
++ * adxrs450_spi_write_reg_16() - write 2 bytes data to a register pair
++ * @dev: device associated with child of actual actual iio_dev
++ * @reg_address: the address of the lower of the two registers,which should be an even address,
++ * Second register's address is reg_address + 1.
++ * @val: value to be written.
++ **/
++static int adxrs450_spi_write_reg_16(struct device *dev,
++		u8 reg_address,
++		u16 val)
++{
++	struct spi_message msg;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct adxrs450_state *st = iio_dev_get_devdata(indio_dev);
++	int ret;
++	struct spi_transfer xfers = {
++		.tx_buf = st->tx,
++		.rx_buf = st->rx,
++		.bits_per_word = 8,
++		.len = 4,
++	};
++
++	mutex_lock(&st->buf_lock);
++	st->tx[0] = ADXRS450_WRITE_DATA | reg_address >> 7;
++	st->tx[1] = reg_address << 1 | val >> 15;
++	st->tx[2] = val >> 7;
++	st->tx[3] = val << 1;
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers, &msg);
++	ret = spi_sync(st->us, &msg);
++	if (ret)
++		dev_err(&st->us->dev, "problem while writing 16 bit register 0x%02x\n",
++				reg_address);
++	mutex_unlock(&st->buf_lock);
++	return ret;
++}
++
++/**
++ * adxrs450_spi_sensor_data() - read 2 bytes sensor data
++ * @dev: device associated with child of actual iio_dev
++ * @val: somewhere to pass back the value read
++ **/
++static int adxrs450_spi_sensor_data(struct device *dev, u16 *val)
++{
++	struct spi_message msg;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct adxrs450_state *st = iio_dev_get_devdata(indio_dev);
++	int ret;
++	struct spi_transfer xfers = {
++		.tx_buf = st->tx,
++		.rx_buf = st->rx,
++		.bits_per_word = 8,
++		.len = 4,
++	};
++
++	mutex_lock(&st->buf_lock);
++	st->tx[0] = ADXRS450_SENSOR_DATA;
++	st->tx[1] = 0;
++	st->tx[2] = 0;
++	st->tx[3] = 0;
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers, &msg);
++	ret = spi_sync(st->us, &msg);
++	if (ret) {
++		dev_err(&st->us->dev, "Problem while reading sensor data\n");
++		goto error_ret;
++	}
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers, &msg);
++	ret = spi_sync(st->us, &msg);
++	if (ret) {
++		dev_err(&st->us->dev, "Problem while reading sensor data\n");
++		goto error_ret;
++	}
++
++	*val = (st->rx[0] & 0x03) << 14 | st->rx[1] << 6 | (st->rx[2] & 0xfc) >> 2;
++error_ret:
++	mutex_unlock(&st->buf_lock);
++	return ret;
++}
++
++/**
++ * adxrs450_spi_initial() - use for initializing procedure.
++ * @st: device instance specific data
++ * @val: somewhere to pass back the value read
++ **/
++static int adxrs450_spi_initial(struct adxrs450_state *st,
++		u32 *val, char chk)
++{
++	struct spi_message msg;
++	int ret;
++	struct spi_transfer xfers = {
++		.tx_buf = st->tx,
++		.rx_buf = st->rx,
++		.bits_per_word = 8,
++		.len = 4,
++	};
++
++	mutex_lock(&st->buf_lock);
++	st->tx[0] = ADXRS450_SENSOR_DATA;
++	st->tx[1] = 0;
++	st->tx[2] = 0;
++	st->tx[3] = 0;
++	if (chk)
++		st->tx[3] |= (ADXRS450_CHK | ADXRS450_P);
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers, &msg);
++	ret = spi_sync(st->us, &msg);
++	if (ret) {
++		dev_err(&st->us->dev, "Problem while reading initializing data\n");
++		goto error_ret;
++	}
++
++	*val = be32_to_cpu(*(u32 *)st->rx);
++
++error_ret:
++	mutex_unlock(&st->buf_lock);
++	return ret;
++}
++
++static ssize_t adxrs450_read_temp(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	int ret;
++	u16 t;
++	ret = adxrs450_spi_read_reg_16(dev,
++			ADXRS450_TEMP1,
++			&t);
++	if (ret)
++		return ret;
++	return sprintf(buf, "%d\n", t);
++}
++
++static ssize_t adxrs450_read_quad(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	int ret;
++	u16 t;
++	ret = adxrs450_spi_read_reg_16(dev,
++			ADXRS450_QUAD1,
++			&t);
++	if (ret)
++		return ret;
++	return sprintf(buf, "%d\n", t);
++}
++
++static ssize_t adxrs450_write_dnc(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	int ret;
++	long val;
++
++	ret = strict_strtol(buf, 10, &val);
++	if (ret)
++		goto error_ret;
++	ret = adxrs450_spi_write_reg_16(dev,
++			ADXRS450_DNC1,
++			val);
++error_ret:
++	return ret ? ret : len;
++}
++
++static ssize_t adxrs450_read_sensor_data(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	int ret;
++	u16 t;
++
++	ret = adxrs450_spi_sensor_data(dev, &t);
++	if (ret)
++		return ret;
++
++	return sprintf(buf, "%d\n", t);
++}
++
++/* Recommended Startup Sequence by spec */
++static int adxrs450_initial_setup(struct adxrs450_state *st)
++{
++	u32 t;
++	u16 data;
++	int ret;
++	struct device *dev = &st->indio_dev->dev;
++
++	msleep(ADXRS450_STARTUP_DELAY*2);
++	ret = adxrs450_spi_initial(st, &t, 1);
++	if (ret)
++		return ret;
++	if (t != 0x01) {
++		dev_err(&st->us->dev, "The initial response is not correct!\n");
++		return -ENODEV;
++
++	}
++
++	msleep(ADXRS450_STARTUP_DELAY);
++	ret = adxrs450_spi_initial(st, &t, 0);
++	if (ret)
++		return ret;
++
++	msleep(ADXRS450_STARTUP_DELAY);
++	ret = adxrs450_spi_initial(st, &t, 0);
++	if (ret)
++		return ret;
++	if (((t & 0xff) | 0x01) != 0xff || ADXRS450_GET_ST(t) != 2) {
++		dev_err(&st->us->dev, "The second response is not correct!\n");
++		return -EIO;
++
++	}
++	ret = adxrs450_spi_initial(st, &t, 0);
++	if (ret)
++		return ret;
++	if (((t & 0xff) | 0x01) != 0xff || ADXRS450_GET_ST(t) != 2) {
++		dev_err(&st->us->dev, "The third response is not correct!\n");
++		return -EIO;
++
++	}
++	ret = adxrs450_spi_read_reg_16(dev, ADXRS450_FAULT1, &data);
++	if (ret)
++		return ret;
++	if (data & 0x0fff) {
++		dev_err(&st->us->dev, "The device is not in normal status!\n");
++		return -EINVAL;
++	}
++	ret = adxrs450_spi_read_reg_16(dev, ADXRS450_PID1, &data);
++	if (ret)
++		return ret;
++	dev_info(&st->us->dev, "The Part ID is 0x%x\n", data);
++
++	ret = adxrs450_spi_read_reg_16(dev, ADXRS450_SNL, &data);
++	if (ret)
++		return ret;
++	t = data;
++	ret = adxrs450_spi_read_reg_16(dev, ADXRS450_SNH, &data);
++	if (ret)
++		return ret;
++	t |= data << 16;
++	dev_info(&st->us->dev, "The Serial Number is 0x%x\n", t);
++
++	return 0;
++}
++
++static IIO_DEV_ATTR_GYRO_Z(adxrs450_read_sensor_data, 0);
++static IIO_DEV_ATTR_TEMP_RAW(adxrs450_read_temp);
++static IIO_DEV_ATTR_GYRO_Z_QUADRATURE_CORRECTION(adxrs450_read_quad, 0);
++static IIO_DEV_ATTR_GYRO_Z_CALIBBIAS(S_IWUSR,
++		NULL, adxrs450_write_dnc, 0);
++static IIO_CONST_ATTR(name, "adxrs450");
++
++static struct attribute *adxrs450_attributes[] = {
++	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
++	&iio_dev_attr_temp_raw.dev_attr.attr,
++	&iio_dev_attr_gyro_z_quadrature_correction_raw.dev_attr.attr,
++	&iio_dev_attr_gyro_z_calibbias.dev_attr.attr,
++	&iio_const_attr_name.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group adxrs450_attribute_group = {
++	.attrs = adxrs450_attributes,
++};
++
++static int __devinit adxrs450_probe(struct spi_device *spi)
++{
++	int ret, regdone = 0;
++	struct adxrs450_state *st = kzalloc(sizeof *st, GFP_KERNEL);
++	if (!st) {
++		ret =  -ENOMEM;
++		goto error_ret;
++	}
++	/* This is only used for removal purposes */
++	spi_set_drvdata(spi, st);
++
++	/* Allocate the comms buffers */
++	st->rx = kzalloc(sizeof(*st->rx)*ADXRS450_MAX_RX, GFP_KERNEL);
++	if (st->rx == NULL) {
++		ret = -ENOMEM;
++		goto error_free_st;
++	}
++	st->tx = kzalloc(sizeof(*st->tx)*ADXRS450_MAX_TX, GFP_KERNEL);
++	if (st->tx == NULL) {
++		ret = -ENOMEM;
++		goto error_free_rx;
++	}
++	st->us = spi;
++	mutex_init(&st->buf_lock);
++	/* setup the industrialio driver allocated elements */
++	st->indio_dev = iio_allocate_device();
++	if (st->indio_dev == NULL) {
++		ret = -ENOMEM;
++		goto error_free_tx;
++	}
++
++	st->indio_dev->dev.parent = &spi->dev;
++	st->indio_dev->attrs = &adxrs450_attribute_group;
++	st->indio_dev->dev_data = (void *)(st);
++	st->indio_dev->driver_module = THIS_MODULE;
++	st->indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = iio_device_register(st->indio_dev);
++	if (ret)
++		goto error_free_dev;
++	regdone = 1;
++
++	/* Get the device into a sane initial state */
++	ret = adxrs450_initial_setup(st);
++	if (ret)
++		goto error_initial;
++	return 0;
++
++error_initial:
++error_free_dev:
++	if (regdone)
++		iio_device_unregister(st->indio_dev);
++	else
++		iio_free_device(st->indio_dev);
++error_free_tx:
++	kfree(st->tx);
++error_free_rx:
++	kfree(st->rx);
++error_free_st:
++	kfree(st);
++error_ret:
++	return ret;
++}
++
++static int adxrs450_remove(struct spi_device *spi)
++{
++	struct adxrs450_state *st = spi_get_drvdata(spi);
++
++	iio_device_unregister(st->indio_dev);
++	kfree(st->tx);
++	kfree(st->rx);
++	kfree(st);
++
++	return 0;
++}
++
++static struct spi_driver adxrs450_driver = {
++	.driver = {
++		.name = "adxrs450",
++		.owner = THIS_MODULE,
++	},
++	.probe = adxrs450_probe,
++	.remove = __devexit_p(adxrs450_remove),
++};
++
++static __init int adxrs450_init(void)
++{
++	return spi_register_driver(&adxrs450_driver);
++}
++module_init(adxrs450_init);
++
++static __exit void adxrs450_exit(void)
++{
++	spi_unregister_driver(&adxrs450_driver);
++}
++module_exit(adxrs450_exit);
++
++MODULE_AUTHOR("Cliff Cai <cliff.cai@analog.com>");
++MODULE_DESCRIPTION("Analog Devices ADXRS450 Gyroscope SPI driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.7.1
