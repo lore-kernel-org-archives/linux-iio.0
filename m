@@ -1,16 +1,32 @@
-Return-Path: <shubhrajyoti@ti.com>
-From: Shubhrajyoti Datta <shubhrajyoti@ti.com>
-References: <1301089260.29448.22.camel@jonz-ubuntu> <4D8E1F9B.9080302@ti.com> <1301338247.1830.6.camel@jonz-ubuntu>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:24922 "EHLO
+	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750980Ab1C2PIM convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Mar 2011 11:08:12 -0400
 MIME-Version: 1.0
-In-Reply-To: <1301338247.1830.6.camel@jonz-ubuntu>
-Date: Tue, 29 Mar 2011 11:07:41 +0530
-Message-ID: <a3971e1f0d7d9d86b13f09015574b69e@mail.gmail.com>
+Content-Type: text/plain;
+	charset="us-ascii"
 Subject: RE: [PATCH V3]TAOS 258x: Device Driver
-To: Jon Brenner <jbrenner@taosinc.com>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio <linux-iio@vger.kernel.org>,
-	Linux Kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Date: Tue, 29 Mar 2011 10:08:09 -0500
+Message-ID: <B4B07CCC7B7A084E989CF9386538EA1D69ACCD@exchsrvr.taosinc.com>
+In-Reply-To: <a3971e1f0d7d9d86b13f09015574b69e@mail.gmail.com>
+References: <1301089260.29448.22.camel@jonz-ubuntu> <4D8E1F9B.9080302@ti.com> <1301338247.1830.6.camel@jonz-ubuntu> <a3971e1f0d7d9d86b13f09015574b69e@mail.gmail.com>
+From: "Jon Brenner" <jbrenner@TAOSinc.com>
+To: "Shubhrajyoti Datta" <shubhrajyoti@ti.com>
+Cc: "Jonathan Cameron" <jic23@cam.ac.uk>,
+	"linux-iio" <linux-iio@vger.kernel.org>,
+	"Linux Kernel" <linux-kernel@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
+
+
+
+-----Original Message-----
+From: Shubhrajyoti Datta [mailto:shubhrajyoti@ti.com] 
+Sent: Tuesday, March 29, 2011 12:38 AM
+To: Jon Brenner
+Cc: Jonathan Cameron; linux-iio; Linux Kernel
+Subject: RE: [PATCH V3]TAOS 258x: Device Driver
 
 > -----Original Message-----
 > From: Jon Brenner [mailto:jbrenner@TAOSinc.com]
@@ -34,14 +50,17 @@ List-ID: <linux-iio@vger.kernel.org>
 > > > [PATCH v3] for TAOS tsl2580/81/83 Device driver
 > > >
 > > > Added suspend/resume functions.
-> > > Changed attribute names to match existing where applicable and updated
+> > > Changed attribute names to match existing where applicable and 
+> > > updated
 > or documented new ABI as discussed.
-> > > Changed integration time ABI from using index (0 to 3) to use actual
+> > > Changed integration time ABI from using index (0 to 3) to use 
+> > > actual
 > gain values (1x,8x, etc.).
 > > > Removed various unused variables, declarations, and functions.
 > > > Revised code to accommodate different endianess (le16_to_cpu).
 > > > Updated error return codes in various functions.
-> > > Changed from mdelay to msleep after determining that longer wait would
+> > > Changed from mdelay to msleep after determining that longer wait 
+> > > would
 > be acceptable.
 > > >
 > > > Signed-off-by:Jon August Brenner<jbrenner@taosinc.com>
@@ -62,7 +81,8 @@ List-ID: <linux-iio@vger.kernel.org>
 > > > --- a/drivers/staging/iio/Documentation/sysfs-bus-iio
 > > > +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
 > > > @@ -6,6 +6,12 @@ Description:
-> > >   		Corresponds to a grouping of sensor channels. X is the
+> > >   		Corresponds to a grouping of sensor channels. X
+is the
 > IIO
 > > >   		index of the device.
 > > >
@@ -81,13 +101,17 @@ List-ID: <linux-iio@vger.kernel.org>
 > > > --- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
 > > > +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
 > > > @@ -62,3 +62,16 @@ Description:
-> > >   		sensing mode. This value should be the output from a
+> > >   		sensing mode. This value should be the output
+from a
 > reading
-> > >   		and if expressed in SI units, should include _input. If
+> > >   		and if expressed in SI units, should include
+_input. If
 > this
-> > >   		value is not in SI units, then it should include _raw.
+> > >   		value is not in SI units, then it should include
+_raw.
 > > > +
-> > > +What:		/sys/bus/iio/devices/device[n]/illuminance0_target
+> > > +What:
+/sys/bus/iio/devices/device[n]/illuminance0_target
 > > > +KernelVersion:	2.6.37
 > > > +Contact:	linux-iio@vger.kernel.org
 > > > +Description:
@@ -99,14 +123,18 @@ List-ID: <linux-iio@vger.kernel.org>
 > > > +KernelVersion:	2.6.37
 > > > +Contact:	linux-iio@vger.kernel.org
 > > > +Description:
-> > > +		This property gets/sets the sensors ADC analog integration
+> > > +		This property gets/sets the sensors ADC analog
+integration
 > time.
-> > > diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light-
-> tsl2583 b/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
+> > > diff --git 
+> > > a/drivers/staging/iio/Documentation/sysfs-bus-iio-light-
+> tsl2583 
+> b/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
 > > > new file mode 100644
 > > > index 0000000..660781d
 > > > --- /dev/null
-> > > +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
+> > > +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl258
+> > > +++ 3
 > > > @@ -0,0 +1,20 @@
 > > > +What:		/sys/bus/iio/devices/device[n]/lux_table
 > > > +KernelVersion:	2.6.37
@@ -115,27 +143,34 @@ List-ID: <linux-iio@vger.kernel.org>
 > > > +		This property gets/sets the table of coefficients
 > > > +		used in calculating illuminance in lux.
 > > > +
-> > > +What:		/sys/bus/iio/devices/device[n]/illuminance0_calibrate
+> > > +What:
+/sys/bus/iio/devices/device[n]/illuminance0_calibrate
 > > > +KernelVersion:	2.6.37
 > > > +Contact:	linux-iio@vger.kernel.org
 > > > +Description:
-> > > +		This property causes an internal calibration of the als gain
+> > > +		This property causes an internal calibration of the als
+gain
 > trim
-> > > +		value which is later used in calculating illuminance in lux.
+> > > +		value which is later used in calculating illuminance in
+lux.
 > > > +
-> > > +What:		/sys/bus/iio/devices/device[n]/illuminance0_input_target
+> > > +What:
+/sys/bus/iio/devices/device[n]/illuminance0_input_target
 > > > +KernelVersion:	2.6.37
 > > > +Contact:	linux-iio@vger.kernel.org
 > > > +Description:
-> > > +		This property is the known externally illuminance (in lux).
-> > > +		It is used in the process of calibrating the device accuracy.
+> > > +		This property is the known externally illuminance (in
+lux).
+> > > +		It is used in the process of calibrating the device
+accuracy.
 > > > diff --git a/drivers/staging/iio/light/Kconfig
 > b/drivers/staging/iio/light/Kconfig
 > > > index 36d8bbe..55c146c 100644
 > > > --- a/drivers/staging/iio/light/Kconfig
 > > > +++ b/drivers/staging/iio/light/Kconfig
 > > > @@ -13,6 +13,15 @@ config SENSORS_TSL2563
-> > >   	 This driver can also be built as a module.  If so, the module
+> > >   	 This driver can also be built as a module.  If so, the
+module
 > > >   	 will be called tsl2563.
 > > >
 > > > +config TSL2583
@@ -178,22 +213,29 @@ List-ID: <linux-iio@vger.kernel.org>
 > > > + *
 > > > + * This program is free software; you can redistribute it and/or
 > modify
-> > > + * it under the terms of the GNU General Public License as published
+> > > + * it under the terms of the GNU General Public License as 
+> > > + published
 > by
-> > > + * the Free Software Foundation; either version 2 of the License, or
+> > > + * the Free Software Foundation; either version 2 of the License,
+
+> > > + or
 > > > + * (at your option) any later version.
 > > > + *
-> > > + * This program is distributed in the hope that it will be useful,
+> > > + * This program is distributed in the hope that it will be 
+> > > + useful,
 > but WITHOUT
-> > > + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+> > > + * ANY WARRANTY; without even the implied warranty of 
+> > > + MERCHANTABILITY
 > or
 > > > + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
 > License for
 > > > + * more details.
 > > > + *
-> > > + * You should have received a copy of the GNU General Public License
+> > > + * You should have received a copy of the GNU General Public 
+> > > + License
 > along
-> > > + * with this program; if not, write to the Free Software Foundation,
+> > > + * with this program; if not, write to the Free Software 
+> > > + Foundation,
 > Inc.,
 > > > + * 51 Franklin Street, Fifth Floor, Boston, MA	02110-1301, USA.
 > > > + */
@@ -291,10 +333,11 @@ List-ID: <linux-iio@vger.kernel.org>
 > > > +	unsigned int ch1;
 > > > +};
 > > > +
-> > > +/* This structure is intentionally large to accommodate updates via
+> > > +/* This structure is intentionally large to accommodate updates 
+> > > +via
 > sysfs. */
 > > > +/* Sized to 11 = max 10 segments + 1 termination segment */
-> > > +/* Assumption is is one and only one type of glass used  */
+> > > +/* Assumption is is one and only one type of glass used  */ 
 > > > +struct taos_lux taos_device_lux[11] = {
 > > > +	{  9830,  8520, 15729 },
 > > > +	{ 12452, 10807, 23344 },
@@ -307,7 +350,7 @@ List-ID: <linux-iio@vger.kernel.org>
 > > > +	s16 ch1;
 > > > +};
 > > > +
-> > > +/* Index = (0 - 3) Used to validate the gain selection index */
+> > > +/* Index = (0 - 3) Used to validate the gain selection index */ 
 > > > +static const struct gainadj gainadj[] = {
 > > > +	{ 1, 1 },
 > > > +	{ 8, 8 },
@@ -317,10 +360,10 @@ List-ID: <linux-iio@vger.kernel.org>
 > > > +
 > > > +/*
 > > > + * Provides initial operational parameter defaults.
-> > > + * These defaults may be changed through the device's sysfs files.
+> > > + * These defaults may be changed through the device's sysfs
+files.
 > > > + */
-> > > +static void taos_defaults(struct tsl2583_chip *chip)
-> > > +{
+> > > +static void taos_defaults(struct tsl2583_chip *chip) {
 > > > +	/* Operational parameters */
 > > > +	chip->taos_settings.als_time = 450;
 > > > +	/* must be a multiple of 50mS */
@@ -330,8 +373,7 @@ List-ID: <linux-iio@vger.kernel.org>
 > > > +	chip->taos_settings.als_gain_trim = 1000;
 > > > +	/* default gain trim to account for aperture effects */
 > > > +	chip->taos_settings.als_cal_target = 130;
-> > > +	/* Known external ALS reading used for calibration */
-> > > +}
+> > > +	/* Known external ALS reading used for calibration */ }
 > > > +
 > > > +/*
 > > > + * Read a number of bytes starting at register (reg) location.
@@ -341,10 +383,13 @@ List-ID: <linux-iio@vger.kernel.org>
 > NO -Many controllers no longer seem to support block mode read/write.
 > To use block mode reads could exclude some.
 By controller you mean the i2c controller?
+(ie. - msg from older driver)
+taos 0-0039: taos_probe() - i2c smbus block data functions unsupported
 
 >
 > > > +static int
-> > > +taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val, unsigned
+> > > +taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val, 
+> > > +unsigned
 > int len)
 > > > +{
 > > > +	int ret;
