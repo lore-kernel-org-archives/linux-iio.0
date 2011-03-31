@@ -5,234 +5,220 @@ To: linux-iio@vger.kernel.org,
 Cc: arnd@arndb.de,
 	tglx@linutronix.de,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 21/21] staging:iio: rip out scan_el attributes.  Now handled as iio_dev_attrs like everything else.
-Date: Thu, 31 Mar 2011 15:54:15 +0100
-Message-Id: <1301583255-28468-22-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 20/21] staging:iio:trigger remove legacy pollfunc elements.
+Date: Thu, 31 Mar 2011 15:54:14 +0100
+Message-Id: <1301583255-28468-21-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1301583255-28468-1-git-send-email-jic23@cam.ac.uk>
 References: <1301583255-28468-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Drivers have no need to use this functionality any more and we save a lot of
-code by getting rid of it.
-
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/industrialio-ring.c |  101 ++++++++-----------------------
- drivers/staging/iio/ring_generic.h      |   24 -------
- 2 files changed, 26 insertions(+), 99 deletions(-)
+ drivers/staging/iio/industrialio-trigger.c |   98 +++-------------------------
+ drivers/staging/iio/trigger.h              |   28 +-------
+ 2 files changed, 14 insertions(+), 112 deletions(-)
 
-diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
-index 07d64bc..815be33 100644
---- a/drivers/staging/iio/industrialio-ring.c
-+++ b/drivers/staging/iio/industrialio-ring.c
-@@ -193,53 +193,6 @@ static ssize_t iio_show_fixed_type(struct device *dev,
- 		       this_attr->c->scan_type.shift);
- }
- 
--static int __iio_add_chan_scan_elattr(const char *postfix,
--				      const char *group,
--				      struct iio_chan_spec *chan,
--				      struct device *dev,
--				      struct list_head *attr_list)
--{
--	int ret;
--	struct iio_scan_el *scan_el;
--
--	scan_el = kzalloc(sizeof *scan_el, GFP_KERNEL);
--	if (scan_el == NULL) {
--		ret = -ENOMEM;
--		goto error_ret;
--	}
--	if (chan->type != IIO_TIMESTAMP)
--		ret = __iio_device_attr_init(&scan_el->dev_attr, postfix, chan,
--					     iio_scan_el_show,
--					     iio_scan_el_store, 0);
--	else /*
--	      * Timestamp handled separately because it simplifies a lot of
--	      * drivers by ensuring they don't have to know its magic index
--	      */
--		ret = __iio_device_attr_init(&scan_el->dev_attr, postfix, chan,
--					     iio_scan_el_ts_show,
--					     iio_scan_el_ts_store, 0);
--	if (ret)
--		goto error_free_scan_el;
--
--	scan_el->number = chan->scan_index;
--
--	ret = sysfs_add_file_to_group(&dev->kobj,
--				      &scan_el->dev_attr.attr,
--				      group);
--	if (ret < 0)
--		goto error_device_attr_deinit;
--
--	list_add(&scan_el->l, attr_list);
--
--	return 0;
--error_device_attr_deinit:
--	__iio_device_attr_deinit(&scan_el->dev_attr);
--error_free_scan_el:
--	kfree(scan_el);
--error_ret:
--	return ret;
--}
--
- static int iio_ring_add_channel_sysfs(struct iio_ring_buffer *ring,
- 				      struct iio_chan_spec *chan)
+diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
+index 8100822..a350f25 100644
+--- a/drivers/staging/iio/industrialio-trigger.c
++++ b/drivers/staging/iio/industrialio-trigger.c
+@@ -164,21 +164,6 @@ static struct iio_trigger *iio_trigger_find_by_name(const char *name,
+ void iio_trigger_poll(struct iio_trigger *trig, s64 time)
  {
-@@ -268,23 +221,28 @@ static int iio_ring_add_channel_sysfs(struct iio_ring_buffer *ring,
- 	if (ret)
- 		goto error_ret;
- 
--	ret = __iio_add_chan_scan_elattr("en", "scan_elements",
--					 chan, &ring->dev,
--					 &ring->scan_el_en_attr_list);
+ 	int i;
+-	struct iio_poll_func *pf_cursor;
 -
-+	if (chan->type != IIO_TIMESTAMP)
-+		ret = __iio_add_chan_devattr("en", "scan_elements",
-+					     chan,
-+					     &iio_scan_el_show,
-+					     &iio_scan_el_store,
-+					     chan->scan_index,
-+					     0,
-+					     &ring->dev,
-+					     &ring->scan_el_dev_attr_list);
-+	else
-+		ret = __iio_add_chan_devattr("en", "scan_elements",
-+					     chan,
-+					     &iio_scan_el_ts_show,
-+					     &iio_scan_el_ts_store,
-+					     chan->scan_index,
-+					     0,
-+					     &ring->dev,
-+					     &ring->scan_el_dev_attr_list);
- error_ret:
+-	list_for_each_entry(pf_cursor, &trig->pollfunc_list, list) {
+-		if (pf_cursor->poll_func_immediate) {
+-			pf_cursor->poll_func_immediate(pf_cursor->private_data);
+-			trig->use_count++;
+-		}
+-	}
+-	list_for_each_entry(pf_cursor, &trig->pollfunc_list, list) {
+-		if (pf_cursor->poll_func_main) {
+-			pf_cursor->poll_func_main(pf_cursor->private_data,
+-						  time);
+-			trig->use_count++;
+-		}
+-	}
+ 	for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++)
+ 		if (trig->subirqs[i].enabled) {
+ 			trig->use_count++;
+@@ -223,24 +208,13 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+ 				 struct iio_poll_func *pf)
+ {
+ 	int ret = 0;
+-	unsigned long flags;
+-
+-	if (pf->handler) {
+-		pf->irq = iio_trigger_get_irq(trig);
+-		ret = request_threaded_irq(pf->irq, NULL, pf->handler,
+-					   pf->type, pf->name,
+-					   pf);
+-	} else {
+-		spin_lock_irqsave(&trig->pollfunc_list_lock, flags);
+-		list_add_tail(&pf->list, &trig->pollfunc_list);
+-		spin_unlock_irqrestore(&trig->pollfunc_list_lock, flags);
+-	}
++
++	pf->irq = iio_trigger_get_irq(trig);
++	ret = request_threaded_irq(pf->irq, NULL, pf->handler,
++				   pf->type, pf->name,
++				   pf);
+ 	if (trig->set_trigger_state)
+ 		ret = trig->set_trigger_state(trig, true);
+-	if (ret) {
+-		printk(KERN_ERR "set trigger state failed\n");
+-		list_del(&pf->list);
+-	}
+ 
  	return ret;
  }
- 
--static void iio_ring_remove_and_free_scan_el_attr(struct iio_ring_buffer *ring,
--						  struct iio_scan_el *p)
--{
--	sysfs_remove_file_from_group(&ring->dev.kobj,
--				     &p->dev_attr.attr, "scan_elements");
--	kfree(p->dev_attr.attr.name);
--	kfree(p);
--}
+@@ -249,46 +223,11 @@ EXPORT_SYMBOL(iio_trigger_attach_poll_func);
+ int iio_trigger_dettach_poll_func(struct iio_trigger *trig,
+ 				  struct iio_poll_func *pf)
+ {
+-	struct iio_poll_func *pf_cursor;
+-	unsigned long flags;
+-	int ret = -EINVAL;
 -
- static void iio_ring_remove_and_free_scan_dev_attr(struct iio_ring_buffer *ring,
- 						   struct iio_dev_attr *p)
- {
-@@ -306,15 +264,10 @@ static struct attribute_group iio_scan_el_dummy_group = {
- static void __iio_ring_attr_cleanup(struct iio_ring_buffer *ring)
- {
- 	struct iio_dev_attr *p, *n;
--	struct iio_scan_el *q, *m;
--	int anydynamic = !(list_empty(&ring->scan_el_dev_attr_list) &&
--			   list_empty(&ring->scan_el_en_attr_list));
-+	int anydynamic = !list_empty(&ring->scan_el_dev_attr_list);
- 	list_for_each_entry_safe(p, n,
- 				 &ring->scan_el_dev_attr_list, l)
- 		iio_ring_remove_and_free_scan_dev_attr(ring, p);
--	list_for_each_entry_safe(q, m,
--				 &ring->scan_el_en_attr_list, l)
--		iio_ring_remove_and_free_scan_el_attr(ring, q);
+-	if (pf->handler) {
+-		ret = trig->set_trigger_state(trig, false);
+-		if (ret)
+-			goto error_ret;
+-		iio_trigger_put_irq(trig, pf->irq);
+-		free_irq(pf->irq, pf);
+-	} else {
+-		spin_lock_irqsave(&trig->pollfunc_list_lock, flags);
+-		list_for_each_entry(pf_cursor, &trig->pollfunc_list, list)
+-			if (pf_cursor == pf) {
+-				ret = 0;
+-				break;
+-			}
+-		if (!ret) {
+-			if (list_is_singular(&trig->pollfunc_list)
+-			    && trig->set_trigger_state) {
+-				spin_unlock_irqrestore(&trig
+-						       ->pollfunc_list_lock,
+-						       flags);
+-				/* May sleep hence cannot hold the spin lock */
+-				ret = trig->set_trigger_state(trig, false);
+-				if (ret)
+-					goto error_ret;
+-				spin_lock_irqsave(&trig->pollfunc_list_lock,
+-						  flags);
+-			}
+-			/*
+-			 * Now we can delete safe in the knowledge that, if
+-			 * this is the last pollfunc then we have disabled
+-			 * the trigger anyway and so nothing should be able
+-			 * to call the pollfunc.
+-			 */
+-			list_del(&pf_cursor->list);
+-		}
+-		spin_unlock_irqrestore(&trig->pollfunc_list_lock, flags);
+-	}
++	int ret = trig->set_trigger_state(trig, false);
++	if (ret)
++		goto error_ret;
++	iio_trigger_put_irq(trig, pf->irq);
++	free_irq(pf->irq, pf);
  
- 	if (ring->scan_el_attrs)
- 		sysfs_remove_group(&ring->dev.kobj,
-@@ -352,7 +305,6 @@ int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
- 	}
- 
- 	INIT_LIST_HEAD(&ring->scan_el_dev_attr_list);
--	INIT_LIST_HEAD(&ring->scan_el_en_attr_list);
- 	if (channels) {
- 		/* new magic */
- 		for (i = 0; i < num_channels; i++) {
-@@ -554,9 +506,9 @@ ssize_t iio_scan_el_show(struct device *dev,
- {
- 	int ret;
- 	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
--	struct iio_scan_el *this_el = to_iio_scan_el(attr);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 
--	ret = iio_scan_mask_query(ring, this_el->number);
-+	ret = iio_scan_mask_query(ring, this_attr->address);
- 	if (ret < 0)
- 		return ret;
- 	return sprintf(buf, "%d\n", ret);
-@@ -572,7 +524,7 @@ ssize_t iio_scan_el_store(struct device *dev,
- 	bool state;
- 	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
- 	struct iio_dev *indio_dev = ring->indio_dev;
--	struct iio_scan_el *this_el = to_iio_scan_el(attr);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 
- 	state = !(buf[0] == '0');
- 	mutex_lock(&indio_dev->mlock);
-@@ -580,20 +532,19 @@ ssize_t iio_scan_el_store(struct device *dev,
- 		ret = -EBUSY;
- 		goto error_ret;
- 	}
--	ret = iio_scan_mask_query(ring, this_el->number);
-+	ret = iio_scan_mask_query(ring, this_attr->address);
- 	if (ret < 0)
- 		goto error_ret;
- 	if (!state && ret) {
--		ret = iio_scan_mask_clear(ring, this_el->number);
-+		ret = iio_scan_mask_clear(ring, this_attr->address);
- 		if (ret)
- 			goto error_ret;
- 	} else if (state && !ret) {
--		ret = iio_scan_mask_set(ring, this_el->number);
-+		ret = iio_scan_mask_set(ring, this_attr->address);
- 		if (ret)
- 			goto error_ret;
- 	}
--	if (this_el->set_state)
--		ret = this_el->set_state(this_el, indio_dev, state);
-+
  error_ret:
- 	mutex_unlock(&indio_dev->mlock);
+ 	return ret;
+@@ -412,9 +351,6 @@ struct iio_trigger *iio_allocate_trigger_named(const char *name)
+ 		trig->dev.bus = &iio_bus_type;
+ 		device_initialize(&trig->dev);
+ 		dev_set_drvdata(&trig->dev, (void *)trig);
+-		spin_lock_init(&trig->pollfunc_list_lock);
+-		INIT_LIST_HEAD(&trig->list);
+-		INIT_LIST_HEAD(&trig->pollfunc_list);
  
-diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
-index ba441d9..801ec34 100644
---- a/drivers/staging/iio/ring_generic.h
-+++ b/drivers/staging/iio/ring_generic.h
-@@ -109,7 +109,6 @@ struct iio_ring_buffer {
- 	int				(*postdisable)(struct iio_dev *);
- 
- 	struct list_head scan_el_dev_attr_list;
--	struct list_head scan_el_en_attr_list;
- 
- 	wait_queue_head_t pollq;
- 	bool stufftoread;
-@@ -138,29 +137,6 @@ static inline void __iio_update_ring_buffer(struct iio_ring_buffer *ring,
+ 		if (name) {
+ 			mutex_init(&trig->pool_lock);
+@@ -477,20 +413,6 @@ int iio_device_unregister_trigger_consumer(struct iio_dev *dev_info)
  }
+ EXPORT_SYMBOL(iio_device_unregister_trigger_consumer);
  
+-int iio_alloc_pollfunc(struct iio_dev *indio_dev,
+-		       void (*immediate)(struct iio_dev *indio_dev),
+-		       void (*main)(struct iio_dev *private_data, s64 time))
+-{
+-	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
+-	if (indio_dev->pollfunc == NULL)
+-		return -ENOMEM;
+-	indio_dev->pollfunc->poll_func_immediate = immediate;
+-	indio_dev->pollfunc->poll_func_main = main;
+-	indio_dev->pollfunc->private_data = indio_dev;
+-	return 0;
+-}
+-EXPORT_SYMBOL(iio_alloc_pollfunc);
+-
+ int iio_triggered_ring_postenable(struct iio_dev *indio_dev)
+ {
+ 	return indio_dev->trig
+diff --git a/drivers/staging/iio/trigger.h b/drivers/staging/iio/trigger.h
+index 2e52004..f4a9b54 100644
+--- a/drivers/staging/iio/trigger.h
++++ b/drivers/staging/iio/trigger.h
+@@ -24,8 +24,6 @@ struct iio_subirq {
+  * @private_data:	[DRIVER] device specific data
+  * @list:		[INTERN] used in maintenance of global trigger list
+  * @alloc_list:		[DRIVER] used for driver specific trigger list
+- * @pollfunc_list_lock:	[INTERN] protection of the polling function list
+- * @pollfunc_list:	[INTERN] list of functions to run on trigger.
+  * @control_attrs:	[DRIVER] sysfs attributes relevant to trigger type
+  * @owner:		[DRIVER] used to monitor usage count of the trigger.
+  * @use_count:		use count for the trigger
+@@ -41,8 +39,6 @@ struct iio_trigger {
+ 	void				*private_data;
+ 	struct list_head		list;
+ 	struct list_head		alloc_list;
+-	spinlock_t			pollfunc_list_lock;
+-	struct list_head		pollfunc_list;
+ 	const struct attribute_group	*control_attrs;
+ 	struct module			*owner;
+ 	int use_count;
+@@ -151,36 +147,20 @@ static inline void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
  /**
-- * struct iio_scan_el - an individual element of a scan
-- * @dev_attr:		control attribute (if directly controllable)
-- * @number:		unique identifier of element (used for bit mask)
-- * @label:		useful data for the scan el (often reg address)
-- * @set_state:		for some devices datardy signals are generated
-- *			for any enabled lines.  This allows unwanted lines
-- *			to be disabled and hence not get in the way.
-- **/
--struct iio_scan_el {
--	struct device_attribute		dev_attr;
--	unsigned int			number;
--	unsigned int			label;
--	struct list_head l;
+  * struct iio_poll_func - poll function pair
+  *
+- * @list:			associate this with a triggers pollfunc_list
+  * @private_data:		data specific to device (passed into poll func)
+- * @poll_func_immediate:	function in here is run first. They should be
+- *				extremely lightweight.  Typically used for latch
+- *				control on sensor supporting it.
+- * @poll_func_main:		function in here is run after all immediates.
+- *				Reading from sensor etc typically involves
+- *				scheduling from here.
+- *
+- * The two stage approach used here is only important when multiple sensors are
+- * being triggered by a single trigger. This really comes into its own with
+- * simultaneous sampling devices where a simple latch command can be used to
+- * make the device store the values on all inputs.
++ * @handler:			the function that is actually run on trigger
++ * @type:			the type of interrupt (basically if oneshot)
++ * @irq:			the corresponding irq as allocated from the
++ *				trigger pool
+  **/
+ struct iio_poll_func {
+-	struct				list_head list;
+ 	void				*private_data;
+-	void (*poll_func_immediate)(struct iio_dev *indio_dev);
+-	void (*poll_func_main)(struct iio_dev *private_data, s64 time);
 -
--	int (*set_state)(struct iio_scan_el *scanel,
--			 struct iio_dev *dev_info,
--			 bool state);
--};
+ 	irqreturn_t (*handler)(int irq, void *p);
+ 	int type;
+ 	char *name;
+ 	int irq;
+ };
+ 
+-int iio_alloc_pollfunc(struct iio_dev *indio_dev,
+-		       void (*immediate)(struct iio_dev *indio_dev),
+-		       void (*main)(struct iio_dev *private_data, s64 time));
 -
--#define to_iio_scan_el(_dev_attr)				\
--	container_of(_dev_attr, struct iio_scan_el, dev_attr);
--
--/**
-  * iio_scan_el_store() - sysfs scan element selection interface
-  * @dev: the target device
-  * @attr: the device attribute that is being processed
+ /*
+  * Two functions for common case where all that happens is a pollfunc
+  * is attached and detached from a trigger
 -- 
 1.7.3.4
