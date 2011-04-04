@@ -1,32 +1,220 @@
-Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4DA34AA5.3020700@cam.ac.uk>
-Date: Mon, 11 Apr 2011 19:38:29 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+Message-ID: <4D99B34B.9050309@analog.com>
+Date: Mon, 4 Apr 2011 14:02:19 +0200
+From: Michael Hennerich <michael.hennerich@analog.com>
+Reply-To: michael.hennerich@analog.com
 MIME-Version: 1.0
 To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- arnd@arndb.de, tglx@linutronix.de
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"arnd@arndb.de" <arnd@arndb.de>, "tglx@linutronix.de" <tglx@linutronix.de>,
+	"device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>
 Subject: Re: [RFC PATCH 00/21] IIO: Channel registration rework, buffer chardev
  combining and rewrite of triggers as 'virtual' irq_chips.
 References: <1301583255-28468-1-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1301583255-28468-1-git-send-email-jic23@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="ISO-8859-1"
 List-ID: <linux-iio@vger.kernel.org>
 
+On 03/31/2011 04:53 PM, Jonathan Cameron wrote:
+> Dear All,
+>
+> I'm afraid what in many ways makes sense as three separate
+> series have gotten rather intertwined.  I can probably unpick
+> them but it will involve a lot of intermediate code in
+> lis3l02dq (which is our fiddly example for this set) that I'd
+> rather avoid.  Hence lets have a guide to what various people
+> might be interested in:
+>
+> 1) Channel registration rework (this has previous been in linux-iio
+>    but really comes into it's own after we remove various special
+>    cases later in this code).
+>
+>    Patches 1, 2, 3, 21
+>    (8) - cleanups Arnd Bergmann pointed out in passing.
+>   
+Good approach. It removes quite a bit on duplicated code across drivers.
+At the moment I can't think of existing drivers that couldn't moved over
+to the
+new channel registration method. However there are some limitations.
+read_raw() value is currently type int, depending on the channel type,
+int type might be to short.
 
-Just a quick heads up.  I am not intending to repost this series
-to lkml.  Given with carrying drivers through past 
-"staging:iio: Remove legacy event handling" has resulted
-in over 50 patches that are mostly very much driver specific,
-it seems silly to bombard the general list.
+ 
+> 2) Flattening together of (some) of the chardevs (buffer related ones).
+>    As Arnd pointed out, there is really a use case for having multiple
+>    watershed type events from ring buffers.  Much better to have a
+>    single one (be that at a controllable point).  Firstly this removes
+>    the need for the event escalation code.  Second, this single 'event'
+>    can then be indicated to user space purely using polling on the
+>    access chrdev.  This approach does need an additional attribute to
+>    tell user space what the poll succeeding indicates (tbd).
+>
+>    I haven't for now merged the ring handling with the more general
+>    event handling as Arnd suggested.  This is for two reasons
+>    1) It's much easier to debug this done in a couple of steps
+>    2) The approach Arnd suggested may work well, but it is rather
+>    different to how other bits of the kernel pass event type data
+>    to user space.  It's an interesting idea, but I'd rather any
+>    discussion of that approach was separate from the obviously
+>    big gains seen here.
+>
+>    Patches 4, 5, 6, 7, 17
+>   
+I appreciate the removal of the buffer event chardev. Adding support for
+poll is also a good thing to do.
+However support for a blocking read might also fit some use cases.
+ 
+> 3) Reworking the triggering infrastructure to use 'virtual' irq_chips
+>    This approach was suggested by Thomas Gleixner.
+>    Before we had explicit trigger consumer lists.  This made for a very
+>    clunky implementation when we considered moving things over to
+>    threaded interrupts.  Thomas pointed out we were reinventing the
+>    wheel and suggested more or less what we have here (I hope ;)
+>   
+Using threaded interrupts, greatly reduces use of additional workqueues
+and excessive interrupt enable and disables.
+  
+>    Patches 9 and 10 are minor rearrangements of code in the one
+>    driver I know of where the physical interrupt line for events
+>    is the same as that for data ready signals (though not at the
+>    same time).
+>   
+I wouldn't consider this being a corner case. I know quite a few devices
+that trigger data availability,
+and other events from the same physical interrupt line, and they may do
+it at the same time.
+ 
+>    In a rare situation we have complete control of these virtual
+>    interrupts within the subsystem.  As such we want to be able to
+>    continue to build the subsystem as a module.  This requires a
+>    couple of additional exports in the generic irq core code and
+>    also arm (for my test board anyway).
+>    Patches 13 and 14 make these changes.  I hope they won't prove
+>    to controversial.
+>
+>    Patch 15 adds a board info built in element to the IIO subsystem
+>    so we have a means of platform data telling us what interrupt
+>    numbers are available for us to play with.  Does anyone have
+>    a better way of doing this?  Patch 16 is an example of what
+>    needs to go in board files.
+>   
+Since this is purely platform dependent, setting the irq pool from the
+board setup looks acceptable to me, and depending on the arch or machine
+it might be necessary two tweak some other defines.
+However many arches define NR_IRQS always greater than actually used. So
+why not make IR-Base a Kconfig option?
 
-I will be posting that set on linux-iio if anyone is interested
-(after a little more cleaning up).
+>    18, 19 move lis3l02dq over to the threaded interrupts.
+>
+>    20 rips out the old approach.  Until this patch current drivers
+>    using the old system should still work. I make no guarantees
+>    about combining consumers of both types though!
+>
+>
+> Note that this series sits on top of the cleanup series:
+> [PATCH 0/8] staging:iio:mixed bag of fixes and cleanups
+> http://marc.info/?l=linux-iio&m=130039556909192&w=2
+> on top of staging-next (which right now might mean mainline is
+> also fine).
+>
+> There are clearly corners to be cleaned up and exact interfaces
+> elements to be pinned down, but I'd like to get some opinions
+> on what we have here.
+>
+> All comments welcomed!
+>
+> Note, wrt to the recent discussion on a strategy for moving IIO
+> out of staging, my intent is to pin down these big changes before
+> we attempt to move these elements out.  Note that the initial
+> steps of that move may occur in parallel with these changes.
+>
+> Some of these patches may only be applied during that move as
+> that is a sensible point to update and test every driver.
+>
+> Thanks to Arnd and Thomas for their contributions to this.
+>
+> Jonathan
+>
+> Jonathan Cameron (21):
+>   staging:iio: allow channels to be set up using a table of
+>     iio_channel_spec structures.
+>   staging:iio:lis3l02dq - experimental move to new channel_spec
+>     approach.
+>   staging:iio:max1363 - experimental move to channel_spec registration.
+>   staging:iio: remove ability to escalate events.
+>   staging:iio: Add polling of events on the ring access chrdev.
+>   staging:iio: remove legacy event chrdev for the buffers
+>   staging:iio: Buffer device flattening.
+>   staging:iio:lis3l02dq: General cleanup
+>   staging:iio: Push interrupt setup down into the drivers for event
+>     lines.
+>   staging:iio: lis3l02dq - separate entirely interrupt handling for
+>     thesholds from that for the datardy signal.
+>   staging:iio: Remove legacy event handling.
+>   staging:iio:lis3l02dq make threshold interrupt threaded.
+>   arm: irq: export set flags
+>   irq: export handle_simple_irq and irq_to_desc to allow for virtual
+>     irqs in IIO
+>   staging:iio: Add infrastructure for irq_chip based triggers
+>   stargate2 - add an IIO interrupt pool
+>   staging:iio:Documentation generic_buffer.c update to new abi for
+>     buffers.
+>   staging:iio:ring_sw add function needed for threaded irq.
+>   staging:iio:lis3l02dq move to threaded trigger handling.
+>   staging:iio:trigger remove legacy pollfunc elements.
+>   staging:iio: rip out scan_el attributes.  Now handled as
+>     iio_dev_attrs like everything else.
+>
+>  arch/arm/kernel/irq.c                              |    1 +
+>  arch/arm/mach-pxa/stargate2.c                      |    6 +-
+>  drivers/staging/Makefile                           |    2 +-
+>  drivers/staging/iio/Documentation/generic_buffer.c |   53 +-
+>  drivers/staging/iio/Kconfig                        |   12 +
+>  drivers/staging/iio/Makefile                       |    2 +
+>  drivers/staging/iio/accel/lis3l02dq.h              |   25 +-
+>  drivers/staging/iio/accel/lis3l02dq_core.c         |  700 +++++-------
+>  drivers/staging/iio/accel/lis3l02dq_ring.c         |  421 +++----
+>  drivers/staging/iio/adc/max1363.h                  |    8 +-
+>  drivers/staging/iio/adc/max1363_core.c             | 1277 ++++++++------------
+>  drivers/staging/iio/adc/max1363_ring.c             |    1 -
+>  drivers/staging/iio/chrdev.h                       |   33 +-
+>  drivers/staging/iio/iio-board-info.h               |   24 +
+>  drivers/staging/iio/iio-core.h                     |   13 +
+>  drivers/staging/iio/iio.h                          |  250 +++--
+>  drivers/staging/iio/industrialio-board-info.c      |   25 +
+>  drivers/staging/iio/industrialio-core.c            |  724 ++++++++---
+>  drivers/staging/iio/industrialio-ring.c            |  315 +++---
+>  drivers/staging/iio/industrialio-trigger.c         |  150 ++--
+>  drivers/staging/iio/ring_generic.h                 |   79 +-
+>  drivers/staging/iio/ring_sw.c                      |   42 +-
+>  drivers/staging/iio/ring_sw.h                      |    1 +
+>  drivers/staging/iio/sysfs.h                        |  152 +--
+>  drivers/staging/iio/trigger.h                      |   68 +-
+>  kernel/irq/chip.c                                  |    1 +
+>  kernel/irq/irqdesc.c                               |    1 +
+>  27 files changed, 2116 insertions(+), 2270 deletions(-)
+>  create mode 100644 drivers/staging/iio/iio-board-info.h
+>  create mode 100644 drivers/staging/iio/iio-core.h
+>  create mode 100644 drivers/staging/iio/industrialio-board-info.c
+>
+> --
+> 1.7.3.4
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>   
 
-I will cherry pick a few bits such as the additional
-exports from genirq to post to lkml.
 
-Seems rude to drop a huge patch set on everyone when
-only a few corners will be of general interest.
+-- 
+Greetings,
+Michael
 
-Jonathan
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
+Margaret Seif
