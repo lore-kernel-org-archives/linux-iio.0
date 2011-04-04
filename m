@@ -1,43 +1,598 @@
-Return-Path: <Cliff.Cai@analog.com>
-From: Cliff Cai <cliff.cai@analog.com>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
 To: greg@kroah.com
 CC: linux-iio@vger.kernel.org, drivers@analog.com, jic23@cam.ac.uk,
         device-drivers-devel@blackfin.uclinux.org,
         Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 2/3] IIO: Documentation: Add ABI documentatio for gyro quadrature correction
-Date: Wed, 6 Apr 2011 10:39:19 +0200
-Message-ID: <1302079160-2881-2-git-send-email-cliff.cai@analog.com>
-In-Reply-To: <1302079160-2881-1-git-send-email-cliff.cai@analog.com>
-References: <1302079160-2881-1-git-send-email-cliff.cai@analog.com>
+Subject: [PATCH] IIO: DAC: New driver for the AD5504 and AD55041 High Voltage DACs
+Date: Mon, 4 Apr 2011 15:39:15 +0200
+Message-ID: <1301924355-21361-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-Add ABI documentation for gyro quadrature correction.
+Changes since V1:
 
-Signed-off-by: Cliff Cai <cliff.cai@analog.com>
+IIO: DAC: Apply review feedback from Jonathan
+
+Fix array size and declare const.
+Fix reversed dacY_powerdown read back.
+Use individual attribute groups instead of is_visible.
+Fix event naming and add the _en file.
+
+Changes since V2:
+
+IIO: DAC: AD5504 use proper event type
+
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/Documentation/sysfs-bus-iio |    7 +++++++
- 1 files changed, 7 insertions(+), 0 deletions(-)
+ drivers/staging/iio/dac/Kconfig  |   10 +
+ drivers/staging/iio/dac/Makefile |    1 +
+ drivers/staging/iio/dac/ad5504.c |  426 ++++++++++++++++++++++++++++++++++++++
+ drivers/staging/iio/dac/ad5504.h |   74 +++++++
+ drivers/staging/iio/sysfs.h      |    1 +
+ 5 files changed, 512 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/dac/ad5504.c
+ create mode 100644 drivers/staging/iio/dac/ad5504.h
 
-diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio b/drivers/staging/iio/Documentation/sysfs-bus-iio
-index 4915aee..49047ad 100644
---- a/drivers/staging/iio/Documentation/sysfs-bus-iio
-+++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
-@@ -698,3 +698,10 @@ Description:
- 		with all _en attributes to establish which channels are present,
- 		and the relevant _type attributes to establish the data storage
- 		format.
+diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
+index 67defcb..1b0188a 100644
+--- a/drivers/staging/iio/dac/Kconfig
++++ b/drivers/staging/iio/dac/Kconfig
+@@ -21,6 +21,16 @@ config AD5446
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad5446.
+
++config AD5504
++	tristate "Analog Devices AD5504/AD5501 DAC SPI driver"
++	depends on SPI
++	help
++	  Say yes here to build support for Analog Devices AD5504, AD5501,
++	  High Voltage Digital to Analog Converter.
 +
-+What:		/sys/bus/iio/devices/deviceX/gyro_z_quadrature_correction_raw
-+KernelVersion:	2.6.38
-+Contact:	linux-iio@xxxxxxxxxxxxxxx
-+Description:
-+		This attribute is used to read the amount of quadrature error
-+		present in the device at a given time.
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad5504.
++
+ config MAX517
+ 	tristate "Maxim MAX517/518/519 DAC driver"
+ 	depends on I2C && EXPERIMENTAL
+diff --git a/drivers/staging/iio/dac/Makefile b/drivers/staging/iio/dac/Makefile
+index 1197aef..020df4a 100644
+--- a/drivers/staging/iio/dac/Makefile
++++ b/drivers/staging/iio/dac/Makefile
+@@ -3,5 +3,6 @@
+ #
+
+ obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
++obj-$(CONFIG_AD5504) += ad5504.o
+ obj-$(CONFIG_AD5446) += ad5446.o
+ obj-$(CONFIG_MAX517) += max517.o
+diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
+new file mode 100644
+index 0000000..153c36e
+--- /dev/null
++++ b/drivers/staging/iio/dac/ad5504.c
+@@ -0,0 +1,426 @@
++/*
++ * AD5504, AD5501 High Voltage Digital to Analog Converter
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/interrupt.h>
++#include <linux/gpio.h>
++#include <linux/fs.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/spi/spi.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/regulator/consumer.h>
++
++#include "../iio.h"
++#include "../sysfs.h"
++#include "dac.h"
++#include "ad5504.h"
++
++static int ad5504_spi_write(struct spi_device *spi, u8 addr, u16 val)
++{
++	u16 tmp = cpu_to_be16(AD5504_CMD_WRITE |
++			      AD5504_ADDR(addr) |
++			      (val & AD5504_RES_MASK));
++
++	return spi_write(spi, (u8 *)&tmp, 2);
++}
++
++static int ad5504_spi_read(struct spi_device *spi, u8 addr, u16 *val)
++{
++	u16 tmp = cpu_to_be16(AD5504_CMD_READ | AD5504_ADDR(addr));
++	int ret;
++	struct spi_transfer	t = {
++			.tx_buf		= &tmp,
++			.rx_buf		= val,
++			.len		= 2,
++		};
++	struct spi_message	m;
++
++	spi_message_init(&m);
++	spi_message_add_tail(&t, &m);
++	ret = spi_sync(spi, &m);
++
++	*val = be16_to_cpu(*val) & AD5504_RES_MASK;
++
++	return ret;
++}
++
++static ssize_t ad5504_write_dac(struct device *dev,
++				 struct device_attribute *attr,
++				 const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5504_state *st = iio_dev_get_devdata(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	long readin;
++	int ret;
++
++	ret = strict_strtol(buf, 10, &readin);
++	if (ret)
++		return ret;
++
++	ret = ad5504_spi_write(st->spi, this_attr->address, readin);
++	return ret ? ret : len;
++}
++
++static ssize_t ad5504_read_dac(struct device *dev,
++					   struct device_attribute *attr,
++					   char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5504_state *st = iio_dev_get_devdata(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	int ret;
++	u16 val;
++
++	ret = ad5504_spi_read(st->spi, this_attr->address, &val);
++	if (ret)
++		return ret;
++
++	return sprintf(buf, "%d\n", val);
++}
++
++static ssize_t ad5504_read_powerdown_mode(struct device *dev,
++				      struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5504_state *st = iio_dev_get_devdata(indio_dev);
++
++	const char mode[][14] = {"20kohm_to_gnd", "three_state"};
++
++	return sprintf(buf, "%s\n", mode[st->pwr_down_mode]);
++}
++
++static ssize_t ad5504_write_powerdown_mode(struct device *dev,
++				       struct device_attribute *attr,
++				       const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5504_state *st = iio_dev_get_devdata(indio_dev);
++	int ret;
++
++	if (sysfs_streq(buf, "20kohm_to_gnd"))
++		st->pwr_down_mode = AD5504_DAC_PWRDN_20K;
++	else if (sysfs_streq(buf, "three_state"))
++		st->pwr_down_mode = AD5504_DAC_PWRDN_3STATE;
++	else
++		ret = -EINVAL;
++
++	return ret ? ret : len;
++}
++
++static ssize_t ad5504_read_dac_powerdown(struct device *dev,
++					   struct device_attribute *attr,
++					   char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5504_state *st = iio_dev_get_devdata(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++
++	return sprintf(buf, "%d\n",
++			!(st->pwr_down_mask & (1 << this_attr->address)));
++}
++
++static ssize_t ad5504_write_dac_powerdown(struct device *dev,
++					    struct device_attribute *attr,
++					    const char *buf, size_t len)
++{
++	long readin;
++	int ret;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5504_state *st = iio_dev_get_devdata(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++
++	ret = strict_strtol(buf, 10, &readin);
++	if (ret)
++		return ret;
++
++	if (readin == 0)
++		st->pwr_down_mask |= (1 << this_attr->address);
++	else if (readin == 1)
++		st->pwr_down_mask &= ~(1 << this_attr->address);
++	else
++		ret = -EINVAL;
++
++	ret = ad5504_spi_write(st->spi, AD5504_ADDR_CTRL,
++				AD5504_DAC_PWRDWN_MODE(st->pwr_down_mode) |
++				AD5504_DAC_PWR(st->pwr_down_mask));
++
++	/* writes to the CTRL register must be followed by a NOOP */
++	ad5504_spi_write(st->spi, AD5504_ADDR_NOOP, 0);
++
++	return ret ? ret : len;
++}
++
++static ssize_t ad5504_show_scale(struct device *dev,
++				struct device_attribute *attr,
++				char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5504_state *st = iio_dev_get_devdata(indio_dev);
++	/* Corresponds to Vref / 2^(bits) */
++	unsigned int scale_uv = (st->vref_mv * 1000) >> AD5505_BITS;
++
++	return sprintf(buf, "%d.%03d\n", scale_uv / 1000, scale_uv % 1000);
++}
++static IIO_DEVICE_ATTR(out_scale, S_IRUGO, ad5504_show_scale, NULL, 0);
++
++static ssize_t ad5504_show_name(struct device *dev,
++				 struct device_attribute *attr,
++				 char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5504_state *st = iio_dev_get_devdata(indio_dev);
++
++	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
++}
++static IIO_DEVICE_ATTR(name, S_IRUGO, ad5504_show_name, NULL, 0);
++
++#define IIO_DEV_ATTR_OUT_RW_RAW(_num, _show, _store, _addr)		\
++	IIO_DEVICE_ATTR(out##_num##_raw,				\
++			S_IRUGO | S_IWUSR, _show, _store, _addr)
++
++static IIO_DEV_ATTR_OUT_RW_RAW(0, ad5504_read_dac,
++	ad5504_write_dac, AD5504_ADDR_DAC0);
++static IIO_DEV_ATTR_OUT_RW_RAW(1, ad5504_read_dac,
++	ad5504_write_dac, AD5504_ADDR_DAC1);
++static IIO_DEV_ATTR_OUT_RW_RAW(2, ad5504_read_dac,
++	ad5504_write_dac, AD5504_ADDR_DAC2);
++static IIO_DEV_ATTR_OUT_RW_RAW(3, ad5504_read_dac,
++	ad5504_write_dac, AD5504_ADDR_DAC3);
++
++static IIO_DEVICE_ATTR(out_powerdown_mode, S_IRUGO |
++			S_IWUSR, ad5504_read_powerdown_mode,
++			ad5504_write_powerdown_mode, 0);
++
++static IIO_CONST_ATTR(out_powerdown_mode_available,
++			"20kohm_to_gnd three_state");
++
++#define IIO_DEV_ATTR_DAC_POWERDOWN(_num, _show, _store, _addr)		\
++	IIO_DEVICE_ATTR(out##_num##_powerdown,				\
++			S_IRUGO | S_IWUSR, _show, _store, _addr)
++
++static IIO_DEV_ATTR_DAC_POWERDOWN(0, ad5504_read_dac_powerdown,
++				   ad5504_write_dac_powerdown, 0);
++static IIO_DEV_ATTR_DAC_POWERDOWN(1, ad5504_read_dac_powerdown,
++				   ad5504_write_dac_powerdown, 1);
++static IIO_DEV_ATTR_DAC_POWERDOWN(2, ad5504_read_dac_powerdown,
++				   ad5504_write_dac_powerdown, 2);
++static IIO_DEV_ATTR_DAC_POWERDOWN(3, ad5504_read_dac_powerdown,
++				   ad5504_write_dac_powerdown, 3);
++
++static struct attribute *ad5504_attributes[] = {
++	&iio_dev_attr_out0_raw.dev_attr.attr,
++	&iio_dev_attr_out1_raw.dev_attr.attr,
++	&iio_dev_attr_out2_raw.dev_attr.attr,
++	&iio_dev_attr_out3_raw.dev_attr.attr,
++	&iio_dev_attr_out0_powerdown.dev_attr.attr,
++	&iio_dev_attr_out1_powerdown.dev_attr.attr,
++	&iio_dev_attr_out2_powerdown.dev_attr.attr,
++	&iio_dev_attr_out3_powerdown.dev_attr.attr,
++	&iio_dev_attr_out_powerdown_mode.dev_attr.attr,
++	&iio_const_attr_out_powerdown_mode_available.dev_attr.attr,
++	&iio_dev_attr_out_scale.dev_attr.attr,
++	&iio_dev_attr_name.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ad5504_attribute_group = {
++	.attrs = ad5504_attributes,
++};
++
++static struct attribute *ad5501_attributes[] = {
++	&iio_dev_attr_out0_raw.dev_attr.attr,
++	&iio_dev_attr_out0_powerdown.dev_attr.attr,
++	&iio_dev_attr_out_powerdown_mode.dev_attr.attr,
++	&iio_const_attr_out_powerdown_mode_available.dev_attr.attr,
++	&iio_dev_attr_out_scale.dev_attr.attr,
++	&iio_dev_attr_name.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ad5501_attribute_group = {
++	.attrs = ad5501_attributes,
++};
++
++static IIO_CONST_ATTR(temp0_thresh_rising_value, "110000");
++static IIO_CONST_ATTR(temp0_thresh_rising_en, "1");
++
++static struct attribute *ad5504_ev_attributes[] = {
++	&iio_const_attr_temp0_thresh_rising_value.dev_attr.attr,
++	&iio_const_attr_temp0_thresh_rising_en.dev_attr.attr,
++	NULL,
++};
++
++static struct attribute_group ad5504_ev_attribute_group = {
++	.attrs = ad5504_ev_attributes,
++};
++
++static void ad5504_interrupt_bh(struct work_struct *work_s)
++{
++	struct ad5504_state *st = container_of(work_s,
++		struct ad5504_state, work_alarm);
++
++	iio_push_event(st->indio_dev, 0,
++			IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_TEMP,
++			0,
++			IIO_EV_TYPE_THRESH,
++			IIO_EV_DIR_RISING),
++			st->last_timestamp);
++
++	enable_irq(st->spi->irq);
++}
++
++static int ad5504_interrupt(struct iio_dev *dev_info,
++		int index,
++		s64 timestamp,
++		int no_test)
++{
++	struct ad5504_state *st = dev_info->dev_data;
++
++	st->last_timestamp = timestamp;
++	schedule_work(&st->work_alarm);
++	return 0;
++}
++
++IIO_EVENT_SH(ad5504, &ad5504_interrupt);
++
++static int __devinit ad5504_probe(struct spi_device *spi)
++{
++	struct ad5504_platform_data *pdata = spi->dev.platform_data;
++	struct ad5504_state *st;
++	int ret, voltage_uv = 0;
++
++	st = kzalloc(sizeof(*st), GFP_KERNEL);
++	if (st == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++
++	spi_set_drvdata(spi, st);
++
++	st->reg = regulator_get(&spi->dev, "vcc");
++	if (!IS_ERR(st->reg)) {
++		ret = regulator_enable(st->reg);
++		if (ret)
++			goto error_put_reg;
++
++		voltage_uv = regulator_get_voltage(st->reg);
++	}
++
++	if (voltage_uv)
++		st->vref_mv = voltage_uv / 1000;
++	else if (pdata)
++		st->vref_mv = pdata->vref_mv;
++	else
++		dev_warn(&spi->dev, "reference voltage unspecified\n");
++
++	st->spi = spi;
++	st->indio_dev = iio_allocate_device();
++	if (st->indio_dev == NULL) {
++		ret = -ENOMEM;
++		goto error_disable_reg;
++	}
++	st->indio_dev->dev.parent = &spi->dev;
++
++	st->indio_dev->attrs = spi_get_device_id(st->spi)->driver_data
++		== ID_AD5501 ? &ad5501_attribute_group :
++		&ad5504_attribute_group;
++	st->indio_dev->dev_data = (void *)(st);
++	st->indio_dev->driver_module = THIS_MODULE;
++	st->indio_dev->modes = INDIO_DIRECT_MODE;
++	st->indio_dev->num_interrupt_lines = 1;
++	st->indio_dev->event_attrs = &ad5504_ev_attribute_group,
++
++	ret = iio_device_register(st->indio_dev);
++	if (ret)
++		goto error_free_dev;
++
++	if (spi->irq) {
++		INIT_WORK(&st->work_alarm, ad5504_interrupt_bh);
++
++		ret = iio_register_interrupt_line(spi->irq,
++				st->indio_dev,
++				0,
++				IRQF_TRIGGER_FALLING,
++				spi_get_device_id(st->spi)->name);
++		if (ret)
++			goto error_unreg_iio_device;
++
++		iio_add_event_to_list(&iio_event_ad5504,
++				&st->indio_dev->interrupts[0]->ev_list);
++	}
++
++	return 0;
++
++error_unreg_iio_device:
++	iio_device_unregister(st->indio_dev);
++error_free_dev:
++	iio_free_device(st->indio_dev);
++error_disable_reg:
++	if (!IS_ERR(st->reg))
++		regulator_disable(st->reg);
++error_put_reg:
++	if (!IS_ERR(st->reg))
++		regulator_put(st->reg);
++
++	kfree(st);
++error_ret:
++	return ret;
++}
++
++static int __devexit ad5504_remove(struct spi_device *spi)
++{
++	struct ad5504_state *st = spi_get_drvdata(spi);
++
++	if (spi->irq)
++		iio_unregister_interrupt_line(st->indio_dev, 0);
++
++	iio_device_unregister(st->indio_dev);
++
++	if (!IS_ERR(st->reg)) {
++		regulator_disable(st->reg);
++		regulator_put(st->reg);
++	}
++
++	kfree(st);
++
++	return 0;
++}
++
++static const struct spi_device_id ad5504_id[] = {
++	{"ad5504", ID_AD5504},
++	{"ad5501", ID_AD5501},
++	{}
++};
++
++static struct spi_driver ad5504_driver = {
++	.driver = {
++		   .name = "ad5504",
++		   .owner = THIS_MODULE,
++		   },
++	.probe = ad5504_probe,
++	.remove = __devexit_p(ad5504_remove),
++	.id_table = ad5504_id,
++};
++
++static __init int ad5504_spi_init(void)
++{
++	return spi_register_driver(&ad5504_driver);
++}
++module_init(ad5504_spi_init);
++
++static __exit void ad5504_spi_exit(void)
++{
++	spi_unregister_driver(&ad5504_driver);
++}
++module_exit(ad5504_spi_exit);
++
++MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
++MODULE_DESCRIPTION("Analog Devices AD5501/AD5501 DAC");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/staging/iio/dac/ad5504.h b/drivers/staging/iio/dac/ad5504.h
+new file mode 100644
+index 0000000..d2fac63
+--- /dev/null
++++ b/drivers/staging/iio/dac/ad5504.h
+@@ -0,0 +1,74 @@
++/*
++ * AD5504 SPI DAC driver
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#ifndef SPI_AD5504_H_
++#define SPI_AD5504_H_
++
++#define AD5505_BITS			12
++#define AD5504_RES_MASK			((1 << (AD5505_BITS)) - 1)
++
++#define AD5504_CMD_READ			(1 << 15)
++#define AD5504_CMD_WRITE		(0 << 15)
++#define AD5504_ADDR(addr)		((addr) << 12)
++
++/* Registers */
++#define AD5504_ADDR_NOOP		0
++#define AD5504_ADDR_DAC0		1
++#define AD5504_ADDR_DAC1		2
++#define AD5504_ADDR_DAC2		3
++#define AD5504_ADDR_DAC3		4
++#define AD5504_ADDR_ALL_DAC		5
++#define AD5504_ADDR_CTRL		7
++
++/* Control Register */
++#define AD5504_DAC_PWR(ch)		((ch) << 2)
++#define AD5504_DAC_PWRDWN_MODE(mode)	((mode) << 6)
++#define AD5504_DAC_PWRDN_20K		0
++#define AD5504_DAC_PWRDN_3STATE		1
++
++/*
++ * TODO: struct ad5504_platform_data needs to go into include/linux/iio
++ */
++
++struct ad5504_platform_data {
++	u16				vref_mv;
++};
++
++/**
++ * struct ad5446_state - driver instance specific data
++ * @indio_dev:		the industrial I/O device
++ * @us:			spi_device
++ * @reg:		supply regulator
++ * @vref_mv:		actual reference voltage used
++ * @work_alarm:		bh work structure for event handling
++ * @last_timestamp:	timestamp of last event interrupt
++ * @pwr_down_mask	power down mask
++ * @pwr_down_mode	current power down mode
++ */
++
++struct ad5504_state {
++	struct iio_dev			*indio_dev;
++	struct spi_device		*spi;
++	struct regulator		*reg;
++	unsigned short			vref_mv;
++	struct work_struct		work_alarm;
++	s64				last_timestamp;
++	unsigned			pwr_down_mask;
++	unsigned			pwr_down_mode;
++};
++
++/**
++ * ad5504_supported_device_ids:
++ */
++
++enum ad5504_supported_device_ids {
++	ID_AD5504,
++	ID_AD5501,
++};
++
++#endif /* SPI_AD5504_H_ */
+diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
+index 24b74dd..8f4d547 100644
+--- a/drivers/staging/iio/sysfs.h
++++ b/drivers/staging/iio/sysfs.h
+@@ -266,6 +266,7 @@ struct iio_const_attr {
+ #define IIO_EV_CLASS_MAGN		4
+ #define IIO_EV_CLASS_LIGHT		5
+ #define IIO_EV_CLASS_PROXIMITY		6
++#define IIO_EV_CLASS_TEMP		7
+
+ #define IIO_EV_MOD_X			0
+ #define IIO_EV_MOD_Y			1
 --
 1.6.0.2
