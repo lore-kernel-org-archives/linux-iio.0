@@ -1,12 +1,12 @@
 Return-Path: <Michael.Hennerich@analog.com>
 From: <michael.hennerich@analog.com>
-To: greg@kroah.com
-CC: linux-iio@vger.kernel.org, drivers@analog.com, jic23@cam.ac.uk,
+To: jic23@cam.ac.uk
+CC: linux-iio@vger.kernel.org, drivers@analog.com,
         device-drivers-devel@blackfin.uclinux.org,
         Michael Hennerich <michael.hennerich@analog.com>
 Subject: [PATCH] IIO: DAC: New driver for the AD5504 and AD55041 High Voltage DACs
-Date: Mon, 4 Apr 2011 15:39:15 +0200
-Message-ID: <1301924355-21361-1-git-send-email-michael.hennerich@analog.com>
+Date: Mon, 4 Apr 2011 14:44:53 +0200
+Message-ID: <1301921093-21122-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
@@ -27,7 +27,6 @@ Changes since V2:
 IIO: DAC: AD5504 use proper event type
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
  drivers/staging/iio/dac/Kconfig  |   10 +
  drivers/staging/iio/dac/Makefile |    1 +
@@ -45,7 +44,7 @@ index 67defcb..1b0188a 100644
 @@ -21,6 +21,16 @@ config AD5446
  	  To compile this driver as a module, choose M here: the
  	  module will be called ad5446.
-
+ 
 +config AD5504
 +	tristate "Analog Devices AD5504/AD5501 DAC SPI driver"
 +	depends on SPI
@@ -65,7 +64,7 @@ index 1197aef..020df4a 100644
 +++ b/drivers/staging/iio/dac/Makefile
 @@ -3,5 +3,6 @@
  #
-
+ 
  obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
 +obj-$(CONFIG_AD5504) += ad5504.o
  obj-$(CONFIG_AD5446) += ad5446.o
@@ -591,8 +590,8 @@ index 24b74dd..8f4d547 100644
  #define IIO_EV_CLASS_LIGHT		5
  #define IIO_EV_CLASS_PROXIMITY		6
 +#define IIO_EV_CLASS_TEMP		7
-
+ 
  #define IIO_EV_MOD_X			0
  #define IIO_EV_MOD_Y			1
---
+-- 
 1.6.0.2
