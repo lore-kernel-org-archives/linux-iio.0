@@ -1,49 +1,46 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: <michael.hennerich@analog.com>
-To: jic23@cam.ac.uk
-CC: linux-iio@vger.kernel.org, drivers@analog.com,
-        device-drivers-devel@blackfin.uclinux.org,
-        Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH] IIO: kfifo_buf: Fix erroneous timestamp handling.
-Date: Thu, 7 Apr 2011 12:55:15 +0200
-Message-ID: <1302173715-21582-1-git-send-email-michael.hennerich@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:43690 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755989Ab1DFOJX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Apr 2011 10:09:23 -0400
+Message-ID: <4D9C7475.6080900@cam.ac.uk>
+Date: Wed, 06 Apr 2011 15:11:01 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Subject: gpio.h interaction with other headers issue on pxa (maybe arm in
+ general?)
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+Dear all,
 
-Saving the timestamp should not be part of the buffer implementation.
-Apart from that, the code present doesn't make sense at all.
+Doing a quick test build of drivers staging/iio/gyro/adis16080_core.c for pxa27x
+gave me:
 
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
----
- drivers/staging/iio/kfifo_buf.c |   11 +++--------
- 1 files changed, 3 insertions(+), 8 deletions(-)
+  CHECK   drivers/staging/iio/gyro/adis16080_core.c
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:57:48: error: Expected ; at end of declaration
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:57:48: error: got read_cpuid_id
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:59:16: error: Expected ; at the end of type declaration
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:59:16: error: got }
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:60:1: error: Expected ; at the end of type declaration
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:60:1: error: got }
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:64:16: error: Expected ; at the end of type declaration
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:64:16: error: got }
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:65:1: error: Expected ; at the end of type declaration
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:65:1: error: got }
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:69:16: error: Expected ; at the end of type declaration
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:69:16: error: got }
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:70:1: error: Expected ; at the end of type declaration
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:70:1: error: got }
+/home/jic23/src/kernel/onwards/arch/arm/include/asm/cputype.h:59:16: error: undefined identifier '__val'
 
-diff --git a/drivers/staging/iio/kfifo_buf.c b/drivers/staging/iio/kfifo_buf.c
-index a56c0cb..cc58b1b 100644
---- a/drivers/staging/iio/kfifo_buf.c
-+++ b/drivers/staging/iio/kfifo_buf.c
-@@ -167,16 +167,11 @@ int iio_store_to_kfifo(struct iio_ring_buffer *r, u8 *data, s64 timestamp)
- {
- 	int ret;
- 	struct iio_kfifo *kf = iio_to_kfifo(r);
--	u8 *datal = kmalloc(r->bytes_per_datum, GFP_KERNEL);
--	memcpy(datal, data, r->bytes_per_datum - sizeof(timestamp));
--	memcpy(datal + r->bytes_per_datum - sizeof(timestamp),
--		&timestamp, sizeof(timestamp));
-+
- 	ret = kfifo_in(&kf->kf, data, r->bytes_per_datum);
--	if (ret != r->bytes_per_datum) {
--		kfree(datal);
-+	if (ret != r->bytes_per_datum)
- 		return -EBUSY;
--	}
--	kfree(datal);
-+
- 	return 0;
- }
- EXPORT_SYMBOL(iio_store_to_kfifo);
--- 
-1.6.0.2
+Simply reorder the header includes to have kernel.h before gpio.h fixes this, but is it an indication of
+an underlying problem that should have a more general fix?
+
+Give the driver was developed on blackfin, I'm guessing it's fine for them and given
+Greg's testing on x86 and friends I guess it is fine there as well.
+
+Jonathan
