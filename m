@@ -4,9 +4,9 @@ To: greg@kroah.com
 CC: linux-iio@vger.kernel.org, drivers@analog.com, jic23@cam.ac.uk,
         device-drivers-devel@blackfin.uclinux.org,
         Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 3/3] IIO: GYRO: IIO driver for Analog Devices Digital Output Gyroscope ADXRS450
-Date: Wed, 6 Apr 2011 10:39:20 +0200
-Message-ID: <1302079160-2881-3-git-send-email-cliff.cai@analog.com>
+Subject: [PATCH 2/3] IIO: Documentation: Add ABI documentatio for gyro quadrature correction
+Date: Wed, 6 Apr 2011 10:39:19 +0200
+Message-ID: <1302079160-2881-2-git-send-email-cliff.cai@analog.com>
 In-Reply-To: <1302079160-2881-1-git-send-email-cliff.cai@analog.com>
 References: <1302079160-2881-1-git-send-email-cliff.cai@analog.com>
 MIME-Version: 1.0
@@ -15,44 +15,29 @@ List-ID: <linux-iio@vger.kernel.org>
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-Add new IIO driver for Analog Devices digital output gyroscope ADXRS450
+Add ABI documentation for gyro quadrature correction.
 
 Signed-off-by: Cliff Cai <cliff.cai@analog.com>
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/gyro/Kconfig  |   10 ++++++++++
- drivers/staging/iio/gyro/Makefile |    3 +++
- 2 files changed, 13 insertions(+), 0 deletions(-)
+ drivers/staging/iio/Documentation/sysfs-bus-iio |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
-index 8b78fa0..ae2e7d3 100644
---- a/drivers/staging/iio/gyro/Kconfig
-+++ b/drivers/staging/iio/gyro/Kconfig
-@@ -35,3 +35,13 @@ config ADIS16260
-
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called adis16260.
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio b/drivers/staging/iio/Documentation/sysfs-bus-iio
+index 4915aee..49047ad 100644
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
+@@ -698,3 +698,10 @@ Description:
+ 		with all _en attributes to establish which channels are present,
+ 		and the relevant _type attributes to establish the data storage
+ 		format.
 +
-+config ADXRS450
-+	tristate "Analog Devices ADXRS450 Digital Output Gyroscope SPI driver"
-+	depends on SPI
-+	help
-+	  Say yes here to build support for Analog Devices ADXRS450 programmable
-+	  digital output gyroscope.
-+
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called adxrs450.
-diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
-index 2764c15..2212240 100644
---- a/drivers/staging/iio/gyro/Makefile
-+++ b/drivers/staging/iio/gyro/Makefile
-@@ -17,3 +17,6 @@ obj-$(CONFIG_ADIS16260) += adis16260.o
-
- adis16251-y             := adis16251_core.o
- obj-$(CONFIG_ADIS16251) += adis16251.o
-+
-+adxrs450-y             := adxrs450_core.o
-+obj-$(CONFIG_ADXRS450) += adxrs450.o
++What:		/sys/bus/iio/devices/deviceX/gyro_z_quadrature_correction_raw
++KernelVersion:	2.6.38
++Contact:	linux-iio@xxxxxxxxxxxxxxx
++Description:
++		This attribute is used to read the amount of quadrature error
++		present in the device at a given time.
 --
 1.6.0.2
