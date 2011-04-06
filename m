@@ -1,75 +1,58 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: "greg@kroah.com" <greg@kroah.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Drivers
-	<Drivers@analog.com>, "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Date: Wed, 6 Apr 2011 09:51:51 +0100
-Subject: RE: [PATCH 1/3] IIO: GYRO: Add MACRO for gyro quadrature correction
-Message-ID: <544AC56F16B56944AEC3BD4E3D5917713754673DBE@LIMKCMBX1.ad.analog.com>
-References: <1302079160-2881-1-git-send-email-cliff.cai@analog.com>
+Return-Path: <Cliff.Cai@analog.com>
+From: Cliff Cai <cliff.cai@analog.com>
+To: greg@kroah.com
+CC: linux-iio@vger.kernel.org, drivers@analog.com, jic23@cam.ac.uk,
+        device-drivers-devel@blackfin.uclinux.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 3/3] IIO: GYRO: IIO driver for Analog Devices Digital Output Gyroscope ADXRS450
+Date: Wed, 6 Apr 2011 10:39:20 +0200
+Message-ID: <1302079160-2881-3-git-send-email-cliff.cai@analog.com>
 In-Reply-To: <1302079160-2881-1-git-send-email-cliff.cai@analog.com>
-Content-Type: text/plain; charset="us-ascii"
+References: <1302079160-2881-1-git-send-email-cliff.cai@analog.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Greg,
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Please ignore this set.
+Add new IIO driver for Analog Devices digital output gyroscope ADXRS450
 
-Cliff left ADI last week.
-I therefore tried to apply his patches to my tree in order to resubmit the =
-complete patch set.
-However this set is incomplete, and also shows the wrong From:
+Signed-off-by: Cliff Cai <cliff.cai@analog.com>
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/gyro/Kconfig  |   10 ++++++++++
+ drivers/staging/iio/gyro/Makefile |    3 +++
+ 2 files changed, 13 insertions(+), 0 deletions(-)
 
-Greetings,
-Michael
+diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
+index 8b78fa0..ae2e7d3 100644
+--- a/drivers/staging/iio/gyro/Kconfig
++++ b/drivers/staging/iio/gyro/Kconfig
+@@ -35,3 +35,13 @@ config ADIS16260
 
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called adis16260.
++
++config ADXRS450
++	tristate "Analog Devices ADXRS450 Digital Output Gyroscope SPI driver"
++	depends on SPI
++	help
++	  Say yes here to build support for Analog Devices ADXRS450 programmable
++	  digital output gyroscope.
++
++	  This driver can also be built as a module.  If so, the module
++	  will be called adxrs450.
+diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
+index 2764c15..2212240 100644
+--- a/drivers/staging/iio/gyro/Makefile
++++ b/drivers/staging/iio/gyro/Makefile
+@@ -17,3 +17,6 @@ obj-$(CONFIG_ADIS16260) += adis16260.o
+
+ adis16251-y             := adis16251_core.o
+ obj-$(CONFIG_ADIS16251) += adis16251.o
++
++adxrs450-y             := adxrs450_core.o
++obj-$(CONFIG_ADXRS450) += adxrs450.o
 --
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Mar=
-garet Seif
-
-
-> -----Original Message-----
-> From: Cliff Cai [mailto:cliff.cai@analog.com]
-> Sent: Wednesday, April 06, 2011 10:39 AM
-> To: greg@kroah.com
-> Cc: linux-iio@vger.kernel.org; Drivers; jic23@cam.ac.uk; device-
-> drivers-devel@blackfin.uclinux.org; Hennerich, Michael
-> Subject: [PATCH 1/3] IIO: GYRO: Add MACRO for gyro quadrature
-> correction
->
-> From: Michael Hennerich <michael.hennerich@analog.com>
->
-> Add gyro_z_quadrature_correction_raw define.
->
-> Signed-off-by: Cliff Cai <cliff.cai@analog.com>
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/gyro/gyro.h |    3 +++
->  1 files changed, 3 insertions(+), 0 deletions(-)
->
-> diff --git a/drivers/staging/iio/gyro/gyro.h
-> b/drivers/staging/iio/gyro/gyro.h
-> index b4ea5bf..b549561 100644
-> --- a/drivers/staging/iio/gyro/gyro.h
-> +++ b/drivers/staging/iio/gyro/gyro.h
-> @@ -57,6 +57,9 @@
->  #define IIO_DEV_ATTR_GYRO_Z_CALIBSCALE(_mode, _show, _store, _addr)
->               \
->       IIO_DEVICE_ATTR(gyro_z_calibscale, _mode, _show, _store, _addr)
->
-> +#define IIO_DEV_ATTR_GYRO_Z_QUADRATURE_CORRECTION(_show, _addr)
->       \
-> +     IIO_DEVICE_ATTR(gyro_z_quadrature_correction_raw, S_IRUGO, _show,
-> NULL, _addr)
-> +
->  #define IIO_DEV_ATTR_GYRO(_show, _addr)                      \
->       IIO_DEVICE_ATTR(gyro_raw, S_IRUGO, _show, NULL, _addr)
->
-> --
-> 1.6.0.2
+1.6.0.2
