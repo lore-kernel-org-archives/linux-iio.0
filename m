@@ -1,63 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from opensource.wolfsonmicro.com ([80.75.67.52]:34086 "EHLO
-	opensource2.wolfsonmicro.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1757200Ab1DNOCo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2011 10:02:44 -0400
-Date: Thu, 14 Apr 2011 15:02:29 +0100
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
-To: Michael Hennerich <michael.hennerich@analog.com>
-Cc: Liam Girdwood <lrg@slimlogic.co.uk>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: voltage and current regulator framework: specifying negative
- voltages
-Message-ID: <20110414140229.GC7890@opensource.wolfsonmicro.com>
-References: <544AC56F16B56944AEC3BD4E3D59177137546EF3FC@LIMKCMBX1.ad.analog.com>
- <20110412152102.GB20710@opensource.wolfsonmicro.com>
- <4DA59580.4010707@analog.com>
- <1302702201.3600.81.camel@odin>
- <20110413172404.GB18008@opensource.wolfsonmicro.com>
- <4DA6D01B.9080202@analog.com>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:56799 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751247Ab1DISVr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Apr 2011 14:21:47 -0400
+Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:52505)
+	by ppsw-51.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.158]:25)
+	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
+	id 1Q8cn1-00065o-ZG (Exim 4.72) for linux-iio@vger.kernel.org
+	(return-path <jic23@cam.ac.uk>); Sat, 09 Apr 2011 19:21:43 +0100
+Message-ID: <4DA0A420.8060302@cam.ac.uk>
+Date: Sat, 09 Apr 2011 19:23:28 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <4DA6D01B.9080202@analog.com>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: RFC How to handle device with different _scale values depending on
+ how you access them.
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Apr 14, 2011 at 12:44:43PM +0200, Michael Hennerich wrote:
-> On 04/13/2011 07:24 PM, Mark Brown wrote:
+Dear All,
 
-Please cut irrelevant context from your replies.
+I'm messing with my favourite 'special' device, the sca3000.
 
-> >>> Updating the core to allow negative and zero voltages, is not  straight
-> >>> forward.
-> >>> There are more issues with constrain checking and I currently can't
-> >>> oversee all side
+It has a hardware ring buffer and direct read abilities.
 
-> > What are the issues that you see?
+Direct reads of current value are 13bit signed, the buffer
+is either 11 bit or 8 bit.
 
-> In case the output voltage can be negative, the input voltage may be
-> negative as well.
-> In functions drms_uA_update() and regulator_set_optimum_mode(), the
-> input supply voltage
-> is checked for being > 0, if that fails it uses the constrains->input_uV
-> instead...
+So ultimately the scale on the buffer can change which is
+nasty enough, however direct reads are 13bits whatever
+the buffer is set to.
 
-None of this seems particularly complicated to deal with, it's not a
-massive change in the architecture of the code or anything - it's all
-just refactoring interfaces and implementations a bit.
+Hence we need to export two scale's at a time.
 
-> BTW: Function drms_uA_update() looks suspicious.
+Would anyone mind if I add the option to have both
 
->     /* get input voltage */
->     input_uV = 0;
->     if (rdev->supply)
->         input_uV = _regulator_get_voltage(rdev);
+/device0/accel_scale (applies to _raw files in the same dir).
+and
+/device0/device0:buffer0/accel_scale (or maybe put it
+in the 'scan_elements' directory?
 
-> it checks for rdev->supply but later uses rdev, which will ultimately
-> mean input_uV == output_uV.
+This means we will have to define a precedence for these
+attributes when reading from buffers which isn't nice, but
+such is life...
 
-There's very few users of supplies in mainline and no users at all of
-the optimal mode stuff.
+Jonathan
