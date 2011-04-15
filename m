@@ -1,44 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:56526 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751404Ab1DOLgX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Apr 2011 07:36:23 -0400
-Message-ID: <4DA82E28.5030206@cam.ac.uk>
-Date: Fri, 15 Apr 2011 12:38:16 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: jic23@cam.ac.uk
+CC: linux-iio@vger.kernel.org, drivers@analog.com,
+        device-drivers-devel@blackfin.uclinux.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] IIO-onwards: ADC: AD7476: Fix ringbuffer registration
+Date: Fri, 15 Apr 2011 11:27:56 +0200
+Message-ID: <1302859676-24706-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: Channel mask out/hide
-References: <544AC56F16B56944AEC3BD4E3D591771375475E2F5@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D591771375475E2F5@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/15/11 12:15, Hennerich, Michael wrote:
-> Hi Jonathan,
-> 
-> A number of our ADC drivers use is_visible to hide some channels in certain configurations.
-> Now that the channel registration is done in the core.
-> How do you think we should do that, from now on?
-Different channel sets for the different devices. It's slightly more static data, but
-not too bad.  So basically how we did it before that is_visible function came along.
-See max1363 or the version of adis16400 I'll push out to the onwards tree shortly.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-That's the one big disadvantage I've seen, but I think the gains outweigh the slightly
-larger amount of code in those places where is_visible is currently used.
-> 
-> Greetings,
-> Michael
-> 
-> --
-> Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-> Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-> Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret Seif
-> 
-> 
-> 
 
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/adc/ad7476_core.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
+index 5867b92..a3cd4cd 100644
+--- a/drivers/staging/iio/adc/ad7476_core.c
++++ b/drivers/staging/iio/adc/ad7476_core.c
+@@ -209,7 +209,9 @@ static int __devinit ad7476_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto error_free_device;
+ 
+-	ret = iio_ring_buffer_register(st->indio_dev->ring, 0);
++	ret = iio_ring_buffer_register_ex(st->indio_dev->ring, 0,
++			(struct iio_chan_spec *) st->chip_info->channel,
++			ARRAY_SIZE(st->chip_info->channel));
+ 	if (ret)
+ 		goto error_cleanup_ring;
+ 	return 0;
+-- 
+1.6.0.2
