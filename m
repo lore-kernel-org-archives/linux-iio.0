@@ -1,1330 +1,1447 @@
-Return-Path: <jic23@cam.ac.uk>
-From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 01/70] staging:iio: allow channels to be set up using a table of iio_channel_spec structures.
-Date: Sun, 17 Apr 2011 20:05:34 +0100
-Message-Id: <1303067203-4894-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
-References: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:4431 "EHLO
+	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751109Ab1DOTqz convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Apr 2011 15:46:55 -0400
+Subject: [PATCH v1]TAOS 2571 Device Driver
+From: Jon Brenner <jbrenner@taosinc.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio <linux-iio@vger.kernel.org>,
+	Linux Kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 15 Apr 2011 14:47:03 -0500
+Message-ID: <1302896823.9557.5.camel@jonz-ubuntu>
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-V2: Various fixes - some thanks to Arnd.
-    Bug fix for unregistering of event attr group
-    Changed iio_read_channel_info to have two part value - use for
-    raw value read as well.
-    constify the channelspec structures
-    raw write support for calibbias and similar
-    Additional strings for buidling attribute names.
+[PATCH v1] for TAOS tsl2571 Device driver 
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Patch for tsl2571 driver.  
+Driver includes (iio_event/interrupt).
+
+Signed-off-by: Jon August Brenner <jbrenner@taosinc.com>
+
 ---
- drivers/staging/iio/chrdev.h            |    3 +
- drivers/staging/iio/iio.h               |  171 ++++++++-
- drivers/staging/iio/industrialio-core.c |  645 +++++++++++++++++++++++++++++--
- drivers/staging/iio/industrialio-ring.c |  188 +++++++++-
- drivers/staging/iio/ring_generic.h      |   20 +
- drivers/staging/iio/sysfs.h             |   34 ++-
- 6 files changed, 1019 insertions(+), 42 deletions(-)
+ drivers/staging/iio/light/Kconfig   |    8 +
+ drivers/staging/iio/light/Makefile  |    1 +
+ drivers/staging/iio/light/tsl2571.c | 1379 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 1388 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/staging/iio/chrdev.h b/drivers/staging/iio/chrdev.h
-index 4fcb99c..62c4285 100644
---- a/drivers/staging/iio/chrdev.h
-+++ b/drivers/staging/iio/chrdev.h
-@@ -91,6 +91,9 @@ struct iio_event_interface {
- 	void					*private;
- 	char					_name[35];
- 	char					_attrname[20];
-+
-+	struct list_head event_attr_list;
-+	struct list_head dev_attr_list;
- };
- 
- /**
-diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index 80ef2cf..d6c6cab 100644
---- a/drivers/staging/iio/iio.h
-+++ b/drivers/staging/iio/iio.h
-@@ -26,6 +26,142 @@
- 
- struct iio_dev;
- 
-+/* naughty temporary hack to match these against the event version
-+   - need to flattern these together */
-+enum iio_chan_type {
-+	/* Need this here for now to support buffer events
-+	 * set to 0  to avoid changes to ring_generic.c */
-+	IIO_BUFFER = 0,
-+
-+	/* real channel types */
-+	IIO_IN,
-+	IIO_ACCEL,
-+	IIO_IN_DIFF,
-+	IIO_GYRO,
-+	IIO_MAGN,
-+	IIO_LIGHT,
-+	IIO_PROXIMITY,
-+	IIO_TEMP,
-+	IIO_INCLI,
-+	IIO_ROT,
-+	IIO_TIMESTAMP,
-+};
-+
-+/* Could add the raw attributes as well - allowing buffer only devices */
-+enum iio_chan_info_enum {
-+	IIO_CHAN_INFO_SCALE_SHARED,
-+	IIO_CHAN_INFO_SCALE_SEPARATE,
-+	IIO_CHAN_INFO_OFFSET_SHARED,
-+	IIO_CHAN_INFO_OFFSET_SEPARATE,
-+	IIO_CHAN_INFO_CALIBSCALE_SHARED,
-+	IIO_CHAN_INFO_CALIBSCALE_SEPARATE,
-+	IIO_CHAN_INFO_CALIBBIAS_SHARED,
-+	IIO_CHAN_INFO_CALIBBIAS_SEPARATE
-+};
-+
-+/**
-+ * struct iio_chan_spec - specification of a single channel
-+ * @type:	what type of measurement is the channel making
-+ * @channel:	what number or name do we wish to asign the channel
-+ * @channel2:	if there is a second number for a differential
-+ *		channel then this is it.
-+ * @address:	driver specific identifier.
-+ * @scan_index:	monotonic index to give ordering in scans when read
-+ *		from a buffer.
-+ * @scan_type:	sign is 's' or 'u' to specify signed or unsigned
-+ *		realbits is the number of valid bits of data
-+ *		storage bits is realbits + padding
-+ *		shift tells you how much to shift right before masking
-+ *		  out realbits.
-+ * @info_mask:	what information is to be exported about this channel.
-+ *		This includes calibbias, scale etc.
-+ * @event_mask:	what events can this channel produce.
-+ * @shared_handler: single handler for the events registered.
+diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
+index 36d8bbe..e1ee39a 100644
+--- a/drivers/staging/iio/light/Kconfig
++++ b/drivers/staging/iio/light/Kconfig
+@@ -24,3 +24,11 @@ config SENSORS_ISL29018
+          in lux, proximity infrared sensing and normal infrared sensing.
+          Data from sensor is accessible via sysfs.
+
++config SENSORS_TSL2571
++	tristate "TAOS TSL2571 light-to-digital converters"
++	depends on I2C
++	help
++	 Y = in kernel.
++	 M = as module.
++	 Provides support for TAOS tsl2571 devices.
++	 Access ALS data via iio, sysfs (w/ ALS iio_event).
+diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
+index 9142c0e..09413ab 100644
+--- a/drivers/staging/iio/light/Makefile
++++ b/drivers/staging/iio/light/Makefile
+@@ -3,4 +3,5 @@
+ #
+
+ obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
++obj-$(CONFIG_SENSORS_TSL2571)	+= tsl2571.o
+ obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
+diff --git a/drivers/staging/iio/light/tsl2571.c b/drivers/staging/iio/light/tsl2571.c
+new file mode 100644
+index 0000000..b7dd5b2
+--- /dev/null
++++ b/drivers/staging/iio/light/tsl2571.c
+@@ -0,0 +1,1379 @@
++/*
++ * Device driver for monitoring ambient light intensity (lux)
++ * for the TAOS TSL257X devices (w/ interrupt iio_event functionality).
++ *
++ * Copyright (c) 2011, TAOS Corporation.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program; if not, write to the Free Software Foundation, Inc.,
++ * 51 Franklin Street, Fifth Floor, Boston, MA	02110-1301, USA.
 + */
-+struct iio_chan_spec {
-+	enum iio_chan_type type;
-+	int channel;
-+	int channel2;
-+	unsigned long address;
-+	int scan_index;
-+	struct {
-+		char sign;
-+		u8 realbits;
-+		u8 storagebits;
-+		u8 shift;
-+	} scan_type;
-+	const long info_mask;
-+	const long event_mask;
-+	/* TODO: investigate pushing shared event handling out to
-+	 * the drivers */
-+	struct iio_event_handler_list *shared_handler;
-+};
-+/* Meant for internal use only */
-+void __iio_device_attr_deinit(struct device_attribute *dev_attr);
-+int __iio_device_attr_init(struct device_attribute *dev_attr,
-+			   const char *postfix,
-+			   struct iio_chan_spec const *chan,
-+			   ssize_t (*readfunc)(struct device *dev,
-+					       struct device_attribute *attr,
-+					       char *buf),
-+			   ssize_t (*writefunc)(struct device *dev,
-+						struct device_attribute *attr,
-+						const char *buf,
-+						size_t len),
-+			   bool generic);
-+#define IIO_ST(si, rb, sb, sh)						\
-+	{ .sign = si, .realbits = rb, .storagebits = sb, .shift = sh }
 +
-+#define IIO_CHAN(_type, _chan, _inf_mask, _address, _si, _stype)	\
-+	{ .type = _type, .channel = _chan, .info_mask = _inf_mask,	\
-+			.address = _address,				\
-+			.scan_index = _si, .scan_type = _stype }
++#include <linux/kernel.h>
++#include <linux/i2c.h>
++#include <linux/errno.h>
++#include <linux/delay.h>
++#include <linux/string.h>
++#include <linux/mutex.h>
++#include <linux/unistd.h>
++#include <linux/interrupt.h>
++#include <linux/input.h>
++#include <linux/slab.h>
++#include "../iio.h"
++#include "../sysfs.h"
 +
-+#define IIO_CHAN_EV(_type, _chan, _inf_mask, _address, _si,		\
-+		    _stype, _event_mask, _shared_h)			\
-+	{ .type = _type,						\
-+			.channel = _chan,				\
-+			.info_mask = _inf_mask,				\
-+			.address = _address,				\
-+			.scan_index = _si, .scan_type = _stype,		\
-+			.event_mask = _event_mask,			\
-+			.shared_handler = _shared_h }
++/* 2571 register offsets */
++#define TSL257X_MAX_DEVICE_REGS	32
++#define	TSL257X_REG_MAX		16
 +
-+#define IIO_CHAN_COMPOUND(_type, _chan1, _chan2, _inf_mask,		\
-+			  _address, _si, _stype)			\
-+	{ .type = _type, .channel = _chan1, .channel2 = _chan2,		\
-+			.info_mask = _inf_mask,				\
-+			.address = _address,				\
-+			.scan_index = _si, .scan_type = _stype }
++/* Device Registers and Masks */
++#define TSL257X_CNTRL			0x00
++#define TSL257X_ALS_TIME		0X01
 +
-+#define IIO_CHAN_COMPOUND_EV(_type, _chan1, _chan2, _inf_mask,		\
-+			     _address, _si, _stype, _event_mask, _shared_h) \
-+	{ .type = _type,						\
-+			.channel = _chan1, .channel2 = _chan2,		\
-+			.info_mask = _inf_mask,				\
-+			.address = _address,				\
-+			.scan_index = _si, .scan_type = _stype,		\
-+			.event_mask = _event_mask,			\
-+			.shared_handler = _shared_h}
++#define TSL257X_ALS_MINTHRESHLO	0X04
++#define TSL257X_ALS_MINTHRESHHI	0X05
++#define TSL257X_ALS_MAXTHRESHLO	0X06
++#define TSL257X_ALS_MAXTHRESHHI	0X07
 +
-+#define IIO_CHAN_SOFT_TIMESTAMP(_si)					\
-+	{ .type = IIO_TIMESTAMP, .channel = -1,				\
-+			.scan_index = _si, .scan_type = IIO_ST('s', 64, 64, 0) }
++#define TSL257X_PERSISTENCE		0x0c
++#define TSL257X_GAIN			0x0f
++#define	TSL257X_STATUS			0x13
++#define TSL257X_REVID			0x11
++#define TSL257X_CHIPID			0x12
++#define TSL257X_ALS_CHAN0LO		0x14
++#define TSL257X_ALS_CHAN0HI		0x15
++#define TSL257X_ALS_CHAN1LO		0x16
++#define TSL257X_ALS_CHAN1HI		0x17
 +
-+int __iio_add_chan_devattr(const char *postfix,
-+			   const char *group,
-+			   struct iio_chan_spec const *chan,
-+			   ssize_t (*func)(struct device *dev,
-+					   struct device_attribute *attr,
-+					   char *buf),
-+			   ssize_t (*writefunc)(struct device *dev,
-+						struct device_attribute *attr,
-+						const char *buf,
-+						size_t len),
-+			   int mask,
-+			   bool generic,
-+			   struct device *dev,
-+			   struct list_head *attr_list);
- /**
-  * iio_get_time_ns() - utility function to get a time stamp for events etc
-  **/
-@@ -70,7 +206,8 @@ void iio_remove_event_from_list(struct iio_event_handler_list *el,
- 
- /* Vast majority of this is set by the industrialio subsystem on a
-  * call to iio_device_register. */
--
-+#define IIO_VAL_INT 1
-+#define IIO_VAL_INT_PLUS_MICRO 2
- /**
-  * struct iio_dev - industrial I/O device
-  * @id:			[INTERN] used to identify device internally
-@@ -116,6 +253,38 @@ struct iio_dev {
- 	u32				*available_scan_masks;
- 	struct iio_trigger		*trig;
- 	struct iio_poll_func		*pollfunc;
++/* tsl2571 cmd reg masks */
++#define TSL257X_CMD_REG			0x80
++#define TSL257X_CMD_SPL_FN		0x60
++#define TSL257X_CMD_ALS_INT_CLR	0x06
 +
-+	struct iio_chan_spec const *channels;
-+	int num_channels;
-+	struct list_head channel_attr_list;
++/* tsl2571 cntrl reg masks */
++#define TSL257X_CNTL_ADC_ENBL	0x02
++#define TSL257X_CNTL_PWR_ON		0x01
 +
-+	char *name; /*device name - IMPLEMENT */
-+	int (*read_raw)(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *chan,
-+			int *val,
-+			int *val2,
-+			long mask);
++/* tsl2571 status reg masks */
++#define TSL257X_STA_ADC_VALID	0x01
++#define TSL257X_STA_ALS_INTR	0x10
 +
-+	int (*write_raw)(struct iio_dev *indio_dev,
-+			 struct iio_chan_spec const *chan,
-+			 int val,
-+			 int val2,
-+			 long mask);
++/* Triton cntrl reg masks */
++#define CNTL_REG_CLEAR			0x00
++#define CNTL_PROX_INT_ENBL		0X20
++#define CNTL_ALS_INT_ENBL		0X10
++#define TSL257X_CNTL_WAIT_TMR_ENBL	0X08
++#define CNTL_PROX_DET_ENBL		0X04
++#define CNTL_ADC_ENBL			0x02
++#define TSL257X_CNTL_PWRON		0x01
++#define CNTL_ALSPON_ENBL		0x03
++#define CNTL_INTALSPON_ENBL		0x13
++#define CNTL_PROXPON_ENBL		0x0F
++#define CNTL_INTPROXPON_ENBL	0x2F
++#define TSL257X_CMD_PROXALS_INTCLR	0X07
 +
-+	int (*read_event_config)(struct iio_dev *indio_dev,
-+				 int event_code);
++/* Lux calculation constants */
++#define	TSL257X_LUX_CALC_OVER_FLOW	65535
 +
-+	int (*write_event_config)(struct iio_dev *indio_dev,
-+				  int event_code,
-+				  struct iio_event_handler_list *listel,
-+				  int state);
++enum {
++	TSL257X_CHIP_UNKNOWN = 0,
++	TSL257X_CHIP_WORKING = 1,
++	TSL257X_CHIP_SUSPENDED = 2
++} TSL257X_CHIP_WORKING_STATUS;
 +
-+	int (*read_event_value)(struct iio_dev *indio_dev,
-+				int event_code,
-+				int *val);
-+	int (*write_event_value)(struct iio_dev *indio_dev,
-+				 int event_code,
-+				 int val);
- };
- 
- /**
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 3a82414..4d9a8bc 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -44,6 +44,38 @@ struct bus_type iio_bus_type = {
- };
- EXPORT_SYMBOL(iio_bus_type);
- 
-+static const char * const iio_chan_type_name_spec_shared[] = {
-+	[IIO_TIMESTAMP] = "timestamp",
-+	[IIO_ACCEL] = "accel",
-+	[IIO_IN] = "in",
-+	[IIO_IN_DIFF] = "in-in",
-+	[IIO_GYRO] = "gyro",
-+	[IIO_TEMP] = "temp",
-+	[IIO_MAGN] = "magn",
-+	[IIO_INCLI] = "incli",
-+	[IIO_ROT] = "rot",
++/* Per-device data */
++struct taos_als_info {
++	u16 als_ch0;
++	u16 als_ch1;
++	u16 lux;
 +};
 +
-+static const char * const iio_chan_type_name_spec[] = {
-+	[IIO_TIMESTAMP] = "timestamp",
-+	[IIO_ACCEL] = "accel_%c",
-+	[IIO_IN] = "in%d",
-+	[IIO_IN_DIFF] = "in%d-in%d",
-+	[IIO_GYRO] = "gyro_%c",
-+	[IIO_TEMP] = "temp%d",
-+	[IIO_MAGN] = "magn_%c",
-+	[IIO_INCLI] = "incli_%c",
-+	[IIO_ROT] = "rot_%c",
++struct taos_settings {
++	int als_time;
++	int als_gain;
++	int als_gain_trim;
++	int als_cal_target;
++	u8	als_interrupt;
++	u8	als_persistence;
++	int	als_thresh_low;
++	int	als_thresh_high;
 +};
 +
-+/* relies on pairs of these shared then separate */
-+static const char * const iio_chan_info_postfix[] = {
-+	[IIO_CHAN_INFO_SCALE_SHARED/2] = "scale",
-+	[IIO_CHAN_INFO_OFFSET_SHARED/2] = "offset",
-+	[IIO_CHAN_INFO_CALIBSCALE_SHARED/2] = "calibscale",
-+	[IIO_CHAN_INFO_CALIBBIAS_SHARED/2] = "calibbias",
++static const u8 persistence_available[] = {
++	0, 1, 2, 3, 5, 10, 15, 20,
++	25, 30, 35, 40, 45, 50, 55, 60
 +};
 +
- void __iio_change_event(struct iio_detected_event_list *ev,
- 			int ev_code,
- 			s64 timestamp)
-@@ -488,24 +520,304 @@ static void __exit iio_exit(void)
- 	bus_unregister(&iio_bus_type);
- }
- 
--static int iio_device_register_sysfs(struct iio_dev *dev_info)
-+static ssize_t iio_read_channel_info(struct device *dev,
-+				     struct device_attribute *attr,
-+				     char *buf)
- {
--	int ret = 0;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int val, val2;
-+	int ret = indio_dev->read_raw(indio_dev, this_attr->c,
-+				      &val, &val2, this_attr->address);
- 
--	ret = sysfs_create_group(&dev_info->dev.kobj, dev_info->attrs);
--	if (ret) {
--		dev_err(dev_info->dev.parent,
--			"Failed to register sysfs hooks\n");
++static int
++taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val, unsigned int len);
++static int taos_get_lux(struct i2c_client *client);
++
++struct tsl2571_chip {
++	struct mutex als_mutex;
++	struct i2c_client *client;
++	struct iio_dev *iio_dev;
++	struct taos_als_info als_cur_info;
++	struct taos_settings taos_settings;
++	int als_time_scale;
++	int als_saturation;
++	int taos_chip_status;
++	u8 taos_config[TSL257X_REG_MAX];
++	u8 init_done;
++	struct work_struct	work_thresh;
++	s64	event_timestamp;
++	unsigned int irq_no;
++};
++
++/*
++ * Ambient light transition sense interrupt BH - called when the ambient
++ * light falls above or below a band of ambient light. A signal is issued to
++ * any waiting user mode threads, and the above band is adjusted up or down?
++ * The ALS interrupt filter is initially set to 0x00 when ALS_ON is called, to
++ * force the first interrupt, after which it is set to the configured value.
++ */
++void taos_als_interrupt_bh(struct work_struct *als)
++{
++int ret;
++int i;
++u8 als_int_thresh[4];
++u8 chdata[4];
++unsigned int raw_ch0, raw_ch1, cdelta;
++int value;
++
++struct tsl2571_chip *chip
++	= container_of(als,
++		struct tsl2571_chip, work_thresh);
++
++	value = i2c_smbus_read_byte_data(chip->client,
++		TSL257X_CMD_REG | TSL257X_STATUS);
++
++	/* post the event */
++	if (value & 0x10) {
++		iio_push_event(chip->iio_dev, 0,
++			       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_LIGHT,
++						    0,
++						    IIO_EV_TYPE_THRESH,
++						    IIO_EV_DIR_EITHER),
++			       chip->event_timestamp);
++	}
++
++	taos_get_lux(chip->client);
++
++	/* Clear interrupt */
++	ret = i2c_smbus_write_byte(chip->client,
++	(TSL257X_CMD_REG | TSL257X_CMD_SPL_FN | TSL257X_CMD_PROXALS_INTCLR));
 +	if (ret < 0)
-+		return ret;
++		dev_info(&chip->client->dev,
++		"i2c_write_command failed in taos_chip_on, err = %d\n", ret);
 +
-+	if (ret == IIO_VAL_INT)
-+		return sprintf(buf, "%d\n", val);
-+	else if (ret == IIO_VAL_INT_PLUS_MICRO) {
-+		if (val2 < 0)
-+			return sprintf(buf, "-%d.%06u\n", val, -val2);
-+		else
-+			return sprintf(buf, "%d.%06u\n", val, val2);
-+	} else
-+		return 0;
-+}
-+
-+static ssize_t iio_write_channel_info(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf,
-+				      size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int ret, integer = 0, micro = 0, micro_mult = 100000;
-+	bool integer_part = true, negative = false;;
-+	/* Assumes decimal - precision based on number of digits */
-+	
-+	if (!indio_dev->write_raw)
-+		return -EINVAL;
-+	if (buf[0] == '-') {
-+		negative = true;
-+		buf++;
++	/* re-adjust our upper and lower thresholds */
++	raw_ch0 = chip->als_cur_info.als_ch0;
++	raw_ch1 = chip->als_cur_info.als_ch1;
++	if (raw_ch0 == 0) {
++		chip->taos_settings.als_thresh_low = 0;
++		chip->taos_settings.als_thresh_high = 1;
++	} else if (raw_ch0 < 10) {
++		chip->taos_settings.als_thresh_low = raw_ch0 - 1;
++		chip->taos_settings.als_thresh_high = raw_ch0;
++	} else {
++		cdelta = (raw_ch0 * 5) / 100;
++		chip->taos_settings.als_thresh_low = raw_ch0 - cdelta;
++		chip->taos_settings.als_thresh_high = raw_ch0 + cdelta;
++		if (chip->taos_settings.als_thresh_high > 0xFFFF)
++			chip->taos_settings.als_thresh_high = 0xFFFF;
 +	}
-+	while (*buf) {
-+		if ('0' <= *buf && *buf <= '9') {
-+			if (integer_part)
-+				integer = integer*10 + *buf - '0';
-+			else {
-+				micro += micro_mult*(*buf - '0');
-+				if (micro_mult == 1)
-+					break;
-+				micro_mult /= 10;
-+			}
-+		} else if (*buf == '\n') {
-+			if (*(buf + 1) == '\0')
-+				break;
-+			else
-+				return -EINVAL;
-+		} else if (*buf == '.') {
-+			integer_part = false;
-+		} else {
-+			return -EINVAL;
++
++	als_int_thresh[0] = (chip->taos_settings.als_thresh_low) & 0xFF;
++	als_int_thresh[1] = (chip->taos_settings.als_thresh_low >> 8) & 0xFF;
++	als_int_thresh[2] = (chip->taos_settings.als_thresh_high) & 0xFF;
++	als_int_thresh[3] = (chip->taos_settings.als_thresh_high >> 8) & 0xFF;
++
++	for (i = 0; i < 4; i++) {
++		ret = i2c_smbus_write_byte_data(chip->client,
++			(TSL257X_CMD_REG | (TSL257X_ALS_MINTHRESHLO + i)),
++			als_int_thresh[i]);
++		if (ret < 0) {
++			dev_info(&chip->client->dev,
++			"FAILED: update the ALS LOW THRESH (B).\n");
 +		}
-+		buf++;
-+	}
-+	if (negative) {
-+		if (integer)
-+			integer = -integer;
-+		else
-+			micro = -micro;
 +	}
 +
-+	ret = indio_dev->write_raw(indio_dev, this_attr->c,
-+				       integer, micro, this_attr->address);
-+	if (ret)
-+		return ret;
-+
-+	return len;
-+}
-+
-+int __iio_device_attr_init(struct device_attribute *dev_attr,
-+			   const char *postfix,
-+			   struct iio_chan_spec const *chan,
-+			   ssize_t (*readfunc)(struct device *dev,
-+					       struct device_attribute *attr,
-+					       char *buf),
-+			   ssize_t (*writefunc)(struct device *dev,
-+						struct device_attribute *attr,
-+						const char *buf,
-+						size_t len),
-+			   bool generic)
-+{
-+	int ret;
-+	char *name_format;
-+	sysfs_attr_init(&dev_attr->attr);
-+	if (generic)
-+		name_format
-+			= kasprintf(GFP_KERNEL, "%s_%s",
-+				    iio_chan_type_name_spec_shared[chan->type],
-+				    postfix);
-+	else
-+		name_format = kasprintf(GFP_KERNEL, "%s_%s",
-+					iio_chan_type_name_spec[chan->type],
-+					postfix);
-+	if (name_format == NULL) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+
-+	dev_attr->attr.name = kasprintf(GFP_KERNEL,
-+					name_format,
-+					chan->channel,
-+					chan->channel2);
-+	if (dev_attr->attr.name == NULL) {
-+		ret = -ENOMEM;
-+		goto error_free_name_format;
-+	}
-+
-+	if (readfunc) {
-+		dev_attr->attr.mode |= S_IRUGO;
-+		dev_attr->show = readfunc;
-+	}
-+
-+	if (writefunc) {
-+		dev_attr->attr.mode |= S_IWUSR;
-+		dev_attr->store = writefunc;
-+	}
-+	kfree(name_format);
-+
-+	return 0;
-+
-+error_free_name_format:
-+	kfree(name_format);
-+error_ret:
-+	return ret;
-+}
-+
-+void __iio_device_attr_deinit(struct device_attribute *dev_attr)
-+{
-+	kfree(dev_attr->attr.name);
-+}
-+
-+int __iio_add_chan_devattr(const char *postfix,
-+			   const char *group,
-+			   struct iio_chan_spec const *chan,
-+			   ssize_t (*readfunc)(struct device *dev,
-+					       struct device_attribute *attr,
-+					       char *buf),
-+			   ssize_t (*writefunc)(struct device *dev,
-+						struct device_attribute *attr,
-+						const char *buf,
-+						size_t len),
-+			   int mask,
-+			   bool generic,
-+			   struct device *dev,
-+			   struct list_head *attr_list)
-+{
-+	int ret;
-+	struct iio_dev_attr *iio_attr, *t;
-+
-+	iio_attr = kzalloc(sizeof *iio_attr, GFP_KERNEL);
-+	if (iio_attr == NULL) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+	ret = __iio_device_attr_init(&iio_attr->dev_attr,
-+				     postfix, chan,
-+				     readfunc, writefunc, generic);
-+	if (ret)
-+		goto error_iio_dev_attr_free;
-+	iio_attr->c = chan;
-+	iio_attr->address = mask;
-+	list_for_each_entry(t, attr_list, l)
-+		if (strcmp(t->dev_attr.attr.name,
-+			   iio_attr->dev_attr.attr.name) == 0) {
-+			if (!generic)
-+				dev_err(dev, "tried to double register : %s\n",
-+					t->dev_attr.attr.name);
-+			ret = -EBUSY;
-+			goto error_device_attr_deinit;
-+		}
-+
-+	ret = sysfs_add_file_to_group(&dev->kobj,
-+				      &iio_attr->dev_attr.attr, group);
-+	if (ret < 0)
-+		goto error_device_attr_deinit;
-+
-+	list_add(&iio_attr->l, attr_list);
-+
-+	return 0;
-+
-+error_device_attr_deinit:
-+	__iio_device_attr_deinit(&iio_attr->dev_attr);
-+error_iio_dev_attr_free:
-+	kfree(iio_attr);
-+error_ret:
-+	return ret;
-+}
-+
-+static int iio_device_add_channel_sysfs(struct iio_dev *dev_info,
-+					struct iio_chan_spec const *chan)
-+{
-+	int ret, i;
-+
-+
-+	if (chan->channel < 0)
-+		return 0;
-+
-+	ret = __iio_add_chan_devattr("raw", NULL, chan,
-+				     &iio_read_channel_info,
-+				     NULL,
-+				     0,
-+				     0,
-+				     &dev_info->dev,
-+				     &dev_info->channel_attr_list);
-+	if (ret)
- 		goto error_ret;
-+
-+	for_each_set_bit(i, &chan->info_mask, sizeof(long)*8) {
-+		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i/2],
-+					     NULL, chan,
-+					     &iio_read_channel_info,
-+					     &iio_write_channel_info,
-+					     (1 << i),
-+					     !(i%2),
-+					     &dev_info->dev,
-+					     &dev_info->channel_attr_list);
-+		if (ret == -EBUSY && (i%2 == 0)) {
-+			ret = 0;
-+			continue;
-+		}
++	if (!chip->init_done) {
++		/* Maintain the persistence value that was there
++		 * if there was one */
++		ret = taos_i2c_read(chip->client,
++			(TSL257X_CMD_REG | (TSL257X_PERSISTENCE)),
++			&chdata[0], 1);
 +		if (ret < 0)
-+			goto error_ret;
++			dev_info(&chip->client->dev,
++			"Failed to get the persistence register value\n");
++
++			chdata[0] = chip->taos_settings.als_persistence;
++
++		ret = i2c_smbus_write_byte_data(chip->client,
++			(TSL257X_CMD_REG | TSL257X_PERSISTENCE), chdata[0]);
++		if (ret < 0)
++			dev_info(&chip->client->dev,
++			"FAILED: taos_i2c_write to update the persistence (B).\n");
++
++		ret = i2c_smbus_write_byte(chip->client,
++		TSL257X_CMD_REG | TSL257X_CMD_SPL_FN | TSL257X_CMD_ALS_INT_CLR);
++		if (ret < 0) {
++			dev_info(&chip->client->dev,
++			"i2c_write failed to clear ALS irq, err = %d\n", ret);
++		}
++
++		chip->init_done = 1;
 +	}
-+error_ret:
++
++	enable_irq(chip->irq_no);
++
++return;
++}
++
++/*
++ * Initial values for device - this values can/will be changed by driver.
++ * and applications as needed.
++ * These values are dynamic.
++ */
++static u8 taos_config[] = {
++		0x00, 0xee, 0xFF, 0xF5, 0x03, 0x00, 0x00, 0x01,
++	/*  Enabl atime N/A   wtime ThL0  ThL1  ThH0  ThH1 */
++		0x00, 0x00, 0x00, 0x03,	0x30, 0x00, 0x0a, 0x20
++	/*  N/A   N/A   N/A   N/A   gain  intr  N/A   Ctl  */
++};
++
++struct taos_lux {
++	unsigned int ratio;
++	unsigned int ch0;
++	unsigned int ch1;
++};
++
++/* This structure is intentionally large to accommodate updates via sysfs. */
++/* Sized to 11 = max 10 segments + 1 termination segment */
++/* Assumption is one and only one type of glass used  */
++struct taos_lux taos_device_lux[11] = {
++	{  9830,  8520, 15729 },
++	{ 12452, 10807, 23344 },
++	{ 14746,  6383, 11705 },
++	{ 17695,  4063,  6554 },
++};
++
++struct gainadj {
++	s16 ch0;
++	s16 ch1;
++};
++
++/* Used to validate the gain selection index */
++static const struct gainadj gainadj[] = {
++	{ 1, 1 },
++	{ 8, 8 },
++	{ 16, 16 },
++	{ 120, 120 }
++};
++
++/*
++ * Provides initial operational parameter defaults.
++ * These defaults may be changed through the device's sysfs files.
++ */
++static void taos_defaults(struct tsl2571_chip *chip)
++{
++	/* Operational parameters */
++	chip->taos_settings.als_time = 200;
++	/* must be a multiple of 50mS */
++	chip->taos_settings.als_gain = 0;
++	/* this is actually an index into the gain table */
++	/* assume clear glass as default */
++	chip->taos_settings.als_gain_trim = 1000;
++	/* default gain trim to account for aperture effects */
++	chip->taos_settings.als_cal_target = 130;
++	/* Known external ALS reading used for calibration */
++	chip->taos_settings.als_thresh_low = 03;
++	/* CH0 'low' count to trigger interrupt */
++	chip->taos_settings.als_thresh_high = 256;
++	/* CH0 'high' count to trigger interrupt */
++	chip->taos_settings.als_persistence = 3;
++	/* Number of 'out of limits' ADC readings */
++	chip->taos_settings.als_interrupt = 1;
++	/* Default with interrupt enabled */
++}
++
++/*
++ * Read a number of bytes starting at register (reg) location.
++ * Return 0, or i2c_smbus_write_byte ERROR code.
++ */
++static int
++taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val, unsigned int len)
++{
++	int ret;
++	int i;
++
++	for (i = 0; i < len; i++) {
++		/* select register to write */
++		ret = i2c_smbus_write_byte(client, (TSL257X_CMD_REG | reg));
++		if (ret < 0) {
++			dev_err(&client->dev, "taos_i2c_read failed to write"
++				" register %x\n", reg);
++			return ret;
++		}
++		/* read the data */
++		*val = i2c_smbus_read_byte(client);
++		val++;
++		reg++;
++	}
++	return 0;
++}
++
++/*
++ * Reads and calculates current lux value.
++ * The raw ch0 and ch1 values of the ambient light sensed in the last
++ * integration cycle are read from the device.
++ * Time scale factor array values are adjusted based on the integration time.
++ * The raw values are multiplied by a scale factor, and device gain is obtained
++ * using gain index. Limit checks are done next, then the ratio of a multiple
++ * of ch1 value, to the ch0 value, is calculated. The array taos_device_lux[]
++ * declared above is then scanned to find the first ratio value that is just
++ * above the ratio we just calculated. The ch0 and ch1 multiplier constants in
++ * the array are then used along with the time scale factor array values, to
++ * calculate the lux.
++ */
++static int taos_get_lux(struct i2c_client *client)
++{
++	u16 ch0, ch1; /* separated ch0/ch1 data from device */
++	u32 lux; /* raw lux calculated from device data */
++	u32 ratio;
++	u8 buf[5];
++	struct taos_lux *p;
++	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	int i, ret;
++	u32 ch0lux = 0;
++	u32 ch1lux = 0;
++
++	if (mutex_trylock(&chip->als_mutex) == 0) {
++		dev_info(&client->dev, "taos_get_lux device is busy\n");
++		return chip->als_cur_info.lux; /* busy, so return LAST VALUE */
++	}
++
++	if (chip->taos_chip_status != TSL257X_CHIP_WORKING) {
++		/* device is not enabled */
++		dev_err(&client->dev, "taos_get_lux device is not enabled\n");
++		ret = -EBUSY ;
++		goto out_unlock;
++	}
++
++	ret = taos_i2c_read(client, (TSL257X_CMD_REG | TSL257X_STATUS),
++		&buf[0], 1);
++	if (ret < 0) {
++		dev_err(&client->dev, "taos_get_lux failed to read CMD_REG\n");
++		goto out_unlock;
++	}
++	/* is data new & valid */
++	if (!(buf[0] & TSL257X_STA_ADC_VALID)) {
++		dev_err(&client->dev, "taos_get_lux data not valid\n");
++		ret = chip->als_cur_info.lux; /* return LAST VALUE */
++		goto out_unlock;
++	}
++
++	for (i = 0; i < 4; i++) {
++		int reg = TSL257X_CMD_REG | (TSL257X_ALS_CHAN0LO + i);
++		ret = taos_i2c_read(client, reg, &buf[i], 1);
++		if (ret < 0) {
++			dev_err(&client->dev, "taos_get_lux failed to read"
++				" register %x\n", reg);
++			goto out_unlock;
++		}
++	}
++
++	/* clear status, really interrupt status (interrupts are off), but
++	we use the bit anyway */
++	ret = i2c_smbus_write_byte(client,
++	(TSL257X_CMD_REG | TSL257X_CMD_SPL_FN | TSL257X_CMD_ALS_INT_CLR));
++
++	if (ret < 0) {
++		dev_err(&client->dev,
++			"taos_i2c_write_command failed in taos_get_lux, err = %d\n",
++			ret);
++		goto out_unlock; /* have no data, so return failure */
++	}
++
++	/* extract ALS/lux data */
++	ch0 = le16_to_cpup((const __le16 *)&buf[0]);
++	ch1 = le16_to_cpup((const __le16 *)&buf[2]);
++
++	chip->als_cur_info.als_ch0 = ch0;
++	chip->als_cur_info.als_ch1 = ch1;
++
++	if ((ch0 >= chip->als_saturation) || (ch1 >= chip->als_saturation))
++		goto return_max;
++
++	if (ch0 == 0) {
++		/* have no data, so return LAST VALUE */
++		ret = chip->als_cur_info.lux = 0;
++		goto out_unlock;
++	}
++	/* calculate ratio */
++	ratio = (ch1 << 15) / ch0;
++	/* convert to unscaled lux using the pointer to the table */
++	for (p = (struct taos_lux *) taos_device_lux;
++	     p->ratio != 0 && p->ratio < ratio; p++)
++		;
++
++	if (p->ratio == 0) {
++		lux = 0;
++	} else {
++		ch0lux = ((ch0 * p->ch0) +
++			  (gainadj[chip->taos_settings.als_gain].ch0 >> 1))
++			 / gainadj[chip->taos_settings.als_gain].ch0;
++		ch1lux = ((ch1 * p->ch1) +
++			  (gainadj[chip->taos_settings.als_gain].ch1 >> 1))
++			 / gainadj[chip->taos_settings.als_gain].ch1;
++		lux = ch0lux - ch1lux;
++	}
++
++	/* note: lux is 31 bit max at this point */
++	if (ch1lux > ch0lux) {
++		dev_dbg(&client->dev, "No Data - Return last value\n");
++		ret = chip->als_cur_info.lux = 0;
++		goto out_unlock;
++	}
++
++	/* adjust for active time scale */
++	if (chip->als_time_scale == 0)
++		lux = 0;
++	else
++		lux = (lux + (chip->als_time_scale >> 1)) /
++			chip->als_time_scale;
++
++	/* adjust for active gain scale */
++	lux >>= 13; /* tables have factor of 8192 builtin for accuracy */
++	lux = (lux * chip->taos_settings.als_gain_trim + 500) / 1000;
++	if (lux > TSL257X_LUX_CALC_OVER_FLOW) { /* check for overflow */
++return_max:
++		lux = TSL257X_LUX_CALC_OVER_FLOW;
++	}
++
++	/* Update the structure with the latest VALID lux. */
++	chip->als_cur_info.lux = lux;
++	ret = lux;
++
++out_unlock:
++	mutex_unlock(&chip->als_mutex);
++	return ret;
++
++}
++
++/*
++ * Obtain single reading and calculate the als_gain_trim (later used
++ * to derive actual lux).
++ * Return updated gain_trim value.
++ */
++int taos_als_calibrate(struct i2c_client *client)
++{
++	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	u8 reg_val;
++	unsigned int gain_trim_val;
++	int ret;
++	int lux_val;
++
++	ret = i2c_smbus_write_byte(client, (TSL257X_CMD_REG | TSL257X_CNTRL));
++	if (ret < 0) {
++		dev_err(&client->dev,
++			"taos_als_calibrate failed to reach the CNTRL register, ret=%d\n",
++			ret);
++		return ret;
++	}
++
++	reg_val = i2c_smbus_read_byte(client);
++	if ((reg_val & (TSL257X_CNTL_ADC_ENBL | TSL257X_CNTL_PWR_ON))
++			!= (TSL257X_CNTL_ADC_ENBL | TSL257X_CNTL_PWR_ON)) {
++		dev_err(&client->dev,
++			"taos_als_calibrate failed: ADC not enabled\n");
++		return -1;
++	}
++
++	ret = i2c_smbus_write_byte(client, (TSL257X_CMD_REG | TSL257X_CNTRL));
++	if (ret < 0) {
++		dev_err(&client->dev,
++			"taos_als_calibrate failed to reach the STATUS register, ret=%d\n",
++			ret);
++		return ret;
++	}
++	reg_val = i2c_smbus_read_byte(client);
++
++	if ((reg_val & TSL257X_STA_ADC_VALID) != TSL257X_STA_ADC_VALID) {
++		dev_err(&client->dev,
++			"taos_als_calibrate failed: STATUS - ADC not valid.\n");
++		return -ENODATA;
++	}
++	lux_val = taos_get_lux(client);
++	if (lux_val < 0) {
++		dev_err(&client->dev, "taos_als_calibrate failed to get lux\n");
++		return lux_val;
++	}
++	gain_trim_val = (unsigned int) (((chip->taos_settings.als_cal_target)
++			* chip->taos_settings.als_gain_trim) / lux_val);
++
++	if ((gain_trim_val < 250) || (gain_trim_val > 4000)) {
++		dev_err(&client->dev,
++			"taos_als_calibrate failed: trim_val of %d is out of range\n",
++			gain_trim_val);
++		return -ENODATA;
++	}
++	chip->taos_settings.als_gain_trim = (int) gain_trim_val;
++
++	return (int) gain_trim_val;
++}
++
++/*
++ * Turn the device on.
++ * Configuration must be set before calling this function.
++ */
++static int taos_chip_on(struct i2c_client *client)
++{
++	int i;
++	int ret = 0;
++	u8 *uP;
++	u8 utmp;
++	int als_count;
++	int als_time;
++	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	u8 reg_val;
++
++
++    /* Non calculated parameters */
++	chip->taos_config[TSL257X_ALS_MINTHRESHLO] =
++		(chip->taos_settings.als_thresh_low) & 0xFF;
++	chip->taos_config[TSL257X_ALS_MINTHRESHHI] =
++		(chip->taos_settings.als_thresh_low >> 8) & 0xFF;
++	chip->taos_config[TSL257X_ALS_MAXTHRESHLO] =
++		(chip->taos_settings.als_thresh_high) & 0xFF;
++	chip->taos_config[TSL257X_ALS_MAXTHRESHHI] =
++		(chip->taos_settings.als_thresh_high >> 8) & 0xFF;
++	chip->taos_config[TSL257X_PERSISTENCE] =
++		chip->taos_settings.als_persistence;
++
++	/* and make sure we're not already on */
++	if (chip->taos_chip_status == TSL257X_CHIP_WORKING) {
++		/* if forcing a register update - turn off, then on */
++		dev_info(&client->dev, "device is already enabled\n");
++		return   -EINVAL;
++	}
++
++	/* determine als integration regster */
++	als_count = (chip->taos_settings.als_time * 100 + 135) / 270;
++	if (als_count == 0)
++		als_count = 1; /* ensure at least one cycle */
++
++	/* convert back to time (encompasses overrides) */
++	als_time = (als_count * 27 + 5) / 10;
++	chip->taos_config[TSL257X_ALS_TIME] = 256 - als_count;
++
++	/* Set the gain based on taos_settings struct */
++	chip->taos_config[TSL257X_GAIN] = chip->taos_settings.als_gain;
++
++	/* set chip struct re scaling and saturation */
++	chip->als_saturation = als_count * 922; /* 90% of full scale */
++	chip->als_time_scale = (als_time + 25) / 50;
++
++	/* TSL257X Specific power-on / adc enable sequence
++	 * Power on the device 1st. */
++	utmp = TSL257X_CNTL_PWR_ON;
++	ret = i2c_smbus_write_byte_data(client, TSL257X_CMD_REG | TSL257X_CNTRL,
++					utmp);
++	if (ret < 0) {
++		dev_err(&client->dev, "taos_chip_on failed on CNTRL reg.\n");
++		return -1;
++	}
++
++	/* Use the following shadow copy for our delay before enabling ADC.
++	 * Write all the registers. */
++	for (i = 0, uP = chip->taos_config; i < TSL257X_REG_MAX; i++) {
++		ret = i2c_smbus_write_byte_data(client, TSL257X_CMD_REG + i,
++						*uP++);
++		if (ret < 0) {
++			dev_err(&client->dev,
++				"taos_chip_on failed on write to reg %d.\n", i);
++			return -1;
++		}
++	}
++
++	msleep(3);
++	/* NOW enable the ADC
++	 * initialize the desired mode of operation */
++	utmp = TSL257X_CNTL_PWR_ON | TSL257X_CNTL_ADC_ENBL;
++	ret = i2c_smbus_write_byte_data(client, TSL257X_CMD_REG | TSL257X_CNTRL,
++					utmp);
++	if (ret < 0) {
++		dev_err(&client->dev, "taos_chip_on failed on 2nd CTRL reg.\n");
++		return -1;
++		}
++
++	chip->taos_chip_status = TSL257X_CHIP_WORKING;
++
++	/* If interrupts are enabled */
++	chip->init_done = 0;
++	if (chip->taos_settings.als_interrupt) {
++		dev_info(&client->dev, "ALS Interrupts on\n");
++	/*First make sure we have an ALS persistence > 0
++	else we'll interrupt continuously.*/
++	ret = taos_i2c_read(client,
++		(TSL257X_CMD_REG | TSL257X_PERSISTENCE), &reg_val, 1);
++	if (ret < 0)
++		dev_err(&client->dev,
++			"Failed to get the persistence register value\n");
++
++	/*ALS Interrupt after 3 consecutive reading out of range */
++	if ((reg_val & 0x0F) == 0) {
++		reg_val |= 0x03;
++		ret = i2c_smbus_write_byte_data(client,
++			(TSL257X_CMD_REG | (TSL257X_PERSISTENCE)), reg_val);
++
++	if (ret < 0)
++		dev_err(&client->dev,
++		"taos_i2c_write to update the persistance register.\n");
++	}
++	reg_val = TSL257X_CNTL_PWRON |
++	CNTL_ADC_ENBL |
++	CNTL_ALS_INT_ENBL |
++	CNTL_INTALSPON_ENBL;
++
++	ret = i2c_smbus_write_byte_data(client,
++		(TSL257X_CMD_REG | TSL257X_CNTRL), reg_val);
++	if (ret < 0)
++		dev_err(&client->dev,
++		"taos_i2c_write to device failed in TAOS_IOCTL_INT_SET.\n");
++
++	/* Clear out any initial als interrupts */
++	ret = i2c_smbus_write_byte(client,
++		TSL257X_CMD_REG | TSL257X_CMD_SPL_FN |
++		TSL257X_CMD_PROXALS_INTCLR);
++	if (ret < 0) {
++		dev_err(&client->dev,
++			"taos_i2c_write_command failed in taos_chip_on\n");
++	    return -1;
++		}
++	}
++	return ret;
++
++}
++
++static int taos_chip_off(struct i2c_client *client)
++{
++	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	int ret;
++
++	/* turn device off */
++	chip->taos_chip_status = TSL257X_CHIP_SUSPENDED;
++	ret = i2c_smbus_write_byte_data(client, TSL257X_CMD_REG | TSL257X_CNTRL,
++					0x00);
++
 +	return ret;
 +}
 +
-+static void iio_device_remove_and_free_read_attr(struct iio_dev *dev_info,
-+						 struct iio_dev_attr *p)
-+{
-+	sysfs_remove_file_from_group(&dev_info->dev.kobj,
-+				     &p->dev_attr.attr, NULL);
-+	kfree(p->dev_attr.attr.name);
-+	kfree(p);
-+}
++/* ---------- Sysfs Interface Functions ------------- */
 +
-+static int iio_device_register_sysfs(struct iio_dev *dev_info)
-+{
-+	int i, ret = 0;
-+	struct iio_dev_attr *p, *n;
-+
-+	if (dev_info->attrs) {
-+		ret = sysfs_create_group(&dev_info->dev.kobj, dev_info->attrs);
-+		if (ret) {
-+			dev_err(dev_info->dev.parent,
-+				"Failed to register sysfs hooks\n");
-+			goto error_ret;
-+		}
- 	}
- 
-+	/*
-+	 * New channel registration method - relies on the fact a group does
-+	 *  not need to be initialized if it is name is NULL.
-+	 */
-+	INIT_LIST_HEAD(&dev_info->channel_attr_list);
-+	if (dev_info->channels)
-+		for (i = 0; i < dev_info->num_channels; i++) {
-+			ret = iio_device_add_channel_sysfs(dev_info,
-+							   &dev_info
-+							   ->channels[i]);
-+			if (ret < 0)
-+				goto error_clear_attrs;
-+		}
-+
-+	return 0;
-+error_clear_attrs:
-+	list_for_each_entry_safe(p, n,
-+				 &dev_info->channel_attr_list, l) {
-+		list_del(&p->l);
-+		iio_device_remove_and_free_read_attr(dev_info, p);
-+	}
-+	if (dev_info->attrs)
-+		sysfs_remove_group(&dev_info->dev.kobj, dev_info->attrs);
- error_ret:
- 	return ret;
-+
- }
- 
- static void iio_device_unregister_sysfs(struct iio_dev *dev_info)
- {
--	sysfs_remove_group(&dev_info->dev.kobj, dev_info->attrs);
-+
-+	struct iio_dev_attr *p, *n;
-+	list_for_each_entry_safe(p, n, &dev_info->channel_attr_list, l) {
-+		list_del(&p->l);
-+		iio_device_remove_and_free_read_attr(dev_info, p);
-+	}
-+
-+	if (dev_info->attrs)
-+		sysfs_remove_group(&dev_info->dev.kobj, dev_info->attrs);
- }
- 
- /* Return a negative errno on failure */
-@@ -552,8 +864,261 @@ static void iio_device_unregister_id(struct iio_dev *dev_info)
- 	iio_free_ida_val(&iio_ida, dev_info->id);
- }
- 
-+static const char * const iio_ev_type_text[] = {
-+	[IIO_EV_TYPE_THRESH] = "thresh",
-+	[IIO_EV_TYPE_MAG] = "mag",
-+	[IIO_EV_TYPE_ROC] = "roc"
-+};
-+
-+static const char * const iio_ev_dir_text[] = {
-+	[IIO_EV_DIR_EITHER] = "either",
-+	[IIO_EV_DIR_RISING] = "rising",
-+	[IIO_EV_DIR_FALLING] = "falling"
-+};
-+
-+static ssize_t iio_ev_state_store(struct device *dev,
-+				  struct device_attribute *attr,
-+				  const char *buf,
-+				  size_t len)
++static ssize_t taos_device_id(struct device *dev,
++	struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
-+	int ret;
-+	unsigned long val;
-+	ret = strict_strtoul(buf, 10, &val);
-+	if (ret || val < 0 || val > 1)
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++
++	return sprintf(buf, "%s\n", chip->client->name);
++}
++
++static ssize_t taos_power_state_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++
++	return sprintf(buf, "%d\n", chip->taos_chip_status);
++}
++
++static ssize_t taos_power_state_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
 +		return -EINVAL;
 +
-+	ret = indio_dev->write_event_config(indio_dev, this_attr->mask,
-+					    this_attr->listel,
-+					    val);
-+	return (ret < 0) ? ret : len;
-+}
-+
-+static ssize_t iio_ev_state_show(struct device *dev,
-+				 struct device_attribute *attr,
-+				 char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
-+	int val = indio_dev->read_event_config(indio_dev, this_attr->mask);
-+
-+	if (val < 0)
-+		return val;
++	if (value == 0)
++		taos_chip_off(chip->client);
 +	else
-+		return sprintf(buf, "%d\n", val);
-+}
-+
-+static ssize_t iio_ev_value_show(struct device *dev,
-+				 struct device_attribute *attr,
-+				 char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int val, ret;
-+
-+	ret = indio_dev->read_event_value(indio_dev,
-+					  this_attr->address, &val);
-+	if (ret < 0)
-+		return ret;
-+
-+	return sprintf(buf, "%d\n", val);
-+}
-+
-+static ssize_t iio_ev_value_store(struct device *dev,
-+				  struct device_attribute *attr,
-+				  const char *buf,
-+				  size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	unsigned long val;
-+	int ret;
-+
-+	ret = strict_strtoul(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	ret = indio_dev->write_event_value(indio_dev, this_attr->address,
-+					   val);
-+	if (ret < 0)
-+		return ret;
++		taos_chip_on(chip->client);
 +
 +	return len;
 +}
 +
-+static int __iio_add_chan_event_attr(const char *postfix,
-+				     const char *group,
-+				     struct iio_chan_spec const *chan,
-+				     unsigned int mask,
-+				     struct device *dev,
-+				     struct list_head *attr_list)
++static ssize_t taos_gain_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
 +{
-+	char *name_format;
-+	int ret;
-+	struct iio_event_attr *iio_ev_attr;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	char gain[4] = {0};
 +
-+	iio_ev_attr = kzalloc(sizeof *iio_ev_attr, GFP_KERNEL);
-+	if (iio_ev_attr == NULL) {
-+		ret = -ENOMEM;
-+		goto error_ret;
++	switch (chip->taos_settings.als_gain) {
++	case 0:
++		strcpy(gain, "001");
++		break;
++	case 1:
++		strcpy(gain, "008");
++		break;
++	case 2:
++		strcpy(gain, "016");
++		break;
++	case 3:
++		strcpy(gain, "120");
++		break;
 +	}
 +
-+	sysfs_attr_init(&iio_ev_attr->dev_attr.attr);
-+
-+	name_format = kasprintf(GFP_KERNEL, "%s_%s",
-+				iio_chan_type_name_spec[chan->type],
-+				postfix);
-+	if (name_format == NULL) {
-+		ret = -ENOMEM;
-+		goto error_free_attr;
-+	}
-+
-+	iio_ev_attr->dev_attr.attr.name = kasprintf(GFP_KERNEL,
-+						    name_format,
-+						    chan->channel,
-+						    chan->channel2);
-+	if (iio_ev_attr->dev_attr.attr.name == NULL) {
-+		ret = -ENOMEM;
-+		goto error_free_name_format;
-+	}
-+
-+	iio_ev_attr->dev_attr.attr.mode = S_IRUGO | S_IWUSR;
-+	iio_ev_attr->dev_attr.show = &iio_ev_state_show;
-+	iio_ev_attr->dev_attr.store = &iio_ev_state_store;
-+	iio_ev_attr->mask = mask;
-+	iio_ev_attr->listel = chan->shared_handler;
-+	ret = sysfs_add_file_to_group(&dev->kobj,
-+				      &iio_ev_attr->dev_attr.attr,
-+				      group);
-+	if (ret < 0)
-+		goto error_free_name;
-+	list_add(&iio_ev_attr->l, attr_list);
-+	kfree(name_format);
-+	return 0;
-+
-+error_free_name:
-+	kfree(iio_ev_attr->dev_attr.attr.name);
-+error_free_name_format:
-+	kfree(name_format);
-+error_free_attr:
-+	kfree(iio_ev_attr);
-+error_ret:
-+	return ret;
++	return sprintf(buf, "%s\n", gain);
 +}
 +
-+
-+static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
-+				      struct iio_chan_spec const *chan)
++static ssize_t taos_gain_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
 +{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
 +
-+	int ret = 0, i, mask;
-+	char *postfix;
-+	if (!chan->event_mask)
-+		return 0;
++	switch (value) {
++	case 1:
++		chip->taos_settings.als_gain = 0;
++		break;
++	case 8:
++		chip->taos_settings.als_gain = 1;
++		break;
++	case 16:
++		chip->taos_settings.als_gain = 2;
++		break;
++	case 111:
++		chip->taos_settings.als_gain = 3;
++		break;
++	default:
++		dev_err(dev,
++			"Invalid Gain Index\n");
++		return -1;
++	}
 +
-+	for_each_set_bit(i, &chan->event_mask, sizeof(chan->event_mask)*8) {
-+		postfix = kasprintf(GFP_KERNEL, "%s_%s_en",
-+				    iio_ev_type_text[i/IIO_EV_TYPE_MAX],
-+				    iio_ev_dir_text[i%IIO_EV_TYPE_MAX]);
-+		if (postfix == NULL) {
-+			ret = -ENOMEM;
-+			goto error_ret;
++	return len;
++}
++
++static ssize_t taos_gain_available_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	return sprintf(buf, "%s\n", "1 8 16 111");
++}
++
++static ssize_t taos_als_time_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++
++	return sprintf(buf, "%d\n", chip->taos_settings.als_time);
++}
++
++static ssize_t taos_als_time_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
++
++	if ((value < 50) || (value > 650))
++		return -EINVAL;
++
++	if (value % 50)
++		return -EINVAL;
++
++	 chip->taos_settings.als_time = value;
++
++	return len;
++}
++
++static ssize_t taos_als_time_available_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	return sprintf(buf, "%s\n",
++		"50 100 150 200 250 300 350 400 450 500 550 600 650");
++}
++
++static ssize_t taos_als_trim_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++
++	return sprintf(buf, "%d\n", chip->taos_settings.als_gain_trim);
++}
++
++static ssize_t taos_als_trim_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
++
++	if (value)
++		chip->taos_settings.als_gain_trim = value;
++
++	return len;
++}
++
++static ssize_t taos_adc_show(struct device *dev, struct device_attribute *attr,
++	char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	int lux;
++
++	lux = taos_get_lux(chip->client);
++
++	return sprintf(buf, "%d,%d\n",
++		chip->als_cur_info.als_ch0, chip->als_cur_info.als_ch1);
++}
++
++static ssize_t taos_als_cal_target_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++
++	return sprintf(buf, "%d\n", chip->taos_settings.als_cal_target);
++}
++
++static ssize_t taos_als_cal_target_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
++
++	if (value)
++		chip->taos_settings.als_cal_target = value;
++
++	return len;
++}
++
++static ssize_t taos_als_interrupt_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++
++	return sprintf(buf, "%d\n", chip->taos_settings.als_interrupt);
++}
++
++static ssize_t taos_als_interrupt_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
++
++	if (value > 1)
++		return -EINVAL;
++	chip->taos_settings.als_interrupt = value;
++
++	return len;
++}
++
++static ssize_t taos_als_thresh_low_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++
++	return sprintf(buf, "%d\n", chip->taos_settings.als_thresh_low);
++}
++
++static ssize_t taos_als_thresh_low_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
++
++	chip->taos_settings.als_thresh_low = value;
++
++	return len;
++}
++
++static ssize_t taos_als_thresh_high_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++
++	return sprintf(buf, "%d\n", chip->taos_settings.als_thresh_high);
++}
++
++static ssize_t taos_als_thresh_high_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
++
++	chip->taos_settings.als_thresh_high = value;
++
++	return len;
++}
++
++/* sampling_frequency AKA persistence in data sheet */
++static ssize_t taos_als_persistence_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++
++	return sprintf(buf, "%d\n",
++		persistence_available[chip->taos_settings.als_persistence]);
++}
++
++static ssize_t taos_als_persistence_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	int i;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
++
++	for (i = 0; i < (sizeof(persistence_available) + 1); i++) {
++		if ((u8)value == persistence_available[i]) {
++			chip->taos_settings.als_persistence = i;
++			return len;
 +		}
-+		switch (chan->type) {
-+			/* Switch this to a table at some point */
-+		case IIO_IN:
-+			mask = IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
-+						    i/IIO_EV_TYPE_MAX,
-+						    i%IIO_EV_TYPE_MAX);
++	}
++
++	dev_err(dev,
++		"Invalid Persistence value\n");
++	return -EINVAL;
++}
++
++static ssize_t taos_als_persistence_available_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	return sprintf(buf, "0 1 2 3 5 10 15 20 25 30 35 40 45 5 55 60\n");
++}
++
++static ssize_t taos_lux_show(struct device *dev, struct device_attribute *attr,
++	char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	int lux;
++
++	lux = taos_get_lux(chip->client);
++
++	return sprintf(buf, "%d\n", lux);
++}
++
++static ssize_t taos_do_calibrate(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
++
++	if (value == 1)
++		taos_als_calibrate(chip->client);
++
++	return len;
++}
++
++static ssize_t taos_luxtable_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	int i;
++	int offset = 0;
++
++	for (i = 0; i < ARRAY_SIZE(taos_device_lux); i++) {
++		offset += sprintf(buf + offset, "%d,%d,%d,",
++				  taos_device_lux[i].ratio,
++				  taos_device_lux[i].ch0,
++				  taos_device_lux[i].ch1);
++		if (taos_device_lux[i].ratio == 0) {
++			/* We just printed the first "0" entry.
++			 * Now get rid of the extra "," and break. */
++			offset--;
 +			break;
-+		case IIO_ACCEL:
-+			mask = IIO_MOD_EVENT_CODE(chan->type, 0, chan->channel,
-+						  i/IIO_EV_TYPE_MAX,
-+						  i%IIO_EV_TYPE_MAX);
-+			break;
-+		case IIO_IN_DIFF:
-+			mask = IIO_MOD_EVENT_CODE(chan->type, chan->channel,
-+						  chan->channel2,
-+						  i/IIO_EV_TYPE_MAX,
-+						  i%IIO_EV_TYPE_MAX);
-+			break;
-+		default:
-+			printk(KERN_INFO "currently unhandled type of event\n");
-+		}
-+		ret = __iio_add_chan_event_attr(postfix,
-+						NULL,
-+						chan,
-+						mask,
-+						/*HACK. - limits us to one
-+						  event interface - fix by
-+						  extending the bitmask - but
-+						  how far*/
-+						&dev_info->event_interfaces[0]
-+						.dev,
-+						&dev_info->event_interfaces[0].
-+						event_attr_list);
-+		kfree(postfix);
-+		if (ret)
-+			goto error_ret;
-+
-+		postfix = kasprintf(GFP_KERNEL, "%s_%s_value",
-+				    iio_ev_type_text[i/IIO_EV_TYPE_MAX],
-+				    iio_ev_dir_text[i%IIO_EV_TYPE_MAX]);
-+		if (postfix == NULL) {
-+			ret = -ENOMEM;
-+			goto error_ret;
-+		}
-+		ret = __iio_add_chan_devattr(postfix, NULL, chan,
-+					     iio_ev_value_show,
-+					     iio_ev_value_store,
-+					     mask,
-+					     0,
-+					     &dev_info->event_interfaces[0]
-+					     .dev,
-+					     &dev_info->event_interfaces[0]
-+					     .dev_attr_list);
-+		kfree(postfix);
-+		if (ret)
-+			goto error_ret;
-+
-+	}
-+
-+error_ret:
-+	return ret;
-+}
-+
-+static inline void __iio_remove_all_event_sysfs(struct iio_dev *dev_info,
-+						const char *groupname,
-+						int num)
-+{
-+	struct iio_dev_attr *p, *n;
-+	struct iio_event_attr *q, *m;
-+	list_for_each_entry_safe(p, n,
-+				 &dev_info->event_interfaces[num].
-+				 dev_attr_list, l) {
-+		sysfs_remove_file_from_group(&dev_info
-+					     ->event_interfaces[num].dev.kobj,
-+					     &p->dev_attr.attr,
-+					     groupname);
-+		kfree(p->dev_attr.attr.name);
-+		kfree(p);
-+	}
-+	list_for_each_entry_safe(q, m,
-+				 &dev_info->event_interfaces[num].
-+				 event_attr_list, l) {
-+		sysfs_remove_file_from_group(&dev_info
-+					     ->event_interfaces[num].dev.kobj,
-+					     &q->dev_attr.attr,
-+					     groupname);
-+		kfree(q->dev_attr.attr.name);
-+		kfree(q);
-+	}
-+}
-+
- static inline int __iio_add_event_config_attrs(struct iio_dev *dev_info, int i)
- {
-+	int j;
- 	int ret;
- 	/*p for adding, q for removing */
- 	struct attribute **attrp, **attrq;
-@@ -561,23 +1126,42 @@ static inline int __iio_add_event_config_attrs(struct iio_dev *dev_info, int i)
- 	if (dev_info->event_conf_attrs && dev_info->event_conf_attrs[i].attrs) {
- 		attrp = dev_info->event_conf_attrs[i].attrs;
- 		while (*attrp) {
--			ret =  sysfs_add_file_to_group(&dev_info->dev.kobj,
-+			ret =  sysfs_add_file_to_group(&dev_info
-+						       ->event_interfaces[0]
-+						       .dev.kobj,
- 						       *attrp,
--						       dev_info
--						       ->event_attrs[i].name);
-+						       NULL);
- 			if (ret)
- 				goto error_ret;
- 			attrp++;
- 		}
- 	}
-+	INIT_LIST_HEAD(&dev_info->event_interfaces[0].event_attr_list);
-+	INIT_LIST_HEAD(&dev_info->event_interfaces[0].dev_attr_list);
-+	/* Dynically created from the channels array */
-+	if (dev_info->channels) {
-+		for (j = 0; j < dev_info->num_channels; j++) {
-+			ret = iio_device_add_event_sysfs(dev_info,
-+							 &dev_info
-+							 ->channels[j]);
-+			if (ret)
-+				goto error_clear_attrs;
 +		}
 +	}
- 	return 0;
- 
-+error_clear_attrs:
-+	__iio_remove_all_event_sysfs(dev_info,
-+				     NULL,
-+				     i);
- error_ret:
- 	attrq = dev_info->event_conf_attrs[i].attrs;
- 	while (attrq != attrp) {
--			sysfs_remove_file_from_group(&dev_info->dev.kobj,
--					     *attrq,
--					     dev_info->event_attrs[i].name);
-+			sysfs_remove_file_from_group(&dev_info
-+						     ->event_interfaces[0]
-+						     .dev.kobj,
-+						     *attrq,
-+						     NULL);
- 		attrq++;
- 	}
- 
-@@ -588,15 +1172,18 @@ static inline int __iio_remove_event_config_attrs(struct iio_dev *dev_info,
- 						  int i)
- {
- 	struct attribute **attrq;
--
-+	__iio_remove_all_event_sysfs(dev_info,
-+				     NULL,
-+				     i);
- 	if (dev_info->event_conf_attrs
- 		&& dev_info->event_conf_attrs[i].attrs) {
- 		attrq = dev_info->event_conf_attrs[i].attrs;
- 		while (*attrq) {
--			sysfs_remove_file_from_group(&dev_info->dev.kobj,
-+			sysfs_remove_file_from_group(&dev_info
-+						     ->event_interfaces[0]
-+						     .dev.kobj,
- 						     *attrq,
--						     dev_info
--						     ->event_attrs[i].name);
-+						     NULL);
- 			attrq++;
- 		}
- 	}
-@@ -650,10 +1237,12 @@ static int iio_device_register_eventset(struct iio_dev *dev_info)
- 
- 		dev_set_drvdata(&dev_info->event_interfaces[i].dev,
- 				(void *)dev_info);
--		ret = sysfs_create_group(&dev_info
--					->event_interfaces[i]
--					.dev.kobj,
--					&dev_info->event_attrs[i]);
 +
-+		if (dev_info->event_attrs != NULL)
-+			ret = sysfs_create_group(&dev_info
-+						 ->event_interfaces[i]
-+						 .dev.kobj,
-+						 &dev_info->event_attrs[i]);
- 
- 		if (ret) {
- 			dev_err(&dev_info->dev,
-@@ -676,7 +1265,8 @@ error_unregister_config_attrs:
- 	i = dev_info->num_interrupt_lines - 1;
- error_remove_sysfs_interfaces:
- 	for (j = 0; j < i; j++)
--		sysfs_remove_group(&dev_info
-+		if (dev_info->event_attrs != NULL)
-+			sysfs_remove_group(&dev_info
- 				   ->event_interfaces[j].dev.kobj,
- 				   &dev_info->event_attrs[j]);
- error_free_setup_ev_ints:
-@@ -696,10 +1286,13 @@ static void iio_device_unregister_eventset(struct iio_dev *dev_info)
- 
- 	if (dev_info->num_interrupt_lines == 0)
- 		return;
--	for (i = 0; i < dev_info->num_interrupt_lines; i++)
--		sysfs_remove_group(&dev_info
--				   ->event_interfaces[i].dev.kobj,
--				   &dev_info->event_attrs[i]);
-+	for (i = 0; i < dev_info->num_interrupt_lines; i++) {
-+		__iio_remove_event_config_attrs(dev_info, i);
-+		if (dev_info->event_attrs != NULL)
-+			sysfs_remove_group(&dev_info
-+					   ->event_interfaces[i].dev.kobj,
-+					   &dev_info->event_attrs[i]);
++	offset += sprintf(buf + offset, "\n");
++	return offset;
++}
++
++static ssize_t taos_luxtable_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2571_chip *chip = indio_dev->dev_data;
++	int value[ARRAY_SIZE(taos_device_lux)];
++	int n;
++
++	get_options(buf, ARRAY_SIZE(value), value);
++
++	/* We now have an array of ints starting at value[1], and
++	 * enumerated by value[0].
++	 * We expect each group of three ints is one table entry,
++	 * and the last table entry is all 0.
++	 */
++	n = value[0];
++	if ((n % 3) || n < 6 || n > (ARRAY_SIZE(taos_device_lux) - 3)) {
++		dev_info(dev, "LUX TABLE INPUT ERROR 1 Value[0]=%d\n", n);
++		return -EINVAL;
 +	}
- 
- 	for (i = 0; i < dev_info->num_interrupt_lines; i++)
- 		iio_free_ev_int(&dev_info->event_interfaces[i]);
-diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
-index 3f6bee0..d6b4bb7 100644
---- a/drivers/staging/iio/industrialio-ring.c
-+++ b/drivers/staging/iio/industrialio-ring.c
-@@ -233,9 +233,162 @@ void iio_ring_buffer_init(struct iio_ring_buffer *ring,
- }
- EXPORT_SYMBOL(iio_ring_buffer_init);
- 
--int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id)
-+static ssize_t iio_show_scan_index(struct device *dev,
-+				  struct device_attribute *attr,
-+				  char *buf)
-+{
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	return sprintf(buf, "%u\n", this_attr->c->scan_index);
-+}
-+
-+static ssize_t iio_show_fixed_type(struct device *dev,
-+				   struct device_attribute *attr,
-+				   char *buf)
-+{
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	return sprintf(buf, "%c%d/%d>>%u\n",
-+		       this_attr->c->scan_type.sign,
-+		       this_attr->c->scan_type.realbits,
-+		       this_attr->c->scan_type.storagebits,
-+		       this_attr->c->scan_type.shift);
-+}
-+
-+static int __iio_add_chan_scan_elattr(const char *postfix,
-+				      const char *group,
-+				      const struct iio_chan_spec *chan,
-+				      struct device *dev,
-+				      struct list_head *attr_list)
- {
- 	int ret;
-+	struct iio_scan_el *scan_el;
-+
-+	scan_el = kzalloc(sizeof *scan_el, GFP_KERNEL);
-+	if (scan_el == NULL) {
-+		ret = -ENOMEM;
-+		goto error_ret;
++	if ((value[(n - 2)] | value[(n - 1)] | value[n]) != 0) {
++		dev_info(dev, "LUX TABLE INPUT ERROR 2 Value[0]=%d\n", n);
++		return -EINVAL;
 +	}
-+	if (chan->type != IIO_TIMESTAMP)
-+		ret = __iio_device_attr_init(&scan_el->dev_attr, postfix, chan,
-+					     iio_scan_el_show,
-+					     iio_scan_el_store, 0);
-+	else /*
-+	      * Timestamp handled separately because it simplifies a lot of
-+	      * drivers by ensuring they don't have to know its magic index
-+	      */
-+		ret = __iio_device_attr_init(&scan_el->dev_attr, postfix, chan,
-+					     iio_scan_el_ts_show,
-+					     iio_scan_el_ts_store, 0);
-+	if (ret)
-+		goto error_free_scan_el;
 +
-+	scan_el->number = chan->scan_index;
++	if (chip->taos_chip_status == TSL257X_CHIP_WORKING)
++		taos_chip_off(chip->client);
 +
-+	ret = sysfs_add_file_to_group(&dev->kobj,
-+				      &scan_el->dev_attr.attr,
-+				      group);
-+	if (ret < 0)
-+		goto error_device_attr_deinit;
++	/* Zero out the table */
++	memset(taos_device_lux, 0, sizeof(taos_device_lux));
++	memcpy(taos_device_lux, &value[1], (value[0] * 4));
 +
-+	list_add(&scan_el->l, attr_list);
++	taos_chip_on(chip->client);
 +
-+	return 0;
-+error_device_attr_deinit:
-+	__iio_device_attr_deinit(&scan_el->dev_attr);
-+error_free_scan_el:
-+	kfree(scan_el);
-+error_ret:
-+	return ret;
++	return len;
 +}
 +
-+static int iio_ring_add_channel_sysfs(struct iio_ring_buffer *ring,
-+				      const struct iio_chan_spec *chan)
-+{
-+	int ret;
 +
-+	ret = __iio_add_chan_devattr("index", "scan_elements",
-+				     chan,
-+				     &iio_show_scan_index,
-+				     NULL,
-+				     0,
-+				     0,
-+				     &ring->dev,
-+				     &ring->scan_el_dev_attr_list);
-+	if (ret)
-+		goto error_ret;
++static DEVICE_ATTR(name, S_IRUGO, taos_device_id, NULL);
++static DEVICE_ATTR(power_state, S_IRUGO | S_IWUSR,
++		taos_power_state_show, taos_power_state_store);
 +
-+	ret = __iio_add_chan_devattr("type", "scan_elements",
-+				     chan,
-+				     &iio_show_fixed_type,
-+				     NULL,
-+				     0,
-+				     0,
-+				     &ring->dev,
-+				     &ring->scan_el_dev_attr_list);
++static DEVICE_ATTR(illuminance0_calibscale, S_IRUGO | S_IWUSR,
++		taos_gain_show, taos_gain_store);
++static DEVICE_ATTR(illuminance0_calibscale_available, S_IRUGO,
++		taos_gain_available_show, NULL);
 +
-+	if (ret)
-+		goto error_ret;
++static DEVICE_ATTR(illuminance0_integration_time, S_IRUGO | S_IWUSR,
++		taos_als_time_show, taos_als_time_store);
++static DEVICE_ATTR(illuminance0_integration_time_available, S_IRUGO,
++		taos_als_time_available_show, NULL);
 +
-+	ret = __iio_add_chan_scan_elattr("en", "scan_elements",
-+					 chan, &ring->dev,
-+					 &ring->scan_el_en_attr_list);
++static DEVICE_ATTR(illuminance0_calibbias, S_IRUGO | S_IWUSR,
++		taos_als_trim_show, taos_als_trim_store);
 +
-+error_ret:
-+	return ret;
-+}
++static DEVICE_ATTR(illuminance0_input_target, S_IRUGO | S_IWUSR,
++		taos_als_cal_target_show, taos_als_cal_target_store);
 +
-+static void iio_ring_remove_and_free_scan_el_attr(struct iio_ring_buffer *ring,
-+						  struct iio_scan_el *p)
-+{
-+	sysfs_remove_file_from_group(&ring->dev.kobj,
-+				     &p->dev_attr.attr, "scan_elements");
-+	kfree(p->dev_attr.attr.name);
-+	kfree(p);
-+}
++static DEVICE_ATTR(illuminance0_raw, S_IRUGO, taos_adc_show, NULL);
 +
-+static void iio_ring_remove_and_free_scan_dev_attr(struct iio_ring_buffer *ring,
-+						   struct iio_dev_attr *p)
-+{
-+	sysfs_remove_file_from_group(&ring->dev.kobj,
-+				     &p->dev_attr.attr, "scan_elements");
-+	kfree(p->dev_attr.attr.name);
-+	kfree(p);
-+}
++static DEVICE_ATTR(illuminance0_input, S_IRUGO, taos_lux_show, NULL);
++static DEVICE_ATTR(illuminance0_calibrate, S_IWUSR, NULL, taos_do_calibrate);
++static DEVICE_ATTR(illuminance0_lux_table, S_IRUGO | S_IWUSR,
++		taos_luxtable_show, taos_luxtable_store);
 +
-+static struct attribute *iio_scan_el_dummy_attrs[] = {
++static DEVICE_ATTR(intensity0_both_thresh_falling_value, S_IRUGO | S_IWUSR,
++		taos_als_thresh_low_show, taos_als_thresh_low_store);
++
++static DEVICE_ATTR(intensity0_both_thresh_rising_value, S_IRUGO | S_IWUSR,
++		taos_als_thresh_high_show, taos_als_thresh_high_store);
++
++static DEVICE_ATTR(sampling_frequency, S_IRUGO | S_IWUSR,
++		taos_als_persistence_show, taos_als_persistence_store);
++
++static DEVICE_ATTR(sampling_frequency_available, S_IRUGO,
++		taos_als_persistence_available_show, NULL);
++
++static DEVICE_ATTR(intensity0_both_thresh_en, S_IRUGO | S_IWUSR,
++		taos_als_interrupt_show, taos_als_interrupt_store);
++
++static struct attribute *sysfs_attrs_ctrl[] = {
++	&dev_attr_name.attr,
++	&dev_attr_power_state.attr,
++	&dev_attr_illuminance0_calibscale.attr,	/* Gain  */
++	&dev_attr_illuminance0_calibscale_available.attr,
++	&dev_attr_illuminance0_integration_time.attr, /* I time*/
++	&dev_attr_illuminance0_integration_time_available.attr,
++	&dev_attr_illuminance0_calibbias.attr,	/* trim  */
++	&dev_attr_illuminance0_input_target.attr,
++	&dev_attr_illuminance0_raw.attr,
++	&dev_attr_illuminance0_input.attr,
++	&dev_attr_illuminance0_calibrate.attr,
++	&dev_attr_illuminance0_lux_table.attr,
++	&dev_attr_intensity0_both_thresh_falling_value.attr,/* Low T  */
++	&dev_attr_intensity0_both_thresh_rising_value.attr,	/* High T */
++	&dev_attr_sampling_frequency.attr,		/* persist*/
++	&dev_attr_sampling_frequency_available.attr,
++	&dev_attr_intensity0_both_thresh_en.attr,		/* irq en */
 +	NULL
 +};
 +
-+static struct attribute_group iio_scan_el_dummy_group = {
-+	.name = "scan_elements",
-+	.attrs = iio_scan_el_dummy_attrs
++static struct attribute_group tsl2571_attribute_group = {
++	.attrs = sysfs_attrs_ctrl,
 +};
 +
-+static void __iio_ring_attr_cleanup(struct iio_ring_buffer *ring)
++/*
++ * Run-time interrupt handler - depending on whether the device is in ambient
++ * light sensing interrupt mode, this handler queues up
++ * the bottom-half tasklet, to handle all valid interrupts.
++ */
++static int taos_interrupt_th(struct iio_dev *dev_info,
++			int index,
++			s64 timestamp,
++			int not_test)
 +{
-+	struct iio_dev_attr *p, *n;
-+	struct iio_scan_el *q, *m;
-+	int anydynamic = !(list_empty(&ring->scan_el_dev_attr_list) &&
-+			   list_empty(&ring->scan_el_en_attr_list));
-+	list_for_each_entry_safe(p, n,
-+				 &ring->scan_el_dev_attr_list, l)
-+		iio_ring_remove_and_free_scan_dev_attr(ring, p);
-+	list_for_each_entry_safe(q, m,
-+				 &ring->scan_el_en_attr_list, l)
-+		iio_ring_remove_and_free_scan_el_attr(ring, q);
++	struct tsl2571_chip *chip = dev_info->dev_data;
 +
-+	if (ring->scan_el_attrs)
-+		sysfs_remove_group(&ring->dev.kobj,
-+				   ring->scan_el_attrs);
-+	else if (anydynamic)
-+		sysfs_remove_group(&ring->dev.kobj,
-+				   &iio_scan_el_dummy_group);
++	chip->event_timestamp = timestamp;
++	schedule_work(&chip->work_thresh);
++	return 0;
 +}
 +
-+int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
-+				const struct iio_chan_spec *channels,
-+				int num_channels)
-+{
-+	int ret, i;
- 
- 	ring->id = id;
- 
-@@ -268,9 +421,28 @@ int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id)
- 				"Failed to add sysfs scan elements\n");
- 			goto error_free_ring_buffer_event_chrdev;
- 		}
-+	} else if (channels) {
-+		ret = sysfs_create_group(&ring->dev.kobj,
-+					 &iio_scan_el_dummy_group);
-+		if (ret)
-+			goto error_free_ring_buffer_event_chrdev;
- 	}
- 
--	return ret;
++IIO_EVENT_SH(threshold, &taos_interrupt_th);
 +
-+	INIT_LIST_HEAD(&ring->scan_el_dev_attr_list);
-+	INIT_LIST_HEAD(&ring->scan_el_en_attr_list);
-+	if (channels) {
-+		/* new magic */
-+		for (i = 0; i < num_channels; i++) {
-+			ret = iio_ring_add_channel_sysfs(ring, &channels[i]);
-+			if (ret < 0)
-+				goto error_cleanup_dynamic;
-+		}
++IIO_EVENT_ATTR_SH(intensity0_both_thresh_en,
++		  iio_event_threshold,
++		  taos_als_interrupt_show,
++		  taos_als_interrupt_store,
++		  0x10);
++
++static struct attribute *tsl2571_event_attributes[] = {
++	&iio_event_attr_intensity0_both_thresh_en.dev_attr.attr,
++	NULL,
++};
++
++static struct attribute_group tsl2571_event_attribute_group = {
++	.attrs = tsl2571_event_attributes,
++};
++
++/* Use the default register values to identify the Taos device */
++static int taos_TSL257X_device(unsigned char *bufp)
++{
++	return ((bufp[TSL257X_CHIPID] & 0xf0) == 0x00);
++}
++
++/*
++ * Client probe function - When a valid device is found, the driver's device
++ * data structure is updated, and initialization completes successfully.
++ */
++static int __devinit taos_probe(struct i2c_client *clientp,
++		      const struct i2c_device_id *idp)
++{
++	int i, ret = 0;
++	unsigned char buf[TSL257X_MAX_DEVICE_REGS];
++	static struct tsl2571_chip *chip;
++
++	if (!i2c_check_functionality(clientp->adapter,
++		I2C_FUNC_SMBUS_BYTE_DATA)) {
++		dev_err(&clientp->dev,
++			"taos_probe() - i2c smbus byte data "
++			"functions unsupported\n");
++		return -EOPNOTSUPP;
 +	}
 +
++	chip = kzalloc(sizeof(struct tsl2571_chip), GFP_KERNEL);
++
++	chip->client = clientp;
++	i2c_set_clientdata(clientp, chip);
++
++	mutex_init(&chip->als_mutex);
++	chip->taos_chip_status = TSL257X_CHIP_UNKNOWN;
++	memcpy(chip->taos_config, taos_config, sizeof(chip->taos_config));
++
++	for (i = 0; i < TSL257X_MAX_DEVICE_REGS; i++) {
++		ret = i2c_smbus_write_byte(clientp,
++				(TSL257X_CMD_REG | (TSL257X_CNTRL + i)));
++		if (ret < 0) {
++			dev_err(&clientp->dev, "i2c_smbus_write_bytes() to cmd "
++				"reg failed in taos_probe(), err = %d\n", ret);
++			goto fail1;
++		}
++		ret = i2c_smbus_read_byte(clientp);
++		if (ret < 0) {
++			dev_err(&clientp->dev, "i2c_smbus_read_byte from "
++				"reg failed in taos_probe(), err = %d\n", ret);
++
++			goto fail1;
++		}
++		buf[i] = ret;
++	}
++
++	if (!taos_TSL257X_device(buf)) {
++		dev_info(&clientp->dev, "i2c device found but does not match "
++			"expected id in taos_probe()\n");
++		goto fail1;
++	}
++
++	ret = i2c_smbus_write_byte(clientp, (TSL257X_CMD_REG | TSL257X_CNTRL));
++	if (ret < 0) {
++		dev_err(&clientp->dev, "i2c_smbus_write_byte() to cmd reg "
++			"failed in taos_probe(), err = %d\n", ret);
++		goto fail1;
++	}
++
++	chip->iio_dev = iio_allocate_device();
++	if (!chip->iio_dev)
++		goto fail1;
++
++	chip->iio_dev->attrs = &tsl2571_attribute_group;
++	chip->iio_dev->dev.parent = &clientp->dev;
++	chip->iio_dev->dev_data = (void *)(chip);
++	chip->iio_dev->num_interrupt_lines = 1;
++	chip->iio_dev->event_attrs = &tsl2571_event_attribute_group;
++	chip->iio_dev->driver_module = THIS_MODULE;
++	chip->iio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = iio_device_register(chip->iio_dev);
++	if (ret)
++		goto fail1;
++
++	if (chip->irq_no) {
++		ret = iio_register_interrupt_line(chip->irq_no,
++						  chip->iio_dev,
++						  0,
++						  IRQF_TRIGGER_FALLING,
++						  "TMD2571");
++		if (ret)
++			goto fail1;
++
++		iio_add_event_to_list(&iio_event_threshold,
++				    &chip->iio_dev->interrupts[0]->ev_list);
++		printk(KERN_INFO "Added event to list\n");
++	}
++
++	/* Defaults - (these are can be changed in the device[x]/ABI) */
++	taos_defaults(chip);
++
++	INIT_WORK(&chip->work_thresh, taos_als_interrupt_bh);
++
++	/* Make sure the chip is on */
++	taos_chip_on(clientp);
++
++	dev_info(&clientp->dev, "Light sensor found.\n");
++
 +	return 0;
-+error_cleanup_dynamic:
-+	__iio_ring_attr_cleanup(ring);
- error_free_ring_buffer_event_chrdev:
- 	__iio_free_ring_buffer_event_chrdev(ring);
- error_remove_device:
-@@ -278,14 +450,17 @@ error_remove_device:
- error_ret:
- 	return ret;
- }
-+EXPORT_SYMBOL(iio_ring_buffer_register_ex);
 +
-+int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id)
-+{
-+	return iio_ring_buffer_register_ex(ring, id, NULL, 0);
++fail1:
++	kfree(chip);
++
++	return ret;
 +}
- EXPORT_SYMBOL(iio_ring_buffer_register);
- 
- void iio_ring_buffer_unregister(struct iio_ring_buffer *ring)
- {
--	if (ring->scan_el_attrs)
--		sysfs_remove_group(&ring->dev.kobj,
--				   ring->scan_el_attrs);
--
-+	__iio_ring_attr_cleanup(ring);
- 	__iio_free_ring_buffer_access_chrdev(ring);
- 	__iio_free_ring_buffer_event_chrdev(ring);
- 	device_del(&ring->dev);
-@@ -540,4 +715,3 @@ error_ret:
- 	return ret ? ret : len;
- }
- EXPORT_SYMBOL(iio_scan_el_ts_store);
--
-diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
-index 780c6aa..ada51c2 100644
---- a/drivers/staging/iio/ring_generic.h
-+++ b/drivers/staging/iio/ring_generic.h
-@@ -140,6 +140,8 @@ struct iio_ring_buffer {
- 	int				(*predisable)(struct iio_dev *);
- 	int				(*postdisable)(struct iio_dev *);
- 
-+	struct list_head scan_el_dev_attr_list;
-+	struct list_head scan_el_en_attr_list;
- };
- 
- /**
-@@ -177,6 +179,7 @@ struct iio_scan_el {
- 	struct device_attribute		dev_attr;
- 	unsigned int			number;
- 	unsigned int			label;
-+	struct list_head l;
- 
- 	int (*set_state)(struct iio_scan_el *scanel,
- 			 struct iio_dev *dev_info,
-@@ -430,6 +433,14 @@ static inline void iio_put_ring_buffer(struct iio_ring_buffer *ring)
-  **/
- int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id);
- 
-+/** iio_ring_buffer_register_ex() - register the buffer with IIO core
-+ * @ring: the buffer to be registered
-+ * @id: the id of the buffer (typically 0)
-+ **/
-+int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
-+				const struct iio_chan_spec *channels,
-+				int num_channels);
 +
- /**
-  * iio_ring_buffer_unregister() - unregister the buffer from IIO core
-  * @ring: the buffer to be unregistered
-@@ -481,6 +492,15 @@ static inline int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id)
- {
- 	return 0;
- };
-+
-+static inline int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring,
-+					      int id,
-+					      struct iio_chan_spec *channels,
-+					      int num_channels)
++static int taos_suspend(struct i2c_client *client, pm_message_t state)
 +{
++	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	int ret = 0;
++
++	mutex_lock(&chip->als_mutex);
++
++	if (chip->taos_chip_status == TSL257X_CHIP_WORKING) {
++		ret = taos_chip_off(client);
++		chip->taos_chip_status = TSL257X_CHIP_SUSPENDED;
++	}
++
++	mutex_unlock(&chip->als_mutex);
++	return ret;
++}
++
++static int taos_resume(struct i2c_client *client)
++{
++	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	int ret = 0;
++
++	mutex_lock(&chip->als_mutex);
++
++	if (chip->taos_chip_status == TSL257X_CHIP_SUSPENDED)
++		ret = taos_chip_on(client);
++
++	mutex_unlock(&chip->als_mutex);
++	return ret;
++}
++
++
++static int __devexit taos_remove(struct i2c_client *client)
++{
++	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++
++	taos_chip_off(client);
++
++	if (chip->irq_no)
++		free_irq(chip->irq_no, chip->client->name);
++
++	iio_device_unregister(chip->iio_dev);
++
++	kfree(chip);
 +	return 0;
 +}
 +
- static inline void iio_ring_buffer_unregister(struct iio_ring_buffer *ring)
- {};
- 
-diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
-index 8f4d547..f80d789 100644
---- a/drivers/staging/iio/sysfs.h
-+++ b/drivers/staging/iio/sysfs.h
-@@ -24,6 +24,7 @@ struct iio_event_attr {
- 	struct device_attribute dev_attr;
- 	int mask;
- 	struct iio_event_handler_list *listel;
-+	struct list_head l;
- };
- 
- #define to_iio_event_attr(_dev_attr) \
-@@ -34,11 +35,14 @@ struct iio_event_attr {
-  * @dev_attr:	underlying device attribute
-  * @address:	associated register address
-  * @val2:	secondary attribute value
-+ * @l:		list head for maintaining list of dynamically created attrs.
-  */
- struct iio_dev_attr {
- 	struct device_attribute dev_attr;
- 	int address;
- 	int val2;
-+	struct list_head l;
-+	struct iio_chan_spec const *c;
- };
- 
- #define to_iio_dev_attr(_dev_attr)				\
-@@ -259,14 +263,16 @@ struct iio_const_attr {
- #define IIO_EVENT_ATTR_DATA_RDY(_show, _store, _mask, _handler) \
- 	IIO_EVENT_ATTR(data_rdy, _show, _store, _mask, _handler)
- 
--#define IIO_EV_CLASS_BUFFER		0
--#define IIO_EV_CLASS_IN			1
--#define IIO_EV_CLASS_ACCEL		2
--#define IIO_EV_CLASS_GYRO		3
--#define IIO_EV_CLASS_MAGN		4
--#define IIO_EV_CLASS_LIGHT		5
--#define IIO_EV_CLASS_PROXIMITY		6
--#define IIO_EV_CLASS_TEMP		7
-+/* must match our channel defs */
-+#define IIO_EV_CLASS_IN			IIO_IN
-+#define IIO_EV_CLASS_IN_DIFF		IIO_IN_DIFF
-+#define IIO_EV_CLASS_ACCEL		IIO_ACCEL
-+#define IIO_EV_CLASS_GYRO		IIO_GYRO
-+#define IIO_EV_CLASS_MAGN		IIO_MAGN
-+#define IIO_EV_CLASS_LIGHT		IIO_LIGHT
-+#define IIO_EV_CLASS_PROXIMITY		IIO_PROXIMITY
-+#define IIO_EV_CLASS_TEMP		IIO_TEMP
-+#define IIO_EV_CLASS_BUFFER		IIO_BUFFER
- 
- #define IIO_EV_MOD_X			0
- #define IIO_EV_MOD_Y			1
-@@ -288,6 +294,10 @@ struct iio_const_attr {
- #define IIO_EV_DIR_RISING		1
- #define IIO_EV_DIR_FALLING		2
- 
-+#define IIO_EV_TYPE_MAX 8
-+#define IIO_EV_BIT(type, direction)			\
-+	(1 << (type*IIO_EV_TYPE_MAX + direction))
++static struct i2c_device_id taos_idtable[] = {
++	{ "tsl2571", 0 },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, taos_idtable);
 +
- #define IIO_EVENT_CODE(channelclass, orient_bit, number,		\
- 		       modifier, type, direction)			\
- 	(channelclass | (orient_bit << 8) | ((number) << 9) |		\
-@@ -304,6 +314,14 @@ struct iio_const_attr {
- #define IIO_BUFFER_EVENT_CODE(code)		\
- 	(IIO_EV_CLASS_BUFFER | (code << 8))
- 
-+#define IIO_EVENT_CODE_EXTRACT_DIR(mask) ((mask >> 24) & 0xf)
++/* Driver definition */
++static struct i2c_driver taos_driver = {
++	.driver = {
++		.name = "tsl2571",
++	},
++	.id_table = taos_idtable,
++	.suspend	= taos_suspend,
++	.resume		= taos_resume,
++	.probe = taos_probe,
++	.remove = __devexit_p(taos_remove),
++};
 +
-+/* Event code number extraction depends on which type of event we have.
-+ * Perhaps review this function in the future*/
-+#define IIO_EVENT_CODE_EXTRACT_NUM(mask) ((mask >> 9) & 0x0f)
++static int __init taos_init(void)
++{
++	return i2c_add_driver(&taos_driver);
++}
 +
-+#define IIO_EVENT_CODE_EXTRACT_MODIFIER(mask) ((mask >> 13) & 0x7)
++static void __exit taos_exit(void)
++{
++	i2c_del_driver(&taos_driver);
++}
 +
- /**
-  * IIO_EVENT_ATTR_RING_50_FULL - ring buffer event to indicate 50% full
-  * @_show: output method for the attribute
--- 
-1.7.3.4
++module_init(taos_init);
++module_exit(taos_exit);
++
++MODULE_AUTHOR("J. August Brenner<jbrenner@taosinc.com>");
++MODULE_DESCRIPTION("TAOS tsl2571 ambient light sensor driver");
++MODULE_LICENSE("GPL");
+--
+1.7.0.4
+
+
+
+
