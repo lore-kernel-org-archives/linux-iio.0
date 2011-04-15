@@ -1,53 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:49476 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752856Ab1DETo5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Apr 2011 15:44:57 -0400
-Message-ID: <4D9B7198.1090109@cam.ac.uk>
-Date: Tue, 05 Apr 2011 20:46:32 +0100
+Return-Path: <jic23@cam.ac.uk>
+Message-ID: <4DA87A30.1010602@cam.ac.uk>
+Date: Fri, 15 Apr 2011 18:02:40 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: Greg KH <greg@kroah.com>
-CC: cliff.cai@analog.com, gregkh@suse.de, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH 1/2] staging: IIO driver for Analog Devices Digital Output
- Gyroscope ADXRS450
-References: <1301025958-2175-1-git-send-email-cliff.cai@analog.com> <20110405192130.GA10106@kroah.com>
-In-Reply-To: <20110405192130.GA10106@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@cam.ac.uk>, Greg KH <greg@kroah.com>
+CC: linux-iio@vger.kernel.org,
+ "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+ Jon Brenner <jbrenner@taosinc.com>
+Subject: Re: [PATCH 0/8] staging:iio:mixed bag of fixes and cleanups.
+References: <1300395627-18547-1-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1300395627-18547-1-git-send-email-jic23@cam.ac.uk>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/05/11 20:21, Greg KH wrote:
-> On Fri, Mar 25, 2011 at 12:05:57PM +0800, cliff.cai@analog.com wrote:
->> From: Cliff Cai <cliff.cai@analog.com>
->>
->> Add new IIO driver for Analog Devices digital output gyroscope ADXRS=
-450
->>
->> Signed-off-by: Cliff Cai <cliff.cai@analog.com>
->> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
->=20
-> This breaks the build:
->   CC [M]  drivers/staging/iio/gyro/adxrs450_core.o
-> drivers/staging/iio/gyro/adxrs450_core.c:329:70: error: expected =E2=80=
-=98)=E2=80=99 before numeric constant
-> drivers/staging/iio/gyro/adxrs450_core.c:337:3: error: =E2=80=98iio_d=
-ev_attr_gyro_z_quadrature_correction_raw=E2=80=99 undeclared here (not =
-in a function)
-> drivers/staging/iio/gyro/adxrs450_core.c:216:16: warning: =E2=80=98ad=
-xrs450_read_quad=E2=80=99 defined but not used
->=20
-> Please test your patches before you send them out, it wastes everyone=
-'s
-> time when you don't :(
 
-=46irst patch seems to have dropped off the start of this series.
+Hi Greg,
 
-The review version had:
+There are a lot of core changes it IIO building up, but
+in the meantime various new drivers have arrived.
 
-[PATCH 1/3] Add MACRO for gyro quadrature correction
+So, I would propose not merging this series
+ [PATCH 0/8] staging:iio:mixed bag of fixes and cleanups.
+ I'll do a fresh version of this including the changes to
+ the new drivers.
 
-Guessing a typo in git command post adding acks
-is the culprit here!
+Until after:
+
+[PATCH V4]TAOS 258x: Device Driver
+[PATCH 1/1] IIO: DAC: AD5446 add support for AD5541A devices
+[PATCH 1/1] IIO: DAC: New driver for AD5791/AD5781 High Resolution Voltage Output DACs
+[PATCH 1/3] IIO: GYRO: Add MACRO for gyro quadrature correction
+(including the rest of that series)
+
+Any new drivers people post from now on will have to be held
+until some of the core changes are in or we will never get them
+done. I propose doing those in chunks anyway so shouldn't be
+too painful.  First set are currently out for review. I know
+Michael is already working on top of my development tree
+(poor guy is coping with me rebasing all the time ;)
+
+Thanks for handling all our merge woes!
+
+Jonathan
