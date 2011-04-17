@@ -2,171 +2,286 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 33/70] staging:iio:max1363 move to irqchip based threaded irq triggering
-Date: Sun, 17 Apr 2011 20:06:06 +0100
-Message-Id: <1303067203-4894-34-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 32/70] staging:iio:lis3l02dq move to threaded trigger handling.
+Date: Sun, 17 Apr 2011 20:06:05 +0100
+Message-Id: <1303067203-4894-33-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 References: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
+V2: Cleaned up handling of name string.
+
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/max1363.h      |    4 --
- drivers/staging/iio/adc/max1363_core.c |    2 -
- drivers/staging/iio/adc/max1363_ring.c |   64 +++++++++++++-------------------
- 3 files changed, 26 insertions(+), 44 deletions(-)
+ drivers/staging/iio/accel/lis3l02dq.h      |    2 -
+ drivers/staging/iio/accel/lis3l02dq_core.c |    2 -
+ drivers/staging/iio/accel/lis3l02dq_ring.c |  137 +++++++++++----------------
+ 3 files changed, 56 insertions(+), 85 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/max1363.h b/drivers/staging/iio/adc/max1363.h
-index 76635a0..2d41a27 100644
---- a/drivers/staging/iio/adc/max1363.h
-+++ b/drivers/staging/iio/adc/max1363.h
-@@ -180,8 +180,6 @@ struct max1363_chip_info {
-  * @chip_info:		chip model specific constants, available modes etc
-  * @current_mode:	the scan mode of this chip
-  * @requestedmask:	a valid requested set of channels
-- * @poll_work:		bottom half of polling interrupt handler
-- * @protect_ring:	used to ensure only one polling bh running at a time
-  * @reg:		supply regulator
-  * @monitor_on:		whether monitor mode is enabled
-  * @monitor_speed:	parameter corresponding to device monitor speed setting
-@@ -197,8 +195,6 @@ struct max1363_state {
- 	const struct max1363_chip_info	*chip_info;
- 	const struct max1363_mode	*current_mode;
- 	u32				requestedmask;
--	struct work_struct		poll_work;
--	atomic_t			protect_ring;
+diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
+index 67f312d..a910f2d 100644
+--- a/drivers/staging/iio/accel/lis3l02dq.h
++++ b/drivers/staging/iio/accel/lis3l02dq.h
+@@ -150,7 +150,6 @@ Form of high byte dependent on justification set in ctrl reg */
+  * struct lis3l02dq_state - device instance specific data
+  * @helper:		data and func pointer allowing generic functions
+  * @us:			actual spi_device
+- * @inter:		used to check if new interrupt has been triggered
+  * @trig:		data ready trigger registered with iio
+  * @tx:			transmit buffer
+  * @rx:			receive buffer
+@@ -159,7 +158,6 @@ Form of high byte dependent on justification set in ctrl reg */
+ struct lis3l02dq_state {
+ 	struct iio_sw_ring_helper_state	help;
+ 	struct spi_device		*us;
+-	bool				inter;
  	struct iio_trigger		*trig;
- 	struct regulator		*reg;
+ 	u8				*tx;
+ 	u8				*rx;
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+index f54a16d..5d57110 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+@@ -15,7 +15,6 @@
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+ #include <linux/gpio.h>
+-#include <linux/workqueue.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+@@ -727,7 +726,6 @@ static int __devinit lis3l02dq_probe(struct spi_device *spi)
+ 	}
  
-diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
-index e8d10f9..48a2a28 100644
---- a/drivers/staging/iio/adc/max1363_core.c
-+++ b/drivers/staging/iio/adc/max1363_core.c
-@@ -1352,8 +1352,6 @@ static int __devinit max1363_probe(struct i2c_client *client,
- 	/* this is only used for device removal purposes */
- 	i2c_set_clientdata(client, indio_dev);
- 
--	atomic_set(&st->protect_ring, 0);
--
- 	st->chip_info = &max1363_chip_info_tbl[id->driver_data];
- 	st->client = client;
- 
-diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
-index 405f729..ef3c2bc 100644
---- a/drivers/staging/iio/adc/max1363_ring.c
-+++ b/drivers/staging/iio/adc/max1363_ring.c
-@@ -105,36 +105,11 @@ static int max1363_ring_preenable(struct iio_dev *indio_dev)
- 	return 0;
+ 	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0) {
+-		st->inter = 0;
+ 		ret = lis3l02dq_probe_trigger(st->help.indio_dev);
+ 		if (ret)
+ 			goto error_uninitialize_ring;
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index 9bc2e5f..108b956 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -29,37 +29,6 @@ static inline u16 combine_8_to_16(u8 lower, u8 upper)
  }
  
+ /**
+- * lis3l02dq_poll_func_th() top half interrupt handler called by trigger
+- * @private_data:	iio_dev
+- **/
+-static void lis3l02dq_poll_func_th(struct iio_dev *indio_dev, s64 time)
+-{
+-	struct iio_sw_ring_helper_state *h
+-		= iio_dev_get_devdata(indio_dev);
+-	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
+-	/* in this case we need to slightly extend the helper function */
+-	iio_sw_poll_func_th(indio_dev, time);
+-
+-	/* Indicate that this interrupt is being handled */
+-	/* Technically this is trigger related, but without this
+-	 * handler running there is currently now way for the interrupt
+-	 * to clear.
+-	 */
+-	st->inter = 1;
+-}
 -
 -/**
-- * max1363_poll_func_th() - th of trigger launched polling to ring buffer
-- *
-- * As sampling only occurs on i2c comms occurring, leave timestamping until
-- * then.  Some triggers will generate their own time stamp.  Currently
-- * there is no way of notifying them when no one cares.
+- * lis3l02dq_data_rdy_trig_poll() the event handler for the data rdy trig
 - **/
--static void max1363_poll_func_th(struct iio_dev *indio_dev, s64 time)
-+static irqreturn_t max1363_trigger_handler(int irq, void *p)
+-static irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private)
+-{
+-	disable_irq_nosync(irq);
+-	iio_trigger_poll(private, iio_get_time_ns());
+-
+-	return IRQ_HANDLED;
+-}
+-
+-/**
+  * lis3l02dq_read_accel_from_ring() individual acceleration read from ring
+  **/
+ ssize_t lis3l02dq_read_accel_from_ring(struct iio_ring_buffer *ring,
+@@ -153,15 +122,16 @@ static int lis3l02dq_read_all(struct lis3l02dq_state *st, u8 *rx_array)
+ 	return ret;
+ }
+ 
+-static void lis3l02dq_trigger_bh_to_ring(struct work_struct *work_s)
++static irqreturn_t lis3l02dq_trigger_handler(int irq, void *p)
  {
+-	struct iio_sw_ring_helper_state *h
+-		= container_of(work_s, struct iio_sw_ring_helper_state,
+-			work_trigger_to_ring);
+-	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
 +	struct iio_poll_func *pf = p;
 +	struct iio_dev *indio_dev = pf->private_data;
- 	struct max1363_state *st = iio_priv(indio_dev);
--
--	schedule_work(&st->poll_work);
--
--	return;
--}
--/**
-- * max1363_poll_bh_to_ring() - bh of trigger launched polling to ring buffer
-- * @work_s:	the work struct through which this was scheduled
-- *
-- * Currently there is no option in this driver to disable the saving of
-- * timestamps within the ring.
-- * I think the one copy of this at a time was to avoid problems if the
-- * trigger was set far too high and the reads then locked up the computer.
-- **/
--static void max1363_poll_bh_to_ring(struct work_struct *work_s)
--{
--	struct max1363_state *st = container_of(work_s, struct max1363_state,
--						  poll_work);
--	struct iio_dev *indio_dev = iio_priv_to_dev(st);
- 	struct iio_sw_ring_buffer *sw_ring = iio_to_sw_ring(indio_dev->ring);
- 	s64 time_ns;
- 	__u8 *rxbuf;
-@@ -150,20 +125,16 @@ static void max1363_poll_bh_to_ring(struct work_struct *work_s)
- 	if (d_size % sizeof(s64))
- 		d_size += sizeof(s64) - (d_size % sizeof(s64));
++	struct iio_sw_ring_helper_state *h = iio_dev_get_devdata(indio_dev);
  
--	/* Ensure only one copy of this function running at a time */
--	if (atomic_inc_return(&st->protect_ring) > 1)
--		return;
--
- 	/* Monitor mode prevents reading. Whilst not currently implemented
- 	 * might as well have this test in here in the meantime as it does
- 	 * no harm.
- 	 */
- 	if (numvals == 0)
--		return;
-+		return IRQ_HANDLED;
- 
- 	rxbuf = kmalloc(d_size,	GFP_KERNEL);
- 	if (rxbuf == NULL)
--		return;
-+		return -ENOMEM;
- 	if (st->chip_info->bits != 8)
- 		b_sent = i2c_master_recv(st->client, rxbuf, numvals*2);
- 	else
-@@ -177,8 +148,10 @@ static void max1363_poll_bh_to_ring(struct work_struct *work_s)
- 
- 	indio_dev->ring->access.store_to(&sw_ring->buf, rxbuf, time_ns);
- done:
-+	iio_trigger_notify_done(indio_dev->trig);
- 	kfree(rxbuf);
--	atomic_dec(&st->protect_ring);
+-	st->inter = 0;
+-	iio_sw_trigger_bh_to_ring(work_s);
++	h->last_timestamp = pf->timestamp;
++	iio_sw_trigger_to_ring(h);
 +
 +	return IRQ_HANDLED;
  }
  
+ static int lis3l02dq_get_ring_element(struct iio_sw_ring_helper_state *h,
+@@ -236,7 +206,7 @@ __lis3l02dq_write_data_ready_config(struct device *dev, bool state)
+ 		valold = ret |
+ 			LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION;
+ 		ret = request_irq(st->us->irq,
+-				  lis3l02dq_data_rdy_trig_poll,
++				  &iio_trigger_generic_data_rdy_poll,
+ 				  IRQF_TRIGGER_RISING, "lis3l02dq_datardy",
+ 				  st->trig);
+ 		if (ret)
+@@ -272,10 +242,10 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
  
-@@ -194,19 +167,34 @@ int max1363_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	__lis3l02dq_write_data_ready_config(&st->help.indio_dev->dev, state);
+ 	if (state == false) {
+-		/* possible quirk with handler currently worked around
+-		   by ensuring the work queue is empty */
+-		flush_scheduled_work();
+-		/* Clear any outstanding ready events */
++		/*
++		 * A possible quirk with teh handler is currently worked around
++		 *  by ensuring outstanding read events are cleared.
++		 */
+ 		ret = lis3l02dq_read_all(st, NULL);
  	}
- 	/* Effectively select the ring buffer implementation */
- 	iio_ring_sw_register_funcs(&indio_dev->ring->access);
--	ret = iio_alloc_pollfunc(indio_dev, NULL, &max1363_poll_func_th);
+ 	lis3l02dq_spi_read_reg_8(st->help.indio_dev,
+@@ -298,32 +268,23 @@ static const struct attribute_group lis3l02dq_trigger_attr_group = {
+ /**
+  * lis3l02dq_trig_try_reen() try renabling irq for data rdy trigger
+  * @trig:	the datardy trigger
+- *
+- * As the trigger may occur on any data element being updated it is
+- * really rather likely to occur during the read from the previous
+- * trigger event.  The only way to discover if this has occurred on
+- * boards not supporting level interrupts is to take a look at the line.
+- * If it is indicating another interrupt and we don't seem to have a
+- * handler looking at it, then we need to notify the core that we need
+- * to tell the triggering core to try reading all these again.
+- **/
++ */
+ static int lis3l02dq_trig_try_reen(struct iio_trigger *trig)
+ {
+ 	struct lis3l02dq_state *st = trig->private_data;
+-	enable_irq(st->us->irq);
++	int i;
++
+ 	/* If gpio still high (or high again) */
+-	if (gpio_get_value(irq_to_gpio(st->us->irq)))
+-		if (st->inter == 0) {
+-			/* already interrupt handler dealing with it */
+-			disable_irq_nosync(st->us->irq);
+-			if (st->inter == 1) {
+-				/* interrupt handler snuck in between test
+-				 * and disable */
+-				enable_irq(st->us->irq);
+-				return 0;
+-			}
+-			return -EAGAIN;
+-		}
++	/* In theory possible we will need to do this several times */
++	for (i = 0; i < 5; i++)
++		if (gpio_get_value(irq_to_gpio(st->us->irq)))
++			lis3l02dq_read_all(st, NULL);
++		else
++			break;
++	if (i == 5)
++		printk(KERN_INFO
++		       "Failed to clear the interrupt for lis3l02dq\n");
++
+ 	/* irq reenabled so success! */
+ 	return 0;
+ }
+@@ -334,17 +295,19 @@ int lis3l02dq_probe_trigger(struct iio_dev *indio_dev)
+ 	struct iio_sw_ring_helper_state *h
+ 		= iio_dev_get_devdata(indio_dev);
+ 	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
++	char *name;
+ 
+-	st->trig = iio_allocate_trigger();
+-	if (!st->trig)
+-		return -ENOMEM;
+-
+-	st->trig->name = kasprintf(GFP_KERNEL,
+-				   "lis3l02dq-dev%d",
+-				   indio_dev->id);
+-	if (!st->trig->name) {
++	name = kasprintf(GFP_KERNEL,
++			 "lis3l02dq-dev%d",
++			 indio_dev->id);
++	if (name == NULL) {
+ 		ret = -ENOMEM;
+-		goto error_free_trig;
++		goto error_ret;
++	}
++	st->trig = iio_allocate_trigger_named(name);
++	if (!st->trig) {
++		ret = -ENOMEM;
++		goto error_free_name;
+ 	}
+ 
+ 	st->trig->dev.parent = &st->us->dev;
+@@ -355,15 +318,15 @@ int lis3l02dq_probe_trigger(struct iio_dev *indio_dev)
+ 	st->trig->control_attrs = &lis3l02dq_trigger_attr_group;
+ 	ret = iio_trigger_register(st->trig);
+ 	if (ret)
+-		goto error_free_trig_name;
++		goto error_free_trig;
+ 
+ 	return 0;
+ 
+-error_free_trig_name:
+-	kfree(st->trig->name);
+ error_free_trig:
+ 	iio_free_trigger(st->trig);
+-
++error_free_name:
++	kfree(name);
++error_ret:
+ 	return ret;
+ }
+ 
+@@ -380,6 +343,7 @@ void lis3l02dq_remove_trigger(struct iio_dev *indio_dev)
+ 
+ void lis3l02dq_unconfigure_ring(struct iio_dev *indio_dev)
+ {
++	kfree(indio_dev->pollfunc->name);
+ 	kfree(indio_dev->pollfunc);
+ 	lis3l02dq_free_buf(indio_dev->ring);
+ }
+@@ -459,7 +423,7 @@ int lis3l02dq_configure_ring(struct iio_dev *indio_dev)
+ 	int ret;
+ 	struct iio_sw_ring_helper_state *h = iio_dev_get_devdata(indio_dev);
+ 	struct iio_ring_buffer *ring;
+-	INIT_WORK(&h->work_trigger_to_ring, lis3l02dq_trigger_bh_to_ring);
++
+ 	h->get_ring_element = &lis3l02dq_get_ring_element;
+ 
+ 	ring = lis3l02dq_alloc_buf(indio_dev);
+@@ -482,9 +446,20 @@ int lis3l02dq_configure_ring(struct iio_dev *indio_dev)
+ 	iio_scan_mask_set(ring, 1);
+ 	iio_scan_mask_set(ring, 2);
+ 
+-	ret = iio_alloc_pollfunc(indio_dev, NULL, &lis3l02dq_poll_func_th);
 -	if (ret)
++	/* Functions are NULL as we set handler below */
 +	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
 +
 +	if (indio_dev->pollfunc == NULL) {
 +		ret = -ENOMEM;
- 		goto error_deallocate_sw_rb;
+ 		goto error_iio_sw_rb_free;
 +	}
 +	indio_dev->pollfunc->private_data = indio_dev;
-+	indio_dev->pollfunc->thread = &max1363_trigger_handler;
-+	indio_dev->pollfunc->type = IRQF_ONESHOT;
-+	indio_dev->pollfunc->name =
-+		kasprintf(GFP_KERNEL, "%s_consumer%d",
-+			  st->client->name, indio_dev->id);
-+	if (indio_dev->pollfunc->name == NULL) {
-+		ret = -ENOMEM;
-+		goto error_free_pollfunc;
-+	}
- 
- 	/* Ring buffer functions - here trigger setup related */
- 	indio_dev->ring->postenable = &iio_triggered_ring_postenable;
- 	indio_dev->ring->preenable = &max1363_ring_preenable;
- 	indio_dev->ring->predisable = &iio_triggered_ring_predisable;
--	INIT_WORK(&st->poll_work, &max1363_poll_bh_to_ring);
- 
- 	/* Flag that polled ring buffering is possible */
- 	indio_dev->modes |= INDIO_RING_TRIGGERED;
++	indio_dev->pollfunc->thread = &lis3l02dq_trigger_handler;
++	indio_dev->pollfunc->h = &iio_pollfunc_store_time;
++	indio_dev->pollfunc->type = 0;
++	indio_dev->pollfunc->name
++		= kasprintf(GFP_KERNEL, "lis3l02dq_consumer%d", indio_dev->id);
 +
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
  	return 0;
-+error_free_pollfunc:
-+	kfree(indio_dev->pollfunc);
- error_deallocate_sw_rb:
- 	iio_sw_rb_free(indio_dev->ring);
- error_ret:
+ 
 -- 
 1.7.3.4
