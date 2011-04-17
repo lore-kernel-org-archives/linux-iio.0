@@ -2,875 +2,1819 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 55/70] staging:iio:accel:adis16201 move to chan_spec based setup.
-Date: Sun, 17 Apr 2011 20:06:28 +0100
-Message-Id: <1303067203-4894-56-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 54/70] staging:iio: use the new central name attribute creation code
+Date: Sun, 17 Apr 2011 20:06:27 +0100
+Message-Id: <1303067203-4894-55-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 References: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Mainly motivated by wish to remove the remaing users of the
-scan helpers.
-
-Some minor cleanups done whilst here.
-
-Untested.
-
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/adis16201.h         |    4 +-
- drivers/staging/iio/accel/adis16201_core.c    |  454 +++++++++++--------------
- drivers/staging/iio/accel/adis16201_ring.c    |   87 +----
- drivers/staging/iio/accel/adis16201_trigger.c |    3 +-
- 4 files changed, 220 insertions(+), 328 deletions(-)
+ drivers/staging/iio/accel/adis16201_core.c |    4 +--
+ drivers/staging/iio/accel/adis16203_core.c |    5 +---
+ drivers/staging/iio/accel/adis16204_core.c |    4 +--
+ drivers/staging/iio/accel/adis16209_core.c |    4 +--
+ drivers/staging/iio/accel/adis16220_core.c |    4 +--
+ drivers/staging/iio/accel/adis16240_core.c |    4 +--
+ drivers/staging/iio/accel/lis3l02dq_core.c |    4 +--
+ drivers/staging/iio/accel/sca3000.h        |    2 -
+ drivers/staging/iio/accel/sca3000_core.c   |   28 +++++++----------------
+ drivers/staging/iio/adc/ad7150.c           |   15 +------------
+ drivers/staging/iio/adc/ad7152.c           |   15 +------------
+ drivers/staging/iio/adc/ad7291.c           |   17 +-------------
+ drivers/staging/iio/adc/ad7298_core.c      |   13 +----------
+ drivers/staging/iio/adc/ad7314.c           |   19 ++--------------
+ drivers/staging/iio/adc/ad7476_core.c      |   22 +------------------
+ drivers/staging/iio/adc/ad7745.c           |   15 +------------
+ drivers/staging/iio/adc/ad7780.c           |   13 +----------
+ drivers/staging/iio/adc/ad7816.c           |   32 +++++++--------------------
+ drivers/staging/iio/adc/ad7887_core.c      |   13 +----------
+ drivers/staging/iio/adc/ad799x_core.c      |   15 +------------
+ drivers/staging/iio/adc/adt7310.c          |   21 +++--------------
+ drivers/staging/iio/adc/adt7410.c          |   20 ++--------------
+ drivers/staging/iio/adc/adt75.c            |   19 ++--------------
+ drivers/staging/iio/adc/max1363_core.c     |   21 +-----------------
+ drivers/staging/iio/addac/adt7316.c        |   21 ++---------------
+ drivers/staging/iio/dac/ad5446.c           |   13 +----------
+ drivers/staging/iio/dac/ad5504.c           |   15 +------------
+ drivers/staging/iio/dac/ad5624r_spi.c      |   13 +----------
+ drivers/staging/iio/dds/ad9832.c           |   13 +----------
+ drivers/staging/iio/dds/ad9834.c           |   13 +----------
+ drivers/staging/iio/gyro/adis16080_core.c  |    3 +-
+ drivers/staging/iio/gyro/adis16130_core.c  |    4 +--
+ drivers/staging/iio/gyro/adis16260_core.c  |    4 +--
+ drivers/staging/iio/imu/adis16400_core.c   |   12 +---------
+ drivers/staging/iio/light/isl29018.c       |   13 +----------
+ drivers/staging/iio/meter/ade7753.c        |    4 +--
+ drivers/staging/iio/meter/ade7754.c        |    4 +--
+ drivers/staging/iio/meter/ade7758_core.c   |    4 +--
+ drivers/staging/iio/meter/ade7759.c        |    4 +--
+ drivers/staging/iio/sysfs.h                |    7 ------
+ 40 files changed, 66 insertions(+), 410 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16201.h b/drivers/staging/iio/accel/adis16201.h
-index 6296a4f..0b9b854 100644
---- a/drivers/staging/iio/accel/adis16201.h
-+++ b/drivers/staging/iio/accel/adis16201.h
-@@ -79,7 +79,7 @@ struct adis16201_state {
- 	struct mutex			buf_lock;
- };
- 
--int adis16201_set_irq(struct device *dev, bool enable);
-+int adis16201_set_irq(struct iio_dev *indio_dev, bool enable);
- 
- #ifdef CONFIG_IIO_RING_BUFFER
- enum adis16201_scan {
-@@ -102,8 +102,6 @@ ssize_t adis16201_read_data_from_ring(struct device *dev,
- int adis16201_configure_ring(struct iio_dev *indio_dev);
- void adis16201_unconfigure_ring(struct iio_dev *indio_dev);
- 
--int adis16201_initialize_ring(struct iio_ring_buffer *ring);
--void adis16201_uninitialize_ring(struct iio_ring_buffer *ring);
- #else /* CONFIG_IIO_RING_BUFFER */
- 
- static inline void adis16201_remove_trigger(struct iio_dev *indio_dev)
 diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
-index f45eb8f..7832b68 100644
+index 08e42f4..f45eb8f 100644
 --- a/drivers/staging/iio/accel/adis16201_core.c
 +++ b/drivers/staging/iio/accel/adis16201_core.c
-@@ -6,9 +6,6 @@
-  * Licensed under the GPL-2 or later.
-  */
- 
--#include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/gpio.h>
- #include <linux/delay.h>
- #include <linux/mutex.h>
- #include <linux/device.h>
-@@ -16,20 +13,28 @@
- #include <linux/spi/spi.h>
- #include <linux/slab.h>
- #include <linux/sysfs.h>
--#include <linux/list.h>
- 
- #include "../iio.h"
- #include "../sysfs.h"
-+#include "../ring_generic.h"
-+
- #include "accel.h"
- #include "inclinometer.h"
--#include "../gyro/gyro.h"
- #include "../adc/adc.h"
- 
- #include "adis16201.h"
- 
- #define DRIVER_NAME		"adis16201"
- 
--static int adis16201_check_status(struct device *dev);
-+enum adis16201_chan {
-+	in_supply,
-+	temp,
-+	accel_x,
-+	accel_y,
-+	incli_x,
-+	incli_y,
-+	in_aux,
-+};
- 
- /**
-  * adis16201_spi_write_reg_8() - write single byte to a register
-@@ -57,18 +62,17 @@ static int adis16201_spi_write_reg_8(struct device *dev,
- 
- /**
-  * adis16201_spi_write_reg_16() - write 2 bytes to a pair of registers
-- * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @indio_dev: iio device associated with child of actual device
-  * @reg_address: the address of the lower of the two registers. Second register
-  *               is assumed to have address one greater.
-  * @val: value to be written
-  **/
--static int adis16201_spi_write_reg_16(struct device *dev,
--		u8 lower_reg_address,
--		u16 value)
-+static int adis16201_spi_write_reg_16(struct iio_dev *indio_dev,
-+				      u8 lower_reg_address,
-+				      u16 value)
- {
- 	int ret;
- 	struct spi_message msg;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct adis16201_state *st = iio_dev_get_devdata(indio_dev);
- 	struct spi_transfer xfers[] = {
- 		{
-@@ -80,7 +84,6 @@ static int adis16201_spi_write_reg_16(struct device *dev,
- 			.tx_buf = st->tx + 2,
- 			.bits_per_word = 8,
- 			.len = 2,
--			.cs_change = 1,
- 		},
- 	};
- 
-@@ -101,17 +104,16 @@ static int adis16201_spi_write_reg_16(struct device *dev,
- 
- /**
-  * adis16201_spi_read_reg_16() - read 2 bytes from a 16-bit register
-- * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @indio_dev: iio device associated with child of actual device
-  * @reg_address: the address of the lower of the two registers. Second register
-  *               is assumed to have address one greater.
-  * @val: somewhere to pass back the value read
-  **/
--static int adis16201_spi_read_reg_16(struct device *dev,
-+static int adis16201_spi_read_reg_16(struct iio_dev *indio_dev,
- 		u8 lower_reg_address,
- 		u16 *val)
- {
- 	struct spi_message msg;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct adis16201_state *st = iio_dev_get_devdata(indio_dev);
- 	int ret;
- 	struct spi_transfer xfers[] = {
-@@ -125,7 +127,6 @@ static int adis16201_spi_read_reg_16(struct device *dev,
- 			.rx_buf = st->rx,
- 			.bits_per_word = 8,
- 			.len = 2,
--			.cs_change = 1,
- 			.delay_usecs = 20,
- 		},
- 	};
-@@ -150,160 +151,6 @@ error_ret:
- 	return ret;
- }
- 
--static ssize_t adis16201_read_12bit_unsigned(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	int ret;
--	u16 val = 0;
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--
--	ret = adis16201_spi_read_reg_16(dev, this_attr->address, &val);
--	if (ret)
--		return ret;
--
--	if (val & ADIS16201_ERROR_ACTIVE) {
--		ret = adis16201_check_status(dev);
--		if (ret)
--			return ret;
--	}
--
--	return sprintf(buf, "%u\n", val & 0x0FFF);
--}
--
--static ssize_t adis16201_read_temp(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	ssize_t ret;
--	u16 val;
--
--	/* Take the iio_dev status lock */
--	mutex_lock(&indio_dev->mlock);
--
--	ret = adis16201_spi_read_reg_16(dev, ADIS16201_TEMP_OUT, (u16 *)&val);
--	if (ret)
--		goto error_ret;
--
--	if (val & ADIS16201_ERROR_ACTIVE) {
--		ret = adis16201_check_status(dev);
--		if (ret)
--			goto error_ret;
--	}
--
--	val &= 0xFFF;
--	ret = sprintf(buf, "%d\n", val);
--
--error_ret:
--	mutex_unlock(&indio_dev->mlock);
--	return ret;
--}
--
--static ssize_t adis16201_read_9bit_signed(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	s16 val = 0;
--	ssize_t ret;
--
--	mutex_lock(&indio_dev->mlock);
--
--	ret = adis16201_spi_read_reg_16(dev, this_attr->address, (u16 *)&val);
--	if (!ret) {
--		if (val & ADIS16201_ERROR_ACTIVE) {
--			ret = adis16201_check_status(dev);
--			if (ret)
--				goto error_ret;
--		}
--		val = ((s16)(val << 7) >> 7);
--		ret = sprintf(buf, "%d\n", val);
--	}
--
--error_ret:
--	mutex_unlock(&indio_dev->mlock);
--
--	return ret;
--}
--
--static ssize_t adis16201_read_12bit_signed(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	s16 val = 0;
--	ssize_t ret;
--
--	mutex_lock(&indio_dev->mlock);
--
--	ret = adis16201_spi_read_reg_16(dev, this_attr->address, (u16 *)&val);
--	if (!ret) {
--		if (val & ADIS16201_ERROR_ACTIVE) {
--			ret = adis16201_check_status(dev);
--			if (ret)
--				goto error_ret;
--		}
--
--		val = ((s16)(val << 4) >> 4);
--		ret = sprintf(buf, "%d\n", val);
--	}
--
--error_ret:
--	mutex_unlock(&indio_dev->mlock);
--
--	return ret;
--}
--
--static ssize_t adis16201_read_14bit_signed(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	s16 val = 0;
--	ssize_t ret;
--
--	mutex_lock(&indio_dev->mlock);
--
--	ret = adis16201_spi_read_reg_16(dev, this_attr->address, (u16 *)&val);
--	if (!ret) {
--		if (val & ADIS16201_ERROR_ACTIVE) {
--			ret = adis16201_check_status(dev);
--			if (ret)
--				goto error_ret;
--		}
--
--		val = ((s16)(val << 2) >> 2);
--		ret = sprintf(buf, "%d\n", val);
--	}
--
--error_ret:
--	mutex_unlock(&indio_dev->mlock);
--
--	return ret;
--}
--
--static ssize_t adis16201_write_16bit(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
--{
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int ret;
--	long val;
--
--	ret = strict_strtol(buf, 10, &val);
--	if (ret)
--		goto error_ret;
--	ret = adis16201_spi_write_reg_16(dev, this_attr->address, val);
--
--error_ret:
--	return ret ? ret : len;
--}
--
- static int adis16201_reset(struct device *dev)
- {
- 	int ret;
-@@ -331,12 +178,12 @@ static ssize_t adis16201_write_reset(struct device *dev,
- 	return -EINVAL;
- }
- 
--int adis16201_set_irq(struct device *dev, bool enable)
-+int adis16201_set_irq(struct iio_dev *indio_dev, bool enable)
- {
- 	int ret = 0;
- 	u16 msc;
- 
--	ret = adis16201_spi_read_reg_16(dev, ADIS16201_MSC_CTRL, &msc);
-+	ret = adis16201_spi_read_reg_16(indio_dev, ADIS16201_MSC_CTRL, &msc);
- 	if (ret)
- 		goto error_ret;
- 
-@@ -347,20 +194,21 @@ int adis16201_set_irq(struct device *dev, bool enable)
- 	else
- 		msc &= ~ADIS16201_MSC_CTRL_DATA_RDY_EN;
- 
--	ret = adis16201_spi_write_reg_16(dev, ADIS16201_MSC_CTRL, msc);
-+	ret = adis16201_spi_write_reg_16(indio_dev, ADIS16201_MSC_CTRL, msc);
- 
- error_ret:
- 	return ret;
- }
- 
--static int adis16201_check_status(struct device *dev)
-+static int adis16201_check_status(struct iio_dev *indio_dev)
- {
- 	u16 status;
- 	int ret;
- 
--	ret = adis16201_spi_read_reg_16(dev, ADIS16201_DIAG_STAT, &status);
-+	ret = adis16201_spi_read_reg_16(indio_dev,
-+					ADIS16201_DIAG_STAT, &status);
- 	if (ret < 0) {
--		dev_err(dev, "Reading status failed\n");
-+		dev_err(&indio_dev->dev, "Reading status failed\n");
- 		goto error_ret;
- 	}
- 	ret = status & 0xF;
-@@ -368,30 +216,30 @@ static int adis16201_check_status(struct device *dev)
- 		ret = -EFAULT;
- 
- 	if (status & ADIS16201_DIAG_STAT_SPI_FAIL)
--		dev_err(dev, "SPI failure\n");
-+		dev_err(&indio_dev->dev, "SPI failure\n");
- 	if (status & ADIS16201_DIAG_STAT_FLASH_UPT)
--		dev_err(dev, "Flash update failed\n");
-+		dev_err(&indio_dev->dev, "Flash update failed\n");
- 	if (status & ADIS16201_DIAG_STAT_POWER_HIGH)
--		dev_err(dev, "Power supply above 3.625V\n");
-+		dev_err(&indio_dev->dev, "Power supply above 3.625V\n");
- 	if (status & ADIS16201_DIAG_STAT_POWER_LOW)
--		dev_err(dev, "Power supply below 3.15V\n");
-+		dev_err(&indio_dev->dev, "Power supply below 3.15V\n");
- 
- error_ret:
- 	return ret;
- }
- 
--static int adis16201_self_test(struct device *dev)
-+static int adis16201_self_test(struct iio_dev *indio_dev)
- {
- 	int ret;
--	ret = adis16201_spi_write_reg_16(dev,
-+	ret = adis16201_spi_write_reg_16(indio_dev,
- 			ADIS16201_MSC_CTRL,
- 			ADIS16201_MSC_CTRL_SELF_TEST_EN);
- 	if (ret) {
--		dev_err(dev, "problem starting self test");
-+		dev_err(&indio_dev->dev, "problem starting self test");
- 		goto err_ret;
- 	}
- 
--	ret = adis16201_check_status(dev);
-+	ret = adis16201_check_status(indio_dev);
- 
- err_ret:
- 	return ret;
-@@ -403,26 +251,26 @@ static int adis16201_initial_setup(struct adis16201_state *st)
- 	struct device *dev = &st->indio_dev->dev;
- 
- 	/* Disable IRQ */
--	ret = adis16201_set_irq(dev, false);
-+	ret = adis16201_set_irq(st->indio_dev, false);
- 	if (ret) {
- 		dev_err(dev, "disable irq failed");
- 		goto err_ret;
- 	}
- 
- 	/* Do self test */
--	ret = adis16201_self_test(dev);
-+	ret = adis16201_self_test(st->indio_dev);
- 	if (ret) {
- 		dev_err(dev, "self test failure");
- 		goto err_ret;
- 	}
- 
- 	/* Read status register to check the result */
--	ret = adis16201_check_status(dev);
-+	ret = adis16201_check_status(st->indio_dev);
- 	if (ret) {
- 		adis16201_reset(dev);
- 		dev_err(dev, "device not playing ball -> reset");
- 		msleep(ADIS16201_STARTUP_DELAY);
--		ret = adis16201_check_status(dev);
-+		ret = adis16201_check_status(st->indio_dev);
- 		if (ret) {
- 			dev_err(dev, "giving up");
- 			goto err_ret;
-@@ -436,66 +284,172 @@ err_ret:
- 	return ret;
- }
- 
--static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16201_read_12bit_unsigned,
--		ADIS16201_SUPPLY_OUT);
--static IIO_CONST_ATTR(in0_supply_scale, "0.00122");
--static IIO_DEV_ATTR_IN_RAW(1, adis16201_read_12bit_unsigned,
--		ADIS16201_AUX_ADC);
--static IIO_CONST_ATTR(in1_scale, "0.00061");
--
--static IIO_DEV_ATTR_ACCEL_X(adis16201_read_14bit_signed,
--		ADIS16201_XACCL_OUT);
--static IIO_DEV_ATTR_ACCEL_Y(adis16201_read_14bit_signed,
--		ADIS16201_YACCL_OUT);
--static IIO_DEV_ATTR_ACCEL_X_OFFSET(S_IWUSR | S_IRUGO,
--		adis16201_read_12bit_signed,
--		adis16201_write_16bit,
--		ADIS16201_XACCL_OFFS);
--static IIO_DEV_ATTR_ACCEL_Y_OFFSET(S_IWUSR | S_IRUGO,
--		adis16201_read_12bit_signed,
--		adis16201_write_16bit,
--		ADIS16201_YACCL_OFFS);
--static IIO_CONST_ATTR(accel_scale, "0.4625");
--
--static IIO_DEV_ATTR_INCLI_X(adis16201_read_14bit_signed,
--		ADIS16201_XINCL_OUT);
--static IIO_DEV_ATTR_INCLI_Y(adis16201_read_14bit_signed,
--		ADIS16201_YINCL_OUT);
--static IIO_DEV_ATTR_INCLI_X_OFFSET(S_IWUSR | S_IRUGO,
--		adis16201_read_9bit_signed,
--		adis16201_write_16bit,
--		ADIS16201_XACCL_OFFS);
--static IIO_DEV_ATTR_INCLI_Y_OFFSET(S_IWUSR | S_IRUGO,
--		adis16201_read_9bit_signed,
--		adis16201_write_16bit,
--		ADIS16201_YACCL_OFFS);
--static IIO_CONST_ATTR(incli_scale, "0.1");
--
--static IIO_DEV_ATTR_TEMP_RAW(adis16201_read_temp);
--static IIO_CONST_ATTR(temp_offset, "25");
--static IIO_CONST_ATTR(temp_scale, "-0.47");
-+static u8 adis16201_addresses[7][2] = {
-+	[in_supply] = { ADIS16201_SUPPLY_OUT, },
-+	[temp] = { ADIS16201_TEMP_OUT },
-+	[accel_x] = { ADIS16201_XACCL_OUT, ADIS16201_XACCL_OFFS },
-+	[accel_y] = { ADIS16201_YACCL_OUT, ADIS16201_YACCL_OFFS },
-+	[in_aux] = { ADIS16201_AUX_ADC },
-+	[incli_x] = { ADIS16201_XINCL_OUT },
-+	[incli_y] = { ADIS16201_YINCL_OUT },
-+};
-+
-+static int adis16201_read_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int *val, int *val2,
-+			      long mask)
-+{
-+	int ret;
-+	int bits;
-+	u8 addr;
-+	s16 val16;
-+
-+	switch (mask) {
-+	case 0:
-+		mutex_lock(&indio_dev->mlock);
-+		addr = adis16201_addresses[chan->address][0];
-+		ret = adis16201_spi_read_reg_16(indio_dev, addr, &val16);
-+		if (ret)
-+			return ret;
-+
-+		if (val16 & ADIS16201_ERROR_ACTIVE) {
-+			ret = adis16201_check_status(indio_dev);
-+			if (ret)
-+				return ret;
-+		}
-+		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
-+		if (chan->scan_type.sign == 's')
-+			val16 = (s16)(val16 <<
-+				      (16 - chan->scan_type.realbits)) >>
-+				(16 - chan->scan_type.realbits);
-+		*val = val16;
-+		mutex_unlock(&indio_dev->mlock);
-+		return IIO_VAL_INT;
-+	case (1 << IIO_CHAN_INFO_SCALE_SEPARATE):
-+	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
-+		switch (chan->type) {
-+		case IIO_IN:
-+			*val = 0;
-+			if (chan->channel == 0)
-+				*val2 = 1220;
-+			else
-+				*val2 = 610;
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		case IIO_TEMP:
-+			*val = 0;
-+			*val2 = -470000;
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		case IIO_ACCEL:
-+			*val = 0;
-+			*val2 = 462500;
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		case IIO_INCLI:
-+			*val = 0;
-+			*val2 = 100000;
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		default:
-+			return -EINVAL;
-+		}
-+		break;
-+	case (1 << IIO_CHAN_INFO_OFFSET_SEPARATE):
-+		*val = 25;
-+		return IIO_VAL_INT;
-+	case (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE):
-+		switch (chan->type) {
-+		case IIO_ACCEL:
-+			bits = 12;
-+			break;
-+		case IIO_INCLI:
-+			bits = 9;
-+			break;
-+		default:
-+			return -EINVAL;
-+		};
-+		mutex_lock(&indio_dev->mlock);
-+		addr = adis16201_addresses[chan->address][1];
-+		ret = adis16201_spi_read_reg_16(indio_dev, addr, &val16);
-+		if (ret) {
-+			mutex_unlock(&indio_dev->mlock);
-+			return ret;
-+		}
-+		val16 &= (1 << bits) - 1;
-+		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
-+		*val = val16;
-+		mutex_unlock(&indio_dev->mlock);
-+		return IIO_VAL_INT;
-+	}
-+	return -EINVAL;
-+}
-+
-+static int adis16201_write_raw(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       int val,
-+			       int val2,
-+			       long mask)
-+{
-+	int bits;
-+	s16 val16;
-+	u8 addr;
-+	switch (mask) {
-+	case (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE):
-+		switch (chan->type) {
-+		case IIO_ACCEL:
-+			bits = 12;
-+			break;
-+		case IIO_INCLI:
-+			bits = 9;
-+			break;
-+		default:
-+			return -EINVAL;
-+		};
-+		val16 = val & ((1 << bits) - 1);
-+		addr = adis16201_addresses[chan->address][1];
-+		return adis16201_spi_write_reg_16(indio_dev, addr, val16);
-+	}
-+	return -EINVAL;
-+}
-+
-+static struct iio_chan_spec adis16201_channels[] = {
-+	IIO_CHAN_EV(IIO_IN, 0,
-+		    (1 << IIO_CHAN_INFO_SCALE_SEPARATE),
-+		    in_supply, ADIS16201_SCAN_SUPPLY,
-+		    IIO_ST('u', 12, 16, 0), 0),
-+	IIO_CHAN_EV(IIO_TEMP, 0,
-+		    (1 << IIO_CHAN_INFO_SCALE_SEPARATE) |
-+		    (1 << IIO_CHAN_INFO_OFFSET_SEPARATE),
-+		    temp, ADIS16201_SCAN_TEMP,
-+		    IIO_ST('u', 12, 16, 0), 0),
-+	IIO_CHAN_EV(IIO_ACCEL, 'x',
-+		    (1 << IIO_CHAN_INFO_SCALE_SHARED) |
-+		    (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE),
-+		    accel_x, ADIS16201_SCAN_ACC_X,
-+		    IIO_ST('s', 14, 16, 0), 0),
-+	IIO_CHAN_EV(IIO_ACCEL, 'y',
-+		    (1 << IIO_CHAN_INFO_SCALE_SHARED) |
-+		    (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE),
-+		    accel_y, ADIS16201_SCAN_ACC_Y,
-+		    IIO_ST('s', 14, 16, 0), 0),
-+	IIO_CHAN_EV(IIO_IN, 1,
-+		    (1 << IIO_CHAN_INFO_SCALE_SEPARATE),
-+		    in_aux, ADIS16201_SCAN_AUX_ADC,
-+		    IIO_ST('u', 12, 16, 0), 0),
-+	IIO_CHAN_EV(IIO_INCLI, 'x',
-+		    (1 << IIO_CHAN_INFO_SCALE_SHARED) |
-+		    (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE),
-+		    incli_x, ADIS16201_SCAN_INCLI_X,
-+		    IIO_ST('s', 14, 16, 0), 0),
-+	IIO_CHAN_EV(IIO_INCLI, 'y',
-+		    (1 << IIO_CHAN_INFO_SCALE_SHARED) |
-+		    (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE),
-+		    incli_y, ADIS16201_SCAN_INCLI_Y,
-+		    IIO_ST('s', 14, 16, 0), 0),
-+	IIO_CHAN_SOFT_TIMESTAMP(7)
-+};
+@@ -477,8 +477,6 @@ static IIO_CONST_ATTR(temp_scale, "-0.47");
  
  static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16201_write_reset, 0);
  
+-static IIO_CONST_ATTR(name, "adis16201");
+-
  static struct attribute *adis16201_attributes[] = {
--	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
--	&iio_const_attr_in0_supply_scale.dev_attr.attr,
--	&iio_dev_attr_temp_raw.dev_attr.attr,
--	&iio_const_attr_temp_offset.dev_attr.attr,
--	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
+ 	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+@@ -486,7 +484,6 @@ static struct attribute *adis16201_attributes[] = {
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
  	&iio_dev_attr_reset.dev_attr.attr,
--	&iio_dev_attr_in1_raw.dev_attr.attr,
--	&iio_const_attr_in1_scale.dev_attr.attr,
--	&iio_dev_attr_accel_x_raw.dev_attr.attr,
--	&iio_dev_attr_accel_y_raw.dev_attr.attr,
--	&iio_dev_attr_accel_x_offset.dev_attr.attr,
--	&iio_dev_attr_accel_y_offset.dev_attr.attr,
--	&iio_const_attr_accel_scale.dev_attr.attr,
--	&iio_dev_attr_incli_x_raw.dev_attr.attr,
--	&iio_dev_attr_incli_y_raw.dev_attr.attr,
--	&iio_dev_attr_incli_x_offset.dev_attr.attr,
--	&iio_dev_attr_incli_y_offset.dev_attr.attr,
--	&iio_const_attr_incli_scale.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_in1_raw.dev_attr.attr,
+ 	&iio_const_attr_in1_scale.dev_attr.attr,
+ 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+@@ -537,6 +534,7 @@ static int __devinit adis16201_probe(struct spi_device *spi)
+ 		goto error_free_tx;
+ 	}
+ 
++	st->indio_dev->name = spi->dev.driver->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->attrs = &adis16201_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
+index 4043a97..6162311 100644
+--- a/drivers/staging/iio/accel/adis16203_core.c
++++ b/drivers/staging/iio/accel/adis16203_core.c
+@@ -392,8 +392,6 @@ static IIO_CONST_ATTR(temp_scale, "-0.47");
+ 
+ static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16203_write_reset, 0);
+ 
+-static IIO_CONST_ATTR(name, "adis16203");
+-
+ static struct attribute *adis16203_attributes[] = {
+ 	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
+ 	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+@@ -401,7 +399,6 @@ static struct attribute *adis16203_attributes[] = {
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_in1_raw.dev_attr.attr,
+ 	&iio_const_attr_in1_scale.dev_attr.attr,
+ 	&iio_dev_attr_incli_x_raw.dev_attr.attr,
+@@ -445,7 +442,7 @@ static int __devinit adis16203_probe(struct spi_device *spi)
+ 		ret = -ENOMEM;
+ 		goto error_free_tx;
+ 	}
+-
++	st->indio_dev->name = spi->dev.driver->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->attrs = &adis16203_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
+index fe44b25..a9c890d 100644
+--- a/drivers/staging/iio/accel/adis16204_core.c
++++ b/drivers/staging/iio/accel/adis16204_core.c
+@@ -430,8 +430,6 @@ static IIO_CONST_ATTR(temp_scale, "-0.47");
+ 
+ static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16204_write_reset, 0);
+ 
+-static IIO_CONST_ATTR(name, "adis16204");
+-
+ static struct attribute *adis16204_attributes[] = {
+ 	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
+ 	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+@@ -439,7 +437,6 @@ static struct attribute *adis16204_attributes[] = {
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_in1_raw.dev_attr.attr,
+ 	&iio_const_attr_in1_scale.dev_attr.attr,
+ 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+@@ -491,6 +488,7 @@ static int __devinit adis16204_probe(struct spi_device *spi)
+ 		goto error_free_tx;
+ 	}
+ 
++	st->indio_dev->name = spi->dev.driver->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->attrs = &adis16204_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
+index 54b5bae..fa0a3ad 100644
+--- a/drivers/staging/iio/accel/adis16209_core.c
++++ b/drivers/staging/iio/accel/adis16209_core.c
+@@ -427,8 +427,6 @@ static IIO_CONST_ATTR_TEMP_SCALE("-0.47");
+ 
+ static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16209_write_reset, 0);
+ 
+-static IIO_CONST_ATTR_NAME("adis16209");
+-
+ static struct attribute *adis16209_attributes[] = {
+ 	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
+ 	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+@@ -436,7 +434,6 @@ static struct attribute *adis16209_attributes[] = {
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_in1_raw.dev_attr.attr,
+ 	&iio_const_attr_in1_scale.dev_attr.attr,
+ 	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+@@ -486,6 +483,7 @@ static int __devinit adis16209_probe(struct spi_device *spi)
+ 		goto error_free_tx;
+ 	}
+ 
++	st->indio_dev->name = spi->dev.driver->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->attrs = &adis16209_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+diff --git a/drivers/staging/iio/accel/adis16220_core.c b/drivers/staging/iio/accel/adis16220_core.c
+index 0689e41..7af48b8 100644
+--- a/drivers/staging/iio/accel/adis16220_core.c
++++ b/drivers/staging/iio/accel/adis16220_core.c
+@@ -521,8 +521,6 @@ static IIO_DEV_ATTR_CAPTURE_COUNT(S_IWUSR | S_IRUGO,
+ 
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("100200");
+ 
+-static IIO_CONST_ATTR_NAME("adis16220");
+-
+ static struct attribute *adis16220_attributes[] = {
+ 	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
+ 	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+@@ -539,7 +537,6 @@ static struct attribute *adis16220_attributes[] = {
+ 	&iio_dev_attr_reset.dev_attr.attr,
+ 	&iio_dev_attr_capture.dev_attr.attr,
+ 	&iio_dev_attr_capture_count.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
  	NULL
  };
  
-@@ -537,6 +491,10 @@ static int __devinit adis16201_probe(struct spi_device *spi)
- 	st->indio_dev->name = spi->dev.driver->name;
+@@ -578,6 +575,7 @@ static int __devinit adis16220_probe(struct spi_device *spi)
+ 		goto error_free_tx;
+ 	}
+ 
++	st->indio_dev->name = spi->dev.driver->name;
  	st->indio_dev->dev.parent = &spi->dev;
- 	st->indio_dev->attrs = &adis16201_attribute_group;
-+	st->indio_dev->channels = adis16201_channels;
-+	st->indio_dev->num_channels = ARRAY_SIZE(adis16201_channels);
-+	st->indio_dev->read_raw = &adis16201_read_raw;
-+	st->indio_dev->write_raw = &adis16201_write_raw;
+ 	st->indio_dev->attrs = &adis16220_attribute_group;
  	st->indio_dev->dev_data = (void *)(st);
- 	st->indio_dev->driver_module = THIS_MODULE;
- 	st->indio_dev->modes = INDIO_DIRECT_MODE;
-@@ -550,7 +508,9 @@ static int __devinit adis16201_probe(struct spi_device *spi)
- 		goto error_unreg_ring_funcs;
- 	regdone = 1;
+diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
+index 89ab810..6350c7c 100644
+--- a/drivers/staging/iio/accel/adis16240_core.c
++++ b/drivers/staging/iio/accel/adis16240_core.c
+@@ -422,8 +422,6 @@ static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16240_write_reset, 0);
  
--	ret = adis16201_initialize_ring(st->indio_dev->ring);
-+	ret = iio_ring_buffer_register_ex(st->indio_dev->ring, 0,
-+					  adis16201_channels,
-+					  ARRAY_SIZE(adis16201_channels));
- 	if (ret) {
- 		printk(KERN_ERR "failed to initialize the ring\n");
- 		goto error_unreg_ring_funcs;
-@@ -571,7 +531,7 @@ static int __devinit adis16201_probe(struct spi_device *spi)
- error_remove_trigger:
- 	adis16201_remove_trigger(st->indio_dev);
- error_uninitialize_ring:
--	adis16201_uninitialize_ring(st->indio_dev->ring);
-+	iio_ring_buffer_unregister(st->indio_dev->ring);
- error_unreg_ring_funcs:
- 	adis16201_unconfigure_ring(st->indio_dev);
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("4096");
+ 
+-static IIO_CONST_ATTR_NAME("adis16240");
+-
+ static struct attribute *adis16240_attributes[] = {
+ 	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
+ 	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+@@ -444,7 +442,6 @@ static struct attribute *adis16240_attributes[] = {
+ 	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	NULL
+ };
+ 
+@@ -483,6 +480,7 @@ static int __devinit adis16240_probe(struct spi_device *spi)
+ 		goto error_free_tx;
+ 	}
+ 
++	st->indio_dev->name = spi->dev.driver->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->attrs = &adis16240_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+index 5d57110..61045a5 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+@@ -649,12 +649,9 @@ error_ret:
+ 	return ret;
+ }
+ 
+-static IIO_CONST_ATTR_NAME("lis3l02dq");
+-
+ static struct attribute *lis3l02dq_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	NULL
+ };
+ 
+@@ -694,6 +691,7 @@ static int __devinit lis3l02dq_probe(struct spi_device *spi)
+ 		goto error_free_tx;
+ 	}
+ 
++	st->help.indio_dev->name = spi->dev.driver->name;
+ 	st->help.indio_dev->dev.parent = &spi->dev;
+ 	st->help.indio_dev->num_interrupt_lines = 1;
+ 	st->help.indio_dev->channels = lis3l02dq_channels;
+diff --git a/drivers/staging/iio/accel/sca3000.h b/drivers/staging/iio/accel/sca3000.h
+index f77eb74..cf0751d 100644
+--- a/drivers/staging/iio/accel/sca3000.h
++++ b/drivers/staging/iio/accel/sca3000.h
+@@ -186,7 +186,6 @@ struct sca3000_state {
+ 
+ /**
+  * struct sca3000_chip_info - model dependent parameters
+- * @name:			model identification
+  * @scale:			scale * 10^-6
+  * @temp_output:		some devices have temperature sensors.
+  * @measurement_mode_freq:	normal mode sampling frequency
+@@ -199,7 +198,6 @@ struct sca3000_state {
+  * sca3000 variant.
+  **/
+ struct sca3000_chip_info {
+-	const char		*name;
+ 	unsigned int		scale;
+ 	bool			temp_output;
+ 	int			measurement_mode_freq;
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index c8b8325..c636928 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -40,8 +40,7 @@ enum sca3000_variant {
+  * do not actually appear to be available.
+  */
+ static const struct sca3000_chip_info sca3000_spi_chip_info_tbl[] = {
+-	{
+-		.name = "sca3000-d01",
++	[d01] = {
+ 		.scale = 7357,
+ 		.temp_output = true,
+ 		.measurement_mode_freq = 250,
+@@ -49,16 +48,16 @@ static const struct sca3000_chip_info sca3000_spi_chip_info_tbl[] = {
+ 		.option_mode_1_freq = 250,
+ 		.mot_det_mult_xz = {50, 100, 200, 350, 650, 1300},
+ 		.mot_det_mult_y = {50, 100, 150, 250, 450, 850, 1750},
+-	}, {
+-		.name = "sca3000-e02",
++	},
++	[e02] = {
+ 		.scale = 9810,
+ 		.measurement_mode_freq = 125,
+ 		.option_mode_1 = SCA3000_OP_MODE_NARROW,
+ 		.option_mode_1_freq = 63,
+ 		.mot_det_mult_xz = {100, 150, 300, 550, 1050, 2050},
+ 		.mot_det_mult_y = {50, 100, 200, 350, 700, 1350, 2700},
+-	}, {
+-		.name = "sca3000-e04",
++	},
++	[e04] = {
+ 		.scale = 19620,
+ 		.measurement_mode_freq = 100,
+ 		.option_mode_1 = SCA3000_OP_MODE_NARROW,
+@@ -67,8 +66,8 @@ static const struct sca3000_chip_info sca3000_spi_chip_info_tbl[] = {
+ 		.option_mode_2_freq = 400,
+ 		.mot_det_mult_xz = {200, 300, 600, 1100, 2100, 4100},
+ 		.mot_det_mult_y = {100, 200, 400, 7000, 1400, 2700, 54000},
+-	}, {
+-		.name = "sca3000-e05",
++	},
++	[e05] = {
+ 		.scale = 61313,
+ 		.measurement_mode_freq = 200,
+ 		.option_mode_1 = SCA3000_OP_MODE_NARROW,
+@@ -260,14 +259,7 @@ error_ret:
+ }
+ #endif /* SCA3000_DEBUG */
+ 
+-static ssize_t sca3000_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct sca3000_state *st = dev_info->dev_data;
+-	return sprintf(buf, "%s\n", st->info->name);
+-}
++
+ /**
+  * sca3000_show_reg() - sysfs interface to read the chip revision number
+  **/
+@@ -430,7 +422,6 @@ static IIO_DEVICE_ATTR(measurement_mode, S_IRUGO | S_IWUSR,
+ 
+ /* More standard attributes */
+ 
+-static IIO_DEV_ATTR_NAME(sca3000_show_name);
+ static IIO_DEV_ATTR_REV(sca3000_show_rev);
+ 
+ #define SCA3000_INFO_MASK			\
+@@ -768,7 +759,6 @@ static int sca3000_write_thresh(struct iio_dev *indio_dev,
+ }
+ 
+ static struct attribute *sca3000_attributes[] = {
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_revision.dev_attr.attr,
+ 	&iio_dev_attr_measurement_mode_available.dev_attr.attr,
+ 	&iio_dev_attr_measurement_mode.dev_attr.attr,
+@@ -778,7 +768,6 @@ static struct attribute *sca3000_attributes[] = {
+ };
+ 
+ static struct attribute *sca3000_attributes_with_temp[] = {
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_revision.dev_attr.attr,
+ 	&iio_dev_attr_measurement_mode_available.dev_attr.attr,
+ 	&iio_dev_attr_measurement_mode.dev_attr.attr,
+@@ -1137,6 +1126,7 @@ static int __devinit sca3000_probe(struct spi_device *spi)
+ 		goto error_clear_st;
+ 	}
+ 	st->indio_dev->dev.parent = &spi->dev;
++	st->indio_dev->name = spi_get_device_id(spi)->name;
+ 	st->indio_dev->num_interrupt_lines = 1;
+ 	st->indio_dev->event_attrs = &sca3000_event_attribute_group;
+ 	if (st->info->temp_output)
+diff --git a/drivers/staging/iio/adc/ad7150.c b/drivers/staging/iio/adc/ad7150.c
+index a236caf..f804edf 100644
+--- a/drivers/staging/iio/adc/ad7150.c
++++ b/drivers/staging/iio/adc/ad7150.c
+@@ -61,7 +61,6 @@
+  */
+ 
+ struct ad7150_chip_info {
+-	const char *name;
+ 	struct i2c_client *client;
+ 	struct iio_dev *indio_dev;
+ 	bool inter;
+@@ -587,17 +586,6 @@ static IIO_DEV_ATTR_CH2_SETUP(S_IRUGO | S_IWUSR,
+ 		ad7150_show_ch2_setup,
+ 		ad7150_store_ch2_setup);
+ 
+-static ssize_t ad7150_show_name(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7150_chip_info *chip = dev_info->dev_data;
+-	return sprintf(buf, "%s\n", chip->name);
+-}
+-
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad7150_show_name, NULL, 0);
+-
+ static ssize_t ad7150_show_powerdown_timer(struct device *dev,
+ 		struct device_attribute *attr,
+ 		char *buf)
+@@ -646,7 +634,6 @@ static struct attribute *ad7150_attributes[] = {
+ 	&iio_dev_attr_powerdown_timer.dev_attr.attr,
+ 	&iio_dev_attr_ch1_value.dev_attr.attr,
+ 	&iio_dev_attr_ch2_value.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -727,7 +714,6 @@ static int __devinit ad7150_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, chip);
+ 
+ 	chip->client = client;
+-	chip->name = id->name;
+ 
+ 	chip->indio_dev = iio_allocate_device(0);
+ 	if (chip->indio_dev == NULL) {
+@@ -736,6 +722,7 @@ static int __devinit ad7150_probe(struct i2c_client *client,
+ 	}
+ 
+ 	/* Echipabilish that the iio_dev is a child of the i2c device */
++	chip->indio_dev->name = id->name;
+ 	chip->indio_dev->dev.parent = &client->dev;
+ 	chip->indio_dev->attrs = &ad7150_attribute_group;
+ 	chip->indio_dev->event_attrs = &ad7150_event_attribute_group;
+diff --git a/drivers/staging/iio/adc/ad7152.c b/drivers/staging/iio/adc/ad7152.c
+index 46a0b67..fe85219b 100644
+--- a/drivers/staging/iio/adc/ad7152.c
++++ b/drivers/staging/iio/adc/ad7152.c
+@@ -54,7 +54,6 @@
+  */
+ 
+ struct ad7152_chip_info {
+-	const char *name;
+ 	struct i2c_client *client;
+ 	struct iio_dev *indio_dev;
+ 	u16 ch1_offset;     /* Channel 1 offset calibration coefficient */
+@@ -483,17 +482,6 @@ static IIO_DEV_ATTR_FILTER_RATE_SETUP(S_IRUGO | S_IWUSR,
+ 		ad7152_show_filter_rate_setup,
+ 		ad7152_store_filter_rate_setup);
+ 
+-static ssize_t ad7152_show_name(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7152_chip_info *chip = dev_info->dev_data;
+-	return sprintf(buf, "%s\n", chip->name);
+-}
+-
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad7152_show_name, NULL, 0);
+-
+ static struct attribute *ad7152_attributes[] = {
+ 	&iio_dev_attr_available_conversion_modes.dev_attr.attr,
+ 	&iio_dev_attr_conversion_mode.dev_attr.attr,
+@@ -506,7 +494,6 @@ static struct attribute *ad7152_attributes[] = {
+ 	&iio_dev_attr_ch1_setup.dev_attr.attr,
+ 	&iio_dev_attr_ch2_setup.dev_attr.attr,
+ 	&iio_dev_attr_filter_rate_setup.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -532,7 +519,6 @@ static int __devinit ad7152_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, chip);
+ 
+ 	chip->client = client;
+-	chip->name = id->name;
+ 
+ 	chip->indio_dev = iio_allocate_device(0);
+ 	if (chip->indio_dev == NULL) {
+@@ -541,6 +527,7 @@ static int __devinit ad7152_probe(struct i2c_client *client,
+ 	}
+ 
+ 	/* Echipabilish that the iio_dev is a child of the i2c device */
++	chip->indio_dev->name = id->name;
+ 	chip->indio_dev->dev.parent = &client->dev;
+ 	chip->indio_dev->attrs = &ad7152_attribute_group;
+ 	chip->indio_dev->dev_data = (void *)(chip);
+diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
+index 23ad18e..527311c 100644
+--- a/drivers/staging/iio/adc/ad7291.c
++++ b/drivers/staging/iio/adc/ad7291.c
+@@ -60,7 +60,6 @@
+  */
+ 
+ struct ad7291_chip_info {
+-	const char *name;
+ 	struct i2c_client *client;
+ 	struct iio_dev *indio_dev;
+ 	u16 command;
+@@ -434,17 +433,6 @@ static IIO_DEVICE_ATTR(channel_mask, S_IRUGO | S_IWUSR,
+ 		ad7291_store_channel_mask,
+ 		0);
+ 
+-static ssize_t ad7291_show_name(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7291_chip_info *chip = dev_info->dev_data;
+-	return sprintf(buf, "%s\n", chip->name);
+-}
+-
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad7291_show_name, NULL, 0);
+-
+ static struct attribute *ad7291_attributes[] = {
+ 	&iio_dev_attr_available_modes.dev_attr.attr,
+ 	&iio_dev_attr_mode.dev_attr.attr,
+@@ -455,7 +443,6 @@ static struct attribute *ad7291_attributes[] = {
+ 	&iio_dev_attr_t_average.dev_attr.attr,
+ 	&iio_dev_attr_voltage.dev_attr.attr,
+ 	&iio_dev_attr_channel_mask.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -784,7 +771,6 @@ static int __devinit ad7291_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, chip);
+ 
+ 	chip->client = client;
+-	chip->name = id->name;
+ 	chip->command = AD7291_NOISE_DELAY | AD7291_T_SENSE_MASK;
+ 
+ 	chip->indio_dev = iio_allocate_device(0);
+@@ -793,6 +779,7 @@ static int __devinit ad7291_probe(struct i2c_client *client,
+ 		goto error_free_chip;
+ 	}
+ 
++	chip->indio_dev->name = id->name;
+ 	chip->indio_dev->dev.parent = &client->dev;
+ 	chip->indio_dev->attrs = &ad7291_attribute_group;
+ 	chip->indio_dev->event_attrs = &ad7291_event_attribute_group;
+@@ -810,7 +797,7 @@ static int __devinit ad7291_probe(struct i2c_client *client,
+ 					   NULL,
+ 					   &ad7291_event_handler,
+ 					   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+-					   chip->name,
++					   id->name,
+ 					   chip->indio_dev);
+ 		if (ret)
+ 			goto error_unreg_dev;
+diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
+index 5a60481..5fe0dff 100644
+--- a/drivers/staging/iio/adc/ad7298_core.c
++++ b/drivers/staging/iio/adc/ad7298_core.c
+@@ -119,17 +119,6 @@ static ssize_t ad7298_show_scale(struct device *dev,
+ }
+ static IIO_DEVICE_ATTR(in_scale, S_IRUGO, ad7298_show_scale, NULL, 0);
+ 
+-static ssize_t ad7298_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7298_state *st = iio_dev_get_devdata(dev_info);
+-
+-	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
+-}
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad7298_show_name, NULL, 0);
+-
+ static struct attribute *ad7298_attributes[] = {
+ 	&iio_dev_attr_in0_raw.dev_attr.attr,
+ 	&iio_dev_attr_in1_raw.dev_attr.attr,
+@@ -141,7 +130,6 @@ static struct attribute *ad7298_attributes[] = {
+ 	&iio_dev_attr_in7_raw.dev_attr.attr,
+ 	&iio_dev_attr_in_scale.dev_attr.attr,
+ 	&iio_dev_attr_temp0_input.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -178,6 +166,7 @@ static int __devinit ad7298_probe(struct spi_device *spi)
+ 		goto error_disable_reg;
+ 	}
+ 
++	st->indio_dev->name = spi_get_device_id(spi)->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->attrs = &ad7298_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+diff --git a/drivers/staging/iio/adc/ad7314.c b/drivers/staging/iio/adc/ad7314.c
+index 00bf3f4..0ef6db4 100644
+--- a/drivers/staging/iio/adc/ad7314.c
++++ b/drivers/staging/iio/adc/ad7314.c
+@@ -47,7 +47,6 @@
+  */
+ 
+ struct ad7314_chip_info {
+-	const char *name;
+ 	struct spi_device *spi_dev;
+ 	struct iio_dev *indio_dev;
+ 	s64 last_timestamp;
+@@ -160,7 +159,7 @@ static ssize_t ad7314_show_temperature(struct device *dev,
+ 	if (chip->mode)
+ 		ad7314_spi_write(chip, chip->mode);
+ 
+-	if (strcmp(chip->name, "ad7314")) {
++	if (strcmp(dev_info->name, "ad7314")) {
+ 		data = (data & AD7314_TEMP_MASK) >>
+ 			AD7314_TEMP_OFFSET;
+ 		if (data & AD7314_TEMP_SIGN) {
+@@ -186,22 +185,10 @@ static ssize_t ad7314_show_temperature(struct device *dev,
+ 
+ static IIO_DEVICE_ATTR(temperature, S_IRUGO, ad7314_show_temperature, NULL, 0);
+ 
+-static ssize_t ad7314_show_name(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7314_chip_info *chip = dev_info->dev_data;
+-	return sprintf(buf, "%s\n", chip->name);
+-}
+-
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad7314_show_name, NULL, 0);
+-
+ static struct attribute *ad7314_attributes[] = {
+ 	&iio_dev_attr_available_modes.dev_attr.attr,
+ 	&iio_dev_attr_mode.dev_attr.attr,
+ 	&iio_dev_attr_temperature.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -227,7 +214,6 @@ static int __devinit ad7314_probe(struct spi_device *spi_dev)
+ 	dev_set_drvdata(&spi_dev->dev, chip);
+ 
+ 	chip->spi_dev = spi_dev;
+-	chip->name = spi_dev->modalias;
+ 
+ 	chip->indio_dev = iio_allocate_device(0);
+ 	if (chip->indio_dev == NULL) {
+@@ -235,6 +221,7 @@ static int __devinit ad7314_probe(struct spi_device *spi_dev)
+ 		goto error_free_chip;
+ 	}
+ 
++	chip->indio_dev->name = spi_get_device_id(spi_dev)->name;
+ 	chip->indio_dev->dev.parent = &spi_dev->dev;
+ 	chip->indio_dev->attrs = &ad7314_attribute_group;
+ 	chip->indio_dev->dev_data = (void *)chip;
+@@ -245,7 +232,7 @@ static int __devinit ad7314_probe(struct spi_device *spi_dev)
+ 		goto error_free_dev;
+ 
+ 	dev_info(&spi_dev->dev, "%s temperature sensor registered.\n",
+-			 chip->name);
++			 chip->indio_dev->name);
+ 
+ 	return 0;
  error_free_dev:
-@@ -594,10 +554,8 @@ static int adis16201_remove(struct spi_device *spi)
- 	struct adis16201_state *st = spi_get_drvdata(spi);
- 	struct iio_dev *indio_dev = st->indio_dev;
+diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
+index efeb0dc..f26f7a1 100644
+--- a/drivers/staging/iio/adc/ad7476_core.c
++++ b/drivers/staging/iio/adc/ad7476_core.c
+@@ -69,26 +69,6 @@ static int ad7476_read_raw(struct iio_dev *dev_info,
+ 	return -EINVAL;
+ }
  
--	flush_scheduled_work();
+-static ssize_t ad7476_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7476_state *st = iio_dev_get_devdata(dev_info);
 -
- 	adis16201_remove_trigger(indio_dev);
--	adis16201_uninitialize_ring(indio_dev->ring);
-+	iio_ring_buffer_unregister(indio_dev->ring);
- 	iio_device_unregister(indio_dev);
- 	adis16201_unconfigure_ring(indio_dev);
- 	kfree(st->tx);
-diff --git a/drivers/staging/iio/accel/adis16201_ring.c b/drivers/staging/iio/accel/adis16201_ring.c
-index d0998b2..5405a38 100644
---- a/drivers/staging/iio/accel/adis16201_ring.c
-+++ b/drivers/staging/iio/accel/adis16201_ring.c
-@@ -1,14 +1,11 @@
- #include <linux/interrupt.h>
- #include <linux/irq.h>
--#include <linux/gpio.h>
--#include <linux/workqueue.h>
- #include <linux/mutex.h>
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/spi/spi.h>
- #include <linux/slab.h>
- #include <linux/sysfs.h>
--#include <linux/list.h>
- 
- #include "../iio.h"
- #include "../sysfs.h"
-@@ -17,63 +14,15 @@
- #include "../trigger.h"
- #include "adis16201.h"
- 
--static IIO_SCAN_EL_C(in_supply, ADIS16201_SCAN_SUPPLY, ADIS16201_SUPPLY_OUT, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(in_supply, u, 12, 16);
--static IIO_SCAN_EL_C(accel_x, ADIS16201_SCAN_ACC_X, ADIS16201_XACCL_OUT, NULL);
--static IIO_SCAN_EL_C(accel_y, ADIS16201_SCAN_ACC_Y, ADIS16201_YACCL_OUT, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(accel, s, 14, 16);
--static IIO_SCAN_EL_C(in0, ADIS16201_SCAN_AUX_ADC, ADIS16201_AUX_ADC, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(in0, u, 12, 16);
--static IIO_SCAN_EL_C(temp, ADIS16201_SCAN_TEMP, ADIS16201_TEMP_OUT, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(temp, u, 12, 16);
--static IIO_SCAN_EL_C(incli_x, ADIS16201_SCAN_INCLI_X,
--		     ADIS16201_XINCL_OUT, NULL);
--static IIO_SCAN_EL_C(incli_y, ADIS16201_SCAN_INCLI_Y,
--		     ADIS16201_YINCL_OUT, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(incli, s, 14, 16);
--static IIO_SCAN_EL_TIMESTAMP(7);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
+-	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
+-}
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad7476_show_name, NULL, 0);
 -
--static struct attribute *adis16201_scan_el_attrs[] = {
--	&iio_scan_el_in_supply.dev_attr.attr,
--	&iio_const_attr_in_supply_index.dev_attr.attr,
--	&iio_const_attr_in_supply_type.dev_attr.attr,
--	&iio_scan_el_accel_x.dev_attr.attr,
--	&iio_const_attr_accel_x_index.dev_attr.attr,
--	&iio_scan_el_accel_y.dev_attr.attr,
--	&iio_const_attr_accel_y_index.dev_attr.attr,
--	&iio_const_attr_accel_type.dev_attr.attr,
--	&iio_scan_el_in0.dev_attr.attr,
--	&iio_const_attr_in0_index.dev_attr.attr,
--	&iio_const_attr_in0_type.dev_attr.attr,
--	&iio_scan_el_temp.dev_attr.attr,
--	&iio_const_attr_temp_index.dev_attr.attr,
--	&iio_const_attr_temp_type.dev_attr.attr,
--	&iio_scan_el_incli_x.dev_attr.attr,
--	&iio_const_attr_incli_x_index.dev_attr.attr,
--	&iio_scan_el_incli_y.dev_attr.attr,
--	&iio_const_attr_incli_y_index.dev_attr.attr,
--	&iio_const_attr_incli_type.dev_attr.attr,
--	&iio_scan_el_timestamp.dev_attr.attr,
--	&iio_const_attr_timestamp_index.dev_attr.attr,
--	&iio_const_attr_timestamp_type.dev_attr.attr,
+-static struct attribute *ad7476_attributes[] = {
+-	&iio_dev_attr_name.dev_attr.attr,
 -	NULL,
 -};
 -
--static struct attribute_group adis16201_scan_el_group = {
--	.attrs = adis16201_scan_el_attrs,
--	.name = "scan_elements",
+-static const struct attribute_group ad7476_attribute_group = {
+-	.attrs = ad7476_attributes,
 -};
+-
+ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+ 	[ID_AD7466] = {
+ 		.channel[0] = IIO_CHAN_EV(IIO_IN, 0,
+@@ -186,7 +166,7 @@ static int __devinit ad7476_probe(struct spi_device *spi)
  
- /**
-  * adis16201_read_ring_data() read data registers which will be placed into ring
-  * @dev: device associated with child of actual device (iio_dev or iio_trig)
-  * @rx: somewhere to pass back the value read
-  **/
--static int adis16201_read_ring_data(struct device *dev, u8 *rx)
-+static int adis16201_read_ring_data(struct iio_dev *indio_dev, u8 *rx)
- {
- 	struct spi_message msg;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct adis16201_state *st = iio_dev_get_devdata(indio_dev);
- 	struct spi_transfer xfers[ADIS16201_OUTPUTS + 1];
- 	int ret;
-@@ -90,7 +39,8 @@ static int adis16201_read_ring_data(struct device *dev, u8 *rx)
- 		xfers[i].len = 2;
- 		xfers[i].delay_usecs = 20;
- 		xfers[i].tx_buf = st->tx + 2 * i;
--		st->tx[2 * i] = ADIS16201_READ_REG(ADIS16201_SUPPLY_OUT + 2 * i);
-+		st->tx[2 * i] = ADIS16201_READ_REG(ADIS16201_SUPPLY_OUT +
-+						   2 * i);
- 		st->tx[2 * i + 1] = 0;
- 		if (i >= 1)
- 			xfers[i].rx_buf = rx + 2 * (i - 1);
-@@ -127,7 +77,7 @@ static irqreturn_t adis16201_trigger_handler(int irq, void *p)
+ 	/* Establish that the iio_dev is a child of the spi device */
+ 	st->indio_dev->dev.parent = &spi->dev;
+-	st->indio_dev->attrs = &ad7476_attribute_group;
++	st->indio_dev->name = spi_get_device_id(spi)->name;
+ 	st->indio_dev->dev_data = (void *)(st);
+ 	st->indio_dev->driver_module = THIS_MODULE;
+ 	st->indio_dev->modes = INDIO_DIRECT_MODE;
+diff --git a/drivers/staging/iio/adc/ad7745.c b/drivers/staging/iio/adc/ad7745.c
+index cb1fc61..afa2648 100644
+--- a/drivers/staging/iio/adc/ad7745.c
++++ b/drivers/staging/iio/adc/ad7745.c
+@@ -53,7 +53,6 @@
+  */
+ 
+ struct ad774x_chip_info {
+-	const char *name;
+ 	struct i2c_client *client;
+ 	struct iio_dev *indio_dev;
+ 	bool inter;
+@@ -499,17 +498,6 @@ static IIO_DEV_ATTR_CAP_GAIN(S_IRUGO | S_IWUSR,
+ 		ad774x_show_cap_gain,
+ 		ad774x_store_cap_gain);
+ 
+-static ssize_t ad774x_show_name(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = dev_info->dev_data;
+-	return sprintf(buf, "%s\n", chip->name);
+-}
+-
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad774x_show_name, NULL, 0);
+-
+ static struct attribute *ad774x_attributes[] = {
+ 	&iio_dev_attr_available_conversion_modes.dev_attr.attr,
+ 	&iio_dev_attr_conversion_mode.dev_attr.attr,
+@@ -523,7 +511,6 @@ static struct attribute *ad774x_attributes[] = {
+ 	&iio_dev_attr_cap0_raw.dev_attr.attr,
+ 	&iio_dev_attr_capdac0_raw.dev_attr.attr,
+ 	&iio_dev_attr_capdac1_raw.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -596,7 +583,6 @@ static int __devinit ad774x_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, chip);
+ 
+ 	chip->client = client;
+-	chip->name = id->name;
+ 
+ 	chip->indio_dev = iio_allocate_device(0);
+ 	if (chip->indio_dev == NULL) {
+@@ -605,6 +591,7 @@ static int __devinit ad774x_probe(struct i2c_client *client,
  	}
  
- 	if (ring->scan_count)
--		if (adis16201_read_ring_data(&st->indio_dev->dev, st->rx) >= 0)
-+		if (adis16201_read_ring_data(st->indio_dev, st->rx) >= 0)
- 			for (; i < ring->scan_count; i++)
- 				data[i] = be16_to_cpup(
- 					(__be16 *)&(st->rx[i*2]));
-@@ -136,9 +86,7 @@ static irqreturn_t adis16201_trigger_handler(int irq, void *p)
- 	if (ring->scan_timestamp)
- 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
- 
--	ring->access.store_to(ring,
--			      (u8 *)data,
--			      pf->timestamp);
-+	ring->access.store_to(ring, (u8 *)data, pf->timestamp);
- 
- 	iio_trigger_notify_done(st->indio_dev->trig);
- 	kfree(data);
-@@ -167,7 +115,6 @@ int adis16201_configure_ring(struct iio_dev *indio_dev)
- 	/* Effectively select the ring buffer implementation */
- 	iio_ring_sw_register_funcs(&ring->access);
- 	ring->bpe = 2;
--	ring->scan_el_attrs = &adis16201_scan_el_group;
- 	ring->scan_timestamp = true;
- 	ring->preenable = &iio_sw_ring_preenable;
- 	ring->postenable = &iio_triggered_ring_postenable;
-@@ -175,13 +122,13 @@ int adis16201_configure_ring(struct iio_dev *indio_dev)
- 	ring->owner = THIS_MODULE;
- 
- 	/* Set default scan mode */
--	iio_scan_mask_set(ring, iio_scan_el_in_supply.number);
--	iio_scan_mask_set(ring, iio_scan_el_accel_x.number);
--	iio_scan_mask_set(ring, iio_scan_el_accel_y.number);
--	iio_scan_mask_set(ring, iio_scan_el_temp.number);
--	iio_scan_mask_set(ring, iio_scan_el_in0.number);
--	iio_scan_mask_set(ring, iio_scan_el_incli_x.number);
--	iio_scan_mask_set(ring, iio_scan_el_incli_y.number);
-+	iio_scan_mask_set(ring,	ADIS16201_SCAN_SUPPLY);
-+	iio_scan_mask_set(ring, ADIS16201_SCAN_ACC_X);
-+	iio_scan_mask_set(ring, ADIS16201_SCAN_ACC_Y);
-+	iio_scan_mask_set(ring, ADIS16201_SCAN_AUX_ADC);
-+	iio_scan_mask_set(ring, ADIS16201_SCAN_TEMP);
-+	iio_scan_mask_set(ring, ADIS16201_SCAN_INCLI_X);
-+	iio_scan_mask_set(ring, ADIS16201_SCAN_INCLI_Y);
- 
- 	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
- 	if (indio_dev->pollfunc == NULL) {
-@@ -207,13 +154,3 @@ error_iio_sw_rb_free:
- 	iio_sw_rb_free(indio_dev->ring);
- 	return ret;
+ 	/* Establish that the iio_dev is a child of the i2c device */
++	chip->indio_dev->name = id->name;
+ 	chip->indio_dev->dev.parent = &client->dev;
+ 	chip->indio_dev->attrs = &ad774x_attribute_group;
+ 	chip->indio_dev->event_attrs = &ad774x_event_attribute_group;
+diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+index ab23c5c..f828e83 100644
+--- a/drivers/staging/iio/adc/ad7780.c
++++ b/drivers/staging/iio/adc/ad7780.c
+@@ -132,21 +132,9 @@ static ssize_t ad7780_show_scale(struct device *dev,
  }
--
--int adis16201_initialize_ring(struct iio_ring_buffer *ring)
+ static IIO_DEVICE_ATTR(in_scale, S_IRUGO, ad7780_show_scale, NULL, 0);
+ 
+-static ssize_t ad7780_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
 -{
--	return iio_ring_buffer_register(ring, 0);
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7780_state *st = iio_dev_get_devdata(dev_info);
+-
+-	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
+-}
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad7780_show_name, NULL, 0);
+-
+ static struct attribute *ad7780_attributes[] = {
+ 	&iio_dev_attr_in0_raw.dev_attr.attr,
+ 	&iio_dev_attr_in_scale.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -229,6 +217,7 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+ 
+ 	/* Establish that the iio_dev is a child of the spi device */
+ 	st->indio_dev->dev.parent = &spi->dev;
++	st->indio_dev->name = spi_get_device_id(spi)->name;
+ 	st->indio_dev->attrs = &ad7780_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+ 	st->indio_dev->driver_module = THIS_MODULE;
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index a062ec3..bee4209 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -42,7 +42,6 @@
+  */
+ 
+ struct ad7816_chip_info {
+-	const char *name;
+ 	struct spi_device *spi_dev;
+ 	struct iio_dev *indio_dev;
+ 	u16 rdwr_pin;
+@@ -181,13 +180,13 @@ static ssize_t ad7816_store_channel(struct device *dev,
+ 
+ 	if (data > AD7816_CS_MAX && data != AD7816_CS_MASK) {
+ 		dev_err(&chip->spi_dev->dev, "Invalid channel id %lu for %s.\n",
+-			data, chip->name);
++			data, dev_info->name);
+ 		return -EINVAL;
+-	} else if (strcmp(chip->name, "ad7818") == 0 && data > 1) {
++	} else if (strcmp(dev_info->name, "ad7818") == 0 && data > 1) {
+ 		dev_err(&chip->spi_dev->dev,
+ 			"Invalid channel id %lu for ad7818.\n", data);
+ 		return -EINVAL;
+-	} else if (strcmp(chip->name, "ad7816") == 0 && data > 0) {
++	} else if (strcmp(dev_info->name, "ad7816") == 0 && data > 0) {
+ 		dev_err(&chip->spi_dev->dev,
+ 			"Invalid channel id %lu for ad7816.\n", data);
+ 		return -EINVAL;
+@@ -232,23 +231,11 @@ static ssize_t ad7816_show_value(struct device *dev,
+ 
+ static IIO_DEVICE_ATTR(value, S_IRUGO, ad7816_show_value, NULL, 0);
+ 
+-static ssize_t ad7816_show_name(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7816_chip_info *chip = dev_info->dev_data;
+-	return sprintf(buf, "%s\n", chip->name);
 -}
 -
--void adis16201_uninitialize_ring(struct iio_ring_buffer *ring)
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad7816_show_name, NULL, 0);
+-
+ static struct attribute *ad7816_attributes[] = {
+ 	&iio_dev_attr_available_modes.dev_attr.attr,
+ 	&iio_dev_attr_mode.dev_attr.attr,
+ 	&iio_dev_attr_channel.dev_attr.attr,
+ 	&iio_dev_attr_value.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -366,28 +353,27 @@ static int __devinit ad7816_probe(struct spi_device *spi_dev)
+ 	dev_set_drvdata(&spi_dev->dev, chip);
+ 
+ 	chip->spi_dev = spi_dev;
+-	chip->name = spi_dev->modalias;
+ 	for (i = 0; i <= AD7816_CS_MAX; i++)
+ 		chip->oti_data[i] = 203;
+ 	chip->rdwr_pin = pins[0];
+ 	chip->convert_pin = pins[1];
+ 	chip->busy_pin = pins[2];
+ 
+-	ret = gpio_request(chip->rdwr_pin, chip->name);
++	ret = gpio_request(chip->rdwr_pin, spi_get_device_id(spi_dev)->name);
+ 	if (ret) {
+ 		dev_err(&spi_dev->dev, "Fail to request rdwr gpio PIN %d.\n",
+ 			chip->rdwr_pin);
+ 		goto error_free_chip;
+ 	}
+ 	gpio_direction_input(chip->rdwr_pin);
+-	ret = gpio_request(chip->convert_pin, chip->name);
++	ret = gpio_request(chip->convert_pin, spi_get_device_id(spi_dev)->name);
+ 	if (ret) {
+ 		dev_err(&spi_dev->dev, "Fail to request convert gpio PIN %d.\n",
+ 			chip->convert_pin);
+ 		goto error_free_gpio_rdwr;
+ 	}
+ 	gpio_direction_input(chip->convert_pin);
+-	ret = gpio_request(chip->busy_pin, chip->name);
++	ret = gpio_request(chip->busy_pin, spi_get_device_id(spi_dev)->name);
+ 	if (ret) {
+ 		dev_err(&spi_dev->dev, "Fail to request busy gpio PIN %d.\n",
+ 			chip->busy_pin);
+@@ -400,7 +386,7 @@ static int __devinit ad7816_probe(struct spi_device *spi_dev)
+ 		ret = -ENOMEM;
+ 		goto error_free_gpio;
+ 	}
+-
++	chip->indio_dev->name = spi_get_device_id(spi_dev)->name;
+ 	chip->indio_dev->dev.parent = &spi_dev->dev;
+ 	chip->indio_dev->attrs = &ad7816_attribute_group;
+ 	chip->indio_dev->event_attrs = &ad7816_event_attribute_group;
+@@ -419,14 +405,14 @@ static int __devinit ad7816_probe(struct spi_device *spi_dev)
+ 					   NULL,
+ 					   &ad7816_event_handler,
+ 					   IRQF_TRIGGER_LOW,
+-					   chip->name,
++					   chip->indio_dev->name,
+ 					   chip->indio_dev);
+ 		if (ret)
+ 			goto error_unreg_dev;
+ 	}
+ 
+ 	dev_info(&spi_dev->dev, "%s temperature sensor and ADC registered.\n",
+-			 chip->name);
++			 chip->indio_dev->name);
+ 
+ 	return 0;
+ 
+diff --git a/drivers/staging/iio/adc/ad7887_core.c b/drivers/staging/iio/adc/ad7887_core.c
+index 42e9cd7..27adff4 100644
+--- a/drivers/staging/iio/adc/ad7887_core.c
++++ b/drivers/staging/iio/adc/ad7887_core.c
+@@ -72,22 +72,10 @@ static ssize_t ad7887_show_scale(struct device *dev,
+ }
+ static IIO_DEVICE_ATTR(in_scale, S_IRUGO, ad7887_show_scale, NULL, 0);
+ 
+-static ssize_t ad7887_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
 -{
--	iio_ring_buffer_unregister(ring);
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7887_state *st = iio_dev_get_devdata(dev_info);
+-
+-	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
 -}
-diff --git a/drivers/staging/iio/accel/adis16201_trigger.c b/drivers/staging/iio/accel/adis16201_trigger.c
-index a4fb410..bfd43c5 100644
---- a/drivers/staging/iio/accel/adis16201_trigger.c
-+++ b/drivers/staging/iio/accel/adis16201_trigger.c
-@@ -4,7 +4,6 @@
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/sysfs.h>
--#include <linux/list.h>
- #include <linux/spi/spi.h>
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad7887_show_name, NULL, 0);
+-
+ static struct attribute *ad7887_attributes[] = {
+ 	&iio_dev_attr_in0_raw.dev_attr.attr,
+ 	&iio_dev_attr_in1_raw.dev_attr.attr,
+ 	&iio_dev_attr_in_scale.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
  
- #include "../iio.h"
-@@ -33,7 +32,7 @@ static int adis16201_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 	struct iio_dev *indio_dev = st->indio_dev;
+@@ -160,6 +148,7 @@ static int __devinit ad7887_probe(struct spi_device *spi)
  
- 	dev_dbg(&indio_dev->dev, "%s (%d)\n", __func__, state);
--	return adis16201_set_irq(&st->indio_dev->dev, state);
-+	return adis16201_set_irq(st->indio_dev, state);
+ 	/* Estabilish that the iio_dev is a child of the spi device */
+ 	st->indio_dev->dev.parent = &spi->dev;
++	st->indio_dev->name = spi_get_device_id(spi)->name;
+ 	st->indio_dev->attrs = &ad7887_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+ 	st->indio_dev->driver_module = THIS_MODULE;
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index dadb320..70006ec 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -426,23 +426,11 @@ static ssize_t ad799x_show_scale(struct device *dev,
+ 
+ static IIO_DEVICE_ATTR(in_scale, S_IRUGO, ad799x_show_scale, NULL, 0);
+ 
+-static ssize_t ad799x_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad799x_state *st = iio_dev_get_devdata(dev_info);
+-	return sprintf(buf, "%s\n", st->client->name);
+-}
+-
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad799x_show_name, NULL, 0);
+-
+ static struct attribute *ad7991_5_9_3_4_device_attrs[] = {
+ 	&iio_dev_attr_in0_raw.dev_attr.attr,
+ 	&iio_dev_attr_in1_raw.dev_attr.attr,
+ 	&iio_dev_attr_in2_raw.dev_attr.attr,
+ 	&iio_dev_attr_in3_raw.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_in_scale.dev_attr.attr,
+ 	NULL
+ };
+@@ -475,7 +463,6 @@ static struct attribute_group ad7991_5_9_3_4_scan_el_group = {
+ static struct attribute *ad7992_device_attrs[] = {
+ 	&iio_dev_attr_in0_raw.dev_attr.attr,
+ 	&iio_dev_attr_in1_raw.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_in_scale.dev_attr.attr,
+ 	NULL
+ };
+@@ -510,7 +497,6 @@ static struct attribute *ad7997_8_device_attrs[] = {
+ 	&iio_dev_attr_in5_raw.dev_attr.attr,
+ 	&iio_dev_attr_in6_raw.dev_attr.attr,
+ 	&iio_dev_attr_in7_raw.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_in_scale.dev_attr.attr,
+ 	NULL
+ };
+@@ -794,6 +780,7 @@ static int __devinit ad799x_probe(struct i2c_client *client,
+ 
+ 	/* Estabilish that the iio_dev is a child of the i2c device */
+ 	st->indio_dev->dev.parent = &client->dev;
++	st->indio_dev->name = id->name;
+ 	st->indio_dev->attrs = st->chip_info->dev_attrs;
+ 	st->indio_dev->event_attrs = st->chip_info->event_attrs;
+ 
+diff --git a/drivers/staging/iio/adc/adt7310.c b/drivers/staging/iio/adc/adt7310.c
+index 9b2a8ec..2ade485 100644
+--- a/drivers/staging/iio/adc/adt7310.c
++++ b/drivers/staging/iio/adc/adt7310.c
+@@ -79,7 +79,6 @@
+  */
+ 
+ struct adt7310_chip_info {
+-	const char *name;
+ 	struct spi_device *spi_dev;
+ 	struct iio_dev *indio_dev;
+ 	u8  config;
+@@ -375,24 +374,12 @@ static ssize_t adt7310_show_value(struct device *dev,
+ 
+ static IIO_DEVICE_ATTR(value, S_IRUGO, adt7310_show_value, NULL, 0);
+ 
+-static ssize_t adt7310_show_name(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct adt7310_chip_info *chip = dev_info->dev_data;
+-	return sprintf(buf, "%s\n", chip->name);
+-}
+-
+-static IIO_DEVICE_ATTR(name, S_IRUGO, adt7310_show_name, NULL, 0);
+-
+ static struct attribute *adt7310_attributes[] = {
+ 	&iio_dev_attr_available_modes.dev_attr.attr,
+ 	&iio_dev_attr_mode.dev_attr.attr,
+ 	&iio_dev_attr_resolution.dev_attr.attr,
+ 	&iio_dev_attr_id.dev_attr.attr,
+ 	&iio_dev_attr_value.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -781,7 +768,6 @@ static int __devinit adt7310_probe(struct spi_device *spi_dev)
+ 	dev_set_drvdata(&spi_dev->dev, chip);
+ 
+ 	chip->spi_dev = spi_dev;
+-	chip->name = spi_dev->modalias;
+ 
+ 	chip->indio_dev = iio_allocate_device(0);
+ 	if (chip->indio_dev == NULL) {
+@@ -790,6 +776,7 @@ static int __devinit adt7310_probe(struct spi_device *spi_dev)
+ 	}
+ 
+ 	chip->indio_dev->dev.parent = &spi_dev->dev;
++	chip->indio_dev->name = spi_get_device_id(spi_dev)->name;
+ 	chip->indio_dev->attrs = &adt7310_attribute_group;
+ 	chip->indio_dev->event_attrs = adt7310_event_attribute_group;
+ 	chip->indio_dev->dev_data = (void *)chip;
+@@ -811,7 +798,7 @@ static int __devinit adt7310_probe(struct spi_device *spi_dev)
+ 					   NULL,
+ 					   &adt7310_event_handler,
+ 					   irq_flags,
+-					   chip->name,
++					   chip->indio_dev->name,
+ 					   chip->indio_dev);
+ 		if (ret)
+ 			goto error_unreg_dev;
+@@ -823,7 +810,7 @@ static int __devinit adt7310_probe(struct spi_device *spi_dev)
+ 					   NULL,
+ 					   &adt7310_event_handler,
+ 					   adt7310_platform_data[1],
+-					   chip->name,
++					   chip->indio_dev->name,
+ 					   chip->indio_dev);
+ 		if (ret)
+ 			goto error_unreg_ct_irq;
+@@ -852,7 +839,7 @@ static int __devinit adt7310_probe(struct spi_device *spi_dev)
+ 	}
+ 
+ 	dev_info(&spi_dev->dev, "%s temperature sensor registered.\n",
+-			chip->name);
++			chip->indio_dev->name);
+ 
+ 	return 0;
+ 
+diff --git a/drivers/staging/iio/adc/adt7410.c b/drivers/staging/iio/adc/adt7410.c
+index dc59130..c102b42 100644
+--- a/drivers/staging/iio/adc/adt7410.c
++++ b/drivers/staging/iio/adc/adt7410.c
+@@ -74,7 +74,6 @@
+  */
+ 
+ struct adt7410_chip_info {
+-	const char *name;
+ 	struct i2c_client *client;
+ 	struct iio_dev *indio_dev;
+ 	u8  config;
+@@ -343,24 +342,12 @@ static ssize_t adt7410_show_value(struct device *dev,
+ 
+ static IIO_DEVICE_ATTR(value, S_IRUGO, adt7410_show_value, NULL, 0);
+ 
+-static ssize_t adt7410_show_name(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct adt7410_chip_info *chip = dev_info->dev_data;
+-	return sprintf(buf, "%s\n", chip->name);
+-}
+-
+-static IIO_DEVICE_ATTR(name, S_IRUGO, adt7410_show_name, NULL, 0);
+-
+ static struct attribute *adt7410_attributes[] = {
+ 	&iio_dev_attr_available_modes.dev_attr.attr,
+ 	&iio_dev_attr_mode.dev_attr.attr,
+ 	&iio_dev_attr_resolution.dev_attr.attr,
+ 	&iio_dev_attr_id.dev_attr.attr,
+ 	&iio_dev_attr_value.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -748,14 +735,13 @@ static int __devinit adt7410_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, chip);
+ 
+ 	chip->client = client;
+-	chip->name = id->name;
+ 
+ 	chip->indio_dev = iio_allocate_device(0);
+ 	if (chip->indio_dev == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_free_chip;
+ 	}
+-
++	chip->indio_dev->name = id->name;
+ 	chip->indio_dev->dev.parent = &client->dev;
+ 	chip->indio_dev->attrs = &adt7410_attribute_group;
+ 	chip->indio_dev->event_attrs = adt7410_event_attribute_group;
+@@ -774,7 +760,7 @@ static int __devinit adt7410_probe(struct i2c_client *client,
+ 					   NULL,
+ 					   &adt7410_event_handler,
+ 					   IRQF_TRIGGER_LOW,
+-					   chip->name,
++					   id->name,
+ 					   chip->indio_dev);
+ 		if (ret)
+ 			goto error_unreg_dev;
+@@ -786,7 +772,7 @@ static int __devinit adt7410_probe(struct i2c_client *client,
+ 					   NULL,
+ 					   &adt7410_event_handler,
+ 					   adt7410_platform_data[1],
+-					   chip->name,
++					   id->name,
+ 					   chip->indio_dev);
+ 		if (ret)
+ 			goto error_unreg_ct_irq;
+diff --git a/drivers/staging/iio/adc/adt75.c b/drivers/staging/iio/adc/adt75.c
+index cf0e5e4..f0f62bc 100644
+--- a/drivers/staging/iio/adc/adt75.c
++++ b/drivers/staging/iio/adc/adt75.c
+@@ -52,7 +52,6 @@
+  */
+ 
+ struct adt75_chip_info {
+-	const char *name;
+ 	struct i2c_client *client;
+ 	struct iio_dev *indio_dev;
+ 	u8  config;
+@@ -245,23 +244,11 @@ static ssize_t adt75_show_value(struct device *dev,
+ 
+ static IIO_DEVICE_ATTR(value, S_IRUGO, adt75_show_value, NULL, 0);
+ 
+-static ssize_t adt75_show_name(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct adt75_chip_info *chip = dev_info->dev_data;
+-	return sprintf(buf, "%s\n", chip->name);
+-}
+-
+-static IIO_DEVICE_ATTR(name, S_IRUGO, adt75_show_name, NULL, 0);
+-
+ static struct attribute *adt75_attributes[] = {
+ 	&iio_dev_attr_available_modes.dev_attr.attr,
+ 	&iio_dev_attr_mode.dev_attr.attr,
+ 	&iio_dev_attr_oneshot.dev_attr.attr,
+ 	&iio_dev_attr_value.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -565,7 +552,6 @@ static int __devinit adt75_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, chip);
+ 
+ 	chip->client = client;
+-	chip->name = id->name;
+ 
+ 	chip->indio_dev = iio_allocate_device(0);
+ 	if (chip->indio_dev == NULL) {
+@@ -573,6 +559,7 @@ static int __devinit adt75_probe(struct i2c_client *client,
+ 		goto error_free_chip;
+ 	}
+ 
++	chip->indio_dev->name = id->name;
+ 	chip->indio_dev->dev.parent = &client->dev;
+ 	chip->indio_dev->attrs = &adt75_attribute_group;
+ 	chip->indio_dev->event_attrs = &adt75_event_attribute_group;
+@@ -590,7 +577,7 @@ static int __devinit adt75_probe(struct i2c_client *client,
+ 					   NULL,
+ 					   &adt75_event_handler,
+ 					   IRQF_TRIGGER_LOW,
+-					   chip->name,
++					   chip->indio_dev->name,
+ 					   chip->indio_dev);
+ 		if (ret)
+ 			goto error_unreg_dev;
+@@ -612,7 +599,7 @@ static int __devinit adt75_probe(struct i2c_client *client,
+ 	}
+ 
+ 	dev_info(&client->dev, "%s temperature sensor registered.\n",
+-			 id->name);
++			 chip->indio_dev->name);
+ 
+ 	return 0;
+ error_unreg_irq:
+diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
+index 48a2a28..ab07a59 100644
+--- a/drivers/staging/iio/adc/max1363_core.c
++++ b/drivers/staging/iio/adc/max1363_core.c
+@@ -245,16 +245,6 @@ static int max1363_read_raw(struct iio_dev *indio_dev,
+ 	return 0;
  }
  
- int adis16201_probe_trigger(struct iio_dev *indio_dev)
+-static ssize_t max1363_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
+-{
+-	struct max1363_state *st = iio_priv(dev_get_drvdata(dev));
+-	return sprintf(buf, "%s\n", st->client->name);
+-}
+-
+-static IIO_DEVICE_ATTR(name, S_IRUGO, max1363_show_name, NULL, 0);
+-
+ /* Applies to max1363 */
+ static const enum max1363_modes max1363_mode_list[] = {
+ 	_s0, _s1, _s2, _s3,
+@@ -360,15 +350,6 @@ static struct iio_chan_spec max1036_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(8)
+ };
+ 
+-static struct attribute *max1363_device_attrs[] = {
+-	&iio_dev_attr_name.dev_attr.attr,
+-	NULL
+-};
+-
+-static struct attribute_group max1363_dev_attr_group = {
+-	.attrs = max1363_device_attrs,
+-};
+-
+ /* Appies to max1236, max1237 */
+ static const enum max1363_modes max1236_mode_list[] = {
+ 	_s0, _s1, _s2, _s3,
+@@ -1369,7 +1350,7 @@ static int __devinit max1363_probe(struct i2c_client *client,
+ 			.modemask;
+ 	/* Estabilish that the iio_dev is a child of the i2c device */
+ 	indio_dev->dev.parent = &client->dev;
+-	indio_dev->attrs = &max1363_dev_attr_group;
++	indio_dev->name = id->name;
+ 	indio_dev->read_event_value = &max1363_read_thresh;
+ 	indio_dev->write_event_value = &max1363_write_thresh;
+ 	indio_dev->read_event_config = &max1363_read_event_config;
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index 9e96b5f..05b48b1 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -174,7 +174,6 @@
+  */
+ 
+ struct adt7316_chip_info {
+-	const char		*name;
+ 	struct iio_dev		*indio_dev;
+ 	struct adt7316_bus	bus;
+ 	u16			ldac_pin;
+@@ -1672,18 +1671,6 @@ static ssize_t adt7316_show_bus_type(struct device *dev,
+ 
+ static IIO_DEVICE_ATTR(bus_type, S_IRUGO, adt7316_show_bus_type, NULL, 0);
+ 
+-static ssize_t adt7316_show_name(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct adt7316_chip_info *chip = dev_info->dev_data;
+-
+-	return sprintf(buf, "%s\n", chip->name);
+-}
+-
+-static IIO_DEVICE_ATTR(name, S_IRUGO, adt7316_show_name, NULL, 0);
+-
+ static struct attribute *adt7316_attributes[] = {
+ 	&iio_dev_attr_all_modes.dev_attr.attr,
+ 	&iio_dev_attr_mode.dev_attr.attr,
+@@ -1720,7 +1707,6 @@ static struct attribute *adt7316_attributes[] = {
+ 	&iio_dev_attr_manufactorer_id.dev_attr.attr,
+ 	&iio_dev_attr_device_rev.dev_attr.attr,
+ 	&iio_dev_attr_bus_type.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -1769,7 +1755,6 @@ static struct attribute *adt7516_attributes[] = {
+ 	&iio_dev_attr_manufactorer_id.dev_attr.attr,
+ 	&iio_dev_attr_device_rev.dev_attr.attr,
+ 	&iio_dev_attr_bus_type.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -2118,7 +2103,6 @@ int __devinit adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+ 	dev_set_drvdata(dev, chip);
+ 
+ 	chip->bus = *bus;
+-	chip->name = name;
+ 
+ 	if (name[4] == '3')
+ 		chip->id = ID_ADT7316 + (name[6] - '6');
+@@ -2151,6 +2135,7 @@ int __devinit adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+ 		chip->indio_dev->attrs = &adt7316_attribute_group;
+ 		chip->indio_dev->event_attrs = &adt7316_event_attribute_group;
+ 	}
++	chip->indio_dev->name = name;
+ 	chip->indio_dev->dev_data = (void *)chip;
+ 	chip->indio_dev->driver_module = THIS_MODULE;
+ 	chip->indio_dev->num_interrupt_lines = 1;
+@@ -2168,7 +2153,7 @@ int __devinit adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+ 					   NULL,
+ 					   &adt7316_event_handler,
+ 					   chip->bus.irq_flags | IRQF_ONESHOT,
+-					   chip->name,
++					   chip->indio_dev->name,
+ 					   chip->indio_dev);
+ 		if (ret)
+ 			goto error_unreg_dev;
+@@ -2190,7 +2175,7 @@ int __devinit adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+ 	}
+ 
+ 	dev_info(dev, "%s temperature sensor, ADC and DAC registered.\n",
+-			chip->name);
++			chip->indio_dev->name);
+ 
+ 	return 0;
+ 
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index fd4fa54..22646a6 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -106,17 +106,6 @@ static ssize_t ad5446_show_scale(struct device *dev,
+ }
+ static IIO_DEVICE_ATTR(out_scale, S_IRUGO, ad5446_show_scale, NULL, 0);
+ 
+-static ssize_t ad5446_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad5446_state *st = iio_dev_get_devdata(dev_info);
+-
+-	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
+-}
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad5446_show_name, NULL, 0);
+-
+ static ssize_t ad5446_write_powerdown_mode(struct device *dev,
+ 				       struct device_attribute *attr,
+ 				       const char *buf, size_t len)
+@@ -204,7 +193,6 @@ static struct attribute *ad5446_attributes[] = {
+ 	&iio_dev_attr_out0_powerdown.dev_attr.attr,
+ 	&iio_dev_attr_out_powerdown_mode.dev_attr.attr,
+ 	&iio_const_attr_out_powerdown_mode_available.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -381,6 +369,7 @@ static int __devinit ad5446_probe(struct spi_device *spi)
+ 
+ 	/* Estabilish that the iio_dev is a child of the spi device */
+ 	st->indio_dev->dev.parent = &spi->dev;
++	st->indio_dev->name = spi_get_device_id(spi)->name;
+ 	st->indio_dev->attrs = &ad5446_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+ 	st->indio_dev->driver_module = THIS_MODULE;
+diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
+index 5534c41..351a9d3 100644
+--- a/drivers/staging/iio/dac/ad5504.c
++++ b/drivers/staging/iio/dac/ad5504.c
+@@ -170,17 +170,6 @@ static ssize_t ad5504_show_scale(struct device *dev,
+ }
+ static IIO_DEVICE_ATTR(out_scale, S_IRUGO, ad5504_show_scale, NULL, 0);
+ 
+-static ssize_t ad5504_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ad5504_state *st = iio_dev_get_devdata(indio_dev);
+-
+-	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
+-}
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad5504_show_name, NULL, 0);
+-
+ #define IIO_DEV_ATTR_OUT_RW_RAW(_num, _show, _store, _addr)		\
+ 	IIO_DEVICE_ATTR(out##_num##_raw,				\
+ 			S_IRUGO | S_IWUSR, _show, _store, _addr)
+@@ -226,7 +215,6 @@ static struct attribute *ad5504_attributes[] = {
+ 	&iio_dev_attr_out_powerdown_mode.dev_attr.attr,
+ 	&iio_const_attr_out_powerdown_mode_available.dev_attr.attr,
+ 	&iio_dev_attr_out_scale.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -240,7 +228,6 @@ static struct attribute *ad5501_attributes[] = {
+ 	&iio_dev_attr_out_powerdown_mode.dev_attr.attr,
+ 	&iio_const_attr_out_powerdown_mode_available.dev_attr.attr,
+ 	&iio_dev_attr_out_scale.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -310,7 +297,7 @@ static int __devinit ad5504_probe(struct spi_device *spi)
+ 		goto error_disable_reg;
+ 	}
+ 	st->indio_dev->dev.parent = &spi->dev;
+-
++	st->indio_dev->name = spi_get_device_id(st->spi)->name;
+ 	st->indio_dev->attrs = spi_get_device_id(st->spi)->driver_data
+ 		== ID_AD5501 ? &ad5501_attribute_group :
+ 		&ad5504_attribute_group;
+diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
+index cfb5828..b0e25e2 100644
+--- a/drivers/staging/iio/dac/ad5624r_spi.c
++++ b/drivers/staging/iio/dac/ad5624r_spi.c
+@@ -174,17 +174,6 @@ static ssize_t ad5624r_show_scale(struct device *dev,
+ }
+ static IIO_DEVICE_ATTR(out_scale, S_IRUGO, ad5624r_show_scale, NULL, 0);
+ 
+-static ssize_t ad5624r_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ad5624r_state *st = iio_dev_get_devdata(indio_dev);
+-
+-	return sprintf(buf, "%s\n", spi_get_device_id(st->us)->name);
+-}
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad5624r_show_name, NULL, 0);
+-
+ static IIO_DEV_ATTR_OUT_RAW(0, ad5624r_write_dac, AD5624R_ADDR_DAC0);
+ static IIO_DEV_ATTR_OUT_RAW(1, ad5624r_write_dac, AD5624R_ADDR_DAC1);
+ static IIO_DEV_ATTR_OUT_RAW(2, ad5624r_write_dac, AD5624R_ADDR_DAC2);
+@@ -222,7 +211,6 @@ static struct attribute *ad5624r_attributes[] = {
+ 	&iio_dev_attr_out_powerdown_mode.dev_attr.attr,
+ 	&iio_const_attr_out_powerdown_mode_available.dev_attr.attr,
+ 	&iio_dev_attr_out_scale.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -266,6 +254,7 @@ static int __devinit ad5624r_probe(struct spi_device *spi)
+ 		goto error_disable_reg;
+ 	}
+ 	st->indio_dev->dev.parent = &spi->dev;
++	st->indio_dev->name = spi_get_device_id(spi)->name;
+ 	st->indio_dev->attrs = &ad5624r_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+ 	st->indio_dev->driver_module = THIS_MODULE;
+diff --git a/drivers/staging/iio/dds/ad9832.c b/drivers/staging/iio/dds/ad9832.c
+index 9c6114f..4b5721c 100644
+--- a/drivers/staging/iio/dds/ad9832.c
++++ b/drivers/staging/iio/dds/ad9832.c
+@@ -153,17 +153,6 @@ error_ret:
+ 	return ret ? ret : len;
+ }
+ 
+-static ssize_t ad9832_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad9832_state *st = iio_dev_get_devdata(dev_info);
+-
+-	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
+-}
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad9832_show_name, NULL, 0);
+-
+ /**
+  * see dds.h for further information
+  */
+@@ -199,7 +188,6 @@ static struct attribute *ad9832_attributes[] = {
+ 	&iio_dev_attr_dds0_freqsymbol.dev_attr.attr,
+ 	&iio_dev_attr_dds0_phasesymbol.dev_attr.attr,
+ 	&iio_dev_attr_dds0_out_enable.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -243,6 +231,7 @@ static int __devinit ad9832_probe(struct spi_device *spi)
+ 	}
+ 
+ 	st->indio_dev->dev.parent = &spi->dev;
++	st->indio_dev->name = spi_get_device_id(spi)->name;
+ 	st->indio_dev->attrs = &ad9832_attribute_group;
+ 	st->indio_dev->dev_data = (void *) st;
+ 	st->indio_dev->driver_module = THIS_MODULE;
+diff --git a/drivers/staging/iio/dds/ad9834.c b/drivers/staging/iio/dds/ad9834.c
+index da5e302..ae03df2 100644
+--- a/drivers/staging/iio/dds/ad9834.c
++++ b/drivers/staging/iio/dds/ad9834.c
+@@ -198,17 +198,6 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
+ 	return ret ? ret : len;
+ }
+ 
+-static ssize_t ad9834_show_name(struct device *dev,
+-				 struct device_attribute *attr,
+-				 char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad9834_state *st = iio_dev_get_devdata(dev_info);
+-
+-	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
+-}
+-static IIO_DEVICE_ATTR(name, S_IRUGO, ad9834_show_name, NULL, 0);
+-
+ static ssize_t ad9834_show_out0_wavetype_available(struct device *dev,
+ 						struct device_attribute *attr,
+ 						char *buf)
+@@ -288,7 +277,6 @@ static struct attribute *ad9834_attributes[] = {
+ 	&iio_dev_attr_dds0_out1_wavetype.dev_attr.attr,
+ 	&iio_dev_attr_dds0_out0_wavetype_available.dev_attr.attr,
+ 	&iio_dev_attr_dds0_out1_wavetype_available.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -356,6 +344,7 @@ static int __devinit ad9834_probe(struct spi_device *spi)
+ 	}
+ 
+ 	st->indio_dev->dev.parent = &spi->dev;
++	st->indio_dev->name = spi_get_device_id(spi)->name;
+ 	st->indio_dev->attrs = &ad9834_attribute_group;
+ 	st->indio_dev->dev_data = (void *) st;
+ 	st->indio_dev->driver_module = THIS_MODULE;
+diff --git a/drivers/staging/iio/gyro/adis16080_core.c b/drivers/staging/iio/gyro/adis16080_core.c
+index 26af63f..fb48e9b 100644
+--- a/drivers/staging/iio/gyro/adis16080_core.c
++++ b/drivers/staging/iio/gyro/adis16080_core.c
+@@ -110,14 +110,12 @@ static IIO_DEVICE_ATTR(temp_raw, S_IRUGO, adis16080_read, NULL,
+ 		       ADIS16080_DIN_TEMP);
+ static IIO_DEV_ATTR_IN_RAW(0, adis16080_read, ADIS16080_DIN_AIN1);
+ static IIO_DEV_ATTR_IN_RAW(1, adis16080_read, ADIS16080_DIN_AIN2);
+-static IIO_CONST_ATTR(name, "adis16080");
+ 
+ static struct attribute *adis16080_attributes[] = {
+ 	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_dev_attr_in0_raw.dev_attr.attr,
+ 	&iio_dev_attr_in1_raw.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	NULL
+ };
+ 
+@@ -146,6 +144,7 @@ static int __devinit adis16080_probe(struct spi_device *spi)
+ 		goto error_free_st;
+ 	}
+ 
++	st->indio_dev->name = spi->dev.driver->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->attrs = &adis16080_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
+index 02fbe07..c2f338c 100644
+--- a/drivers/staging/iio/gyro/adis16130_core.c
++++ b/drivers/staging/iio/gyro/adis16130_core.c
+@@ -155,8 +155,6 @@ static ssize_t adis16130_bitsmode_write(struct device *dev,
+ static IIO_DEVICE_ATTR(temp_raw, S_IRUGO, adis16130_val_read, NULL,
+ 		      ADIS16130_TEMPDATA);
+ 
+-static IIO_CONST_ATTR(name, "adis16130");
+-
+ static IIO_DEV_ATTR_GYRO_Z(adis16130_val_read, ADIS16130_RATEDATA);
+ 
+ static IIO_DEVICE_ATTR(gyro_z_type, S_IWUSR | S_IRUGO, adis16130_bitsmode_read,
+@@ -167,7 +165,6 @@ static IIO_CONST_ATTR(gyro_z_type_available, "s16 s24");
+ 
+ static struct attribute *adis16130_attributes[] = {
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
+ 	&iio_dev_attr_gyro_z_type.dev_attr.attr,
+ 	&iio_const_attr_gyro_z_type_available.dev_attr.attr,
+@@ -197,6 +194,7 @@ static int __devinit adis16130_probe(struct spi_device *spi)
+ 		goto error_free_st;
+ 	}
+ 
++	st->indio_dev->name = spi->dev.driver->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->attrs = &adis16130_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
+index a50b645..3366bd0 100644
+--- a/drivers/staging/iio/gyro/adis16260_core.c
++++ b/drivers/staging/iio/gyro/adis16260_core.c
+@@ -505,8 +505,6 @@ static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16260_write_reset, 0);
+ static IIO_DEVICE_ATTR(sampling_frequency_available,
+ 		       S_IRUGO, adis16260_read_frequency_available, NULL, 0);
+ 
+-static IIO_CONST_ATTR_NAME("adis16260");
+-
+ #define ADIS16260_GYRO_ATTR_SET(axis)					\
+ 	IIO_DEV_ATTR_GYRO##axis(adis16260_read_14bit_signed,		\
+ 				ADIS16260_GYRO_OUT);			\
+@@ -547,7 +545,6 @@ static ADIS16260_GYRO_ATTR_SET(_Z);
+ 		&iio_dev_attr_sampling_frequency.dev_attr.attr,		\
+ 		&iio_dev_attr_sampling_frequency_available.dev_attr.attr, \
+ 		&iio_dev_attr_reset.dev_attr.attr,			\
+-		&iio_const_attr_name.dev_attr.attr,			\
+ 		NULL							\
+ 	};								\
+ 	static const struct attribute_group adis16260_attribute_group##axis \
+@@ -594,6 +591,7 @@ static int __devinit adis16260_probe(struct spi_device *spi)
+ 		goto error_free_tx;
+ 	}
+ 
++	st->indio_dev->name = spi_get_device_id(st->us)->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	if (pd && pd->direction)
+ 		switch (pd->direction) {
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index aa3fca0..09d0efb 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -427,16 +427,6 @@ static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16400_write_reset, 0);
+ 
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("409 546 819 1638");
+ 
+-static ssize_t adis16400_show_name(struct device *dev,
+-				   struct device_attribute *attr,
+-				   char *buf)
+-{
+-	struct adis16400_state *st
+-		= iio_dev_get_devdata(dev_get_drvdata(dev));
+-	return sprintf(buf, "%s\n", spi_get_device_id(st->us)->name);
+-}
+-static IIO_DEVICE_ATTR(name, S_IRUGO, adis16400_show_name, NULL, 0);
+-
+ enum adis16400_chan {
+ 	in_supply,
+ 	gyro_x,
+@@ -704,7 +694,6 @@ static struct attribute *adis16400_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+-	&iio_dev_attr_name.dev_attr.attr,
+ 	NULL
+ };
+ 
+@@ -814,6 +803,7 @@ static int __devinit adis16400_probe(struct spi_device *spi)
+ 	}
+ 	st->variant = &adis16400_chips[spi_get_device_id(spi)->driver_data];
+ 	st->indio_dev->dev.parent = &spi->dev;
++	st->indio_dev->name = spi_get_device_id(spi)->name;
+ 	st->indio_dev->attrs = &adis16400_attribute_group;
+ 	st->indio_dev->channels = st->variant->channels;
+ 	st->indio_dev->num_channels = st->variant->num_channels;
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index dfbc423..307c664 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -402,16 +402,6 @@ static ssize_t show_proxim_ir(struct device *dev,
+ 	return get_sensor_data(dev, buf, COMMMAND1_OPMODE_PROX_ONCE);
+ }
+ 
+-/* Read name */
+-static ssize_t show_name(struct device *dev,
+-		struct device_attribute *attr, char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct isl29018_chip *chip = indio_dev->dev_data;
+-
+-	return sprintf(buf, "%s\n", chip->client->name);
+-}
+-
+ static IIO_DEVICE_ATTR(range, S_IRUGO | S_IWUSR, show_range, store_range, 0);
+ static IIO_CONST_ATTR(range_available, "1000 4000 16000 64000");
+ static IIO_CONST_ATTR(adc_resolution_available, "4 8 12 16");
+@@ -424,12 +414,10 @@ static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_supression,
+ static IIO_DEVICE_ATTR(illuminance0_input, S_IRUGO, show_lux, NULL, 0);
+ static IIO_DEVICE_ATTR(intensity_infrared_raw, S_IRUGO, show_ir, NULL, 0);
+ static IIO_DEVICE_ATTR(proximity_raw, S_IRUGO, show_proxim_ir, NULL, 0);
+-static IIO_DEVICE_ATTR(name, S_IRUGO, show_name, NULL, 0);
+ 
+ #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+ #define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
+ static struct attribute *isl29018_attributes[] = {
+-	ISL29018_DEV_ATTR(name),
+ 	ISL29018_DEV_ATTR(range),
+ 	ISL29018_CONST_ATTR(range_available),
+ 	ISL29018_DEV_ATTR(adc_resolution),
+@@ -498,6 +486,7 @@ static int __devinit isl29018_probe(struct i2c_client *client,
+ 		goto exit_free;
+ 	}
+ 	chip->indio_dev->attrs = &isl29108_group;
++	chip->indio_dev->name = id->name;
+ 	chip->indio_dev->dev.parent = &client->dev;
+ 	chip->indio_dev->dev_data = (void *)(chip);
+ 	chip->indio_dev->driver_module = THIS_MODULE;
+diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
+index d62d9e2..8b6bf50 100644
+--- a/drivers/staging/iio/meter/ade7753.c
++++ b/drivers/staging/iio/meter/ade7753.c
+@@ -463,8 +463,6 @@ static IIO_DEV_ATTR_RESET(ade7753_write_reset);
+ 
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("27900 14000 7000 3500");
+ 
+-static IIO_CONST_ATTR(name, "ade7753");
+-
+ static struct attribute *ade7753_attributes[] = {
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+@@ -472,7 +470,6 @@ static struct attribute *ade7753_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_phcal.dev_attr.attr,
+ 	&iio_dev_attr_cfden.dev_attr.attr,
+ 	&iio_dev_attr_aenergy.dev_attr.attr,
+@@ -538,6 +535,7 @@ static int __devinit ade7753_probe(struct spi_device *spi)
+ 		goto error_free_tx;
+ 	}
+ 
++	st->indio_dev->name = spi->dev.driver->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->attrs = &ade7753_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
+index 2d0b8cc..4179325 100644
+--- a/drivers/staging/iio/meter/ade7754.c
++++ b/drivers/staging/iio/meter/ade7754.c
+@@ -482,8 +482,6 @@ static IIO_DEV_ATTR_RESET(ade7754_write_reset);
+ 
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("26000 13000 65000 33000");
+ 
+-static IIO_CONST_ATTR(name, "ade7754");
+-
+ static struct attribute *ade7754_attributes[] = {
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+@@ -491,7 +489,6 @@ static struct attribute *ade7754_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_aenergy.dev_attr.attr,
+ 	&iio_dev_attr_laenergy.dev_attr.attr,
+ 	&iio_dev_attr_vaenergy.dev_attr.attr,
+@@ -563,6 +560,7 @@ static int __devinit ade7754_probe(struct spi_device *spi)
+ 		goto error_free_tx;
+ 	}
+ 
++	st->indio_dev->name = spi->dev.driver->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->attrs = &ade7754_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
+index cab31dd..c9956c4 100644
+--- a/drivers/staging/iio/meter/ade7758_core.c
++++ b/drivers/staging/iio/meter/ade7758_core.c
+@@ -650,8 +650,6 @@ static IIO_DEV_ATTR_RESET(ade7758_write_reset);
+ 
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("26000 13000 65000 33000");
+ 
+-static IIO_CONST_ATTR(name, "ade7758");
+-
+ static struct attribute *ade7758_attributes[] = {
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+@@ -660,7 +658,6 @@ static struct attribute *ade7758_attributes[] = {
+ 	&iio_dev_attr_waveform_type.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_awatthr.dev_attr.attr,
+ 	&iio_dev_attr_bwatthr.dev_attr.attr,
+ 	&iio_dev_attr_cwatthr.dev_attr.attr,
+@@ -735,6 +732,7 @@ static int __devinit ade7758_probe(struct spi_device *spi)
+ 		goto error_free_tx;
+ 	}
+ 
++	st->indio_dev->name = spi->dev.driver->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->attrs = &ade7758_attribute_group;
+ 	st->indio_dev->dev_data = (void *)(st);
+diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
+index 42b3b27..86fe0ae 100644
+--- a/drivers/staging/iio/meter/ade7759.c
++++ b/drivers/staging/iio/meter/ade7759.c
+@@ -422,8 +422,6 @@ static IIO_DEV_ATTR_RESET(ade7759_write_reset);
+ 
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("27900 14000 7000 3500");
+ 
+-static IIO_CONST_ATTR(name, "ade7759");
+-
+ static struct attribute *ade7759_attributes[] = {
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_const_attr_temp_offset.dev_attr.attr,
+@@ -431,7 +429,6 @@ static struct attribute *ade7759_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+ 	&iio_dev_attr_phcal.dev_attr.attr,
+ 	&iio_dev_attr_cfden.dev_attr.attr,
+ 	&iio_dev_attr_aenergy.dev_attr.attr,
+@@ -484,6 +481,7 @@ static int __devinit ade7759_probe(struct spi_device *spi)
+ 		goto error_free_tx;
+ 	}
+ 
++	st->indio_dev->name = spi->dev.driver->name;
+ 	st->indio_dev->dev.parent = &spi->dev;
+ 	st->indio_dev->num_interrupt_lines = 1;
+ 
+diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
+index 47d1afb..1dc32eb 100644
+--- a/drivers/staging/iio/sysfs.h
++++ b/drivers/staging/iio/sysfs.h
+@@ -89,13 +89,6 @@ struct iio_const_attr {
+ 	IIO_DEVICE_ATTR(revision, S_IRUGO, _show, NULL, 0)
+ 
+ /**
+- * IIO_DEV_ATTR_NAME - chip type dependent identifier
+- * @_show: output method for the attribute
+- **/
+-#define IIO_DEV_ATTR_NAME(_show)				\
+-	IIO_DEVICE_ATTR(name, S_IRUGO, _show, NULL, 0)
+-
+-/**
+  * IIO_DEV_ATTR_RESET: resets the device
+  **/
+ #define IIO_DEV_ATTR_RESET(_store)			\
 -- 
 1.7.3.4
