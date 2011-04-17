@@ -2,179 +2,258 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 47/70] staging:iio:adc:ad7298 move to irqchip based trigger handling.
-Date: Sun, 17 Apr 2011 20:06:20 +0100
-Message-Id: <1303067203-4894-48-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 46/70] staging:iio:accel:adis16240 move to irqchip based trigger handling.
+Date: Sun, 17 Apr 2011 20:06:19 +0100
+Message-Id: <1303067203-4894-47-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 References: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Untested. This one is of a different form, so worth a closer look than
-the previous incredibly similar patches (which were based on the
-adis16400 that I have tested).
+Untested.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/ad7298.h      |    2 -
- drivers/staging/iio/adc/ad7298_core.c |    1 -
- drivers/staging/iio/adc/ad7298_ring.c |   65 +++++++++++++--------------------
- 3 files changed, 26 insertions(+), 42 deletions(-)
+ drivers/staging/iio/accel/adis16240.h         |    5 --
+ drivers/staging/iio/accel/adis16240_ring.c    |   68 ++++++++++++-------------
+ drivers/staging/iio/accel/adis16240_trigger.c |   39 +++++---------
+ 3 files changed, 45 insertions(+), 67 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7298.h b/drivers/staging/iio/adc/ad7298.h
-index fe7ed77..8d149c8 100644
---- a/drivers/staging/iio/adc/ad7298.h
-+++ b/drivers/staging/iio/adc/ad7298.h
-@@ -40,8 +40,6 @@ struct ad7298_state {
+diff --git a/drivers/staging/iio/accel/adis16240.h b/drivers/staging/iio/accel/adis16240.h
+index 76a4579..364aabf 100644
+--- a/drivers/staging/iio/accel/adis16240.h
++++ b/drivers/staging/iio/accel/adis16240.h
+@@ -126,9 +126,6 @@
+ /**
+  * struct adis16240_state - device instance specific data
+  * @us:			actual spi_device
+- * @work_trigger_to_ring: bh for triggered event handling
+- * @inter:		used to check if new interrupt has been triggered
+- * @last_timestamp:	passing timestamp from th to bh of interrupt handler
+  * @indio_dev:		industrial I/O device structure
+  * @trig:		data ready trigger registered with iio
+  * @tx:			transmit buffer
+@@ -137,8 +134,6 @@
+  **/
+ struct adis16240_state {
+ 	struct spi_device		*us;
+-	struct work_struct		work_trigger_to_ring;
+-	s64				last_timestamp;
  	struct iio_dev			*indio_dev;
- 	struct spi_device		*spi;
- 	struct regulator		*reg;
--	struct work_struct		poll_work;
--	atomic_t			protect_ring;
- 	size_t				d_size;
- 	u16				int_vref_mv;
- 	unsigned			ext_ref;
-diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
-index 8b3a490..5a60481 100644
---- a/drivers/staging/iio/adc/ad7298_core.c
-+++ b/drivers/staging/iio/adc/ad7298_core.c
-@@ -170,7 +170,6 @@ static int __devinit ad7298_probe(struct spi_device *spi)
- 
- 	spi_set_drvdata(spi, st);
- 
--	atomic_set(&st->protect_ring, 0);
- 	st->spi = spi;
- 
- 	st->indio_dev = iio_allocate_device(0);
-diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
-index 9068d7f..1b9752c 100644
---- a/drivers/staging/iio/adc/ad7298_ring.c
-+++ b/drivers/staging/iio/adc/ad7298_ring.c
-@@ -7,7 +7,6 @@
-  */
- 
- #include <linux/interrupt.h>
--#include <linux/workqueue.h>
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/slab.h>
-@@ -155,47 +154,24 @@ static int ad7298_ring_preenable(struct iio_dev *indio_dev)
- }
+ 	struct iio_trigger		*trig;
+ 	u8				*tx;
+diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
+index f882e9c..c289b66 100644
+--- a/drivers/staging/iio/accel/adis16240_ring.c
++++ b/drivers/staging/iio/accel/adis16240_ring.c
+@@ -60,17 +60,6 @@ static struct attribute_group adis16240_scan_el_group = {
+ };
  
  /**
-- * ad7298_poll_func_th() th of trigger launched polling to ring buffer
-- *
-- * As sampling only occurs on spi comms occurring, leave timestamping until
-- * then.  Some triggers will generate their own time stamp.  Currently
-- * there is no way of notifying them when no one cares.
+- * adis16240_poll_func_th() top half interrupt handler called by trigger
+- * @private_data:	iio_dev
 - **/
--static void ad7298_poll_func_th(struct iio_dev *indio_dev, s64 time)
+-static void adis16240_poll_func_th(struct iio_dev *indio_dev, s64 time)
 -{
--	struct ad7298_state *st = indio_dev->dev_data;
--
--	schedule_work(&st->poll_work);
--	return;
+-	struct adis16240_state *st = iio_dev_get_devdata(indio_dev);
+-	st->last_timestamp = time;
+-	schedule_work(&st->work_trigger_to_ring);
 -}
 -
 -/**
-- * ad7298_poll_bh_to_ring() bh of trigger launched polling to ring buffer
-- * @work_s:	the work struct through which this was scheduled
-+ * ad7298_trigger_handler() bh of trigger launched polling to ring buffer
-  *
-  * Currently there is no option in this driver to disable the saving of
-  * timestamps within the ring.
-- * I think the one copy of this at a time was to avoid problems if the
-- * trigger was set far too high and the reads then locked up the computer.
-  **/
--static void ad7298_poll_bh_to_ring(struct work_struct *work_s)
-+static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+  * adis16240_read_ring_data() read data registers which will be placed into ring
+  * @dev: device associated with child of actual device (iio_dev or iio_trig)
+  * @rx: somewhere to pass back the value read
+@@ -112,46 +101,43 @@ static int adis16240_read_ring_data(struct device *dev, u8 *rx)
+ 	return ret;
+ }
+ 
+-
+-static void adis16240_trigger_bh_to_ring(struct work_struct *work_s)
++static irqreturn_t adis16240_trigger_handler(int irq, void *p)
  {
--	struct ad7298_state *st = container_of(work_s, struct ad7298_state,
--						  poll_work);
--	struct iio_dev *indio_dev = st->indio_dev;
--	struct iio_sw_ring_buffer *sw_ring = iio_to_sw_ring(indio_dev->ring);
+-	struct adis16240_state *st
+-		= container_of(work_s, struct adis16240_state,
+-				work_trigger_to_ring);
+-	struct iio_ring_buffer *ring = st->indio_dev->ring;
 +	struct iio_poll_func *pf = p;
 +	struct iio_dev *indio_dev = pf->private_data;
-+	struct ad7298_state *st = iio_dev_get_devdata(indio_dev);
- 	struct iio_ring_buffer *ring = indio_dev->ring;
- 	s64 time_ns;
- 	__u16 buf[16];
- 	int b_sent, i;
++	struct adis16240_state *st = iio_dev_get_devdata(indio_dev);
++	struct iio_ring_buffer *ring = indio_dev->ring;
  
--	/* Ensure only one copy of this function running at a time */
--	if (atomic_inc_return(&st->protect_ring) > 1)
+ 	int i = 0;
+ 	s16 *data;
+ 	size_t datasize = ring->access.get_bytes_per_datum(ring);
+ 
+-	data = kmalloc(datasize , GFP_KERNEL);
++	data = kmalloc(datasize, GFP_KERNEL);
+ 	if (data == NULL) {
+ 		dev_err(&st->us->dev, "memory alloc failed in ring bh");
 -		return;
--
- 	b_sent = spi_sync(st->spi, &st->ring_msg);
- 	if (b_sent)
--		goto done;
-+		return b_sent;
++		return -ENOMEM;
+ 	}
  
- 	if (ring->scan_timestamp) {
- 		time_ns = iio_get_time_ns();
-@@ -206,14 +182,13 @@ static void ad7298_poll_bh_to_ring(struct work_struct *work_s)
- 	for (i = 0; i < ring->scan_count; i++)
- 		buf[i] = be16_to_cpu(st->rx_buf[i]);
+-	if (ring->scan_count)
+-		if (adis16240_read_ring_data(&st->indio_dev->dev, st->rx) >= 0)
+-			for (; i < ring->scan_count; i++)
+-				data[i] = be16_to_cpup(
+-					(__be16 *)&(st->rx[i*2]));
++	if (ring->scan_count &&
++	    adis16240_read_ring_data(&st->indio_dev->dev, st->rx) >= 0)
++		for (; i < ring->scan_count; i++)
++			data[i] = be16_to_cpup((__be16 *)&(st->rx[i*2]));
  
--	indio_dev->ring->access.store_to(&sw_ring->buf, (u8 *)buf, time_ns);
--done:
--	atomic_dec(&st->protect_ring);
-+	indio_dev->ring->access.store_to(ring, (u8 *)buf, time_ns);
-+
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+ 	if (ring->scan_timestamp)
+-		*((s64 *)(data + ((i + 3)/4)*4)) = st->last_timestamp;
++		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+-	ring->access.store_to(ring,
+-			(u8 *)data,
+-			st->last_timestamp);
++	ring->access.store_to(ring, (u8 *)data, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(st->indio_dev->trig);
+ 	kfree(data);
+ 
+-	return;
 +	return IRQ_HANDLED;
  }
  
- int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ void adis16240_unconfigure_ring(struct iio_dev *indio_dev)
  {
--	struct ad7298_state *st = indio_dev->dev_data;
- 	int ret;
++	kfree(indio_dev->pollfunc->name);
+ 	kfree(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
+@@ -159,9 +145,7 @@ void adis16240_unconfigure_ring(struct iio_dev *indio_dev)
+ int adis16240_configure_ring(struct iio_dev *indio_dev)
+ {
+ 	int ret = 0;
+-	struct adis16240_state *st = indio_dev->dev_data;
+ 	struct iio_ring_buffer *ring;
+-	INIT_WORK(&st->work_trigger_to_ring, adis16240_trigger_bh_to_ring);
  
- 	indio_dev->ring = iio_sw_rb_allocate(indio_dev);
-@@ -223,10 +198,21 @@ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
- 	}
- 	/* Effectively select the ring buffer implementation */
- 	iio_ring_sw_register_funcs(&indio_dev->ring->access);
--	ret = iio_alloc_pollfunc(indio_dev, NULL, &ad7298_poll_func_th);
+ 	ring = iio_sw_rb_allocate(indio_dev);
+ 	if (!ring) {
+@@ -187,13 +171,25 @@ int adis16240_configure_ring(struct iio_dev *indio_dev)
+ 	iio_scan_mask_set(ring, iio_scan_el_temp.number);
+ 	iio_scan_mask_set(ring, iio_scan_el_in0.number);
+ 
+-	ret = iio_alloc_pollfunc(indio_dev, NULL, &adis16240_poll_func_th);
 -	if (ret)
--		goto error_deallocate_sw_rb;
- 
+-		goto error_iio_sw_rb_free;
+-
 +	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
 +	if (indio_dev->pollfunc == NULL) {
 +		ret = -ENOMEM;
-+		goto error_deallocate_sw_rb;
++ 		goto error_iio_sw_rb_free;
 +	}
 +	indio_dev->pollfunc->private_data = indio_dev;
-+	indio_dev->pollfunc->thread = &ad7298_trigger_handler;
++	indio_dev->pollfunc->h = &iio_pollfunc_store_time;
++	indio_dev->pollfunc->thread = &adis16240_trigger_handler;
 +	indio_dev->pollfunc->type = IRQF_ONESHOT;
 +	indio_dev->pollfunc->name =
-+		kasprintf(GFP_KERNEL, "ad7298_consumer%d", indio_dev->id);
++		kasprintf(GFP_KERNEL, "adis16240_consumer%d", indio_dev->id);
 +	if (indio_dev->pollfunc->name == NULL) {
 +		ret = -ENOMEM;
 +		goto error_free_poll_func;
 +	}
- 	/* Ring buffer functions - here trigger setup related */
- 
- 	indio_dev->ring->preenable = &ad7298_ring_preenable;
-@@ -235,11 +221,11 @@ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
- 	indio_dev->ring->scan_el_attrs = &ad7298_scan_el_group;
- 	indio_dev->ring->scan_timestamp = true;
- 
--	INIT_WORK(&st->poll_work, &ad7298_poll_bh_to_ring);
--
- 	/* Flag that polled ring buffering is possible */
  	indio_dev->modes |= INDIO_RING_TRIGGERED;
  	return 0;
+-
 +error_free_poll_func:
 +	kfree(indio_dev->pollfunc);
- error_deallocate_sw_rb:
+ error_iio_sw_rb_free:
  	iio_sw_rb_free(indio_dev->ring);
- error_ret:
-@@ -253,6 +239,7 @@ void ad7298_ring_cleanup(struct iio_dev *indio_dev)
- 		iio_trigger_dettach_poll_func(indio_dev->trig,
- 					      indio_dev->pollfunc);
+ 	return ret;
+diff --git a/drivers/staging/iio/accel/adis16240_trigger.c b/drivers/staging/iio/accel/adis16240_trigger.c
+index c5a26ae..55e2145 100644
+--- a/drivers/staging/iio/accel/adis16240_trigger.c
++++ b/drivers/staging/iio/accel/adis16240_trigger.c
+@@ -17,7 +17,6 @@
+  **/
+ static irqreturn_t adis16240_data_rdy_trig_poll(int irq, void *trig)
+ {
+-	disable_irq_nosync(irq);
+ 	iio_trigger_poll(trig, iio_get_time_ns());
+ 	return IRQ_HANDLED;
+ }
+@@ -46,27 +45,23 @@ static int adis16240_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 	return adis16240_set_irq(&st->indio_dev->dev, state);
+ }
+ 
+-/**
+- * adis16240_trig_try_reen() try renabling irq for data rdy trigger
+- * @trig:	the datardy trigger
+- **/
+-static int adis16240_trig_try_reen(struct iio_trigger *trig)
+-{
+-	struct adis16240_state *st = trig->private_data;
+-	enable_irq(st->us->irq);
+-	return 0;
+-}
+-
+ int adis16240_probe_trigger(struct iio_dev *indio_dev)
+ {
+ 	int ret;
+ 	struct adis16240_state *st = indio_dev->dev_data;
++	char *name;
+ 
+-	st->trig = iio_allocate_trigger();
+-	if (st->trig == NULL) {
++	name = kasprintf(GFP_KERNEL, "adis16240-dev%d", indio_dev->id);
++	if (name == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_ret;
  	}
-+	kfree(indio_dev->pollfunc->name);
- 	kfree(indio_dev->pollfunc);
- 	iio_sw_rb_free(indio_dev->ring);
++	st->trig = iio_allocate_trigger_named(name);
++	if (st->trig == NULL) {
++		ret = -ENOMEM;
++		goto error_free_name;
++	}
++
+ 	ret = request_irq(st->us->irq,
+ 			  adis16240_data_rdy_trig_poll,
+ 			  IRQF_TRIGGER_RISING,
+@@ -74,35 +69,27 @@ int adis16240_probe_trigger(struct iio_dev *indio_dev)
+ 			  st->trig);
+ 	if (ret)
+ 		goto error_free_trig;
+-		
+-	st->trig->name = kasprintf(GFP_KERNEL,
+-				   "adis16240-dev%d",
+-				   indio_dev->id);
+-	if (!st->trig->name) {
+-		ret = -ENOMEM;
+-		goto error_free_irq;
+-	}
++
+ 	st->trig->dev.parent = &st->us->dev;
+ 	st->trig->owner = THIS_MODULE;
+ 	st->trig->private_data = st;
+ 	st->trig->set_trigger_state = &adis16240_data_rdy_trigger_set_state;
+-	st->trig->try_reenable = &adis16240_trig_try_reen;
+ 	st->trig->control_attrs = &adis16240_trigger_attr_group;
+ 	ret = iio_trigger_register(st->trig);
+ 
+ 	/* select default trigger */
+ 	indio_dev->trig = st->trig;
+ 	if (ret)
+-		goto error_free_trig_name;
++		goto error_free_irq;
+ 
+ 	return 0;
+ 
+-error_free_trig_name:
+-	kfree(st->trig->name);
+ error_free_irq:
+ 	free_irq(st->us->irq, st->trig);
+ error_free_trig:
+ 	iio_free_trigger(st->trig);
++error_free_name:
++	kfree(name);
+ error_ret:
+ 	return ret;
  }
 -- 
 1.7.3.4
