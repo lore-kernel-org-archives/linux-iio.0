@@ -1,599 +1,350 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: <michael.hennerich@analog.com>
-To: greg@kroah.com
-CC: linux-iio@vger.kernel.org, drivers@analog.com, jic23@cam.ac.uk,
-        device-drivers-devel@blackfin.uclinux.org,
-        Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 1/1] IIO: DAC: New driver for AD5791/AD5781 High Resolution Voltage Output DACs
-Date: Mon, 18 Apr 2011 09:40:58 +0200
-Message-ID: <1303112458-25673-1-git-send-email-michael.hennerich@analog.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 00/70] IIO: Major rework set (review request).
+Date: Sun, 17 Apr 2011 20:05:33 +0100
+Message-Id: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+Dear all,
+
+A few of these have been posted before. A lot are conversion patches
+and hence fairly mechanical but that's not saying I didn't do anything
+silly.
+
+So this is really just a request for anyone with any time at all to
+take one of these patches and do a sanity check on it.  Of course, if
+people have the parts, testing would be the best form of sanity check.
+Obviously, starting at the beginning would be best, but then quite
+a few of these patches introduce bits of intermediate code that gets
+wiped out late, so commenting on issues with the results of these
+patches is fine too!
+
+My test set (which, 'touch wood' work) are:
+
+sca3000-e05, max1363, max1238, lis3l02dq and adis16350.
+
+Towards the end of the set a few drivers will not build for one
+of two reasons:
+
+a) They abuse the old buffer event codes.  These uses need to
+go ASAP, but will take some datasheet trawling as we really want
+to know what the heck those events actually are.
+
+b) They are an adc driver which hasn't been converted to chan_spec
+registration yet and still has some IIO_SCAN_EL_C macro usage.
+
+Everything should build up to
+
+staging:iio: rip out scan_el attributes.  Now handled as
+    iio_dev_attrs like everything else.
+
+Note this set sits on top of
+
+* if you are on arm, a missing header fix deep in the cpu_type code
+  which is needed to build one of the gyro types - its in Russells
+  fix branch so should go to Linus in a day or two if it hasn't already.
+
+* [PATCH] irq: export handle_simple_irq, irq_modify_status and irq_to_desc
+
+* [PATCH 0/8 V2] staging:iio:mixed bag of fixes and cleanups.
+which it turns sits on various new driver patches.
+
+* [PATCH 00/12] IIO: precursor cleanups to even system rewrite
+
+All in all, if you actually want to run this, then take a look at
+the iio-onwards tree.
+
+http://git.kernel.org/?p=linux/kernel/git/jic23/iio-onwards.git;a=summary
+
+Please take a look if you possibly can.  Note I will be rebasing the above
+tree in response to reviews.
 
 
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/dac/Kconfig  |   10 +
- drivers/staging/iio/dac/Makefile |    1 +
- drivers/staging/iio/dac/ad5791.c |  418 ++++++++++++++++++++++++++++++++++++++
- drivers/staging/iio/dac/ad5791.h |  109 ++++++++++
- 4 files changed, 538 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/dac/ad5791.c
- create mode 100644 drivers/staging/iio/dac/ad5791.h
+Anyhow, lets briefly summarize what we have here for the record
 
-diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
-index 1b0188a..f25468a 100644
---- a/drivers/staging/iio/dac/Kconfig
-+++ b/drivers/staging/iio/dac/Kconfig
-@@ -31,6 +31,16 @@ config AD5504
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad5504.
+All the way through I carry max1363 and lis3l02dq along, using new
+functionality as it becomes available.  This leads to some
+'fun and games' with interrupts in lis3l02dq that perhaps I could
+have avoided, but there we are.
 
-+config AD5791
-+	tristate "Analog Devices AD5781/AD5791 DAC SPI driver"
-+	depends on SPI
-+	help
-+	  Say yes here to build support for Analog Devices AD5781, AD5791,
-+	  High Resolution Voltage Output Digital to Analog Converter.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ad5791.
-+
- config MAX517
- 	tristate "Maxim MAX517/518/519 DAC driver"
- 	depends on I2C && EXPERIMENTAL
-diff --git a/drivers/staging/iio/dac/Makefile b/drivers/staging/iio/dac/Makefile
-index 020df4a..83196de 100644
---- a/drivers/staging/iio/dac/Makefile
-+++ b/drivers/staging/iio/dac/Makefile
-@@ -5,4 +5,5 @@
- obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
- obj-$(CONFIG_AD5504) += ad5504.o
- obj-$(CONFIG_AD5446) += ad5446.o
-+obj-$(CONFIG_AD5791) += ad5791.o
- obj-$(CONFIG_MAX517) += max517.o
-diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
-new file mode 100644
-index 0000000..545f1a6
---- /dev/null
-+++ b/drivers/staging/iio/dac/ad5791.c
-@@ -0,0 +1,418 @@
-+/*
-+ * AD5791, AD5791 Voltage Output Digital to Analog Converter
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/interrupt.h>
-+#include <linux/gpio.h>
-+#include <linux/fs.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/spi/spi.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
-+#include <linux/regulator/consumer.h>
-+
-+#include "../iio.h"
-+#include "../sysfs.h"
-+#include "dac.h"
-+#include "ad5791.h"
-+
-+static int ad5791_spi_write(struct spi_device *spi, u8 addr, u32 val)
-+{
-+	union {
-+		u32 d32;
-+		u8 d8[4];
-+	} data;
-+
-+	data.d32 = cpu_to_be32(AD5791_CMD_WRITE |
-+			      AD5791_ADDR(addr) |
-+			      (val & AD5791_DAC_MASK));
-+
-+	return spi_write(spi, &data.d8[1], 3);
-+}
-+
-+static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
-+{
-+	union {
-+		u32 d32;
-+		u8 d8[4];
-+	} data[3];
-+	int ret;
-+	struct spi_message msg;
-+	struct spi_transfer xfers[] = {
-+		{
-+			.tx_buf = &data[0].d8[1],
-+			.bits_per_word = 8,
-+			.len = 3,
-+			.cs_change = 1,
-+		}, {
-+			.tx_buf = &data[1].d8[1],
-+			.rx_buf = &data[2].d8[1],
-+			.bits_per_word = 8,
-+			.len = 3,
-+		},
-+	};
-+
-+	data[0].d32 = cpu_to_be32(AD5791_CMD_READ |
-+			      AD5791_ADDR(addr));
-+	data[1].d32 = cpu_to_be32(AD5791_ADDR(AD5791_ADDR_NOOP));
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfers[0], &msg);
-+	spi_message_add_tail(&xfers[1], &msg);
-+	ret = spi_sync(spi, &msg);
-+
-+	*val = be32_to_cpu(data[2].d32);
-+
-+	return ret;
-+}
-+
-+static ssize_t ad5791_write_dac(struct device *dev,
-+				 struct device_attribute *attr,
-+				 const char *buf, size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5791_state *st = iio_dev_get_devdata(indio_dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	long readin;
-+	int ret;
-+
-+	ret = strict_strtol(buf, 10, &readin);
-+	if (ret)
-+		return ret;
-+
-+	readin += (1 << (st->chip_info->bits - 1));
-+	readin &= AD5791_RES_MASK(st->chip_info->bits);
-+	readin <<= st->chip_info->left_shift;
-+
-+	ret = ad5791_spi_write(st->spi, this_attr->address, readin);
-+	return ret ? ret : len;
-+}
-+
-+static ssize_t ad5791_read_dac(struct device *dev,
-+					   struct device_attribute *attr,
-+					   char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5791_state *st = iio_dev_get_devdata(indio_dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int ret;
-+	int val;
-+
-+	ret = ad5791_spi_read(st->spi, this_attr->address, &val);
-+	if (ret)
-+		return ret;
-+
-+	val &= AD5791_DAC_MASK;
-+	val >>= st->chip_info->left_shift;
-+	val -= (1 << (st->chip_info->bits - 1));
-+
-+	return sprintf(buf, "%d\n", val);
-+}
-+
-+static ssize_t ad5791_read_powerdown_mode(struct device *dev,
-+				      struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5791_state *st = iio_dev_get_devdata(indio_dev);
-+
-+	const char mode[][14] = {"6kohm_to_gnd", "three_state"};
-+
-+	return sprintf(buf, "%s\n", mode[st->pwr_down_mode]);
-+}
-+
-+static ssize_t ad5791_write_powerdown_mode(struct device *dev,
-+				       struct device_attribute *attr,
-+				       const char *buf, size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5791_state *st = iio_dev_get_devdata(indio_dev);
-+	int ret;
-+
-+	if (sysfs_streq(buf, "6kohm_to_gnd"))
-+		st->pwr_down_mode = AD5791_DAC_PWRDN_6K;
-+	else if (sysfs_streq(buf, "three_state"))
-+		st->pwr_down_mode = AD5791_DAC_PWRDN_3STATE;
-+	else
-+		ret = -EINVAL;
-+
-+	return ret ? ret : len;
-+}
-+
-+static ssize_t ad5791_read_dac_powerdown(struct device *dev,
-+					   struct device_attribute *attr,
-+					   char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5791_state *st = iio_dev_get_devdata(indio_dev);
-+
-+	return sprintf(buf, "%d\n", st->pwr_down);
-+}
-+
-+static ssize_t ad5791_write_dac_powerdown(struct device *dev,
-+					    struct device_attribute *attr,
-+					    const char *buf, size_t len)
-+{
-+	long readin;
-+	int ret;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5791_state *st = iio_dev_get_devdata(indio_dev);
-+
-+	ret = strict_strtol(buf, 10, &readin);
-+	if (ret)
-+		return ret;
-+
-+	if (readin == 0) {
-+		st->pwr_down = false;
-+		st->ctrl &= ~(AD5791_CTRL_OPGND | AD5791_CTRL_DACTRI);
-+	} else if (readin == 1) {
-+		st->pwr_down = true;
-+		if (st->pwr_down_mode == AD5791_DAC_PWRDN_6K)
-+			st->ctrl |= AD5791_CTRL_OPGND;
-+		else if (st->pwr_down_mode == AD5791_DAC_PWRDN_3STATE)
-+			st->ctrl |= AD5791_CTRL_DACTRI;
-+	} else
-+		ret = -EINVAL;
-+
-+	ret = ad5791_spi_write(st->spi, AD5791_ADDR_CTRL, st->ctrl);
-+
-+	return ret ? ret : len;
-+}
-+
-+static ssize_t ad5791_show_scale(struct device *dev,
-+				struct device_attribute *attr,
-+				char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5791_state *st = iio_dev_get_devdata(indio_dev);
-+	/* Corresponds to Vref / 2^(bits) */
-+	unsigned int scale_uv = (st->vref_mv * 1000) >> st->chip_info->bits;
-+
-+	return sprintf(buf, "%d.%03d\n", scale_uv / 1000, scale_uv % 1000);
-+}
-+static IIO_DEVICE_ATTR(out_scale, S_IRUGO, ad5791_show_scale, NULL, 0);
-+
-+static ssize_t ad5791_show_name(struct device *dev,
-+				 struct device_attribute *attr,
-+				 char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ad5791_state *st = iio_dev_get_devdata(indio_dev);
-+
-+	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
-+}
-+static IIO_DEVICE_ATTR(name, S_IRUGO, ad5791_show_name, NULL, 0);
-+
-+#define IIO_DEV_ATTR_OUT_RW_RAW(_num, _show, _store, _addr)		\
-+	IIO_DEVICE_ATTR(out##_num##_raw,				\
-+			S_IRUGO | S_IWUSR, _show, _store, _addr)
-+
-+static IIO_DEV_ATTR_OUT_RW_RAW(0, ad5791_read_dac,
-+	ad5791_write_dac, AD5791_ADDR_DAC0);
-+
-+static IIO_DEVICE_ATTR(out_powerdown_mode, S_IRUGO |
-+			S_IWUSR, ad5791_read_powerdown_mode,
-+			ad5791_write_powerdown_mode, 0);
-+
-+static IIO_CONST_ATTR(out_powerdown_mode_available,
-+			"6kohm_to_gnd three_state");
-+
-+#define IIO_DEV_ATTR_DAC_POWERDOWN(_num, _show, _store, _addr)		\
-+	IIO_DEVICE_ATTR(out##_num##_powerdown,				\
-+			S_IRUGO | S_IWUSR, _show, _store, _addr)
-+
-+static IIO_DEV_ATTR_DAC_POWERDOWN(0, ad5791_read_dac_powerdown,
-+				   ad5791_write_dac_powerdown, 0);
-+
-+static struct attribute *ad5791_attributes[] = {
-+	&iio_dev_attr_out0_raw.dev_attr.attr,
-+	&iio_dev_attr_out0_powerdown.dev_attr.attr,
-+	&iio_dev_attr_out_powerdown_mode.dev_attr.attr,
-+	&iio_const_attr_out_powerdown_mode_available.dev_attr.attr,
-+	&iio_dev_attr_out_scale.dev_attr.attr,
-+	&iio_dev_attr_name.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group ad5791_attribute_group = {
-+	.attrs = ad5791_attributes,
-+};
-+
-+static const struct ad5791_chip_info ad5791_chip_info_tbl[] = {
-+	[ID_AD5791] = {
-+		.bits = 20,
-+		.left_shift = 0,
-+	},
-+	[ID_AD5781] = {
-+		.bits = 18,
-+		.left_shift = 2,
-+	},
-+};
-+
-+static int ad5791_get_lin_comp(unsigned int span)
-+{
-+	if (span <= 10000)
-+		return AD5791_LINCOMP_0_10;
-+	else if (span <= 12000)
-+		return AD5791_LINCOMP_10_12;
-+	else if (span <= 16000)
-+		return AD5791_LINCOMP_12_16;
-+	else if (span <= 19000)
-+		return AD5791_LINCOMP_16_19;
-+	else
-+		return AD5791_LINCOMP_19_20;
-+}
-+
-+static int __devinit ad5791_probe(struct spi_device *spi)
-+{
-+	struct ad5791_platform_data *pdata = spi->dev.platform_data;
-+	struct ad5791_state *st;
-+	int ret, pos_voltage_uv = 0, neg_voltage_uv = 0;
-+
-+	st = kzalloc(sizeof(*st), GFP_KERNEL);
-+	if (st == NULL) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+
-+	spi_set_drvdata(spi, st);
-+
-+	st->reg_vdd = regulator_get(&spi->dev, "vdd");
-+	if (!IS_ERR(st->reg_vdd)) {
-+		ret = regulator_enable(st->reg_vdd);
-+		if (ret)
-+			goto error_put_reg_pos;
-+
-+		pos_voltage_uv = regulator_get_voltage(st->reg_vdd);
-+	}
-+
-+	st->reg_vss = regulator_get(&spi->dev, "vss");
-+	if (!IS_ERR(st->reg_vss)) {
-+		ret = regulator_enable(st->reg_vss);
-+		if (ret)
-+			goto error_put_reg_neg;
-+
-+		neg_voltage_uv = regulator_get_voltage(st->reg_vss);
-+	}
-+
-+	if (!IS_ERR(st->reg_vss) && !IS_ERR(st->reg_vdd))
-+		st->vref_mv = (pos_voltage_uv - neg_voltage_uv) / 1000;
-+	else if (pdata)
-+		st->vref_mv = pdata->vref_pos_mv - pdata->vref_neg_mv;
-+	else
-+		dev_warn(&spi->dev, "reference voltage unspecified\n");
-+
-+	ret = ad5791_spi_write(spi, AD5791_ADDR_SW_CTRL, AD5791_SWCTRL_RESET);
-+	if (ret)
-+		goto error_disable_reg_neg;
-+
-+	st->chip_info =
-+		&ad5791_chip_info_tbl[spi_get_device_id(spi)->driver_data];
-+
-+
-+	st->ctrl = AD5761_CTRL_LINCOMP(ad5791_get_lin_comp(st->vref_mv)) |
-+		  ((pdata && pdata->use_rbuf_gain2) ? 0 : AD5791_CTRL_RBUF) |
-+		  AD5791_CTRL_BIN2SC;
-+
-+	ret = ad5791_spi_write(spi, AD5791_ADDR_CTRL, st->ctrl |
-+		AD5791_CTRL_OPGND | AD5791_CTRL_DACTRI);
-+	if (ret)
-+		goto error_disable_reg_neg;
-+
-+	st->pwr_down = true;
-+
-+	st->spi = spi;
-+	st->indio_dev = iio_allocate_device();
-+	if (st->indio_dev == NULL) {
-+		ret = -ENOMEM;
-+		goto error_disable_reg_neg;
-+	}
-+	st->indio_dev->dev.parent = &spi->dev;
-+	st->indio_dev->dev_data = (void *)(st);
-+	st->indio_dev->attrs = &ad5791_attribute_group;
-+	st->indio_dev->driver_module = THIS_MODULE;
-+	st->indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = iio_device_register(st->indio_dev);
-+	if (ret)
-+		goto error_free_dev;
-+
-+	return 0;
-+
-+error_free_dev:
-+	iio_free_device(st->indio_dev);
-+
-+error_disable_reg_neg:
-+	if (!IS_ERR(st->reg_vss))
-+		regulator_disable(st->reg_vss);
-+error_put_reg_neg:
-+	if (!IS_ERR(st->reg_vss))
-+		regulator_put(st->reg_vss);
-+
-+	if (!IS_ERR(st->reg_vdd))
-+		regulator_disable(st->reg_vdd);
-+error_put_reg_pos:
-+	if (!IS_ERR(st->reg_vdd))
-+		regulator_put(st->reg_vdd);
-+
-+	kfree(st);
-+error_ret:
-+	return ret;
-+}
-+
-+static int __devexit ad5791_remove(struct spi_device *spi)
-+{
-+	struct ad5791_state *st = spi_get_drvdata(spi);
-+
-+	iio_device_unregister(st->indio_dev);
-+
-+	if (!IS_ERR(st->reg_vdd)) {
-+		regulator_disable(st->reg_vdd);
-+		regulator_put(st->reg_vdd);
-+	}
-+
-+	if (!IS_ERR(st->reg_vss)) {
-+		regulator_disable(st->reg_vss);
-+		regulator_put(st->reg_vss);
-+	}
-+
-+	kfree(st);
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id ad5791_id[] = {
-+	{"ad5791", ID_AD5791},
-+	{"ad5781", ID_AD5781},
-+	{}
-+};
-+
-+static struct spi_driver ad5791_driver = {
-+	.driver = {
-+		   .name = "ad5791",
-+		   .owner = THIS_MODULE,
-+		   },
-+	.probe = ad5791_probe,
-+	.remove = __devexit_p(ad5791_remove),
-+	.id_table = ad5791_id,
-+};
-+
-+static __init int ad5791_spi_init(void)
-+{
-+	return spi_register_driver(&ad5791_driver);
-+}
-+module_init(ad5791_spi_init);
-+
-+static __exit void ad5791_spi_exit(void)
-+{
-+	spi_unregister_driver(&ad5791_driver);
-+}
-+module_exit(ad5791_spi_exit);
-+
-+MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-+MODULE_DESCRIPTION("Analog Devices AD5791/AD5781 DAC");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/staging/iio/dac/ad5791.h b/drivers/staging/iio/dac/ad5791.h
-new file mode 100644
-index 0000000..71c7d59
---- /dev/null
-+++ b/drivers/staging/iio/dac/ad5791.h
-@@ -0,0 +1,109 @@
-+/*
-+ * AD5791 SPI DAC driver
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#ifndef SPI_AD5791_H_
-+#define SPI_AD5791_H_
-+
-+#define AD5791_RES_MASK(x)		((1 << (x)) - 1)
-+#define AD5791_DAC_MASK			AD5791_RES_MASK(20)
-+#define AD5791_DAC_MSB			(1 << 19)
-+
-+#define AD5791_CMD_READ			(1 << 23)
-+#define AD5791_CMD_WRITE		(0 << 23)
-+#define AD5791_ADDR(addr)		((addr) << 20)
-+
-+/* Registers */
-+#define AD5791_ADDR_NOOP		0
-+#define AD5791_ADDR_DAC0		1
-+#define AD5791_ADDR_CTRL		2
-+#define AD5791_ADDR_CLRCODE		3
-+#define AD5791_ADDR_SW_CTRL		4
-+
-+/* Control Register */
-+#define AD5791_CTRL_RBUF		(1 << 1)
-+#define AD5791_CTRL_OPGND		(1 << 2)
-+#define AD5791_CTRL_DACTRI		(1 << 3)
-+#define AD5791_CTRL_BIN2SC		(1 << 4)
-+#define AD5791_CTRL_SDODIS		(1 << 5)
-+#define AD5761_CTRL_LINCOMP(x)		((x) << 6)
-+
-+#define AD5791_LINCOMP_0_10		0
-+#define AD5791_LINCOMP_10_12		1
-+#define AD5791_LINCOMP_12_16		2
-+#define AD5791_LINCOMP_16_19		3
-+#define AD5791_LINCOMP_19_20		12
-+
-+/* Software Control Register */
-+#define AD5791_SWCTRL_LDAC		(1 << 0)
-+#define AD5791_SWCTRL_CLR		(1 << 1)
-+#define AD5791_SWCTRL_RESET		(1 << 2)
-+
-+#define AD5791_DAC_PWRDN_6K		0
-+#define AD5791_DAC_PWRDN_3STATE		1
-+
-+/*
-+ * TODO: struct ad5791_platform_data needs to go into include/linux/iio
-+ */
-+
-+/**
-+ * struct ad5791_platform_data - platform specific information
-+ * @vref_pos_mv:	Vdd Positive Analog Supply Volatge (mV)
-+ * @vref_neg_mv:	Vdd Negative Analog Supply Volatge (mV)
-+ * @use_rbuf_gain2:	ext. amplifier connected in gain of two configuration
-+ */
-+
-+struct ad5791_platform_data {
-+	u16				vref_pos_mv;
-+	u16				vref_neg_mv;
-+	bool				use_rbuf_gain2;
-+};
-+
-+/**
-+ * struct ad5791_chip_info - chip specific information
-+ * @bits:		accuracy of the DAC in bits
-+ * @left_shift:		number of bits the datum must be shifted
-+ */
-+
-+struct ad5791_chip_info {
-+	u8			bits;
-+	u8			left_shift;
-+};
-+
-+/**
-+ * struct ad5791_state - driver instance specific data
-+ * @indio_dev:		the industrial I/O device
-+ * @us:			spi_device
-+ * @reg_vdd:		positive supply regulator
-+ * @reg_vss:		negative supply regulator
-+ * @chip_info:		chip model specific constants
-+ * @vref_mv:		actual reference voltage used
-+ * @pwr_down_mode	current power down mode
-+ */
-+
-+struct ad5791_state {
-+	struct iio_dev			*indio_dev;
-+	struct spi_device		*spi;
-+	struct regulator		*reg_vdd;
-+	struct regulator		*reg_vss;
-+	const struct ad5791_chip_info	*chip_info;
-+	unsigned short			vref_mv;
-+	unsigned			ctrl;
-+	unsigned			pwr_down_mode;
-+	bool				pwr_down;
-+};
-+
-+/**
-+ * ad5791_supported_device_ids:
-+ */
-+
-+enum ad5791_supported_device_ids {
-+	ID_AD5791,
-+	ID_AD5781,
-+};
-+
-+#endif /* SPI_AD5791_H_ */
---
-1.6.0.2
+Patch 1 introduces the use of iio_chan_spec structures to specify
+a channel.  Note this adds a set of callbacks to iio_dev. Arnd
+pointed out that we can pull these out into constant iio_ops
+structures.  I haven't done this yet, but it should be easy
+to retrofit on at the end.
+
+Patches 5-9 remove the event interface for buffers and replace
+with use of poll.
+
+11 fixes sca3000 to use the new approach and generally actually
+work. It's been broken for some time.
+
+13-25 Interrupt registration for event lines is then pushed into the
+drivers (and various other fixes accomplished). Between 9 and these
+patches some event lines may not work.
+
+26 removes the old event methods.  Boy were they over engineered.
+oops.
+
+28 adds irq_chip route for triggers as suggested by Thomas Gleixner.
+52 removes the old method.  Everything in between is driver conversions
+- note that in the imu cases I merged all the drivers (as per a somewhat
+old previous proposal - I'll add the event support that was in the
+original patches at a later date).
+
+53 is a cheeky cleanup that makes a lot of sense now we have very
+few directly registered attributes in chan_spec using drivers.  Basically
+it moves handling the device name into the core.
+54 makes extensive use of this.
+
+55-63 are mechanical switching over to chan_spec so I can get rid of
+the whole SCAN_EL_C stuff.  Given all these drivers never use the
+calbacks for setting the scan up, this was straight forward - if
+lengthy.  Fixed a few bugs and generally cleaned up the drivers whilst
+I was there (may well have introduced some new ones)
+
+64 removes SCAN_EL_C and iio_scan_attr and all the support code.
+Its' at this stage that the chan_spec code introduced in  patch (1)
+actually reaches it's full potential, so if considering whether that
+was worth while, take a look at the tree at this point.  What we have
+is a lot simpler and more consise than the previous approach.
+There are cases that are not yet handled, but it makes life easier
+for the vast majority of drivers we have.  Thanks to Arnd for the
+suggestion.
+
+65,66 and 68 and trivial bits that should probably have been separated
+out from this set. Hence I've pushed them down to the end.
+
+70 puts lis3l02dq's interrupt handlers back together playing a slightly
+unusual game with the top half handler.
+
+67 is the sysfs-trigger rework.  Note the other non device triggers
+need converting over - they build right now, but that's it.
+
+69 removes the buffer event codes.  The only remaining uses are hideous
+abuses that need to be hunted down and removed.
+
+Sorry for the mass set.  There was a lot to do and separating it out
+into coherent themes would be a real pain (yes I'm being lazy - if
+we weren't still in staging I probably wouldn't try and get away
+with it).
+
+I'm convinced it was worth the pain.  What do others think?
+
+The one big thing left to consider (to my mind anyway) is a better
+way of pushing events up to userspace, but that's a topic for another day.
+
+
+Thanks all.
+
+Jonathan
+
+Jonathan Cameron (70):
+  staging:iio: allow channels to be set up using a table of
+    iio_channel_spec structures.
+  staging:iio:lis3l02dq - move to new channel_spec approach.
+  staging:iio:max1363 - move to channel_spec registration.
+  staging:iio: remove ability to escalate events.
+  staging:iio: Add polling of events on the ring access chrdev.
+  staging:iio: remove legacy event chrdev for the buffers
+  staging:iio: Buffer device flattening.
+  staging:iio:lis3l02dq: General cleanup
+  staging:iio: Push interrupt setup down into the drivers for event
+    lines.
+  staging:iio: lis3l02dq - separate entirely interrupt handling for
+    thesholds from that for the datardy signal.
+  staging:iio:sca3000 extract old event handling and move to poll for
+    events from buffer
+  staging:iio:buffering remove unused parameter dead_offset from
+    read_last_n in all buffer implementations.
+  staging:iio:light:tsl2563 remove old style event registration.
+  staging:iio:dac:ad5504 move from old to new event handling.
+  staging:iio:adt7316 get rid of legacy event handling code.
+  staging:iio:adc:ad7745 move from old to current event handling.
+  staging:iio:adc:ad7816 move from old to current event handling.
+  staging:iio:adc:ad7150 move from deprecated event handling.
+  staging:iio:adc:ad7152 remove unregister of interrupt line.
+  staging:iio:adc:adt75 old to new event handling conversion
+  staging:iio:ad7291 move from old event system to current.
+  staging:iio:adc:adt7410 move to current event handling
+  staging:iio:adt7310 move to current event handling
+  staging:iio:adc:ad7314 remove unmatched unregister of event line.
+  staging:iio:ad799x move to new event handling
+  staging:iio: Remove legacy event handling.
+  staging:iio:lis3l02dq make threshold interrupt threaded.
+  staging:iio: Add infrastructure for irq_chip based triggers
+  staging:iio:Documentation generic_buffer.c update to new abi for
+    buffers + misc fixes
+  staging:iio:ring_sw add function needed for threaded irq.
+  staging:iio: add generic data ready poll function.
+  staging:iio:lis3l02dq move to threaded trigger handling.
+  staging:iio:max1363 move to irqchip based threaded irq triggering
+  staging:iio:ad7476 use channel_spec
+  staging:iio:ad7476 move to irqchip based triggering
+  staging:iio:meter:ade7758 move to irqchip based trigger handling.
+  staging:iio:adis16400 move to irq based triggers and channel spec
+    channel registration.
+  staging:iio:imu:adis16350 etc support into adis16400 driver.
+  staging:iio:imu remove old adis16350. Support now in adis16400
+    driver.
+  staging:iio:imu:adis16400 add support for adis16300
+  staging:iio:imu remove adis16300 driver.
+  staging:iio:accel:adis16201 move to irqchip based trigger handling.
+  staging:iio:accel:adis16203 move to irqchip based trigger handling.
+  staging:iio:accel:adis16204 move to irqchip based trigger handling.
+  staging:iio:accel:adis16209 move to irqchip based trigger handling.
+  staging:iio:accel:adis16240 move to irqchip based trigger handling.
+  staging:iio:adc:ad7298 move to irqchip based trigger handling.
+  staging:iio:ad7606 conversion to irq_chip based polling.
+  staging:iio:adc:ad7887 move to irqchip based trigger handling.
+  staging:iio:adc:ad799x move to irqchip based trigger handling.
+  staging:iio:gyro:adis16260 move to irqchip based trigger handling.
+  staging:iio:trigger remove legacy pollfunc elements.
+  staging:iio: Add core attribute handling for name of device.
+  staging:iio: use the new central name attribute creation code
+  staging:iio:accel:adis16201 move to chan_spec based setup.
+  staging:iio:accel:adis16203 move to chan_spec based setup.
+  staging:iio:accel:adis16204 move to chan_spec based setup.
+  staging:iio:accel:adis16209 move to chan_spec based setup.
+  staging:iio:accel: lis3l02dq add writing for calibscale and
+    calibbias.
+  staging:iio: Add chan info support for 'peak_raw' attributes.
+  staging:iio:accel:adis16240 move to chan_spec based setup.
+  staging:iio: Add angl parameters to the chan spec code.
+  staging:iio:gyro:adis16260 move to chan_spec based setup.
+  staging:iio: rip out scan_el attributes.  Now handled as
+    iio_dev_attrs like everything else.
+  staging:iio:max1363 trivial removal of unused trig pointer.
+  staging:iio:max1363 add new 2 channels parts form maxim, 11644-7
+  staging:iio:trigger sysfs userspace trigger rework.
+  staging:iio:core clean out unused elements.
+  staging:iio:buffer - remove unused event code for buffer events.
+  staging:iio:lis3l02dq remerge the two interrupt handlers.
+
+ drivers/staging/Makefile                           |    2 +-
+ drivers/staging/iio/Documentation/generic_buffer.c |   93 +-
+ drivers/staging/iio/Documentation/iio_utils.h      |   20 +-
+ drivers/staging/iio/Kconfig                        |   12 +
+ drivers/staging/iio/Makefile                       |    2 +
+ drivers/staging/iio/accel/adis16201.h              |    9 +-
+ drivers/staging/iio/accel/adis16201_core.c         |  458 +++----
+ drivers/staging/iio/accel/adis16201_ring.c         |  138 +--
+ drivers/staging/iio/accel/adis16201_trigger.c      |   52 +-
+ drivers/staging/iio/accel/adis16203.h              |   18 +-
+ drivers/staging/iio/accel/adis16203_core.c         |  379 +++---
+ drivers/staging/iio/accel/adis16203_ring.c         |  116 +--
+ drivers/staging/iio/accel/adis16203_trigger.c      |   53 +-
+ drivers/staging/iio/accel/adis16204.h              |   18 +-
+ drivers/staging/iio/accel/adis16204_core.c         |  404 +++---
+ drivers/staging/iio/accel/adis16204_ring.c         |  117 +--
+ drivers/staging/iio/accel/adis16204_trigger.c      |   55 +-
+ drivers/staging/iio/accel/adis16209.h              |    6 +-
+ drivers/staging/iio/accel/adis16209_core.c         |  438 ++++---
+ drivers/staging/iio/accel/adis16209_ring.c         |  135 +--
+ drivers/staging/iio/accel/adis16209_trigger.c      |   42 +-
+ drivers/staging/iio/accel/adis16220_core.c         |    4 +-
+ drivers/staging/iio/accel/adis16240.h              |    7 +-
+ drivers/staging/iio/accel/adis16240_core.c         |  362 +++---
+ drivers/staging/iio/accel/adis16240_ring.c         |  125 +--
+ drivers/staging/iio/accel/adis16240_trigger.c      |   41 +-
+ drivers/staging/iio/accel/lis3l02dq.h              |   30 +-
+ drivers/staging/iio/accel/lis3l02dq_core.c         |  715 +++++------
+ drivers/staging/iio/accel/lis3l02dq_ring.c         |  443 +++----
+ drivers/staging/iio/accel/sca3000.h                |   76 +-
+ drivers/staging/iio/accel/sca3000_core.c           |  933 +++++---------
+ drivers/staging/iio/accel/sca3000_ring.c           |  250 +++--
+ drivers/staging/iio/adc/Kconfig                    |    4 +-
+ drivers/staging/iio/adc/ad7150.c                   |  129 +--
+ drivers/staging/iio/adc/ad7152.c                   |   20 +-
+ drivers/staging/iio/adc/ad7291.c                   |  437 ++-----
+ drivers/staging/iio/adc/ad7298.h                   |    2 -
+ drivers/staging/iio/adc/ad7298_core.c              |   14 +-
+ drivers/staging/iio/adc/ad7298_ring.c              |   65 +-
+ drivers/staging/iio/adc/ad7314.c                   |   21 +-
+ drivers/staging/iio/adc/ad7476.h                   |    7 +-
+ drivers/staging/iio/adc/ad7476_core.c              |  162 +--
+ drivers/staging/iio/adc/ad7476_ring.c              |  102 +-
+ drivers/staging/iio/adc/ad7606_ring.c              |   27 +-
+ drivers/staging/iio/adc/ad7745.c                   |  104 +--
+ drivers/staging/iio/adc/ad7780.c                   |   13 +-
+ drivers/staging/iio/adc/ad7816.c                   |   92 +-
+ drivers/staging/iio/adc/ad7887.h                   |    2 -
+ drivers/staging/iio/adc/ad7887_core.c              |   14 +-
+ drivers/staging/iio/adc/ad7887_ring.c              |   63 +-
+ drivers/staging/iio/adc/ad799x.h                   |    4 -
+ drivers/staging/iio/adc/ad799x_core.c              |  268 ++---
+ drivers/staging/iio/adc/ad799x_ring.c              |   60 +-
+ drivers/staging/iio/adc/adt7310.c                  |  172 +--
+ drivers/staging/iio/adc/adt7410.c                  |  167 +--
+ drivers/staging/iio/adc/adt75.c                    |  159 +--
+ drivers/staging/iio/adc/max1363.h                  |   17 +-
+ drivers/staging/iio/adc/max1363_core.c             | 1371 ++++++++------------
+ drivers/staging/iio/adc/max1363_ring.c             |   65 +-
+ drivers/staging/iio/addac/adt7316.c                |  385 ++----
+ drivers/staging/iio/chrdev.h                       |   33 +-
+ drivers/staging/iio/dac/ad5446.c                   |   13 +-
+ drivers/staging/iio/dac/ad5504.c                   |   68 +-
+ drivers/staging/iio/dac/ad5504.h                   |    4 -
+ drivers/staging/iio/dac/ad5624r_spi.c              |   13 +-
+ drivers/staging/iio/dds/ad9832.c                   |   13 +-
+ drivers/staging/iio/dds/ad9834.c                   |   13 +-
+ drivers/staging/iio/gyro/adis16080_core.c          |    3 +-
+ drivers/staging/iio/gyro/adis16130_core.c          |    4 +-
+ drivers/staging/iio/gyro/adis16260.h               |    7 +-
+ drivers/staging/iio/gyro/adis16260_core.c          |  450 ++++----
+ drivers/staging/iio/gyro/adis16260_ring.c          |  117 +--
+ drivers/staging/iio/gyro/adis16260_trigger.c       |   55 +-
+ drivers/staging/iio/iio-board-info.h               |   24 +
+ drivers/staging/iio/iio-core.h                     |   13 +
+ drivers/staging/iio/iio.h                          |  276 +++--
+ drivers/staging/iio/imu/Kconfig                    |   26 +-
+ drivers/staging/iio/imu/Makefile                   |    8 -
+ drivers/staging/iio/imu/adis16300.h                |  184 ---
+ drivers/staging/iio/imu/adis16300_core.c           |  732 -----------
+ drivers/staging/iio/imu/adis16300_ring.c           |  238 ----
+ drivers/staging/iio/imu/adis16300_trigger.c        |  119 --
+ drivers/staging/iio/imu/adis16350.h                |  177 ---
+ drivers/staging/iio/imu/adis16350_core.c           |  733 -----------
+ drivers/staging/iio/imu/adis16350_ring.c           |  236 ----
+ drivers/staging/iio/imu/adis16350_trigger.c        |  119 --
+ drivers/staging/iio/imu/adis16400.h                |   31 +-
+ drivers/staging/iio/imu/adis16400_core.c           |  631 ++++++---
+ drivers/staging/iio/imu/adis16400_ring.c           |  223 ++--
+ drivers/staging/iio/imu/adis16400_trigger.c        |   55 +-
+ drivers/staging/iio/industrialio-board-info.c      |   25 +
+ drivers/staging/iio/industrialio-core.c            |  793 ++++++++----
+ drivers/staging/iio/industrialio-ring.c            |  319 +++--
+ drivers/staging/iio/industrialio-trigger.c         |  218 +++-
+ drivers/staging/iio/kfifo_buf.c                    |    3 +-
+ drivers/staging/iio/kfifo_buf.h                    |    3 +-
+ drivers/staging/iio/light/isl29018.c               |   13 +-
+ drivers/staging/iio/light/tsl2563.c                |   62 +-
+ drivers/staging/iio/meter/ade7753.c                |    4 +-
+ drivers/staging/iio/meter/ade7754.c                |    4 +-
+ drivers/staging/iio/meter/ade7758.h                |    5 -
+ drivers/staging/iio/meter/ade7758_core.c           |    4 +-
+ drivers/staging/iio/meter/ade7758_ring.c           |   58 +-
+ drivers/staging/iio/meter/ade7759.c                |    4 +-
+ drivers/staging/iio/ring_generic.h                 |  166 +--
+ drivers/staging/iio/ring_sw.c                      |   57 +-
+ drivers/staging/iio/ring_sw.h                      |    5 +-
+ drivers/staging/iio/sysfs.h                        |  161 +--
+ drivers/staging/iio/trigger.h                      |   77 +-
+ drivers/staging/iio/trigger/iio-trig-sysfs.c       |  170 ++-
+ 110 files changed, 6094 insertions(+), 10174 deletions(-)
+ create mode 100644 drivers/staging/iio/iio-board-info.h
+ create mode 100644 drivers/staging/iio/iio-core.h
+ delete mode 100644 drivers/staging/iio/imu/adis16300.h
+ delete mode 100644 drivers/staging/iio/imu/adis16300_core.c
+ delete mode 100644 drivers/staging/iio/imu/adis16300_ring.c
+ delete mode 100644 drivers/staging/iio/imu/adis16300_trigger.c
+ delete mode 100644 drivers/staging/iio/imu/adis16350.h
+ delete mode 100644 drivers/staging/iio/imu/adis16350_core.c
+ delete mode 100644 drivers/staging/iio/imu/adis16350_ring.c
+ delete mode 100644 drivers/staging/iio/imu/adis16350_trigger.c
+ create mode 100644 drivers/staging/iio/industrialio-board-info.c
+
+-- 
+1.7.3.4
