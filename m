@@ -2,249 +2,265 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 07/70] staging:iio: Buffer device flattening.
-Date: Sun, 17 Apr 2011 20:05:40 +0100
-Message-Id: <1303067203-4894-8-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 06/70] staging:iio: remove legacy event chrdev for the buffers
+Date: Sun, 17 Apr 2011 20:05:39 +0100
+Message-Id: <1303067203-4894-7-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 References: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Given we now only have one device we don't need the extra layer any more.
-Hence this patch removes it.
+part of sca3000 driver temporarily disabled (buffer won't run
+anyway).  This section is replaced later in this patch set.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/industrialio-ring.c |   76 ++++++++++---------------------
- drivers/staging/iio/ring_generic.h      |    8 +---
- drivers/staging/iio/ring_sw.c           |    3 +-
- 3 files changed, 28 insertions(+), 59 deletions(-)
+ drivers/staging/iio/accel/sca3000_ring.c |    2 +
+ drivers/staging/iio/iio.h                |   14 -------
+ drivers/staging/iio/industrialio-core.c  |    4 +-
+ drivers/staging/iio/industrialio-ring.c  |   58 +-----------------------------
+ drivers/staging/iio/ring_generic.h       |   25 -------------
+ drivers/staging/iio/ring_sw.c            |    5 ---
+ 6 files changed, 5 insertions(+), 103 deletions(-)
 
+diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
+index c20bfe0..44f9a56 100644
+--- a/drivers/staging/iio/accel/sca3000_ring.c
++++ b/drivers/staging/iio/accel/sca3000_ring.c
+@@ -357,6 +357,7 @@ void sca3000_register_ring_funcs(struct iio_dev *indio_dev)
+  **/
+ void sca3000_ring_int_process(u8 val, struct iio_ring_buffer *ring)
+ {
++	/*
+ 	if (val & SCA3000_INT_STATUS_THREE_QUARTERS)
+ 		iio_push_ring_event(ring,
+ 				    IIO_EVENT_CODE_RING_75_FULL,
+@@ -364,4 +365,5 @@ void sca3000_ring_int_process(u8 val, struct iio_ring_buffer *ring)
+ 	else if (val & SCA3000_INT_STATUS_HALF)
+ 		iio_push_ring_event(ring,
+ 				    IIO_EVENT_CODE_RING_50_FULL, 0);
++	*/
+ }
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index cfbd6a5..57c978f 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -363,20 +363,6 @@ int __iio_push_event(struct iio_event_interface *ev_int,
+ 		     s64 timestamp);
+ 
+ /**
+- * iio_setup_ev_int() - configure an event interface (chrdev)
+- * @name:		name used for resulting sysfs directory etc.
+- * @ev_int:		interface we are configuring
+- * @owner:		module that is responsible for registering this ev_int
+- * @dev:		device whose ev_int this is
+- **/
+-int iio_setup_ev_int(struct iio_event_interface *ev_int,
+-		     const char *name,
+-		     struct module *owner,
+-		     struct device *dev);
+-
+-void iio_free_ev_int(struct iio_event_interface *ev_int);
+-
+-/**
+  * iio_allocate_chrdev() - Allocate a chrdev
+  * @handler:	struct that contains relevant file handling for chrdev
+  * @dev_info:	iio_dev for which chrdev is being created
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 334bb35..a057744 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -387,7 +387,7 @@ void iio_device_free_chrdev_minor(int val)
+ 	spin_unlock(&iio_ida_lock);
+ }
+ 
+-int iio_setup_ev_int(struct iio_event_interface *ev_int,
++static int iio_setup_ev_int(struct iio_event_interface *ev_int,
+ 		     const char *name,
+ 		     struct module *owner,
+ 		     struct device *dev)
+@@ -439,7 +439,7 @@ error_device_put:
+ 	return ret;
+ }
+ 
+-void iio_free_ev_int(struct iio_event_interface *ev_int)
++static void iio_free_ev_int(struct iio_event_interface *ev_int)
+ {
+ 	device_unregister(&ev_int->dev);
+ 	put_device(&ev_int->dev);
 diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
-index 559d613..625263e 100644
+index 5c3f466..559d613 100644
 --- a/drivers/staging/iio/industrialio-ring.c
 +++ b/drivers/staging/iio/industrialio-ring.c
-@@ -106,72 +106,60 @@ static const struct file_operations iio_ring_fileops = {
+@@ -23,16 +23,6 @@
+ #include "iio.h"
+ #include "ring_generic.h"
+ 
+-int iio_push_ring_event(struct iio_ring_buffer *ring_buf,
+-		       int event_code,
+-		       s64 timestamp)
+-{
+-	return __iio_push_event(&ring_buf->ev_int,
+-				event_code,
+-				timestamp);
+-}
+-EXPORT_SYMBOL(iio_push_ring_event);
+-
+ /**
+  * iio_ring_open() - chrdev file open for ring buffer access
+  *
+@@ -116,43 +106,6 @@ static const struct file_operations iio_ring_fileops = {
  	.llseek = noop_llseek,
  };
  
--static void iio_ring_access_release(struct device *dev)
-+void iio_ring_access_release(struct device *dev)
- {
- 	struct iio_ring_buffer *buf
--		= access_dev_to_iio_ring_buffer(dev);
-+		= container_of(dev, struct iio_ring_buffer, dev);
- 	cdev_del(&buf->access_handler.chrdev);
- 	iio_device_free_chrdev_minor(MINOR(dev->devt));
- }
+-/**
+- * __iio_request_ring_buffer_event_chrdev() - allocate ring event chrdev
+- * @buf:	ring buffer whose event chrdev we are allocating
+- * @id:		id of this ring buffer (typically 0)
+- * @owner:	the module who owns the ring buffer (for ref counting)
+- * @dev:	device with which the chrdev is associated
+- **/
+-static inline int
+-__iio_request_ring_buffer_event_chrdev(struct iio_ring_buffer *buf,
+-				       int id,
+-				       struct module *owner,
+-				       struct device *dev)
+-{
+-	int ret;
 -
--static struct device_type iio_ring_access_type = {
--	.release = iio_ring_access_release,
--};
-+EXPORT_SYMBOL(iio_ring_access_release);
- 
- static inline int
--__iio_request_ring_buffer_access_chrdev(struct iio_ring_buffer *buf,
--					int id,
-+__iio_request_ring_buffer_chrdev(struct iio_ring_buffer *buf,
- 					struct module *owner)
- {
- 	int ret, minor;
- 
- 	buf->access_handler.flags = 0;
- 
--	buf->access_dev.parent = &buf->dev;
--	buf->access_dev.bus = &iio_bus_type;
--	buf->access_dev.type = &iio_ring_access_type;
--	device_initialize(&buf->access_dev);
-+	buf->dev.bus = &iio_bus_type;
-+	device_initialize(&buf->dev);
- 
- 	minor = iio_device_get_chrdev_minor();
- 	if (minor < 0) {
- 		ret = minor;
- 		goto error_device_put;
- 	}
--	buf->access_dev.devt = MKDEV(MAJOR(iio_devt), minor);
--
--
--	buf->access_id = id;
--
--	dev_set_name(&buf->access_dev, "%s:access%d",
--		     dev_name(&buf->dev),
--		     buf->access_id);
--	ret = device_add(&buf->access_dev);
-+	buf->dev.devt = MKDEV(MAJOR(iio_devt), minor);
-+	dev_set_name(&buf->dev, "%s:buffer%d",
-+		     dev_name(buf->dev.parent),
-+		     buf->id);
-+	ret = device_add(&buf->dev);
- 	if (ret < 0) {
--		printk(KERN_ERR "failed to add the ring access dev\n");
-+		printk(KERN_ERR "failed to add the ring dev\n");
- 		goto error_device_put;
- 	}
--
- 	cdev_init(&buf->access_handler.chrdev, &iio_ring_fileops);
- 	buf->access_handler.chrdev.owner = owner;
--
--	ret = cdev_add(&buf->access_handler.chrdev, buf->access_dev.devt, 1);
-+	ret = cdev_add(&buf->access_handler.chrdev, buf->dev.devt, 1);
- 	if (ret) {
--		printk(KERN_ERR "failed to allocate ring access chrdev\n");
-+		printk(KERN_ERR "failed to allocate ring chrdev\n");
- 		goto error_device_unregister;
- 	}
- 	return 0;
- 
- error_device_unregister:
--	device_unregister(&buf->access_dev);
-+	device_unregister(&buf->dev);
- error_device_put:
--	put_device(&buf->access_dev);
-+	put_device(&buf->dev);
- 
- 	return ret;
- }
- 
--static void __iio_free_ring_buffer_access_chrdev(struct iio_ring_buffer *buf)
-+static void __iio_free_ring_buffer_chrdev(struct iio_ring_buffer *buf)
- {
--	device_unregister(&buf->access_dev);
-+	device_unregister(&buf->dev);
- }
- 
- void iio_ring_buffer_init(struct iio_ring_buffer *ring,
-@@ -344,36 +332,25 @@ int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
- 
- 	ring->id = id;
- 
--	dev_set_name(&ring->dev, "%s:buffer%d",
--		     dev_name(ring->dev.parent),
--		     ring->id);
--	ret = device_add(&ring->dev);
+-	snprintf(buf->ev_int._name, sizeof(buf->ev_int._name),
+-		 "%s:event%d",
+-		 dev_name(&buf->dev),
+-		 id);
+-	ret = iio_setup_ev_int(&(buf->ev_int),
+-			       buf->ev_int._name,
+-			       owner,
+-			       dev);
 -	if (ret)
 -		goto error_ret;
+-	return 0;
 -
--	ret = __iio_request_ring_buffer_access_chrdev(ring,
--						      0,
--						      ring->owner);
-+	ret = __iio_request_ring_buffer_chrdev(ring, ring->owner);
- 
+-error_ret:
+-	return ret;
+-}
+-
+-static inline void
+-__iio_free_ring_buffer_event_chrdev(struct iio_ring_buffer *buf)
+-{
+-	iio_free_ev_int(&(buf->ev_int));
+-}
+-
+ static void iio_ring_access_release(struct device *dev)
+ {
+ 	struct iio_ring_buffer *buf
+@@ -227,7 +180,6 @@ void iio_ring_buffer_init(struct iio_ring_buffer *ring,
+ 	if (ring->access.mark_param_change)
+ 		ring->access.mark_param_change(ring);
+ 	ring->indio_dev = dev_info;
+-	ring->ev_int.private = ring;
+ 	ring->access_handler.private = ring;
+ 	init_waitqueue_head(&ring->pollq);
+ }
+@@ -399,19 +351,12 @@ int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
  	if (ret)
+ 		goto error_ret;
+ 
+-	ret = __iio_request_ring_buffer_event_chrdev(ring,
+-						     0,
+-						     ring->owner,
+-						     &ring->dev);
+-	if (ret)
 -		goto error_remove_device;
 -
-+		goto error_ret;
+ 	ret = __iio_request_ring_buffer_access_chrdev(ring,
+ 						      0,
+ 						      ring->owner);
+ 
+ 	if (ret)
+-		goto error_ret;
++		goto error_remove_device;
+ 
  	if (ring->scan_el_attrs) {
  		ret = sysfs_create_group(&ring->dev.kobj,
- 					 ring->scan_el_attrs);
- 		if (ret) {
- 			dev_err(&ring->dev,
- 				"Failed to add sysfs scan elements\n");
--			goto error_free_ring_buffer_access_chrdev;
-+			goto error_free_ring_buffer_chrdev;
- 		}
- 	} else if (channels) {
- 		ret = sysfs_create_group(&ring->dev.kobj,
- 					 &iio_scan_el_dummy_group);
- 		if (ret)
--			goto error_free_ring_buffer_access_chrdev;
-+			goto error_free_ring_buffer_chrdev;
- 	}
- 
--
- 	INIT_LIST_HEAD(&ring->scan_el_dev_attr_list);
- 	INIT_LIST_HEAD(&ring->scan_el_en_attr_list);
- 	if (channels) {
-@@ -388,10 +365,8 @@ int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
- 	return 0;
- error_cleanup_dynamic:
- 	__iio_ring_attr_cleanup(ring);
--error_free_ring_buffer_access_chrdev:
--	__iio_free_ring_buffer_access_chrdev(ring);
--error_remove_device:
--	device_del(&ring->dev);
-+error_free_ring_buffer_chrdev:
-+	__iio_free_ring_buffer_chrdev(ring);
- error_ret:
- 	return ret;
- }
-@@ -406,8 +381,7 @@ EXPORT_SYMBOL(iio_ring_buffer_register);
- void iio_ring_buffer_unregister(struct iio_ring_buffer *ring)
+@@ -462,7 +407,6 @@ void iio_ring_buffer_unregister(struct iio_ring_buffer *ring)
  {
  	__iio_ring_attr_cleanup(ring);
--	__iio_free_ring_buffer_access_chrdev(ring);
--	device_del(&ring->dev);
-+	__iio_free_ring_buffer_chrdev(ring);
+ 	__iio_free_ring_buffer_access_chrdev(ring);
+-	__iio_free_ring_buffer_event_chrdev(ring);
+ 	device_del(&ring->dev);
  }
  EXPORT_SYMBOL(iio_ring_buffer_unregister);
- 
 diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
-index 3a1a872..91f1037 100644
+index 0640a8a..3a1a872 100644
 --- a/drivers/staging/iio/ring_generic.h
 +++ b/drivers/staging/iio/ring_generic.h
-@@ -68,11 +68,9 @@ struct iio_ring_access_funcs {
- /**
-  * struct iio_ring_buffer - general ring buffer structure
-  * @dev:		ring buffer device struct
-- * @access_dev:		system device struct for the chrdev
-  * @indio_dev:		industrial I/O device structure
-  * @owner:		module that owns the ring buffer (for ref counting)
-  * @id:			unique id number
-- * @access_id:		device id number
-  * @length:		[DEVICE] number of datums in ring
-  * @bytes_per_datum:	[DEVICE] size of individual datum including timestamp
-  * @bpe:		[DEVICE] size of individual channel value
-@@ -92,11 +90,9 @@ struct iio_ring_access_funcs {
-   **/
- struct iio_ring_buffer {
- 	struct device dev;
--	struct device access_dev;
- 	struct iio_dev *indio_dev;
- 	struct module *owner;
- 	int				id;
--	int				access_id;
- 	int				length;
- 	int				bytes_per_datum;
- 	int				bpe;
-@@ -398,8 +394,6 @@ static inline void iio_put_ring_buffer(struct iio_ring_buffer *ring)
- 
- #define to_iio_ring_buffer(d)			\
- 	container_of(d, struct iio_ring_buffer, dev)
--#define access_dev_to_iio_ring_buffer(d)			\
--	container_of(d, struct iio_ring_buffer, access_dev)
+@@ -16,29 +16,6 @@
+ struct iio_ring_buffer;
  
  /**
-  * iio_ring_buffer_register() - register the buffer with IIO core
-@@ -416,6 +410,8 @@ int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
- 				const struct iio_chan_spec *channels,
- 				int num_channels);
- 
-+void iio_ring_access_release(struct device *dev);
-+
- /**
-  * iio_ring_buffer_unregister() - unregister the buffer from IIO core
-  * @ring: the buffer to be unregistered
+- * iio_push_ring_event() - ring buffer specific push to event chrdev
+- * @ring_buf:		ring buffer that is the event source
+- * @event_code:		event indentification code
+- * @timestamp:		time of event
+- **/
+-int iio_push_ring_event(struct iio_ring_buffer *ring_buf,
+-			int event_code,
+-			s64 timestamp);
+-/**
+- * iio_push_or_escallate_ring_event() -	escalate or add as appropriate
+- * @ring_buf:		ring buffer that is the event source
+- * @event_code:		event indentification code
+- * @timestamp:		time of event
+- *
+- * Typical usecase is to escalate a 50% ring full to 75% full if no one has yet
+- * read the first event. Clearly the 50% full is no longer of interest in
+- * typical use case.
+- **/
+-int iio_push_or_escallate_ring_event(struct iio_ring_buffer *ring_buf,
+-				     int event_code,
+-				     s64 timestamp);
+-
+-/**
+  * struct iio_ring_access_funcs - access functions for ring buffers.
+  * @mark_in_use:	reference counting, typically to prevent module removal
+  * @unmark_in_use:	reduce reference count when no longer using ring buffer
+@@ -106,7 +83,6 @@ struct iio_ring_access_funcs {
+  * @scan_mask:		[INTERN] bitmask used in masking scan mode elements
+  * @scan_timestamp:	[INTERN] does the scan mode include a timestamp
+  * @access_handler:	[INTERN] chrdev access handling
+- * @ev_int:		[INTERN] chrdev interface for the event chrdev
+  * @access:		[DRIVER] ring access functions associated with the
+  *			implementation.
+  * @preenable:		[DRIVER] function to run prior to marking ring enabled
+@@ -130,7 +106,6 @@ struct iio_ring_buffer {
+ 	u32				scan_mask;
+ 	bool				scan_timestamp;
+ 	struct iio_handler		access_handler;
+-	struct iio_event_interface	ev_int;
+ 	struct iio_ring_access_funcs	access;
+ 	int				(*preenable)(struct iio_dev *);
+ 	int				(*postenable)(struct iio_dev *);
 diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
-index a429a3d..5fbf5ff 100644
+index 53c6774..a429a3d 100644
 --- a/drivers/staging/iio/ring_sw.c
 +++ b/drivers/staging/iio/ring_sw.c
-@@ -375,6 +375,7 @@ EXPORT_SYMBOL(iio_mark_update_needed_sw_rb);
- static void iio_sw_rb_release(struct device *dev)
+@@ -69,7 +69,6 @@ static int iio_store_to_sw_ring(struct iio_sw_ring_buffer *ring,
+ 				unsigned char *data, s64 timestamp)
  {
- 	struct iio_ring_buffer *r = to_iio_ring_buffer(dev);
-+	iio_ring_access_release(&r->dev);
- 	kfree(iio_to_sw_ring(r));
- }
+ 	int ret = 0;
+-	int code;
+ 	unsigned char *temp_ptr, *change_test_ptr;
  
-@@ -416,9 +417,7 @@ struct iio_ring_buffer *iio_sw_rb_allocate(struct iio_dev *indio_dev)
- 	iio_ring_buffer_init(buf, indio_dev);
- 	__iio_init_sw_ring_buffer(ring);
- 	buf->dev.type = &iio_sw_ring_type;
--	device_initialize(&buf->dev);
- 	buf->dev.parent = &indio_dev->dev;
--	buf->dev.bus = &iio_bus_type;
- 	dev_set_drvdata(&buf->dev, (void *)buf);
- 
- 	return buf;
+ 	/* initial store */
+@@ -133,10 +132,6 @@ static int iio_store_to_sw_ring(struct iio_sw_ring_buffer *ring,
+ 	if (ring->half_p == ring->data + ring->buf.length*ring->buf.bytes_per_datum)
+ 		ring->half_p = ring->data;
+ 	if (ring->half_p == ring->read_p) {
+-		code = IIO_EVENT_CODE_RING_50_FULL;
+-		ret = __iio_push_event(&ring->buf.ev_int,
+-				       code,
+-				       timestamp);
+ 		ring->buf.stufftoread = true;
+ 		wake_up_interruptible(&ring->buf.pollq);
+ 	}
 -- 
 1.7.3.4
