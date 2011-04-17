@@ -2,557 +2,249 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 08/70] staging:iio:lis3l02dq: General cleanup
-Date: Sun, 17 Apr 2011 20:05:41 +0100
-Message-Id: <1303067203-4894-9-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 07/70] staging:iio: Buffer device flattening.
+Date: Sun, 17 Apr 2011 20:05:40 +0100
+Message-Id: <1303067203-4894-8-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 References: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-As Arnd observed, things are clearner if we pass iio_dev into read and write fucntions.
-
-Now uses st for lis3l02dq_state everywhere.
-
-Other bits of trivial tidying.
+Given we now only have one device we don't need the extra layer any more.
+Hence this patch removes it.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/lis3l02dq.h      |    4 +-
- drivers/staging/iio/accel/lis3l02dq_core.c |  118 ++++++++++++----------------
- drivers/staging/iio/accel/lis3l02dq_ring.c |   62 ++++++++-------
- 3 files changed, 84 insertions(+), 100 deletions(-)
+ drivers/staging/iio/industrialio-ring.c |   76 ++++++++++---------------------
+ drivers/staging/iio/ring_generic.h      |    8 +---
+ drivers/staging/iio/ring_sw.c           |    3 +-
+ 3 files changed, 28 insertions(+), 59 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
-index 88b5598..76f592b 100644
---- a/drivers/staging/iio/accel/lis3l02dq.h
-+++ b/drivers/staging/iio/accel/lis3l02dq.h
-@@ -173,11 +173,11 @@ struct lis3l02dq_state {
- #define lis3l02dq_h_to_s(_h)				\
- 	container_of(_h, struct lis3l02dq_state, help)
+diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
+index 559d613..625263e 100644
+--- a/drivers/staging/iio/industrialio-ring.c
++++ b/drivers/staging/iio/industrialio-ring.c
+@@ -106,72 +106,60 @@ static const struct file_operations iio_ring_fileops = {
+ 	.llseek = noop_llseek,
+ };
  
--int lis3l02dq_spi_read_reg_8(struct device *dev,
-+int lis3l02dq_spi_read_reg_8(struct iio_dev *indio_dev,
- 			     u8 reg_address,
- 			     u8 *val);
- 
--int lis3l02dq_spi_write_reg_8(struct device *dev,
-+int lis3l02dq_spi_write_reg_8(struct iio_dev *indio_dev,
- 			      u8 reg_address,
- 			      u8 *val);
- 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
-index a487923..3e057b0 100644
---- a/drivers/staging/iio/accel/lis3l02dq_core.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_core.c
-@@ -39,9 +39,17 @@
-  * This means that use cannot be made of spi_write etc.
-  */
- 
--static int __lis3l02dq_spi_read_reg_8(struct lis3l02dq_state *st,
--				      u8 reg_address, u8 *val)
-+/**
-+ * lis3l02dq_spi_read_reg_8() - read single byte from a single register
-+ * @indio_dev: iio_dev for this actual device
-+ * @reg_address: the address of the register to be read
-+ * @val: pass back the resulting value
-+ **/
-+int lis3l02dq_spi_read_reg_8(struct iio_dev *indio_dev,
-+			     u8 reg_address, u8 *val)
+-static void iio_ring_access_release(struct device *dev)
++void iio_ring_access_release(struct device *dev)
  {
-+	struct iio_sw_ring_helper_state *h = iio_dev_get_devdata(indio_dev);
-+	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
- 	struct spi_message msg;
- 	int ret;
- 	struct spi_transfer xfer = {
-@@ -49,7 +57,6 @@ static int __lis3l02dq_spi_read_reg_8(struct lis3l02dq_state *st,
- 		.rx_buf = st->rx,
- 		.bits_per_word = 8,
- 		.len = 2,
--		.cs_change = 1,
- 	};
- 
- 	mutex_lock(&st->buf_lock);
-@@ -64,50 +71,26 @@ static int __lis3l02dq_spi_read_reg_8(struct lis3l02dq_state *st,
- 
- 	return ret;
+ 	struct iio_ring_buffer *buf
+-		= access_dev_to_iio_ring_buffer(dev);
++		= container_of(dev, struct iio_ring_buffer, dev);
+ 	cdev_del(&buf->access_handler.chrdev);
+ 	iio_device_free_chrdev_minor(MINOR(dev->devt));
  }
--/**
-- * lis3l02dq_spi_read_reg_8() - read single byte from a single register
-- * @dev: device asosciated with child of actual device (iio_dev or iio_trig)
-- * @reg_address: the address of the register to be read
-- * @val: pass back the resulting value
-- **/
--int lis3l02dq_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct iio_sw_ring_helper_state *h = iio_dev_get_devdata(indio_dev);
--	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
--	return __lis3l02dq_spi_read_reg_8(st, reg_address, val);
--}
- 
- /**
-  * lis3l02dq_spi_write_reg_8() - write single byte to a register
-- * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @indio_dev: iio_dev for this device
-  * @reg_address: the address of the register to be written
-  * @val: the value to write
-  **/
--int lis3l02dq_spi_write_reg_8(struct device *dev,
-+int lis3l02dq_spi_write_reg_8(struct iio_dev *indio_dev,
- 			      u8 reg_address,
- 			      u8 *val)
- {
- 	int ret;
--	struct spi_message msg;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct iio_sw_ring_helper_state *h
- 		= iio_dev_get_devdata(indio_dev);
- 	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
--	struct spi_transfer xfer = {
--		.tx_buf = st->tx,
--		.bits_per_word = 8,
--		.len = 2,
--		.cs_change = 1,
--	};
- 
- 	mutex_lock(&st->buf_lock);
- 	st->tx[0] = LIS3L02DQ_WRITE_REG(reg_address);
- 	st->tx[1] = *val;
 -
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfer, &msg);
--	ret = spi_sync(st->us, &msg);
-+	ret = spi_write(st->us, st->tx, 2);
- 	mutex_unlock(&st->buf_lock);
+-static struct device_type iio_ring_access_type = {
+-	.release = iio_ring_access_release,
+-};
++EXPORT_SYMBOL(iio_ring_access_release);
  
- 	return ret;
-@@ -115,18 +98,17 @@ int lis3l02dq_spi_write_reg_8(struct device *dev,
- 
- /**
-  * lisl302dq_spi_write_reg_s16() - write 2 bytes to a pair of registers
-- * @dev: device associated with child of actual device (iio_dev or iio_trig)
-- * @reg_address: the address of the lower of the two registers. Second register
-- *               is assumed to have address one greater.
-- * @val: value to be written
-+ * @indio_dev: iio_dev for this device
-+ * @lower_reg_address: the address of the lower of the two registers.
-+ *               Second register is assumed to have address one greater.
-+ * @value: value to be written
-  **/
--static int lis3l02dq_spi_write_reg_s16(struct device *dev,
-+static int lis3l02dq_spi_write_reg_s16(struct iio_dev *indio_dev,
- 				       u8 lower_reg_address,
- 				       s16 value)
+ static inline int
+-__iio_request_ring_buffer_access_chrdev(struct iio_ring_buffer *buf,
+-					int id,
++__iio_request_ring_buffer_chrdev(struct iio_ring_buffer *buf,
+ 					struct module *owner)
  {
- 	int ret;
- 	struct spi_message msg;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct iio_sw_ring_helper_state *h
- 		= iio_dev_get_devdata(indio_dev);
- 	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
-@@ -139,7 +121,6 @@ static int lis3l02dq_spi_write_reg_s16(struct device *dev,
- 			.tx_buf = st->tx + 2,
- 			.bits_per_word = 8,
- 			.len = 2,
--			.cs_change = 1,
- 		},
- 	};
+ 	int ret, minor;
  
-@@ -158,10 +139,14 @@ static int lis3l02dq_spi_write_reg_s16(struct device *dev,
- 	return ret;
- }
+ 	buf->access_handler.flags = 0;
  
--static int lis3l02dq_read_16bit_s(struct lis3l02dq_state *st,
-+static int lis3l02dq_read_reg_s16(struct iio_dev *indio_dev,
- 				  u8 lower_reg_address,
- 				  int *val)
- {
-+	struct iio_sw_ring_helper_state *h
-+		= iio_dev_get_devdata(indio_dev);
-+	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
-+
- 	struct spi_message msg;
- 	int ret;
- 	s16 tempval;
-@@ -176,7 +161,6 @@ static int lis3l02dq_read_16bit_s(struct lis3l02dq_state *st,
- 			.rx_buf = st->rx + 2,
- 			.bits_per_word = 8,
- 			.len = 2,
--			.cs_change = 0,
- 		},
- 	};
+-	buf->access_dev.parent = &buf->dev;
+-	buf->access_dev.bus = &iio_bus_type;
+-	buf->access_dev.type = &iio_ring_access_type;
+-	device_initialize(&buf->access_dev);
++	buf->dev.bus = &iio_bus_type;
++	device_initialize(&buf->dev);
  
-@@ -224,11 +208,7 @@ static int lis3l02dq_read_thresh(struct iio_dev *indio_dev,
- 				 int e,
- 				 int *val)
- {
--	struct iio_sw_ring_helper_state *h
--		= iio_dev_get_devdata(indio_dev);
--	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
+ 	minor = iio_device_get_chrdev_minor();
+ 	if (minor < 0) {
+ 		ret = minor;
+ 		goto error_device_put;
+ 	}
+-	buf->access_dev.devt = MKDEV(MAJOR(iio_devt), minor);
 -
--	return lis3l02dq_read_16bit_s(st, LIS3L02DQ_REG_THS_L_ADDR, val);
-+	return lis3l02dq_read_reg_s16(indio_dev, LIS3L02DQ_REG_THS_L_ADDR, val);
- }
- 
- static int lis3l02dq_write_thresh(struct iio_dev *indio_dev,
-@@ -236,7 +216,7 @@ static int lis3l02dq_write_thresh(struct iio_dev *indio_dev,
- 				  int val)
- {
- 	u16 value = val;
--	return lis3l02dq_spi_write_reg_s16(&indio_dev->dev,
-+	return lis3l02dq_spi_write_reg_s16(indio_dev,
- 					   LIS3L02DQ_REG_THS_L_ADDR,
- 					   value);
- }
-@@ -250,10 +230,8 @@ static int lis3l02dq_read_raw(struct iio_dev *indio_dev,
- 	u8 utemp;
- 	s8 stemp;
- 	ssize_t ret = 0;
--	struct iio_sw_ring_helper_state *h
--		= iio_dev_get_devdata(indio_dev);
--	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
- 	u8 reg;
-+
- 	switch (mask) {
- 	case 0:
- 		/* Take the iio_dev status lock */
-@@ -265,7 +243,7 @@ static int lis3l02dq_read_raw(struct iio_dev *indio_dev,
- 		else {
- 			reg = lis3l02dq_axis_map
- 				[LIS3L02DQ_ACCEL][chan->address];
--			ret = lis3l02dq_read_16bit_s(st, reg, val);
-+			ret = lis3l02dq_read_reg_s16(indio_dev, reg, val);
- 		}
- 		mutex_unlock(&indio_dev->mlock);
- 		return IIO_VAL_INT;
-@@ -275,7 +253,7 @@ static int lis3l02dq_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
- 		reg = lis3l02dq_axis_map[LIS3L02DQ_GAIN][chan->address];
--		ret = __lis3l02dq_spi_read_reg_8(st, reg, &utemp);
-+		ret = lis3l02dq_spi_read_reg_8(indio_dev, reg, &utemp);
- 		if (ret)
- 			goto error_ret;
- 		/* to match with what previous code does */
-@@ -284,7 +262,7 @@ static int lis3l02dq_read_raw(struct iio_dev *indio_dev,
- 
- 	case (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE):
- 		reg = lis3l02dq_axis_map[LIS3L02DQ_BIAS][chan->address];
--		ret = __lis3l02dq_spi_read_reg_8(st, reg, (u8 *)&stemp);
-+		ret = lis3l02dq_spi_read_reg_8(indio_dev, reg, (u8 *)&stemp);
- 		/* to match with what previous code does */
- 		*val = stemp;
- 		return IIO_VAL_INT;
-@@ -297,9 +275,10 @@ static ssize_t lis3l02dq_read_frequency(struct device *dev,
- 					struct device_attribute *attr,
- 					char *buf)
- {
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	int ret, len = 0;
- 	s8 t;
--	ret = lis3l02dq_spi_read_reg_8(dev,
-+	ret = lis3l02dq_spi_read_reg_8(indio_dev,
- 				       LIS3L02DQ_REG_CTRL_1_ADDR,
- 				       (u8 *)&t);
- 	if (ret)
-@@ -337,7 +316,7 @@ static ssize_t lis3l02dq_write_frequency(struct device *dev,
- 		return ret;
- 
- 	mutex_lock(&indio_dev->mlock);
--	ret = lis3l02dq_spi_read_reg_8(dev,
-+	ret = lis3l02dq_spi_read_reg_8(indio_dev,
- 				       LIS3L02DQ_REG_CTRL_1_ADDR,
- 				       &t);
- 	if (ret)
-@@ -362,7 +341,7 @@ static ssize_t lis3l02dq_write_frequency(struct device *dev,
- 		goto error_ret_mutex;
- 	};
- 
--	ret = lis3l02dq_spi_write_reg_8(dev,
-+	ret = lis3l02dq_spi_write_reg_8(indio_dev,
- 					LIS3L02DQ_REG_CTRL_1_ADDR,
- 					&t);
- 
-@@ -383,7 +362,7 @@ static int lis3l02dq_initial_setup(struct lis3l02dq_state *st)
- 
- 	val = LIS3L02DQ_DEFAULT_CTRL1;
- 	/* Write suitable defaults to ctrl1 */
--	ret = lis3l02dq_spi_write_reg_8(&st->help.indio_dev->dev,
-+	ret = lis3l02dq_spi_write_reg_8(st->help.indio_dev,
- 					LIS3L02DQ_REG_CTRL_1_ADDR,
- 					&val);
+-
+-	buf->access_id = id;
+-
+-	dev_set_name(&buf->access_dev, "%s:access%d",
+-		     dev_name(&buf->dev),
+-		     buf->access_id);
+-	ret = device_add(&buf->access_dev);
++	buf->dev.devt = MKDEV(MAJOR(iio_devt), minor);
++	dev_set_name(&buf->dev, "%s:buffer%d",
++		     dev_name(buf->dev.parent),
++		     buf->id);
++	ret = device_add(&buf->dev);
+ 	if (ret < 0) {
+-		printk(KERN_ERR "failed to add the ring access dev\n");
++		printk(KERN_ERR "failed to add the ring dev\n");
+ 		goto error_device_put;
+ 	}
+-
+ 	cdev_init(&buf->access_handler.chrdev, &iio_ring_fileops);
+ 	buf->access_handler.chrdev.owner = owner;
+-
+-	ret = cdev_add(&buf->access_handler.chrdev, buf->access_dev.devt, 1);
++	ret = cdev_add(&buf->access_handler.chrdev, buf->dev.devt, 1);
  	if (ret) {
-@@ -391,7 +370,7 @@ static int lis3l02dq_initial_setup(struct lis3l02dq_state *st)
- 		goto err_ret;
+-		printk(KERN_ERR "failed to allocate ring access chrdev\n");
++		printk(KERN_ERR "failed to allocate ring chrdev\n");
+ 		goto error_device_unregister;
  	}
- 	/* Repeat as sometimes doesn't work first time?*/
--	ret = lis3l02dq_spi_write_reg_8(&st->help.indio_dev->dev,
-+	ret = lis3l02dq_spi_write_reg_8(st->help.indio_dev,
- 					LIS3L02DQ_REG_CTRL_1_ADDR,
- 					&val);
- 	if (ret) {
-@@ -401,17 +380,18 @@ static int lis3l02dq_initial_setup(struct lis3l02dq_state *st)
- 
- 	/* Read back to check this has worked acts as loose test of correct
- 	 * chip */
--	ret = lis3l02dq_spi_read_reg_8(&st->help.indio_dev->dev,
-+	ret = lis3l02dq_spi_read_reg_8(st->help.indio_dev,
- 				       LIS3L02DQ_REG_CTRL_1_ADDR,
- 				       &valtest);
- 	if (ret || (valtest != val)) {
--		dev_err(&st->help.indio_dev->dev, "device not playing ball");
-+		dev_err(&st->help.indio_dev->dev,
-+			"device not playing ball %d %d\n", valtest, val);
- 		ret = -EINVAL;
- 		goto err_ret;
- 	}
- 
- 	val = LIS3L02DQ_DEFAULT_CTRL2;
--	ret = lis3l02dq_spi_write_reg_8(&st->help.indio_dev->dev,
-+	ret = lis3l02dq_spi_write_reg_8(st->help.indio_dev,
- 					LIS3L02DQ_REG_CTRL_2_ADDR,
- 					&val);
- 	if (ret) {
-@@ -420,7 +400,7 @@ static int lis3l02dq_initial_setup(struct lis3l02dq_state *st)
- 	}
- 
- 	val = LIS3L02DQ_REG_WAKE_UP_CFG_LATCH_SRC;
--	ret = lis3l02dq_spi_write_reg_8(&st->help.indio_dev->dev,
-+	ret = lis3l02dq_spi_write_reg_8(st->help.indio_dev,
- 					LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
- 					&val);
- 	if (ret)
-@@ -487,7 +467,7 @@ static ssize_t lis3l02dq_read_event_config(struct iio_dev *indio_dev,
- 	u8 mask = (1 << (IIO_EVENT_CODE_EXTRACT_MODIFIER(event_code)*2 +
- 			 (IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
- 			  IIO_EV_DIR_RISING)));
--	ret = lis3l02dq_spi_read_reg_8(&indio_dev->dev,
-+	ret = lis3l02dq_spi_read_reg_8(indio_dev,
- 				       LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
- 				       &val);
- 	if (ret < 0)
-@@ -511,12 +491,12 @@ static int lis3l02dq_write_event_config(struct iio_dev *indio_dev,
- 
- 	mutex_lock(&indio_dev->mlock);
- 	/* read current control */
--	ret = lis3l02dq_spi_read_reg_8(&indio_dev->dev,
-+	ret = lis3l02dq_spi_read_reg_8(indio_dev,
- 				       LIS3L02DQ_REG_CTRL_2_ADDR,
- 				       &control);
- 	if (ret)
- 		goto error_ret;
--	ret = lis3l02dq_spi_read_reg_8(&indio_dev->dev,
-+	ret = lis3l02dq_spi_read_reg_8(indio_dev,
- 				       LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
- 				       &val);
- 	if (ret < 0)
-@@ -536,7 +516,7 @@ static int lis3l02dq_write_event_config(struct iio_dev *indio_dev,
- 					   &indio_dev->interrupts[0]->ev_list);
- 	}
- 	if (changed) {
--		ret = lis3l02dq_spi_write_reg_8(&indio_dev->dev,
-+		ret = lis3l02dq_spi_write_reg_8(indio_dev,
- 						LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
- 						&val);
- 		if (ret)
-@@ -544,7 +524,7 @@ static int lis3l02dq_write_event_config(struct iio_dev *indio_dev,
- 		control = list_el->refcount ?
- 			(control | LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT) :
- 			(control & ~LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT);
--		ret = lis3l02dq_spi_write_reg_8(&indio_dev->dev,
-+		ret = lis3l02dq_spi_write_reg_8(indio_dev,
- 					       LIS3L02DQ_REG_CTRL_2_ADDR,
- 					       &control);
- 	}
-@@ -565,7 +545,7 @@ static void lis3l02dq_thresh_handler_bh_no_check(struct work_struct *work_s)
- 
- 	u8 t;
- 
--	lis3l02dq_spi_read_reg_8(&st->help.indio_dev->dev,
-+	lis3l02dq_spi_read_reg_8(st->help.indio_dev,
- 				 LIS3L02DQ_REG_WAKE_UP_SRC_ADDR,
- 				 &t);
- 
-@@ -625,7 +605,7 @@ static void lis3l02dq_thresh_handler_bh_no_check(struct work_struct *work_s)
- 	/* reenable the irq */
- 	enable_irq(st->us->irq);
- 	/* Ack and allow for new interrupts */
--	lis3l02dq_spi_read_reg_8(&st->help.indio_dev->dev,
-+	lis3l02dq_spi_read_reg_8(st->help.indio_dev,
- 				 LIS3L02DQ_REG_WAKE_UP_ACK_ADDR,
- 				 &t);
- 
-@@ -764,7 +744,7 @@ static int lis3l02dq_stop_device(struct iio_dev *indio_dev)
- 	u8 val = 0;
- 
- 	mutex_lock(&indio_dev->mlock);
--	ret = lis3l02dq_spi_write_reg_8(&indio_dev->dev,
-+	ret = lis3l02dq_spi_write_reg_8(indio_dev,
- 					LIS3L02DQ_REG_CTRL_1_ADDR,
- 					&val);
- 	if (ret) {
-@@ -772,7 +752,7 @@ static int lis3l02dq_stop_device(struct iio_dev *indio_dev)
- 		goto err_ret;
- 	}
- 
--	ret = lis3l02dq_spi_write_reg_8(&indio_dev->dev,
-+	ret = lis3l02dq_spi_write_reg_8(indio_dev,
- 					LIS3L02DQ_REG_CTRL_2_ADDR,
- 					&val);
- 	if (ret)
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index a710832..2c666f2 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -206,7 +206,7 @@ __lis3l02dq_write_data_ready_config(struct device *dev,
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 
- /* Get the current event mask register */
--	ret = lis3l02dq_spi_read_reg_8(dev,
-+	ret = lis3l02dq_spi_read_reg_8(indio_dev,
- 				       LIS3L02DQ_REG_CTRL_2_ADDR,
- 				       &valold);
- 	if (ret)
-@@ -220,12 +220,12 @@ __lis3l02dq_write_data_ready_config(struct device *dev,
- 
- 		valold &= ~LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION;
- 		/* The double write is to overcome a hardware bug?*/
--		ret = lis3l02dq_spi_write_reg_8(dev,
-+		ret = lis3l02dq_spi_write_reg_8(indio_dev,
- 						LIS3L02DQ_REG_CTRL_2_ADDR,
- 						&valold);
- 		if (ret)
- 			goto error_ret;
--		ret = lis3l02dq_spi_write_reg_8(dev,
-+		ret = lis3l02dq_spi_write_reg_8(indio_dev,
- 						LIS3L02DQ_REG_CTRL_2_ADDR,
- 						&valold);
- 		if (ret)
-@@ -240,7 +240,7 @@ __lis3l02dq_write_data_ready_config(struct device *dev,
- 		/* if not set, enable requested */
- 		valold |= LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION;
- 		iio_add_event_to_list(list, &indio_dev->interrupts[0]->ev_list);
--		ret = lis3l02dq_spi_write_reg_8(dev,
-+		ret = lis3l02dq_spi_write_reg_8(indio_dev,
- 						LIS3L02DQ_REG_CTRL_2_ADDR,
- 						&valold);
- 		if (ret)
-@@ -275,7 +275,7 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 		/* Clear any outstanding ready events */
- 		ret = lis3l02dq_read_all(st, NULL);
- 	}
--	lis3l02dq_spi_read_reg_8(&st->help.indio_dev->dev,
-+	lis3l02dq_spi_read_reg_8(st->help.indio_dev,
- 				 LIS3L02DQ_REG_WAKE_UP_SRC_ADDR,
- 				 &t);
- 	return ret;
-@@ -328,47 +328,51 @@ static int lis3l02dq_trig_try_reen(struct iio_trigger *trig)
- int lis3l02dq_probe_trigger(struct iio_dev *indio_dev)
- {
- 	int ret;
--	struct lis3l02dq_state *state = indio_dev->dev_data;
-+	struct iio_sw_ring_helper_state *h
-+		= iio_dev_get_devdata(indio_dev);
-+	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
- 
--	state->trig = iio_allocate_trigger();
--	if (!state->trig)
-+	st->trig = iio_allocate_trigger();
-+	if (!st->trig)
- 		return -ENOMEM;
- 
--	state->trig->name = kasprintf(GFP_KERNEL,
--				      "lis3l02dq-dev%d",
--				      indio_dev->id);
--	if (!state->trig->name) {
-+	st->trig->name = kasprintf(GFP_KERNEL,
-+				   "lis3l02dq-dev%d",
-+				   indio_dev->id);
-+	if (!st->trig->name) {
- 		ret = -ENOMEM;
- 		goto error_free_trig;
- 	}
- 
--	state->trig->dev.parent = &state->us->dev;
--	state->trig->owner = THIS_MODULE;
--	state->trig->private_data = state;
--	state->trig->set_trigger_state = &lis3l02dq_data_rdy_trigger_set_state;
--	state->trig->try_reenable = &lis3l02dq_trig_try_reen;
--	state->trig->control_attrs = &lis3l02dq_trigger_attr_group;
--	ret = iio_trigger_register(state->trig);
-+	st->trig->dev.parent = &st->us->dev;
-+	st->trig->owner = THIS_MODULE;
-+	st->trig->private_data = st;
-+	st->trig->set_trigger_state = &lis3l02dq_data_rdy_trigger_set_state;
-+	st->trig->try_reenable = &lis3l02dq_trig_try_reen;
-+	st->trig->control_attrs = &lis3l02dq_trigger_attr_group;
-+	ret = iio_trigger_register(st->trig);
- 	if (ret)
- 		goto error_free_trig_name;
- 
  	return 0;
  
- error_free_trig_name:
--	kfree(state->trig->name);
-+	kfree(st->trig->name);
- error_free_trig:
--	iio_free_trigger(state->trig);
-+	iio_free_trigger(st->trig);
+ error_device_unregister:
+-	device_unregister(&buf->access_dev);
++	device_unregister(&buf->dev);
+ error_device_put:
+-	put_device(&buf->access_dev);
++	put_device(&buf->dev);
  
  	return ret;
  }
  
- void lis3l02dq_remove_trigger(struct iio_dev *indio_dev)
+-static void __iio_free_ring_buffer_access_chrdev(struct iio_ring_buffer *buf)
++static void __iio_free_ring_buffer_chrdev(struct iio_ring_buffer *buf)
  {
--	struct lis3l02dq_state *state = indio_dev->dev_data;
-+	struct iio_sw_ring_helper_state *h
-+		= iio_dev_get_devdata(indio_dev);
-+	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
- 
--	iio_trigger_unregister(state->trig);
--	kfree(state->trig->name);
--	iio_free_trigger(state->trig);
-+	iio_trigger_unregister(st->trig);
-+	kfree(st->trig->name);
-+	iio_free_trigger(st->trig);
+-	device_unregister(&buf->access_dev);
++	device_unregister(&buf->dev);
  }
  
- void lis3l02dq_unconfigure_ring(struct iio_dev *indio_dev)
-@@ -384,7 +388,7 @@ static int lis3l02dq_ring_postenable(struct iio_dev *indio_dev)
- 	int ret;
- 	bool oneenabled = false;
+ void iio_ring_buffer_init(struct iio_ring_buffer *ring,
+@@ -344,36 +332,25 @@ int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
  
--	ret = lis3l02dq_spi_read_reg_8(&indio_dev->dev,
-+	ret = lis3l02dq_spi_read_reg_8(indio_dev,
- 				       LIS3L02DQ_REG_CTRL_1_ADDR,
- 				       &t);
+ 	ring->id = id;
+ 
+-	dev_set_name(&ring->dev, "%s:buffer%d",
+-		     dev_name(ring->dev.parent),
+-		     ring->id);
+-	ret = device_add(&ring->dev);
+-	if (ret)
+-		goto error_ret;
+-
+-	ret = __iio_request_ring_buffer_access_chrdev(ring,
+-						      0,
+-						      ring->owner);
++	ret = __iio_request_ring_buffer_chrdev(ring, ring->owner);
+ 
  	if (ret)
-@@ -408,7 +412,7 @@ static int lis3l02dq_ring_postenable(struct iio_dev *indio_dev)
+-		goto error_remove_device;
+-
++		goto error_ret;
+ 	if (ring->scan_el_attrs) {
+ 		ret = sysfs_create_group(&ring->dev.kobj,
+ 					 ring->scan_el_attrs);
+ 		if (ret) {
+ 			dev_err(&ring->dev,
+ 				"Failed to add sysfs scan elements\n");
+-			goto error_free_ring_buffer_access_chrdev;
++			goto error_free_ring_buffer_chrdev;
+ 		}
+ 	} else if (channels) {
+ 		ret = sysfs_create_group(&ring->dev.kobj,
+ 					 &iio_scan_el_dummy_group);
+ 		if (ret)
+-			goto error_free_ring_buffer_access_chrdev;
++			goto error_free_ring_buffer_chrdev;
+ 	}
  
- 	if (!oneenabled) /* what happens in this case is unknown */
- 		return -EINVAL;
--	ret = lis3l02dq_spi_write_reg_8(&indio_dev->dev,
-+	ret = lis3l02dq_spi_write_reg_8(indio_dev,
- 					LIS3L02DQ_REG_CTRL_1_ADDR,
- 					&t);
- 	if (ret)
-@@ -429,7 +433,7 @@ static int lis3l02dq_ring_predisable(struct iio_dev *indio_dev)
- 	if (ret)
- 		goto error_ret;
+-
+ 	INIT_LIST_HEAD(&ring->scan_el_dev_attr_list);
+ 	INIT_LIST_HEAD(&ring->scan_el_en_attr_list);
+ 	if (channels) {
+@@ -388,10 +365,8 @@ int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
+ 	return 0;
+ error_cleanup_dynamic:
+ 	__iio_ring_attr_cleanup(ring);
+-error_free_ring_buffer_access_chrdev:
+-	__iio_free_ring_buffer_access_chrdev(ring);
+-error_remove_device:
+-	device_del(&ring->dev);
++error_free_ring_buffer_chrdev:
++	__iio_free_ring_buffer_chrdev(ring);
+ error_ret:
+ 	return ret;
+ }
+@@ -406,8 +381,7 @@ EXPORT_SYMBOL(iio_ring_buffer_register);
+ void iio_ring_buffer_unregister(struct iio_ring_buffer *ring)
+ {
+ 	__iio_ring_attr_cleanup(ring);
+-	__iio_free_ring_buffer_access_chrdev(ring);
+-	device_del(&ring->dev);
++	__iio_free_ring_buffer_chrdev(ring);
+ }
+ EXPORT_SYMBOL(iio_ring_buffer_unregister);
  
--	ret = lis3l02dq_spi_read_reg_8(&indio_dev->dev,
-+	ret = lis3l02dq_spi_read_reg_8(indio_dev,
- 				       LIS3L02DQ_REG_CTRL_1_ADDR,
- 				       &t);
- 	if (ret)
-@@ -438,7 +442,7 @@ static int lis3l02dq_ring_predisable(struct iio_dev *indio_dev)
- 		LIS3L02DQ_REG_CTRL_1_AXES_Y_ENABLE |
- 		LIS3L02DQ_REG_CTRL_1_AXES_Z_ENABLE;
+diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
+index 3a1a872..91f1037 100644
+--- a/drivers/staging/iio/ring_generic.h
++++ b/drivers/staging/iio/ring_generic.h
+@@ -68,11 +68,9 @@ struct iio_ring_access_funcs {
+ /**
+  * struct iio_ring_buffer - general ring buffer structure
+  * @dev:		ring buffer device struct
+- * @access_dev:		system device struct for the chrdev
+  * @indio_dev:		industrial I/O device structure
+  * @owner:		module that owns the ring buffer (for ref counting)
+  * @id:			unique id number
+- * @access_id:		device id number
+  * @length:		[DEVICE] number of datums in ring
+  * @bytes_per_datum:	[DEVICE] size of individual datum including timestamp
+  * @bpe:		[DEVICE] size of individual channel value
+@@ -92,11 +90,9 @@ struct iio_ring_access_funcs {
+   **/
+ struct iio_ring_buffer {
+ 	struct device dev;
+-	struct device access_dev;
+ 	struct iio_dev *indio_dev;
+ 	struct module *owner;
+ 	int				id;
+-	int				access_id;
+ 	int				length;
+ 	int				bytes_per_datum;
+ 	int				bpe;
+@@ -398,8 +394,6 @@ static inline void iio_put_ring_buffer(struct iio_ring_buffer *ring)
  
--	ret = lis3l02dq_spi_write_reg_8(&indio_dev->dev,
-+	ret = lis3l02dq_spi_write_reg_8(indio_dev,
- 					LIS3L02DQ_REG_CTRL_1_ADDR,
- 					&t);
+ #define to_iio_ring_buffer(d)			\
+ 	container_of(d, struct iio_ring_buffer, dev)
+-#define access_dev_to_iio_ring_buffer(d)			\
+-	container_of(d, struct iio_ring_buffer, access_dev)
  
+ /**
+  * iio_ring_buffer_register() - register the buffer with IIO core
+@@ -416,6 +410,8 @@ int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
+ 				const struct iio_chan_spec *channels,
+ 				int num_channels);
+ 
++void iio_ring_access_release(struct device *dev);
++
+ /**
+  * iio_ring_buffer_unregister() - unregister the buffer from IIO core
+  * @ring: the buffer to be unregistered
+diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
+index a429a3d..5fbf5ff 100644
+--- a/drivers/staging/iio/ring_sw.c
++++ b/drivers/staging/iio/ring_sw.c
+@@ -375,6 +375,7 @@ EXPORT_SYMBOL(iio_mark_update_needed_sw_rb);
+ static void iio_sw_rb_release(struct device *dev)
+ {
+ 	struct iio_ring_buffer *r = to_iio_ring_buffer(dev);
++	iio_ring_access_release(&r->dev);
+ 	kfree(iio_to_sw_ring(r));
+ }
+ 
+@@ -416,9 +417,7 @@ struct iio_ring_buffer *iio_sw_rb_allocate(struct iio_dev *indio_dev)
+ 	iio_ring_buffer_init(buf, indio_dev);
+ 	__iio_init_sw_ring_buffer(ring);
+ 	buf->dev.type = &iio_sw_ring_type;
+-	device_initialize(&buf->dev);
+ 	buf->dev.parent = &indio_dev->dev;
+-	buf->dev.bus = &iio_bus_type;
+ 	dev_set_drvdata(&buf->dev, (void *)buf);
+ 
+ 	return buf;
 -- 
 1.7.3.4
