@@ -1,171 +1,154 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:35541 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753960Ab1DQTFF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2011 15:05:05 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 36/70] staging:iio:meter:ade7758 move to irqchip based trigger handling.
-Date: Sun, 17 Apr 2011 20:06:09 +0100
-Message-Id: <1303067203-4894-37-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 35/70] staging:iio:ad7476 move to irqchip based triggering
+Date: Sun, 17 Apr 2011 20:06:08 +0100
+Message-Id: <1303067203-4894-36-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 References: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 Untested
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/meter/ade7758.h      |    5 ---
- drivers/staging/iio/meter/ade7758_ring.c |   58 +++++++++++++----------------
- 2 files changed, 26 insertions(+), 37 deletions(-)
+ drivers/staging/iio/adc/ad7476.h      |    2 -
+ drivers/staging/iio/adc/ad7476_core.c |    1 -
+ drivers/staging/iio/adc/ad7476_ring.c |   62 +++++++++++++-------------------
+ 3 files changed, 25 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/staging/iio/meter/ade7758.h b/drivers/staging/iio/meter/ade7758.h
-index c6fd94f..169982b 100644
---- a/drivers/staging/iio/meter/ade7758.h
-+++ b/drivers/staging/iio/meter/ade7758.h
-@@ -92,9 +92,6 @@
- /**
-  * struct ade7758_state - device instance specific data
-  * @us:			actual spi_device
-- * @work_trigger_to_ring: bh for triggered event handling
-- * @inter:		used to check if new interrupt has been triggered
-- * @last_timestamp:	passing timestamp from th to bh of interrupt handler
-  * @indio_dev:		industrial I/O device structure
-  * @trig:		data ready trigger registered with iio
-  * @tx:			transmit buffer
-@@ -103,8 +100,6 @@
-  **/
- struct ade7758_state {
- 	struct spi_device		*us;
--	struct work_struct		work_trigger_to_ring;
--	s64				last_timestamp;
- 	struct iio_dev			*indio_dev;
- 	struct iio_trigger		*trig;
- 	u8				*tx;
-diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
-index 274b4a0..2c9865d 100644
---- a/drivers/staging/iio/meter/ade7758_ring.c
-+++ b/drivers/staging/iio/meter/ade7758_ring.c
-@@ -50,23 +50,6 @@ static struct attribute_group ade7758_scan_el_group = {
- };
+diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
+index 17febd2..01a7021 100644
+--- a/drivers/staging/iio/adc/ad7476.h
++++ b/drivers/staging/iio/adc/ad7476.h
+@@ -28,8 +28,6 @@ struct ad7476_state {
+ 	struct spi_device		*spi;
+ 	const struct ad7476_chip_info	*chip_info;
+ 	struct regulator		*reg;
+-	struct work_struct		poll_work;
+-	atomic_t			protect_ring;
+ 	size_t				d_size;
+ 	u16				int_vref_mv;
+ 	struct spi_transfer		xfer;
+diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
+index 9f7e904..efeb0dc 100644
+--- a/drivers/staging/iio/adc/ad7476_core.c
++++ b/drivers/staging/iio/adc/ad7476_core.c
+@@ -176,7 +176,6 @@ static int __devinit ad7476_probe(struct spi_device *spi)
  
- /**
-- * ade7758_poll_func_th() top half interrupt handler called by trigger
-- * @private_data:	iio_dev
-- **/
--static void ade7758_poll_func_th(struct iio_dev *indio_dev, s64 time)
--{
--	struct ade7758_state *st = iio_dev_get_devdata(indio_dev);
--	st->last_timestamp = time;
--	schedule_work(&st->work_trigger_to_ring);
--	/* Indicate that this interrupt is being handled */
--
--	/* Technically this is trigger related, but without this
--	 * handler running there is currently no way for the interrupt
--	 * to clear.
--	 */
--}
--
+ 	spi_set_drvdata(spi, st);
+ 
+-	atomic_set(&st->protect_ring, 0);
+ 	st->spi = spi;
+ 
+ 	st->indio_dev = iio_allocate_device(0);
+diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
+index 8f00d6c..e018b96 100644
+--- a/drivers/staging/iio/adc/ad7476_ring.c
++++ b/drivers/staging/iio/adc/ad7476_ring.c
+@@ -77,46 +77,19 @@ static int ad7476_ring_preenable(struct iio_dev *indio_dev)
+ 	return 0;
+ }
+ 
 -/**
-  * ade7758_spi_read_burst() - read all data registers
-  * @dev: device associated with child of actual device (iio_dev or iio_trig)
-  * @rx: somewhere to pass back the value read (min size is 24 bytes)
-@@ -117,13 +100,12 @@ static int ade7758_spi_read_burst(struct device *dev, u8 *rx)
- /* Whilst this makes a lot of calls to iio_sw_ring functions - it is to device
-  * specific to be rolled into the core.
-  */
--static void ade7758_trigger_bh_to_ring(struct work_struct *work_s)
-+static irqreturn_t ade7758_trigger_handler(int irq, void *p)
- {
--	struct ade7758_state *st
--		= container_of(work_s, struct ade7758_state,
--			       work_trigger_to_ring);
--	struct iio_ring_buffer *ring = st->indio_dev->ring;
+- * ad7476_poll_func_th() th of trigger launched polling to ring buffer
+- *
+- * As sampling only occurs on i2c comms occurring, leave timestamping until
+- * then.  Some triggers will generate their own time stamp.  Currently
+- * there is no way of notifying them when no one cares.
+- **/
+-static void ad7476_poll_func_th(struct iio_dev *indio_dev, s64 time)
+-{
+-	struct ad7476_state *st = indio_dev->dev_data;
 -
+-	schedule_work(&st->poll_work);
+-	return;
+-}
+-/**
+- * ad7476_poll_bh_to_ring() bh of trigger launched polling to ring buffer
+- * @work_s:	the work struct through which this was scheduled
+- *
+- * Currently there is no option in this driver to disable the saving of
+- * timestamps within the ring.
+- * I think the one copy of this at a time was to avoid problems if the
+- * trigger was set far too high and the reads then locked up the computer.
+- **/
+-static void ad7476_poll_bh_to_ring(struct work_struct *work_s)
++static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+ {
+-	struct ad7476_state *st = container_of(work_s, struct ad7476_state,
+-						  poll_work);
+-	struct iio_dev *indio_dev = st->indio_dev;
 +	struct iio_poll_func *pf = p;
 +	struct iio_dev *indio_dev = pf->private_data;
-+	struct iio_ring_buffer *ring = indio_dev->ring;
-+	struct ade7758_state *st = iio_dev_get_devdata(indio_dev);
- 	int i = 0;
- 	s32 *data;
- 	size_t datasize = ring->access.get_bytes_per_datum(ring);
-@@ -131,7 +113,7 @@ static void ade7758_trigger_bh_to_ring(struct work_struct *work_s)
- 	data = kmalloc(datasize, GFP_KERNEL);
- 	if (data == NULL) {
- 		dev_err(&st->us->dev, "memory alloc failed in ring bh");
++	struct ad7476_state *st = iio_dev_get_devdata(indio_dev);
+ 	struct iio_sw_ring_buffer *sw_ring = iio_to_sw_ring(indio_dev->ring);
+ 	s64 time_ns;
+ 	__u8 *rxbuf;
+ 	int b_sent;
+ 
+-	/* Ensure only one copy of this function running at a time */
+-	if (atomic_inc_return(&st->protect_ring) > 1)
+-		return;
+-
+ 	rxbuf = kzalloc(st->d_size, GFP_KERNEL);
+ 	if (rxbuf == NULL)
 -		return;
 +		return -ENOMEM;
- 	}
  
- 	if (ring->scan_count)
-@@ -145,20 +127,21 @@ static void ade7758_trigger_bh_to_ring(struct work_struct *work_s)
- 	if (ring->scan_timestamp)
- 		*((s64 *)
- 		(((u32)data + 4 * ring->scan_count + 4) & ~0x7)) =
--			st->last_timestamp;
-+			pf->timestamp;
+ 	b_sent = spi_read(st->spi, rxbuf,
+ 			  st->chip_info->channel[0].scan_type.storagebits / 8);
+@@ -131,8 +104,10 @@ static void ad7476_poll_bh_to_ring(struct work_struct *work_s)
  
- 	ring->access.store_to(ring,
- 			      (u8 *)data,
--			      st->last_timestamp);
-+			      pf->timestamp);
- 
- 	iio_trigger_notify_done(st->indio_dev->trig);
- 	kfree(data);
- 
--	return;
+ 	indio_dev->ring->access.store_to(&sw_ring->buf, rxbuf, time_ns);
+ done:
++	iio_trigger_notify_done(indio_dev->trig);
+ 	kfree(rxbuf);
+-	atomic_dec(&st->protect_ring);
++
 +	return IRQ_HANDLED;
  }
  
- void ade7758_unconfigure_ring(struct iio_dev *indio_dev)
- {
-+	kfree(indio_dev->pollfunc->name);
- 	kfree(indio_dev->pollfunc);
- 	iio_sw_rb_free(indio_dev->ring);
- }
-@@ -166,9 +149,7 @@ void ade7758_unconfigure_ring(struct iio_dev *indio_dev)
- int ade7758_configure_ring(struct iio_dev *indio_dev)
- {
- 	int ret = 0;
--	struct ade7758_state *st = indio_dev->dev_data;
- 	struct iio_ring_buffer *ring;
--	INIT_WORK(&st->work_trigger_to_ring, ade7758_trigger_bh_to_ring);
- 
- 	ring = iio_sw_rb_allocate(indio_dev);
- 	if (!ring) {
-@@ -189,13 +170,26 @@ int ade7758_configure_ring(struct iio_dev *indio_dev)
- 	/* Set default scan mode */
- 	iio_scan_mask_set(ring, iio_scan_el_wform.number);
- 
--	ret = iio_alloc_pollfunc(indio_dev, NULL, &ade7758_poll_func_th);
+ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+@@ -147,9 +122,22 @@ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	}
+ 	/* Effectively select the ring buffer implementation */
+ 	iio_ring_sw_register_funcs(&indio_dev->ring->access);
+-	ret = iio_alloc_pollfunc(indio_dev, NULL, &ad7476_poll_func_th);
 -	if (ret)
-+	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
++	indio_dev->pollfunc = kzalloc(sizeof(indio_dev->pollfunc), GFP_KERNEL);
 +	if (indio_dev->pollfunc == NULL) {
 +		ret = -ENOMEM;
- 		goto error_iio_sw_rb_free;
--
+ 		goto error_deallocate_sw_rb;
 +	}
-+	indio_dev->pollfunc->private_data = indio_dev->ring;
-+	indio_dev->pollfunc->h = &iio_pollfunc_store_time;
-+	indio_dev->pollfunc->thread = &ade7758_trigger_handler;
++	indio_dev->pollfunc->private_data = indio_dev;
++	indio_dev->pollfunc->thread = &ad7476_trigger_handler;
++	indio_dev->pollfunc->type = IRQF_ONESHOT;
 +	indio_dev->pollfunc->name
-+		= kasprintf(GFP_KERNEL, "ade7759_consumer%d", indio_dev->id);
++		= kasprintf(GFP_KERNEL, "%s_consumer%d",
++			    spi_get_device_id(st->spi)->name,
++			    indio_dev->id);
 +	if (indio_dev->pollfunc->name == NULL) {
 +		ret = -ENOMEM;
 +		goto error_free_pollfunc;
 +	}
- 	indio_dev->modes |= INDIO_RING_TRIGGERED;
-+
- 	return 0;
  
+ 	/* Ring buffer functions - here trigger setup related */
+ 
+@@ -158,11 +146,11 @@ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	indio_dev->ring->predisable = &iio_triggered_ring_predisable;
+ 	indio_dev->ring->scan_timestamp = true;
+ 
+-	INIT_WORK(&st->poll_work, &ad7476_poll_bh_to_ring);
+-
+ 	/* Flag that polled ring buffering is possible */
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
+ 	return 0;
 +error_free_pollfunc:
 +	kfree(indio_dev->pollfunc);
- error_iio_sw_rb_free:
+ error_deallocate_sw_rb:
  	iio_sw_rb_free(indio_dev->ring);
- 	return ret;
+ error_ret:
 -- 
 1.7.3.4
-
