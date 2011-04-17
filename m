@@ -1,290 +1,131 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:35607 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754170Ab1DQTFK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Apr 2011 15:05:10 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 67/70] staging:iio:trigger sysfs userspace trigger rework.
-Date: Sun, 17 Apr 2011 20:06:40 +0100
-Message-Id: <1303067203-4894-68-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 66/70] staging:iio:max1363 add new 2 channels parts form maxim, 11644-7
+Date: Sun, 17 Apr 2011 20:06:39 +0100
+Message-Id: <1303067203-4894-67-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 References: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
-
-Awaiting comments on using the nested_irq_trick so that may change.
-Moves away from platform device to sysfs controlled creation and
-removal of these triggers.
-
-Fix double free of name on trigger allocation failure thanks
-to Michael Hennerich.
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
-Reviewed-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/industrialio-trigger.c   |   13 ++
- drivers/staging/iio/trigger.h                |    1 +
- drivers/staging/iio/trigger/iio-trig-sysfs.c |  170 ++++++++++++++++++++------
- 3 files changed, 149 insertions(+), 35 deletions(-)
+ drivers/staging/iio/adc/Kconfig        |    4 +-
+ drivers/staging/iio/adc/max1363_core.c |   66 +++++++++++++++++++++++++++++++-
+ 2 files changed, 67 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
-index b8e7ce4..273b327 100644
---- a/drivers/staging/iio/industrialio-trigger.c
-+++ b/drivers/staging/iio/industrialio-trigger.c
-@@ -207,6 +207,19 @@ irqreturn_t iio_trigger_generic_data_rdy_poll(int irq, void *private)
- }
- EXPORT_SYMBOL(iio_trigger_generic_data_rdy_poll);
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 4159389..228274b 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -15,8 +15,8 @@ config MAX1363
+ 	  max1139, max1236, max1237, max11238, max1239, max11600, max11601,
+ 	  max11602, max11603, max11604, max11605, max11606, max11607,
+ 	  max11608, max11609, max11610, max11611, max11612, max11613,
+-	  max11614, max11615, max11616, max11617) Provides direct access
+-	  via sysfs.
++	  max11614, max11615, max11616, max11617, max11644, max11645,
++	  max11646, max11647) Provides direct access via sysfs.
  
-+void iio_trigger_poll_chained(struct iio_trigger *trig, s64 time)
-+{
-+	int i;
-+	if (!trig->use_count) {
-+		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++)
-+			if (trig->subirqs[i].enabled) {
-+				trig->use_count++;
-+				handle_nested_irq(trig->subirq_base + i);
-+			}
-+	}
-+}
-+EXPORT_SYMBOL(iio_trigger_poll_chained);
-+
- void iio_trigger_notify_done(struct iio_trigger *trig)
- {
- 	trig->use_count--;
-diff --git a/drivers/staging/iio/trigger.h b/drivers/staging/iio/trigger.h
-index e831a89..5efa0d5 100644
---- a/drivers/staging/iio/trigger.h
-+++ b/drivers/staging/iio/trigger.h
-@@ -121,6 +121,7 @@ int iio_trigger_dettach_poll_func(struct iio_trigger *trig,
-  * Typically called in relevant hardware interrupt handler.
-  **/
- void iio_trigger_poll(struct iio_trigger *trig, s64 time);
-+void iio_trigger_poll_chained(struct iio_trigger *trig, s64 time);
- void iio_trigger_notify_done(struct iio_trigger *trig);
- 
- irqreturn_t iio_trigger_generic_data_rdy_poll(int irq, void *private);
-diff --git a/drivers/staging/iio/trigger/iio-trig-sysfs.c b/drivers/staging/iio/trigger/iio-trig-sysfs.c
-index 127a2a3..6d3dee3 100644
---- a/drivers/staging/iio/trigger/iio-trig-sysfs.c
-+++ b/drivers/staging/iio/trigger/iio-trig-sysfs.c
-@@ -9,15 +9,84 @@
- #include <linux/module.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
-+#include <linux/list.h>
- 
- #include "../iio.h"
- #include "../trigger.h"
- 
-+struct iio_sysfs_trig {
-+	struct iio_trigger *trig;
-+	int id;
-+	struct list_head l;
-+};
-+
-+static LIST_HEAD(iio_sysfs_trig_list);
-+static DEFINE_MUTEX(iio_syfs_trig_list_mut);
-+
-+static int iio_sysfs_trigger_probe(int id);
-+static ssize_t iio_sysfs_trig_add(struct device *dev,
-+				  struct device_attribute *attr,
-+				  const char *buf,
-+				  size_t len)
-+{
-+	int ret;
-+	unsigned long input;
-+
-+	ret = strict_strtoul(buf, 10, &input);
-+	if (ret)
-+		return ret;
-+	ret = iio_sysfs_trigger_probe(input);
-+	if (ret)
-+		return ret;
-+	return len;
-+}
-+static DEVICE_ATTR(add_trigger, S_IWUSR, NULL, &iio_sysfs_trig_add);
-+
-+static int iio_sysfs_trigger_remove(int id);
-+static ssize_t iio_sysfs_trig_remove(struct device *dev,
-+				     struct device_attribute *attr,
-+				     const char *buf,
-+				     size_t len)
-+{
-+	int ret;
-+	unsigned long input;
-+
-+	ret = strict_strtoul(buf, 10, &input);
-+	if (ret)
-+		return ret;
-+	ret = iio_sysfs_trigger_remove(input);
-+	if (ret)
-+		return ret;
-+	return len;
-+}
-+
-+static DEVICE_ATTR(remove_trigger, S_IWUSR, NULL, &iio_sysfs_trig_remove);
-+
-+static struct attribute *iio_sysfs_trig_attrs[] = {
-+	&dev_attr_add_trigger.attr,
-+	&dev_attr_remove_trigger.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group iio_sysfs_trig_group = {
-+	.attrs = iio_sysfs_trig_attrs,
-+};
-+
-+static const struct attribute_group *iio_sysfs_trig_groups[] = {
-+	&iio_sysfs_trig_group,
-+	NULL
-+};
-+
-+static struct device iio_sysfs_trig_dev = {
-+	.bus = &iio_bus_type,
-+	.groups = iio_sysfs_trig_groups,
-+};
-+
- static ssize_t iio_sysfs_trigger_poll(struct device *dev,
- 		struct device_attribute *attr, const char *buf, size_t count)
- {
- 	struct iio_trigger *trig = dev_get_drvdata(dev);
--	iio_trigger_poll(trig, 0);
-+	iio_trigger_poll_chained(trig, 0);
- 
- 	return count;
- }
-@@ -35,70 +104,101 @@ static const struct attribute_group iio_sysfs_trigger_attr_group = {
- 	.attrs = iio_sysfs_trigger_attrs,
+ config MAX1363_RING_BUFFER
+ 	bool "MAXIM max1363: use ring buffer"
+diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
+index ab07a59..10c75c0 100644
+--- a/drivers/staging/iio/adc/max1363_core.c
++++ b/drivers/staging/iio/adc/max1363_core.c
+@@ -598,6 +598,30 @@ static struct iio_chan_spec max11614_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(16)
  };
  
--static int __devinit iio_sysfs_trigger_probe(struct platform_device *pdev)
-+static int iio_sysfs_trigger_probe(int id)
- {
--	struct iio_trigger *trig;
-+	struct iio_sysfs_trig *t;
- 	int ret;
-+	char *name;
-+	bool foundit = false;
-+	mutex_lock(&iio_syfs_trig_list_mut);
-+	list_for_each_entry(t, &iio_sysfs_trig_list, l)
-+		if (id == t->id) {
-+			foundit = true;
-+			break;
-+		}
-+	if (foundit) {
-+		ret = -EINVAL;
-+		goto out1;
-+	}
- 
--	trig = iio_allocate_trigger();
--	if (!trig) {
-+	name = kasprintf(GFP_KERNEL, "sysfstrig%d", id);
-+	if (name == NULL) {
- 		ret = -ENOMEM;
- 		goto out1;
- 	}
--
--	trig->control_attrs = &iio_sysfs_trigger_attr_group;
--	trig->owner = THIS_MODULE;
--	trig->name = kasprintf(GFP_KERNEL, "sysfstrig%d", pdev->id);
--	if (trig->name == NULL) {
-+	t = kmalloc(sizeof(*t), GFP_KERNEL);
-+	if (t == NULL) {
- 		ret = -ENOMEM;
--		goto out2;
-+		goto free_name;
-+	}
-+	t->id = id;
-+	t->trig = iio_allocate_trigger_named(name);
-+	if (!t->trig) {
-+		ret = -ENOMEM;
-+		goto free_t;
- 	}
- 
--	ret = iio_trigger_register(trig);
--	if (ret)
--		goto out3;
--
--	platform_set_drvdata(pdev, trig);
-+	t->trig->control_attrs = &iio_sysfs_trigger_attr_group;
-+	t->trig->owner = THIS_MODULE;
-+	t->trig->dev.parent = &iio_sysfs_trig_dev;
- 
-+	ret = iio_trigger_register(t->trig);
-+	if (ret)
-+		goto out2;
-+	list_add(&t->l, &iio_sysfs_trig_list);
-+	__module_get(THIS_MODULE);
-+	mutex_unlock(&iio_syfs_trig_list_mut);
- 	return 0;
--out3:
--	kfree(trig->name);
++static const enum max1363_modes max11644_mode_list[] = {
++	_s0, _s1, s0to1, d0m1, d1m0,
++};
 +
- out2:
--	iio_put_trigger(trig);
-+	iio_put_trigger(t->trig);
-+free_t:
-+	kfree(t);
-+free_name:
-+	kfree(name);
- out1:
--
-+	mutex_unlock(&iio_syfs_trig_list_mut);
- 	return ret;
- }
++static struct iio_chan_spec max11644_channels[] = {
++	IIO_CHAN(IIO_IN, 0, MAX1363_INFO_MASK, _s0, 0, IIO_ST('u', 12, 16, 0)),
++	IIO_CHAN(IIO_IN, 1, MAX1363_INFO_MASK, _s0, 1, IIO_ST('u', 12, 16, 0)),
++	IIO_CHAN_COMPOUND(IIO_IN_DIFF, 0, 1, MAX1363_INFO_MASK,
++			  d0m1, 2, IIO_ST('s', 12, 16, 0)),
++	IIO_CHAN_COMPOUND(IIO_IN_DIFF, 1, 0, MAX1363_INFO_MASK,
++			  d1m0, 3, IIO_ST('s', 12, 16, 0)),
++	IIO_CHAN_SOFT_TIMESTAMP(4)
++};
++
++static struct iio_chan_spec max11646_channels[] = {
++	IIO_CHAN(IIO_IN, 0, MAX1363_INFO_MASK, _s0, 0, IIO_ST('u', 10, 16, 0)),
++	IIO_CHAN(IIO_IN, 1, MAX1363_INFO_MASK, _s0, 1, IIO_ST('u', 10, 16, 0)),
++	IIO_CHAN_COMPOUND(IIO_IN_DIFF, 0, 1, MAX1363_INFO_MASK,
++			  d0m1, 2, IIO_ST('s', 10, 16, 0)),
++	IIO_CHAN_COMPOUND(IIO_IN_DIFF, 1, 0, MAX1363_INFO_MASK,
++			  d1m0, 3, IIO_ST('s', 10, 16, 0)),
++	IIO_CHAN_SOFT_TIMESTAMP(4)
++};
++
+ enum { max1361,
+        max1362,
+        max1363,
+@@ -632,6 +656,10 @@ enum { max1361,
+        max11615,
+        max11616,
+        max11617,
++       max11644,
++       max11645,
++       max11646,
++       max11647
+ };
  
--static int __devexit iio_sysfs_trigger_remove(struct platform_device *pdev)
-+static int iio_sysfs_trigger_remove(int id)
- {
--	struct iio_trigger *trig = platform_get_drvdata(pdev);
-+	bool foundit = false;
-+	struct iio_sysfs_trig *t;
-+	mutex_lock(&iio_syfs_trig_list_mut);
-+	list_for_each_entry(t, &iio_sysfs_trig_list, l)
-+		if (id == t->id) {
-+			foundit = true;
-+			break;
-+		}
-+	if (!foundit) {
-+		mutex_unlock(&iio_syfs_trig_list_mut);
-+		return -EINVAL;
-+	}
+ /* max1363 and max1368 tested - rest from data sheet */
+@@ -945,7 +973,43 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 		.default_mode = s0to11,
+ 		.channels = max1238_channels,
+ 		.num_channels = ARRAY_SIZE(max1238_channels),
+-	}
++	},
++	[max11644] = {
++		.bits = 12,
++		.int_vref_mv = 2048,
++		.mode_list = max11644_mode_list,
++		.num_modes = ARRAY_SIZE(max11644_mode_list),
++		.default_mode = s0to1,
++		.channels = max11644_channels,
++		.num_channels = ARRAY_SIZE(max11644_channels),
++	},
++	[max11645] = {
++		.bits = 12,
++		.int_vref_mv = 4096,
++		.mode_list = max11644_mode_list,
++		.num_modes = ARRAY_SIZE(max11644_mode_list),
++		.default_mode = s0to1,
++		.channels = max11644_channels,
++		.num_channels = ARRAY_SIZE(max11644_channels),
++	},
++	[max11646] = {
++		.bits = 10,
++		.int_vref_mv = 2048,
++		.mode_list = max11644_mode_list,
++		.num_modes = ARRAY_SIZE(max11644_mode_list),
++		.default_mode = s0to1,
++		.channels = max11644_channels,
++		.num_channels = ARRAY_SIZE(max11646_channels),
++	},
++	[max11647] = {
++		.bits = 10,
++		.int_vref_mv = 4096,
++		.mode_list = max11644_mode_list,
++		.num_modes = ARRAY_SIZE(max11644_mode_list),
++		.default_mode = s0to1,
++		.channels = max11644_channels,
++		.num_channels = ARRAY_SIZE(max11646_channels),
++	},
+ };
  
--	iio_trigger_unregister(trig);
--	kfree(trig->name);
--	iio_put_trigger(trig);
-+	iio_trigger_unregister(t->trig);
-+	kfree(t->trig->name);
-+	iio_free_trigger(t->trig);
- 
-+	list_del(&t->l);
-+	kfree(t);
-+	module_put(THIS_MODULE);
-+	mutex_unlock(&iio_syfs_trig_list_mut);
- 	return 0;
- }
- 
--static struct platform_driver iio_sysfs_trigger_driver = {
--	.driver = {
--		.name = "iio_sysfs_trigger",
--		.owner = THIS_MODULE,
--	},
--	.probe = iio_sysfs_trigger_probe,
--	.remove = __devexit_p(iio_sysfs_trigger_remove),
--};
- 
- static int __init iio_sysfs_trig_init(void)
- {
--	return platform_driver_register(&iio_sysfs_trigger_driver);
-+	device_initialize(&iio_sysfs_trig_dev);
-+	dev_set_name(&iio_sysfs_trig_dev, "iio_sysfs_trigger");
-+	return device_add(&iio_sysfs_trig_dev);
- }
- module_init(iio_sysfs_trig_init);
- 
- static void __exit iio_sysfs_trig_exit(void)
- {
--	platform_driver_unregister(&iio_sysfs_trigger_driver);
-+	device_unregister(&iio_sysfs_trig_dev);
- }
- module_exit(iio_sysfs_trig_exit);
- 
+ static const int max1363_monitor_speeds[] = { 133000, 665000, 33300, 16600,
 -- 
 1.7.3.4
+
