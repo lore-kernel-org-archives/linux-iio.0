@@ -2,31 +2,28 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 22/70] staging:iio:adc:adt7410 move to current event handling
-Date: Sun, 17 Apr 2011 20:05:55 +0100
-Message-Id: <1303067203-4894-23-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 21/70] staging:iio:ad7291 move from old event system to current.
+Date: Sun, 17 Apr 2011 20:05:54 +0100
+Message-Id: <1303067203-4894-22-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 References: <1303067203-4894-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-This device actually has a pair of interrupts. The code basically ignores
-that and feeds them both to the same handlers.  I'm not sure if that is
-the right thing to do, but the updated code should do exactly the same.
+This driver needed some tender loving care. It still does.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/adt7410.c |  151 +++++++++++++++----------------------
- 1 files changed, 61 insertions(+), 90 deletions(-)
+ drivers/staging/iio/adc/ad7291.c |  422 ++++++++++++-------------------------
+ 1 files changed, 137 insertions(+), 285 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/adt7410.c b/drivers/staging/iio/adc/adt7410.c
-index 7cc3feb..dc59130 100644
---- a/drivers/staging/iio/adc/adt7410.c
-+++ b/drivers/staging/iio/adc/adt7410.c
-@@ -7,15 +7,12 @@
-  */
+diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
+index 976ae7f..23ad18e 100644
+--- a/drivers/staging/iio/adc/ad7291.c
++++ b/drivers/staging/iio/adc/ad7291.c
+@@ -8,14 +8,12 @@
  
  #include <linux/interrupt.h>
--#include <linux/gpio.h>
+ #include <linux/gpio.h>
 -#include <linux/workqueue.h>
  #include <linux/device.h>
  #include <linux/kernel.h>
@@ -38,158 +35,492 @@ index 7cc3feb..dc59130 100644
  
  #include "../iio.h"
  #include "../sysfs.h"
-@@ -80,8 +77,6 @@ struct adt7410_chip_info {
+@@ -65,8 +63,6 @@ struct ad7291_chip_info {
  	const char *name;
  	struct i2c_client *client;
  	struct iio_dev *indio_dev;
 -	struct work_struct thresh_work;
 -	s64 last_timestamp;
- 	u8  config;
+ 	u16 command;
+ 	u8  channels;	/* Active voltage channels */
  };
+@@ -477,22 +473,23 @@ static const struct attribute_group ad7291_attribute_group = {
+ #define IIO_EVENT_CODE_AD7291_T_AVG_LOW     IIO_BUFFER_EVENT_CODE(3)
+ #define IIO_EVENT_CODE_AD7291_VOLTAGE_BASE  IIO_BUFFER_EVENT_CODE(4)
  
-@@ -381,47 +376,32 @@ static const struct attribute_group adt7410_attribute_group = {
- #define IIO_EVENT_CODE_ADT7410_BELLOW_ALARM   IIO_BUFFER_EVENT_CODE(1)
- #define IIO_EVENT_CODE_ADT7410_ABOVE_CRIT     IIO_BUFFER_EVENT_CODE(2)
- 
--static void adt7410_interrupt_bh(struct work_struct *work_s)
-+static irqreturn_t adt7410_event_handler(int irq, void *private)
+-static void ad7291_interrupt_bh(struct work_struct *work_s)
++static irqreturn_t ad7291_event_handler(int irq, void *private)
  {
--	struct adt7410_chip_info *chip =
--		container_of(work_s, struct adt7410_chip_info, thresh_work);
+-	struct ad7291_chip_info *chip =
+-		container_of(work_s, struct ad7291_chip_info, thresh_work);
 +	struct iio_dev *indio_dev = private;
-+	struct adt7410_chip_info *chip = iio_dev_get_devdata(indio_dev);
++	struct ad7291_chip_info *chip = iio_dev_get_devdata(private);
+ 	u16 t_status, v_status;
+ 	u16 command;
+ 	int i;
 +	s64 timestamp = iio_get_time_ns();
- 	u8 status;
  
- 	if (adt7410_i2c_read_byte(chip, ADT7410_STATUS, &status))
+ 	if (ad7291_i2c_read(chip, AD7291_T_ALERT_STATUS, &t_status))
 -		return;
--
--	enable_irq(chip->client->irq);
 +		return IRQ_HANDLED;
  
- 	if (status & ADT7410_STAT_T_HIGH)
--		iio_push_event(chip->indio_dev, 0,
-+		iio_push_event(indio_dev, 0,
- 			IIO_EVENT_CODE_ADT7410_ABOVE_ALARM,
--			chip->last_timestamp);
-+			timestamp);
- 	if (status & ADT7410_STAT_T_LOW)
--		iio_push_event(chip->indio_dev, 0,
-+		iio_push_event(indio_dev, 0,
- 			IIO_EVENT_CODE_ADT7410_BELLOW_ALARM,
--			chip->last_timestamp);
-+			timestamp);
- 	if (status & ADT7410_STAT_T_CRIT)
--		iio_push_event(chip->indio_dev, 0,
-+		iio_push_event(indio_dev, 0,
- 			IIO_EVENT_CODE_ADT7410_ABOVE_CRIT,
--			chip->last_timestamp);
--}
+ 	if (ad7291_i2c_read(chip, AD7291_VOLTAGE_ALERT_STATUS, &v_status))
+-		return;
++		return IRQ_HANDLED;
+ 
+ 	if (!(t_status || v_status))
+-		return;
++		return IRQ_HANDLED;
+ 
+ 	command = chip->command | AD7291_ALART_CLEAR;
+ 	ad7291_i2c_write(chip, AD7291_COMMAND, command);
+@@ -500,50 +497,35 @@ static void ad7291_interrupt_bh(struct work_struct *work_s)
+ 	command = chip->command & ~AD7291_ALART_CLEAR;
+ 	ad7291_i2c_write(chip, AD7291_COMMAND, command);
+ 
+-	enable_irq(chip->client->irq);
 -
--static int adt7410_interrupt(struct iio_dev *dev_info,
+ 	for (i = 0; i < 4; i++) {
+ 		if (t_status & (1 << i))
+-			iio_push_event(chip->indio_dev, 0,
++			iio_push_event(indio_dev, 0,
+ 				IIO_EVENT_CODE_AD7291_T_SENSE_HIGH + i,
+-				chip->last_timestamp);
++				timestamp);
+ 	}
+ 
+ 	for (i = 0; i < AD7291_VOLTAGE_LIMIT_COUNT*2; i++) {
+ 		if (v_status & (1 << i))
+-			iio_push_event(chip->indio_dev, 0,
++			iio_push_event(indio_dev, 0,
+ 				IIO_EVENT_CODE_AD7291_VOLTAGE_BASE + i,
+-				chip->last_timestamp);
++				timestamp);
+ 	}
+-}
+ 
+-static int ad7291_interrupt(struct iio_dev *dev_info,
 -		int index,
 -		s64 timestamp,
 -		int no_test)
 -{
--	struct adt7410_chip_info *chip = dev_info->dev_data;
+-	struct ad7291_chip_info *chip = dev_info->dev_data;
 -
 -	chip->last_timestamp = timestamp;
 -	schedule_work(&chip->thresh_work);
-+			timestamp);
- 
+-
 -	return 0;
 +	return IRQ_HANDLED;
  }
  
--IIO_EVENT_SH(adt7410, &adt7410_interrupt);
--IIO_EVENT_SH(adt7410_ct, &adt7410_interrupt);
+-IIO_EVENT_SH(ad7291, &ad7291_interrupt);
 -
- static ssize_t adt7410_show_event_mode(struct device *dev,
+ static inline ssize_t ad7291_show_t_bound(struct device *dev,
  		struct device_attribute *attr,
+-		u8 bound_reg,
  		char *buf)
-@@ -699,45 +679,51 @@ static inline ssize_t adt7410_set_t_hyst(struct device *dev,
+ {
+ 	struct iio_dev *dev_info = dev_get_drvdata(dev);
+ 	struct ad7291_chip_info *chip = dev_info->dev_data;
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	u16 data;
+ 	char sign = ' ';
+ 	int ret;
+ 
+-	ret = ad7291_i2c_read(chip, bound_reg, &data);
++	ret = ad7291_i2c_read(chip, this_attr->address, &data);
+ 	if (ret)
+ 		return -EIO;
+ 
+@@ -561,12 +543,12 @@ static inline ssize_t ad7291_show_t_bound(struct device *dev,
+ 
+ static inline ssize_t ad7291_set_t_bound(struct device *dev,
+ 		struct device_attribute *attr,
+-		u8 bound_reg,
+ 		const char *buf,
+ 		size_t len)
+ {
+ 	struct iio_dev *dev_info = dev_get_drvdata(dev);
+ 	struct ad7291_chip_info *chip = dev_info->dev_data;
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	long tmp1, tmp2;
+ 	u16 data;
+ 	char *pos;
+@@ -600,64 +582,13 @@ static inline ssize_t ad7291_set_t_bound(struct device *dev,
+ 		/* convert positive value to supplyment */
+ 		data = (AD7291_T_VALUE_SIGN << 1) - data;
+ 
+-	ret = ad7291_i2c_write(chip, bound_reg, data);
++	ret = ad7291_i2c_write(chip, this_attr->address, data);
+ 	if (ret)
+ 		return -EIO;
+ 
  	return ret;
  }
  
--IIO_EVENT_ATTR_SH(event_mode, iio_event_adt7410,
--		adt7410_show_event_mode, adt7410_set_event_mode, 0);
--IIO_EVENT_ATTR_SH(available_event_modes, iio_event_adt7410,
--		adt7410_show_available_event_modes, NULL, 0);
--IIO_EVENT_ATTR_SH(fault_queue, iio_event_adt7410,
--		adt7410_show_fault_queue, adt7410_set_fault_queue, 0);
--IIO_EVENT_ATTR_SH(t_alarm_high, iio_event_adt7410,
--		adt7410_show_t_alarm_high, adt7410_set_t_alarm_high, 0);
--IIO_EVENT_ATTR_SH(t_alarm_low, iio_event_adt7410,
--		adt7410_show_t_alarm_low, adt7410_set_t_alarm_low, 0);
--IIO_EVENT_ATTR_SH(t_crit, iio_event_adt7410_ct,
--		adt7410_show_t_crit, adt7410_set_t_crit, 0);
--IIO_EVENT_ATTR_SH(t_hyst, iio_event_adt7410,
--		adt7410_show_t_hyst, adt7410_set_t_hyst, 0);
-+static IIO_DEVICE_ATTR(event_mode,
-+		       S_IRUGO | S_IWUSR,
-+		       adt7410_show_event_mode, adt7410_set_event_mode, 0);
-+static IIO_DEVICE_ATTR(available_event_modes,
-+		       S_IRUGO,
-+		       adt7410_show_available_event_modes, NULL, 0);
-+static IIO_DEVICE_ATTR(fault_queue,
-+		       S_IRUGO | S_IWUSR,
-+		       adt7410_show_fault_queue, adt7410_set_fault_queue, 0);
-+static IIO_DEVICE_ATTR(t_alarm_high,
-+		       S_IRUGO | S_IWUSR,
-+		       adt7410_show_t_alarm_high, adt7410_set_t_alarm_high, 0);
-+static IIO_DEVICE_ATTR(t_alarm_low,
-+		       S_IRUGO | S_IWUSR,
-+		       adt7410_show_t_alarm_low, adt7410_set_t_alarm_low, 0);
-+static IIO_DEVICE_ATTR(t_crit,
-+		       S_IRUGO | S_IWUSR,
-+		       adt7410_show_t_crit, adt7410_set_t_crit, 0);
-+static IIO_DEVICE_ATTR(t_hyst,
-+		       S_IRUGO | S_IWUSR,
-+		       adt7410_show_t_hyst, adt7410_set_t_hyst, 0);
+-static ssize_t ad7291_show_t_sense_high(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	return ad7291_show_t_bound(dev, attr,
+-			AD7291_T_SENSE_HIGH, buf);
+-}
+-
+-static inline ssize_t ad7291_set_t_sense_high(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	return ad7291_set_t_bound(dev, attr,
+-			AD7291_T_SENSE_HIGH, buf, len);
+-}
+-
+-static ssize_t ad7291_show_t_sense_low(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	return ad7291_show_t_bound(dev, attr,
+-			AD7291_T_SENSE_LOW, buf);
+-}
+-
+-static inline ssize_t ad7291_set_t_sense_low(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	return ad7291_set_t_bound(dev, attr,
+-			AD7291_T_SENSE_LOW, buf, len);
+-}
+-
+-static ssize_t ad7291_show_t_sense_hyst(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	return ad7291_show_t_bound(dev, attr,
+-			AD7291_T_SENSE_HYST, buf);
+-}
+-
+-static inline ssize_t ad7291_set_t_sense_hyst(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	return ad7291_set_t_bound(dev, attr,
+-			AD7291_T_SENSE_HYST, buf, len);
+-}
+-
+ static inline ssize_t ad7291_show_v_bound(struct device *dev,
+ 		struct device_attribute *attr,
+ 		u8 bound_reg,
+@@ -712,191 +643,121 @@ static inline ssize_t ad7291_set_v_bound(struct device *dev,
+ 	return ret;
+ }
  
- static struct attribute *adt7410_event_int_attributes[] = {
--	&iio_event_attr_event_mode.dev_attr.attr,
--	&iio_event_attr_available_event_modes.dev_attr.attr,
--	&iio_event_attr_fault_queue.dev_attr.attr,
--	&iio_event_attr_t_alarm_high.dev_attr.attr,
--	&iio_event_attr_t_alarm_low.dev_attr.attr,
--	&iio_event_attr_t_hyst.dev_attr.attr,
-+	&iio_dev_attr_event_mode.dev_attr.attr,
-+	&iio_dev_attr_available_event_modes.dev_attr.attr,
-+	&iio_dev_attr_fault_queue.dev_attr.attr,
-+	&iio_dev_attr_t_alarm_high.dev_attr.attr,
-+	&iio_dev_attr_t_alarm_low.dev_attr.attr,
-+	&iio_dev_attr_t_hyst.dev_attr.attr,
+-static int ad7291_get_voltage_limit_regs(const char *channel)
+-{
+-	int index;
+-
+-	if (strlen(channel) < 3 && channel[0] != 'v')
+-		return -EINVAL;
+-
+-	index = channel[1] - '0';
+-	if (index >= AD7291_VOLTAGE_LIMIT_COUNT)
+-		return -EINVAL;
+-
+-	return index;
+-}
+-
+-static ssize_t ad7291_show_voltage_high(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	int regs;
+-
+-	regs = ad7291_get_voltage_limit_regs(attr->attr.name);
+-
+-	if (regs < 0)
+-		return regs;
+-
+-	return ad7291_show_t_bound(dev, attr, regs, buf);
+-}
+-
+-static inline ssize_t ad7291_set_voltage_high(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	int regs;
+-
+-	regs = ad7291_get_voltage_limit_regs(attr->attr.name);
+-
+-	if (regs < 0)
+-		return regs;
+-
+-	return ad7291_set_t_bound(dev, attr, regs, buf, len);
+-}
+-
+-static ssize_t ad7291_show_voltage_low(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	int regs;
+-
+-	regs = ad7291_get_voltage_limit_regs(attr->attr.name);
+-
+-	if (regs < 0)
+-		return regs;
+-
+-	return ad7291_show_t_bound(dev, attr, regs+1, buf);
+-}
+-
+-static inline ssize_t ad7291_set_voltage_low(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	int regs;
+-
+-	regs = ad7291_get_voltage_limit_regs(attr->attr.name);
+-
+-	if (regs < 0)
+-		return regs;
+-
+-	return ad7291_set_t_bound(dev, attr, regs+1, buf, len);
+-}
+-
+-static ssize_t ad7291_show_voltage_hyst(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	int regs;
+-
+-	regs = ad7291_get_voltage_limit_regs(attr->attr.name);
+-
+-	if (regs < 0)
+-		return regs;
+-
+-	return ad7291_show_t_bound(dev, attr, regs+2, buf);
+-}
+-
+-static inline ssize_t ad7291_set_voltage_hyst(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	int regs;
+-
+-	regs = ad7291_get_voltage_limit_regs(attr->attr.name);
+-
+-	if (regs < 0)
+-		return regs;
+-
+-	return ad7291_set_t_bound(dev, attr, regs+2, buf, len);
+-}
+-
+-IIO_EVENT_ATTR_SH(t_sense_high, iio_event_ad7291,
+-		ad7291_show_t_sense_high, ad7291_set_t_sense_high, 0);
+-IIO_EVENT_ATTR_SH(t_sense_low, iio_event_ad7291,
+-		ad7291_show_t_sense_low, ad7291_set_t_sense_low, 0);
+-IIO_EVENT_ATTR_SH(t_sense_hyst, iio_event_ad7291,
+-		ad7291_show_t_sense_hyst, ad7291_set_t_sense_hyst, 0);
+-
+-IIO_EVENT_ATTR_SH(v0_high, iio_event_ad7291,
+-		ad7291_show_voltage_high, ad7291_set_voltage_high, 0);
+-IIO_EVENT_ATTR_SH(v0_low, iio_event_ad7291,
+-		ad7291_show_voltage_low, ad7291_set_voltage_low, 0);
+-IIO_EVENT_ATTR_SH(v0_hyst, iio_event_ad7291,
+-		ad7291_show_voltage_hyst, ad7291_set_voltage_hyst, 0);
+-IIO_EVENT_ATTR_SH(v1_high, iio_event_ad7291,
+-		ad7291_show_voltage_high, ad7291_set_voltage_high, 0);
+-IIO_EVENT_ATTR_SH(v1_low, iio_event_ad7291,
+-		ad7291_show_voltage_low, ad7291_set_voltage_low, 0);
+-IIO_EVENT_ATTR_SH(v1_hyst, iio_event_ad7291,
+-		ad7291_show_voltage_hyst, ad7291_set_voltage_hyst, 0);
+-IIO_EVENT_ATTR_SH(v2_high, iio_event_ad7291,
+-		ad7291_show_voltage_high, ad7291_set_voltage_high, 0);
+-IIO_EVENT_ATTR_SH(v2_low, iio_event_ad7291,
+-		ad7291_show_voltage_low, ad7291_set_voltage_low, 0);
+-IIO_EVENT_ATTR_SH(v2_hyst, iio_event_ad7291,
+-		ad7291_show_voltage_hyst, ad7291_set_voltage_hyst, 0);
+-IIO_EVENT_ATTR_SH(v3_high, iio_event_ad7291,
+-		ad7291_show_voltage_high, ad7291_set_voltage_high, 0);
+-IIO_EVENT_ATTR_SH(v3_low, iio_event_ad7291,
+-		ad7291_show_voltage_low, ad7291_set_voltage_low, 0);
+-IIO_EVENT_ATTR_SH(v3_hyst, iio_event_ad7291,
+-		ad7291_show_voltage_hyst, ad7291_set_voltage_hyst, 0);
+-IIO_EVENT_ATTR_SH(v4_high, iio_event_ad7291,
+-		ad7291_show_voltage_high, ad7291_set_voltage_high, 0);
+-IIO_EVENT_ATTR_SH(v4_low, iio_event_ad7291,
+-		ad7291_show_voltage_low, ad7291_set_voltage_low, 0);
+-IIO_EVENT_ATTR_SH(v4_hyst, iio_event_ad7291,
+-		ad7291_show_voltage_hyst, ad7291_set_voltage_hyst, 0);
+-IIO_EVENT_ATTR_SH(v5_high, iio_event_ad7291,
+-		ad7291_show_voltage_high, ad7291_set_voltage_high, 0);
+-IIO_EVENT_ATTR_SH(v5_low, iio_event_ad7291,
+-		ad7291_show_voltage_low, ad7291_set_voltage_low, 0);
+-IIO_EVENT_ATTR_SH(v5_hyst, iio_event_ad7291,
+-		ad7291_show_voltage_hyst, ad7291_set_voltage_hyst, 0);
+-IIO_EVENT_ATTR_SH(v6_high, iio_event_ad7291,
+-		ad7291_show_voltage_high, ad7291_set_voltage_high, 0);
+-IIO_EVENT_ATTR_SH(v6_low, iio_event_ad7291,
+-		ad7291_show_voltage_low, ad7291_set_voltage_low, 0);
+-IIO_EVENT_ATTR_SH(v6_hyst, iio_event_ad7291,
+-		ad7291_show_voltage_hyst, ad7291_set_voltage_hyst, 0);
+-IIO_EVENT_ATTR_SH(v7_high, iio_event_ad7291,
+-		ad7291_show_voltage_high, ad7291_set_voltage_high, 0);
+-IIO_EVENT_ATTR_SH(v7_low, iio_event_ad7291,
+-		ad7291_show_voltage_low, ad7291_set_voltage_low, 0);
+-IIO_EVENT_ATTR_SH(v7_hyst, iio_event_ad7291,
+-		ad7291_show_voltage_hyst, ad7291_set_voltage_hyst, 0);
++static IIO_DEVICE_ATTR(t_sense_high_value,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound,
++		       AD7291_T_SENSE_HIGH);
++static IIO_DEVICE_ATTR(t_sense_low_value,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound,
++		       AD7291_T_SENSE_LOW);
++static IIO_DEVICE_ATTR(t_sense_hyst_value,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound,
++		       AD7291_T_SENSE_HYST);
++static IIO_DEVICE_ATTR(v0_high,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x04);
++static IIO_DEVICE_ATTR(v0_low,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x05);
++static IIO_DEVICE_ATTR(v0_hyst,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x06);
++static IIO_DEVICE_ATTR(v1_high,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x07);
++static IIO_DEVICE_ATTR(v1_low,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x08);
++static IIO_DEVICE_ATTR(v1_hyst,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x09);
++static IIO_DEVICE_ATTR(v2_high,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x0A);
++static IIO_DEVICE_ATTR(v2_low,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x0B);
++static IIO_DEVICE_ATTR(v2_hyst,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x0C);
++static IIO_DEVICE_ATTR(v3_high,
++		       S_IRUGO | S_IWUSR,
++		       /* Datasheet suggests this one and this one only
++			  has the registers in different order */
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x0E);
++static IIO_DEVICE_ATTR(v3_low,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x0D);
++static IIO_DEVICE_ATTR(v3_hyst,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x0F);
++static IIO_DEVICE_ATTR(v4_high,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x10);
++static IIO_DEVICE_ATTR(v4_low,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x11);
++static IIO_DEVICE_ATTR(v4_hyst,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x12);
++static IIO_DEVICE_ATTR(v5_high,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x13);
++static IIO_DEVICE_ATTR(v5_low,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x14);
++static IIO_DEVICE_ATTR(v5_hyst,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x15);
++static IIO_DEVICE_ATTR(v6_high,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x16);
++static IIO_DEVICE_ATTR(v6_low,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x17);
++static IIO_DEVICE_ATTR(v6_hyst,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x18);
++static IIO_DEVICE_ATTR(v7_high,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x19);
++static IIO_DEVICE_ATTR(v7_low,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x1A);
++static IIO_DEVICE_ATTR(v7_hyst,
++		       S_IRUGO | S_IWUSR,
++		       ad7291_show_t_bound, ad7291_set_t_bound, 0x1B);
+ 
+ static struct attribute *ad7291_event_attributes[] = {
+-	&iio_event_attr_t_sense_high.dev_attr.attr,
+-	&iio_event_attr_t_sense_low.dev_attr.attr,
+-	&iio_event_attr_t_sense_hyst.dev_attr.attr,
+-	&iio_event_attr_v0_high.dev_attr.attr,
+-	&iio_event_attr_v0_low.dev_attr.attr,
+-	&iio_event_attr_v0_hyst.dev_attr.attr,
+-	&iio_event_attr_v1_high.dev_attr.attr,
+-	&iio_event_attr_v1_low.dev_attr.attr,
+-	&iio_event_attr_v1_hyst.dev_attr.attr,
+-	&iio_event_attr_v2_high.dev_attr.attr,
+-	&iio_event_attr_v2_low.dev_attr.attr,
+-	&iio_event_attr_v2_hyst.dev_attr.attr,
+-	&iio_event_attr_v3_high.dev_attr.attr,
+-	&iio_event_attr_v3_low.dev_attr.attr,
+-	&iio_event_attr_v3_hyst.dev_attr.attr,
+-	&iio_event_attr_v4_high.dev_attr.attr,
+-	&iio_event_attr_v4_low.dev_attr.attr,
+-	&iio_event_attr_v4_hyst.dev_attr.attr,
+-	&iio_event_attr_v5_high.dev_attr.attr,
+-	&iio_event_attr_v5_low.dev_attr.attr,
+-	&iio_event_attr_v5_hyst.dev_attr.attr,
+-	&iio_event_attr_v6_high.dev_attr.attr,
+-	&iio_event_attr_v6_low.dev_attr.attr,
+-	&iio_event_attr_v6_hyst.dev_attr.attr,
+-	&iio_event_attr_v7_high.dev_attr.attr,
+-	&iio_event_attr_v7_low.dev_attr.attr,
+-	&iio_event_attr_v7_hyst.dev_attr.attr,
++	&iio_dev_attr_t_sense_high_value.dev_attr.attr,
++	&iio_dev_attr_t_sense_low_value.dev_attr.attr,
++	&iio_dev_attr_t_sense_hyst_value.dev_attr.attr,
++	&iio_dev_attr_v0_high.dev_attr.attr,
++	&iio_dev_attr_v0_low.dev_attr.attr,
++	&iio_dev_attr_v0_hyst.dev_attr.attr,
++	&iio_dev_attr_v1_high.dev_attr.attr,
++	&iio_dev_attr_v1_low.dev_attr.attr,
++	&iio_dev_attr_v1_hyst.dev_attr.attr,
++	&iio_dev_attr_v2_high.dev_attr.attr,
++	&iio_dev_attr_v2_low.dev_attr.attr,
++	&iio_dev_attr_v2_hyst.dev_attr.attr,
++	&iio_dev_attr_v3_high.dev_attr.attr,
++	&iio_dev_attr_v3_low.dev_attr.attr,
++	&iio_dev_attr_v3_hyst.dev_attr.attr,
++	&iio_dev_attr_v4_high.dev_attr.attr,
++	&iio_dev_attr_v4_low.dev_attr.attr,
++	&iio_dev_attr_v4_hyst.dev_attr.attr,
++	&iio_dev_attr_v5_high.dev_attr.attr,
++	&iio_dev_attr_v5_low.dev_attr.attr,
++	&iio_dev_attr_v5_hyst.dev_attr.attr,
++	&iio_dev_attr_v6_high.dev_attr.attr,
++	&iio_dev_attr_v6_low.dev_attr.attr,
++	&iio_dev_attr_v6_hyst.dev_attr.attr,
++	&iio_dev_attr_v7_high.dev_attr.attr,
++	&iio_dev_attr_v7_low.dev_attr.attr,
++	&iio_dev_attr_v7_hyst.dev_attr.attr,
  	NULL,
  };
  
- static struct attribute *adt7410_event_ct_attributes[] = {
--	&iio_event_attr_event_mode.dev_attr.attr,
--	&iio_event_attr_available_event_modes.dev_attr.attr,
--	&iio_event_attr_fault_queue.dev_attr.attr,
--	&iio_event_attr_t_crit.dev_attr.attr,
--	&iio_event_attr_t_hyst.dev_attr.attr,
-+	&iio_dev_attr_event_mode.dev_attr.attr,
-+	&iio_dev_attr_available_event_modes.dev_attr.attr,
-+	&iio_dev_attr_fault_queue.dev_attr.attr,
-+	&iio_dev_attr_t_crit.dev_attr.attr,
-+	&iio_dev_attr_t_hyst.dev_attr.attr,
- 	NULL,
- };
+@@ -945,24 +806,15 @@ static int __devinit ad7291_probe(struct i2c_client *client,
+ 		goto error_free_dev;
  
- static struct attribute_group adt7410_event_attribute_group[ADT7410_IRQS] = {
- 	{
- 		.attrs = adt7410_event_int_attributes,
--	},
--	{
-+	}, {
- 		.attrs = adt7410_event_ct_attributes,
- 	}
- };
-@@ -784,44 +770,29 @@ static int __devinit adt7410_probe(struct i2c_client *client,
- 
- 	/* CT critcal temperature event. line 0 */
- 	if (client->irq) {
+ 	if (client->irq > 0) {
 -		ret = iio_register_interrupt_line(client->irq,
 -				chip->indio_dev,
 -				0,
@@ -197,70 +528,38 @@ index 7cc3feb..dc59130 100644
 -				chip->name);
 +		ret = request_threaded_irq(client->irq,
 +					   NULL,
-+					   &adt7410_event_handler,
-+					   IRQF_TRIGGER_LOW,
++					   &ad7291_event_handler,
++					   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
 +					   chip->name,
 +					   chip->indio_dev);
  		if (ret)
  			goto error_unreg_dev;
--
+ 
 -		/*
--		 * The event handler list element refer to iio_event_adt7410.
+-		 * The event handler list element refer to iio_event_ad7291.
 -		 * All event attributes bind to the same event handler.
--		 * One event handler can only be added to one event list.
+-		 * So, only register event handler once.
 -		 */
--		iio_add_event_to_list(&iio_event_adt7410,
+-		iio_add_event_to_list(&iio_event_ad7291,
 -				&chip->indio_dev->interrupts[0]->ev_list);
- 	}
- 
- 	/* INT bound temperature alarm event. line 1 */
- 	if (adt7410_platform_data[0]) {
--		ret = iio_register_interrupt_line(adt7410_platform_data[0],
--				chip->indio_dev,
--				1,
--				adt7410_platform_data[1],
--				chip->name);
-+		ret = request_threaded_irq(adt7410_platform_data[0],
-+					   NULL,
-+					   &adt7410_event_handler,
-+					   adt7410_platform_data[1],
-+					   chip->name,
-+					   chip->indio_dev);
- 		if (ret)
- 			goto error_unreg_ct_irq;
 -
--		/*
--		 * The event handler list element refer to iio_event_adt7410.
--		 * All event attributes bind to the same event handler.
--		 * One event handler can only be added to one event list.
--		 */
--		iio_add_event_to_list(&iio_event_adt7410_ct,
--				&chip->indio_dev->interrupts[1]->ev_list);
+-		INIT_WORK(&chip->thresh_work, ad7291_interrupt_bh);
+-
+ 		/* set irq polarity low level */
+ 		chip->command |= AD7291_ALART_POLARITY;
  	}
- 
- 	if (client->irq && adt7410_platform_data[0]) {
--		INIT_WORK(&chip->thresh_work, adt7410_interrupt_bh);
- 
- 		ret = adt7410_i2c_read_byte(chip, ADT7410_CONFIG, &chip->config);
- 		if (ret) {
-@@ -850,9 +821,9 @@ static int __devinit adt7410_probe(struct i2c_client *client,
+@@ -979,7 +831,7 @@ static int __devinit ad7291_probe(struct i2c_client *client,
  	return 0;
  
- error_unreg_int_irq:
--	iio_unregister_interrupt_line(chip->indio_dev, 1);
-+	free_irq(adt7410_platform_data[0], chip->indio_dev);
- error_unreg_ct_irq:
+ error_unreg_irq:
 -	iio_unregister_interrupt_line(chip->indio_dev, 0);
 +	free_irq(client->irq, chip->indio_dev);
  error_unreg_dev:
  	iio_device_unregister(chip->indio_dev);
  error_free_dev:
-@@ -870,9 +841,9 @@ static int __devexit adt7410_remove(struct i2c_client *client)
- 	unsigned long *adt7410_platform_data = client->dev.platform_data;
+@@ -996,7 +848,7 @@ static int __devexit ad7291_remove(struct i2c_client *client)
+ 	struct iio_dev *indio_dev = chip->indio_dev;
  
- 	if (adt7410_platform_data[0])
--		iio_unregister_interrupt_line(indio_dev, 1);
-+		free_irq(adt7410_platform_data[0], chip->indio_dev);
  	if (client->irq)
 -		iio_unregister_interrupt_line(indio_dev, 0);
 +		free_irq(client->irq, chip->indio_dev);
