@@ -1,453 +1,214 @@
 Return-Path: <Michael.Hennerich@analog.com>
-From: <michael.hennerich@analog.com>
-To: jic23@cam.ac.uk
-CC: linux-iio@vger.kernel.org, drivers@analog.com,
-        device-drivers-devel@blackfin.uclinux.org,
-        Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 2/4] IIO-onwards: ADC: AD7606: Use private data space from iio_allocate_device
-Date: Wed, 20 Apr 2011 15:35:30 +0200
-Message-ID: <1303306532-28506-2-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1303306532-28506-1-git-send-email-michael.hennerich@analog.com>
-References: <1303306532-28506-1-git-send-email-michael.hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Tue, 19 Apr 2011 16:22:21 +0100
+Subject: iio_trigger_poll_chained causes NULL pointer access
+Message-ID: <544AC56F16B56944AEC3BD4E3D591771375475ED44@LIMKCMBX1.ad.analog.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+Hi Jonathan,
 
-Use private data space from iio_allocate_device
+The AD7606 ring buffer doesn't use the thread, and installs only the hard h=
+andler.
 
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
----
- drivers/staging/iio/adc/ad7606.h      |    9 ++--
- drivers/staging/iio/adc/ad7606_core.c |   92 +++++++++++++++++----------------
- drivers/staging/iio/adc/ad7606_par.c  |   30 ++++++-----
- drivers/staging/iio/adc/ad7606_ring.c |    8 ++-
- drivers/staging/iio/adc/ad7606_spi.c  |   24 +++++----
- 5 files changed, 86 insertions(+), 77 deletions(-)
+        indio_dev->pollfunc->h =3D &ad7606_trigger_handler_th;
+        indio_dev->pollfunc->thread =3D NULL;
 
-diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-index 8af1792..8ba245a 100644
---- a/drivers/staging/iio/adc/ad7606.h
-+++ b/drivers/staging/iio/adc/ad7606.h
-@@ -60,7 +60,6 @@ struct ad7606_chip_info {
-  */
- 
- struct ad7606_state {
--	struct iio_dev			*indio_dev;
- 	struct device			*dev;
- 	const struct ad7606_chip_info	*chip_info;
- 	struct ad7606_platform_data	*pdata;
-@@ -94,12 +93,12 @@ struct ad7606_bus_ops {
- 	int (*read_block)(struct device *, int, void *);
- };
- 
--void ad7606_suspend(struct ad7606_state *st);
--void ad7606_resume(struct ad7606_state *st);
--struct ad7606_state *ad7606_probe(struct device *dev, int irq,
-+void ad7606_suspend(struct iio_dev *indio_dev);
-+void ad7606_resume(struct iio_dev *indio_dev);
-+struct iio_dev *ad7606_probe(struct device *dev, int irq,
- 			      void __iomem *base_address, unsigned id,
- 			      const struct ad7606_bus_ops *bops);
--int ad7606_remove(struct ad7606_state *st);
-+int ad7606_remove(struct iio_dev *indio_dev);
- int ad7606_reset(struct ad7606_state *st);
- 
- enum ad7606_supported_device_ids {
-diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-index 0045def..93e5ef5 100644
---- a/drivers/staging/iio/adc/ad7606_core.c
-+++ b/drivers/staging/iio/adc/ad7606_core.c
-@@ -365,8 +365,8 @@ static int ad7606_request_gpios(struct ad7606_state *st)
- 		st->have_reset = true;
- 
- 	ret = gpio_request_one(st->pdata->gpio_range, GPIOF_DIR_OUT |
--			       ((st->range == 10000) ? GPIOF_INIT_HIGH :
--			       	GPIOF_INIT_LOW), "AD7606_RANGE");
-+				((st->range == 10000) ? GPIOF_INIT_HIGH :
-+				GPIOF_INIT_LOW), "AD7606_RANGE");
- 	if (!ret)
- 		st->have_range = true;
- 
-@@ -413,9 +413,10 @@ static void ad7606_free_gpios(struct ad7606_state *st)
-  */
- static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
- {
--	struct ad7606_state *st = dev_id;
-+	struct iio_dev *indio_dev = dev_id;
-+	struct ad7606_state *st = iio_priv(indio_dev);
- 
--	if (iio_ring_enabled(st->indio_dev)) {
-+	if (iio_ring_enabled(indio_dev)) {
- 		if (!work_pending(&st->poll_work))
- 			schedule_work(&st->poll_work);
- 	} else {
-@@ -426,21 +427,23 @@ static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- };
- 
--struct ad7606_state *ad7606_probe(struct device *dev, int irq,
-+struct iio_dev *ad7606_probe(struct device *dev, int irq,
- 			      void __iomem *base_address,
- 			      unsigned id,
- 			      const struct ad7606_bus_ops *bops)
- {
- 	struct ad7606_platform_data *pdata = dev->platform_data;
- 	struct ad7606_state *st;
--	int ret;
-+	int ret, regdone = 0;
-+	struct iio_dev *indio_dev = iio_allocate_device(sizeof(*st));
- 
--	st = kzalloc(sizeof(*st), GFP_KERNEL);
--	if (st == NULL) {
-+	if (indio_dev == NULL) {
- 		ret = -ENOMEM;
- 		goto error_ret;
- 	}
- 
-+	st = iio_priv(indio_dev);
-+
- 	st->dev = dev;
- 	st->id = id;
- 	st->irq = irq;
-@@ -467,97 +470,94 @@ struct ad7606_state *ad7606_probe(struct device *dev, int irq,
- 	st->pdata = pdata;
- 	st->chip_info = &ad7606_chip_info_tbl[id];
- 
--	st->indio_dev = iio_allocate_device(0);
--	if (st->indio_dev == NULL) {
--		ret = -ENOMEM;
--		goto error_disable_reg;
--	}
--
--	st->indio_dev->dev.parent = dev;
--	st->indio_dev->attrs = &ad7606_attribute_group;
--	st->indio_dev->dev_data = (void *)(st);
--	st->indio_dev->driver_module = THIS_MODULE;
--	st->indio_dev->modes = INDIO_DIRECT_MODE;
--	st->indio_dev->name = st->chip_info->name;
--	st->indio_dev->channels = st->chip_info->channels;
--	st->indio_dev->num_channels = st->chip_info->num_channels;
--	st->indio_dev->read_raw = &ad7606_read_raw;
-+	indio_dev->dev.parent = dev;
-+	indio_dev->attrs = &ad7606_attribute_group;
-+	indio_dev->dev_data = (void *)(st);
-+	indio_dev->driver_module = THIS_MODULE;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->name = st->chip_info->name;
-+	indio_dev->channels = st->chip_info->channels;
-+	indio_dev->num_channels = st->chip_info->num_channels;
-+	indio_dev->read_raw = &ad7606_read_raw;
- 
- 	init_waitqueue_head(&st->wq_data_avail);
- 
- 	ret = ad7606_request_gpios(st);
- 	if (ret)
--		goto error_free_device;
-+		goto error_disable_reg;
- 
- 	ret = ad7606_reset(st);
- 	if (ret)
- 		dev_warn(st->dev, "failed to RESET: no RESET GPIO specified\n");
- 
- 	ret = request_irq(st->irq, ad7606_interrupt,
--		IRQF_TRIGGER_FALLING, st->chip_info->name, st);
-+		IRQF_TRIGGER_FALLING, st->chip_info->name, indio_dev);
- 	if (ret)
- 		goto error_free_gpios;
- 
--	ret = ad7606_register_ring_funcs_and_init(st->indio_dev);
-+	ret = ad7606_register_ring_funcs_and_init(indio_dev);
- 	if (ret)
- 		goto error_free_irq;
- 
--	ret = iio_device_register(st->indio_dev);
-+	ret = iio_device_register(indio_dev);
- 	if (ret)
- 		goto error_free_irq;
-+	regdone = 1;
- 
--	ret = iio_ring_buffer_register_ex(st->indio_dev->ring, 0,
--					  st->indio_dev->channels,
--					  st->indio_dev->num_channels);
-+	ret = iio_ring_buffer_register_ex(indio_dev->ring, 0,
-+					  indio_dev->channels,
-+					  indio_dev->num_channels);
- 	if (ret)
- 		goto error_cleanup_ring;
- 
--	return st;
-+	return indio_dev;
- 
- error_cleanup_ring:
--	ad7606_ring_cleanup(st->indio_dev);
--	iio_device_unregister(st->indio_dev);
-+	ad7606_ring_cleanup(indio_dev);
- 
- error_free_irq:
--	free_irq(st->irq, st);
-+	free_irq(st->irq, indio_dev);
- 
- error_free_gpios:
- 	ad7606_free_gpios(st);
- 
--error_free_device:
--	iio_free_device(st->indio_dev);
--
- error_disable_reg:
- 	if (!IS_ERR(st->reg))
- 		regulator_disable(st->reg);
- error_put_reg:
- 	if (!IS_ERR(st->reg))
- 		regulator_put(st->reg);
--	kfree(st);
-+	if (regdone)
-+		iio_device_unregister(indio_dev);
-+	else
-+		iio_free_device(indio_dev);
- error_ret:
- 	return ERR_PTR(ret);
+This crashes the system in handle_nested_irq (null pointer action->thread_f=
+n)
+called from iio_trigger_poll_chained().
+
+root:/> echo 1 > /sys/bus/iio/devices/trigger0/trigger_now
+Jump to NULL address
+Kernel OOPS in progress
+Deferred Exception context
+CURRENT PROCESS:
+COMM=3Dsh PID=3D166  CPU=3D0
+TEXT =3D 0x02a00040-0x02a54380        DATA =3D 0x02a543a0-0x02a68d28
+ BSS =3D 0x02a68d28-0x02a6a6e0  USER-STACK =3D 0x02a73fa4
+
+return address: [0x  (null)]; contents of:
+
+ADSP-BF537-0.2 500(MHz CCLK) 125(MHz SCLK) (mpu off)
+Linux version 2.6.39-rc3-00802-g1f36cb3-dirty (michael@mhenneri-D02) (gcc v=
+ersion 4.3.5 (ADI-trunk/svn-5074) ) #84 Tue Apr 19 17:09:10 CEST 2011
+
+SEQUENCER STATUS:               Not tainted
+ SEQSTAT: 0000002d  IPEND: 8008  IMASK: ffff  SYSCFG: 0006
+  EXCAUSE   : 0x2d
+  physical IVG3 asserted : <0xffa007b4> { _trap + 0x0 }
+  physical IVG15 asserted : <0xffa01098> { _evt_system_call + 0x0 }
+  logical irq   6 mapped  : <0xffa003c8> { _bfin_coretmr_interrupt + 0x0 }
+  logical irq  10 mapped  : <0x000c0278> { _bfin_rtc_interrupt + 0x0 }
+  logical irq  16 mapped  : <0x000c2114> { _bfin_twi_interrupt_entry + 0x0 =
+}
+  logical irq  18 mapped  : <0x000ab53c> { _bfin_serial_dma_rx_int + 0x0 }
+  logical irq  19 mapped  : <0x000ab29c> { _bfin_serial_dma_tx_int + 0x0 }
+  logical irq  24 mapped  : <0x000baa40> { _bfin_mac_interrupt + 0x0 }
+  logical irq  54 mapped  : <0x000cce0c> { _ad7606_interrupt + 0x0 }
+  logical irq 106 mapped  : <0x000cd390> { _ad7606_trigger_handler_th + 0x0=
  }
- 
--int ad7606_remove(struct ad7606_state *st)
-+int ad7606_remove(struct iio_dev *indio_dev)
- {
--	struct iio_dev *indio_dev = st->indio_dev;
-+	struct ad7606_state *st = iio_priv(indio_dev);
-+
- 	iio_ring_buffer_unregister(indio_dev->ring);
- 	ad7606_ring_cleanup(indio_dev);
--	iio_device_unregister(indio_dev);
--	free_irq(st->irq, st);
-+
-+	free_irq(st->irq, indio_dev);
- 	if (!IS_ERR(st->reg)) {
- 		regulator_disable(st->reg);
- 		regulator_put(st->reg);
- 	}
- 
- 	ad7606_free_gpios(st);
-+	iio_device_unregister(indio_dev);
- 
--	kfree(st);
- 	return 0;
- }
- 
--void ad7606_suspend(struct ad7606_state *st)
-+void ad7606_suspend(struct iio_dev *indio_dev)
- {
-+	struct ad7606_state *st = iio_priv(indio_dev);
-+
- 	if (st->have_stby) {
- 		if (st->have_range)
- 			gpio_set_value(st->pdata->gpio_range, 1);
-@@ -565,8 +565,10 @@ void ad7606_suspend(struct ad7606_state *st)
- 	}
- }
- 
--void ad7606_resume(struct ad7606_state *st)
-+void ad7606_resume(struct iio_dev *indio_dev)
- {
-+	struct ad7606_state *st = iio_priv(indio_dev);
-+
- 	if (st->have_stby) {
- 		if (st->have_range)
- 			gpio_set_value(st->pdata->gpio_range,
-diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-index 43a554c..d21218d 100644
---- a/drivers/staging/iio/adc/ad7606_par.c
-+++ b/drivers/staging/iio/adc/ad7606_par.c
-@@ -12,13 +12,15 @@
- #include <linux/err.h>
- #include <linux/io.h>
- 
-+#include "../iio.h"
- #include "ad7606.h"
- 
- static int ad7606_par16_read_block(struct device *dev,
- 				 int count, void *buf)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
--	struct ad7606_state *st = platform_get_drvdata(pdev);
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct ad7606_state *st = iio_priv(indio_dev);
- 
- 	insw((unsigned long) st->base_address, buf, count);
- 
-@@ -33,7 +35,8 @@ static int ad7606_par8_read_block(struct device *dev,
- 				 int count, void *buf)
- {
- 	struct platform_device *pdev = to_platform_device(dev);
--	struct ad7606_state *st = platform_get_drvdata(pdev);
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct ad7606_state *st = iio_priv(indio_dev);
- 
- 	insb((unsigned long) st->base_address, buf, count * 2);
- 
-@@ -47,7 +50,7 @@ static const struct ad7606_bus_ops ad7606_par8_bops = {
- static int __devinit ad7606_par_probe(struct platform_device *pdev)
- {
- 	struct resource *res;
--	struct ad7606_state *st;
-+	struct iio_dev *indio_dev;
- 	void __iomem *addr;
- 	resource_size_t remap_size;
- 	int ret, irq;
-@@ -75,17 +78,17 @@ static int __devinit ad7606_par_probe(struct platform_device *pdev)
- 		goto out1;
- 	}
- 
--	st = ad7606_probe(&pdev->dev, irq, addr,
-+	indio_dev = ad7606_probe(&pdev->dev, irq, addr,
- 			  platform_get_device_id(pdev)->driver_data,
- 			  remap_size > 1 ? &ad7606_par16_bops :
- 			  &ad7606_par8_bops);
- 
--	if (IS_ERR(st))  {
--		ret = PTR_ERR(st);
-+	if (IS_ERR(indio_dev))  {
-+		ret = PTR_ERR(indio_dev);
- 		goto out2;
- 	}
- 
--	platform_set_drvdata(pdev, st);
-+	platform_set_drvdata(pdev, indio_dev);
- 
- 	return 0;
- 
-@@ -99,10 +102,11 @@ out1:
- 
- static int __devexit ad7606_par_remove(struct platform_device *pdev)
- {
--	struct ad7606_state *st = platform_get_drvdata(pdev);
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
- 	struct resource *res;
-+	struct ad7606_state *st = iio_priv(indio_dev);
- 
--	ad7606_remove(st);
-+	ad7606_remove(indio_dev);
- 
- 	iounmap(st->base_address);
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-@@ -116,18 +120,18 @@ static int __devexit ad7606_par_remove(struct platform_device *pdev)
- #ifdef CONFIG_PM
- static int ad7606_par_suspend(struct device *dev)
- {
--	struct ad7606_state *st = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 
--	ad7606_suspend(st);
-+	ad7606_suspend(indio_dev);
- 
- 	return 0;
- }
- 
- static int ad7606_par_resume(struct device *dev)
- {
--	struct ad7606_state *st = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 
--	ad7606_resume(st);
-+	ad7606_resume(indio_dev);
- 
- 	return 0;
- }
-diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
-index ee2952c..1040082 100644
---- a/drivers/staging/iio/adc/ad7606_ring.c
-+++ b/drivers/staging/iio/adc/ad7606_ring.c
-@@ -23,11 +23,12 @@
- 
- int ad7606_scan_from_ring(struct ad7606_state *st, unsigned ch)
- {
--	struct iio_ring_buffer *ring = st->indio_dev->ring;
-+	struct iio_ring_buffer *ring = iio_priv_to_dev(st)->ring;
- 	int ret;
- 	u16 *ring_data;
- 
--	ring_data = kmalloc(ring->access->get_bytes_per_datum(ring), GFP_KERNEL);
-+	ring_data = kmalloc(ring->access->get_bytes_per_datum(ring),
-+			    GFP_KERNEL);
- 	if (ring_data == NULL) {
- 		ret = -ENOMEM;
- 		goto error_ret;
-@@ -103,7 +104,8 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
- {
- 	struct ad7606_state *st = container_of(work_s, struct ad7606_state,
- 						poll_work);
--	struct iio_dev *indio_dev = st->indio_dev;
-+
-+	struct iio_dev *indio_dev = iio_priv_to_dev(st);
- 	struct iio_ring_buffer *ring = indio_dev->ring;
- 	s64 time_ns;
- 	__u8 *buf;
-diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-index d738491..0769c80 100644
---- a/drivers/staging/iio/adc/ad7606_spi.c
-+++ b/drivers/staging/iio/adc/ad7606_spi.c
-@@ -10,6 +10,8 @@
- #include <linux/spi/spi.h>
- #include <linux/types.h>
- #include <linux/err.h>
-+
-+#include "../iio.h"
- #include "ad7606.h"
- 
- #define MAX_SPI_FREQ_HZ		23500000	/* VDRIVE above 4.75 V */
-@@ -39,42 +41,42 @@ static const struct ad7606_bus_ops ad7606_spi_bops = {
- 
- static int __devinit ad7606_spi_probe(struct spi_device *spi)
- {
--	struct ad7606_state *st;
-+	struct iio_dev *indio_dev;
- 
--	st = ad7606_probe(&spi->dev, spi->irq, NULL,
-+	indio_dev = ad7606_probe(&spi->dev, spi->irq, NULL,
- 			   spi_get_device_id(spi)->driver_data,
- 			   &ad7606_spi_bops);
- 
--	if (IS_ERR(st))
--		return PTR_ERR(st);
-+	if (IS_ERR(indio_dev))
-+		return PTR_ERR(indio_dev);
- 
--	spi_set_drvdata(spi, st);
-+	spi_set_drvdata(spi, indio_dev);
- 
- 	return 0;
- }
- 
- static int __devexit ad7606_spi_remove(struct spi_device *spi)
- {
--	struct ad7606_state *st = dev_get_drvdata(&spi->dev);
-+	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
- 
--	return ad7606_remove(st);
-+	return ad7606_remove(indio_dev);
- }
- 
- #ifdef CONFIG_PM
- static int ad7606_spi_suspend(struct device *dev)
- {
--	struct ad7606_state *st = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 
--	ad7606_suspend(st);
-+	ad7606_suspend(indio_dev);
- 
- 	return 0;
- }
- 
- static int ad7606_spi_resume(struct device *dev)
- {
--	struct ad7606_state *st = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 
--	ad7606_resume(st);
-+	ad7606_resume(indio_dev);
- 
- 	return 0;
- }
--- 
-1.6.0.2
+ RETE: <0x00000000> /* Maybe null pointer? */
+ RETN: <0x028f7e3c> /* kernel dynamic memory (maybe user-space) */
+ RETX: <0x00000480> /* Maybe fixed code section */
+ RETS: <0x00036778> { _handle_nested_irq + 0x58 }
+ PC  : <0x00000000> /* Maybe null pointer? */
+DCPLB_FAULT_ADDR: <0x028e71f4> /* kernel dynamic memory (maybe user-space) =
+*/
+ICPLB_FAULT_ADDR: <0x00000000> /* Maybe null pointer? */
+PROCESSOR STATE:
+ R0 : 0000006a    R1 : 027f8c80    R2 : 00000000    R3 : 028dc3c4
+ R4 : 026cf860    R5 : 028e77b4    R6 : 00000002    R7 : 0000006a
+ P0 : 02078002    P1 : 00000089    P2 : 00000000    P3 : 00130080
+ P4 : 00195efc    P5 : 0019b488    FP : 028f7ef0    SP : 028f7d60
+ LB0: ffa01778    LT0: ffa01776    LC0: 00000000
+ LB1: 02a0cfdd    LT1: 02a0cf92    LC1: 00000000
+ B0 : 00000001    L0 : 00000000    M0 : 0000002c    I0 : 00195efc
+ B1 : 00000001    L1 : 00000000    M1 : 00000001    I1 : 02a73d88
+ B2 : 02a739c3    L2 : 00000000    M2 : 00000000    I2 : 02a68a20
+ B3 : 00000001    L3 : 00000000    M3 : 00000000    I3 : 00000000
+A0.w: 00000000   A0.x: 00000000   A1.w: 00000000   A1.x: 00000000
+USP : 02a73d10  ASTAT: 02000020
+
+Hardware Trace:
+   0 Target : <0x00003fa8> { _trap_c + 0x0 }
+     Source : <0xffa00748> { _exception_to_level5 + 0xa4 } JUMP.L
+   1 Target : <0xffa006a4> { _exception_to_level5 + 0x0 }
+     Source : <0xffa00558> { _bfin_return_from_exception + 0x20 } RTX
+   2 Target : <0xffa00538> { _bfin_return_from_exception + 0x0 }
+     Source : <0xffa005fc> { _ex_trap_c + 0x74 } JUMP.S
+   3 Target : <0xffa00588> { _ex_trap_c + 0x0 }
+     Source : <0xffa0081c> { _trap + 0x68 } JUMP (P4)
+   4 Target : <0xffa007d2> { _trap + 0x1e }
+     Source : <0xffa007ce> { _trap + 0x1a } IF CC JUMP pcrel
+   5 Target : <0xffa007b4> { _trap + 0x0 }
+      FAULT : <0x00000000> /* Maybe null pointer? */
+     Source : <0x00036776> { _handle_nested_irq + 0x56 } CALL (P2)
+   6 Target : <0x00036732> { _handle_nested_irq + 0x12 }
+     Source : <0xffa0214c> { __cond_resched + 0x20 } RTS
+   7 Target : <0xffa02146> { __cond_resched + 0x1a }
+     Source : <0xffa0213e> { __cond_resched + 0x12 } IF CC JUMP pcrel (BP)
+   8 Target : <0xffa0212c> { __cond_resched + 0x0 }
+     Source : <0x0003672e> { _handle_nested_irq + 0xe } JUMP.L
+   9 Target : <0x0003672c> { _handle_nested_irq + 0xc }
+     Source : <0x000348e6> { _irq_to_desc + 0x1a } RTS
+  10 Target : <0x000348cc> { _irq_to_desc + 0x0 }
+     Source : <0x00036728> { _handle_nested_irq + 0x8 } JUMP.L
+  11 Target : <0x00036720> { _handle_nested_irq + 0x0 }
+     Source : <0x000cbd2c> { _iio_trigger_poll_chained + 0x58 } JUMP.L
+  12 Target : <0x000cbd22> { _iio_trigger_poll_chained + 0x4e }
+     Source : <0x000cbcf0> { _iio_trigger_poll_chained + 0x1c } IF !CC JUMP=
+ pcrel
+  13 Target : <0x000cbcd4> { _iio_trigger_poll_chained + 0x0 }
+     Source : <0x000cd518> { _iio_sysfs_trigger_poll + 0xc } CALL pcrel
+  14 Target : <0x000cd514> { _iio_sysfs_trigger_poll + 0x8 }
+     Source : <0x000afdf2> { _dev_get_drvdata + 0x16 } RTS
+  15 Target : <0x000afde6> { _dev_get_drvdata + 0xa }
+     Source : <0x000afde0> { _dev_get_drvdata + 0x4 } IF !CC JUMP pcrel
+Kernel Stack
+Stack info:
+ SP: [0x028f7f24] <0x028f7f24> /* kernel dynamic memory (maybe user-space) =
+*/
+ Memory from 0x028f7f20 to 028f8000
+028f7f20: 7fffffff [02a039de]
+ 00000000  00000000  028f8000  02a039de  02a039de
+028f7f40: 02a158ea  ffa010fc  02001004  02a0cfdd  02a0cdcd  02a0cf92  02a0c=
+dca  00000000
+028f7f60: 00000000  00000000  00000000  00000000  00000000  00000001  02a73=
+9c3  00000001
+028f7f80: 00000001  00000000  00000000  00000000  00000000  00000000  00000=
+000  00000001
+028f7fa0: 00000000  00000000  02a68a20  02a73d88  029ea578  02a73d10  02a73=
+d1c  02a695c8
+028f7fc0: 02a6870c  02a73d94  02a695ca  02a6870c  00000004  00000002  00000=
+002  7fffffff
+028f7fe0: 00000000  00000000  00000002  02a695c8  00000001  00000001  00000=
+004  00000006
+Return addresses in stack:
+    address : <0x00008000> { _show_regs + 0x154 }
+Modules linked in:
+Kernel panic - not syncing: Kernel exception
+Hardware Trace:
+Stack info:
+ SP: [0x028f7c68] <0x028f7c68> /* kernel dynamic memory (maybe user-space) =
+*/
+ FP: (0x028f7d78)
+ Memory from 0x028f7c60 to 028f8000
+028f7c60: 028f7c68  00000013 [00155970] 00124660  028f7d60  00155970  00189=
+3cb  001893cb
+028f7c80: 001893cb  028f7cb0  028f7ef0  00004464  028f7d60  ffe02014  00130=
+080  00008008
+028f7ca0: 0000000b  0000002d  00000013  028f7d60  0000003f  ffffffff  0007e=
+710  00000000
+028f7cc0: 0003000b  0005bd68  0000a068  028dc3c4  028f7ec4  01a02a64  00000=
+001  00000000
+028f7ce0: 00000000  00000000  028f7ec4  0005bc60  02a9d8cc  02a96b54  02a9d=
+8cc  00000002
+028f7d00: 0000a068  00000000  00000008  00051b04  00000002  02a9d8cc  00000=
+002  00000000
+028f7d20: 00000000  0004aace  02a96b54  028f7e34  0000002c  00000000  001a3=
+8e4  ffa0074c
+028f7d40: 00186000  00008008  0000002d  028e77b4  026cf860  009c5234  00000=
+001  00000480
+028f7d60: 00000480  00008008  0000002d  00000000  028f7e3c  00000480 (00000=
+000)
+028f7d80: 0000006a  02000020  02a0cfdd  ffa01778  02a0cf92  ffa01776  00000=
+000  00000000
+028f7da0: 00000000  00000000  00000000  00000000  00000001  02a739c3  00000=
+001  00000001
+028f7dc0: 00000000  00000000  00000000  00000000  00000000  00000000  00000=
+001  0000002c
+028f7de0: 00000000  02a68a20  02a73d88  00195efc  02a73d10  028f7ef0  0019b=
+488  00195efc
+028f7e00: 00130080  00000000  00000089  02078002  0000006a  00000002  028e7=
+7b4  026cf860
+028f7e20: 028dc3c4  00000000  027f8c80  0000006a  0000006a  02078002  00000=
+006  a92f6ddb
+028f7e40: 001a38c0  028f7ef0  000cbd30  029a0200  028dc3c4  029a0210  00000=
+000  00000002
+028f7e60: 028e77b4  000cd51c  028e77a0  00000000  0007eabc  029a0210 <0007e=
+b30> 00000000
+028f7e80: 00000000  00000000  00000002  02a73d1c <0004baa6> 026cf860  00000=
+004  02a73d94
+028f7ea0: 028f7ef0  00000002  02a695c8  00000000  00000004  00000000  02a73=
+d7c  028f7ef0
+028f7ec0: 026cf860  00000006  0004bbbc  026cf860  00000004  02a695c8  00000=
+002  7fffffff
+028f7ee0: 026cf860  00000001  00000000  028f7ef0  00000000  00000000  00000=
+000 <ffa00956>
+028f7f00: 0004bb8c  00000000  ffffe000  ffffe000  7fffffff  0000fffe  00000=
+000  00000000
+028f7f20: 7fffffff  02a039de
+ 00000000  00000000  028f8000  02a039de  02a039de
+028f7f40: 02a158ea  ffa010fc  02001004  02a0cfdd  02a0cdcd  02a0cf92  02a0c=
+dca  00000000
+028f7f60: 00000000  00000000  00000000  00000000  00000000  00000001  02a73=
+9c3  00000001
+028f7f80: 00000001  00000000  00000000  00000000  00000000  00000000  00000=
+000  00000001
+028f7fa0: 00000000  00000000  02a68a20  02a73d88  029ea578  02a73d10  02a73=
+d1c  02a695c8
+028f7fc0: 02a6870c  02a73d94  02a695ca  02a6870c  00000004  00000002  00000=
+002  7fffffff
+028f7fe0: 00000000  00000000  00000002  02a695c8  00000001  00000001  00000=
+004  00000006
+Return addresses in stack:
+   frame  1 : <0x00036778> { _handle_nested_irq + 0x58 }
+    address : <0x0007eb30> { _sysfs_write_file + 0xac }
+    address : <0x0004baa6> { _vfs_write + 0x6a }
+    address : <0xffa00956> { _system_call + 0x6a }
+    address : <0x00008000> { _show_regs + 0x154 }
+
+
+------------------------------------------------------------------
+********* Analog Devices GmbH
+**  *****
+**     ** Wilhelm-Wagenfeld-Strasse 6
+**  ***** D-80807 Munich
+********* Germany
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer: Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Ma=
+rgaret Seif
