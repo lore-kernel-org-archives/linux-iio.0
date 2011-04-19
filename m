@@ -1,137 +1,56 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from nwd2mail10.analog.com ([137.71.25.55]:38627 "EHLO
-	nwd2mail10.analog.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754201Ab1DSNKA convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Apr 2011 09:10:00 -0400
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Drivers <Drivers@analog.com>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Date: Tue, 19 Apr 2011 14:09:53 +0100
-Subject: RE: [PATCH 2/2] IIO-onwards: ADC: AD7298: Use private data space
- from iio_allocate_device
-Message-ID: <544AC56F16B56944AEC3BD4E3D591771375475EC50@LIMKCMBX1.ad.analog.com>
-References: <1303214170-10379-1-git-send-email-michael.hennerich@analog.com>
- <1303214170-10379-2-git-send-email-michael.hennerich@analog.com>
- <4DAD889F.9060408@cam.ac.uk>
-In-Reply-To: <4DAD889F.9060408@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: jic23@cam.ac.uk
+CC: linux-iio@vger.kernel.org, drivers@analog.com,
+        device-drivers-devel@blackfin.uclinux.org,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] IIO-onwards: ADC: free pollfunc->name on remove
+Date: Tue, 19 Apr 2011 09:19:17 +0200
+Message-ID: <1303197557-32421-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron wrote on 2011-04-19:
-> On 04/19/11 12:56, michael.hennerich@analog.com wrote:
->> From: Michael Hennerich <michael.hennerich@analog.com>
->>
->> Use private data space from iio_allocate_device
-> This is fine as is, but what about the following additional patch..
-> At some point I'd like to get rid of the explicit dev_data pointer
-> entirely.  Now I 'think' I've cleaned out all the uses of it in here,
-> but please do check it still works!
->
-> If you are happy with this, shall I just merge this one into your patch?
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Sure - Looks good.
 
-Acked-by: Michael Hennerich <michael.hennerich@analog.com>
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/adc/ad7476_ring.c  |    2 +-
+ drivers/staging/iio/adc/max1363_ring.c |    1 +
+ 2 files changed, 2 insertions(+), 1 deletions(-)
 
-> [PATCH] staging:iio:ad7298: remove use of iio_dev->dev_data.
->
-> Also one small cleanup to avoid jumping backwards and forwards between
-> iio_dev and ad7298_state for no particular reason.
->
-> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/adc/ad7298.h      |    4 ++--
->  drivers/staging/iio/adc/ad7298_core.c |    5 ++---
->  drivers/staging/iio/adc/ad7298_ring.c |    8 ++++----
->  3 files changed, 8 insertions(+), 9 deletions(-)
-> diff --git a/drivers/staging/iio/adc/ad7298.h
-> b/drivers/staging/iio/adc/ad7298.h index 7eb2c3b..628f5ad 100644 ---
-> a/drivers/staging/iio/adc/ad7298.h +++
-> b/drivers/staging/iio/adc/ad7298.h @@ -54,11 +54,11 @@ struct
-> ad7298_state {  };
->
->  #ifdef CONFIG_IIO_RING_BUFFER
-> -int ad7298_scan_from_ring(struct ad7298_state *st, long ch);
-> +int ad7298_scan_from_ring(struct iio_dev *indio_dev, long ch);
->  int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev);
-> void ad7298_ring_cleanup(struct iio_dev *indio_dev);  #else /*
-> CONFIG_IIO_RING_BUFFER */ -static inline int
-> ad7298_scan_from_ring(struct ad7298_state *st, long ch) +static inline
-> int ad7298_scan_from_ring(struct iio_dev *indio_dev, long +ch)
->  {
->       return 0;
->  }
-> diff --git a/drivers/staging/iio/adc/ad7298_core.c
-> b/drivers/staging/iio/adc/ad7298_core.c index 8c0792b..442f48b 100644
-> --- a/drivers/staging/iio/adc/ad7298_core.c +++
-> b/drivers/staging/iio/adc/ad7298_core.c @@ -117,7 +117,7 @@ static int
-> ad7298_read_raw(struct iio_dev *dev_info,
->                          long m)
->  {
->       int ret;
-> -     struct ad7298_state *st = dev_info->dev_data;
-> +     struct ad7298_state *st = iio_priv(dev_info);
->       unsigned int scale_uv;
->
->       switch (m) {
-> @@ -127,7 +127,7 @@ static int ad7298_read_raw(struct iio_dev
-> *dev_info,
->                       if (chan->address == AD7298_CH_TEMP)
->                               ret = -ENODEV;
->                       else
-> -                             ret = ad7298_scan_from_ring(st, chan->address);
-> +                             ret = ad7298_scan_from_ring(dev_info, chan-
->> address);
->>              } else {
->>                      if (chan->address == AD7298_CH_TEMP)
->>                              ret = ad7298_scan_temp(st, val);
-> @@ -181,7 +181,6 @@ static int __devinit ad7298_probe(struct spi_device
-> *spi)
->
->       indio_dev->name = spi_get_device_id(spi)->name;         indio_dev->dev.parent
->  = &spi->dev; -       indio_dev->dev_data = (void *)(st);
->       indio_dev->driver_module = THIS_MODULE;         indio_dev->modes =
->  INDIO_DIRECT_MODE;   indio_dev->channels = ad7298_channels; diff --git
-> a/drivers/staging/iio/adc/ad7298_ring.c
-> b/drivers/staging/iio/adc/ad7298_ring.c index ad1f5b7..d0a0aeaaf 100644
-> --- a/drivers/staging/iio/adc/ad7298_ring.c +++
-> b/drivers/staging/iio/adc/ad7298_ring.c @@ -21,9 +21,9 @@
->
->  #include "ad7298.h"
-> -int ad7298_scan_from_ring(struct ad7298_state *st, long ch)
-> +int ad7298_scan_from_ring(struct iio_dev *dev_info, long ch)
->  {
-> -     struct iio_ring_buffer *ring = iio_priv_to_dev(st)->ring;
-> +     struct iio_ring_buffer *ring = dev_info->ring;
->       int ret;
->       u16 *ring_data;
-> @@ -59,7 +59,7 @@ error_ret:
->   **/
->  static int ad7298_ring_preenable(struct iio_dev *indio_dev)  {
-> -     struct ad7298_state *st = indio_dev->dev_data;
-> +     struct ad7298_state *st = iio_priv(indio_dev);
->       struct iio_ring_buffer *ring = indio_dev->ring;
->       size_t d_size;
->       int i, m;
-> @@ -121,7 +121,7 @@ static irqreturn_t ad7298_trigger_handler(int irq,
-> void *p)  {
->       struct iio_poll_func *pf = p;
->       struct iio_dev *indio_dev = pf->private_data;
-> -     struct ad7298_state *st = iio_dev_get_devdata(indio_dev);
-> +     struct ad7298_state *st = iio_priv(indio_dev);
->       struct iio_ring_buffer *ring = indio_dev->ring;
->       s64 time_ns;
->       __u16 buf[16];
-
-Greetings,
-Michael
-
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368; Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret Seif
-
+diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
+index b6da824..de6006b 100644
+--- a/drivers/staging/iio/adc/ad7476_ring.c
++++ b/drivers/staging/iio/adc/ad7476_ring.c
+@@ -109,7 +109,6 @@ done:
+ 	return IRQ_HANDLED;
+ }
+ 
+- 
+ static struct iio_ring_setup_ops ad7476_ring_setup_ops = {
+ 	.preenable = &ad7476_ring_preenable,
+ 	.postenable = &iio_triggered_ring_postenable,
+@@ -168,6 +167,7 @@ void ad7476_ring_cleanup(struct iio_dev *indio_dev)
+ 		iio_trigger_dettach_poll_func(indio_dev->trig,
+ 					      indio_dev->pollfunc);
+ 	}
++	kfree(indio_dev->pollfunc->name);
+ 	kfree(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
+diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
+index b8054be..da6b4f6 100644
+--- a/drivers/staging/iio/adc/max1363_ring.c
++++ b/drivers/staging/iio/adc/max1363_ring.c
+@@ -210,6 +210,7 @@ void max1363_ring_cleanup(struct iio_dev *indio_dev)
+ 		iio_trigger_dettach_poll_func(indio_dev->trig,
+ 					      indio_dev->pollfunc);
+ 	}
++	kfree(indio_dev->pollfunc->name);
+ 	kfree(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
+-- 
+1.6.0.2
