@@ -1,73 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:38669 "EHLO
+Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:37356 "EHLO
 	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754195Ab1DUV3g convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Apr 2011 17:29:36 -0400
-Subject: [PATCH v2]TAOS 2571 Device Driver
+	with ESMTP id S1752533Ab1DUUtQ convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Apr 2011 16:49:16 -0400
+Subject: [PATCH v1]TAOS tsl2771 Device Driver
 From: Jon Brenner <jbrenner@taosinc.com>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio <linux-iio@vger.kernel.org>,
 	Linux Kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 21 Apr 2011 16:29:35 -0500
-Message-ID: <1303421375.21291.8.camel@jonz-ubuntu>
+Date: Thu, 21 Apr 2011 15:49:14 -0500
+Message-ID: <1303418954.20895.5.camel@jonz-ubuntu>
 Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-[PATCH v2] for TAOS tsl2571 Device driver 
+[PATCH v1] for TAOS tsl2771 Device driver
 
-Patch for tsl2571 driver.  
-Driver includes (iio_event/interrupt).
-Corrected various functions to return proper status (vs eating status).
-Corrected various formatting issues.
-Changed term in lux calculation from 2^13 to 2^8 to accommodate updated lux table (glass coefficients).
-Updated default lux table (clear glass).
-   
+Patch for tsl2771 driver.
+Driver includes (iio_event/interrupt), proximity and ALS.
+
 Signed-off-by: Jon August Brenner <jbrenner@taosinc.com>
 
 ---
  drivers/staging/iio/light/Kconfig   |   10 +
  drivers/staging/iio/light/Makefile  |    1 +
- drivers/staging/iio/light/tsl2571.c | 1362 +++++++++++++++++++++++++++++++++++
- 3 files changed, 1373 insertions(+), 0 deletions(-)
+ drivers/staging/iio/light/tsl2771.c | 1917 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 1928 insertions(+), 0 deletions(-)
 
 diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-index 36d8bbe..7f9897c 100644
+index 36d8bbe..a75a700 100644
 --- a/drivers/staging/iio/light/Kconfig
 +++ b/drivers/staging/iio/light/Kconfig
 @@ -24,3 +24,13 @@ config SENSORS_ISL29018
           in lux, proximity infrared sensing and normal infrared sensing.
           Data from sensor is accessible via sysfs.
 
-+config SENSORS_TSL2571
-+	tristate "TAOS TSL2571 ambient light sensor"
++config SENSORS_TSL2771
++	tristate "TAOS TSL2771 proximity and ambient light sensor"
 +	depends on I2C
 +	help
-+	 If you say yes here you get support for the TAOS TSL2571,
-+	 ambient light sensor with interrupt.
++	 If you say yes here you get support for the Taos TSL277x,
++	 family of proximity and ambient light sensors.
 +
 +	 This driver can also be built as a module.  If so, the module
-+	 will be called tsl2571.
++	 will be called tsl2771.
 +
 diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
-index 9142c0e..fa08012 100644
+index 9142c0e..33ed99d 100644
 --- a/drivers/staging/iio/light/Makefile
 +++ b/drivers/staging/iio/light/Makefile
 @@ -4,3 +4,4 @@
 
  obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
  obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
-+obj-$(CONFIG_SENSORS_TSL2571)	+= tsl2571.o
-diff --git a/drivers/staging/iio/light/tsl2571.c b/drivers/staging/iio/light/tsl2571.c
++obj-$(CONFIG_SENSORS_TSL2771)	+= tsl2771.o
+diff --git a/drivers/staging/iio/light/tsl2771.c b/drivers/staging/iio/light/tsl2771.c
 new file mode 100644
-index 0000000..1c28dca
+index 0000000..c75eaa2
 --- /dev/null
-+++ b/drivers/staging/iio/light/tsl2571.c
-@@ -0,0 +1,1362 @@
++++ b/drivers/staging/iio/light/tsl2771.c
+@@ -0,0 +1,1917 @@
 +/*
 + * Device driver for monitoring ambient light intensity (lux)
-+ * for the TAOS TSL257X devices (w/ interrupt iio_event functionality).
++ * and proximity (prox) within the TAOS TSL277X family of devices.
 + *
 + * Copyright (c) 2011, TAOS Corporation.
 + *
@@ -99,64 +95,107 @@ index 0000000..1c28dca
 +#include "../iio.h"
 +#include "../sysfs.h"
 +
++//remove these later - once we have board info
++#include <linux/gpio.h>
++#include <linux/irq.h>
++#include <plat/gpio-cfg.h>
++#include <mach/regs-gpio.h>
++#include <mach/regs-irq.h>
++
 +/* 2571 register offsets */
-+#define TSL257X_MAX_DEVICE_REGS	32
-+#define	TSL257X_REG_MAX		16
++#define TSL277X_MAX_DEVICE_REGS	32
++#define	TSL277X_REG_MAX		16
 +
 +/* Device Registers and Masks */
-+#define TSL257X_CNTRL			0x00
-+#define TSL257X_ALS_TIME		0X01
++#define TSL277X_CNTRL			0x00
++#define TSL277X_ALS_TIME		0X01
 +
-+#define TSL257X_ALS_MINTHRESHLO	0X04
-+#define TSL257X_ALS_MINTHRESHHI	0X05
-+#define TSL257X_ALS_MAXTHRESHLO	0X06
-+#define TSL257X_ALS_MAXTHRESHHI	0X07
++#define TSL277X_ALS_MINTHRESHLO	0X04
++#define TSL277X_ALS_MINTHRESHHI	0X05
++#define TSL277X_ALS_MAXTHRESHLO	0X06
++#define TSL277X_ALS_MAXTHRESHHI	0X07
 +
-+#define TSL257X_PERSISTENCE		0x0c
-+#define TSL257X_GAIN			0x0f
-+#define	TSL257X_STATUS			0x13
-+#define TSL257X_REVID			0x11
-+#define TSL257X_CHIPID			0x12
-+#define TSL257X_ALS_CHAN0LO		0x14
-+#define TSL257X_ALS_CHAN0HI		0x15
-+#define TSL257X_ALS_CHAN1LO		0x16
-+#define TSL257X_ALS_CHAN1HI		0x17
++#define TSL277X_PRX_MINTHRESHLO	0X08
++#define TSL277X_PRX_MINTHRESHHI	0X09
++#define TSL277X_PRX_MAXTHRESHLO	0X0A
++#define TSL277X_PRX_MAXTHRESHHI	0X0B
 +
-+/* tsl2571 cmd reg masks */
-+#define TSL257X_CMD_REG			0x80
-+#define TSL257X_CMD_SPL_FN		0x60
-+#define TSL257X_CMD_ALS_INT_CLR	0x06
++#define TSL277X_PERSISTENCE		0x0c
 +
-+/* tsl2571 cntrl reg masks */
-+#define TSL257X_CNTL_ADC_ENBL	0x02
-+#define TSL257X_CNTL_PWR_ON		0x01
++#define TSL277X_PRX_COUNT		0x0E
++#define TSL277X_GAIN			0x0f
++#define	TSL277X_STATUS			0x13
++#define TSL277X_REVID			0x11
++#define TSL277X_CHIPID			0x12
++#define TSL277X_ALS_CHAN0LO		0x14
++#define TSL277X_ALS_CHAN0HI		0x15
++#define TSL277X_ALS_CHAN1LO		0x16
++#define TSL277X_ALS_CHAN1HI		0x17
 +
-+/* tsl2571 status reg masks */
-+#define TSL257X_STA_ADC_VALID	0x01
-+#define TSL257X_STA_ALS_INTR	0x10
++#define TSL277X_PRX_LO			0x18
++#define TSL277X_PRX_HI			0x19
++
++
++/* tsl2771 cmd reg masks */
++#define TSL277X_CMD_REG			0x80
++#define TSL277X_CMD_SPL_FN		0x60
++
++#define TSL277X_CMD_PROX_INT_CLR	0X05
++#define TSL277X_CMD_ALS_INT_CLR	0x06
++#define CMD_PROXALS_INT_CLR		0X07
++
++/* tsl2771 cntrl reg masks */
++#define TSL277X_CNTL_ADC_ENBL	0x02
++#define TSL277X_CNTL_PWR_ON		0x01
++
++/* tsl2771 status reg masks */
++#define TSL277X_STA_ADC_VALID	0x01
++#define TSL277X_STA_PRX_VALID	0x02
++#define TSL277X_STA_ADC_PRX_VALID	0x03
++#define STA_ALSINTR			0x10
++#define STA_ADCINTR			0x10
++#define STA_PRXINTR			0x20
++
++#define TSL277X_STA_ADC_INTR	0x10
 +
 +/* Triton cntrl reg masks */
 +#define CNTL_REG_CLEAR			0x00
 +#define CNTL_PROX_INT_ENBL		0X20
 +#define CNTL_ALS_INT_ENBL		0X10
-+#define TSL257X_CNTL_WAIT_TMR_ENBL	0X08
++#define TSL277X_CNTL_WAIT_TMR_ENBL	0X08
 +#define CNTL_PROX_DET_ENBL		0X04
 +#define CNTL_ADC_ENBL			0x02
-+#define TSL257X_CNTL_PWRON		0x01
++#define TSL277X_CNTL_PWRON		0x01
 +#define CNTL_ALSPON_ENBL		0x03
 +#define CNTL_INTALSPON_ENBL		0x13
 +#define CNTL_PROXPON_ENBL		0x0F
 +#define CNTL_INTPROXPON_ENBL	0x2F
-+#define TSL257X_CMD_PROXALS_INTCLR	0X07
++#define TSL277X_CMD_PROXALS_INTCLR	0X07
++
++/*Prox diode to use */
++#define DIODE0				0x10
++#define DIODE1				0x20
++#define DIODE_BOTH			0x30
++
++/* LED Power */
++#define mA100				0x00
++#define mA50				0x40
++#define mA25				0x80
++#define mA13				0xD0
++
++/* Cal defs*/
++#define	PROX_STAT_CAL	0
++#define	PROX_STAT_SAMP	1
++#define	MAX_SAMPLES_CAL	200
 +
 +/* Lux calculation constants */
-+#define	TSL257X_LUX_CALC_OVER_FLOW	65535
++#define	TSL277X_LUX_CALC_OVER_FLOW	65535
 +
 +enum {
-+	TSL257X_CHIP_UNKNOWN = 0,
-+	TSL257X_CHIP_WORKING = 1,
-+	TSL257X_CHIP_SUSPENDED = 2
-+} TSL257X_CHIP_WORKING_STATUS;
++	TSL277X_CHIP_UNKNOWN = 0,
++	TSL277X_CHIP_WORKING = 1,
++	TSL277X_CHIP_SUSPENDED = 2
++} TSL277X_CHIP_WORKING_STATUS;
 +
 +/* Per-device data */
 +struct taos_als_info {
@@ -165,32 +204,55 @@ index 0000000..1c28dca
 +	u16 lux;
 +};
 +
++/* proximity data */
++struct taos_prox_info {
++	u16 prox_data;
++	int prox_event;
++};
++
++struct prox_stat {
++	u16 min;
++	u16 max;
++	u16 mean;
++	unsigned long stddev;
++} ;
++
 +struct taos_settings {
 +	int als_time;
 +	int als_gain;
 +	int als_gain_trim;
 +	int als_cal_target;
-+	u8  als_interrupt;
-+	u8  als_persistence;
-+	int als_thresh_low;
-+	int als_thresh_high;
++	u8	als_interrupt;
++	u8	als_persistence;
++	int	als_thresh_low;
++	int	als_thresh_high;
++	int	prox_thres;
++	int	prox_pulse_count;
++	int	prox_max_samples_cal;	/* for calibration mode*/
++
 +};
 +
-+static const u8 persistence_available[] = {
-+	0, 1, 2, 3, 5, 10, 15, 20,
-+	25, 30, 35, 40, 45, 50, 55, 60
-+};
++#define	MAXPROXFILTER	100			// set for max length expected in a system
 +
-+struct tsl2571_chip {
++//TAKE ME OUT!!!!!!!!!!!!
++int taos_register_dump(struct i2c_client *client);
++
++u16 taos_prox_filter_data[MAXPROXFILTER];	// history buffer
++u16 taos_prox_write_index;			// index of next array entry to write
++u16 taos_prox_count;				// number of valid entries in history buffer
++
++struct tsl2771_chip {
++	struct mutex prox_mutex;
 +	struct mutex als_mutex;
 +	struct i2c_client *client;
 +	struct iio_dev *iio_dev;
++	struct taos_prox_info prox_cur_info;
 +	struct taos_als_info als_cur_info;
 +	struct taos_settings taos_settings;
 +	int als_time_scale;
 +	int als_saturation;
 +	int taos_chip_status;
-+	u8 taos_config[TSL257X_REG_MAX];
++	u8 taos_config[TSL277X_REG_MAX];
 +	bool init_done;
 +	struct work_struct	work_thresh;
 +	s64	event_timestamp;
@@ -202,11 +264,11 @@ index 0000000..1c28dca
 + * and applications as needed.
 + * These values are dynamic.
 + */
-+static u8 taos_config[] = {
-+		0x00, 0xee, 0x00, 0xF5, 0x03, 0x00, 0x00, 0x01,
-+	/*  Enabl atime N/A   wtime ThL0  ThL1  ThH0  ThH1 */
-+		0x00, 0x00, 0x00, 0x00,	0x30, 0x00, 0x00, 0x00
-+	/*  N/A   N/A   N/A   N/A   prst  wlong  N/A  gain */
++static u8 tsl2771_taos_config[] = {
++		0x00, 0xee, 0xFF, 0xF5, 0x03, 0x00, 0x00, 0x01,
++	/*	Enabl atime ptime wtime AtL0  AtL1  AtH0  AtH1 */
++		0x00, 0x00, 0x00, 0x03,	0x30, 0x00, 0x0a, 0x20
++	/*	PtL0  PtL1  PtH0  PtH1  Pers  CFG   Pcnt  CTRL */
 +};
 +
 +struct taos_lux {
@@ -217,7 +279,7 @@ index 0000000..1c28dca
 +
 +/* This structure is intentionally large to accommodate updates via sysfs. */
 +/* Sized to 11 = max 10 segments + 1 termination segment */
-+/* Assumption is one and only one type of glass used     */
++/* Assumption is one and only one type of glass used  */
 +struct taos_lux taos_device_lux[11] = {
 +	{ 14461,   611,  1211 },
 +	{ 18540,   352,   623 },
@@ -230,7 +292,7 @@ index 0000000..1c28dca
 +};
 +
 +/* Used to validate the gain selection index */
-+static const struct gainadj tsl2571_gainadj[] = {
++static const struct gainadj tsl2771_gainadj[] = {
 +	{ 1, 1 },
 +	{ 8, 8 },
 +	{ 16, 16 },
@@ -249,7 +311,7 @@ index 0000000..1c28dca
 +
 +	for (i = 0; i < len; i++) {
 +		/* select register to write */
-+		ret = i2c_smbus_write_byte(client, (TSL257X_CMD_REG | reg));
++		ret = i2c_smbus_write_byte(client, (TSL277X_CMD_REG | reg));
 +		if (ret < 0) {
 +			dev_err(&client->dev, "taos_i2c_read failed to write"
 +				" register %x\n", reg);
@@ -283,9 +345,8 @@ index 0000000..1c28dca
 +	u32 ratio;
 +#pragma pack(4)
 +	u8 buf[4];
-+
 +	struct taos_lux *p;
-+	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	struct tsl2771_chip *chip = i2c_get_clientdata(client);
 +	int i, ret;
 +	u32 ch0lux = 0;
 +	u32 ch1lux = 0;
@@ -295,41 +356,46 @@ index 0000000..1c28dca
 +		return chip->als_cur_info.lux; /* busy, so return LAST VALUE */
 +	}
 +
-+	if (chip->taos_chip_status != TSL257X_CHIP_WORKING) {
++	if (chip->taos_chip_status != TSL277X_CHIP_WORKING) {
 +		/* device is not enabled */
 +		dev_err(&client->dev, "taos_get_lux device is not enabled\n");
 +		ret = -EBUSY ;
 +		goto out_unlock;
 +	}
 +
-+	ret = taos_i2c_read(client, (TSL257X_CMD_REG | TSL257X_STATUS),
-+		&buf[0], 1);
++	ret = taos_i2c_read(client,
++		(TSL277X_CMD_REG | TSL277X_STATUS), &buf[0], 1);
 +	if (ret < 0) {
-+		dev_err(&client->dev, "taos_get_lux failed to read CMD_REG\n");
++		dev_err(&client->dev,
++			"taos_get_lux failed to read CMD_REG\n");
 +		goto out_unlock;
 +	}
 +	/* is data new & valid */
-+	if (!(buf[0] & TSL257X_STA_ADC_VALID)) {
-+		dev_err(&client->dev, "taos_get_lux data not valid\n");
++	if (!(buf[0] & TSL277X_STA_ADC_VALID)) {
++		dev_err(&client->dev,
++			"taos_get_lux data not valid\n");
 +		ret = chip->als_cur_info.lux; /* return LAST VALUE */
 +		goto out_unlock;
 +	}
 +
 +	for (i = 0; i < 4; i++) {
 +		ret = taos_i2c_read(client,
-+		(TSL257X_CMD_REG | (TSL257X_ALS_CHAN0LO + i)), &buf[i], 1);
++			(TSL277X_CMD_REG | (TSL277X_ALS_CHAN0LO + i)),
++			&buf[i], 1);
 +		if (ret < 0) {
-+			dev_err(&client->dev, "taos_get_lux failed to read"
-+				" register %x\n",
-+				TSL257X_CMD_REG | (TSL257X_ALS_CHAN0LO + i));
++			dev_err(&client->dev,
++				"taos_get_lux failed to read"
++				" ret: %x\n", ret);
 +			goto out_unlock;
 +		}
 +	}
 +
-+	/* clear status, really interrupt status (interrupts are off), but
-+	we use the bit anyway */
++	/* clear status, really interrupt status (interrupts are off),
++	but we use the bit anyway */
 +	ret = i2c_smbus_write_byte(client,
-+	(TSL257X_CMD_REG | TSL257X_CMD_SPL_FN | TSL257X_CMD_ALS_INT_CLR));
++		(TSL277X_CMD_REG |
++				TSL277X_CMD_SPL_FN |
++				TSL277X_CMD_ALS_INT_CLR));
 +
 +	if (ret < 0) {
 +		dev_err(&client->dev,
@@ -364,11 +430,11 @@ index 0000000..1c28dca
 +		lux = 0;
 +	} else {
 +		ch0lux = ((ch0 * p->ch0) +
-+		(tsl2571_gainadj[chip->taos_settings.als_gain].ch0 >> 1))
-+		 / tsl2571_gainadj[chip->taos_settings.als_gain].ch0;
++				(tsl2771_gainadj[chip->taos_settings.als_gain].ch0 >> 1))
++				/ tsl2771_gainadj[chip->taos_settings.als_gain].ch0;
 +		ch1lux = ((ch1 * p->ch1) +
-+		(tsl2571_gainadj[chip->taos_settings.als_gain].ch1 >> 1))
-+		 / tsl2571_gainadj[chip->taos_settings.als_gain].ch1;
++				(tsl2771_gainadj[chip->taos_settings.als_gain].ch1 >> 1))
++				/ tsl2771_gainadj[chip->taos_settings.als_gain].ch1;
 +		lux = ch0lux - ch1lux;
 +	}
 +
@@ -390,10 +456,9 @@ index 0000000..1c28dca
 +	lux >>= 8;  /* tables have factor of 256 built in for accuracy */
 +
 +	lux = (lux * chip->taos_settings.als_gain_trim + 500) / 1000;
-+
-+	if (lux > TSL257X_LUX_CALC_OVER_FLOW) { /* check for overflow */
++	if (lux > TSL277X_LUX_CALC_OVER_FLOW) { /* check for overflow */
 +return_max:
-+		lux = TSL257X_LUX_CALC_OVER_FLOW;
++		lux = TSL277X_LUX_CALC_OVER_FLOW;
 +	}
 +
 +	/* Update the structure with the latest VALID lux. */
@@ -407,46 +472,184 @@ index 0000000..1c28dca
 +}
 +
 +/*
-+ * Ambient light transition sense interrupt BH - called when the ambient
-+ * light falls above or below a band of ambient light. A signal is issued to
-+ * any waiting user mode threads, and the above band is adjusted up or down?
-+ * The ALS interrupt filter is initially set to 0x00 when ALS_ON is called, to
-+ * force the first interrupt, after which it is set to the configured value.
++ * Proximity poll function - if valid data is available, read and form the ch0
++ * and prox data values, check for limits on the ch0 value, and check the prox
++ * data against the current thresholds, to set the event status accordingly.
 + */
-+void taos_als_interrupt_bh(struct work_struct *als)
++int taos_prox_poll(struct i2c_client *client)
 +{
-+int ret;
++#define CONSECUTIVE_RETRIES 50
++
 +int i;
-+u8 als_int_thresh[4];
-+u8 chdata[4];
-+unsigned int raw_ch0, raw_ch1, cdelta;
-+int value;
++int ret;
++u8 status;
++u8 chdata[2];
++int err_cnt;
++struct tsl2771_chip *chip = i2c_get_clientdata(client);
 +
-+struct tsl2571_chip *chip
-+	= container_of(als,
-+		struct tsl2571_chip, work_thresh);
-+
-+	value = i2c_smbus_read_byte_data(chip->client,
-+		TSL257X_CMD_REG | TSL257X_STATUS);
-+
-+	/* post the event */
-+	if (value & 0x10) {
-+		iio_push_event(chip->iio_dev, 0,
-+			       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_LIGHT,
-+						    0,
-+						    IIO_EV_TYPE_THRESH,
-+						    IIO_EV_DIR_EITHER),
-+			       chip->event_timestamp);
++	if (mutex_trylock(&chip->prox_mutex) == 0) {
++		dev_err(&client->dev, "Can't get prox mutex\n");
++	return -1;
 +	}
 +
++	err_cnt = 0;
++
++tryAgain:
++	ret = taos_i2c_read(client, (TSL277X_CMD_REG | TSL277X_STATUS), &status, 1);
++	if (ret < 0) {
++		dev_err(&client->dev, "Read regs failed in taos_prox_poll() - A\n");
++		mutex_unlock(&chip->prox_mutex);
++		return ret;
++	}
++
++	/*Prox interrupt asserted*/
++	if (((chip->taos_settings.als_interrupt << 4) & CNTL_PROX_INT_ENBL)) {
++		if (!(status & TSL277X_STA_ADC_VALID)) {
++			err_cnt++;
++			if (err_cnt > CONSECUTIVE_RETRIES) {
++				mutex_unlock(&chip->prox_mutex);
++				dev_err(&client->dev, "Consec. retries exceeded\n");
++				return chip->prox_cur_info.prox_event;
++			}
++			goto tryAgain;
++		}
++	}
++
++	for (i = 0; i < 2; i++) {
++		ret = taos_i2c_read(client,
++			(TSL277X_CMD_REG |
++					(TSL277X_PRX_LO + i)), &chdata[i], 1);
++		if (ret < 0) {
++			dev_err(&client->dev,
++			"Read regs failed in taos_prox_poll() - B\n");
++			mutex_unlock(&chip->prox_mutex);
++			return ret;
++		}
++	}
++
++	chip->prox_cur_info.prox_data = (chdata[1]<<8)|chdata[0];
++
++	if (chip->prox_cur_info.prox_data >= chip->taos_settings.prox_thres)
++		chip->prox_cur_info.prox_event = 1;
++	else
++		chip->prox_cur_info.prox_event = 0;
++
++	mutex_unlock(&chip->prox_mutex);
++	return chip->prox_cur_info.prox_event;
++}
++
++/*
++ * Proximity detect interrupt BH - called when proximity of an object
++ * to the sensor is detected (event = 1), or, once detected, it has moved away
++ * from the sensor (event = 0).
++ * Prox info is stored into the structure "prox_cur_inf",
++ * and signal is issued to any waiting user mode threads -
++ * which must be (of course) registered to be signaled.
++ * This is the 'bottom half' of IRQ.
++ */
++void taos_prox_adjust_level(struct work_struct *prox)
++{
++	int ret = 0, i;
++	u16 cdelta;
++	u8 prox_low[2];
++	u8 prox_high[2];
++	struct tsl2771_chip *chip
++	= container_of(prox,
++			struct tsl2771_chip, work_thresh);
++
++	printk(KERN_INFO "PROX INT\n");
++
++	taos_prox_poll(chip->client);
++
++	if (chip->prox_cur_info.prox_data > chip->taos_settings.prox_thres) {
++		dev_info(&chip->client->dev,
++			"prox_data > prox_thres");
++		/*Rail the threshold so we don't keep interrupting*/
++		prox_high[0] = 0xFF;
++		prox_high[1] = 0xFF;
++		for (i = 0; i < 2; i++) {
++			ret = i2c_smbus_write_byte_data(chip->client,
++				(TSL277X_CMD_REG |
++				(TSL277X_PRX_MAXTHRESHLO + i)),
++				prox_high[i]);
++
++			if (ret < 0)
++				dev_err(&chip->client->dev,
++				"FAILED: to update PROX HIGH THRESH (A).\n");
++		}
++
++		printk(KERN_INFO "Turn touchscreen OFF\n");
++
++		cdelta = chip->taos_settings.prox_thres - 100;
++
++		if (cdelta < 10)
++			cdelta = chip->taos_settings.prox_thres - 1;
++
++		prox_low[0] = (cdelta) & 0xFF;
++		prox_low[1] = (cdelta >> 8) & 0xFF;
++		for (i = 0; i < 2; i++) {
++			i2c_smbus_write_byte_data(chip->client,
++				(TSL277X_CMD_REG |
++				(TSL277X_PRX_MINTHRESHLO + i)),
++				prox_low[i]);
++
++			if (ret < 0)
++				dev_err(&chip->client->dev,
++				"FAILED: to update the PROX LOW THRESH (B).\n");
++		}
++	} else if (chip->prox_cur_info.prox_data < chip->taos_settings.prox_thres) {
++		dev_info(&chip->client->dev,
++		"prox_data <= prox_thres");
++		printk(KERN_INFO "Turn touchscreen ON\n");
++		prox_low[0] = 0x00;
++		prox_low[1] = 0x00;
++		for (i = 0; i < 2; i++) {
++			ret = i2c_smbus_write_byte_data(chip->client,
++				(TSL277X_CMD_REG |
++				(TSL277X_PRX_MINTHRESHLO + i)),
++				prox_low[i]);
++
++			if (ret < 0)
++				dev_err(&chip->client->dev,
++				"FAILED: to update the PROX LOW THRESH (C).\n");
++		}
++		/*Lastly we put the high threshols back to where we started*/
++		prox_high[0] = (chip->taos_settings.prox_thres) & 0xFF;
++		prox_high[1] = (chip->taos_settings.prox_thres >> 8) & 0xFF;
++		for (i = 0; i < 2; i++) {
++			ret = i2c_smbus_write_byte_data(chip->client,
++				(TSL277X_CMD_REG |
++				(TSL277X_PRX_MAXTHRESHLO + i)),
++				prox_high[i]);
++
++			if (ret < 0)
++				dev_err(&chip->client->dev,
++				"FAILED: to update PROX HIGH THRESH (D).\n");
++		}
++
++	}
++
++return;
++}
++
++/*
++ * Readjust the ALS threshold levels, based on the cause of the last ALS
++ * interrupt.
++ */
++void taos_als_adjust_level(struct work_struct *als)
++{
++	int ret;
++	int i;
++	u8 als_int_thresh[4];
++	unsigned int raw_ch0, raw_ch1, cdelta;
++
++	struct tsl2771_chip *chip
++		= container_of(als,
++			struct tsl2771_chip, work_thresh);
 +	taos_get_lux(chip->client);
 +
-+	/* Clear interrupt */
-+	ret = i2c_smbus_write_byte(chip->client,
-+	(TSL257X_CMD_REG | TSL257X_CMD_SPL_FN | TSL257X_CMD_PROXALS_INTCLR));
-+	if (ret < 0)
-+		dev_info(&chip->client->dev,
-+		"i2c_write_command failed in taos_chip_on, err = %d\n", ret);
++	dev_err(&chip->client->dev,
++	"ALS Irq\n");
 +
 +	/* re-adjust our upper and lower thresholds */
 +	raw_ch0 = chip->als_cur_info.als_ch0;
@@ -472,7 +675,7 @@ index 0000000..1c28dca
 +
 +	for (i = 0; i < 4; i++) {
 +		ret = i2c_smbus_write_byte_data(chip->client,
-+			(TSL257X_CMD_REG | (TSL257X_ALS_MINTHRESHLO + i)),
++			(TSL277X_CMD_REG | (TSL277X_ALS_MINTHRESHLO + i)),
 +			als_int_thresh[i]);
 +		if (ret < 0) {
 +			dev_info(&chip->client->dev,
@@ -480,33 +683,80 @@ index 0000000..1c28dca
 +		}
 +	}
 +
++return;
++
++}
++
++/*
++ * Ambient light transition sense interrupt BH - called when the ambient
++ * light falls above or below a band of ambient light. A signal is issued to
++ * any waiting user mode threads, and the above band is adjusted up or down?
++ * The ALS interrupt filter is initially set to 0x00 when ALS_ON is called, to
++ * force the first interrupt, after which it is set to the configured value.
++ */
++void taos_interrupt_bh(struct work_struct *als)
++{
++int ret;
++int value;
++u8  reg_val;
++
++struct tsl2771_chip *chip
++	= container_of(als,
++		struct tsl2771_chip, work_thresh);
++
++	value = i2c_smbus_read_byte_data(chip->client,
++		TSL277X_CMD_REG | TSL277X_STATUS);
++
++	if ((value & STA_PRXINTR) &&
++		(chip->taos_settings.als_interrupt & CNTL_PROX_INT_ENBL)) {
++		iio_push_event(chip->iio_dev, 0,
++			IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_PROXIMITY,
++				0,
++				IIO_EV_TYPE_THRESH,
++				IIO_EV_DIR_EITHER),
++				chip->event_timestamp);
++		taos_prox_adjust_level(als);
++	}
++
++	if ((value & STA_ALSINTR) &&
++		(chip->taos_settings.als_interrupt & CNTL_ALS_INT_ENBL)) {
++		iio_push_event(chip->iio_dev, 0,
++			IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_LIGHT,
++				0,
++				IIO_EV_TYPE_THRESH,
++				IIO_EV_DIR_EITHER),
++				chip->event_timestamp);
++		taos_als_adjust_level(als);
++	}
++
 +	if (!chip->init_done) {
-+		/* Maintain the persistence value that was there
-+		 * if there was one */
++		/* Maintain the persistence value */
 +		ret = taos_i2c_read(chip->client,
-+			(TSL257X_CMD_REG | (TSL257X_PERSISTENCE)),
-+			&chdata[0], 1);
++			(TSL277X_CMD_REG | (TSL277X_PERSISTENCE)),
++			&reg_val, 1);
 +		if (ret < 0)
 +			dev_info(&chip->client->dev,
 +			"Failed to get the persistence register value\n");
 +
-+			chdata[0] = chip->taos_settings.als_persistence;
++			reg_val = chip->taos_settings.als_persistence;
 +
 +		ret = i2c_smbus_write_byte_data(chip->client,
-+			(TSL257X_CMD_REG | TSL257X_PERSISTENCE), chdata[0]);
++			(TSL277X_CMD_REG | TSL277X_PERSISTENCE), reg_val);
 +		if (ret < 0)
 +			dev_info(&chip->client->dev,
-+			"FAILED: taos_i2c_write to upersistence (B).\n");
-+
-+		ret = i2c_smbus_write_byte(chip->client,
-+		TSL257X_CMD_REG | TSL257X_CMD_SPL_FN | TSL257X_CMD_ALS_INT_CLR);
-+		if (ret < 0) {
-+			dev_info(&chip->client->dev,
-+			"i2c_write failed to clear ALS irq, err = %d\n", ret);
++			"FAILED: update the persistence (B).\n");
 +		}
 +
 +		chip->init_done = 1;
-+	}
++
++	/* Clear out any initial prox and ALS. */
++	ret = i2c_smbus_write_byte(chip->client,
++		(TSL277X_CMD_REG |
++				TSL277X_CMD_SPL_FN |
++				TSL277X_CMD_PROXALS_INTCLR));
++	if (ret < 0)
++		dev_info(&chip->client->dev,
++		"taos_interrupt_bh FAILED to clear irqs: err = %d\n", ret);
 +
 +	enable_irq(chip->irq_no);
 +
@@ -517,7 +767,7 @@ index 0000000..1c28dca
 + * Provides initial operational parameter defaults.
 + * These defaults may be changed through the device's sysfs files.
 + */
-+static void taos_defaults(struct tsl2571_chip *chip)
++static void taos_defaults(struct tsl2771_chip *chip)
 +{
 +	/* Operational parameters */
 +	chip->taos_settings.als_time = 200;
@@ -533,59 +783,65 @@ index 0000000..1c28dca
 +	/* CH0 'low' count to trigger interrupt */
 +	chip->taos_settings.als_thresh_high = 256;
 +	/* CH0 'high' count to trigger interrupt */
-+	chip->taos_settings.als_persistence = 3;
++	chip->taos_settings.als_persistence = 0x13;
 +	/* Number of 'out of limits' ADC readings */
-+	chip->taos_settings.als_interrupt = 1;
-+	/* Default with interrupt enabled */
++	chip->taos_settings.als_interrupt = 0x10;
++	/* Default interrupt(s) enabled.
++	 * 0x00 = none, 0x10 = als, 0x20 = prx 0x30 = bth */
++	chip->taos_settings.prox_thres = 512;
++	/*default threshold (adjust either manually or with cal routine*/
++	chip->taos_settings.prox_max_samples_cal = 100;
++	chip->taos_settings.prox_pulse_count = 10;
++
 +}
 +
-+
 +/*
-+ * Obtain single reading and calculate the als_gain_trim (later used
-+ * to derive actual lux).
++ * Obtain single reading and calculate the als_gain_trim
++ * (later used to derive actual lux).
 + * Return updated gain_trim value.
 + */
 +int taos_als_calibrate(struct i2c_client *client)
 +{
-+	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	struct tsl2771_chip *chip = i2c_get_clientdata(client);
 +	u8 reg_val;
 +	unsigned int gain_trim_val;
 +	int ret;
 +	int lux_val;
 +
-+	ret = i2c_smbus_write_byte(client, (TSL257X_CMD_REG | TSL257X_CNTRL));
++	ret = i2c_smbus_write_byte(client, (TSL277X_CMD_REG | TSL277X_CNTRL));
 +	if (ret < 0) {
 +		dev_err(&client->dev,
-+		"taos_als_calibrate failed read CNTRL register, ret=%d\n",
++		"taos_als_calibrate failed to write CNTRL register, ret=%d\n",
 +			ret);
 +		return ret;
 +	}
 +
 +	reg_val = i2c_smbus_read_byte(client);
-+	if ((reg_val & (TSL257X_CNTL_ADC_ENBL | TSL257X_CNTL_PWR_ON))
-+			!= (TSL257X_CNTL_ADC_ENBL | TSL257X_CNTL_PWR_ON)) {
++	if ((reg_val & (TSL277X_CNTL_ADC_ENBL | TSL277X_CNTL_PWR_ON))
++			!= (TSL277X_CNTL_ADC_ENBL | TSL277X_CNTL_PWR_ON)) {
 +		dev_err(&client->dev,
-+		"taos_als_calibrate failed: ADC not enabled\n");
++			"taos_als_calibrate failed: ADC not enabled\n");
 +		return -1;
 +	}
 +
-+	ret = i2c_smbus_write_byte(client, (TSL257X_CMD_REG | TSL257X_CNTRL));
++	ret = i2c_smbus_write_byte(client, (TSL277X_CMD_REG | TSL277X_CNTRL));
 +	if (ret < 0) {
 +		dev_err(&client->dev,
-+		"taos_als_calibrate failed: read STATUS, ret=%d\n",
++		"taos_als_calibrate failed to write ctrl reg: ret=%d\n",
 +			ret);
 +		return ret;
 +	}
 +	reg_val = i2c_smbus_read_byte(client);
 +
-+	if ((reg_val & TSL257X_STA_ADC_VALID) != TSL257X_STA_ADC_VALID) {
++	if ((reg_val & TSL277X_STA_ADC_VALID) != TSL277X_STA_ADC_VALID) {
 +		dev_err(&client->dev,
-+			"taos_als_calibrate failed: STATUS - ADC not valid.\n");
-+		return -EINVAL;
++		"taos_als_calibrate failed: STATUS - ADC not valid.\n");
++		return -ENODATA;
 +	}
 +	lux_val = taos_get_lux(client);
 +	if (lux_val < 0) {
-+		dev_err(&client->dev, "taos_als_calibrate failed to get lux\n");
++		dev_err(&client->dev,
++		"taos_als_calibrate failed to get lux\n");
 +		return lux_val;
 +	}
 +	gain_trim_val = (unsigned int) (((chip->taos_settings.als_cal_target)
@@ -593,7 +849,7 @@ index 0000000..1c28dca
 +
 +	if ((gain_trim_val < 250) || (gain_trim_val > 4000)) {
 +		dev_err(&client->dev,
-+		"taos_als_calibrate failed: trim_val %d - out of range\n",
++		"taos_als_calibrate failed: trim_val of %d is out of range\n",
 +			gain_trim_val);
 +		return -ERANGE;
 +	}
@@ -614,24 +870,31 @@ index 0000000..1c28dca
 +	u8 utmp;
 +	int als_count;
 +	int als_time;
-+	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	struct tsl2771_chip *chip = i2c_get_clientdata(client);
 +	u8 reg_val;
 +
-+    /* Non calculated parameters */
-+	chip->taos_config[TSL257X_ALS_MINTHRESHLO] =
++	/* Non calculated parameters */
++	chip->taos_config[TSL277X_ALS_MINTHRESHLO] =
 +		(chip->taos_settings.als_thresh_low) & 0xFF;
-+	chip->taos_config[TSL257X_ALS_MINTHRESHHI] =
++	chip->taos_config[TSL277X_ALS_MINTHRESHHI] =
 +		(chip->taos_settings.als_thresh_low >> 8) & 0xFF;
-+	chip->taos_config[TSL257X_ALS_MAXTHRESHLO] =
++	chip->taos_config[TSL277X_ALS_MAXTHRESHLO] =
 +		(chip->taos_settings.als_thresh_high) & 0xFF;
-+	chip->taos_config[TSL257X_ALS_MAXTHRESHHI] =
++	chip->taos_config[TSL277X_ALS_MAXTHRESHHI] =
 +		(chip->taos_settings.als_thresh_high >> 8) & 0xFF;
-+	chip->taos_config[TSL257X_PERSISTENCE] =
++	chip->taos_config[TSL277X_PERSISTENCE] =
 +		chip->taos_settings.als_persistence;
 +
++	chip->taos_config[TSL277X_PRX_COUNT] =
++			chip->taos_settings.prox_pulse_count;
++	chip->taos_config[TSL277X_PRX_MINTHRESHLO] = 0;
++	chip->taos_config[TSL277X_PRX_MAXTHRESHLO] =
++			chip->taos_settings.prox_thres;
++
 +	/* and make sure we're not already on */
-+	if (chip->taos_chip_status == TSL257X_CHIP_WORKING) {
-+			dev_info(&client->dev, "device is already enabled\n");
++	if (chip->taos_chip_status == TSL277X_CHIP_WORKING) {
++		/* if forcing a register update - turn off, then on */
++		dev_info(&client->dev, "device is already enabled\n");
 +		return -EINVAL;
 +	}
 +
@@ -642,29 +905,30 @@ index 0000000..1c28dca
 +
 +	/* convert back to time (encompasses overrides) */
 +	als_time = (als_count * 27 + 5) / 10;
-+	chip->taos_config[TSL257X_ALS_TIME] = 256 - als_count;
++	chip->taos_config[TSL277X_ALS_TIME] = 256 - als_count;
 +
 +	/* Set the gain based on taos_settings struct */
-+	chip->taos_config[TSL257X_GAIN] = chip->taos_settings.als_gain;
++	chip->taos_config[TSL277X_GAIN] =
++			(chip->taos_settings.als_gain | (mA100 | DIODE_BOTH));
 +
 +	/* set chip struct re scaling and saturation */
 +	chip->als_saturation = als_count * 922; /* 90% of full scale */
 +	chip->als_time_scale = (als_time + 25) / 50;
 +
-+	/* TSL257X Specific power-on / adc enable sequence
++	/* TSL277X Specific power-on / adc enable sequence
 +	 * Power on the device 1st. */
-+	utmp = TSL257X_CNTL_PWR_ON;
-+	ret = i2c_smbus_write_byte_data(client, TSL257X_CMD_REG | TSL257X_CNTRL,
-+					utmp);
++	utmp = TSL277X_CNTL_PWR_ON;
++	ret = i2c_smbus_write_byte_data(client,
++		TSL277X_CMD_REG | TSL277X_CNTRL, utmp);
 +	if (ret < 0) {
 +		dev_err(&client->dev, "taos_chip_on failed on CNTRL reg.\n");
-+		return ret;
++		return -1;
 +	}
 +
 +	/* Use the following shadow copy for our delay before enabling ADC.
 +	 * Write all the registers. */
-+	for (i = 0, uP = chip->taos_config; i < TSL257X_REG_MAX; i++) {
-+		ret = i2c_smbus_write_byte_data(client, TSL257X_CMD_REG + i,
++	for (i = 0, uP = chip->taos_config; i < TSL277X_REG_MAX; i++) {
++		ret = i2c_smbus_write_byte_data(client, TSL277X_CMD_REG + i,
 +						*uP++);
 +		if (ret < 0) {
 +			dev_err(&client->dev,
@@ -676,65 +940,72 @@ index 0000000..1c28dca
 +	msleep(3);
 +	/* NOW enable the ADC
 +	 * initialize the desired mode of operation */
-+	utmp = TSL257X_CNTL_PWR_ON | TSL257X_CNTL_ADC_ENBL;
-+	ret = i2c_smbus_write_byte_data(client, TSL257X_CMD_REG | TSL257X_CNTRL,
++	utmp = TSL277X_CNTL_PWR_ON | TSL277X_CNTL_ADC_ENBL;
++	ret = i2c_smbus_write_byte_data(client, TSL277X_CMD_REG | TSL277X_CNTRL,
 +					utmp);
 +	if (ret < 0) {
 +		dev_err(&client->dev, "taos_chip_on failed on 2nd CTRL reg.\n");
 +		return ret;
 +		}
 +
++	chip->taos_chip_status = TSL277X_CHIP_WORKING;
 +
 +	/* If interrupts are enabled */
 +	chip->init_done = 0;
++
 +	if (chip->taos_settings.als_interrupt) {
-+		dev_info(&client->dev, "ALS Interrupts on\n");
-+	/*First make sure we have an ALS persistence > 0
-+	else we'll interrupt continuously.*/
-+	ret = taos_i2c_read(client,
-+		(TSL257X_CMD_REG | TSL257X_PERSISTENCE), &reg_val, 1);
-+	if (ret < 0) {
++		dev_info(&client->dev, "Setting Up Interrupt(s)\n");
++		/* first time interrupt */
++		chip->init_done = 0;
++
++		/*First make sure we have an ALS persistence > 0
++		else we'll interrupt continuously.*/
++		ret = taos_i2c_read(client,
++			(TSL277X_CMD_REG | TSL277X_PERSISTENCE), &reg_val, 1);
++	if (ret < 0)
 +		dev_err(&client->dev,
 +			"Failed to get the persistence register value\n");
-+		return ret;
-+	}
 +
 +	/*ALS Interrupt after 3 consecutive reading out of range */
 +	if ((reg_val & 0x0F) == 0) {
 +		reg_val |= 0x03;
 +		ret = i2c_smbus_write_byte_data(client,
-+			(TSL257X_CMD_REG | (TSL257X_PERSISTENCE)), reg_val);
++			(TSL277X_CMD_REG | (TSL277X_PERSISTENCE)), reg_val);
 +
 +	if (ret < 0)
 +		dev_err(&client->dev,
-+		"taos_i2c_write to update the persistence register.\n");
-+		return ret;
++		"taos_i2c_write to update the persistance register.\n");
 +	}
-+	reg_val = TSL257X_CNTL_PWRON |
-+	CNTL_ADC_ENBL |
-+	CNTL_ALS_INT_ENBL |
-+	CNTL_INTALSPON_ENBL;
++
++	reg_val = TSL277X_CNTL_PWR_ON;
++
++	if (chip->taos_settings.als_interrupt == 0x10)
++		reg_val |= CNTL_ADC_ENBL;
++
++	if (chip->taos_settings.als_interrupt == 0x20)
++		reg_val |= CNTL_PROX_DET_ENBL;
++
++	if (chip->taos_settings.als_interrupt == 0x30)
++		reg_val |= (CNTL_ADC_ENBL | CNTL_PROX_DET_ENBL);
++
++	reg_val |= chip->taos_settings.als_interrupt;
 +
 +	ret = i2c_smbus_write_byte_data(client,
-+		(TSL257X_CMD_REG | TSL257X_CNTRL), reg_val);
-+	if (ret < 0) {
++		(TSL277X_CMD_REG | TSL277X_CNTRL), reg_val);
++	if (ret < 0)
 +		dev_err(&client->dev,
 +		"taos_i2c_write to device failed in TAOS_IOCTL_INT_SET.\n");
-+		return ret;
-+	}
 +
 +	/* Clear out any initial als interrupts */
 +	ret = i2c_smbus_write_byte(client,
-+		TSL257X_CMD_REG | TSL257X_CMD_SPL_FN |
-+		TSL257X_CMD_PROXALS_INTCLR);
++		TSL277X_CMD_REG | TSL277X_CMD_SPL_FN |
++		TSL277X_CMD_PROXALS_INTCLR);
 +	if (ret < 0) {
 +		dev_err(&client->dev,
-+		"Failed to clear interrupts: taos_chip_on\n");
++			"taos_i2c_write_command failed in taos_chip_on\n");
 +	    return ret;
 +		}
 +	}
-+
-+	chip->taos_chip_status = TSL257X_CHIP_WORKING;
 +
 +	return ret;
 +
@@ -742,12 +1013,144 @@ index 0000000..1c28dca
 +
 +static int taos_chip_off(struct i2c_client *client)
 +{
-+	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	struct tsl2771_chip *chip = i2c_get_clientdata(client);
 +
 +	/* turn device off */
-+	chip->taos_chip_status = TSL257X_CHIP_SUSPENDED;
++	chip->taos_chip_status = TSL277X_CHIP_SUSPENDED;
 +	return i2c_smbus_write_byte_data(client,
-+		TSL257X_CMD_REG | TSL257X_CNTRL, 0x00);
++		TSL277X_CMD_REG | TSL277X_CNTRL, 0x00);
++}
++
++/**
++ * Integer Square Root
++ * We need an integer version since 1st Floating point is not allowed
++ * in driver world, 2nd, cannot count on the devices having a FPU, and
++ * 3rd software FP emulation may be excessive.
++ */
++unsigned long taos_isqrt(unsigned long x)
++{
++register unsigned long op, res, one;
++op = x;
++res = 0;
++
++    // "one" starts at the highest power of four <= than the argument.
++	one = 1 << 30; // second-to-top bit set
++	while (one > op)
++		one >>= 2;
++
++	while (one != 0) {
++		if (op >= res + one) {
++			op -= res + one;
++			res += one << 1; // <-- faster than 2 * one
++		}
++		res >>= 1;
++		one >>= 2;
++	}
++	return res;
++}
++
++/*
++ * Proximity calibration helper function
++ * runs through a collection of data samples,
++ * sets the min, max, mean, and std dev.
++ */
++void taos_prox_calculate(u16 *data, int length, struct prox_stat *statP)
++{
++
++int i;
++int min, max, sum, mean;
++unsigned long stddev;
++int tmp;
++
++	if (length == 0) {
++		length = 1;
++	}
++
++	sum = 0;
++	min = 0xffff;
++	max = 0;
++	for (i = 0; i < length; i++) {
++		sum += data[i];
++		if (data[i] < min) {
++			min = data[i];
++		}
++		if (data[i] > max) {
++			max = data[i];
++		}
++	}
++	mean = sum/length;
++	statP->min = min;
++	statP->max = max;
++	statP->mean = mean;
++
++	sum = 0;
++	for (i = 0; i < length; i++) {
++		tmp = data[i]-mean;
++		sum += tmp * tmp;
++	}
++	stddev = taos_isqrt((long)sum)/length;
++	statP->stddev = stddev;
++
++}
++
++
++/**
++ * Proximity calibration - collects a number of samples, calculates a standard deviation based on the samples, and
++ * sets the threshold accordingly.
++ * \param	none
++ * \return	none
++ */
++void taos_prox_cal(struct i2c_client *client)
++{
++u16 prox_history[MAX_SAMPLES_CAL+1];
++int i;
++struct prox_stat prox_stat_data[2];
++struct prox_stat *calP;
++struct tsl2771_chip *chip = i2c_get_clientdata(client);
++u8 tmp_irq_settings;
++
++	if (chip->taos_settings.prox_max_samples_cal > MAX_SAMPLES_CAL) {
++		dev_err(&client->dev,
++			"max prox samples cal is too big: %d\n",
++			chip->taos_settings.prox_max_samples_cal);
++		chip->taos_settings.prox_max_samples_cal = MAX_SAMPLES_CAL;
++	}
++
++	/* have to stop to change settings */
++	taos_chip_off(chip->client);
++
++	/* Enable proximity detection save just in case prox not wanted yet*/
++	tmp_irq_settings = chip->taos_settings.als_interrupt;
++	chip->taos_settings.als_interrupt |= CNTL_PROX_INT_ENBL;
++
++	/*turn on device if not already on*/
++	taos_chip_on(chip->client);
++
++	/*gather the samples*/
++	for (i = 0; i < chip->taos_settings.prox_max_samples_cal; i++) {
++		mdelay(15);
++		taos_prox_poll(chip->client);
++		prox_history[i] = chip->prox_cur_info.prox_data;
++		dev_info(&client->dev, "2 i=%d prox data= %d\n",
++			i, chip->prox_cur_info.prox_data);
++
++	}
++
++	taos_chip_off(chip->client);
++
++	calP = &prox_stat_data[PROX_STAT_CAL];
++	taos_prox_calculate(prox_history,
++		chip->taos_settings.prox_max_samples_cal, calP);
++	chip->taos_settings.prox_thres = (calP->max << 1) - calP->mean;
++
++	dev_info(&client->dev, " cal min=%d mean=%d max=%d\n",
++		calP->min, calP->mean, calP->max);
++	dev_info(&client->dev,
++		"TAOS: proximity threshold set to %d, basic mode\n",
++		chip->taos_settings.prox_thres);
++
++	/* back to the way they were */
++	chip->taos_settings.als_interrupt = tmp_irq_settings;
 +}
 +
 +/* ---------- Sysfs Interface Functions ------------- */
@@ -756,7 +1159,9 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
++
++	taos_register_dump(chip->client);
 +
 +	return sprintf(buf, "%s\n", chip->client->name);
 +}
@@ -765,7 +1170,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +
 +	return sprintf(buf, "%d\n", chip->taos_chip_status);
 +}
@@ -774,7 +1179,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	unsigned long value;
 +
 +	if (strict_strtoul(buf, 0, &value))
@@ -792,17 +1197,17 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +
 +	return sprintf(buf, "%d\n",
-+		tsl2571_gainadj[chip->taos_settings.als_gain].ch0);
++		tsl2771_gainadj[chip->taos_settings.als_gain].ch0);
 +}
 +
 +static ssize_t taos_gain_store(struct device *dev,
 +	struct device_attribute *attr, const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	unsigned long value;
 +	if (strict_strtoul(buf, 0, &value))
 +		return -EINVAL;
@@ -839,7 +1244,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +
 +	return sprintf(buf, "%d\n", chip->taos_settings.als_time);
 +}
@@ -848,7 +1253,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	unsigned long value;
 +
 +	if (strict_strtoul(buf, 0, &value))
@@ -876,7 +1281,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +
 +	return sprintf(buf, "%d\n", chip->taos_settings.als_gain_trim);
 +}
@@ -885,7 +1290,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	unsigned long value;
 +
 +	if (strict_strtoul(buf, 0, &value))
@@ -897,24 +1302,11 @@ index 0000000..1c28dca
 +	return len;
 +}
 +
-+static ssize_t taos_adc_show(struct device *dev, struct device_attribute *attr,
-+	char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
-+	int lux;
-+
-+	lux = taos_get_lux(chip->client);
-+
-+	return sprintf(buf, "%d,%d\n",
-+		chip->als_cur_info.als_ch0, chip->als_cur_info.als_ch1);
-+}
-+
 +static ssize_t taos_als_cal_target_show(struct device *dev,
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +
 +	return sprintf(buf, "%d\n", chip->taos_settings.als_cal_target);
 +}
@@ -923,7 +1315,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	unsigned long value;
 +
 +	if (strict_strtoul(buf, 0, &value))
@@ -939,16 +1331,18 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
-+
-+	return sprintf(buf, "%d\n", chip->taos_settings.als_interrupt);
++	struct tsl2771_chip *chip = indio_dev->dev_data;
++	if (chip->taos_settings.als_interrupt & 0x10)
++		return sprintf(buf, "%d\n", 1);
++	else
++		return sprintf(buf, "%d\n", 0);
 +}
 +
 +static ssize_t taos_als_interrupt_store(struct device *dev,
 +	struct device_attribute *attr, const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	unsigned long value;
 +
 +	if (strict_strtoul(buf, 0, &value))
@@ -956,7 +1350,41 @@ index 0000000..1c28dca
 +
 +	if (value > 1)
 +		return -EINVAL;
-+	chip->taos_settings.als_interrupt = value;
++	if (value)
++		chip->taos_settings.als_interrupt |= 0x10;
++	else
++		chip->taos_settings.als_interrupt &= 0x20;
++
++	return len;
++}
++
++static ssize_t taos_prox_interrupt_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2771_chip *chip = indio_dev->dev_data;
++	if (chip->taos_settings.als_interrupt & 0x20)
++		return sprintf(buf, "%d\n", 1);
++	else
++		return sprintf(buf, "%d\n", 0);
++}
++
++static ssize_t taos_prox_interrupt_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2771_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
++
++	if (value > 1)
++		return -EINVAL;
++	if (value)
++		chip->taos_settings.als_interrupt |= 0x20;
++	else
++		chip->taos_settings.als_interrupt &= 0x10;
 +
 +	return len;
 +}
@@ -965,7 +1393,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +
 +	return sprintf(buf, "%d\n", chip->taos_settings.als_thresh_low);
 +}
@@ -974,7 +1402,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	unsigned long value;
 +
 +	if (strict_strtoul(buf, 0, &value))
@@ -989,7 +1417,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +
 +	return sprintf(buf, "%d\n", chip->taos_settings.als_thresh_high);
 +}
@@ -998,7 +1426,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	unsigned long value;
 +
 +	if (strict_strtoul(buf, 0, &value))
@@ -1009,51 +1437,66 @@ index 0000000..1c28dca
 +	return len;
 +}
 +
-+/* sampling_frequency AKA persistence in data sheet */
-+static ssize_t taos_als_persistence_show(struct device *dev,
++static ssize_t taos_prox_thresh_high_show(struct device *dev,
 +	struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +
-+	return sprintf(buf, "%d\n",
-+		persistence_available[chip->taos_settings.als_persistence]);
++	return sprintf(buf, "%d\n", chip->taos_settings.prox_thres);
 +}
 +
-+static ssize_t taos_als_persistence_store(struct device *dev,
++static ssize_t taos_prox_thresh_high_store(struct device *dev,
 +	struct device_attribute *attr, const char *buf, size_t len)
 +{
-+	int i;
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	unsigned long value;
 +
 +	if (strict_strtoul(buf, 0, &value))
 +		return -EINVAL;
 +
-+	for (i = 0; i < (sizeof(persistence_available) + 1); i++) {
-+		if ((u8)value == persistence_available[i]) {
-+			chip->taos_settings.als_persistence = i;
-+			return len;
-+		}
-+	}
++	chip->taos_settings.prox_thres = value;
 +
-+	dev_err(dev,
-+		"Invalid Persistence value\n");
-+	return -EINVAL;
++	return len;
++}
++
++/* sampling_frequency AKA persistence in data sheet */
++static ssize_t taos_als_persistence_show(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2771_chip *chip = indio_dev->dev_data;
++
++	return sprintf(buf, "0x%02X\n", chip->taos_settings.als_persistence);
++}
++
++static ssize_t taos_als_persistence_store(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2771_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
++
++	chip->taos_settings.als_persistence = value;
++
++	return len;
 +}
 +
 +static ssize_t taos_als_persistence_available_show(struct device *dev,
 +	struct device_attribute *attr, char *buf)
 +{
-+	return sprintf(buf, "0 1 2 3 5 10 15 20 25 30 35 40 45 5 55 60\n");
++	return sprintf(buf, "0x00 - 0xFF (0 - 255)\n");
 +}
 +
 +static ssize_t taos_lux_show(struct device *dev, struct device_attribute *attr,
 +	char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	int lux;
 +
 +	lux = taos_get_lux(chip->client);
@@ -1061,11 +1504,24 @@ index 0000000..1c28dca
 +	return sprintf(buf, "%d\n", lux);
 +}
 +
++static ssize_t taos_adc_show(struct device *dev, struct device_attribute *attr,
++	char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2771_chip *chip = indio_dev->dev_data;
++	int lux;
++
++	lux = taos_get_lux(chip->client);
++
++	return sprintf(buf, "%d,%d\n",
++		chip->als_cur_info.als_ch0, chip->als_cur_info.als_ch1);
++}
++
 +static ssize_t taos_do_calibrate(struct device *dev,
 +	struct device_attribute *attr, const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	unsigned long value;
 +
 +	if (strict_strtoul(buf, 0, &value))
@@ -1085,9 +1541,9 @@ index 0000000..1c28dca
 +
 +	for (i = 0; i < ARRAY_SIZE(taos_device_lux); i++) {
 +		offset += sprintf(buf + offset, "%d,%d,%d,",
-+				  taos_device_lux[i].ratio,
-+				  taos_device_lux[i].ch0,
-+				  taos_device_lux[i].ch1);
++			taos_device_lux[i].ratio,
++			taos_device_lux[i].ch0,
++			taos_device_lux[i].ch1);
 +		if (taos_device_lux[i].ratio == 0) {
 +			/* We just printed the first "0" entry.
 +			 * Now get rid of the extra "," and break. */
@@ -1104,7 +1560,7 @@ index 0000000..1c28dca
 +	struct device_attribute *attr, const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct tsl2571_chip *chip = indio_dev->dev_data;
++	struct tsl2771_chip *chip = indio_dev->dev_data;
 +	int value[ARRAY_SIZE(taos_device_lux)];
 +	int n;
 +
@@ -1126,7 +1582,7 @@ index 0000000..1c28dca
 +		return -EINVAL;
 +	}
 +
-+	if (chip->taos_chip_status == TSL257X_CHIP_WORKING)
++	if (chip->taos_chip_status == TSL277X_CHIP_WORKING)
 +		taos_chip_off(chip->client);
 +
 +	/* Zero out the table */
@@ -1138,6 +1594,21 @@ index 0000000..1c28dca
 +	return len;
 +}
 +
++static ssize_t taos_do_prox_calibrate(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct tsl2771_chip *chip = indio_dev->dev_data;
++	unsigned long value;
++
++	if (strict_strtoul(buf, 0, &value))
++		return -EINVAL;
++
++	if (value == 1)
++		taos_prox_cal(chip->client);
++
++	return len;
++}
 +
 +static DEVICE_ATTR(name, S_IRUGO, taos_device_id, NULL);
 +static DEVICE_ATTR(power_state, S_IRUGO | S_IWUSR,
@@ -1163,13 +1634,15 @@ index 0000000..1c28dca
 +
 +static DEVICE_ATTR(illuminance0_input, S_IRUGO, taos_lux_show, NULL);
 +static DEVICE_ATTR(illuminance0_calibrate, S_IWUSR, NULL, taos_do_calibrate);
++static DEVICE_ATTR(proximity_calibrate, S_IWUSR, NULL, taos_do_prox_calibrate);
++
 +static DEVICE_ATTR(illuminance0_lux_table, S_IRUGO | S_IWUSR,
 +		taos_luxtable_show, taos_luxtable_store);
 +
-+static DEVICE_ATTR(intensity0_both_thresh_falling_value, S_IRUGO | S_IWUSR,
++static DEVICE_ATTR(illuminance0_thresh_falling_value, S_IRUGO | S_IWUSR,
 +		taos_als_thresh_low_show, taos_als_thresh_low_store);
 +
-+static DEVICE_ATTR(intensity0_both_thresh_rising_value, S_IRUGO | S_IWUSR,
++static DEVICE_ATTR(illuminance0_thresh_rising_value, S_IRUGO | S_IWUSR,
 +		taos_als_thresh_high_show, taos_als_thresh_high_store);
 +
 +static DEVICE_ATTR(sampling_frequency, S_IRUGO | S_IWUSR,
@@ -1177,6 +1650,9 @@ index 0000000..1c28dca
 +
 +static DEVICE_ATTR(sampling_frequency_available, S_IRUGO,
 +		taos_als_persistence_available_show, NULL);
++
++static DEVICE_ATTR(proximity_thresh_value, S_IRUGO | S_IWUSR,
++		taos_prox_thresh_high_show, taos_prox_thresh_high_store);
 +
 +static struct attribute *sysfs_attrs_ctrl[] = {
 +	&dev_attr_name.attr,
@@ -1191,14 +1667,16 @@ index 0000000..1c28dca
 +	&dev_attr_illuminance0_input.attr,
 +	&dev_attr_illuminance0_calibrate.attr,
 +	&dev_attr_illuminance0_lux_table.attr,
-+	&dev_attr_intensity0_both_thresh_falling_value.attr,/* Low T  */
-+	&dev_attr_intensity0_both_thresh_rising_value.attr,	/* High T */
++	&dev_attr_illuminance0_thresh_falling_value.attr, /* Low T */
++	&dev_attr_illuminance0_thresh_rising_value.attr,  /* High T */
 +	&dev_attr_sampling_frequency.attr,		/* persist*/
 +	&dev_attr_sampling_frequency_available.attr,
++	&dev_attr_proximity_thresh_value.attr,	/*Prox thresh */
++	&dev_attr_proximity_calibrate.attr,
 +	NULL
 +};
 +
-+static struct attribute_group tsl2571_attribute_group = {
++static struct attribute_group tsl2771_attribute_group = {
 +	.attrs = sysfs_attrs_ctrl,
 +};
 +
@@ -1208,11 +1686,11 @@ index 0000000..1c28dca
 + * the bottom-half tasklet, to handle all valid interrupts.
 + */
 +static int taos_interrupt_th(struct iio_dev *dev_info,
-+			int index,
-+			s64 timestamp,
-+			int not_test)
++	int index,
++	s64 timestamp,
++	int not_test)
 +{
-+	struct tsl2571_chip *chip = dev_info->dev_data;
++	struct tsl2771_chip *chip = dev_info->dev_data;
 +
 +	schedule_work(&chip->work_thresh);
 +	return 0;
@@ -1220,25 +1698,32 @@ index 0000000..1c28dca
 +
 +IIO_EVENT_SH(threshold, &taos_interrupt_th);
 +
-+IIO_EVENT_ATTR_SH(intensity0_both_thresh_en,
++IIO_EVENT_ATTR_SH(intensity0_thresh_en,
 +		  iio_event_threshold,
 +		  taos_als_interrupt_show,
 +		  taos_als_interrupt_store,
-+		  TSL257X_STA_ALS_INTR);
++		  STA_ALSINTR);
 +
-+static struct attribute *tsl2571_event_attributes[] = {
-+	&iio_event_attr_intensity0_both_thresh_en.dev_attr.attr,
++IIO_EVENT_ATTR_SH(proximity_thresh_en,
++		  iio_event_threshold,
++		  taos_prox_interrupt_show,
++		  taos_prox_interrupt_store,
++		  STA_PRXINTR);
++
++static struct attribute *tsl2771_event_attributes[] = {
++	&iio_event_attr_intensity0_thresh_en.dev_attr.attr,
++	&iio_event_attr_proximity_thresh_en.dev_attr.attr,
 +	NULL,
 +};
 +
-+static struct attribute_group tsl2571_event_attribute_group = {
-+	.attrs = tsl2571_event_attributes,
++static struct attribute_group tsl2771_event_attribute_group = {
++	.attrs = tsl2771_event_attributes,
 +};
 +
 +/* Use the default register values to identify the Taos device */
-+static int taos_TSL257X_device(unsigned char *bufp)
++static int taos_TSL277X_device(unsigned char *bufp)
 +{
-+	return ((bufp[TSL257X_CHIPID] & 0xf0) == 0x00);
++	return ((bufp[TSL277X_CHIPID] & 0xf0) == 0x00);
 +}
 +
 +/*
@@ -1246,11 +1731,11 @@ index 0000000..1c28dca
 + * data structure is updated, and initialization completes successfully.
 + */
 +static int __devinit taos_probe(struct i2c_client *clientp,
-+		      const struct i2c_device_id *idp)
++	const struct i2c_device_id *idp)
 +{
 +	int i, ret = 0;
-+	unsigned char buf[TSL257X_MAX_DEVICE_REGS];
-+	static struct tsl2571_chip *chip;
++	unsigned char buf[TSL277X_MAX_DEVICE_REGS];
++	static struct tsl2771_chip *chip;
 +
 +	if (!i2c_check_functionality(clientp->adapter,
 +		I2C_FUNC_SMBUS_BYTE_DATA)) {
@@ -1260,18 +1745,21 @@ index 0000000..1c28dca
 +		return -EOPNOTSUPP;
 +	}
 +
-+	chip = kzalloc(sizeof(struct tsl2571_chip), GFP_KERNEL);
++	chip = kzalloc(sizeof(struct tsl2771_chip), GFP_KERNEL);
 +
 +	chip->client = clientp;
 +	i2c_set_clientdata(clientp, chip);
 +
++	mutex_init(&chip->prox_mutex);
 +	mutex_init(&chip->als_mutex);
-+	chip->taos_chip_status = TSL257X_CHIP_UNKNOWN;
-+	memcpy(chip->taos_config, taos_config, sizeof(chip->taos_config));
 +
-+	for (i = 0; i < TSL257X_MAX_DEVICE_REGS; i++) {
++	chip->taos_chip_status = TSL277X_CHIP_UNKNOWN;
++	memcpy(chip->taos_config, tsl2771_taos_config,
++		sizeof(chip->taos_config));
++
++	for (i = 0; i < TSL277X_MAX_DEVICE_REGS; i++) {
 +		ret = i2c_smbus_write_byte(clientp,
-+				(TSL257X_CMD_REG | (TSL257X_CNTRL + i)));
++				(TSL277X_CMD_REG | (TSL277X_CNTRL + i)));
 +		if (ret < 0) {
 +			dev_err(&clientp->dev, "i2c_smbus_write_bytes() to cmd "
 +				"reg failed in taos_probe(), err = %d\n", ret);
@@ -1287,28 +1775,50 @@ index 0000000..1c28dca
 +		buf[i] = ret;
 +	}
 +
-+	if (!taos_TSL257X_device(buf)) {
++	if (!taos_TSL277X_device(buf)) {
 +		dev_info(&clientp->dev, "i2c device found but does not match "
 +			"expected id in taos_probe()\n");
 +		goto fail1;
 +	}
 +
-+	ret = i2c_smbus_write_byte(clientp, (TSL257X_CMD_REG | TSL257X_CNTRL));
++	ret = i2c_smbus_write_byte(clientp, (TSL277X_CMD_REG | TSL277X_CNTRL));
 +	if (ret < 0) {
 +		dev_err(&clientp->dev, "i2c_smbus_write_byte() to cmd reg "
 +			"failed in taos_probe(), err = %d\n", ret);
 +		goto fail1;
 +	}
 +
++	//............................................................................................
++	// H/W INTERRUPT Configuration section
++	// Modify this section as needed to accommodate the target platform
++	//First make sure the pin we want is free from previous use
++	gpio_free(S5PV210_GPH0(4));		//Interrupt pin - defined by H/W arch
++	//Make sure it's available
++	ret = gpio_request(S5PV210_GPH0(4), "GPH0");
++
++	if (ret) {
++		printk(KERN_INFO "gpio request error : %d\n", ret);
++	} else {
++		//These are the gpio configuration functions (s3c_ ) change as needed
++		s3c_gpio_cfgpin(S5PV210_GPH0(4), (0xf << 16));
++		s3c_gpio_setpull(S5PV210_GPH0(4), S3C_GPIO_PULL_NONE);
++	}
++
++	gpio_direction_input(IRQ_EINT4);
++
++	chip->irq_no = IRQ_EINT4;
++
++	//............................................................................................
++
 +	chip->iio_dev = iio_allocate_device();
 +	if (!chip->iio_dev)
 +		goto fail1;
 +
-+	chip->iio_dev->attrs = &tsl2571_attribute_group;
++	chip->iio_dev->attrs = &tsl2771_attribute_group;
 +	chip->iio_dev->dev.parent = &clientp->dev;
 +	chip->iio_dev->dev_data = (void *)(chip);
 +	chip->iio_dev->num_interrupt_lines = 1;
-+	chip->iio_dev->event_attrs = &tsl2571_event_attribute_group;
++	chip->iio_dev->event_attrs = &tsl2771_event_attribute_group;
 +	chip->iio_dev->driver_module = THIS_MODULE;
 +	chip->iio_dev->modes = INDIO_DIRECT_MODE;
 +
@@ -1321,18 +1831,23 @@ index 0000000..1c28dca
 +						  chip->iio_dev,
 +						  0,
 +						  IRQF_TRIGGER_FALLING,
-+						  "tsl2571");
++						  "tsl2771");
 +		if (ret)
 +			goto fail1;
 +
 +		iio_add_event_to_list(&iio_event_threshold,
-+				    &chip->iio_dev->interrupts[0]->ev_list);
++			&chip->iio_dev->interrupts[0]->ev_list);
 +	}
 +
-+	/* Defaults - (these are can be changed in the device[x]/ABI) */
++	/* Load up the defaults
++	 * (these are can be changed in the device[x]/ABI) */
 +	taos_defaults(chip);
 +
-+	INIT_WORK(&chip->work_thresh, taos_als_interrupt_bh);
++	/* Assume board info already established
++	chip->irq_no = IRQ_EINT4;
++	*/
++
++	INIT_WORK(&chip->work_thresh, taos_interrupt_bh);
 +
 +	/* Make sure the chip is on */
 +	taos_chip_on(clientp);
@@ -1349,14 +1864,14 @@ index 0000000..1c28dca
 +
 +static int taos_suspend(struct i2c_client *client, pm_message_t state)
 +{
-+	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	struct tsl2771_chip *chip = i2c_get_clientdata(client);
 +	int ret = 0;
 +
 +	mutex_lock(&chip->als_mutex);
 +
-+	if (chip->taos_chip_status == TSL257X_CHIP_WORKING) {
++	if (chip->taos_chip_status == TSL277X_CHIP_WORKING) {
 +		ret = taos_chip_off(client);
-+		chip->taos_chip_status = TSL257X_CHIP_SUSPENDED;
++		chip->taos_chip_status = TSL277X_CHIP_SUSPENDED;
 +	}
 +
 +	mutex_unlock(&chip->als_mutex);
@@ -1365,12 +1880,12 @@ index 0000000..1c28dca
 +
 +static int taos_resume(struct i2c_client *client)
 +{
-+	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	struct tsl2771_chip *chip = i2c_get_clientdata(client);
 +	int ret = 0;
 +
 +	mutex_lock(&chip->als_mutex);
 +
-+	if (chip->taos_chip_status == TSL257X_CHIP_SUSPENDED)
++	if (chip->taos_chip_status == TSL277X_CHIP_SUSPENDED)
 +		ret = taos_chip_on(client);
 +
 +	mutex_unlock(&chip->als_mutex);
@@ -1380,13 +1895,15 @@ index 0000000..1c28dca
 +
 +static int __devexit taos_remove(struct i2c_client *client)
 +{
-+	struct tsl2571_chip *chip = i2c_get_clientdata(client);
++	struct tsl2771_chip *chip = i2c_get_clientdata(client);
 +
 +	taos_chip_off(client);
 +
 +	if (chip->irq_no)
 +		free_irq(chip->irq_no, chip->client->name);
++
 +	flush_scheduled_work();
++
 +	iio_device_unregister(chip->iio_dev);
 +
 +	kfree(chip);
@@ -1394,7 +1911,7 @@ index 0000000..1c28dca
 +}
 +
 +static struct i2c_device_id taos_idtable[] = {
-+	{ "tsl2571", 0 },
++	{ "tsl2771", 0 },
 +	{}
 +};
 +MODULE_DEVICE_TABLE(i2c, taos_idtable);
@@ -1402,7 +1919,7 @@ index 0000000..1c28dca
 +/* Driver definition */
 +static struct i2c_driver taos_driver = {
 +	.driver = {
-+		.name = "tsl2571",
++		.name = "tsl2771",
 +	},
 +	.id_table = taos_idtable,
 +	.suspend	= taos_suspend,
@@ -1421,13 +1938,46 @@ index 0000000..1c28dca
 +	i2c_del_driver(&taos_driver);
 +}
 +
++
++//........................................................................................
++/**
++ * Simple dump of device registers to console via printk.
++ */
++int taos_register_dump(struct i2c_client *client)
++{
++	int i = 0;
++	int ret = 0;
++	u8 chdata[0x20];
++
++	for (i = 0; i < 0x20; i++) {
++		ret = taos_i2c_read(client,
++			(TSL277X_CMD_REG | (TSL277X_CNTRL + i)),
++			&chdata[i], 1);
++		if (ret < 0) {
++			printk(KERN_INFO "i2c_smbus_read_byte() failed in taos_register_dump()\n");
++			return ret;
++		}
++	}
++
++	printk(KERN_INFO "** taos register dump *** \n");
++	for (i = 0; i < 0x20; i++)
++		printk(KERN_INFO "(0x%02x)0x%02x, ", i, chdata[i]);
++
++	printk(KERN_INFO "\n");
++
++	return 0;
++}
++
++
++//.......................................................................................
++
 +module_init(taos_init);
 +module_exit(taos_exit);
 +
 +MODULE_AUTHOR("J. August Brenner<jbrenner@taosinc.com>");
-+MODULE_DESCRIPTION("TAOS tsl2571 ambient light sensor driver");
++MODULE_DESCRIPTION("TAOS tsl2771 ambient light sensor driver");
 +MODULE_LICENSE("GPL");
++
 --
 1.7.0.4
-
 
