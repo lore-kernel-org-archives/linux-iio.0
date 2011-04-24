@@ -1,19 +1,23 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:42872 "EHLO
-	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755700Ab1DVABx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Apr 2011 20:01:53 -0400
-Subject: [PATCH v2]TAOS tsl2771 Device Driver - SCRATCH
-From: Jon Brenner <jbrenner@taosinc.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio <linux-iio@vger.kernel.org>,
+Return-Path: <greg@kroah.com>
+Date: Sun, 24 Apr 2011 08:39:18 -0700
+From: Greg KH <greg@kroah.com>
+To: Jon Brenner <jbrenner@taosinc.com>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	linux-iio <linux-iio@vger.kernel.org>,
 	Linux Kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain
-Date: Thu, 21 Apr 2011 19:01:52 -0500
-Message-ID: <1303430512.30238.0.camel@jonz-ubuntu>
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2]TAOS tsl2771 Device Driver - SCRATCH
+Message-ID: <20110424153918.GA16843@kroah.com>
+References: <1303430512.30238.0.camel@jonz-ubuntu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1303430512.30238.0.camel@jonz-ubuntu>
+List-ID: <linux-iio@vger.kernel.org>
 
-Please scratch [PATCH v1]TAOS tsl2771 Device Driver.
+On Thu, Apr 21, 2011 at 07:01:52PM -0500, Jon Brenner wrote:
+> Please scratch [PATCH v1]TAOS tsl2771 Device Driver.
 
+What do you mean?
+
+confused,
+
+greg k-h
