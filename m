@@ -1,182 +1,39 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:54387 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759311Ab1D0P0S (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Apr 2011 11:26:18 -0400
-Message-ID: <4DB8361E.3010705@cam.ac.uk>
-Date: Wed, 27 Apr 2011 16:28:30 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <manuel.stahl9cd33xy531iis.fraunhofer.de@bounce.antispameurope.com>
+Message-ID: <4DB82ABC.70304@iis.fraunhofer.de>
+Date: Wed, 27 Apr 2011 16:39:56 +0200
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org, drivers@analog.com,
-	device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH] IIO: DDS: AD9834: Add support for AD9837 and AD9838 DDS
- devices
-References: <1303917101-17957-1-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1303917101-17957-1-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Shubhrajyoti Datta <shubhrajyoti@ti.com>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH] staging: iio: hmc5843: Add missing attribute name
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/27/11 16:11, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> Add support for AD9837 and AD9838 DDS devices
-> Update copyright and license notice
-> Fix typo
-> 
-Looks straight forward...
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/dds/Kconfig  |    4 ++--
->  drivers/staging/iio/dds/ad9834.c |   31 ++++++++++++++++---------------
->  drivers/staging/iio/dds/ad9834.h |    8 +++++---
->  3 files changed, 23 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/dds/Kconfig b/drivers/staging/iio/dds/Kconfig
-> index 06b6f3a..e07431d 100644
-> --- a/drivers/staging/iio/dds/Kconfig
-> +++ b/drivers/staging/iio/dds/Kconfig
-> @@ -21,11 +21,11 @@ config AD9832
->  	  module will be called ad9832.
->  
->  config AD9834
-> -	tristate "Analog Devices ad9833/4/ driver"
-> +	tristate "Analog Devices AD9833/4/7/8 driver"
->  	depends on SPI
->  	help
->  	  Say yes here to build support for Analog Devices DDS chip
-> -	  AD9833 and AD9834, provides direct access via sysfs.
-> +	  AD9833, AD9834, AD9837 and AD9838, provides direct access via sysfs.
->  
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad9834.
-> diff --git a/drivers/staging/iio/dds/ad9834.c b/drivers/staging/iio/dds/ad9834.c
-> index da5e302..6dbc458 100644
-> --- a/drivers/staging/iio/dds/ad9834.c
-> +++ b/drivers/staging/iio/dds/ad9834.c
-> @@ -1,9 +1,9 @@
->  /*
-> - * AD9834 SPI DAC driver
-> + * AD9833/AD9834/AD9837/AD9838 SPI DDS driver
->   *
-> - * Copyright 2010 Analog Devices Inc.
-> + * Copyright 2010-2011 Analog Devices Inc.
->   *
-> - * Licensed under the GPL-2 or later.
-> + * Licensed under the GPL-2.
->   */
->  
->  #include <linux/interrupt.h>
-> @@ -47,7 +47,7 @@ static int ad9834_write_frequency(struct ad9834_state *st,
->  				       (AD9834_FREQ_BITS / 2)) &
->  				       RES_MASK(AD9834_FREQ_BITS / 2)));
->  
-> -	return spi_sync(st->spi, &st->freq_msg);;
-> +	return spi_sync(st->spi, &st->freq_msg);
->  }
->  
->  static int ad9834_write_phase(struct ad9834_state *st,
-> @@ -148,7 +148,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
->  	struct ad9834_state *st = dev_info->dev_data;
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  	int ret = 0;
-> -	bool is_ad9833 = st->devid == ID_AD9833;
-> +	bool is_ad9833_7 = (st->devid == ID_AD9833) || (st->devid == ID_AD9837);
->  
->  	mutex_lock(&dev_info->mlock);
->  
-> @@ -156,10 +156,10 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
->  	case 0:
->  		if (sysfs_streq(buf, "sine")) {
->  			st->control &= ~AD9834_MODE;
-> -			if (is_ad9833)
-> +			if (is_ad9833_7)
->  				st->control &= ~AD9834_OPBITEN;
->  		} else if (sysfs_streq(buf, "triangle")) {
-> -			if (is_ad9833) {
-> +			if (is_ad9833_7) {
->  				st->control &= ~AD9834_OPBITEN;
->  				st->control |= AD9834_MODE;
->  			} else if (st->control & AD9834_OPBITEN) {
-> @@ -167,7 +167,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
->  			} else {
->  				st->control |= AD9834_MODE;
->  			}
-> -		} else if (is_ad9833 && sysfs_streq(buf, "square")) {
-> +		} else if (is_ad9833_7 && sysfs_streq(buf, "square")) {
->  			st->control &= ~AD9834_MODE;
->  			st->control |= AD9834_OPBITEN;
->  		} else {
-> @@ -217,7 +217,7 @@ static ssize_t ad9834_show_out0_wavetype_available(struct device *dev,
->  	struct ad9834_state *st = iio_dev_get_devdata(dev_info);
->  	char *str;
->  
-> -	if (st->devid == ID_AD9833)
-> +	if ((st->devid == ID_AD9833) || (st->devid == ID_AD9837))
->  		str = "sine triangle square";
->  	else if (st->control & AD9834_OPBITEN)
->  		str = "sine";
-> @@ -301,13 +301,12 @@ static mode_t ad9834_attr_is_visible(struct kobject *kobj,
->  
->  	mode_t mode = attr->mode;
->  
-> -	if (st->devid == ID_AD9834)
-> -		return mode;
-> -
-> -	if ((attr == &iio_dev_attr_dds0_out1_enable.dev_attr.attr) ||
-> +	if (((st->devid == ID_AD9833) || (st->devid == ID_AD9837)) &&
-> +		((attr == &iio_dev_attr_dds0_out1_enable.dev_attr.attr) ||
->  		(attr == &iio_dev_attr_dds0_out1_wavetype.dev_attr.attr) ||
->  		(attr ==
-> -		&iio_dev_attr_dds0_out1_wavetype_available.dev_attr.attr))
-> +		&iio_dev_attr_dds0_out1_wavetype_available.dev_attr.attr) ||
-> +		(attr == &iio_dev_attr_dds0_pincontrol_en.dev_attr.attr)))
->  		mode = 0;
->  
->  	return mode;
-> @@ -445,6 +444,8 @@ static int __devexit ad9834_remove(struct spi_device *spi)
->  static const struct spi_device_id ad9834_id[] = {
->  	{"ad9833", ID_AD9833},
->  	{"ad9834", ID_AD9834},
-> +	{"ad9837", ID_AD9837},
-> +	{"ad9838", ID_AD9838},
->  	{}
->  };
->  
-> @@ -472,6 +473,6 @@ static void __exit ad9834_exit(void)
->  module_exit(ad9834_exit);
->  
->  MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-> -MODULE_DESCRIPTION("Analog Devices AD9833/AD9834 DDS");
-> +MODULE_DESCRIPTION("Analog Devices AD9833/AD9834/AD9837/AD9838 DDS");
->  MODULE_LICENSE("GPL v2");
->  MODULE_ALIAS("spi:ad9834");
-> diff --git a/drivers/staging/iio/dds/ad9834.h b/drivers/staging/iio/dds/ad9834.h
-> index 0fc3b88..2abd635 100644
-> --- a/drivers/staging/iio/dds/ad9834.h
-> +++ b/drivers/staging/iio/dds/ad9834.h
-> @@ -1,9 +1,9 @@
->  /*
-> - * AD9834 SPI DDS driver
-> + * AD9833/AD9834/AD9837/AD9838 SPI DDS driver
->   *
-> - * Copyright 2010 Analog Devices Inc.
-> + * Copyright 2010-2011 Analog Devices Inc.
->   *
-> - * Licensed under the GPL-2 or later.
-> + * Licensed under the GPL-2.
->   */
->  #ifndef IIO_DDS_AD9834_H_
->  #define IIO_DDS_AD9834_H_
-> @@ -107,6 +107,8 @@ struct ad9834_platform_data {
->  enum ad9834_supported_device_ids {
->  	ID_AD9833,
->  	ID_AD9834,
-> +	ID_AD9837,
-> +	ID_AD9838,
->  };
->  
->  #endif /* IIO_DDS_AD9834_H_ */
 
+Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+---
+  drivers/staging/iio/magnetometer/hmc5843.c |    3 +++
+  1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/staging/iio/magnetometer/hmc5843.c 
+b/drivers/staging/iio/magnetometer/hmc5843.c
+index d0676e9..b015a38 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843.c
++++ b/drivers/staging/iio/magnetometer/hmc5843.c
+@@ -481,6 +481,8 @@ static IIO_DEVICE_ATTR(magn_scale,
+  			show_scale,
+  			NULL , 0);
+  +static IIO_CONST_ATTR_NAME("hmc5843");
++
+  static struct attribute *hmc5843_attributes[] = {
+  	&iio_dev_attr_meas_conf.dev_attr.attr,
+  	&iio_dev_attr_operating_mode.dev_attr.attr,
+@@ -491,6 +493,7 @@ static struct attribute *hmc5843_attributes[] = {
+  	&iio_dev_attr_magn_y_raw.dev_attr.attr,
+  	&iio_dev_attr_magn_z_raw.dev_attr.attr,
+  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	&iio_const_attr_name.dev_attr.attr,
+  	NULL
+  };
+  -- 1.7.2.3
