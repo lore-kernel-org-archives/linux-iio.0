@@ -4,171 +4,181 @@ To: <greg@kroah.com>
 CC: <linux-iio@vger.kernel.org>, <drivers@analog.com>, <jic23@cam.ac.uk>,
 	<device-drivers-devel@blackfin.uclinux.org>, Michael Hennerich
 	<michael.hennerich@analog.com>
-Subject: [PATCH] IIO: DDS: AD9834: Add support for AD9837 and AD9838 DDS devices
-Date: Wed, 27 Apr 2011 17:22:36 +0200
-Message-ID: <1303917756-18113-1-git-send-email-michael.hennerich@analog.com>
+Subject: [PATCH] IIO: DAC: AD5791: Add support for the AD5760/AD5780 High Resolution DACs
+Date: Wed, 27 Apr 2011 17:13:58 +0200
+Message-ID: <1303917238-17998-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-Add support for AD9837 and AD9838 DDS devices
-Update copyright and license notice
-Fix typo
+Add support for the AD5760/AD5780 High Resolution Voltage Output DACs
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/dds/Kconfig  |    4 ++--
- drivers/staging/iio/dds/ad9834.c |   31 ++++++++++++++++---------------
- drivers/staging/iio/dds/ad9834.h |    8 +++++---
- 3 files changed, 23 insertions(+), 20 deletions(-)
+ drivers/staging/iio/dac/Kconfig  |    7 +++--
+ drivers/staging/iio/dac/ad5791.c |   54 ++++++++++++++++++++++++++-----------
+ drivers/staging/iio/dac/ad5791.h |    9 +++++-
+ 3 files changed, 50 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/staging/iio/dds/Kconfig b/drivers/staging/iio/dds/Kconfig
-index 06b6f3a..e07431d 100644
---- a/drivers/staging/iio/dds/Kconfig
-+++ b/drivers/staging/iio/dds/Kconfig
-@@ -21,11 +21,11 @@ config AD9832
- 	  module will be called ad9832.
+diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
+index f25468a..d5a5556 100644
+--- a/drivers/staging/iio/dac/Kconfig
++++ b/drivers/staging/iio/dac/Kconfig
+@@ -32,11 +32,12 @@ config AD5504
+ 	  module will be called ad5504.
 
- config AD9834
--	tristate "Analog Devices ad9833/4/ driver"
-+	tristate "Analog Devices AD9833/4/7/8 driver"
+ config AD5791
+-	tristate "Analog Devices AD5781/AD5791 DAC SPI driver"
++	tristate "Analog Devices AD5760/AD5780/AD5781/AD5791 DAC SPI driver"
  	depends on SPI
  	help
- 	  Say yes here to build support for Analog Devices DDS chip
--	  AD9833 and AD9834, provides direct access via sysfs.
-+	  AD9833, AD9834, AD9837 and AD9838, provides direct access via sysfs.
+-	  Say yes here to build support for Analog Devices AD5781, AD5791,
+-	  High Resolution Voltage Output Digital to Analog Converter.
++	  Say yes here to build support for Analog Devices AD5760, AD5780,
++	  AD5781, AD5791 High Resolution Voltage Output Digital to
++	  Analog Converter.
 
  	  To compile this driver as a module, choose M here: the
- 	  module will be called ad9834.
-diff --git a/drivers/staging/iio/dds/ad9834.c b/drivers/staging/iio/dds/ad9834.c
-index da5e302..6dbc458 100644
---- a/drivers/staging/iio/dds/ad9834.c
-+++ b/drivers/staging/iio/dds/ad9834.c
-@@ -1,9 +1,9 @@
+ 	  module will be called ad5791.
+diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
+index c4a258d..acfd13b 100644
+--- a/drivers/staging/iio/dac/ad5791.c
++++ b/drivers/staging/iio/dac/ad5791.c
+@@ -1,5 +1,5 @@
  /*
-- * AD9834 SPI DAC driver
-+ * AD9833/AD9834/AD9837/AD9838 SPI DDS driver
+- * AD5791, AD5791 Voltage Output Digital to Analog Converter
++ * AD5760, AD5780, AD5781, AD5791 Voltage Output Digital to Analog Converter
   *
-- * Copyright 2010 Analog Devices Inc.
-+ * Copyright 2010-2011 Analog Devices Inc.
+  * Copyright 2011 Analog Devices Inc.
   *
-- * Licensed under the GPL-2 or later.
-+ * Licensed under the GPL-2.
-  */
+@@ -242,17 +242,6 @@ static const struct attribute_group ad5791_attribute_group = {
+ 	.attrs = ad5791_attributes,
+ };
 
- #include <linux/interrupt.h>
-@@ -47,7 +47,7 @@ static int ad9834_write_frequency(struct ad9834_state *st,
- 				       (AD9834_FREQ_BITS / 2)) &
- 				       RES_MASK(AD9834_FREQ_BITS / 2)));
-
--	return spi_sync(st->spi, &st->freq_msg);;
-+	return spi_sync(st->spi, &st->freq_msg);
+-static const struct ad5791_chip_info ad5791_chip_info_tbl[] = {
+-	[ID_AD5791] = {
+-		.bits = 20,
+-		.left_shift = 0,
+-	},
+-	[ID_AD5781] = {
+-		.bits = 18,
+-		.left_shift = 2,
+-	},
+-};
+-
+ static int ad5791_get_lin_comp(unsigned int span)
+ {
+ 	if (span <= 10000)
+@@ -267,6 +256,37 @@ static int ad5791_get_lin_comp(unsigned int span)
+ 		return AD5791_LINCOMP_19_20;
  }
 
- static int ad9834_write_phase(struct ad9834_state *st,
-@@ -148,7 +148,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
- 	struct ad9834_state *st = dev_info->dev_data;
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int ret = 0;
--	bool is_ad9833 = st->devid == ID_AD9833;
-+	bool is_ad9833_7 = (st->devid == ID_AD9833) || (st->devid == ID_AD9837);
++static int ad5780_get_lin_comp(unsigned int span)
++{
++	if (span <= 10000)
++		return AD5780_LINCOMP_0_10;
++	else
++		return AD5780_LINCOMP_10_20;
++}
++
++static const struct ad5791_chip_info ad5791_chip_info_tbl[] = {
++	[ID_AD5760] = {
++		.bits = 16,
++		.left_shift = 4,
++		.get_lin_comp = ad5780_get_lin_comp,
++	},
++	[ID_AD5780] = {
++		.bits = 18,
++		.left_shift = 2,
++		.get_lin_comp = ad5780_get_lin_comp,
++	},
++	[ID_AD5781] = {
++		.bits = 18,
++		.left_shift = 2,
++		.get_lin_comp = ad5791_get_lin_comp,
++	},
++	[ID_AD5791] = {
++		.bits = 20,
++		.left_shift = 0,
++		.get_lin_comp = ad5791_get_lin_comp,
++	},
++};
++
+ static int __devinit ad5791_probe(struct spi_device *spi)
+ {
+ 	struct ad5791_platform_data *pdata = spi->dev.platform_data;
+@@ -314,8 +334,8 @@ static int __devinit ad5791_probe(struct spi_device *spi)
+ 		&ad5791_chip_info_tbl[spi_get_device_id(spi)->driver_data];
 
- 	mutex_lock(&dev_info->mlock);
 
-@@ -156,10 +156,10 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
- 	case 0:
- 		if (sysfs_streq(buf, "sine")) {
- 			st->control &= ~AD9834_MODE;
--			if (is_ad9833)
-+			if (is_ad9833_7)
- 				st->control &= ~AD9834_OPBITEN;
- 		} else if (sysfs_streq(buf, "triangle")) {
--			if (is_ad9833) {
-+			if (is_ad9833_7) {
- 				st->control &= ~AD9834_OPBITEN;
- 				st->control |= AD9834_MODE;
- 			} else if (st->control & AD9834_OPBITEN) {
-@@ -167,7 +167,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
- 			} else {
- 				st->control |= AD9834_MODE;
- 			}
--		} else if (is_ad9833 && sysfs_streq(buf, "square")) {
-+		} else if (is_ad9833_7 && sysfs_streq(buf, "square")) {
- 			st->control &= ~AD9834_MODE;
- 			st->control |= AD9834_OPBITEN;
- 		} else {
-@@ -217,7 +217,7 @@ static ssize_t ad9834_show_out0_wavetype_available(struct device *dev,
- 	struct ad9834_state *st = iio_dev_get_devdata(dev_info);
- 	char *str;
+-	st->ctrl = AD5761_CTRL_LINCOMP(ad5791_get_lin_comp(st->vref_mv)) |
+-		  ((pdata && pdata->use_rbuf_gain2) ? 0 : AD5791_CTRL_RBUF) |
++	st->ctrl = AD5761_CTRL_LINCOMP(st->chip_info->get_lin_comp(st->vref_mv))
++		  | ((pdata && pdata->use_rbuf_gain2) ? 0 : AD5791_CTRL_RBUF) |
+ 		  AD5791_CTRL_BIN2SC;
 
--	if (st->devid == ID_AD9833)
-+	if ((st->devid == ID_AD9833) || (st->devid == ID_AD9837))
- 		str = "sine triangle square";
- 	else if (st->control & AD9834_OPBITEN)
- 		str = "sine";
-@@ -301,13 +301,12 @@ static mode_t ad9834_attr_is_visible(struct kobject *kobj,
+ 	ret = ad5791_spi_write(spi, AD5791_ADDR_CTRL, st->ctrl |
+@@ -386,8 +406,10 @@ static int __devexit ad5791_remove(struct spi_device *spi)
+ }
 
- 	mode_t mode = attr->mode;
-
--	if (st->devid == ID_AD9834)
--		return mode;
--
--	if ((attr == &iio_dev_attr_dds0_out1_enable.dev_attr.attr) ||
-+	if (((st->devid == ID_AD9833) || (st->devid == ID_AD9837)) &&
-+		((attr == &iio_dev_attr_dds0_out1_enable.dev_attr.attr) ||
- 		(attr == &iio_dev_attr_dds0_out1_wavetype.dev_attr.attr) ||
- 		(attr ==
--		&iio_dev_attr_dds0_out1_wavetype_available.dev_attr.attr))
-+		&iio_dev_attr_dds0_out1_wavetype_available.dev_attr.attr) ||
-+		(attr == &iio_dev_attr_dds0_pincontrol_en.dev_attr.attr)))
- 		mode = 0;
-
- 	return mode;
-@@ -445,6 +444,8 @@ static int __devexit ad9834_remove(struct spi_device *spi)
- static const struct spi_device_id ad9834_id[] = {
- 	{"ad9833", ID_AD9833},
- 	{"ad9834", ID_AD9834},
-+	{"ad9837", ID_AD9837},
-+	{"ad9838", ID_AD9838},
+ static const struct spi_device_id ad5791_id[] = {
+-	{"ad5791", ID_AD5791},
++	{"ad5760", ID_AD5760},
++	{"ad5780", ID_AD5780},
+ 	{"ad5781", ID_AD5781},
++	{"ad5791", ID_AD5791},
  	{}
  };
 
-@@ -472,6 +473,6 @@ static void __exit ad9834_exit(void)
- module_exit(ad9834_exit);
+@@ -414,5 +436,5 @@ static __exit void ad5791_spi_exit(void)
+ module_exit(ad5791_spi_exit);
 
  MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
--MODULE_DESCRIPTION("Analog Devices AD9833/AD9834 DDS");
-+MODULE_DESCRIPTION("Analog Devices AD9833/AD9834/AD9837/AD9838 DDS");
+-MODULE_DESCRIPTION("Analog Devices AD5791/AD5781 DAC");
++MODULE_DESCRIPTION("Analog Devices AD5760/AD5780/AD5781/AD5791 DAC");
  MODULE_LICENSE("GPL v2");
- MODULE_ALIAS("spi:ad9834");
-diff --git a/drivers/staging/iio/dds/ad9834.h b/drivers/staging/iio/dds/ad9834.h
-index 0fc3b88..2abd635 100644
---- a/drivers/staging/iio/dds/ad9834.h
-+++ b/drivers/staging/iio/dds/ad9834.h
-@@ -1,9 +1,9 @@
- /*
-- * AD9834 SPI DDS driver
-+ * AD9833/AD9834/AD9837/AD9838 SPI DDS driver
-  *
-- * Copyright 2010 Analog Devices Inc.
-+ * Copyright 2010-2011 Analog Devices Inc.
-  *
-- * Licensed under the GPL-2 or later.
-+ * Licensed under the GPL-2.
+diff --git a/drivers/staging/iio/dac/ad5791.h b/drivers/staging/iio/dac/ad5791.h
+index 71c7d59..f09ad9a 100644
+--- a/drivers/staging/iio/dac/ad5791.h
++++ b/drivers/staging/iio/dac/ad5791.h
+@@ -38,6 +38,9 @@
+ #define AD5791_LINCOMP_16_19		3
+ #define AD5791_LINCOMP_19_20		12
+
++#define AD5780_LINCOMP_0_10		0
++#define AD5780_LINCOMP_10_20		12
++
+ /* Software Control Register */
+ #define AD5791_SWCTRL_LDAC		(1 << 0)
+ #define AD5791_SWCTRL_CLR		(1 << 1)
+@@ -67,11 +70,13 @@ struct ad5791_platform_data {
+  * struct ad5791_chip_info - chip specific information
+  * @bits:		accuracy of the DAC in bits
+  * @left_shift:		number of bits the datum must be shifted
++ * @get_lin_comp:	function pointer to the device specific function
   */
- #ifndef IIO_DDS_AD9834_H_
- #define IIO_DDS_AD9834_H_
-@@ -107,6 +107,8 @@ struct ad9834_platform_data {
- enum ad9834_supported_device_ids {
- 	ID_AD9833,
- 	ID_AD9834,
-+	ID_AD9837,
-+	ID_AD9838,
+
+ struct ad5791_chip_info {
+ 	u8			bits;
+ 	u8			left_shift;
++	int (*get_lin_comp)	(unsigned int span);
  };
 
- #endif /* IIO_DDS_AD9834_H_ */
+ /**
+@@ -102,8 +107,10 @@ struct ad5791_state {
+  */
+
+ enum ad5791_supported_device_ids {
+-	ID_AD5791,
++	ID_AD5760,
++	ID_AD5780,
+ 	ID_AD5781,
++	ID_AD5791,
+ };
+
+ #endif /* SPI_AD5791_H_ */
 --
 1.6.0.2
