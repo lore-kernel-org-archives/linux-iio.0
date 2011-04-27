@@ -1,38 +1,56 @@
-Return-Path: <arnd@arndb.de>
-From: Arnd Bergmann <arnd@arndb.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [RFC PATCH] IIO: break out const elements of iio_dev configuration
-Date: Wed, 27 Apr 2011 15:58:37 +0200
-Cc: linux-iio@vger.kernel.org,
- Michael.Hennerich@analog.com
-References: <1303898975-26215-1-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1303898975-26215-1-git-send-email-jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:47530 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754728Ab1D0PDe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Apr 2011 11:03:34 -0400
+Message-ID: <4DB830CB.8060905@cam.ac.uk>
+Date: Wed, 27 Apr 2011 16:05:47 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-15"
-Message-Id: <201104271558.37971.arnd@arndb.de>
-List-ID: <linux-iio@vger.kernel.org>
+To: Arnd Bergmann <arnd@arndb.de>
+CC: linux-iio@vger.kernel.org, Michael.Hennerich@analog.com
+Subject: Re: [RFC PATCH] IIO: break out const elements of iio_dev configuration
+References: <1303898975-26215-1-git-send-email-jic23@cam.ac.uk> <201104271558.37971.arnd@arndb.de>
+In-Reply-To: <201104271558.37971.arnd@arndb.de>
+Content-Type: text/plain; charset=ISO-8859-15
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wednesday 27 April 2011, Jonathan Cameron wrote:
-> In conclusion max1363 gets bigger in all ways if we break this
-> stuff out.  That is just down to the large number of devices supported.
-> lis3l02dq which supports only one part gets smaller.
+On 04/27/11 14:58, Arnd Bergmann wrote:
+> On Wednesday 27 April 2011, Jonathan Cameron wrote:
+>> In conclusion max1363 gets bigger in all ways if we break this
+>> stuff out.  That is just down to the large number of devices supported.
+>> lis3l02dq which supports only one part gets smaller.
+>>
+>> So not a clear descision either way as far as I am concerned, but
+>> putting the channel_spec into this structure is pretty costly for
+>> typical multipart drivers.
+>>
+>> So the upshot of this RFC to my mind is: Is the clarity gained
+>> a good idea?
+>>
+>> What do people think?
 > 
-> So not a clear descision either way as far as I am concerned, but
-> putting the channel_spec into this structure is pretty costly for
-> typical multipart drivers.
+> I suggested this initially, so it shouldn't surprise that I like
+> the patch.
 > 
-> So the upshot of this RFC to my mind is: Is the clarity gained
-> a good idea?
-> 
-> What do people think?
+> For the increase in size, that seems to be purely because of the
+> change in one data structure from bool to pointer, right?
+> If you reorder the members of max1363_chip_info to remove the
+> padding, I think you can make up for that.
+Changes in there were a bit more than that, but I take your point.
+The difference is pretty minor.  The size argument was more one
+for avoiding putting chan_spec structures in the iio_info struct.
+That meant a lot more variants of the iio_info structs were needed
+in that driver.  It was kind of obvious from the lines of code that
+would need to be added as well, but I had the size numbers too hand.
 
-I suggested this initially, so it shouldn't surprise that I like
-the patch.
+For reference, reordering max1363_chip_info gets us:
 
-For the increase in size, that seems to be purely because of the
-change in one data structure from bool to pointer, right?
-If you reorder the members of max1363_chip_info to remove the
-padding, I think you can make up for that.
+26571   drivers/staging/iio/adc/max1363.ko
+and
+max1363                15884  0
 
-	Arnd
+So not a great saving - but the difference are pretty trivial anyway
+and there are sure to be numerous other ways of making minor savings
+in that driver! (can get to 15748 merely by making num_modes a u8)
