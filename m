@@ -1,64 +1,31 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:57121 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753777Ab1D2MGA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 29 Apr 2011 08:06:00 -0400
-Message-ID: <4DBAAA2F.5060604@cam.ac.uk>
-Date: Fri, 29 Apr 2011 13:08:15 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org, drivers@analog.com,
-	device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH 2/6] IIO: GYRO: ADXRS450: Cleanup result extraction and
- update license notice
-References: <1304074721-18159-1-git-send-email-michael.hennerich@analog.com> <1304074721-18159-2-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1304074721-18159-2-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Michael.Hennerich@analog.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [RFC PATCH 0/2] staging:iio: add name_extend to allow for named channels
+Date: Thu, 28 Apr 2011 15:24:21 +0100
+Message-Id: <1304000663-5176-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/29/11 11:58, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> Cleanup result extraction and update license notice, no functional changes.
-> 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/gyro/adxrs450_core.c |    7 ++++---
->  1 files changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/gyro/adxrs450_core.c b/drivers/staging/iio/gyro/adxrs450_core.c
-> index a1a71b7..c02e3ef 100644
-> --- a/drivers/staging/iio/gyro/adxrs450_core.c
-> +++ b/drivers/staging/iio/gyro/adxrs450_core.c
-> @@ -3,7 +3,7 @@
->   *
->   * Copyright 2011 Analog Devices Inc.
->   *
-> - * Licensed under the GPL-2 or later.
-> + * Licensed under the GPL-2.
->   */
->  
->  #include <linux/interrupt.h>
-> @@ -69,7 +69,7 @@ static int adxrs450_spi_read_reg_16(struct device *dev,
->  		goto error_ret;
->  	}
->  
-> -	*val = (st->rx[1] & 0x1f) << 11 | st->rx[2] << 3 | (st->rx[3] & 0xe0) >> 5;
-> +	*val = (be32_to_cpu(*(u32 *)st->rx) >> 5) & 0xFFFF;
->  
->  error_ret:
->  	mutex_unlock(&st->buf_lock);
-> @@ -152,7 +152,8 @@ static int adxrs450_spi_sensor_data(struct device *dev, u16 *val)
->  		goto error_ret;
->  	}
->  
-> -	*val = (st->rx[0] & 0x03) << 14 | st->rx[1] << 6 | (st->rx[2] & 0xfc) >> 2;
-> +	*val = (be32_to_cpu(*(u32 *)st->rx) >> 10) & 0xFFFF;
-> +
->  error_ret:
->  	mutex_unlock(&st->buf_lock);
->  	return ret;
+This is needed for the light sensors where we indicate what a given sensor
+is measuring. It also came up in Michael's questions in the the thread
+Oddities and how to handle them.  Also for that matter allows us to put
+back the in0_supply_raw convention that got squashed in moving to
+iio_chan_spec registration.
 
+What do people think?
+
+(this is rather rough and ready, but then it is an RFC ;)
+
+Jonathan Cameron (2):
+  RFC add naming to channels
+  Example of naming usage
+
+ drivers/staging/iio/iio.h               |   26 +++-
+ drivers/staging/iio/industrialio-core.c |   34 +++-
+ drivers/staging/iio/light/tsl2563.c     |  323 +++++++++++--------------------
+ 3 files changed, 165 insertions(+), 218 deletions(-)
+
+-- 
+1.7.3.4
