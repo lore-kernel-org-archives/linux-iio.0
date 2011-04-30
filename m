@@ -1,145 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:35498 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753055Ab1CCPpX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Mar 2011 10:45:23 -0500
-Message-ID: <4D6FB7BD.4070300@cam.ac.uk>
-Date: Thu, 03 Mar 2011 15:46:05 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from mail-yi0-f46.google.com ([209.85.218.46]:53927 "EHLO
+	mail-yi0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752761Ab1D3Hdu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Apr 2011 03:33:50 -0400
+Received: by yia27 with SMTP id 27so1521097yia.19
+        for <linux-iio@vger.kernel.org>; Sat, 30 Apr 2011 00:33:50 -0700 (PDT)
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org, drivers@analog.com,
-	device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH] IIO: Documentation: iio_utils: fix channel array generation.
-References: <1298551309-20589-1-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1298551309-20589-1-git-send-email-michael.hennerich@analog.com>
+From: Prashant Shah <pshah.mumbai@gmail.com>
+Date: Sat, 30 Apr 2011 13:03:30 +0530
+Message-ID: <BANLkTikjnjSRtDRBHjXeMfHAOEsVzkkwag@mail.gmail.com>
+Subject: drivers for usb daq card
+To: linux-iio@vger.kernel.org
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/24/11 12:41, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> The previous implementation flawed, in case some channels are not enabled.
-> The sorted array would then include channel information of disabled channels,
-> And misses the enabled ones, when the count is reached.
-> More troublesome, the loop would not even terminate.
-> 
-> The fix is twofold:
-> 
-> First we skip channels that are not enabled.
-> Then we use a tested bubble sort algorithm to sort the array.
-> Since we already allocated exactly the number of bytes we need.
-> We can exercise bubble sort on the original memory.
-> In all cases I've seen, the array is already sorted, so this sort
-> terminates immediately.
-Hi Michael,
+Hi,
 
-Sorry for asking you to hold this one.  I haven't had the time to test
-the alternative I suggested and we could really do with having a working
-version of this in place.  Hence lets merge your fix and can readdress
-the alternative as a cleanup sometime in the future.
-> 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/Documentation/iio_utils.h |   53 ++++++++++++++----------
->  1 files changed, 31 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
-> index 1b33c04..da10b4e 100644
-> --- a/drivers/staging/iio/Documentation/iio_utils.h
-> +++ b/drivers/staging/iio/Documentation/iio_utils.h
-> @@ -242,6 +242,25 @@ error_ret:
->  	return ret;
->  }
->  
-> +/**
-> + * bsort_channel_array_by_index() - reorder so that the array is in index order
-> + *
-> + **/
-> +
-> +inline void bsort_channel_array_by_index(struct iio_channel_info **ci_array, int cnt)
-> +{
-> +
-> +	struct iio_channel_info temp;
-> +	int x,y;
-> +
-> +	for(x=0; x<cnt; x++)
-> +		for(y=0; y<(cnt - 1); y++)
-> +			if((*ci_array)[y].index > (*ci_array)[y+1].index) {
-> +				temp = (*ci_array)[y+1];
-> +				(*ci_array)[y+1] = (*ci_array)[y];
-> +				(*ci_array)[y] = temp;
-> +			}
-> +}
->  
->  /**
->   * build_channel_array() - function to figure out what channels are present
-> @@ -254,7 +273,7 @@ inline int build_channel_array(const char *device_dir,
->  {
->  	DIR *dp;
->  	FILE *sysfsfp;
-> -	int count = 0, temp, i;
-> +	int count, temp, i;
->  	struct iio_channel_info *current;
->  	int ret;
->  	const struct dirent *ent;
-> @@ -290,11 +309,10 @@ inline int build_channel_array(const char *device_dir,
->  			fscanf(sysfsfp, "%u", &ret);
->  			if (ret == 1)
->  				(*counter)++;
-> -			count++;
->  			fclose(sysfsfp);
->  			free(filename);
->  		}
-> -	*ci_array = malloc(sizeof(**ci_array)*count);
-> +	*ci_array = malloc(sizeof(**ci_array) * (*counter));
->  	if (*ci_array == NULL) {
->  		ret = -ENOMEM;
->  		goto error_close_dir;
-> @@ -321,6 +339,13 @@ inline int build_channel_array(const char *device_dir,
->  			}
->  			fscanf(sysfsfp, "%u", &current->enabled);
->  			fclose(sysfsfp);
-> +
-> +			if (!current->enabled) {
-> +				free(filename);
-> +				count--;
-> +				continue;
-> +			}
-> +
->  			current->scale = 1.0;
->  			current->offset = 0;
->  			current->name = strndup(ent->d_name,
-> @@ -375,26 +400,10 @@ inline int build_channel_array(const char *device_dir,
->  						current->generic_name);
->  		}
->  	}
-> -	/* reorder so that the array is in index order*/
-> -	current = malloc(sizeof(**ci_array)*(*counter));
-> -	if (current == NULL) {
-> -		ret = -ENOMEM;
-> -		goto error_cleanup_array;
-> -	}
-> +
->  	closedir(dp);
-> -	count = 0;
-> -	temp = 0;
-> -	while (count < *counter)
-> -		for (i = 0; i < *counter; i++)
-> -			if ((*ci_array)[i].index == temp) {
-> -				memcpy(&current[count++],
-> -				       &(*ci_array)[i],
-> -				       sizeof(*current));
-> -				temp++;
-> -				break;
-> -			}
-> -	free(*ci_array);
-> -	*ci_array = current;
-> +	/* reorder so that the array is in index order */
-> +	bsort_channel_array_by_index(ci_array, *counter);
->  
->  	return 0;
->  
+I am total newbie and this is my first device drivers. I am trying to
+write drivers for National Instruments USB 6008 USB based data
+acquisition card.
 
+I was initially trying to do that with the comedi based system but I
+was suggest to try working with the IIO sub system. I was reading
+through the IIO docs and IIO seems to be more targeted to SPI and I2C
+systems. I am not sure about how good is the support for USB based
+systems. I am newbie so I dont want to do something that will be hard
+for me to work with :)
+
+Also, we already have user space applications that interface with
+comedi like scilab and xoscope, etc. Will these applications that use
+the comedi based interface work with IIO ?
+
+Regards.
