@@ -1,73 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from imr4.ericy.com ([198.24.6.8]:37182 "EHLO imr4.ericy.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753248Ab1ECRds (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 3 May 2011 13:33:48 -0400
-Subject: Re: [lm-sensors] [RFC 5/5] hwmon: add support for Technologic
- Systems TS-5500 A-D converter
-From: Guenter Roeck <guenter.roeck@ericsson.com>
-Reply-To: guenter.roeck@ericsson.com
-To: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"lm-sensors@lm-sensors.org" <lm-sensors@lm-sensors.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>,
-	"platform-driver-x86@vger.kernel.org"
-	<platform-driver-x86@vger.kernel.org>,
-	linux-iio <linux-iio@vger.kernel.org>
-In-Reply-To: <1304434162-sup-3877@sfl>
-References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>
-	 <1304115712-5299-6-git-send-email-vivien.didelot@savoirfairelinux.com>
-	 <20110430033938.GA14397@ericsson.com>  <1304434162-sup-3877@sfl>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 3 May 2011 10:33:06 -0700
-Message-ID: <1304443986.31666.359.camel@groeck-laptop>
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+CC: "device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>, Drivers <Drivers@analog.com>
+Date: Mon, 2 May 2011 14:05:14 +0100
+Subject: RE: [RFC PATCH 0/2] staging:iio: add name_extend to allow for named
+ channels
+Message-ID: <544AC56F16B56944AEC3BD4E3D5917713AAF07290B@LIMKCMBX1.ad.analog.com>
+References: <1304000663-5176-1-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1304000663-5176-1-git-send-email-jic23@cam.ac.uk>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 2011-05-03 at 11:55 -0400, Vivien Didelot wrote:
-> Hi Guenter,
-> 
-> Excerpts from Guenter Roeck's message of 2011-04-29 23:39:38 -0400:
-> > Hi Vivien,
-> > 
-> > The headline and file name are a bit misleading, since the driver is really
-> > for MAX197 on a TS-5500 board.
-> > 
-> > You should split the driver into two parts, a generic driver
-> > for the MAX197 and a platform driver (residing somewhere in arch/
-> > or possibly drivers/platform/) to instantiate it.
-> > 
-> > There should be a platform data include file, probably in
-> > include/linux/platform_data/.
-> > 
-> > .ioaddr in platform data should not be necessary. The driver's probe
-> > function should get the values using platform_get_resource().
-> > 
-> > Having said that, from reading the code it looks like the chip is not really
-> > used for hardware monitoring, but for generic ADC functionality. A quick look
-> > into the TS-5500 user manual confirms this. So this should not be a hwmon
-> > driver in the first place, but a generic ADC driver. Given the ADC conversion rate
-> > of the MAX197, the hwmon ABI is not optimal anyway. You should move this driver
-> > into the iio subsystem, probably to drivers/staging/iio/adc. Copying the iio
-> > mailing list for input.
-> > 
-> > Thanks,
-> > Guenter
-> 
-> I've took a closer look to the manual and that's right, in fact the
-> driver doesn't talk to the MAX197 directly. The board uses a CPLD to
-> abstract the interface to the MAX197. So all the MAX197 logic is hidden
-> by the CPLD.  Therefore, the driver files should probably not have
-> function and structure names with a "max197_" prefix. I'll make the code
-> a bit clearer. What do you think?
-> 
-The original driver for the chip on http://mcrapet.free.fr/ has a
-platform dependent and a platform independent part. Other than coding
-style issues, that approach seems to be cleaner to me.
+Jonathan Cameron wrote on 2011-04-28:
+> This is needed for the light sensors where we indicate what a given
+> sensor is measuring. It also came up in Michael's questions in the the
+> thread Oddities and how to handle them.  Also for that matter allows
+> us to put back the in0_supply_raw convention that got squashed in
+> moving to iio_chan_spec registration.
+>
+> What do people think?
 
-Thanks,
-Guenter
+Looks good to me... And actually needed for the ADE7758 driver cleanup.
+So it would be good if you could get this into your iio-onwards tree.
 
+> (this is rather rough and ready, but then it is an RFC ;)
+>
+> Jonathan Cameron (2):
+>   RFC add naming to channels
+>   Example of naming usage
+>  drivers/staging/iio/iio.h               |   26 +++-
+>  drivers/staging/iio/industrialio-core.c |   34 +++-
+>  drivers/staging/iio/light/tsl2563.c     |  323 +++++++++++------------
+>  -------- 3 files changed, 165 insertions(+), 218 deletions(-)
 
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368; Gesch=
+aeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret=
+ Seif
