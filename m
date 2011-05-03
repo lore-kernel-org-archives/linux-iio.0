@@ -1,33 +1,64 @@
-Return-Path: <pshah.mumbai@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <4DCBE9B0.8060501@cam.ac.uk>
-References: <BANLkTikjnjSRtDRBHjXeMfHAOEsVzkkwag@mail.gmail.com>
- <4DBBDFE7.5060207@cam.ac.uk> <BANLkTinejkJViZ_tX8QyivPh14nzVNfjWA@mail.gmail.com>
- <4DCBE9B0.8060501@cam.ac.uk>
-From: Prashant Shah <pshah.mumbai@gmail.com>
-Date: Sat, 14 May 2011 15:29:15 +0530
-Message-ID: <BANLkTinjLhtuY0KAs1V6qaT=0zKZ=zGG8g@mail.gmail.com>
-Subject: Re: drivers for usb daq card
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.savoirfairelinux.com ([209.172.62.77]:50725 "EHLO
+	mail.savoirfairelinux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752625Ab1ECQEk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 May 2011 12:04:40 -0400
+Content-Type: text/plain; charset=UTF-8
+From: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
+To: Guenter Roeck <guenter.roeck@ericsson.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"lm-sensors@lm-sensors.org" <lm-sensors@lm-sensors.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>,
+	"platform-driver-x86@vger.kernel.org"
+	<platform-driver-x86@vger.kernel.org>,
+	linux-iio <linux-iio@vger.kernel.org>
+Subject: Re: [lm-sensors] [RFC 5/5] hwmon: add support for Technologic Systems TS-5500 A-D converter
+In-reply-to: <20110430033938.GA14397@ericsson.com>
+References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com> <1304115712-5299-6-git-send-email-vivien.didelot@savoirfairelinux.com> <20110430033938.GA14397@ericsson.com>
+Date: Tue, 03 May 2011 11:55:34 -0400
+Message-Id: <1304434162-sup-3877@sfl>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Hi Guenter,
 
-On Thu, May 12, 2011 at 7:37 PM, Jonathan Cameron <jic23@cam.ac.uk> wrote:
-> Hi
->
->> On Sat, Apr 30, 2011 at 3:39 PM, Jonathan Cameron <jic23@cam.ac.uk> wrote:
->>> On 04/30/11 08:33, Prashant Shah wrote:
->> I dont have any docs other than what is available on their website. Is
->> it possible to track the usb traffic and work with that.
+Excerpts from Guenter Roeck's message of 2011-04-29 23:39:38 -0400:
+> Hi Vivien,
+> 
+> The headline and file name are a bit misleading, since the driver is really
+> for MAX197 on a TS-5500 board.
+> 
+> You should split the driver into two parts, a generic driver
+> for the MAX197 and a platform driver (residing somewhere in arch/
+> or possibly drivers/platform/) to instantiate it.
+> 
+> There should be a platform data include file, probably in
+> include/linux/platform_data/.
+> 
+> .ioaddr in platform data should not be necessary. The driver's probe
+> function should get the values using platform_get_resource().
+> 
+> Having said that, from reading the code it looks like the chip is not really
+> used for hardware monitoring, but for generic ADC functionality. A quick look
+> into the TS-5500 user manual confirms this. So this should not be a hwmon
+> driver in the first place, but a generic ADC driver. Given the ADC conversion rate
+> of the MAX197, the hwmon ABI is not optimal anyway. You should move this driver
+> into the iio subsystem, probably to drivers/staging/iio/adc. Copying the iio
+> mailing list for input.
+> 
+> Thanks,
+> Guenter
 
-> It's certainly possible and having looked at the above post I see you have
-> made some progress. Any luck getting it working?
+I've took a closer look to the manual and that's right, in fact the
+driver doesn't talk to the MAX197 directly. The board uses a CPLD to
+abstract the interface to the MAX197. So all the MAX197 logic is hidden
+by the CPLD.  Therefore, the driver files should probably not have
+function and structure names with a "max197_" prefix. I'll make the code
+a bit clearer. What do you think?
 
-Not yet. I think it will be much easier for me to first write a normal
-USB driver for the device and then convert that to comedi. That is
-what I am upto next.
+Ok for iio subsystem, several ADC drivers are in drivers/hwmon/ but
+drivers/staging/iio/adc seems to be the good place now.
 
-Regards.
+Regards,
+Vivien.
