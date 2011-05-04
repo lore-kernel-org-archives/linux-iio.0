@@ -1,1029 +1,1479 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:57452 "EHLO
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:57448 "EHLO
 	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754013Ab1EDL4u (ORCPT
+	with ESMTP id S1753837Ab1EDL4u (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 May 2011 07:56:50 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: arnd@arndb.de, Michael.Hennerich@analog.com,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 02/99] staging:iio:lis3l02dq - move to new channel_spec approach.
-Date: Wed,  4 May 2011 12:57:34 +0100
-Message-Id: <1304510351-10922-3-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 01/99] staging:iio: allow channels to be set up using a table of iio_channel_spec structures.
+Date: Wed,  4 May 2011 12:57:33 +0100
+Message-Id: <1304510351-10922-2-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1304510351-10922-1-git-send-email-jic23@cam.ac.uk>
 References: <1304510351-10922-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-V3: Move to single IIO_CHAN macro.
-V2: Update to two part read_raw value.
+V6: Fixup the docs for iio_chan_spec structure.
+V5: Actually have the macro handle the _input type channels (oops)
+V4: Add ability to do, _input and modified channel naming in a coherent fashion.
+    Scrap all the messy IIO_CHAN_* macros and move to only one.
+
+V3: Added more types - intensity and light.
+
+V2: Various fixes - some thanks to Arnd.
+    Bug fix for unregistering of event attr group
+    Changed iio_read_channel_info to have two part value - use for
+    raw value read as well.
+    constify the channelspec structures
+    raw write support for calibbias and similar
+    Additional strings for buidling attribute names.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/lis3l02dq.h      |   13 +-
- drivers/staging/iio/accel/lis3l02dq_core.c |  554 +++++++++++-----------------
- drivers/staging/iio/accel/lis3l02dq_ring.c |  227 +++++-------
- 3 files changed, 313 insertions(+), 481 deletions(-)
+ drivers/staging/iio/chrdev.h            |    3 +
+ drivers/staging/iio/iio.h               |  189 ++++++++-
+ drivers/staging/iio/industrialio-core.c |  738 +++++++++++++++++++++++++++++--
+ drivers/staging/iio/industrialio-ring.c |  188 ++++++++-
+ drivers/staging/iio/ring_generic.h      |   20 +
+ drivers/staging/iio/sysfs.h             |   58 ++-
+ 6 files changed, 1142 insertions(+), 54 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
-index 1140218..88b5598 100644
---- a/drivers/staging/iio/accel/lis3l02dq.h
-+++ b/drivers/staging/iio/accel/lis3l02dq.h
-@@ -188,9 +188,9 @@ int lis3l02dq_spi_write_reg_8(struct device *dev,
- void lis3l02dq_remove_trigger(struct iio_dev *indio_dev);
- int lis3l02dq_probe_trigger(struct iio_dev *indio_dev);
- 
--ssize_t lis3l02dq_read_accel_from_ring(struct device *dev,
--				       struct device_attribute *attr,
--				       char *buf);
-+ssize_t lis3l02dq_read_accel_from_ring(struct iio_ring_buffer *ring,
-+				       int index,
-+				       int *val);
- 
- 
- int lis3l02dq_configure_ring(struct iio_dev *indio_dev);
-@@ -215,11 +215,10 @@ static inline int lis3l02dq_probe_trigger(struct iio_dev *indio_dev)
- {
- 	return 0;
- }
--
- static inline ssize_t
--lis3l02dq_read_accel_from_ring(struct device *dev,
--			       struct device_attribute *attr,
--			       char *buf)
-+lis3l02dq_read_accel_from_ring(struct iio_ring_buffer *ring,
-+			       int index,
-+			       int *val)
- {
- 	return 0;
- }
-diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
-index e11388a..0368d51 100644
---- a/drivers/staging/iio/accel/lis3l02dq_core.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_core.c
-@@ -39,20 +39,11 @@
-  * This means that use cannot be made of spi_write etc.
-  */
- 
--/**
-- * lis3l02dq_spi_read_reg_8() - read single byte from a single register
-- * @dev: device asosciated with child of actual device (iio_dev or iio_trig)
-- * @reg_address: the address of the register to be read
-- * @val: pass back the resulting value
-- **/
--int lis3l02dq_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
-+static int __lis3l02dq_spi_read_reg_8(struct lis3l02dq_state *st,
-+				      u8 reg_address, u8 *val)
- {
--	int ret;
- 	struct spi_message msg;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct iio_sw_ring_helper_state *h = iio_dev_get_devdata(indio_dev);
--	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
--
-+	int ret;
- 	struct spi_transfer xfer = {
- 		.tx_buf = st->tx,
- 		.rx_buf = st->rx,
-@@ -73,6 +64,19 @@ int lis3l02dq_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
- 
- 	return ret;
- }
-+/**
-+ * lis3l02dq_spi_read_reg_8() - read single byte from a single register
-+ * @dev: device asosciated with child of actual device (iio_dev or iio_trig)
-+ * @reg_address: the address of the register to be read
-+ * @val: pass back the resulting value
-+ **/
-+int lis3l02dq_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_sw_ring_helper_state *h = iio_dev_get_devdata(indio_dev);
-+	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
-+	return __lis3l02dq_spi_read_reg_8(st, reg_address, val);
-+}
+diff --git a/drivers/staging/iio/chrdev.h b/drivers/staging/iio/chrdev.h
+index 4fcb99c..62c4285 100644
+--- a/drivers/staging/iio/chrdev.h
++++ b/drivers/staging/iio/chrdev.h
+@@ -91,6 +91,9 @@ struct iio_event_interface {
+ 	void					*private;
+ 	char					_name[35];
+ 	char					_attrname[20];
++
++	struct list_head event_attr_list;
++	struct list_head dev_attr_list;
+ };
  
  /**
-  * lis3l02dq_spi_write_reg_8() - write single byte to a register
-@@ -154,23 +158,13 @@ static int lis3l02dq_spi_write_reg_s16(struct device *dev,
- 	return ret;
- }
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index 80ef2cf..1801842 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -26,6 +26,160 @@
  
--/**
-- * lisl302dq_spi_read_reg_s16() - write 2 bytes to a pair of registers
-- * @dev: device associated with child of actual device (iio_dev or iio_trig)
-- * @reg_address: the address of the lower of the two registers. Second register
-- *               is assumed to have address one greater.
-- * @val: somewhere to pass back the value read
-- **/
--static int lis3l02dq_spi_read_reg_s16(struct device *dev,
--				      u8 lower_reg_address,
--				      s16 *val)
-+static int lis3l02dq_read_16bit_s(struct lis3l02dq_state *st,
-+				  u8 lower_reg_address,
-+				  int *val)
- {
- 	struct spi_message msg;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct iio_sw_ring_helper_state *h
--		= iio_dev_get_devdata(indio_dev);
--	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
- 	int ret;
-+	s16 tempval;
- 	struct spi_transfer xfers[] = { {
- 			.tx_buf = st->tx,
- 			.rx_buf = st->rx,
-@@ -182,15 +176,14 @@ static int lis3l02dq_spi_read_reg_s16(struct device *dev,
- 			.rx_buf = st->rx + 2,
- 			.bits_per_word = 8,
- 			.len = 2,
--			.cs_change = 1,
--
-+			.cs_change = 0,
- 		},
- 	};
+ struct iio_dev;
  
- 	mutex_lock(&st->buf_lock);
- 	st->tx[0] = LIS3L02DQ_READ_REG(lower_reg_address);
- 	st->tx[1] = 0;
--	st->tx[2] = LIS3L02DQ_READ_REG(lower_reg_address+1);
-+	st->tx[2] = LIS3L02DQ_READ_REG(lower_reg_address + 1);
- 	st->tx[3] = 0;
- 
- 	spi_message_init(&msg);
-@@ -201,135 +194,103 @@ static int lis3l02dq_spi_read_reg_s16(struct device *dev,
- 		dev_err(&st->us->dev, "problem when reading 16 bit register");
- 		goto error_ret;
- 	}
--	*val = (s16)(st->rx[1]) | ((s16)(st->rx[3]) << 8);
-+	tempval = (s16)(st->rx[1]) | ((s16)(st->rx[3]) << 8);
- 
-+	*val = tempval;
- error_ret:
- 	mutex_unlock(&st->buf_lock);
- 	return ret;
- }
- 
--/**
-- * lis3l02dq_read_signed() - attribute function used for 8 bit signed values
-- * @dev: the child device associated with the iio_dev or iio_trigger
-- * @attr: the attribute being processed
-- * @buf: buffer into which put the output string
-- **/
--static ssize_t lis3l02dq_read_signed(struct device *dev,
--				     struct device_attribute *attr,
--				     char *buf)
--{
--	int ret;
--	s8 val;
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--
--	ret = lis3l02dq_spi_read_reg_8(dev, this_attr->address, (u8 *)&val);
--
--	return ret ? ret : sprintf(buf, "%d\n", val);
--}
--
--static ssize_t lis3l02dq_read_unsigned(struct device *dev,
--				       struct device_attribute *attr,
--				       char *buf)
--{
--	int ret;
--	u8 val;
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--
--	ret = lis3l02dq_spi_read_reg_8(dev, this_attr->address, &val);
--
--	return ret ? ret : sprintf(buf, "%d\n", val);
--}
--
--static ssize_t lis3l02dq_write_signed(struct device *dev,
--				      struct device_attribute *attr,
--				      const char *buf,
--				      size_t len)
--{
--	long valin;
--	s8 val;
--	int ret;
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--
--	ret = strict_strtol(buf, 10, &valin);
--	if (ret)
--		goto error_ret;
--	val = valin;
--	ret = lis3l02dq_spi_write_reg_8(dev, this_attr->address, (u8 *)&val);
--
--error_ret:
--	return ret ? ret : len;
--}
--
--static ssize_t lis3l02dq_write_unsigned(struct device *dev,
--					struct device_attribute *attr,
--					const char *buf,
--					size_t len)
--{
--	int ret;
--	ulong valin;
--	u8 val;
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--
--	ret = strict_strtoul(buf, 10, &valin);
--	if (ret)
--		goto err_ret;
--	val = valin;
--	ret = lis3l02dq_spi_write_reg_8(dev, this_attr->address, &val);
-+enum lis3l02dq_rm_ind {
-+	LIS3L02DQ_ACCEL,
-+	LIS3L02DQ_GAIN,
-+	LIS3L02DQ_BIAS,
++/* naughty temporary hack to match these against the event version
++   - need to flattern these together */
++enum iio_chan_type {
++	/* Need this here for now to support buffer events
++	 * set to 0  to avoid changes to ring_generic.c */
++	IIO_BUFFER = 0,
++
++	/* real channel types */
++	IIO_IN,
++	IIO_ACCEL,
++	IIO_IN_DIFF,
++	IIO_GYRO,
++	IIO_MAGN,
++	IIO_LIGHT,
++	IIO_INTENSITY,
++	IIO_PROXIMITY,
++	IIO_TEMP,
++	IIO_INCLI,
++	IIO_ROT,
++	IIO_ANGL,
++	IIO_TIMESTAMP,
 +};
- 
--err_ret:
--	return ret ? ret : len;
--}
-+static u8 lis3l02dq_axis_map[3][3] = {
-+	[LIS3L02DQ_ACCEL] = { LIS3L02DQ_REG_OUT_X_L_ADDR,
-+			      LIS3L02DQ_REG_OUT_Y_L_ADDR,
-+			      LIS3L02DQ_REG_OUT_Z_L_ADDR },
-+	[LIS3L02DQ_GAIN] = { LIS3L02DQ_REG_GAIN_X_ADDR,
-+			     LIS3L02DQ_REG_GAIN_Y_ADDR,
-+			     LIS3L02DQ_REG_GAIN_Z_ADDR },
-+	[LIS3L02DQ_BIAS] = { LIS3L02DQ_REG_OFFSET_X_ADDR,
-+			     LIS3L02DQ_REG_OFFSET_Y_ADDR,
-+			     LIS3L02DQ_REG_OFFSET_Z_ADDR }
++
++#define IIO_MOD_X			0
++#define IIO_MOD_LIGHT_BOTH		0
++#define IIO_MOD_Y			1
++#define IIO_MOD_LIGHT_IR		1
++#define IIO_MOD_Z			2
++#define IIO_MOD_X_AND_Y			3
++#define IIO_MOD_X_ANX_Z			4
++#define IIO_MOD_Y_AND_Z			5
++#define IIO_MOD_X_AND_Y_AND_Z		6
++#define IIO_MOD_X_OR_Y			7
++#define IIO_MOD_X_OR_Z			8
++#define IIO_MOD_Y_OR_Z			9
++#define IIO_MOD_X_OR_Y_OR_Z		10
++
++/* Could add the raw attributes as well - allowing buffer only devices */
++enum iio_chan_info_enum {
++	IIO_CHAN_INFO_SCALE_SHARED,
++	IIO_CHAN_INFO_SCALE_SEPARATE,
++	IIO_CHAN_INFO_OFFSET_SHARED,
++	IIO_CHAN_INFO_OFFSET_SEPARATE,
++	IIO_CHAN_INFO_CALIBSCALE_SHARED,
++	IIO_CHAN_INFO_CALIBSCALE_SEPARATE,
++	IIO_CHAN_INFO_CALIBBIAS_SHARED,
++	IIO_CHAN_INFO_CALIBBIAS_SEPARATE
 +};
++
++/**
++ * struct iio_chan_spec - specification of a single channel
++ * @type:		What type of measurement is the channel making.
++ * @channel:		What number or name do we wish to asign the channel.
++ * @channel2:		If there is a second number for a differential
++ *			channel then this is it. If modified is set then the
++ *			value here specifies the modifier.
++ * @address:		Driver specific identifier.
++ * @scan_index:	Monotonic index to give ordering in scans when read
++ *			from a buffer.
++ * @scan_type:		Sign:		's' or 'u' to specify signed or unsigned
++ *			realbits:	Number of valid bits of data
++ *			storage_bits:	Realbits + padding
++ *			shift:		Shift right by this before masking out
++ *					realbits.
++ * @info_mask:		What information is to be exported about this channel.
++ *			This includes calibbias, scale etc.
++ * @event_mask:	What events can this channel produce.
++ * @extend_name:	Allows labeling of channel attributes with an
++ *			informative name. Note this has no effect codes etc,
++ *			unlike modifiers.
++ * @processed_val:	Flag to specify the data access attribute should be
++ *			*_input rather than *_raw.
++ * @modified:		Does a modifier apply to this channel. What these are
++ *			depends on the channel type.  Modifier is set in
++ *			channel2. Examples are IIO_MOD_X for axial sensors about
++ *			the 'x' axis.
++ * @indexed:		Specify the channel has a numerical index. If not,
++ *			the value in channel will be suppressed for attribute
++ *			but not for event codes. Typically set it to 0 when
++ *			the index is false.
++ * @shared_handler:	Single handler for the events registered.
++ */
++struct iio_chan_spec {
++	enum iio_chan_type	type;
++	int			channel;
++	int			channel2;
++	unsigned long		address;
++	int			scan_index;
++	struct {
++		char	sign;
++		u8	realbits;
++		u8	storagebits;
++		u8	shift;
++	} scan_type;
++	const long		info_mask;
++	const long		event_mask;
++	const char		*extend_name;
++	unsigned		processed_val:1;
++	unsigned		modified:1;
++	unsigned		indexed:1;
++	/* TODO: investigate pushing shared event handling out to
++	 * the drivers */
++	struct iio_event_handler_list *shared_handler;
++};
++/* Meant for internal use only */
++void __iio_device_attr_deinit(struct device_attribute *dev_attr);
++int __iio_device_attr_init(struct device_attribute *dev_attr,
++			   const char *postfix,
++			   struct iio_chan_spec const *chan,
++			   ssize_t (*readfunc)(struct device *dev,
++					       struct device_attribute *attr,
++					       char *buf),
++			   ssize_t (*writefunc)(struct device *dev,
++						struct device_attribute *attr,
++						const char *buf,
++						size_t len),
++			   bool generic);
++#define IIO_ST(si, rb, sb, sh)						\
++	{ .sign = si, .realbits = rb, .storagebits = sb, .shift = sh }
++
++#define IIO_CHAN(_type, _mod, _indexed, _proc, _name, _chan, _chan2,	\
++		 _inf_mask, _address, _si, _stype, _event_mask,		\
++		 _handler)						\
++	{ .type = _type,						\
++	  .modified = _mod,						\
++	  .indexed = _indexed,						\
++	  .processed_val = _proc,					\
++	  .extend_name = _name,						\
++	  .channel = _chan,						\
++	  .channel2 = _chan2,						\
++	  .info_mask = _inf_mask,					\
++	  .scan_index = _si,						\
++	  .scan_type = _stype,						\
++	  .event_mask = _event_mask,					\
++	  .shared_handler = _handler }
++
++#define IIO_CHAN_SOFT_TIMESTAMP(_si)					\
++	{ .type = IIO_TIMESTAMP, .channel = -1,				\
++			.scan_index = _si, .scan_type = IIO_ST('s', 64, 64, 0) }
++
++int __iio_add_chan_devattr(const char *postfix,
++			   const char *group,
++			   struct iio_chan_spec const *chan,
++			   ssize_t (*func)(struct device *dev,
++					   struct device_attribute *attr,
++					   char *buf),
++			   ssize_t (*writefunc)(struct device *dev,
++						struct device_attribute *attr,
++						const char *buf,
++						size_t len),
++			   int mask,
++			   bool generic,
++			   struct device *dev,
++			   struct list_head *attr_list);
+ /**
+  * iio_get_time_ns() - utility function to get a time stamp for events etc
+  **/
+@@ -70,7 +224,8 @@ void iio_remove_event_from_list(struct iio_event_handler_list *el,
  
--static ssize_t lis3l02dq_read_16bit_signed(struct device *dev,
--					   struct device_attribute *attr,
--					   char *buf)
-+static int lis3l02dq_read_thresh(struct iio_dev *indio_dev,
-+				 int e,
-+				 int *val)
- {
--	int ret;
--	s16 val = 0;
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ /* Vast majority of this is set by the industrialio subsystem on a
+  * call to iio_device_register. */
 -
--	ret = lis3l02dq_spi_read_reg_s16(dev, this_attr->address, &val);
--
--	if (ret)
--		return ret;
-+	struct iio_sw_ring_helper_state *h
-+		= iio_dev_get_devdata(indio_dev);
-+	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
- 
--	return sprintf(buf, "%d\n", val);
-+	return lis3l02dq_read_16bit_s(st, LIS3L02DQ_REG_THS_L_ADDR, val);
- }
- 
--static ssize_t lis3l02dq_read_accel(struct device *dev,
--				    struct device_attribute *attr,
--				    char *buf)
-+static int lis3l02dq_write_thresh(struct iio_dev *indio_dev,
++#define IIO_VAL_INT 1
++#define IIO_VAL_INT_PLUS_MICRO 2
+ /**
+  * struct iio_dev - industrial I/O device
+  * @id:			[INTERN] used to identify device internally
+@@ -116,6 +271,38 @@ struct iio_dev {
+ 	u32				*available_scan_masks;
+ 	struct iio_trigger		*trig;
+ 	struct iio_poll_func		*pollfunc;
++
++	struct iio_chan_spec const *channels;
++	int num_channels;
++	struct list_head channel_attr_list;
++
++	char *name; /*device name - IMPLEMENT */
++	int (*read_raw)(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int *val,
++			int *val2,
++			long mask);
++
++	int (*write_raw)(struct iio_dev *indio_dev,
++			 struct iio_chan_spec const *chan,
++			 int val,
++			 int val2,
++			 long mask);
++
++	int (*read_event_config)(struct iio_dev *indio_dev,
++				 int event_code);
++
++	int (*write_event_config)(struct iio_dev *indio_dev,
 +				  int event_code,
-+				  int val)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	ssize_t ret;
--
--	/* Take the iio_dev status lock */
--	mutex_lock(&indio_dev->mlock);
--	if (indio_dev->currentmode == INDIO_RING_TRIGGERED)
--		ret = lis3l02dq_read_accel_from_ring(dev, attr, buf);
--	else
--		ret =  lis3l02dq_read_16bit_signed(dev, attr, buf);
--	mutex_unlock(&indio_dev->mlock);
--
--	return ret;
-+	u16 value = val;
-+	return lis3l02dq_spi_write_reg_s16(&indio_dev->dev,
-+					   LIS3L02DQ_REG_THS_L_ADDR,
-+					   value);
- }
- 
--static ssize_t lis3l02dq_write_16bit_signed(struct device *dev,
--					    struct device_attribute *attr,
--					    const char *buf,
--					    size_t len)
-+static int lis3l02dq_read_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int *val,
-+			      int *val2,
-+			      long mask)
- {
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int ret;
--	long val;
--
--	ret = strict_strtol(buf, 10, &val);
--	if (ret)
--		goto error_ret;
--	ret = lis3l02dq_spi_write_reg_s16(dev, this_attr->address, val);
--
-+	u8 utemp;
-+	s8 stemp;
-+	ssize_t ret = 0;
-+	struct iio_sw_ring_helper_state *h
-+		= iio_dev_get_devdata(indio_dev);
-+	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
-+	u8 reg;
-+	switch (mask) {
-+	case 0:
-+		/* Take the iio_dev status lock */
-+		mutex_lock(&indio_dev->mlock);
-+		if (indio_dev->currentmode == INDIO_RING_TRIGGERED)
-+			ret = lis3l02dq_read_accel_from_ring(indio_dev->ring,
-+							     chan->scan_index,
-+							     val);
-+		else {
-+			reg = lis3l02dq_axis_map
-+				[LIS3L02DQ_ACCEL][chan->address];
-+			ret = lis3l02dq_read_16bit_s(st, reg, val);
-+		}
-+		mutex_unlock(&indio_dev->mlock);
-+		return IIO_VAL_INT;
-+	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
-+		*val = 0;
-+		*val2 = 9580;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
-+		reg = lis3l02dq_axis_map[LIS3L02DQ_GAIN][chan->address];
-+		ret = __lis3l02dq_spi_read_reg_8(st, reg, &utemp);
-+		if (ret)
-+			goto error_ret;
-+		/* to match with what previous code does */
-+		*val = utemp;
-+		return IIO_VAL_INT;
++				  struct iio_event_handler_list *listel,
++				  int state);
 +
-+	case (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE):
-+		reg = lis3l02dq_axis_map[LIS3L02DQ_BIAS][chan->address];
-+		ret = __lis3l02dq_spi_read_reg_8(st, reg, (u8 *)&stemp);
-+		/* to match with what previous code does */
-+		*val = stemp;
-+		return IIO_VAL_INT;
-+	}
- error_ret:
--	return ret ? ret : len;
-+	return ret;
- }
++	int (*read_event_value)(struct iio_dev *indio_dev,
++				int event_code,
++				int *val);
++	int (*write_event_value)(struct iio_dev *indio_dev,
++				 int event_code,
++				 int val);
+ };
  
- static ssize_t lis3l02dq_read_frequency(struct device *dev,
-@@ -469,168 +430,139 @@ err_ret:
- 	return ret;
- }
+ /**
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 3a82414..b67394c 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -44,6 +44,44 @@ struct bus_type iio_bus_type = {
+ };
+ EXPORT_SYMBOL(iio_bus_type);
  
--#define LIS3L02DQ_SIGNED_ATTR(name, reg)	\
--	IIO_DEVICE_ATTR(name,			\
--			S_IWUSR | S_IRUGO,	\
--			lis3l02dq_read_signed,	\
--			lis3l02dq_write_signed, \
--			reg);
--
--#define LIS3L02DQ_UNSIGNED_ATTR(name, reg)		\
--	IIO_DEVICE_ATTR(name,				\
--			S_IWUSR | S_IRUGO,		\
--			lis3l02dq_read_unsigned,	\
--			lis3l02dq_write_unsigned,	\
--			reg);
--
--static LIS3L02DQ_SIGNED_ATTR(accel_x_calibbias,
--			     LIS3L02DQ_REG_OFFSET_X_ADDR);
--static LIS3L02DQ_SIGNED_ATTR(accel_y_calibbias,
--			     LIS3L02DQ_REG_OFFSET_Y_ADDR);
--static LIS3L02DQ_SIGNED_ATTR(accel_z_calibbias,
--			     LIS3L02DQ_REG_OFFSET_Z_ADDR);
--
--static LIS3L02DQ_UNSIGNED_ATTR(accel_x_calibscale,
--			       LIS3L02DQ_REG_GAIN_X_ADDR);
--static LIS3L02DQ_UNSIGNED_ATTR(accel_y_calibscale,
--			       LIS3L02DQ_REG_GAIN_Y_ADDR);
--static LIS3L02DQ_UNSIGNED_ATTR(accel_z_calibscale,
--			       LIS3L02DQ_REG_GAIN_Z_ADDR);
--
--static IIO_DEVICE_ATTR(accel_raw_mag_value,
--		       S_IWUSR | S_IRUGO,
--		       lis3l02dq_read_16bit_signed,
--		       lis3l02dq_write_16bit_signed,
--		       LIS3L02DQ_REG_THS_L_ADDR);
--/* RFC The reading method for these will change depending on whether
-- * ring buffer capture is in use. Is it worth making these take two
-- * functions and let the core handle which to call, or leave as in this
-- * driver where it is the drivers problem to manage this?
-- */
--
--static IIO_DEV_ATTR_ACCEL_X(lis3l02dq_read_accel,
--			    LIS3L02DQ_REG_OUT_X_L_ADDR);
--
--static IIO_DEV_ATTR_ACCEL_Y(lis3l02dq_read_accel,
--			    LIS3L02DQ_REG_OUT_Y_L_ADDR);
--
--static IIO_DEV_ATTR_ACCEL_Z(lis3l02dq_read_accel,
--			    LIS3L02DQ_REG_OUT_Z_L_ADDR);
--
- static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
- 			      lis3l02dq_read_frequency,
- 			      lis3l02dq_write_frequency);
- 
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("280 560 1120 4480");
- 
--static ssize_t lis3l02dq_read_interrupt_config(struct device *dev,
--					       struct device_attribute *attr,
--					       char *buf)
-+static int lis3l02dq_thresh_handler_th(struct iio_dev *indio_dev,
-+				       int index,
-+				       s64 timestamp,
-+				       int no_test)
- {
--	int ret;
--	s8 val;
--	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
-+	struct iio_sw_ring_helper_state *h
-+		= iio_dev_get_devdata(indio_dev);
-+	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
- 
--	ret = lis3l02dq_spi_read_reg_8(dev->parent,
--				       LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
--				       (u8 *)&val);
-+	/* Stash the timestamp somewhere convenient for the bh */
-+	st->thresh_timestamp = timestamp;
-+	schedule_work(&st->work_thresh);
- 
--	return ret ? ret : sprintf(buf, "%d\n", !!(val & this_attr->mask));
-+	return 0;
- }
- 
--static ssize_t lis3l02dq_write_interrupt_config(struct device *dev,
--						struct device_attribute *attr,
--						const char *buf,
--						size_t len)
--{
--	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	int ret, currentlyset, changed = 0;
--	u8 valold, controlold;
--	bool val;
-+/* A shared handler for a number of threshold types */
-+IIO_EVENT_SH(threshold, &lis3l02dq_thresh_handler_th);
- 
--	val = !(buf[0] == '0');
- 
--	mutex_lock(&indio_dev->mlock);
--	/* read current value */
--	ret = lis3l02dq_spi_read_reg_8(dev->parent,
-+#define LIS3L02DQ_INFO_MASK				\
-+	((1 << IIO_CHAN_INFO_SCALE_SHARED) |		\
-+	 (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE) |	\
-+	 (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE))
-+
-+#define LIS3L02DQ_EVENT_MASK					\
-+	(IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) |	\
-+	 IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING))
-+
-+static struct iio_chan_spec lis3l02dq_channels[] = {
-+	IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_X, LIS3L02DQ_INFO_MASK,
-+		 0, 0, IIO_ST('s', 12, 16, 0),
-+		 LIS3L02DQ_EVENT_MASK, &iio_event_threshold),
-+	IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_Y, LIS3L02DQ_INFO_MASK,
-+		 1, 1, IIO_ST('s', 12, 16, 0),
-+		 LIS3L02DQ_EVENT_MASK, &iio_event_threshold),
-+	IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_Z, LIS3L02DQ_INFO_MASK,
-+		 2, 2, IIO_ST('s', 12, 16, 0),
-+		 LIS3L02DQ_EVENT_MASK, &iio_event_threshold),
-+	IIO_CHAN_SOFT_TIMESTAMP(3)
++static const char * const iio_chan_type_name_spec_shared[] = {
++	[IIO_TIMESTAMP] = "timestamp",
++	[IIO_ACCEL] = "accel",
++	[IIO_IN] = "in",
++	[IIO_IN_DIFF] = "in-in",
++	[IIO_GYRO] = "gyro",
++	[IIO_TEMP] = "temp",
++	[IIO_MAGN] = "magn",
++	[IIO_INCLI] = "incli",
++	[IIO_ROT] = "rot",
++	[IIO_INTENSITY] = "intensity",
++	[IIO_LIGHT] = "illuminance",
++	[IIO_ANGL] = "angl",
 +};
 +
++static const char * const iio_chan_type_name_spec_complex[] = {
++	[IIO_IN_DIFF] = "in%d-in%d",
++};
 +
-+static ssize_t lis3l02dq_read_event_config(struct iio_dev *indio_dev,
-+					   int event_code)
-+{
++static const char * const iio_modifier_names_light[] = {
++	[IIO_MOD_LIGHT_BOTH] = "both",
++	[IIO_MOD_LIGHT_IR] = "ir",
++};
 +
-+	u8 val;
-+	int ret;
-+	u8 mask = (1 << (IIO_EVENT_CODE_EXTRACT_MODIFIER(event_code)*2 +
-+			 (IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
-+			  IIO_EV_DIR_RISING)));
-+	ret = lis3l02dq_spi_read_reg_8(&indio_dev->dev,
- 				       LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
--				       &valold);
--	if (ret)
--		goto error_mutex_unlock;
-+				       &val);
++static const char * const iio_modifier_names_axial[] = {
++	[IIO_MOD_X] = "x",
++	[IIO_MOD_Y] = "y",
++	[IIO_MOD_Z] = "z",
++};
++
++/* relies on pairs of these shared then separate */
++static const char * const iio_chan_info_postfix[] = {
++	[IIO_CHAN_INFO_SCALE_SHARED/2] = "scale",
++	[IIO_CHAN_INFO_OFFSET_SHARED/2] = "offset",
++	[IIO_CHAN_INFO_CALIBSCALE_SHARED/2] = "calibscale",
++	[IIO_CHAN_INFO_CALIBBIAS_SHARED/2] = "calibbias",
++};
++
+ void __iio_change_event(struct iio_detected_event_list *ev,
+ 			int ev_code,
+ 			s64 timestamp)
+@@ -488,24 +526,375 @@ static void __exit iio_exit(void)
+ 	bus_unregister(&iio_bus_type);
+ }
+ 
+-static int iio_device_register_sysfs(struct iio_dev *dev_info)
++static ssize_t iio_read_channel_info(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
+ {
+-	int ret = 0;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	int val, val2;
++	int ret = indio_dev->read_raw(indio_dev, this_attr->c,
++				      &val, &val2, this_attr->address);
+ 
+-	ret = sysfs_create_group(&dev_info->dev.kobj, dev_info->attrs);
+-	if (ret) {
+-		dev_err(dev_info->dev.parent,
+-			"Failed to register sysfs hooks\n");
 +	if (ret < 0)
 +		return ret;
 +
-+	return !!(val & mask);
++	if (ret == IIO_VAL_INT)
++		return sprintf(buf, "%d\n", val);
++	else if (ret == IIO_VAL_INT_PLUS_MICRO) {
++		if (val2 < 0)
++			return sprintf(buf, "-%d.%06u\n", val, -val2);
++		else
++			return sprintf(buf, "%d.%06u\n", val, val2);
++	} else
++		return 0;
 +}
- 
-+static int lis3l02dq_write_event_config(struct iio_dev *indio_dev,
-+					int event_code,
-+					struct iio_event_handler_list *list_el,
-+					int state)
++
++static ssize_t iio_write_channel_info(struct device *dev,
++				      struct device_attribute *attr,
++				      const char *buf,
++				      size_t len)
 +{
-+	int ret = 0;
-+	u8 val, control;
-+	u8 currentlyset;
-+	bool changed = false;
-+	u8 mask = (1 << (IIO_EVENT_CODE_EXTRACT_MODIFIER(event_code)*2 +
-+			 (IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
-+			  IIO_EV_DIR_RISING)));
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	int ret, integer = 0, micro = 0, micro_mult = 100000;
++	bool integer_part = true, negative = false;
 +
-+	mutex_lock(&indio_dev->mlock);
- 	/* read current control */
--	ret = lis3l02dq_spi_read_reg_8(dev,
-+	ret = lis3l02dq_spi_read_reg_8(&indio_dev->dev,
- 				       LIS3L02DQ_REG_CTRL_2_ADDR,
--				       &controlold);
-+				       &control);
- 	if (ret)
--		goto error_mutex_unlock;
--	currentlyset = !!(valold & this_attr->mask);
--	if (val == false && currentlyset) {
--		valold &= ~this_attr->mask;
--		changed = 1;
--		iio_remove_event_from_list(this_attr->listel,
--						 &indio_dev->interrupts[0]
--						 ->ev_list);
--	} else if (val == true && !currentlyset) {
--		changed = 1;
--		valold |= this_attr->mask;
--		iio_add_event_to_list(this_attr->listel,
--					    &indio_dev->interrupts[0]->ev_list);
-+		goto error_ret;
-+	ret = lis3l02dq_spi_read_reg_8(&indio_dev->dev,
-+				       LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
-+				       &val);
-+	if (ret < 0)
-+		goto error_ret;
-+	currentlyset = val & mask;
-+
-+	if (!currentlyset && state) {
-+		changed = true;
-+		val |= mask;
-+		iio_add_event_to_list(list_el,
-+				      &indio_dev->interrupts[0]->ev_list);
-+
-+	} else if (currentlyset && !state) {
-+		changed = true;
-+		val &= ~mask;
-+		iio_remove_event_from_list(list_el,
-+					   &indio_dev->interrupts[0]->ev_list);
- 	}
--
- 	if (changed) {
--		ret = lis3l02dq_spi_write_reg_8(dev,
-+		ret = lis3l02dq_spi_write_reg_8(&indio_dev->dev,
- 						LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
--						&valold);
-+						&val);
- 		if (ret)
--			goto error_mutex_unlock;
--		/* This always enables the interrupt, even if we've remove the
--		 * last thing using it. For this device we can use the reference
--		 * count on the handler to tell us if anyone wants the interrupt
--		 */
--		controlold = this_attr->listel->refcount ?
--			(controlold | LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT) :
--			(controlold & ~LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT);
--		ret = lis3l02dq_spi_write_reg_8(dev,
--						LIS3L02DQ_REG_CTRL_2_ADDR,
--						&controlold);
--		if (ret)
--			goto error_mutex_unlock;
-+			goto error_ret;
-+		control = list_el->refcount ?
-+			(control | LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT) :
-+			(control & ~LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT);
-+		ret = lis3l02dq_spi_write_reg_8(&indio_dev->dev,
-+					       LIS3L02DQ_REG_CTRL_2_ADDR,
-+					       &control);
- 	}
--error_mutex_unlock:
--	mutex_unlock(&indio_dev->mlock);
--
--	return ret ? ret : len;
--}
--
--
--static int lis3l02dq_thresh_handler_th(struct iio_dev *indio_dev,
--				       int index,
--				       s64 timestamp,
--				       int no_test)
--{
--	struct iio_sw_ring_helper_state *h
--		= iio_dev_get_devdata(indio_dev);
--	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
- 
--	/* Stash the timestamp somewhere convenient for the bh */
--	st->thresh_timestamp = timestamp;
--	schedule_work(&st->work_thresh);
--
--	return 0;
-+error_ret:
-+	mutex_unlock(&indio_dev->mlock);
-+	return ret;
- }
- 
--
- /* Unforunately it appears the interrupt won't clear unless you read from the
-  * src register.
-  */
- static void lis3l02dq_thresh_handler_bh_no_check(struct work_struct *work_s)
- {
--       struct lis3l02dq_state *st
--	       = container_of(work_s,
--		       struct lis3l02dq_state, work_thresh);
--
-+	struct lis3l02dq_state *st
-+		= container_of(work_s,
-+			       struct lis3l02dq_state, work_thresh);
- 	u8 t;
- 
- 	lis3l02dq_spi_read_reg_8(&st->help.indio_dev->dev,
-@@ -700,75 +632,9 @@ static void lis3l02dq_thresh_handler_bh_no_check(struct work_struct *work_s)
- 	return;
- }
- 
--/* A shared handler for a number of threshold types */
--IIO_EVENT_SH(threshold, &lis3l02dq_thresh_handler_th);
--
--IIO_EVENT_ATTR_SH(accel_x_thresh_rising_en,
--		  iio_event_threshold,
--		  lis3l02dq_read_interrupt_config,
--		  lis3l02dq_write_interrupt_config,
--		  LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_X_HIGH);
--
--IIO_EVENT_ATTR_SH(accel_y_thresh_rising_en,
--		  iio_event_threshold,
--		  lis3l02dq_read_interrupt_config,
--		  lis3l02dq_write_interrupt_config,
--		  LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Y_HIGH);
--
--IIO_EVENT_ATTR_SH(accel_z_thresh_rising_en,
--		  iio_event_threshold,
--		  lis3l02dq_read_interrupt_config,
--		  lis3l02dq_write_interrupt_config,
--		  LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Z_HIGH);
--
--IIO_EVENT_ATTR_SH(accel_x_thresh_falling_en,
--		  iio_event_threshold,
--		  lis3l02dq_read_interrupt_config,
--		  lis3l02dq_write_interrupt_config,
--		  LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_X_LOW);
--
--IIO_EVENT_ATTR_SH(accel_y_thresh_falling_en,
--		  iio_event_threshold,
--		  lis3l02dq_read_interrupt_config,
--		  lis3l02dq_write_interrupt_config,
--		  LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Y_LOW);
--
--IIO_EVENT_ATTR_SH(accel_z_thresh_falling_en,
--		  iio_event_threshold,
--		  lis3l02dq_read_interrupt_config,
--		  lis3l02dq_write_interrupt_config,
--		  LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Z_LOW);
--
--
--static struct attribute *lis3l02dq_event_attributes[] = {
--	&iio_event_attr_accel_x_thresh_rising_en.dev_attr.attr,
--	&iio_event_attr_accel_y_thresh_rising_en.dev_attr.attr,
--	&iio_event_attr_accel_z_thresh_rising_en.dev_attr.attr,
--	&iio_event_attr_accel_x_thresh_falling_en.dev_attr.attr,
--	&iio_event_attr_accel_y_thresh_falling_en.dev_attr.attr,
--	&iio_event_attr_accel_z_thresh_falling_en.dev_attr.attr,
--	&iio_dev_attr_accel_raw_mag_value.dev_attr.attr,
--	NULL
--};
--
--static struct attribute_group lis3l02dq_event_attribute_group = {
--	.attrs = lis3l02dq_event_attributes,
--};
--
- static IIO_CONST_ATTR_NAME("lis3l02dq");
--static IIO_CONST_ATTR(accel_scale, "0.00958");
- 
- static struct attribute *lis3l02dq_attributes[] = {
--	&iio_dev_attr_accel_x_calibbias.dev_attr.attr,
--	&iio_dev_attr_accel_y_calibbias.dev_attr.attr,
--	&iio_dev_attr_accel_z_calibbias.dev_attr.attr,
--	&iio_dev_attr_accel_x_calibscale.dev_attr.attr,
--	&iio_dev_attr_accel_y_calibscale.dev_attr.attr,
--	&iio_dev_attr_accel_z_calibscale.dev_attr.attr,
--	&iio_const_attr_accel_scale.dev_attr.attr,
--	&iio_dev_attr_accel_x_raw.dev_attr.attr,
--	&iio_dev_attr_accel_y_raw.dev_attr.attr,
--	&iio_dev_attr_accel_z_raw.dev_attr.attr,
- 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
- 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
- 	&iio_const_attr_name.dev_attr.attr,
-@@ -813,7 +679,13 @@ static int __devinit lis3l02dq_probe(struct spi_device *spi)
- 
- 	st->help.indio_dev->dev.parent = &spi->dev;
- 	st->help.indio_dev->num_interrupt_lines = 1;
--	st->help.indio_dev->event_attrs = &lis3l02dq_event_attribute_group;
-+	st->help.indio_dev->channels = lis3l02dq_channels;
-+	st->help.indio_dev->num_channels = ARRAY_SIZE(lis3l02dq_channels);
-+	st->help.indio_dev->read_raw = &lis3l02dq_read_raw;
-+	st->help.indio_dev->read_event_value = &lis3l02dq_read_thresh;
-+	st->help.indio_dev->write_event_value = &lis3l02dq_write_thresh;
-+	st->help.indio_dev->write_event_config = &lis3l02dq_write_event_config;
-+	st->help.indio_dev->read_event_config = &lis3l02dq_read_event_config;
- 	st->help.indio_dev->attrs = &lis3l02dq_attribute_group;
- 	st->help.indio_dev->dev_data = (void *)(&st->help);
- 	st->help.indio_dev->driver_module = THIS_MODULE;
-@@ -828,7 +700,9 @@ static int __devinit lis3l02dq_probe(struct spi_device *spi)
- 		goto error_unreg_ring_funcs;
- 	regdone = 1;
- 
--	ret = iio_ring_buffer_register(st->help.indio_dev->ring, 0);
-+	ret = iio_ring_buffer_register_ex(st->help.indio_dev->ring, 0,
-+					  lis3l02dq_channels,
-+					  ARRAY_SIZE(lis3l02dq_channels));
- 	if (ret) {
- 		printk(KERN_ERR "failed to initialize the ring\n");
- 		goto error_unreg_ring_funcs;
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index 529a3cc..a710832 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -29,86 +29,6 @@ static inline u16 combine_8_to_16(u8 lower, u8 upper)
- }
- 
- /**
-- * lis3l02dq_scan_el_set_state() set whether a scan contains a given channel
-- * @scan_el:	associtate iio scan element attribute
-- * @indio_dev:	the device structure
-- * @bool:	desired state
-- *
-- * mlock already held when this is called.
-- **/
--static int lis3l02dq_scan_el_set_state(struct iio_scan_el *scan_el,
--				       struct iio_dev *indio_dev,
--				       bool state)
--{
--	u8 t, mask;
--	int ret;
--
--	ret = lis3l02dq_spi_read_reg_8(&indio_dev->dev,
--				       LIS3L02DQ_REG_CTRL_1_ADDR,
--				       &t);
--	if (ret)
--		goto error_ret;
--	switch (scan_el->label) {
--	case LIS3L02DQ_REG_OUT_X_L_ADDR:
--		mask = LIS3L02DQ_REG_CTRL_1_AXES_X_ENABLE;
--		break;
--	case LIS3L02DQ_REG_OUT_Y_L_ADDR:
--		mask = LIS3L02DQ_REG_CTRL_1_AXES_Y_ENABLE;
--		break;
--	case LIS3L02DQ_REG_OUT_Z_L_ADDR:
--		mask = LIS3L02DQ_REG_CTRL_1_AXES_Z_ENABLE;
--		break;
--	default:
--		ret = -EINVAL;
--		goto error_ret;
--	}
--
--	if (!(mask & t) == state) {
--		if (state)
--			t |= mask;
--		else
--			t &= ~mask;
--		ret = lis3l02dq_spi_write_reg_8(&indio_dev->dev,
--						LIS3L02DQ_REG_CTRL_1_ADDR,
--						&t);
--	}
--error_ret:
--	return ret;
--
--}
--static IIO_SCAN_EL_C(accel_x, 0,
--		     LIS3L02DQ_REG_OUT_X_L_ADDR,
--		     &lis3l02dq_scan_el_set_state);
--static IIO_SCAN_EL_C(accel_y, 1,
--		     LIS3L02DQ_REG_OUT_Y_L_ADDR,
--		     &lis3l02dq_scan_el_set_state);
--static IIO_SCAN_EL_C(accel_z, 2,
--		     LIS3L02DQ_REG_OUT_Z_L_ADDR,
--		     &lis3l02dq_scan_el_set_state);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(accel, s, 12, 16);
--static IIO_SCAN_EL_TIMESTAMP(3);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
--
--static struct attribute *lis3l02dq_scan_el_attrs[] = {
--	&iio_scan_el_accel_x.dev_attr.attr,
--	&iio_const_attr_accel_x_index.dev_attr.attr,
--	&iio_scan_el_accel_y.dev_attr.attr,
--	&iio_const_attr_accel_y_index.dev_attr.attr,
--	&iio_scan_el_accel_z.dev_attr.attr,
--	&iio_const_attr_accel_z_index.dev_attr.attr,
--	&iio_const_attr_accel_type.dev_attr.attr,
--	&iio_scan_el_timestamp.dev_attr.attr,
--	&iio_const_attr_timestamp_index.dev_attr.attr,
--	&iio_const_attr_timestamp_type.dev_attr.attr,
--	NULL,
--};
--
--static struct attribute_group lis3l02dq_scan_el_group = {
--	.attrs = lis3l02dq_scan_el_attrs,
--	.name = "scan_elements",
--};
--
--/**
-  * lis3l02dq_poll_func_th() top half interrupt handler called by trigger
-  * @private_data:	iio_dev
-  **/
-@@ -151,58 +71,27 @@ IIO_EVENT_SH(data_rdy_trig, &lis3l02dq_data_rdy_trig_poll);
- /**
-  * lis3l02dq_read_accel_from_ring() individual acceleration read from ring
-  **/
--ssize_t lis3l02dq_read_accel_from_ring(struct device *dev,
--				       struct device_attribute *attr,
--				       char *buf)
-+ssize_t lis3l02dq_read_accel_from_ring(struct iio_ring_buffer *ring,
-+				       int index,
-+				       int *val)
- {
--	struct iio_scan_el *el = NULL;
--	int ret, len = 0, i = 0;
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct iio_ring_buffer *ring = dev_info->ring;
--	struct attribute_group *scan_el_attrs = ring->scan_el_attrs;
-+	int ret;
- 	s16 *data;
-+	if (!iio_scan_mask_query(ring, index))
++	/* Assumes decimal - precision based on number of digits */
++	if (!indio_dev->write_raw)
 +		return -EINVAL;
- 
--	while (scan_el_attrs->attrs[i]) {
--		el = to_iio_scan_el((struct device_attribute *)
--				    (scan_el_attrs->attrs[i]));
--		/* label is in fact the address */
--		if (el->label == this_attr->address)
--			break;
--		i++;
--	}
--	if (!scan_el_attrs->attrs[i]) {
--		ret = -EINVAL;
--		goto error_ret;
--	}
--	/* If this element is in the scan mask */
--	ret = iio_scan_mask_query(ring, el->number);
--	if (ret < 0)
--		goto error_ret;
--	if (ret) {
--		data = kmalloc(ring->access.get_bytes_per_datum(ring),
--			       GFP_KERNEL);
--		if (data == NULL)
--			return -ENOMEM;
--		ret = ring->access.read_last(ring,
--					(u8 *)data);
--		if (ret)
--			goto error_free_data;
--	} else {
--		ret = -EINVAL;
--		goto error_ret;
--	}
--	len = iio_scan_mask_count_to_right(ring, el->number);
--	if (len < 0) {
--		ret = len;
-+	data = kmalloc(ring->access.get_bytes_per_datum(ring),
-+		       GFP_KERNEL);
-+	if (data == NULL)
++	if (buf[0] == '-') {
++		negative = true;
++		buf++;
++	}
++	while (*buf) {
++		if ('0' <= *buf && *buf <= '9') {
++			if (integer_part)
++				integer = integer*10 + *buf - '0';
++			else {
++				micro += micro_mult*(*buf - '0');
++				if (micro_mult == 1)
++					break;
++				micro_mult /= 10;
++			}
++		} else if (*buf == '\n') {
++			if (*(buf + 1) == '\0')
++				break;
++			else
++				return -EINVAL;
++		} else if (*buf == '.') {
++			integer_part = false;
++		} else {
++			return -EINVAL;
++		}
++		buf++;
++	}
++	if (negative) {
++		if (integer)
++			integer = -integer;
++		else
++			micro = -micro;
++	}
++
++	ret = indio_dev->write_raw(indio_dev, this_attr->c,
++				       integer, micro, this_attr->address);
++	if (ret)
++		return ret;
++
++	return len;
++}
++
++static int __iio_build_postfix(struct iio_chan_spec const *chan,
++			       bool generic,
++			       const char *postfix,
++			       char **result)
++{
++	char *all_post;
++	/* 3 options - generic, extend_name, modified - if generic, extend_name
++	* and modified cannot apply.*/
++
++	if (generic || (!chan->modified && !chan->extend_name)) {
++		all_post = kasprintf(GFP_KERNEL, "%s", postfix);
++	} else if (chan->modified) {
++		const char *intermediate;
++		switch (chan->type) {
++		case IIO_INTENSITY:
++			intermediate
++				= iio_modifier_names_light[chan->channel2];
++			break;
++		case IIO_ACCEL:
++		case IIO_GYRO:
++		case IIO_MAGN:
++		case IIO_INCLI:
++		case IIO_ROT:
++		case IIO_ANGL:
++			intermediate
++				= iio_modifier_names_axial[chan->channel2];
++			break;
++		default:
++			return -EINVAL;
++		}
++		if (chan->extend_name)
++			all_post = kasprintf(GFP_KERNEL, "%s_%s_%s",
++					     intermediate,
++					     chan->extend_name,
++					     postfix);
++		else
++			all_post = kasprintf(GFP_KERNEL, "%s_%s",
++					     intermediate,
++					     postfix);
++	} else
++		all_post = kasprintf(GFP_KERNEL, "%s_%s", chan->extend_name,
++				     postfix);
++	if (all_post == NULL)
 +		return -ENOMEM;
++	*result = all_post;
++	return 0;
++}
 +
-+	ret = ring->access.read_last(ring, (u8 *)data);
-+	if (ret)
- 		goto error_free_data;
--	}
--	len = sprintf(buf, "ring %d\n", data[len]);
-+	*val = data[iio_scan_mask_count_to_right(ring, index)];
- error_free_data:
- 	kfree(data);
--error_ret:
--	return ret ? ret : len;
--
-+	return ret;
- }
- 
- static const u8 read_all_tx_array[] = {
-@@ -234,7 +123,7 @@ static int lis3l02dq_read_all(struct lis3l02dq_state *st, u8 *rx_array)
- 
- 	mutex_lock(&st->buf_lock);
- 
--	for (i = 0; i < ARRAY_SIZE(read_all_tx_array)/4; i++) {
-+	for (i = 0; i < ARRAY_SIZE(read_all_tx_array)/4; i++)
- 		if (ring->scan_mask & (1 << i)) {
- 			/* lower byte */
- 			xfers[j].tx_buf = st->tx + 2*j;
-@@ -258,7 +147,7 @@ static int lis3l02dq_read_all(struct lis3l02dq_state *st, u8 *rx_array)
- 			xfers[j].cs_change = 1;
- 			j++;
- 		}
--	}
-+
- 	/* After these are transmitted, the rx_buff should have
- 	 * values in alternate bytes
- 	 */
-@@ -488,6 +377,76 @@ void lis3l02dq_unconfigure_ring(struct iio_dev *indio_dev)
- 	lis3l02dq_free_buf(indio_dev->ring);
- }
- 
-+static int lis3l02dq_ring_postenable(struct iio_dev *indio_dev)
++int __iio_device_attr_init(struct device_attribute *dev_attr,
++			   const char *postfix,
++			   struct iio_chan_spec const *chan,
++			   ssize_t (*readfunc)(struct device *dev,
++					       struct device_attribute *attr,
++					       char *buf),
++			   ssize_t (*writefunc)(struct device *dev,
++						struct device_attribute *attr,
++						const char *buf,
++						size_t len),
++			   bool generic)
 +{
-+	/* Disable unwanted channels otherwise the interrupt will not clear */
-+	u8 t;
 +	int ret;
-+	bool oneenabled = false;
-+
-+	ret = lis3l02dq_spi_read_reg_8(&indio_dev->dev,
-+				       LIS3L02DQ_REG_CTRL_1_ADDR,
-+				       &t);
++	char *name_format, *full_postfix;
++	sysfs_attr_init(&dev_attr->attr);
++	ret = __iio_build_postfix(chan, generic, postfix, &full_postfix);
 +	if (ret)
 +		goto error_ret;
 +
-+	if (iio_scan_mask_query(indio_dev->ring, 0)) {
-+		t |= LIS3L02DQ_REG_CTRL_1_AXES_X_ENABLE;
-+		oneenabled = true;
-+	} else
-+		t &= ~LIS3L02DQ_REG_CTRL_1_AXES_X_ENABLE;
-+	if (iio_scan_mask_query(indio_dev->ring, 1)) {
-+		t |= LIS3L02DQ_REG_CTRL_1_AXES_Y_ENABLE;
-+		oneenabled = true;
-+	} else
-+		t &= ~LIS3L02DQ_REG_CTRL_1_AXES_Y_ENABLE;
-+	if (iio_scan_mask_query(indio_dev->ring, 2)) {
-+		t |= LIS3L02DQ_REG_CTRL_1_AXES_Z_ENABLE;
-+		oneenabled = true;
-+	} else
-+		t &= ~LIS3L02DQ_REG_CTRL_1_AXES_Z_ENABLE;
++	/* Special case for types that uses both channel numbers in naming */
++	if (chan->type == IIO_IN_DIFF && !generic)
++		name_format
++			= kasprintf(GFP_KERNEL, "%s_%s",
++				    iio_chan_type_name_spec_complex[chan->type],
++				    full_postfix);
++	else if (generic || !chan->indexed)
++		name_format
++			= kasprintf(GFP_KERNEL, "%s_%s",
++				    iio_chan_type_name_spec_shared[chan->type],
++				    full_postfix);
++	else
++		name_format
++			= kasprintf(GFP_KERNEL, "%s%d_%s",
++				    iio_chan_type_name_spec_shared[chan->type],
++				    chan->channel,
++				    full_postfix);
 +
-+	if (!oneenabled) /* what happens in this case is unknown */
++	if (name_format == NULL) {
++		ret = -ENOMEM;
++		goto error_free_full_postfix;
++	}
++	dev_attr->attr.name = kasprintf(GFP_KERNEL,
++					name_format,
++					chan->channel,
++					chan->channel2);
++	if (dev_attr->attr.name == NULL) {
++		ret = -ENOMEM;
++		goto error_free_name_format;
++	}
++
++	if (readfunc) {
++		dev_attr->attr.mode |= S_IRUGO;
++		dev_attr->show = readfunc;
++	}
++
++	if (writefunc) {
++		dev_attr->attr.mode |= S_IWUSR;
++		dev_attr->store = writefunc;
++	}
++	kfree(name_format);
++	kfree(full_postfix);
++
++	return 0;
++
++error_free_name_format:
++	kfree(name_format);
++error_free_full_postfix:
++	kfree(full_postfix);
++error_ret:
++	return ret;
++}
++
++void __iio_device_attr_deinit(struct device_attribute *dev_attr)
++{
++	kfree(dev_attr->attr.name);
++}
++
++int __iio_add_chan_devattr(const char *postfix,
++			   const char *group,
++			   struct iio_chan_spec const *chan,
++			   ssize_t (*readfunc)(struct device *dev,
++					       struct device_attribute *attr,
++					       char *buf),
++			   ssize_t (*writefunc)(struct device *dev,
++						struct device_attribute *attr,
++						const char *buf,
++						size_t len),
++			   int mask,
++			   bool generic,
++			   struct device *dev,
++			   struct list_head *attr_list)
++{
++	int ret;
++	struct iio_dev_attr *iio_attr, *t;
++
++	iio_attr = kzalloc(sizeof *iio_attr, GFP_KERNEL);
++	if (iio_attr == NULL) {
++		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
++	ret = __iio_device_attr_init(&iio_attr->dev_attr,
++				     postfix, chan,
++				     readfunc, writefunc, generic);
++	if (ret)
++		goto error_iio_dev_attr_free;
++	iio_attr->c = chan;
++	iio_attr->address = mask;
++	list_for_each_entry(t, attr_list, l)
++		if (strcmp(t->dev_attr.attr.name,
++			   iio_attr->dev_attr.attr.name) == 0) {
++			if (!generic)
++				dev_err(dev, "tried to double register : %s\n",
++					t->dev_attr.attr.name);
++			ret = -EBUSY;
++			goto error_device_attr_deinit;
++		}
++
++	ret = sysfs_add_file_to_group(&dev->kobj,
++				      &iio_attr->dev_attr.attr, group);
++	if (ret < 0)
++		goto error_device_attr_deinit;
++
++	list_add(&iio_attr->l, attr_list);
++
++	return 0;
++
++error_device_attr_deinit:
++	__iio_device_attr_deinit(&iio_attr->dev_attr);
++error_iio_dev_attr_free:
++	kfree(iio_attr);
++error_ret:
++	return ret;
++}
++
++static int iio_device_add_channel_sysfs(struct iio_dev *dev_info,
++					struct iio_chan_spec const *chan)
++{
++	int ret, i;
++
++
++	if (chan->channel < 0)
++		return 0;
++	if (chan->processed_val)
++		ret = __iio_add_chan_devattr("input", NULL, chan,
++					     &iio_read_channel_info,
++					     NULL,
++					     0,
++					     0,
++					     &dev_info->dev,
++					     &dev_info->channel_attr_list);
++	else
++		ret = __iio_add_chan_devattr("raw", NULL, chan,
++					     &iio_read_channel_info,
++					     NULL,
++					     0,
++					     0,
++					     &dev_info->dev,
++					     &dev_info->channel_attr_list);
++	if (ret)
++		goto error_ret;
++
++	for_each_set_bit(i, &chan->info_mask, sizeof(long)*8) {
++		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i/2],
++					     NULL, chan,
++					     &iio_read_channel_info,
++					     &iio_write_channel_info,
++					     (1 << i),
++					     !(i%2),
++					     &dev_info->dev,
++					     &dev_info->channel_attr_list);
++		if (ret == -EBUSY && (i%2 == 0)) {
++			ret = 0;
++			continue;
++		}
++		if (ret < 0)
++			goto error_ret;
++	}
++error_ret:
++	return ret;
++}
++
++static void iio_device_remove_and_free_read_attr(struct iio_dev *dev_info,
++						 struct iio_dev_attr *p)
++{
++	sysfs_remove_file_from_group(&dev_info->dev.kobj,
++				     &p->dev_attr.attr, NULL);
++	kfree(p->dev_attr.attr.name);
++	kfree(p);
++}
++
++static int iio_device_register_sysfs(struct iio_dev *dev_info)
++{
++	int i, ret = 0;
++	struct iio_dev_attr *p, *n;
++
++	if (dev_info->attrs) {
++		ret = sysfs_create_group(&dev_info->dev.kobj, dev_info->attrs);
++		if (ret) {
++			dev_err(dev_info->dev.parent,
++				"Failed to register sysfs hooks\n");
++			goto error_ret;
++		}
++	}
+ 
++	/*
++	 * New channel registration method - relies on the fact a group does
++	 *  not need to be initialized if it is name is NULL.
++	 */
++	INIT_LIST_HEAD(&dev_info->channel_attr_list);
++	if (dev_info->channels)
++		for (i = 0; i < dev_info->num_channels; i++) {
++			ret = iio_device_add_channel_sysfs(dev_info,
++							   &dev_info
++							   ->channels[i]);
++			if (ret < 0)
++				goto error_clear_attrs;
++		}
++
++	return 0;
++error_clear_attrs:
++	list_for_each_entry_safe(p, n,
++				 &dev_info->channel_attr_list, l) {
++		list_del(&p->l);
++		iio_device_remove_and_free_read_attr(dev_info, p);
++	}
++	if (dev_info->attrs)
++		sysfs_remove_group(&dev_info->dev.kobj, dev_info->attrs);
+ error_ret:
+ 	return ret;
++
+ }
+ 
+ static void iio_device_unregister_sysfs(struct iio_dev *dev_info)
+ {
+-	sysfs_remove_group(&dev_info->dev.kobj, dev_info->attrs);
++
++	struct iio_dev_attr *p, *n;
++	list_for_each_entry_safe(p, n, &dev_info->channel_attr_list, l) {
++		list_del(&p->l);
++		iio_device_remove_and_free_read_attr(dev_info, p);
++	}
++
++	if (dev_info->attrs)
++		sysfs_remove_group(&dev_info->dev.kobj, dev_info->attrs);
+ }
+ 
+ /* Return a negative errno on failure */
+@@ -552,8 +941,277 @@ static void iio_device_unregister_id(struct iio_dev *dev_info)
+ 	iio_free_ida_val(&iio_ida, dev_info->id);
+ }
+ 
++static const char * const iio_ev_type_text[] = {
++	[IIO_EV_TYPE_THRESH] = "thresh",
++	[IIO_EV_TYPE_MAG] = "mag",
++	[IIO_EV_TYPE_ROC] = "roc"
++};
++
++static const char * const iio_ev_dir_text[] = {
++	[IIO_EV_DIR_EITHER] = "either",
++	[IIO_EV_DIR_RISING] = "rising",
++	[IIO_EV_DIR_FALLING] = "falling"
++};
++
++static ssize_t iio_ev_state_store(struct device *dev,
++				  struct device_attribute *attr,
++				  const char *buf,
++				  size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
++	int ret;
++	unsigned long val;
++	ret = strict_strtoul(buf, 10, &val);
++	if (ret || val < 0 || val > 1)
 +		return -EINVAL;
-+	ret = lis3l02dq_spi_write_reg_8(&indio_dev->dev,
-+					LIS3L02DQ_REG_CTRL_1_ADDR,
-+					&t);
-+	if (ret)
-+		goto error_ret;
 +
-+	return iio_triggered_ring_postenable(indio_dev);
-+error_ret:
-+	return ret;
++	ret = indio_dev->write_event_config(indio_dev, this_attr->mask,
++					    this_attr->listel,
++					    val);
++	return (ret < 0) ? ret : len;
 +}
 +
-+/* Turn all channels on again */
-+static int lis3l02dq_ring_predisable(struct iio_dev *indio_dev)
++static ssize_t iio_ev_state_show(struct device *dev,
++				 struct device_attribute *attr,
++				 char *buf)
 +{
-+	u8 t;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
++	int val = indio_dev->read_event_config(indio_dev, this_attr->mask);
++
++	if (val < 0)
++		return val;
++	else
++		return sprintf(buf, "%d\n", val);
++}
++
++static ssize_t iio_ev_value_show(struct device *dev,
++				 struct device_attribute *attr,
++				 char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	int val, ret;
++
++	ret = indio_dev->read_event_value(indio_dev,
++					  this_attr->address, &val);
++	if (ret < 0)
++		return ret;
++
++	return sprintf(buf, "%d\n", val);
++}
++
++static ssize_t iio_ev_value_store(struct device *dev,
++				  struct device_attribute *attr,
++				  const char *buf,
++				  size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	unsigned long val;
 +	int ret;
 +
-+	ret = iio_triggered_ring_predisable(indio_dev);
++	ret = strict_strtoul(buf, 10, &val);
++	if (ret)
++		return ret;
++
++	ret = indio_dev->write_event_value(indio_dev, this_attr->address,
++					   val);
++	if (ret < 0)
++		return ret;
++
++	return len;
++}
++
++static int __iio_add_chan_event_attr(const char *postfix,
++				     const char *group,
++				     struct iio_chan_spec const *chan,
++				     unsigned int mask,
++				     struct device *dev,
++				     struct list_head *attr_list)
++{
++	char *name_format, *full_postfix;
++	int ret;
++	struct iio_event_attr *iio_ev_attr;
++
++	iio_ev_attr = kzalloc(sizeof *iio_ev_attr, GFP_KERNEL);
++	if (iio_ev_attr == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++
++	sysfs_attr_init(&iio_ev_attr->dev_attr.attr);
++	ret = __iio_build_postfix(chan, 0, postfix, &full_postfix);
 +	if (ret)
 +		goto error_ret;
++	/* Special case for types that uses both channel numbers in naming */
++	if (chan->type == IIO_IN_DIFF)
++		name_format
++			= kasprintf(GFP_KERNEL, "%s_%s",
++				    iio_chan_type_name_spec_complex[chan->type],
++				    full_postfix);
++	else if (!chan->indexed)
++		name_format
++			= kasprintf(GFP_KERNEL, "%s_%s",
++				    iio_chan_type_name_spec_shared[chan->type],
++				    full_postfix);
++	else
++		name_format
++			= kasprintf(GFP_KERNEL, "%s%d_%s",
++				    iio_chan_type_name_spec_shared[chan->type],
++				    chan->channel,
++				    full_postfix);
++	if (name_format == NULL) {
++		ret = -ENOMEM;
++		goto error_free_attr;
++	}
 +
-+	ret = lis3l02dq_spi_read_reg_8(&indio_dev->dev,
-+				       LIS3L02DQ_REG_CTRL_1_ADDR,
-+				       &t);
-+	if (ret)
-+		goto error_ret;
-+	t |= LIS3L02DQ_REG_CTRL_1_AXES_X_ENABLE |
-+		LIS3L02DQ_REG_CTRL_1_AXES_Y_ENABLE |
-+		LIS3L02DQ_REG_CTRL_1_AXES_Z_ENABLE;
++	iio_ev_attr->dev_attr.attr.name = kasprintf(GFP_KERNEL,
++						    name_format,
++						    chan->channel,
++						    chan->channel2);
++	if (iio_ev_attr->dev_attr.attr.name == NULL) {
++		ret = -ENOMEM;
++		goto error_free_name_format;
++	}
 +
-+	ret = lis3l02dq_spi_write_reg_8(&indio_dev->dev,
-+					LIS3L02DQ_REG_CTRL_1_ADDR,
-+					&t);
++	iio_ev_attr->dev_attr.attr.mode = S_IRUGO | S_IWUSR;
++	iio_ev_attr->dev_attr.show = &iio_ev_state_show;
++	iio_ev_attr->dev_attr.store = &iio_ev_state_store;
++	iio_ev_attr->mask = mask;
++	iio_ev_attr->listel = chan->shared_handler;
++	ret = sysfs_add_file_to_group(&dev->kobj,
++				      &iio_ev_attr->dev_attr.attr,
++				      group);
++	if (ret < 0)
++		goto error_free_name;
++	list_add(&iio_ev_attr->l, attr_list);
++	kfree(name_format);
++	return 0;
 +
++error_free_name:
++	kfree(iio_ev_attr->dev_attr.attr.name);
++error_free_name_format:
++	kfree(name_format);
++error_free_attr:
++	kfree(iio_ev_attr);
 +error_ret:
 +	return ret;
 +}
 +
 +
- int lis3l02dq_configure_ring(struct iio_dev *indio_dev)
++static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
++				      struct iio_chan_spec const *chan)
++{
++
++	int ret = 0, i, mask;
++	char *postfix;
++	if (!chan->event_mask)
++		return 0;
++
++	for_each_set_bit(i, &chan->event_mask, sizeof(chan->event_mask)*8) {
++		postfix = kasprintf(GFP_KERNEL, "%s_%s_en",
++				    iio_ev_type_text[i/IIO_EV_TYPE_MAX],
++				    iio_ev_dir_text[i%IIO_EV_TYPE_MAX]);
++		if (postfix == NULL) {
++			ret = -ENOMEM;
++			goto error_ret;
++		}
++		switch (chan->type) {
++			/* Switch this to a table at some point */
++		case IIO_IN:
++			mask = IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
++						    i/IIO_EV_TYPE_MAX,
++						    i%IIO_EV_TYPE_MAX);
++			break;
++		case IIO_ACCEL:
++			mask = IIO_MOD_EVENT_CODE(chan->type, 0, chan->channel,
++						  i/IIO_EV_TYPE_MAX,
++						  i%IIO_EV_TYPE_MAX);
++			break;
++		case IIO_IN_DIFF:
++			mask = IIO_MOD_EVENT_CODE(chan->type, chan->channel,
++						  chan->channel2,
++						  i/IIO_EV_TYPE_MAX,
++						  i%IIO_EV_TYPE_MAX);
++			break;
++		default:
++			printk(KERN_INFO "currently unhandled type of event\n");
++		}
++		ret = __iio_add_chan_event_attr(postfix,
++						NULL,
++						chan,
++						mask,
++						/*HACK. - limits us to one
++						  event interface - fix by
++						  extending the bitmask - but
++						  how far*/
++						&dev_info->event_interfaces[0]
++						.dev,
++						&dev_info->event_interfaces[0].
++						event_attr_list);
++		kfree(postfix);
++		if (ret)
++			goto error_ret;
++
++		postfix = kasprintf(GFP_KERNEL, "%s_%s_value",
++				    iio_ev_type_text[i/IIO_EV_TYPE_MAX],
++				    iio_ev_dir_text[i%IIO_EV_TYPE_MAX]);
++		if (postfix == NULL) {
++			ret = -ENOMEM;
++			goto error_ret;
++		}
++		ret = __iio_add_chan_devattr(postfix, NULL, chan,
++					     iio_ev_value_show,
++					     iio_ev_value_store,
++					     mask,
++					     0,
++					     &dev_info->event_interfaces[0]
++					     .dev,
++					     &dev_info->event_interfaces[0]
++					     .dev_attr_list);
++		kfree(postfix);
++		if (ret)
++			goto error_ret;
++
++	}
++
++error_ret:
++	return ret;
++}
++
++static inline void __iio_remove_all_event_sysfs(struct iio_dev *dev_info,
++						const char *groupname,
++						int num)
++{
++	struct iio_dev_attr *p, *n;
++	struct iio_event_attr *q, *m;
++	list_for_each_entry_safe(p, n,
++				 &dev_info->event_interfaces[num].
++				 dev_attr_list, l) {
++		sysfs_remove_file_from_group(&dev_info
++					     ->event_interfaces[num].dev.kobj,
++					     &p->dev_attr.attr,
++					     groupname);
++		kfree(p->dev_attr.attr.name);
++		kfree(p);
++	}
++	list_for_each_entry_safe(q, m,
++				 &dev_info->event_interfaces[num].
++				 event_attr_list, l) {
++		sysfs_remove_file_from_group(&dev_info
++					     ->event_interfaces[num].dev.kobj,
++					     &q->dev_attr.attr,
++					     groupname);
++		kfree(q->dev_attr.attr.name);
++		kfree(q);
++	}
++}
++
+ static inline int __iio_add_event_config_attrs(struct iio_dev *dev_info, int i)
+ {
++	int j;
+ 	int ret;
+ 	/*p for adding, q for removing */
+ 	struct attribute **attrp, **attrq;
+@@ -561,23 +1219,42 @@ static inline int __iio_add_event_config_attrs(struct iio_dev *dev_info, int i)
+ 	if (dev_info->event_conf_attrs && dev_info->event_conf_attrs[i].attrs) {
+ 		attrp = dev_info->event_conf_attrs[i].attrs;
+ 		while (*attrp) {
+-			ret =  sysfs_add_file_to_group(&dev_info->dev.kobj,
++			ret =  sysfs_add_file_to_group(&dev_info
++						       ->event_interfaces[0]
++						       .dev.kobj,
+ 						       *attrp,
+-						       dev_info
+-						       ->event_attrs[i].name);
++						       NULL);
+ 			if (ret)
+ 				goto error_ret;
+ 			attrp++;
+ 		}
+ 	}
++	INIT_LIST_HEAD(&dev_info->event_interfaces[0].event_attr_list);
++	INIT_LIST_HEAD(&dev_info->event_interfaces[0].dev_attr_list);
++	/* Dynically created from the channels array */
++	if (dev_info->channels) {
++		for (j = 0; j < dev_info->num_channels; j++) {
++			ret = iio_device_add_event_sysfs(dev_info,
++							 &dev_info
++							 ->channels[j]);
++			if (ret)
++				goto error_clear_attrs;
++		}
++	}
+ 	return 0;
+ 
++error_clear_attrs:
++	__iio_remove_all_event_sysfs(dev_info,
++				     NULL,
++				     i);
+ error_ret:
+ 	attrq = dev_info->event_conf_attrs[i].attrs;
+ 	while (attrq != attrp) {
+-			sysfs_remove_file_from_group(&dev_info->dev.kobj,
+-					     *attrq,
+-					     dev_info->event_attrs[i].name);
++			sysfs_remove_file_from_group(&dev_info
++						     ->event_interfaces[0]
++						     .dev.kobj,
++						     *attrq,
++						     NULL);
+ 		attrq++;
+ 	}
+ 
+@@ -588,15 +1265,18 @@ static inline int __iio_remove_event_config_attrs(struct iio_dev *dev_info,
+ 						  int i)
+ {
+ 	struct attribute **attrq;
+-
++	__iio_remove_all_event_sysfs(dev_info,
++				     NULL,
++				     i);
+ 	if (dev_info->event_conf_attrs
+ 		&& dev_info->event_conf_attrs[i].attrs) {
+ 		attrq = dev_info->event_conf_attrs[i].attrs;
+ 		while (*attrq) {
+-			sysfs_remove_file_from_group(&dev_info->dev.kobj,
++			sysfs_remove_file_from_group(&dev_info
++						     ->event_interfaces[0]
++						     .dev.kobj,
+ 						     *attrq,
+-						     dev_info
+-						     ->event_attrs[i].name);
++						     NULL);
+ 			attrq++;
+ 		}
+ 	}
+@@ -650,10 +1330,12 @@ static int iio_device_register_eventset(struct iio_dev *dev_info)
+ 
+ 		dev_set_drvdata(&dev_info->event_interfaces[i].dev,
+ 				(void *)dev_info);
+-		ret = sysfs_create_group(&dev_info
+-					->event_interfaces[i]
+-					.dev.kobj,
+-					&dev_info->event_attrs[i]);
++
++		if (dev_info->event_attrs != NULL)
++			ret = sysfs_create_group(&dev_info
++						 ->event_interfaces[i]
++						 .dev.kobj,
++						 &dev_info->event_attrs[i]);
+ 
+ 		if (ret) {
+ 			dev_err(&dev_info->dev,
+@@ -676,7 +1358,8 @@ error_unregister_config_attrs:
+ 	i = dev_info->num_interrupt_lines - 1;
+ error_remove_sysfs_interfaces:
+ 	for (j = 0; j < i; j++)
+-		sysfs_remove_group(&dev_info
++		if (dev_info->event_attrs != NULL)
++			sysfs_remove_group(&dev_info
+ 				   ->event_interfaces[j].dev.kobj,
+ 				   &dev_info->event_attrs[j]);
+ error_free_setup_ev_ints:
+@@ -696,10 +1379,13 @@ static void iio_device_unregister_eventset(struct iio_dev *dev_info)
+ 
+ 	if (dev_info->num_interrupt_lines == 0)
+ 		return;
+-	for (i = 0; i < dev_info->num_interrupt_lines; i++)
+-		sysfs_remove_group(&dev_info
+-				   ->event_interfaces[i].dev.kobj,
+-				   &dev_info->event_attrs[i]);
++	for (i = 0; i < dev_info->num_interrupt_lines; i++) {
++		__iio_remove_event_config_attrs(dev_info, i);
++		if (dev_info->event_attrs != NULL)
++			sysfs_remove_group(&dev_info
++					   ->event_interfaces[i].dev.kobj,
++					   &dev_info->event_attrs[i]);
++	}
+ 
+ 	for (i = 0; i < dev_info->num_interrupt_lines; i++)
+ 		iio_free_ev_int(&dev_info->event_interfaces[i]);
+diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
+index 3f6bee0..d6b4bb7 100644
+--- a/drivers/staging/iio/industrialio-ring.c
++++ b/drivers/staging/iio/industrialio-ring.c
+@@ -233,9 +233,162 @@ void iio_ring_buffer_init(struct iio_ring_buffer *ring,
+ }
+ EXPORT_SYMBOL(iio_ring_buffer_init);
+ 
+-int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id)
++static ssize_t iio_show_scan_index(struct device *dev,
++				  struct device_attribute *attr,
++				  char *buf)
++{
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	return sprintf(buf, "%u\n", this_attr->c->scan_index);
++}
++
++static ssize_t iio_show_fixed_type(struct device *dev,
++				   struct device_attribute *attr,
++				   char *buf)
++{
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	return sprintf(buf, "%c%d/%d>>%u\n",
++		       this_attr->c->scan_type.sign,
++		       this_attr->c->scan_type.realbits,
++		       this_attr->c->scan_type.storagebits,
++		       this_attr->c->scan_type.shift);
++}
++
++static int __iio_add_chan_scan_elattr(const char *postfix,
++				      const char *group,
++				      const struct iio_chan_spec *chan,
++				      struct device *dev,
++				      struct list_head *attr_list)
  {
  	int ret;
-@@ -504,17 +463,17 @@ int lis3l02dq_configure_ring(struct iio_dev *indio_dev)
- 	/* Effectively select the ring buffer implementation */
- 	lis3l02dq_register_buf_funcs(&ring->access);
- 	ring->bpe = 2;
--	ring->scan_el_attrs = &lis3l02dq_scan_el_group;
++	struct iio_scan_el *scan_el;
 +
- 	ring->scan_timestamp = true;
- 	ring->preenable = &iio_sw_ring_preenable;
--	ring->postenable = &iio_triggered_ring_postenable;
--	ring->predisable = &iio_triggered_ring_predisable;
-+	ring->postenable = &lis3l02dq_ring_postenable;
-+	ring->predisable = &lis3l02dq_ring_predisable;
- 	ring->owner = THIS_MODULE;
++	scan_el = kzalloc(sizeof *scan_el, GFP_KERNEL);
++	if (scan_el == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++	if (chan->type != IIO_TIMESTAMP)
++		ret = __iio_device_attr_init(&scan_el->dev_attr, postfix, chan,
++					     iio_scan_el_show,
++					     iio_scan_el_store, 0);
++	else /*
++	      * Timestamp handled separately because it simplifies a lot of
++	      * drivers by ensuring they don't have to know its magic index
++	      */
++		ret = __iio_device_attr_init(&scan_el->dev_attr, postfix, chan,
++					     iio_scan_el_ts_show,
++					     iio_scan_el_ts_store, 0);
++	if (ret)
++		goto error_free_scan_el;
++
++	scan_el->number = chan->scan_index;
++
++	ret = sysfs_add_file_to_group(&dev->kobj,
++				      &scan_el->dev_attr.attr,
++				      group);
++	if (ret < 0)
++		goto error_device_attr_deinit;
++
++	list_add(&scan_el->l, attr_list);
++
++	return 0;
++error_device_attr_deinit:
++	__iio_device_attr_deinit(&scan_el->dev_attr);
++error_free_scan_el:
++	kfree(scan_el);
++error_ret:
++	return ret;
++}
++
++static int iio_ring_add_channel_sysfs(struct iio_ring_buffer *ring,
++				      const struct iio_chan_spec *chan)
++{
++	int ret;
++
++	ret = __iio_add_chan_devattr("index", "scan_elements",
++				     chan,
++				     &iio_show_scan_index,
++				     NULL,
++				     0,
++				     0,
++				     &ring->dev,
++				     &ring->scan_el_dev_attr_list);
++	if (ret)
++		goto error_ret;
++
++	ret = __iio_add_chan_devattr("type", "scan_elements",
++				     chan,
++				     &iio_show_fixed_type,
++				     NULL,
++				     0,
++				     0,
++				     &ring->dev,
++				     &ring->scan_el_dev_attr_list);
++
++	if (ret)
++		goto error_ret;
++
++	ret = __iio_add_chan_scan_elattr("en", "scan_elements",
++					 chan, &ring->dev,
++					 &ring->scan_el_en_attr_list);
++
++error_ret:
++	return ret;
++}
++
++static void iio_ring_remove_and_free_scan_el_attr(struct iio_ring_buffer *ring,
++						  struct iio_scan_el *p)
++{
++	sysfs_remove_file_from_group(&ring->dev.kobj,
++				     &p->dev_attr.attr, "scan_elements");
++	kfree(p->dev_attr.attr.name);
++	kfree(p);
++}
++
++static void iio_ring_remove_and_free_scan_dev_attr(struct iio_ring_buffer *ring,
++						   struct iio_dev_attr *p)
++{
++	sysfs_remove_file_from_group(&ring->dev.kobj,
++				     &p->dev_attr.attr, "scan_elements");
++	kfree(p->dev_attr.attr.name);
++	kfree(p);
++}
++
++static struct attribute *iio_scan_el_dummy_attrs[] = {
++	NULL
++};
++
++static struct attribute_group iio_scan_el_dummy_group = {
++	.name = "scan_elements",
++	.attrs = iio_scan_el_dummy_attrs
++};
++
++static void __iio_ring_attr_cleanup(struct iio_ring_buffer *ring)
++{
++	struct iio_dev_attr *p, *n;
++	struct iio_scan_el *q, *m;
++	int anydynamic = !(list_empty(&ring->scan_el_dev_attr_list) &&
++			   list_empty(&ring->scan_el_en_attr_list));
++	list_for_each_entry_safe(p, n,
++				 &ring->scan_el_dev_attr_list, l)
++		iio_ring_remove_and_free_scan_dev_attr(ring, p);
++	list_for_each_entry_safe(q, m,
++				 &ring->scan_el_en_attr_list, l)
++		iio_ring_remove_and_free_scan_el_attr(ring, q);
++
++	if (ring->scan_el_attrs)
++		sysfs_remove_group(&ring->dev.kobj,
++				   ring->scan_el_attrs);
++	else if (anydynamic)
++		sysfs_remove_group(&ring->dev.kobj,
++				   &iio_scan_el_dummy_group);
++}
++
++int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
++				const struct iio_chan_spec *channels,
++				int num_channels)
++{
++	int ret, i;
  
- 	/* Set default scan mode */
--	iio_scan_mask_set(ring, iio_scan_el_accel_x.number);
--	iio_scan_mask_set(ring, iio_scan_el_accel_y.number);
--	iio_scan_mask_set(ring, iio_scan_el_accel_z.number);
-+	iio_scan_mask_set(ring, 0);
-+	iio_scan_mask_set(ring, 1);
-+	iio_scan_mask_set(ring, 2);
+ 	ring->id = id;
  
- 	ret = iio_alloc_pollfunc(indio_dev, NULL, &lis3l02dq_poll_func_th);
- 	if (ret)
+@@ -268,9 +421,28 @@ int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id)
+ 				"Failed to add sysfs scan elements\n");
+ 			goto error_free_ring_buffer_event_chrdev;
+ 		}
++	} else if (channels) {
++		ret = sysfs_create_group(&ring->dev.kobj,
++					 &iio_scan_el_dummy_group);
++		if (ret)
++			goto error_free_ring_buffer_event_chrdev;
+ 	}
+ 
+-	return ret;
++
++	INIT_LIST_HEAD(&ring->scan_el_dev_attr_list);
++	INIT_LIST_HEAD(&ring->scan_el_en_attr_list);
++	if (channels) {
++		/* new magic */
++		for (i = 0; i < num_channels; i++) {
++			ret = iio_ring_add_channel_sysfs(ring, &channels[i]);
++			if (ret < 0)
++				goto error_cleanup_dynamic;
++		}
++	}
++
++	return 0;
++error_cleanup_dynamic:
++	__iio_ring_attr_cleanup(ring);
+ error_free_ring_buffer_event_chrdev:
+ 	__iio_free_ring_buffer_event_chrdev(ring);
+ error_remove_device:
+@@ -278,14 +450,17 @@ error_remove_device:
+ error_ret:
+ 	return ret;
+ }
++EXPORT_SYMBOL(iio_ring_buffer_register_ex);
++
++int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id)
++{
++	return iio_ring_buffer_register_ex(ring, id, NULL, 0);
++}
+ EXPORT_SYMBOL(iio_ring_buffer_register);
+ 
+ void iio_ring_buffer_unregister(struct iio_ring_buffer *ring)
+ {
+-	if (ring->scan_el_attrs)
+-		sysfs_remove_group(&ring->dev.kobj,
+-				   ring->scan_el_attrs);
+-
++	__iio_ring_attr_cleanup(ring);
+ 	__iio_free_ring_buffer_access_chrdev(ring);
+ 	__iio_free_ring_buffer_event_chrdev(ring);
+ 	device_del(&ring->dev);
+@@ -540,4 +715,3 @@ error_ret:
+ 	return ret ? ret : len;
+ }
+ EXPORT_SYMBOL(iio_scan_el_ts_store);
+-
+diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
+index 780c6aa..ada51c2 100644
+--- a/drivers/staging/iio/ring_generic.h
++++ b/drivers/staging/iio/ring_generic.h
+@@ -140,6 +140,8 @@ struct iio_ring_buffer {
+ 	int				(*predisable)(struct iio_dev *);
+ 	int				(*postdisable)(struct iio_dev *);
+ 
++	struct list_head scan_el_dev_attr_list;
++	struct list_head scan_el_en_attr_list;
+ };
+ 
+ /**
+@@ -177,6 +179,7 @@ struct iio_scan_el {
+ 	struct device_attribute		dev_attr;
+ 	unsigned int			number;
+ 	unsigned int			label;
++	struct list_head l;
+ 
+ 	int (*set_state)(struct iio_scan_el *scanel,
+ 			 struct iio_dev *dev_info,
+@@ -430,6 +433,14 @@ static inline void iio_put_ring_buffer(struct iio_ring_buffer *ring)
+  **/
+ int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id);
+ 
++/** iio_ring_buffer_register_ex() - register the buffer with IIO core
++ * @ring: the buffer to be registered
++ * @id: the id of the buffer (typically 0)
++ **/
++int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
++				const struct iio_chan_spec *channels,
++				int num_channels);
++
+ /**
+  * iio_ring_buffer_unregister() - unregister the buffer from IIO core
+  * @ring: the buffer to be unregistered
+@@ -481,6 +492,15 @@ static inline int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id)
+ {
+ 	return 0;
+ };
++
++static inline int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring,
++					      int id,
++					      struct iio_chan_spec *channels,
++					      int num_channels)
++{
++	return 0;
++}
++
+ static inline void iio_ring_buffer_unregister(struct iio_ring_buffer *ring)
+ {};
+ 
+diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
+index 8f4d547..44bd575 100644
+--- a/drivers/staging/iio/sysfs.h
++++ b/drivers/staging/iio/sysfs.h
+@@ -24,6 +24,7 @@ struct iio_event_attr {
+ 	struct device_attribute dev_attr;
+ 	int mask;
+ 	struct iio_event_handler_list *listel;
++	struct list_head l;
+ };
+ 
+ #define to_iio_event_attr(_dev_attr) \
+@@ -34,11 +35,14 @@ struct iio_event_attr {
+  * @dev_attr:	underlying device attribute
+  * @address:	associated register address
+  * @val2:	secondary attribute value
++ * @l:		list head for maintaining list of dynamically created attrs.
+  */
+ struct iio_dev_attr {
+ 	struct device_attribute dev_attr;
+ 	int address;
+ 	int val2;
++	struct list_head l;
++	struct iio_chan_spec const *c;
+ };
+ 
+ #define to_iio_dev_attr(_dev_attr)				\
+@@ -259,26 +263,28 @@ struct iio_const_attr {
+ #define IIO_EVENT_ATTR_DATA_RDY(_show, _store, _mask, _handler) \
+ 	IIO_EVENT_ATTR(data_rdy, _show, _store, _mask, _handler)
+ 
+-#define IIO_EV_CLASS_BUFFER		0
+-#define IIO_EV_CLASS_IN			1
+-#define IIO_EV_CLASS_ACCEL		2
+-#define IIO_EV_CLASS_GYRO		3
+-#define IIO_EV_CLASS_MAGN		4
+-#define IIO_EV_CLASS_LIGHT		5
+-#define IIO_EV_CLASS_PROXIMITY		6
+-#define IIO_EV_CLASS_TEMP		7
+-
+-#define IIO_EV_MOD_X			0
+-#define IIO_EV_MOD_Y			1
+-#define IIO_EV_MOD_Z			2
+-#define IIO_EV_MOD_X_AND_Y		3
+-#define IIO_EV_MOD_X_ANX_Z		4
+-#define IIO_EV_MOD_Y_AND_Z		5
+-#define IIO_EV_MOD_X_AND_Y_AND_Z	6
+-#define IIO_EV_MOD_X_OR_Y		7
+-#define IIO_EV_MOD_X_OR_Z		8
+-#define IIO_EV_MOD_Y_OR_Z		9
+-#define IIO_EV_MOD_X_OR_Y_OR_Z		10
++/* must match our channel defs */
++#define IIO_EV_CLASS_IN			IIO_IN
++#define IIO_EV_CLASS_IN_DIFF		IIO_IN_DIFF
++#define IIO_EV_CLASS_ACCEL		IIO_ACCEL
++#define IIO_EV_CLASS_GYRO		IIO_GYRO
++#define IIO_EV_CLASS_MAGN		IIO_MAGN
++#define IIO_EV_CLASS_LIGHT		IIO_LIGHT
++#define IIO_EV_CLASS_PROXIMITY		IIO_PROXIMITY
++#define IIO_EV_CLASS_TEMP		IIO_TEMP
++#define IIO_EV_CLASS_BUFFER		IIO_BUFFER
++
++#define IIO_EV_MOD_X			IIO_MOD_X
++#define IIO_EV_MOD_Y			IIO_MOD_Y
++#define IIO_EV_MOD_Z			IIO_MOD_Z
++#define IIO_EV_MOD_X_AND_Y		IIO_MOD_X_AND_Y
++#define IIO_EV_MOD_X_ANX_Z		IIO_MOD_X_AND_Z
++#define IIO_EV_MOD_Y_AND_Z		IIO_MOD_Y_AND_Z
++#define IIO_EV_MOD_X_AND_Y_AND_Z	IIO_MOD_X_AND_Y_AND_Z
++#define IIO_EV_MOD_X_OR_Y		IIO_MOD_X_OR_Y
++#define IIO_EV_MOD_X_OR_Z		IIO_MOD_X_OR_Z
++#define IIO_EV_MOD_Y_OR_Z		IIO_MOD_Y_OR_Z
++#define IIO_EV_MOD_X_OR_Y_OR_Z		IIO_MOD_X_OR_Y_OR_Z
+ 
+ #define IIO_EV_TYPE_THRESH		0
+ #define IIO_EV_TYPE_MAG			1
+@@ -288,6 +294,10 @@ struct iio_const_attr {
+ #define IIO_EV_DIR_RISING		1
+ #define IIO_EV_DIR_FALLING		2
+ 
++#define IIO_EV_TYPE_MAX 8
++#define IIO_EV_BIT(type, direction)			\
++	(1 << (type*IIO_EV_TYPE_MAX + direction))
++
+ #define IIO_EVENT_CODE(channelclass, orient_bit, number,		\
+ 		       modifier, type, direction)			\
+ 	(channelclass | (orient_bit << 8) | ((number) << 9) |		\
+@@ -304,6 +314,14 @@ struct iio_const_attr {
+ #define IIO_BUFFER_EVENT_CODE(code)		\
+ 	(IIO_EV_CLASS_BUFFER | (code << 8))
+ 
++#define IIO_EVENT_CODE_EXTRACT_DIR(mask) ((mask >> 24) & 0xf)
++
++/* Event code number extraction depends on which type of event we have.
++ * Perhaps review this function in the future*/
++#define IIO_EVENT_CODE_EXTRACT_NUM(mask) ((mask >> 9) & 0x0f)
++
++#define IIO_EVENT_CODE_EXTRACT_MODIFIER(mask) ((mask >> 13) & 0x7)
++
+ /**
+  * IIO_EVENT_ATTR_RING_50_FULL - ring buffer event to indicate 50% full
+  * @_show: output method for the attribute
 -- 
 1.7.3.4
 
