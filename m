@@ -1,52 +1,36 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:53257 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756069Ab1ELNiV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 May 2011 09:38:21 -0400
-Message-ID: <4DCBE36A.5050801@cam.ac.uk>
-Date: Thu, 12 May 2011 14:40:58 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <jic23@cam.ac.uk>
+CC: <linux-iio@vger.kernel.org>, <drivers@analog.com>,
+	<device-drivers-devel@blackfin.uclinux.org>, Michael Hennerich
+	<michael.hennerich@analog.com>
+Subject: [PATCH] iio: trigger: iio-trig-bfin-timer: select missing dependency
+Date: Thu, 12 May 2011 13:15:09 +0200
+Message-ID: <1305198909-2078-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org, drivers@analog.com,
-	device-drivers-devel@blackfin.uclinux.org, randy.dunlap@oracle.com
-Subject: Re: [PATCH] iio: adc: ad7780: Add missing GPIOLIB dependency
-References: <1305200160-2217-1-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1305200160-2217-1-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/12/11 12:36, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-> Reported-by: Randy Dunlap <randy.dunlap@oracle.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/adc/Kconfig |    1 +
->  1 files changed, 1 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-> index 4159389..0a19cee 100644
-> --- a/drivers/staging/iio/adc/Kconfig
-> +++ b/drivers/staging/iio/adc/Kconfig
-> @@ -145,6 +145,7 @@ config AD7887
->  config AD7780
->  	tristate "Analog Devices AD7780 AD7781 ADC driver"
->  	depends on SPI
-> +	depends on GPIOLIB
->  	help
->  	  Say yes here to build support for Analog Devices
->  	  AD7780 and AD7781 SPI analog to digital convertors (ADC).
-> --
-> 1.6.0.2
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+From: Michael Hennerich <michael.hennerich@analog.com>
 
+This driver requires CONFIG_BFIN_GPTIMERS.
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/trigger/Kconfig |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/staging/iio/trigger/Kconfig b/drivers/staging/iio/trigger/Kconfig
+index c33777e..b8abf54 100644
+--- a/drivers/staging/iio/trigger/Kconfig
++++ b/drivers/staging/iio/trigger/Kconfig
+@@ -31,6 +31,7 @@ config IIO_SYSFS_TRIGGER
+ config IIO_BFIN_TMR_TRIGGER
+ 	tristate "Blackfin TIMER trigger"
+ 	depends on BLACKFIN
++	select BFIN_GPTIMERS
+ 	help
+ 	  Provides support for using a Blackfin timer as IIO triggers.
+ 	  If unsure, say N (but it's safe to say "Y").
+-- 
+1.6.0.2
