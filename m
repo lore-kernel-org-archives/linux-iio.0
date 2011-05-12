@@ -1,22 +1,27 @@
-Return-Path: <Michael.Hennerich@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from va3ehsobe002.messaging.microsoft.com ([216.32.180.12]:55289
+	"EHLO VA3EHSOBE002.bigfish.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755202Ab1ELLq7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 May 2011 07:46:59 -0400
 From: <michael.hennerich@analog.com>
-To: <greg@kroah.com>
-CC: <jic23@cam.ac.uk>, <linux-iio@vger.kernel.org>, <drivers@analog.com>,
-	<device-drivers-devel@blackfin.uclinux.org>, <randy.dunlap@oracle.com>,
+To: <jic23@cam.ac.uk>
+CC: <linux-iio@vger.kernel.org>, <drivers@analog.com>,
+	<device-drivers-devel@blackfin.uclinux.org>,
+	<randy.dunlap@oracle.com>,
 	Michael Hennerich <michael.hennerich@analog.com>
 Subject: [PATCH] iio: adc: ad7780: Add missing GPIOLIB dependency
-Date: Thu, 12 May 2011 15:38:24 +0200
-Message-ID: <1305207504-6617-1-git-send-email-michael.hennerich@analog.com>
+Date: Thu, 12 May 2011 13:36:00 +0200
+Message-ID: <1305200160-2217-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Reported-by: Randy Dunlap <randy.dunlap@oracle.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
  drivers/staging/iio/adc/Kconfig |    1 +
  1 files changed, 1 insertions(+), 0 deletions(-)
@@ -35,3 +40,5 @@ index 4159389..0a19cee 100644
  	  AD7780 and AD7781 SPI analog to digital convertors (ADC).
 --
 1.6.0.2
+
+
