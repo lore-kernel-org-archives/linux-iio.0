@@ -1,122 +1,161 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:53160 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759486Ab1EMQG2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 May 2011 12:06:28 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 0/5] IIO: Another mixed bag, including iio_info structure and doc updates.
-Date: Fri, 13 May 2011 17:08:58 +0100
-Message-Id: <1305302943-16475-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: [PATCH 5/5] staging:iio: Trivial kconfig reorganization and uniformity improvements.
+Date: Fri, 13 May 2011 17:09:03 +0100
+Message-Id: <1305302943-16475-6-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1305302943-16475-1-git-send-email-jic23@cam.ac.uk>
+References: <1305302943-16475-1-git-send-email-jic23@cam.ac.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi all,
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/Kconfig       |    8 +++---
+ drivers/staging/iio/adc/Kconfig   |   48 ++++++++++++++++++------------------
+ drivers/staging/iio/light/Kconfig |   26 ++++++++++----------
+ 3 files changed, 41 insertions(+), 41 deletions(-)
 
-Only one significant patch here.  The first adds the iio_info structure,
-pulling those elements that are typically shared by a large group of
-parts and constant out of iio_dev structures. It touches every driver,
-but as a simple parameter move patch 'should' be relatively safe.
-
-I haven't put the iio_chan_spec pointer in there. To see why, just consider
-the number of instances of iio_info that would be needed in max1363 if we
-did do so.
-
-The doc updates aren't great, but the get it nearer to where it should be.
-
-Other stuff is in the category of things I'd either noted down to fix, or
-happened to come across whilst doing something else.
-
-Thanks all, and as ever comments / review welcome.
-
-
-
-Jonathan Cameron (5):
-  staging:iio: implement an iio_info structure to take some of the
-    constant elements out of iio_dev.
-  staging:iio:max1363 misc cleanups and use of for_each_bit_set to    
-    simplify event code spitting out.
-  staging:iio: use pollfunc allocation helpers in remaining drivers.
-  staging:iio:documenation partial update.
-  staging:iio: Trivial kconfig reorganization and uniformity
-    improvements.
-
- drivers/staging/iio/Documentation/device.txt    |   78 ++-
- drivers/staging/iio/Documentation/overview.txt  |   19 +-
- drivers/staging/iio/Documentation/ring.txt      |   44 +-
- drivers/staging/iio/Documentation/trigger.txt   |   16 +-
- drivers/staging/iio/Documentation/userspace.txt |   12 -
- drivers/staging/iio/Kconfig                     |    8 +-
- drivers/staging/iio/accel/adis16201_core.c      |   13 +-
- drivers/staging/iio/accel/adis16203_core.c      |   12 +-
- drivers/staging/iio/accel/adis16204_core.c      |   12 +-
- drivers/staging/iio/accel/adis16209_core.c      |   12 +-
- drivers/staging/iio/accel/adis16220_core.c      |    7 +-
- drivers/staging/iio/accel/adis16240_core.c      |   12 +-
- drivers/staging/iio/accel/kxsd9.c               |   12 +-
- drivers/staging/iio/accel/lis3l02dq_core.c      |   23 +-
- drivers/staging/iio/accel/lis3l02dq_ring.c      |   16 +-
- drivers/staging/iio/accel/sca3000_core.c        |   33 +-
- drivers/staging/iio/adc/Kconfig                 |   48 +-
- drivers/staging/iio/adc/ad7150.c                |   15 +-
- drivers/staging/iio/adc/ad7152.c                |    7 +-
- drivers/staging/iio/adc/ad7291.c                |   11 +-
- drivers/staging/iio/adc/ad7298_core.c           |    8 +-
- drivers/staging/iio/adc/ad7298_ring.c           |   24 +-
- drivers/staging/iio/adc/ad7314.c                |    7 +-
- drivers/staging/iio/adc/ad7476_core.c           |    8 +-
- drivers/staging/iio/adc/ad7476_ring.c           |   26 +-
- drivers/staging/iio/adc/ad7606_core.c           |   10 +-
- drivers/staging/iio/adc/ad7606_ring.c           |   24 +-
- drivers/staging/iio/adc/ad7745.c                |   11 +-
- drivers/staging/iio/adc/ad7780.c                |    8 +-
- drivers/staging/iio/adc/ad7816.c                |   12 +-
- drivers/staging/iio/adc/ad7887_core.c           |    8 +-
- drivers/staging/iio/adc/ad7887_ring.c           |   24 +-
- drivers/staging/iio/adc/ad799x.h                |    3 +-
- drivers/staging/iio/adc/ad799x_core.c           |   47 +-
- drivers/staging/iio/adc/ad799x_ring.c           |   25 +-
- drivers/staging/iio/adc/adt7310.c               |   12 +-
- drivers/staging/iio/adc/adt7410.c               |   12 +-
- drivers/staging/iio/adc/adt75.c                 |   12 +-
- drivers/staging/iio/adc/max1363.h               |   78 +--
- drivers/staging/iio/adc/max1363_core.c          |  890 ++++++++++++-----------
- drivers/staging/iio/adc/max1363_ring.c          |   25 +-
- drivers/staging/iio/addac/adt7316.c             |   27 +-
- drivers/staging/iio/dac/ad5446.c                |    8 +-
- drivers/staging/iio/dac/ad5504.c                |   24 +-
- drivers/staging/iio/dac/ad5624r_spi.c           |    8 +-
- drivers/staging/iio/dac/ad5791.c                |    8 +-
- drivers/staging/iio/dac/max517.c                |   15 +-
- drivers/staging/iio/dds/ad5930.c                |   12 +-
- drivers/staging/iio/dds/ad9832.c                |    8 +-
- drivers/staging/iio/dds/ad9834.c                |    8 +-
- drivers/staging/iio/dds/ad9850.c                |   10 +-
- drivers/staging/iio/dds/ad9852.c                |   10 +-
- drivers/staging/iio/dds/ad9910.c                |   10 +-
- drivers/staging/iio/dds/ad9951.c                |   10 +-
- drivers/staging/iio/gyro/adis16060_core.c       |    8 +-
- drivers/staging/iio/gyro/adis16080_core.c       |    8 +-
- drivers/staging/iio/gyro/adis16130_core.c       |    8 +-
- drivers/staging/iio/gyro/adis16260_core.c       |   12 +-
- drivers/staging/iio/gyro/adis16260_ring.c       |   23 +-
- drivers/staging/iio/gyro/adxrs450_core.c        |    8 +-
- drivers/staging/iio/iio.h                       |  105 ++--
- drivers/staging/iio/imu/adis16400_core.c        |   12 +-
- drivers/staging/iio/industrialio-core.c         |   73 +-
- drivers/staging/iio/light/Kconfig               |   26 +-
- drivers/staging/iio/light/isl29018.c            |    8 +-
- drivers/staging/iio/light/tsl2563.c             |   26 +-
- drivers/staging/iio/light/tsl2583.c             |    8 +-
- drivers/staging/iio/magnetometer/ak8975.c       |    8 +-
- drivers/staging/iio/magnetometer/hmc5843.c      |    8 +-
- drivers/staging/iio/meter/ade7753.c             |    8 +-
- drivers/staging/iio/meter/ade7754.c             |    8 +-
- drivers/staging/iio/meter/ade7758_core.c        |    8 +-
- drivers/staging/iio/meter/ade7758_ring.c        |   22 +-
- drivers/staging/iio/meter/ade7759.c             |    9 +-
- drivers/staging/iio/meter/ade7854.c             |    8 +-
- drivers/staging/iio/resolver/ad2s120x.c         |   11 +-
- drivers/staging/iio/resolver/ad2s1210.c         |   10 +-
- drivers/staging/iio/resolver/ad2s90.c           |   10 +-
- 78 files changed, 1241 insertions(+), 1036 deletions(-)
- delete mode 100644 drivers/staging/iio/Documentation/userspace.txt
-
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index e6235d1..f96d5b5 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -5,17 +5,17 @@
+ menuconfig IIO
+ 	tristate "Industrial I/O support"
+ 	depends on !S390
+-	---help---
++	help
+ 	  The industrial I/O subsystem provides a unified framework for
+ 	  drivers for many different types of embedded sensors using a
+ 	  number of different physical interfaces (i2c, spi, etc). See
+-	  Documentation/industrialio for more information.
++	  drivers/staging/iio/Documentation for more information.
+ if IIO
+ 
+ config IIO_RING_BUFFER
+-	bool "Enable ring buffer support within IIO"
++	bool "Enable buffer support within IIO"
+ 	help
+-	  Provide core support for various ring buffer based data
++	  Provide core support for various buffer based data
+ 	  acquisition methods.
+ 
+ if IIO_RING_BUFFER
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 228274b..00bfb9d 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -3,30 +3,6 @@
+ #
+ comment "Analog to digital convertors"
+ 
+-config MAX1363
+-	tristate "MAXIM max1363 ADC driver"
+-	depends on I2C
+-	select IIO_TRIGGER if IIO_RING_BUFFER
+-	select MAX1363_RING_BUFFER
+-	help
+-	  Say yes here to build support for many MAXIM i2c analog to digital
+-	  convertors (ADC). (max1361, max1362, max1363, max1364, max1036,
+-	  max1037, max1038, max1039, max1136, max1136, max1137, max1138,
+-	  max1139, max1236, max1237, max11238, max1239, max11600, max11601,
+-	  max11602, max11603, max11604, max11605, max11606, max11607,
+-	  max11608, max11609, max11610, max11611, max11612, max11613,
+-	  max11614, max11615, max11616, max11617, max11644, max11645,
+-	  max11646, max11647) Provides direct access via sysfs.
+-
+-config MAX1363_RING_BUFFER
+-	bool "MAXIM max1363: use ring buffer"
+-	depends on MAX1363
+-	select IIO_RING_BUFFER
+-	select IIO_SW_RING
+-	help
+-	  Say yes here to include ring buffer support in the MAX1363
+-	  ADC driver.
+-
+ config AD7150
+ 	tristate "Analog Devices ad7150/1/6 capacitive sensor driver"
+ 	depends on I2C
+@@ -190,3 +166,27 @@ config ADT7410
+ 	help
+ 	  Say yes here to build support for Analog Devices ADT7410
+ 	  temperature sensors.
++
++config MAX1363
++	tristate "Maxim max1363 ADC driver"
++	depends on I2C
++	select IIO_TRIGGER if IIO_RING_BUFFER
++	select MAX1363_RING_BUFFER
++	help
++	  Say yes here to build support for many Maxim i2c analog to digital
++	  convertors (ADC). (max1361, max1362, max1363, max1364, max1036,
++	  max1037, max1038, max1039, max1136, max1136, max1137, max1138,
++	  max1139, max1236, max1237, max11238, max1239, max11600, max11601,
++	  max11602, max11603, max11604, max11605, max11606, max11607,
++	  max11608, max11609, max11610, max11611, max11612, max11613,
++	  max11614, max11615, max11616, max11617, max11644, max11645,
++	  max11646, max11647) Provides direct access via sysfs.
++
++config MAX1363_RING_BUFFER
++	bool "Maxim max1363: use ring buffer"
++	depends on MAX1363
++	select IIO_RING_BUFFER
++	select IIO_SW_RING
++	help
++	  Say yes here to include ring buffer support in the MAX1363
++	  ADC driver.
+diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
+index e9f3794..46d62d1 100644
+--- a/drivers/staging/iio/light/Kconfig
++++ b/drivers/staging/iio/light/Kconfig
+@@ -1,18 +1,8 @@
+-#
++\#
+ # Light sensors
+ #
+ comment "Light sensors"
+ 
+-config SENSORS_TSL2563
+-	tristate "TAOS TSL256[0-3] ambient light sensor"
+-	depends on I2C
+-	help
+-	 If you say yes here you get support for the Taos TSL2560,
+-	 TSL2561, TSL2562 and TSL2563 ambient light sensors.
+-
+-	 This driver can also be built as a module.  If so, the module
+-	 will be called tsl2563.
+-
+ config SENSORS_ISL29018
+         tristate "ISL 29018 light and proximity sensor"
+         depends on I2C
+@@ -24,9 +14,19 @@ config SENSORS_ISL29018
+          in lux, proximity infrared sensing and normal infrared sensing.
+          Data from sensor is accessible via sysfs.
+ 
++config SENSORS_TSL2563
++	tristate "TAOS TSL2560, TSL2561, TSL2562 and TSL2563 ambient light sensors"
++	depends on I2C
++	help
++	 If you say yes here you get support for the Taos TSL2560,
++	 TSL2561, TSL2562 and TSL2563 ambient light sensors.
++
++	 This driver can also be built as a module.  If so, the module
++	 will be called tsl2563.
++
+ config TSL2583
+-	tristate "TAOS TSL2580, TSL2581, and TSL2583 light-to-digital converters"
++	tristate "TAOS TSL2580, TSL2581 and TSL2583 light-to-digital converters"
+ 	depends on I2C
+ 	help
+-	 Provides support for the TAOS tsl2580, tsl2581, and tsl2583 devices.
++	 Provides support for the TAOS tsl2580, tsl2581 and tsl2583 devices.
+ 	 Access ALS data via iio, sysfs.
 -- 
 1.7.3.4
+
