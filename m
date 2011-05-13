@@ -1,41 +1,122 @@
 Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4DD39989.7000602@cam.ac.uk>
-Date: Wed, 18 May 2011 11:03:53 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "Hennerich, Michael" <Michael.Hennerich@analog.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Drivers <Drivers@analog.com>,
- "device-drivers-devel@blackfin.uclinux.org" <device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: IIO-onwards
-References: <544AC56F16B56944AEC3BD4E3D5917713AAF21C49E@LIMKCMBX1.ad.analog.com> <4DD385B2.9070809@cam.ac.uk>
-In-Reply-To: <4DD385B2.9070809@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 0/5] IIO: Another mixed bag, including iio_info structure and doc updates.
+Date: Fri, 13 May 2011 17:08:58 +0100
+Message-Id: <1305302943-16475-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/18/11 09:39, Jonathan Cameron wrote:
-> On 05/18/11 08:58, Hennerich, Michael wrote:
->> Hi Jonathan,
->>
->> What are your plans for submitting IIO-onwards?
-> It would have gone about a weak ago, but Thomas Gleixner wants some slight
-> tweaks to the irq core exports patch that about 50% of 
-> our tree is dependent on.  Getting this sorted is being slowed down by (I think)
-> the fact Thomas is travelling at the moment and seems to only have
-> intermittent email access. The outstanding issue is that irq_to_descs
-> should not be exported, but rather handle_generic_irq shouldn't
-> be inline.  I'm waiting on a reply for where it should go as it
-> doesn't obviously fit in any of the files under kernel/irq/.
-> 
-> Greg knows what the situation is, so fingers crossed that we can
-> get it cleared up in time to catch the merge window.
-> 
-> I think I'll just plump for a vaguely reasonable location for the code
-> and hope I guessed right as that will speed things up a touch and can't
-> do any harm!
-I've just pushed out exactly what I aim to send to Greg the moment
-Thomas acks the irq element (or says he is pulling it via his tree).
+Hi all,
 
-Other than updates to that irq patch, I've cleaned up some commit
-messages so it all looks nice and tidy ;)
+Only one significant patch here.  The first adds the iio_info structure,
+pulling those elements that are typically shared by a large group of
+parts and constant out of iio_dev structures. It touches every driver,
+but as a simple parameter move patch 'should' be relatively safe.
+
+I haven't put the iio_chan_spec pointer in there. To see why, just consider
+the number of instances of iio_info that would be needed in max1363 if we
+did do so.
+
+The doc updates aren't great, but the get it nearer to where it should be.
+
+Other stuff is in the category of things I'd either noted down to fix, or
+happened to come across whilst doing something else.
+
+Thanks all, and as ever comments / review welcome.
+
+
+
+Jonathan Cameron (5):
+  staging:iio: implement an iio_info structure to take some of the
+    constant elements out of iio_dev.
+  staging:iio:max1363 misc cleanups and use of for_each_bit_set to    
+    simplify event code spitting out.
+  staging:iio: use pollfunc allocation helpers in remaining drivers.
+  staging:iio:documenation partial update.
+  staging:iio: Trivial kconfig reorganization and uniformity
+    improvements.
+
+ drivers/staging/iio/Documentation/device.txt    |   78 ++-
+ drivers/staging/iio/Documentation/overview.txt  |   19 +-
+ drivers/staging/iio/Documentation/ring.txt      |   44 +-
+ drivers/staging/iio/Documentation/trigger.txt   |   16 +-
+ drivers/staging/iio/Documentation/userspace.txt |   12 -
+ drivers/staging/iio/Kconfig                     |    8 +-
+ drivers/staging/iio/accel/adis16201_core.c      |   13 +-
+ drivers/staging/iio/accel/adis16203_core.c      |   12 +-
+ drivers/staging/iio/accel/adis16204_core.c      |   12 +-
+ drivers/staging/iio/accel/adis16209_core.c      |   12 +-
+ drivers/staging/iio/accel/adis16220_core.c      |    7 +-
+ drivers/staging/iio/accel/adis16240_core.c      |   12 +-
+ drivers/staging/iio/accel/kxsd9.c               |   12 +-
+ drivers/staging/iio/accel/lis3l02dq_core.c      |   23 +-
+ drivers/staging/iio/accel/lis3l02dq_ring.c      |   16 +-
+ drivers/staging/iio/accel/sca3000_core.c        |   33 +-
+ drivers/staging/iio/adc/Kconfig                 |   48 +-
+ drivers/staging/iio/adc/ad7150.c                |   15 +-
+ drivers/staging/iio/adc/ad7152.c                |    7 +-
+ drivers/staging/iio/adc/ad7291.c                |   11 +-
+ drivers/staging/iio/adc/ad7298_core.c           |    8 +-
+ drivers/staging/iio/adc/ad7298_ring.c           |   24 +-
+ drivers/staging/iio/adc/ad7314.c                |    7 +-
+ drivers/staging/iio/adc/ad7476_core.c           |    8 +-
+ drivers/staging/iio/adc/ad7476_ring.c           |   26 +-
+ drivers/staging/iio/adc/ad7606_core.c           |   10 +-
+ drivers/staging/iio/adc/ad7606_ring.c           |   24 +-
+ drivers/staging/iio/adc/ad7745.c                |   11 +-
+ drivers/staging/iio/adc/ad7780.c                |    8 +-
+ drivers/staging/iio/adc/ad7816.c                |   12 +-
+ drivers/staging/iio/adc/ad7887_core.c           |    8 +-
+ drivers/staging/iio/adc/ad7887_ring.c           |   24 +-
+ drivers/staging/iio/adc/ad799x.h                |    3 +-
+ drivers/staging/iio/adc/ad799x_core.c           |   47 +-
+ drivers/staging/iio/adc/ad799x_ring.c           |   25 +-
+ drivers/staging/iio/adc/adt7310.c               |   12 +-
+ drivers/staging/iio/adc/adt7410.c               |   12 +-
+ drivers/staging/iio/adc/adt75.c                 |   12 +-
+ drivers/staging/iio/adc/max1363.h               |   78 +--
+ drivers/staging/iio/adc/max1363_core.c          |  890 ++++++++++++-----------
+ drivers/staging/iio/adc/max1363_ring.c          |   25 +-
+ drivers/staging/iio/addac/adt7316.c             |   27 +-
+ drivers/staging/iio/dac/ad5446.c                |    8 +-
+ drivers/staging/iio/dac/ad5504.c                |   24 +-
+ drivers/staging/iio/dac/ad5624r_spi.c           |    8 +-
+ drivers/staging/iio/dac/ad5791.c                |    8 +-
+ drivers/staging/iio/dac/max517.c                |   15 +-
+ drivers/staging/iio/dds/ad5930.c                |   12 +-
+ drivers/staging/iio/dds/ad9832.c                |    8 +-
+ drivers/staging/iio/dds/ad9834.c                |    8 +-
+ drivers/staging/iio/dds/ad9850.c                |   10 +-
+ drivers/staging/iio/dds/ad9852.c                |   10 +-
+ drivers/staging/iio/dds/ad9910.c                |   10 +-
+ drivers/staging/iio/dds/ad9951.c                |   10 +-
+ drivers/staging/iio/gyro/adis16060_core.c       |    8 +-
+ drivers/staging/iio/gyro/adis16080_core.c       |    8 +-
+ drivers/staging/iio/gyro/adis16130_core.c       |    8 +-
+ drivers/staging/iio/gyro/adis16260_core.c       |   12 +-
+ drivers/staging/iio/gyro/adis16260_ring.c       |   23 +-
+ drivers/staging/iio/gyro/adxrs450_core.c        |    8 +-
+ drivers/staging/iio/iio.h                       |  105 ++--
+ drivers/staging/iio/imu/adis16400_core.c        |   12 +-
+ drivers/staging/iio/industrialio-core.c         |   73 +-
+ drivers/staging/iio/light/Kconfig               |   26 +-
+ drivers/staging/iio/light/isl29018.c            |    8 +-
+ drivers/staging/iio/light/tsl2563.c             |   26 +-
+ drivers/staging/iio/light/tsl2583.c             |    8 +-
+ drivers/staging/iio/magnetometer/ak8975.c       |    8 +-
+ drivers/staging/iio/magnetometer/hmc5843.c      |    8 +-
+ drivers/staging/iio/meter/ade7753.c             |    8 +-
+ drivers/staging/iio/meter/ade7754.c             |    8 +-
+ drivers/staging/iio/meter/ade7758_core.c        |    8 +-
+ drivers/staging/iio/meter/ade7758_ring.c        |   22 +-
+ drivers/staging/iio/meter/ade7759.c             |    9 +-
+ drivers/staging/iio/meter/ade7854.c             |    8 +-
+ drivers/staging/iio/resolver/ad2s120x.c         |   11 +-
+ drivers/staging/iio/resolver/ad2s1210.c         |   10 +-
+ drivers/staging/iio/resolver/ad2s90.c           |   10 +-
+ 78 files changed, 1241 insertions(+), 1036 deletions(-)
+ delete mode 100644 drivers/staging/iio/Documentation/userspace.txt
+
+-- 
+1.7.3.4
