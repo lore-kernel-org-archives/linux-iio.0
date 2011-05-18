@@ -1,76 +1,69 @@
-Return-Path: <groeck@ericsson.com>
-Date: Wed, 18 May 2011 09:37:07 -0700
-From: Guenter Roeck <guenter.roeck@ericsson.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "fabien.marteau@armadeus.com" <fabien.marteau@armadeus.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "lm-sensors@lm-sensors.org" <lm-sensors@lm-sensors.org>
-Subject: Re: [PATCH 1/2] staging:iio:adc: as1531 driver initial conversion
- from hwmon submission.
-Message-ID: <20110518163707.GB11675@ericsson.com>
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: fabien.marteau@armadeus.com
+Cc: guenter.roeck@ericsson.com,
+	linux-iio@vger.kernel.org,
+	lm-sensors@lm-sensors.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH V2 0/2] staging:iio:adc:as1531 driver port from hwmon driver.
+Date: Wed, 18 May 2011 17:16:58 +0100
+Message-Id: <1305735420-23293-1-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1305733172-18519-1-git-send-email-jic23@cam.ac.uk>
 References: <1305733172-18519-1-git-send-email-jic23@cam.ac.uk>
- <1305735420-23293-2-git-send-email-jic23@cam.ac.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-In-Reply-To: <1305735420-23293-2-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, May 18, 2011 at 12:16:59PM -0400, Jonathan Cameron wrote:
-> From: Fabien Marteau <fabien.marteau@armadeus.com>
->=20
-> V2: Fix double mutex unlock and whitespace (Guenter Roeck).
+V2: Fix the various issues Guenter found.
 
-Should be below ---
+Original message -
 
-> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Dear All,
 
-and nitpick below, otherwise=20
+This is a quick initial port of the as1531 driver Fabien submitted
+to the lm-sensors mailing list.
 
-Revewed-by: Guenter Roeck <guenter.roeck@ericsson.com>
+Based on top of a large series I just sent to Greg KH and posted to
+linux-iio. That has a few other dependencies, so might be easier
+to just to wait for them all to be in a standard tree (linux-next
+or mainline).
 
-> ---
->  drivers/staging/iio/adc/Kconfig  |   10 ++
->  drivers/staging/iio/adc/Makefile |    2 +
->  drivers/staging/iio/adc/as1531.c |  209 ++++++++++++++++++++++++++++++=
-++++++++
->  3 files changed, 221 insertions(+), 0 deletions(-)
->=20
-> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/=
-Kconfig
-> index 8c751c4..4af730a 100644
-> --- a/drivers/staging/iio/adc/Kconfig
-> +++ b/drivers/staging/iio/adc/Kconfig
-> @@ -168,6 +168,16 @@ config ADT7410
->  	  Say yes here to build support for Analog Devices ADT7410
->  	  temperature sensors.
-> =20
-> +config AS1531
-> +tristate "Austria Microsystems AS1531 Analog to Digital Converter"
-> +	depends on SPI_MASTER
-> +	help
-> +	  If you say yes here you get support for Austria Microsystems AS1531.
-> +		AS1531 is a 12=A0bits Analog to digitals converter with 8 channels
-> +		provided by Austria-Microsystems company.
-> +	  This driver can also be built as a module.  If so, the module
-> +	  will be called as1531.
-> +
->  config MAX1363
->  	tristate "Maxim max1363 ADC driver"
->  	depends on I2C
-> diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc=
-/Makefile
-> index 1d9b3f5..027b94e2 100644
-> --- a/drivers/staging/iio/adc/Makefile
-> +++ b/drivers/staging/iio/adc/Makefile
-> @@ -39,3 +39,5 @@ obj-$(CONFIG_AD7816) +=3D ad7816.o
->  obj-$(CONFIG_ADT75) +=3D adt75.o
->  obj-$(CONFIG_ADT7310) +=3D adt7310.o
->  obj-$(CONFIG_ADT7410) +=3D adt7410.o
-> +
-> +obj-$(CONFIG_AS1531) +=3D as1531.o
-> \ No newline at end of file
+Dropped from hwmon driver - max and min values.
 
-What does this mean ? Is there a missing newline ?
+Stuff to add at some point (i.e. when needed)
 
-Thanks,
-Guenter
+1) Differential channels - trivial to do, just add a few more entries to
+the channels array and some signed bits in read_raw
+
+2) Buffered read support - straight forward case where all channels have
+to be explicitly requested anyway.
+
+3) Other devices trivially added:
+as1530 is directly compatible.
+as1532/1533 look like 4 channel equivalents (add iio_chan_spec arrays).
+
+The other similarly numbered parts are different enough to need their
+own drivers.
+
+Fabien, as more of the code in the first patch is yours than mine,
+I've put you as author of that one.
+
+The second is mostly stuff you'd have gotten in review to the hwmon
+driver anyway.
+
+Jonathan
+
+Fabien Marteau (1):
+  staging:iio:adc: as1531 driver initial conversion from hwmon
+    submission.
+
+Jonathan Cameron (1):
+  staging:iio:adc:as1351 general cleanup and conversion to standard
+    functions.
+
+ drivers/staging/iio/adc/Kconfig  |   10 +++
+ drivers/staging/iio/adc/Makefile |    2 +
+ drivers/staging/iio/adc/as1531.c |  166 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 178 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/as1531.c
+
+-- 
+1.7.3.4
