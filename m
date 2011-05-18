@@ -3,26 +3,26 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 017/111] staging:iio:adc:ad7816 move from old to current event handling.
-Date: Wed, 18 May 2011 14:41:07 +0100
-Message-Id: <1305726161-5606-18-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 016/111] staging:iio:adc:ad7745 move from old to current event handling.
+Date: Wed, 18 May 2011 14:41:06 +0100
+Message-Id: <1305726161-5606-17-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-I'm not sure what the event is and am very much against the dodgy
-hack to give it a code. However for now, lets just stop it using
-the deprecated core handling so we can move on.
+Nice simple one.  Not sure we actually want devices outputting
+datardy signals like that, but I'll leave it for now.
+Cleaned up some unneeded functions whilst here.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/ad7816.c |   62 +++++++++----------------------------
- 1 files changed, 15 insertions(+), 47 deletions(-)
+ drivers/staging/iio/adc/ad7745.c |   89 ++++++++++---------------------------
+ 1 files changed, 24 insertions(+), 65 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index 9e30d35..a062ec3 100644
---- a/drivers/staging/iio/adc/ad7816.c
-+++ b/drivers/staging/iio/adc/ad7816.c
+diff --git a/drivers/staging/iio/adc/ad7745.c b/drivers/staging/iio/adc/ad7745.c
+index 1373d23..cb1fc61 100644
+--- a/drivers/staging/iio/adc/ad7745.c
++++ b/drivers/staging/iio/adc/ad7745.c
 @@ -8,14 +8,12 @@
  
  #include <linux/interrupt.h>
@@ -33,112 +33,155 @@ index 9e30d35..a062ec3 100644
  #include <linux/slab.h>
  #include <linux/sysfs.h>
  #include <linux/list.h>
- #include <linux/spi/spi.h>
+ #include <linux/i2c.h>
 -#include <linux/rtc.h>
  
  #include "../iio.h"
  #include "../sysfs.h"
-@@ -47,8 +45,6 @@ struct ad7816_chip_info {
+@@ -58,9 +56,7 @@ struct ad774x_chip_info {
  	const char *name;
- 	struct spi_device *spi_dev;
+ 	struct i2c_client *client;
  	struct iio_dev *indio_dev;
 -	struct work_struct thresh_work;
+ 	bool inter;
 -	s64 last_timestamp;
- 	u16 rdwr_pin;
- 	u16 convert_pin;
- 	u16 busy_pin;
-@@ -266,33 +262,14 @@ static const struct attribute_group ad7816_attribute_group = {
+ 	u16 cap_offs;                   /* Capacitive offset */
+ 	u16 cap_gain;                   /* Capacitive gain calibration */
+ 	u16 volt_gain;                  /* Voltage gain calibration */
+@@ -76,7 +72,8 @@ struct ad774x_conversion_mode {
+ 	u8 reg_cfg;
+ };
  
- #define IIO_EVENT_CODE_AD7816_OTI    IIO_BUFFER_EVENT_CODE(0)
+-struct ad774x_conversion_mode ad774x_conv_mode_table[AD774X_MAX_CONV_MODE] = {
++static struct ad774x_conversion_mode
++ad774x_conv_mode_table[AD774X_MAX_CONV_MODE] = {
+ 	{ "idle", 0 },
+ 	{ "continuous-conversion", 1 },
+ 	{ "single-conversion", 2 },
+@@ -547,67 +544,33 @@ static const struct attribute_group ad774x_attribute_group = {
+ #define IIO_EVENT_ATTR_VT_RDY_SH(_evlist, _show, _store, _mask)	\
+ 	IIO_EVENT_ATTR_SH(vt_rdy, _evlist, _show, _store, _mask)
  
--static void ad7816_interrupt_bh(struct work_struct *work_s)
-+static irqreturn_t ad7816_event_handler(int irq, void *private)
+-static void ad774x_interrupt_handler_bh(struct work_struct *work_s)
++static irqreturn_t ad774x_event_handler(int irq, void *private)
  {
--	struct ad7816_chip_info *chip =
--		container_of(work_s, struct ad7816_chip_info, thresh_work);
+-	struct ad774x_chip_info *chip =
+-		container_of(work_s, struct ad774x_chip_info, thresh_work);
++	struct iio_dev *indio_dev = private;
++	struct ad774x_chip_info *chip = iio_dev_get_devdata(indio_dev);
+ 	u8 int_status;
+ 
+-	enable_irq(chip->client->irq);
 -
--	enable_irq(chip->spi_dev->irq);
--
--	iio_push_event(chip->indio_dev, 0,
--			IIO_EVENT_CODE_AD7816_OTI,
--			chip->last_timestamp);
+ 	ad774x_i2c_read(chip, AD774X_STATUS, &int_status, 1);
+ 
+ 	if (int_status & AD774X_STATUS_RDYCAP)
+-		iio_push_event(chip->indio_dev, 0,
+-				IIO_EVENT_CODE_CAP_RDY,
+-				chip->last_timestamp);
++		iio_push_event(indio_dev, 0,
++			       IIO_EVENT_CODE_CAP_RDY,
++			       iio_get_time_ns());
+ 
+ 	if (int_status & AD774X_STATUS_RDYVT)
+-		iio_push_event(chip->indio_dev, 0,
+-				IIO_EVENT_CODE_VT_RDY,
+-				chip->last_timestamp);
 -}
 -
--static int ad7816_interrupt(struct iio_dev *dev_info,
+-static int ad774x_interrupt_handler_th(struct iio_dev *dev_info,
 -		int index,
 -		s64 timestamp,
 -		int no_test)
 -{
--	struct ad7816_chip_info *chip = dev_info->dev_data;
+-	struct ad774x_chip_info *chip = dev_info->dev_data;
 -
 -	chip->last_timestamp = timestamp;
 -	schedule_work(&chip->thresh_work);
 -
 -	return 0;
-+	iio_push_event(private, 0,
-+		       IIO_EVENT_CODE_AD7816_OTI,
-+		       iio_get_time_ns());
+-}
+-
+-IIO_EVENT_SH(data_rdy, &ad774x_interrupt_handler_th);
+-
+-static ssize_t ad774x_query_out_mode(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	/*
+-	 * AD774X provides one /RDY pin, which can be used as interrupt
+-	 * but the pin is not configurable
+-	 */
+-	return sprintf(buf, "1\n");
+-}
++		iio_push_event(indio_dev, 0,
++			       IIO_EVENT_CODE_VT_RDY,
++			       iio_get_time_ns());
+ 
+-static ssize_t ad774x_set_out_mode(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	return len;
 +	return IRQ_HANDLED;
  }
  
--IIO_EVENT_SH(ad7816, &ad7816_interrupt);
--
- static ssize_t ad7816_show_oti(struct device *dev,
- 		struct device_attribute *attr,
- 		char *buf)
-@@ -352,11 +329,11 @@ static inline ssize_t ad7816_set_oti(struct device *dev,
- 	return len;
- }
+-IIO_EVENT_ATTR_CAP_RDY_SH(iio_event_data_rdy, ad774x_query_out_mode, ad774x_set_out_mode, 0);
+-IIO_EVENT_ATTR_VT_RDY_SH(iio_event_data_rdy, ad774x_query_out_mode, ad774x_set_out_mode, 0);
++static IIO_CONST_ATTR(cap_rdy_en, "1");
++static IIO_CONST_ATTR(vt_rdy_en, "1");
  
--IIO_EVENT_ATTR_SH(oti, iio_event_ad7816,
--		ad7816_show_oti, ad7816_set_oti, 0);
-+static IIO_DEVICE_ATTR(oti, S_IRUGO | S_IWUSR,
-+		       ad7816_show_oti, ad7816_set_oti, 0);
- 
- static struct attribute *ad7816_event_attributes[] = {
--	&iio_event_attr_oti.dev_attr.attr,
-+	&iio_dev_attr_oti.dev_attr.attr,
+ static struct attribute *ad774x_event_attributes[] = {
+-	&iio_event_attr_cap_rdy.dev_attr.attr,
+-	&iio_event_attr_vt_rdy.dev_attr.attr,
++	&iio_const_attr_cap_rdy_en.dev_attr.attr,
++	&iio_const_attr_vt_rdy_en.dev_attr.attr,
  	NULL,
  };
  
-@@ -438,23 +415,14 @@ static int __devinit ad7816_probe(struct spi_device *spi_dev)
+@@ -656,18 +619,14 @@ static int __devinit ad774x_probe(struct i2c_client *client,
+ 	regdone = 1;
  
- 	if (spi_dev->irq) {
- 		/* Only low trigger is supported in ad7816/7/8 */
--		ret = iio_register_interrupt_line(spi_dev->irq,
+ 	if (client->irq) {
+-		ret = iio_register_interrupt_line(client->irq,
 -				chip->indio_dev,
 -				0,
--				IRQF_TRIGGER_LOW,
--				chip->name);
-+		ret = request_threaded_irq(spi_dev->irq,
+-				IRQF_TRIGGER_FALLING,
+-				"ad774x");
++		ret = request_threaded_irq(client->irq,
 +					   NULL,
-+					   &ad7816_event_handler,
-+					   IRQF_TRIGGER_LOW,
-+					   chip->name,
++					   &ad774x_event_handler,
++					   IRQF_TRIGGER_FALLING,
++					   "ad774x",
 +					   chip->indio_dev);
  		if (ret)
- 			goto error_unreg_dev;
+ 			goto error_free_dev;
 -
--		/*
--		 * The event handler list element refer to iio_event_ad7816.
--		 * All event attributes bind to the same event handler.
--		 * So, only register event handler once.
--		 */
--		iio_add_event_to_list(&iio_event_ad7816,
+-		iio_add_event_to_list(iio_event_attr_cap_rdy.listel,
 -				&chip->indio_dev->interrupts[0]->ev_list);
 -
--		INIT_WORK(&chip->thresh_work, ad7816_interrupt_bh);
+-		INIT_WORK(&chip->thresh_work, ad774x_interrupt_handler_bh);
  	}
  
- 	dev_info(&spi_dev->dev, "%s temperature sensor and ADC registered.\n",
-@@ -485,7 +453,7 @@ static int __devexit ad7816_remove(struct spi_device *spi_dev)
+ 	dev_err(&client->dev, "%s capacitive sensor registered, irq: %d\n", id->name, client->irq);
+@@ -676,7 +635,7 @@ static int __devinit ad774x_probe(struct i2c_client *client,
  
- 	dev_set_drvdata(&spi_dev->dev, NULL);
- 	if (spi_dev->irq)
+ error_free_dev:
+ 	if (regdone)
+-		iio_device_unregister(chip->indio_dev);
++		free_irq(client->irq, chip->indio_dev);
+ 	else
+ 		iio_free_device(chip->indio_dev);
+ error_free_chip:
+@@ -691,7 +650,7 @@ static int __devexit ad774x_remove(struct i2c_client *client)
+ 	struct iio_dev *indio_dev = chip->indio_dev;
+ 
+ 	if (client->irq)
 -		iio_unregister_interrupt_line(indio_dev, 0);
-+		free_irq(spi_dev->irq, indio_dev);
++		free_irq(client->irq, indio_dev);
  	iio_device_unregister(indio_dev);
- 	iio_free_device(chip->indio_dev);
- 	gpio_free(chip->busy_pin);
+ 	kfree(chip);
+ 
 -- 
 1.7.3.4
