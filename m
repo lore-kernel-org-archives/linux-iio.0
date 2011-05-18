@@ -1,72 +1,156 @@
-Return-Path: <greg@kroah.com>
-Date: Fri, 20 May 2011 06:02:14 -0700
-From: Greg KH <greg@kroah.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 000/111] IIO: chan_spec intro, generic irq based triggers,
-Message-ID: <20110520130214.GA10033@kroah.com>
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: greg@kroah.com
+Cc: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 111/111] staging:iio: Trivial kconfig reorganization and uniformity improvements.
+Date: Wed, 18 May 2011 14:42:41 +0100
+Message-Id: <1305726161-5606-112-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
- <20110518152545.GB8106@kroah.com>
- <4DD3E75A.2030506@cam.ac.uk>
- <20110519231702.GA27712@kroah.com>
- <4DD663B0.7030407@cam.ac.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <4DD663B0.7030407@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, May 20, 2011 at 01:50:56PM +0100, Jonathan Cameron wrote:
-> On 05/20/11 00:17, Greg KH wrote:
-> > On Wed, May 18, 2011 at 04:35:54PM +0100, Jonathan Cameron wrote:
-> >> On 05/18/11 16:25, Greg KH wrote:
-> >>> On Wed, May 18, 2011 at 02:40:50PM +0100, Jonathan Cameron wrote:
-> >>>> Dear Greg,
-> >>>>
-> >>>> Here is the set I mentioned was coming.
-> >>>>
-> >>>> Thomas Gleixner just pushed the required irq patches to the tip tree
-> >>>> (though they aren't visible yet).
-> >>>>
-> >>>> [tip:irq/core] genirq: Uninline and sanity check generic_handle_irq()
-> >>>> fe12bc2c996d3e492b2920e32ac79f7bbae3e15d
-> >>>>
-> >>>> and
-> >>>>
-> >>>> [tip:irq/core] irq: Export functions to allow modular irq drivers
-> >>>> edf76f8307c350bcb81f0c760118a991b3e62956
-> >>>>
-> >>>> There are two other dependencies. One is a trivial missing header
-> >>>> in arm (patch on it's way through the arm tree). Doesn't break building
-> >>>> except on arm anyway.
-> >>>>
-> >>>> The other is the strtobool that you added to driver-core
-> >>>> Add a strtobool function matching semantics of existing in kernel equivalents
-> >>>> ad58671cf32c74a8d6e8f51e63e9cf4e7a73bf1e
-> >>>
-> >>> Hm, this is going to be "interesting" then.  I'll see if I can pull
-> >>> these patches into my staging-next tree, or if I can just wait for them
-> >>> to be merged before staging-next and hope that linux-next all works fine
-> >>> for everyone...
-> >>>
-> >> I 'think' they all apply directly to current mainline and that nothing else
-> >> has changed in the relevant areas for a little while, so with a bit
-> >> of luck they should be cherry-pickable directly into staging-next
-> >>
-> >> Or as you say, wait for them to merge which I'd imagine will happen fairly
-> >> soon anyway.
-> > 
-> > Ok, I've merged them to my tree, and all should be good in the next
-> > linux-next tree.  Can you verify it tomorrow when it comes out?
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> > 
-> All looks good seems to work.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/Kconfig       |    8 +++---
+ drivers/staging/iio/adc/Kconfig   |   48 ++++++++++++++++++------------------
+ drivers/staging/iio/light/Kconfig |   26 ++++++++++----------
+ 3 files changed, 41 insertions(+), 41 deletions(-)
 
-Thanks for testing.  The above mentioned patches are now in Linus's tree
-so I'll do this merge with him soon.
-
-thanks,
-
-greg k-h
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index e6235d1..f96d5b5 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -5,17 +5,17 @@
+ menuconfig IIO
+ 	tristate "Industrial I/O support"
+ 	depends on !S390
+-	---help---
++	help
+ 	  The industrial I/O subsystem provides a unified framework for
+ 	  drivers for many different types of embedded sensors using a
+ 	  number of different physical interfaces (i2c, spi, etc). See
+-	  Documentation/industrialio for more information.
++	  drivers/staging/iio/Documentation for more information.
+ if IIO
+ 
+ config IIO_RING_BUFFER
+-	bool "Enable ring buffer support within IIO"
++	bool "Enable buffer support within IIO"
+ 	help
+-	  Provide core support for various ring buffer based data
++	  Provide core support for various buffer based data
+ 	  acquisition methods.
+ 
+ if IIO_RING_BUFFER
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 617af93..8c751c4 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -3,30 +3,6 @@
+ #
+ comment "Analog to digital convertors"
+ 
+-config MAX1363
+-	tristate "MAXIM max1363 ADC driver"
+-	depends on I2C
+-	select IIO_TRIGGER if IIO_RING_BUFFER
+-	select MAX1363_RING_BUFFER
+-	help
+-	  Say yes here to build support for many MAXIM i2c analog to digital
+-	  convertors (ADC). (max1361, max1362, max1363, max1364, max1036,
+-	  max1037, max1038, max1039, max1136, max1136, max1137, max1138,
+-	  max1139, max1236, max1237, max11238, max1239, max11600, max11601,
+-	  max11602, max11603, max11604, max11605, max11606, max11607,
+-	  max11608, max11609, max11610, max11611, max11612, max11613,
+-	  max11614, max11615, max11616, max11617, max11644, max11645,
+-	  max11646, max11647) Provides direct access via sysfs.
+-
+-config MAX1363_RING_BUFFER
+-	bool "MAXIM max1363: use ring buffer"
+-	depends on MAX1363
+-	select IIO_RING_BUFFER
+-	select IIO_SW_RING
+-	help
+-	  Say yes here to include ring buffer support in the MAX1363
+-	  ADC driver.
+-
+ config AD7150
+ 	tristate "Analog Devices ad7150/1/6 capacitive sensor driver"
+ 	depends on I2C
+@@ -191,3 +167,27 @@ config ADT7410
+ 	help
+ 	  Say yes here to build support for Analog Devices ADT7410
+ 	  temperature sensors.
++
++config MAX1363
++	tristate "Maxim max1363 ADC driver"
++	depends on I2C
++	select IIO_TRIGGER if IIO_RING_BUFFER
++	select MAX1363_RING_BUFFER
++	help
++	  Say yes here to build support for many Maxim i2c analog to digital
++	  convertors (ADC). (max1361, max1362, max1363, max1364, max1036,
++	  max1037, max1038, max1039, max1136, max1136, max1137, max1138,
++	  max1139, max1236, max1237, max11238, max1239, max11600, max11601,
++	  max11602, max11603, max11604, max11605, max11606, max11607,
++	  max11608, max11609, max11610, max11611, max11612, max11613,
++	  max11614, max11615, max11616, max11617, max11644, max11645,
++	  max11646, max11647) Provides direct access via sysfs.
++
++config MAX1363_RING_BUFFER
++	bool "Maxim max1363: use ring buffer"
++	depends on MAX1363
++	select IIO_RING_BUFFER
++	select IIO_SW_RING
++	help
++	  Say yes here to include ring buffer support in the MAX1363
++	  ADC driver.
+diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
+index e9f3794..46d62d1 100644
+--- a/drivers/staging/iio/light/Kconfig
++++ b/drivers/staging/iio/light/Kconfig
+@@ -1,18 +1,8 @@
+-#
++\#
+ # Light sensors
+ #
+ comment "Light sensors"
+ 
+-config SENSORS_TSL2563
+-	tristate "TAOS TSL256[0-3] ambient light sensor"
+-	depends on I2C
+-	help
+-	 If you say yes here you get support for the Taos TSL2560,
+-	 TSL2561, TSL2562 and TSL2563 ambient light sensors.
+-
+-	 This driver can also be built as a module.  If so, the module
+-	 will be called tsl2563.
+-
+ config SENSORS_ISL29018
+         tristate "ISL 29018 light and proximity sensor"
+         depends on I2C
+@@ -24,9 +14,19 @@ config SENSORS_ISL29018
+          in lux, proximity infrared sensing and normal infrared sensing.
+          Data from sensor is accessible via sysfs.
+ 
++config SENSORS_TSL2563
++	tristate "TAOS TSL2560, TSL2561, TSL2562 and TSL2563 ambient light sensors"
++	depends on I2C
++	help
++	 If you say yes here you get support for the Taos TSL2560,
++	 TSL2561, TSL2562 and TSL2563 ambient light sensors.
++
++	 This driver can also be built as a module.  If so, the module
++	 will be called tsl2563.
++
+ config TSL2583
+-	tristate "TAOS TSL2580, TSL2581, and TSL2583 light-to-digital converters"
++	tristate "TAOS TSL2580, TSL2581 and TSL2583 light-to-digital converters"
+ 	depends on I2C
+ 	help
+-	 Provides support for the TAOS tsl2580, tsl2581, and tsl2583 devices.
++	 Provides support for the TAOS tsl2580, tsl2581 and tsl2583 devices.
+ 	 Access ALS data via iio, sysfs.
+-- 
+1.7.3.4
