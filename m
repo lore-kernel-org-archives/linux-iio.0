@@ -1,65 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:38640 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S935479Ab1ETJik (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 20 May 2011 05:38:40 -0400
-Message-ID: <4DD63749.9030202@cam.ac.uk>
-Date: Fri, 20 May 2011 10:41:29 +0100
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:48234 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756673Ab1ERPgw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2011 11:36:52 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: GENERIC_HARDIRQS does anyone have a platform that doesn't enable
- this?
-References: <4DD62994.4080701@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D5917713AAF293210@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917713AAF293210@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: fabien.marteau@armadeus.com
+Cc: guenter.roeck@ericsson.com, linux-iio@vger.kernel.org,
+	lm-sensors@lm-sensors.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 2/2] staging:iio:adc:as1351 general cleanup and conversion to standard functions.
+Date: Wed, 18 May 2011 16:39:32 +0100
+Message-Id: <1305733172-18519-3-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <4DD26311.7070905@armadeus.com>
+References: <4DD26311.7070905@armadeus.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/20/11 10:09, Hennerich, Michael wrote:
-> Jonathan Cameron wrote on 2011-05-20:
->> Hi All,
->>
->> Just occurred to me whilst reading some other patches that technically
->> we now depend on CONFIG_GENERIC_HARDIRQS
->>
->> Just wondering if anyone knows of a platform to build tests on that
->> doesn't have this?
->>
->> Thanks,
->>
->> Jonathan
-> 
-> michael@mhenner-D03:~/devel/git/staging-2.6/arch$ grep -R HAVE_GENERIC_HARDIRQS */Kconfig
-> alpha/Kconfig:  select HAVE_GENERIC_HARDIRQS
-> arm/Kconfig:    select HAVE_GENERIC_HARDIRQS
-> avr32/Kconfig:  select HAVE_GENERIC_HARDIRQS
-> blackfin/Kconfig:       select HAVE_GENERIC_HARDIRQS
-> cris/Kconfig:   select HAVE_GENERIC_HARDIRQS
-> frv/Kconfig:    select HAVE_GENERIC_HARDIRQS
-> h8300/Kconfig:  select HAVE_GENERIC_HARDIRQS
-> ia64/Kconfig:   select HAVE_GENERIC_HARDIRQS
-> m32r/Kconfig:   select HAVE_GENERIC_HARDIRQS
-> m68k/Kconfig:   select HAVE_GENERIC_HARDIRQS if !MMU
-> microblaze/Kconfig:     select HAVE_GENERIC_HARDIRQS
-> mips/Kconfig:   select HAVE_GENERIC_HARDIRQS
-> mn10300/Kconfig:        select HAVE_GENERIC_HARDIRQS
-> parisc/Kconfig: select HAVE_GENERIC_HARDIRQS
-> powerpc/Kconfig:        select HAVE_GENERIC_HARDIRQS
-> score/Kconfig:       select HAVE_GENERIC_HARDIRQS
-> sh/Kconfig:     select HAVE_GENERIC_HARDIRQS
-> sparc/Kconfig:  select HAVE_GENERIC_HARDIRQS
-> tile/Kconfig:   select HAVE_GENERIC_HARDIRQS
-> unicore32/Kconfig:      select HAVE_GENERIC_HARDIRQS
-> x86/Kconfig:    select HAVE_GENERIC_HARDIRQS
-> xtensa/Kconfig: select HAVE_GENERIC_HARDIRQS
-> 
-> 
-> michael@mhenner-D03:~/devel/git/staging-2.6/arch$ grep -R -L HAVE_GENERIC_HARDIRQS */Kconfig
-> s390/Kconfig
-Good point...  An s390 is blocked anyway in the Kconfig file so we are fine.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/adc/as1531.c |   60 +++++--------------------------------
+ 1 files changed, 8 insertions(+), 52 deletions(-)
 
-Thanks,
+diff --git a/drivers/staging/iio/adc/as1531.c b/drivers/staging/iio/adc/as1531.c
+index 7222549..30119ce 100644
+--- a/drivers/staging/iio/adc/as1531.c
++++ b/drivers/staging/iio/adc/as1531.c
+@@ -58,47 +58,6 @@ struct as1531_state {
+ 	struct mutex lock;
+ };
+ 
+-static int as1531_message(struct spi_device *spi, int cmd, int *ret_value)
+-{
+-	struct spi_message	message;
+-	struct spi_transfer	x[1];
+-	int status, i;
+-	u8	cmd_send;
+-	unsigned char buf[64];
+-	unsigned char buf_read[64];
+-
+-	cmd_send = cmd;
+-
+-	spi_message_init(&message);
+-	memset(x, 0, sizeof x);
+-	memset(buf, 0, sizeof(buf));
+-	memset(buf_read, 0, sizeof(buf_read));
+-
+-	for (i = 0; i < 8; i++) {
+-		buf[i] = ((cmd_send & 0x80)>>7);
+-		cmd_send = cmd_send << 1;
+-	}
+-
+-	x[0].tx_buf = buf;
+-	x[0].len = 24;
+-	x[0].rx_buf = buf_read;
+-	x[0].speed_hz = AS1531_SPI_SPEED;
+-	x[0].bits_per_word = 1;
+-	spi_message_add_tail(&x[0], &message);
+-
+-	status = spi_sync(spi, &message);
+-	if (status < 0)
+-		return status;
+-
+-	*ret_value = buf_read[11] & 0x01;
+-	for (i = 12; i < 23 ; i++) {
+-		*ret_value = *ret_value << 1;
+-		*ret_value = *ret_value | (buf_read[i]&0x01);
+-	}
+-
+-	return 0;
+-}
+-
+ static int as1531_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val,
+@@ -107,21 +66,20 @@ static int as1531_read_raw(struct iio_dev *indio_dev,
+ {
+ 
+ 	int status = 0;
+-	int ret_value = 0;
++	u16 ret_value = 0;
+ 	struct as1531_state *st = iio_priv(indio_dev);
+ 	if (mutex_lock_interruptible(&st->lock))
+ 		return -ERESTARTSYS;
+ 
+-	status = as1531_message(st->spi,
+-				AS1531_START_BIT | chan->address |
+-				AS1531_RANGE_0_TO_VREF | AS1531_MODE_COM |
+-				AS1531_POWER_NORMAL,
+-				&ret_value);
++	status = spi_w8r16(st->spi,
++			   AS1531_START_BIT | chan->address |
++			   AS1531_RANGE_0_TO_VREF | AS1531_MODE_COM |
++			   AS1531_POWER_NORMAL);
+ 	mutex_unlock(&st->lock);
+ 	if (status < 0)
+ 		goto out;
+-	
+-	*val = ret_value*2500/4096;
++	ret_value = status;
++	*val = (be16_to_cpu(ret_value) >>2)&0xFFF*2500/4096;
+ 
+ 	return IIO_VAL_INT;
+ out:
+@@ -174,9 +132,7 @@ static int __devinit as1531_probe(struct spi_device *spi)
+ 
+ static int as1531_remove(struct spi_device *spi)
+ {
+-	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+-
+-	iio_device_unregister(indio_dev);
++	iio_device_unregister(spi_get_drvdata(spi));
+ 	return 0;
+ }
+ 
+-- 
+1.7.3.4
+
