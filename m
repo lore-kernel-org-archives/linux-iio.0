@@ -5,60 +5,112 @@ Cc: guenter.roeck@ericsson.com,
 	linux-iio@vger.kernel.org,
 	lm-sensors@lm-sensors.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 0/2] staging:iio:adc:as1531 driver port from hwmon driver.
-Date: Wed, 18 May 2011 16:39:30 +0100
-Message-Id: <1305733172-18519-1-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <4DD26311.7070905@armadeus.com>
-References: <4DD26311.7070905@armadeus.com>
+Subject: [PATCH 2/2] staging:iio:adc:as1351 general cleanup and conversion to standard functions.
+Date: Wed, 18 May 2011 17:17:00 +0100
+Message-Id: <1305735420-23293-3-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1305733172-18519-1-git-send-email-jic23@cam.ac.uk>
+References: <1305733172-18519-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Dear All,
+V2: Fix the precedence issue Guenter Roeck pointed out.
 
-This is a quick initial port of the as1531 driver Fabien submitted
-to the lm-sensors mailing list.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/adc/as1531.c |   59 +++++--------------------------------
+ 1 files changed, 8 insertions(+), 51 deletions(-)
 
-Based on top of a large series I just sent to Greg KH and posted to
-linux-iio. That has a few other dependencies, so might be easier
-to just to wait for them all to be in a standard tree (linux-next
-or mainline).
-
-Dropped from hwmon driver - max and min values.
-
-Stuff to add at some point (i.e. when needed)
-
-1) Differential channels - trivial to do, just add a few more entries to
-the channels array and some signed bits in read_raw
-
-2) Buffered read support - straight forward case where all channels have
-to be explicitly requested anyway.
-
-3) Other devices trivially added:
-as1530 is directly compatible.
-as1532/1533 look like 4 channel equivalents (add iio_chan_spec arrays).
-
-The other similarly numbered parts are different enough to need their
-own drivers.
-
-Fabien, as more of the code in the first patch is yours than mine,
-I've put you as author of that one.
-
-The second is mostly stuff you'd have gotten in review to the hwmon
-driver anyway.
-
-
-Fabien Marteau (1):
-  staging:iio:adc: as1531 driver initial conversion from hwmon
-    submission.
-
-Jonathan Cameron (1):
-  staging:iio:adc:as1351 general cleanup and conversion to standard
-    functions.
-
- drivers/staging/iio/adc/Kconfig  |   10 ++
- drivers/staging/iio/adc/Makefile |    2 +
- drivers/staging/iio/adc/as1531.c |  168 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 180 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/adc/as1531.c
-
+diff --git a/drivers/staging/iio/adc/as1531.c b/drivers/staging/iio/adc/as1531.c
+index 1724c39..24a1ac0 100644
+--- a/drivers/staging/iio/adc/as1531.c
++++ b/drivers/staging/iio/adc/as1531.c
+@@ -58,47 +58,6 @@ struct as1531_state {
+ 	struct mutex lock;
+ };
+ 
+-static int as1531_message(struct spi_device *spi, int cmd, int *ret_value)
+-{
+-	struct spi_message	message;
+-	struct spi_transfer	x[1];
+-	int status, i;
+-	u8	cmd_send;
+-	unsigned char buf[64];
+-	unsigned char buf_read[64];
+-
+-	cmd_send = cmd;
+-
+-	spi_message_init(&message);
+-	memset(x, 0, sizeof x);
+-	memset(buf, 0, sizeof(buf));
+-	memset(buf_read, 0, sizeof(buf_read));
+-
+-	for (i = 0; i < 8; i++) {
+-		buf[i] = ((cmd_send & 0x80)>>7);
+-		cmd_send = cmd_send << 1;
+-	}
+-
+-	x[0].tx_buf = buf;
+-	x[0].len = 24;
+-	x[0].rx_buf = buf_read;
+-	x[0].speed_hz = AS1531_SPI_SPEED;
+-	x[0].bits_per_word = 1;
+-	spi_message_add_tail(&x[0], &message);
+-
+-	status = spi_sync(spi, &message);
+-	if (status < 0)
+-		return status;
+-
+-	*ret_value = buf_read[11] & 0x01;
+-	for (i = 12; i < 23 ; i++) {
+-		*ret_value = *ret_value << 1;
+-		*ret_value = *ret_value | (buf_read[i]&0x01);
+-	}
+-
+-	return 0;
+-}
+-
+ static int as1531_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val,
+@@ -106,22 +65,22 @@ static int as1531_read_raw(struct iio_dev *indio_dev,
+ 			   long m)
+ {
+ 	int status = 0;
+-	int ret_value = 0;
++	u16 ret_value = 0;
+ 	struct as1531_state *st = iio_priv(indio_dev);
+ 
+ 	if (mutex_lock_interruptible(&st->lock))
+ 		return -ERESTARTSYS;
+ 
+-	status = as1531_message(st->spi,
+-				AS1531_START_BIT | chan->address |
+-				AS1531_RANGE_0_TO_VREF | AS1531_MODE_COM |
+-				AS1531_POWER_NORMAL,
+-				&ret_value);
++	status = spi_w8r16(st->spi,
++			   AS1531_START_BIT | chan->address |
++			   AS1531_RANGE_0_TO_VREF | AS1531_MODE_COM |
++			   AS1531_POWER_NORMAL);
+ 	mutex_unlock(&st->lock);
+ 	if (status < 0)
+ 		return status;
+ 
+-	*val = ret_value*2500/4096;
++	ret_value = status;
++	*val = ((be16_to_cpu(ret_value) >> 2) & 0xFFF)*2500/4096;
+ 
+ 	return IIO_VAL_INT;
+ }
+@@ -171,9 +130,7 @@ static int __devinit as1531_probe(struct spi_device *spi)
+ 
+ static int as1531_remove(struct spi_device *spi)
+ {
+-	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+-
+-	iio_device_unregister(indio_dev);
++	iio_device_unregister(spi_get_drvdata(spi));
+ 	return 0;
+ }
+ 
 -- 
 1.7.3.4
