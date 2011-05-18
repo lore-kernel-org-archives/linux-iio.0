@@ -1,119 +1,27 @@
-Return-Path: <jic23@cam.ac.uk>
-From: Jonathan Cameron <jic23@cam.ac.uk>
-To: tglx@linutronix.de
-Cc: linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH V4] irq: uninline generic_handle_irq, export handle_simple_irq, irq_modify_status, generic_handle_irq, irq_alloc_descs and irq_free_descs
-Date: Wed, 18 May 2011 10:39:04 +0100
-Message-Id: <1305711544-505-1-git-send-email-jic23@cam.ac.uk>
+Return-Path: <tglx@linutronix.de>
+Date: Wed, 18 May 2011 12:51:12 +0200 (CEST)
+From: Thomas Gleixner <tglx@linutronix.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH V4] irq: uninline generic_handle_irq, export handle_simple_irq,
+ irq_modify_status, generic_handle_irq, irq_alloc_descs and irq_free_descs
+In-Reply-To: <1305711544-505-1-git-send-email-jic23@cam.ac.uk>
+Message-ID: <alpine.LFD.2.02.1105181249470.3078@ionos>
+References: <1305711544-505-1-git-send-email-jic23@cam.ac.uk>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-V4: EXPORT_SYMBOL_GPL instead of EXPORT_SYMBOL for generic_handle_irq.
+On Wed, 18 May 2011, Jonathan Cameron wrote:
+> Hi Thomas,
+> 
+> Looking a bit more at possible locations it is clear that CONFIG_GENERIC_HARDIRQS
+> only exists as an ifdef in irqdesc.c so I guess that is the least intrusive place
+> to move this to.
 
-V3: stop exporting irq_to_desc and instead take generic_handle_irq out of the header.
-As suggested by Thomas Gleixner.
-
-Patch was previously:
-irq: export handle_simple_irq, irq_modify_status, irq_to_desc, irq_alloc_descs and irq_free_descs
-
-V2: add irq_alloc_descs and irq_free_descs for dynamic pool allocation.
-
-This is to allow their use in IIO. We have complete control of
-both the irq_chip creation and requesting of irqs so would like
-to be able to build as a module. That requires these exports.
-
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
-
-Same as before except for EXPORT_SYMBOL_GPL instead of EXPORT_SYMBOL.
-Sorry about that all; more coffee needed I think.
-
-
-Hi Thomas,
-
-Looking a bit more at possible locations it is clear that CONFIG_GENERIC_HARDIRQS
-only exists as an ifdef in irqdesc.c so I guess that is the least intrusive place
-to move this to.
-
-Lots stacked behind this, so thought I'd keep the ball rolling rather than
-waiting for your reply to my question of where best to put generic_handle_irq.
+Bah, that ifdef there is completely useless. kernel/irq/ is only built
+when CONFIG_GENERIC_HARDIRQS=y. I fix that.
 
 Thanks,
 
-Jonathan
-
- include/linux/irqdesc.h |    5 +----
- kernel/irq/chip.c       |    2 ++
- kernel/irq/irqdesc.c    |    8 ++++++++
- 3 files changed, 11 insertions(+), 4 deletions(-)
-
-diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
-index a082905..27b971d 100644
---- a/include/linux/irqdesc.h
-+++ b/include/linux/irqdesc.h
-@@ -109,10 +109,7 @@ static inline void generic_handle_irq_desc(unsigned int irq, struct irq_desc *de
- 	desc->handle_irq(irq, desc);
- }
- 
--static inline void generic_handle_irq(unsigned int irq)
--{
--	generic_handle_irq_desc(irq, irq_to_desc(irq));
--}
-+void generic_handle_irq(unsigned int irq);
- 
- /* Test to see if a driver has successfully requested an irq */
- static inline int irq_has_action(unsigned int irq)
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 4af1e2b..ad409d3 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -310,6 +310,7 @@ handle_simple_irq(unsigned int irq, struct irq_desc *desc)
- out_unlock:
- 	raw_spin_unlock(&desc->lock);
- }
-+EXPORT_SYMBOL_GPL(handle_simple_irq);
- 
- /**
-  *	handle_level_irq - Level type irq handler
-@@ -612,6 +613,7 @@ void irq_modify_status(unsigned int irq, unsigned long clr, unsigned long set)
- 
- 	irq_put_desc_unlock(desc, flags);
- }
-+EXPORT_SYMBOL_GPL(irq_modify_status);
- 
- /**
-  *	irq_cpu_online - Invoke all irq_cpu_online functions.
-diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
-index 2c039c9..a6fdd10 100644
---- a/kernel/irq/irqdesc.c
-+++ b/kernel/irq/irqdesc.c
-@@ -311,6 +311,7 @@ void irq_free_descs(unsigned int from, unsigned int cnt)
- 	bitmap_clear(allocated_irqs, from, cnt);
- 	mutex_unlock(&sparse_irq_lock);
- }
-+EXPORT_SYMBOL_GPL(irq_free_descs);
- 
- /**
-  * irq_alloc_descs - allocate and initialize a range of irq descriptors
-@@ -351,6 +352,7 @@ err:
- 	mutex_unlock(&sparse_irq_lock);
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(irq_alloc_descs);
- 
- /**
-  * irq_reserve_irqs - mark irqs allocated
-@@ -443,4 +445,10 @@ unsigned int kstat_irqs(unsigned int irq)
- 		sum += *per_cpu_ptr(desc->kstat_irqs, cpu);
- 	return sum;
- }
-+
-+void generic_handle_irq(unsigned int irq)
-+{
-+	generic_handle_irq_desc(irq, irq_to_desc(irq));
-+}
-+EXPORT_SYMBOL_GPL(generic_handle_irq);
- #endif /* CONFIG_GENERIC_HARDIRQS */
--- 
-1.7.3.4
+	tglx
