@@ -1,408 +1,219 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:46911 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933215Ab1ERNk3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2011 09:40:29 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
-	Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 106/111] staging:iio:meter:ade7758: Use private data space from iio_allocate_device
-Date: Wed, 18 May 2011 14:42:36 +0100
-Message-Id: <1305726161-5606-107-git-send-email-jic23@cam.ac.uk>
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 105/111] staging:iio:accel:lis3l02dq make write_reg_8 take value not a pointer to value.
+Date: Wed, 18 May 2011 14:42:35 +0100
+Message-Id: <1305726161-5606-106-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+Silliness that has been there a long time.
 
-Use private data space from iio_allocate_device.
-Drop dev_data in favor of iio_priv().
-Fix indention issues from previous patches.
-
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/meter/ade7758.h         |   10 +--
- drivers/staging/iio/meter/ade7758_core.c    |   92 +++++++++++++--------------
- drivers/staging/iio/meter/ade7758_ring.c    |   12 ++--
- drivers/staging/iio/meter/ade7758_trigger.c |   18 +++---
- 4 files changed, 62 insertions(+), 70 deletions(-)
+ drivers/staging/iio/accel/lis3l02dq.h      |    2 +-
+ drivers/staging/iio/accel/lis3l02dq_core.c |   30 ++++++++++++++--------------
+ drivers/staging/iio/accel/lis3l02dq_ring.c |   10 ++++----
+ 3 files changed, 21 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/staging/iio/meter/ade7758.h b/drivers/staging/iio/meter/ade7758.h
-index 372a9f6..fd74e15 100644
---- a/drivers/staging/iio/meter/ade7758.h
-+++ b/drivers/staging/iio/meter/ade7758.h
-@@ -111,7 +111,6 @@
- /**
-  * struct ade7758_state - device instance specific data
-  * @us:			actual spi_device
-- * @indio_dev:		industrial I/O device structure
-  * @trig:		data ready trigger registered with iio
-  * @tx:			transmit buffer
-  * @rx:			receive buffer
-@@ -119,21 +118,20 @@
-  **/
- struct ade7758_state {
- 	struct spi_device	*us;
--	struct iio_dev		*indio_dev;
- 	struct iio_trigger	*trig;
- 	u8			*tx;
- 	u8			*rx;
- 	struct mutex		buf_lock;
- 	u32			available_scan_masks[AD7758_NUM_WAVESRC];
- 	struct iio_chan_spec	*ade7758_ring_channels;
--	struct spi_transfer		ring_xfer[4];
--	struct spi_message		ring_msg;
-+	struct spi_transfer	ring_xfer[4];
-+	struct spi_message	ring_msg;
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
--	unsigned char			rx_buf[8] ____cacheline_aligned;
--	unsigned char			tx_buf[8];
-+	unsigned char		rx_buf[8] ____cacheline_aligned;
-+	unsigned char		tx_buf[8];
+diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
+index 94d9869..18b23ac 100644
+--- a/drivers/staging/iio/accel/lis3l02dq.h
++++ b/drivers/staging/iio/accel/lis3l02dq.h
+@@ -170,7 +170,7 @@ int lis3l02dq_spi_read_reg_8(struct iio_dev *indio_dev,
  
- };
- #ifdef CONFIG_IIO_RING_BUFFER
-diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
-index 42682ad..d9dfd83 100644
---- a/drivers/staging/iio/meter/ade7758_core.c
-+++ b/drivers/staging/iio/meter/ade7758_core.c
-@@ -30,7 +30,7 @@ int ade7758_spi_write_reg_8(struct device *dev,
+ int lis3l02dq_spi_write_reg_8(struct iio_dev *indio_dev,
+ 			      u8 reg_address,
+-			      u8 *val);
++			      u8 val);
+ 
+ int lis3l02dq_disable_all_events(struct iio_dev *indio_dev);
+ 
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+index 6b5414c..942139a 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+@@ -82,14 +82,14 @@ int lis3l02dq_spi_read_reg_8(struct iio_dev *indio_dev,
+  **/
+ int lis3l02dq_spi_write_reg_8(struct iio_dev *indio_dev,
+ 			      u8 reg_address,
+-			      u8 *val)
++			      u8 val)
  {
  	int ret;
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7758_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7758_state *st = iio_priv(indio_dev);
+ 	struct lis3l02dq_state *st = iio_priv(indio_dev);
  
  	mutex_lock(&st->buf_lock);
- 	st->tx[0] = ADE7758_WRITE_REG(reg_address);
-@@ -49,7 +49,7 @@ static int ade7758_spi_write_reg_16(struct device *dev,
- 	int ret;
- 	struct spi_message msg;
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7758_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 	struct spi_transfer xfers[] = {
- 		{
- 			.tx_buf = st->tx,
-@@ -78,7 +78,7 @@ static int ade7758_spi_write_reg_24(struct device *dev,
- 	int ret;
- 	struct spi_message msg;
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7758_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 	struct spi_transfer xfers[] = {
- 		{
- 			.tx_buf = st->tx,
-@@ -107,7 +107,7 @@ int ade7758_spi_read_reg_8(struct device *dev,
- {
- 	struct spi_message msg;
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7758_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 	int ret;
- 	struct spi_transfer xfers[] = {
- 		{
-@@ -150,7 +150,7 @@ static int ade7758_spi_read_reg_16(struct device *dev,
- {
- 	struct spi_message msg;
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7758_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 	int ret;
- 	struct spi_transfer xfers[] = {
- 		{
-@@ -196,7 +196,7 @@ static int ade7758_spi_read_reg_24(struct device *dev,
- {
- 	struct spi_message msg;
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7758_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 	int ret;
- 	struct spi_transfer xfers[] = {
- 		{
-@@ -485,10 +485,11 @@ static int ade7758_stop_device(struct device *dev)
+ 	st->tx[0] = LIS3L02DQ_WRITE_REG(reg_address);
+-	st->tx[1] = *val;
++	st->tx[1] = val;
+ 	ret = spi_write(st->us, st->tx, 2);
+ 	mutex_unlock(&st->buf_lock);
+ 
+@@ -232,14 +232,14 @@ static int lis3l02dq_write_raw(struct iio_dev *indio_dev,
+ 			return -EINVAL;
+ 		sval = val;
+ 		reg = lis3l02dq_axis_map[LIS3L02DQ_BIAS][chan->address];
+-		ret = lis3l02dq_spi_write_reg_8(indio_dev, reg, (u8 *)&sval);
++		ret = lis3l02dq_spi_write_reg_8(indio_dev, reg, sval);
+ 		break;
+ 	case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
+ 		if (val & ~0xFF)
+ 			return -EINVAL;
+ 		uval = val;
+ 		reg = lis3l02dq_axis_map[LIS3L02DQ_GAIN][chan->address];
+-		ret = lis3l02dq_spi_write_reg_8(indio_dev, reg, &uval);
++		ret = lis3l02dq_spi_write_reg_8(indio_dev, reg, uval);
+ 		break;
+ 	}
  	return ret;
- }
+@@ -367,7 +367,7 @@ static ssize_t lis3l02dq_write_frequency(struct device *dev,
  
--static int ade7758_initial_setup(struct ade7758_state *st)
-+static int ade7758_initial_setup(struct iio_dev *indio_dev)
- {
-+	struct ade7758_state *st = iio_priv(indio_dev);
-+	struct device *dev = &indio_dev->dev;
- 	int ret;
--	struct device *dev = &st->indio_dev->dev;
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					&t);
++					t);
  
- 	/* use low spi speed for init */
- 	st->us->mode = SPI_MODE_1;
-@@ -727,19 +728,23 @@ static struct iio_chan_spec ade7758_channels[] = {
- static int __devinit ade7758_probe(struct spi_device *spi)
- {
- 	int i, ret, regdone = 0;
--	struct ade7758_state *st = kzalloc(sizeof *st, GFP_KERNEL);
--	if (!st) {
--		ret =  -ENOMEM;
-+	struct ade7758_state *st;
-+	struct iio_dev *indio_dev = iio_allocate_device(sizeof(*st));
-+
-+	if (indio_dev == NULL) {
-+		ret = -ENOMEM;
- 		goto error_ret;
- 	}
-+
-+	st = iio_priv(indio_dev);
- 	/* this is only used for removal purposes */
--	spi_set_drvdata(spi, st);
-+	spi_set_drvdata(spi, indio_dev);
- 
- 	/* Allocate the comms buffers */
- 	st->rx = kzalloc(sizeof(*st->rx)*ADE7758_MAX_RX, GFP_KERNEL);
- 	if (st->rx == NULL) {
- 		ret = -ENOMEM;
--		goto error_free_st;
-+		goto error_free_dev;
- 	}
- 	st->tx = kzalloc(sizeof(*st->tx)*ADE7758_MAX_TX, GFP_KERNEL);
- 	if (st->tx == NULL) {
-@@ -749,35 +754,28 @@ static int __devinit ade7758_probe(struct spi_device *spi)
- 	st->us = spi;
- 	st->ade7758_ring_channels = &ade7758_channels[0];
- 	mutex_init(&st->buf_lock);
--	/* setup the industrialio driver allocated elements */
--	st->indio_dev = iio_allocate_device(0);
--	if (st->indio_dev == NULL) {
--		ret = -ENOMEM;
--		goto error_free_tx;
--	}
- 
--	st->indio_dev->name = spi->dev.driver->name;
--	st->indio_dev->dev.parent = &spi->dev;
--	st->indio_dev->attrs = &ade7758_attribute_group;
--	st->indio_dev->dev_data = (void *)(st);
--	st->indio_dev->driver_module = THIS_MODULE;
--	st->indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->name = spi->dev.driver->name;
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->attrs = &ade7758_attribute_group;
-+	indio_dev->driver_module = THIS_MODULE;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	for (i = 0; i < AD7758_NUM_WAVESRC; i++)
- 		st->available_scan_masks[i] = 1 << i;
- 
--	st->indio_dev->available_scan_masks = st->available_scan_masks;
-+	indio_dev->available_scan_masks = st->available_scan_masks;
- 
--	ret = ade7758_configure_ring(st->indio_dev);
-+	ret = ade7758_configure_ring(indio_dev);
- 	if (ret)
--		goto error_free_dev;
-+		goto error_free_tx;
- 
--	ret = iio_device_register(st->indio_dev);
-+	ret = iio_device_register(indio_dev);
- 	if (ret)
- 		goto error_unreg_ring_funcs;
- 	regdone = 1;
- 
--	ret = iio_ring_buffer_register_ex(st->indio_dev->ring, 0,
-+	ret = iio_ring_buffer_register_ex(indio_dev->ring, 0,
- 					  &ade7758_channels[0],
- 					  ARRAY_SIZE(ade7758_channels));
+ error_ret_mutex:
+ 	mutex_unlock(&indio_dev->mlock);
+@@ -389,7 +389,7 @@ static int lis3l02dq_initial_setup(struct iio_dev *indio_dev)
+ 	/* Write suitable defaults to ctrl1 */
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					&val);
++					val);
  	if (ret) {
-@@ -786,12 +784,12 @@ static int __devinit ade7758_probe(struct spi_device *spi)
- 	}
- 
- 	/* Get the device into a sane initial state */
--	ret = ade7758_initial_setup(st);
-+	ret = ade7758_initial_setup(indio_dev);
+ 		dev_err(&st->us->dev, "problem with setup control register 1");
+ 		goto err_ret;
+@@ -397,7 +397,7 @@ static int lis3l02dq_initial_setup(struct iio_dev *indio_dev)
+ 	/* Repeat as sometimes doesn't work first time?*/
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					&val);
++					val);
+ 	if (ret) {
+ 		dev_err(&st->us->dev, "problem with setup control register 1");
+ 		goto err_ret;
+@@ -418,7 +418,7 @@ static int lis3l02dq_initial_setup(struct iio_dev *indio_dev)
+ 	val = LIS3L02DQ_DEFAULT_CTRL2;
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_CTRL_2_ADDR,
+-					&val);
++					val);
+ 	if (ret) {
+ 		dev_err(&st->us->dev, "problem with setup control register 2");
+ 		goto err_ret;
+@@ -427,7 +427,7 @@ static int lis3l02dq_initial_setup(struct iio_dev *indio_dev)
+ 	val = LIS3L02DQ_REG_WAKE_UP_CFG_LATCH_SRC;
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+-					&val);
++					val);
  	if (ret)
- 		goto error_uninitialize_ring;
+ 		dev_err(&st->us->dev, "problem with interrupt cfg register");
+ err_ret:
+@@ -564,7 +564,7 @@ int lis3l02dq_disable_all_events(struct iio_dev *indio_dev)
+ 	control &= ~LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT;
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_CTRL_2_ADDR,
+-					&control);
++					control);
+ 	if (ret)
+ 		goto error_ret;
+ 	/* Also for consistency clear the mask */
+@@ -577,7 +577,7 @@ int lis3l02dq_disable_all_events(struct iio_dev *indio_dev)
  
- 	if (spi->irq) {
--		ret = ade7758_probe_trigger(st->indio_dev);
-+		ret = ade7758_probe_trigger(indio_dev);
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+-					&val);
++					val);
+ 	if (ret)
+ 		goto error_ret;
+ 
+@@ -623,7 +623,7 @@ static int lis3l02dq_write_event_config(struct iio_dev *indio_dev,
+ 	if (changed) {
+ 		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 						LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+-						&val);
++						val);
  		if (ret)
- 			goto error_remove_trigger;
+ 			goto error_ret;
+ 		control = val & 0x3f ?
+@@ -631,7 +631,7 @@ static int lis3l02dq_write_event_config(struct iio_dev *indio_dev,
+ 			(control & ~LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT);
+ 		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					       LIS3L02DQ_REG_CTRL_2_ADDR,
+-					       &control);
++					       control);
+ 		if (ret)
+ 			goto error_ret;
  	}
-@@ -799,47 +797,43 @@ static int __devinit ade7758_probe(struct spi_device *spi)
- 	return 0;
+@@ -750,7 +750,7 @@ static int lis3l02dq_stop_device(struct iio_dev *indio_dev)
+ 	mutex_lock(&indio_dev->mlock);
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					&val);
++					val);
+ 	if (ret) {
+ 		dev_err(&st->us->dev, "problem with turning device off: ctrl1");
+ 		goto err_ret;
+@@ -758,7 +758,7 @@ static int lis3l02dq_stop_device(struct iio_dev *indio_dev)
  
- error_remove_trigger:
--	if (st->indio_dev->modes & INDIO_RING_TRIGGERED)
--		ade7758_remove_trigger(st->indio_dev);
-+	if (indio_dev->modes & INDIO_RING_TRIGGERED)
-+		ade7758_remove_trigger(indio_dev);
- error_uninitialize_ring:
--	ade7758_uninitialize_ring(st->indio_dev->ring);
-+	ade7758_uninitialize_ring(indio_dev->ring);
- error_unreg_ring_funcs:
--	ade7758_unconfigure_ring(st->indio_dev);
--error_free_dev:
--	if (regdone)
--		iio_device_unregister(st->indio_dev);
--	else
--		iio_free_device(st->indio_dev);
-+	ade7758_unconfigure_ring(indio_dev);
- error_free_tx:
- 	kfree(st->tx);
- error_free_rx:
- 	kfree(st->rx);
--error_free_st:
--	kfree(st);
-+error_free_dev:
-+	if (regdone)
-+		iio_device_unregister(indio_dev);
-+	else
-+		iio_free_device(indio_dev);
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_CTRL_2_ADDR,
+-					&val);
++					val);
+ 	if (ret)
+ 		dev_err(&st->us->dev, "problem with turning device off: ctrl2");
+ err_ret:
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index c8f29bc..1c208d2 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -220,12 +220,12 @@ __lis3l02dq_write_data_ready_config(struct device *dev, bool state)
+ 		/* The double write is to overcome a hardware bug?*/
+ 		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 						LIS3L02DQ_REG_CTRL_2_ADDR,
+-						&valold);
++						valold);
+ 		if (ret)
+ 			goto error_ret;
+ 		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 						LIS3L02DQ_REG_CTRL_2_ADDR,
+-						&valold);
++						valold);
+ 		if (ret)
+ 			goto error_ret;
+ 		st->trigger_on = false;
+@@ -243,7 +243,7 @@ __lis3l02dq_write_data_ready_config(struct device *dev, bool state)
+ 		st->trigger_on = true;
+ 		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 						LIS3L02DQ_REG_CTRL_2_ADDR,
+-						&valold);
++						valold);
+ 		if (ret)
+ 			goto error_ret;
+ 	}
+@@ -382,7 +382,7 @@ static int lis3l02dq_ring_postenable(struct iio_dev *indio_dev)
+ 		return -EINVAL;
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					&t);
++					t);
+ 	if (ret)
+ 		goto error_ret;
+ 
+@@ -412,7 +412,7 @@ static int lis3l02dq_ring_predisable(struct iio_dev *indio_dev)
+ 
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					&t);
++					t);
+ 
  error_ret:
  	return ret;
- }
- 
- static int ade7758_remove(struct spi_device *spi)
- {
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 	int ret;
--	struct ade7758_state *st = spi_get_drvdata(spi);
--	struct iio_dev *indio_dev = st->indio_dev;
- 
--	ret = ade7758_stop_device(&(indio_dev->dev));
-+	ret = ade7758_stop_device(&indio_dev->dev);
- 	if (ret)
- 		goto err_ret;
- 
- 	ade7758_remove_trigger(indio_dev);
- 	ade7758_uninitialize_ring(indio_dev->ring);
--	iio_device_unregister(indio_dev);
- 	ade7758_unconfigure_ring(indio_dev);
- 	kfree(st->tx);
- 	kfree(st->rx);
--	kfree(st);
-+	iio_device_unregister(indio_dev);
- 
- 	return 0;
--
- err_ret:
- 	return ret;
- }
-diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
-index 564555a..a5e48c1 100644
---- a/drivers/staging/iio/meter/ade7758_ring.c
-+++ b/drivers/staging/iio/meter/ade7758_ring.c
-@@ -32,7 +32,7 @@
- static int ade7758_spi_read_burst(struct device *dev)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7758_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 	int ret;
- 
- 	ret = spi_sync(st->us, &st->ring_msg);
-@@ -71,12 +71,12 @@ static irqreturn_t ade7758_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->private_data;
- 	struct iio_ring_buffer *ring = indio_dev->ring;
--	struct ade7758_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 	s64 dat64[2];
- 	u32 *dat32 = (u32 *)dat64;
- 
- 	if (ring->scan_count)
--		if (ade7758_spi_read_burst(&st->indio_dev->dev) >= 0)
-+		if (ade7758_spi_read_burst(&indio_dev->dev) >= 0)
- 			*dat32 = get_unaligned_be32(&st->rx_buf[5]) & 0xFFFFFF;
- 
- 	/* Guaranteed to be aligned with 8 byte boundary */
-@@ -85,7 +85,7 @@ static irqreturn_t ade7758_trigger_handler(int irq, void *p)
- 
- 	ring->access->store_to(ring, (u8 *)dat64, pf->timestamp);
- 
--	iio_trigger_notify_done(st->indio_dev->trig);
-+	iio_trigger_notify_done(indio_dev->trig);
- 
- 	return IRQ_HANDLED;
- }
-@@ -99,7 +99,7 @@ static irqreturn_t ade7758_trigger_handler(int irq, void *p)
-  **/
- static int ade7758_ring_preenable(struct iio_dev *indio_dev)
- {
--	struct ade7758_state *st = indio_dev->dev_data;
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 	struct iio_ring_buffer *ring = indio_dev->ring;
- 	size_t d_size;
- 	unsigned channel;
-@@ -149,7 +149,7 @@ void ade7758_unconfigure_ring(struct iio_dev *indio_dev)
- 
- int ade7758_configure_ring(struct iio_dev *indio_dev)
- {
--	struct ade7758_state *st = indio_dev->dev_data;
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 	int ret = 0;
- 
- 	indio_dev->ring = iio_sw_rb_allocate(indio_dev);
-diff --git a/drivers/staging/iio/meter/ade7758_trigger.c b/drivers/staging/iio/meter/ade7758_trigger.c
-index 5442d79..a5c3248 100644
---- a/drivers/staging/iio/meter/ade7758_trigger.c
-+++ b/drivers/staging/iio/meter/ade7758_trigger.c
-@@ -37,8 +37,7 @@ static irqreturn_t ade7758_data_rdy_trig_poll(int irq, void *private)
- static int ade7758_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 						bool state)
- {
--	struct ade7758_state *st = trig->private_data;
--	struct iio_dev *indio_dev = st->indio_dev;
-+	struct iio_dev *indio_dev = trig->private_data;
- 
- 	dev_dbg(&indio_dev->dev, "%s (%d)\n", __func__, state);
- 	return ade7758_set_irq(&indio_dev->dev, state);
-@@ -50,7 +49,8 @@ static int ade7758_data_rdy_trigger_set_state(struct iio_trigger *trig,
-  **/
- static int ade7758_trig_try_reen(struct iio_trigger *trig)
- {
--	struct ade7758_state *st = trig->private_data;
-+	struct iio_dev *indio_dev = trig->private_data;
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 
- 	enable_irq(st->us->irq);
- 	/* irq reenabled so success! */
-@@ -59,8 +59,8 @@ static int ade7758_trig_try_reen(struct iio_trigger *trig)
- 
- int ade7758_probe_trigger(struct iio_dev *indio_dev)
- {
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 	int ret;
--	struct ade7758_state *st = indio_dev->dev_data;
- 
- 	st->trig = iio_allocate_trigger("%s-dev%d",
- 					spi_get_device_id(st->us)->name,
-@@ -80,7 +80,7 @@ int ade7758_probe_trigger(struct iio_dev *indio_dev)
- 
- 	st->trig->dev.parent = &st->us->dev;
- 	st->trig->owner = THIS_MODULE;
--	st->trig->private_data = st;
-+	st->trig->private_data = indio_dev;
- 	st->trig->set_trigger_state = &ade7758_data_rdy_trigger_set_state;
- 	st->trig->try_reenable = &ade7758_trig_try_reen;
- 	ret = iio_trigger_register(st->trig);
-@@ -102,9 +102,9 @@ error_ret:
- 
- void ade7758_remove_trigger(struct iio_dev *indio_dev)
- {
--	struct ade7758_state *state = indio_dev->dev_data;
-+	struct ade7758_state *st = iio_priv(indio_dev);
- 
--	iio_trigger_unregister(state->trig);
--	free_irq(state->us->irq, state->trig);
--	iio_free_trigger(state->trig);
-+	iio_trigger_unregister(st->trig);
-+	free_irq(st->us->irq, st->trig);
-+	iio_free_trigger(st->trig);
- }
 -- 
 1.7.3.4
-
