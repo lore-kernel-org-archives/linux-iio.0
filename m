@@ -1,133 +1,241 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:54128 "EHLO
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:54126 "EHLO
 	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933254Ab1ERNkI (ORCPT
+	with ESMTP id S933252Ab1ERNkI (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2011 09:40:08 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 091/111] staging:iio: iio_event_interfaces - clean out unused elements
-Date: Wed, 18 May 2011 14:42:21 +0100
-Message-Id: <1305726161-5606-92-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 090/111] staging:iio:lis3l02dq remerge the two interrupt handlers.
+Date: Wed, 18 May 2011 14:42:20 +0100
+Message-Id: <1305726161-5606-91-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Also removed const casting of _name that was unnecessary.
+Does add a small burden to both handlers, but the gain is somewhat
+simpler code.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/chrdev.h            |    8 +-------
- drivers/staging/iio/industrialio-core.c |   18 +++++++-----------
- 2 files changed, 8 insertions(+), 18 deletions(-)
+ drivers/staging/iio/accel/lis3l02dq.h      |    5 +++
+ drivers/staging/iio/accel/lis3l02dq_core.c |   52 ++++++++++++---------------
+ drivers/staging/iio/accel/lis3l02dq_ring.c |   30 ++++++++++------
+ 3 files changed, 47 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/staging/iio/chrdev.h b/drivers/staging/iio/chrdev.h
-index 10491f0..6523273 100644
---- a/drivers/staging/iio/chrdev.h
-+++ b/drivers/staging/iio/chrdev.h
-@@ -60,24 +60,18 @@ struct iio_detected_event_list {
-  * @det_events:		list of detected events
-  * @max_events:		maximum number of events before new ones are dropped
-  * @current_events:	number of events in detected list
-- * @owner:		ensure the driver module owns the file, not iio
-- * @private:		driver specific data
-  * @_name:		used internally to store the sysfs name for minor id
-  *			attribute
-- * @_attrname:		the event interface's attribute name
-  */
- struct iio_event_interface {
- 	struct device				dev;
- 	struct iio_handler			handler;
- 	wait_queue_head_t			wait;
- 	struct mutex				event_list_lock;
--	struct iio_detected_event_list		det_events;
-+	struct list_head			det_events;
- 	int					max_events;
- 	int					current_events;
--	struct module				*owner;
--	void					*private;
- 	char					_name[35];
--	char					_attrname[20];
- 	struct list_head dev_attr_list;
+diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
+index a910f2d..3f1d7c6 100644
+--- a/drivers/staging/iio/accel/lis3l02dq.h
++++ b/drivers/staging/iio/accel/lis3l02dq.h
+@@ -162,6 +162,7 @@ struct lis3l02dq_state {
+ 	u8				*tx;
+ 	u8				*rx;
+ 	struct mutex			buf_lock;
++	bool				trigger_on;
  };
  
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 49560e4..b5b658c 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -112,7 +112,7 @@ int iio_push_event(struct iio_dev *dev_info,
- 		ev->ev.id = ev_code;
- 		ev->ev.timestamp = timestamp;
+ #define lis3l02dq_h_to_s(_h)				\
+@@ -202,7 +203,11 @@ void lis3l02dq_unconfigure_ring(struct iio_dev *indio_dev);
+ #define lis3l02dq_alloc_buf iio_kfifo_allocate
+ #define lis3l02dq_register_buf_funcs iio_kfifo_register_funcs
+ #endif
++irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private);
++#define lis3l02dq_th lis3l02dq_data_rdy_trig_poll
++
+ #else /* CONFIG_IIO_RING_BUFFER */
++#define lis3l02dq_th lis3l02dq_noring
  
--		list_add_tail(&ev->list, &ev_int->det_events.list);
-+		list_add_tail(&ev->list, &ev_int->det_events);
- 		ev_int->current_events++;
- 		mutex_unlock(&ev_int->event_list_lock);
- 		wake_up_interruptible(&ev_int->wait);
-@@ -146,7 +146,7 @@ static ssize_t iio_event_chrdev_read(struct file *filep,
- 	size_t len;
+ static inline void lis3l02dq_remove_trigger(struct iio_dev *indio_dev)
+ {
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+index 8793ee4..42261b5 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+@@ -35,6 +35,13 @@
+  * It's in the likely to be added comment at the top of spi.h.
+  * This means that use cannot be made of spi_write etc.
+  */
++/* direct copy of the irq_default_primary_handler */
++#ifndef CONFIG_IIO_RING_BUFFER
++static irqreturn_t lis3l02dq_noring(int irq, void *private)
++{
++	return IRQ_WAKE_THREAD;
++}
++#endif
  
- 	mutex_lock(&ev_int->event_list_lock);
--	if (list_empty(&ev_int->det_events.list)) {
-+	if (list_empty(&ev_int->det_events)) {
- 		if (filep->f_flags & O_NONBLOCK) {
- 			ret = -EAGAIN;
- 			goto error_mutex_unlock;
-@@ -155,14 +155,14 @@ static ssize_t iio_event_chrdev_read(struct file *filep,
- 		/* Blocking on device; waiting for something to be there */
- 		ret = wait_event_interruptible(ev_int->wait,
- 					       !list_empty(&ev_int
--							   ->det_events.list));
-+							   ->det_events));
+ /**
+  * lis3l02dq_spi_read_reg_8() - read single byte from a single register
+@@ -557,19 +564,13 @@ static ssize_t lis3l02dq_read_event_config(struct iio_dev *indio_dev,
+ 
+ int lis3l02dq_disable_all_events(struct iio_dev *indio_dev)
+ {
+-	struct iio_sw_ring_helper_state *h
+-		= iio_dev_get_devdata(indio_dev);
+-	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
+ 	int ret;
+ 	u8 control, val;
+-	bool irqtofree;
+ 
+ 	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+ 				       LIS3L02DQ_REG_CTRL_2_ADDR,
+ 				       &control);
+ 
+-	irqtofree = !!(control & LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT);
+-
+ 	control &= ~LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT;
+ 	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 					LIS3L02DQ_REG_CTRL_2_ADDR,
+@@ -590,9 +591,6 @@ int lis3l02dq_disable_all_events(struct iio_dev *indio_dev)
+ 	if (ret)
+ 		goto error_ret;
+ 
+-	if (irqtofree)
+-		free_irq(st->us->irq, indio_dev);
+-
+ 	ret = control;
+ error_ret:
+ 	return ret;
+@@ -602,9 +600,6 @@ static int lis3l02dq_write_event_config(struct iio_dev *indio_dev,
+ 					int event_code,
+ 					int state)
+ {
+-	struct iio_sw_ring_helper_state *h
+-		= iio_dev_get_devdata(indio_dev);
+-	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
+ 	int ret = 0;
+ 	u8 val, control;
+ 	u8 currentlyset;
+@@ -636,18 +631,6 @@ static int lis3l02dq_write_event_config(struct iio_dev *indio_dev,
+ 	}
+ 
+ 	if (changed) {
+-		if (!(control & LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT)) {
+-			ret = request_threaded_irq(st->us->irq,
+-						   NULL,
+-						   &lis3l02dq_event_handler,
+-						   IRQF_TRIGGER_RISING |
+-						   IRQF_ONESHOT,
+-						   "lis3l02dq_event",
+-						   indio_dev);
+-			if (ret)
+-				goto error_ret;
+-		}
+-
+ 		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 						LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+ 						&val);
+@@ -661,10 +644,6 @@ static int lis3l02dq_write_event_config(struct iio_dev *indio_dev,
+ 					       &control);
  		if (ret)
  			goto error_ret;
- 		/* Single access device so no one else can get the data */
- 		mutex_lock(&ev_int->event_list_lock);
- 	}
- 
--	el = list_first_entry(&ev_int->det_events.list,
-+	el = list_first_entry(&ev_int->det_events,
- 			      struct iio_detected_event_list,
- 			      list);
- 	len = sizeof el->ev;
-@@ -197,7 +197,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
- 	 * clear out any awaiting events. The mask will prevent
- 	 * any new __iio_push_event calls running.
- 	 */
--	list_for_each_entry_safe(el, t, &ev_int->det_events.list, list) {
-+	list_for_each_entry_safe(el, t, &ev_int->det_events, list) {
- 		list_del(&el->list);
- 		kfree(el);
- 	}
-@@ -300,7 +300,7 @@ static int iio_setup_ev_int(struct iio_event_interface *ev_int,
- 	/* discussion point - make this variable? */
- 	ev_int->max_events = 10;
- 	ev_int->current_events = 0;
--	INIT_LIST_HEAD(&ev_int->det_events.list);
-+	INIT_LIST_HEAD(&ev_int->det_events);
- 	init_waitqueue_head(&ev_int->wait);
- 	ev_int->handler.private = ev_int;
- 	ev_int->handler.flags = 0;
-@@ -1041,17 +1041,13 @@ static int iio_device_register_eventset(struct iio_dev *dev_info)
- 	}
- 
- 	for (i = 0; i < dev_info->num_interrupt_lines; i++) {
--		dev_info->event_interfaces[i].owner = dev_info->driver_module;
 -
- 		snprintf(dev_info->event_interfaces[i]._name, 20,
- 			 "%s:event%d",
- 			 dev_name(&dev_info->dev),
- 			 i);
+-		/* remove interrupt handler if nothing is still on */
+-		if (!(val & 0x3f))
+-			free_irq(st->us->irq, indio_dev);
+ 	}
  
- 		ret = iio_setup_ev_int(&dev_info->event_interfaces[i],
--				       (const char *)(dev_info
--						      ->event_interfaces[i]
--						      ._name),
-+				       dev_info->event_interfaces[i]._name,
- 				       dev_info->driver_module,
- 				       &dev_info->dev);
- 		if (ret) {
+ error_ret:
+@@ -748,9 +727,18 @@ static int __devinit lis3l02dq_probe(struct spi_device *spi)
+ 	}
+ 
+ 	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0) {
+-		ret = lis3l02dq_probe_trigger(st->help.indio_dev);
++		ret = request_threaded_irq(st->us->irq,
++					   &lis3l02dq_th,
++					   &lis3l02dq_event_handler,
++					   IRQF_TRIGGER_RISING,
++					   "lis3l02dq",
++					   st->help.indio_dev);
+ 		if (ret)
+ 			goto error_uninitialize_ring;
++
++		ret = lis3l02dq_probe_trigger(st->help.indio_dev);
++		if (ret)
++			goto error_free_interrupt;
+ 	}
+ 
+ 	/* Get the device into a sane initial state */
+@@ -762,6 +750,9 @@ static int __devinit lis3l02dq_probe(struct spi_device *spi)
+ error_remove_trigger:
+ 	if (st->help.indio_dev->modes & INDIO_RING_TRIGGERED)
+ 		lis3l02dq_remove_trigger(st->help.indio_dev);
++error_free_interrupt:
++	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0)
++		free_irq(st->us->irq, st->help.indio_dev);
+ error_uninitialize_ring:
+ 	iio_ring_buffer_unregister(st->help.indio_dev->ring);
+ error_unreg_ring_funcs:
+@@ -823,6 +814,9 @@ static int lis3l02dq_remove(struct spi_device *spi)
+ 	if (ret)
+ 		goto err_ret;
+ 
++	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0)
++		free_irq(st->us->irq, indio_dev);
++
+ 	lis3l02dq_remove_trigger(indio_dev);
+ 	iio_ring_buffer_unregister(indio_dev->ring);
+ 	lis3l02dq_unconfigure_ring(indio_dev);
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index d261bd6..83f2bbe 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -27,6 +27,22 @@ static inline u16 combine_8_to_16(u8 lower, u8 upper)
+ }
+ 
+ /**
++ * lis3l02dq_data_rdy_trig_poll() the event handler for the data rdy trig
++ **/
++irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct iio_sw_ring_helper_state *h =  iio_dev_get_devdata(indio_dev);
++	struct lis3l02dq_state *st = lis3l02dq_h_to_s(h);
++
++	if (st->trigger_on) {
++		iio_trigger_poll(st->trig, iio_get_time_ns());
++		return IRQ_HANDLED;
++	} else
++		return IRQ_WAKE_THREAD;
++}
++
++/**
+  * lis3l02dq_read_accel_from_ring() individual acceleration read from ring
+  **/
+ ssize_t lis3l02dq_read_accel_from_ring(struct iio_ring_buffer *ring,
+@@ -191,8 +207,7 @@ __lis3l02dq_write_data_ready_config(struct device *dev, bool state)
+ 						&valold);
+ 		if (ret)
+ 			goto error_ret;
+-
+-		free_irq(st->us->irq, st->trig);
++		st->trigger_on = false;
+ /* Enable requested */
+ 	} else if (state && !currentlyset) {
+ 		/* if not set, enable requested */
+@@ -203,20 +218,13 @@ __lis3l02dq_write_data_ready_config(struct device *dev, bool state)
+ 
+ 		valold = ret |
+ 			LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION;
+-		ret = request_irq(st->us->irq,
+-				  &iio_trigger_generic_data_rdy_poll,
+-				  IRQF_TRIGGER_RISING, "lis3l02dq_datardy",
+-				  st->trig);
+-		if (ret)
+-			goto error_ret;
+ 
++		st->trigger_on = true;
+ 		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+ 						LIS3L02DQ_REG_CTRL_2_ADDR,
+ 						&valold);
+-		if (ret) {
+-			free_irq(st->us->irq, st->trig);
++		if (ret)
+ 			goto error_ret;
+-		}
+ 	}
+ 
+ 	return 0;
 -- 
 1.7.3.4
 
