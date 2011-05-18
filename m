@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:46602 "EHLO
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:46600 "EHLO
 	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933262Ab1ERNkI (ORCPT
+	with ESMTP id S933261Ab1ERNkI (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2011 09:40:08 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 099/111] staging:iio:adc:AD7780: Convert to new channel registration method
-Date: Wed, 18 May 2011 14:42:29 +0100
-Message-Id: <1305726161-5606-100-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 098/111] staging:iio:adc: AD7606: Drop dev_data in favour of iio_priv()
+Date: Wed, 18 May 2011 14:42:28 +0100
+Message-Id: <1305726161-5606-99-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
@@ -17,168 +17,181 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-Convert to new channel registration method
+Some other small cleanups including excess header removals.
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/ad7780.c |  113 +++++++++++++++++---------------------
- 1 files changed, 51 insertions(+), 62 deletions(-)
+ drivers/staging/iio/adc/ad7606.h      |    2 +-
+ drivers/staging/iio/adc/ad7606_core.c |   22 ++++++++++------------
+ drivers/staging/iio/adc/ad7606_ring.c |   11 +++++------
+ 3 files changed, 16 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index f828e83..14b16b5 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -36,9 +36,7 @@
- #define AD7780_PAT0	(1 << 0)
- 
- struct ad7780_chip_info {
--	u8				bits;
--	u8				storagebits;
--	u8				res_shift;
-+	struct iio_chan_spec		channel;
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index 4d9d780..b8b3d8e 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -109,7 +109,7 @@ enum ad7606_supported_device_ids {
+ 	ID_AD7606_4
  };
  
- struct ad7780_state {
-@@ -88,70 +86,59 @@ out:
- 	return ret;
+-int ad7606_scan_from_ring(struct ad7606_state *st, unsigned ch);
++int ad7606_scan_from_ring(struct iio_dev *indio_dev, unsigned ch);
+ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+ void ad7606_ring_cleanup(struct iio_dev *indio_dev);
+ #endif /* IIO_ADC_AD7606_H_ */
+diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+index 0db11f1..fb96802 100644
+--- a/drivers/staging/iio/adc/ad7606_core.c
++++ b/drivers/staging/iio/adc/ad7606_core.c
+@@ -7,12 +7,10 @@
+  */
+ 
+ #include <linux/interrupt.h>
+-#include <linux/workqueue.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
+-#include <linux/list.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/err.h>
+ #include <linux/gpio.h>
+@@ -38,8 +36,9 @@ int ad7606_reset(struct ad7606_state *st)
+ 	return -ENODEV;
  }
  
--static ssize_t ad7780_scan(struct device *dev,
--			    struct device_attribute *attr,
--			    char *buf)
-+static int ad7780_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val,
-+			   int *val2,
-+			   long m)
+-static int ad7606_scan_direct(struct ad7606_state *st, unsigned ch)
++static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned ch)
  {
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7780_state *st = dev_info->dev_data;
--	int ret, val, smpl;
--
--	mutex_lock(&dev_info->mlock);
--	ret = ad7780_read(st, &smpl);
--	mutex_unlock(&dev_info->mlock);
--
--	if (ret < 0)
--		return ret;
--
--	if ((smpl & AD7780_ERR) ||
--		!((smpl & AD7780_PAT0) && !(smpl & AD7780_PAT1)))
--		return -EIO;
--
--	val = (smpl >> st->chip_info->res_shift) &
--		((1 << (st->chip_info->bits)) - 1);
--	val -= (1 << (st->chip_info->bits - 1));
--
--	if (!(smpl & AD7780_GAIN))
--		val *= 128;
--
--	return sprintf(buf, "%d\n", val);
--}
--static IIO_DEV_ATTR_IN_RAW(0, ad7780_scan, 0);
--
--static ssize_t ad7780_show_scale(struct device *dev,
--				struct device_attribute *attr,
--				char *buf)
--{
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7780_state *st = iio_dev_get_devdata(dev_info);
--	/* Corresponds to Vref / 2^(bits-1) */
--	unsigned int scale = (st->int_vref_mv * 100000) >>
--		(st->chip_info->bits - 1);
--
--	return sprintf(buf, "%d.%05d\n", scale / 100000, scale % 100000);
-+	int ret, smpl;
-+	struct ad7780_state *st = indio_dev->dev_data;
-+	unsigned int scale_uv;
-+
-+	switch (m) {
-+	case 0:
-+		mutex_lock(&indio_dev->mlock);
-+		ret = ad7780_read(st, &smpl);
-+		mutex_unlock(&indio_dev->mlock);
-+
-+		if (ret < 0)
-+			return ret;
-+
-+		if ((smpl & AD7780_ERR) ||
-+			!((smpl & AD7780_PAT0) && !(smpl & AD7780_PAT1)))
-+			return -EIO;
-+
-+		*val = (smpl >> st->chip_info->channel.scan_type.shift) &
-+			((1 << (st->chip_info->channel.scan_type.realbits))
-+			- 1);
-+		*val -= (1 << (st->chip_info->channel.scan_type.realbits
-+			- 1));
-+
-+		if (!(smpl & AD7780_GAIN))
-+			*val *= 128;
-+
-+		return IIO_VAL_INT;
-+	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
-+		scale_uv = (st->int_vref_mv * 100000)
-+			>> (st->chip_info->channel.scan_type.realbits - 1);
-+		*val =  scale_uv / 100000;
-+		*val2 = (scale_uv % 100000) * 10;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	}
-+	return -EINVAL;
++	struct ad7606_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+ 	st->done = false;
+@@ -85,16 +84,16 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
+ 			   long m)
+ {
+ 	int ret;
+-	struct ad7606_state *st = indio_dev->dev_data;
++	struct ad7606_state *st = iio_priv(indio_dev);
+ 	unsigned int scale_uv;
+ 
+ 	switch (m) {
+ 	case 0:
+ 		mutex_lock(&indio_dev->mlock);
+ 		if (iio_ring_enabled(indio_dev))
+-			ret = ad7606_scan_from_ring(st, chan->address);
++			ret = ad7606_scan_from_ring(indio_dev, chan->address);
+ 		else
+-			ret = ad7606_scan_direct(st, chan->address);
++			ret = ad7606_scan_direct(indio_dev, chan->address);
+ 		mutex_unlock(&indio_dev->mlock);
+ 
+ 		if (ret < 0)
+@@ -115,7 +114,7 @@ static ssize_t ad7606_show_range(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ad7606_state *st = iio_dev_get_devdata(indio_dev);
++	struct ad7606_state *st = iio_priv(indio_dev);
+ 
+ 	return sprintf(buf, "%u\n", st->range);
  }
--static IIO_DEVICE_ATTR(in_scale, S_IRUGO, ad7780_show_scale, NULL, 0);
--
--static struct attribute *ad7780_attributes[] = {
--	&iio_dev_attr_in0_raw.dev_attr.attr,
--	&iio_dev_attr_in_scale.dev_attr.attr,
--	NULL,
--};
--
--static const struct attribute_group ad7780_attribute_group = {
--	.attrs = ad7780_attributes,
--};
+@@ -124,7 +123,7 @@ static ssize_t ad7606_store_range(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ad7606_state *st = iio_dev_get_devdata(indio_dev);
++	struct ad7606_state *st = iio_priv(indio_dev);
+ 	unsigned long lval;
  
- static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
- 	[ID_AD7780] = {
--		.bits = 24,
--		.storagebits = 32,
--		.res_shift = 8,
-+		.channel = IIO_CHAN(IIO_IN, 0, 1, 0, NULL, 0, 0,
-+				    (1 << IIO_CHAN_INFO_SCALE_SHARED),
-+				    0, 0, IIO_ST('s', 24, 32, 8), 0),
- 	},
- 	[ID_AD7781] = {
--		.bits = 20,
--		.storagebits = 32,
--		.res_shift = 12,
-+		.channel = IIO_CHAN(IIO_IN, 0, 1, 0, NULL, 0, 0,
-+				    (1 << IIO_CHAN_INFO_SCALE_SHARED),
-+				    0, 0, IIO_ST('s', 20, 32, 12), 0),
- 	},
- };
+ 	if (strict_strtoul(buf, 10, &lval))
+@@ -149,7 +148,7 @@ static ssize_t ad7606_show_oversampling_ratio(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ad7606_state *st = iio_dev_get_devdata(indio_dev);
++	struct ad7606_state *st = iio_priv(indio_dev);
  
-@@ -218,17 +205,19 @@ static int __devinit ad7780_probe(struct spi_device *spi)
- 	/* Establish that the iio_dev is a child of the spi device */
- 	st->indio_dev->dev.parent = &spi->dev;
- 	st->indio_dev->name = spi_get_device_id(spi)->name;
--	st->indio_dev->attrs = &ad7780_attribute_group;
- 	st->indio_dev->dev_data = (void *)(st);
- 	st->indio_dev->driver_module = THIS_MODULE;
- 	st->indio_dev->modes = INDIO_DIRECT_MODE;
-+	st->indio_dev->channels = &st->chip_info->channel;
-+	st->indio_dev->num_channels = 1;
-+	st->indio_dev->read_raw = &ad7780_read_raw;
+ 	return sprintf(buf, "%u\n", st->oversampling);
+ }
+@@ -170,7 +169,7 @@ static ssize_t ad7606_store_oversampling_ratio(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ad7606_state *st = iio_dev_get_devdata(indio_dev);
++	struct ad7606_state *st = iio_priv(indio_dev);
+ 	unsigned long lval;
+ 	int ret;
  
- 	init_waitqueue_head(&st->wq_data_avail);
+@@ -211,7 +210,7 @@ static mode_t ad7606_attr_is_visible(struct kobject *kobj,
+ {
+ 	struct device *dev = container_of(kobj, struct device, kobj);
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ad7606_state *st = iio_dev_get_devdata(indio_dev);
++	struct ad7606_state *st = iio_priv(indio_dev);
  
- 	/* Setup default message */
+ 	mode_t mode = attr->mode;
  
- 	st->xfer.rx_buf = &st->data;
--	st->xfer.len = st->chip_info->storagebits / 8;
-+	st->xfer.len = st->chip_info->channel.scan_type.storagebits / 8;
+@@ -472,7 +471,6 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
  
- 	spi_message_init(&st->msg);
- 	spi_message_add_tail(&st->xfer, &st->msg);
+ 	indio_dev->dev.parent = dev;
+ 	indio_dev->attrs = &ad7606_attribute_group;
+-	indio_dev->dev_data = (void *)(st);
+ 	indio_dev->driver_module = THIS_MODULE;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->name = st->chip_info->name;
+diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+index 925806c..85cde6a 100644
+--- a/drivers/staging/iio/adc/ad7606_ring.c
++++ b/drivers/staging/iio/adc/ad7606_ring.c
+@@ -7,7 +7,6 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/gpio.h>
+-#include <linux/workqueue.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+@@ -21,9 +20,9 @@
+ 
+ #include "ad7606.h"
+ 
+-int ad7606_scan_from_ring(struct ad7606_state *st, unsigned ch)
++int ad7606_scan_from_ring(struct iio_dev *indio_dev, unsigned ch)
+ {
+-	struct iio_ring_buffer *ring = iio_priv_to_dev(st)->ring;
++	struct iio_ring_buffer *ring = indio_dev->ring;
+ 	int ret;
+ 	u16 *ring_data;
+ 
+@@ -54,7 +53,7 @@ error_ret:
+  **/
+ static int ad7606_ring_preenable(struct iio_dev *indio_dev)
+ {
+-	struct ad7606_state *st = indio_dev->dev_data;
++	struct ad7606_state *st = iio_priv(indio_dev);
+ 	struct iio_ring_buffer *ring = indio_dev->ring;
+ 	size_t d_size;
+ 
+@@ -84,7 +83,7 @@ static irqreturn_t ad7606_trigger_handler_th_bh(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->private_data;
+-	struct ad7606_state *st = indio_dev->dev_data;
++	struct ad7606_state *st = iio_priv(indio_dev);
+ 
+ 	gpio_set_value(st->pdata->gpio_convst, 1);
+ 
+@@ -159,7 +158,7 @@ static const struct iio_ring_setup_ops ad7606_ring_setup_ops = {
+ 
+ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ {
+-	struct ad7606_state *st = indio_dev->dev_data;
++	struct ad7606_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+ 	indio_dev->ring = iio_sw_rb_allocate(indio_dev);
 -- 
 1.7.3.4
 
