@@ -1,79 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:51519 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756845Ab1ERQJd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2011 12:09:33 -0400
-Message-ID: <4DD3EFE3.9070201@cam.ac.uk>
-Date: Wed, 18 May 2011 17:12:19 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Guenter Roeck
-	<guenter.roeck-IzeFyvvaP7pWk0Htik3J/w@public.gmane.org>
-CC: Jonathan Cameron <jic23-KWPb1pKIrIJaa/9Udqfwiw@public.gmane.org>,
-	fabien.marteau@armadeus.com,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	LM Sensors <lm-sensors@lm-sensors.org>
-Subject: Re: [PATCH 1/2] staging:iio:adc: as1531 driver initial conversion
- from hwmon submission.
-References: <4DD26311.7070905@armadeus.com> <1305733172-18519-2-git-send-email-jic23@cam.ac.uk> <20110518160202.GC11280@ericsson.com>
-In-Reply-To: <20110518160202.GC11280@ericsson.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: fabien.marteau@armadeus.com
+Cc: guenter.roeck@ericsson.com,
+	linux-iio@vger.kernel.org,
+	lm-sensors@lm-sensors.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 0/2] staging:iio:adc:as1531 driver port from hwmon driver.
+Date: Wed, 18 May 2011 16:39:30 +0100
+Message-Id: <1305733172-18519-1-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <4DD26311.7070905@armadeus.com>
+References: <4DD26311.7070905@armadeus.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/18/11 17:02, Guenter Roeck wrote:
-> On Wed, May 18, 2011 at 11:39:31AM -0400, Jonathan Cameron wrote:
->> From: Fabien Marteau <fabien.marteau-d2DlULPkwbNWk0Htik3J/w@public.gmane.org>
->>
->> Signed-off-by: Jonathan Cameron <jic23-KWPb1pKIrIJaa/9Udqfwiw@public.gmane.org>
-> 
-> Hi Jonathan,
-> 
-> nice job. Thanks a lot for the effort.
-> 
-> [ ... ]
-> 
->> +static int as1531_read_raw(struct iio_dev *indio_dev,
->> +			   struct iio_chan_spec const *chan,
->> +			   int *val,
->> +			   int *val2,
->> +			   long m)
->> +{
->> +
-> Extra blank line
-> 
->> +	int status = 0;
->> +	int ret_value = 0;
->> +	struct as1531_state *st = iio_priv(indio_dev);
-> 
-> Move it to here, maybe ?
-> 
->> +	if (mutex_lock_interruptible(&st->lock))
->> +		return -ERESTARTSYS;
->> +
->> +	status = as1531_message(st->spi,
->> +				AS1531_START_BIT | chan->address |
->> +				AS1531_RANGE_0_TO_VREF | AS1531_MODE_COM |
->> +				AS1531_POWER_NORMAL,
->> +				&ret_value);
->> +	mutex_unlock(&st->lock);
->> +	if (status < 0)
->> +		goto out;
->> +	
->> +	*val = ret_value*2500/4096;
->> +
->> +	return IIO_VAL_INT;
->> +out:
->> +	mutex_unlock(&st->lock);
-> 
-> Mutex was unlocked above already. Maybe just return status above ?
-Hmm.. Sometimes working without testing shows just how bad first versions
-of code really can be ;)
+Dear All,
 
-Thanks for the other review as well.  Have fixed up both.
+This is a quick initial port of the as1531 driver Fabien submitted
+to the lm-sensors mailing list.
+
+Based on top of a large series I just sent to Greg KH and posted to
+linux-iio. That has a few other dependencies, so might be easier
+to just to wait for them all to be in a standard tree (linux-next
+or mainline).
+
+Dropped from hwmon driver - max and min values.
+
+Stuff to add at some point (i.e. when needed)
+
+1) Differential channels - trivial to do, just add a few more entries to
+the channels array and some signed bits in read_raw
+
+2) Buffered read support - straight forward case where all channels have
+to be explicitly requested anyway.
+
+3) Other devices trivially added:
+as1530 is directly compatible.
+as1532/1533 look like 4 channel equivalents (add iio_chan_spec arrays).
+
+The other similarly numbered parts are different enough to need their
+own drivers.
+
+Fabien, as more of the code in the first patch is yours than mine,
+I've put you as author of that one.
+
+The second is mostly stuff you'd have gotten in review to the hwmon
+driver anyway.
 
 
-Thanks.
+Fabien Marteau (1):
+  staging:iio:adc: as1531 driver initial conversion from hwmon
+    submission.
 
-Jonathan 
+Jonathan Cameron (1):
+  staging:iio:adc:as1351 general cleanup and conversion to standard
+    functions.
 
+ drivers/staging/iio/adc/Kconfig  |   10 ++
+ drivers/staging/iio/adc/Makefile |    2 +
+ drivers/staging/iio/adc/as1531.c |  168 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 180 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/as1531.c
+
+-- 
+1.7.3.4
