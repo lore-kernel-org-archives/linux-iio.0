@@ -1,59 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:54111 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933246Ab1ERNkH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2011 09:40:07 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 084/111] staging:iio:adc:ad7816 and adt75 change to meaningful event code.
-Date: Wed, 18 May 2011 14:42:14 +0100
-Message-Id: <1305726161-5606-85-git-send-email-jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 083/111] staging:iio:adc:ad7150 fix event codes.
+Date: Wed, 18 May 2011 14:42:13 +0100
+Message-Id: <1305726161-5606-84-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-This was another abuse of the buffer event codes.
+I won't guarantee I got these right, but they are certainly closer than
+the abuse of buffer event codes that was perviously in here.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/ad7816.c |    5 ++++-
- drivers/staging/iio/adc/adt75.c  |    5 ++++-
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/staging/iio/adc/ad7150.c |   31 +++++++++++++++++++------------
+ 1 files changed, 19 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index bee4209..873fe2b 100644
---- a/drivers/staging/iio/adc/ad7816.c
-+++ b/drivers/staging/iio/adc/ad7816.c
-@@ -247,7 +247,10 @@ static const struct attribute_group ad7816_attribute_group = {
-  * temperature bound events
+diff --git a/drivers/staging/iio/adc/ad7150.c b/drivers/staging/iio/adc/ad7150.c
+index cbd1f96..e23bb99 100644
+--- a/drivers/staging/iio/adc/ad7150.c
++++ b/drivers/staging/iio/adc/ad7150.c
+@@ -642,11 +642,6 @@ static const struct attribute_group ad7150_attribute_group = {
+  * threshold events
   */
  
--#define IIO_EVENT_CODE_AD7816_OTI    IIO_BUFFER_EVENT_CODE(0)
-+#define IIO_EVENT_CODE_AD7816_OTI IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_TEMP, \
-+						       0,		\
-+						       IIO_EV_TYPE_THRESH, \
-+						       IIO_EV_DIR_FALLING)
- 
- static irqreturn_t ad7816_event_handler(int irq, void *private)
+-#define IIO_EVENT_CODE_CH1_HIGH    IIO_BUFFER_EVENT_CODE(0)
+-#define IIO_EVENT_CODE_CH1_LOW     IIO_BUFFER_EVENT_CODE(1)
+-#define IIO_EVENT_CODE_CH2_HIGH    IIO_BUFFER_EVENT_CODE(2)
+-#define IIO_EVENT_CODE_CH2_LOW     IIO_BUFFER_EVENT_CODE(3)
+-
+ static irqreturn_t ad7150_event_handler(int irq, void *private)
  {
-diff --git a/drivers/staging/iio/adc/adt75.c b/drivers/staging/iio/adc/adt75.c
-index 4b1c0fa..2a44428 100644
---- a/drivers/staging/iio/adc/adt75.c
-+++ b/drivers/staging/iio/adc/adt75.c
-@@ -258,7 +258,10 @@ static const struct attribute_group adt75_attribute_group = {
-  * temperature bound events
-  */
+ 	struct iio_dev *indio_dev = private;
+@@ -658,21 +653,33 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
  
--#define IIO_EVENT_CODE_ADT75_OTI    IIO_BUFFER_EVENT_CODE(0)
-+#define IIO_EVENT_CODE_ADT75_OTI IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_TEMP, \
-+						      0,		\
-+						      IIO_EV_TYPE_THRESH, \
-+						      IIO_EV_DIR_FALLING)
+ 	if ((int_status & AD7150_STATUS_OUT1) && !(chip->old_state & AD7150_STATUS_OUT1))
+ 		iio_push_event(indio_dev, 0,
+-				IIO_EVENT_CODE_CH1_HIGH,
++			       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
++						    0,
++						    IIO_EV_TYPE_THRESH,
++						    IIO_EV_DIR_RISING),
+ 				timestamp);
+ 	else if ((!(int_status & AD7150_STATUS_OUT1)) && (chip->old_state & AD7150_STATUS_OUT1))
+ 		iio_push_event(indio_dev, 0,
+-				IIO_EVENT_CODE_CH1_LOW,
+-				timestamp);
++			       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
++						    0,
++						    IIO_EV_TYPE_THRESH,
++						    IIO_EV_DIR_FALLING),
++			       timestamp);
  
- static irqreturn_t adt75_event_handler(int irq, void *private)
- {
+ 	if ((int_status & AD7150_STATUS_OUT2) && !(chip->old_state & AD7150_STATUS_OUT2))
+ 		iio_push_event(indio_dev, 0,
+-				IIO_EVENT_CODE_CH2_HIGH,
+-				timestamp);
++			       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
++						    1,
++						    IIO_EV_TYPE_THRESH,
++						    IIO_EV_DIR_RISING),
++			       timestamp);
+ 	else if ((!(int_status & AD7150_STATUS_OUT2)) && (chip->old_state & AD7150_STATUS_OUT2))
+ 		iio_push_event(indio_dev, 0,
+-				IIO_EVENT_CODE_CH2_LOW,
+-				timestamp);
++			       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
++						    1,
++						    IIO_EV_TYPE_THRESH,
++						    IIO_EV_DIR_FALLING),
++			       timestamp);
+ 	return IRQ_HANDLED;
+ }
+ 
 -- 
 1.7.3.4
-
