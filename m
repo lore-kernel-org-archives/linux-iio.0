@@ -1,321 +1,487 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:47032 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933231Ab1ERNkh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2011 09:40:37 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 110/111] staging:iio:documenation partial update.
-Date: Wed, 18 May 2011 14:42:40 +0100
-Message-Id: <1305726161-5606-111-git-send-email-jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 109/111] staging:iio: use pollfunc allocation helpers in remaining drivers.
+Date: Wed, 18 May 2011 14:42:39 +0100
+Message-Id: <1305726161-5606-110-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-More to be added, but this brings the docs in line with
-the current code. Now they are hopefully just uninformative
-rather than actually incorrect.
+Some didn't get converted the first time around.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/Documentation/device.txt    |   78 ++++++++++++++++-------
- drivers/staging/iio/Documentation/overview.txt  |   19 ++----
- drivers/staging/iio/Documentation/ring.txt      |   44 ++++++-------
- drivers/staging/iio/Documentation/trigger.txt   |   16 +++---
- drivers/staging/iio/Documentation/userspace.txt |   12 ----
- 5 files changed, 91 insertions(+), 78 deletions(-)
+ drivers/staging/iio/accel/lis3l02dq_ring.c |   16 +++++++---------
+ drivers/staging/iio/adc/ad7298_ring.c      |   24 ++++++++++--------------
+ drivers/staging/iio/adc/ad7476_ring.c      |   26 ++++++++++----------------
+ drivers/staging/iio/adc/ad7606_ring.c      |   24 +++++++++---------------
+ drivers/staging/iio/adc/ad7887_ring.c      |   24 ++++++++----------------
+ drivers/staging/iio/adc/ad799x_ring.c      |   25 ++++++++++---------------
+ drivers/staging/iio/adc/max1363_ring.c     |   24 +++++++++---------------
+ drivers/staging/iio/gyro/adis16260_ring.c  |   23 ++++++++---------------
+ drivers/staging/iio/meter/ade7758_ring.c   |   22 ++++++++--------------
+ 9 files changed, 79 insertions(+), 129 deletions(-)
 
-diff --git a/drivers/staging/iio/Documentation/device.txt b/drivers/staging/iio/Documentation/device.txt
-index c81e517..1abb80c 100644
---- a/drivers/staging/iio/Documentation/device.txt
-+++ b/drivers/staging/iio/Documentation/device.txt
-@@ -8,34 +8,66 @@ The crucial structure for device drivers in iio is iio_dev.
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index 1c208d2..8d5c8ac 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -344,8 +344,7 @@ void lis3l02dq_remove_trigger(struct iio_dev *indio_dev)
  
- First allocate one using:
+ void lis3l02dq_unconfigure_ring(struct iio_dev *indio_dev)
+ {
+-	kfree(indio_dev->pollfunc->name);
+-	kfree(indio_dev->pollfunc);
++	iio_dealloc_pollfunc(indio_dev->pollfunc);
+ 	lis3l02dq_free_buf(indio_dev->ring);
+ }
  
--struct iio_dev *indio_dev = iio_allocate_device(0);
-+struct iio_dev *indio_dev = iio_allocate_device(sizeof(struct chip_state));
-+where chip_state is a structure of local state data for this instance of
-+the chip.
+@@ -448,18 +447,17 @@ int lis3l02dq_configure_ring(struct iio_dev *indio_dev)
+ 	iio_scan_mask_set(ring, 2);
  
--Then fill in the following:
--
--indio_dev->dev.parent
--  the struct device associated with the underlying hardware.
--
--indio_dev->num_interrupt_lines
--   number of event triggering hardware lines the device has.
-+That data can be accessed using iio_priv(struct iio_dev *)
+ 	/* Functions are NULL as we set handler below */
+-	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
++	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
++						 &lis3l02dq_trigger_handler,
++						 0,
++						 indio_dev,
++						 "lis3l02dq_consumer%d",
++						 indio_dev->id);
  
--indio_dev->event_attrs
--   attributes used to enable / disable hardware events - note the
--   attributes are embedded in iio_event_attr structures with an
--   associated iio_event_handler which may or may note be shared.
--   If num_interrupt_lines = 0, then no need to fill this in.
--
--indio_dev->attrs
--   general attributes such as polled access to device channels.
-+Then fill in the following:
+ 	if (indio_dev->pollfunc == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_iio_sw_rb_free;
+ 	}
+-	indio_dev->pollfunc->private_data = indio_dev;
+-	indio_dev->pollfunc->thread = &lis3l02dq_trigger_handler;
+-	indio_dev->pollfunc->h = &iio_pollfunc_store_time;
+-	indio_dev->pollfunc->type = 0;
+-	indio_dev->pollfunc->name
+-		= kasprintf(GFP_KERNEL, "lis3l02dq_consumer%d", indio_dev->id);
  
--indio_dev->dev_data
--   private device specific data.
-+- indio_dev->dev.parent
-+	Struct device associated with the underlying hardware.
-+- indio_dev->name
-+	Name of the device being driven - made available as the name
-+	attribute in sysfs.
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
+ 	return 0;
+diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
+index d0a0aeaaf..a04c033 100644
+--- a/drivers/staging/iio/adc/ad7298_ring.c
++++ b/drivers/staging/iio/adc/ad7298_ring.c
+@@ -164,20 +164,18 @@ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	/* Effectively select the ring buffer implementation */
+ 	indio_dev->ring->access = &ring_sw_access_funcs;
  
--indio_dev->driver_module
--   typically set to THIS_MODULE. Used to specify ownership of some
--   iio created resources.
-+- indio_dev->info
-+	pointer to a structure with elements that tend to be fixed for
-+	large sets of different parts supported by a given driver.
-+	This contains:
-+	* info->driver_module:
-+		Set to THIS_MODULE. Used to ensure correct ownership
-+		of various resources allocate by the core.
-+	* info->num_interrupt_lines:
-+		Number of event triggering hardware lines the device has.
-+	* info->event_attrs:
-+		Attributes used to enable / disable hardware events.
-+	* info->attrs:
-+		General device attributes. Typically used for the weird
-+		and the wonderful bits not covered by the channel specification.
-+	* info->read_raw:
-+		Raw data reading function. Used for both raw channel access
-+		and for associate parameters such as offsets and scales.
-+	* info->write_raw:
-+		Raw value writing function. Used for writable device values such
-+		as DAC values and caliboffset.
-+	* info->read_event_config:
-+		Typically only set if there are some interrupt lines.  This
-+		is used to read if an on sensor event detector is enabled.
-+	* info->write_event_config:
-+		Enable / disable an on sensor event detector.
-+	* info->read_event_value:
-+		Read value associated with on sensor event detectors. Note that
-+		the meaning of the returned value is dependent on the event
-+		type.
-+	* info->write_event_value:
-+		Write the value associated with on sensor event detectors. E.g.
-+		a threshold above which an interrupt occurs.  Note that the
-+		meaning of the value to be set is event type dependant.
- 
--indio_dev->modes
--   whether direct access and / or ring buffer access is supported.
-+- indio_dev->modes:
-+	Specify whether direct access and / or ring buffer access is supported.
-+- indio_dev->ring:
-+	An optional associated buffer.
-+- indio_dev->pollfunc:
-+	Poll function related elements. This controls what occurs when a trigger
-+	to which this device is attached sends and event.
-+- indio_dev->channels:
-+	Specification of device channels. Most attributes etc are built
-+	form this spec.
-+- indio_dev->num_channels:
-+	How many channels are there?
- 
- Once these are set up, a call to iio_device_register(indio_dev),
- will register the device with the iio core.
-diff --git a/drivers/staging/iio/Documentation/overview.txt b/drivers/staging/iio/Documentation/overview.txt
-index d97106c..afc39ec 100644
---- a/drivers/staging/iio/Documentation/overview.txt
-+++ b/drivers/staging/iio/Documentation/overview.txt
-@@ -3,8 +3,7 @@ Overview of IIO
- The Industrial I/O subsystem is intended to provide support for devices
- that in some sense are analog to digital converters (ADCs). As many
- actual devices combine some ADCs with digital to analog converters
--(DACs) the intention is to add that functionality at a future date
--(hence the name).
-+(DACs) that functionality is also supported.
- 
- The aim is to fill the gap between the somewhat similar hwmon and
- input subsystems.  Hwmon is very much directed at low sample rate
-@@ -31,32 +30,28 @@ event must be accessed via polling.
- Note: A given device may have one or more event channel.  These events are
- turned on or off (if possible) via sysfs interfaces.
- 
--* Hardware ring buffer support.  Some recent sensors have included
-+* Hardware buffer support.  Some recent sensors have included
- fifo / ring buffers on the sensor chip.  These greatly reduce the load
- on the host CPU by buffering relatively large numbers of data samples
- based on an internal sampling clock. Examples include VTI SCA3000
--series and Analog Device ADXL345 accelerometers.  Each ring buffer
--typically has an event chrdev (similar to the more general ones above)
--to pass on events such as buffer 50% full and an access chrdev via
--which the raw data it self may be read back.
-+series and Analog Device ADXL345 accelerometers.  Each buffer supports
-+polling to establish when data is available.
- 
--* Trigger and software ring buffer support. In many data analysis
-+* Trigger and software buffer support. In many data analysis
- applications it it useful to be able to capture data based on some
- external signal (trigger).  These triggers might be a data ready
- signal, a gpio line connected to some external system or an on
- processor periodic interrupt.  A single trigger may initialize data
- capture or reading from a number of sensors.  These triggers are
--used in IIO to fill software ring buffers acting in a very similar
-+used in IIO to fill software buffers acting in a very similar
- fashion to the hardware buffers described above.
- 
- Other documentation:
- 
--userspace.txt - overview of ring buffer reading from userspace.
--
- device.txt - elements of a typical device driver.
- 
- trigger.txt - elements of a typical trigger driver.
- 
--ring.txt - additional elements required for ring buffer support.
-+ring.txt - additional elements required for buffer support.
- 
- sysfs-bus-iio - abi documentation file.
-diff --git a/drivers/staging/iio/Documentation/ring.txt b/drivers/staging/iio/Documentation/ring.txt
-index 3696c36..7e99ef2 100644
---- a/drivers/staging/iio/Documentation/ring.txt
-+++ b/drivers/staging/iio/Documentation/ring.txt
-@@ -1,57 +1,55 @@
--Ring buffer support within IIO
-+Buffer support within IIO
- 
- This document is intended as a general overview of the functionality
--a ring buffer may supply and how it is specified within IIO.  For more
--specific information on a given ring buffer implementation, see the
--comments in the source code.  Note that the intention is to allow
--some drivers to specify ring buffers choice at probe or runtime, but
--for now the selection is hard coded within a given driver.
-+a buffer may supply and how it is specified within IIO.  For more
-+specific information on a given buffer implementation, see the
-+comments in the source code.  Note that some drivers allow buffer
-+implementation to be selected at compile time via Kconfig options.
- 
--A given ring buffer implementation typically embedded a struct
-+A given buffer implementation typically embeds a struct
- iio_ring_buffer and it is a pointer to this that is provided to the
- IIO core. Access to the embedding structure is typically done via
- container_of functions.
- 
--struct iio_ring_buffer contains 4 function pointers
--(preenable, postenable, predisable, postdisable).
--These are used to perform implementation specific steps on either side
--of the core changing it's current mode to indicate that the ring buffer
-+struct iio_ring_buffer contains a struct iio_ring_setup_ops *setup_ops
-+which in turn contains the 4 function pointers
-+(preenable, postenable, predisable and postdisable).
-+These are used to perform device specific steps on either side
-+of the core changing it's current mode to indicate that the buffer
- is enabled or disabled (along with enabling triggering etc as appropriate).
- 
- Also in struct iio_ring_buffer is a struct iio_ring_access_funcs.
- The function pointers within here are used to allow the core to handle
--as much ring buffer functionality as possible. Note almost all of these
-+as much buffer functionality as possible. Note almost all of these
- are optional.
- 
- mark_in_use, unmark_in_use
--  Basically indicate that not changes should be made to the ring
--  buffer state that will effect the form of the data being captures
--  (e.g. scan elements or length)
-+  Basically indicate that not changes should be made to the buffer state that
-+  will effect the form of the data being captures (e.g. scan elements or length)
- 
- store_to
--  If possible, push data to ring buffer.
-+  If possible, push data to the buffer.
- 
- read_last
--  If possible get the most recent entry from the buffer (without removal).
-+  If possible, get the most recent scan from the buffer (without removal).
-   This provides polling like functionality whilst the ring buffering is in
-   use without a separate read from the device.
- 
--rip_lots
--  The primary ring buffer reading function. Note that it may well not return
--  as much data as requested.  The deadoffset is used to indicate that some
--  initial data in the data array is not guaranteed to be valid.
-+rip_first_n
-+  The primary buffer reading function. Note that it may well not return
-+  as much data as requested.
- 
- mark_param_changed
-   Used to indicate that something has changed. Used in conjunction with
- request_update
-   If parameters have changed that require reinitialization or configuration of
--  the ring buffer this will trigger it.
-+  the buffer this will trigger it.
- 
- get_bytes_per_datum, set_bytes_per_datum
-   Get/set the number of bytes for a complete scan. (All samples + timestamp)
- 
- get_length / set_length
--  Get/set the number of sample sets that may be held by the buffer.
-+  Get/set the number of complete scans that may be held by the buffer.
- 
- is_enabled
-   Query if ring buffer is in use
-diff --git a/drivers/staging/iio/Documentation/trigger.txt b/drivers/staging/iio/Documentation/trigger.txt
-index 650157f..fc2012e 100644
---- a/drivers/staging/iio/Documentation/trigger.txt
-+++ b/drivers/staging/iio/Documentation/trigger.txt
-@@ -5,14 +5,11 @@ an IIO device.  Whilst this can create device specific complexities
- such triggers are registered with the core in the same way as
- stand-alone triggers.
- 
--struct iio_trig *trig = iio_allocate_trigger();
-+struct iio_trig *trig = iio_allocate_trigger("<trigger format string>", ...);
- 
- allocates a trigger structure.  The key elements to then fill in within
- a driver are:
- 
--trig->control_attrs
--	Any sysfs attributes needed to control parameters of the trigger
--
- trig->private_data
- 	Device specific private data.
- 
-@@ -20,8 +17,12 @@ trig->owner
- 	Typically set to THIS_MODULE. Used to ensure correct
- 	ownership of core allocated resources.
- 
--trig->name
--	A unique name for the trigger.
-+trig->set_trigger_state:
-+	Function that enables / disables the underlying source of the trigger.
+-	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
++	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
++						 &ad7298_trigger_handler,
++						 IRQF_ONESHOT,
++						 indio_dev,
++						 "ad7298_consumer%d",
++						 indio_dev->id);
 +
-+There is also a
-+trig->alloc_list which is useful for drivers that allocate multiple
-+triggers to keep track of what they have created.
+ 	if (indio_dev->pollfunc == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_deallocate_sw_rb;
+ 	}
+-	indio_dev->pollfunc->private_data = indio_dev;
+-	indio_dev->pollfunc->thread = &ad7298_trigger_handler;
+-	indio_dev->pollfunc->type = IRQF_ONESHOT;
+-	indio_dev->pollfunc->name =
+-		kasprintf(GFP_KERNEL, "ad7298_consumer%d", indio_dev->id);
+-	if (indio_dev->pollfunc->name == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_poll_func;
+-	}
++
+ 	/* Ring buffer functions - here trigger setup related */
+ 	indio_dev->ring->setup_ops = &ad7298_ring_setup_ops;
+ 	indio_dev->ring->scan_timestamp = true;
+@@ -185,8 +183,7 @@ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	/* Flag that polled ring buffering is possible */
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
+ 	return 0;
+-error_free_poll_func:
+-	kfree(indio_dev->pollfunc);
++
+ error_deallocate_sw_rb:
+ 	iio_sw_rb_free(indio_dev->ring);
+ error_ret:
+@@ -200,7 +197,6 @@ void ad7298_ring_cleanup(struct iio_dev *indio_dev)
+ 		iio_trigger_dettach_poll_func(indio_dev->trig,
+ 					      indio_dev->pollfunc);
+ 	}
+-	kfree(indio_dev->pollfunc->name);
+-	kfree(indio_dev->pollfunc);
++	iio_dealloc_pollfunc(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
+diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
+index 1d696ef..b1b2ee2 100644
+--- a/drivers/staging/iio/adc/ad7476_ring.c
++++ b/drivers/staging/iio/adc/ad7476_ring.c
+@@ -125,22 +125,18 @@ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	}
+ 	/* Effectively select the ring buffer implementation */
+ 	indio_dev->ring->access = &ring_sw_access_funcs;
+-	indio_dev->pollfunc = kzalloc(sizeof(indio_dev->pollfunc), GFP_KERNEL);
++	indio_dev->pollfunc
++		= iio_alloc_pollfunc(NULL,
++				     &ad7476_trigger_handler,
++				     IRQF_ONESHOT,
++				     indio_dev,
++				     "%s_consumer%d",
++				     spi_get_device_id(st->spi)->name,
++				     indio_dev->id);
+ 	if (indio_dev->pollfunc == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_deallocate_sw_rb;
+ 	}
+-	indio_dev->pollfunc->private_data = indio_dev;
+-	indio_dev->pollfunc->thread = &ad7476_trigger_handler;
+-	indio_dev->pollfunc->type = IRQF_ONESHOT;
+-	indio_dev->pollfunc->name
+-		= kasprintf(GFP_KERNEL, "%s_consumer%d",
+-			    spi_get_device_id(st->spi)->name,
+-			    indio_dev->id);
+-	if (indio_dev->pollfunc->name == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_pollfunc;
+-	}
  
- When these have been set call:
+ 	/* Ring buffer functions - here trigger setup related */
+ 	indio_dev->ring->setup_ops = &ad7476_ring_setup_ops;
+@@ -149,8 +145,7 @@ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	/* Flag that polled ring buffering is possible */
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
+ 	return 0;
+-error_free_pollfunc:
+-	kfree(indio_dev->pollfunc);
++
+ error_deallocate_sw_rb:
+ 	iio_sw_rb_free(indio_dev->ring);
+ error_ret:
+@@ -165,7 +160,6 @@ void ad7476_ring_cleanup(struct iio_dev *indio_dev)
+ 		iio_trigger_dettach_poll_func(indio_dev->trig,
+ 					      indio_dev->pollfunc);
+ 	}
+-	kfree(indio_dev->pollfunc->name);
+-	kfree(indio_dev->pollfunc);
++	iio_dealloc_pollfunc(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
+diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+index 85cde6a..a199bf4 100644
+--- a/drivers/staging/iio/adc/ad7606_ring.c
++++ b/drivers/staging/iio/adc/ad7606_ring.c
+@@ -169,22 +169,18 @@ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  
-@@ -30,9 +31,8 @@ iio_trigger_register(trig);
- to register the trigger with the core, making it available to trigger
- consumers.
+ 	/* Effectively select the ring buffer implementation */
+ 	indio_dev->ring->access = &ring_sw_access_funcs;
+-	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
++	indio_dev->pollfunc = iio_alloc_pollfunc(&ad7606_trigger_handler_th_bh,
++						 &ad7606_trigger_handler_th_bh,
++						 0,
++						 indio_dev,
++						 "%s_consumer%d",
++						 indio_dev->name,
++						 indio_dev->id);
+ 	if (indio_dev->pollfunc == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_deallocate_sw_rb;
+ 	}
  
--
- Trigger Consumers
+-	indio_dev->pollfunc->private_data = indio_dev;
+-	indio_dev->pollfunc->h = &ad7606_trigger_handler_th_bh;
+-	indio_dev->pollfunc->thread = &ad7606_trigger_handler_th_bh;
+-	indio_dev->pollfunc->name =
+-		kasprintf(GFP_KERNEL, "%s_consumer%d", indio_dev->name,
+-			  indio_dev->id);
+-	if (indio_dev->pollfunc->name == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_poll_func;
+-	}
+ 	/* Ring buffer functions - here trigger setup related */
  
--Currently triggers are only used for the filling of software ring
-+Currently triggers are only used for the filling of software
- buffers and as such any device supporting INDIO_RING_TRIGGERED has the
- consumer interface automatically created.
-diff --git a/drivers/staging/iio/Documentation/userspace.txt b/drivers/staging/iio/Documentation/userspace.txt
-deleted file mode 100644
-index ff06e5d..0000000
---- a/drivers/staging/iio/Documentation/userspace.txt
-+++ /dev/null
-@@ -1,12 +0,0 @@
--Userspace access to IIO
+ 	indio_dev->ring->setup_ops = &ad7606_ring_setup_ops;
+@@ -195,8 +191,7 @@ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	/* Flag that polled ring buffering is possible */
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
+ 	return 0;
+-error_free_poll_func:
+-	kfree(indio_dev->pollfunc);
++
+ error_deallocate_sw_rb:
+ 	iio_sw_rb_free(indio_dev->ring);
+ error_ret:
+@@ -210,7 +205,6 @@ void ad7606_ring_cleanup(struct iio_dev *indio_dev)
+ 		iio_trigger_dettach_poll_func(indio_dev->trig,
+ 					      indio_dev->pollfunc);
+ 	}
+-	kfree(indio_dev->pollfunc->name);
+-	kfree(indio_dev->pollfunc);
++	iio_dealloc_pollfunc(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
+diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
+index f3485b3..0e4a5f4 100644
+--- a/drivers/staging/iio/adc/ad7887_ring.c
++++ b/drivers/staging/iio/adc/ad7887_ring.c
+@@ -166,30 +166,23 @@ int ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	}
+ 	/* Effectively select the ring buffer implementation */
+ 	indio_dev->ring->access = &ring_sw_access_funcs;
+-	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
++	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
++						 &ad7887_trigger_handler,
++						 IRQF_ONESHOT,
++						 indio_dev,
++						 "ad7887_consumer%d",
++						 indio_dev->id);
+ 	if (indio_dev->pollfunc == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_deallocate_sw_rb;
+ 	}
 -
--The sysfs attributes are documented in sysfs-bus-iio.
--
--Udev will create the following entries under /dev by default:
--
--device0:buffer0:access0 - ring access chrdev
--device0:buffer0:event0 - ring event chrdev
--device0:event0 - general event chrdev.
--
--The files, lis3l02dqbuffersimple.c and iio_utils.h in this directory provide an example
--of how to use the ring buffer and event interfaces.
+-	indio_dev->pollfunc->private_data = indio_dev;
+-	indio_dev->pollfunc->h = &iio_pollfunc_store_time;
+-	indio_dev->pollfunc->thread = &ad7887_trigger_handler;
+-	indio_dev->pollfunc->type = IRQF_ONESHOT;
+-	indio_dev->pollfunc->name =
+-		kasprintf(GFP_KERNEL, "ad7887_consumer%d", indio_dev->id);
+-	if (indio_dev->pollfunc->name == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_pollfunc;
+-	}
+ 	/* Ring buffer functions - here trigger setup related */
+ 	indio_dev->ring->setup_ops = &ad7887_ring_setup_ops;
+ 
+ 	/* Flag that polled ring buffering is possible */
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
+ 	return 0;
+-error_free_pollfunc:
+-	kfree(indio_dev->pollfunc);
++
+ error_deallocate_sw_rb:
+ 	iio_sw_rb_free(indio_dev->ring);
+ error_ret:
+@@ -204,7 +197,6 @@ void ad7887_ring_cleanup(struct iio_dev *indio_dev)
+ 		iio_trigger_dettach_poll_func(indio_dev->trig,
+ 					      indio_dev->pollfunc);
+ 	}
+-	kfree(indio_dev->pollfunc->name);
+-	kfree(indio_dev->pollfunc);
++	iio_dealloc_pollfunc(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
+diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
+index 57dca20..1ae8857 100644
+--- a/drivers/staging/iio/adc/ad799x_ring.c
++++ b/drivers/staging/iio/adc/ad799x_ring.c
+@@ -179,21 +179,18 @@ int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	}
+ 	/* Effectively select the ring buffer implementation */
+ 	indio_dev->ring->access = &ring_sw_access_funcs;
+-	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
++	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
++						 &ad799x_trigger_handler,
++						 IRQF_ONESHOT,
++						 indio_dev,
++						 "%s_consumer%d",
++						 indio_dev->name,
++						 indio_dev->id);
+ 	if (indio_dev->pollfunc == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_deallocate_sw_rb;
+ 	}
+-	indio_dev->pollfunc->private_data = indio_dev;
+-	indio_dev->pollfunc->thread = &ad799x_trigger_handler;
+-	indio_dev->pollfunc->type = IRQF_ONESHOT;
+-	indio_dev->pollfunc->name =
+-		kasprintf(GFP_KERNEL, "%s_consumer%d", indio_dev->name,
+-			  indio_dev->id);
+-	if (indio_dev->pollfunc->name == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_poll_func;
+-	}
++
+ 	/* Ring buffer functions - here trigger setup related */
+ 	indio_dev->ring->setup_ops = &ad799x_buf_setup_ops;
+ 	indio_dev->ring->scan_timestamp = true;
+@@ -201,8 +198,7 @@ int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	/* Flag that polled ring buffering is possible */
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
+ 	return 0;
+-error_free_poll_func:
+-	kfree(indio_dev->pollfunc);
++
+ error_deallocate_sw_rb:
+ 	iio_sw_rb_free(indio_dev->ring);
+ error_ret:
+@@ -217,7 +213,6 @@ void ad799x_ring_cleanup(struct iio_dev *indio_dev)
+ 		iio_trigger_dettach_poll_func(indio_dev->trig,
+ 					      indio_dev->pollfunc);
+ 	}
+-	kfree(indio_dev->pollfunc->name);
+-	kfree(indio_dev->pollfunc);
++	iio_dealloc_pollfunc(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
+diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
+index 1587aec1..f43befd 100644
+--- a/drivers/staging/iio/adc/max1363_ring.c
++++ b/drivers/staging/iio/adc/max1363_ring.c
+@@ -169,21 +169,17 @@ int max1363_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
++	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
++						 &max1363_trigger_handler,
++						 IRQF_ONESHOT,
++						 indio_dev,
++						 "%s_consumer%d",
++						 st->client->name,
++						 indio_dev->id);
+ 	if (indio_dev->pollfunc == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_deallocate_sw_rb;
+ 	}
+-	indio_dev->pollfunc->private_data = indio_dev;
+-	indio_dev->pollfunc->thread = &max1363_trigger_handler;
+-	indio_dev->pollfunc->type = IRQF_ONESHOT;
+-	indio_dev->pollfunc->name =
+-		kasprintf(GFP_KERNEL, "%s_consumer%d",
+-			  st->client->name, indio_dev->id);
+-	if (indio_dev->pollfunc->name == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_pollfunc;
+-	}
+ 	/* Effectively select the ring buffer implementation */
+ 	indio_dev->ring->access = &ring_sw_access_funcs;
+ 	/* Ring buffer functions - here trigger setup related */
+@@ -193,8 +189,7 @@ int max1363_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
+ 
+ 	return 0;
+-error_free_pollfunc:
+-	kfree(indio_dev->pollfunc);
++
+ error_deallocate_sw_rb:
+ 	iio_sw_rb_free(indio_dev->ring);
+ error_ret:
+@@ -209,7 +204,6 @@ void max1363_ring_cleanup(struct iio_dev *indio_dev)
+ 		iio_trigger_dettach_poll_func(indio_dev->trig,
+ 					      indio_dev->pollfunc);
+ 	}
+-	kfree(indio_dev->pollfunc->name);
+-	kfree(indio_dev->pollfunc);
++	iio_dealloc_pollfunc(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
+diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
+index 85586e4..a092504 100644
+--- a/drivers/staging/iio/gyro/adis16260_ring.c
++++ b/drivers/staging/iio/gyro/adis16260_ring.c
+@@ -101,8 +101,7 @@ static irqreturn_t adis16260_trigger_handler(int irq, void *p)
+ 
+ void adis16260_unconfigure_ring(struct iio_dev *indio_dev)
+ {
+-	kfree(indio_dev->pollfunc->name);
+-	kfree(indio_dev->pollfunc);
++	iio_dealloc_pollfunc(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
+ 
+@@ -137,26 +136,20 @@ int adis16260_configure_ring(struct iio_dev *indio_dev)
+ 	iio_scan_mask_set(ring, ADIS16260_SCAN_TEMP);
+ 	iio_scan_mask_set(ring, ADIS16260_SCAN_ANGL);
+ 
+-	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
++	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
++						 &adis16260_trigger_handler,
++						 IRQF_ONESHOT,
++						 indio_dev,
++						 "adis16260_consumer%d",
++						 indio_dev->id);
+ 	if (indio_dev->pollfunc == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_iio_sw_rb_free;
+ 	}
+-	indio_dev->pollfunc->private_data = indio_dev;
+-	indio_dev->pollfunc->h = &iio_pollfunc_store_time;
+-	indio_dev->pollfunc->thread = &adis16260_trigger_handler;
+-	indio_dev->pollfunc->type = IRQF_ONESHOT;
+-	indio_dev->pollfunc->name =
+-		kasprintf(GFP_KERNEL, "adis16260_consumer%d", indio_dev->id);
+-	if (indio_dev->pollfunc->name == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_pollfunc;
+-	}
+ 
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
+ 	return 0;
+-error_free_pollfunc:
+-	kfree(indio_dev->pollfunc);
++
+ error_iio_sw_rb_free:
+ 	iio_sw_rb_free(indio_dev->ring);
+ 	return ret;
+diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+index a5e48c1..b89b7f8 100644
+--- a/drivers/staging/iio/meter/ade7758_ring.c
++++ b/drivers/staging/iio/meter/ade7758_ring.c
+@@ -142,8 +142,7 @@ void ade7758_unconfigure_ring(struct iio_dev *indio_dev)
+ 		iio_trigger_dettach_poll_func(indio_dev->trig,
+ 					      indio_dev->pollfunc);
+ 	}
+-	kfree(indio_dev->pollfunc->name);
+-	kfree(indio_dev->pollfunc);
++	iio_dealloc_pollfunc(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
+ 
+@@ -163,20 +162,17 @@ int ade7758_configure_ring(struct iio_dev *indio_dev)
+ 	indio_dev->ring->setup_ops = &ade7758_ring_setup_ops;
+ 	indio_dev->ring->owner = THIS_MODULE;
+ 
+-	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
++	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
++						 &ade7758_trigger_handler,
++						 0,
++						 indio_dev,
++						 "ade7759_consumer%d",
++						 indio_dev->id);
+ 	if (indio_dev->pollfunc == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_iio_sw_rb_free;
+ 	}
+-	indio_dev->pollfunc->private_data = indio_dev;
+-	indio_dev->pollfunc->h = &iio_pollfunc_store_time;
+-	indio_dev->pollfunc->thread = &ade7758_trigger_handler;
+-	indio_dev->pollfunc->name
+-		= kasprintf(GFP_KERNEL, "ade7759_consumer%d", indio_dev->id);
+-	if (indio_dev->pollfunc->name == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_pollfunc;
+-	}
++
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
+ 
+ 	st->tx_buf[0] = ADE7758_READ_REG(ADE7758_RSTATUS);
+@@ -214,8 +210,6 @@ int ade7758_configure_ring(struct iio_dev *indio_dev)
+ 
+ 	return 0;
+ 
+-error_free_pollfunc:
+-	kfree(indio_dev->pollfunc);
+ error_iio_sw_rb_free:
+ 	iio_sw_rb_free(indio_dev->ring);
+ 	return ret;
 -- 
 1.7.3.4
+
