@@ -1,141 +1,57 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:54075 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933235Ab1ERNkH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2011 09:40:07 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 073/111] staging:iio:meter:ade7758: Update trigger to the new API
-Date: Wed, 18 May 2011 14:42:03 +0100
-Message-Id: <1305726161-5606-74-git-send-email-jic23@cam.ac.uk>
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 072/111] staging:iio: Add channel types IIO_CURRENT and IIO_POWER.
+Date: Wed, 18 May 2011 14:42:02 +0100
+Message-Id: <1305726161-5606-73-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-Update trigger to the new API.
-Add file comment/license header.
-
-Some backporting needed to keep the driver building all the way
-through the core changes.
+This is required for the ADE7758 driver cleanup.
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/meter/ade7758_trigger.c |   52 ++++++++++++++-------------
- 1 files changed, 27 insertions(+), 25 deletions(-)
+ drivers/staging/iio/iio.h               |    2 ++
+ drivers/staging/iio/industrialio-core.c |    2 ++
+ 2 files changed, 4 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/staging/iio/meter/ade7758_trigger.c b/drivers/staging/iio/meter/ade7758_trigger.c
-index 0adfcc6..06c921d 100644
---- a/drivers/staging/iio/meter/ade7758_trigger.c
-+++ b/drivers/staging/iio/meter/ade7758_trigger.c
-@@ -1,3 +1,11 @@
-+/*
-+ * ADE7758 Poly Phase Multifunction Energy Metering IC driver
-+ *
-+ * Copyright 2010-2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
- #include <linux/interrupt.h>
- #include <linux/irq.h>
- #include <linux/mutex.h>
-@@ -19,20 +27,10 @@ static irqreturn_t ade7758_data_rdy_trig_poll(int irq, void *private)
- {
- 	disable_irq_nosync(irq);
- 	iio_trigger_poll(private, iio_get_time_ns());
-+
- 	return IRQ_HANDLED;
- }
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index 1a6bedc..c6fda58 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -36,6 +36,8 @@ enum iio_chan_type {
  
--static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
--
--static struct attribute *ade7758_trigger_attrs[] = {
--	&dev_attr_name.attr,
--	NULL,
--};
--
--static const struct attribute_group ade7758_trigger_attr_group = {
--	.attrs = ade7758_trigger_attrs,
--};
--
- /**
-  * ade7758_data_rdy_trigger_set_state() set datardy interrupt state
-  **/
-@@ -53,6 +51,7 @@ static int ade7758_data_rdy_trigger_set_state(struct iio_trigger *trig,
- static int ade7758_trig_try_reen(struct iio_trigger *trig)
- {
- 	struct ade7758_state *st = trig->private_data;
-+
- 	enable_irq(st->us->irq);
- 	/* irq reenabled so success! */
- 	return 0;
-@@ -62,48 +61,51 @@ int ade7758_probe_trigger(struct iio_dev *indio_dev)
- {
- 	int ret;
- 	struct ade7758_state *st = indio_dev->dev_data;
-+	char *name;
- 
-+	name = kasprintf(GFP_KERNEL,
-+			 "%s-dev%d",
-+			 spi_get_device_id(st->us)->name,
-+			 indio_dev->id);
-+	if (name == NULL) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
- 
--	st->trig = iio_allocate_trigger();
-+	st->trig = iio_allocate_trigger_named(name);
- 	if (st->trig == NULL) {
- 		ret = -ENOMEM;
--		goto error_ret;
-+		goto error_free_name;
- 	}
-+
- 	ret = request_irq(st->us->irq,
- 			  ade7758_data_rdy_trig_poll,
--			  IRQF_TRIGGER_FALLING, "ade7758",
-+			  IRQF_TRIGGER_LOW,
-+			  spi_get_device_id(st->us)->name,
- 			  st->trig);
- 	if (ret)
- 		goto error_free_trig;
- 
--	st->trig->name = kasprintf(GFP_KERNEL,
--				"ade7758-dev%d",
--				indio_dev->id);
--	if (!st->trig->name) {
--		ret = -ENOMEM;
--		goto error_free_irq;
--	}
- 	st->trig->dev.parent = &st->us->dev;
- 	st->trig->owner = THIS_MODULE;
- 	st->trig->private_data = st;
- 	st->trig->set_trigger_state = &ade7758_data_rdy_trigger_set_state;
- 	st->trig->try_reenable = &ade7758_trig_try_reen;
--	st->trig->control_attrs = &ade7758_trigger_attr_group;
- 	ret = iio_trigger_register(st->trig);
- 
- 	/* select default trigger */
- 	indio_dev->trig = st->trig;
- 	if (ret)
--		goto error_free_trig_name;
-+		goto error_free_irq;
- 
- 	return 0;
- 
--error_free_trig_name:
--	kfree(st->trig->name);
- error_free_irq:
- 	free_irq(st->us->irq, st->trig);
- error_free_trig:
- 	iio_free_trigger(st->trig);
-+error_free_name:
-+	kfree(name);
- error_ret:
- 	return ret;
- }
+ 	/* real channel types */
+ 	IIO_IN,
++	IIO_CURRENT,
++	IIO_POWER,
+ 	IIO_ACCEL,
+ 	IIO_IN_DIFF,
+ 	IIO_GYRO,
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index e3582c9..fc20a06 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -48,6 +48,8 @@ static const char * const iio_chan_type_name_spec_shared[] = {
+ 	[IIO_TIMESTAMP] = "timestamp",
+ 	[IIO_ACCEL] = "accel",
+ 	[IIO_IN] = "in",
++	[IIO_CURRENT] = "current",
++	[IIO_POWER] = "power",
+ 	[IIO_IN_DIFF] = "in-in",
+ 	[IIO_GYRO] = "gyro",
+ 	[IIO_TEMP] = "temp",
 -- 
 1.7.3.4
+
