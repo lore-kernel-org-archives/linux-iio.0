@@ -3,125 +3,168 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 014/111] staging:iio:dac:ad5504 move from old to new event handling.
-Date: Wed, 18 May 2011 14:41:04 +0100
-Message-Id: <1305726161-5606-15-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 013/111] staging:iio:light:tsl2563 remove old style event registration.
+Date: Wed, 18 May 2011 14:41:03 +0100
+Message-Id: <1305726161-5606-14-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Untested, but fairly trivial change here.
+Untested.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/dac/ad5504.c |   53 +++++++++++--------------------------
- drivers/staging/iio/dac/ad5504.h |    4 ---
- 2 files changed, 16 insertions(+), 41 deletions(-)
+ drivers/staging/iio/light/tsl2563.c |   62 +++++++++++------------------------
+ 1 files changed, 19 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
-index 28ace30..5534c41 100644
---- a/drivers/staging/iio/dac/ad5504.c
-+++ b/drivers/staging/iio/dac/ad5504.c
-@@ -261,35 +261,18 @@ static struct attribute_group ad5504_ev_attribute_group = {
- 	.attrs = ad5504_ev_attributes,
- };
+diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
+index 19b7215..d613086 100644
+--- a/drivers/staging/iio/light/tsl2563.c
++++ b/drivers/staging/iio/light/tsl2563.c
+@@ -117,8 +117,6 @@ struct tsl2563_chip {
+ 	struct i2c_client	*client;
+ 	struct delayed_work	poweroff_work;
  
--static void ad5504_interrupt_bh(struct work_struct *work_s)
-+static irqreturn_t ad5504_event_handler(int irq, void *private)
+-	struct work_struct	work_thresh;
+-	s64			event_timestamp;
+ 	/* Remember state for suspend and resume functions */
+ 	pm_message_t		state;
+ 
+@@ -677,38 +675,22 @@ static IIO_DEVICE_ATTR(intensity0_both_raw_thresh_falling_value,
+ 		tsl2563_write_thresh,
+ 		TSL2563_REG_LOWLOW);
+ 
+-static int tsl2563_int_th(struct iio_dev *dev_info,
+-			int index,
+-			s64 timestamp,
+-			int not_test)
++static irqreturn_t tsl2563_event_handler(int irq, void *private)
  {
--	struct ad5504_state *st = container_of(work_s,
--		struct ad5504_state, work_alarm);
++	struct iio_dev *dev_info = private;
+ 	struct tsl2563_chip *chip = iio_priv(dev_info);
 -
--	iio_push_event(st->indio_dev, 0,
--			IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_TEMP,
--			0,
--			IIO_EV_TYPE_THRESH,
--			IIO_EV_DIR_RISING),
--			st->last_timestamp);
+-	chip->event_timestamp = timestamp;
+-	schedule_work(&chip->work_thresh);
 -
--	enable_irq(st->spi->irq);
+-	return 0;
 -}
 -
--static int ad5504_interrupt(struct iio_dev *dev_info,
--		int index,
--		s64 timestamp,
--		int no_test)
+-static void tsl2563_int_bh(struct work_struct *work_s)
 -{
--	struct ad5504_state *st = dev_info->dev_data;
--
--	st->last_timestamp = timestamp;
--	schedule_work(&st->work_alarm);
--	return 0;
-+	iio_push_event(private, 0,
-+		       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_TEMP,
-+					    0,
-+					    IIO_EV_TYPE_THRESH,
-+					    IIO_EV_DIR_RISING),
+-	struct tsl2563_chip *chip
+-		= container_of(work_s,
+-			struct tsl2563_chip, work_thresh);
+ 	u8 cmd = TSL2563_CMD | TSL2563_CLEARINT;
+ 
+-	iio_push_event(iio_priv_to_dev(chip), 0,
++	iio_push_event(dev_info, 0,
+ 		       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_LIGHT,
+ 					    0,
+ 					    IIO_EV_TYPE_THRESH,
+ 					    IIO_EV_DIR_EITHER),
+-		       chip->event_timestamp);
 +		       iio_get_time_ns());
-+
+ 
+-	/* reenable_irq */
+-	enable_irq(chip->client->irq);
+ 	/* clear the interrupt and push the event */
+ 	i2c_master_send(chip->client, &cmd, sizeof(cmd));
+-
 +	return IRQ_HANDLED;
  }
  
--IIO_EVENT_SH(ad5504, &ad5504_interrupt);
--
- static int __devinit ad5504_probe(struct spi_device *spi)
+ static ssize_t tsl2563_write_interrupt_config(struct device *dev,
+@@ -718,7 +700,6 @@ static ssize_t tsl2563_write_interrupt_config(struct device *dev,
  {
- 	struct ad5504_platform_data *pdata = spi->dev.platform_data;
-@@ -342,18 +325,14 @@ static int __devinit ad5504_probe(struct spi_device *spi)
- 		goto error_free_dev;
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct tsl2563_chip *chip = iio_priv(indio_dev);
+-	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
+ 	int input, ret = 0;
  
- 	if (spi->irq) {
--		INIT_WORK(&st->work_alarm, ad5504_interrupt_bh);
+ 	ret = sscanf(buf, "%d", &input);
+@@ -726,8 +707,6 @@ static ssize_t tsl2563_write_interrupt_config(struct device *dev,
+ 		return -EINVAL;
+ 	mutex_lock(&chip->lock);
+ 	if (input && !(chip->intr & 0x30)) {
+-		iio_add_event_to_list(this_attr->listel,
+-				&indio_dev->interrupts[0]->ev_list);
+ 		chip->intr &= ~0x30;
+ 		chip->intr |= 0x10;
+ 		/* ensure the chip is actually on */
+@@ -747,8 +726,6 @@ static ssize_t tsl2563_write_interrupt_config(struct device *dev,
+ 	if (!input && (chip->intr & 0x30)) {
+ 		chip->intr |= ~0x30;
+ 		ret = tsl2563_write(chip->client, TSL2563_REG_INT, chip->intr);
+-		iio_remove_event_from_list(this_attr->listel,
+-					&indio_dev->interrupts[0]->ev_list);
+ 		chip->int_enabled = false;
+ 		/* now the interrupt is not enabled, we can go to sleep */
+ 		schedule_delayed_work(&chip->poweroff_work, 5 * HZ);
+@@ -781,15 +758,14 @@ error_ret:
+ 
+ 	return (ret < 0) ? ret : len;
+ }
 -
--		ret = iio_register_interrupt_line(spi->irq,
--				st->indio_dev,
--				0,
--				IRQF_TRIGGER_FALLING,
--				spi_get_device_id(st->spi)->name);
-+		ret = request_threaded_irq(spi->irq,
+-IIO_EVENT_ATTR(intensity0_both_thresh_en,
+-	tsl2563_read_interrupt_config,
+-	tsl2563_write_interrupt_config,
+-	0,
+-	tsl2563_int_th);
++static IIO_DEVICE_ATTR(intensity0_both_thresh_en,
++		       S_IRUGO | S_IWUSR,
++		       tsl2563_read_interrupt_config,
++		       tsl2563_write_interrupt_config,
++		       0);
+ 
+ static struct attribute *tsl2563_event_attributes[] = {
+-	&iio_event_attr_intensity0_both_thresh_en.dev_attr.attr,
++	&iio_dev_attr_intensity0_both_thresh_en.dev_attr.attr,
+ 	&iio_dev_attr_intensity0_both_raw_thresh_rising_value.dev_attr.attr,
+ 	&iio_dev_attr_intensity0_both_raw_thresh_falling_value.dev_attr.attr,
+ 	NULL,
+@@ -820,7 +796,6 @@ static int __devinit tsl2563_probe(struct i2c_client *client,
+ 
+ 	chip = iio_priv(indio_dev);
+ 
+-	INIT_WORK(&chip->work_thresh, tsl2563_int_bh);
+ 	i2c_set_clientdata(client, chip);
+ 	chip->client = client;
+ 
+@@ -865,11 +840,12 @@ static int __devinit tsl2563_probe(struct i2c_client *client,
+ 		goto fail1;
+ 
+ 	if (client->irq) {
+-		ret = iio_register_interrupt_line(client->irq,
+-						indio_dev,
+-						0,
+-						IRQF_TRIGGER_RISING,
+-						client->name);
++		ret = request_threaded_irq(client->irq,
 +					   NULL,
-+					   &ad5504_event_handler,
-+					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-+					   spi_get_device_id(st->spi)->name,
-+					   st->indio_dev);
++					   &tsl2563_event_handler,
++					   IRQF_TRIGGER_RISING | IRQF_ONESHOT,
++					   "tsl2563_event",
++					   indio_dev);
  		if (ret)
- 			goto error_unreg_iio_device;
--
--		iio_add_event_to_list(&iio_event_ad5504,
--				&st->indio_dev->interrupts[0]->ev_list);
+ 			goto fail2;
  	}
+@@ -884,7 +860,7 @@ static int __devinit tsl2563_probe(struct i2c_client *client,
+ 	return 0;
+ fail3:
+ 	if (client->irq)
+-		iio_unregister_interrupt_line(indio_dev, 0);
++		free_irq(client->irq, indio_dev);
+ fail2:
+ 	iio_device_unregister(indio_dev);
+ fail1:
+@@ -904,7 +880,7 @@ static int tsl2563_remove(struct i2c_client *client)
+ 	flush_scheduled_work();
+ 	tsl2563_set_power(chip, 0);
+ 	if (client->irq)
+-		iio_unregister_interrupt_line(indio_dev, 0);
++		free_irq(client->irq, indio_dev);
+ 	iio_device_unregister(indio_dev);
  
  	return 0;
-@@ -379,7 +358,7 @@ static int __devexit ad5504_remove(struct spi_device *spi)
- 	struct ad5504_state *st = spi_get_drvdata(spi);
- 
- 	if (spi->irq)
--		iio_unregister_interrupt_line(st->indio_dev, 0);
-+		free_irq(spi->irq, st->indio_dev);
- 
- 	iio_device_unregister(st->indio_dev);
- 
-diff --git a/drivers/staging/iio/dac/ad5504.h b/drivers/staging/iio/dac/ad5504.h
-index d2fac63..13ef353 100644
---- a/drivers/staging/iio/dac/ad5504.h
-+++ b/drivers/staging/iio/dac/ad5504.h
-@@ -45,8 +45,6 @@ struct ad5504_platform_data {
-  * @us:			spi_device
-  * @reg:		supply regulator
-  * @vref_mv:		actual reference voltage used
-- * @work_alarm:		bh work structure for event handling
-- * @last_timestamp:	timestamp of last event interrupt
-  * @pwr_down_mask	power down mask
-  * @pwr_down_mode	current power down mode
-  */
-@@ -56,8 +54,6 @@ struct ad5504_state {
- 	struct spi_device		*spi;
- 	struct regulator		*reg;
- 	unsigned short			vref_mv;
--	struct work_struct		work_alarm;
--	s64				last_timestamp;
- 	unsigned			pwr_down_mask;
- 	unsigned			pwr_down_mode;
- };
 -- 
 1.7.3.4
