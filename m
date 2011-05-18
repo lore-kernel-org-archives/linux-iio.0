@@ -1,323 +1,200 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:53953 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933194Ab1ERNkE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2011 09:40:04 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 034/111] staging:iio:adc:ad7476 use channel_spec
-Date: Wed, 18 May 2011 14:41:24 +0100
-Message-Id: <1305726161-5606-35-git-send-email-jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 033/111] staging:iio:adc:max1363 move to irqchip based threaded irq triggering
+Date: Wed, 18 May 2011 14:41:23 +0100
+Message-Id: <1305726161-5606-34-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-V3: Trivial rebase fixup.
-V2: Move to new single IIO_CHAN macro.
-
-Done without hardware.
-
-Fix from Michael Hennerich incorporated to use
-iio_ring_buffer_register_ex instead of
-iio_ring_buffer_register and thus actually make it work.
+V2: Fixed missing free of pollfunc->name as pointed out by
+Michael Hennerich.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/ad7476.h      |    5 +-
- drivers/staging/iio/adc/ad7476_core.c |  139 ++++++++++++++++-----------------
- drivers/staging/iio/adc/ad7476_ring.c |   40 +---------
- 3 files changed, 74 insertions(+), 110 deletions(-)
+ drivers/staging/iio/adc/max1363.h      |    4 --
+ drivers/staging/iio/adc/max1363_core.c |    3 -
+ drivers/staging/iio/adc/max1363_ring.c |   66 ++++++++++++-------------------
+ 3 files changed, 26 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
-index f917e9c..17febd2 100644
---- a/drivers/staging/iio/adc/ad7476.h
-+++ b/drivers/staging/iio/adc/ad7476.h
-@@ -19,11 +19,8 @@ struct ad7476_platform_data {
- };
+diff --git a/drivers/staging/iio/adc/max1363.h b/drivers/staging/iio/adc/max1363.h
+index 76635a0..2d41a27 100644
+--- a/drivers/staging/iio/adc/max1363.h
++++ b/drivers/staging/iio/adc/max1363.h
+@@ -180,8 +180,6 @@ struct max1363_chip_info {
+  * @chip_info:		chip model specific constants, available modes etc
+  * @current_mode:	the scan mode of this chip
+  * @requestedmask:	a valid requested set of channels
+- * @poll_work:		bottom half of polling interrupt handler
+- * @protect_ring:	used to ensure only one polling bh running at a time
+  * @reg:		supply regulator
+  * @monitor_on:		whether monitor mode is enabled
+  * @monitor_speed:	parameter corresponding to device monitor speed setting
+@@ -197,8 +195,6 @@ struct max1363_state {
+ 	const struct max1363_chip_info	*chip_info;
+ 	const struct max1363_mode	*current_mode;
+ 	u32				requestedmask;
+-	struct work_struct		poll_work;
+-	atomic_t			protect_ring;
+ 	struct iio_trigger		*trig;
+ 	struct regulator		*reg;
  
- struct ad7476_chip_info {
--	u8				bits;
--	u8				storagebits;
--	u8				res_shift;
--	char				sign;
- 	u16				int_vref_mv;
-+	struct iio_chan_spec		channel[2];
- };
+diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
+index 892bb41..935914e 100644
+--- a/drivers/staging/iio/adc/max1363_core.c
++++ b/drivers/staging/iio/adc/max1363_core.c
+@@ -22,7 +22,6 @@
+   */
  
- struct ad7476_state {
-diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
-index b16744c..0438923 100644
---- a/drivers/staging/iio/adc/ad7476_core.c
-+++ b/drivers/staging/iio/adc/ad7476_core.c
-@@ -35,42 +35,39 @@ static int ad7476_scan_direct(struct ad7476_state *st)
- 	return (st->data[0] << 8) | st->data[1];
- }
+ #include <linux/interrupt.h>
+-#include <linux/workqueue.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/sysfs.h>
+@@ -1171,8 +1170,6 @@ static int __devinit max1363_probe(struct i2c_client *client,
+ 	/* this is only used for device removal purposes */
+ 	i2c_set_clientdata(client, indio_dev);
  
--static ssize_t ad7476_scan(struct device *dev,
--			    struct device_attribute *attr,
--			    char *buf)
-+static int ad7476_read_raw(struct iio_dev *dev_info,
-+			   struct iio_chan_spec const *chan,
-+			   int *val,
-+			   int *val2,
-+			   long m)
- {
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7476_state *st = dev_info->dev_data;
- 	int ret;
+-	atomic_set(&st->protect_ring, 0);
 -
--	mutex_lock(&dev_info->mlock);
--	if (iio_ring_enabled(dev_info))
--		ret = ad7476_scan_from_ring(st);
--	else
--		ret = ad7476_scan_direct(st);
--	mutex_unlock(&dev_info->mlock);
--
--	if (ret < 0)
--		return ret;
--
--	return sprintf(buf, "%d\n", (ret >> st->chip_info->res_shift) &
--		       RES_MASK(st->chip_info->bits));
--}
--static IIO_DEV_ATTR_IN_RAW(0, ad7476_scan, 0);
--
--static ssize_t ad7476_show_scale(struct device *dev,
--				struct device_attribute *attr,
--				char *buf)
--{
--	/* Driver currently only support internal vref */
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7476_state *st = iio_dev_get_devdata(dev_info);
--	/* Corresponds to Vref / 2^(bits) */
--	unsigned int scale_uv = (st->int_vref_mv * 1000) >> st->chip_info->bits;
--
--	return sprintf(buf, "%d.%03d\n", scale_uv / 1000, scale_uv % 1000);
-+	struct ad7476_state *st = dev_info->dev_data;
-+	unsigned int scale_uv;
-+
-+	switch (m) {
-+	case 0:
-+		mutex_lock(&dev_info->mlock);
-+		if (iio_ring_enabled(dev_info))
-+			ret = ad7476_scan_from_ring(st);
-+		else
-+			ret = ad7476_scan_direct(st);
-+		mutex_unlock(&dev_info->mlock);
-+
-+		if (ret < 0)
-+			return ret;
-+		*val = (ret >> st->chip_info->channel[0].scan_type.shift) &
-+			RES_MASK(st->chip_info->channel[0].scan_type.realbits);
-+		return IIO_VAL_INT;
-+	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
-+		scale_uv = (st->int_vref_mv * 1000)
-+			>> st->chip_info->channel[0].scan_type.realbits;
-+		*val =  scale_uv/1000;
-+		*val2 = (scale_uv%1000)*1000;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	}
-+	return -EINVAL;
- }
--static IIO_DEVICE_ATTR(in_scale, S_IRUGO, ad7476_show_scale, NULL, 0);
+ 	st->chip_info = &max1363_chip_info_tbl[id->driver_data];
+ 	st->client = client;
  
- static ssize_t ad7476_show_name(struct device *dev,
- 				 struct device_attribute *attr,
-@@ -84,8 +81,6 @@ static ssize_t ad7476_show_name(struct device *dev,
- static IIO_DEVICE_ATTR(name, S_IRUGO, ad7476_show_name, NULL, 0);
+diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
+index 405f729..a387a99 100644
+--- a/drivers/staging/iio/adc/max1363_ring.c
++++ b/drivers/staging/iio/adc/max1363_ring.c
+@@ -9,8 +9,6 @@
+  */
  
- static struct attribute *ad7476_attributes[] = {
--	&iio_dev_attr_in0_raw.dev_attr.attr,
--	&iio_dev_attr_in_scale.dev_attr.attr,
- 	&iio_dev_attr_name.dev_attr.attr,
- 	NULL,
- };
-@@ -96,53 +91,53 @@ static const struct attribute_group ad7476_attribute_group = {
- 
- static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
- 	[ID_AD7466] = {
--		.bits = 12,
--		.storagebits = 16,
--		.res_shift = 0,
--		.sign = IIO_SCAN_EL_TYPE_UNSIGNED,
-+		.channel[0] = IIO_CHAN(IIO_IN, 0, 1, 0, NULL, 0, 0,
-+				       (1 << IIO_CHAN_INFO_SCALE_SHARED),
-+				       0, 0, IIO_ST('u', 12, 16, 0), 0),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 	},
- 	[ID_AD7467] = {
--		.bits = 10,
--		.storagebits = 16,
--		.res_shift = 2,
--		.sign = IIO_SCAN_EL_TYPE_UNSIGNED,
-+		.channel[0] = IIO_CHAN(IIO_IN, 0, 1, 0, NULL, 0, 0,
-+				       (1 << IIO_CHAN_INFO_SCALE_SHARED),
-+				       0, 0, IIO_ST('u', 10, 16, 2), 0),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 	},
- 	[ID_AD7468] = {
--		.bits = 8,
--		.storagebits = 16,
--		.res_shift = 4,
--		.sign = IIO_SCAN_EL_TYPE_UNSIGNED,
-+		.channel[0] = IIO_CHAN(IIO_IN, 0, 1 , 0, NULL, 0, 0,
-+				       (1 << IIO_CHAN_INFO_SCALE_SHARED),
-+				       0, 0, IIO_ST('u', 8, 16, 4), 0),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 	},
- 	[ID_AD7475] = {
--		.bits = 12,
--		.storagebits = 16,
--		.res_shift = 0,
--		.sign = IIO_SCAN_EL_TYPE_UNSIGNED,
-+		.channel[0] = IIO_CHAN(IIO_IN, 0, 1, 0, NULL, 0, 0,
-+				       (1 << IIO_CHAN_INFO_SCALE_SHARED),
-+				       0, 0, IIO_ST('u', 12, 16, 0), 0),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 	},
- 	[ID_AD7476] = {
--		.bits = 12,
--		.storagebits = 16,
--		.res_shift = 0,
--		.sign = IIO_SCAN_EL_TYPE_UNSIGNED,
-+		.channel[0] = IIO_CHAN(IIO_IN, 0, 1, 0, NULL, 0, 0,
-+				       (1 << IIO_CHAN_INFO_SCALE_SHARED),
-+				       0, 0, IIO_ST('u', 12, 16, 0), 0),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 	},
- 	[ID_AD7477] = {
--		.bits = 10,
--		.storagebits = 16,
--		.res_shift = 2,
--		.sign = IIO_SCAN_EL_TYPE_UNSIGNED,
-+		.channel[0] = IIO_CHAN(IIO_IN, 0, 1, 0, NULL, 0, 0,
-+				       (1 << IIO_CHAN_INFO_SCALE_SHARED),
-+				       0, 0, IIO_ST('u', 10, 16, 2), 0),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 	},
- 	[ID_AD7478] = {
--		.bits = 8,
--		.storagebits = 16,
--		.res_shift = 4,
--		.sign = IIO_SCAN_EL_TYPE_UNSIGNED,
-+		.channel[0] = IIO_CHAN(IIO_IN, 0, 1, 0, NULL, 0, 0,
-+				       (1 << IIO_CHAN_INFO_SCALE_SHARED),
-+				       0, 0, IIO_ST('u', 8, 16, 4), 0),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 	},
- 	[ID_AD7495] = {
--		.bits = 12,
--		.storagebits = 16,
--		.res_shift = 0,
-+		.channel[0] = IIO_CHAN(IIO_IN, 0, 1, 0, NULL, 0, 0,
-+				       (1 << IIO_CHAN_INFO_SCALE_SHARED),
-+				       0, 0, IIO_ST('u', 12, 16, 0), 0),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 		.int_vref_mv = 2500,
--		.sign = IIO_SCAN_EL_TYPE_UNSIGNED,
- 	},
- };
- 
-@@ -196,11 +191,13 @@ static int __devinit ad7476_probe(struct spi_device *spi)
- 	st->indio_dev->dev_data = (void *)(st);
- 	st->indio_dev->driver_module = THIS_MODULE;
- 	st->indio_dev->modes = INDIO_DIRECT_MODE;
--
-+	st->indio_dev->channels = st->chip_info->channel;
-+	st->indio_dev->num_channels = 2;
-+	st->indio_dev->read_raw = &ad7476_read_raw;
- 	/* Setup default message */
- 
- 	st->xfer.rx_buf = &st->data;
--	st->xfer.len = st->chip_info->storagebits / 8;
-+	st->xfer.len = st->chip_info->channel[0].scan_type.storagebits / 8;
- 
- 	spi_message_init(&st->msg);
- 	spi_message_add_tail(&st->xfer, &st->msg);
-@@ -213,7 +210,9 @@ static int __devinit ad7476_probe(struct spi_device *spi)
- 	if (ret)
- 		goto error_free_device;
- 
--	ret = iio_ring_buffer_register(st->indio_dev->ring, 0);
-+	ret = iio_ring_buffer_register_ex(st->indio_dev->ring, 0,
-+					  st->chip_info->channel,
-+					  ARRAY_SIZE(st->chip_info->channel));
- 	if (ret)
- 		goto error_cleanup_ring;
+ #include <linux/interrupt.h>
+-#include <linux/gpio.h>
+-#include <linux/workqueue.h>
+ #include <linux/device.h>
+ #include <linux/slab.h>
+ #include <linux/kernel.h>
+@@ -105,36 +103,11 @@ static int max1363_ring_preenable(struct iio_dev *indio_dev)
  	return 0;
-diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
-index 92d9378..8f00d6c 100644
---- a/drivers/staging/iio/adc/ad7476_ring.c
-+++ b/drivers/staging/iio/adc/ad7476_ring.c
-@@ -25,39 +25,6 @@
+ }
  
- #include "ad7476.h"
- 
--static IIO_SCAN_EL_C(in0, 0, 0, NULL);
--static IIO_SCAN_EL_TIMESTAMP(1);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
 -
--static ssize_t ad7476_show_type(struct device *dev,
--				struct device_attribute *attr,
--				char *buf)
--{
--	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
--	struct iio_dev *indio_dev = ring->indio_dev;
--	struct ad7476_state *st = indio_dev->dev_data;
--
--	return sprintf(buf, "%c%d/%d>>%d\n", st->chip_info->sign,
--		       st->chip_info->bits, st->chip_info->storagebits,
--		       st->chip_info->res_shift);
--}
--static IIO_DEVICE_ATTR(in_type, S_IRUGO, ad7476_show_type, NULL, 0);
--
--static struct attribute *ad7476_scan_el_attrs[] = {
--	&iio_scan_el_in0.dev_attr.attr,
--	&iio_const_attr_in0_index.dev_attr.attr,
--	&iio_const_attr_timestamp_index.dev_attr.attr,
--	&iio_scan_el_timestamp.dev_attr.attr,
--	&iio_const_attr_timestamp_type.dev_attr.attr,
--	&iio_dev_attr_in_type.dev_attr.attr,
--	NULL,
--};
--
--static struct attribute_group ad7476_scan_el_group = {
--	.name = "scan_elements",
--	.attrs = ad7476_scan_el_attrs,
--};
--
- int ad7476_scan_from_ring(struct ad7476_state *st)
+-/**
+- * max1363_poll_func_th() - th of trigger launched polling to ring buffer
+- *
+- * As sampling only occurs on i2c comms occurring, leave timestamping until
+- * then.  Some triggers will generate their own time stamp.  Currently
+- * there is no way of notifying them when no one cares.
+- **/
+-static void max1363_poll_func_th(struct iio_dev *indio_dev, s64 time)
++static irqreturn_t max1363_trigger_handler(int irq, void *p)
  {
- 	struct iio_ring_buffer *ring = st->indio_dev->ring;
-@@ -93,7 +60,8 @@ static int ad7476_ring_preenable(struct iio_dev *indio_dev)
- 	struct ad7476_state *st = indio_dev->dev_data;
- 	struct iio_ring_buffer *ring = indio_dev->ring;
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->private_data;
+ 	struct max1363_state *st = iio_priv(indio_dev);
+-
+-	schedule_work(&st->poll_work);
+-
+-	return;
+-}
+-/**
+- * max1363_poll_bh_to_ring() - bh of trigger launched polling to ring buffer
+- * @work_s:	the work struct through which this was scheduled
+- *
+- * Currently there is no option in this driver to disable the saving of
+- * timestamps within the ring.
+- * I think the one copy of this at a time was to avoid problems if the
+- * trigger was set far too high and the reads then locked up the computer.
+- **/
+-static void max1363_poll_bh_to_ring(struct work_struct *work_s)
+-{
+-	struct max1363_state *st = container_of(work_s, struct max1363_state,
+-						  poll_work);
+-	struct iio_dev *indio_dev = iio_priv_to_dev(st);
+ 	struct iio_sw_ring_buffer *sw_ring = iio_to_sw_ring(indio_dev->ring);
+ 	s64 time_ns;
+ 	__u8 *rxbuf;
+@@ -150,20 +123,16 @@ static void max1363_poll_bh_to_ring(struct work_struct *work_s)
+ 	if (d_size % sizeof(s64))
+ 		d_size += sizeof(s64) - (d_size % sizeof(s64));
  
--	st->d_size = ring->scan_count * st->chip_info->storagebits / 8;
-+	st->d_size = ring->scan_count *
-+		st->chip_info->channel[0].scan_type.storagebits / 8;
+-	/* Ensure only one copy of this function running at a time */
+-	if (atomic_inc_return(&st->protect_ring) > 1)
+-		return;
+-
+ 	/* Monitor mode prevents reading. Whilst not currently implemented
+ 	 * might as well have this test in here in the meantime as it does
+ 	 * no harm.
+ 	 */
+ 	if (numvals == 0)
+-		return;
++		return IRQ_HANDLED;
  
- 	if (ring->scan_timestamp) {
- 		st->d_size += sizeof(s64);
-@@ -150,7 +118,8 @@ static void ad7476_poll_bh_to_ring(struct work_struct *work_s)
+ 	rxbuf = kmalloc(d_size,	GFP_KERNEL);
  	if (rxbuf == NULL)
- 		return;
+-		return;
++		return -ENOMEM;
+ 	if (st->chip_info->bits != 8)
+ 		b_sent = i2c_master_recv(st->client, rxbuf, numvals*2);
+ 	else
+@@ -177,8 +146,10 @@ static void max1363_poll_bh_to_ring(struct work_struct *work_s)
  
--	b_sent = spi_read(st->spi, rxbuf, st->chip_info->storagebits / 8);
-+	b_sent = spi_read(st->spi, rxbuf,
-+			  st->chip_info->channel[0].scan_type.storagebits / 8);
- 	if (b_sent < 0)
- 		goto done;
+ 	indio_dev->ring->access.store_to(&sw_ring->buf, rxbuf, time_ns);
+ done:
++	iio_trigger_notify_done(indio_dev->trig);
+ 	kfree(rxbuf);
+-	atomic_dec(&st->protect_ring);
++
++	return IRQ_HANDLED;
+ }
  
-@@ -187,7 +156,6 @@ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
- 	indio_dev->ring->preenable = &ad7476_ring_preenable;
+ 
+@@ -194,19 +165,33 @@ int max1363_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	}
+ 	/* Effectively select the ring buffer implementation */
+ 	iio_ring_sw_register_funcs(&indio_dev->ring->access);
+-	ret = iio_alloc_pollfunc(indio_dev, NULL, &max1363_poll_func_th);
+-	if (ret)
++	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
++	if (indio_dev->pollfunc == NULL) {
++		ret = -ENOMEM;
+ 		goto error_deallocate_sw_rb;
++	}
++	indio_dev->pollfunc->private_data = indio_dev;
++	indio_dev->pollfunc->thread = &max1363_trigger_handler;
++	indio_dev->pollfunc->type = IRQF_ONESHOT;
++	indio_dev->pollfunc->name =
++		kasprintf(GFP_KERNEL, "%s_consumer%d",
++			  st->client->name, indio_dev->id);
++	if (indio_dev->pollfunc->name == NULL) {
++		ret = -ENOMEM;
++		goto error_free_pollfunc;
++	}
+ 
+ 	/* Ring buffer functions - here trigger setup related */
  	indio_dev->ring->postenable = &iio_triggered_ring_postenable;
+ 	indio_dev->ring->preenable = &max1363_ring_preenable;
  	indio_dev->ring->predisable = &iio_triggered_ring_predisable;
--	indio_dev->ring->scan_el_attrs = &ad7476_scan_el_group;
- 	indio_dev->ring->scan_timestamp = true;
+-	INIT_WORK(&st->poll_work, &max1363_poll_bh_to_ring);
  
- 	INIT_WORK(&st->poll_work, &ad7476_poll_bh_to_ring);
+ 	/* Flag that polled ring buffering is possible */
+ 	indio_dev->modes |= INDIO_RING_TRIGGERED;
++
+ 	return 0;
++error_free_pollfunc:
++	kfree(indio_dev->pollfunc);
+ error_deallocate_sw_rb:
+ 	iio_sw_rb_free(indio_dev->ring);
+ error_ret:
+@@ -221,6 +206,7 @@ void max1363_ring_cleanup(struct iio_dev *indio_dev)
+ 		iio_trigger_dettach_poll_func(indio_dev->trig,
+ 					      indio_dev->pollfunc);
+ 	}
++	kfree(indio_dev->pollfunc->name);
+ 	kfree(indio_dev->pollfunc);
+ 	iio_sw_rb_free(indio_dev->ring);
+ }
 -- 
 1.7.3.4
-
