@@ -3,598 +3,169 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 104/111] staging:iio: ring core cleanups + check if read_last available in lis3l02dq
-Date: Wed, 18 May 2011 14:42:34 +0100
-Message-Id: <1305726161-5606-105-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 103/111] staging:iio:core cleanup: squash tiny wrappers and use dev_set_name to handle creation of event interface name.
+Date: Wed, 18 May 2011 14:42:33 +0100
+Message-Id: <1305726161-5606-104-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/lis3l02dq_ring.c |    7 +-
- drivers/staging/iio/industrialio-ring.c    |  237 +++++++++++++---------------
- drivers/staging/iio/ring_generic.h         |  125 ++-------------
- 3 files changed, 136 insertions(+), 233 deletions(-)
+ drivers/staging/iio/chrdev.h            |    3 --
+ drivers/staging/iio/industrialio-core.c |   54 ++++++++++--------------------
+ 2 files changed, 18 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index 5029c51..c8f29bc 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -50,9 +50,13 @@ ssize_t lis3l02dq_read_accel_from_ring(struct iio_ring_buffer *ring,
- {
- 	int ret;
- 	s16 *data;
-+
- 	if (!iio_scan_mask_query(ring, index))
- 		return -EINVAL;
+diff --git a/drivers/staging/iio/chrdev.h b/drivers/staging/iio/chrdev.h
+index 6523273..3e31ee6 100644
+--- a/drivers/staging/iio/chrdev.h
++++ b/drivers/staging/iio/chrdev.h
+@@ -60,8 +60,6 @@ struct iio_detected_event_list {
+  * @det_events:		list of detected events
+  * @max_events:		maximum number of events before new ones are dropped
+  * @current_events:	number of events in detected list
+- * @_name:		used internally to store the sysfs name for minor id
+- *			attribute
+  */
+ struct iio_event_interface {
+ 	struct device				dev;
+@@ -71,7 +69,6 @@ struct iio_event_interface {
+ 	struct list_head			det_events;
+ 	int					max_events;
+ 	int					current_events;
+-	char					_name[35];
+ 	struct list_head dev_attr_list;
+ };
  
-+	if (!ring->access->read_last)
-+		return -EBUSY;
-+
- 	data = kmalloc(ring->access->get_bytes_per_datum(ring),
- 		       GFP_KERNEL);
- 	if (data == NULL)
-@@ -61,9 +65,10 @@ ssize_t lis3l02dq_read_accel_from_ring(struct iio_ring_buffer *ring,
- 	ret = ring->access->read_last(ring, (u8 *)data);
- 	if (ret)
- 		goto error_free_data;
--	*val = data[iio_scan_mask_count_to_right(ring, index)];
-+	*val = data[bitmap_weight(&ring->scan_mask, index)];
- error_free_data:
- 	kfree(data);
-+
- 	return ret;
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index b5b658c..9218fee 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -16,7 +16,6 @@
+ #include <linux/err.h>
+ #include <linux/device.h>
+ #include <linux/fs.h>
+-#include <linux/interrupt.h>
+ #include <linux/poll.h>
+ #include <linux/sched.h>
+ #include <linux/wait.h>
+@@ -270,9 +269,10 @@ void iio_device_free_chrdev_minor(int val)
  }
  
-diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
-index 050f9f9..843eb82 100644
---- a/drivers/staging/iio/industrialio-ring.c
-+++ b/drivers/staging/iio/industrialio-ring.c
-@@ -71,14 +71,10 @@ static ssize_t iio_ring_read_first_n_outer(struct file *filp, char __user *buf,
- 				  size_t n, loff_t *f_ps)
+ static int iio_setup_ev_int(struct iio_event_interface *ev_int,
+-		     const char *name,
+-		     struct module *owner,
+-		     struct device *dev)
++			    const char *dev_name,
++			    int index,
++			    struct module *owner,
++			    struct device *dev)
  {
- 	struct iio_ring_buffer *rb = filp->private_data;
--	int ret;
+ 	int ret, minor;
  
--	/* rip lots must exist. */
- 	if (!rb->access->read_first_n)
- 		return -EINVAL;
--	ret = rb->access->read_first_n(rb, n, buf);
--
--	return ret;
-+	return rb->access->read_first_n(rb, n, buf);
- }
- 
- /**
-@@ -88,13 +84,12 @@ static unsigned int iio_ring_poll(struct file *filp,
- 				  struct poll_table_struct *wait)
- {
- 	struct iio_ring_buffer *rb = filp->private_data;
--	int ret = 0;
- 
- 	poll_wait(filp, &rb->pollq, wait);
- 	if (rb->stufftoread)
- 		return POLLIN | POLLRDNORM;
- 	/* need a way of knowing if there may be enough data... */
--	return ret;
-+	return 0;
- }
- 
- static const struct file_operations iio_ring_fileops = {
-@@ -117,24 +112,23 @@ EXPORT_SYMBOL(iio_ring_access_release);
- 
- static inline int
- __iio_request_ring_buffer_chrdev(struct iio_ring_buffer *buf,
--					struct module *owner)
-+				 struct module *owner,
-+				 int id)
- {
--	int ret, minor;
-+	int ret;
- 
- 	buf->access_handler.flags = 0;
--
- 	buf->dev.bus = &iio_bus_type;
- 	device_initialize(&buf->dev);
- 
--	minor = iio_device_get_chrdev_minor();
--	if (minor < 0) {
--		ret = minor;
-+	ret = iio_device_get_chrdev_minor();
-+	if (ret < 0)
+@@ -287,7 +287,7 @@ static int iio_setup_ev_int(struct iio_event_interface *ev_int,
  		goto error_device_put;
--	}
--	buf->dev.devt = MKDEV(MAJOR(iio_devt), minor);
-+
-+	buf->dev.devt = MKDEV(MAJOR(iio_devt), ret);
- 	dev_set_name(&buf->dev, "%s:buffer%d",
- 		     dev_name(buf->dev.parent),
--		     buf->id);
-+		     id);
- 	ret = device_add(&buf->dev);
- 	if (ret < 0) {
- 		printk(KERN_ERR "failed to add the ring dev\n");
-@@ -172,11 +166,10 @@ void iio_ring_buffer_init(struct iio_ring_buffer *ring,
- EXPORT_SYMBOL(iio_ring_buffer_init);
+ 	}
+ 	ev_int->dev.devt = MKDEV(MAJOR(iio_devt), minor);
+-	dev_set_name(&ev_int->dev, "%s", name);
++	dev_set_name(&ev_int->dev, "%s:event%d", dev_name, index);
  
- static ssize_t iio_show_scan_index(struct device *dev,
--				  struct device_attribute *attr,
--				  char *buf)
-+				   struct device_attribute *attr,
-+				   char *buf)
- {
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	return sprintf(buf, "%u\n", this_attr->c->scan_index);
-+	return sprintf(buf, "%u\n", to_iio_dev_attr(attr)->c->scan_index);
+ 	ret = device_add(&ev_int->dev);
+ 	if (ret)
+@@ -798,20 +798,6 @@ void iio_free_ida_val(struct ida *this_ida, int id)
  }
+ EXPORT_SYMBOL(iio_free_ida_val);
  
- static ssize_t iio_show_fixed_type(struct device *dev,
-@@ -191,6 +184,95 @@ static ssize_t iio_show_fixed_type(struct device *dev,
- 		       this_attr->c->scan_type.shift);
- }
- 
-+static ssize_t iio_scan_el_show(struct device *dev,
-+				struct device_attribute *attr,
-+				char *buf)
-+{
-+	int ret;
-+	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
+-static int iio_device_register_id(struct iio_dev *dev_info,
+-				  struct ida *this_ida)
+-{
+-	dev_info->id = iio_get_new_ida_val(&iio_ida);
+-	if (dev_info->id < 0)
+-		return dev_info->id;
+-	return 0;
+-}
+-
+-static void iio_device_unregister_id(struct iio_dev *dev_info)
+-{
+-	iio_free_ida_val(&iio_ida, dev_info->id);
+-}
+-
+ static const char * const iio_ev_type_text[] = {
+ 	[IIO_EV_TYPE_THRESH] = "thresh",
+ 	[IIO_EV_TYPE_MAG] = "mag",
+@@ -832,10 +818,11 @@ static ssize_t iio_ev_state_store(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret;
+-	unsigned long val;
+-	ret = strict_strtoul(buf, 10, &val);
+-	if (ret || val < 0 || val > 1)
+-		return -EINVAL;
++	bool val;
 +
-+	ret = iio_scan_mask_query(ring, to_iio_dev_attr(attr)->address);
++	ret = strtobool(buf, &val);
 +	if (ret < 0)
 +		return ret;
-+	return sprintf(buf, "%d\n", ret);
-+}
-+
-+static int iio_scan_mask_clear(struct iio_ring_buffer *ring, int bit)
-+{
-+	if (bit > IIO_MAX_SCAN_LENGTH)
-+		return -EINVAL;
-+	ring->scan_mask &= ~(1 << bit);
-+	ring->scan_count--;
-+	return 0;
-+}
-+
-+static ssize_t iio_scan_el_store(struct device *dev,
-+				 struct device_attribute *attr,
-+				 const char *buf,
-+				 size_t len)
-+{
-+	int ret = 0;
-+	bool state;
-+	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = ring->indio_dev;
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+
-+	state = !(buf[0] == '0');
-+	mutex_lock(&indio_dev->mlock);
-+	if (indio_dev->currentmode == INDIO_RING_TRIGGERED) {
-+		ret = -EBUSY;
-+		goto error_ret;
-+	}
-+	ret = iio_scan_mask_query(ring, this_attr->address);
-+	if (ret < 0)
-+		goto error_ret;
-+	if (!state && ret) {
-+		ret = iio_scan_mask_clear(ring, this_attr->address);
-+		if (ret)
-+			goto error_ret;
-+	} else if (state && !ret) {
-+		ret = iio_scan_mask_set(ring, this_attr->address);
-+		if (ret)
-+			goto error_ret;
-+	}
-+
-+error_ret:
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret ? ret : len;
-+
-+}
-+
-+static ssize_t iio_scan_el_ts_show(struct device *dev,
-+				   struct device_attribute *attr,
-+				   char *buf)
-+{
-+	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
-+	return sprintf(buf, "%d\n", ring->scan_timestamp);
-+}
-+
-+static ssize_t iio_scan_el_ts_store(struct device *dev,
-+				    struct device_attribute *attr,
-+				    const char *buf,
-+				    size_t len)
-+{
-+	int ret = 0;
-+	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = ring->indio_dev;
-+	bool state;
-+	state = !(buf[0] == '0');
-+	mutex_lock(&indio_dev->mlock);
-+	if (indio_dev->currentmode == INDIO_RING_TRIGGERED) {
-+		ret = -EBUSY;
-+		goto error_ret;
-+	}
-+	ring->scan_timestamp = state;
-+error_ret:
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret ? ret : len;
-+}
-+
- static int iio_ring_add_channel_sysfs(struct iio_ring_buffer *ring,
- 				      const struct iio_chan_spec *chan)
- {
-@@ -215,7 +297,6 @@ static int iio_ring_add_channel_sysfs(struct iio_ring_buffer *ring,
- 				     0,
- 				     &ring->dev,
- 				     &ring->scan_el_dev_attr_list);
--
- 	if (ret)
- 		goto error_ret;
  
-@@ -281,12 +362,10 @@ int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring, int id,
- {
- 	int ret, i;
+ 	ret = indio_dev->write_event_config(indio_dev, this_attr->address,
+ 					    val);
+@@ -1041,13 +1028,9 @@ static int iio_device_register_eventset(struct iio_dev *dev_info)
+ 	}
  
--	ring->id = id;
+ 	for (i = 0; i < dev_info->num_interrupt_lines; i++) {
+-		snprintf(dev_info->event_interfaces[i]._name, 20,
+-			 "%s:event%d",
+-			 dev_name(&dev_info->dev),
+-			 i);
 -
--	ret = __iio_request_ring_buffer_chrdev(ring, ring->owner);
+ 		ret = iio_setup_ev_int(&dev_info->event_interfaces[i],
+-				       dev_info->event_interfaces[i]._name,
++				       dev_name(&dev_info->dev),
++				       i,
+ 				       dev_info->driver_module,
+ 				       &dev_info->dev);
+ 		if (ret) {
+@@ -1120,10 +1103,8 @@ static void iio_device_unregister_eventset(struct iio_dev *dev_info)
+ 
+ static void iio_dev_release(struct device *device)
+ {
+-	struct iio_dev *dev = to_iio_dev(device);
 -
-+	ret = __iio_request_ring_buffer_chrdev(ring, ring->owner, id);
- 	if (ret)
- 		goto error_ret;
-+
- 	if (ring->scan_el_attrs) {
- 		ret = sysfs_create_group(&ring->dev.kobj,
- 					 ring->scan_el_attrs);
-@@ -322,12 +401,6 @@ error_ret:
+ 	iio_put();
+-	kfree(dev);
++	kfree(to_iio_dev(device));
  }
- EXPORT_SYMBOL(iio_ring_buffer_register_ex);
  
--int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id)
--{
--	return iio_ring_buffer_register_ex(ring, id, NULL, 0);
--}
--EXPORT_SYMBOL(iio_ring_buffer_register);
--
- void iio_ring_buffer_unregister(struct iio_ring_buffer *ring)
+ static struct device_type iio_dev_type = {
+@@ -1170,8 +1151,9 @@ int iio_device_register(struct iio_dev *dev_info)
  {
- 	__iio_ring_attr_cleanup(ring);
-@@ -339,14 +412,13 @@ ssize_t iio_read_ring_length(struct device *dev,
- 			     struct device_attribute *attr,
- 			     char *buf)
- {
--	int len = 0;
- 	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
- 
- 	if (ring->access->get_length)
--		len = sprintf(buf, "%d\n",
--			      ring->access->get_length(ring));
-+		return sprintf(buf, "%d\n",
-+			       ring->access->get_length(ring));
- 
--	return len;
-+	return 0;
- }
- EXPORT_SYMBOL(iio_read_ring_length);
- 
-@@ -358,6 +430,7 @@ ssize_t iio_write_ring_length(struct device *dev,
  	int ret;
- 	ulong val;
- 	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
-+
- 	ret = strict_strtoul(buf, 10, &val);
- 	if (ret)
- 		return ret;
-@@ -380,14 +453,13 @@ ssize_t iio_read_ring_bytes_per_datum(struct device *dev,
- 			  struct device_attribute *attr,
- 			  char *buf)
- {
--	int len = 0;
- 	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
  
- 	if (ring->access->get_bytes_per_datum)
--		len = sprintf(buf, "%d\n",
--			      ring->access->get_bytes_per_datum(ring));
-+		return sprintf(buf, "%d\n",
-+			       ring->access->get_bytes_per_datum(ring));
- 
--	return len;
-+	return 0;
- }
- EXPORT_SYMBOL(iio_read_ring_bytes_per_datum);
- 
-@@ -450,7 +522,6 @@ ssize_t iio_store_ring_enable(struct device *dev,
- 		}
- 
- 		if (ring->setup_ops->postenable) {
--
- 			ret = ring->setup_ops->postenable(dev_info);
- 			if (ret) {
- 				printk(KERN_INFO
-@@ -488,6 +559,7 @@ error_ret:
+-	ret = iio_device_register_id(dev_info, &iio_ida);
+-	if (ret) {
++	dev_info->id = iio_get_new_ida_val(&iio_ida);
++	if (dev_info->id < 0) {
++		ret = dev_info->id;
+ 		dev_err(&dev_info->dev, "Failed to get id\n");
+ 		goto error_ret;
+ 	}
+@@ -1202,7 +1184,7 @@ error_free_sysfs:
+ error_del_device:
+ 	device_del(&dev_info->dev);
+ error_free_ida:
+-	iio_device_unregister_id(dev_info);
++	iio_free_ida_val(&iio_ida, dev_info->id);
+ error_ret:
  	return ret;
  }
- EXPORT_SYMBOL(iio_store_ring_enable);
-+
- ssize_t iio_show_ring_enable(struct device *dev,
- 				    struct device_attribute *attr,
- 				    char *buf)
-@@ -498,91 +570,6 @@ ssize_t iio_show_ring_enable(struct device *dev,
+@@ -1214,7 +1196,7 @@ void iio_device_unregister(struct iio_dev *dev_info)
+ 		iio_device_unregister_trigger_consumer(dev_info);
+ 	iio_device_unregister_eventset(dev_info);
+ 	iio_device_unregister_sysfs(dev_info);
+-	iio_device_unregister_id(dev_info);
++	iio_free_ida_val(&iio_ida, dev_info->id);
+ 	device_unregister(&dev_info->dev);
  }
- EXPORT_SYMBOL(iio_show_ring_enable);
- 
--ssize_t iio_scan_el_show(struct device *dev,
--			 struct device_attribute *attr,
--			 char *buf)
--{
--	int ret;
--	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--
--	ret = iio_scan_mask_query(ring, this_attr->address);
--	if (ret < 0)
--		return ret;
--	return sprintf(buf, "%d\n", ret);
--}
--EXPORT_SYMBOL(iio_scan_el_show);
--
--ssize_t iio_scan_el_store(struct device *dev,
--			  struct device_attribute *attr,
--			  const char *buf,
--			  size_t len)
--{
--	int ret = 0;
--	bool state;
--	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
--	struct iio_dev *indio_dev = ring->indio_dev;
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--
--	state = !(buf[0] == '0');
--	mutex_lock(&indio_dev->mlock);
--	if (indio_dev->currentmode == INDIO_RING_TRIGGERED) {
--		ret = -EBUSY;
--		goto error_ret;
--	}
--	ret = iio_scan_mask_query(ring, this_attr->address);
--	if (ret < 0)
--		goto error_ret;
--	if (!state && ret) {
--		ret = iio_scan_mask_clear(ring, this_attr->address);
--		if (ret)
--			goto error_ret;
--	} else if (state && !ret) {
--		ret = iio_scan_mask_set(ring, this_attr->address);
--		if (ret)
--			goto error_ret;
--	}
--
--error_ret:
--	mutex_unlock(&indio_dev->mlock);
--
--	return ret ? ret : len;
--
--}
--EXPORT_SYMBOL(iio_scan_el_store);
--
--ssize_t iio_scan_el_ts_show(struct device *dev,
--			    struct device_attribute *attr,
--			    char *buf)
--{
--	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
--	return sprintf(buf, "%d\n", ring->scan_timestamp);
--}
--EXPORT_SYMBOL(iio_scan_el_ts_show);
--
--ssize_t iio_scan_el_ts_store(struct device *dev,
--			     struct device_attribute *attr,
--			     const char *buf,
--			     size_t len)
--{
--	int ret = 0;
--	struct iio_ring_buffer *ring = dev_get_drvdata(dev);
--	struct iio_dev *indio_dev = ring->indio_dev;
--	bool state;
--	state = !(buf[0] == '0');
--	mutex_lock(&indio_dev->mlock);
--	if (indio_dev->currentmode == INDIO_RING_TRIGGERED) {
--		ret = -EBUSY;
--		goto error_ret;
--	}
--	ring->scan_timestamp = state;
--error_ret:
--	mutex_unlock(&indio_dev->mlock);
--
--	return ret ? ret : len;
--}
--EXPORT_SYMBOL(iio_scan_el_ts_store);
--
- int iio_sw_ring_preenable(struct iio_dev *indio_dev)
- {
- 	struct iio_ring_buffer *ring = indio_dev->ring;
-diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
-index 3349676..3f26f71 100644
---- a/drivers/staging/iio/ring_generic.h
-+++ b/drivers/staging/iio/ring_generic.h
-@@ -76,11 +76,9 @@ struct iio_ring_setup_ops {
-  * @dev:		ring buffer device struct
-  * @indio_dev:		industrial I/O device structure
-  * @owner:		module that owns the ring buffer (for ref counting)
-- * @id:			unique id number
-  * @length:		[DEVICE] number of datums in ring
-  * @bytes_per_datum:	[DEVICE] size of individual datum including timestamp
-  * @bpe:		[DEVICE] size of individual channel value
-- * @loopcount:		[INTERN] number of times the ring has looped
-  * @scan_el_attrs:	[DRIVER] control of scan elements if that scan mode
-  *			control method is used
-  * @scan_count:	[INTERN] the number of elements in the current scan mode
-@@ -93,27 +91,25 @@ struct iio_ring_setup_ops {
-  * @postenable:		[DRIVER] function to run after marking ring enabled
-  * @predisable:		[DRIVER] function to run prior to marking ring disabled
-  * @postdisable:	[DRIVER] function to run after marking ring disabled
--  **/
-+ **/
- struct iio_ring_buffer {
--	struct device dev;
--	struct iio_dev *indio_dev;
--	struct module *owner;
--	int				id;
--	int				length;
--	int				bytes_per_datum;
--	int				bpe;
--	int				loopcount;
--	struct attribute_group		*scan_el_attrs;
--	int				scan_count;
--	u32				scan_mask;
--	bool				scan_timestamp;
--	struct iio_handler		access_handler;
-+	struct device				dev;
-+	struct iio_dev				*indio_dev;
-+	struct module				*owner;
-+	int					length;
-+	int					bytes_per_datum;
-+	int					bpe;
-+	struct attribute_group			*scan_el_attrs;
-+	int					scan_count;
-+	unsigned long				scan_mask;
-+	bool					scan_timestamp;
-+	struct iio_handler			access_handler;
- 	const struct iio_ring_access_funcs	*access;
--	const struct iio_ring_setup_ops	*setup_ops;
--	struct list_head scan_el_dev_attr_list;
-+	const struct iio_ring_setup_ops		*setup_ops;
-+	struct list_head			scan_el_dev_attr_list;
- 
--	wait_queue_head_t pollq;
--	bool stufftoread;
-+	wait_queue_head_t			pollq;
-+	bool					stufftoread;
- };
- 
- /**
-@@ -135,48 +131,8 @@ static inline void __iio_update_ring_buffer(struct iio_ring_buffer *ring,
- {
- 	ring->bytes_per_datum = bytes_per_datum;
- 	ring->length = length;
--	ring->loopcount = 0;
- }
- 
--/**
-- * iio_scan_el_store() - sysfs scan element selection interface
-- * @dev: the target device
-- * @attr: the device attribute that is being processed
-- * @buf: input from userspace
-- * @len: length of input
-- *
-- * A generic function used to enable various scan elements.  In some
-- * devices explicit read commands for each channel mean this is merely
-- * a software switch.  In others this must actively disable the channel.
-- * Complexities occur when this interacts with data ready type triggers
-- * which may not reset unless every channel that is enabled is explicitly
-- * read.
-- **/
--ssize_t iio_scan_el_store(struct device *dev, struct device_attribute *attr,
--			  const char *buf, size_t len);
--/**
-- * iio_scan_el_show() -	sysfs interface to query whether a scan element
-- *			is enabled or not
-- * @dev: the target device
-- * @attr: the device attribute that is being processed
-- * @buf: output buffer
-- **/
--ssize_t iio_scan_el_show(struct device *dev, struct device_attribute *attr,
--			 char *buf);
--
--/**
-- * iio_scan_el_ts_store() - sysfs interface to set whether a timestamp is included
-- *			    in the scan.
-- **/
--ssize_t iio_scan_el_ts_store(struct device *dev, struct device_attribute *attr,
--			     const char *buf, size_t len);
--/**
-- * iio_scan_el_ts_show() - sysfs interface to query if a timestamp is included
-- *			   in the scan.
-- **/
--ssize_t iio_scan_el_ts_show(struct device *dev, struct device_attribute *attr,
--			    char *buf);
--
- /*
-  * These are mainly provided to allow for a change of implementation if a device
-  * has a large number of scan elements
-@@ -243,41 +199,6 @@ static inline int iio_scan_mask_set(struct iio_ring_buffer *ring, int bit)
- };
- 
- /**
-- * iio_scan_mask_clear() - clear a particular element from the scan mask
-- * @ring: the ring buffer whose scan mask we are interested in
-- * @bit: the bit to clear
-- **/
--static inline int iio_scan_mask_clear(struct iio_ring_buffer *ring, int bit)
--{
--	if (bit > IIO_MAX_SCAN_LENGTH)
--		return -EINVAL;
--	ring->scan_mask &= ~(1 << bit);
--	ring->scan_count--;
--	return 0;
--};
--
--/**
-- * iio_scan_mask_count_to_right() - how many scan elements occur before here
-- * @ring: the ring buffer whose scan mask we interested in
-- * @bit: which number scan element is this
-- **/
--static inline int iio_scan_mask_count_to_right(struct iio_ring_buffer *ring,
--						int bit)
--{
--	int count = 0;
--	int mask = (1 << bit);
--	if (bit > IIO_MAX_SCAN_LENGTH)
--		return -EINVAL;
--	while (mask) {
--		mask >>= 1;
--		if (mask & ring->scan_mask)
--			count++;
--	}
--
--	return count;
--}
--
--/**
-  * iio_put_ring_buffer() - notify done with buffer
-  * @ring: the buffer we are done with.
-  **/
-@@ -286,17 +207,11 @@ static inline void iio_put_ring_buffer(struct iio_ring_buffer *ring)
- 	put_device(&ring->dev);
- };
- 
--#define to_iio_ring_buffer(d)			\
-+#define to_iio_ring_buffer(d)				\
- 	container_of(d, struct iio_ring_buffer, dev)
- 
- /**
-- * iio_ring_buffer_register() - register the buffer with IIO core
-- * @ring: the buffer to be registered
-- * @id: the id of the buffer (typically 0)
-- **/
--int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id);
--
--/** iio_ring_buffer_register_ex() - register the buffer with IIO core
-+ * iio_ring_buffer_register_ex() - register the buffer with IIO core
-  * @ring: the buffer to be registered
-  * @id: the id of the buffer (typically 0)
-  **/
-@@ -356,10 +271,6 @@ ssize_t iio_show_ring_enable(struct device *dev,
- int iio_sw_ring_preenable(struct iio_dev *indio_dev);
- 
- #else /* CONFIG_IIO_RING_BUFFER */
--static inline int iio_ring_buffer_register(struct iio_ring_buffer *ring, int id)
--{
--	return 0;
--};
- 
- static inline int iio_ring_buffer_register_ex(struct iio_ring_buffer *ring,
- 					      int id,
+ EXPORT_SYMBOL(iio_device_unregister);
 -- 
 1.7.3.4
