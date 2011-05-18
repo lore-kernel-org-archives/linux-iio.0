@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:54067 "EHLO
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:54064 "EHLO
 	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933232Ab1ERNkH (ORCPT
+	with ESMTP id S933159Ab1ERNkH (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2011 09:40:07 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 069/111] staging:iio:gyro:adis16260 move to chan_spec based setup.
-Date: Wed, 18 May 2011 14:41:59 +0100
-Message-Id: <1305726161-5606-70-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 068/111] staging:iio:accel:adis16240 move to chan_spec based setup.
+Date: Wed, 18 May 2011 14:41:58 +0100
+Message-Id: <1305726161-5606-69-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 References: <1305726161-5606-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
@@ -21,141 +21,135 @@ going away.
 Some minor cleanups done whilst here.
 
 Untested.
-V3: rebase fixup and make attribute_group static.
-
-V2: IIO_CHAN macro updates.
+V2: IIO_CHAN macro use updated.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/gyro/adis16260.h         |    2 +-
- drivers/staging/iio/gyro/adis16260_core.c    |  450 +++++++++++++-------------
- drivers/staging/iio/gyro/adis16260_ring.c    |   51 +---
- drivers/staging/iio/gyro/adis16260_trigger.c |    2 +-
- 4 files changed, 239 insertions(+), 266 deletions(-)
+ drivers/staging/iio/accel/adis16240.h         |    2 +-
+ drivers/staging/iio/accel/adis16240_core.c    |  360 +++++++++++++++----------
+ drivers/staging/iio/accel/adis16240_ring.c    |   55 +----
+ drivers/staging/iio/accel/adis16240_trigger.c |    2 +-
+ 4 files changed, 220 insertions(+), 199 deletions(-)
 
-diff --git a/drivers/staging/iio/gyro/adis16260.h b/drivers/staging/iio/gyro/adis16260.h
-index 5325c68..702dc98 100644
---- a/drivers/staging/iio/gyro/adis16260.h
-+++ b/drivers/staging/iio/gyro/adis16260.h
-@@ -102,7 +102,7 @@ struct adis16260_state {
- 	unsigned			negate:1;
+diff --git a/drivers/staging/iio/accel/adis16240.h b/drivers/staging/iio/accel/adis16240.h
+index 364aabf..162b1f4 100644
+--- a/drivers/staging/iio/accel/adis16240.h
++++ b/drivers/staging/iio/accel/adis16240.h
+@@ -141,7 +141,7 @@ struct adis16240_state {
+ 	struct mutex			buf_lock;
  };
  
--int adis16260_set_irq(struct device *dev, bool enable);
-+int adis16260_set_irq(struct iio_dev *indio_dev, bool enable);
+-int adis16240_set_irq(struct device *dev, bool enable);
++int adis16240_set_irq(struct iio_dev *indio_dev, bool enable);
  
  #ifdef CONFIG_IIO_RING_BUFFER
  /* At the moment triggers are only used for ring buffer
-diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-index 3366bd0..0eb6a87 100644
---- a/drivers/staging/iio/gyro/adis16260_core.c
-+++ b/drivers/staging/iio/gyro/adis16260_core.c
+diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
+index 6350c7c..537e0f2 100644
+--- a/drivers/staging/iio/accel/adis16240_core.c
++++ b/drivers/staging/iio/accel/adis16240_core.c
 @@ -28,20 +28,19 @@
  
- #define DRIVER_NAME		"adis16260"
+ #define DRIVER_NAME		"adis16240"
  
--static int adis16260_check_status(struct device *dev);
-+static int adis16260_check_status(struct iio_dev *indio_dev);
+-static int adis16240_check_status(struct device *dev);
++static int adis16240_check_status(struct iio_dev *indio_dev);
  
  /**
-  * adis16260_spi_write_reg_8() - write single byte to a register
+  * adis16240_spi_write_reg_8() - write single byte to a register
 - * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @indio_dev: iio_dev for the device
++ * @indio_dev: iio_dev associated with device
   * @reg_address: the address of the register to be written
   * @val: the value to write
   **/
--static int adis16260_spi_write_reg_8(struct device *dev,
-+static int adis16260_spi_write_reg_8(struct iio_dev *indio_dev,
- 		u8 reg_address,
- 		u8 val)
+-static int adis16240_spi_write_reg_8(struct device *dev,
+-		u8 reg_address,
+-		u8 val)
++static int adis16240_spi_write_reg_8(struct iio_dev *indio_dev,
++				     u8 reg_address,
++				     u8 val)
  {
  	int ret;
 -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct adis16260_state *st = iio_dev_get_devdata(indio_dev);
+ 	struct adis16240_state *st = iio_dev_get_devdata(indio_dev);
  
  	mutex_lock(&st->buf_lock);
-@@ -56,18 +55,17 @@ static int adis16260_spi_write_reg_8(struct device *dev,
+@@ -56,18 +55,17 @@ static int adis16240_spi_write_reg_8(struct device *dev,
  
  /**
-  * adis16260_spi_write_reg_16() - write 2 bytes to a pair of registers
+  * adis16240_spi_write_reg_16() - write 2 bytes to a pair of registers
 - * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @indio_dev: iio_dev for the device
++ * @indio_dev: iio_dev for this device
   * @reg_address: the address of the lower of the two registers. Second register
   *               is assumed to have address one greater.
   * @val: value to be written
   **/
--static int adis16260_spi_write_reg_16(struct device *dev,
-+static int adis16260_spi_write_reg_16(struct iio_dev *indio_dev,
- 		u8 lower_reg_address,
- 		u16 value)
+-static int adis16240_spi_write_reg_16(struct device *dev,
+-		u8 lower_reg_address,
+-		u16 value)
++static int adis16240_spi_write_reg_16(struct iio_dev *indio_dev,
++				      u8 lower_reg_address,
++				      u16 value)
  {
  	int ret;
  	struct spi_message msg;
 -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct adis16260_state *st = iio_dev_get_devdata(indio_dev);
+ 	struct adis16240_state *st = iio_dev_get_devdata(indio_dev);
  	struct spi_transfer xfers[] = {
  		{
-@@ -80,7 +78,6 @@ static int adis16260_spi_write_reg_16(struct device *dev,
+@@ -80,7 +78,6 @@ static int adis16240_spi_write_reg_16(struct device *dev,
  			.tx_buf = st->tx + 2,
  			.bits_per_word = 8,
  			.len = 2,
 -			.cs_change = 1,
- 			.delay_usecs = 20,
+ 			.delay_usecs = 35,
  		},
  	};
-@@ -102,17 +99,16 @@ static int adis16260_spi_write_reg_16(struct device *dev,
+@@ -102,17 +99,16 @@ static int adis16240_spi_write_reg_16(struct device *dev,
  
  /**
-  * adis16260_spi_read_reg_16() - read 2 bytes from a 16-bit register
+  * adis16240_spi_read_reg_16() - read 2 bytes from a 16-bit register
 - * @dev: device associated with child of actual device (iio_dev or iio_trig)
-+ * @indio_dev: iio_dev for the device
++ * @indio_dev: iio_dev for this device
   * @reg_address: the address of the lower of the two registers. Second register
   *               is assumed to have address one greater.
   * @val: somewhere to pass back the value read
   **/
--static int adis16260_spi_read_reg_16(struct device *dev,
-+static int adis16260_spi_read_reg_16(struct iio_dev *indio_dev,
+-static int adis16240_spi_read_reg_16(struct device *dev,
++static int adis16240_spi_read_reg_16(struct iio_dev *indio_dev,
  		u8 lower_reg_address,
  		u16 *val)
  {
  	struct spi_message msg;
 -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct adis16260_state *st = iio_dev_get_devdata(indio_dev);
+ 	struct adis16240_state *st = iio_dev_get_devdata(indio_dev);
  	int ret;
  	struct spi_transfer xfers[] = {
-@@ -126,7 +122,6 @@ static int adis16260_spi_read_reg_16(struct device *dev,
- 			.rx_buf = st->rx,
- 			.bits_per_word = 8,
- 			.len = 2,
--			.cs_change = 1,
- 			.delay_usecs = 30,
- 		},
- 	};
-@@ -152,92 +147,6 @@ error_ret:
- 	return ret;
+@@ -159,61 +155,30 @@ static ssize_t adis16240_spi_read_signed(struct device *dev,
+ 		char *buf,
+ 		unsigned bits)
+ {
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	int ret;
+ 	s16 val = 0;
+ 	unsigned shift = 16 - bits;
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 
+-	ret = adis16240_spi_read_reg_16(dev, this_attr->address, (u16 *)&val);
++	ret = adis16240_spi_read_reg_16(indio_dev,
++					this_attr->address, (u16 *)&val);
+ 	if (ret)
+ 		return ret;
+ 
+ 	if (val & ADIS16240_ERROR_ACTIVE)
+-		adis16240_check_status(dev);
++		adis16240_check_status(indio_dev);
+ 
+ 	val = ((s16)(val << shift) >> shift);
+ 	return sprintf(buf, "%d\n", val);
  }
  
--static ssize_t adis16260_spi_read_signed(struct device *dev,
--		struct device_attribute *attr,
--		char *buf,
--		unsigned bits)
--{
--	int ret;
--	s16 val = 0;
--	unsigned shift = 16 - bits;
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--
--	ret = adis16260_spi_read_reg_16(dev, this_attr->address, (u16 *)&val);
--	if (ret)
--		return ret;
--
--	if (val & ADIS16260_ERROR_ACTIVE)
--		adis16260_check_status(dev);
--	val = ((s16)(val << shift) >> shift);
--	return sprintf(buf, "%d\n", val);
--}
--
--static ssize_t adis16260_read_12bit_unsigned(struct device *dev,
+-static ssize_t adis16240_read_10bit_unsigned(struct device *dev,
 -		struct device_attribute *attr,
 -		char *buf)
 -{
@@ -163,17 +157,17 @@ index 3366bd0..0eb6a87 100644
 -	u16 val = 0;
 -	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
 -
--	ret = adis16260_spi_read_reg_16(dev, this_attr->address, &val);
+-	ret = adis16240_spi_read_reg_16(dev, this_attr->address, &val);
 -	if (ret)
 -		return ret;
 -
--	if (val & ADIS16260_ERROR_ACTIVE)
--		adis16260_check_status(dev);
+-	if (val & ADIS16240_ERROR_ACTIVE)
+-		adis16240_check_status(dev);
 -
--	return sprintf(buf, "%u\n", val & 0x0FFF);
+-	return sprintf(buf, "%u\n", val & 0x03FF);
 -}
 -
--static ssize_t adis16260_read_12bit_signed(struct device *dev,
+-static ssize_t adis16240_read_10bit_signed(struct device *dev,
 -		struct device_attribute *attr,
 -		char *buf)
 -{
@@ -182,28 +176,27 @@ index 3366bd0..0eb6a87 100644
 -
 -	/* Take the iio_dev status lock */
 -	mutex_lock(&indio_dev->mlock);
--	ret =  adis16260_spi_read_signed(dev, attr, buf, 12);
+-	ret =  adis16240_spi_read_signed(dev, attr, buf, 10);
 -	mutex_unlock(&indio_dev->mlock);
 -
 -	return ret;
 -}
 -
--static ssize_t adis16260_read_14bit_signed(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
+ static ssize_t adis16240_read_12bit_signed(struct device *dev,
+ 		struct device_attribute *attr,
+ 		char *buf)
+ {
 -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	ssize_t ret;
--
--	/* Take the iio_dev status lock */
--	mutex_lock(&indio_dev->mlock);
--	ret =  adis16260_spi_read_signed(dev, attr, buf, 14);
--	mutex_unlock(&indio_dev->mlock);
--
--	return ret;
--}
--
--static ssize_t adis16260_write_16bit(struct device *dev,
+ 	ssize_t ret;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 
+ 	/* Take the iio_dev status lock */
+ 	mutex_lock(&indio_dev->mlock);
+@@ -223,32 +188,14 @@ static ssize_t adis16240_read_12bit_signed(struct device *dev,
+ 	return ret;
+ }
+ 
+-static ssize_t adis16240_write_16bit(struct device *dev,
 -		struct device_attribute *attr,
 -		const char *buf,
 -		size_t len)
@@ -215,197 +208,141 @@ index 3366bd0..0eb6a87 100644
 -	ret = strict_strtol(buf, 10, &val);
 -	if (ret)
 -		goto error_ret;
--	ret = adis16260_spi_write_reg_16(dev, this_attr->address, val);
+-	ret = adis16240_spi_write_reg_16(dev, this_attr->address, val);
 -
 -error_ret:
 -	return ret ? ret : len;
 -}
 -
- static ssize_t adis16260_read_frequency_available(struct device *dev,
- 						  struct device_attribute *attr,
- 						  char *buf)
-@@ -259,7 +168,7 @@ static ssize_t adis16260_read_frequency(struct device *dev,
- 	int ret, len = 0;
- 	u16 t;
- 	int sps;
--	ret = adis16260_spi_read_reg_16(dev,
-+	ret = adis16260_spi_read_reg_16(indio_dev,
- 			ADIS16260_SMPL_PRD,
- 			&t);
- 	if (ret)
-@@ -305,7 +214,7 @@ static ssize_t adis16260_write_frequency(struct device *dev,
- 		st->us->max_speed_hz = ADIS16260_SPI_SLOW;
- 	else
- 		st->us->max_speed_hz = ADIS16260_SPI_FAST;
--	ret = adis16260_spi_write_reg_8(dev,
-+	ret = adis16260_spi_write_reg_8(indio_dev,
- 			ADIS16260_SMPL_PRD,
- 			t);
- 
-@@ -314,33 +223,14 @@ static ssize_t adis16260_write_frequency(struct device *dev,
- 	return ret ? ret : len;
- }
- 
--static ssize_t adis16260_read_gyro_scale(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct adis16260_state *st = iio_dev_get_devdata(indio_dev);
--	ssize_t ret = 0;
--
--	if (st->negate)
--		ret = sprintf(buf, "-");
--	/* Take the iio_dev status lock */
--	if (spi_get_device_id(st->us)->driver_data)
--		ret += sprintf(buf + ret, "%s\n", "0.00031974432");
--	else
--		ret += sprintf(buf + ret, "%s\n", "0.00127862821");
--
--	return ret;
--}
--
--static int adis16260_reset(struct device *dev)
-+static int adis16260_reset(struct iio_dev *indio_dev)
+-static int adis16240_reset(struct device *dev)
++static int adis16240_reset(struct iio_dev *indio_dev)
  {
  	int ret;
--	ret = adis16260_spi_write_reg_8(dev,
-+	ret = adis16260_spi_write_reg_8(indio_dev,
- 			ADIS16260_GLOB_CMD,
- 			ADIS16260_GLOB_CMD_SW_RESET);
+-	ret = adis16240_spi_write_reg_8(dev,
++	ret = adis16240_spi_write_reg_8(indio_dev,
+ 			ADIS16240_GLOB_CMD,
+ 			ADIS16240_GLOB_CMD_SW_RESET);
  	if (ret)
 -		dev_err(dev, "problem resetting device");
 +		dev_err(&indio_dev->dev, "problem resetting device");
  
  	return ret;
  }
-@@ -349,22 +239,23 @@ static ssize_t adis16260_write_reset(struct device *dev,
+@@ -257,23 +204,26 @@ static ssize_t adis16240_write_reset(struct device *dev,
  		struct device_attribute *attr,
  		const char *buf, size_t len)
  {
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++
  	if (len < 1)
  		return -EINVAL;
  	switch (buf[0]) {
  	case '1':
  	case 'y':
  	case 'Y':
--		return adis16260_reset(dev);
-+		return adis16260_reset(indio_dev);
+-		return adis16240_reset(dev);
++		return adis16240_reset(indio_dev);
  	}
  	return -EINVAL;
  }
  
--int adis16260_set_irq(struct device *dev, bool enable)
-+int adis16260_set_irq(struct iio_dev *indio_dev, bool enable)
+-int adis16240_set_irq(struct device *dev, bool enable)
++int adis16240_set_irq(struct iio_dev *indio_dev, bool enable)
  {
- 	int ret;
+ 	int ret = 0;
  	u16 msc;
--	ret = adis16260_spi_read_reg_16(dev, ADIS16260_MSC_CTRL, &msc);
-+	ret = adis16260_spi_read_reg_16(indio_dev, ADIS16260_MSC_CTRL, &msc);
+ 
+-	ret = adis16240_spi_read_reg_16(dev, ADIS16240_MSC_CTRL, &msc);
++	ret = adis16240_spi_read_reg_16(indio_dev,
++					ADIS16240_MSC_CTRL, &msc);
  	if (ret)
  		goto error_ret;
  
-@@ -374,7 +265,7 @@ int adis16260_set_irq(struct device *dev, bool enable)
+@@ -284,37 +234,40 @@ int adis16240_set_irq(struct device *dev, bool enable)
  	else
- 		msc &= ~ADIS16260_MSC_CTRL_DATA_RDY_EN;
+ 		msc &= ~ADIS16240_MSC_CTRL_DATA_RDY_EN;
  
--	ret = adis16260_spi_write_reg_16(dev, ADIS16260_MSC_CTRL, msc);
-+	ret = adis16260_spi_write_reg_16(indio_dev, ADIS16260_MSC_CTRL, msc);
- 	if (ret)
- 		goto error_ret;
+-	ret = adis16240_spi_write_reg_16(dev, ADIS16240_MSC_CTRL, msc);
++	ret = adis16240_spi_write_reg_16(indio_dev,
++					 ADIS16240_MSC_CTRL, msc);
  
-@@ -383,41 +274,44 @@ error_ret:
- }
- 
- /* Power down the device */
--static int adis16260_stop_device(struct device *dev)
-+static int adis16260_stop_device(struct iio_dev *indio_dev)
- {
- 	int ret;
- 	u16 val = ADIS16260_SLP_CNT_POWER_OFF;
- 
--	ret = adis16260_spi_write_reg_16(dev, ADIS16260_SLP_CNT, val);
-+	ret = adis16260_spi_write_reg_16(indio_dev, ADIS16260_SLP_CNT, val);
- 	if (ret)
--		dev_err(dev, "problem with turning device off: SLP_CNT");
-+		dev_err(&indio_dev->dev, "problem with turning device off: SLP_CNT");
- 
+ error_ret:
  	return ret;
  }
  
--static int adis16260_self_test(struct device *dev)
-+static int adis16260_self_test(struct iio_dev *indio_dev)
+-static int adis16240_self_test(struct device *dev)
++static int adis16240_self_test(struct iio_dev *indio_dev)
  {
  	int ret;
--	ret = adis16260_spi_write_reg_16(dev,
-+	ret = adis16260_spi_write_reg_16(indio_dev,
- 			ADIS16260_MSC_CTRL,
- 			ADIS16260_MSC_CTRL_MEM_TEST);
+-	ret = adis16240_spi_write_reg_16(dev,
++	ret = adis16240_spi_write_reg_16(indio_dev,
+ 			ADIS16240_MSC_CTRL,
+ 			ADIS16240_MSC_CTRL_SELF_TEST_EN);
  	if (ret) {
 -		dev_err(dev, "problem starting self test");
 +		dev_err(&indio_dev->dev, "problem starting self test");
  		goto err_ret;
  	}
  
--	adis16260_check_status(dev);
-+	adis16260_check_status(indio_dev);
+ 	msleep(ADIS16240_STARTUP_DELAY);
+ 
+-	adis16240_check_status(dev);
++	adis16240_check_status(indio_dev);
  
  err_ret:
  	return ret;
  }
  
--static int adis16260_check_status(struct device *dev)
-+static int adis16260_check_status(struct iio_dev *indio_dev)
+-static int adis16240_check_status(struct device *dev)
++static int adis16240_check_status(struct iio_dev *indio_dev)
  {
  	u16 status;
  	int ret;
 +	struct device *dev = &indio_dev->dev;
  
--	ret = adis16260_spi_read_reg_16(dev, ADIS16260_DIAG_STAT, &status);
-+	ret = adis16260_spi_read_reg_16(indio_dev,
-+					ADIS16260_DIAG_STAT,
-+					&status);
+-	ret = adis16240_spi_read_reg_16(dev, ADIS16240_DIAG_STAT, &status);
++	ret = adis16240_spi_read_reg_16(indio_dev,
++					ADIS16240_DIAG_STAT, &status);
  
  	if (ret < 0) {
  		dev_err(dev, "Reading status failed\n");
-@@ -443,119 +337,233 @@ error_ret:
+@@ -337,109 +290,214 @@ error_ret:
  	return ret;
  }
  
--static int adis16260_initial_setup(struct adis16260_state *st)
-+static int adis16260_initial_setup(struct iio_dev *indio_dev)
+-static int adis16240_initial_setup(struct adis16240_state *st)
++static int adis16240_initial_setup(struct iio_dev *indio_dev)
  {
  	int ret;
 -	struct device *dev = &st->indio_dev->dev;
 +	struct device *dev = &indio_dev->dev;
  
  	/* Disable IRQ */
--	ret = adis16260_set_irq(dev, false);
-+	ret = adis16260_set_irq(indio_dev, false);
+-	ret = adis16240_set_irq(dev, false);
++	ret = adis16240_set_irq(indio_dev, false);
  	if (ret) {
  		dev_err(dev, "disable irq failed");
  		goto err_ret;
  	}
  
  	/* Do self test */
--	ret = adis16260_self_test(dev);
-+	ret = adis16260_self_test(indio_dev);
+-	ret = adis16240_self_test(dev);
++	ret = adis16240_self_test(indio_dev);
  	if (ret) {
  		dev_err(dev, "self test failure");
  		goto err_ret;
  	}
  
  	/* Read status register to check the result */
--	ret = adis16260_check_status(dev);
-+	ret = adis16260_check_status(indio_dev);
+-	ret = adis16240_check_status(dev);
++	ret = adis16240_check_status(indio_dev);
  	if (ret) {
--		adis16260_reset(dev);
-+		adis16260_reset(indio_dev);
+-		adis16240_reset(dev);
++		adis16240_reset(indio_dev);
  		dev_err(dev, "device not playing ball -> reset");
- 		msleep(ADIS16260_STARTUP_DELAY);
--		ret = adis16260_check_status(dev);
-+		ret = adis16260_check_status(indio_dev);
+ 		msleep(ADIS16240_STARTUP_DELAY);
+-		ret = adis16240_check_status(dev);
++		ret = adis16240_check_status(indio_dev);
  		if (ret) {
  			dev_err(dev, "giving up");
  			goto err_ret;
@@ -419,129 +356,78 @@ index 3366bd0..0eb6a87 100644
  	return ret;
  }
  
--static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply,
--				adis16260_read_12bit_unsigned,
--				ADIS16260_SUPPLY_OUT);
--static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.0018315");
+-static IIO_DEV_ATTR_IN_NAMED_RAW(0, supply, adis16240_read_10bit_unsigned,
+-		ADIS16240_SUPPLY_OUT);
+-static IIO_DEV_ATTR_IN_RAW(1, adis16240_read_10bit_signed,
+-		ADIS16240_AUX_ADC);
+-static IIO_CONST_ATTR_IN_NAMED_SCALE(0, supply, "0.00488");
 -
--static IIO_DEV_ATTR_TEMP_RAW(adis16260_read_12bit_unsigned);
--static IIO_CONST_ATTR_TEMP_OFFSET("25");
--static IIO_CONST_ATTR_TEMP_SCALE("0.1453");
+-static IIO_CONST_ATTR_ACCEL_SCALE("0.50406181");
+-static IIO_CONST_ATTR(accel_peak_scale, "6.6292954");
+-static IIO_DEV_ATTR_ACCEL_X(adis16240_read_10bit_signed,
+-		ADIS16240_XACCL_OUT);
+-static IIO_DEVICE_ATTR(accel_x_peak_raw, S_IRUGO,
+-		       adis16240_read_10bit_signed, NULL,
+-		       ADIS16240_XPEAK_OUT);
+-static IIO_DEV_ATTR_ACCEL_Y(adis16240_read_10bit_signed,
+-		ADIS16240_YACCL_OUT);
+-static IIO_DEVICE_ATTR(accel_y_peak_raw, S_IRUGO,
+-		       adis16240_read_10bit_signed, NULL,
+-		       ADIS16240_YPEAK_OUT);
+-static IIO_DEV_ATTR_ACCEL_Z(adis16240_read_10bit_signed,
+-		ADIS16240_ZACCL_OUT);
+-static IIO_DEVICE_ATTR(accel_z_peak_raw, S_IRUGO,
+-		       adis16240_read_10bit_signed, NULL,
+-		       ADIS16240_ZPEAK_OUT);
 -
--static IIO_DEV_ATTR_IN_RAW(1, adis16260_read_12bit_unsigned,
--		ADIS16260_AUX_ADC);
--static IIO_CONST_ATTR(in1_scale, "0.0006105");
--
- static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
- 		adis16260_read_frequency,
- 		adis16260_write_frequency);
+ static IIO_DEVICE_ATTR(accel_xyz_squared_peak_raw, S_IRUGO,
+ 		       adis16240_read_12bit_signed, NULL,
+ 		       ADIS16240_XYZPEAK_OUT);
+-static IIO_DEV_ATTR_ACCEL_X_CALIBBIAS(S_IWUSR | S_IRUGO,
+-		adis16240_read_10bit_signed,
+-		adis16240_write_16bit,
+-		ADIS16240_XACCL_OFF);
+-static IIO_DEV_ATTR_ACCEL_Y_CALIBBIAS(S_IWUSR | S_IRUGO,
+-		adis16240_read_10bit_signed,
+-		adis16240_write_16bit,
+-		ADIS16240_YACCL_OFF);
+-static IIO_DEV_ATTR_ACCEL_Z_CALIBBIAS(S_IWUSR | S_IRUGO,
+-		adis16240_read_10bit_signed,
+-		adis16240_write_16bit,
+-		ADIS16240_ZACCL_OFF);
+-static IIO_DEV_ATTR_TEMP_RAW(adis16240_read_10bit_unsigned);
+-static IIO_CONST_ATTR_TEMP_SCALE("0.244");
  
- static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16260_write_reset, 0);
+ static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16240_write_reset, 0);
  
--
- static IIO_DEVICE_ATTR(sampling_frequency_available,
- 		       S_IRUGO, adis16260_read_frequency_available, NULL, 0);
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("4096");
  
--#define ADIS16260_GYRO_ATTR_SET(axis)					\
--	IIO_DEV_ATTR_GYRO##axis(adis16260_read_14bit_signed,		\
--				ADIS16260_GYRO_OUT);			\
--	static IIO_DEV_ATTR_GYRO##axis##_SCALE(S_IRUGO,			\
--					adis16260_read_gyro_scale,	\
--					NULL,				\
--					0);				\
--	static IIO_DEV_ATTR_GYRO##axis##_CALIBSCALE(S_IRUGO | S_IWUSR,	\
--					adis16260_read_12bit_unsigned,	\
--					adis16260_write_16bit,		\
--					ADIS16260_GYRO_SCALE);		\
--	static IIO_DEV_ATTR_GYRO##axis##_CALIBBIAS(S_IWUSR | S_IRUGO,	\
--					adis16260_read_12bit_signed,	\
--					adis16260_write_16bit,		\
--					ADIS16260_GYRO_OFF);		\
--	static IIO_DEV_ATTR_ANGL##axis(adis16260_read_14bit_signed,	\
--				       ADIS16260_ANGL_OUT);
--
--static ADIS16260_GYRO_ATTR_SET();
--static ADIS16260_GYRO_ATTR_SET(_X);
--static ADIS16260_GYRO_ATTR_SET(_Y);
--static ADIS16260_GYRO_ATTR_SET(_Z);
--
--#define ADIS16260_ATTR_GROUP(axis)					\
--	struct attribute *adis16260_attributes##axis[] = {		\
--		&iio_dev_attr_in0_supply_raw.dev_attr.attr,		\
--		&iio_const_attr_in0_supply_scale.dev_attr.attr,		\
--		&iio_dev_attr_gyro##axis##_raw.dev_attr.attr,		\
--		&iio_dev_attr_gyro##axis##_scale.dev_attr.attr,		\
--		&iio_dev_attr_gyro##axis##_calibscale.dev_attr.attr,	\
--		&iio_dev_attr_gyro##axis##_calibbias.dev_attr.attr,	\
--		&iio_dev_attr_angl##axis##_raw.dev_attr.attr,		\
--		&iio_dev_attr_temp_raw.dev_attr.attr,			\
--		&iio_const_attr_temp_offset.dev_attr.attr,		\
--		&iio_const_attr_temp_scale.dev_attr.attr,		\
--		&iio_dev_attr_in1_raw.dev_attr.attr,			\
--		&iio_const_attr_in1_scale.dev_attr.attr,		\
--		&iio_dev_attr_sampling_frequency.dev_attr.attr,		\
--		&iio_dev_attr_sampling_frequency_available.dev_attr.attr, \
--		&iio_dev_attr_reset.dev_attr.attr,			\
--		NULL							\
--	};								\
--	static const struct attribute_group adis16260_attribute_group##axis \
--	= {								\
--		.attrs = adis16260_attributes##axis,			\
--	};
-+enum adis16260_channel {
-+	gyro,
-+	temp,
++enum adis16240_chan {
 +	in_supply,
 +	in_aux,
-+	angle,
++	accel_x,
++	accel_y,
++	accel_z,
++	temp,
 +};
-+#define ADIS16260_GYRO_CHANNEL_SET(axis, mod)				\
-+	struct iio_chan_spec adis16260_channels_##axis[] = {		\
-+		IIO_CHAN(IIO_GYRO, 1, 0, 0, NULL, 0, mod,		\
-+			 (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE) |	\
-+			 (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE) |	\
-+			 (1 << IIO_CHAN_INFO_SCALE_SEPARATE),		\
-+			 gyro, ADIS16260_SCAN_GYRO,			\
-+			 IIO_ST('s', 14, 16, 0), 0),			\
-+		IIO_CHAN(IIO_ANGL, 1, 0, 0, NULL, 0, mod,		\
-+			 0,						\
-+			 angle, ADIS16260_SCAN_ANGL,			\
-+			 IIO_ST('u', 14, 16, 0), 0),			\
-+		IIO_CHAN(IIO_TEMP, 0, 1, 0, NULL, 0, 0,			\
-+			 (1 << IIO_CHAN_INFO_OFFSET_SEPARATE) |		\
-+			 (1 << IIO_CHAN_INFO_SCALE_SEPARATE),		\
-+			 temp, ADIS16260_SCAN_TEMP,			\
-+			 IIO_ST('u', 12, 16, 0), 0),			\
-+		IIO_CHAN(IIO_IN, 0, 1, 0, "supply", 0, 0,		\
-+			 (1 << IIO_CHAN_INFO_SCALE_SEPARATE),		\
-+			 in_supply, ADIS16260_SCAN_SUPPLY,		\
-+			 IIO_ST('u', 12, 16, 0), 0),			\
-+		IIO_CHAN(IIO_IN, 0, 1, 0, NULL, 1, 0,			\
-+			 (1 << IIO_CHAN_INFO_SCALE_SEPARATE),		\
-+			 in_aux, ADIS16260_SCAN_AUX_ADC,		\
-+			 IIO_ST('u', 12, 16, 0), 0),			\
-+		IIO_CHAN_SOFT_TIMESTAMP(5)				\
-+	}
 +
-+static const ADIS16260_GYRO_CHANNEL_SET(x, IIO_MOD_X);
-+static const ADIS16260_GYRO_CHANNEL_SET(y, IIO_MOD_Y);
-+static const ADIS16260_GYRO_CHANNEL_SET(z, IIO_MOD_Z);
-+
-+static const u8 adis16260_addresses[5][3] = {
-+	[gyro] = { ADIS16260_GYRO_OUT,
-+		   ADIS16260_GYRO_OFF,
-+		   ADIS16260_GYRO_SCALE },
-+	[angle] = { ADIS16260_ANGL_OUT },
-+	[in_supply] = { ADIS16260_SUPPLY_OUT },
-+	[in_aux] = { ADIS16260_AUX_ADC },
-+	[temp] = { ADIS16260_TEMP_OUT },
++static const u8 adis16240_addresses[6][3] = {
++	[in_supply] = { ADIS16240_SUPPLY_OUT },
++	[in_aux] = { ADIS16240_AUX_ADC },
++	[accel_x] = { ADIS16240_XACCL_OUT, ADIS16240_XACCL_OFF,
++		      ADIS16240_XPEAK_OUT },
++	[accel_y] = { ADIS16240_YACCL_OUT, ADIS16240_YACCL_OFF,
++		      ADIS16240_YPEAK_OUT },
++	[accel_z] = { ADIS16240_ZACCL_OUT, ADIS16240_ZACCL_OFF,
++		      ADIS16240_ZPEAK_OUT },
++	[temp] = { ADIS16240_TEMP_OUT },
 +};
-+static int adis16260_read_raw(struct iio_dev *indio_dev,
++
++static int adis16240_read_raw(struct iio_dev *indio_dev,
 +			      struct iio_chan_spec const *chan,
 +			      int *val, int *val2,
 +			      long mask)
 +{
-+	struct adis16260_state *st = iio_dev_get_devdata(indio_dev);
 +	int ret;
 +	int bits;
 +	u8 addr;
@@ -550,13 +436,13 @@ index 3366bd0..0eb6a87 100644
 +	switch (mask) {
 +	case 0:
 +		mutex_lock(&indio_dev->mlock);
-+		addr = adis16260_addresses[chan->address][0];
-+		ret = adis16260_spi_read_reg_16(indio_dev, addr, &val16);
++		addr = adis16240_addresses[chan->address][0];
++		ret = adis16240_spi_read_reg_16(indio_dev, addr, &val16);
 +		if (ret)
 +			return ret;
 +
-+		if (val16 & ADIS16260_ERROR_ACTIVE) {
-+			ret = adis16260_check_status(indio_dev);
++		if (val16 & ADIS16240_ERROR_ACTIVE) {
++			ret = adis16240_check_status(indio_dev);
 +			if (ret)
 +				return ret;
 +		}
@@ -571,42 +457,37 @@ index 3366bd0..0eb6a87 100644
 +	case (1 << IIO_CHAN_INFO_SCALE_SEPARATE):
 +	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
 +		switch (chan->type) {
-+		case IIO_GYRO:
-+			*val = 0;
-+			if (spi_get_device_id(st->us)->driver_data)
-+				*val2 = 320;
-+			else
-+				*val2 = 1278;
-+			return IIO_VAL_INT_PLUS_MICRO;
 +		case IIO_IN:
 +			*val = 0;
 +			if (chan->channel == 0)
-+				*val2 = 18315;
++				*val2 = 4880;
 +			else
-+				*val2 = 610500;
++				return -EINVAL;
 +			return IIO_VAL_INT_PLUS_MICRO;
 +		case IIO_TEMP:
 +			*val = 0;
-+			*val2 = 145300;
++			*val2 = 244000;
++			return IIO_VAL_INT_PLUS_MICRO;
++		case IIO_ACCEL:
++			*val = 0;
++			*val2 = 504062;
 +			return IIO_VAL_INT_PLUS_MICRO;
 +		default:
 +			return -EINVAL;
 +		}
 +		break;
++	case (1 << IIO_CHAN_INFO_PEAK_SCALE_SHARED):
++		*val = 6;
++		*val2 = 629295;
++		return IIO_VAL_INT_PLUS_MICRO;
 +	case (1 << IIO_CHAN_INFO_OFFSET_SEPARATE):
 +		*val = 25;
 +		return IIO_VAL_INT;
 +	case (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE):
-+		switch (chan->type) {
-+		case IIO_GYRO:
-+			bits = 12;
-+			break;
-+		default:
-+			return -EINVAL;
-+		};
++		bits = 10;
 +		mutex_lock(&indio_dev->mlock);
-+		addr = adis16260_addresses[chan->address][1];
-+		ret = adis16260_spi_read_reg_16(indio_dev, addr, &val16);
++		addr = adis16240_addresses[chan->address][1];
++		ret = adis16240_spi_read_reg_16(indio_dev, addr, &val16);
 +		if (ret) {
 +			mutex_unlock(&indio_dev->mlock);
 +			return ret;
@@ -616,220 +497,218 @@ index 3366bd0..0eb6a87 100644
 +		*val = val16;
 +		mutex_unlock(&indio_dev->mlock);
 +		return IIO_VAL_INT;
-+	case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
-+		switch (chan->type) {
-+		case IIO_GYRO:
-+			bits = 12;
-+			break;
-+		default:
-+			return -EINVAL;
-+		};
++	case (1 << IIO_CHAN_INFO_PEAK_SEPARATE):
++		bits = 10;
 +		mutex_lock(&indio_dev->mlock);
-+		addr = adis16260_addresses[chan->address][2];
-+		ret = adis16260_spi_read_reg_16(indio_dev, addr, &val16);
++		addr = adis16240_addresses[chan->address][2];
++		ret = adis16240_spi_read_reg_16(indio_dev, addr, &val16);
 +		if (ret) {
 +			mutex_unlock(&indio_dev->mlock);
 +			return ret;
 +		}
-+		*val = (1 << bits) - 1;
++		val16 &= (1 << bits) - 1;
++		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
++		*val = val16;
 +		mutex_unlock(&indio_dev->mlock);
 +		return IIO_VAL_INT;
 +	}
 +	return -EINVAL;
 +}
 +
-+static int adis16260_write_raw(struct iio_dev *indio_dev,
++static int adis16240_write_raw(struct iio_dev *indio_dev,
 +			       struct iio_chan_spec const *chan,
 +			       int val,
 +			       int val2,
 +			       long mask)
 +{
-+	int bits = 12;
++	int bits = 10;
 +	s16 val16;
 +	u8 addr;
 +	switch (mask) {
 +	case (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE):
 +		val16 = val & ((1 << bits) - 1);
-+		addr = adis16260_addresses[chan->address][1];
-+		return adis16260_spi_write_reg_16(indio_dev, addr, val16);
-+	case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
-+		val16 = val & ((1 << bits) - 1);
-+		addr = adis16260_addresses[chan->address][2];
-+		return adis16260_spi_write_reg_16(indio_dev, addr, val16);
++		addr = adis16240_addresses[chan->address][1];
++		return adis16240_spi_write_reg_16(indio_dev, addr, val16);
 +	}
 +	return -EINVAL;
 +}
- 
--static ADIS16260_ATTR_GROUP();
--static ADIS16260_ATTR_GROUP(_x);
--static ADIS16260_ATTR_GROUP(_y);
--static ADIS16260_ATTR_GROUP(_z);
-+static struct attribute *adis16260_attributes[] = {
-+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-+	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_reset.dev_attr.attr,
-+	NULL
++
++static struct iio_chan_spec adis16240_channels[] = {
++	IIO_CHAN(IIO_IN, 0, 1, 0, "supply", 0, 0,
++		 (1 << IIO_CHAN_INFO_SCALE_SEPARATE),
++		 in_supply, ADIS16240_SCAN_SUPPLY,
++		 IIO_ST('u', 10, 16, 0), 0),
++	IIO_CHAN(IIO_IN, 0, 1, 0, NULL, 1, 0,
++		 0,
++		 in_aux, ADIS16240_SCAN_AUX_ADC,
++		 IIO_ST('u', 10, 16, 0), 0),
++	IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_X,
++		 (1 << IIO_CHAN_INFO_SCALE_SHARED) |
++		 (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE),
++		 accel_x, ADIS16240_SCAN_ACC_X,
++		 IIO_ST('s', 10, 16, 0), 0),
++	IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_Y,
++		 (1 << IIO_CHAN_INFO_SCALE_SHARED) |
++		 (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE),
++		 accel_y, ADIS16240_SCAN_ACC_Y,
++		 IIO_ST('s', 10, 16, 0), 0),
++	IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_Z,
++		 (1 << IIO_CHAN_INFO_SCALE_SHARED) |
++		 (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE),
++		 accel_z, ADIS16240_SCAN_ACC_Z,
++		 IIO_ST('s', 10, 16, 0), 0),
++	IIO_CHAN(IIO_TEMP, 0, 1, 0, NULL, 0, 0,
++		 (1 << IIO_CHAN_INFO_SCALE_SEPARATE),
++		 temp, ADIS16240_SCAN_TEMP,
++		 IIO_ST('u', 10, 16, 0), 0),
++	IIO_CHAN_SOFT_TIMESTAMP(6)
 +};
 +
-+static const struct attribute_group adis16260_attribute_group = {
-+	.attrs = adis16260_attributes,
-+};
- 
- static int __devinit adis16260_probe(struct spi_device *spi)
- {
-@@ -593,24 +601,28 @@ static int __devinit adis16260_probe(struct spi_device *spi)
- 
- 	st->indio_dev->name = spi_get_device_id(st->us)->name;
+ static struct attribute *adis16240_attributes[] = {
+-	&iio_dev_attr_in0_supply_raw.dev_attr.attr,
+-	&iio_const_attr_in0_supply_scale.dev_attr.attr,
+-	&iio_dev_attr_in1_raw.dev_attr.attr,
+-	&iio_const_attr_accel_scale.dev_attr.attr,
+-	&iio_const_attr_accel_peak_scale.dev_attr.attr,
+-	&iio_dev_attr_accel_x_raw.dev_attr.attr,
+-	&iio_dev_attr_accel_x_calibbias.dev_attr.attr,
+-	&iio_dev_attr_accel_x_peak_raw.dev_attr.attr,
+-	&iio_dev_attr_accel_y_raw.dev_attr.attr,
+-	&iio_dev_attr_accel_y_calibbias.dev_attr.attr,
+-	&iio_dev_attr_accel_y_peak_raw.dev_attr.attr,
+-	&iio_dev_attr_accel_z_raw.dev_attr.attr,
+-	&iio_dev_attr_accel_z_calibbias.dev_attr.attr,
+-	&iio_dev_attr_accel_z_peak_raw.dev_attr.attr,
+ 	&iio_dev_attr_accel_xyz_squared_peak_raw.dev_attr.attr,
+-	&iio_dev_attr_temp_raw.dev_attr.attr,
+-	&iio_const_attr_temp_scale.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_reset.dev_attr.attr,
+ 	NULL
+@@ -483,6 +541,10 @@ static int __devinit adis16240_probe(struct spi_device *spi)
+ 	st->indio_dev->name = spi->dev.driver->name;
  	st->indio_dev->dev.parent = &spi->dev;
-+	st->indio_dev->attrs = &adis16260_attribute_group;
-+	st->indio_dev->num_channels
-+		= ARRAY_SIZE(adis16260_channels_x);
- 	if (pd && pd->direction)
- 		switch (pd->direction) {
- 		case 'x':
--			st->indio_dev->attrs = &adis16260_attribute_group_x;
-+			st->indio_dev->channels = adis16260_channels_x;
- 			break;
- 		case 'y':
--			st->indio_dev->attrs = &adis16260_attribute_group_y;
-+			st->indio_dev->channels = adis16260_channels_y;
- 			break;
- 		case 'z':
--			st->indio_dev->attrs = &adis16260_attribute_group_z;
-+			st->indio_dev->channels = adis16260_channels_z;
- 			break;
- 		default:
--			st->indio_dev->attrs = &adis16260_attribute_group;
--			break;
-+			return -EINVAL;
- 		}
- 	else
--		st->indio_dev->attrs = &adis16260_attribute_group;
-+		st->indio_dev->channels = adis16260_channels_x;
- 
-+	st->indio_dev->read_raw = &adis16260_read_raw;
-+	st->indio_dev->write_raw = &adis16260_write_raw;
+ 	st->indio_dev->attrs = &adis16240_attribute_group;
++	st->indio_dev->channels = adis16240_channels;
++	st->indio_dev->num_channels = ARRAY_SIZE(adis16240_channels);
++	st->indio_dev->read_raw = &adis16240_read_raw;
++	st->indio_dev->write_raw = &adis16240_write_raw;
  	st->indio_dev->dev_data = (void *)(st);
  	st->indio_dev->driver_module = THIS_MODULE;
  	st->indio_dev->modes = INDIO_DIRECT_MODE;
-@@ -623,7 +635,9 @@ static int __devinit adis16260_probe(struct spi_device *spi)
- 	if (ret)
+@@ -496,7 +558,9 @@ static int __devinit adis16240_probe(struct spi_device *spi)
  		goto error_unreg_ring_funcs;
  	regdone = 1;
+ 
 -	ret = iio_ring_buffer_register(st->indio_dev->ring, 0);
 +	ret = iio_ring_buffer_register_ex(st->indio_dev->ring, 0,
-+					  st->indio_dev->channels,
-+					  ARRAY_SIZE(adis16260_channels_x));
++					  adis16240_channels,
++					  ARRAY_SIZE(adis16240_channels));
  	if (ret) {
  		printk(KERN_ERR "failed to initialize the ring\n");
  		goto error_unreg_ring_funcs;
-@@ -636,7 +650,7 @@ static int __devinit adis16260_probe(struct spi_device *spi)
+@@ -509,7 +573,7 @@ static int __devinit adis16240_probe(struct spi_device *spi)
  	}
  
  	/* Get the device into a sane initial state */
--	ret = adis16260_initial_setup(st);
-+	ret = adis16260_initial_setup(st->indio_dev);
+-	ret = adis16240_initial_setup(st);
++	ret = adis16240_initial_setup(st->indio_dev);
  	if (ret)
  		goto error_remove_trigger;
  	return 0;
-@@ -668,7 +682,7 @@ static int adis16260_remove(struct spi_device *spi)
- 	struct adis16260_state *st = spi_get_drvdata(spi);
- 	struct iio_dev *indio_dev = st->indio_dev;
- 
--	ret = adis16260_stop_device(&(indio_dev->dev));
-+	ret = adis16260_stop_device(indio_dev);
- 	if (ret)
- 		goto err_ret;
- 
-diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
-index 2806d83..12fbbf2 100644
---- a/drivers/staging/iio/gyro/adis16260_ring.c
-+++ b/drivers/staging/iio/gyro/adis16260_ring.c
-@@ -17,46 +17,6 @@
+diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
+index a6d27d21..bddd699 100644
+--- a/drivers/staging/iio/accel/adis16240_ring.c
++++ b/drivers/staging/iio/accel/adis16240_ring.c
+@@ -17,48 +17,6 @@
  #include "../trigger.h"
- #include "adis16260.h"
+ #include "adis16240.h"
  
--static IIO_SCAN_EL_C(in_supply, ADIS16260_SCAN_SUPPLY,
--		ADIS16260_SUPPLY_OUT, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(in_supply, u, 12, 16);
--static IIO_SCAN_EL_C(gyro, ADIS16260_SCAN_GYRO, ADIS16260_GYRO_OUT, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(gyro, s, 14, 16);
--static IIO_SCAN_EL_C(in0, ADIS16260_SCAN_AUX_ADC, ADIS16260_AUX_ADC, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(in0, u, 12, 16);
--static IIO_SCAN_EL_C(temp, ADIS16260_SCAN_TEMP, ADIS16260_TEMP_OUT, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(temp, u, 12, 16);
--static IIO_SCAN_EL_C(angl, ADIS16260_SCAN_ANGL, ADIS16260_ANGL_OUT, NULL);
--static IIO_CONST_ATTR_SCAN_EL_TYPE(angl, u, 14, 16);
--static IIO_SCAN_EL_TIMESTAMP(5);
+-static IIO_SCAN_EL_C(in_supply, ADIS16240_SCAN_SUPPLY,
+-		ADIS16240_SUPPLY_OUT, NULL);
+-static IIO_CONST_ATTR_SCAN_EL_TYPE(in_supply, u, 10, 16);
+-static IIO_SCAN_EL_C(accel_x, ADIS16240_SCAN_ACC_X, ADIS16240_XACCL_OUT, NULL);
+-static IIO_SCAN_EL_C(accel_y, ADIS16240_SCAN_ACC_Y, ADIS16240_YACCL_OUT, NULL);
+-static IIO_SCAN_EL_C(accel_z, ADIS16240_SCAN_ACC_Z, ADIS16240_ZACCL_OUT, NULL);
+-static IIO_CONST_ATTR_SCAN_EL_TYPE(accel, s, 10, 16);
+-static IIO_SCAN_EL_C(in0, ADIS16240_SCAN_AUX_ADC, ADIS16240_AUX_ADC, NULL);
+-static IIO_CONST_ATTR_SCAN_EL_TYPE(in0, u, 10, 16);
+-static IIO_SCAN_EL_C(temp, ADIS16240_SCAN_TEMP, ADIS16240_TEMP_OUT, NULL);
+-static IIO_CONST_ATTR_SCAN_EL_TYPE(temp, u, 10, 16);
+-static IIO_SCAN_EL_TIMESTAMP(6);
 -static IIO_CONST_ATTR_SCAN_EL_TYPE(timestamp, s, 64, 64);
 -
--static struct attribute *adis16260_scan_el_attrs[] = {
+-static struct attribute *adis16240_scan_el_attrs[] = {
 -	&iio_scan_el_in_supply.dev_attr.attr,
 -	&iio_const_attr_in_supply_index.dev_attr.attr,
 -	&iio_const_attr_in_supply_type.dev_attr.attr,
--	&iio_scan_el_gyro.dev_attr.attr,
--	&iio_const_attr_gyro_index.dev_attr.attr,
--	&iio_const_attr_gyro_type.dev_attr.attr,
+-	&iio_scan_el_accel_x.dev_attr.attr,
+-	&iio_const_attr_accel_x_index.dev_attr.attr,
+-	&iio_scan_el_accel_y.dev_attr.attr,
+-	&iio_const_attr_accel_y_index.dev_attr.attr,
+-	&iio_scan_el_accel_z.dev_attr.attr,
+-	&iio_const_attr_accel_z_index.dev_attr.attr,
+-	&iio_const_attr_accel_type.dev_attr.attr,
 -	&iio_scan_el_in0.dev_attr.attr,
 -	&iio_const_attr_in0_index.dev_attr.attr,
 -	&iio_const_attr_in0_type.dev_attr.attr,
 -	&iio_scan_el_temp.dev_attr.attr,
 -	&iio_const_attr_temp_index.dev_attr.attr,
 -	&iio_const_attr_temp_type.dev_attr.attr,
--	&iio_scan_el_angl.dev_attr.attr,
--	&iio_const_attr_angl_index.dev_attr.attr,
--	&iio_const_attr_angl_type.dev_attr.attr,
 -	&iio_scan_el_timestamp.dev_attr.attr,
 -	&iio_const_attr_timestamp_index.dev_attr.attr,
 -	&iio_const_attr_timestamp_type.dev_attr.attr,
 -	NULL,
 -};
 -
--static struct attribute_group adis16260_scan_el_group = {
--	.attrs = adis16260_scan_el_attrs,
+-static struct attribute_group adis16240_scan_el_group = {
+-	.attrs = adis16240_scan_el_attrs,
 -	.name = "scan_elements",
 -};
- 
+-
  /**
-  * adis16260_read_ring_data() read data registers which will be placed into ring
-@@ -160,7 +120,6 @@ int adis16260_configure_ring(struct iio_dev *indio_dev)
+  * adis16240_read_ring_data() read data registers which will be placed into ring
+  * @dev: device associated with child of actual device (iio_dev or iio_trig)
+@@ -156,7 +114,6 @@ int adis16240_configure_ring(struct iio_dev *indio_dev)
  	/* Effectively select the ring buffer implementation */
  	iio_ring_sw_register_funcs(&ring->access);
  	ring->bpe = 2;
--	ring->scan_el_attrs = &adis16260_scan_el_group;
+-	ring->scan_el_attrs = &adis16240_scan_el_group;
  	ring->scan_timestamp = true;
  	ring->preenable = &iio_sw_ring_preenable;
  	ring->postenable = &iio_triggered_ring_postenable;
-@@ -168,11 +127,11 @@ int adis16260_configure_ring(struct iio_dev *indio_dev)
+@@ -164,12 +121,12 @@ int adis16240_configure_ring(struct iio_dev *indio_dev)
  	ring->owner = THIS_MODULE;
  
  	/* Set default scan mode */
 -	iio_scan_mask_set(ring, iio_scan_el_in_supply.number);
--	iio_scan_mask_set(ring, iio_scan_el_gyro.number);
--	iio_scan_mask_set(ring, iio_scan_el_in0.number);
+-	iio_scan_mask_set(ring, iio_scan_el_accel_x.number);
+-	iio_scan_mask_set(ring, iio_scan_el_accel_y.number);
+-	iio_scan_mask_set(ring, iio_scan_el_accel_z.number);
 -	iio_scan_mask_set(ring, iio_scan_el_temp.number);
--	iio_scan_mask_set(ring, iio_scan_el_angl.number);
-+	iio_scan_mask_set(ring, ADIS16260_SCAN_SUPPLY);
-+	iio_scan_mask_set(ring, ADIS16260_SCAN_GYRO);
-+	iio_scan_mask_set(ring, ADIS16260_SCAN_AUX_ADC);
-+	iio_scan_mask_set(ring, ADIS16260_SCAN_TEMP);
-+	iio_scan_mask_set(ring, ADIS16260_SCAN_ANGL);
+-	iio_scan_mask_set(ring, iio_scan_el_in0.number);
++	iio_scan_mask_set(ring, ADIS16240_SCAN_SUPPLY);
++	iio_scan_mask_set(ring, ADIS16240_SCAN_ACC_X);
++	iio_scan_mask_set(ring, ADIS16240_SCAN_ACC_Y);
++	iio_scan_mask_set(ring, ADIS16240_SCAN_ACC_Z);
++	iio_scan_mask_set(ring, ADIS16240_SCAN_AUX_ADC);
++	iio_scan_mask_set(ring, ADIS16240_SCAN_TEMP);
  
  	indio_dev->pollfunc = kzalloc(sizeof(*indio_dev->pollfunc), GFP_KERNEL);
  	if (indio_dev->pollfunc == NULL) {
-diff --git a/drivers/staging/iio/gyro/adis16260_trigger.c b/drivers/staging/iio/gyro/adis16260_trigger.c
-index 6b73927..228272e 100644
---- a/drivers/staging/iio/gyro/adis16260_trigger.c
-+++ b/drivers/staging/iio/gyro/adis16260_trigger.c
-@@ -33,7 +33,7 @@ static int adis16260_data_rdy_trigger_set_state(struct iio_trigger *trig,
+diff --git a/drivers/staging/iio/accel/adis16240_trigger.c b/drivers/staging/iio/accel/adis16240_trigger.c
+index 55e2145..d5bda92 100644
+--- a/drivers/staging/iio/accel/adis16240_trigger.c
++++ b/drivers/staging/iio/accel/adis16240_trigger.c
+@@ -42,7 +42,7 @@ static int adis16240_data_rdy_trigger_set_state(struct iio_trigger *trig,
  	struct iio_dev *indio_dev = st->indio_dev;
  
  	dev_dbg(&indio_dev->dev, "%s (%d)\n", __func__, state);
--	return adis16260_set_irq(&st->indio_dev->dev, state);
-+	return adis16260_set_irq(indio_dev, state);
+-	return adis16240_set_irq(&st->indio_dev->dev, state);
++	return adis16240_set_irq(st->indio_dev, state);
  }
  
- int adis16260_probe_trigger(struct iio_dev *indio_dev)
+ int adis16240_probe_trigger(struct iio_dev *indio_dev)
 -- 
 1.7.3.4
 
