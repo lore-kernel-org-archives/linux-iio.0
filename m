@@ -1,57 +1,142 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:57689 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754237Ab1ETKzq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 20 May 2011 06:55:46 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: device-drivers-devel@blackfin.uclinux.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [RFC resolvers] How to handle fault conditions..
-Date: Fri, 20 May 2011 10:41:56 +0100
-Message-Id: <1305884517-11168-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: [PATCH 2/2] staging:iio:resolver:ad2s90 general cleanup
+Date: Fri, 20 May 2011 11:58:32 +0100
+Message-Id: <1305889112-28814-3-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1305884517-11168-1-git-send-email-jic23@cam.ac.uk>
+References: <1305884517-11168-1-git-send-email-jic23@cam.ac.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi all,
+Very simple driver, so not much to do.
 
-The attached patch is a trivial bit of code cleanup to give us a clean
-starting point for a discussion of suitable interface for resolvers.
-(I was having a dull afternoon yesterday so thought I'd take a look
-at a corner of IIO I didn't really know anything about ;)
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/resolver/ad2s90.c |   50 ++++++++------------------------
+ 1 files changed, 13 insertions(+), 37 deletions(-)
 
-Anyhow, we have some 'unusual' interrupt sources on these and
-without knowing their use cases I'm not sure how we want to handle them.
-
-They are:
-
-1) LOS Loss of signal
- * A low voltage threshold applying to either quadrature signal.
- * Disconnected pin
- * Clipping is occuring.
- * config parity error occured.
-2) DOS Degradation of signal
- * High voltage theshold on either signal is exceeded,
- * Missmatch between the quadrature signals by more than some threshold.
-3) LOT Loss of tracking.
- * Internal error signal on the tracker is greater than some threshold.
- * Input exeeds max tracking rate.
-
-So we kind of have:
-
-in0_or_in1_thresh_rising, in0_or_in1_thresh_falling 
-
-in1-in0_mag_rising
-
-+ that loss of tracking one which is going to need a new type..
-+ clipping of signal and those disconnected errors.
-For this last one I wonder if we want it to go through the
-event system at all, or whether we should have some out of
-band sysfs attributes like the fault ones in hwmon?
-
-Whave do people think?  No rush on this obviously, just thought
-I'd get the ball rolling!
-
-onathan Cameron (1):
-  staging:iio:resolver:ad2s1210 general driver cleanup.
-
- drivers/staging/iio/resolver/ad2s1210.c |  856 ++++++++++++++-----------------
- 1 files changed, 399 insertions(+), 457 deletions(-)
-
+diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
+index 9b72a95..29d0fbe 100644
+--- a/drivers/staging/iio/resolver/ad2s90.c
++++ b/drivers/staging/iio/resolver/ad2s90.c
+@@ -24,48 +24,35 @@ struct ad2s90_state {
+ 	struct mutex lock;
+ 	struct iio_dev *idev;
+ 	struct spi_device *sdev;
+-	u8 rx[2];
+-	u8 tx[2];
++	u8 rx[2] ____cacheline_aligned;
+ };
+ 
+ static ssize_t ad2s90_show_angular(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+-	struct spi_message msg;
+-	struct spi_transfer xfer;
+ 	int ret;
+ 	ssize_t len = 0;
+ 	u16 val;
+-	struct iio_dev *idev = dev_get_drvdata(dev);
+-	struct ad2s90_state *st = idev->dev_data;
++	struct ad2s90_state *st = iio_priv(dev_get_drvdata(dev));
+ 
+-	xfer.len = 1;
+-	xfer.tx_buf = st->tx;
+-	xfer.rx_buf = st->rx;
+ 	mutex_lock(&st->lock);
+-
+-	spi_message_init(&msg);
+-	spi_message_add_tail(&xfer, &msg);
+-	ret = spi_sync(st->sdev, &msg);
++	ret = spi_read(st->sdev, st->rx, 2);
+ 	if (ret)
+ 		goto error_ret;
+ 	val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
+ 	len = sprintf(buf, "%d\n", val);
+ error_ret:
+ 	mutex_unlock(&st->lock);
+-
++	
+ 	return ret ? ret : len;
+ }
+ 
+ #define IIO_DEV_ATTR_SIMPLE_RESOLVER(_show) \
+ 	IIO_DEVICE_ATTR(angular, S_IRUGO, _show, NULL, 0)
+ 
+-static IIO_CONST_ATTR(description,
+-	"Low Cost, Complete 12-Bit Resolver-to-Digital Converter");
+ static IIO_DEV_ATTR_SIMPLE_RESOLVER(ad2s90_show_angular);
+ 
+ static struct attribute *ad2s90_attributes[] = {
+-	&iio_const_attr_description.dev_attr.attr,
+ 	&iio_dev_attr_angular.dev_attr.attr,
+ 	NULL,
+ };
+@@ -82,29 +69,23 @@ static const struct iio_info ad2s90_info = {
+ 
+ static int __devinit ad2s90_probe(struct spi_device *spi)
+ {
++	struct iio_dev *indio_dev;
+ 	struct ad2s90_state *st;
+ 	int ret = 0;
+ 
+-	st = kzalloc(sizeof(*st), GFP_KERNEL);
+-	if (st == NULL) {
++	indio_dev = iio_allocate_device(sizeof(*st));
++	if (indio_dev == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	spi_set_drvdata(spi, st);
++	st = iio_priv(indio_dev);
++	spi_set_drvdata(spi, indio_dev);
+ 
+ 	mutex_init(&st->lock);
+ 	st->sdev = spi;
+-
+-	st->idev = iio_allocate_device(0);
+-	if (st->idev == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_st;
+-	}
+-	st->idev->dev.parent = &spi->dev;
+-
+-	st->idev->info = &ad2s90_info;
+-	st->idev->dev_data = (void *)(st);
+-	st->idev->modes = INDIO_DIRECT_MODE;
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->info = &ad2s90_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+ 	ret = iio_device_register(st->idev);
+ 	if (ret)
+@@ -119,18 +100,13 @@ static int __devinit ad2s90_probe(struct spi_device *spi)
+ 
+ error_free_dev:
+ 	iio_free_device(st->idev);
+-error_free_st:
+-	kfree(st);
+ error_ret:
+ 	return ret;
+ }
+ 
+ static int __devexit ad2s90_remove(struct spi_device *spi)
+ {
+-	struct ad2s90_state *st = spi_get_drvdata(spi);
+-
+-	iio_device_unregister(st->idev);
+-	kfree(st);
++	iio_device_unregister(spi_get_drvdata(spi));
+ 
+ 	return 0;
+ }
 -- 
 1.7.3.4
+
