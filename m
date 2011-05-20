@@ -1,32 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:33787 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934797Ab1ETIkO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 20 May 2011 04:40:14 -0400
-Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:56338)
-	by ppsw-52.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.159]:25)
-	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
-	id 1QNLFj-0003e4-D2 (Exim 4.72) for linux-iio@vger.kernel.org
-	(return-path <jic23@cam.ac.uk>); Fri, 20 May 2011 09:40:11 +0100
-Message-ID: <4DD62994.4080701@cam.ac.uk>
-Date: Fri, 20 May 2011 09:43:00 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from ch1ehsobe002.messaging.microsoft.com ([216.32.181.182]:41909
+	"EHLO CH1EHSOBE005.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S935380Ab1ETJJS convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 20 May 2011 05:09:18 -0400
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: "device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>
+Date: Fri, 20 May 2011 10:09:10 +0100
+Subject: RE: GENERIC_HARDIRQS does anyone have a platform that doesn't
+ enable this?
+Message-ID: <544AC56F16B56944AEC3BD4E3D5917713AAF293210@LIMKCMBX1.ad.analog.com>
+References: <4DD62994.4080701@cam.ac.uk>
+In-Reply-To: <4DD62994.4080701@cam.ac.uk>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: GENERIC_HARDIRQS does anyone have a platform that doesn't enable
- this?
-Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi All,
+Jonathan Cameron wrote on 2011-05-20:
+> Hi All,
+>
+> Just occurred to me whilst reading some other patches that technically
+> we now depend on CONFIG_GENERIC_HARDIRQS
+>
+> Just wondering if anyone knows of a platform to build tests on that
+> doesn't have this?
+>
+> Thanks,
+>
+> Jonathan
 
-Just occurred to me whilst reading some other patches that technically
-we now depend on CONFIG_GENERIC_HARDIRQS
+michael@mhenner-D03:~/devel/git/staging-2.6/arch$ grep -R HAVE_GENERIC_HARDIRQS */Kconfig
+alpha/Kconfig:  select HAVE_GENERIC_HARDIRQS
+arm/Kconfig:    select HAVE_GENERIC_HARDIRQS
+avr32/Kconfig:  select HAVE_GENERIC_HARDIRQS
+blackfin/Kconfig:       select HAVE_GENERIC_HARDIRQS
+cris/Kconfig:   select HAVE_GENERIC_HARDIRQS
+frv/Kconfig:    select HAVE_GENERIC_HARDIRQS
+h8300/Kconfig:  select HAVE_GENERIC_HARDIRQS
+ia64/Kconfig:   select HAVE_GENERIC_HARDIRQS
+m32r/Kconfig:   select HAVE_GENERIC_HARDIRQS
+m68k/Kconfig:   select HAVE_GENERIC_HARDIRQS if !MMU
+microblaze/Kconfig:     select HAVE_GENERIC_HARDIRQS
+mips/Kconfig:   select HAVE_GENERIC_HARDIRQS
+mn10300/Kconfig:        select HAVE_GENERIC_HARDIRQS
+parisc/Kconfig: select HAVE_GENERIC_HARDIRQS
+powerpc/Kconfig:        select HAVE_GENERIC_HARDIRQS
+score/Kconfig:       select HAVE_GENERIC_HARDIRQS
+sh/Kconfig:     select HAVE_GENERIC_HARDIRQS
+sparc/Kconfig:  select HAVE_GENERIC_HARDIRQS
+tile/Kconfig:   select HAVE_GENERIC_HARDIRQS
+unicore32/Kconfig:      select HAVE_GENERIC_HARDIRQS
+x86/Kconfig:    select HAVE_GENERIC_HARDIRQS
+xtensa/Kconfig: select HAVE_GENERIC_HARDIRQS
 
-Just wondering if anyone knows of a platform to build tests on
-that doesn't have this?
 
-Thanks,
+michael@mhenner-D03:~/devel/git/staging-2.6/arch$ grep -R -L HAVE_GENERIC_HARDIRQS */Kconfig
+s390/Kconfig
 
-Jonathan
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368; Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret Seif
+
+
+
