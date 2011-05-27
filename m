@@ -2,43 +2,43 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 33/50] staging:iio:dds:ad9951: allocate chip state with iio_dev
-Date: Fri, 27 May 2011 19:36:13 +0100
-Message-Id: <1306521390-24897-34-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 32/50] staging:iio:dds:ad9910: allocate chip state with iio_dev
+Date: Fri, 27 May 2011 19:36:12 +0100
+Message-Id: <1306521390-24897-33-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1306521390-24897-1-git-send-email-jic23@cam.ac.uk>
 References: <1306521390-24897-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/dds/ad9951.c |   36 +++++++++++++-----------------------
- 1 files changed, 13 insertions(+), 23 deletions(-)
+ drivers/staging/iio/dds/ad9910.c |   36 ++++++++++++------------------------
+ 1 files changed, 12 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/staging/iio/dds/ad9951.c b/drivers/staging/iio/dds/ad9951.c
-index d4dfcd4..d361d1f 100644
---- a/drivers/staging/iio/dds/ad9951.c
-+++ b/drivers/staging/iio/dds/ad9951.c
-@@ -51,7 +51,6 @@ struct ad9951_config {
+diff --git a/drivers/staging/iio/dds/ad9910.c b/drivers/staging/iio/dds/ad9910.c
+index 97d75d7..0fa217f 100644
+--- a/drivers/staging/iio/dds/ad9910.c
++++ b/drivers/staging/iio/dds/ad9910.c
+@@ -110,7 +110,6 @@ struct ad9910_config {
  
- struct ad9951_state {
+ struct ad9910_state {
  	struct mutex lock;
 -	struct iio_dev *idev;
  	struct spi_device *sdev;
  };
  
-@@ -65,7 +64,7 @@ static ssize_t ad9951_set_parameter(struct device *dev,
+@@ -124,7 +123,7 @@ static ssize_t ad9910_set_parameter(struct device *dev,
  	int ret;
- 	struct ad9951_config *config = (struct ad9951_config *)buf;
+ 	struct ad9910_config *config = (struct ad9910_config *)buf;
  	struct iio_dev *idev = dev_get_drvdata(dev);
--	struct ad9951_state *st = idev->dev_data;
-+	struct ad9951_state *st = iio_priv(idev);
+-	struct ad9910_state *st = idev->dev_data;
++	struct ad9910_state *st = iio_priv(idev);
  
- 	xfer.len = 3;
- 	xfer.tx_buf = &config->asf[0];
-@@ -174,30 +173,25 @@ static const struct iio_info ad9951_info = {
- static int __devinit ad9951_probe(struct spi_device *spi)
+ 	xfer.len = 5;
+ 	xfer.tx_buf = &config->auxdac[0];
+@@ -365,30 +364,24 @@ static const struct iio_info ad9910_info = {
+ static int __devinit ad9910_probe(struct spi_device *spi)
  {
- 	struct ad9951_state *st;
+ 	struct ad9910_state *st;
 +	struct iio_dev *idev;
  	int ret = 0;
  
@@ -62,12 +62,12 @@ index d4dfcd4..d361d1f 100644
 -		goto error_free_st;
 -	}
 -	st->idev->dev.parent = &spi->dev;
-+	idev->dev.parent = &spi->dev;
- 
--	st->idev->info = &ad9951_info;
+-
+-	st->idev->info = &ad9910_info;
 -	st->idev->dev_data = (void *)(st);
 -	st->idev->modes = INDIO_DIRECT_MODE;
-+	idev->info = &ad9951_info;
++	idev->dev.parent = &spi->dev;
++	idev->info = &ad9910_info;
 +	idev->modes = INDIO_DIRECT_MODE;
  
 -	ret = iio_device_register(st->idev);
@@ -75,7 +75,7 @@ index d4dfcd4..d361d1f 100644
  	if (ret)
  		goto error_free_dev;
  	spi->max_speed_hz = 2000000;
-@@ -208,19 +202,15 @@ static int __devinit ad9951_probe(struct spi_device *spi)
+@@ -399,19 +392,14 @@ static int __devinit ad9910_probe(struct spi_device *spi)
  	return 0;
  
  error_free_dev:
@@ -83,14 +83,13 @@ index d4dfcd4..d361d1f 100644
 -error_free_st:
 -	kfree(st);
 +	iio_free_device(idev);
-+
  error_ret:
  	return ret;
  }
  
- static int __devexit ad9951_remove(struct spi_device *spi)
+ static int __devexit ad9910_remove(struct spi_device *spi)
  {
--	struct ad9951_state *st = spi_get_drvdata(spi);
+-	struct ad9910_state *st = spi_get_drvdata(spi);
 -
 -	iio_device_unregister(st->idev);
 -	kfree(st);
