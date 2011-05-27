@@ -2,218 +2,198 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 46/50] staging:iio:meter:ade7759: allocate state with iio_dev
-Date: Fri, 27 May 2011 19:36:26 +0100
-Message-Id: <1306521390-24897-47-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 45/50] staging:iio:magnetometer:ak8975: allocate chip state with iio_dev.
+Date: Fri, 27 May 2011 19:36:25 +0100
+Message-Id: <1306521390-24897-46-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1306521390-24897-1-git-send-email-jic23@cam.ac.uk>
 References: <1306521390-24897-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
+Here the ordering is a little tricky, so to keep changes minimal, a copy of the gpio
+number is introduced.
+
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/meter/ade7759.c |   80 ++++++++++++-----------------------
- drivers/staging/iio/meter/ade7759.h |   12 ++---
- 2 files changed, 32 insertions(+), 60 deletions(-)
+ drivers/staging/iio/magnetometer/ak8975.c |   91 +++++++++++++----------------
+ 1 files changed, 40 insertions(+), 51 deletions(-)
 
-diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-index 730f6d9..a51a64c 100644
---- a/drivers/staging/iio/meter/ade7759.c
-+++ b/drivers/staging/iio/meter/ade7759.c
-@@ -29,7 +29,7 @@ static int ade7759_spi_write_reg_8(struct device *dev,
+diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+index 700f96c..33919e8 100644
+--- a/drivers/staging/iio/magnetometer/ak8975.c
++++ b/drivers/staging/iio/magnetometer/ak8975.c
+@@ -89,7 +89,6 @@
+  */
+ struct ak8975_data {
+ 	struct i2c_client	*client;
+-	struct iio_dev		*indio_dev;
+ 	struct attribute_group	attrs;
+ 	struct mutex		lock;
+ 	u8			asa[3];
+@@ -221,7 +220,7 @@ static ssize_t show_mode(struct device *dev, struct device_attribute *devattr,
+ 			 char *buf)
  {
- 	int ret;
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7759_state *st = iio_priv(indio_dev);
+-	struct ak8975_data *data = indio_dev->dev_data;
++	struct ak8975_data *data = iio_priv(indio_dev);
  
- 	mutex_lock(&st->buf_lock);
- 	st->tx[0] = ADE7759_WRITE_REG(reg_address);
-@@ -47,7 +47,7 @@ static int ade7759_spi_write_reg_16(struct device *dev,
- {
- 	int ret;
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7759_state *st = iio_priv(indio_dev);
- 
- 	mutex_lock(&st->buf_lock);
- 	st->tx[0] = ADE7759_WRITE_REG(reg_address);
-@@ -64,7 +64,7 @@ static int ade7759_spi_read_reg_8(struct device *dev,
- 		u8 *val)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7759_state *st = iio_priv(indio_dev);
- 	int ret;
- 
- 	ret = spi_w8r8(st->us, ADE7759_READ_REG(reg_address));
-@@ -83,7 +83,7 @@ static int ade7759_spi_read_reg_16(struct device *dev,
- 		u16 *val)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7759_state *st = iio_priv(indio_dev);
- 	int ret;
- 
- 	ret = spi_w8r16(st->us, ADE7759_READ_REG(reg_address));
-@@ -105,7 +105,7 @@ static int ade7759_spi_read_reg_40(struct device *dev,
- {
- 	struct spi_message msg;
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7759_state *st = iio_priv(indio_dev);
- 	int ret;
- 	struct spi_transfer xfers[] = {
- 		{
-@@ -328,10 +328,11 @@ static int ade7759_stop_device(struct device *dev)
- 	return ade7759_spi_write_reg_16(dev, ADE7759_MODE, val);
+ 	return sprintf(buf, "%lu\n", data->mode);
  }
- 
--static int ade7759_initial_setup(struct ade7759_state *st)
-+static int ade7759_initial_setup(struct iio_dev *indio_dev)
- {
- 	int ret;
--	struct device *dev = &st->indio_dev->dev;
-+	struct ade7759_state *st = iio_priv(indio_dev);
-+	struct device *dev = &indio_dev->dev;
- 
- 	/* use low spi speed for init */
- 	st->us->mode = SPI_MODE_3;
-@@ -376,7 +377,7 @@ static ssize_t ade7759_write_frequency(struct device *dev,
- 		size_t len)
+@@ -234,7 +233,7 @@ static ssize_t store_mode(struct device *dev, struct device_attribute *devattr,
+ 			  const char *buf, size_t count)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7759_state *st = iio_priv(indio_dev);
- 	unsigned long val;
+-	struct ak8975_data *data = indio_dev->dev_data;
++	struct ak8975_data *data = iio_priv(indio_dev);
+ 	struct i2c_client *client = data->client;
+ 	unsigned long oval;
  	int ret;
- 	u16 reg, t;
-@@ -458,62 +459,41 @@ static const struct iio_info ade7759_info = {
- static int __devinit ade7759_probe(struct spi_device *spi)
+@@ -310,7 +309,7 @@ static ssize_t show_scale(struct device *dev, struct device_attribute *devattr,
+ 			  char *buf)
  {
- 	int ret;
--	struct ade7759_state *st = kzalloc(sizeof *st, GFP_KERNEL);
--	if (!st) {
--		ret =  -ENOMEM;
-+	struct ade7759_state *st;
-+	struct iio_dev *indio_dev;
-+
-+	/* setup the industrialio driver allocated elements */
-+	indio_dev = iio_allocate_device(sizeof(*st));
-+	if (indio_dev == NULL) {
-+		ret = -ENOMEM;
- 		goto error_ret;
- 	}
- 	/* this is only used for removal purposes */
--	spi_set_drvdata(spi, st);
-+	spi_set_drvdata(spi, indio_dev);
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ak8975_data *data = indio_dev->dev_data;
++	struct ak8975_data *data = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(devattr);
  
--	/* Allocate the comms buffers */
--	st->rx = kzalloc(sizeof(*st->rx)*ADE7759_MAX_RX, GFP_KERNEL);
--	if (st->rx == NULL) {
--		ret = -ENOMEM;
--		goto error_free_st;
--	}
--	st->tx = kzalloc(sizeof(*st->tx)*ADE7759_MAX_TX, GFP_KERNEL);
--	if (st->tx == NULL) {
--		ret = -ENOMEM;
--		goto error_free_rx;
--	}
-+	st = iio_priv(indio_dev);
- 	st->us = spi;
- 	mutex_init(&st->buf_lock);
--	/* setup the industrialio driver allocated elements */
--	st->indio_dev = iio_allocate_device(0);
--	if (st->indio_dev == NULL) {
--		ret = -ENOMEM;
--		goto error_free_tx;
+ 	return sprintf(buf, "%ld\n", data->raw_to_gauss[this_attr->address]);
+@@ -376,7 +375,7 @@ static ssize_t show_raw(struct device *dev, struct device_attribute *devattr,
+ 			char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ak8975_data *data = indio_dev->dev_data;
++	struct ak8975_data *data = iio_priv(indio_dev);
+ 	struct i2c_client *client = data->client;
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(devattr);
+ 	u16 meas_reg;
+@@ -483,46 +482,41 @@ static int ak8975_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
+ {
+ 	struct ak8975_data *data;
++	struct iio_dev *indio_dev;
++	int eoc_gpio;
+ 	int err;
+ 
+-	/* Allocate our device context. */
+-	data = kzalloc(sizeof(struct ak8975_data), GFP_KERNEL);
+-	if (!data) {
+-		dev_err(&client->dev, "Memory allocation fails\n");
+-		err = -ENOMEM;
+-		goto exit;
 -	}
 -
--	st->indio_dev->name = spi->dev.driver->name;
--	st->indio_dev->dev.parent = &spi->dev;
+-	i2c_set_clientdata(client, data);
+-	data->client = client;
 -
--	st->indio_dev->info = &ade7759_info;
--	st->indio_dev->dev_data = (void *)(st);
--	st->indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->name = spi->dev.driver->name;
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->info = &ade7759_info;
+-	mutex_init(&data->lock);
+-
+ 	/* Grab and set up the supplied GPIO. */
+-	data->eoc_irq = client->irq;
+-	data->eoc_gpio = irq_to_gpio(client->irq);
++	eoc_gpio = irq_to_gpio(client->irq);
+ 
+ 	/* We may not have a GPIO based IRQ to scan, that is fine, we will
+ 	   poll if so */
+-	if (data->eoc_gpio > 0) {
+-		err = gpio_request(data->eoc_gpio, "ak_8975");
++	if (eoc_gpio > 0) {
++		err = gpio_request(eoc_gpio, "ak_8975");
+ 		if (err < 0) {
+ 			dev_err(&client->dev,
+ 				"failed to request GPIO %d, error %d\n",
+-							data->eoc_gpio, err);
+-			goto exit_free;
++							eoc_gpio, err);
++			goto exit;
+ 		}
+ 
+-		err = gpio_direction_input(data->eoc_gpio);
++		err = gpio_direction_input(eoc_gpio);
+ 		if (err < 0) {
+ 			dev_err(&client->dev,
+ 				"Failed to configure input direction for GPIO %d, error %d\n",
+-						data->eoc_gpio, err);
++						eoc_gpio, err);
+ 			goto exit_gpio;
+ 		}
+ 	} else
+-		data->eoc_gpio = 0;	/* No GPIO available */
++		eoc_gpio = 0;	/* No GPIO available */
+ 
++	/* Register with IIO */
++	indio_dev = iio_allocate_device(sizeof(*data));
++	if (indio_dev == NULL) {
++		err = -ENOMEM;
++		goto exit_gpio;
++	}
++	data = iio_priv(indio_dev);
+ 	/* Perform some basic start-of-day setup of the device. */
+ 	err = ak8975_setup(client);
+ 	if (err < 0) {
+@@ -530,46 +524,41 @@ static int ak8975_probe(struct i2c_client *client,
+ 		goto exit_gpio;
+ 	}
+ 
+-	/* Register with IIO */
+-	data->indio_dev = iio_allocate_device(0);
+-	if (data->indio_dev == NULL) {
+-		err = -ENOMEM;
+-		goto exit_gpio;
+-	}
+-
+-	data->indio_dev->dev.parent = &client->dev;
+-	data->indio_dev->info = &ak8975_info;
+-	data->indio_dev->dev_data = (void *)(data);
+-	data->indio_dev->modes = INDIO_DIRECT_MODE;
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++	mutex_init(&data->lock);
++	data->eoc_irq = client->irq;
++	data->eoc_gpio = eoc_gpio;
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &ak8975_info;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
  
--	ret = iio_device_register(st->indio_dev);
-+	ret = iio_device_register(indio_dev);
- 	if (ret)
- 		goto error_free_dev;
+-	err = iio_device_register(data->indio_dev);
++	err = iio_device_register(indio_dev);
+ 	if (err < 0)
+ 		goto exit_free_iio;
  
- 	/* Get the device into a sane initial state */
--	ret = ade7759_initial_setup(st);
-+	ret = ade7759_initial_setup(indio_dev);
- 	if (ret)
- 		goto error_unreg_dev;
  	return 0;
  
- 
- error_unreg_dev:
--	iio_device_unregister(st->indio_dev);
-+	iio_device_unregister(indio_dev);
- error_free_dev:
--	iio_free_device(st->indio_dev);
--error_free_tx:
--	kfree(st->tx);
--error_free_rx:
--	kfree(st->rx);
--error_free_st:
--	kfree(st);
+ exit_free_iio:
+-	iio_free_device(data->indio_dev);
 +	iio_free_device(indio_dev);
- error_ret:
- 	return ret;
+ exit_gpio:
+-	if (data->eoc_gpio)
+-		gpio_free(data->eoc_gpio);
+-exit_free:
+-	kfree(data);
++	if (eoc_gpio)
++		gpio_free(eoc_gpio);
+ exit:
+ 	return err;
  }
-@@ -522,19 +502,13 @@ error_ret:
- static int ade7759_remove(struct spi_device *spi)
+ 
+ static int ak8975_remove(struct i2c_client *client)
  {
- 	int ret;
--	struct ade7759_state *st = spi_get_drvdata(spi);
--	struct iio_dev *indio_dev = st->indio_dev;
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
- 
- 	ret = ade7759_stop_device(&(indio_dev->dev));
- 	if (ret)
- 		goto err_ret;
- 
- 	iio_device_unregister(indio_dev);
--	kfree(st->tx);
--	kfree(st->rx);
--	kfree(st);
+-	struct ak8975_data *data = i2c_get_clientdata(client);
 -
--	return 0;
+-	iio_device_unregister(data->indio_dev);
+-	iio_free_device(data->indio_dev);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct ak8975_data *data = iio_priv(indio_dev);
++	int eoc_gpio = data->eoc_gpio;
  
- err_ret:
- 	return ret;
-diff --git a/drivers/staging/iio/meter/ade7759.h b/drivers/staging/iio/meter/ade7759.h
-index cc76c2c..c81d23d 100644
---- a/drivers/staging/iio/meter/ade7759.h
-+++ b/drivers/staging/iio/meter/ade7759.h
-@@ -41,17 +41,15 @@
- /**
-  * struct ade7759_state - device instance specific data
-  * @us:			actual spi_device
-- * @indio_dev:		industrial I/O device structure
-+ * @buf_lock:		mutex to protect tx and rx
-  * @tx:			transmit buffer
-  * @rx:			receive buffer
-- * @buf_lock:		mutex to protect tx and rx
-  **/
- struct ade7759_state {
--	struct spi_device		*us;
--	struct iio_dev			*indio_dev;
--	u8				*tx;
--	u8				*rx;
--	struct mutex			buf_lock;
-+	struct spi_device	*us;
-+	struct mutex		buf_lock;
-+	u8			tx[ADE7759_MAX_TX] ____cacheline_aligned;
-+	u8			rx[ADE7759_MAX_RX];
- };
+-	if (data->eoc_gpio)
+-		gpio_free(data->eoc_gpio);
++	iio_device_unregister(indio_dev);
++	iio_free_device(indio_dev);
  
- #endif
+-	kfree(data);
++	if (eoc_gpio)
++		gpio_free(eoc_gpio);
+ 
+ 	return 0;
+ }
 -- 
 1.7.3.4
