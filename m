@@ -2,196 +2,132 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 45/50] staging:iio:magnetometer:ak8975: allocate chip state with iio_dev.
-Date: Fri, 27 May 2011 19:36:25 +0100
-Message-Id: <1306521390-24897-46-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 44/50] staging:iio:resolver:ad2s90 general cleanup
+Date: Fri, 27 May 2011 19:36:24 +0100
+Message-Id: <1306521390-24897-45-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1306521390-24897-1-git-send-email-jic23@cam.ac.uk>
 References: <1306521390-24897-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Here the ordering is a little tricky, so to keep changes minimal, a copy of the gpio
-number is introduced.
+Very simple driver, so not much to do.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/magnetometer/ak8975.c |   91 +++++++++++++----------------
- 1 files changed, 40 insertions(+), 51 deletions(-)
+ drivers/staging/iio/resolver/ad2s90.c |   50 ++++++++------------------------
+ 1 files changed, 13 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-index 700f96c..33919e8 100644
---- a/drivers/staging/iio/magnetometer/ak8975.c
-+++ b/drivers/staging/iio/magnetometer/ak8975.c
-@@ -89,7 +89,6 @@
-  */
- struct ak8975_data {
- 	struct i2c_client	*client;
--	struct iio_dev		*indio_dev;
- 	struct attribute_group	attrs;
- 	struct mutex		lock;
- 	u8			asa[3];
-@@ -221,7 +220,7 @@ static ssize_t show_mode(struct device *dev, struct device_attribute *devattr,
- 			 char *buf)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ak8975_data *data = indio_dev->dev_data;
-+	struct ak8975_data *data = iio_priv(indio_dev);
+diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
+index 9b72a95..29d0fbe 100644
+--- a/drivers/staging/iio/resolver/ad2s90.c
++++ b/drivers/staging/iio/resolver/ad2s90.c
+@@ -24,48 +24,35 @@ struct ad2s90_state {
+ 	struct mutex lock;
+ 	struct iio_dev *idev;
+ 	struct spi_device *sdev;
+-	u8 rx[2];
+-	u8 tx[2];
++	u8 rx[2] ____cacheline_aligned;
+ };
  
- 	return sprintf(buf, "%lu\n", data->mode);
- }
-@@ -234,7 +233,7 @@ static ssize_t store_mode(struct device *dev, struct device_attribute *devattr,
- 			  const char *buf, size_t count)
+ static ssize_t ad2s90_show_angular(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
  {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ak8975_data *data = indio_dev->dev_data;
-+	struct ak8975_data *data = iio_priv(indio_dev);
- 	struct i2c_client *client = data->client;
- 	unsigned long oval;
+-	struct spi_message msg;
+-	struct spi_transfer xfer;
  	int ret;
-@@ -310,7 +309,7 @@ static ssize_t show_scale(struct device *dev, struct device_attribute *devattr,
- 			  char *buf)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ak8975_data *data = indio_dev->dev_data;
-+	struct ak8975_data *data = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(devattr);
+ 	ssize_t len = 0;
+ 	u16 val;
+-	struct iio_dev *idev = dev_get_drvdata(dev);
+-	struct ad2s90_state *st = idev->dev_data;
++	struct ad2s90_state *st = iio_priv(dev_get_drvdata(dev));
  
- 	return sprintf(buf, "%ld\n", data->raw_to_gauss[this_attr->address]);
-@@ -376,7 +375,7 @@ static ssize_t show_raw(struct device *dev, struct device_attribute *devattr,
- 			char *buf)
+-	xfer.len = 1;
+-	xfer.tx_buf = st->tx;
+-	xfer.rx_buf = st->rx;
+ 	mutex_lock(&st->lock);
+-
+-	spi_message_init(&msg);
+-	spi_message_add_tail(&xfer, &msg);
+-	ret = spi_sync(st->sdev, &msg);
++	ret = spi_read(st->sdev, st->rx, 2);
+ 	if (ret)
+ 		goto error_ret;
+ 	val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
+ 	len = sprintf(buf, "%d\n", val);
+ error_ret:
+ 	mutex_unlock(&st->lock);
+-
++	
+ 	return ret ? ret : len;
+ }
+ 
+ #define IIO_DEV_ATTR_SIMPLE_RESOLVER(_show) \
+ 	IIO_DEVICE_ATTR(angular, S_IRUGO, _show, NULL, 0)
+ 
+-static IIO_CONST_ATTR(description,
+-	"Low Cost, Complete 12-Bit Resolver-to-Digital Converter");
+ static IIO_DEV_ATTR_SIMPLE_RESOLVER(ad2s90_show_angular);
+ 
+ static struct attribute *ad2s90_attributes[] = {
+-	&iio_const_attr_description.dev_attr.attr,
+ 	&iio_dev_attr_angular.dev_attr.attr,
+ 	NULL,
+ };
+@@ -82,29 +69,23 @@ static const struct iio_info ad2s90_info = {
+ 
+ static int __devinit ad2s90_probe(struct spi_device *spi)
  {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ak8975_data *data = indio_dev->dev_data;
-+	struct ak8975_data *data = iio_priv(indio_dev);
- 	struct i2c_client *client = data->client;
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(devattr);
- 	u16 meas_reg;
-@@ -483,46 +482,41 @@ static int ak8975_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
- 	struct ak8975_data *data;
 +	struct iio_dev *indio_dev;
-+	int eoc_gpio;
- 	int err;
+ 	struct ad2s90_state *st;
+ 	int ret = 0;
  
--	/* Allocate our device context. */
--	data = kzalloc(sizeof(struct ak8975_data), GFP_KERNEL);
--	if (!data) {
--		dev_err(&client->dev, "Memory allocation fails\n");
--		err = -ENOMEM;
--		goto exit;
--	}
--
--	i2c_set_clientdata(client, data);
--	data->client = client;
--
--	mutex_init(&data->lock);
--
- 	/* Grab and set up the supplied GPIO. */
--	data->eoc_irq = client->irq;
--	data->eoc_gpio = irq_to_gpio(client->irq);
-+	eoc_gpio = irq_to_gpio(client->irq);
- 
- 	/* We may not have a GPIO based IRQ to scan, that is fine, we will
- 	   poll if so */
--	if (data->eoc_gpio > 0) {
--		err = gpio_request(data->eoc_gpio, "ak_8975");
-+	if (eoc_gpio > 0) {
-+		err = gpio_request(eoc_gpio, "ak_8975");
- 		if (err < 0) {
- 			dev_err(&client->dev,
- 				"failed to request GPIO %d, error %d\n",
--							data->eoc_gpio, err);
--			goto exit_free;
-+							eoc_gpio, err);
-+			goto exit;
- 		}
- 
--		err = gpio_direction_input(data->eoc_gpio);
-+		err = gpio_direction_input(eoc_gpio);
- 		if (err < 0) {
- 			dev_err(&client->dev,
- 				"Failed to configure input direction for GPIO %d, error %d\n",
--						data->eoc_gpio, err);
-+						eoc_gpio, err);
- 			goto exit_gpio;
- 		}
- 	} else
--		data->eoc_gpio = 0;	/* No GPIO available */
-+		eoc_gpio = 0;	/* No GPIO available */
- 
-+	/* Register with IIO */
-+	indio_dev = iio_allocate_device(sizeof(*data));
+-	st = kzalloc(sizeof(*st), GFP_KERNEL);
+-	if (st == NULL) {
++	indio_dev = iio_allocate_device(sizeof(*st));
 +	if (indio_dev == NULL) {
-+		err = -ENOMEM;
-+		goto exit_gpio;
-+	}
-+	data = iio_priv(indio_dev);
- 	/* Perform some basic start-of-day setup of the device. */
- 	err = ak8975_setup(client);
- 	if (err < 0) {
-@@ -530,46 +524,41 @@ static int ak8975_probe(struct i2c_client *client,
- 		goto exit_gpio;
+ 		ret = -ENOMEM;
+ 		goto error_ret;
  	}
+-	spi_set_drvdata(spi, st);
++	st = iio_priv(indio_dev);
++	spi_set_drvdata(spi, indio_dev);
  
--	/* Register with IIO */
--	data->indio_dev = iio_allocate_device(0);
--	if (data->indio_dev == NULL) {
--		err = -ENOMEM;
--		goto exit_gpio;
--	}
+ 	mutex_init(&st->lock);
+ 	st->sdev = spi;
 -
--	data->indio_dev->dev.parent = &client->dev;
--	data->indio_dev->info = &ak8975_info;
--	data->indio_dev->dev_data = (void *)(data);
--	data->indio_dev->modes = INDIO_DIRECT_MODE;
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+	mutex_init(&data->lock);
-+	data->eoc_irq = client->irq;
-+	data->eoc_gpio = eoc_gpio;
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &ak8975_info;
+-	st->idev = iio_allocate_device(0);
+-	if (st->idev == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_st;
+-	}
+-	st->idev->dev.parent = &spi->dev;
+-
+-	st->idev->info = &ad2s90_info;
+-	st->idev->dev_data = (void *)(st);
+-	st->idev->modes = INDIO_DIRECT_MODE;
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->info = &ad2s90_info;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
  
--	err = iio_device_register(data->indio_dev);
-+	err = iio_device_register(indio_dev);
- 	if (err < 0)
- 		goto exit_free_iio;
+ 	ret = iio_device_register(st->idev);
+ 	if (ret)
+@@ -119,18 +100,13 @@ static int __devinit ad2s90_probe(struct spi_device *spi)
  
- 	return 0;
- 
- exit_free_iio:
--	iio_free_device(data->indio_dev);
-+	iio_free_device(indio_dev);
- exit_gpio:
--	if (data->eoc_gpio)
--		gpio_free(data->eoc_gpio);
--exit_free:
--	kfree(data);
-+	if (eoc_gpio)
-+		gpio_free(eoc_gpio);
- exit:
- 	return err;
+ error_free_dev:
+ 	iio_free_device(st->idev);
+-error_free_st:
+-	kfree(st);
+ error_ret:
+ 	return ret;
  }
  
- static int ak8975_remove(struct i2c_client *client)
+ static int __devexit ad2s90_remove(struct spi_device *spi)
  {
--	struct ak8975_data *data = i2c_get_clientdata(client);
+-	struct ad2s90_state *st = spi_get_drvdata(spi);
 -
--	iio_device_unregister(data->indio_dev);
--	iio_free_device(data->indio_dev);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct ak8975_data *data = iio_priv(indio_dev);
-+	int eoc_gpio = data->eoc_gpio;
- 
--	if (data->eoc_gpio)
--		gpio_free(data->eoc_gpio);
-+	iio_device_unregister(indio_dev);
-+	iio_free_device(indio_dev);
- 
--	kfree(data);
-+	if (eoc_gpio)
-+		gpio_free(eoc_gpio);
+-	iio_device_unregister(st->idev);
+-	kfree(st);
++	iio_device_unregister(spi_get_drvdata(spi));
  
  	return 0;
  }
