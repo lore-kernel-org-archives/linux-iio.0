@@ -2,273 +2,165 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 49/50] staging:iio:light:tsl2583 allocate chip state with iio_dev
-Date: Fri, 27 May 2011 19:36:29 +0100
-Message-Id: <1306521390-24897-50-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 48/50] staging:iio:light:isl29018: allocate device state with iio_dev
+Date: Fri, 27 May 2011 19:36:28 +0100
+Message-Id: <1306521390-24897-49-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1306521390-24897-1-git-send-email-jic23@cam.ac.uk>
 References: <1306521390-24897-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-There are some unusual corners in the probe function of this
-driver, so may need another look.
-
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/light/tsl2583.c |   82 +++++++++++++++-------------------
- 1 files changed, 36 insertions(+), 46 deletions(-)
+ drivers/staging/iio/light/isl29018.c |   52 ++++++++++++++-------------------
+ 1 files changed, 22 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 5694610..f5ab6f5 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -87,7 +87,6 @@ struct taos_settings {
- struct tsl2583_chip {
- 	struct mutex als_mutex;
- 	struct i2c_client *client;
--	struct iio_dev *iio_dev;
- 	struct taos_als_info als_cur_info;
- 	struct taos_settings taos_settings;
- 	int als_time_scale;
-@@ -467,7 +466,7 @@ static ssize_t taos_device_id(struct device *dev,
- struct device_attribute *attr, char *buf)
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 4794ffd..c0cedc4 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -54,7 +54,6 @@
+ #define ISL29018_MAX_REGS		ISL29018_REG_ADD_DATA_MSB
+ 
+ struct isl29018_chip {
+-	struct iio_dev		*indio_dev;
+ 	struct i2c_client	*client;
+ 	struct mutex		lock;
+ 	unsigned int		range;
+@@ -227,7 +226,7 @@ static int isl29018_read_proximity_ir(struct i2c_client *client, int scheme,
+ static ssize_t get_sensor_data(struct device *dev, char *buf, int mode)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-	struct isl29018_chip *chip = indio_dev->dev_data;
++	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 	struct i2c_client *client = chip->client;
+ 	int value = 0;
+ 	int status;
+@@ -269,7 +268,7 @@ static ssize_t show_range(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct isl29018_chip *chip = indio_dev->dev_data;
++	struct isl29018_chip *chip = iio_priv(indio_dev);
  
- 	return sprintf(buf, "%s\n", chip->client->name);
+ 	return sprintf(buf, "%u\n", chip->range);
  }
-@@ -476,7 +475,7 @@ static ssize_t taos_power_state_show(struct device *dev,
- 	struct device_attribute *attr, char *buf)
+@@ -278,7 +277,7 @@ static ssize_t store_range(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-	struct isl29018_chip *chip = indio_dev->dev_data;
++	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 	struct i2c_client *client = chip->client;
+ 	int status;
+ 	unsigned long lval;
+@@ -311,7 +310,7 @@ static ssize_t show_resolution(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct isl29018_chip *chip = indio_dev->dev_data;
++	struct isl29018_chip *chip = iio_priv(indio_dev);
  
- 	return sprintf(buf, "%d\n", chip->taos_chip_status);
+ 	return sprintf(buf, "%u\n", chip->adc_bit);
  }
-@@ -485,7 +484,7 @@ static ssize_t taos_power_state_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
+@@ -320,7 +319,7 @@ static ssize_t store_resolution(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
- 
- 	if (strict_strtoul(buf, 0, &value))
-@@ -503,7 +502,7 @@ static ssize_t taos_gain_show(struct device *dev,
- 	struct device_attribute *attr, char *buf)
+-	struct isl29018_chip *chip = indio_dev->dev_data;
++	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 	struct i2c_client *client = chip->client;
+ 	int status;
+ 	unsigned long lval;
+@@ -351,7 +350,7 @@ static ssize_t show_prox_infrared_supression(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	char gain[4] = {0};
+-	struct isl29018_chip *chip = indio_dev->dev_data;
++	struct isl29018_chip *chip = iio_priv(indio_dev);
  
- 	switch (chip->taos_settings.als_gain) {
-@@ -528,7 +527,7 @@ static ssize_t taos_gain_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
+ 	/* return the "proximity scheme" i.e. if the chip does on chip
+ 	infrared supression (1 means perform on chip supression) */
+@@ -362,7 +361,7 @@ static ssize_t store_prox_infrared_supression(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
+-	struct isl29018_chip *chip = indio_dev->dev_data;
++	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 	unsigned long lval;
  
- 	if (strict_strtoul(buf, 0, &value))
-@@ -565,7 +564,7 @@ static ssize_t taos_als_time_show(struct device *dev,
- 	struct device_attribute *attr, char *buf)
+ 	if (strict_strtoul(buf, 10, &lval))
+@@ -464,16 +463,18 @@ static int __devinit isl29018_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
  {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", chip->taos_settings.als_time);
- }
-@@ -574,7 +573,7 @@ static ssize_t taos_als_time_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
- 
- 	if (strict_strtoul(buf, 0, &value))
-@@ -602,7 +601,7 @@ static ssize_t taos_als_trim_show(struct device *dev,
- 	struct device_attribute *attr, char *buf)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", chip->taos_settings.als_gain_trim);
- }
-@@ -611,7 +610,7 @@ static ssize_t taos_als_trim_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
- 
- 	if (strict_strtoul(buf, 0, &value))
-@@ -627,7 +626,7 @@ static ssize_t taos_als_cal_target_show(struct device *dev,
- 	struct device_attribute *attr, char *buf)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", chip->taos_settings.als_cal_target);
- }
-@@ -636,7 +635,7 @@ static ssize_t taos_als_cal_target_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
- 
- 	if (strict_strtoul(buf, 0, &value))
-@@ -652,7 +651,7 @@ static ssize_t taos_lux_show(struct device *dev, struct device_attribute *attr,
- 	char *buf)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	int lux;
- 
- 	lux = taos_get_lux(chip->client);
-@@ -664,7 +663,7 @@ static ssize_t taos_do_calibrate(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
- 
- 	if (strict_strtoul(buf, 0, &value))
-@@ -703,7 +702,7 @@ static ssize_t taos_luxtable_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	int value[ARRAY_SIZE(taos_device_lux)];
- 	int n;
- 
-@@ -800,7 +799,8 @@ static int __devinit taos_probe(struct i2c_client *clientp,
- {
- 	int i, ret = 0;
- 	unsigned char buf[TSL258X_MAX_DEVICE_REGS];
--	static struct tsl2583_chip *chip;
-+	struct tsl2583_chip *chip;
+ 	struct isl29018_chip *chip;
 +	struct iio_dev *indio_dev;
+ 	int err;
  
- 	if (!i2c_check_functionality(clientp->adapter,
- 		I2C_FUNC_SMBUS_BYTE_DATA)) {
-@@ -810,12 +810,15 @@ static int __devinit taos_probe(struct i2c_client *clientp,
- 		return -EOPNOTSUPP;
+-	chip = kzalloc(sizeof(struct isl29018_chip), GFP_KERNEL);
+-	if (!chip) {
+-		dev_err(&client->dev, "Memory allocation fails\n");
++	indio_dev = iio_allocate_device(0);
++	if (indio_dev == NULL) {
++		dev_err(&client->dev, "iio allocation fails\n");
+ 		err = -ENOMEM;
+ 		goto exit;
  	}
- 
--	chip = kzalloc(sizeof(struct tsl2583_chip), GFP_KERNEL);
--	if (!chip)
--		return -ENOMEM;
--
-+	indio_dev = iio_allocate_device(sizeof(*chip));
-+	if (indio_dev) {
-+		ret = -ENOMEM;
-+		dev_err(&clientp->dev, "iio allocation failed\n");
-+		goto fail1;
-+	}
 +	chip = iio_priv(indio_dev);
- 	chip->client = clientp;
--	i2c_set_clientdata(clientp, chip);
-+	i2c_set_clientdata(clientp, indio_dev);
  
- 	mutex_init(&chip->als_mutex);
- 	chip->taos_chip_status = TSL258X_CHIP_UNKNOWN;
-@@ -827,14 +830,14 @@ static int __devinit taos_probe(struct i2c_client *clientp,
- 		if (ret < 0) {
- 			dev_err(&clientp->dev, "i2c_smbus_write_bytes() to cmd "
- 				"reg failed in taos_probe(), err = %d\n", ret);
--			goto fail1;
-+			goto fail2;
- 		}
- 		ret = i2c_smbus_read_byte(clientp);
- 		if (ret < 0) {
- 			dev_err(&clientp->dev, "i2c_smbus_read_byte from "
- 				"reg failed in taos_probe(), err = %d\n", ret);
+-	i2c_set_clientdata(client, chip);
++	i2c_set_clientdata(client, indio_dev);
+ 	chip->client = client;
  
--			goto fail1;
-+			goto fail2;
- 		}
- 		buf[i] = ret;
- 	}
-@@ -842,31 +845,23 @@ static int __devinit taos_probe(struct i2c_client *clientp,
- 	if (!taos_tsl258x_device(buf)) {
- 		dev_info(&clientp->dev, "i2c device found but does not match "
- 			"expected id in taos_probe()\n");
--		goto fail1;
-+		goto fail2;
- 	}
+ 	mutex_init(&chip->lock);
+@@ -483,19 +484,13 @@ static int __devinit isl29018_probe(struct i2c_client *client,
  
- 	ret = i2c_smbus_write_byte(clientp, (TSL258X_CMD_REG | TSL258X_CNTRL));
- 	if (ret < 0) {
- 		dev_err(&clientp->dev, "i2c_smbus_write_byte() to cmd reg "
- 			"failed in taos_probe(), err = %d\n", ret);
--		goto fail1;
+ 	err = isl29018_chip_init(client);
+ 	if (err)
+-		goto exit_free;
++		goto exit_iio_free;
+ 
+-	chip->indio_dev = iio_allocate_device(0);
+-	if (!chip->indio_dev) {
+-		dev_err(&client->dev, "iio allocation fails\n");
+-		goto exit_free;
 -	}
--
--	chip->iio_dev = iio_allocate_device(0);
--	if (!chip->iio_dev) {
--		ret = -ENOMEM;
--		dev_err(&clientp->dev, "iio allocation failed\n");
--		goto fail1;
-+		goto fail2;
- 	}
- 
--	chip->iio_dev->info = &tsl2583_info;
--	chip->iio_dev->dev.parent = &clientp->dev;
--	chip->iio_dev->dev_data = (void *)(chip);
--	chip->iio_dev->modes = INDIO_DIRECT_MODE;
--	ret = iio_device_register(chip->iio_dev);
-+	indio_dev->info = &tsl2583_info;
-+	indio_dev->dev.parent = &clientp->dev;
+-	chip->indio_dev->info = &isl29108_info;
+-	chip->indio_dev->name = id->name;
+-	chip->indio_dev->dev.parent = &client->dev;
+-	chip->indio_dev->dev_data = (void *)(chip);
+-	chip->indio_dev->modes = INDIO_DIRECT_MODE;
+-	err = iio_device_register(chip->indio_dev);
++	indio_dev->info = &isl29108_info;
++	indio_dev->name = id->name;
++	indio_dev->dev.parent = &client->dev;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
-+	ret = iio_device_register(indio_dev);
- 	if (ret) {
- 		dev_err(&clientp->dev, "iio registration failed\n");
--		goto fail1;
-+		goto fail2;
- 	}
++	err = iio_device_register(indio_dev);
+ 	if (err) {
+ 		dev_err(&client->dev, "iio registration fails\n");
+ 		goto exit_iio_free;
+@@ -503,20 +498,17 @@ static int __devinit isl29018_probe(struct i2c_client *client,
  
- 	/* Load up the V2 defaults (these are hard coded defaults for now) */
-@@ -876,12 +871,10 @@ static int __devinit taos_probe(struct i2c_client *clientp,
- 	taos_chip_on(clientp);
- 
- 	dev_info(&clientp->dev, "Light sensor found.\n");
--
  	return 0;
--
- fail1:
+ exit_iio_free:
+-	iio_free_device(chip->indio_dev);
+-exit_free:
 -	kfree(chip);
--
 +	iio_free_device(indio_dev);
-+fail2:
- 	return ret;
+ exit:
+ 	return err;
  }
  
-@@ -918,11 +911,8 @@ static int taos_resume(struct i2c_client *client)
- 
- static int __devexit taos_remove(struct i2c_client *client)
+ static int __devexit isl29018_remove(struct i2c_client *client)
  {
--	struct tsl2583_chip *chip = i2c_get_clientdata(client);
--
--	iio_device_unregister(chip->iio_dev);
-+	iio_device_unregister(i2c_get_clientdata(client));
+-	struct isl29018_chip *chip = i2c_get_clientdata(client);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
  
+ 	dev_dbg(&client->dev, "%s()\n", __func__);
+-	iio_device_unregister(chip->indio_dev);
 -	kfree(chip);
++	iio_device_unregister(indio_dev);
+ 
  	return 0;
  }
- 
 -- 
 1.7.3.4
