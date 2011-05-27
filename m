@@ -2,112 +2,122 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 27/50] staging:iio:dds: Fix attr group location + allocate state with iio_dev
-Date: Fri, 27 May 2011 19:36:07 +0100
-Message-Id: <1306521390-24897-28-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 26/50] staging:iio:dac:max517: allocate chip state with iio_dev and use iio_priv to access it.
+Date: Fri, 27 May 2011 19:36:06 +0100
+Message-Id: <1306521390-24897-27-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1306521390-24897-1-git-send-email-jic23@cam.ac.uk>
 References: <1306521390-24897-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-The main attribute group was placed under driver name for some reason.
-
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/dds/ad5930.c |   37 ++++++++++++-------------------------
- 1 files changed, 12 insertions(+), 25 deletions(-)
+ drivers/staging/iio/dac/max517.c |   42 +++++++++++++------------------------
+ 1 files changed, 15 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/staging/iio/dds/ad5930.c b/drivers/staging/iio/dds/ad5930.c
-index 490c363..0b2aa4c 100644
---- a/drivers/staging/iio/dds/ad5930.c
-+++ b/drivers/staging/iio/dds/ad5930.c
-@@ -35,7 +35,6 @@ struct ad5903_config {
+diff --git a/drivers/staging/iio/dac/max517.c b/drivers/staging/iio/dac/max517.c
+index 881768d..ed5d351 100644
+--- a/drivers/staging/iio/dac/max517.c
++++ b/drivers/staging/iio/dac/max517.c
+@@ -59,7 +59,7 @@ static ssize_t max517_set_value(struct device *dev,
+ 				 const char *buf, size_t count, int channel)
+ {
+ 	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct max517_data *data = iio_dev_get_devdata(dev_info);
++	struct max517_data *data = iio_priv(dev_info);
+ 	struct i2c_client *client = data->client;
+ 	u8 outbuf[4]; /* 1x or 2x command + value */
+ 	int outbuf_size = 0;
+@@ -127,7 +127,7 @@ static ssize_t max517_show_scale(struct device *dev,
+ 				char *buf, int channel)
+ {
+ 	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct max517_data *data = iio_dev_get_devdata(dev_info);
++	struct max517_data *data = iio_priv(dev_info);
+ 	/* Corresponds to Vref / 2^(bits) */
+ 	unsigned int scale_uv = (data->vref_mv[channel - 1] * 1000) >> 8;
  
- struct ad5930_state {
- 	struct mutex lock;
--	struct iio_dev *idev;
- 	struct spi_device *sdev;
+@@ -195,7 +195,7 @@ static const struct iio_info max517_info = {
  };
  
-@@ -49,7 +48,7 @@ static ssize_t ad5930_set_parameter(struct device *dev,
- 	int ret;
- 	struct ad5903_config *config = (struct ad5903_config *)buf;
- 	struct iio_dev *idev = dev_get_drvdata(dev);
--	struct ad5930_state *st = idev->dev_data;
-+	struct ad5930_state *st = iio_priv(idev);
- 
- 	config->control = (config->control & ~value_mask);
- 	config->incnum = (config->control & ~value_mask) | (1 << addr_shift);
-@@ -83,42 +82,35 @@ static struct attribute *ad5930_attributes[] = {
- };
- 
- static const struct attribute_group ad5930_attribute_group = {
--	.name = DRV_NAME,
- 	.attrs = ad5930_attributes,
- };
- 
- static const struct iio_info ad5930_info = {
- 	.attrs = &ad5930_attribute_group,
--
+ static const struct iio_info max518_info = {
+-	.attrs = &max517_attribute_group,
++	.attrs = &max518_attribute_group,
  	.driver_module = THIS_MODULE,
  };
  
- static int __devinit ad5930_probe(struct spi_device *spi)
+@@ -203,35 +203,28 @@ static int max517_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
  {
- 	struct ad5930_state *st;
-+	struct iio_dev *idev;
- 	int ret = 0;
+ 	struct max517_data *data;
++	struct iio_dev *indio_dev;
+ 	struct max517_platform_data *platform_data = client->dev.platform_data;
+ 	int err;
  
--	st = kzalloc(sizeof(*st), GFP_KERNEL);
--	if (st == NULL) {
-+	idev = iio_allocate_device(sizeof(*st));
-+	if (idev == NULL) {
- 		ret = -ENOMEM;
- 		goto error_ret;
+-	data = kzalloc(sizeof(struct max517_data), GFP_KERNEL);
+-	if (!data) {
++	indio_dev = iio_allocate_device(sizeof(*data));
++	if (indio_dev == NULL) {
+ 		err = -ENOMEM;
+ 		goto exit;
  	}
--	spi_set_drvdata(spi, st);
-+	spi_set_drvdata(spi, idev);
-+	st = iio_priv(idev);
- 
- 	mutex_init(&st->lock);
- 	st->sdev = spi;
-+	idev->dev.parent = &spi->dev;
-+	idev->info = &ad5930_info;
-+	idev->modes = INDIO_DIRECT_MODE;
- 
--	st->idev = iio_allocate_device(0);
--	if (st->idev == NULL) {
--		ret = -ENOMEM;
--		goto error_free_st;
--	}
--	st->idev->dev.parent = &spi->dev;
--	st->idev->dev_data = (void *)(st);
--	st->idev->info = &ad5930_info;
--	st->idev->modes = INDIO_DIRECT_MODE;
 -
--	ret = iio_device_register(st->idev);
-+	ret = iio_device_register(idev);
- 	if (ret)
- 		goto error_free_dev;
- 	spi->max_speed_hz = 2000000;
-@@ -129,19 +121,14 @@ static int __devinit ad5930_probe(struct spi_device *spi)
+-	i2c_set_clientdata(client, data);
+-
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 
+-	data->indio_dev = iio_allocate_device(0);
+-	if (data->indio_dev == NULL) {
+-		err = -ENOMEM;
+-		goto exit_free_data;
+-	}
+-
+ 	/* establish that the iio_dev is a child of the i2c device */
+-	data->indio_dev->dev.parent = &client->dev;
++	indio_dev->dev.parent = &client->dev;
+ 
+ 	/* reduced attribute set for MAX517 */
+ 	if (id->driver_data == ID_MAX517)
+-		data->indio_dev->info = &max517_info;
++		indio_dev->info = &max517_info;
+ 	else
+-		data->indio_dev->info = &max518_info;
+-	data->indio_dev->dev_data = (void *)(data);
+-	data->indio_dev->modes = INDIO_DIRECT_MODE;
++		indio_dev->info = &max518_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+ 	/*
+ 	 * Reference voltage on MAX518 and default is 5V, else take vref_mv
+@@ -244,7 +237,7 @@ static int max517_probe(struct i2c_client *client,
+ 		data->vref_mv[1] = platform_data->vref_mv[1];
+ 	}
+ 
+-	err = iio_device_register(data->indio_dev);
++	err = iio_device_register(indio_dev);
+ 	if (err)
+ 		goto exit_free_device;
+ 
+@@ -253,19 +246,14 @@ static int max517_probe(struct i2c_client *client,
  	return 0;
  
- error_free_dev:
--	iio_free_device(st->idev);
--error_free_st:
--	kfree(st);
-+	iio_free_device(idev);
- error_ret:
- 	return ret;
+ exit_free_device:
+-	iio_free_device(data->indio_dev);
+-exit_free_data:
+-	kfree(data);
++	iio_free_device(indio_dev);
+ exit:
+ 	return err;
  }
  
- static int __devexit ad5930_remove(struct spi_device *spi)
+ static int max517_remove(struct i2c_client *client)
  {
--	struct ad5930_state *st = spi_get_drvdata(spi);
+-	struct max517_data *data = i2c_get_clientdata(client);
 -
--	iio_device_unregister(st->idev);
--	kfree(st);
-+	iio_device_unregister(spi_get_drvdata(spi));
+-	iio_free_device(data->indio_dev);
+-	kfree(data);
++	iio_free_device(i2c_get_clientdata(client));
  
  	return 0;
  }
