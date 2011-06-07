@@ -1,86 +1,94 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>, Ben Dooks <ben-i2c@fluff.org>
-CC: anish <anish198519851985@gmail.com>, "gregkh@suse.de" <gregkh@suse.de>,
-	"manuel.stahl@iis.fraunhofer.de" <manuel.stahl@iis.fraunhofer.de>,
-	"lucas.demarchi@profusion.mobi" <lucas.demarchi@profusion.mobi>,
-	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Linux I2C
-	<linux-i2c@vger.kernel.org>
-Date: Tue, 7 Jun 2011 15:04:32 +0100
-Subject: RE: [PATCH] staging iio: Replace kmalloc with local variable
-Message-ID: <544AC56F16B56944AEC3BD4E3D5917713AAF3C9C0F@LIMKCMBX1.ad.analog.com>
-References: <1307450354.1516.23.camel@anish-desktop>
- <4DEE20E7.4020008@cam.ac.uk> <20110607134135.GD15795@trinity.fluff.org>
- <4DEE2D7D.6070506@cam.ac.uk>
-In-Reply-To: <4DEE2D7D.6070506@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ch1ehsobe004.messaging.microsoft.com ([216.32.181.184]:13688
+	"EHLO CH1EHSOBE014.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752085Ab1FGLaQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2011 07:30:16 -0400
+From: <michael.hennerich@analog.com>
+To: <jic23@cam.ac.uk>
+CC: <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] iio: industrialio-core: iio_write_channel_info accept IIO_VAL_INT_PLUS_NANO
+Date: Tue, 7 Jun 2011 13:21:28 +0200
+Message-ID: <1307445688-23126-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Jonathan Cameron wrote on 2011-06-07:
-> On 06/07/11 14:41, Ben Dooks wrote:
->> On Tue, Jun 07, 2011 at 02:00:23PM +0100, Jonathan Cameron wrote:
->>> On 06/07/11 13:39, anish wrote:
->>>> From: anish kumar <anish198519851985@gmail.com>
->>>>
->>>> replaced kmalloc with local variable as I2C(in this case) doesn't
->>>> require kmalloc memory it can do with stack memory.
->>> I've cc'd linux-i2c just to check I'm right about the whole i2c
->>> doesn't need dma safe buffers bit...
->>
->> No, it is down to the i2c driver, and from recollection dma from stack
->> is not recommended, due to things like cache line alignment. Please do
->> not do this.
-> Then lets drop this.  Sorry Anish, seems I led you down the garden path.
-> I'll check all my i2c drivers don't do this...
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Can you point to a i2c bus driver that does dma and uses the buffer from th=
-e
-client directly?
+Allow iio_write_channel_info() to accept IIO_VAL_INT_PLUS_NANO
 
->>
->>>> Signed-off-by: anish kumar <anish198519851985@gmail.com> Acked-by:
->>>> Jonathan Cameron <jic23@cam.ac.uk> ---
->>>>  drivers/staging/iio/adc/max1363_core.c |    5 +----
->>>>  1 files changed, 1 insertions(+), 4 deletions(-)
->>>> diff --git a/drivers/staging/iio/adc/max1363_core.c
->>>> b/drivers/staging/iio/adc/max1363_core.c
->>>> index 1037087..9462230 100644
->>>> --- a/drivers/staging/iio/adc/max1363_core.c
->>>> +++ b/drivers/staging/iio/adc/max1363_core.c
->>>> @@ -207,15 +207,12 @@ static int max1363_write_basic_config(struct
-> i2c_client *client,
->>>>                                  unsigned char d2)
->>>>  {
->>>>    int ret;
->>>> -  u8 *tx_buf =3D kmalloc(2, GFP_KERNEL);
->>>> +  u8 tx_buf[2];
->>>>
->>>> -  if (!tx_buf)
->>>> -          return -ENOMEM;
->>>>    tx_buf[0] =3D d1;
->>>>    tx_buf[1] =3D d2;
->>>>
->>>>    ret =3D i2c_master_send(client, tx_buf, 2);
->>>> -  kfree(tx_buf);
->>>>
->>>>    return (ret > 0) ? 0 : ret;
->>>>  }
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-i2c"
->>> in the body of a message to majordomo@vger.kernel.org More
->>> majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/industrialio-core.c |   27 +++++++++++++++++++++------
+ 1 files changed, 21 insertions(+), 6 deletions(-)
 
-Greetings,
-Michael
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index e5a7663..74158c1 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -412,25 +412,40 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	int ret, integer = 0, micro = 0, micro_mult = 100000;
++	int ret, fract_digits, integer = 0, fract = 0, fract_mult;
+ 	bool integer_part = true, negative = false;
+ 
+ 	/* Assumes decimal - precision based on number of digits */
+ 	if (!indio_dev->info->write_raw)
+ 		return -EINVAL;
++
++	fract_digits = strnchr(buf, len, '\n') - strnchr(buf, len, '.') - 1;
++
++	switch (fract_digits) {
++	case 6:	/* IIO_VAL_INT_PLUS_MICRO */
++		fract_mult = 100000;
++		break;
++	case 9: /* IIO_VAL_INT_PLUS_NANO */
++		fract_mult = 100000000;
++		break;
++	default:
++		return -EINVAL;
++	}
++
+ 	if (buf[0] == '-') {
+ 		negative = true;
+ 		buf++;
+ 	}
++
+ 	while (*buf) {
+ 		if ('0' <= *buf && *buf <= '9') {
+ 			if (integer_part)
+ 				integer = integer*10 + *buf - '0';
+ 			else {
+-				micro += micro_mult*(*buf - '0');
+-				if (micro_mult == 1)
++				fract += fract_mult*(*buf - '0');
++				if (fract_mult == 1)
+ 					break;
+-				micro_mult /= 10;
++				fract_mult /= 10;
+ 			}
+ 		} else if (*buf == '\n') {
+ 			if (*(buf + 1) == '\0')
+@@ -448,11 +463,11 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 		if (integer)
+ 			integer = -integer;
+ 		else
+-			micro = -micro;
++			fract = -fract;
+ 	}
+ 
+ 	ret = indio_dev->info->write_raw(indio_dev, this_attr->c,
+-					 integer, micro, this_attr->address);
++					 integer, fract, this_attr->address);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+1.7.0.4
 
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368; Gesch=
-aeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret=
- Seif
+
