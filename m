@@ -1,126 +1,128 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:10526
-	"EHLO VA3EHSOBE009.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1756160Ab1FHOVk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jun 2011 10:21:40 -0400
+Return-Path: <Michael.Hennerich@analog.com>
 From: <michael.hennerich@analog.com>
 To: <greg@kroah.com>
-CC: <linux-iio@vger.kernel.org>,
-	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
-	<jic23@cam.ac.uk>, Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 3/4] iio: industrialio-core: iio_write_channel_info accept IIO_VAL_INT_PLUS_NANO
-Date: Wed, 8 Jun 2011 16:12:43 +0200
-Message-ID: <1307542364-7089-3-git-send-email-michael.hennerich@analog.com>
+CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, <jic23@cam.ac.uk>, Michael Hennerich
+	<michael.hennerich@analog.com>
+Subject: [PATCH 2/4] iio: trigger: Add filter callback
+Date: Wed, 8 Jun 2011 16:12:42 +0200
+Message-ID: <1307542364-7089-2-git-send-email-michael.hennerich@analog.com>
 In-Reply-To: <1307542364-7089-1-git-send-email-michael.hennerich@analog.com>
 References: <1307542364-7089-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-Allow iio_write_channel_info() to accept IIO_VAL_INT_PLUS_NANO
+Allow devices to reject triggers and vice versa.
 
 Changes since V1:
-use callback to query expected format/precision
+Added kernel-doc
+Moved callback into iio_info
+Changed function naming
+Revised return value passing
+Add forward declaration to avoid warnings
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/iio.h               |    7 +++++++
- drivers/staging/iio/industrialio-core.c |   27 +++++++++++++++++++++------
- 2 files changed, 28 insertions(+), 6 deletions(-)
+ drivers/staging/iio/iio.h                  |    7 +++++++
+ drivers/staging/iio/industrialio-trigger.c |   20 +++++++++++++++++++-
+ drivers/staging/iio/trigger.h              |    4 ++++
+ 3 files changed, 30 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index 6e51baa..9ca89c7 100644
+index 78a0927..6e51baa 100644
 --- a/drivers/staging/iio/iio.h
 +++ b/drivers/staging/iio/iio.h
-@@ -220,6 +220,9 @@ struct iio_trigger; /* forward declaration */
-  *			contain the elements making up the returned value.
-  * @write_raw:		function to write a value to the device.
-  *			Parameters are the same as for read_raw.
-+ * @write_raw_get_fmt:	callback function to query the expected
-+ *			format/precision. If not set by the driver, write_raw
-+ *			returns IIO_VAL_INT_PLUS_MICRO.
-  * @read_event_config:	find out if the event is enabled.
-  * @write_event_config:	set if the event is enabled.
-  * @read_event_value:	read a value associated with the event. Meaning
-@@ -247,6 +250,10 @@ struct iio_info {
- 			 int val2,
- 			 long mask);
+@@ -204,6 +204,8 @@ static inline s64 iio_get_time_ns(void)
+ #define IIO_VAL_INT_PLUS_MICRO 2
+ #define IIO_VAL_INT_PLUS_NANO 3
 
-+	int (*write_raw_get_fmt)(struct iio_dev *indio_dev,
-+			 struct iio_chan_spec const *chan,
-+			 long mask);
++struct iio_trigger; /* forward declaration */
 +
- 	int (*read_event_config)(struct iio_dev *indio_dev,
- 				 int event_code);
+ /**
+  * struct iio_info - constant information about device
+  * @driver_module:	module structure used to ensure correct
+@@ -224,6 +226,8 @@ static inline s64 iio_get_time_ns(void)
+  *			is event dependant. event_code specifies which event.
+  * @write_event_value:	write the value associate with the event.
+  *			Meaning is event dependent.
++ * @validate_trigger:	function to validate the trigger when the
++ *			current trigger gets changed.
+  **/
+ struct iio_info {
+ 	struct module			*driver_module;
+@@ -256,6 +260,9 @@ struct iio_info {
+ 	int (*write_event_value)(struct iio_dev *indio_dev,
+ 				 int event_code,
+ 				 int val);
++	int (*validate_trigger)(struct iio_dev *indio_dev,
++				struct iio_trigger *trig);
++
+ };
 
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index e5a7663..744153e 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -412,25 +412,40 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ /**
+diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
+index d504aa2..90ca2df 100644
+--- a/drivers/staging/iio/industrialio-trigger.c
++++ b/drivers/staging/iio/industrialio-trigger.c
+@@ -340,6 +340,9 @@ static ssize_t iio_trigger_write_current(struct device *dev,
  {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int ret, integer = 0, micro = 0, micro_mult = 100000;
-+	int ret, integer = 0, fract = 0, fract_mult = 100000;
- 	bool integer_part = true, negative = false;
-
- 	/* Assumes decimal - precision based on number of digits */
- 	if (!indio_dev->info->write_raw)
- 		return -EINVAL;
+ 	struct iio_dev *dev_info = dev_get_drvdata(dev);
+ 	struct iio_trigger *oldtrig = dev_info->trig;
++	struct iio_trigger *trig;
++	int ret;
 +
-+	if (indio_dev->info->write_raw_get_fmt)
-+		switch (indio_dev->info->write_raw_get_fmt(indio_dev,
-+			this_attr->c, this_attr->address)) {
-+		case IIO_VAL_INT_PLUS_MICRO:
-+			fract_mult = 100000;
-+			break;
-+		case IIO_VAL_INT_PLUS_NANO:
-+			fract_mult = 100000000;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+
- 	if (buf[0] == '-') {
- 		negative = true;
- 		buf++;
+ 	mutex_lock(&dev_info->mlock);
+ 	if (dev_info->currentmode == INDIO_RING_TRIGGERED) {
+ 		mutex_unlock(&dev_info->mlock);
+@@ -347,7 +350,22 @@ static ssize_t iio_trigger_write_current(struct device *dev,
  	}
+ 	mutex_unlock(&dev_info->mlock);
+
+-	dev_info->trig = iio_trigger_find_by_name(buf, len);
++	trig = iio_trigger_find_by_name(buf, len);
 +
- 	while (*buf) {
- 		if ('0' <= *buf && *buf <= '9') {
- 			if (integer_part)
- 				integer = integer*10 + *buf - '0';
- 			else {
--				micro += micro_mult*(*buf - '0');
--				if (micro_mult == 1)
-+				fract += fract_mult*(*buf - '0');
-+				if (fract_mult == 1)
- 					break;
--				micro_mult /= 10;
-+				fract_mult /= 10;
- 			}
- 		} else if (*buf == '\n') {
- 			if (*(buf + 1) == '\0')
-@@ -448,11 +463,11 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 		if (integer)
- 			integer = -integer;
- 		else
--			micro = -micro;
-+			fract = -fract;
- 	}
++	if (trig && dev_info->info->validate_trigger) {
++		ret = dev_info->info->validate_trigger(dev_info, trig);
++		if (ret)
++			return ret;
++	}
++
++	if (trig && trig->validate_device) {
++		ret = trig->validate_device(trig, dev_info);
++		if (ret)
++			return ret;
++	}
++
++	dev_info->trig = trig;
++
+ 	if (oldtrig && dev_info->trig != oldtrig)
+ 		iio_put_trigger(oldtrig);
+ 	if (dev_info->trig)
+diff --git a/drivers/staging/iio/trigger.h b/drivers/staging/iio/trigger.h
+index 7ddaabb..e0b58ed 100644
+--- a/drivers/staging/iio/trigger.h
++++ b/drivers/staging/iio/trigger.h
+@@ -29,6 +29,8 @@ struct iio_subirq {
+  * @set_trigger_state:	[DRIVER] switch on/off the trigger on demand
+  * @try_reenable:	function to reenable the trigger when the
+  *			use count is zero (may be NULL)
++ * @validate_device:	function to validate the device when the
++ *			current trigger gets changed.
+  * @subirq_chip:	[INTERN] associate 'virtual' irq chip.
+  * @subirq_base:	[INTERN] base number for irqs provided by trigger.
+  * @subirqs:		[INTERN] information about the 'child' irqs.
+@@ -48,6 +50,8 @@ struct iio_trigger {
 
- 	ret = indio_dev->info->write_raw(indio_dev, this_attr->c,
--					 integer, micro, this_attr->address);
-+					 integer, fract, this_attr->address);
- 	if (ret)
- 		return ret;
+ 	int (*set_trigger_state)(struct iio_trigger *trig, bool state);
+ 	int (*try_reenable)(struct iio_trigger *trig);
++	int (*validate_device)(struct iio_trigger *trig,
++			       struct iio_dev *indio_dev);
 
+ 	struct irq_chip			subirq_chip;
+ 	int				subirq_base;
 --
 1.7.0.4
-
-
