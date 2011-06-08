@@ -1,53 +1,91 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:34539 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932245Ab1FJNsx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Jun 2011 09:48:53 -0400
-Message-ID: <4DF222AA.7020809@cam.ac.uk>
-Date: Fri, 10 Jun 2011 14:56:58 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <greg@kroah.com>
+CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, <jic23@cam.ac.uk>, Michael Hennerich
+	<michael.hennerich@analog.com>
+Subject: [PATCH 1/4] iio: trigger: Move declaration of struct iio_poll_func to avoid warnings
+Date: Wed, 8 Jun 2011 16:12:41 +0200
+Message-ID: <1307542364-7089-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>,
-	Drivers <Drivers@analog.com>
-Subject: Re: [PATCH 2/2] iio: dac: New driver for AD5686R, AD5685R, AD5684R
- Digital to analog converters
-References: <1307706541-4750-1-git-send-email-michael.hennerich@analog.com> <1307706541-4750-2-git-send-email-michael.hennerich@analog.com> <4DF218F1.3090602@cam.ac.uk> <4DF21D1A.8010703@analog.com>
-In-Reply-To: <4DF21D1A.8010703@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-...
->>> +}
->>> +
->>> +static ssize_t ad5686_write_dac_powerdown(struct device *dev,
->>> +                                         struct device_attribute *attr,
->>> +                                         const char *buf, size_t len)
->>> +{
->>> +     long readin;
->>> +     int ret;
->>> +     struct iio_dev *indio_dev = dev_get_drvdata(dev);
->>> +     struct ad5686_state *st = iio_priv(indio_dev);
->>> +     struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->>> +
->> strtobool perhaps? Seems reasonable to write Y to power down the device as well
->> for example.
-> That must be a new function. I never saw it before.
-> Good match here.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Yup, I added it ;) Got fed up with replicating that functionality all over the place.
-As they say, 'scratching an itch...'
+Move declaration of struct iio_poll_func to avoid warnings
 
->>> +/**
->>> + * struct ad5686_chip_info - chip specific information
->>> + * @int_vref_mv:     AD5620/40/60: the internal reference voltage
->> silly question, but do you have chips to add where this actually varies?
-> There might be ones in future.
-Then I'd argue for adding it in the future!
->>> +#endif /* SPI_AD5684_H_ */
-> Thanks for the review!
-You are welcome.  Keep sending me nice drivers like this an I'll be very
-happy ;)
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/trigger.h |   48 ++++++++++++++++++++--------------------
+ 1 files changed, 24 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/staging/iio/trigger.h b/drivers/staging/iio/trigger.h
+index f329fe1..7ddaabb 100644
+--- a/drivers/staging/iio/trigger.h
++++ b/drivers/staging/iio/trigger.h
+@@ -57,6 +57,30 @@ struct iio_trigger {
+ 	struct mutex			pool_lock;
+ };
+
++/**
++ * struct iio_poll_func - poll function pair
++ *
++ * @private_data:		data specific to device (passed into poll func)
++ * @h:				the function that is actually run on trigger
++ * @thread:			threaded interrupt part
++ * @type:			the type of interrupt (basically if oneshot)
++ * @name:			name used to identify the trigger consumer.
++ * @irq:			the corresponding irq as allocated from the
++ *				trigger pool
++ * @timestamp:			some devices need a timestamp grabbed as soon
++ *				as possible after the trigger - hence handler
++ *				passes it via here.
++ **/
++struct iio_poll_func {
++	void				*private_data;
++	irqreturn_t (*h)(int irq, void *p);
++	irqreturn_t (*thread)(int irq, void *p);
++	int type;
++	char *name;
++	int irq;
++	s64 timestamp;
++};
++
+ static inline struct iio_trigger *to_iio_trigger(struct device *d)
+ {
+ 	return container_of(d, struct iio_trigger, dev);
+@@ -136,30 +160,6 @@ static inline void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
+ 	mutex_unlock(&trig->pool_lock);
+ };
+
+-/**
+- * struct iio_poll_func - poll function pair
+- *
+- * @private_data:		data specific to device (passed into poll func)
+- * @h:				the function that is actually run on trigger
+- * @thread:			threaded interrupt part
+- * @type:			the type of interrupt (basically if oneshot)
+- * @name:			name used to identify the trigger consumer.
+- * @irq:			the corresponding irq as allocated from the
+- *				trigger pool
+- * @timestamp:			some devices need a timestamp grabbed as soon
+- *				as possible after the trigger - hence handler
+- *				passes it via here.
+- **/
+-struct iio_poll_func {
+-	void				*private_data;
+-	irqreturn_t (*h)(int irq, void *p);
+-	irqreturn_t (*thread)(int irq, void *p);
+-	int type;
+-	char *name;
+-	int irq;
+-	s64 timestamp;
+-};
+-
+ struct iio_poll_func
+ *iio_alloc_pollfunc(irqreturn_t (*h)(int irq, void *p),
+ 		    irqreturn_t (*thread)(int irq, void *p),
+--
+1.7.0.4
