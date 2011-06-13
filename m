@@ -1,88 +1,182 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:60607 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752899Ab1FPJCg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jun 2011 05:02:36 -0400
-Message-ID: <4DF9C88F.5070609@cam.ac.uk>
-Date: Thu, 16 Jun 2011 10:10:39 +0100
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:33570 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754570Ab1FMIs4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jun 2011 04:48:56 -0400
+Message-ID: <4DF5D0DC.5090205@cam.ac.uk>
+Date: Mon, 13 Jun 2011 09:57:00 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: Randy Dunlap <randy.dunlap@oracle.com>
-CC: driverdevel <devel@driverdev.osuosl.org>, gregkh <greg@kroah.com>,
-	linux-iio@vger.kernel.org, torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH 3.0-rc3] staging: fix iio builds when IIO_RING_BUFFER
- is not enabled
-References: <20110614150018.fc7d5516.randy.dunlap@oracle.com>
-In-Reply-To: <20110614150018.fc7d5516.randy.dunlap@oracle.com>
+To: Bryan Freed <bfreed@chromium.org>
+CC: linux-kernel@vger.kernel.org, jbrenner@taosinc.com, gregkh@suse.de,
+	arnd@arndb.de,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 1/2] light sensor: Add a calibration file to the isl29018
+ driver.
+References: <1307737580-14131-1-git-send-email-bfreed@chromium.org>
+In-Reply-To: <1307737580-14131-1-git-send-email-bfreed@chromium.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/14/11 23:00, Randy Dunlap wrote:
-> From: Randy Dunlap <randy.dunlap@oracle.com>
-Ooops, my mess up, sorry about that.  Thanks Randy.
+cc'd linux-iio 
+On 06/10/11 21:26, Bryan Freed wrote:
+> This is the same tuning file used in tsl2583.c.
+> Add documentation for it to sysfs-bus-iio-light.
+> Normalize it at 1024 instead of 1000 so we can avoid 64bit division (div_u64).
+> Use u64 so we can do all multiplication before division to avoid loss of
+> granularity on amplified values.
+Hi  Brian.
+
+This attribute is a general IIO one rather than a light specific one so is
+already documented in sysfs-bus-iio.
+
+Now it is supposed to be an offset rather than a gain.  The current docs say:
+
+"Hardware applied calibration offset. (assumed to fix production
+ inaccuracies). If shared across all channels, <type>_calibbias
+ is used."
+
+I do note that the illuminance variant isn't actually listed and would be
+happy to have a patch adding it alongside the gyro and accel ones already there.
+
+My first issue here is that it supposed to be an offset not a gain.  Secondly that
+description could clearly do with amending to make it clear that this can be used
+for devices with complex non linear transformations to SI units which is what it
+is supposed to be doing here.  In cases where there is no '_raw' output we can assume
+something complex may be happening, so changing this value won't result in a additive
+change the output.
+
+If we are playing with a gain, then calibscale is the parameter name that should be used
+(also a core attribute definition, not a light specific one).
+
+"Hardware applied calibration scale factor. (assumed to fix
+ production inaccuracies).  If shared across all channels,
+ <type>_calibscale is used."
+
+Note all these attributes are defined to be pseudo floating point.  The chan_spec approach
+to registration handles this cleanly (particularly with Michael Hennerich's additional
+callbacks added last week).  It's a gain, so 1 is the no change value. Sorry, but anything
+that assumes 1024 is the no effect value is never going to generalize well
+so is a non starter.
+
+Sorry, I'll be happy to see a patch adding the support you want to the isl29018 driver
+but it must conform to the existing abi.  It looks like you may have found a discrepancy
+between a driver and the spec, but I'll leave Jon to comment on that. 
+
+Jonathan
 > 
-> Fix build by moving enum list outside of
-> #ifdef CONFIG_IIO_RING_BUFFER.
-> 
-> drivers/staging/iio/accel/adis16201_core.c:413: error: 'ADIS16201_SCAN_SUPPLY' undeclared here (not in a function)
-> drivers/staging/iio/accel/adis16201_core.c:417: error: 'ADIS16201_SCAN_TEMP' undeclared here (not in a function)
-> drivers/staging/iio/accel/adis16201_core.c:422: error: 'ADIS16201_SCAN_ACC_X' undeclared here (not in a function)
-> drivers/staging/iio/accel/adis16201_core.c:427: error: 'ADIS16201_SCAN_ACC_Y' undeclared here (not in a function)
-> drivers/staging/iio/accel/adis16201_core.c:432: error: 'ADIS16201_SCAN_AUX_ADC' undeclared here (not in a function)
-> drivers/staging/iio/accel/adis16201_core.c:436: error: 'ADIS16201_SCAN_INCLI_X' undeclared here (not in a function)
-> drivers/staging/iio/accel/adis16201_core.c:441: error: 'ADIS16201_SCAN_INCLI_Y' undeclared here (not in a function)
-> 
-> vers/staging/iio/accel/adis16203_core.c:374: error: 'ADIS16203_SCAN_SUPPLY' undeclared here (not in a function)
-> drivers/staging/iio/accel/adis16203_core.c:378: error: 'ADIS16203_SCAN_AUX_ADC' undeclared here (not in a function)
-> drivers/staging/iio/accel/adis16203_core.c:382: error: 'ADIS16203_SCAN_INCLI_X' undeclared here (not in a function)
-> drivers/staging/iio/accel/adis16203_core.c:388: error: 'ADIS16203_SCAN_INCLI_Y' undeclared here (not in a function)
-> drivers/staging/iio/accel/adis16203_core.c:392: error: 'ADIS16203_SCAN_TEMP' undeclared here (not in a function)
-> 
-> Signed-off-by: Randy Dunlap <randy.dunlap@oracle.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> Cc: Jonathan Cameron <jic23@cam.ac.uk>
-> Cc: linux-iio@vger.kernel.org
+> Signed-off-by: Bryan Freed <bfreed@chromium.org>
 > ---
->  drivers/staging/iio/accel/adis16201.h |    2 +-
->  drivers/staging/iio/accel/adis16203.h |    2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+>  .../staging/iio/Documentation/sysfs-bus-iio-light  |   10 +++++
+>  drivers/staging/iio/light/isl29018.c               |   36 +++++++++++++++++++-
+>  2 files changed, 45 insertions(+), 1 deletions(-)
 > 
-> --- lnx-30-rc3.orig/drivers/staging/iio/accel/adis16201.h
-> +++ lnx-30-rc3/drivers/staging/iio/accel/adis16201.h
-> @@ -81,7 +81,6 @@ struct adis16201_state {
+> diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+> index 21d2774..704b6c9 100644
+> --- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+> +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+> @@ -75,3 +75,13 @@ KernelVersion:	2.6.37
+>  Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		This property gets/sets the sensors ADC analog integration time.
+> +
+> +What:		/sys/bus/iio/devices/device[n]/illuminance0_calibbias
+> +KernelVersion:	2.6.38
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		This property gets/sets the illuminance0_input amplification
+> +		value.  The calculated lux reading is multiplied by this value
+> +		and divided by 1024.  Default of 1024 gives no amplification.
+> +		This provides compensation for glass or bezel that can
+> +		attenuate the ambient light.
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index 4794ffd..a106f16 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -57,6 +57,7 @@ struct isl29018_chip {
+>  	struct iio_dev		*indio_dev;
+>  	struct i2c_client	*client;
+>  	struct mutex		lock;
+> +	unsigned int		calibbias;
+>  	unsigned int		range;
+>  	unsigned int		adc_bit;
+>  	int			prox_scheme;
+> @@ -157,6 +158,7 @@ static int isl29018_read_sensor_input(struct i2c_client *client, int mode)
 >  
->  int adis16201_set_irq(struct iio_dev *indio_dev, bool enable);
+>  static int isl29018_read_lux(struct i2c_client *client, int *lux)
+>  {
+> +	u64 lux64;
+>  	int lux_data;
+>  	struct isl29018_chip *chip = i2c_get_clientdata(client);
 >  
-> -#ifdef CONFIG_IIO_RING_BUFFER
->  enum adis16201_scan {
->  	ADIS16201_SCAN_SUPPLY,
->  	ADIS16201_SCAN_ACC_X,
-> @@ -92,6 +91,7 @@ enum adis16201_scan {
->  	ADIS16201_SCAN_INCLI_Y,
->  };
+> @@ -166,7 +168,8 @@ static int isl29018_read_lux(struct i2c_client *client, int *lux)
+>  	if (lux_data < 0)
+>  		return lux_data;
 >  
-> +#ifdef CONFIG_IIO_RING_BUFFER
->  void adis16201_remove_trigger(struct iio_dev *indio_dev);
->  int adis16201_probe_trigger(struct iio_dev *indio_dev);
+> -	*lux = (lux_data * chip->range) >> chip->adc_bit;
+> +	lux64 = lux_data * chip->range;
+> +	*lux = (lux64 * chip->calibbias) >> (10 + chip->adc_bit);
 >  
-> --- lnx-30-rc3.orig/drivers/staging/iio/accel/adis16203.h
-> +++ lnx-30-rc3/drivers/staging/iio/accel/adis16203.h
-> @@ -76,7 +76,6 @@ struct adis16203_state {
+>  	return 0;
+>  }
+> @@ -264,6 +267,33 @@ static ssize_t get_sensor_data(struct device *dev, char *buf, int mode)
+>  }
 >  
->  int adis16203_set_irq(struct iio_dev *indio_dev, bool enable);
+>  /* Sysfs interface */
+> +/* calibbias */
+> +static ssize_t show_calibbias(struct device *dev,
+> +			struct device_attribute *attr, char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct isl29018_chip *chip = indio_dev->dev_data;
+> +
+> +	return sprintf(buf, "%u\n", chip->calibbias);
+> +}
+> +
+> +static ssize_t store_calibbias(struct device *dev,
+> +		struct device_attribute *attr, const char *buf, size_t count)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct isl29018_chip *chip = indio_dev->dev_data;
+> +	unsigned long lval;
+> +
+> +	if (strict_strtoul(buf, 10, &lval))
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&chip->lock);
+> +	chip->calibbias = lval;
+> +	mutex_unlock(&chip->lock);
+> +
+> +	return count;
+> +}
+> +
+>  /* range */
+>  static ssize_t show_range(struct device *dev,
+>  			struct device_attribute *attr, char *buf)
+> @@ -412,6 +442,8 @@ static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_supression,
+>  					show_prox_infrared_supression,
+>  					store_prox_infrared_supression, 0);
+>  static IIO_DEVICE_ATTR(illuminance0_input, S_IRUGO, show_lux, NULL, 0);
+> +static IIO_DEVICE_ATTR(illuminance0_calibbias, S_IRUGO | S_IWUSR,
+> +					show_calibbias, store_calibbias, 0);
+>  static IIO_DEVICE_ATTR(intensity_infrared_raw, S_IRUGO, show_ir, NULL, 0);
+>  static IIO_DEVICE_ATTR(proximity_raw, S_IRUGO, show_proxim_ir, NULL, 0);
 >  
-> -#ifdef CONFIG_IIO_RING_BUFFER
->  enum adis16203_scan {
->  	ADIS16203_SCAN_SUPPLY,
->  	ADIS16203_SCAN_AUX_ADC,
-> @@ -85,6 +84,7 @@ enum adis16203_scan {
->  	ADIS16203_SCAN_INCLI_Y,
->  };
+> @@ -424,6 +456,7 @@ static struct attribute *isl29018_attributes[] = {
+>  	ISL29018_CONST_ATTR(adc_resolution_available),
+>  	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_supression),
+>  	ISL29018_DEV_ATTR(illuminance0_input),
+> +	ISL29018_DEV_ATTR(illuminance0_calibbias),
+>  	ISL29018_DEV_ATTR(intensity_infrared_raw),
+>  	ISL29018_DEV_ATTR(proximity_raw),
+>  	NULL
+> @@ -478,6 +511,7 @@ static int __devinit isl29018_probe(struct i2c_client *client,
 >  
-> +#ifdef CONFIG_IIO_RING_BUFFER
->  void adis16203_remove_trigger(struct iio_dev *indio_dev);
->  int adis16203_probe_trigger(struct iio_dev *indio_dev);
+>  	mutex_init(&chip->lock);
 >  
-> 
+> +	chip->calibbias = 1024;
+>  	chip->range = 1000;
+>  	chip->adc_bit = 16;
+>  
 
