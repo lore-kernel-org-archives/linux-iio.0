@@ -1,139 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:47170 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752769Ab1FPKYz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jun 2011 06:24:55 -0400
-Message-ID: <4DF9DBDE.9060907@cam.ac.uk>
-Date: Thu, 16 Jun 2011 11:33:02 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: RFC: IIO: Options for 'event' userspace interface.
+Date: Thu, 16 Jun 2011 13:27:56 +0200
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+ Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+ Mark Brown <broonie@opensource.wolfsonmicro.com>,
+ "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+References: <4DF9DBDE.9060907@cam.ac.uk>
+In-Reply-To: <4DF9DBDE.9060907@cam.ac.uk>
 MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>
-CC: Arnd Bergmann <arnd@arndb.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-	Mark Brown <broonie@opensource.wolfsonmicro.com>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-Subject: RFC: IIO: Options for 'event' userspace interface.
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Message-Id: <201106161327.57015.arnd@arndb.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi All,
+On Thursday 16 June 2011, Jonathan Cameron wrote:
 
-Cc list is a bit random, so please do send this on to anyone else
-who might be interested!
+> Obvious options (or ones that have been suggested)
+> 
+> * Use out of band signalling on the main data chrdev.  Basically poll with the more
+> unusual types, POLLPRI perhaps.  Then use an IOCTL to read what actually happened.
+> (grep suggests it gets used for something similar in v4l2-subdev.c) (suggested by
+> Arnd Bergmann).
 
-One of the remaining large questions that needs to be answered
-for the Industrial I/O (basically ADCs and DACs, including all
-sorts of sensors), is that of how we pass events to user space.
+The important change that I'd really like to see is the use of poll() to wait
+for events. Using POLLPRI/ioctl to get IIO events is particularly nice IMHO because
+it lets you represent every IIO device as a single chardev. However, using a
+separate file descriptor (chardev or something else) with POLLIN/read is also
+totally fine. An interesting twist would be an ioctl on the chardev that returns
+a new file descriptor (from anon_inode_getfd()) on which you then do poll/read
+to get the events, instead of having separate character devices.
 
-IIO Events
+> * Similar system to evdev in input.  This carries a few extra fields, but that probably
+> doesn't matter. We need to know when an event happened reasonably soon after, but not
+> asap.
 
-In IIO events are not used for passing normal readings from the
-sensing devices to userspace, but rather for out of band information.
-(Normal data reaches userspace through a low overhead character
-device - typically via either software or hardware buffer.
-The stream format is pseudo fixed, so is described and controlled
-via sysfs rather than adding headers to the data describing what
-is in it).
+I'd suggest that if you do something similar to evdev, then make it use the *exact*
+same user interface with the ioctl command definitions used in evdev.
 
-Pretty much all IIO events correspond to thresholds
-on some value derived from one or more raw readings from the
-sensor.  They are provided by the underlying hardware.
-Examples include:
+One disadvantage that I see here is that the evdev interface has a number of flaws
+regarding is 32 bit compatibility code that you cannot solve in a backwards-compatible
+way. Another is its use of variable-length ioctl arguments, which I would recommend
+avoiding in general. Also, Adding evdev extensions for iio into linux/input.h might
+be seen as a layer violation by interface purists.
 
-1) Straight crossing a voltage threshold
-2) Moving average crosses a threshold
-3) Motion detectors (lots of ways of doing this).
-4) Thresholds on sum squared or rms values.
-5) Rate of change thresholds.
-Lots more weird variants. 
+> * Separate evdev from input and share it across both subsystems.  This seemed like
+> a good idea, but evdev is pretty tightly tied to the input core. Note we would never
+> be sharing input's event codes.  They are too restrictive (with good reason seeing
+> as they are for 'input' devices!)  Basically I expect this could be done, but would
+> need to be done very carefully so as to not have any impact on input users.  Perhaps
+> it is the right answer, but its not trivial. (I've cc'd linux-input to get comments
+> on this option!)
 
-Events need timestamps.
-Currently no event carries any 'value'.  There are a few
-corner cases where this might be useful, but are unusual.
+This could be a second step if you decide to use the evdev interface. You start
+by duplicating evdev functionality within IIO at first, and then at a convenient
+time you put the common parts into a library module that is used by both input
+and iio for evdev.
 
-Current interface:
+> * Some other event passing methods that I've either forgotten or never knew about
+> in the first place.
 
-1) Single user at a time - for vast majority of IIO users this
-makes sense, but if it costs us little it would be nice to support
-multiple readers.
+For completeness, the list should probably include generic netlink sockets
+(net/netlink/genetlink.c). Some people hate them, others love them. They certainly
+fit the requirements and have some other nice properties, so I'd suggest you read
+some documentation and examples and build your own opinion.
 
-2) Simple chrdev per device (aggregation across devices doesn't really
-make sense for IIO as you tend to really care which sensor caused
-the event rather than just that it happened.)
+> * Leave things be. Its small and simple. Perhaps it's best we don't try to be clever
+> at all.
 
-The format is:
+I would really hope for the interface to change to allow poll. The least invasive
+option would be to simply add a poll() function to iio_event_chrdev_fileops, which
+allows you to wait for multiple events in a single thread. Anything beyond that
+is an option IMHO.
 
-struct iio_event_data {
-	int	id;
-	s64	timestamp;
-};
-
-Event codes are built as  below (I've tweaked this a touch from current as there are some
-cases of overlapping fields that shouldn't be there).  I suspect we have assigned to
-many bits to direction and type and not enough to the modifiers for example.
-Fixing that up is probably the topic of another discussion...
-
-/**
-* IIO_EVENT_CODE() - event code creation macro
-* @channel_class: What type of device channel is associated with the event
-* 		(IIO_IN, IIO_ACCEL, IIO_GYRO etc - 256 possible values)
-* @orient_bit:	Does this channel have an associated orientation?
-* @number:	The channel number. (for differential channels this is non trivial)
-*		128 values if no orientation, 8 if oriented
-* @modifier:	Only set if orientation associated with channel. May be compound
-*		orientation (X_OR_Y_OR_Z for example). (16 options - currently 10 used)
-*		Note we can reuse values for different classes.  No accelerometer is going
-*		to be specified as being in the infrared spectrum for example!
-* @type: 	Threshold, magnitude (level interrupt equivalent) or Rate of Change currently.
-* @direction:	Which direction the value must change in to trigger event either, rising, falling.
-**/ 
-#define IIO_EVENT_CODE(channelclass, orient_bit, number,		\
-		       modifier, type, direction)			\
-	(channelclass | (orient_bit << 8) | ((number) << 9) |		\
-	 ((modifier) << 12) | ((type) << 16) | ((direction) << 24))
-
-Possible reasons to change:
-
-1) Currently have 2 chrdevs per IIO device (one for main data flow, one for events).
-2) Lack of adaptablity.
-3) Avoid reinventing the wheel.
-
-Obvious options (or ones that have been suggested)
-
-* Use out of band signalling on the main data chrdev.  Basically poll with the more
-unusual types, POLLPRI perhaps.  Then use an IOCTL to read what actually happened.
-(grep suggests it gets used for something similar in v4l2-subdev.c) (suggested by
-Arnd Bergmann).
-
-* Similar system to evdev in input.  This carries a few extra fields, but that probably
-doesn't matter. We need to know when an event happened reasonably soon after, but not
-asap.
-
-* Separate evdev from input and share it across both subsystems.  This seemed like
-a good idea, but evdev is pretty tightly tied to the input core. Note we would never
-be sharing input's event codes.  They are too restrictive (with good reason seeing
-as they are for 'input' devices!)  Basically I expect this could be done, but would
-need to be done very carefully so as to not have any impact on input users.  Perhaps
-it is the right answer, but its not trivial. (I've cc'd linux-input to get comments
-on this option!)
-
-* Some other event passing methods that I've either forgotten or never knew about
-in the first place.
-
-* Leave things be. Its small and simple. Perhaps it's best we don't try to be clever
-at all.
-
-So how do people thing we should do it?
-
-Lots of examples of current users in staging/iio/
-
-For reference, most work in IIO since merge window has been driving the new abi
-elements introduced into the individual drivers.  Keeps highlighting minor things
-we hadn't thought of before, but nothing critical as of yet!
-
-Thanks,
-
-Jonathan
+	Arnd
