@@ -1,66 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:49997 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752707Ab1FVI70 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jun 2011 04:59:26 -0400
-Message-ID: <4E01B0CE.4050400@cam.ac.uk>
-Date: Wed, 22 Jun 2011 10:07:26 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from smtp-out.google.com ([216.239.44.51]:41768 "EHLO
+	smtp-out.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752495Ab1FUPgP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jun 2011 11:36:15 -0400
+Received: from hpaq3.eem.corp.google.com (hpaq3.eem.corp.google.com [172.25.149.3])
+	by smtp-out.google.com with ESMTP id p5LFaDxg012695
+	for <linux-iio@vger.kernel.org>; Tue, 21 Jun 2011 08:36:14 -0700
+Received: from gxk26 (gxk26.prod.google.com [10.202.11.26])
+	by hpaq3.eem.corp.google.com with ESMTP id p5LFa69Z020862
+	(version=TLSv1/SSLv3 cipher=RC4-MD5 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Tue, 21 Jun 2011 08:36:12 -0700
+Received: by gxk26 with SMTP id 26so1108346gxk.4
+        for <linux-iio@vger.kernel.org>; Tue, 21 Jun 2011 08:36:06 -0700 (PDT)
+Message-ID: <4E00BA3A.8030003@chromium.org>
+Date: Tue, 21 Jun 2011 11:35:22 -0400
+From: Chris Wolfe <cwolfe@chromium.org>
 MIME-Version: 1.0
-To: Bryan Freed <bfreed@chromium.org>
-CC: linux-kernel@vger.kernel.org, jbrenner@taosinc.com, gregkh@suse.de,
-	arnd@arndb.de,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 2/3] light sensor: Fix a panic in the tsl2563 driver.
-References: <1308696897-25161-1-git-send-email-bfreed@chromium.org> <1308696897-25161-2-git-send-email-bfreed@chromium.org>
-In-Reply-To: <1308696897-25161-2-git-send-email-bfreed@chromium.org>
-Content-Type: text/plain; charset=ISO-8859-1
+To: linux-input@vger.kernel.org, Chris Hudson <chudson@kionix.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Generalizing Kionix KXTJ9 driver
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi folks,
 
-> Add a wrapper for this driver around the IIO_CHAN() wrapper to make channel
-> parameters more readable.  This fixes a panic caused by the info_masks being
-> accidentally passed in as channel2 parameters which easily surpass the size
-> of the iio_modifier_names_light array.
-Good change (particularly as it's my bug in the first place - oops!).
+I am working on a driver for the Kionix KXTF9 accelerometer. This is a 
+fairly close relative of the KXTJ9 that Chris Hudson has been iterating 
+in linux-input. Unfortunately I missed his driver when getting started, 
+so I now have a fairly-complete IIO-based implementation instead.
+
+As the KXTJ9 input driver has had more review, it makes sense for me to 
+backtrack and build on that one. My proposal is to work on generalizing 
+the driver enough to also support the KXTF9, and coordinate with Chris 
+Hudson to avoid breaking his improvements.
+
+While the I2C interfaces are fairly similar, the KXTF9 (and newer KXTI9) 
+have more on-chip processing and a variety of added features. These 
+include things like taps and coarse orientation, which I am not sure how 
+to report in an upstream-friendly way. Any advice would be appreciated:
+
+Tap: Single and double taps in six directions. The only example I can 
+find is the ADXL34 driver, which seems to just report BTN_TOUCH for any 
+tap (unless changed in platform data).
+
+Tilt: Coarse orientation in six directions (face up, face down, left up, 
+right up, top up, bottom up). Saw some discussion about this, but wasn't 
+sure if there was agreement on how to report these events in a useful 
+fashion.
+
+Motion: Yes/no binary state.
+
+Sampling Rate: KXTJ9 driver is using delay in ms to drive both 
+interrupt-based and polling-based cases. Since the sysfs interfaces are 
+string-based, am wondering if decimal Hz would be more intuitive. These 
+would be converted to fixed-point in-kernel. Since there are five or six 
+different rates to adjust, they needs to be easy to understand.
+
+Timing Parameters: The tap/tilt/motion sensing is configured via a large 
+number of user-configurable parameters. My thought for these is to 
+expose them in sysfs as decimal numbers of seconds. I believe the actual 
+values set on the chip need to change with the associated sampling rates.
+
+Axis Parameters: Many of the modes need to be configured with a mask of 
+directions (+x -x +y -y +z -z). Six sysfs attributes for each seems 
+excessive and a bitmask feels error-prone. I wouldn't be averse to using 
+a list of strings if that is acceptable (e.g. "x z" or "up down left 
+forward"). Any other alternatives?
 
 Thanks,
-> 
-> Signed-off-by: Bryan Freed <bfreed@chromium.org>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-
-> ---
->  drivers/staging/iio/light/tsl2563.c |   17 +++++++++--------
->  1 files changed, 9 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
-> index 04aa155..d9be19c 100644
-> --- a/drivers/staging/iio/light/tsl2563.c
-> +++ b/drivers/staging/iio/light/tsl2563.c
-> @@ -570,15 +570,16 @@ error_ret:
->  	return ret;
->  }
->  
-> +#define INFO_MASK (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE)
-> +#define EVENT_MASK (IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) | \
-> +		    IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING))
-> +#define IIO_CHAN_2563(type, mod, proc, chan, imask, emask) \
-> +	IIO_CHAN(type, mod, 1, proc, NULL, chan, 0, imask, 0, 0, {}, emask)
-> +
->  static const struct iio_chan_spec tsl2563_channels[] = {
-> -	IIO_CHAN(IIO_LIGHT, 0, 1, 1, NULL, 0, 0, 0, 0, 0, {}, 0),
-> -	IIO_CHAN(IIO_INTENSITY, 1, 1, 0, "both", 0,
-> -		 (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE), 0, 0, 0, {},
-> -		 IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) |
-> -		 IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING)),
-> -	IIO_CHAN(IIO_INTENSITY, 1, 1, 0, "ir", 1,
-> -		 (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE), 0, 0, 0, {},
-> -		 0)
-> +	IIO_CHAN_2563(IIO_LIGHT,     0, 1, 0, 0, 0),
-> +	IIO_CHAN_2563(IIO_INTENSITY, 1, 0, 0, INFO_MASK, EVENT_MASK),
-> +	IIO_CHAN_2563(IIO_INTENSITY, 1, 0, 1, INFO_MASK, 0),
->  };
->  
->  static int tsl2563_read_thresh(struct iio_dev *indio_dev,
+Chris
 
