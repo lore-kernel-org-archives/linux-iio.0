@@ -1,191 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:39295 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754057Ab1FXO7D (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jun 2011 10:59:03 -0400
-Message-ID: <4E04A814.6040309@cam.ac.uk>
-Date: Fri, 24 Jun 2011 16:07:00 +0100
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:48922 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753484Ab1FVI5p (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jun 2011 04:57:45 -0400
+Message-ID: <4E01B068.3090102@cam.ac.uk>
+Date: Wed, 22 Jun 2011 10:05:44 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
 To: Bryan Freed <bfreed@chromium.org>
 CC: linux-kernel@vger.kernel.org, jbrenner@taosinc.com, gregkh@suse.de,
-	arnd@arndb.de, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] light sensor: Add SMBUS support to the tsl2563
- driver.
-References: <1308870748-20683-1-git-send-email-bfreed@chromium.org>
-In-Reply-To: <1308870748-20683-1-git-send-email-bfreed@chromium.org>
+	arnd@arndb.de,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jean Delvare <khali@linux-fr.org>,
+	Amit Kucheria <amit.kucheria@verdurent.com>
+Subject: Re: [PATCH 1/3] light sensor: Add SMBUS support to the tsl2563 driver.
+References: <1308696897-25161-1-git-send-email-bfreed@chromium.org>
+In-Reply-To: <1308696897-25161-1-git-send-email-bfreed@chromium.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/24/11 00:12, Bryan Freed wrote:
+On 06/21/11 23:54, Bryan Freed wrote:
 > This is so we can support it on x86 SMBUS adapters.
-> 
-> Since i2c adapters which do not provide an smbus_xfer interface fall
-> back to using their I2C master_xfer interface, all the i2c_master_send()
-> calls in this driver are changed to i2c_smbus_*() calls.
-> This will fail on an i2c adapter that implements a proper subset of
-> (SMBUS_BYTE | SMBUS_BYTE_DATA | SMBUS_WORD_DATA), but I do not see that
-> in any of our adapters today.
 Hi Brian,
 
-Principal looking good.
-
-You've been careful to minimize apparent changes, but as a result
-we now have some really short and largely pointless wrappers.  Please
-squash them into the calling locations.  That way we get a cleaner
-result (which makes me happy ;)  Given all call sites are changing
-anyway, such a patch will only be marginally more invasive.
-
-Jonathan
+Please cc linux-iio@vger.kernel.org for iio patches.  Also this driver has fairly
+clear authorship at the top, so more for your cc list. (added)
 > 
 > Signed-off-by: Bryan Freed <bfreed@chromium.org>
 > ---
->  drivers/staging/iio/light/tsl2563.c |   62 +++++++++++++++++------------------
->  1 files changed, 30 insertions(+), 32 deletions(-)
+>  drivers/staging/iio/light/tsl2563.c |   29 ++++++++++++++++++++++++++++-
+>  1 files changed, 28 insertions(+), 1 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
-> index 9cffa2e..14fc337 100644
+> index 9cffa2e..04aa155 100644
 > --- a/drivers/staging/iio/light/tsl2563.c
 > +++ b/drivers/staging/iio/light/tsl2563.c
-> @@ -139,26 +139,33 @@ struct tsl2563_chip {
+> @@ -137,6 +137,8 @@ struct tsl2563_chip {
+>  	u32			data1;
+>  };
 >  
+> +static int use_smbus;
+> +
 >  static int tsl2563_write(struct i2c_client *client, u8 reg, u8 value)
 >  {
-> -	int ret;
-> -	u8 buf[2];
-> -
-> -	buf[0] = TSL2563_CMD | reg;
-> -	buf[1] = value;
-> +	return i2c_smbus_write_byte_data(client, TSL2563_CMD | reg, value);
-> +}
-Please just get rid of this fucntion enirely. It can be trivially made inline
-for all users.
+>  	int ret;
+> @@ -145,15 +147,35 @@ static int tsl2563_write(struct i2c_client *client, u8 reg, u8 value)
+>  	buf[0] = TSL2563_CMD | reg;
+>  	buf[1] = value;
 >  
-> -	ret = i2c_master_send(client, buf, sizeof(buf));
-> -	return (ret == sizeof(buf)) ? 0 : ret;
-> +static int tsl2563_write_quick(struct i2c_client *client, u8 reg)
-> +{
-> +	return i2c_smbus_write_byte(client, TSL2563_CMD | reg);
->  }
-Same here. This sort of short inline just makes the code harder to read.
+> +	if (use_smbus) {
+> +		ret = i2c_smbus_write_byte_data(client, buf[0], value);
+> +		return ret;
+> +	}
+> +
+Here I'd prefer to see this in an else block to make the program flow clear. Same with the others.
+Actually, is there any reason we can't use the smbus_write_byte_data for all cases?  I 'think'
+it's emulated via i2c if that is available and smbus is not? (cc'd Jean to confirm this - though
+a quick code browse of i2c-core.c looks promising.)
 
+If smbus_xfer is not supplied by the adapter, i2c_smbus_xfer_emulated is called. 
+
+The only possible issue I can think of is that a device supports full i2c + a partial smbus
+support. (rather odd!)
+>  	ret = i2c_master_send(client, buf, sizeof(buf));
+>  	return (ret == sizeof(buf)) ? 0 : ret;
+>  }
 >  
 > -static int tsl2563_read(struct i2c_client *client, u8 reg, void *buf, int len)
-> +static int tsl2563_read8(struct i2c_client *client, u8 reg, u8 *buf)
+> +static int tsl2563_read(struct i2c_client *client, u8 reg, u8 *buf, int len)
 >  {
 >  	int ret;
-> -	u8 cmd = TSL2563_CMD | reg;
+>  	u8 cmd = TSL2563_CMD | reg;
 >  
-> -	ret = i2c_master_send(client, &cmd, sizeof(cmd));
-> -	if (ret != sizeof(cmd))
-> +	ret = i2c_smbus_read_byte_data(client, TSL2563_CMD | reg);
-> +	if (ret < 0)
->  		return ret;
-> +	*buf = ret & 0xff;
-mask isn't needed as you are copying a guaranteeded 8 bit unsigned value
-from an int to a u8.  Hence, this function should go away and the
-i2c_smbus_read_byte_data call used directly for all call sites.
-> +	return 0;
-> +}
+> +	if (use_smbus) {
+> +		if (len == 1) {
+> +			ret = i2c_smbus_read_byte_data(client, cmd);
+> +			buf[0] = ret & 0xff;
+> +		} else if (len == 2) {
+> +			ret = i2c_smbus_read_word_data(client, cmd);
+> +			buf[0] = ret & 0xff;
+> +			buf[1] = (ret >> 8) & 0xff;
+> +		} else
+> +			ret = -1;
+If we hit this something has gone hideously wrong.  Hence please
+audit the driver to be sure this doesn't happen and don't bother
+with this extra option.
+> +		if (ret < 0)
+> +			return 0; /* failure */
+Please return the error, not 0 in event of failure.
+> +		return len; /* success */
+> +	}
 > +
-> +static int tsl2563_read16(struct i2c_client *client, u8 reg, u16 *buf)
-> +{
-> +	int ret;
->  
-> -	return i2c_master_recv(client, buf, len);
-> +	ret = i2c_smbus_read_word_data(client, TSL2563_CMD | reg);
-> +	if (ret < 0)
-> +		return ret;
-> +	*buf = ret & 0xffff;
-Same for this one as the read8. Better to handle the data storage in
-the callers.
->  }
->  
->  static int tsl2563_set_power(struct tsl2563_chip *chip, int on)
-> @@ -180,8 +187,8 @@ static int tsl2563_get_power(struct tsl2563_chip *chip)
->  	int ret;
->  	u8 val;
->  
-> -	ret = tsl2563_read(client, TSL2563_REG_CTRL, &val, sizeof(val));
-> -	if (ret != sizeof(val))
-> +	ret = tsl2563_read8(client, TSL2563_REG_CTRL, &val);
-> +	if (ret)
+>  	ret = i2c_master_send(client, &cmd, sizeof(cmd));
+>  	if (ret != sizeof(cmd))
 >  		return ret;
->  
->  	return (val & TSL2563_CTRL_POWER_MASK) == TSL2563_CMD_POWER_ON;
-> @@ -242,8 +249,8 @@ static int tsl2563_read_id(struct tsl2563_chip *chip, u8 *id)
->  	struct i2c_client *client = chip->client;
+> @@ -712,6 +734,11 @@ static int __devinit tsl2563_probe(struct i2c_client *client,
+>  	int err = 0;
 >  	int ret;
+>  	u8 id;
+> +	u32 smbus_func = I2C_FUNC_SMBUS_BYTE_DATA | I2C_FUNC_SMBUS_WORD_DATA;
+Can this be const?  Oddly, the answer looks to be no.  Given its an inline
+in i2c.h, can't see why this one isn't const.  Jean, am I missing something
+or wouldn't:
+diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+index a6c652e..be5515d 100644
+--- a/include/linux/i2c.h
++++ b/include/linux/i2c.h
+@@ -458,7 +458,7 @@ static inline u32 i2c_get_functionality(struct i2c_adapter *adap)
+ }
+ 
+ /* Return 1 if adapter supports everything we need, 0 if not. */
+-static inline int i2c_check_functionality(struct i2c_adapter *adap, u32 func)
++static inline int i2c_check_functionality(struct i2c_adapter *adap, const u32 func)
+ {
+        return (func & i2c_get_functionality(adap)) == func;
+ }
+
+Be a sensible change?  For that matter, this code should probably just have that
+value inline in the function call as it isn't used anywhere else.
+
+> +	/* We support both I2C and SMBUS adapter interfaces. */
+> +	if (i2c_check_functionality(client->adapter, smbus_func))
+> +		use_smbus = 1;
 >  
-> -	ret = tsl2563_read(client, TSL2563_REG_ID, id, sizeof(*id));
-> -	if (ret != sizeof(*id))
-> +	ret = tsl2563_read8(client, TSL2563_REG_ID, id);
-> +	if (ret)
->  		return ret;
->  
->  	return 0;
-> @@ -327,7 +334,6 @@ static int tsl2563_adjust_gainlevel(struct tsl2563_chip *chip, u16 adc)
->  static int tsl2563_get_adc(struct tsl2563_chip *chip)
->  {
->  	struct i2c_client *client = chip->client;
-> -	u8 buf0[2], buf1[2];
->  	u16 adc0, adc1;
->  	int retry = 1;
->  	int ret = 0;
-> @@ -350,20 +356,14 @@ static int tsl2563_get_adc(struct tsl2563_chip *chip)
->  	}
->  
->  	while (retry) {
-> -		ret = tsl2563_read(client,
-> -				   TSL2563_REG_DATA0LOW,
-> -				   buf0, sizeof(buf0));
-> -		if (ret != sizeof(buf0))
-> +		ret = tsl2563_read16(client, TSL2563_REG_DATA0LOW, &adc0);
-> +		if (ret)
->  			goto out;
->  
-> -		ret = tsl2563_read(client, TSL2563_REG_DATA1LOW,
-> -				   buf1, sizeof(buf1));
-> -		if (ret != sizeof(buf1))
-> +		ret = tsl2563_read16(client, TSL2563_REG_DATA1LOW, &adc1);
-> +		if (ret)
->  			goto out;
->  
-> -		adc0 = (buf0[1] << 8) + buf0[0];
-> -		adc1 = (buf1[1] << 8) + buf1[0];
-> -
->  		retry = tsl2563_adjust_gainlevel(chip, adc0);
->  	}
->  
-> @@ -612,7 +612,6 @@ static irqreturn_t tsl2563_event_handler(int irq, void *private)
->  {
->  	struct iio_dev *dev_info = private;
->  	struct tsl2563_chip *chip = iio_priv(dev_info);
-> -	u8 cmd = TSL2563_CMD | TSL2563_CLEARINT;
->  
->  	iio_push_event(dev_info, 0,
->  		       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_LIGHT,
-> @@ -622,7 +621,7 @@ static irqreturn_t tsl2563_event_handler(int irq, void *private)
->  		       iio_get_time_ns());
->  
->  	/* clear the interrupt and push the event */
-> -	i2c_master_send(chip->client, &cmd, sizeof(cmd));
-> +	tsl2563_write_quick(chip->client, TSL2563_CLEARINT);
->  	return IRQ_HANDLED;
->  }
->  
-> @@ -672,10 +671,9 @@ static int tsl2563_read_interrupt_config(struct iio_dev *indio_dev,
->  	int ret;
->  
->  	mutex_lock(&chip->lock);
-> -	ret = tsl2563_read(chip->client, TSL2563_REG_INT,
-> -			   &rxbuf, sizeof(rxbuf));
-> +	ret = tsl2563_read8(chip->client, TSL2563_REG_INT, &rxbuf);
->  	mutex_unlock(&chip->lock);
-> -	if (ret < 0)
-> +	if (ret)
->  		goto error_ret;
->  	ret = !!(rxbuf & 0x30);
->  error_ret:
+>  	indio_dev = iio_allocate_device(sizeof(*chip));
+>  	if (!indio_dev)
 
