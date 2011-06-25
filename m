@@ -1,40 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:58996 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757215Ab1F0JUm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jun 2011 05:20:42 -0400
-Message-ID: <4E084D4E.9060100@cam.ac.uk>
-Date: Mon, 27 Jun 2011 10:28:46 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: ManuelStahl <manuel.stahl@iis.fraunhofer.de>
-CC: Michael Hennerich <michael.hennerich@analog.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: Dummy device driver
-References: <4E084A4E.2020704@iis.fraunhofer.de>
-In-Reply-To: <4E084A4E.2020704@iis.fraunhofer.de>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: greg@kroah.com
+Cc: randy.dunlap@oracle.com,
+	linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH] staging:iio: one more fix for IIO_RING_BUFFER not enabled.
+Date: Sat, 25 Jun 2011 12:20:39 +0100
+Message-Id: <1309000839-19741-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/27/11 10:15, ManuelStahl wrote:
-> Hi Jonathan,
-> 
-> as we have so many changes happening right now, I feel the need for something like a reference driver. One that uses the most recent IIO functions as they are intended.
-> This should be a dummy device that does not talk to real hardware, so we can use it on common x86 platforms.
-> 
-> What do you think?
-Excellent idea.
+Same problem as seen and fixed in adis16204 et al.
+These were fixed by Randy in: 
+staging: fix more iio builds when IIO_RING_BUFFER is not enabled
 
-I have a somewhat rubbish version I use for interface testing, but that's very ugly
-(and changes from day to day ;)  Not to mention, I can't remember which of my random
-branches it is actually in!  Hence you are probably better off starting from scratch.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Reported-by: Randy Dunlap <randy.dunlap@oracle.com>
 
-Big advantage of dummy drivers is also that we can propose any changes with examples
-based on that, so everyone can see how they will work. 
+---
+ drivers/staging/iio/accel/adis16240.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-The slightly annoying bit with dummy drivers is we can't test the fast path for triggers
-(i.e. any with a top half). That's not a great problem though and some of our triggers
-(e.g. the user space trigger) can't trigger top halves anyway!
-
-Jonathan
+diff --git a/drivers/staging/iio/accel/adis16240.h b/drivers/staging/iio/accel/adis16240.h
+index 162b1f4..0f400f0 100644
+--- a/drivers/staging/iio/accel/adis16240.h
++++ b/drivers/staging/iio/accel/adis16240.h
+@@ -143,7 +143,6 @@ struct adis16240_state {
+ 
+ int adis16240_set_irq(struct iio_dev *indio_dev, bool enable);
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
+ /* At the moment triggers are only used for ring buffer
+  * filling. This may change!
+  */
+@@ -155,6 +154,7 @@ int adis16240_set_irq(struct iio_dev *indio_dev, bool enable);
+ #define ADIS16240_SCAN_AUX_ADC	4
+ #define ADIS16240_SCAN_TEMP	5
+ 
++#ifdef CONFIG_IIO_RING_BUFFER
+ void adis16240_remove_trigger(struct iio_dev *indio_dev);
+ int adis16240_probe_trigger(struct iio_dev *indio_dev);
+ 
+-- 
+1.7.3.4
