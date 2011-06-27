@@ -3,9 +3,9 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 43/54] staging:iio:meter:ade7754: allocate state with iio_dev and buffers in state.
-Date: Mon, 27 Jun 2011 11:04:53 +0100
-Message-Id: <1309169104-22139-44-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 42/54] staging:iio:meter:ade7753 allocate chip state with iio_dev; allocate buffers within state
+Date: Mon, 27 Jun 2011 11:04:52 +0100
+Message-Id: <1309169104-22139-43-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1309169104-22139-1-git-send-email-jic23@cam.ac.uk>
 References: <1309169104-22139-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
@@ -13,90 +13,90 @@ List-ID: <linux-iio@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/meter/ade7754.c |   80 +++++++++++++----------------------
- drivers/staging/iio/meter/ade7754.h |   12 ++---
- 2 files changed, 34 insertions(+), 58 deletions(-)
+ drivers/staging/iio/meter/ade7753.c |   79 ++++++++++++----------------------
+ drivers/staging/iio/meter/ade7753.h |   10 ++---
+ 2 files changed, 32 insertions(+), 57 deletions(-)
 
-diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
-index 378f2c8..f4f85fd 100644
---- a/drivers/staging/iio/meter/ade7754.c
-+++ b/drivers/staging/iio/meter/ade7754.c
-@@ -29,7 +29,7 @@ static int ade7754_spi_write_reg_8(struct device *dev,
+diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
+index 6c9c23f..59f47fd 100644
+--- a/drivers/staging/iio/meter/ade7753.c
++++ b/drivers/staging/iio/meter/ade7753.c
+@@ -29,7 +29,7 @@ static int ade7753_spi_write_reg_8(struct device *dev,
  {
  	int ret;
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7754_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7754_state *st = iio_priv(indio_dev);
+-	struct ade7753_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7753_state *st = iio_priv(indio_dev);
  
  	mutex_lock(&st->buf_lock);
- 	st->tx[0] = ADE7754_WRITE_REG(reg_address);
-@@ -47,7 +47,7 @@ static int ade7754_spi_write_reg_16(struct device *dev,
+ 	st->tx[0] = ADE7753_WRITE_REG(reg_address);
+@@ -47,7 +47,7 @@ static int ade7753_spi_write_reg_16(struct device *dev,
  {
  	int ret;
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7754_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7754_state *st = iio_priv(indio_dev);
+-	struct ade7753_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7753_state *st = iio_priv(indio_dev);
  
  	mutex_lock(&st->buf_lock);
- 	st->tx[0] = ADE7754_WRITE_REG(reg_address);
-@@ -64,7 +64,7 @@ static int ade7754_spi_read_reg_8(struct device *dev,
+ 	st->tx[0] = ADE7753_WRITE_REG(reg_address);
+@@ -64,7 +64,7 @@ static int ade7753_spi_read_reg_8(struct device *dev,
  		u8 *val)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7754_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7754_state *st = iio_priv(indio_dev);
- 	int ret;
+-	struct ade7753_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7753_state *st = iio_priv(indio_dev);
+ 	ssize_t ret;
  
- 	ret = spi_w8r8(st->us, ADE7754_READ_REG(reg_address));
-@@ -83,7 +83,7 @@ static int ade7754_spi_read_reg_16(struct device *dev,
+ 	ret = spi_w8r8(st->us, ADE7753_READ_REG(reg_address));
+@@ -83,7 +83,7 @@ static int ade7753_spi_read_reg_16(struct device *dev,
  		u16 *val)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7754_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7754_state *st = iio_priv(indio_dev);
- 	int ret;
+-	struct ade7753_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7753_state *st = iio_priv(indio_dev);
+ 	ssize_t ret;
  
- 	ret = spi_w8r16(st->us, ADE7754_READ_REG(reg_address));
-@@ -105,7 +105,7 @@ static int ade7754_spi_read_reg_24(struct device *dev,
+ 	ret = spi_w8r16(st->us, ADE7753_READ_REG(reg_address));
+@@ -105,7 +105,7 @@ static int ade7753_spi_read_reg_24(struct device *dev,
  {
  	struct spi_message msg;
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7754_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7754_state *st = iio_priv(indio_dev);
+-	struct ade7753_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7753_state *st = iio_priv(indio_dev);
  	int ret;
  	struct spi_transfer xfers[] = {
  		{
-@@ -388,10 +388,11 @@ static int ade7754_stop_device(struct device *dev)
- 	return ade7754_spi_write_reg_8(dev, ADE7754_OPMODE, val);
+@@ -369,10 +369,11 @@ static int ade7753_stop_device(struct device *dev)
+ 	return ade7753_spi_write_reg_16(dev, ADE7753_MODE, val);
  }
  
--static int ade7754_initial_setup(struct ade7754_state *st)
-+static int ade7754_initial_setup(struct iio_dev *indio_dev)
+-static int ade7753_initial_setup(struct ade7753_state *st)
++static int ade7753_initial_setup(struct iio_dev *indio_dev)
  {
  	int ret;
 -	struct device *dev = &st->indio_dev->dev;
-+	struct ade7754_state *st = iio_priv(indio_dev);
 +	struct device *dev = &indio_dev->dev;
++	struct ade7753_state *st = iio_priv(indio_dev);
  
  	/* use low spi speed for init */
  	st->us->mode = SPI_MODE_3;
-@@ -436,7 +437,7 @@ static ssize_t ade7754_write_frequency(struct device *dev,
+@@ -416,7 +417,7 @@ static ssize_t ade7753_write_frequency(struct device *dev,
  		size_t len)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ade7754_state *st = iio_dev_get_devdata(indio_dev);
-+	struct ade7754_state *st = iio_priv(indio_dev);
+-	struct ade7753_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7753_state *st = iio_priv(indio_dev);
  	unsigned long val;
  	int ret;
- 	u8 reg, t;
-@@ -535,62 +536,44 @@ static const struct iio_info ade7754_info = {
- static int __devinit ade7754_probe(struct spi_device *spi)
+ 	u16 reg, t;
+@@ -512,62 +513,44 @@ static const struct iio_info ade7753_info = {
+ static int __devinit ade7753_probe(struct spi_device *spi)
  {
  	int ret, regdone = 0;
--	struct ade7754_state *st = kzalloc(sizeof *st, GFP_KERNEL);
+-	struct ade7753_state *st = kzalloc(sizeof *st, GFP_KERNEL);
 -	if (!st) {
 -		ret =  -ENOMEM;
-+	struct ade7754_state *st;
++	struct ade7753_state *st;
 +	struct iio_dev *indio_dev;
 +
 +	/* setup the industrialio driver allocated elements */
@@ -110,12 +110,12 @@ index 378f2c8..f4f85fd 100644
 +	spi_set_drvdata(spi, indio_dev);
  
 -	/* Allocate the comms buffers */
--	st->rx = kzalloc(sizeof(*st->rx)*ADE7754_MAX_RX, GFP_KERNEL);
+-	st->rx = kzalloc(sizeof(*st->rx)*ADE7753_MAX_RX, GFP_KERNEL);
 -	if (st->rx == NULL) {
 -		ret = -ENOMEM;
 -		goto error_free_st;
 -	}
--	st->tx = kzalloc(sizeof(*st->tx)*ADE7754_MAX_TX, GFP_KERNEL);
+-	st->tx = kzalloc(sizeof(*st->tx)*ADE7753_MAX_TX, GFP_KERNEL);
 -	if (st->tx == NULL) {
 -		ret = -ENOMEM;
 -		goto error_free_rx;
@@ -132,12 +132,12 @@ index 378f2c8..f4f85fd 100644
  
 -	st->indio_dev->name = spi->dev.driver->name;
 -	st->indio_dev->dev.parent = &spi->dev;
--	st->indio_dev->info = &ade7754_info;
+-	st->indio_dev->info = &ade7753_info;
 -	st->indio_dev->dev_data = (void *)(st);
 -	st->indio_dev->modes = INDIO_DIRECT_MODE;
 +	indio_dev->name = spi->dev.driver->name;
 +	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->info = &ade7754_info;
++	indio_dev->info = &ade7753_info;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
  
 -	ret = iio_device_register(st->indio_dev);
@@ -147,8 +147,8 @@ index 378f2c8..f4f85fd 100644
  	regdone = 1;
  
  	/* Get the device into a sane initial state */
--	ret = ade7754_initial_setup(st);
-+	ret = ade7754_initial_setup(indio_dev);
+-	ret = ade7753_initial_setup(st);
++	ret = ade7753_initial_setup(indio_dev);
  	if (ret)
  		goto error_free_dev;
  	return 0;
@@ -170,15 +170,15 @@ index 378f2c8..f4f85fd 100644
  error_ret:
  	return ret;
  }
-@@ -599,22 +582,17 @@ error_ret:
- static int ade7754_remove(struct spi_device *spi)
+@@ -576,19 +559,13 @@ error_ret:
+ static int ade7753_remove(struct spi_device *spi)
  {
  	int ret;
--	struct ade7754_state *st = spi_get_drvdata(spi);
+-	struct ade7753_state *st = spi_get_drvdata(spi);
 -	struct iio_dev *indio_dev = st->indio_dev;
 +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
  
- 	ret = ade7754_stop_device(&(indio_dev->dev));
+ 	ret = ade7753_stop_device(&(indio_dev->dev));
  	if (ret)
  		goto err_ret;
  
@@ -191,25 +191,20 @@ index 378f2c8..f4f85fd 100644
  
  err_ret:
  	return ret;
-+
- }
- 
- static struct spi_driver ade7754_driver = {
-diff --git a/drivers/staging/iio/meter/ade7754.h b/drivers/staging/iio/meter/ade7754.h
-index 0aa0522..6121125 100644
---- a/drivers/staging/iio/meter/ade7754.h
-+++ b/drivers/staging/iio/meter/ade7754.h
-@@ -78,17 +78,15 @@
+diff --git a/drivers/staging/iio/meter/ade7753.h b/drivers/staging/iio/meter/ade7753.h
+index 3b9c7f6..3f059d3 100644
+--- a/drivers/staging/iio/meter/ade7753.h
++++ b/drivers/staging/iio/meter/ade7753.h
+@@ -60,17 +60,15 @@
  /**
-  * struct ade7754_state - device instance specific data
+  * struct ade7753_state - device instance specific data
   * @us:			actual spi_device
 - * @indio_dev:		industrial I/O device structure
-+ * @buf_lock:		mutex to protect tx and rx
   * @tx:			transmit buffer
   * @rx:			receive buffer
-- * @buf_lock:		mutex to protect tx and rx
+  * @buf_lock:		mutex to protect tx and rx
   **/
- struct ade7754_state {
+ struct ade7753_state {
 -	struct spi_device		*us;
 -	struct iio_dev			*indio_dev;
 -	u8				*tx;
@@ -217,8 +212,8 @@ index 0aa0522..6121125 100644
 -	struct mutex			buf_lock;
 +	struct spi_device	*us;
 +	struct mutex		buf_lock;
-+	u8			tx[ADE7754_MAX_TX] ____cacheline_aligned;
-+	u8			rx[ADE7754_MAX_RX];
++	u8			tx[ADE7753_MAX_TX] ____cacheline_aligned;
++	u8			rx[ADE7753_MAX_RX];
  };
  
  #endif
