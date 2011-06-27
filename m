@@ -3,168 +3,219 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 50/54] staging:iio:magnetometer:hmc5843: allocate device state with iio_dev.
-Date: Mon, 27 Jun 2011 11:05:00 +0100
-Message-Id: <1309169104-22139-51-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 49/54] staging:iio:meter:ade7759: allocate state with iio_dev
+Date: Mon, 27 Jun 2011 11:04:59 +0100
+Message-Id: <1309169104-22139-50-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1309169104-22139-1-git-send-email-jic23@cam.ac.uk>
 References: <1309169104-22139-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/magnetometer/hmc5843.c |   50 ++++++++++++----------------
- 1 files changed, 21 insertions(+), 29 deletions(-)
+ drivers/staging/iio/meter/ade7759.c |   80 ++++++++++++-----------------------
+ drivers/staging/iio/meter/ade7759.h |   12 ++---
+ 2 files changed, 32 insertions(+), 60 deletions(-)
 
-diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-index dd9a3bb..b44c273a 100644
---- a/drivers/staging/iio/magnetometer/hmc5843.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843.c
-@@ -131,7 +131,6 @@ static const unsigned short normal_i2c[] = { HMC5843_I2C_ADDRESS,
+diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
+index 730f6d9..a51a64c 100644
+--- a/drivers/staging/iio/meter/ade7759.c
++++ b/drivers/staging/iio/meter/ade7759.c
+@@ -29,7 +29,7 @@ static int ade7759_spi_write_reg_8(struct device *dev,
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7759_state *st = iio_priv(indio_dev);
  
- /* Each client has this additional data */
- struct hmc5843_data {
--	struct iio_dev	*indio_dev;
- 	struct mutex lock;
- 	u8		rate;
- 	u8		meas_conf;
-@@ -159,7 +158,7 @@ static ssize_t hmc5843_read_measurement(struct device *dev,
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
- 	s16 coordinate_val;
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	struct hmc5843_data *data = indio_dev->dev_data;
-+	struct hmc5843_data *data = iio_priv(indio_dev);
- 	s32 result;
+ 	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADE7759_WRITE_REG(reg_address);
+@@ -47,7 +47,7 @@ static int ade7759_spi_write_reg_16(struct device *dev,
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7759_state *st = iio_priv(indio_dev);
  
- 	mutex_lock(&data->lock);
-@@ -202,7 +201,7 @@ static ssize_t hmc5843_show_operating_mode(struct device *dev,
- 					char *buf)
+ 	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADE7759_WRITE_REG(reg_address);
+@@ -64,7 +64,7 @@ static int ade7759_spi_read_reg_8(struct device *dev,
+ 		u8 *val)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct hmc5843_data *data = indio_dev->dev_data;
-+	struct hmc5843_data *data = iio_priv(indio_dev);
- 	return sprintf(buf, "%d\n", data->operating_mode);
+-	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7759_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+ 	ret = spi_w8r8(st->us, ADE7759_READ_REG(reg_address));
+@@ -83,7 +83,7 @@ static int ade7759_spi_read_reg_16(struct device *dev,
+ 		u16 *val)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7759_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+ 	ret = spi_w8r16(st->us, ADE7759_READ_REG(reg_address));
+@@ -105,7 +105,7 @@ static int ade7759_spi_read_reg_40(struct device *dev,
+ {
+ 	struct spi_message msg;
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7759_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 	struct spi_transfer xfers[] = {
+ 		{
+@@ -328,10 +328,11 @@ static int ade7759_stop_device(struct device *dev)
+ 	return ade7759_spi_write_reg_16(dev, ADE7759_MODE, val);
  }
  
-@@ -213,7 +212,7 @@ static ssize_t hmc5843_set_operating_mode(struct device *dev,
+-static int ade7759_initial_setup(struct ade7759_state *st)
++static int ade7759_initial_setup(struct iio_dev *indio_dev)
  {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
--	struct hmc5843_data *data = indio_dev->dev_data;
-+	struct hmc5843_data *data = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	unsigned long operating_mode = 0;
- 	s32 status;
-@@ -278,7 +277,7 @@ static ssize_t hmc5843_show_measurement_configuration(struct device *dev,
- 						char *buf)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct hmc5843_data *data = indio_dev->dev_data;
-+	struct hmc5843_data *data = iio_priv(indio_dev);
- 	return sprintf(buf, "%d\n", data->meas_conf);
- }
+ 	int ret;
+-	struct device *dev = &st->indio_dev->dev;
++	struct ade7759_state *st = iio_priv(indio_dev);
++	struct device *dev = &indio_dev->dev;
  
-@@ -350,7 +349,7 @@ static ssize_t set_sampling_frequency(struct device *dev,
- 
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
--	struct hmc5843_data *data = indio_dev->dev_data;
-+	struct hmc5843_data *data = iio_priv(indio_dev);
- 	unsigned long rate = 0;
- 
- 	if (strncmp(buf, "0.5" , 3) == 0)
-@@ -422,7 +421,7 @@ static ssize_t show_range(struct device *dev,
- {
- 	u8 range;
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct hmc5843_data *data = indio_dev->dev_data;
-+	struct hmc5843_data *data = iio_priv(indio_dev);
- 
- 	range = data->range;
- 	return sprintf(buf, "%d\n", regval_to_input_field_mg[range]);
-@@ -436,7 +435,7 @@ static ssize_t set_range(struct device *dev,
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	struct hmc5843_data *data = indio_dev->dev_data;
-+	struct hmc5843_data *data = iio_priv(indio_dev);
- 	unsigned long range = 0;
- 	int error;
- 	mutex_lock(&data->lock);
-@@ -473,7 +472,7 @@ static ssize_t show_scale(struct device *dev,
- 			char *buf)
+ 	/* use low spi speed for init */
+ 	st->us->mode = SPI_MODE_3;
+@@ -376,7 +377,7 @@ static ssize_t ade7759_write_frequency(struct device *dev,
+ 		size_t len)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct hmc5843_data *data = indio_dev->dev_data;
-+	struct hmc5843_data *data = iio_priv(indio_dev);
- 	return strlen(strcpy(buf, regval_to_scale[data->range]));
- }
- static IIO_DEVICE_ATTR(magn_scale,
-@@ -538,53 +537,46 @@ static int hmc5843_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
+-	struct ade7759_state *st = iio_dev_get_devdata(indio_dev);
++	struct ade7759_state *st = iio_priv(indio_dev);
+ 	unsigned long val;
+ 	int ret;
+ 	u16 reg, t;
+@@ -458,62 +459,41 @@ static const struct iio_info ade7759_info = {
+ static int __devinit ade7759_probe(struct spi_device *spi)
  {
- 	struct hmc5843_data *data;
+ 	int ret;
+-	struct ade7759_state *st = kzalloc(sizeof *st, GFP_KERNEL);
+-	if (!st) {
+-		ret =  -ENOMEM;
++	struct ade7759_state *st;
 +	struct iio_dev *indio_dev;
- 	int err = 0;
- 
--	data = kzalloc(sizeof(struct hmc5843_data), GFP_KERNEL);
--	if (!data) {
-+	indio_dev = iio_allocate_device(sizeof(*data));
-+	if (indio_dev == NULL) {
- 		err = -ENOMEM;
- 		goto exit;
- 	}
--
-+	data = iio_priv(indio_dev);
- 	/* default settings at probe */
- 
- 	data->meas_conf = CONF_NORMAL;
- 	data->range = RANGE_1_0;
- 	data->operating_mode = MODE_CONVERSION_CONTINUOUS;
- 
--	i2c_set_clientdata(client, data);
-+	i2c_set_clientdata(client, indio_dev);
- 
- 	/* Initialize the HMC5843 chip */
- 	hmc5843_init_client(client);
- 
--	data->indio_dev = iio_allocate_device(0);
--	if (!data->indio_dev) {
--		err = -ENOMEM;
--		goto exit_free1;
--	}
--	data->indio_dev->info = &hmc5843_info;
--	data->indio_dev->dev.parent = &client->dev;
--	data->indio_dev->dev_data = (void *)(data);
--	data->indio_dev->modes = INDIO_DIRECT_MODE;
--	err = iio_device_register(data->indio_dev);
-+	indio_dev->info = &hmc5843_info;
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	err = iio_device_register(indio_dev);
- 	if (err)
- 		goto exit_free2;
- 	return 0;
- exit_free2:
--	iio_free_device(data->indio_dev);
--exit_free1:
--	kfree(data);
-+	iio_free_device(indio_dev);
- exit:
- 	return err;
- }
- 
- static int hmc5843_remove(struct i2c_client *client)
- {
--	struct hmc5843_data *data = i2c_get_clientdata(client);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 	 /*  sleep mode to save power */
- 	hmc5843_configure(client, MODE_SLEEP);
--	iio_device_unregister(data->indio_dev);
--	kfree(i2c_get_clientdata(client));
-+	iio_device_unregister(indio_dev);
 +
- 	return 0;
- }
++	/* setup the industrialio driver allocated elements */
++	indio_dev = iio_allocate_device(sizeof(*st));
++	if (indio_dev == NULL) {
++		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+ 	/* this is only used for removal purposes */
+-	spi_set_drvdata(spi, st);
++	spi_set_drvdata(spi, indio_dev);
  
+-	/* Allocate the comms buffers */
+-	st->rx = kzalloc(sizeof(*st->rx)*ADE7759_MAX_RX, GFP_KERNEL);
+-	if (st->rx == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_st;
+-	}
+-	st->tx = kzalloc(sizeof(*st->tx)*ADE7759_MAX_TX, GFP_KERNEL);
+-	if (st->tx == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_rx;
+-	}
++	st = iio_priv(indio_dev);
+ 	st->us = spi;
+ 	mutex_init(&st->buf_lock);
+-	/* setup the industrialio driver allocated elements */
+-	st->indio_dev = iio_allocate_device(0);
+-	if (st->indio_dev == NULL) {
+-		ret = -ENOMEM;
+-		goto error_free_tx;
+-	}
+-
+-	st->indio_dev->name = spi->dev.driver->name;
+-	st->indio_dev->dev.parent = &spi->dev;
+-
+-	st->indio_dev->info = &ade7759_info;
+-	st->indio_dev->dev_data = (void *)(st);
+-	st->indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->name = spi->dev.driver->name;
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->info = &ade7759_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-	ret = iio_device_register(st->indio_dev);
++	ret = iio_device_register(indio_dev);
+ 	if (ret)
+ 		goto error_free_dev;
+ 
+ 	/* Get the device into a sane initial state */
+-	ret = ade7759_initial_setup(st);
++	ret = ade7759_initial_setup(indio_dev);
+ 	if (ret)
+ 		goto error_unreg_dev;
+ 	return 0;
+ 
+ 
+ error_unreg_dev:
+-	iio_device_unregister(st->indio_dev);
++	iio_device_unregister(indio_dev);
+ error_free_dev:
+-	iio_free_device(st->indio_dev);
+-error_free_tx:
+-	kfree(st->tx);
+-error_free_rx:
+-	kfree(st->rx);
+-error_free_st:
+-	kfree(st);
++	iio_free_device(indio_dev);
+ error_ret:
+ 	return ret;
+ }
+@@ -522,19 +502,13 @@ error_ret:
+ static int ade7759_remove(struct spi_device *spi)
+ {
+ 	int ret;
+-	struct ade7759_state *st = spi_get_drvdata(spi);
+-	struct iio_dev *indio_dev = st->indio_dev;
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 
+ 	ret = ade7759_stop_device(&(indio_dev->dev));
+ 	if (ret)
+ 		goto err_ret;
+ 
+ 	iio_device_unregister(indio_dev);
+-	kfree(st->tx);
+-	kfree(st->rx);
+-	kfree(st);
+-
+-	return 0;
+ 
+ err_ret:
+ 	return ret;
+diff --git a/drivers/staging/iio/meter/ade7759.h b/drivers/staging/iio/meter/ade7759.h
+index cc76c2c..c81d23d 100644
+--- a/drivers/staging/iio/meter/ade7759.h
++++ b/drivers/staging/iio/meter/ade7759.h
+@@ -41,17 +41,15 @@
+ /**
+  * struct ade7759_state - device instance specific data
+  * @us:			actual spi_device
+- * @indio_dev:		industrial I/O device structure
++ * @buf_lock:		mutex to protect tx and rx
+  * @tx:			transmit buffer
+  * @rx:			receive buffer
+- * @buf_lock:		mutex to protect tx and rx
+  **/
+ struct ade7759_state {
+-	struct spi_device		*us;
+-	struct iio_dev			*indio_dev;
+-	u8				*tx;
+-	u8				*rx;
+-	struct mutex			buf_lock;
++	struct spi_device	*us;
++	struct mutex		buf_lock;
++	u8			tx[ADE7759_MAX_TX] ____cacheline_aligned;
++	u8			rx[ADE7759_MAX_RX];
+ };
+ 
+ #endif
 -- 
 1.7.3.4
