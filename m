@@ -3,9 +3,9 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 16/54] staging:iio:adc:ad7150: allocate chip state with iio_dev and use iio_priv to access.
-Date: Mon, 27 Jun 2011 11:04:26 +0100
-Message-Id: <1309169104-22139-17-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 15/54] staging:iio:adc:ad799x clear out last few uses of iio_dev->dev_data.
+Date: Mon, 27 Jun 2011 11:04:25 +0100
+Message-Id: <1309169104-22139-16-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1309169104-22139-1-git-send-email-jic23@cam.ac.uk>
 References: <1309169104-22139-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
@@ -13,328 +13,97 @@ List-ID: <linux-iio@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/adc/ad7150.c |   91 +++++++++++++++++---------------------
- 1 files changed, 41 insertions(+), 50 deletions(-)
+ drivers/staging/iio/adc/ad799x_core.c |   13 ++++++-------
+ drivers/staging/iio/adc/ad799x_ring.c |    4 ++--
+ 2 files changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7150.c b/drivers/staging/iio/adc/ad7150.c
-index ca32b67..460f8f4 100644
---- a/drivers/staging/iio/adc/ad7150.c
-+++ b/drivers/staging/iio/adc/ad7150.c
-@@ -59,7 +59,6 @@
- 
- struct ad7150_chip_info {
- 	struct i2c_client *client;
--	struct iio_dev *indio_dev;
- 	bool inter;
- 	u16 ch1_threshold;     /* Ch1 Threshold (in fixed threshold mode) */
- 	u8  ch1_sensitivity;   /* Ch1 Sensitivity (in adaptive threshold mode) */
-@@ -184,7 +183,7 @@ static ssize_t ad7150_show_conversion_mode(struct device *dev,
- 		char *buf)
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index 29bfbcf..92cfe2e 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -143,7 +143,7 @@ static int ad799x_read_raw(struct iio_dev *dev_info,
+ 			   long m)
  {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 
- 	return sprintf(buf, "%s\n", chip->conversion_mode);
- }
-@@ -195,7 +194,7 @@ static ssize_t ad7150_store_conversion_mode(struct device *dev,
- 		size_t len)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	u8 cfg;
- 	int i;
- 
-@@ -234,7 +233,7 @@ static ssize_t ad7150_show_ch1_value(struct device *dev,
- 		char *buf)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	u8 data[2];
- 
- 	ad7150_i2c_read(chip, AD7150_CH1_DATA_HIGH, data, 2);
-@@ -248,7 +247,7 @@ static ssize_t ad7150_show_ch2_value(struct device *dev,
- 		char *buf)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	u8 data[2];
- 
- 	ad7150_i2c_read(chip, AD7150_CH2_DATA_HIGH, data, 2);
-@@ -262,7 +261,7 @@ static ssize_t ad7150_show_threshold_mode(struct device *dev,
- 		char *buf)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 
- 	return sprintf(buf, "%s\n", chip->threshold_mode);
- }
-@@ -273,7 +272,7 @@ static ssize_t ad7150_store_threshold_mode(struct device *dev,
- 		size_t len)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	u8 cfg;
- 
- 	ad7150_i2c_read(chip, AD7150_CFG, &cfg, 1);
-@@ -305,7 +304,7 @@ static ssize_t ad7150_show_ch1_threshold(struct device *dev,
- 		char *buf)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 
- 	return sprintf(buf, "%d\n", chip->ch1_threshold);
- }
-@@ -316,7 +315,7 @@ static ssize_t ad7150_store_ch1_threshold(struct device *dev,
- 		size_t len)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	unsigned long data;
  	int ret;
+-	struct ad799x_state *st = dev_info->dev_data;
++	struct ad799x_state *st = iio_priv(dev_info);
+ 	unsigned int scale_uv;
  
-@@ -341,7 +340,7 @@ static ssize_t ad7150_show_ch2_threshold(struct device *dev,
- 		char *buf)
+ 	switch (m) {
+@@ -176,7 +176,7 @@ static ssize_t ad799x_read_frequency(struct device *dev,
+ 					char *buf)
  {
  	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
+-	struct ad799x_state *st = iio_dev_get_devdata(dev_info);
++	struct ad799x_state *st = iio_priv(dev_info);
  
- 	return sprintf(buf, "%d\n", chip->ch2_threshold);
- }
-@@ -352,7 +351,7 @@ static ssize_t ad7150_store_ch2_threshold(struct device *dev,
- 		size_t len)
+ 	int ret, len = 0;
+ 	u8 val;
+@@ -221,7 +221,7 @@ static ssize_t ad799x_write_frequency(struct device *dev,
+ 					 size_t len)
  {
  	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	unsigned long data;
+-	struct ad799x_state *st = iio_dev_get_devdata(dev_info);
++	struct ad799x_state *st = iio_priv(dev_info);
+ 
+ 	long val;
  	int ret;
- 
-@@ -377,7 +376,7 @@ static ssize_t ad7150_show_ch1_sensitivity(struct device *dev,
- 		char *buf)
+@@ -281,7 +281,7 @@ static ssize_t ad799x_read_channel_config(struct device *dev,
+ 					char *buf)
  {
  	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
+-	struct ad799x_state *st = iio_dev_get_devdata(dev_info);
++	struct ad799x_state *st = iio_priv(dev_info);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
  
- 	return sprintf(buf, "%d\n", chip->ch1_sensitivity);
- }
-@@ -388,7 +387,7 @@ static ssize_t ad7150_store_ch1_sensitivity(struct device *dev,
- 		size_t len)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	unsigned long data;
  	int ret;
- 
-@@ -412,7 +411,7 @@ static ssize_t ad7150_show_ch2_sensitivity(struct device *dev,
- 		char *buf)
+@@ -299,7 +299,7 @@ static ssize_t ad799x_write_channel_config(struct device *dev,
+ 					 size_t len)
  {
  	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
+-	struct ad799x_state *st = iio_dev_get_devdata(dev_info);
++	struct ad799x_state *st = iio_priv(dev_info);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
  
- 	return sprintf(buf, "%d\n", chip->ch2_sensitivity);
- }
-@@ -423,7 +422,7 @@ static ssize_t ad7150_store_ch2_sensitivity(struct device *dev,
- 		size_t len)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	unsigned long data;
- 	int ret;
- 
-@@ -447,7 +446,7 @@ static ssize_t ad7150_show_ch1_timeout(struct device *dev,
- 		char *buf)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 
- 	return sprintf(buf, "%d\n", chip->ch1_timeout);
- }
-@@ -458,7 +457,7 @@ static ssize_t ad7150_store_ch1_timeout(struct device *dev,
- 		size_t len)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	unsigned long data;
- 	int ret;
- 
-@@ -482,7 +481,7 @@ static ssize_t ad7150_show_ch2_timeout(struct device *dev,
- 		char *buf)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 
- 	return sprintf(buf, "%d\n", chip->ch2_timeout);
- }
-@@ -493,7 +492,7 @@ static ssize_t ad7150_store_ch2_timeout(struct device *dev,
- 		size_t len)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	unsigned long data;
- 	int ret;
- 
-@@ -517,7 +516,7 @@ static ssize_t ad7150_show_ch1_setup(struct device *dev,
- 		char *buf)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 
- 	return sprintf(buf, "0x%02x\n", chip->ch1_setup);
- }
-@@ -528,7 +527,7 @@ static ssize_t ad7150_store_ch1_setup(struct device *dev,
- 		size_t len)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	unsigned long data;
- 	int ret;
- 
-@@ -553,7 +552,7 @@ static ssize_t ad7150_show_ch2_setup(struct device *dev,
- 		char *buf)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 
- 	return sprintf(buf, "0x%02x\n", chip->ch2_setup);
- }
-@@ -564,7 +563,7 @@ static ssize_t ad7150_store_ch2_setup(struct device *dev,
- 		size_t len)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	unsigned long data;
- 	int ret;
- 
-@@ -588,7 +587,7 @@ static ssize_t ad7150_show_powerdown_timer(struct device *dev,
- 		char *buf)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 
- 	return sprintf(buf, "0x%02x\n", chip->powerdown_timer);
- }
-@@ -599,7 +598,7 @@ static ssize_t ad7150_store_powerdown_timer(struct device *dev,
- 		size_t len)
- {
- 	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct ad7150_chip_info *chip = dev_info->dev_data;
-+	struct ad7150_chip_info *chip = iio_priv(dev_info);
- 	unsigned long data;
- 	int ret;
- 
-@@ -645,7 +644,7 @@ static const struct attribute_group ad7150_attribute_group = {
- static irqreturn_t ad7150_event_handler(int irq, void *private)
+ 	long val;
+@@ -319,7 +319,7 @@ static ssize_t ad799x_write_channel_config(struct device *dev,
+ static irqreturn_t ad799x_event_handler(int irq, void *private)
  {
  	struct iio_dev *indio_dev = private;
--	struct ad7150_chip_info *chip = iio_dev_get_devdata(indio_dev);
-+	struct ad7150_chip_info *chip = iio_priv(indio_dev);
- 	u8 int_status;
- 	s64 timestamp = iio_get_time_ns();
+-	struct ad799x_state *st = iio_dev_get_devdata(private);
++	struct ad799x_state *st = iio_priv(private);
+ 	u8 status;
+ 	int i, ret;
  
-@@ -714,33 +713,29 @@ static int __devinit ad7150_probe(struct i2c_client *client,
- 		const struct i2c_device_id *id)
+@@ -686,7 +686,6 @@ static int __devinit ad799x_probe(struct i2c_client *client,
+ 	indio_dev->name = id->name;
+ 	indio_dev->info = st->chip_info->info;
+ 	indio_dev->name = id->name;
+-	indio_dev->dev_data = (void *)(st);
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->channels = st->chip_info->channel;
+diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
+index 1ae8857..0376a82 100644
+--- a/drivers/staging/iio/adc/ad799x_ring.c
++++ b/drivers/staging/iio/adc/ad799x_ring.c
+@@ -72,7 +72,7 @@ error_ret:
+ static int ad799x_ring_preenable(struct iio_dev *indio_dev)
  {
- 	int ret = 0, regdone = 0;
--	struct ad7150_chip_info *chip = kzalloc(sizeof(*chip), GFP_KERNEL);
--	if (chip == NULL) {
-+	struct ad7150_chip_info *chip;
-+	struct iio_dev *indio_dev;
-+
-+	indio_dev = iio_allocate_device(0);
-+	if (indio_dev == NULL) {
- 		ret = -ENOMEM;
- 		goto error_ret;
- 	}
--
-+	chip = iio_priv(indio_dev);
- 	/* this is only used for device removal purposes */
--	i2c_set_clientdata(client, chip);
-+	i2c_set_clientdata(client, indio_dev);
+ 	struct iio_ring_buffer *ring = indio_dev->ring;
+-	struct ad799x_state *st = iio_dev_get_devdata(indio_dev);
++	struct ad799x_state *st = iio_priv(indio_dev);
  
- 	chip->client = client;
- 
--	chip->indio_dev = iio_allocate_device(0);
--	if (chip->indio_dev == NULL) {
--		ret = -ENOMEM;
--		goto error_free_chip;
--	}
--
- 	/* Establish that the iio_dev is a child of the i2c device */
--	chip->indio_dev->name = id->name;
--	chip->indio_dev->dev.parent = &client->dev;
-+	indio_dev->name = id->name;
-+	indio_dev->dev.parent = &client->dev;
- 
--	chip->indio_dev->info = &ad7150_info;
--	chip->indio_dev->dev_data = (void *)(chip);
-+	indio_dev->info = &ad7150_info;
- 
--	chip->indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
- 
--	ret = iio_device_register(chip->indio_dev);
-+	ret = iio_device_register(indio_dev);
- 	if (ret)
- 		goto error_free_dev;
- 	regdone = 1;
-@@ -752,7 +747,7 @@ static int __devinit ad7150_probe(struct i2c_client *client,
- 					   IRQF_TRIGGER_RISING |
- 					   IRQF_TRIGGER_FALLING,
- 					   "ad7150",
--					   chip->indio_dev);
-+					   indio_dev);
- 		if (ret)
- 			goto error_free_dev;
- 	}
-@@ -763,24 +758,20 @@ static int __devinit ad7150_probe(struct i2c_client *client,
- 
- error_free_dev:
- 	if (regdone)
--		iio_device_unregister(chip->indio_dev);
-+		iio_device_unregister(indio_dev);
- 	else
--		iio_free_device(chip->indio_dev);
--error_free_chip:
--	kfree(chip);
-+		iio_free_device(indio_dev);
- error_ret:
- 	return ret;
- }
- 
- static int __devexit ad7150_remove(struct i2c_client *client)
+ 	/*
+ 	 * Need to figure out the current mode based upon the requested
+@@ -109,7 +109,7 @@ static irqreturn_t ad799x_trigger_handler(int irq, void *p)
  {
--	struct ad7150_chip_info *chip = i2c_get_clientdata(client);
--	struct iio_dev *indio_dev = chip->indio_dev;
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 
- 	if (client->irq)
- 		free_irq(client->irq, indio_dev);
- 	iio_device_unregister(indio_dev);
--	kfree(chip);
- 
- 	return 0;
- }
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->private_data;
+-	struct ad799x_state *st = iio_dev_get_devdata(indio_dev);
++	struct ad799x_state *st = iio_priv(indio_dev);
+ 	struct iio_ring_buffer *ring = indio_dev->ring;
+ 	s64 time_ns;
+ 	__u8 *rxbuf;
 -- 
 1.7.3.4
