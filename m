@@ -1,11 +1,12 @@
 Return-Path: <bfreed@google.com>
 MIME-Version: 1.0
 Sender: bfreed@google.com
-In-Reply-To: <1309299480.10209.13.camel@rklein-linux2>
+In-Reply-To: <CAEYUcX1XwSN4n2Xy56AD9tY7yNfpDN+gsB0Uff+qXsMFzemqFw@mail.gmail.com>
 References: <1309298401-8623-1-git-send-email-bfreed@chromium.org>
 	<1309299480.10209.13.camel@rklein-linux2>
-Date: Tue, 28 Jun 2011 16:10:46 -0700
-Message-ID: <CAEYUcX1XwSN4n2Xy56AD9tY7yNfpDN+gsB0Uff+qXsMFzemqFw@mail.gmail.com>
+	<CAEYUcX1XwSN4n2Xy56AD9tY7yNfpDN+gsB0Uff+qXsMFzemqFw@mail.gmail.com>
+Date: Tue, 28 Jun 2011 16:19:11 -0700
+Message-ID: <CAEYUcX29mgpqOWTRh8b0EBiqgkvKJpPcWjn_qoySO5K5MrDWMA@mail.gmail.com>
 Subject: Re: [PATCH] light sensor: Add a calibscale file to the isl29018 light
  sensor driver.
 From: Bryan Freed <bfreed@chromium.org>
@@ -14,161 +15,189 @@ Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "jic23@cam.ac.uk" <jic23@cam.ac.uk>, "gregkh@suse.de" <gregkh@suse.de>,
         "arnd@arndb.de" <arnd@arndb.de>
-Content-Type: multipart/alternative; boundary=0015174c448c2ea38404a6cdc7ee
+Content-Type: multipart/alternative; boundary=000e0cd4bde23952a104a6cde543
 List-ID: <linux-iio@vger.kernel.org>
 
---0015174c448c2ea38404a6cdc7ee
+--000e0cd4bde23952a104a6cde543
 Content-Type: text/plain; charset=ISO-8859-1
 
-Hi Rhyland.
+Well...
 
-On Tue, Jun 28, 2011 at 3:18 PM, Rhyland Klein <rklein@nvidia.com> wrote:
+I supposed documenting illuminance0_calibscale is better done
+in sysfs-bus-iio-light than sysfs-bus-iio.
+sysfs-bus-iio currently documents all the *_calibscale files,
+but sysfs-bus-iio-light documents all the illuminance0 files.
 
-> On Tue, 2011-06-28 at 15:00 -0700, Bryan Freed wrote:
-> > Defaulting to 1, this gives a way to amplify the lux value before being
-> > reduced by the programmed adc_bit shift.
-> > Only support whole numbers right now.  When this driver is converted to
-> the new
-> > IIO_CHAN framework, it will be easy to support the framework's pseudo
-> float.
-> >
-> > Signed-off-by: Bryan Freed <bfreed@chromium.org>
-> > ---
-> >  drivers/staging/iio/light/isl29018.c |   35
-> +++++++++++++++++++++++++++++++++-
-> >  1 files changed, 34 insertions(+), 1 deletions(-)
-> >
-> > diff --git a/drivers/staging/iio/light/isl29018.c
-> b/drivers/staging/iio/light/isl29018.c
-> > index 4794ffd..cd88311 100644
-> > --- a/drivers/staging/iio/light/isl29018.c
-> > +++ b/drivers/staging/iio/light/isl29018.c
-> > @@ -57,6 +57,7 @@ struct isl29018_chip {
-> >       struct iio_dev          *indio_dev;
-> >       struct i2c_client       *client;
-> >       struct mutex            lock;
-> > +     unsigned int            lux_scale;
-> >       unsigned int            range;
-> >       unsigned int            adc_bit;
-> >       int                     prox_scheme;
-> > @@ -166,7 +167,7 @@ static int isl29018_read_lux(struct i2c_client
-> *client, int *lux)
-> >       if (lux_data < 0)
-> >               return lux_data;
-> >
-> > -     *lux = (lux_data * chip->range) >> chip->adc_bit;
-> > +     *lux = (lux_data * chip->range * chip->lux_scale) >> chip->adc_bit;
->
-> This calibscale property changes the output of the _input property.
-> Properties defined with _input I believe are designed to return values
-> in SI units. Wouldn't changing the scale, say to 1000, change the units
-> from like lux to say kilolux? Wouldn't it be more appropriate then to
-> return this calibrated value through illuminance_raw ?
->
-
-Yes, setting it to 1000 will give something like kilolux.  But putting the
-sensor under a glass that filters out 99.9% of the light returns the result
-to real SI units.  The addition of this file lets us tune each system to
-account for its Industrial Design (ie, glass and bezel hole).
-
-
-> >
-> >       return 0;
-> >  }
-> > @@ -264,6 +265,34 @@ static ssize_t get_sensor_data(struct device *dev,
-> char *buf, int mode)
-> >  }
-> >
-> >  /* Sysfs interface */
-> > +/* lux_scale */
-> > +static ssize_t show_lux_scale(struct device *dev,
-> > +                     struct device_attribute *attr, char *buf)
-> > +{
-> > +     struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> > +     struct isl29018_chip *chip = indio_dev->dev_data;
-> > +
-> > +     return sprintf(buf, "%d\n", chip->lux_scale);
-> > +}
-> > +
-> > +static ssize_t store_lux_scale(struct device *dev,
-> > +             struct device_attribute *attr, const char *buf, size_t
-> count)
-> > +{
-> > +     struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> > +     struct isl29018_chip *chip = indio_dev->dev_data;
-> > +     unsigned long lval;
-> > +
-> > +     lval = simple_strtoul(buf, NULL, 10);
-> > +     if (lval == 0)
-> > +             return -EINVAL;
-> > +
-> > +     mutex_lock(&chip->lock);
-> > +     chip->lux_scale = lval;
-> > +     mutex_unlock(&chip->lock);
-> > +
-> > +     return count;
-> > +}
-> > +
-> >  /* range */
-> >  static ssize_t show_range(struct device *dev,
-> >                       struct device_attribute *attr, char *buf)
-> > @@ -412,6 +441,8 @@ static
-> IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_supression,
-> >                                       show_prox_infrared_supression,
-> >                                       store_prox_infrared_supression, 0);
-> >  static IIO_DEVICE_ATTR(illuminance0_input, S_IRUGO, show_lux, NULL, 0);
-> > +static IIO_DEVICE_ATTR(illuminance0_calibscale, S_IRUGO | S_IWUSR,
-> > +                                     show_lux_scale, store_lux_scale,
-> 0);
-> >  static IIO_DEVICE_ATTR(intensity_infrared_raw, S_IRUGO, show_ir, NULL,
-> 0);
-> >  static IIO_DEVICE_ATTR(proximity_raw, S_IRUGO, show_proxim_ir, NULL, 0);
-> >
-> > @@ -424,6 +455,7 @@ static struct attribute *isl29018_attributes[] = {
-> >       ISL29018_CONST_ATTR(adc_resolution_available),
-> >       ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_supression),
-> >       ISL29018_DEV_ATTR(illuminance0_input),
-> > +     ISL29018_DEV_ATTR(illuminance0_calibscale),
-> >       ISL29018_DEV_ATTR(intensity_infrared_raw),
-> >       ISL29018_DEV_ATTR(proximity_raw),
-> >       NULL
-> > @@ -478,6 +510,7 @@ static int __devinit isl29018_probe(struct i2c_client
-> *client,
-> >
-> >       mutex_init(&chip->lock);
-> >
-> > +     chip->lux_scale = 1;
-> >       chip->range = 1000;
-> >       chip->adc_bit = 16;
-> >
->
-> Also, please update
-> drivers/staging/iio/Documentation/sysfs-bus-iio-light with definitions
-> for the calibscale property so that it is properly documented there.
->
-
-I will actually put it in sysfs-bus-iio since that is where all the other
-*_calibscale files are described.
+Patch coming...
 
 bryan.
 
+On Tue, Jun 28, 2011 at 4:10 PM, Bryan Freed <bfreed@chromium.org> wrote:
 
+> Hi Rhyland.
 >
-> -rhyland
+> On Tue, Jun 28, 2011 at 3:18 PM, Rhyland Klein <rklein@nvidia.com> wrote:
 >
+>> On Tue, 2011-06-28 at 15:00 -0700, Bryan Freed wrote:
+>> > Defaulting to 1, this gives a way to amplify the lux value before being
+>> > reduced by the programmed adc_bit shift.
+>> > Only support whole numbers right now.  When this driver is converted to
+>> the new
+>> > IIO_CHAN framework, it will be easy to support the framework's pseudo
+>> float.
+>> >
+>> > Signed-off-by: Bryan Freed <bfreed@chromium.org>
+>> > ---
+>> >  drivers/staging/iio/light/isl29018.c |   35
+>> +++++++++++++++++++++++++++++++++-
+>> >  1 files changed, 34 insertions(+), 1 deletions(-)
+>> >
+>> > diff --git a/drivers/staging/iio/light/isl29018.c
+>> b/drivers/staging/iio/light/isl29018.c
+>> > index 4794ffd..cd88311 100644
+>> > --- a/drivers/staging/iio/light/isl29018.c
+>> > +++ b/drivers/staging/iio/light/isl29018.c
+>> > @@ -57,6 +57,7 @@ struct isl29018_chip {
+>> >       struct iio_dev          *indio_dev;
+>> >       struct i2c_client       *client;
+>> >       struct mutex            lock;
+>> > +     unsigned int            lux_scale;
+>> >       unsigned int            range;
+>> >       unsigned int            adc_bit;
+>> >       int                     prox_scheme;
+>> > @@ -166,7 +167,7 @@ static int isl29018_read_lux(struct i2c_client
+>> *client, int *lux)
+>> >       if (lux_data < 0)
+>> >               return lux_data;
+>> >
+>> > -     *lux = (lux_data * chip->range) >> chip->adc_bit;
+>> > +     *lux = (lux_data * chip->range * chip->lux_scale) >>
+>> chip->adc_bit;
+>>
+>> This calibscale property changes the output of the _input property.
+>> Properties defined with _input I believe are designed to return values
+>> in SI units. Wouldn't changing the scale, say to 1000, change the units
+>> from like lux to say kilolux? Wouldn't it be more appropriate then to
+>> return this calibrated value through illuminance_raw ?
+>>
+>
+> Yes, setting it to 1000 will give something like kilolux.  But putting the
+> sensor under a glass that filters out 99.9% of the light returns the result
+> to real SI units.  The addition of this file lets us tune each system to
+> account for its Industrial Design (ie, glass and bezel hole).
+>
+>
+>> >
+>> >       return 0;
+>> >  }
+>> > @@ -264,6 +265,34 @@ static ssize_t get_sensor_data(struct device *dev,
+>> char *buf, int mode)
+>> >  }
+>> >
+>> >  /* Sysfs interface */
+>> > +/* lux_scale */
+>> > +static ssize_t show_lux_scale(struct device *dev,
+>> > +                     struct device_attribute *attr, char *buf)
+>> > +{
+>> > +     struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>> > +     struct isl29018_chip *chip = indio_dev->dev_data;
+>> > +
+>> > +     return sprintf(buf, "%d\n", chip->lux_scale);
+>> > +}
+>> > +
+>> > +static ssize_t store_lux_scale(struct device *dev,
+>> > +             struct device_attribute *attr, const char *buf, size_t
+>> count)
+>> > +{
+>> > +     struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>> > +     struct isl29018_chip *chip = indio_dev->dev_data;
+>> > +     unsigned long lval;
+>> > +
+>> > +     lval = simple_strtoul(buf, NULL, 10);
+>> > +     if (lval == 0)
+>> > +             return -EINVAL;
+>> > +
+>> > +     mutex_lock(&chip->lock);
+>> > +     chip->lux_scale = lval;
+>> > +     mutex_unlock(&chip->lock);
+>> > +
+>> > +     return count;
+>> > +}
+>> > +
+>> >  /* range */
+>> >  static ssize_t show_range(struct device *dev,
+>> >                       struct device_attribute *attr, char *buf)
+>> > @@ -412,6 +441,8 @@ static
+>> IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_supression,
+>> >                                       show_prox_infrared_supression,
+>> >                                       store_prox_infrared_supression,
+>> 0);
+>> >  static IIO_DEVICE_ATTR(illuminance0_input, S_IRUGO, show_lux, NULL, 0);
+>> > +static IIO_DEVICE_ATTR(illuminance0_calibscale, S_IRUGO | S_IWUSR,
+>> > +                                     show_lux_scale, store_lux_scale,
+>> 0);
+>> >  static IIO_DEVICE_ATTR(intensity_infrared_raw, S_IRUGO, show_ir, NULL,
+>> 0);
+>> >  static IIO_DEVICE_ATTR(proximity_raw, S_IRUGO, show_proxim_ir, NULL,
+>> 0);
+>> >
+>> > @@ -424,6 +455,7 @@ static struct attribute *isl29018_attributes[] = {
+>> >       ISL29018_CONST_ATTR(adc_resolution_available),
+>> >       ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_supression),
+>> >       ISL29018_DEV_ATTR(illuminance0_input),
+>> > +     ISL29018_DEV_ATTR(illuminance0_calibscale),
+>> >       ISL29018_DEV_ATTR(intensity_infrared_raw),
+>> >       ISL29018_DEV_ATTR(proximity_raw),
+>> >       NULL
+>> > @@ -478,6 +510,7 @@ static int __devinit isl29018_probe(struct
+>> i2c_client *client,
+>> >
+>> >       mutex_init(&chip->lock);
+>> >
+>> > +     chip->lux_scale = 1;
+>> >       chip->range = 1000;
+>> >       chip->adc_bit = 16;
+>> >
+>>
+>> Also, please update
+>> drivers/staging/iio/Documentation/sysfs-bus-iio-light with definitions
+>> for the calibscale property so that it is properly documented there.
+>>
+>
+> I will actually put it in sysfs-bus-iio since that is where all the other
+> *_calibscale files are described.
+>
+> bryan.
+>
+>
+>>
+>> -rhyland
+>>
+>>
 >
 
---0015174c448c2ea38404a6cdc7ee
+--000e0cd4bde23952a104a6cde543
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-<div class=3D"gmail_quote">Hi Rhyland.</div><div class=3D"gmail_quote"><br>=
-</div><div class=3D"gmail_quote">On Tue, Jun 28, 2011 at 3:18 PM, Rhyland K=
-lein <span dir=3D"ltr">&lt;<a href=3D"mailto:rklein@nvidia.com">rklein@nvid=
-ia.com</a>&gt;</span> wrote:<br>
+Well...<div><br></div><div>I supposed documenting illuminance0_calibscale i=
+s better done in=A0sysfs-bus-iio-light than sysfs-bus-iio.</div><div>sysfs-=
+bus-iio currently documents all the *_calibscale files, but=A0sysfs-bus-iio=
+-light documents all the=A0illuminance0 files.</div>
+<div><br></div><div>Patch coming...</div><div><br></div><div>bryan.</div><d=
+iv><br><div class=3D"gmail_quote">On Tue, Jun 28, 2011 at 4:10 PM, Bryan Fr=
+eed <span dir=3D"ltr">&lt;<a href=3D"mailto:bfreed@chromium.org">bfreed@chr=
+omium.org</a>&gt;</span> wrote:<br>
 <blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex;"><div><div></div><div class=3D"h5">On Tue, 2=
-011-06-28 at 15:00 -0700, Bryan Freed wrote:<br>
+x #ccc solid;padding-left:1ex;"><div class=3D"gmail_quote">Hi Rhyland.</div=
+><div class=3D"gmail_quote"><br></div><div class=3D"gmail_quote"><div><div>=
+</div>
+<div class=3D"h5">On Tue, Jun 28, 2011 at 3:18 PM, Rhyland Klein <span dir=
+=3D"ltr">&lt;<a href=3D"mailto:rklein@nvidia.com" target=3D"_blank">rklein@=
+nvidia.com</a>&gt;</span> wrote:<br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex"><div><div></div><div>On Tue, 2011-06-28 at 1=
+5:00 -0700, Bryan Freed wrote:<br>
 &gt; Defaulting to 1, this gives a way to amplify the lux value before bein=
 g<br>
 &gt; reduced by the programmed adc_bit shift.<br>
@@ -177,8 +206,8 @@ g<br>
 &gt; IIO_CHAN framework, it will be easy to support the framework&#39;s pse=
 udo float.<br>
 &gt;<br>
-&gt; Signed-off-by: Bryan Freed &lt;<a href=3D"mailto:bfreed@chromium.org">=
-bfreed@chromium.org</a>&gt;<br>
+&gt; Signed-off-by: Bryan Freed &lt;<a href=3D"mailto:bfreed@chromium.org" =
+target=3D"_blank">bfreed@chromium.org</a>&gt;<br>
 &gt; ---<br>
 &gt; =A0drivers/staging/iio/light/isl29018.c | =A0 35 +++++++++++++++++++++=
 ++++++++++++-<br>
@@ -216,14 +245,15 @@ in SI units. Wouldn&#39;t changing the scale, say to 1000, change the units=
 from like lux to say kilolux? Wouldn&#39;t it be more appropriate then to<b=
 r>
 return this calibrated value through illuminance_raw ?<br></blockquote><div=
-><br></div><div>Yes, setting it to 1000 will give something like kilolux. =
-=A0But putting the sensor under a glass that filters out 99.9% of the light=
- returns the result to real SI units. =A0The addition of this file lets us =
-tune each system to account for its Industrial Design (ie, glass and bezel =
-hole).</div>
+><br></div></div></div><div>Yes, setting it to 1000 will give something lik=
+e kilolux. =A0But putting the sensor under a glass that filters out 99.9% o=
+f the light returns the result to real SI units. =A0The addition of this fi=
+le lets us tune each system to account for its Industrial Design (ie, glass=
+ and bezel hole).</div>
+<div><div></div><div class=3D"h5">
 <div><br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex=
-;border-left:1px #ccc solid;padding-left:1ex;">
-<div><div></div><div class=3D"h5"><br>
+;border-left:1px #ccc solid;padding-left:1ex">
+<div><div></div><div><br>
 &gt;<br>
 &gt; =A0 =A0 =A0 return 0;<br>
 &gt; =A0}<br>
@@ -307,13 +337,16 @@ ent *client,<br>
 </div></div>Also, please update<br>
 drivers/staging/iio/Documentation/sysfs-bus-iio-light with definitions<br>
 for the calibscale property so that it is properly documented there.<br></b=
-lockquote><div><br></div><div>I will actually put it in sysfs-bus-iio since=
- that is where all the other *_calibscale files are described.</div><div>
+lockquote><div><br></div></div></div><div>I will actually put it in sysfs-b=
+us-iio since that is where all the other *_calibscale files are described.<=
+/div>
+<div>
 <br></div><div>bryan.</div><div>=A0</div><blockquote class=3D"gmail_quote" =
-style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;">
+style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
 <font color=3D"#888888"><br>
 -rhyland<br>
 <br>
 </font></blockquote></div><br>
+</blockquote></div><br></div>
 
---0015174c448c2ea38404a6cdc7ee--
+--000e0cd4bde23952a104a6cde543--
