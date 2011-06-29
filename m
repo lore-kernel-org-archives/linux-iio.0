@@ -1,29 +1,42 @@
-Return-Path: <rklein@nvidia.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:35347 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755172Ab1F2MGn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Jun 2011 08:06:43 -0400
+Message-ID: <4E0B1737.4060402@cam.ac.uk>
+Date: Wed, 29 Jun 2011 13:14:47 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
+To: Bryan Freed <bfreed@chromium.org>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	rklein@nvidia.com, gregkh@suse.de, arnd@arndb.de
 Subject: Re: [PATCH v2] light sensor: Add a calibscale file to the isl29018
  light sensor driver.
-From: Rhyland Klein <rklein@nvidia.com>
-To: Bryan Freed <bfreed@chromium.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "jic23@cam.ac.uk" <jic23@cam.ac.uk>, "gregkh@suse.de" <gregkh@suse.de>,
-        "arnd@arndb.de" <arnd@arndb.de>
-In-Reply-To: <1309304793-21886-1-git-send-email-bfreed@chromium.org>
 References: <1309304793-21886-1-git-send-email-bfreed@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 29 Jun 2011 10:40:45 -0700
-Message-ID: <1309369245.10209.21.camel@rklein-linux2>
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1309304793-21886-1-git-send-email-bfreed@chromium.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, 2011-06-28 at 16:46 -0700, Bryan Freed wrote:
+On 06/29/11 00:46, Bryan Freed wrote:
 > Defaulting to 1, this gives a way to amplify the lux value before being
 > reduced by the programmed adc_bit shift.
 > Only support whole numbers right now.  When this driver is converted to the new
 > IIO_CHAN framework, it will be easy to support the framework's pseudo float.
+Hohum. Guess I'll get round to the conversion at some point if no one else
+beats me to it, as long as someone with hardware can test that I don't mess it up!
 > 
 > Add illuminance0_calibscale documentation to sysfs-bus-iio-light.
+Hmm.. I do wonder if we should just squash that file into the main abi file.
+Overlaps like the one we have here just tend to lead to confusion + the
+fact there is a separate file sometimes means people don't also check
+the main abi docs.  I'd have acked this in either location currently.
+
+Anyhow, that's a job for another day.
 > 
 > Signed-off-by: Bryan Freed <bfreed@chromium.org>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+
 > ---
 >  .../staging/iio/Documentation/sysfs-bus-iio-light  |    8 ++++
 >  drivers/staging/iio/light/isl29018.c               |   35 +++++++++++++++++++-
@@ -127,6 +140,3 @@ On Tue, 2011-06-28 at 16:46 -0700, Bryan Freed wrote:
 >  	chip->adc_bit = 16;
 >  
 
-Seems fine with me.
-
-Acked-by: Rhyland Klein <rklein@nvidia.com>
