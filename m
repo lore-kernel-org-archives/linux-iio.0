@@ -1,137 +1,65 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:47543 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755450Ab1F2Ln4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Jun 2011 07:43:56 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
-Cc: device-drivers-devel@blackfin.uclinux.org,
-	ldewangan@nvidia.com,
-	shubhrajyoti@ti.com,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 21/24] staging:iio:accel:adis16204:  use peak_raw info_mask element + push some defs down from header.
-Date: Wed, 29 Jun 2011 12:51:53 +0100
-Message-Id: <1309348316-7699-22-git-send-email-jic23@cam.ac.uk>
+Cc: device-drivers-devel@blackfin.uclinux.org, ldewangan@nvidia.com,
+	shubhrajyoti@ti.com, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 20/24] staging:iio:various  header includes that should never have been.
+Date: Wed, 29 Jun 2011 12:51:52 +0100
+Message-Id: <1309348316-7699-21-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1309348316-7699-1-git-send-email-jic23@cam.ac.uk>
 References: <1309348316-7699-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Currently this is the only driver using some of the defines in accel.h.
-If these become common we'll just add them to the channel_spec options,
-for now push down into this driver.
+I will assume these were cut and pastes messup.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/adis16204_core.c |   47 ++++++++++++++++------------
- 1 files changed, 27 insertions(+), 20 deletions(-)
+ drivers/staging/iio/gyro/adis16260_ring.c |    1 -
+ drivers/staging/iio/imu/adis16400_ring.c  |    1 -
+ drivers/staging/iio/meter/ade7758_ring.c  |    1 -
+ 3 files changed, 0 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
-index cfd09b3..c5a46fd 100644
---- a/drivers/staging/iio/accel/adis16204_core.c
-+++ b/drivers/staging/iio/accel/adis16204_core.c
-@@ -21,8 +21,6 @@
+diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
+index a4df8b3..e9cff3b 100644
+--- a/drivers/staging/iio/gyro/adis16260_ring.c
++++ b/drivers/staging/iio/gyro/adis16260_ring.c
+@@ -13,7 +13,6 @@
  #include "../iio.h"
  #include "../sysfs.h"
- #include "../ring_generic.h"
--#include "accel.h"
--#include "../adc/adc.h"
+ #include "../ring_sw.h"
+-#include "../accel/accel.h"
+ #include "../trigger.h"
+ #include "adis16260.h"
  
- #include "adis16204.h"
+diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
+index 3612373..d07c86b 100644
+--- a/drivers/staging/iio/imu/adis16400_ring.c
++++ b/drivers/staging/iio/imu/adis16400_ring.c
+@@ -14,7 +14,6 @@
+ #include "../iio.h"
+ #include "../sysfs.h"
+ #include "../ring_sw.h"
+-#include "../accel/accel.h"
+ #include "../trigger.h"
+ #include "adis16400.h"
  
-@@ -299,12 +297,15 @@ static int adis16204_initial_setup(struct iio_dev *indio_dev)
- err_ret:
- 	return ret;
- }
-+
-+/* Unique to this driver currently */
-+#define IIO_DEV_ATTR_ACCEL_XY(_show, _addr)			\
-+	IIO_DEVICE_ATTR(accel_xy, S_IRUGO, _show, NULL, _addr)
-+#define IIO_DEV_ATTR_ACCEL_XYPEAK(_show, _addr)		\
-+	IIO_DEVICE_ATTR(accel_xypeak, S_IRUGO, _show, NULL, _addr)
-+
- static IIO_DEV_ATTR_ACCEL_XY(adis16204_read_14bit_signed,
- 		ADIS16204_XY_RSS_OUT);
--static IIO_DEV_ATTR_ACCEL_XPEAK(adis16204_read_14bit_signed,
--		ADIS16204_X_PEAK_OUT);
--static IIO_DEV_ATTR_ACCEL_YPEAK(adis16204_read_14bit_signed,
--		ADIS16204_Y_PEAK_OUT);
- static IIO_DEV_ATTR_ACCEL_XYPEAK(adis16204_read_14bit_signed,
- 		ADIS16204_XY_PEAK_OUT);
- static IIO_CONST_ATTR(accel_xy_scale, "0.017125");
-@@ -319,13 +320,16 @@ enum adis16204_channel {
- 	accel_y,
- };
+diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+index b89b7f8..e7a04b4 100644
+--- a/drivers/staging/iio/meter/ade7758_ring.c
++++ b/drivers/staging/iio/meter/ade7758_ring.c
+@@ -21,7 +21,6 @@
+ #include "../iio.h"
+ #include "../sysfs.h"
+ #include "../ring_sw.h"
+-#include "../accel/accel.h"
+ #include "../trigger.h"
+ #include "ade7758.h"
  
--static u8 adis16204_addresses[5][2] = {
-+static u8 adis16204_addresses[5][3] = {
- 	[in_supply] = { ADIS16204_SUPPLY_OUT },
- 	[in_aux] = { ADIS16204_AUX_ADC },
- 	[temp] = { ADIS16204_TEMP_OUT },
--	[accel_x] = { ADIS16204_XACCL_OUT, ADIS16204_XACCL_NULL },
--	[accel_y] = { ADIS16204_XACCL_OUT, ADIS16204_YACCL_NULL },
-+	[accel_x] = { ADIS16204_XACCL_OUT, ADIS16204_XACCL_NULL,
-+		      ADIS16204_X_PEAK_OUT },
-+	[accel_y] = { ADIS16204_XACCL_OUT, ADIS16204_YACCL_NULL,
-+		      ADIS16204_Y_PEAK_OUT },
- };
-+
- static int adis16204_read_raw(struct iio_dev *indio_dev,
- 			      struct iio_chan_spec const *chan,
- 			      int *val, int *val2,
-@@ -335,6 +339,7 @@ static int adis16204_read_raw(struct iio_dev *indio_dev,
- 	int bits;
- 	u8 addr;
- 	s16 val16;
-+	int addrind;
- 
- 	switch (mask) {
- 	case 0:
-@@ -385,15 +390,16 @@ static int adis16204_read_raw(struct iio_dev *indio_dev,
- 		*val = 25;
- 		return IIO_VAL_INT;
- 	case (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE):
--		switch (chan->type) {
--		case IIO_ACCEL:
-+	case (1 << IIO_CHAN_INFO_PEAK_SEPARATE):
-+		if (mask == (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE)) {
- 			bits = 12;
--			break;
--		default:
--			return -EINVAL;
--		};
-+			addrind = 1;
-+		} else { /* PEAK_SEPARATE */
-+			bits = 14;
-+			addrind = 2;
-+		}
- 		mutex_lock(&indio_dev->mlock);
--		addr = adis16204_addresses[chan->address][1];
-+		addr = adis16204_addresses[chan->address][addrind];
- 		ret = adis16204_spi_read_reg_16(indio_dev, addr, &val16);
- 		if (ret) {
- 			mutex_unlock(&indio_dev->mlock);
-@@ -449,21 +455,22 @@ static struct iio_chan_spec adis16204_channels[] = {
- 		 IIO_ST('u', 12, 16, 0), 0),
- 	IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_X,
- 		 (1 << IIO_CHAN_INFO_SCALE_SEPARATE) |
--		 (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE),
-+		 (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE) |
-+		 (1 << IIO_CHAN_INFO_PEAK_SEPARATE),
- 		 accel_x, ADIS16204_SCAN_ACC_X,
- 		 IIO_ST('s', 14, 16, 0), 0),
- 	IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_Y,
- 		 (1 << IIO_CHAN_INFO_SCALE_SEPARATE) |
--		 (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE),
-+		 (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE) |
-+		 (1 << IIO_CHAN_INFO_PEAK_SEPARATE),
- 		 accel_y, ADIS16204_SCAN_ACC_Y,
- 		 IIO_ST('s', 14, 16, 0), 0),
- 	IIO_CHAN_SOFT_TIMESTAMP(5),
- };
-+
- static struct attribute *adis16204_attributes[] = {
- 	&iio_dev_attr_reset.dev_attr.attr,
- 	&iio_dev_attr_accel_xy.dev_attr.attr,
--	&iio_dev_attr_accel_xpeak.dev_attr.attr,
--	&iio_dev_attr_accel_ypeak.dev_attr.attr,
- 	&iio_dev_attr_accel_xypeak.dev_attr.attr,
- 	&iio_const_attr_accel_xy_scale.dev_attr.attr,
- 	NULL
 -- 
 1.7.3.4
+
