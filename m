@@ -1,46 +1,48 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:55742 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752990Ab1F2UG1 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Jun 2011 16:06:27 -0400
-Date: 29 Jun 2011 20:41:06 +0100
-From: "J.I. Cameron" <jic23@cam.ac.uk>
-To: Dan Carpenter <error27@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-	Arnd Bergmann <arnd@arndb.de>, linux-iio@vger.kernel.org,
-	"open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [patch] Staging: iio: uninitialized variable in sca3000_probe()
-Message-ID: <Prayer.1.3.4.1106292041060.4512@hermes-2.csi.cam.ac.uk>
-In-Reply-To: <20110629184053.GI14591@shale.localdomain>
-References: <20110629184053.GI14591@shale.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
-	format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <error27@gmail.com>
+Date: Wed, 29 Jun 2011 21:22:21 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Michael Hennerich <michael.hennerich@analog.com>,
+	linux-iio@vger.kernel.org, Barry Song <barry.song@analog.com>,
+	"open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>
+Subject: [smatch stuff] iio: writing past the end of the array in
+ adis16201_read_ring_data()
+Message-ID: <20110629182220.GH14591@shale.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On Jun 29 2011, Dan Carpenter wrote:
+Smatch complains that there is a write past the end of the array in
+adis16201_read_ring_data().  I don't know the code well enough to
+fix it myself.
 
->We recently changed how "st" was allocated in 83f0422dc6a16
->"staging:iio:accel:sca3000: allocate state in iio_dev and use
->iio_priv to access."  Unfortunately this assignment was left out.
->
-Thanks,
->Signed-off-by: Dan Carpenter <error27@gmail.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
->
-> diff --git a/drivers/staging/iio/accel/sca3000_core.c 
-> b/drivers/staging/iio/accel/sca3000_core.c index 4313f73..603f5bc 100644 
-> --- a/drivers/staging/iio/accel/sca3000_core.c +++ 
-> b/drivers/staging/iio/accel/sca3000_core.c @@ -1133,6 +1133,7 @@ static 
-> int __devinit sca3000_probe(struct spi_device *spi)
-> 		goto error_ret;
-> 	}
-> 
->+	st = iio_priv(indio_dev);
-> 	spi_set_drvdata(spi, indio_dev);
-> 	st->us = spi;
-> 	mutex_init(&st->lock);
->
+drivers/staging/iio/accel/adis16201_ring.c +42
+	adis16201_read_ring_data(19) error: buffer overflow 'st->tx' 14 <= 14
+drivers/staging/iio/accel/adis16201_ring.c +44
+	adis16201_read_ring_data(21) error: buffer overflow 'st->tx' 14 <= 15
+
+    36          for (i = 0; i <= ADIS16201_OUTPUTS; i++) {
+                                 ^^^^^^^^^^^^^^^^^
+	ADIS16201_OUTPUTS is 7.
+
+    37                  xfers[i].bits_per_word = 8;
+    38                  xfers[i].cs_change = 1;
+    39                  xfers[i].len = 2;
+    40                  xfers[i].delay_usecs = 20;
+    41                  xfers[i].tx_buf = st->tx + 2 * i;
+    42                  st->tx[2 * i] = ADIS16201_READ_REG(ADIS16201_SUPPLY_OUT +
+                        ^^^^^^^^^^^^^
+	tx has 14 elements.  7 * 2 is one past the end of the array.
+
+    43                                                     2 * i);
+    44                  st->tx[2 * i + 1] = 0;
+                        ^^^^^^^^^^^^^^^^^
+	We're two spaces past the end of the array here.
+
+    45                  if (i >= 1)
+    46                          xfers[i].rx_buf = rx + 2 * (i - 1);
+    47                  spi_message_add_tail(&xfers[i], &msg);
+    48          }
+
+regards,
+dan carpenter
