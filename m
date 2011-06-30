@@ -1,204 +1,269 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: Jean Delvare <khali@linux-fr.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, Drivers <Drivers@analog.com>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>, Guenter Roeck
-	<guenter.roeck@ericsson.com>
-Date: Wed, 4 May 2011 19:45:36 +0100
-Subject: RE: [Device-drivers-devel] Oddities and how to handle them.
-Message-ID: <544AC56F16B56944AEC3BD4E3D5917713AAF0733FF@LIMKCMBX1.ad.analog.com>
-References: <4DB6EF2D.9090704@cam.ac.uk>	<4DB7FEE8.3080004@analog.com>
-	<4DB82B5C.5070900@cam.ac.uk>
-	<544AC56F16B56944AEC3BD4E3D5917713AAEE15859@LIMKCMBX1.ad.analog.com>
-	<4DB8322A.6050207@cam.ac.uk>
-	<544AC56F16B56944AEC3BD4E3D5917713AAEE15A62@LIMKCMBX1.ad.analog.com>
-	<4DB933E3.8070803@cam.ac.uk>	<20110428155118.041b84f2@endymion.delvare>
- <4DB977F2.7090002@cam.ac.uk> <4DB980A0.4040506@analog.com>
- <4DB98BE8.9060301@cam.ac.uk> <4DBAC97E.1090901@analog.com>
- <4DBAD336.3080006@cam.ac.uk> <4DBE652E.2040800@analog
- <4DBEC4C1.3070009@cam.ac.uk> <4DBFCA2D.3080105@analog.com>
- <4DBFCEE5.1090706@cam.ac.uk> <4DC04452.9010702@cam.ac.uk>
- <4DC130D6.9050600@cam.ac.uk>
-In-Reply-To: <4DC130D6.9050600@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Return-Path: <bfreed@google.com>
+From: Bryan Freed <bfreed@chromium.org>
+To: linux-kernel@vger.kernel.org
+Cc: jic23@cam.ac.uk, gregkh@suse.de, rklein@nvidia.com,
+        linux-iio@vger.kernel.org, Bryan Freed <bfreed@chromium.org>
+Subject: [PATCH] staging:iio:light:isl29018: Convert some of the isl29018 driver to the new IIO_CHAN framework.
+Date: Thu, 30 Jun 2011 12:46:04 -0700
+Message-Id: <1309463164-17775-1-git-send-email-bfreed@chromium.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron wrote on 2011-05-04:
-> On 05/03/11 19:07, Jonathan Cameron wrote:
->> On 05/03/11 10:46, Jonathan Cameron wrote:
->>> On 05/03/11 10:26, Michael Hennerich wrote:
->>>> On 05/02/2011 04:50 PM, Jonathan Cameron wrote:
->>>>>
->>>>>>>>>>
->>>>>>>>> We could prefix all inputs with in and all outputs with out,
->>>>>>>>> assuming we move voltages out of the way. Ultimately we didn't
->>>>>>>>> have any output devices when we started hammering the interfaces
->>>>>>>>> into shape.
->>>>>>>>>
->>>>>>>>>
->>>>>>>>>
->>>>>>>> That sounds right to me.
->>>>>>>>
->>>>>>>>
->>>>>>> We may need to do this gradually, or on the move from staging out
->>>>>>> into the main tree.  Whilst we are in staging, I know there are
->>>>>>> mainstream users of a few drivers.  Perhaps we just support old
->>>>>>> interface for them on a case by case basis.
->>>>>>>
->>>>>>> This will want a full proposal to lkml.
->>>>>>>
->>>>>>>
->>>>>>>>>
->>>>>>>>>> In addition we need to proper naming for what is input or
->>>>>>>>>> output - current, voltage, etc.
->>>>>>>>>>
->>>>>>>>>> The three power values can't be three different channels.
->>>>>>>>>> They are alternatives all on the same physical input
->>>>>>>>>> channel, and the naming should express this.
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>> Then it will have to be as modifiers.  Right now we tend to use
->>>>>>>>> them to group things.  So for accelerometers we can in theory
->>>>>>>>> have:
->>>>>>>>>
->>>>>>>>> accel0_x, accel0_y, accel1_x, etc. for chips implementing more
->>>>>>>>> than one sensor in a given direction.
->>>>>>>>>
->>>>>>>>> If we insist on same number meaning same physical ping then for
->>>>>>>>> typical inertial sensor the channel number would have to be
->>>>>>>>> unique. Thus take adis16400 we would need.
->>>>>>>>>
->>>>>>>>> in0_supply_raw
->>>>>>>>> gyro1_x_raw
->>>>>>>>> gyro2_y_raw
->>>>>>>>> gyro3_z_raw
->>>>>>>>> accel4_x_raw
->>>>>>>>> etc...
->>>>>>>>> which, whilst looking odd, wouldn't be a fundamental problem.
->>>>>>>>>
->>>>>>>>>
->>>>>>>>>
->>>>>>>> Agreed - that looks odd. And yes modifiers should work as well.
->>>>>>>> So we get to -
->>>>>>>>
->>>>>>>> in_powerX_Y_apparent_raw
->>>>>>>>
->>>>>>>> in_volatgeX_Y_rms_raw
->>>>>>>>
->>>>>>>> or
->>>>>>>>
->>>>>>>> inX_powerY_apparent_raw
->>>>>>>> inX_volatgeY_rms_raw
->>>>>>>> outX_volatgeY_raw
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>> I'm a little confused on what the Y is?  I would imagine we can
->>>>>>> only have one apparent power measure per channel.  The modifier
->>>>>>> will be into an enum associated with that 'apparent' label, much
->>>>>>> as we have 'x' for axis in devices where that makes sense.  We may
->>>>>>> want to move away from the passing a character approach for those
->>>>>>> modifiers as well so we have just one path.
->>>>>>>
->>>>>>>
->>>>>> Hi Jonathan,
->>>>>>
->>>>>> I'm now getting confused as well. Yes one apparent power measure
->>>>>> per channel is enough. Didn't you say that the 3 power values will
->>>>>> need to be different channels? My point was that we need a modifier
->>>>>> that identifies the physical input/output channel.
->>>>>>
->>>>> I was thinking of this other way around. We have perfectly good
->>>>> channel numbers. Lets use them for the physical channel, then use
->>>>> the modifiers to distinguish what we are dealing with.  Thus, here
->>>>> we have:
->>>>>
->>>>> Channel types
->>>>> Power,
->>>>> Voltage,
->>>>> Current,
->>>>> (for now keep voltage as inX as it will easier to do a separate
->>>>> series converting all drivers to new naming)
->>>>>
->>>>> for power, we define modifiers, apparent, active, reactive.
->>>>>
->>>>> for voltage and current we will define the modifier rms
->>>>>
->>>>> (this is a change to what I proposed earlier so as to allow for
->>>>> events on RMS values. For consistency we will probably want to move
->>>>> the existing channel info element peak_raw over to be a modifier as
->>>>> well - what we currently do with that is a dirty hack that will bite
->>>>> us at some point)
->>>>>
->>>>> We then define channel numbering, to be an 'indicator' of shared
->>>>> physical channel (i.e. pin).  I only say indicator so as to avoid a
->>>>> mass change of the tree in this driver patch. As with the channel
->>>>> renames, that wants to be a separate series.  It actually effects
->>>>> only a few channels on a few devices so isn't a big problem.
->>>>>
->>>>> By saying channel numbers indicate physical channels iff they are
->>>>> present we get around having to assign the to axes on the IMU's and
->>>>> accelerometers.
->>>>>
->>>>> So we end up with here (I've gone for raw everywhere to avoid
->>>>> reading the datasheet thoroughly!)
->>>>>
->>>>> power0_apparent_raw
->>>>> power0_active_raw
->>>>> power0_reactive_raw
->>>>> in0_raw (probably become voltage0_raw at a later date, from
->>>>> waveform register?)
->>>>>
->>>> Not sure if we need voltage0_raw and current0_raw as a none buffer
->>>> channel. These actual values are only interesting when they are
->>>> sampled at a fixed frequency.
->>> Cool. I wasn't sure about those.  Can conceive of devices that look at
->>> the exact wave form which want to do this, but agreed, it doesn't make
->>> sense for this one.. (and I have no idea if such a detailed device
->>> exists - can only think of being useful for looking at various DC to
->>> AC convertors...)
->>>>> in0_rms_raw in0_peak_raw (max value from set number of wave cycles -
->>>>> probably needs in0_peak_cycles as well?) curr0_raw (from waveform
->>>>> register?) curr0_rms_raw curr0_peak_raw (max value from set number
->>>>> of wave cycles..)
->>>>>
->>>>> Would this cover your requirements?  It generalizes well (I
->>>>> think) so I'm quite keen on doing it roughly like this...
->>>>>
->>>> Thanks, this covers things - and makes a lot of sense.
->>> I'm pushing the updated code all the way through the tree.  It will
->>> take a little while as this touches about half the driver updates.
->>> Note I'm also scrapping all but one of the IIO_CHAN macros as per the
->>> other branch of this thread.  As Arnd predicted they have turned
-> into a maintenance nightmare!
->>
->> I've pushed a fairly rough branch 'work' on the iio-onwards tree. As
->> the names of the last few commits show, it has some elements I should
->> have hacked off the top, but I've run out of time (pesky students) +
->> not sure what time I'll have for a few days.
->>
->> Still basic principal of what I described is there in the meantime.
->> Sorry it's touch messy!
-> Cleaned up somewhat and remembered to tack in the ability to do _input
-> attributes that I forgot in the last version (core support was partly
-> there - but not in the macros).
->
-> Pushed to the work branch. I need to do some doc fixes before
-> switching master over to this.
+Add the "proximity" string to the iio_chan_type_name_spec_shared list
+and rearrange the list to match the iio.h enum format for easy comparison.
 
-Thanks for the update - I'll switch to the work branch tomorrow.
-Still doing the ADE7758 cleanups on your michex branch.
+Remove the driver's get_sensor_data() interfaces and replace them with
+IIO_CHAN channels.  This converts 4 files to the new framework.
+Driver ABI change: The intensity_infrared_raw file is now intensity_ir_raw.
 
+Signed-off-by: Bryan Freed <bfreed@chromium.org>
+---
+ drivers/staging/iio/industrialio-core.c |   11 +-
+ drivers/staging/iio/light/isl29018.c    |  159 +++++++++++++-----------------
+ 2 files changed, 75 insertions(+), 95 deletions(-)
 
-Greetings,
-Michael
-
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368; Gesch=
-aeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret=
- Seif
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 94d3bfa..ef9a11e 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -44,20 +44,21 @@ struct bus_type iio_bus_type = {
+ EXPORT_SYMBOL(iio_bus_type);
+ 
+ static const char * const iio_chan_type_name_spec_shared[] = {
+-	[IIO_TIMESTAMP] = "timestamp",
+-	[IIO_ACCEL] = "accel",
+ 	[IIO_IN] = "in",
+ 	[IIO_CURRENT] = "current",
+ 	[IIO_POWER] = "power",
++	[IIO_ACCEL] = "accel",
+ 	[IIO_IN_DIFF] = "in-in",
+ 	[IIO_GYRO] = "gyro",
+-	[IIO_TEMP] = "temp",
+ 	[IIO_MAGN] = "magn",
++	[IIO_LIGHT] = "illuminance",
++	[IIO_INTENSITY] = "intensity",
++	[IIO_PROXIMITY] = "proximity",
++	[IIO_TEMP] = "temp",
+ 	[IIO_INCLI] = "incli",
+ 	[IIO_ROT] = "rot",
+-	[IIO_INTENSITY] = "intensity",
+-	[IIO_LIGHT] = "illuminance",
+ 	[IIO_ANGL] = "angl",
++	[IIO_TIMESTAMP] = "timestamp",
+ };
+ 
+ static const char * const iio_chan_type_name_spec_complex[] = {
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index cd88311..aac4e39 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -225,74 +225,7 @@ static int isl29018_read_proximity_ir(struct i2c_client *client, int scheme,
+ 	return 0;
+ }
+ 
+-static ssize_t get_sensor_data(struct device *dev, char *buf, int mode)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct isl29018_chip *chip = indio_dev->dev_data;
+-	struct i2c_client *client = chip->client;
+-	int value = 0;
+-	int status;
+-
+-	mutex_lock(&chip->lock);
+-	switch (mode) {
+-	case COMMMAND1_OPMODE_PROX_ONCE:
+-		status = isl29018_read_proximity_ir(client,
+-				chip->prox_scheme, &value);
+-		break;
+-
+-	case COMMMAND1_OPMODE_ALS_ONCE:
+-		status = isl29018_read_lux(client, &value);
+-		break;
+-
+-	case COMMMAND1_OPMODE_IR_ONCE:
+-		status = isl29018_read_ir(client, &value);
+-		break;
+-
+-	default:
+-		dev_err(&client->dev, "Mode %d is not supported\n", mode);
+-		mutex_unlock(&chip->lock);
+-		return -EBUSY;
+-	}
+-	if (status < 0) {
+-		dev_err(&client->dev, "Error in Reading data");
+-		mutex_unlock(&chip->lock);
+-		return status;
+-	}
+-
+-	mutex_unlock(&chip->lock);
+-
+-	return sprintf(buf, "%d\n", value);
+-}
+-
+ /* Sysfs interface */
+-/* lux_scale */
+-static ssize_t show_lux_scale(struct device *dev,
+-			struct device_attribute *attr, char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct isl29018_chip *chip = indio_dev->dev_data;
+-
+-	return sprintf(buf, "%d\n", chip->lux_scale);
+-}
+-
+-static ssize_t store_lux_scale(struct device *dev,
+-		struct device_attribute *attr, const char *buf, size_t count)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct isl29018_chip *chip = indio_dev->dev_data;
+-	unsigned long lval;
+-
+-	lval = simple_strtoul(buf, NULL, 10);
+-	if (lval == 0)
+-		return -EINVAL;
+-
+-	mutex_lock(&chip->lock);
+-	chip->lux_scale = lval;
+-	mutex_unlock(&chip->lock);
+-
+-	return count;
+-}
+-
+ /* range */
+ static ssize_t show_range(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+@@ -410,27 +343,78 @@ static ssize_t store_prox_infrared_supression(struct device *dev,
+ 	return count;
+ }
+ 
+-/* Read lux */
+-static ssize_t show_lux(struct device *dev,
+-		struct device_attribute *devattr, char *buf)
++/* Channel IO */
++static int isl29018_write_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      int val,
++			      int val2,
++			      long mask)
+ {
+-	return get_sensor_data(dev, buf, COMMMAND1_OPMODE_ALS_ONCE);
+-}
++	struct isl29018_chip *chip = indio_dev->dev_data;
++	int ret = -EINVAL;
+ 
+-/* Read ir */
+-static ssize_t show_ir(struct device *dev,
+-		struct device_attribute *devattr, char *buf)
+-{
+-	return get_sensor_data(dev, buf, COMMMAND1_OPMODE_IR_ONCE);
++	mutex_lock(&chip->lock);
++	if (mask == (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE) &&
++	    chan->type == IIO_LIGHT) {
++		chip->lux_scale = val;
++		ret = 0;
++	}
++	mutex_unlock(&chip->lock);
++
++	return 0;
+ }
+ 
+-/* Read nearest ir */
+-static ssize_t show_proxim_ir(struct device *dev,
+-		struct device_attribute *devattr, char *buf)
++static int isl29018_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val,
++			     int *val2,
++			     long mask)
+ {
+-	return get_sensor_data(dev, buf, COMMMAND1_OPMODE_PROX_ONCE);
++	int ret = -EINVAL;
++	struct isl29018_chip *chip = indio_dev->dev_data;
++	struct i2c_client *client = chip->client;
++
++	mutex_lock(&chip->lock);
++	switch (mask) {
++	case 0:
++		switch (chan->type) {
++		case IIO_LIGHT:
++			ret = isl29018_read_lux(client, val);
++			break;
++		case IIO_INTENSITY:
++			ret = isl29018_read_ir(client, val);
++			break;
++		case IIO_PROXIMITY:
++			ret = isl29018_read_proximity_ir(client,
++					chip->prox_scheme, val);
++			break;
++		default:
++			break;
++		}
++		if (!ret)
++			ret = IIO_VAL_INT;
++		break;
++	case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
++		if (chan->type == IIO_LIGHT) {
++			*val = chip->lux_scale;
++			ret = IIO_VAL_INT;
++		}
++		break;
++	default:
++		break;
++	}
++	mutex_unlock(&chip->lock);
++	return ret;
+ }
+ 
++#define LIGHT_INFO_MASK (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE)
++static const struct iio_chan_spec isl29018_channels[] = {
++	IIO_CHAN(IIO_LIGHT,     0, 1, 1, NULL, 0, 0, LIGHT_INFO_MASK,
++							0, 0, {}, 0),
++	IIO_CHAN(IIO_INTENSITY, 1, 0, 0, NULL, 0, 1, 0, 0, 0, {}, 0),
++	IIO_CHAN(IIO_PROXIMITY, 0, 0, 0, NULL, 0, 0, 0, 0, 0, {}, 0),
++};
++
+ static IIO_DEVICE_ATTR(range, S_IRUGO | S_IWUSR, show_range, store_range, 0);
+ static IIO_CONST_ATTR(range_available, "1000 4000 16000 64000");
+ static IIO_CONST_ATTR(adc_resolution_available, "4 8 12 16");
+@@ -440,11 +424,6 @@ static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_supression,
+ 					S_IRUGO | S_IWUSR,
+ 					show_prox_infrared_supression,
+ 					store_prox_infrared_supression, 0);
+-static IIO_DEVICE_ATTR(illuminance0_input, S_IRUGO, show_lux, NULL, 0);
+-static IIO_DEVICE_ATTR(illuminance0_calibscale, S_IRUGO | S_IWUSR,
+-					show_lux_scale, store_lux_scale, 0);
+-static IIO_DEVICE_ATTR(intensity_infrared_raw, S_IRUGO, show_ir, NULL, 0);
+-static IIO_DEVICE_ATTR(proximity_raw, S_IRUGO, show_proxim_ir, NULL, 0);
+ 
+ #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+ #define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
+@@ -454,10 +433,6 @@ static struct attribute *isl29018_attributes[] = {
+ 	ISL29018_DEV_ATTR(adc_resolution),
+ 	ISL29018_CONST_ATTR(adc_resolution_available),
+ 	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_supression),
+-	ISL29018_DEV_ATTR(illuminance0_input),
+-	ISL29018_DEV_ATTR(illuminance0_calibscale),
+-	ISL29018_DEV_ATTR(intensity_infrared_raw),
+-	ISL29018_DEV_ATTR(proximity_raw),
+ 	NULL
+ };
+ 
+@@ -490,6 +465,8 @@ static int isl29018_chip_init(struct i2c_client *client)
+ static const struct iio_info isl29108_info = {
+ 	.attrs = &isl29108_group,
+ 	.driver_module = THIS_MODULE,
++	.read_raw = &isl29018_read_raw,
++	.write_raw = &isl29018_write_raw,
+ };
+ 
+ static int __devinit isl29018_probe(struct i2c_client *client,
+@@ -524,6 +501,8 @@ static int __devinit isl29018_probe(struct i2c_client *client,
+ 		goto exit_free;
+ 	}
+ 	chip->indio_dev->info = &isl29108_info;
++	chip->indio_dev->channels = isl29018_channels;
++	chip->indio_dev->num_channels = ARRAY_SIZE(isl29018_channels);
+ 	chip->indio_dev->name = id->name;
+ 	chip->indio_dev->dev.parent = &client->dev;
+ 	chip->indio_dev->dev_data = (void *)(chip);
+-- 
+1.7.3.1
