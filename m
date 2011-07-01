@@ -1,205 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:49301 "EHLO
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:49302 "EHLO
 	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756203Ab1GAKDN (ORCPT
+	with ESMTP id S1756176Ab1GAKDN (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jul 2011 06:03:13 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: device-drivers-devel@blackfin.uclinux.org, ldewangan@nvidia.com,
 	shubhrajyoti@ti.com, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 17/25] staging:iio:accel: usused header removals.
-Date: Fri,  1 Jul 2011 11:11:08 +0100
-Message-Id: <1309515076-12323-18-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 16/25] staging:iio:gyro: remove gyro.h
+Date: Fri,  1 Jul 2011 11:11:07 +0100
+Message-Id: <1309515076-12323-17-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1309515076-12323-1-git-send-email-jic23@cam.ac.uk>
 References: <1309515076-12323-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Missing from the iio_chan_spec conversion patches.
+Not longer needed now all devices with gyro channels are using
+iio_chan_spec registration.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/adis16201_core.c |    4 ----
- drivers/staging/iio/accel/adis16201_ring.c |    1 -
- drivers/staging/iio/accel/adis16203_core.c |    3 ---
- drivers/staging/iio/accel/adis16203_ring.c |    1 -
- drivers/staging/iio/accel/adis16204_ring.c |    1 -
- drivers/staging/iio/accel/adis16209_core.c |    3 ---
- drivers/staging/iio/accel/adis16209_ring.c |    1 -
- drivers/staging/iio/accel/adis16240_core.c |    2 --
- drivers/staging/iio/accel/adis16240_ring.c |    1 -
- drivers/staging/iio/accel/lis3l02dq_core.c |    2 --
- drivers/staging/iio/accel/lis3l02dq_ring.c |    1 -
- drivers/staging/iio/accel/sca3000_core.c   |    1 -
- drivers/staging/iio/accel/sca3000_ring.c   |    1 -
- 13 files changed, 0 insertions(+), 22 deletions(-)
+ drivers/staging/iio/gyro/gyro.h |   85 ---------------------------------------
+ 1 files changed, 0 insertions(+), 85 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
-index cbc59c5..aff1118 100644
---- a/drivers/staging/iio/accel/adis16201_core.c
-+++ b/drivers/staging/iio/accel/adis16201_core.c
-@@ -18,10 +18,6 @@
- #include "../sysfs.h"
- #include "../ring_generic.h"
- 
--#include "accel.h"
--#include "inclinometer.h"
--#include "../adc/adc.h"
+diff --git a/drivers/staging/iio/gyro/gyro.h b/drivers/staging/iio/gyro/gyro.h
+deleted file mode 100644
+index b5495613..0000000
+--- a/drivers/staging/iio/gyro/gyro.h
++++ /dev/null
+@@ -1,85 +0,0 @@
 -
- #include "adis16201.h"
- 
- enum adis16201_chan {
-diff --git a/drivers/staging/iio/accel/adis16201_ring.c b/drivers/staging/iio/accel/adis16201_ring.c
-index 66e708d..aa4e465 100644
---- a/drivers/staging/iio/accel/adis16201_ring.c
-+++ b/drivers/staging/iio/accel/adis16201_ring.c
-@@ -10,7 +10,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "adis16201.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
-index bf19888..034115a 100644
---- a/drivers/staging/iio/accel/adis16203_core.c
-+++ b/drivers/staging/iio/accel/adis16203_core.c
-@@ -16,10 +16,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "accel.h"
--#include "inclinometer.h"
- #include "../ring_generic.h"
--#include "../adc/adc.h"
- 
- #include "adis16203.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
-index d2c07c5..7ca9c25 100644
---- a/drivers/staging/iio/accel/adis16203_ring.c
-+++ b/drivers/staging/iio/accel/adis16203_ring.c
-@@ -13,7 +13,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "adis16203.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16204_ring.c b/drivers/staging/iio/accel/adis16204_ring.c
-index 852df06..537d463 100644
---- a/drivers/staging/iio/accel/adis16204_ring.c
-+++ b/drivers/staging/iio/accel/adis16204_ring.c
-@@ -13,7 +13,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "adis16204.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-index 55f3a7b..70a7e29 100644
---- a/drivers/staging/iio/accel/adis16209_core.c
-+++ b/drivers/staging/iio/accel/adis16209_core.c
-@@ -18,9 +18,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_generic.h"
--#include "accel.h"
--#include "inclinometer.h"
--#include "../adc/adc.h"
- 
- #include "adis16209.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
-index 45017d3..77b70e3 100644
---- a/drivers/staging/iio/accel/adis16209_ring.c
-+++ b/drivers/staging/iio/accel/adis16209_ring.c
-@@ -13,7 +13,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "adis16209.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-index 4a4eafc..b9dd92d 100644
---- a/drivers/staging/iio/accel/adis16240_core.c
-+++ b/drivers/staging/iio/accel/adis16240_core.c
-@@ -21,8 +21,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_generic.h"
--#include "accel.h"
--#include "../adc/adc.h"
- 
- #include "adis16240.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
-index c812a34..3f1e159 100644
---- a/drivers/staging/iio/accel/adis16240_ring.c
-+++ b/drivers/staging/iio/accel/adis16240_ring.c
-@@ -13,7 +13,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "adis16240.h"
- 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
-index ba5bc67..c032d60 100644
---- a/drivers/staging/iio/accel/lis3l02dq_core.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_core.c
-@@ -26,8 +26,6 @@
- #include "../sysfs.h"
- #include "../ring_generic.h"
- 
--#include "accel.h"
+-#include "../sysfs.h"
 -
- #include "lis3l02dq.h"
- 
- /* At the moment the spi framework doesn't allow global setting of cs_change.
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index 5795f82..7305c78 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -12,7 +12,6 @@
- #include "../sysfs.h"
- #include "../ring_sw.h"
- #include "../kfifo_buf.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "lis3l02dq.h"
- 
-diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-index 4313f73..993542f 100644
---- a/drivers/staging/iio/accel/sca3000_core.c
-+++ b/drivers/staging/iio/accel/sca3000_core.c
-@@ -22,7 +22,6 @@
- #include "../sysfs.h"
- #include "../ring_generic.h"
- 
--#include "accel.h"
- #include "sca3000.h"
- 
- enum sca3000_variant {
-diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
-index a704c75..db9cf98 100644
---- a/drivers/staging/iio/accel/sca3000_ring.c
-+++ b/drivers/staging/iio/accel/sca3000_ring.c
-@@ -24,7 +24,6 @@
- #include "../sysfs.h"
- #include "../ring_generic.h"
- #include "../ring_hw.h"
--#include "accel.h"
- #include "sca3000.h"
- 
- /* RFC / future work
+-/* Gyroscope types of attribute */
+-
+-#define IIO_CONST_ATTR_GYRO_OFFSET(_string)	\
+-	IIO_CONST_ATTR(gyro_offset, _string)
+-
+-#define IIO_DEV_ATTR_GYRO_OFFSET(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(gyro_offset, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_X_OFFSET(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(gyro_x_offset, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_Y_OFFSET(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(gyro_y_offset, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_Z_OFFSET(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(gyro_z_offset, _mode, _show, _store, _addr)
+-
+-#define IIO_CONST_ATTR_GYRO_SCALE(_string)		\
+-	IIO_CONST_ATTR(gyro_scale, _string)
+-
+-#define IIO_DEV_ATTR_GYRO_SCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_scale, S_IRUGO, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_X_SCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_x_scale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_Y_SCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_y_scale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_Z_SCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_z_scale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_CALIBBIAS(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_calibbias, S_IRUGO, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_X_CALIBBIAS(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_x_calibbias, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_Y_CALIBBIAS(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_y_calibbias, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_Z_CALIBBIAS(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_z_calibbias, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_CALIBSCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_calibscale, S_IRUGO, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_X_CALIBSCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_x_calibscale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_Y_CALIBSCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_y_calibscale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_Z_CALIBSCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_z_calibscale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_Z_QUADRATURE_CORRECTION(_show, _addr)		\
+-	IIO_DEVICE_ATTR(gyro_z_quadrature_correction_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO(_show, _addr)			\
+-	IIO_DEVICE_ATTR(gyro_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_X(_show, _addr)			\
+-	IIO_DEVICE_ATTR(gyro_x_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_Y(_show, _addr)			\
+-	IIO_DEVICE_ATTR(gyro_y_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_GYRO_Z(_show, _addr)			\
+-	IIO_DEVICE_ATTR(gyro_z_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ANGL(_show, _addr)                         \
+-	IIO_DEVICE_ATTR(angl_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ANGL_X(_show, _addr)				\
+-	IIO_DEVICE_ATTR(angl_x_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ANGL_Y(_show, _addr)				\
+-	IIO_DEVICE_ATTR(angl_y_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ANGL_Z(_show, _addr)				\
+-	IIO_DEVICE_ATTR(angl_z_raw, S_IRUGO, _show, NULL, _addr)
 -- 
 1.7.3.4
 
