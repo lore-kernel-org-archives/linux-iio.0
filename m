@@ -1,256 +1,382 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:51215 "EHLO
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:49303 "EHLO
 	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751793Ab1GAMHo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jul 2011 08:07:44 -0400
-Message-ID: <4E0DBA76.6050200@cam.ac.uk>
-Date: Fri, 01 Jul 2011 13:15:50 +0100
+	with ESMTP id S1756192Ab1GAKDN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jul 2011 06:03:13 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, ldewangan@nvidia.com,
-	shubhrajyoti@ti.com
-Subject: Re: [PATCH 10/25] staging:iio:magnetometer:hmc5843 iio_chan_spec
- conversion.
-References: <1309515076-12323-1-git-send-email-jic23@cam.ac.uk> <1309515076-12323-11-git-send-email-jic23@cam.ac.uk> <4E0DA881.30608@iis.fraunhofer.de>
-In-Reply-To: <4E0DA881.30608@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-1
+To: linux-iio@vger.kernel.org
+Cc: device-drivers-devel@blackfin.uclinux.org, ldewangan@nvidia.com,
+	shubhrajyoti@ti.com, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 09/25] staging:iio:magnetometer:ak8975 convert to iio_chan_spec + cleanups.
+Date: Fri,  1 Jul 2011 11:11:00 +0100
+Message-Id: <1309515076-12323-10-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1309515076-12323-1-git-send-email-jic23@cam.ac.uk>
+References: <1309515076-12323-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/01/11 11:59, Manuel Stahl wrote:
-> On 01.07.2011 12:11, Jonathan Cameron wrote:
->> -static IIO_DEVICE_ATTR(magn_scale,
->> -            S_IRUGO,
->> -            show_scale,
->> -            NULL , 0);
->> +
->> +#define HMC5843_CHANNEL(axis, add)                    \
->> +    {                                \
->> +        .type = IIO_MAGN,                    \
->> +        .modified = 1,                        \
->> +        .channel2 = IIO_MOD_##axis,                \
->> +        .info_mask = (1<<  IIO_CHAN_INFO_SCALE_SHARED),        \
->> +        .address = add                        \
->> +    }
->> +
->> +static const struct iio_chan_spec hmc5843_channels[] = {
->> +    HMC5843_CHANNEL(X, HMC5843_DATA_OUT_X_MSB_REG),
->> +    HMC5843_CHANNEL(X, HMC5843_DATA_OUT_Y_MSB_REG),
->> +    HMC5843_CHANNEL(X, HMC5843_DATA_OUT_Z_MSB_REG),
->> +};
-> Shouldn't be all X, I guess.
-> 
-> Regards,
-> 
-Thanks.  This may be my worst patch set ever!
+iio_chan_spec conversion is straight forward.
 
-Fixed - patch follows.
+Other changes:
+* use i2c_smbus_write_byte_data in write_data
+* c99 isms to setup various structures.
+* move the comment about the scale factor and kill off trivial access func.
+* make mode setting code use a bool rather than a ulong.
 
-
-
-
-[PATCH 10/25 V3] staging:iio:magnetometer:hmc5843 iio_chan_spec conversion.
+Ultimately I'd like to get rid of that mode bit entirely and handle it through
+core pm routines, but have left it for now.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/magnetometer/hmc5843.c |   96 +++++++++++++++-------------
- 1 files changed, 51 insertions(+), 45 deletions(-)
+ drivers/staging/iio/magnetometer/ak8975.c |  214 ++++++++++++++---------------
+ 1 files changed, 103 insertions(+), 111 deletions(-)
 
-diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-index b44c273a..1bb7186 100644
---- a/drivers/staging/iio/magnetometer/hmc5843.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843.c
-@@ -24,7 +24,6 @@
- #include <linux/types.h>
+diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+index 33919e8..a17fa9f 100644
+--- a/drivers/staging/iio/magnetometer/ak8975.c
++++ b/drivers/staging/iio/magnetometer/ak8975.c
+@@ -31,7 +31,6 @@
+ #include <linux/gpio.h>
+ 
  #include "../iio.h"
- #include "../sysfs.h"
 -#include "magnet.h"
  
- #define HMC5843_I2C_ADDRESS			0x1E
- 
-@@ -62,9 +61,9 @@
  /*
-  * Device status
-  */
--#define	DATA_READY  				0x01
--#define	DATA_OUTPUT_LOCK  			0x02
--#define	VOLTAGE_REGULATOR_ENABLED  		0x04
-+#define	DATA_READY				0x01
-+#define	DATA_OUTPUT_LOCK			0x02
-+#define	VOLTAGE_REGULATOR_ENABLED		0x04
- 
- /*
-  * Mode register configuration
-@@ -89,22 +88,16 @@
- /*
-  * Device Configutration
-  */
--#define	CONF_NORMAL  				0x00
-+#define	CONF_NORMAL				0x00
- #define	CONF_POSITIVE_BIAS			0x01
- #define	CONF_NEGATIVE_BIAS			0x02
- #define	CONF_NOT_USED				0x03
- #define	MEAS_CONF_MASK				0x03
- 
--static const char *regval_to_scale[] = {
--	"0.0000006173",
--	"0.0000007692",
--	"0.0000010309",
--	"0.0000012821",
--	"0.0000018868",
--	"0.0000021739",
--	"0.0000025641",
--	"0.0000035714",
-+static int hmc5843_regval_to_nanoscale[] = {
-+	6173, 7692, 10309, 12821, 18868, 21739, 25641, 35714
+  * Register definitions, as well as various shifts and masks to get at the
+@@ -93,38 +92,28 @@ struct ak8975_data {
+ 	struct mutex		lock;
+ 	u8			asa[3];
+ 	long			raw_to_gauss[3];
+-	unsigned long		mode;
++	bool			mode;
+ 	u8			reg_cache[AK8975_MAX_REGS];
+ 	int			eoc_gpio;
+ 	int			eoc_irq;
  };
+ 
++static const int ak8975_index_to_reg[] = {
++	AK8975_REG_HXL, AK8975_REG_HYL, AK8975_REG_HZL,
++};
 +
- static const int regval_to_input_field_mg[] = {
- 	700,
- 	1000,
-@@ -115,7 +108,7 @@ static const int regval_to_input_field_mg[] = {
- 	4500,
- 	6500
- };
--static const char *regval_to_samp_freq[] = {
-+static const char * const regval_to_samp_freq[] = {
- 	"0.5",
- 	"1",
- 	"2",
-@@ -150,37 +143,28 @@ static s32 hmc5843_configure(struct i2c_client *client,
+ /*
+  * Helper function to write to the I2C device's registers.
+  */
+ static int ak8975_write_data(struct i2c_client *client,
+ 			     u8 reg, u8 val, u8 mask, u8 shift)
+ {
+-	u8 regval;
+-	struct i2c_msg msg;
+-	u8 w_data[2];
+-	int ret = 0;
+-
+ 	struct ak8975_data *data = i2c_get_clientdata(client);
++	u8 regval;
++	int ret;
+ 
+-	regval = data->reg_cache[reg];
+-	regval &= ~mask;
+-	regval |= val << shift;
+-
+-	w_data[0] = reg;
+-	w_data[1] = regval;
+-
+-	msg.addr = client->addr;
+-	msg.flags = 0;
+-	msg.len = 2;
+-	msg.buf = w_data;
+-
+-	ret = i2c_transfer(client->adapter, &msg, 1);
++	regval = (data->reg_cache[reg] & ~mask) | (val << shift);
++	ret = i2c_smbus_write_byte_data(client, reg, regval);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "Write to device fails status %x\n", ret);
+ 		return ret;
+@@ -140,21 +129,20 @@ static int ak8975_write_data(struct i2c_client *client,
+ static int ak8975_read_data(struct i2c_client *client,
+ 			    u8 reg, u8 length, u8 *buffer)
+ {
+-	struct i2c_msg msg[2];
+-	u8 w_data[2];
+ 	int ret;
+-
+-	w_data[0] = reg;
+-
+-	msg[0].addr = client->addr;
+-	msg[0].flags = I2C_M_NOSTART;	/* set repeated start and write */
+-	msg[0].len = 1;
+-	msg[0].buf = w_data;
+-
+-	msg[1].addr = client->addr;
+-	msg[1].flags = I2C_M_RD;
+-	msg[1].len = length;
+-	msg[1].buf = buffer;
++	struct i2c_msg msg[2] = {
++		{
++			.addr = client->addr,
++			.flags = I2C_M_NOSTART,
++			.len = 1,
++			.buf = &reg,
++		}, {
++			.addr = client->addr,
++			.flags = I2C_M_RD,
++			.len = length,
++			.buf = buffer,
++		}
++	};
+ 
+ 	ret = i2c_transfer(client->adapter, msg, 2);
+ 	if (ret < 0) {
+@@ -204,8 +192,41 @@ static int ak8975_setup(struct i2c_client *client)
+ 		return ret;
+ 	}
+ 
+-	/* Precalculate scale factor for each axis and
+-	   store in the device data. */
++/*
++ * Precalculate scale factor (in Gauss units) for each axis and
++ * store in the device data.
++ *
++ * This scale factor is axis-dependent, and is derived from 3 calibration
++ * factors ASA(x), ASA(y), and ASA(z).
++ *
++ * These ASA values are read from the sensor device at start of day, and
++ * cached in the device context struct.
++ *
++ * Adjusting the flux value with the sensitivity adjustment value should be
++ * done via the following formula:
++ *
++ * Hadj = H * ( ( ( (ASA-128)*0.5 ) / 128 ) + 1 )
++ *
++ * where H is the raw value, ASA is the sensitivity adjustment, and Hadj
++ * is the resultant adjusted value.
++ *
++ * We reduce the formula to:
++ *
++ * Hadj = H * (ASA + 128) / 256
++ *
++ * H is in the range of -4096 to 4095.  The magnetometer has a range of
++ * +-1229uT.  To go from the raw value to uT is:
++ *
++ * HuT = H * 1229/4096, or roughly, 3/10.
++ *
++ * Since 1uT = 100 gauss, our final scale factor becomes:
++ *
++ * Hadj = H * ((ASA + 128) / 256) * 3/10 * 100
++ * Hadj = H * ((ASA + 128) * 30 / 256
++ *
++ * Since ASA doesn't change, we cache the resultant scale factor into the
++ * device context in ak8975_setup().
++ */
+ 	data->raw_to_gauss[0] = ((data->asa[0] + 128) * 30) >> 8;
+ 	data->raw_to_gauss[1] = ((data->asa[1] + 128) * 30) >> 8;
+ 	data->raw_to_gauss[2] = ((data->asa[2] + 128) * 30) >> 8;
+@@ -222,7 +243,7 @@ static ssize_t show_mode(struct device *dev, struct device_attribute *devattr,
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ak8975_data *data = iio_priv(indio_dev);
+ 
+-	return sprintf(buf, "%lu\n", data->mode);
++	return sprintf(buf, "%u\n", data->mode);
  }
  
- /* Return the measurement value from the  specified channel */
--static ssize_t hmc5843_read_measurement(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
-+static int hmc5843_read_measurement(struct iio_dev *indio_dev,
-+				    int address,
-+				    int *val)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
--	s16 coordinate_val;
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	struct hmc5843_data *data = iio_priv(indio_dev);
- 	s32 result;
+ /*
+@@ -235,26 +256,22 @@ static ssize_t store_mode(struct device *dev, struct device_attribute *devattr,
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ak8975_data *data = iio_priv(indio_dev);
+ 	struct i2c_client *client = data->client;
+-	unsigned long oval;
++	bool value;
+ 	int ret;
+ 
+ 	/* Convert mode string and do some basic sanity checking on it.
+ 	   only 0 or 1 are valid. */
+-	if (strict_strtoul(buf, 10, &oval))
+-		return -EINVAL;
+-
+-	if (oval > 1) {
+-		dev_err(dev, "mode value is not supported\n");
+-		return -EINVAL;
+-	}
++	ret = strtobool(buf, &value);
++	if (ret < 0)
++		return ret;
  
  	mutex_lock(&data->lock);
--
- 	result = i2c_smbus_read_byte_data(client, HMC5843_STATUS_REG);
- 	while (!(result & DATA_READY))
- 		result = i2c_smbus_read_byte_data(client, HMC5843_STATUS_REG);
  
--	result = i2c_smbus_read_word_data(client, this_attr->address);
-+	result = i2c_smbus_read_word_data(client, address);
- 	mutex_unlock(&data->lock);
- 	if (result < 0)
- 		return -EINVAL;
+ 	/* Write the mode to the device. */
+-	if (data->mode != oval) {
++	if (data->mode != value) {
+ 		ret = ak8975_write_data(client,
+ 					AK8975_REG_CNTL,
+-					(u8)oval,
++					(u8)value,
+ 					AK8975_REG_CNTL_MODE_MASK,
+ 					AK8975_REG_CNTL_MODE_SHIFT);
  
--	coordinate_val	= (s16)swab16((u16)result);
--	return sprintf(buf, "%d\n", coordinate_val);
-+	*val	= (s16)swab16((u16)result);
-+	return IIO_VAL_INT;
- }
--static IIO_DEV_ATTR_MAGN_X(hmc5843_read_measurement,
--		HMC5843_DATA_OUT_X_MSB_REG);
--static IIO_DEV_ATTR_MAGN_Y(hmc5843_read_measurement,
--		HMC5843_DATA_OUT_Y_MSB_REG);
--static IIO_DEV_ATTR_MAGN_Z(hmc5843_read_measurement,
--		HMC5843_DATA_OUT_Z_MSB_REG);
-+
- 
- /*
-  * From the datasheet
-@@ -336,7 +320,7 @@ static s32 hmc5843_set_rate(struct i2c_client *client,
- 	reg_val = (data->meas_conf) |  (rate << RATE_OFFSET);
- 	if (rate >= RATE_NOT_USED) {
- 		dev_err(&client->dev,
--			"This data output rate is not supported \n");
-+			"This data output rate is not supported\n");
- 		return -EINVAL;
+@@ -263,7 +280,7 @@ static ssize_t store_mode(struct device *dev, struct device_attribute *devattr,
+ 			mutex_unlock(&data->lock);
+ 			return ret;
+ 		}
+-		data->mode = oval;
++		data->mode = value;
  	}
- 	return i2c_smbus_write_byte_data(client, HMC5843_CONFIG_REG_A, reg_val);
-@@ -467,28 +451,46 @@ static IIO_DEVICE_ATTR(magn_range,
- 			set_range,
- 			HMC5843_CONFIG_REG_B);
  
--static ssize_t show_scale(struct device *dev,
--			struct device_attribute *attr,
+ 	mutex_unlock(&data->lock);
+@@ -271,50 +288,6 @@ static ssize_t store_mode(struct device *dev, struct device_attribute *devattr,
+ 	return count;
+ }
+ 
+-/*
+- * Emits the scale factor to bring the raw value into Gauss units.
+- *
+- * This scale factor is axis-dependent, and is derived from 3 calibration
+- * factors ASA(x), ASA(y), and ASA(z).
+- *
+- * These ASA values are read from the sensor device at start of day, and
+- * cached in the device context struct.
+- *
+- * Adjusting the flux value with the sensitivity adjustment value should be
+- * done via the following formula:
+- *
+- * Hadj = H * ( ( ( (ASA-128)*0.5 ) / 128 ) + 1 )
+- *
+- * where H is the raw value, ASA is the sensitivity adjustment, and Hadj
+- * is the resultant adjusted value.
+- *
+- * We reduce the formula to:
+- *
+- * Hadj = H * (ASA + 128) / 256
+- *
+- * H is in the range of -4096 to 4095.  The magnetometer has a range of
+- * +-1229uT.  To go from the raw value to uT is:
+- *
+- * HuT = H * 1229/4096, or roughly, 3/10.
+- *
+- * Since 1uT = 100 gauss, our final scale factor becomes:
+- *
+- * Hadj = H * ((ASA + 128) / 256) * 3/10 * 100
+- * Hadj = H * ((ASA + 128) * 30 / 256
+- *
+- * Since ASA doesn't change, we cache the resultant scale factor into the
+- * device context in ak8975_setup().
+- */
+-static ssize_t show_scale(struct device *dev, struct device_attribute *devattr,
+-			  char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ak8975_data *data = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(devattr);
+-
+-	return sprintf(buf, "%ld\n", data->raw_to_gauss[this_attr->address]);
+-}
+-
+ static int wait_conversion_complete_gpio(struct ak8975_data *data)
+ {
+ 	struct i2c_client *client = data->client;
+@@ -371,13 +344,10 @@ static int wait_conversion_complete_polled(struct ak8975_data *data)
+ /*
+  * Emits the raw flux value for the x, y, or z axis.
+  */
+-static ssize_t show_raw(struct device *dev, struct device_attribute *devattr,
 -			char *buf)
-+static int hmc5843_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int *val, int *val2,
-+			    long mask)
++static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
  {
 -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct hmc5843_data *data = iio_priv(indio_dev);
--	return strlen(strcpy(buf, regval_to_scale[data->range]));
+ 	struct ak8975_data *data = iio_priv(indio_dev);
+ 	struct i2c_client *client = data->client;
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(devattr);
+ 	u16 meas_reg;
+ 	s16 raw;
+ 	u8 read_status;
+@@ -429,7 +399,8 @@ static ssize_t show_raw(struct device *dev, struct device_attribute *devattr,
+ 
+ 	/* Read the flux value from the appropriate register
+ 	   (the register is specified in the iio device attributes). */
+-	ret = ak8975_read_data(client, this_attr->address, 2, (u8 *)&meas_reg);
++	ret = ak8975_read_data(client, ak8975_index_to_reg[index],
++			       2, (u8 *)&meas_reg);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "Read axis data fails\n");
+ 		goto exit;
+@@ -442,30 +413,48 @@ static ssize_t show_raw(struct device *dev, struct device_attribute *devattr,
+ 
+ 	/* Clamp to valid range. */
+ 	raw = clamp_t(s16, raw, -4096, 4095);
+-
+-	return sprintf(buf, "%d\n", raw);
++	*val = raw;
++	return IIO_VAL_INT;
+ 
+ exit:
+ 	mutex_unlock(&data->lock);
+ 	return ret;
+ }
+ 
++static int ak8975_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2,
++			   long mask)
++{
++	struct ak8975_data *data = iio_priv(indio_dev);
 +
 +	switch (mask) {
 +	case 0:
-+		return hmc5843_read_measurement(indio_dev,
-+						chan->address,
-+						val);
-+	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
-+		*val = 0;
-+		*val2 = hmc5843_regval_to_nanoscale[data->range];
-+		return IIO_VAL_INT_PLUS_NANO;
-+	};
++		return ak8975_read_axis(indio_dev, chan->address, val);
++	case (1 << IIO_CHAN_INFO_SCALE_SEPARATE):
++		*val = data->raw_to_gauss[chan->address];
++		return IIO_VAL_INT;
++	}
 +	return -EINVAL;
- }
--static IIO_DEVICE_ATTR(magn_scale,
--			S_IRUGO,
--			show_scale,
--			NULL , 0);
++}
 +
-+#define HMC5843_CHANNEL(axis, add)					\
++#define AK8975_CHANNEL(axis, index)					\
 +	{								\
 +		.type = IIO_MAGN,					\
 +		.modified = 1,						\
 +		.channel2 = IIO_MOD_##axis,				\
-+		.info_mask = (1 << IIO_CHAN_INFO_SCALE_SHARED),		\
-+		.address = add						\
++		.info_mask = (1 << IIO_CHAN_INFO_SCALE_SEPARATE),	\
++		.address = index,					\
 +	}
 +
-+static const struct iio_chan_spec hmc5843_channels[] = {
-+	HMC5843_CHANNEL(X, HMC5843_DATA_OUT_X_MSB_REG),
-+	HMC5843_CHANNEL(Y, HMC5843_DATA_OUT_Y_MSB_REG),
-+	HMC5843_CHANNEL(Z, HMC5843_DATA_OUT_Z_MSB_REG),
++static const struct iio_chan_spec ak8975_channels[] = {
++	AK8975_CHANNEL(X, 0), AK8975_CHANNEL(Y, 1), AK8975_CHANNEL(Z, 2),
 +};
++
+ static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR, show_mode, store_mode, 0);
+-static IIO_DEV_ATTR_MAGN_X_SCALE(S_IRUGO, show_scale, NULL, 0);
+-static IIO_DEV_ATTR_MAGN_Y_SCALE(S_IRUGO, show_scale, NULL, 1);
+-static IIO_DEV_ATTR_MAGN_Z_SCALE(S_IRUGO, show_scale, NULL, 2);
+-static IIO_DEV_ATTR_MAGN_X(show_raw, AK8975_REG_HXL);
+-static IIO_DEV_ATTR_MAGN_Y(show_raw, AK8975_REG_HYL);
+-static IIO_DEV_ATTR_MAGN_Z(show_raw, AK8975_REG_HZL);
  
- static struct attribute *hmc5843_attributes[] = {
- 	&iio_dev_attr_meas_conf.dev_attr.attr,
- 	&iio_dev_attr_operating_mode.dev_attr.attr,
- 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
- 	&iio_dev_attr_magn_range.dev_attr.attr,
--	&iio_dev_attr_magn_scale.dev_attr.attr,
+ static struct attribute *ak8975_attr[] = {
+ 	&iio_dev_attr_mode.dev_attr.attr,
+-	&iio_dev_attr_magn_x_scale.dev_attr.attr,
+-	&iio_dev_attr_magn_y_scale.dev_attr.attr,
+-	&iio_dev_attr_magn_z_scale.dev_attr.attr,
 -	&iio_dev_attr_magn_x_raw.dev_attr.attr,
 -	&iio_dev_attr_magn_y_raw.dev_attr.attr,
 -	&iio_dev_attr_magn_z_raw.dev_attr.attr,
- 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
  	NULL
  };
-@@ -530,6 +532,7 @@ static void hmc5843_init_client(struct i2c_client *client)
  
- static const struct iio_info hmc5843_info = {
- 	.attrs = &hmc5843_group,
-+	.read_raw = &hmc5843_read_raw,
+@@ -475,6 +464,7 @@ static struct attribute_group ak8975_attr_group = {
+ 
+ static const struct iio_info ak8975_info = {
+ 	.attrs = &ak8975_attr_group,
++	.read_raw = &ak8975_read_raw,
  	.driver_module = THIS_MODULE,
  };
  
-@@ -558,6 +561,9 @@ static int hmc5843_probe(struct i2c_client *client,
- 	hmc5843_init_client(client);
- 
- 	indio_dev->info = &hmc5843_info;
-+	indio_dev->name = id->name;
-+	indio_dev->channels = hmc5843_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(hmc5843_channels);
+@@ -530,6 +520,8 @@ static int ak8975_probe(struct i2c_client *client,
+ 	data->eoc_irq = client->irq;
+ 	data->eoc_gpio = eoc_gpio;
  	indio_dev->dev.parent = &client->dev;
++	indio_dev->channels = ak8975_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
+ 	indio_dev->info = &ak8975_info;
  	indio_dev->modes = INDIO_DIRECT_MODE;
- 	err = iio_device_register(indio_dev);
+ 
 -- 
 1.7.3.4
 
