@@ -1,408 +1,325 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:45712 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755320Ab1GAIhv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jul 2011 04:37:51 -0400
+Message-ID: <4E0D8943.5040907@cam.ac.uk>
+Date: Fri, 01 Jul 2011 09:45:55 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org
-Cc: device-drivers-devel@blackfin.uclinux.org,
-	ldewangan@nvidia.com,
-	shubhrajyoti@ti.com,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 01/25] staging:iio:accel:kxsd9 cleanup and conversion to iio_chan_spec.
-Date: Fri,  1 Jul 2011 11:10:52 +0100
-Message-Id: <1309515076-12323-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1309515076-12323-1-git-send-email-jic23@cam.ac.uk>
-References: <1309515076-12323-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+MIME-Version: 1.0
+To: Bryan Freed <bfreed@chromium.org>
+CC: linux-kernel@vger.kernel.org, gregkh@suse.de, rklein@nvidia.com,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH] staging:iio:light:isl29018: Convert some of the isl29018
+ driver to the new IIO_CHAN framework.
+References: <1309463164-17775-1-git-send-email-bfreed@chromium.org>
+In-Reply-To: <1309463164-17775-1-git-send-email-bfreed@chromium.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Lots of minor bits and pieces.
+On 06/30/11 20:46, Bryan Freed wrote:
+> Add the "proximity" string to the iio_chan_type_name_spec_shared list
+> and rearrange the list to match the iio.h enum format for easy comparison.
+> 
+> Remove the driver's get_sensor_data() interfaces and replace them with
+> IIO_CHAN channels.  This converts 4 files to the new framework.
+> Driver ABI change: The intensity_infrared_raw file is now intensity_ir_raw.
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/accel/kxsd9.c |  268 +++++++++++++++----------------------
- 1 files changed, 105 insertions(+), 163 deletions(-)
+Hi Brian,
 
-diff --git a/drivers/staging/iio/accel/kxsd9.c b/drivers/staging/iio/accel/kxsd9.c
-index c8a358a..3f2d047 100644
---- a/drivers/staging/iio/accel/kxsd9.c
-+++ b/drivers/staging/iio/accel/kxsd9.c
-@@ -24,8 +24,6 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../adc/adc.h"
--#include "accel.h"
- 
- #define KXSD9_REG_X		0x00
- #define KXSD9_REG_Y		0x02
-@@ -34,10 +32,6 @@
- #define KXSD9_REG_RESET		0x0a
- #define KXSD9_REG_CTRL_C	0x0c
- 
--#define KXSD9_FS_8		0x00
--#define KXSD9_FS_6		0x01
--#define KXSD9_FS_4		0x02
--#define KXSD9_FS_2		0x03
- #define KXSD9_FS_MASK		0x03
- 
- #define KXSD9_REG_CTRL_B	0x0d
-@@ -46,13 +40,8 @@
- #define KXSD9_READ(a) (0x80 | (a))
- #define KXSD9_WRITE(a) (a)
- 
--#define KXSD9_SCALE_2G "0.011978"
--#define KXSD9_SCALE_4G "0.023927"
--#define KXSD9_SCALE_6G "0.035934"
--#define KXSD9_SCALE_8G "0.047853"
--
- #define KXSD9_STATE_RX_SIZE 2
--#define KXSD9_STATE_TX_SIZE 4
-+#define KXSD9_STATE_TX_SIZE 2
- /**
-  * struct kxsd9_state - device related storage
-  * @buf_lock:	protect the rx and tx buffers.
-@@ -67,170 +56,70 @@ struct kxsd9_state {
- 	u8 tx[KXSD9_STATE_TX_SIZE];
- };
- 
--/* This may want to move to mili g to allow for non integer ranges */
--static ssize_t kxsd9_read_scale(struct device *dev,
--				struct device_attribute *attr,
--				char *buf)
--{
--	int ret;
--	ssize_t len = 0;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct kxsd9_state *st = iio_priv(indio_dev);
--	struct spi_transfer xfer = {
--		.bits_per_word = 8,
--		.len = 2,
--		.cs_change = 1,
--		.tx_buf = st->tx,
--		.rx_buf = st->rx,
--	};
--	struct spi_message msg;
--
--	mutex_lock(&st->buf_lock);
--	st->tx[0] = KXSD9_READ(KXSD9_REG_CTRL_C);
--	st->tx[1] = 0;
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfer, &msg);
--	ret = spi_sync(st->us, &msg);
--	if (ret)
--		goto error_ret;
--
--	switch (st->rx[1] & KXSD9_FS_MASK) {
--	case KXSD9_FS_8:
--		len += sprintf(buf, "%s\n", KXSD9_SCALE_8G);
--		break;
--	case KXSD9_FS_6:
--		len += sprintf(buf, "%s\n", KXSD9_SCALE_6G);
--		break;
--	case KXSD9_FS_4:
--		len += sprintf(buf, "%s\n", KXSD9_SCALE_4G);
--		break;
--	case KXSD9_FS_2:
--		len += sprintf(buf, "%s\n", KXSD9_SCALE_2G);
--		break;
--	}
-+#define KXSD9_SCALE_2G "0.011978"
-+#define KXSD9_SCALE_4G "0.023927"
-+#define KXSD9_SCALE_6G "0.035934"
-+#define KXSD9_SCALE_8G "0.047853"
- 
--error_ret:
--	mutex_unlock(&st->buf_lock);
-+/* reverse order */
-+static const int kxsd9_micro_scales[4] = { 47853, 35934, 23927, 11978 };
- 
--	return ret ? ret : len;
--}
--static ssize_t kxsd9_write_scale(struct device *dev,
--				 struct device_attribute *attr,
--				 const char *buf,
--				 size_t len)
-+static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
- {
--
--	struct spi_message msg;
--	int ret;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	int ret, i;
- 	struct kxsd9_state *st = iio_priv(indio_dev);
--	u8 val;
--	struct spi_transfer xfers[] = {
--		{
--			.bits_per_word = 8,
--			.len = 2,
--			.cs_change = 1,
--			.tx_buf = st->tx,
--			.rx_buf = st->rx,
--		}, {
--			.bits_per_word = 8,
--			.len = 2,
--			.cs_change = 1,
--			.tx_buf = st->tx,
--		},
--	};
--
--	if (!strncmp(buf, KXSD9_SCALE_8G,
--		     strlen(buf) < strlen(KXSD9_SCALE_8G)
--		     ? strlen(buf) : strlen(KXSD9_SCALE_8G)))
--		val = KXSD9_FS_8;
--	else if (!strncmp(buf, KXSD9_SCALE_6G,
--			  strlen(buf) < strlen(KXSD9_SCALE_6G)
--			  ? strlen(buf) : strlen(KXSD9_SCALE_6G)))
--		val = KXSD9_FS_6;
--	else if (!strncmp(buf, KXSD9_SCALE_4G,
--			  strlen(buf) < strlen(KXSD9_SCALE_4G)
--			  ? strlen(buf) : strlen(KXSD9_SCALE_4G)))
--		val = KXSD9_FS_4;
--	else if (!strncmp(buf, KXSD9_SCALE_2G,
--			  strlen(buf) < strlen(KXSD9_SCALE_2G)
--			  ? strlen(buf) : strlen(KXSD9_SCALE_2G)))
--		val = KXSD9_FS_2;
--	else
-+	bool foundit = false;
-+
-+	for (i = 0; i < 4; i++)
-+		if (micro == kxsd9_micro_scales[i]) {
-+			foundit = true;
-+			break;
-+		}
-+	if (!foundit)
- 		return -EINVAL;
- 
- 	mutex_lock(&st->buf_lock);
--	st->tx[0] = KXSD9_READ(KXSD9_REG_CTRL_C);
--	st->tx[1] = 0;
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfers[0], &msg);
--	ret = spi_sync(st->us, &msg);
-+	ret = spi_w8r8(st->us, KXSD9_READ(KXSD9_REG_CTRL_C));
- 	if (ret)
- 		goto error_ret;
- 	st->tx[0] = KXSD9_WRITE(KXSD9_REG_CTRL_C);
--	st->tx[1] = (st->rx[1] & ~KXSD9_FS_MASK) | val;
-+	st->tx[1] = (ret & ~KXSD9_FS_MASK) | i;
- 
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfers[1], &msg);
--	ret = spi_sync(st->us, &msg);
-+	ret = spi_write(st->us, st->tx, 2);
- error_ret:
- 	mutex_unlock(&st->buf_lock);
--	return ret ? ret : len;
-+	return ret;
- }
- 
--static ssize_t kxsd9_read_accel(struct device *dev,
--				struct device_attribute *attr,
--				char *buf)
-+static int kxsd9_read(struct iio_dev *indio_dev, u8 address)
- {
- 	struct spi_message msg;
- 	int ret;
--	ssize_t len = 0;
--	u16 val;
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct kxsd9_state *st = iio_priv(indio_dev);
- 	struct spi_transfer xfers[] = {
- 		{
- 			.bits_per_word = 8,
- 			.len = 1,
--			.cs_change = 0,
- 			.delay_usecs = 200,
- 			.tx_buf = st->tx,
- 		}, {
- 			.bits_per_word = 8,
- 			.len = 2,
--			.cs_change = 1,
- 			.rx_buf = st->rx,
- 		},
- 	};
- 
- 	mutex_lock(&st->buf_lock);
--	st->tx[0] = KXSD9_READ(this_attr->address);
-+	st->tx[0] = KXSD9_READ(address);
- 	spi_message_init(&msg);
- 	spi_message_add_tail(&xfers[0], &msg);
- 	spi_message_add_tail(&xfers[1], &msg);
- 	ret = spi_sync(st->us, &msg);
- 	if (ret)
--		goto error_ret;
--	val = (((u16)(st->rx[0])) << 8) | (st->rx[1] & 0xF0);
--	len = sprintf(buf, "%d\n", val);
--error_ret:
--	mutex_unlock(&st->buf_lock);
--
--	return ret ? ret : len;
-+		return ret;
-+	return (((u16)(st->rx[0])) << 8) | (st->rx[1] & 0xF0);
- }
- 
--static IIO_DEV_ATTR_ACCEL_X(kxsd9_read_accel, KXSD9_REG_X);
--static IIO_DEV_ATTR_ACCEL_Y(kxsd9_read_accel, KXSD9_REG_Y);
--static IIO_DEV_ATTR_ACCEL_Z(kxsd9_read_accel, KXSD9_REG_Z);
--static IIO_DEV_ATTR_IN_RAW(0, kxsd9_read_accel, KXSD9_REG_AUX);
--
--static IIO_DEVICE_ATTR(accel_scale,
--		S_IRUGO | S_IWUSR,
--		kxsd9_read_scale,
--		kxsd9_write_scale,
--		0);
--
- static IIO_CONST_ATTR(accel_scale_available,
- 		KXSD9_SCALE_2G " "
- 		KXSD9_SCALE_4G " "
-@@ -238,48 +127,94 @@ static IIO_CONST_ATTR(accel_scale_available,
- 		KXSD9_SCALE_8G);
- 
- static struct attribute *kxsd9_attributes[] = {
--	&iio_dev_attr_accel_x_raw.dev_attr.attr,
--	&iio_dev_attr_accel_y_raw.dev_attr.attr,
--	&iio_dev_attr_accel_z_raw.dev_attr.attr,
--	&iio_dev_attr_in0_raw.dev_attr.attr,
--	&iio_dev_attr_accel_scale.dev_attr.attr,
- 	&iio_const_attr_accel_scale_available.dev_attr.attr,
- 	NULL,
- };
- 
-+static int kxsd9_write_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int val,
-+			   int val2,
-+			   long mask)
-+{
-+	int ret = -EINVAL;
-+
-+	if (mask == (1 << IIO_CHAN_INFO_SCALE_SHARED)) {
-+		/* Check no integer component */
-+		if (val)
-+			return -EINVAL;
-+		ret = kxsd9_write_scale(indio_dev, val2);
-+	}
-+
-+	return ret;
-+}
-+
-+static int kxsd9_read_raw(struct iio_dev *indio_dev,
-+			  struct iio_chan_spec const *chan,
-+			  int *val, int *val2, long mask)
-+{
-+	int ret = -EINVAL;
-+	struct kxsd9_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case 0:
-+		ret = kxsd9_read(indio_dev, chan->address);
-+		if (ret < 0)
-+			goto error_ret;
-+		*val = ret;
-+		break;
-+	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
-+		ret = spi_w8r8(st->us, KXSD9_READ(KXSD9_REG_CTRL_C));
-+		if (ret)
-+			goto error_ret;
-+		*val2 = kxsd9_micro_scales[ret & KXSD9_FS_MASK];
-+		ret = IIO_VAL_INT_PLUS_MICRO;
-+		break;
-+	};
-+
-+error_ret:
-+	return ret;
-+};
-+#define KXSD9_ACCEL_CHAN(axis)						\
-+	{								\
-+		.type = IIO_ACCEL,					\
-+		.modified = 1,						\
-+		.channel2 = IIO_MOD_##axis,				\
-+		.info_mask = 1 << IIO_CHAN_INFO_SCALE_SHARED,		\
-+		.address = KXSD9_REG_##axis,				\
-+	}
-+
-+static struct iio_chan_spec kxsd9_channels[] = {
-+	KXSD9_ACCEL_CHAN(X), KXSD9_ACCEL_CHAN(Y), KXSD9_ACCEL_CHAN(Z),
-+	{
-+		.type = IIO_IN,
-+		.indexed = 1,
-+		.address = KXSD9_REG_AUX,
-+	}
-+};
-+
- static const struct attribute_group kxsd9_attribute_group = {
- 	.attrs = kxsd9_attributes,
- };
- 
- static int __devinit kxsd9_power_up(struct kxsd9_state *st)
- {
--	struct spi_transfer xfers[2] = {
--		{
--			.bits_per_word = 8,
--			.len = 2,
--			.cs_change = 1,
--			.tx_buf = st->tx,
--		}, {
--			.bits_per_word = 8,
--			.len = 2,
--			.cs_change = 1,
--			.tx_buf = st->tx + 2,
--		},
--	};
--	struct spi_message msg;
-+	int ret;
-+
- 	st->tx[0] = 0x0d;
- 	st->tx[1] = 0x40;
--	st->tx[2] = 0x0c;
--	st->tx[3] = 0x9b;
--
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfers[0], &msg);
--	spi_message_add_tail(&xfers[1], &msg);
-+	ret = spi_write(st->us, st->tx, 2);
-+	if (ret)
-+		return ret;
- 
--	return spi_sync(st->us, &msg);
-+	st->tx[0] = 0x0c;
-+	st->tx[1] = 0x9b;
-+	return spi_write(st->us, st->tx, 2);
- };
- 
- static const struct iio_info kxsd9_info = {
-+	.read_raw = &kxsd9_read_raw,
-+	.write_raw = &kxsd9_write_raw,
- 	.attrs = &kxsd9_attribute_group,
- 	.driver_module = THIS_MODULE,
- };
-@@ -300,7 +235,9 @@ static int __devinit kxsd9_probe(struct spi_device *spi)
- 
- 	st->us = spi;
- 	mutex_init(&st->buf_lock);
--
-+	indio_dev->channels = kxsd9_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(kxsd9_channels);
-+	indio_dev->name = spi_get_device_id(spi)->name;
- 	indio_dev->dev.parent = &spi->dev;
- 	indio_dev->info = &kxsd9_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
-@@ -328,6 +265,10 @@ static int __devexit kxsd9_remove(struct spi_device *spi)
- 	return 0;
- }
- 
-+static const struct spi_device_id kxsd9_id[] = {
-+	{"kxsd9", 0}
-+};
-+
- static struct spi_driver kxsd9_driver = {
- 	.driver = {
- 		.name = "kxsd9",
-@@ -335,6 +276,7 @@ static struct spi_driver kxsd9_driver = {
- 	},
- 	.probe = kxsd9_probe,
- 	.remove = __devexit_p(kxsd9_remove),
-+	.id_table = kxsd9_id,
- };
- 
- static __init int kxsd9_spi_init(void)
--- 
-1.7.3.4
+Thanks for doing this. I know it's a bit more work, but could you please
+break this into 3 patches (right now the name hides the core changes!)
+
+1) Reorder the lists to match iio.h enum format (excellent point btw!)
+2) Add proximity to that list.
+3) Convert the driver.
+
+Couple of trivial notes inline.  One bug, but the others are really up to you.
+
+On another note, what is the use case for adc resolution control?  The read
+path is slow anyway so does it ever hurt the application to just read at
+full resolution?
+
+Thanks,
+
+Jonathan
+
+> 
+> Signed-off-by: Bryan Freed <bfreed@chromium.org>
+> ---
+>  drivers/staging/iio/industrialio-core.c |   11 +-
+>  drivers/staging/iio/light/isl29018.c    |  159 +++++++++++++-----------------
+>  2 files changed, 75 insertions(+), 95 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+> index 94d3bfa..ef9a11e 100644
+> --- a/drivers/staging/iio/industrialio-core.c
+> +++ b/drivers/staging/iio/industrialio-core.c
+> @@ -44,20 +44,21 @@ struct bus_type iio_bus_type = {
+>  EXPORT_SYMBOL(iio_bus_type);
+>  
+>  static const char * const iio_chan_type_name_spec_shared[] = {
+> -	[IIO_TIMESTAMP] = "timestamp",
+> -	[IIO_ACCEL] = "accel",
+>  	[IIO_IN] = "in",
+>  	[IIO_CURRENT] = "current",
+>  	[IIO_POWER] = "power",
+> +	[IIO_ACCEL] = "accel",
+>  	[IIO_IN_DIFF] = "in-in",
+>  	[IIO_GYRO] = "gyro",
+> -	[IIO_TEMP] = "temp",
+>  	[IIO_MAGN] = "magn",
+> +	[IIO_LIGHT] = "illuminance",
+> +	[IIO_INTENSITY] = "intensity",
+> +	[IIO_PROXIMITY] = "proximity",
+> +	[IIO_TEMP] = "temp",
+>  	[IIO_INCLI] = "incli",
+>  	[IIO_ROT] = "rot",
+> -	[IIO_INTENSITY] = "intensity",
+> -	[IIO_LIGHT] = "illuminance",
+>  	[IIO_ANGL] = "angl",
+> +	[IIO_TIMESTAMP] = "timestamp",
+>  };
+>  
+>  static const char * const iio_chan_type_name_spec_complex[] = {
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index cd88311..aac4e39 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -225,74 +225,7 @@ static int isl29018_read_proximity_ir(struct i2c_client *client, int scheme,
+>  	return 0;
+>  }
+>  
+> -static ssize_t get_sensor_data(struct device *dev, char *buf, int mode)
+> -{
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> -	struct isl29018_chip *chip = indio_dev->dev_data;
+> -	struct i2c_client *client = chip->client;
+> -	int value = 0;
+> -	int status;
+> -
+> -	mutex_lock(&chip->lock);
+> -	switch (mode) {
+> -	case COMMMAND1_OPMODE_PROX_ONCE:
+> -		status = isl29018_read_proximity_ir(client,
+> -				chip->prox_scheme, &value);
+> -		break;
+> -
+> -	case COMMMAND1_OPMODE_ALS_ONCE:
+> -		status = isl29018_read_lux(client, &value);
+> -		break;
+> -
+> -	case COMMMAND1_OPMODE_IR_ONCE:
+> -		status = isl29018_read_ir(client, &value);
+> -		break;
+> -
+> -	default:
+> -		dev_err(&client->dev, "Mode %d is not supported\n", mode);
+> -		mutex_unlock(&chip->lock);
+> -		return -EBUSY;
+> -	}
+> -	if (status < 0) {
+> -		dev_err(&client->dev, "Error in Reading data");
+> -		mutex_unlock(&chip->lock);
+> -		return status;
+> -	}
+> -
+> -	mutex_unlock(&chip->lock);
+> -
+> -	return sprintf(buf, "%d\n", value);
+> -}
+> -
+>  /* Sysfs interface */
+> -/* lux_scale */
+> -static ssize_t show_lux_scale(struct device *dev,
+> -			struct device_attribute *attr, char *buf)
+> -{
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> -	struct isl29018_chip *chip = indio_dev->dev_data;
+> -
+> -	return sprintf(buf, "%d\n", chip->lux_scale);
+> -}
+> -
+> -static ssize_t store_lux_scale(struct device *dev,
+> -		struct device_attribute *attr, const char *buf, size_t count)
+> -{
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> -	struct isl29018_chip *chip = indio_dev->dev_data;
+> -	unsigned long lval;
+> -
+> -	lval = simple_strtoul(buf, NULL, 10);
+> -	if (lval == 0)
+> -		return -EINVAL;
+> -
+> -	mutex_lock(&chip->lock);
+> -	chip->lux_scale = lval;
+> -	mutex_unlock(&chip->lock);
+> -
+> -	return count;
+> -}
+> -
+>  /* range */
+>  static ssize_t show_range(struct device *dev,
+>  			struct device_attribute *attr, char *buf)
+> @@ -410,27 +343,78 @@ static ssize_t store_prox_infrared_supression(struct device *dev,
+>  	return count;
+>  }
+>  
+> -/* Read lux */
+> -static ssize_t show_lux(struct device *dev,
+> -		struct device_attribute *devattr, char *buf)
+> +/* Channel IO */
+> +static int isl29018_write_raw(struct iio_dev *indio_dev,
+> +			      struct iio_chan_spec const *chan,
+> +			      int val,
+> +			      int val2,
+> +			      long mask)
+>  {
+> -	return get_sensor_data(dev, buf, COMMMAND1_OPMODE_ALS_ONCE);
+> -}
+> +	struct isl29018_chip *chip = indio_dev->dev_data;
+> +	int ret = -EINVAL;
+>  
+> -/* Read ir */
+> -static ssize_t show_ir(struct device *dev,
+> -		struct device_attribute *devattr, char *buf)
+> -{
+> -	return get_sensor_data(dev, buf, COMMMAND1_OPMODE_IR_ONCE);
+> +	mutex_lock(&chip->lock);
+> +	if (mask == (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE) &&
+> +	    chan->type == IIO_LIGHT) {
+> +		chip->lux_scale = val;
+> +		ret = 0;
+> +	}
+> +	mutex_unlock(&chip->lock);
+> +
+> +	return 0;
+>  }
+>  
+> -/* Read nearest ir */
+> -static ssize_t show_proxim_ir(struct device *dev,
+> -		struct device_attribute *devattr, char *buf)
+> +static int isl29018_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val,
+> +			     int *val2,
+> +			     long mask)
+>  {
+> -	return get_sensor_data(dev, buf, COMMMAND1_OPMODE_PROX_ONCE);
+> +	int ret = -EINVAL;
+> +	struct isl29018_chip *chip = indio_dev->dev_data;
+> +	struct i2c_client *client = chip->client;
+> +
+> +	mutex_lock(&chip->lock);
+> +	switch (mask) {
+> +	case 0:
+> +		switch (chan->type) {
+> +		case IIO_LIGHT:
+> +			ret = isl29018_read_lux(client, val);
+> +			break;
+> +		case IIO_INTENSITY:
+> +			ret = isl29018_read_ir(client, val);
+> +			break;
+> +		case IIO_PROXIMITY:
+> +			ret = isl29018_read_proximity_ir(client,
+> +					chip->prox_scheme, val);
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +		if (!ret)
+> +			ret = IIO_VAL_INT;
+> +		break;
+> +	case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
+> +		if (chan->type == IIO_LIGHT) {
+> +			*val = chip->lux_scale;
+> +			ret = IIO_VAL_INT;
+> +		}
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +	mutex_unlock(&chip->lock);
+> +	return ret;
+>  }
+>  
+> +#define LIGHT_INFO_MASK (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE)
+> +static const struct iio_chan_spec isl29018_channels[] = {
+> +	IIO_CHAN(IIO_LIGHT,     0, 1, 1, NULL, 0, 0, LIGHT_INFO_MASK,
+> +							0, 0, {}, 0),
+> +	IIO_CHAN(IIO_INTENSITY, 1, 0, 0, NULL, 0, 1, 0, 0, 0, {}, 0),
+> +	IIO_CHAN(IIO_PROXIMITY, 0, 0, 0, NULL, 0, 0, 0, 0, 0, {}, 0),
+> +};
+Given these are very simply, I'd prefer explicit initialization of the
+structure. (I've only done this myself in the very latest changes, but
+it is easier to follow as long as it doesn't cost obscene numbers of lines)
+It also quickly highlights any issues. For example compare the above with
+what I think we want. (Yes it's longer, but it is clearer to read and not
+that long really!)
+
+static const struct iio_chan_spec isl29018[] = {
+       {
+		.type = IIO_LIGHT,
+		.indexed = 1,
+		.channel = 0, /* clearer to put this here than not */
+		.processed_val = 1,
+		.info_mask = (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE),
+		
+	}, {
+		.type = IIO_INTENSITY,
+		.modfiied = 1,
+		.channel2 = IIO_MOD_LIGHT_IR,
+		/* missing modfifier spec
+		 * gives wrong one LIGHT_BOTH in above macro usage */
+	}, {
+		.type = IIO_PROXIMITY,
+		/* I'd possibly argue this one should be indexed, but that would be an abi change */
+	}   
+};
+> +
+>  static IIO_DEVICE_ATTR(range, S_IRUGO | S_IWUSR, show_range, store_range, 0);
+>  static IIO_CONST_ATTR(range_available, "1000 4000 16000 64000");
+>  static IIO_CONST_ATTR(adc_resolution_available, "4 8 12 16");
+> @@ -440,11 +424,6 @@ static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_supression,
+>  					S_IRUGO | S_IWUSR,
+>  					show_prox_infrared_supression,
+>  					store_prox_infrared_supression, 0);
+> -static IIO_DEVICE_ATTR(illuminance0_input, S_IRUGO, show_lux, NULL, 0);
+> -static IIO_DEVICE_ATTR(illuminance0_calibscale, S_IRUGO | S_IWUSR,
+> -					show_lux_scale, store_lux_scale, 0);
+> -static IIO_DEVICE_ATTR(intensity_infrared_raw, S_IRUGO, show_ir, NULL, 0);
+> -static IIO_DEVICE_ATTR(proximity_raw, S_IRUGO, show_proxim_ir, NULL, 0);
+>  
+>  #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+>  #define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
+> @@ -454,10 +433,6 @@ static struct attribute *isl29018_attributes[] = {
+>  	ISL29018_DEV_ATTR(adc_resolution),
+>  	ISL29018_CONST_ATTR(adc_resolution_available),
+>  	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_supression),
+> -	ISL29018_DEV_ATTR(illuminance0_input),
+> -	ISL29018_DEV_ATTR(illuminance0_calibscale),
+> -	ISL29018_DEV_ATTR(intensity_infrared_raw),
+> -	ISL29018_DEV_ATTR(proximity_raw),
+>  	NULL
+>  };
+>  
+> @@ -490,6 +465,8 @@ static int isl29018_chip_init(struct i2c_client *client)
+>  static const struct iio_info isl29108_info = {
+>  	.attrs = &isl29108_group,
+>  	.driver_module = THIS_MODULE,
+> +	.read_raw = &isl29018_read_raw,
+> +	.write_raw = &isl29018_write_raw,
+>  };
+>  
+>  static int __devinit isl29018_probe(struct i2c_client *client,
+> @@ -524,6 +501,8 @@ static int __devinit isl29018_probe(struct i2c_client *client,
+>  		goto exit_free;
+>  	}
+>  	chip->indio_dev->info = &isl29108_info;
+> +	chip->indio_dev->channels = isl29018_channels;
+> +	chip->indio_dev->num_channels = ARRAY_SIZE(isl29018_channels);
+>  	chip->indio_dev->name = id->name;
+>  	chip->indio_dev->dev.parent = &client->dev;
+>  	chip->indio_dev->dev_data = (void *)(chip);
+
