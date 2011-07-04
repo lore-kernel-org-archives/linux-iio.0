@@ -1,128 +1,57 @@
-Return-Path: <nroyer@invensense.com>
-From: Nathan Royer <nroyer@invensense.com>
-References: <1309486707-1658-1-git-send-email-nroyer@invensense.com>
-	<4E0D8E94.5030604@cam.ac.uk>	<4d61a92a11e5d83a1cb0094441ae5f5e@mail.gmail.com>
-	<4E105284.7030209@cam.ac.uk> <20110704091658.0d4c8e3f@bob.linux.org.uk>
- <c2189246a279a0e5a1b8599edc94a79a@mail.gmail.com> <4E1425E0.2070408@cam.ac.uk>
-In-Reply-To: <4E1425E0.2070408@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:60296 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756588Ab1GDIxG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Jul 2011 04:53:06 -0400
+Message-ID: <4E118157.3020906@cam.ac.uk>
+Date: Mon, 04 Jul 2011 10:01:11 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-Date: Wed, 6 Jul 2011 13:25:43 -0700
-Message-ID: <7c63d523bcbec36ba226968f20249823@mail.gmail.com>
-Subject: RE: [PATCH 01/11] misc: inv_mpu primary header file and README file.
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Alan Cox <alan@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>,
-	Greg Kroah-Hartman <gregkh@suse.de>, Jiri Kosina <jkosina@suse.cz>, Jean Delvare <khali@linux-fr.org>,
-	linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-	Chris Hudson <chudson@kionix.com>, eric.andersson@unixphere.com, eric.miao@linaro.org,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>, linux-iio@vger.kernel.org
+To: Chris Forbes <chrisf@ijw.co.nz>
+CC: Greg Kroah-Hartman <gregkh@suse.de>, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] drivers: staging: iio: adc: fix uninitialized use
+References: <1309657621-21711-1-git-send-email-chrisf@ijw.co.nz>
+In-Reply-To: <1309657621-21711-1-git-send-email-chrisf@ijw.co.nz>
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> It is only intended for those rare
-> cases where someone really wants to use a 1000 dolar IMU as a mouse.
-> Not relevant here though.
+On 07/03/11 02:47, Chris Forbes wrote:
+> Fixed an uninitialized variable access. In the first two error paths in
+> max1363_probe(), 'st' is not yet initialized, but its 'reg' member is
+> accessed anyway. This would most likely crash.
+Good spot. Please tech TODO files for staging patches. In this case it would
+have given you the mailing list, now cc'd.
+> 
+> The intended value for st->reg *is* available at that point in 'reg',
+> so just use that directly.
+> 
+> Signed-off-by: Chris Forbes <chrisf@ijw.co.nz>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+> ---
+>  drivers/staging/iio/adc/max1363_core.c |    8 ++++----
+>  1 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
+> index 98cebd2..ebecf14 100644
+> --- a/drivers/staging/iio/adc/max1363_core.c
+> +++ b/drivers/staging/iio/adc/max1363_core.c
+> @@ -1335,11 +1335,11 @@ error_free_device:
+>  	else
+>  		iio_device_unregister(indio_dev);
+>  error_disable_reg:
+> -	if (!IS_ERR(st->reg))
+> -		regulator_disable(st->reg);
+> +	if (!IS_ERR(reg))
+> +		regulator_disable(reg);
+>  error_put_reg:
+> -	if (!IS_ERR(st->reg))
+> -		regulator_put(st->reg);
+> +	if (!IS_ERR(reg))
+> +		regulator_put(reg);
+>  
+>  	return ret;
+>  }
 
-We have a mouse application that is significantly less expensive than
-$1000, so it might actually be relevant, in the future.
-
-> > If the DMP is
-> err, DMP?
-
-Digital Motion Processor.  It is what we call the built in micro
-controller on the mpu3050 that does sensor fusion.
-
-> > used, a buffer for the FIFO data would be created, and user space
-> would be
-> > responsible to push the sensor data back to iio after sensor fusion
-> and
-> > calibration.  Without the DMP, each sensor driver would act
-> independently
-> > providing their own raw data.
->
-> Strangely enough, your need to push data back is not dissimilar to what
-> we have
-> discussed in the past for DACs. Right now we only have a slow and
-> simple interface
-> for DACs, mainly because doing anything clever requires some fairly
-> nasty additions
-> to the host bus drivers and no one has had the time.  Michael has
-> almost
-> certainly thought more on this than I ever have!
-
-A slow interface might be ok.  Highest traffic is usually in the low 10's
-of bytes at 30hz.
-
-> > We still need a way to read and write registers and DMP memory during
-> > runtime from user space.
-> I guess the DMP is the on device processor? So what you write varies a
-> lot
-> with what firmware is loaded?
-
-Yes that is correct.
-
-> So let me just check I understand the data flow here.
->
-> Example
->
-> Magnetometer -> kernel -> userspace interface -> hideously complex
-> algorithm ->
-> kernel -> mpu -> mpu fusion algorithm in relevant firmware -> userspace
-> ?
-
-Hideously complex algorithm or HCA for short :)
-
-Your data path is more relevant for the mpu6050.  I'll explain what it
-currently looks like on each chip 2 chips.  For the 3050 it looks like
-this:
-=======================
-Accel -> mpu3050 -> DMP (6 Axis fusion) -> FIFO
-         (gyro)                   ^
-                                  |
-                               Kernel
-                                  |
-FIFO -> Kernel -> user space -> 9 Axis fusion + HCA's-> application
-                                  ^
-                                  |
-Compass -> kernel -> user space --/
-
-For the mpu6050:
-================
-Compass -> mpu6050   -> DMP (9 Axis Fusion) -> Kernel -> User Space HCA's
--> Apps
-          (gyro + accel)     ^                               |
-                             |                               |
-                             \---------------- Kernel <------/
-
-
-As you might have seen we don't have an input or an iio interface for user
-space to retrieve data.  Currently applications have to link in our MPL,
-either standalone, or as a daemon, or something similar like the Android
-sensor HAL.  What I'm trying to figure out is once data is ready to be
-provided to applications, where should it come from, input, IIO, or a
-daemon, before I start that part of development.  It seems like IIO was
-built more for raw data, but that input has a facility to handle processed
-data.
-
-> So how do we know the mpu wants data?  Obvious options that might be
-> the case
-> a) on chip fifo with flow control.
-> b) interrupt to request data?
-> c) Always feed latest value and it runs unsynchronized.
-
-The MPL (Motion Processing Library user space library that includes HCA's)
-makes the decision when to feed data down, and does it in an
-unsynchronized way.  It will do it shortly after processing a FIFO data
-packet, but the timing does not need to be precise.
-
-> Do we actually have that hideously complex algorithm in userspace
-> element
-> or did I invent that part?  If not, we might want to use some in kernel
-> hooks to pass the data back bypassing userspace entirely.
-
-Yes the HCA's exists.  They include 9 axis fusion, compass calibration
-algorithms, and a number of other proprietary algorithms.  We've tried to
-design the MPL so that they can be removed and still provide basic
-functionality.  This basic functionality is available to be pushed into
-the kernel if necessary, but we will still need a way to support the
-HCA's.
