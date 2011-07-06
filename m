@@ -3,11 +3,9 @@ From: Bryan Freed <bfreed@chromium.org>
 To: linux-kernel@vger.kernel.org
 Cc: jic23@cam.ac.uk, gregkh@suse.de, rklein@nvidia.com,
         linux-iio@vger.kernel.org, Bryan Freed <bfreed@chromium.org>
-Subject: [PATCH v2 1/4] staging:iio: Reorder channel type strings to match the iio.h enums.
-Date: Thu,  7 Jul 2011 12:01:54 -0700
-Message-Id: <1310065317-3872-2-git-send-email-bfreed@chromium.org>
-In-Reply-To: <1310065317-3872-1-git-send-email-bfreed@chromium.org>
-References: <1310065317-3872-1-git-send-email-bfreed@chromium.org>
+Subject: [PATCH 1/3] staging:iio: Reorder channel type strings to match the iio.h enums.
+Date: Wed,  6 Jul 2011 11:56:24 -0700
+Message-Id: <1309978586-10092-1-git-send-email-bfreed@chromium.org>
 List-ID: <linux-iio@vger.kernel.org>
 
 This makes comparison between the iio_chan_type_name_spec_shared strings
@@ -19,17 +17,16 @@ Signed-off-by: Bryan Freed <bfreed@chromium.org>
  1 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 8fa2be6..52a02af 100644
+index 94d3bfa..4987bf4 100644
 --- a/drivers/staging/iio/industrialio-core.c
 +++ b/drivers/staging/iio/industrialio-core.c
-@@ -44,21 +44,21 @@ struct bus_type iio_bus_type = {
+@@ -44,20 +44,20 @@ struct bus_type iio_bus_type = {
  EXPORT_SYMBOL(iio_bus_type);
  
  static const char * const iio_chan_type_name_spec_shared[] = {
 -	[IIO_TIMESTAMP] = "timestamp",
 -	[IIO_ACCEL] = "accel",
  	[IIO_IN] = "in",
- 	[IIO_OUT] = "out",
  	[IIO_CURRENT] = "current",
  	[IIO_POWER] = "power",
 +	[IIO_ACCEL] = "accel",
