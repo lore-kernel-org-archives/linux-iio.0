@@ -1,41 +1,61 @@
-Return-Path: <gregkh@suse.de>
-Date: Thu, 7 Jul 2011 10:14:56 -0700
-From: Greg KH <gregkh@suse.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:48441 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755235Ab1GFTg6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jul 2011 15:36:58 -0400
+Message-ID: <4E14BB35.5070800@cam.ac.uk>
+Date: Wed, 06 Jul 2011 20:44:53 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
 To: Bryan Freed <bfreed@chromium.org>
-Cc: Greg KH <greg@kroah.com>, linux-kernel@vger.kernel.org,
-	jic23@cam.ac.uk, rklein@nvidia.com, linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, gregkh@suse.de, rklein@nvidia.com,
+	linux-iio@vger.kernel.org
 Subject: Re: [PATCH 1/3] staging:iio: Reorder channel type strings to match
  the iio.h enums.
-Message-ID: <20110707171456.GA1471@suse.de>
 References: <1309978586-10092-1-git-send-email-bfreed@chromium.org>
- <20110706232720.GA28400@kroah.com>
- <CAEYUcX2C4XqYW1NgqzV+KbdHdcKRs1V3RFVnCN7C=bhojywA=g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <CAEYUcX2C4XqYW1NgqzV+KbdHdcKRs1V3RFVnCN7C=bhojywA=g@mail.gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1309978586-10092-1-git-send-email-bfreed@chromium.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Jul 07, 2011 at 10:03:53AM -0700, Bryan Freed wrote:
-> These are made from git://git.kernel.org/pub/scm/linux/kernel/git/torva=
-lds/
-> linux-2.6.git last synced on 6/22.
+On 07/06/11 19:56, Bryan Freed wrote:
+> This makes comparison between the iio_chan_type_name_spec_shared strings
+> and the iio_chan_type enums easier.
+> 
+> Signed-off-by: Bryan Freed <bfreed@chromium.org>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+> ---
+>  drivers/staging/iio/industrialio-core.c |   10 +++++-----
+>  1 files changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+> index 94d3bfa..4987bf4 100644
+> --- a/drivers/staging/iio/industrialio-core.c
+> +++ b/drivers/staging/iio/industrialio-core.c
+> @@ -44,20 +44,20 @@ struct bus_type iio_bus_type = {
+>  EXPORT_SYMBOL(iio_bus_type);
+>  
+>  static const char * const iio_chan_type_name_spec_shared[] = {
+> -	[IIO_TIMESTAMP] = "timestamp",
+> -	[IIO_ACCEL] = "accel",
+>  	[IIO_IN] = "in",
+>  	[IIO_CURRENT] = "current",
+>  	[IIO_POWER] = "power",
+> +	[IIO_ACCEL] = "accel",
+>  	[IIO_IN_DIFF] = "in-in",
+>  	[IIO_GYRO] = "gyro",
+> -	[IIO_TEMP] = "temp",
+>  	[IIO_MAGN] = "magn",
+> +	[IIO_LIGHT] = "illuminance",
+> +	[IIO_INTENSITY] = "intensity",
+> +	[IIO_TEMP] = "temp",
+>  	[IIO_INCLI] = "incli",
+>  	[IIO_ROT] = "rot",
+> -	[IIO_INTENSITY] = "intensity",
+> -	[IIO_LIGHT] = "illuminance",
+>  	[IIO_ANGL] = "angl",
+> +	[IIO_TIMESTAMP] = "timestamp",
+>  };
+>  
+>  static const char * const iio_chan_type_name_spec_complex[] = {
 
-Ick, wrong tree.
-
-> I synced up just now and had no problem cherry-picking the first two pa=
-tches
-> into a new branch.
-> The third one required a manual merge, but I am not sure why. =A0They w=
-ere all my
-> diffs.
->=20
-> I will resubmit them all in a moment.
-
-Please work against linux-next or the staging-next branch.  That is
-where all of the development happens and your previous patches are
-applied against.  We can't work against Linus's tree as it doesn't have
-the previously accepted patches in it.
-
-So please use that one instead.
-
-greg k-h
