@@ -3,30 +3,52 @@ From: Bryan Freed <bfreed@chromium.org>
 To: linux-kernel@vger.kernel.org
 Cc: jic23@cam.ac.uk, gregkh@suse.de, rklein@nvidia.com,
         linux-iio@vger.kernel.org, Bryan Freed <bfreed@chromium.org>
-Subject: [PATCH 0/4] Apply these staging:iio patches to staging-next.
-Date: Thu,  7 Jul 2011 12:01:53 -0700
-Message-Id: <1310065317-3872-1-git-send-email-bfreed@chromium.org>
+Subject: [PATCH v1 4/4] staging:iio:light:isl29018: Fix the "Init of isl29018 fails" failure.
+Date: Thu,  7 Jul 2011 12:01:57 -0700
+Message-Id: <1310065317-3872-5-git-send-email-bfreed@chromium.org>
+In-Reply-To: <1310065317-3872-1-git-send-email-bfreed@chromium.org>
+References: <1310065317-3872-1-git-send-email-bfreed@chromium.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-These patches are made from
-git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging-2.6.git staging-next
-instead of
-git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/
-as the previous patches were.
+The I2C clientdata is set to indio_dev instead of chip as of a couple weeks ago.
+Correct the calls to i2c_get_clientdata() accordingly.
+Otherwise the driver fails to initialize.
 
-Found another bug there, so there are 4 patches instead of 3.
+Signed-off-by: Bryan Freed <bfreed@chromium.org>
+---
+ drivers/staging/iio/light/isl29018.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-Bryan Freed (4):
-  staging:iio: Reorder channel type strings to match the iio.h enums.
-  staging:iio: Add an iio channel type string to support proximity
-    sensors.
-  staging:iio:light:isl29018: Convert some of the isl29018 driver to
-    the new iio_chan_spec framework.
-  staging:iio:light:isl29018: Fix the "Init of isl29018 fails" failure.
-
- drivers/staging/iio/industrialio-core.c |   11 +-
- drivers/staging/iio/light/isl29018.c    |  174 ++++++++++++++----------------
- 2 files changed, 87 insertions(+), 98 deletions(-)
-
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 070e94d..426b6af 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -68,7 +68,7 @@ static int isl29018_write_data(struct i2c_client *client, u8 reg,
+ {
+ 	u8 regval;
+ 	int ret = 0;
+-	struct isl29018_chip *chip = i2c_get_clientdata(client);
++	struct isl29018_chip *chip = iio_priv(i2c_get_clientdata(client));
+ 
+ 	regval = chip->reg_cache[reg];
+ 	regval &= ~mask;
+@@ -158,7 +158,7 @@ static int isl29018_read_sensor_input(struct i2c_client *client, int mode)
+ static int isl29018_read_lux(struct i2c_client *client, int *lux)
+ {
+ 	int lux_data;
+-	struct isl29018_chip *chip = i2c_get_clientdata(client);
++	struct isl29018_chip *chip = iio_priv(i2c_get_clientdata(client));
+ 
+ 	lux_data = isl29018_read_sensor_input(client,
+ 				COMMMAND1_OPMODE_ALS_ONCE);
+@@ -450,7 +450,7 @@ static const struct attribute_group isl29108_group = {
+ 
+ static int isl29018_chip_init(struct i2c_client *client)
+ {
+-	struct isl29018_chip *chip = i2c_get_clientdata(client);
++	struct isl29018_chip *chip = iio_priv(i2c_get_clientdata(client));
+ 	int status;
+ 	int new_adc_bit;
+ 	unsigned int new_range;
 -- 
 1.7.3.1
