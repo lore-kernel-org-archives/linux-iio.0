@@ -1,50 +1,32 @@
-Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4E1B27C9.7060404@cam.ac.uk>
-Date: Mon, 11 Jul 2011 17:41:45 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "Hennerich, Michael" <Michael.Hennerich@analog.com>
-Subject: Re: Splitting trigger header in two and barriers.
-References: <4E1B1BF9.4000707@cam.ac.uk> <4E1B2001.2030409@cam.ac.uk>
-In-Reply-To: <4E1B2001.2030409@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <bfreed@google.com>
+From: Bryan Freed <bfreed@chromium.org>
+To: linux-kernel@vger.kernel.org
+Cc: jic23@cam.ac.uk, gregkh@suse.de, rklein@nvidia.com,
+        linux-iio@vger.kernel.org, Bryan Freed <bfreed@chromium.org>
+Subject: [PATCH 0/4] Apply these staging:iio patches to staging-next.
+Date: Thu,  7 Jul 2011 12:01:53 -0700
+Message-Id: <1310065317-3872-1-git-send-email-bfreed@chromium.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/11/11 17:08, Jonathan Cameron wrote:
-> On 07/11/11 16:51, Jonathan Cameron wrote:
->> Hi All,
->>
->> The trigger.h file merges elements I'd really rather were separate.
->> There are some parts that belong to drivers acting as consumers
->> and others to those acting as producers of triggers.
->> In a few cases  (e.g. lis3l02dq_ring.c) the consumer and trigger
->> are in the same file, but in many others the driver only supports
->> one or the other or has them in separate source files.
->>
->> The main block to this bit of reorganization ist that some drivers
->> explicitly put the trigger and detach from it in their 'ring cleanup'
->> functions (see ad7298_ring.c ad7298_ring_cleanup.)
->>
->> My original intent was that if a trigger had not been detached from
->> in userspace, it would not be possible to remmove the driver, so
->> no cleanup would occur. (basically it counts as being 'in use').
->>
->> Is there a usecase that demands this explicity disconnect, or
->> is it simply a case that the reference counting is going wrong
->> somewhere and hence this was needed in the drivers?
->>
->> Failing a good description of why this is there in these drivers,
->> I'd like to clean it out.  Will give us a much easier to follow
->> interface for the triggers.
-> oops, just noticed I did this first in max1363. Will hammer that hard
-> and see whether everything works as I think it should!
-Ah, definitely doesn't work as I thought it did. Will fix and repost
-when I have a simple solution to that.  Guess when one sees unexpected
-code, one should expect it to have a reason for being there!
+These patches are made from
+git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging-2.6.git staging-next
+instead of
+git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/
+as the previous patches were.
 
-Sorry for the noise, though the basic question still stands, even if
-a little more work is needed to fix the core first.
+Found another bug there, so there are 4 patches instead of 3.
 
-Jonathan
+Bryan Freed (4):
+  staging:iio: Reorder channel type strings to match the iio.h enums.
+  staging:iio: Add an iio channel type string to support proximity
+    sensors.
+  staging:iio:light:isl29018: Convert some of the isl29018 driver to
+    the new iio_chan_spec framework.
+  staging:iio:light:isl29018: Fix the "Init of isl29018 fails" failure.
+
+ drivers/staging/iio/industrialio-core.c |   11 +-
+ drivers/staging/iio/light/isl29018.c    |  174 ++++++++++++++----------------
+ 2 files changed, 87 insertions(+), 98 deletions(-)
+
+-- 
+1.7.3.1
