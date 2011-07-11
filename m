@@ -1,52 +1,108 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:39096 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757979Ab1GKQA4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jul 2011 12:00:56 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 0/3] IIO: Header housekeeping.
-Date: Mon, 11 Jul 2011 17:00:50 +0100
-Message-Id: <1310400053-30041-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH 3/3] staging:iio:gyro and meter: header housecleaning.
+Date: Mon, 11 Jul 2011 17:00:53 +0100
+Message-Id: <1310400053-30041-4-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1310400053-30041-1-git-send-email-jic23@cam.ac.uk>
+References: <1310400053-30041-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Lots of header includes that aren't needed.
-Some are cut and paste bloat, others from pre threaded irq days.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/gyro/adis16260_ring.c    |    7 -------
+ drivers/staging/iio/gyro/adis16260_trigger.c |    6 ------
+ drivers/staging/iio/meter/ade7758_ring.c     |    8 --------
+ drivers/staging/iio/meter/ade7758_trigger.c  |    6 ------
+ 4 files changed, 0 insertions(+), 27 deletions(-)
 
-Pretty straight forward. Build tested on arm. Probably worth a quick
-build on blackfin if someone has the time.
-
-Jonathan Cameron (3):
-  staging:iio:adc: header cleanup - remove unused.
-  staging:iio:accel header housekeeping - remove unecessary includes.
-  staging:iio:gyro and meter: header housecleaning.
-
- drivers/staging/iio/accel/adis16201_ring.c    |    4 ----
- drivers/staging/iio/accel/adis16201_trigger.c |    5 -----
- drivers/staging/iio/accel/adis16203_ring.c    |    7 -------
- drivers/staging/iio/accel/adis16203_trigger.c |    6 ------
- drivers/staging/iio/accel/adis16204_ring.c    |    7 -------
- drivers/staging/iio/accel/adis16204_trigger.c |    6 ------
- drivers/staging/iio/accel/adis16209_ring.c    |    7 -------
- drivers/staging/iio/accel/adis16209_trigger.c |    6 ------
- drivers/staging/iio/accel/adis16240_ring.c    |    7 -------
- drivers/staging/iio/accel/adis16240_trigger.c |    6 ------
- drivers/staging/iio/accel/lis3l02dq_ring.c    |    4 ----
- drivers/staging/iio/accel/sca3000_ring.c      |    2 --
- drivers/staging/iio/adc/ad7298_ring.c         |    3 ---
- drivers/staging/iio/adc/ad7476_ring.c         |    2 --
- drivers/staging/iio/adc/ad7606_ring.c         |    2 --
- drivers/staging/iio/adc/ad7887_ring.c         |    3 ---
- drivers/staging/iio/adc/ad799x_ring.c         |    3 ---
- drivers/staging/iio/adc/max1363_ring.c        |    4 ----
- drivers/staging/iio/gyro/adis16260_ring.c     |    7 -------
- drivers/staging/iio/gyro/adis16260_trigger.c  |    6 ------
- drivers/staging/iio/meter/ade7758_ring.c      |    8 --------
- drivers/staging/iio/meter/ade7758_trigger.c   |    6 ------
- 22 files changed, 0 insertions(+), 111 deletions(-)
-
+diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
+index e9cff3b..92d1fac 100644
+--- a/drivers/staging/iio/gyro/adis16260_ring.c
++++ b/drivers/staging/iio/gyro/adis16260_ring.c
+@@ -1,17 +1,10 @@
+ #include <linux/interrupt.h>
+-#include <linux/irq.h>
+-#include <linux/gpio.h>
+-#include <linux/workqueue.h>
+ #include <linux/mutex.h>
+-#include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/spi/spi.h>
+ #include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/list.h>
+ 
+ #include "../iio.h"
+-#include "../sysfs.h"
+ #include "../ring_sw.h"
+ #include "../trigger.h"
+ #include "adis16260.h"
+diff --git a/drivers/staging/iio/gyro/adis16260_trigger.c b/drivers/staging/iio/gyro/adis16260_trigger.c
+index f240961..2f2b216 100644
+--- a/drivers/staging/iio/gyro/adis16260_trigger.c
++++ b/drivers/staging/iio/gyro/adis16260_trigger.c
+@@ -1,14 +1,8 @@
+ #include <linux/interrupt.h>
+-#include <linux/irq.h>
+-#include <linux/mutex.h>
+-#include <linux/device.h>
+ #include <linux/kernel.h>
+-#include <linux/sysfs.h>
+-#include <linux/list.h>
+ #include <linux/spi/spi.h>
+ 
+ #include "../iio.h"
+-#include "../sysfs.h"
+ #include "../trigger.h"
+ #include "adis16260.h"
+ 
+diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+index e7a04b4..c9271d0 100644
+--- a/drivers/staging/iio/meter/ade7758_ring.c
++++ b/drivers/staging/iio/meter/ade7758_ring.c
+@@ -6,20 +6,12 @@
+  * Licensed under the GPL-2.
+  */
+ #include <linux/interrupt.h>
+-#include <linux/irq.h>
+-#include <linux/gpio.h>
+-#include <linux/workqueue.h>
+-#include <linux/mutex.h>
+-#include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/spi/spi.h>
+ #include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/list.h>
+ #include <asm/unaligned.h>
+ 
+ #include "../iio.h"
+-#include "../sysfs.h"
+ #include "../ring_sw.h"
+ #include "../trigger.h"
+ #include "ade7758.h"
+diff --git a/drivers/staging/iio/meter/ade7758_trigger.c b/drivers/staging/iio/meter/ade7758_trigger.c
+index 4c451c2..392dfe3 100644
+--- a/drivers/staging/iio/meter/ade7758_trigger.c
++++ b/drivers/staging/iio/meter/ade7758_trigger.c
+@@ -7,16 +7,10 @@
+  */
+ 
+ #include <linux/interrupt.h>
+-#include <linux/irq.h>
+-#include <linux/mutex.h>
+-#include <linux/device.h>
+ #include <linux/kernel.h>
+-#include <linux/sysfs.h>
+-#include <linux/list.h>
+ #include <linux/spi/spi.h>
+ 
+ #include "../iio.h"
+-#include "../sysfs.h"
+ #include "../trigger.h"
+ #include "ade7758.h"
+ 
 -- 
 1.7.3.4
-
