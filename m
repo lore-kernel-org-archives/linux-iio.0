@@ -1,155 +1,38 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:58870 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758002Ab1GKP6O (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jul 2011 11:58:14 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 1/3] staging:iio:adc: header cleanup - remove unused.
-Date: Mon, 11 Jul 2011 17:00:51 +0100
-Message-Id: <1310400053-30041-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1310400053-30041-1-git-send-email-jic23@cam.ac.uk>
-References: <1310400053-30041-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Cc: Device-drivers-devel@blackfin.uclinux.org,
+	manuel.stahl@iis.fraunhofer.de, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 0/4] ADIS16400 one big fix and some updates.
+Date: Mon, 11 Jul 2011 16:58:03 +0100
+Message-Id: <1310399887-4049-1-git-send-email-jic23@cam.ac.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Clear out all the excessive includes in the *_ring.c files.
-Mixture of cut and paste bloat and things needed for code that
-has gone away.
+Hi All,
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/adc/ad7298_ring.c  |    3 ---
- drivers/staging/iio/adc/ad7476_ring.c  |    2 --
- drivers/staging/iio/adc/ad7606_ring.c  |    2 --
- drivers/staging/iio/adc/ad7887_ring.c  |    3 ---
- drivers/staging/iio/adc/ad799x_ring.c  |    3 ---
- drivers/staging/iio/adc/max1363_ring.c |    4 ----
- 6 files changed, 0 insertions(+), 17 deletions(-)
+The first patch here is a clanger of a bug introduced by me.  Pretty self
+explanatory. Sorry all.
 
-diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
-index a04c033..7423d4a 100644
---- a/drivers/staging/iio/adc/ad7298_ring.c
-+++ b/drivers/staging/iio/adc/ad7298_ring.c
-@@ -7,17 +7,14 @@
-  */
- 
- #include <linux/interrupt.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
- #include <linux/spi/spi.h>
- 
- #include "../iio.h"
- #include "../ring_generic.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
--#include "../sysfs.h"
- 
- #include "ad7298.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
-index a92fc5a..86bbba8 100644
---- a/drivers/staging/iio/adc/ad7476_ring.c
-+++ b/drivers/staging/iio/adc/ad7476_ring.c
-@@ -11,14 +11,12 @@
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
- #include <linux/spi/spi.h>
- 
- #include "../iio.h"
- #include "../ring_generic.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
--#include "../sysfs.h"
- 
- #include "ad7476.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
-index a199bf4..f8f574a 100644
---- a/drivers/staging/iio/adc/ad7606_ring.c
-+++ b/drivers/staging/iio/adc/ad7606_ring.c
-@@ -10,13 +10,11 @@
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
- 
- #include "../iio.h"
- #include "../ring_generic.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
--#include "../sysfs.h"
- 
- #include "ad7606.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
-index 0ac7c0b..b77b120 100644
---- a/drivers/staging/iio/adc/ad7887_ring.c
-+++ b/drivers/staging/iio/adc/ad7887_ring.c
-@@ -8,17 +8,14 @@
-  */
- 
- #include <linux/interrupt.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
- #include <linux/spi/spi.h>
- 
- #include "../iio.h"
- #include "../ring_generic.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
--#include "../sysfs.h"
- 
- #include "ad7887.h"
- 
-diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
-index 0376a82..d84efd6 100644
---- a/drivers/staging/iio/adc/ad799x_ring.c
-+++ b/drivers/staging/iio/adc/ad799x_ring.c
-@@ -10,10 +10,8 @@
-  */
- 
- #include <linux/interrupt.h>
--#include <linux/device.h>
- #include <linux/slab.h>
- #include <linux/kernel.h>
--#include <linux/sysfs.h>
- #include <linux/list.h>
- #include <linux/i2c.h>
- #include <linux/bitops.h>
-@@ -22,7 +20,6 @@
- #include "../ring_generic.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
--#include "../sysfs.h"
- 
- #include "ad799x.h"
- 
-diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
-index f43befd..696676f 100644
---- a/drivers/staging/iio/adc/max1363_ring.c
-+++ b/drivers/staging/iio/adc/max1363_ring.c
-@@ -9,11 +9,8 @@
-  */
- 
- #include <linux/interrupt.h>
--#include <linux/device.h>
- #include <linux/slab.h>
- #include <linux/kernel.h>
--#include <linux/sysfs.h>
--#include <linux/list.h>
- #include <linux/i2c.h>
- #include <linux/bitops.h>
- 
-@@ -21,7 +18,6 @@
- #include "../ring_generic.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
--#include "../sysfs.h"
- 
- #include "max1363.h"
- 
+The others are simple cleanups.
+
+Jonathan Cameron (4):
+  staging:iio:imu fix missing register table index for some channels
+  staging:iio:imu:adis16344 support
+  staging:iio:imu:adis16400: use strtobool for reset sysfs and don't
+    assign unused tx members.
+  staging:iio:imu:adis16400 remove now unused headers.
+
+ drivers/staging/iio/imu/adis16400.h         |    3 +
+ drivers/staging/iio/imu/adis16400_core.c    |  117 +++++++++++++++++++--------
+ drivers/staging/iio/imu/adis16400_ring.c    |    7 --
+ drivers/staging/iio/imu/adis16400_trigger.c |    6 --
+ 4 files changed, 85 insertions(+), 48 deletions(-)
+
 -- 
 1.7.3.4
+
