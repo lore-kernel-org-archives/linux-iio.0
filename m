@@ -3,40 +3,34 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 0/3] IIO fixes for 3.0 (or 3.0 stable)
-Date: Wed, 13 Jul 2011 12:51:57 +0100
-Message-Id: <1310557920-30519-1-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 3/3] staging:iio:kfifo_buf fix double initialization of the ring device structure.
+Date: Wed, 13 Jul 2011 12:52:00 +0100
+Message-Id: <1310557920-30519-4-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1310557920-30519-1-git-send-email-jic23@cam.ac.uk>
+References: <1310557920-30519-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Greg,
+Looks like this moved into the core at somepoint and kfifo buf got left
+behind.
 
-A few clangers slipped through until now.  Sorry they are so late!
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/kfifo_buf.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
 
-The IMU patch is non trivial so has been on list for a few days.
-Result is you get the same channel which ever one you try to read on
-some devices (oops).
-
-Kfifo hasn't been posted, but is trivial.  Just causes a warning. Virtually
-no users, so this one isn't that critical.
-
-lis3l02dq - not posted, but trivial. Causes null dereference on remove.
-
-Thanks
-
-Jonathan
-
-Jonathan Cameron (3):
-  staging:iio:imu fix missing register table index for some channels
-  staging:iio:accel:lis3l02dq: fix incorrect pointer passed to
-    spi_set_drvdata.
-  staging:iio:kfifo_buf fix double initialization of the ring device
-    structure.
-
- drivers/staging/iio/accel/lis3l02dq_core.c |    2 +-
- drivers/staging/iio/imu/adis16400.h        |    3 ++
- drivers/staging/iio/imu/adis16400_core.c   |   50 +++++++++++++++-------------
- drivers/staging/iio/kfifo_buf.c            |    2 -
- 4 files changed, 31 insertions(+), 26 deletions(-)
-
+diff --git a/drivers/staging/iio/kfifo_buf.c b/drivers/staging/iio/kfifo_buf.c
+index cc14b96..6002368 100644
+--- a/drivers/staging/iio/kfifo_buf.c
++++ b/drivers/staging/iio/kfifo_buf.c
+@@ -110,9 +110,7 @@ struct iio_ring_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev)
+ 	iio_ring_buffer_init(&kf->ring, indio_dev);
+ 	__iio_init_kfifo(kf);
+ 	kf->ring.dev.type = &iio_kfifo_type;
+-	device_initialize(&kf->ring.dev);
+ 	kf->ring.dev.parent = &indio_dev->dev;
+-	kf->ring.dev.bus = &iio_bus_type;
+ 	dev_set_drvdata(&kf->ring.dev, (void *)&(kf->ring));
+ 
+ 	return &kf->ring;
 -- 
 1.7.3.4
