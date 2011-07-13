@@ -1,107 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:55099 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754083Ab1GNKF4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jul 2011 06:05:56 -0400
-Message-ID: <4E1EBF82.2040408@cam.ac.uk>
-Date: Thu, 14 Jul 2011 11:05:54 +0100
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:38383 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754739Ab1GMOF6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 Jul 2011 10:05:58 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: Randy Dunlap <rdunlap@xenotime.net>,
-	driverdevel <devel@driverdev.osuosl.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: staging/iio/meter/ade7753: 406:19: warning: right shift by bigger
- than source value
-References: <20110713084909.8ee94a75.rdunlap@xenotime.net> <4E1EB5B2.6000105@cam.ac.uk> <4E1EB88E.30004@analog.com>
-In-Reply-To: <4E1EB88E.30004@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: greg@kroah.com, linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 0/6] Trigger locking rework and splitting up trigger.h
+Date: Wed, 13 Jul 2011 15:05:49 +0100
+Message-Id: <1310565955-13469-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/14/11 10:36, Michael Hennerich wrote:
-> On 07/14/2011 11:24 AM, Jonathan Cameron wrote:
->> On 07/13/11 16:49, Randy Dunlap wrote:
->>> static ssize_t ade7753_read_frequency(struct device *dev,
->>>         struct device_attribute *attr,
->>>         char *buf)
->>> {
->>>     int ret, len = 0;
->>>     u8 t;
->>>     int sps;
->>>     ret = ade7753_spi_read_reg_8(dev, ADE7753_MODE,    &t);
->>>     if (ret)
->>>         return ret;
->>>
->>>     t = (t>>  11)&  0x3; /// HUH?
->>>
->> Excellent question. Honestly I've passed that line by several times but always whilst
->> working on something else and had no real idea of what it is actually meant to be
->> doing.  Clearly it's garbage.
-> Agreed.
-> 
->> So time for some datasheet trawling.  The mode register is 16 bit, so I'm guessing that
->> should have been u16 t; and ade7753_spi_read_reg_16.  I think this is a cut and paste
->> bug form the ade7754 driver where the equivalent is an 8 bit register.  Patch below.
->>
->> Michael, do you have access to test hardware for this one?  I might do a more general
->> tidy up of that driver whilst I'm here. Something fun to do before coffee ;)
-> At the moment I only have HW for the ADE7758.
+This is the result of actually checking the locking code for
+triggers and ensuring saferemoval.
 
-On second thoughts, I'm going to leave the rest of this driver be. It basically needs a rewrite
-from scratch and that'll have to wait until someone wants it or is very bored.  It's full
-of things like incorrect register lengths (no masking), everything comes out unsigned, whether
-it is or not etc.
+One kicker in here.  Any driver that can do dynamic creation / removal
+of triggers (currently only sysfs trigger), must be very very careful.
+It's possible post this series for two devices to apparently be connected
+to a trigger with the same name, but only one be connected to the current
+instance of that trigger.  To my mind, if you've got into this mess, your
+userspace is borked anyway and it doesn't actually cause a crash (unlike
+before this set), it just doesn't work as expected.
 
-Given my todo list from a read through has:
+If anyone can see a case I've missed, please do point it out.
 
-squish header into file and get rid of magic number writes.
-h1os and ch2os are 5 bit registers with integrators, not 8 bit registers.
-pga gain is not simple or linear.
-vagain is 12 bit and there is an offset of 1.
-Lots of other 12 bit registers etc to handle.
-IRMSOS is simple offset.
+Note this also includes the trigger.h split and the semantic change
+discussed in 'Splitting trigger header in two and barriers'.
 
-Probably 75%+ of the code is going to change having dealt with them and moved to new abi's.
+That is, if your driver is currently using a trigger (other than one
+it provides), you will not be able to remove the module.  The previous
+approach of just disconnected on removal would double release some stuff
+anyway causing lots of unpleasant messages.
 
-We probably want to finish taking ade7758 over to new abi first so that we pin down remaining
-elements, then get to work on the other meter drivers. (right now ade7758 is in a strange inbetween
-world where the ring uses new abi's and the rest the old methods).
+Whilst this stuff is definitely broken in current mainline, I'm not
+proposing to rush this set out.
 
-> 
->> Thanks,
->>
->> Jonathan
->>
->> Subject: [PATCH] staging:iio:meter:ade7753 should be 16 bit read not 8 bit for mode register.
->>
->> Build tested only.
->>
->> Signed-off-by: Jonathan Cameron<jic23@cam.ac.uk>
->> Reported-by: Randy Dunlap<rdunlap@xenotime.net>
-> Acked-by: Michael Hennerich <michael.hennerich@analog.com>
->> ---
->>   drivers/staging/iio/meter/ade7753.c |    4 ++--
->>   1 files changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
->> index 59f47fd..482e16a 100644
->> --- a/drivers/staging/iio/meter/ade7753.c
->> +++ b/drivers/staging/iio/meter/ade7753.c
->> @@ -398,9 +398,9 @@ static ssize_t ade7753_read_frequency(struct device *dev,
->>           char *buf)
->>   {
->>       int ret, len = 0;
->> -    u8 t;
->> +    u16 t;
->>       int sps;
->> -    ret = ade7753_spi_read_reg_8(dev, ADE7753_MODE,    &t);
->> +    ret = ade7753_spi_read_reg_16(dev, ADE7753_MODE,&t);
->>       if (ret)
->>           return ret;
->>
-> 
-> 
+Thanks,
+
+Jonathan
+
+Jonathan Cameron (6):
+  staging:iio:triggers reorder module put and device put to ensure that
+        the ops are still there if put results in device deletion.
+  staging:iio:trigger:sysfs trigger: Add a release function to avoid
+    warning     on module removal.
+  staging:iio:pollfunc: Make explicit that private data is always
+    pointer to a struct iio_dev.
+  staging:iio: prevent removal of module connected to trigger.
+  staging:iio:rename trigger_consumer.h to indicate it is core only.
+  staging:iio: spit trigger.h into provider and consumer parts.
+
+ drivers/staging/iio/accel/adis16201_ring.c   |    4 +-
+ drivers/staging/iio/accel/adis16203_ring.c   |    4 +-
+ drivers/staging/iio/accel/adis16204_ring.c   |    4 +-
+ drivers/staging/iio/accel/adis16209_ring.c   |    4 +-
+ drivers/staging/iio/accel/adis16240_ring.c   |    4 +-
+ drivers/staging/iio/accel/lis3l02dq_ring.c   |    3 +-
+ drivers/staging/iio/adc/ad7298_ring.c        |    9 +---
+ drivers/staging/iio/adc/ad7476_ring.c        |   10 +---
+ drivers/staging/iio/adc/ad7606_ring.c        |   10 +---
+ drivers/staging/iio/adc/ad7793.c             |    9 +---
+ drivers/staging/iio/adc/ad7887_ring.c        |   10 +---
+ drivers/staging/iio/adc/ad799x_ring.c        |   10 +---
+ drivers/staging/iio/adc/max1363_ring.c       |    9 +---
+ drivers/staging/iio/gyro/adis16260_ring.c    |    4 +-
+ drivers/staging/iio/iio_core_trigger.h       |   47 +++++++++++++++++
+ drivers/staging/iio/imu/adis16400_ring.c     |    4 +-
+ drivers/staging/iio/industrialio-core.c      |    2 +-
+ drivers/staging/iio/industrialio-trigger.c   |    8 ++-
+ drivers/staging/iio/meter/ade7758_ring.c     |   10 +---
+ drivers/staging/iio/trigger.h                |   46 +----------------
+ drivers/staging/iio/trigger/iio-trig-sysfs.c |    7 +++
+ drivers/staging/iio/trigger_consumer.h       |   71 ++++++++++++++------------
+ 22 files changed, 134 insertions(+), 155 deletions(-)
+ create mode 100644 drivers/staging/iio/iio_core_trigger.h
+
+-- 
+1.7.3.4
 
