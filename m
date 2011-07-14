@@ -1,69 +1,58 @@
-Return-Path: <Michael.Hennerich@analog.com>
-Message-ID: <4E243980.6040307@analog.com>
-Date: Mon, 18 Jul 2011 15:47:44 +0200
-From: Michael Hennerich <michael.hennerich@analog.com>
-Reply-To: <michael.hennerich@analog.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>, Drivers <Drivers@analog.com>
-Subject: Re: [PATCH 2/2] iio: adc: New driver for AD7280A Lithium Ion Battery
- Monitoring System
-References: <1310734743-2623-1-git-send-email-michael.hennerich@analog.com> <1310734743-2623-2-git-send-email-michael.hennerich@analog.com> <4E241C45.5090902@cam.ac.uk> <4E242BA8.8020006@analog.com> <4E242D8C.8080300@cam.ac.uk> <4E2436E0.9060501@analog.com> <4E243822.6020204@cam.ac.uk>
-In-Reply-To: <4E243822.6020204@cam.ac.uk>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:49458 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754620Ab1GNMdt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jul 2011 08:33:49 -0400
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 0/7] IIO: Fix to error path and some housekeeping.
+Date: Thu, 14 Jul 2011 13:33:40 +0100
+Message-Id: <1310646827-25690-1-git-send-email-jic23@cam.ac.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 07/18/2011 03:41 PM, Jonathan Cameron wrote:
->>>>>> +
->>>>>> +static int ad7280_read_raw(struct iio_dev *dev_info,
->>>>>> +                        struct iio_chan_spec const *chan,
->>>>>> +                        int *val,
->>>>>> +                        int *val2,
->>>>>> +                        long m)
->>>>>> +{
->>>>>> +     struct ad7280_state *st = iio_priv(dev_info);
->>>>>> +     unsigned int scale_uv;
->>>>>> +     int ret;
->>>>>> +
->>>>>> +     switch (m) {
->>>>>> +     case 0:
->>>>>> +             mutex_lock(&dev_info->mlock);
->>>>>> +             switch (chan->type) {
->>>>>> +             case IIO_IN:
->>>>>> +                     ret = ad7280_read_channel(st, chan->address>>    8,
->>>>>> +                                               chan->address&    0xFF);
->>>>>> +                     break;
->>>>>> +             case IIO_IN_DIFF:
->>>>>> +                     ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
->>>>> Err... Really need some explanation for what this channel is!
->>>> Voltage across all cells.
->>> Fair enough. So are the other voltages not differential as well? (across a given
->>> cell rather than referred to a base voltage)
->>> ...
->> Yes technically seen they are all differential.
->>
-> Any cost in setting them up as such then?
->
-> in1-in0
-> in2-in1 etc
-> +
-> inX-in0 for your summed one?
-Yes this is already on my to-do list...
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Nothing terribly exciting in here.
 
+Bit of reorganization to ensure drivers see less of the core infrastructure
+and removal of various things from headers that no longer have a reason
+to exist.
+
+Comments welcome!
+
+Jonathan
+
+Jonathan Cameron (7):
+  staging:iio:core simplify and fix a bug in
+    iio_device_(un)register_event_set.
+  staging:iio:core flatten convenience function that only has one user.
+  staging:iio:core squash trivial wrappers and use ida allocation func.
+  staging:iio:trigger core. Trivial code cleanups.
+  staging:iio: Introduce iio_core.h and move all core only stuff out of
+    iio.h.
+  staging:iio:sysfs cleanout header for unused definitions.
+  staging:iio:events: use IIO_<TYPE> and IIO_MOD_<> instead of
+    IIO_EV_CLASS_<TYPE> etc
+
+ drivers/staging/iio/accel/lis3l02dq_core.c |   24 ++--
+ drivers/staging/iio/accel/sca3000_core.c   |   18 ++--
+ drivers/staging/iio/adc/ad7150.c           |    8 +-
+ drivers/staging/iio/adc/ad7816.c           |    2 +-
+ drivers/staging/iio/adc/ad799x_core.c      |    4 +-
+ drivers/staging/iio/adc/adt75.c            |    2 +-
+ drivers/staging/iio/adc/max1363_core.c     |   24 ++---
+ drivers/staging/iio/dac/ad5504.c           |    2 +-
+ drivers/staging/iio/iio.h                  |   67 +----------
+ drivers/staging/iio/iio_core.h             |   48 ++++++++
+ drivers/staging/iio/iio_core_trigger.h     |    5 +-
+ drivers/staging/iio/industrialio-core.c    |  178 +++++++++++----------------
+ drivers/staging/iio/industrialio-ring.c    |    1 +
+ drivers/staging/iio/industrialio-trigger.c |   23 ++---
+ drivers/staging/iio/light/tsl2563.c        |    2 +-
+ drivers/staging/iio/sysfs.h                |   71 +-----------
+ 16 files changed, 174 insertions(+), 305 deletions(-)
+ create mode 100644 drivers/staging/iio/iio_core.h
 
 -- 
-Greetings,
-Michael
+1.7.3.4
 
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
-Margaret Seif
