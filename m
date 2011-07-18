@@ -1,67 +1,149 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:47927 "EHLO
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:47930 "EHLO
 	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751907Ab1GRNuF (ORCPT
+	with ESMTP id S1751521Ab1GRNuF (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jul 2011 09:50:05 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: arnd@arndb.de, manuel.stahl@iis.fraunhofer.de,
 	device-drivers-devel@blackfin.uclinux.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 2/7] staging:iio:kfifo buffer - push structure definition down into implementation.
-Date: Mon, 18 Jul 2011 14:49:59 +0100
-Message-Id: <1310997004-22728-3-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 1/7] staging:iio:trigger push functions that don't need to be generaly available down into the core.
+Date: Mon, 18 Jul 2011 14:49:58 +0100
+Message-Id: <1310997004-22728-2-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1310997004-22728-1-git-send-email-jic23@cam.ac.uk>
 References: <1310997004-22728-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Nothing other than the implementation needs to know about this.
-
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/kfifo_buf.c |    8 ++++++++
- drivers/staging/iio/kfifo_buf.h |    8 --------
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/staging/iio/industrialio-trigger.c |   30 +++++++++++++++++----
+ drivers/staging/iio/trigger.h              |   39 ----------------------------
+ 2 files changed, 24 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/staging/iio/kfifo_buf.c b/drivers/staging/iio/kfifo_buf.c
-index 6002368..3c9516b 100644
---- a/drivers/staging/iio/kfifo_buf.c
-+++ b/drivers/staging/iio/kfifo_buf.c
-@@ -8,6 +8,14 @@
+diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
+index 72ea106..f1ece86 100644
+--- a/drivers/staging/iio/industrialio-trigger.c
++++ b/drivers/staging/iio/industrialio-trigger.c
+@@ -215,6 +215,26 @@ void iio_trigger_notify_done(struct iio_trigger *trig)
+ EXPORT_SYMBOL(iio_trigger_notify_done);
  
- #include "kfifo_buf.h"
- 
-+struct iio_kfifo {
-+	struct iio_ring_buffer ring;
-+	struct kfifo kf;
-+	int use_count;
-+	int update_needed;
-+	struct mutex use_lock;
-+};
+ /* Trigger Consumer related functions */
++static int iio_trigger_get_irq(struct iio_trigger *trig)
++{
++	int ret;
++	mutex_lock(&trig->pool_lock);
++	ret = bitmap_find_free_region(trig->pool,
++				      CONFIG_IIO_CONSUMERS_PER_TRIGGER,
++				      ilog2(1));
++	mutex_unlock(&trig->pool_lock);
++	if (ret >= 0)
++		ret += trig->subirq_base;
 +
- #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, ring)
++	return ret;
++}
++
++static void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
++{
++	mutex_lock(&trig->pool_lock);
++	clear_bit(irq - trig->subirq_base, trig->pool);
++	mutex_unlock(&trig->pool_lock);
++}
  
- static inline int __iio_allocate_kfifo(struct iio_kfifo *buf,
-diff --git a/drivers/staging/iio/kfifo_buf.h b/drivers/staging/iio/kfifo_buf.h
-index aac3053..fb48523 100644
---- a/drivers/staging/iio/kfifo_buf.h
-+++ b/drivers/staging/iio/kfifo_buf.h
-@@ -3,14 +3,6 @@
- #include "iio.h"
- #include "ring_generic.h"
+ /* Complexity in here.  With certain triggers (datardy) an acknowledgement
+  * may be needed if the pollfuncs do not include the data read for the
+@@ -223,8 +243,8 @@ EXPORT_SYMBOL(iio_trigger_notify_done);
+  * the relevant function is in there may be the best option.
+  */
+ /* Worth protecting against double additions?*/
+-int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+-				 struct iio_poll_func *pf)
++static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
++					struct iio_poll_func *pf)
+ {
+ 	int ret = 0;
+ 	bool notinuse
+@@ -241,10 +261,9 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
  
--struct iio_kfifo {
--	struct iio_ring_buffer ring;
--	struct kfifo kf;
--	int use_count;
--	int update_needed;
--	struct mutex use_lock;
+ 	return ret;
+ }
+-EXPORT_SYMBOL(iio_trigger_attach_poll_func);
+ 
+-int iio_trigger_dettach_poll_func(struct iio_trigger *trig,
+-				  struct iio_poll_func *pf)
++static int iio_trigger_dettach_poll_func(struct iio_trigger *trig,
++					 struct iio_poll_func *pf)
+ {
+ 	int ret = 0;
+ 	bool no_other_users
+@@ -263,7 +282,6 @@ int iio_trigger_dettach_poll_func(struct iio_trigger *trig,
+ error_ret:
+ 	return ret;
+ }
+-EXPORT_SYMBOL(iio_trigger_dettach_poll_func);
+ 
+ irqreturn_t iio_pollfunc_store_time(int irq, void *p)
+ {
+diff --git a/drivers/staging/iio/trigger.h b/drivers/staging/iio/trigger.h
+index 56f8baf..722fc33 100644
+--- a/drivers/staging/iio/trigger.h
++++ b/drivers/staging/iio/trigger.h
+@@ -104,23 +104,6 @@ int iio_trigger_register(struct iio_trigger *trig_info);
+ void iio_trigger_unregister(struct iio_trigger *trig_info);
+ 
+ /**
+- * iio_trigger_attach_poll_func() - add a function pair to be run on trigger
+- * @trig:	trigger to which the function pair are being added
+- * @pf:		poll function pair
+- **/
+-int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+-				 struct iio_poll_func *pf);
+-
+-/**
+- * iio_trigger_dettach_poll_func() -	remove function pair from those to be
+- *					run on trigger
+- * @trig:	trigger from which the function is being removed
+- * @pf:		poll function pair
+- **/
+-int iio_trigger_dettach_poll_func(struct iio_trigger *trig,
+-				  struct iio_poll_func *pf);
+-
+-/**
+  * iio_trigger_poll() - called on a trigger occurring
+  * @trig: trigger which occurred
+  *
+@@ -129,30 +112,8 @@ int iio_trigger_dettach_poll_func(struct iio_trigger *trig,
+ void iio_trigger_poll(struct iio_trigger *trig, s64 time);
+ void iio_trigger_poll_chained(struct iio_trigger *trig, s64 time);
+ 
+-
+ irqreturn_t iio_trigger_generic_data_rdy_poll(int irq, void *private);
+ 
+-static inline int iio_trigger_get_irq(struct iio_trigger *trig)
+-{
+-	int ret;
+-	mutex_lock(&trig->pool_lock);
+-	ret = bitmap_find_free_region(trig->pool,
+-				      CONFIG_IIO_CONSUMERS_PER_TRIGGER,
+-				      ilog2(1));
+-	mutex_unlock(&trig->pool_lock);
+-	if (ret >= 0)
+-		ret += trig->subirq_base;
+-
+-	return ret;
 -};
 -
- extern const struct iio_ring_access_funcs kfifo_access_funcs;
- 
- struct iio_ring_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev);
+-static inline void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
+-{
+-	mutex_lock(&trig->pool_lock);
+-	clear_bit(irq - trig->subirq_base, trig->pool);
+-	mutex_unlock(&trig->pool_lock);
+-};
+-
+ struct iio_trigger *iio_allocate_trigger(const char *fmt, ...)
+ 	__attribute__((format(printf, 1, 2)));
+ void iio_free_trigger(struct iio_trigger *trig);
 -- 
 1.7.3.4
 
