@@ -5,8 +5,8 @@ CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
 	<drivers@analog.com>, <jic23@cam.ac.uk>, Michael Hennerich
 	<michael.hennerich@analog.com>
 Subject: [PATCH 2/2] iio: adc: New driver for AD7280A Lithium Ion Battery Monitoring System
-Date: Wed, 20 Jul 2011 15:03:10 +0200
-Message-ID: <1311166990-32310-4-git-send-email-michael.hennerich@analog.com>
+Date: Wed, 20 Jul 2011 15:03:09 +0200
+Message-ID: <1311166990-32310-3-git-send-email-michael.hennerich@analog.com>
 In-Reply-To: <1311166990-32310-1-git-send-email-michael.hennerich@analog.com>
 References: <1311166990-32310-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
@@ -36,6 +36,7 @@ Changes since V2:
 Remove redundant adc.h include file, scheduled for removal.
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
  .../iio/Documentation/sysfs-bus-iio-adc-ad7280a    |   21 +
  drivers/staging/iio/adc/Kconfig                    |   10 +
@@ -81,7 +82,7 @@ index b39f2e1..60de7d7 100644
 @@ -182,6 +182,16 @@ config ADT7410
  	  Say yes here to build support for Analog Devices ADT7410
  	  temperature sensors.
- 
+
 +config AD7280
 +	tristate "Analog Devices AD7280A Lithium Ion Battery Monitoring System"
 +	depends on SPI
@@ -1146,5 +1147,5 @@ index 0000000..20400b0
 +};
 +
 +#endif /* IIO_ADC_AD7280_H_ */
--- 
+--
 1.7.0.4
