@@ -1,31 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:60433 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751740Ab1GULIg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jul 2011 07:08:36 -0400
-Message-ID: <4E2808B8.90105@cam.ac.uk>
-Date: Thu, 21 Jul 2011 12:08:40 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+Message-ID: <4E283295.6060606@analog.com>
+Date: Thu, 21 Jul 2011 16:07:17 +0200
+From: Michael Hennerich <michael.hennerich@analog.com>
+Reply-To: <michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
 CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: adt7310 uses two event lines.
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: Re: adt7310 uses two event lines.
+References: <4E2808B8.90105@cam.ac.uk>
+In-Reply-To: <4E2808B8.90105@cam.ac.uk>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Michael,
+On 07/21/2011 01:08 PM, Jonathan Cameron wrote:
+> Michael,
+>
+> Right now there are bugs galore in the multiple event line code.
+> I'm intending to rip it out for now so as to keep things simple.
+> We can merge it back in when we have a use case.
+>
+> The only multiple line user I know of is the adt7310.  Now there
+> are all sorts of other issues with this driver anyway and it
+> probably shouldn't be in IIO at all (just a temperature sensor).
+>
+> In the meantime I propose just deleting the second interrupt line.
+>
+> Is that alright with you?
+>
+> Jonathan
+>
+Hi Jonathan,
 
-Right now there are bugs galore in the multiple event line code.
-I'm intending to rip it out for now so as to keep things simple.
-We can merge it back in when we have a use case.
+In theory both interrupt lines could be wired together.
+They both end up on the same handler anyways.
+So feel free to remove one.
 
-The only multiple line user I know of is the adt7310.  Now there
-are all sorts of other issues with this driver anyway and it
-probably shouldn't be in IIO at all (just a temperature sensor).
+-- 
+Greetings,
+Michael
 
-In the meantime I propose just deleting the second interrupt line.
-
-Is that alright with you?
-
-Jonathan
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
+Margaret Seif
