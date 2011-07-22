@@ -1,48 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:42446 "EHLO
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:48360 "EHLO
 	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753779Ab1GVMFz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jul 2011 08:05:55 -0400
-Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:57969)
-	by ppsw-50.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.157]:25)
-	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
-	id 1QkEUM-0006s7-sY (Exim 4.72) for linux-iio@vger.kernel.org
-	(return-path <jic23@cam.ac.uk>); Fri, 22 Jul 2011 13:05:54 +0100
-Message-ID: <4E2967A8.5070502@cam.ac.uk>
-Date: Fri, 22 Jul 2011 13:06:00 +0100
+	with ESMTP id S1753161Ab1GVJyn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jul 2011 05:54:43 -0400
+Message-ID: <4E2948E7.7080908@cam.ac.uk>
+Date: Fri, 22 Jul 2011 10:54:47 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Temporary git tree for ABI changes etc.
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	Jon Brenner <jbrenner@taosinc.com>,
+	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Subject: 64 bit event code. How to split up?
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 Hi All,
 
-It's time for another one of those git trees with lots
-and lots of warnings attached.
+Given Michael has already run out of space in our 32 bit event code I suggest
+we bite the bullet and move over to a 64 bit one now.  I doubt there is much
+userspace code in place so this shouldn't be 'too' painful.
 
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio-blue.git
+So to start the ball rolling, how about the following split.
+The final will probably still be a macro of doom.  Bitfields get a bit
+confusing cross architectures.  I 'think' the following should even
+be fine of arm oabi (IIRC that has 4 byte alignment for structures).
 
-I will rebase this and edit the history in response to reviews etc.
+The following avoids all the conditionals we currently have in the macro.
+It costs us space, but we have more of that. Note we'll need to add
+a NO_MOD modifier and add 1 to all the modifier codes.  It should also
+allow us to use enums for everything.
 
-If nought else it has a really dirty version of Rusty's simple ida
-patch so we'll be replacing that when a final version is decided on.
+/**
+ * iio_event - general purpose event to userspace.
+ * @time: timestamp
+ * @chan: index of non differential channel
+ * @chan1: index of first end of differential channel
+ * @chan2: index of second end of differential channel
+ * @chan_type: an iio_chan_type (we currently have 15)
+ * @modifier: currently we interleave several types of these (axial, light).
+ *            having this much space would allow us to relax that and lead to
+ *            simpler code.
+ * @direction: currently only 3, but definitely want level versions as well.
+ * @type: event type (currently thresh, mag, roc). Can see we will have more
+ *        of these.
+ */
 
-So, what is currently there...
+struct iio_event {
+        int64_t time;
+	union {
+		unsigned chan:32;
+		struct {
+			unsigned chan1:16;
+			unsigned chan2:16;
+		};
+	};
+	unsigned chan_type:8;
+	unsigned modifier:8;
+	unsigned direction:8;
+	unsigned type:8;
+};
 
-1) Everything I've sent Greg KH
-2) Lots of cleanup
-3) Chrdev merge series (updated according to Arnd's suggestions).
-4) Removal of multiple event line support.
-5) Channel masks -> bitmap conversion to allow for way more channels.
-6) 64 bit event code introduction
-7) Fixes
+So the question is, is this rough and ready distribution of bits good
+enough, or do we need more channel types for example at the cost of some
+directions?
 
-Have fun. I'll post the patches for review on list, but feel free
-to take a look and in particular test anything you can!
-
-Thanks,
+I'll hack some patches based on this together shortly so we can see what
+other cleanups it allows.
 
 Jonathan
