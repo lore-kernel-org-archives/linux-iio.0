@@ -1,38 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:36833 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751372Ab1GYNmc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2011 09:42:32 -0400
-Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:37207)
-	by ppsw-52.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.159]:25)
-	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
-	id 1QlLQV-0008RC-G0 (Exim 4.72) for linux-iio@vger.kernel.org
-	(return-path <jic23@cam.ac.uk>); Mon, 25 Jul 2011 14:42:31 +0100
-Message-ID: <4E2D72CE.7040508@cam.ac.uk>
-Date: Mon, 25 Jul 2011 14:42:38 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: iio-blue.git - contents.
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 0/4] blue part 8: IIO, the rest.
+Date: Mon, 25 Jul 2011 14:38:56 +0100
+Message-Id: <1311601140-20660-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio-blue.git
+Another mixed bag of cleanups. Some can't move earlier due to
+dependencies.
 
-1: Misc fixes
-2: Last removal of dev_data usage and removal of field (long since reviewed)
-3: Trigger registration and removal cleanup (already posted).
-4: General cleanup
-5: chrdev combining
-6: abi rework to have in and out prefixes for all channel attributes.
-7: Scaling issue related changes to allow for lots of channels.
-8: Misc fixes and cleanups.
+The ida patch depends on Rusty Russels ida_simple_get patch. I've
+pulled current version of that into iio-blue.git. It'll hopefully
+merge early in the next merge window.
 
-Please do note the tree will be rebased.
-
-As ever all reviews welcome!
+The others are trivial bits and bobs.
 
 Thanks,
 
 Jonathan
+
+Jonathan Cameron (4):
+  staging:iio: use ida_simple_get and ida_simple_remove + merge ids
+  staging:iio:trivial sparse related cleanups.
+  staging:iio: sysfs.h remove unused val2 and dead macro.
+  staging:iio:various Stop drivers putting sysfs attributes in a    
+    directory named after the device.
+
+ drivers/staging/iio/accel/sca3000_ring.c   |   68 ----------------------------
+ drivers/staging/iio/adc/ad7150.c           |    2 +
+ drivers/staging/iio/dac/ad5791.c           |    1 -
+ drivers/staging/iio/dds/ad9852.c           |    1 -
+ drivers/staging/iio/dds/ad9910.c           |    1 -
+ drivers/staging/iio/dds/ad9951.c           |    1 -
+ drivers/staging/iio/industrialio-core.c    |   61 ++-----------------------
+ drivers/staging/iio/industrialio-trigger.c |   48 +++-----------------
+ drivers/staging/iio/light/tsl2563.c        |    2 +-
+ drivers/staging/iio/light/tsl2583.c        |    6 +-
+ drivers/staging/iio/meter/ade7854.c        |    2 +-
+ drivers/staging/iio/resolver/ad2s1210.c    |    1 -
+ drivers/staging/iio/resolver/ad2s90.c      |    1 -
+ drivers/staging/iio/sysfs.h                |    6 ---
+ 14 files changed, 18 insertions(+), 183 deletions(-)
+
+-- 
+1.7.3.4
