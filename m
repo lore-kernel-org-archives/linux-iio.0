@@ -1,296 +1,115 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:36322 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751942Ab1GYNKz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2011 09:10:55 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 4/8] staging:iio: Introduce iio_core.h and move all core only stuff out of iio.h.
-Date: Mon, 25 Jul 2011 14:10:54 +0100
-Message-Id: <1311599458-15152-5-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 3/8] staging:iio:trigger core. Trivial code cleanups.
+Date: Mon, 25 Jul 2011 14:10:53 +0100
+Message-Id: <1311599458-15152-4-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1311599458-15152-1-git-send-email-jic23@cam.ac.uk>
 References: <1311599458-15152-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Also get rid of a few function defs where they are only now in one core file
-anyway.
-Whilst here add mask = 0 to get rid of warning.
+Stop exporting functions only intended for core usage.
+Return void from function which can never return anything other than 0.
+Trivial stype cleanups.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/iio.h                  |   63 +---------------------------
- drivers/staging/iio/iio_core.h             |   48 +++++++++++++++++++++
- drivers/staging/iio/industrialio-core.c    |   16 ++++----
- drivers/staging/iio/industrialio-ring.c    |    1 +
- drivers/staging/iio/industrialio-trigger.c |    1 +
- 5 files changed, 59 insertions(+), 70 deletions(-)
+ drivers/staging/iio/iio_core_trigger.h     |    5 ++---
+ drivers/staging/iio/industrialio-trigger.c |   22 +++++++---------------
+ 2 files changed, 9 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index 07f88aa..61cfb26 100644
---- a/drivers/staging/iio/iio.h
-+++ b/drivers/staging/iio/iio.h
-@@ -23,9 +23,6 @@
-  * Currently assumes nano seconds.
-  */
- 
--/* Event interface flags */
--#define IIO_BUSY_BIT_POS 1
--
- /* naughty temporary hack to match these against the event version
-    - need to flattern these together */
- enum iio_chan_type {
-@@ -131,19 +128,7 @@ struct iio_chan_spec {
- 	unsigned		modified:1;
- 	unsigned		indexed:1;
- };
--/* Meant for internal use only */
--void __iio_device_attr_deinit(struct device_attribute *dev_attr);
--int __iio_device_attr_init(struct device_attribute *dev_attr,
--			   const char *postfix,
--			   struct iio_chan_spec const *chan,
--			   ssize_t (*readfunc)(struct device *dev,
--					       struct device_attribute *attr,
--					       char *buf),
--			   ssize_t (*writefunc)(struct device *dev,
--						struct device_attribute *attr,
--						const char *buf,
--						size_t len),
--			   bool generic);
-+
- #define IIO_ST(si, rb, sb, sh)						\
- 	{ .sign = si, .realbits = rb, .storagebits = sb, .shift = sh }
- 
-@@ -166,20 +151,6 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
- 	{ .type = IIO_TIMESTAMP, .channel = -1,				\
- 			.scan_index = _si, .scan_type = IIO_ST('s', 64, 64, 0) }
- 
--int __iio_add_chan_devattr(const char *postfix,
--			   const char *group,
--			   struct iio_chan_spec const *chan,
--			   ssize_t (*func)(struct device *dev,
--					   struct device_attribute *attr,
--					   char *buf),
--			   ssize_t (*writefunc)(struct device *dev,
--						struct device_attribute *attr,
--						const char *buf,
--						size_t len),
--			   int mask,
--			   bool generic,
--			   struct device *dev,
--			   struct list_head *attr_list);
- /**
-  * iio_get_time_ns() - utility function to get a time stamp for events etc
+diff --git a/drivers/staging/iio/iio_core_trigger.h b/drivers/staging/iio/iio_core_trigger.h
+index 9d52d96..3e5195a 100644
+--- a/drivers/staging/iio/iio_core_trigger.h
++++ b/drivers/staging/iio/iio_core_trigger.h
+@@ -19,7 +19,7 @@ int iio_device_register_trigger_consumer(struct iio_dev *dev_info);
+  * iio_device_unregister_trigger_consumer() - reverse the registration process
+  * @dev_info: iio_dev associated with the device that consumed the trigger
   **/
-@@ -344,13 +315,6 @@ int iio_push_event(struct iio_dev *dev_info,
- 		  int ev_code,
- 		  s64 timestamp);
+-int iio_device_unregister_trigger_consumer(struct iio_dev *dev_info);
++void iio_device_unregister_trigger_consumer(struct iio_dev *dev_info);
  
--/* Used to distinguish between bipolar and unipolar scan elemenents.
-- * Whilst this may seem obvious, we may well want to change the representation
-- * in the future!*/
--#define IIO_SIGNED(a) -(a)
--#define IIO_UNSIGNED(a) (a)
--
--extern dev_t iio_devt;
- extern struct bus_type iio_bus_type;
+ #else
  
- /**
-@@ -363,15 +327,6 @@ static inline void iio_put_device(struct iio_dev *dev)
- 		put_device(&dev->dev);
- };
- 
--/**
-- * to_iio_dev() - get iio_dev for which we have the struct device
-- * @d: the struct device
-- **/
--static inline struct iio_dev *to_iio_dev(struct device *d)
--{
--	return container_of(d, struct iio_dev, dev);
--};
--
- /* Can we make this smaller? */
- #define IIO_ALIGN L1_CACHE_BYTES
- /**
-@@ -398,22 +353,6 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
- void iio_free_device(struct iio_dev *dev);
- 
- /**
-- * iio_put() - internal module reference count reduce
-- **/
--void iio_put(void);
--
--/**
-- * iio_get() - internal module reference count increase
-- **/
--void iio_get(void);
--
--/**
-- * iio_device_get_chrdev_minor() - get an unused minor number
-- **/
--int iio_device_get_chrdev_minor(void);
--void iio_device_free_chrdev_minor(int val);
--
--/**
-  * iio_ring_enabled() - helper function to test if any form of ring is enabled
-  * @dev_info:		IIO device info structure for device
+@@ -36,9 +36,8 @@ static int iio_device_register_trigger_consumer(struct iio_dev *dev_info)
+  * iio_device_unregister_trigger_consumer() - reverse the registration process
+  * @dev_info: iio_dev associated with the device that consumed the trigger
   **/
-diff --git a/drivers/staging/iio/iio_core.h b/drivers/staging/iio/iio_core.h
-new file mode 100644
-index 0000000..00e894d
---- /dev/null
-+++ b/drivers/staging/iio/iio_core.h
-@@ -0,0 +1,48 @@
-+/* The industrial I/O core function defs.
-+ *
-+ * Copyright (c) 2008 Jonathan Cameron
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ *
-+ * These definitions are meant for use only within the IIO core, not indvidual
-+ * drivers.
-+ */
-+
-+/**
-+ * iio_device_get_chrdev_minor() - get an unused minor number
-+ **/
-+int iio_device_get_chrdev_minor(void);
-+void iio_device_free_chrdev_minor(int val);
-+
-+
-+/**
-+ * iio_put() - internal module reference count reduce
-+ **/
-+void iio_put(void);
-+
-+/**
-+ * iio_get() - internal module reference count increase
-+ **/
-+void iio_get(void);
-+
-+extern dev_t iio_devt;
-+
-+int __iio_add_chan_devattr(const char *postfix,
-+			   const char *group,
-+			   struct iio_chan_spec const *chan,
-+			   ssize_t (*func)(struct device *dev,
-+					   struct device_attribute *attr,
-+					   char *buf),
-+			   ssize_t (*writefunc)(struct device *dev,
-+						struct device_attribute *attr,
-+						const char *buf,
-+						size_t len),
-+			   int mask,
-+			   bool generic,
-+			   struct device *dev,
-+			   struct list_head *attr_list);
-+
-+/* Event interface flags */
-+#define IIO_BUSY_BIT_POS 1
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index b131a58..123841b 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -22,6 +22,7 @@
- #include <linux/cdev.h>
- #include <linux/slab.h>
- #include "iio.h"
-+#include "iio_core.h"
- #include "iio_core_trigger.h"
- 
- #define IIO_ID_PREFIX "device"
-@@ -35,7 +36,6 @@ static DEFINE_IDA(iio_chrdev_ida);
- static DEFINE_SPINLOCK(iio_ida_lock);
- 
- dev_t iio_devt;
--EXPORT_SYMBOL(iio_devt);
- 
- #define IIO_DEV_MAX 256
- struct bus_type iio_bus_type = {
-@@ -90,7 +90,7 @@ static const char * const iio_chan_info_postfix[] = {
+-static int iio_device_unregister_trigger_consumer(struct iio_dev *dev_info)
++static void iio_device_unregister_trigger_consumer(struct iio_dev *dev_info)
+ {
+-	return 0;
  };
  
- /* Return a negative errno on failure */
--int iio_get_new_ida_val(struct ida *this_ida)
-+static int iio_get_new_ida_val(struct ida *this_ida)
- {
- 	int ret;
- 	int val;
-@@ -109,15 +109,13 @@ ida_again:
- 
- 	return val;
- }
--EXPORT_SYMBOL(iio_get_new_ida_val);
- 
--void iio_free_ida_val(struct ida *this_ida, int id)
-+static void iio_free_ida_val(struct ida *this_ida, int id)
- {
- 	spin_lock(&iio_ida_lock);
- 	ida_remove(this_ida, id);
- 	spin_unlock(&iio_ida_lock);
- }
--EXPORT_SYMBOL(iio_free_ida_val);
- 
- int iio_push_event(struct iio_dev *dev_info,
- 		   int ev_line,
-@@ -532,6 +530,7 @@ static int __iio_build_postfix(struct iio_chan_spec const *chan,
- 	return 0;
- }
- 
-+static
- int __iio_device_attr_init(struct device_attribute *dev_attr,
- 			   const char *postfix,
- 			   struct iio_chan_spec const *chan,
-@@ -604,7 +603,7 @@ error_ret:
- 	return ret;
- }
- 
--void __iio_device_attr_deinit(struct device_attribute *dev_attr)
-+static void __iio_device_attr_deinit(struct device_attribute *dev_attr)
- {
- 	kfree(dev_attr->attr.name);
- }
-@@ -889,7 +888,7 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
- 				      struct iio_chan_spec const *chan)
- {
- 
--	int ret = 0, i, mask;
-+	int ret = 0, i, mask = 0;
- 	char *postfix;
- 	if (!chan->event_mask)
- 		return 0;
-@@ -1099,8 +1098,9 @@ static void iio_device_unregister_eventset(struct iio_dev *dev_info)
- 
- static void iio_dev_release(struct device *device)
- {
-+	struct iio_dev *dev_info = container_of(device, struct iio_dev, dev);
- 	iio_put();
--	kfree(to_iio_dev(device));
-+	kfree(dev_info);
- }
- 
- static struct device_type iio_dev_type = {
-diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
-index 843eb82..dce50b1 100644
---- a/drivers/staging/iio/industrialio-ring.c
-+++ b/drivers/staging/iio/industrialio-ring.c
-@@ -21,6 +21,7 @@
- #include <linux/poll.h>
- 
- #include "iio.h"
-+#include "iio_core.h"
- #include "ring_generic.h"
- 
- /**
+ #endif /* CONFIG_TRIGGER_CONSUMER */
 diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
-index 21a7dbb..72ea106 100644
+index 6940f8c..21a7dbb 100644
 --- a/drivers/staging/iio/industrialio-trigger.c
 +++ b/drivers/staging/iio/industrialio-trigger.c
-@@ -17,6 +17,7 @@
+@@ -173,13 +173,12 @@ static struct iio_trigger *iio_trigger_find_by_name(const char *name,
+ void iio_trigger_poll(struct iio_trigger *trig, s64 time)
+ {
+ 	int i;
+-	if (!trig->use_count) {
++	if (!trig->use_count)
+ 		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++)
+ 			if (trig->subirqs[i].enabled) {
+ 				trig->use_count++;
+ 				generic_handle_irq(trig->subirq_base + i);
+ 			}
+-	}
+ }
+ EXPORT_SYMBOL(iio_trigger_poll);
  
- #include "iio.h"
- #include "trigger.h"
-+#include "iio_core.h"
- #include "iio_core_trigger.h"
- #include "trigger_consumer.h"
+@@ -321,12 +320,10 @@ static ssize_t iio_trigger_read_current(struct device *dev,
+ 					char *buf)
+ {
+ 	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	int len = 0;
++
+ 	if (dev_info->trig)
+-		len = sprintf(buf,
+-			      "%s\n",
+-			      dev_info->trig->name);
+-	return len;
++		return sprintf(buf, "%s\n", dev_info->trig->name);
++	return 0;
+ }
  
+ /**
+@@ -495,23 +492,18 @@ EXPORT_SYMBOL(iio_free_trigger);
+ 
+ int iio_device_register_trigger_consumer(struct iio_dev *dev_info)
+ {
+-	int ret;
+-	ret = sysfs_create_group(&dev_info->dev.kobj,
+-				 &iio_trigger_consumer_attr_group);
+-	return ret;
++	return sysfs_create_group(&dev_info->dev.kobj,
++				  &iio_trigger_consumer_attr_group);
+ }
+-EXPORT_SYMBOL(iio_device_register_trigger_consumer);
+ 
+-int iio_device_unregister_trigger_consumer(struct iio_dev *dev_info)
++void iio_device_unregister_trigger_consumer(struct iio_dev *dev_info)
+ {
+ 	/* Clean up and associated but not attached triggers references */
+ 	if (dev_info->trig)
+ 		iio_put_trigger(dev_info->trig);
+ 	sysfs_remove_group(&dev_info->dev.kobj,
+ 			   &iio_trigger_consumer_attr_group);
+-	return 0;
+ }
+-EXPORT_SYMBOL(iio_device_unregister_trigger_consumer);
+ 
+ int iio_triggered_ring_postenable(struct iio_dev *indio_dev)
+ {
 -- 
 1.7.3.4
+
