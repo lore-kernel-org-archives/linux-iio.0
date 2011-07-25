@@ -1,822 +1,887 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:41735 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751212Ab1GYNfH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2011 09:35:07 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 2/3] staging:iio: Switch the channel masks to bitmaps so as to allow for more channels.
-Date: Mon, 25 Jul 2011 14:35:10 +0100
-Message-Id: <1311600911-20353-3-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 1/3] staging:iio: remove broken support for multiple event interfaces.
+Date: Mon, 25 Jul 2011 14:35:09 +0100
+Message-Id: <1311600911-20353-2-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1311600911-20353-1-git-send-email-jic23@cam.ac.uk>
 References: <1311600911-20353-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This is as light as possible on changes to current drivers.
-Some drivers make assumptions that their masks fit in a single
-long.  Given they were previously working this is clearly valid if
-not tidy.
-
-The max1363 is an example where there should be no such assumptions.
+We don't have a use case for these.  Two drivers appeared to use them
+but both report all events on the first.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/lis3l02dq_ring.c |    5 +-
- drivers/staging/iio/adc/ad7298_ring.c      |    4 +-
- drivers/staging/iio/adc/ad7793.c           |   18 ++++--
- drivers/staging/iio/adc/ad7887.h           |    4 +-
- drivers/staging/iio/adc/ad7887_ring.c      |   10 ++-
- drivers/staging/iio/adc/ad799x.h           |    4 +-
- drivers/staging/iio/adc/ad799x_core.c      |    2 +-
- drivers/staging/iio/adc/ad799x_ring.c      |   18 ++----
- drivers/staging/iio/adc/max1363.h          |    8 ++-
- drivers/staging/iio/adc/max1363_core.c     |   37 ++++++-----
- drivers/staging/iio/adc/max1363_ring.c     |   22 ++++----
- drivers/staging/iio/iio.h                  |    3 +-
- drivers/staging/iio/imu/adis16400_ring.c   |    9 ++-
- drivers/staging/iio/industrialio-ring.c    |   91 +++++++++++++++++++++++++++-
- drivers/staging/iio/meter/ade7758.h        |    2 +-
- drivers/staging/iio/meter/ade7758_core.c   |    2 +-
- drivers/staging/iio/meter/ade7758_ring.c   |    2 +-
- drivers/staging/iio/ring_generic.h         |   64 ++------------------
- 18 files changed, 172 insertions(+), 133 deletions(-)
+ drivers/staging/iio/accel/lis3l02dq_core.c |   13 +--
+ drivers/staging/iio/accel/sca3000_core.c   |    9 +-
+ drivers/staging/iio/adc/ad7150.c           |   21 +++--
+ drivers/staging/iio/adc/ad7291.c           |   13 +--
+ drivers/staging/iio/adc/ad7745.c           |    5 +-
+ drivers/staging/iio/adc/ad7816.c           |    5 +-
+ drivers/staging/iio/adc/ad799x_core.c      |    4 +-
+ drivers/staging/iio/adc/adt7310.c          |    7 +-
+ drivers/staging/iio/adc/adt7410.c          |    7 +-
+ drivers/staging/iio/adc/adt75.c            |    3 +-
+ drivers/staging/iio/adc/max1363_core.c     |    4 +-
+ drivers/staging/iio/addac/adt7316.c        |   18 ++--
+ drivers/staging/iio/dac/ad5504.c           |    4 +-
+ drivers/staging/iio/iio.h                  |   11 +--
+ drivers/staging/iio/industrialio-core.c    |  146 +++++++++++++--------------
+ drivers/staging/iio/light/tsl2563.c        |    3 +-
+ 16 files changed, 123 insertions(+), 150 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index 5c6fe13..82891cb 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -61,8 +61,9 @@ ssize_t lis3l02dq_read_accel_from_ring(struct iio_ring_buffer *ring,
- 	ret = ring->access->read_last(ring, (u8 *)data);
- 	if (ret)
- 		goto error_free_data;
--	*val = data[bitmap_weight(&ring->scan_mask, index)];
-+	*val = data[bitmap_weight(ring->scan_mask, index)];
- error_free_data:
-+
- 	kfree(data);
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+index 062632b..83c12b0 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+@@ -451,7 +451,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 				 &t);
  
- 	return ret;
-@@ -99,7 +100,7 @@ static int lis3l02dq_read_all(struct iio_dev *indio_dev, u8 *rx_array)
- 	mutex_lock(&st->buf_lock);
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_HIGH)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Z,
+@@ -460,7 +460,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 			       timestamp);
  
- 	for (i = 0; i < ARRAY_SIZE(read_all_tx_array)/4; i++)
--		if (ring->scan_mask & (1 << i)) {
-+		if (test_bit(i, ring->scan_mask)) {
- 			/* lower byte */
- 			xfers[j].tx_buf = st->tx + 2*j;
- 			st->tx[2*j] = read_all_tx_array[i*4];
-diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
-index 741818c..246b2e7 100644
---- a/drivers/staging/iio/adc/ad7298_ring.c
-+++ b/drivers/staging/iio/adc/ad7298_ring.c
-@@ -24,7 +24,7 @@ int ad7298_scan_from_ring(struct iio_dev *dev_info, long ch)
- 	int ret;
- 	u16 *ring_data;
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_LOW)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Z,
+@@ -469,7 +469,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 			       timestamp);
  
--	if (!(ring->scan_mask & (1 << ch))) {
-+	if (!(test_bit(ch, ring->scan_mask))) {
- 		ret = -EBUSY;
- 		goto error_ret;
- 	}
-@@ -79,7 +79,7 @@ static int ad7298_ring_preenable(struct iio_dev *indio_dev)
- 	command = AD7298_WRITE | st->ext_ref;
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_HIGH)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Y,
+@@ -478,7 +478,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 			       timestamp);
  
- 	for (i = 0, m = AD7298_CH(0); i < AD7298_MAX_CHAN; i++, m >>= 1)
--		if (ring->scan_mask & (1 << i))
-+		if (test_bit(i, ring->scan_mask))
- 			command |= m;
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_LOW)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Y,
+@@ -487,7 +487,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 			       timestamp);
  
- 	st->tx_buf[0] = cpu_to_be16(command);
-diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index ed993e3..d1f4911 100644
---- a/drivers/staging/iio/adc/ad7793.c
-+++ b/drivers/staging/iio/adc/ad7793.c
-@@ -51,7 +51,8 @@ struct ad7793_state {
- 	u16				mode;
- 	u16				conf;
- 	u32				scale_avail[8][2];
--	u32				available_scan_masks[7];
-+	/* Note this uses fact that 8 the mask always fits in a long */
-+	unsigned long			available_scan_masks[7];
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the
- 	 * transfer buffers to live in their own cache lines.
-@@ -321,7 +322,7 @@ static int ad7793_scan_from_ring(struct ad7793_state *st, unsigned ch, int *val)
- 	s64 dat64[2];
- 	u32 *dat32 = (u32 *)dat64;
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_HIGH)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_X,
+@@ -496,7 +496,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 			       timestamp);
  
--	if (!(ring->scan_mask & (1 << ch)))
-+	if (!(test_bit(ch, ring->scan_mask)))
- 		return  -EBUSY;
- 
- 	ret = ring->access->read_last(ring, (u8 *) &dat64);
-@@ -343,7 +344,8 @@ static int ad7793_ring_preenable(struct iio_dev *indio_dev)
- 	if (!ring->scan_count)
- 		return -EINVAL;
- 
--	channel = __ffs(ring->scan_mask);
-+	channel = find_first_bit(ring->scan_mask,
-+				 indio_dev->masklength);
- 
- 	d_size = ring->scan_count *
- 		 indio_dev->channels[0].scan_type.storagebits / 8;
-@@ -875,10 +877,12 @@ static int __devinit ad7793_probe(struct spi_device *spi)
- 	indio_dev->num_channels = 7;
- 	indio_dev->info = &ad7793_info;
- 
--	for (i = 0; i < indio_dev->num_channels; i++)
--		st->available_scan_masks[i] = (1 << i) | (1 <<
--			indio_dev->channels[indio_dev->num_channels - 1].
--			scan_index);
-+	for (i = 0; i < indio_dev->num_channels; i++) {
-+		set_bit(i, &st->available_scan_masks[i]);
-+		set_bit(indio_dev->
-+			channels[indio_dev->num_channels - 1].scan_index,
-+			&st->available_scan_masks[i]);
-+	}
- 
- 	init_waitqueue_head(&st->wq_data_avail);
- 
-diff --git a/drivers/staging/iio/adc/ad7887.h b/drivers/staging/iio/adc/ad7887.h
-index 837046c..1b7a772 100644
---- a/drivers/staging/iio/adc/ad7887.h
-+++ b/drivers/staging/iio/adc/ad7887.h
-@@ -83,11 +83,11 @@ enum ad7887_supported_device_ids {
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_LOW)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_X,
+@@ -650,7 +650,6 @@ static const struct attribute_group lis3l02dq_attribute_group = {
  };
  
- #ifdef CONFIG_IIO_RING_BUFFER
--int ad7887_scan_from_ring(struct ad7887_state *st, long mask);
-+int ad7887_scan_from_ring(struct ad7887_state *st, int channum);
- int ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev);
- void ad7887_ring_cleanup(struct iio_dev *indio_dev);
- #else /* CONFIG_IIO_RING_BUFFER */
--static inline int ad7887_scan_from_ring(struct ad7887_state *st, long mask)
-+static inline int ad7887_scan_from_ring(struct ad7887_state *st, int channum)
+ static const struct iio_info lis3l02dq_info = {
+-	.num_interrupt_lines = 1,
+ 	.read_raw = &lis3l02dq_read_raw,
+ 	.write_raw = &lis3l02dq_write_raw,
+ 	.read_event_value = &lis3l02dq_read_thresh,
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index 9d1e699..02ff6ba 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -814,7 +814,7 @@ static irqreturn_t sca3000_event_handler(int irq, void *private)
+ 	sca3000_ring_int_process(val, indio_dev->ring);
+ 
+ 	if (val & SCA3000_INT_STATUS_FREE_FALL)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_X_AND_Y_AND_Z,
+@@ -823,7 +823,7 @@ static irqreturn_t sca3000_event_handler(int irq, void *private)
+ 			       last_timestamp);
+ 
+ 	if (val & SCA3000_INT_STATUS_Y_TRIGGER)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Y,
+@@ -832,7 +832,7 @@ static irqreturn_t sca3000_event_handler(int irq, void *private)
+ 			       last_timestamp);
+ 
+ 	if (val & SCA3000_INT_STATUS_X_TRIGGER)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_X,
+@@ -841,7 +841,7 @@ static irqreturn_t sca3000_event_handler(int irq, void *private)
+ 			       last_timestamp);
+ 
+ 	if (val & SCA3000_INT_STATUS_Z_TRIGGER)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Z,
+@@ -1102,7 +1102,6 @@ error_ret:
+ static const struct iio_info sca3000_info = {
+ 	.attrs = &sca3000_attribute_group,
+ 	.read_raw = &sca3000_read_raw,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &sca3000_event_attribute_group,
+ 	.read_event_value = &sca3000_read_thresh,
+ 	.write_event_value = &sca3000_write_thresh,
+diff --git a/drivers/staging/iio/adc/ad7150.c b/drivers/staging/iio/adc/ad7150.c
+index 672493e..240c208 100644
+--- a/drivers/staging/iio/adc/ad7150.c
++++ b/drivers/staging/iio/adc/ad7150.c
+@@ -650,30 +650,34 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
+ 
+ 	ad7150_i2c_read(chip, AD7150_STATUS, &int_status, 1);
+ 
+-	if ((int_status & AD7150_STATUS_OUT1) && !(chip->old_state & AD7150_STATUS_OUT1))
+-		iio_push_event(indio_dev, 0,
++	if ((int_status & AD7150_STATUS_OUT1) &&
++	    !(chip->old_state & AD7150_STATUS_OUT1))
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+ 				timestamp);
+-	else if ((!(int_status & AD7150_STATUS_OUT1)) && (chip->old_state & AD7150_STATUS_OUT1))
+-		iio_push_event(indio_dev, 0,
++	else if ((!(int_status & AD7150_STATUS_OUT1)) &&
++		 (chip->old_state & AD7150_STATUS_OUT1))
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+ 			       timestamp);
+ 
+-	if ((int_status & AD7150_STATUS_OUT2) && !(chip->old_state & AD7150_STATUS_OUT2))
+-		iio_push_event(indio_dev, 0,
++	if ((int_status & AD7150_STATUS_OUT2) &&
++	    !(chip->old_state & AD7150_STATUS_OUT2))
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 						    1,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+ 			       timestamp);
+-	else if ((!(int_status & AD7150_STATUS_OUT2)) && (chip->old_state & AD7150_STATUS_OUT2))
+-		iio_push_event(indio_dev, 0,
++	else if ((!(int_status & AD7150_STATUS_OUT2)) &&
++		 (chip->old_state & AD7150_STATUS_OUT2))
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 						    1,
+ 						    IIO_EV_TYPE_THRESH,
+@@ -702,7 +706,6 @@ static struct attribute_group ad7150_event_attribute_group = {
+ 
+ static const struct iio_info ad7150_info = {
+ 	.attrs = &ad7150_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad7150_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
+index 96cbb17..3991633 100644
+--- a/drivers/staging/iio/adc/ad7291.c
++++ b/drivers/staging/iio/adc/ad7291.c
+@@ -478,28 +478,28 @@ static irqreturn_t ad7291_event_handler(int irq, void *private)
+ 	ad7291_i2c_write(chip, AD7291_COMMAND, command);
+ 
+ 	if (t_status & (1 << 0))
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+ 			       timestamp);
+ 	if (t_status & (1 << 1))
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+ 			       timestamp);
+ 	if (t_status & (1 << 2))
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+ 			       timestamp);
+ 	if (t_status & (1 << 3))
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+@@ -508,14 +508,14 @@ static irqreturn_t ad7291_event_handler(int irq, void *private)
+ 
+ 	for (i = 0; i < AD7291_VOLTAGE_LIMIT_COUNT*2; i += 2) {
+ 		if (v_status & (1 << i))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 							    i/2,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_FALLING),
+ 				       timestamp);
+ 		if (v_status & (1 << (i + 1)))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 							    i/2,
+ 							    IIO_EV_TYPE_THRESH,
+@@ -779,7 +779,6 @@ static struct attribute_group ad7291_event_attribute_group = {
+ 
+ static const struct iio_info ad7291_info = {
+ 	.attrs = &ad7291_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad7291_event_attribute_group,
+ };
+ 
+diff --git a/drivers/staging/iio/adc/ad7745.c b/drivers/staging/iio/adc/ad7745.c
+index d6e18e1..4a504ce 100644
+--- a/drivers/staging/iio/adc/ad7745.c
++++ b/drivers/staging/iio/adc/ad7745.c
+@@ -539,12 +539,12 @@ static irqreturn_t ad774x_event_handler(int irq, void *private)
+ 	ad774x_i2c_read(chip, AD774X_STATUS, &int_status, 1);
+ 
+ 	if (int_status & AD774X_STATUS_RDYCAP)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_EVENT_CODE_CAP_RDY,
+ 			       iio_get_time_ns());
+ 
+ 	if (int_status & AD774X_STATUS_RDYVT)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_EVENT_CODE_VT_RDY,
+ 			       iio_get_time_ns());
+ 
+@@ -568,7 +568,6 @@ static struct attribute_group ad774x_event_attribute_group = {
+ static const struct iio_info ad774x_info = {
+ 	.attrs = &ad774x_event_attribute_group,
+ 	.event_attrs = &ad774x_event_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.driver_module = THIS_MODULE,
+ };
+ /*
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index 91a61fc..fb861fb 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -253,9 +253,7 @@ static const struct attribute_group ad7816_attribute_group = {
+ 
+ static irqreturn_t ad7816_event_handler(int irq, void *private)
  {
- 	return 0;
+-	iio_push_event(private, 0,
+-		       IIO_EVENT_CODE_AD7816_OTI,
+-		       iio_get_time_ns());
++	iio_push_event(private, IIO_EVENT_CODE_AD7816_OTI, iio_get_time_ns());
+ 	return IRQ_HANDLED;
  }
-diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
-index 6b3daf4..36e118c 100644
---- a/drivers/staging/iio/adc/ad7887_ring.c
-+++ b/drivers/staging/iio/adc/ad7887_ring.c
-@@ -19,13 +19,13 @@
  
- #include "ad7887.h"
+@@ -333,7 +331,6 @@ static struct attribute_group ad7816_event_attribute_group = {
  
--int ad7887_scan_from_ring(struct ad7887_state *st, long mask)
-+int ad7887_scan_from_ring(struct ad7887_state *st, int channum)
- {
- 	struct iio_ring_buffer *ring = iio_priv_to_dev(st)->ring;
- 	int count = 0, ret;
- 	u16 *ring_data;
- 
--	if (!(ring->scan_mask & mask)) {
-+	if (!(test_bit(channum, ring->scan_mask))) {
- 		ret = -EBUSY;
- 		goto error_ret;
- 	}
-@@ -41,7 +41,8 @@ int ad7887_scan_from_ring(struct ad7887_state *st, long mask)
- 		goto error_free_ring_data;
- 
- 	/* for single channel scan the result is stored with zero offset */
--	if ((ring->scan_mask == ((1 << 1) | (1 << 0))) && (mask == (1 << 1)))
-+	if ((test_bit(1, ring->scan_mask) || test_bit(0, ring->scan_mask)) &&
-+	    (channum == 1))
- 		count = 1;
- 
- 	ret = be16_to_cpu(ring_data[count]);
-@@ -78,7 +79,8 @@ static int ad7887_ring_preenable(struct iio_dev *indio_dev)
- 		indio_dev->ring->access->set_bytes_per_datum(indio_dev->ring,
- 							    st->d_size);
- 
--	switch (ring->scan_mask) {
-+	/* We know this is a single long so can 'cheat' */
-+	switch (*ring->scan_mask) {
- 	case (1 << 0):
- 		st->ring_msg = &st->msg[AD7887_CH0];
- 		break;
-diff --git a/drivers/staging/iio/adc/ad799x.h b/drivers/staging/iio/adc/ad799x.h
-index 0dc9b4c..98f06f6 100644
---- a/drivers/staging/iio/adc/ad799x.h
-+++ b/drivers/staging/iio/adc/ad799x.h
-@@ -124,11 +124,11 @@ struct ad799x_platform_data {
- int ad7997_8_set_scan_mode(struct ad799x_state *st, unsigned mask);
- 
- #ifdef CONFIG_AD799X_RING_BUFFER
--int ad799x_single_channel_from_ring(struct ad799x_state *st, long mask);
-+int ad799x_single_channel_from_ring(struct ad799x_state *st, int channum);
- int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev);
- void ad799x_ring_cleanup(struct iio_dev *indio_dev);
- #else /* CONFIG_AD799X_RING_BUFFER */
--int ad799x_single_channel_from_ring(struct ad799x_state *st, long mask)
-+int ad799x_single_channel_from_ring(struct ad799x_state *st, int channum)
- {
- 	return -EINVAL;
- }
+ static const struct iio_info ad7816_info = {
+ 	.attrs = &ad7816_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad7816_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
 diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
-index 11d0add..b7461f0 100644
+index 33d7fb1..11d0add 100644
 --- a/drivers/staging/iio/adc/ad799x_core.c
 +++ b/drivers/staging/iio/adc/ad799x_core.c
-@@ -150,7 +150,7 @@ static int ad799x_read_raw(struct iio_dev *dev_info,
- 		mutex_lock(&dev_info->mlock);
- 		if (iio_ring_enabled(dev_info))
- 			ret = ad799x_single_channel_from_ring(st,
--				1 << chan->address);
-+							      chan->address);
- 		else
- 			ret = ad799x_scan_direct(st, chan->address);
- 		mutex_unlock(&dev_info->mlock);
-diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
-index 8f1fc52..438e81d 100644
---- a/drivers/staging/iio/adc/ad799x_ring.c
-+++ b/drivers/staging/iio/adc/ad799x_ring.c
-@@ -23,13 +23,13 @@
+@@ -333,7 +333,7 @@ static irqreturn_t ad799x_event_handler(int irq, void *private)
  
- #include "ad799x.h"
+ 	for (i = 0; i < 8; i++) {
+ 		if (status & (1 << i))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       i & 0x1 ?
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 							    (i >> 1),
+@@ -473,14 +473,12 @@ static const struct iio_info ad7991_info = {
  
--int ad799x_single_channel_from_ring(struct ad799x_state *st, long mask)
-+int ad799x_single_channel_from_ring(struct ad799x_state *st, int channum)
+ static const struct iio_info ad7992_info = {
+ 	.read_raw = &ad799x_read_raw,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad7992_event_attrs_group,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+ static const struct iio_info ad7993_4_7_8_info = {
+ 	.read_raw = &ad799x_read_raw,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad7993_4_7_8_event_attrs_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/adc/adt7310.c b/drivers/staging/iio/adc/adt7310.c
+index 2ed5e84..8f5c3fc 100644
+--- a/drivers/staging/iio/adc/adt7310.c
++++ b/drivers/staging/iio/adc/adt7310.c
+@@ -399,19 +399,19 @@ static irqreturn_t adt7310_event_handler(int irq, void *private)
+ 		return ret;
+ 
+ 	if (status & ADT7310_STAT_T_HIGH)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+ 			       timestamp);
+ 	if (status & ADT7310_STAT_T_LOW)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+ 			       timestamp);
+ 	if (status & ADT7310_STAT_T_CRIT)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+@@ -749,7 +749,6 @@ static struct attribute_group adt7310_event_attribute_group[ADT7310_IRQS] = {
+ 
+ static const struct iio_info adt7310_info = {
+ 	.attrs = &adt7310_attribute_group,
+-	.num_interrupt_lines = ADT7310_IRQS,
+ 	.event_attrs = adt7310_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/adc/adt7410.c b/drivers/staging/iio/adc/adt7410.c
+index 0387c7c..c7b1ceb 100644
+--- a/drivers/staging/iio/adc/adt7410.c
++++ b/drivers/staging/iio/adc/adt7410.c
+@@ -365,19 +365,19 @@ static irqreturn_t adt7410_event_handler(int irq, void *private)
+ 		return IRQ_HANDLED;
+ 
+ 	if (status & ADT7410_STAT_T_HIGH)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+ 			       timestamp);
+ 	if (status & ADT7410_STAT_T_LOW)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+ 			       timestamp);
+ 	if (status & ADT7410_STAT_T_CRIT)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+@@ -716,7 +716,6 @@ static struct attribute_group adt7410_event_attribute_group[ADT7410_IRQS] = {
+ 
+ static const struct iio_info adt7410_info = {
+ 	.attrs = &adt7410_attribute_group,
+-	.num_interrupt_lines = ADT7410_IRQS,
+ 	.event_attrs = adt7410_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/adc/adt75.c b/drivers/staging/iio/adc/adt75.c
+index ed42945..a306dbd 100644
+--- a/drivers/staging/iio/adc/adt75.c
++++ b/drivers/staging/iio/adc/adt75.c
+@@ -264,7 +264,7 @@ static const struct attribute_group adt75_attribute_group = {
+ 
+ static irqreturn_t adt75_event_handler(int irq, void *private)
  {
- 	struct iio_ring_buffer *ring = iio_priv_to_dev(st)->ring;
- 	int count = 0, ret;
- 	u16 *ring_data;
+-	iio_push_event(private, 0,
++	iio_push_event(private,
+ 		       IIO_EVENT_CODE_ADT75_OTI,
+ 		       iio_get_time_ns());
  
--	if (!(ring->scan_mask & mask)) {
-+	if (!(test_bit(channum, ring->scan_mask))) {
- 		ret = -EBUSY;
- 		goto error_ret;
- 	}
-@@ -44,13 +44,7 @@ int ad799x_single_channel_from_ring(struct ad799x_state *st, long mask)
- 	if (ret)
- 		goto error_free_ring_data;
- 	/* Need a count of channels prior to this one */
--	mask >>= 1;
--	while (mask) {
--		if (mask & ring->scan_mask)
--			count++;
--		mask >>= 1;
--	}
--
-+	count = bitmap_weight(ring->scan_mask, channum);
- 	ret = be16_to_cpu(ring_data[count]);
+@@ -534,7 +534,6 @@ static struct attribute_group adt75_event_attribute_group = {
  
- error_free_ring_data:
-@@ -77,7 +71,7 @@ static int ad799x_ring_preenable(struct iio_dev *indio_dev)
- 	 */
- 
- 	if (st->id == ad7997 || st->id == ad7998)
--		ad7997_8_set_scan_mode(st, ring->scan_mask);
-+		ad7997_8_set_scan_mode(st, *ring->scan_mask);
- 
- 	st->d_size = ring->scan_count * 2;
- 
-@@ -121,12 +115,12 @@ static irqreturn_t ad799x_trigger_handler(int irq, void *p)
- 	case ad7991:
- 	case ad7995:
- 	case ad7999:
--		cmd = st->config | (ring->scan_mask << AD799X_CHANNEL_SHIFT);
-+		cmd = st->config | (*ring->scan_mask << AD799X_CHANNEL_SHIFT);
- 		break;
- 	case ad7992:
- 	case ad7993:
- 	case ad7994:
--		cmd = (ring->scan_mask << AD799X_CHANNEL_SHIFT) |
-+		cmd = (*ring->scan_mask << AD799X_CHANNEL_SHIFT) |
- 			AD7998_CONV_RES_REG;
- 		break;
- 	case ad7997:
-diff --git a/drivers/staging/iio/adc/max1363.h b/drivers/staging/iio/adc/max1363.h
-index 360bfc5..cbcb08a 100644
---- a/drivers/staging/iio/adc/max1363.h
-+++ b/drivers/staging/iio/adc/max1363.h
-@@ -57,6 +57,7 @@
- #define MAX1363_SCAN_MASK			0x60
- #define MAX1363_SE_DE_MASK			0x01
- 
-+#define MAX1363_MAX_CHANNELS 25
- /**
-  * struct max1363_mode - scan mode information
-  * @conf:	The corresponding value of the configuration register
-@@ -64,7 +65,7 @@
-  */
- struct max1363_mode {
- 	int8_t		conf;
--	long		modemask;
-+	DECLARE_BITMAP(modemask, MAX1363_MAX_CHANNELS);
+ static const struct iio_info adt75_info = {
+ 	.attrs = &adt75_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &adt75_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
  };
- 
- /* This must be maintained along side the max1363_mode_table in max1363_core */
-@@ -145,13 +146,14 @@ struct max1363_state {
- };
- 
- const struct max1363_mode
--*max1363_match_mode(u32 mask, const struct max1363_chip_info *ci);
-+*max1363_match_mode(unsigned long *mask, const struct max1363_chip_info *ci);
- 
- int max1363_set_scan_mode(struct max1363_state *st);
- 
- #ifdef CONFIG_MAX1363_RING_BUFFER
- 
--int max1363_single_channel_from_ring(long mask, struct max1363_state *st);
-+int max1363_single_channel_from_ring(const long *mask,
-+				     struct max1363_state *st);
- int max1363_register_ring_funcs_and_init(struct iio_dev *indio_dev);
- void max1363_ring_cleanup(struct iio_dev *indio_dev);
- 
 diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
-index ad2631d..d37d1ca 100644
+index d4a200a..ad2631d 100644
 --- a/drivers/staging/iio/adc/max1363_core.c
 +++ b/drivers/staging/iio/adc/max1363_core.c
-@@ -41,14 +41,14 @@
- 		.conf = MAX1363_CHANNEL_SEL(_num)			\
- 			| MAX1363_CONFIG_SCAN_SINGLE_1			\
- 			| MAX1363_CONFIG_SE,				\
--			.modemask = _mask,				\
-+			.modemask[0] = _mask,				\
- 			}
+@@ -614,8 +614,7 @@ static irqreturn_t max1363_event_handler(int irq, void *private)
+ 	i2c_master_recv(st->client, &rx, 1);
+ 	mask = rx;
+ 	for_each_set_bit(loc, &mask, 8)
+-		iio_push_event(indio_dev, 0, max1363_event_codes[loc],
+-			       timestamp);
++		iio_push_event(indio_dev, max1363_event_codes[loc], timestamp);
+ 	i2c_master_send(st->client, tx, 2);
  
- #define MAX1363_MODE_SCAN_TO_CHANNEL(_num, _mask) {			\
- 		.conf = MAX1363_CHANNEL_SEL(_num)			\
- 			| MAX1363_CONFIG_SCAN_TO_CS			\
- 			| MAX1363_CONFIG_SE,				\
--			.modemask = _mask,				\
-+			.modemask[0] = _mask,				\
- 			}
- 
- /* note not available for max1363 hence naming */
-@@ -56,14 +56,14 @@
- 		.conf = MAX1363_CHANNEL_SEL(_num)			\
- 			| MAX1236_SCAN_MID_TO_CHANNEL			\
- 			| MAX1363_CONFIG_SE,				\
--			.modemask = _mask				\
-+			.modemask[0] = _mask				\
- }
- 
- #define MAX1363_MODE_DIFF_SINGLE(_nump, _numm, _mask) {			\
- 		.conf = MAX1363_CHANNEL_SEL(_nump)			\
- 			| MAX1363_CONFIG_SCAN_SINGLE_1			\
- 			| MAX1363_CONFIG_DE,				\
--			.modemask = _mask				\
-+			.modemask[0] = _mask				\
- 			}
- 
- /* Can't think how to automate naming so specify for now */
-@@ -71,7 +71,7 @@
- 		.conf = MAX1363_CHANNEL_SEL(_num)			\
- 			| MAX1363_CONFIG_SCAN_TO_CS			\
- 			| MAX1363_CONFIG_DE,				\
--			.modemask = _mask				\
-+			.modemask[0] = _mask				\
- 			}
- 
- /* note only available for max1363 hence naming */
-@@ -79,7 +79,7 @@
- 		.conf = MAX1363_CHANNEL_SEL(_num)			\
- 			| MAX1236_SCAN_MID_TO_CHANNEL			\
- 			| MAX1363_CONFIG_SE,				\
--			.modemask = _mask				\
-+			.modemask[0] = _mask				\
- }
- 
- static const struct max1363_mode max1363_mode_table[] = {
-@@ -146,13 +146,15 @@ static const struct max1363_mode max1363_mode_table[] = {
+ 	return IRQ_HANDLED;
+@@ -844,7 +843,6 @@ static const struct iio_info max1363_info = {
+ 	.write_event_config = &max1363_write_event_config,
+ 	.read_raw = &max1363_read_raw,
+ 	.driver_module = THIS_MODULE,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &max1363_event_attribute_group,
  };
  
- const struct max1363_mode
--*max1363_match_mode(u32 mask, const struct max1363_chip_info *ci)
-+*max1363_match_mode(unsigned long *mask, const struct max1363_chip_info *ci)
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index ea6e994..bc7a196 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -1776,43 +1776,43 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+ 
+ 		time = iio_get_time_ns();
+ 		if (stat1 & (1 << 0))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_RISING),
+ 				       time);
+ 		if (stat1 & (1 << 1))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_FALLING),
+ 				       time);
+ 		if (stat1 & (1 << 2))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 1,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_RISING),
+ 				       time);
+ 		if (stat1 & (1 << 3))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 1,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_FALLING),
+ 				       time);
+ 		if (stat1 & (1 << 5))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN, 1,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_EITHER),
+ 				       time);
+ 		if (stat1 & (1 << 6))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN, 2,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_EITHER),
+ 				       time);
+ 		if (stat1 & (1 << 7))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN, 3,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_EITHER),
+@@ -1821,7 +1821,7 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+ 	ret = chip->bus.read(chip->bus.client, ADT7316_INT_STAT2, &stat2);
+ 	if (!ret) {
+ 		if (stat2 & ADT7316_INT_MASK2_VDD)
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 							    0,
+ 							    IIO_EV_TYPE_THRESH,
+@@ -2109,14 +2109,12 @@ EXPORT_SYMBOL(adt7316_enable);
+ 
+ static const struct iio_info adt7316_info = {
+ 	.attrs = &adt7316_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &adt7316_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+ static const struct iio_info adt7516_info = {
+ 	.attrs = &adt7516_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &adt7516_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
+index c706ea4..54c8198 100644
+--- a/drivers/staging/iio/dac/ad5504.c
++++ b/drivers/staging/iio/dac/ad5504.c
+@@ -251,7 +251,7 @@ static struct attribute_group ad5504_ev_attribute_group = {
+ 
+ static irqreturn_t ad5504_event_handler(int irq, void *private)
  {
- 	int i;
- 	if (mask)
- 		for (i = 0; i < ci->num_modes; i++)
--			if (!((~max1363_mode_table[ci->mode_list[i]].modemask) &
--			      mask))
-+			if (bitmap_subset(mask,
-+					  max1363_mode_table[ci->mode_list[i]].
-+					  modemask,
-+					  MAX1363_MAX_CHANNELS))
- 				return &max1363_mode_table[ci->mode_list[i]];
- 	return NULL;
- }
-@@ -186,7 +188,7 @@ static int max1363_read_single_chan(struct iio_dev *indio_dev,
- 	int ret = 0;
- 	s32 data;
- 	char rxbuf[2];
--	long mask;
-+	const unsigned long *mask;
- 	struct max1363_state *st = iio_priv(indio_dev);
- 	struct i2c_client *client = st->client;
+-	iio_push_event(private, 0,
++	iio_push_event(private,
+ 		       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 					    0,
+ 					    IIO_EV_TYPE_THRESH,
+@@ -263,14 +263,12 @@ static irqreturn_t ad5504_event_handler(int irq, void *private)
  
-@@ -643,7 +645,7 @@ static int max1363_monitor_mode_update(struct max1363_state *st, int enabled)
- 	int ret, i = 3, j;
- 	unsigned long numelements;
- 	int len;
--	long modemask;
-+	const long *modemask;
+ static const struct iio_info ad5504_info = {
+ 	.attrs = &ad5504_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad5504_ev_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
  
- 	if (!enabled) {
- 		/* transition to ring capture is not currently supported */
-@@ -671,7 +673,7 @@ static int max1363_monitor_mode_update(struct max1363_state *st, int enabled)
- 		st->configbyte |= max1363_mode_table[d1m0to3m2].conf;
- 		modemask = max1363_mode_table[d1m0to3m2].modemask;
- 	}
--	numelements = hweight_long(modemask);
-+	numelements = bitmap_weight(modemask, MAX1363_MAX_CHANNELS);
- 	len = 3 * numelements + 3;
- 	tx_buf = kmalloc(len, GFP_KERNEL);
- 	if (!tx_buf) {
-@@ -687,7 +689,7 @@ static int max1363_monitor_mode_update(struct max1363_state *st, int enabled)
- 	 * setup to match what we need.
- 	 */
- 	for (j = 0; j < 8; j++)
--		if (modemask & (1 << j)) {
-+		if (test_bit(j, modemask)) {
- 			/* Establish the mode is in the scan */
- 			if (st->mask_low & (1 << j)) {
- 				tx_buf[i] = (st->thresh_low[j] >> 4) & 0xFF;
-@@ -1280,7 +1282,7 @@ static int __devinit max1363_probe(struct i2c_client *client,
- 	st->client = client;
- 
- 	indio_dev->available_scan_masks
--		= kzalloc(sizeof(*indio_dev->available_scan_masks)*
-+		= kzalloc(BITS_TO_LONGS(MAX1363_MAX_CHANNELS)*
- 			  (st->chip_info->num_modes + 1), GFP_KERNEL);
- 	if (!indio_dev->available_scan_masks) {
- 		ret = -ENOMEM;
-@@ -1288,9 +1290,10 @@ static int __devinit max1363_probe(struct i2c_client *client,
- 	}
- 
- 	for (i = 0; i < st->chip_info->num_modes; i++)
--		indio_dev->available_scan_masks[i] =
--			max1363_mode_table[st->chip_info->mode_list[i]]
--			.modemask;
-+		bitmap_copy(indio_dev->available_scan_masks +
-+			    BITS_TO_LONGS(MAX1363_MAX_CHANNELS)*i,
-+			    max1363_mode_table[st->chip_info->mode_list[i]]
-+			    .modemask, MAX1363_MAX_CHANNELS);
- 	/* Estabilish that the iio_dev is a child of the i2c device */
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->name = id->name;
-diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
-index be601e0..abe9e03 100644
---- a/drivers/staging/iio/adc/max1363_ring.c
-+++ b/drivers/staging/iio/adc/max1363_ring.c
-@@ -21,12 +21,14 @@
- 
- #include "max1363.h"
- 
--int max1363_single_channel_from_ring(long mask, struct max1363_state *st)
-+int max1363_single_channel_from_ring(const long *mask, struct max1363_state *st)
- {
- 	struct iio_ring_buffer *ring = iio_priv_to_dev(st)->ring;
--	int count = 0, ret;
-+	int count = 0, ret, index;
- 	u8 *ring_data;
--	if (!(st->current_mode->modemask & mask)) {
-+	index = find_first_bit(mask, MAX1363_MAX_CHANNELS);
-+
-+	if (!(test_bit(index, st->current_mode->modemask))) {
- 		ret = -EBUSY;
- 		goto error_ret;
- 	}
-@@ -41,12 +43,8 @@ int max1363_single_channel_from_ring(long mask, struct max1363_state *st)
- 	if (ret)
- 		goto error_free_ring_data;
- 	/* Need a count of channels prior to this one */
--	mask >>= 1;
--	while (mask) {
--		if (mask & st->current_mode->modemask)
--			count++;
--		mask >>= 1;
--	}
-+
-+	count = bitmap_weight(mask, index - 1);
- 	if (st->chip_info->bits != 8)
- 		ret = ((int)(ring_data[count*2 + 0] & 0x0F) << 8)
- 			+ (int)(ring_data[count*2 + 1]);
-@@ -85,7 +83,8 @@ static int max1363_ring_preenable(struct iio_dev *indio_dev)
- 
- 	max1363_set_scan_mode(st);
- 
--	numvals = hweight_long(st->current_mode->modemask);
-+	numvals = bitmap_weight(st->current_mode->modemask,
-+				indio_dev->masklength);
- 	if (ring->access->set_bytes_per_datum) {
- 		if (ring->scan_timestamp)
- 			d_size += sizeof(s64);
-@@ -110,7 +109,8 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
- 	__u8 *rxbuf;
- 	int b_sent;
- 	size_t d_size;
--	unsigned long numvals = hweight_long(st->current_mode->modemask);
-+	unsigned long numvals = bitmap_weight(st->current_mode->modemask,
-+					      MAX1363_MAX_CHANNELS);
- 
- 	/* Ensure the timestamp is 8 byte aligned */
- 	if (st->chip_info->bits != 8)
+ static const struct iio_info ad5501_info = {
+ 	.attrs = &ad5501_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad5504_ev_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
 diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index 480b4d0..5854f4a 100644
+index 4311a36..480b4d0 100644
 --- a/drivers/staging/iio/iio.h
 +++ b/drivers/staging/iio/iio.h
-@@ -298,7 +298,8 @@ struct iio_dev {
+@@ -206,7 +206,6 @@ struct iio_dev;
+  * struct iio_info - constant information about device
+  * @driver_module:	module structure used to ensure correct
+  *			ownership of chrdevs etc
+- * @num_interrupt_lines:number of physical interrupt lines from device
+  * @event_attrs:	event control attributes
+  * @attrs:		general purpose device attributes
+  * @read_raw:		function to request a value from the device.
+@@ -230,7 +229,6 @@ struct iio_dev;
+  **/
+ struct iio_info {
+ 	struct module			*driver_module;
+-	int				num_interrupt_lines;
+ 	struct attribute_group		*event_attrs;
+ 	const struct attribute_group	*attrs;
+ 
+@@ -275,7 +273,7 @@ struct iio_info {
+  * @currentmode:	[DRIVER] current operating mode
+  * @dev:		[DRIVER] device structure, should be assigned a parent
+  *			and owner
+- * @event_interfaces:	[INTERN] event chrdevs associated with interrupt lines
++ * @event_interface:	[INTERN] event chrdevs associated with interrupt lines
+  * @ring:		[DRIVER] any ring buffer present
+  * @mlock:		[INTERN] lock used to prevent simultaneous device state
+  *			changes
+@@ -295,7 +293,7 @@ struct iio_dev {
+ 	int				currentmode;
+ 	struct device			dev;
+ 
+-	struct iio_event_interface	*event_interfaces;
++	struct iio_event_interface	*event_interface;
+ 
  	struct iio_ring_buffer		*ring;
  	struct mutex			mlock;
+@@ -332,10 +330,7 @@ void iio_device_unregister(struct iio_dev *dev_info);
+  * @ev_code:		What event
+  * @timestamp:		When the event occurred
+  **/
+-int iio_push_event(struct iio_dev *dev_info,
+-		  int ev_line,
+-		  int ev_code,
+-		  s64 timestamp);
++int iio_push_event(struct iio_dev *dev_info, int ev_code,  s64 timestamp);
  
--	u32				*available_scan_masks;
-+	unsigned long			*available_scan_masks;
-+	unsigned			masklength;
- 	struct iio_trigger		*trig;
- 	struct iio_poll_func		*pollfunc;
+ extern struct bus_type iio_bus_type;
  
-diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
-index 3fc2403..1a47d07 100644
---- a/drivers/staging/iio/imu/adis16400_ring.c
-+++ b/drivers/staging/iio/imu/adis16400_ring.c
-@@ -85,7 +85,7 @@ static int adis16350_spi_read_all(struct device *dev, u8 *rx)
- 		return -ENOMEM;
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 06ffc48..77b5b2d 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -150,13 +150,9 @@ struct iio_event_interface {
+ 	unsigned long flags;
+ };
  
- 	for (i = 0; i < ARRAY_SIZE(read_all_tx_array); i++)
--		if (indio_dev->ring->scan_mask & (1 << i)) {
-+		if (test_bit(i, indio_dev->ring->scan_mask)) {
- 			xfers[j].tx_buf = &read_all_tx_array[i];
- 			xfers[j].bits_per_word = 16;
- 			xfers[j].len = 2;
-@@ -117,7 +117,8 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
- 	int i = 0, j, ret = 0;
- 	s16 *data;
- 	size_t datasize = ring->access->get_bytes_per_datum(ring);
--	unsigned long mask = ring->scan_mask;
-+	/* Asumption that long is enough for maximum channels */
-+	unsigned long mask = *ring->scan_mask;
- 
- 	data = kmalloc(datasize , GFP_KERNEL);
- 	if (data == NULL) {
-@@ -189,8 +190,8 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
- 	ring->scan_timestamp = true;
- 	ring->setup_ops = &adis16400_ring_setup_ops;
- 	ring->owner = THIS_MODULE;
--	/* Set default scan mode */
--	ring->scan_mask = st->variant->default_scan_mask;
-+	/* Set default scan mode - assumes single long is big enough */
-+	*ring->scan_mask = st->variant->default_scan_mask;
- 	ring->scan_count = hweight_long(st->variant->default_scan_mask);
- 
- 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
-diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
-index 1607293..40c3b3e 100644
---- a/drivers/staging/iio/industrialio-ring.c
-+++ b/drivers/staging/iio/industrialio-ring.c
-@@ -118,9 +118,7 @@ static ssize_t iio_scan_el_show(struct device *dev,
- 
- static int iio_scan_mask_clear(struct iio_ring_buffer *ring, int bit)
+-int iio_push_event(struct iio_dev *dev_info,
+-		   int ev_line,
+-		   int ev_code,
+-		   s64 timestamp)
++int iio_push_event(struct iio_dev *dev_info, int ev_code, s64 timestamp)
  {
--	if (bit > IIO_MAX_SCAN_LENGTH)
--		return -EINVAL;
--	ring->scan_mask &= ~(1 << bit);
-+	clear_bit(bit, ring->scan_mask);
- 	ring->scan_count--;
- 	return 0;
- }
-@@ -309,11 +307,21 @@ int iio_ring_buffer_register_ex(struct iio_dev *indio_dev, int id,
- 	if (channels) {
- 		/* new magic */
- 		for (i = 0; i < num_channels; i++) {
-+			/* Establish necessary mask length */
-+			if (channels[i].scan_index >  indio_dev->masklength - 1)
-+				indio_dev->masklength
-+					= indio_dev->channels[i].scan_index + 1;
-+
- 			ret = iio_ring_add_channel_sysfs(indio_dev,
- 							 &channels[i]);
- 			if (ret < 0)
- 				goto error_cleanup_group;
- 		}
-+		if (indio_dev->masklength)
-+			ring->scan_mask
-+				= kzalloc(sizeof(*ring->scan_mask)*
-+					  BITS_TO_LONGS(indio_dev->masklength),
-+					  GFP_KERNEL);
+-	struct iio_event_interface *ev_int
+-		= &dev_info->event_interfaces[ev_line];
++	struct iio_event_interface *ev_int = dev_info->event_interface;
+ 	struct iio_detected_event_list *ev;
+ 	int ret = 0;
+ 
+@@ -295,19 +291,19 @@ static void iio_device_free_chrdev_minor(int val)
+ 
+ static int iio_event_getfd(struct iio_dev *indio_dev)
+ {
+-	if (indio_dev->event_interfaces == NULL)
++	if (indio_dev->event_interface == NULL)
+ 		return -ENODEV;
+ 
+-	mutex_lock(&indio_dev->event_interfaces->event_list_lock);
++	mutex_lock(&indio_dev->event_interface->event_list_lock);
+ 	if (test_and_set_bit(IIO_BUSY_BIT_POS,
+-			     &indio_dev->event_interfaces->flags)) {
+-		mutex_unlock(&indio_dev->event_interfaces->event_list_lock);
++			     &indio_dev->event_interface->flags)) {
++		mutex_unlock(&indio_dev->event_interface->event_list_lock);
+ 		return -EBUSY;
  	}
- 
- 	return 0;
-@@ -329,6 +337,7 @@ EXPORT_SYMBOL(iio_ring_buffer_register_ex);
- 
- void iio_ring_buffer_unregister(struct iio_dev *indio_dev)
- {
-+	kfree(indio_dev->ring->scan_mask);
- 	if (indio_dev->ring->attrs)
- 		sysfs_remove_group(&indio_dev->dev.kobj,
- 				   indio_dev->ring->attrs);
-@@ -525,3 +534,79 @@ int iio_sw_ring_preenable(struct iio_dev *indio_dev)
- 	return 0;
+-	mutex_unlock(&indio_dev->event_interfaces->event_list_lock);
++	mutex_unlock(&indio_dev->event_interface->event_list_lock);
+ 	return anon_inode_getfd("iio:event",
+ 				&iio_event_chrdev_fileops,
+-				&indio_dev->event_interfaces[0], O_RDONLY);
++				indio_dev->event_interface, O_RDONLY);
  }
- EXPORT_SYMBOL(iio_sw_ring_preenable);
+ 
+ static void iio_setup_ev_int(struct iio_event_interface *ev_int)
+@@ -907,7 +903,7 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 					       how far*/
+ 					     0,
+ 					     &dev_info->dev,
+-					     &dev_info->event_interfaces[0].
++					     &dev_info->event_interface->
+ 					     dev_attr_list);
+ 		kfree(postfix);
+ 		if (ret)
+@@ -926,8 +922,8 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 					     mask,
+ 					     0,
+ 					     &dev_info->dev,
+-					     &dev_info->event_interfaces[0]
+-					     .dev_attr_list);
++					     &dev_info->event_interface->
++					     dev_attr_list);
+ 		kfree(postfix);
+ 		if (ret)
+ 			goto error_ret;
+@@ -938,12 +934,11 @@ error_ret:
+ 	return ret;
+ }
+ 
+-static inline void __iio_remove_event_config_attrs(struct iio_dev *dev_info,
+-						  int i)
++static inline void __iio_remove_event_config_attrs(struct iio_dev *dev_info)
+ {
+ 	struct iio_dev_attr *p, *n;
+ 	list_for_each_entry_safe(p, n,
+-				 &dev_info->event_interfaces[i].
++				 &dev_info->event_interface->
+ 				 dev_attr_list, l) {
+ 		sysfs_remove_file_from_group(&dev_info->dev.kobj,
+ 					     &p->dev_attr.attr,
+@@ -953,25 +948,23 @@ static inline void __iio_remove_event_config_attrs(struct iio_dev *dev_info,
+ 	}
+ }
+ 
+-static inline int __iio_add_event_config_attrs(struct iio_dev *dev_info, int i)
++static inline int __iio_add_event_config_attrs(struct iio_dev *dev_info)
+ {
+ 	int j;
+ 	int ret;
+-	INIT_LIST_HEAD(&dev_info->event_interfaces[i].dev_attr_list);
++	INIT_LIST_HEAD(&dev_info->event_interface->dev_attr_list);
+ 	/* Dynically created from the channels array */
+-	if (dev_info->channels) {
+-		for (j = 0; j < dev_info->num_channels; j++) {
+-			ret = iio_device_add_event_sysfs(dev_info,
+-							 &dev_info
+-							 ->channels[j]);
+-			if (ret)
+-				goto error_clear_attrs;
+-		}
++	for (j = 0; j < dev_info->num_channels; j++) {
 +
-+
-+/* note NULL used as error indicator as it doesn't make sense. */
-+static unsigned long *iio_scan_mask_match(unsigned long *av_masks,
-+					  unsigned int masklength,
-+					  unsigned long *mask)
++		ret = iio_device_add_event_sysfs(dev_info,
++						 &dev_info->channels[j]);
++		if (ret)
++			goto error_clear_attrs;
+ 	}
+ 	return 0;
+ 
+ error_clear_attrs:
+-	__iio_remove_event_config_attrs(dev_info, i);
++	__iio_remove_event_config_attrs(dev_info);
+ 
+ 	return ret;
+ }
+@@ -985,42 +978,49 @@ static struct attribute_group iio_events_dummy_group = {
+ 	.attrs = iio_events_dummy_attrs
+ };
+ 
++static bool iio_check_for_dynamic_events(struct iio_dev *dev_info)
 +{
-+	if (bitmap_empty(mask, masklength))
-+		return NULL;
-+	while (*av_masks) {
-+		if (bitmap_subset(mask, av_masks, masklength))
-+			return av_masks;
-+		av_masks += BITS_TO_LONGS(masklength);
-+	}
-+	return NULL;
++	int j;
++	for (j = 0; j < dev_info->num_channels; j++)
++		if (dev_info->channels[j].event_mask != 0)
++			return true;
++	return false;
 +}
 +
-+/**
-+ * iio_scan_mask_set() - set particular bit in the scan mask
-+ * @ring: the ring buffer whose scan mask we are interested in
-+ * @bit: the bit to be set.
-+ **/
-+int iio_scan_mask_set(struct iio_ring_buffer *ring, int bit)
-+{
-+	struct iio_dev *dev_info = ring->indio_dev;
-+	unsigned long *mask;
-+	unsigned long *trialmask;
-+
-+	trialmask = kmalloc(sizeof(*trialmask)*
-+			    BITS_TO_LONGS(dev_info->masklength),
-+			    GFP_KERNEL);
-+
-+	if (trialmask == NULL)
-+		return -ENOMEM;
-+
-+	bitmap_copy(trialmask, ring->scan_mask, dev_info->masklength);
-+	set_bit(bit, trialmask);
-+
-+	if (dev_info->available_scan_masks) {
-+		mask = iio_scan_mask_match(dev_info->available_scan_masks,
-+					   dev_info->masklength,
-+					   trialmask);
-+		if (!mask)
-+			return -EINVAL;
-+	}
-+	bitmap_copy(ring->scan_mask, trialmask, dev_info->masklength);
-+	ring->scan_count++;
-+
-+	kfree(trialmask);
-+
-+	return 0;
-+};
-+EXPORT_SYMBOL_GPL(iio_scan_mask_set);
-+
-+int iio_scan_mask_query(struct iio_ring_buffer *ring, int bit)
-+{
-+	struct iio_dev *dev_info = ring->indio_dev;
-+	long *mask;
-+
-+	if (bit > dev_info->masklength)
-+		return -EINVAL;
-+
-+	if (!ring->scan_mask)
-+		return 0;
-+	if (dev_info->available_scan_masks)
-+		mask = iio_scan_mask_match(dev_info->available_scan_masks,
-+					   dev_info->masklength,
-+					   ring->scan_mask);
+ static int iio_device_register_eventset(struct iio_dev *dev_info)
+ {
+-	int ret = 0, i, j;
++	int ret = 0;
+ 
+-	if (dev_info->info->num_interrupt_lines == 0)
++	if (!(dev_info->info->event_attrs ||
++	      iio_check_for_dynamic_events(dev_info)))
+ 		return 0;
+ 
+-	dev_info->event_interfaces =
+-		kzalloc(sizeof(struct iio_event_interface)
+-			*dev_info->info->num_interrupt_lines,
+-			GFP_KERNEL);
+-	if (dev_info->event_interfaces == NULL) {
++	dev_info->event_interface =
++		kzalloc(sizeof(struct iio_event_interface), GFP_KERNEL);
++	if (dev_info->event_interface == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+ 
+-	for (i = 0; i < dev_info->info->num_interrupt_lines; i++) {
+-		iio_setup_ev_int(&dev_info->event_interfaces[i]);
+-		if (dev_info->info->event_attrs != NULL)
+-			ret = sysfs_create_group(&dev_info->dev.kobj,
+-						 &dev_info->info
+-						 ->event_attrs[i]);
+-		else
+-			ret = sysfs_create_group(&dev_info->dev.kobj,
+-						 &iio_events_dummy_group);
+-		if (ret) {
+-			dev_err(&dev_info->dev,
+-				"Failed to register sysfs for event attrs");
+-			goto error_free_setup_event_lines;
+-		}
+-		ret = __iio_add_event_config_attrs(dev_info, i);
++	iio_setup_ev_int(dev_info->event_interface);
++	if (dev_info->info->event_attrs != NULL)
++		ret = sysfs_create_group(&dev_info->dev.kobj,
++					 dev_info->info->event_attrs);
 +	else
-+		mask = ring->scan_mask;
-+	if (!mask)
-+		return 0;
-+
-+	return test_bit(bit, mask);
-+};
-+EXPORT_SYMBOL_GPL(iio_scan_mask_query);
-diff --git a/drivers/staging/iio/meter/ade7758.h b/drivers/staging/iio/meter/ade7758.h
-index 4d73e1a..20a2bca 100644
---- a/drivers/staging/iio/meter/ade7758.h
-+++ b/drivers/staging/iio/meter/ade7758.h
-@@ -122,7 +122,7 @@ struct ade7758_state {
- 	u8			*tx;
- 	u8			*rx;
- 	struct mutex		buf_lock;
--	u32			available_scan_masks[AD7758_NUM_WAVESRC];
-+	unsigned long		available_scan_masks[AD7758_NUM_WAVESRC];
- 	struct iio_chan_spec	*ade7758_ring_channels;
- 	struct spi_transfer	ring_xfer[4];
- 	struct spi_message	ring_msg;
-diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
-index ce2d156..5270a10 100644
---- a/drivers/staging/iio/meter/ade7758_core.c
-+++ b/drivers/staging/iio/meter/ade7758_core.c
-@@ -766,7 +766,7 @@ static int __devinit ade7758_probe(struct spi_device *spi)
- 	indio_dev->modes = INDIO_DIRECT_MODE;
++		ret = sysfs_create_group(&dev_info->dev.kobj,
++					 &iio_events_dummy_group);
++	if (ret) {
++		dev_err(&dev_info->dev,
++			"Failed to register sysfs for event attrs");
++		goto error_free_setup_event_lines;
++	}
++	if (dev_info->channels) {
++		ret = __iio_add_event_config_attrs(dev_info);
+ 		if (ret) {
+ 			if (dev_info->info->event_attrs != NULL)
+ 				sysfs_remove_group(&dev_info->dev.kobj,
+-						   &dev_info->info
+-						   ->event_attrs[i]);
++						   dev_info->info
++						   ->event_attrs);
+ 			else
+ 				sysfs_remove_group(&dev_info->dev.kobj,
+ 						   &iio_events_dummy_group);
+@@ -1031,16 +1031,14 @@ static int iio_device_register_eventset(struct iio_dev *dev_info)
+ 	return 0;
  
- 	for (i = 0; i < AD7758_NUM_WAVESRC; i++)
--		st->available_scan_masks[i] = 1 << i;
-+		set_bit(i, &st->available_scan_masks[i]);
+ error_free_setup_event_lines:
+-	for (j = 0; j < i; j++) {
+-		__iio_remove_event_config_attrs(dev_info, j);
+-		if (dev_info->info->event_attrs != NULL) {
+-			sysfs_remove_group(&dev_info->dev.kobj,
+-					   &dev_info->info->event_attrs[j]);
+-			sysfs_remove_group(&dev_info->dev.kobj,
+-					   &iio_events_dummy_group);
+-		}
+-	}
+-	kfree(dev_info->event_interfaces);
++	__iio_remove_event_config_attrs(dev_info);
++	if (dev_info->info->event_attrs != NULL)
++		sysfs_remove_group(&dev_info->dev.kobj,
++				   dev_info->info->event_attrs);
++	else
++		sysfs_remove_group(&dev_info->dev.kobj,
++				   &iio_events_dummy_group);
++	kfree(dev_info->event_interface);
+ error_ret:
  
- 	indio_dev->available_scan_masks = st->available_scan_masks;
+ 	return ret;
+@@ -1048,20 +1046,16 @@ error_ret:
  
-diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
-index 5e740e3..9934f50 100644
---- a/drivers/staging/iio/meter/ade7758_ring.c
-+++ b/drivers/staging/iio/meter/ade7758_ring.c
-@@ -98,7 +98,7 @@ static int ade7758_ring_preenable(struct iio_dev *indio_dev)
- 	if (!ring->scan_count)
- 		return -EINVAL;
- 
--	channel = __ffs(ring->scan_mask);
-+	channel = find_first_bit(ring->scan_mask, indio_dev->masklength);
- 
- 	d_size = st->ade7758_ring_channels[channel].scan_type.storagebits / 8;
- 
-diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
-index db8d0d1..7e1beee 100644
---- a/drivers/staging/iio/ring_generic.h
-+++ b/drivers/staging/iio/ring_generic.h
-@@ -101,7 +101,7 @@ struct iio_ring_buffer {
- 	int					bpe;
- 	struct attribute_group			*scan_el_attrs;
- 	int					scan_count;
--	unsigned long				scan_mask;
-+	long					*scan_mask;
- 	bool					scan_timestamp;
- 	const struct iio_ring_access_funcs	*access;
- 	const struct iio_ring_setup_ops		*setup_ops;
-@@ -121,6 +121,8 @@ struct iio_ring_buffer {
- void iio_ring_buffer_init(struct iio_ring_buffer *ring,
- 			  struct iio_dev *dev_info);
- 
-+void iio_ring_buffer_deinit(struct iio_ring_buffer *ring);
-+
- /**
-  * __iio_update_ring_buffer() - update common elements of ring buffers
-  * @ring:		ring buffer that is the event source
-@@ -134,70 +136,14 @@ static inline void __iio_update_ring_buffer(struct iio_ring_buffer *ring,
- 	ring->length = length;
+ static void iio_device_unregister_eventset(struct iio_dev *dev_info)
+ {
+-	int i;
+-
+-	if (dev_info->info->num_interrupt_lines == 0)
++	if (dev_info->event_interface == NULL)
+ 		return;
+-	for (i = 0; i < dev_info->info->num_interrupt_lines; i++) {
+-		__iio_remove_event_config_attrs(dev_info, i);
+-		if (dev_info->info->event_attrs != NULL)
+-			sysfs_remove_group(&dev_info->dev.kobj,
+-					   &dev_info->info->event_attrs[i]);
+-		else
+-			sysfs_remove_group(&dev_info->dev.kobj,
+-					   &iio_events_dummy_group);
+-	}
+-	kfree(dev_info->event_interfaces);
++	__iio_remove_event_config_attrs(dev_info);
++	if (dev_info->info->event_attrs != NULL)
++		sysfs_remove_group(&dev_info->dev.kobj,
++				   dev_info->info->event_attrs);
++	else
++		sysfs_remove_group(&dev_info->dev.kobj,
++				   &iio_events_dummy_group);
++	kfree(dev_info->event_interface);
  }
  
--/*
-- * These are mainly provided to allow for a change of implementation if a device
-- * has a large number of scan elements
-- */
--#define IIO_MAX_SCAN_LENGTH 31
--
--/* note 0 used as error indicator as it doesn't make sense. */
--static inline u32 iio_scan_mask_match(u32 *av_masks, u32 mask)
--{
--	while (*av_masks) {
--		if (!(~*av_masks & mask))
--			return *av_masks;
--		av_masks++;
--	}
--	return 0;
--}
--
--static inline int iio_scan_mask_query(struct iio_ring_buffer *ring, int bit)
--{
--	struct iio_dev *dev_info = ring->indio_dev;
--	u32 mask;
--
--	if (bit > IIO_MAX_SCAN_LENGTH)
--		return -EINVAL;
--
--	if (!ring->scan_mask)
--		return 0;
--
--	if (dev_info->available_scan_masks)
--		mask = iio_scan_mask_match(dev_info->available_scan_masks,
--					ring->scan_mask);
--	else
--		mask = ring->scan_mask;
--
--	if (!mask)
--		return -EINVAL;
--
--	return !!(mask & (1 << bit));
--};
-+int iio_scan_mask_query(struct iio_ring_buffer *ring, int bit);
+ static void iio_dev_release(struct device *device)
+diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
+index 7c4cc9e..10a658d 100644
+--- a/drivers/staging/iio/light/tsl2563.c
++++ b/drivers/staging/iio/light/tsl2563.c
+@@ -595,7 +595,7 @@ static irqreturn_t tsl2563_event_handler(int irq, void *private)
+ 	struct iio_dev *dev_info = private;
+ 	struct tsl2563_chip *chip = iio_priv(dev_info);
  
- /**
-  * iio_scan_mask_set() - set particular bit in the scan mask
-  * @ring: the ring buffer whose scan mask we are interested in
-  * @bit: the bit to be set.
-  **/
--static inline int iio_scan_mask_set(struct iio_ring_buffer *ring, int bit)
--{
--	struct iio_dev *dev_info = ring->indio_dev;
--	u32 mask;
--	u32 trialmask = ring->scan_mask | (1 << bit);
--
--	if (bit > IIO_MAX_SCAN_LENGTH)
--		return -EINVAL;
--	if (dev_info->available_scan_masks) {
--		mask = iio_scan_mask_match(dev_info->available_scan_masks,
--					trialmask);
--		if (!mask)
--			return -EINVAL;
--	}
--	ring->scan_mask = trialmask;
--	ring->scan_count++;
--
--	return 0;
--};
-+int iio_scan_mask_set(struct iio_ring_buffer *ring, int bit);
+-	iio_push_event(dev_info, 0,
++	iio_push_event(dev_info,
+ 		       IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
+ 					    0,
+ 					    IIO_EV_TYPE_THRESH,
+@@ -680,7 +680,6 @@ static const struct iio_info tsl2563_info_no_irq = {
  
- #define to_iio_ring_buffer(d)				\
- 	container_of(d, struct iio_ring_buffer, dev)
+ static const struct iio_info tsl2563_info = {
+ 	.driver_module = THIS_MODULE,
+-	.num_interrupt_lines = 1,
+ 	.read_raw = &tsl2563_read_raw,
+ 	.write_raw = &tsl2563_write_raw,
+ 	.read_event_value = &tsl2563_read_thresh,
 -- 
 1.7.3.4
+
