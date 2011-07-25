@@ -1,48 +1,42 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-CC: "device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Date: Tue, 26 Jul 2011 10:04:08 +0100
-Subject: RE: [PATCH 1/3] staging:iio: remove broken support for multiple
- event interfaces.
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177143001196AF@LIMKCMBX1.ad.analog.com>
-References: <1311600911-20353-1-git-send-email-jic23@cam.ac.uk>
- <1311600911-20353-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1311600911-20353-2-git-send-email-jic23@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 0/2] blue part 6: IIO abi rework
+Date: Mon, 25 Jul 2011 14:23:52 +0100
+Message-Id: <1311600234-16128-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron wrote on 2011-07-25:
-> We don't have a use case for these.  Two drivers appeared to use them
-> but both report all events on the first.
->
-> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
-Acked-by: Michael Hennerich <michael.hennerich@analog.com>
-> ---
->  drivers/staging/iio/accel/lis3l02dq_core.c |   13 +--
->  drivers/staging/iio/accel/sca3000_core.c   |    9 +-
->  drivers/staging/iio/adc/ad7150.c           |   21 +++--
->  drivers/staging/iio/adc/ad7291.c           |   13 +--
->  drivers/staging/iio/adc/ad7745.c           |    5 +-
->  drivers/staging/iio/adc/ad7816.c           |    5 +-
->  drivers/staging/iio/adc/ad799x_core.c      |    4 +-
->  drivers/staging/iio/adc/adt7310.c          |    7 +-
->  drivers/staging/iio/adc/adt7410.c          |    7 +-
->  drivers/staging/iio/adc/adt75.c            |    3 +-
->  drivers/staging/iio/adc/max1363_core.c     |    4 +-
->  drivers/staging/iio/addac/adt7316.c        |   18 ++--
->  drivers/staging/iio/dac/ad5504.c           |    4 +-
->  drivers/staging/iio/iio.h                  |   11 +--
->  drivers/staging/iio/industrialio-core.c    |  146 +++++++++++++-------
+Michael pointed out the issues that not having an explicit
+direction for channels was causing and the inconsistency
+of the inX and outX channel naming we got from hmwon.
 
-Greetings,
-Michael
+They are stuck with it, but we aren't, so lets fix this now.
 
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368; Gesch=
-aeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret=
- Seif
+Interesting question is whether we reset the base units to be
+volts whilst we are at it? (for voltage channels obviously!)
+
+Given there will be a lot of auditing and datasheet reading
+to do that, I suggest that if we decide to do it, we leave
+that for when we are moving drivers out of staging.
+
+We could roll the doc patch in with the one in the previous
+series to reduce churn.  If they go together I'll probably
+do that.
+
+Thanks,
+
+Jonathan
+
+Jonathan Cameron (2):
+  staging:iio: ABI rework - add in_ or out_ prefix to channnels
+  staging:iio:Documentation sysfs-bus-iio add in and out prefixes
+
+ drivers/staging/iio/Documentation/sysfs-bus-iio |  536 +++++++++++-----------
+ drivers/staging/iio/dac/ad5686.c                |   24 +-
+ drivers/staging/iio/iio.h                       |   31 ++-
+ drivers/staging/iio/industrialio-core.c         |   28 +-
+ 4 files changed, 324 insertions(+), 295 deletions(-)
+
+-- 
+1.7.3.4
