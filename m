@@ -1,72 +1,155 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:40664 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751142Ab1GZIkv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jul 2011 04:40:51 -0400
-Message-ID: <4E2E7F70.2030102@cam.ac.uk>
-Date: Tue, 26 Jul 2011 09:48:48 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"arnd@arndb.de" <arnd@arndb.de>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH 2/7] staging:iio: remove specific chrdev for event reading.
- Get fd from ioctl on buffer.
-References: <1311599921-15729-1-git-send-email-jic23@cam.ac.uk> <1311599921-15729-3-git-send-email-jic23@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D5917714300119677@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917714300119677@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: arnd@arndb.de,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 1/7] staging:iio:chrdev.h rationalization.
+Date: Mon, 25 Jul 2011 14:18:35 +0100
+Message-Id: <1311599921-15729-2-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1311599921-15729-1-git-send-email-jic23@cam.ac.uk>
+References: <1311599921-15729-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/26/11 09:36, Hennerich, Michael wrote:
-> Jonathan Cameron wrote on 2011-07-25:
->> Change suggested by Arnd Bergmann.
->>
->> No real reason to have two chrdevs per device. This step merges them
->> into one.
->> Currently this means that events will only work on devices with
->> buffers. THat will be remedied shortly.
-> 
-> Will there be am iio:event instead?
-> Or iio:buffer even if no buffer and we need to get the iio:event through the anon fds?
-Nope. There is only one and it is called iio:deviceX.  Some stub functions should
-(if I have gotten it right) ensure that you can have events and/or buffers.
-Note that isn't as you've noticed the case mid way through this set.  Couldn't see
-a cleaner way of doing this.  It only all should work after patch 5.
-> 
->> V2: set name for event attribute groups.  Otherwise they all sorts of
->> fun occurs on dynamic channel event attribute creation.
->>
->> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
-> Acked-by: Michael Hennerich <michael.hennerich@analog.com>
->> ---
->>  drivers/staging/iio/accel/sca3000_core.c |    1 +
->>  drivers/staging/iio/adc/ad7150.c         |    1 +
->>  drivers/staging/iio/adc/ad7745.c         |    1 +
->>  drivers/staging/iio/adc/ad7816.c         |    1 +
->>  drivers/staging/iio/adc/ad799x_core.c    |    2 +
->>  drivers/staging/iio/adc/adt7310.c        |    2 +
->>  drivers/staging/iio/adc/adt7410.c        |    2 +
->>  drivers/staging/iio/adc/adt75.c          |    1 +
->>  drivers/staging/iio/adc/max1363_core.c   |    4 +-
->>  drivers/staging/iio/addac/adt7316.c      |    2 +
->>  drivers/staging/iio/chrdev.h             |    1 +
->>  drivers/staging/iio/dac/ad5504.c         |    1 +
->>  drivers/staging/iio/iio.h                |    1 +
->>  drivers/staging/iio/industrialio-core.c  |  174
->> ++++++++++------------
->> --------
-> 
-> Greetings,
-> Michael
-> 
-> --
-> Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-> Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368; Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret Seif
-> 
-> 
-> 
-> 
+Push some functions out of header and include this where it is needed
+in other headers only.
 
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/chrdev.h            |   32 -------------------------------
+ drivers/staging/iio/iio.h               |    2 +-
+ drivers/staging/iio/industrialio-core.c |   32 +++++++++++++++++++++++++++++++
+ drivers/staging/iio/ring_generic.h      |    1 +
+ 4 files changed, 34 insertions(+), 33 deletions(-)
+
+diff --git a/drivers/staging/iio/chrdev.h b/drivers/staging/iio/chrdev.h
+index 3e31ee6..8a229e7 100644
+--- a/drivers/staging/iio/chrdev.h
++++ b/drivers/staging/iio/chrdev.h
+@@ -9,7 +9,6 @@
+ 
+ #ifndef _IIO_CHRDEV_H_
+ #define _IIO_CHRDEV_H_
+-struct iio_dev;
+ 
+ /**
+  * struct iio_handler - Structure used to specify file operations
+@@ -41,35 +40,4 @@ struct iio_event_data {
+ 	s64	timestamp;
+ };
+ 
+-/**
+- * struct iio_detected_event_list - list element for events that have occurred
+- * @list:		linked list header
+- * @ev:			the event itself
+- */
+-struct iio_detected_event_list {
+-	struct list_head		list;
+-	struct iio_event_data		ev;
+-};
+-
+-/**
+- * struct iio_event_interface - chrdev interface for an event line
+- * @dev:		device assocated with event interface
+- * @handler:		fileoperations and related control for the chrdev
+- * @wait:		wait queue to allow blocking reads of events
+- * @event_list_lock:	mutex to protect the list of detected events
+- * @det_events:		list of detected events
+- * @max_events:		maximum number of events before new ones are dropped
+- * @current_events:	number of events in detected list
+- */
+-struct iio_event_interface {
+-	struct device				dev;
+-	struct iio_handler			handler;
+-	wait_queue_head_t			wait;
+-	struct mutex				event_list_lock;
+-	struct list_head			det_events;
+-	int					max_events;
+-	int					current_events;
+-	struct list_head dev_attr_list;
+-};
+-
+ #endif
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index 16abb37..e2c971f 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -15,7 +15,6 @@
+ #include <linux/cdev.h>
+ #include <linux/irq.h>
+ #include "sysfs.h"
+-#include "chrdev.h"
+ 
+ /* IIO TODO LIST */
+ /*
+@@ -178,6 +177,7 @@ static inline s64 iio_get_time_ns(void)
+ #define IIO_VAL_INT_PLUS_NANO 3
+ 
+ struct iio_trigger; /* forward declaration */
++struct iio_dev;
+ 
+ /**
+  * struct iio_info - constant information about device
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 123841b..f9d1744 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -24,6 +24,7 @@
+ #include "iio.h"
+ #include "iio_core.h"
+ #include "iio_core_trigger.h"
++#include "chrdev.h"
+ 
+ #define IIO_ID_PREFIX "device"
+ #define IIO_ID_FORMAT IIO_ID_PREFIX "%d"
+@@ -117,6 +118,37 @@ static void iio_free_ida_val(struct ida *this_ida, int id)
+ 	spin_unlock(&iio_ida_lock);
+ }
+ 
++/**
++ * struct iio_detected_event_list - list element for events that have occurred
++ * @list:		linked list header
++ * @ev:			the event itself
++ */
++struct iio_detected_event_list {
++	struct list_head		list;
++	struct iio_event_data		ev;
++};
++
++/**
++ * struct iio_event_interface - chrdev interface for an event line
++ * @dev:		device assocated with event interface
++ * @handler:		fileoperations and related control for the chrdev
++ * @wait:		wait queue to allow blocking reads of events
++ * @event_list_lock:	mutex to protect the list of detected events
++ * @det_events:		list of detected events
++ * @max_events:		maximum number of events before new ones are dropped
++ * @current_events:	number of events in detected list
++ */
++struct iio_event_interface {
++	struct device				dev;
++	struct iio_handler			handler;
++	wait_queue_head_t			wait;
++	struct mutex				event_list_lock;
++	struct list_head			det_events;
++	int					max_events;
++	int					current_events;
++	struct list_head dev_attr_list;
++};
++
+ int iio_push_event(struct iio_dev *dev_info,
+ 		   int ev_line,
+ 		   int ev_code,
+diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
+index 3f26f71..d103262 100644
+--- a/drivers/staging/iio/ring_generic.h
++++ b/drivers/staging/iio/ring_generic.h
+@@ -10,6 +10,7 @@
+ #ifndef _IIO_RING_GENERIC_H_
+ #define _IIO_RING_GENERIC_H_
+ #include "iio.h"
++#include "chrdev.h"
+ 
+ #ifdef CONFIG_IIO_RING_BUFFER
+ 
+-- 
+1.7.3.4
