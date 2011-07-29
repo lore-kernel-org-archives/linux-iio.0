@@ -1,142 +1,98 @@
-Return-Path: <error27@gmail.com>
-Date: Sat, 30 Jul 2011 11:45:09 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Mike Frysinger <vapier@gentoo.org>,
-	"open list:STAGING - INDUSTR..." <linux-iio@vger.kernel.org>,
-	"open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
-	kernel-janitors@vger.kernel.org
-Subject: [patch] Staging: iio: add some unlocks to raw_read() functions
-Message-ID: <20110730084509.GD5575@shale.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org
+Cc: michael.hennerich@analog.com,
+	manuel.stahl@iis.fraunhofer.de,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH] staging:iio:scan element types: introduce endian description to the data format.
+Date: Fri, 29 Jul 2011 18:28:24 +0100
+Message-Id: <1311960504-4268-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-This code was cut and pasted in several places.  It's missing some
-unlocks on error.
+If not set in chan_spec, cpu endianness used.
 
-Signed-off-by: Dan Carpenter <error27@gmail.com>
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+Result of discussion in [PATCH 0/2] blue part 6: IIO abi rework.
+Michael highlighted that we need to specify the endianness of buffer
+contents.  This patch does that.  The IIO_CPU option exists so that
+existing drivers which do conversion to cpu endian should work
+without change.
 
-diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
-index b6e0d84..30be963 100644
---- a/drivers/staging/iio/accel/adis16203_core.c
-+++ b/drivers/staging/iio/accel/adis16203_core.c
-@@ -312,13 +312,17 @@ static int adis16203_read_raw(struct iio_dev *indio_dev,
- 		mutex_lock(&indio_dev->mlock);
- 		addr = adis16203_addresses[chan->address][0];
- 		ret = adis16203_spi_read_reg_16(indio_dev, addr, &val16);
--		if (ret)
-+		if (ret) {
-+			mutex_unlock(&indio_dev->mlock);
- 			return ret;
-+		}
+Based on all sorts of fun I haven't pushed, so if you really want to
+play with this see the iio-blue.git tree.
+
+Jonathan
+
+ drivers/staging/iio/iio.h               |    8 ++++++++
+ drivers/staging/iio/industrialio-ring.c |   15 ++++++++++++++-
+ 2 files changed, 22 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index bde8b87..d09f84b 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -86,6 +86,12 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SEPARATE,
+ };
  
- 		if (val16 & ADIS16203_ERROR_ACTIVE) {
- 			ret = adis16203_check_status(indio_dev);
--			if (ret)
-+			if (ret) {
-+				mutex_unlock(&indio_dev->mlock);
- 				return ret;
-+			}
- 		}
- 		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
- 		if (chan->scan_type.sign == 's')
-diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
-index 61c2442..eb68367 100644
---- a/drivers/staging/iio/accel/adis16204_core.c
-+++ b/drivers/staging/iio/accel/adis16204_core.c
-@@ -342,13 +342,17 @@ static int adis16204_read_raw(struct iio_dev *indio_dev,
- 		mutex_lock(&indio_dev->mlock);
- 		addr = adis16204_addresses[chan->address][0];
- 		ret = adis16204_spi_read_reg_16(indio_dev, addr, &val16);
--		if (ret)
-+		if (ret) {
-+			mutex_unlock(&indio_dev->mlock);
- 			return ret;
-+		}
++enum iio_endian {
++	IIO_CPU,
++	IIO_BE,
++	IIO_LE,
++};
++
+ /**
+  * struct iio_chan_spec - specification of a single channel
+  * @type:		What type of measurement is the channel making.
+@@ -101,6 +107,7 @@ enum iio_chan_info_enum {
+  *			storage_bits:	Realbits + padding
+  *			shift:		Shift right by this before masking out
+  *					realbits.
++ *			endianness:	little or big endian	
+  * @info_mask:		What information is to be exported about this channel.
+  *			This includes calibbias, scale etc.
+  * @event_mask:	What events can this channel produce.
+@@ -129,6 +136,7 @@ struct iio_chan_spec {
+ 		u8	realbits;
+ 		u8	storagebits;
+ 		u8	shift;
++	       	enum iio_endian endianness;
+ 	} scan_type;
+ 	const long		info_mask;
+ 	const long		event_mask;
+diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
+index 5edc6d8..aa1748b 100644
+--- a/drivers/staging/iio/industrialio-ring.c
++++ b/drivers/staging/iio/industrialio-ring.c
+@@ -24,6 +24,10 @@
+ #include "iio_core.h"
+ #include "ring_generic.h"
  
- 		if (val16 & ADIS16204_ERROR_ACTIVE) {
- 			ret = adis16204_check_status(indio_dev);
--			if (ret)
-+			if (ret) {
-+				mutex_unlock(&indio_dev->mlock);
- 				return ret;
-+			}
- 		}
- 		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
- 		if (chan->scan_type.sign == 's')
-diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-index 238438e..39a6136 100644
---- a/drivers/staging/iio/accel/adis16209_core.c
-+++ b/drivers/staging/iio/accel/adis16209_core.c
-@@ -338,13 +338,17 @@ static int adis16209_read_raw(struct iio_dev *indio_dev,
- 		mutex_lock(&indio_dev->mlock);
- 		addr = adis16209_addresses[chan->address][0];
- 		ret = adis16209_spi_read_reg_16(indio_dev, addr, &val16);
--		if (ret)
-+		if (ret) {
-+			mutex_unlock(&indio_dev->mlock);
- 			return ret;
-+		}
++const static char *iio_endian_prefix[] = {
++	[IIO_BE] = "be",
++	[IIO_LE] = "le",
++};
  
- 		if (val16 & ADIS16209_ERROR_ACTIVE) {
- 			ret = adis16209_check_status(indio_dev);
--			if (ret)
-+			if (ret) {
-+				mutex_unlock(&indio_dev->mlock);
- 				return ret;
-+			}
- 		}
- 		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
- 		if (chan->scan_type.sign == 's')
-diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-index 3abac95..d1f5305 100644
---- a/drivers/staging/iio/accel/adis16240_core.c
-+++ b/drivers/staging/iio/accel/adis16240_core.c
-@@ -371,13 +371,17 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
- 		mutex_lock(&indio_dev->mlock);
- 		addr = adis16240_addresses[chan->address][0];
- 		ret = adis16240_spi_read_reg_16(indio_dev, addr, &val16);
--		if (ret)
-+		if (ret) {
-+			mutex_unlock(&indio_dev->mlock);
- 			return ret;
-+		}
- 
- 		if (val16 & ADIS16240_ERROR_ACTIVE) {
- 			ret = adis16240_check_status(indio_dev);
--			if (ret)
-+			if (ret) {
-+				mutex_unlock(&indio_dev->mlock);
- 				return ret;
-+			}
- 		}
- 		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
- 		if (chan->scan_type.sign == 's')
-diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-index 02de650..429c252 100644
---- a/drivers/staging/iio/gyro/adis16260_core.c
-+++ b/drivers/staging/iio/gyro/adis16260_core.c
-@@ -447,13 +447,17 @@ static int adis16260_read_raw(struct iio_dev *indio_dev,
- 		mutex_lock(&indio_dev->mlock);
- 		addr = adis16260_addresses[chan->address][0];
- 		ret = adis16260_spi_read_reg_16(indio_dev, addr, &val16);
--		if (ret)
-+		if (ret) {
-+			mutex_unlock(&indio_dev->mlock);
- 			return ret;
-+		}
- 
- 		if (val16 & ADIS16260_ERROR_ACTIVE) {
- 			ret = adis16260_check_status(indio_dev);
--			if (ret)
-+			if (ret) {
-+				mutex_unlock(&indio_dev->mlock);
- 				return ret;
-+			}
- 		}
- 		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
- 		if (chan->scan_type.sign == 's')
+ /**
+  * iio_ring_read_first_n_outer() - chrdev read for ring buffer access
+@@ -95,7 +99,16 @@ static ssize_t iio_show_fixed_type(struct device *dev,
+ 				   char *buf)
+ {
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	return sprintf(buf, "%c%d/%d>>%u\n",
++	u8 type = this_attr->c->scan_type.endianness;
++
++	if (type == IIO_CPU) {
++		if (__LITTLE_ENDIAN)
++			type = IIO_LE;
++		else
++			type = IIO_BE;
++	}
++	return sprintf(buf, "%s:%c%d/%d>>%u\n",
++		       iio_endian_prefix[type],
+ 		       this_attr->c->scan_type.sign,
+ 		       this_attr->c->scan_type.realbits,
+ 		       this_attr->c->scan_type.storagebits,
+-- 
+1.7.3.4
