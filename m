@@ -1,69 +1,142 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:59381 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751848Ab1FGI3R (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2011 04:29:17 -0400
-Message-ID: <4DEDE33F.5020104@cam.ac.uk>
-Date: Tue, 07 Jun 2011 09:37:19 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <error27@gmail.com>
+Date: Sat, 30 Jul 2011 11:45:09 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Mike Frysinger <vapier@gentoo.org>,
+	"open list:STAGING - INDUSTR..." <linux-iio@vger.kernel.org>,
+	"open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
+	kernel-janitors@vger.kernel.org
+Subject: [patch] Staging: iio: add some unlocks to raw_read() functions
+Message-ID: <20110730084509.GD5575@shale.localdomain>
 MIME-Version: 1.0
-To: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
-CC: linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [lm-sensors] [RFC 5/5] hwmon: add support for Technologic Systems
- TS-5500 A-D converter
-References: <1304115712-5299-1-git-send-email-vivien.didelot@savoirfairelinux.com>	<1304115712-5299-6-git-send-email-vivien.didelot@savoirfairelinux.com>	<20110430033938.GA14397@ericsson.com>	<1304434162-sup-3877@sfl>	<4DC1165C.4000103@cam.ac.uk> <20110606185658.73b29f39@v0nbox>
-In-Reply-To: <20110606185658.73b29f39@v0nbox>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/06/11 23:56, Vivien Didelot wrote:
-> Hi Jonathan,
-> 
-> On Wed, 04 May 2011 10:03:24 +0100,
-> Jonathan Cameron <jic23@cam.ac.uk> wrote:
->>> Excerpts from Guenter Roeck's message of 2011-04-29 23:39:38 -0400:
->>>> Having said that, from reading the code it looks like the chip is
->>>> not really used for hardware monitoring, but for generic ADC
->>>> functionality. A quick look into the TS-5500 user manual confirms
->>>> this. So this should not be a hwmon driver in the first place, but
->>>> a generic ADC driver. Given the ADC conversion rate of the MAX197,
->>>> the hwmon ABI is not optimal anyway. You should move this driver
->>>> into the iio subsystem, probably to drivers/staging/iio/adc.
->>>> Copying the iio mailing list for input.
->>>>
->>>> Thanks,
->>>> Guenter
->>>
->>> I've took a closer look to the manual and that's right, in fact the
->>> driver doesn't talk to the MAX197 directly. The board uses a CPLD to
->>> abstract the interface to the MAX197. So all the MAX197 logic is
->>> hidden by the CPLD.  Therefore, the driver files should probably
->>> not have function and structure names with a "max197_" prefix. I'll
->>> make the code a bit clearer. What do you think?
->>>
->>> Ok for iio subsystem, several ADC drivers are in drivers/hwmon/ but
->>> drivers/staging/iio/adc seems to be the good place now.
->> Just as a heads up, beware there are a few abi changes (and a lot of
->> core ones) working their way through review /already in staging-next.
->> I only mention it because merges against that tree will go through
->> staging-next and as it's name suggests is sometimes a fast moving
->> target!
->>
->> Jonathan
-> 
-> For the moment I have a working driver for the TS-5500 A/D Converter in
-> a arch/x86/platform/ts5500/ directory, but it is actually using the
-> HWMON interface. I have to move it to the IIO subsystem as you
-> suggested. Should it be in drivers/staging/iio/adc/ or can it stay in
-> my platform directory, as it is a platform specific device?
-Seeing the current effort going on to move drivers out of arch (first step
-in all the Arm cleanups), I'd suggest we follow the herd.   Also, we are
-still making a fair number of core changes and a lot of these change the
-internal abis.  If it is elsewhere in the kernel, I for one am likely
-to forget it exists, so I definitely want all drivers in drivers/staging/iio/adc
+This code was cut and pasted in several places.  It's missing some
+unlocks on error.
 
-Also, you'd run into fun issues due to the fact we are in staging.  Nothing
-outside of staging is supposed to depend on elements inside.
+Signed-off-by: Dan Carpenter <error27@gmail.com>
 
-Jonathan
+diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
+index b6e0d84..30be963 100644
+--- a/drivers/staging/iio/accel/adis16203_core.c
++++ b/drivers/staging/iio/accel/adis16203_core.c
+@@ -312,13 +312,17 @@ static int adis16203_read_raw(struct iio_dev *indio_dev,
+ 		mutex_lock(&indio_dev->mlock);
+ 		addr = adis16203_addresses[chan->address][0];
+ 		ret = adis16203_spi_read_reg_16(indio_dev, addr, &val16);
+-		if (ret)
++		if (ret) {
++			mutex_unlock(&indio_dev->mlock);
+ 			return ret;
++		}
+ 
+ 		if (val16 & ADIS16203_ERROR_ACTIVE) {
+ 			ret = adis16203_check_status(indio_dev);
+-			if (ret)
++			if (ret) {
++				mutex_unlock(&indio_dev->mlock);
+ 				return ret;
++			}
+ 		}
+ 		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
+ 		if (chan->scan_type.sign == 's')
+diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
+index 61c2442..eb68367 100644
+--- a/drivers/staging/iio/accel/adis16204_core.c
++++ b/drivers/staging/iio/accel/adis16204_core.c
+@@ -342,13 +342,17 @@ static int adis16204_read_raw(struct iio_dev *indio_dev,
+ 		mutex_lock(&indio_dev->mlock);
+ 		addr = adis16204_addresses[chan->address][0];
+ 		ret = adis16204_spi_read_reg_16(indio_dev, addr, &val16);
+-		if (ret)
++		if (ret) {
++			mutex_unlock(&indio_dev->mlock);
+ 			return ret;
++		}
+ 
+ 		if (val16 & ADIS16204_ERROR_ACTIVE) {
+ 			ret = adis16204_check_status(indio_dev);
+-			if (ret)
++			if (ret) {
++				mutex_unlock(&indio_dev->mlock);
+ 				return ret;
++			}
+ 		}
+ 		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
+ 		if (chan->scan_type.sign == 's')
+diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
+index 238438e..39a6136 100644
+--- a/drivers/staging/iio/accel/adis16209_core.c
++++ b/drivers/staging/iio/accel/adis16209_core.c
+@@ -338,13 +338,17 @@ static int adis16209_read_raw(struct iio_dev *indio_dev,
+ 		mutex_lock(&indio_dev->mlock);
+ 		addr = adis16209_addresses[chan->address][0];
+ 		ret = adis16209_spi_read_reg_16(indio_dev, addr, &val16);
+-		if (ret)
++		if (ret) {
++			mutex_unlock(&indio_dev->mlock);
+ 			return ret;
++		}
+ 
+ 		if (val16 & ADIS16209_ERROR_ACTIVE) {
+ 			ret = adis16209_check_status(indio_dev);
+-			if (ret)
++			if (ret) {
++				mutex_unlock(&indio_dev->mlock);
+ 				return ret;
++			}
+ 		}
+ 		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
+ 		if (chan->scan_type.sign == 's')
+diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
+index 3abac95..d1f5305 100644
+--- a/drivers/staging/iio/accel/adis16240_core.c
++++ b/drivers/staging/iio/accel/adis16240_core.c
+@@ -371,13 +371,17 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
+ 		mutex_lock(&indio_dev->mlock);
+ 		addr = adis16240_addresses[chan->address][0];
+ 		ret = adis16240_spi_read_reg_16(indio_dev, addr, &val16);
+-		if (ret)
++		if (ret) {
++			mutex_unlock(&indio_dev->mlock);
+ 			return ret;
++		}
+ 
+ 		if (val16 & ADIS16240_ERROR_ACTIVE) {
+ 			ret = adis16240_check_status(indio_dev);
+-			if (ret)
++			if (ret) {
++				mutex_unlock(&indio_dev->mlock);
+ 				return ret;
++			}
+ 		}
+ 		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
+ 		if (chan->scan_type.sign == 's')
+diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
+index 02de650..429c252 100644
+--- a/drivers/staging/iio/gyro/adis16260_core.c
++++ b/drivers/staging/iio/gyro/adis16260_core.c
+@@ -447,13 +447,17 @@ static int adis16260_read_raw(struct iio_dev *indio_dev,
+ 		mutex_lock(&indio_dev->mlock);
+ 		addr = adis16260_addresses[chan->address][0];
+ 		ret = adis16260_spi_read_reg_16(indio_dev, addr, &val16);
+-		if (ret)
++		if (ret) {
++			mutex_unlock(&indio_dev->mlock);
+ 			return ret;
++		}
+ 
+ 		if (val16 & ADIS16260_ERROR_ACTIVE) {
+ 			ret = adis16260_check_status(indio_dev);
+-			if (ret)
++			if (ret) {
++				mutex_unlock(&indio_dev->mlock);
+ 				return ret;
++			}
+ 		}
+ 		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
+ 		if (chan->scan_type.sign == 's')
