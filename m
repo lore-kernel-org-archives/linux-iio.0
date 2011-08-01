@@ -1,126 +1,146 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:35250 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752674Ab1HOI56 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2011 04:57:58 -0400
-Message-ID: <4E48E17D.70201@cam.ac.uk>
-Date: Mon, 15 Aug 2011 10:06:05 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+Message-ID: <4E368CBB.9000301@analog.com>
+Date: Mon, 1 Aug 2011 13:23:39 +0200
+From: Michael Hennerich <michael.hennerich@analog.com>
+Reply-To: <michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: ManuelStahl <manuel.stahl@iis.fraunhofer.de>
-CC: linux-iio@vger.kernel.org, michael.hennerich@analog.com
-Subject: Re: [PATCH] staging:iio:scan element types: introduce endian description
- to the data format.
-References: <1311960504-4268-1-git-send-email-jic23@cam.ac.uk> <4E45538A.5090104@cam.ac.uk> <4E48CD76.3010909@iis.fraunhofer.de>
-In-Reply-To: <4E48CD76.3010909@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>, Drivers <Drivers@analog.com>
+Subject: Re: [PATCH] iio: impedance-analyzer: New driver for AD5933/4 Impedance
+ Converter, Network Analyzer
+References: <1311852772-17988-1-git-send-email-michael.hennerich@analog.com> <4E316C4C.5080008@cam.ac.uk> <4E317DEF.5000104@analog.com> <4E31862D.2060802@cam.ac.uk>
+In-Reply-To: <4E31862D.2060802@cam.ac.uk>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/15/11 08:40, ManuelStahl wrote:
-> Hi Jonathan,
-> 
-> I'm not sure if we need the IIO_CPU, but as long as we only have BE and LE in the sysfs API it's fine for me.
-IIO_CPU is purely for merging reasons (as it doesn't require us to update all drivers
-in one big patch set).  We'll drop it when moving out of staging or whenever every
-driver is specifying what it is providing.
-> 
-> Regards,
-> Manuel
-> 
-> Am 12.08.2011 18:23, schrieb Jonathan Cameron:
->> On 07/29/11 18:28, Jonathan Cameron wrote:
->>> If not set in chan_spec, cpu endianness used.
->>>
->>> Signed-off-by: Jonathan Cameron<jic23@cam.ac.uk>
->>> ---
->>> Result of discussion in [PATCH 0/2] blue part 6: IIO abi rework.
->>> Michael highlighted that we need to specify the endianness of buffer
->>> contents.  This patch does that.  The IIO_CPU option exists so that
->>> existing drivers which do conversion to cpu endian should work
->>> without change.
->>>
->>> Based on all sorts of fun I haven't pushed, so if you really want to
->>> play with this see the iio-blue.git tree.
->> Michael, Manuel
->>
->> Is this patch fine with you two?
->>
->> Thanks,
->>
->> Jonathan
->>> Jonathan
->>>
->>>   drivers/staging/iio/iio.h               |    8 ++++++++
->>>   drivers/staging/iio/industrialio-ring.c |   15 ++++++++++++++-
->>>   2 files changed, 22 insertions(+), 1 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
->>> index bde8b87..d09f84b 100644
->>> --- a/drivers/staging/iio/iio.h
->>> +++ b/drivers/staging/iio/iio.h
->>> @@ -86,6 +86,12 @@ enum iio_chan_info_enum {
->>>       IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SEPARATE,
->>>   };
->>>
->>> +enum iio_endian {
->>> +    IIO_CPU,
->>> +    IIO_BE,
->>> +    IIO_LE,
->>> +};
->>> +
->>>   /**
->>>    * struct iio_chan_spec - specification of a single channel
->>>    * @type:        What type of measurement is the channel making.
->>> @@ -101,6 +107,7 @@ enum iio_chan_info_enum {
->>>    *            storage_bits:    Realbits + padding
->>>    *            shift:        Shift right by this before masking out
->>>    *                    realbits.
->>> + *            endianness:    little or big endian   
->>>    * @info_mask:        What information is to be exported about this channel.
->>>    *            This includes calibbias, scale etc.
->>>    * @event_mask:    What events can this channel produce.
->>> @@ -129,6 +136,7 @@ struct iio_chan_spec {
->>>           u8    realbits;
->>>           u8    storagebits;
->>>           u8    shift;
->>> +               enum iio_endian endianness;
->>>       } scan_type;
->>>       const long        info_mask;
->>>       const long        event_mask;
->>> diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
->>> index 5edc6d8..aa1748b 100644
->>> --- a/drivers/staging/iio/industrialio-ring.c
->>> +++ b/drivers/staging/iio/industrialio-ring.c
->>> @@ -24,6 +24,10 @@
->>>   #include "iio_core.h"
->>>   #include "ring_generic.h"
->>>
->>> +const static char *iio_endian_prefix[] = {
->>> +    [IIO_BE] = "be",
->>> +    [IIO_LE] = "le",
->>> +};
->>>
->>>   /**
->>>    * iio_ring_read_first_n_outer() - chrdev read for ring buffer access
->>> @@ -95,7 +99,16 @@ static ssize_t iio_show_fixed_type(struct device *dev,
->>>                      char *buf)
->>>   {
->>>       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->>> -    return sprintf(buf, "%c%d/%d>>%u\n",
->>> +    u8 type = this_attr->c->scan_type.endianness;
->>> +
->>> +    if (type == IIO_CPU) {
->>> +        if (__LITTLE_ENDIAN)
->>> +            type = IIO_LE;
->>> +        else
->>> +            type = IIO_BE;
->>> +    }
->>> +    return sprintf(buf, "%s:%c%d/%d>>%u\n",
->>> +               iio_endian_prefix[type],
->>>                  this_attr->c->scan_type.sign,
->>>                  this_attr->c->scan_type.realbits,
->>>                  this_attr->c->scan_type.storagebits,
-> 
-> 
+On 07/28/2011 05:54 PM, Jonathan Cameron wrote:
+> On 07/28/11 16:19, Michael Hennerich wrote:
+>> On 07/28/2011 04:03 PM, Jonathan Cameron wrote:
+>>> On 07/28/11 12:32, michael.hennerich@analog.com wrote:
+>>>> From: Michael Hennerich<michael.hennerich@analog.com>
+>>>>
+>>>> The AD5933 is a high precision impedance converter system solution
+>>>> that combines an on-board frequency generator with a 12-bit, 1 MSPS,
+>>>> analog-to-digital converter (ADC). The frequency generator allows an
+>>>> external complex impedance to be excited with a known frequency.
+>>>>
+>>>> The response signal from the impedance is sampled by the on-board ADC
+>>>> and a discrete Fourier transform (DFT) is processed by an on-chip DSP engine.
+>>>> The DFT algorithm returns a real (R) and imaginary (I) data-word at each
+>>>> output frequency.
+>>>>
+>>> Mostly looks good. Couple of nitpicks / queries in line.  I'm particularly
+>>> bothered about the SCALE info elements in chan_spec that aren't matched
+>>> in the read_raw (or a write_raw if relevant).
+>> in0_real_raw and in0_imag_raw only exist as scan elements.
+>> They aren't present in indio_dev->channels. I therefore couldn't use
+>> scale info elements from channel spec.
+> Ah. I hadn't noticed that (obviously).  Why is this the case?  Does it just
+> not make sense to read them directly?  If so, set their channel number to -1
+> and they won't appear.  Hmm.  Perhaps we need to make that test a little
+> more refined to make this work.  iio_device_add_channel_sysfs drops the channel
+> immediately if it's number is negative.   Maybe move the magic value into channel2?
+>
+> That way the only uggliness will come if we have a differential channel that only exists
+> for scans.  Or use a negative index (rather than just -1).  That's probably the cleanest
+> option, but will require a few abs() insertions in the code and some testing
+> to make sure we got them all.
+>
 
+Well this works well for channels abs(chan->channel) > 0.
+But how about the case where I need no channel sysfs but the scale 
+attributes of channel# 0?
+Unfortunately there is no -0 :-)
+
+Since the AD5933 is a corner case - I suggest we leave it as is - and I 
+add some comments to the source... ?
+
+
+> Something like:
+>
+> diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+> index b49db92..aeeb5e6 100644
+> --- a/drivers/staging/iio/industrialio-core.c
+> +++ b/drivers/staging/iio/industrialio-core.c
+> @@ -480,7 +480,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+>                          = kasprintf(GFP_KERNEL, "%s_%s%d_%s",
+>                                      iio_direction[chan->output],
+>                                      iio_chan_type_name_spec_shared[chan->type],
+> -                                   chan->channel,
+> +                                   (int)abs(chan->channel),
+>                                      full_postfix);
+>
+>          if (name_format == NULL) {
+> @@ -489,7 +489,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+>          }
+>          dev_attr->attr.name = kasprintf(GFP_KERNEL,
+>                                          name_format,
+> -                                       chan->channel,
+> +                                       (int)abs(chan->channel),
+>                                          chan->channel2);
+>          if (dev_attr->attr.name == NULL) {
+>                  ret = -ENOMEM;
+> @@ -585,27 +585,27 @@ static int iio_device_add_channel_sysfs(struct iio_dev *dev_info,
+>   {
+>          int ret, i;
+>
+> -       if (chan->channel<  0)
+> -               return 0;
+> -       if (chan->processed_val)
+> -               ret = __iio_add_chan_devattr("input", NULL, chan,
+> -&iio_read_channel_info,
+> -                                            NULL,
+> -                                            0,
+> -                                            0,
+> -&dev_info->dev,
+> -&dev_info->channel_attr_list);
+> -       else
+> -               ret = __iio_add_chan_devattr("raw", NULL, chan,
+> -&iio_read_channel_info,
+> -                                            (chan->output ?
+> -&iio_write_channel_info : NULL),
+> -                                            0,
+> -                                            0,
+> -&dev_info->dev,
+> -&dev_info->channel_attr_list);
+> -       if (ret)
+> -               goto error_ret;
+> +       if (chan->channel>= 0) {
+> +               if (chan->processed_val)
+> +                       ret = __iio_add_chan_devattr("input", NULL, chan,
+> +&iio_read_channel_info,
+> +                                                    NULL,
+> +                                                    0,
+> +                                                    0,
+> +&dev_info->dev,
+> +&dev_info->channel_attr_list);
+> +               else
+> +                       ret = __iio_add_chan_devattr("raw", NULL, chan,
+> +&iio_read_channel_info,
+> +                                                    (chan->output ?
+> +&iio_write_channel_info : NULL),
+> +                                                    0,
+> +                                                    0,
+> +&dev_info->dev,
+> +&dev_info->channel_attr_list);
+> +               if (ret)
+> +                       goto error_ret;
+> +       }
+>
+>          for_each_set_bit(i,&chan->info_mask, sizeof(long)*8) {
+>                  ret = __iio_add_chan_devattr(iio_chan_info_postfix[i/2],
+>
+>
+
+
+-- 
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
+Margaret Seif
