@@ -1,47 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:38558 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753326Ab1HCJNi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Aug 2011 05:13:38 -0400
-Message-ID: <4E39131F.3010305@cam.ac.uk>
-Date: Wed, 03 Aug 2011 10:21:35 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <bjdooks@googlemail.com>
+Message-ID: <4E382924.2050201@googlemail.com>
+Date: Tue, 02 Aug 2011 17:43:16 +0100
+From: Ben Dooks <bjdooks@googlemail.com>
 MIME-Version: 1.0
-To: Wanlong Gao <gaowanlong@cn.fujitsu.com>
-CC: gregkh@suse.de, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org
-Subject: Re: [PATCH] drivers:staging: remove the unused label
-References: <1312362362-26767-1-git-send-email-gaowanlong@cn.fujitsu.com>
-In-Reply-To: <1312362362-26767-1-git-send-email-gaowanlong@cn.fujitsu.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
+ LKML <linux-kernel@vger.kernel.org>
+Subject: uses of irq_to_gpio() in drivers/staging/iio
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/03/11 10:06, Wanlong Gao wrote:
-> remove the unused label error_ret in ad37854.c.
-> 
-I have equivalent queued up locally, but you posted first
-which is fine by me.  Thanks!
+Whilst looking in drivers/staging/iio/accel/lis3l02dq_core.c, I
+came across the following lines of code
 
-Have also fixes for all current sparse / smatch and coccinelle
-checker issues (bar one set of false positives).
+    708          if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0) {
+    709                  ret = request_threaded_irq(st->us->irq,
+    710                                             &lis3l02dq_th,
+    711 
+&lis3l02dq_event_handler,
+    712                                             IRQF_TRIGGER_RISING,
+    713                                             "lis3l02dq",
+    714                                             indio_dev);
 
-> Signed-off-by: Wanlong Gao <gaowanlong@cn.fujitsu.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/meter/ade7854.c |    1 -
->  1 files changed, 0 insertions(+), 1 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
-> index b82659f..ac3f9d5 100644
-> --- a/drivers/staging/iio/meter/ade7854.c
-> +++ b/drivers/staging/iio/meter/ade7854.c
-> @@ -582,7 +582,6 @@ error_unreg_dev:
->  	iio_device_unregister(indio_dev);
->  error_free_dev:
->  	iio_free_device(indio_dev);
-> -error_ret:
->  	return ret;
->  }
->  EXPORT_SYMBOL(ade7854_probe);
+Which gives rise to the following questions:
 
+1) IRQ0 and GPIO0 are often valid numbers for GPIOs.
+
+2) Not all interrupts are necessarily GPIO interrupts. What happens
+    if the device is attached to a hardware interrupt line which is
+    not a GPIO?
+
+-- 
+Ben Dooks <bjdooks@googlemail.com> http://www.fluff.org/ben/
