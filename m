@@ -1,51 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:53551 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750852Ab1HLIme (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Aug 2011 04:42:34 -0400
-Message-ID: <4E44E95F.6070402@cam.ac.uk>
-Date: Fri, 12 Aug 2011 09:50:39 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: stufever@gmail.com
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	gregkh@suse.de, Wang Shaoyan <wangshaoyan.pt@taobao.com>
-Subject: Re: [PATCH] staging: IIO: DAC: Delete useless label error_ret in
- ade7854.c
-References: <1312655064-28311-1-git-send-email-wangshaoyan.pt@taobao.com>
-In-Reply-To: <1312655064-28311-1-git-send-email-wangshaoyan.pt@taobao.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mail-pz0-f42.google.com ([209.85.210.42]:59516 "EHLO
+	mail-pz0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756519Ab1HFSMM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Aug 2011 14:12:12 -0400
+From: stufever@gmail.com
+To: linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org, gregkh@suse.de,
+	michael.hennerich@analog.com,
+	Wang Shaoyan <wangshaoyan.pt@taobao.com>
+Subject: [PATCH] staging: IIO: DAC: Delete useless label error_ret in ad5791.c
+Date: Sun,  7 Aug 2011 02:09:18 +0800
+Message-Id: <1312654158-28057-1-git-send-email-wangshaoyan.pt@taobao.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/06/11 19:24, stufever@gmail.com wrote:
-> From: Wang Shaoyan <wangshaoyan.pt@taobao.com>
-> 
->   drivers/staging/iio/meter/ade7854.c: In function 'ade7854_probe':
->   drivers/staging/iio/meter/ade7854.c:585: warning: label 'error_ret' defined but not used
-> 
-> The label error_ret is defined, but never used, so delete it to avoid annoying warning.
-Have equivalent in our dev tree, but happy to see this version merge instead.
-For reference, we have all sparse / coccinelle and smatch warnings fixed in iio-blue.git.
+From: Wang Shaoyan <wangshaoyan.pt@taobao.com>
 
-I'll be pushing the cleanup bits of that tree out sometime fairly soon.
-> 
-> Signed-off-by: Wang Shaoyan <wangshaoyan.pt@taobao.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/meter/ade7854.c |    1 -
->  1 files changed, 0 insertions(+), 1 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
-> index b82659f..ac3f9d5 100644
-> --- a/drivers/staging/iio/meter/ade7854.c
-> +++ b/drivers/staging/iio/meter/ade7854.c
-> @@ -582,7 +582,6 @@ error_unreg_dev:
->  	iio_device_unregister(indio_dev);
->  error_free_dev:
->  	iio_free_device(indio_dev);
-> -error_ret:
->  	return ret;
->  }
->  EXPORT_SYMBOL(ade7854_probe);
+  drivers/staging/iio/dac/ad5791.c: In function 'ad5791_probe':
+  drivers/staging/iio/dac/ad5791.c:384: warning: label 'error_ret' defined but not used
+
+The label error_ret is defined, but never used, so delete it to avoid annoying warning.
+
+Signed-off-by: Wang Shaoyan <wangshaoyan.pt@taobao.com>
+---
+ drivers/staging/iio/dac/ad5791.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
+index 64770d2..5b00b70 100644
+--- a/drivers/staging/iio/dac/ad5791.c
++++ b/drivers/staging/iio/dac/ad5791.c
+@@ -381,7 +381,6 @@ error_put_reg_pos:
+ 	if (!IS_ERR(reg_vdd))
+ 		regulator_put(reg_vdd);
+ 
+-error_ret:
+ 	return ret;
+ }
+ 
+-- 
+1.7.0.4
 
