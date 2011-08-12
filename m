@@ -3,67 +3,113 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 4/7] staging:iio:adc remove unused adc.h.
-Date: Fri, 12 Aug 2011 17:56:02 +0100
-Message-Id: <1313168165-16109-5-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 3/7] staging:iio:accel remove unused accel.h header.
+Date: Fri, 12 Aug 2011 17:56:01 +0100
+Message-Id: <1313168165-16109-4-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313168165-16109-1-git-send-email-jic23@cam.ac.uk>
 References: <1313168165-16109-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Another header unused after chan_spec conversions.
+The chan spec conversions and a small amount of pushdown of defines
+mean this header is no longer used.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/adc.h |   42 -----------------------------------------
- 1 files changed, 0 insertions(+), 42 deletions(-)
+ drivers/staging/iio/accel/accel.h |   87 -------------------------------------
+ 1 files changed, 0 insertions(+), 87 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/adc.h b/drivers/staging/iio/adc/adc.h
+diff --git a/drivers/staging/iio/accel/accel.h b/drivers/staging/iio/accel/accel.h
 deleted file mode 100644
-index 40c5949..0000000
---- a/drivers/staging/iio/adc/adc.h
+index 50651f8..0000000
+--- a/drivers/staging/iio/accel/accel.h
 +++ /dev/null
-@@ -1,42 +0,0 @@
--/*
-- * adc.h - sysfs attributes associated with ADCs
-- *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of the GNU General Public License version 2 as published by
-- * the Free Software Foundation.
-- *
-- * Copyright (c) 2008 Jonathan Cameron <jic23@cam.ac.uk>
-- *
-- */
+@@ -1,87 +0,0 @@
 -
--/* Deprecated */
--#define IIO_DEV_ATTR_ADC(_num, _show, _addr)			\
--  IIO_DEVICE_ATTR(adc_##_num, S_IRUGO, _show, NULL, _addr)
+-#include "../sysfs.h"
 -
--#define IIO_DEV_ATTR_IN_RAW(_num, _show, _addr)				\
--	IIO_DEVICE_ATTR(in##_num##_raw, S_IRUGO, _show, NULL, _addr)
+-/* Accelerometer types of attribute */
+-#define IIO_DEV_ATTR_ACCEL_OFFSET(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(accel_offset, _mode, _show, _store, _addr)
 -
--#define IIO_DEV_ATTR_IN_NAMED_RAW(_num, _name, _show, _addr)		\
--	IIO_DEVICE_ATTR(in##_num##_##_name##_raw, S_IRUGO, _show, NULL, _addr)
+-#define IIO_DEV_ATTR_ACCEL_X_OFFSET(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(accel_x_offset, _mode, _show, _store, _addr)
 -
--#define IIO_DEV_ATTR_IN_DIFF_RAW(_nump, _numn, _show, _addr)		\
--	IIO_DEVICE_ATTR_NAMED(in##_nump##min##_numn##_raw,		\
--			      in##_nump-in##_numn##_raw,		\
--			      S_IRUGO,					\
--			      _show,					\
--			      NULL,					\
--			      _addr)
+-#define IIO_DEV_ATTR_ACCEL_Y_OFFSET(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(accel_y_offset, _mode, _show, _store, _addr)
 -
+-#define IIO_DEV_ATTR_ACCEL_Z_OFFSET(_mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(accel_z_offset, _mode, _show, _store, _addr)
 -
--#define IIO_CONST_ATTR_IN_NAMED_OFFSET(_num, _name, _string)	\
--	IIO_CONST_ATTR(in##_num##_##_name##_offset, _string)
+-#define IIO_CONST_ATTR_ACCEL_SCALE(_string)		\
+-	IIO_CONST_ATTR(accel_scale, _string)
 -
--#define IIO_CONST_ATTR_IN_NAMED_SCALE(_num, _name, _string)	\
--	IIO_CONST_ATTR(in##_num##_##_name##_scale, _string)
+-#define IIO_DEV_ATTR_ACCEL_SCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_scale, _mode, _show, _store, _addr)
 -
--#define IIO_EVENT_CODE_IN_HIGH_THRESH(a)				\
--	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, a, IIO_EV_TYPE_THRESH,	\
--			     IIO_EV_DIR_RISING)
--#define IIO_EVENT_CODE_IN_LOW_THRESH(a)				     \
--	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, a, IIO_EV_TYPE_THRESH, \
--			     IIO_EV_DIR_FALLING)
+-#define IIO_DEV_ATTR_ACCEL_X_SCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_x_scale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_Y_SCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_y_scale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_Z_SCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_z_scale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_CALIBBIAS(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_calibbias, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_X_CALIBBIAS(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_x_calibbias, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_Y_CALIBBIAS(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_y_calibbias, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_Z_CALIBBIAS(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_z_calibbias, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_CALIBSCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_calibscale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_X_CALIBSCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_x_calibscale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_Y_CALIBSCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_y_calibscale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_Z_CALIBSCALE(_mode, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(accel_z_calibscale, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL(_show, _addr)			\
+-	IIO_DEVICE_ATTR(accel_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_X(_show, _addr)			\
+-	IIO_DEVICE_ATTR(accel_x_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_Y(_show, _addr)			\
+-	IIO_DEVICE_ATTR(accel_y_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_Z(_show, _addr)			\
+-	IIO_DEVICE_ATTR(accel_z_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_XY(_show, _addr)			\
+-	IIO_DEVICE_ATTR(accel_xy, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_PEAK(_show, _addr)			\
+-	IIO_DEVICE_ATTR(accel_peak, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_XPEAK(_show, _addr)			\
+-	IIO_DEVICE_ATTR(accel_xpeak, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_YPEAK(_show, _addr)			\
+-	IIO_DEVICE_ATTR(accel_ypeak, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_ZPEAK(_show, _addr)			\
+-	IIO_DEVICE_ATTR(accel_zpeak, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_XYPEAK(_show, _addr)		\
+-	IIO_DEVICE_ATTR(accel_xypeak, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_ACCEL_XYZPEAK(_show, _addr)		\
+-	IIO_DEVICE_ATTR(accel_xyzpeak, S_IRUGO, _show, NULL, _addr)
 -- 
 1.7.3.4
