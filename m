@@ -1,59 +1,55 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:57264 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754017Ab1HLQBA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Aug 2011 12:01:00 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 11/19] staging:iio:various header includes that should never have been.
-Date: Fri, 12 Aug 2011 17:08:45 +0100
-Message-Id: <1313165333-3951-12-git-send-email-jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 10/19] staging:iio:inclinometer.h remove as now unused.
+Date: Fri, 12 Aug 2011 17:08:44 +0100
+Message-Id: <1313165333-3951-11-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
 References: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
-
-I will assume these were cut and pastes messup.
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/gyro/adis16260_ring.c |    1 -
- drivers/staging/iio/imu/adis16400_ring.c  |    1 -
- drivers/staging/iio/meter/ade7758_ring.c  |    1 -
- 3 files changed, 0 insertions(+), 3 deletions(-)
+ drivers/staging/iio/accel/inclinometer.h |   25 -------------------------
+ 1 files changed, 0 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
-index a4df8b3..e9cff3b 100644
---- a/drivers/staging/iio/gyro/adis16260_ring.c
-+++ b/drivers/staging/iio/gyro/adis16260_ring.c
-@@ -13,7 +13,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "../accel/accel.h"
- #include "../trigger.h"
- #include "adis16260.h"
- 
-diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
-index 556d928..ef38477 100644
---- a/drivers/staging/iio/imu/adis16400_ring.c
-+++ b/drivers/staging/iio/imu/adis16400_ring.c
-@@ -7,7 +7,6 @@
- 
- #include "../iio.h"
- #include "../ring_sw.h"
--#include "../accel/accel.h"
- #include "../trigger.h"
- #include "adis16400.h"
- 
-diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
-index b89b7f8..e7a04b4 100644
---- a/drivers/staging/iio/meter/ade7758_ring.c
-+++ b/drivers/staging/iio/meter/ade7758_ring.c
-@@ -21,7 +21,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "../accel/accel.h"
- #include "../trigger.h"
- #include "ade7758.h"
- 
+diff --git a/drivers/staging/iio/accel/inclinometer.h b/drivers/staging/iio/accel/inclinometer.h
+deleted file mode 100644
+index faf73d7..0000000
+--- a/drivers/staging/iio/accel/inclinometer.h
++++ /dev/null
+@@ -1,25 +0,0 @@
+-/*
+- * Inclinometer related attributes
+- */
+-#include "../sysfs.h"
+-
+-#define IIO_DEV_ATTR_INCLI_X(_show, _addr)			\
+-	IIO_DEVICE_ATTR(incli_x_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_INCLI_Y(_show, _addr)			\
+-	IIO_DEVICE_ATTR(incli_y_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_INCLI_Z(_show, _addr)			\
+-	IIO_DEVICE_ATTR(incli_z_raw, S_IRUGO, _show, NULL, _addr)
+-
+-#define IIO_DEV_ATTR_INCLI_X_OFFSET(_mode, _show, _store, _addr) \
+-	IIO_DEVICE_ATTR(incli_x_offset, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_INCLI_Y_OFFSET(_mode, _show, _store, _addr) \
+-	IIO_DEVICE_ATTR(incli_y_offset, _mode, _show, _store, _addr)
+-
+-#define IIO_DEV_ATTR_INCLI_Z_OFFSET(_mode, _show, _store, _addr) \
+-	IIO_DEVICE_ATTR(incli_z_offset, _mode, _show, _store, _addr)
+-
+-#define IIO_CONST_ATTR_INCLI_SCALE(_string) \
+-	IIO_CONST_ATTR(incli_scale, _string)
 -- 
 1.7.3.4
+
