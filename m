@@ -3,197 +3,163 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 08/19] staging:iio:accel: usused header removals.
-Date: Fri, 12 Aug 2011 17:08:42 +0100
-Message-Id: <1313165333-3951-9-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 07/19] staging:iio:gyro:adis16130 drop control of adc resolution.
+Date: Fri, 12 Aug 2011 17:08:41 +0100
+Message-Id: <1313165333-3951-8-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
 References: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Missing from the iio_chan_spec conversion patches.
+There is no clear use case for this functionality in a driver
+that only supports slow reading via sysfs. The interface
+use was non compliant with the abi motiving it being dropped.
+
+It can go back in if anyone ever implements buffered reading
+support for this device.  Then it will be controlled as
+part of the buffering abi where this should indeed be correctly
+supported.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/accel/adis16201_core.c |    4 ----
- drivers/staging/iio/accel/adis16201_ring.c |    1 -
- drivers/staging/iio/accel/adis16203_core.c |    3 ---
- drivers/staging/iio/accel/adis16203_ring.c |    1 -
- drivers/staging/iio/accel/adis16204_ring.c |    1 -
- drivers/staging/iio/accel/adis16209_core.c |    3 ---
- drivers/staging/iio/accel/adis16209_ring.c |    1 -
- drivers/staging/iio/accel/adis16240_core.c |    2 --
- drivers/staging/iio/accel/adis16240_ring.c |    1 -
- drivers/staging/iio/accel/lis3l02dq_core.c |    2 --
- drivers/staging/iio/accel/lis3l02dq_ring.c |    1 -
- drivers/staging/iio/accel/sca3000_core.c   |    1 -
- drivers/staging/iio/accel/sca3000_ring.c   |    1 -
- 13 files changed, 0 insertions(+), 22 deletions(-)
+ drivers/staging/iio/gyro/adis16130_core.c |   76 ++---------------------------
+ 1 files changed, 4 insertions(+), 72 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
-index 2fd01ae..16b388b 100644
---- a/drivers/staging/iio/accel/adis16201_core.c
-+++ b/drivers/staging/iio/accel/adis16201_core.c
-@@ -18,10 +18,6 @@
- #include "../sysfs.h"
- #include "../ring_generic.h"
+diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
+index caf067c..6d3cd6c 100644
+--- a/drivers/staging/iio/gyro/adis16130_core.c
++++ b/drivers/staging/iio/gyro/adis16130_core.c
+@@ -41,34 +41,15 @@
+ /**
+  * struct adis16130_state - device instance specific data
+  * @us:			actual spi_device to write data
+- * @mode:		24 bits (1) or 16 bits (0)
+  * @buf_lock:		mutex to protect tx and rx
+  * @buf:		unified tx/rx buffer
+  **/
+ struct adis16130_state {
+ 	struct spi_device		*us;
+-	u32                             mode;
+ 	struct mutex			buf_lock;
+ 	u8				buf[4] ____cacheline_aligned;
+ };
  
--#include "accel.h"
--#include "inclinometer.h"
--#include "../adc/adc.h"
+-static int adis16130_spi_write(struct device *dev, u8 reg_addr,
+-		u8 val)
+-{
+-	int ret;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct adis16130_state *st = iio_priv(indio_dev);
 -
- #include "adis16201.h"
- 
- enum adis16201_chan {
-diff --git a/drivers/staging/iio/accel/adis16201_ring.c b/drivers/staging/iio/accel/adis16201_ring.c
-index a745d5de..30bac86 100644
---- a/drivers/staging/iio/accel/adis16201_ring.c
-+++ b/drivers/staging/iio/accel/adis16201_ring.c
-@@ -10,7 +10,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "adis16201.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
-index cf5d15d..a7c06b9 100644
---- a/drivers/staging/iio/accel/adis16203_core.c
-+++ b/drivers/staging/iio/accel/adis16203_core.c
-@@ -16,10 +16,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "accel.h"
--#include "inclinometer.h"
- #include "../ring_generic.h"
--#include "../adc/adc.h"
- 
- #include "adis16203.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
-index d2c07c5..7ca9c25 100644
---- a/drivers/staging/iio/accel/adis16203_ring.c
-+++ b/drivers/staging/iio/accel/adis16203_ring.c
-@@ -13,7 +13,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "adis16203.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16204_ring.c b/drivers/staging/iio/accel/adis16204_ring.c
-index 852df06..537d463 100644
---- a/drivers/staging/iio/accel/adis16204_ring.c
-+++ b/drivers/staging/iio/accel/adis16204_ring.c
-@@ -13,7 +13,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "adis16204.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-index bec1fa8..bd3d557 100644
---- a/drivers/staging/iio/accel/adis16209_core.c
-+++ b/drivers/staging/iio/accel/adis16209_core.c
-@@ -18,9 +18,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_generic.h"
--#include "accel.h"
--#include "inclinometer.h"
--#include "../adc/adc.h"
- 
- #include "adis16209.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
-index 45017d3..77b70e3 100644
---- a/drivers/staging/iio/accel/adis16209_ring.c
-+++ b/drivers/staging/iio/accel/adis16209_ring.c
-@@ -13,7 +13,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "adis16209.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-index aee8b69..237da46 100644
---- a/drivers/staging/iio/accel/adis16240_core.c
-+++ b/drivers/staging/iio/accel/adis16240_core.c
-@@ -21,8 +21,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_generic.h"
--#include "accel.h"
--#include "../adc/adc.h"
- 
- #include "adis16240.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
-index c812a34..3f1e159 100644
---- a/drivers/staging/iio/accel/adis16240_ring.c
-+++ b/drivers/staging/iio/accel/adis16240_ring.c
-@@ -13,7 +13,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_sw.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "adis16240.h"
- 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
-index a29dfd2..83ec286 100644
---- a/drivers/staging/iio/accel/lis3l02dq_core.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_core.c
-@@ -26,8 +26,6 @@
- #include "../sysfs.h"
- #include "../ring_generic.h"
- 
--#include "accel.h"
+-	mutex_lock(&st->buf_lock);
+-	st->buf[0] = reg_addr;
+-	st->buf[1] = val;
 -
- #include "lis3l02dq.h"
+-	ret = spi_write(st->us, st->buf, 2);
+-	mutex_unlock(&st->buf_lock);
+-
+-	return ret;
+-}
+-
+ static int adis16130_spi_read(struct device *dev, u8 reg_addr,
+ 		u32 *val)
+ {
+@@ -79,6 +60,7 @@ static int adis16130_spi_read(struct device *dev, u8 reg_addr,
+ 	struct spi_transfer xfer = {
+ 		.tx_buf = st->buf,
+ 		.rx_buf = st->buf,
++		.len = 4,
+ 	};
  
- /* At the moment the spi framework doesn't allow global setting of cs_change.
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index 5795f82..7305c78 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -12,7 +12,6 @@
- #include "../sysfs.h"
- #include "../ring_sw.h"
- #include "../kfifo_buf.h"
--#include "accel.h"
- #include "../trigger.h"
- #include "lis3l02dq.h"
+ 	mutex_lock(&st->buf_lock);
+@@ -86,22 +68,13 @@ static int adis16130_spi_read(struct device *dev, u8 reg_addr,
+ 	st->buf[0] = ADIS16130_CON_RD | reg_addr;
+ 	st->buf[1] = st->buf[2] = st->buf[3] = 0;
  
-diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-index 603f5bc..3c637b9 100644
---- a/drivers/staging/iio/accel/sca3000_core.c
-+++ b/drivers/staging/iio/accel/sca3000_core.c
-@@ -22,7 +22,6 @@
- #include "../sysfs.h"
- #include "../ring_generic.h"
+-	if (st->mode)
+-		xfer.len = 4;
+-	else
+-		xfer.len = 3;
+ 	spi_message_init(&msg);
+ 	spi_message_add_tail(&xfer, &msg);
+ 	ret = spi_sync(st->us, &msg);
+-	if (ret == 0) {
+-		if (st->mode)
+-			*val = (st->buf[1] << 16) |
+-				(st->buf[2] << 8) |
+-				st->buf[3];
+-		else
+-			*val = (st->buf[1] << 8) | st->buf[2];
+-	}
++	ret = spi_read(st->us, st->buf, 4);
  
--#include "accel.h"
- #include "sca3000.h"
++	if (ret == 0)
++		*val = (st->buf[1] << 16) | (st->buf[2] << 8) | st->buf[3];
+ 	mutex_unlock(&st->buf_lock);
  
- enum sca3000_variant {
-diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
-index 3e60861..6ce8bf5 100644
---- a/drivers/staging/iio/accel/sca3000_ring.c
-+++ b/drivers/staging/iio/accel/sca3000_ring.c
-@@ -24,7 +24,6 @@
- #include "../sysfs.h"
- #include "../ring_generic.h"
- #include "../ring_hw.h"
--#include "accel.h"
- #include "sca3000.h"
+ 	return ret;
+@@ -127,54 +100,14 @@ static ssize_t adis16130_val_read(struct device *dev,
+ 		return ret;
+ }
  
- /* RFC / future work
+-static ssize_t adis16130_bitsmode_read(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct adis16130_state *st = iio_priv(indio_dev);
+-
+-	if (st->mode == 1)
+-		return sprintf(buf, "s24\n");
+-	else
+-		return sprintf(buf, "s16\n");
+-}
+-
+-static ssize_t adis16130_bitsmode_write(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	int ret;
+-	u8 val;
+-
+-	if (sysfs_streq(buf, "s16"))
+-		val = 0;
+-	else if (sysfs_streq(buf, "s24"))
+-		val = 1;
+-	else
+-		return -EINVAL;
+-
+-	ret = adis16130_spi_write(dev, ADIS16130_MODE, val);
+-
+-	return ret ? ret : len;
+-}
+ static IIO_DEVICE_ATTR(temp_raw, S_IRUGO, adis16130_val_read, NULL,
+ 		      ADIS16130_TEMPDATA);
+ 
+ static IIO_DEV_ATTR_GYRO_Z(adis16130_val_read, ADIS16130_RATEDATA);
+ 
+-static IIO_DEVICE_ATTR(gyro_z_type, S_IWUSR | S_IRUGO, adis16130_bitsmode_read,
+-			adis16130_bitsmode_write,
+-			ADIS16130_MODE);
+-
+-static IIO_CONST_ATTR(gyro_z_type_available, "s16 s24");
+-
+ static struct attribute *adis16130_attributes[] = {
+ 	&iio_dev_attr_temp_raw.dev_attr.attr,
+ 	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
+-	&iio_dev_attr_gyro_z_type.dev_attr.attr,
+-	&iio_const_attr_gyro_z_type_available.dev_attr.attr,
+ 	NULL
+ };
+ 
+@@ -208,7 +141,6 @@ static int __devinit adis16130_probe(struct spi_device *spi)
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->info = &adis16130_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	st->mode = 1;
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
 -- 
 1.7.3.4
