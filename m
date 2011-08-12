@@ -3,54 +3,95 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 05/12] staging:iio: sysfs.h remove unused val2 and dead macro.
-Date: Fri, 12 Aug 2011 16:55:31 +0100
-Message-Id: <1313164538-1769-6-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 04/12] staging:iio:core simplify and fix a bug in iio_device_(un)register_event_set.
+Date: Fri, 12 Aug 2011 16:55:30 +0100
+Message-Id: <1313164538-1769-5-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313164538-1769-1-git-send-email-jic23@cam.ac.uk>
 References: <1313164538-1769-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Vivien pointed out that 99e5dc45b854b4b661044e807905152911ed3fdb
-removed the IIO_DEVICE_ATTR_2 macro but didn't clean up the other
-macros that used it.
-
-As it turns out, no one is using val2 in tree, so lets scrap that
-until it is needed.
+The unwinding index was j, not i and it is much simpler to do these as a single
+loop unwinding those elements necessary in before jumping to the error handler.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
-Reported-by: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
 ---
- drivers/staging/iio/sysfs.h |    6 ------
- 1 files changed, 0 insertions(+), 6 deletions(-)
+ drivers/staging/iio/industrialio-core.c |   40 +++++++++++++++---------------
+ 1 files changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
-index dd79b58..203ee83 100644
---- a/drivers/staging/iio/sysfs.h
-+++ b/drivers/staging/iio/sysfs.h
-@@ -18,13 +18,11 @@
-  * struct iio_dev_attr - iio specific device attribute
-  * @dev_attr:	underlying device attribute
-  * @address:	associated register address
-- * @val2:	secondary attribute value
-  * @l:		list head for maintaining list of dynamically created attrs.
-  */
- struct iio_dev_attr {
- 	struct device_attribute dev_attr;
- 	int address;
--	int val2;
- 	struct list_head l;
- 	struct iio_chan_spec const *c;
- };
-@@ -64,10 +62,6 @@ struct iio_const_attr {
- 	struct iio_dev_attr iio_dev_attr_##_vname			\
- 	= IIO_ATTR(_name, _mode, _show, _store, _addr)
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 19819e7..7ee4186 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -1061,7 +1061,7 @@ static int iio_device_register_eventset(struct iio_dev *dev_info)
+ 		if (ret) {
+ 			dev_err(&dev_info->dev,
+ 				"Could not get chrdev interface\n");
+-			goto error_free_setup_ev_ints;
++			goto error_free_setup_event_lines;
+ 		}
  
--#define IIO_DEVICE_ATTR_2(_name, _mode, _show, _store, _addr, _val2)	\
--	struct iio_dev_attr iio_dev_attr_##_name			\
--	= IIO_ATTR_2(_name, _mode, _show, _store, _addr, _val2)
+ 		dev_set_drvdata(&dev_info->event_interfaces[i].dev,
+@@ -1077,31 +1077,33 @@ static int iio_device_register_eventset(struct iio_dev *dev_info)
+ 		if (ret) {
+ 			dev_err(&dev_info->dev,
+ 				"Failed to register sysfs for event attrs");
+-			goto error_remove_sysfs_interfaces;
++			iio_free_ev_int(&dev_info->event_interfaces[i]);
++			goto error_free_setup_event_lines;
+ 		}
+-	}
 -
- #define IIO_CONST_ATTR(_name, _string)					\
- 	struct iio_const_attr iio_const_attr_##_name			\
- 	= { .string = _string,						\
+-	for (i = 0; i < dev_info->info->num_interrupt_lines; i++) {
+ 		ret = __iio_add_event_config_attrs(dev_info, i);
+-		if (ret)
+-			goto error_unregister_config_attrs;
++		if (ret) {
++			if (dev_info->info->event_attrs != NULL)
++				sysfs_remove_group(&dev_info
++						   ->event_interfaces[i]
++						   .dev.kobj,
++						   &dev_info->info
++						   ->event_attrs[i]);
++			iio_free_ev_int(&dev_info->event_interfaces[i]);
++			goto error_free_setup_event_lines;
++		}
+ 	}
+ 
+ 	return 0;
+ 
+-error_unregister_config_attrs:
+-	for (j = 0; j < i; j++)
+-		__iio_remove_event_config_attrs(dev_info, i);
+-	i = dev_info->info->num_interrupt_lines - 1;
+-error_remove_sysfs_interfaces:
+-	for (j = 0; j < i; j++)
++error_free_setup_event_lines:
++	for (j = 0; j < i; j++) {
++		__iio_remove_event_config_attrs(dev_info, j);
+ 		if (dev_info->info->event_attrs != NULL)
+ 			sysfs_remove_group(&dev_info
+-				   ->event_interfaces[j].dev.kobj,
+-				   &dev_info->info->event_attrs[j]);
+-error_free_setup_ev_ints:
+-	for (j = 0; j < i; j++)
++					   ->event_interfaces[j].dev.kobj,
++					   &dev_info->info->event_attrs[j]);
+ 		iio_free_ev_int(&dev_info->event_interfaces[j]);
++	}
+ 	kfree(dev_info->event_interfaces);
+ error_ret:
+ 
+@@ -1120,10 +1122,8 @@ static void iio_device_unregister_eventset(struct iio_dev *dev_info)
+ 			sysfs_remove_group(&dev_info
+ 					   ->event_interfaces[i].dev.kobj,
+ 					   &dev_info->info->event_attrs[i]);
+-	}
+-
+-	for (i = 0; i < dev_info->info->num_interrupt_lines; i++)
+ 		iio_free_ev_int(&dev_info->event_interfaces[i]);
++	}
+ 	kfree(dev_info->event_interfaces);
+ }
+ 
 -- 
 1.7.3.4
