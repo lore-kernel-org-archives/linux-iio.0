@@ -3,351 +3,295 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 6/7] staging:iio:events: use IIO_<TYPE> and IIO_MOD_<> instead of IIO_EV_CLASS_<TYPE> etc
-Date: Fri, 12 Aug 2011 17:56:04 +0100
-Message-Id: <1313168165-16109-7-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 5/7] staging:iio: Introduce iio_core.h and move all core only stuff out of iio.h.
+Date: Fri, 12 Aug 2011 17:56:03 +0100
+Message-Id: <1313168165-16109-6-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313168165-16109-1-git-send-email-jic23@cam.ac.uk>
 References: <1313168165-16109-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-The original definitions were duplicated to reduce tree churn during introduction of chan_spec
-registration.  Now there is no point in maintaining the two sets of definitions.
+Also get rid of a few function defs where they are only now in one core file
+anyway.
+Whilst here add mask = 0 to get rid of warning.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
-Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/accel/lis3l02dq_core.c |   24 ++++++++++++------------
- drivers/staging/iio/accel/sca3000_core.c   |   16 ++++++++--------
- drivers/staging/iio/adc/ad7150.c           |    8 ++++----
- drivers/staging/iio/adc/ad7816.c           |    2 +-
- drivers/staging/iio/adc/ad799x_core.c      |    4 ++--
- drivers/staging/iio/adc/adt75.c            |    2 +-
- drivers/staging/iio/adc/max1363_core.c     |   24 ++++++++----------------
- drivers/staging/iio/dac/ad5504.c           |    2 +-
- drivers/staging/iio/iio.h                  |    2 --
- drivers/staging/iio/light/tsl2563.c        |    2 +-
- drivers/staging/iio/sysfs.h                |   26 --------------------------
- 11 files changed, 38 insertions(+), 74 deletions(-)
+ drivers/staging/iio/iio.h                  |   63 +---------------------------
+ drivers/staging/iio/iio_core.h             |   48 +++++++++++++++++++++
+ drivers/staging/iio/industrialio-core.c    |   16 ++++----
+ drivers/staging/iio/industrialio-ring.c    |    1 +
+ drivers/staging/iio/industrialio-trigger.c |    1 +
+ 5 files changed, 59 insertions(+), 70 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
-index 83ec286..7f946aa 100644
---- a/drivers/staging/iio/accel/lis3l02dq_core.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_core.c
-@@ -452,54 +452,54 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
- 
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_HIGH)
- 		iio_push_event(indio_dev, 0,
--			       IIO_MOD_EVENT_CODE(IIO_EV_CLASS_ACCEL,
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
- 						  0,
--						  IIO_EV_MOD_Z,
-+						  IIO_MOD_Z,
- 						  IIO_EV_TYPE_THRESH,
- 						  IIO_EV_DIR_RISING),
- 			       timestamp);
- 
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_LOW)
- 		iio_push_event(indio_dev, 0,
--			       IIO_MOD_EVENT_CODE(IIO_EV_CLASS_ACCEL,
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
- 						  0,
--						  IIO_EV_MOD_Z,
-+						  IIO_MOD_Z,
- 						  IIO_EV_TYPE_THRESH,
- 						  IIO_EV_DIR_FALLING),
- 			       timestamp);
- 
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_HIGH)
- 		iio_push_event(indio_dev, 0,
--			       IIO_MOD_EVENT_CODE(IIO_EV_CLASS_ACCEL,
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
- 						  0,
--						  IIO_EV_MOD_Y,
-+						  IIO_MOD_Y,
- 						  IIO_EV_TYPE_THRESH,
- 						  IIO_EV_DIR_RISING),
- 			       timestamp);
- 
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_LOW)
- 		iio_push_event(indio_dev, 0,
--			       IIO_MOD_EVENT_CODE(IIO_EV_CLASS_ACCEL,
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
- 						  0,
--						  IIO_EV_MOD_Y,
-+						  IIO_MOD_Y,
- 						  IIO_EV_TYPE_THRESH,
- 						  IIO_EV_DIR_FALLING),
- 			       timestamp);
- 
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_HIGH)
- 		iio_push_event(indio_dev, 0,
--			       IIO_MOD_EVENT_CODE(IIO_EV_CLASS_ACCEL,
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
- 						  0,
--						  IIO_EV_MOD_X,
-+						  IIO_MOD_X,
- 						  IIO_EV_TYPE_THRESH,
- 						  IIO_EV_DIR_RISING),
- 			       timestamp);
- 
- 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_LOW)
- 		iio_push_event(indio_dev, 0,
--			       IIO_MOD_EVENT_CODE(IIO_EV_CLASS_ACCEL,
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
- 						  0,
--						  IIO_EV_MOD_X,
-+						  IIO_MOD_X,
- 						  IIO_EV_TYPE_THRESH,
- 						  IIO_EV_DIR_FALLING),
- 			       timestamp);
-diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-index 22c38c3..d5684fc 100644
---- a/drivers/staging/iio/accel/sca3000_core.c
-+++ b/drivers/staging/iio/accel/sca3000_core.c
-@@ -815,36 +815,36 @@ static irqreturn_t sca3000_event_handler(int irq, void *private)
- 
- 	if (val & SCA3000_INT_STATUS_FREE_FALL)
- 		iio_push_event(indio_dev, 0,
--			       IIO_MOD_EVENT_CODE(IIO_EV_CLASS_ACCEL,
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
- 						  0,
--						  IIO_EV_MOD_X_AND_Y_AND_Z,
-+						  IIO_MOD_X_AND_Y_AND_Z,
- 						  IIO_EV_TYPE_MAG,
- 						  IIO_EV_DIR_FALLING),
- 			       last_timestamp);
- 
- 	if (val & SCA3000_INT_STATUS_Y_TRIGGER)
- 		iio_push_event(indio_dev, 0,
--			       IIO_MOD_EVENT_CODE(IIO_EV_CLASS_ACCEL,
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
- 						  0,
--						  IIO_EV_MOD_Y,
-+						  IIO_MOD_Y,
- 						  IIO_EV_TYPE_MAG,
- 						  IIO_EV_DIR_RISING),
- 			       last_timestamp);
- 
- 	if (val & SCA3000_INT_STATUS_X_TRIGGER)
- 		iio_push_event(indio_dev, 0,
--			       IIO_MOD_EVENT_CODE(IIO_EV_CLASS_ACCEL,
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
- 						  0,
--						  IIO_EV_MOD_X,
-+						  IIO_MOD_X,
- 						  IIO_EV_TYPE_MAG,
- 						  IIO_EV_DIR_RISING),
- 			       last_timestamp);
- 
- 	if (val & SCA3000_INT_STATUS_Z_TRIGGER)
- 		iio_push_event(indio_dev, 0,
--			       IIO_MOD_EVENT_CODE(IIO_EV_CLASS_ACCEL,
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
- 						  0,
--						  IIO_EV_MOD_Z,
-+						  IIO_MOD_Z,
- 						  IIO_EV_TYPE_MAG,
- 						  IIO_EV_DIR_RISING),
- 			       last_timestamp);
-diff --git a/drivers/staging/iio/adc/ad7150.c b/drivers/staging/iio/adc/ad7150.c
-index 917fb2f..5a1e15f 100644
---- a/drivers/staging/iio/adc/ad7150.c
-+++ b/drivers/staging/iio/adc/ad7150.c
-@@ -654,14 +654,14 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
- 
- 	if ((int_status & AD7150_STATUS_OUT1) && !(chip->old_state & AD7150_STATUS_OUT1))
- 		iio_push_event(indio_dev, 0,
--			       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
-+			       IIO_UNMOD_EVENT_CODE(IIO_IN,
- 						    0,
- 						    IIO_EV_TYPE_THRESH,
- 						    IIO_EV_DIR_RISING),
- 				timestamp);
- 	else if ((!(int_status & AD7150_STATUS_OUT1)) && (chip->old_state & AD7150_STATUS_OUT1))
- 		iio_push_event(indio_dev, 0,
--			       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
-+			       IIO_UNMOD_EVENT_CODE(IIO_IN,
- 						    0,
- 						    IIO_EV_TYPE_THRESH,
- 						    IIO_EV_DIR_FALLING),
-@@ -669,14 +669,14 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
- 
- 	if ((int_status & AD7150_STATUS_OUT2) && !(chip->old_state & AD7150_STATUS_OUT2))
- 		iio_push_event(indio_dev, 0,
--			       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
-+			       IIO_UNMOD_EVENT_CODE(IIO_IN,
- 						    1,
- 						    IIO_EV_TYPE_THRESH,
- 						    IIO_EV_DIR_RISING),
- 			       timestamp);
- 	else if ((!(int_status & AD7150_STATUS_OUT2)) && (chip->old_state & AD7150_STATUS_OUT2))
- 		iio_push_event(indio_dev, 0,
--			       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
-+			       IIO_UNMOD_EVENT_CODE(IIO_IN,
- 						    1,
- 						    IIO_EV_TYPE_THRESH,
- 						    IIO_EV_DIR_FALLING),
-diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index 0c84217..3fa4bb3 100644
---- a/drivers/staging/iio/adc/ad7816.c
-+++ b/drivers/staging/iio/adc/ad7816.c
-@@ -246,7 +246,7 @@ static const struct attribute_group ad7816_attribute_group = {
-  * temperature bound events
-  */
- 
--#define IIO_EVENT_CODE_AD7816_OTI IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_TEMP, \
-+#define IIO_EVENT_CODE_AD7816_OTI IIO_UNMOD_EVENT_CODE(IIO_TEMP,	\
- 						       0,		\
- 						       IIO_EV_TYPE_THRESH, \
- 						       IIO_EV_DIR_FALLING)
-diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
-index d42d61d..2438ed5 100644
---- a/drivers/staging/iio/adc/ad799x_core.c
-+++ b/drivers/staging/iio/adc/ad799x_core.c
-@@ -335,11 +335,11 @@ static irqreturn_t ad799x_event_handler(int irq, void *private)
- 		if (status & (1 << i))
- 			iio_push_event(indio_dev, 0,
- 				       i & 0x1 ?
--				       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
-+				       IIO_UNMOD_EVENT_CODE(IIO_IN,
- 							    (i >> 1),
- 							    IIO_EV_TYPE_THRESH,
- 							    IIO_EV_DIR_RISING) :
--				       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
-+				       IIO_UNMOD_EVENT_CODE(IIO_IN,
- 							    (i >> 1),
- 							    IIO_EV_TYPE_THRESH,
- 							    IIO_EV_DIR_FALLING),
-diff --git a/drivers/staging/iio/adc/adt75.c b/drivers/staging/iio/adc/adt75.c
-index 38f141d..fc31cac 100644
---- a/drivers/staging/iio/adc/adt75.c
-+++ b/drivers/staging/iio/adc/adt75.c
-@@ -257,7 +257,7 @@ static const struct attribute_group adt75_attribute_group = {
-  * temperature bound events
-  */
- 
--#define IIO_EVENT_CODE_ADT75_OTI IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_TEMP, \
-+#define IIO_EVENT_CODE_ADT75_OTI IIO_UNMOD_EVENT_CODE(IIO_TEMP,		\
- 						      0,		\
- 						      IIO_EV_TYPE_THRESH, \
- 						      IIO_EV_DIR_FALLING)
-diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
-index 9525aec..6896b4c 100644
---- a/drivers/staging/iio/adc/max1363_core.c
-+++ b/drivers/staging/iio/adc/max1363_core.c
-@@ -591,22 +591,14 @@ static int max1363_write_thresh(struct iio_dev *indio_dev,
- }
- 
- static const int max1363_event_codes[] = {
--	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 0,
--			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
--	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 1,
--			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
--	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 2,
--			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
--	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 3,
--			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
--	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 0,
--			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
--	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 1,
--			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
--	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 2,
--			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
--	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 3,
--			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
-+	IIO_UNMOD_EVENT_CODE(IIO_IN, 0, IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
-+	IIO_UNMOD_EVENT_CODE(IIO_IN, 1, IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
-+	IIO_UNMOD_EVENT_CODE(IIO_IN, 2, IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
-+	IIO_UNMOD_EVENT_CODE(IIO_IN, 3, IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
-+	IIO_UNMOD_EVENT_CODE(IIO_IN, 0, IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
-+	IIO_UNMOD_EVENT_CODE(IIO_IN, 1, IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
-+	IIO_UNMOD_EVENT_CODE(IIO_IN, 2, IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
-+	IIO_UNMOD_EVENT_CODE(IIO_IN, 3, IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
- };
- 
- static irqreturn_t max1363_event_handler(int irq, void *private)
-diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
-index 88512dd..ba3d9b3 100644
---- a/drivers/staging/iio/dac/ad5504.c
-+++ b/drivers/staging/iio/dac/ad5504.c
-@@ -251,7 +251,7 @@ static struct attribute_group ad5504_ev_attribute_group = {
- static irqreturn_t ad5504_event_handler(int irq, void *private)
- {
- 	iio_push_event(private, 0,
--		       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_TEMP,
-+		       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
- 					    0,
- 					    IIO_EV_TYPE_THRESH,
- 					    IIO_EV_DIR_RISING),
 diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index 61cfb26..16abb37 100644
+index 07f88aa..61cfb26 100644
 --- a/drivers/staging/iio/iio.h
 +++ b/drivers/staging/iio/iio.h
-@@ -23,8 +23,6 @@
+@@ -23,9 +23,6 @@
   * Currently assumes nano seconds.
   */
  
--/* naughty temporary hack to match these against the event version
--   - need to flattern these together */
+-/* Event interface flags */
+-#define IIO_BUSY_BIT_POS 1
+-
+ /* naughty temporary hack to match these against the event version
+    - need to flattern these together */
  enum iio_chan_type {
- 	/* real channel types */
- 	IIO_IN,
-diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
-index bb96857..665a744 100644
---- a/drivers/staging/iio/light/tsl2563.c
-+++ b/drivers/staging/iio/light/tsl2563.c
-@@ -596,7 +596,7 @@ static irqreturn_t tsl2563_event_handler(int irq, void *private)
- 	struct tsl2563_chip *chip = iio_priv(dev_info);
+@@ -131,19 +128,7 @@ struct iio_chan_spec {
+ 	unsigned		modified:1;
+ 	unsigned		indexed:1;
+ };
+-/* Meant for internal use only */
+-void __iio_device_attr_deinit(struct device_attribute *dev_attr);
+-int __iio_device_attr_init(struct device_attribute *dev_attr,
+-			   const char *postfix,
+-			   struct iio_chan_spec const *chan,
+-			   ssize_t (*readfunc)(struct device *dev,
+-					       struct device_attribute *attr,
+-					       char *buf),
+-			   ssize_t (*writefunc)(struct device *dev,
+-						struct device_attribute *attr,
+-						const char *buf,
+-						size_t len),
+-			   bool generic);
++
+ #define IIO_ST(si, rb, sb, sh)						\
+ 	{ .sign = si, .realbits = rb, .storagebits = sb, .shift = sh }
  
- 	iio_push_event(dev_info, 0,
--		       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_LIGHT,
-+		       IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
- 					    0,
- 					    IIO_EV_TYPE_THRESH,
- 					    IIO_EV_DIR_EITHER),
-diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
-index 56f4efb..bf34cfb 100644
---- a/drivers/staging/iio/sysfs.h
-+++ b/drivers/staging/iio/sysfs.h
-@@ -114,28 +114,6 @@ struct iio_const_attr {
- #define IIO_CONST_ATTR_TEMP_SCALE(_string)		\
- 	IIO_CONST_ATTR(temp_scale, _string)
+@@ -166,20 +151,6 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+ 	{ .type = IIO_TIMESTAMP, .channel = -1,				\
+ 			.scan_index = _si, .scan_type = IIO_ST('s', 64, 64, 0) }
  
--/* must match our channel defs */
--#define IIO_EV_CLASS_IN			IIO_IN
--#define IIO_EV_CLASS_IN_DIFF		IIO_IN_DIFF
--#define IIO_EV_CLASS_ACCEL		IIO_ACCEL
--#define IIO_EV_CLASS_GYRO		IIO_GYRO
--#define IIO_EV_CLASS_MAGN		IIO_MAGN
--#define IIO_EV_CLASS_LIGHT		IIO_LIGHT
--#define IIO_EV_CLASS_PROXIMITY		IIO_PROXIMITY
--#define IIO_EV_CLASS_TEMP		IIO_TEMP
--
--#define IIO_EV_MOD_X			IIO_MOD_X
--#define IIO_EV_MOD_Y			IIO_MOD_Y
--#define IIO_EV_MOD_Z			IIO_MOD_Z
--#define IIO_EV_MOD_X_AND_Y		IIO_MOD_X_AND_Y
--#define IIO_EV_MOD_X_ANX_Z		IIO_MOD_X_AND_Z
--#define IIO_EV_MOD_Y_AND_Z		IIO_MOD_Y_AND_Z
--#define IIO_EV_MOD_X_AND_Y_AND_Z	IIO_MOD_X_AND_Y_AND_Z
--#define IIO_EV_MOD_X_OR_Y		IIO_MOD_X_OR_Y
--#define IIO_EV_MOD_X_OR_Z		IIO_MOD_X_OR_Z
--#define IIO_EV_MOD_Y_OR_Z		IIO_MOD_Y_OR_Z
--#define IIO_EV_MOD_X_OR_Y_OR_Z		IIO_MOD_X_OR_Y_OR_Z
--
- #define IIO_EV_TYPE_THRESH		0
- #define IIO_EV_TYPE_MAG			1
- #define IIO_EV_TYPE_ROC			2
-@@ -160,10 +138,6 @@ struct iio_const_attr {
- #define IIO_UNMOD_EVENT_CODE(channelclass, number, type, direction)	\
- 	IIO_EVENT_CODE(channelclass, 0, number, 0, type, direction)
+-int __iio_add_chan_devattr(const char *postfix,
+-			   const char *group,
+-			   struct iio_chan_spec const *chan,
+-			   ssize_t (*func)(struct device *dev,
+-					   struct device_attribute *attr,
+-					   char *buf),
+-			   ssize_t (*writefunc)(struct device *dev,
+-						struct device_attribute *attr,
+-						const char *buf,
+-						size_t len),
+-			   int mask,
+-			   bool generic,
+-			   struct device *dev,
+-			   struct list_head *attr_list);
+ /**
+  * iio_get_time_ns() - utility function to get a time stamp for events etc
+  **/
+@@ -344,13 +315,6 @@ int iio_push_event(struct iio_dev *dev_info,
+ 		  int ev_code,
+ 		  s64 timestamp);
  
+-/* Used to distinguish between bipolar and unipolar scan elemenents.
+- * Whilst this may seem obvious, we may well want to change the representation
+- * in the future!*/
+-#define IIO_SIGNED(a) -(a)
+-#define IIO_UNSIGNED(a) (a)
 -
--#define IIO_BUFFER_EVENT_CODE(code)		\
--	(IIO_EV_CLASS_BUFFER | (code << 8))
--
- #define IIO_EVENT_CODE_EXTRACT_DIR(mask) ((mask >> 24) & 0xf)
+-extern dev_t iio_devt;
+ extern struct bus_type iio_bus_type;
  
- /* Event code number extraction depends on which type of event we have.
+ /**
+@@ -363,15 +327,6 @@ static inline void iio_put_device(struct iio_dev *dev)
+ 		put_device(&dev->dev);
+ };
+ 
+-/**
+- * to_iio_dev() - get iio_dev for which we have the struct device
+- * @d: the struct device
+- **/
+-static inline struct iio_dev *to_iio_dev(struct device *d)
+-{
+-	return container_of(d, struct iio_dev, dev);
+-};
+-
+ /* Can we make this smaller? */
+ #define IIO_ALIGN L1_CACHE_BYTES
+ /**
+@@ -398,22 +353,6 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
+ void iio_free_device(struct iio_dev *dev);
+ 
+ /**
+- * iio_put() - internal module reference count reduce
+- **/
+-void iio_put(void);
+-
+-/**
+- * iio_get() - internal module reference count increase
+- **/
+-void iio_get(void);
+-
+-/**
+- * iio_device_get_chrdev_minor() - get an unused minor number
+- **/
+-int iio_device_get_chrdev_minor(void);
+-void iio_device_free_chrdev_minor(int val);
+-
+-/**
+  * iio_ring_enabled() - helper function to test if any form of ring is enabled
+  * @dev_info:		IIO device info structure for device
+  **/
+diff --git a/drivers/staging/iio/iio_core.h b/drivers/staging/iio/iio_core.h
+new file mode 100644
+index 0000000..00e894d
+--- /dev/null
++++ b/drivers/staging/iio/iio_core.h
+@@ -0,0 +1,48 @@
++/* The industrial I/O core function defs.
++ *
++ * Copyright (c) 2008 Jonathan Cameron
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ *
++ * These definitions are meant for use only within the IIO core, not indvidual
++ * drivers.
++ */
++
++/**
++ * iio_device_get_chrdev_minor() - get an unused minor number
++ **/
++int iio_device_get_chrdev_minor(void);
++void iio_device_free_chrdev_minor(int val);
++
++
++/**
++ * iio_put() - internal module reference count reduce
++ **/
++void iio_put(void);
++
++/**
++ * iio_get() - internal module reference count increase
++ **/
++void iio_get(void);
++
++extern dev_t iio_devt;
++
++int __iio_add_chan_devattr(const char *postfix,
++			   const char *group,
++			   struct iio_chan_spec const *chan,
++			   ssize_t (*func)(struct device *dev,
++					   struct device_attribute *attr,
++					   char *buf),
++			   ssize_t (*writefunc)(struct device *dev,
++						struct device_attribute *attr,
++						const char *buf,
++						size_t len),
++			   int mask,
++			   bool generic,
++			   struct device *dev,
++			   struct list_head *attr_list);
++
++/* Event interface flags */
++#define IIO_BUSY_BIT_POS 1
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 364964b..cf268bc 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -23,6 +23,7 @@
+ #include <linux/slab.h>
+ #include "iio.h"
+ #include "trigger_consumer.h"
++#include "iio_core.h"
+ 
+ #define IIO_ID_PREFIX "device"
+ #define IIO_ID_FORMAT IIO_ID_PREFIX "%d"
+@@ -35,7 +36,6 @@ static DEFINE_IDA(iio_chrdev_ida);
+ static DEFINE_SPINLOCK(iio_ida_lock);
+ 
+ dev_t iio_devt;
+-EXPORT_SYMBOL(iio_devt);
+ 
+ #define IIO_DEV_MAX 256
+ struct bus_type iio_bus_type = {
+@@ -90,7 +90,7 @@ static const char * const iio_chan_info_postfix[] = {
+ };
+ 
+ /* Return a negative errno on failure */
+-int iio_get_new_ida_val(struct ida *this_ida)
++static int iio_get_new_ida_val(struct ida *this_ida)
+ {
+ 	int ret;
+ 	int val;
+@@ -109,15 +109,13 @@ ida_again:
+ 
+ 	return val;
+ }
+-EXPORT_SYMBOL(iio_get_new_ida_val);
+ 
+-void iio_free_ida_val(struct ida *this_ida, int id)
++static void iio_free_ida_val(struct ida *this_ida, int id)
+ {
+ 	spin_lock(&iio_ida_lock);
+ 	ida_remove(this_ida, id);
+ 	spin_unlock(&iio_ida_lock);
+ }
+-EXPORT_SYMBOL(iio_free_ida_val);
+ 
+ int iio_push_event(struct iio_dev *dev_info,
+ 		   int ev_line,
+@@ -532,6 +530,7 @@ static int __iio_build_postfix(struct iio_chan_spec const *chan,
+ 	return 0;
+ }
+ 
++static
+ int __iio_device_attr_init(struct device_attribute *dev_attr,
+ 			   const char *postfix,
+ 			   struct iio_chan_spec const *chan,
+@@ -604,7 +603,7 @@ error_ret:
+ 	return ret;
+ }
+ 
+-void __iio_device_attr_deinit(struct device_attribute *dev_attr)
++static void __iio_device_attr_deinit(struct device_attribute *dev_attr)
+ {
+ 	kfree(dev_attr->attr.name);
+ }
+@@ -903,7 +902,7 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 				      struct iio_chan_spec const *chan)
+ {
+ 
+-	int ret = 0, i, mask;
++	int ret = 0, i, mask = 0;
+ 	char *postfix;
+ 	if (!chan->event_mask)
+ 		return 0;
+@@ -1114,8 +1113,9 @@ static void iio_device_unregister_eventset(struct iio_dev *dev_info)
+ 
+ static void iio_dev_release(struct device *device)
+ {
++	struct iio_dev *dev_info = container_of(device, struct iio_dev, dev);
+ 	iio_put();
+-	kfree(to_iio_dev(device));
++	kfree(dev_info);
+ }
+ 
+ static struct device_type iio_dev_type = {
+diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
+index 843eb82..dce50b1 100644
+--- a/drivers/staging/iio/industrialio-ring.c
++++ b/drivers/staging/iio/industrialio-ring.c
+@@ -21,6 +21,7 @@
+ #include <linux/poll.h>
+ 
+ #include "iio.h"
++#include "iio_core.h"
+ #include "ring_generic.h"
+ 
+ /**
+diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
+index 513a7a0..ebacfda 100644
+--- a/drivers/staging/iio/industrialio-trigger.c
++++ b/drivers/staging/iio/industrialio-trigger.c
+@@ -18,6 +18,7 @@
+ 
+ #include "iio.h"
+ #include "trigger.h"
++#include "iio_core.h"
+ #include "trigger_consumer.h"
+ 
+ /* RFC - Question of approach
 -- 
 1.7.3.4
