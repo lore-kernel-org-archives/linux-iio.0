@@ -1,52 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:40652 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753812Ab1HLPrn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Aug 2011 11:47:43 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 03/12] staging:iio:adc: max1363 fix 2 raw sysfs issues.
-Date: Fri, 12 Aug 2011 16:55:29 +0100
-Message-Id: <1313164538-1769-4-git-send-email-jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 02/12] staging:iio:gyro:adis16130 fix adis16130_spi_read which was never selecting the channel
+Date: Fri, 12 Aug 2011 16:55:28 +0100
+Message-Id: <1313164538-1769-3-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313164538-1769-1-git-send-email-jic23@cam.ac.uk>
 References: <1313164538-1769-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
-
-indio_dev->channels was accidentally removed thus preventing any sysfs
-registrations occuring for direct reading.  That hid the other issue.
-
-Unfortunately the incorrect handling leads to misspresentation of data
-in sysfs reads.
+List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/adc/max1363_core.c |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+ drivers/staging/iio/gyro/adis16130_core.c |   15 ++++++++++++---
+ 1 files changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
-index 72b0917..d93b7a9 100644
---- a/drivers/staging/iio/adc/max1363_core.c
-+++ b/drivers/staging/iio/adc/max1363_core.c
-@@ -255,7 +255,7 @@ static int max1363_read_raw(struct iio_dev *indio_dev,
- 	switch (m) {
- 	case 0:
- 		ret = max1363_read_single_chan(indio_dev, chan, val, m);
--		if (ret)
-+		if (ret < 0)
- 			return ret;
- 		return IIO_VAL_INT;
- 	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
-@@ -1295,6 +1295,8 @@ static int __devinit max1363_probe(struct i2c_client *client,
+diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
+index c80e908..caf067c 100644
+--- a/drivers/staging/iio/gyro/adis16130_core.c
++++ b/drivers/staging/iio/gyro/adis16130_core.c
+@@ -75,15 +75,24 @@ static int adis16130_spi_read(struct device *dev, u8 reg_addr,
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct adis16130_state *st = iio_priv(indio_dev);
++	struct spi_message msg;
++	struct spi_transfer xfer = {
++		.tx_buf = st->buf,
++		.rx_buf = st->buf,
++	};
  
- 	indio_dev->info = st->chip_info->info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = st->chip_info->channels;
-+	indio_dev->num_channels = st->chip_info->num_channels;
- 	ret = max1363_initial_setup(st);
- 	if (ret < 0)
- 		goto error_free_available_scan_masks;
+ 	mutex_lock(&st->buf_lock);
+ 
+ 	st->buf[0] = ADIS16130_CON_RD | reg_addr;
++	st->buf[1] = st->buf[2] = st->buf[3] = 0;
++
+ 	if (st->mode)
+-		ret = spi_read(st->us, st->buf, 4);
++		xfer.len = 4;
+ 	else
+-		ret = spi_read(st->us, st->buf, 3);
+-
++		xfer.len = 3;
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++	ret = spi_sync(st->us, &msg);
+ 	if (ret == 0) {
+ 		if (st->mode)
+ 			*val = (st->buf[1] << 16) |
 -- 
 1.7.3.4
-
