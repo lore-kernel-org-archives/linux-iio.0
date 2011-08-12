@@ -1,635 +1,122 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:57285 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754079Ab1HLQBB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Aug 2011 12:01:01 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 18/19] staging:iio:light:tsl2583 allocate chip state with iio_dev
-Date: Fri, 12 Aug 2011 17:08:52 +0100
-Message-Id: <1313165333-3951-19-git-send-email-jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 17/19] staging:iio:sysfs cleanout header for unused definitions.
+Date: Fri, 12 Aug 2011 17:08:51 +0100
+Message-Id: <1313165333-3951-18-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
 References: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-There are some unusual corners in the probe function of this
-driver, so may need another look.
-
-V2: Now with the check for allocation success not inverted.
-V3: Now with the i2c devdata calls actually being correctly cast.
+Also push one down into the only driver that actually uses it.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
-Tested-by: Jon Brenner <jbrenner@TAOSinc.com>
 ---
- drivers/staging/iio/light/tsl2583.c |  216 ++++++++++++++++-------------------
- 1 files changed, 101 insertions(+), 115 deletions(-)
+ drivers/staging/iio/accel/sca3000_core.c |    2 +-
+ drivers/staging/iio/sysfs.h              |   45 +----------------------------
+ 2 files changed, 3 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 296d0ff..f75fe85 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -87,7 +87,6 @@ struct taos_settings {
- struct tsl2583_chip {
- 	struct mutex als_mutex;
- 	struct i2c_client *client;
--	struct iio_dev *iio_dev;
- 	struct taos_als_info als_cur_info;
- 	struct taos_settings taos_settings;
- 	int als_time_scale;
-@@ -159,8 +158,7 @@ static void taos_defaults(struct tsl2583_chip *chip)
- static int
- taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val, unsigned int len)
- {
--	int ret;
--	int i;
-+	int i, ret;
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index 3c637b9..22c38c3 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -421,7 +421,7 @@ static IIO_DEVICE_ATTR(measurement_mode, S_IRUGO | S_IWUSR,
  
- 	for (i = 0; i < len; i++) {
- 		/* select register to write */
-@@ -191,47 +189,47 @@ taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val, unsigned int len)
-  * the array are then used along with the time scale factor array values, to
-  * calculate the lux.
-  */
--static int taos_get_lux(struct i2c_client *client)
-+static int taos_get_lux(struct iio_dev *indio_dev)
- {
- 	u16 ch0, ch1; /* separated ch0/ch1 data from device */
- 	u32 lux; /* raw lux calculated from device data */
- 	u32 ratio;
- 	u8 buf[5];
- 	struct taos_lux *p;
--	struct tsl2583_chip *chip = i2c_get_clientdata(client);
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	int i, ret;
- 	u32 ch0lux = 0;
- 	u32 ch1lux = 0;
+ /* More standard attributes */
  
- 	if (mutex_trylock(&chip->als_mutex) == 0) {
--		dev_info(&client->dev, "taos_get_lux device is busy\n");
-+		dev_info(&chip->client->dev, "taos_get_lux device is busy\n");
- 		return chip->als_cur_info.lux; /* busy, so return LAST VALUE */
- 	}
+-static IIO_DEV_ATTR_REV(sca3000_show_rev);
++static IIO_DEVICE_ATTR(revision, S_IRUGO, sca3000_show_rev, NULL, 0);
  
- 	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
- 		/* device is not enabled */
--		dev_err(&client->dev, "taos_get_lux device is not enabled\n");
-+		dev_err(&chip->client->dev, "taos_get_lux device is not enabled\n");
- 		ret = -EBUSY ;
- 		goto out_unlock;
- 	}
- 
--	ret = taos_i2c_read(client, (TSL258X_CMD_REG), &buf[0], 1);
-+	ret = taos_i2c_read(chip->client, (TSL258X_CMD_REG), &buf[0], 1);
- 	if (ret < 0) {
--		dev_err(&client->dev, "taos_get_lux failed to read CMD_REG\n");
-+		dev_err(&chip->client->dev, "taos_get_lux failed to read CMD_REG\n");
- 		goto out_unlock;
- 	}
- 	/* is data new & valid */
- 	if (!(buf[0] & TSL258X_STA_ADC_INTR)) {
--		dev_err(&client->dev, "taos_get_lux data not valid\n");
-+		dev_err(&chip->client->dev, "taos_get_lux data not valid\n");
- 		ret = chip->als_cur_info.lux; /* return LAST VALUE */
- 		goto out_unlock;
- 	}
- 
- 	for (i = 0; i < 4; i++) {
- 		int reg = TSL258X_CMD_REG | (TSL258X_ALS_CHAN0LO + i);
--		ret = taos_i2c_read(client, reg, &buf[i], 1);
-+		ret = taos_i2c_read(chip->client, reg, &buf[i], 1);
- 		if (ret < 0) {
--			dev_err(&client->dev, "taos_get_lux failed to read"
-+			dev_err(&chip->client->dev, "taos_get_lux failed to read"
- 				" register %x\n", reg);
- 			goto out_unlock;
- 		}
-@@ -239,11 +237,12 @@ static int taos_get_lux(struct i2c_client *client)
- 
- 	/* clear status, really interrupt status (interrupts are off), but
- 	 * we use the bit anyway - don't forget 0x80 - this is a command*/
--	ret = i2c_smbus_write_byte(client,
--	(TSL258X_CMD_REG | TSL258X_CMD_SPL_FN | TSL258X_CMD_ALS_INT_CLR));
-+	ret = i2c_smbus_write_byte(chip->client,
-+				   (TSL258X_CMD_REG | TSL258X_CMD_SPL_FN |
-+				    TSL258X_CMD_ALS_INT_CLR));
- 
- 	if (ret < 0) {
--		dev_err(&client->dev,
-+		dev_err(&chip->client->dev,
- 			"taos_i2c_write_command failed in taos_get_lux, err = %d\n",
- 			ret);
- 		goto out_unlock; /* have no data, so return failure */
-@@ -285,7 +284,7 @@ static int taos_get_lux(struct i2c_client *client)
- 
- 	/* note: lux is 31 bit max at this point */
- 	if (ch1lux > ch0lux) {
--		dev_dbg(&client->dev, "No Data - Return last value\n");
-+		dev_dbg(&chip->client->dev, "No Data - Return last value\n");
- 		ret = chip->als_cur_info.lux = 0;
- 		goto out_unlock;
- 	}
-@@ -319,54 +318,56 @@ out_unlock:
-  * to derive actual lux).
-  * Return updated gain_trim value.
-  */
--int taos_als_calibrate(struct i2c_client *client)
-+static int taos_als_calibrate(struct iio_dev *indio_dev)
- {
--	struct tsl2583_chip *chip = i2c_get_clientdata(client);
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	u8 reg_val;
- 	unsigned int gain_trim_val;
- 	int ret;
- 	int lux_val;
- 
--	ret = i2c_smbus_write_byte(client, (TSL258X_CMD_REG | TSL258X_CNTRL));
-+	ret = i2c_smbus_write_byte(chip->client,
-+				   (TSL258X_CMD_REG | TSL258X_CNTRL));
- 	if (ret < 0) {
--		dev_err(&client->dev,
-+		dev_err(&chip->client->dev,
- 			"taos_als_calibrate failed to reach the CNTRL register, ret=%d\n",
- 			ret);
- 		return ret;
- 	}
- 
--	reg_val = i2c_smbus_read_byte(client);
-+	reg_val = i2c_smbus_read_byte(chip->client);
- 	if ((reg_val & (TSL258X_CNTL_ADC_ENBL | TSL258X_CNTL_PWR_ON))
- 			!= (TSL258X_CNTL_ADC_ENBL | TSL258X_CNTL_PWR_ON)) {
--		dev_err(&client->dev,
-+		dev_err(&chip->client->dev,
- 			"taos_als_calibrate failed: device not powered on with ADC enabled\n");
- 		return -1;
- 	}
- 
--	ret = i2c_smbus_write_byte(client, (TSL258X_CMD_REG | TSL258X_CNTRL));
-+	ret = i2c_smbus_write_byte(chip->client,
-+				   (TSL258X_CMD_REG | TSL258X_CNTRL));
- 	if (ret < 0) {
--		dev_err(&client->dev,
-+		dev_err(&chip->client->dev,
- 			"taos_als_calibrate failed to reach the STATUS register, ret=%d\n",
- 			ret);
- 		return ret;
- 	}
--	reg_val = i2c_smbus_read_byte(client);
-+	reg_val = i2c_smbus_read_byte(chip->client);
- 
- 	if ((reg_val & TSL258X_STA_ADC_VALID) != TSL258X_STA_ADC_VALID) {
--		dev_err(&client->dev,
-+		dev_err(&chip->client->dev,
- 			"taos_als_calibrate failed: STATUS - ADC not valid.\n");
- 		return -ENODATA;
- 	}
--	lux_val = taos_get_lux(client);
-+	lux_val = taos_get_lux(indio_dev);
- 	if (lux_val < 0) {
--		dev_err(&client->dev, "taos_als_calibrate failed to get lux\n");
-+		dev_err(&chip->client->dev, "taos_als_calibrate failed to get lux\n");
- 		return lux_val;
- 	}
- 	gain_trim_val = (unsigned int) (((chip->taos_settings.als_cal_target)
- 			* chip->taos_settings.als_gain_trim) / lux_val);
- 
- 	if ((gain_trim_val < 250) || (gain_trim_val > 4000)) {
--		dev_err(&client->dev,
-+		dev_err(&chip->client->dev,
- 			"taos_als_calibrate failed: trim_val of %d is out of range\n",
- 			gain_trim_val);
- 		return -ENODATA;
-@@ -380,21 +381,21 @@ int taos_als_calibrate(struct i2c_client *client)
-  * Turn the device on.
-  * Configuration must be set before calling this function.
-  */
--static int taos_chip_on(struct i2c_client *client)
-+static int taos_chip_on(struct iio_dev *indio_dev)
- {
- 	int i;
--	int ret = 0;
-+	int ret;
- 	u8 *uP;
- 	u8 utmp;
- 	int als_count;
- 	int als_time;
--	struct tsl2583_chip *chip = i2c_get_clientdata(client);
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 
- 	/* and make sure we're not already on */
- 	if (chip->taos_chip_status == TSL258X_CHIP_WORKING) {
- 		/* if forcing a register update - turn off, then on */
--		dev_info(&client->dev, "device is already enabled\n");
--		return   -EINVAL;
-+		dev_info(&chip->client->dev, "device is already enabled\n");
-+		return -EINVAL;
- 	}
- 
- 	/* determine als integration regster */
-@@ -416,20 +417,21 @@ static int taos_chip_on(struct i2c_client *client)
- 	/* TSL258x Specific power-on / adc enable sequence
- 	 * Power on the device 1st. */
- 	utmp = TSL258X_CNTL_PWR_ON;
--	ret = i2c_smbus_write_byte_data(client,
--		TSL258X_CMD_REG | TSL258X_CNTRL, utmp);
-+	ret = i2c_smbus_write_byte_data(chip->client,
-+					TSL258X_CMD_REG | TSL258X_CNTRL, utmp);
- 	if (ret < 0) {
--		dev_err(&client->dev, "taos_chip_on failed on CNTRL reg.\n");
-+		dev_err(&chip->client->dev, "taos_chip_on failed on CNTRL reg.\n");
- 		return -1;
- 	}
- 
- 	/* Use the following shadow copy for our delay before enabling ADC.
- 	 * Write all the registers. */
- 	for (i = 0, uP = chip->taos_config; i < TSL258X_REG_MAX; i++) {
--		ret = i2c_smbus_write_byte_data(client, TSL258X_CMD_REG + i,
-+		ret = i2c_smbus_write_byte_data(chip->client,
-+						TSL258X_CMD_REG + i,
- 						*uP++);
- 		if (ret < 0) {
--			dev_err(&client->dev,
-+			dev_err(&chip->client->dev,
- 				"taos_chip_on failed on reg %d.\n", i);
- 			return -1;
- 		}
-@@ -439,10 +441,11 @@ static int taos_chip_on(struct i2c_client *client)
- 	/* NOW enable the ADC
- 	 * initialize the desired mode of operation */
- 	utmp = TSL258X_CNTL_PWR_ON | TSL258X_CNTL_ADC_ENBL;
--	ret = i2c_smbus_write_byte_data(client, TSL258X_CMD_REG | TSL258X_CNTRL,
-+	ret = i2c_smbus_write_byte_data(chip->client,
-+					TSL258X_CMD_REG | TSL258X_CNTRL,
- 					utmp);
- 	if (ret < 0) {
--		dev_err(&client->dev, "taos_chip_on failed on 2nd CTRL reg.\n");
-+		dev_err(&chip->client->dev, "taos_chip_on failed on 2nd CTRL reg.\n");
- 		return -1;
- 	}
- 	chip->taos_chip_status = TSL258X_CHIP_WORKING;
-@@ -450,33 +453,26 @@ static int taos_chip_on(struct i2c_client *client)
- 	return ret;
- }
- 
--static int taos_chip_off(struct i2c_client *client)
-+static int taos_chip_off(struct iio_dev *indio_dev)
- {
--	struct tsl2583_chip *chip = i2c_get_clientdata(client);
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	int ret;
- 
- 	/* turn device off */
- 	chip->taos_chip_status = TSL258X_CHIP_SUSPENDED;
--	ret = i2c_smbus_write_byte_data(client, TSL258X_CMD_REG | TSL258X_CNTRL,
-+	ret = i2c_smbus_write_byte_data(chip->client,
-+					TSL258X_CMD_REG | TSL258X_CNTRL,
- 					0x00);
- 	return ret;
- }
- 
- /* Sysfs Interface Functions */
--static ssize_t taos_device_id(struct device *dev,
--struct device_attribute *attr, char *buf)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
+ #define SCA3000_INFO_MASK			\
+ 	(1 << IIO_CHAN_INFO_SCALE_SHARED)
+diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
+index 203ee83..56f4efb 100644
+--- a/drivers/staging/iio/sysfs.h
++++ b/drivers/staging/iio/sysfs.h
+@@ -71,17 +71,8 @@ struct iio_const_attr {
+ 	struct iio_const_attr iio_const_attr_##_vname			\
+ 	= { .string = _string,						\
+ 	    .dev_attr = __ATTR(_name, S_IRUGO, iio_read_const_attr, NULL)}
+-/* Generic attributes of onetype or another */
 -
--	return sprintf(buf, "%s\n", chip->client->name);
--}
+-/**
+- * IIO_DEV_ATTR_REV - revision number for the device
+- * @_show: output method for the attribute
+- *
+- * Very much device dependent.
+- **/
+-#define IIO_DEV_ATTR_REV(_show)			\
+-	IIO_DEVICE_ATTR(revision, S_IRUGO, _show, NULL, 0)
  
- static ssize_t taos_power_state_show(struct device *dev,
- 	struct device_attribute *attr, char *buf)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
++/* Generic attributes of onetype or another */
+ /**
+  * IIO_DEV_ATTR_RESET: resets the device
+  **/
+@@ -89,13 +80,6 @@ struct iio_const_attr {
+ 	IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, _store, 0)
  
- 	return sprintf(buf, "%d\n", chip->taos_chip_status);
- }
-@@ -485,16 +481,15 @@ static ssize_t taos_power_state_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
- 	unsigned long value;
- 
- 	if (strict_strtoul(buf, 0, &value))
- 		return -EINVAL;
- 
- 	if (value == 0)
--		taos_chip_off(chip->client);
-+		taos_chip_off(indio_dev);
- 	else
--		taos_chip_on(chip->client);
-+		taos_chip_on(indio_dev);
- 
- 	return len;
- }
-@@ -503,7 +498,7 @@ static ssize_t taos_gain_show(struct device *dev,
- 	struct device_attribute *attr, char *buf)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	char gain[4] = {0};
- 
- 	switch (chip->taos_settings.als_gain) {
-@@ -528,7 +523,7 @@ static ssize_t taos_gain_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
- 
- 	if (strict_strtoul(buf, 0, &value))
-@@ -565,7 +560,7 @@ static ssize_t taos_als_time_show(struct device *dev,
- 	struct device_attribute *attr, char *buf)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", chip->taos_settings.als_time);
- }
-@@ -574,7 +569,7 @@ static ssize_t taos_als_time_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
- 
- 	if (strict_strtoul(buf, 0, &value))
-@@ -586,7 +581,7 @@ static ssize_t taos_als_time_store(struct device *dev,
- 	if (value % 50)
- 		return -EINVAL;
- 
--	 chip->taos_settings.als_time = value;
-+	chip->taos_settings.als_time = value;
- 
- 	return len;
- }
-@@ -602,7 +597,7 @@ static ssize_t taos_als_trim_show(struct device *dev,
- 	struct device_attribute *attr, char *buf)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", chip->taos_settings.als_gain_trim);
- }
-@@ -611,7 +606,7 @@ static ssize_t taos_als_trim_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
- 
- 	if (strict_strtoul(buf, 0, &value))
-@@ -627,7 +622,7 @@ static ssize_t taos_als_cal_target_show(struct device *dev,
- 	struct device_attribute *attr, char *buf)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", chip->taos_settings.als_cal_target);
- }
-@@ -636,7 +631,7 @@ static ssize_t taos_als_cal_target_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
- 
- 	if (strict_strtoul(buf, 0, &value))
-@@ -651,27 +646,26 @@ static ssize_t taos_als_cal_target_store(struct device *dev,
- static ssize_t taos_lux_show(struct device *dev, struct device_attribute *attr,
- 	char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
--	int lux;
-+	int ret;
- 
--	lux = taos_get_lux(chip->client);
-+	ret = taos_get_lux(dev_get_drvdata(dev));
-+	if (ret < 0)
-+		return ret;
- 
--	return sprintf(buf, "%d\n", lux);
-+	return sprintf(buf, "%d\n", ret);
- }
- 
- static ssize_t taos_do_calibrate(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
- 	unsigned long value;
- 
- 	if (strict_strtoul(buf, 0, &value))
- 		return -EINVAL;
- 
- 	if (value == 1)
--		taos_als_calibrate(chip->client);
-+		taos_als_calibrate(indio_dev);
- 
- 	return len;
- }
-@@ -703,8 +697,8 @@ static ssize_t taos_luxtable_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct tsl2583_chip *chip = indio_dev->dev_data;
--	int value[ARRAY_SIZE(taos_device_lux)];
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
-+	int value[ARRAY_SIZE(taos_device_lux)*3 + 1];
- 	int n;
- 
- 	get_options(buf, ARRAY_SIZE(value), value);
-@@ -725,18 +719,17 @@ static ssize_t taos_luxtable_store(struct device *dev,
- 	}
- 
- 	if (chip->taos_chip_status == TSL258X_CHIP_WORKING)
--		taos_chip_off(chip->client);
-+		taos_chip_off(indio_dev);
- 
- 	/* Zero out the table */
- 	memset(taos_device_lux, 0, sizeof(taos_device_lux));
- 	memcpy(taos_device_lux, &value[1], (value[0] * 4));
- 
--	taos_chip_on(chip->client);
-+	taos_chip_on(indio_dev);
- 
- 	return len;
- }
- 
--static DEVICE_ATTR(name, S_IRUGO, taos_device_id, NULL);
- static DEVICE_ATTR(power_state, S_IRUGO | S_IWUSR,
- 		taos_power_state_show, taos_power_state_store);
- 
-@@ -762,7 +755,6 @@ static DEVICE_ATTR(illuminance0_lux_table, S_IRUGO | S_IWUSR,
- 		taos_luxtable_show, taos_luxtable_store);
- 
- static struct attribute *sysfs_attrs_ctrl[] = {
--	&dev_attr_name.attr,
- 	&dev_attr_power_state.attr,
- 	&dev_attr_illuminance0_calibscale.attr,			/* Gain  */
- 	&dev_attr_illuminance0_calibscale_available.attr,
-@@ -798,9 +790,10 @@ static const struct iio_info tsl2583_info = {
- static int __devinit taos_probe(struct i2c_client *clientp,
- 		      const struct i2c_device_id *idp)
- {
--	int i, ret = 0;
-+	int i, ret;
- 	unsigned char buf[TSL258X_MAX_DEVICE_REGS];
--	static struct tsl2583_chip *chip;
-+	struct tsl2583_chip *chip;
-+	struct iio_dev *indio_dev;
- 
- 	if (!i2c_check_functionality(clientp->adapter,
- 		I2C_FUNC_SMBUS_BYTE_DATA)) {
-@@ -810,12 +803,15 @@ static int __devinit taos_probe(struct i2c_client *clientp,
- 		return -EOPNOTSUPP;
- 	}
- 
--	chip = kzalloc(sizeof(struct tsl2583_chip), GFP_KERNEL);
--	if (!chip)
--		return -ENOMEM;
+ /**
+- * IIO_CONST_ATTR_NAME - constant identifier
+- * @_string: the name
+- **/
+-#define IIO_CONST_ATTR_NAME(_string)				\
+-	IIO_CONST_ATTR(name, _string)
 -
-+	indio_dev = iio_allocate_device(sizeof(*chip));
-+	if (indio_dev == NULL) {
-+		ret = -ENOMEM;
-+		dev_err(&clientp->dev, "iio allocation failed\n");
-+		goto fail1;
-+	}
-+	chip = iio_priv(indio_dev);
- 	chip->client = clientp;
--	i2c_set_clientdata(clientp, chip);
-+	i2c_set_clientdata(clientp, indio_dev);
+-/**
+  * IIO_DEV_ATTR_SAMP_FREQ - sets any internal clock frequency
+  * @_mode: sysfs file mode/permissions
+  * @_show: output method for the attribute
+@@ -105,15 +89,11 @@ struct iio_const_attr {
+ 	IIO_DEVICE_ATTR(sampling_frequency, _mode, _show, _store, 0)
  
- 	mutex_init(&chip->als_mutex);
- 	chip->taos_chip_status = TSL258X_CHIP_UNKNOWN;
-@@ -827,14 +823,14 @@ static int __devinit taos_probe(struct i2c_client *clientp,
- 		if (ret < 0) {
- 			dev_err(&clientp->dev, "i2c_smbus_write_bytes() to cmd "
- 				"reg failed in taos_probe(), err = %d\n", ret);
--			goto fail1;
-+			goto fail2;
- 		}
- 		ret = i2c_smbus_read_byte(clientp);
- 		if (ret < 0) {
- 			dev_err(&clientp->dev, "i2c_smbus_read_byte from "
- 				"reg failed in taos_probe(), err = %d\n", ret);
- 
--			goto fail1;
-+			goto fail2;
- 		}
- 		buf[i] = ret;
- 	}
-@@ -842,58 +838,50 @@ static int __devinit taos_probe(struct i2c_client *clientp,
- 	if (!taos_tsl258x_device(buf)) {
- 		dev_info(&clientp->dev, "i2c device found but does not match "
- 			"expected id in taos_probe()\n");
--		goto fail1;
-+		goto fail2;
- 	}
- 
- 	ret = i2c_smbus_write_byte(clientp, (TSL258X_CMD_REG | TSL258X_CNTRL));
- 	if (ret < 0) {
- 		dev_err(&clientp->dev, "i2c_smbus_write_byte() to cmd reg "
- 			"failed in taos_probe(), err = %d\n", ret);
--		goto fail1;
-+		goto fail2;
- 	}
- 
--	chip->iio_dev = iio_allocate_device(0);
--	if (!chip->iio_dev) {
--		ret = -ENOMEM;
--		dev_err(&clientp->dev, "iio allocation failed\n");
--		goto fail1;
--	}
+ /**
+- * IIO_DEV_ATTR_AVAIL_SAMP_FREQ - list available sampling frequencies
++ * IIO_DEV_ATTR_SAMP_FREQ_AVAIL - list available sampling frequencies
+  * @_show: output method for the attribute
+  *
+  * May be mode dependent on some devices
+  **/
+-/* Deprecated */
+-#define IIO_DEV_ATTR_AVAIL_SAMP_FREQ(_show)				\
+-	IIO_DEVICE_ATTR(available_sampling_frequency, S_IRUGO, _show, NULL, 0)
 -
--	chip->iio_dev->info = &tsl2583_info;
--	chip->iio_dev->dev.parent = &clientp->dev;
--	chip->iio_dev->dev_data = (void *)(chip);
--	chip->iio_dev->modes = INDIO_DIRECT_MODE;
--	ret = iio_device_register(chip->iio_dev);
-+	indio_dev->info = &tsl2583_info;
-+	indio_dev->dev.parent = &clientp->dev;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->name = chip->client->name;
-+	ret = iio_device_register(indio_dev);
- 	if (ret) {
- 		dev_err(&clientp->dev, "iio registration failed\n");
--		goto fail1;
-+		goto fail2;
- 	}
+ #define IIO_DEV_ATTR_SAMP_FREQ_AVAIL(_show)				\
+ 	IIO_DEVICE_ATTR(sampling_frequency_available, S_IRUGO, _show, NULL, 0)
+ /**
+@@ -125,27 +105,6 @@ struct iio_const_attr {
+ #define IIO_CONST_ATTR_SAMP_FREQ_AVAIL(_string)			\
+ 	IIO_CONST_ATTR(sampling_frequency_available, _string)
  
- 	/* Load up the V2 defaults (these are hard coded defaults for now) */
- 	taos_defaults(chip);
- 
- 	/* Make sure the chip is on */
--	taos_chip_on(clientp);
-+	taos_chip_on(indio_dev);
- 
- 	dev_info(&clientp->dev, "Light sensor found.\n");
+-/**
+- * IIO_DEV_ATTR_SW_RING_ENABLE - enable software ring buffer
+- * @_show: output method for the attribute
+- * @_store: input method for the attribute
+- *
+- * Success may be dependent on attachment of trigger previously.
+- **/
+-#define IIO_DEV_ATTR_SW_RING_ENABLE(_show, _store)			\
+-	IIO_DEVICE_ATTR(sw_ring_enable, S_IRUGO | S_IWUSR, _show, _store, 0)
 -
- 	return 0;
+-/**
+- * IIO_DEV_ATTR_HW_RING_ENABLE - enable hardware ring buffer
+- * @_show: output method for the attribute
+- * @_store: input method for the attribute
+- *
+- * This is a different attribute from the software one as one can envision
+- * schemes where a combination of the two may be used.
+- **/
+-#define IIO_DEV_ATTR_HW_RING_ENABLE(_show, _store)			\
+-	IIO_DEVICE_ATTR(hw_ring_enable, S_IRUGO | S_IWUSR, _show, _store, 0)
 -
- fail1:
--	kfree(chip);
--
-+	iio_free_device(indio_dev);
-+fail2:
- 	return ret;
- }
- 
- static int taos_suspend(struct i2c_client *client, pm_message_t state)
- {
--	struct tsl2583_chip *chip = i2c_get_clientdata(client);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	int ret = 0;
- 
- 	mutex_lock(&chip->als_mutex);
- 
- 	if (chip->taos_chip_status == TSL258X_CHIP_WORKING) {
--		ret = taos_chip_off(client);
-+		ret = taos_chip_off(indio_dev);
- 		chip->taos_chip_status = TSL258X_CHIP_SUSPENDED;
- 	}
- 
-@@ -903,13 +891,14 @@ static int taos_suspend(struct i2c_client *client, pm_message_t state)
- 
- static int taos_resume(struct i2c_client *client)
- {
--	struct tsl2583_chip *chip = i2c_get_clientdata(client);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	int ret = 0;
- 
- 	mutex_lock(&chip->als_mutex);
- 
- 	if (chip->taos_chip_status == TSL258X_CHIP_SUSPENDED)
--		ret = taos_chip_on(client);
-+		ret = taos_chip_on(indio_dev);
- 
- 	mutex_unlock(&chip->als_mutex);
- 	return ret;
-@@ -918,11 +907,8 @@ static int taos_resume(struct i2c_client *client)
- 
- static int __devexit taos_remove(struct i2c_client *client)
- {
--	struct tsl2583_chip *chip = i2c_get_clientdata(client);
--
--	iio_device_unregister(chip->iio_dev);
-+	iio_device_unregister(i2c_get_clientdata(client));
- 
--	kfree(chip);
- 	return 0;
- }
+ #define IIO_DEV_ATTR_TEMP_RAW(_show)			\
+ 	IIO_DEVICE_ATTR(temp_raw, S_IRUGO, _show, NULL, 0)
  
 -- 
 1.7.3.4
+
