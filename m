@@ -1,38 +1,40 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:57249 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754002Ab1HLQBA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Aug 2011 12:01:00 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 06/19] staging:iio:imu:adis16400 remove unused headers.
-Date: Fri, 12 Aug 2011 17:08:40 +0100
-Message-Id: <1313165333-3951-7-git-send-email-jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 05/19] staging:iio:gyro:adis16260 remove some unused headers
+Date: Fri, 12 Aug 2011 17:08:39 +0100
+Message-Id: <1313165333-3951-6-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
 References: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-These should have gone with the iio_chan_spec conversion.
+These should have gone with the iio_chan_spec conversion patch.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/imu/adis16400_core.c |    5 -----
- 1 files changed, 0 insertions(+), 5 deletions(-)
+ drivers/staging/iio/gyro/adis16260_core.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-index 4feee26..8b8e8a3 100644
---- a/drivers/staging/iio/imu/adis16400_core.c
-+++ b/drivers/staging/iio/imu/adis16400_core.c
-@@ -29,11 +29,6 @@
+diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
+index f2d43cf..bc45228 100644
+--- a/drivers/staging/iio/gyro/adis16260_core.c
++++ b/drivers/staging/iio/gyro/adis16260_core.c
+@@ -21,8 +21,6 @@
  #include "../iio.h"
  #include "../sysfs.h"
  #include "../ring_generic.h"
--#include "../accel/accel.h"
 -#include "../adc/adc.h"
--#include "../gyro/gyro.h"
--#include "../magnetometer/magnet.h"
--
- #include "adis16400.h"
+-#include "gyro.h"
  
- #define DRIVER_NAME		"adis16400"
+ #include "adis16260.h"
+ 
 -- 
 1.7.3.4
+
