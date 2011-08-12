@@ -1,146 +1,311 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:37754 "EHLO
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:37755 "EHLO
 	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751269Ab1HLQkA (ORCPT
+	with ESMTP id S1751382Ab1HLQkA (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Aug 2011 12:40:00 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 04/12] staging:iio:gyro:adxrs450 make more use of spi_read and spi_write.
-Date: Fri, 12 Aug 2011 17:47:55 +0100
-Message-Id: <1313167683-11881-5-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 03/12] staging:iio:gyro:adxrs450 move to iio_chan_spec registration
+Date: Fri, 12 Aug 2011 17:47:54 +0100
+Message-Id: <1313167683-11881-4-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313167683-11881-1-git-send-email-jic23@cam.ac.uk>
 References: <1313167683-11881-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This needs confirmation that the devices is happy if another part is
-talked to in between the request for a register and the read back.
-
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/gyro/adxrs450_core.c |   63 ++++++++----------------------
- 1 files changed, 17 insertions(+), 46 deletions(-)
+ drivers/staging/iio/gyro/adxrs450_core.c |  174 ++++++++++++++++++------------
+ 1 files changed, 103 insertions(+), 71 deletions(-)
 
 diff --git a/drivers/staging/iio/gyro/adxrs450_core.c b/drivers/staging/iio/gyro/adxrs450_core.c
-index 97a07f9..967a772 100644
+index 7502a26..97a07f9 100644
 --- a/drivers/staging/iio/gyro/adxrs450_core.c
 +++ b/drivers/staging/iio/gyro/adxrs450_core.c
-@@ -35,21 +35,8 @@ static int adxrs450_spi_read_reg_16(struct iio_dev *indio_dev,
- 				    u8 reg_address,
- 				    u16 *val)
- {
--	struct spi_message msg;
- 	struct adxrs450_state *st = iio_priv(indio_dev);
- 	int ret;
--	struct spi_transfer xfers[] = {
--		{
--			.tx_buf = st->tx,
--			.bits_per_word = 8,
--			.len = 4,
--			.cs_change = 1,
--		}, {
--			.rx_buf = st->rx,
--			.bits_per_word = 8,
--			.len = 4,
--		},
--	};
+@@ -20,7 +20,6 @@
  
- 	mutex_lock(&st->buf_lock);
- 	st->tx[0] = ADXRS450_READ_DATA | (reg_address >> 7);
-@@ -60,10 +47,13 @@ static int adxrs450_spi_read_reg_16(struct iio_dev *indio_dev,
- 	if (!(hweight32(be32_to_cpu(*(u32 *)st->tx)) & 1))
- 		st->tx[3]  |= ADXRS450_P;
+ #include "../iio.h"
+ #include "../sysfs.h"
+-#include "gyro.h"
+ #include "../adc/adc.h"
  
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfers[0], &msg);
--	spi_message_add_tail(&xfers[1], &msg);
--	ret = spi_sync(st->us, &msg);
-+	ret = spi_write(st->us, st->tx, 4);
-+	if (ret) {
-+		dev_err(&st->us->dev, "problem while reading 16 bit register 0x%02x\n",
-+			reg_address);
-+		goto error_ret;
-+	}
-+	ret = spi_read(st->us, st->rx, 4);
- 	if (ret) {
- 		dev_err(&st->us->dev, "problem while reading 16 bit register 0x%02x\n",
- 				reg_address);
-@@ -88,15 +78,8 @@ static int adxrs450_spi_write_reg_16(struct iio_dev *indio_dev,
- 				     u8 reg_address,
- 				     u16 val)
- {
--	struct spi_message msg;
- 	struct adxrs450_state *st = iio_priv(indio_dev);
- 	int ret;
--	struct spi_transfer xfers = {
--		.tx_buf = st->tx,
--		.rx_buf = st->rx,
--		.bits_per_word = 8,
--		.len = 4,
--	};
- 
- 	mutex_lock(&st->buf_lock);
- 	st->tx[0] = ADXRS450_WRITE_DATA | reg_address >> 7;
-@@ -105,14 +88,12 @@ static int adxrs450_spi_write_reg_16(struct iio_dev *indio_dev,
- 	st->tx[3] = val << 1;
- 
- 	if (!(hweight32(be32_to_cpu(*(u32 *)st->tx)) & 1))
--		st->tx[3]  |= ADXRS450_P;
-+		st->tx[3] |= ADXRS450_P;
- 
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfers, &msg);
--	ret = spi_sync(st->us, &msg);
-+	ret = spi_write(st->us, st->tx, 4);
- 	if (ret)
- 		dev_err(&st->us->dev, "problem while writing 16 bit register 0x%02x\n",
--				reg_address);
-+			reg_address);
- 	msleep(1); /* enforce sequential transfer delay 0.1ms */
- 	mutex_unlock(&st->buf_lock);
- 	return ret;
-@@ -125,21 +106,8 @@ static int adxrs450_spi_write_reg_16(struct iio_dev *indio_dev,
+ #include "adxrs450.h"
+@@ -32,12 +31,11 @@
+  * Second register's address is reg_address + 1.
+  * @val: somewhere to pass back the value read
   **/
- static int adxrs450_spi_sensor_data(struct iio_dev *indio_dev, s16 *val)
+-static int adxrs450_spi_read_reg_16(struct device *dev,
+-		u8 reg_address,
+-		u16 *val)
++static int adxrs450_spi_read_reg_16(struct iio_dev *indio_dev,
++				    u8 reg_address,
++				    u16 *val)
  {
--	struct spi_message msg;
+ 	struct spi_message msg;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
  	struct adxrs450_state *st = iio_priv(indio_dev);
  	int ret;
--	struct spi_transfer xfers[] = {
--		{
--			.tx_buf = st->tx,
--			.bits_per_word = 8,
--			.len = 4,
--			.cs_change = 1,
--		}, {
--			.rx_buf = st->rx,
--			.bits_per_word = 8,
--			.len = 4,
--		},
--	};
+ 	struct spi_transfer xfers[] = {
+@@ -86,12 +84,11 @@ error_ret:
+  * Second register's address is reg_address + 1.
+  * @val: value to be written.
+  **/
+-static int adxrs450_spi_write_reg_16(struct device *dev,
+-		u8 reg_address,
+-		u16 val)
++static int adxrs450_spi_write_reg_16(struct iio_dev *indio_dev,
++				     u8 reg_address,
++				     u16 val)
+ {
+ 	struct spi_message msg;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct adxrs450_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 	struct spi_transfer xfers = {
+@@ -126,10 +123,9 @@ static int adxrs450_spi_write_reg_16(struct device *dev,
+  * @dev: device associated with child of actual iio_dev
+  * @val: somewhere to pass back the value read
+  **/
+-static int adxrs450_spi_sensor_data(struct device *dev, s16 *val)
++static int adxrs450_spi_sensor_data(struct iio_dev *indio_dev, s16 *val)
+ {
+ 	struct spi_message msg;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct adxrs450_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 	struct spi_transfer xfers[] = {
+@@ -206,64 +202,39 @@ error_ret:
+ 	return ret;
+ }
  
- 	mutex_lock(&st->buf_lock);
- 	st->tx[0] = ADXRS450_SENSOR_DATA;
-@@ -147,10 +115,13 @@ static int adxrs450_spi_sensor_data(struct iio_dev *indio_dev, s16 *val)
- 	st->tx[2] = 0;
- 	st->tx[3] = 0;
+-static ssize_t adxrs450_read_temp(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++static int adxrs450_read_temp(struct iio_dev *indio_dev, int *val)
+ {
+ 	int ret;
+ 	u16 t;
+-	ret = adxrs450_spi_read_reg_16(dev,
+-			ADXRS450_TEMP1,
+-			&t);
++	ret = adxrs450_spi_read_reg_16(indio_dev, ADXRS450_TEMP1, &t);
+ 	if (ret)
+ 		return ret;
+-	return sprintf(buf, "%d\n", t >> 7);
++	*val = t;
++	return 0;
+ }
  
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfers[0], &msg);
--	spi_message_add_tail(&xfers[1], &msg);
--	ret = spi_sync(st->us, &msg);
-+	ret = spi_write(st->us, st->tx, 4);
-+	if (ret) {
-+		dev_err(&st->us->dev, "Problem while reading sensor data\n");
-+		goto error_ret;
+-static ssize_t adxrs450_read_quad(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++static int adxrs450_read_quad(struct iio_dev *indio_dev, int *val)
+ {
+ 	int ret;
+ 	s16 t;
+-	ret = adxrs450_spi_read_reg_16(dev,
+-			ADXRS450_QUAD1,
+-			&t);
++	ret = adxrs450_spi_read_reg_16(indio_dev, ADXRS450_QUAD1, &t);
+ 	if (ret)
+ 		return ret;
+-	return sprintf(buf, "%d\n", t);
+-}
+-
+-static ssize_t adxrs450_write_dnc(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	int ret;
+-	long val;
+-
+-	ret = strict_strtol(buf, 10, &val);
+-	if (ret)
+-		goto error_ret;
+-	ret = adxrs450_spi_write_reg_16(dev,
+-			ADXRS450_DNC1,
+-			val & 0x3FF);
+-error_ret:
+-	return ret ? ret : len;
++	*val = t;
++	return 0;
+ }
+ 
+-static ssize_t adxrs450_read_sensor_data(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++static int adxrs450_read_sensor_data(struct iio_dev *indio_dev, int *val)
+ {
+ 	int ret;
+ 	s16 t;
+ 
+-	ret = adxrs450_spi_sensor_data(dev, &t);
++	ret = adxrs450_spi_sensor_data(indio_dev, &t);
+ 	if (ret)
+ 		return ret;
+ 
+-	return sprintf(buf, "%d\n", t);
++	*val = t;
++	return 0;
+ }
+ 
+ /* Recommended Startup Sequence by spec */
+@@ -272,7 +243,6 @@ static int adxrs450_initial_setup(struct iio_dev *indio_dev)
+ 	u32 t;
+ 	u16 data;
+ 	int ret;
+-	struct device *dev = &indio_dev->dev;
+ 	struct adxrs450_state *st = iio_priv(indio_dev);
+ 
+ 	msleep(ADXRS450_STARTUP_DELAY*2);
+@@ -305,23 +275,23 @@ static int adxrs450_initial_setup(struct iio_dev *indio_dev)
+ 		return -EIO;
+ 
+ 	}
+-	ret = adxrs450_spi_read_reg_16(dev, ADXRS450_FAULT1, &data);
++	ret = adxrs450_spi_read_reg_16(indio_dev, ADXRS450_FAULT1, &data);
+ 	if (ret)
+ 		return ret;
+ 	if (data & 0x0fff) {
+ 		dev_err(&st->us->dev, "The device is not in normal status!\n");
+ 		return -EINVAL;
+ 	}
+-	ret = adxrs450_spi_read_reg_16(dev, ADXRS450_PID1, &data);
++	ret = adxrs450_spi_read_reg_16(indio_dev, ADXRS450_PID1, &data);
+ 	if (ret)
+ 		return ret;
+ 	dev_info(&st->us->dev, "The Part ID is 0x%x\n", data);
+ 
+-	ret = adxrs450_spi_read_reg_16(dev, ADXRS450_SNL, &data);
++	ret = adxrs450_spi_read_reg_16(indio_dev, ADXRS450_SNL, &data);
+ 	if (ret)
+ 		return ret;
+ 	t = data;
+-	ret = adxrs450_spi_read_reg_16(dev, ADXRS450_SNH, &data);
++	ret = adxrs450_spi_read_reg_16(indio_dev, ADXRS450_SNH, &data);
+ 	if (ret)
+ 		return ret;
+ 	t |= data << 16;
+@@ -330,29 +300,88 @@ static int adxrs450_initial_setup(struct iio_dev *indio_dev)
+ 	return 0;
+ }
+ 
+-static IIO_DEV_ATTR_GYRO_Z(adxrs450_read_sensor_data, 0);
+-static IIO_DEV_ATTR_TEMP_RAW(adxrs450_read_temp);
+-static IIO_DEV_ATTR_GYRO_Z_QUADRATURE_CORRECTION(adxrs450_read_quad, 0);
+-static IIO_DEV_ATTR_GYRO_Z_CALIBBIAS(S_IWUSR,
+-		NULL, adxrs450_write_dnc, 0);
+-static IIO_CONST_ATTR(name, "adxrs450");
+-
+-static struct attribute *adxrs450_attributes[] = {
+-	&iio_dev_attr_gyro_z_raw.dev_attr.attr,
+-	&iio_dev_attr_temp_raw.dev_attr.attr,
+-	&iio_dev_attr_gyro_z_quadrature_correction_raw.dev_attr.attr,
+-	&iio_dev_attr_gyro_z_calibbias.dev_attr.attr,
+-	&iio_const_attr_name.dev_attr.attr,
+-	NULL
+-};
++static int adxrs450_write_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      int val,
++			      int val2,
++			      long mask)
++{
++	int ret;
++	switch (mask) {
++	case (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE):
++		ret = adxrs450_spi_write_reg_16(indio_dev,
++						ADXRS450_DNC1,
++						val & 0x3FF);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++	return ret;
++}
++
++static int adxrs450_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val,
++			     int *val2,
++			     long mask)
++{
++	int ret;
++	switch (mask) {
++	case 0:
++		switch (chan->type) {
++		case IIO_GYRO:
++			ret = adxrs450_read_sensor_data(indio_dev, val);
++			if (ret < 0)
++				break;
++			*val = ret;
++			ret = IIO_VAL_INT;
++			break;
++		case IIO_TEMP:
++			ret = adxrs450_read_temp(indio_dev, val);
++			if (ret < 0)
++				break;
++			*val = ret;
++			ret = IIO_VAL_INT;
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		break;
++	case (1 << IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SEPARATE):
++		ret = adxrs450_read_quad(indio_dev, val);
++		if (ret < 0)
++			break;
++		*val = ret;
++		ret = IIO_VAL_INT;
++		break;
++	default:
++		ret = -EINVAL;
++		break;
 +	}
 +
-+	ret = spi_read(st->us, st->rx, 4);
- 	if (ret) {
- 		dev_err(&st->us->dev, "Problem while reading sensor data\n");
- 		goto error_ret;
++	return ret;
++}
+ 
+-static const struct attribute_group adxrs450_attribute_group = {
+-	.attrs = adxrs450_attributes,
++static const struct iio_chan_spec adxrs450_channels[] = {
++	{
++		.type = IIO_GYRO,
++		.modified = 1,
++		.channel2 = IIO_MOD_Z,
++		.info_mask = (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE) |
++		(1 << IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SEPARATE)
++	}, {
++		.type = IIO_TEMP,
++		.indexed = 1,
++		.channel = 0,
++	}
+ };
+ 
+ static const struct iio_info adxrs450_info = {
+-	.attrs = &adxrs450_attribute_group,
+ 	.driver_module = THIS_MODULE,
++	.read_raw = &adxrs450_read_raw,
++	.write_raw = &adxrs450_write_raw,
+ };
+ 
+ static int __devinit adxrs450_probe(struct spi_device *spi)
+@@ -376,6 +405,9 @@ static int __devinit adxrs450_probe(struct spi_device *spi)
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->info = &adxrs450_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = adxrs450_channels;
++	indio_dev->num_channels = ARRAY_SIZE(adxrs450_channels);
++	indio_dev->name = spi->dev.driver->name;
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
 -- 
 1.7.3.4
 
