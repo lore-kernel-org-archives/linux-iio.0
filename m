@@ -3,176 +3,197 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 09/19] staging:iio:adc: unused header removals.
-Date: Fri, 12 Aug 2011 17:08:43 +0100
-Message-Id: <1313165333-3951-10-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 08/19] staging:iio:accel: usused header removals.
+Date: Fri, 12 Aug 2011 17:08:42 +0100
+Message-Id: <1313165333-3951-9-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
 References: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-More headers now not needed after iio_chan_spec conversions.
-A couple of drivers were using helpers from adc.h.
-
-Given these were trivial, they are pushed down into the drivers.
+Missing from the iio_chan_spec conversion patches.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/ad7298_core.c  |    1 -
- drivers/staging/iio/adc/ad7476_core.c  |    1 -
- drivers/staging/iio/adc/ad7606_core.c  |    1 -
- drivers/staging/iio/adc/ad7780.c       |    1 -
- drivers/staging/iio/adc/ad7793.c       |    1 -
- drivers/staging/iio/adc/ad7887_core.c  |    2 +-
- drivers/staging/iio/adc/ad799x_core.c  |   13 +++++++++----
- drivers/staging/iio/adc/max1363_core.c |   23 +++++++++++++++++------
- 8 files changed, 27 insertions(+), 16 deletions(-)
+ drivers/staging/iio/accel/adis16201_core.c |    4 ----
+ drivers/staging/iio/accel/adis16201_ring.c |    1 -
+ drivers/staging/iio/accel/adis16203_core.c |    3 ---
+ drivers/staging/iio/accel/adis16203_ring.c |    1 -
+ drivers/staging/iio/accel/adis16204_ring.c |    1 -
+ drivers/staging/iio/accel/adis16209_core.c |    3 ---
+ drivers/staging/iio/accel/adis16209_ring.c |    1 -
+ drivers/staging/iio/accel/adis16240_core.c |    2 --
+ drivers/staging/iio/accel/adis16240_ring.c |    1 -
+ drivers/staging/iio/accel/lis3l02dq_core.c |    2 --
+ drivers/staging/iio/accel/lis3l02dq_ring.c |    1 -
+ drivers/staging/iio/accel/sca3000_core.c   |    1 -
+ drivers/staging/iio/accel/sca3000_ring.c   |    1 -
+ 13 files changed, 0 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
-index b8e4ae2..21d1931 100644
---- a/drivers/staging/iio/adc/ad7298_core.c
-+++ b/drivers/staging/iio/adc/ad7298_core.c
-@@ -18,7 +18,6 @@
- #include "../iio.h"
+diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
+index 2fd01ae..16b388b 100644
+--- a/drivers/staging/iio/accel/adis16201_core.c
++++ b/drivers/staging/iio/accel/adis16201_core.c
+@@ -18,10 +18,6 @@
  #include "../sysfs.h"
  #include "../ring_generic.h"
--#include "adc.h"
  
- #include "ad7298.h"
+-#include "accel.h"
+-#include "inclinometer.h"
+-#include "../adc/adc.h"
+-
+ #include "adis16201.h"
  
-diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
-index c210898..f2fdd48 100644
---- a/drivers/staging/iio/adc/ad7476_core.c
-+++ b/drivers/staging/iio/adc/ad7476_core.c
-@@ -17,7 +17,6 @@
+ enum adis16201_chan {
+diff --git a/drivers/staging/iio/accel/adis16201_ring.c b/drivers/staging/iio/accel/adis16201_ring.c
+index a745d5de..30bac86 100644
+--- a/drivers/staging/iio/accel/adis16201_ring.c
++++ b/drivers/staging/iio/accel/adis16201_ring.c
+@@ -10,7 +10,6 @@
  #include "../iio.h"
  #include "../sysfs.h"
- #include "../ring_generic.h"
--#include "adc.h"
- 
- #include "ad7476.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-index 459371a..dcdb180 100644
---- a/drivers/staging/iio/adc/ad7606_core.c
-+++ b/drivers/staging/iio/adc/ad7606_core.c
-@@ -20,7 +20,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_generic.h"
--#include "adc.h"
- 
- #include "ad7606.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index e0c7b6c..f90cdea 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -20,7 +20,6 @@
- #include "../iio.h"
- #include "../sysfs.h"
- #include "../ring_generic.h"
--#include "adc.h"
- 
- #include "ad7780.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index 90f6c03..ab6f109 100644
---- a/drivers/staging/iio/adc/ad7793.c
-+++ b/drivers/staging/iio/adc/ad7793.c
-@@ -22,7 +22,6 @@
- #include "../ring_generic.h"
  #include "../ring_sw.h"
+-#include "accel.h"
  #include "../trigger.h"
--#include "adc.h"
+ #include "adis16201.h"
  
- #include "ad7793.h"
+diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
+index cf5d15d..a7c06b9 100644
+--- a/drivers/staging/iio/accel/adis16203_core.c
++++ b/drivers/staging/iio/accel/adis16203_core.c
+@@ -16,10 +16,7 @@
  
-diff --git a/drivers/staging/iio/adc/ad7887_core.c b/drivers/staging/iio/adc/ad7887_core.c
-index 3d9121e..a7da9e6 100644
---- a/drivers/staging/iio/adc/ad7887_core.c
-+++ b/drivers/staging/iio/adc/ad7887_core.c
-@@ -17,7 +17,7 @@
+ #include "../iio.h"
+ #include "../sysfs.h"
+-#include "accel.h"
+-#include "inclinometer.h"
+ #include "../ring_generic.h"
+-#include "../adc/adc.h"
+ 
+ #include "adis16203.h"
+ 
+diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
+index d2c07c5..7ca9c25 100644
+--- a/drivers/staging/iio/accel/adis16203_ring.c
++++ b/drivers/staging/iio/accel/adis16203_ring.c
+@@ -13,7 +13,6 @@
+ #include "../iio.h"
+ #include "../sysfs.h"
+ #include "../ring_sw.h"
+-#include "accel.h"
+ #include "../trigger.h"
+ #include "adis16203.h"
+ 
+diff --git a/drivers/staging/iio/accel/adis16204_ring.c b/drivers/staging/iio/accel/adis16204_ring.c
+index 852df06..537d463 100644
+--- a/drivers/staging/iio/accel/adis16204_ring.c
++++ b/drivers/staging/iio/accel/adis16204_ring.c
+@@ -13,7 +13,6 @@
+ #include "../iio.h"
+ #include "../sysfs.h"
+ #include "../ring_sw.h"
+-#include "accel.h"
+ #include "../trigger.h"
+ #include "adis16204.h"
+ 
+diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
+index bec1fa8..bd3d557 100644
+--- a/drivers/staging/iio/accel/adis16209_core.c
++++ b/drivers/staging/iio/accel/adis16209_core.c
+@@ -18,9 +18,6 @@
  #include "../iio.h"
  #include "../sysfs.h"
  #include "../ring_generic.h"
--#include "adc.h"
-+
+-#include "accel.h"
+-#include "inclinometer.h"
+-#include "../adc/adc.h"
  
- #include "ad7887.h"
+ #include "adis16209.h"
  
-diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
-index 92cfe2e..d42d61d 100644
---- a/drivers/staging/iio/adc/ad799x_core.c
-+++ b/drivers/staging/iio/adc/ad799x_core.c
-@@ -34,9 +34,8 @@
- 
+diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
+index 45017d3..77b70e3 100644
+--- a/drivers/staging/iio/accel/adis16209_ring.c
++++ b/drivers/staging/iio/accel/adis16209_ring.c
+@@ -13,7 +13,6 @@
  #include "../iio.h"
  #include "../sysfs.h"
+ #include "../ring_sw.h"
+-#include "accel.h"
+ #include "../trigger.h"
+ #include "adis16209.h"
+ 
+diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
+index aee8b69..237da46 100644
+--- a/drivers/staging/iio/accel/adis16240_core.c
++++ b/drivers/staging/iio/accel/adis16240_core.c
+@@ -21,8 +21,6 @@
+ #include "../iio.h"
+ #include "../sysfs.h"
+ #include "../ring_generic.h"
+-#include "accel.h"
+-#include "../adc/adc.h"
+ 
+ #include "adis16240.h"
+ 
+diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
+index c812a34..3f1e159 100644
+--- a/drivers/staging/iio/accel/adis16240_ring.c
++++ b/drivers/staging/iio/accel/adis16240_ring.c
+@@ -13,7 +13,6 @@
+ #include "../iio.h"
+ #include "../sysfs.h"
+ #include "../ring_sw.h"
+-#include "accel.h"
+ #include "../trigger.h"
+ #include "adis16240.h"
+ 
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+index a29dfd2..83ec286 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+@@ -26,8 +26,6 @@
+ #include "../sysfs.h"
+ #include "../ring_generic.h"
+ 
+-#include "accel.h"
 -
- #include "../ring_generic.h"
--#include "adc.h"
-+
- #include "ad799x.h"
+ #include "lis3l02dq.h"
  
- /*
-@@ -336,8 +335,14 @@ static irqreturn_t ad799x_event_handler(int irq, void *private)
- 		if (status & (1 << i))
- 			iio_push_event(indio_dev, 0,
- 				       i & 0x1 ?
--				       IIO_EVENT_CODE_IN_HIGH_THRESH(i >> 1) :
--				       IIO_EVENT_CODE_IN_LOW_THRESH(i >> 1),
-+				       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
-+							    (i >> 1),
-+							    IIO_EV_TYPE_THRESH,
-+							    IIO_EV_DIR_RISING) :
-+				       IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN,
-+							    (i >> 1),
-+							    IIO_EV_TYPE_THRESH,
-+							    IIO_EV_DIR_FALLING),
- 				       iio_get_time_ns());
- 	}
- 
-diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
-index d93b7a9..9525aec 100644
---- a/drivers/staging/iio/adc/max1363_core.c
-+++ b/drivers/staging/iio/adc/max1363_core.c
-@@ -33,9 +33,8 @@
- 
- #include "../iio.h"
+ /* At the moment the spi framework doesn't allow global setting of cs_change.
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index 5795f82..7305c78 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -12,7 +12,6 @@
  #include "../sysfs.h"
--
+ #include "../ring_sw.h"
+ #include "../kfifo_buf.h"
+-#include "accel.h"
+ #include "../trigger.h"
+ #include "lis3l02dq.h"
+ 
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index 603f5bc..3c637b9 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -22,7 +22,6 @@
+ #include "../sysfs.h"
  #include "../ring_generic.h"
--#include "adc.h"
-+
- #include "max1363.h"
  
- #define MAX1363_MODE_SINGLE(_num, _mask) {				\
-@@ -592,10 +591,22 @@ static int max1363_write_thresh(struct iio_dev *indio_dev,
- }
+-#include "accel.h"
+ #include "sca3000.h"
  
- static const int max1363_event_codes[] = {
--	IIO_EVENT_CODE_IN_LOW_THRESH(3), IIO_EVENT_CODE_IN_HIGH_THRESH(3),
--	IIO_EVENT_CODE_IN_LOW_THRESH(2), IIO_EVENT_CODE_IN_HIGH_THRESH(2),
--	IIO_EVENT_CODE_IN_LOW_THRESH(1), IIO_EVENT_CODE_IN_HIGH_THRESH(1),
--	IIO_EVENT_CODE_IN_LOW_THRESH(0), IIO_EVENT_CODE_IN_HIGH_THRESH(0)
-+	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 0,
-+			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
-+	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 1,
-+			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
-+	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 2,
-+			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
-+	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 3,
-+			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
-+	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 0,
-+			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
-+	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 1,
-+			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
-+	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 2,
-+			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
-+	IIO_UNMOD_EVENT_CODE(IIO_EV_CLASS_IN, 3,
-+			     IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
- };
+ enum sca3000_variant {
+diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
+index 3e60861..6ce8bf5 100644
+--- a/drivers/staging/iio/accel/sca3000_ring.c
++++ b/drivers/staging/iio/accel/sca3000_ring.c
+@@ -24,7 +24,6 @@
+ #include "../sysfs.h"
+ #include "../ring_generic.h"
+ #include "../ring_hw.h"
+-#include "accel.h"
+ #include "sca3000.h"
  
- static irqreturn_t max1363_event_handler(int irq, void *private)
+ /* RFC / future work
 -- 
 1.7.3.4
