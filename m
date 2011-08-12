@@ -3,263 +3,154 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 13/19] staging:iio:accel header housekeeping - remove unecessary includes.
-Date: Fri, 12 Aug 2011 17:08:47 +0100
-Message-Id: <1313165333-3951-14-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 12/19] staging:iio:adc: header cleanup - remove unused.
+Date: Fri, 12 Aug 2011 17:08:46 +0100
+Message-Id: <1313165333-3951-13-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
 References: <1313165333-3951-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
+Clear out all the excessive includes in the *_ring.c files.
+Mixture of cut and paste bloat and things needed for code that
+has gone away.
+
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/adis16201_ring.c    |    4 ----
- drivers/staging/iio/accel/adis16201_trigger.c |    5 -----
- drivers/staging/iio/accel/adis16203_ring.c    |    7 -------
- drivers/staging/iio/accel/adis16203_trigger.c |    6 ------
- drivers/staging/iio/accel/adis16204_ring.c    |    7 -------
- drivers/staging/iio/accel/adis16204_trigger.c |    6 ------
- drivers/staging/iio/accel/adis16209_ring.c    |    7 -------
- drivers/staging/iio/accel/adis16209_trigger.c |    6 ------
- drivers/staging/iio/accel/adis16240_ring.c    |    7 -------
- drivers/staging/iio/accel/adis16240_trigger.c |    6 ------
- drivers/staging/iio/accel/lis3l02dq_ring.c    |    4 ----
- drivers/staging/iio/accel/sca3000_ring.c      |    2 --
- 12 files changed, 0 insertions(+), 67 deletions(-)
+ drivers/staging/iio/adc/ad7298_ring.c  |    3 ---
+ drivers/staging/iio/adc/ad7476_ring.c  |    2 --
+ drivers/staging/iio/adc/ad7606_ring.c  |    2 --
+ drivers/staging/iio/adc/ad7887_ring.c  |    3 ---
+ drivers/staging/iio/adc/ad799x_ring.c  |    3 ---
+ drivers/staging/iio/adc/max1363_ring.c |    4 ----
+ 6 files changed, 0 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16201_ring.c b/drivers/staging/iio/accel/adis16201_ring.c
-index 30bac86..9925785 100644
---- a/drivers/staging/iio/accel/adis16201_ring.c
-+++ b/drivers/staging/iio/accel/adis16201_ring.c
-@@ -1,14 +1,10 @@
- #include <linux/interrupt.h>
--#include <linux/irq.h>
- #include <linux/mutex.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/spi/spi.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
- 
- #include "../iio.h"
--#include "../sysfs.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
- #include "adis16201.h"
-diff --git a/drivers/staging/iio/accel/adis16201_trigger.c b/drivers/staging/iio/accel/adis16201_trigger.c
-index 7c853a6..f448258 100644
---- a/drivers/staging/iio/accel/adis16201_trigger.c
-+++ b/drivers/staging/iio/accel/adis16201_trigger.c
-@@ -1,13 +1,8 @@
- #include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/mutex.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
--#include <linux/sysfs.h>
- #include <linux/spi/spi.h>
- 
- #include "../iio.h"
--#include "../sysfs.h"
- #include "../trigger.h"
- #include "adis16201.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
-index 7ca9c25..049174d 100644
---- a/drivers/staging/iio/accel/adis16203_ring.c
-+++ b/drivers/staging/iio/accel/adis16203_ring.c
-@@ -1,17 +1,10 @@
- #include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/gpio.h>
--#include <linux/workqueue.h>
- #include <linux/mutex.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/spi/spi.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
--#include <linux/list.h>
- 
- #include "../iio.h"
--#include "../sysfs.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
- #include "adis16203.h"
-diff --git a/drivers/staging/iio/accel/adis16203_trigger.c b/drivers/staging/iio/accel/adis16203_trigger.c
-index 9ea1c1e..50165f9 100644
---- a/drivers/staging/iio/accel/adis16203_trigger.c
-+++ b/drivers/staging/iio/accel/adis16203_trigger.c
-@@ -1,14 +1,8 @@
- #include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/mutex.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
--#include <linux/sysfs.h>
--#include <linux/list.h>
- #include <linux/spi/spi.h>
- 
- #include "../iio.h"
--#include "../sysfs.h"
- #include "../trigger.h"
- #include "adis16203.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16204_ring.c b/drivers/staging/iio/accel/adis16204_ring.c
-index 537d463..b173856 100644
---- a/drivers/staging/iio/accel/adis16204_ring.c
-+++ b/drivers/staging/iio/accel/adis16204_ring.c
-@@ -1,17 +1,10 @@
- #include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/gpio.h>
--#include <linux/workqueue.h>
- #include <linux/mutex.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/spi/spi.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
--#include <linux/list.h>
- 
- #include "../iio.h"
--#include "../sysfs.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
- #include "adis16204.h"
-diff --git a/drivers/staging/iio/accel/adis16204_trigger.c b/drivers/staging/iio/accel/adis16204_trigger.c
-index bd6d293..55b661c 100644
---- a/drivers/staging/iio/accel/adis16204_trigger.c
-+++ b/drivers/staging/iio/accel/adis16204_trigger.c
-@@ -1,14 +1,8 @@
- #include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/mutex.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
--#include <linux/sysfs.h>
--#include <linux/list.h>
- #include <linux/spi/spi.h>
- 
- #include "../iio.h"
--#include "../sysfs.h"
- #include "../trigger.h"
- #include "adis16204.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
-index 77b70e3..7547ddb 100644
---- a/drivers/staging/iio/accel/adis16209_ring.c
-+++ b/drivers/staging/iio/accel/adis16209_ring.c
-@@ -1,17 +1,10 @@
- #include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/gpio.h>
--#include <linux/workqueue.h>
- #include <linux/mutex.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/spi/spi.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
--#include <linux/list.h>
- 
- #include "../iio.h"
--#include "../sysfs.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
- #include "adis16209.h"
-diff --git a/drivers/staging/iio/accel/adis16209_trigger.c b/drivers/staging/iio/accel/adis16209_trigger.c
-index 4c6df9e..8df8a97 100644
---- a/drivers/staging/iio/accel/adis16209_trigger.c
-+++ b/drivers/staging/iio/accel/adis16209_trigger.c
-@@ -1,14 +1,8 @@
- #include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/mutex.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
--#include <linux/sysfs.h>
--#include <linux/list.h>
- #include <linux/spi/spi.h>
- 
- #include "../iio.h"
--#include "../sysfs.h"
- #include "../trigger.h"
- #include "adis16209.h"
- 
-diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
-index 3f1e159..9bb4ff8 100644
---- a/drivers/staging/iio/accel/adis16240_ring.c
-+++ b/drivers/staging/iio/accel/adis16240_ring.c
-@@ -1,17 +1,10 @@
- #include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/gpio.h>
--#include <linux/workqueue.h>
- #include <linux/mutex.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/spi/spi.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
--#include <linux/list.h>
- 
- #include "../iio.h"
--#include "../sysfs.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
- #include "adis16240.h"
-diff --git a/drivers/staging/iio/accel/adis16240_trigger.c b/drivers/staging/iio/accel/adis16240_trigger.c
-index 0c75338..13f1d14 100644
---- a/drivers/staging/iio/accel/adis16240_trigger.c
-+++ b/drivers/staging/iio/accel/adis16240_trigger.c
-@@ -1,14 +1,8 @@
- #include <linux/interrupt.h>
--#include <linux/irq.h>
--#include <linux/mutex.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
--#include <linux/sysfs.h>
--#include <linux/list.h>
- #include <linux/spi/spi.h>
- 
- #include "../iio.h"
--#include "../sysfs.h"
- #include "../trigger.h"
- #include "adis16240.h"
- 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index 7305c78..c53985e 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -1,15 +1,11 @@
- #include <linux/interrupt.h>
--#include <linux/irq.h>
- #include <linux/gpio.h>
- #include <linux/mutex.h>
--#include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/spi/spi.h>
--#include <linux/sysfs.h>
- #include <linux/slab.h>
- 
- #include "../iio.h"
--#include "../sysfs.h"
- #include "../ring_sw.h"
- #include "../kfifo_buf.h"
- #include "../trigger.h"
-diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
-index 6ce8bf5..0b736db 100644
---- a/drivers/staging/iio/accel/sca3000_ring.c
-+++ b/drivers/staging/iio/accel/sca3000_ring.c
-@@ -10,9 +10,7 @@
+diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
+index a04c033..7423d4a 100644
+--- a/drivers/staging/iio/adc/ad7298_ring.c
++++ b/drivers/staging/iio/adc/ad7298_ring.c
+@@ -7,17 +7,14 @@
   */
  
  #include <linux/interrupt.h>
--#include <linux/gpio.h>
- #include <linux/fs.h>
+-#include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+-#include <linux/sysfs.h>
+ #include <linux/spi/spi.h>
+ 
+ #include "../iio.h"
+ #include "../ring_generic.h"
+ #include "../ring_sw.h"
+ #include "../trigger.h"
+-#include "../sysfs.h"
+ 
+ #include "ad7298.h"
+ 
+diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
+index a92fc5a..86bbba8 100644
+--- a/drivers/staging/iio/adc/ad7476_ring.c
++++ b/drivers/staging/iio/adc/ad7476_ring.c
+@@ -11,14 +11,12 @@
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+-#include <linux/sysfs.h>
+ #include <linux/spi/spi.h>
+ 
+ #include "../iio.h"
+ #include "../ring_generic.h"
+ #include "../ring_sw.h"
+ #include "../trigger.h"
+-#include "../sysfs.h"
+ 
+ #include "ad7476.h"
+ 
+diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+index a199bf4..f8f574a 100644
+--- a/drivers/staging/iio/adc/ad7606_ring.c
++++ b/drivers/staging/iio/adc/ad7606_ring.c
+@@ -10,13 +10,11 @@
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+-#include <linux/sysfs.h>
+ 
+ #include "../iio.h"
+ #include "../ring_generic.h"
+ #include "../ring_sw.h"
+ #include "../trigger.h"
+-#include "../sysfs.h"
+ 
+ #include "ad7606.h"
+ 
+diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
+index 0ac7c0b..b77b120 100644
+--- a/drivers/staging/iio/adc/ad7887_ring.c
++++ b/drivers/staging/iio/adc/ad7887_ring.c
+@@ -8,17 +8,14 @@
+  */
+ 
+ #include <linux/interrupt.h>
+-#include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+-#include <linux/sysfs.h>
+ #include <linux/spi/spi.h>
+ 
+ #include "../iio.h"
+ #include "../ring_generic.h"
+ #include "../ring_sw.h"
+ #include "../trigger.h"
+-#include "../sysfs.h"
+ 
+ #include "ad7887.h"
+ 
+diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
+index 0376a82..d84efd6 100644
+--- a/drivers/staging/iio/adc/ad799x_ring.c
++++ b/drivers/staging/iio/adc/ad799x_ring.c
+@@ -10,10 +10,8 @@
+  */
+ 
+ #include <linux/interrupt.h>
 -#include <linux/device.h>
  #include <linux/slab.h>
  #include <linux/kernel.h>
- #include <linux/spi/spi.h>
+-#include <linux/sysfs.h>
+ #include <linux/list.h>
+ #include <linux/i2c.h>
+ #include <linux/bitops.h>
+@@ -22,7 +20,6 @@
+ #include "../ring_generic.h"
+ #include "../ring_sw.h"
+ #include "../trigger.h"
+-#include "../sysfs.h"
+ 
+ #include "ad799x.h"
+ 
+diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
+index f43befd..696676f 100644
+--- a/drivers/staging/iio/adc/max1363_ring.c
++++ b/drivers/staging/iio/adc/max1363_ring.c
+@@ -9,11 +9,8 @@
+  */
+ 
+ #include <linux/interrupt.h>
+-#include <linux/device.h>
+ #include <linux/slab.h>
+ #include <linux/kernel.h>
+-#include <linux/sysfs.h>
+-#include <linux/list.h>
+ #include <linux/i2c.h>
+ #include <linux/bitops.h>
+ 
+@@ -21,7 +18,6 @@
+ #include "../ring_generic.h"
+ #include "../ring_sw.h"
+ #include "../trigger.h"
+-#include "../sysfs.h"
+ 
+ #include "max1363.h"
+ 
 -- 
 1.7.3.4
