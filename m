@@ -3,84 +3,29 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 11/12] staging:iio:various Stop drivers putting sysfs attributes in a directory named after the device.
-Date: Fri, 12 Aug 2011 16:55:37 +0100
-Message-Id: <1313164538-1769-12-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 10/12] staging:iio: in case of buggy drivers avoid using undefined mask.
+Date: Fri, 12 Aug 2011 16:55:36 +0100
+Message-Id: <1313164538-1769-11-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313164538-1769-1-git-send-email-jic23@cam.ac.uk>
 References: <1313164538-1769-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-No idea how this particularly 'quirk' got in there in the first
-place.
-
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/dds/ad9852.c        |    1 -
- drivers/staging/iio/dds/ad9910.c        |    1 -
- drivers/staging/iio/dds/ad9951.c        |    1 -
- drivers/staging/iio/resolver/ad2s1210.c |    1 -
- drivers/staging/iio/resolver/ad2s90.c   |    1 -
- 5 files changed, 0 insertions(+), 5 deletions(-)
+ drivers/staging/iio/industrialio-core.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/staging/iio/dds/ad9852.c b/drivers/staging/iio/dds/ad9852.c
-index 0184585..8672265 100644
---- a/drivers/staging/iio/dds/ad9852.c
-+++ b/drivers/staging/iio/dds/ad9852.c
-@@ -217,7 +217,6 @@ static struct attribute *ad9852_attributes[] = {
- };
- 
- static const struct attribute_group ad9852_attribute_group = {
--	.name = DRV_NAME,
- 	.attrs = ad9852_attributes,
- };
- 
-diff --git a/drivers/staging/iio/dds/ad9910.c b/drivers/staging/iio/dds/ad9910.c
-index 0fa217f..3358553 100644
---- a/drivers/staging/iio/dds/ad9910.c
-+++ b/drivers/staging/iio/dds/ad9910.c
-@@ -352,7 +352,6 @@ static struct attribute *ad9910_attributes[] = {
- };
- 
- static const struct attribute_group ad9910_attribute_group = {
--	.name = DRV_NAME,
- 	.attrs = ad9910_attributes,
- };
- 
-diff --git a/drivers/staging/iio/dds/ad9951.c b/drivers/staging/iio/dds/ad9951.c
-index d361d1f..6c18e24 100644
---- a/drivers/staging/iio/dds/ad9951.c
-+++ b/drivers/staging/iio/dds/ad9951.c
-@@ -161,7 +161,6 @@ static struct attribute *ad9951_attributes[] = {
- };
- 
- static const struct attribute_group ad9951_attribute_group = {
--	.name = DRV_NAME,
- 	.attrs = ad9951_attributes,
- };
- 
-diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index ecaf7bb..53cb031 100644
---- a/drivers/staging/iio/resolver/ad2s1210.c
-+++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -639,7 +639,6 @@ static struct attribute *ad2s1210_attributes[] = {
- };
- 
- static const struct attribute_group ad2s1210_attribute_group = {
--	.name = DRV_NAME,
- 	.attrs = ad2s1210_attributes,
- };
- 
-diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-index 166e241..43a66d4 100644
---- a/drivers/staging/iio/resolver/ad2s90.c
-+++ b/drivers/staging/iio/resolver/ad2s90.c
-@@ -58,7 +58,6 @@ static struct attribute *ad2s90_attributes[] = {
- };
- 
- static const struct attribute_group ad2s90_attribute_group = {
--	.name = DRV_NAME,
- 	.attrs = ad2s90_attributes,
- };
- 
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 8bee562..e8ad648 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -958,6 +958,7 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 			break;
+ 		default:
+ 			printk(KERN_INFO "currently unhandled type of event\n");
++			continue;
+ 		}
+ 		ret = __iio_add_chan_devattr(postfix,
+ 					     NULL,
 -- 
 1.7.3.4
