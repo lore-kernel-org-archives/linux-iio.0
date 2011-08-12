@@ -1,21 +1,31 @@
-Return-Path: <greg@kroah.com>
-Date: Tue, 23 Aug 2011 13:29:51 -0700
-From: Greg KH <greg@kroah.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 00/12] staging:iio:fixes
-Message-ID: <20110823202951.GH25977@kroah.com>
-References: <1313164538-1769-1-git-send-email-jic23@cam.ac.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: greg@kroah.com
+Cc: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 12/12] staging:iio:documentation trivial typo fix
+Date: Fri, 12 Aug 2011 16:55:38 +0100
+Message-Id: <1313164538-1769-13-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1313164538-1769-1-git-send-email-jic23@cam.ac.uk>
+References: <1313164538-1769-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Aug 12, 2011 at 04:55:26PM +0100, Jonathan Cameron wrote:
-> Hi Greg,
-> 
-> Most of these are uncontroversial.
+---
+ drivers/staging/iio/Documentation/sysfs-bus-iio |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-applied, thanks.
-
-greg k-h
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio b/drivers/staging/iio/Documentation/sysfs-bus-iio
+index 467c49a..5f99f88 100644
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio
+@@ -2,7 +2,7 @@ What:		/sys/bus/iio/devices/deviceX
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Hardware chip or device accessed by on communication port.
++		Hardware chip or device accessed by one communication port.
+ 		Corresponds to a grouping of sensor channels. X is the IIO
+ 		index of the device.
+ 
+-- 
+1.7.3.4
