@@ -1,145 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:36180 "EHLO
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:54947 "EHLO
 	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751187Ab1HQJWE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Aug 2011 05:22:04 -0400
-Message-ID: <4E4B89F4.3090201@cam.ac.uk>
-Date: Wed, 17 Aug 2011 10:29:24 +0100
+	with ESMTP id S1751443Ab1HQIeO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Aug 2011 04:34:14 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH 5/6] staging:iio:adc:ad7150: use i2c_smbus commands +
- drop unused poweroff timeout control.
-References: <1313570537-26971-1-git-send-email-jic23@cam.ac.uk> <1313570537-26971-6-git-send-email-jic23@cam.ac.uk> <4E4B8413.6070204@analog.com>
-In-Reply-To: <4E4B8413.6070204@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: linux-iio@vger.kernel.org
+Cc: device-drivers-devel@blackfin.uclinux.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 4/6] staging:iio:naming in the EV_BIT macro fix.
+Date: Wed, 17 Aug 2011 09:42:15 +0100
+Message-Id: <1313570537-26971-5-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1313570537-26971-1-git-send-email-jic23@cam.ac.uk>
+References: <1313570537-26971-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/17/11 10:04, Michael Hennerich wrote:
-> On 08/17/2011 10:42 AM, Jonathan Cameron wrote:
->> Minimal changes to code layout as going to do chan spec conversion shortly.
->> Otherwise, there are numerous code sharing opportunities in here and abi
->> elements that are uterly non compliant.
->>
->> Signed-off-by: Jonathan Cameron<jic23@cam.ac.uk>
->> ---
->>   drivers/staging/iio/adc/ad7150.c |  279 +++++++++++++++++---------------------
->>   1 files changed, 122 insertions(+), 157 deletions(-)
->>
->> diff --git a/drivers/staging/iio/adc/ad7150.c b/drivers/staging/iio/adc/ad7150.c
->> index 973fcea..2bea6fe 100644
->> --- a/drivers/staging/iio/adc/ad7150.c
->> +++ b/drivers/staging/iio/adc/ad7150.c
->> @@ -88,47 +88,6 @@ ad7150_conv_mode_table[AD7150_MAX_CONV_MODE] = {
->>   };
->>
->>   /*
->> - * ad7150 register access by I2C
->> - */
->> -
->> -static int ad7150_i2c_read(struct ad7150_chip_info *chip, u8 reg, u8 *data, int len)
->> -{
->> -       struct i2c_client *client = chip->client;
->> -       int ret = 0;
->> -
->> -       ret = i2c_master_send(client,&reg, 1);
->> -       if (ret<  0) {
->> -               dev_err(&client->dev, "I2C write error\n");
->> -               return ret;
->> -       }
->> -
->> -       ret = i2c_master_recv(client, data, len);
->> -       if (ret<  0) {
->> -               dev_err(&client->dev, "I2C read error\n");
->> -               return ret;
->> -       }
->> -
->> -       return ret;
->> -}
->> -
->> -static int ad7150_i2c_write(struct ad7150_chip_info *chip, u8 reg, u8 data)
->> -{
->> -       struct i2c_client *client = chip->client;
->> -       int ret = 0;
->> -
->> -       u8 tx[2] = {
->> -               reg,
->> -               data,
->> -       };
->> -
->> -       ret = i2c_master_send(client, tx, 2);
->> -       if (ret<  0)
->> -               dev_err(&client->dev, "I2C write error\n");
->> -
->> -       return ret;
->> -}
->> -
->> -/*
->>    * sysfs nodes
->>    */
->>
->> @@ -196,16 +155,23 @@ static ssize_t ad7150_store_conversion_mode(struct device *dev,
->>          struct iio_dev *dev_info = dev_get_drvdata(dev);
->>          struct ad7150_chip_info *chip = iio_priv(dev_info);
->>          u8 cfg;
->> -       int i;
->> +       int i, ret;
->>
->> -       ad7150_i2c_read(chip, AD7150_CFG,&cfg, 1);
->> +       ret = i2c_smbus_read_byte_data(chip->client, AD7150_CFG);
->> +       if (ret<  0)
->> +               return ret;
->> +       cfg = ret;
->>
->>          for (i = 0; i<  AD7150_MAX_CONV_MODE; i++) {
->>                  if (strncmp(buf, ad7150_conv_mode_table[i].name,
->>                                  strlen(ad7150_conv_mode_table[i].name) - 1) == 0) {
->>                          chip->conversion_mode = ad7150_conv_mode_table[i].name;
->>                          cfg |= 0x18 | ad7150_conv_mode_table[i].reg_cfg;
->> -                       ad7150_i2c_write(chip, AD7150_CFG, cfg);
->> +                       ret = i2c_smbus_write_byte_data(chip->client,
->> +                                                       AD7150_CFG,
->> +                                                       cfg);
->> +                       if (ret<  0)
->> +                               return ret;
->>                          return len;
->>                  }
->>          }
->> @@ -234,10 +200,13 @@ static ssize_t ad7150_show_ch1_value(struct device *dev,
->>   {
->>          struct iio_dev *dev_info = dev_get_drvdata(dev);
->>          struct ad7150_chip_info *chip = iio_priv(dev_info);
->> -       u8 data[2];
->> +       int ret;
->> +
->> +       ret = i2c_smbus_read_word_data(chip->client, AD7150_CH1_DATA_HIGH);
-> 
-> Hi Jonathan,
-> 
-> Byte ordering issue here-
-> 
-> SMBus Read Word:  i2c_smbus_read_word_data()
-> ============================================
-> 
-> This operation is very like Read Byte; again, data is read from a
-> device, from a designated register that is specified through the Comm
-> byte. But this time, the data is a complete word (16 bits).
-> 
-> S Addr Wr [A] Comm [A] S Addr Rd [A] [DataLow] A [DataHigh] NA
-> 
-> i2c_smbus_read_word_data() and i2c_smbus_write_word_data() assumes the
-> Low byte first - however the AD7150 transmits and expects the High-byte first.
-> 
-> Therefore we need an unconditional swab16() for all smbus word transactions.
-> 
-> return sprintf(buf, "%d\n", swab16(ret));
-> 
-> 
-> -Michael
+Should always have been IIO_EV_DIR_MAX as that's what it actually controls.
+Also reduced the number to 4 as not yet seen a case needing more and this
+is not userspace visible anyway.
 
-Good catch. Thanks - will update through the series.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/industrialio-core.c |   20 ++++++++++----------
+ drivers/staging/iio/sysfs.h             |    4 ++--
+ 2 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index a14f8fb..5c81034 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -799,27 +799,27 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 
+ 	for_each_set_bit(i, &chan->event_mask, sizeof(chan->event_mask)*8) {
+ 		postfix = kasprintf(GFP_KERNEL, "%s_%s_en",
+-				    iio_ev_type_text[i/IIO_EV_TYPE_MAX],
+-				    iio_ev_dir_text[i%IIO_EV_TYPE_MAX]);
++				    iio_ev_type_text[i/IIO_EV_DIR_MAX],
++				    iio_ev_dir_text[i%IIO_EV_DIR_MAX]);
+ 		if (postfix == NULL) {
+ 			ret = -ENOMEM;
+ 			goto error_ret;
+ 		}
+ 		if (chan->modified)
+ 			mask = IIO_MOD_EVENT_CODE(chan->type, 0, chan->channel,
+-						  i/IIO_EV_TYPE_MAX,
+-						  i%IIO_EV_TYPE_MAX);
++						  i/IIO_EV_DIR_MAX,
++						  i%IIO_EV_DIR_MAX);
+ 		else if (chan->type == IIO_VOLTAGE_DIFF)
+ 			mask = IIO_MOD_EVENT_CODE(chan->type,
+ 						  chan->channel,
+ 						  chan->channel2,
+-						  i/IIO_EV_TYPE_MAX,
+-						  i%IIO_EV_TYPE_MAX);
++						  i/IIO_EV_DIR_MAX,
++						  i%IIO_EV_DIR_MAX);
+ 		else
+ 			mask = IIO_UNMOD_EVENT_CODE(chan->type,
+ 						    chan->channel,
+-						    i/IIO_EV_TYPE_MAX,
+-						    i%IIO_EV_TYPE_MAX);
++						    i/IIO_EV_DIR_MAX,
++						    i%IIO_EV_DIR_MAX);
+ 
+ 		ret = __iio_add_chan_devattr(postfix,
+ 					     "events",
+@@ -836,8 +836,8 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 			goto error_ret;
+ 
+ 		postfix = kasprintf(GFP_KERNEL, "%s_%s_value",
+-				    iio_ev_type_text[i/IIO_EV_TYPE_MAX],
+-				    iio_ev_dir_text[i%IIO_EV_TYPE_MAX]);
++				    iio_ev_type_text[i/IIO_EV_DIR_MAX],
++				    iio_ev_dir_text[i%IIO_EV_DIR_MAX]);
+ 		if (postfix == NULL) {
+ 			ret = -ENOMEM;
+ 			goto error_ret;
+diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
+index 78f1a2a..3388b8c 100644
+--- a/drivers/staging/iio/sysfs.h
++++ b/drivers/staging/iio/sysfs.h
+@@ -133,9 +133,9 @@ enum iio_event_direction {
+ 	(((u64)type << 56) | ((u64)direction << 48) | ((u64)modifier << 40) | \
+ 	 ((u64)chan_type << 32) | (chan2 << 16) | chan1 | chan)
+ 
+-#define IIO_EV_TYPE_MAX 8
++#define IIO_EV_DIR_MAX 4
+ #define IIO_EV_BIT(type, direction)			\
+-	(1 << (type*IIO_EV_TYPE_MAX + direction))
++	(1 << (type*IIO_EV_DIR_MAX + direction))
+ 
+ #define IIO_MOD_EVENT_CODE(channelclass, number, modifier,		\
+ 			   type, direction)				\
+-- 
+1.7.3.4
 
