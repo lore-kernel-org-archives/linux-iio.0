@@ -1,82 +1,48 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:54953 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751363Ab1HQIeN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Aug 2011 04:34:13 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: greg@kroah.com,
+To: linux-iio@vger.kernel.org
+Cc: device-drivers-devel@blackfin.uclinux.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 1/2] sysfs: Allow for null group pointer in create_group
-Date: Wed, 17 Aug 2011 11:17:01 +0100
-Message-Id: <1313576222-27743-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1313576222-27743-1-git-send-email-jic23@cam.ac.uk>
-References: <1313576222-27743-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: [RFC PATCH 0/6] IIO: capacitance ADC cleanup (ad7150)
+Date: Wed, 17 Aug 2011 09:42:11 +0100
+Message-Id: <1313570537-26971-1-git-send-email-jic23@cam.ac.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Needed for the case where all files are added separately rather than
-as a group.
+Hi All,
 
-Usecase - iio_chan_spec based registration of IIO devices where
-in some drivers all sysfs attributes are generated from these
-descriptive structures on probe rather than using a static table.
+Couple of bits in here that I'll push out into next set of main cleanups.
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- fs/sysfs/group.c |   24 +++++++++++++-----------
- 1 files changed, 13 insertions(+), 11 deletions(-)
+Controversial bits (hence RFC) are the introduction of IIO_EV_TYPE_MAG_ADAPTIVE
+and IIO_EV_TYPE_THRESH_ADAPTIVE, to handle the 'mean' shifted thresholds
+of this device.  I'm far from convinced these are the right way to go,
+but best I have come up with just yet.
 
-diff --git a/fs/sysfs/group.c b/fs/sysfs/group.c
-index 194414f..65d6d78 100644
---- a/fs/sysfs/group.c
-+++ b/fs/sysfs/group.c
-@@ -68,17 +68,19 @@ static int internal_create_group(struct kobject *kobj, int update,
- 	if (unlikely(update && !kobj->sd))
- 		return -EINVAL;
- 
--	if (grp->name) {
-+	if (grp && grp->name) {
- 		error = sysfs_create_subdir(kobj, grp->name, &sd);
- 		if (error)
- 			return error;
- 	} else
- 		sd = kobj->sd;
- 	sysfs_get(sd);
--	error = create_files(sd, kobj, grp, update);
--	if (error) {
--		if (grp->name)
--			sysfs_remove_subdir(sd);
-+	if (grp) {
-+		error = create_files(sd, kobj, grp, update);
-+		if (error) {
-+			if (grp->name)
-+				sysfs_remove_subdir(sd);
-+		}
- 	}
- 	sysfs_put(sd);
- 	return error;
-@@ -131,7 +133,7 @@ void sysfs_remove_group(struct kobject * kobj,
- 	struct sysfs_dirent *dir_sd = kobj->sd;
- 	struct sysfs_dirent *sd;
- 
--	if (grp->name) {
-+	if (grp && grp->name) {
- 		sd = sysfs_get_dirent(dir_sd, NULL, grp->name);
- 		if (!sd) {
- 			WARN(!sd, KERN_WARNING "sysfs group %p not found for "
-@@ -140,11 +142,11 @@ void sysfs_remove_group(struct kobject * kobj,
- 		}
- 	} else
- 		sd = sysfs_get(dir_sd);
--
--	remove_files(sd, kobj, grp);
--	if (grp->name)
--		sysfs_remove_subdir(sd);
--
-+	if (grp) {
-+	 	remove_files(sd, kobj, grp);
-+		if (grp->name)
-+			sysfs_remove_subdir(sd);
-+	}
- 	sysfs_put(sd);
- }
- 
+Note this series is completely untested.  I haven't even verified that the
+new chan spec related bits work right yet (can do that with a dummy driver).
+
+Jonathan
+
+Jonathan Cameron (6):
+  staging:iio: Add capacitance type and average_raw chan info.
+  staging:iio:attrs - make address a u64 to allow event codes to be
+    used.
+  staging:iio:add adaptive event types and missing extract_type macro.
+  staging:iio:naming in the EV_BIT macro fix.
+  staging:iio:adc:ad7150: use i2c_smbus commands + drop unused poweroff
+    timeout control.
+  staging:iio:adc:ad7150 initial chan_spec conversion
+
+ drivers/staging/iio/adc/ad7150.c        |  837 ++++++++++++++-----------------
+ drivers/staging/iio/iio.h               |    3 +
+ drivers/staging/iio/industrialio-core.c |   26 +-
+ drivers/staging/iio/sysfs.h             |    9 +-
+ 4 files changed, 411 insertions(+), 464 deletions(-)
+
 -- 
 1.7.3.4
+
