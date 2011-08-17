@@ -1,51 +1,54 @@
-Return-Path: <greg@kroah.com>
-Date: Wed, 24 Aug 2011 08:10:38 -0700
-From: Greg KH <greg@kroah.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [RFC PATCH 0/2] Sysfs group create for empty groups.
-Message-ID: <20110824151038.GB25080@kroah.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:58111 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752439Ab1HQKJH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Aug 2011 06:09:07 -0400
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: greg@kroah.com, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 2/2] sysfs: Allow for groups with no attributes - grp->attrs = NULL.
+Date: Wed, 17 Aug 2011 11:17:02 +0100
+Message-Id: <1313576222-27743-3-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1313576222-27743-1-git-send-email-jic23@cam.ac.uk>
 References: <1313576222-27743-1-git-send-email-jic23@cam.ac.uk>
- <4E4BEBFD.3040004@cam.ac.uk>
- <20110823003352.GA5982@kroah.com>
- <4E538896.3050006@cam.ac.uk>
- <4E53FEA9.3010408@cam.ac.uk>
- <20110823220311.GA15689@kroah.com>
- <4E54EBA5.9040103@cam.ac.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <4E54EBA5.9040103@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Aug 24, 2011 at 01:16:37PM +0100, Jonathan Cameron wrote:
-> I've dropped lkml on this discussion seeing as it will now be all linux-iio
-> stuff.
-> 
-> Anyhow, I've put together a patch set that does this on top of iio-blue.git.
-> 
-> Unfortunately it requires changes in a lot of drivers.
-> 
-> Basically you have to do iio_device_register last - after all ring and trigger
-> registrations (previously it had to be first).
-> 
-> Has the nice side effect of removing the need for that nasty regdone trick
-> that quite a lot of drivers use.
-> 
-> Sorry all but this will break almost all drivers currently out of tree.
+One approach to handling case where all attributes of a subdir are
+added independently via sysfs_add_file.
 
-That provides a good goal for people to get their driver into the tree
-:)
+Usecase - iio_chan_spec device registration sometimes creates all the
+elements of a subdirectory (e.g. scan_elements) rather than adding
+them to an existing subdirectory. Right now the core provides 'dummy'
+groups for this purpose, but that's uggly.
 
-> I wasn't too nasty to implement, though it does mean embedding attribute_group
-> structures in struct iio_dev, struct iio_ring_buffer and struct iio_event_interface
-> and dynamically allocating the struct attribute pointer arrays + remembering to
-> free them.  That's all in the core though so as long as I haven't messed up shouldn't
-> effect anyone.
-> 
-> + now we should get all the right notifications for file creation.
-> 
-> Will post patches once I've done all the driver reorderings as stated above.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ fs/sysfs/group.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
 
-Sounds good, thanks for letting me know.
+diff --git a/fs/sysfs/group.c b/fs/sysfs/group.c
+index 65d6d78..25fe548 100644
+--- a/fs/sysfs/group.c
++++ b/fs/sysfs/group.c
+@@ -22,6 +22,8 @@ static void remove_files(struct sysfs_dirent *dir_sd, struct kobject *kobj,
+ 	struct attribute *const* attr;
+ 	int i;
+ 
++	if (grp->attrs == NULL)
++		return;
+ 	for (i = 0, attr = grp->attrs; *attr; i++, attr++)
+ 		sysfs_hash_and_remove(dir_sd, NULL, (*attr)->name);
+ }
+@@ -32,6 +34,8 @@ static int create_files(struct sysfs_dirent *dir_sd, struct kobject *kobj,
+ 	struct attribute *const* attr;
+ 	int error = 0, i;
+ 
++	if (grp->attrs == NULL)
++		return 0;
+ 	for (i = 0, attr = grp->attrs; *attr && !error; i++, attr++) {
+ 		mode_t mode = 0;
+ 
+-- 
+1.7.3.4
 
-greg k-h
