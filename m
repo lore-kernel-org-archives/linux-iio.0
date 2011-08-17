@@ -1,12 +1,11 @@
 Return-Path: <Michael.Hennerich@analog.com>
 From: <michael.hennerich@analog.com>
-To: <greg@kroah.com>
+To: <jic23@cam.ac.uk>
 CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
-	<drivers@analog.com>, <jic23@cam.ac.uk>, Michael Hennerich
-	<michael.hennerich@analog.com>
+	<drivers@analog.com>, Michael Hennerich <michael.hennerich@analog.com>
 Subject: [PATCH] IIO: ADC: New driver for AD7190/AD7192/AD7195 4 Channel SPI ADC
-Date: Wed, 17 Aug 2011 17:29:34 +0200
-Message-ID: <1313594974-29883-1-git-send-email-michael.hennerich@analog.com>
+Date: Wed, 17 Aug 2011 17:04:15 +0200
+Message-ID: <1313593455-29706-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
@@ -37,7 +36,6 @@ Reorder elements in ad7192_platform_data.
 Remove driver bus type.
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
  drivers/staging/iio/Documentation/sysfs-bus-iio |   21 +
  drivers/staging/iio/adc/Kconfig                 |   14 +
@@ -84,7 +82,7 @@ index b39f2e1..975a9a5 100644
 @@ -161,6 +161,20 @@ config AD7816
  	  Say yes here to build support for Analog Devices AD7816/7/8
  	  temperature sensors and ADC.
-
+ 
 +config AD7192
 +	tristate "Analog Devices AD7190 AD7192 AD7195 ADC driver"
 +	depends on SPI
@@ -1362,5 +1360,5 @@ index 0000000..a0a5b61
 +};
 +
 +#endif /* IIO_ADC_AD7192_H_ */
---
+-- 
 1.7.0.4
