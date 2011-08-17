@@ -1,65 +1,51 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>, Drivers <Drivers@analog.com>
-Date: Thu, 18 Aug 2011 09:20:04 +0100
-Subject: RE: [PATCH] IIO: ADC: New driver for AD7190/AD7192/AD7195 4 Channel
- SPI ADC
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177143006BA8B8@LIMKCMBX1.ad.analog.com>
-References: <1313593455-29706-1-git-send-email-michael.hennerich@analog.com>
- <4E4BDEBC.3090606@cam.ac.uk> <4E4BE4F1.30706@cam.ac.uk>
-In-Reply-To: <4E4BE4F1.30706@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:58108 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752133Ab1HQKJH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Aug 2011 06:09:07 -0400
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: greg@kroah.com, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [RFC PATCH 0/2] Sysfs group create for empty groups.
+Date: Wed, 17 Aug 2011 11:17:00 +0100
+Message-Id: <1313576222-27743-1-git-send-email-jic23@cam.ac.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Jonathan Cameron wrote on 2011-08-17:
-> On 08/17/11 16:31, Jonathan Cameron wrote:
->> On 08/17/11 16:04, michael.hennerich@analog.com wrote:
->>> From: Michael Hennerich <michael.hennerich@analog.com>
->>>
->>> New driver for AD7190/AD7192/AD7195 4.8 kHz, Ultralow Noise, 24-Bit
->>> Sigma-Delta ADC with PGA
->>>
->>> These devices features a dual use data out ready DOUT/RDY output.
->>> In order to avoid contentions on the SPI bus, it's necessary to use
->>> spi bus locking. The DOUT/RDY output must also be wired to an
->>> interrupt capable GPIO.
->>>
->>> In INDIO_RING_TRIGGERED mode, this driver may block its SPI bus
->>> segment for an extended period of time.
->>>
->>> Changes since V1:
->>>
->>> Add missing documentation.
->>> Remove obsoleted include files.
->>> Fix typos and style issues.
->>> Fix buffer size.
->>> Split ad7192_show() into two functions.
->>> Avoid race condition add mutex.
->>> Abandon IIO_CHAN macro.
->>> Reorder elements in ad7192_platform_data.
->>> Remove driver bus type.
->>>
->>> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
->> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
->>
->> No merge issues with what I've sent Greg so far so this one should
->> go in cleanly either before them or after. (all sorts of fun later
->> on though  - I'll pull it into iio-blue and fix up shortly.)
->
-> done - please check I didn't mess this up 'too' badly.
+The following is a quick stab at avoiding a hideous work around
+we are currently using in IIO.  In some cases we have entire
+attribute groups that are created from descriptions an array
+of struct iio_chan_spec.  To keep the reference counts sane
+and cause subdirectories to be created we are currently using
+dummy groups and dummy attribute arrays (provided once in the
+core).  This series is an initial probably stupid approach
+to avoiding this.
 
-Tested - no issues.
+Greg has expressed some doubts about whether subdirectories are
+ever a good idea, but the problem occurs for the top level
+directory as well (handled by patch 1).
 
+Note, all attributes are created at probe time.  Ultimately we
+are just respinning the create_group code to allow us to create
+the attributes from a device description rather than statically
+allocating them in each driver (results in a massive reduction
+in repeated code).
 
-Greetings,
-Michael
+All opinions welcomed.
 
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368; Gesch=
-aeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret=
- Seif
+(this is definitely an rfc, the code isn't even tested yet)
+
+Jonathan
+
+p.s. Greg, sorry for pestering about this!
+
+Jonathan Cameron (2):
+  sysfs: Allow for null group pointer in create_group
+  sysfs: Allow for groups with no attributes - grp->attrs = NULL.
+
+ fs/sysfs/group.c |   28 +++++++++++++++++-----------
+ 1 files changed, 17 insertions(+), 11 deletions(-)
+
+-- 
+1.7.3.4
+
