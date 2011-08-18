@@ -1,93 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:58742 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752730Ab1HSKSM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Aug 2011 06:18:12 -0400
-Message-ID: <4E4E3A4B.7040804@cam.ac.uk>
-Date: Fri, 19 Aug 2011 11:26:19 +0100
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:53219 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755181Ab1HRKKG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Aug 2011 06:10:06 -0400
+Message-ID: <4E4CE6E6.2010308@cam.ac.uk>
+Date: Thu, 18 Aug 2011 11:18:14 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH] iio: capfun: fix - mask must be type u64
-References: <1313668903-18115-1-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1313668903-18115-1-git-send-email-michael.hennerich@analog.com>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>
+Subject: RFC: Does separate types for differential signals make sense?
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/18/11 13:01, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> mask must be type u64 otherwise it won't hold a full event code
-Fix merged to original patch.  Thanks and good spot.
-All branches updated and pushed to iio-blue.git
+Hi All,
 
-(sorry all, nasty forces rebasing  so you'll probably have to create a patch set
-of whatever you have on top and rebuild your local tree).
+Whilst working on some of the capacitance adc drivers yesterday I added a second
+differential type.   Whilst we only had IIO_VOlTAGE_DIFF, it seemed easier to
+handle it as a special case - now we have IIO_CAPACITANCE_DIFF, I'm not so sure.
 
-Going to be the case till these patches are in shape I'm afraid.
+The alternative is to add another flag to struct iio_chan_spec and build the
+differential names automatically (easy enough I think).  Nastier is how to handle
+the related event codes.  As we haven't pushed out the new 64 bit codes, this
+is a perfect time to slip in a change there (rather than two changes back to back.)
 
-> 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-> ---
->  drivers/staging/iio/iio_core.h          |    2 +-
->  drivers/staging/iio/industrialio-core.c |    9 +++++----
->  2 files changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/iio_core.h b/drivers/staging/iio/iio_core.h
-> index 433952b..85ac5b2 100644
-> --- a/drivers/staging/iio/iio_core.h
-> +++ b/drivers/staging/iio/iio_core.h
-> @@ -33,7 +33,7 @@ int __iio_add_chan_devattr(const char *postfix,
->  						struct device_attribute *attr,
->  						const char *buf,
->  						size_t len),
-> -			   int mask,
-> +			   u64 mask,
->  			   bool generic,
->  			   struct device *dev,
->  			   struct list_head *attr_list);
-> diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-> index 4aa538f..35e81f8 100644
-> --- a/drivers/staging/iio/industrialio-core.c
-> +++ b/drivers/staging/iio/industrialio-core.c
-> @@ -519,7 +519,7 @@ int __iio_add_chan_devattr(const char *postfix,
->  						struct device_attribute *attr,
->  						const char *buf,
->  						size_t len),
-> -			   int mask,
-> +			   u64 mask,
->  			   bool generic,
->  			   struct device *dev,
->  			   struct list_head *attr_list)
-> @@ -643,7 +643,7 @@ static int iio_device_register_sysfs(struct iio_dev *dev_info)
->  	else
->  		ret = sysfs_create_group(&dev_info->dev.kobj,
->  					 &iio_base_dummy_group);
-> -	
-> +
->  	if (ret) {
->  		dev_err(dev_info->dev.parent,
->  			"Failed to register sysfs hooks\n");
-> @@ -663,7 +663,7 @@ static int iio_device_register_sysfs(struct iio_dev *dev_info)
->  			if (ret < 0)
->  				goto error_clear_attrs;
->  		}
-> -	if (dev_info->name) { 
-> +	if (dev_info->name) {
->  		ret = sysfs_add_file_to_group(&dev_info->dev.kobj,
->  					      &dev_attr_name.attr,
->  					      NULL);
-> @@ -796,7 +796,8 @@ static ssize_t iio_ev_value_store(struct device *dev,
->  static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
->  				      struct iio_chan_spec const *chan)
->  {
-> -	int ret = 0, i, mask = 0;
-> +	int ret = 0, i;
-> +	u64 mask = 0;
->  	char *postfix;
->  	if (!chan->event_mask)
->  		return 0;
+Current macro to generate codes is:
+
+define IIO_EVENT_CODE(chan_type, modifier, direction,			\
+		       type, chan, chan1, chan2)			\
+	(((u64)type << 56) | ((u64)direction << 48) | ((u64)modifier << 40) | \
+	 ((u64)chan_type << 32) | (chan2 << 16) | chan1 | chan)
+
+So if we were to steal a bit to mark channels as differential, where would we do it?
+Obvious choice is in type - reducing max number of types to 128 - can't see that being
+a problem any time soon.  Could pinch the top bit off direction instead - that one
+has way more values than I can think of uses for...
+
+This is going to be an annoyingly invasive patch to do. I'll probably scrap the
+use of the IIO_CHAN macro for all differential channels rather than adding another
+parameter to it. Plan was to scrap that macro entirely eventually, so not such a
+bad thing.
+
+Jonathan
 
