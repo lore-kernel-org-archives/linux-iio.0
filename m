@@ -1,40 +1,35 @@
-Return-Path: <maxin.john@gmail.com>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <jic23@cam.ac.uk>
+CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 1/3] iio: capfun: fix typo
+Date: Fri, 19 Aug 2011 14:41:54 +0200
+Message-ID: <1313757716-20557-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-In-Reply-To: <4E523F8D.8080902@cam.ac.uk>
-References: <20110822100824.GA6671@maxin>
-	<4E523F8D.8080902@cam.ac.uk>
-Date: Mon, 22 Aug 2011 14:44:20 +0300
-Message-ID: <CAMhs6YxhF5nhb=JMSVKWOVjiZXOehFZDESeYcrVvmU21fnrhdw@mail.gmail.com>
-Subject: Re: [PATCH] staging: iio: industrialio-core: Fix compiler warning
-From: Maxin B John <maxin.john@gmail.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Michael Hennerich <michael.hennerich@analog.com>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>, Bryan Freed <bfreed@chromium.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Aug 22, 2011 at 2:37 PM, Jonathan Cameron <jic23@cam.ac.uk> wrote:
-> On 08/22/11 11:08, Maxin B. John wrote:
->> drivers/staging/iio/industrialio-core.c: In function
->> 'iio_device_add_event_sysfs':
->> drivers/staging/iio/industrialio-core.c:914: warning: 'mask' may be
->> used uninitialized in this function
-> Thanks for the patch. =A0It's actually a driver bug if this occurs.
-> We could have had a WARN_ON to let userspace know about the bug and
-> indeed taken the error route you suggest but
-> the relevant code has actually undergone a rewrite anyway so the
-> bit you are fixing doesn't exist any more anyway.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
- Yes, That makes more sense.
 
-> See http://git.kernel.org/?p=3Dlinux/kernel/git/jic23/iio-blue.git;a=3Dsu=
-mmary
-> For our current dev tree (eats babies and includes all sorts of stuff
-> that hasn't been reviewed yet - so beware).
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/iio_core.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-Thanks for sharing  this (scary) info :)
-
-Best Regards,
-Maxin
+diff --git a/drivers/staging/iio/iio_core.h b/drivers/staging/iio/iio_core.h
+index edc295e..d7eb0d8 100644
+--- a/drivers/staging/iio/iio_core.h
++++ b/drivers/staging/iio/iio_core.h
+@@ -6,7 +6,7 @@
+  * under the terms of the GNU General Public License version 2 as published by
+  * the Free Software Foundation.
+  *
+- * These definitions are meant for use only within the IIO core, not indvidual
++ * These definitions are meant for use only within the IIO core, not individual
+  * drivers.
+  */
+ 
+-- 
+1.7.0.4
