@@ -1,200 +1,90 @@
 Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4E383157.7000801@cam.ac.uk>
-Date: Tue, 02 Aug 2011 18:18:15 +0100
+Message-ID: <4E52538F.8070501@cam.ac.uk>
+Date: Mon, 22 Aug 2011 14:03:11 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
 To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: Sysfs - export sysfs_create_subdir?
-References: <4E29B6B1.2090107@cam.ac.uk> <20110724031804.GA16601@kroah.com> <4E2D348C.7020702@cam.ac.uk>
-In-Reply-To: <4E2D348C.7020702@cam.ac.uk>
+CC: "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH 0/6] Trigger locking rework and splitting up trigger.h
+References: <1310565955-13469-1-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1310565955-13469-1-git-send-email-jic23@cam.ac.uk>
 Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-As a heads up there is something very nasty going on that
-looks vaguely like it might be connected to some of the hacks in here.
-I'm trying to chase it down.
+Hi All,
 
-It's manifesting as a random issue if we don't have a dummy group
-(which was a nasty hack that just happened to work). With the dummy
-group it appears as a null pointer dereference in sysfs_remove_bin_file
-as called ultimately from sys_delete_module (on module removal).
+This set have been around for a while. I've not seen any issues yet
+and no one has screamed so I'll probably assume they are fine and send
+on to Greg shortly.
 
-> On 07/24/11 04:18, Greg KH wrote:
->> On Fri, Jul 22, 2011 at 06:43:13PM +0100, Jonathan Cameron wrote:
->>> Hi All,
->>>
->>> I have a couple of cases in IIO where under some conditions
->>> we end up using dummy attr_groups (no elements) to initialize
->>> a sub directory before dynamically creating all of its attributes.
->>
->> Ick, you really shouldn't do that.
-> Agreed :)
->>
->>> Now having dummy groups in the IIO core is fine, but it does seem
->>> a little messy.
->>>
->>> The obvious choice would be to put together a small wrapper function
->>> for sysfs_create_subdir that also does sysfs_get on the result.
->>
+Michael, you've been testing on the iio-blue.git tree which has these.
+Any sign of problems yet?
+
+Thanks,
+
+Jonathan
+> This is the result of actually checking the locking code for
+> triggers and ensuring saferemoval.
 > 
-> The sysfs_get issue still exists if we are creating all the elements in
-> the base directory (which we are in a few drivers - most have something
-> that isn't handled by the channel spec though).
+> One kicker in here.  Any driver that can do dynamic creation / removal
+> of triggers (currently only sysfs trigger), must be very very careful.
+> It's possible post this series for two devices to apparently be connected
+> to a trigger with the same name, but only one be connected to the current
+> instance of that trigger.  To my mind, if you've got into this mess, your
+> userspace is borked anyway and it doesn't actually cause a crash (unlike
+> before this set), it just doesn't work as expected.
 > 
->> That's why that function is not exported.  Creating subdirectories in
->> sysfs is not a good idea, udev doesn't like it, and you don't get
->> userspace notification for it very well either.
->>
->> What specifically are you trying to do in sysfs that you are needing
->> this?
-> We are using it purely for organisation.  Note that when I said dynamically
-> creating all the attributes I meant at probe of the device.  We aren't
-> talking about creating subdirectories under any other conditions.
+> If anyone can see a case I've missed, please do point it out.
 > 
-> The primary reason is that the attributes in IIO fall into a couple of nice
-> clean groups and there can be an awful lot of them.
+> Note this also includes the trigger.h split and the semantic change
+> discussed in 'Splitting trigger header in two and barriers'.
 > 
-> Hence taking an adis16400 as an example (from memory). Note the naming is based
-> on some more abi tweaks that are in progress.  I've also for reference added
-> the events side of things which this driver doesn't currently have (last patches
-> for this have long since bit rotted beyond being useful!).  Note this is
-> a moderately complex example.  There are devices with more channels, but this
-> has the greatest mix of anything currently in tree.
+> That is, if your driver is currently using a trigger (other than one
+> it provides), you will not be able to remove the module.  The previous
+> approach of just disconnected on removal would double release some stuff
+> anyway causing lots of unpleasant messages.
 > 
-> We have the following structure currently
-> 
-> iio:deviceX/  // top level directory containing the basic read parameters
->               // for the channels + conversion factors (offsets calibration stuff
->               // etc) + stuff that effects everything such as sampling frequency.
-> 
-> In this device that contains the following created from the chan_spec
-> structures.
-> 
-> in_voltage0_supply_raw
-> in_voltage0_supply_scale
-> in_accel_x_raw
-> in_accel_y_raw
-> in_accel_z_raw
-> in_accel_scale
-> in_gyro_x_raw
-> in_gyro_y_raw
-> in_gyro_z_raw
-> in_gyro_scale
-> in_magn_x_raw
-> in_magn_y_raw
-> in_magn_z_raw
-> in_magn_scale
-> in_temp0_raw
-> in_temp0_scale
-> in_temp0_offset
-> in_voltage1_raw
-> in_voltage1_scale
-> 
-> in this case we also have the following.
-> 
-> sampling_frequency
-> sampling_frequency_available
-> reset
-> 
-> iio:deviceX/buffer // control elements for the buffer - these depend on the selected
->                    // buffer implementation - right now this driver only uses ring_sw,
->                    // but others support kfifo and ring_sw.
->                    // Note the device driver has nothing to do with these, they are
->                    // provided by the buffer implementation.  There is no known reason
->                    // why a device driver would need to add anything to here.
-> contains
-> 
-> length
-> bytes_per_datum
-> enable
-> 
-> iio:deviceX/scan_elements  // Control and description of 'scans'. These are the mass
->                            // data reads that are pushed to the buffer on a trigger.  
-> 
-> in_voltage0_supply_en
-> in_voltage0_supply_type
-> in_gyro_x_en
-> in_gyro_x_type
-> in_gyro_y_en
-> in_gyro_y_type
-> in_gyro_z_en
-> in_gyro_z_type
-> in_accel_x_en
-> in_accel_x_type
-> in_accel_y_en
-> in_accel_y_type
-> in_accel_z_en
-> in_accel_z_type
-> in_magn_x_en
-> in_magn_x_type
-> in_magn_z_en
-> in_magn_z_type
-> in_voltage0_en
-> in_voltage0_type
-> in_timestamp_en
-> in_timestamp_type
-> 
-> All of these are only of interest if you are using the buffer.
-> 
-> If the events were implemented we would have
-> 
-> iio:deviceX/events //control of events (thresholds basically)
-> 
-> in_voltage0_supply_thresh_rising_value
-> in_voltage0_supply_thresh_rising_en
-> in_voltage0_supply_thresh_falling_value
-> in_voltage0_supply_thresh_falling_en
-> in_voltage0_supply_roc_rising_value
-> in_voltage0_supply_roc_rising_en
-> in_voltage0_supply_roc_falling_value
-> in_voltage0_supply_roc_falling_en
-> 
-> in_gyro_x_supply_thresh_rising_value
-> in_gyro_x_supply_thresh_rising_en
-> in_gyro_x_supply_thresh_falling_value
-> in_gyro_x_supply_thresh_falling_en
-> in_gyro_x_supply_roc_rising_value
-> in_gyro_x_supply_roc_rising_en
-> in_gyro_x_supply_roc_falling_value
-> in_gyro_x_supply_roc_falling_en
-> 
-> etc for all the other channels so 88 attrs in here.
-> 
-> These are only relevant if you are interested in events.  There are
-> occasionaly reasons for other elements in this directory not created
-> from the channel spec (for example if the event monitoring sampling
-> frequency is separate from the main one), but in most cases this
-> directory is entirely created from our channel description structures.
-> 
-> Note as I said above all of these are created at probe time and
-> correspond directly to the equivalent:
-> 
-> static const attribute adis16400_event_attrs[] = {
-> };
-> 
-> static const attribute_group adis16400_event_group {
->        .name = "events",
->        .attrs = adis16400_event_attrs,
-> };
-> 
-> This is more obvious after the recent flattenning of our
-> tree as a result of combining the previous 3 chrdevs per
-> complex device into one.
-> 
-> (as an aside there is also a triggerX device for the adis16400
-> data ready, but that is nice and simple and conventional).
-> 
-> We could flattern everything into one directory and do everything
-> with appropriate prefixes but that is really ugly.
-> 
-> So how should we do this?
+> Whilst this stuff is definitely broken in current mainline, I'm not
+> proposing to rush this set out.
 > 
 > Thanks,
 > 
 > Jonathan
 > 
-> p.s. Having just grepped our tree for various things whilst writing this I've
-> noticed some 'interesting' drivers that were setting attributes up in a directory
-> with DRV_NAME as the directory name.  Patch will follow to get rid of those...
-> Actually we aren't the only ones.  There are a couple of examples in misc as well..
+> Jonathan Cameron (6):
+>   staging:iio:triggers reorder module put and device put to ensure that
+>         the ops are still there if put results in device deletion.
+>   staging:iio:trigger:sysfs trigger: Add a release function to avoid
+>     warning     on module removal.
+>   staging:iio:pollfunc: Make explicit that private data is always
+>     pointer to a struct iio_dev.
+>   staging:iio: prevent removal of module connected to trigger.
+>   staging:iio:rename trigger_consumer.h to indicate it is core only.
+>   staging:iio: spit trigger.h into provider and consumer parts.
+> 
+>  drivers/staging/iio/accel/adis16201_ring.c   |    4 +-
+>  drivers/staging/iio/accel/adis16203_ring.c   |    4 +-
+>  drivers/staging/iio/accel/adis16204_ring.c   |    4 +-
+>  drivers/staging/iio/accel/adis16209_ring.c   |    4 +-
+>  drivers/staging/iio/accel/adis16240_ring.c   |    4 +-
+>  drivers/staging/iio/accel/lis3l02dq_ring.c   |    3 +-
+>  drivers/staging/iio/adc/ad7298_ring.c        |    9 +---
+>  drivers/staging/iio/adc/ad7476_ring.c        |   10 +---
+>  drivers/staging/iio/adc/ad7606_ring.c        |   10 +---
+>  drivers/staging/iio/adc/ad7793.c             |    9 +---
+>  drivers/staging/iio/adc/ad7887_ring.c        |   10 +---
+>  drivers/staging/iio/adc/ad799x_ring.c        |   10 +---
+>  drivers/staging/iio/adc/max1363_ring.c       |    9 +---
+>  drivers/staging/iio/gyro/adis16260_ring.c    |    4 +-
+>  drivers/staging/iio/iio_core_trigger.h       |   47 +++++++++++++++++
+>  drivers/staging/iio/imu/adis16400_ring.c     |    4 +-
+>  drivers/staging/iio/industrialio-core.c      |    2 +-
+>  drivers/staging/iio/industrialio-trigger.c   |    8 ++-
+>  drivers/staging/iio/meter/ade7758_ring.c     |   10 +---
+>  drivers/staging/iio/trigger.h                |   46 +----------------
+>  drivers/staging/iio/trigger/iio-trig-sysfs.c |    7 +++
+>  drivers/staging/iio/trigger_consumer.h       |   71 ++++++++++++++------------
+>  22 files changed, 134 insertions(+), 155 deletions(-)
+>  create mode 100644 drivers/staging/iio/iio_core_trigger.h
+> 
