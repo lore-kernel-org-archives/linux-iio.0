@@ -1,44 +1,62 @@
-Return-Path: <maxin.john@gmail.com>
-Date: Mon, 22 Aug 2011 13:08:24 +0300
-From: "Maxin B. John" <maxin.john@gmail.com>
-To: Greg Kroah-Hartman <gregkh@suse.de>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:32891 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751055Ab1HVL3n (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2011 07:29:43 -0400
+Message-ID: <4E523F8D.8080902@cam.ac.uk>
+Date: Mon, 22 Aug 2011 12:37:49 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
+To: "Maxin B. John" <maxin.john@gmail.com>
+CC: Greg Kroah-Hartman <gregkh@suse.de>,
 	Michael Hennerich <michael.hennerich@analog.com>,
 	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
 	Bryan Freed <bfreed@chromium.org>, linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: industrialio-core: Fix compiler warning
-Message-ID: <20110822100824.GA6671@maxin>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] staging: iio: industrialio-core: Fix compiler warning
+References: <20110822100824.GA6671@maxin>
+In-Reply-To: <20110822100824.GA6671@maxin>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-drivers/staging/iio/industrialio-core.c: In function
-'iio_device_add_event_sysfs':
-drivers/staging/iio/industrialio-core.c:914: warning: 'mask' may be
-used uninitialized in this function
+On 08/22/11 11:08, Maxin B. John wrote:
+> drivers/staging/iio/industrialio-core.c: In function
+> 'iio_device_add_event_sysfs':
+> drivers/staging/iio/industrialio-core.c:914: warning: 'mask' may be
+> used uninitialized in this function
+Thanks for the patch.  It's actually a driver bug if this occurs.
+We could have had a WARN_ON to let userspace know about the bug and
+indeed taken the error route you suggest but
+the relevant code has actually undergone a rewrite anyway so the
+bit you are fixing doesn't exist any more anyway.
 
-Signed-off-by: Maxin B. John <maxin.john@gmail.com>
----
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 19819e7..83b5953 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -911,7 +911,7 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
- 				      struct iio_chan_spec const *chan)
- {
- 
--	int ret = 0, i, mask;
-+	int ret = 0, i, mask = 0;
- 	char *postfix;
- 	if (!chan->event_mask)
- 		return 0;
-@@ -944,6 +944,8 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
- 			break;
- 		default:
- 			printk(KERN_INFO "currently unhandled type of event\n");
-+			ret = -EINVAL;
-+			goto error_ret;
- 		}
- 		ret = __iio_add_chan_devattr(postfix,
- 					     NULL,
+See http://git.kernel.org/?p=linux/kernel/git/jic23/iio-blue.git;a=summary
+For our current dev tree (eats babies and includes all sorts of stuff
+that hasn't been reviewed yet - so beware).  
+
+> Signed-off-by: Maxin B. John <maxin.john@gmail.com>
+> ---
+> diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+> index 19819e7..83b5953 100644
+> --- a/drivers/staging/iio/industrialio-core.c
+> +++ b/drivers/staging/iio/industrialio-core.c
+> @@ -911,7 +911,7 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+>  				      struct iio_chan_spec const *chan)
+>  {
+>  
+> -	int ret = 0, i, mask;
+> +	int ret = 0, i, mask = 0;
+>  	char *postfix;
+>  	if (!chan->event_mask)
+>  		return 0;
+> @@ -944,6 +944,8 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+>  			break;
+>  		default:
+>  			printk(KERN_INFO "currently unhandled type of event\n");
+> +			ret = -EINVAL;
+> +			goto error_ret;
+>  		}
+>  		ret = __iio_add_chan_devattr(postfix,
+>  					     NULL,
+
