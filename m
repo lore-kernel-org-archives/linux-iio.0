@@ -1,110 +1,211 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:55408 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751135Ab1HXOG0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Aug 2011 10:06:26 -0400
-Message-ID: <4E55074D.5010801@cam.ac.uk>
-Date: Wed, 24 Aug 2011 15:14:37 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <jic23@cam.ac.uk>
+CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 2/5] iio: ad7152: Miscellaneous fixes and touch-up
+Date: Wed, 24 Aug 2011 14:45:53 +0200
+Message-ID: <1314189956-26511-2-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1314189956-26511-1-git-send-email-michael.hennerich@analog.com>
+References: <1314189956-26511-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH 3/5] iio: ad7152: update scale handling
-References: <1314189956-26511-1-git-send-email-michael.hennerich@analog.com> <1314189956-26511-3-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1314189956-26511-3-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/24/11 13:45, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> Add scale_available attribute.
-> fix ad7152_scale_table, values are not sorted descending.
-> Use IIO_VAL_INT_PLUS_NANO, to increase granularity.
-> Update scale handling accordingly.
-> 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-merged into iio-blue.git
+Remove unused define.
+Introduce cached SETUP variables.
+Wait until calibration finished. (Device returns to idle state)
+IIO_CHAN_INFO_CALIBSCALE_SEPARATE use proper scales. (range 1.0 to 1.99999)
+i2c_smbus word transactions expect low byte first, therefore swap bytes.
+CAPDIFF is bit in SETUP not CFG.
 
-> ---
->  drivers/staging/iio/adc/ad7152.c |   26 ++++++++++++++++++++++----
->  1 files changed, 22 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7152.c b/drivers/staging/iio/adc/ad7152.c
-> index 0f653f5..d3ffcdf 100644
-> --- a/drivers/staging/iio/adc/ad7152.c
-> +++ b/drivers/staging/iio/adc/ad7152.c
-> @@ -190,12 +190,16 @@ static IIO_DEV_ATTR_FILTER_RATE_SETUP(S_IRUGO | S_IWUSR,
->  		ad7152_show_filter_rate_setup,
->  		ad7152_store_filter_rate_setup);
->  
-> +static IIO_CONST_ATTR(in_capacitance_scale_available,
-> +		      "0.000061050 0.000030525 0.000015263 0.000007631");
-> +
->  static struct attribute *ad7152_attributes[] = {
->  	&iio_dev_attr_filter_rate_setup.dev_attr.attr,
->  	&iio_dev_attr_in_capacitance0_calibbias_calibration.dev_attr.attr,
->  	&iio_dev_attr_in_capacitance1_calibbias_calibration.dev_attr.attr,
->  	&iio_dev_attr_in_capacitance0_calibscale_calibration.dev_attr.attr,
->  	&iio_dev_attr_in_capacitance1_calibscale_calibration.dev_attr.attr,
-> +	&iio_const_attr_in_capacitance_scale_available.dev_attr.attr,
->  	NULL,
->  };
->  
-> @@ -210,9 +214,9 @@ static const u8 ad7152_addresses[][4] = {
->  	  AD7152_REG_CH2_GAIN_HIGH, AD7152_REG_CH2_SETUP },
->  };
->  
-> -/* Values are micro relative to pf base. */
-> +/* Values are nano relative to pf base. */
->  static const int ad7152_scale_table[] = {
-> -	488, 244, 122, 61
-> +	30525, 7631, 15263, 61050
->  };
->  
->  static int ad7152_write_raw(struct iio_dev *dev_info,
-> @@ -253,7 +257,7 @@ static int ad7152_write_raw(struct iio_dev *dev_info,
->  		if (val != 0)
->  			return -EINVAL;
->  		for (i = 0; i < ARRAY_SIZE(ad7152_scale_table); i++)
-> -			if (val2 <= ad7152_scale_table[i])
-> +			if (val2 == ad7152_scale_table[i])
->  				break;
->  
->  		chip->setup[chan->channel] &= ~AD7152_SETUP_RANGE_4pF;
-> @@ -345,15 +349,29 @@ static int ad7152_read_raw(struct iio_dev *dev_info,
->  		*val = 0;
->  		*val2 = ad7152_scale_table[ret >> 6];
->  
-> -		return IIO_VAL_INT_PLUS_MICRO;
-> +		return IIO_VAL_INT_PLUS_NANO;
->  	default:
->  		return -EINVAL;
->  	};
->  }
-> +
-> +static int ad7152_write_raw_get_fmt(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       long mask)
-> +{
-> +	switch (mask) {
-> +	case (1 << IIO_CHAN_INFO_SCALE_SEPARATE):
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	default:
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	}
-> +}
-> +
->  static const struct iio_info ad7152_info = {
->  	.attrs = &ad7152_attribute_group,
->  	.read_raw = &ad7152_read_raw,
->  	.write_raw = &ad7152_write_raw,
-> +	.write_raw_get_fmt = &ad7152_write_raw_get_fmt,
->  	.driver_module = THIS_MODULE,
->  };
->  
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/adc/ad7152.c |   77 ++++++++++++++++++++++++--------------
+ 1 files changed, 49 insertions(+), 28 deletions(-)
 
+diff --git a/drivers/staging/iio/adc/ad7152.c b/drivers/staging/iio/adc/ad7152.c
+index b0db745..0f653f5 100644
+--- a/drivers/staging/iio/adc/ad7152.c
++++ b/drivers/staging/iio/adc/ad7152.c
+@@ -51,6 +51,7 @@
+ #define AD7152_SETUP_RANGE_0_5pF	(1 << 6)
+ #define AD7152_SETUP_RANGE_1pF		(2 << 6)
+ #define AD7152_SETUP_RANGE_4pF		(3 << 6)
++#define AD7152_SETUP_RANGE(x)		((x) << 6)
+ 
+ /* Config Register Bit Designations (AD7152_REG_CFG) */
+ #define AD7152_CONF_CH2EN		(1 << 3)
+@@ -65,8 +66,6 @@
+ #define AD7152_CAPDAC_DACEN		(1 << 7)
+ #define AD7152_CAPDAC_DACP(x)		((x) & 0x1F)
+ 
+-#define AD7152_MAX_CONV_MODE		6
+-
+ enum {
+ 	AD7152_DATA,
+ 	AD7152_OFFS,
+@@ -84,7 +83,8 @@ struct ad7152_chip_info {
+ 	 * Capacitive channel digital filter setup;
+ 	 * conversion time/update rate setup per channel
+ 	 */
+-	u8  filter_rate_setup;
++	u8	filter_rate_setup;
++	u8	setup[2];
+ };
+ 
+ static inline ssize_t ad7152_start_calib(struct device *dev,
+@@ -97,7 +97,7 @@ static inline ssize_t ad7152_start_calib(struct device *dev,
+ 	struct ad7152_chip_info *chip = iio_priv(dev_info);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	bool doit;
+-	int ret;
++	int ret, timeout = 10;
+ 
+ 	ret = strtobool(buf, &doit);
+ 	if (ret < 0)
+@@ -114,8 +114,14 @@ static inline ssize_t ad7152_start_calib(struct device *dev,
+ 	ret = i2c_smbus_write_byte_data(chip->client, AD7152_REG_CFG, regval);
+ 	if (ret < 0)
+ 		return ret;
+-	/* Unclear on period this should be set for or whether it flips back
+-	 * to idle automatically */
++
++	do {
++		mdelay(20);
++		ret = i2c_smbus_read_byte_data(chip->client, AD7152_REG_CFG);
++		if (ret < 0)
++			return ret;
++	} while ((ret == regval) && timeout--);
++
+ 	return len;
+ }
+ static ssize_t ad7152_start_offset_calib(struct device *dev,
+@@ -123,7 +129,6 @@ static ssize_t ad7152_start_offset_calib(struct device *dev,
+ 					 const char *buf,
+ 					 size_t len)
+ {
+-
+ 	return ad7152_start_calib(dev, attr, buf, len,
+ 				  AD7152_CONF_MODE_OFFS_CAL);
+ }
+@@ -221,11 +226,14 @@ static int ad7152_write_raw(struct iio_dev *dev_info,
+ 
+ 	switch (mask) {
+ 	case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
+-		if ((val < 0) | (val > 0xFFFF))
++		if (val != 1)
+ 			return -EINVAL;
++
++		val = (val2 * 1024) / 15625;
++
+ 		ret = i2c_smbus_write_word_data(chip->client,
+ 				ad7152_addresses[chan->channel][AD7152_GAIN],
+-				val);
++				swab16(val));
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -236,7 +244,7 @@ static int ad7152_write_raw(struct iio_dev *dev_info,
+ 			return -EINVAL;
+ 		ret = i2c_smbus_write_word_data(chip->client,
+ 				ad7152_addresses[chan->channel][AD7152_OFFS],
+-				val);
++				swab16(val));
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -247,14 +255,13 @@ static int ad7152_write_raw(struct iio_dev *dev_info,
+ 		for (i = 0; i < ARRAY_SIZE(ad7152_scale_table); i++)
+ 			if (val2 <= ad7152_scale_table[i])
+ 				break;
+-		ret = i2c_smbus_read_byte_data(chip->client,
+-				ad7152_addresses[chan->channel][AD7152_SETUP]);
+-		if (ret < 0)
+-			return ret;
+-		if ((ret & 0xC0) != i)
+-			ret = i2c_smbus_write_byte_data(chip->client,
++
++		chip->setup[chan->channel] &= ~AD7152_SETUP_RANGE_4pF;
++		chip->setup[chan->channel] |= AD7152_SETUP_RANGE(i);
++
++		ret = i2c_smbus_write_byte_data(chip->client,
+ 				ad7152_addresses[chan->channel][AD7152_SETUP],
+-				(ret & ~0xC0) | i);
++				chip->setup[chan->channel]);
+ 		if (ret < 0)
+ 			return ret;
+ 		else
+@@ -274,18 +281,30 @@ static int ad7152_read_raw(struct iio_dev *dev_info,
+ 	switch (mask) {
+ 	case 0:
+ 		/* First set whether in differential mode */
++
++		regval = chip->setup[chan->channel];
++
+ 		if (chan->differential)
+-			regval = AD7152_SETUP_CAPDIFF;
++			chip->setup[chan->channel] |= AD7152_SETUP_CAPDIFF;
++		else
++			chip->setup[chan->channel] &= ~AD7152_SETUP_CAPDIFF;
+ 
++		if (regval != chip->setup[chan->channel]) {
++			ret = i2c_smbus_write_byte_data(chip->client,
++				ad7152_addresses[chan->channel][AD7152_SETUP],
++				chip->setup[chan->channel]);
++			if (ret < 0)
++				return ret;
++		}
+ 		/* Make sure the channel is enabled */
+-		if (chan->address == 0)
+-			regval |= AD7152_CONF_CH1EN;
++		if (chan->channel == 0)
++			regval = AD7152_CONF_CH1EN;
+ 		else
+-			regval |= AD7152_CONF_CH2EN;
++			regval = AD7152_CONF_CH2EN;
++
+ 		/* Trigger a single read */
+ 		regval |= AD7152_CONF_MODE_SINGLE_CONV;
+-		ret = i2c_smbus_write_byte_data(chip->client,
+-				ad7152_addresses[chan->channel][AD7152_SETUP],
++		ret = i2c_smbus_write_byte_data(chip->client, AD7152_REG_CFG,
+ 				regval);
+ 		if (ret < 0)
+ 			return ret;
+@@ -296,24 +315,26 @@ static int ad7152_read_raw(struct iio_dev *dev_info,
+ 				ad7152_addresses[chan->channel][AD7152_DATA]);
+ 		if (ret < 0)
+ 			return ret;
+-		*val = ret;
++		*val = swab16(ret);
+ 
+ 		return IIO_VAL_INT;
+ 	case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
+-		/* FIXME: Hmm. very small. it's 1+ 1/(2^16 *val) */
++
+ 		ret = i2c_smbus_read_word_data(chip->client,
+ 				ad7152_addresses[chan->channel][AD7152_GAIN]);
+ 		if (ret < 0)
+ 			return ret;
+-		*val = ret;
++		/* 1 + gain_val / 2^16 */
++		*val = 1;
++		*val2 = (15625 * swab16(ret)) / 1024;
+ 
+-		return IIO_VAL_INT;
++		return IIO_VAL_INT_PLUS_MICRO;
+ 	case (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE):
+ 		ret = i2c_smbus_read_word_data(chip->client,
+ 				ad7152_addresses[chan->channel][AD7152_OFFS]);
+ 		if (ret < 0)
+ 			return ret;
+-		*val = ret;
++		*val = swab16(ret);
+ 
+ 		return IIO_VAL_INT;
+ 	case (1 << IIO_CHAN_INFO_SCALE_SEPARATE):
+-- 
+1.7.0.4
