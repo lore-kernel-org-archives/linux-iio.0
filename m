@@ -1,39 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:53444 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754743Ab1HZJ5k (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Aug 2011 05:57:40 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
-Cc: Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 05/14] staging:iio: fix typo
-Date: Fri, 26 Aug 2011 11:05:39 +0100
-Message-Id: <1314353148-6670-6-git-send-email-jic23@cam.ac.uk>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 04/14] staging:iio: remove orphaned function definition.
+Date: Fri, 26 Aug 2011 11:05:38 +0100
+Message-Id: <1314353148-6670-5-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1314353148-6670-1-git-send-email-jic23@cam.ac.uk>
 References: <1314353148-6670-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+I have no idea what this was, or what it did, but it doesn't
+do it any more.
 
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/iio_core.h |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ drivers/staging/iio/ring_generic.h |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/iio_core.h b/drivers/staging/iio/iio_core.h
-index edc295e..d7eb0d8 100644
---- a/drivers/staging/iio/iio_core.h
-+++ b/drivers/staging/iio/iio_core.h
-@@ -6,7 +6,7 @@
-  * under the terms of the GNU General Public License version 2 as published by
-  * the Free Software Foundation.
-  *
-- * These definitions are meant for use only within the IIO core, not indvidual
-+ * These definitions are meant for use only within the IIO core, not individual
-  * drivers.
-  */
+diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
+index db8d0d1..a63a9cb 100644
+--- a/drivers/staging/iio/ring_generic.h
++++ b/drivers/staging/iio/ring_generic.h
+@@ -211,8 +211,6 @@ int iio_ring_buffer_register_ex(struct iio_dev *indio_dev, int id,
+ 				const struct iio_chan_spec *channels,
+ 				int num_channels);
  
+-void iio_ring_access_release(struct device *dev);
+-
+ /**
+  * iio_ring_buffer_unregister() - unregister the buffer from IIO core
+  * @indio_dev: the device with the buffer to be unregistered
 -- 
 1.7.3.4
-
