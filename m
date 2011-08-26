@@ -1,39 +1,60 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:59237 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751046Ab1HZL7K (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Aug 2011 07:59:10 -0400
-Message-ID: <4E578C79.2030105@cam.ac.uk>
-Date: Fri, 26 Aug 2011 13:07:21 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>,
-	Drivers <Drivers@analog.com>
-Subject: Re: [PATCH] iio: accel: ADIS16209: Fix double registration of in_incli0_index
-References: <1314358594-2565-1-git-send-email-michael.hennerich@analog.com> <4E578AD1.8080806@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D59177146E6F62D54@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D59177146E6F62D54@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 00/16] staging:iio: CDC and other driver updates.
+Date: Fri, 26 Aug 2011 11:19:17 +0100
+Message-Id: <1314353973-7662-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/26/11 12:56, Hennerich, Michael wrote:
-> Jonathan Cameron wrote on 2011-08-26:
->> On 08/26/11 12:36, michael.hennerich@analog.com wrote:
->>> From: Michael Hennerich <michael.hennerich@analog.com>
->>>
->>> iio (null): tried to double register : in_incli0_index
->> oops.  That (null) is clearly an issue to.
->>
->> As for the fix.  Yet another bug due to that pesky IIO_CHAN
->> macro. hohum.
->>
->> Thanks and merged.
-> 
-> I'm currently in progress testing some devices, since I need to update our documentation.
-> Will send more patches - would be great if you could take them through your tree.
-Will do and thanks for all the testing.
+Hi All,
+
+Straight forward series - as you can see I've rolled in Michael's
+recent posting so you can see where they fit.
+
+This lot sits on top of
+staging:iio: New stuff and reworks.
+
+Nothing terribly interesting.  Mostly bringing a few drivers into
+line with the abi.  Thanks particularly to Michael for testing my
+hardware free changes and chasing down all the bugs!
 
 Jonathan
+
+Jonathan Cameron (7):
+  staging:iio:dac:ad5791 chan spec conversion.
+  staging:iio:adc:ad7150: chan_spec conv + i2c_smbus commands + drop
+    unused poweroff timeout control.
+  staging:iio:adc:ad7152 use smbus read / write functions + checkpatch
+    fixes
+  staging:iio:adc:ad7152 set correct number of channels for ad7153.
+  staging:iio:adc:ad7152 bring more into line with abi.
+  staging:iio:adc:ad7291 bring into line with current abi + chan_spec
+    conversion.
+  staging:iio:imu:adis16400 cleanups
+
+Michael Hennerich (9):
+  staging:iio:adc:ad7150: remove conversion mode handling.
+  staging:iio:adc:ad7150: Add support for the second interrupt strobe.
+  staging:iio:adc:ad7152: increase readability by introducing proper
+    bit defines
+  staging:iio:adc:ad7152: Miscellaneous fixes and touch-up
+  staging:iio:adc:ad7152: update scale handling
+  staging:iio:adc:ad7152: Add proper locking
+  staging:iio:adc:ad7152: Update sample rate, conversion time, digital
+    filter handling
+  staging:iio:adc:ad7152: Fix differential channel return value and
+    increase delay.
+  iio: imu: adis16400: Avoid using printk facility
+
+ drivers/staging/iio/adc/ad7150.c            |  930 +++++++++++----------------
+ drivers/staging/iio/adc/ad7152.c            |  783 +++++++++++------------
+ drivers/staging/iio/adc/ad7291.c            |  892 +++++++++-----------------
+ drivers/staging/iio/dac/ad5791.c            |  158 ++---
+ drivers/staging/iio/dac/ad5791.h            |    4 -
+ drivers/staging/iio/imu/adis16400_core.c    |  607 ++++++++++++------
+ drivers/staging/iio/imu/adis16400_trigger.c |    2 +-
+ 7 files changed, 1560 insertions(+), 1816 deletions(-)
+
+-- 
+1.7.3.4
