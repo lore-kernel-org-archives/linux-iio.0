@@ -1,77 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:58661 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751370Ab1HZL54 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Aug 2011 07:57:56 -0400
-Message-ID: <4E578C2E.4010002@cam.ac.uk>
-Date: Fri, 26 Aug 2011 13:06:06 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from mail-wy0-f174.google.com ([74.125.82.174]:60979 "EHLO
+	mail-wy0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753954Ab1HZBR6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 25 Aug 2011 21:17:58 -0400
+Received: by wyg24 with SMTP id 24so2097107wyg.19
+        for <linux-iio@vger.kernel.org>; Thu, 25 Aug 2011 18:17:57 -0700 (PDT)
+Date: Fri, 26 Aug 2011 04:15:42 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Grant Grundler <grundler@google.com>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: re: STAGING:iio:light: fix ISL29018 init to handle brownout
+Message-ID: <20110826011542.GK5975@shale.localdomain>
 MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>,
-	Drivers <Drivers@analog.com>
-Subject: Re: [PATCH] iio: imu: adis16400: Avoid null pointer dereference
-References: <1314348200-11112-1-git-send-email-michael.hennerich@analog.com> <4E57655D.4060303@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D59177146E6F62D45@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D59177146E6F62D45@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/26/11 12:40, Hennerich, Michael wrote:
-> Jonathan Cameron wrote on 2011-08-26:
->> On 08/26/11 09:43, michael.hennerich@analog.com wrote:
->>> From: Michael Hennerich <michael.hennerich@analog.com>
->>>
->>> Not sure if this is a proper fix. However it should do the trick.
->>> ring->scan_maks is allocated in iio_ring_buffer_register() which called
->>> after adis16400_configure_ring. So the time this pointer dereference
->>> takes place scan_mask is uninitialized.
->> Dratt missed that one.  This definitely isn't the right fix as it will
->> get wiped out when that element is initialized.
->>
->> Mostly I fixed equivalents elsewhere by not setting a default. After all
->> user space shouldn't be relying on any particular set of channels being
->> enable anyway.  Do we have a good reason to not just remove it here?
-> 
-> Feel free to remove it - I don't have a good reason other than convenience...
-Added to the patch that scraps the rest of these and pushed out to iio-blue.git
-> 
->>> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
->>> ---
->>>  drivers/staging/iio/imu/adis16400_ring.c |    2 +-
->>>  1 files changed, 1 insertions(+), 1 deletions(-)
->>> diff --git a/drivers/staging/iio/imu/adis16400_ring.c
->>> b/drivers/staging/iio/imu/adis16400_ring.c index 1a47d07..f6d50be
->>> 100644 --- a/drivers/staging/iio/imu/adis16400_ring.c +++
->>> b/drivers/staging/iio/imu/adis16400_ring.c @@ -191,7 +191,7 @@ int
->>> adis16400_configure_ring(struct iio_dev
->> *indio_dev)
->>>      ring->setup_ops = &adis16400_ring_setup_ops;
->>>      ring->owner = THIS_MODULE;
->>>      /* Set default scan mode - assumes single long is big enough */
->>> -    *ring->scan_mask = st->variant->default_scan_mask;
->>> +    ring->scan_mask = &st->variant->default_scan_mask;
->>>      ring->scan_count = hweight_long(st->variant->default_scan_mask);
->>>
->>>      indio_dev->pollfunc =
->> iio_alloc_pollfunc(&iio_pollfunc_store_time,
->>
-> 
-> Greetings,
-> Michael
-> 
-> --
-> Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-> Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-> Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret Seif
-> 
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Hi Grant,
 
+There is a memory corruption bug in 176f9f29cec9 "STAGING:iio:light:
+fix ISL29018 init to handle brownout".
+
+In isl29018_chip_init() we call:
+        status = isl29018_write_data(client, ISL29018_REG_TEST, 0,               
+                                ISL29018_TEST_MASK, ISL29018_TEST_SHIFT);        
+
+where ISL29018_REG_TEST is 8.
+
+In isl29018_write_data() it uses reg (ISL29018_REG_TEST) as the
+offset into the ->reg_cache[] array:
+	chip->reg_cache[reg] = regval;
+
+But ->reg_cache[] only has 3 elements, so we're past the end of the
+array.
+
+I don't know the code well enough to fix this.
+
+regards,
+dan carpenter
