@@ -2,93 +2,343 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 00/14] staging:iio:cleanups and bug fixes.
-Date: Fri, 26 Aug 2011 11:05:34 +0100
-Message-Id: <1314353148-6670-1-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 14/14] staging:iio:various cleanup regulator use paths.
+Date: Fri, 26 Aug 2011 11:05:48 +0100
+Message-Id: <1314353148-6670-15-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1314353148-6670-1-git-send-email-jic23@cam.ac.uk>
+References: <1314353148-6670-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-This set sits on top of the chrdev unifying set.
+No way iio_device_allocate or iio_device_unregister effected
+by regulators so copying tricks not needed.
 
-Not much in the way of controversial stuff here.
+This is really about regularizing the layout of drivers.
 
-Patches 1, 3, 4, 9 remove stuff that isn't needed
-Patch 2 makes use of the ida_simple stuff of Rusty Russell
-Patches 5, 6, 7, 8, 10, 11, 13 are conventional cleanups.
-Patch 12 is a set of free then use bug fixes thrown up during
-the attribute registration rework ithat will follow shortly.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/adc/ad7476_core.c |   26 +++++-------
+ drivers/staging/iio/dac/ad5624r_spi.c |   47 ++++++++++-----------
+ drivers/staging/iio/dac/ad5686.c      |    7 +--
+ drivers/staging/iio/dac/ad5791.c      |   74 +++++++++++++++------------------
+ 4 files changed, 70 insertions(+), 84 deletions(-)
 
-Please shout fairly quicly if you have issues with any of these as
-I'd like to push them out soon.
-
-Thanks,
-
-Jonathan
-
-Jonathan Cameron (13):
-  staging:iio: remove broken support for multiple event interfaces.
-  staging:iio: use ida_simple_get and ida_simple_remove + merge ids
-  staging:iio: remove defunct iio_put and iio_get.
-  staging:iio: remove orphaned function definition.
-  staging:iio:trivial add a string array for IIO_RAW and IIO_PROCESSED.
-  staging:iio: struct iio_dev formatting cleanup and documentation
-    fixes.
-  staging:iio:buffering drag some stray docs back to correct place.
-  staging:iio:buffering cleanup ring_buffer_register_ex naming.
-  staging:iio: push "sysfs.h" and linux/irq.h out of iio.h
-  staging:iio:light:tsl2563 remove use of IIO_CHAN macro and make use
-    modifier defines.
-  staging:iio:light:tsl2563 remove unused headers.
-  staging:iio:fix using iio_priv or iio_dev after iio_unregister_device
-  staging:iio:various cleanup regulator use paths.
-
-Michael Hennerich (1):
-  staging:iio: fix typo
-
- drivers/staging/iio/accel/adis16201_core.c      |    8 +-
- drivers/staging/iio/accel/adis16203_core.c      |    8 +-
- drivers/staging/iio/accel/adis16204_core.c      |    8 +-
- drivers/staging/iio/accel/adis16209_core.c      |    8 +-
- drivers/staging/iio/accel/adis16240_core.c      |    8 +-
- drivers/staging/iio/accel/lis3l02dq_core.c      |   19 +-
- drivers/staging/iio/accel/sca3000_core.c        |   15 +-
- drivers/staging/iio/adc/ad7150.c                |   21 +-
- drivers/staging/iio/adc/ad7192.c                |    6 +-
- drivers/staging/iio/adc/ad7280a.c               |    9 +-
- drivers/staging/iio/adc/ad7291.c                |   14 +-
- drivers/staging/iio/adc/ad7298_core.c           |    6 +-
- drivers/staging/iio/adc/ad7314.c                |    1 -
- drivers/staging/iio/adc/ad7476_core.c           |   32 ++--
- drivers/staging/iio/adc/ad7606_core.c           |    6 +-
- drivers/staging/iio/adc/ad7745.c                |    5 +-
- drivers/staging/iio/adc/ad7793.c                |    6 +-
- drivers/staging/iio/adc/ad7816.c                |    6 +-
- drivers/staging/iio/adc/ad7887_core.c           |    6 +-
- drivers/staging/iio/adc/ad799x_core.c           |   10 +-
- drivers/staging/iio/adc/adt7310.c               |    8 +-
- drivers/staging/iio/adc/adt7410.c               |    7 +-
- drivers/staging/iio/adc/adt75.c                 |    4 +-
- drivers/staging/iio/adc/max1363_core.c          |   10 +-
- drivers/staging/iio/addac/adt7316.c             |   19 +-
- drivers/staging/iio/dac/ad5504.c                |    4 +-
- drivers/staging/iio/dac/ad5624r_spi.c           |   53 ++---
- drivers/staging/iio/dac/ad5686.c                |    7 +-
- drivers/staging/iio/dac/ad5791.c                |   74 +++----
- drivers/staging/iio/dac/max517.c                |    1 +
- drivers/staging/iio/gyro/adis16260_core.c       |    8 +-
- drivers/staging/iio/iio.h                       |   35 ++--
- drivers/staging/iio/iio_core.h                  |   12 +-
- drivers/staging/iio/impedance-analyzer/ad5933.c |    2 +-
- drivers/staging/iio/imu/adis16400_core.c        |    6 +-
- drivers/staging/iio/industrialio-core.c         |  285 ++++++++---------------
- drivers/staging/iio/industrialio-ring.c         |    9 +-
- drivers/staging/iio/industrialio-trigger.c      |   50 +----
- drivers/staging/iio/light/isl29018.c            |    2 +-
- drivers/staging/iio/light/tsl2563.c             |   34 ++-
- drivers/staging/iio/magnetometer/ak8975.c       |    3 +-
- drivers/staging/iio/meter/ade7758_core.c        |    6 +-
- drivers/staging/iio/resolver/ad2s1210.c         |    2 +-
- drivers/staging/iio/ring_generic.h              |   29 ++--
- 44 files changed, 359 insertions(+), 513 deletions(-)
-
+diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
+index e38358b..161820f 100644
+--- a/drivers/staging/iio/adc/ad7476_core.c
++++ b/drivers/staging/iio/adc/ad7476_core.c
+@@ -129,7 +129,6 @@ static int __devinit ad7476_probe(struct spi_device *spi)
+ 	struct iio_dev *indio_dev;
+ 	int ret, voltage_uv = 0;
+ 	bool reg_done = false;
+-	struct regulator *reg;
+ 
+ 	indio_dev = iio_allocate_device(sizeof(*st));
+ 	if (indio_dev == NULL) {
+@@ -137,15 +136,14 @@ static int __devinit ad7476_probe(struct spi_device *spi)
+ 		goto error_ret;
+ 	}
+ 	st = iio_priv(indio_dev);
+-	reg = regulator_get(&spi->dev, "vcc");
+-	if (!IS_ERR(reg)) {
+-		ret = regulator_enable(reg);
++	st->reg = regulator_get(&spi->dev, "vcc");
++	if (!IS_ERR(st->reg)) {
++		ret = regulator_enable(st->reg);
+ 		if (ret)
+ 			goto error_put_reg;
+ 
+-		voltage_uv = regulator_get_voltage(reg);
++		voltage_uv = regulator_get_voltage(st->reg);
+ 	}
+-	st->reg = reg;
+ 	st->chip_info =
+ 		&ad7476_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+ 
+@@ -196,11 +194,11 @@ error_cleanup_ring:
+ 	ad7476_ring_cleanup(indio_dev);
+ 	iio_device_unregister(indio_dev);
+ error_disable_reg:
+-	if (!IS_ERR(reg))
++	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
+ error_put_reg:
+-	if (!IS_ERR(reg))
+-		regulator_put(reg);
++	if (!IS_ERR(st->reg))
++		regulator_put(st->reg);
+ 	if (!reg_done)
+ 		iio_free_device(indio_dev);
+ error_ret:
+@@ -211,16 +209,14 @@ static int ad7476_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad7476_state *st = iio_priv(indio_dev);
+-	/* copy needed as st will have been freed */
+-	struct regulator *reg = st->reg;
+ 
+ 	iio_ring_buffer_unregister(indio_dev);
+ 	ad7476_ring_cleanup(indio_dev);
+-	iio_device_unregister(indio_dev);
+-	if (!IS_ERR(reg)) {
+-		regulator_disable(reg);
+-		regulator_put(reg);
++	if (!IS_ERR(st->reg)) {
++		regulator_disable(st->reg);
++		regulator_put(st->reg);
+ 	}
++	iio_device_unregister(indio_dev);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
+index 4581d26..5117c76 100644
+--- a/drivers/staging/iio/dac/ad5624r_spi.c
++++ b/drivers/staging/iio/dac/ad5624r_spi.c
+@@ -227,24 +227,23 @@ static int __devinit ad5624r_probe(struct spi_device *spi)
+ {
+ 	struct ad5624r_state *st;
+ 	struct iio_dev *indio_dev;
+-	struct regulator *reg;
+ 	int ret, voltage_uv = 0;
+ 
+-	reg = regulator_get(&spi->dev, "vcc");
+-	if (!IS_ERR(reg)) {
+-		ret = regulator_enable(reg);
+-		if (ret)
+-			goto error_put_reg;
+-
+-		voltage_uv = regulator_get_voltage(reg);
+-	}
+ 	indio_dev = iio_allocate_device(sizeof(*st));
+ 	if (indio_dev == NULL) {
+ 		ret = -ENOMEM;
+-		goto error_disable_reg;
++		goto error_ret;
+ 	}
+ 	st = iio_priv(indio_dev);
+-	st->reg = reg;
++	st->reg = regulator_get(&spi->dev, "vcc");
++	if (!IS_ERR(st->reg)) {
++		ret = regulator_enable(st->reg);
++		if (ret)
++			goto error_put_reg;
++
++		voltage_uv = regulator_get_voltage(st->reg);
++	}
++
+ 	spi_set_drvdata(spi, indio_dev);
+ 	st->chip_info =
+ 		&ad5624r_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+@@ -264,22 +263,23 @@ static int __devinit ad5624r_probe(struct spi_device *spi)
+ 	ret = ad5624r_spi_write(spi, AD5624R_CMD_INTERNAL_REFER_SETUP, 0,
+ 				!!voltage_uv, 16);
+ 	if (ret)
+-		goto error_free_dev;
++		goto error_disable_reg;
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+-		goto error_free_dev;
++		goto error_disable_reg;
+ 
+ 	return 0;
+ 
+-error_free_dev:
+-	iio_free_device(indio_dev);
++
+ error_disable_reg:
+-	if (!IS_ERR(reg))
+-		regulator_disable(reg);
++	if (!IS_ERR(st->reg))
++		regulator_disable(st->reg);
+ error_put_reg:
+-	if (!IS_ERR(reg))
+-		regulator_put(reg);
++	if (!IS_ERR(st->reg))
++		regulator_put(st->reg);
++	iio_free_device(indio_dev);
++error_ret:
+ 
+ 	return ret;
+ }
+@@ -288,13 +288,12 @@ static int __devexit ad5624r_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad5624r_state *st = iio_priv(indio_dev);
+-	struct regulator *reg = st->reg;
+ 
+-	iio_device_unregister(indio_dev);
+-	if (!IS_ERR(reg)) {
+-		regulator_disable(reg);
+-		regulator_put(reg);
++	if (!IS_ERR(st->reg)) {
++		regulator_disable(st->reg);
++		regulator_put(st->reg);
+ 	}
++	iio_device_unregister(indio_dev);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/staging/iio/dac/ad5686.c b/drivers/staging/iio/dac/ad5686.c
+index fd67cfa..4dc1831 100644
+--- a/drivers/staging/iio/dac/ad5686.c
++++ b/drivers/staging/iio/dac/ad5686.c
+@@ -451,11 +451,10 @@ static int __devexit ad5686_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad5686_state *st = iio_priv(indio_dev);
+-	struct regulator *reg = st->reg;
+ 
+-	if (!IS_ERR(reg)) {
+-		regulator_disable(reg);
+-		regulator_put(reg);
++	if (!IS_ERR(st->reg)) {
++		regulator_disable(st->reg);
++		regulator_put(st->reg);
+ 	}
+ 
+ 	iio_device_unregister(indio_dev);
+diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
+index 5b00b70..edf7477 100644
+--- a/drivers/staging/iio/dac/ad5791.c
++++ b/drivers/staging/iio/dac/ad5791.c
+@@ -296,38 +296,37 @@ static int __devinit ad5791_probe(struct spi_device *spi)
+ {
+ 	struct ad5791_platform_data *pdata = spi->dev.platform_data;
+ 	struct iio_dev *indio_dev;
+-	struct regulator *reg_vdd, *reg_vss;
+ 	struct ad5791_state *st;
+ 	int ret, pos_voltage_uv = 0, neg_voltage_uv = 0;
+ 
+-	reg_vdd = regulator_get(&spi->dev, "vdd");
+-	if (!IS_ERR(reg_vdd)) {
+-		ret = regulator_enable(reg_vdd);
++	indio_dev = iio_allocate_device(sizeof(*st));
++	if (indio_dev == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++	st = iio_priv(indio_dev);
++	st->reg_vdd = regulator_get(&spi->dev, "vdd");
++	if (!IS_ERR(st->reg_vdd)) {
++		ret = regulator_enable(st->reg_vdd);
+ 		if (ret)
+ 			goto error_put_reg_pos;
+ 
+-		pos_voltage_uv = regulator_get_voltage(reg_vdd);
++		pos_voltage_uv = regulator_get_voltage(st->reg_vdd);
+ 	}
+ 
+-	reg_vss = regulator_get(&spi->dev, "vss");
+-	if (!IS_ERR(reg_vss)) {
+-		ret = regulator_enable(reg_vss);
++	st->reg_vss = regulator_get(&spi->dev, "vss");
++	if (!IS_ERR(st->reg_vss)) {
++		ret = regulator_enable(st->reg_vss);
+ 		if (ret)
+ 			goto error_put_reg_neg;
+ 
+-		neg_voltage_uv = regulator_get_voltage(reg_vss);
++		neg_voltage_uv = regulator_get_voltage(st->reg_vss);
+ 	}
+ 
+-	indio_dev = iio_allocate_device(sizeof(*st));
+-	if (indio_dev == NULL) {
+-		ret = -ENOMEM;
+-		goto error_disable_reg_neg;
+-	}
+-	st = iio_priv(indio_dev);
+ 	st->pwr_down = true;
+ 	st->spi = spi;
+ 
+-	if (!IS_ERR(reg_vss) && !IS_ERR(reg_vdd))
++	if (!IS_ERR(st->reg_vss) && !IS_ERR(st->reg_vdd))
+ 		st->vref_mv = (pos_voltage_uv - neg_voltage_uv) / 1000;
+ 	else if (pdata)
+ 		st->vref_mv = pdata->vref_pos_mv - pdata->vref_neg_mv;
+@@ -336,7 +335,7 @@ static int __devinit ad5791_probe(struct spi_device *spi)
+ 
+ 	ret = ad5791_spi_write(spi, AD5791_ADDR_SW_CTRL, AD5791_SWCTRL_RESET);
+ 	if (ret)
+-		goto error_free_dev;
++		goto error_disable_reg_neg;
+ 
+ 	st->chip_info =
+ 		&ad5791_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+@@ -349,10 +348,7 @@ static int __devinit ad5791_probe(struct spi_device *spi)
+ 	ret = ad5791_spi_write(spi, AD5791_ADDR_CTRL, st->ctrl |
+ 		AD5791_CTRL_OPGND | AD5791_CTRL_DACTRI);
+ 	if (ret)
+-		goto error_free_dev;
+-
+-	st->reg_vdd = reg_vdd;
+-	st->reg_vss = reg_vss;
++		goto error_disable_reg_neg;
+ 
+ 	spi_set_drvdata(spi, indio_dev);
+ 	indio_dev->dev.parent = &spi->dev;
+@@ -361,25 +357,24 @@ static int __devinit ad5791_probe(struct spi_device *spi)
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+-		goto error_free_dev;
++		goto error_disable_reg_neg;
+ 
+ 	return 0;
+ 
+-error_free_dev:
+-	iio_free_device(indio_dev);
+-
+ error_disable_reg_neg:
+-	if (!IS_ERR(reg_vss))
+-		regulator_disable(reg_vss);
++	if (!IS_ERR(st->reg_vss))
++		regulator_disable(st->reg_vss);
+ error_put_reg_neg:
+-	if (!IS_ERR(reg_vss))
+-		regulator_put(reg_vss);
++	if (!IS_ERR(st->reg_vss))
++		regulator_put(st->reg_vss);
+ 
+-	if (!IS_ERR(reg_vdd))
+-		regulator_disable(reg_vdd);
++	if (!IS_ERR(st->reg_vdd))
++		regulator_disable(st->reg_vdd);
+ error_put_reg_pos:
+-	if (!IS_ERR(reg_vdd))
+-		regulator_put(reg_vdd);
++	if (!IS_ERR(st->reg_vdd))
++		regulator_put(st->reg_vdd);
++	iio_free_device(indio_dev);
++error_ret:
+ 
+ 	return ret;
+ }
+@@ -388,20 +383,17 @@ static int __devexit ad5791_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad5791_state *st = iio_priv(indio_dev);
+-	struct regulator *reg_vdd = st->reg_vdd;
+-	struct regulator *reg_vss = st->reg_vss;
+-
+-	iio_device_unregister(indio_dev);
+ 
+ 	if (!IS_ERR(st->reg_vdd)) {
+-		regulator_disable(reg_vdd);
+-		regulator_put(reg_vdd);
++		regulator_disable(st->reg_vdd);
++		regulator_put(st->reg_vdd);
+ 	}
+ 
+ 	if (!IS_ERR(st->reg_vss)) {
+-		regulator_disable(reg_vss);
+-		regulator_put(reg_vss);
++		regulator_disable(st->reg_vss);
++		regulator_put(st->reg_vss);
+ 	}
++	iio_device_unregister(indio_dev);
+ 
+ 	return 0;
+ }
 -- 
 1.7.3.4
