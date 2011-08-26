@@ -2,60 +2,115 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 11/14] staging:iio:light:tsl2563 remove use of IIO_CHAN macro and make use modifier defines.
-Date: Fri, 26 Aug 2011 11:05:45 +0100
-Message-Id: <1314353148-6670-12-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 10/14] staging:iio: push "sysfs.h" and linux/irq.h out of iio.h
+Date: Fri, 26 Aug 2011 11:05:44 +0100
+Message-Id: <1314353148-6670-11-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1314353148-6670-1-git-send-email-jic23@cam.ac.uk>
 References: <1314353148-6670-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-This avoids issues in the new event code introduced shortly + makes
-moving this one out of staging easier.
+These are no longer needed.
+Requires a few driver updates for places "sysfs.h" should have been
+present but wasn't.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/light/tsl2563.c |   28 +++++++++++++++++++---------
- 1 files changed, 19 insertions(+), 9 deletions(-)
+ drivers/staging/iio/dac/max517.c          |    1 +
+ drivers/staging/iio/iio.h                 |    2 --
+ drivers/staging/iio/industrialio-core.c   |    2 ++
+ drivers/staging/iio/industrialio-ring.c   |    1 +
+ drivers/staging/iio/light/isl29018.c      |    2 +-
+ drivers/staging/iio/light/tsl2563.c       |    1 +
+ drivers/staging/iio/magnetometer/ak8975.c |    2 +-
+ 7 files changed, 7 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/staging/iio/dac/max517.c b/drivers/staging/iio/dac/max517.c
+index ed5d351..d54262f 100644
+--- a/drivers/staging/iio/dac/max517.c
++++ b/drivers/staging/iio/dac/max517.c
+@@ -26,6 +26,7 @@
+ #include <linux/err.h>
+ 
+ #include "../iio.h"
++#include "../sysfs.h"
+ #include "dac.h"
+ 
+ #include "max517.h"
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index 36a826e..6b896a5 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -13,8 +13,6 @@
+ 
+ #include <linux/device.h>
+ #include <linux/cdev.h>
+-#include <linux/irq.h>
+-#include "sysfs.h"
+ 
+ /* IIO TODO LIST */
+ /*
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index e83d626..f59a603 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -26,6 +26,8 @@
+ #include "iio_core.h"
+ #include "iio_core_trigger.h"
+ #include "chrdev.h"
++#include "sysfs.h"
++
+ /* IDA to assign each registered device a unique id*/
+ static DEFINE_IDA(iio_ida);
+ 
+diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
+index 947f542..e844246 100644
+--- a/drivers/staging/iio/industrialio-ring.c
++++ b/drivers/staging/iio/industrialio-ring.c
+@@ -22,6 +22,7 @@
+ 
+ #include "iio.h"
+ #include "iio_core.h"
++#include "sysfs.h"
+ #include "ring_generic.h"
+ 
+ 
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index da5bb33..f31e8c2 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -28,7 +28,7 @@
+ #include <linux/delay.h>
+ #include <linux/slab.h>
+ #include "../iio.h"
+-
++#include "../sysfs.h"
+ #define CONVERSION_TIME_MS		100
+ 
+ #define ISL29018_REG_ADD_COMMAND1	0x00
 diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
-index bd879ad..3493d93 100644
+index 60d21f3..bd879ad 100644
 --- a/drivers/staging/iio/light/tsl2563.c
 +++ b/drivers/staging/iio/light/tsl2563.c
-@@ -528,16 +528,26 @@ error_ret:
- 	return ret;
- }
+@@ -38,6 +38,7 @@
+ #include <linux/slab.h>
  
--#define INFO_MASK (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE)
--#define EVENT_MASK (IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) | \
--		    IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING))
--#define IIO_CHAN_2563(type, mod, proc, chan, imask, emask) \
--	IIO_CHAN(type, mod, 1, proc, NULL, chan, 0, imask, 0, 0, {}, emask)
+ #include "../iio.h"
++#include "../sysfs.h"
+ #include "tsl2563.h"
+ 
+ /* Use this many bits for fraction part. */
+diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+index a17fa9f..43936cb 100644
+--- a/drivers/staging/iio/magnetometer/ak8975.c
++++ b/drivers/staging/iio/magnetometer/ak8975.c
+@@ -31,7 +31,7 @@
+ #include <linux/gpio.h>
+ 
+ #include "../iio.h"
 -
- static const struct iio_chan_spec tsl2563_channels[] = {
--	IIO_CHAN_2563(IIO_LIGHT,     0, 1, 0, 0, 0),
--	IIO_CHAN_2563(IIO_INTENSITY, 1, 0, 0, INFO_MASK, EVENT_MASK),
--	IIO_CHAN_2563(IIO_INTENSITY, 1, 0, 1, INFO_MASK, 0),
-+	{
-+		.type = IIO_LIGHT,
-+		.indexed = 1,
-+		.channel = 0,
-+	}, {
-+		.type = IIO_INTENSITY,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_LIGHT_BOTH,
-+		.info_mask = (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE),
-+		.event_mask = (IIO_EV_BIT(IIO_EV_TYPE_THRESH,
-+					  IIO_EV_DIR_RISING) |
-+			       IIO_EV_BIT(IIO_EV_TYPE_THRESH,
-+					  IIO_EV_DIR_FALLING)),
-+	}, {
-+		.type = IIO_INTENSITY,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_LIGHT_BOTH,
-+		.info_mask = (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE),
-+	}
- };
- 
- static int tsl2563_read_thresh(struct iio_dev *indio_dev,
++#include "../sysfs.h"
+ /*
+  * Register definitions, as well as various shifts and masks to get at the
+  * individual fields of the registers.
 -- 
 1.7.3.4
