@@ -1,24 +1,22 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out.google.com ([216.239.44.51]:33004 "EHLO
+Received: from smtp-out.google.com ([74.125.121.67]:26215 "EHLO
 	smtp-out.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750715Ab1HZWmv convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Aug 2011 18:42:51 -0400
-Received: from hpaq2.eem.corp.google.com (hpaq2.eem.corp.google.com [172.25.149.2])
-	by smtp-out.google.com with ESMTP id p7QMgopm026210
-	for <linux-iio@vger.kernel.org>; Fri, 26 Aug 2011 15:42:51 -0700
-Received: from yie16 (yie16.prod.google.com [10.243.66.16])
-	by hpaq2.eem.corp.google.com with ESMTP id p7QMfYub021777
+	with ESMTP id S1751714Ab1HZF1J convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Aug 2011 01:27:09 -0400
+Received: from hpaq6.eem.corp.google.com (hpaq6.eem.corp.google.com [172.25.149.6])
+	by smtp-out.google.com with ESMTP id p7Q5R8uY006482
+	for <linux-iio@vger.kernel.org>; Thu, 25 Aug 2011 22:27:08 -0700
+Received: from gwj17 (gwj17.prod.google.com [10.200.10.17])
+	by hpaq6.eem.corp.google.com with ESMTP id p7Q5R31k029140
 	(version=TLSv1/SSLv3 cipher=RC4-SHA bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Fri, 26 Aug 2011 15:42:49 -0700
-Received: by yie16 with SMTP id 16so2479517yie.29
-        for <linux-iio@vger.kernel.org>; Fri, 26 Aug 2011 15:42:49 -0700 (PDT)
+	for <linux-iio@vger.kernel.org>; Thu, 25 Aug 2011 22:27:07 -0700
+Received: by gwj17 with SMTP id 17so2529428gwj.38
+        for <linux-iio@vger.kernel.org>; Thu, 25 Aug 2011 22:27:06 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20110826221817.GI3775@shale.localdomain>
+In-Reply-To: <20110826011542.GK5975@shale.localdomain>
 References: <20110826011542.GK5975@shale.localdomain>
-	<CANEJEGtys_kBMMPstRahrYq956g22ZgowySxvOCqUpHww6x29w@mail.gmail.com>
-	<20110826221817.GI3775@shale.localdomain>
-Date: Fri, 26 Aug 2011 15:42:48 -0700
-Message-ID: <CANEJEGvzc5zVSnKUepmtjG3uYWqm3nP08ZUsVbUeDQEVv3zG4Q@mail.gmail.com>
+Date: Thu, 25 Aug 2011 22:27:06 -0700
+Message-ID: <CANEJEGsj8_crCzVT7tX6yREO4BJVAcWTPgxxUY=jpU8Z+yZAew@mail.gmail.com>
 Subject: Re: STAGING:iio:light: fix ISL29018 init to handle brownout
 From: Grant Grundler <grundler@google.com>
 To: Dan Carpenter <error27@gmail.com>
@@ -27,23 +25,46 @@ Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Aug 26, 2011 at 3:18 PM, Dan Carpenter <error27@gmail.com> wrot=
+On Thu, Aug 25, 2011 at 6:15 PM, Dan Carpenter <error27@gmail.com> wrot=
 e:
-> It looks good to me, but I don't know anything about the iio code.
-> Jonathan will let you know if there is a problem. =C2=A0:)
-
-I'm hoping so. :)  Thanks for reviewing.
-
+> Hi Grant,
 >
-> This is minor thing, but checkpatch complains that:
-> +#define ISL29018_MAX_REGS =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0ISL29018_REG_ADD_DATA_MSB+1
-> should be written as:
-> +#define ISL29018_MAX_REGS =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0(ISL29018_REG_ADD_DATA_MSB + 1)
+> There is a memory corruption bug in 176f9f29cec9 "STAGING:iio:light:
+> fix ISL29018 init to handle brownout".
+>
+> In isl29018_chip_init() we call:
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0status =3D isl29018_write_data(client, ISL=
+29018_REG_TEST, 0,
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ISL29018_TEST_MASK, ISL29018_=
+TEST_SHIFT);
+>
+> where ISL29018_REG_TEST is 8.
+>
+> In isl29018_write_data() it uses reg (ISL29018_REG_TEST) as the
+> offset into the ->reg_cache[] array:
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0chip->reg_cache[reg] =3D regval;
+>
+> But ->reg_cache[] only has 3 elements, so we're past the end of the
+> array.
 
-ah...I didn't run check_patch. /o\
-I'll include that in the version I send to gregkh.
+Wow! Thanks! I'll look at the code in the morning and suggest a fix.
+
+
+> I don't know the code well enough to fix this.
+
+No problem - I'm happy you spotted this.
+
+My initial suggestion for a fix is to just not reference reg_cache if
+"reg" exceeds the size of reg_cache. In other words, don't cache those
+values. This should normally work well since we don't other touch that
+register in the driver AFAICT.  But I'll review the code some more
+tomorrow before submitting a fix.
 
 cheers,
 grant
+
+>
+> regards,
+> dan carpenter
+>
