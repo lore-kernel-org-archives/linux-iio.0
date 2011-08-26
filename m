@@ -1,58 +1,68 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:37825 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754824Ab1HZKI1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Aug 2011 06:08:27 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 11/12] staging:iio:add adaptive event types and missing extract_type macro.
-Date: Fri, 26 Aug 2011 11:16:34 +0100
-Message-Id: <1314353795-7437-12-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 10/12] staging:iio: Add capacitance type and average_raw chan info.
+Date: Fri, 26 Aug 2011 11:16:33 +0100
+Message-Id: <1314353795-7437-11-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1314353795-7437-1-git-send-email-jic23@cam.ac.uk>
 References: <1314353795-7437-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-I'm not entirely sure this is the right way to go. Suggestions of other
-options welcome!
+These are both needed for CAPADCs
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/industrialio-core.c |    4 +++-
- drivers/staging/iio/sysfs.h             |    3 +++
- 2 files changed, 6 insertions(+), 1 deletions(-)
+ drivers/staging/iio/iio.h               |    3 +++
+ drivers/staging/iio/industrialio-core.c |    2 ++
+ 2 files changed, 5 insertions(+), 0 deletions(-)
 
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index a59988f..742f6c6 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -42,6 +42,7 @@ enum iio_chan_type {
+ 	IIO_ROT,
+ 	IIO_ANGL,
+ 	IIO_TIMESTAMP,
++	IIO_CAPACITANCE,
+ };
+ 
+ /* Nasty hack to avoid massive churn */
+@@ -81,6 +82,8 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_PEAK_SCALE_SEPARATE,
+ 	IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SHARED,
+ 	IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SEPARATE,
++	IIO_CHAN_INFO_AVERAGE_RAW_SHARED,
++	IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE,
+ };
+ 
+ enum iio_endian {
 diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 44a5be5..83e55b1 100644
+index 8c054c0..44a5be5 100644
 --- a/drivers/staging/iio/industrialio-core.c
 +++ b/drivers/staging/iio/industrialio-core.c
-@@ -700,7 +700,9 @@ static void iio_device_unregister_sysfs(struct iio_dev *dev_info)
- static const char * const iio_ev_type_text[] = {
- 	[IIO_EV_TYPE_THRESH] = "thresh",
- 	[IIO_EV_TYPE_MAG] = "mag",
--	[IIO_EV_TYPE_ROC] = "roc"
-+	[IIO_EV_TYPE_ROC] = "roc",
-+	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
-+	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
+@@ -65,6 +65,7 @@ static const char * const iio_chan_type_name_spec_shared[] = {
+ 	[IIO_ROT] = "rot",
+ 	[IIO_ANGL] = "angl",
+ 	[IIO_TIMESTAMP] = "timestamp",
++	[IIO_CAPACITANCE] = "capacitance",
  };
  
- static const char * const iio_ev_dir_text[] = {
-diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
-index 9224f30..3388b8c 100644
---- a/drivers/staging/iio/sysfs.h
-+++ b/drivers/staging/iio/sysfs.h
-@@ -118,6 +118,8 @@ enum iio_event_type {
- 	IIO_EV_TYPE_THRESH,
- 	IIO_EV_TYPE_MAG,
- 	IIO_EV_TYPE_ROC,
-+	IIO_EV_TYPE_THRESH_ADAPTIVE,
-+	IIO_EV_TYPE_MAG_ADAPTIVE,
+ static const char * const iio_chan_type_name_spec_complex[] = {
+@@ -89,6 +90,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_PEAK_SCALE_SHARED/2] = "peak_scale",
+ 	[IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SHARED/2]
+ 	= "quadrature_correction_raw",
++	[IIO_CHAN_INFO_AVERAGE_RAW_SHARED/2] = "mean_raw",
  };
  
- enum iio_event_direction {
-@@ -142,6 +144,7 @@ enum iio_event_direction {
- #define IIO_UNMOD_EVENT_CODE(channelclass, number, type, direction)	\
- 	IIO_EVENT_CODE(channelclass, 0, direction, type, number, 0, 0)
- 
-+#define IIO_EVENT_CODE_EXTRACT_TYPE(mask) ((mask >> 56) & 0xFF)
- #define IIO_EVENT_CODE_EXTRACT_DIR(mask) ((mask >> 48) & 0xFF)
- 
- /* Event code number extraction depends on which type of event we have.
+ /**
 -- 
 1.7.3.4
+
