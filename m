@@ -1,90 +1,81 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:37820 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754804Ab1HZKI1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Aug 2011 06:08:27 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 09/12] staging:iio:naming in the EV_BIT macro fix.
-Date: Fri, 26 Aug 2011 11:16:32 +0100
-Message-Id: <1314353795-7437-10-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 08/12] staging:iio:attrs - make address a u64 to allow event codes to be used.
+Date: Fri, 26 Aug 2011 11:16:31 +0100
+Message-Id: <1314353795-7437-9-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1314353795-7437-1-git-send-email-jic23@cam.ac.uk>
 References: <1314353795-7437-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Should always have been IIO_EV_DIR_MAX as that's what it actually controls.
-Also reduced the number to 4 as not yet seen a case needing more and this
-is not userspace visible anyway.
+Makes unusual event related attributes look a lot more like the core ones.
 
+V2: Make sure the utils that set these up can handle the codes.
+V3: rebase
+
+Reported-by: Michael Hennerich <michael.hennerich@analog.com>
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/industrialio-core.c |   20 ++++++++++----------
- drivers/staging/iio/sysfs.h             |    4 ++--
- 2 files changed, 12 insertions(+), 12 deletions(-)
+ drivers/staging/iio/iio_core.h          |    2 +-
+ drivers/staging/iio/industrialio-core.c |    5 +++--
+ drivers/staging/iio/sysfs.h             |    2 +-
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/staging/iio/iio_core.h b/drivers/staging/iio/iio_core.h
+index 3a80dbf..803bdd8 100644
+--- a/drivers/staging/iio/iio_core.h
++++ b/drivers/staging/iio/iio_core.h
+@@ -22,7 +22,7 @@ int __iio_add_chan_devattr(const char *postfix,
+ 						struct device_attribute *attr,
+ 						const char *buf,
+ 						size_t len),
+-			   int mask,
++			   u64 mask,
+ 			   bool generic,
+ 			   struct device *dev,
+ 			   struct list_head *attr_list);
 diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index c4985cb..8c054c0 100644
+index 49322bf..c4985cb 100644
 --- a/drivers/staging/iio/industrialio-core.c
 +++ b/drivers/staging/iio/industrialio-core.c
-@@ -791,27 +791,27 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
- 
- 	for_each_set_bit(i, &chan->event_mask, sizeof(chan->event_mask)*8) {
- 		postfix = kasprintf(GFP_KERNEL, "%s_%s_en",
--				    iio_ev_type_text[i/IIO_EV_TYPE_MAX],
--				    iio_ev_dir_text[i%IIO_EV_TYPE_MAX]);
-+				    iio_ev_type_text[i/IIO_EV_DIR_MAX],
-+				    iio_ev_dir_text[i%IIO_EV_DIR_MAX]);
- 		if (postfix == NULL) {
- 			ret = -ENOMEM;
- 			goto error_ret;
- 		}
- 		if (chan->modified)
- 			mask = IIO_MOD_EVENT_CODE(chan->type, 0, chan->channel,
--						  i/IIO_EV_TYPE_MAX,
--						  i%IIO_EV_TYPE_MAX);
-+						  i/IIO_EV_DIR_MAX,
-+						  i%IIO_EV_DIR_MAX);
- 		else if (chan->type == IIO_VOLTAGE_DIFF)
- 			mask = IIO_MOD_EVENT_CODE(chan->type,
- 						  chan->channel,
- 						  chan->channel2,
--						  i/IIO_EV_TYPE_MAX,
--						  i%IIO_EV_TYPE_MAX);
-+						  i/IIO_EV_DIR_MAX,
-+						  i%IIO_EV_DIR_MAX);
- 		else
- 			mask = IIO_UNMOD_EVENT_CODE(chan->type,
- 						    chan->channel,
--						    i/IIO_EV_TYPE_MAX,
--						    i%IIO_EV_TYPE_MAX);
-+						    i/IIO_EV_DIR_MAX,
-+						    i%IIO_EV_DIR_MAX);
- 
- 		ret = __iio_add_chan_devattr(postfix,
- 					     chan,
-@@ -827,8 +827,8 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
- 			goto error_ret;
- 		attrcount++;
- 		postfix = kasprintf(GFP_KERNEL, "%s_%s_value",
--				    iio_ev_type_text[i/IIO_EV_TYPE_MAX],
--				    iio_ev_dir_text[i%IIO_EV_TYPE_MAX]);
-+				    iio_ev_type_text[i/IIO_EV_DIR_MAX],
-+				    iio_ev_dir_text[i%IIO_EV_DIR_MAX]);
- 		if (postfix == NULL) {
- 			ret = -ENOMEM;
- 			goto error_ret;
+@@ -515,7 +515,7 @@ int __iio_add_chan_devattr(const char *postfix,
+ 						struct device_attribute *attr,
+ 						const char *buf,
+ 						size_t len),
+-			   int mask,
++			   u64 mask,
+ 			   bool generic,
+ 			   struct device *dev,
+ 			   struct list_head *attr_list)
+@@ -783,7 +783,8 @@ static ssize_t iio_ev_value_store(struct device *dev,
+ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 				      struct iio_chan_spec const *chan)
+ {
+-	int ret = 0, i, mask = 0, attrcount = 0;
++	int ret = 0, i, attrcount = 0;
++	u64 mask = 0;
+ 	char *postfix;
+ 	if (!chan->event_mask)
+ 		return 0;
 diff --git a/drivers/staging/iio/sysfs.h b/drivers/staging/iio/sysfs.h
-index dcb413d..9224f30 100644
+index 30f9a4d..dcb413d 100644
 --- a/drivers/staging/iio/sysfs.h
 +++ b/drivers/staging/iio/sysfs.h
-@@ -131,9 +131,9 @@ enum iio_event_direction {
- 	(((u64)type << 56) | ((u64)direction << 48) | ((u64)modifier << 40) | \
- 	 ((u64)chan_type << 32) | (chan2 << 16) | chan1 | chan)
- 
--#define IIO_EV_TYPE_MAX 8
-+#define IIO_EV_DIR_MAX 4
- #define IIO_EV_BIT(type, direction)			\
--	(1 << (type*IIO_EV_TYPE_MAX + direction))
-+	(1 << (type*IIO_EV_DIR_MAX + direction))
- 
- #define IIO_MOD_EVENT_CODE(channelclass, number, modifier,		\
- 			   type, direction)				\
+@@ -22,7 +22,7 @@ struct iio_chan_spec;
+  */
+ struct iio_dev_attr {
+ 	struct device_attribute dev_attr;
+-	int address;
++	u64 address;
+ 	struct list_head l;
+ 	struct iio_chan_spec const *c;
+ };
 -- 
 1.7.3.4
+
