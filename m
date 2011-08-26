@@ -2,262 +2,154 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 01/16] staging:iio:dac:ad5791 chan spec conversion.
-Date: Fri, 26 Aug 2011 11:19:18 +0100
-Message-Id: <1314353973-7662-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1314353973-7662-1-git-send-email-jic23@cam.ac.uk>
-References: <1314353973-7662-1-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 00/12] staging:iio: New stuff and reworks.
+Date: Fri, 26 Aug 2011 11:16:23 +0100
+Message-Id: <1314353795-7437-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/dac/ad5791.c |  158 +++++++++++++++++---------------------
- drivers/staging/iio/dac/ad5791.h |    4 -
- 2 files changed, 72 insertions(+), 90 deletions(-)
+Hi All,
 
-diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
-index b266513..d904c14 100644
---- a/drivers/staging/iio/dac/ad5791.c
-+++ b/drivers/staging/iio/dac/ad5791.c
-@@ -71,48 +71,22 @@ static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
- 	return ret;
- }
- 
--static ssize_t ad5791_write_dac(struct device *dev,
--				 struct device_attribute *attr,
--				 const char *buf, size_t len)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ad5791_state *st = iio_priv(indio_dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	long readin;
--	int ret;
--
--	ret = strict_strtol(buf, 10, &readin);
--	if (ret)
--		return ret;
--
--	readin += (1 << (st->chip_info->bits - 1));
--	readin &= AD5791_RES_MASK(st->chip_info->bits);
--	readin <<= st->chip_info->left_shift;
--
--	ret = ad5791_spi_write(st->spi, this_attr->address, readin);
--	return ret ? ret : len;
-+#define AD5791_CHAN(bits, shift) {			\
-+	.type = IIO_VOLTAGE,				\
-+	.output = 1,					\
-+	.indexed = 1,					\
-+	.address = AD5791_ADDR_DAC0,			\
-+	.channel = 0,					\
-+	.info_mask = (1 << IIO_CHAN_INFO_SCALE_SHARED),	\
-+	.scan_type = IIO_ST('u', bits, 24, shift)	\
- }
- 
--static ssize_t ad5791_read_dac(struct device *dev,
--					   struct device_attribute *attr,
--					   char *buf)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ad5791_state *st = iio_priv(indio_dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int ret;
--	int val;
--
--	ret = ad5791_spi_read(st->spi, this_attr->address, &val);
--	if (ret)
--		return ret;
--
--	val &= AD5791_DAC_MASK;
--	val >>= st->chip_info->left_shift;
--	val -= (1 << (st->chip_info->bits - 1));
--
--	return sprintf(buf, "%d\n", val);
--}
-+static const struct iio_chan_spec ad5791_channels[] = {
-+	[ID_AD5760] = AD5791_CHAN(16, 4),
-+	[ID_AD5780] = AD5791_CHAN(18, 2),
-+	[ID_AD5781] = AD5791_CHAN(18, 2),
-+	[ID_AD5791] = AD5791_CHAN(20, 0)
-+};
- 
- static ssize_t ad5791_read_powerdown_mode(struct device *dev,
- 				      struct device_attribute *attr, char *buf)
-@@ -183,37 +157,6 @@ static ssize_t ad5791_write_dac_powerdown(struct device *dev,
- 	return ret ? ret : len;
- }
- 
--static ssize_t ad5791_show_scale(struct device *dev,
--				struct device_attribute *attr,
--				char *buf)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ad5791_state *st = iio_priv(indio_dev);
--	/* Corresponds to Vref / 2^(bits) */
--	unsigned int scale_uv = (st->vref_mv * 1000) >> st->chip_info->bits;
--
--	return sprintf(buf, "%d.%03d\n", scale_uv / 1000, scale_uv % 1000);
--}
--static IIO_DEVICE_ATTR(out_scale, S_IRUGO, ad5791_show_scale, NULL, 0);
--
--static ssize_t ad5791_show_name(struct device *dev,
--				 struct device_attribute *attr,
--				 char *buf)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ad5791_state *st = iio_priv(indio_dev);
--
--	return sprintf(buf, "%s\n", spi_get_device_id(st->spi)->name);
--}
--static IIO_DEVICE_ATTR(name, S_IRUGO, ad5791_show_name, NULL, 0);
--
--#define IIO_DEV_ATTR_OUT_RW_RAW(_num, _show, _store, _addr)		\
--	IIO_DEVICE_ATTR(out##_num##_raw,				\
--			S_IRUGO | S_IWUSR, _show, _store, _addr)
--
--static IIO_DEV_ATTR_OUT_RW_RAW(0, ad5791_read_dac,
--	ad5791_write_dac, AD5791_ADDR_DAC0);
--
- static IIO_DEVICE_ATTR(out_powerdown_mode, S_IRUGO |
- 			S_IWUSR, ad5791_read_powerdown_mode,
- 			ad5791_write_powerdown_mode, 0);
-@@ -229,12 +172,9 @@ static IIO_DEV_ATTR_DAC_POWERDOWN(0, ad5791_read_dac_powerdown,
- 				   ad5791_write_dac_powerdown, 0);
- 
- static struct attribute *ad5791_attributes[] = {
--	&iio_dev_attr_out0_raw.dev_attr.attr,
- 	&iio_dev_attr_out0_powerdown.dev_attr.attr,
- 	&iio_dev_attr_out_powerdown_mode.dev_attr.attr,
- 	&iio_const_attr_out_powerdown_mode_available.dev_attr.attr,
--	&iio_dev_attr_out_scale.dev_attr.attr,
--	&iio_dev_attr_name.dev_attr.attr,
- 	NULL,
- };
- 
-@@ -263,31 +203,74 @@ static int ad5780_get_lin_comp(unsigned int span)
- 	else
- 		return AD5780_LINCOMP_10_20;
- }
--
- static const struct ad5791_chip_info ad5791_chip_info_tbl[] = {
- 	[ID_AD5760] = {
--		.bits = 16,
--		.left_shift = 4,
- 		.get_lin_comp = ad5780_get_lin_comp,
- 	},
- 	[ID_AD5780] = {
--		.bits = 18,
--		.left_shift = 2,
- 		.get_lin_comp = ad5780_get_lin_comp,
- 	},
- 	[ID_AD5781] = {
--		.bits = 18,
--		.left_shift = 2,
- 		.get_lin_comp = ad5791_get_lin_comp,
- 	},
- 	[ID_AD5791] = {
--		.bits = 20,
--		.left_shift = 0,
- 		.get_lin_comp = ad5791_get_lin_comp,
- 	},
- };
- 
-+static int ad5791_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val,
-+			   int *val2,
-+			   long m)
-+{
-+	struct ad5791_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (m) {
-+	case 0:
-+		ret = ad5791_spi_read(st->spi, chan->address, val);
-+		if (ret)
-+			return ret;
-+		*val &= AD5791_DAC_MASK;
-+		*val >>= chan->scan_type.shift;
-+		*val -= (1 << (chan->scan_type.storagebits - 1));
-+		return IIO_VAL_INT;
-+	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
-+		*val = 0;
-+		*val2 = (st->vref_mv * 1000) >> chan->scan_type.storagebits;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+};
-+
-+
-+static int ad5791_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val,
-+			    int val2,
-+			    long mask)
-+{
-+	struct ad5791_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case 0:
-+		val += (1 << (chan->scan_type.storagebits - 1));
-+		val &= AD5791_RES_MASK(chan->scan_type.storagebits);
-+		val <<= chan->scan_type.shift;
-+
-+		return ad5791_spi_write(st->spi, chan->address, val);
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static const struct iio_info ad5791_info = {
-+	.read_raw = &ad5791_read_raw,
-+	.write_raw = &ad5791_write_raw,
- 	.attrs = &ad5791_attribute_group,
- 	.driver_module = THIS_MODULE,
- };
-@@ -337,8 +320,8 @@ static int __devinit ad5791_probe(struct spi_device *spi)
- 	if (ret)
- 		goto error_disable_reg_neg;
- 
--	st->chip_info =
--		&ad5791_chip_info_tbl[spi_get_device_id(spi)->driver_data];
-+	st->chip_info =	&ad5791_chip_info_tbl[spi_get_device_id(spi)
-+					      ->driver_data];
- 
- 
- 	st->ctrl = AD5761_CTRL_LINCOMP(st->chip_info->get_lin_comp(st->vref_mv))
-@@ -354,7 +337,10 @@ static int __devinit ad5791_probe(struct spi_device *spi)
- 	indio_dev->dev.parent = &spi->dev;
- 	indio_dev->info = &ad5791_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--
-+	indio_dev->channels
-+		= &ad5791_channels[spi_get_device_id(spi)->driver_data];
-+	indio_dev->num_channels = 1;
-+	indio_dev->name = spi_get_device_id(st->spi)->name;
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
- 		goto error_disable_reg_neg;
-diff --git a/drivers/staging/iio/dac/ad5791.h b/drivers/staging/iio/dac/ad5791.h
-index c807f26..2a50a11 100644
---- a/drivers/staging/iio/dac/ad5791.h
-+++ b/drivers/staging/iio/dac/ad5791.h
-@@ -68,14 +68,10 @@ struct ad5791_platform_data {
- 
- /**
-  * struct ad5791_chip_info - chip specific information
-- * @bits:		accuracy of the DAC in bits
-- * @left_shift:		number of bits the datum must be shifted
-  * @get_lin_comp:	function pointer to the device specific function
-  */
- 
- struct ad5791_chip_info {
--	u8			bits;
--	u8			left_shift;
- 	int (*get_lin_comp)	(unsigned int span);
- };
- 
+This is the interesting series of the day. I could have broken
+it down futher, but then it would mostly be single patches.
+
+A fair bit of this you will have seen before, but this is the form
+I intend to send to greg if no one shouts.
+
+So what's here:
+
+1) Add in_/out_ prefixes to all channels generate via iio_chan_spec.
+   We will need a cleanup series adding them to all the stuff provided
+   directly by the drivers.  (what fun).
+2) Docs for the above
+
+3) Endian description for scan elements.  Here we have a cpu version
+   internally. Note that will not be leaving staging. All drivers
+   should get it right themselves.
+
+4) Reorganize the default scan mask settings so that they won't cause
+   trouble (will insert a separate patch here to handle the issue Michael
+   has found with adis16400.
+
+5) Bitmaps for channel masks.  This is fiddly, but does allow for devices
+   with a lot more channels so we need to do this or something similar.
+
+6) 64bit event codes.  Gives us more space and avoids the reuse issues
+   with the previous 32bit ones. Very few disadvantages and a lot of
+   advantages!
+
+7) rework the attribute registration.  This is invasive and nasty but
+   necessary if we want udev to know attributes have been created. Upshot
+   of that discussion about allowing empty groups in sysfs (which was
+   the wrong way to solve this). Side effect is we can get rid of that
+   hideous regdone trick that was in lots of drivers.
+
+8) Make the address element of iio_device_attr 64 bit to allow for new
+   long event codes. Makes life a lot easier in some corner cases.
+
+9) the EV_BIT macro had some odd naming. Trivial fix.
+
+10) Get ready for CDC (capacitance to digital convertors) being handled
+    properly.
+
+11) Differential channel handling rework.  the IIO_VOLTAGE_DIFF channel
+    type was a bad idea.  Allow all channel types to be differential by
+    adding an explicit flag.  This means that the differential CDCs
+    are much cleaner. Requires updating all previous differential users.
+    Whilst there cleared out some IIO_CHAN macro usage as that's slowly
+    going away.
+
+What fun,
+
+All comments welcome.
+
+Jonathan
+
+Jonathan Cameron (12):
+  staging:iio: ABI rework - add in_ or out_ prefix to channnels
+  staging:iio:Documentation sysfs-bus-iio add in and out prefixes
+  staging:iio:scan element types: introduce endian description to the
+    data format.
+  staging:iio:various move default scan mask setting after ring
+    register or remove
+  staging:iio: Switch the channel masks to bitmaps so as to allow for
+    more channels.
+  staging:iio:events - new 64 bit code structure and push out drivers.
+  staging:iio: rework of attribute registration.
+  staging:iio:attrs - make address a u64 to allow event codes to be
+    used.
+  staging:iio:naming in the EV_BIT macro fix.
+  staging:iio: Add capacitance type and average_raw chan info.
+  staging:iio:add adaptive event types and missing extract_type macro.
+  staging:iio: Differential channel handling - use explicit flag rather
+    than types.
+
+ drivers/staging/iio/Documentation/sysfs-bus-iio |  536 +++++++++++-----------
+ drivers/staging/iio/accel/adis16201_core.c      |   16 +-
+ drivers/staging/iio/accel/adis16201_ring.c      |    9 -
+ drivers/staging/iio/accel/adis16203_core.c      |   17 +-
+ drivers/staging/iio/accel/adis16203_ring.c      |    7 -
+ drivers/staging/iio/accel/adis16204_core.c      |   18 +-
+ drivers/staging/iio/accel/adis16204_ring.c      |    7 -
+ drivers/staging/iio/accel/adis16209_core.c      |   16 +-
+ drivers/staging/iio/accel/adis16209_ring.c      |   10 -
+ drivers/staging/iio/accel/adis16240_core.c      |   15 +-
+ drivers/staging/iio/accel/adis16240_ring.c      |    8 -
+ drivers/staging/iio/accel/lis3l02dq_core.c      |   26 +-
+ drivers/staging/iio/accel/lis3l02dq_ring.c      |   10 +-
+ drivers/staging/iio/accel/sca3000_core.c        |   16 +-
+ drivers/staging/iio/accel/sca3000_ring.c        |    4 -
+ drivers/staging/iio/adc/ad7150.c                |   20 +-
+ drivers/staging/iio/adc/ad7192.c                |   14 +-
+ drivers/staging/iio/adc/ad7280a.c               |   26 +-
+ drivers/staging/iio/adc/ad7291.c                |   12 +-
+ drivers/staging/iio/adc/ad7298_core.c           |   18 +-
+ drivers/staging/iio/adc/ad7298_ring.c           |    4 +-
+ drivers/staging/iio/adc/ad7476_core.c           |   16 +-
+ drivers/staging/iio/adc/ad7606_core.c           |   17 +-
+ drivers/staging/iio/adc/ad7745.c                |   18 +-
+ drivers/staging/iio/adc/ad7793.c                |  210 ++++++---
+ drivers/staging/iio/adc/ad7816.c                |   15 +-
+ drivers/staging/iio/adc/ad7887.h                |    4 +-
+ drivers/staging/iio/adc/ad7887_core.c           |   20 +-
+ drivers/staging/iio/adc/ad7887_ring.c           |   10 +-
+ drivers/staging/iio/adc/ad799x.h                |    4 +-
+ drivers/staging/iio/adc/ad799x_core.c           |   19 +-
+ drivers/staging/iio/adc/ad799x_ring.c           |   18 +-
+ drivers/staging/iio/adc/adt7310.c               |   12 +-
+ drivers/staging/iio/adc/adt7410.c               |   11 +-
+ drivers/staging/iio/adc/adt75.c                 |   12 +-
+ drivers/staging/iio/adc/max1363.h               |    8 +-
+ drivers/staging/iio/adc/max1363_core.c          |  263 +++++------
+ drivers/staging/iio/adc/max1363_ring.c          |   22 +-
+ drivers/staging/iio/addac/adt7316.c             |   13 +-
+ drivers/staging/iio/chrdev.h                    |    2 +-
+ drivers/staging/iio/dac/ad5504.c                |   40 +-
+ drivers/staging/iio/dac/ad5624r_spi.c           |    1 -
+ drivers/staging/iio/dac/ad5686.c                |   83 ++---
+ drivers/staging/iio/dac/ad5791.c                |    2 +
+ drivers/staging/iio/gyro/adis16060_core.c       |    8 +-
+ drivers/staging/iio/gyro/adis16080_core.c       |    9 +-
+ drivers/staging/iio/gyro/adis16260_core.c       |   24 +-
+ drivers/staging/iio/gyro/adis16260_ring.c       |    7 -
+ drivers/staging/iio/iio.h                       |   77 +++-
+ drivers/staging/iio/iio_core.h                  |    3 +-
+ drivers/staging/iio/impedance-analyzer/ad5933.c |   18 +-
+ drivers/staging/iio/imu/adis16400_core.c        |   16 +-
+ drivers/staging/iio/imu/adis16400_ring.c        |    9 +-
+ drivers/staging/iio/industrialio-core.c         |  448 +++++++++----------
+ drivers/staging/iio/industrialio-ring.c         |  223 +++++++---
+ drivers/staging/iio/industrialio-trigger.c      |    8 +-
+ drivers/staging/iio/light/tsl2563.c             |   21 +-
+ drivers/staging/iio/meter/ade7753.c             |   15 +-
+ drivers/staging/iio/meter/ade7754.c             |   16 +-
+ drivers/staging/iio/meter/ade7758.h             |    2 +-
+ drivers/staging/iio/meter/ade7758_core.c        |   20 +-
+ drivers/staging/iio/meter/ade7758_ring.c        |    2 +-
+ drivers/staging/iio/meter/ade7759.c             |   12 +-
+ drivers/staging/iio/resolver/ad2s1210.c         |    1 +
+ drivers/staging/iio/ring_generic.h              |   67 +---
+ drivers/staging/iio/sysfs.h                     |   46 ++-
+ 66 files changed, 1334 insertions(+), 1347 deletions(-)
+
 -- 
 1.7.3.4
