@@ -1,62 +1,33 @@
-Return-Path: <grundler@google.com>
-MIME-Version: 1.0
-In-Reply-To: <4E5D1057.3020706@cam.ac.uk>
-References: <20110826011542.GK5975@shale.localdomain>
-	<CANEJEGtys_kBMMPstRahrYq956g22ZgowySxvOCqUpHww6x29w@mail.gmail.com>
-	<4E5CB5CD.5060301@cam.ac.uk>
-	<CANEJEGsohYnKXNUKUSfBpXofcNdt13bY_mnFZRUWMpewNjUykg@mail.gmail.com>
-	<4E5D1057.3020706@cam.ac.uk>
-Date: Tue, 30 Aug 2011 09:45:02 -0700
-Message-ID: <CANEJEGsfWCz3WaeS4dACqkb4NJhrNWSGaB7PBC2+aSx6=tU8Tg@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pz0-f42.google.com ([209.85.210.42]:39925 "EHLO
+	mail-pz0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750823Ab1HZWUf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Aug 2011 18:20:35 -0400
+Received: by pzk37 with SMTP id 37so4947122pzk.1
+        for <linux-iio@vger.kernel.org>; Fri, 26 Aug 2011 15:20:35 -0700 (PDT)
+Date: Sat, 27 Aug 2011 01:18:17 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Grant Grundler <grundler@google.com>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
 Subject: Re: STAGING:iio:light: fix ISL29018 init to handle brownout
-From: Grant Grundler <grundler@google.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Dan Carpenter <error27@gmail.com>, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Message-ID: <20110826221817.GI3775@shale.localdomain>
+References: <20110826011542.GK5975@shale.localdomain>
+ <CANEJEGtys_kBMMPstRahrYq956g22ZgowySxvOCqUpHww6x29w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CANEJEGtys_kBMMPstRahrYq956g22ZgowySxvOCqUpHww6x29w@mail.gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Aug 30, 2011 at 9:31 AM, Jonathan Cameron <jic23@cam.ac.uk> wrote:
-> On 08/30/11 17:14, Grant Grundler wrote:
->> On Tue, Aug 30, 2011 at 3:05 AM, Jonathan Cameron <jic23@cam.ac.uk> wrot=
-e:
->> ....
->>>> I did change one basic behavior that I think was also broken: cache
->>>> the value regardless of if the transaction completed successfully or
->>>> not.
->>> Don't do that. =C2=A0That means userspace will get an invalid value if =
-it reads
->>> in the meantime. If you have an error on a hardware bus - tell userspac=
-e about
->>> it and don't 'guess' what is in the register.
->>
->> Ah ok - I didn't know this was part of the path to/from user space.
-> It plausibly isn't, I didn't go over it closely enough to be sure.
+It looks good to me, but I don't know anything about the iio code.
+Jonathan will let you know if there is a problem.  :)
 
-Ok. After thinking about it more, it might not matter anyway.
+This is minor thing, but checkpatch complains that:
++#define ISL29018_MAX_REGS              ISL29018_REG_ADD_DATA_MSB+1
+should be written as:
++#define ISL29018_MAX_REGS              (ISL29018_REG_ADD_DATA_MSB + 1)
 
-> Even if not, it's a nasty complexity that will bite someone at some stage=
-.
-> Mostly comes down to code doing what other code does in the same situatio=
-n
-> rather than trying to be clever.
+Thanks Grant.
 
-The whole error handling path one ugly bit of "nasty complexity". If a regi=
-ster
-write fails, the register contents will be unknown. We will have no idea wh=
-at
-value is in the register or if the device is even still alive.
-The cached value can't represent "known HW state" at that point and should
-probably be marked "invalid" until either the value is succesfully
-read or the next
-write succeeds.
-
-BTW, I didn't consider this particularly clever - just the code was
-easier to read. :)
-
-I don't think it really matters how the "cached value" is handled as
-long as the error gets returned.  I'm just going to implement whatever
-you prefer. :)
-
-cheers,
-grant
+regards,
+dan carpenter
