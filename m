@@ -1,73 +1,153 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:42966 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753254Ab1H3LdL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Aug 2011 07:33:11 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 07/14] staging:iio: struct iio_dev formatting cleanup and documentation fixes.
-Date: Tue, 30 Aug 2011 12:41:12 +0100
-Message-Id: <1314704479-15956-8-git-send-email-jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 06/14] staging:iio:trivial add a string array for IIO_RAW and IIO_PROCESSED.
+Date: Tue, 30 Aug 2011 12:41:11 +0100
+Message-Id: <1314704479-15956-7-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1314704479-15956-1-git-send-email-jic23@cam.ac.uk>
 References: <1314704479-15956-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
+
+Introduce IIO_RAW and IIO_PROCESSED and an array for their strings.
+Also move one function to just above where it is called.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/iio.h |   19 ++++++++++---------
- 1 files changed, 10 insertions(+), 9 deletions(-)
+ drivers/staging/iio/iio.h               |    5 +++
+ drivers/staging/iio/industrialio-core.c |   57 ++++++++++++++----------------
+ 2 files changed, 32 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index 1c24d13..36a826e 100644
+index 098d827..1c24d13 100644
 --- a/drivers/staging/iio/iio.h
 +++ b/drivers/staging/iio/iio.h
-@@ -265,8 +265,10 @@ struct iio_info {
-  * @channels:		[DRIVER] channel specification structure table
-  * @num_channels:	[DRIVER] number of chanels specified in @channels.
-  * @channel_attr_list:	[INTERN] keep track of automatically created channel
-- *			attributes.
-+ *			attributes
-  * @name:		[DRIVER] name of the device.
-+ * @info:		[DRIVER] callbacks and constant info from driver
-+ * @chrdev:		[INTERN] associated character device
-  **/
- struct iio_dev {
- 	int				id;
-@@ -284,13 +286,13 @@ struct iio_dev {
- 	struct iio_trigger		*trig;
- 	struct iio_poll_func		*pollfunc;
+@@ -22,6 +22,11 @@
+  * Currently assumes nano seconds.
+  */
  
--	struct iio_chan_spec const *channels;
--	int num_channels;
-+	struct iio_chan_spec const	*channels;
-+	int				num_channels;
- 
--	struct list_head channel_attr_list;
--	const char *name;
--	const struct iio_info *info;
--	struct cdev				chrdev;
-+	struct list_head		channel_attr_list;
-+	const char			*name;
-+	const struct iio_info		*info;
-+	struct cdev			chrdev;
++enum iio_data_type {
++	IIO_RAW,
++	IIO_PROCESSED,
++};
++
+ enum iio_chan_type {
+ 	/* real channel types */
+ 	IIO_IN,
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 8b8e1fb..e83d626 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -37,6 +37,11 @@ struct bus_type iio_bus_type = {
  };
+ EXPORT_SYMBOL(iio_bus_type);
  
- /**
-@@ -308,11 +310,10 @@ void iio_device_unregister(struct iio_dev *dev_info);
- /**
-  * iio_push_event() - try to add event to the list for userspace reading
-  * @dev_info:		IIO device structure
-- * @ev_line:		Which event line (hardware interrupt)
-  * @ev_code:		What event
-  * @timestamp:		When the event occurred
-  **/
--int iio_push_event(struct iio_dev *dev_info, int ev_code,  s64 timestamp);
-+int iio_push_event(struct iio_dev *dev_info, int ev_code, s64 timestamp);
++static const char * const iio_data_type_name[] = {
++	[IIO_RAW] = "raw",
++	[IIO_PROCESSED] = "input",
++};
++
+ static const char * const iio_chan_type_name_spec_shared[] = {
+ 	[IIO_IN] = "in",
+ 	[IIO_OUT] = "out",
+@@ -253,16 +258,6 @@ static int iio_event_getfd(struct iio_dev *indio_dev)
+ 				indio_dev->event_interface, O_RDONLY);
+ }
  
- extern struct bus_type iio_bus_type;
+-static void iio_setup_ev_int(struct iio_event_interface *ev_int)
+-{
+-	mutex_init(&ev_int->event_list_lock);
+-	/* discussion point - make this variable? */
+-	ev_int->max_events = 10;
+-	ev_int->current_events = 0;
+-	INIT_LIST_HEAD(&ev_int->det_events);
+-	init_waitqueue_head(&ev_int->wait);
+-}
+-
+ static int __init iio_init(void)
+ {
+ 	int ret;
+@@ -584,26 +579,18 @@ static int iio_device_add_channel_sysfs(struct iio_dev *dev_info,
+ {
+ 	int ret, i;
  
+-
+ 	if (chan->channel < 0)
+ 		return 0;
+-	if (chan->processed_val)
+-		ret = __iio_add_chan_devattr("input", NULL, chan,
+-					     &iio_read_channel_info,
+-					     NULL,
+-					     0,
+-					     0,
+-					     &dev_info->dev,
+-					     &dev_info->channel_attr_list);
+-	else
+-		ret = __iio_add_chan_devattr("raw", NULL, chan,
+-					     &iio_read_channel_info,
+-					     (chan->type == IIO_OUT ?
+-					     &iio_write_channel_info : NULL),
+-					     0,
+-					     0,
+-					     &dev_info->dev,
+-					     &dev_info->channel_attr_list);
++
++	ret = __iio_add_chan_devattr(iio_data_type_name[chan->processed_val],
++				     NULL, chan,
++				     &iio_read_channel_info,
++				     (chan->type == IIO_OUT ?
++				      &iio_write_channel_info : NULL),
++				     0,
++				     0,
++				     &dev_info->dev,
++				     &dev_info->channel_attr_list);
+ 	if (ret)
+ 		goto error_ret;
+ 
+@@ -815,7 +802,6 @@ static ssize_t iio_ev_value_store(struct device *dev,
+ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 				      struct iio_chan_spec const *chan)
+ {
+-
+ 	int ret = 0, i, mask = 0;
+ 	char *postfix;
+ 	if (!chan->event_mask)
+@@ -908,10 +894,10 @@ static inline int __iio_add_event_config_attrs(struct iio_dev *dev_info)
+ {
+ 	int j;
+ 	int ret;
++
+ 	INIT_LIST_HEAD(&dev_info->event_interface->dev_attr_list);
+ 	/* Dynically created from the channels array */
+ 	for (j = 0; j < dev_info->num_channels; j++) {
+-
+ 		ret = iio_device_add_event_sysfs(dev_info,
+ 						 &dev_info->channels[j]);
+ 		if (ret)
+@@ -937,12 +923,23 @@ static struct attribute_group iio_events_dummy_group = {
+ static bool iio_check_for_dynamic_events(struct iio_dev *dev_info)
+ {
+ 	int j;
++
+ 	for (j = 0; j < dev_info->num_channels; j++)
+ 		if (dev_info->channels[j].event_mask != 0)
+ 			return true;
+ 	return false;
+ }
+ 
++static void iio_setup_ev_int(struct iio_event_interface *ev_int)
++{
++	mutex_init(&ev_int->event_list_lock);
++	/* discussion point - make this variable? */
++	ev_int->max_events = 10;
++	ev_int->current_events = 0;
++	INIT_LIST_HEAD(&ev_int->det_events);
++	init_waitqueue_head(&ev_int->wait);
++}
++
+ static int iio_device_register_eventset(struct iio_dev *dev_info)
+ {
+ 	int ret = 0;
 -- 
 1.7.3.4
-
