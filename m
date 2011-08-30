@@ -1,121 +1,241 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:42954 "EHLO
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:42958 "EHLO
 	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753351Ab1H3LdL (ORCPT
+	with ESMTP id S1752045Ab1H3LdL (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Aug 2011 07:33:11 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 03/14] staging:iio: remove defunct iio_put and iio_get.
-Date: Tue, 30 Aug 2011 12:41:08 +0100
-Message-Id: <1314704479-15956-4-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 02/14] staging:iio: use ida_simple_get and ida_simple_remove + merge ids
+Date: Tue, 30 Aug 2011 12:41:07 +0100
+Message-Id: <1314704479-15956-3-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1314704479-15956-1-git-send-email-jic23@cam.ac.uk>
 References: <1314704479-15956-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-All iio dependent modules statically depend on industrialio
-so these aren't needed. Not sure why they originally existed,
-but they aren't now.
+Use new simple ida allocation functions to remove some boilerplate
+code.
+
+Also, now we only have one chdev per device we don't need to maintain
+a separate ida for minor numbers. Just use the devices id.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/iio_core.h             |   10 ----------
- drivers/staging/iio/industrialio-core.c    |   17 +----------------
- drivers/staging/iio/industrialio-trigger.c |    2 --
- 3 files changed, 1 insertions(+), 28 deletions(-)
+ drivers/staging/iio/industrialio-core.c    |   63 ++-------------------------
+ drivers/staging/iio/industrialio-trigger.c |   48 +++------------------
+ 2 files changed, 12 insertions(+), 99 deletions(-)
 
-diff --git a/drivers/staging/iio/iio_core.h b/drivers/staging/iio/iio_core.h
-index 433952b..edc295e 100644
---- a/drivers/staging/iio/iio_core.h
-+++ b/drivers/staging/iio/iio_core.h
-@@ -13,16 +13,6 @@
- #ifndef _IIO_CORE_H_
- #define _IIO_CORE_H_
- 
--/**
-- * iio_put() - internal module reference count reduce
-- **/
--void iio_put(void);
--
--/**
-- * iio_get() - internal module reference count increase
-- **/
--void iio_get(void);
--
- int __iio_add_chan_devattr(const char *postfix,
- 			   const char *group,
- 			   struct iio_chan_spec const *chan,
 diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 13f8c82..8b8e1fb 100644
+index 269a0f2..13f8c82 100644
 --- a/drivers/staging/iio/industrialio-core.c
 +++ b/drivers/staging/iio/industrialio-core.c
-@@ -1018,7 +1018,6 @@ static void iio_dev_release(struct device *device)
+@@ -26,13 +26,8 @@
+ #include "iio_core.h"
+ #include "iio_core_trigger.h"
+ #include "chrdev.h"
+-
+-/* IDR to assign each registered device a unique id*/
++/* IDA to assign each registered device a unique id*/
+ static DEFINE_IDA(iio_ida);
+-/* IDR to allocate character device minor numbers */
+-static DEFINE_IDA(iio_chrdev_ida);
+-/* Lock used to protect both of the above */
+-static DEFINE_SPINLOCK(iio_ida_lock);
+ 
+ static dev_t iio_devt;
+ 
+@@ -88,34 +83,6 @@ static const char * const iio_chan_info_postfix[] = {
+ 	= "quadrature_correction_raw",
+ };
+ 
+-/* Return a negative errno on failure */
+-static int iio_get_new_ida_val(struct ida *this_ida)
+-{
+-	int ret;
+-	int val;
+-
+-ida_again:
+-	if (unlikely(ida_pre_get(this_ida, GFP_KERNEL) == 0))
+-		return -ENOMEM;
+-
+-	spin_lock(&iio_ida_lock);
+-	ret = ida_get_new(this_ida, &val);
+-	spin_unlock(&iio_ida_lock);
+-	if (unlikely(ret == -EAGAIN))
+-		goto ida_again;
+-	else if (unlikely(ret))
+-		return ret;
+-
+-	return val;
+-}
+-
+-static void iio_free_ida_val(struct ida *this_ida, int id)
+-{
+-	spin_lock(&iio_ida_lock);
+-	ida_remove(this_ida, id);
+-	spin_unlock(&iio_ida_lock);
+-}
+-
+ /**
+  * struct iio_detected_event_list - list element for events that have occurred
+  * @list:		linked list header
+@@ -269,22 +236,6 @@ static const struct file_operations iio_event_chrdev_fileops = {
+ 	.llseek = noop_llseek,
+ };
+ 
+-static int iio_device_get_chrdev_minor(void)
+-{
+-	int ret;
+-
+-	ret = iio_get_new_ida_val(&iio_chrdev_ida);
+-	if (ret < IIO_DEV_MAX) /* both errors and valid */
+-		return ret;
+-	else
+-		return -ENOMEM;
+-}
+-
+-static void iio_device_free_chrdev_minor(int val)
+-{
+-	iio_free_ida_val(&iio_chrdev_ida, val);
+-}
+-
+ static int iio_event_getfd(struct iio_dev *indio_dev)
+ {
+ 	if (indio_dev->event_interface == NULL)
+@@ -1067,7 +1018,6 @@ static void iio_dev_release(struct device *device)
  {
  	struct iio_dev *dev_info = container_of(device, struct iio_dev, dev);
  	cdev_del(&dev_info->chrdev);
--	iio_put();
+-	iio_device_free_chrdev_minor(MINOR(device->devt));
+ 	iio_put();
  	kfree(dev_info);
  }
- 
-@@ -1048,7 +1047,6 @@ struct iio_dev *iio_allocate_device(int sizeof_priv)
- 		device_initialize(&dev->dev);
- 		dev_set_drvdata(&dev->dev, (void *)dev);
- 		mutex_init(&dev->mlock);
--		iio_get();
- 	}
- 
- 	return dev;
-@@ -1057,10 +1055,8 @@ EXPORT_SYMBOL(iio_allocate_device);
- 
- void iio_free_device(struct iio_dev *dev)
+@@ -1168,19 +1118,16 @@ int iio_device_register(struct iio_dev *dev_info)
  {
--	if (dev) {
--		iio_put();
-+	if (dev)
- 		kfree(dev);
--	}
- }
- EXPORT_SYMBOL(iio_free_device);
+ 	int ret;
  
-@@ -1173,17 +1169,6 @@ void iio_device_unregister(struct iio_dev *dev_info)
+-	dev_info->id = iio_get_new_ida_val(&iio_ida);
++	dev_info->id = ida_simple_get(&iio_ida, 0, 0, GFP_KERNEL);
+ 	if (dev_info->id < 0) {
+ 		ret = dev_info->id;
+ 		dev_err(&dev_info->dev, "Failed to get id\n");
+ 		goto error_ret;
+ 	}
+ 	dev_set_name(&dev_info->dev, "iio:device%d", dev_info->id);
+-	ret = iio_device_get_chrdev_minor();
+-	if (ret < 0)
+-		goto error_free_ida;
+ 
+ 	/* configure elements for the chrdev */
+-	dev_info->dev.devt = MKDEV(MAJOR(iio_devt), ret);
++	dev_info->dev.devt = MKDEV(MAJOR(iio_devt), dev_info->id);
+ 
+ 	ret = device_add(&dev_info->dev);
+ 	if (ret)
+@@ -1210,7 +1157,7 @@ error_free_sysfs:
+ error_del_device:
+ 	device_del(&dev_info->dev);
+ error_free_ida:
+-	iio_free_ida_val(&iio_ida, dev_info->id);
++	ida_simple_remove(&iio_ida, dev_info->id);
+ error_ret:
+ 	return ret;
+ }
+@@ -1222,7 +1169,7 @@ void iio_device_unregister(struct iio_dev *dev_info)
+ 		iio_device_unregister_trigger_consumer(dev_info);
+ 	iio_device_unregister_eventset(dev_info);
+ 	iio_device_unregister_sysfs(dev_info);
+-	iio_free_ida_val(&iio_ida, dev_info->id);
++	ida_simple_remove(&iio_ida, dev_info->id);
  	device_unregister(&dev_info->dev);
  }
  EXPORT_SYMBOL(iio_device_unregister);
--
--void iio_put(void)
--{
--	module_put(THIS_MODULE);
--}
--
--void iio_get(void)
--{
--	__module_get(THIS_MODULE);
--}
--
- subsys_initcall(iio_init);
- module_exit(iio_exit);
- 
 diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
-index b99d14e..3e60406 100644
+index f1ece86..b99d14e 100644
 --- a/drivers/staging/iio/industrialio-trigger.c
 +++ b/drivers/staging/iio/industrialio-trigger.c
-@@ -394,7 +394,6 @@ static void iio_trig_release(struct device *device)
- 	}
- 	kfree(trig->name);
- 	kfree(trig);
--	iio_put();
+@@ -32,8 +32,7 @@
+  * Any other suggestions?
+  */
+ 
+-static DEFINE_IDR(iio_trigger_idr);
+-static DEFINE_SPINLOCK(iio_trigger_idr_lock);
++static DEFINE_IDA(iio_trigger_ida);
+ 
+ /* Single list of all available triggers */
+ static LIST_HEAD(iio_trigger_list);
+@@ -72,48 +71,15 @@ static void iio_trigger_unregister_sysfs(struct iio_trigger *trig_info)
+ 					   NULL);
  }
  
- static struct device_type iio_trig_type = {
-@@ -461,7 +460,6 @@ struct iio_trigger *iio_allocate_trigger(const char *fmt, ...)
- 					  IRQ_NOREQUEST | IRQ_NOAUTOEN,
- 					  IRQ_NOPROBE);
- 		}
--		iio_get();
- 		get_device(&trig->dev);
- 	}
- 	return trig;
+-
+-/**
+- * iio_trigger_register_id() - get a unique id for this trigger
+- * @trig_info:	the trigger
+- **/
+-static int iio_trigger_register_id(struct iio_trigger *trig_info)
+-{
+-	int ret = 0;
+-
+-idr_again:
+-	if (unlikely(idr_pre_get(&iio_trigger_idr, GFP_KERNEL) == 0))
+-		return -ENOMEM;
+-
+-	spin_lock(&iio_trigger_idr_lock);
+-	ret = idr_get_new(&iio_trigger_idr, NULL, &trig_info->id);
+-	spin_unlock(&iio_trigger_idr_lock);
+-	if (unlikely(ret == -EAGAIN))
+-		goto idr_again;
+-	else if (likely(!ret))
+-		trig_info->id = trig_info->id & MAX_ID_MASK;
+-
+-	return ret;
+-}
+-
+-/**
+- * iio_trigger_unregister_id() - free up unique id for use by another trigger
+- * @trig_info: the trigger
+- **/
+-static void iio_trigger_unregister_id(struct iio_trigger *trig_info)
+-{
+-	spin_lock(&iio_trigger_idr_lock);
+-	idr_remove(&iio_trigger_idr, trig_info->id);
+-	spin_unlock(&iio_trigger_idr_lock);
+-}
+-
+ int iio_trigger_register(struct iio_trigger *trig_info)
+ {
+ 	int ret;
+ 
+-	ret = iio_trigger_register_id(trig_info);
+-	if (ret)
++	trig_info->id = ida_simple_get(&iio_trigger_ida, 0, 0, GFP_KERNEL);
++	if (trig_info->id < 0) {
++		ret = trig_info->id;
+ 		goto error_ret;
++	}
+ 	/* Set the name used for the sysfs directory etc */
+ 	dev_set_name(&trig_info->dev, "trigger%ld",
+ 		     (unsigned long) trig_info->id);
+@@ -136,7 +102,7 @@ int iio_trigger_register(struct iio_trigger *trig_info)
+ error_device_del:
+ 	device_del(&trig_info->dev);
+ error_unregister_id:
+-	iio_trigger_unregister_id(trig_info);
++	ida_simple_remove(&iio_trigger_ida, trig_info->id);
+ error_ret:
+ 	return ret;
+ }
+@@ -149,7 +115,7 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
+ 	mutex_unlock(&iio_trigger_list_lock);
+ 
+ 	iio_trigger_unregister_sysfs(trig_info);
+-	iio_trigger_unregister_id(trig_info);
++	ida_simple_remove(&iio_trigger_ida, trig_info->id);
+ 	/* Possible issue in here */
+ 	device_unregister(&trig_info->dev);
+ }
 -- 
 1.7.3.4
 
