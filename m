@@ -1,241 +1,946 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:42958 "EHLO
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:42957 "EHLO
 	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752045Ab1H3LdL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Aug 2011 07:33:11 -0400
+	with ESMTP id S1752898Ab1H3LdM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Aug 2011 07:33:12 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 02/14] staging:iio: use ida_simple_get and ida_simple_remove + merge ids
-Date: Tue, 30 Aug 2011 12:41:07 +0100
-Message-Id: <1314704479-15956-3-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 01/14] staging:iio: remove broken support for multiple event interfaces.
+Date: Tue, 30 Aug 2011 12:41:06 +0100
+Message-Id: <1314704479-15956-2-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1314704479-15956-1-git-send-email-jic23@cam.ac.uk>
 References: <1314704479-15956-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Use new simple ida allocation functions to remove some boilerplate
-code.
+We don't have a use case for these.  Two drivers appeared to use them
+but both report all events on the first.
 
-Also, now we only have one chdev per device we don't need to maintain
-a separate ida for minor numbers. Just use the devices id.
+V2: Remove now irrelevant comment.
+V3: Include fixup for adc/ad7280a.c
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/industrialio-core.c    |   63 ++-------------------------
- drivers/staging/iio/industrialio-trigger.c |   48 +++------------------
- 2 files changed, 12 insertions(+), 99 deletions(-)
+ drivers/staging/iio/accel/lis3l02dq_core.c |   13 +--
+ drivers/staging/iio/accel/sca3000_core.c   |    9 +-
+ drivers/staging/iio/adc/ad7150.c           |   21 ++--
+ drivers/staging/iio/adc/ad7280a.c          |    9 +-
+ drivers/staging/iio/adc/ad7291.c           |   13 +--
+ drivers/staging/iio/adc/ad7745.c           |    5 +-
+ drivers/staging/iio/adc/ad7816.c           |    5 +-
+ drivers/staging/iio/adc/ad799x_core.c      |    4 +-
+ drivers/staging/iio/adc/adt7310.c          |    7 +-
+ drivers/staging/iio/adc/adt7410.c          |    7 +-
+ drivers/staging/iio/adc/adt75.c            |    3 +-
+ drivers/staging/iio/adc/max1363_core.c     |    4 +-
+ drivers/staging/iio/addac/adt7316.c        |   18 ++--
+ drivers/staging/iio/dac/ad5504.c           |    4 +-
+ drivers/staging/iio/iio.h                  |   11 +--
+ drivers/staging/iio/industrialio-core.c    |  150 +++++++++++++---------------
+ drivers/staging/iio/light/tsl2563.c        |    3 +-
+ 17 files changed, 127 insertions(+), 159 deletions(-)
 
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+index 440b26b..b57bf50 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+@@ -452,7 +452,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 				 &t);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_HIGH)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Z,
+@@ -461,7 +461,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 			       timestamp);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_LOW)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Z,
+@@ -470,7 +470,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 			       timestamp);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_HIGH)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Y,
+@@ -479,7 +479,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 			       timestamp);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_LOW)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Y,
+@@ -488,7 +488,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 			       timestamp);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_HIGH)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_X,
+@@ -497,7 +497,7 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+ 			       timestamp);
+ 
+ 	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_LOW)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_X,
+@@ -651,7 +651,6 @@ static const struct attribute_group lis3l02dq_attribute_group = {
+ };
+ 
+ static const struct iio_info lis3l02dq_info = {
+-	.num_interrupt_lines = 1,
+ 	.read_raw = &lis3l02dq_read_raw,
+ 	.write_raw = &lis3l02dq_write_raw,
+ 	.read_event_value = &lis3l02dq_read_thresh,
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index 1a6780f..4490200 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -815,7 +815,7 @@ static irqreturn_t sca3000_event_handler(int irq, void *private)
+ 	sca3000_ring_int_process(val, indio_dev->ring);
+ 
+ 	if (val & SCA3000_INT_STATUS_FREE_FALL)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_X_AND_Y_AND_Z,
+@@ -824,7 +824,7 @@ static irqreturn_t sca3000_event_handler(int irq, void *private)
+ 			       last_timestamp);
+ 
+ 	if (val & SCA3000_INT_STATUS_Y_TRIGGER)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Y,
+@@ -833,7 +833,7 @@ static irqreturn_t sca3000_event_handler(int irq, void *private)
+ 			       last_timestamp);
+ 
+ 	if (val & SCA3000_INT_STATUS_X_TRIGGER)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_X,
+@@ -842,7 +842,7 @@ static irqreturn_t sca3000_event_handler(int irq, void *private)
+ 			       last_timestamp);
+ 
+ 	if (val & SCA3000_INT_STATUS_Z_TRIGGER)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+ 						  0,
+ 						  IIO_MOD_Z,
+@@ -1103,7 +1103,6 @@ error_ret:
+ static const struct iio_info sca3000_info = {
+ 	.attrs = &sca3000_attribute_group,
+ 	.read_raw = &sca3000_read_raw,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &sca3000_event_attribute_group,
+ 	.read_event_value = &sca3000_read_thresh,
+ 	.write_event_value = &sca3000_write_thresh,
+diff --git a/drivers/staging/iio/adc/ad7150.c b/drivers/staging/iio/adc/ad7150.c
+index 9fd1087..d70623c 100644
+--- a/drivers/staging/iio/adc/ad7150.c
++++ b/drivers/staging/iio/adc/ad7150.c
+@@ -653,30 +653,34 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
+ 
+ 	ad7150_i2c_read(chip, AD7150_STATUS, &int_status, 1);
+ 
+-	if ((int_status & AD7150_STATUS_OUT1) && !(chip->old_state & AD7150_STATUS_OUT1))
+-		iio_push_event(indio_dev, 0,
++	if ((int_status & AD7150_STATUS_OUT1) &&
++	    !(chip->old_state & AD7150_STATUS_OUT1))
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+ 				timestamp);
+-	else if ((!(int_status & AD7150_STATUS_OUT1)) && (chip->old_state & AD7150_STATUS_OUT1))
+-		iio_push_event(indio_dev, 0,
++	else if ((!(int_status & AD7150_STATUS_OUT1)) &&
++		 (chip->old_state & AD7150_STATUS_OUT1))
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+ 			       timestamp);
+ 
+-	if ((int_status & AD7150_STATUS_OUT2) && !(chip->old_state & AD7150_STATUS_OUT2))
+-		iio_push_event(indio_dev, 0,
++	if ((int_status & AD7150_STATUS_OUT2) &&
++	    !(chip->old_state & AD7150_STATUS_OUT2))
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 						    1,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+ 			       timestamp);
+-	else if ((!(int_status & AD7150_STATUS_OUT2)) && (chip->old_state & AD7150_STATUS_OUT2))
+-		iio_push_event(indio_dev, 0,
++	else if ((!(int_status & AD7150_STATUS_OUT2)) &&
++		 (chip->old_state & AD7150_STATUS_OUT2))
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 						    1,
+ 						    IIO_EV_TYPE_THRESH,
+@@ -705,7 +709,6 @@ static struct attribute_group ad7150_event_attribute_group = {
+ 
+ static const struct iio_info ad7150_info = {
+ 	.attrs = &ad7150_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad7150_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index ab6cf9c..bdc325d 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -691,7 +691,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ 		if (((channels[i] >> 23) & 0xF) <= AD7280A_CELL_VOLTAGE_6) {
+ 			if (((channels[i] >> 11) & 0xFFF) >=
+ 				st->cell_threshhigh)
+-				iio_push_event(dev_info, 0,
++				iio_push_event(dev_info,
+ 					IIO_UNMOD_EVENT_CODE(IIO_IN_DIFF,
+ 					0,
+ 					IIO_EV_TYPE_THRESH,
+@@ -699,7 +699,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ 					iio_get_time_ns());
+ 			else if (((channels[i] >> 11) & 0xFFF) <=
+ 				st->cell_threshlow)
+-				iio_push_event(dev_info, 0,
++				iio_push_event(dev_info,
+ 					IIO_UNMOD_EVENT_CODE(IIO_IN_DIFF,
+ 					0,
+ 					IIO_EV_TYPE_THRESH,
+@@ -707,7 +707,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ 					iio_get_time_ns());
+ 		} else {
+ 			if (((channels[i] >> 11) & 0xFFF) >= st->aux_threshhigh)
+-				iio_push_event(dev_info, 0,
++				iio_push_event(dev_info,
+ 					IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 					0,
+ 					IIO_EV_TYPE_THRESH,
+@@ -715,7 +715,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ 					iio_get_time_ns());
+ 			else if (((channels[i] >> 11) & 0xFFF) <=
+ 				st->aux_threshlow)
+-				iio_push_event(dev_info, 0,
++				iio_push_event(dev_info,
+ 					IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 					0,
+ 					IIO_EV_TYPE_THRESH,
+@@ -809,7 +809,6 @@ static int ad7280_read_raw(struct iio_dev *dev_info,
+ 
+ static const struct iio_info ad7280_info = {
+ 	.read_raw = &ad7280_read_raw,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad7280_event_attrs_group,
+ 	.attrs = &ad7280_attrs_group,
+ 	.driver_module = THIS_MODULE,
+diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
+index e884c78..ac7c04e 100644
+--- a/drivers/staging/iio/adc/ad7291.c
++++ b/drivers/staging/iio/adc/ad7291.c
+@@ -479,28 +479,28 @@ static irqreturn_t ad7291_event_handler(int irq, void *private)
+ 	ad7291_i2c_write(chip, AD7291_COMMAND, command);
+ 
+ 	if (t_status & (1 << 0))
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+ 			       timestamp);
+ 	if (t_status & (1 << 1))
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+ 			       timestamp);
+ 	if (t_status & (1 << 2))
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+ 			       timestamp);
+ 	if (t_status & (1 << 3))
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+@@ -509,14 +509,14 @@ static irqreturn_t ad7291_event_handler(int irq, void *private)
+ 
+ 	for (i = 0; i < AD7291_VOLTAGE_LIMIT_COUNT*2; i += 2) {
+ 		if (v_status & (1 << i))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 							    i/2,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_FALLING),
+ 				       timestamp);
+ 		if (v_status & (1 << (i + 1)))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 							    i/2,
+ 							    IIO_EV_TYPE_THRESH,
+@@ -780,7 +780,6 @@ static struct attribute_group ad7291_event_attribute_group = {
+ 
+ static const struct iio_info ad7291_info = {
+ 	.attrs = &ad7291_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad7291_event_attribute_group,
+ };
+ 
+diff --git a/drivers/staging/iio/adc/ad7745.c b/drivers/staging/iio/adc/ad7745.c
+index 414e6dd..41150c6 100644
+--- a/drivers/staging/iio/adc/ad7745.c
++++ b/drivers/staging/iio/adc/ad7745.c
+@@ -540,12 +540,12 @@ static irqreturn_t ad774x_event_handler(int irq, void *private)
+ 	ad774x_i2c_read(chip, AD774X_STATUS, &int_status, 1);
+ 
+ 	if (int_status & AD774X_STATUS_RDYCAP)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_EVENT_CODE_CAP_RDY,
+ 			       iio_get_time_ns());
+ 
+ 	if (int_status & AD774X_STATUS_RDYVT)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_EVENT_CODE_VT_RDY,
+ 			       iio_get_time_ns());
+ 
+@@ -569,7 +569,6 @@ static struct attribute_group ad774x_event_attribute_group = {
+ static const struct iio_info ad774x_info = {
+ 	.attrs = &ad774x_event_attribute_group,
+ 	.event_attrs = &ad774x_event_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.driver_module = THIS_MODULE,
+ };
+ /*
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index 8104ef4..2706de3 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -254,9 +254,7 @@ static const struct attribute_group ad7816_attribute_group = {
+ 
+ static irqreturn_t ad7816_event_handler(int irq, void *private)
+ {
+-	iio_push_event(private, 0,
+-		       IIO_EVENT_CODE_AD7816_OTI,
+-		       iio_get_time_ns());
++	iio_push_event(private, IIO_EVENT_CODE_AD7816_OTI, iio_get_time_ns());
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -334,7 +332,6 @@ static struct attribute_group ad7816_event_attribute_group = {
+ 
+ static const struct iio_info ad7816_info = {
+ 	.attrs = &ad7816_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad7816_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index ba6d4ed..b21e868 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -334,7 +334,7 @@ static irqreturn_t ad799x_event_handler(int irq, void *private)
+ 
+ 	for (i = 0; i < 8; i++) {
+ 		if (status & (1 << i))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       i & 0x1 ?
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 							    (i >> 1),
+@@ -474,14 +474,12 @@ static const struct iio_info ad7991_info = {
+ 
+ static const struct iio_info ad7992_info = {
+ 	.read_raw = &ad799x_read_raw,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad7992_event_attrs_group,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+ static const struct iio_info ad7993_4_7_8_info = {
+ 	.read_raw = &ad799x_read_raw,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad7993_4_7_8_event_attrs_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/adc/adt7310.c b/drivers/staging/iio/adc/adt7310.c
+index b55066f..e002e97 100644
+--- a/drivers/staging/iio/adc/adt7310.c
++++ b/drivers/staging/iio/adc/adt7310.c
+@@ -400,19 +400,19 @@ static irqreturn_t adt7310_event_handler(int irq, void *private)
+ 		return ret;
+ 
+ 	if (status & ADT7310_STAT_T_HIGH)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+ 			       timestamp);
+ 	if (status & ADT7310_STAT_T_LOW)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+ 			       timestamp);
+ 	if (status & ADT7310_STAT_T_CRIT)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+@@ -750,7 +750,6 @@ static struct attribute_group adt7310_event_attribute_group[ADT7310_IRQS] = {
+ 
+ static const struct iio_info adt7310_info = {
+ 	.attrs = &adt7310_attribute_group,
+-	.num_interrupt_lines = ADT7310_IRQS,
+ 	.event_attrs = adt7310_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/adc/adt7410.c b/drivers/staging/iio/adc/adt7410.c
+index 2e56ae8..e7e9e25 100644
+--- a/drivers/staging/iio/adc/adt7410.c
++++ b/drivers/staging/iio/adc/adt7410.c
+@@ -366,19 +366,19 @@ static irqreturn_t adt7410_event_handler(int irq, void *private)
+ 		return IRQ_HANDLED;
+ 
+ 	if (status & ADT7410_STAT_T_HIGH)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+ 			       timestamp);
+ 	if (status & ADT7410_STAT_T_LOW)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+ 			       timestamp);
+ 	if (status & ADT7410_STAT_T_CRIT)
+-		iio_push_event(indio_dev, 0,
++		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+@@ -717,7 +717,6 @@ static struct attribute_group adt7410_event_attribute_group[ADT7410_IRQS] = {
+ 
+ static const struct iio_info adt7410_info = {
+ 	.attrs = &adt7410_attribute_group,
+-	.num_interrupt_lines = ADT7410_IRQS,
+ 	.event_attrs = adt7410_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/adc/adt75.c b/drivers/staging/iio/adc/adt75.c
+index 66c5000..440c799 100644
+--- a/drivers/staging/iio/adc/adt75.c
++++ b/drivers/staging/iio/adc/adt75.c
+@@ -265,7 +265,7 @@ static const struct attribute_group adt75_attribute_group = {
+ 
+ static irqreturn_t adt75_event_handler(int irq, void *private)
+ {
+-	iio_push_event(private, 0,
++	iio_push_event(private,
+ 		       IIO_EVENT_CODE_ADT75_OTI,
+ 		       iio_get_time_ns());
+ 
+@@ -535,7 +535,6 @@ static struct attribute_group adt75_event_attribute_group = {
+ 
+ static const struct iio_info adt75_info = {
+ 	.attrs = &adt75_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &adt75_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
+index 53b7451..85fb74b 100644
+--- a/drivers/staging/iio/adc/max1363_core.c
++++ b/drivers/staging/iio/adc/max1363_core.c
+@@ -615,8 +615,7 @@ static irqreturn_t max1363_event_handler(int irq, void *private)
+ 	i2c_master_recv(st->client, &rx, 1);
+ 	mask = rx;
+ 	for_each_set_bit(loc, &mask, 8)
+-		iio_push_event(indio_dev, 0, max1363_event_codes[loc],
+-			       timestamp);
++		iio_push_event(indio_dev, max1363_event_codes[loc], timestamp);
+ 	i2c_master_send(st->client, tx, 2);
+ 
+ 	return IRQ_HANDLED;
+@@ -845,7 +844,6 @@ static const struct iio_info max1363_info = {
+ 	.write_event_config = &max1363_write_event_config,
+ 	.read_raw = &max1363_read_raw,
+ 	.driver_module = THIS_MODULE,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &max1363_event_attribute_group,
+ };
+ 
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index dca43a7..0cb3091 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -1777,43 +1777,43 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+ 
+ 		time = iio_get_time_ns();
+ 		if (stat1 & (1 << 0))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_RISING),
+ 				       time);
+ 		if (stat1 & (1 << 1))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_FALLING),
+ 				       time);
+ 		if (stat1 & (1 << 2))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 1,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_RISING),
+ 				       time);
+ 		if (stat1 & (1 << 3))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 1,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_FALLING),
+ 				       time);
+ 		if (stat1 & (1 << 5))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN, 1,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_EITHER),
+ 				       time);
+ 		if (stat1 & (1 << 6))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN, 2,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_EITHER),
+ 				       time);
+ 		if (stat1 & (1 << 7))
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN, 3,
+ 							    IIO_EV_TYPE_THRESH,
+ 							    IIO_EV_DIR_EITHER),
+@@ -1822,7 +1822,7 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+ 	ret = chip->bus.read(chip->bus.client, ADT7316_INT_STAT2, &stat2);
+ 	if (!ret) {
+ 		if (stat2 & ADT7316_INT_MASK2_VDD)
+-			iio_push_event(indio_dev, 0,
++			iio_push_event(indio_dev,
+ 				       IIO_UNMOD_EVENT_CODE(IIO_IN,
+ 							    0,
+ 							    IIO_EV_TYPE_THRESH,
+@@ -2110,14 +2110,12 @@ EXPORT_SYMBOL(adt7316_enable);
+ 
+ static const struct iio_info adt7316_info = {
+ 	.attrs = &adt7316_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &adt7316_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+ static const struct iio_info adt7516_info = {
+ 	.attrs = &adt7516_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &adt7516_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
+index 5fb2106..9a421f2 100644
+--- a/drivers/staging/iio/dac/ad5504.c
++++ b/drivers/staging/iio/dac/ad5504.c
+@@ -252,7 +252,7 @@ static struct attribute_group ad5504_ev_attribute_group = {
+ 
+ static irqreturn_t ad5504_event_handler(int irq, void *private)
+ {
+-	iio_push_event(private, 0,
++	iio_push_event(private,
+ 		       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 					    0,
+ 					    IIO_EV_TYPE_THRESH,
+@@ -264,14 +264,12 @@ static irqreturn_t ad5504_event_handler(int irq, void *private)
+ 
+ static const struct iio_info ad5504_info = {
+ 	.attrs = &ad5504_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad5504_ev_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+ static const struct iio_info ad5501_info = {
+ 	.attrs = &ad5501_attribute_group,
+-	.num_interrupt_lines = 1,
+ 	.event_attrs = &ad5504_ev_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index 239219b..098d827 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -183,7 +183,6 @@ struct iio_dev;
+  * struct iio_info - constant information about device
+  * @driver_module:	module structure used to ensure correct
+  *			ownership of chrdevs etc
+- * @num_interrupt_lines:number of physical interrupt lines from device
+  * @event_attrs:	event control attributes
+  * @attrs:		general purpose device attributes
+  * @read_raw:		function to request a value from the device.
+@@ -207,7 +206,6 @@ struct iio_dev;
+  **/
+ struct iio_info {
+ 	struct module			*driver_module;
+-	int				num_interrupt_lines;
+ 	struct attribute_group		*event_attrs;
+ 	const struct attribute_group	*attrs;
+ 
+@@ -252,7 +250,7 @@ struct iio_info {
+  * @currentmode:	[DRIVER] current operating mode
+  * @dev:		[DRIVER] device structure, should be assigned a parent
+  *			and owner
+- * @event_interfaces:	[INTERN] event chrdevs associated with interrupt lines
++ * @event_interface:	[INTERN] event chrdevs associated with interrupt lines
+  * @ring:		[DRIVER] any ring buffer present
+  * @mlock:		[INTERN] lock used to prevent simultaneous device state
+  *			changes
+@@ -272,7 +270,7 @@ struct iio_dev {
+ 	int				currentmode;
+ 	struct device			dev;
+ 
+-	struct iio_event_interface	*event_interfaces;
++	struct iio_event_interface	*event_interface;
+ 
+ 	struct iio_ring_buffer		*ring;
+ 	struct mutex			mlock;
+@@ -309,10 +307,7 @@ void iio_device_unregister(struct iio_dev *dev_info);
+  * @ev_code:		What event
+  * @timestamp:		When the event occurred
+  **/
+-int iio_push_event(struct iio_dev *dev_info,
+-		  int ev_line,
+-		  int ev_code,
+-		  s64 timestamp);
++int iio_push_event(struct iio_dev *dev_info, int ev_code,  s64 timestamp);
+ 
+ extern struct bus_type iio_bus_type;
+ 
 diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 269a0f2..13f8c82 100644
+index de91878..269a0f2 100644
 --- a/drivers/staging/iio/industrialio-core.c
 +++ b/drivers/staging/iio/industrialio-core.c
-@@ -26,13 +26,8 @@
- #include "iio_core.h"
- #include "iio_core_trigger.h"
- #include "chrdev.h"
--
--/* IDR to assign each registered device a unique id*/
-+/* IDA to assign each registered device a unique id*/
- static DEFINE_IDA(iio_ida);
--/* IDR to allocate character device minor numbers */
--static DEFINE_IDA(iio_chrdev_ida);
--/* Lock used to protect both of the above */
--static DEFINE_SPINLOCK(iio_ida_lock);
- 
- static dev_t iio_devt;
- 
-@@ -88,34 +83,6 @@ static const char * const iio_chan_info_postfix[] = {
- 	= "quadrature_correction_raw",
+@@ -146,13 +146,9 @@ struct iio_event_interface {
+ 	unsigned long flags;
  };
  
--/* Return a negative errno on failure */
--static int iio_get_new_ida_val(struct ida *this_ida)
--{
--	int ret;
--	int val;
--
--ida_again:
--	if (unlikely(ida_pre_get(this_ida, GFP_KERNEL) == 0))
--		return -ENOMEM;
--
--	spin_lock(&iio_ida_lock);
--	ret = ida_get_new(this_ida, &val);
--	spin_unlock(&iio_ida_lock);
--	if (unlikely(ret == -EAGAIN))
--		goto ida_again;
--	else if (unlikely(ret))
--		return ret;
--
--	return val;
--}
--
--static void iio_free_ida_val(struct ida *this_ida, int id)
--{
--	spin_lock(&iio_ida_lock);
--	ida_remove(this_ida, id);
--	spin_unlock(&iio_ida_lock);
--}
--
- /**
-  * struct iio_detected_event_list - list element for events that have occurred
-  * @list:		linked list header
-@@ -269,22 +236,6 @@ static const struct file_operations iio_event_chrdev_fileops = {
- 	.llseek = noop_llseek,
- };
+-int iio_push_event(struct iio_dev *dev_info,
+-		   int ev_line,
+-		   int ev_code,
+-		   s64 timestamp)
++int iio_push_event(struct iio_dev *dev_info, int ev_code, s64 timestamp)
+ {
+-	struct iio_event_interface *ev_int
+-		= &dev_info->event_interfaces[ev_line];
++	struct iio_event_interface *ev_int = dev_info->event_interface;
+ 	struct iio_detected_event_list *ev;
+ 	int ret = 0;
  
--static int iio_device_get_chrdev_minor(void)
--{
--	int ret;
--
--	ret = iio_get_new_ida_val(&iio_chrdev_ida);
--	if (ret < IIO_DEV_MAX) /* both errors and valid */
--		return ret;
--	else
--		return -ENOMEM;
--}
--
--static void iio_device_free_chrdev_minor(int val)
--{
--	iio_free_ida_val(&iio_chrdev_ida, val);
--}
--
+@@ -291,19 +287,19 @@ static void iio_device_free_chrdev_minor(int val)
+ 
  static int iio_event_getfd(struct iio_dev *indio_dev)
  {
- 	if (indio_dev->event_interface == NULL)
-@@ -1067,7 +1018,6 @@ static void iio_dev_release(struct device *device)
- {
- 	struct iio_dev *dev_info = container_of(device, struct iio_dev, dev);
- 	cdev_del(&dev_info->chrdev);
--	iio_device_free_chrdev_minor(MINOR(device->devt));
- 	iio_put();
- 	kfree(dev_info);
- }
-@@ -1168,19 +1118,16 @@ int iio_device_register(struct iio_dev *dev_info)
- {
- 	int ret;
+-	if (indio_dev->event_interfaces == NULL)
++	if (indio_dev->event_interface == NULL)
+ 		return -ENODEV;
  
--	dev_info->id = iio_get_new_ida_val(&iio_ida);
-+	dev_info->id = ida_simple_get(&iio_ida, 0, 0, GFP_KERNEL);
- 	if (dev_info->id < 0) {
- 		ret = dev_info->id;
- 		dev_err(&dev_info->dev, "Failed to get id\n");
+-	mutex_lock(&indio_dev->event_interfaces->event_list_lock);
++	mutex_lock(&indio_dev->event_interface->event_list_lock);
+ 	if (test_and_set_bit(IIO_BUSY_BIT_POS,
+-			     &indio_dev->event_interfaces->flags)) {
+-		mutex_unlock(&indio_dev->event_interfaces->event_list_lock);
++			     &indio_dev->event_interface->flags)) {
++		mutex_unlock(&indio_dev->event_interface->event_list_lock);
+ 		return -EBUSY;
+ 	}
+-	mutex_unlock(&indio_dev->event_interfaces->event_list_lock);
++	mutex_unlock(&indio_dev->event_interface->event_list_lock);
+ 	return anon_inode_getfd("iio:event",
+ 				&iio_event_chrdev_fileops,
+-				&indio_dev->event_interfaces[0], O_RDONLY);
++				indio_dev->event_interface, O_RDONLY);
+ }
+ 
+ static void iio_setup_ev_int(struct iio_event_interface *ev_int)
+@@ -910,13 +906,9 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 					     &iio_ev_state_show,
+ 					     iio_ev_state_store,
+ 					     mask,
+-					     /*HACK. - limits us to one
+-					       event interface - fix by
+-					       extending the bitmask - but
+-					       how far*/
+ 					     0,
+ 					     &dev_info->dev,
+-					     &dev_info->event_interfaces[0].
++					     &dev_info->event_interface->
+ 					     dev_attr_list);
+ 		kfree(postfix);
+ 		if (ret)
+@@ -935,8 +927,8 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 					     mask,
+ 					     0,
+ 					     &dev_info->dev,
+-					     &dev_info->event_interfaces[0]
+-					     .dev_attr_list);
++					     &dev_info->event_interface->
++					     dev_attr_list);
+ 		kfree(postfix);
+ 		if (ret)
+ 			goto error_ret;
+@@ -947,12 +939,11 @@ error_ret:
+ 	return ret;
+ }
+ 
+-static inline void __iio_remove_event_config_attrs(struct iio_dev *dev_info,
+-						  int i)
++static inline void __iio_remove_event_config_attrs(struct iio_dev *dev_info)
+ {
+ 	struct iio_dev_attr *p, *n;
+ 	list_for_each_entry_safe(p, n,
+-				 &dev_info->event_interfaces[i].
++				 &dev_info->event_interface->
+ 				 dev_attr_list, l) {
+ 		sysfs_remove_file_from_group(&dev_info->dev.kobj,
+ 					     &p->dev_attr.attr,
+@@ -962,25 +953,23 @@ static inline void __iio_remove_event_config_attrs(struct iio_dev *dev_info,
+ 	}
+ }
+ 
+-static inline int __iio_add_event_config_attrs(struct iio_dev *dev_info, int i)
++static inline int __iio_add_event_config_attrs(struct iio_dev *dev_info)
+ {
+ 	int j;
+ 	int ret;
+-	INIT_LIST_HEAD(&dev_info->event_interfaces[i].dev_attr_list);
++	INIT_LIST_HEAD(&dev_info->event_interface->dev_attr_list);
+ 	/* Dynically created from the channels array */
+-	if (dev_info->channels) {
+-		for (j = 0; j < dev_info->num_channels; j++) {
+-			ret = iio_device_add_event_sysfs(dev_info,
+-							 &dev_info
+-							 ->channels[j]);
+-			if (ret)
+-				goto error_clear_attrs;
+-		}
++	for (j = 0; j < dev_info->num_channels; j++) {
++
++		ret = iio_device_add_event_sysfs(dev_info,
++						 &dev_info->channels[j]);
++		if (ret)
++			goto error_clear_attrs;
+ 	}
+ 	return 0;
+ 
+ error_clear_attrs:
+-	__iio_remove_event_config_attrs(dev_info, i);
++	__iio_remove_event_config_attrs(dev_info);
+ 
+ 	return ret;
+ }
+@@ -994,42 +983,49 @@ static struct attribute_group iio_events_dummy_group = {
+ 	.attrs = iio_events_dummy_attrs
+ };
+ 
++static bool iio_check_for_dynamic_events(struct iio_dev *dev_info)
++{
++	int j;
++	for (j = 0; j < dev_info->num_channels; j++)
++		if (dev_info->channels[j].event_mask != 0)
++			return true;
++	return false;
++}
++
+ static int iio_device_register_eventset(struct iio_dev *dev_info)
+ {
+-	int ret = 0, i, j;
++	int ret = 0;
+ 
+-	if (dev_info->info->num_interrupt_lines == 0)
++	if (!(dev_info->info->event_attrs ||
++	      iio_check_for_dynamic_events(dev_info)))
+ 		return 0;
+ 
+-	dev_info->event_interfaces =
+-		kzalloc(sizeof(struct iio_event_interface)
+-			*dev_info->info->num_interrupt_lines,
+-			GFP_KERNEL);
+-	if (dev_info->event_interfaces == NULL) {
++	dev_info->event_interface =
++		kzalloc(sizeof(struct iio_event_interface), GFP_KERNEL);
++	if (dev_info->event_interface == NULL) {
+ 		ret = -ENOMEM;
  		goto error_ret;
  	}
- 	dev_set_name(&dev_info->dev, "iio:device%d", dev_info->id);
--	ret = iio_device_get_chrdev_minor();
--	if (ret < 0)
--		goto error_free_ida;
  
- 	/* configure elements for the chrdev */
--	dev_info->dev.devt = MKDEV(MAJOR(iio_devt), ret);
-+	dev_info->dev.devt = MKDEV(MAJOR(iio_devt), dev_info->id);
- 
- 	ret = device_add(&dev_info->dev);
- 	if (ret)
-@@ -1210,7 +1157,7 @@ error_free_sysfs:
- error_del_device:
- 	device_del(&dev_info->dev);
- error_free_ida:
--	iio_free_ida_val(&iio_ida, dev_info->id);
-+	ida_simple_remove(&iio_ida, dev_info->id);
- error_ret:
- 	return ret;
- }
-@@ -1222,7 +1169,7 @@ void iio_device_unregister(struct iio_dev *dev_info)
- 		iio_device_unregister_trigger_consumer(dev_info);
- 	iio_device_unregister_eventset(dev_info);
- 	iio_device_unregister_sysfs(dev_info);
--	iio_free_ida_val(&iio_ida, dev_info->id);
-+	ida_simple_remove(&iio_ida, dev_info->id);
- 	device_unregister(&dev_info->dev);
- }
- EXPORT_SYMBOL(iio_device_unregister);
-diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
-index f1ece86..b99d14e 100644
---- a/drivers/staging/iio/industrialio-trigger.c
-+++ b/drivers/staging/iio/industrialio-trigger.c
-@@ -32,8 +32,7 @@
-  * Any other suggestions?
-  */
- 
--static DEFINE_IDR(iio_trigger_idr);
--static DEFINE_SPINLOCK(iio_trigger_idr_lock);
-+static DEFINE_IDA(iio_trigger_ida);
- 
- /* Single list of all available triggers */
- static LIST_HEAD(iio_trigger_list);
-@@ -72,48 +71,15 @@ static void iio_trigger_unregister_sysfs(struct iio_trigger *trig_info)
- 					   NULL);
- }
- 
--
--/**
-- * iio_trigger_register_id() - get a unique id for this trigger
-- * @trig_info:	the trigger
-- **/
--static int iio_trigger_register_id(struct iio_trigger *trig_info)
--{
--	int ret = 0;
--
--idr_again:
--	if (unlikely(idr_pre_get(&iio_trigger_idr, GFP_KERNEL) == 0))
--		return -ENOMEM;
--
--	spin_lock(&iio_trigger_idr_lock);
--	ret = idr_get_new(&iio_trigger_idr, NULL, &trig_info->id);
--	spin_unlock(&iio_trigger_idr_lock);
--	if (unlikely(ret == -EAGAIN))
--		goto idr_again;
--	else if (likely(!ret))
--		trig_info->id = trig_info->id & MAX_ID_MASK;
--
--	return ret;
--}
--
--/**
-- * iio_trigger_unregister_id() - free up unique id for use by another trigger
-- * @trig_info: the trigger
-- **/
--static void iio_trigger_unregister_id(struct iio_trigger *trig_info)
--{
--	spin_lock(&iio_trigger_idr_lock);
--	idr_remove(&iio_trigger_idr, trig_info->id);
--	spin_unlock(&iio_trigger_idr_lock);
--}
--
- int iio_trigger_register(struct iio_trigger *trig_info)
- {
- 	int ret;
- 
--	ret = iio_trigger_register_id(trig_info);
--	if (ret)
-+	trig_info->id = ida_simple_get(&iio_trigger_ida, 0, 0, GFP_KERNEL);
-+	if (trig_info->id < 0) {
-+		ret = trig_info->id;
- 		goto error_ret;
+-	for (i = 0; i < dev_info->info->num_interrupt_lines; i++) {
+-		iio_setup_ev_int(&dev_info->event_interfaces[i]);
+-		if (dev_info->info->event_attrs != NULL)
+-			ret = sysfs_create_group(&dev_info->dev.kobj,
+-						 &dev_info->info
+-						 ->event_attrs[i]);
+-		else
+-			ret = sysfs_create_group(&dev_info->dev.kobj,
+-						 &iio_events_dummy_group);
+-		if (ret) {
+-			dev_err(&dev_info->dev,
+-				"Failed to register sysfs for event attrs");
+-			goto error_free_setup_event_lines;
+-		}
+-		ret = __iio_add_event_config_attrs(dev_info, i);
++	iio_setup_ev_int(dev_info->event_interface);
++	if (dev_info->info->event_attrs != NULL)
++		ret = sysfs_create_group(&dev_info->dev.kobj,
++					 dev_info->info->event_attrs);
++	else
++		ret = sysfs_create_group(&dev_info->dev.kobj,
++					 &iio_events_dummy_group);
++	if (ret) {
++		dev_err(&dev_info->dev,
++			"Failed to register sysfs for event attrs");
++		goto error_free_setup_event_lines;
 +	}
- 	/* Set the name used for the sysfs directory etc */
- 	dev_set_name(&trig_info->dev, "trigger%ld",
- 		     (unsigned long) trig_info->id);
-@@ -136,7 +102,7 @@ int iio_trigger_register(struct iio_trigger *trig_info)
- error_device_del:
- 	device_del(&trig_info->dev);
- error_unregister_id:
--	iio_trigger_unregister_id(trig_info);
-+	ida_simple_remove(&iio_trigger_ida, trig_info->id);
- error_ret:
- 	return ret;
- }
-@@ -149,7 +115,7 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
- 	mutex_unlock(&iio_trigger_list_lock);
++	if (dev_info->channels) {
++		ret = __iio_add_event_config_attrs(dev_info);
+ 		if (ret) {
+ 			if (dev_info->info->event_attrs != NULL)
+ 				sysfs_remove_group(&dev_info->dev.kobj,
+-						   &dev_info->info
+-						   ->event_attrs[i]);
++						   dev_info->info
++						   ->event_attrs);
+ 			else
+ 				sysfs_remove_group(&dev_info->dev.kobj,
+ 						   &iio_events_dummy_group);
+@@ -1040,16 +1036,14 @@ static int iio_device_register_eventset(struct iio_dev *dev_info)
+ 	return 0;
  
- 	iio_trigger_unregister_sysfs(trig_info);
--	iio_trigger_unregister_id(trig_info);
-+	ida_simple_remove(&iio_trigger_ida, trig_info->id);
- 	/* Possible issue in here */
- 	device_unregister(&trig_info->dev);
+ error_free_setup_event_lines:
+-	for (j = 0; j < i; j++) {
+-		__iio_remove_event_config_attrs(dev_info, j);
+-		if (dev_info->info->event_attrs != NULL) {
+-			sysfs_remove_group(&dev_info->dev.kobj,
+-					   &dev_info->info->event_attrs[j]);
+-			sysfs_remove_group(&dev_info->dev.kobj,
+-					   &iio_events_dummy_group);
+-		}
+-	}
+-	kfree(dev_info->event_interfaces);
++	__iio_remove_event_config_attrs(dev_info);
++	if (dev_info->info->event_attrs != NULL)
++		sysfs_remove_group(&dev_info->dev.kobj,
++				   dev_info->info->event_attrs);
++	else
++		sysfs_remove_group(&dev_info->dev.kobj,
++				   &iio_events_dummy_group);
++	kfree(dev_info->event_interface);
+ error_ret:
+ 
+ 	return ret;
+@@ -1057,20 +1051,16 @@ error_ret:
+ 
+ static void iio_device_unregister_eventset(struct iio_dev *dev_info)
+ {
+-	int i;
+-
+-	if (dev_info->info->num_interrupt_lines == 0)
++	if (dev_info->event_interface == NULL)
+ 		return;
+-	for (i = 0; i < dev_info->info->num_interrupt_lines; i++) {
+-		__iio_remove_event_config_attrs(dev_info, i);
+-		if (dev_info->info->event_attrs != NULL)
+-			sysfs_remove_group(&dev_info->dev.kobj,
+-					   &dev_info->info->event_attrs[i]);
+-		else
+-			sysfs_remove_group(&dev_info->dev.kobj,
+-					   &iio_events_dummy_group);
+-	}
+-	kfree(dev_info->event_interfaces);
++	__iio_remove_event_config_attrs(dev_info);
++	if (dev_info->info->event_attrs != NULL)
++		sysfs_remove_group(&dev_info->dev.kobj,
++				   dev_info->info->event_attrs);
++	else
++		sysfs_remove_group(&dev_info->dev.kobj,
++				   &iio_events_dummy_group);
++	kfree(dev_info->event_interface);
  }
+ 
+ static void iio_dev_release(struct device *device)
+diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
+index 665a744..60d21f3 100644
+--- a/drivers/staging/iio/light/tsl2563.c
++++ b/drivers/staging/iio/light/tsl2563.c
+@@ -595,7 +595,7 @@ static irqreturn_t tsl2563_event_handler(int irq, void *private)
+ 	struct iio_dev *dev_info = private;
+ 	struct tsl2563_chip *chip = iio_priv(dev_info);
+ 
+-	iio_push_event(dev_info, 0,
++	iio_push_event(dev_info,
+ 		       IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
+ 					    0,
+ 					    IIO_EV_TYPE_THRESH,
+@@ -680,7 +680,6 @@ static const struct iio_info tsl2563_info_no_irq = {
+ 
+ static const struct iio_info tsl2563_info = {
+ 	.driver_module = THIS_MODULE,
+-	.num_interrupt_lines = 1,
+ 	.read_raw = &tsl2563_read_raw,
+ 	.write_raw = &tsl2563_write_raw,
+ 	.read_event_value = &tsl2563_read_thresh,
 -- 
 1.7.3.4
 
