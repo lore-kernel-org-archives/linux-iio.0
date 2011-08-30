@@ -3,276 +3,601 @@ From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
 Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 4/7] staging:iio: squash chrdev handler remains into users.
-Date: Tue, 30 Aug 2011 12:32:46 +0100
-Message-Id: <1314703969-15275-5-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 3/7] staging:iio: remove specific chrdev for event reading. Get fd from ioctl on buffer.
+Date: Tue, 30 Aug 2011 12:32:45 +0100
+Message-Id: <1314703969-15275-4-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1314703969-15275-1-git-send-email-jic23@cam.ac.uk>
 References: <1314703969-15275-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-This no longer has any purpose given all chrdevs are pretty much the same
-now the event interfaces are done via anon fds
+Change suggested by Arnd Bergmann.
+
+No real reason to have two chrdevs per device. This step merges them into one.
+Currently this means that events will only work on devices with buffers. THat will
+be remedied shortly.
+
+V2: set name for event attribute groups.  Otherwise they all sorts of fun occurs on
+dynamic channel event attribute creation.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/chrdev.h            |   19 -------------------
- drivers/staging/iio/industrialio-core.c |   29 ++++++++++-------------------
- drivers/staging/iio/industrialio-ring.c |   28 +++++++++++++---------------
- drivers/staging/iio/ring_generic.h      |    5 +++--
- 4 files changed, 26 insertions(+), 55 deletions(-)
+Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 
-diff --git a/drivers/staging/iio/chrdev.h b/drivers/staging/iio/chrdev.h
-index c6bd04c..28cce12 100644
---- a/drivers/staging/iio/chrdev.h
-+++ b/drivers/staging/iio/chrdev.h
-@@ -11,25 +11,6 @@
- #define _IIO_CHRDEV_H_
+---
+ drivers/staging/iio/accel/sca3000_core.c |    1 +
+ drivers/staging/iio/adc/ad7150.c         |    1 +
+ drivers/staging/iio/adc/ad7745.c         |    1 +
+ drivers/staging/iio/adc/ad7816.c         |    1 +
+ drivers/staging/iio/adc/ad799x_core.c    |    2 +
+ drivers/staging/iio/adc/adt7310.c        |    2 +
+ drivers/staging/iio/adc/adt7410.c        |    2 +
+ drivers/staging/iio/adc/adt75.c          |    1 +
+ drivers/staging/iio/adc/max1363_core.c   |    4 +-
+ drivers/staging/iio/addac/adt7316.c      |    2 +
+ drivers/staging/iio/chrdev.h             |    1 +
+ drivers/staging/iio/dac/ad5504.c         |    1 +
+ drivers/staging/iio/iio.h                |    1 +
+ drivers/staging/iio/industrialio-core.c  |  174 ++++++++++--------------------
+ drivers/staging/iio/industrialio-ring.c  |   21 ++++
+ 15 files changed, 98 insertions(+), 117 deletions(-)
+
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index dbf1622..d7f79b4 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -1036,6 +1036,7 @@ static struct attribute *sca3000_event_attributes[] = {
+ 
+ static struct attribute_group sca3000_event_attribute_group = {
+ 	.attrs = sca3000_event_attributes,
++	.name = "events",
+ };
  
  /**
-- * struct iio_handler - Structure used to specify file operations
-- *			for a particular chrdev
-- * @chrdev:	character device structure
-- * @id:		the location in the handler table - used for deallocation.
-- * @flags:	file operations related flags including busy flag.
-- * @private:	handler specific data used by the fileops registered with
-- *		the chrdev.
-- */
--struct iio_handler {
--	struct cdev	chrdev;
--	int		id;
--	unsigned long	flags;
--	void		*private;
--};
+diff --git a/drivers/staging/iio/adc/ad7150.c b/drivers/staging/iio/adc/ad7150.c
+index c01acbc..9fd1087 100644
+--- a/drivers/staging/iio/adc/ad7150.c
++++ b/drivers/staging/iio/adc/ad7150.c
+@@ -700,6 +700,7 @@ static struct attribute *ad7150_event_attributes[] = {
+ 
+ static struct attribute_group ad7150_event_attribute_group = {
+ 	.attrs = ad7150_event_attributes,
++	.name = "events",
+ };
+ 
+ static const struct iio_info ad7150_info = {
+diff --git a/drivers/staging/iio/adc/ad7745.c b/drivers/staging/iio/adc/ad7745.c
+index 91d598c..414e6dd 100644
+--- a/drivers/staging/iio/adc/ad7745.c
++++ b/drivers/staging/iio/adc/ad7745.c
+@@ -563,6 +563,7 @@ static struct attribute *ad774x_event_attributes[] = {
+ 
+ static struct attribute_group ad774x_event_attribute_group = {
+ 	.attrs = ad774x_event_attributes,
++	.name = "events",
+ };
+ 
+ static const struct iio_info ad774x_info = {
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index f5aa57b..8104ef4 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -329,6 +329,7 @@ static struct attribute *ad7816_event_attributes[] = {
+ 
+ static struct attribute_group ad7816_event_attribute_group = {
+ 	.attrs = ad7816_event_attributes,
++	.name = "events",
+ };
+ 
+ static const struct iio_info ad7816_info = {
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index 33e4e21..f1b044b 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -447,6 +447,7 @@ static struct attribute *ad7993_4_7_8_event_attributes[] = {
+ 
+ static struct attribute_group ad7993_4_7_8_event_attrs_group = {
+ 	.attrs = ad7993_4_7_8_event_attributes,
++	.name = "events",
+ };
+ 
+ static struct attribute *ad7992_event_attributes[] = {
+@@ -463,6 +464,7 @@ static struct attribute *ad7992_event_attributes[] = {
+ 
+ static struct attribute_group ad7992_event_attrs_group = {
+ 	.attrs = ad7992_event_attributes,
++	.name = "events",
+ };
+ 
+ static const struct iio_info ad7991_info = {
+diff --git a/drivers/staging/iio/adc/adt7310.c b/drivers/staging/iio/adc/adt7310.c
+index 697ad1b..b55066f 100644
+--- a/drivers/staging/iio/adc/adt7310.c
++++ b/drivers/staging/iio/adc/adt7310.c
+@@ -741,8 +741,10 @@ static struct attribute *adt7310_event_ct_attributes[] = {
+ static struct attribute_group adt7310_event_attribute_group[ADT7310_IRQS] = {
+ 	{
+ 		.attrs = adt7310_event_int_attributes,
++		.name = "events",
+ 	}, {
+ 		.attrs = adt7310_event_ct_attributes,
++		.name = "events",
+ 	}
+ };
+ 
+diff --git a/drivers/staging/iio/adc/adt7410.c b/drivers/staging/iio/adc/adt7410.c
+index b7631f1..2e56ae8 100644
+--- a/drivers/staging/iio/adc/adt7410.c
++++ b/drivers/staging/iio/adc/adt7410.c
+@@ -708,8 +708,10 @@ static struct attribute *adt7410_event_ct_attributes[] = {
+ static struct attribute_group adt7410_event_attribute_group[ADT7410_IRQS] = {
+ 	{
+ 		.attrs = adt7410_event_int_attributes,
++		.name = "events",
+ 	}, {
+ 		.attrs = adt7410_event_ct_attributes,
++		.name = "events",
+ 	}
+ };
+ 
+diff --git a/drivers/staging/iio/adc/adt75.c b/drivers/staging/iio/adc/adt75.c
+index dd78277..66c5000 100644
+--- a/drivers/staging/iio/adc/adt75.c
++++ b/drivers/staging/iio/adc/adt75.c
+@@ -530,6 +530,7 @@ static struct attribute *adt75_event_attributes[] = {
+ 
+ static struct attribute_group adt75_event_attribute_group = {
+ 	.attrs = adt75_event_attributes,
++	.name = "events",
+ };
+ 
+ static const struct iio_info adt75_info = {
+diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
+index e10a4d8..0bf7b74 100644
+--- a/drivers/staging/iio/adc/max1363_core.c
++++ b/drivers/staging/iio/adc/max1363_core.c
+@@ -827,6 +827,7 @@ static struct attribute *max1363_event_attributes[] = {
+ 
+ static struct attribute_group max1363_event_attribute_group = {
+ 	.attrs = max1363_event_attributes,
++	.name = "events",
+ };
+ 
+ #define MAX1363_EVENT_FUNCS						\
+@@ -1296,7 +1297,8 @@ static int __devinit max1363_probe(struct i2c_client *client,
+ 	/* Estabilish that the iio_dev is a child of the i2c device */
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->name = id->name;
 -
--#define iio_cdev_to_handler(cd)				\
--	container_of(cd, struct iio_handler, chrdev)
--
--/**
-  * struct iio_event_data - The actual event being pushed to userspace
-  * @id:		event identifier
-  * @timestamp:	best estimate of time of event occurrence (often from
++	indio_dev->channels = st->chip_info->channels;
++	indio_dev->num_channels = st->chip_info->num_channels;
+ 	indio_dev->info = st->chip_info->info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->channels = st->chip_info->channels;
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index 474d946..dca43a7 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -2064,6 +2064,7 @@ static struct attribute *adt7316_event_attributes[] = {
+ 
+ static struct attribute_group adt7316_event_attribute_group = {
+ 	.attrs = adt7316_event_attributes,
++	.name = "events",
+ };
+ 
+ static struct attribute *adt7516_event_attributes[] = {
+@@ -2084,6 +2085,7 @@ static struct attribute *adt7516_event_attributes[] = {
+ 
+ static struct attribute_group adt7516_event_attribute_group = {
+ 	.attrs = adt7516_event_attributes,
++	.name = "events",
+ };
+ 
+ #ifdef CONFIG_PM
+diff --git a/drivers/staging/iio/chrdev.h b/drivers/staging/iio/chrdev.h
+index 8a229e7..c6bd04c 100644
+--- a/drivers/staging/iio/chrdev.h
++++ b/drivers/staging/iio/chrdev.h
+@@ -40,4 +40,5 @@ struct iio_event_data {
+ 	s64	timestamp;
+ };
+ 
++#define IIO_GET_EVENT_FD_IOCTL _IOR('i', 0x90, int)
+ #endif
+diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
+index 5243ef9..5fb2106 100644
+--- a/drivers/staging/iio/dac/ad5504.c
++++ b/drivers/staging/iio/dac/ad5504.c
+@@ -247,6 +247,7 @@ static struct attribute *ad5504_ev_attributes[] = {
+ 
+ static struct attribute_group ad5504_ev_attribute_group = {
+ 	.attrs = ad5504_ev_attributes,
++	.name = "events",
+ };
+ 
+ static irqreturn_t ad5504_event_handler(int irq, void *private)
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index cfa1480..5b61a7e 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -245,6 +245,7 @@ struct iio_info {
+ 
+ };
+ 
++int iio_event_getfd(struct iio_dev *indio_dev);
+ /**
+  * struct iio_dev - industrial I/O device
+  * @id:			[INTERN] used to identify device internally
 diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index a6ea962..2b72398 100644
+index 8a21c5e..a6ea962 100644
 --- a/drivers/staging/iio/industrialio-core.c
 +++ b/drivers/staging/iio/industrialio-core.c
-@@ -129,25 +129,24 @@ struct iio_detected_event_list {
+@@ -21,6 +21,7 @@
+ #include <linux/wait.h>
+ #include <linux/cdev.h>
+ #include <linux/slab.h>
++#include <linux/anon_inodes.h>
+ #include "iio.h"
+ #include "iio_core.h"
+ #include "iio_core_trigger.h"
+@@ -128,6 +129,7 @@ struct iio_detected_event_list {
  	struct iio_event_data		ev;
  };
  
--
++
  /**
   * struct iio_event_interface - chrdev interface for an event line
   * @dev:		device assocated with event interface
-- * @handler:		fileoperations and related control for the chrdev
-  * @wait:		wait queue to allow blocking reads of events
-  * @event_list_lock:	mutex to protect the list of detected events
-  * @det_events:		list of detected events
-  * @max_events:		maximum number of events before new ones are dropped
+@@ -139,7 +141,6 @@ struct iio_detected_event_list {
   * @current_events:	number of events in detected list
-+ * @flags:		file operations related flags including busy flag.
   */
  struct iio_event_interface {
--	struct iio_handler			handler;
+-	struct device				dev;
+ 	struct iio_handler			handler;
  	wait_queue_head_t			wait;
  	struct mutex				event_list_lock;
- 	struct list_head			det_events;
- 	int					max_events;
- 	int					current_events;
- 	struct list_head dev_attr_list;
-+	unsigned long flags;
- };
- 
- int iio_push_event(struct iio_dev *dev_info,
-@@ -162,7 +161,7 @@ int iio_push_event(struct iio_dev *dev_info,
- 
- 	/* Does anyone care? */
- 	mutex_lock(&ev_int->event_list_lock);
--	if (test_bit(IIO_BUSY_BIT_POS, &ev_int->handler.flags)) {
-+	if (test_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
- 		if (ev_int->current_events == ev_int->max_events) {
- 			mutex_unlock(&ev_int->event_list_lock);
- 			return 0;
-@@ -188,6 +187,7 @@ error_ret:
+@@ -187,7 +188,6 @@ error_ret:
  }
  EXPORT_SYMBOL(iio_push_event);
  
-+
+-
  /* This turns up an awful lot */
  ssize_t iio_read_const_attr(struct device *dev,
  			    struct device_attribute *attr,
-@@ -207,6 +207,7 @@ static ssize_t iio_event_chrdev_read(struct file *filep,
+@@ -207,7 +207,6 @@ static ssize_t iio_event_chrdev_read(struct file *filep,
  	struct iio_detected_event_list *el;
  	int ret;
  	size_t len;
-+
+-
  	mutex_lock(&ev_int->event_list_lock);
  	if (list_empty(&ev_int->det_events)) {
  		if (filep->f_flags & O_NONBLOCK) {
-@@ -250,8 +251,9 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
- {
- 	struct iio_event_interface *ev_int = filep->private_data;
- 	struct iio_detected_event_list *el, *t;
-+
- 	mutex_lock(&ev_int->event_list_lock);
--	clear_bit(IIO_BUSY_BIT_POS, &ev_int->handler.flags);
-+	clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
- 	/*
- 	 * In order to maintain a clean state for reopening,
- 	 * clear out any awaiting events. The mask will prevent
-@@ -297,7 +299,7 @@ int iio_event_getfd(struct iio_dev *indio_dev)
+@@ -249,10 +248,8 @@ error_ret:
  
- 	mutex_lock(&indio_dev->event_interfaces->event_list_lock);
- 	if (test_and_set_bit(IIO_BUSY_BIT_POS,
--			     &indio_dev->event_interfaces->handler.flags)) {
-+			     &indio_dev->event_interfaces->flags)) {
- 		mutex_unlock(&indio_dev->event_interfaces->event_list_lock);
- 		return -EBUSY;
+ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+ {
+-	struct iio_handler *hand = iio_cdev_to_handler(inode->i_cdev);
+-	struct iio_event_interface *ev_int = hand->private;
++	struct iio_event_interface *ev_int = filep->private_data;
+ 	struct iio_detected_event_list *el, *t;
+-
+ 	mutex_lock(&ev_int->event_list_lock);
+ 	clear_bit(IIO_BUSY_BIT_POS, &ev_int->handler.flags);
+ 	/*
+@@ -264,23 +261,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+ 		list_del(&el->list);
+ 		kfree(el);
  	}
-@@ -307,11 +309,7 @@ int iio_event_getfd(struct iio_dev *indio_dev)
- 				&indio_dev->event_interfaces[0], O_RDONLY);
+-	mutex_unlock(&ev_int->event_list_lock);
+-
+-	return 0;
+-}
+-
+-static int iio_event_chrdev_open(struct inode *inode, struct file *filep)
+-{
+-	struct iio_handler *hand = iio_cdev_to_handler(inode->i_cdev);
+-	struct iio_event_interface *ev_int = hand->private;
+-
+-	mutex_lock(&ev_int->event_list_lock);
+-	if (test_and_set_bit(IIO_BUSY_BIT_POS, &hand->flags)) {
+-		fops_put(filep->f_op);
+-		mutex_unlock(&ev_int->event_list_lock);
+-		return -EBUSY;
+-	}
+-	filep->private_data = hand->private;
++	ev_int->current_events = 0;
+ 	mutex_unlock(&ev_int->event_list_lock);
+ 
+ 	return 0;
+@@ -289,23 +270,10 @@ static int iio_event_chrdev_open(struct inode *inode, struct file *filep)
+ static const struct file_operations iio_event_chrdev_fileops = {
+ 	.read =  iio_event_chrdev_read,
+ 	.release = iio_event_chrdev_release,
+-	.open = iio_event_chrdev_open,
+ 	.owner = THIS_MODULE,
+ 	.llseek = noop_llseek,
+ };
+ 
+-static void iio_event_dev_release(struct device *dev)
+-{
+-	struct iio_event_interface *ev_int
+-		= container_of(dev, struct iio_event_interface, dev);
+-	cdev_del(&ev_int->handler.chrdev);
+-	iio_device_free_chrdev_minor(MINOR(dev->devt));
+-};
+-
+-static struct device_type iio_event_type = {
+-	.release = iio_event_dev_release,
+-};
+-
+ int iio_device_get_chrdev_minor(void)
+ {
+ 	int ret;
+@@ -322,34 +290,29 @@ void iio_device_free_chrdev_minor(int val)
+ 	iio_free_ida_val(&iio_chrdev_ida, val);
  }
  
--static void iio_setup_ev_int(struct iio_event_interface *ev_int,
--			    const char *dev_name,
--			    int index,
--			    struct module *owner,
--			    struct device *dev)
-+static void iio_setup_ev_int(struct iio_event_interface *ev_int)
+-static int iio_setup_ev_int(struct iio_event_interface *ev_int,
++int iio_event_getfd(struct iio_dev *indio_dev)
++{
++	if (indio_dev->event_interfaces == NULL)
++		return -ENODEV;
++
++	mutex_lock(&indio_dev->event_interfaces->event_list_lock);
++	if (test_and_set_bit(IIO_BUSY_BIT_POS,
++			     &indio_dev->event_interfaces->handler.flags)) {
++		mutex_unlock(&indio_dev->event_interfaces->event_list_lock);
++		return -EBUSY;
++	}
++	mutex_unlock(&indio_dev->event_interfaces->event_list_lock);
++	return anon_inode_getfd("iio:event",
++				&iio_event_chrdev_fileops,
++				&indio_dev->event_interfaces[0], O_RDONLY);
++}
++
++static void iio_setup_ev_int(struct iio_event_interface *ev_int,
+ 			    const char *dev_name,
+ 			    int index,
+ 			    struct module *owner,
+ 			    struct device *dev)
  {
+-	int ret, minor;
+-
+-	ev_int->dev.bus = &iio_bus_type;
+-	ev_int->dev.parent = dev;
+-	ev_int->dev.type = &iio_event_type;
+-	device_initialize(&ev_int->dev);
+-
+-	minor = iio_device_get_chrdev_minor();
+-	if (minor < 0) {
+-		ret = minor;
+-		goto error_device_put;
+-	}
+-	ev_int->dev.devt = MKDEV(MAJOR(iio_devt), minor);
+-	dev_set_name(&ev_int->dev, "%s:event%d", dev_name, index);
+-
+-	ret = device_add(&ev_int->dev);
+-	if (ret)
+-		goto error_free_minor;
+-
+-	cdev_init(&ev_int->handler.chrdev, &iio_event_chrdev_fileops);
+-	ev_int->handler.chrdev.owner = owner;
+-
  	mutex_init(&ev_int->event_list_lock);
  	/* discussion point - make this variable? */
-@@ -319,8 +317,6 @@ static void iio_setup_ev_int(struct iio_event_interface *ev_int,
- 	ev_int->current_events = 0;
- 	INIT_LIST_HEAD(&ev_int->det_events);
+ 	ev_int->max_events = 10;
+@@ -358,27 +321,6 @@ static int iio_setup_ev_int(struct iio_event_interface *ev_int,
  	init_waitqueue_head(&ev_int->wait);
--	ev_int->handler.private = ev_int;
--	ev_int->handler.flags = 0;
+ 	ev_int->handler.private = ev_int;
+ 	ev_int->handler.flags = 0;
+-
+-	ret = cdev_add(&ev_int->handler.chrdev, ev_int->dev.devt, 1);
+-	if (ret)
+-		goto error_unreg_device;
+-
+-	return 0;
+-
+-error_unreg_device:
+-	device_unregister(&ev_int->dev);
+-error_free_minor:
+-	iio_device_free_chrdev_minor(minor);
+-error_device_put:
+-	put_device(&ev_int->dev);
+-
+-	return ret;
+-}
+-
+-static void iio_free_ev_int(struct iio_event_interface *ev_int)
+-{
+-	device_unregister(&ev_int->dev);
+-	put_device(&ev_int->dev);
  }
  
  static int __init iio_init(void)
-@@ -1018,12 +1014,7 @@ static int iio_device_register_eventset(struct iio_dev *dev_info)
+@@ -970,7 +912,7 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 			continue;
+ 		}
+ 		ret = __iio_add_chan_devattr(postfix,
+-					     NULL,
++					     "events",
+ 					     chan,
+ 					     &iio_ev_state_show,
+ 					     iio_ev_state_store,
+@@ -980,7 +922,7 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 					       extending the bitmask - but
+ 					       how far*/
+ 					     0,
+-					     &dev_info->event_interfaces[0].dev,
++					     &dev_info->dev,
+ 					     &dev_info->event_interfaces[0].
+ 					     dev_attr_list);
+ 		kfree(postfix);
+@@ -994,13 +936,12 @@ static int iio_device_add_event_sysfs(struct iio_dev *dev_info,
+ 			ret = -ENOMEM;
+ 			goto error_ret;
+ 		}
+-		ret = __iio_add_chan_devattr(postfix, NULL, chan,
++		ret = __iio_add_chan_devattr(postfix, "events", chan,
+ 					     iio_ev_value_show,
+ 					     iio_ev_value_store,
+ 					     mask,
+ 					     0,
+-					     &dev_info->event_interfaces[0]
+-					     .dev,
++					     &dev_info->dev,
+ 					     &dev_info->event_interfaces[0]
+ 					     .dev_attr_list);
+ 		kfree(postfix);
+@@ -1020,8 +961,7 @@ static inline void __iio_remove_event_config_attrs(struct iio_dev *dev_info,
+ 	list_for_each_entry_safe(p, n,
+ 				 &dev_info->event_interfaces[i].
+ 				 dev_attr_list, l) {
+-		sysfs_remove_file_from_group(&dev_info
+-					     ->event_interfaces[i].dev.kobj,
++		sysfs_remove_file_from_group(&dev_info->dev.kobj,
+ 					     &p->dev_attr.attr,
+ 					     NULL);
+ 		kfree(p->dev_attr.attr.name);
+@@ -1052,6 +992,15 @@ error_clear_attrs:
+ 	return ret;
+ }
+ 
++static struct attribute *iio_events_dummy_attrs[] = {
++	NULL
++};
++
++static struct attribute_group iio_events_dummy_group = {
++	.name = "events",
++	.attrs = iio_events_dummy_attrs
++};
++
+ static int iio_device_register_eventset(struct iio_dev *dev_info)
+ {
+ 	int ret = 0, i, j;
+@@ -1069,42 +1018,33 @@ static int iio_device_register_eventset(struct iio_dev *dev_info)
  	}
  
  	for (i = 0; i < dev_info->info->num_interrupt_lines; i++) {
--		iio_setup_ev_int(&dev_info->event_interfaces[i],
--				 dev_name(&dev_info->dev),
--				 i,
--				 dev_info->info->driver_module,
--				 &dev_info->dev);
+-		ret = iio_setup_ev_int(&dev_info->event_interfaces[i],
+-				       dev_name(&dev_info->dev),
+-				       i,
+-				       dev_info->info->driver_module,
+-				       &dev_info->dev);
+-		if (ret) {
+-			dev_err(&dev_info->dev,
+-				"Could not get chrdev interface\n");
+-			goto error_free_setup_event_lines;
+-		}
 -
-+		iio_setup_ev_int(&dev_info->event_interfaces[i]);
+-		dev_set_drvdata(&dev_info->event_interfaces[i].dev,
+-				(void *)dev_info);
++		iio_setup_ev_int(&dev_info->event_interfaces[i],
++				 dev_name(&dev_info->dev),
++				 i,
++				 dev_info->info->driver_module,
++				 &dev_info->dev);
+ 
  		if (dev_info->info->event_attrs != NULL)
- 			ret = sysfs_create_group(&dev_info->dev.kobj,
+-			ret = sysfs_create_group(&dev_info
+-						 ->event_interfaces[i]
+-						 .dev.kobj,
++			ret = sysfs_create_group(&dev_info->dev.kobj,
  						 &dev_info->info
+ 						 ->event_attrs[i]);
+-
++		else
++			ret = sysfs_create_group(&dev_info->dev.kobj,
++						 &iio_events_dummy_group);
+ 		if (ret) {
+ 			dev_err(&dev_info->dev,
+ 				"Failed to register sysfs for event attrs");
+-			iio_free_ev_int(&dev_info->event_interfaces[i]);
+ 			goto error_free_setup_event_lines;
+ 		}
+ 		ret = __iio_add_event_config_attrs(dev_info, i);
+ 		if (ret) {
+ 			if (dev_info->info->event_attrs != NULL)
+-				sysfs_remove_group(&dev_info
+-						   ->event_interfaces[i]
+-						   .dev.kobj,
++				sysfs_remove_group(&dev_info->dev.kobj,
+ 						   &dev_info->info
+ 						   ->event_attrs[i]);
+-			iio_free_ev_int(&dev_info->event_interfaces[i]);
++			else
++				sysfs_remove_group(&dev_info->dev.kobj,
++						   &iio_events_dummy_group);
+ 			goto error_free_setup_event_lines;
+ 		}
+ 	}
+@@ -1114,11 +1054,12 @@ static int iio_device_register_eventset(struct iio_dev *dev_info)
+ error_free_setup_event_lines:
+ 	for (j = 0; j < i; j++) {
+ 		__iio_remove_event_config_attrs(dev_info, j);
+-		if (dev_info->info->event_attrs != NULL)
+-			sysfs_remove_group(&dev_info
+-					   ->event_interfaces[j].dev.kobj,
++		if (dev_info->info->event_attrs != NULL) {
++			sysfs_remove_group(&dev_info->dev.kobj,
+ 					   &dev_info->info->event_attrs[j]);
+-		iio_free_ev_int(&dev_info->event_interfaces[j]);
++			sysfs_remove_group(&dev_info->dev.kobj,
++					   &iio_events_dummy_group);
++		}
+ 	}
+ 	kfree(dev_info->event_interfaces);
+ error_ret:
+@@ -1135,10 +1076,11 @@ static void iio_device_unregister_eventset(struct iio_dev *dev_info)
+ 	for (i = 0; i < dev_info->info->num_interrupt_lines; i++) {
+ 		__iio_remove_event_config_attrs(dev_info, i);
+ 		if (dev_info->info->event_attrs != NULL)
+-			sysfs_remove_group(&dev_info
+-					   ->event_interfaces[i].dev.kobj,
++			sysfs_remove_group(&dev_info->dev.kobj,
+ 					   &dev_info->info->event_attrs[i]);
+-		iio_free_ev_int(&dev_info->event_interfaces[i]);
++		else
++			sysfs_remove_group(&dev_info->dev.kobj,
++					   &iio_events_dummy_group);
+ 	}
+ 	kfree(dev_info->event_interfaces);
+ }
 diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
-index e4554be..cce02244 100644
+index dce50b1..e4554be 100644
 --- a/drivers/staging/iio/industrialio-ring.c
 +++ b/drivers/staging/iio/industrialio-ring.c
-@@ -32,11 +32,10 @@
-  **/
- static int iio_ring_open(struct inode *inode, struct file *filp)
- {
--	struct iio_handler *hand
--		= container_of(inode->i_cdev, struct iio_handler, chrdev);
--	struct iio_ring_buffer *rb = hand->private;
--
--	filp->private_data = hand->private;
-+	struct iio_ring_buffer *rb
-+		= container_of(inode->i_cdev,
-+			       struct iio_ring_buffer, chrdev);
-+	filp->private_data = rb;
- 	if (rb->access->mark_in_use)
- 		rb->access->mark_in_use(rb);
- 
-@@ -51,11 +50,11 @@ static int iio_ring_open(struct inode *inode, struct file *filp)
-  **/
- static int iio_ring_release(struct inode *inode, struct file *filp)
- {
--	struct cdev *cd = inode->i_cdev;
--	struct iio_handler *hand = iio_cdev_to_handler(cd);
--	struct iio_ring_buffer *rb = hand->private;
-+	struct iio_ring_buffer *rb
-+		= container_of(inode->i_cdev,
-+			       struct iio_ring_buffer, chrdev);
- 
--	clear_bit(IIO_BUSY_BIT_POS, &rb->access_handler.flags);
-+	clear_bit(IIO_BUSY_BIT_POS, &rb->flags);
- 	if (rb->access->unmark_in_use)
- 		rb->access->unmark_in_use(rb);
- 
-@@ -127,7 +126,7 @@ void iio_ring_access_release(struct device *dev)
- {
- 	struct iio_ring_buffer *buf
- 		= container_of(dev, struct iio_ring_buffer, dev);
--	cdev_del(&buf->access_handler.chrdev);
-+	cdev_del(&buf->chrdev);
- 	iio_device_free_chrdev_minor(MINOR(dev->devt));
+@@ -93,6 +93,25 @@ static unsigned int iio_ring_poll(struct file *filp,
+ 	return 0;
  }
- EXPORT_SYMBOL(iio_ring_access_release);
-@@ -139,7 +138,7 @@ __iio_request_ring_buffer_chrdev(struct iio_ring_buffer *buf,
- {
- 	int ret;
  
--	buf->access_handler.flags = 0;
-+	buf->flags = 0;
- 	buf->dev.bus = &iio_bus_type;
- 	device_initialize(&buf->dev);
- 
-@@ -156,9 +155,9 @@ __iio_request_ring_buffer_chrdev(struct iio_ring_buffer *buf,
- 		printk(KERN_ERR "failed to add the ring dev\n");
- 		goto error_device_put;
- 	}
--	cdev_init(&buf->access_handler.chrdev, &iio_ring_fileops);
--	buf->access_handler.chrdev.owner = owner;
--	ret = cdev_add(&buf->access_handler.chrdev, buf->dev.devt, 1);
-+	cdev_init(&buf->chrdev, &iio_ring_fileops);
-+	buf->chrdev.owner = owner;
-+	ret = cdev_add(&buf->chrdev, buf->dev.devt, 1);
- 	if (ret) {
- 		printk(KERN_ERR "failed to allocate ring chrdev\n");
- 		goto error_device_unregister;
-@@ -182,7 +181,6 @@ void iio_ring_buffer_init(struct iio_ring_buffer *ring,
- 			  struct iio_dev *dev_info)
- {
- 	ring->indio_dev = dev_info;
--	ring->access_handler.private = ring;
- 	init_waitqueue_head(&ring->pollq);
- }
- EXPORT_SYMBOL(iio_ring_buffer_init);
-diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
-index d103262..81bbe39 100644
---- a/drivers/staging/iio/ring_generic.h
-+++ b/drivers/staging/iio/ring_generic.h
-@@ -85,13 +85,13 @@ struct iio_ring_setup_ops {
-  * @scan_count:	[INTERN] the number of elements in the current scan mode
-  * @scan_mask:		[INTERN] bitmask used in masking scan mode elements
-  * @scan_timestamp:	[INTERN] does the scan mode include a timestamp
-- * @access_handler:	[INTERN] chrdev access handling
-  * @access:		[DRIVER] ring access functions associated with the
-  *			implementation.
-  * @preenable:		[DRIVER] function to run prior to marking ring enabled
-  * @postenable:		[DRIVER] function to run after marking ring enabled
-  * @predisable:		[DRIVER] function to run prior to marking ring disabled
-  * @postdisable:	[DRIVER] function to run after marking ring disabled
-+ * @flags:		[INTERN] file ops related flags including busy flag.
-  **/
- struct iio_ring_buffer {
- 	struct device				dev;
-@@ -104,13 +104,14 @@ struct iio_ring_buffer {
- 	int					scan_count;
- 	unsigned long				scan_mask;
- 	bool					scan_timestamp;
--	struct iio_handler			access_handler;
- 	const struct iio_ring_access_funcs	*access;
- 	const struct iio_ring_setup_ops		*setup_ops;
- 	struct list_head			scan_el_dev_attr_list;
- 
- 	wait_queue_head_t			pollq;
- 	bool					stufftoread;
-+	unsigned long				flags;
-+	struct cdev				chrdev;
++/* Somewhat of a cross file organization violation - ioctls here are actually
++ * event related */
++static long iio_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
++{
++
++	struct iio_ring_buffer *rb = f->private_data;
++	struct iio_dev *indio_dev = rb->indio_dev;
++	int __user *ip = (int __user *)arg;
++
++	if (cmd == IIO_GET_EVENT_FD_IOCTL) {
++		int fd;
++		fd = iio_event_getfd(indio_dev);
++		if (copy_to_user(ip, &fd, sizeof(fd)))
++			return -EFAULT;
++		return 0;
++	}
++	return -EINVAL;
++}
++
+ static const struct file_operations iio_ring_fileops = {
+ 	.read = iio_ring_read_first_n_outer,
+ 	.release = iio_ring_release,
+@@ -100,6 +119,8 @@ static const struct file_operations iio_ring_fileops = {
+ 	.poll = iio_ring_poll,
+ 	.owner = THIS_MODULE,
+ 	.llseek = noop_llseek,
++	.unlocked_ioctl = iio_ioctl,
++	.compat_ioctl = iio_ioctl,
  };
  
- /**
+ void iio_ring_access_release(struct device *dev)
 -- 
 1.7.3.4
