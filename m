@@ -1,93 +1,76 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:57545 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754732Ab1HaLoQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2011 07:44:16 -0400
-Message-ID: <4E5E207E.1040101@cam.ac.uk>
-Date: Wed, 31 Aug 2011 12:52:30 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <jic23@cam.ac.uk>
+CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 11/12] iio: ad7291: reset device and setup irq before it is enabled
+Date: Wed, 31 Aug 2011 12:57:39 +0200
+Message-ID: <1314788260-5791-11-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1314788260-5791-1-git-send-email-michael.hennerich@analog.com>
+References: <1314788260-5791-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH 12/12] iio: ad7192: add temp_scale attribute, change module
- description
-References: <1314788260-5791-1-git-send-email-michael.hennerich@analog.com> <1314788260-5791-12-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1314788260-5791-12-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/31/11 11:57, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> Use KBUILD_MODNAME
-> Fix indention style
-Again, not all in the right place in the series, but it's so
-trivial we'll leave it be. I'll probably fix up that mutex whitespace
-issue where it occurred.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-> 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-merged
-> ---
->  drivers/staging/iio/adc/ad7291.c |   17 ++++++++++++-----
->  1 files changed, 12 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
-> index 0811c5e..636e635 100644
-> --- a/drivers/staging/iio/adc/ad7291.c
-> +++ b/drivers/staging/iio/adc/ad7291.c
-> @@ -101,7 +101,7 @@ struct ad7291_chip_info {
->  	u16			int_vref_mv;
->  	u16			command;
->  	u16			c_mask;	/* Active voltage channels for events */
-> -	struct mutex 		state_lock;
-> +	struct mutex		state_lock;
->  };
->  
->  static int ad7291_i2c_read(struct ad7291_chip_info *chip, u8 reg, u16 *data)
-> @@ -513,6 +513,13 @@ static int ad7291_read_raw(struct iio_dev *indio_dev,
->  		*val =  scale_uv / 1000;
->  		*val2 = (scale_uv % 1000) * 1000;
->  		return IIO_VAL_INT_PLUS_MICRO;
-> +	case (1 << IIO_CHAN_INFO_SCALE_SEPARATE):
-> +		/*
-> +		* One LSB of the ADC corresponds to 0.25 deg C.
-> +		* The temperature reading is in 12-bit twos complement format
-> +		*/
-> +		*val = 250;
-> +		return IIO_VAL_INT;
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -539,7 +546,8 @@ static const struct iio_chan_spec ad7291_channels[] = {
->  	AD7291_VOLTAGE_CHAN(7),
->  	{
->  		.type = IIO_TEMP,
-> -		.info_mask = (1 << IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE),
-> +		.info_mask = (1 << IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE) |
-> +				(1 << IIO_CHAN_INFO_SCALE_SEPARATE),
->  		.indexed = 1,
->  		.channel = 0,
->  		.event_mask =
-> @@ -683,7 +691,7 @@ MODULE_DEVICE_TABLE(i2c, ad7291_id);
->  
->  static struct i2c_driver ad7291_driver = {
->  	.driver = {
-> -		.name = "ad7291",
-> +		.name = KBUILD_MODNAME,
->  	},
->  	.probe = ad7291_probe,
->  	.remove = __devexit_p(ad7291_remove),
-> @@ -701,8 +709,7 @@ static __exit void ad7291_exit(void)
->  }
->  
->  MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
-> -MODULE_DESCRIPTION("Analog Devices AD7291 digital"
-> -			" temperature sensor driver");
-> +MODULE_DESCRIPTION("Analog Devices AD7291 ADC driver");
->  MODULE_LICENSE("GPL v2");
->  
->  module_init(ad7291_init);
 
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/adc/ad7291.c |   27 ++++++++++++++++-----------
+ 1 files changed, 16 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
+index 334951c..0811c5e 100644
+--- a/drivers/staging/iio/adc/ad7291.c
++++ b/drivers/staging/iio/adc/ad7291.c
+@@ -589,8 +589,10 @@ static int __devinit ad7291_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, indio_dev);
+ 
+ 	chip->client = client;
+-	/* Tsense always enabled */
+-	chip->command = AD7291_NOISE_DELAY | AD7291_T_SENSE_MASK;
++
++	chip->command = AD7291_NOISE_DELAY |
++			AD7291_T_SENSE_MASK | /* Tsense always enabled */
++			AD7291_ALERT_POLARITY; /* set irq polarity low level */
+ 
+ 	if (voltage_uv) {
+ 		chip->int_vref_mv = voltage_uv / 1000;
+@@ -607,6 +609,18 @@ static int __devinit ad7291_probe(struct i2c_client *client,
+ 	indio_dev->info = &ad7291_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
++	ret = ad7291_i2c_write(chip, AD7291_COMMAND, AD7291_RESET);
++	if (ret) {
++		ret = -EIO;
++		goto error_disable_reg;
++	}
++
++	ret = ad7291_i2c_write(chip, AD7291_COMMAND, chip->command);
++	if (ret) {
++		ret = -EIO;
++		goto error_disable_reg;
++	}
++
+ 	if (client->irq > 0) {
+ 		ret = request_threaded_irq(client->irq,
+ 					   NULL,
+@@ -616,15 +630,6 @@ static int __devinit ad7291_probe(struct i2c_client *client,
+ 					   indio_dev);
+ 		if (ret)
+ 			goto error_disable_reg;
+-
+-		/* set irq polarity low level */
+-		chip->command |= AD7291_ALERT_POLARITY;
+-	}
+-
+-	ret = ad7291_i2c_write(chip, AD7291_COMMAND, chip->command);
+-	if (ret) {
+-		ret = -EIO;
+-		goto error_unreg_irq;
+ 	}
+ 
+ 	ret = iio_device_register(indio_dev);
+-- 
+1.7.0.4
