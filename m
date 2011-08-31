@@ -1,81 +1,91 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:45035 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750845Ab1HaLLW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2011 07:11:22 -0400
-Message-ID: <4E5E18C8.9000306@cam.ac.uk>
-Date: Wed, 31 Aug 2011 12:19:36 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <jic23@cam.ac.uk>
+CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 02/12] iio: ad7291: Fix typos, change kconfig description and file header
+Date: Wed, 31 Aug 2011 12:57:30 +0200
+Message-ID: <1314788260-5791-2-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1314788260-5791-1-git-send-email-michael.hennerich@analog.com>
+References: <1314788260-5791-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH 03/12] iio: ad7291: Fix AD7291_T_SENSE_MASK
-References: <1314788260-5791-1-git-send-email-michael.hennerich@analog.com> <1314788260-5791-3-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1314788260-5791-3-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/31/11 11:57, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> AD7291_T_SENSE_MASK must set bit-7.
-> Change definition style.
-> 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Merged
-> ---
->  drivers/staging/iio/adc/ad7291.c |   28 ++++++++++++++--------------
->  1 files changed, 14 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
-> index d47df4a..dda6bcb 100644
-> --- a/drivers/staging/iio/adc/ad7291.c
-> +++ b/drivers/staging/iio/adc/ad7291.c
-> @@ -37,30 +37,30 @@
->  #define AD7291_T_AVERAGE		3
->  #define AD7291_VOLTAGE_LIMIT_BASE	4
->  #define AD7291_VOLTAGE_LIMIT_COUNT	8
-> -#define AD7291_T_SENSE_HIGH		0x1c
-> -#define AD7291_T_SENSE_LOW		0x1d
-> -#define AD7291_T_SENSE_HYST		0x1e
-> -#define AD7291_VOLTAGE_ALERT_STATUS	0x1f
-> +#define AD7291_T_SENSE_HIGH		0x1C
-> +#define AD7291_T_SENSE_LOW		0x1D
-> +#define AD7291_T_SENSE_HYST		0x1E
-> +#define AD7291_VOLTAGE_ALERT_STATUS	0x1F
->  #define AD7291_T_ALERT_STATUS		0x20
->  
->  /*
->   * AD7291 command
->   */
-> -#define AD7291_AUTOCYCLE		0x1
-> -#define AD7291_RESET			0x2
-> -#define AD7291_ALERT_CLEAR		0x4
-> -#define AD7291_ALERT_POLARITY		0x8
-> -#define AD7291_EXT_REF			0x10
-> -#define AD7291_NOISE_DELAY		0x20
-> -#define AD7291_T_SENSE_MASK		0x40
-> -#define AD7291_VOLTAGE_MASK		0xff00
-> +#define AD7291_AUTOCYCLE		(1 << 0)
-> +#define AD7291_RESET			(1 << 1)
-> +#define AD7291_ALERT_CLEAR		(1 << 2)
-> +#define AD7291_ALERT_POLARITY		(1 << 3)
-> +#define AD7291_EXT_REF			(1 << 4)
-> +#define AD7291_NOISE_DELAY		(1 << 5)
-> +#define AD7291_T_SENSE_MASK		(1 << 7)
-> +#define AD7291_VOLTAGE_MASK		0xFF00
->  #define AD7291_VOLTAGE_OFFSET		0x8
->  
->  /*
->   * AD7291 value masks
->   */
-> -#define AD7291_CHANNEL_MASK		0xf000
-> -#define AD7291_VALUE_MASK		0xfff
-> +#define AD7291_CHANNEL_MASK		0xF000
-> +#define AD7291_VALUE_MASK		0xFFF
->  #define AD7291_T_VALUE_SIGN		0x400
->  #define AD7291_T_VALUE_FLOAT_OFFSET	2
->  #define AD7291_T_VALUE_FLOAT_MASK	0x2
+From: Michael Hennerich <michael.hennerich@analog.com>
 
+Make clear the AD7291 is primarily an ADC, and not a temp sensor.
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/adc/Kconfig  |    4 ++--
+ drivers/staging/iio/adc/ad7291.c |   14 +++++++-------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 25566c6..7867ab1 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -18,11 +18,11 @@ config AD7152
+ 	  (ad7152, ad7153) Provides direct access via sysfs.
+ 
+ config AD7291
+-	tristate "Analog Devices AD7291 temperature sensor driver"
++	tristate "Analog Devices AD7291 ADC driver"
+ 	depends on I2C
+ 	help
+ 	  Say yes here to build support for Analog Devices AD7291
+-	  temperature sensors.
++	  8 Channel ADC with temperature sensor.
+ 
+ config AD7298
+ 	tristate "Analog Devices AD7298 ADC driver"
+diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
+index 32944f3..d47df4a 100644
+--- a/drivers/staging/iio/adc/ad7291.c
++++ b/drivers/staging/iio/adc/ad7291.c
+@@ -1,7 +1,7 @@
+ /*
+- * AD7291 digital temperature sensor driver supporting AD7291
++ * AD7291 8-Channel, I2C, 12-Bit SAR ADC with Temperature Sensor
+  *
+- * Copyright 2010 Analog Devices Inc.
++ * Copyright 2010-2011 Analog Devices Inc.
+  *
+  * Licensed under the GPL-2 or later.
+  */
+@@ -48,8 +48,8 @@
+  */
+ #define AD7291_AUTOCYCLE		0x1
+ #define AD7291_RESET			0x2
+-#define AD7291_ALART_CLEAR		0x4
+-#define AD7291_ALART_POLARITY		0x8
++#define AD7291_ALERT_CLEAR		0x4
++#define AD7291_ALERT_POLARITY		0x8
+ #define AD7291_EXT_REF			0x10
+ #define AD7291_NOISE_DELAY		0x20
+ #define AD7291_T_SENSE_MASK		0x40
+@@ -134,10 +134,10 @@ static irqreturn_t ad7291_event_handler(int irq, void *private)
+ 	if (!(t_status || v_status))
+ 		return IRQ_HANDLED;
+ 
+-	command = chip->command | AD7291_ALART_CLEAR;
++	command = chip->command | AD7291_ALERT_CLEAR;
+ 	ad7291_i2c_write(chip, AD7291_COMMAND, command);
+ 
+-	command = chip->command & ~AD7291_ALART_CLEAR;
++	command = chip->command & ~AD7291_ALERT_CLEAR;
+ 	ad7291_i2c_write(chip, AD7291_COMMAND, command);
+ 
+ 	/* For now treat t_sense and t_sense_average the same */
+@@ -558,7 +558,7 @@ static int __devinit ad7291_probe(struct i2c_client *client,
+ 			goto error_free_dev;
+ 
+ 		/* set irq polarity low level */
+-		chip->command |= AD7291_ALART_POLARITY;
++		chip->command |= AD7291_ALERT_POLARITY;
+ 	}
+ 
+ 	ret = ad7291_i2c_write(chip, AD7291_COMMAND, chip->command);
+-- 
+1.7.0.4
