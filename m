@@ -1,53 +1,49 @@
 Return-Path: <swarren@nvidia.com>
 From: Stephen Warren <swarren@nvidia.com>
-To: Greg KH <greg@kroah.com>
-CC: Greg Kroah-Hartman <gregkh@suse.de>, Jean Delvare <khali@linux-fr.org>,
-	Jonathan Cameron <jic23@cam.ac.uk>, "devel@driverdev.osuosl.org"
-	<devel@driverdev.osuosl.org>, Andrew Chew <AChew@nvidia.com>, Arnd Bergmann
-	<arnd@arndb.de>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Grant Likely
-	<grant.likely@secretlab.ca>, "linux-i2c@vger.kernel.org"
-	<linux-i2c@vger.kernel.org>, Ben Dooks <ben-linux@fluff.org>,
-	"spi-devel-general@lists.sourceforge.net"
-	<spi-devel-general@lists.sourceforge.net>, "linux-tegra@vger.kernel.org"
-	<linux-tegra@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>
-Date: Mon, 19 Sep 2011 14:59:07 -0700
-Subject: RE: [PATCH V3 1/5] i2c: Add irq_gpio field to struct i2c_client,
- i2c_board_info.
-Message-ID: <74CDBE0F657A3D45AFBB94109FB122FF04B7321434@HQMAIL01.nvidia.com>
+To: Greg Kroah-Hartman <gregkh@suse.de>,
+	Jean Delvare <khali@linux-fr.org>,
+	Ben Dooks <ben-linux@fluff.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Arnd Bergmann <arnd@arndb.de>
+Cc: Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Andrew Chew <achew@nvidia.com>,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	linux-tegra@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	spi-devel-general@lists.sourceforge.net,
+	Stephen Warren <swarren@nvidia.com>
+Subject: [PATCH V3 5/5] staging:iio:magnetometer:ak8975: Fix probe() error-handling
+Date: Thu,  1 Sep 2011 16:04:36 -0600
+Message-Id: <1314914676-28397-10-git-send-email-swarren@nvidia.com>
+In-Reply-To: <1314914676-28397-1-git-send-email-swarren@nvidia.com>
 References: <1314914676-28397-1-git-send-email-swarren@nvidia.com>
- <20110902085620.4ad918c4@endymion.delvare> <4E609F9C.5020403@cam.ac.uk>
- <20110902112435.69c9e8f7@endymion.delvare>
- <74CDBE0F657A3D45AFBB94109FB122FF04B327A628@HQMAIL01.nvidia.com>
- <20110906225708.GA28957@kroah.com>
-In-Reply-To: <20110906225708.GA28957@kroah.com>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Greg KH wrote at Tuesday, September 06, 2011 4:57 PM:
-> On Fri, Sep 02, 2011 at 11:24:04AM -0700, Stephen Warren wrote:
-> > Jean Delvare wrote at Friday, September 02, 2011 3:25 AM:
-...
-> > > > Why not make it platform data for now and 'if' it becomes way more =
-common
-> > > > (probably won't) we can always propose adding as a general field at=
- a later
-> > > > date.
-> > >
-> > > Yes, this sounds like a much more reasonable approach.
-> >
-> > BTW, if that's the direction that's decided, just take the first versio=
-n
-> > of the patchset I posted, plus Jonathan Cameron's subsequent patch to
-> > modify ak8975 to accept GPIO ID through platform data.
->=20
-> I don't know which patchset that would be, can you please just resend
-> what you want applied so that I know I get the correct one?
+Fix ak8975_probe() to jump to the appropriate exit labels when an error
+occurs. With the previous code, some cleanup actions were being skipped
+for some error conditions.
 
-Sorry for the slow response; I was on vacation for the last couple weeks.
-I've now posted an updated version of this patchset, without any of the
-changes for I2C/SPI core/types/...
+Signed-off-by: Stephen Warren <swarren@nvidia.com>
+---
+ drivers/staging/iio/magnetometer/ak8975.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
---=20
-nvpublic
+diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+index 0dfdf50..cc20e8d 100644
+--- a/drivers/staging/iio/magnetometer/ak8975.c
++++ b/drivers/staging/iio/magnetometer/ak8975.c
+@@ -510,7 +510,7 @@ static int ak8975_probe(struct i2c_client *client,
+ 	err = ak8975_setup(client);
+ 	if (err < 0) {
+ 		dev_err(&client->dev, "AK8975 initialization fails\n");
+-		goto exit_gpio;
++		goto exit_free_iio;
+ 	}
+ 
+ 	i2c_set_clientdata(client, indio_dev);
+-- 
+1.7.0.4
