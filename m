@@ -16,36 +16,81 @@ Cc: Russell King <linux@arm.linux.org.uk>,
 	linux-i2c@vger.kernel.org,
 	spi-devel-general@lists.sourceforge.net,
 	Stephen Warren <swarren@nvidia.com>
-Subject: [PATCH V3 3/5] staging:iio:magnetometer:ak8975 Don't use irq_to_gpio()
-Date: Thu,  1 Sep 2011 16:04:34 -0600
-Message-Id: <1314914676-28397-8-git-send-email-swarren@nvidia.com>
+Subject: [PATCH V3 2/5] spi: Add irq_gpio field to struct spi_device, spi_board_info.
+Date: Thu,  1 Sep 2011 16:04:33 -0600
+Message-Id: <1314914676-28397-7-git-send-email-swarren@nvidia.com>
 In-Reply-To: <1314914676-28397-1-git-send-email-swarren@nvidia.com>
 References: <1314914676-28397-1-git-send-email-swarren@nvidia.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Tegra doesn't have irq_to_gpio() any more, and ak8975 is included in
-tegra_defconfig. This causes a build failure.
-
-Instead, obtain the GPIO ID corresponding to the chip's IRQ from the new
-i2c_client field irq_gpio.
+Some devices use a single pin as both an IRQ and a GPIO. In that case,
+irq_gpio is the GPIO ID for that pin. Not all drivers use this feature.
+Where they do, and the use of this feature is optional, and the system
+wishes to disable this feature, this field must be explicitly set to a
+defined invalid GPIO ID, such as -1.
 
 Signed-off-by: Stephen Warren <swarren@nvidia.com>
 ---
- drivers/staging/iio/magnetometer/ak8975.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+v3: New patch for v3; apply the same change to spi as for i2c per Mark
+    Brown.
 
-diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-index a17fa9f..14076da 100644
---- a/drivers/staging/iio/magnetometer/ak8975.c
-+++ b/drivers/staging/iio/magnetometer/ak8975.c
-@@ -477,7 +477,7 @@ static int ak8975_probe(struct i2c_client *client,
- 	int err;
+ drivers/spi/spi.c       |    1 +
+ include/linux/spi/spi.h |   10 ++++++++++
+ 2 files changed, 11 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index 77eae99..9932572 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -433,6 +433,7 @@ struct spi_device *spi_new_device(struct spi_master *master,
+ 	proxy->max_speed_hz = chip->max_speed_hz;
+ 	proxy->mode = chip->mode;
+ 	proxy->irq = chip->irq;
++	proxy->irq_gpio = chip->irq_gpio;
+ 	strlcpy(proxy->modalias, chip->modalias, sizeof(proxy->modalias));
+ 	proxy->dev.platform_data = (void *) chip->platform_data;
+ 	proxy->controller_data = chip->controller_data;
+diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
+index bb4f5fb..086b591 100644
+--- a/include/linux/spi/spi.h
++++ b/include/linux/spi/spi.h
+@@ -50,6 +50,12 @@ extern struct bus_type spi_bus_type;
+  *	The spi_transfer.bits_per_word can override this for each transfer.
+  * @irq: Negative, or the number passed to request_irq() to receive
+  *	interrupts from this device.
++ * @irq_gpio: some devices use a single pin as both an IRQ and a GPIO. In
++ *	that case, irq_gpio is the GPIO ID for that pin. Not all drivers
++ *	use this feature. Where they do, and the use of this feature is
++ *	optional, and the system wishes to disable this feature, this
++ *	field must be explicitly set to a defined invalid GPIO ID, such
++ *	as -1.
+  * @controller_state: Controller's runtime state
+  * @controller_data: Board-specific definitions for controller, such as
+  *	FIFO initialization parameters; from board_info.controller_data
+@@ -86,6 +92,7 @@ struct spi_device {
+ #define	SPI_READY	0x80			/* slave pulls low to pause */
+ 	u8			bits_per_word;
+ 	int			irq;
++	int			irq_gpio;
+ 	void			*controller_state;
+ 	void			*controller_data;
+ 	char			modalias[SPI_NAME_SIZE];
+@@ -692,6 +699,8 @@ static inline ssize_t spi_w8r16(struct spi_device *spi, u8 cmd)
+  * @controller_data: Initializes spi_device.controller_data; some
+  *	controllers need hints about hardware setup, e.g. for DMA.
+  * @irq: Initializes spi_device.irq; depends on how the board is wired.
++ * @irq_gpio: Initializes spi_device.irq_gpio; depends on how the board
++ *	is wired.
+  * @max_speed_hz: Initializes spi_device.max_speed_hz; based on limits
+  *	from the chip datasheet and board-specific signal quality issues.
+  * @bus_num: Identifies which spi_master parents the spi_device; unused
+@@ -727,6 +736,7 @@ struct spi_board_info {
+ 	const void	*platform_data;
+ 	void		*controller_data;
+ 	int		irq;
++	int		irq_gpio;
  
- 	/* Grab and set up the supplied GPIO. */
--	eoc_gpio = irq_to_gpio(client->irq);
-+	eoc_gpio = client->irq_gpio;
- 
- 	/* We may not have a GPIO based IRQ to scan, that is fine, we will
- 	   poll if so */
+ 	/* slower signaling on noisy or low voltage boards */
+ 	u32		max_speed_hz;
 -- 
 1.7.0.4
