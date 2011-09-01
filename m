@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:54391 "EHLO
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:52638 "EHLO
 	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932107Ab1IAJAq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2011 05:00:46 -0400
-Message-ID: <4E5F4BAA.9040404@cam.ac.uk>
-Date: Thu, 01 Sep 2011 10:08:58 +0100
+	with ESMTP id S1756469Ab1IAI5y (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2011 04:57:54 -0400
+Message-ID: <4E5F4AFE.5020800@cam.ac.uk>
+Date: Thu, 01 Sep 2011 10:06:06 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
 To: Stephen Warren <swarren@nvidia.com>
@@ -13,39 +13,75 @@ CC: Greg Kroah-Hartman <gregkh@suse.de>,
 	Andrew Chew <achew@nvidia.com>, Arnd Bergmann <arnd@arndb.de>,
 	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
 	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH 3/3] staging:iio:magnetometer:ak8975: Fix probe() error-handling
-References: <1314819657-828-1-git-send-email-swarren@nvidia.com> <1314819657-828-3-git-send-email-swarren@nvidia.com>
-In-Reply-To: <1314819657-828-3-git-send-email-swarren@nvidia.com>
+Subject: Re: [PATCH 2/3] staging:iio:magnetometer:ak8975: Don't assume 0 is
+ an invalid GPIO
+References: <1314819657-828-1-git-send-email-swarren@nvidia.com> <1314819657-828-2-git-send-email-swarren@nvidia.com>
+In-Reply-To: <1314819657-828-2-git-send-email-swarren@nvidia.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 08/31/11 20:40, Stephen Warren wrote:
-> Fix ak8975_probe() to jump to the appropriate exit labels when an error
-> occurs. With the previous code, some cleanup actions were being skipped
-> for some error conditions.
+> gpio_is_valid() is the defined mechanism to determine whether a GPIO is
+> valid. Use this instead of assuming that 0 is an invalid GPIO.
 > 
+Greg, depending on merge order you will get some fuzz between this and something
+in my tree.
+
 > Signed-off-by: Stephen Warren <swarren@nvidia.com>
 Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-
-Thanks for these Stephen.  There's one other driver in tree that uses irq_to_gpio
-(I hadn't registered it was going away till you sent these.)
-
 > ---
->  drivers/staging/iio/magnetometer/ak8975.c |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
+>  drivers/staging/iio/magnetometer/ak8975.c |   11 +++++------
+>  1 files changed, 5 insertions(+), 6 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-> index 79ed183..d92b3d0 100644
+> index bd40e32..79ed183 100644
 > --- a/drivers/staging/iio/magnetometer/ak8975.c
 > +++ b/drivers/staging/iio/magnetometer/ak8975.c
-> @@ -510,7 +510,7 @@ static int ak8975_probe(struct i2c_client *client,
->  	err = ak8975_setup(client);
->  	if (err < 0) {
->  		dev_err(&client->dev, "AK8975 initialization fails\n");
-> -		goto exit_gpio;
-> +		goto exit_free_iio;
+> @@ -373,7 +373,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
 >  	}
 >  
->  	i2c_set_clientdata(client, indio_dev);
+>  	/* Wait for the conversion to complete. */
+> -	if (data->eoc_gpio)
+> +	if (gpio_is_valid(data->eoc_gpio))
+>  		ret = wait_conversion_complete_gpio(data);
+>  	else
+>  		ret = wait_conversion_complete_polled(data);
+> @@ -481,7 +481,7 @@ static int ak8975_probe(struct i2c_client *client,
+>  
+>  	/* We may not have a GPIO based IRQ to scan, that is fine, we will
+>  	   poll if so */
+> -	if (eoc_gpio > 0) {
+> +	if (gpio_is_valid(eoc_gpio)) {
+>  		err = gpio_request(eoc_gpio, "ak_8975");
+>  		if (err < 0) {
+>  			dev_err(&client->dev,
+> @@ -497,8 +497,7 @@ static int ak8975_probe(struct i2c_client *client,
+>  						eoc_gpio, err);
+>  			goto exit_gpio;
+>  		}
+> -	} else
+> -		eoc_gpio = 0;	/* No GPIO available */
+> +	}
+>  
+>  	/* Register with IIO */
+>  	indio_dev = iio_allocate_device(sizeof(*data));
+> @@ -534,7 +533,7 @@ static int ak8975_probe(struct i2c_client *client,
+>  exit_free_iio:
+>  	iio_free_device(indio_dev);
+>  exit_gpio:
+> -	if (eoc_gpio)
+> +	if (gpio_is_valid(eoc_gpio))
+>  		gpio_free(eoc_gpio);
+>  exit:
+>  	return err;
+> @@ -549,7 +548,7 @@ static int ak8975_remove(struct i2c_client *client)
+>  	iio_device_unregister(indio_dev);
+>  	iio_free_device(indio_dev);
+>  
+> -	if (eoc_gpio)
+> +	if (gpio_is_valid(eoc_gpio))
+>  		gpio_free(eoc_gpio);
+>  
+>  	return 0;
 
