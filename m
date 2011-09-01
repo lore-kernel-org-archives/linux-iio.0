@@ -16,70 +16,36 @@ Cc: Russell King <linux@arm.linux.org.uk>,
 	linux-i2c@vger.kernel.org,
 	spi-devel-general@lists.sourceforge.net,
 	Stephen Warren <swarren@nvidia.com>
-Subject: [PATCH V3 4/5] staging:iio:magnetometer:ak8975: Don't assume 0 is an invalid GPIO
-Date: Thu,  1 Sep 2011 16:04:35 -0600
-Message-Id: <1314914676-28397-9-git-send-email-swarren@nvidia.com>
+Subject: [PATCH V3 3/5] staging:iio:magnetometer:ak8975 Don't use irq_to_gpio()
+Date: Thu,  1 Sep 2011 16:04:34 -0600
+Message-Id: <1314914676-28397-8-git-send-email-swarren@nvidia.com>
 In-Reply-To: <1314914676-28397-1-git-send-email-swarren@nvidia.com>
 References: <1314914676-28397-1-git-send-email-swarren@nvidia.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-gpio_is_valid() is the defined mechanism to determine whether a GPIO is
-valid. Use this instead of assuming that 0 is an invalid GPIO.
+Tegra doesn't have irq_to_gpio() any more, and ak8975 is included in
+tegra_defconfig. This causes a build failure.
+
+Instead, obtain the GPIO ID corresponding to the chip's IRQ from the new
+i2c_client field irq_gpio.
 
 Signed-off-by: Stephen Warren <swarren@nvidia.com>
 ---
- drivers/staging/iio/magnetometer/ak8975.c |   11 +++++------
- 1 files changed, 5 insertions(+), 6 deletions(-)
+ drivers/staging/iio/magnetometer/ak8975.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-index 14076da..0dfdf50 100644
+index a17fa9f..14076da 100644
 --- a/drivers/staging/iio/magnetometer/ak8975.c
 +++ b/drivers/staging/iio/magnetometer/ak8975.c
-@@ -373,7 +373,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	}
+@@ -477,7 +477,7 @@ static int ak8975_probe(struct i2c_client *client,
+ 	int err;
  
- 	/* Wait for the conversion to complete. */
--	if (data->eoc_gpio)
-+	if (gpio_is_valid(data->eoc_gpio))
- 		ret = wait_conversion_complete_gpio(data);
- 	else
- 		ret = wait_conversion_complete_polled(data);
-@@ -481,7 +481,7 @@ static int ak8975_probe(struct i2c_client *client,
+ 	/* Grab and set up the supplied GPIO. */
+-	eoc_gpio = irq_to_gpio(client->irq);
++	eoc_gpio = client->irq_gpio;
  
  	/* We may not have a GPIO based IRQ to scan, that is fine, we will
  	   poll if so */
--	if (eoc_gpio > 0) {
-+	if (gpio_is_valid(eoc_gpio)) {
- 		err = gpio_request(eoc_gpio, "ak_8975");
- 		if (err < 0) {
- 			dev_err(&client->dev,
-@@ -497,8 +497,7 @@ static int ak8975_probe(struct i2c_client *client,
- 						eoc_gpio, err);
- 			goto exit_gpio;
- 		}
--	} else
--		eoc_gpio = 0;	/* No GPIO available */
-+	}
- 
- 	/* Register with IIO */
- 	indio_dev = iio_allocate_device(sizeof(*data));
-@@ -534,7 +533,7 @@ static int ak8975_probe(struct i2c_client *client,
- exit_free_iio:
- 	iio_free_device(indio_dev);
- exit_gpio:
--	if (eoc_gpio)
-+	if (gpio_is_valid(eoc_gpio))
- 		gpio_free(eoc_gpio);
- exit:
- 	return err;
-@@ -549,7 +548,7 @@ static int ak8975_remove(struct i2c_client *client)
- 	iio_device_unregister(indio_dev);
- 	iio_free_device(indio_dev);
- 
--	if (eoc_gpio)
-+	if (gpio_is_valid(eoc_gpio))
- 		gpio_free(eoc_gpio);
- 
- 	return 0;
 -- 
 1.7.0.4
