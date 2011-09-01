@@ -1,36 +1,46 @@
-Return-Path: <arnd@arndb.de>
-From: Arnd Bergmann <arnd@arndb.de>
-To: Stephen Warren <swarren@nvidia.com>
-Subject: Re: [PATCH 1/3] staging:iio:magnetometer:ak8975 Don't use irq_to_gpio()
-Date: Thu, 1 Sep 2011 18:20:25 +0200
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
- Andrew Chew <AChew@nvidia.com>,
- "Greg Kroah-Hartman" <gregkh@suse.de>,
- Russell King <linux@arm.linux.org.uk>,
+Return-Path: <jic23@cam.ac.uk>
+Message-ID: <4E5F4AA0.2070006@cam.ac.uk>
+Date: Thu, 01 Sep 2011 10:04:32 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Andrew Chew <AChew@nvidia.com>, Stephen Warren <swarren@nvidia.com>,
+ Greg Kroah-Hartman <gregkh@suse.de>,
+ Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>,
  "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
  "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-References: <1314819657-828-1-git-send-email-swarren@nvidia.com> <201109011306.50936.arnd@arndb.de> <74CDBE0F657A3D45AFBB94109FB122FF04B327A2A4@HQMAIL01.nvidia.com>
-In-Reply-To: <74CDBE0F657A3D45AFBB94109FB122FF04B327A2A4@HQMAIL01.nvidia.com>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Message-Id: <201109011820.25307.arnd@arndb.de>
+Subject: [PATCH] staging:iio:magnetometer:ak8975 use platform_data to pass
+ the gpio number.
+References: <1314819657-828-1-git-send-email-swarren@nvidia.com> <643E69AA4436674C8F39DCC2C05F76383CF3C784A3@HQMAIL03.nvidia.com> <4E5F49F4.2080208@cam.ac.uk>
+In-Reply-To: <4E5F49F4.2080208@cam.ac.uk>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thursday 01 September 2011, Stephen Warren wrote:
-> One question: When we add this field, how do drivers tell whether a value
-> of 0 is an uninitialized field, or a legitimate GPIO value of 0? Should we
-> add a flag to indicate validity, or just work hard to not enable driver-
-> side code to use this value until we've fixed up all places that instantiate
-> the driver to initialize the field to some invalid value like -1?
+Basically provide another means to set this value given irq_to_gpio has
+gone away.
 
-I think it's enough to coordinate the driver with the initialization of the
-i2c data. If a driver requires a GPIO number, it can assume that it's valid.
-Drivers that don't need one don't care. If it's an optional feature, you
-might want to either use platform_data after all, or use different identifiers
-for devices that have a gpio vs. those that have none -- in effect those are
-different types of devices handled by the same driver.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/magnetometer/ak8975.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
 
-	Arnd
+diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+index c1ff430..ab0e26c 100644
+--- a/drivers/staging/iio/magnetometer/ak8975.c
++++ b/drivers/staging/iio/magnetometer/ak8975.c
+@@ -477,7 +477,10 @@ static int ak8975_probe(struct i2c_client *client,
+ 	int err;
+ 
+ 	/* Grab and set up the supplied GPIO. */
+-	eoc_gpio = -1; /* FIXME: irq_to_gpio(client->irq) */
++	if (client->dev.platform_data == NULL)
++		eoc_gpio = -1;
++	else
++		eoc_gpio = *(int *)(client->dev.platform_data);
+ 
+ 	/* We may not have a GPIO based IRQ to scan, that is fine, we will
+ 	   poll if so */
+-- 
+1.7.3.4
