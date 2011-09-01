@@ -1,63 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:54590 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932175Ab1IANCf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2011 09:02:35 -0400
-Message-ID: <4E5F8459.7030400@cam.ac.uk>
-Date: Thu, 01 Sep 2011 14:10:49 +0100
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:53435 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756469Ab1IAI7O (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2011 04:59:14 -0400
+Message-ID: <4E5F4B4E.5060801@cam.ac.uk>
+Date: Thu, 01 Sep 2011 10:07:26 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH] iio: ad7152: fix channel assignment for AD7153
-References: <1314876904-20984-1-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1314876904-20984-1-git-send-email-michael.hennerich@analog.com>
+To: Stephen Warren <swarren@nvidia.com>
+CC: Greg Kroah-Hartman <gregkh@suse.de>,
+	Russell King <linux@arm.linux.org.uk>,
+	Andrew Chew <achew@nvidia.com>, Arnd Bergmann <arnd@arndb.de>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH 1/3] staging:iio:magnetometer:ak8975 Don't use irq_to_gpio()
+References: <1314819657-828-1-git-send-email-swarren@nvidia.com>
+In-Reply-To: <1314819657-828-1-git-send-email-swarren@nvidia.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/01/11 12:35, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
+On 08/31/11 20:40, Stephen Warren wrote:
+> Tegra doesn't have irq_to_gpio() any more, and ak8975 is included in
+> tegra_defconfig. This causes a build failure. Solve this with a heavy-handed
+> method for now.
 > 
-> In case the AD7153 is selected we need to make sure we provide channel info
-> for the first capacitance input in both single ended and differential
-> configuration.
-Good point. I didn't think my original fix through.
+> I suspect the long-term solution is to pass both the IRQ and GPIO IDs
+> to the driver; the GPIO ID coming from either platform data, or perhaps
+> enhancing struct i2c_client to add a gpio field alongside irq.
+Definitely on the platform data front. We need some means of doing this now
+hence my patch putting most trivial form of that in.
 > 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-merged
-
-looks like master.kernel.org is still undergoing reinstall so it'll be local
-to me for a while (or to Greg when I've sent it on).
+> Signed-off-by: Stephen Warren <swarren@nvidia.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 > ---
->  drivers/staging/iio/adc/ad7152.c |    8 ++++----
->  1 files changed, 4 insertions(+), 4 deletions(-)
+> Russell, now that irq_to_gpio() is going away, can you comment on how
+> you'd like to fix drivers that do this kind of thing? Thanks.
 > 
-> diff --git a/drivers/staging/iio/adc/ad7152.c b/drivers/staging/iio/adc/ad7152.c
-> index 42efc37..dac3392 100644
-> --- a/drivers/staging/iio/adc/ad7152.c
-> +++ b/drivers/staging/iio/adc/ad7152.c
-> @@ -440,17 +440,17 @@ static const struct iio_chan_spec ad7152_channels[] = {
->  		(1 << IIO_CHAN_INFO_SCALE_SEPARATE),
->  	}, {
->  		.type = IIO_CAPACITANCE,
-> +		.differential = 1,
->  		.indexed = 1,
-> -		.channel = 1,
-> +		.channel = 0,
-> +		.channel2 = 2,
->  		.info_mask = (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE) |
->  		(1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE) |
->  		(1 << IIO_CHAN_INFO_SCALE_SEPARATE),
->  	}, {
->  		.type = IIO_CAPACITANCE,
-> -		.differential = 1,
->  		.indexed = 1,
-> -		.channel = 0,
-> -		.channel2 = 2,
-> +		.channel = 1,
->  		.info_mask = (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE) |
->  		(1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE) |
->  		(1 << IIO_CHAN_INFO_SCALE_SEPARATE),
+>  drivers/staging/iio/magnetometer/ak8975.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+> index a17fa9f..bd40e32 100644
+> --- a/drivers/staging/iio/magnetometer/ak8975.c
+> +++ b/drivers/staging/iio/magnetometer/ak8975.c
+> @@ -477,7 +477,7 @@ static int ak8975_probe(struct i2c_client *client,
+>  	int err;
+>  
+>  	/* Grab and set up the supplied GPIO. */
+> -	eoc_gpio = irq_to_gpio(client->irq);
+> +	eoc_gpio = -1; /* FIXME: irq_to_gpio(client->irq) */
+>  
+>  	/* We may not have a GPIO based IRQ to scan, that is fine, we will
+>  	   poll if so */
 
