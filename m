@@ -1,44 +1,62 @@
-Return-Path: <maxin.john@gmail.com>
-Date: Fri, 2 Sep 2011 12:41:07 +0300
-From: "Maxin B. John" <maxin.john@gmail.com>
-To: Dan Carpenter <error27@gmail.com>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>, Bryan Freed <bfreed@chromium.org>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:42766 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933313Ab1IBKrm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2011 06:47:42 -0400
+Message-ID: <4E60B63C.1030101@cam.ac.uk>
+Date: Fri, 02 Sep 2011 11:55:56 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
+To: "Maxin B. John" <maxin.john@gmail.com>
+CC: Dan Carpenter <error27@gmail.com>,
+	Bryan Freed <bfreed@chromium.org>,
 	linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>,
 	linux-iio@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
 	devel@driverdev.osuosl.org,
 	Amit Kucheria <amit.kucheria@verdurent.com>
 Subject: Re: [PATCH] staging: iio: light: Fix compiler warning in tsl2563.c
-Message-ID: <20110902094107.GA2846@maxin>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+References: <20110902094107.GA2846@maxin>
+In-Reply-To: <20110902094107.GA2846@maxin>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> Don't overwrite the error code.  For example, the lower layers can
-> return -EAGAIN and that's more useful than just returning -EIO every
-> time.
-Ahh.. Thanks a lot for explaining this.
+On 09/02/11 10:41, Maxin B. John wrote:
+>> Don't overwrite the error code.  For example, the lower layers can
+>> return -EAGAIN and that's more useful than just returning -EIO every
+>> time.
+> Ahh.. Thanks a lot for explaining this.
+> 
+>> Your fix works, but it's not very clean.  Just add a "*id = ret;"
+>> line before the "return 0;" and that's it.  (It doesn't make sense
+>> to pass a pointer to "id" and not use it).
+> Dan, yes, I agree with you. This fix is much much better than what I 
+> had in my mind.
+> 
+>> Yikes - I wonder why my various compilers don't throw that up.
+> I guess, in "iio-blue.git" tree, the 'id = 0' suppresses this warning.
+That'd do it. oops.
 
-> Your fix works, but it's not very clean.  Just add a "*id = ret;"
-> line before the "return 0;" and that's it.  (It doesn't make sense
-> to pass a pointer to "id" and not use it).
-Dan, yes, I agree with you. This fix is much much better than what I 
-had in my mind.
+Ideally keep the white space but doesn't really matter. Either send on
+to Greg directly or I'll add it to iio-blue and send on with the next fixes
+series - probably this afternoon.
+> 
+> Signed-off-by: Maxin B. John <maxin.john@gmail.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 
-> Yikes - I wonder why my various compilers don't throw that up.
-I guess, in "iio-blue.git" tree, the 'id = 0' suppresses this warning.
+> ---
+> diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
+> index f25243b..55012ff 100644
+> --- a/drivers/staging/iio/light/tsl2563.c
+> +++ b/drivers/staging/iio/light/tsl2563.c
+> @@ -226,7 +226,7 @@ static int tsl2563_read_id(struct tsl2563_chip *chip, u8 *id)
+>  	ret = i2c_smbus_read_byte_data(client, TSL2563_CMD | TSL2563_REG_ID);
+>  	if (ret < 0)
+>  		return ret;
+> -
+> +	*id = ret;
+>  	return 0;
+>  }
+>  
+> 
 
-Signed-off-by: Maxin B. John <maxin.john@gmail.com>
----
-diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
-index f25243b..55012ff 100644
---- a/drivers/staging/iio/light/tsl2563.c
-+++ b/drivers/staging/iio/light/tsl2563.c
-@@ -226,7 +226,7 @@ static int tsl2563_read_id(struct tsl2563_chip *chip, u8 *id)
- 	ret = i2c_smbus_read_byte_data(client, TSL2563_CMD | TSL2563_REG_ID);
- 	if (ret < 0)
- 		return ret;
--
-+	*id = ret;
- 	return 0;
- }
- 
