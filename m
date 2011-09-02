@@ -1,47 +1,49 @@
-Return-Path: <swarren@nvidia.com>
-From: Stephen Warren <swarren@nvidia.com>
-To: Greg Kroah-Hartman <gregkh@suse.de>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:39297 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933014Ab1IBIoH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2011 04:44:07 -0400
+Message-ID: <4E609941.6080402@cam.ac.uk>
+Date: Fri, 02 Sep 2011 09:52:17 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
+To: Stephen Warren <swarren@nvidia.com>
+CC: Greg Kroah-Hartman <gregkh@suse.de>,
 	Jean Delvare <khali@linux-fr.org>,
-	Ben Dooks <ben-linux@fluff.org>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Arnd Bergmann <arnd@arndb.de>
-Cc: Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Andrew Chew <achew@nvidia.com>,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org,
-	linux-tegra@vger.kernel.org,
-	linux-i2c@vger.kernel.org,
-	Stephen Warren <swarren@nvidia.com>
-Subject: [PATCH V2 4/4] staging:iio:magnetometer:ak8975: Fix probe() error-handling
-Date: Thu,  1 Sep 2011 10:52:40 -0600
-Message-Id: <1314895964-15964-4-git-send-email-swarren@nvidia.com>
-In-Reply-To: <1314895964-15964-1-git-send-email-swarren@nvidia.com>
-References: <1314895964-15964-1-git-send-email-swarren@nvidia.com>
-List-ID: <linux-iio@vger.kernel.org>
+	Ben Dooks <ben-linux@fluff.org>, Arnd Bergmann <arnd@arndb.de>,
+	Russell King <linux@arm.linux.org.uk>,
+	Andrew Chew <achew@nvidia.com>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+	linux-tegra@vger.kernel.org, linux-i2c@vger.kernel.org
+Subject: Re: [PATCH V2 4/4] staging:iio:magnetometer:ak8975: Fix probe() error-handling
+References: <1314895964-15964-1-git-send-email-swarren@nvidia.com> <1314895964-15964-4-git-send-email-swarren@nvidia.com>
+In-Reply-To: <1314895964-15964-4-git-send-email-swarren@nvidia.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Fix ak8975_probe() to jump to the appropriate exit labels when an error
-occurs. With the previous code, some cleanup actions were being skipped
-for some error conditions.
+On 09/01/11 17:52, Stephen Warren wrote:
+> Fix ak8975_probe() to jump to the appropriate exit labels when an error
+> occurs. With the previous code, some cleanup actions were being skipped
+> for some error conditions.
+> 
+> Signed-off-by: Stephen Warren <swarren@nvidia.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+> ---
+>  drivers/staging/iio/magnetometer/ak8975.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+> index 0dfdf50..cc20e8d 100644
+> --- a/drivers/staging/iio/magnetometer/ak8975.c
+> +++ b/drivers/staging/iio/magnetometer/ak8975.c
+> @@ -510,7 +510,7 @@ static int ak8975_probe(struct i2c_client *client,
+>  	err = ak8975_setup(client);
+>  	if (err < 0) {
+>  		dev_err(&client->dev, "AK8975 initialization fails\n");
+> -		goto exit_gpio;
+> +		goto exit_free_iio;
+>  	}
+>  
+>  	i2c_set_clientdata(client, indio_dev);
 
-Signed-off-by: Stephen Warren <swarren@nvidia.com>
----
- drivers/staging/iio/magnetometer/ak8975.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-index 0dfdf50..cc20e8d 100644
---- a/drivers/staging/iio/magnetometer/ak8975.c
-+++ b/drivers/staging/iio/magnetometer/ak8975.c
-@@ -510,7 +510,7 @@ static int ak8975_probe(struct i2c_client *client,
- 	err = ak8975_setup(client);
- 	if (err < 0) {
- 		dev_err(&client->dev, "AK8975 initialization fails\n");
--		goto exit_gpio;
-+		goto exit_free_iio;
- 	}
- 
- 	i2c_set_clientdata(client, indio_dev);
--- 
-1.7.0.4
