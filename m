@@ -1,53 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from opensource.wolfsonmicro.com ([80.75.67.52]:55856 "EHLO
-	opensource2.wolfsonmicro.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753222Ab1IER6D (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2011 13:58:03 -0400
-Date: Mon, 5 Sep 2011 10:57:59 -0700
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] staging:iio:accel:lis3l02dq use regmap.
-Message-ID: <20110905175758.GJ3889@opensource.wolfsonmicro.com>
-References: <1315240395-6623-1-git-send-email-jic23@cam.ac.uk>
- <1315240395-6623-2-git-send-email-jic23@cam.ac.uk>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:59288 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750802Ab1IEJe2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2011 05:34:28 -0400
+Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:43689)
+	by ppsw-51.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.158]:25)
+	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
+	id 1R0VZT-0007e5-ZC (Exim 4.72) for linux-iio@vger.kernel.org
+	(return-path <jic23@cam.ac.uk>); Mon, 05 Sep 2011 10:34:27 +0100
+Message-ID: <4E649994.9030208@cam.ac.uk>
+Date: Mon, 05 Sep 2011 10:42:44 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1315240395-6623-2-git-send-email-jic23@cam.ac.uk>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Temporary iio-blue.git location.
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Sep 05, 2011 at 05:33:15PM +0100, Jonathan Cameron wrote:
+Hi All,
 
-> +static bool lis3l02dq_reg_writeable(struct device *dev, unsigned int reg)
-> +{
-> +	return (reg == LIS3L02DQ_REG_OFFSET_X_ADDR ||
-> +		reg == LIS3L02DQ_REG_OFFSET_Y_ADDR ||
-> +		reg == LIS3L02DQ_REG_OFFSET_Z_ADDR ||
+Given master.kernel.org is still down, after pestering
+of our local admin I can now host repositories on our windows
+based web server (oh goody).
 
-These would all look nicer as switch statements I think - this doesn't
-look terribly idiomatic.
+So, you should be able to pull from:
 
-> +static bool lis3l02dq_reg_volatile(struct device *dev, unsigned int reg)
-> +{
-> +	return (reg == LIS3L02DQ_REG_WAKE_UP_ACK_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_X_L_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_X_H_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_Y_L_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_Y_H_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_Z_L_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_Z_H_ADDR);	
-> +}
-> +/* Read the data registers might result in unexpected datardy signal
-> + * so they have to be marked precious */
-> +static bool lis3l02dq_reg_precious(struct device *dev, unsigned int reg)
-> +{
-> +	return (reg == LIS3L02DQ_REG_WAKE_UP_ACK_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_X_L_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_X_H_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_Y_L_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_Y_H_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_Z_L_ADDR ||
-> +		reg == LIS3L02DQ_REG_OUT_Z_H_ADDR);
+ http://www-sigproc.eng.cam.ac.uk/~jic23/iio/.git
+(I copied it across so it's not a bare repository).
 
-These could perhaps be the same function?
+That'll get you everything I have sent to Greg if you
+want to know where we are.
+
+Note this is just a temporary work around and please don't
+pull the whole repository too often.
+
+Thanks,
+
+Jonathan
