@@ -1,87 +1,36 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:52638 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756469Ab1IAI5y (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2011 04:57:54 -0400
-Message-ID: <4E5F4AFE.5020800@cam.ac.uk>
-Date: Thu, 01 Sep 2011 10:06:06 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <greg@kroah.com>
+Date: Tue, 6 Sep 2011 16:05:33 -0700
+From: Greg KH <greg@kroah.com>
+To: Grant Grundler <grundler@google.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>, devel@linuxdriverproject.org,
+	linux-iio@vger.kernel.org, bfreed@chromium.org,
+	grundler@chromium.org
+Subject: Re: [PATCH] STAGING:iio:light: V2 fix out of bounds reg_cache[]
+ access
+Message-ID: <20110906230533.GA5882@kroah.com>
+References: <20110830235546.3135B208185@grundler.mtv.corp.google.com>
 MIME-Version: 1.0
-To: Stephen Warren <swarren@nvidia.com>
-CC: Greg Kroah-Hartman <gregkh@suse.de>,
-	Russell King <linux@arm.linux.org.uk>,
-	Andrew Chew <achew@nvidia.com>, Arnd Bergmann <arnd@arndb.de>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH 2/3] staging:iio:magnetometer:ak8975: Don't assume 0 is
- an invalid GPIO
-References: <1314819657-828-1-git-send-email-swarren@nvidia.com> <1314819657-828-2-git-send-email-swarren@nvidia.com>
-In-Reply-To: <1314819657-828-2-git-send-email-swarren@nvidia.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20110830235546.3135B208185@grundler.mtv.corp.google.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/31/11 20:40, Stephen Warren wrote:
-> gpio_is_valid() is the defined mechanism to determine whether a GPIO is
-> valid. Use this instead of assuming that 0 is an invalid GPIO.
+On Tue, Aug 30, 2011 at 04:55:46PM -0700, Grant Grundler wrote:
+> V2 Fix out-of-bounds reference to reg_cache[]
 > 
-Greg, depending on merge order you will get some fuzz between this and something
-in my tree.
-
-> Signed-off-by: Stephen Warren <swarren@nvidia.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/magnetometer/ak8975.c |   11 +++++------
->  1 files changed, 5 insertions(+), 6 deletions(-)
+> Simple fix is to just not cache REG_TEST (offset 8).
+> Cache doesn't help REG_TEST anyway since we write all 8 bits exactly once
+> (at resume/init time).
 > 
-> diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-> index bd40e32..79ed183 100644
-> --- a/drivers/staging/iio/magnetometer/ak8975.c
-> +++ b/drivers/staging/iio/magnetometer/ak8975.c
-> @@ -373,7 +373,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
->  	}
->  
->  	/* Wait for the conversion to complete. */
-> -	if (data->eoc_gpio)
-> +	if (gpio_is_valid(data->eoc_gpio))
->  		ret = wait_conversion_complete_gpio(data);
->  	else
->  		ret = wait_conversion_complete_polled(data);
-> @@ -481,7 +481,7 @@ static int ak8975_probe(struct i2c_client *client,
->  
->  	/* We may not have a GPIO based IRQ to scan, that is fine, we will
->  	   poll if so */
-> -	if (eoc_gpio > 0) {
-> +	if (gpio_is_valid(eoc_gpio)) {
->  		err = gpio_request(eoc_gpio, "ak_8975");
->  		if (err < 0) {
->  			dev_err(&client->dev,
-> @@ -497,8 +497,7 @@ static int ak8975_probe(struct i2c_client *client,
->  						eoc_gpio, err);
->  			goto exit_gpio;
->  		}
-> -	} else
-> -		eoc_gpio = 0;	/* No GPIO available */
-> +	}
->  
->  	/* Register with IIO */
->  	indio_dev = iio_allocate_device(sizeof(*data));
-> @@ -534,7 +533,7 @@ static int ak8975_probe(struct i2c_client *client,
->  exit_free_iio:
->  	iio_free_device(indio_dev);
->  exit_gpio:
-> -	if (eoc_gpio)
-> +	if (gpio_is_valid(eoc_gpio))
->  		gpio_free(eoc_gpio);
->  exit:
->  	return err;
-> @@ -549,7 +548,7 @@ static int ak8975_remove(struct i2c_client *client)
->  	iio_device_unregister(indio_dev);
->  	iio_free_device(indio_dev);
->  
-> -	if (eoc_gpio)
-> +	if (gpio_is_valid(eoc_gpio))
->  		gpio_free(eoc_gpio);
->  
->  	return 0;
+> Also fix an "off-by-one" allocation of reg_cache[] array size that
+> was in the original code before I touched it.
+> 
+> Reported-by: Dan Carpenter <error27@gmail.com>
+> Signed-off-by: Grant Grundler <grundler@chromium.org>
+> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 
+Jonathan, this no longer applies after your other patches, so could you
+queue this up in your tree and resend it in a format that applies?
+
+thanks,
+
+greg k-h
