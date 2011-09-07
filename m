@@ -1,43 +1,65 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:45561 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750896Ab1IGSUI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 7 Sep 2011 14:20:08 -0400
-Message-ID: <4E67B7C7.8060800@cam.ac.uk>
-Date: Wed, 07 Sep 2011 19:28:23 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-CC: linux-kernel@vger.kernel.org, Michael.Hennerich@analog.com,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/6] SPI: add ability to say we want a cs change after
- every transfer.
-References: <4E679770.4090008@cam.ac.uk> <1315412387-5765-2-git-send-email-jic23@cam.ac.uk> <20110907173515.GF2906@opensource.wolfsonmicro.com> <4E67B477.7060602@cam.ac.uk> <20110907181236.GI2906@opensource.wolfsonmicro.com>
-In-Reply-To: <20110907181236.GI2906@opensource.wolfsonmicro.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: broonie@opensource.wolfsonmicro.com
+Cc: linux-kernel@vger.kernel.org,
+	Michael.Hennerich@analog.com,
+	linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [RFC PATCH 0/6] Using regmap with ADIS devices.
+Date: Wed,  7 Sep 2011 17:19:41 +0100
+Message-Id: <1315412387-5765-1-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <4E679770.4090008@cam.ac.uk>
+References: <4E679770.4090008@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/07/11 19:12, Mark Brown wrote:
-> On Wed, Sep 07, 2011 at 07:14:15PM +0100, Jonathan Cameron wrote:
->> On 09/07/11 18:35, Mark Brown wrote:
-> 
->>> We could add this in regmap if required.
-> 
->> Makes more sense in spi and has been in their 'may be needed comment'
->> from the first.  Also, lots of other users who don't fit into regmap
->> (because they don't have any registers to speak of :)
-> 
-> Right, but obviously anything doing SPI transfers can just set the flag
-> in the transfers anyway.  It looked like you were adding this to the
-> core due to other intervening abstractions, probably this is just a
-> problem with your changelog.
-I'll make it clearer that it has uses there elsewhere as well not to
-mention merely stopping stupid bugs in drivers where this is always
-needed.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Aim - allow all the advantages of regmap to work with the 'unusual'
+spi interfaces of Analog Devices ADIS parts.
 
+Missing - means of feeding results of burst reads back into regmap.
+
+The spi change clearly needs to be circulated much more widely.
+I'll do that at a later date.
+
+It 'might' be possible to make regmap understand the non symmetric
+nature of these registers (reads are 16 bit, writes 8 ;) but I
+couldn't really see how to do it cleanly - hence this proposal.
+
+Anyhow, read and poke fun at it.  It's not even vaguely cleaned up.
+I want to get suggestions on how to do it better before I waste time
+on doing that.
+
+To sumarise main trick.  Treat all registers as 16 bit and mess
+with the register addresses in the write function to get it
+to split them in two.
+
+Note I've halved all register addresses in the driver as that will
+work better for caching in regmap at a later date.
+
+Jonathan
+
+
+
+Jonathan Cameron (6):
+  SPI: add ability to say we want a cs change after every transfer.
+  regmap: Add a magic bus type to handle quirks of analog devices ADIS
+    sensors.
+  staging:iio:imu: adis16400 partial conversion to regmap.
+  regmap-spi-adi + staging:iio:imu:adis16400 halve register addresses
+  regmap-spi-adi generalize regmap_spi_read.
+  staging:iio:imu:adis16400 make use of regmap bulk read capabilities
+
+ drivers/base/regmap/Kconfig              |    5 +-
+ drivers/base/regmap/Makefile             |    1 +
+ drivers/base/regmap/regmap-spi-adi.c     |   93 +++++++++
+ drivers/spi/spi.c                        |    8 +
+ drivers/staging/iio/imu/Kconfig          |    1 +
+ drivers/staging/iio/imu/adis16400.h      |  100 +++++-----
+ drivers/staging/iio/imu/adis16400_core.c |  300 ++++++++++++++++++-----------
+ drivers/staging/iio/imu/adis16400_ring.c |   69 ++------
+ include/linux/regmap.h                   |    2 +
+ include/linux/spi/spi.h                  |    2 +
+ 10 files changed, 360 insertions(+), 221 deletions(-)
+ create mode 100644 drivers/base/regmap/regmap-spi-adi.c
+
+-- 
+1.7.3.4
