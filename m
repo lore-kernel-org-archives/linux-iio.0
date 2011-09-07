@@ -5,211 +5,569 @@ Cc: linux-kernel@vger.kernel.org,
 	Michael.Hennerich@analog.com,
 	linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 4/6] regmap-spi-adi + staging:iio:imu:adis16400 halve register addresses
-Date: Wed,  7 Sep 2011 17:19:45 +0100
-Message-Id: <1315412387-5765-5-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 3/6] staging:iio:imu: adis16400 partial conversion to regmap.
+Date: Wed,  7 Sep 2011 17:19:44 +0100
+Message-Id: <1315412387-5765-4-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <4E679770.4090008@cam.ac.uk>
 References: <4E679770.4090008@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-The register addresses were even numbers only.  That makes for very bad
-caching, so lets halve them all.
+This requires the regmap-spi-adi regmap bus to deal with
+complex read / write combinations.
 
-Nasty trick needed with the write_flag_mask being halved to make this work.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/base/regmap/regmap-spi-adi.c     |    8 ++-
- drivers/staging/iio/imu/adis16400.h      |   88 +++++++++++++++---------------
- drivers/staging/iio/imu/adis16400_core.c |    2 +-
- drivers/staging/iio/imu/adis16400_ring.c |   22 ++++----
- 4 files changed, 61 insertions(+), 59 deletions(-)
+ drivers/staging/iio/imu/Kconfig          |    1 +
+ drivers/staging/iio/imu/adis16400.h      |    2 +
+ drivers/staging/iio/imu/adis16400_core.c |  300 ++++++++++++++++++-----------
+ drivers/staging/iio/imu/adis16400_ring.c |    2 +-
+ 4 files changed, 190 insertions(+), 115 deletions(-)
 
-diff --git a/drivers/base/regmap/regmap-spi-adi.c b/drivers/base/regmap/regmap-spi-adi.c
-index a98c000..d4301cc 100644
---- a/drivers/base/regmap/regmap-spi-adi.c
-+++ b/drivers/base/regmap/regmap-spi-adi.c
-@@ -25,14 +25,13 @@ static int regmap_spi_write(struct device *dev, const void *data, size_t count)
- 
- 	BUG_ON(count != 3);
- 	/* Fiddling needed as the value is bigendian */
--	rawdata[0] += 1;
-+	rawdata[0] = (rawdata[0] << 1) + 1;
- 	ret = spi_write(spi, data, 2);
- 	if (ret < 0)
- 		return ret;
- 
- 	rawdata[1] = rawdata[0] - 1;
--	ret = spi_write(spi, data + 1, 2);
--	return ret;
-+	return spi_write(spi, data + 1, 2);
- }
- 
- static int regmap_spi_read(struct device *dev,
-@@ -40,6 +39,9 @@ static int regmap_spi_read(struct device *dev,
- 			   void *val, size_t val_size)
- {
- 	struct spi_device *spi = to_spi_device(dev);
-+	u8 *regraw = (u8 *)reg;
-+
-+	regraw[0] <<= 1;
- 
- 	BUG_ON(reg_size != 1 || val_size != 2);
- 
+diff --git a/drivers/staging/iio/imu/Kconfig b/drivers/staging/iio/imu/Kconfig
+index e0e0144..7dfaa43 100644
+--- a/drivers/staging/iio/imu/Kconfig
++++ b/drivers/staging/iio/imu/Kconfig
+@@ -6,6 +6,7 @@ comment "Inertial measurement units"
+ config ADIS16400
+ 	tristate "Analog Devices ADIS16400 and similar IMU SPI driver"
+ 	depends on SPI
++	select REGMAP_SPI_ADI
+ 	select IIO_SW_RING if IIO_RING_BUFFER
+ 	select IIO_TRIGGER if IIO_RING_BUFFER
+ 	help
 diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
-index 0bf1fd9..919d6fa 100644
+index 1f8f0c6..0bf1fd9 100644
 --- a/drivers/staging/iio/imu/adis16400.h
 +++ b/drivers/staging/iio/imu/adis16400.h
-@@ -23,58 +23,58 @@
- #define ADIS16400_READ_REG(a)    a
- #define ADIS16400_WRITE_REG(a) ((a) | 0x80)
+@@ -141,6 +141,7 @@ struct adis16400_chip_info {
+ 	unsigned long default_scan_mask;
+ };
  
--#define ADIS16400_FLASH_CNT  0x00 /* Flash memory write count */
--#define ADIS16400_SUPPLY_OUT 0x02 /* Power supply measurement */
--#define ADIS16400_XGYRO_OUT 0x04 /* X-axis gyroscope output */
--#define ADIS16400_YGYRO_OUT 0x06 /* Y-axis gyroscope output */
--#define ADIS16400_ZGYRO_OUT 0x08 /* Z-axis gyroscope output */
--#define ADIS16400_XACCL_OUT 0x0A /* X-axis accelerometer output */
--#define ADIS16400_YACCL_OUT 0x0C /* Y-axis accelerometer output */
--#define ADIS16400_ZACCL_OUT 0x0E /* Z-axis accelerometer output */
--#define ADIS16400_XMAGN_OUT 0x10 /* X-axis magnetometer measurement */
--#define ADIS16400_YMAGN_OUT 0x12 /* Y-axis magnetometer measurement */
--#define ADIS16400_ZMAGN_OUT 0x14 /* Z-axis magnetometer measurement */
--#define ADIS16400_TEMP_OUT  0x16 /* Temperature output */
--#define ADIS16400_AUX_ADC   0x18 /* Auxiliary ADC measurement */
--
--#define ADIS16350_XTEMP_OUT 0x10 /* X-axis gyroscope temperature measurement */
--#define ADIS16350_YTEMP_OUT 0x12 /* Y-axis gyroscope temperature measurement */
--#define ADIS16350_ZTEMP_OUT 0x14 /* Z-axis gyroscope temperature measurement */
--
--#define ADIS16300_PITCH_OUT 0x12 /* X axis inclinometer output measurement */
--#define ADIS16300_ROLL_OUT  0x12 /* Y axis inclinometer output measurement */
-+#define ADIS16400_FLASH_CNT  (0x00 >> 1) /* Flash memory write count */
-+#define ADIS16400_SUPPLY_OUT (0x02 >> 1) /* Power supply measurement */
-+#define ADIS16400_XGYRO_OUT (0x04 >> 1) /* X-axis gyroscope output */
-+#define ADIS16400_YGYRO_OUT (0x06 >> 1) /* Y-axis gyroscope output */
-+#define ADIS16400_ZGYRO_OUT (0x08 >> 1) /* Z-axis gyroscope output */
-+#define ADIS16400_XACCL_OUT (0x0A >> 1) /* X-axis accelerometer output */
-+#define ADIS16400_YACCL_OUT (0x0C >> 1) /* Y-axis accelerometer output */
-+#define ADIS16400_ZACCL_OUT (0x0E >> 1) /* Z-axis accelerometer output */
-+#define ADIS16400_XMAGN_OUT (0x10 >> 1) /* X-axis magnetometer measurement */
-+#define ADIS16400_YMAGN_OUT (0x12 >> 1) /* Y-axis magnetometer measurement */
-+#define ADIS16400_ZMAGN_OUT (0x14 >> 1) /* Z-axis magnetometer measurement */
-+#define ADIS16400_TEMP_OUT  (0x16 >> 1) /* Temperature output */
-+#define ADIS16400_AUX_ADC   (0x18 >> 1) /* Auxiliary ADC measurement */
-+
-+#define ADIS16350_XTEMP_OUT (0x10 >> 1) /* X-axis gyroscope temperature measurement */
-+#define ADIS16350_YTEMP_OUT (0x12 >> 1) /* Y-axis gyroscope temperature measurement */
-+#define ADIS16350_ZTEMP_OUT (0x14 >> 1) /* Z-axis gyroscope temperature measurement */
-+
-+#define ADIS16300_PITCH_OUT (0x12 >> 1) /* X axis inclinometer output measurement */
-+#define ADIS16300_ROLL_OUT  (0x12 >> 1) /* Y axis inclinometer output measurement */
- 
- /* Calibration parameters */
--#define ADIS16400_XGYRO_OFF 0x1A /* X-axis gyroscope bias offset factor */
--#define ADIS16400_YGYRO_OFF 0x1C /* Y-axis gyroscope bias offset factor */
--#define ADIS16400_ZGYRO_OFF 0x1E /* Z-axis gyroscope bias offset factor */
--#define ADIS16400_XACCL_OFF 0x20 /* X-axis acceleration bias offset factor */
--#define ADIS16400_YACCL_OFF 0x22 /* Y-axis acceleration bias offset factor */
--#define ADIS16400_ZACCL_OFF 0x24 /* Z-axis acceleration bias offset factor */
--#define ADIS16400_XMAGN_HIF 0x26 /* X-axis magnetometer, hard-iron factor */
--#define ADIS16400_YMAGN_HIF 0x28 /* Y-axis magnetometer, hard-iron factor */
--#define ADIS16400_ZMAGN_HIF 0x2A /* Z-axis magnetometer, hard-iron factor */
--#define ADIS16400_XMAGN_SIF 0x2C /* X-axis magnetometer, soft-iron factor */
--#define ADIS16400_YMAGN_SIF 0x2E /* Y-axis magnetometer, soft-iron factor */
--#define ADIS16400_ZMAGN_SIF 0x30 /* Z-axis magnetometer, soft-iron factor */
--
--#define ADIS16400_GPIO_CTRL 0x32 /* Auxiliary digital input/output control */
--#define ADIS16400_MSC_CTRL  0x34 /* Miscellaneous control */
--#define ADIS16400_SMPL_PRD  0x36 /* Internal sample period (rate) control */
--#define ADIS16400_SENS_AVG  0x38 /* Dynamic range and digital filter control */
--#define ADIS16400_SLP_CNT   0x3A /* Sleep mode control */
--#define ADIS16400_DIAG_STAT 0x3C /* System status */
-+#define ADIS16400_XGYRO_OFF (0x1A >> 1) /* X-axis gyroscope bias offset factor */
-+#define ADIS16400_YGYRO_OFF (0x1C >> 1) /* Y-axis gyroscope bias offset factor */
-+#define ADIS16400_ZGYRO_OFF (0x1E >> 1) /* Z-axis gyroscope bias offset factor */
-+#define ADIS16400_XACCL_OFF (0x20 >> 1) /* X-axis acceleration bias offset factor */
-+#define ADIS16400_YACCL_OFF (0x22 >> 1) /* Y-axis acceleration bias offset factor */
-+#define ADIS16400_ZACCL_OFF (0x24 >> 1) /* Z-axis acceleration bias offset factor */
-+#define ADIS16400_XMAGN_HIF (0x26 >> 1) /* X-axis magnetometer, hard-iron factor */
-+#define ADIS16400_YMAGN_HIF (0x28 >> 1) /* Y-axis magnetometer, hard-iron factor */
-+#define ADIS16400_ZMAGN_HIF (0x2A >> 1) /* Z-axis magnetometer, hard-iron factor */
-+#define ADIS16400_XMAGN_SIF (0x2C >> 1) /* X-axis magnetometer, soft-iron factor */
-+#define ADIS16400_YMAGN_SIF (0x2E >> 1) /* Y-axis magnetometer, soft-iron factor */
-+#define ADIS16400_ZMAGN_SIF (0x30 >> 1) /* Z-axis magnetometer, soft-iron factor */
-+
-+#define ADIS16400_GPIO_CTRL (0x32 >> 1) /* Auxiliary digital input/output control */
-+#define ADIS16400_MSC_CTRL  (0x34 >> 1) /* Miscellaneous control */
-+#define ADIS16400_SMPL_PRD  (0x36 >> 1) /* Internal sample period (rate) control */
-+#define ADIS16400_SENS_AVG  (0x38 >> 1) /* Dynamic range and digital filter control */
-+#define ADIS16400_SLP_CNT   (0x3A >> 1) /* Sleep mode control */
-+#define ADIS16400_DIAG_STAT (0x3C >> 1) /* System status */
- 
- /* Alarm functions */
--#define ADIS16400_GLOB_CMD  0x3E /* System command */
--#define ADIS16400_ALM_MAG1  0x40 /* Alarm 1 amplitude threshold */
--#define ADIS16400_ALM_MAG2  0x42 /* Alarm 2 amplitude threshold */
--#define ADIS16400_ALM_SMPL1 0x44 /* Alarm 1 sample size */
--#define ADIS16400_ALM_SMPL2 0x46 /* Alarm 2 sample size */
--#define ADIS16400_ALM_CTRL  0x48 /* Alarm control */
--#define ADIS16400_AUX_DAC   0x4A /* Auxiliary DAC data */
--
--#define ADIS16400_PRODUCT_ID 0x56 /* Product identifier */
-+#define ADIS16400_GLOB_CMD  (0x3E >> 1) /* System command */
-+#define ADIS16400_ALM_MAG1  (0x40 >> 1) /* Alarm 1 amplitude threshold */
-+#define ADIS16400_ALM_MAG2  (0x42 >> 1) /* Alarm 2 amplitude threshold */
-+#define ADIS16400_ALM_SMPL1 (0x44 >> 1) /* Alarm 1 sample size */
-+#define ADIS16400_ALM_SMPL2 (0x46 >> 1) /* Alarm 2 sample size */
-+#define ADIS16400_ALM_CTRL  (0x48 >> 1) /* Alarm control */
-+#define ADIS16400_AUX_DAC   (0x4A >> 1) /* Auxiliary DAC data */
-+
-+#define ADIS16400_PRODUCT_ID (0x56 >> 1) /* Product identifier */
- 
- #define ADIS16400_ERROR_ACTIVE			(1<<14)
- #define ADIS16400_NEW_DATA			(1<<14)
++struct regmap;
+ /**
+  * struct adis16400_state - device instance specific data
+  * @us:			actual spi_device
+@@ -150,6 +151,7 @@ struct adis16400_chip_info {
+  * @buf_lock:		mutex to protect tx and rx
+  **/
+ struct adis16400_state {
++	struct regmap *regmap;
+ 	struct spi_device		*us;
+ 	struct iio_trigger		*trig;
+ 	struct mutex			buf_lock;
 diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-index b4be380..a75a7d1 100644
+index b6d824f..b4be380 100644
 --- a/drivers/staging/iio/imu/adis16400_core.c
 +++ b/drivers/staging/iio/imu/adis16400_core.c
-@@ -1074,7 +1074,7 @@ static struct regmap_config adis16400_regmap_config = {
- 	.precious_reg = &adis16400_reg_precious,
- 	.volatile_reg = &adis16400_reg_volatile,
- 	.max_register = 0x56,
--	.write_flag_mask = 0x80,
-+	.write_flag_mask = 0x40, /* doubling of this occurs */
- 	.read_flag_mask = 0,
+@@ -25,6 +25,8 @@
+ #include <linux/sysfs.h>
+ #include <linux/list.h>
+ #include <linux/module.h>
++#include <linux/regmap.h>
++#include <linux/err.h>
+ 
+ #include "../iio.h"
+ #include "../sysfs.h"
+@@ -42,28 +44,6 @@ enum adis16400_chip_variant {
+ 	ADIS16400,
  };
  
-diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
-index 8345d4e..e1cd1bf 100644
---- a/drivers/staging/iio/imu/adis16400_ring.c
-+++ b/drivers/staging/iio/imu/adis16400_ring.c
-@@ -57,17 +57,17 @@ static int adis16400_spi_read_burst(struct device *dev, u8 *rx)
+-/**
+- * adis16400_spi_write_reg_8() - write single byte to a register
+- * @dev: device associated with child of actual device (iio_dev or iio_trig)
+- * @reg_address: the address of the register to be written
+- * @val: the value to write
+- */
+-static int adis16400_spi_write_reg_8(struct iio_dev *indio_dev,
+-				     u8 reg_address,
+-				     u8 val)
+-{
+-	int ret;
+-	struct adis16400_state *st = iio_priv(indio_dev);
+-
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = ADIS16400_WRITE_REG(reg_address);
+-	st->tx[1] = val;
+-
+-	ret = spi_write(st->us, st->tx, 2);
+-	mutex_unlock(&st->buf_lock);
+-
+-	return ret;
+-}
+ 
+ /**
+  * adis16400_spi_write_reg_16() - write 2 bytes to a pair of registers
+@@ -71,43 +51,14 @@ static int adis16400_spi_write_reg_8(struct iio_dev *indio_dev,
+  * @reg_address: the address of the lower of the two registers. Second register
+  *               is assumed to have address one greater.
+  * @val: value to be written
+- *
+- * At the moment the spi framework doesn't allow global setting of cs_change.
+- * This means that use cannot be made of spi_write.
+  */
+ static int adis16400_spi_write_reg_16(struct iio_dev *indio_dev,
+-		u8 lower_reg_address,
+-		u16 value)
++				      u8 lower_reg_address,
++				      u16 value)
+ {
+-	int ret;
+-	struct spi_message msg;
+ 	struct adis16400_state *st = iio_priv(indio_dev);
+-	struct spi_transfer xfers[] = {
+-		{
+-			.tx_buf = st->tx,
+-			.bits_per_word = 8,
+-			.len = 2,
+-			.cs_change = 1,
+-		}, {
+-			.tx_buf = st->tx + 2,
+-			.bits_per_word = 8,
+-			.len = 2,
+-		},
+-	};
+-
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = ADIS16400_WRITE_REG(lower_reg_address);
+-	st->tx[1] = value & 0xFF;
+-	st->tx[2] = ADIS16400_WRITE_REG(lower_reg_address + 1);
+-	st->tx[3] = (value >> 8) & 0xFF;
+ 
+-	spi_message_init(&msg);
+-	spi_message_add_tail(&xfers[0], &msg);
+-	spi_message_add_tail(&xfers[1], &msg);
+-	ret = spi_sync(st->us, &msg);
+-	mutex_unlock(&st->buf_lock);
+-
+-	return ret;
++	return regmap_write(st->regmap, lower_reg_address, value);
  }
  
- static const u16 read_all_tx_array[] = {
--	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_SUPPLY_OUT)),
--	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_XGYRO_OUT)),
--	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_YGYRO_OUT)),
--	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_ZGYRO_OUT)),
--	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_XACCL_OUT)),
--	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_YACCL_OUT)),
--	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_ZACCL_OUT)),
--	cpu_to_be16(ADIS16400_READ_REG(ADIS16350_XTEMP_OUT)),
--	cpu_to_be16(ADIS16400_READ_REG(ADIS16350_YTEMP_OUT)),
--	cpu_to_be16(ADIS16400_READ_REG(ADIS16350_ZTEMP_OUT)),
--	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_AUX_ADC)),
-+	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_SUPPLY_OUT << 1)),
-+	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_XGYRO_OUT << 1)),
-+	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_YGYRO_OUT << 1)),
-+	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_ZGYRO_OUT << 1)),
-+	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_XACCL_OUT << 1)),
-+	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_YACCL_OUT << 1)),
-+	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_ZACCL_OUT << 1)),
-+	cpu_to_be16(ADIS16400_READ_REG(ADIS16350_XTEMP_OUT << 1)),
-+	cpu_to_be16(ADIS16400_READ_REG(ADIS16350_YTEMP_OUT << 1)),
-+	cpu_to_be16(ADIS16400_READ_REG(ADIS16350_ZTEMP_OUT << 1)),
-+	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_AUX_ADC << 1)),
+ /**
+@@ -116,49 +67,22 @@ static int adis16400_spi_write_reg_16(struct iio_dev *indio_dev,
+  * @reg_address: the address of the lower of the two registers. Second register
+  *               is assumed to have address one greater.
+  * @val: somewhere to pass back the value read
+- *
+- * At the moment the spi framework doesn't allow global setting of cs_change.
+- * This means that use cannot be made of spi_read.
+  **/
+ static int adis16400_spi_read_reg_16(struct iio_dev *indio_dev,
+-		u8 lower_reg_address,
+-		u16 *val)
++				     u8 lower_reg_address,
++				     u16 *val)
+ {
+-	struct spi_message msg;
+ 	struct adis16400_state *st = iio_priv(indio_dev);
+ 	int ret;
+-	struct spi_transfer xfers[] = {
+-		{
+-			.tx_buf = st->tx,
+-			.bits_per_word = 8,
+-			.len = 2,
+-			.cs_change = 1,
+-		}, {
+-			.rx_buf = st->rx,
+-			.bits_per_word = 8,
+-			.len = 2,
+-		},
+-	};
++	unsigned int value;
+ 
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = ADIS16400_READ_REG(lower_reg_address);
+-	st->tx[1] = 0;
+-
+-	spi_message_init(&msg);
+-	spi_message_add_tail(&xfers[0], &msg);
+-	spi_message_add_tail(&xfers[1], &msg);
+-	ret = spi_sync(st->us, &msg);
+-	if (ret) {
+-		dev_err(&st->us->dev,
+-			"problem when reading 16 bit register 0x%02X",
+-			lower_reg_address);
+-		goto error_ret;
+-	}
+-	*val = (st->rx[0] << 8) | st->rx[1];
++	ret = regmap_read(st->regmap, lower_reg_address, &value);
++	if (ret < 0)
++		return ret;
+ 
+-error_ret:
+-	mutex_unlock(&st->buf_lock);
+-	return ret;
++	*val = value;
++
++	return 0;
+ }
+ 
+ static ssize_t adis16400_read_frequency(struct device *dev,
+@@ -172,7 +96,7 @@ static ssize_t adis16400_read_frequency(struct device *dev,
+ 	ret = adis16400_spi_read_reg_16(indio_dev,
+ 			ADIS16400_SMPL_PRD,
+ 			&t);
+-	if (ret)
++	if (ret < 0)
+ 		return ret;
+ 	sps =  (t & ADIS16400_SMPL_PRD_TIME_BASE) ? 53 : 1638;
+ 	sps /= (t & ADIS16400_SMPL_PRD_DIV_MASK) + 1;
+@@ -192,7 +116,7 @@ static ssize_t adis16400_write_frequency(struct device *dev,
+ 	u8 t;
+ 
+ 	ret = strict_strtol(buf, 10, &val);
+-	if (ret)
++	if (ret < 0)
+ 		return ret;
+ 
+ 	mutex_lock(&indio_dev->mlock);
+@@ -206,22 +130,22 @@ static ssize_t adis16400_write_frequency(struct device *dev,
+ 	else
+ 		st->us->max_speed_hz = ADIS16400_SPI_FAST;
+ 
+-	ret = adis16400_spi_write_reg_8(indio_dev,
++	ret = adis16400_spi_write_reg_16(indio_dev,
+ 			ADIS16400_SMPL_PRD,
+ 			t);
+ 
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+-	return ret ? ret : len;
++	return ret < 0 ? ret : len;
+ }
+ 
+ static int adis16400_reset(struct iio_dev *indio_dev)
+ {
+ 	int ret;
+-	ret = adis16400_spi_write_reg_8(indio_dev,
++	ret = adis16400_spi_write_reg_16(indio_dev,
+ 			ADIS16400_GLOB_CMD,
+ 			ADIS16400_GLOB_CMD_SW_RESET);
+-	if (ret)
++	if (ret < 0)
+ 		dev_err(&indio_dev->dev, "problem resetting device");
+ 
+ 	return ret;
+@@ -252,7 +176,7 @@ int adis16400_set_irq(struct iio_dev *indio_dev, bool enable)
+ 	u16 msc;
+ 
+ 	ret = adis16400_spi_read_reg_16(indio_dev, ADIS16400_MSC_CTRL, &msc);
+-	if (ret)
++	if (ret < 0)
+ 		goto error_ret;
+ 
+ 	msc |= ADIS16400_MSC_CTRL_DATA_RDY_POL_HIGH;
+@@ -262,8 +186,6 @@ int adis16400_set_irq(struct iio_dev *indio_dev, bool enable)
+ 		msc &= ~ADIS16400_MSC_CTRL_DATA_RDY_EN;
+ 
+ 	ret = adis16400_spi_write_reg_16(indio_dev, ADIS16400_MSC_CTRL, msc);
+-	if (ret)
+-		goto error_ret;
+ 
+ error_ret:
+ 	return ret;
+@@ -338,7 +260,7 @@ static int adis16400_self_test(struct iio_dev *indio_dev)
+ 	ret = adis16400_spi_write_reg_16(indio_dev,
+ 			ADIS16400_MSC_CTRL,
+ 			ADIS16400_MSC_CTRL_MEM_TEST);
+-	if (ret) {
++	if (ret < 0) {
+ 		dev_err(&indio_dev->dev, "problem starting self test");
+ 		goto err_ret;
+ 	}
+@@ -362,24 +284,24 @@ static int adis16400_initial_setup(struct iio_dev *indio_dev)
+ 	spi_setup(st->us);
+ 
+ 	ret = adis16400_set_irq(indio_dev, false);
+-	if (ret) {
++	if (ret < 0) {
+ 		dev_err(&indio_dev->dev, "disable irq failed");
+ 		goto err_ret;
+ 	}
+ 
+ 	ret = adis16400_self_test(indio_dev);
+-	if (ret) {
++	if (ret < 0) {
+ 		dev_err(&indio_dev->dev, "self test failure");
+ 		goto err_ret;
+ 	}
+ 
+ 	ret = adis16400_check_status(indio_dev);
+-	if (ret) {
++	if (ret < 0) {
+ 		adis16400_reset(indio_dev);
+ 		dev_err(&indio_dev->dev, "device not playing ball -> reset");
+ 		msleep(ADIS16400_STARTUP_DELAY);
+ 		ret = adis16400_check_status(indio_dev);
+-		if (ret) {
++		if (ret < 0) {
+ 			dev_err(&indio_dev->dev, "giving up");
+ 			goto err_ret;
+ 		}
+@@ -387,7 +309,7 @@ static int adis16400_initial_setup(struct iio_dev *indio_dev)
+ 	if (st->variant->flags & ADIS16400_HAS_PROD_ID) {
+ 		ret = adis16400_spi_read_reg_16(indio_dev,
+ 						ADIS16400_PRODUCT_ID, &prod_id);
+-		if (ret)
++		if (ret < 0)
+ 			goto err_ret;
+ 
+ 		if ((prod_id & 0xF000) != st->variant->product_id)
+@@ -492,7 +414,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 		ret = adis16400_spi_read_reg_16(indio_dev,
+ 				adis16400_addresses[chan->address][0],
+ 				&val16);
+-		if (ret) {
++		if (ret < 0) {
+ 			mutex_unlock(&indio_dev->mlock);
+ 			return ret;
+ 		}
+@@ -539,7 +461,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 				adis16400_addresses[chan->address][1],
+ 				&val16);
+ 		mutex_unlock(&indio_dev->mlock);
+-		if (ret)
++		if (ret < 0)
+ 			return ret;
+ 		val16 = ((val16 & 0xFFF) << 4) >> 4;
+ 		*val = val16;
+@@ -1016,6 +938,146 @@ static const struct iio_info adis16400_info = {
+ 	.attrs = &adis16400_attribute_group,
  };
  
- static int adis16350_spi_read_all(struct device *dev, u8 *rx)
++/* This may technically result in read attempts to undefined registers */
++static bool adis16400_reg_readable(struct device *dev,
++				   unsigned int reg)
++{
++	switch (reg) {
++	case ADIS16400_FLASH_CNT:
++	case ADIS16400_SUPPLY_OUT:
++	case ADIS16400_XGYRO_OUT:
++	case ADIS16400_YGYRO_OUT:
++	case ADIS16400_ZGYRO_OUT:
++	case ADIS16400_XACCL_OUT:
++	case ADIS16400_YACCL_OUT:
++	case ADIS16400_ZACCL_OUT:
++	case ADIS16400_XMAGN_OUT:
++	case ADIS16400_YMAGN_OUT:
++	case ADIS16400_ZMAGN_OUT:
++	case ADIS16400_TEMP_OUT:
++	case ADIS16400_AUX_ADC:
++	case ADIS16400_XGYRO_OFF:
++	case ADIS16400_YGYRO_OFF:
++	case ADIS16400_ZGYRO_OFF:
++	case ADIS16400_XACCL_OFF:
++	case ADIS16400_YACCL_OFF:
++	case ADIS16400_ZACCL_OFF:
++	case ADIS16400_XMAGN_HIF:
++	case ADIS16400_YMAGN_HIF:
++	case ADIS16400_ZMAGN_HIF:
++	case ADIS16400_XMAGN_SIF:
++	case ADIS16400_YMAGN_SIF:
++	case ADIS16400_ZMAGN_SIF:
++	case ADIS16400_GPIO_CTRL:
++	case ADIS16400_MSC_CTRL:
++	case ADIS16400_SMPL_PRD:
++	case ADIS16400_SENS_AVG:
++	case ADIS16400_DIAG_STAT:
++	case ADIS16400_ALM_MAG1:
++	case ADIS16400_ALM_MAG2:
++	case ADIS16400_ALM_SMPL1:
++	case ADIS16400_ALM_SMPL2:
++	case ADIS16400_ALM_CTRL:
++	case ADIS16400_AUX_DAC:
++	case ADIS16400_PRODUCT_ID:
++		return true;
++	default:
++		return false;
++	};
++}
++
++static bool adis16400_reg_precious(struct device *dev,
++				   unsigned int reg)
++{
++	switch (reg) {
++	case ADIS16400_SUPPLY_OUT:
++	case ADIS16400_XGYRO_OUT:
++	case ADIS16400_YGYRO_OUT:
++	case ADIS16400_ZGYRO_OUT:
++	case ADIS16400_XACCL_OUT:
++	case ADIS16400_YACCL_OUT:
++	case ADIS16400_ZACCL_OUT:
++	case ADIS16400_XMAGN_OUT:
++	case ADIS16400_YMAGN_OUT:
++	case ADIS16400_ZMAGN_OUT:
++	case ADIS16400_TEMP_OUT:
++	case ADIS16400_AUX_ADC:
++	case ADIS16400_DIAG_STAT:
++		return true;
++	default:
++		return 0;
++	}
++}
++
++static bool adis16400_reg_volatile(struct device *dev,
++				   unsigned int reg)
++{
++	switch (reg) {
++	case ADIS16400_FLASH_CNT:
++	case ADIS16400_SUPPLY_OUT:
++	case ADIS16400_XGYRO_OUT:
++	case ADIS16400_YGYRO_OUT:
++	case ADIS16400_ZGYRO_OUT:
++	case ADIS16400_XACCL_OUT:
++	case ADIS16400_YACCL_OUT:
++	case ADIS16400_ZACCL_OUT:
++	case ADIS16400_XMAGN_OUT:
++	case ADIS16400_YMAGN_OUT:
++	case ADIS16400_ZMAGN_OUT:
++	case ADIS16400_TEMP_OUT:
++	case ADIS16400_AUX_ADC:
++	case ADIS16400_DIAG_STAT:
++
++		return true;
++	default:
++		return 0;
++	}
++}
++static bool adis16400_reg_writeable(struct device *dev,
++				    unsigned int reg)
++{
++	switch (reg) {
++	case ADIS16400_XGYRO_OFF:
++	case ADIS16400_YGYRO_OFF:
++	case ADIS16400_ZGYRO_OFF:
++	case ADIS16400_XACCL_OFF:
++	case ADIS16400_YACCL_OFF:
++	case ADIS16400_ZACCL_OFF:
++	case ADIS16400_XMAGN_HIF:
++	case ADIS16400_YMAGN_HIF:
++	case ADIS16400_ZMAGN_HIF:
++	case ADIS16400_XMAGN_SIF:
++	case ADIS16400_YMAGN_SIF:
++	case ADIS16400_ZMAGN_SIF:
++	case ADIS16400_GPIO_CTRL:
++	case ADIS16400_MSC_CTRL:
++	case ADIS16400_SMPL_PRD:
++	case ADIS16400_SENS_AVG:
++	case ADIS16400_SLP_CNT:
++	case ADIS16400_GLOB_CMD:
++	case ADIS16400_ALM_MAG1:
++	case ADIS16400_ALM_MAG2:
++	case ADIS16400_ALM_SMPL1:
++	case ADIS16400_ALM_SMPL2:
++	case ADIS16400_ALM_CTRL:
++	case ADIS16400_AUX_DAC:
++		return true;
++	default:
++		return false;
++	};
++}
++static struct regmap_config adis16400_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 16,
++	.writeable_reg = &adis16400_reg_writeable,
++	.readable_reg = &adis16400_reg_readable,
++	.precious_reg = &adis16400_reg_precious,
++	.volatile_reg = &adis16400_reg_volatile,
++	.max_register = 0x56,
++	.write_flag_mask = 0x80,
++	.read_flag_mask = 0,
++};
++
+ static int __devinit adis16400_probe(struct spi_device *spi)
+ {
+ 	int ret;
+@@ -1026,8 +1088,14 @@ static int __devinit adis16400_probe(struct spi_device *spi)
+ 		goto error_ret;
+ 	}
+ 	st = iio_priv(indio_dev);
++	st->regmap = regmap_init_spi_adi(spi, &adis16400_regmap_config);
++	if (IS_ERR(st->regmap)) {
++		ret = PTR_ERR(st->regmap);
++		goto error_free_dev;
++	}
+ 	/* this is only used for removal purposes */
+ 	spi_set_drvdata(spi, indio_dev);
++	spi->cs_between_transfers = 1;
+ 
+ 	st->us = spi;
+ 	mutex_init(&st->buf_lock);
+@@ -1042,29 +1110,29 @@ static int __devinit adis16400_probe(struct spi_device *spi)
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+ 	ret = adis16400_configure_ring(indio_dev);
+-	if (ret)
+-		goto error_free_dev;
++	if (ret < 0)
++		goto error_free_regmap;
+ 
+ 	ret = iio_ring_buffer_register(indio_dev,
+ 				       st->variant->channels,
+ 				       st->variant->num_channels);
+-	if (ret) {
++	if (ret < 0) {
+ 		dev_err(&spi->dev, "failed to initialize the ring\n");
+ 		goto error_unreg_ring_funcs;
+ 	}
+ 
+ 	if (spi->irq) {
+ 		ret = adis16400_probe_trigger(indio_dev);
+-		if (ret)
++		if (ret < 0)
+ 			goto error_uninitialize_ring;
+ 	}
+ 
+ 	/* Get the device into a sane initial state */
+ 	ret = adis16400_initial_setup(indio_dev);
+-	if (ret)
++	if (ret < 0)
+ 		goto error_remove_trigger;
+ 	ret = iio_device_register(indio_dev);
+-	if (ret)
++	if (ret < 0)
+ 		goto error_remove_trigger;
+ 
+ 	return 0;
+@@ -1076,6 +1144,8 @@ error_uninitialize_ring:
+ 	iio_ring_buffer_unregister(indio_dev);
+ error_unreg_ring_funcs:
+ 	adis16400_unconfigure_ring(indio_dev);
++error_free_regmap:
++	regmap_exit(st->regmap);
+ error_free_dev:
+ 	iio_free_device(indio_dev);
+ error_ret:
+@@ -1087,14 +1157,16 @@ static int adis16400_remove(struct spi_device *spi)
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev =  spi_get_drvdata(spi);
++	struct adis16400_state *st = iio_priv(indio_dev);
+ 
+ 	ret = adis16400_stop_device(indio_dev);
+-	if (ret)
++	if (ret < 0)
+ 		goto err_ret;
+ 
+ 	adis16400_remove_trigger(indio_dev);
+ 	iio_ring_buffer_unregister(indio_dev);
+ 	adis16400_unconfigure_ring(indio_dev);
++	regmap_exit(st->regmap);
+ 	iio_device_unregister(indio_dev);
+ 
+ 	return 0;
+diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
+index af25697..8345d4e 100644
+--- a/drivers/staging/iio/imu/adis16400_ring.c
++++ b/drivers/staging/iio/imu/adis16400_ring.c
+@@ -47,7 +47,7 @@ static int adis16400_spi_read_burst(struct device *dev, u8 *rx)
+ 	spi_setup(st->us);
+ 
+ 	ret = spi_sync(st->us, &msg);
+-	if (ret)
++	if (ret < 0)
+ 		dev_err(&st->us->dev, "problem when burst reading");
+ 
+ 	st->us->max_speed_hz = old_speed_hz;
 -- 
 1.7.3.4
