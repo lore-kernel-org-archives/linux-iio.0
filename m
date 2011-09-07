@@ -1,60 +1,168 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:45247 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752194Ab1IGSEW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 7 Sep 2011 14:04:22 -0400
-Message-ID: <4E67B415.6000106@cam.ac.uk>
-Date: Wed, 07 Sep 2011 19:12:37 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-CC: LKML <linux-kernel@vger.kernel.org>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: Blockers on IIO usage of regmap.
-References: <4E6600A8.4020101@cam.ac.uk> <20110906175435.GA2924@opensource.wolfsonmicro.com> <Prayer.1.3.4.1109062213100.4243@hermes-2.csi.cam.ac.uk> <4E679770.4090008@cam.ac.uk> <20110907175756.GH2906@opensource.wolfsonmicro.com>
-In-Reply-To: <20110907175756.GH2906@opensource.wolfsonmicro.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: broonie@opensource.wolfsonmicro.com
+Cc: linux-kernel@vger.kernel.org,
+	Michael.Hennerich@analog.com,
+	linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 6/6] staging:iio:imu:adis16400 make use of regmap bulk read capabilities
+Date: Wed,  7 Sep 2011 17:19:47 +0100
+Message-Id: <1315412387-5765-7-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <4E679770.4090008@cam.ac.uk>
+References: <4E679770.4090008@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/07/11 18:57, Mark Brown wrote:
-> On Wed, Sep 07, 2011 at 05:10:24PM +0100, Jonathan Cameron wrote:
-> 
-> Please fix your mailer to word wrap at less than 80 colums, they're
-> really quite hard to read as a result of this.
-> 
->> CS -_______________________-
->> TX  Ada0...Ada7  Da0....Da7
->> RX XXXXXXXXXXXXXXXXXXXXXXXXX
->>
->> Reads are 16 bit with either of the two 8 bit register addresses given the same value
->>
->> CS -______________________-_____________________-
->> TX  Ada0....Ada7 XXXXXXXX
->> RX  XXXXXXXXXXXXXXXXXXXXX  Da0...Da7  Db0....Db7  
-> 
->> Can interpret Da0...Da7 and Db0....Db7 as single 16 bit register and consider this device
->> to just have a weird write method and normal read.  Might be easier.  I'll define Ax<n> as
->> 16 bit address for the burst read.
-> 
-> This is starting to seem pretty far off the reservation.
-Indeed.
-> 
->> Perhaps the burst mode thing is better handled by just providing a hook to allow data to be pushed
->> into regmap (from 'magic' sources), but the weird write read combination looks to me like something
->> that makes sense to have in regmap (be it as another bus variant).
-> 
-> Probably not as a bus, it sounds like a marshalling difference rather
-> than a bus - the buses should really only understand byte streams.  I
-> don't have any bright ideas on how to deal with this, it's fairly far
-> away from the problem space I'm worried about.
-The right answer maybe that it isn't a good idea to do it at all, but it
-wasn't obvious until I tried! Having done it I'm not sure either way.
+Note this only works because of the spi cs change default fun.
+---
+ drivers/staging/iio/imu/adis16400.h      |    4 +-
+ drivers/staging/iio/imu/adis16400_ring.c |   67 +++++-------------------------
+ 2 files changed, 13 insertions(+), 58 deletions(-)
 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
+index 919d6fa..d1b7b3e 100644
+--- a/drivers/staging/iio/imu/adis16400.h
++++ b/drivers/staging/iio/imu/adis16400.h
+@@ -122,7 +122,7 @@
+ /* SLP_CNT */
+ #define ADIS16400_SLP_CNT_POWER_OFF	(1<<8)
+ 
+-#define ADIS16400_MAX_TX 24
++#define ADIS16400_MAX_TX 2
+ #define ADIS16400_MAX_RX 24
+ 
+ #define ADIS16400_SPI_SLOW	(u32)(300 * 1000)
+@@ -158,7 +158,7 @@ struct adis16400_state {
+ 	struct adis16400_chip_info	*variant;
+ 
+ 	u8	tx[ADIS16400_MAX_TX] ____cacheline_aligned;
+-	u8	rx[ADIS16400_MAX_RX] ____cacheline_aligned;
++	u16	rx[ADIS16400_MAX_RX >> 1] ____cacheline_aligned;
+ };
+ 
+ int adis16400_set_irq(struct iio_dev *indio_dev, bool enable);
+diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
+index e1cd1bf..84c539b 100644
+--- a/drivers/staging/iio/imu/adis16400_ring.c
++++ b/drivers/staging/iio/imu/adis16400_ring.c
+@@ -4,6 +4,7 @@
+ #include <linux/spi/spi.h>
+ #include <linux/slab.h>
+ #include <linux/bitops.h>
++#include <linux/regmap.h>
+ 
+ #include "../iio.h"
+ #include "../ring_sw.h"
+@@ -15,7 +16,7 @@
+  * @dev: device associated with child of actual device (iio_dev or iio_trig)
+  * @rx: somewhere to pass back the value read (min size is 24 bytes)
+  **/
+-static int adis16400_spi_read_burst(struct device *dev, u8 *rx)
++static int adis16400_spi_read_burst(struct device *dev, u16 *rx)
+ {
+ 	struct spi_message msg;
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+@@ -56,55 +57,6 @@ static int adis16400_spi_read_burst(struct device *dev, u8 *rx)
+ 	return ret;
+ }
+ 
+-static const u16 read_all_tx_array[] = {
+-	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_SUPPLY_OUT << 1)),
+-	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_XGYRO_OUT << 1)),
+-	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_YGYRO_OUT << 1)),
+-	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_ZGYRO_OUT << 1)),
+-	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_XACCL_OUT << 1)),
+-	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_YACCL_OUT << 1)),
+-	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_ZACCL_OUT << 1)),
+-	cpu_to_be16(ADIS16400_READ_REG(ADIS16350_XTEMP_OUT << 1)),
+-	cpu_to_be16(ADIS16400_READ_REG(ADIS16350_YTEMP_OUT << 1)),
+-	cpu_to_be16(ADIS16400_READ_REG(ADIS16350_ZTEMP_OUT << 1)),
+-	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_AUX_ADC << 1)),
+-};
+-
+-static int adis16350_spi_read_all(struct device *dev, u8 *rx)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct adis16400_state *st = iio_priv(indio_dev);
+-
+-	struct spi_message msg;
+-	int i, j = 0, ret;
+-	struct spi_transfer *xfers;
+-
+-	xfers = kzalloc(sizeof(*xfers)*indio_dev->ring->scan_count + 1,
+-			GFP_KERNEL);
+-	if (xfers == NULL)
+-		return -ENOMEM;
+-
+-	for (i = 0; i < ARRAY_SIZE(read_all_tx_array); i++)
+-		if (test_bit(i, indio_dev->ring->scan_mask)) {
+-			xfers[j].tx_buf = &read_all_tx_array[i];
+-			xfers[j].bits_per_word = 16;
+-			xfers[j].len = 2;
+-			xfers[j + 1].rx_buf = rx + j*2;
+-			j++;
+-		}
+-	xfers[j].bits_per_word = 16;
+-	xfers[j].len = 2;
+-
+-	spi_message_init(&msg);
+-	for (j = 0; j < indio_dev->ring->scan_count + 1; j++)
+-		spi_message_add_tail(&xfers[j], &msg);
+-
+-	ret = spi_sync(st->us, &msg);
+-	kfree(xfers);
+-
+-	return ret;
+-}
+-
+ /* Whilst this makes a lot of calls to iio_sw_ring functions - it is to device
+  * specific to be rolled into the core.
+  */
+@@ -120,7 +72,7 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
+ 	/* Asumption that long is enough for maximum channels */
+ 	unsigned long mask = *ring->scan_mask;
+ 
+-	data = kmalloc(datasize , GFP_KERNEL);
++	data = kmalloc(datasize, GFP_KERNEL);
+ 	if (data == NULL) {
+ 		dev_err(&st->us->dev, "memory alloc failed in ring bh");
+ 		return -ENOMEM;
+@@ -128,11 +80,14 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
+ 
+ 	if (ring->scan_count) {
+ 		if (st->variant->flags & ADIS16400_NO_BURST) {
+-			ret = adis16350_spi_read_all(&indio_dev->dev, st->rx);
++			ret = regmap_bulk_read(st->regmap, ADIS16400_SUPPLY_OUT, st->rx, 12);
+ 			if (ret < 0)
+ 				goto err;
+-			for (; i < ring->scan_count; i++)
+-				data[i]	= *(s16 *)(st->rx + i*2);
++			for (; i < indio_dev->ring->scan_count; i++) {
++				j = __ffs(mask);
++				mask &= ~(1 << j);
++				data[i] = st->rx[j];
++			}
+ 		} else {
+ 			ret = adis16400_spi_read_burst(&indio_dev->dev, st->rx);
+ 			if (ret < 0)
+@@ -141,9 +96,10 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
+ 				j = __ffs(mask);
+ 				mask &= ~(1 << j);
+ 				data[i] = be16_to_cpup(
+-					(__be16 *)&(st->rx[j*2]));
++					(__be16 *)&(st->rx[j]));
+ 			}
+ 		}
++
+ 	}
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+ 	if (ring->scan_timestamp)
+@@ -175,7 +131,6 @@ static const struct iio_ring_setup_ops adis16400_ring_setup_ops = {
+ int adis16400_configure_ring(struct iio_dev *indio_dev)
+ {
+ 	int ret = 0;
+-	struct adis16400_state *st = iio_priv(indio_dev);
+ 	struct iio_ring_buffer *ring;
+ 
+ 	ring = iio_sw_rb_allocate(indio_dev);
+-- 
+1.7.3.4
