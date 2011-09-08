@@ -1,56 +1,47 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-CC: "device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Date: Fri, 9 Sep 2011 12:49:46 +0100
-Subject: RE: [PATCH] staging:iio:tree wide.  abi fixup for in_ out_ prefix
- introduction.
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177146E7118EBF@LIMKCMBX1.ad.analog.com>
-References: <1315568739-6752-1-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1315568739-6752-1-git-send-email-jic23@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: broonie@opensource.wolfsonmicro.com
+Cc: linux-kernel@vger.kernel.org,
+	Michael.Hennerich@analog.com,
+	linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [RFC PATCH 0/2 V2] Using regmap with ADIS devices.
+Date: Thu,  8 Sep 2011 15:09:22 +0100
+Message-Id: <1315490964-25718-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron wrote on 2011-09-09:
-> This patch set should bring all the attributes created outside
-> of chan_spec registration inline with the new abi.
->
-> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Hi Mark,
 
-Acked-by: Michael Hennerich <michael.hennerich@analog.com>
+I've tried your suggestion of doing things at the marshalling level
+and would be interested to hear what you think of the result.
 
-> ---
->  drivers/staging/iio/accel/adis16204_core.c      |   12 ++--
->  drivers/staging/iio/accel/adis16240_core.c      |    4 +-
->  drivers/staging/iio/accel/sca3000_core.c        |   10 ++--
->  drivers/staging/iio/accel/sca3000_ring.c        |    4 +-
->  drivers/staging/iio/adc/ad7192.c                |    9 ++--
->  drivers/staging/iio/adc/ad7280a.c               |   12 ++--
->  drivers/staging/iio/adc/ad7745.c                |   36 +++++++-------
->  drivers/staging/iio/adc/ad799x_core.c           |   60 +++++++++++----
->  ------- drivers/staging/iio/dac/ad5446.c                |   26
->  +++++----- drivers/staging/iio/dac/ad5504.c                |   43
->  ++++++++------- - drivers/staging/iio/dac/ad5624r_spi.c           |
->  30 ++++++------ drivers/staging/iio/dac/ad5686.c                |   30
->  ++++++----- drivers/staging/iio/dac/dac.h                   |    2 +-
->  drivers/staging/iio/dac/max517.c                |   25 +++++----
->  drivers/staging/iio/impedance-analyzer/ad5933.c |   32 ++++++------
->  drivers/staging/iio/magnetometer/hmc5843.c      |    4 +-
->  drivers/staging/iio/meter/ade7753.c             |   10 ++--
->  drivers/staging/iio/meter/ade7754.c             |   10 ++--
->  drivers/staging/iio/meter/ade7758_core.c        |   10 ++--
->  drivers/staging/iio/meter/ade7759.c             |   10 ++--
->  drivers/staging/iio/sysfs.h                     |    6 +- 21 files
->  changed, 196 insertions(+), 189 deletions(-)
+Note these patches are not clean yet hence no sign offs.
 
-Greetings,
-Michael
+The tricky bit was triggering the two separate writes per register
+and the result is somewhat hacky.
 
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Mar=
-garet Seif
+An alternative there would be to add some configuration options to
+the spi_write (or allow a couple of varients) so as to break the
+long transfer that would generate up and hence bounce the cs line
+in the right place.  Gah. SPI can be so uggly sometimes.
+
+If this approach isn't acceptable in principle I'll give up and
+conclude that these parts will never play well! (which is fine
+by me if true).
+
+Jonathan
+
+Jonathan Cameron (2):
+  regmap: Support half writes and padding between register and value.
+  staging:iio:imu:adis16400 regmap introduction.
+
+ drivers/base/regmap/internal.h           |    1 +
+ drivers/base/regmap/regmap.c             |   42 ++++-
+ drivers/staging/iio/imu/Kconfig          |    1 +
+ drivers/staging/iio/imu/adis16400.h      |    2 +
+ drivers/staging/iio/imu/adis16400_core.c |  301 +++++++++++++++++++-----------
+ include/linux/regmap.h                   |    6 +
+ 6 files changed, 234 insertions(+), 119 deletions(-)
+
+-- 
+1.7.3.4
