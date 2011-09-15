@@ -2,903 +2,838 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 6/8] staging:iio: rename ring_generic.h -> buffer_generic.h
-Date: Thu, 15 Sep 2011 14:45:35 +0100
-Message-Id: <1316094337-12542-7-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 5/8] staging:iio: tree wide IIO_RING_BUFFER config symbol to IIO_BUFFER
+Date: Thu, 15 Sep 2011 14:45:34 +0100
+Message-Id: <1316094337-12542-6-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1316094337-12542-1-git-send-email-jic23@cam.ac.uk>
 References: <1316094337-12542-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Nothing in this file is specific to RING buffers so rename it.
+Functionality is generic, so name is missleading.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/adis16201_core.c      |    2 +-
- drivers/staging/iio/accel/adis16203_core.c      |    2 +-
- drivers/staging/iio/accel/adis16204_core.c      |    2 +-
- drivers/staging/iio/accel/adis16209_core.c      |    2 +-
- drivers/staging/iio/accel/adis16240_core.c      |    2 +-
- drivers/staging/iio/accel/lis3l02dq_core.c      |    2 +-
- drivers/staging/iio/accel/sca3000_core.c        |    2 +-
- drivers/staging/iio/accel/sca3000_ring.c        |    2 +-
- drivers/staging/iio/adc/ad7192.c                |    2 +-
- drivers/staging/iio/adc/ad7298_core.c           |    2 +-
- drivers/staging/iio/adc/ad7298_ring.c           |    2 +-
- drivers/staging/iio/adc/ad7476_core.c           |    2 +-
- drivers/staging/iio/adc/ad7476_ring.c           |    2 +-
- drivers/staging/iio/adc/ad7606_core.c           |    2 +-
- drivers/staging/iio/adc/ad7606_ring.c           |    2 +-
- drivers/staging/iio/adc/ad7780.c                |    1 -
- drivers/staging/iio/adc/ad7793.c                |    2 +-
- drivers/staging/iio/adc/ad7887_core.c           |    2 +-
- drivers/staging/iio/adc/ad7887_ring.c           |    2 +-
- drivers/staging/iio/adc/ad799x_core.c           |    2 +-
- drivers/staging/iio/adc/ad799x_ring.c           |    2 +-
- drivers/staging/iio/adc/max1363_core.c          |    2 +-
- drivers/staging/iio/adc/max1363_ring.c          |    2 +-
- drivers/staging/iio/buffer_generic.h            |  226 +++++++++++++++++++++++
- drivers/staging/iio/gyro/adis16260_core.c       |    2 +-
- drivers/staging/iio/impedance-analyzer/ad5933.c |    2 +-
- drivers/staging/iio/imu/adis16400_core.c        |    2 +-
- drivers/staging/iio/industrialio-ring.c         |    2 +-
- drivers/staging/iio/kfifo_buf.h                 |    2 +-
- drivers/staging/iio/meter/ade7758_core.c        |    2 +-
- drivers/staging/iio/ring_generic.h              |  226 -----------------------
- drivers/staging/iio/ring_sw.h                   |    2 +-
- 32 files changed, 255 insertions(+), 256 deletions(-)
+ drivers/staging/iio/Kconfig                    |    6 ++--
+ drivers/staging/iio/Makefile                   |    2 +-
+ drivers/staging/iio/accel/Kconfig              |   28 ++++++++++++------------
+ drivers/staging/iio/accel/Makefile             |   12 +++++-----
+ drivers/staging/iio/accel/adis16201.h          |    6 ++--
+ drivers/staging/iio/accel/adis16203.h          |    6 ++--
+ drivers/staging/iio/accel/adis16204.h          |    6 ++--
+ drivers/staging/iio/accel/adis16209.h          |    6 ++--
+ drivers/staging/iio/accel/adis16240.h          |    6 ++--
+ drivers/staging/iio/accel/lis3l02dq.h          |    6 ++--
+ drivers/staging/iio/accel/lis3l02dq_core.c     |    2 +-
+ drivers/staging/iio/accel/sca3000.h            |    2 +-
+ drivers/staging/iio/adc/Kconfig                |   18 +++++++-------
+ drivers/staging/iio/adc/Makefile               |    8 +++---
+ drivers/staging/iio/adc/ad7298.h               |    6 ++--
+ drivers/staging/iio/adc/ad7476.h               |    6 ++--
+ drivers/staging/iio/adc/ad7887.h               |    6 ++--
+ drivers/staging/iio/gyro/Kconfig               |    4 +-
+ drivers/staging/iio/gyro/Makefile              |    2 +-
+ drivers/staging/iio/gyro/adis16260.h           |    6 ++--
+ drivers/staging/iio/iio_core.h                 |    2 +-
+ drivers/staging/iio/impedance-analyzer/Kconfig |    2 +-
+ drivers/staging/iio/imu/Kconfig                |    4 +-
+ drivers/staging/iio/imu/Makefile               |    2 +-
+ drivers/staging/iio/imu/adis16400.h            |    6 ++--
+ drivers/staging/iio/meter/Kconfig              |    4 +-
+ drivers/staging/iio/meter/Makefile             |    2 +-
+ drivers/staging/iio/meter/ade7758.h            |    6 ++--
+ drivers/staging/iio/ring_generic.h             |    6 ++--
+ 29 files changed, 89 insertions(+), 89 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
-index 2785460..eb6a1a8 100644
---- a/drivers/staging/iio/accel/adis16201_core.c
-+++ b/drivers/staging/iio/accel/adis16201_core.c
-@@ -17,7 +17,7 @@
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index 7526567..db4a79f 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -12,13 +12,13 @@ menuconfig IIO
+ 	  drivers/staging/iio/Documentation for more information.
+ if IIO
  
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
+-config IIO_RING_BUFFER
++config IIO_BUFFER
+ 	bool "Enable buffer support within IIO"
+ 	help
+ 	  Provide core support for various buffer based data
+ 	  acquisition methods.
  
- #include "adis16201.h"
+-if IIO_RING_BUFFER
++if IIO_BUFFER
  
-diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
-index 27079a9..561e7a9 100644
---- a/drivers/staging/iio/accel/adis16203_core.c
-+++ b/drivers/staging/iio/accel/adis16203_core.c
-@@ -17,7 +17,7 @@
+ config IIO_SW_RING
+        select IIO_TRIGGER
+@@ -38,7 +38,7 @@ config IIO_KFIFO_BUF
+ 	  no buffer events so it is up to userspace to work out how
+ 	  often to read from the buffer.
  
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
+-endif # IIO_RINGBUFFER
++endif # IIO_BUFFER
  
- #include "adis16203.h"
+ config IIO_TRIGGER
+ 	boolean "Enable triggered sampling support"
+diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
+index eaff649..67a1d9c 100644
+--- a/drivers/staging/iio/Makefile
++++ b/drivers/staging/iio/Makefile
+@@ -4,7 +4,7 @@
  
-diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
-index b0d6a2e..507f282 100644
---- a/drivers/staging/iio/accel/adis16204_core.c
-+++ b/drivers/staging/iio/accel/adis16204_core.c
-@@ -21,7 +21,7 @@
+ obj-$(CONFIG_IIO) += industrialio.o
+ industrialio-y := industrialio-core.o
+-industrialio-$(CONFIG_IIO_RING_BUFFER) += industrialio-ring.o
++industrialio-$(CONFIG_IIO_BUFFER) += industrialio-ring.o
+ industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
  
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
+ obj-$(CONFIG_IIO_SW_RING) += ring_sw.o
+diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
+index 81a33b6..c0f4376 100644
+--- a/drivers/staging/iio/accel/Kconfig
++++ b/drivers/staging/iio/accel/Kconfig
+@@ -6,8 +6,8 @@ comment "Accelerometers"
+ config ADIS16201
+ 	tristate "Analog Devices ADIS16201 Dual-Axis Digital Inclinometer and Accelerometer"
+ 	depends on SPI
+-	select IIO_TRIGGER if IIO_RING_BUFFER
+-	select IIO_SW_RING if IIO_RING_BUFFER
++	select IIO_TRIGGER if IIO_BUFFER
++	select IIO_SW_RING if IIO_BUFFER
+ 	help
+ 	  Say yes here to build support for Analog Devices adis16201 dual-axis
+ 	  digital inclinometer and accelerometer.
+@@ -15,8 +15,8 @@ config ADIS16201
+ config ADIS16203
+ 	tristate "Analog Devices ADIS16203 Programmable 360 Degrees Inclinometer"
+ 	depends on SPI
+-	select IIO_TRIGGER if IIO_RING_BUFFER
+-	select IIO_SW_RING if IIO_RING_BUFFER
++	select IIO_TRIGGER if IIO_BUFFER
++	select IIO_SW_RING if IIO_BUFFER
+ 	help
+ 	  Say yes here to build support for Analog Devices adis16203 Programmable
+ 	  360 Degrees Inclinometer.
+@@ -24,8 +24,8 @@ config ADIS16203
+ config ADIS16204
+ 	tristate "Analog Devices ADIS16204 Programmable High-g Digital Impact Sensor and Recorder"
+ 	depends on SPI
+-	select IIO_TRIGGER if IIO_RING_BUFFER
+-	select IIO_SW_RING if IIO_RING_BUFFER
++	select IIO_TRIGGER if IIO_BUFFER
++	select IIO_SW_RING if IIO_BUFFER
+ 	help
+ 	  Say yes here to build support for Analog Devices adis16204 Programmable
+ 	  High-g Digital Impact Sensor and Recorder.
+@@ -33,8 +33,8 @@ config ADIS16204
+ config ADIS16209
+ 	tristate "Analog Devices ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer"
+ 	depends on SPI
+-	select IIO_TRIGGER if IIO_RING_BUFFER
+-	select IIO_SW_RING if IIO_RING_BUFFER
++	select IIO_TRIGGER if IIO_BUFFER
++	select IIO_SW_RING if IIO_BUFFER
+ 	help
+ 	  Say yes here to build support for Analog Devices adis16209 dual-axis digital inclinometer
+ 	  and accelerometer.
+@@ -49,8 +49,8 @@ config ADIS16220
+ config ADIS16240
+ 	tristate "Analog Devices ADIS16240 Programmable Impact Sensor and Recorder"
+ 	depends on SPI
+-	select IIO_TRIGGER if IIO_RING_BUFFER
+-	select IIO_SW_RING if IIO_RING_BUFFER
++	select IIO_TRIGGER if IIO_BUFFER
++	select IIO_SW_RING if IIO_BUFFER
+ 	help
+ 	  Say yes here to build support for Analog Devices adis16240 programmable
+ 	  impact Sensor and recorder.
+@@ -65,8 +65,8 @@ config KXSD9
+ config LIS3L02DQ
+ 	tristate "ST Microelectronics LIS3L02DQ Accelerometer Driver"
+ 	depends on SPI
+-	select IIO_TRIGGER if IIO_RING_BUFFER
+-	depends on !IIO_RING_BUFFER || IIO_KFIFO_BUF || IIO_SW_RING
++	select IIO_TRIGGER if IIO_BUFFER
++	depends on !IIO_BUFFER || IIO_KFIFO_BUF || IIO_SW_RING
+ 	help
+ 	  Say yes here to build SPI support for the ST microelectronics
+ 	  accelerometer. The driver supplies direct access via sysfs files
+@@ -74,7 +74,7 @@ config LIS3L02DQ
  
- #include "adis16204.h"
+ choice
+ 	prompt "Buffer type"
+-       	depends on LIS3L02DQ && IIO_RING_BUFFER
++       	depends on LIS3L02DQ && IIO_BUFFER
  
-diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-index 97dca88..2dd24c3 100644
---- a/drivers/staging/iio/accel/adis16209_core.c
-+++ b/drivers/staging/iio/accel/adis16209_core.c
-@@ -18,7 +18,7 @@
+ config LIS3L02DQ_BUF_KFIFO
+        depends on IIO_KFIFO_BUF
+@@ -94,7 +94,7 @@ config LIS3L02DQ_BUF_RING_SW
+ endchoice
  
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
+ config SCA3000
+-	depends on IIO_RING_BUFFER
++	depends on IIO_BUFFER
+ 	depends on SPI
+ 	tristate "VTI SCA3000 series accelerometers"
+ 	help
+diff --git a/drivers/staging/iio/accel/Makefile b/drivers/staging/iio/accel/Makefile
+index 1b2a6d3..95c6666 100644
+--- a/drivers/staging/iio/accel/Makefile
++++ b/drivers/staging/iio/accel/Makefile
+@@ -3,32 +3,32 @@
+ #
  
- #include "adis16209.h"
+ adis16201-y             := adis16201_core.o
+-adis16201-$(CONFIG_IIO_RING_BUFFER) += adis16201_ring.o adis16201_trigger.o
++adis16201-$(CONFIG_IIO_BUFFER) += adis16201_ring.o adis16201_trigger.o
+ obj-$(CONFIG_ADIS16201) += adis16201.o
  
-diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-index 282a746..10e0249 100644
---- a/drivers/staging/iio/accel/adis16240_core.c
-+++ b/drivers/staging/iio/accel/adis16240_core.c
-@@ -21,7 +21,7 @@
+ adis16203-y             := adis16203_core.o
+-adis16203-$(CONFIG_IIO_RING_BUFFER) += adis16203_ring.o adis16203_trigger.o
++adis16203-$(CONFIG_IIO_BUFFER) += adis16203_ring.o adis16203_trigger.o
+ obj-$(CONFIG_ADIS16203) += adis16203.o
  
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
+ adis16204-y             := adis16204_core.o
+-adis16204-$(CONFIG_IIO_RING_BUFFER) += adis16204_ring.o adis16204_trigger.o
++adis16204-$(CONFIG_IIO_BUFFER) += adis16204_ring.o adis16204_trigger.o
+ obj-$(CONFIG_ADIS16204) += adis16204.o
  
- #include "adis16240.h"
+ adis16209-y             := adis16209_core.o
+-adis16209-$(CONFIG_IIO_RING_BUFFER) += adis16209_ring.o adis16209_trigger.o
++adis16209-$(CONFIG_IIO_BUFFER) += adis16209_ring.o adis16209_trigger.o
+ obj-$(CONFIG_ADIS16209) += adis16209.o
  
+ adis16220-y             := adis16220_core.o
+ obj-$(CONFIG_ADIS16220) += adis16220.o
+ 
+ adis16240-y             := adis16240_core.o
+-adis16240-$(CONFIG_IIO_RING_BUFFER) += adis16240_ring.o adis16240_trigger.o
++adis16240-$(CONFIG_IIO_BUFFER) += adis16240_ring.o adis16240_trigger.o
+ obj-$(CONFIG_ADIS16240) += adis16240.o
+ 
+ obj-$(CONFIG_KXSD9)	+= kxsd9.o
+ 
+ lis3l02dq-y		:= lis3l02dq_core.o
+-lis3l02dq-$(CONFIG_IIO_RING_BUFFER) += lis3l02dq_ring.o
++lis3l02dq-$(CONFIG_IIO_BUFFER) += lis3l02dq_ring.o
+ obj-$(CONFIG_LIS3L02DQ)	+= lis3l02dq.o
+ 
+ sca3000-y		:= sca3000_core.o sca3000_ring.o
+diff --git a/drivers/staging/iio/accel/adis16201.h b/drivers/staging/iio/accel/adis16201.h
+index dac5540..72750f7 100644
+--- a/drivers/staging/iio/accel/adis16201.h
++++ b/drivers/staging/iio/accel/adis16201.h
+@@ -89,7 +89,7 @@ enum adis16201_scan {
+ 	ADIS16201_SCAN_INCLI_Y,
+ };
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ void adis16201_remove_trigger(struct iio_dev *indio_dev);
+ int adis16201_probe_trigger(struct iio_dev *indio_dev);
+ 
+@@ -100,7 +100,7 @@ ssize_t adis16201_read_data_from_ring(struct device *dev,
+ int adis16201_configure_ring(struct iio_dev *indio_dev);
+ void adis16201_unconfigure_ring(struct iio_dev *indio_dev);
+ 
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ 
+ static inline void adis16201_remove_trigger(struct iio_dev *indio_dev)
+ {
+@@ -137,5 +137,5 @@ static inline void adis16201_uninitialize_ring(struct iio_ring_buffer *ring)
+ {
+ }
+ 
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ #endif /* SPI_ADIS16201_H_ */
+diff --git a/drivers/staging/iio/accel/adis16203.h b/drivers/staging/iio/accel/adis16203.h
+index 4071bc0..3f96ad3 100644
+--- a/drivers/staging/iio/accel/adis16203.h
++++ b/drivers/staging/iio/accel/adis16203.h
+@@ -82,7 +82,7 @@ enum adis16203_scan {
+ 	ADIS16203_SCAN_INCLI_Y,
+ };
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ void adis16203_remove_trigger(struct iio_dev *indio_dev);
+ int adis16203_probe_trigger(struct iio_dev *indio_dev);
+ 
+@@ -93,7 +93,7 @@ ssize_t adis16203_read_data_from_ring(struct device *dev,
+ int adis16203_configure_ring(struct iio_dev *indio_dev);
+ void adis16203_unconfigure_ring(struct iio_dev *indio_dev);
+ 
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ 
+ static inline void adis16203_remove_trigger(struct iio_dev *indio_dev)
+ {
+@@ -121,5 +121,5 @@ static inline void adis16203_unconfigure_ring(struct iio_dev *indio_dev)
+ {
+ }
+ 
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ #endif /* SPI_ADIS16203_H_ */
+diff --git a/drivers/staging/iio/accel/adis16204.h b/drivers/staging/iio/accel/adis16204.h
+index 3bb0490..7cf4e91 100644
+--- a/drivers/staging/iio/accel/adis16204.h
++++ b/drivers/staging/iio/accel/adis16204.h
+@@ -90,7 +90,7 @@ enum adis16204_scan {
+ 	ADIS16204_SCAN_TEMP,
+ };
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ void adis16204_remove_trigger(struct iio_dev *indio_dev);
+ int adis16204_probe_trigger(struct iio_dev *indio_dev);
+ 
+@@ -101,7 +101,7 @@ ssize_t adis16204_read_data_from_ring(struct device *dev,
+ int adis16204_configure_ring(struct iio_dev *indio_dev);
+ void adis16204_unconfigure_ring(struct iio_dev *indio_dev);
+ 
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ 
+ static inline void adis16204_remove_trigger(struct iio_dev *indio_dev)
+ {
+@@ -129,5 +129,5 @@ static inline void adis16204_unconfigure_ring(struct iio_dev *indio_dev)
+ {
+ }
+ 
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ #endif /* SPI_ADIS16204_H_ */
+diff --git a/drivers/staging/iio/accel/adis16209.h b/drivers/staging/iio/accel/adis16209.h
+index c8b7b00..3c88b86 100644
+--- a/drivers/staging/iio/accel/adis16209.h
++++ b/drivers/staging/iio/accel/adis16209.h
+@@ -128,7 +128,7 @@ int adis16209_set_irq(struct iio_dev *indio_dev, bool enable);
+ #define ADIS16209_SCAN_INCLI_Y	6
+ #define ADIS16209_SCAN_ROT	7
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ 
+ void adis16209_remove_trigger(struct iio_dev *indio_dev);
+ int adis16209_probe_trigger(struct iio_dev *indio_dev);
+@@ -140,7 +140,7 @@ ssize_t adis16209_read_data_from_ring(struct device *dev,
+ int adis16209_configure_ring(struct iio_dev *indio_dev);
+ void adis16209_unconfigure_ring(struct iio_dev *indio_dev);
+ 
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ 
+ static inline void adis16209_remove_trigger(struct iio_dev *indio_dev)
+ {
+@@ -168,5 +168,5 @@ static inline void adis16209_unconfigure_ring(struct iio_dev *indio_dev)
+ {
+ }
+ 
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ #endif /* SPI_ADIS16209_H_ */
+diff --git a/drivers/staging/iio/accel/adis16240.h b/drivers/staging/iio/accel/adis16240.h
+index f1dd047..3fabcc0 100644
+--- a/drivers/staging/iio/accel/adis16240.h
++++ b/drivers/staging/iio/accel/adis16240.h
+@@ -152,7 +152,7 @@ int adis16240_set_irq(struct iio_dev *indio_dev, bool enable);
+ #define ADIS16240_SCAN_AUX_ADC	4
+ #define ADIS16240_SCAN_TEMP	5
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ void adis16240_remove_trigger(struct iio_dev *indio_dev);
+ int adis16240_probe_trigger(struct iio_dev *indio_dev);
+ 
+@@ -164,7 +164,7 @@ ssize_t adis16240_read_data_from_ring(struct device *dev,
+ int adis16240_configure_ring(struct iio_dev *indio_dev);
+ void adis16240_unconfigure_ring(struct iio_dev *indio_dev);
+ 
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ 
+ static inline void adis16240_remove_trigger(struct iio_dev *indio_dev)
+ {
+@@ -192,5 +192,5 @@ static inline void adis16240_unconfigure_ring(struct iio_dev *indio_dev)
+ {
+ }
+ 
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ #endif /* SPI_ADIS16240_H_ */
+diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
+index 18b23ac..5a18f50 100644
+--- a/drivers/staging/iio/accel/lis3l02dq.h
++++ b/drivers/staging/iio/accel/lis3l02dq.h
+@@ -174,7 +174,7 @@ int lis3l02dq_spi_write_reg_8(struct iio_dev *indio_dev,
+ 
+ int lis3l02dq_disable_all_events(struct iio_dev *indio_dev);
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ /* At the moment triggers are only used for ring buffer
+  * filling. This may change!
+  */
+@@ -202,7 +202,7 @@ void lis3l02dq_unconfigure_ring(struct iio_dev *indio_dev);
+ irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private);
+ #define lis3l02dq_th lis3l02dq_data_rdy_trig_poll
+ 
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ #define lis3l02dq_th lis3l02dq_noring
+ 
+ static inline void lis3l02dq_remove_trigger(struct iio_dev *indio_dev)
+@@ -227,5 +227,5 @@ static int lis3l02dq_configure_ring(struct iio_dev *indio_dev)
+ static inline void lis3l02dq_unconfigure_ring(struct iio_dev *indio_dev)
+ {
+ }
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ #endif /* SPI_LIS3L02DQ_H_ */
 diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
-index 6d600f6..fd53fd5 100644
+index 52b3a12..6d600f6 100644
 --- a/drivers/staging/iio/accel/lis3l02dq_core.c
 +++ b/drivers/staging/iio/accel/lis3l02dq_core.c
-@@ -25,7 +25,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- 
- #include "lis3l02dq.h"
- 
-diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-index 394b04e..2fe3578 100644
---- a/drivers/staging/iio/accel/sca3000_core.c
-+++ b/drivers/staging/iio/accel/sca3000_core.c
-@@ -21,7 +21,7 @@
- #include <linux/module.h>
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- 
- #include "sca3000.h"
- 
-diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
-index 2a83e8a..f519857 100644
---- a/drivers/staging/iio/accel/sca3000_ring.c
-+++ b/drivers/staging/iio/accel/sca3000_ring.c
-@@ -20,7 +20,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "../ring_hw.h"
- #include "sca3000.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 4b56490..8d080ab 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -19,7 +19,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
- #include "../trigger_consumer.h"
-diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
-index a627bfe..cf91ccd 100644
---- a/drivers/staging/iio/adc/ad7298_core.c
-+++ b/drivers/staging/iio/adc/ad7298_core.c
-@@ -18,7 +18,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- 
- #include "ad7298.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
-index 2315ee9..1cd5f61 100644
---- a/drivers/staging/iio/adc/ad7298_ring.c
-+++ b/drivers/staging/iio/adc/ad7298_ring.c
-@@ -12,7 +12,7 @@
- #include <linux/spi/spi.h>
- 
- #include "../iio.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "../ring_sw.h"
- #include "../trigger_consumer.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
-index edf25ce..d574a2e 100644
---- a/drivers/staging/iio/adc/ad7476_core.c
-+++ b/drivers/staging/iio/adc/ad7476_core.c
-@@ -17,7 +17,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- 
- #include "ad7476.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
-index e48181a..854d949 100644
---- a/drivers/staging/iio/adc/ad7476_ring.c
-+++ b/drivers/staging/iio/adc/ad7476_ring.c
-@@ -14,7 +14,7 @@
- #include <linux/spi/spi.h>
- 
- #include "../iio.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "../ring_sw.h"
- #include "../trigger_consumer.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-index f22f668..f8eba67 100644
---- a/drivers/staging/iio/adc/ad7606_core.c
-+++ b/drivers/staging/iio/adc/ad7606_core.c
-@@ -20,7 +20,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- 
- #include "ad7606.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
-index 15bdec6..20afb3e 100644
---- a/drivers/staging/iio/adc/ad7606_ring.c
-+++ b/drivers/staging/iio/adc/ad7606_ring.c
-@@ -12,7 +12,7 @@
- #include <linux/slab.h>
- 
- #include "../iio.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "../ring_sw.h"
- #include "../trigger_consumer.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index 46d1f8f..4b6f8c6 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -20,7 +20,6 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
- 
- #include "ad7780.h"
- 
-diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index e21593d..11ba79e 100644
---- a/drivers/staging/iio/adc/ad7793.c
-+++ b/drivers/staging/iio/adc/ad7793.c
-@@ -19,7 +19,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "../ring_sw.h"
- #include "../trigger.h"
- #include "../trigger_consumer.h"
-diff --git a/drivers/staging/iio/adc/ad7887_core.c b/drivers/staging/iio/adc/ad7887_core.c
-index cdd7c13..4a8ffb5 100644
---- a/drivers/staging/iio/adc/ad7887_core.c
-+++ b/drivers/staging/iio/adc/ad7887_core.c
-@@ -17,7 +17,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- 
- 
- #include "ad7887.h"
-diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
-index 678c877..96274d6 100644
---- a/drivers/staging/iio/adc/ad7887_ring.c
-+++ b/drivers/staging/iio/adc/ad7887_ring.c
-@@ -13,7 +13,7 @@
- #include <linux/spi/spi.h>
- 
- #include "../iio.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "../ring_sw.h"
- #include "../trigger_consumer.h"
- 
-diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
-index ae64ee9..d5fbda7 100644
---- a/drivers/staging/iio/adc/ad799x_core.c
-+++ b/drivers/staging/iio/adc/ad799x_core.c
-@@ -35,7 +35,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- 
- #include "ad799x.h"
- 
-diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
-index 8177de5..c1d38c5 100644
---- a/drivers/staging/iio/adc/ad799x_ring.c
-+++ b/drivers/staging/iio/adc/ad799x_ring.c
-@@ -17,7 +17,7 @@
- #include <linux/bitops.h>
- 
- #include "../iio.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "../ring_sw.h"
- #include "../trigger_consumer.h"
- 
-diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
-index b7c46ae..e0f8791 100644
---- a/drivers/staging/iio/adc/max1363_core.c
-+++ b/drivers/staging/iio/adc/max1363_core.c
 @@ -34,7 +34,7 @@
+  * This means that use cannot be made of spi_write etc.
+  */
+ /* direct copy of the irq_default_primary_handler */
+-#ifndef CONFIG_IIO_RING_BUFFER
++#ifndef CONFIG_IIO_BUFFER
+ static irqreturn_t lis3l02dq_noring(int irq, void *private)
+ {
+ 	return IRQ_WAKE_THREAD;
+diff --git a/drivers/staging/iio/accel/sca3000.h b/drivers/staging/iio/accel/sca3000.h
+index 1e396ce..0dabfad 100644
+--- a/drivers/staging/iio/accel/sca3000.h
++++ b/drivers/staging/iio/accel/sca3000.h
+@@ -221,7 +221,7 @@ int sca3000_read_data_short(struct sca3000_state *st,
+  **/
+ int sca3000_write_reg(struct sca3000_state *st, u8 address, u8 val);
  
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- 
- #include "max1363.h"
- 
-diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
-index 570c686..91e29c5 100644
---- a/drivers/staging/iio/adc/max1363_ring.c
-+++ b/drivers/staging/iio/adc/max1363_ring.c
-@@ -15,7 +15,7 @@
- #include <linux/bitops.h>
- 
- #include "../iio.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "../ring_sw.h"
- #include "../trigger_consumer.h"
- 
-diff --git a/drivers/staging/iio/buffer_generic.h b/drivers/staging/iio/buffer_generic.h
-new file mode 100644
-index 0000000..a1256c1
---- /dev/null
-+++ b/drivers/staging/iio/buffer_generic.h
-@@ -0,0 +1,226 @@
-+/* The industrial I/O core - generic ring buffer interfaces.
-+ *
-+ * Copyright (c) 2008 Jonathan Cameron
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#ifndef _IIO_BUFFER_GENERIC_H_
-+#define _IIO_BUFFER_GENERIC_H_
-+#include <linux/sysfs.h>
-+#include "iio.h"
-+#include "chrdev.h"
-+
+-#ifdef CONFIG_IIO_RING_BUFFER
 +#ifdef CONFIG_IIO_BUFFER
-+
-+struct iio_ring_buffer;
-+
-+/**
-+ * struct iio_ring_access_funcs - access functions for ring buffers.
-+ * @mark_in_use:	reference counting, typically to prevent module removal
-+ * @unmark_in_use:	reduce reference count when no longer using ring buffer
-+ * @store_to:		actually store stuff to the ring buffer
-+ * @read_last:		get the last element stored
-+ * @read_first_n:	try to get a specified number of elements (must exist)
-+ * @mark_param_change:	notify ring that some relevant parameter has changed
-+ *			Often this means the underlying storage may need to
-+ *			change.
-+ * @request_update:	if a parameter change has been marked, update underlying
-+ *			storage.
-+ * @get_bytes_per_datum:get current bytes per datum
-+ * @set_bytes_per_datum:set number of bytes per datum
-+ * @get_length:		get number of datums in ring
-+ * @set_length:		set number of datums in ring
-+ * @is_enabled:		query if ring is currently being used
-+ * @enable:		enable the ring
-+ *
-+ * The purpose of this structure is to make the ring buffer element
-+ * modular as event for a given driver, different usecases may require
-+ * different ring designs (space efficiency vs speed for example).
-+ *
-+ * It is worth noting that a given ring implementation may only support a small
-+ * proportion of these functions.  The core code 'should' cope fine with any of
-+ * them not existing.
-+ **/
-+struct iio_ring_access_funcs {
-+	void (*mark_in_use)(struct iio_ring_buffer *ring);
-+	void (*unmark_in_use)(struct iio_ring_buffer *ring);
-+
-+	int (*store_to)(struct iio_ring_buffer *ring, u8 *data, s64 timestamp);
-+	int (*read_last)(struct iio_ring_buffer *ring, u8 *data);
-+	int (*read_first_n)(struct iio_ring_buffer *ring,
-+			    size_t n,
-+			    char __user *buf);
-+
-+	int (*mark_param_change)(struct iio_ring_buffer *ring);
-+	int (*request_update)(struct iio_ring_buffer *ring);
-+
-+	int (*get_bytes_per_datum)(struct iio_ring_buffer *ring);
-+	int (*set_bytes_per_datum)(struct iio_ring_buffer *ring, size_t bpd);
-+	int (*get_length)(struct iio_ring_buffer *ring);
-+	int (*set_length)(struct iio_ring_buffer *ring, int length);
-+
-+	int (*is_enabled)(struct iio_ring_buffer *ring);
-+	int (*enable)(struct iio_ring_buffer *ring);
-+};
-+
-+/**
-+ * struct iio_ring_setup_ops - buffer setup related callbacks
-+ * @preenable:		[DRIVER] function to run prior to marking ring enabled
-+ * @postenable:		[DRIVER] function to run after marking ring enabled
-+ * @predisable:		[DRIVER] function to run prior to marking ring disabled
-+ * @postdisable:	[DRIVER] function to run after marking ring disabled
-+ */
-+struct iio_ring_setup_ops {
-+	int				(*preenable)(struct iio_dev *);
-+	int				(*postenable)(struct iio_dev *);
-+	int				(*predisable)(struct iio_dev *);
-+	int				(*postdisable)(struct iio_dev *);
-+};
-+
-+/**
-+ * struct iio_ring_buffer - general ring buffer structure
-+ * @dev:		ring buffer device struct
-+ * @indio_dev:		industrial I/O device structure
-+ * @owner:		module that owns the ring buffer (for ref counting)
-+ * @length:		[DEVICE] number of datums in ring
-+ * @bytes_per_datum:	[DEVICE] size of individual datum including timestamp
-+ * @bpe:		[DEVICE] size of individual channel value
-+ * @scan_el_attrs:	[DRIVER] control of scan elements if that scan mode
-+ *			control method is used
-+ * @scan_count:	[INTERN] the number of elements in the current scan mode
-+ * @scan_mask:		[INTERN] bitmask used in masking scan mode elements
-+ * @scan_timestamp:	[INTERN] does the scan mode include a timestamp
-+ * @access:		[DRIVER] ring access functions associated with the
-+ *			implementation.
-+ * @flags:		[INTERN] file ops related flags including busy flag.
-+ **/
-+struct iio_ring_buffer {
-+	struct iio_dev				*indio_dev;
-+	struct module				*owner;
-+	int					length;
-+	int					bytes_per_datum;
-+	int					bpe;
-+	struct attribute_group			*scan_el_attrs;
-+	int					scan_count;
-+	long					*scan_mask;
-+	bool					scan_timestamp;
-+	const struct iio_ring_access_funcs	*access;
-+	const struct iio_ring_setup_ops		*setup_ops;
-+	struct list_head			scan_el_dev_attr_list;
-+	struct attribute_group			scan_el_group;
-+	wait_queue_head_t			pollq;
-+	bool					stufftoread;
-+	unsigned long				flags;
-+	const struct attribute_group *attrs;
-+};
-+
-+/**
-+ * iio_ring_buffer_init() - Initialize the buffer structure
-+ * @ring: buffer to be initialized
-+ * @dev_info: the iio device the buffer is assocated with
-+ **/
-+void iio_ring_buffer_init(struct iio_ring_buffer *ring,
-+			  struct iio_dev *dev_info);
-+
-+void iio_ring_buffer_deinit(struct iio_ring_buffer *ring);
-+
-+/**
-+ * __iio_update_ring_buffer() - update common elements of ring buffers
-+ * @ring:		ring buffer that is the event source
-+ * @bytes_per_datum:	size of individual datum including timestamp
-+ * @length:		number of datums in ring
-+ **/
-+static inline void __iio_update_ring_buffer(struct iio_ring_buffer *ring,
-+					    int bytes_per_datum, int length)
-+{
-+	ring->bytes_per_datum = bytes_per_datum;
-+	ring->length = length;
-+}
-+
-+int iio_scan_mask_query(struct iio_ring_buffer *ring, int bit);
-+
-+/**
-+ * iio_scan_mask_set() - set particular bit in the scan mask
-+ * @ring: the ring buffer whose scan mask we are interested in
-+ * @bit: the bit to be set.
-+ **/
-+int iio_scan_mask_set(struct iio_ring_buffer *ring, int bit);
-+
-+#define to_iio_ring_buffer(d)				\
-+	container_of(d, struct iio_ring_buffer, dev)
-+
-+/**
-+ * iio_ring_buffer_register() - register the buffer with IIO core
-+ * @indio_dev: device with the buffer to be registered
-+ **/
-+int iio_ring_buffer_register(struct iio_dev *indio_dev,
-+			     const struct iio_chan_spec *channels,
-+			     int num_channels);
-+
-+/**
-+ * iio_ring_buffer_unregister() - unregister the buffer from IIO core
-+ * @indio_dev: the device with the buffer to be unregistered
-+ **/
-+void iio_ring_buffer_unregister(struct iio_dev *indio_dev);
-+
-+/**
-+ * iio_read_ring_length() - attr func to get number of datums in the buffer
-+ **/
-+ssize_t iio_read_ring_length(struct device *dev,
-+			     struct device_attribute *attr,
-+			     char *buf);
-+/**
-+ * iio_write_ring_length() - attr func to set number of datums in the buffer
-+ **/
-+ssize_t iio_write_ring_length(struct device *dev,
-+			      struct device_attribute *attr,
-+			      const char *buf,
-+			      size_t len);
-+/**
-+ * iio_read_ring_bytes_per_datum() - attr for number of bytes in whole datum
-+ **/
-+ssize_t iio_read_ring_bytes_per_datum(struct device *dev,
-+			  struct device_attribute *attr,
-+			  char *buf);
-+/**
-+ * iio_store_ring_enable() - attr to turn the buffer on
-+ **/
-+ssize_t iio_store_ring_enable(struct device *dev,
-+			      struct device_attribute *attr,
-+			      const char *buf,
-+			      size_t len);
-+/**
-+ * iio_show_ring_enable() - attr to see if the buffer is on
-+ **/
-+ssize_t iio_show_ring_enable(struct device *dev,
-+			     struct device_attribute *attr,
-+			     char *buf);
-+#define IIO_RING_LENGTH_ATTR DEVICE_ATTR(length, S_IRUGO | S_IWUSR,	\
-+					 iio_read_ring_length,		\
-+					 iio_write_ring_length)
-+#define IIO_RING_BYTES_PER_DATUM_ATTR DEVICE_ATTR(bytes_per_datum, S_IRUGO | S_IWUSR,	\
-+				      iio_read_ring_bytes_per_datum, NULL)
-+#define IIO_RING_ENABLE_ATTR DEVICE_ATTR(enable, S_IRUGO | S_IWUSR, \
-+					 iio_show_ring_enable,		\
-+					 iio_store_ring_enable)
-+
-+int iio_sw_ring_preenable(struct iio_dev *indio_dev);
-+
-+#else /* CONFIG_IIO_BUFFER */
-+
-+static inline int iio_ring_buffer_register(struct iio_dev *indio_dev,
-+					   struct iio_chan_spec *channels,
-+					   int num_channels)
-+{
-+	return 0;
-+}
-+
-+static inline void iio_ring_buffer_unregister(struct iio_dev *indio_dev)
-+{};
-+
-+#endif /* CONFIG_IIO_BUFFER */
-+
-+#endif /* _IIO_BUFFER_GENERIC_H_ */
-diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-index 73157b2..8058d66 100644
---- a/drivers/staging/iio/gyro/adis16260_core.c
-+++ b/drivers/staging/iio/gyro/adis16260_core.c
-@@ -21,7 +21,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- 
- #include "adis16260.h"
- 
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 25223d8..fb83161 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -20,7 +20,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "../ring_sw.h"
- 
- #include "ad5933.h"
-diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-index 19dacfb..b041b46 100644
---- a/drivers/staging/iio/imu/adis16400_core.c
-+++ b/drivers/staging/iio/imu/adis16400_core.c
-@@ -28,7 +28,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "adis16400.h"
- 
- enum adis16400_chip_variant {
-diff --git a/drivers/staging/iio/industrialio-ring.c b/drivers/staging/iio/industrialio-ring.c
-index e048d34..6f9d9e7 100644
---- a/drivers/staging/iio/industrialio-ring.c
-+++ b/drivers/staging/iio/industrialio-ring.c
-@@ -23,7 +23,7 @@
- #include "iio.h"
- #include "iio_core.h"
- #include "sysfs.h"
--#include "ring_generic.h"
-+#include "buffer_generic.h"
- 
- static const char * const iio_endian_prefix[] = {
- 	[IIO_BE] = "be",
-diff --git a/drivers/staging/iio/kfifo_buf.h b/drivers/staging/iio/kfifo_buf.h
-index fb48523..66a80c6 100644
---- a/drivers/staging/iio/kfifo_buf.h
-+++ b/drivers/staging/iio/kfifo_buf.h
-@@ -1,7 +1,7 @@
- 
- #include <linux/kfifo.h>
- #include "iio.h"
--#include "ring_generic.h"
-+#include "buffer_generic.h"
- 
- extern const struct iio_ring_access_funcs kfifo_access_funcs;
- 
-diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
-index 1661f31..9a0dc1e 100644
---- a/drivers/staging/iio/meter/ade7758_core.c
-+++ b/drivers/staging/iio/meter/ade7758_core.c
-@@ -21,7 +21,7 @@
- 
- #include "../iio.h"
- #include "../sysfs.h"
--#include "../ring_generic.h"
-+#include "../buffer_generic.h"
- #include "meter.h"
- #include "ade7758.h"
- 
-diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
-deleted file mode 100644
-index 6a89ec0..0000000
---- a/drivers/staging/iio/ring_generic.h
-+++ /dev/null
-@@ -1,226 +0,0 @@
--/* The industrial I/O core - generic ring buffer interfaces.
-- *
-- * Copyright (c) 2008 Jonathan Cameron
-- *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of the GNU General Public License version 2 as published by
-- * the Free Software Foundation.
-- */
--
--#ifndef _IIO_RING_GENERIC_H_
--#define _IIO_RING_GENERIC_H_
--#include <linux/sysfs.h>
--#include "iio.h"
--#include "chrdev.h"
--
--#ifdef CONFIG_IIO_BUFFER
--
--struct iio_ring_buffer;
--
--/**
-- * struct iio_ring_access_funcs - access functions for ring buffers.
-- * @mark_in_use:	reference counting, typically to prevent module removal
-- * @unmark_in_use:	reduce reference count when no longer using ring buffer
-- * @store_to:		actually store stuff to the ring buffer
-- * @read_last:		get the last element stored
-- * @read_first_n:	try to get a specified number of elements (must exist)
-- * @mark_param_change:	notify ring that some relevant parameter has changed
-- *			Often this means the underlying storage may need to
-- *			change.
-- * @request_update:	if a parameter change has been marked, update underlying
-- *			storage.
-- * @get_bytes_per_datum:get current bytes per datum
-- * @set_bytes_per_datum:set number of bytes per datum
-- * @get_length:		get number of datums in ring
-- * @set_length:		set number of datums in ring
-- * @is_enabled:		query if ring is currently being used
-- * @enable:		enable the ring
-- *
-- * The purpose of this structure is to make the ring buffer element
-- * modular as event for a given driver, different usecases may require
-- * different ring designs (space efficiency vs speed for example).
-- *
-- * It is worth noting that a given ring implementation may only support a small
-- * proportion of these functions.  The core code 'should' cope fine with any of
-- * them not existing.
-- **/
--struct iio_ring_access_funcs {
--	void (*mark_in_use)(struct iio_ring_buffer *ring);
--	void (*unmark_in_use)(struct iio_ring_buffer *ring);
--
--	int (*store_to)(struct iio_ring_buffer *ring, u8 *data, s64 timestamp);
--	int (*read_last)(struct iio_ring_buffer *ring, u8 *data);
--	int (*read_first_n)(struct iio_ring_buffer *ring,
--			    size_t n,
--			    char __user *buf);
--
--	int (*mark_param_change)(struct iio_ring_buffer *ring);
--	int (*request_update)(struct iio_ring_buffer *ring);
--
--	int (*get_bytes_per_datum)(struct iio_ring_buffer *ring);
--	int (*set_bytes_per_datum)(struct iio_ring_buffer *ring, size_t bpd);
--	int (*get_length)(struct iio_ring_buffer *ring);
--	int (*set_length)(struct iio_ring_buffer *ring, int length);
--
--	int (*is_enabled)(struct iio_ring_buffer *ring);
--	int (*enable)(struct iio_ring_buffer *ring);
--};
--
--/**
-- * struct iio_ring_setup_ops - buffer setup related callbacks
-- * @preenable:		[DRIVER] function to run prior to marking ring enabled
-- * @postenable:		[DRIVER] function to run after marking ring enabled
-- * @predisable:		[DRIVER] function to run prior to marking ring disabled
-- * @postdisable:	[DRIVER] function to run after marking ring disabled
-- */
--struct iio_ring_setup_ops {
--	int				(*preenable)(struct iio_dev *);
--	int				(*postenable)(struct iio_dev *);
--	int				(*predisable)(struct iio_dev *);
--	int				(*postdisable)(struct iio_dev *);
--};
--
--/**
-- * struct iio_ring_buffer - general ring buffer structure
-- * @dev:		ring buffer device struct
-- * @indio_dev:		industrial I/O device structure
-- * @owner:		module that owns the ring buffer (for ref counting)
-- * @length:		[DEVICE] number of datums in ring
-- * @bytes_per_datum:	[DEVICE] size of individual datum including timestamp
-- * @bpe:		[DEVICE] size of individual channel value
-- * @scan_el_attrs:	[DRIVER] control of scan elements if that scan mode
-- *			control method is used
-- * @scan_count:	[INTERN] the number of elements in the current scan mode
-- * @scan_mask:		[INTERN] bitmask used in masking scan mode elements
-- * @scan_timestamp:	[INTERN] does the scan mode include a timestamp
-- * @access:		[DRIVER] ring access functions associated with the
-- *			implementation.
-- * @flags:		[INTERN] file ops related flags including busy flag.
-- **/
--struct iio_ring_buffer {
--	struct iio_dev				*indio_dev;
--	struct module				*owner;
--	int					length;
--	int					bytes_per_datum;
--	int					bpe;
--	struct attribute_group			*scan_el_attrs;
--	int					scan_count;
--	long					*scan_mask;
--	bool					scan_timestamp;
--	const struct iio_ring_access_funcs	*access;
--	const struct iio_ring_setup_ops		*setup_ops;
--	struct list_head			scan_el_dev_attr_list;
--	struct attribute_group			scan_el_group;
--	wait_queue_head_t			pollq;
--	bool					stufftoread;
--	unsigned long				flags;
--	const struct attribute_group *attrs;
--};
--
--/**
-- * iio_ring_buffer_init() - Initialize the buffer structure
-- * @ring: buffer to be initialized
-- * @dev_info: the iio device the buffer is assocated with
-- **/
--void iio_ring_buffer_init(struct iio_ring_buffer *ring,
--			  struct iio_dev *dev_info);
--
--void iio_ring_buffer_deinit(struct iio_ring_buffer *ring);
--
--/**
-- * __iio_update_ring_buffer() - update common elements of ring buffers
-- * @ring:		ring buffer that is the event source
-- * @bytes_per_datum:	size of individual datum including timestamp
-- * @length:		number of datums in ring
-- **/
--static inline void __iio_update_ring_buffer(struct iio_ring_buffer *ring,
--					    int bytes_per_datum, int length)
--{
--	ring->bytes_per_datum = bytes_per_datum;
--	ring->length = length;
--}
--
--int iio_scan_mask_query(struct iio_ring_buffer *ring, int bit);
--
--/**
-- * iio_scan_mask_set() - set particular bit in the scan mask
-- * @ring: the ring buffer whose scan mask we are interested in
-- * @bit: the bit to be set.
-- **/
--int iio_scan_mask_set(struct iio_ring_buffer *ring, int bit);
--
--#define to_iio_ring_buffer(d)				\
--	container_of(d, struct iio_ring_buffer, dev)
--
--/**
-- * iio_ring_buffer_register() - register the buffer with IIO core
-- * @indio_dev: device with the buffer to be registered
-- **/
--int iio_ring_buffer_register(struct iio_dev *indio_dev,
--			     const struct iio_chan_spec *channels,
--			     int num_channels);
--
--/**
-- * iio_ring_buffer_unregister() - unregister the buffer from IIO core
-- * @indio_dev: the device with the buffer to be unregistered
-- **/
--void iio_ring_buffer_unregister(struct iio_dev *indio_dev);
--
--/**
-- * iio_read_ring_length() - attr func to get number of datums in the buffer
-- **/
--ssize_t iio_read_ring_length(struct device *dev,
--			     struct device_attribute *attr,
--			     char *buf);
--/**
-- * iio_write_ring_length() - attr func to set number of datums in the buffer
-- **/
--ssize_t iio_write_ring_length(struct device *dev,
--			      struct device_attribute *attr,
--			      const char *buf,
--			      size_t len);
--/**
-- * iio_read_ring_bytes_per_datum() - attr for number of bytes in whole datum
-- **/
--ssize_t iio_read_ring_bytes_per_datum(struct device *dev,
--			  struct device_attribute *attr,
--			  char *buf);
--/**
-- * iio_store_ring_enable() - attr to turn the buffer on
-- **/
--ssize_t iio_store_ring_enable(struct device *dev,
--			      struct device_attribute *attr,
--			      const char *buf,
--			      size_t len);
--/**
-- * iio_show_ring_enable() - attr to see if the buffer is on
-- **/
--ssize_t iio_show_ring_enable(struct device *dev,
--			     struct device_attribute *attr,
--			     char *buf);
--#define IIO_RING_LENGTH_ATTR DEVICE_ATTR(length, S_IRUGO | S_IWUSR,	\
--					 iio_read_ring_length,		\
--					 iio_write_ring_length)
--#define IIO_RING_BYTES_PER_DATUM_ATTR DEVICE_ATTR(bytes_per_datum, S_IRUGO | S_IWUSR,	\
--				      iio_read_ring_bytes_per_datum, NULL)
--#define IIO_RING_ENABLE_ATTR DEVICE_ATTR(enable, S_IRUGO | S_IWUSR, \
--					 iio_show_ring_enable,		\
--					 iio_store_ring_enable)
--
--int iio_sw_ring_preenable(struct iio_dev *indio_dev);
--
--#else /* CONFIG_IIO_BUFFER */
--
--static inline int iio_ring_buffer_register(struct iio_dev *indio_dev,
--					   struct iio_chan_spec *channels,
--					   int num_channels)
--{
--	return 0;
--}
--
--static inline void iio_ring_buffer_unregister(struct iio_dev *indio_dev)
--{};
--
--#endif /* CONFIG_IIO_BUFFER */
--
--#endif /* _IIO_RING_GENERIC_H_ */
-diff --git a/drivers/staging/iio/ring_sw.h b/drivers/staging/iio/ring_sw.h
-index 1527163..2835c99 100644
---- a/drivers/staging/iio/ring_sw.h
-+++ b/drivers/staging/iio/ring_sw.h
-@@ -23,7 +23,7 @@
- 
- #ifndef _IIO_RING_SW_H_
- #define _IIO_RING_SW_H_
--#include "ring_generic.h"
-+#include "buffer_generic.h"
- 
  /**
-  * ring_sw_access_funcs - access functions for a software ring buffer
+  * sca3000_register_ring_funcs() setup the ring state change functions
+  **/
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 7867ab1..3be85b5 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -44,7 +44,7 @@ config AD7314
+ config AD7606
+ 	tristate "Analog Devices AD7606 ADC driver"
+ 	depends on GPIOLIB
+-	select IIO_RING_BUFFER
++	select IIO_BUFFER
+ 	select IIO_TRIGGER
+ 	select IIO_SW_RING
+ 	help
+@@ -72,7 +72,7 @@ config AD7606_IFACE_SPI
+ config AD799X
+ 	tristate "Analog Devices AD799x ADC driver"
+ 	depends on I2C
+-	select IIO_TRIGGER if IIO_RING_BUFFER
++	select IIO_TRIGGER if IIO_BUFFER
+ 	select AD799X_RING_BUFFER
+ 	help
+ 	  Say yes here to build support for Analog Devices:
+@@ -83,7 +83,7 @@ config AD799X
+ config AD799X_RING_BUFFER
+ 	bool "Analog Devices AD799x: use ring buffer"
+ 	depends on AD799X
+-	select IIO_RING_BUFFER
++	select IIO_BUFFER
+ 	select IIO_SW_RING
+ 	help
+ 	  Say yes here to include ring buffer support in the AD799X
+@@ -92,7 +92,7 @@ config AD799X_RING_BUFFER
+ config AD7476
+ 	tristate "Analog Devices AD7475/6/7/8 AD7466/7/8 and AD7495 ADC driver"
+ 	depends on SPI
+-	select IIO_RING_BUFFER
++	select IIO_BUFFER
+ 	select IIO_SW_RING
+ 	select IIO_TRIGGER
+ 	help
+@@ -107,7 +107,7 @@ config AD7476
+ config AD7887
+ 	tristate "Analog Devices AD7887 ADC driver"
+ 	depends on SPI
+-	select IIO_RING_BUFFER
++	select IIO_BUFFER
+ 	select IIO_SW_RING
+ 	select IIO_TRIGGER
+ 	help
+@@ -133,7 +133,7 @@ config AD7780
+ config AD7793
+ 	tristate "Analog Devices AD7792 AD7793 ADC driver"
+ 	depends on SPI
+-	select IIO_RING_BUFFER
++	select IIO_BUFFER
+ 	select IIO_SW_RING
+ 	select IIO_TRIGGER
+ 	help
+@@ -164,7 +164,7 @@ config AD7816
+ config AD7192
+ 	tristate "Analog Devices AD7190 AD7192 AD7195 ADC driver"
+ 	depends on SPI
+-	select IIO_RING_BUFFER
++	select IIO_BUFFER
+ 	select IIO_SW_RING
+ 	select IIO_TRIGGER
+ 	help
+@@ -209,7 +209,7 @@ config AD7280
+ config MAX1363
+ 	tristate "Maxim max1363 ADC driver"
+ 	depends on I2C
+-	select IIO_TRIGGER if IIO_RING_BUFFER
++	select IIO_TRIGGER if IIO_BUFFER
+ 	select MAX1363_RING_BUFFER
+ 	help
+ 	  Say yes here to build support for many Maxim i2c analog to digital
+@@ -224,7 +224,7 @@ config MAX1363
+ config MAX1363_RING_BUFFER
+ 	bool "Maxim max1363: use ring buffer"
+ 	depends on MAX1363
+-	select IIO_RING_BUFFER
++	select IIO_BUFFER
+ 	select IIO_SW_RING
+ 	help
+ 	  Say yes here to include ring buffer support in the MAX1363
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index 990d3fa..263a1ee 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -8,7 +8,7 @@ max1363-y += max1363_ring.o
+ obj-$(CONFIG_MAX1363) += max1363.o
+ 
+ ad7606-y := ad7606_core.o
+-ad7606-$(CONFIG_IIO_RING_BUFFER) += ad7606_ring.o
++ad7606-$(CONFIG_IIO_BUFFER) += ad7606_ring.o
+ ad7606-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
+ ad7606-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
+ obj-$(CONFIG_AD7606) += ad7606.o
+@@ -18,15 +18,15 @@ ad799x-$(CONFIG_AD799X_RING_BUFFER) += ad799x_ring.o
+ obj-$(CONFIG_AD799X) += ad799x.o
+ 
+ ad7476-y := ad7476_core.o
+-ad7476-$(CONFIG_IIO_RING_BUFFER) += ad7476_ring.o
++ad7476-$(CONFIG_IIO_BUFFER) += ad7476_ring.o
+ obj-$(CONFIG_AD7476) += ad7476.o
+ 
+ ad7887-y := ad7887_core.o
+-ad7887-$(CONFIG_IIO_RING_BUFFER) += ad7887_ring.o
++ad7887-$(CONFIG_IIO_BUFFER) += ad7887_ring.o
+ obj-$(CONFIG_AD7887) += ad7887.o
+ 
+ ad7298-y := ad7298_core.o
+-ad7298-$(CONFIG_IIO_RING_BUFFER) += ad7298_ring.o
++ad7298-$(CONFIG_IIO_BUFFER) += ad7298_ring.o
+ obj-$(CONFIG_AD7298) += ad7298.o
+ 
+ obj-$(CONFIG_AD7150) += ad7150.o
+diff --git a/drivers/staging/iio/adc/ad7298.h b/drivers/staging/iio/adc/ad7298.h
+index 628f5ad..9ddf5cf 100644
+--- a/drivers/staging/iio/adc/ad7298.h
++++ b/drivers/staging/iio/adc/ad7298.h
+@@ -53,11 +53,11 @@ struct ad7298_state {
+ 	unsigned short			tx_buf[2];
+ };
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ int ad7298_scan_from_ring(struct iio_dev *indio_dev, long ch);
+ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+ void ad7298_ring_cleanup(struct iio_dev *indio_dev);
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ static inline int ad7298_scan_from_ring(struct iio_dev *indio_dev, long ch)
+ {
+ 	return 0;
+@@ -72,5 +72,5 @@ ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ static inline void ad7298_ring_cleanup(struct iio_dev *indio_dev)
+ {
+ }
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ #endif /* IIO_ADC_AD7298_H_ */
+diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
+index 0d44976..6014292 100644
+--- a/drivers/staging/iio/adc/ad7476.h
++++ b/drivers/staging/iio/adc/ad7476.h
+@@ -49,11 +49,11 @@ enum ad7476_supported_device_ids {
+ 	ID_AD7495
+ };
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ int ad7476_scan_from_ring(struct iio_dev *indio_dev);
+ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+ void ad7476_ring_cleanup(struct iio_dev *indio_dev);
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ static inline int ad7476_scan_from_ring(struct iio_dev *indio_dev)
+ {
+ 	return 0;
+@@ -68,5 +68,5 @@ ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ static inline void ad7476_ring_cleanup(struct iio_dev *indio_dev)
+ {
+ }
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ #endif /* IIO_ADC_AD7476_H_ */
+diff --git a/drivers/staging/iio/adc/ad7887.h b/drivers/staging/iio/adc/ad7887.h
+index 1b7a772..3452d18 100644
+--- a/drivers/staging/iio/adc/ad7887.h
++++ b/drivers/staging/iio/adc/ad7887.h
+@@ -82,11 +82,11 @@ enum ad7887_supported_device_ids {
+ 	ID_AD7887
+ };
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ int ad7887_scan_from_ring(struct ad7887_state *st, int channum);
+ int ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+ void ad7887_ring_cleanup(struct iio_dev *indio_dev);
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ static inline int ad7887_scan_from_ring(struct ad7887_state *st, int channum)
+ {
+ 	return 0;
+@@ -101,5 +101,5 @@ ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ static inline void ad7887_ring_cleanup(struct iio_dev *indio_dev)
+ {
+ }
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ #endif /* IIO_ADC_AD7887_H_ */
+diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
+index ae2e7d3..3a02eb9 100644
+--- a/drivers/staging/iio/gyro/Kconfig
++++ b/drivers/staging/iio/gyro/Kconfig
+@@ -27,8 +27,8 @@ config ADIS16130
+ config ADIS16260
+ 	tristate "Analog Devices ADIS16260 Digital Gyroscope Sensor SPI driver"
+ 	depends on SPI
+-	select IIO_TRIGGER if IIO_RING_BUFFER
+-	select IIO_SW_RING if IIO_RING_BUFFER
++	select IIO_TRIGGER if IIO_BUFFER
++	select IIO_SW_RING if IIO_BUFFER
+ 	help
+ 	  Say yes here to build support for Analog Devices ADIS16260 ADIS16265
+ 	  ADIS16250 ADIS16255 and ADIS16251 programmable digital gyroscope sensors.
+diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
+index 2212240..9ba5ec1 100644
+--- a/drivers/staging/iio/gyro/Makefile
++++ b/drivers/staging/iio/gyro/Makefile
+@@ -12,7 +12,7 @@ adis16130-y             := adis16130_core.o
+ obj-$(CONFIG_ADIS16130) += adis16130.o
+ 
+ adis16260-y             := adis16260_core.o
+-adis16260-$(CONFIG_IIO_RING_BUFFER) += adis16260_ring.o adis16260_trigger.o
++adis16260-$(CONFIG_IIO_BUFFER) += adis16260_ring.o adis16260_trigger.o
+ obj-$(CONFIG_ADIS16260) += adis16260.o
+ 
+ adis16251-y             := adis16251_core.o
+diff --git a/drivers/staging/iio/gyro/adis16260.h b/drivers/staging/iio/gyro/adis16260.h
+index 969b624..4c4b251 100644
+--- a/drivers/staging/iio/gyro/adis16260.h
++++ b/drivers/staging/iio/gyro/adis16260.h
+@@ -112,7 +112,7 @@ int adis16260_set_irq(struct iio_dev *indio_dev, bool enable);
+ #define ADIS16260_SCAN_TEMP	3
+ #define ADIS16260_SCAN_ANGL	4
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ void adis16260_remove_trigger(struct iio_dev *indio_dev);
+ int adis16260_probe_trigger(struct iio_dev *indio_dev);
+ 
+@@ -124,7 +124,7 @@ ssize_t adis16260_read_data_from_ring(struct device *dev,
+ int adis16260_configure_ring(struct iio_dev *indio_dev);
+ void adis16260_unconfigure_ring(struct iio_dev *indio_dev);
+ 
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ 
+ static inline void adis16260_remove_trigger(struct iio_dev *indio_dev)
+ {
+@@ -152,5 +152,5 @@ static inline void adis16260_unconfigure_ring(struct iio_dev *indio_dev)
+ {
+ }
+ 
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ #endif /* SPI_ADIS16260_H_ */
+diff --git a/drivers/staging/iio/iio_core.h b/drivers/staging/iio/iio_core.h
+index 803bdd8..a173321 100644
+--- a/drivers/staging/iio/iio_core.h
++++ b/drivers/staging/iio/iio_core.h
+@@ -30,7 +30,7 @@ int __iio_add_chan_devattr(const char *postfix,
+ /* Event interface flags */
+ #define IIO_BUSY_BIT_POS 1
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ struct poll_table_struct;
+ 
+ void iio_chrdev_ring_open(struct iio_dev *indio_dev);
+diff --git a/drivers/staging/iio/impedance-analyzer/Kconfig b/drivers/staging/iio/impedance-analyzer/Kconfig
+index 9e91a9b..e666a5d 100644
+--- a/drivers/staging/iio/impedance-analyzer/Kconfig
++++ b/drivers/staging/iio/impedance-analyzer/Kconfig
+@@ -6,7 +6,7 @@ comment "Network Analyzer, Impedance Converters"
+ config AD5933
+ 	tristate "Analog Devices AD5933, AD5934 driver"
+ 	depends on I2C
+-	select IIO_RING_BUFFER
++	select IIO_BUFFER
+ 	select IIO_SW_RING
+ 	help
+ 	  Say yes here to build support for Analog Devices Impedance Converter,
+diff --git a/drivers/staging/iio/imu/Kconfig b/drivers/staging/iio/imu/Kconfig
+index e0e0144..b601d2b 100644
+--- a/drivers/staging/iio/imu/Kconfig
++++ b/drivers/staging/iio/imu/Kconfig
+@@ -6,8 +6,8 @@ comment "Inertial measurement units"
+ config ADIS16400
+ 	tristate "Analog Devices ADIS16400 and similar IMU SPI driver"
+ 	depends on SPI
+-	select IIO_SW_RING if IIO_RING_BUFFER
+-	select IIO_TRIGGER if IIO_RING_BUFFER
++	select IIO_SW_RING if IIO_BUFFER
++	select IIO_TRIGGER if IIO_BUFFER
+ 	help
+ 	  Say yes here to build support for Analog Devices adis16300, adis16350,
+ 	  adis16354, adis16355, adis16360, adis16362, adis16364, adis16365,
+diff --git a/drivers/staging/iio/imu/Makefile b/drivers/staging/iio/imu/Makefile
+index d46a691..3400a13 100644
+--- a/drivers/staging/iio/imu/Makefile
++++ b/drivers/staging/iio/imu/Makefile
+@@ -3,5 +3,5 @@
+ #
+ 
+ adis16400-y             := adis16400_core.o
+-adis16400-$(CONFIG_IIO_RING_BUFFER) += adis16400_ring.o adis16400_trigger.o
++adis16400-$(CONFIG_IIO_BUFFER) += adis16400_ring.o adis16400_trigger.o
+ obj-$(CONFIG_ADIS16400) += adis16400.o
+diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
+index 1f8f0c6..f3546ee 100644
+--- a/drivers/staging/iio/imu/adis16400.h
++++ b/drivers/staging/iio/imu/adis16400.h
+@@ -184,7 +184,7 @@ int adis16400_set_irq(struct iio_dev *indio_dev, bool enable);
+ #define ADIS16300_SCAN_INCLI_X	12
+ #define ADIS16300_SCAN_INCLI_Y	13
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ void adis16400_remove_trigger(struct iio_dev *indio_dev);
+ int adis16400_probe_trigger(struct iio_dev *indio_dev);
+ 
+@@ -196,7 +196,7 @@ ssize_t adis16400_read_data_from_ring(struct device *dev,
+ int adis16400_configure_ring(struct iio_dev *indio_dev);
+ void adis16400_unconfigure_ring(struct iio_dev *indio_dev);
+ 
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ 
+ static inline void adis16400_remove_trigger(struct iio_dev *indio_dev)
+ {
+@@ -224,5 +224,5 @@ static inline void adis16400_unconfigure_ring(struct iio_dev *indio_dev)
+ {
+ }
+ 
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ #endif /* SPI_ADIS16400_H_ */
+diff --git a/drivers/staging/iio/meter/Kconfig b/drivers/staging/iio/meter/Kconfig
+index 12e36e4..9136b20 100644
+--- a/drivers/staging/iio/meter/Kconfig
++++ b/drivers/staging/iio/meter/Kconfig
+@@ -20,8 +20,8 @@ config ADE7754
+ config ADE7758
+ 	tristate "Analog Devices ADE7758 Poly Phase Multifunction Energy Metering IC Driver"
+ 	depends on SPI
+-	select IIO_TRIGGER if IIO_RING_BUFFER
+-	select IIO_SW_RING if IIO_RING_BUFFER
++	select IIO_TRIGGER if IIO_BUFFER
++	select IIO_SW_RING if IIO_BUFFER
+ 	help
+ 	  Say yes here to build support for Analog Devices ADE7758 Polyphase
+ 	  Multifunction Energy Metering IC with Per Phase Information Driver.
+diff --git a/drivers/staging/iio/meter/Makefile b/drivers/staging/iio/meter/Makefile
+index 0cc7d51..de3863d 100644
+--- a/drivers/staging/iio/meter/Makefile
++++ b/drivers/staging/iio/meter/Makefile
+@@ -6,7 +6,7 @@ obj-$(CONFIG_ADE7753) += ade7753.o
+ obj-$(CONFIG_ADE7754) += ade7754.o
+ 
+ ade7758-y             := ade7758_core.o
+-ade7758-$(CONFIG_IIO_RING_BUFFER) += ade7758_ring.o ade7758_trigger.o
++ade7758-$(CONFIG_IIO_BUFFER) += ade7758_ring.o ade7758_trigger.o
+ obj-$(CONFIG_ADE7758) += ade7758.o
+ 
+ obj-$(CONFIG_ADE7759) += ade7759.o
+diff --git a/drivers/staging/iio/meter/ade7758.h b/drivers/staging/iio/meter/ade7758.h
+index 20a2bca..bdd1b05 100644
+--- a/drivers/staging/iio/meter/ade7758.h
++++ b/drivers/staging/iio/meter/ade7758.h
+@@ -134,7 +134,7 @@ struct ade7758_state {
+ 	unsigned char		tx_buf[8];
+ 
+ };
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ /* At the moment triggers are only used for ring buffer
+  * filling. This may change!
+  */
+@@ -158,7 +158,7 @@ int ade7758_spi_write_reg_8(struct device *dev,
+ int ade7758_spi_read_reg_8(struct device *dev,
+ 		u8 reg_address, u8 *val);
+ 
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ 
+ static inline void ade7758_remove_trigger(struct iio_dev *indio_dev)
+ {
+@@ -182,6 +182,6 @@ static inline int ade7758_initialize_ring(struct iio_ring_buffer *ring)
+ static inline void ade7758_uninitialize_ring(struct iio_dev *indio_dev)
+ {
+ }
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ 
+ #endif
+diff --git a/drivers/staging/iio/ring_generic.h b/drivers/staging/iio/ring_generic.h
+index 8f6ecde..6a89ec0 100644
+--- a/drivers/staging/iio/ring_generic.h
++++ b/drivers/staging/iio/ring_generic.h
+@@ -13,7 +13,7 @@
+ #include "iio.h"
+ #include "chrdev.h"
+ 
+-#ifdef CONFIG_IIO_RING_BUFFER
++#ifdef CONFIG_IIO_BUFFER
+ 
+ struct iio_ring_buffer;
+ 
+@@ -209,7 +209,7 @@ ssize_t iio_show_ring_enable(struct device *dev,
+ 
+ int iio_sw_ring_preenable(struct iio_dev *indio_dev);
+ 
+-#else /* CONFIG_IIO_RING_BUFFER */
++#else /* CONFIG_IIO_BUFFER */
+ 
+ static inline int iio_ring_buffer_register(struct iio_dev *indio_dev,
+ 					   struct iio_chan_spec *channels,
+@@ -221,6 +221,6 @@ static inline int iio_ring_buffer_register(struct iio_dev *indio_dev,
+ static inline void iio_ring_buffer_unregister(struct iio_dev *indio_dev)
+ {};
+ 
+-#endif /* CONFIG_IIO_RING_BUFFER */
++#endif /* CONFIG_IIO_BUFFER */
+ 
+ #endif /* _IIO_RING_GENERIC_H_ */
 -- 
 1.7.3.4
