@@ -1,80 +1,72 @@
-Return-Path: <swarren@nvidia.com>
-From: Stephen Warren <swarren@nvidia.com>
-To: Greg Kroah-Hartman <gregkh@suse.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Arnd Bergmann <arnd@arndb.de>
-Cc: Andrew Chew <achew@nvidia.com>,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org,
-	linux-tegra@vger.kernel.org,
-	Stephen Warren <swarren@nvidia.com>
-Subject: [PATCH 2/3] staging:iio:magnetometer:ak8975: Don't assume 0 is an invalid GPIO
-Date: Mon, 19 Sep 2011 15:57:31 -0600
-Message-Id: <1316469452-23575-2-git-send-email-swarren@nvidia.com>
-In-Reply-To: <1316469452-23575-1-git-send-email-swarren@nvidia.com>
-References: <1316469452-23575-1-git-send-email-swarren@nvidia.com>
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH] staging:iio: Prevent reading from buffer chrdev when device has no buffer.
+Date: Mon, 19 Sep 2011 14:03:37 +0100
+Message-Id: <1316437417-9962-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-gpio_is_valid() is the defined mechanism to determine whether a GPIO is
-valid. Use this instead of assuming that 0 is an invalid GPIO.
+Silly bug introduced during the chrdev merge series.
 
-Signed-off-by: Stephen Warren <swarren@nvidia.com>
-Acked-by: Andrew Chew <achew@nvidia.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/magnetometer/ak8975.c |   11 +++++------
- 1 files changed, 5 insertions(+), 6 deletions(-)
+Fix is pretty trivial so I'll send this on to Greg shortly 
+if no one shouts!
 
-diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-index 6d17ae5..930ddef 100644
---- a/drivers/staging/iio/magnetometer/ak8975.c
-+++ b/drivers/staging/iio/magnetometer/ak8975.c
-@@ -373,7 +373,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	}
- 
- 	/* Wait for the conversion to complete. */
--	if (data->eoc_gpio)
-+	if (gpio_is_valid(data->eoc_gpio))
- 		ret = wait_conversion_complete_gpio(data);
- 	else
- 		ret = wait_conversion_complete_polled(data);
-@@ -484,7 +484,7 @@ static int ak8975_probe(struct i2c_client *client,
- 
- 	/* We may not have a GPIO based IRQ to scan, that is fine, we will
- 	   poll if so */
--	if (eoc_gpio > 0) {
-+	if (gpio_is_valid(eoc_gpio)) {
- 		err = gpio_request(eoc_gpio, "ak_8975");
- 		if (err < 0) {
- 			dev_err(&client->dev,
-@@ -500,8 +500,7 @@ static int ak8975_probe(struct i2c_client *client,
- 						eoc_gpio, err);
- 			goto exit_gpio;
- 		}
--	} else
--		eoc_gpio = 0;	/* No GPIO available */
-+	}
- 
- 	/* Register with IIO */
- 	indio_dev = iio_allocate_device(sizeof(*data));
-@@ -537,7 +536,7 @@ static int ak8975_probe(struct i2c_client *client,
- exit_free_iio:
- 	iio_free_device(indio_dev);
- exit_gpio:
--	if (eoc_gpio)
-+	if (gpio_is_valid(eoc_gpio))
- 		gpio_free(eoc_gpio);
- exit:
- 	return err;
-@@ -552,7 +551,7 @@ static int ak8975_remove(struct i2c_client *client)
- 	iio_device_unregister(indio_dev);
- 	iio_free_device(indio_dev);
- 
--	if (eoc_gpio)
-+	if (gpio_is_valid(eoc_gpio))
- 		gpio_free(eoc_gpio);
- 
+Jonathan
+
+ drivers/staging/iio/industrialio-buffer.c |    8 +++++---
+ drivers/staging/iio/industrialio-core.c   |    5 +++--
+ 2 files changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c
+index c3f57e7..4ce101a 100644
+--- a/drivers/staging/iio/industrialio-buffer.c
++++ b/drivers/staging/iio/industrialio-buffer.c
+@@ -63,11 +63,14 @@ unsigned int iio_buffer_poll(struct file *filp,
  	return 0;
+ }
+ 
+-void iio_chrdev_buffer_open(struct iio_dev *indio_dev)
++int iio_chrdev_buffer_open(struct iio_dev *indio_dev)
+ {
+ 	struct iio_buffer *rb = indio_dev->buffer;
+-	if (rb && rb->access->mark_in_use)
++	if (!rb)
++		return -EINVAL;
++	if (rb->access->mark_in_use)
+ 		rb->access->mark_in_use(rb);
++	return 0;
+ }
+ 
+ void iio_chrdev_buffer_release(struct iio_dev *indio_dev)
+@@ -77,7 +80,6 @@ void iio_chrdev_buffer_release(struct iio_dev *indio_dev)
+ 	clear_bit(IIO_BUSY_BIT_POS, &rb->flags);
+ 	if (rb->access->unmark_in_use)
+ 		rb->access->unmark_in_use(rb);
+-
+ }
+ 
+ void iio_buffer_init(struct iio_buffer *buffer, struct iio_dev *dev_info)
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index b11c7f3..2f535b1 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -1062,11 +1062,12 @@ EXPORT_SYMBOL(iio_free_device);
+  **/
+ static int iio_chrdev_open(struct inode *inode, struct file *filp)
+ {
++	int ret;
+ 	struct iio_dev *dev_info = container_of(inode->i_cdev,
+ 						struct iio_dev, chrdev);
+ 	filp->private_data = dev_info;
+-	iio_chrdev_buffer_open(dev_info);
+-	return 0;
++
++	return iio_chrdev_buffer_open(dev_info);
+ }
+ 
+ /**
 -- 
-1.7.0.4
+1.7.3.4
