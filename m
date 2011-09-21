@@ -1,82 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:35801 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752984Ab1IUKHr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2011 06:07:47 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org, greg@kroah.com
-Cc: Stephen Warren <swarren@nvidia.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 12/14] staging:iio:magnetometer:ak8975: Don't assume 0 is an invalid GPIO
-Date: Wed, 21 Sep 2011 11:16:00 +0100
-Message-Id: <1316600162-15581-13-git-send-email-jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org,
+	greg@kroah.com
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	Stephen Warren <swarren@nvidia.com>
+Subject: [PATCH 11/14] staging:iio:magnetometer:ak8975 use platform_data to pass the gpio number.
+Date: Wed, 21 Sep 2011 11:15:59 +0100
+Message-Id: <1316600162-15581-12-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1316600162-15581-1-git-send-email-jic23@cam.ac.uk>
 References: <1316600162-15581-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-From: Stephen Warren <swarren@nvidia.com>
+Tegra doesn't have irq_to_gpio() any more, and ak8975 is included in
+tegra_defconfig. This causes a build failure. Instead, pass the GPIO name
+through platform data.
 
-gpio_is_valid() is the defined mechanism to determine whether a GPIO is
-valid. Use this instead of assuming that 0 is an invalid GPIO.
+[swarren: Rewrote commit description when I squashed this with my patch
+to remove the irq_to_gpio() call]
 
-Signed-off-by: Stephen Warren <swarren@nvidia.com>
-Acked-by: Andrew Chew <achew@nvidia.com>
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Stephen Warren <swarren@nvidia.com>
 ---
- drivers/staging/iio/magnetometer/ak8975.c |   11 +++++------
- 1 files changed, 5 insertions(+), 6 deletions(-)
+ drivers/staging/iio/magnetometer/ak8975.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-index 0e66d3f..9c53383 100644
+index 0697ab3..0e66d3f 100644
 --- a/drivers/staging/iio/magnetometer/ak8975.c
 +++ b/drivers/staging/iio/magnetometer/ak8975.c
-@@ -373,7 +373,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
- 	}
+@@ -477,7 +477,10 @@ static int ak8975_probe(struct i2c_client *client,
+ 	int err;
  
- 	/* Wait for the conversion to complete. */
--	if (data->eoc_gpio)
-+	if (gpio_is_valid(data->eoc_gpio))
- 		ret = wait_conversion_complete_gpio(data);
- 	else
- 		ret = wait_conversion_complete_polled(data);
-@@ -484,7 +484,7 @@ static int ak8975_probe(struct i2c_client *client,
+ 	/* Grab and set up the supplied GPIO. */
+-	eoc_gpio = irq_to_gpio(client->irq);
++	if (client->dev.platform_data == NULL)
++		eoc_gpio = -1;
++	else
++		eoc_gpio = *(int *)(client->dev.platform_data);
  
  	/* We may not have a GPIO based IRQ to scan, that is fine, we will
  	   poll if so */
--	if (eoc_gpio > 0) {
-+	if (gpio_is_valid(eoc_gpio)) {
- 		err = gpio_request(eoc_gpio, "ak_8975");
- 		if (err < 0) {
- 			dev_err(&client->dev,
-@@ -500,8 +500,7 @@ static int ak8975_probe(struct i2c_client *client,
- 						eoc_gpio, err);
- 			goto exit_gpio;
- 		}
--	} else
--		eoc_gpio = 0;	/* No GPIO available */
-+	}
- 
- 	/* Register with IIO */
- 	indio_dev = iio_allocate_device(sizeof(*data));
-@@ -537,7 +536,7 @@ static int ak8975_probe(struct i2c_client *client,
- exit_free_iio:
- 	iio_free_device(indio_dev);
- exit_gpio:
--	if (eoc_gpio)
-+	if (gpio_is_valid(eoc_gpio))
- 		gpio_free(eoc_gpio);
- exit:
- 	return err;
-@@ -551,7 +550,7 @@ static int ak8975_remove(struct i2c_client *client)
- 
- 	iio_device_unregister(indio_dev);
- 
--	if (eoc_gpio)
-+	if (gpio_is_valid(eoc_gpio))
- 		gpio_free(eoc_gpio);
- 
- 	return 0;
 -- 
 1.7.3.4
-
