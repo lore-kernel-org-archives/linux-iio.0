@@ -1,268 +1,1585 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:35786 "EHLO
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:35779 "EHLO
 	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752972Ab1IUKHr (ORCPT
+	with ESMTP id S1752919Ab1IUKHr (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2011 06:07:47 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org, greg@kroah.com
-Cc: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+Cc: Michael Hennerich <michael.hennerich@analog.com>,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 02/14] staging: iio: Move sensor drivers to sub menus
-Date: Wed, 21 Sep 2011 11:15:50 +0100
-Message-Id: <1316600162-15581-3-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 01/14] [PATCH] iio: adc: Replace, rewrite ad7745 from scratch.
+Date: Wed, 21 Sep 2011 11:15:49 +0100
+Message-Id: <1316600162-15581-2-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1316600162-15581-1-git-send-email-jic23@cam.ac.uk>
 References: <1316600162-15581-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-We have a lot of drivers now, so the iio sub menu becomes quite large.
-This patch creates sub menus for the different sensors.
+The existing ad7745 driver didn't conform with the IIO spec for such devices.
+It was way simpler to rewrite the existing driver, than actually fixing it.
 
-Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/accel/Kconfig              |    4 +++-
- drivers/staging/iio/adc/Kconfig                |    4 +++-
- drivers/staging/iio/addac/Kconfig              |    4 +++-
- drivers/staging/iio/dac/Kconfig                |    4 +++-
- drivers/staging/iio/dds/Kconfig                |    4 +++-
- drivers/staging/iio/gyro/Kconfig               |    4 +++-
- drivers/staging/iio/impedance-analyzer/Kconfig |    4 +++-
- drivers/staging/iio/imu/Kconfig                |    4 +++-
- drivers/staging/iio/light/Kconfig              |    4 +++-
- drivers/staging/iio/magnetometer/Kconfig       |    3 ++-
- drivers/staging/iio/meter/Kconfig              |    4 +++-
- drivers/staging/iio/resolver/Kconfig           |    3 ++-
- 12 files changed, 34 insertions(+), 12 deletions(-)
+ drivers/staging/iio/adc/Kconfig  |    2 +-
+ drivers/staging/iio/adc/Makefile |    2 +-
+ drivers/staging/iio/adc/ad7745.c |  673 -------------------------------
+ drivers/staging/iio/adc/ad7746.c |  804 ++++++++++++++++++++++++++++++++++++++
+ drivers/staging/iio/adc/ad7746.h |   29 ++
+ 5 files changed, 835 insertions(+), 675 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
-index 81a33b6..bf38114 100644
---- a/drivers/staging/iio/accel/Kconfig
-+++ b/drivers/staging/iio/accel/Kconfig
-@@ -1,7 +1,7 @@
- #
- # Accelerometer drivers
- #
--comment "Accelerometers"
-+menu "Accelerometers"
- 
- config ADIS16201
- 	tristate "Analog Devices ADIS16201 Dual-Axis Digital Inclinometer and Accelerometer"
-@@ -100,3 +100,5 @@ config SCA3000
- 	help
- 	  Say yes here to build support for the VTI SCA3000 series of SPI
- 	  accelerometers. These devices use a hardware ring buffer.
-+
-+endmenu
 diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index 0482073..27dda13 100644
+index 7867ab1..0482073 100644
 --- a/drivers/staging/iio/adc/Kconfig
 +++ b/drivers/staging/iio/adc/Kconfig
-@@ -1,7 +1,7 @@
- #
- # ADC drivers
- #
--comment "Analog to digital convertors"
-+menu "Analog to digital convertors"
- 
- config AD7150
- 	tristate "Analog Devices ad7150/1/6 capacitive sensor driver"
-@@ -229,3 +229,5 @@ config MAX1363_RING_BUFFER
- 	help
- 	  Say yes here to include ring buffer support in the MAX1363
- 	  ADC driver.
-+
-+endmenu
-diff --git a/drivers/staging/iio/addac/Kconfig b/drivers/staging/iio/addac/Kconfig
-index 9847baf..869540e 100644
---- a/drivers/staging/iio/addac/Kconfig
-+++ b/drivers/staging/iio/addac/Kconfig
-@@ -1,7 +1,7 @@
- #
- # ADDAC drivers
- #
--comment "Analog digital bi-direction convertors"
-+menu "Analog digital bi-direction convertors"
- 
- config ADT7316
- 	tristate "Analog Devices ADT7316/7/8 ADT7516/7/9 temperature sensor, ADC and DAC driver"
-@@ -23,3 +23,5 @@ config ADT7316_I2C
- 	help
- 	  Say yes here to build I2C bus support for Analog Devices ADT7316/7/8
- 	  and ADT7516/7/9.
-+
-+endmenu
-diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
-index 7ddae35..3000156 100644
---- a/drivers/staging/iio/dac/Kconfig
-+++ b/drivers/staging/iio/dac/Kconfig
-@@ -1,7 +1,7 @@
- #
- # DAC drivers
- #
--comment "Digital to analog convertors"
-+menu "Digital to analog convertors"
- 
- config AD5624R_SPI
- 	tristate "Analog Devices AD5624/44/64R DAC spi driver"
-@@ -62,3 +62,5 @@ config MAX517
- 
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called max517.
-+
-+endmenu
-diff --git a/drivers/staging/iio/dds/Kconfig b/drivers/staging/iio/dds/Kconfig
-index e07431d..93b7141 100644
---- a/drivers/staging/iio/dds/Kconfig
-+++ b/drivers/staging/iio/dds/Kconfig
-@@ -1,7 +1,7 @@
- #
- # Direct Digital Synthesis drivers
- #
--comment "Direct Digital Synthesis"
-+menu "Direct Digital Synthesis"
- 
- config AD5930
- 	tristate "Analog Devices ad5930/5932 driver"
-@@ -57,3 +57,5 @@ config AD9951
- 	help
- 	  Say yes here to build support for Analog Devices DDS chip
- 	  ad9951, provides direct access via sysfs.
-+
-+endmenu
-diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
-index ae2e7d3..86774e3 100644
---- a/drivers/staging/iio/gyro/Kconfig
-+++ b/drivers/staging/iio/gyro/Kconfig
-@@ -1,7 +1,7 @@
- #
- # IIO Digital Gyroscope Sensor drivers configuration
- #
--comment "Digital gyroscope sensors"
-+menu "Digital gyroscope sensors"
- 
- config ADIS16060
- 	tristate "Analog Devices ADIS16060 Yaw Rate Gyroscope with SPI driver"
-@@ -45,3 +45,5 @@ config ADXRS450
- 
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called adxrs450.
-+
-+endmenu
-diff --git a/drivers/staging/iio/impedance-analyzer/Kconfig b/drivers/staging/iio/impedance-analyzer/Kconfig
-index 9e91a9b..cce1ce3 100644
---- a/drivers/staging/iio/impedance-analyzer/Kconfig
-+++ b/drivers/staging/iio/impedance-analyzer/Kconfig
-@@ -1,7 +1,7 @@
- #
- # Impedance Converter, Network Analyzer drivers
- #
--comment "Network Analyzer, Impedance Converters"
-+menu "Network Analyzer, Impedance Converters"
- 
- config AD5933
- 	tristate "Analog Devices AD5933, AD5934 driver"
-@@ -14,3 +14,5 @@ config AD5933
- 
+@@ -144,7 +144,7 @@ config AD7793
  	  To compile this driver as a module, choose M here: the
- 	  module will be called ad5933.
-+
-+endmenu
-diff --git a/drivers/staging/iio/imu/Kconfig b/drivers/staging/iio/imu/Kconfig
-index e0e0144..233c76a 100644
---- a/drivers/staging/iio/imu/Kconfig
-+++ b/drivers/staging/iio/imu/Kconfig
-@@ -1,7 +1,7 @@
- #
- # IIO imu drivers configuration
- #
--comment "Inertial measurement units"
-+menu "Inertial measurement units"
+ 	  module will be called AD7793.
  
- config ADIS16400
- 	tristate "Analog Devices ADIS16400 and similar IMU SPI driver"
-@@ -13,3 +13,5 @@ config ADIS16400
- 	  adis16354, adis16355, adis16360, adis16362, adis16364, adis16365,
- 	  adis16400 and adis16405 triaxial inertial sensors (adis16400 series
- 	  also have magnetometers).
-+
-+endmenu
-diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-index 1ad2d56..e7e9159 100644
---- a/drivers/staging/iio/light/Kconfig
-+++ b/drivers/staging/iio/light/Kconfig
-@@ -1,7 +1,7 @@
- #
- # Light sensors
- #
--comment "Light sensors"
-+menu "Light sensors"
- 
- config SENSORS_ISL29018
-         tristate "ISL 29018 light and proximity sensor"
-@@ -30,3 +30,5 @@ config TSL2583
+-config AD7745
++config AD7746
+ 	tristate "Analog Devices AD7745, AD7746 AD7747 capacitive sensor driver"
+ 	depends on I2C
  	help
- 	 Provides support for the TAOS tsl2580, tsl2581 and tsl2583 devices.
- 	 Access ALS data via iio, sysfs.
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index 990d3fa..5ba3cdb 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -33,7 +33,7 @@ obj-$(CONFIG_AD7150) += ad7150.o
+ obj-$(CONFIG_AD7152) += ad7152.o
+ obj-$(CONFIG_AD7291) += ad7291.o
+ obj-$(CONFIG_AD7314) += ad7314.o
+-obj-$(CONFIG_AD7745) += ad7745.o
++obj-$(CONFIG_AD7746) += ad7746.o
+ obj-$(CONFIG_AD7780) += ad7780.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+ obj-$(CONFIG_AD7816) += ad7816.o
+diff --git a/drivers/staging/iio/adc/ad7745.c b/drivers/staging/iio/adc/ad7745.c
+deleted file mode 100644
+index 827344c..0000000
+--- a/drivers/staging/iio/adc/ad7745.c
++++ /dev/null
+@@ -1,673 +0,0 @@
+-/*
+- * AD774X capacitive sensor driver supporting AD7745/6/7
+- *
+- * Copyright 2010 Analog Devices Inc.
+- *
+- * Licensed under the GPL-2 or later.
+- */
+-
+-#include <linux/interrupt.h>
+-#include <linux/gpio.h>
+-#include <linux/device.h>
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/list.h>
+-#include <linux/i2c.h>
+-#include <linux/module.h>
+-
+-#include "../iio.h"
+-#include "../sysfs.h"
+-
+-/*
+- * AD774X registers definition
+- */
+-
+-#define AD774X_STATUS		0
+-#define AD774X_STATUS_RDY	(1 << 2)
+-#define AD774X_STATUS_RDYVT	(1 << 1)
+-#define AD774X_STATUS_RDYCAP	(1 << 0)
+-#define AD774X_CAP_DATA_HIGH	1
+-#define AD774X_CAP_DATA_MID	2
+-#define AD774X_CAP_DATA_LOW	3
+-#define AD774X_VT_DATA_HIGH	4
+-#define AD774X_VT_DATA_MID	5
+-#define AD774X_VT_DATA_LOW	6
+-#define AD774X_CAP_SETUP	7
+-#define AD774X_VT_SETUP		8
+-#define AD774X_EXEC_SETUP	9
+-#define AD774X_CFG		10
+-#define AD774X_CAPDACA		11
+-#define AD774X_CAPDACB		12
+-#define AD774X_CAPDAC_EN	(1 << 7)
+-#define AD774X_CAP_OFFH		13
+-#define AD774X_CAP_OFFL		14
+-#define AD774X_CAP_GAINH	15
+-#define AD774X_CAP_GAINL	16
+-#define AD774X_VOLT_GAINH	17
+-#define AD774X_VOLT_GAINL	18
+-
+-#define AD774X_MAX_CONV_MODE	6
+-
+-/*
+- * struct ad774x_chip_info - chip specifc information
+- */
+-
+-struct ad774x_chip_info {
+-	struct i2c_client *client;
+-	bool inter;
+-	u16 cap_offs;                   /* Capacitive offset */
+-	u16 cap_gain;                   /* Capacitive gain calibration */
+-	u16 volt_gain;                  /* Voltage gain calibration */
+-	u8  cap_setup;
+-	u8  vt_setup;
+-	u8  exec_setup;
+-
+-	char *conversion_mode;
+-};
+-
+-struct ad774x_conversion_mode {
+-	char *name;
+-	u8 reg_cfg;
+-};
+-
+-static struct ad774x_conversion_mode
+-ad774x_conv_mode_table[AD774X_MAX_CONV_MODE] = {
+-	{ "idle", 0 },
+-	{ "continuous-conversion", 1 },
+-	{ "single-conversion", 2 },
+-	{ "power-down", 3 },
+-	{ "offset-calibration", 5 },
+-	{ "gain-calibration", 6 },
+-};
+-
+-/*
+- * ad774x register access by I2C
+- */
+-
+-static int ad774x_i2c_read(struct ad774x_chip_info *chip, u8 reg, u8 *data, int len)
+-{
+-	struct i2c_client *client = chip->client;
+-	int ret;
+-
+-	ret = i2c_master_send(client, &reg, 1);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "I2C write error\n");
+-		return ret;
+-	}
+-
+-	ret = i2c_master_recv(client, data, len);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "I2C read error\n");
+-		return ret;
+-	}
+-
+-	return ret;
+-}
+-
+-static int ad774x_i2c_write(struct ad774x_chip_info *chip, u8 reg, u8 data)
+-{
+-	struct i2c_client *client = chip->client;
+-	int ret;
+-
+-	u8 tx[2] = {
+-		reg,
+-		data,
+-	};
+-
+-	ret = i2c_master_send(client, tx, 2);
+-	if (ret < 0)
+-		dev_err(&client->dev, "I2C write error\n");
+-
+-	return ret;
+-}
+-
+-/*
+- * sysfs nodes
+- */
+-
+-#define IIO_DEV_ATTR_AVAIL_CONVERSION_MODES(_show)				\
+-	IIO_DEVICE_ATTR(available_conversion_modes, S_IRUGO, _show, NULL, 0)
+-#define IIO_DEV_ATTR_CONVERSION_MODE(_mode, _show, _store)              \
+-	IIO_DEVICE_ATTR(conversion_mode, _mode, _show, _store, 0)
+-#define IIO_DEV_ATTR_CAP_SETUP(_mode, _show, _store)		\
+-	IIO_DEVICE_ATTR(in_capacitance_setup, _mode, _show, _store, 0)
+-#define IIO_DEV_ATTR_VT_SETUP(_mode, _show, _store)              \
+-	IIO_DEVICE_ATTR(in_voltage0_setup, _mode, _show, _store, 0)
+-#define IIO_DEV_ATTR_EXEC_SETUP(_mode, _show, _store)              \
+-	IIO_DEVICE_ATTR(exec_setup, _mode, _show, _store, 0)
+-#define IIO_DEV_ATTR_VOLT_GAIN(_mode, _show, _store)		\
+-	IIO_DEVICE_ATTR(in_voltage0_gain, _mode, _show, _store, 0)
+-#define IIO_DEV_ATTR_CAP_OFFS(_mode, _show, _store)		\
+-	IIO_DEVICE_ATTR(in_capacitance_offs, _mode, _show, _store, 0)
+-#define IIO_DEV_ATTR_CAP_GAIN(_mode, _show, _store)		\
+-	IIO_DEVICE_ATTR(in_capacitance_gain, _mode, _show, _store, 0)
+-#define IIO_DEV_ATTR_CAP_DATA(_show)		\
+-	IIO_DEVICE_ATTR(in_capacitance0_raw, S_IRUGO, _show, NULL, 0)
+-#define IIO_DEV_ATTR_VT_DATA(_show)		\
+-	IIO_DEVICE_ATTR(in_voltage0_raw, S_IRUGO, _show, NULL, 0)
+-
+-static ssize_t ad774x_show_conversion_modes(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	int i;
+-	int len = 0;
+-
+-	for (i = 0; i < AD774X_MAX_CONV_MODE; i++)
+-		len += sprintf(buf + len, "%s ", ad774x_conv_mode_table[i].name);
+-
+-	len += sprintf(buf + len, "\n");
+-
+-	return len;
+-}
+-
+-static IIO_DEV_ATTR_AVAIL_CONVERSION_MODES(ad774x_show_conversion_modes);
+-
+-static ssize_t ad774x_show_conversion_mode(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-
+-	return sprintf(buf, "%s\n", chip->conversion_mode);
+-}
+-
+-static ssize_t ad774x_store_conversion_mode(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-	u8 cfg;
+-	int i;
+-
+-	ad774x_i2c_read(chip, AD774X_CFG, &cfg, 1);
+-
+-	for (i = 0; i < AD774X_MAX_CONV_MODE; i++) {
+-		if (strncmp(buf, ad774x_conv_mode_table[i].name,
+-				strlen(ad774x_conv_mode_table[i].name) - 1) == 0) {
+-			chip->conversion_mode = ad774x_conv_mode_table[i].name;
+-			cfg |= 0x18 | ad774x_conv_mode_table[i].reg_cfg;
+-			ad774x_i2c_write(chip, AD774X_CFG, cfg);
+-			return len;
+-		}
+-	}
+-
+-	dev_err(dev, "not supported conversion mode\n");
+-
+-	return -EINVAL;
+-}
+-
+-static IIO_DEV_ATTR_CONVERSION_MODE(S_IRUGO | S_IWUSR,
+-		ad774x_show_conversion_mode,
+-		ad774x_store_conversion_mode);
+-
+-static ssize_t ad774x_show_dac_value(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	u8 data;
+-
+-	ad774x_i2c_read(chip, this_attr->address, &data, 1);
+-
+-	return sprintf(buf, "%02x\n", data & 0x7F);
+-}
+-
+-static ssize_t ad774x_store_dac_value(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	unsigned long data;
+-	int ret;
+-
+-	ret = strict_strtoul(buf, 10, &data);
+-
+-	if (!ret) {
+-		ad774x_i2c_write(chip, this_attr->address,
+-			(data ? AD774X_CAPDAC_EN : 0) | (data & 0x7F));
+-		return len;
+-	}
+-
+-	return -EINVAL;
+-}
+-
+-static IIO_DEVICE_ATTR(out_capacitance0_raw, S_IRUGO | S_IWUSR,
+-			ad774x_show_dac_value,
+-			ad774x_store_dac_value,
+-			AD774X_CAPDACA);
+-
+-static IIO_DEVICE_ATTR(out_capacitance1_raw, S_IRUGO | S_IWUSR,
+-			ad774x_show_dac_value,
+-			ad774x_store_dac_value,
+-			AD774X_CAPDACB);
+-
+-static ssize_t ad774x_show_cap_setup(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-
+-	return sprintf(buf, "0x%02x\n", chip->cap_setup);
+-}
+-
+-static ssize_t ad774x_store_cap_setup(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-	unsigned long data;
+-	int ret;
+-
+-	ret = strict_strtoul(buf, 10, &data);
+-
+-	if ((!ret) && (data < 0x100)) {
+-		ad774x_i2c_write(chip, AD774X_CAP_SETUP, data);
+-		chip->cap_setup = data;
+-		return len;
+-	}
+-
+-	return -EINVAL;
+-}
+-
+-static IIO_DEV_ATTR_CAP_SETUP(S_IRUGO | S_IWUSR,
+-		ad774x_show_cap_setup,
+-		ad774x_store_cap_setup);
+-
+-static ssize_t ad774x_show_vt_setup(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-
+-	return sprintf(buf, "0x%02x\n", chip->vt_setup);
+-}
+-
+-static ssize_t ad774x_store_vt_setup(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-	unsigned long data;
+-	int ret;
+-
+-	ret = strict_strtoul(buf, 10, &data);
+-
+-	if ((!ret) && (data < 0x100)) {
+-		ad774x_i2c_write(chip, AD774X_VT_SETUP, data);
+-		chip->vt_setup = data;
+-		return len;
+-	}
+-
+-	return -EINVAL;
+-}
+-
+-static IIO_DEV_ATTR_VT_SETUP(S_IRUGO | S_IWUSR,
+-		ad774x_show_vt_setup,
+-		ad774x_store_vt_setup);
+-
+-static ssize_t ad774x_show_exec_setup(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-
+-	return sprintf(buf, "0x%02x\n", chip->exec_setup);
+-}
+-
+-static ssize_t ad774x_store_exec_setup(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-	unsigned long data;
+-	int ret;
+-
+-	ret = strict_strtoul(buf, 10, &data);
+-
+-	if ((!ret) && (data < 0x100)) {
+-		ad774x_i2c_write(chip, AD774X_EXEC_SETUP, data);
+-		chip->exec_setup = data;
+-		return len;
+-	}
+-
+-	return -EINVAL;
+-}
+-
+-static IIO_DEV_ATTR_EXEC_SETUP(S_IRUGO | S_IWUSR,
+-		ad774x_show_exec_setup,
+-		ad774x_store_exec_setup);
+-
+-static ssize_t ad774x_show_volt_gain(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-
+-	return sprintf(buf, "%d\n", chip->volt_gain);
+-}
+-
+-static ssize_t ad774x_store_volt_gain(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-	unsigned long data;
+-	int ret;
+-
+-	ret = strict_strtoul(buf, 10, &data);
+-
+-	if ((!ret) && (data < 0x10000)) {
+-		ad774x_i2c_write(chip, AD774X_VOLT_GAINH, data >> 8);
+-		ad774x_i2c_write(chip, AD774X_VOLT_GAINL, data);
+-		chip->volt_gain = data;
+-		return len;
+-	}
+-
+-	return -EINVAL;
+-}
+-
+-static IIO_DEV_ATTR_VOLT_GAIN(S_IRUGO | S_IWUSR,
+-		ad774x_show_volt_gain,
+-		ad774x_store_volt_gain);
+-
+-static ssize_t ad774x_show_cap_data(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-	unsigned long data;
+-	char tmp[3];
+-
+-	ad774x_i2c_read(chip, AD774X_CAP_DATA_HIGH, tmp, 3);
+-	data = ((int)tmp[0] << 16) | ((int)tmp[1] << 8) | (int)tmp[2];
+-
+-	return sprintf(buf, "%ld\n", data);
+-}
+-
+-static IIO_DEV_ATTR_CAP_DATA(ad774x_show_cap_data);
+-
+-static ssize_t ad774x_show_vt_data(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-	unsigned long data;
+-	char tmp[3];
+-
+-	ad774x_i2c_read(chip, AD774X_VT_DATA_HIGH, tmp, 3);
+-	data = ((int)tmp[0] << 16) | ((int)tmp[1] << 8) | (int)tmp[2];
+-
+-	return sprintf(buf, "%ld\n", data);
+-}
+-
+-static IIO_DEV_ATTR_VT_DATA(ad774x_show_vt_data);
+-
+-static ssize_t ad774x_show_cap_offs(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-
+-	return sprintf(buf, "%d\n", chip->cap_offs);
+-}
+-
+-static ssize_t ad774x_store_cap_offs(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-	unsigned long data;
+-	int ret;
+-
+-	ret = strict_strtoul(buf, 10, &data);
+-
+-	if ((!ret) && (data < 0x10000)) {
+-		ad774x_i2c_write(chip, AD774X_CAP_OFFH, data >> 8);
+-		ad774x_i2c_write(chip, AD774X_CAP_OFFL, data);
+-		chip->cap_offs = data;
+-		return len;
+-	}
+-
+-	return -EINVAL;
+-}
+-
+-static IIO_DEV_ATTR_CAP_OFFS(S_IRUGO | S_IWUSR,
+-		ad774x_show_cap_offs,
+-		ad774x_store_cap_offs);
+-
+-static ssize_t ad774x_show_cap_gain(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-
+-	return sprintf(buf, "%d\n", chip->cap_gain);
+-}
+-
+-static ssize_t ad774x_store_cap_gain(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad774x_chip_info *chip = iio_priv(dev_info);
+-	unsigned long data;
+-	int ret;
+-
+-	ret = strict_strtoul(buf, 10, &data);
+-
+-	if ((!ret) && (data < 0x10000)) {
+-		ad774x_i2c_write(chip, AD774X_CAP_GAINH, data >> 8);
+-		ad774x_i2c_write(chip, AD774X_CAP_GAINL, data);
+-		chip->cap_gain = data;
+-		return len;
+-	}
+-
+-	return -EINVAL;
+-}
+-
+-static IIO_DEV_ATTR_CAP_GAIN(S_IRUGO | S_IWUSR,
+-		ad774x_show_cap_gain,
+-		ad774x_store_cap_gain);
+-
+-static struct attribute *ad774x_attributes[] = {
+-	&iio_dev_attr_available_conversion_modes.dev_attr.attr,
+-	&iio_dev_attr_conversion_mode.dev_attr.attr,
+-	&iio_dev_attr_in_capacitance_setup.dev_attr.attr,
+-	&iio_dev_attr_in_voltage0_setup.dev_attr.attr,
+-	&iio_dev_attr_exec_setup.dev_attr.attr,
+-	&iio_dev_attr_in_capacitance_offs.dev_attr.attr,
+-	&iio_dev_attr_in_capacitance_gain.dev_attr.attr,
+-	&iio_dev_attr_in_voltage0_gain.dev_attr.attr,
+-	&iio_dev_attr_in_voltage0_raw.dev_attr.attr,
+-	&iio_dev_attr_in_capacitance0_raw.dev_attr.attr,
+-	&iio_dev_attr_out_capacitance0_raw.dev_attr.attr,
+-	&iio_dev_attr_out_capacitance1_raw.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ad774x_attribute_group = {
+-	.attrs = ad774x_attributes,
+-};
+-
+-/*
+- * data ready events
+- */
+-
+-#define IIO_EVENT_CODE_CAP_RDY     0
+-#define IIO_EVENT_CODE_VT_RDY      1
+-
+-#define IIO_EVENT_ATTR_CAP_RDY_SH(_evlist, _show, _store, _mask)	\
+-	IIO_EVENT_ATTR_SH(cap_rdy, _evlist, _show, _store, _mask)
+-
+-#define IIO_EVENT_ATTR_VT_RDY_SH(_evlist, _show, _store, _mask)	\
+-	IIO_EVENT_ATTR_SH(vt_rdy, _evlist, _show, _store, _mask)
+-
+-static irqreturn_t ad774x_event_handler(int irq, void *private)
+-{
+-	struct iio_dev *indio_dev = private;
+-	struct ad774x_chip_info *chip = iio_priv(indio_dev);
+-	u8 int_status;
+-
+-	ad774x_i2c_read(chip, AD774X_STATUS, &int_status, 1);
+-
+-	if (int_status & AD774X_STATUS_RDYCAP)
+-		iio_push_event(indio_dev,
+-			       IIO_EVENT_CODE_CAP_RDY,
+-			       iio_get_time_ns());
+-
+-	if (int_status & AD774X_STATUS_RDYVT)
+-		iio_push_event(indio_dev,
+-			       IIO_EVENT_CODE_VT_RDY,
+-			       iio_get_time_ns());
+-
+-	return IRQ_HANDLED;
+-}
+-
+-static IIO_CONST_ATTR(cap_rdy_en, "1");
+-static IIO_CONST_ATTR(vt_rdy_en, "1");
+-
+-static struct attribute *ad774x_event_attributes[] = {
+-	&iio_const_attr_cap_rdy_en.dev_attr.attr,
+-	&iio_const_attr_vt_rdy_en.dev_attr.attr,
+-	NULL,
+-};
+-
+-static struct attribute_group ad774x_event_attribute_group = {
+-	.attrs = ad774x_event_attributes,
+-	.name = "events",
+-};
+-
+-static const struct iio_info ad774x_info = {
+-	.attrs = &ad774x_event_attribute_group,
+-	.event_attrs = &ad774x_event_attribute_group,
+-	.driver_module = THIS_MODULE,
+-};
+-/*
+- * device probe and remove
+- */
+-
+-static int __devinit ad774x_probe(struct i2c_client *client,
+-		const struct i2c_device_id *id)
+-{
+-	int ret;
+-	struct ad774x_chip_info *chip;
+-	struct iio_dev *indio_dev;
+-
+-	indio_dev = iio_allocate_device(sizeof(*chip));
+-	if (indio_dev == NULL) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-	chip = iio_priv(indio_dev);
+-	/* this is only used for device removal purposes */
+-	i2c_set_clientdata(client, indio_dev);
+-
+-	chip->client = client;
+-
+-	/* Establish that the iio_dev is a child of the i2c device */
+-	indio_dev->name = id->name;
+-	indio_dev->dev.parent = &client->dev;
+-	indio_dev->info = &ad774x_info;
+-	indio_dev->modes = INDIO_DIRECT_MODE;
+-
+-	if (client->irq) {
+-		ret = request_threaded_irq(client->irq,
+-					   NULL,
+-					   &ad774x_event_handler,
+-					   IRQF_TRIGGER_FALLING,
+-					   "ad774x",
+-					   indio_dev);
+-		if (ret)
+-			goto error_free_dev;
+-	}
+-
+-	ret = iio_device_register(indio_dev);
+-	if (ret)
+-		goto error_free_irq;
+-
+-	dev_err(&client->dev, "%s capacitive sensor registered, irq: %d\n", id->name, client->irq);
+-
+-	return 0;
+-
+-error_free_irq:
+-	free_irq(client->irq, indio_dev);
+-error_free_dev:
+-	iio_free_device(indio_dev);
+-error_ret:
+-	return ret;
+-}
+-
+-static int __devexit ad774x_remove(struct i2c_client *client)
+-{
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-
+-	if (client->irq)
+-		free_irq(client->irq, indio_dev);
+-	iio_device_unregister(indio_dev);
+-
+-	return 0;
+-}
+-
+-static const struct i2c_device_id ad774x_id[] = {
+-	{ "ad7745", 0 },
+-	{ "ad7746", 0 },
+-	{ "ad7747", 0 },
+-	{}
+-};
+-
+-MODULE_DEVICE_TABLE(i2c, ad774x_id);
+-
+-static struct i2c_driver ad774x_driver = {
+-	.driver = {
+-		.name = "ad774x",
+-	},
+-	.probe = ad774x_probe,
+-	.remove = __devexit_p(ad774x_remove),
+-	.id_table = ad774x_id,
+-};
+-
+-static __init int ad774x_init(void)
+-{
+-	return i2c_add_driver(&ad774x_driver);
+-}
+-
+-static __exit void ad774x_exit(void)
+-{
+-	i2c_del_driver(&ad774x_driver);
+-}
+-
+-MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+-MODULE_DESCRIPTION("Analog Devices ad7745/6/7 capacitive sensor driver");
+-MODULE_LICENSE("GPL v2");
+-
+-module_init(ad774x_init);
+-module_exit(ad774x_exit);
+diff --git a/drivers/staging/iio/adc/ad7746.c b/drivers/staging/iio/adc/ad7746.c
+new file mode 100644
+index 0000000..0b251ad
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7746.c
+@@ -0,0 +1,804 @@
++/*
++ * AD7746 capacitive sensor driver supporting AD7745, AD7746 and AD7747
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
 +
-+endmenu
-diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
-index 81b579d..b8c149d 100644
---- a/drivers/staging/iio/magnetometer/Kconfig
-+++ b/drivers/staging/iio/magnetometer/Kconfig
-@@ -1,7 +1,7 @@
- #
- # Magnetometer sensors
- #
--comment "Magnetometer sensors"
-+menu "Magnetometer sensors"
- 
- config SENSORS_AK8975
- 	tristate "Asahi Kasei AK8975 3-Axis Magnetometer"
-@@ -23,3 +23,4 @@ config SENSORS_HMC5843
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called hmc5843
- 
-+endmenu
-diff --git a/drivers/staging/iio/meter/Kconfig b/drivers/staging/iio/meter/Kconfig
-index 12e36e4..a8deab2 100644
---- a/drivers/staging/iio/meter/Kconfig
-+++ b/drivers/staging/iio/meter/Kconfig
-@@ -1,7 +1,7 @@
- #
- # IIO meter drivers configuration
- #
--comment "Active energy metering IC"
-+menu "Active energy metering IC"
- 
- config ADE7753
- 	tristate "Analog Devices ADE7753/6 Single-Phase Multifunction Metering IC Driver"
-@@ -59,3 +59,5 @@ config ADE7854_SPI
- 
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ade7854-spi.
++#include <linux/interrupt.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/i2c.h>
++#include <linux/delay.h>
 +
-+endmenu
-diff --git a/drivers/staging/iio/resolver/Kconfig b/drivers/staging/iio/resolver/Kconfig
-index 6ecd79e..07c309b 100644
---- a/drivers/staging/iio/resolver/Kconfig
-+++ b/drivers/staging/iio/resolver/Kconfig
-@@ -1,7 +1,7 @@
- #
- # Resolver/Synchro drivers
- #
--comment "Resolver to digital converters"
-+menu "Resolver to digital converters"
- 
- config AD2S90
- 	tristate "Analog Devices ad2s90 driver"
-@@ -25,3 +25,4 @@ config AD2S1210
- 	  Say yes here to build support for Analog Devices spi resolver
- 	  to digital converters, ad2s1210, provides direct access via sysfs.
- 
-+endmenu
++#include "../iio.h"
++#include "../sysfs.h"
++
++#include "ad7746.h"
++
++/*
++ * AD7746 Register Definition
++ */
++
++#define AD7746_REG_STATUS		0
++#define AD7746_REG_CAP_DATA_HIGH	1
++#define AD7746_REG_CAP_DATA_MID		2
++#define AD7746_REG_CAP_DATA_LOW		3
++#define AD7746_REG_VT_DATA_HIGH		4
++#define AD7746_REG_VT_DATA_MID		5
++#define AD7746_REG_VT_DATA_LOW		6
++#define AD7746_REG_CAP_SETUP		7
++#define AD7746_REG_VT_SETUP		8
++#define AD7746_REG_EXC_SETUP		9
++#define AD7746_REG_CFG			10
++#define AD7746_REG_CAPDACA		11
++#define AD7746_REG_CAPDACB		12
++#define AD7746_REG_CAP_OFFH		13
++#define AD7746_REG_CAP_OFFL		14
++#define AD7746_REG_CAP_GAINH		15
++#define AD7746_REG_CAP_GAINL		16
++#define AD7746_REG_VOLT_GAINH		17
++#define AD7746_REG_VOLT_GAINL		18
++
++/* Status Register Bit Designations (AD7746_REG_STATUS) */
++#define AD7746_STATUS_EXCERR		(1 << 3)
++#define AD7746_STATUS_RDY		(1 << 2)
++#define AD7746_STATUS_RDYVT		(1 << 1)
++#define AD7746_STATUS_RDYCAP		(1 << 0)
++
++/* Capacitive Channel Setup Register Bit Designations (AD7746_REG_CAP_SETUP) */
++#define AD7746_CAPSETUP_CAPEN		(1 << 7)
++#define AD7746_CAPSETUP_CIN2		(1 << 6) /* AD7746 only */
++#define AD7746_CAPSETUP_CAPDIFF		(1 << 5)
++#define AD7746_CAPSETUP_CACHOP		(1 << 0)
++
++/* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
++#define AD7746_VTSETUP_VTEN		(1 << 7)
++#define AD7746_VTSETUP_VTMD_INT_TEMP	(0 << 5)
++#define AD7746_VTSETUP_VTMD_EXT_TEMP	(1 << 5)
++#define AD7746_VTSETUP_VTMD_VDD_MON	(2 << 5)
++#define AD7746_VTSETUP_VTMD_EXT_VIN	(3 << 5)
++#define AD7746_VTSETUP_EXTREF		(1 << 4)
++#define AD7746_VTSETUP_VTSHORT		(1 << 1)
++#define AD7746_VTSETUP_VTCHOP		(1 << 0)
++
++/* Excitation Setup Register Bit Designations (AD7746_REG_EXC_SETUP) */
++#define AD7746_EXCSETUP_CLKCTRL		(1 << 7)
++#define AD7746_EXCSETUP_EXCON		(1 << 6)
++#define AD7746_EXCSETUP_EXCB		(1 << 5)
++#define AD7746_EXCSETUP_NEXCB		(1 << 4)
++#define AD7746_EXCSETUP_EXCA		(1 << 3)
++#define AD7746_EXCSETUP_NEXCA		(1 << 2)
++#define AD7746_EXCSETUP_EXCLVL(x)	(((x) & 0x3) << 0)
++
++/* Config Register Bit Designations (AD7746_REG_CFG) */
++#define AD7746_CONF_VTFS(x)		((x) << 6)
++#define AD7746_CONF_CAPFS(x)		((x) << 3)
++#define AD7746_CONF_MODE_IDLE		(0 << 0)
++#define AD7746_CONF_MODE_CONT_CONV	(1 << 0)
++#define AD7746_CONF_MODE_SINGLE_CONV	(2 << 0)
++#define AD7746_CONF_MODE_PWRDN		(3 << 0)
++#define AD7746_CONF_MODE_OFFS_CAL	(5 << 0)
++#define AD7746_CONF_MODE_GAIN_CAL	(6 << 0)
++
++/* CAPDAC Register Bit Designations (AD7746_REG_CAPDACx) */
++#define AD7746_CAPDAC_DACEN		(1 << 7)
++#define AD7746_CAPDAC_DACP(x)		((x) & 0x7F)
++
++/*
++ * struct ad7746_chip_info - chip specifc information
++ */
++
++struct ad7746_chip_info {
++	struct i2c_client *client;
++	/*
++	 * Capacitive channel digital filter setup;
++	 * conversion time/update rate setup per channel
++	 */
++	u8	config;
++	u8	cap_setup;
++	u8	vt_setup;
++	u8	capdac[2][2];
++	s8	capdac_set;
++};
++
++enum ad7746_chan {
++	VIN,
++	VIN_VDD,
++	TEMP_INT,
++	TEMP_EXT,
++	CIN1,
++	CIN1_DIFF,
++	CIN2,
++	CIN2_DIFF,
++};
++
++static const struct iio_chan_spec ad7746_channels[] = {
++	[VIN] = {
++		.type = IIO_VOLTAGE,
++		.indexed = 1,
++		.channel = 0,
++		.info_mask = (1 << IIO_CHAN_INFO_SCALE_SHARED),
++		.address = AD7746_REG_VT_DATA_HIGH << 8 |
++			AD7746_VTSETUP_VTMD_EXT_VIN,
++	},
++	[VIN_VDD] = {
++		.type = IIO_VOLTAGE,
++		.indexed = 1,
++		.channel = 1,
++		.extend_name = "supply",
++		.info_mask = (1 << IIO_CHAN_INFO_SCALE_SHARED),
++		.address = AD7746_REG_VT_DATA_HIGH << 8 |
++			AD7746_VTSETUP_VTMD_VDD_MON,
++	},
++	[TEMP_INT] = {
++		.type = IIO_TEMP,
++		.indexed = 1,
++		.channel = 0,
++		.processed_val = IIO_PROCESSED,
++		.address = AD7746_REG_VT_DATA_HIGH << 8 |
++			AD7746_VTSETUP_VTMD_INT_TEMP,
++	},
++	[TEMP_EXT] = {
++		.type = IIO_TEMP,
++		.indexed = 1,
++		.channel = 1,
++		.processed_val = IIO_PROCESSED,
++		.address = AD7746_REG_VT_DATA_HIGH << 8 |
++			AD7746_VTSETUP_VTMD_EXT_TEMP,
++	},
++	[CIN1] = {
++		.type = IIO_CAPACITANCE,
++		.indexed = 1,
++		.channel = 0,
++		.info_mask = (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE) |
++		(1 << IIO_CHAN_INFO_CALIBBIAS_SHARED) |
++		(1 << IIO_CHAN_INFO_OFFSET_SEPARATE) |
++		(1 << IIO_CHAN_INFO_SCALE_SHARED),
++		.address = AD7746_REG_CAP_DATA_HIGH << 8,
++	},
++	[CIN1_DIFF] = {
++		.type = IIO_CAPACITANCE,
++		.differential = 1,
++		.indexed = 1,
++		.channel = 0,
++		.channel2 = 2,
++		.info_mask = (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE) |
++		(1 << IIO_CHAN_INFO_CALIBBIAS_SHARED) |
++		(1 << IIO_CHAN_INFO_OFFSET_SEPARATE) |
++		(1 << IIO_CHAN_INFO_SCALE_SHARED),
++		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
++			AD7746_CAPSETUP_CAPDIFF
++	},
++	[CIN2] = {
++		.type = IIO_CAPACITANCE,
++		.indexed = 1,
++		.channel = 1,
++		.info_mask = (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE) |
++		(1 << IIO_CHAN_INFO_CALIBBIAS_SHARED) |
++		(1 << IIO_CHAN_INFO_OFFSET_SEPARATE) |
++		(1 << IIO_CHAN_INFO_SCALE_SHARED),
++		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
++			AD7746_CAPSETUP_CIN2,
++	},
++	[CIN2_DIFF] = {
++		.type = IIO_CAPACITANCE,
++		.differential = 1,
++		.indexed = 1,
++		.channel = 1,
++		.channel2 = 3,
++		.info_mask = (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE) |
++		(1 << IIO_CHAN_INFO_CALIBBIAS_SHARED) |
++		(1 << IIO_CHAN_INFO_OFFSET_SEPARATE) |
++		(1 << IIO_CHAN_INFO_SCALE_SHARED),
++		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
++			AD7746_CAPSETUP_CAPDIFF | AD7746_CAPSETUP_CIN2,
++	}
++};
++
++/* Values are Update Rate (Hz), Conversion Time (ms) + 1*/
++static const unsigned char ad7746_vt_filter_rate_table[][2] = {
++	{50, 20 + 1}, {31, 32 + 1}, {16, 62 + 1}, {8, 122 + 1},
++};
++
++static const unsigned char ad7746_cap_filter_rate_table[][2] = {
++	{91, 11 + 1}, {84, 12 + 1}, {50, 20 + 1}, {26, 38 + 1},
++	{16, 62 + 1}, {13, 77 + 1}, {11, 92 + 1}, {9, 110 + 1},
++};
++
++static int ad7746_select_channel(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan)
++{
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	int ret, delay;
++	u8 vt_setup, cap_setup;
++
++	switch (chan->type) {
++	case IIO_CAPACITANCE:
++		cap_setup = (chan->address & 0xFF) | AD7746_CAPSETUP_CAPEN;
++		vt_setup = chip->vt_setup & ~AD7746_VTSETUP_VTEN;
++		delay = ad7746_cap_filter_rate_table[(chip->config >> 3) &
++			0x7][1];
++
++		if (chip->capdac_set != chan->channel) {
++			ret = i2c_smbus_write_byte_data(chip->client,
++				AD7746_REG_CAPDACA,
++				chip->capdac[chan->channel][0]);
++			if (ret < 0)
++				return ret;
++			ret = i2c_smbus_write_byte_data(chip->client,
++				AD7746_REG_CAPDACB,
++				chip->capdac[chan->channel][1]);
++			if (ret < 0)
++				return ret;
++
++			chip->capdac_set = chan->channel;
++		}
++		break;
++	case IIO_VOLTAGE:
++	case IIO_TEMP:
++		vt_setup = (chan->address & 0xFF) | AD7746_VTSETUP_VTEN;
++		cap_setup = chip->cap_setup & ~AD7746_CAPSETUP_CAPEN;
++		delay = ad7746_cap_filter_rate_table[(chip->config >> 6) &
++			0x3][1];
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	if (chip->cap_setup != cap_setup) {
++		ret = i2c_smbus_write_byte_data(chip->client,
++						AD7746_REG_CAP_SETUP,
++						cap_setup);
++		if (ret < 0)
++			return ret;
++
++		chip->cap_setup = cap_setup;
++	}
++
++	if (chip->vt_setup != vt_setup) {
++		ret = i2c_smbus_write_byte_data(chip->client,
++						AD7746_REG_VT_SETUP,
++						vt_setup);
++		if (ret < 0)
++			return ret;
++
++		chip->vt_setup = vt_setup;
++	}
++
++	return delay;
++}
++
++static inline ssize_t ad7746_start_calib(struct device *dev,
++					 struct device_attribute *attr,
++					 const char *buf,
++					 size_t len,
++					 u8 regval)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	bool doit;
++	int ret, timeout = 10;
++
++	ret = strtobool(buf, &doit);
++	if (ret < 0)
++		return ret;
++
++	if (!doit)
++		return 0;
++
++	mutex_lock(&indio_dev->mlock);
++	regval |= chip->config;
++	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG, regval);
++	if (ret < 0) {
++		mutex_unlock(&indio_dev->mlock);
++		return ret;
++	}
++
++	do {
++		msleep(20);
++		ret = i2c_smbus_read_byte_data(chip->client, AD7746_REG_CFG);
++		if (ret < 0) {
++			mutex_unlock(&indio_dev->mlock);
++			return ret;
++		}
++	} while ((ret == regval) && timeout--);
++
++	mutex_unlock(&indio_dev->mlock);
++
++	return len;
++}
++
++static ssize_t ad7746_start_offset_calib(struct device *dev,
++					 struct device_attribute *attr,
++					 const char *buf,
++					 size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	int ret = ad7746_select_channel(indio_dev,
++			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
++	if (ret < 0)
++		return ret;
++
++	return ad7746_start_calib(dev, attr, buf, len,
++				  AD7746_CONF_MODE_OFFS_CAL);
++}
++
++static ssize_t ad7746_start_gain_calib(struct device *dev,
++				       struct device_attribute *attr,
++				       const char *buf,
++				       size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	int ret = ad7746_select_channel(indio_dev,
++			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
++	if (ret < 0)
++		return ret;
++
++	return ad7746_start_calib(dev, attr, buf, len,
++				  AD7746_CONF_MODE_GAIN_CAL);
++}
++
++static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
++		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN1);
++static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
++		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN2);
++static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
++		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN1);
++static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
++		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN2);
++static IIO_DEVICE_ATTR(in_voltage0_calibscale_calibration,
++		       S_IWUSR, NULL, ad7746_start_gain_calib, VIN);
++
++static ssize_t ad7746_show_cap_filter_rate_setup(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++
++	return sprintf(buf, "%d\n", ad7746_cap_filter_rate_table[
++			(chip->config >> 3) & 0x7][0]);
++}
++
++static ssize_t ad7746_store_cap_filter_rate_setup(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	u8 data;
++	int ret, i;
++
++	ret = kstrtou8(buf, 10, &data);
++	if (ret < 0)
++		return ret;
++
++	for (i = 0; i < ARRAY_SIZE(ad7746_cap_filter_rate_table); i++)
++		if (data >= ad7746_cap_filter_rate_table[i][0])
++			break;
++
++	if (i >= ARRAY_SIZE(ad7746_cap_filter_rate_table))
++		i = ARRAY_SIZE(ad7746_cap_filter_rate_table) - 1;
++
++	mutex_lock(&indio_dev->mlock);
++	chip->config &= ~AD7746_CONF_CAPFS(0x7);
++	chip->config |= AD7746_CONF_CAPFS(i);
++	mutex_unlock(&indio_dev->mlock);
++
++	return len;
++}
++
++static ssize_t ad7746_show_vt_filter_rate_setup(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++
++	return sprintf(buf, "%d\n", ad7746_vt_filter_rate_table[
++			(chip->config >> 6) & 0x3][0]);
++}
++
++static ssize_t ad7746_store_vt_filter_rate_setup(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	u8 data;
++	int ret, i;
++
++	ret = kstrtou8(buf, 10, &data);
++	if (ret < 0)
++		return ret;
++
++	for (i = 0; i < ARRAY_SIZE(ad7746_vt_filter_rate_table); i++)
++		if (data >= ad7746_vt_filter_rate_table[i][0])
++			break;
++
++	if (i >= ARRAY_SIZE(ad7746_vt_filter_rate_table))
++		i = ARRAY_SIZE(ad7746_vt_filter_rate_table) - 1;
++
++	mutex_lock(&indio_dev->mlock);
++	chip->config &= ~AD7746_CONF_VTFS(0x3);
++	chip->config |= AD7746_CONF_VTFS(i);
++	mutex_unlock(&indio_dev->mlock);
++
++	return len;
++}
++
++static IIO_DEVICE_ATTR(in_capacitance_sampling_frequency,
++		       S_IRUGO | S_IWUSR, ad7746_show_cap_filter_rate_setup,
++			ad7746_store_cap_filter_rate_setup, 0);
++
++static IIO_DEVICE_ATTR(in_voltage_sampling_frequency,
++		       S_IRUGO | S_IWUSR, ad7746_show_vt_filter_rate_setup,
++		       ad7746_store_vt_filter_rate_setup, 0);
++
++static IIO_CONST_ATTR(in_voltage_sampling_frequency_available, "50 31 16 8");
++static IIO_CONST_ATTR(in_capacitance_sampling_frequency_available,
++		       "91 84 50 26 16 13 11 9");
++
++static struct attribute *ad7746_attributes[] = {
++	&iio_dev_attr_in_capacitance_sampling_frequency.dev_attr.attr,
++	&iio_dev_attr_in_voltage_sampling_frequency.dev_attr.attr,
++	&iio_dev_attr_in_capacitance0_calibbias_calibration.dev_attr.attr,
++	&iio_dev_attr_in_capacitance0_calibscale_calibration.dev_attr.attr,
++	&iio_dev_attr_in_capacitance1_calibscale_calibration.dev_attr.attr,
++	&iio_dev_attr_in_capacitance1_calibbias_calibration.dev_attr.attr,
++	&iio_dev_attr_in_voltage0_calibscale_calibration.dev_attr.attr,
++	&iio_const_attr_in_voltage_sampling_frequency_available.dev_attr.attr,
++	&iio_const_attr_in_capacitance_sampling_frequency_available.
++	dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ad7746_attribute_group = {
++	.attrs = ad7746_attributes,
++};
++
++static int ad7746_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val,
++			    int val2,
++			    long mask)
++{
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	int ret, reg;
++
++	mutex_lock(&indio_dev->mlock);
++
++	switch (mask) {
++	case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
++		if (val != 1) {
++			ret = -EINVAL;
++			goto out;
++		}
++
++		val = (val2 * 1024) / 15625;
++
++		switch (chan->type) {
++		case IIO_CAPACITANCE:
++			reg = AD7746_REG_CAP_GAINH;
++			break;
++		case IIO_VOLTAGE:
++			reg = AD7746_REG_VOLT_GAINH;
++			break;
++		default:
++			ret = -EINVAL;
++			goto out;
++		}
++
++		ret = i2c_smbus_write_word_data(chip->client, reg, swab16(val));
++		if (ret < 0)
++			goto out;
++
++		ret = 0;
++		break;
++	case (1 << IIO_CHAN_INFO_CALIBBIAS_SHARED):
++		if ((val < 0) | (val > 0xFFFF)) {
++			ret = -EINVAL;
++			goto out;
++		}
++		ret = i2c_smbus_write_word_data(chip->client,
++				AD7746_REG_CAP_OFFH, swab16(val));
++		if (ret < 0)
++			goto out;
++
++		ret = 0;
++		break;
++	case (1 << IIO_CHAN_INFO_OFFSET_SEPARATE):
++		if ((val < 0) | (val > 43008000)) { /* 21pF */
++			ret = -EINVAL;
++			goto out;
++		}
++
++		/* CAPDAC Scale = 21pF_typ / 127
++		 * CIN Scale = 8.192pF / 2^24
++		 * Offset Scale = CAPDAC Scale / CIN Scale = 338646
++		 * */
++
++		val /= 338646;
++
++		chip->capdac[chan->channel][chan->differential] = (val > 0 ?
++			AD7746_CAPDAC_DACP(val) | AD7746_CAPDAC_DACEN : 0);
++
++		ret = i2c_smbus_write_byte_data(chip->client,
++			AD7746_REG_CAPDACA,
++			chip->capdac[chan->channel][0]);
++		if (ret < 0)
++			goto out;
++		ret = i2c_smbus_write_byte_data(chip->client,
++			AD7746_REG_CAPDACB,
++			chip->capdac[chan->channel][1]);
++		if (ret < 0)
++			goto out;
++
++		chip->capdac_set = chan->channel;
++
++		ret = 0;
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++out:
++	mutex_unlock(&indio_dev->mlock);
++	return ret;
++}
++
++static int ad7746_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2,
++			   long mask)
++{
++	struct ad7746_chip_info *chip = iio_priv(indio_dev);
++	int ret, delay;
++	u8 regval, reg;
++
++	union {
++		u32 d32;
++		u8 d8[4];
++	} data;
++
++	mutex_lock(&indio_dev->mlock);
++
++	switch (mask) {
++	case 0:
++		ret = ad7746_select_channel(indio_dev, chan);
++		if (ret < 0)
++			goto out;
++		delay = ret;
++
++		regval = chip->config | AD7746_CONF_MODE_SINGLE_CONV;
++		ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG,
++				regval);
++		if (ret < 0)
++			goto out;
++
++		msleep(delay);
++		/* Now read the actual register */
++
++		ret = i2c_smbus_read_i2c_block_data(chip->client,
++			chan->address >> 8, 3, &data.d8[1]);
++
++		if (ret < 0)
++			goto out;
++
++		*val = (be32_to_cpu(data.d32) & 0xFFFFFF) - 0x800000;
++
++		switch (chan->type) {
++		case IIO_TEMP:
++		/* temperature in milli degrees Celsius
++		 * T = ((*val / 2048) - 4096) * 1000
++		 */
++			*val = (*val * 125) / 256;
++			break;
++		case IIO_VOLTAGE:
++			if (chan->channel == 1) /* supply_raw*/
++				*val = *val * 6;
++			break;
++		default:
++			break;
++		}
++
++		ret = IIO_VAL_INT;
++		break;
++	case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
++		switch (chan->type) {
++		case IIO_CAPACITANCE:
++			reg = AD7746_REG_CAP_GAINH;
++			break;
++		case IIO_VOLTAGE:
++			reg = AD7746_REG_VOLT_GAINH;
++			break;
++		default:
++			ret = -EINVAL;
++			goto out;
++		}
++
++		ret = i2c_smbus_read_word_data(chip->client, reg);
++		if (ret < 0)
++			goto out;
++		/* 1 + gain_val / 2^16 */
++		*val = 1;
++		*val2 = (15625 * swab16(ret)) / 1024;
++
++		ret = IIO_VAL_INT_PLUS_MICRO;
++		break;
++	case (1 << IIO_CHAN_INFO_CALIBBIAS_SHARED):
++		ret = i2c_smbus_read_word_data(chip->client,
++					       AD7746_REG_CAP_OFFH);
++		if (ret < 0)
++			goto out;
++		*val = swab16(ret);
++
++		ret = IIO_VAL_INT;
++		break;
++	case (1 << IIO_CHAN_INFO_OFFSET_SEPARATE):
++		*val = AD7746_CAPDAC_DACP(chip->capdac[chan->channel]
++			[chan->differential]) * 338646;
++
++		ret = IIO_VAL_INT;
++		break;
++	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
++		switch (chan->type) {
++		case IIO_CAPACITANCE:
++			/* 8.192pf / 2^24 */
++			*val2 = 488;
++			*val =  0;
++			break;
++		case IIO_VOLTAGE:
++			/* 1170mV / 2^23 */
++			*val2 = 139475;
++			*val =  0;
++			break;
++		default:
++			ret =  -EINVAL;
++			goto out;
++		}
++
++		ret = IIO_VAL_INT_PLUS_NANO;
++		break;
++	default:
++		ret = -EINVAL;
++	};
++out:
++	mutex_unlock(&indio_dev->mlock);
++	return ret;
++}
++
++static const struct iio_info ad7746_info = {
++	.attrs = &ad7746_attribute_group,
++	.read_raw = &ad7746_read_raw,
++	.write_raw = &ad7746_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++/*
++ * device probe and remove
++ */
++
++static int __devinit ad7746_probe(struct i2c_client *client,
++		const struct i2c_device_id *id)
++{
++	struct ad7746_platform_data *pdata = client->dev.platform_data;
++	struct ad7746_chip_info *chip;
++	struct iio_dev *indio_dev;
++	int ret = 0;
++	unsigned char regval = 0;
++
++	indio_dev = iio_allocate_device(sizeof(*chip));
++	if (indio_dev == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++	chip = iio_priv(indio_dev);
++	/* this is only used for device removal purposes */
++	i2c_set_clientdata(client, indio_dev);
++
++	chip->client = client;
++	chip->capdac_set = -1;
++
++	/* Establish that the iio_dev is a child of the i2c device */
++	indio_dev->name = id->name;
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &ad7746_info;
++	indio_dev->channels = ad7746_channels;
++	if (id->driver_data == 7746)
++		indio_dev->num_channels = ARRAY_SIZE(ad7746_channels);
++	else
++		indio_dev->num_channels =  ARRAY_SIZE(ad7746_channels) - 2;
++	indio_dev->num_channels = ARRAY_SIZE(ad7746_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	if (pdata) {
++		if (pdata->exca_en) {
++			if (pdata->exca_inv_en)
++				regval |= AD7746_EXCSETUP_NEXCA;
++			else
++				regval |= AD7746_EXCSETUP_EXCA;
++		}
++
++		if (pdata->excb_en) {
++			if (pdata->excb_inv_en)
++				regval |= AD7746_EXCSETUP_NEXCB;
++			else
++				regval |= AD7746_EXCSETUP_EXCB;
++		}
++
++		regval |= AD7746_EXCSETUP_EXCLVL(pdata->exclvl);
++	} else {
++		dev_warn(&client->dev, "No platform data? using default\n");
++		regval = AD7746_EXCSETUP_EXCA | AD7746_EXCSETUP_EXCB |
++			AD7746_EXCSETUP_EXCLVL(3);
++	}
++
++	ret = i2c_smbus_write_byte_data(chip->client,
++					AD7746_REG_EXC_SETUP, regval);
++	if (ret < 0)
++		goto error_free_dev;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_free_dev;
++
++	dev_info(&client->dev, "%s capacitive sensor registered\n", id->name);
++
++	return 0;
++
++error_free_dev:
++	iio_free_device(indio_dev);
++error_ret:
++	return ret;
++}
++
++static int __devexit ad7746_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++
++	return 0;
++}
++
++static const struct i2c_device_id ad7746_id[] = {
++	{ "ad7745", 7745 },
++	{ "ad7746", 7746 },
++	{ "ad7747", 7747 },
++	{}
++};
++
++MODULE_DEVICE_TABLE(i2c, ad7746_id);
++
++static struct i2c_driver ad7746_driver = {
++	.driver = {
++		.name = KBUILD_MODNAME,
++	},
++	.probe = ad7746_probe,
++	.remove = __devexit_p(ad7746_remove),
++	.id_table = ad7746_id,
++};
++
++static __init int ad7746_init(void)
++{
++	return i2c_add_driver(&ad7746_driver);
++}
++
++static __exit void ad7746_exit(void)
++{
++	i2c_del_driver(&ad7746_driver);
++}
++
++MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
++MODULE_DESCRIPTION("Analog Devices AD7746/5/7 capacitive sensor driver");
++MODULE_LICENSE("GPL v2");
++
++module_init(ad7746_init);
++module_exit(ad7746_exit);
+diff --git a/drivers/staging/iio/adc/ad7746.h b/drivers/staging/iio/adc/ad7746.h
+new file mode 100644
+index 0000000..ea8572d
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7746.h
+@@ -0,0 +1,29 @@
++/*
++ * AD7746 capacitive sensor driver supporting AD7745, AD7746 and AD7747
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#ifndef IIO_CDC_AD7746_H_
++#define IIO_CDC_AD7746_H_
++
++/*
++ * TODO: struct ad7746_platform_data needs to go into include/linux/iio
++ */
++
++#define AD7466_EXCLVL_0		0 /* +-VDD/8 */
++#define AD7466_EXCLVL_1		1 /* +-VDD/4 */
++#define AD7466_EXCLVL_2		2 /* +-VDD * 3/8 */
++#define AD7466_EXCLVL_3		3 /* +-VDD/2 */
++
++struct ad7746_platform_data {
++	unsigned char exclvl;	/*Excitation Voltage Level */
++	bool exca_en;		/* enables EXCA pin as the excitation output */
++	bool exca_inv_en;	/* enables /EXCA pin as the excitation output */
++	bool excb_en;		/* enables EXCB pin as the excitation output */
++	bool excb_inv_en;	/* enables /EXCB pin as the excitation output */
++};
++
++#endif /* IIO_CDC_AD7746_H_ */
 -- 
 1.7.3.4
 
