@@ -1,24 +1,99 @@
-Return-Path: <greg@kroah.com>
-Date: Mon, 26 Sep 2011 17:32:29 -0700
-From: Greg KH <greg@kroah.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 00/14 V2] staging:iio: mixed bag
-Message-ID: <20110927003229.GA11092@kroah.com>
-References: <1316600162-15581-1-git-send-email-jic23@cam.ac.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:35790 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752973Ab1IUKHr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2011 06:07:47 -0400
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org, greg@kroah.com
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 14/14] staging:iio: Prevent reading from buffer chrdev when device has no buffer.
+Date: Wed, 21 Sep 2011 11:16:02 +0100
+Message-Id: <1316600162-15581-15-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1316600162-15581-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+References: <1316600162-15581-1-git-send-email-jic23@cam.ac.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Sep 21, 2011 at 11:15:48AM +0100, Jonathan Cameron wrote:
-> Hi Greg,
-> 
-> Same as previous lot but with the changes to iio_core.h actually
-> present. Sorry again!
+Silly bug introduced during the chrdev merge series.
 
-This one builds properly, thanks :)
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/iio_core.h            |    9 ++++++---
+ drivers/staging/iio/industrialio-buffer.c |    8 +++++---
+ drivers/staging/iio/industrialio-core.c   |    4 ++--
+ 3 files changed, 13 insertions(+), 8 deletions(-)
 
-All applied.
+diff --git a/drivers/staging/iio/iio_core.h b/drivers/staging/iio/iio_core.h
+index dde9e3e..36159e0 100644
+--- a/drivers/staging/iio/iio_core.h
++++ b/drivers/staging/iio/iio_core.h
+@@ -33,7 +33,7 @@ int __iio_add_chan_devattr(const char *postfix,
+ #ifdef CONFIG_IIO_BUFFER
+ struct poll_table_struct;
+ 
+-void iio_chrdev_buffer_open(struct iio_dev *indio_dev);
++int iio_chrdev_buffer_open(struct iio_dev *indio_dev);
+ void iio_chrdev_buffer_release(struct iio_dev *indio_dev);
+ 
+ unsigned int iio_buffer_poll(struct file *filp,
+@@ -47,8 +47,11 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+ 
+ #else
+ 
+-static inline void iio_chrdev_buffer_open(struct iio_dev *indio_dev)
+-{}
++static inline int iio_chrdev_buffer_open(struct iio_dev *indio_dev)
++{
++	return -EINVAL;
++}
++
+ static inline void iio_chrdev_buffer_release(struct iio_dev *indio_dev)
+ {}
+ 
+diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c
+index c3f57e7..4ce101a 100644
+--- a/drivers/staging/iio/industrialio-buffer.c
++++ b/drivers/staging/iio/industrialio-buffer.c
+@@ -63,11 +63,14 @@ unsigned int iio_buffer_poll(struct file *filp,
+ 	return 0;
+ }
+ 
+-void iio_chrdev_buffer_open(struct iio_dev *indio_dev)
++int iio_chrdev_buffer_open(struct iio_dev *indio_dev)
+ {
+ 	struct iio_buffer *rb = indio_dev->buffer;
+-	if (rb && rb->access->mark_in_use)
++	if (!rb)
++		return -EINVAL;
++	if (rb->access->mark_in_use)
+ 		rb->access->mark_in_use(rb);
++	return 0;
+ }
+ 
+ void iio_chrdev_buffer_release(struct iio_dev *indio_dev)
+@@ -77,7 +80,6 @@ void iio_chrdev_buffer_release(struct iio_dev *indio_dev)
+ 	clear_bit(IIO_BUSY_BIT_POS, &rb->flags);
+ 	if (rb->access->unmark_in_use)
+ 		rb->access->unmark_in_use(rb);
+-
+ }
+ 
+ void iio_buffer_init(struct iio_buffer *buffer, struct iio_dev *dev_info)
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index b11c7f3..647a405 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -1065,8 +1065,8 @@ static int iio_chrdev_open(struct inode *inode, struct file *filp)
+ 	struct iio_dev *dev_info = container_of(inode->i_cdev,
+ 						struct iio_dev, chrdev);
+ 	filp->private_data = dev_info;
+-	iio_chrdev_buffer_open(dev_info);
+-	return 0;
++
++	return iio_chrdev_buffer_open(dev_info);
+ }
+ 
+ /**
+-- 
+1.7.3.4
 
-greg k-h
