@@ -1,99 +1,41 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:35790 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752973Ab1IUKHr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2011 06:07:47 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org, greg@kroah.com
-Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 14/14] staging:iio: Prevent reading from buffer chrdev when device has no buffer.
-Date: Wed, 21 Sep 2011 11:16:02 +0100
-Message-Id: <1316600162-15581-15-git-send-email-jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org,
+	greg@kroah.com
+Cc: Stephen Warren <swarren@nvidia.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 13/14] staging:iio:magnetometer:ak8975: Fix probe() error-handling
+Date: Wed, 21 Sep 2011 11:16:01 +0100
+Message-Id: <1316600162-15581-14-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1316600162-15581-1-git-send-email-jic23@cam.ac.uk>
 References: <1316600162-15581-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Silly bug introduced during the chrdev merge series.
+From: Stephen Warren <swarren@nvidia.com>
 
+Fix ak8975_probe() to jump to the appropriate exit labels when an error
+occurs. With the previous code, some cleanup actions were being skipped
+for some error conditions.
+
+Signed-off-by: Stephen Warren <swarren@nvidia.com>
+Acked-by: Andrew Chew <achew@nvidia.com>
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/iio_core.h            |    9 ++++++---
- drivers/staging/iio/industrialio-buffer.c |    8 +++++---
- drivers/staging/iio/industrialio-core.c   |    4 ++--
- 3 files changed, 13 insertions(+), 8 deletions(-)
+ drivers/staging/iio/magnetometer/ak8975.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/staging/iio/iio_core.h b/drivers/staging/iio/iio_core.h
-index dde9e3e..36159e0 100644
---- a/drivers/staging/iio/iio_core.h
-+++ b/drivers/staging/iio/iio_core.h
-@@ -33,7 +33,7 @@ int __iio_add_chan_devattr(const char *postfix,
- #ifdef CONFIG_IIO_BUFFER
- struct poll_table_struct;
+diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+index 9c53383..ab0e26c 100644
+--- a/drivers/staging/iio/magnetometer/ak8975.c
++++ b/drivers/staging/iio/magnetometer/ak8975.c
+@@ -513,7 +513,7 @@ static int ak8975_probe(struct i2c_client *client,
+ 	err = ak8975_setup(client);
+ 	if (err < 0) {
+ 		dev_err(&client->dev, "AK8975 initialization fails\n");
+-		goto exit_gpio;
++		goto exit_free_iio;
+ 	}
  
--void iio_chrdev_buffer_open(struct iio_dev *indio_dev);
-+int iio_chrdev_buffer_open(struct iio_dev *indio_dev);
- void iio_chrdev_buffer_release(struct iio_dev *indio_dev);
- 
- unsigned int iio_buffer_poll(struct file *filp,
-@@ -47,8 +47,11 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- 
- #else
- 
--static inline void iio_chrdev_buffer_open(struct iio_dev *indio_dev)
--{}
-+static inline int iio_chrdev_buffer_open(struct iio_dev *indio_dev)
-+{
-+	return -EINVAL;
-+}
-+
- static inline void iio_chrdev_buffer_release(struct iio_dev *indio_dev)
- {}
- 
-diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c
-index c3f57e7..4ce101a 100644
---- a/drivers/staging/iio/industrialio-buffer.c
-+++ b/drivers/staging/iio/industrialio-buffer.c
-@@ -63,11 +63,14 @@ unsigned int iio_buffer_poll(struct file *filp,
- 	return 0;
- }
- 
--void iio_chrdev_buffer_open(struct iio_dev *indio_dev)
-+int iio_chrdev_buffer_open(struct iio_dev *indio_dev)
- {
- 	struct iio_buffer *rb = indio_dev->buffer;
--	if (rb && rb->access->mark_in_use)
-+	if (!rb)
-+		return -EINVAL;
-+	if (rb->access->mark_in_use)
- 		rb->access->mark_in_use(rb);
-+	return 0;
- }
- 
- void iio_chrdev_buffer_release(struct iio_dev *indio_dev)
-@@ -77,7 +80,6 @@ void iio_chrdev_buffer_release(struct iio_dev *indio_dev)
- 	clear_bit(IIO_BUSY_BIT_POS, &rb->flags);
- 	if (rb->access->unmark_in_use)
- 		rb->access->unmark_in_use(rb);
--
- }
- 
- void iio_buffer_init(struct iio_buffer *buffer, struct iio_dev *dev_info)
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index b11c7f3..647a405 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -1065,8 +1065,8 @@ static int iio_chrdev_open(struct inode *inode, struct file *filp)
- 	struct iio_dev *dev_info = container_of(inode->i_cdev,
- 						struct iio_dev, chrdev);
- 	filp->private_data = dev_info;
--	iio_chrdev_buffer_open(dev_info);
--	return 0;
-+
-+	return iio_chrdev_buffer_open(dev_info);
- }
- 
- /**
+ 	i2c_set_clientdata(client, indio_dev);
 -- 
 1.7.3.4
-
