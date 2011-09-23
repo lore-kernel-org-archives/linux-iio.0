@@ -1,114 +1,261 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Mon, 26 Sep 2011 08:42:33 +0100
-Subject: RE: [PATCH 13/16] staging;iio:adc:ad7606 use
- iio_sw_buffer_preenable rather than local equiv
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177146E7272AE5@LIMKCMBX1.ad.analog.com>
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: Michael.Hennerich@analog.com
+Cc: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 12/16] staging:iio:adc:ad7606 make gpio request failures more consistent
+Date: Fri, 23 Sep 2011 13:01:38 +0100
+Message-Id: <1316779302-12357-13-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1316779302-12357-1-git-send-email-jic23@cam.ac.uk>
 References: <1316779302-12357-1-git-send-email-jic23@cam.ac.uk>
- <1316779302-12357-14-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1316779302-12357-14-git-send-email-jic23@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron wrote on 2011-09-23:
-> Other than a few slight refactorings the local version was pretty
-> standard so replace it and rework to get rid of st->d_size which it
-> setup.
->
-> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+To my mind, if a gpio is specified in the board file, yet fails
+to be successfully requested, that is an error condidtion and
+the driver should not muddle on regardless.
 
-Acked-by: Michael Hennerich <michael.hennerich@analog.com>
+This does mean unwinding the gpios on error. Also the free_gpios
+function is reordered so that it is consistent with the request one
+(reverse order obviously).
 
-> ---
->  drivers/staging/iio/adc/ad7606.h      |    1 -
->  drivers/staging/iio/adc/ad7606_ring.c |   42 +++++--------------------
->  ------- 2 files changed, 7 insertions(+), 36 deletions(-)
-> diff --git a/drivers/staging/iio/adc/ad7606.h
-> b/drivers/staging/iio/adc/ad7606.h index 8fc259f..bc95f09 100644 ---
-> a/drivers/staging/iio/adc/ad7606.h +++
-> b/drivers/staging/iio/adc/ad7606.h @@ -68,7 +68,6 @@ struct ad7606_state
-> {
->       struct regulator                *reg;   struct work_struct         =
-     poll_work;
->       wait_queue_head_t               wq_data_avail; -        size_t     =
-                     d_size;         const struct
->  ad7606_bus_ops       *bops;  int                             irq;    uns=
-igned                        id;
-> diff --git a/drivers/staging/iio/adc/ad7606_ring.c
-> b/drivers/staging/iio/adc/ad7606_ring.c index f0742d6..20927fd 100644
-> --- a/drivers/staging/iio/adc/ad7606_ring.c +++
-> b/drivers/staging/iio/adc/ad7606_ring.c @@ -43,37 +43,6 @@ error_ret:
->  }
->
->  /**
-> - * ad7606_ring_preenable() setup the parameters of the ring before
-> enabling - * - * The complex nature of the setting of the nuber of bytes
-> per datum is due - * to this driver currently ensuring that the
-> timestamp is stored at an 8 - * byte boundary. - **/ -static int
-> ad7606_ring_preenable(struct iio_dev *indio_dev) -{ - struct
-> ad7606_state *st =3D iio_priv(indio_dev); -     struct iio_buffer *ring =
-=3D
-> indio_dev->buffer; -  size_t d_size; - -      d_size =3D
-> st->chip_info->num_channels * -
-> st->chip_info->channels[0].scan_type.storagebits / 8; - -     if
-> (ring->scan_timestamp) { -            d_size +=3D sizeof(s64); - -       =
-       if (d_size %
-> sizeof(s64)) -                        d_size +=3D sizeof(s64) - (d_size %=
- sizeof(s64)); -       } -
-> -     if (ring->access->set_bytes_per_datum)
-> -             ring->access->set_bytes_per_datum(ring, d_size); - -    st-=
->d_size =3D
-> d_size; - -   return 0; -} - -/**
->   * ad7606_trigger_handler_th() th/bh of trigger launched polling to
->   ring buffer * **/
-> @@ -106,7 +75,8 @@ static void ad7606_poll_bh_to_ring(struct
-> work_struct *work_s)
->       __u8 *buf;
->       int ret;
-> -     buf =3D kzalloc(st->d_size, GFP_KERNEL);
-> +     buf =3D kzalloc(ring->access->get_bytes_per_datum(ring),
-> +                   GFP_KERNEL);
->       if (buf =3D=3D NULL)
->               return;
-> @@ -137,8 +107,8 @@ static void ad7606_poll_bh_to_ring(struct
-> work_struct *work_s)
->       time_ns =3D iio_get_time_ns();
->
->       if (ring->scan_timestamp)
-> -             memcpy(buf + st->d_size - sizeof(s64),
-> -                     &time_ns, sizeof(time_ns));
-> +             *((s64 *)(buf + ring->access->get_bytes_per_datum(ring) -
-> +                       sizeof(s64))) =3D time_ns;
->
->       ring->access->store_to(indio_dev->buffer, buf, time_ns); done: @@
->  -148,7 +118,7 @@ done: }
->
->  static const struct iio_buffer_setup_ops ad7606_ring_setup_ops =3D {
-> -     .preenable =3D &ad7606_ring_preenable,
-> +     .preenable =3D &iio_sw_buffer_preenable,
->       .postenable =3D &iio_triggered_buffer_postenable,
->       .predisable =3D &iio_triggered_buffer_predisable,
->  };
-> @@ -166,6 +136,8 @@ int ad7606_register_ring_funcs_and_init(struct
-> iio_dev *indio_dev)
->
->       /* Effectively select the ring buffer implementation */
->       indio_dev->buffer->access =3D &ring_sw_access_funcs;
-> +     indio_dev->buffer->bpe =3D
-> +             st->chip_info->channels[0].scan_type.storagebits / 8;
-        indio_dev->pollfunc =3D iio_alloc_pollfunc(&ad7606_trigger_handler_=
-th_bh,
-                                                 &ad7606_trigger_handler_th=
-_bh,                                                  0,
+This patch is the category of not technically fixing anything, just
+making the driver be more in line with what a reviewer will expect.
 
-Greetings,
-Michael
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/adc/ad7606.h      |    5 -
+ drivers/staging/iio/adc/ad7606_core.c |  135 +++++++++++++++++++++------------
+ drivers/staging/iio/adc/ad7606_ring.c |    2 +-
+ 3 files changed, 86 insertions(+), 56 deletions(-)
 
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Mar=
-garet Seif
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index b8b3d8e..8fc259f 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -75,11 +75,6 @@ struct ad7606_state {
+ 	unsigned			range;
+ 	unsigned			oversampling;
+ 	bool				done;
+-	bool				have_frstdata;
+-	bool				have_os;
+-	bool				have_stby;
+-	bool				have_reset;
+-	bool				have_range;
+ 	void __iomem			*base_address;
+ 
+ 	/*
+diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+index 02b0a5b..e762acb 100644
+--- a/drivers/staging/iio/adc/ad7606_core.c
++++ b/drivers/staging/iio/adc/ad7606_core.c
+@@ -26,7 +26,7 @@
+ 
+ int ad7606_reset(struct ad7606_state *st)
+ {
+-	if (st->have_reset) {
++	if (gpio_is_valid(st->pdata->gpio_reset)) {
+ 		gpio_set_value(st->pdata->gpio_reset, 1);
+ 		ndelay(100); /* t_reset >= 100ns */
+ 		gpio_set_value(st->pdata->gpio_reset, 0);
+@@ -48,7 +48,7 @@ static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned ch)
+ 	if (ret)
+ 		goto error_ret;
+ 
+-	if (st->have_frstdata) {
++	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
+ 		ret = st->bops->read_block(st->dev, 1, st->data);
+ 		if (ret)
+ 			goto error_ret;
+@@ -214,12 +214,14 @@ static mode_t ad7606_attr_is_visible(struct kobject *kobj,
+ 
+ 	mode_t mode = attr->mode;
+ 
+-	if (!st->have_os &&
+-		(attr == &iio_dev_attr_oversampling_ratio.dev_attr.attr ||
+-		attr ==
+-		&iio_const_attr_oversampling_ratio_available.dev_attr.attr))
++	if (!(gpio_is_valid(st->pdata->gpio_os0) &&
++	      gpio_is_valid(st->pdata->gpio_os1) &&
++	      gpio_is_valid(st->pdata->gpio_os2)) &&
++	    (attr == &iio_dev_attr_oversampling_ratio.dev_attr.attr ||
++	     attr ==
++	     &iio_const_attr_oversampling_ratio_available.dev_attr.attr))
+ 		mode = 0;
+-	else if (!st->have_range &&
++	else if (!gpio_is_valid(st->pdata->gpio_range) &&
+ 		 (attr == &iio_dev_attr_in_voltage_range.dev_attr.attr ||
+ 		  attr ==
+ 		  &iio_const_attr_in_voltage_range_available.dev_attr.attr))
+@@ -321,63 +323,96 @@ static int ad7606_request_gpios(struct ad7606_state *st)
+ 	};
+ 	int ret;
+ 
+-	ret = gpio_request_one(st->pdata->gpio_convst, GPIOF_OUT_INIT_LOW,
+-			       "AD7606_CONVST");
+-	if (ret) {
+-		dev_err(st->dev, "failed to request GPIO CONVST\n");
+-		return ret;
++	if (gpio_is_valid(st->pdata->gpio_convst)) {
++		ret = gpio_request_one(st->pdata->gpio_convst,
++				       GPIOF_OUT_INIT_LOW,
++				       "AD7606_CONVST");
++		if (ret) {
++			dev_err(st->dev, "failed to request GPIO CONVST\n");
++			goto error_ret;
++		}
++	} else {
++		ret = -EIO;
++		goto error_ret;
+ 	}
+ 
+-	ret = gpio_request_array(gpio_array, ARRAY_SIZE(gpio_array));
+-	if (!ret)
+-		st->have_os = true;
+-
+-	ret = gpio_request_one(st->pdata->gpio_reset, GPIOF_OUT_INIT_LOW,
+-			       "AD7606_RESET");
+-	if (!ret)
+-		st->have_reset = true;
++	if (gpio_is_valid(st->pdata->gpio_os0) &&
++	    gpio_is_valid(st->pdata->gpio_os1) &&
++	    gpio_is_valid(st->pdata->gpio_os2)) {
++		ret = gpio_request_array(gpio_array, ARRAY_SIZE(gpio_array));
++		if (ret < 0)
++			goto error_free_convst;
++	}
+ 
+-	ret = gpio_request_one(st->pdata->gpio_range, GPIOF_DIR_OUT |
+-				((st->range == 10000) ? GPIOF_INIT_HIGH :
+-				GPIOF_INIT_LOW), "AD7606_RANGE");
+-	if (!ret)
+-		st->have_range = true;
++	if (gpio_is_valid(st->pdata->gpio_reset)) {
++		ret = gpio_request_one(st->pdata->gpio_reset,
++				       GPIOF_OUT_INIT_LOW,
++				       "AD7606_RESET");
++		if (ret < 0)
++			goto error_free_os;
++	}
+ 
+-	ret = gpio_request_one(st->pdata->gpio_stby, GPIOF_OUT_INIT_HIGH,
+-			       "AD7606_STBY");
+-	if (!ret)
+-		st->have_stby = true;
++	if (gpio_is_valid(st->pdata->gpio_range)) {
++		ret = gpio_request_one(st->pdata->gpio_range, GPIOF_DIR_OUT |
++				       ((st->range == 10000) ? GPIOF_INIT_HIGH :
++					GPIOF_INIT_LOW), "AD7606_RANGE");
++		if (ret < 0)
++			goto error_free_reset;
++	}
++	if (gpio_is_valid(st->pdata->gpio_stby)) {
++		ret = gpio_request_one(st->pdata->gpio_stby,
++				       GPIOF_OUT_INIT_HIGH,
++				       "AD7606_STBY");
++		if (ret < 0)
++			goto error_free_range;
++	}
+ 
+ 	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
+ 		ret = gpio_request_one(st->pdata->gpio_frstdata, GPIOF_IN,
+ 				       "AD7606_FRSTDATA");
+-		if (!ret)
+-			st->have_frstdata = true;
++		if (ret < 0)
++			goto error_free_stby;
+ 	}
+ 
+ 	return 0;
++
++error_free_stby:
++	if (gpio_is_valid(st->pdata->gpio_stby))
++		gpio_free(st->pdata->gpio_stby);
++error_free_range:
++	if (gpio_is_valid(st->pdata->gpio_range))
++		gpio_free(st->pdata->gpio_range);
++error_free_reset:
++	if (gpio_is_valid(st->pdata->gpio_reset))
++		gpio_free(st->pdata->gpio_reset);
++error_free_os:
++	if (gpio_is_valid(st->pdata->gpio_os0) &&
++	    gpio_is_valid(st->pdata->gpio_os1) &&
++	    gpio_is_valid(st->pdata->gpio_os2))
++		gpio_free_array(gpio_array, ARRAY_SIZE(gpio_array));
++error_free_convst:
++	gpio_free(st->pdata->gpio_convst);
++error_ret:
++	return ret;
+ }
+ 
+ static void ad7606_free_gpios(struct ad7606_state *st)
+ {
+-	if (st->have_range)
+-		gpio_free(st->pdata->gpio_range);
+-
+-	if (st->have_stby)
++	if (gpio_is_valid(st->pdata->gpio_frstdata))
++		gpio_free(st->pdata->gpio_frstdata);
++	if (gpio_is_valid(st->pdata->gpio_stby))
+ 		gpio_free(st->pdata->gpio_stby);
+-
+-	if (st->have_os) {
+-		gpio_free(st->pdata->gpio_os0);
+-		gpio_free(st->pdata->gpio_os1);
++	if (gpio_is_valid(st->pdata->gpio_range))
++		gpio_free(st->pdata->gpio_range);
++	if (gpio_is_valid(st->pdata->gpio_reset))
++		gpio_free(st->pdata->gpio_reset);
++	if (gpio_is_valid(st->pdata->gpio_os0) &&
++	    gpio_is_valid(st->pdata->gpio_os1) &&
++	    gpio_is_valid(st->pdata->gpio_os2)) {
+ 		gpio_free(st->pdata->gpio_os2);
++		gpio_free(st->pdata->gpio_os1);
++		gpio_free(st->pdata->gpio_os0);
+ 	}
+-
+-	if (st->have_reset)
+-		gpio_free(st->pdata->gpio_reset);
+-
+-	if (st->have_frstdata)
+-		gpio_free(st->pdata->gpio_frstdata);
+-
+ 	gpio_free(st->pdata->gpio_convst);
+ }
+ 
+@@ -531,8 +566,8 @@ void ad7606_suspend(struct iio_dev *indio_dev)
+ {
+ 	struct ad7606_state *st = iio_priv(indio_dev);
+ 
+-	if (st->have_stby) {
+-		if (st->have_range)
++	if (gpio_is_valid(st->pdata->gpio_stby)) {
++		if (gpio_is_valid(st->pdata->gpio_range))
+ 			gpio_set_value(st->pdata->gpio_range, 1);
+ 		gpio_set_value(st->pdata->gpio_stby, 0);
+ 	}
+@@ -542,8 +577,8 @@ void ad7606_resume(struct iio_dev *indio_dev)
+ {
+ 	struct ad7606_state *st = iio_priv(indio_dev);
+ 
+-	if (st->have_stby) {
+-		if (st->have_range)
++	if (gpio_is_valid(st->pdata->gpio_stby)) {
++		if (gpio_is_valid(st->pdata->gpio_range))
+ 			gpio_set_value(st->pdata->gpio_range,
+ 					st->range == 10000);
+ 
+diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+index 0b60a6e..f0742d6 100644
+--- a/drivers/staging/iio/adc/ad7606_ring.c
++++ b/drivers/staging/iio/adc/ad7606_ring.c
+@@ -110,7 +110,7 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
+ 	if (buf == NULL)
+ 		return;
+ 
+-	if (st->have_frstdata) {
++	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
+ 		ret = st->bops->read_block(st->dev, 1, buf);
+ 		if (ret)
+ 			goto done;
+-- 
+1.7.3.4
