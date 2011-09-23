@@ -1,132 +1,116 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Device-drivers-devel@blackfin.uclinux.org"
-	<Device-drivers-devel@blackfin.uclinux.org>
-Date: Mon, 26 Sep 2011 08:38:40 +0100
-Subject: RE: [PATCH 14/16] staging:iio:adc:ad7606 refactor to remove st->irq
- and st->id.
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177146E7272ADB@LIMKCMBX1.ad.analog.com>
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: Michael.Hennerich@analog.com
+Cc: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 13/16] staging;iio:adc:ad7606 use iio_sw_buffer_preenable rather than local equiv
+Date: Fri, 23 Sep 2011 13:01:39 +0100
+Message-Id: <1316779302-12357-14-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1316779302-12357-1-git-send-email-jic23@cam.ac.uk>
 References: <1316779302-12357-1-git-send-email-jic23@cam.ac.uk>
- <1316779302-12357-15-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1316779302-12357-15-git-send-email-jic23@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron wrote on 2011-09-23:
-> id wasn't used anywhere and st->irq can be removed by simply
-> passing it into the core remove function (trivially available in
-> the two bus implementations).
->
-> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Other than a few slight refactorings the local version was pretty standard
+so replace it and rework to get rid of st->d_size which it setup.
 
-Acked-by: Michael Hennerich <michael.hennerich@analog.com>
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/adc/ad7606.h      |    1 -
+ drivers/staging/iio/adc/ad7606_ring.c |   42 +++++---------------------------
+ 2 files changed, 7 insertions(+), 36 deletions(-)
 
-> ---
->  drivers/staging/iio/adc/ad7606.h      |    4 +---
->  drivers/staging/iio/adc/ad7606_core.c |   10 ++++------
->  drivers/staging/iio/adc/ad7606_par.c  |    2 +-
->  drivers/staging/iio/adc/ad7606_spi.c  |    2 +-
->  4 files changed, 7 insertions(+), 11 deletions(-)
-> diff --git a/drivers/staging/iio/adc/ad7606.h
-> b/drivers/staging/iio/adc/ad7606.h index bc95f09..0d1bb26 100644 ---
-> a/drivers/staging/iio/adc/ad7606.h +++
-> b/drivers/staging/iio/adc/ad7606.h @@ -69,8 +69,6 @@ struct ad7606_state
-> {
->       struct work_struct              poll_work;      wait_queue_head_t  =
-             wq_data_avail;
->       const struct ad7606_bus_ops     *bops;
-> -     int                             irq;
-> -     unsigned                        id;
->       unsigned                        range;  unsigned                   =
-     oversampling;   bool                            done; @@ -94,7
->  +92,7 @@ void ad7606_resume(struct iio_dev *indio_dev); struct iio_dev
->  *ad7606_probe(struct device *dev, int irq,                         void =
-__iomem
->  *base_address, unsigned id,                        const struct ad7606_b=
-us_ops *bops);
-> -int ad7606_remove(struct iio_dev *indio_dev);
-> +int ad7606_remove(struct iio_dev *indio_dev, int irq);
->  int ad7606_reset(struct ad7606_state *st);
->
->  enum ad7606_supported_device_ids {
-> diff --git a/drivers/staging/iio/adc/ad7606_core.c
-> b/drivers/staging/iio/adc/ad7606_core.c index e762acb..3c0fb72 100644
-> --- a/drivers/staging/iio/adc/ad7606_core.c +++
-> b/drivers/staging/iio/adc/ad7606_core.c @@ -459,8 +459,6 @@ struct
-> iio_dev *ad7606_probe(struct device *dev, int irq,
->       st =3D iio_priv(indio_dev);
->
->       st->dev =3D dev;
-> -     st->id =3D id;
-> -     st->irq =3D irq;
->       st->bops =3D bops;
->       st->base_address =3D base_address;
->       st->range =3D pdata->default_range =3D=3D 10000 ? 10000 : 5000;
-> @@ -501,7 +499,7 @@ struct iio_dev *ad7606_probe(struct device *dev,
-> int irq,
->       if (ret)
->               dev_warn(st->dev, "failed to RESET: no RESET GPIO
-> specified\n");
->
-> -     ret =3D request_irq(st->irq, ad7606_interrupt,
-> +     ret =3D request_irq(irq, ad7606_interrupt,
->               IRQF_TRIGGER_FALLING, st->chip_info->name, indio_dev);  if =
-(ret)
->               goto error_free_gpios; @@ -527,7 +525,7 @@ error_cleanup_ri=
-ng:
->       ad7606_ring_cleanup(indio_dev);
->
->  error_free_irq:
-> -     free_irq(st->irq, indio_dev);
-> +     free_irq(irq, indio_dev);
->
->  error_free_gpios:    ad7606_free_gpios(st); @@ -543,14 +541,14 @@
->  error_ret:   return ERR_PTR(ret); }
-> -int ad7606_remove(struct iio_dev *indio_dev)
-> +int ad7606_remove(struct iio_dev *indio_dev, int irq)
->  {
->       struct ad7606_state *st =3D iio_priv(indio_dev);
->
->       iio_buffer_unregister(indio_dev);
->       ad7606_ring_cleanup(indio_dev);
-> -     free_irq(st->irq, indio_dev);
-> +     free_irq(irq, indio_dev);
->       if (!IS_ERR(st->reg)) {
->               regulator_disable(st->reg);
->               regulator_put(st->reg);
-> diff --git a/drivers/staging/iio/adc/ad7606_par.c
-> b/drivers/staging/iio/adc/ad7606_par.c index d21218d..688632e 100644 ---
-> a/drivers/staging/iio/adc/ad7606_par.c +++
-> b/drivers/staging/iio/adc/ad7606_par.c @@ -106,7 +106,7 @@ static int
-> __devexit ad7606_par_remove(struct platform_device *pdev)
->       struct resource *res;
->       struct ad7606_state *st =3D iio_priv(indio_dev);
-> -     ad7606_remove(indio_dev);
-> +     ad7606_remove(indio_dev, platform_get_irq(pdev, 0));
->
->       iounmap(st->base_address);
->       res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> diff --git a/drivers/staging/iio/adc/ad7606_spi.c
-> b/drivers/staging/iio/adc/ad7606_spi.c index 0769c80..aede1ba 100644 ---
-> a/drivers/staging/iio/adc/ad7606_spi.c +++
-> b/drivers/staging/iio/adc/ad7606_spi.c @@ -59,7 +59,7 @@ static int
-> __devexit ad7606_spi_remove(struct spi_device *spi)
->  {
->       struct iio_dev *indio_dev =3D dev_get_drvdata(&spi->dev);
-> -     return ad7606_remove(indio_dev);
-> +     return ad7606_remove(indio_dev, spi->irq);
->  }
->
->  #ifdef CONFIG_PM
-
-Greetings,
-Michael
-
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Mar=
-garet Seif
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index 8fc259f..bc95f09 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -68,7 +68,6 @@ struct ad7606_state {
+ 	struct regulator		*reg;
+ 	struct work_struct		poll_work;
+ 	wait_queue_head_t		wq_data_avail;
+-	size_t				d_size;
+ 	const struct ad7606_bus_ops	*bops;
+ 	int				irq;
+ 	unsigned			id;
+diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+index f0742d6..20927fd 100644
+--- a/drivers/staging/iio/adc/ad7606_ring.c
++++ b/drivers/staging/iio/adc/ad7606_ring.c
+@@ -43,37 +43,6 @@ error_ret:
+ }
+ 
+ /**
+- * ad7606_ring_preenable() setup the parameters of the ring before enabling
+- *
+- * The complex nature of the setting of the nuber of bytes per datum is due
+- * to this driver currently ensuring that the timestamp is stored at an 8
+- * byte boundary.
+- **/
+-static int ad7606_ring_preenable(struct iio_dev *indio_dev)
+-{
+-	struct ad7606_state *st = iio_priv(indio_dev);
+-	struct iio_buffer *ring = indio_dev->buffer;
+-	size_t d_size;
+-
+-	d_size = st->chip_info->num_channels *
+-		 st->chip_info->channels[0].scan_type.storagebits / 8;
+-
+-	if (ring->scan_timestamp) {
+-		d_size += sizeof(s64);
+-
+-		if (d_size % sizeof(s64))
+-			d_size += sizeof(s64) - (d_size % sizeof(s64));
+-	}
+-
+-	if (ring->access->set_bytes_per_datum)
+-		ring->access->set_bytes_per_datum(ring, d_size);
+-
+-	st->d_size = d_size;
+-
+-	return 0;
+-}
+-
+-/**
+  * ad7606_trigger_handler_th() th/bh of trigger launched polling to ring buffer
+  *
+  **/
+@@ -106,7 +75,8 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
+ 	__u8 *buf;
+ 	int ret;
+ 
+-	buf = kzalloc(st->d_size, GFP_KERNEL);
++	buf = kzalloc(ring->access->get_bytes_per_datum(ring),
++		      GFP_KERNEL);
+ 	if (buf == NULL)
+ 		return;
+ 
+@@ -137,8 +107,8 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
+ 	time_ns = iio_get_time_ns();
+ 
+ 	if (ring->scan_timestamp)
+-		memcpy(buf + st->d_size - sizeof(s64),
+-			&time_ns, sizeof(time_ns));
++		*((s64 *)(buf + ring->access->get_bytes_per_datum(ring) -
++			  sizeof(s64))) = time_ns;
+ 
+ 	ring->access->store_to(indio_dev->buffer, buf, time_ns);
+ done:
+@@ -148,7 +118,7 @@ done:
+ }
+ 
+ static const struct iio_buffer_setup_ops ad7606_ring_setup_ops = {
+-	.preenable = &ad7606_ring_preenable,
++	.preenable = &iio_sw_buffer_preenable,
+ 	.postenable = &iio_triggered_buffer_postenable,
+ 	.predisable = &iio_triggered_buffer_predisable,
+ };
+@@ -166,6 +136,8 @@ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 
+ 	/* Effectively select the ring buffer implementation */
+ 	indio_dev->buffer->access = &ring_sw_access_funcs;
++	indio_dev->buffer->bpe =
++		st->chip_info->channels[0].scan_type.storagebits / 8;
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&ad7606_trigger_handler_th_bh,
+ 						 &ad7606_trigger_handler_th_bh,
+ 						 0,
+-- 
+1.7.3.4
