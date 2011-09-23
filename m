@@ -1,82 +1,135 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Mon, 26 Sep 2011 08:29:15 +0100
-Subject: RE: [PATCH 06/16] staging:iio:adc:ad799x avoid bouncing back and
- forth from iio_priv space.
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177146E7272AC5@LIMKCMBX1.ad.analog.com>
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: Michael.Hennerich@analog.com
+Cc: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 05/16] staging:iio:adc:ad799x use a table for frequency values rather than big switch.
+Date: Fri, 23 Sep 2011 13:01:31 +0100
+Message-Id: <1316779302-12357-6-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1316779302-12357-1-git-send-email-jic23@cam.ac.uk>
 References: <1316779302-12357-1-git-send-email-jic23@cam.ac.uk>
- <1316779302-12357-7-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1316779302-12357-7-git-send-email-jic23@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron wrote on 2011-09-23:
-> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/adc/ad799x_core.c |   74 ++++++++-------------------------
+ 1 files changed, 17 insertions(+), 57 deletions(-)
 
-Acked-by: Michael Hennerich <michael.hennerich@analog.com>
-
-> ---
->  drivers/staging/iio/adc/ad799x.h      |    4 ++--
->  drivers/staging/iio/adc/ad799x_core.c |    2 +-
->  drivers/staging/iio/adc/ad799x_ring.c |    4 ++--
->  3 files changed, 5 insertions(+), 5 deletions(-)
-> diff --git a/drivers/staging/iio/adc/ad799x.h
-> b/drivers/staging/iio/adc/ad799x.h index 98f06f6..eda01d5 100644 ---
-> a/drivers/staging/iio/adc/ad799x.h +++
-> b/drivers/staging/iio/adc/ad799x.h @@ -124,11 +124,11 @@ struct
-> ad799x_platform_data {
->  int ad7997_8_set_scan_mode(struct ad799x_state *st, unsigned mask);
->
->  #ifdef CONFIG_AD799X_RING_BUFFER
-> -int ad799x_single_channel_from_ring(struct ad799x_state *st, int
-> channum); +int ad799x_single_channel_from_ring(struct iio_dev
-> *indio_dev, int channum);
->  int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev);
->  void ad799x_ring_cleanup(struct iio_dev *indio_dev);
->  #else /* CONFIG_AD799X_RING_BUFFER */
-> -int ad799x_single_channel_from_ring(struct ad799x_state *st, int
-> channum) +int ad799x_single_channel_from_ring(struct iio_dev *indio_dev,
-> int channum)
->  {
->       return -EINVAL;
->  }
-> diff --git a/drivers/staging/iio/adc/ad799x_core.c
-> b/drivers/staging/iio/adc/ad799x_core.c index c615188..a24d695 100644
-> --- a/drivers/staging/iio/adc/ad799x_core.c +++
-> b/drivers/staging/iio/adc/ad799x_core.c @@ -151,7 +151,7 @@ static int
-> ad799x_read_raw(struct iio_dev *dev_info,
->       case 0:
->               mutex_lock(&dev_info->mlock);
->               if (iio_buffer_enabled(dev_info))
-> -                     ret =3D ad799x_single_channel_from_ring(st,
-> +                     ret =3D ad799x_single_channel_from_ring(dev_info,
->                                                             chan->scan_in=
-dex);
->               else
->                       ret =3D ad799x_scan_direct(st, chan->address);
-> diff --git a/drivers/staging/iio/adc/ad799x_ring.c
-> b/drivers/staging/iio/adc/ad799x_ring.c index 1bcc168..e3f4698 100644
-> --- a/drivers/staging/iio/adc/ad799x_ring.c +++
-> b/drivers/staging/iio/adc/ad799x_ring.c @@ -23,9 +23,9 @@
->
->  #include "ad799x.h"
-> -int ad799x_single_channel_from_ring(struct ad799x_state *st, int
-> channum) +int ad799x_single_channel_from_ring(struct iio_dev *indio_dev,
-> int channum)
->  {
-> -     struct iio_buffer *ring =3D iio_priv_to_dev(st)->buffer;
-> +     struct iio_buffer *ring =3D indio_dev->buffer;
->       int count =3D 0, ret;
->       u16 *ring_data;
-
-Greetings,
-Michael
-
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Mar=
-garet Seif
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index 517cbd9..c615188 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -170,7 +170,15 @@ static int ad799x_read_raw(struct iio_dev *dev_info,
+ 	}
+ 	return -EINVAL;
+ }
+-
++static const unsigned int ad7998_frequencies[] = {
++	[AD7998_CYC_DIS]	= 0,
++	[AD7998_CYC_TCONF_32]	= 15625,
++	[AD7998_CYC_TCONF_64]	= 7812,
++	[AD7998_CYC_TCONF_128]	= 3906,
++	[AD7998_CYC_TCONF_512]	= 976,
++	[AD7998_CYC_TCONF_1024]	= 488,
++	[AD7998_CYC_TCONF_2048]	= 244,
++};
+ static ssize_t ad799x_read_frequency(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+@@ -178,7 +186,7 @@ static ssize_t ad799x_read_frequency(struct device *dev,
+ 	struct iio_dev *dev_info = dev_get_drvdata(dev);
+ 	struct ad799x_state *st = iio_priv(dev_info);
+ 
+-	int ret, len = 0;
++	int ret;
+ 	u8 val;
+ 	ret = ad799x_i2c_read8(st, AD7998_CYCLE_TMR_REG, &val);
+ 	if (ret)
+@@ -186,33 +194,7 @@ static ssize_t ad799x_read_frequency(struct device *dev,
+ 
+ 	val &= AD7998_CYC_MASK;
+ 
+-	switch (val) {
+-	case AD7998_CYC_DIS:
+-		len = sprintf(buf, "0\n");
+-		break;
+-	case AD7998_CYC_TCONF_32:
+-		len = sprintf(buf, "15625\n");
+-		break;
+-	case AD7998_CYC_TCONF_64:
+-		len = sprintf(buf, "7812\n");
+-		break;
+-	case AD7998_CYC_TCONF_128:
+-		len = sprintf(buf, "3906\n");
+-		break;
+-	case AD7998_CYC_TCONF_256:
+-		len = sprintf(buf, "1953\n");
+-		break;
+-	case AD7998_CYC_TCONF_512:
+-		len = sprintf(buf, "976\n");
+-		break;
+-	case AD7998_CYC_TCONF_1024:
+-		len = sprintf(buf, "488\n");
+-		break;
+-	case AD7998_CYC_TCONF_2048:
+-		len = sprintf(buf, "244\n");
+-		break;
+-	}
+-	return len;
++	return sprintf(buf, "%u\n", ad7998_frequencies[val]);
+ }
+ 
+ static ssize_t ad799x_write_frequency(struct device *dev,
+@@ -224,7 +206,7 @@ static ssize_t ad799x_write_frequency(struct device *dev,
+ 	struct ad799x_state *st = iio_priv(dev_info);
+ 
+ 	long val;
+-	int ret;
++	int ret, i;
+ 	u8 t;
+ 
+ 	ret = strict_strtol(buf, 10, &val);
+@@ -238,36 +220,14 @@ static ssize_t ad799x_write_frequency(struct device *dev,
+ 	/* Wipe the bits clean */
+ 	t &= ~AD7998_CYC_MASK;
+ 
+-	switch (val) {
+-	case 15625:
+-		t |= AD7998_CYC_TCONF_32;
+-		break;
+-	case 7812:
+-		t |= AD7998_CYC_TCONF_64;
+-		break;
+-	case 3906:
+-		t |= AD7998_CYC_TCONF_128;
+-		break;
+-	case 1953:
+-		t |= AD7998_CYC_TCONF_256;
+-		break;
+-	case 976:
+-		t |= AD7998_CYC_TCONF_512;
+-		break;
+-	case 488:
+-		t |= AD7998_CYC_TCONF_1024;
+-		break;
+-	case 244:
+-		t |= AD7998_CYC_TCONF_2048;
+-		break;
+-	case  0:
+-		t |= AD7998_CYC_DIS;
+-		break;
+-	default:
++	for (i = 0; i < ARRAY_SIZE(ad7998_frequencies); i++)
++		if (val == ad7998_frequencies[i])
++			break;
++	if (i == ARRAY_SIZE(ad7998_frequencies)) {
+ 		ret = -EINVAL;
+ 		goto error_ret_mutex;
+ 	}
+-
++	t |= i;
+ 	ret = ad799x_i2c_write8(st, AD7998_CYCLE_TMR_REG, t);
+ 
+ error_ret_mutex:
+-- 
+1.7.3.4
