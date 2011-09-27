@@ -1,6 +1,6 @@
 Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4E8591C0.7000009@cam.ac.uk>
-Date: Fri, 30 Sep 2011 10:54:08 +0100
+Message-ID: <4E81AB82.3020202@cam.ac.uk>
+Date: Tue, 27 Sep 2011 11:54:58 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
 To: Jonathan Cameron <jic23@cam.ac.uk>
@@ -12,14 +12,8 @@ In-Reply-To: <1316534313-20212-1-git-send-email-jic23@cam.ac.uk>
 Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-
-Only feedback on this version was generally positive (thanks Maxime).
-
-Manuel, have you had a chance to look at this?  I'd like to push it
-on fairly soon as rumour says there is a rapidly approaching merge
-window.
-
-Jonathan
+Anyone had a chance to look over this?
+> Hi All,
 > 
 > This has v2 of the dummy driver introduction to start with,
 > main changes are responses to Manuels review and a kernel doc
