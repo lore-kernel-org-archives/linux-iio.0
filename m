@@ -1,82 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:37239 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752264Ab1I0NtV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Sep 2011 09:49:21 -0400
-Message-ID: <4E81D658.30801@cam.ac.uk>
-Date: Tue, 27 Sep 2011 14:57:44 +0100
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:53450 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752350Ab1I0IsW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Sep 2011 04:48:22 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Amit Kucheria <amit.kucheria@verdurent.com>
-Subject: Re: IIO: ownership of patches taking drivers out of staging.
-References: <4E81D071.5050806@cam.ac.uk> <201109271534.09628.manuel.stahl@iis.fraunhofer.de>
-In-Reply-To: <201109271534.09628.manuel.stahl@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-1
+To: linux-iio@vger.kernel.org, greg@kroah.com
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH] staging:iio: unwind IIO_IN -> IIO_VOLTAGE define.
+Date: Tue, 27 Sep 2011 09:56:40 +0100
+Message-Id: <1317113801-21838-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/27/11 14:34, Manuel Stahl wrote:
-> Hi Jonathon,
-> 
-> I'm fine with that. Of course we could also change ownership for adis16400 to 
-> Michael, as I don't have the time to actively support this one.
-> I have a few others in the pipeline (lis331dlh, itg3200) that I will publish 
-> as soon as we have a stable API in mainline.
-Cool.  Unless Michael particularly wants it, why don't we put a maintainers
-entry in that lists the Analog list along side linux-iio as contact points.
-either Michael or I can then take the maintainer role as emails will get to
-both of us (and you for that matter) anyway.
+Prequel to [PATCH 00/16] staging:iio:ad799x/ad7606/ad7887 cleanups.
+As Greg discovered, my local tags were wrong and the above series
+doesn't actually apply to his tree (I had this tagged as already
+gone - oops).  Hopefully this is the only difference between
+our trees.
+
+This is a trivial cleanup of an original churn avoidance define.
+When we introduced the in_ and out_ prefixes I wanted to keep
+the churn in drivers down to keep that already invasive patch
+as clean as possible.  Now that is in place, we can unwind
+the hack that allowed that for the few remaining users.
+
+Note this may well break out of tree drivers that had been
+muddling along with the old definition.
 
 Jonathan
 
-> 
-> Regards,
-> Manuel
-> 
-> Am Dienstag, 27. September 2011, 15:32:33 schrieb Jonathan Cameron:
->> Hi All,
->>
->> I'm putting together a patch set to propose the first step in moving
->> IIO out of the staging tree.
->>
->> I want to take a small set (initially) of representative drivers
->> along for the ride.
->>
->> Now unlike later elements which will consist of git moves (and hence
->> preserve history) those that come with us now will be done by
->> stripping down the drivers and then building their feature set
->> back up as we go.
->>
->> My question here is whether people are happy if I assign authorship
->> of patches for their drivers to them (with appropriate note and
->> sign off from me to explain where they came from).
->>
->> Right now my example set consists of
->>
->> ad799x - Michael's
->> max1363 - mine :)
->> tsl2583 - Amit's
->> adis16400 - Manuel's but with large bits from drivers of mine
->> 	    and Barry Song. I'm fine with it being Manuel's.
->> 	    Copyright notice covers that some of it is Analog's
->> 	    so, Michael, is that fine with you guys?
->>
->> So I need responses from Amit, Michael and Manuel as to whether
->> they mind me setting author of relevant drivers to them?  I'd
->> obviously also like sign offs once you have had time to look
->> at them. I'll post an updated tree shortly to github.
->>
->> Thanks,
->>
->> Jonathan
->>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Jonathan Cameron (1):
+  staging:iio: unwind the IIO_IN -> IIO_VOLTAGE define
+
+ drivers/staging/iio/accel/adis16201_core.c      |    6 +-
+ drivers/staging/iio/accel/adis16203_core.c      |    6 +-
+ drivers/staging/iio/accel/adis16204_core.c      |    6 +-
+ drivers/staging/iio/accel/adis16209_core.c      |    6 +-
+ drivers/staging/iio/accel/adis16220_core.c      |    8 +-
+ drivers/staging/iio/accel/adis16240_core.c      |    6 +-
+ drivers/staging/iio/accel/kxsd9.c               |    2 +-
+ drivers/staging/iio/adc/ad7150.c                |    8 +-
+ drivers/staging/iio/adc/ad7291.c                |    4 +-
+ drivers/staging/iio/adc/ad7298_core.c           |   16 ++--
+ drivers/staging/iio/adc/ad7476_core.c           |   16 ++--
+ drivers/staging/iio/adc/ad7606_core.c           |   36 +++++-----
+ drivers/staging/iio/adc/ad7780.c                |    4 +-
+ drivers/staging/iio/adc/ad7793.c                |    2 +-
+ drivers/staging/iio/adc/ad7887_core.c           |    4 +-
+ drivers/staging/iio/adc/ad799x_core.c           |   80 +++++++++++-----------
+ drivers/staging/iio/adc/max1363_core.c          |   24 +++++--
+ drivers/staging/iio/addac/adt7316.c             |    8 +-
+ drivers/staging/iio/gyro/adis16060_core.c       |    4 +-
+ drivers/staging/iio/gyro/adis16080_core.c       |    4 +-
+ drivers/staging/iio/gyro/adis16260_core.c       |    6 +-
+ drivers/staging/iio/iio.h                       |    4 -
+ drivers/staging/iio/impedance-analyzer/ad5933.c |    4 +-
+ drivers/staging/iio/imu/adis16400_core.c        |    8 +-
+ drivers/staging/iio/meter/ade7758_core.c        |    6 +-
+ 25 files changed, 141 insertions(+), 137 deletions(-)
+
+-- 
+1.7.3.4
 
