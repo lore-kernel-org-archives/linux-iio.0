@@ -1,317 +1,258 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:51284 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753447Ab1I0OVf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Sep 2011 10:21:35 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
-Cc: dtor@mail.ru,
-	khali@linux-fr.org,
-	guenter.roeck@ericsson.com,
+Cc: dtor@mail.ru, khali@linux-fr.org, guenter.roeck@ericsson.com,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [RFC PATCH 0/6 V2] IIO: Out of staging step 1: The core
-Date: Tue, 27 Sep 2011 15:29:48 +0100
-Message-Id: <1317133794-16397-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
-
-Hi All,
-
-Dmitry, Jean, Guenter, I've cc'd you on the offchance any of you
-have the time / inclination to take a look at this explanatory
-cover letter.  Clearly IIO touches on the edges of the scope of
-hwmon and input so I would welcome your input on whether I have
-pitched this letter right (let alone the code!)
-
-
-
-V2 brings things up to date and adds ad799x and some documentation.
-
-I'd like to make a good impression when posting this more widely,
-hence I'm posting it here first. Please comment on both the code
-and the text of this explanatory email!  Are there other things
-I should put in here?  Clearly the set is currently missing
-documentation which will need doing before this goes to lkml etc.
-
-Also note that the code has to sit on a couple of namespace moves
-to avoid a clash with the staging tree.  These are in the
-outofstaging branch on github.
-
-https://github.com/jic23/linux-iio/commits/outofstaging
-
-
-Dear All,
-
-This is our first attempt to propose moving 'some' of the
-Industrial I/O subsystem out of staging.  This cover letter
-attempts to explain what IIO is and why it is needed.
-All comments welcome on this as well as the code!
-
-So the big question is 'Why is there a need for a new subsystem?'
-
-To answer this we need two things, a list or requirements and analysis
-of why current subystems (hwmon and input) do not meet them. Focused
-subsytems targetting just one type of sensor have been rejected as
-a concept (see ALS proposal).
-
-Requirements of IIO.
-
-1) Simple interface for simple use cases.
-2) High performance data route.
-3) Generic and consistent 'event' handling.
-4) Wide device type coverage with consistent interface.
-5) Complex triggering setups - multiple devices capture 'simultaneously'.
-6) Support output devices.
-
-Lets take these in turn:
-
-1 - Simple interface for simple use cases:
-
-The requirement boils down to an easy way to get a reading from a device or set
-an output without much overhead.
-
-This is an area in which hwmon excels. Everything is available via sysfs
-and thats exactly what we allow drivers to provide.
-
-2 - High performance data route:
-
-We want a path via which data can get to userspace without much overhead,
-thus allowing high speed data capture. (Note I'm not arguing we have this
-right yet - but the potential is there).
-
-Input comes closest to this, but its approach of treating all data as events
-and providing significant filtering options (obvously tailored to human input)
-means that it isn't light weight.
-
-The approach taken in IIO is to provide a 'buffered' interface.
-
-The buffer may be in hardware or in software. The 'data' outputs of the
-devices being considered can be mapped onto the concept of 'scans'.  In ADCs it
-is common to have a single actually convertor connected via a multiplexer to a
-much larger set of inputs. The multiplexer will select the channels in turn in a
-repeating sequence.  Each repeat is termed a scan.  The whole scan clearly
-doesn't always occur simultaneously, but can be considered as a single set
-of associated data none the less.  Thus we have repeating sequences of data.
-This means that the meta data about what we are reading can be read
-'out of band' from the data stream itself.
-
-In IIO the buffers consist of a sequence of scans. The contents of each scan
-data set (laid out however a driver wants to do it) is provided via a set of
-sysfs attributes in the scan_elements directory.
-
-The reason we can do it this way is that unlike input we pass our 'unusual'
-events via a different path.
-(see point 3).
-
-We also allow for the minimum amount of processing of data to occur in the
-kernel possible. Its often best to leave this to userspace and in a number
-of important use cases doesn't need doing at all, either because it can be
-done offline (logging) or because the reverse transform can be applied
-to a much smaller set of data (e.g. software threshold comparison).  Note
-that the raw value off the sensor is often considerably more compact to store
-than a value in some set of consistent units.
-
-3 - Generic and consistent 'event' handling.
-
-Numerous sensing devices provide threshold type detectors designed to do
-simple comparisons on the data without involving the host device.
-
-In input, these are passed within the main event stream (we don't as that
-would mean all data would need to carry identifying metadata along).  Where
-these events map to typical human input device elements (double click etc)
-these are well handled. Hwmon supports a small set of such events via its alarm
-attributes.
-
-For IIO we have decided to try and create an event code (litterally one number)
-to describe all types of events that these devices can detect and pass on to
-the host device. This is coupled with appropriate sysfs controls to configure
-the event.  The event code consists of:
-
-1) What type of channel
-
-2) Which channel (either axis / index or just index) Note this can be compound
-if modified. (e.g. freefall is typically X&Y&Z all less than alpha)
-
-3) What type of processed data it is applied to (raw value, abs value,
-rate of change, average shifted value)
-
-4) Which direction the threshold is crossed in.
-
-4 - Device coverage with a consistent interface
-
-Hwmon and input have consistent interfaces that cover their chosen target well.
-When considering a wider range of sensors they simply don't generalize well
-enough. Afterall why should they?
-
-Initially we matched hwmon where ever possible. In the end we broke away for a
-number of reasons. The in / out naming for voltage is a nasty bit of legacy for
-them which we don't want to carry. There is no general way of specifying whether
-a channel is an input or an output.  Having said that there is an easy mapping
-from IIO to hwmon (see possible future work).
-
-Input is only interested in a narrow set of devices (those for human input).
-
-5) Complex triggering setups
-
-This is probably more of a niche requirement but the generalizations required
-for it do simplify simple cases as well.
-
-In a traditional data capturing environment (picture oscilloscopes / data
-loggers), the concept of a trigger is vital.  That is, some event on which
-data is captured.
-
-In IIO this point is stretched somewhat.  For some devices it is indeed the
-point of capture (those with explicit 'capture now' pins, or those that
-capture when asked to by a bus transaction).  For other devices that run on
-their own internal clocks this is actualy a 'data has been captured now'
-signal (dataready).
-
-What we want to allow (where possible) is for any device to be triggered by
-any other and crucially for any number of devices to be triggered by a single
-source.  As Thomas Gleixner observed, this is pretty much an irq cascade
-(and hence that's how it is now implemented - a very tidy approach!).
-
-Some of the types of trigger we have are:
-
-a) Data ready signals
-   These usually need to be used to trigger reading from the device producing
-   them but can be used to get only 'slightly' late readings from other devices.
-b) Software triggers
-   These allow userspace to trigger simultaneous capture from a number of
-   devices.
-c) Standalone triggers.
-   General interrupts from whereever can be used to cause a capture to occur
-   - typically a gpio.
-d) hardware timers
-   (could probably do with a more consistent interface outside of IIO for
-   these).
-
-6) Support output devices.
-
-This is a relatively recent addition to IIO (despite us planning on it when
-the name was picked!).  Right now the support is very rudimentary -
-corresponding to the most basic sysfs only device interfaces.
-
-It becomes more interesting when buffered outputs are considered, but that
-has not yet been implemented.
-
-There is rudimentary support for output in hwmon (as is appropriate for its
-use domain) and indeed some of this could map to the regulator api, but
-neither is adaptable or suitable for more complex data flows.
-
-
-
-
-To get an appreciation for the whole subsystem it is necessary to look at
-what is still in staging as we aren't attempting to move the whole core
-out in one go.  Naturally if anyone fancies diving deeper into that tree
-and commenting on stuff in there it would also be welcomed.
-
-Note however that being in staging some of the drivers are in 'interesting'
-shape.
-
-'Good' drivers include (and this is far from a complete list)
-
-adc/
-	ad7192
-	ad7780
-	ad7792
-	ad799x
-	max1363
-accel/
-	lis3l02dq
-gyro/
-	adis16260
-imu/
-	adis16400
-light/
-	tsl2563
-
-
-So what do we have here?
-
-Our merge plan (order may change) has the following elements
-
-1) Registration core and sysfs interface
-2) Some stripped down drivers using the above.
-
-3) Event interface
-4) Extend drivers in 2 to provide event interfaces.
-
-5) Buffered reading interface
-6) Extend drivers from 4 to provide buffered reading.
-7) Pull in hardware ring buffer device examples
-
-8) Futher sets pulling across a few drivers at time (keeping review
-manageable!)
-
-Drivers may be added to the subsystem at any stage (once support for
-what they use is available).
-
-This patchset (1-2) only covers the simplest type of driver supported
-by IIO, that with only a sysfs based interface.  Please review it
-with that in mind!
-
-Acknowledgements
-
-A lot of thanks is due to various people during the IIO development.
-Most of it is born out by commit messages but I'd particularly like to
-thank Michael Hennerich for massive contributions and Arnd Bergmann for
-taking the time to not only suggest what we should do differently but
-to explain it to me and look at the results as they occured.
-
-Amit Kucheria (1):
-  IIO:light:tsl2563 initial move out of staging.
-
-Jonathan Cameron (3):
-  IIO: Core sysfs only support.
-  IIO:ADC: max1363 initial import.
-  IIO: ABI documetation.
-
-Manuel Stahl (1):
-  IIO:imu:adis16400 partial move from staging.
-
-Michael Hennerich (1):
-  IIO:ADC:ad799x initial import.
-
- Documentation/ABI/testing/sysfs-bus-iio |  223 ++++++
- drivers/Kconfig                         |    2 +
- drivers/Makefile                        |    2 +
- drivers/iio/Kconfig                     |   19 +
- drivers/iio/Makefile                    |   10 +
- drivers/iio/adc/Kconfig                 |   30 +
- drivers/iio/adc/Makefile                |    9 +
- drivers/iio/adc/ad799x_core.c           |  722 +++++++++++++++++++
- drivers/iio/adc/max1363.h               |  148 ++++
- drivers/iio/adc/max1363_core.c          | 1000 +++++++++++++++++++++++++++
- drivers/iio/iio.c                       |  593 ++++++++++++++++
- drivers/iio/imu/Kconfig                 |   12 +
- drivers/iio/imu/Makefile                |    6 +
- drivers/iio/imu/adis16400.h             |  180 +++++
- drivers/iio/imu/adis16400_core.c        | 1141 +++++++++++++++++++++++++++++++
- drivers/iio/light/Kconfig               |   16 +
- drivers/iio/light/Makefile              |    6 +
- drivers/iio/light/tsl2563.c             |  653 ++++++++++++++++++
- include/linux/iio/ad799x.h              |   12 +
- include/linux/iio/iio.h                 |  249 +++++++
- include/linux/iio/sysfs.h               |   68 ++
- include/linux/iio/tsl2563.h             |    9 +
- 22 files changed, 5110 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio
- create mode 100644 drivers/iio/Kconfig
- create mode 100644 drivers/iio/Makefile
- create mode 100644 drivers/iio/adc/Kconfig
- create mode 100644 drivers/iio/adc/Makefile
- create mode 100644 drivers/iio/adc/ad799x_core.c
- create mode 100644 drivers/iio/adc/max1363.h
- create mode 100644 drivers/iio/adc/max1363_core.c
- create mode 100644 drivers/iio/iio.c
- create mode 100644 drivers/iio/imu/Kconfig
- create mode 100644 drivers/iio/imu/Makefile
- create mode 100644 drivers/iio/imu/adis16400.h
- create mode 100644 drivers/iio/imu/adis16400_core.c
- create mode 100644 drivers/iio/light/Kconfig
- create mode 100644 drivers/iio/light/Makefile
- create mode 100644 drivers/iio/light/tsl2563.c
- create mode 100644 include/linux/iio/ad799x.h
- create mode 100644 include/linux/iio/iio.h
- create mode 100644 include/linux/iio/sysfs.h
- create mode 100644 include/linux/iio/tsl2563.h
-
+Subject: [PATCH 6/6] IIO: ABI documetation.
+Date: Tue, 27 Sep 2011 15:29:54 +0100
+Message-Id: <1317133794-16397-7-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1317133794-16397-1-git-send-email-jic23@cam.ac.uk>
+References: <1317133794-16397-1-git-send-email-jic23@cam.ac.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
+
+Elements lifted from staging documentation,
+drivers/staging/iio/Documentation/sysfs-bus-iio
+
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ Documentation/ABI/testing/sysfs-bus-iio |  223 +++++++++++++++++++++++++++++++
+ 1 files changed, 223 insertions(+), 0 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+new file mode 100644
+index 0000000..f271509
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -0,0 +1,223 @@
++What:		/sys/bus/iio/devices/iio:deviceX
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware chip or device accessed by one communication port.
++		Corresponds to a grouping of sensor channels. X is the IIO
++		index of the device.
++
++What:		/sys/bus/iio/devices/iio:deviceX/name
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Description of the physical chip / device for device X.
++		Typically a part number.
++
++What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Some devices have internal clocks.  This parameter sets the
++		resulting sampling frequency.
++
++What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency_available
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		When the internal sampling clock can only take a small
++		discrete set of values, this file lists those available.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled no bias removal etc) voltage measurement from
++		channel Y. In special cases where the channel does not
++		correspond to externally available input one of the named
++		versions may be used. The number must always be specified and
++		unique to allow association with event codes. Units after
++		application of scale and offset are microvolts.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY-voltageZ_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled) differential voltage measurement equivalent to
++		channel Y - channel Z where these channel numbers apply to the
++		physically equivalent inputs when non differential readings are
++		separately available. In differential only parts, then all that
++		is required is a consistent labeling.  Units after application
++		of scale and offset are microvolts.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_tempX_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_z_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled no bias removal etc) temperature measurement.
++		It an axis is specified it generally means that the temperature
++		sensor is associated with one part of a compound device (e.g.
++		a gyroscope axis). Units after application of scale and offset
++		are milli degrees Celsuis.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Acceleration in direction x, y or z (may be arbitrarily assigned
++		but should match other such assignments on device).
++		Has all of the equivalent parameters as per voltageY. Units
++		after application of scale and offset are m/s^2.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_z_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Angular velocity about axis x, y or z (may be arbitrarily
++		assigned) Data converted by application of offset then scale to
++		radians per second. Has all the equivalent parameters as
++		per voltageY. Units after application of scale and offset are
++		radians per second.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_incli_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_incli_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_incli_z_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Inclination raw reading about axis x, y or z (may be
++		arbitrarily assigned). Data converted by application of offset
++		and scale to Degrees.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Magnetic field along axis x, y or z (may be arbitrarily
++		assigned).  Data converted by application of offset
++		then scale to Gauss.
++
++What:		/sys/bus/iio/devices/device[n]/illuminance0_input
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This should return the calculated lux from the light sensor.
++		Units are lumens.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensityY_infrared_input
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This property is supported by sensors that have an infrared
++		sensitive element.  Unfortunately this reading is very
++		frequency range dependent and hence tends not to have well
++		defined units.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensityY_both_input
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This property is supported by sensors that have an infrared
++		and visible light sensing element. The visible portion is
++		usually extracted by subtracting the value from a separate
++		infrared only sensor.  Unfortunately this reading is very
++		frequency range dependent and hence tends not to have well
++		defined	units.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If known for a device, offset to be added to <type>[Y]_raw prior
++		to scaling by <type>[Y]_scale in order to obtain value in the
++		<type> units as specified in <type>[y]_raw documentation.
++		Not present if the offset is always 0 or unknown. If Y or
++		axis <x|y|z> is not present, then the offset applies to all
++		in channels of <type>.
++		May be writable if a variable offset can be applied on the
++		device. Note that this is different to calibbias which
++		is for devices (or drivers) that apply offsets to compensate
++		for variation between different instances of the part, typically
++		adjusted by using some hardware supported calibration procedure.
++		Calibbias is applied internally, offset is applied in userspace
++		to the _raw output.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_scale
++What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_scale
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If known for a device, scale to be applied to <type>Y[_name]_raw
++		post addition of <type>[Y][_name]_offset in order to obtain the
++		measured value in <type> units as specified in
++		<type>[Y][_name]_raw documentation..  If shared across all in
++		channels then Y and <x|y|z> are not present and the value is
++		called <type>[Y][_name]_scale. The peak modifier means this
++		value is applied to <type>Y[_name]_peak_raw values.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale_available
++What:		/sys/.../iio:deviceX/in_voltageX_scale_available
++What:		/sys/.../iio:deviceX/in_voltage-voltage_scale_available
++What:		/sys/.../iio:deviceX/out_voltageX_scale_available
++What:		/sys/.../iio:deviceX/in_capacitance_scale_available
++KernelVersion:	2.635
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If a discrete set of scale values are available, they
++		are listed in this attribute.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_calibbias
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_calibbias
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_calibbias
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_x_calibbias
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_y_calibbias
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_z_calibbias
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware applied calibration offset. (assumed to fix production
++		inaccuracies).
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_x_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_y_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_z_calibscale
++What:		/sys/.../iio:deviceX/in_intensityY_infrared_calibscale
++What:		/sys/.../iio:deviceX/in_intensityY_both_calibscale
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware applied calibration scale factor. (assumed to fix
++		production inaccuracies).  If shared across all channels,
++		<type>_calibscale is used.
+\ No newline at end of file
 -- 
 1.7.3.4
+
