@@ -1,168 +1,317 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:42442 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754908Ab1I2Ikh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Sep 2011 04:40:37 -0400
-Message-ID: <4E8430FC.3000800@cam.ac.uk>
-Date: Thu, 29 Sep 2011 09:49:00 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: JohnLM <johnlm@apollo.lv>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>
-Subject: Re: New board potentially using IIO
-References: <20110928014131.2dc76061@isg005> <4E82DFD7.3000906@cam.ac.uk> <20110929003510.638ac489@isg005>
-In-Reply-To: <20110929003510.638ac489@isg005>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: dtor@mail.ru,
+	khali@linux-fr.org,
+	guenter.roeck@ericsson.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [RFC PATCH 0/6 V2] IIO: Out of staging step 1: The core
+Date: Tue, 27 Sep 2011 15:29:48 +0100
+Message-Id: <1317133794-16397-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/28/11 22:35, JohnLM wrote:
-> On Wed, 28 Sep 2011 09:50:31 +0100
-> Jonathan Cameron <jic23@cam.ac.uk> wrote:
-> 
->> On 09/27/11 23:41, JohnLM wrote:
->>> Hello Jonathan!
->>>
->>> I wasn't exactly sure if this topic is worth discussing on linux-iio
->>> or it'd just cause more "noise". So I just wrote it to you.
->>> (Since you're -- from what I can understand -- maintainer of IIO)
->> Should be on linux-iio (people can ignore it if not interested!)
->> So I've cc'd the list.
->>>
->>> The thing is... I'm working in a project and we're developing a
->>> sort of DAQ (Data acquisition) device. It's still pretty much on
->>> initial brainstorming stage.
->>>
->>> Few things are laid down however - it shall be a PCI-Express device
->>> with potentially very fast (fuzzy definition here, but assume tens
->>> or hundreds of MSPS) data sources/sinks (or "channels" by Comedi
->>> terms). And I have simple and fairly generic protocol to exchange
->>> data over PCIe.
->>>
->>> Not to go into details too much I'll get to my questions.
->>> What's the current status with IIO and how it relates to Comedi?
->> Firstly my knowledge of Comedi is somewhat light (tediously NI won't
->> give me docs for the only card I actually want to use it for and
->> it isn't supported - but that is another story!)
->>
->> We've mostly kept clear of Comedi (other than for inspiration in
->> some areas).  Traditionally Comedi has covered high speed
->> daq cards in relatively high end machines.  We very much wanted to
->> have a clear progression from slow and simple drivers (basically hwmon
->> type interfaces where you read from human readable sysfs files)
->> through to the low overhead / high data rate end.  Right now though
->> we don't have any truely high speed devices.
-> 
-> Then it on first glance it appears my device would be better using
-> Comedi. But I'll have to study the APIs/interfaces for both more
-> thoroughly.
-> I'm not particularly interested in providing sysfs files for other than
-> testing the driver. I intend to use mostly chardevs to get data from and
-> shove data unto.
-> Then again, that was the initial idea, obviously I'll have to conform to
-> one or the other subsystem's interface.
-> 
->> There has also been some discussion about sharing interfaces with
->> comedi but for now that has stalled because no one has had the time
->> to look into it.  To my quick glance it looked like comedi was pretty
->> much always used through a standard userspace library so such sharing
->> would probably occur at the library interface level. Comedi is old
->> and big so carries a lot of legacy stuff very different to how it
->> would be developed today.
->>
->> I know there have been some suggestions that eventually some comedi
->> stuff might migrate to IIO, but right now no one has any time to even
->> see if that is feasible! (he says but who knows what others are
->> looking at!)
-> 
-> btw I did a quick search over Comedi archives, there is no topic
-> concerning merging with IIO. In fact nothing came up with keyword IIO
-> in topics. I reckon this idea didn't originate with them. :)
-Indeed. The only suggestion I've seen was:
-http://lists.kernelnewbies.org/pipermail/kernelnewbies/2011-April/001616.html
-(note I don't want to encourage this right now anyway as we have
-too much on our plate!)
+Hi All,
 
-The interface sharing stuff came from our side, specifically 
-http://marc.info/?l=linux-iio&m=129271499509310
-> 
->>
->>> I can
->>> see IIO in progress of being moved out of staging, which is nice.
->>> What's the support for outputting data to the device? 
->> Very basic.  Right now there are two types of output. Simple
->> dac controls via single sysfs files - write a value and that is
->> what you get and dds controls which only cover small classes of
->> standard waveforms (square, sine etc).  
->>
->> Analog Devices are interested in a more general framework but I
->> don't think any work has gone in on it as yet (cc'd Michael in
->> case there any updates on that front).  The plan was to do
->> a reverse version of the buffering we have for outputs.  So
->> you'd set up the channel format etc for an input buffer, then
->> push the waveform in you want.  That would then either sit in
->> a software buffer and be pushed to the device on a trigger
->> occuring, or the device would have a hardware buffer that would
->> eat it up.
-> 
-> That's pretty much what I was thinking. I'd want to add that the write
-> itself could optionally be considered a trigger. This would start
-> consuming the data right away and should be
-> better for real-time (I use the term ligtly here) capable devices.
-> On other fast devices might require a larger chunk of initial data to
-> avoid buffer underrun.
-True on both counts.  I suspect the queue up and then trigger when ready
-approach might work better (allows for things like ramps up to a level),
-but it comes down to whatever the user case requires!
-> 
->>
->> The exact form of the interface hasn't been pinned down as
->> we don't have any code yet!
->>> Let's say an DAC
->>> as a voltage source or function generator.
->>> Does my upcoming device driver is a good candidate to use IIO, or
->>> should I look elsewhere?
->> I'd say that depends on how much work you want to give yourself.
->> It would probably be easier to do under Comedi as everything is
->> there already.  If you did want to do it under IIO, I would first
->> want to open up a full discussion with the Comedi list and more
->> generally about whether it makes sense to try doing this stuff
->> in IIO. Basically, I have no interest in starting a fight
->> with them, but would love to get their input if we do start
->> supporting the level of device you describe.
-> 
-> I'm not afraid some extra work, in fact I was up to make the whole
-> driver/interface/library stack if necessary. But why do it when someone
-> has done it for you? }:)
-Getting buffered feeds to output channels working is a big job, so
-I'd be delighted if you do decide to take it on.  I know there is a fair
-bit of interest.
-> 
-> However the discussion with Comedi guys will have to done sooner or
-> later anyway. My project is irrelevant here.
-It's only relevant in that it's the second time we have had people wondering
-which subsystem makes sense.  
-> 
->>>
->>> One other thing, which as a newbie kernel hacker couldn't really
->>> find answer on.
->>> How should I go about putting a driver for prototype device in
->>> mainline kernel? Putting it in staging is obvious, but should I put
->>> it in mainline at all?
->> Usual question is whether two people might be interested / using it.
->> Their are whole architectures in there with only one physical device
->> in existence, so if you want to work with mainline then do so (and
->> I'd encourage you to indeed do that!).
->>
->> I wouldn't necessarily bother with staging unless it is dependent on
->> stuff in there (e.g. IIO :). It makes sense when you are looking for
->> more general public code exposure or it is useful to others, but in
->> your case mailing list posts etc may be a better work flow.
-> 
-> 
-> Thank you for you input!
-Looking forward to seeing your code, whether in IIO or comedi.
+Dmitry, Jean, Guenter, I've cc'd you on the offchance any of you
+have the time / inclination to take a look at this explanatory
+cover letter.  Clearly IIO touches on the edges of the scope of
+hwmon and input so I would welcome your input on whether I have
+pitched this letter right (let alone the code!)
 
-Jonathan
 
+
+V2 brings things up to date and adds ad799x and some documentation.
+
+I'd like to make a good impression when posting this more widely,
+hence I'm posting it here first. Please comment on both the code
+and the text of this explanatory email!  Are there other things
+I should put in here?  Clearly the set is currently missing
+documentation which will need doing before this goes to lkml etc.
+
+Also note that the code has to sit on a couple of namespace moves
+to avoid a clash with the staging tree.  These are in the
+outofstaging branch on github.
+
+https://github.com/jic23/linux-iio/commits/outofstaging
+
+
+Dear All,
+
+This is our first attempt to propose moving 'some' of the
+Industrial I/O subsystem out of staging.  This cover letter
+attempts to explain what IIO is and why it is needed.
+All comments welcome on this as well as the code!
+
+So the big question is 'Why is there a need for a new subsystem?'
+
+To answer this we need two things, a list or requirements and analysis
+of why current subystems (hwmon and input) do not meet them. Focused
+subsytems targetting just one type of sensor have been rejected as
+a concept (see ALS proposal).
+
+Requirements of IIO.
+
+1) Simple interface for simple use cases.
+2) High performance data route.
+3) Generic and consistent 'event' handling.
+4) Wide device type coverage with consistent interface.
+5) Complex triggering setups - multiple devices capture 'simultaneously'.
+6) Support output devices.
+
+Lets take these in turn:
+
+1 - Simple interface for simple use cases:
+
+The requirement boils down to an easy way to get a reading from a device or set
+an output without much overhead.
+
+This is an area in which hwmon excels. Everything is available via sysfs
+and thats exactly what we allow drivers to provide.
+
+2 - High performance data route:
+
+We want a path via which data can get to userspace without much overhead,
+thus allowing high speed data capture. (Note I'm not arguing we have this
+right yet - but the potential is there).
+
+Input comes closest to this, but its approach of treating all data as events
+and providing significant filtering options (obvously tailored to human input)
+means that it isn't light weight.
+
+The approach taken in IIO is to provide a 'buffered' interface.
+
+The buffer may be in hardware or in software. The 'data' outputs of the
+devices being considered can be mapped onto the concept of 'scans'.  In ADCs it
+is common to have a single actually convertor connected via a multiplexer to a
+much larger set of inputs. The multiplexer will select the channels in turn in a
+repeating sequence.  Each repeat is termed a scan.  The whole scan clearly
+doesn't always occur simultaneously, but can be considered as a single set
+of associated data none the less.  Thus we have repeating sequences of data.
+This means that the meta data about what we are reading can be read
+'out of band' from the data stream itself.
+
+In IIO the buffers consist of a sequence of scans. The contents of each scan
+data set (laid out however a driver wants to do it) is provided via a set of
+sysfs attributes in the scan_elements directory.
+
+The reason we can do it this way is that unlike input we pass our 'unusual'
+events via a different path.
+(see point 3).
+
+We also allow for the minimum amount of processing of data to occur in the
+kernel possible. Its often best to leave this to userspace and in a number
+of important use cases doesn't need doing at all, either because it can be
+done offline (logging) or because the reverse transform can be applied
+to a much smaller set of data (e.g. software threshold comparison).  Note
+that the raw value off the sensor is often considerably more compact to store
+than a value in some set of consistent units.
+
+3 - Generic and consistent 'event' handling.
+
+Numerous sensing devices provide threshold type detectors designed to do
+simple comparisons on the data without involving the host device.
+
+In input, these are passed within the main event stream (we don't as that
+would mean all data would need to carry identifying metadata along).  Where
+these events map to typical human input device elements (double click etc)
+these are well handled. Hwmon supports a small set of such events via its alarm
+attributes.
+
+For IIO we have decided to try and create an event code (litterally one number)
+to describe all types of events that these devices can detect and pass on to
+the host device. This is coupled with appropriate sysfs controls to configure
+the event.  The event code consists of:
+
+1) What type of channel
+
+2) Which channel (either axis / index or just index) Note this can be compound
+if modified. (e.g. freefall is typically X&Y&Z all less than alpha)
+
+3) What type of processed data it is applied to (raw value, abs value,
+rate of change, average shifted value)
+
+4) Which direction the threshold is crossed in.
+
+4 - Device coverage with a consistent interface
+
+Hwmon and input have consistent interfaces that cover their chosen target well.
+When considering a wider range of sensors they simply don't generalize well
+enough. Afterall why should they?
+
+Initially we matched hwmon where ever possible. In the end we broke away for a
+number of reasons. The in / out naming for voltage is a nasty bit of legacy for
+them which we don't want to carry. There is no general way of specifying whether
+a channel is an input or an output.  Having said that there is an easy mapping
+from IIO to hwmon (see possible future work).
+
+Input is only interested in a narrow set of devices (those for human input).
+
+5) Complex triggering setups
+
+This is probably more of a niche requirement but the generalizations required
+for it do simplify simple cases as well.
+
+In a traditional data capturing environment (picture oscilloscopes / data
+loggers), the concept of a trigger is vital.  That is, some event on which
+data is captured.
+
+In IIO this point is stretched somewhat.  For some devices it is indeed the
+point of capture (those with explicit 'capture now' pins, or those that
+capture when asked to by a bus transaction).  For other devices that run on
+their own internal clocks this is actualy a 'data has been captured now'
+signal (dataready).
+
+What we want to allow (where possible) is for any device to be triggered by
+any other and crucially for any number of devices to be triggered by a single
+source.  As Thomas Gleixner observed, this is pretty much an irq cascade
+(and hence that's how it is now implemented - a very tidy approach!).
+
+Some of the types of trigger we have are:
+
+a) Data ready signals
+   These usually need to be used to trigger reading from the device producing
+   them but can be used to get only 'slightly' late readings from other devices.
+b) Software triggers
+   These allow userspace to trigger simultaneous capture from a number of
+   devices.
+c) Standalone triggers.
+   General interrupts from whereever can be used to cause a capture to occur
+   - typically a gpio.
+d) hardware timers
+   (could probably do with a more consistent interface outside of IIO for
+   these).
+
+6) Support output devices.
+
+This is a relatively recent addition to IIO (despite us planning on it when
+the name was picked!).  Right now the support is very rudimentary -
+corresponding to the most basic sysfs only device interfaces.
+
+It becomes more interesting when buffered outputs are considered, but that
+has not yet been implemented.
+
+There is rudimentary support for output in hwmon (as is appropriate for its
+use domain) and indeed some of this could map to the regulator api, but
+neither is adaptable or suitable for more complex data flows.
+
+
+
+
+To get an appreciation for the whole subsystem it is necessary to look at
+what is still in staging as we aren't attempting to move the whole core
+out in one go.  Naturally if anyone fancies diving deeper into that tree
+and commenting on stuff in there it would also be welcomed.
+
+Note however that being in staging some of the drivers are in 'interesting'
+shape.
+
+'Good' drivers include (and this is far from a complete list)
+
+adc/
+	ad7192
+	ad7780
+	ad7792
+	ad799x
+	max1363
+accel/
+	lis3l02dq
+gyro/
+	adis16260
+imu/
+	adis16400
+light/
+	tsl2563
+
+
+So what do we have here?
+
+Our merge plan (order may change) has the following elements
+
+1) Registration core and sysfs interface
+2) Some stripped down drivers using the above.
+
+3) Event interface
+4) Extend drivers in 2 to provide event interfaces.
+
+5) Buffered reading interface
+6) Extend drivers from 4 to provide buffered reading.
+7) Pull in hardware ring buffer device examples
+
+8) Futher sets pulling across a few drivers at time (keeping review
+manageable!)
+
+Drivers may be added to the subsystem at any stage (once support for
+what they use is available).
+
+This patchset (1-2) only covers the simplest type of driver supported
+by IIO, that with only a sysfs based interface.  Please review it
+with that in mind!
+
+Acknowledgements
+
+A lot of thanks is due to various people during the IIO development.
+Most of it is born out by commit messages but I'd particularly like to
+thank Michael Hennerich for massive contributions and Arnd Bergmann for
+taking the time to not only suggest what we should do differently but
+to explain it to me and look at the results as they occured.
+
+Amit Kucheria (1):
+  IIO:light:tsl2563 initial move out of staging.
+
+Jonathan Cameron (3):
+  IIO: Core sysfs only support.
+  IIO:ADC: max1363 initial import.
+  IIO: ABI documetation.
+
+Manuel Stahl (1):
+  IIO:imu:adis16400 partial move from staging.
+
+Michael Hennerich (1):
+  IIO:ADC:ad799x initial import.
+
+ Documentation/ABI/testing/sysfs-bus-iio |  223 ++++++
+ drivers/Kconfig                         |    2 +
+ drivers/Makefile                        |    2 +
+ drivers/iio/Kconfig                     |   19 +
+ drivers/iio/Makefile                    |   10 +
+ drivers/iio/adc/Kconfig                 |   30 +
+ drivers/iio/adc/Makefile                |    9 +
+ drivers/iio/adc/ad799x_core.c           |  722 +++++++++++++++++++
+ drivers/iio/adc/max1363.h               |  148 ++++
+ drivers/iio/adc/max1363_core.c          | 1000 +++++++++++++++++++++++++++
+ drivers/iio/iio.c                       |  593 ++++++++++++++++
+ drivers/iio/imu/Kconfig                 |   12 +
+ drivers/iio/imu/Makefile                |    6 +
+ drivers/iio/imu/adis16400.h             |  180 +++++
+ drivers/iio/imu/adis16400_core.c        | 1141 +++++++++++++++++++++++++++++++
+ drivers/iio/light/Kconfig               |   16 +
+ drivers/iio/light/Makefile              |    6 +
+ drivers/iio/light/tsl2563.c             |  653 ++++++++++++++++++
+ include/linux/iio/ad799x.h              |   12 +
+ include/linux/iio/iio.h                 |  249 +++++++
+ include/linux/iio/sysfs.h               |   68 ++
+ include/linux/iio/tsl2563.h             |    9 +
+ 22 files changed, 5110 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio
+ create mode 100644 drivers/iio/Kconfig
+ create mode 100644 drivers/iio/Makefile
+ create mode 100644 drivers/iio/adc/Kconfig
+ create mode 100644 drivers/iio/adc/Makefile
+ create mode 100644 drivers/iio/adc/ad799x_core.c
+ create mode 100644 drivers/iio/adc/max1363.h
+ create mode 100644 drivers/iio/adc/max1363_core.c
+ create mode 100644 drivers/iio/iio.c
+ create mode 100644 drivers/iio/imu/Kconfig
+ create mode 100644 drivers/iio/imu/Makefile
+ create mode 100644 drivers/iio/imu/adis16400.h
+ create mode 100644 drivers/iio/imu/adis16400_core.c
+ create mode 100644 drivers/iio/light/Kconfig
+ create mode 100644 drivers/iio/light/Makefile
+ create mode 100644 drivers/iio/light/tsl2563.c
+ create mode 100644 include/linux/iio/ad799x.h
+ create mode 100644 include/linux/iio/iio.h
+ create mode 100644 include/linux/iio/sysfs.h
+ create mode 100644 include/linux/iio/tsl2563.h
+
+-- 
+1.7.3.4
