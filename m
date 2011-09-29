@@ -1,310 +1,278 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:45377 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751540Ab1I1Q3W (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 28 Sep 2011 12:29:22 -0400
-Message-ID: <4E834D56.8060502@cam.ac.uk>
-Date: Wed, 28 Sep 2011 17:37:42 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: guenter.roeck@ericsson.com
-CC: "lm-sensors@lm-sensors.org" <lm-sensors@lm-sensors.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Device-drivers-devel@blackfin.uclinux.org"
-	<Device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [lm-sensors] [PATCH] hwmon: ad7314 driver (ported from IIO).
-References: <1317214661-31282-1-git-send-email-jic23@cam.ac.uk>  <1317214661-31282-2-git-send-email-jic23@cam.ac.uk> <1317225785.3888.117.camel@groeck-laptop>
-In-Reply-To: <1317225785.3888.117.camel@groeck-laptop>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: lm-sensors@lm-sensors.org
+Cc: linux-iio@vger.kernel.org,
+	Device-drivers-devel@blackfin.uclinux.org,
+	guenter.roeck@ericsson.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH V2] hwmon: ad7314 driver (ported from IIO).
+Date: Thu, 29 Sep 2011 13:11:19 +0100
+Message-Id: <1317298279-25905-1-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <4E834D56.8060502@cam.ac.uk>
+References: <4E834D56.8060502@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/28/11 17:03, Guenter Roeck wrote:
-> Hi Jonathan,
-> 
-> On Wed, 2011-09-28 at 08:57 -0400, Jonathan Cameron wrote:
->> Currently dropped power down mode support.
->> Not tested.
->>
-> Guess you don't really want the above in the commit log.
-Well, I'm crossing my fingers someone might give me a tested-by ;)
+Currently dropped power down mode support.
+V2: Fixes:
+- messed up use of cache aligned store fixed.
+- correct output format to be milli degrees.
+- add documentation file.
 
-> 
-> I requested samples for all three chips. Should be simple enough to test
-> once I have also written a SPI master driver for one of my
-> controllers ;).
-Nice ;)
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+Untested, but trivial port.
 
-Thanks for the review and sorry for the dumb ass mistakes.
-Not my best work. oops.
-> 
->> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
->> ---
->>  drivers/hwmon/Kconfig  |   10 +++
->>  drivers/hwmon/Makefile |    1 +
->>  drivers/hwmon/ad7314.c |  181 ++++++++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 192 insertions(+), 0 deletions(-)
->>
-> We would also like to see
-> 	Documentation/hwmon/ad7314
-> 
-> Does this file or an equivalent of it exist in the iio tree ?
-Nope, I'll make one up.
-> 
->> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
->> index 0b62c3c..e5d4daa 100644
->> --- a/drivers/hwmon/Kconfig
->> +++ b/drivers/hwmon/Kconfig
->> @@ -68,6 +68,16 @@ config SENSORS_ABITUGURU3
->>  	  This driver can also be built as a module.  If so, the module
->>  	  will be called abituguru3.
->>  
->> +config SENSORS_AD7314
->> +	tristate "Analog Devices AD7314 and compatibles"
->> +	depends on SPI && EXPERIMENTAL
->> +	help
->> +	  If you say yes here you get support for the Analog Devices
->> +	  AD7314, ADT7301 and ADT7302 temperature sensors.
->> +
->> +	  This driver can also be built as a module. If so, the module
->> +	  will be called ad7314.
->> +
->>  config SENSORS_AD7414
->>  	tristate "Analog Devices AD7414"
->>  	depends on I2C && EXPERIMENTAL
->> diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
->> index 3c9ccef..228a4b7 100644
->> --- a/drivers/hwmon/Makefile
->> +++ b/drivers/hwmon/Makefile
->> @@ -21,6 +21,7 @@ obj-$(CONFIG_SENSORS_W83791D)	+= w83791d.o
->>  
->>  obj-$(CONFIG_SENSORS_ABITUGURU)	+= abituguru.o
->>  obj-$(CONFIG_SENSORS_ABITUGURU3)+= abituguru3.o
->> +obj-$(CONFIG_SENSORS_AD7314)	+= ad7314.o
->>  obj-$(CONFIG_SENSORS_AD7414)	+= ad7414.o
->>  obj-$(CONFIG_SENSORS_AD7418)	+= ad7418.o
->>  obj-$(CONFIG_SENSORS_ADCXX)	+= adcxx.o
->> diff --git a/drivers/hwmon/ad7314.c b/drivers/hwmon/ad7314.c
->> new file mode 100644
->> index 0000000..9cabe7b
->> --- /dev/null
->> +++ b/drivers/hwmon/ad7314.c
->> @@ -0,0 +1,181 @@
->> +/*
->> + * AD7314 digital temperature sensor driver for AD7314, ADT7301 and ADT7302
->> + *
->> + * Copyright 2010 Analog Devices Inc.
->> + *
->> + * Licensed under the GPL-2 or later.
->> + *
->> + * Conversion to hwmon from IIO done by Jonathan Cameron <jic23@cam.ac.uk>
->> + */
->> +#include <linux/device.h>
->> +#include <linux/kernel.h>
->> +#include <linux/slab.h>
->> +#include <linux/sysfs.h>
->> +#include <linux/spi/spi.h>
->> +#include <linux/module.h>
->> +#include <linux/hwmon.h>
->> +#include <linux/hwmon-sysfs.h>
->> +
->> +/*
->> + * AD7314 power mode
->> + */
->> +#define AD7314_PD		0x2000
->> +
->> +/*
->> + * AD7314 temperature masks
->> + */
->> +#define AD7314_TEMP_SIGN		0x200
->> +#define AD7314_TEMP_MASK		0x7FE0
->> +#define AD7314_TEMP_OFFSET		5
->> +#define AD7314_TEMP_FLOAT_OFFSET	2
->> +#define AD7314_TEMP_FLOAT_MASK		0x3
->> +
->> +/*
->> + * ADT7301 and ADT7302 temperature masks
->> + */
->> +#define ADT7301_TEMP_SIGN		0x2000
->> +#define ADT7301_TEMP_MASK		0x2FFF
->> +#define ADT7301_TEMP_FLOAT_OFFSET	5
->> +#define ADT7301_TEMP_FLOAT_MASK		0x1F
->> +
->> +enum ad7314_variant {
->> +	adt7301,
->> +	adt7302,
->> +	ad7314,
->> +};
->> +
->> +struct ad7314_data {
->> +	struct spi_device	*spi_dev;
->> +	struct device		*hwmon_dev;
->> +	u16 rx ____cacheline_aligned;
->> +};
->> +
->> +static int ad7314_spi_read(struct spi_device *spi_dev, u16 *data)
->> +{
->> +	int ret = 0;
-> 
-> No need to initialize ret.
-> 
->> +	u16 value;
->> +
->> +	ret = spi_read(spi_dev, (u8 *)&value, sizeof(value));
-> 
-> I am having a bit of trouble here. value is not cache aligned, yet you
-> use it for the spi transaction. data is cache aligned, but you only
-> store the result from the spi transaction into in.
+ Documentation/hwmon/ad7314 |   25 ++++++
+ drivers/hwmon/Kconfig      |   10 +++
+ drivers/hwmon/Makefile     |    1 +
+ drivers/hwmon/ad7314.c     |  176 ++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 212 insertions(+), 0 deletions(-)
 
-> 
-> Given this, either the code doesn't work, or "rx" is not needed at all
-> since you don't use it for a transaction which would require or ask for
-> cache alignment.
-> 
-> Am I missing something ?
-Nope, I'm just being stupid. Sometimes I assume code does what I
-expect and then don't notice it isn't doing so.
-Will fix.
-> 
->> +	if (ret < 0) {
->> +		dev_err(&spi_dev->dev, "SPI read error\n");
->> +		return ret;
->> +	}
->> +
->> +	*data = be16_to_cpu((u16)value);
-> 
-> value is defined as u16 and does not need a type cast.
-> 
->> +
->> +	return ret;
->> +}
->> +
->> +static ssize_t ad7314_show_temperature(struct device *dev,
->> +		struct device_attribute *attr,
->> +		char *buf)
->> +{
->> +	struct ad7314_data *chip = dev_get_drvdata(dev);
->> +	s16 data;
->> +	int ret;
->> +
->> +	ret = ad7314_spi_read(chip->spi_dev, &chip->rx);
->> +	if (ret < 0)
->> +		return ret;
->> +	data = chip->rx;
->> +	switch (spi_get_device_id(chip->spi_dev)->driver_data) {
->> +	case ad7314:
->> +		data = (data & AD7314_TEMP_MASK) >> AD7314_TEMP_OFFSET;
->> +		data = (data << 6) >> 6;
->> +
->> +		return sprintf(buf, "%d.%.2d\n",
->> +			       data >> AD7314_TEMP_FLOAT_OFFSET,
->> +			       (data & AD7314_TEMP_FLOAT_MASK) * 25);
-> 
-> hwmon reports temperatures in milli-degrees C, and does not know about
-> decimal points. So this should be something like
-> 
-> 		return sprintf(buf, "%d\n", data * 250);
-Sorry, I'm half asleep today and forgot that.  Will fix. 
-> 
->> +	case adt7301:
->> +	case adt7302:
->> +		data &= ADT7301_TEMP_MASK;
->> +		data = (data << 3) >> 3;
->> +
->> +		return sprintf(buf, "%d.%.5d\n",
->> +			       data >> ADT7301_TEMP_FLOAT_OFFSET,
->> +			       (data & ADT7301_TEMP_FLOAT_MASK) * 3125);
-> 
-> Similar, this should be something like
-> 
-> 		return sprintf(buf, "%d\n", (data * 1000) >> 5);
-> 
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +}
->> +
->> +static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO,
->> +			  ad7314_show_temperature, NULL, 0);
->> +
->> +static struct attribute *ad7314_attributes[] = {
->> +	&sensor_dev_attr_temp1_input.dev_attr.attr,
->> +	NULL,
->> +};
->> +
->> +static const struct attribute_group ad7314_group = {
->> +	.attrs = ad7314_attributes,
->> +};
->> +
->> +static int __devinit ad7314_probe(struct spi_device *spi_dev)
->> +{
->> +	int ret;
->> +	struct ad7314_data *chip;
->> +
->> +	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
->> +	if (chip == NULL) {
->> +		ret = -ENOMEM;
->> +		goto error_ret;
->> +	}
->> +	dev_set_drvdata(&spi_dev->dev, chip);
->> +
->> +	ret = sysfs_create_group(&spi_dev->dev.kobj, &ad7314_group);
->> +	if (ret < 0)
->> +		goto error_free_chip;
->> +
->> +	return 0;
->> +error_free_chip:
->> +	kfree(chip);
->> +error_ret:
->> +	return ret;
->> +}
->> +
->> +static int __devexit ad7314_remove(struct spi_device *spi_dev)
->> +{
->> +	struct ad7314_data *chip = dev_get_drvdata(&spi_dev->dev);
->> +
->> +	hwmon_device_unregister(chip->hwmon_dev);
->> +	sysfs_remove_group(&spi_dev->dev.kobj, &ad7314_group);
->> +	kfree(chip);
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct spi_device_id ad7314_id[] = {
->> +	{ "adt7301", adt7301 },
->> +	{ "adt7302", adt7302 },
->> +	{ "ad7314", ad7314 },
->> +	{}
->> +};
->> +
->> +static struct spi_driver ad7314_driver = {
->> +	.driver = {
->> +		.name = "ad7314",
->> +		.bus = &spi_bus_type,
->> +		.owner = THIS_MODULE,
->> +	},
->> +	.probe = ad7314_probe,
->> +	.remove = __devexit_p(ad7314_remove),
->> +	.id_table = ad7314_id,
->> +};
->> +
->> +static __init int ad7314_init(void)
->> +{
->> +	return spi_register_driver(&ad7314_driver);
->> +}
->> +module_init(ad7314_init);
->> +
->> +static __exit void ad7314_exit(void)
->> +{
->> +	spi_unregister_driver(&ad7314_driver);
->> +}
->> +module_exit(ad7314_exit);
->> +
->> +MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
->> +MODULE_DESCRIPTION("Analog Devices AD7314, ADT7301 and ADT7302 digital"
->> +			" temperature sensor driver");
->> +MODULE_LICENSE("GPL v2");
-> 
-> 
-> 
-
+diff --git a/Documentation/hwmon/ad7314 b/Documentation/hwmon/ad7314
+new file mode 100644
+index 0000000..1b026a0
+--- /dev/null
++++ b/Documentation/hwmon/ad7314
+@@ -0,0 +1,25 @@
++Kernel driver ad7314
++====================
++
++Supported chips:
++   * Analog Devices AD7314
++     Prefx: 'ad7314'
++     Datasheet: Publicaly available at Analog Devices website.
++   * Analog Devices ADT7301
++     Prefx: 'adt7301'
++     Datasheet: Publicaly available at Analog Devices website.
++   * Analog Devices ADT7302
++     Prefx: 'adt7302'
++     Datasheet: Publicaly available at Analog Devices website.
++
++Description
++-----------
++
++Driver supports the above parts.  The ad7314 has a 10 bit
++sensor with 1lsb = 0.25 degrees centigrade. The adt7301 and
++adt7302 have 14 bit sensors with 1lsb = 0.03125 degrees centigrade.
++
++Notes
++-----
++
++Currently power down mode is not supported.
+diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+index 0b62c3c..e5d4daa 100644
+--- a/drivers/hwmon/Kconfig
++++ b/drivers/hwmon/Kconfig
+@@ -68,6 +68,16 @@ config SENSORS_ABITUGURU3
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called abituguru3.
+ 
++config SENSORS_AD7314
++	tristate "Analog Devices AD7314 and compatibles"
++	depends on SPI && EXPERIMENTAL
++	help
++	  If you say yes here you get support for the Analog Devices
++	  AD7314, ADT7301 and ADT7302 temperature sensors.
++
++	  This driver can also be built as a module. If so, the module
++	  will be called ad7314.
++
+ config SENSORS_AD7414
+ 	tristate "Analog Devices AD7414"
+ 	depends on I2C && EXPERIMENTAL
+diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
+index 3c9ccef..228a4b7 100644
+--- a/drivers/hwmon/Makefile
++++ b/drivers/hwmon/Makefile
+@@ -21,6 +21,7 @@ obj-$(CONFIG_SENSORS_W83791D)	+= w83791d.o
+ 
+ obj-$(CONFIG_SENSORS_ABITUGURU)	+= abituguru.o
+ obj-$(CONFIG_SENSORS_ABITUGURU3)+= abituguru3.o
++obj-$(CONFIG_SENSORS_AD7314)	+= ad7314.o
+ obj-$(CONFIG_SENSORS_AD7414)	+= ad7414.o
+ obj-$(CONFIG_SENSORS_AD7418)	+= ad7418.o
+ obj-$(CONFIG_SENSORS_ADCXX)	+= adcxx.o
+diff --git a/drivers/hwmon/ad7314.c b/drivers/hwmon/ad7314.c
+new file mode 100644
+index 0000000..a1fea9b
+--- /dev/null
++++ b/drivers/hwmon/ad7314.c
+@@ -0,0 +1,176 @@
++/*
++ * AD7314 digital temperature sensor driver for AD7314, ADT7301 and ADT7302
++ *
++ * Copyright 2010 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2 or later.
++ *
++ * Conversion to hwmon from IIO done by Jonathan Cameron <jic23@cam.ac.uk>
++ */
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/spi/spi.h>
++#include <linux/module.h>
++#include <linux/hwmon.h>
++#include <linux/hwmon-sysfs.h>
++
++/*
++ * AD7314 power mode
++ */
++#define AD7314_PD		0x2000
++
++/*
++ * AD7314 temperature masks
++ */
++#define AD7314_TEMP_SIGN		0x200
++#define AD7314_TEMP_MASK		0x7FE0
++#define AD7314_TEMP_OFFSET		5
++
++/*
++ * ADT7301 and ADT7302 temperature masks
++ */
++#define ADT7301_TEMP_SIGN		0x2000
++#define ADT7301_TEMP_MASK		0x3FFF
++
++enum ad7314_variant {
++	adt7301,
++	adt7302,
++	ad7314,
++};
++
++struct ad7314_data {
++	struct spi_device	*spi_dev;
++	struct device		*hwmon_dev;
++	u16 rx ____cacheline_aligned;
++};
++
++static int ad7314_spi_read(struct ad7314_data *chip, s16 *data)
++{
++	int ret;
++
++	ret = spi_read(chip->spi_dev, (u8 *)&chip->rx, sizeof(chip->rx));
++	if (ret < 0) {
++		dev_err(&chip->spi_dev->dev, "SPI read error\n");
++		return ret;
++	}
++
++	*data = be16_to_cpu(chip->rx);
++
++	return ret;
++}
++
++static ssize_t ad7314_show_temperature(struct device *dev,
++		struct device_attribute *attr,
++		char *buf)
++{
++	struct ad7314_data *chip = dev_get_drvdata(dev);
++	s16 data;
++	int ret;
++
++	ret = ad7314_spi_read(chip, &data);
++	if (ret < 0)
++		return ret;
++	switch (spi_get_device_id(chip->spi_dev)->driver_data) {
++	case ad7314:
++		data = (data & AD7314_TEMP_MASK) >> AD7314_TEMP_OFFSET;
++		data = (data << 6) >> 6;
++
++		return sprintf(buf, "%d\n", 250 * data);
++	case adt7301:
++	case adt7302:
++		/*
++		 * Documented as a 13 bit twos complement register
++		 * with a sign bit - which is a 14 bit 2's complement
++		 * register.  1lsb - 31.25 milli degrees centigrade
++		 */
++		data &= ADT7301_TEMP_MASK;
++		data = (data << 2) >> 2;
++
++		return sprintf(buf, "%d\n", (3125 * (int)data)/100);
++	default:
++		return -EINVAL;
++	}
++}
++
++static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO,
++			  ad7314_show_temperature, NULL, 0);
++
++static struct attribute *ad7314_attributes[] = {
++	&sensor_dev_attr_temp1_input.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ad7314_group = {
++	.attrs = ad7314_attributes,
++};
++
++static int __devinit ad7314_probe(struct spi_device *spi_dev)
++{
++	int ret;
++	struct ad7314_data *chip;
++
++	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
++	if (chip == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++	dev_set_drvdata(&spi_dev->dev, chip);
++
++	ret = sysfs_create_group(&spi_dev->dev.kobj, &ad7314_group);
++	if (ret < 0)
++		goto error_free_chip;
++
++	return 0;
++error_free_chip:
++	kfree(chip);
++error_ret:
++	return ret;
++}
++
++static int __devexit ad7314_remove(struct spi_device *spi_dev)
++{
++	struct ad7314_data *chip = dev_get_drvdata(&spi_dev->dev);
++
++	hwmon_device_unregister(chip->hwmon_dev);
++	sysfs_remove_group(&spi_dev->dev.kobj, &ad7314_group);
++	kfree(chip);
++
++	return 0;
++}
++
++static const struct spi_device_id ad7314_id[] = {
++	{ "adt7301", adt7301 },
++	{ "adt7302", adt7302 },
++	{ "ad7314", ad7314 },
++	{}
++};
++
++static struct spi_driver ad7314_driver = {
++	.driver = {
++		.name = "ad7314",
++		.bus = &spi_bus_type,
++		.owner = THIS_MODULE,
++	},
++	.probe = ad7314_probe,
++	.remove = __devexit_p(ad7314_remove),
++	.id_table = ad7314_id,
++};
++
++static __init int ad7314_init(void)
++{
++	return spi_register_driver(&ad7314_driver);
++}
++module_init(ad7314_init);
++
++static __exit void ad7314_exit(void)
++{
++	spi_unregister_driver(&ad7314_driver);
++}
++module_exit(ad7314_exit);
++
++MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
++MODULE_DESCRIPTION("Analog Devices AD7314, ADT7301 and ADT7302 digital"
++			" temperature sensor driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.7.3.4
