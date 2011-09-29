@@ -1,44 +1,42 @@
-Return-Path: <alan@lxorguk.ukuu.org.uk>
-Date: Fri, 30 Sep 2011 10:47:07 +0100
-From: Alan Cox <alan@lxorguk.ukuu.org.uk>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        LKML
- <linux-kernel@vger.kernel.org>
-Subject: Re: IIO (+ more general?) Error condition handling (e.g. wire fell
- out errors)
-Message-ID: <20110930104707.0645afda@lxorguk.ukuu.org.uk>
-In-Reply-To: <4E858F5A.5000901@cam.ac.uk>
-References: <4E858F5A.5000901@cam.ac.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:42004 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754739Ab1I2NFV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Sep 2011 09:05:21 -0400
+Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:59355)
+	by ppsw-51.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.158]:25)
+	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
+	id 1R9GIi-0003yu-Xz (Exim 4.72) for linux-iio@vger.kernel.org
+	(return-path <jic23@cam.ac.uk>); Thu, 29 Sep 2011 14:05:20 +0100
+Message-ID: <4E846F08.5070906@cam.ac.uk>
+Date: Thu, 29 Sep 2011 14:13:44 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: IIO: angular measurement types.
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> 3) Consider these out of band (from the out of band event data)
-> and look at other options for reporting them.
+Hi All
 
-Treat it like a socket/pipe perhaps - if it "goes down" then report it as
-having hung up and deliver a SIGPIPE or similar and with an appropriate
-error code for those catching it (-EIO ?)
+Just looking at add chan spec support for resolvers and
+realised that our representations of angular measurements
+have become somewhat confused.
 
-That generally gets noticed.
+Right now we have
 
-> Is there anything general out there for reporting hardware failures
-> that would be appropriate?  Sometime these conditions are the sort
-> of thing that should cause a siren to go off.
-> They might be sensor failure
+IIO_GYRO -> angular velocity (units radians / sec)
+IIO_ROT -> vertical rotation position (undocumented)
+IIO_ANGL -> rotation angle (currently integrated version of IIO_GYRO, undocumented)
 
-There are two things here - one is making sure the app notices (where we
-have equivalent handling in other interfaces) the other is what to do
-about it. We don't have a general framework for reporting system
-component failure. That's something that ought to get fixed generally to
-report everything from "that new nasty smell was formerly your hard disk"
-to a sensor fail.
+For resolvers we seem to need
 
-> (p.s. I hope no one is using the current driver for trains, though
-> that might explain British trains...)
+Absolute rotation position (IIO_ANGL?)  set units to radians
+Angular velocity (IIO_GYRO? - odd naming here) randians / sec
 
-Tssh... there is Linux on UK trains, but it's usually driving annoying
-announcement/video systems.
+So, proposal is to rename IIO_GYRO - > IIO_ANGL_VEL
 
-Alan
+Anyone have an thoughts on this?
+
+Jonathan
