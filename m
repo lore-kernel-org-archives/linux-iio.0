@@ -1,65 +1,93 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:46052 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755129Ab1I3KGf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Sep 2011 06:06:35 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Device-drivers-devel@blackfin.uclinux.org,
-	manuel.stahl@iis.fraunhofer.de, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 00/11] IIO: resolvers - first round of cleanups.
-Date: Fri, 30 Sep 2011 11:14:43 +0100
-Message-Id: <1317377694-9001-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	manuel.stahl@iis.fraunhofer.de,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 11/11] staging:iio:resolver:ad2s1210 cleanup gpio handling.
+Date: Fri, 30 Sep 2011 11:14:54 +0100
+Message-Id: <1317377694-9001-12-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1317377694-9001-1-git-send-email-jic23@cam.ac.uk>
+References: <1317377694-9001-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi All,
+Basically make use of the gpio array functions.
+Technically the free doesn't need as much info
+as given here, but this keeps it clean and easy
+to follow.
 
-Mostly straight forward, but that change I suggested yesterday
-IIO_GYRO -> IIO_ANGL_VEL and in_gyro_x_* -> in_anglvel_x_*
-is in here.  I'm interested to hear peoples opinions on that
-in particular.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/resolver/ad2s1210.c |   51 +++++++++++--------------------
+ 1 files changed, 18 insertions(+), 33 deletions(-)
 
-Note the ad2s1210 is still definitely a work in progress.
-There are numerous weird and wonderful corners of its abi
-a the moment that need sorting out.
-
-Thanks,
-
-Jonathan
-
-Jonathan Cameron (11):
-  staging:iio:resolver:ad2s90 fix registration of null pointer
-  staging:iio:resolver:ad2s90 ensure name is passed to iio_core.
-  stagiong:iio:resolver:ad2s90 chan spec conversion
-  staging:iio: rename gyro channels to anglvel
-  staging:iio:Documentation gyro -> anglvel updates in attribute names
-  staging:iio:resolver:ad2s120x chan spec conversion
-  staging:iio:resolver rename ad2s120x ->ad2s1200
-  staging:iio:resolver:ad2s1210 ensure iio_dev->name is set
-  staging:iio:resolver:ad2s1210 minimal chan spec conversion.
-  staging:iio:resolver:ad2s1210 drop raw config register access
-  staging:iio:resolver:ad2s1210 cleanup gpio handling.
-
- drivers/staging/iio/Documentation/sysfs-bus-iio |  108 ++++++------
- drivers/staging/iio/gyro/adis16060_core.c       |    2 +-
- drivers/staging/iio/gyro/adis16080_core.c       |    2 +-
- drivers/staging/iio/gyro/adis16130_core.c       |    2 +-
- drivers/staging/iio/gyro/adis16260_core.c       |    8 +-
- drivers/staging/iio/gyro/adxrs450_core.c        |    4 +-
- drivers/staging/iio/iio.h                       |    2 +-
- drivers/staging/iio/imu/adis16400_core.c        |   22 ++--
- drivers/staging/iio/industrialio-core.c         |    2 +-
- drivers/staging/iio/resolver/Kconfig            |    4 +-
- drivers/staging/iio/resolver/Makefile           |    2 +-
- drivers/staging/iio/resolver/ad2s1200.c         |  187 ++++++++++++++++++++
- drivers/staging/iio/resolver/ad2s120x.c         |  178 -------------------
- drivers/staging/iio/resolver/ad2s1210.c         |  216 +++++++++-------------
- drivers/staging/iio/resolver/ad2s90.c           |   57 +++---
- 15 files changed, 382 insertions(+), 414 deletions(-)
- create mode 100644 drivers/staging/iio/resolver/ad2s1200.c
- delete mode 100644 drivers/staging/iio/resolver/ad2s120x.c
-
+diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+index 4f248de..8a6fcb6 100644
+--- a/drivers/staging/iio/resolver/ad2s1210.c
++++ b/drivers/staging/iio/resolver/ad2s1210.c
+@@ -653,45 +653,30 @@ static const struct iio_info ad2s1210_info = {
+ 
+ static int ad2s1210_setup_gpios(struct ad2s1210_state *st)
+ {
+-	int ret;
+ 	unsigned long flags = st->pdata->gpioin ? GPIOF_DIR_IN : GPIOF_DIR_OUT;
++	struct gpio ad2s1210_gpios[] = {
++		{ st->pdata->sample, GPIOF_DIR_IN, "sample" },
++		{ st->pdata->a[0], flags, "a0" },
++		{ st->pdata->a[1], flags, "a1" },
++		{ st->pdata->res[0], flags, "res0" },
++		{ st->pdata->res[0], flags, "res1" },
++	};
+ 
+-	ret = gpio_request_one(st->pdata->sample, GPIOF_DIR_IN, "sample");
+-	if (ret < 0)
+-		goto error_ret;
+-	ret = gpio_request_one(st->pdata->a[0], flags, "a0");
+-	if (ret < 0)
+-		goto error_free_sample;
+-	ret = gpio_request_one(st->pdata->a[1], flags, "a1");
+-	if (ret < 0)
+-		goto error_free_a0;
+-	ret = gpio_request_one(st->pdata->res[1], flags, "res0");
+-	if (ret < 0)
+-		goto error_free_a1;
+-	ret = gpio_request_one(st->pdata->res[1], flags, "res1");
+-	if (ret < 0)
+-		goto error_free_res0;
+-
+-	return 0;
+-error_free_res0:
+-	gpio_free(st->pdata->res[0]);
+-error_free_a1:
+-	gpio_free(st->pdata->a[1]);
+-error_free_a0:
+-	gpio_free(st->pdata->a[0]);
+-error_free_sample:
+-	gpio_free(st->pdata->sample);
+-error_ret:
+-	return ret;
++	return gpio_request_array(ad2s1210_gpios, ARRAY_SIZE(ad2s1210_gpios));
+ }
+ 
+ static void ad2s1210_free_gpios(struct ad2s1210_state *st)
+ {
+-	gpio_free(st->pdata->res[1]);
+-	gpio_free(st->pdata->res[0]);
+-	gpio_free(st->pdata->a[1]);
+-	gpio_free(st->pdata->a[0]);
+-	gpio_free(st->pdata->sample);
++	unsigned long flags = st->pdata->gpioin ? GPIOF_DIR_IN : GPIOF_DIR_OUT;
++	struct gpio ad2s1210_gpios[] = {
++		{ st->pdata->sample, GPIOF_DIR_IN, "sample" },
++		{ st->pdata->a[0], flags, "a0" },
++		{ st->pdata->a[1], flags, "a1" },
++		{ st->pdata->res[0], flags, "res0" },
++		{ st->pdata->res[0], flags, "res1" },
++	};
++
++	gpio_free_array(ad2s1210_gpios, ARRAY_SIZE(ad2s1210_gpios));
+ }
+ 
+ static int __devinit ad2s1210_probe(struct spi_device *spi)
 -- 
 1.7.3.4
-
