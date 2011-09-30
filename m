@@ -1,59 +1,352 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.windriver.com ([147.11.1.11]:42916 "EHLO
-	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755179Ab1I3WHS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Sep 2011 18:07:18 -0400
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-To: gregkh@suse.de
-Cc: linux-iio@vger.kernel.org, linux-next@vger.kernel.org,
-	Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH] staging: add module.h to various iio drivers
-Date: Fri, 30 Sep 2011 18:06:58 -0400
-Message-Id: <1317420418-28335-1-git-send-email-paul.gortmaker@windriver.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@cam.ac.uk>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org
+Cc: Device-drivers-devel@blackfin.uclinux.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH] staging:iio:adc:ad7314 removal. Supported via hwmon.
+Date: Fri, 30 Sep 2011 11:20:54 +0100
+Message-Id: <1317378054-9511-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Since they are assuming it is there implicitly and will fail otherwise
-with things like:
+Driver ported over to hwmon where it fits much better.
 
-drivers/staging/iio/impedance-analyzer/ad5933.c:816: warning: type
- defaults to =E2=80=98int=E2=80=99 in declaration of =E2=80=98MODULE_AU=
-THOR=E2=80=99
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+Technically there is a slight loss of functionality in the hwmon
+driver (no power down mode).
 
-drivers/staging/iio/adc/ad7280a.c:990: warning: type defaults to =E2=80=
-=98int=E2=80=99
- in declaration of =E2=80=98MODULE_AUTHOR=E2=80=99
+Otherwise, lets clear this one out.
 
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+3 more to go on my removal list ;)
+adt7310, adt7410 and adt75.
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/ad=
-c/ad7280a.c
-index ab6cf9c..6ca4532 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -14,6 +14,7 @@
- #include <linux/err.h>
- #include <linux/delay.h>
- #include <linux/interrupt.h>
-+#include <linux/module.h>
-=20
- #include "../iio.h"
- #include "../sysfs.h"
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/=
-staging/iio/impedance-analyzer/ad5933.c
-index acc0e69..5783742 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -16,6 +16,7 @@
- #include <linux/types.h>
- #include <linux/err.h>
- #include <linux/delay.h>
-+#include <linux/module.h>
- #include <asm/div64.h>
-=20
- #include "../iio.h"
---=20
-1.7.6
+If anyone is bored, those are rather more effort than this one
+was.
 
+Jonathan
+
+ drivers/staging/iio/adc/Kconfig  |    7 -
+ drivers/staging/iio/adc/Makefile |    1 -
+ drivers/staging/iio/adc/ad7314.c |  281 --------------------------------------
+ 3 files changed, 0 insertions(+), 289 deletions(-)
+ delete mode 100644 drivers/staging/iio/adc/ad7314.c
+
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 070efd3..2c1b7de 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -34,13 +34,6 @@ config AD7298
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7298.
+ 
+-config AD7314
+-	tristate "Analog Devices AD7314 temperature sensor driver"
+-	depends on SPI
+-	help
+-	  Say yes here to build support for Analog Devices AD7314
+-	  temperature sensors.
+-
+ config AD7606
+ 	tristate "Analog Devices AD7606 ADC driver"
+ 	depends on GPIOLIB
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index 8adf096..93dc84b 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -32,7 +32,6 @@ obj-$(CONFIG_AD7298) += ad7298.o
+ obj-$(CONFIG_AD7150) += ad7150.o
+ obj-$(CONFIG_AD7152) += ad7152.o
+ obj-$(CONFIG_AD7291) += ad7291.o
+-obj-$(CONFIG_AD7314) += ad7314.o
+ obj-$(CONFIG_AD7746) += ad7746.o
+ obj-$(CONFIG_AD7780) += ad7780.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+diff --git a/drivers/staging/iio/adc/ad7314.c b/drivers/staging/iio/adc/ad7314.c
+deleted file mode 100644
+index 094a4ee..0000000
+--- a/drivers/staging/iio/adc/ad7314.c
++++ /dev/null
+@@ -1,281 +0,0 @@
+-/*
+- * AD7314 digital temperature sensor driver for AD7314, ADT7301 and ADT7302
+- *
+- * Copyright 2010 Analog Devices Inc.
+- *
+- * Licensed under the GPL-2 or later.
+- */
+-
+-#include <linux/device.h>
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/spi/spi.h>
+-#include <linux/module.h>
+-
+-#include "../iio.h"
+-#include "../sysfs.h"
+-
+-/*
+- * AD7314 power mode
+- */
+-#define AD7314_PD		0x2000
+-
+-/*
+- * AD7314 temperature masks
+- */
+-#define AD7314_TEMP_SIGN		0x200
+-#define AD7314_TEMP_MASK		0x7FE0
+-#define AD7314_TEMP_OFFSET		5
+-#define AD7314_TEMP_FLOAT_OFFSET	2
+-#define AD7314_TEMP_FLOAT_MASK		0x3
+-
+-/*
+- * ADT7301 and ADT7302 temperature masks
+- */
+-#define ADT7301_TEMP_SIGN		0x2000
+-#define ADT7301_TEMP_MASK		0x2FFF
+-#define ADT7301_TEMP_FLOAT_OFFSET	5
+-#define ADT7301_TEMP_FLOAT_MASK		0x1F
+-
+-/*
+- * struct ad7314_chip_info - chip specifc information
+- */
+-
+-struct ad7314_chip_info {
+-	struct spi_device *spi_dev;
+-	s64 last_timestamp;
+-	u8  mode;
+-};
+-
+-/*
+- * ad7314 register access by SPI
+- */
+-
+-static int ad7314_spi_read(struct ad7314_chip_info *chip, u16 *data)
+-{
+-	struct spi_device *spi_dev = chip->spi_dev;
+-	int ret = 0;
+-	u16 value;
+-
+-	ret = spi_read(spi_dev, (u8 *)&value, sizeof(value));
+-	if (ret < 0) {
+-		dev_err(&spi_dev->dev, "SPI read error\n");
+-		return ret;
+-	}
+-
+-	*data = be16_to_cpu((u16)value);
+-
+-	return ret;
+-}
+-
+-static int ad7314_spi_write(struct ad7314_chip_info *chip, u16 data)
+-{
+-	struct spi_device *spi_dev = chip->spi_dev;
+-	int ret = 0;
+-	u16 value = cpu_to_be16(data);
+-
+-	ret = spi_write(spi_dev, (u8 *)&value, sizeof(value));
+-	if (ret < 0)
+-		dev_err(&spi_dev->dev, "SPI write error\n");
+-
+-	return ret;
+-}
+-
+-static ssize_t ad7314_show_mode(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7314_chip_info *chip = iio_priv(dev_info);
+-
+-	if (chip->mode)
+-		return sprintf(buf, "power-save\n");
+-	else
+-		return sprintf(buf, "full\n");
+-}
+-
+-static ssize_t ad7314_store_mode(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7314_chip_info *chip = iio_priv(dev_info);
+-	u16 mode = 0;
+-	int ret;
+-
+-	if (!strcmp(buf, "full"))
+-		mode = AD7314_PD;
+-
+-	ret = ad7314_spi_write(chip, mode);
+-	if (ret)
+-		return -EIO;
+-
+-	chip->mode = mode;
+-
+-	return len;
+-}
+-
+-static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR,
+-		ad7314_show_mode,
+-		ad7314_store_mode,
+-		0);
+-
+-static ssize_t ad7314_show_available_modes(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	return sprintf(buf, "full\npower-save\n");
+-}
+-
+-static IIO_DEVICE_ATTR(available_modes, S_IRUGO, ad7314_show_available_modes, NULL, 0);
+-
+-static ssize_t ad7314_show_temperature(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_get_drvdata(dev);
+-	struct ad7314_chip_info *chip = iio_priv(dev_info);
+-	u16 data;
+-	char sign = ' ';
+-	int ret;
+-
+-	if (chip->mode) {
+-		ret = ad7314_spi_write(chip, 0);
+-		if (ret)
+-			return -EIO;
+-	}
+-
+-	ret = ad7314_spi_read(chip, &data);
+-	if (ret)
+-		return -EIO;
+-
+-	if (chip->mode)
+-		ad7314_spi_write(chip, chip->mode);
+-
+-	if (strcmp(dev_info->name, "ad7314")) {
+-		data = (data & AD7314_TEMP_MASK) >>
+-			AD7314_TEMP_OFFSET;
+-		if (data & AD7314_TEMP_SIGN) {
+-			data = (AD7314_TEMP_SIGN << 1) - data;
+-			sign = '-';
+-		}
+-
+-		return sprintf(buf, "%c%d.%.2d\n", sign,
+-				data >> AD7314_TEMP_FLOAT_OFFSET,
+-				(data & AD7314_TEMP_FLOAT_MASK) * 25);
+-	} else {
+-		data &= ADT7301_TEMP_MASK;
+-		if (data & ADT7301_TEMP_SIGN) {
+-			data = (ADT7301_TEMP_SIGN << 1) - data;
+-			sign = '-';
+-		}
+-
+-		return sprintf(buf, "%c%d.%.5d\n", sign,
+-				data >> ADT7301_TEMP_FLOAT_OFFSET,
+-				(data & ADT7301_TEMP_FLOAT_MASK) * 3125);
+-	}
+-}
+-
+-static IIO_DEVICE_ATTR(temperature, S_IRUGO, ad7314_show_temperature, NULL, 0);
+-
+-static struct attribute *ad7314_attributes[] = {
+-	&iio_dev_attr_available_modes.dev_attr.attr,
+-	&iio_dev_attr_mode.dev_attr.attr,
+-	&iio_dev_attr_temperature.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ad7314_attribute_group = {
+-	.attrs = ad7314_attributes,
+-};
+-
+-static const struct iio_info ad7314_info = {
+-	.attrs = &ad7314_attribute_group,
+-	.driver_module = THIS_MODULE,
+-};
+-/*
+- * device probe and remove
+- */
+-
+-static int __devinit ad7314_probe(struct spi_device *spi_dev)
+-{
+-	struct ad7314_chip_info *chip;
+-	struct iio_dev *indio_dev;
+-	int ret = 0;
+-
+-	indio_dev = iio_allocate_device(sizeof(*chip));
+-	if (indio_dev == NULL) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-	chip = iio_priv(indio_dev);
+-	/* this is only used for device removal purposes */
+-	dev_set_drvdata(&spi_dev->dev, chip);
+-
+-	chip->spi_dev = spi_dev;
+-
+-	indio_dev->name = spi_get_device_id(spi_dev)->name;
+-	indio_dev->dev.parent = &spi_dev->dev;
+-	indio_dev->info = &ad7314_info;
+-
+-	ret = iio_device_register(indio_dev);
+-	if (ret)
+-		goto error_free_dev;
+-
+-	dev_info(&spi_dev->dev, "%s temperature sensor registered.\n",
+-			 indio_dev->name);
+-
+-	return 0;
+-error_free_dev:
+-	iio_free_device(indio_dev);
+-error_ret:
+-	return ret;
+-}
+-
+-static int __devexit ad7314_remove(struct spi_device *spi_dev)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(&spi_dev->dev);
+-
+-	dev_set_drvdata(&spi_dev->dev, NULL);
+-	iio_device_unregister(indio_dev);
+-
+-	return 0;
+-}
+-
+-static const struct spi_device_id ad7314_id[] = {
+-	{ "adt7301", 0 },
+-	{ "adt7302", 0 },
+-	{ "ad7314", 0 },
+-	{}
+-};
+-
+-static struct spi_driver ad7314_driver = {
+-	.driver = {
+-		.name = "ad7314",
+-		.bus = &spi_bus_type,
+-		.owner = THIS_MODULE,
+-	},
+-	.probe = ad7314_probe,
+-	.remove = __devexit_p(ad7314_remove),
+-	.id_table = ad7314_id,
+-};
+-
+-static __init int ad7314_init(void)
+-{
+-	return spi_register_driver(&ad7314_driver);
+-}
+-
+-static __exit void ad7314_exit(void)
+-{
+-	spi_unregister_driver(&ad7314_driver);
+-}
+-
+-MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
+-MODULE_DESCRIPTION("Analog Devices AD7314, ADT7301 and ADT7302 digital"
+-			" temperature sensor driver");
+-MODULE_LICENSE("GPL v2");
+-
+-module_init(ad7314_init);
+-module_exit(ad7314_exit);
+-- 
+1.7.3.4
