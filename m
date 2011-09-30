@@ -1,63 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:46782 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757634Ab1I3Jfa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Sep 2011 05:35:30 -0400
-Message-ID: <4E858F5A.5000901@cam.ac.uk>
-Date: Fri, 30 Sep 2011 10:43:54 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>
-Subject: IIO (+ more general?) Error condition handling (e.g. wire fell out
- errors)
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <alan@lxorguk.ukuu.org.uk>
+Date: Fri, 30 Sep 2011 10:47:07 +0100
+From: Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        LKML
+ <linux-kernel@vger.kernel.org>
+Subject: Re: IIO (+ more general?) Error condition handling (e.g. wire fell
+ out errors)
+Message-ID: <20110930104707.0645afda@lxorguk.ukuu.org.uk>
+In-Reply-To: <4E858F5A.5000901@cam.ac.uk>
+References: <4E858F5A.5000901@cam.ac.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-I'm not sure how general this is, hence sent to LKML and IIO.
+> 3) Consider these out of band (from the out of band event data)
+> and look at other options for reporting them.
 
-Some of the devices we have can produce interrupts indicating
-that everything has gone horribly wrong. Sometimes this is
-also embedded in the main data stream.
+Treat it like a socket/pipe perhaps - if it "goes down" then report it as
+having hung up and deliver a SIGPIPE or similar and with an appropriate
+error code for those catching it (-EIO ?)
 
-The best examples are all the 'wonderful' ways the ad2s1210 resolver
-can go wrong.  None of these would be expected to be part of normal
-operating conditions.
+That generally gets noticed.
 
-So, the question is - do we want these to go through our main
-events stream?  They are weird and wonderful and often don't
-align well with our existing event codes.  Loss of data error
-for example (a wire came out).  Others could possibly be made
-to fit but that would loose some of the semantics.  Loss of
-tracking could be a rate of change threshold event, but it
-really is meant to tell you the data could be garbage.
+> Is there anything general out there for reporting hardware failures
+> that would be appropriate?  Sometime these conditions are the sort
+> of thing that should cause a siren to go off.
+> They might be sensor failure
 
-So three options come to mind:
+There are two things here - one is making sure the app notices (where we
+have equivalent handling in other interfaces) the other is what to do
+about it. We don't have a general framework for reporting system
+component failure. That's something that ought to get fixed generally to
+report everything from "that new nasty smell was formerly your hard disk"
+to a sensor fail.
 
-1) Have a magic set of event codes for device class specific
-fault events and push through our main event path.  For reference of
-non IIO types - that is an anon file descriptor obtained by an
-ioctl on the devices chrdev.  Events are a simple timestamp / eventcode
-pair.
+> (p.s. I hope no one is using the current driver for trains, though
+> that might explain British trains...)
 
-2)  Add another anon file that you get via an ioctl as a separate
-event reporting channel. We then define a big list of error codes
-without aiming for any real structure.  Drivers would then need to
-document what they can throw out (preferably under sysfs?)
+Tssh... there is Linux on UK trains, but it's usually driving annoying
+announcement/video systems.
 
-3) Consider these out of band (from the out of band event data)
-and look at other options for reporting them.
-
-Is there anything general out there for reporting hardware failures
-that would be appropriate?  Sometime these conditions are the sort
-of thing that should cause a siren to go off.
-They might be sensor failure.... or they might mean you have
-a runaway train heading for a station... 
-
-(p.s. I hope no one is using the current driver for trains, though
-that might explain British trains...)
-
-Thanks,
-
-Jonathan
+Alan
