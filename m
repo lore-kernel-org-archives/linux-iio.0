@@ -1,85 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:40234 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932193Ab1JCO7y (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Oct 2011 10:59:54 -0400
-From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 1/6] staging:iio:triggers Remove unecessary existence checks and return val
-Date: Mon,  3 Oct 2011 16:08:11 +0100
-Message-Id: <1317654496-14484-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1317654496-14484-1-git-send-email-jic23@cam.ac.uk>
-References: <1317654496-14484-1-git-send-email-jic23@cam.ac.uk>
+Received: from db3ehsobe006.messaging.microsoft.com ([213.199.154.144]:15203
+	"EHLO DB3EHSOBE006.bigfish.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1757724Ab1JEGj3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Oct 2011 02:39:29 -0400
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Paul Gortmaker <paul.gortmaker@windriver.com>,
+	"gregkh@suse.de" <gregkh@suse.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-next@vger.kernel.org" <linux-next@vger.kernel.org>,
+	"Device-drivers-devel@blackfin.uclinux.org"
+	<Device-drivers-devel@blackfin.uclinux.org>
+Date: Wed, 5 Oct 2011 07:39:07 +0100
+Subject: RE: [PATCH] staging: add module.h to various iio drivers
+Message-ID: <544AC56F16B56944AEC3BD4E3D59177146E73435AC@LIMKCMBX1.ad.analog.com>
+References: <1317420418-28335-1-git-send-email-paul.gortmaker@windriver.com>
+In-Reply-To: <1317420418-28335-1-git-send-email-paul.gortmaker@windriver.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Postenable and predisable are called via buffer->ops so  don't
-need to check if buffer exists.
-
-The return value of iio_device_register_trigger_consumer is
-always zero and it isn't checked anyway so get rid of it.
-
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/iio_core_trigger.h     |    2 +-
- drivers/staging/iio/industrialio-trigger.c |   16 +++++-----------
- 2 files changed, 6 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/staging/iio/iio_core_trigger.h b/drivers/staging/iio/iio_core_trigger.h
-index 3e5195a..7f1bdc7 100644
---- a/drivers/staging/iio/iio_core_trigger.h
-+++ b/drivers/staging/iio/iio_core_trigger.h
-@@ -13,7 +13,7 @@
-  * iio_device_register_trigger_consumer() - set up an iio_dev to use triggers
-  * @dev_info: iio_dev associated with the device that will consume the trigger
-  **/
--int iio_device_register_trigger_consumer(struct iio_dev *dev_info);
-+void iio_device_register_trigger_consumer(struct iio_dev *dev_info);
- 
- /**
-  * iio_device_unregister_trigger_consumer() - reverse the registration process
-diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
-index 3926649..97aaf8d 100644
---- a/drivers/staging/iio/industrialio-trigger.c
-+++ b/drivers/staging/iio/industrialio-trigger.c
-@@ -473,12 +473,10 @@ void iio_free_trigger(struct iio_trigger *trig)
- }
- EXPORT_SYMBOL(iio_free_trigger);
- 
--int iio_device_register_trigger_consumer(struct iio_dev *dev_info)
-+void iio_device_register_trigger_consumer(struct iio_dev *dev_info)
- {
- 	dev_info->groups[dev_info->groupcounter++] =
- 		&iio_trigger_consumer_attr_group;
--
--	return 0;
- }
- 
- void iio_device_unregister_trigger_consumer(struct iio_dev *dev_info)
-@@ -490,18 +488,14 @@ void iio_device_unregister_trigger_consumer(struct iio_dev *dev_info)
- 
- int iio_triggered_buffer_postenable(struct iio_dev *indio_dev)
- {
--	return indio_dev->trig
--		? iio_trigger_attach_poll_func(indio_dev->trig,
--					       indio_dev->pollfunc)
--		: 0;
-+	return iio_trigger_attach_poll_func(indio_dev->trig,
-+					    indio_dev->pollfunc);
- }
- EXPORT_SYMBOL(iio_triggered_buffer_postenable);
- 
- int iio_triggered_buffer_predisable(struct iio_dev *indio_dev)
- {
--	return indio_dev->trig
--		? iio_trigger_dettach_poll_func(indio_dev->trig,
--						indio_dev->pollfunc)
--		: 0;
-+	return iio_trigger_dettach_poll_func(indio_dev->trig,
-+					     indio_dev->pollfunc);
- }
- EXPORT_SYMBOL(iio_triggered_buffer_predisable);
--- 
-1.7.3.4
+UGF1bCBHb3J0bWFrZXIgd3JvdGUgb24gMjAxMS0xMC0wMToNCj4gU2luY2UgdGhleSBhcmUgYXNz
+dW1pbmcgaXQgaXMgdGhlcmUgaW1wbGljaXRseSBhbmQgd2lsbCBmYWlsIG90aGVyd2lzZQ0KPiB3
+aXRoIHRoaW5ncyBsaWtlOg0KPg0KPiBkcml2ZXJzL3N0YWdpbmcvaWlvL2ltcGVkYW5jZS1hbmFs
+eXplci9hZDU5MzMuYzo4MTY6IHdhcm5pbmc6IHR5cGUNCj4gIGRlZmF1bHRzIHRvIOKAmGludOKA
+mSBpbiBkZWNsYXJhdGlvbiBvZiDigJhNT0RVTEVfQVVUSE9S4oCZDQo+IGRyaXZlcnMvc3RhZ2lu
+Zy9paW8vYWRjL2FkNzI4MGEuYzo5OTA6IHdhcm5pbmc6IHR5cGUgZGVmYXVsdHMgdG8g4oCYaW50
+4oCZDQo+ICBpbiBkZWNsYXJhdGlvbiBvZiDigJhNT0RVTEVfQVVUSE9S4oCZDQo+IFNpZ25lZC1v
+ZmYtYnk6IFBhdWwgR29ydG1ha2VyIDxwYXVsLmdvcnRtYWtlckB3aW5kcml2ZXIuY29tPg0KDQpB
+Y2tlZC1ieTogTWljaGFlbCBIZW5uZXJpY2ggPG1pY2hhZWwuaGVubmVyaWNoQGFuYWxvZy5jb20+
+DQoNCj4NCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzI4MGEuYw0K
+PiBiL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzI4MGEuYyBpbmRleCBhYjZjZjljLi42Y2E0
+NTMyIDEwMDY0NCAtLS0NCj4gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDcyODBhLmMgKysr
+DQo+IGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3MjgwYS5jIEBAIC0xNCw2ICsxNCw3IEBA
+DQo+ICAjaW5jbHVkZSA8bGludXgvZXJyLmg+DQo+ICAjaW5jbHVkZSA8bGludXgvZGVsYXkuaD4N
+Cj4gICNpbmNsdWRlIDxsaW51eC9pbnRlcnJ1cHQuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9tb2R1
+bGUuaD4NCj4NCj4gICNpbmNsdWRlICIuLi9paW8uaCINCj4gICNpbmNsdWRlICIuLi9zeXNmcy5o
+Ig0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9pbXBlZGFuY2UtYW5hbHl6ZXIv
+YWQ1OTMzLmMNCj4gYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2ltcGVkYW5jZS1hbmFseXplci9hZDU5
+MzMuYyBpbmRleCBhY2MwZTY5Li41NzgzNzQyDQo+IDEwMDY0NCAtLS0gYS9kcml2ZXJzL3N0YWdp
+bmcvaWlvL2ltcGVkYW5jZS1hbmFseXplci9hZDU5MzMuYyArKysNCj4gYi9kcml2ZXJzL3N0YWdp
+bmcvaWlvL2ltcGVkYW5jZS1hbmFseXplci9hZDU5MzMuYyBAQCAtMTYsNiArMTYsNyBAQA0KPiAg
+I2luY2x1ZGUgPGxpbnV4L3R5cGVzLmg+ICNpbmNsdWRlIDxsaW51eC9lcnIuaD4gI2luY2x1ZGUN
+Cj4gIDxsaW51eC9kZWxheS5oPiArI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPiAjaW5jbHVkZSA8
+YXNtL2RpdjY0Lmg+DQo+DQo+ICAjaW5jbHVkZSAiLi4vaWlvLmgiDQoNCkdyZWV0aW5ncywNCk1p
+Y2hhZWwNCg0KLS0NCkFuYWxvZyBEZXZpY2VzIEdtYkggICAgICBXaWxoZWxtLVdhZ2VuZmVsZC1T
+dHIuIDYgICAgICA4MDgwNyBNdWVuY2hlbg0KU2l0eiBkZXIgR2VzZWxsc2NoYWZ0OiBNdWVuY2hl
+bjsgUmVnaXN0ZXJnZXJpY2h0OiBNdWVuY2hlbiBIUkIgNDAzNjg7DQpHZXNjaGFlZnRzZnVlaHJl
+cjpEci5DYXJzdGVuIFN1Y2tyb3csIFRob21hcyBXZXNzZWwsIFdpbGxpYW0gQS4gTWFydGluLCBN
+YXJnYXJldCBTZWlmDQoNCg0K
 
