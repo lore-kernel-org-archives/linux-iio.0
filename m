@@ -1,45 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:58689 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755276Ab1JEO00 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Oct 2011 10:26:26 -0400
-Message-ID: <4E8C6B0C.7040504@cam.ac.uk>
-Date: Wed, 05 Oct 2011 15:34:52 +0100
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:48182 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753833Ab1JEIo2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Oct 2011 04:44:28 -0400
+Message-ID: <4E8C1AE6.5000701@cam.ac.uk>
+Date: Wed, 05 Oct 2011 09:52:54 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Alan Cox <alan@lxorguk.ukuu.org.uk>
 CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Device-drivers-devel@blackfin.uclinux.org"
-	<Device-drivers-devel@blackfin.uclinux.org>,
-	"manuel.stahl@iis.fraunhofer.de" <manuel.stahl@iis.fraunhofer.de>
-Subject: Re: [PATCH 00/11] IIO: resolvers - first round of cleanups.
-References: <1317377694-9001-1-git-send-email-jic23@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D59177146E73435B7@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D59177146E73435B7@LIMKCMBX1.ad.analog.com>
+	LKML <linux-kernel@vger.kernel.org>
+Subject: Re: IIO (+ more general?) Error condition handling (e.g. wire fell
+ out errors)
+References: <4E858F5A.5000901@cam.ac.uk> <20110930104707.0645afda@lxorguk.ukuu.org.uk>
+In-Reply-To: <20110930104707.0645afda@lxorguk.ukuu.org.uk>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/05/11 07:58, Hennerich, Michael wrote:
-> Jonathan Cameron wrote on 2011-09-30:
->> Hi All,
->>
->> Mostly straight forward, but that change I suggested yesterday
->> IIO_GYRO -> IIO_ANGL_VEL and in_gyro_x_* -> in_anglvel_x_*
->> is in here.  I'm interested to hear peoples opinions on that
->> in particular.
->>
->> Note the ad2s1210 is still definitely a work in progress.
->> There are numerous weird and wonderful corners of its abi
->> a the moment that need sorting out.
->>
->> Thanks,
->>
->> Jonathan
+Sorry for the slow reply!
+>> 3) Consider these out of band (from the out of band event data)
+>> and look at other options for reporting them.
 > 
-> Hi Jonathan,
+> Treat it like a socket/pipe perhaps - if it "goes down" then report it as
+> having hung up and deliver a SIGPIPE or similar and with an appropriate
+> error code for those catching it (-EIO ?)
+I guess that will work.  Feels a little clunky, but such is life.
 > 
-> Looks good to me. Thanks!
-Gone to Greg along with the ad7314 removal patch.
+> That generally gets noticed.
+> 
+>> Is there anything general out there for reporting hardware failures
+>> that would be appropriate?  Sometime these conditions are the sort
+>> of thing that should cause a siren to go off.
+>> They might be sensor failure
+> 
+> There are two things here - one is making sure the app notices (where we
+> have equivalent handling in other interfaces) the other is what to do
+> about it. We don't have a general framework for reporting system
+> component failure. That's something that ought to get fixed generally to
+> report everything from "that new nasty smell was formerly your hard disk"
+> to a sensor fail.
+It does seem like that would be useful. 
+> 
+>> (p.s. I hope no one is using the current driver for trains, though
+>> that might explain British trains...)
+> 
+> Tssh... there is Linux on UK trains, but it's usually driving annoying
+> announcement/video systems.
+:) Good thing their are no 'this runs Linux' badges on the speakers.
+I've nothing against them using Linux, just the driver in question which
+is currently 'interesting'.
+
+Thanks,
 
 Jonathan
 
