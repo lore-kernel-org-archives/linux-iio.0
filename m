@@ -1,87 +1,78 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:38784 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758472Ab1JFOQk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Oct 2011 10:16:40 -0400
-Message-ID: <4E8DBA42.1010605@cam.ac.uk>
-Date: Thu, 06 Oct 2011 15:25:06 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+CC: "Device-drivers-devel@blackfin.uclinux.org"
+	<Device-drivers-devel@blackfin.uclinux.org>, "manuel.stahl@iis.fraunhofer.de"
+	<manuel.stahl@iis.fraunhofer.de>
+Date: Wed, 5 Oct 2011 07:58:08 +0100
+Subject: RE: [PATCH 00/11] IIO: resolvers - first round of cleanups.
+Message-ID: <544AC56F16B56944AEC3BD4E3D59177146E73435B7@LIMKCMBX1.ad.analog.com>
+References: <1317377694-9001-1-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1317377694-9001-1-git-send-email-jic23@cam.ac.uk>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: JohnLM <johnlm@apollo.lv>
-CC: linux-iio@vger.kernel.org,
-	Device-drivers-devel@blackfin.uclinux.org,
-	manuel.stahl@iis.fraunhofer.de
-Subject: Re: [RFC PATCH 0/2] IIO: Filtering - how to handle.
-References: <1317377879-9264-1-git-send-email-jic23@cam.ac.uk> <20111004153946.77e9754d@isg005> <4E8B16EE.6000708@cam.ac.uk> <20111006170151.62ea82a1@isg005>
-In-Reply-To: <20111006170151.62ea82a1@isg005>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/06/11 15:01, JohnLM wrote:
-> On Tue, 04 Oct 2011 15:23:42 +0100
-> Jonathan Cameron <jic23@cam.ac.uk> wrote:
-> 
->> On 10/04/11 13:39, JohnLM wrote:
->>> On Fri, 30 Sep 2011 11:17:57 +0100
->>> Jonathan Cameron <jic23@cam.ac.uk> wrote:
->>>
->>>> Hi All,
->>>>
->>>> One big area we have pretty much glossed over so far is devices
->>>> with controllable hardware filters.  This RFC proposes one option
->>>> for how to handle this. For low pass filters at least, the 3db
->>>> point seems the obvious choice as it allows us to gloss over
->>>> exactly what type of filter it is whilst still capturing it's basic
->>>> property of what it lets through.
->>>>
->>>> What do people think?
->>> I have no exact filters in mind but in general since they affect the
->>> readings I think some kind of framework is needed.
->>> Some generic types should be defined, but even when IIO can't make
->>> out what kind of filter it is, user-space app might so it should be
->>> exposed.
->> True.  But how generic do we want and how do we specify it?
->>
->> The version here assumes that knowing it is low pass is enough, but
->> is that true.  Do we need to know for example if it is a Butterworth
->> filter?
-> IMO it makes most sense we categorize them by
-> basic functionality. Thus making it 'low pass filter' should be good
-> enough, but we can (and should) expose it's type.
-Hmm. Going to be interesting to document these.  Your Butterworth
-etc classes are well known, but there are some nasty hacky things
-out there as well.  Lets keep it as a single sysfs type file when we
-do it (not suggesting doing this now unless we have a user).
-So the butterworth-2, butterworth-4, butterworth-8 etc here.
-They are least almost a single conceptual value...
->>
->> If we do, does it need to be in the naming?   If not, should we
->> perhaps have in_voltage_filter_low_pass_type with named filter
->> types?  Perhaps this also has say butterworth-N for N tap butterworth
->> for example? Or should be have filter_low_pass_type and
->> filter_low_pass_taps? Number of taps is often tied up with the 3db
->> point, which would make things a little interesting.  We might have
->> to buffer the 3db request and do a hardware update on any of type,
->> taps, 3db_frequency and sampling frequency changing.  We are already
->> doing that on frequency in the example given here, so not so bad.
->>
->>>
->>> For filters that can be enabled/disabled userspace could even
->>> abstract the filtering routine to use hardware filter when desired
->>> or use software filter when hardware filter is not present or is
->>> unreliable.
->> I'm unconvinced that we want to do software filtering in kernel land.
->> Can't immediately see the point, unless possibly it was used to do
->> data reduction into a buffer.  Worth keeping in mind, but no something
->> I can see happening any time soon.
-> I ran a bit ahead of me. I didn't intend to do this kind of processing
-> in kernel space. Surely software filters should stay in userspace, I
-> don't see the point of this being in kernel space either.
-> What I meant was that enough information about filters must be exposed
-> so this abstraction could be done in userspace library or/and app.
-Agreed.  Though I an inclined to say - add it when needed rather
-than anticipate the need. For now the 3db point works for anything I know
-of.
+Jonathan Cameron wrote on 2011-09-30:
+> Hi All,
+>
+> Mostly straight forward, but that change I suggested yesterday
+> IIO_GYRO -> IIO_ANGL_VEL and in_gyro_x_* -> in_anglvel_x_*
+> is in here.  I'm interested to hear peoples opinions on that
+> in particular.
+>
+> Note the ad2s1210 is still definitely a work in progress.
+> There are numerous weird and wonderful corners of its abi
+> a the moment that need sorting out.
+>
+> Thanks,
+>
+> Jonathan
 
-Jonathan
+Hi Jonathan,
+
+Looks good to me. Thanks!
+
+Acked-by: Michael Hennerich <michael.hennerich@analog.com>
+
+
+> Jonathan Cameron (11):
+>   staging:iio:resolver:ad2s90 fix registration of null pointer
+>   staging:iio:resolver:ad2s90 ensure name is passed to iio_core.
+>   stagiong:iio:resolver:ad2s90 chan spec conversion
+>   staging:iio: rename gyro channels to anglvel
+>   staging:iio:Documentation gyro -> anglvel updates in attribute names
+>   staging:iio:resolver:ad2s120x chan spec conversion
+>   staging:iio:resolver rename ad2s120x ->ad2s1200
+>   staging:iio:resolver:ad2s1210 ensure iio_dev->name is set
+>   staging:iio:resolver:ad2s1210 minimal chan spec conversion.
+>   staging:iio:resolver:ad2s1210 drop raw config register access
+>   staging:iio:resolver:ad2s1210 cleanup gpio handling.
+>  drivers/staging/iio/Documentation/sysfs-bus-iio |  108 ++++++------
+>  drivers/staging/iio/gyro/adis16060_core.c       |    2 +-
+>  drivers/staging/iio/gyro/adis16080_core.c       |    2 +-
+>  drivers/staging/iio/gyro/adis16130_core.c       |    2 +-
+>  drivers/staging/iio/gyro/adis16260_core.c       |    8 +-
+>  drivers/staging/iio/gyro/adxrs450_core.c        |    4 +-
+>  drivers/staging/iio/iio.h                       |    2 +-
+>  drivers/staging/iio/imu/adis16400_core.c        |   22 ++--
+>  drivers/staging/iio/industrialio-core.c         |    2 +-
+>  drivers/staging/iio/resolver/Kconfig            |    4 +-
+>  drivers/staging/iio/resolver/Makefile           |    2 +-
+>  drivers/staging/iio/resolver/ad2s1200.c         |  187
+>  ++++++++++++++++++++ drivers/staging/iio/resolver/ad2s120x.c         |
+>  178 --------------- ---- drivers/staging/iio/resolver/ad2s1210.c
+>   |  216 +++++++++------ ------- drivers/staging/iio/resolver/ad2s90.c
+>          |   57 +++--- 15 files changed, 382 insertions(+), 414
+>  deletions(-) create mode 100644 drivers/staging/iio/resolver/ad2s1200.c
+>  delete mode 100644 drivers/staging/iio/resolver/ad2s120x.c
+
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Mar=
+garet Seif
