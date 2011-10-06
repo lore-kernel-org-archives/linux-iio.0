@@ -1,46 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:36248 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754701Ab1JFLBr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Oct 2011 07:01:47 -0400
-Message-ID: <4E8D8C8A.1000309@cam.ac.uk>
-Date: Thu, 06 Oct 2011 12:10:02 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <dan.carpenter@oracle.com>
+Date: Thu, 6 Oct 2011 09:15:36 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, Bryan Freed <bfreed@chromium.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, kernel-janitors@vger.kernel.org
+Subject: [patch 2/2] Staging: iio/light/tsl2563: fix compile warning
+Message-ID: <20111006061536.GB14701@elgon.mountain>
 MIME-Version: 1.0
-To: Dan Carpenter <dan.carpenter@oracle.com>
-CC: Greg Kroah-Hartman <gregkh@suse.de>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Mike Frysinger <vapier@gentoo.org>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, kernel-janitors@vger.kernel.org
-Subject: Re: [patch] Staging: iio/adc/ad7150: release lock on error
-References: <20111006061700.GC14701@elgon.mountain>
-In-Reply-To: <20111006061700.GC14701@elgon.mountain>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/06/11 07:17, Dan Carpenter wrote:
-> The error_ret label should have been before the mutex_unlock().  It's
-> a typo.
-Good catch thanks!
-> 
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> 
-> diff --git a/drivers/staging/iio/adc/ad7150.c b/drivers/staging/iio/adc/ad7150.c
-> index 8943420..d1767d8 100644
-> --- a/drivers/staging/iio/adc/ad7150.c
-> +++ b/drivers/staging/iio/adc/ad7150.c
-> @@ -332,8 +332,8 @@ static int ad7150_write_event_value(struct iio_dev *indio_dev,
->  	/* write back if active */
->  	ret = ad7150_write_event_params(indio_dev, event_code);
->  
-> -	mutex_unlock(&chip->state_lock);
->  error_ret:
-> +	mutex_unlock(&chip->state_lock);
->  	return ret;
->  }
->  
-> 
+This fixes a compile warning:
+drivers/staging/iio/light/tsl2563.c:696:2:
+	warning: initialization from incompatible pointer type [enabled by defau=
+lt]
+drivers/staging/iio/light/tsl2563.c:696:2:
+	warning: (near initialization for =E2=80=98tsl2563_info.write_event_valu=
+e=E2=80=99) [enabled by default]
 
+The tsl2563_write_thresh() function returns zero on success and error
+codes on failure, so nothing is lost by making the return type int
+instead of ssize_t.
+
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+
+diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/li=
+ght/tsl2563.c
+index 8977f58..a5e08b3 100644
+--- a/drivers/staging/iio/light/tsl2563.c
++++ b/drivers/staging/iio/light/tsl2563.c
+@@ -569,7 +569,7 @@ static int tsl2563_read_thresh(struct iio_dev *indio_=
+dev,
+ 	return 0;
+ }
+=20
+-static ssize_t tsl2563_write_thresh(struct iio_dev *indio_dev,
++static int tsl2563_write_thresh(struct iio_dev *indio_dev,
+ 				  u64 event_code,
+ 				  int val)
+ {
