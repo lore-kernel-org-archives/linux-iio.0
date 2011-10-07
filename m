@@ -1,35 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-092.synserver.de ([212.40.185.92]:1025 "EHLO
-	smtp-out-092.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754372Ab1JJOja (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Oct 2011 10:39:30 -0400
-Message-ID: <4E93039A.7010401@metafoo.de>
-Date: Mon, 10 Oct 2011 16:39:22 +0200
+Received: from smtp-out-075.synserver.de ([212.40.185.75]:1118 "HELO
+	smtp-out-064.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with SMTP id S1759308Ab1JGIc0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Oct 2011 04:32:26 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: Michael Hennerich <michael.hennerich@analog.com>,
+To: Greg Kroah-Hartman <gregkh@suse.de>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	Michael Hennerich <michael.hennerich@analog.com>,
 	linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH] staging:iio:dac Add AD5064 driver
-References: <1317985694-12670-1-git-send-email-lars@metafoo.de> <4E8EEF99.2080502@cam.ac.uk> <4E8F507A.9040905@metafoo.de> <4E92AFC6.4060108@cam.ac.uk>
-In-Reply-To: <4E92AFC6.4060108@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+	device-drivers-devel@blackfin.uclinux.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:dac:ad5638: Fix channel address
+Date: Fri,  7 Oct 2011 10:31:42 +0200
+Message-Id: <1317976302-24498-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/10/2011 10:41 AM, Jonathan Cameron wrote:
-> On 10/07/11 20:18, Lars-Peter Clausen wrote:
->> I wanted to use the bulk regulator API at first but decided against it, so we
->> can support the case where only some, but not all, of the channels are used and
->> some channels don't have a supply for their vref.
-> That would be fair enough if you were actually supporting the ability to do that
-> in the driver.  You aren't, so please use the bulk apis.
-> If this is added later, then that is the time to hand roll a custom version of this.
-Well, the idea was to be consistent with other DAC drivers, which simply
-report a
-scale value of 0 if no vref was specified. But I'll change it to use the
-bulk
-regulator API and let probe fail in case a vref regulator is missing.
+Commit c6fc806247 ("staging:iio: ABI rework - add in_ or out_ prefix to
+channnels") added the AD5868_CHANNEL macro to simplify channel initialization.
+Unfortunately the macro hardcodes the channel's address to AD5686_ADDR_DAC0. As
+a result writing to any of the channels will change the value of the first
+channel.
 
-- Lars
+This patch fixes the issue by calculating the channel address based on the
+channel number.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/dac/ad5686.c |    7 ++-----
+ 1 files changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/staging/iio/dac/ad5686.c b/drivers/staging/iio/dac/ad5686.c
+index b55ef42..adf898f 100644
+--- a/drivers/staging/iio/dac/ad5686.c
++++ b/drivers/staging/iio/dac/ad5686.c
+@@ -26,10 +26,7 @@
+ #define AD5686_ADDR(x)				((x) << 16)
+ #define AD5686_CMD(x)				((x) << 20)
+ 
+-#define AD5686_ADDR_DAC0			0x1
+-#define AD5686_ADDR_DAC1			0x2
+-#define AD5686_ADDR_DAC2			0x4
+-#define AD5686_ADDR_DAC3			0x8
++#define AD5686_ADDR_DAC(chan)		(0x1 << (chan))
+ #define AD5686_ADDR_ALL_DAC			0xF
+ 
+ #define AD5686_CMD_NOOP				0x0
+@@ -103,7 +100,7 @@ enum ad5686_supported_device_ids {
+ 		.output = 1,					\
+ 		.channel = chan,				\
+ 		.info_mask = (1 << IIO_CHAN_INFO_SCALE_SHARED),	\
+-		.address = AD5686_ADDR_DAC0,			\
++		.address = AD5686_ADDR_DAC(chan),			\
+ 		.scan_type = IIO_ST('u', bits, 16, shift)	\
+ }
+ static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
+-- 
+1.7.2.5
+
