@@ -1,80 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:17290
-	"EHLO VA3EHSOBE007.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752703Ab1JLMPb convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 12 Oct 2011 08:15:31 -0400
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "greg@kroah.com" <greg@kroah.com>,
-	"rdunlap@xenotime.net" <rdunlap@xenotime.net>
-Date: Wed, 12 Oct 2011 13:14:05 +0100
-Subject: RE: [PATCH] staging:iio: gpio build dependency fixing
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177146E750B042@LIMKCMBX1.ad.analog.com>
-References: <1318413453-7702-1-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1318413453-7702-1-git-send-email-jic23@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <rdunlap@xenotime.net>
+Message-ID: <4E94AADA.4080204@xenotime.net>
+Date: Tue, 11 Oct 2011 13:45:14 -0700
+From: Randy Dunlap <rdunlap@xenotime.net>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Stephen Rothwell <sfr@canb.auug.org.au>
+CC: linux-next@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+ Jonathan Cameron <jic23@cam.ac.uk>,
+ linux-iio@vger.kernel.org,
+ "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+ Greg KH <gregkh@suse.de>
+Subject: Re: linux-next: Tree for Oct 11 (iio/resolver)
+References: <20111011201127.455df266dcbffb1d621f8576@canb.auug.org.au>
+In-Reply-To: <20111011201127.455df266dcbffb1d621f8576@canb.auug.org.au>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron wrote on 2011-10-12:
-> Numerous drivers either had pointless includes of gpio.h
-> or should have been dependent on GENERIC_GPIO and were not.
-> Conversion of ads1210 to use array registration triggered
-> build failures that highlighted all was not well.
->
-> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
-> Reported-by: Randy Dunlap <rdunlap@xenotime.net>
+On 10/11/11 02:11, Stephen Rothwell wrote:
+> Hi all,
+> 
+> The linux-next tree is now available from
+> git://github.com/sfrothwell/linux-next.git as a temporary measure while
+> the kernel.org servers are unavailable.
+> 
+> It may also turn up on git.kernel.org (depending on the mirroring).  The
+> patch set is still absent, however.
+> 
+> Changes since 20111007:
 
-Acked-by: Michael Hennerich <michael.hennerich@analog.com>
+When no GPIO support is enabled:
 
-> ---
->
-> Randy pointed out the issue with ad2s1210 triggered by
-> building without GENERIC_GPIO.  This motivated a quick
-> use of git grep on all the drivers and this patch fixes
-> all cases where there should have been a dependency,
-> or where they was and shouldn't have been (be it implied
-> by gpio.h includes).
->
-> One has to wonder what the point in having stubs for the
-> array calls is. I'll post on this point separately shortly.
->
-> I have no idea what the sca3000 was checking those gpios
-> for. It is probably lost somewhere in history but clearly
-> doesn't make sense.
->
-> Jonathan
->  drivers/staging/iio/accel/Kconfig          |    1 +
->  drivers/staging/iio/accel/adis16204_core.c |    1 -
->  drivers/staging/iio/accel/sca3000_core.c   |    7 +++----
->  drivers/staging/iio/adc/Kconfig            |    1 +
->  drivers/staging/iio/addac/Kconfig          |    1 +
->  drivers/staging/iio/dac/ad5504.c           |    1 -
->  drivers/staging/iio/dac/ad5624r_spi.c      |    1 -
->  drivers/staging/iio/dac/ad5686.c           |    1 -
->  drivers/staging/iio/dac/ad5791.c           |    1 -
->  drivers/staging/iio/gyro/adis16080_core.c  |    1 -
->  drivers/staging/iio/gyro/adis16260_core.c  |    1 -
->  drivers/staging/iio/gyro/adxrs450_core.c   |    1 -
->  drivers/staging/iio/magnetometer/Kconfig   |    1 +
->  drivers/staging/iio/meter/ade7753.c        |    1 -
->  drivers/staging/iio/meter/ade7754.c        |    1 -
->  drivers/staging/iio/meter/ade7758_core.c   |    1 -
->  drivers/staging/iio/meter/ade7759.c        |    1 -
->  drivers/staging/iio/meter/ade7854.c        |    1 -
->  drivers/staging/iio/resolver/Kconfig       |    2 ++
->  19 files changed, 9 insertions(+), 17 deletions(-)
-
-Greetings,
-Michael
-
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret Seif
+drivers/staging/iio/resolver/ad2s1210.c:657:14: error: array type has incomplete element type
+drivers/staging/iio/resolver/ad2s1210.c:665:44: warning: type defaults to 'int' in type name
+drivers/staging/iio/resolver/ad2s1210.c:665:44: warning: type defaults to 'int' in type name
+drivers/staging/iio/resolver/ad2s1210.c:665:44: error: negative width in bit-field '<anonymous>'
+drivers/staging/iio/resolver/ad2s1210.c:671:14: error: array type has incomplete element type
+drivers/staging/iio/resolver/ad2s1210.c:679:34: warning: type defaults to 'int' in type name
+drivers/staging/iio/resolver/ad2s1210.c:679:34: warning: type defaults to 'int' in type name
+drivers/staging/iio/resolver/ad2s1210.c:679:34: error: negative width in bit-field '<anonymous>'
 
 
 
+-- 
+~Randy
+*** Remember to use Documentation/SubmitChecklist when testing your code ***
