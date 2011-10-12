@@ -1,728 +1,322 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:58586 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753361Ab1JLPfg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Oct 2011 11:35:36 -0400
-Message-ID: <4E95B3C8.8050306@cam.ac.uk>
-Date: Wed, 12 Oct 2011 16:35:36 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH] iio: adc: remove ADT75 driver - hwmon/lm75 will take
- over ADT75 support
-References: <1318426575-5394-1-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1318426575-5394-1-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: greg@kroah.com,
+	Michael.Hennerich@analog.com,
+	rdunlap@xenotime.net,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH] staging:iio: gpio build dependency fixing
+Date: Wed, 12 Oct 2011 10:57:33 +0100
+Message-Id: <1318413453-7702-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/12/11 14:36, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> 
-Obviously hold this one up until the supported is queued up
-for merge in hwmon.
+Numerous drivers either had pointless includes of gpio.h
+or should have been dependent on GENERIC_GPIO and were not.
+Conversion of ads1210 to use array registration triggered
+build failures that highlighted all was not well.
 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  drivers/staging/iio/adc/Kconfig  |    7 -
->  drivers/staging/iio/adc/Makefile |    1 -
->  drivers/staging/iio/adc/adt75.c  |  655 --------------------------------------
->  3 files changed, 0 insertions(+), 663 deletions(-)
->  delete mode 100644 drivers/staging/iio/adc/adt75.c
-> 
-> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-> index 2c1b7de..f0b494f 100644
-> --- a/drivers/staging/iio/adc/Kconfig
-> +++ b/drivers/staging/iio/adc/Kconfig
-> @@ -168,13 +168,6 @@ config AD7192
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad7192.
->  
-> -config ADT75
-> -	tristate "Analog Devices ADT75 temperature sensor driver"
-> -	depends on I2C
-> -	help
-> -	  Say yes here to build support for Analog Devices ADT75
-> -	  temperature sensors.
-> -
->  config ADT7310
->  	tristate "Analog Devices ADT7310 temperature sensor driver"
->  	depends on SPI
-> diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
-> index 93dc84b..be7faaa 100644
-> --- a/drivers/staging/iio/adc/Makefile
-> +++ b/drivers/staging/iio/adc/Makefile
-> @@ -37,7 +37,6 @@ obj-$(CONFIG_AD7780) += ad7780.o
->  obj-$(CONFIG_AD7793) += ad7793.o
->  obj-$(CONFIG_AD7816) += ad7816.o
->  obj-$(CONFIG_AD7192) += ad7192.o
-> -obj-$(CONFIG_ADT75) += adt75.o
->  obj-$(CONFIG_ADT7310) += adt7310.o
->  obj-$(CONFIG_ADT7410) += adt7410.o
->  obj-$(CONFIG_AD7280) += ad7280a.o
-> diff --git a/drivers/staging/iio/adc/adt75.c b/drivers/staging/iio/adc/adt75.c
-> deleted file mode 100644
-> index 08215e9..0000000
-> --- a/drivers/staging/iio/adc/adt75.c
-> +++ /dev/null
-> @@ -1,655 +0,0 @@
-> -/*
-> - * ADT75 digital temperature sensor driver supporting ADT75
-> - *
-> - * Copyright 2010 Analog Devices Inc.
-> - *
-> - * Licensed under the GPL-2 or later.
-> - */
-> -
-> -#include <linux/interrupt.h>
-> -#include <linux/device.h>
-> -#include <linux/kernel.h>
-> -#include <linux/slab.h>
-> -#include <linux/sysfs.h>
-> -#include <linux/i2c.h>
-> -#include <linux/module.h>
-> -
-> -#include "../iio.h"
-> -#include "../sysfs.h"
-> -
-> -/*
-> - * ADT75 registers definition
-> - */
-> -
-> -#define ADT75_TEMPERATURE		0
-> -#define ADT75_CONFIG			1
-> -#define ADT75_T_HYST			2
-> -#define ADT75_T_OS			3
-> -#define ADT75_ONESHOT			4
-> -
-> -/*
-> - * ADT75 config
-> - */
-> -#define ADT75_PD			0x1
-> -#define ADT75_OS_INT			0x2
-> -#define ADT75_OS_POLARITY		0x4
-> -#define ADT75_FAULT_QUEUE_MASK		0x18
-> -#define ADT75_FAULT_QUEUE_OFFSET	3
-> -#define ADT75_SMBUS_ALART		0x8
-> -
-> -/*
-> - * ADT75 masks
-> - */
-> -#define ADT75_VALUE_SIGN		0x800
-> -#define ADT75_VALUE_OFFSET		4
-> -#define ADT75_VALUE_FLOAT_OFFSET	4
-> -#define ADT75_VALUE_FLOAT_MASK		0xF
-> -
-> -
-> -/*
-> - * struct adt75_chip_info - chip specifc information
-> - */
-> -
-> -struct adt75_chip_info {
-> -	struct i2c_client *client;
-> -	u8  config;
-> -};
-> -
-> -/*
-> - * adt75 register access by I2C
-> - */
-> -
-> -static int adt75_i2c_read(struct iio_dev *dev_info, u8 reg, u8 *data)
-> -{
-> -	struct adt75_chip_info *chip = iio_priv(dev_info);
-> -	struct i2c_client *client = chip->client;
-> -	int ret = 0, len;
-> -
-> -	ret = i2c_smbus_write_byte(client, reg);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "I2C read register address error\n");
-> -		return ret;
-> -	}
-> -
-> -	if (reg == ADT75_CONFIG || reg == ADT75_ONESHOT)
-> -		len = 1;
-> -	else
-> -		len = 2;
-> -
-> -	ret = i2c_master_recv(client, data, len);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "I2C read error\n");
-> -		return ret;
-> -	}
-> -
-> -	return ret;
-> -}
-> -
-> -static int adt75_i2c_write(struct iio_dev *dev_info, u8 reg, u8 data)
-> -{
-> -	struct adt75_chip_info *chip = iio_priv(dev_info);
-> -	struct i2c_client *client = chip->client;
-> -	int ret = 0;
-> -
-> -	if (reg == ADT75_CONFIG || reg == ADT75_ONESHOT)
-> -		ret = i2c_smbus_write_byte_data(client, reg, data);
-> -	else
-> -		ret = i2c_smbus_write_word_data(client, reg, data);
-> -
-> -	if (ret < 0)
-> -		dev_err(&client->dev, "I2C write error\n");
-> -
-> -	return ret;
-> -}
-> -
-> -static ssize_t adt75_show_mode(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> -{
-> -	struct adt75_chip_info *chip = iio_priv(dev_get_drvdata(dev));
-> -
-> -	if (chip->config & ADT75_PD)
-> -		return sprintf(buf, "power-save\n");
-> -	else
-> -		return sprintf(buf, "full\n");
-> -}
-> -
-> -static ssize_t adt75_store_mode(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> -{
-> -	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> -	struct adt75_chip_info *chip = iio_priv(dev_info);
-> -	int ret;
-> -	u8 config;
-> -
-> -	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	config = chip->config & ~ADT75_PD;
-> -	if (!strcmp(buf, "full"))
-> -		config |= ADT75_PD;
-> -
-> -	ret = adt75_i2c_write(dev_info, ADT75_CONFIG, config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	chip->config = config;
-> -
-> -	return ret;
-> -}
-> -
-> -static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR,
-> -		adt75_show_mode,
-> -		adt75_store_mode,
-> -		0);
-> -
-> -static ssize_t adt75_show_available_modes(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> -{
-> -	return sprintf(buf, "full\npower-down\n");
-> -}
-> -
-> -static IIO_DEVICE_ATTR(available_modes, S_IRUGO, adt75_show_available_modes, NULL, 0);
-> -
-> -static ssize_t adt75_show_oneshot(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> -{
-> -	struct adt75_chip_info *chip = iio_priv(dev_get_drvdata(dev));
-> -
-> -	return sprintf(buf, "%d\n", !!(chip->config & ADT75_ONESHOT));
-> -}
-> -
-> -static ssize_t adt75_store_oneshot(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> -{
-> -	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> -	struct adt75_chip_info *chip = iio_priv(dev_info);
-> -	unsigned long data = 0;
-> -	int ret;
-> -	u8 config;
-> -
-> -	ret = strict_strtoul(buf, 10, &data);
-> -	if (ret)
-> -		return -EINVAL;
-> -
-> -
-> -	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	config = chip->config & ~ADT75_ONESHOT;
-> -	if (data)
-> -		config |= ADT75_ONESHOT;
-> -
-> -	ret = adt75_i2c_write(dev_info, ADT75_CONFIG, config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	chip->config = config;
-> -
-> -	return ret;
-> -}
-> -
-> -static IIO_DEVICE_ATTR(oneshot, S_IRUGO | S_IWUSR,
-> -		adt75_show_oneshot,
-> -		adt75_store_oneshot,
-> -		0);
-> -
-> -static ssize_t adt75_show_value(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> -{
-> -	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> -	struct adt75_chip_info *chip = iio_priv(dev_info);
-> -	u16 data;
-> -	char sign = ' ';
-> -	int ret;
-> -
-> -	if (chip->config & ADT75_PD) {
-> -		dev_err(dev, "Can't read value in power-down mode.\n");
-> -		return -EIO;
-> -	}
-> -
-> -	if (chip->config & ADT75_ONESHOT) {
-> -		/* write to active converter */
-> -		ret = i2c_smbus_write_byte(chip->client, ADT75_ONESHOT);
-> -		if (ret)
-> -			return -EIO;
-> -	}
-> -
-> -	ret = adt75_i2c_read(dev_info, ADT75_TEMPERATURE, (u8 *)&data);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	data = swab16(data) >> ADT75_VALUE_OFFSET;
-> -	if (data & ADT75_VALUE_SIGN) {
-> -		/* convert supplement to positive value */
-> -		data = (ADT75_VALUE_SIGN << 1) - data;
-> -		sign = '-';
-> -	}
-> -
-> -	return sprintf(buf, "%c%d.%.4d\n", sign,
-> -		(data >> ADT75_VALUE_FLOAT_OFFSET),
-> -		(data & ADT75_VALUE_FLOAT_MASK) * 625);
-> -}
-> -
-> -static IIO_DEVICE_ATTR(value, S_IRUGO, adt75_show_value, NULL, 0);
-> -
-> -static struct attribute *adt75_attributes[] = {
-> -	&iio_dev_attr_available_modes.dev_attr.attr,
-> -	&iio_dev_attr_mode.dev_attr.attr,
-> -	&iio_dev_attr_oneshot.dev_attr.attr,
-> -	&iio_dev_attr_value.dev_attr.attr,
-> -	NULL,
-> -};
-> -
-> -static const struct attribute_group adt75_attribute_group = {
-> -	.attrs = adt75_attributes,
-> -};
-> -
-> -/*
-> - * temperature bound events
-> - */
-> -
-> -#define IIO_EVENT_CODE_ADT75_OTI IIO_UNMOD_EVENT_CODE(IIO_TEMP,		\
-> -						      0,		\
-> -						      IIO_EV_TYPE_THRESH, \
-> -						      IIO_EV_DIR_FALLING)
-> -
-> -static irqreturn_t adt75_event_handler(int irq, void *private)
-> -{
-> -	iio_push_event(private,
-> -		       IIO_EVENT_CODE_ADT75_OTI,
-> -		       iio_get_time_ns());
-> -
-> -	return IRQ_HANDLED;
-> -}
-> -
-> -static ssize_t adt75_show_oti_mode(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> -{
-> -	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> -	struct adt75_chip_info *chip = iio_priv(dev_info);
-> -	int ret;
-> -
-> -	/* retrive ALART status */
-> -	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	if (chip->config & ADT75_OS_INT)
-> -		return sprintf(buf, "interrupt\n");
-> -	else
-> -		return sprintf(buf, "comparator\n");
-> -}
-> -
-> -static ssize_t adt75_set_oti_mode(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> -{
-> -	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> -	struct adt75_chip_info *chip = iio_priv(dev_info);
-> -	int ret;
-> -	u8 config;
-> -
-> -	/* retrive ALART status */
-> -	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	config = chip->config & ~ADT75_OS_INT;
-> -	if (strcmp(buf, "comparator") != 0)
-> -		config |= ADT75_OS_INT;
-> -
-> -	ret = adt75_i2c_write(dev_info, ADT75_CONFIG, config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	chip->config = config;
-> -
-> -	return ret;
-> -}
-> -
-> -static ssize_t adt75_show_available_oti_modes(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> -{
-> -	return sprintf(buf, "comparator\ninterrupt\n");
-> -}
-> -
-> -static ssize_t adt75_show_smbus_alart(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> -{
-> -	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> -	struct adt75_chip_info *chip = iio_priv(dev_info);
-> -	int ret;
-> -
-> -	/* retrive ALART status */
-> -	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	return sprintf(buf, "%d\n", !!(chip->config & ADT75_SMBUS_ALART));
-> -}
-> -
-> -static ssize_t adt75_set_smbus_alart(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> -{
-> -	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> -	struct adt75_chip_info *chip = iio_priv(dev_info);
-> -	unsigned long data = 0;
-> -	int ret;
-> -	u8 config;
-> -
-> -	ret = strict_strtoul(buf, 10, &data);
-> -	if (ret)
-> -		return -EINVAL;
-> -
-> -	/* retrive ALART status */
-> -	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	config = chip->config & ~ADT75_SMBUS_ALART;
-> -	if (data)
-> -		config |= ADT75_SMBUS_ALART;
-> -
-> -	ret = adt75_i2c_write(dev_info, ADT75_CONFIG, config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	chip->config = config;
-> -
-> -	return ret;
-> -}
-> -
-> -static ssize_t adt75_show_fault_queue(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> -{
-> -	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> -	struct adt75_chip_info *chip = iio_priv(dev_info);
-> -	int ret;
-> -
-> -	/* retrive ALART status */
-> -	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	return sprintf(buf, "%d\n", (chip->config & ADT75_FAULT_QUEUE_MASK) >>
-> -				ADT75_FAULT_QUEUE_OFFSET);
-> -}
-> -
-> -static ssize_t adt75_set_fault_queue(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> -{
-> -	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> -	struct adt75_chip_info *chip = iio_priv(dev_info);
-> -	unsigned long data;
-> -	int ret;
-> -	u8 config;
-> -
-> -	ret = strict_strtoul(buf, 10, &data);
-> -	if (ret || data > 3)
-> -		return -EINVAL;
-> -
-> -	/* retrive ALART status */
-> -	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	config = chip->config & ~ADT75_FAULT_QUEUE_MASK;
-> -	config |= (data << ADT75_FAULT_QUEUE_OFFSET);
-> -	ret = adt75_i2c_write(dev_info, ADT75_CONFIG, config);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	chip->config = config;
-> -
-> -	return ret;
-> -}
-> -static inline ssize_t adt75_show_t_bound(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> -{
-> -	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> -	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> -	u16 data;
-> -	char sign = ' ';
-> -	int ret;
-> -
-> -	ret = adt75_i2c_read(dev_info, this_attr->address, (u8 *)&data);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	data = swab16(data) >> ADT75_VALUE_OFFSET;
-> -	if (data & ADT75_VALUE_SIGN) {
-> -		/* convert supplement to positive value */
-> -		data = (ADT75_VALUE_SIGN << 1) - data;
-> -		sign = '-';
-> -	}
-> -
-> -	return sprintf(buf, "%c%d.%.4d\n", sign,
-> -		(data >> ADT75_VALUE_FLOAT_OFFSET),
-> -		(data & ADT75_VALUE_FLOAT_MASK) * 625);
-> -}
-> -
-> -static inline ssize_t adt75_set_t_bound(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> -{
-> -	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> -	struct iio_dev *dev_info = dev_get_drvdata(dev);
-> -	long tmp1, tmp2;
-> -	u16 data;
-> -	char *pos;
-> -	int ret;
-> -
-> -	pos = strchr(buf, '.');
-> -
-> -	ret = strict_strtol(buf, 10, &tmp1);
-> -
-> -	if (ret || tmp1 > 127 || tmp1 < -128)
-> -		return -EINVAL;
-> -
-> -	if (pos) {
-> -		len = strlen(pos);
-> -		if (len > ADT75_VALUE_FLOAT_OFFSET)
-> -			len = ADT75_VALUE_FLOAT_OFFSET;
-> -		pos[len] = 0;
-> -		ret = strict_strtol(pos, 10, &tmp2);
-> -
-> -		if (!ret)
-> -			tmp2 = (tmp2 / 625) * 625;
-> -	}
-> -
-> -	if (tmp1 < 0)
-> -		data = (u16)(-tmp1);
-> -	else
-> -		data = (u16)tmp1;
-> -	data = (data << ADT75_VALUE_FLOAT_OFFSET) | (tmp2 & ADT75_VALUE_FLOAT_MASK);
-> -	if (tmp1 < 0)
-> -		/* convert positive value to supplyment */
-> -		data = (ADT75_VALUE_SIGN << 1) - data;
-> -	data <<= ADT75_VALUE_OFFSET;
-> -	data = swab16(data);
-> -
-> -	ret = adt75_i2c_write(dev_info, this_attr->address, (u8)data);
-> -	if (ret)
-> -		return -EIO;
-> -
-> -	return ret;
-> -}
-> -
-> -
-> -static IIO_DEVICE_ATTR(oti_mode,
-> -		       S_IRUGO | S_IWUSR,
-> -		       adt75_show_oti_mode, adt75_set_oti_mode, 0);
-> -static IIO_DEVICE_ATTR(available_oti_modes,
-> -		       S_IRUGO,
-> -		       adt75_show_available_oti_modes, NULL, 0);
-> -static IIO_DEVICE_ATTR(smbus_alart,
-> -		       S_IRUGO | S_IWUSR,
-> -		       adt75_show_smbus_alart, adt75_set_smbus_alart, 0);
-> -static IIO_DEVICE_ATTR(fault_queue,
-> -		       S_IRUGO | S_IWUSR,
-> -		       adt75_show_fault_queue, adt75_set_fault_queue, 0);
-> -static IIO_DEVICE_ATTR(t_os_value,
-> -		       S_IRUGO | S_IWUSR,
-> -		       adt75_show_t_bound, adt75_set_t_bound,
-> -		       ADT75_T_OS);
-> -static IIO_DEVICE_ATTR(t_hyst_value,
-> -		       S_IRUGO | S_IWUSR,
-> -		       adt75_show_t_bound, adt75_set_t_bound,
-> -		       ADT75_T_HYST);
-> -
-> -static struct attribute *adt75_event_attributes[] = {
-> -	&iio_dev_attr_oti_mode.dev_attr.attr,
-> -	&iio_dev_attr_available_oti_modes.dev_attr.attr,
-> -	&iio_dev_attr_smbus_alart.dev_attr.attr,
-> -	&iio_dev_attr_fault_queue.dev_attr.attr,
-> -	&iio_dev_attr_t_os_value.dev_attr.attr,
-> -	&iio_dev_attr_t_hyst_value.dev_attr.attr,
-> -	NULL,
-> -};
-> -
-> -static struct attribute_group adt75_event_attribute_group = {
-> -	.attrs = adt75_event_attributes,
-> -	.name = "events",
-> -};
-> -
-> -static const struct iio_info adt75_info = {
-> -	.attrs = &adt75_attribute_group,
-> -	.event_attrs = &adt75_event_attribute_group,
-> -	.driver_module = THIS_MODULE,
-> -};
-> -
-> -/*
-> - * device probe and remove
-> - */
-> -
-> -static int __devinit adt75_probe(struct i2c_client *client,
-> -		const struct i2c_device_id *id)
-> -{
-> -	struct adt75_chip_info *chip;
-> -	struct iio_dev *indio_dev;
-> -	int ret = 0;
-> -
-> -	indio_dev = iio_allocate_device(sizeof(*chip));
-> -	if (indio_dev == NULL) {
-> -		ret = -ENOMEM;
-> -		goto error_ret;
-> -	}
-> -	chip = iio_priv(indio_dev);
-> -
-> -	/* this is only used for device removal purposes */
-> -	i2c_set_clientdata(client, indio_dev);
-> -
-> -	chip->client = client;
-> -
-> -	indio_dev->name = id->name;
-> -	indio_dev->dev.parent = &client->dev;
-> -	indio_dev->info = &adt75_info;
-> -	indio_dev->modes = INDIO_DIRECT_MODE;
-> -
-> -	if (client->irq > 0) {
-> -		ret = request_threaded_irq(client->irq,
-> -					   NULL,
-> -					   &adt75_event_handler,
-> -					   IRQF_TRIGGER_LOW,
-> -					   indio_dev->name,
-> -					   indio_dev);
-> -		if (ret)
-> -			goto error_free_dev;
-> -
-> -		ret = adt75_i2c_read(indio_dev, ADT75_CONFIG, &chip->config);
-> -		if (ret) {
-> -			ret = -EIO;
-> -			goto error_unreg_irq;
-> -		}
-> -
-> -		/* set irq polarity low level */
-> -		chip->config &= ~ADT75_OS_POLARITY;
-> -
-> -		ret = adt75_i2c_write(indio_dev, ADT75_CONFIG, chip->config);
-> -		if (ret) {
-> -			ret = -EIO;
-> -			goto error_unreg_irq;
-> -		}
-> -	}
-> -
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret)
-> -		goto error_unreg_irq;
-> -
-> -	dev_info(&client->dev, "%s temperature sensor registered.\n",
-> -			 indio_dev->name);
-> -
-> -	return 0;
-> -error_unreg_irq:
-> -	free_irq(client->irq, indio_dev);
-> -error_free_dev:
-> -	iio_free_device(indio_dev);
-> -error_ret:
-> -	return ret;
-> -}
-> -
-> -static int __devexit adt75_remove(struct i2c_client *client)
-> -{
-> -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> -
-> -	if (client->irq)
-> -		free_irq(client->irq, indio_dev);
-> -	iio_device_unregister(indio_dev);
-> -
-> -	return 0;
-> -}
-> -
-> -static const struct i2c_device_id adt75_id[] = {
-> -	{ "adt75", 0 },
-> -	{}
-> -};
-> -
-> -MODULE_DEVICE_TABLE(i2c, adt75_id);
-> -
-> -static struct i2c_driver adt75_driver = {
-> -	.driver = {
-> -		.name = "adt75",
-> -	},
-> -	.probe = adt75_probe,
-> -	.remove = __devexit_p(adt75_remove),
-> -	.id_table = adt75_id,
-> -};
-> -
-> -static __init int adt75_init(void)
-> -{
-> -	return i2c_add_driver(&adt75_driver);
-> -}
-> -
-> -static __exit void adt75_exit(void)
-> -{
-> -	i2c_del_driver(&adt75_driver);
-> -}
-> -
-> -MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
-> -MODULE_DESCRIPTION("Analog Devices ADT75 digital"
-> -			" temperature sensor driver");
-> -MODULE_LICENSE("GPL v2");
-> -
-> -module_init(adt75_init);
-> -module_exit(adt75_exit);
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Reported-by: Randy Dunlap <rdunlap@xenotime.net>
+---
 
+Randy pointed out the issue with ad2s1210 triggered by
+building without GENERIC_GPIO.  This motivated a quick
+use of git grep on all the drivers and this patch fixes
+all cases where there should have been a dependency,
+or where they was and shouldn't have been (be it implied
+by gpio.h includes).
+
+One has to wonder what the point in having stubs for the
+array calls is. I'll post on this point separately shortly.
+
+I have no idea what the sca3000 was checking those gpios
+for. It is probably lost somewhere in history but clearly
+doesn't make sense.
+
+Jonathan
+ drivers/staging/iio/accel/Kconfig          |    1 +
+ drivers/staging/iio/accel/adis16204_core.c |    1 -
+ drivers/staging/iio/accel/sca3000_core.c   |    7 +++----
+ drivers/staging/iio/adc/Kconfig            |    1 +
+ drivers/staging/iio/addac/Kconfig          |    1 +
+ drivers/staging/iio/dac/ad5504.c           |    1 -
+ drivers/staging/iio/dac/ad5624r_spi.c      |    1 -
+ drivers/staging/iio/dac/ad5686.c           |    1 -
+ drivers/staging/iio/dac/ad5791.c           |    1 -
+ drivers/staging/iio/gyro/adis16080_core.c  |    1 -
+ drivers/staging/iio/gyro/adis16260_core.c  |    1 -
+ drivers/staging/iio/gyro/adxrs450_core.c   |    1 -
+ drivers/staging/iio/magnetometer/Kconfig   |    1 +
+ drivers/staging/iio/meter/ade7753.c        |    1 -
+ drivers/staging/iio/meter/ade7754.c        |    1 -
+ drivers/staging/iio/meter/ade7758_core.c   |    1 -
+ drivers/staging/iio/meter/ade7759.c        |    1 -
+ drivers/staging/iio/meter/ade7854.c        |    1 -
+ drivers/staging/iio/resolver/Kconfig       |    2 ++
+ 19 files changed, 9 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
+index 71f8739..5ab7167 100644
+--- a/drivers/staging/iio/accel/Kconfig
++++ b/drivers/staging/iio/accel/Kconfig
+@@ -67,6 +67,7 @@ config LIS3L02DQ
+ 	depends on SPI
+ 	select IIO_TRIGGER if IIO_BUFFER
+ 	depends on !IIO_BUFFER || IIO_KFIFO_BUF || IIO_SW_RING
++	depends on GENERIC_GPIO
+ 	help
+ 	  Say yes here to build SPI support for the ST microelectronics
+ 	  accelerometer. The driver supplies direct access via sysfs files
+diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
+index cc6eb26..644ac8e 100644
+--- a/drivers/staging/iio/accel/adis16204_core.c
++++ b/drivers/staging/iio/accel/adis16204_core.c
+@@ -8,7 +8,6 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+-#include <linux/gpio.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index 62cdef4..a44a705 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -11,7 +11,6 @@
+  */
+ 
+ #include <linux/interrupt.h>
+-#include <linux/gpio.h>
+ #include <linux/fs.h>
+ #include <linux/device.h>
+ #include <linux/slab.h>
+@@ -1167,7 +1166,7 @@ static int __devinit sca3000_probe(struct spi_device *spi)
+ 		iio_scan_mask_set(indio_dev->buffer, 2);
+ 	}
+ 
+-	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0) {
++	if (spi->irq) {
+ 		ret = request_threaded_irq(spi->irq,
+ 					   NULL,
+ 					   &sca3000_event_handler,
+@@ -1184,7 +1183,7 @@ static int __devinit sca3000_probe(struct spi_device *spi)
+ 	return 0;
+ 
+ error_free_irq:
+-	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0)
++	if (spi->irq)
+ 		free_irq(spi->irq, indio_dev);
+ error_unregister_ring:
+ 	iio_buffer_unregister(indio_dev);
+@@ -1224,7 +1223,7 @@ static int sca3000_remove(struct spi_device *spi)
+ 	ret = sca3000_stop_all_interrupts(st);
+ 	if (ret)
+ 		return ret;
+-	if (spi->irq && gpio_is_valid(irq_to_gpio(spi->irq)) > 0)
++	if (spi->irq)
+ 		free_irq(spi->irq, indio_dev);
+ 	iio_device_unregister(indio_dev);
+ 	iio_buffer_unregister(indio_dev);
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 2c1b7de..3bf975a 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -150,6 +150,7 @@ config AD7746
+ config AD7816
+ 	tristate "Analog Devices AD7816/7/8 temperature sensor and ADC driver"
+ 	depends on SPI
++	depends on GENERIC_GPIO
+ 	help
+ 	  Say yes here to build support for Analog Devices AD7816/7/8
+ 	  temperature sensors and ADC.
+diff --git a/drivers/staging/iio/addac/Kconfig b/drivers/staging/iio/addac/Kconfig
+index 869540e..4b76375 100644
+--- a/drivers/staging/iio/addac/Kconfig
++++ b/drivers/staging/iio/addac/Kconfig
+@@ -5,6 +5,7 @@ menu "Analog digital bi-direction convertors"
+ 
+ config ADT7316
+ 	tristate "Analog Devices ADT7316/7/8 ADT7516/7/9 temperature sensor, ADC and DAC driver"
++	depends on GENERIC_GPIO
+ 	help
+ 	  Say yes here to build support for Analog Devices ADT7316, ADT7317, ADT7318
+ 	  and ADT7516, ADT7517, ADT7519 temperature sensors, ADC and DAC.
+diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
+index a0be132..60dd640 100644
+--- a/drivers/staging/iio/dac/ad5504.c
++++ b/drivers/staging/iio/dac/ad5504.c
+@@ -7,7 +7,6 @@
+  */
+ 
+ #include <linux/interrupt.h>
+-#include <linux/gpio.h>
+ #include <linux/fs.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
+index 01e8e48..284d879 100644
+--- a/drivers/staging/iio/dac/ad5624r_spi.c
++++ b/drivers/staging/iio/dac/ad5624r_spi.c
+@@ -7,7 +7,6 @@
+  */
+ 
+ #include <linux/interrupt.h>
+-#include <linux/gpio.h>
+ #include <linux/fs.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+diff --git a/drivers/staging/iio/dac/ad5686.c b/drivers/staging/iio/dac/ad5686.c
+index 97ce0e8..7274e73 100644
+--- a/drivers/staging/iio/dac/ad5686.c
++++ b/drivers/staging/iio/dac/ad5686.c
+@@ -7,7 +7,6 @@
+  */
+ 
+ #include <linux/interrupt.h>
+-#include <linux/gpio.h>
+ #include <linux/fs.h>
+ #include <linux/device.h>
+ #include <linux/module.h>
+diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
+index abb5952..fbf446d 100644
+--- a/drivers/staging/iio/dac/ad5791.c
++++ b/drivers/staging/iio/dac/ad5791.c
+@@ -7,7 +7,6 @@
+  */
+ 
+ #include <linux/interrupt.h>
+-#include <linux/gpio.h>
+ #include <linux/fs.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+diff --git a/drivers/staging/iio/gyro/adis16080_core.c b/drivers/staging/iio/gyro/adis16080_core.c
+index 5b5a60d6..5d7a906 100644
+--- a/drivers/staging/iio/gyro/adis16080_core.c
++++ b/drivers/staging/iio/gyro/adis16080_core.c
+@@ -5,7 +5,6 @@
+  *
+  * Licensed under the GPL-2 or later.
+  */
+-#include <linux/gpio.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
+index d37fae7..aaa3967 100644
+--- a/drivers/staging/iio/gyro/adis16260_core.c
++++ b/drivers/staging/iio/gyro/adis16260_core.c
+@@ -8,7 +8,6 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+-#include <linux/gpio.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+diff --git a/drivers/staging/iio/gyro/adxrs450_core.c b/drivers/staging/iio/gyro/adxrs450_core.c
+index 37837c7..3c3ef79 100644
+--- a/drivers/staging/iio/gyro/adxrs450_core.c
++++ b/drivers/staging/iio/gyro/adxrs450_core.c
+@@ -8,7 +8,6 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+-#include <linux/gpio.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
+index b8c149d..722c4e1 100644
+--- a/drivers/staging/iio/magnetometer/Kconfig
++++ b/drivers/staging/iio/magnetometer/Kconfig
+@@ -6,6 +6,7 @@ menu "Magnetometer sensors"
+ config SENSORS_AK8975
+ 	tristate "Asahi Kasei AK8975 3-Axis Magnetometer"
+ 	depends on I2C
++	depends on GENERIC_GPIO
+ 	help
+ 	  Say yes here to build support for Asahi Kasei AK8975 3-Axis
+ 	  Magnetometer.
+diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
+index 10c3c54..940fef6 100644
+--- a/drivers/staging/iio/meter/ade7753.c
++++ b/drivers/staging/iio/meter/ade7753.c
+@@ -8,7 +8,6 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+-#include <linux/gpio.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
+index 39a069a..33f0d32 100644
+--- a/drivers/staging/iio/meter/ade7754.c
++++ b/drivers/staging/iio/meter/ade7754.c
+@@ -8,7 +8,6 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+-#include <linux/gpio.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
+index 7d66343..c5dafbd 100644
+--- a/drivers/staging/iio/meter/ade7758_core.c
++++ b/drivers/staging/iio/meter/ade7758_core.c
+@@ -8,7 +8,6 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+-#include <linux/gpio.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
+index 2e3fac5..b691f10 100644
+--- a/drivers/staging/iio/meter/ade7759.c
++++ b/drivers/staging/iio/meter/ade7759.c
+@@ -8,7 +8,6 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+-#include <linux/gpio.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
+index ca88676..49c01c5 100644
+--- a/drivers/staging/iio/meter/ade7854.c
++++ b/drivers/staging/iio/meter/ade7854.c
+@@ -8,7 +8,6 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+-#include <linux/gpio.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
+ #include <linux/device.h>
+diff --git a/drivers/staging/iio/resolver/Kconfig b/drivers/staging/iio/resolver/Kconfig
+index 90b3bbc..49f69ef 100644
+--- a/drivers/staging/iio/resolver/Kconfig
++++ b/drivers/staging/iio/resolver/Kconfig
+@@ -13,6 +13,7 @@ config AD2S90
+ config AD2S1200
+ 	tristate "Analog Devices ad2s1200/ad2s1205 driver"
+ 	depends on SPI
++	depends on GENERIC_GPIO
+ 	help
+ 	  Say yes here to build support for Analog Devices spi resolver
+ 	  to digital converters, ad2s1200 and ad2s1205, provides direct access
+@@ -21,6 +22,7 @@ config AD2S1200
+ config AD2S1210
+ 	tristate "Analog Devices ad2s1210 driver"
+ 	depends on SPI
++	depends on GENERIC_GPIO
+ 	help
+ 	  Say yes here to build support for Analog Devices spi resolver
+ 	  to digital converters, ad2s1210, provides direct access via sysfs.
+-- 
+1.7.3.4
