@@ -1,44 +1,31 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:55373 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755870Ab1JMOqE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Oct 2011 10:46:04 -0400
-Message-ID: <4E96F9AC.9000001@cam.ac.uk>
-Date: Thu, 13 Oct 2011 15:46:04 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+Return-Path: <broonie@sirena.org.uk>
+Date: Thu, 13 Oct 2011 21:44:10 +0100
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	zdevai@gmail.com, linus.walleij@linaro.org
 Subject: Re: [PATCH] staging:iio:proof of concept in kernel interface.
-References: <1318333383-17663-1-git-send-email-jic23@cam.ac.uk> <1318333383-17663-2-git-send-email-jic23@cam.ac.uk> <20111013143224.GO1098@sirena.org.uk>
-In-Reply-To: <20111013143224.GO1098@sirena.org.uk>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Message-ID: <20111013204410.GA17160@sirena.org.uk>
+References: <1318333383-17663-1-git-send-email-jic23@cam.ac.uk>
+ <1318333383-17663-2-git-send-email-jic23@cam.ac.uk>
+ <20111013143224.GO1098@sirena.org.uk>
+ <4E96F9AC.9000001@cam.ac.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <4E96F9AC.9000001@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/13/11 15:32, Mark Brown wrote:
-> On Tue, Oct 11, 2011 at 12:43:03PM +0100, Jonathan Cameron wrote:
-> 
->> +struct iio_dev *iio_find_dev(const char *name);
->> +void iio_release_dev(struct iio_dev *indio_dev);
-> 
-> This looks like it should really be clk style with a struct device and a
-> back end interface that deals with mapping the provider to consumers at
-> runtime.
-Agreed.  That definitely looks like the best discovery interface
-out there at the moment.  Will reroll with the equivalent.
+On Thu, Oct 13, 2011 at 03:46:04PM +0100, Jonathan Cameron wrote:
 
-We'll have to play a few games in the drivers to map back to the underlying
-bus names so that we have consistent naming.  (simple callback).
-> 
->> +	/* read from channel 1 and exit */
->> +	ret = indio_dev->info->read_raw(indio_dev, &indio_dev->channels[0], &val, &val2, 0);
-> 
-> I guess an actual implementation would have wrappers for doing the
-> indirections rather than having users peer into the ops table directly?
-> 
-Yup, for some reason the cover letter seems to have detached from this.
-It suggested exactly that.  There may be weird cases where peering this
-deep into the ops makes sense, but not for something like this one.
+> > I guess an actual implementation would have wrappers for doing the
+> > indirections rather than having users peer into the ops table directly?
 
+> Yup, for some reason the cover letter seems to have detached from this.
+> It suggested exactly that.  There may be weird cases where peering this
+> deep into the ops makes sense, but not for something like this one.
+
+Oh, right.  As a general rule I don't read cover letters for single
+patches until after I've read the patch, generally they're either
+completely content free (if only by virtue of repeating the changelog)
+or there's a problem with the changelog in the actual patch not
+explaining what's going on.
