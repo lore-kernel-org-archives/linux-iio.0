@@ -1,718 +1,539 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: <michael.hennerich@analog.com>
-To: <greg@kroah.com>
-CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
-	<drivers@analog.com>, <jic23@cam.ac.uk>, Michael Hennerich
-	<michael.hennerich@analog.com>
-Subject: [PATCH] iio: adc: remove ADT75 driver - hwmon/lm75 will take over ADT75 support
-Date: Fri, 14 Oct 2011 09:00:44 +0200
-Message-ID: <1318575644-21407-1-git-send-email-michael.hennerich@analog.com>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-iio@vger.kernel.org>, <Device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:dac Add AD5064 driver
+Date: Thu, 13 Oct 2011 13:40:28 +0200
+Message-ID: <1318506028-5041-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+This patch adds support for the Analog Devices AD6064, AD6064-1, AD6044, AD6024
+quad channel digital-to-analog converter devices.
 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/Kconfig  |    7 -
- drivers/staging/iio/adc/Makefile |    1 -
- drivers/staging/iio/adc/adt75.c  |  655 --------------------------------------
- 3 files changed, 0 insertions(+), 663 deletions(-)
- delete mode 100644 drivers/staging/iio/adc/adt75.c
+Changes since v1:
+	* Use regulator bulk API to request vref regulators
+	* Cache written DAC values as the chip doesn't support readback. This allows
+	  us to have support for reading from the out_voltageY_raw attribute.
+	* Add proper locking. We need to lock the spi write buffer against
+	  concurrent usage.
 
-diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index 2c1b7de..f0b494f 100644
---- a/drivers/staging/iio/adc/Kconfig
-+++ b/drivers/staging/iio/adc/Kconfig
-@@ -168,13 +168,6 @@ config AD7192
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad7192.
+Note: This patch depends on the "staging:iio: fix removal path to allow correct
+freeing." patch.
+---
+ drivers/staging/iio/dac/Kconfig  |   10 +
+ drivers/staging/iio/dac/Makefile |    1 +
+ drivers/staging/iio/dac/ad5064.c |  463 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 474 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/dac/ad5064.c
 
--config ADT75
--	tristate "Analog Devices ADT75 temperature sensor driver"
--	depends on I2C
--	help
--	  Say yes here to build support for Analog Devices ADT75
--	  temperature sensors.
--
- config ADT7310
- 	tristate "Analog Devices ADT7310 temperature sensor driver"
+diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
+index 3000156..724af7f 100644
+--- a/drivers/staging/iio/dac/Kconfig
++++ b/drivers/staging/iio/dac/Kconfig
+@@ -3,6 +3,16 @@
+ #
+ menu "Digital to analog convertors"
+ 
++config AD5064
++	tristate "Analog Devices AD5064/64-1/44/24 DAC driver"
++	depends on SPI
++	help
++	  Say yes here to build support for Analog Devices AD5064, AD5064-1,
++	  AD5044, AD5024 Digital to Analog Converter.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad5064.
++
+ config AD5624R_SPI
+ 	tristate "Analog Devices AD5624/44/64R DAC spi driver"
  	depends on SPI
-diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
-index 93dc84b..be7faaa 100644
---- a/drivers/staging/iio/adc/Makefile
-+++ b/drivers/staging/iio/adc/Makefile
-@@ -37,7 +37,6 @@ obj-$(CONFIG_AD7780) += ad7780.o
- obj-$(CONFIG_AD7793) += ad7793.o
- obj-$(CONFIG_AD7816) += ad7816.o
- obj-$(CONFIG_AD7192) += ad7192.o
--obj-$(CONFIG_ADT75) += adt75.o
- obj-$(CONFIG_ADT7310) += adt7310.o
- obj-$(CONFIG_ADT7410) += adt7410.o
- obj-$(CONFIG_AD7280) += ad7280a.o
-diff --git a/drivers/staging/iio/adc/adt75.c b/drivers/staging/iio/adc/adt75.c
-deleted file mode 100644
-index 08215e9..0000000
---- a/drivers/staging/iio/adc/adt75.c
-+++ /dev/null
-@@ -1,655 +0,0 @@
--/*
-- * ADT75 digital temperature sensor driver supporting ADT75
-- *
-- * Copyright 2010 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2 or later.
-- */
--
--#include <linux/interrupt.h>
--#include <linux/device.h>
--#include <linux/kernel.h>
--#include <linux/slab.h>
--#include <linux/sysfs.h>
--#include <linux/i2c.h>
--#include <linux/module.h>
--
--#include "../iio.h"
--#include "../sysfs.h"
--
--/*
-- * ADT75 registers definition
-- */
--
--#define ADT75_TEMPERATURE		0
--#define ADT75_CONFIG			1
--#define ADT75_T_HYST			2
--#define ADT75_T_OS			3
--#define ADT75_ONESHOT			4
--
--/*
-- * ADT75 config
-- */
--#define ADT75_PD			0x1
--#define ADT75_OS_INT			0x2
--#define ADT75_OS_POLARITY		0x4
--#define ADT75_FAULT_QUEUE_MASK		0x18
--#define ADT75_FAULT_QUEUE_OFFSET	3
--#define ADT75_SMBUS_ALART		0x8
--
--/*
-- * ADT75 masks
-- */
--#define ADT75_VALUE_SIGN		0x800
--#define ADT75_VALUE_OFFSET		4
--#define ADT75_VALUE_FLOAT_OFFSET	4
--#define ADT75_VALUE_FLOAT_MASK		0xF
--
--
--/*
-- * struct adt75_chip_info - chip specifc information
-- */
--
--struct adt75_chip_info {
--	struct i2c_client *client;
--	u8  config;
--};
--
--/*
-- * adt75 register access by I2C
-- */
--
--static int adt75_i2c_read(struct iio_dev *dev_info, u8 reg, u8 *data)
--{
--	struct adt75_chip_info *chip = iio_priv(dev_info);
--	struct i2c_client *client = chip->client;
--	int ret = 0, len;
--
--	ret = i2c_smbus_write_byte(client, reg);
--	if (ret < 0) {
--		dev_err(&client->dev, "I2C read register address error\n");
--		return ret;
--	}
--
--	if (reg == ADT75_CONFIG || reg == ADT75_ONESHOT)
--		len = 1;
--	else
--		len = 2;
--
--	ret = i2c_master_recv(client, data, len);
--	if (ret < 0) {
--		dev_err(&client->dev, "I2C read error\n");
--		return ret;
--	}
--
--	return ret;
--}
--
--static int adt75_i2c_write(struct iio_dev *dev_info, u8 reg, u8 data)
--{
--	struct adt75_chip_info *chip = iio_priv(dev_info);
--	struct i2c_client *client = chip->client;
--	int ret = 0;
--
--	if (reg == ADT75_CONFIG || reg == ADT75_ONESHOT)
--		ret = i2c_smbus_write_byte_data(client, reg, data);
--	else
--		ret = i2c_smbus_write_word_data(client, reg, data);
--
--	if (ret < 0)
--		dev_err(&client->dev, "I2C write error\n");
--
--	return ret;
--}
--
--static ssize_t adt75_show_mode(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct adt75_chip_info *chip = iio_priv(dev_get_drvdata(dev));
--
--	if (chip->config & ADT75_PD)
--		return sprintf(buf, "power-save\n");
--	else
--		return sprintf(buf, "full\n");
--}
--
--static ssize_t adt75_store_mode(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
--{
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct adt75_chip_info *chip = iio_priv(dev_info);
--	int ret;
--	u8 config;
--
--	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
--	if (ret)
--		return -EIO;
--
--	config = chip->config & ~ADT75_PD;
--	if (!strcmp(buf, "full"))
--		config |= ADT75_PD;
--
--	ret = adt75_i2c_write(dev_info, ADT75_CONFIG, config);
--	if (ret)
--		return -EIO;
--
--	chip->config = config;
--
--	return ret;
--}
--
--static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR,
--		adt75_show_mode,
--		adt75_store_mode,
--		0);
--
--static ssize_t adt75_show_available_modes(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	return sprintf(buf, "full\npower-down\n");
--}
--
--static IIO_DEVICE_ATTR(available_modes, S_IRUGO, adt75_show_available_modes, NULL, 0);
--
--static ssize_t adt75_show_oneshot(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct adt75_chip_info *chip = iio_priv(dev_get_drvdata(dev));
--
--	return sprintf(buf, "%d\n", !!(chip->config & ADT75_ONESHOT));
--}
--
--static ssize_t adt75_store_oneshot(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
--{
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct adt75_chip_info *chip = iio_priv(dev_info);
--	unsigned long data = 0;
--	int ret;
--	u8 config;
--
--	ret = strict_strtoul(buf, 10, &data);
--	if (ret)
--		return -EINVAL;
--
--
--	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
--	if (ret)
--		return -EIO;
--
--	config = chip->config & ~ADT75_ONESHOT;
--	if (data)
--		config |= ADT75_ONESHOT;
--
--	ret = adt75_i2c_write(dev_info, ADT75_CONFIG, config);
--	if (ret)
--		return -EIO;
--
--	chip->config = config;
--
--	return ret;
--}
--
--static IIO_DEVICE_ATTR(oneshot, S_IRUGO | S_IWUSR,
--		adt75_show_oneshot,
--		adt75_store_oneshot,
--		0);
--
--static ssize_t adt75_show_value(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct adt75_chip_info *chip = iio_priv(dev_info);
--	u16 data;
--	char sign = ' ';
--	int ret;
--
--	if (chip->config & ADT75_PD) {
--		dev_err(dev, "Can't read value in power-down mode.\n");
--		return -EIO;
--	}
--
--	if (chip->config & ADT75_ONESHOT) {
--		/* write to active converter */
--		ret = i2c_smbus_write_byte(chip->client, ADT75_ONESHOT);
--		if (ret)
--			return -EIO;
--	}
--
--	ret = adt75_i2c_read(dev_info, ADT75_TEMPERATURE, (u8 *)&data);
--	if (ret)
--		return -EIO;
--
--	data = swab16(data) >> ADT75_VALUE_OFFSET;
--	if (data & ADT75_VALUE_SIGN) {
--		/* convert supplement to positive value */
--		data = (ADT75_VALUE_SIGN << 1) - data;
--		sign = '-';
--	}
--
--	return sprintf(buf, "%c%d.%.4d\n", sign,
--		(data >> ADT75_VALUE_FLOAT_OFFSET),
--		(data & ADT75_VALUE_FLOAT_MASK) * 625);
--}
--
--static IIO_DEVICE_ATTR(value, S_IRUGO, adt75_show_value, NULL, 0);
--
--static struct attribute *adt75_attributes[] = {
--	&iio_dev_attr_available_modes.dev_attr.attr,
--	&iio_dev_attr_mode.dev_attr.attr,
--	&iio_dev_attr_oneshot.dev_attr.attr,
--	&iio_dev_attr_value.dev_attr.attr,
--	NULL,
--};
--
--static const struct attribute_group adt75_attribute_group = {
--	.attrs = adt75_attributes,
--};
--
--/*
-- * temperature bound events
-- */
--
--#define IIO_EVENT_CODE_ADT75_OTI IIO_UNMOD_EVENT_CODE(IIO_TEMP,		\
--						      0,		\
--						      IIO_EV_TYPE_THRESH, \
--						      IIO_EV_DIR_FALLING)
--
--static irqreturn_t adt75_event_handler(int irq, void *private)
--{
--	iio_push_event(private,
--		       IIO_EVENT_CODE_ADT75_OTI,
--		       iio_get_time_ns());
--
--	return IRQ_HANDLED;
--}
--
--static ssize_t adt75_show_oti_mode(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct adt75_chip_info *chip = iio_priv(dev_info);
--	int ret;
--
--	/* retrive ALART status */
--	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
--	if (ret)
--		return -EIO;
--
--	if (chip->config & ADT75_OS_INT)
--		return sprintf(buf, "interrupt\n");
--	else
--		return sprintf(buf, "comparator\n");
--}
--
--static ssize_t adt75_set_oti_mode(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
--{
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct adt75_chip_info *chip = iio_priv(dev_info);
--	int ret;
--	u8 config;
--
--	/* retrive ALART status */
--	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
--	if (ret)
--		return -EIO;
--
--	config = chip->config & ~ADT75_OS_INT;
--	if (strcmp(buf, "comparator") != 0)
--		config |= ADT75_OS_INT;
--
--	ret = adt75_i2c_write(dev_info, ADT75_CONFIG, config);
--	if (ret)
--		return -EIO;
--
--	chip->config = config;
--
--	return ret;
--}
--
--static ssize_t adt75_show_available_oti_modes(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	return sprintf(buf, "comparator\ninterrupt\n");
--}
--
--static ssize_t adt75_show_smbus_alart(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct adt75_chip_info *chip = iio_priv(dev_info);
--	int ret;
--
--	/* retrive ALART status */
--	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
--	if (ret)
--		return -EIO;
--
--	return sprintf(buf, "%d\n", !!(chip->config & ADT75_SMBUS_ALART));
--}
--
--static ssize_t adt75_set_smbus_alart(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
--{
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct adt75_chip_info *chip = iio_priv(dev_info);
--	unsigned long data = 0;
--	int ret;
--	u8 config;
--
--	ret = strict_strtoul(buf, 10, &data);
--	if (ret)
--		return -EINVAL;
--
--	/* retrive ALART status */
--	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
--	if (ret)
--		return -EIO;
--
--	config = chip->config & ~ADT75_SMBUS_ALART;
--	if (data)
--		config |= ADT75_SMBUS_ALART;
--
--	ret = adt75_i2c_write(dev_info, ADT75_CONFIG, config);
--	if (ret)
--		return -EIO;
--
--	chip->config = config;
--
--	return ret;
--}
--
--static ssize_t adt75_show_fault_queue(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct adt75_chip_info *chip = iio_priv(dev_info);
--	int ret;
--
--	/* retrive ALART status */
--	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
--	if (ret)
--		return -EIO;
--
--	return sprintf(buf, "%d\n", (chip->config & ADT75_FAULT_QUEUE_MASK) >>
--				ADT75_FAULT_QUEUE_OFFSET);
--}
--
--static ssize_t adt75_set_fault_queue(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
--{
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	struct adt75_chip_info *chip = iio_priv(dev_info);
--	unsigned long data;
--	int ret;
--	u8 config;
--
--	ret = strict_strtoul(buf, 10, &data);
--	if (ret || data > 3)
--		return -EINVAL;
--
--	/* retrive ALART status */
--	ret = adt75_i2c_read(dev_info, ADT75_CONFIG, &chip->config);
--	if (ret)
--		return -EIO;
--
--	config = chip->config & ~ADT75_FAULT_QUEUE_MASK;
--	config |= (data << ADT75_FAULT_QUEUE_OFFSET);
--	ret = adt75_i2c_write(dev_info, ADT75_CONFIG, config);
--	if (ret)
--		return -EIO;
--
--	chip->config = config;
--
--	return ret;
--}
--static inline ssize_t adt75_show_t_bound(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	u16 data;
--	char sign = ' ';
--	int ret;
--
--	ret = adt75_i2c_read(dev_info, this_attr->address, (u8 *)&data);
--	if (ret)
--		return -EIO;
--
--	data = swab16(data) >> ADT75_VALUE_OFFSET;
--	if (data & ADT75_VALUE_SIGN) {
--		/* convert supplement to positive value */
--		data = (ADT75_VALUE_SIGN << 1) - data;
--		sign = '-';
--	}
--
--	return sprintf(buf, "%c%d.%.4d\n", sign,
--		(data >> ADT75_VALUE_FLOAT_OFFSET),
--		(data & ADT75_VALUE_FLOAT_MASK) * 625);
--}
--
--static inline ssize_t adt75_set_t_bound(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
--{
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	struct iio_dev *dev_info = dev_get_drvdata(dev);
--	long tmp1, tmp2;
--	u16 data;
--	char *pos;
--	int ret;
--
--	pos = strchr(buf, '.');
--
--	ret = strict_strtol(buf, 10, &tmp1);
--
--	if (ret || tmp1 > 127 || tmp1 < -128)
--		return -EINVAL;
--
--	if (pos) {
--		len = strlen(pos);
--		if (len > ADT75_VALUE_FLOAT_OFFSET)
--			len = ADT75_VALUE_FLOAT_OFFSET;
--		pos[len] = 0;
--		ret = strict_strtol(pos, 10, &tmp2);
--
--		if (!ret)
--			tmp2 = (tmp2 / 625) * 625;
--	}
--
--	if (tmp1 < 0)
--		data = (u16)(-tmp1);
--	else
--		data = (u16)tmp1;
--	data = (data << ADT75_VALUE_FLOAT_OFFSET) | (tmp2 & ADT75_VALUE_FLOAT_MASK);
--	if (tmp1 < 0)
--		/* convert positive value to supplyment */
--		data = (ADT75_VALUE_SIGN << 1) - data;
--	data <<= ADT75_VALUE_OFFSET;
--	data = swab16(data);
--
--	ret = adt75_i2c_write(dev_info, this_attr->address, (u8)data);
--	if (ret)
--		return -EIO;
--
--	return ret;
--}
--
--
--static IIO_DEVICE_ATTR(oti_mode,
--		       S_IRUGO | S_IWUSR,
--		       adt75_show_oti_mode, adt75_set_oti_mode, 0);
--static IIO_DEVICE_ATTR(available_oti_modes,
--		       S_IRUGO,
--		       adt75_show_available_oti_modes, NULL, 0);
--static IIO_DEVICE_ATTR(smbus_alart,
--		       S_IRUGO | S_IWUSR,
--		       adt75_show_smbus_alart, adt75_set_smbus_alart, 0);
--static IIO_DEVICE_ATTR(fault_queue,
--		       S_IRUGO | S_IWUSR,
--		       adt75_show_fault_queue, adt75_set_fault_queue, 0);
--static IIO_DEVICE_ATTR(t_os_value,
--		       S_IRUGO | S_IWUSR,
--		       adt75_show_t_bound, adt75_set_t_bound,
--		       ADT75_T_OS);
--static IIO_DEVICE_ATTR(t_hyst_value,
--		       S_IRUGO | S_IWUSR,
--		       adt75_show_t_bound, adt75_set_t_bound,
--		       ADT75_T_HYST);
--
--static struct attribute *adt75_event_attributes[] = {
--	&iio_dev_attr_oti_mode.dev_attr.attr,
--	&iio_dev_attr_available_oti_modes.dev_attr.attr,
--	&iio_dev_attr_smbus_alart.dev_attr.attr,
--	&iio_dev_attr_fault_queue.dev_attr.attr,
--	&iio_dev_attr_t_os_value.dev_attr.attr,
--	&iio_dev_attr_t_hyst_value.dev_attr.attr,
--	NULL,
--};
--
--static struct attribute_group adt75_event_attribute_group = {
--	.attrs = adt75_event_attributes,
--	.name = "events",
--};
--
--static const struct iio_info adt75_info = {
--	.attrs = &adt75_attribute_group,
--	.event_attrs = &adt75_event_attribute_group,
--	.driver_module = THIS_MODULE,
--};
--
--/*
-- * device probe and remove
-- */
--
--static int __devinit adt75_probe(struct i2c_client *client,
--		const struct i2c_device_id *id)
--{
--	struct adt75_chip_info *chip;
--	struct iio_dev *indio_dev;
--	int ret = 0;
--
--	indio_dev = iio_allocate_device(sizeof(*chip));
--	if (indio_dev == NULL) {
--		ret = -ENOMEM;
--		goto error_ret;
--	}
--	chip = iio_priv(indio_dev);
--
--	/* this is only used for device removal purposes */
--	i2c_set_clientdata(client, indio_dev);
--
--	chip->client = client;
--
--	indio_dev->name = id->name;
--	indio_dev->dev.parent = &client->dev;
--	indio_dev->info = &adt75_info;
--	indio_dev->modes = INDIO_DIRECT_MODE;
--
--	if (client->irq > 0) {
--		ret = request_threaded_irq(client->irq,
--					   NULL,
--					   &adt75_event_handler,
--					   IRQF_TRIGGER_LOW,
--					   indio_dev->name,
--					   indio_dev);
--		if (ret)
--			goto error_free_dev;
--
--		ret = adt75_i2c_read(indio_dev, ADT75_CONFIG, &chip->config);
--		if (ret) {
--			ret = -EIO;
--			goto error_unreg_irq;
--		}
--
--		/* set irq polarity low level */
--		chip->config &= ~ADT75_OS_POLARITY;
--
--		ret = adt75_i2c_write(indio_dev, ADT75_CONFIG, chip->config);
--		if (ret) {
--			ret = -EIO;
--			goto error_unreg_irq;
--		}
--	}
--
--	ret = iio_device_register(indio_dev);
--	if (ret)
--		goto error_unreg_irq;
--
--	dev_info(&client->dev, "%s temperature sensor registered.\n",
--			 indio_dev->name);
--
--	return 0;
--error_unreg_irq:
--	free_irq(client->irq, indio_dev);
--error_free_dev:
--	iio_free_device(indio_dev);
--error_ret:
--	return ret;
--}
--
--static int __devexit adt75_remove(struct i2c_client *client)
--{
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--
--	if (client->irq)
--		free_irq(client->irq, indio_dev);
--	iio_device_unregister(indio_dev);
--
--	return 0;
--}
--
--static const struct i2c_device_id adt75_id[] = {
--	{ "adt75", 0 },
--	{}
--};
--
--MODULE_DEVICE_TABLE(i2c, adt75_id);
--
--static struct i2c_driver adt75_driver = {
--	.driver = {
--		.name = "adt75",
--	},
--	.probe = adt75_probe,
--	.remove = __devexit_p(adt75_remove),
--	.id_table = adt75_id,
--};
--
--static __init int adt75_init(void)
--{
--	return i2c_add_driver(&adt75_driver);
--}
--
--static __exit void adt75_exit(void)
--{
--	i2c_del_driver(&adt75_driver);
--}
--
--MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
--MODULE_DESCRIPTION("Analog Devices ADT75 digital"
--			" temperature sensor driver");
--MODULE_LICENSE("GPL v2");
--
--module_init(adt75_init);
--module_exit(adt75_exit);
---
-1.7.0.4
+diff --git a/drivers/staging/iio/dac/Makefile b/drivers/staging/iio/dac/Makefile
+index 7f4f2ed..ea49750 100644
+--- a/drivers/staging/iio/dac/Makefile
++++ b/drivers/staging/iio/dac/Makefile
+@@ -3,6 +3,7 @@
+ #
+ 
+ obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
++obj-$(CONFIG_AD5064) += ad5064.o
+ obj-$(CONFIG_AD5504) += ad5504.o
+ obj-$(CONFIG_AD5446) += ad5446.o
+ obj-$(CONFIG_AD5791) += ad5791.o
+diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
+new file mode 100644
+index 0000000..bb0152b
+--- /dev/null
++++ b/drivers/staging/iio/dac/ad5064.c
+@@ -0,0 +1,463 @@
++/*
++ * AD5064, AD5064-1, AD5044, AD5024 Digital to analog converters  driver
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/spi/spi.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/regulator/consumer.h>
++
++#include "../iio.h"
++#include "../sysfs.h"
++#include "dac.h"
++
++#define AD5064_DAC_CHANNELS			4
++
++#define AD5064_ADDR(x)				((x) << 20)
++#define AD5064_CMD(x)				((x) << 24)
++
++#define AD5064_ADDR_DAC(chan)			(chan)
++#define AD5064_ADDR_ALL_DAC			0xF
++
++#define AD5064_CMD_WRITE_INPUT_N		0x0
++#define AD5064_CMD_UPDATE_DAC_N			0x1
++#define AD5064_CMD_WRITE_INPUT_N_UPDATE_ALL	0x2
++#define AD5064_CMD_WRITE_INPUT_N_UPDATE_N	0x3
++#define AD5064_CMD_POWERDOWN_DAC		0x4
++#define AD5064_CMD_CLEAR			0x5
++#define AD5064_CMD_LDAC_MASK			0x6
++#define AD5064_CMD_RESET			0x7
++#define AD5064_CMD_DAISY_CHAIN_ENABLE		0x8
++
++#define AD5064_LDAC_PWRDN_NONE			0x0
++#define AD5064_LDAC_PWRDN_1K			0x1
++#define AD5064_LDAC_PWRDN_100K			0x2
++#define AD5064_LDAC_PWRDN_3STATE		0x3
++
++/**
++ * struct ad5064_chip_info - chip specific information
++ * @shared_vref:	whether the vref supply is shared between channels
++ * @channel:		channel specification
++*/
++
++struct ad5064_chip_info {
++	bool shared_vref;
++	struct iio_chan_spec channel[AD5064_DAC_CHANNELS];
++};
++
++/**
++ * struct ad5064_state - driver instance specific data
++ * @spi:		spi_device
++ * @chip_info:		chip model specific constants, available modes etc
++ * @vref_reg:		vref supply regulators
++ * @pwr_down:		whether channel is powered down
++ * @pwr_down_mode:	channel's current power down mode
++ * @dac_cache:		current DAC raw value (chip does not support readback)
++ * @data:		spi transfer buffers
++ */
++
++struct ad5064_state {
++	struct spi_device		*spi;
++	const struct ad5064_chip_info	*chip_info;
++	struct regulator_bulk_data	vref_reg[AD5064_DAC_CHANNELS];
++	bool				pwr_down[AD5064_DAC_CHANNELS];
++	u8				pwr_down_mode[AD5064_DAC_CHANNELS];
++	unsigned int			dac_cache[AD5064_DAC_CHANNELS];
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++
++	__be32 data ____cacheline_aligned;
++};
++
++enum ad5064_type {
++	ID_AD5024,
++	ID_AD5044,
++	ID_AD5064,
++	ID_AD5064_1,
++};
++
++#define AD5064_CHANNEL(chan, bits) {				\
++	.type = IIO_VOLTAGE,					\
++	.indexed = 1,						\
++	.output = 1,						\
++	.channel = (chan),					\
++	.info_mask = (1 << IIO_CHAN_INFO_SCALE_SEPARATE),	\
++	.address = AD5064_ADDR_DAC(chan),			\
++	.scan_type = IIO_ST('u', (bits), 16, 20 - (bits))	\
++}
++
++static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
++	[ID_AD5024] = {
++		.shared_vref = false,
++		.channel[0] = AD5064_CHANNEL(0, 12),
++		.channel[1] = AD5064_CHANNEL(1, 12),
++		.channel[2] = AD5064_CHANNEL(2, 12),
++		.channel[3] = AD5064_CHANNEL(3, 12),
++	},
++	[ID_AD5044] = {
++		.shared_vref = false,
++		.channel[0] = AD5064_CHANNEL(0, 14),
++		.channel[1] = AD5064_CHANNEL(1, 14),
++		.channel[2] = AD5064_CHANNEL(2, 14),
++		.channel[3] = AD5064_CHANNEL(3, 14),
++	},
++	[ID_AD5064] = {
++		.shared_vref = false,
++		.channel[0] = AD5064_CHANNEL(0, 16),
++		.channel[1] = AD5064_CHANNEL(1, 16),
++		.channel[2] = AD5064_CHANNEL(2, 16),
++		.channel[3] = AD5064_CHANNEL(3, 16),
++	},
++	[ID_AD5064_1] = {
++		.shared_vref = true,
++		.channel[0] = AD5064_CHANNEL(0, 16),
++		.channel[1] = AD5064_CHANNEL(1, 16),
++		.channel[2] = AD5064_CHANNEL(2, 16),
++		.channel[3] = AD5064_CHANNEL(3, 16),
++	},
++};
++
++static int ad5064_spi_write(struct ad5064_state *st, unsigned int cmd,
++	unsigned int addr, unsigned int val, unsigned int shift)
++{
++	val <<= shift;
++
++	st->data = cpu_to_be32(AD5064_CMD(cmd) | AD5064_ADDR(addr) | val);
++
++	return spi_write(st->spi, &st->data, sizeof(st->data));
++}
++
++static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
++	unsigned int channel)
++{
++	unsigned int val;
++	int ret;
++
++	val = (0x1 << channel);
++
++	if (st->pwr_down[channel])
++		val |= st->pwr_down_mode[channel] << 8;
++
++	ret = ad5064_spi_write(st, AD5064_CMD_POWERDOWN_DAC, 0, val, 0);
++
++	return ret;
++}
++
++static const char ad5064_powerdown_modes[][15] = {
++	[AD5064_LDAC_PWRDN_NONE]	= "",
++	[AD5064_LDAC_PWRDN_1K]		= "1kohm_to_gnd",
++	[AD5064_LDAC_PWRDN_100K]	= "100kohm_to_gnd",
++	[AD5064_LDAC_PWRDN_3STATE]	= "three_state",
++};
++
++static ssize_t ad5064_read_powerdown_mode(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5064_state *st = iio_priv(indio_dev);
++
++	return sprintf(buf, "%s\n",
++		ad5064_powerdown_modes[st->pwr_down_mode[this_attr->address]]);
++}
++
++static ssize_t ad5064_write_powerdown_mode(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5064_state *st = iio_priv(indio_dev);
++	unsigned int mode, i;
++	int ret;
++
++	mode = 0;
++
++	for (i = 1; i < ARRAY_SIZE(ad5064_powerdown_modes); ++i) {
++		if (sysfs_streq(buf, ad5064_powerdown_modes[i])) {
++			mode = i;
++			break;
++		}
++	}
++	if (mode == 0)
++		return  -EINVAL;
++
++	mutex_lock(&indio_dev->mlock);
++	st->pwr_down_mode[this_attr->address] = mode;
++
++	ret = ad5064_sync_powerdown_mode(st, this_attr->address);
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret ? ret : len;
++}
++
++static ssize_t ad5064_read_dac_powerdown(struct device *dev,
++					   struct device_attribute *attr,
++					   char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5064_state *st = iio_priv(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++
++	return sprintf(buf, "%d\n", st->pwr_down[this_attr->address]);
++}
++
++static ssize_t ad5064_write_dac_powerdown(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5064_state *st = iio_priv(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	bool pwr_down;
++	int ret;
++
++	ret = strtobool(buf, &pwr_down);
++	if (ret)
++		return ret;
++
++	mutex_lock(&indio_dev->mlock);
++	st->pwr_down[this_attr->address] = pwr_down;
++
++	ret = ad5064_sync_powerdown_mode(st, this_attr->address);
++	mutex_unlock(&indio_dev->mlock);
++	return ret ? ret : len;
++}
++
++static IIO_CONST_ATTR(out_voltage_powerdown_mode_available,
++			"1kohm_to_gnd 100kohm_to_gnd three_state");
++
++#define IIO_DEV_ATTR_DAC_POWERDOWN_MODE(_chan) \
++	IIO_DEVICE_ATTR(out_voltage##_chan##_powerdown_mode, \
++			S_IRUGO | S_IWUSR, \
++			ad5064_read_powerdown_mode, \
++			ad5064_write_powerdown_mode, _chan);
++
++#define IIO_DEV_ATTR_DAC_POWERDOWN(_chan)				\
++	IIO_DEVICE_ATTR(out_voltage##_chan##_powerdown,			\
++			S_IRUGO | S_IWUSR,				\
++			ad5064_read_dac_powerdown,			\
++			ad5064_write_dac_powerdown, _chan)
++
++static IIO_DEV_ATTR_DAC_POWERDOWN(0);
++static IIO_DEV_ATTR_DAC_POWERDOWN_MODE(0);
++static IIO_DEV_ATTR_DAC_POWERDOWN(1);
++static IIO_DEV_ATTR_DAC_POWERDOWN_MODE(1);
++static IIO_DEV_ATTR_DAC_POWERDOWN(2);
++static IIO_DEV_ATTR_DAC_POWERDOWN_MODE(2);
++static IIO_DEV_ATTR_DAC_POWERDOWN(3);
++static IIO_DEV_ATTR_DAC_POWERDOWN_MODE(3);
++
++static struct attribute *ad5064_attributes[] = {
++	&iio_dev_attr_out_voltage0_powerdown.dev_attr.attr,
++	&iio_dev_attr_out_voltage1_powerdown.dev_attr.attr,
++	&iio_dev_attr_out_voltage2_powerdown.dev_attr.attr,
++	&iio_dev_attr_out_voltage3_powerdown.dev_attr.attr,
++	&iio_dev_attr_out_voltage0_powerdown_mode.dev_attr.attr,
++	&iio_dev_attr_out_voltage1_powerdown_mode.dev_attr.attr,
++	&iio_dev_attr_out_voltage2_powerdown_mode.dev_attr.attr,
++	&iio_dev_attr_out_voltage3_powerdown_mode.dev_attr.attr,
++	&iio_const_attr_out_voltage_powerdown_mode_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ad5064_attribute_group = {
++	.attrs = ad5064_attributes,
++};
++
++static int ad5064_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val,
++			   int *val2,
++			   long m)
++{
++	struct ad5064_state *st = iio_priv(indio_dev);
++	unsigned long scale_uv;
++	unsigned int vref;
++
++	switch (m) {
++	case 0:
++		*val = st->dac_cache[chan->channel];
++		return IIO_VAL_INT;
++	case (1 << IIO_CHAN_INFO_SCALE_SEPARATE):
++		vref = st->chip_info->shared_vref ? 0 : chan->channel;
++		scale_uv = regulator_get_voltage(st->vref_reg[vref].consumer);
++		if (scale_uv < 0)
++			return scale_uv;
++
++		scale_uv = (scale_uv * 100) >> chan->scan_type.realbits;
++		*val =  scale_uv / 100000;
++		*val2 = (scale_uv % 100000) * 10;
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		break;
++	}
++	return -EINVAL;
++}
++
++static int ad5064_write_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int val, int val2, long mask)
++{
++	struct ad5064_state *st = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case 0:
++		if (val > (1 << chan->scan_type.realbits))
++			return -EINVAL;
++
++		mutex_lock(&indio_dev->mlock);
++		ret = ad5064_spi_write(st, AD5064_CMD_WRITE_INPUT_N_UPDATE_N,
++				chan->address, val, chan->scan_type.shift);
++		if (ret == 0)
++			st->dac_cache[chan->channel] = val;
++		mutex_unlock(&indio_dev->mlock);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static const struct iio_info ad5064_info = {
++	.read_raw = ad5064_read_raw,
++	.write_raw = ad5064_write_raw,
++	.attrs = &ad5064_attribute_group,
++	.driver_module = THIS_MODULE,
++};
++
++static inline unsigned int ad5064_num_vref(struct ad5064_state *st)
++{
++	return st->chip_info->shared_vref ? 1 : AD5064_DAC_CHANNELS;
++}
++
++static const char * const ad5064_vref_names[] = {
++	"vrefA",
++	"vrefB",
++	"vrefC",
++	"vrefD",
++};
++
++static const char * const ad5064_vref_name(struct ad5064_state *st,
++	unsigned int vref)
++{
++	return st->chip_info->shared_vref ? "vref" : ad5064_vref_names[vref];
++}
++
++static int __devinit ad5064_probe(struct spi_device *spi)
++{
++	enum ad5064_type type = spi_get_device_id(spi)->driver_data;
++	struct iio_dev *indio_dev;
++	struct ad5064_state *st;
++	unsigned int i;
++	int ret;
++
++	indio_dev = iio_allocate_device(sizeof(*st));
++	if (indio_dev == NULL)
++		return  -ENOMEM;
++
++	st = iio_priv(indio_dev);
++	spi_set_drvdata(spi, indio_dev);
++
++	st->chip_info = &ad5064_chip_info_tbl[type];
++	st->spi = spi;
++
++	for (i = 0; i < ad5064_num_vref(st); ++i)
++		st->vref_reg[i].supply = ad5064_vref_name(st, i);
++
++	ret = regulator_bulk_get(&st->spi->dev, ad5064_num_vref(st),
++		st->vref_reg);
++	if (ret)
++		goto error_free;
++
++	ret = regulator_bulk_enable(ad5064_num_vref(st), st->vref_reg);
++	if (ret)
++		goto error_free_reg;
++
++	for (i = 0; i < AD5064_DAC_CHANNELS; ++i) {
++		st->pwr_down_mode[i] = AD5064_LDAC_PWRDN_1K;
++		st->dac_cache[i] = 0x8000;
++	}
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->info = &ad5064_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = st->chip_info->channel;
++	indio_dev->num_channels = AD5064_DAC_CHANNELS;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_disable_reg;
++
++	return 0;
++
++error_disable_reg:
++	regulator_bulk_disable(ad5064_num_vref(st), st->vref_reg);
++error_free_reg:
++	regulator_bulk_free(ad5064_num_vref(st), st->vref_reg);
++error_free:
++	iio_free_device(indio_dev);
++
++	return ret;
++}
++
++
++static int __devexit ad5064_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct ad5064_state *st = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++
++	regulator_bulk_disable(ad5064_num_vref(st), st->vref_reg);
++	regulator_bulk_free(ad5064_num_vref(st), st->vref_reg);
++
++	iio_free_device(indio_dev);
++
++	return 0;
++}
++
++static const struct spi_device_id ad5064_id[] = {
++	{"ad5024", ID_AD5024},
++	{"ad5044", ID_AD5044},
++	{"ad5064", ID_AD5064},
++	{"ad5064-1", ID_AD5064_1},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, ad5064_id);
++
++static struct spi_driver ad5064_driver = {
++	.driver = {
++		   .name = "ad5064",
++		   .owner = THIS_MODULE,
++	},
++	.probe = ad5064_probe,
++	.remove = __devexit_p(ad5064_remove),
++	.id_table = ad5064_id,
++};
++
++static __init int ad5064_spi_init(void)
++{
++	return spi_register_driver(&ad5064_driver);
++}
++module_init(ad5064_spi_init);
++
++static __exit void ad5064_spi_exit(void)
++{
++	spi_unregister_driver(&ad5064_driver);
++}
++module_exit(ad5064_spi_exit);
++
++MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
++MODULE_DESCRIPTION("Analog Devices AD5064/64-1/44/24 DAC");
++MODULE_LICENSE("GPL v2");
+-- 
+1.7.6.3
