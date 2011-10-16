@@ -1,69 +1,76 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:56000 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753397Ab1JNP71 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Oct 2011 11:59:27 -0400
-Message-ID: <4E985C60.9020308@cam.ac.uk>
-Date: Fri, 14 Oct 2011 16:59:28 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <linus.ml.walleij@gmail.com>
 MIME-Version: 1.0
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	zdevai@gmail.com, linus.walleij@linaro.org
+In-Reply-To: <4E985C60.9020308@cam.ac.uk>
+References: <1318333383-17663-1-git-send-email-jic23@cam.ac.uk>
+	<1318333383-17663-2-git-send-email-jic23@cam.ac.uk>
+	<20111013143224.GO1098@sirena.org.uk>
+	<4E96F9AC.9000001@cam.ac.uk>
+	<20111013204410.GA17160@sirena.org.uk>
+	<4E985C60.9020308@cam.ac.uk>
+Date: Sun, 16 Oct 2011 20:45:06 +0200
+Message-ID: <CAKnu2MrUkY2upFh5d6GGTNUr-=r_JKcxh5OQNV63bdOCa4F+zg@mail.gmail.com>
 Subject: Re: [PATCH] staging:iio:proof of concept in kernel interface.
-References: <1318333383-17663-1-git-send-email-jic23@cam.ac.uk> <1318333383-17663-2-git-send-email-jic23@cam.ac.uk> <20111013143224.GO1098@sirena.org.uk> <4E96F9AC.9000001@cam.ac.uk> <20111013204410.GA17160@sirena.org.uk>
-In-Reply-To: <20111013204410.GA17160@sirena.org.uk>
+From: Linus Walleij <linus.ml.walleij@gmail.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, zdevai@gmail.com
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/13/11 21:44, Mark Brown wrote:
-> On Thu, Oct 13, 2011 at 03:46:04PM +0100, Jonathan Cameron wrote:
-> 
->>> I guess an actual implementation would have wrappers for doing the
->>> indirections rather than having users peer into the ops table directly?
-> 
->> Yup, for some reason the cover letter seems to have detached from this.
->> It suggested exactly that.  There may be weird cases where peering this
->> deep into the ops makes sense, but not for something like this one.
-> 
-> Oh, right.  As a general rule I don't read cover letters for single
-> patches until after I've read the patch, generally they're either
-> completely content free (if only by virtue of repeating the changelog)
-> or there's a problem with the changelog in the actual patch not
-> explaining what's going on.
-Fair enough.
+2011/10/14 Jonathan Cameron <jic23@cam.ac.uk>:
 
-I'm trying to work out what our equivalent of the clk finding api is.
+> I'm trying to work out what our equivalent of the clk finding api is.
 
-The best match pair to match on I can come up with is:
+Judging from the ideal use of our in-tree driver
+drivers/mfd/ab8500-gpadc.c a map like this would be
+great
 
-part name: iio_dev.name
+struct adc_map {
+        struct device *adc_dev;
+        const char *adc_dev_name;
+        const char *channel;
+        struct device *dev;
+        const char *dev_name;
+};
 
-dev_name of underlying hardware if specified.
-dev_name(iio_dev->dev.parent)
-This matching source can be overridden by an optional callback if we
-unique matching is achievable in some other way for the device.
+{ adc_dev, adc_dev_name } are alternative-compulsory identifiers for
+the ADC
 
-Typical pairs:
+channel: string identifying the channel on the ADC, strings have
+been shown to be good for identifying things.
 
-max1363, 0-0035
-max1238, 0-0034
-lis3l02dq spi1.0
-adis16400 spi2.1
+{ dev, dev_name } are alternative-compulsory identifiers for the
+ADC client.
 
-On soc ADCs can use any combination of the two that makes local
-sense.
+struct device * pointers take precedence, fallback to names if device
+pointers are unavailable.
 
-Does this look sufficient for description / identification?
+adc_dev_name is the name of the ADC and then I mean what is returned
+from it's struct device *dev when you do dev_name() on it. dev_name is
+well dev_name(dev);
 
-Precedence order of both, then column 2 (lets call that id) and finally column 1
-(part name).
+Then this API feels comfortable:
 
-The concept of connections doesn't make sense quite like it does for clks as
-we are getting a reference to the whole device, then picking which bits we want
-afterwards.
+struct adc *adc_get(struct device *dev, const char *channel);
+void adc_put(struct adc *adc);
+int adc_read_raw(struct adc *adc, int *val);
 
+We can then add adc_read_voltage(), adc_read_temperature(), adc_read_foo() ...
 
- 
+Usage in say a hwmon driver or whatever:
 
+struct adc *mr_adc = adc_get(dev, NULL);
+/*
+ * Optional channel parameter used only when a single
+ * device use more than one channel, as with clock names
+ * or regulator names, so pass in NULL for the one channel
+ * tied to this device.
+ */
+ret = adc_read_raw(mr_adc, &val);
+(...)
+adc_put(mr_adc);
+
+But this is just what looks useful to us.
+
+Yours,
+Linus Walleij
