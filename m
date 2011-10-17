@@ -1,115 +1,81 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:38454 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751364Ab1JQJnt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2011 05:43:49 -0400
-Message-ID: <4E9BF8D9.8030301@cam.ac.uk>
-Date: Mon, 17 Oct 2011 10:43:53 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-To: Linus Walleij <linus.ml.walleij@gmail.com>
-CC: Mark Brown <broonie@opensource.wolfsonmicro.com>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	zdevai@gmail.com
+In-Reply-To: <4E9BF8D9.8030301@cam.ac.uk>
+References: <1318333383-17663-1-git-send-email-jic23@cam.ac.uk>
+	<1318333383-17663-2-git-send-email-jic23@cam.ac.uk>
+	<20111013143224.GO1098@sirena.org.uk>
+	<4E96F9AC.9000001@cam.ac.uk>
+	<20111013204410.GA17160@sirena.org.uk>
+	<4E985C60.9020308@cam.ac.uk>
+	<CAKnu2MrUkY2upFh5d6GGTNUr-=r_JKcxh5OQNV63bdOCa4F+zg@mail.gmail.com>
+	<4E9BF8D9.8030301@cam.ac.uk>
+Date: Mon, 17 Oct 2011 15:55:05 +0200
+Message-ID: <CACRpkdaEUndv=-1hkKghx7BuOQFfHKONq0n86M+v=fTms3L04g@mail.gmail.com>
 Subject: Re: [PATCH] staging:iio:proof of concept in kernel interface.
-References: <1318333383-17663-1-git-send-email-jic23@cam.ac.uk> <1318333383-17663-2-git-send-email-jic23@cam.ac.uk> <20111013143224.GO1098@sirena.org.uk> <4E96F9AC.9000001@cam.ac.uk> <20111013204410.GA17160@sirena.org.uk> <4E985C60.9020308@cam.ac.uk> <CAKnu2MrUkY2upFh5d6GGTNUr-=r_JKcxh5OQNV63bdOCa4F+zg@mail.gmail.com>
-In-Reply-To: <CAKnu2MrUkY2upFh5d6GGTNUr-=r_JKcxh5OQNV63bdOCa4F+zg@mail.gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Linus Walleij <linus.ml.walleij@gmail.com>,
+	Mark Brown <broonie@opensource.wolfsonmicro.com>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, zdevai@gmail.com
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/16/11 19:45, Linus Walleij wrote:
-> 2011/10/14 Jonathan Cameron <jic23@cam.ac.uk>:
-> 
->> I'm trying to work out what our equivalent of the clk finding api is.
-> 
-> Judging from the ideal use of our in-tree driver
-> drivers/mfd/ab8500-gpadc.c a map like this would be
-> great
-> 
+On Mon, Oct 17, 2011 at 11:43 AM, Jonathan Cameron <jic23@cam.ac.uk> wrote:
+
+> Thanks for this Linus. It is more or less where I was heading with one
+> exception. =A0I was going to link whole physical devices whereas I think
+> you are proposing linking individual channels.
+
+That's for the usecases I have at hand, I don't know which is more
+common: grab the entire device and pick a few channels or grab
+a single channel. I was thinking the latter would be most common
+for in-kernel use.
+
+If you need some inspiring code for how to handle registration of
+mapping tables etc you can look at the API I'm pushing for the
+pin control subsystem:
+http://marc.info/?l=3Dlinux-kernel&m=3D131850357826490&w=3D2
+
+> For the adc channel I'm not particularly keen on insisting every device
+> have a unique name for every channel. =A0That breaks the effort we went t=
+o
+> in IIO to enforce consistent naming (for userspace interfaces) in the fir=
+st
+> place. =A0To my mind it should never be anything other than a number.
+
+Doesn't feel like a big issue, plain numbers are fine for me.
+
+I was more thinking along the line that in an embedded system an
+on-system-in-chip GPADC sure has specific set-in-stone uses for
+each channel, i.e. the pin it connects to is hardwired somewhere,
+like channel 0 is "battery-voltage", pin 1 is "battery-temperature"
+etc, which makes string descriptions make sense.
+
+It doesn't make sense for an ADC card with 100 ADC:s for random
+measurements, of course.
+
 > struct adc_map {
->         struct device *adc_dev;
->         const char *adc_dev_name;
->         const char *channel;
->         struct device *dev;
->         const char *dev_name;
+> /* Input / output side */
+> =A0 =A0 =A0 =A0struct device *adc_dev;
+> =A0 =A0 =A0 =A0const char *adc_dev_name;
+> =A0 =A0 =A0 =A0int channel_number;
+> /* User side */
+> =A0 =A0 =A0 =A0const char *channel;
+> =A0 =A0 =A0 =A0struct device *dev;
+> =A0 =A0 =A0 =A0const char *dev_name;
 > };
-> 
-> { adc_dev, adc_dev_name } are alternative-compulsory identifiers for
-> the ADC
-> 
-> channel: string identifying the channel on the ADC, strings have
-> been shown to be good for identifying things.
-> 
-> { dev, dev_name } are alternative-compulsory identifiers for the
-> ADC client.
-> 
-> struct device * pointers take precedence, fallback to names if device
-> pointers are unavailable.
-> 
-> adc_dev_name is the name of the ADC and then I mean what is returned
-> from it's struct device *dev when you do dev_name() on it. dev_name is
-> well dev_name(dev);
-> 
-> Then this API feels comfortable:
-> 
-> struct adc *adc_get(struct device *dev, const char *channel);
-> void adc_put(struct adc *adc);
-> int adc_read_raw(struct adc *adc, int *val);
-> 
-> We can then add adc_read_voltage(), adc_read_temperature(), adc_read_foo() ...
-> 
-> Usage in say a hwmon driver or whatever:
-> 
-> struct adc *mr_adc = adc_get(dev, NULL);
-> /*
->  * Optional channel parameter used only when a single
->  * device use more than one channel, as with clock names
->  * or regulator names, so pass in NULL for the one channel
->  * tied to this device.
->  */
-> ret = adc_read_raw(mr_adc, &val);
-> (...)
-> adc_put(mr_adc);
-> 
-> But this is just what looks useful to us.
-> 
-Thanks for this Linus. It is more or less where I was heading with one
-exception.  I was going to link whole physical devices whereas I think
-you are proposing linking individual channels.
 
->>From the client side yours make more sense (why should a client care
-that the channels are on the same device?).  Saying that I think convention
-for hwmon usage all channels should be on the same physical device
-(to match against current hwmon conventions).
+OK that makes sense.
 
-For the adc channel I'm not particularly keen on insisting every device
-have a unique name for every channel.  That breaks the effort we went to
-in IIO to enforce consistent naming (for userspace interfaces) in the first
-place.  To my mind it should never be anything other than a number.
+> Anyhow, I'll have a go at implementing this over the next few days. =A0Be=
+fore I
+> do that I am going to push out the proposal to move the core IIO infrastr=
+ucture
+> out of staging.
 
-Hence I propose that your char *channel is for identifying the element in
-the map and we have a full structure with an addition of a channel_number
-on the adc side.  (Note I'm keeping adc here to match your naming, but will
-not do that later as I want to use the same interface for output devices!)
+Good, my gut feeling is that right now it hurts the kernel more to
+have IIO in staging than it could ever hurt it to have it in drivers/,
+it is getting badly needed.
 
-struct adc_map {
-/* Input / output side */
-        struct device *adc_dev;
-        const char *adc_dev_name;
-	int channel_number;
-/* User side */
-        const char *channel;
-        struct device *dev;
-        const char *dev_name;
-};
-
-Anyhow, I'll have a go at implementing this over the next few days.  Before I
-do that I am going to push out the proposal to move the core IIO infrastructure
-out of staging.  Clearly that interacts with this discussion (and the cover letter
-will reflect that!), but I want to get the rest of that under review (particularly
-interfaces) whilst we continue this discussion / development in a parallel track.
-
-Thanks,
-
-Jonathan
+Yours,
+Linus Walleij
