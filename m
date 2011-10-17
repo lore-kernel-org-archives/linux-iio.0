@@ -1,699 +1,530 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:42129 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751414Ab1JQLKy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2011 07:10:54 -0400
-Message-ID: <4E9C0D3F.3030508@cam.ac.uk>
-Date: Mon, 17 Oct 2011 12:10:55 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Greg Kroah-Hartman <gregkh@suse.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, Michael Hennerich
+	<michael.hennerich@analog.com>, <linux-iio@vger.kernel.org>,
+	<devel@driverdev.osuosl.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:dac Add AD5064 driver
+Date: Mon, 17 Oct 2011 09:38:30 +0200
+Message-ID: <1318837110-3462-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Drivers <Drivers@analog.com>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH] staging:iio:dac: Add AD5360 driver
-References: <1318846155-21126-1-git-send-email-lars@metafoo.de> <4E9C0512.5000401@cam.ac.uk> <4E9C0B8C.5020103@metafoo.de>
-In-Reply-To: <4E9C0B8C.5020103@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/17/11 12:03, Lars-Peter Clausen wrote:
-> On 10/17/2011 12:36 PM, Jonathan Cameron wrote:
->> On 10/17/11 11:09, Lars-Peter Clausen wrote:
->>> This patch adds support for the Analog Devices AD5360, AD5361, AD5362, AD5363,
->>> AD5370, AD5371, AD5372, AD5373 multi-channel digital-to-analog converters.
->>>
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->>>
->>> ---
->>>
->>> I'm not entirly sure about one aspect of this driver. The chip has multiple
->>> reference voltages and each vref is shared between multiple channels. There is
->>> an adjustable offset per vref. For the current implementation I choose to have a
->>> offset attribute for each channel which returns the offset which is used for
->>> that channel. So now if that offset gets written to, the offset for all other
->>> channels which share the same offset gets updated as well.
->> That is fine.  We do exactly the same thing all over the place.  Docs probably need
->> a strongly worded note that userspace should never expect these things to be independent.
->> Always check you got what you want afterwards!
->>
->>> The alternative would be to register a iio device per vref and have a shared
->>> offset attribute.
->> You have gone to a lot of effort here to do channel allocation dynamically.
->> I'm not entirely sure it wouldn't have been better to simply do it statically
->> with a few macros to keep the code to a minimum.  Still what you have is clean
->> so this is more be being a lazy reviewer than a real complaint.  Static stuff
->> is easier to review!
-> We'd have a total of ~200 channel specs if we'd define them all static,
-> so we'd either end up with a lot of copy'n'paste or some crude macro magic.
-> 
->> Couple of nitpicks in line.  Fix them up and I'm happy.
-> Ok, thanks. Shall I add your ack and send it directly to Greg, or should I
-> resend to you first?
-resend first and wait for a day or so to see if Michael in particular wants to comment.
->>> ---
->>>  drivers/staging/iio/dac/Kconfig  |   10 +
->>>  drivers/staging/iio/dac/Makefile |    1 +
->>>  drivers/staging/iio/dac/ad5360.c |  584 ++++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 595 insertions(+), 0 deletions(-)
->>>  create mode 100644 drivers/staging/iio/dac/ad5360.c
->>>
->>> diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
->>> index 3000156..d5c95dc 100644
->>> --- a/drivers/staging/iio/dac/Kconfig
->>> +++ b/drivers/staging/iio/dac/Kconfig
->>> @@ -3,6 +3,16 @@
->>>  #
->>>  menu "Digital to analog convertors"
->>>
->>> +config AD5360
->>> +     tristate "Analog Devices Analog Devices AD5360/61/62/63/70/71/73 DAC driver"
->>> +     depends on SPI
->>> +     help
->>> +       Say yes here to build support for Analog Devices AD5360/61/62/63/70/71/73
->> Please list full part numbers in the help. Makes it easy to grep for them.
->>> +       digital-to-analog convertors (DAC). This driver uses the common SPI interface.
->>> +
->>> +       To compile this driver as module choose M here: the module will be called
->>> +       ad5360.
->>> +
->>>  config AD5624R_SPI
->>>       tristate "Analog Devices AD5624/44/64R DAC spi driver"
->>>       depends on SPI
->>> diff --git a/drivers/staging/iio/dac/Makefile b/drivers/staging/iio/dac/Makefile
->>> index 7f4f2ed..e0a8c97 100644
->>> --- a/drivers/staging/iio/dac/Makefile
->>> +++ b/drivers/staging/iio/dac/Makefile
->>> @@ -2,6 +2,7 @@
->>>  # Makefile for industrial I/O DAC drivers
->>>  #
->>>
->>> +obj-$(CONFIG_AD5360) += ad5360.o
->>>  obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
->>>  obj-$(CONFIG_AD5504) += ad5504.o
->>>  obj-$(CONFIG_AD5446) += ad5446.o
->>> diff --git a/drivers/staging/iio/dac/ad5360.c b/drivers/staging/iio/dac/ad5360.c
->>> new file mode 100644
->>> index 0000000..6cdff44
->>> --- /dev/null
->>> +++ b/drivers/staging/iio/dac/ad5360.c
->>> @@ -0,0 +1,584 @@
->>> +/*
->>> + * AD5360 Digital to analog converters  driver
->>> + *
->>> + * Copyright 2011 Analog Devices Inc.
->>> + *
->>> + * Licensed under the GPL-2.
->>> + */
->>> +
->>> +#include <linux/device.h>
->>> +#include <linux/err.h>
->>> +#include <linux/module.h>
->>> +#include <linux/kernel.h>
->>> +#include <linux/spi/spi.h>
->>> +#include <linux/slab.h>
->>> +#include <linux/sysfs.h>
->>> +#include <linux/regulator/consumer.h>
->>> +
->>> +#include "../iio.h"
->>> +#include "../sysfs.h"
->>> +#include "dac.h"
->>> +
->>> +#define AD5360_CMD(x)                                ((x) << 22)
->>> +#define AD5360_ADDR(x)                               ((x) << 16)
->>> +
->>> +#define AD5360_READBACK_TYPE(x)                      ((x) << 13)
->>> +#define AD5360_READBACK_ADDR(x)                      ((x) << 7)
->>> +
->>> +#define AD5360_CHAN_ADDR(chan)                       ((chan) + 0x8)
->>> +
->>> +#define AD5360_CMD_WRITE_DATA                        0x3
->>> +#define AD5360_CMD_WRITE_OFFSET                      0x2
->>> +#define AD5360_CMD_WRITE_GAIN                        0x1
->>> +#define AD5360_CMD_SPECIAL_FUNCTION          0x0
->>> +
->>> +/* Special function register addresses */
->>> +#define AD5360_REG_SF_NOP                    0x0
->>> +#define AD5360_REG_SF_CTRL                   0x1
->>> +#define AD5360_REG_SF_OFS(x)                 (0x2 + (x))
->>> +#define AD5360_REG_SF_READBACK                       0x5
->>> +
->>> +#define AD5360_SF_CTRL_PWR_DOWN                      BIT(0)
->>> +
->>> +#define AD5360_READBACK_X1A                  0x0
->>> +#define AD5360_READBACK_X1B                  0x1
->>> +#define AD5360_READBACK_OFFSET                       0x2
->>> +#define AD5360_READBACK_GAIN                 0x3
->>> +#define AD5360_READBACK_SF                   0x4
->>> +
->>> +
->>> +/**
->>> + * struct ad5360_chip_info - chip specific information
->>> + * @channel_template:        channel specification template
->>> + * @num_channels:    number of channels
->>> + * @channels_per_group:      number of channels per group
->>> + * @num_vrefs:               number of vref supplies for the chip
->>> +*/
->>> +
->>> +struct ad5360_chip_info {
->>> +     struct iio_chan_spec    channel_template;
->>> +     unsigned int            num_channels;
->>> +     unsigned int            channels_per_group;
->>> +     unsigned int            num_vrefs;
->>> +};
->>> +
->>> +/**
->>> + * struct ad5360_state - driver instance specific data
->>> + * @spi:             spi_device
->>> + * @chip_info:               chip model specific constants, available modes etc
->>> + * @vref_reg:                vref supply regulators
->>> + * @ctrl:            control register cache
->>> + * @data:            spi transfer buffers
->>> + */
->>> +
->>> +struct ad5360_state {
->>> +     struct spi_device               *spi;
->>> +     const struct ad5360_chip_info   *chip_info;
->>> +     struct regulator_bulk_data      vref_reg[3];
->>> +     unsigned int                    ctrl;
->>> +
->>> +     /*
->>> +      * DMA (thus cache coherency maintenance) requires the
->>> +      * transfer buffers to live in their own cache lines.
->>> +      */
->>> +     union {
->>> +             __be32 d32;
->>> +             u8 d8[4];
->>> +     } data[2] ____cacheline_aligned;
->>> +};
->>> +
->>> +enum ad5360_type {
->>> +     ID_AD5360,
->>> +     ID_AD5361,
->>> +     ID_AD5362,
->>> +     ID_AD5363,
->>> +     ID_AD5370,
->>> +     ID_AD5371,
->>> +     ID_AD5372,
->>> +     ID_AD5373,
->>> +};
->>> +
->>> +#define AD5360_CHANNEL(bits) {                                       \
->>> +     .type = IIO_VOLTAGE,                                    \
->>> +     .indexed = 1,                                           \
->>> +     .output = 1,                                            \
->>> +     .info_mask = (1 << IIO_CHAN_INFO_SCALE_SEPARATE) |      \
->>> +             (1 << IIO_CHAN_INFO_OFFSET_SEPARATE) |          \
->>> +             (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE) |      \
->>> +             (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE),        \
->>> +     .scan_type = IIO_ST('u', (bits), 16, 16 - (bits))       \
->>> +}
->>> +
->>> +static const struct ad5360_chip_info ad5360_chip_info_tbl[] = {
->>> +     [ID_AD5360] = {
->>> +             .channel_template = AD5360_CHANNEL(16),
->>> +             .num_channels = 16,
->>> +             .channels_per_group = 8,
->>> +             .num_vrefs = 2,
->>> +     },
->>> +     [ID_AD5361] = {
->>> +             .channel_template = AD5360_CHANNEL(14),
->>> +             .num_channels = 16,
->>> +             .channels_per_group = 8,
->>> +             .num_vrefs = 2,
->>> +     },
->>> +     [ID_AD5362] = {
->>> +             .channel_template = AD5360_CHANNEL(16),
->>> +             .num_channels = 8,
->>> +             .channels_per_group = 4,
->>> +             .num_vrefs = 2,
->>> +     },
->>> +     [ID_AD5363] = {
->>> +             .channel_template = AD5360_CHANNEL(14),
->>> +             .num_channels = 8,
->>> +             .channels_per_group = 4,
->>> +             .num_vrefs = 2,
->>> +     },
->>> +     [ID_AD5370] = {
->>> +             .channel_template = AD5360_CHANNEL(16),
->>> +             .num_channels = 40,
->>> +             .channels_per_group = 8,
->>> +             .num_vrefs = 2,
->>> +     },
->>> +     [ID_AD5371] = {
->>> +             .channel_template = AD5360_CHANNEL(14),
->>> +             .num_channels = 40,
->>> +             .channels_per_group = 8,
->>> +             .num_vrefs = 3,
->>> +     },
->>> +     [ID_AD5372] = {
->>> +             .channel_template = AD5360_CHANNEL(16),
->>> +             .num_channels = 32,
->>> +             .channels_per_group = 8,
->>> +             .num_vrefs = 2,
->>> +     },
->>> +     [ID_AD5373] = {
->>> +             .channel_template = AD5360_CHANNEL(14),
->>> +             .num_channels = 32,
->>> +             .channels_per_group = 8,
->>> +             .num_vrefs = 2,
->>> +     },
->>> +};
->>> +
->>> +static unsigned int ad5360_get_channel_vref_index(struct ad5360_state *st,
->>> +     unsigned int channel)
->>> +{
->>> +     unsigned int i;
->>> +
->>> +     /* The first groups have their own vref, while the remaining groups
->>> +      * share the last vref */
->>> +     i = channel / st->chip_info->channels_per_group;
->>> +     if (i >= st->chip_info->num_vrefs)
->>> +             i = st->chip_info->num_vrefs - 1;
->>> +
->>> +     return i;
->>> +}
->>> +
->>> +static int ad5360_get_channel_vref(struct ad5360_state *st,
->>> +     unsigned int channel)
->>> +{
->>> +     unsigned int i = ad5360_get_channel_vref_index(st, channel);
->>> +
->>> +     return regulator_get_voltage(st->vref_reg[i].consumer);
->>> +}
->>> +
->>> +
->>> +static int ad5360_write_unlocked(struct iio_dev *indio_dev,
->>> +     unsigned int cmd, unsigned int addr, unsigned int val,
->>> +     unsigned int shift)
->>> +{
->>> +     struct ad5360_state *st = iio_priv(indio_dev);
->>> +
->>> +     val <<= shift;
->>> +     val |= AD5360_CMD(cmd) | AD5360_ADDR(addr);
->>> +     st->data[0].d32 = cpu_to_be32(val);
->>> +
->>> +     return spi_write(st->spi, &st->data[0].d8[1], 3);
->>> +}
->>> +
->>> +static int ad5360_write(struct iio_dev *indio_dev, unsigned int cmd,
->>> +     unsigned int addr, unsigned int val, unsigned int shift)
->>> +{
->>> +     int ret;
->>> +
->>> +     mutex_lock(&indio_dev->mlock);
->>> +     ret = ad5360_write_unlocked(indio_dev, cmd, addr, val, shift);
->>> +     mutex_unlock(&indio_dev->mlock);
->>> +
->>> +     return ret;
->>> +}
->>> +
->>> +static int ad5360_read(struct iio_dev *indio_dev, unsigned int type,
->>> +     unsigned int addr)
->>> +{
->>> +     struct ad5360_state *st = iio_priv(indio_dev);
->>> +     struct spi_message m;
->>> +     int ret;
->>> +     struct spi_transfer t[] = {
->>> +             {
->>> +                     .tx_buf = &st->data[0].d8[1],
->>> +                     .len = 3,
->>> +                     .cs_change = 1,
->>> +             }, {
->>> +                     .rx_buf = &st->data[1].d8[1],
->>> +                     .len = 3,
->>> +             },
->>> +     };
->>> +
->>> +     spi_message_init(&m);
->>> +     spi_message_add_tail(&t[0], &m);
->>> +     spi_message_add_tail(&t[1], &m);
->>> +
->>> +     mutex_lock(&indio_dev->mlock);
->>> +
->>> +     st->data[0].d32 = cpu_to_be32(AD5360_CMD(AD5360_CMD_SPECIAL_FUNCTION) |
->>> +             AD5360_ADDR(AD5360_REG_SF_READBACK) |
->>> +             AD5360_READBACK_TYPE(type) |
->>> +             AD5360_READBACK_ADDR(addr));
->>> +
->>> +     ret = spi_sync(st->spi, &m);
->>> +     if (ret >= 0)
->>> +             ret = be32_to_cpu(st->data[1].d32) & 0xffff;
->>> +
->>> +     mutex_unlock(&indio_dev->mlock);
->>> +
->>> +     return ret;
->>> +}
->>> +
->>> +static ssize_t ad5360_read_dac_powerdown(struct device *dev,
->>> +                                        struct device_attribute *attr,
->>> +                                        char *buf)
->>> +{
->>> +     struct iio_dev *indio_dev = dev_get_drvdata(dev);
->>> +     struct ad5360_state *st = iio_priv(indio_dev);
->>> +
->>> +     return sprintf(buf, "%d\n", (bool)(st->ctrl & AD5360_SF_CTRL_PWR_DOWN));
->>> +}
->>> +
->>> +static int ad5360_update_ctrl(struct iio_dev *indio_dev, unsigned int set,
->>> +     unsigned int clr)
->>> +{
->>> +     struct ad5360_state *st = iio_priv(indio_dev);
->>> +     unsigned int ret;
->>> +
->>> +     mutex_lock(&indio_dev->mlock);
->>> +
->>> +     st->ctrl |= set;
->>> +     st->ctrl &= ~clr;
->>> +
->>> +     ret = ad5360_write_unlocked(indio_dev, AD5360_CMD_SPECIAL_FUNCTION,
->>> +                     AD5360_REG_SF_CTRL, st->ctrl, 0);
->>> +
->>> +     mutex_unlock(&indio_dev->mlock);
->>> +
->>> +     return ret;
->>> +}
->>> +
->>> +static ssize_t ad5360_write_dac_powerdown(struct device *dev,
->>> +     struct device_attribute *attr, const char *buf, size_t len)
->>> +{
->>> +     struct iio_dev *indio_dev = dev_get_drvdata(dev);
->>> +     bool pwr_down;
->>> +     int ret;
->>> +
->>> +     ret = strtobool(buf, &pwr_down);
->>> +     if (ret)
->>> +             return ret;
->>> +
->>> +     if (pwr_down)
->>> +             ret = ad5360_update_ctrl(indio_dev, AD5360_SF_CTRL_PWR_DOWN, 0);
->>> +     else
->>> +             ret = ad5360_update_ctrl(indio_dev, 0, AD5360_SF_CTRL_PWR_DOWN);
->>> +
->>> +     return ret ? ret : len;
->>> +}
->>> +
->>> +static IIO_DEVICE_ATTR(out_voltage_powerdown,
->>> +                     S_IRUGO | S_IWUSR,
->>> +                     ad5360_read_dac_powerdown,
->>> +                     ad5360_write_dac_powerdown, 0);
->>> +
->>> +static struct attribute *ad5360_attributes[] = {
->>> +     &iio_dev_attr_out_voltage_powerdown.dev_attr.attr,
->>> +     NULL,
->>> +};
->>> +
->>> +static const struct attribute_group ad5360_attribute_group = {
->>> +     .attrs = ad5360_attributes,
->>> +};
->>> +
->>> +static int ad5360_write_raw(struct iio_dev *indio_dev,
->>> +                            struct iio_chan_spec const *chan,
->>> +                            int val,
->>> +                            int val2,
->>> +                            long mask)
->>> +{
->>> +     struct ad5360_state *st = iio_priv(indio_dev);
->>> +     int max_val = (1 << chan->scan_type.realbits);
->>> +     unsigned int ofs_index;
->>> +     int ret;
->>> +
->>> +     switch (mask) {
->>> +     case 0:
->>> +             if (val >= max_val || val < 0)
->>> +                     return -EINVAL;
->>> +
->>> +             ret = ad5360_write(indio_dev, AD5360_CMD_WRITE_DATA,
->>> +                              chan->address, val,
->>> +                              chan->scan_type.shift);
->> Given you already return directly on error, I'd just return directly
->> on success as well rather than breaking.  Slightly cleaner code
->> and no need to have ret.
->>
->>> +             break;
->>> +     case (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE):
->>> +             if (val >= max_val || val < 0)
->>> +                     return -EINVAL;
->>> +
->>> +             ret = ad5360_write(indio_dev, AD5360_CMD_WRITE_OFFSET,
->>> +                              chan->address, val,
->>> +                              chan->scan_type.shift);
->>> +             break;
->>> +     case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
->>> +             if (val >= max_val || val < 0)
->>> +                     return -EINVAL;
->>> +
->>> +             ret = ad5360_write(indio_dev, AD5360_CMD_WRITE_GAIN,
->>> +                              chan->address, val,
->>> +                              chan->scan_type.shift);
->>> +             break;
->>> +     case (1 << IIO_CHAN_INFO_OFFSET_SEPARATE):
->>> +             if (val <= -max_val || val > 0)
->>> +                     return -EINVAL;
->>> +
->>> +             val = -val;
->>> +
->>> +             /* offset is supposed to have the same scale as raw, but it
->>> +              * is always 14bits wide, so on a chip where the raw value has
->>> +              * more bits, we need to shift offset. */
->>> +             val >>= (chan->scan_type.realbits - 14);
->>> +
->>> +             /* There is one DAC offset register per vref. Changing one
->>> +              * channels offset will also change the offset for all other
->>> +              * channels which share the same vref supply. */
->>> +             ofs_index = ad5360_get_channel_vref_index(st, chan->channel);
->>> +             ret = ad5360_write(indio_dev, AD5360_CMD_SPECIAL_FUNCTION,
->>> +                              AD5360_REG_SF_OFS(ofs_index), val, 0);
->>> +             break;
->>> +     default:
->>> +             ret = -EINVAL;
->>> +     }
->>> +
->>> +     return ret;
->>> +}
->>> +
->>> +static int ad5360_read_raw(struct iio_dev *indio_dev,
->>> +                        struct iio_chan_spec const *chan,
->>> +                        int *val,
->>> +                        int *val2,
->>> +                        long m)
->>> +{
->>> +     struct ad5360_state *st = iio_priv(indio_dev);
->>> +     unsigned long scale_uv;
->>> +     unsigned int ofs_index;
->>> +     int ret;
->>> +
->>> +     switch (m) {
->>> +     case 0:
->>> +             ret = ad5360_read(indio_dev, AD5360_READBACK_X1A,
->>> +                     chan->address);
->>> +             if (ret < 0)
->>> +                     return ret;
->>> +             *val = ret >> chan->scan_type.shift;
->>> +             return IIO_VAL_INT;
->>> +     case (1 << IIO_CHAN_INFO_SCALE_SEPARATE):
->>> +             /* vout = 4 * vref * dac_code */
->>> +             scale_uv = ad5360_get_channel_vref(st, chan->channel) * 4 * 100;
->>> +             if (scale_uv < 0)
->>> +                     return scale_uv;
->>> +
->>> +             scale_uv >>= (chan->scan_type.realbits);
->>> +             *val =  scale_uv / 100000;
->>> +             *val2 = (scale_uv % 100000) * 10;
->>> +             return IIO_VAL_INT_PLUS_MICRO;
->>> +     case (1 << IIO_CHAN_INFO_CALIBBIAS_SEPARATE):
->>> +             ret = ad5360_read(indio_dev, AD5360_READBACK_OFFSET,
->>> +                     chan->address);
->>> +             if (ret < 0)
->>> +                     return ret;
->>> +             *val = ret;
->>> +             return IIO_VAL_INT;
->>> +     case (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE):
->>> +             ret = ad5360_read(indio_dev, AD5360_READBACK_GAIN,
->>> +                     chan->address);
->>> +             if (ret < 0)
->>> +                     return ret;
->>> +             *val = ret;
->>> +             return IIO_VAL_INT;
->>> +     case (1 << IIO_CHAN_INFO_OFFSET_SEPARATE):
->>> +             ofs_index = ad5360_get_channel_vref_index(st, chan->channel);
->>> +             ret = ad5360_read(indio_dev, AD5360_READBACK_SF,
->>> +                     AD5360_REG_SF_OFS(ofs_index));
->>> +             if (ret < 0)
->>> +                     return ret;
->>> +
->>> +             ret <<= (chan->scan_type.realbits - 14);
->>> +             *val = -ret;
->>> +             return IIO_VAL_INT;
->>> +     }
->>> +
->>> +     return -EINVAL;
->>> +}
->>> +
->>> +static const struct iio_info ad5360_info = {
->>> +     .read_raw = ad5360_read_raw,
->>> +     .write_raw = ad5360_write_raw,
->>> +     .attrs = &ad5360_attribute_group,
->>> +     .driver_module = THIS_MODULE,
->>> +};
->>> +
->>> +static const char * const ad5360_vref_name[] = {
->>> +      "vref0", "vref1", "vref2"
->>> +};
->>> +
->>> +static int __devinit ad5360_alloc_channels(struct iio_dev *indio_dev)
->>> +{
->>> +     struct ad5360_state *st = iio_priv(indio_dev);
->>> +     struct iio_chan_spec *channels;
->>> +     unsigned int i;
->>> +
->>> +     channels = kcalloc(sizeof(struct iio_chan_spec),
->>> +                     st->chip_info->num_channels, GFP_KERNEL);
->>> +
->>> +     if (!channels)
->>> +             return -ENOMEM;
->>> +
->>> +     for (i = 0; i < st->chip_info->num_channels; ++i) {
->>> +             channels[i] = st->chip_info->channel_template;
->>> +             channels[i].channel = i;
->>> +             channels[i].address = AD5360_CHAN_ADDR(i);
->>> +     }
->>> +
->>> +     indio_dev->channels = channels;
->>> +
->>> +     return 0;
->>> +}
->>> +
->>> +static int __devinit ad5360_probe(struct spi_device *spi)
->>> +{
->>> +     enum ad5360_type type = spi_get_device_id(spi)->driver_data;
->>> +     struct iio_dev *indio_dev;
->>> +     struct ad5360_state *st;
->>> +     unsigned int i;
->>> +     int ret;
->>> +
->>> +     indio_dev = iio_allocate_device(sizeof(*st));
->>> +     if (indio_dev == NULL) {
->>> +             dev_err(&spi->dev, "Failed to allocate iio device\n");
->>> +             return  -ENOMEM;
->>> +     }
->>> +
->>> +     st = iio_priv(indio_dev);
->>> +     spi_set_drvdata(spi, indio_dev);
->>> +
->>> +     st->chip_info = &ad5360_chip_info_tbl[type];
->>> +     st->spi = spi;
->>> +
->>> +     indio_dev->dev.parent = &spi->dev;
->>> +     indio_dev->name = spi_get_device_id(spi)->name;
->>> +     indio_dev->info = &ad5360_info;
->>> +     indio_dev->modes = INDIO_DIRECT_MODE;
->>> +     indio_dev->num_channels = st->chip_info->num_channels;
->>> +
->>> +     ret = ad5360_alloc_channels(indio_dev);
->>> +     if (ret) {
->>> +             dev_err(&spi->dev, "Failed to allocate channel spec: %d\n", ret);
->>> +             goto error_free;
->>> +     }
->>> +
->>> +     for (i = 0; i < st->chip_info->num_vrefs; ++i)
->>> +             st->vref_reg[i].supply = ad5360_vref_name[i];
->>> +
->>> +     ret = regulator_bulk_get(&st->spi->dev, st->chip_info->num_vrefs,
->>> +             st->vref_reg);
->>> +     if (ret) {
->>> +             dev_err(&spi->dev, "Failed to request vref regulators: %d\n", ret);
->>> +             goto error_free_channels;
->>> +     }
->>> +
->>> +     ret = regulator_bulk_enable(st->chip_info->num_vrefs, st->vref_reg);
->>> +     if (ret) {
->>> +             dev_err(&spi->dev, "Failed to enable vref regulators: %d\n", ret);
->>> +             goto error_free_reg;
->>> +     }
->>> +
->>> +     ret = iio_device_register(indio_dev);
->>> +     if (ret) {
->>> +             dev_err(&spi->dev, "Failed to register iio device: %d\n", ret);
->>> +             goto error_disable_reg;
->>> +     }
->>> +
->>> +     return 0;
->>> +
->>> +error_disable_reg:
->>> +     regulator_bulk_disable(st->chip_info->num_vrefs, st->vref_reg);
->>> +error_free_reg:
->>> +     regulator_bulk_free(st->chip_info->num_vrefs, st->vref_reg);
->>> +error_free_channels:
->>> +     kfree(indio_dev->channels);
->>> +error_free:
->>> +     iio_free_device(indio_dev);
->>> +
->>> +     return ret;
->>> +}
->>> +
->>> +static int __devexit ad5360_remove(struct spi_device *spi)
->>> +{
->>> +     struct iio_dev *indio_dev = spi_get_drvdata(spi);
->>> +     struct ad5360_state *st = iio_priv(indio_dev);
->>> +
->>> +     iio_device_unregister(indio_dev);
->>> +
->>> +     kfree(indio_dev->channels);
->>> +
->>> +     regulator_bulk_disable(st->chip_info->num_vrefs, st->vref_reg);
->>> +     regulator_bulk_free(st->chip_info->num_vrefs, st->vref_reg);
->>> +
->>> +     iio_free_device(indio_dev);
->>> +
->>> +     return 0;
->>> +}
->>> +
->>> +static const struct spi_device_id ad5360_ids[] = {
->>> +     { "ad5360", ID_AD5360 },
->>> +     { "ad5361", ID_AD5361 },
->>> +     { "ad5362", ID_AD5362 },
->>> +     { "ad5363", ID_AD5363 },
->>> +     { "ad5370", ID_AD5370 },
->>> +     { "ad5371", ID_AD5371 },
->>> +     { "ad5372", ID_AD5372 },
->>> +     { "ad5373", ID_AD5373 },
->>> +     {}
->>> +};
->>> +
->>> +static struct spi_driver ad5360_driver = {
->>> +     .driver = {
->>> +                .name = "ad5360",
->>> +                .owner = THIS_MODULE,
->>> +     },
->>> +     .probe = ad5360_probe,
->>> +     .remove = __devexit_p(ad5360_remove),
->>> +     .id_table = ad5360_ids,
->>> +};
->>> +
->>> +static __init int ad5360_spi_init(void)
->>> +{
->>> +     return spi_register_driver(&ad5360_driver);
->>> +}
->>> +module_init(ad5360_spi_init);
->>> +
->>> +static __exit void ad5360_spi_exit(void)
->>> +{
->>> +     spi_unregister_driver(&ad5360_driver);
->>> +}
->>> +module_exit(ad5360_spi_exit);
->>> +
->>> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
->>> +MODULE_DESCRIPTION("Analog Devices AD5360/61/62/63/70/71/72/73 DAC");
->>> +MODULE_LICENSE("GPL v2");
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+This patch adds support for the Analog Devices AD6064, AD6064-1, AD6044, AD6024
+quad channel digital-to-analog converter devices.
 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/dac/Kconfig  |   10 +
+ drivers/staging/iio/dac/Makefile |    1 +
+ drivers/staging/iio/dac/ad5064.c |  463 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 474 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/dac/ad5064.c
+
+diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
+index 3000156..724af7f 100644
+--- a/drivers/staging/iio/dac/Kconfig
++++ b/drivers/staging/iio/dac/Kconfig
+@@ -3,6 +3,16 @@
+ #
+ menu "Digital to analog convertors"
+ 
++config AD5064
++	tristate "Analog Devices AD5064/64-1/44/24 DAC driver"
++	depends on SPI
++	help
++	  Say yes here to build support for Analog Devices AD5064, AD5064-1,
++	  AD5044, AD5024 Digital to Analog Converter.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad5064.
++
+ config AD5624R_SPI
+ 	tristate "Analog Devices AD5624/44/64R DAC spi driver"
+ 	depends on SPI
+diff --git a/drivers/staging/iio/dac/Makefile b/drivers/staging/iio/dac/Makefile
+index 7f4f2ed..ea49750 100644
+--- a/drivers/staging/iio/dac/Makefile
++++ b/drivers/staging/iio/dac/Makefile
+@@ -3,6 +3,7 @@
+ #
+ 
+ obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
++obj-$(CONFIG_AD5064) += ad5064.o
+ obj-$(CONFIG_AD5504) += ad5504.o
+ obj-$(CONFIG_AD5446) += ad5446.o
+ obj-$(CONFIG_AD5791) += ad5791.o
+diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
+new file mode 100644
+index 0000000..6de6f25
+--- /dev/null
++++ b/drivers/staging/iio/dac/ad5064.c
+@@ -0,0 +1,463 @@
++/*
++ * AD5064, AD5064-1, AD5044, AD5024 Digital to analog converters  driver
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/spi/spi.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/regulator/consumer.h>
++
++#include "../iio.h"
++#include "../sysfs.h"
++#include "dac.h"
++
++#define AD5064_DAC_CHANNELS			4
++
++#define AD5064_ADDR(x)				((x) << 20)
++#define AD5064_CMD(x)				((x) << 24)
++
++#define AD5064_ADDR_DAC(chan)			(chan)
++#define AD5064_ADDR_ALL_DAC			0xF
++
++#define AD5064_CMD_WRITE_INPUT_N		0x0
++#define AD5064_CMD_UPDATE_DAC_N			0x1
++#define AD5064_CMD_WRITE_INPUT_N_UPDATE_ALL	0x2
++#define AD5064_CMD_WRITE_INPUT_N_UPDATE_N	0x3
++#define AD5064_CMD_POWERDOWN_DAC		0x4
++#define AD5064_CMD_CLEAR			0x5
++#define AD5064_CMD_LDAC_MASK			0x6
++#define AD5064_CMD_RESET			0x7
++#define AD5064_CMD_DAISY_CHAIN_ENABLE		0x8
++
++#define AD5064_LDAC_PWRDN_NONE			0x0
++#define AD5064_LDAC_PWRDN_1K			0x1
++#define AD5064_LDAC_PWRDN_100K			0x2
++#define AD5064_LDAC_PWRDN_3STATE		0x3
++
++/**
++ * struct ad5064_chip_info - chip specific information
++ * @shared_vref:	whether the vref supply is shared between channels
++ * @channel:		channel specification
++*/
++
++struct ad5064_chip_info {
++	bool shared_vref;
++	struct iio_chan_spec channel[AD5064_DAC_CHANNELS];
++};
++
++/**
++ * struct ad5064_state - driver instance specific data
++ * @spi:		spi_device
++ * @chip_info:		chip model specific constants, available modes etc
++ * @vref_reg:		vref supply regulators
++ * @pwr_down:		whether channel is powered down
++ * @pwr_down_mode:	channel's current power down mode
++ * @dac_cache:		current DAC raw value (chip does not support readback)
++ * @data:		spi transfer buffers
++ */
++
++struct ad5064_state {
++	struct spi_device		*spi;
++	const struct ad5064_chip_info	*chip_info;
++	struct regulator_bulk_data	vref_reg[AD5064_DAC_CHANNELS];
++	bool				pwr_down[AD5064_DAC_CHANNELS];
++	u8				pwr_down_mode[AD5064_DAC_CHANNELS];
++	unsigned int			dac_cache[AD5064_DAC_CHANNELS];
++
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++	__be32 data ____cacheline_aligned;
++};
++
++enum ad5064_type {
++	ID_AD5024,
++	ID_AD5044,
++	ID_AD5064,
++	ID_AD5064_1,
++};
++
++#define AD5064_CHANNEL(chan, bits) {				\
++	.type = IIO_VOLTAGE,					\
++	.indexed = 1,						\
++	.output = 1,						\
++	.channel = (chan),					\
++	.info_mask = (1 << IIO_CHAN_INFO_SCALE_SEPARATE),	\
++	.address = AD5064_ADDR_DAC(chan),			\
++	.scan_type = IIO_ST('u', (bits), 16, 20 - (bits))	\
++}
++
++static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
++	[ID_AD5024] = {
++		.shared_vref = false,
++		.channel[0] = AD5064_CHANNEL(0, 12),
++		.channel[1] = AD5064_CHANNEL(1, 12),
++		.channel[2] = AD5064_CHANNEL(2, 12),
++		.channel[3] = AD5064_CHANNEL(3, 12),
++	},
++	[ID_AD5044] = {
++		.shared_vref = false,
++		.channel[0] = AD5064_CHANNEL(0, 14),
++		.channel[1] = AD5064_CHANNEL(1, 14),
++		.channel[2] = AD5064_CHANNEL(2, 14),
++		.channel[3] = AD5064_CHANNEL(3, 14),
++	},
++	[ID_AD5064] = {
++		.shared_vref = false,
++		.channel[0] = AD5064_CHANNEL(0, 16),
++		.channel[1] = AD5064_CHANNEL(1, 16),
++		.channel[2] = AD5064_CHANNEL(2, 16),
++		.channel[3] = AD5064_CHANNEL(3, 16),
++	},
++	[ID_AD5064_1] = {
++		.shared_vref = true,
++		.channel[0] = AD5064_CHANNEL(0, 16),
++		.channel[1] = AD5064_CHANNEL(1, 16),
++		.channel[2] = AD5064_CHANNEL(2, 16),
++		.channel[3] = AD5064_CHANNEL(3, 16),
++	},
++};
++
++static int ad5064_spi_write(struct ad5064_state *st, unsigned int cmd,
++	unsigned int addr, unsigned int val, unsigned int shift)
++{
++	val <<= shift;
++
++	st->data = cpu_to_be32(AD5064_CMD(cmd) | AD5064_ADDR(addr) | val);
++
++	return spi_write(st->spi, &st->data, sizeof(st->data));
++}
++
++static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
++	unsigned int channel)
++{
++	unsigned int val;
++	int ret;
++
++	val = (0x1 << channel);
++
++	if (st->pwr_down[channel])
++		val |= st->pwr_down_mode[channel] << 8;
++
++	ret = ad5064_spi_write(st, AD5064_CMD_POWERDOWN_DAC, 0, val, 0);
++
++	return ret;
++}
++
++static const char ad5064_powerdown_modes[][15] = {
++	[AD5064_LDAC_PWRDN_NONE]	= "",
++	[AD5064_LDAC_PWRDN_1K]		= "1kohm_to_gnd",
++	[AD5064_LDAC_PWRDN_100K]	= "100kohm_to_gnd",
++	[AD5064_LDAC_PWRDN_3STATE]	= "three_state",
++};
++
++static ssize_t ad5064_read_powerdown_mode(struct device *dev,
++	struct device_attribute *attr, char *buf)
++{
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5064_state *st = iio_priv(indio_dev);
++
++	return sprintf(buf, "%s\n",
++		ad5064_powerdown_modes[st->pwr_down_mode[this_attr->address]]);
++}
++
++static ssize_t ad5064_write_powerdown_mode(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5064_state *st = iio_priv(indio_dev);
++	unsigned int mode, i;
++	int ret;
++
++	mode = 0;
++
++	for (i = 1; i < ARRAY_SIZE(ad5064_powerdown_modes); ++i) {
++		if (sysfs_streq(buf, ad5064_powerdown_modes[i])) {
++			mode = i;
++			break;
++		}
++	}
++	if (mode == 0)
++		return  -EINVAL;
++
++	mutex_lock(&indio_dev->mlock);
++	st->pwr_down_mode[this_attr->address] = mode;
++
++	ret = ad5064_sync_powerdown_mode(st, this_attr->address);
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret ? ret : len;
++}
++
++static ssize_t ad5064_read_dac_powerdown(struct device *dev,
++					   struct device_attribute *attr,
++					   char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5064_state *st = iio_priv(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++
++	return sprintf(buf, "%d\n", st->pwr_down[this_attr->address]);
++}
++
++static ssize_t ad5064_write_dac_powerdown(struct device *dev,
++	struct device_attribute *attr, const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ad5064_state *st = iio_priv(indio_dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	bool pwr_down;
++	int ret;
++
++	ret = strtobool(buf, &pwr_down);
++	if (ret)
++		return ret;
++
++	mutex_lock(&indio_dev->mlock);
++	st->pwr_down[this_attr->address] = pwr_down;
++
++	ret = ad5064_sync_powerdown_mode(st, this_attr->address);
++	mutex_unlock(&indio_dev->mlock);
++	return ret ? ret : len;
++}
++
++static IIO_CONST_ATTR(out_voltage_powerdown_mode_available,
++			"1kohm_to_gnd 100kohm_to_gnd three_state");
++
++#define IIO_DEV_ATTR_DAC_POWERDOWN_MODE(_chan) \
++	IIO_DEVICE_ATTR(out_voltage##_chan##_powerdown_mode, \
++			S_IRUGO | S_IWUSR, \
++			ad5064_read_powerdown_mode, \
++			ad5064_write_powerdown_mode, _chan);
++
++#define IIO_DEV_ATTR_DAC_POWERDOWN(_chan)				\
++	IIO_DEVICE_ATTR(out_voltage##_chan##_powerdown,			\
++			S_IRUGO | S_IWUSR,				\
++			ad5064_read_dac_powerdown,			\
++			ad5064_write_dac_powerdown, _chan)
++
++static IIO_DEV_ATTR_DAC_POWERDOWN(0);
++static IIO_DEV_ATTR_DAC_POWERDOWN_MODE(0);
++static IIO_DEV_ATTR_DAC_POWERDOWN(1);
++static IIO_DEV_ATTR_DAC_POWERDOWN_MODE(1);
++static IIO_DEV_ATTR_DAC_POWERDOWN(2);
++static IIO_DEV_ATTR_DAC_POWERDOWN_MODE(2);
++static IIO_DEV_ATTR_DAC_POWERDOWN(3);
++static IIO_DEV_ATTR_DAC_POWERDOWN_MODE(3);
++
++static struct attribute *ad5064_attributes[] = {
++	&iio_dev_attr_out_voltage0_powerdown.dev_attr.attr,
++	&iio_dev_attr_out_voltage1_powerdown.dev_attr.attr,
++	&iio_dev_attr_out_voltage2_powerdown.dev_attr.attr,
++	&iio_dev_attr_out_voltage3_powerdown.dev_attr.attr,
++	&iio_dev_attr_out_voltage0_powerdown_mode.dev_attr.attr,
++	&iio_dev_attr_out_voltage1_powerdown_mode.dev_attr.attr,
++	&iio_dev_attr_out_voltage2_powerdown_mode.dev_attr.attr,
++	&iio_dev_attr_out_voltage3_powerdown_mode.dev_attr.attr,
++	&iio_const_attr_out_voltage_powerdown_mode_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ad5064_attribute_group = {
++	.attrs = ad5064_attributes,
++};
++
++static int ad5064_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val,
++			   int *val2,
++			   long m)
++{
++	struct ad5064_state *st = iio_priv(indio_dev);
++	unsigned long scale_uv;
++	unsigned int vref;
++
++	switch (m) {
++	case 0:
++		*val = st->dac_cache[chan->channel];
++		return IIO_VAL_INT;
++	case (1 << IIO_CHAN_INFO_SCALE_SEPARATE):
++		vref = st->chip_info->shared_vref ? 0 : chan->channel;
++		scale_uv = regulator_get_voltage(st->vref_reg[vref].consumer);
++		if (scale_uv < 0)
++			return scale_uv;
++
++		scale_uv = (scale_uv * 100) >> chan->scan_type.realbits;
++		*val =  scale_uv / 100000;
++		*val2 = (scale_uv % 100000) * 10;
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		break;
++	}
++	return -EINVAL;
++}
++
++static int ad5064_write_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int val, int val2, long mask)
++{
++	struct ad5064_state *st = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case 0:
++		if (val > (1 << chan->scan_type.realbits) || val < 0)
++			return -EINVAL;
++
++		mutex_lock(&indio_dev->mlock);
++		ret = ad5064_spi_write(st, AD5064_CMD_WRITE_INPUT_N_UPDATE_N,
++				chan->address, val, chan->scan_type.shift);
++		if (ret == 0)
++			st->dac_cache[chan->channel] = val;
++		mutex_unlock(&indio_dev->mlock);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static const struct iio_info ad5064_info = {
++	.read_raw = ad5064_read_raw,
++	.write_raw = ad5064_write_raw,
++	.attrs = &ad5064_attribute_group,
++	.driver_module = THIS_MODULE,
++};
++
++static inline unsigned int ad5064_num_vref(struct ad5064_state *st)
++{
++	return st->chip_info->shared_vref ? 1 : AD5064_DAC_CHANNELS;
++}
++
++static const char * const ad5064_vref_names[] = {
++	"vrefA",
++	"vrefB",
++	"vrefC",
++	"vrefD",
++};
++
++static const char * const ad5064_vref_name(struct ad5064_state *st,
++	unsigned int vref)
++{
++	return st->chip_info->shared_vref ? "vref" : ad5064_vref_names[vref];
++}
++
++static int __devinit ad5064_probe(struct spi_device *spi)
++{
++	enum ad5064_type type = spi_get_device_id(spi)->driver_data;
++	struct iio_dev *indio_dev;
++	struct ad5064_state *st;
++	unsigned int i;
++	int ret;
++
++	indio_dev = iio_allocate_device(sizeof(*st));
++	if (indio_dev == NULL)
++		return  -ENOMEM;
++
++	st = iio_priv(indio_dev);
++	spi_set_drvdata(spi, indio_dev);
++
++	st->chip_info = &ad5064_chip_info_tbl[type];
++	st->spi = spi;
++
++	for (i = 0; i < ad5064_num_vref(st); ++i)
++		st->vref_reg[i].supply = ad5064_vref_name(st, i);
++
++	ret = regulator_bulk_get(&st->spi->dev, ad5064_num_vref(st),
++		st->vref_reg);
++	if (ret)
++		goto error_free;
++
++	ret = regulator_bulk_enable(ad5064_num_vref(st), st->vref_reg);
++	if (ret)
++		goto error_free_reg;
++
++	for (i = 0; i < AD5064_DAC_CHANNELS; ++i) {
++		st->pwr_down_mode[i] = AD5064_LDAC_PWRDN_1K;
++		st->dac_cache[i] = 0x8000;
++	}
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->info = &ad5064_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = st->chip_info->channel;
++	indio_dev->num_channels = AD5064_DAC_CHANNELS;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_disable_reg;
++
++	return 0;
++
++error_disable_reg:
++	regulator_bulk_disable(ad5064_num_vref(st), st->vref_reg);
++error_free_reg:
++	regulator_bulk_free(ad5064_num_vref(st), st->vref_reg);
++error_free:
++	iio_free_device(indio_dev);
++
++	return ret;
++}
++
++
++static int __devexit ad5064_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct ad5064_state *st = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++
++	regulator_bulk_disable(ad5064_num_vref(st), st->vref_reg);
++	regulator_bulk_free(ad5064_num_vref(st), st->vref_reg);
++
++	iio_free_device(indio_dev);
++
++	return 0;
++}
++
++static const struct spi_device_id ad5064_id[] = {
++	{"ad5024", ID_AD5024},
++	{"ad5044", ID_AD5044},
++	{"ad5064", ID_AD5064},
++	{"ad5064-1", ID_AD5064_1},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, ad5064_id);
++
++static struct spi_driver ad5064_driver = {
++	.driver = {
++		   .name = "ad5064",
++		   .owner = THIS_MODULE,
++	},
++	.probe = ad5064_probe,
++	.remove = __devexit_p(ad5064_remove),
++	.id_table = ad5064_id,
++};
++
++static __init int ad5064_spi_init(void)
++{
++	return spi_register_driver(&ad5064_driver);
++}
++module_init(ad5064_spi_init);
++
++static __exit void ad5064_spi_exit(void)
++{
++	spi_unregister_driver(&ad5064_driver);
++}
++module_exit(ad5064_spi_exit);
++
++MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
++MODULE_DESCRIPTION("Analog Devices AD5064/64-1/44/24 DAC");
++MODULE_LICENSE("GPL v2");
+-- 
+1.7.6.3
