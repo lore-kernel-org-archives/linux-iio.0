@@ -1,90 +1,62 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:57769 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751347Ab1JQLcW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2011 07:32:22 -0400
-Message-ID: <4E9C1249.5020408@cam.ac.uk>
-Date: Mon, 17 Oct 2011 12:32:25 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-CC: Linus Walleij <linus.ml.walleij@gmail.com>,
+Return-Path: <broonie@opensource.wolfsonmicro.com>
+Date: Mon, 17 Oct 2011 13:08:14 +0100
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Linus Walleij <linus.ml.walleij@gmail.com>,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	zdevai@gmail.com
 Subject: Re: [PATCH] staging:iio:proof of concept in kernel interface.
-References: <20111013143224.GO1098@sirena.org.uk> <4E96F9AC.9000001@cam.ac.uk> <20111013204410.GA17160@sirena.org.uk> <4E985C60.9020308@cam.ac.uk> <CAKnu2MrUkY2upFh5d6GGTNUr-=r_JKcxh5OQNV63bdOCa4F+zg@mail.gmail.com> <4E9BF8D9.8030301@cam.ac.uk> <20111017101959.GC3042@opensource.wolfsonmicro.com> <4E9C0423.5010909@cam.ac.uk> <20111017104642.GD3042@opensource.wolfsonmicro.com> <4E9C0DD7.7080105@cam.ac.uk> <20111017111807.GA27266@opensource.wolfsonmicro.com>
-In-Reply-To: <20111017111807.GA27266@opensource.wolfsonmicro.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Message-ID: <20111017120813.GB27266@opensource.wolfsonmicro.com>
+References: <20111013204410.GA17160@sirena.org.uk>
+ <4E985C60.9020308@cam.ac.uk>
+ <CAKnu2MrUkY2upFh5d6GGTNUr-=r_JKcxh5OQNV63bdOCa4F+zg@mail.gmail.com>
+ <4E9BF8D9.8030301@cam.ac.uk>
+ <20111017101959.GC3042@opensource.wolfsonmicro.com>
+ <4E9C0423.5010909@cam.ac.uk>
+ <20111017104642.GD3042@opensource.wolfsonmicro.com>
+ <4E9C0DD7.7080105@cam.ac.uk>
+ <20111017111807.GA27266@opensource.wolfsonmicro.com>
+ <4E9C1249.5020408@cam.ac.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <4E9C1249.5020408@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/17/11 12:18, Mark Brown wrote:
-> On Mon, Oct 17, 2011 at 12:13:27PM +0100, Jonathan Cameron wrote:
->> On 10/17/11 11:46, Mark Brown wrote:
-> 
->>> I think the PMIC case is a real one, assigning numbers people need to
->>> use to find things is doesn't really reflect actual usage.
-> 
->> Just to make sure I'm understanding you correctly could you give an example
->> part.  The supplies one we explicitly handle anyway so I'm happy with that
->> one, I just want to confirm that this is what you are talking about.
-> 
-> The wm831x PMICs have an AUXADC with (actual wirings vary depending on
-> the particular device):
-Just to pin this down completely...
-> 
->  - Some voltage inputs hard wired to particular system supplies.
-Hard wired in the pmic?  (e.g. do not vary from device to device).
-These I'm happy to see have names.  If it were a normal IIO device their
-access attributes would be something like:
+On Mon, Oct 17, 2011 at 12:32:25PM +0100, Jonathan Cameron wrote:
+> On 10/17/11 12:18, Mark Brown wrote:
 
-in_voltage0_supply3V_raw
-in_voltage1_supply2.8V_raw
+> >  - Some voltage inputs hard wired to particular system supplies.
 
-(have insist on indexing even with named channels because it is needed as
-events codes don't want to carry a string.).
+> Hard wired in the pmic?  (e.g. do not vary from device to device).
+> These I'm happy to see have names.  If it were a normal IIO device their
+> access attributes would be something like:
 
->  - One or more temperature inputs wired to particular place (eg, chip
->    and battery).
-Not hard wired so to my mind these are just general purpose temperature inputs.
-Hence naming doesn't make sense (at least not outside of board file or DT).
-If there really is something that stops these being switched round then they can
-be named (e.g. if one is actually in the pmic package!). IIO raw attribute would be: 
+> in_voltage0_supply3V_raw
+> in_voltage1_supply2.8V_raw
 
-in_temp0_raw
-in_temp1_raw etc
+Yes, though the names are more symbolic than that (eg, "USB").
 
->  - Some channels that measure voltages on some of the pins with no
->    particular function allocated to them.
-So these are nameless numbered channels.
+> (have insist on indexing even with named channels because it is needed as
+> events codes don't want to carry a string.).
 
-in_voltage13_raw onwards.
+This is orthogonal to the request interface, though.
 
-There are some complexities to deal with that make me wonder if direct indexing
-into a driver provided table isn't easier.  The other is channel types.
+> >  - One or more temperature inputs wired to particular place (eg, chip
+> >    and battery).
 
-Perhaps something as involved as the following works - we are basically lifting about
-half of struct iio_chan_spec into here:
+> Not hard wired so to my mind these are just general purpose temperature inputs.
+> Hence naming doesn't make sense (at least not outside of board file or DT).
 
-struct adc_map {
-/* Input / output side */
-        struct device *adc_dev;
-        const char *adc_dev_name;
-	int channel_num1;
-	int channel_num2;
-	enum IIO_TYPE type /*adc etc*/
-	bool differential.
-/* User side */
-        const char *channel;
-        struct device *dev;
-        const char *dev_name;
-};
+No, they're hard wired - like I say they're wired to a particular place.
 
-Is it so bad to insist that the dt writer or equivalent actually looks at the
-driver in question and picks the underlying channel index directly?
+> There are some complexities to deal with that make me wonder if direct indexing
+> into a driver provided table isn't easier.  The other is channel types.
 
-I'm certainly going to implement that first then add the matching logic
-afterwards anyway as it will make it easier to review / test.
+It's not great for usability if you've got to apply an additional layer
+of translation on top of mapping the schematic onto the hardware.
 
+> Is it so bad to insist that the dt writer or equivalent actually looks at the
+> driver in question and picks the underlying channel index directly?
 
-
+We certainly can't put Linux specific channel numbers into the device
+tree.
