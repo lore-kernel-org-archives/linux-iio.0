@@ -1,120 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-092.synserver.de ([212.40.185.92]:1153 "HELO
-	smtp-out-054.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with SMTP id S1755520Ab1JSPC0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2011 11:02:26 -0400
-Message-ID: <4E9EE68F.6040506@metafoo.de>
-Date: Wed, 19 Oct 2011 17:02:39 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linus.ml.walleij@gmail.com, zdevai@gmail.com,
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:41202 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755572Ab1JRP3f (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2011 11:29:35 -0400
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: linus.ml.walleij@gmail.com, zdevai@gmail.com,
 	linux@arm.linux.org.uk, arnd@arndb.de,
-	broonie@opensource.wolfsonmicro.com, gregkh@suse.de
-Subject: Re: [PATCH 3/6] IIO:CORE add global list of registered IIO devices.
-References: <1318951776-19393-1-git-send-email-jic23@cam.ac.uk> <1318951776-19393-4-git-send-email-jic23@cam.ac.uk> <4E9DC496.3010909@metafoo.de> <4E9DE2AB.3090208@cam.ac.uk> <4E9ED49B.1070005@cam.ac.uk>
-In-Reply-To: <4E9ED49B.1070005@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+	broonie@opensource.wolfsonmicro.com, gregkh@suse.de,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 2/6] IIO:ADC:max1363 add datasheet_name entries.
+Date: Tue, 18 Oct 2011 16:29:32 +0100
+Message-Id: <1318951776-19393-3-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1318951776-19393-1-git-send-email-jic23@cam.ac.uk>
+References: <1318951776-19393-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/19/2011 03:46 PM, Jonathan Cameron wrote:
-> On 10/18/11 21:33, Jonathan Cameron wrote:
->> On 10/18/11 19:25, Lars-Peter Clausen wrote:
->>> On 10/18/2011 05:29 PM, Jonathan Cameron wrote:
->>>> Needed for inkernel interfaces.
->>>>
->>>
->>> The bus_type structure keeps a list of all devices registered on that bus, so
->>> you should be able to use bus_for_each_dev and bus_find_device for iterating
->>> over the iio devices.
->> I hadn't realised that but don't think it will work anyway. There are several
->> other things than iio_dev based devices that sit on our bus unfortunately.
->> None are in these initial merges but they will turn up later.
->> The most common are iio_triggers but there are also a few weird ones such
->> as the event generator for the dummy driver and the sysfstrig control device.  
->> We could play some games to allow these to be identified, but it's going
->> to be a mess. Probably easier to just maintain a second list as we are doing
->> here.  Interesting suggestion though. Thanks and feel free to point out if there
->> is a simple way around the identification issue.
-> Actually looking into it this morning - this is trivial to do.
-> We can just check that the device_type is set appropriately before doing anything
-> else.
-> 
-> Thanks Lars-Peter your suggestion is should clean things up nicely.
-> 
-> New version coming up.
+Kind of obvious for this device but useful
+for testing purposes.
 
-Yes, this should work. The device class iter functions already allow
-filtering on the device type, so it might even make sense to add generic
-device bus iterator functions which allow this as well, but this is probably
-something for later.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/iio/adc/max1363_core.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
->>>
->>>> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
->>>> ---
->>>>  drivers/iio/iio.c       |    9 +++++++++
->>>>  include/linux/iio/iio.h |    1 +
->>>>  2 files changed, 10 insertions(+), 0 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/iio.c b/drivers/iio/iio.c
->>>> index 9e6acc1..246a093 100644
->>>> --- a/drivers/iio/iio.c
->>>> +++ b/drivers/iio/iio.c
->>>> @@ -15,6 +15,9 @@
->>>>  #include <linux/iio/iio.h>
->>>>  #include <linux/iio/sysfs.h>
->>>>  
->>>> +static DEFINE_MUTEX(iio_device_list_lock);
->>>> +static LIST_HEAD(iio_device_list);
->>>> +
->>>>  static DEFINE_IDA(iio_ida);
->>>>  
->>>>  static struct bus_type iio_bus_type = {
->>>> @@ -91,6 +94,9 @@ static void iio_dev_release(struct device *device)
->>>>  {
->>>>  	struct iio_dev *indio_dev = container_of(device, struct iio_dev, dev);
->>>>  	iio_device_unregister_sysfs(indio_dev);
->>>> +	mutex_lock(&iio_device_list_lock);
->>>> +	list_del(&indio_dev->dev_list_entry);
->>>> +	mutex_unlock(&iio_device_list_lock);
->>>>  }
->>>>  
->>>>  static struct device_type iio_dev_type = {
->>>> @@ -559,6 +565,9 @@ int iio_device_register(struct iio_dev *indio_dev)
->>>>  	if (ret)
->>>>  		goto error_free_sysfs;
->>>>  
->>>> +	mutex_lock(&iio_device_list_lock);
->>>> +	list_add(&indio_dev->dev_list_entry, &iio_device_list);
->>>> +	mutex_unlock(&iio_device_list_lock);
->>>>  	return 0;
->>>>  
->>>>  error_free_sysfs:
->>>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->>>> index beedc5c..f14e7dc 100644
->>>> --- a/include/linux/iio/iio.h
->>>> +++ b/include/linux/iio/iio.h
->>>> @@ -192,6 +192,7 @@ struct iio_info {
->>>>   * @info:		[DRIVER] callbacks and constant info from driver
->>>>   * @groups:		[INTERN] attribute groups
->>>>   * @groupcounter:	[INTERN] index of next attribute group
->>>> + * @dev_list_entry:	[INTERN] entry in global list of iio devices
->>>>   **/
->>>>  struct iio_dev {
->>>>  	int				id;
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> 
+diff --git a/drivers/iio/adc/max1363_core.c b/drivers/iio/adc/max1363_core.c
+index ee06d48..e035df9 100644
+--- a/drivers/iio/adc/max1363_core.c
++++ b/drivers/iio/adc/max1363_core.c
+@@ -251,7 +251,8 @@ static const enum max1363_modes max1363_mode_list[] = {
+ 		.indexed = 1,						\
+ 		.channel = num,						\
+ 		.address = addr,					\
+-		.info_mask = MAX1363_INFO_MASK				\
++		.info_mask = MAX1363_INFO_MASK,				\
++		.datasheet_name = "AIN"#num				\
+ 	}								\
+ 
+ /* bipolar channel */
+@@ -264,6 +265,7 @@ static const enum max1363_modes max1363_mode_list[] = {
+ 		.channel2 = num2,					\
+ 		.address = addr,					\
+ 		.info_mask = MAX1363_INFO_MASK,				\
++		.datasheet_name = "AIN"#num"-AIN"#num2			\
+ 	}
+ #define MAX1363_INFO_MASK (1 << IIO_CHAN_INFO_SCALE_SHARED)
+ 
+-- 
+1.7.7
 
