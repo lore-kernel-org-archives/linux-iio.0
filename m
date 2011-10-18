@@ -1,301 +1,266 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:36362 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755739Ab1JRP4e (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2011 11:56:34 -0400
-Message-ID: <4E9DA1B4.9010300@cam.ac.uk>
-Date: Tue, 18 Oct 2011 16:56:36 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/3] staging:iio:dac:ad5504: Convert to channel spec
+Date: Tue, 18 Oct 2011 12:54:50 +0200
+Message-ID: <1318935292-28847-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1318935292-28847-1-git-send-email-lars@metafoo.de>
+References: <1318935292-28847-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>,
-	Drivers <Drivers@analog.com>
-Subject: Re: [PATCH 3/3] staging:iio:dac:ad5624r: Convert to channel spec
-References: <1318935292-28847-1-git-send-email-lars@metafoo.de> <1318935292-28847-3-git-send-email-lars@metafoo.de> <4E9D8E8C.4040000@cam.ac.uk> <4E9D9384.2030700@metafoo.de>
-In-Reply-To: <4E9D9384.2030700@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/18/11 15:56, Lars-Peter Clausen wrote:
-> On 10/18/2011 04:34 PM, Jonathan Cameron wrote:
->> Couple of nitpicks, but nothing that actually matters so
->> make your own mind up.
->>
->> At some point we need to have a think about cleaner ways of handling that
->> powerdown mode stuff through chan_spec. It might be something people want
->> inkernel access to?  One for another day though.
-> Yes, definitely. I already though about this as well and also already have
-> an experimental patch which adds a powerdown info attribute to chan spec.
-> But I'm not quite sure yet whether this is actually the right thing to do in
-> respect to that we want to add an in kernel interface. If we want to allow
-> individual channels to be requested and the device only has a global power-
-> down attribute, we might want to do reference counting for it. So we might
-> need a extra interface for power management.
-True. Not easy to do.  Should also make this play nicely with runtime pm which
-is going to be interesting.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/dac/ad5504.c |  130 ++++++++++++++++++++-----------------
+ drivers/staging/iio/dac/ad5504.h |    5 +-
+ 2 files changed, 71 insertions(+), 64 deletions(-)
 
-I have been wondering from the practical point of view of doing this whether
-we need equivalents of our chan_into mask and read / write _raw functions
-for boolean values and for things best represented as strings.  The strings
-one is particularly tricky as we need a way of specifying which ones make sense.
-
-Feel free to have a go at any of this.  Right now I'm afraid most of my time
-is going to be on the attempt to move some of this out of staging.  These
-corner cases can come later (even if like this one they are pretty common).
-
-It's just possible this powerdown stuff ought to map onto the pinctrl
-infrastructure that has been proposed. I haven't kept up with it enough to
-be sure though.
-> 
->> Thanks for your work on this.  Now I think all our DAC drivers can
->> be moved into my list of clean drivers :)  New drivers are always nice
->> but I really really like people who clean up existing ones!
-> 
-> I have some additional cleanups and fixes for the ad5624r driver, which had
-> some problems.
-Excellent :)
-> 
->> On 10/18/11 11:54, Lars-Peter Clausen wrote:
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> 
-> Thanks,
-> - Lars
->>> ---
->>>  drivers/staging/iio/dac/ad5624r.h     |    4 +-
->>>  drivers/staging/iio/dac/ad5624r_spi.c |  123 +++++++++++++++++++++------------
->>>  2 files changed, 82 insertions(+), 45 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/dac/ad5624r.h b/drivers/staging/iio/dac/ad5624r.h
->>> index b71c6a0..5dca302 100644
->>> --- a/drivers/staging/iio/dac/ad5624r.h
->>> +++ b/drivers/staging/iio/dac/ad5624r.h
->>> @@ -32,12 +32,12 @@
->>>  
->>>  /**
->>>   * struct ad5624r_chip_info - chip specific information
->>> - * @bits:		accuracy of the DAC in bits
->>> + * @channels:		channel spec for the DAC
->>>   * @int_vref_mv:	AD5620/40/60: the internal reference voltage
->>>   */
->>>  
->>>  struct ad5624r_chip_info {
->>> -	u8				bits;
->>> +	const struct iio_chan_spec	*channels;
->>>  	u16				int_vref_mv;
->>>  };
->>>  
->>> diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
->>> index 284d879..d054f27 100644
->>> --- a/drivers/staging/iio/dac/ad5624r_spi.c
->>> +++ b/drivers/staging/iio/dac/ad5624r_spi.c
->>> @@ -21,29 +21,60 @@
->>>  #include "dac.h"
->>>  #include "ad5624r.h"
->>>  
->>> +#define AD5624R_CHANNEL(_chan, _bits) { \
->>> +	.type = IIO_VOLTAGE, \
->>> +	.indexed = 1, \
->>> +	.output = 1, \
->>> +	.channel = (_chan), \
->>> +	.info_mask = (1 << IIO_CHAN_INFO_SCALE_SHARED), \
->>> +	.address = (_chan), \
->>> +	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits)), \
->>> +}
->>> +
->> Could save a few lines via a trivial 
->> #define AD5624_CHANNELS(bits) macro given there are always 4.
->> Perhaps not worth bothering. 
->>> +static const struct iio_chan_spec ad5624r_channels_12[] = {
->>> +	AD5624R_CHANNEL(0, 12),
->>> +	AD5624R_CHANNEL(1, 12),
->>> +	AD5624R_CHANNEL(2, 12),
->>> +	AD5624R_CHANNEL(3, 12),
->>> +};
->>> +
->>> +static const struct iio_chan_spec ad5624r_channels_14[] = {
->>> +	AD5624R_CHANNEL(0, 14),
->>> +	AD5624R_CHANNEL(1, 14),
->>> +	AD5624R_CHANNEL(2, 14),
->>> +	AD5624R_CHANNEL(3, 14),
->>> +};
->>> +
->>> +static const struct iio_chan_spec ad5624r_channels_16[] = {
->>> +	AD5624R_CHANNEL(0, 16),
->>> +	AD5624R_CHANNEL(1, 16),
->>> +	AD5624R_CHANNEL(2, 16),
->>> +	AD5624R_CHANNEL(3, 16),
->>> +};
->>> +
->>>  static const struct ad5624r_chip_info ad5624r_chip_info_tbl[] = {
->> I'd reorder this into alphabetical order.  Took me a few secs to work
->> out what was going on (obviously not your fault but might as well tidy
->> up whilst you are here!)
->>>  	[ID_AD5624R3] = {
->>> -		.bits = 12,
->>> +		.channels = ad5624r_channels_12,
->>>  		.int_vref_mv = 1250,
->>>  	},
->>>  	[ID_AD5644R3] = {
->>> -		.bits = 14,
->>> +		.channels = ad5624r_channels_14,
->>>  		.int_vref_mv = 1250,
->>>  	},
->>>  	[ID_AD5664R3] = {
->>> -		.bits = 16,
->>> +		.channels = ad5624r_channels_16,
->>>  		.int_vref_mv = 1250,
->>>  	},
->>>  	[ID_AD5624R5] = {
->>> -		.bits = 12,
->>> +		.channels = ad5624r_channels_12,
->>>  		.int_vref_mv = 2500,
->>>  	},
->>>  	[ID_AD5644R5] = {
->>> -		.bits = 14,
->>> +		.channels = ad5624r_channels_14,
->>>  		.int_vref_mv = 2500,
->>>  	},
->>>  	[ID_AD5664R5] = {
->>> -		.bits = 16,
->>> +		.channels = ad5624r_channels_16,
->>>  		.int_vref_mv = 2500,
->>>  	},
->>>  };
->>> @@ -70,24 +101,49 @@ static int ad5624r_spi_write(struct spi_device *spi,
->>>  	return spi_write(spi, msg, 3);
->>>  }
->>>  
->>> -static ssize_t ad5624r_write_dac(struct device *dev,
->>> -				 struct device_attribute *attr,
->>> -				 const char *buf, size_t len)
->>> +static int ad5624r_read_raw(struct iio_dev *indio_dev,
->>> +			   struct iio_chan_spec const *chan,
->>> +			   int *val,
->>> +			   int *val2,
->>> +			   long m)
->>>  {
->>> -	long readin;
->>> -	int ret;
->>> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->>>  	struct ad5624r_state *st = iio_priv(indio_dev);
->>> -	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->>> +	unsigned long scale_uv;
->>>  
->>> -	ret = strict_strtol(buf, 10, &readin);
->>> -	if (ret)
->>> -		return ret;
->>> +	switch (m) {
->>> +	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
->>> +		scale_uv = (st->vref_mv * 1000) >> chan->scan_type.realbits;
->>> +		*val =  scale_uv / 1000;
->>> +		*val2 = (scale_uv % 1000) * 1000;
->>> +		return IIO_VAL_INT_PLUS_MICRO;
->>>  
->>> -	ret = ad5624r_spi_write(st->us, AD5624R_CMD_WRITE_INPUT_N_UPDATE_N,
->>> -				this_attr->address, readin,
->>> -				st->chip_info->bits);
->>> -	return ret ? ret : len;
->>> +	}
->>> +	return -EINVAL;
->>> +}
->>> +
->>> +static int ad5624r_write_raw(struct iio_dev *indio_dev,
->>> +			       struct iio_chan_spec const *chan,
->>> +			       int val,
->>> +			       int val2,
->>> +			       long mask)
->>> +{
->>> +	struct ad5624r_state *st = iio_priv(indio_dev);
->>> +	int ret;
->>> +
->>> +	switch (mask) {
->>> +	case 0:
->>> +		if (val >= (1 << chan->scan_type.realbits) || val < 0)
->>> +			return -EINVAL;
->>> +
->>> +		return ad5624r_spi_write(st->us,
->>> +				AD5624R_CMD_WRITE_INPUT_N_UPDATE_N,
->>> +				chan->address, val,
->>> +				chan->scan_type.shift);
->>> +	default:
->>> +		ret = -EINVAL;
->>> +	}
->>> +
->>> +	return -EINVAL;
->>>  }
->>>  
->>>  static ssize_t ad5624r_read_powerdown_mode(struct device *dev,
->>> @@ -161,24 +217,6 @@ static ssize_t ad5624r_write_dac_powerdown(struct device *dev,
->>>  	return ret ? ret : len;
->>>  }
->>>  
->>> -static ssize_t ad5624r_show_scale(struct device *dev,
->>> -				struct device_attribute *attr,
->>> -				char *buf)
->>> -{
->>> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->>> -	struct ad5624r_state *st = iio_priv(indio_dev);
->>> -	/* Corresponds to Vref / 2^(bits) */
->>> -	unsigned int scale_uv = (st->vref_mv * 1000) >> st->chip_info->bits;
->>> -
->>> -	return sprintf(buf, "%d.%03d\n", scale_uv / 1000, scale_uv % 1000);
->>> -}
->>> -static IIO_DEVICE_ATTR(out_voltage_scale, S_IRUGO, ad5624r_show_scale, NULL, 0);
->>> -
->>> -static IIO_DEV_ATTR_OUT_RAW(0, ad5624r_write_dac, AD5624R_ADDR_DAC0);
->>> -static IIO_DEV_ATTR_OUT_RAW(1, ad5624r_write_dac, AD5624R_ADDR_DAC1);
->>> -static IIO_DEV_ATTR_OUT_RAW(2, ad5624r_write_dac, AD5624R_ADDR_DAC2);
->>> -static IIO_DEV_ATTR_OUT_RAW(3, ad5624r_write_dac, AD5624R_ADDR_DAC3);
->>> -
->>>  static IIO_DEVICE_ATTR(out_voltage_powerdown_mode, S_IRUGO |
->>>  			S_IWUSR, ad5624r_read_powerdown_mode,
->>>  			ad5624r_write_powerdown_mode, 0);
->>> @@ -200,17 +238,12 @@ static IIO_DEV_ATTR_DAC_POWERDOWN(3, ad5624r_read_dac_powerdown,
->>>  				   ad5624r_write_dac_powerdown, 3);
->>>  
->>>  static struct attribute *ad5624r_attributes[] = {
->>> -	&iio_dev_attr_out_voltage0_raw.dev_attr.attr,
->>> -	&iio_dev_attr_out_voltage1_raw.dev_attr.attr,
->>> -	&iio_dev_attr_out_voltage2_raw.dev_attr.attr,
->>> -	&iio_dev_attr_out_voltage3_raw.dev_attr.attr,
->>>  	&iio_dev_attr_out_voltage0_powerdown.dev_attr.attr,
->>>  	&iio_dev_attr_out_voltage1_powerdown.dev_attr.attr,
->>>  	&iio_dev_attr_out_voltage2_powerdown.dev_attr.attr,
->>>  	&iio_dev_attr_out_voltage3_powerdown.dev_attr.attr,
->>>  	&iio_dev_attr_out_voltage_powerdown_mode.dev_attr.attr,
->>>  	&iio_const_attr_out_voltage_powerdown_mode_available.dev_attr.attr,
->>> -	&iio_dev_attr_out_voltage_scale.dev_attr.attr,
->>>  	NULL,
->>>  };
->>>  
->>> @@ -219,6 +252,8 @@ static const struct attribute_group ad5624r_attribute_group = {
->>>  };
->>>  
->>>  static const struct iio_info ad5624r_info = {
->>> +	.write_raw = ad5624r_write_raw,
->>> +	.read_raw = ad5624r_read_raw,
->>>  	.attrs = &ad5624r_attribute_group,
->>>  	.driver_module = THIS_MODULE,
->>>  };
->>> @@ -259,6 +294,8 @@ static int __devinit ad5624r_probe(struct spi_device *spi)
->>>  	indio_dev->name = spi_get_device_id(spi)->name;
->>>  	indio_dev->info = &ad5624r_info;
->>>  	indio_dev->modes = INDIO_DIRECT_MODE;
->>> +	indio_dev->channels = st->chip_info->channels;
->>> +	indio_dev->num_channels = AD5624R_DAC_CHANNELS;
->>>  
->>>  	ret = ad5624r_spi_write(spi, AD5624R_CMD_INTERNAL_REFER_SETUP, 0,
->>>  				!!voltage_uv, 16);
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
+index 60dd640..6ea7c78 100644
+--- a/drivers/staging/iio/dac/ad5504.c
++++ b/drivers/staging/iio/dac/ad5504.c
+@@ -21,6 +21,23 @@
+ #include "dac.h"
+ #include "ad5504.h"
+ 
++#define AD5504_CHANNEL(_chan) { \
++	.type = IIO_VOLTAGE, \
++	.indexed = 1, \
++	.output = 1, \
++	.channel = (_chan), \
++	.info_mask = (1 << IIO_CHAN_INFO_SCALE_SHARED), \
++	.address = AD5504_ADDR_DAC(_chan), \
++	.scan_type = IIO_ST('u', 12, 16, 0), \
++}
++
++static const struct iio_chan_spec ad5504_channels[] = {
++	AD5504_CHANNEL(0),
++	AD5504_CHANNEL(1),
++	AD5504_CHANNEL(2),
++	AD5504_CHANNEL(3),
++};
++
+ static int ad5504_spi_write(struct spi_device *spi, u8 addr, u16 val)
+ {
+ 	u16 tmp = cpu_to_be16(AD5504_CMD_WRITE |
+@@ -30,13 +47,14 @@ static int ad5504_spi_write(struct spi_device *spi, u8 addr, u16 val)
+ 	return spi_write(spi, (u8 *)&tmp, 2);
+ }
+ 
+-static int ad5504_spi_read(struct spi_device *spi, u8 addr, u16 *val)
++static int ad5504_spi_read(struct spi_device *spi, u8 addr)
+ {
+ 	u16 tmp = cpu_to_be16(AD5504_CMD_READ | AD5504_ADDR(addr));
++	u16 val;
+ 	int ret;
+ 	struct spi_transfer	t = {
+ 			.tx_buf		= &tmp,
+-			.rx_buf		= val,
++			.rx_buf		= &val,
+ 			.len		= 2,
+ 		};
+ 	struct spi_message	m;
+@@ -45,44 +63,61 @@ static int ad5504_spi_read(struct spi_device *spi, u8 addr, u16 *val)
+ 	spi_message_add_tail(&t, &m);
+ 	ret = spi_sync(spi, &m);
+ 
+-	*val = be16_to_cpu(*val) & AD5504_RES_MASK;
++	if (ret < 0)
++		return ret;
+ 
+-	return ret;
++	return be16_to_cpu(val) & AD5504_RES_MASK;
+ }
+ 
+-static ssize_t ad5504_write_dac(struct device *dev,
+-				 struct device_attribute *attr,
+-				 const char *buf, size_t len)
++static int ad5504_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val,
++			   int *val2,
++			   long m)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	long readin;
++	unsigned long scale_uv;
+ 	int ret;
+ 
+-	ret = strict_strtol(buf, 10, &readin);
+-	if (ret)
+-		return ret;
++	switch (m) {
++	case 0:
++		ret = ad5504_spi_read(st->spi, chan->address);
++		if (ret < 0)
++			return ret;
+ 
+-	ret = ad5504_spi_write(st->spi, this_attr->address, readin);
+-	return ret ? ret : len;
++		*val = ret;
++
++		return IIO_VAL_INT;
++	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
++		scale_uv = (st->vref_mv * 1000) >> chan->scan_type.realbits;
++		*val =  scale_uv / 1000;
++		*val2 = (scale_uv % 1000) * 1000;
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	}
++	return -EINVAL;
+ }
+ 
+-static ssize_t ad5504_read_dac(struct device *dev,
+-					   struct device_attribute *attr,
+-					   char *buf)
++static int ad5504_write_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int val,
++			       int val2,
++			       long mask)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret;
+-	u16 val;
+ 
+-	ret = ad5504_spi_read(st->spi, this_attr->address, &val);
+-	if (ret)
+-		return ret;
++	switch (mask) {
++	case 0:
++		if (val >= (1 << chan->scan_type.realbits) || val < 0)
++			return -EINVAL;
+ 
+-	return sprintf(buf, "%d\n", val);
++		return ad5504_spi_write(st->spi, chan->address, val);
++	default:
++		ret = -EINVAL;
++	}
++
++	return -EINVAL;
+ }
+ 
+ static ssize_t ad5504_read_powerdown_mode(struct device *dev,
+@@ -157,32 +192,6 @@ static ssize_t ad5504_write_dac_powerdown(struct device *dev,
+ 	return ret ? ret : len;
+ }
+ 
+-static ssize_t ad5504_show_scale(struct device *dev,
+-				struct device_attribute *attr,
+-				char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct ad5504_state *st = iio_priv(indio_dev);
+-	/* Corresponds to Vref / 2^(bits) */
+-	unsigned int scale_uv = (st->vref_mv * 1000) >> AD5505_BITS;
+-
+-	return sprintf(buf, "%d.%03d\n", scale_uv / 1000, scale_uv % 1000);
+-}
+-static IIO_DEVICE_ATTR(out_voltage_scale, S_IRUGO, ad5504_show_scale, NULL, 0);
+-
+-#define IIO_DEV_ATTR_OUT_RW_RAW(_num, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(out_voltage##_num##_raw,			\
+-			S_IRUGO | S_IWUSR, _show, _store, _addr)
+-
+-static IIO_DEV_ATTR_OUT_RW_RAW(0, ad5504_read_dac,
+-	ad5504_write_dac, AD5504_ADDR_DAC0);
+-static IIO_DEV_ATTR_OUT_RW_RAW(1, ad5504_read_dac,
+-	ad5504_write_dac, AD5504_ADDR_DAC1);
+-static IIO_DEV_ATTR_OUT_RW_RAW(2, ad5504_read_dac,
+-	ad5504_write_dac, AD5504_ADDR_DAC2);
+-static IIO_DEV_ATTR_OUT_RW_RAW(3, ad5504_read_dac,
+-	ad5504_write_dac, AD5504_ADDR_DAC3);
+-
+ static IIO_DEVICE_ATTR(out_voltage_powerdown_mode, S_IRUGO |
+ 			S_IWUSR, ad5504_read_powerdown_mode,
+ 			ad5504_write_powerdown_mode, 0);
+@@ -203,17 +212,12 @@ static IIO_DEV_ATTR_DAC_POWERDOWN(3, ad5504_read_dac_powerdown,
+ 				   ad5504_write_dac_powerdown, 3);
+ 
+ static struct attribute *ad5504_attributes[] = {
+-	&iio_dev_attr_out_voltage0_raw.dev_attr.attr,
+-	&iio_dev_attr_out_voltage1_raw.dev_attr.attr,
+-	&iio_dev_attr_out_voltage2_raw.dev_attr.attr,
+-	&iio_dev_attr_out_voltage3_raw.dev_attr.attr,
+ 	&iio_dev_attr_out_voltage0_powerdown.dev_attr.attr,
+ 	&iio_dev_attr_out_voltage1_powerdown.dev_attr.attr,
+ 	&iio_dev_attr_out_voltage2_powerdown.dev_attr.attr,
+ 	&iio_dev_attr_out_voltage3_powerdown.dev_attr.attr,
+ 	&iio_dev_attr_out_voltage_powerdown_mode.dev_attr.attr,
+ 	&iio_const_attr_out_voltage_powerdown_mode_available.dev_attr.attr,
+-	&iio_dev_attr_out_voltage_scale.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -222,11 +226,9 @@ static const struct attribute_group ad5504_attribute_group = {
+ };
+ 
+ static struct attribute *ad5501_attributes[] = {
+-	&iio_dev_attr_out_voltage0_raw.dev_attr.attr,
+ 	&iio_dev_attr_out_voltage0_powerdown.dev_attr.attr,
+ 	&iio_dev_attr_out_voltage_powerdown_mode.dev_attr.attr,
+ 	&iio_const_attr_out_voltage_powerdown_mode_available.dev_attr.attr,
+-	&iio_dev_attr_out_voltage_scale.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -261,12 +263,16 @@ static irqreturn_t ad5504_event_handler(int irq, void *private)
+ }
+ 
+ static const struct iio_info ad5504_info = {
++	.write_raw = ad5504_write_raw,
++	.read_raw = ad5504_read_raw,
+ 	.attrs = &ad5504_attribute_group,
+ 	.event_attrs = &ad5504_ev_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+ static const struct iio_info ad5501_info = {
++	.write_raw = ad5504_write_raw,
++	.read_raw = ad5504_read_raw,
+ 	.attrs = &ad5501_attribute_group,
+ 	.event_attrs = &ad5504_ev_attribute_group,
+ 	.driver_module = THIS_MODULE,
+@@ -307,10 +313,14 @@ static int __devinit ad5504_probe(struct spi_device *spi)
+ 	st->spi = spi;
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->name = spi_get_device_id(st->spi)->name;
+-	if (spi_get_device_id(st->spi)->driver_data == ID_AD5501)
++	if (spi_get_device_id(st->spi)->driver_data == ID_AD5501) {
+ 		indio_dev->info = &ad5501_info;
+-	else
++		indio_dev->num_channels = 1;
++	} else {
+ 		indio_dev->info = &ad5504_info;
++		indio_dev->num_channels = 4;
++	}
++	indio_dev->channels = ad5504_channels;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+ 	if (spi->irq) {
+diff --git a/drivers/staging/iio/dac/ad5504.h b/drivers/staging/iio/dac/ad5504.h
+index 85beb1d..afe0952 100644
+--- a/drivers/staging/iio/dac/ad5504.h
++++ b/drivers/staging/iio/dac/ad5504.h
+@@ -18,10 +18,7 @@
+ 
+ /* Registers */
+ #define AD5504_ADDR_NOOP		0
+-#define AD5504_ADDR_DAC0		1
+-#define AD5504_ADDR_DAC1		2
+-#define AD5504_ADDR_DAC2		3
+-#define AD5504_ADDR_DAC3		4
++#define AD5504_ADDR_DAC(x)		((x) + 1)
+ #define AD5504_ADDR_ALL_DAC		5
+ #define AD5504_ADDR_CTRL		7
+ 
+-- 
+1.7.6.3
