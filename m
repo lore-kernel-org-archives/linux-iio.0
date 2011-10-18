@@ -1,52 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:41202 "EHLO
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:41267 "EHLO
 	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755572Ab1JRP3f (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2011 11:29:35 -0400
+	with ESMTP id S1758036Ab1JRP3j (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2011 11:29:39 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 Cc: linus.ml.walleij@gmail.com, zdevai@gmail.com,
 	linux@arm.linux.org.uk, arnd@arndb.de,
 	broonie@opensource.wolfsonmicro.com, gregkh@suse.de,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 2/6] IIO:ADC:max1363 add datasheet_name entries.
-Date: Tue, 18 Oct 2011 16:29:32 +0100
-Message-Id: <1318951776-19393-3-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 1/6] IIO: core: add datasheet_name to chan_spec
+Date: Tue, 18 Oct 2011 16:29:31 +0100
+Message-Id: <1318951776-19393-2-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1318951776-19393-1-git-send-email-jic23@cam.ac.uk>
 References: <1318951776-19393-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Kind of obvious for this device but useful
-for testing purposes.
+This allows for matching against the name given
+on a datasheet, however silly/inconsistent it might
+be.
+
+Useful for in kernel interfaces.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/iio/adc/max1363_core.c |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+ include/linux/iio/iio.h |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/iio/adc/max1363_core.c b/drivers/iio/adc/max1363_core.c
-index ee06d48..e035df9 100644
---- a/drivers/iio/adc/max1363_core.c
-+++ b/drivers/iio/adc/max1363_core.c
-@@ -251,7 +251,8 @@ static const enum max1363_modes max1363_mode_list[] = {
- 		.indexed = 1,						\
- 		.channel = num,						\
- 		.address = addr,					\
--		.info_mask = MAX1363_INFO_MASK				\
-+		.info_mask = MAX1363_INFO_MASK,				\
-+		.datasheet_name = "AIN"#num				\
- 	}								\
- 
- /* bipolar channel */
-@@ -264,6 +265,7 @@ static const enum max1363_modes max1363_mode_list[] = {
- 		.channel2 = num2,					\
- 		.address = addr,					\
- 		.info_mask = MAX1363_INFO_MASK,				\
-+		.datasheet_name = "AIN"#num"-AIN"#num2			\
- 	}
- #define MAX1363_INFO_MASK (1 << IIO_CHAN_INFO_SCALE_SHARED)
- 
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 8066c8a..beedc5c 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -128,6 +128,7 @@ struct iio_chan_spec {
+ 	} scan_type;
+ 	long                    info_mask;
+ 	char			*extend_name;
++	const char		*datasheet_name;
+ 	unsigned		processed_val:1;
+ 	unsigned		modified:1;
+ 	unsigned		indexed:1;
 -- 
 1.7.7
 
