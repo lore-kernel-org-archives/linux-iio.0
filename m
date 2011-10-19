@@ -1,46 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:35329 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756417Ab1JSOrK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2011 10:47:10 -0400
-From: Jonathan Cameron <jic23@cam.ac.uk>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: linus.ml.walleij@gmail.com, zdevai@gmail.com,
-	linux@arm.linux.org.uk, arnd@arndb.de,
-	broonie@opensource.wolfsonmicro.com, gregkh@suse.de,
-	lm-sensors@lm-sensors.org, guenter.roeck@ericsson.com,
-	khali@linux-fr.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 1/6] IIO: core: add datasheet_name to chan_spec
-Date: Wed, 19 Oct 2011 15:47:03 +0100
-Message-Id: <1319035628-32580-2-git-send-email-jic23@cam.ac.uk>
-In-Reply-To: <1319035628-32580-1-git-send-email-jic23@cam.ac.uk>
-References: <1319035628-32580-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <greg@kroah.com>
+CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, <jic23@cam.ac.uk>, Michael Hennerich
+	<michael.hennerich@analog.com>
+Subject: [PATCH] iio: cdc: Fix pushed event code - Typo, should be IIO_CAPACITANCE.
+Date: Wed, 19 Oct 2011 14:41:08 +0200
+Message-ID: <1319028068-14325-1-git-send-email-michael.hennerich@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-This allows for matching against the name given
-on a datasheet, however silly/inconsistent it might
-be.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Useful for in kernel interfaces.
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- include/linux/iio/iio.h |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+ drivers/staging/iio/cdc/ad7150.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 8066c8a..beedc5c 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -128,6 +128,7 @@ struct iio_chan_spec {
- 	} scan_type;
- 	long                    info_mask;
- 	char			*extend_name;
-+	const char		*datasheet_name;
- 	unsigned		processed_val:1;
- 	unsigned		modified:1;
- 	unsigned		indexed:1;
--- 
-1.7.7
-
+diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
+index e185f0e..a761ca9 100644
+--- a/drivers/staging/iio/cdc/ad7150.c
++++ b/drivers/staging/iio/cdc/ad7150.c
+@@ -473,7 +473,7 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
+ 	if ((int_status & AD7150_STATUS_OUT1) &&
+ 	    !(chip->old_state & AD7150_STATUS_OUT1))
+ 		iio_push_event(indio_dev,
+-			       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE,
++			       IIO_UNMOD_EVENT_CODE(IIO_CAPACITANCE,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+@@ -481,7 +481,7 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
+ 	else if ((!(int_status & AD7150_STATUS_OUT1)) &&
+ 		 (chip->old_state & AD7150_STATUS_OUT1))
+ 		iio_push_event(indio_dev,
+-			       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE,
++			       IIO_UNMOD_EVENT_CODE(IIO_CAPACITANCE,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+@@ -490,7 +490,7 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
+ 	if ((int_status & AD7150_STATUS_OUT2) &&
+ 	    !(chip->old_state & AD7150_STATUS_OUT2))
+ 		iio_push_event(indio_dev,
+-			       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE,
++			       IIO_UNMOD_EVENT_CODE(IIO_CAPACITANCE,
+ 						    1,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+@@ -498,7 +498,7 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
+ 	else if ((!(int_status & AD7150_STATUS_OUT2)) &&
+ 		 (chip->old_state & AD7150_STATUS_OUT2))
+ 		iio_push_event(indio_dev,
+-			       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE,
++			       IIO_UNMOD_EVENT_CODE(IIO_CAPACITANCE,
+ 						    1,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+--
+1.7.0.4
