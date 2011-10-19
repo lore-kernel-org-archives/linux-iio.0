@@ -1,44 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([88.190.12.23]:59424 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753200Ab1JSQTP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2011 12:19:15 -0400
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Patrice Vilchez <patrice.vilchez@atmel.com>
-Subject: [PATCH 1/3] ARM: AT91: Add platform data for the ADCs
-Date: Wed, 19 Oct 2011 18:18:52 +0200
-Message-Id: <1319041134-19712-2-git-send-email-maxime.ripard@free-electrons.com>
-In-Reply-To: <1319041134-19712-1-git-send-email-maxime.ripard@free-electrons.com>
-References: <1319041134-19712-1-git-send-email-maxime.ripard@free-electrons.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Greg Kroah-Hartman <gregkh@suse.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, Michael Hennerich
+	<michael.hennerich@analog.com>, <devel@driverdev.osuosl.org>,
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:dac:ad5686: Check for negative values
+Date: Wed, 19 Oct 2011 17:51:28 +0200
+Message-ID: <1319039488-19810-1-git-send-email-lars@metafoo.de>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
-Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Currently it is possible to write negative values to the ad5686's raw attribute.
+This will cause undefined behaviour, so reject negative values.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- arch/arm/mach-at91/include/mach/board.h |    8 ++++++++
- 1 files changed, 8 insertions(+), 0 deletions(-)
+ drivers/staging/iio/dac/ad5686.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/arm/mach-at91/include/mach/board.h b/arch/arm/mach-at91/include/mach/board.h
-index ed544a0..adbc431 100644
---- a/arch/arm/mach-at91/include/mach/board.h
-+++ b/arch/arm/mach-at91/include/mach/board.h
-@@ -207,4 +207,12 @@ extern void __init at91_pwm_leds(struct gpio_led *leds, int nr);
- /* FIXME: this needs a better location, but gets stuff building again */
- extern int at91_suspend_entering_slow_clock(void);
+diff --git a/drivers/staging/iio/dac/ad5686.c b/drivers/staging/iio/dac/ad5686.c
+index 1d50dd1..48389e1 100644
+--- a/drivers/staging/iio/dac/ad5686.c
++++ b/drivers/staging/iio/dac/ad5686.c
+@@ -327,7 +327,7 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
  
-+/* ADC */
-+struct at91_adc_data {
-+	unsigned int adc_clock;
-+	u8 channels;
-+	u8 startup_time;
-+};
-+extern void __init at91_add_device_adc(struct at91_adc_data *data);
-+
- #endif
+ 	switch (mask) {
+ 	case 0:
+-		if (val > (1 << chan->scan_type.realbits))
++		if (val > (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+ 		mutex_lock(&indio_dev->mlock);
 -- 
-1.7.4.1
-
+1.7.6.3
