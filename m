@@ -1,12 +1,11 @@
 Return-Path: <Michael.Hennerich@analog.com>
 From: <michael.hennerich@analog.com>
-To: <greg@kroah.com>
+To: <jic23@cam.ac.uk>
 CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
-	<drivers@analog.com>, <jic23@cam.ac.uk>, Michael Hennerich
-	<michael.hennerich@analog.com>
+	<drivers@analog.com>, Michael Hennerich <michael.hennerich@analog.com>
 Subject: [PATCH] iio: Spell fix - consistent use of Converter - no functional changes
-Date: Wed, 19 Oct 2011 11:17:53 +0200
-Message-ID: <1319015873-23897-1-git-send-email-michael.hennerich@analog.com>
+Date: Wed, 19 Oct 2011 11:12:42 +0200
+Message-ID: <1319015562-23832-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
@@ -15,7 +14,6 @@ From: Michael Hennerich <michael.hennerich@analog.com>
 
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
  drivers/staging/iio/adc/Kconfig   |   18 +++++++++---------
  drivers/staging/iio/addac/Kconfig |    2 +-
@@ -32,7 +30,7 @@ index bfe91d7..13e93fb 100644
  #
 -menu "Analog to digital convertors"
 +menu "Analog to digital converters"
-
+ 
  config AD7150
  	tristate "Analog Devices ad7150/1/6 capacitive sensor driver"
 @@ -42,7 +42,7 @@ config AD7606
@@ -41,7 +39,7 @@ index bfe91d7..13e93fb 100644
  	  Say yes here to build support for Analog Devices:
 -	  ad7606, ad7606-6, ad7606-4 analog to digital convertors (ADC).
 +	  ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
-
+ 
  	  To compile this driver as a module, choose M here: the
  	  module will be called ad7606.
 @@ -70,7 +70,7 @@ config AD799X
@@ -51,7 +49,7 @@ index bfe91d7..13e93fb 100644
 -	  i2c analog to digital convertors (ADC). Provides direct access
 +	  i2c analog to digital converters (ADC). Provides direct access
  	  via sysfs.
-
+ 
  config AD799X_RING_BUFFER
 @@ -91,7 +91,7 @@ config AD7476
  	help
@@ -60,7 +58,7 @@ index bfe91d7..13e93fb 100644
 -	  SPI analog to digital convertors (ADC).
 +	  SPI analog to digital converters (ADC).
  	  If unsure, say N (but it's safe to say "Y").
-
+ 
  	  To compile this driver as a module, choose M here: the
 @@ -105,7 +105,7 @@ config AD7887
  	select IIO_TRIGGER
@@ -69,7 +67,7 @@ index bfe91d7..13e93fb 100644
 -	  AD7887 SPI analog to digital convertor (ADC).
 +	  AD7887 SPI analog to digital converter (ADC).
  	  If unsure, say N (but it's safe to say "Y").
-
+ 
  	  To compile this driver as a module, choose M here: the
 @@ -117,7 +117,7 @@ config AD7780
  	depends on GPIOLIB
@@ -78,7 +76,7 @@ index bfe91d7..13e93fb 100644
 -	  AD7780 and AD7781 SPI analog to digital convertors (ADC).
 +	  AD7780 and AD7781 SPI analog to digital converters (ADC).
  	  If unsure, say N (but it's safe to say "Y").
-
+ 
  	  To compile this driver as a module, choose M here: the
 @@ -131,7 +131,7 @@ config AD7793
  	select IIO_TRIGGER
@@ -87,7 +85,7 @@ index bfe91d7..13e93fb 100644
 -	  AD7792 and AD7793 SPI analog to digital convertors (ADC).
 +	  AD7792 and AD7793 SPI analog to digital converters (ADC).
  	  If unsure, say N (but it's safe to say "Y").
-
+ 
  	  To compile this driver as a module, choose M here: the
 @@ -163,7 +163,7 @@ config AD7192
  	select IIO_TRIGGER
@@ -96,7 +94,7 @@ index bfe91d7..13e93fb 100644
 -	  AD7192 or AD7195 SPI analog to digital convertors (ADC).
 +	  AD7192 or AD7195 SPI analog to digital converters (ADC).
  	  If unsure, say N (but it's safe to say "Y").
-
+ 
  	  To compile this driver as a module, choose M here: the
 @@ -200,7 +200,7 @@ config MAX1363
  	select MAX1363_RING_BUFFER
@@ -117,7 +115,7 @@ index 4b76375..698a897 100644
  #
 -menu "Analog digital bi-direction convertors"
 +menu "Analog digital bi-direction converters"
-
+ 
  config ADT7316
  	tristate "Analog Devices ADT7316/7/8 ADT7516/7/9 temperature sensor, ADC and DAC driver"
 diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
@@ -130,7 +128,7 @@ index 3000156..5bddf9b 100644
  #
 -menu "Digital to analog convertors"
 +menu "Digital to analog converters"
-
+ 
  config AD5624R_SPI
  	tristate "Analog Devices AD5624/44/64R DAC spi driver"
  	depends on SPI
@@ -138,8 +136,8 @@ index 3000156..5bddf9b 100644
  	  Say yes here to build support for Analog Devices AD5624R, AD5644R and
 -	  AD5664R convertors (DAC). This driver uses the common SPI interface.
 +	  AD5664R converters (DAC). This driver uses the common SPI interface.
-
+ 
  config AD5446
  	tristate "Analog Devices AD5444/6, AD5620/40/60 and AD5542A/12A DAC SPI driver"
---
+-- 
 1.7.0.4
