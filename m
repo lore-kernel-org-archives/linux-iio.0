@@ -1,154 +1,62 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:52562 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750944Ab1JSNjx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2011 09:39:53 -0400
-Message-ID: <4E9ED32D.7040809@cam.ac.uk>
-Date: Wed, 19 Oct 2011 14:39:57 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <jic23@cam.ac.uk>
+CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] iio: cdc: Fix pushed event code - Typo, should be IIO_CAPACITANCE.
+Date: Wed, 19 Oct 2011 13:39:49 +0200
+Message-ID: <1319024389-14243-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>,
-	Drivers <Drivers@analog.com>
-Subject: Re: [PATCH 2/4] staging:iio:dac:ad5791: Allow asymmetrical reference
- voltages
-References: <1319027030-9696-1-git-send-email-lars@metafoo.de> <1319027030-9696-2-git-send-email-lars@metafoo.de> <4E9ECA38.7040707@cam.ac.uk> <4E9ECEE2.4000403@metafoo.de>
-In-Reply-To: <4E9ECEE2.4000403@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/19/11 14:21, Lars-Peter Clausen wrote:
-> On 10/19/2011 03:01 PM, Jonathan Cameron wrote:
->> On 10/19/11 13:23, Lars-Peter Clausen wrote:
->>> The ad5791 currently assumes that the negative and positive supply have the
->>> same absolute value, which is not necessarily true. This patch introduces a
->>> offset attribute which will contain the negative supply voltage scaled
->>> according to the iio spec. The raw attribute now accepts values in the range
->>> of 0 to max instead of -max/2 to max/2.
->>>
->>> While we are at it also fix the vref span calculation. Since both positive and
->>> negative reference voltages are specificed as absolute values we need to add
->>> them and not subtract them to get the reference voltage span.
->> Everything commented here is fine, but one odd looking removal...
-Got it now thanks.
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+From: Michael Hennerich <michael.hennerich@analog.com>
 
->>> ---
->>>  drivers/staging/iio/dac/ad5791.c |   24 ++++++++++++++++--------
->>>  drivers/staging/iio/dac/ad5791.h |    2 ++
->>>  2 files changed, 18 insertions(+), 8 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
->>> index 9a76c43..c465fcf 100644
->>> --- a/drivers/staging/iio/dac/ad5791.c
->>> +++ b/drivers/staging/iio/dac/ad5791.c
->>> @@ -77,7 +77,8 @@ static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
->>>  	.indexed = 1,					\
->>>  	.address = AD5791_ADDR_DAC0,			\
->>>  	.channel = 0,					\
->>> -	.info_mask = (1 << IIO_CHAN_INFO_SCALE_SHARED),	\
->>> +	.info_mask = (1 << IIO_CHAN_INFO_SCALE_SHARED) | \
->>> +		(1 << IIO_CHAN_INFO_OFFSET_SHARED),	\
->>>  	.scan_type = IIO_ST('u', bits, 24, shift)	\
->>>  }
->>>  
->>> @@ -225,6 +226,7 @@ static int ad5791_read_raw(struct iio_dev *indio_dev,
->>>  			   long m)
->>>  {
->>>  	struct ad5791_state *st = iio_priv(indio_dev);
->>> +	u64 val64;
->>>  	int ret;
->>>  
->>>  	switch (m) {
->>> @@ -234,12 +236,16 @@ static int ad5791_read_raw(struct iio_dev *indio_dev,
->>>  			return ret;
->>>  		*val &= AD5791_DAC_MASK;
->>>  		*val >>= chan->scan_type.shift;
->>> -		*val -= (1 << (chan->scan_type.realbits - 1));
->>>  		return IIO_VAL_INT;
->>>  	case (1 << IIO_CHAN_INFO_SCALE_SHARED):
->>>  		*val = 0;
->>>  		*val2 = (st->vref_mv * 1000) >> chan->scan_type.realbits;
->>>  		return IIO_VAL_INT_PLUS_MICRO;
->>> +	case (1 << IIO_CHAN_INFO_OFFSET_SHARED):
->>> +		val64 = (((u64)st->vref_neg_mv) << chan->scan_type.realbits);
->>> +		do_div(val64, st->vref_mv);
->>> +		*val = -val64;
->>> +		return IIO_VAL_INT;
->>>  	default:
->>>  		return -EINVAL;
->>>  	}
->>> @@ -257,7 +263,6 @@ static int ad5791_write_raw(struct iio_dev *indio_dev,
->>>  
->>>  	switch (mask) {
->>>  	case 0:
->>> -		val += (1 << (chan->scan_type.realbits - 1));
->> This line looks suspicious.  What is it doing in this patch?
->> I'll be honest and say I'm not sure why it was there in the first place, but
->> I can't immediately see what it has to do with the rest of the patch.
-> 
-> The driver would previously accept values from -(1 << realbits) / 2 to (1 <<
-> realbits) / 2
-> for the raw attribute. But this only really works if the the reference
-> voltages are symmetrical.
-> So what this patch does is to change the raw attribute to accept values from
-> 0 to (1 << realbits) -1
-> and add the offset attribute which contains the negative offset.
-> 
->>>  		val &= AD5791_RES_MASK(chan->scan_type.realbits);
->>>  		val <<= chan->scan_type.shift;
->>>  
->>> @@ -309,12 +314,15 @@ static int __devinit ad5791_probe(struct spi_device *spi)
->>>  	st->pwr_down = true;
->>>  	st->spi = spi;
->>>  
->>> -	if (!IS_ERR(st->reg_vss) && !IS_ERR(st->reg_vdd))
->>> -		st->vref_mv = (pos_voltage_uv - neg_voltage_uv) / 1000;
->>> -	else if (pdata)
->>> -		st->vref_mv = pdata->vref_pos_mv - pdata->vref_neg_mv;
->>> -	else
->>> +	if (!IS_ERR(st->reg_vss) && !IS_ERR(st->reg_vdd)) {
->>> +		st->vref_mv = (pos_voltage_uv + neg_voltage_uv) / 1000;
->>> +		st->vref_neg_mv = neg_voltage_uv / 1000;
->>> +	} else if (pdata) {
->>> +		st->vref_mv = pdata->vref_pos_mv + pdata->vref_neg_mv;
->>> +		st->vref_neg_mv = pdata->vref_neg_mv;
->>> +	} else {
->>>  		dev_warn(&spi->dev, "reference voltage unspecified\n");
->>> +	}
->>>  
->>>  	ret = ad5791_spi_write(spi, AD5791_ADDR_SW_CTRL, AD5791_SWCTRL_RESET);
->>>  	if (ret)
->>> diff --git a/drivers/staging/iio/dac/ad5791.h b/drivers/staging/iio/dac/ad5791.h
->>> index 2a50a11..fd7edbd 100644
->>> --- a/drivers/staging/iio/dac/ad5791.h
->>> +++ b/drivers/staging/iio/dac/ad5791.h
->>> @@ -82,6 +82,7 @@ struct ad5791_chip_info {
->>>   * @reg_vss:		negative supply regulator
->>>   * @chip_info:		chip model specific constants
->>>   * @vref_mv:		actual reference voltage used
->>> + * @vref_neg_mv:	voltage of the negative supply
->>>   * @pwr_down_mode	current power down mode
->>>   */
->>>  
->>> @@ -91,6 +92,7 @@ struct ad5791_state {
->>>  	struct regulator		*reg_vss;
->>>  	const struct ad5791_chip_info	*chip_info;
->>>  	unsigned short			vref_mv;
->>> +	unsigned int			vref_neg_mv;
->>>  	unsigned			ctrl;
->>>  	unsigned			pwr_down_mode;
->>>  	bool				pwr_down;
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
 
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/cdc/ad7150.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
+index e185f0e..a761ca9 100644
+--- a/drivers/staging/iio/cdc/ad7150.c
++++ b/drivers/staging/iio/cdc/ad7150.c
+@@ -473,7 +473,7 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
+ 	if ((int_status & AD7150_STATUS_OUT1) &&
+ 	    !(chip->old_state & AD7150_STATUS_OUT1))
+ 		iio_push_event(indio_dev,
+-			       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE,
++			       IIO_UNMOD_EVENT_CODE(IIO_CAPACITANCE,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+@@ -481,7 +481,7 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
+ 	else if ((!(int_status & AD7150_STATUS_OUT1)) &&
+ 		 (chip->old_state & AD7150_STATUS_OUT1))
+ 		iio_push_event(indio_dev,
+-			       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE,
++			       IIO_UNMOD_EVENT_CODE(IIO_CAPACITANCE,
+ 						    0,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+@@ -490,7 +490,7 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
+ 	if ((int_status & AD7150_STATUS_OUT2) &&
+ 	    !(chip->old_state & AD7150_STATUS_OUT2))
+ 		iio_push_event(indio_dev,
+-			       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE,
++			       IIO_UNMOD_EVENT_CODE(IIO_CAPACITANCE,
+ 						    1,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_RISING),
+@@ -498,7 +498,7 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
+ 	else if ((!(int_status & AD7150_STATUS_OUT2)) &&
+ 		 (chip->old_state & AD7150_STATUS_OUT2))
+ 		iio_push_event(indio_dev,
+-			       IIO_UNMOD_EVENT_CODE(IIO_VOLTAGE,
++			       IIO_UNMOD_EVENT_CODE(IIO_CAPACITANCE,
+ 						    1,
+ 						    IIO_EV_TYPE_THRESH,
+ 						    IIO_EV_DIR_FALLING),
+-- 
+1.7.0.4
