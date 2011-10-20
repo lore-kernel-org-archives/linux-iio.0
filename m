@@ -1,59 +1,62 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:38784 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756781Ab1JTQok (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2011 12:44:40 -0400
-Message-ID: <4EA04FFD.9080708@cam.ac.uk>
-Date: Thu, 20 Oct 2011 17:44:45 +0100
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Mark Brown <broonie@opensource.wolfsonmicro.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Barry Song <21cnbao@gmail.com>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Towards a IIO in kernel push interface.
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 0/5] staging:iio: add demux support.
+Date: Thu, 20 Oct 2011 17:29:24 +0100
+Message-Id: <1319128169-3722-1-git-send-email-jic23@cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Route plan based on initial messing around today.
+Given earlier conversation about in kernel interfaces and how the
+heck to move towards push interfaces.  I thought I'd take on
+one of the small corners.  The ability to take an incoming scan
+and only push on some elements to the buffer.
 
+The intent is that we will then reallow multiple buffers
+with new in kernel requests for push events creating these.
 
-This will all be in staging for now as no where
-near enough infrastructure is available in the initial
-proposed move out of staging. Right now boring though
-it is, if anyone has review time please look at those
-patches first.
+Then any registered demuxers will be run one after another
+pushing the data on to whoever cares about about it.
+There will need to be quite a lot of functions to handle
+the description (or raw access to some / all of chan_spec).
 
-1) We now have basic demux functionality.
+It's also going to be 'interesting' to get the tear down
+rebuild / put up dynamics write on the triggered capture.
 
-2) Need to stop timestamps being special so as to simplify
-code paths.
+Clearly we can also be much cleverer in grouping memcpy's
+in the demux_table entries, but that's one for a later date
+and my guess is that will work by creating it, then passing
+the result and merging elements.
 
-3) Need to support multiple buffers (again - thought they
-never really worked before).
+Anyhow this is a step in the right direction.
 
-4) Bring the inkernel pull interfaces across to staging tree (quick)
+As a side effect it means that we can now move demuxing into the
+core from the few drivers that were either doing it locally
+(adis16400 - for burst reads) or not doing it (max1363 as here).
 
-5) Create pass through buffer type
+I've only sent this to linux-iio as it only matters there
+right now.  I'll send a heads up to the other conversations
+that are on going which this touches upon.
 
-6) Interfaces for drivers to instantiate such a pass through.
+Jonathan
 
-7) Work out stop and restart for other devices changing the
-scan being done.  (fiddly to get right and test).
+Jonathan Cameron (5):
+  staging:iio:kfifo remove entirely pointless code.
+  staging:iio:fine iio channel from scan index util function
+  staging:iio: trigger fixes for repeat request of same trigger and
+    allocation failure
+  staging:iio: add demux optionally to path from device to buffer
+  staging:iio:adc:max1363 use new demuxing support.
 
-8) Lots of interface pinning down so clients can query what they
-are going to get in response to their channel requests.
+ drivers/staging/iio/adc/max1363_core.c     |    4 -
+ drivers/staging/iio/adc/max1363_ring.c     |   27 ++-----
+ drivers/staging/iio/buffer_generic.h       |   15 ++++
+ drivers/staging/iio/iio.h                  |    8 ++
+ drivers/staging/iio/industrialio-buffer.c  |  120 +++++++++++++++++++++++++++-
+ drivers/staging/iio/industrialio-core.c    |   11 +++
+ drivers/staging/iio/industrialio-trigger.c |   12 +++-
+ drivers/staging/iio/kfifo_buf.c            |    9 +--
+ 8 files changed, 168 insertions(+), 38 deletions(-)
 
-So lots of fun to come.  Oh dear.
-
-ps. cc list is drawn from the various threads of the last day or
-so that touch on this. 
-
-p.p.s. I'll probably push the demuxer up stream just as soon
-as the timestamp issue is sorted as it shouldn't break anything
-not explicitly calling it.
+-- 
+1.7.7
