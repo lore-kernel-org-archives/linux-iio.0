@@ -1,24 +1,59 @@
-Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4EA13B32.1020209@cam.ac.uk>
-Date: Fri, 21 Oct 2011 10:28:18 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:38784 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756781Ab1JTQok (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2011 12:44:40 -0400
+Message-ID: <4EA04FFD.9080708@cam.ac.uk>
+Date: Thu, 20 Oct 2011 17:44:45 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: linux-iio@vger.kernel.org, lars@metafoo.de,
- Michael.Hennerich@analog.com, device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH] staging:iio: header reorganization
-References: <4EA13439.8060504@cam.ac.uk> <1319188148-32349-1-git-send-email-jic23@cam.ac.uk> <4EA13782.9050405@cam.ac.uk>
-In-Reply-To: <4EA13782.9050405@cam.ac.uk>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Barry Song <21cnbao@gmail.com>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: Towards a IIO in kernel push interface.
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 10/21/11 10:12, Jonathan Cameron wrote:
-> Oops - forgot to say what this sits on.
-> https://github.com/jic23/linux-iio master branch.
-> 
-> That means it may well clash with a lot of the patches that have
-> gone to Greg over last day or so.
-> 
-I've rebased this and demux branches so all should now be fine.
-For now I've also stuck this patch on top of master
-(and hence at bottom of demux)
+Route plan based on initial messing around today.
+
+
+This will all be in staging for now as no where
+near enough infrastructure is available in the initial
+proposed move out of staging. Right now boring though
+it is, if anyone has review time please look at those
+patches first.
+
+1) We now have basic demux functionality.
+
+2) Need to stop timestamps being special so as to simplify
+code paths.
+
+3) Need to support multiple buffers (again - thought they
+never really worked before).
+
+4) Bring the inkernel pull interfaces across to staging tree (quick)
+
+5) Create pass through buffer type
+
+6) Interfaces for drivers to instantiate such a pass through.
+
+7) Work out stop and restart for other devices changing the
+scan being done.  (fiddly to get right and test).
+
+8) Lots of interface pinning down so clients can query what they
+are going to get in response to their channel requests.
+
+So lots of fun to come.  Oh dear.
+
+ps. cc list is drawn from the various threads of the last day or
+so that touch on this. 
+
+p.p.s. I'll probably push the demuxer up stream just as soon
+as the timestamp issue is sorted as it shouldn't break anything
+not explicitly calling it.
