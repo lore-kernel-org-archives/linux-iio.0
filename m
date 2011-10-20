@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:50862 "EHLO
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:50926 "EHLO
 	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756255Ab1JTJdI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2011 05:33:08 -0400
+	with ESMTP id S1756260Ab1JTJdK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2011 05:33:10 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 Cc: linus.ml.walleij@gmail.com, zdevai@gmail.com,
@@ -12,105 +12,74 @@ Cc: linus.ml.walleij@gmail.com, zdevai@gmail.com,
 	khali@linux-fr.org, thomas.petazzoni@free-electrons.com,
 	maxime.ripard@free-electrons.com,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [RFC V3 PATCH 0/6] IIO in kernel interfaces
-Date: Thu, 20 Oct 2011 10:33:01 +0100
-Message-Id: <1319103187-27791-1-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 6/6] stargate2: example of map configuration for iio to hwmon example.
+Date: Thu, 20 Oct 2011 10:33:07 +0100
+Message-Id: <1319103187-27791-7-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1319103187-27791-1-git-send-email-jic23@cam.ac.uk>
+References: <1319103187-27791-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Since V2:
+Do not commit.
+---
+ arch/arm/mach-pxa/stargate2.c |   23 +++++++++++++++++++++++
+ 1 files changed, 23 insertions(+), 0 deletions(-)
 
-Fixes as per Guenter's comments on the iio_hwmon driver.
-Only one that differred slightly from Guenters suggestion
-is the value calculation where I reordered things to reduce
-the chance of overflow as well as casting to longs.
-Thanks Guenter!
-
-Since V1:
-Uses the bus's list of devices instead of having a local one.
-     (thanks to Lars-Peter).
-
-Added are interfaces for getting all channels mapped to a particular
-device.
-
-Hwmon driver is now vaguely complete - hence cc'd hwmon. If people
-are happy I'd expect this to ultimately end up in drivers/hmwon.
-Right now it is acting as a test driver for these interfaces.
-
-Thanks and all comments welcome. I've added hwmon to the cc list 
-this time round.
-
-V1 message:
-There are obviously some rough corners in here that will need cleaning up.
-For now I've just put this out there to see if anyone radically disagrees
-on the direction.  It sits on top the recent rfc to move first bit of IIO
-out of staging with a few buglets fixed.  Best bet if anyone wants to
-test is to pull from:
-
-https://github.com/jic23/linux-iio/tree/outofstaging
-
-which now also includes these patches.
-
-Intereresting patches are 3 and 4.  5 gives a trivial example of
-a driver using this (hwmon driver that only takes first matching channel
-and sticks it out as in1_input - breaks all sorts elements of the hwmon
-interface spec.)
-
-For now I've gone with Mark Brown's suggestion of a datasheet_name for
-finding the channels on the device.  Patch 2 hacks this name into the
-max1363 driver.  I'll probably put a version matching on channel number and
-type in at a later date.
-
-Here we just have a pull interface.  Push is considerably harder to do
-and needs quite a lot more of the IIO infrastructure to be in place
-(triggers / buffers etc). Events obviously require IIO event handling
-to be there. Hence all of that will have to wait until those elements
-have in of themselves been posted for review.
-
-It is pretty clear to me that hwmon interface for starters needs the
-ability to say - 'give me all mappings that correspond to me'.
-
-This is what I intend to add next followed by some utility functions
-to make it easy to match the hwmon interface.
-
-At that point I'll propose the hwmon driver goes into drivers/hwmon
-(subject to the underlying iio stuff merging).
-
-Fun fun fun.  Thanks to Linus an Mark for their input on this.
-Hope this is roughly what you guys were looking for.
-
-Also on my list to do is to check this very thoroughly for any
-possible race conditions around the removal of the underlying
-device.
-
-Jonathan
-
-Jonathan Cameron (6):
-  IIO: core: add datasheet_name to chan_spec
-  IIO:ADC:max1363 add datasheet_name entries.
-  IIO:CORE: put defs needed by inkern and userspace interfaces into
-    chan_spec.h
-  IIO:CORE add in kernel interface mapping and getting IIO channels.
-  IIO:hwmon interface client driver.
-  stargate2: example of map configuration for iio to hwmon example.
-
- arch/arm/mach-pxa/stargate2.c  |   23 ++++
- drivers/Makefile               |    2 +-
- drivers/iio/Kconfig            |    8 +
- drivers/iio/Makefile           |    2 +
- drivers/iio/adc/max1363_core.c |    4 +-
- drivers/iio/iio.c              |  279 +++++++++++++++++++++++++++++++++++++++-
- drivers/iio/iio_hwmon.c        |  227 ++++++++++++++++++++++++++++++++
- drivers/iio/inkern.c           |   21 +++
- include/linux/iio/chan_spec.h  |   46 +++++++
- include/linux/iio/iio.h        |   41 +-----
- include/linux/iio/inkern.h     |   87 +++++++++++++
- 11 files changed, 700 insertions(+), 40 deletions(-)
- create mode 100644 drivers/iio/iio_hwmon.c
- create mode 100644 drivers/iio/inkern.c
- create mode 100644 include/linux/iio/chan_spec.h
- create mode 100644 include/linux/iio/inkern.h
-
+diff --git a/arch/arm/mach-pxa/stargate2.c b/arch/arm/mach-pxa/stargate2.c
+index 3f8d0af..48dcbb7 100644
+--- a/arch/arm/mach-pxa/stargate2.c
++++ b/arch/arm/mach-pxa/stargate2.c
+@@ -54,6 +54,8 @@
+ #include <linux/mfd/da903x.h>
+ #include <linux/sht15.h>
+ 
++#include <linux/iio/inkern.h>
++
+ #include "devices.h"
+ #include "generic.h"
+ 
+@@ -406,6 +408,24 @@ static struct i2c_pxa_platform_data i2c_pdata = {
+ 	.fast_mode = 1,
+ };
+ 
++static struct platform_device iio_hwmon_test = {
++	.name = "iio_hwmon",
++};
++
++static struct iio_map adc_map[] = {
++	{
++		.adc_dev_name = "0-0035",
++		.adc_channel_label = "AIN1",
++		.consumer_dev = &iio_hwmon_test.dev,
++		.consumer_channel = "testchan1",
++	}, {
++		.adc_dev_name = "0-0035",
++		.adc_channel_label = "AIN2",
++		.consumer_dev = &iio_hwmon_test.dev,
++		.consumer_channel = "testchan2",
++	},
++};
++
+ static void __init imote2_stargate2_init(void)
+ {
+ 
+@@ -423,6 +443,8 @@ static void __init imote2_stargate2_init(void)
+ 
+ 	pxa27x_set_i2c_power_info(&i2c_pwr_pdata);
+ 	pxa_set_i2c_info(&i2c_pdata);
++
++	iio_map_array_register(adc_map, ARRAY_SIZE(adc_map));
+ }
+ 
+ #ifdef CONFIG_MACH_INTELMOTE2
+@@ -971,6 +993,7 @@ static struct platform_device *stargate2_devices[] = {
+ 	&stargate2_sram,
+ 	&smc91x_device,
+ 	&sht15,
++	&iio_hwmon_test,
+ };
+ 
+ static void __init stargate2_init(void)
 -- 
 1.7.7
 
