@@ -1,19 +1,17 @@
 Return-Path: <lars@metafoo.de>
 From: Lars-Peter Clausen <lars@metafoo.de>
-To: Greg Kroah-Hartman <gregkh@suse.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, Michael Hennerich
-	<michael.hennerich@analog.com>, <devel@driverdev.osuosl.org>,
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
 	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
 	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
 Subject: [PATCH] staging:iio:trigger:bfin-timer: Fix compile error
-Date: Thu, 20 Oct 2011 14:38:43 +0200
-Message-ID: <1319114323-13645-1-git-send-email-lars@metafoo.de>
+Date: Thu, 20 Oct 2011 13:38:01 +0200
+Message-ID: <1319110681-29726-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
  drivers/staging/iio/trigger/iio-trig-bfin-timer.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
