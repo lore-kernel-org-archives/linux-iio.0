@@ -1,113 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([88.190.12.23]:59438 "EHLO
+Received: from mail.free-electrons.com ([88.190.12.23]:40070 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756580Ab1JSQTY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2011 12:19:24 -0400
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Patrice Vilchez <patrice.vilchez@atmel.com>
-Subject: [PATCH 3/3] ARM: AT91: Add the ADC to the sam9g20ek board
-Date: Wed, 19 Oct 2011 18:18:54 +0200
-Message-Id: <1319041134-19712-4-git-send-email-maxime.ripard@free-electrons.com>
-In-Reply-To: <1319041134-19712-1-git-send-email-maxime.ripard@free-electrons.com>
+	with ESMTP id S1753807Ab1JTHOZ convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2011 03:14:25 -0400
+Date: Thu, 20 Oct 2011 09:14:16 +0200
+From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	Patrice Vilchez <patrice.vilchez@atmel.com>,
+	Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH 3/3] ARM: AT91: Add the ADC to the sam9g20ek board
+Message-ID: <20111020091416.1e90828c@skate>
+In-Reply-To: <1319041134-19712-4-git-send-email-maxime.ripard@free-electrons.com>
 References: <1319041134-19712-1-git-send-email-maxime.ripard@free-electrons.com>
+	<1319041134-19712-4-git-send-email-maxime.ripard@free-electrons.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
-Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
----
- arch/arm/mach-at91/at91sam9260_devices.c |   44 ++++++++++++++++++++++++++++++
- arch/arm/mach-at91/board-sam9g20ek.c     |   12 ++++++++
- 2 files changed, 56 insertions(+), 0 deletions(-)
+Le Wed, 19 Oct 2011 18:18:54 +0200,
+Maxime Ripard <maxime.ripard@free-electrons.com> a =C3=A9crit :
 
-diff --git a/arch/arm/mach-at91/at91sam9260_devices.c b/arch/arm/mach-at91/at91sam9260_devices.c
-index 39f81f4..4f5e0f9 100644
---- a/arch/arm/mach-at91/at91sam9260_devices.c
-+++ b/arch/arm/mach-at91/at91sam9260_devices.c
-@@ -1312,6 +1312,50 @@ void __init at91_add_device_cf(struct at91_cf_data *data)
- void __init at91_add_device_cf(struct at91_cf_data * data) {}
- #endif
- 
-+/* --------------------------------------------------------------------
-+ *  ADCs
-+ * -------------------------------------------------------------------- */
-+
-+static struct at91_adc_data adc_data;
-+
-+static struct resource adc_resources[] = {
-+	[0] = {
-+		.start	= AT91SAM9260_BASE_ADC,
-+		.end	= AT91SAM9260_BASE_ADC + SZ_16K - 1,
-+		.flags	= IORESOURCE_MEM,
-+	},
-+	[1] = {
-+		.start	= AT91SAM9260_ID_ADC,
-+		.end	= AT91SAM9260_ID_ADC,
-+		.flags	= IORESOURCE_IRQ,
-+	},
-+};
-+
-+static struct platform_device at91_adc_device = {
-+	.name		= "at91adc",
-+	.id		= -1,
-+	.dev		= {
-+				.platform_data		= &adc_data,
-+	},
-+	.resource	= adc_resources,
-+	.num_resources	= ARRAY_SIZE(adc_resources),
-+};
-+
-+void __init at91_add_device_adc(struct at91_adc_data *data)
-+{
-+	if (!data)
-+		return;
-+
-+	at91_set_A_periph(AT91_PIN_PC0, 0);
-+	at91_set_A_periph(AT91_PIN_PC1, 0);
-+	at91_set_A_periph(AT91_PIN_PC2, 0);
-+	at91_set_A_periph(AT91_PIN_PC3, 0);
-+
-+	adc_data = *data;
-+	platform_device_register(&at91_adc_device);
-+}
-+
-+
- /* -------------------------------------------------------------------- */
- /*
-  * These devices are always present and don't need any board-specific
-diff --git a/arch/arm/mach-at91/board-sam9g20ek.c b/arch/arm/mach-at91/board-sam9g20ek.c
-index 817f59d..fd373c3 100644
---- a/arch/arm/mach-at91/board-sam9g20ek.c
-+++ b/arch/arm/mach-at91/board-sam9g20ek.c
-@@ -314,6 +314,16 @@ static void __init ek_add_device_buttons(void)
- static void __init ek_add_device_buttons(void) {}
- #endif
- 
-+/*
-+ * ADCs
-+ */
-+
-+static struct at91_adc_data ek_adc_data = {
-+	.channels = 4,
-+	.adc_clock = 5000000,
-+	.startup_time = 10,
-+};
-+
- #if defined(CONFIG_REGULATOR_FIXED_VOLTAGE) || defined(CONFIG_REGULATOR_FIXED_VOLTAGE_MODULE)
- static struct regulator_consumer_supply ek_audio_consumer_supplies[] = {
- 	REGULATOR_SUPPLY("AVDD", "0-001b"),
-@@ -389,6 +399,8 @@ static void __init ek_board_init(void)
- 	ek_add_device_gpio_leds();
- 	/* Push Buttons */
- 	ek_add_device_buttons();
-+	/* ADCs */
-+	at91_add_device_adc(&ek_adc_data);
- 	/* PCK0 provides MCLK to the WM8731 */
- 	at91_set_B_periph(AT91_PIN_PC1, 0);
- 	/* SSC (for WM8731) */
--- 
-1.7.4.1
+> +void __init at91_add_device_adc(struct at91_adc_data *data)
+> +{
+> +	if (!data)
+> +		return;
+> +
+> +	at91_set_A_periph(AT91_PIN_PC0, 0);
+> +	at91_set_A_periph(AT91_PIN_PC1, 0);
+> +	at91_set_A_periph(AT91_PIN_PC2, 0);
+> +	at91_set_A_periph(AT91_PIN_PC3, 0);
 
+As suggested, the decision of which ADC channels are used and therefore
+which pins should be muxed to function A is a board-specific decision
+and should not be enforced by SoC code.
+
+> +static struct at91_adc_data ek_adc_data =3D {
+> +	.channels =3D 4,
+> +	.adc_clock =3D 5000000,
+> +	.startup_time =3D 10,
+> +};
+
+And on the opposite, those informations are specific to a SoC, not to a
+board. So to avoid duplication in all board files, they should be moved
+to the corresponding SoC file.
+
+Maybe something like:
+
+#define AT91_ADC_MAX_CHANNELS 8
+
+struct at91_adc_data {
+    unsigned int adc_clock;
+    u8 channels_used[AT91_ADC_MAX_CHANNELS];
+    u8 startup_time;
+    u8 channels;
+};
+
+at91_add_device_adc() {
+	if (data->channels_used[0])
+		at91_set_A_periph(AT91_PIN_PC0, 0);
+	if (data->channels_used[1])
+		at91_set_A_periph(AT91_PIN_PC1, 0);
+	if (data->channels_used[2])
+		at91_set_A_periph(AT91_PIN_PC2, 0);
+	if (data->channels_used[3])
+		at91_set_A_periph(AT91_PIN_PC3, 0);
+	data->startup_time =3D ...
+	data->channels =3D ...
+	data->adc_clock =3D ...
+}
+
+and the board file would do:
+
+struct at91_adc_data ek_adc_data =3D {
+	.channels_used =3D { 1, 0, 1, 1 },;
+};
+
+Or maybe others have different suggestions ?
+
+Regards,
+
+Thomas
+--=20
+Thomas Petazzoni, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
