@@ -1,54 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-161.synserver.de ([212.40.185.161]:1066 "EHLO
-	smtp-out-161.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752355Ab1JXI6A (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Oct 2011 04:58:00 -0400
-Message-ID: <4EA528B6.1030300@metafoo.de>
-Date: Mon, 24 Oct 2011 10:58:30 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: linux-iio@vger.kernel.org, michael.hennerich@analog.com,
-	device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH] staging:iio:treewide only use shared to decide on interfaces
-References: <1319211579-14367-1-git-send-email-jic23@cam.ac.uk> <1319211579-14367-2-git-send-email-jic23@cam.ac.uk> <4EA5220A.6010301@metafoo.de> <4EA522D3.9000906@cam.ac.uk>
-In-Reply-To: <4EA522D3.9000906@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:55527 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751325Ab1JUNXs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Oct 2011 09:23:48 -0400
+From: Jonathan Cameron <jic23@cam.ac.uk>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH] staging:iio:light:tsl2563 both intensity channels have same chan_spec.
+Date: Fri, 21 Oct 2011 14:23:51 +0100
+Message-Id: <1319203431-22764-1-git-send-email-jic23@cam.ac.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/24/2011 10:33 AM, Jonathan Cameron wrote:
-> On 10/24/11 09:30, Lars-Peter Clausen wrote:
->> On 10/21/2011 05:39 PM, Jonathan Cameron wrote:
->>> Internally the fact that say scale is shared across channels is
->>> actually of remarkably little interest.  Hence lets not store it.
->>> Numerous devices have weird combinations of channels sharing
->>> scale anyway so it is not as though this was really telling
->>> us much. Note however that we do still use the shared sysfs
->>> attrs thus massively reducing the number of attrs in complex
->>> drivers.
->>>
->>> Side effect is that certain drivers that were abusing this
->>> (mostly my work) needed to do a few more checks on what the
->>> channel they are being queried on actually is.
->>>
->>> This is also helpful for in kernel interfaces where we
->>> just want to query the scale and don't care whether it
->>> is shared with other channels or not.
->>>
->>> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
->>
->> Hi
->>
->> Seems to work. I think it makes sense to submit this one and the other,
->> which removes the bitmask addressing, together. Will you take care of this?
-> Yes.  Might take a few days to hit though as I would guess Greg is going
-> to be busy at the kernel summit.
-> 
-> Are you happy to Ack this patch or if not give a tested-by.
-> Whilst I can push stuff on without review to Greg, I always prefer not to!
-> 
-> Jonathan
+Bug has been fixed for some time in the outofstaging tree, but
+didn't propogate back to here.
 
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/light/tsl2563.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
+index af00d8e..5cee5ca 100644
+--- a/drivers/staging/iio/light/tsl2563.c
++++ b/drivers/staging/iio/light/tsl2563.c
+@@ -545,7 +545,7 @@ static const struct iio_chan_spec tsl2563_channels[] = {
+ 	}, {
+ 		.type = IIO_INTENSITY,
+ 		.modified = 1,
+-		.channel2 = IIO_MOD_LIGHT_BOTH,
++		.channel2 = IIO_MOD_LIGHT_IR,
+ 		.info_mask = (1 << IIO_CHAN_INFO_CALIBSCALE_SEPARATE),
+ 	}
+ };
+-- 
+1.7.7
+
