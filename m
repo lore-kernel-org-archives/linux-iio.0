@@ -2,43 +2,51 @@ Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 0/6] staging:iio: misc fixes
-Date: Mon, 24 Oct 2011 10:43:29 +0100
-Message-Id: <1319449415-23269-1-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 6/6] staging:iio: trigger fixes for repeat request of same trigger and allocation failure
+Date: Mon, 24 Oct 2011 10:43:35 +0100
+Message-Id: <1319449415-23269-7-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1319449415-23269-1-git-send-email-jic23@cam.ac.uk>
+References: <1319449415-23269-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi All,
+Both of these are decidedly silly bugs show up whilst testing
+completely different code paths.
 
-I've just gathered up the fixes sitting in my various trees
-ready to send on.  I have lost track of whether all of these
-have previously been posted for review so this is to make
-sure they all have.  They are all in the github master branch.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/industrialio-trigger.c |   12 +++++++++++-
+ 1 files changed, 11 insertions(+), 1 deletions(-)
 
-I'd like to push these out before the larger changes that
-Lars-Peter and I made at the end of last week.
-
-Thanks,
-
-Jonathan
-
-Jonathan Cameron (5):
-  staging:iio:light:tsl2563 both intensity channels have same
-    chan_spec.
-  staging:iio:triggers Remove unecessary existence checks and return
-    val
-  staging:iio:industrialio-trigger.c Trivial code style brackets fix
-  staging:iio:kfifo remove entirely pointless code.
-  staging:iio: trigger fixes for repeat request of same trigger and
-    allocation failure
-
-Maxin B. John (1):
-  staging:iio:light:tsl2563 missing setting of id in get id function.
-
- drivers/staging/iio/iio_core_trigger.h     |    3 +-
- drivers/staging/iio/industrialio-trigger.c |   34 ++++++++++++++-------------
- drivers/staging/iio/kfifo_buf.c            |    9 +------
- drivers/staging/iio/light/tsl2563.c        |    4 ++-
- 4 files changed, 23 insertions(+), 27 deletions(-)
-
+diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
+index 9412013..20dc8e8 100644
+--- a/drivers/staging/iio/industrialio-trigger.c
++++ b/drivers/staging/iio/industrialio-trigger.c
+@@ -220,8 +220,16 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+ 	ret = request_threaded_irq(pf->irq, pf->h, pf->thread,
+ 				   pf->type, pf->name,
+ 				   pf);
+-	if (trig->ops && trig->ops->set_trigger_state && notinuse)
++	if (ret < 0) {
++		module_put(pf->indio_dev->info->driver_module);
++		return ret;
++	}
++
++	if (trig->ops && trig->ops->set_trigger_state && notinuse) {
+ 		ret = trig->ops->set_trigger_state(trig, true);
++		if (ret < 0)
++			module_put(pf->indio_dev->info->driver_module);
++	}
+ 
+ 	return ret;
+ }
+@@ -334,6 +342,8 @@ static ssize_t iio_trigger_write_current(struct device *dev,
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+ 	trig = iio_trigger_find_by_name(buf, len);
++	if (oldtrig == trig)
++		return len;
+ 
+ 	if (trig && indio_dev->info->validate_trigger) {
+ 		ret = indio_dev->info->validate_trigger(indio_dev, trig);
 -- 
 1.7.7
