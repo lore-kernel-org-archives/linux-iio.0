@@ -1,55 +1,80 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:47865 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754582Ab1JXJna (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Oct 2011 05:43:30 -0400
+Return-Path: <jic23@cam.ac.uk>
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 4/6] staging:iio:industrialio-trigger.c Trivial code style brackets fix
-Date: Mon, 24 Oct 2011 10:43:33 +0100
-Message-Id: <1319449415-23269-5-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 3/6] staging:iio:triggers Remove unecessary existence checks and return val
+Date: Mon, 24 Oct 2011 10:43:32 +0100
+Message-Id: <1319449415-23269-4-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1319449415-23269-1-git-send-email-jic23@cam.ac.uk>
 References: <1319449415-23269-1-git-send-email-jic23@cam.ac.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
+
+Postenable and predisable are called via buffer->ops so  don't
+need to check if buffer exists.
+
+The return value of iio_device_register_trigger_consumer is
+always zero and it isn't checked anyway so get rid of it.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/industrialio-trigger.c |    6 ++----
- 1 files changed, 2 insertions(+), 4 deletions(-)
+ drivers/staging/iio/iio_core_trigger.h     |    3 +--
+ drivers/staging/iio/industrialio-trigger.c |   16 +++++-----------
+ 2 files changed, 6 insertions(+), 13 deletions(-)
 
+diff --git a/drivers/staging/iio/iio_core_trigger.h b/drivers/staging/iio/iio_core_trigger.h
+index 523c288..6f7c56f 100644
+--- a/drivers/staging/iio/iio_core_trigger.h
++++ b/drivers/staging/iio/iio_core_trigger.h
+@@ -13,8 +13,7 @@
+  * iio_device_register_trigger_consumer() - set up an iio_dev to use triggers
+  * @indio_dev: iio_dev associated with the device that will consume the trigger
+  **/
+-
+-int iio_device_register_trigger_consumer(struct iio_dev *indio_dev);
++void iio_device_register_trigger_consumer(struct iio_dev *indio_dev);
+ 
+ /**
+  * iio_device_unregister_trigger_consumer() - reverse the registration process
 diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
-index ca4124a..9412013 100644
+index 2c626e0..ca4124a 100644
 --- a/drivers/staging/iio/industrialio-trigger.c
 +++ b/drivers/staging/iio/industrialio-trigger.c
-@@ -159,13 +159,12 @@ EXPORT_SYMBOL(iio_trigger_generic_data_rdy_poll);
- void iio_trigger_poll_chained(struct iio_trigger *trig, s64 time)
- {
- 	int i;
--	if (!trig->use_count) {
-+	if (!trig->use_count)
- 		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++)
- 			if (trig->subirqs[i].enabled) {
- 				trig->use_count++;
- 				handle_nested_irq(trig->subirq_base + i);
- 			}
--	}
+@@ -473,12 +473,10 @@ void iio_free_trigger(struct iio_trigger *trig)
  }
- EXPORT_SYMBOL(iio_trigger_poll_chained);
+ EXPORT_SYMBOL(iio_free_trigger);
  
-@@ -173,10 +172,9 @@ void iio_trigger_notify_done(struct iio_trigger *trig)
+-int iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
++void iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
  {
- 	trig->use_count--;
- 	if (trig->use_count == 0 && trig->ops && trig->ops->try_reenable)
--		if (trig->ops->try_reenable(trig)) {
-+		if (trig->ops->try_reenable(trig))
- 			/* Missed and interrupt so launch new poll now */
- 			iio_trigger_poll(trig, 0);
--		}
+ 	indio_dev->groups[indio_dev->groupcounter++] =
+ 		&iio_trigger_consumer_attr_group;
+-
+-	return 0;
  }
- EXPORT_SYMBOL(iio_trigger_notify_done);
  
+ void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
+@@ -490,18 +488,14 @@ void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
+ 
+ int iio_triggered_buffer_postenable(struct iio_dev *indio_dev)
+ {
+-	return indio_dev->trig
+-		? iio_trigger_attach_poll_func(indio_dev->trig,
+-					       indio_dev->pollfunc)
+-		: 0;
++	return iio_trigger_attach_poll_func(indio_dev->trig,
++					    indio_dev->pollfunc);
+ }
+ EXPORT_SYMBOL(iio_triggered_buffer_postenable);
+ 
+ int iio_triggered_buffer_predisable(struct iio_dev *indio_dev)
+ {
+-	return indio_dev->trig
+-		? iio_trigger_dettach_poll_func(indio_dev->trig,
+-						indio_dev->pollfunc)
+-		: 0;
++	return iio_trigger_dettach_poll_func(indio_dev->trig,
++					     indio_dev->pollfunc);
+ }
+ EXPORT_SYMBOL(iio_triggered_buffer_predisable);
 -- 
 1.7.7
-
