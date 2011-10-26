@@ -1,53 +1,51 @@
-Return-Path: <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:46253 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933624Ab1JZQ1j (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2011 12:27:39 -0400
 From: Jonathan Cameron <jic23@cam.ac.uk>
 To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 06/10] staging:iio: trigger fixes for repeat request of same trigger and allocation failure
-Date: Wed, 26 Oct 2011 17:27:41 +0100
-Message-Id: <1319646465-2788-7-git-send-email-jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 05/10] staging:iio:kfifo remove entirely pointless code.
+Date: Wed, 26 Oct 2011 17:27:40 +0100
+Message-Id: <1319646465-2788-6-git-send-email-jic23@cam.ac.uk>
 In-Reply-To: <1319646465-2788-1-git-send-email-jic23@cam.ac.uk>
 References: <1319646465-2788-1-git-send-email-jic23@cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Both of these are decidedly silly bugs show up whilst testing
-completely different code paths.
+I really don't want to think about how this bit got
+in there.  It allocates some storage - copies something
+into it then frees it without making use of it.
+Oops.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/industrialio-trigger.c |   12 +++++++++++-
- 1 files changed, 11 insertions(+), 1 deletions(-)
+ drivers/staging/iio/kfifo_buf.c |    9 +--------
+ 1 files changed, 1 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/staging/iio/industrialio-trigger.c b/drivers/staging/iio/industrialio-trigger.c
-index 9412013..20dc8e8 100644
---- a/drivers/staging/iio/industrialio-trigger.c
-+++ b/drivers/staging/iio/industrialio-trigger.c
-@@ -220,8 +220,16 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
- 	ret = request_threaded_irq(pf->irq, pf->h, pf->thread,
- 				   pf->type, pf->name,
- 				   pf);
--	if (trig->ops && trig->ops->set_trigger_state && notinuse)
-+	if (ret < 0) {
-+		module_put(pf->indio_dev->info->driver_module);
-+		return ret;
-+	}
-+
-+	if (trig->ops && trig->ops->set_trigger_state && notinuse) {
- 		ret = trig->ops->set_trigger_state(trig, true);
-+		if (ret < 0)
-+			module_put(pf->indio_dev->info->driver_module);
-+	}
- 
- 	return ret;
+diff --git a/drivers/staging/iio/kfifo_buf.c b/drivers/staging/iio/kfifo_buf.c
+index e8c234b..fd98a0e 100644
+--- a/drivers/staging/iio/kfifo_buf.c
++++ b/drivers/staging/iio/kfifo_buf.c
+@@ -150,16 +150,9 @@ static int iio_store_to_kfifo(struct iio_buffer *r,
+ {
+ 	int ret;
+ 	struct iio_kfifo *kf = iio_to_kfifo(r);
+-	u8 *datal = kmalloc(r->bytes_per_datum, GFP_KERNEL);
+-	memcpy(datal, data, r->bytes_per_datum - sizeof(timestamp));
+-	memcpy(datal + r->bytes_per_datum - sizeof(timestamp),
+-		&timestamp, sizeof(timestamp));
+ 	ret = kfifo_in(&kf->kf, data, r->bytes_per_datum);
+-	if (ret != r->bytes_per_datum) {
+-		kfree(datal);
++	if (ret != r->bytes_per_datum)
+ 		return -EBUSY;
+-	}
+-	kfree(datal);
+ 	return 0;
  }
-@@ -334,6 +342,8 @@ static ssize_t iio_trigger_write_current(struct device *dev,
- 	mutex_unlock(&indio_dev->mlock);
  
- 	trig = iio_trigger_find_by_name(buf, len);
-+	if (oldtrig == trig)
-+		return len;
- 
- 	if (trig && indio_dev->info->validate_trigger) {
- 		ret = indio_dev->info->validate_trigger(indio_dev, trig);
 -- 
 1.7.7
+
