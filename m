@@ -1,55 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-226.synserver.de ([212.40.185.226]:1430 "HELO
+Received: from smtp-out-226.synserver.de ([212.40.185.226]:1082 "HELO
 	smtp-out-225.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with SMTP id S1750943Ab1J0HY5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Oct 2011 03:24:57 -0400
-Message-ID: <4EA90765.6040705@metafoo.de>
-Date: Thu, 27 Oct 2011 09:25:25 +0200
+	by vger.kernel.org with SMTP id S1754934Ab1JZNVV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2011 09:21:21 -0400
+Message-ID: <4EA8094C.7090708@metafoo.de>
+Date: Wed, 26 Oct 2011 15:21:16 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: Michael Hennerich <michael.hennerich@analog.com>,
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	Michael Hennerich <michael.hennerich@analog.com>,
 	linux-iio@vger.kernel.org,
 	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
 Subject: Re: [PATCH 2/2] staging:iio:dac: Add AD5421 driver
-References: <1319630467-6924-1-git-send-email-lars@metafoo.de> <1319630467-6924-2-git-send-email-lars@metafoo.de> <4EA83DB1.60606@cam.ac.uk>
-In-Reply-To: <4EA83DB1.60606@cam.ac.uk>
+References: <1319630467-6924-1-git-send-email-lars@metafoo.de> <1319630467-6924-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1319630467-6924-2-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/26/2011 07:04 PM, Jonathan Cameron wrote:
-> On 10/26/11 13:01, Lars-Peter Clausen wrote:
->> [...]
->> +
->> +static const struct iio_chan_spec ad5421_channels[] = {
->> +	{
->> +		.type = IIO_CURRENT,
->> +		.indexed = 1,
->> +		.output = 1,
->> +		.channel = 0,
->> +		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
->> +			IIO_CHAN_INFO_OFFSET_SHARED_BIT |
->> +			IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
->> +			IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
->> +		.scan_type = IIO_ST('u', 16, 16, 0),
->> +		.event_mask = IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) |
->> +			IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
->> +	},
->> +	{
-> Wasn't the plan to have this set to channel -1 to avoid it appearing?
-> If that doesn't work we should probably make it do so.  At a quick glance
-> I can't see why it wouldn't...
+On 10/26/2011 02:01 PM, Lars-Peter Clausen wrote:
+> This patch adds support for the Analog Devices AD5421 Loop-Powered, 4mA to 20mA
+> DAC.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+> [...]
+>
+>  drivers/staging/iio/events.h     |    3 +-
+>  
+> [...]
+> diff --git a/drivers/staging/iio/events.h b/drivers/staging/iio/events.h
+> index 7cf9306..2b4d2d9 100644
+> --- a/drivers/staging/iio/events.h
+> +++ b/drivers/staging/iio/events.h
+> @@ -56,7 +56,8 @@ enum iio_event_direction {
+>  		       type, chan, chan1, chan2)			\
+>  	(((u64)type << 56) | ((u64)diff << 55) |			\
+>  	 ((u64)direction << 48) | ((u64)modifier << 40) |		\
+> -	 ((u64)chan_type << 32) | (chan2 << 16) | chan1 | chan)
+> +	 ((u64)chan_type << 32) | (((s16)chan2) << 16) | ((s16)chan1) | \
+> +	 ((s16)chan))
+>  
 
-hehe, that was what the hunk at bottom was about. If the binary
-representation of channel is greater than 0xffff it will overwrite other
-fields. I'll resend with a proper fix included in the series.
+Uhm, this was not supposed to be in this patch...
 
->> +		.type = IIO_TEMP,
->> +		.channel = 1,
->> +		.event_mask = IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
->> +	},
->> +};
->> +
-
+>  
+>  #define IIO_EV_DIR_MAX 4
 
