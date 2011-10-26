@@ -1,50 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-226.synserver.de ([212.40.185.226]:1082 "HELO
-	smtp-out-225.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with SMTP id S1754934Ab1JZNVV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2011 09:21:21 -0400
-Message-ID: <4EA8094C.7090708@metafoo.de>
-Date: Wed, 26 Oct 2011 15:21:16 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <greg@kroah.com>
+CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, <jic23@cam.ac.uk>, Michael Hennerich
+	<michael.hennerich@analog.com>
+Subject: [PATCH] iio: adc: ad7280a: Fix memory leak
+Date: Wed, 26 Oct 2011 13:38:18 +0200
+Message-ID: <1319629098-27442-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH 2/2] staging:iio:dac: Add AD5421 driver
-References: <1319630467-6924-1-git-send-email-lars@metafoo.de> <1319630467-6924-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1319630467-6924-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/26/2011 02:01 PM, Lars-Peter Clausen wrote:
-> This patch adds support for the Analog Devices AD5421 Loop-Powered, 4mA to 20mA
-> DAC.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
-> [...]
->
->  drivers/staging/iio/events.h     |    3 +-
->  
-> [...]
-> diff --git a/drivers/staging/iio/events.h b/drivers/staging/iio/events.h
-> index 7cf9306..2b4d2d9 100644
-> --- a/drivers/staging/iio/events.h
-> +++ b/drivers/staging/iio/events.h
-> @@ -56,7 +56,8 @@ enum iio_event_direction {
->  		       type, chan, chan1, chan2)			\
->  	(((u64)type << 56) | ((u64)diff << 55) |			\
->  	 ((u64)direction << 48) | ((u64)modifier << 40) |		\
-> -	 ((u64)chan_type << 32) | (chan2 << 16) | chan1 | chan)
-> +	 ((u64)chan_type << 32) | (((s16)chan2) << 16) | ((s16)chan1) | \
-> +	 ((s16)chan))
->  
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Uhm, this was not supposed to be in this patch...
+Free channels in case read fails with error.
 
->  
->  #define IIO_EV_DIR_MAX 4
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/adc/ad7280a.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index 0c212e0..f45b66b 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -688,7 +688,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ 
+ 	ret = ad7280_read_all_channels(st, st->scan_cnt, channels);
+ 	if (ret < 0)
+-		return IRQ_HANDLED;
++		goto out;
+ 
+ 	for (i = 0; i < st->scan_cnt; i++) {
+ 		if (((channels[i] >> 23) & 0xF) <= AD7280A_CELL_VOLTAGE_6) {
+@@ -731,6 +731,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ 		}
+ 	}
+ 
++out:
+ 	kfree(channels);
+ 
+ 	return IRQ_HANDLED;
+-- 
+1.7.0.4
