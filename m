@@ -9,149 +9,150 @@ Cc: linus.ml.walleij@gmail.com,
 	Michael.Hennerich@analog.com,
 	lars@metafoo.de,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [RFC PATCH 0/7] staging:iio:towards an in kernel push interface
-Date: Wed, 26 Oct 2011 16:54:11 +0100
-Message-Id: <1319644458-30630-1-git-send-email-jic23@cam.ac.uk>
+Subject: [PATCH 7/7] staging:iio:snoop example of rawest level of push interface
+Date: Wed, 26 Oct 2011 16:54:18 +0100
+Message-Id: <1319644458-30630-8-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1319644458-30630-1-git-send-email-jic23@cam.ac.uk>
+References: <1319644458-30630-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi All,
+This is called garbage in it's Kconfig entry for a reason,
+but it shows how things work at the lowest possible level.
 
-Before I say anything else: Note that the interfaces here are a
-mess and no intended to reflect what would go on on the inkernel
-client side.  The current snoop driver is just a hack to test the
-push side works.  I'll wrap this up and make it look all pretty
-once we have pinned the other elements down.
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/Kconfig     |    5 ++
+ drivers/staging/iio/Makefile    |    1 +
+ drivers/staging/iio/iio_snoop.c |   94 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 100 insertions(+), 0 deletions(-)
 
-The following is primarily an RFC rather than a firm proposal due
-to a few things currently not being there.
-
-1) A decent interface.  The snoop driver shows it works but requires
-some pretty low level knowledge of what is going on.
-
-2) A lack of any certainty that I haven't broken 90% of more of
-the drivers.  Hardware buffers for one (sca3000) are going to
-be interesting with this.
-
-3) Locking missing all over the place.
-
-4) No means of doing in kernel trigger configuration at the moment
-so you'll have have to have a trigger set up BEFORE any driver
-tries to insert a buffer for it to feed.
-
-5) Probably want to separate the bits of preenable functions that
-deal with setting up scan modes etc from those that run for each
-buffer.  This is the case with max1363 which uses the update_scan_mode
-callback, but the naming doesn't reflect things well.
-
-6) I've only tested it on the max1363 so far with snoop on in_voltage3_raw
-and the main buffer set to read in_voltage0_raw and in_voltage2_raw.
-A sysfs trigger was used and hammered from a tight loop whilst the
-generic_buffer example was used to read from the iio chrdev.
-This setup works.
-
-So basically, this 'works', but might eat babies in its current form.
-
-What has changed:
-
-Principally the dataflow has become a little more complex
-
-Before we had
- -------      --------       ------------        ---------
-|Trigger|--->|Device 1| --> |Ring or Fifo|  --> |Userspace|
- -------      --------       ------------        ---------
-    |         --------       ------------        ---------
-     ------->|Device 2| --> |Ring or Fifo|  --> |Userspace|
-              --------       ------------        ---------
-
-
-Now we have
- -------    --------      ----------      ------      ---------
-|Trigger|->|Device 1| -> |BufferList| -> |R/Fifo| -> |Userspace|
- -------    --------      ----------      ------      ---------
-    |                          |
-    |         ------           |          -------------------
-     ----->|Device 2| ->        -------> |In Kernel interface|
-              ------                      -------------------
-
-So we have inserted a bufferlist.  If there is nothing in this
-list (initial state) then the poll function is not attached
-so the trigger will not cause this device to push to the buffers.
-
-All buffer pushing from the driver is done through
-iio_push_to_buffers()
-
-Changes to the buffer list are done by calling iio_buffers_update
-which takes a buffer to add or one to remove (or neither).
-
-This function does the following:
-
-1) Tear down current buffering (including detaching the poll function).
-2) Add or remove buffers from the list.
-3) Setup the Demux. As a change to any buffer can result in a change
-   to the active scan mask (that may or may not succeed) all demuxes
-   into the buffers must be updated if they are still attached.
-4) Bring up buffinrg (including attaching the pollfunc).
-
-As you can see form the snoop driver, right now we don't really
-have an interface, drivers can add buffers by setting up the magic
-and inserting them.  Whether we need to be nicer than that isn't
-immediately clear.  Some utility functions would definitely make
-things easier to follow though!
-
-Note that the only overhead on a 'normal' driver over what we had
-before is a lookup into a list with only one entry + a few pointer
-copies. (where normal is without in kernel usage and a scan that
-requires no demux).
-
-All comments welcome.  I'll be away from a few hours time until
-next Monday though so may take me until then to get back to people!
-
-Just thought I'd best show people where things stand before heading
-out.  All in all it was roughly as fiddly to get this working as
-I expected.  It's suprising how many decisions turn out to be wrong
-when you want to add a diversion for your data...
-
-Jonathan Cameron (7):
-  staging:iio:buffer drop bpe field.
-  staging:iio; remove userspace access to bytes per datum.
-  staging:iio:buffer move setup ops from buffer instance to iio_dev
-  staging:iio: scrap scan_count and ensure all drivers use
-    active_scan_mask
-  staging:iio: make all buffer access pass through the buffer_list
-  staging:iio: make update buffers available outside iio.
-  staging:iio:snoop example of rawest level of push interface
-
- drivers/staging/iio/Kconfig                     |    5 +
- drivers/staging/iio/Makefile                    |    1 +
- drivers/staging/iio/accel/adis16201_ring.c      |   29 +-
- drivers/staging/iio/accel/adis16203_ring.c      |   30 +-
- drivers/staging/iio/accel/adis16204_ring.c      |   28 +-
- drivers/staging/iio/accel/adis16209_ring.c      |   23 +-
- drivers/staging/iio/accel/adis16240_ring.c      |   23 +-
- drivers/staging/iio/accel/lis3l02dq_ring.c      |   44 +-
- drivers/staging/iio/accel/sca3000_ring.c        |    4 +-
- drivers/staging/iio/adc/ad7192.c                |   41 +-
- drivers/staging/iio/adc/ad7298_ring.c           |   48 ++-
- drivers/staging/iio/adc/ad7476_ring.c           |   37 +-
- drivers/staging/iio/adc/ad7606_ring.c           |   24 +-
- drivers/staging/iio/adc/ad7793.c                |   45 +-
- drivers/staging/iio/adc/ad7887_ring.c           |   42 +-
- drivers/staging/iio/adc/ad799x_ring.c           |   48 ++-
- drivers/staging/iio/adc/max1363_ring.c          |   22 +-
- drivers/staging/iio/buffer.h                    |   39 +--
- drivers/staging/iio/gyro/adis16260_ring.c       |   26 +-
- drivers/staging/iio/iio.h                       |   18 +
- drivers/staging/iio/iio_simple_dummy_buffer.c   |   29 +-
- drivers/staging/iio/iio_snoop.c                 |   94 ++++
- drivers/staging/iio/impedance-analyzer/ad5933.c |   29 +-
- drivers/staging/iio/imu/adis16400_ring.c        |   24 +-
- drivers/staging/iio/industrialio-buffer.c       |  574 +++++++++++++----------
- drivers/staging/iio/industrialio-core.c         |    1 +
- drivers/staging/iio/kfifo_buf.c                 |    2 -
- drivers/staging/iio/meter/ade7758_ring.c        |   36 +-
- drivers/staging/iio/ring_sw.c                   |    2 -
- 29 files changed, 835 insertions(+), 533 deletions(-)
- create mode 100644 drivers/staging/iio/iio_snoop.c
-
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index ca139fb..f1dbc2c 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -12,6 +12,11 @@ menuconfig IIO
+ 	  drivers/staging/iio/Documentation for more information.
+ if IIO
+ 
++config IIO_SNOOP
++       tristate "dubious hack driver"
++       help
++         Garbage.
++
+ config IIO_ST_HWMON
+        tristate "Hwmon driver that uses channels specified via iio maps"
+        depends on HWMON
+diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
+index d5ca5cf..bd639ed 100644
+--- a/drivers/staging/iio/Makefile
++++ b/drivers/staging/iio/Makefile
+@@ -18,6 +18,7 @@ iio_dummy-$(CONFIG_IIO_SIMPLE_DUMMY_BUFFER) += iio_simple_dummy_buffer.o
+ obj-$(CONFIG_IIO_DUMMY_EVGEN) += iio_dummy_evgen.o
+ 
+ obj-$(CONFIG_IIO_ST_HWMON) += iio_hwmon.o
++obj-$(CONFIG_IIO_SNOOP) += iio_snoop.o
+ 
+ obj-y += accel/
+ obj-y += adc/
+diff --git a/drivers/staging/iio/iio_snoop.c b/drivers/staging/iio/iio_snoop.c
+new file mode 100644
+index 0000000..1f5abdb
+--- /dev/null
++++ b/drivers/staging/iio/iio_snoop.c
+@@ -0,0 +1,94 @@
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/err.h>
++#include <linux/platform_device.h>
++#include "buffer.h"
++#include "inkern.h"
++
++static int iio_snoop_store_to(struct iio_buffer *buffer, u8 *data, s64 timestamp)
++{
++	printk(" snoop %d %d\n", data[0], data[1]);
++	return 0;
++}
++
++static struct iio_buffer_access_funcs iio_snoop_access = {
++	.store_to = &iio_snoop_store_to,
++};
++
++struct iio_snoop_buffer {
++	struct iio_buffer buf;
++};
++
++struct iio_snoop_state {
++	struct iio_channel **channels;
++	struct iio_snoop_buffer buf;
++};
++
++static int __devinit iio_snoop_probe(struct platform_device *pdev)
++{
++	struct iio_snoop_state *st;
++	int ret;
++
++	printk("probing snoop\n");
++	st= kzalloc(sizeof(*st), GFP_KERNEL);
++	if (st == NULL)
++	    return -ENOMEM;
++
++	st->channels = iio_st_channel_get_all(&pdev->dev, NULL);
++	if (IS_ERR(st->channels)) {
++		ret = PTR_ERR(st->channels);
++		goto error_free_state;
++	}
++
++	st->buf.buf.access = &iio_snoop_access;
++	//cheat.
++	st->buf.buf.scan_mask = kzalloc(sizeof(long)*10, GFP_KERNEL);
++	INIT_LIST_HEAD(&st->buf.buf.demux_list);
++	/* naughty ;) */
++	set_bit(3, st->buf.buf.scan_mask);
++
++	platform_set_drvdata(pdev, st);
++	printk("update bufffers\bn");
++	iio_update_buffers(st->channels[0]->indio_dev, &st->buf.buf, NULL);
++
++	return 0;
++error_free_state:
++	kfree(st);
++	return ret;
++}
++
++static int __devexit iio_snoop_remove(struct platform_device *pdev)
++{
++	struct iio_snoop_state *st = platform_get_drvdata(pdev);
++	iio_update_buffers(st->channels[0]->indio_dev, NULL, &st->buf.buf);
++	iio_st_channel_release_all(st->channels);
++
++	kfree(st);
++	return 0;
++}
++
++static struct platform_driver __refdata iio_snoop_driver = {
++	.driver = {
++		.name = "iio_snoop",
++		.owner = THIS_MODULE,
++	},
++	.probe = iio_snoop_probe,
++	.remove = __devexit_p(iio_snoop_remove),
++};
++
++static int iio_snoop_init(void)
++{
++	return platform_driver_register(&iio_snoop_driver);
++}
++module_init(iio_snoop_init);
++
++static void iio_snoop_exit(void)
++{
++	platform_driver_unregister(&iio_snoop_driver);
++}
++module_exit(iio_snoop_exit);
++
++MODULE_AUTHOR("Jonathan Cameron <jic23@cam.ac.uk>");
++MODULE_DESCRIPTION("IIO snoop buffer driver");
++MODULE_LICENSE("GPL v2");
 -- 
 1.7.7
