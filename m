@@ -1,12 +1,11 @@
 Return-Path: <Michael.Hennerich@analog.com>
 From: <michael.hennerich@analog.com>
-To: <greg@kroah.com>
+To: <jic23@cam.ac.uk>
 CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
-	<drivers@analog.com>, <jic23@cam.ac.uk>, Michael Hennerich
-	<michael.hennerich@analog.com>
+	<drivers@analog.com>, Michael Hennerich <michael.hennerich@analog.com>
 Subject: [PATCH] iio: adc: ad7280a: Fix memory leak
-Date: Wed, 26 Oct 2011 13:38:18 +0200
-Message-ID: <1319629098-27442-1-git-send-email-michael.hennerich@analog.com>
+Date: Wed, 26 Oct 2011 13:16:14 +0200
+Message-ID: <1319627774-27278-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
@@ -16,7 +15,6 @@ From: Michael Hennerich <michael.hennerich@analog.com>
 Free channels in case read fails with error.
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
  drivers/staging/iio/adc/ad7280a.c |    3 ++-
  1 files changed, 2 insertions(+), 1 deletions(-)
