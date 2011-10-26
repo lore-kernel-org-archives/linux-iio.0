@@ -1,58 +1,33 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:44250 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932869Ab1JaMWJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Oct 2011 08:22:09 -0400
-Message-ID: <4EAE94E9.3000205@cam.ac.uk>
-Date: Mon, 31 Oct 2011 12:30:33 +0000
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:50823 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932889Ab1JZQsH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2011 12:48:07 -0400
+Received: from arcturus.eng.cam.ac.uk ([129.169.154.73]:48644)
+	by ppsw-52.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.159]:25)
+	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
+	id 1RJ6e6-0004aS-EQ (Exim 4.72) for linux-iio@vger.kernel.org
+	(return-path <jic23@cam.ac.uk>); Wed, 26 Oct 2011 17:48:06 +0100
+Message-ID: <4EA839D0.60401@cam.ac.uk>
+Date: Wed, 26 Oct 2011 17:48:16 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Michael Hennerich <michael.hennerich@analog.com>,
-	linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH 2/3] staging:iio: IIO_EVENT_CODE: Clamp channel numbers
-References: <1319705074-3082-1-git-send-email-lars@metafoo.de> <1319705074-3082-2-git-send-email-lars@metafoo.de> <4EA91E21.8080705@metafoo.de>
-In-Reply-To: <4EA91E21.8080705@metafoo.de>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Tree back on kernel.org
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/27/11 10:02, Lars-Peter Clausen wrote:
-> On 10/27/2011 10:44 AM, Lars-Peter Clausen wrote:
->> Make sure we only use the allotted space for channel numbers in the event mask
->> and do not let them override other fields.
->>
->> Since negative values are valid channel number, cast the channel number to
->> signed when extracting it from an event mask.
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> ---
->>  drivers/staging/iio/events.h |    5 +++--
->>  1 files changed, 3 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/staging/iio/events.h b/drivers/staging/iio/events.h
->> index 7cf9306..fc2b7e5 100644
->> --- a/drivers/staging/iio/events.h
->> +++ b/drivers/staging/iio/events.h
->> @@ -56,7 +56,8 @@ enum iio_event_direction {
->>  		       type, chan, chan1, chan2)			\
->>  	(((u64)type << 56) | ((u64)diff << 55) |			\
->>  	 ((u64)direction << 48) | ((u64)modifier << 40) |		\
->> -	 ((u64)chan_type << 32) | (chan2 << 16) | chan1 | chan)
->> +	 ((u64)chan_type << 32) | (((u16)chan2) << 16) | ((u16)chan1) | \
->> +	 ((u16)chan))
->>  
->>  
->>  #define IIO_EV_DIR_MAX 4
->> @@ -95,7 +96,7 @@ enum iio_event_direction {
->>  
->>  /* Event code number extraction depends on which type of event we have.
->>   * Perhaps review this function in the future*/
->> -#define IIO_EVENT_CODE_EXTRACT_NUM(mask) (mask & 0xFFFF)
->> +#define IIO_EVENT_CODE_EXTRACT_NUM(mask) ((s16)(mask & 0xFFFF))
->>  
-> 
-> Since we want to use it in userspace this should obviously be __s16, sorry.
-> Will fix this before sending the patch on.
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+Hi All,
+
+My IIO tree is back on kernel.org at:
+
+https://git.kernel.org/?p=linux/kernel/git/jic23/iio.git;a=summary
+
+I'm still pushing to github at the moment as well but may start
+not bothering sometime soon.
+
+I'm off on holiday until Monday and will be more or less out of
+touch.
+
+Jonathan
