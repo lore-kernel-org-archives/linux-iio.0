@@ -1,46 +1,51 @@
 Return-Path: <lars@metafoo.de>
-Message-ID: <4EAE9141.60506@metafoo.de>
-Date: Mon, 31 Oct 2011 13:14:57 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
 To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
- "Hennerich, Michael" <Michael.Hennerich@analog.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "device-drivers-devel@blackfin.uclinux.org" <device-drivers-devel@blackfin.uclinux.org>,
- Drivers <Drivers@analog.com>
-Subject: Re: [PATCH v2 3/3] staging:iio:dac: Add AD5421 driver
-References: <1319705074-3082-1-git-send-email-lars@metafoo.de> <1319705074-3082-3-git-send-email-lars@metafoo.de> <4EAE8660.2020604@cam.ac.uk>
-In-Reply-To: <4EAE8660.2020604@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/3] staging:iio: IIO_EVENT_CODE: Clamp channel numbers
+Date: Thu, 27 Oct 2011 10:44:33 +0200
+Message-ID: <1319705074-3082-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1319705074-3082-1-git-send-email-lars@metafoo.de>
+References: <1319705074-3082-1-git-send-email-lars@metafoo.de>
+MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On 10/31/2011 12:28 PM, Jonathan Cameron wrote:
-> On 10/27/11 09:44, Lars-Peter Clausen wrote:
->> This patch adds support for the Analog Devices AD5421 Loop-Powered, 4mA to 20mA
->> DAC.
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> 
-> Feel free to send on to Greg as you've nailed everything I cared about.
-> 
-> I do wonder if we might be better with an explicit 'no_read' flag in the
-> chan_spec for channels like this. That way we could assign more meaningful
-> channel numbers?  Afterall, sooner of later we are going to have something
-> with two temperature sensors that only generate events.
-> 
-> What do you think?
+Make sure we only use the allotted space for channel numbers in the event mask
+and do not let them override other fields.
 
-Makes sense, but I think we can add this when we have to add support for
-such a device.
+Since negative values are valid channel number, cast the channel number to
+signed when extracting it from an event mask.
 
-An alternative would be to make devices explicitly request raw attributes
-through info_mask. But that would require touching all existing drivers again.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/events.h |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
 
-Could you also Ack "staging:iio: IIO_EVENT_CODE: Clamp channel numbers"?
-I'll replace the s16 with __s16 before sending it on to Greg.
-
-
-Thanks
-- Lars
+diff --git a/drivers/staging/iio/events.h b/drivers/staging/iio/events.h
+index 7cf9306..fc2b7e5 100644
+--- a/drivers/staging/iio/events.h
++++ b/drivers/staging/iio/events.h
+@@ -56,7 +56,8 @@ enum iio_event_direction {
+ 		       type, chan, chan1, chan2)			\
+ 	(((u64)type << 56) | ((u64)diff << 55) |			\
+ 	 ((u64)direction << 48) | ((u64)modifier << 40) |		\
+-	 ((u64)chan_type << 32) | (chan2 << 16) | chan1 | chan)
++	 ((u64)chan_type << 32) | (((u16)chan2) << 16) | ((u16)chan1) | \
++	 ((u16)chan))
+ 
+ 
+ #define IIO_EV_DIR_MAX 4
+@@ -95,7 +96,7 @@ enum iio_event_direction {
+ 
+ /* Event code number extraction depends on which type of event we have.
+  * Perhaps review this function in the future*/
+-#define IIO_EVENT_CODE_EXTRACT_NUM(mask) (mask & 0xFFFF)
++#define IIO_EVENT_CODE_EXTRACT_NUM(mask) ((s16)(mask & 0xFFFF))
+ 
+ #define IIO_EVENT_CODE_EXTRACT_MODIFIER(mask) ((mask >> 40) & 0xFF)
+ 
+-- 
+1.7.7
