@@ -1,69 +1,74 @@
-Return-Path: <dan.carpenter@oracle.com>
-Date: Mon, 31 Oct 2011 14:38:20 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: linux-next: build error from iio_simple_dummy_buffer.c
-Message-ID: <20111031113820.GB15494@mwanda>
-References: <20111028112910.GB14881@longonot.mountain>
- <4EAE8574.2050900@cam.ac.uk>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:dac:ad5446: Add support for the AD5662
+Date: Fri, 28 Oct 2011 11:05:21 +0200
+Message-ID: <1319792721-27108-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="XF85m9dhOBO43t/C"
-In-Reply-To: <4EAE8574.2050900@cam.ac.uk>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
+The AD5662 is compatible to the AD5660, but uses an external reference instead
+of an internal.
 
---XF85m9dhOBO43t/C
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/dac/Kconfig  |    2 +-
+ drivers/staging/iio/dac/ad5446.c |    6 ++++++
+ drivers/staging/iio/dac/ad5446.h |    1 +
+ 3 files changed, 8 insertions(+), 1 deletions(-)
 
-On Mon, Oct 31, 2011 at 11:24:36AM +0000, Jonathan Cameron wrote:
-> On 10/28/11 12:29, Dan Carpenter wrote:
-> > I get a compile error in linux-next:
-> >=20
-> >   CC [M]  drivers/staging/iio/iio_simple_dummy_buffer.o
-> >   drivers/staging/iio/iio_simple_dummy_buffer.c: In function =E2=80=98i=
-io_simple_dummy_configure_buffer=E2=80=99:
-> >   drivers/staging/iio/iio_simple_dummy_buffer.c:154:18: error: =E2=80=
-=98THIS_MODULE=E2=80=99 undeclared (first use in this function)
-> >   drivers/staging/iio/iio_simple_dummy_buffer.c:154:18: note: each unde=
-clared identifier is reported only once for each function it appears in
-> >   make[1]: *** [drivers/staging/iio/iio_simple_dummy_buffer.o] Error 1
-> >   make: *** [drivers/staging/iio/iio_simple_dummy_buffer.o] Error 2
-> >=20
-> > We could just include <linux/module.h> I guess?
-> Yup, my bad.  Do you want to do the patch, or shall I do it and
-> credit it to you?
-
-Do no work and collect a Reported-by is always prefered.  :)
-
-thanks,
-dan carpenter
-
-
-
---XF85m9dhOBO43t/C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-
-iQIcBAEBAgAGBQJOroisAAoJEOnZkXI/YHqRXC8P/iDgFDAmr6/OZUl0hB3vgZBR
-1IHMIOQGmtYz3+lg8pvLhtyYx+ixfR1iYStzoppR/pXEfWz/IrXWd+UW3alhRwcJ
-TseKa89+cj409Fr0aByb9esiaukEKhSXuGMzZ6mg4bVSYViCFIrQlLnXUaUHx+f7
-fCdd7e3AKbjB7WUtcHz3xG11MJL8FxoH726ua7Zxpna1sUq3ziBGk0K41s8vFWNg
-Z/orfTO7SnUB/8qgioYljCiB6ZK1HlFrpYNEuaoCEnLCAJexowxHf9yLa9i9hCvN
-RNoqIHgCKoFNJnucitIl/pQUtkg/QcZFueBeJOn0/N0JKDS8iY00lqDMbSAixlRA
-i8HBeft2b1yFChzxO9aPrenH5nUtaFpOpIeyHV9UV13Lhbg9NH7uHlVS43WZG825
-MdaCr4EOeVi7S1BQ+oSupLn5SZtpxypN5CdGwHyod/s5TZ0K6JKQFWBDA/ci2JfO
-7HYpaBWREKggeZZvOY9sfzFx9yEzyZt2tDl87aG2uAeKu0szIrAHUKNH7oN3DrKU
-ZexUZs02oSSBYfqy/qTuKbdW8IJrku2vF8KUQ6aX2AvAExnn4PRfg7cQ9Mb4Mh3C
-FmU//NGnnDPfha6NvBvGfR2QR50zp3ePUqPVbzCYc6a5mHegCPoHMXNZlOOWLsio
-W4tbev8zWBKnPwyKt/vY
-=O5Sd
------END PGP SIGNATURE-----
-
---XF85m9dhOBO43t/C--
+diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
+index fac8549..daa1079 100644
+--- a/drivers/staging/iio/dac/Kconfig
++++ b/drivers/staging/iio/dac/Kconfig
+@@ -37,7 +37,7 @@ config AD5446
+ 	help
+ 	  Say yes here to build support for Analog Devices AD5444, AD5446,
+ 	  AD5512A, AD5542A, AD5543, AD5553, AD5601, AD5611, AD5620, AD5621,
+-	  AD5640, AD5660 DACs.
++	  AD5640, AD5660, AD5662 DACs.
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad5446.
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index 82ac041..3fcb28b 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -264,6 +264,11 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
+ 		.store_sample = ad5660_store_sample,
+ 		.store_pwr_down = ad5660_store_pwr_down,
+ 	},
++	[ID_AD5662] = {
++		.channel = AD5446_CHANNEL(16, 16, 0),
++		.store_sample = ad5660_store_sample,
++		.store_pwr_down = ad5660_store_pwr_down,
++	},
+ };
+ 
+ static int ad5446_read_raw(struct iio_dev *indio_dev,
+@@ -433,6 +438,7 @@ static const struct spi_device_id ad5446_id[] = {
+ 	{"ad5640-1250", ID_AD5640_1250},
+ 	{"ad5660-2500", ID_AD5660_2500},
+ 	{"ad5660-1250", ID_AD5660_1250},
++	{"ad5662", ID_AD5662},
+ 	{}
+ };
+ 
+diff --git a/drivers/staging/iio/dac/ad5446.h b/drivers/staging/iio/dac/ad5446.h
+index 4ea3476..f1ca8fe 100644
+--- a/drivers/staging/iio/dac/ad5446.h
++++ b/drivers/staging/iio/dac/ad5446.h
+@@ -98,6 +98,7 @@ enum ad5446_supported_device_ids {
+ 	ID_AD5640_1250,
+ 	ID_AD5660_2500,
+ 	ID_AD5660_1250,
++	ID_AD5662,
+ };
+ 
+ #endif /* IIO_DAC_AD5446_H_ */
+-- 
+1.7.7
