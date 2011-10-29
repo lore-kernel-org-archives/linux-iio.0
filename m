@@ -1,145 +1,34 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+Return-Path: <dan.carpenter@oracle.com>
+Date: Sat, 29 Oct 2011 10:21:06 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
 To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Device-drivers-devel@blackfin.uclinux.org"
-	<Device-drivers-devel@blackfin.uclinux.org>, "manuel.stahl@iis.fraunhofer.de"
-	<manuel.stahl@iis.fraunhofer.de>
-Date: Mon, 26 Sep 2011 07:56:02 +0100
-Subject: RE: [PATCH 2/4] staging:iio:imu:adis16344 support
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177146E7272AB0@LIMKCMBX1.ad.analog.com>
-References: <1310399887-4049-1-git-send-email-jic23@cam.ac.uk>
- <1310399887-4049-3-git-send-email-jic23@cam.ac.uk>
- <544AC56F16B56944AEC3BD4E3D5917713EA0CD0E5B@LIMKCMBX1.ad.analog.com>
- <4E7C9B9D.3080407@cam.ac.uk>
-In-Reply-To: <4E7C9B9D.3080407@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        kernel-janitors@vger.kernel.org
+Subject: [patch] Staging: iio/dac/ad5360.c: signedness bug in
+ ad5360_read_raw()
+Message-ID: <20111029072106.GD17780@elgon.mountain>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron wrote on 2011-09-23:
-> I know this was a while ago, but I have a feeling I may have made up
-> this part number and it is infact called an adis16334?
->
-> Can anyone shed any light on this?
+ad5360_get_channel_vref() returns an int and scale_uv should be the
+same.  Making it unsigned here breaks the error handling.
 
-Hi Jonathan,
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-ADIS16344 is not a valid part number and I think you meant ADIS16334.
-
--Michael
-
-> Whatever happened, I'll put together a patch changing the naming given
-> it is clearly wrong!
->> Jonathan Cameron wrote on 2011-07-11:
->>> Simple device. Note the sparse scan mask used.
->>>
->>> Done from datasheet as very similar to existing parts.
->>>
->>> Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
->>
->> Acked-by: Michael Hennerich <michael.hennerich@analog.com>
->>
->>> ---
->>>  drivers/staging/iio/imu/adis16400_core.c |   46
->>>  +++++++++++++++++++++++++++++- 1 files changed, 45 insertions(+), 1
->>>  deletions(-)
->>> diff --git a/drivers/staging/iio/imu/adis16400_core.c
->>> b/drivers/staging/iio/imu/adis16400_core.c index 66fc156..f034330
->>> 100644 --- a/drivers/staging/iio/imu/adis16400_core.c +++
->>> b/drivers/staging/iio/imu/adis16400_core.c @@ -35,6 +35,7 @@
->>>
->>>  enum adis16400_chip_variant {        ADIS16300, +    ADIS16344,
-> ADIS16350,
->>>       ADIS16360,      ADIS16362, @@ -458,7 +459,7 @@ static u8
->>>  adis16400_addresses[17][2] =3D {       [temp2] =3D {
-> ADIS16350_ZTEMP_OUT },
->>>       [in1] =3D { ADIS16400_AUX_ADC, 0 },       [incli_x] =3D {
-> ADIS16300_PITCH_OUT,
->>>  0 },
->>> -     [incli_y] =3D { ADIS16300_ROLL_OUT, 0 }
->>> +     [incli_y] =3D { ADIS16300_ROLL_OUT, 0 },
->>>  };
->>>
->>>  static int adis16400_write_raw(struct iio_dev *indio_dev, @@ -690,6
->>>  +691,38 @@ static struct iio_chan_spec adis16300_channels[] =3D {
->>>       IIO_CHAN_SOFT_TIMESTAMP(14) };
->>> +static const struct iio_chan_spec adis16344_channels[] =3D { +
->>> IIO_CHAN(IIO_GYRO, 1, 0, 0, NULL, 0, IIO_MOD_X, + (1 <<
->>> IIO_CHAN_INFO_CALIBBIAS_SEPARATE) | +          (1 <<
->>> IIO_CHAN_INFO_SCALE_SHARED), +                 gyro_x,
->>> ADIS16400_SCAN_GYRO_X, IIO_ST('s', 14, 16, 0), 0), +
->>> IIO_CHAN(IIO_GYRO, 1, 0, 0, NULL, 0, IIO_MOD_Y, +           (1 <<
->>> IIO_CHAN_INFO_CALIBBIAS_SEPARATE) | + (1 <<
->>> IIO_CHAN_INFO_SCALE_SHARED), +                 gyro_y,
->>> ADIS16400_SCAN_GYRO_Y, IIO_ST('s', 14, 16, 0), 0), +
->>> IIO_CHAN(IIO_GYRO, 1, 0, 0, NULL, 0, IIO_MOD_Z, +           (1 <<
->>> IIO_CHAN_INFO_CALIBBIAS_SEPARATE) | + (1 <<
->>> IIO_CHAN_INFO_SCALE_SHARED), +                 gyro_z,
->>> ADIS16400_SCAN_GYRO_Z, IIO_ST('s', 14, 16, 0), 0), +
->>> IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_X, +           (1 <<
->>> IIO_CHAN_INFO_CALIBBIAS_SEPARATE) | + (1 <<
->>> IIO_CHAN_INFO_SCALE_SHARED), +                 accel_x,
->>> ADIS16400_SCAN_ACC_X, IIO_ST('s', 14, 16, 0), 0), +
->>> IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_Y, +           (1 <<
->>> IIO_CHAN_INFO_CALIBBIAS_SEPARATE) | + (1 <<
->>> IIO_CHAN_INFO_SCALE_SHARED), +                 accel_y,
->>> ADIS16400_SCAN_ACC_Y, IIO_ST('s', 14, 16, 0), 0), +
->>> IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_Z, +           (1 <<
->>> IIO_CHAN_INFO_CALIBBIAS_SEPARATE) | + (1 <<
->>> IIO_CHAN_INFO_SCALE_SHARED), +                 accel_z,
->>> ADIS16400_SCAN_ACC_Z, IIO_ST('s', 14, 16, 0), 0), + IIO_CHAN(IIO_TEMP,
->>> 0, 1, 0, NULL, 0, 0, +              (1 <<
->>> IIO_CHAN_INFO_OFFSET_SEPARATE) | + (1 <<
->>> IIO_CHAN_INFO_SCALE_SEPARATE), +               temp0,
->>> ADIS16350_SCAN_TEMP_X, IIO_ST('s', 12, 16, 0), 0), +
->>> IIO_CHAN_SOFT_TIMESTAMP(12) +}; +
->>>  static struct attribute *adis16400_attributes[] =3D {
->>>       &iio_dev_attr_sampling_frequency.dev_attr.attr,
->>>       &iio_const_attr_sampling_frequency_available.dev_attr.attr,
->>> @@ -714,6 +747,16 @@ static struct adis16400_chip_info
->>> adis16400_chips[] =3D {
->>>               (1 << ADIS16300_SCAN_INCLI_X) | (1 <<
-> ADIS16300_SCAN_INCLI_Y) |                 (1
->>>  << 14),      },
->>> +     [ADIS16344] =3D { +             .channels =3D adis16344_channels,=
- +
->>>            .num_channels =3D ARRAY_SIZE(adis16344_channels), +
->>>   .gyro_scale_micro =3D 873, +             .accel_scale_micro =3D 981, =
-+
->>>           .default_scan_mask =3D (1 << ADIS16400_SCAN_GYRO_X) | +
->>>      (1 << ADIS16400_SCAN_GYRO_Y) | (1 << ADIS16400_SCAN_GYRO_Z) | +
->>>           (1 << ADIS16400_SCAN_ACC_X) | (1 << ADIS16400_SCAN_ACC_Y) |
->>> +             (1 << ADIS16400_SCAN_ACC_Z), +     },
->>>       [ADIS16350] =3D {
->>>               .channels =3D adis16350_channels,
->>>               .num_channels =3D ARRAY_SIZE(adis16350_channels), @@ -
-> 869,6
->>> +912,7 @@ err_ret:
->>>
->>> static const struct spi_device_id adis16400_id[] =3D {   {"adis16300",
->>> ADIS16300}, +  {"adis16344", ADIS16344},       {"adis16350",
-> ADIS16350},
->>         {"adis16354", ADIS16350},       {"adis16355", ADIS16350},
->> Greetings,
->> Michael
->>
->> --
->> Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
->> Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-> Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
-> Margaret Seif
->>
->>
->>
->>
->
-
-Greetings,
-Michael
-
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Mar=
-garet Seif
+diff --git a/drivers/staging/iio/dac/ad5360.c b/drivers/staging/iio/dac/ad5360.c
+index 72d0f3f..cfeea72 100644
+--- a/drivers/staging/iio/dac/ad5360.c
++++ b/drivers/staging/iio/dac/ad5360.c
+@@ -371,8 +371,8 @@ static int ad5360_read_raw(struct iio_dev *indio_dev,
+ 			   long m)
+ {
+ 	struct ad5360_state *st = iio_priv(indio_dev);
+-	unsigned long scale_uv;
+ 	unsigned int ofs_index;
++	int scale_uv;
+ 	int ret;
+ 
+ 	switch (m) {
