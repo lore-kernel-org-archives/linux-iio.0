@@ -1,63 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40343 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755755Ab1KGQ1Q (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Nov 2011 11:27:16 -0500
-Message-ID: <4EB806E4.9070408@kernel.org>
-Date: Mon, 07 Nov 2011 16:27:16 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-CC: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Patrice Vilchez <patrice.vilchez@atmel.com>,
-	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Subject: Re: [PATCH 1/3] ARM: AT91: Add platform data for the ADCs
-References: <1319041134-19712-1-git-send-email-maxime.ripard@free-electrons.com> <1320682113-23655-1-git-send-email-maxime.ripard@free-electrons.com> <1320682113-23655-2-git-send-email-maxime.ripard@free-electrons.com>
-In-Reply-To: <1320682113-23655-2-git-send-email-maxime.ripard@free-electrons.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mail.free-electrons.com ([88.190.12.23]:53610 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751346Ab1KCKLZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Nov 2011 06:11:25 -0400
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Patrice Vilchez <patrice.vilchez@atmel.com>
+Subject: [PATCHv2] AT91: Add a driver for the ADC
+Date: Thu,  3 Nov 2011 11:11:07 +0100
+Message-Id: <1320315070-1700-1-git-send-email-maxime.ripard@free-electrons.com>
+In-Reply-To: <1319041134-19712-1-git-send-email-maxime.ripard@free-electrons.com>
+References: <1319041134-19712-1-git-send-email-maxime.ripard@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Looks sensible to me though obviously this is bit is really for the
-at91 lot to comment on.
+Hi all,
 
-On 11/07/2011 04:08 PM, Maxime Ripard wrote:
-> Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-> Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
-> Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-> Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-> ---
->  arch/arm/mach-at91/include/mach/board.h |   18 ++++++++++++++++++
->  1 files changed, 18 insertions(+), 0 deletions(-)
-> 
-> diff --git a/arch/arm/mach-at91/include/mach/board.h b/arch/arm/mach-at91/include/mach/board.h
-> index ed544a0..afdcac0 100644
-> --- a/arch/arm/mach-at91/include/mach/board.h
-> +++ b/arch/arm/mach-at91/include/mach/board.h
-> @@ -207,4 +207,22 @@ extern void __init at91_pwm_leds(struct gpio_led *leds, int nr);
->  /* FIXME: this needs a better location, but gets stuff building again */
->  extern int at91_suspend_entering_slow_clock(void);
->  
-> +/* ADC */
-> +struct at91_adc_data {
-> +	/* ADC Clock as specified by the datasheet, in Hz. */
-> +	unsigned int adc_clock;
-> +	/*
-> +	 * Global number of channels available (to specify which channels are
-> +	 * indeed used on the board, see the channels_used array).
-> +	 */
-> +	u8 num_channels;
-> +	/* Channels in use on the board */
-One nitpick here. You could make it more obvious that this is a mask...
-> +	unsigned long channels_used;
-> +	/* Startup time of the ADC, in microseconds. */
-> +	u8 startup_time;
-> +	/* Reference voltage for the ADC in millivolts */
-> +	unsigned short vref;
-> +};
-> +extern void __init at91_add_device_adc(struct at91_adc_data *data);
-> +
->  #endif
+This patchset adds the driver for the ADC in the AT91 SoC. It has been tested on
+the at91sam9g20ek and should work on sam9g45 as well.
+
+For now, it only reads values when asked for by sysfs, but eventually will
+support hardware triggers and more boards.
+
+This patchset is based on the branch master of Jonathan Cameron present at :
+https://github.com/jic23/linux-iio/, commit 85d8ff8
+
+Improvements since v1:
+  - Rebase on top of commit 85d8ff8
+  - Initialise scan_types
+  - Added scale informations in the driver
+  - Allow to use only a subset of adc channels available on the SoC
+  - Various fix according to reviews
+
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
 
