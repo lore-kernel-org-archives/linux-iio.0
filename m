@@ -16,42 +16,37 @@ Cc: guenter.roeck@ericsson.com,
 	thomas.petazzoni@free-electrons.com,
 	zdevai@gmail.com,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 2/5] IIO:ADC:max1363 add datasheet_name entries.
-Date: Mon,  7 Nov 2011 15:44:38 +0000
-Message-Id: <1320680681-5635-3-git-send-email-jic23@kernel.org>
+Subject: [PATCH 1/5] IIO: core: add datasheet_name to chan_spec
+Date: Mon,  7 Nov 2011 15:44:37 +0000
+Message-Id: <1320680681-5635-2-git-send-email-jic23@kernel.org>
 In-Reply-To: <1320680681-5635-1-git-send-email-jic23@kernel.org>
 References: <1320680681-5635-1-git-send-email-jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Jonathan Cameron <jic23@cam.ac.uk>
 
-Kind of obvious for this device but useful
-for testing purposes.
+This allows for matching against the name given
+on a datasheet, however silly/inconsistent it might
+be.
+
+Useful for in kernel interfaces.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/iio/adc/max1363_core.c |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
+ include/linux/iio/iio.h |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/iio/adc/max1363_core.c b/drivers/iio/adc/max1363_core.c
-index f21ec63..603969b 100644
---- a/drivers/iio/adc/max1363_core.c
-+++ b/drivers/iio/adc/max1363_core.c
-@@ -252,6 +252,7 @@ static const enum max1363_modes max1363_mode_list[] = {
- 		.channel = num,						\
- 		.address = addr,					\
- 		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,		\
-+		.datasheet_name = "AIN"#num				\
- 	}								\
- 
- /* bipolar channel */
-@@ -264,6 +265,7 @@ static const enum max1363_modes max1363_mode_list[] = {
- 		.channel2 = num2,					\
- 		.address = addr,					\
- 		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,		\
-+		.datasheet_name = "AIN"#num"-AIN"#num2			\
- 	}
- 
- 
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 4367d82..36a50b2 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -122,6 +122,7 @@ struct iio_chan_spec {
+ 	} scan_type;
+ 	long                    info_mask;
+ 	char			*extend_name;
++	const char		*datasheet_name;
+ 	unsigned		processed_val:1;
+ 	unsigned		modified:1;
+ 	unsigned		indexed:1;
 -- 
 1.7.7.2
