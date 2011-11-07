@@ -1,43 +1,57 @@
-Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4EBC0418.2040005@cam.ac.uk>
-Date: Thu, 10 Nov 2011 17:04:24 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, guenter.roeck@ericsson.com,
- khali@linux-fr.org, dmitry.torokhov@gmail.com, gregkh@suse.de,
- alan@lxorguk.ukuu.org.uk, arnd@arndb.de, linus.walleij@linaro.org,
- lars@metafoo.de, maxime.ripard@free-electrons.com,
- lm-sensors@lm-sensors.org, thomas.petazzoni@free-electrons.com,
- zdevai@gmail.com
-Subject: Re: [PATCH 3/5] IIO:CORE add in kernel interface mapping and getting
- IIO channels.
-References: <1320680681-5635-1-git-send-email-jic23@kernel.org> <1320680681-5635-4-git-send-email-jic23@kernel.org> <20111110132506.GF3832@opensource.wolfsonmicro.com>
-In-Reply-To: <20111110132506.GF3832@opensource.wolfsonmicro.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <jic23@kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: guenter.roeck@ericsson.com,
+	khali@linux-fr.org,
+	dmitry.torokhov@gmail.com,
+	broonie@opensource.wolfsonmicro.com,
+	gregkh@suse.de,
+	alan@lxorguk.ukuu.org.uk,
+	arnd@arndb.de,
+	linus.walleij@linaro.org,
+	lars@metafoo.de,
+	maxime.ripard@free-electrons.com,
+	lm-sensors@lm-sensors.org,
+	thomas.petazzoni@free-electrons.com,
+	zdevai@gmail.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 2/5] IIO:ADC:max1363 add datasheet_name entries.
+Date: Mon,  7 Nov 2011 15:44:38 +0000
+Message-Id: <1320680681-5635-3-git-send-email-jic23@kernel.org>
+In-Reply-To: <1320680681-5635-1-git-send-email-jic23@kernel.org>
+References: <1320680681-5635-1-git-send-email-jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 11/10/2011 01:25 PM, Mark Brown wrote:
-> On Mon, Nov 07, 2011 at 03:44:39PM +0000, Jonathan Cameron wrote:
->> From: Jonathan Cameron <jic23@cam.ac.uk>
->>
->> Two elements here:
->> * Map as defined in include/linux/iio/inkern.h
->> * Matching code to actually get the iio_dev and channel
->> that we want from the global list of IIO devices.
-> 
-> I've not read it thoroughly but this certainly this looks sensible from
-> an external interface point of view, I'd expect that issues can be
-> worked through incrementally.
-> 
-> Reviewed-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Thanks.
-> 
->> +extern struct list_head iio_map_list;
-> 
-> It's surprising that this is part of the external interface of IIO
-> rather than something hidden within the implementation.
-You are quite correct. I was being lazy and had that one element that
-didn't fit in any headers.  I'lll add a trivial inkern-core.h to handle
-that one bit.
+From: Jonathan Cameron <jic23@cam.ac.uk>
+
+Kind of obvious for this device but useful
+for testing purposes.
+
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/iio/adc/max1363_core.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/iio/adc/max1363_core.c b/drivers/iio/adc/max1363_core.c
+index f21ec63..603969b 100644
+--- a/drivers/iio/adc/max1363_core.c
++++ b/drivers/iio/adc/max1363_core.c
+@@ -252,6 +252,7 @@ static const enum max1363_modes max1363_mode_list[] = {
+ 		.channel = num,						\
+ 		.address = addr,					\
+ 		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,		\
++		.datasheet_name = "AIN"#num				\
+ 	}								\
+ 
+ /* bipolar channel */
+@@ -264,6 +265,7 @@ static const enum max1363_modes max1363_mode_list[] = {
+ 		.channel2 = num2,					\
+ 		.address = addr,					\
+ 		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,		\
++		.datasheet_name = "AIN"#num"-AIN"#num2			\
+ 	}
+ 
+ 
+-- 
+1.7.7.2
