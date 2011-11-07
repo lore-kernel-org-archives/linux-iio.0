@@ -1,94 +1,264 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4EB94ACD.4020708@kernel.org>
-Date: Tue, 08 Nov 2011 15:29:17 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: jic23@cam.ac.uk, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, guenter.roeck@ericsson.com,
- khali@linux-fr.org, dmitry.torokhov@gmail.com,
- broonie@opensource.wolfsonmicro.com, gregkh@suse.de,
- alan@lxorguk.ukuu.org.uk, arnd@arndb.de, linus.walleij@linaro.org,
- maxime.ripard@free-electrons.com
-Subject: Re: [PATCH 0/6 V2] IIO: Out of staging step 1: The core
-References: <1320677563-18378-1-git-send-email-jic23@cam.ac.uk> <4EB92F78.8090200@metafoo.de> <4EB93B61.3030805@kernel.org> <4EB9426A.2040503@metafoo.de>
-In-Reply-To: <4EB9426A.2040503@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <jic23@cam.ac.uk>
+From: jic23@cam.ac.uk
+To: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: guenter.roeck@ericsson.com,
+	khali@linux-fr.org,
+	dmitry.torokhov@gmail.com,
+	broonie@opensource.wolfsonmicro.com,
+	gregkh@suse.de,
+	alan@lxorguk.ukuu.org.uk,
+	arnd@arndb.de,
+	linus.walleij@linaro.org,
+	lars@metafoo.de,
+	maxime.ripard@free-electrons.com,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 6/6] IIO: ABI documetation.
+Date: Mon,  7 Nov 2011 14:52:43 +0000
+Message-Id: <1320677563-18378-7-git-send-email-jic23@cam.ac.uk>
+In-Reply-To: <1320677563-18378-1-git-send-email-jic23@cam.ac.uk>
+References: <1320677563-18378-1-git-send-email-jic23@cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 11/08/2011 02:53 PM, Lars-Peter Clausen wrote:
-> On 11/08/2011 03:23 PM, Jonathan Cameron wrote:
->> On 11/08/2011 01:32 PM, Lars-Peter Clausen wrote:
->>> On 11/07/2011 03:52 PM, jic23@cam.ac.uk wrote:
->>>> From: Jonathan Cameron <jic23@kernel.org>
->>>>
->>>> [...]
->>>> Dear All,
->>>>
->>>> Firstly note that I have pushed ahead of this alongside the ongoing
->>>> discussions on how to handle in kernel interfaces for the devices
->>>> covered by IIO.  I propose to build those on top of this patch
->>>> set and will be working on that support whilst this set is
->>>> under review.
->>>>
->>>> Secondly, this code has some namespace clashes with the staging
->>>> IIO code, so you will need a couple of patches that can be found
->>>> in https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
->>>>
->>>> This is our first attempt to propose moving 'some' of the
->>>> Industrial I/O subsystem out of staging.  This cover letter
->>>> attempts to explain what IIO is and why it is needed.
->>>> All comments welcome on this as well as the code!
->>>
->>>
->>> I don't think moving just part of the IIO core out of staging will work.
->> It's the only option that looks plausible.  We just aren't going to get
->> anyone to review all the code in one go.  The original move into staging
->> was entirely about exposure, rather than code quality (not to say we
->> haven't improved that as well!)  The other thing is that the
->> simple stuff is mature and useful.  The buffering and event side of
->> things is still evolving and hence it may be a while yet before it is
->> stable enough.  (It was mature until the whole in kernel interface stuff
->> came up and lead to a substantial rewrite!)
->>  We
->>> now end up with two competing frameworks for the same purpose which mostly
->>> have the same API. If I for example enable both ST_IIO and IIO at the same
->>> time everything will explode, since both want to register the same device class.
->> True. That would be fixed by a simple namespace move though.  Annoying,
->> but plausible.
-> 
-> Still two almost identical frameworks for the same purpose. The code for the
-> out-of-staging and still-in-staging branches have already started to divert.
-> Having both in the mainline kernel is going to be maintenance hell. People
-> will start sending patches for one, but not the other. I just don't think
-> this will workout well.
-Yes, I agree entirely. It already isn't working that well as I keep
-porting patches between the two.  Intent is to get over this as quickly
-as possible by getting stuff out of staging!  If people add new stuff to
-the staging tree, that is applicable to the non staging one I will be
-shouting at them to do both.  The intent is to keep the two trees close
-enough that driver moves are trivial (when the support is there in the
-non staging tree).
-> 
->>>
->>> In my opinion we should move all of the core interface including events and
->>> buffer support at once. Drivers of course can stay in staging. I guess the
->>> main reason why this code is still in staging is that we don't fell
->>> confident enough about the user-space ABI yet. The overall code quality is
->>> ok and there are no major problems with the internal API.
->> Partly that, and partly that and partly there are controversial elements
->> to be discussed in each of the major parts.  There's a lot of pressure
->> to get 'something' out for the simple drivers now even if we take a
->> while to 'discuss' the other elements.  Hence it needs to happen in
->> chunks from the point of view of review, even if the final pull request
->> will bring over the whole core.
->>
-> 
-> If the core split-up is just for review and is not intended to be merged
-> part-by-part over several kernel releases I don't see a problem.
-The intent is that it should be 'possible' to merge it part by part.
-I'm not against that happening if the more complex stuff doesn't happen
-this cycle.  I'd love it to go quickly, but time as ever is a precious
-resource.
+From: Jonathan Cameron <jic23@cam.ac.uk>
 
-Jonathan
+Elements lifted from staging documentation,
+drivers/staging/iio/Documentation/sysfs-bus-iio
+
+Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ Documentation/ABI/testing/sysfs-bus-iio |  223 +++++++++++++++++++++++++++++++
+ 1 files changed, 223 insertions(+), 0 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+new file mode 100644
+index 0000000..965c7cf
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -0,0 +1,223 @@
++What:		/sys/bus/iio/devices/iio:deviceX
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware chip or device accessed by one communication port.
++		Corresponds to a grouping of sensor channels. X is the IIO
++		index of the device.
++
++What:		/sys/bus/iio/devices/iio:deviceX/name
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Description of the physical chip / device for device X.
++		Typically a part number.
++
++What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Some devices have internal clocks.  This parameter sets the
++		resulting sampling frequency.
++
++What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency_available
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		When the internal sampling clock can only take a small
++		discrete set of values, this file lists those available.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled no bias removal etc) voltage measurement from
++		channel Y. In special cases where the channel does not
++		correspond to externally available input one of the named
++		versions may be used. The number must always be specified and
++		unique to allow association with event codes. Units after
++		application of scale and offset are microvolts.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY-voltageZ_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled) differential voltage measurement equivalent to
++		channel Y - channel Z where these channel numbers apply to the
++		physically equivalent inputs when non differential readings are
++		separately available. In differential only parts, then all that
++		is required is a consistent labeling.  Units after application
++		of scale and offset are microvolts.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_tempX_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_z_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled no bias removal etc) temperature measurement.
++		It an axis is specified it generally means that the temperature
++		sensor is associated with one part of a compound device (e.g.
++		a gyroscope axis). Units after application of scale and offset
++		are milli degrees Celsuis.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Acceleration in direction x, y or z (may be arbitrarily assigned
++		but should match other such assignments on device).
++		Has all of the equivalent parameters as per voltageY. Units
++		after application of scale and offset are m/s^2.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Angular velocity about axis x, y or z (may be arbitrarily
++		assigned) Data converted by application of offset then scale to
++		radians per second. Has all the equivalent parameters as
++		per voltageY. Units after application of scale and offset are
++		radians per second.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_incli_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_incli_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_incli_z_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Inclination raw reading about axis x, y or z (may be
++		arbitrarily assigned). Data converted by application of offset
++		and scale to Degrees.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_raw
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Magnetic field along axis x, y or z (may be arbitrarily
++		assigned).  Data converted by application of offset
++		then scale to Gauss.
++
++What:		/sys/bus/iio/devices/device[n]/illuminance0_input
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This should return the calculated lux from the light sensor.
++		Units are lumens.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensityY_infrared_input
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This property is supported by sensors that have an infrared
++		sensitive element.  Unfortunately this reading is very
++		frequency range dependent and hence tends not to have well
++		defined units.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensityY_both_input
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This property is supported by sensors that have an infrared
++		and visible light sensing element. The visible portion is
++		usually extracted by subtracting the value from a separate
++		infrared only sensor.  Unfortunately this reading is very
++		frequency range dependent and hence tends not to have well
++		defined	units.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If known for a device, offset to be added to <type>[Y]_raw prior
++		to scaling by <type>[Y]_scale in order to obtain value in the
++		<type> units as specified in <type>[y]_raw documentation.
++		Not present if the offset is always 0 or unknown. If Y or
++		axis <x|y|z> is not present, then the offset applies to all
++		in channels of <type>.
++		May be writable if a variable offset can be applied on the
++		device. Note that this is different to calibbias which
++		is for devices (or drivers) that apply offsets to compensate
++		for variation between different instances of the part, typically
++		adjusted by using some hardware supported calibration procedure.
++		Calibbias is applied internally, offset is applied in userspace
++		to the _raw output.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_scale
++What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_scale
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If known for a device, scale to be applied to <type>Y[_name]_raw
++		post addition of <type>[Y][_name]_offset in order to obtain the
++		measured value in <type> units as specified in
++		<type>[Y][_name]_raw documentation..  If shared across all in
++		channels then Y and <x|y|z> are not present and the value is
++		called <type>[Y][_name]_scale. The peak modifier means this
++		value is applied to <type>Y[_name]_peak_raw values.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale_available
++What:		/sys/.../iio:deviceX/in_voltageX_scale_available
++What:		/sys/.../iio:deviceX/in_voltage-voltage_scale_available
++What:		/sys/.../iio:deviceX/out_voltageX_scale_available
++What:		/sys/.../iio:deviceX/in_capacitance_scale_available
++KernelVersion:	2.635
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If a discrete set of scale values are available, they
++		are listed in this attribute.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_calibbias
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_calibbias
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_calibbias
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_x_calibbias
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibbias
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibbias
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware applied calibration offset. (assumed to fix production
++		inaccuracies).
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_x_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibscale
++What:		/sys/.../iio:deviceX/in_intensityY_infrared_calibscale
++What:		/sys/.../iio:deviceX/in_intensityY_both_calibscale
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware applied calibration scale factor. (assumed to fix
++		production inaccuracies).  If shared across all channels,
++		<type>_calibscale is used.
+\ No newline at end of file
+-- 
+1.7.7.2
