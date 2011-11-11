@@ -1,13 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([88.190.12.23]:40570 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752723Ab1KNJHJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Nov 2011 04:07:09 -0500
-Message-ID: <4EC0DA33.2050005@free-electrons.com>
-Date: Mon, 14 Nov 2011 10:06:59 +0100
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48124 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752706Ab1KKMeH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Nov 2011 07:34:07 -0500
+Message-ID: <4EBD163B.7020307@kernel.org>
+Date: Fri, 11 Nov 2011 12:34:03 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
 CC: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
 	Nicolas Ferre <nicolas.ferre@atmel.com>,
 	Patrice Vilchez <patrice.vilchez@atmel.com>,
@@ -20,7 +20,7 @@ Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/11/2011 18:35, Jonathan Cameron wrote:
+On 11/10/2011 05:35 PM, Jonathan Cameron wrote:
 > On 11/09/2011 10:19 AM, Maxime Ripard wrote:
 >> Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
 >> Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
@@ -30,12 +30,7 @@ On 10/11/2011 18:35, Jonathan Cameron wrote:
 > One little comment / query inline.  I'm happy with this either way
 > though.  Beware as you are dependent on a series under review though
 > and it's always possible little things in there might change!
-
-Yes, I know.
-Maybe it would be better if you took this patchset for that reason. I
-guess you have more control over the move out of staging than AT91
-maintaners have.
-
+> 
 >> Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
 > Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
 > 
@@ -151,6 +146,9 @@ maintaners have.
 > and the interrupt indicates that one of the channels has finished.
 > Hence logically this st->done doesn't need to be in the loop.
 > 
+Having had a look at the datasheet, could you just check against the
+whole mask and use the lastdata converted register?  Should under
+current conditions always give you the right thing I think?
 >> +			st->done = true;
 >> +			st->last_value = at91adc_reg_read(st,
 >> +							  AT91_ADC_CHR(chan));
@@ -424,9 +422,3 @@ maintaners have.
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-
--- 
-Maxime Ripard, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
