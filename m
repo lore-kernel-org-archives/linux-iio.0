@@ -1,41 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([88.190.12.23]:53612 "EHLO
+Received: from mail.free-electrons.com ([88.190.12.23]:45477 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753736Ab1KOKX6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2011 05:23:58 -0500
-Message-ID: <4EC23DB6.1040503@free-electrons.com>
-Date: Tue, 15 Nov 2011 11:23:50 +0100
+	with ESMTP id S1755416Ab1KNRbK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Nov 2011 12:31:10 -0500
 From: Maxime Ripard <maxime.ripard@free-electrons.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	Nicolas Ferre <nicolas.ferre@atmel.com>,
+To: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
 	Patrice Vilchez <patrice.vilchez@atmel.com>,
-	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
 	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Subject: Re: [PATCH 2/3] ARM: AT91: IIO: Add AT91 ADC driver.
-References: <1321291857-26277-1-git-send-email-maxime.ripard@free-electrons.com> <1321291857-26277-3-git-send-email-maxime.ripard@free-electrons.com> <4EC188D2.5080706@kernel.org>
-In-Reply-To: <4EC188D2.5080706@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: [PATCH 1/3] ARM: AT91: Add platform data for the ADCs
+Date: Mon, 14 Nov 2011 18:30:55 +0100
+Message-Id: <1321291857-26277-2-git-send-email-maxime.ripard@free-electrons.com>
+In-Reply-To: <1321291857-26277-1-git-send-email-maxime.ripard@free-electrons.com>
+References: <1321291857-26277-1-git-send-email-maxime.ripard@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/11/2011 22:32, Jonathan Cameron wrote:
-> Just one more query on the IIO_CHAN_INFO_SCALE read.
-> Sorry, missed this last time.  Its late so I may be going
-> mad but the units seem out by 1000.
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
+Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
 
-Wow, you're right. Indeed, if you multiply the value returned by
-read_raw and scale, you get a value in millivolts, not micro...
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+---
+ arch/arm/mach-at91/include/mach/board.h |   18 ++++++++++++++++++
+ 1 files changed, 18 insertions(+), 0 deletions(-)
 
-> Also mysterious short as return value type in read_raw.
-
-I will resend a new patchset with these two fixes.
-
-Maxime
-
+diff --git a/arch/arm/mach-at91/include/mach/board.h b/arch/arm/mach-at91/include/mach/board.h
+index ed544a0..4f27797 100644
+--- a/arch/arm/mach-at91/include/mach/board.h
++++ b/arch/arm/mach-at91/include/mach/board.h
+@@ -207,4 +207,22 @@ extern void __init at91_pwm_leds(struct gpio_led *leds, int nr);
+ /* FIXME: this needs a better location, but gets stuff building again */
+ extern int at91_suspend_entering_slow_clock(void);
+ 
++/* ADC */
++struct at91_adc_data {
++	/* ADC Clock as specified by the datasheet, in Hz. */
++	unsigned int adc_clock;
++	/*
++	 * Global number of channels available (to specify which channels are
++	 * indeed used on the board, see the channels_used bitmask).
++	 */
++	u8 num_channels;
++	/* Channels in use on the board as a bitmask */
++	unsigned long channels_used;
++	/* Startup time of the ADC, in microseconds. */
++	u8 startup_time;
++	/* Reference voltage for the ADC in millivolts */
++	unsigned short vref;
++};
++extern void __init at91_add_device_adc(struct at91_adc_data *data);
++
+ #endif
 -- 
-Maxime Ripard, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+1.7.4.1
+
