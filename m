@@ -1,68 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:50578 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932120Ab1KOUbG convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2011 15:31:06 -0500
-References: <1321373655-14359-1-git-send-email-lars@metafoo.de> <4EC2C16B.5040400@kernel.org> <4EC2CB45.8030308@metafoo.de>
-In-Reply-To: <4EC2CB45.8030308@metafoo.de>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Greg Kroah-Hartman <gregkh@suse.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, Michael Hennerich
+	<michael.hennerich@analog.com>, <devel@driverdev.osuosl.org>,
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Dan Carpenter <dan.carpenter@oracle.com>, Lars-Peter
+ Clausen <lars@metafoo.de>
+Subject: [PATCH 1/2] Staging: iio/dac/ad5064.c: signedness bug in ad5064_read_raw()
+Date: Tue, 15 Nov 2011 16:58:13 +0100
+Message-ID: <1321372694-5948-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] staging:iio: Add missing MODULE_DEVICE_TABLE and MODULE_ALIAS
-From: Jonathan Cameron <jic23@cam.ac.uk>
-Date: Tue, 15 Nov 2011 20:30:43 +0000
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: Michael Hennerich <michael.hennerich@analog.com>,
-	linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Message-ID: <2e4edf01-db4b-450f-a3b1-7cce3226de1a@email.android.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
+regulator_get_voltage() returns an int so "scale_uv" should be an
+int.  Making it unsigned here breaks the error handling.
 
-Lars-Peter Clausen <lars@metafoo.de> wrote:
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/dac/ad5064.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
->On 11/15/2011 08:45 PM, Jonathan Cameron wrote:
->> On 11/15/2011 04:14 PM, Lars-Peter Clausen wrote:
->>> Quite a few iio drivers provide no MODULE_DEVICE_TABLE or
->MODULE_ALIAS or only
->>> provide a MODULE_ALIAS while they have support for multiple device
->ids. This
->>> prevents auto module loading from working correctly.
->>>
->> Sensible patch.  I've never chased this down because I'm cynical and
->> tend to specifically load drivers for my devices.  This will have
->> fuzz all over the place, so you may end up rebasing to get it in.
->> I'd like this to happen asap though as things are moderately quiet at
->> the moment!
->
->I'm don't use module auto loading myself that much, but these kind of
->issues
->tend to spread as previous drivers are used as skeletons for new ones.
->
->In regard to the fuzz, I've collected the IIO patches which were sent
->to GregKH
->but haven't been applied yet[1] and based this patch on top of it.
->
->Btw. I see you have a new email address. Which one should we send
->patches too?
-Right now they go to same place anyway so does not matter.
->
->>> This patch fixes it by adding the missing MODULE_DEVICE_TABLEs and
->>> MODULE_ALIAS'.
->>>
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> Acked-by: Jonathan Cameron <jic23@kernel.org>
->
->Thanks
->- Lars
->
->
->[1]
->http://git.metafoo.de/?p=linux-2.6;a=shortlog;h=refs/heads/iio-queue
-
+diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
+index a701063..867e4ab 100644
+--- a/drivers/staging/iio/dac/ad5064.c
++++ b/drivers/staging/iio/dac/ad5064.c
+@@ -280,8 +280,8 @@ static int ad5064_read_raw(struct iio_dev *indio_dev,
+ 			   long m)
+ {
+ 	struct ad5064_state *st = iio_priv(indio_dev);
+-	unsigned long scale_uv;
+ 	unsigned int vref;
++	int scale_uv;
+ 
+ 	switch (m) {
+ 	case 0:
 -- 
-Sent from my Android phone 
-with K-9 Mail. Please excuse my brevity.
+1.7.7.1
