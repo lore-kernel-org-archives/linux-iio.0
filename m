@@ -1,59 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:59634 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751670Ab1KPQNB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 16 Nov 2011 11:13:01 -0500
-Date: Wed, 16 Nov 2011 08:02:06 -0800
-From: Greg KH <gregkh@suse.de>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jean Delvare <khali@linux-fr.org>,
+Received: from zone0.gcu-squad.org ([212.85.147.21]:46721 "EHLO
+	services.gcu-squad.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756043Ab1KPQgh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Nov 2011 11:36:37 -0500
+Date: Wed, 16 Nov 2011 17:36:18 +0100
+From: Jean Delvare <khali@linux-fr.org>
+To: Greg KH <gregkh@suse.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Grant Likely <grant.likely@secretlab.ca>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-i2c@vger.kernel.org, spi-devel-general@lists.sourceforge.net
 Subject: Re: [PATCH 0/5] Generalize module_platform_driver
-Message-ID: <20111116160206.GA27049@suse.de>
+Message-ID: <20111116173618.0a847852@endymion.delvare>
+In-Reply-To: <20111116160206.GA27049@suse.de>
 References: <1321434819-23678-1-git-send-email-lars@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1321434819-23678-1-git-send-email-lars@metafoo.de>
+	<20111116160206.GA27049@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Nov 16, 2011 at 10:13:34AM +0100, Lars-Peter Clausen wrote:
-> Grant Likely recently introduced the module_platform_driver macro which can be
-> used to eliminate a few lines on boilerplate code in platform driver modules.
-> The same approach can be used to do the same for other bus type drivers.
+On Wed, 16 Nov 2011 08:02:06 -0800, Greg KH wrote:
+> On Wed, Nov 16, 2011 at 10:13:34AM +0100, Lars-Peter Clausen wrote:
+> > Grant Likely recently introduced the module_platform_driver macro which can be
+> > used to eliminate a few lines on boilerplate code in platform driver modules.
+> > The same approach can be used to do the same for other bus type drivers.
+> > 
+> > The first patch of this series generalizes the module_platform_driver macro and
+> > introduces the module_driver macro. It is similar to module_platform_driver
+> > macro but has two additional parameters to pass in the driver register and
+> > unregister function. The intend is that this macro is used to construct bus
+> > specific macros for generating the driver register/unregister boilerplate code.
+> > 
+> > The next two patches in this series add the module_i2c_driver and
+> > module_spi_driver macro which use the module_driver macro to generate the I2C
+> > and SPI driver boilerplate code.
+> > 
+> > The last two patches convert the driver found in the IIO framework to use the
+> > new module_i2c_driver and module_spi_driver macros to demonstrate their
+> > potential and remove over 700 lines of code.
+> > 
+> > While this series only introduces these kind of helper macros for I2C and SPI
+> > bus drivers the same scheme should be applicable to most other bus driver types.
+> > For example PCI and USB seem to be good candidates.
+> > 
+> > It probably makes sense to merge the first three patches together. The last two
+> > can probably, since this is not urgent, wait until the first three have reached
+> > mainline.
 > 
-> The first patch of this series generalizes the module_platform_driver macro and
-> introduces the module_driver macro. It is similar to module_platform_driver
-> macro but has two additional parameters to pass in the driver register and
-> unregister function. The intend is that this macro is used to construct bus
-> specific macros for generating the driver register/unregister boilerplate code.
+> Nice, I like this, unless people object, I'll merge the first patch to
+> the driver-core tree.
 > 
-> The next two patches in this series add the module_i2c_driver and
-> module_spi_driver macro which use the module_driver macro to generate the I2C
-> and SPI driver boilerplate code.
-> 
-> The last two patches convert the driver found in the IIO framework to use the
-> new module_i2c_driver and module_spi_driver macros to demonstrate their
-> potential and remove over 700 lines of code.
-> 
-> While this series only introduces these kind of helper macros for I2C and SPI
-> bus drivers the same scheme should be applicable to most other bus driver types.
-> For example PCI and USB seem to be good candidates.
-> 
-> It probably makes sense to merge the first three patches together. The last two
-> can probably, since this is not urgent, wait until the first three have reached
-> mainline.
+> I'll gladly take the i2c and spi patches as well if the subsystem
+> maintainers there don't object, and I'll work on the USB patch as well.
 
-Nice, I like this, unless people object, I'll merge the first patch to
-the driver-core tree.
+No objection from me (for i2c).
 
-I'll gladly take the i2c and spi patches as well if the subsystem
-maintainers there don't object, and I'll work on the USB patch as well.
-
-thanks,
-
-greg k-h
+-- 
+Jean Delvare
