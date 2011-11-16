@@ -1,55 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from opensource.wolfsonmicro.com ([80.75.67.52]:34744 "EHLO
-	opensource.wolfsonmicro.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757113Ab1KPQ4Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Nov 2011 11:56:25 -0500
-Date: Wed, 16 Nov 2011 16:56:22 +0000
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>,
+Received: from smtp-out-055.synserver.de ([212.40.185.55]:1120 "EHLO
+	smtp-out-054.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753528Ab1KPRI2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Nov 2011 12:08:28 -0500
+Message-ID: <4EC3EE32.2090007@metafoo.de>
+Date: Wed, 16 Nov 2011 18:09:06 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Mark Brown <broonie@opensource.wolfsonmicro.com>
+CC: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Michael Hennerich <michael.hennerich@analog.com>,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
 Subject: Re: [PATCH 5/7] regmap: Check if a register is writable instead of
  readable in regcache_read
-Message-ID: <20111116165622.GP29986@opensource.wolfsonmicro.com>
-References: <1321457302-8724-1-git-send-email-lars@metafoo.de>
- <1321457302-8724-5-git-send-email-lars@metafoo.de>
- <20111116161631.GK29986@opensource.wolfsonmicro.com>
- <4EC3E619.70503@metafoo.de>
- <20111116163812.GM29986@opensource.wolfsonmicro.com>
- <4EC3EA61.2000705@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <4EC3EA61.2000705@metafoo.de>
+References: <1321457302-8724-1-git-send-email-lars@metafoo.de> <1321457302-8724-5-git-send-email-lars@metafoo.de> <20111116161631.GK29986@opensource.wolfsonmicro.com> <4EC3E619.70503@metafoo.de> <20111116163812.GM29986@opensource.wolfsonmicro.com> <4EC3EA61.2000705@metafoo.de> <20111116165622.GP29986@opensource.wolfsonmicro.com>
+In-Reply-To: <20111116165622.GP29986@opensource.wolfsonmicro.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Nov 16, 2011 at 05:52:49PM +0100, Lars-Peter Clausen wrote:
-> On 11/16/2011 05:38 PM, Mark Brown wrote:
+On 11/16/2011 05:56 PM, Mark Brown wrote:
+> On Wed, Nov 16, 2011 at 05:52:49PM +0100, Lars-Peter Clausen wrote:
+>> On 11/16/2011 05:38 PM, Mark Brown wrote:
+> 
+>>>> Hm? The use case here is chips which do not support readback. So we never
+>>>> want to fallback to a hardware read but still want to be able to do a cached
+>>>> read.
+> 
+>>> This code will be run on every chip, including chips with read/write
+>>> access.  Caches are useful for all chips.
+> 
+>> Of course. And it still works for chips with read/write support with this
+>> patch, but it doesn't work for chips without read support without this patch.
+> 
+> No, it'll fail if we ever cache volatile registers at startup (which
+> is a perfectly sensible thing to do for things like chip revisions -
+> they're not something we can hard code the default for but they're not
+> going to change at runtime).
+> 
 
-> >> Hm? The use case here is chips which do not support readback. So we never
-> >> want to fallback to a hardware read but still want to be able to do a cached
-> >> read.
+Ah ok, now I get it, you are talking about that this will hypothetical break
+a future patch ;)
 
-> > This code will be run on every chip, including chips with read/write
-> > access.  Caches are useful for all chips.
+>>> If you're looking at the read function and it's checking to see if the
+>>> register is writeable the first thought would be that this is a
+>>> cut'n'paste error.  The above code is at best *way* too cute.
+> 
+>> We can of course add a comment explaining why it is regmap_writable instead
+>> of regmap_readable.
+> 
+> No, really - just do something legible and robust.  For example, teach
+> regmap_readable() about the cache.
 
-> Of course. And it still works for chips with read/write support with this
-> patch, but it doesn't work for chips without read support without this patch.
+Doesn't make much sense. We call regmap_readable from regcache_read, which
+is only called if we use a cache. So if we let regmap_readable return true
+in case we use a cache it will always be true in regcache_read and we can
+drop the check entirely.
 
-No, it'll fail if we ever cache volatile registers at startup (which
-is a perfectly sensible thing to do for things like chip revisions -
-they're not something we can hard code the default for but they're not
-going to change at runtime).
+I'll update the patch to just drop the check.
 
-> > If you're looking at the read function and it's checking to see if the
-> > register is writeable the first thought would be that this is a
-> > cut'n'paste error.  The above code is at best *way* too cute.
-
-> We can of course add a comment explaining why it is regmap_writable instead
-> of regmap_readable.
-
-No, really - just do something legible and robust.  For example, teach
-regmap_readable() about the cache.
