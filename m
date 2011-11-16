@@ -1,32 +1,70 @@
 Return-Path: <lars@metafoo.de>
-Message-ID: <4EC3E3FB.3050305@metafoo.de>
-Date: Wed, 16 Nov 2011 17:25:31 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
+To: Mark Brown <broonie@opensource.wolfsonmicro.com>, Dimitris Papastamos
+	<dp@opensource.wolfsonmicro.com>, Jonathan Cameron <jic23@kernel.org>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>, Lars-Peter
+ Clausen <lars@metafoo.de>
+Subject: [PATCH 2/7] regmap: Make reg_config reg_defaults const
+Date: Wed, 16 Nov 2011 16:28:17 +0100
+Message-ID: <1321457302-8724-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1321457302-8724-1-git-send-email-lars@metafoo.de>
+References: <1321457302-8724-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-CC: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>,
- Jonathan Cameron <jic23@kernel.org>,
- Michael Hennerich <michael.hennerich@analog.com>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH 3/7] regmap: Properly round cache_word_size
-References: <1321457302-8724-1-git-send-email-lars@metafoo.de> <1321457302-8724-3-git-send-email-lars@metafoo.de> <20111116161420.GJ29986@opensource.wolfsonmicro.com>
-In-Reply-To: <20111116161420.GJ29986@opensource.wolfsonmicro.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On 11/16/2011 05:14 PM, Mark Brown wrote:
-> On Wed, Nov 16, 2011 at 04:28:18PM +0100, Lars-Peter Clausen wrote:
-> 
->> +	if (config->val_bits <= 8)
->> +		map->cache_word_size = 1;
->> +	else if (config->val_bits <= 16)
->> +		map->cache_word_size = 2;
->> +	else
->> +		return -EINVAL;
-> 
-> Just do val_bits + 7 if you're going to do this.
+The reg_defaults field usually points to a static per driver array, which should
+not be modified. Make requirement this explicit by making reg_defaults const.
+To allow this the regcache_init code needs some minor changes. Previoulsy the
+reg_config was not available in regcache_init and regmap->reg_defaults was used
+to pass the default register set to regcache_init. Now that the reg_config is
+available we can work on it directly.
 
-This won't work once we add support for a value bit-width of more than 16
-bit. But I can use DIV_ROUND_UP for this patch and we change it once we add
-support for 32 bit cache word size.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/base/regmap/regcache.c |    5 ++---
+ include/linux/regmap.h         |    2 +-
+ 2 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/base/regmap/regcache.c b/drivers/base/regmap/regcache.c
+index 0ad6cfb..d687df6 100644
+--- a/drivers/base/regmap/regcache.c
++++ b/drivers/base/regmap/regcache.c
+@@ -108,7 +108,6 @@ int regcache_init(struct regmap *map, const struct regmap_config *config)
+ 		return -EINVAL;
+ 	}
+ 
+-	map->reg_defaults = config->reg_defaults;
+ 	map->num_reg_defaults = config->num_reg_defaults;
+ 	map->num_reg_defaults_raw = config->num_reg_defaults_raw;
+ 	map->reg_defaults_raw = config->reg_defaults_raw;
+@@ -127,10 +126,10 @@ int regcache_init(struct regmap *map, const struct regmap_config *config)
+ 	 * won't vanish from under us.  We'll need to make
+ 	 * a copy of it.
+ 	 */
+-	if (map->reg_defaults) {
++	if (config->reg_defaults) {
+ 		if (!map->num_reg_defaults)
+ 			return -EINVAL;
+-		tmp_buf = kmemdup(map->reg_defaults, map->num_reg_defaults *
++		tmp_buf = kmemdup(config->reg_defaults, map->num_reg_defaults *
+ 				  sizeof(struct reg_default), GFP_KERNEL);
+ 		if (!tmp_buf)
+ 			return -ENOMEM;
+diff --git a/include/linux/regmap.h b/include/linux/regmap.h
+index 1e4ec2b..458f15f 100644
+--- a/include/linux/regmap.h
++++ b/include/linux/regmap.h
+@@ -83,7 +83,7 @@ struct regmap_config {
+ 	bool (*precious_reg)(struct device *dev, unsigned int reg);
+ 
+ 	unsigned int max_register;
+-	struct reg_default *reg_defaults;
++	const struct reg_default *reg_defaults;
+ 	unsigned int num_reg_defaults;
+ 	enum regcache_type cache_type;
+ 	const void *reg_defaults_raw;
+-- 
+1.7.7.1
