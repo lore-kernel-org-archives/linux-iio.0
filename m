@@ -1,39 +1,52 @@
-Return-Path: <broonie@opensource.wolfsonmicro.com>
-Date: Wed, 16 Nov 2011 17:22:47 +0000
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH 5/7] regmap: Check if a register is writable instead of
- readable in regcache_read
-Message-ID: <20111116172246.GS29986@opensource.wolfsonmicro.com>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Mark Brown <broonie@opensource.wolfsonmicro.com>, Dimitris Papastamos
+	<dp@opensource.wolfsonmicro.com>, Jonathan Cameron <jic23@kernel.org>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>, Lars-Peter
+ Clausen <lars@metafoo.de>
+Subject: [PATCH 4/7] regmap: Try cached read before checking if a hardware read is possible
+Date: Wed, 16 Nov 2011 16:28:19 +0100
+Message-ID: <1321457302-8724-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1321457302-8724-1-git-send-email-lars@metafoo.de>
 References: <1321457302-8724-1-git-send-email-lars@metafoo.de>
- <1321457302-8724-5-git-send-email-lars@metafoo.de>
- <20111116161631.GK29986@opensource.wolfsonmicro.com>
- <4EC3E619.70503@metafoo.de>
- <20111116163812.GM29986@opensource.wolfsonmicro.com>
- <4EC3EA61.2000705@metafoo.de>
- <20111116165622.GP29986@opensource.wolfsonmicro.com>
- <4EC3EE32.2090007@metafoo.de>
- <20111116171213.GR29986@opensource.wolfsonmicro.com>
- <4EC3EFB3.9080205@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <4EC3EFB3.9080205@metafoo.de>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Nov 16, 2011 at 06:15:31PM +0100, Lars-Peter Clausen wrote:
-> On 11/16/2011 06:12 PM, Mark Brown wrote:
+For some register format types we do not provide a parse_val so we can not do a
+hardware read. But a cached read is still possible, so try to read from the
+cache first, before checking whether a hardware read is possible. Otherwise the
+cache becomes pretty useless for these register types.
 
-> > We should at least check that we actually have a cached value there -
-> > the cache is sparse after all.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/base/regmap/regmap.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-> That's what the cache already does today, you recently change the rbtree
-> implementation to return -ENOENT if there is no cached value.
-
-Oh, sorry -  this is in the cache specific code isn't it?  In that case
-yes the check is just totally redundant and can be removed on those
-grounds alone.
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index 3cf4785..b96cf72 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -434,15 +434,15 @@ static int _regmap_read(struct regmap *map, unsigned int reg,
+ {
+ 	int ret;
+ 
+-	if (!map->format.parse_val)
+-		return -EINVAL;
+-
+ 	if (!map->cache_bypass) {
+ 		ret = regcache_read(map, reg, val);
+ 		if (ret == 0)
+ 			return 0;
+ 	}
+ 
++	if (!map->format.parse_val)
++		return -EINVAL;
++
+ 	if (map->cache_only)
+ 		return -EBUSY;
+ 
+-- 
+1.7.7.1
