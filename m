@@ -1,59 +1,102 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([88.190.12.23]:33283 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752188Ab1KRKMw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2011 05:12:52 -0500
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Patrice Vilchez <patrice.vilchez@atmel.com>,
-	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Subject: [PATCH 1/3] ARM: AT91: Add platform data for the ADCs
-Date: Fri, 18 Nov 2011 11:12:38 +0100
-Message-Id: <1321611160-3685-2-git-send-email-maxime.ripard@free-electrons.com>
-In-Reply-To: <1321611160-3685-1-git-send-email-maxime.ripard@free-electrons.com>
-References: <1321611160-3685-1-git-send-email-maxime.ripard@free-electrons.com>
+Received: from am1ehsobe001.messaging.microsoft.com ([213.199.154.204]:14345
+	"EHLO AM1EHSOBE001.bigfish.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751716Ab1KPP3s (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Nov 2011 10:29:48 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	Dimitris Papastamos <dp@opensource.wolfsonmicro.com>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/7] regmap: Move initialization of regcache related fields to regcache_init
+Date: Wed, 16 Nov 2011 16:28:16 +0100
+Message-ID: <1321457302-8724-1-git-send-email-lars@metafoo.de>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
-Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Move the initialization regcache related fields of the regmap struct to
+regcache_init. This allows us to keep regmap and regcache code better
+separated.
 
-Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- arch/arm/mach-at91/include/mach/board.h |   18 ++++++++++++++++++
- 1 files changed, 18 insertions(+), 0 deletions(-)
+ drivers/base/regmap/internal.h |    2 +-
+ drivers/base/regmap/regcache.c |    9 ++++++++-
+ drivers/base/regmap/regmap.c   |    8 +-------
+ 3 files changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/arch/arm/mach-at91/include/mach/board.h b/arch/arm/mach-at91/include/mach/board.h
-index ed544a0..4f27797 100644
---- a/arch/arm/mach-at91/include/mach/board.h
-+++ b/arch/arm/mach-at91/include/mach/board.h
-@@ -207,4 +207,22 @@ extern void __init at91_pwm_leds(struct gpio_led *leds, int nr);
- /* FIXME: this needs a better location, but gets stuff building again */
- extern int at91_suspend_entering_slow_clock(void);
- 
-+/* ADC */
-+struct at91_adc_data {
-+	/* ADC Clock as specified by the datasheet, in Hz. */
-+	unsigned int adc_clock;
-+	/*
-+	 * Global number of channels available (to specify which channels are
-+	 * indeed used on the board, see the channels_used bitmask).
-+	 */
-+	u8 num_channels;
-+	/* Channels in use on the board as a bitmask */
-+	unsigned long channels_used;
-+	/* Startup time of the ADC, in microseconds. */
-+	u8 startup_time;
-+	/* Reference voltage for the ADC in millivolts */
-+	unsigned short vref;
-+};
-+extern void __init at91_add_device_adc(struct at91_adc_data *data);
-+
+diff --git a/drivers/base/regmap/internal.h b/drivers/base/regmap/internal.h
+index 6483e0b..954f7b7 100644
+--- a/drivers/base/regmap/internal.h
++++ b/drivers/base/regmap/internal.h
+@@ -106,7 +106,7 @@ static inline void regmap_debugfs_exit(struct regmap *map) { }
  #endif
+ 
+ /* regcache core declarations */
+-int regcache_init(struct regmap *map);
++int regcache_init(struct regmap *map, const struct regmap_config *config);
+ void regcache_exit(struct regmap *map);
+ int regcache_read(struct regmap *map,
+ 		       unsigned int reg, unsigned int *value);
+diff --git a/drivers/base/regmap/regcache.c b/drivers/base/regmap/regcache.c
+index 27fae58..0ad6cfb 100644
+--- a/drivers/base/regmap/regcache.c
++++ b/drivers/base/regmap/regcache.c
+@@ -87,7 +87,7 @@ err_free:
+ 	return ret;
+ }
+ 
+-int regcache_init(struct regmap *map)
++int regcache_init(struct regmap *map, const struct regmap_config *config)
+ {
+ 	int ret;
+ 	int i;
+@@ -108,6 +108,13 @@ int regcache_init(struct regmap *map)
+ 		return -EINVAL;
+ 	}
+ 
++	map->reg_defaults = config->reg_defaults;
++	map->num_reg_defaults = config->num_reg_defaults;
++	map->num_reg_defaults_raw = config->num_reg_defaults_raw;
++	map->reg_defaults_raw = config->reg_defaults_raw;
++	map->cache_size_raw = (config->val_bits / 8) * config->num_reg_defaults_raw;
++	map->cache_word_size = config->val_bits / 8;
++
+ 	map->cache = NULL;
+ 	map->cache_ops = cache_types[i];
+ 
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index b84ebf9..3cf4785 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -159,12 +159,6 @@ struct regmap *regmap_init(struct device *dev,
+ 	map->volatile_reg = config->volatile_reg;
+ 	map->precious_reg = config->precious_reg;
+ 	map->cache_type = config->cache_type;
+-	map->reg_defaults = config->reg_defaults;
+-	map->num_reg_defaults = config->num_reg_defaults;
+-	map->num_reg_defaults_raw = config->num_reg_defaults_raw;
+-	map->reg_defaults_raw = config->reg_defaults_raw;
+-	map->cache_size_raw = (config->val_bits / 8) * config->num_reg_defaults_raw;
+-	map->cache_word_size = config->val_bits / 8;
+ 
+ 	if (config->read_flag_mask || config->write_flag_mask) {
+ 		map->read_flag_mask = config->read_flag_mask;
+@@ -227,7 +221,7 @@ struct regmap *regmap_init(struct device *dev,
+ 		goto err_map;
+ 	}
+ 
+-	ret = regcache_init(map);
++	ret = regcache_init(map, config);
+ 	if (ret < 0)
+ 		goto err_free_workbuf;
+ 
 -- 
-1.7.4.1
+1.7.7.1
+
 
