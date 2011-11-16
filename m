@@ -1,51 +1,33 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>, Dimitris Papastamos
-	<dp@opensource.wolfsonmicro.com>, Jonathan Cameron <jic23@kernel.org>
-CC: Michael Hennerich <michael.hennerich@analog.com>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>, Lars-Peter
- Clausen <lars@metafoo.de>
-Subject: [PATCH 3/7] regmap: Properly round cache_word_size
-Date: Wed, 16 Nov 2011 16:28:18 +0100
-Message-ID: <1321457302-8724-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1321457302-8724-1-git-send-email-lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from opensource.wolfsonmicro.com ([80.75.67.52]:47966 "EHLO
+	opensource.wolfsonmicro.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752893Ab1KPQOW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Nov 2011 11:14:22 -0500
+Date: Wed, 16 Nov 2011 16:14:21 +0000
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
+Subject: Re: [PATCH 3/7] regmap: Properly round cache_word_size
+Message-ID: <20111116161420.GJ29986@opensource.wolfsonmicro.com>
 References: <1321457302-8724-1-git-send-email-lars@metafoo.de>
+ <1321457302-8724-3-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1321457302-8724-3-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-regcache currently only properly works with val sizes of 8 or 16. For all other
-val sizes it will round them down to the next multiple of 8, which will cause
-the cache to be too small. This patch fixes it by rounding the cache_word_size
-up to the nearest storage size.
+On Wed, Nov 16, 2011 at 04:28:18PM +0100, Lars-Peter Clausen wrote:
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/base/regmap/regcache.c |   11 +++++++++--
- 1 files changed, 9 insertions(+), 2 deletions(-)
+> +	if (config->val_bits <= 8)
+> +		map->cache_word_size = 1;
+> +	else if (config->val_bits <= 16)
+> +		map->cache_word_size = 2;
+> +	else
+> +		return -EINVAL;
 
-diff --git a/drivers/base/regmap/regcache.c b/drivers/base/regmap/regcache.c
-index d687df6..6f0dbc0 100644
---- a/drivers/base/regmap/regcache.c
-+++ b/drivers/base/regmap/regcache.c
-@@ -111,8 +111,15 @@ int regcache_init(struct regmap *map, const struct regmap_config *config)
- 	map->num_reg_defaults = config->num_reg_defaults;
- 	map->num_reg_defaults_raw = config->num_reg_defaults_raw;
- 	map->reg_defaults_raw = config->reg_defaults_raw;
--	map->cache_size_raw = (config->val_bits / 8) * config->num_reg_defaults_raw;
--	map->cache_word_size = config->val_bits / 8;
-+
-+	if (config->val_bits <= 8)
-+		map->cache_word_size = 1;
-+	else if (config->val_bits <= 16)
-+		map->cache_word_size = 2;
-+	else
-+		return -EINVAL;
-+
-+	map->cache_size_raw = map->cache_word_size * config->num_reg_defaults_raw;
- 
- 	map->cache = NULL;
- 	map->cache_ops = cache_types[i];
--- 
-1.7.7.1
+Just do val_bits + 7 if you're going to do this.
