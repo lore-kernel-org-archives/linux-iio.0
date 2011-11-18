@@ -1,42 +1,34 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-Date: 18 Nov 2011 13:15:41 +0000
-From: "J.I. Cameron" <jic23@cam.ac.uk>
-To: "J.I. Cameron" <jic23@cam.ac.uk>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-    Michael Hennerich <michael.hennerich@analog.com>,
-    linux-iio@vger.kernel.org, device-drivers-devel@blackfin.uclinux.org,
-    drivers@analog.com
-Subject: Re: [PATCH] staging:iio:dac: Add AD5380 driver
-Message-ID: <Prayer.1.3.4.1111181315410.15942@hermes-2.csi.cam.ac.uk>
-In-Reply-To: <Prayer.1.3.4.1111181310240.15942@hermes-2.csi.cam.ac.uk>
-References: <1321613695-340-1-git-send-email-lars@metafoo.de>
- <Prayer.1.3.4.1111181310240.15942@hermes-2.csi.cam.ac.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=ISO-8859-1
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([88.190.12.23]:33279 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752188Ab1KRKMv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2011 05:12:51 -0500
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Patrice Vilchez <patrice.vilchez@atmel.com>,
+	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Subject: [PATCH v8] AT91: Add a driver for the ADC
+Date: Fri, 18 Nov 2011 11:12:37 +0100
+Message-Id: <1321611160-3685-1-git-send-email-maxime.ripard@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Nov 18 2011, J.I. Cameron wrote:
+Hi all,
 
->Hi Lars,
->
->My email client is eating all the line feeds, so this will have to be
->out of line with the now unreadable code...
->
->Having reorangised code, is the info_to_reg still worth having?
->
->Otherwise, all looks good (and feel free to just delete the unused?
->entry in that switch).
->
->Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-gah, finger memory, make that jic23@kernel.org
+This patchset adds the driver for the ADC in the AT91 SoC. It has been tested on
+the at91sam9g20ek and should work on sam9g45 as well.
 
-At some point I'll loose control of that email address so am intending
-to move to the kernel.org one for all iio stuff.
->
->
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+For now, it only reads values when asked for by sysfs, but eventually will
+support hardware triggers and more boards.
+
+This patchset is based on the "[PATCH 0/6 V2] IIO: Out of staging step 1: The
+core" patchset from Jonathan Cameron, applied on top of 3.1
+
+Improvements from v7:
+  - Fix the channels mask bug
+
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
+Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+
