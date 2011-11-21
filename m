@@ -1,108 +1,464 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from va3ehsobe005.messaging.microsoft.com ([216.32.180.31]:43696
-	"EHLO VA3EHSOBE005.bigfish.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754651Ab1K3Psy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Nov 2011 10:48:54 -0500
-From: "Getz, Robin" <robin.getz@analog.com>
-To: Alessandro Rubini <rubini@gnudd.com>
-Subject: Re: [Device-drivers-devel] ZIO wiki analysis of IIO and why it doesn't meet there requirements [was Re: Industrial Input Output analysis]
-Date: Wed, 30 Nov 2011 10:47:24 -0500
-CC: "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"greg@kroah.com" <greg@kroah.com>,
-	"federico.vaga@gmail.com" <federico.vaga@gmail.com>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Mark Brown <broonie@opensource.wolfsonmicro.com>
-References: <4ED4D611.7030701@analog.com> <20111129110013.GA27762@mail.gnudd.com> <20111129144449.GA14261@mail.gnudd.com>
-In-Reply-To: <20111129144449.GA14261@mail.gnudd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Message-ID: <201111301047.25521.robin.getz@analog.com>
+Received: from smtp-out-121.synserver.de ([212.40.185.121]:1040 "HELO
+	smtp-out-120.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with SMTP id S1752876Ab1KUIxB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Nov 2011 03:53:01 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Michael Hennerich <michael.hennerich@analog.com>,
+	linux-iio@vger.kernel.org,
+	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:dac: Add AD5764 driver
+Date: Mon, 21 Nov 2011 09:53:35 +0100
+Message-Id: <1321865615-16681-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2011-11-29 15:17:32 GMT Alessandro wrote:
->On 2011-11-29 14:31:11 GMT Lars-Peter wrote:
-> > I just think it's a waste of resources to develop two frameworks
-> > which have more or less the same architecture and serve the same
-> > purpose.
->
-> As I wrote in another message, I agree but not completely.  Shouldn't
-> we try different ideas any now and then? 
+This patch adds support for the Analog Devices AD5764, AD5764R, AD5744, AD5744R
+quad channel analog-to-digital converter.
 
-trying ideas in-kernel is a great idea.
-Changing the userspace ABI isn't.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/dac/Kconfig  |   10 +
+ drivers/staging/iio/dac/Makefile |    1 +
+ drivers/staging/iio/dac/ad5764.c |  394 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 405 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/dac/ad5764.c
 
-> Otherwise we would all be 
-> using comedi.  We have kde and gnome (I have neither), we have git and
-> mercurial, and a zillion other examples.
-
-I think there is a huge difference between different applications in 
-userspace, and different kernel interfaces - creating incompatible userspace 
-applications.
-
-While it was true that there was some overlap in the early iio in staging with 
-other interfaces - I think most of them have been cleaned up, and the 
-duplication has mostly disappeared - I think this was a requirement from 
-Greg, and other subsystem maintainers.
-
-I have been complaining for awhile about the similarities between comedi and 
-iio, and the userspace problem (people wanting to prototype on a desktop with 
-a PCIe card with comedi, are going to need to re-write their entire 
-application when moving to an embedded target) - but have not had the time to 
-contribute anything to solve the problem.
-
-Using the IIO/Comedi overlap as justification to make a third subsystem which 
-overlaps both.... I'm not sure I follow the logic.
-
-On 2011-11-29 18:05:53 GMT, Mark Brown pointed out:
->It's also problematic for driver authors if we end up having to work
->with two separate frameworks that fulfil the same function depending on
->which application users end up using.
-
-Which I think sums up my big concern.
-
-
-> > But I'm pretty optimistic that there is nothing in IIO which
-> > prevents me from getting the right solution in place.
->
-> No, definitely. We'll keep our eyes open on the project, maybe the
-> final choice will be IIO for our use case, but it's too early to know.
-
-No one is saying that the points you make about IIO aren't valid, or that ZIO 
-isn't going to work -- what I think everyone is saying - is let's talk about 
-things, and determine what the end user needs are, and what the best solution 
-is (It's not like in kernel subsystems don't get re-written over time, but 
-the kernel/userspace ABI needs to be stable).
-
-I think all anyone is saying is please give us more feedback, and stay 
-involved.
-
-> but currently our abstraction is much simpler to use. 
-
-I don't think that IIO is complicated - but it might be. It's easy to say that 
-when you are familiar with something. I'm sure that the documentation needs 
-more work - if you want to point out the sections that aren't clear - let us 
-know.
-
-It also could be that ZIO doesn't handle the end user cases which created the 
-need for the "complication" in the API... It's difficult to say without more 
-details.
-
->I think we'll knock for feedback again when we have some drivers 
->and some performance figures, meanwhile we'll continue developing in 
->the zio list, keeping an eye on iio.
-
-I think that's OK - but again - it would be good for everyone here to better 
-understand your use cases - so when we are working on our AD9739A 2.4 GSPS 
-DAC IIO driver, we can try to make sure that we incorporate what you are 
-looking for.
-
-The hardware (PCB) description, and HDL only solution is here:
-http://wiki.analog.com/resources/fpga/xilinx/fmc/ad9739a
-we are just waiting for production hardware to show up to start on the IIO 
-side...
-
--Robin
+diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
+index 0e8a814..bbc33dd 100644
+--- a/drivers/staging/iio/dac/Kconfig
++++ b/drivers/staging/iio/dac/Kconfig
+@@ -75,6 +75,16 @@ config AD5504
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad5504.
+ 
++config AD5764
++	tristate "Analog Devices AD5764/64R/44/44R DAC driver"
++	depends on SPI_MASTER
++	help
++	  Say yes here to build support for Analog Devices AD5764, AD5764R, AD5744,
++	  AD5744R Digital to Analog Converter.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad5764.
++
+ config AD5791
+ 	tristate "Analog Devices AD5760/AD5780/AD5781/AD5791 DAC SPI driver"
+ 	depends on SPI
+diff --git a/drivers/staging/iio/dac/Makefile b/drivers/staging/iio/dac/Makefile
+index 840e94e..8ab1d26 100644
+--- a/drivers/staging/iio/dac/Makefile
++++ b/drivers/staging/iio/dac/Makefile
+@@ -9,6 +9,7 @@ obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
+ obj-$(CONFIG_AD5064) += ad5064.o
+ obj-$(CONFIG_AD5504) += ad5504.o
+ obj-$(CONFIG_AD5446) += ad5446.o
++obj-$(CONFIG_AD5764) += ad5764.o
+ obj-$(CONFIG_AD5791) += ad5791.o
+ obj-$(CONFIG_AD5686) += ad5686.o
+ obj-$(CONFIG_MAX517) += max517.o
+diff --git a/drivers/staging/iio/dac/ad5764.c b/drivers/staging/iio/dac/ad5764.c
+new file mode 100644
+index 0000000..50c1ec62
+--- /dev/null
++++ b/drivers/staging/iio/dac/ad5764.c
+@@ -0,0 +1,394 @@
++/*
++ * Analog devices AD5764, AD5764R, AD5744, AD5744R quad-channel
++ * Digital to Analog Converters driver
++ *
++ * Copyright 2011 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/spi/spi.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/regulator/consumer.h>
++
++#include "../iio.h"
++#include "../sysfs.h"
++#include "dac.h"
++
++#define AD5764_REG_SF_NOP			0x0
++#define AD5764_REG_SF_CONFIG			0x1
++#define AD5764_REG_SF_CLEAR			0x4
++#define AD5764_REG_SF_LOAD			0x5
++#define AD5764_REG_DATA(x)			((2 << 3) | (x))
++#define AD5764_REG_COARSE_GAIN(x)		((3 << 3) | (x))
++#define AD5764_REG_FINE_GAIN(x)			((4 << 3) | (x))
++#define AD5764_REG_OFFSET(x)			((5 << 3) | (x))
++
++#define AD5764_NUM_CHANNELS 4
++
++/**
++ * struct ad5764_chip_info - chip specific information
++ * @int_vref:	Value of the internal reference voltage in uV - 0 if external
++ *		reference voltage is used
++ * @channel	channel specification
++*/
++
++struct ad5764_chip_info {
++	unsigned long int_vref;
++	const struct iio_chan_spec *channels;
++};
++
++/**
++ * struct ad5764_state - driver instance specific data
++ * @spi:		spi_device
++ * @chip_info:		chip info
++ * @vref_reg:		vref supply regulators
++ * @data:		spi transfer buffers
++ */
++
++struct ad5764_state {
++	struct spi_device		*spi;
++	const struct ad5764_chip_info	*chip_info;
++	struct regulator_bulk_data	vref_reg[2];
++
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++	union {
++		__be32 d32;
++		u8 d8[4];
++	} data[2] ____cacheline_aligned;
++};
++
++enum ad5764_type {
++	ID_AD5744,
++	ID_AD5744R,
++	ID_AD5764,
++	ID_AD5764R,
++};
++
++#define AD5764_CHANNEL(_chan, _bits) {				\
++	.type = IIO_VOLTAGE,					\
++	.indexed = 1,						\
++	.output = 1,						\
++	.channel = (_chan),					\
++	.address = (_chan),					\
++	.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |		\
++		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
++	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits))	\
++}
++
++#define DECLARE_AD5764_CHANNELS(_name, _bits) \
++const struct iio_chan_spec _name##_channels[] = { \
++	AD5764_CHANNEL(0, (_bits)), \
++	AD5764_CHANNEL(1, (_bits)), \
++	AD5764_CHANNEL(2, (_bits)), \
++	AD5764_CHANNEL(3, (_bits)), \
++};
++
++static DECLARE_AD5764_CHANNELS(ad5764, 16);
++static DECLARE_AD5764_CHANNELS(ad5744, 14);
++
++static const struct ad5764_chip_info ad5764_chip_infos[] = {
++	[ID_AD5744] = {
++		.int_vref = 0,
++		.channels = ad5744_channels,
++	},
++	[ID_AD5744R] = {
++		.int_vref = 5000000,
++		.channels = ad5744_channels,
++	},
++	[ID_AD5764] = {
++		.int_vref = 0,
++		.channels = ad5764_channels,
++	},
++	[ID_AD5764R] = {
++		.int_vref = 5000000,
++		.channels = ad5764_channels,
++	},
++};
++
++static int ad5764_write(struct iio_dev *indio_dev, unsigned int reg,
++	unsigned int val)
++{
++	struct ad5764_state *st = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&indio_dev->mlock);
++	st->data[0].d32 = cpu_to_be32((reg << 16) | val);
++
++	ret = spi_write(st->spi, &st->data[0].d8[1], 3);
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static int ad5764_read(struct iio_dev *indio_dev, unsigned int reg,
++	unsigned int *val)
++{
++	struct ad5764_state *st = iio_priv(indio_dev);
++	struct spi_message m;
++	int ret;
++	struct spi_transfer t[] = {
++		{
++			.tx_buf = &st->data[0].d8[1],
++			.len = 3,
++			.cs_change = 1,
++		}, {
++			.rx_buf = &st->data[1].d8[1],
++			.len = 3,
++		},
++	};
++
++	spi_message_init(&m);
++	spi_message_add_tail(&t[0], &m);
++	spi_message_add_tail(&t[1], &m);
++
++	mutex_lock(&indio_dev->mlock);
++
++	st->data[0].d32 = cpu_to_be32((1 << 23) | (reg << 16));
++
++	ret = spi_sync(st->spi, &m);
++	if (ret >= 0)
++		*val = be32_to_cpu(st->data[1].d32) & 0xffff;
++
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static int ad5764_chan_info_to_reg(struct iio_chan_spec const *chan, long info)
++{
++	switch (info) {
++	case 0:
++		return AD5764_REG_DATA(chan->address);
++	case IIO_CHAN_INFO_CALIBBIAS:
++		return AD5764_REG_OFFSET(chan->address);
++	case IIO_CHAN_INFO_CALIBSCALE:
++		return AD5764_REG_FINE_GAIN(chan->address);
++	default:
++		BUG();
++		break;
++	}
++
++	return 0;
++}
++
++static int ad5764_write_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int val, int val2, long info)
++{
++	const int max_val = (1 << chan->scan_type.realbits);
++	unsigned int reg;
++
++	switch (info) {
++	case 0:
++		if (val >= max_val || val < 0)
++			return -EINVAL;
++		val <<= chan->scan_type.shift;
++		break;
++	case IIO_CHAN_INFO_CALIBBIAS:
++		if (val >= 128 || val < -128)
++			return -EINVAL;
++		break;
++	case IIO_CHAN_INFO_CALIBSCALE:
++		if (val >= 32 || val < -32)
++			return -EINVAL;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	reg = ad5764_chan_info_to_reg(chan, info);
++	return ad5764_write(indio_dev, reg, (u16)val);
++}
++
++static int ad5764_get_channel_vref(struct ad5764_state *st,
++	unsigned int channel)
++{
++	if (st->chip_info->int_vref)
++		return st->chip_info->int_vref;
++	else
++		return regulator_get_voltage(st->vref_reg[channel / 2].consumer);
++}
++
++static int ad5764_read_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int *val, int *val2, long info)
++{
++	struct ad5764_state *st = iio_priv(indio_dev);
++	unsigned long scale_uv;
++	unsigned int reg;
++	int vref;
++	int ret;
++
++	switch (info) {
++	case 0:
++		reg = AD5764_REG_DATA(chan->address);
++		ret = ad5764_read(indio_dev, reg, val);
++		if (ret < 0)
++			return ret;
++		*val >>= chan->scan_type.shift;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_CALIBBIAS:
++		reg = AD5764_REG_OFFSET(chan->address);
++		ret = ad5764_read(indio_dev, reg, val);
++		if (ret < 0)
++			return ret;
++		*val = sign_extend32(*val, 7);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_CALIBSCALE:
++		reg = AD5764_REG_FINE_GAIN(chan->address);
++		ret = ad5764_read(indio_dev, reg, val);
++		if (ret < 0)
++			return ret;
++		*val = sign_extend32(*val, 5);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		/* vout = 4 * vref + ((dac_code / 65535) - 0.5) */
++		vref = ad5764_get_channel_vref(st, chan->channel);
++		if (vref < 0)
++			return vref;
++
++		scale_uv = (vref * 4 * 100) >> chan->scan_type.realbits;
++		*val = scale_uv / 100000;
++		*val2 = (scale_uv % 100000) * 10;
++		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_OFFSET:
++		*val = -(1 << chan->scan_type.realbits) / 2;
++		return IIO_VAL_INT;
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info ad5764_info = {
++	.read_raw = ad5764_read_raw,
++	.write_raw = ad5764_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int __devinit ad5764_probe(struct spi_device *spi)
++{
++	enum ad5764_type type = spi_get_device_id(spi)->driver_data;
++	struct iio_dev *indio_dev;
++	struct ad5764_state *st;
++	int ret;
++
++	indio_dev = iio_allocate_device(sizeof(*st));
++	if (indio_dev == NULL) {
++		dev_err(&spi->dev, "Failed to allocate iio device\n");
++		return -ENOMEM;
++	}
++
++	st = iio_priv(indio_dev);
++	spi_set_drvdata(spi, indio_dev);
++
++	st->spi = spi;
++	st->chip_info = &ad5764_chip_infos[type];
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->info = &ad5764_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->num_channels = AD5764_NUM_CHANNELS;
++	indio_dev->channels = st->chip_info->channels;
++
++	if (st->chip_info->int_vref == 0) {
++		st->vref_reg[0].supply = "vrefAB";
++		st->vref_reg[1].supply = "vrefCD";
++
++		ret = regulator_bulk_get(&st->spi->dev,
++			ARRAY_SIZE(st->vref_reg), st->vref_reg);
++		if (ret) {
++			dev_err(&spi->dev, "Failed to request vref regulators: %d\n",
++				ret);
++			goto error_free;
++		}
++
++		ret = regulator_bulk_enable(ARRAY_SIZE(st->vref_reg),
++			st->vref_reg);
++		if (ret) {
++			dev_err(&spi->dev, "Failed to enable vref regulators: %d\n",
++				ret);
++			goto error_free_reg;
++		}
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(&spi->dev, "Failed to register iio device: %d\n", ret);
++		goto error_disable_reg;
++	}
++
++	return 0;
++
++error_disable_reg:
++	if (st->chip_info->int_vref == 0)
++		regulator_bulk_disable(ARRAY_SIZE(st->vref_reg), st->vref_reg);
++error_free_reg:
++	if (st->chip_info->int_vref == 0)
++		regulator_bulk_free(ARRAY_SIZE(st->vref_reg), st->vref_reg);
++error_free:
++	iio_free_device(indio_dev);
++
++	return ret;
++}
++
++static int __devexit ad5764_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct ad5764_state *st = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++
++	if (st->chip_info->int_vref == 0) {
++		regulator_bulk_disable(ARRAY_SIZE(st->vref_reg), st->vref_reg);
++		regulator_bulk_free(ARRAY_SIZE(st->vref_reg), st->vref_reg);
++	}
++
++	iio_free_device(indio_dev);
++
++	return 0;
++}
++
++static const struct spi_device_id ad5764_ids[] = {
++	{ "ad5744", ID_AD5744 },
++	{ "ad5744r", ID_AD5744R },
++	{ "ad5764", ID_AD5764 },
++	{ "ad5764r", ID_AD5764R },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, ad5764_ids);
++
++static struct spi_driver ad5764_driver = {
++	.driver = {
++		.name = "ad5764",
++		.owner = THIS_MODULE,
++	},
++	.probe = ad5764_probe,
++	.remove = __devexit_p(ad5764_remove),
++	.id_table = ad5764_ids,
++};
++
++static __init int ad5764_spi_init(void)
++{
++	return spi_register_driver(&ad5764_driver);
++}
++module_init(ad5764_spi_init);
++
++static __exit void ad5764_spi_exit(void)
++{
++	spi_unregister_driver(&ad5764_driver);
++}
++module_exit(ad5764_spi_exit);
++
++MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
++MODULE_DESCRIPTION("Analog Devices AD5744/AD5744R/AD5764/AD5764R DAC");
++MODULE_LICENSE("GPL v2");
+-- 
+1.7.7.1
 
