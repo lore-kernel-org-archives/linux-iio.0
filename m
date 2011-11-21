@@ -1,14 +1,14 @@
 Return-Path: <levinsasha928@gmail.com>
 From: Sasha Levin <levinsasha928@gmail.com>
 To: linux-kernel@vger.kernel.org
-Cc: jic23@cam.ac.uk,
-	Sasha Levin <levinsasha928@gmail.com>,
+Cc: Sasha Levin <levinsasha928@gmail.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
 	Greg Kroah-Hartman <gregkh@suse.de>,
 	linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org
-Subject: [PATCH v2] iio: Don't OOPS if dummy evgen failed init
-Date: Tue, 22 Nov 2011 08:02:21 +0200
-Message-Id: <1321941741-7838-1-git-send-email-levinsasha928@gmail.com>
+Subject: [PATCH] iio: Don't OOPS if dummy evgen failed init
+Date: Mon, 21 Nov 2011 23:11:34 +0200
+Message-Id: <1321909894-1352-1-git-send-email-levinsasha928@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 If the dummy evgen failed init, the irq allocation functions which assume
@@ -67,7 +67,7 @@ Here's the oops:
 [    3.915310]  RSP <ffff880012499bc0>
 [    3.915310] CR2: 0000000000000148
 
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: Greg Kroah-Hartman <gregkh@suse.de>
 Cc: linux-iio@vger.kernel.org
 Cc: devel@driverdev.osuosl.org
@@ -91,5 +91,15 @@ index da657d1..74d8d94 100644
  	mutex_lock(&iio_evgen->lock);
  	for (i = 0; i < IIO_EVENTGEN_NO; i++)
  		if (iio_evgen->inuse[i] == false) {
+@@ -124,6 +128,9 @@ EXPORT_SYMBOL_GPL(iio_dummy_evgen_get_irq);
+  */
+ int iio_dummy_evgen_release_irq(int irq)
+ {
++	if (iio_evgen == NULL)
++		return -ENODEV;
++
+ 	mutex_lock(&iio_evgen->lock);
+ 	iio_evgen->inuse[irq - iio_evgen->base] = false;
+ 	mutex_unlock(&iio_evgen->lock);
 -- 
 1.7.8.rc1
