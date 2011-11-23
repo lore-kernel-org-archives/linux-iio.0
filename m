@@ -1,49 +1,55 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:55626 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754482Ab1KXJMj convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2011 04:12:39 -0500
-References: <1322043239-26082-1-git-send-email-levinsasha928@gmail.com> <4e3c37a6-3777-4138-800b-f055f7caa8f3@email.android.com> <1322124881.4248.8.camel@lappy>
-In-Reply-To: <1322124881.4248.8.camel@lappy>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] iio: Fix build error in industrialio-core.c
-From: Jonathan Cameron <jic23@cam.ac.uk>
-Date: Thu, 24 Nov 2011 09:11:48 +0000
+Return-Path: <dan.carpenter@oracle.com>
+Date: Wed, 23 Nov 2011 17:17:27 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
 To: Sasha Levin <levinsasha928@gmail.com>
-CC: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@suse.de>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Message-ID: <44607571-8d2b-4425-bfea-10e18900b963@email.android.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, Greg Kroah-Hartman <gregkh@suse.de>,
+        Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH] iio: Fix build error in industrialio-core.c
+Message-ID: <20111123141727.GA3195@mwanda>
+References: <1322043239-26082-1-git-send-email-levinsasha928@gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="W/nzBZO5zC0uMSeA"
+In-Reply-To: <1322043239-26082-1-git-send-email-levinsasha928@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
 
+--W/nzBZO5zC0uMSeA
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Sasha Levin <levinsasha928@gmail.com> wrote:
+On Wed, Nov 23, 2011 at 12:13:59PM +0200, Sasha Levin wrote:
+> The error was introduced in commit b4641336 ("iio: fix a leak due to
+> improper use of anon_inode_getfd()").
+>=20
 
->On Thu, 2011-11-24 at 08:49 +0000, Jonathan Cameron wrote:
->> 
->> Sasha Levin <levinsasha928@gmail.com> wrote:
->> 
->> >The error was introduced in commit b4641336 ("iio: fix a leak due to
->> >improper use of anon_inode_getfd()").
->> >
->> >Looks like the code wasn't even compile tested. Instead of just
->fixing
->> >the
->> >error I changed the function a bit to make it nicer.
->> Minimal change would have been slightly nicer but clean up is obvious
->so fine. Thanks for doing this.  Andrew m has a dirty build fix in NM
->but he will drop that when this hits.
->
->If you'd like I can split it into two patches, the fix and the cleanup.
+Which tree is that patch from?  It's not in linux-next.
 
-Unless Greg wants that don't bother. I just want the fix in place!
->-- 
->
->Sasha.
+regards,
+dan carpenter
 
--- 
-Sent from my Android phone 
-with K-9 Mail. Please excuse my brevity.
+--W/nzBZO5zC0uMSeA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAEBAgAGBQJOzQB3AAoJEOnZkXI/YHqRt/kP+gMEmxvCi4HKP5YSNazuIe15
+9hWEDHexBurF1xRoO4QtKleka4JRUs9FWsvbC13qWXaMJkeqguRCn4XJxJTkDm54
++IctZThIcVJhJUv2HqKKQ0ul/2QPm4MaSWE+XtGlG4GyRgvcjxSg9en90w0+tfc6
+vKcHx26GhW2cBMFpOcnUgTYpRxXlFTeHz6Vvt8OcNsUBFLh6uWW4AfhIrVWvnwro
+LRed/sR9A/RSBsimNoU+f4PbXNI1rC3nOi872c4K+POpmPDIdzB6p4IXQtX+GSQP
+5wGwUE2+K7Ci4nFAQfRHqXUKz5OnlY33t0A4AdO7n3AqdCjciWdvXm0NG/iuFf7U
+Jc7vn9VLY3movTJYi8vcEgDzTAD5V1EmEYHjJAVGwfnayCQ63TTcNOUxWWv5eHWx
+mLVBsFgzR4tdQ8otOeQO6kA7pRfg5xJlstJODxheth9elb6YJEtR8Q6IJ7T39nlR
+DKryf6LmVfPwpdCbv7yOcD4NTkBq1RIsRUcUsUtf75rUrOmXwYCAIcBlLsLIiHol
+vaMMjuNgPc1WQzb1B0YQidW8pfqeo+AxvvHSddbXJIkIHZobBfK7VDiSOMr80nwO
+7iMjj1/ojXpJ7gStrEpyur9mc9PcZSA8GNPR4JP+4tYJPJ0+Pf7OMKyITbtAD+kM
+XBgs+d/tVYw4rCS1w/UQ
+=GZpM
+-----END PGP SIGNATURE-----
+
+--W/nzBZO5zC0uMSeA--
