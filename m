@@ -1,73 +1,45 @@
-Return-Path: <glikely@secretlab.ca>
-MIME-Version: 1.0
-Sender: glikely@secretlab.ca
-In-Reply-To: <1321434819-23678-4-git-send-email-lars@metafoo.de>
-References: <1321434819-23678-1-git-send-email-lars@metafoo.de> <1321434819-23678-4-git-send-email-lars@metafoo.de>
-From: Grant Likely <grant.likely@secretlab.ca>
-Date: Wed, 16 Nov 2011 10:12:54 -0700
-Message-ID: <CACxGe6tz0ppZj=a_e4rkgNxzhQ4MSCtXKXGk_dPov80QDU4MCg@mail.gmail.com>
-Subject: Re: [PATCH 3/5] SPI: Add helper macro for spi_driver boilerplate
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Greg Kroah-Hartman <gregkh@suse.de>, Jean Delvare <khali@linux-fr.org>,
-	Jonathan Cameron <jic23@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from trinity.fluff.org ([89.16.178.74]:58257 "EHLO trinity.fluff.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753672Ab1KXAOA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Nov 2011 19:14:00 -0500
+Date: Thu, 24 Nov 2011 00:13:42 +0000
+From: Ben Dooks <ben-i2c@fluff.org>
+To: Grant Likely <grant.likely@secretlab.ca>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Greg Kroah-Hartman <gregkh@suse.de>,
+	Jean Delvare <khali@linux-fr.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-i2c@vger.kernel.org, spi-devel-general@lists.sourceforge.net
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 3/5] SPI: Add helper macro for spi_driver boilerplate
+Message-ID: <20111124001342.GN19115@trinity.fluff.org>
+References: <1321434819-23678-1-git-send-email-lars@metafoo.de> <1321434819-23678-4-git-send-email-lars@metafoo.de> <CACxGe6tz0ppZj=a_e4rkgNxzhQ4MSCtXKXGk_dPov80QDU4MCg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CACxGe6tz0ppZj=a_e4rkgNxzhQ4MSCtXKXGk_dPov80QDU4MCg@mail.gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Nov 16, 2011 at 2:13 AM, Lars-Peter Clausen <lars@metafoo.de> wrote=
-:
-> This patch introduces the module_spi_driver macro which is a convenience =
-macro
-> for SPI driver modules similar to module_platform_driver. It is intended =
-to be
-> used by drivers which init/exit section does nothing but register/unregis=
-ter
-> the SPI driver. By using this macro it is possible to eliminate a few lin=
-es of
-> boilerplate code per SPI driver.
->
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+On Wed, Nov 16, 2011 at 10:12:54AM -0700, Grant Likely wrote:
+> On Wed, Nov 16, 2011 at 2:13 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> > This patch introduces the module_spi_driver macro which is a convenience macro
+> > for SPI driver modules similar to module_platform_driver. It is intended to be
+> > used by drivers which init/exit section does nothing but register/unregister
+> > the SPI driver. By using this macro it is possible to eliminate a few lines of
+> > boilerplate code per SPI driver.
+> >
+> > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> 
+> Acked-by: Grant Likely <grant.likely@secretlab.ca>
 
-Acked-by: Grant Likely <grant.likely@secretlab.ca>
+I'm begining to think we need to make some of these driver and device
+bits more generic... there seems to be so much similar but not quite
+the same code.
 
-> ---
-> =A0include/linux/spi/spi.h | =A0 11 +++++++++++
-> =A01 files changed, 11 insertions(+), 0 deletions(-)
->
-> diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-> index bb4f5fb..176fce9 100644
-> --- a/include/linux/spi/spi.h
-> +++ b/include/linux/spi/spi.h
-> @@ -200,6 +200,17 @@ static inline void spi_unregister_driver(struct spi_=
-driver *sdrv)
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0driver_unregister(&sdrv->driver);
-> =A0}
->
-> +/**
-> + * module_spi_driver() - Helper macro for registering a SPI driver
-> + * @__spi_driver: spi_driver struct
-> + *
-> + * Helper macro for SPI drivers which do not do anything special in modu=
-le
-> + * init/exit. This eliminates a lot of boilerplate. Each module may only
-> + * use this macro once, and calling it replaces module_init() and module=
-_exit()
-> + */
-> +#define module_spi_driver(__spi_driver) \
-> + =A0 =A0 =A0 module_driver(__spi_driver, spi_register_driver, \
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 spi_unregister_driver)
->
-> =A0/**
-> =A0* struct spi_master - interface to SPI master controller
-> --
-> 1.7.7.1
->
->
->
+-- 
+Ben Dooks, ben@fluff.org, http://www.fluff.org/ben/
 
+Large Hadron Colada: A large Pina Colada that makes the universe disappear.
 
-
---=20
-Grant Likely, B.Sc., P.Eng.
-Secret Lab Technologies Ltd.
