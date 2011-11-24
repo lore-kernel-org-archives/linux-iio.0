@@ -1,66 +1,89 @@
-Return-Path: <sfr@canb.auug.org.au>
-Date: Fri, 25 Nov 2011 10:47:50 +1100
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-To: Sasha Levin <levinsasha928@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>, Greg
- Kroah-Hartman <gregkh@suse.de>, linux-iio@vger.kernel.org,
- devel@driverdev.osuosl.org
-Subject: Re: [PATCH] iio: Fix build error in industrialio-core.c
-Message-Id: <20111125104750.61231158a1a57a522a001e5d@canb.auug.org.au>
-In-Reply-To: <1322043239-26082-1-git-send-email-levinsasha928@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:58024 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753460Ab1KXIvB convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2011 03:51:01 -0500
 References: <1322043239-26082-1-git-send-email-levinsasha928@gmail.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pgp-signature";
- micalg="PGP-SHA256";
- boundary="Signature=_Fri__25_Nov_2011_10_47_50_+1100_Ub3r4Jn3IlMcu/.Z"
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1322043239-26082-1-git-send-email-levinsasha928@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH] iio: Fix build error in industrialio-core.c
+From: Jonathan Cameron <jic23@cam.ac.uk>
+Date: Thu, 24 Nov 2011 08:49:51 +0000
+To: Sasha Levin <levinsasha928@gmail.com>, linux-kernel@vger.kernel.org
+CC: Greg Kroah-Hartman <gregkh@suse.de>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org
+Message-ID: <4e3c37a6-3777-4138-800b-f055f7caa8f3@email.android.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---Signature=_Fri__25_Nov_2011_10_47_50_+1100_Ub3r4Jn3IlMcu/.Z
-Content-Type: text/plain; charset=US-ASCII
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, 23 Nov 2011 12:13:59 +0200 Sasha Levin <levinsasha928@gmail.com> wr=
-ote:
+
+Sasha Levin <levinsasha928@gmail.com> wrote:
+
+>The error was introduced in commit b4641336 ("iio: fix a leak due to
+>improper use of anon_inode_getfd()").
 >
-> The error was introduced in commit b4641336 ("iio: fix a leak due to
-> improper use of anon_inode_getfd()").
->=20
-> Looks like the code wasn't even compile tested. Instead of just fixing the
-> error I changed the function a bit to make it nicer.
->=20
-> Cc: Jonathan Cameron <jic23@cam.ac.uk>
-> Cc: Greg Kroah-Hartman <gregkh@suse.de>
-> Cc: linux-iio@vger.kernel.org
-> Cc: devel@driverdev.osuosl.org
-> Signed-off-by: Sasha Levin <levinsasha928@gmail.com>
+>Looks like the code wasn't even compile tested. Instead of just fixing
+>the
+>error I changed the function a bit to make it nicer.
+Minimal change would have been slightly nicer but clean up is obvious so fine. Thanks for doing this.  Andrew m has a dirty build fix in NM but he will drop that when this hits.
+>Cc: Jonathan Cameron <jic23@cam.ac.uk>
+>Cc: Greg Kroah-Hartman <gregkh@suse.de>
+>Cc: linux-iio@vger.kernel.org
+>Cc: devel@driverdev.osuosl.org
+>Signed-off-by: Sasha Levin <levinsasha928@gmail.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+>---
+> drivers/staging/iio/industrialio-core.c |   21 ++++++++++-----------
+> 1 files changed, 10 insertions(+), 11 deletions(-)
+>
+>diff --git a/drivers/staging/iio/industrialio-core.c
+>b/drivers/staging/iio/industrialio-core.c
+>index 2656409..5367914 100644
+>--- a/drivers/staging/iio/industrialio-core.c
+>+++ b/drivers/staging/iio/industrialio-core.c
+>@@ -242,25 +242,24 @@ static const struct file_operations
+>iio_event_chrdev_fileops = {
+> 
+> static int iio_event_getfd(struct iio_dev *indio_dev)
+> {
+>+	struct iio_event_interface *ev_int = indio_dev->event_interface;
+> 	int fd;
+> 
+>-	if (indio_dev->event_interface == NULL)
+>+	if (ev_int == NULL)
+> 		return -ENODEV;
+> 
+>-	mutex_lock(&indio_dev->event_interface->event_list_lock);
+>-	if (test_and_set_bit(IIO_BUSY_BIT_POS,
+>-			     &indio_dev->event_interface->flags)) {
+>-		mutex_unlock(&indio_dev->event_interface->event_list_lock);
+>+	mutex_lock(&ev_int->event_list_lock);
+>+	if (test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+>+		mutex_unlock(&ev_int->event_list_lock);
+> 		return -EBUSY;
+> 	}
+>-	mutex_unlock(&indio_dev->event_interface->event_list_lock);
+>-	fd = anon_inode_getfd("iio:event",
+>-				&iio_event_chrdev_fileops,
+>-				indio_dev->event_interface, O_RDONLY);
+>+	mutex_unlock(&ev_int->event_list_lock);
+>+	fd = anon_inode_getfd("iio:event", &iio_event_chrdev_fileops,
+>+				ev_int, O_RDONLY);
+> 	if (fd < 0) {
+>-		mutex_lock(&indio_dev->event_interface->event_list_lock);
+>+		mutex_lock(&ev_int->event_list_lock);
+> 		clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+>-		mutex_unlock(&indio_dev->event_interface->event_list_lock);
+>+		mutex_unlock(&ev_int->event_list_lock);
+> 	}
+> 	return fd;
+> }
+>-- 
+>1.7.8.rc3
 
-I will add this to my fixes tree today (so linux-next will build).
-
---=20
-Cheers,
-Stephen Rothwell                    sfr@canb.auug.org.au
-http://www.canb.auug.org.au/~sfr/
-
---Signature=_Fri__25_Nov_2011_10_47_50_+1100_Ub3r4Jn3IlMcu/.Z
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-
-iQIcBAEBCAAGBQJOztemAAoJEECxmPOUX5FEL88QAIRA9CyVTDvIIAUR3SjiaD5L
-W4gx3ML0oSZaAAMmXUMFCbW5GC9ny8z8qN12cHq+mxCg9O5RSjc9tQO5v3FE7cSY
-W8vDjo1CEdLyLRFqQ4E2sgm7T1vsUGWeZU/uMwQzSZO/7fIkGJp32cR4oIiuDSe/
-+XuatnYVI7j8890vF+4wNQIw2x4IEosYwl0paFbqibTfswtuKP9IcZK3Ek2L3+UK
-guYDgO2P7REhD0QsbesU+RX19qmcwdxUKXe/F8DECltFc/fV9XnTjtykZkZmNHyp
-UWYwMYqLC+jEu8KIRzzzJTVOkqJoQYhLbaC8bDGdjU8eTgT0xLLJZkTEuu2Y+zSh
-zYp0ZcQebsk05OpxOOaGAM1ITSL+6o3poxYUTbJ+BGSBFbq0V6GR6AhAB5El1KWQ
-XQGt+cm/uv0YTzXvchSW5gKlD0vFRm63GhYXIJQ2JVUphG2vvy7aTQH7WTuJvKbR
-uBMby4FcCisovW9aKQsUK3gN/lPKnVJcWd+uwWoGtsvO1QZH0XSmjNs7ErcVO8kT
-MMi3V2pHdJmk5GWmGnz+XwDdPplShD2cM7d68ngx9BS1MhsqJIAwk6+JA/XNOam9
-jpMRPHqBLBAt3u4kVz1gSMJbpiSlymNNfMmFbmCVa/GBRdy+9QN8gcShLDQYq/oH
-MQR1YJde+nod67xh18m+
-=kqtf
------END PGP SIGNATURE-----
-
---Signature=_Fri__25_Nov_2011_10_47_50_+1100_Ub3r4Jn3IlMcu/.Z--
+-- 
+Sent from my Android phone 
+with K-9 Mail. Please excuse my brevity.
