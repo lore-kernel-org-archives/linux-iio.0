@@ -1,39 +1,65 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-169.synserver.de ([212.40.185.169]:1113 "EHLO
-	smtp-out-169.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752788Ab1KYMeW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Nov 2011 07:34:22 -0500
-Message-ID: <4ECF8B77.2070304@metafoo.de>
-Date: Fri, 25 Nov 2011 13:35:03 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <abogani@kernel.org>
+From: Alessio Igor Bogani <abogani@kernel.org>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Alessio Igor Bogani <abogani@kernel.org>
+Subject: [PATCH] iio: Fix build error
+Date: Fri, 25 Nov 2011 09:42:46 +0100
+Message-Id: <1322210566-16841-1-git-send-email-abogani@kernel.org>
 MIME-Version: 1.0
-To: Andy Whitcroft <apw@canonical.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@suse.de>,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: iio_event_getfd -- fix ev_int build failure
-References: <1322218582-4271-1-git-send-email-apw@canonical.com>
-In-Reply-To: <1322218582-4271-1-git-send-email-apw@canonical.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/25/2011 11:56 AM, Andy Whitcroft wrote:
-> Fix build failure in staging iio driver:
-> 
-> .../drivers/staging/iio/industrialio-core.c: In function 'iio_event_getfd':
-> .../drivers/staging/iio/industrialio-core.c:262:32: error:
-> 			'ev_int' undeclared (first use in this function)
-> 
-> Also convert the rest of the function to use the new variable.
-> 
-> Signed-off-by: Andy Whitcroft <apw@canonical.com>
+drivers/staging/iio/industrialio-core.c: In function
+‘iio_event_getfd’:
+drivers/staging/iio/industrialio-core.c:262:17:
+error: ‘ev_int’ undeclared (first use in this function)
+drivers/staging/iio/industrialio-core.c:262:17: note: each undeclared
+identifier is reported only once for each function it appears in
 
-Hi Andy,
+Signed-off-by: Alessio Igor Bogani <abogani@kernel.org>
+---
+ drivers/staging/iio/industrialio-core.c |   17 +++++++++--------
+ 1 files changed, 9 insertions(+), 8 deletions(-)
 
-I think your patch is number 6 for this bug. A fix should already be on it's
-way.
-
-
-Thanks,
-- Lars
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 2656409..da17136 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -242,25 +242,26 @@ static const struct file_operations iio_event_chrdev_fileops = {
+ 
+ static int iio_event_getfd(struct iio_dev *indio_dev)
+ {
++	struct iio_event_interface *ev_int = indio_dev->event_interface;
+ 	int fd;
+ 
+-	if (indio_dev->event_interface == NULL)
++	if (ev_int == NULL)
+ 		return -ENODEV;
+ 
+-	mutex_lock(&indio_dev->event_interface->event_list_lock);
++	mutex_lock(&ev_int->event_list_lock);
+ 	if (test_and_set_bit(IIO_BUSY_BIT_POS,
+-			     &indio_dev->event_interface->flags)) {
+-		mutex_unlock(&indio_dev->event_interface->event_list_lock);
++			     &ev_int->flags)) {
++		mutex_unlock(&ev_int->event_list_lock);
+ 		return -EBUSY;
+ 	}
+-	mutex_unlock(&indio_dev->event_interface->event_list_lock);
++	mutex_unlock(&ev_int->event_list_lock);
+ 	fd = anon_inode_getfd("iio:event",
+ 				&iio_event_chrdev_fileops,
+-				indio_dev->event_interface, O_RDONLY);
++				ev_int, O_RDONLY);
+ 	if (fd < 0) {
+-		mutex_lock(&indio_dev->event_interface->event_list_lock);
++		mutex_lock(&ev_int->event_list_lock);
+ 		clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+-		mutex_unlock(&indio_dev->event_interface->event_list_lock);
++		mutex_unlock(&ev_int->event_list_lock);
+ 	}
+ 	return fd;
+ }
+-- 
+1.7.4.1
