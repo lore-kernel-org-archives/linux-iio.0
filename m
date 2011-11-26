@@ -1,69 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:48640 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753527Ab1K0LjK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Nov 2011 06:39:10 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 1/3] staging:iio: filter description - low pass 3db frequency.
-Date: Sun, 27 Nov 2011 11:39:12 +0000
-Message-Id: <1322393954-31525-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1322393954-31525-1-git-send-email-jic23@kernel.org>
-References: <1322393954-31525-1-git-send-email-jic23@kernel.org>
+Received: from mail2.gnudd.com ([213.203.150.91]:63456 "EHLO mail.gnudd.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753263Ab1KZRuV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 26 Nov 2011 12:50:21 -0500
+Date: Sat, 26 Nov 2011 18:30:08 +0100
+From: Alessandro Rubini <rubini@gnudd.com>
+To: linux-iio@vger.kernel.org, greg@kroah.com,
+	linux-kernel@vger.kernel.org
+Cc: federico.vaga@gmail.com, dcobas@cern.ch, siglesia@cern.ch,
+	manohar.vanga@cern.ch
+Subject: [RFC PATCH 0/7] Introducing ZIO, a new I/O framework
+Message-ID: <cover.1322328073.git.rubini@gnudd.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <jic23@cam.ac.uk>
+This RFC patch-set introduces the ZIO framework for input/output,
+which will be used in the new series of drivers by the BE-CO-HT
+group at CERN.
 
-Introduce the first data filtering related parameter.
-For now we are ignoring the filter type and merely specifying its
-approximate (I read them off tiny graphs) 3db point.
+The use-case it is meant to cover is very fast I/O with
+hardware-provided timestamps.  The first production driver we will
+support is a 100Ms/s 4-channel 14-bit ADC (developed on ohwr: see
+http://www.ohwr.org/projects/fmc-adc-100m14b4cha ).  We need similar
+bandwidth on output.
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/iio.h               |    7 +++++++
- drivers/staging/iio/industrialio-core.c |    2 ++
- 2 files changed, 9 insertions(+), 0 deletions(-)
+The synchronization engine of that FMC card and other ones is going to
+be White Rabbit (http://www.ohwr.org/projects/white-rabbit).
 
-diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index 66c2604..4aed915 100644
---- a/drivers/staging/iio/iio.h
-+++ b/drivers/staging/iio/iio.h
-@@ -35,6 +35,7 @@ enum iio_chan_info_enum {
- 	IIO_CHAN_INFO_PEAK_SCALE,
- 	IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW,
- 	IIO_CHAN_INFO_AVERAGE_RAW,
-+	IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY,
- };
- 
- #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
-@@ -74,6 +75,12 @@ enum iio_chan_info_enum {
- 	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_AVERAGE_RAW)
- #define IIO_CHAN_INFO_AVERAGE_RAW_SHARED_BIT			\
- 	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_AVERAGE_RAW)
-+#define IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT \
-+	IIO_CHAN_INFO_SHARED_BIT(			       \
-+		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)
-+#define IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SEPARATE_BIT \
-+	IIO_CHAN_INFO_SEPARATE_BIT(			       \
-+		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)
- 
- enum iio_endian {
- 	IIO_CPU,
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 0b67166..55c0b48 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -85,6 +85,8 @@ static const char * const iio_chan_info_postfix[] = {
- 	[IIO_CHAN_INFO_PEAK_SCALE] = "peak_scale",
- 	[IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW] = "quadrature_correction_raw",
- 	[IIO_CHAN_INFO_AVERAGE_RAW] = "mean_raw",
-+	[IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY]
-+	= "filter_low_pass_3db_frequency",
- };
- 
- /**
+Currently, the patch-set includes one example driver (zio-zero)
+that behaves like /dev/zero and /dev/urandom. Other drivers will
+come soon, both demo and real hardware.
+
+Slides for a tutorial on the design ideas are online here:
+http://www.ohwr.org/attachments/881/zio-111123.pdf
+
+A list of pending issues and development plans is online at:
+http://www.ohwr.org/projects/zio/wiki/Todo
+
+/alessandro
+
+Alessandro Rubini (5):
+  Documentation: add docs for drivers/zio
+  include/linux: add headers for drivers/zio
+  drivers/zio: add triggers and buffers
+  drivers/zio: add user-space tool zio-dump
+  zio: insert in Kbuild so it is actually compiled
+
+Federico Vaga (2):
+  drivers/zio: core files for the ZIO input/output framework
+  drivers/zio: add the zio-zero device driver
+
+ Documentation/zio/00-INDEX            |   10 +
+ Documentation/zio/buffer.txt          |  114 +++
+ Documentation/zio/device.txt          |   69 ++
+ Documentation/zio/modules.txt         |   45 +
+ Documentation/zio/trigger.txt         |  128 +++
+ drivers/Kconfig                       |    2 +
+ drivers/Makefile                      |    1 +
+ drivers/zio/Kconfig                   |   12 +
+ drivers/zio/Makefile                  |   10 +
+ drivers/zio/README                    |  105 +++
+ drivers/zio/buffers/Makefile          |    1 +
+ drivers/zio/buffers/zio-buf-kmalloc.c |  273 +++++++
+ drivers/zio/drivers/Makefile          |    1 +
+ drivers/zio/drivers/zio-zero.c        |   87 ++
+ drivers/zio/triggers/Makefile         |    2 +
+ drivers/zio/triggers/zio-trig-irq.c   |  203 +++++
+ drivers/zio/triggers/zio-trig-timer.c |  193 +++++
+ drivers/zio/zio-cdev.c                |  498 ++++++++++++
+ drivers/zio/zio-dump.c                |  196 +++++
+ drivers/zio/zio-sys.c                 | 1423 +++++++++++++++++++++++++++++++++
+ include/linux/zio-buffer.h            |  246 ++++++
+ include/linux/zio-sysfs.h             |  122 +++
+ include/linux/zio-trigger.h           |   99 +++
+ include/linux/zio.h                   |  244 ++++++
+ 24 files changed, 4084 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/zio/00-INDEX
+ create mode 100644 Documentation/zio/buffer.txt
+ create mode 100644 Documentation/zio/device.txt
+ create mode 100644 Documentation/zio/modules.txt
+ create mode 100644 Documentation/zio/trigger.txt
+ create mode 100644 drivers/zio/Kconfig
+ create mode 100644 drivers/zio/Makefile
+ create mode 100644 drivers/zio/README
+ create mode 100644 drivers/zio/buffers/Makefile
+ create mode 100644 drivers/zio/buffers/zio-buf-kmalloc.c
+ create mode 100644 drivers/zio/drivers/Makefile
+ create mode 100644 drivers/zio/drivers/zio-zero.c
+ create mode 100644 drivers/zio/triggers/Makefile
+ create mode 100644 drivers/zio/triggers/zio-trig-irq.c
+ create mode 100644 drivers/zio/triggers/zio-trig-timer.c
+ create mode 100644 drivers/zio/zio-cdev.c
+ create mode 100644 drivers/zio/zio-dump.c
+ create mode 100644 drivers/zio/zio-sys.c
+ create mode 100644 include/linux/zio-buffer.h
+ create mode 100644 include/linux/zio-sysfs.h
+ create mode 100644 include/linux/zio-trigger.h
+ create mode 100644 include/linux/zio.h
+
 -- 
-1.7.7.3
-
+1.7.7.2
