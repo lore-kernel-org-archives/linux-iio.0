@@ -1,25 +1,33 @@
-Return-Path: <greg@kroah.com>
-Date: Sat, 26 Nov 2011 16:54:49 -0800
-From: Greg KH <greg@kroah.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Hui Zhu <teawater@gmail.com>, Greg Kroah-Hartman <gregkh@suse.de>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fix build error of function iio_event_getfd
-Message-ID: <20111127005449.GA8982@kroah.com>
-References: <CANFwon20C9NC6GmWnwfSHcWOSFe-7fdt_QbCQQNhegieNeDUNA@mail.gmail.com>
- <a3c3695e-8a13-4e44-9660-0df049d86003@email.android.com>
+Return-Path: <xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <a3c3695e-8a13-4e44-9660-0df049d86003@email.android.com>
+In-Reply-To: <CANFwon20C9NC6GmWnwfSHcWOSFe-7fdt_QbCQQNhegieNeDUNA@mail.gmail.com>
+References: <CANFwon20C9NC6GmWnwfSHcWOSFe-7fdt_QbCQQNhegieNeDUNA@mail.gmail.com>
+Date: Sat, 26 Nov 2011 16:52:09 +0800
+Message-ID: <CAM_iQpVzASSdfJ0aibkUgx7gjwb7RxLv-ngVuPg4NXJuN1DLHA@mail.gmail.com>
+Subject: Re: [PATCH] fix build error of function iio_event_getfd
+From: Cong Wang <xiyou.wangcong@gmail.com>
+To: Hui Zhu <teawater@gmail.com>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>, Greg Kroah-Hartman <gregkh@suse.de>,
+	Michael Hennerich <michael.hennerich@analog.com>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Nov 26, 2011 at 09:19:34AM +0000, Jonathan Cameron wrote:
-> Thanks but this is 7th fix I have seen.
+On Sat, Nov 26, 2011 at 4:07 PM, Hui Zhu <teawater@gmail.com> wrote:
+> Got a build error:
+> =C2=A0CC [M] =C2=A0drivers/staging/iio/industrialio-core.o
+> /home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:
+> In function =E2=80=98iio_event_getfd=E2=80=99:
+> /home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:262:=
+32:
+> error: =E2=80=98ev_int=E2=80=99 undeclared (first use in this function)
+> /home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:262:=
+32:
+> note: each undeclared identifier is reported only once for each
+> function it appears in
+> Not sure it is fixed or not.
 
-And I sent an 8th one to Linus now, that's a bit smaller :)
+It is fixed twice...
 
-thanks,
-
-greg k-h
+https://lkml.org/lkml/2011/11/25/52
+https://lkml.org/lkml/2011/11/23/114
