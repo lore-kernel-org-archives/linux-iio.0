@@ -1,60 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail2.gnudd.com ([213.203.150.91]:63664 "EHLO mail.gnudd.com"
+Received: from mail2.gnudd.com ([213.203.150.91]:63456 "EHLO mail.gnudd.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753661Ab1KZTLt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 26 Nov 2011 14:11:49 -0500
-Date: Sat, 26 Nov 2011 20:11:37 +0100
+	id S1753249Ab1KZRuS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 26 Nov 2011 12:50:18 -0500
+Date: Sat, 26 Nov 2011 18:31:25 +0100
 From: Alessandro Rubini <rubini@gnudd.com>
-To: lars@metafoo.de
-Cc: linux-iio@vger.kernel.org, greg@kroah.com,
-	linux-kernel@vger.kernel.org, federico.vaga@gmail.com,
-	dcobas@cern.ch, siglesia@cern.ch, manohar.vanga@cern.ch
-Subject: Re: [RFC PATCH 0/7] Introducing ZIO, a new I/O framework
-Message-ID: <20111126191137.GA1046@mail.gnudd.com>
+To: linux-iio@vger.kernel.org, greg@kroah.com,
+	linux-kernel@vger.kernel.org
+Cc: federico.vaga@gmail.com, dcobas@cern.ch, siglesia@cern.ch,
+	manohar.vanga@cern.ch
+Subject: [RFC PATCH 7/7] zio: insert in Kbuild so it is actually compiled
+Message-ID: <df84565f623e464aa8419c4d2003701dafef9ea8.1322328076.git.rubini@gnudd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <4ED12B50.9090206@metafoo.de>
-References: <4ED12B50.9090206@metafoo.de>
-  <cover.1322328073.git.rubini@gnudd.com>
+References: <cover.1322328073.git.rubini@gnudd.com>
+In-Reply-To: <cover.1322328073.git.rubini@gnudd.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> You've Cc'ed the IIO mailinglist, so you know about the IIO
-> framework.
+Signed-off-by: Alessandro Rubini <rubini@gnudd.com>
+Signed-off-by: Federico Vaga <federico.vaga@gmail.com>
+---
+ drivers/Kconfig     |    2 ++
+ drivers/Makefile    |    1 +
+ drivers/zio/Kconfig |   12 ++++++++++++
+ 3 files changed, 15 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/zio/Kconfig
 
-Yes, we are aware of it. Initially we hoped to use it for our
-boards. There is an analysis by Federico on the ohwr wiki:
-
-http://www.ohwr.org/projects/zio/wiki/Iio
-
-See especially the final table about how it fits our requirements:
-
-http://www.ohwr.org/projects/zio/wiki/Requirements
-
-> Could you explain why you need a new framework and your devices
-> can't be supported by the IIO framework?
-
-Mainly, because the use-cases it is designed for are different.  It
-handles data one sample at a time while our data blocks are tens of
-hundreds of megabytes; there is still no support for output; data is
-expected to be analog only; timestamps are assumed to be nanoseconds.
-Also, we need easy off-line elaboration of data, that's why we attach
-a control structure to each data block (and user-space can ignore the
-control structure and work with data alone, if needed).
-
-ZIO can work with accelerometers (we have one we'll support soon),
-but we need to support accelerators too.  I think IIO is much better
-than ZIO for accelerometers, thermometers and similar stuff.
-
-> After a first quick glance ZIO looks to me like a subset of IIO.
-
-In some sense, yes. It's only a mechanism for data transfer, insisting
-to not attach any meaning to the data it carries around.
-
-I'm open to suggestions (_we_ are) about how to easily use IIO for
-output, for hardware timestamps (we have 3 32-bit fields) and for very
-large data blocks, with DMA to/from user space -- sure we don't have this
-last point in ZIO at this point in time.
-
-Thank you for your interest
-/alessandro
+diff --git a/drivers/Kconfig b/drivers/Kconfig
+index 5289508..ef7bf06 100644
+--- a/drivers/Kconfig
++++ b/drivers/Kconfig
+@@ -118,6 +118,8 @@ source "drivers/vlynq/Kconfig"
+ 
+ source "drivers/virtio/Kconfig"
+ 
++source "drivers/zio/Kconfig"
++
+ source "drivers/xen/Kconfig"
+ 
+ source "drivers/staging/Kconfig"
+diff --git a/drivers/Makefile b/drivers/Makefile
+index 91077ac..96da622 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -118,6 +118,7 @@ obj-$(CONFIG_SSB)		+= ssb/
+ obj-$(CONFIG_BCMA)		+= bcma/
+ obj-$(CONFIG_VHOST_NET)		+= vhost/
+ obj-$(CONFIG_VLYNQ)		+= vlynq/
++obj-$(CONFIG_ZIO)		+= zio/
+ obj-$(CONFIG_STAGING)		+= staging/
+ obj-y				+= platform/
+ obj-y				+= ieee802154/
+diff --git a/drivers/zio/Kconfig b/drivers/zio/Kconfig
+new file mode 100644
+index 0000000..774a185
+--- /dev/null
++++ b/drivers/zio/Kconfig
+@@ -0,0 +1,12 @@
++
++config ZIO
++	tristate "The ZIO framework for high-bandwidth I/O"
++	help
++	  This is a new proposed framework for input/output, whose
++	  main use case is multi-megabyte per second I/O on several
++	  channels, with hardware timestamping and offline elaboration.
++
++	  Currently, all drivers (and triggers, and buffers) are compiled,
++	  with no Kconfig selection at a finer resolution.
++
++	  See www.ohwr.org/projects/zio for docs, slides, repo and list.
+-- 
+1.7.7.2
