@@ -1,40 +1,41 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bw0-f46.google.com ([209.85.214.46]:35740 "EHLO
-	mail-bw0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754117Ab1KZVp5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Nov 2011 16:45:57 -0500
-From: Federico Vaga <federico.vaga@gmail.com>
-To: Greg KH <greg@kroah.com>
-Cc: Alessandro Rubini <rubini@gnudd.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dcobas@cern.ch, siglesia@cern.ch,
-	manohar.vanga@cern.ch
-Subject: Re: [RFC PATCH 1/7] Documentation: add docs for drivers/zio
-Date: Sat, 26 Nov 2011 22:48:16 +0100
-Message-ID: <1754007.WtTkxU3GKd@harkonnen>
-In-Reply-To: <20111126200012.GB11421@kroah.com>
-References: <cover.1322328073.git.rubini@gnudd.com> <136508309048abae5ff23c5230e9344c51442849.1322328075.git.rubini@gnudd.com> <20111126200012.GB11421@kroah.com>
+Return-Path: <teawater@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+From: Hui Zhu <teawater@gmail.com>
+Date: Sat, 26 Nov 2011 16:07:18 +0800
+Message-ID: <CANFwon20C9NC6GmWnwfSHcWOSFe-7fdt_QbCQQNhegieNeDUNA@mail.gmail.com>
+Subject: [PATCH] fix build error of function iio_event_getfd
+To: Jonathan Cameron <jic23@cam.ac.uk>, Greg Kroah-Hartman <gregkh@suse.de>,
+	Michael Hennerich <michael.hennerich@analog.com>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-In data sabato 26 novembre 2011 12:00:12, Greg KH ha scritto:
-> On Sat, Nov 26, 2011 at 06:30:20PM +0100, Alessandro Rubini wrote:
-> > This is documentation for the beta3 release of zio.
-> > The files match commit 7d37663 in git://ohwr.org/misc/zio.git .
-> > 
-> > We are aware the "modules.txt" file is not correct as it lists files
-> > that are not ready. We decided to avoid fixing it for this RFC
-> > submission, which won't go upstream anyways.
-> 
-> I think you are using sysfs files here, yet I don't see any
-> Documentation/ABI files describing those sysfs files and how they are to
-> be used.  Could you please include them?
+Got a build error:
+  CC [M]  drivers/staging/iio/industrialio-core.o
+/home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:
+In function =91iio_event_getfd=92:
+/home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:262:32=
+:
+error: =91ev_int=92 undeclared (first use in this function)
+/home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:262:32=
+:
+note: each undeclared identifier is reported only once for each
+function it appears in
+Not sure it is fixed or not.
+Post a patch for it.
 
-Sure, we'll do for the next release.
+Signed-off-by: Hui Zhu <teawater@gmail.com>
+---
+ drivers/staging/iio/industrialio-core.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-> thanks,
-> 
-> greg k-h
--- 
-Federico Vaga
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -243,6 +243,7 @@ static const struct file_operations iio_
+ static int iio_event_getfd(struct iio_dev *indio_dev)
+ {
+ 	int fd;
++	struct iio_event_interface *ev_int =3D indio_dev->event_interface;
+
+ 	if (indio_dev->event_interface =3D=3D NULL)
+ 		return -ENODEV;
