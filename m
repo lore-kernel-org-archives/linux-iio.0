@@ -6,44 +6,48 @@ Cc: dan.carpenter@oracle.com,
 	jic23@cam.ac.uk,
 	linux-iio@vger.kernel.org,
 	Andreas Ruprecht <rupran@einserver.de>
-Subject: [PATCH 3/3] Staging: iio/accel: Changed data type of val in store_measurement_mode to u8
-Date: Sun, 27 Nov 2011 23:17:42 +0100
-Message-Id: <1322432262-16533-3-git-send-email-rupran@einserver.de>
+Subject: [PATCH 2/3] Staging: iio/accel: Changed data type for val to unsigned long in write_frequency
+Date: Sun, 27 Nov 2011 23:17:41 +0100
+Message-Id: <1322432262-16533-2-git-send-email-rupran@einserver.de>
 In-Reply-To: <1322432262-16533-1-git-send-email-rupran@einserver.de>
 References: <20111124205657.GL3258@mwanda>
  <1322432262-16533-1-git-send-email-rupran@einserver.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-The code in sca3000_store_measurement_mode() uses the variable val to
-do bitwise operations with an int mask and or-s it into st->rx[0] which
-is an entry in a u8 array (see sca3000.h).
+In lis3102dq_write_frequency() we used a long variable to store the
+value parsed from the char* buffer buf, as there only was a
+strict_strtol() function to parse values.
+Now we have got kstrto* which allows us to convert to the right data
+type in most cases.
 
-This means up to now values larger than a u8 were silently ignored and
-just the lower 8 bits counted into the value that was written into
-st->rx[0]. This code will return -ERANGE if the value in buf was too
-large to fit into a u8.
+In this particular function we want to write a frequency value, and it
+doesn't make sense to allow negative values here (as Dan Carpenter
+pointed out in a previous email).
+This means we can now parse the value into an unsigned long and get an
+error for invalid (e.g. negative) values.
 
 Signed-off-by: Andreas Ruprecht <rupran@einserver.de>
 ---
- drivers/staging/iio/accel/sca3000_core.c |    4 ++--
+ drivers/staging/iio/accel/lis3l02dq_core.c |    4 ++--
  1 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-index a44a705..c3f1f6a 100644
---- a/drivers/staging/iio/accel/sca3000_core.c
-+++ b/drivers/staging/iio/accel/sca3000_core.c
-@@ -382,10 +382,10 @@ sca3000_store_measurement_mode(struct device *dev,
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 	int ret;
- 	int mask = 0x03;
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+index 559545a..5566809 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+@@ -331,11 +331,11 @@ static ssize_t lis3l02dq_write_frequency(struct device *dev,
+ 					 size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
 -	long val;
-+	u8 val;
++	unsigned long val;
+ 	int ret;
+ 	u8 t;
  
- 	mutex_lock(&st->lock);
 -	ret = strict_strtol(buf, 10, &val);
-+	ret = kstrtou8(buf, 10, &val);
++	ret = kstrtoul(buf, 10, &val);
  	if (ret)
- 		goto error_ret;
- 	ret = sca3000_read_data_short(st, SCA3000_REG_ADDR_MODE, 1);
+ 		return ret;
+ 
 -- 
 1.7.5.4
