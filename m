@@ -1,91 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:42549 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753782Ab1K0Ndj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Nov 2011 08:33:39 -0500
+Return-Path: <jic23@hermes.cam.ac.uk>
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com,
-	manuel.stahl@iis.fraunhofer.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 00/16] staging:iio: buffer cleanup series.
-Date: Sun, 27 Nov 2011 13:33:29 +0000
-Message-Id: <1322400825-29400-1-git-send-email-jic23@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	manuel.stahl@iis.fraunhofer.de,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 16/16] staging:iio:buffer stop allowing for read_last callback.
+Date: Sun, 27 Nov 2011 13:33:45 +0000
+Message-Id: <1322400825-29400-17-git-send-email-jic23@kernel.org>
+In-Reply-To: <1322400825-29400-1-git-send-email-jic23@kernel.org>
+References: <1322400825-29400-1-git-send-email-jic23@kernel.org>
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-A fairly straight forward set of cleanups of the buffer code.
-Recent discussion concluded that having access to channels being
-captured to a buffer by sysfs was an unnecessary complexity so that
-ist dropped.  The other patches get rid of some infrastructure and
-move the setup ops from a buffer instance to the device (as they will
-be relevant to all buffers when we allow more than one)
+No longer needed now we don't allow sysfs acccess to buffer data.
 
-Anyhow, if people could verify I haven't messed any of this up, that
-would be great!
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/buffer.h |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
 
-Jonathan
-
-Jonathan Cameron (16):
-  staging:iio:buffer drop bpe field.
-  staging:iio: remove userspace access to bytes per datum.
-  staging:iio:buffer move setup ops from buffer instance to iio_dev
-  staging:iio: scrap scan_count and ensure all drivers use
-    active_scan_mask
-  staging:iio:buffer remove unused owner field from struct iio_buffer
-  staging:iio:accel:lis3l02dq scrap reading from buffer for sysfs
-    access.
-  staging:iio:adc:ad7192 scrap read from buffer for sysfs access.
-  staging:iio:adc:ad7476 scrap read from buffer for sysfs access.
-  staging:iio:adc:ad7606 remove buffer access for sysfs interfaces.
-  staging:iio:adc:ad7606 remove buffer access to data from sysfs read.
-  staging:iio:adc:ad7993 stop reading from buffer for sysfs raw read.
-  staging:iio:adc:ad7887 stop reading from buffer for sysfs access.
-  staging:iio:adc:ad799x stop reading from buffer for sysfs accesses
-  staging:iio:adc:max1363 stop reading from buffer for sysfs access
-  staging:iio:ring_sw don't provide read last function.
-  staging:iio:buffer stop allowing for read_last callback.
-
- drivers/staging/iio/accel/adis16201_ring.c      |   14 ++---
- drivers/staging/iio/accel/adis16203_ring.c      |   14 ++---
- drivers/staging/iio/accel/adis16204_ring.c      |   14 ++---
- drivers/staging/iio/accel/adis16209_ring.c      |    9 ++--
- drivers/staging/iio/accel/adis16240_ring.c      |    9 ++--
- drivers/staging/iio/accel/lis3l02dq.h           |   12 -----
- drivers/staging/iio/accel/lis3l02dq_core.c      |    9 +--
- drivers/staging/iio/accel/lis3l02dq_ring.c      |   59 +++++-----------------
- drivers/staging/iio/accel/sca3000_ring.c        |    4 +-
- drivers/staging/iio/adc/ad7192.c                |   34 +++----------
- drivers/staging/iio/adc/ad7298.h                |    5 --
- drivers/staging/iio/adc/ad7298_core.c           |    8 +--
- drivers/staging/iio/adc/ad7298_ring.c           |   43 +++-------------
- drivers/staging/iio/adc/ad7476.h                |    5 --
- drivers/staging/iio/adc/ad7476_core.c           |    2 +-
- drivers/staging/iio/adc/ad7476_ring.c           |   29 +----------
- drivers/staging/iio/adc/ad7606.h                |    1 -
- drivers/staging/iio/adc/ad7606_core.c           |    2 +-
- drivers/staging/iio/adc/ad7606_ring.c           |   28 +----------
- drivers/staging/iio/adc/ad7793.c                |   35 +++----------
- drivers/staging/iio/adc/ad7887.h                |    5 --
- drivers/staging/iio/adc/ad7887_core.c           |    2 +-
- drivers/staging/iio/adc/ad7887_ring.c           |   44 ++---------------
- drivers/staging/iio/adc/ad799x.h                |    6 --
- drivers/staging/iio/adc/ad799x_core.c           |    3 +-
- drivers/staging/iio/adc/ad799x_ring.c           |   45 ++++--------------
- drivers/staging/iio/adc/max1363.h               |    7 ---
- drivers/staging/iio/adc/max1363_core.c          |   51 ++++++++------------
- drivers/staging/iio/adc/max1363_ring.c          |   38 +--------------
- drivers/staging/iio/buffer.h                    |   33 -------------
- drivers/staging/iio/gyro/adis16260_ring.c       |    9 ++--
- drivers/staging/iio/iio.h                       |   16 ++++++
- drivers/staging/iio/iio_simple_dummy_buffer.c   |   12 ++--
- drivers/staging/iio/impedance-analyzer/ad5933.c |   16 ++++---
- drivers/staging/iio/imu/adis16400_ring.c        |   23 +++++----
- drivers/staging/iio/industrialio-buffer.c       |   37 ++++----------
- drivers/staging/iio/kfifo_buf.c                 |    2 -
- drivers/staging/iio/meter/ade7758_ring.c        |   10 ++--
- drivers/staging/iio/ring_sw.c                   |   35 -------------
- 39 files changed, 177 insertions(+), 553 deletions(-)
-
+diff --git a/drivers/staging/iio/buffer.h b/drivers/staging/iio/buffer.h
+index 98e9efa..7272333 100644
+--- a/drivers/staging/iio/buffer.h
++++ b/drivers/staging/iio/buffer.h
+@@ -21,7 +21,6 @@ struct iio_buffer;
+  * @mark_in_use:	reference counting, typically to prevent module removal
+  * @unmark_in_use:	reduce reference count when no longer using buffer
+  * @store_to:		actually store stuff to the buffer
+- * @read_last:		get the last element stored
+  * @read_first_n:	try to get a specified number of elements (must exist)
+  * @mark_param_change:	notify buffer that some relevant parameter has changed
+  *			Often this means the underlying storage may need to
+@@ -48,7 +47,6 @@ struct iio_buffer_access_funcs {
+ 	void (*unmark_in_use)(struct iio_buffer *buffer);
+ 
+ 	int (*store_to)(struct iio_buffer *buffer, u8 *data, s64 timestamp);
+-	int (*read_last)(struct iio_buffer *buffer, u8 *data);
+ 	int (*read_first_n)(struct iio_buffer *buffer,
+ 			    size_t n,
+ 			    char __user *buf);
 -- 
 1.7.7.3
-
