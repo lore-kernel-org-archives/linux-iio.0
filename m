@@ -1,39 +1,31 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:50408 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752560Ab1K0Lp5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Nov 2011 06:45:57 -0500
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH] staging:iio:adc:max1363 actually make timestamp controllable
-Date: Sun, 27 Nov 2011 12:22:21 +0000
-Message-Id: <1322396541-29959-1-git-send-email-jic23@kernel.org>
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/2] Fixes ot the generic_buffer example
+Date: Sun, 27 Nov 2011 11:46:03 +0000
+Message-Id: <1322394365-3214-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Hi All,
 
-Previously timestamps were always on in this driver.
+These do what they say on the tin.
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
-A random minor fixlet that has been in my tree far too long.
+Jonathan
 
- drivers/staging/iio/adc/max1363_ring.c |    5 ++---
- 1 files changed, 2 insertions(+), 3 deletions(-)
+Jonathan Cameron (2):
+  staging:iio:Documentation: cleanup properly in buffer handling code
+  staging:iio:generic_buffer example - handle endian differences
 
-diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
-index a87fbe8..3c5e199 100644
---- a/drivers/staging/iio/adc/max1363_ring.c
-+++ b/drivers/staging/iio/adc/max1363_ring.c
-@@ -138,9 +138,8 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
- 		goto done;
- 
- 	time_ns = iio_get_time_ns();
--
--	memcpy(rxbuf + d_size - sizeof(s64), &time_ns, sizeof(time_ns));
--
-+	if (indio_dev->buffer->scan_timestamp)
-+		memcpy(rxbuf + d_size - sizeof(s64), &time_ns, sizeof(time_ns));
- 	indio_dev->buffer->access->store_to(indio_dev->buffer, rxbuf, time_ns);
- done:
- 	iio_trigger_notify_done(indio_dev->trig);
+ drivers/staging/iio/Documentation/generic_buffer.c |    8 ++++++
+ drivers/staging/iio/Documentation/iio_utils.h      |   25 ++++++++++++++++---
+ 2 files changed, 29 insertions(+), 4 deletions(-)
+
 -- 
 1.7.7.3
+
