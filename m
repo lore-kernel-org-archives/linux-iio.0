@@ -1,115 +1,257 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4ECAC738.5030605@kernel.org>
-Date: Mon, 21 Nov 2011 21:48:40 +0000
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34534 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753385Ab1K0LE5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Nov 2011 06:04:57 -0500
+Message-ID: <4ED21960.1000002@kernel.org>
+Date: Sun, 27 Nov 2011 11:05:04 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Sasha Levin <levinsasha928@gmail.com>
-CC: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
- Greg Kroah-Hartman <gregkh@suse.de>,
- linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: Re: [PATCH] iio: Don't OOPS if dummy evgen failed init
-References: <1321909894-1352-1-git-send-email-levinsasha928@gmail.com>
-In-Reply-To: <1321909894-1352-1-git-send-email-levinsasha928@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: Federico Vaga <federico.vaga@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Greg KH <greg@kroah.com>, Lars-Peter Clausen <lars@metafoo.de>
+CC: Alessandro Rubini <rubini@gnudd.com>
+Subject: ZIO wiki analysis of IIO and why it doesn't meet there requirements
+ [was Re: Industrial Input Output analysis]
+References: <CAH5GJ0qTW_DwaAVhe6ZjGYg=1CPPVuQQn3biyg+2BuYHp1Hefw@mail.gmail.com>
+In-Reply-To: <CAH5GJ0qTW_DwaAVhe6ZjGYg=1CPPVuQQn3biyg+2BuYHp1Hefw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 11/21/2011 09:11 PM, Sasha Levin wrote:
-> If the dummy evgen failed init, the irq allocation functions which assume
-> init succeeded may still be called - causing an OOPS due to wrong assumption.
-> 
-> Here's the oops:
-> 
-> [    3.914332] BUG: unable to handle kernel NULL pointer dereference at 0000000000000148
-> [    3.915310] IP: [<ffffffff810b3008>] __lock_acquire+0xac/0xe50
-> [    3.915310] PGD 0
-> [    3.915310] Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC
-> [    3.915310] CPU 1
-> [    3.915310] Pid: 1, comm: swapper Not tainted 3.2.0-rc2-sasha-00279-gd7bfb12-dirty #20
-> [    3.915310] RIP: 0010:[<ffffffff810b3008>]  [<ffffffff810b3008>] __lock_acquire+0xac/0xe50
-> [    3.915310] RSP: 0018:ffff880012499bc0  EFLAGS: 00010046
-> [    3.915310] RAX: 0000000000000086 RBX: ffff880012490000 RCX: 0000000000000000
-> [    3.915310] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000148
-> [    3.915310] RBP: ffff880012499c90 R08: 0000000000000002 R09: 0000000000000000
-> [    3.915310] R10: 0000000000000148 R11: 0000000000000000 R12: 0000000000000148
-> [    3.915310] R13: 0000000000000002 R14: 0000000000000000 R15: 0000000000000000
-> [    3.915310] FS:  0000000000000000(0000) GS:ffff880013c00000(0000) knlGS:0000000000000000
-> [    3.915310] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
-> [    3.915310] CR2: 0000000000000148 CR3: 0000000002605000 CR4: 00000000000406e0
-> [    3.915310] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [    3.915310] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
-> [    3.915310] Process swapper (pid: 1, threadinfo ffff880012498000, task ffff880012490000)
-> [    3.915310] Stack:
-> [    3.915310]  ffff880012490000 ffffffff81e6fd38 ffffffff00000000 0000000000000000
-> [    3.915310]  0000000000000148 0000000012499c08 ffffffff00000000 000000000000002e
-> [    3.915310]  0000000000000001 ffff880012499ce0 ffffffff8161620e 0000000000000000
-> [    3.915310] Call Trace:
-> [    3.915310]  [<ffffffff81e6fd38>] ? retint_restore_args+0x13/0x13
-> [    3.915310]  [<ffffffff8161620e>] ? trace_hardirqs_on_thunk+0x3a/0x3f
-> [    3.915310]  [<ffffffff81e6fd38>] ? retint_restore_args+0x13/0x13
-> [    3.915310]  [<ffffffff81af8883>] ? iio_dummy_evgen_get_irq+0x33/0x8a
-> [    3.915310]  [<ffffffff810b4255>] lock_acquire+0x8a/0xa7
-> [    3.915310]  [<ffffffff81af8883>] ? iio_dummy_evgen_get_irq+0x33/0x8a
-> [    3.915310]  [<ffffffff81e6db81>] __mutex_lock_common+0x63/0x491
-> [    3.915310]  [<ffffffff81af8883>] ? iio_dummy_evgen_get_irq+0x33/0x8a
-> [    3.915310]  [<ffffffff810b474d>] ? debug_check_no_locks_freed+0x135/0x14a
-> [    3.915310]  [<ffffffff810b2c3a>] ? lock_is_held+0x92/0x9d
-> [    3.915310]  [<ffffffff81e6dfe5>] mutex_lock_nested+0x36/0x3b
-> [    3.915310]  [<ffffffff81af8883>] iio_dummy_evgen_get_irq+0x33/0x8a
-> [    3.915310]  [<ffffffff81af8594>] iio_simple_dummy_events_register+0x1b/0x69
-> [    3.915310]  [<ffffffff82ad4a91>] iio_dummy_init+0x105/0x18d
-> [    3.915310]  [<ffffffff82ad498c>] ? iio_init+0x7d/0x7d
-> [    3.915310]  [<ffffffff82a8dc02>] do_one_initcall+0x7a/0x135
-> [    3.915310]  [<ffffffff82a8dda7>] kernel_init+0xea/0x16f
-> [    3.915310]  [<ffffffff81e727c4>] kernel_thread_helper+0x4/0x10
-> [    3.915310]  [<ffffffff81e6fd38>] ? retint_restore_args+0x13/0x13
-> [    3.915310]  [<ffffffff82a8dcbd>] ? do_one_initcall+0x135/0x135
-> [    3.915310]  [<ffffffff81e727c0>] ? gs_change+0x13/0x13
-> [    3.915310] Code: 95 50 ff ff ff 74 24 e8 1f 3f 56 00 85 c0 0f 84 4e 0d 00 00 be cf 0b 00 00 83 3d 63 7c 58 02 00 0f 85 3c 0d 00 00 e9 c1 0c 00 00
-> [    3.915310]  81 3a a0 17 ca 82 b8 01 00 00 00 44 0f 44 e8 83 fe 01 77 0c
-> [    3.915310] RIP  [<ffffffff810b3008>] __lock_acquire+0xac/0xe50
-> [    3.915310]  RSP <ffff880012499bc0>
-> [    3.915310] CR2: 0000000000000148
-> 
-Thanks.  Dealing with the first one should make the second impossible to
-hit (as one shouldn't be trying to free irq's if they weren't
-successfully gotten in the first place.)
+Hi All,
 
-Just for clarity of code, I'd prefer without the release change.
+I'm posting this reply to linux-iio as it may cut down on the amount of
+repeated discussion and allow us to draw everyone relevant together.
+Please CC anyone relevant (I've just added Greg and Lars-Peter as they
+commented on the ZIO RFC and hence are probably at least vaguely
+interested.)
 
-Acked-by: Jonathan Cameron <jic23@cam.ac.uk> for the get change.
+Federico asked me to comment on the zio wiki page analysing IIO a week
+or so ago.  I didn't get round to it until yesterday (was prompted to
+take the time to do it by their posting of the patch series).
 
-Thanks,
-> Cc: Jonathan Cameron <jic23@cam.ac.uk>
-> Cc: Greg Kroah-Hartman <gregkh@suse.de>
-> Cc: linux-iio@vger.kernel.org
-> Cc: devel@driverdev.osuosl.org
-> Signed-off-by: Sasha Levin <levinsasha928@gmail.com>
-> ---
->  drivers/staging/iio/iio_dummy_evgen.c |    7 +++++++
->  1 files changed, 7 insertions(+), 0 deletions(-)
+Anyhow, my points below are intended more for discussion than anything
+else.  There are clearly things we can learn from each other and I
+suspect at some point the question of whether we can merge (or at least
+share some infrastructure) will come up so it is worth keeping that in
+mind as we go. Targets are different but there will clearly be a blurred
+region between the two!  There are strengths and weaknesses to both
+approaches so lets work out what they are and make sure we agree the facts.
+
+Jonathan
+
+> Hello Mr Cameron,
 > 
-> diff --git a/drivers/staging/iio/iio_dummy_evgen.c b/drivers/staging/iio/iio_dummy_evgen.c
-> index da657d1..74d8d94 100644
-> --- a/drivers/staging/iio/iio_dummy_evgen.c
-> +++ b/drivers/staging/iio/iio_dummy_evgen.c
-> @@ -102,6 +102,10 @@ static int iio_dummy_evgen_create(void)
->  int iio_dummy_evgen_get_irq(void)
->  {
->  	int i, ret = 0;
-> +
-> +	if (iio_evgen == NULL)
-> +		return -ENODEV;
-> +
->  	mutex_lock(&iio_evgen->lock);
->  	for (i = 0; i < IIO_EVENTGEN_NO; i++)
->  		if (iio_evgen->inuse[i] == false) {
-> @@ -124,6 +128,9 @@ EXPORT_SYMBOL_GPL(iio_dummy_evgen_get_irq);
->   */
->  int iio_dummy_evgen_release_irq(int irq)
->  {
-> +	if (iio_evgen == NULL)
-> +		return -ENODEV;
-> +
->  	mutex_lock(&iio_evgen->lock);
->  	iio_evgen->inuse[irq - iio_evgen->base] = false;
->  	mutex_unlock(&iio_evgen->lock);
+> I'm working on a new linux framework for data acquisition systems, ZIO.
+> The open hardware repository (http://www.ohwr.org/) hosts the ZIO
+> project at http://www.ohwr.org/projects/zio/.
+> 
+> Before starting with this project I analyzed both COMEDI and IIO to
+> undestand if they comply with our requirements, and they don't. I'm glad
+> if you can read my analysis about IIO on the wiki page of the ZIO project,
+> and give me your opinion. There is not much documentation about IIO, so I
+> read the entire code to understand how it works; maybe I misunderstood
+> something and you can correct me where I'm wrong in my analysis.
+> Bear in mind that our main case are boards with mega-samples for second
+> and with a time-stamp precision of sub-nanoseconds. Data output is as
+> important as data input and we don't handle small sets of samples.
+> 
+> I think that IIO is a good work (absolutely better the COMEDI) but it
+> doesn't meet with our requirements and is directed toward a different
+> target (small chips). The first time, I analyzed the IIO version within kernel
+> 2.6.38/39 and I really appreciate the improvements done about sysfs
+> centralization and channel organization, but there are some points
+> where I still disagree.
+> 
+> The ZIO project is under development at this time, but we think that
+> we'll submit a patch in one or two weeks based on the linux next tree;
+> Greg K.H. suggests us to write also on the IIO mailing list when the ZIO
+> patch is submitted.
+> 
+> PS: English is not my native language, so ... I'm sorry.
+Would you mind if I posted this to linux-iio as well?  It might save us
+all some time.  (If you don't mind and want to reply, then just cc the list)
+
+Sorry I didn't get to this earlier. Things have been a bit manic for the
+last few weeks.
+
+Anyhow, overview of IIO is mostly fair and accurate. Few minor comments
+though (particularly as you've now posted and received the predictable
+questions!)  Note some of these refer to changes we could make,
+obviously your consideration is based on what is there so they don't
+directly apply to the web page.
+
+1) Number of devices is currently limited at 256 entirely because it is
+considered rude to request many more devices than you actually expect to
+see.  Can up this the moment someone actually says they have a reason to
+do so.
+
+2) Output signal support is patchy and currently unbuffered, but there
+is some.  Agreed it is rubbish.  Analog Devices were putting some effort
+in on this front, but  I don't know what stage it reached.
+It wasn't of interest to me so wasn't in the early code.
+
+3) I disagree with your analysis of meta data. We do not carry it with
+the main data streams precisely because it is unnecessary overhead.
+Userspace knows what it setup and what it read. (If your stream is not
+controlled from userspace then fair enough, you need meta data).
+The meta data is valid whenever the buffer is enabled and hence can be
+read once, out of band.
+
+4) The reason for the weird 'fake' floating point (which I agree is
+clunky) is the enormous range of real values one sees.  Straight integer
+just doesn't give you enough space.  Hence we cheat and use
+those two integers with a variable definition of what they mean.
+It's all that we have found that works for the devices we have seen.
+It's a wierd world but I doubt you'll find a single integer works in
+all cases.  Microvolts is incidently not a very fine granularity at all.
+Some of the values we have are already in picovolts and there are
+nastier devices out there.
+
+5) On the sysfs naming, this is lifted from what hwmon does.  The naming
+channel types has worked well for them so there is a lot of support for
+it.  The two indexes are for flexibility and come from our decisions on
+channel naming.  If we are going to have temp0, temp1 etc and in0 in1
+etc then we need one to do the naming index and one to do the location
+in the buffer (ordering is always maintained).  Agreed if you argue the
+naming is a bad choice, then you could just use one. So this is clearly
+tied up with the previous point.
+
+6)  On the precision control bit I'm a little unclear what you mean but
+will take a punt...
+
+Devices have radically different precisions, 8 bit to 24 bit so far in
+IIO. Without this we have to store 4 times the data (as always align to
+save time) for the 8 bit devices. Is this what you mean?  If so you've
+just multiplied your data size by 4 in order to avoid a little bit of
+trivial handling code.  Again a difference of opinion.  Note we don't
+allow these to be changed at run time (more or less, there is one
+exception which is when there is a hardware buffer involved).
+
+7) Buffer file operations stuff.  Trivial to add. I certainly intend to
+do mmapped (and for that matter splice) as soon as buffers exist that
+use it.  Was kind of hoping something nice would come out of the tracing
+guys trying to unify their buffers, but not seen anything yet.
+
+8) concurency support if really needed can be done in userspace. I'd
+consider it decidely odd if you have a high speed read application where
+concurrent reading makes sense.  We talked about this ages ago and
+concluded it wasn't worth the hassle.
+True concurrent reader buffers are a pain.  See the fun evdev goes
+through and they definitely aren't trying to handle much data.
+
+9) I suspect the disagreement about scan's may be down to the types of
+hardware involved.  A lot of devices I see are 'only' capable of reading
+sets of channels together.  We could then demux them into
+multiple buffers (one per channel as you have done), but only by adding
+considerable overhead. These share a timestamp, so if nothing else we
+only want to save one copy of that.  I'll have to have a close look at
+your code to understand what your data flow actually looks like. Perhaps
+I am completely missunderstanding it.
+
+10) Buffer type choice at runtime is not there as you say. Note that the
+infrastructure is there though after the inkernel push interface patches
+merge (they use a demux unit to handle splitting our 'scans' coming from
+hardware out to as many buffers as one likes.  However to do this
+coherently we would have to have all buffers registered at the start or
+disassociate them from the iio device in some way.  Note this may be a
+pass through if a given buffer wants all the channels.)  So it can be
+done, but we haven't yet had a usecase.  This has been on my todo list,
+but not urgent as of yet!
+
+11) I am intrigued to know what could be easier in associating a trigger
+to a device than writing the trigger's 'name' value returned from the
+oponomous sysfs attribute into 'current_trigger' of the
+device you wish to trigger?  This is entirely a userspace operation.
+You can set a default if it makes sense (typically data ready signal
+of the same device).
+
+12) The stuff about instance management for triggers only applies to
+one very special trigger type.  This is the userspace sysfs trigger.
+Any trigger associated with hardware is initialized from board files
+describing the hardware. We would probably do the same with a high
+res timer trigger, but though one has been proposed it isn't ready
+to merge as yet.
+
+13) Event's used to configure a trigger value? I'm not sure what you
+mean by that. Perhaps it is a disconnnect in what 'events' mean to each
+of us?  Anything can be a trigger is someone rights a driver that
+exports it as such.
+
+14) There is nothing to stop developers declaring channel specific
+attributes. If there is a channel related control that is fairly general
+then it should not be separately registered but instead added to the
+channel_info mask.  That way it is available for inkernel control from
+other drivers.  If it is very much device specific (and very few things
+actually are) then there is nothing to stop it being added.
+
+15) The address field being used to give the mask is a spurious point as
+the full channel structure is also available so translation to addresses
+is trivial if needed.  Note this isn't the case for non channel related
+attributes, hence the address is used differently.
+
+16) Concurrent processes can change attributes, but only in non
+distructive ways (from stability point of view anyway).  For example,
+buffer contents is protected. If a buffer is live then no one can edit
+what goes into it.  Hence userspace should setup and initialize the
+buffer then check that it is set to what it wants it to be set to before
+opening / reading from it.  I am unclear what else you would suggest
+protecting?
+
+17) I take your point on the event open/close issues.  Events are one
+bit we aren't really happy with!  Devices ought to have opened the file
+before turning anything on, so this probably doesn't make any difference
+in practice, but as you say it is inconsistent.
+
+18) Can add a warning about registering the buffer before the device I
+guess if getting this wrong is common! First report on that one.
+
+Bits and bobs from your table at the end.  Note some of these are
+considerations of how we could adapt the code to make it fit your
+usecase better.
+
+Buffers only currently work on a sample by sample basis. Technically
+there is nothing stopping us from adding a 'push lots' optional
+callback.  Getting this to interact well with the demux code needed for
+inkernel users would require an optional unroll into individual samples
+though.  This doesn't occur in the case where the buffer 'contains
+everything' that is captured.  Not too bad, but not pain free.  Kind of
+need this anyway to handle chaining a hardware buffer into a software
+buffer.
+
+As above, I think the trigger instance confusion is based on reading one
+fairly odd trigger type.
+
+Offset gain etc inconsistency of naming bothers me.  These certainly
+should be consistent!  There are some drivers in need of cleanup that
+may have confused the issue here.  These  are tightly defined by the abi
+spec and mostly implemented via the info_mask of the channels.
+
+The number of devices limit arguement is spurious.  If you are using
+chrdevs then your number of devices is limited by what it is considered
+polite to request.  we set it at 256 as that is considered reasonable.
+Could trivially make it a compile time configurable option.  Note we
+will only have one iio device per set of triggerable channels (e.g. if
+it looks like two separable devices from a data flow point of view, it
+will be registered as such.).
+
+Good point on the timestamp limitations. Easy to work around though, but
+making the special treatement of timestamps happen only if it is both a
+timestamp and not indexed.  Any 'real' channel should be indexed or have
+a modifier so this is valid.  Two line patch I think.  Only worth doing
+when there is a user though!
+
+Anyhow, I will be interested to have a read of your proposed code.
+
+The big difference I think are that you split data out into independent
+buffers, one per channel.  We use the concept of scan's because that is
+often how adcs actually work and cuts the overhead to minimum.  Two
+options and which is best is probably dictated by the use case.
+
+Other big one is that our output support is currently minimal to say the
+least.
+
+Will be interesting to compare.
+
+Jonathan
