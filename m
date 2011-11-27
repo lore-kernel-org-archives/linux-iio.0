@@ -5,68 +5,66 @@ Cc: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
 	manuel.stahl@iis.fraunhofer.de,
 	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 13/16] staging:iio:adc:ad799x stop reading from buffer for sysfs accesses
-Date: Sun, 27 Nov 2011 13:33:42 +0000
-Message-Id: <1322400825-29400-14-git-send-email-jic23@kernel.org>
+Subject: [PATCH 12/16] staging:iio:adc:ad7887 stop reading from buffer for sysfs access.
+Date: Sun, 27 Nov 2011 13:33:41 +0000
+Message-Id: <1322400825-29400-13-git-send-email-jic23@kernel.org>
 In-Reply-To: <1322400825-29400-1-git-send-email-jic23@kernel.org>
 References: <1322400825-29400-1-git-send-email-jic23@kernel.org>
 Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-No known use case and makes in kernel interface work more complex.
+No known use case and complicates in kernel interface work.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/adc/ad799x.h      |    6 ------
- drivers/staging/iio/adc/ad799x_core.c |    3 +--
- drivers/staging/iio/adc/ad799x_ring.c |   30 ------------------------------
- 3 files changed, 1 insertions(+), 38 deletions(-)
+ drivers/staging/iio/adc/ad7887.h      |    5 ----
+ drivers/staging/iio/adc/ad7887_core.c |    2 +-
+ drivers/staging/iio/adc/ad7887_ring.c |   34 ---------------------------------
+ 3 files changed, 1 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad799x.h b/drivers/staging/iio/adc/ad799x.h
-index eda01d5..356f690 100644
---- a/drivers/staging/iio/adc/ad799x.h
-+++ b/drivers/staging/iio/adc/ad799x.h
-@@ -124,15 +124,9 @@ struct ad799x_platform_data {
- int ad7997_8_set_scan_mode(struct ad799x_state *st, unsigned mask);
+diff --git a/drivers/staging/iio/adc/ad7887.h b/drivers/staging/iio/adc/ad7887.h
+index 3452d18..bc53b65 100644
+--- a/drivers/staging/iio/adc/ad7887.h
++++ b/drivers/staging/iio/adc/ad7887.h
+@@ -83,14 +83,9 @@ enum ad7887_supported_device_ids {
+ };
  
- #ifdef CONFIG_AD799X_RING_BUFFER
--int ad799x_single_channel_from_ring(struct iio_dev *indio_dev, int channum);
- int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev);
- void ad799x_ring_cleanup(struct iio_dev *indio_dev);
- #else /* CONFIG_AD799X_RING_BUFFER */
--int ad799x_single_channel_from_ring(struct iio_dev *indio_dev, int channum)
+ #ifdef CONFIG_IIO_BUFFER
+-int ad7887_scan_from_ring(struct ad7887_state *st, int channum);
+ int ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+ void ad7887_ring_cleanup(struct iio_dev *indio_dev);
+ #else /* CONFIG_IIO_BUFFER */
+-static inline int ad7887_scan_from_ring(struct ad7887_state *st, int channum)
 -{
--	return -EINVAL;
+-	return 0;
 -}
--
  
  static inline int
- ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
-index 5bedb19..815e6b9 100644
---- a/drivers/staging/iio/adc/ad799x_core.c
-+++ b/drivers/staging/iio/adc/ad799x_core.c
-@@ -151,8 +151,7 @@ static int ad799x_read_raw(struct iio_dev *indio_dev,
+ ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+diff --git a/drivers/staging/iio/adc/ad7887_core.c b/drivers/staging/iio/adc/ad7887_core.c
+index 8f48659..ffed20e 100644
+--- a/drivers/staging/iio/adc/ad7887_core.c
++++ b/drivers/staging/iio/adc/ad7887_core.c
+@@ -45,7 +45,7 @@ static int ad7887_read_raw(struct iio_dev *indio_dev,
  	case 0:
  		mutex_lock(&indio_dev->mlock);
  		if (iio_buffer_enabled(indio_dev))
--			ret = ad799x_single_channel_from_ring(indio_dev,
--							      chan->scan_index);
+-			ret = ad7887_scan_from_ring(st, 1 << chan->address);
 +			ret = -EBUSY;
  		else
- 			ret = ad799x_scan_direct(st, chan->scan_index);
+ 			ret = ad7887_scan_direct(st, chan->address);
  		mutex_unlock(&indio_dev->mlock);
-diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
-index 5841c3c..5dded9e 100644
---- a/drivers/staging/iio/adc/ad799x_ring.c
-+++ b/drivers/staging/iio/adc/ad799x_ring.c
-@@ -23,36 +23,6 @@
+diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
+index f53a663..85076cd 100644
+--- a/drivers/staging/iio/adc/ad7887_ring.c
++++ b/drivers/staging/iio/adc/ad7887_ring.c
+@@ -19,40 +19,6 @@
  
- #include "ad799x.h"
+ #include "ad7887.h"
  
--int ad799x_single_channel_from_ring(struct iio_dev *indio_dev, int channum)
+-int ad7887_scan_from_ring(struct ad7887_state *st, int channum)
 -{
--	struct iio_buffer *ring = indio_dev->buffer;
+-	struct iio_buffer *ring = iio_priv_to_dev(st)->buffer;
 -	int count = 0, ret;
 -	u16 *ring_data;
 -
@@ -84,8 +82,12 @@ index 5841c3c..5dded9e 100644
 -	ret = ring->access->read_last(ring, (u8 *) ring_data);
 -	if (ret)
 -		goto error_free_ring_data;
--	/* Need a count of channels prior to this one */
--	count = bitmap_weight(ring->scan_mask, channum);
+-
+-	/* for single channel scan the result is stored with zero offset */
+-	if ((test_bit(1, ring->scan_mask) || test_bit(0, ring->scan_mask)) &&
+-	    (channum == 1))
+-		count = 1;
+-
 -	ret = be16_to_cpu(ring_data[count]);
 -
 -error_free_ring_data:
@@ -95,7 +97,7 @@ index 5841c3c..5dded9e 100644
 -}
 -
  /**
-  * ad799x_ring_preenable() setup the parameters of the ring before enabling
+  * ad7887_ring_preenable() setup the parameters of the ring before enabling
   *
 -- 
 1.7.7.3
