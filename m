@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org
 Cc: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 6/7] staging:iio:adc:max1363 use new demuxing support.
-Date: Sun, 27 Nov 2011 13:10:11 +0000
-Message-Id: <1322399412-21622-7-git-send-email-jic23@kernel.org>
+Subject: [PATCH 5/7] staging:iio: add demux optionally to path from device to buffer
+Date: Sun, 27 Nov 2011 13:10:10 +0000
+Message-Id: <1322399412-21622-6-git-send-email-jic23@kernel.org>
 In-Reply-To: <1322399412-21622-1-git-send-email-jic23@kernel.org>
 References: <1322399412-21622-1-git-send-email-jic23@kernel.org>
 Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
@@ -14,162 +14,235 @@ List-ID: <linux-iio@vger.kernel.org>
 
 From: Jonathan Cameron <jic23@cam.ac.uk>
 
+This gives you only what you ask for which is handy
+for some devices with weird scan combinations.
+
+Routes all data flow through a core utility function.
+That and this demuxing support will be needed to do
+demuxing to multiple destinations in kernel.
+
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/adc/max1363.h      |   11 +++++-
- drivers/staging/iio/adc/max1363_core.c |    4 ++-
- drivers/staging/iio/adc/max1363_ring.c |   51 +++++++++-----------------------
- 3 files changed, 26 insertions(+), 40 deletions(-)
+ drivers/staging/iio/buffer.h              |   15 +++
+ drivers/staging/iio/industrialio-buffer.c |  148 ++++++++++++++++++++++++++++-
+ 2 files changed, 159 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/max1363.h b/drivers/staging/iio/adc/max1363.h
-index cbcb08a..fb52783 100644
---- a/drivers/staging/iio/adc/max1363.h
-+++ b/drivers/staging/iio/adc/max1363.h
-@@ -146,18 +146,25 @@ struct max1363_state {
+diff --git a/drivers/staging/iio/buffer.h b/drivers/staging/iio/buffer.h
+index 4b8f619..5282441 100644
+--- a/drivers/staging/iio/buffer.h
++++ b/drivers/staging/iio/buffer.h
+@@ -95,6 +95,8 @@ struct iio_buffer_setup_ops {
+  * @access:		[DRIVER] buffer access functions associated with the
+  *			implementation.
+  * @flags:		[INTERN] file ops related flags including busy flag.
++ * @demux_list:		[INTERN] list of operations required to demux the scan.
++ * @demux_bounce:	[INTERN] buffer for doing gather from incoming scan.
+  **/
+ struct iio_buffer {
+ 	struct iio_dev				*indio_dev;
+@@ -115,6 +117,8 @@ struct iio_buffer {
+ 	bool					stufftoread;
+ 	unsigned long				flags;
+ 	const struct attribute_group *attrs;
++	struct list_head			demux_list;
++	unsigned char				*demux_bounce;
  };
  
- const struct max1363_mode
--*max1363_match_mode(unsigned long *mask, const struct max1363_chip_info *ci);
-+*max1363_match_mode(const unsigned long *mask,
-+		    const struct max1363_chip_info *ci);
+ /**
+@@ -153,6 +157,17 @@ int iio_scan_mask_set(struct iio_buffer *buffer, int bit);
+ 	container_of(d, struct iio_buffer, dev)
  
- int max1363_set_scan_mode(struct max1363_state *st);
+ /**
++ * iio_push_to_buffer() - push to a registered buffer.
++ * @buffer:		IIO buffer structure for device
++ * @scan:		Full scan.
++ * @timestamp:
++ */
++int iio_push_to_buffer(struct iio_buffer *buffer, unsigned char *data,
++		       s64 timestamp);
++
++int iio_update_demux(struct iio_dev *indio_dev);
++
++/**
+  * iio_buffer_register() - register the buffer with IIO core
+  * @indio_dev: device with the buffer to be registered
+  **/
+diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c
+index fb14e37..352f9f1 100644
+--- a/drivers/staging/iio/industrialio-buffer.c
++++ b/drivers/staging/iio/industrialio-buffer.c
+@@ -87,6 +87,7 @@ void iio_chrdev_buffer_release(struct iio_dev *indio_dev)
  
- #ifdef CONFIG_MAX1363_RING_BUFFER
--
-+int max1363_update_scan_mode(struct iio_dev *indio_dev,
-+			     const unsigned long *scan_mask);
- int max1363_single_channel_from_ring(const long *mask,
- 				     struct max1363_state *st);
- int max1363_register_ring_funcs_and_init(struct iio_dev *indio_dev);
- void max1363_ring_cleanup(struct iio_dev *indio_dev);
- 
- #else /* CONFIG_MAX1363_RING_BUFFER */
-+int max1363_update_scan_mode(struct iio_dev *indio_dev,
-+			     const long *scan_mask)
-+{
-+	return 0;
-+}
- 
- int max1363_single_channel_from_ring(long mask, struct max1363_state *st)
+ void iio_buffer_init(struct iio_buffer *buffer, struct iio_dev *indio_dev)
  {
-diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
-index c3e28e1..7e078fc 100644
---- a/drivers/staging/iio/adc/max1363_core.c
-+++ b/drivers/staging/iio/adc/max1363_core.c
-@@ -148,7 +148,8 @@ static const struct max1363_mode max1363_mode_table[] = {
- };
++	INIT_LIST_HEAD(&buffer->demux_list);
+ 	buffer->indio_dev = indio_dev;
+ 	init_waitqueue_head(&buffer->pollq);
+ }
+@@ -128,10 +129,9 @@ static ssize_t iio_scan_el_show(struct device *dev,
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
  
- const struct max1363_mode
--*max1363_match_mode(unsigned long *mask, const struct max1363_chip_info *ci)
-+*max1363_match_mode(const unsigned long *mask,
-+const struct max1363_chip_info *ci)
- {
- 	int i;
- 	if (mask)
-@@ -834,6 +835,7 @@ static const struct iio_info max1363_info = {
- 	.read_event_config = &max1363_read_event_config,
- 	.write_event_config = &max1363_write_event_config,
- 	.read_raw = &max1363_read_raw,
-+	.update_scan_mode = &max1363_update_scan_mode,
- 	.driver_module = THIS_MODULE,
- 	.event_attrs = &max1363_event_attribute_group,
- };
-diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
-index 3c5e199..19977a6 100644
---- a/drivers/staging/iio/adc/max1363_ring.c
-+++ b/drivers/staging/iio/adc/max1363_ring.c
-@@ -57,46 +57,19 @@ error_ret:
- 	return ret;
+-	ret = iio_scan_mask_query(indio_dev->buffer,
+-				  to_iio_dev_attr(attr)->address);
+-	if (ret < 0)
+-		return ret;
++	ret = test_bit(to_iio_dev_attr(attr)->address,
++		       indio_dev->buffer->scan_mask);
++
+ 	return sprintf(buf, "%d\n", ret);
  }
  
--
--/**
-- * max1363_ring_preenable() - setup the parameters of the ring before enabling
-- *
-- * The complex nature of the setting of the nuber of bytes per datum is due
-- * to this driver currently ensuring that the timestamp is stored at an 8
-- * byte boundary.
-- **/
--static int max1363_ring_preenable(struct iio_dev *indio_dev)
-+int max1363_update_scan_mode(struct iio_dev *indio_dev,
-+			     const unsigned long *scan_mask)
- {
- 	struct max1363_state *st = iio_priv(indio_dev);
--	struct iio_buffer *ring = indio_dev->buffer;
--	size_t d_size = 0;
--	unsigned long numvals;
- 
- 	/*
- 	 * Need to figure out the current mode based upon the requested
- 	 * scan mask in iio_dev
- 	 */
--	st->current_mode = max1363_match_mode(ring->scan_mask,
--					st->chip_info);
-+	st->current_mode = max1363_match_mode(scan_mask, st->chip_info);
- 	if (!st->current_mode)
- 		return -EINVAL;
--
- 	max1363_set_scan_mode(st);
--
--	numvals = bitmap_weight(st->current_mode->modemask,
--				indio_dev->masklength);
--	if (ring->access->set_bytes_per_datum) {
--		if (ring->scan_timestamp)
--			d_size += sizeof(s64);
--		if (st->chip_info->bits != 8)
--			d_size += numvals*2;
--		else
--			d_size += numvals;
--		if (ring->scan_timestamp && (d_size % 8))
--			d_size += 8 - (d_size % 8);
--		ring->access->set_bytes_per_datum(ring, d_size);
--	}
--
+@@ -583,6 +583,12 @@ int iio_sw_buffer_preenable(struct iio_dev *indio_dev)
+ 					    buffer->scan_mask);
+ 	else
+ 		indio_dev->active_scan_mask = buffer->scan_mask;
++	iio_update_demux(indio_dev);
++
++	if (indio_dev->info->update_scan_mode)
++		return indio_dev->info
++			->update_scan_mode(indio_dev,
++					   indio_dev->active_scan_mask);
  	return 0;
  }
- 
-@@ -114,12 +87,14 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
- 
- 	/* Ensure the timestamp is 8 byte aligned */
- 	if (st->chip_info->bits != 8)
--		d_size = numvals*2 + sizeof(s64);
-+		d_size = numvals*2;
- 	else
--		d_size = numvals + sizeof(s64);
--	if (d_size % sizeof(s64))
--		d_size += sizeof(s64) - (d_size % sizeof(s64));
--
-+		d_size = numvals;
-+	if (indio_dev->buffer->scan_timestamp) {
-+		d_size += sizeof(s64);
-+		if (d_size % sizeof(s64))
-+			d_size += sizeof(s64) - (d_size % sizeof(s64));
-+	}
- 	/* Monitor mode prevents reading. Whilst not currently implemented
- 	 * might as well have this test in here in the meantime as it does
- 	 * no harm.
-@@ -138,9 +113,11 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
- 		goto done;
- 
- 	time_ns = iio_get_time_ns();
-+
- 	if (indio_dev->buffer->scan_timestamp)
- 		memcpy(rxbuf + d_size - sizeof(s64), &time_ns, sizeof(time_ns));
--	indio_dev->buffer->access->store_to(indio_dev->buffer, rxbuf, time_ns);
-+	iio_push_to_buffer(indio_dev->buffer, rxbuf, time_ns);
-+
- done:
- 	iio_trigger_notify_done(indio_dev->trig);
- 	kfree(rxbuf);
-@@ -150,7 +127,7 @@ done:
- 
- static const struct iio_buffer_setup_ops max1363_ring_setup_ops = {
- 	.postenable = &iio_triggered_buffer_postenable,
--	.preenable = &max1363_ring_preenable,
-+	.preenable = &iio_sw_buffer_preenable,
- 	.predisable = &iio_triggered_buffer_predisable,
+ EXPORT_SYMBOL(iio_sw_buffer_preenable);
+@@ -652,3 +658,137 @@ int iio_scan_mask_query(struct iio_buffer *buffer, int bit)
+ 	return test_bit(bit, mask);
  };
- 
+ EXPORT_SYMBOL_GPL(iio_scan_mask_query);
++
++/**
++ * struct iio_demux_table() - table describing demux memcpy ops
++ * @from:	index to copy from
++ * @to:	index to copy to
++ * @length:	how many bytes to copy
++ * @l:		list head used for management
++ */
++struct iio_demux_table {
++	unsigned from;
++	unsigned to;
++	unsigned length;
++	struct list_head l;
++};
++
++static unsigned char *iio_demux(struct iio_buffer *buffer,
++				 unsigned char *datain)
++{
++	struct iio_demux_table *t;
++
++	if (list_empty(&buffer->demux_list))
++		return datain;
++	list_for_each_entry(t, &buffer->demux_list, l)
++		memcpy(buffer->demux_bounce + t->to,
++		       datain + t->from, t->length);
++
++	return buffer->demux_bounce;
++}
++
++int iio_push_to_buffer(struct iio_buffer *buffer, unsigned char *data,
++		       s64 timestamp)
++{
++	unsigned char *dataout = iio_demux(buffer, data);
++
++	return buffer->access->store_to(buffer, dataout, timestamp);
++}
++EXPORT_SYMBOL_GPL(iio_push_to_buffer);
++
++int iio_update_demux(struct iio_dev *indio_dev)
++{
++	const struct iio_chan_spec *ch;
++	struct iio_buffer *buffer = indio_dev->buffer;
++	int ret, in_ind = -1, out_ind, length;
++	unsigned in_loc = 0, out_loc = 0;
++	struct iio_demux_table *p, *q;
++
++	/* Clear out any old demux */
++	list_for_each_entry_safe(p, q, &buffer->demux_list, l) {
++		list_del(&p->l);
++		kfree(p);
++	}
++	kfree(buffer->demux_bounce);
++	buffer->demux_bounce = NULL;
++
++	/* First work out which scan mode we will actually have */
++	if (bitmap_equal(indio_dev->active_scan_mask,
++			 buffer->scan_mask,
++			 indio_dev->masklength))
++		return 0;
++
++	out_ind = find_first_bit(buffer->scan_mask, indio_dev->masklength);
++	/* Now we have the two masks, work from least sig and build up sizes */
++	while (out_ind != indio_dev->masklength) {
++		in_ind = find_next_bit(indio_dev->active_scan_mask,
++				       indio_dev->masklength,
++				       in_ind + 1);
++		while (in_ind != out_ind) {
++			in_ind = find_next_bit(indio_dev->active_scan_mask,
++					       indio_dev->masklength,
++					       in_ind + 1);
++			ch = iio_find_channel_from_si(indio_dev, in_ind);
++			length = ch->scan_type.storagebits/8;
++			/* Make sure we are aligned */
++			in_loc += length;
++			if (in_loc % length)
++				in_loc += length - in_loc % length;
++		}
++		p = kmalloc(sizeof(*p), GFP_KERNEL);
++		if (p == NULL) {
++			ret = -ENOMEM;
++			goto error_clear_mux_table;
++		}
++		ch = iio_find_channel_from_si(indio_dev, in_ind);
++		length = ch->scan_type.storagebits/8;
++		if (out_loc % length)
++			out_loc += length - out_loc % length;
++		if (in_loc % length)
++			in_loc += length - in_loc % length;
++		p->from = in_loc;
++		p->to = out_loc;
++		p->length = length;
++		list_add_tail(&p->l, &buffer->demux_list);
++		out_loc += length;
++		in_loc += length;
++		out_ind = find_next_bit(buffer->scan_mask,
++					indio_dev->masklength,
++					out_ind + 1);
++	}
++	/* Relies on scan_timestamp being last */
++	if (buffer->scan_timestamp) {
++		p = kmalloc(sizeof(*p), GFP_KERNEL);
++		if (p == NULL) {
++			ret = -ENOMEM;
++			goto error_clear_mux_table;
++		}
++		ch = iio_find_channel_from_si(indio_dev,
++			buffer->scan_index_timestamp);
++		length = ch->scan_type.storagebits/8;
++		if (out_loc % length)
++			out_loc += length - out_loc % length;
++		if (in_loc % length)
++			in_loc += length - in_loc % length;
++		p->from = in_loc;
++		p->to = out_loc;
++		p->length = length;
++		list_add_tail(&p->l, &buffer->demux_list);
++		out_loc += length;
++		in_loc += length;
++	}
++	buffer->demux_bounce = kzalloc(out_loc, GFP_KERNEL);
++	if (buffer->demux_bounce == NULL) {
++		ret = -ENOMEM;
++		goto error_clear_mux_table;
++	}
++	return 0;
++
++error_clear_mux_table:
++	list_for_each_entry_safe(p, q, &buffer->demux_list, l) {
++		list_del(&p->l);
++		kfree(p);
++	}
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iio_update_demux);
 -- 
 1.7.7.3
