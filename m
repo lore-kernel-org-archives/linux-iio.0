@@ -1,58 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:49860 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752653Ab1KZJTm convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Nov 2011 04:19:42 -0500
-References: <CANFwon20C9NC6GmWnwfSHcWOSFe-7fdt_QbCQQNhegieNeDUNA@mail.gmail.com>
-In-Reply-To: <CANFwon20C9NC6GmWnwfSHcWOSFe-7fdt_QbCQQNhegieNeDUNA@mail.gmail.com>
+Return-Path: <teawater@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <a3c3695e-8a13-4e44-9660-0df049d86003@email.android.com>
+References: <CANFwon20C9NC6GmWnwfSHcWOSFe-7fdt_QbCQQNhegieNeDUNA@mail.gmail.com>
+ <a3c3695e-8a13-4e44-9660-0df049d86003@email.android.com>
+From: Hui Zhu <teawater@gmail.com>
+Date: Sun, 27 Nov 2011 15:01:26 +0800
+Message-ID: <CANFwon0z7XBqhqmB0XT5fJPfYexmBXw0rYUtem5AEmR+xBkh1Q@mail.gmail.com>
 Subject: Re: [PATCH] fix build error of function iio_event_getfd
-From: Jonathan Cameron <jic23@cam.ac.uk>
-Date: Sat, 26 Nov 2011 09:19:34 +0000
-To: Hui Zhu <teawater@gmail.com>, Greg Kroah-Hartman <gregkh@suse.de>,
-	Michael Hennerich <michael.hennerich@analog.com>,
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, Michael Hennerich <michael.hennerich@analog.com>,
 	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Message-ID: <a3c3695e-8a13-4e44-9660-0df049d86003@email.android.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	linux-kernel@vger.kernel.org, Amerigo Wang <xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-Thanks but this is 7th fix I have seen.
+On Sat, Nov 26, 2011 at 17:19, Jonathan Cameron <jic23@cam.ac.uk> wrote:
+> Thanks but this is 7th fix I have seen.
 
-Hui Zhu <teawater@gmail.com> wrote:
+Cool! I am in the top 10.  :)
 
->Got a build error:
->  CC [M]  drivers/staging/iio/industrialio-core.o
->/home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:
->In function =E2=80=98iio_event_getfd=E2=80=99:
->/home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:2=
-62:32:
->error: =E2=80=98ev_int=E2=80=99 undeclared (first use in this function=
-)
->/home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:2=
-62:32:
->note: each undeclared identifier is reported only once for each
->function it appears in
->Not sure it is fixed or not.
->Post a patch for it.
+Sorry for disturb you.
+
+Thanks,
+Hui
+
 >
->Signed-off-by: Hui Zhu <teawater@gmail.com>
->---
-> drivers/staging/iio/industrialio-core.c |    1 +
-> 1 file changed, 1 insertion(+)
+> Hui Zhu <teawater@gmail.com> wrote:
 >
->--- a/drivers/staging/iio/industrialio-core.c
->+++ b/drivers/staging/iio/industrialio-core.c
->@@ -243,6 +243,7 @@ static const struct file_operations iio_
-> static int iio_event_getfd(struct iio_dev *indio_dev)
-> {
-> 	int fd;
->+	struct iio_event_interface *ev_int =3D indio_dev->event_interface;
+>>Got a build error:
+>> =A0CC [M] =A0drivers/staging/iio/industrialio-core.o
+>>/home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:
+>>In function =91iio_event_getfd=92:
+>>/home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:262:=
+32:
+>>error: =91ev_int=92 undeclared (first use in this function)
+>>/home/teawater/kernel2/linux/drivers/staging/iio/industrialio-core.c:262:=
+32:
+>>note: each undeclared identifier is reported only once for each
+>>function it appears in
+>>Not sure it is fixed or not.
+>>Post a patch for it.
+>>
+>>Signed-off-by: Hui Zhu <teawater@gmail.com>
+>>---
+>> drivers/staging/iio/industrialio-core.c | =A0 =A01 +
+>> 1 file changed, 1 insertion(+)
+>>
+>>--- a/drivers/staging/iio/industrialio-core.c
+>>+++ b/drivers/staging/iio/industrialio-core.c
+>>@@ -243,6 +243,7 @@ static const struct file_operations iio_
+>> static int iio_event_getfd(struct iio_dev *indio_dev)
+>> {
+>> =A0 =A0 =A0 int fd;
+>>+ =A0 =A0 =A0struct iio_event_interface *ev_int =3D indio_dev->event_inte=
+rface;
+>>
+>> =A0 =A0 =A0 if (indio_dev->event_interface =3D=3D NULL)
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 return -ENODEV;
 >
-> 	if (indio_dev->event_interface =3D=3D NULL)
-> 		return -ENODEV;
-
---=20
-Sent from my Android phone=20
-with K-9 Mail. Please excuse my brevity.
+> --
+> Sent from my Android phone
+> with K-9 Mail. Please excuse my brevity.
+>
