@@ -1,59 +1,60 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:48635 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752983Ab1K0LjK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Nov 2011 06:39:10 -0500
 From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 1/2] staging:iio:Documentation: cleanup properly in buffer handling code
-Date: Sun, 27 Nov 2011 11:46:04 +0000
-Message-Id: <1322394365-3214-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1322394365-3214-1-git-send-email-jic23@kernel.org>
-References: <1322394365-3214-1-git-send-email-jic23@kernel.org>
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+To: greg@kroah.com
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/3] Initial filtering (hardware) control for IIO.
+Date: Sun, 27 Nov 2011 11:39:11 +0000
+Message-Id: <1322393954-31525-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Hi Greg,
 
-Eating the endian description for now.
+Thanks for merging all those patches yesterday.
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
----
- drivers/staging/iio/Documentation/iio_utils.h |   18 +++++++++++++++---
- 1 files changed, 15 insertions(+), 3 deletions(-)
+These have been sitting in my tree and on linux-iio for far too long.
+I think all issues raised about the initial patch set were answered
+and fear this is not of sufficient interest to anyone to get a second
+review!
 
-diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
-index dbbad8a..986889b 100644
---- a/drivers/staging/iio/Documentation/iio_utils.h
-+++ b/drivers/staging/iio/Documentation/iio_utils.h
-@@ -145,9 +145,17 @@ inline int iioutils_get_type(unsigned *is_signed,
- 				ret = -errno;
- 				goto error_free_filename;
- 			}
--			fscanf(sysfsfp,
--			       "%c%u/%u>>%u", &signchar, bits_used,
--			       &padint, shift);
-+
-+			ret = fscanf(sysfsfp,
-+				     "%ce:%c%u/%u>>%u",
-+				     &endianchar,
-+				     &signchar,
-+				     bits_used,
-+				     &padint, shift);
-+			if (ret < 0) {
-+				printf("failed to pass scan type description\n");
-+				return ret;
-+			}
- 			*bytes = padint / 8;
- 			if (*bits_used == 64)
- 				*mask = ~0;
-@@ -157,6 +165,10 @@ inline int iioutils_get_type(unsigned *is_signed,
- 				*is_signed = 1;
- 			else
- 				*is_signed = 0;
-+			fclose(sysfsfp);
-+			free(filename);
-+
-+			filename = 0;
- 		}
- error_free_filename:
- 	if (filename)
+Anyhow fairly uncontroversial support for the low pass filters on
+the ADI imu units.
+
+Original message was:
+
+Hi All,
+
+Technically this has all been on list before, just now it is in a coherent
+patch set.
+
+Introduces low pass filter controls and description via 3db point.
+JohnLM suggested a whole load more stuff that we might want to know
+about filters.  Whilst I am in favour of adding these at somepoint
+I think it should be as and when we have a user.  I believe the
+naming here allows space for all the other things that have been
+suggested.
+
+Thanks.
+
+v1->v2 Added documentation.
+
+
+Jonathan Cameron (3):
+  staging:iio: filter description - low pass 3db frequency.
+  staging:iio:imu:adis16400 add control of data filtering.
+  staging:iio:documentation: document filter_low_pass_3db_frequency.
+
+ drivers/staging/iio/Documentation/sysfs-bus-iio |   10 ++
+ drivers/staging/iio/iio.h                       |    7 +
+ drivers/staging/iio/imu/adis16400.h             |    2 +
+ drivers/staging/iio/imu/adis16400_core.c        |  177 ++++++++++++++++++-----
+ drivers/staging/iio/industrialio-core.c         |    2 +
+ 5 files changed, 161 insertions(+), 37 deletions(-)
+
 -- 
 1.7.7.3
+
