@@ -1,67 +1,39 @@
 Return-Path: <jic23@hermes.cam.ac.uk>
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 1/7] staging:iio:find iio channel from scan index util function
-Date: Sun, 27 Nov 2011 13:10:06 +0000
-Message-Id: <1322399412-21622-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1322399412-21622-1-git-send-email-jic23@kernel.org>
-References: <1322399412-21622-1-git-send-email-jic23@kernel.org>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH] staging:iio:adc:max1363 actually make timestamp controllable
+Date: Sun, 27 Nov 2011 12:22:21 +0000
+Message-Id: <1322396541-29959-1-git-send-email-jic23@kernel.org>
 Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Jonathan Cameron <jic23@cam.ac.uk>
 
-Useful for getting to the channel based on scan mask alone.
+Previously timestamps were always on in this driver.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/iio.h               |    8 ++++++++
- drivers/staging/iio/industrialio-core.c |   11 +++++++++++
- 2 files changed, 19 insertions(+), 0 deletions(-)
+A random minor fixlet that has been in my tree far too long.
 
-diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index 4aed915..95d6318 100644
---- a/drivers/staging/iio/iio.h
-+++ b/drivers/staging/iio/iio.h
-@@ -323,6 +323,14 @@ struct iio_dev {
- };
+ drivers/staging/iio/adc/max1363_ring.c |    5 ++---
+ 1 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
+index a87fbe8..3c5e199 100644
+--- a/drivers/staging/iio/adc/max1363_ring.c
++++ b/drivers/staging/iio/adc/max1363_ring.c
+@@ -138,9 +138,8 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
+ 		goto done;
  
- /**
-+ * iio_find_channel_from_si() - get channel from its scan index
-+ * @indio_dev:		device
-+ * @si:			scan index to match
-+ */
-+const struct iio_chan_spec
-+*iio_find_channel_from_si(struct iio_dev *indio_dev, int si);
-+
-+/**
-  * iio_device_register() - register a device with the IIO subsystem
-  * @indio_dev:		Device structure filled by the device driver
-  **/
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 55c0b48..3754b85 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -89,6 +89,17 @@ static const char * const iio_chan_info_postfix[] = {
- 	= "filter_low_pass_3db_frequency",
- };
- 
-+const struct iio_chan_spec
-+*iio_find_channel_from_si(struct iio_dev *indio_dev, int si)
-+{
-+	int i;
-+
-+	for (i = 0; i < indio_dev->num_channels; i++)
-+		if (indio_dev->channels[i].scan_index == si)
-+			return &indio_dev->channels[i];
-+	return NULL;
-+}
-+
- /**
-  * struct iio_detected_event_list - list element for events that have occurred
-  * @list:		linked list header
+ 	time_ns = iio_get_time_ns();
+-
+-	memcpy(rxbuf + d_size - sizeof(s64), &time_ns, sizeof(time_ns));
+-
++	if (indio_dev->buffer->scan_timestamp)
++		memcpy(rxbuf + d_size - sizeof(s64), &time_ns, sizeof(time_ns));
+ 	indio_dev->buffer->access->store_to(indio_dev->buffer, rxbuf, time_ns);
+ done:
+ 	iio_trigger_notify_done(indio_dev->trig);
 -- 
 1.7.7.3
