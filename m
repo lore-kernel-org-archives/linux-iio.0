@@ -1,53 +1,40 @@
-Return-Path: <rupran@einserver.de>
-From: Andreas Ruprecht <rupran@einserver.de>
-To: devel@linuxdriverproject.org
-Cc: dan.carpenter@oracle.com,
-	gregkh@suse.de,
-	jic23@cam.ac.uk,
-	linux-iio@vger.kernel.org,
-	Andreas Ruprecht <rupran@einserver.de>
-Subject: [PATCH 2/3] Staging: iio/accel: Changed data type for val to unsigned long in write_frequency
-Date: Sun, 27 Nov 2011 23:17:41 +0100
-Message-Id: <1322432262-16533-2-git-send-email-rupran@einserver.de>
-In-Reply-To: <1322432262-16533-1-git-send-email-rupran@einserver.de>
-References: <20111124205657.GL3258@mwanda>
- <1322432262-16533-1-git-send-email-rupran@einserver.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:49891 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755512Ab1K0Oqt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Nov 2011 09:46:49 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com,
+	manuel.stahl@iis.fraunhofer.de, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/3] staging:iio: more buffer related cleanups.
+Date: Sun, 27 Nov 2011 14:46:50 +0000
+Message-Id: <1322405213-13570-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-In lis3102dq_write_frequency() we used a long variable to store the
-value parsed from the char* buffer buf, as there only was a
-strict_strtol() function to parse values.
-Now we have got kstrto* which allows us to convert to the right data
-type in most cases.
+These were after the inkern pull interface stuff in my tree, but
+with a closer look they clearly aren't dependent on it so I'll tack
+them on to the end of the previous series if everyone is happy.
 
-In this particular function we want to write a frequency value, and it
-doesn't make sense to allow negative values here (as Dan Carpenter
-pointed out in a previous email).
-This means we can now parse the value into an unsigned long and get an
-error for invalid (e.g. negative) values.
+Jonathan
 
-Signed-off-by: Andreas Ruprecht <rupran@einserver.de>
----
- drivers/staging/iio/accel/lis3l02dq_core.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+Jonathan Cameron (3):
+  staging:iio:buffer scrap to_iio_buffer as it no longer has meaning.
+  staging:iio:buffer struct iio_buffer doesn't need an indio_dev
+    pointer.
+  staging:iio:buffer.h update struct buffer docs.
 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
-index 559545a..5566809 100644
---- a/drivers/staging/iio/accel/lis3l02dq_core.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_core.c
-@@ -331,11 +331,11 @@ static ssize_t lis3l02dq_write_frequency(struct device *dev,
- 					 size_t len)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	long val;
-+	unsigned long val;
- 	int ret;
- 	u8 t;
- 
--	ret = strict_strtol(buf, 10, &val);
-+	ret = kstrtoul(buf, 10, &val);
- 	if (ret)
- 		return ret;
- 
+ drivers/staging/iio/accel/sca3000_core.c        |    6 +++---
+ drivers/staging/iio/accel/sca3000_ring.c        |   11 ++++-------
+ drivers/staging/iio/buffer.h                    |   21 +++++++++++----------
+ drivers/staging/iio/gyro/adis16260_core.c       |   15 ++++++++++-----
+ drivers/staging/iio/impedance-analyzer/ad5933.c |    4 ++--
+ drivers/staging/iio/industrialio-buffer.c       |   15 +++++++--------
+ drivers/staging/iio/kfifo_buf.c                 |    2 +-
+ drivers/staging/iio/ring_sw.c                   |    2 +-
+ 8 files changed, 39 insertions(+), 37 deletions(-)
+
 -- 
-1.7.5.4
+1.7.7.3
+
