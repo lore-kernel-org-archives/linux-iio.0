@@ -1,116 +1,134 @@
-Return-Path: <rubini@mail.gnudd.com>
-Date: Tue, 29 Nov 2011 12:00:13 +0100
-From: Alessandro Rubini <rubini@gnudd.com>
-To: lars@metafoo.de
-Cc: jic23@kernel.org, federico.vaga@gmail.com, linux-iio@vger.kernel.org,
-        greg@kroah.com
-Subject: Re: ZIO wiki analysis of IIO and why it doesn't meet there
- requirements [was Re: Industrial Input Output analysis]
-Message-ID: <20111129110013.GA27762@mail.gnudd.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <4ED4ECAF.3040906@metafoo.de>
+Date: Tue, 29 Nov 2011 15:31:11 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: rubini@gnudd.com
-In-Reply-To: <4ED36B93.5020703@metafoo.de>
-References: <4ED36B93.5020703@metafoo.de>
-  <CAH5GJ0qTW_DwaAVhe6ZjGYg=1CPPVuQQn3biyg+2BuYHp1Hefw@mail.gmail.com>
- <4ED21960.1000002@kernel.org>
+To: Alessandro Rubini <rubini@gnudd.com>
+CC: jic23@kernel.org, federico.vaga@gmail.com, linux-iio@vger.kernel.org,
+ greg@kroah.com
+Subject: Re: ZIO wiki analysis of IIO and why it doesn't meet there requirements
+ [was Re: Industrial Input Output analysis]
+References: <4ED36B93.5020703@metafoo.de>  <CAH5GJ0qTW_DwaAVhe6ZjGYg=1CPPVuQQn3biyg+2BuYHp1Hefw@mail.gmail.com> <4ED21960.1000002@kernel.org> <20111129110013.GA27762@mail.gnudd.com>
+In-Reply-To: <20111129110013.GA27762@mail.gnudd.com>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello Lars-Peter, sorry for the delay.
-You raise different points than Jonathan did, I hope I'm not repeating
-stuff Federico already said.
+On 11/29/2011 12:00 PM, Alessandro Rubini wrote:
+> Hello Lars-Peter, sorry for the delay.
+> You raise different points than Jonathan did, I hope I'm not repeating
+> stuff Federico already said.
+> 
+>>> 2) Output signal support is patchy and currently unbuffered, but there
+>>> is some.
+>  
+>> Support for output buffers and trigger output is on my TODO list and will
+>> probably work on it soon.
+> 
+> Good. We'll evaluate it, when available. Thanks.  Time for me to subscribe
+> to the list, I think...
+> 
+> BTW: when I added output support to zio it was a matter of two hours
+> (it was unexpected, but the design proved solid).
+> 
+>> I agree, some of the metadata fields look like they should not be in there,
+>> like minor, major, devicename, ....
+>> As Jonathan says all this information is already available to the
+>> application processing the datastream. And the only usecase for having the
+>> metadata interleaved with the real data is that you just want to dump the
+>> stream right onto storage without further processing.
+> 
+> Exactly. We have thousands of I/O boards, some PC some PowerPC (thus
+> the endianness information in the control block), and some even may be
+> remote -- hostless I/O cards using etherbone
+> (ohwr.org/projects/etherbone-core).
 
->> 2) Output signal support is patchy and currently unbuffered, but there
->> is some.
- 
-> Support for output buffers and trigger output is on my TODO list and will
-> probably work on it soon.
+Yes, but you can inject the meta information in userspace, this does not
+have to come from kernel space, or am I missing something.
 
-Good. We'll evaluate it, when available. Thanks.  Time for me to subscribe
-to the list, I think...
+> 
+>> I'm wondering how this bulk mode in ZIO works. Does the hardware simply
+>> generate a bunch of samples after a trigger event, or do you have a buffer
+>> inside the hardware and it periodically takes samples and you flush the
+>> hardware buffer on a trigger event?
+> 
+> The cards are serious fpga engines. They have 256MB (or more, or less)
+> internal RAM to store the actual acquisition, which is later pushed to
+> the host in big blocks.  We also expect to have a scope-like environment,
+> where the threshold is actually the trigger event, and we have pre-samples
+> being sent to the PC -- the FPGA will use the RAM circularly, monitoring
+> data for the trigger event.
 
-BTW: when I added output support to zio it was a matter of two hours
-(it was unexpected, but the design proved solid).
+Hm, so the FPGA will sample the data on a trigger event and put it into the
+FPGA memory and the host CPU will periodically move data from this buffer to
+storage. Is this understanding correct?
+Will the FPGA insert a timestamp per sample or per block moved from the FPGA
+to storage?
 
-> I agree, some of the metadata fields look like they should not be in there,
-> like minor, major, devicename, ....
-> As Jonathan says all this information is already available to the
-> application processing the datastream. And the only usecase for having the
-> metadata interleaved with the real data is that you just want to dump the
-> stream right onto storage without further processing.
+> 
+>> I wonder if it makes sense to add the concept of timestamp source. A
+>> timestamp source would be associated with an trigger and whenever it is
+>> triggered the timestamp would be read and made available for further
+>> processing by the buffer. One timestamp source would be our nanosecond
+>> clock, others could be generated by external hardware.
+> 
+> I think it makes sense. For us, the stamp comes from hardware because
+> the device knows the current time at sub-nanosecond precision, moreover,
+> the trigger happens much earlier than the DMA is performed -- or
+> much later for output.
+> 
+>> I still think that ZIO is just a subset of IIO.
+> 
+> I don't think it's a subset: it has a different scope. As said, I don't
+> want to run zio in small systems, where iio fits well.
+> 
+>> We do use IIO for high speed data conversion.
+> 
+> May I know how high?
+> 
+> Sure I want to run my ad7888 with a 10MHz spi and double buffering
+> (when federico gets to write the iio code), but that's 625kS to be
+> shared among the channels -- and I've already some concern about
+> processing them one at a a time.  We have 640 times as many (4 *
+> 100MS); even if it's burst (not continuous). I doubt I can push them to
+> the buffers sample-by-sample, and in this case the overhead of our
+> half-a-kB-per-channel meta information is negligible.
+> 
+>> The evaluation on the ZIO wiki reads a bit as if it is assumed that IIO is
+>> set in stone.
+> 
+> Yes. That's a problem when you must evaluate something. Federico
+> started with 2.6.39, actually, where sysfs was much more painful,
+> and we are happy it's getting better and better.
 
-Exactly. We have thousands of I/O boards, some PC some PowerPC (thus
-the endianness information in the control block), and some even may be
-remote -- hostless I/O cards using etherbone
-(ohwr.org/projects/etherbone-core).
+What I meant was that you can actively contribute to IIO and implement the
+features you need and don't have to wait until they show up in the
+framework. E.g. most of the issue mentioned are minor and easy to fix.
 
-> I'm wondering how this bulk mode in ZIO works. Does the hardware simply
-> generate a bunch of samples after a trigger event, or do you have a buffer
-> inside the hardware and it periodically takes samples and you flush the
-> hardware buffer on a trigger event?
+> 
+>> Though I think it should be possible to easily adopt it to the ZIO
+>> needs.
+> 
+> Let's see it over time.  Maybe you are right, or maybe not. Some
+> design choices can't be changed: you need internal consistency in a
+> subsystem.  Sure push_block would help, but aren't your buffers
+> sample-oriented anyways? (a genuine question, not rethoric -- I didn't
+> personally study the internals to fine details, not yet).
+> 
+>> If we keep two different frameworks there will be a huge overlap
+>> in functionality and also supported devices.
+> 
+> Overlap happens. I don't see it as a problem. You overlap with
+> linux-sensors already, and everything overlaps with generic char
+> devices.
 
-The cards are serious fpga engines. They have 256MB (or more, or less)
-internal RAM to store the actual acquisition, which is later pushed to
-the host in big blocks.  We also expect to have a scope-like environment,
-where the threshold is actually the trigger event, and we have pre-samples
-being sent to the PC -- the FPGA will use the RAM circularly, monitoring
-data for the trigger event.
+I just think it's a waste of resources to develop two frameworks which have
+more or less the same architecture and serve the same purpose.
 
-> I wonder if it makes sense to add the concept of timestamp source. A
-> timestamp source would be associated with an trigger and whenever it is
-> triggered the timestamp would be read and made available for further
-> processing by the buffer. One timestamp source would be our nanosecond
-> clock, others could be generated by external hardware.
-
-I think it makes sense. For us, the stamp comes from hardware because
-the device knows the current time at sub-nanosecond precision, moreover,
-the trigger happens much earlier than the DMA is performed -- or
-much later for output.
-
-> I still think that ZIO is just a subset of IIO.
-
-I don't think it's a subset: it has a different scope. As said, I don't
-want to run zio in small systems, where iio fits well.
-
-> We do use IIO for high speed data conversion.
-
-May I know how high?
-
-Sure I want to run my ad7888 with a 10MHz spi and double buffering
-(when federico gets to write the iio code), but that's 625kS to be
-shared among the channels -- and I've already some concern about
-processing them one at a a time.  We have 640 times as many (4 *
-100MS); even if it's burst (not continuous). I doubt I can push them to
-the buffers sample-by-sample, and in this case the overhead of our
-half-a-kB-per-channel meta information is negligible.
-
-> The evaluation on the ZIO wiki reads a bit as if it is assumed that IIO is
-> set in stone.
-
-Yes. That's a problem when you must evaluate something. Federico
-started with 2.6.39, actually, where sysfs was much more painful,
-and we are happy it's getting better and better.
-
-> Though I think it should be possible to easily adopt it to the ZIO
-> needs.
-
-Let's see it over time.  Maybe you are right, or maybe not. Some
-design choices can't be changed: you need internal consistency in a
-subsystem.  Sure push_block would help, but aren't your buffers
-sample-oriented anyways? (a genuine question, not rethoric -- I didn't
-personally study the internals to fine details, not yet).
-
-> If we keep two different frameworks there will be a huge overlap
-> in functionality and also supported devices.
-
-Overlap happens. I don't see it as a problem. You overlap with
-linux-sensors already, and everything overlaps with generic char
-devices.
-
-As for devices, you are partly right. Sure we are starting with the
-same devices that you are using, but the big ones (our target) may be
-zio-only. I have no problems in keeping the AD7* zio drivers
-off-the-kernel, since that's iio's use case -- actually we only
-expect to only have a few of them, mainly as examples.
-
-/alessandro
+> 
+> As for devices, you are partly right. Sure we are starting with the
+> same devices that you are using, but the big ones (our target) may be
+> zio-only. I have no problems in keeping the AD7* zio drivers
+> off-the-kernel, since that's iio's use case -- actually we only
+> expect to only have a few of them, mainly as examples.
+> 
+> /alessandro
