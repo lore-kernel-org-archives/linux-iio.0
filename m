@@ -1,67 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:45149 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753344Ab1JXJOf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 24 Oct 2011 05:14:35 -0400
-Received: from public by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <public@plane.gmane.org>)
-	id 1RIGc4-0001Zg-S0
-	for linux-iio@vger.kernel.org; Mon, 24 Oct 2011 11:14:32 +0200
-Message-ID: <4EA52C78.3030105@cam.ac.uk>
-Date: Mon, 24 Oct 2011 10:14:32 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from mail.free-electrons.com ([88.190.12.23]:38819 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754262Ab1K3NaK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Nov 2011 08:30:10 -0500
+Received: from [192.168.0.41] (col31-4-88-188-83-94.fbx.proxad.net [88.188.83.94])
+	by mail.free-electrons.com (Postfix) with ESMTPSA id 577B113C
+	for <linux-iio@vger.kernel.org>; Wed, 30 Nov 2011 14:30:00 +0100 (CET)
+Message-ID: <4ED62FD2.4040500@free-electrons.com>
+Date: Wed, 30 Nov 2011 14:29:54 +0100
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
 MIME-Version: 1.0
-To: Dan Carpenter <dan.carpenter@oracle.com>
-CC: Maxin B John
-	<public-maxin.john-Re5JQEeQqe8AvxtiuMwx3w@plane.gmane.org>,
-	Jonathan Cameron
-	<public-jic23-KWPb1pKIrIJaa/9Udqfwiw@plane.gmane.org>,
-	Dan Carpenter
-	<public-error27-Re5JQEeQqe8AvxtiuMwx3w@plane.gmane.org>,
-	Bryan Freed
-	<public-bfreed-F7+t8E8rja9g9hUCZPvPmw@plane.gmane.org>,
-	public-linux-kernel-u79uwXL29TY76Z2rM5mHXA@plane.gmane.org,
-	Greg Kroah-Hartman <public-gregkh-l3A5Bk7waGM@plane.gmane.org>,
-	public-linux-iio-u79uwXL29TY76Z2rM5mHXA@plane.gmane.org,
-	Arnd Bergmann <public-arnd-r2nGTMty4D4@plane.gmane.org>,
-	public-devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@plane.gmane.org,
-	Amit Kucheria
-	<public-amit.kucheria-LY4KaoCqKrnby3iVrkZq2A@plane.gmane.org>
-Subject: Re: [PATCH] staging: iio: light: Fix compiler warning in tsl2563.c
-References: <20110902094107.GA2846@maxin> <4E60B63C.1030101@cam.ac.uk> <CAMhs6Yzw3-CARTULhy4s-Re4Q82Ek9gZGUQtABLLs0PSArHCuw@mail.gmail.com> <4EA52710.2060108@cam.ac.uk> <20111024090143.GB3526@mwanda>
-In-Reply-To: <20111024090143.GB3526@mwanda>
+To: linux-iio@vger.kernel.org
+Subject: Buffer chrdev API and test
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi list,
 
+I'm currently trying to test the buffer output, using the chrdev present
+at /dev/iio:deviceN.
 
-On 10/24/11 10:01, Dan Carpenter wrote:
-> On Mon, Oct 24, 2011 at 09:51:28AM +0100, Jonathan Cameron wrote:
->>>>> Signed-off-by: Maxin B. John <maxin.john-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->>>> Acked-by: Jonathan Cameron <jic23-KWPb1pKIrIJaa/9Udqfwiw@public.gmane.org>
->>>>
->>>
->>> Sorry for the delay in replying to this mail. I am curious about the
->>> status of this patch. I couldn't locate this patch at  iio-blue.git as
->>> it is not present in kernel.org now
->>> (http://git.kernel.org/?p=linux/kernel/git/jic23/iio-blue.git;a=summary)
->>> Please ignore this mail if you have already added this patch to your tree.
->> Ah, sorry I slipped up here and should have noticed it didn't go directly to
->> Greg. Just to check, with everyone I have author as Dan, reporter as Maxin
->> and have signed off myself (it's going through my tree anyway now).
->>
->> I think from looking back it was Dan's suggestion in response to Maxin's
->> patch.  Hence convention would be a sign off from Dan and perhaps an
->> Ack from Maxin?
->>
-> 
-> Maxim is the author.  He didn't resend this in the proper way so it
-> was confusing...  Can you give me a Reviewed-by tag?
-> 
-> Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-> 
+So I looked into the generic_buffer.c file which seems to do exactly that.
 
-Sure.
+By looking into the source code, my understanding is that samples are
+stored with this frame format :
 
++--bpe--+--...--+--bpe--+--64 bits--+
+| Ch 0  | ..... | Ch N  | timestamp |
++-------+-------+-------+-----------+
 
+the overall "frame" size being stored in /sys/..../buffer/bytes_per_datum.
+
+Now, when I execute generic-buffer, it sets up correctly the driver by
+enabling the channels, the buffer, setting the trigger, etc, but outputs
+nothing at all. After some number of trigger firing, it finally exits,
+having displayed nothing but
+
+# /root/generic-buffer -n at91_adc -t at91_adc-dev0-external
+iio device number being used is 0
+iio trigger number being used is 3
+/sys/bus/iio/devices/iio:device0 at91_adc-dev0-external
+#
+
+which seems pretty odd to me.
+
+But when I do a cat directly on /dev/iio:device0, I get some binary
+data, which indicates that the buffer is filled anyway.
+
+So, is generic_buffer supposed to print something ? If so, what kind of
+output should I expect ?
+Or is it just a poor driver configuration/data storing from me ?
+
+Thanks,
+Maxime
+
+-- 
+Maxime Ripard, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
