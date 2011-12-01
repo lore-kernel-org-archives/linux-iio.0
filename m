@@ -1,25 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51356 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754910Ab1LDTLa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2011 14:11:30 -0500
-Message-ID: <4EDBC5E0.0@kernel.org>
-Date: Sun, 04 Dec 2011 19:11:28 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-yx0-f174.google.com ([209.85.213.174]:43215 "EHLO
+	mail-yx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755052Ab1LAVlu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Dec 2011 16:41:50 -0500
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 0/2] Fixes ot the generic_buffer example
-References: <1322394365-3214-1-git-send-email-jic23@kernel.org>
-In-Reply-To: <1322394365-3214-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <20111126191137.GA1046@mail.gnudd.com>
+References: <cover.1322328073.git.rubini@gnudd.com>
+	<4ED12B50.9090206@metafoo.de>
+	<20111126191137.GA1046@mail.gnudd.com>
+Date: Thu, 1 Dec 2011 22:41:49 +0100
+Message-ID: <CAKnu2MoHks06GzBG25tBG7JgEwMoeH6cOY95FbcHUq_sCm5LLg@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/7] Introducing ZIO, a new I/O framework
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Alessandro Rubini <rubini@gnudd.com>
+Cc: lars@metafoo.de, linux-iio@vger.kernel.org, greg@kroah.com,
+	linux-kernel@vger.kernel.org, federico.vaga@gmail.com,
+	dcobas@cern.ch, siglesia@cern.ch, manohar.vanga@cern.ch
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/27/2011 11:46 AM, Jonathan Cameron wrote:
-> Hi All,
-> 
-> These do what they say on the tin.
-> 
-> Jonathan
-Gone to Greg.
+2011/11/26 Alessandro Rubini <rubini@gnudd.com>:
+
+> I'm open to suggestions (_we_ are) about how to easily use IIO for
+> output, for hardware timestamps (we have 3 32-bit fields) and for very
+> large data blocks, with DMA to/from user space -- sure we don't have this
+> last point in ZIO at this point in time.
+
+The latter seem like a case for the dma-buf mechanism.
+http://lwn.net/Articles/462524/
+
+(Interesting hardware you found Alessandro! :)
+
+Yours,
+Linus Walleij
