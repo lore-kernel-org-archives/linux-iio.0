@@ -1,25 +1,45 @@
-Return-Path: <rubini@mail.gnudd.com>
-Date: Fri, 2 Dec 2011 17:44:23 +0100
-From: Alessandro Rubini <rubini@gnudd.com>
-To: rupran@einserver.de
-Cc: devel@linuxdriverproject.org, gregkh@suse.de, jic23@cam.ac.uk,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] Staging: iio/accel: Changed data type of mask in
- store_measurement_mode() to u8
-Message-ID: <20111202164423.GA14982@mail.gnudd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: rubini@gnudd.com
-In-Reply-To: <1322843423-18178-1-git-send-email-rupran@einserver.de>
-References: <1322843423-18178-1-git-send-email-rupran@einserver.de>
-  <4ED7EE04.3010308@kernel.org>
+Return-Path: <rupran@einserver.de>
+From: Andreas Ruprecht <rupran@einserver.de>
+To: devel@linuxdriverproject.org
+Cc: gregkh@suse.de,
+	jic23@cam.ac.uk,
+	linux-iio@vger.kernel.org,
+	rubini@gnudd.com,
+	Andreas Ruprecht <rupran@einserver.de>
+Subject: [PATCH v2 1/2] Staging: iio/accel: Changed data type of mask in store_measurement_mode() to u8
+Date: Fri,  2 Dec 2011 17:56:55 +0100
+Message-Id: <1322845015-22467-1-git-send-email-rupran@einserver.de>
+In-Reply-To: <20111202164423.GA14982@mail.gnudd.com>
+References: <20111202164423.GA14982@mail.gnudd.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-> As we are only interested in the lowest two bytes here and mask is
-> initialized with a fixed value 0x03, mask may as well be a u8.
+In sca3000_store_measurement_mode() we parse a value from a string
+buffer via kstrtou8, and store the parsed value into a u8 after
+and-ing it with mask.
 
-s/bytes/bits/
+As we are only interested in the lowest two bits here and mask is
+initialized with a fixed value 0x03, mask may as well be a u8.
 
-It's not a trivial typo, the reader can be confused (I've been)
+Signed-off-by: Andreas Ruprecht <rupran@einserver.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+---
+[v2]: Fixed a confusing typo in the description (bytes/bits)
+---
+ drivers/staging/iio/accel/sca3000_core.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-/alessandro
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index c3f1f6a..a33e742 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -381,7 +381,7 @@ sca3000_store_measurement_mode(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct sca3000_state *st = iio_priv(indio_dev);
+ 	int ret;
+-	int mask = 0x03;
++	u8 mask = 0x03;
+ 	u8 val;
+ 
+ 	mutex_lock(&st->lock);
+-- 
+1.7.5.4
