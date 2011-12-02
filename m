@@ -1,56 +1,51 @@
-Return-Path: <bfreed@google.com>
-From: Bryan Freed <bfreed@chromium.org>
-To: jbrenner@taosinc.com
-Cc: linux-iio@vger.kernel.org, jic23@cam.ac.uk, gregkh@suse.de,
-        linux-kernel@vger.kernel.org, Bryan Freed <bfreed@chromium.org>
-Subject: [PATCH] iio: light sensor: Improve granularity of tsl2583 lux values.
-Date: Fri,  2 Dec 2011 14:12:59 -0800
-Message-Id: <1322863979-14677-1-git-send-email-bfreed@chromium.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([88.190.12.23]:35868 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756812Ab1LBPf2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Dec 2011 10:35:28 -0500
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: linux-iio@vger.kernel.org
+Cc: Patrice Vilchez <patrice.vilchez@atmel.com>,
+	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
+	Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: [RFC] IIO: Add hardware triggers support to the AT91 ADC driver
+Date: Fri,  2 Dec 2011 16:34:59 +0100
+Message-Id: <1322840104-3525-1-git-send-email-maxime.ripard@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-When illuminance0_calibbias gets 4000 (for a 4x multiplier), we see lux
-granularity of 4.  Reversing the order of the right shift and multiplication
-retains the precision of the unadjusted lux value.
+Hi list,
 
-Signed-off-by: Bryan Freed <bfreed@chromium.org>
----
- drivers/staging/iio/light/tsl2583.c |   17 ++++++++++++++---
- 1 files changed, 14 insertions(+), 3 deletions(-)
+here is a patchset that adds the hardware triggers support to the at91_adc
+driver that only supported software triggers so far.
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 80f77cf..186a3ec 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -194,6 +194,7 @@ static int taos_get_lux(struct iio_dev *indio_dev)
- {
- 	u16 ch0, ch1; /* separated ch0/ch1 data from device */
- 	u32 lux; /* raw lux calculated from device data */
-+	u64 lux64;
- 	u32 ratio;
- 	u8 buf[5];
- 	struct taos_lux *p;
-@@ -297,9 +298,19 @@ static int taos_get_lux(struct iio_dev *indio_dev)
- 		lux = (lux + (chip->als_time_scale >> 1)) /
- 			chip->als_time_scale;
- 
--	/* adjust for active gain scale */
--	lux >>= 13; /* tables have factor of 8192 builtin for accuracy */
--	lux = (lux * chip->taos_settings.als_gain_trim + 500) / 1000;
-+	/* Adjust for active gain scale.
-+	 * The taos_device_lux tables above have a factor of 8192 built in,
-+	 * so we need to shift right.
-+	 * User-specified gain provides a multiplier.
-+	 * Apply user-specified gain before shifting right to retain precision.
-+	 * Use 64 bits to avoid overflow on multiplication.
-+	 * Then go back to 32 bits before division to avoid using div_u64().
-+	 */
-+	lux64 = lux;
-+	lux64 = lux64 * chip->taos_settings.als_gain_trim + 500;
-+	lux64 >>= 13;
-+	lux = lux64;
-+	lux /= 1000;
- 	if (lux > TSL258X_LUX_CALC_OVER_FLOW) { /* check for overflow */
- return_max:
- 		lux = TSL258X_LUX_CALC_OVER_FLOW;
--- 
-1.7.3.1
+Please note that this is NOT for inclusion, only for review for now, as there is
+no support for buffers and triggers out of staging out of staging, and the first
+patches only duplicate the at91_adc driver I submitted out of staging.
+
+So basically, the important patches at the 4th and 5th.
+
+The fourth rework the way I declared the platform_data, in a more DT-compliant
+way. I needed it for the available triggers declaration. I will surely backport
+this part soon to the out-of-staging driver, because it will certainly be useful
+to it.
+
+The fifth one adds the triggers and buffers support to the driver in itself.
+While the whole dynamic triggers declaration might seem overkill for now as I
+only support the sam9g20-ek board, support for other atmel boards will come soon
+and I surely need that in place.
+On the downside, it probably needs some more work. Jonathan suggested earlier
+that kfifo is a more convenient backend for the buffer, so I might switch to it
+in the future. Also, I have not been able to test the timer counters triggers,
+only the external for now.
+
+This patchset is based on the commit 3413ec44 from Jonathan's master tree.
+
+So please, take a look.
+Thanks,
+Maxime
+
+Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
+Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+
