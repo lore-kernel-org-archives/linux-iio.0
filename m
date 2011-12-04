@@ -1,214 +1,48 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ch1ehsobe005.messaging.microsoft.com ([216.32.181.185]:32105
-	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932420Ab1LEPwx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Dec 2011 10:52:53 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Greg Kroah-Hartman <gregkh@suse.de>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	<devel@driverdev.osuosl.org>, <linux-iio@vger.kernel.org>,
-	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] staging:iio: Remove redundant spi driver bus initialization
-Date: Mon, 5 Dec 2011 16:53:05 +0100
-Message-ID: <1323100385-13081-1-git-send-email-lars@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@hermes.cam.ac.uk>
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH V2 0/7] Add scan demux unit and use it in max1363
+Date: Sun,  4 Dec 2011 20:56:55 +0000
+Message-Id: <1323032222-21338-1-git-send-email-jic23@kernel.org>
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-In ancient times it was necessary to manually initialize the bus field of an
-spi_driver to spi_bus_type. These days this is done in spi_register_driver() so
-we can drop the manual assignment.
+Hi All,
 
-The patch was generated using the following coccinelle semantic patch:
-// <smpl>
-@@
-identifier _driver;
-@@
- struct spi_driver _driver = {
- 	.driver = {
--		.bus = &spi_bus_type,
- 	},
- };
-// </smpl>
+New version of this series.  Two changes as per Lars-Peter's
+suggestions.  ALIGN macro usage in patch 4 and one of the two
+for each bit set suggestions.  The second is subtly different
+as it is finding bits after a certain point rather than from
+the start.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/adc/ad7280a.c       |    1 -
- drivers/staging/iio/adc/ad7298_core.c   |    1 -
- drivers/staging/iio/adc/ad7476_core.c   |    1 -
- drivers/staging/iio/adc/ad7606_spi.c    |    1 -
- drivers/staging/iio/adc/ad7780.c        |    1 -
- drivers/staging/iio/adc/ad7793.c        |    1 -
- drivers/staging/iio/adc/ad7816.c        |    1 -
- drivers/staging/iio/adc/ad7887_core.c   |    1 -
- drivers/staging/iio/adc/adt7310.c       |    1 -
- drivers/staging/iio/addac/adt7316-spi.c |    1 -
- drivers/staging/iio/dac/ad5446.c        |    1 -
- drivers/staging/iio/dds/ad9832.c        |    1 -
- drivers/staging/iio/dds/ad9834.c        |    1 -
- 13 files changed, 0 insertions(+), 13 deletions(-)
+As explained in patch 5 discussion, I personally feel that
+the demux should occur prior to the buffer and avoiding the
+extra copy should be done by allowing buffers to provide
+callbacks for reserving (plus getting access to) space and
+notifying that they are done filling it.   Either way, now
+is not the time to do this change. Too much else going on!
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index 3fac9b1..941db3a 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -975,7 +975,6 @@ MODULE_DEVICE_TABLE(spi, ad7280_id);
- static struct spi_driver ad7280_driver = {
- 	.driver = {
- 		.name	= "ad7280",
--		.bus	= &spi_bus_type,
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= ad7280_probe,
-diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
-index 3ccd4b4..656b77b 100644
---- a/drivers/staging/iio/adc/ad7298_core.c
-+++ b/drivers/staging/iio/adc/ad7298_core.c
-@@ -276,7 +276,6 @@ MODULE_DEVICE_TABLE(spi, ad7298_id);
- static struct spi_driver ad7298_driver = {
- 	.driver = {
- 		.name	= "ad7298",
--		.bus	= &spi_bus_type,
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= ad7298_probe,
-diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
-index 93b2bef..a42dd19 100644
---- a/drivers/staging/iio/adc/ad7476_core.c
-+++ b/drivers/staging/iio/adc/ad7476_core.c
-@@ -242,7 +242,6 @@ MODULE_DEVICE_TABLE(spi, ad7476_id);
- static struct spi_driver ad7476_driver = {
- 	.driver = {
- 		.name	= "ad7476",
--		.bus	= &spi_bus_type,
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= ad7476_probe,
-diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-index c88d97a..98e6e49 100644
---- a/drivers/staging/iio/adc/ad7606_spi.c
-+++ b/drivers/staging/iio/adc/ad7606_spi.c
-@@ -102,7 +102,6 @@ MODULE_DEVICE_TABLE(spi, ad7606_id);
- static struct spi_driver ad7606_driver = {
- 	.driver = {
- 		.name = "ad7606",
--		.bus = &spi_bus_type,
- 		.owner = THIS_MODULE,
- 		.pm    = AD7606_SPI_PM_OPS,
- 	},
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index 635c7ba..5665dee 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -277,7 +277,6 @@ MODULE_DEVICE_TABLE(spi, ad7780_id);
- static struct spi_driver ad7780_driver = {
- 	.driver = {
- 		.name	= "ad7780",
--		.bus	= &spi_bus_type,
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= ad7780_probe,
-diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index 362cc31..a70e53a 100644
---- a/drivers/staging/iio/adc/ad7793.c
-+++ b/drivers/staging/iio/adc/ad7793.c
-@@ -1041,7 +1041,6 @@ MODULE_DEVICE_TABLE(spi, ad7793_id);
- static struct spi_driver ad7793_driver = {
- 	.driver = {
- 		.name	= "ad7793",
--		.bus	= &spi_bus_type,
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= ad7793_probe,
-diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index 7a344a2..a38a1a9 100644
---- a/drivers/staging/iio/adc/ad7816.c
-+++ b/drivers/staging/iio/adc/ad7816.c
-@@ -460,7 +460,6 @@ MODULE_DEVICE_TABLE(spi, ad7816_id);
- static struct spi_driver ad7816_driver = {
- 	.driver = {
- 		.name = "ad7816",
--		.bus = &spi_bus_type,
- 		.owner = THIS_MODULE,
- 	},
- 	.probe = ad7816_probe,
-diff --git a/drivers/staging/iio/adc/ad7887_core.c b/drivers/staging/iio/adc/ad7887_core.c
-index 8f48659..ab7a5a2 100644
---- a/drivers/staging/iio/adc/ad7887_core.c
-+++ b/drivers/staging/iio/adc/ad7887_core.c
-@@ -251,7 +251,6 @@ MODULE_DEVICE_TABLE(spi, ad7887_id);
- static struct spi_driver ad7887_driver = {
- 	.driver = {
- 		.name	= "ad7887",
--		.bus	= &spi_bus_type,
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= ad7887_probe,
-diff --git a/drivers/staging/iio/adc/adt7310.c b/drivers/staging/iio/adc/adt7310.c
-index c937ac1..ea9fd43 100644
---- a/drivers/staging/iio/adc/adt7310.c
-+++ b/drivers/staging/iio/adc/adt7310.c
-@@ -877,7 +877,6 @@ MODULE_DEVICE_TABLE(spi, adt7310_id);
- static struct spi_driver adt7310_driver = {
- 	.driver = {
- 		.name = "adt7310",
--		.bus = &spi_bus_type,
- 		.owner = THIS_MODULE,
- 	},
- 	.probe = adt7310_probe,
-diff --git a/drivers/staging/iio/addac/adt7316-spi.c b/drivers/staging/iio/addac/adt7316-spi.c
-index 369d4d0..1f75e1b 100644
---- a/drivers/staging/iio/addac/adt7316-spi.c
-+++ b/drivers/staging/iio/addac/adt7316-spi.c
-@@ -151,7 +151,6 @@ static int adt7316_spi_resume(struct spi_device *spi_dev)
- static struct spi_driver adt7316_driver = {
- 	.driver = {
- 		.name = "adt7316",
--		.bus = &spi_bus_type,
- 		.owner = THIS_MODULE,
- 	},
- 	.probe = adt7316_spi_probe,
-diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
-index 9d53b10..bfd88fa 100644
---- a/drivers/staging/iio/dac/ad5446.c
-+++ b/drivers/staging/iio/dac/ad5446.c
-@@ -440,7 +440,6 @@ MODULE_DEVICE_TABLE(spi, ad5446_id);
- static struct spi_driver ad5446_driver = {
- 	.driver = {
- 		.name	= "ad5446",
--		.bus	= &spi_bus_type,
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= ad5446_probe,
-diff --git a/drivers/staging/iio/dds/ad9832.c b/drivers/staging/iio/dds/ad9832.c
-index 1c87820..d612d3d 100644
---- a/drivers/staging/iio/dds/ad9832.c
-+++ b/drivers/staging/iio/dds/ad9832.c
-@@ -349,7 +349,6 @@ MODULE_DEVICE_TABLE(spi, ad9832_id);
- static struct spi_driver ad9832_driver = {
- 	.driver = {
- 		.name	= "ad9832",
--		.bus	= &spi_bus_type,
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= ad9832_probe,
-diff --git a/drivers/staging/iio/dds/ad9834.c b/drivers/staging/iio/dds/ad9834.c
-index cd10479..59a2813 100644
---- a/drivers/staging/iio/dds/ad9834.c
-+++ b/drivers/staging/iio/dds/ad9834.c
-@@ -440,7 +440,6 @@ MODULE_DEVICE_TABLE(spi, ad9834_id);
- static struct spi_driver ad9834_driver = {
- 	.driver = {
- 		.name	= "ad9834",
--		.bus	= &spi_bus_type,
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= ad9834_probe,
+Jonathan
+
+Jonathan Cameron (7):
+  staging:iio:find iio channel from scan index util function
+  staging:iio:buffer add a cache of the timestamp scan index.
+  staging:iio: add hook to allow core to perform scan related config.
+  staging:iio: make iio_sw_buffer_preenable much more general.
+  staging:iio: add demux optionally to path from device to buffer
+  staging:iio:adc:max1363 use new demuxing support.
+  staging:iio:adc:max1363 correctly set channels as big endian.
+
+ drivers/staging/iio/adc/max1363.h         |   11 ++-
+ drivers/staging/iio/adc/max1363_core.c    |   18 ++-
+ drivers/staging/iio/adc/max1363_ring.c    |   51 ++-----
+ drivers/staging/iio/buffer.h              |   16 ++
+ drivers/staging/iio/iio.h                 |   13 ++-
+ drivers/staging/iio/industrialio-buffer.c |  213 +++++++++++++++++++++++++----
+ drivers/staging/iio/industrialio-core.c   |   11 ++
+ 7 files changed, 260 insertions(+), 73 deletions(-)
+
 -- 
-1.7.7.3
-
-
+1.7.7.4
