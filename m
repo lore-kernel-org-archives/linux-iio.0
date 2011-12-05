@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org,
 	greg@kroah.com
 Cc: lars@metafoo.de,
 	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 12/19] staging:iio:adc:ad7887 stop reading from buffer for sysfs access.
-Date: Mon,  5 Dec 2011 22:18:23 +0000
-Message-Id: <1323123510-21388-13-git-send-email-jic23@kernel.org>
+Subject: [PATCH 07/19] staging:iio:adc:ad7192 scrap read from buffer for sysfs access.
+Date: Mon,  5 Dec 2011 22:18:18 +0000
+Message-Id: <1323123510-21388-8-git-send-email-jic23@kernel.org>
 In-Reply-To: <1323123510-21388-1-git-send-email-jic23@kernel.org>
 References: <1323123510-21388-1-git-send-email-jic23@kernel.org>
 Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
@@ -17,87 +17,48 @@ No known use case and complicates in kernel interface work.
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 Acked-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad7887.h      |    5 ----
- drivers/staging/iio/adc/ad7887_core.c |    2 +-
- drivers/staging/iio/adc/ad7887_ring.c |   34 ---------------------------------
- 3 files changed, 1 insertions(+), 40 deletions(-)
+ drivers/staging/iio/adc/ad7192.c |   22 +---------------------
+ 1 files changed, 1 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7887.h b/drivers/staging/iio/adc/ad7887.h
-index 3452d18..bc53b65 100644
---- a/drivers/staging/iio/adc/ad7887.h
-+++ b/drivers/staging/iio/adc/ad7887.h
-@@ -83,14 +83,9 @@ enum ad7887_supported_device_ids {
- };
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index 1b6ecc8..66cc507 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -453,25 +453,6 @@ out:
+ 	return ret;
+ }
  
- #ifdef CONFIG_IIO_BUFFER
--int ad7887_scan_from_ring(struct ad7887_state *st, int channum);
- int ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev);
- void ad7887_ring_cleanup(struct iio_dev *indio_dev);
- #else /* CONFIG_IIO_BUFFER */
--static inline int ad7887_scan_from_ring(struct ad7887_state *st, int channum)
+-static int ad7192_scan_from_ring(struct ad7192_state *st, unsigned ch, int *val)
 -{
+-	struct iio_buffer *ring = iio_priv_to_dev(st)->buffer;
+-	int ret;
+-	s64 dat64[2];
+-	u32 *dat32 = (u32 *)dat64;
+-
+-	if (!(test_bit(ch, ring->scan_mask)))
+-		return  -EBUSY;
+-
+-	ret = ring->access->read_last(ring, (u8 *) &dat64);
+-	if (ret)
+-		return ret;
+-
+-	*val = *dat32;
+-
 -	return 0;
 -}
- 
- static inline int
- ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-diff --git a/drivers/staging/iio/adc/ad7887_core.c b/drivers/staging/iio/adc/ad7887_core.c
-index ab7a5a2..db7e91f 100644
---- a/drivers/staging/iio/adc/ad7887_core.c
-+++ b/drivers/staging/iio/adc/ad7887_core.c
-@@ -45,7 +45,7 @@ static int ad7887_read_raw(struct iio_dev *indio_dev,
+-
+ static int ad7192_ring_preenable(struct iio_dev *indio_dev)
+ {
+ 	struct ad7192_state *st = iio_priv(indio_dev);
+@@ -875,8 +856,7 @@ static int ad7192_read_raw(struct iio_dev *indio_dev,
  	case 0:
  		mutex_lock(&indio_dev->mlock);
  		if (iio_buffer_enabled(indio_dev))
--			ret = ad7887_scan_from_ring(st, 1 << chan->address);
+-			ret = ad7192_scan_from_ring(st,
+-					chan->scan_index, &smpl);
 +			ret = -EBUSY;
  		else
- 			ret = ad7887_scan_direct(st, chan->address);
- 		mutex_unlock(&indio_dev->mlock);
-diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
-index f53a663..85076cd 100644
---- a/drivers/staging/iio/adc/ad7887_ring.c
-+++ b/drivers/staging/iio/adc/ad7887_ring.c
-@@ -19,40 +19,6 @@
- 
- #include "ad7887.h"
- 
--int ad7887_scan_from_ring(struct ad7887_state *st, int channum)
--{
--	struct iio_buffer *ring = iio_priv_to_dev(st)->buffer;
--	int count = 0, ret;
--	u16 *ring_data;
--
--	if (!(test_bit(channum, ring->scan_mask))) {
--		ret = -EBUSY;
--		goto error_ret;
--	}
--
--	ring_data = kmalloc(ring->access->get_bytes_per_datum(ring),
--			    GFP_KERNEL);
--	if (ring_data == NULL) {
--		ret = -ENOMEM;
--		goto error_ret;
--	}
--	ret = ring->access->read_last(ring, (u8 *) ring_data);
--	if (ret)
--		goto error_free_ring_data;
--
--	/* for single channel scan the result is stored with zero offset */
--	if ((test_bit(1, ring->scan_mask) || test_bit(0, ring->scan_mask)) &&
--	    (channum == 1))
--		count = 1;
--
--	ret = be16_to_cpu(ring_data[count]);
--
--error_free_ring_data:
--	kfree(ring_data);
--error_ret:
--	return ret;
--}
--
- /**
-  * ad7887_ring_preenable() setup the parameters of the ring before enabling
-  *
+ 			ret = ad7192_read(st, chan->address,
+ 					chan->scan_type.realbits / 8, &smpl);
 -- 
 1.7.7.4
