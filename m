@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org,
 	greg@kroah.com
 Cc: lars@metafoo.de,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 2/7] staging:iio:buffer add a cache of the timestamp scan index.
-Date: Mon,  5 Dec 2011 21:37:11 +0000
-Message-Id: <1323121036-21094-3-git-send-email-jic23@kernel.org>
+Subject: [PATCH 1/7] staging:iio:find iio channel from scan index util function
+Date: Mon,  5 Dec 2011 21:37:10 +0000
+Message-Id: <1323121036-21094-2-git-send-email-jic23@kernel.org>
 In-Reply-To: <1323121036-21094-1-git-send-email-jic23@kernel.org>
 References: <1323121036-21094-1-git-send-email-jic23@kernel.org>
 Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
@@ -14,39 +14,54 @@ List-ID: <linux-iio@vger.kernel.org>
 
 From: Jonathan Cameron <jic23@cam.ac.uk>
 
-Basically avoids looking it up lots of times.
+Useful for getting to the channel based on scan mask alone.
 
 Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/buffer.h              |    1 +
- drivers/staging/iio/industrialio-buffer.c |    3 +++
- 2 files changed, 4 insertions(+), 0 deletions(-)
+ drivers/staging/iio/iio.h               |    8 ++++++++
+ drivers/staging/iio/industrialio-core.c |   11 +++++++++++
+ 2 files changed, 19 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/staging/iio/buffer.h b/drivers/staging/iio/buffer.h
-index 9de581e..4b8f619 100644
---- a/drivers/staging/iio/buffer.h
-+++ b/drivers/staging/iio/buffer.h
-@@ -106,6 +106,7 @@ struct iio_buffer {
- 	int					scan_count;
- 	long					*scan_mask;
- 	bool					scan_timestamp;
-+	unsigned				scan_index_timestamp;
- 	const struct iio_buffer_access_funcs	*access;
- 	const struct iio_buffer_setup_ops		*setup_ops;
- 	struct list_head			scan_el_dev_attr_list;
-diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c
-index 8c55980..b2cf3e3 100644
---- a/drivers/staging/iio/industrialio-buffer.c
-+++ b/drivers/staging/iio/industrialio-buffer.c
-@@ -313,6 +313,9 @@ int iio_buffer_register(struct iio_dev *indio_dev,
- 			if (ret < 0)
- 				goto error_cleanup_dynamic;
- 			attrcount += ret;
-+			if (channels[i].type == IIO_TIMESTAMP)
-+				buffer->scan_index_timestamp =
-+					channels[i].scan_index;
- 		}
- 		if (indio_dev->masklength && buffer->scan_mask == NULL) {
- 			buffer->scan_mask = kcalloc(BITS_TO_LONGS(indio_dev->masklength),
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index 4aed915..95d6318 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -323,6 +323,14 @@ struct iio_dev {
+ };
+ 
+ /**
++ * iio_find_channel_from_si() - get channel from its scan index
++ * @indio_dev:		device
++ * @si:			scan index to match
++ */
++const struct iio_chan_spec
++*iio_find_channel_from_si(struct iio_dev *indio_dev, int si);
++
++/**
+  * iio_device_register() - register a device with the IIO subsystem
+  * @indio_dev:		Device structure filled by the device driver
+  **/
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index d8cd9e3..dbd1ce1 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -89,6 +89,17 @@ static const char * const iio_chan_info_postfix[] = {
+ 	= "filter_low_pass_3db_frequency",
+ };
+ 
++const struct iio_chan_spec
++*iio_find_channel_from_si(struct iio_dev *indio_dev, int si)
++{
++	int i;
++
++	for (i = 0; i < indio_dev->num_channels; i++)
++		if (indio_dev->channels[i].scan_index == si)
++			return &indio_dev->channels[i];
++	return NULL;
++}
++
+ /**
+  * struct iio_detected_event_list - list element for events that have occurred
+  * @list:		linked list header
 -- 
 1.7.7.4
