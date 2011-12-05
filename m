@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from tx2ehsobe003.messaging.microsoft.com ([65.55.88.13]:14796 "EHLO
-	TX2EHSOBE006.bigfish.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932406Ab1LEQGe (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Dec 2011 11:06:34 -0500
+Received: from ch1ehsobe005.messaging.microsoft.com ([216.32.181.185]:32105
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932420Ab1LEPwx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Dec 2011 10:52:53 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Greg Kroah-Hartman <gregkh@suse.de>
 CC: Jonathan Cameron <jic23@kernel.org>,
@@ -10,458 +10,204 @@ CC: Jonathan Cameron <jic23@kernel.org>,
 	<devel@driverdev.osuosl.org>, <linux-iio@vger.kernel.org>,
 	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] staging:iio:dac: Add AD5764 driver
-Date: Mon, 5 Dec 2011 17:05:41 +0100
-Message-ID: <1323101141-26010-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH] staging:iio: Remove redundant spi driver bus initialization
+Date: Mon, 5 Dec 2011 16:53:05 +0100
+Message-ID: <1323100385-13081-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for the Analog Devices AD5764, AD5764R, AD5744, AD5744R
-quad channel analog-to-digital converter.
+In ancient times it was necessary to manually initialize the bus field of an
+spi_driver to spi_bus_type. These days this is done in spi_register_driver() so
+we can drop the manual assignment.
+
+The patch was generated using the following coccinelle semantic patch:
+// <smpl>
+@@
+identifier _driver;
+@@
+ struct spi_driver _driver = {
+ 	.driver = {
+-		.bus = &spi_bus_type,
+ 	},
+ };
+// </smpl>
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/dac/Kconfig  |   10 +
- drivers/staging/iio/dac/Makefile |    1 +
- drivers/staging/iio/dac/ad5764.c |  393 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 404 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/dac/ad5764.c
+ drivers/staging/iio/adc/ad7280a.c       |    1 -
+ drivers/staging/iio/adc/ad7298_core.c   |    1 -
+ drivers/staging/iio/adc/ad7476_core.c   |    1 -
+ drivers/staging/iio/adc/ad7606_spi.c    |    1 -
+ drivers/staging/iio/adc/ad7780.c        |    1 -
+ drivers/staging/iio/adc/ad7793.c        |    1 -
+ drivers/staging/iio/adc/ad7816.c        |    1 -
+ drivers/staging/iio/adc/ad7887_core.c   |    1 -
+ drivers/staging/iio/adc/adt7310.c       |    1 -
+ drivers/staging/iio/addac/adt7316-spi.c |    1 -
+ drivers/staging/iio/dac/ad5446.c        |    1 -
+ drivers/staging/iio/dds/ad9832.c        |    1 -
+ drivers/staging/iio/dds/ad9834.c        |    1 -
+ 13 files changed, 0 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
-index a71defb..01b1059 100644
---- a/drivers/staging/iio/dac/Kconfig
-+++ b/drivers/staging/iio/dac/Kconfig
-@@ -62,6 +62,16 @@ config AD5504
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad5504.
- 
-+config AD5764
-+	tristate "Analog Devices AD5764/64R/44/44R DAC driver"
-+	depends on SPI_MASTER
-+	help
-+	  Say yes here to build support for Analog Devices AD5764, AD5764R, AD5744,
-+	  AD5744R Digital to Analog Converter.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ad5764.
-+
- config AD5791
- 	tristate "Analog Devices AD5760/AD5780/AD5781/AD5791 DAC SPI driver"
- 	depends on SPI
-diff --git a/drivers/staging/iio/dac/Makefile b/drivers/staging/iio/dac/Makefile
-index e75b0c8..2bd6b55 100644
---- a/drivers/staging/iio/dac/Makefile
-+++ b/drivers/staging/iio/dac/Makefile
-@@ -8,6 +8,7 @@ obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
- obj-$(CONFIG_AD5064) += ad5064.o
- obj-$(CONFIG_AD5504) += ad5504.o
- obj-$(CONFIG_AD5446) += ad5446.o
-+obj-$(CONFIG_AD5764) += ad5764.o
- obj-$(CONFIG_AD5791) += ad5791.o
- obj-$(CONFIG_AD5686) += ad5686.o
- obj-$(CONFIG_MAX517) += max517.o
-diff --git a/drivers/staging/iio/dac/ad5764.c b/drivers/staging/iio/dac/ad5764.c
-new file mode 100644
-index 0000000..ff91480
---- /dev/null
-+++ b/drivers/staging/iio/dac/ad5764.c
-@@ -0,0 +1,393 @@
-+/*
-+ * Analog devices AD5764, AD5764R, AD5744, AD5744R quad-channel
-+ * Digital to Analog Converters driver
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/spi/spi.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
-+#include <linux/regulator/consumer.h>
-+
-+#include "../iio.h"
-+#include "../sysfs.h"
-+#include "dac.h"
-+
-+#define AD5764_REG_SF_NOP			0x0
-+#define AD5764_REG_SF_CONFIG			0x1
-+#define AD5764_REG_SF_CLEAR			0x4
-+#define AD5764_REG_SF_LOAD			0x5
-+#define AD5764_REG_DATA(x)			((2 << 3) | (x))
-+#define AD5764_REG_COARSE_GAIN(x)		((3 << 3) | (x))
-+#define AD5764_REG_FINE_GAIN(x)			((4 << 3) | (x))
-+#define AD5764_REG_OFFSET(x)			((5 << 3) | (x))
-+
-+#define AD5764_NUM_CHANNELS 4
-+
-+/**
-+ * struct ad5764_chip_info - chip specific information
-+ * @int_vref:	Value of the internal reference voltage in uV - 0 if external
-+ *		reference voltage is used
-+ * @channel	channel specification
-+*/
-+
-+struct ad5764_chip_info {
-+	unsigned long int_vref;
-+	const struct iio_chan_spec *channels;
-+};
-+
-+/**
-+ * struct ad5764_state - driver instance specific data
-+ * @spi:		spi_device
-+ * @chip_info:		chip info
-+ * @vref_reg:		vref supply regulators
-+ * @data:		spi transfer buffers
-+ */
-+
-+struct ad5764_state {
-+	struct spi_device		*spi;
-+	const struct ad5764_chip_info	*chip_info;
-+	struct regulator_bulk_data	vref_reg[2];
-+
-+	/*
-+	 * DMA (thus cache coherency maintenance) requires the
-+	 * transfer buffers to live in their own cache lines.
-+	 */
-+	union {
-+		__be32 d32;
-+		u8 d8[4];
-+	} data[2] ____cacheline_aligned;
-+};
-+
-+enum ad5764_type {
-+	ID_AD5744,
-+	ID_AD5744R,
-+	ID_AD5764,
-+	ID_AD5764R,
-+};
-+
-+#define AD5764_CHANNEL(_chan, _bits) {				\
-+	.type = IIO_VOLTAGE,					\
-+	.indexed = 1,						\
-+	.output = 1,						\
-+	.channel = (_chan),					\
-+	.address = (_chan),					\
-+	.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |		\
-+		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |		\
-+		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
-+		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
-+	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits))	\
-+}
-+
-+#define DECLARE_AD5764_CHANNELS(_name, _bits) \
-+const struct iio_chan_spec _name##_channels[] = { \
-+	AD5764_CHANNEL(0, (_bits)), \
-+	AD5764_CHANNEL(1, (_bits)), \
-+	AD5764_CHANNEL(2, (_bits)), \
-+	AD5764_CHANNEL(3, (_bits)), \
-+};
-+
-+static DECLARE_AD5764_CHANNELS(ad5764, 16);
-+static DECLARE_AD5764_CHANNELS(ad5744, 14);
-+
-+static const struct ad5764_chip_info ad5764_chip_infos[] = {
-+	[ID_AD5744] = {
-+		.int_vref = 0,
-+		.channels = ad5744_channels,
-+	},
-+	[ID_AD5744R] = {
-+		.int_vref = 5000000,
-+		.channels = ad5744_channels,
-+	},
-+	[ID_AD5764] = {
-+		.int_vref = 0,
-+		.channels = ad5764_channels,
-+	},
-+	[ID_AD5764R] = {
-+		.int_vref = 5000000,
-+		.channels = ad5764_channels,
-+	},
-+};
-+
-+static int ad5764_write(struct iio_dev *indio_dev, unsigned int reg,
-+	unsigned int val)
-+{
-+	struct ad5764_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	mutex_lock(&indio_dev->mlock);
-+	st->data[0].d32 = cpu_to_be32((reg << 16) | val);
-+
-+	ret = spi_write(st->spi, &st->data[0].d8[1], 3);
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret;
-+}
-+
-+static int ad5764_read(struct iio_dev *indio_dev, unsigned int reg,
-+	unsigned int *val)
-+{
-+	struct ad5764_state *st = iio_priv(indio_dev);
-+	struct spi_message m;
-+	int ret;
-+	struct spi_transfer t[] = {
-+		{
-+			.tx_buf = &st->data[0].d8[1],
-+			.len = 3,
-+			.cs_change = 1,
-+		}, {
-+			.rx_buf = &st->data[1].d8[1],
-+			.len = 3,
-+		},
-+	};
-+
-+	spi_message_init(&m);
-+	spi_message_add_tail(&t[0], &m);
-+	spi_message_add_tail(&t[1], &m);
-+
-+	mutex_lock(&indio_dev->mlock);
-+
-+	st->data[0].d32 = cpu_to_be32((1 << 23) | (reg << 16));
-+
-+	ret = spi_sync(st->spi, &m);
-+	if (ret >= 0)
-+		*val = be32_to_cpu(st->data[1].d32) & 0xffff;
-+
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret;
-+}
-+
-+static int ad5764_chan_info_to_reg(struct iio_chan_spec const *chan, long info)
-+{
-+	switch (info) {
-+	case 0:
-+		return AD5764_REG_DATA(chan->address);
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		return AD5764_REG_OFFSET(chan->address);
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		return AD5764_REG_FINE_GAIN(chan->address);
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+static int ad5764_write_raw(struct iio_dev *indio_dev,
-+	struct iio_chan_spec const *chan, int val, int val2, long info)
-+{
-+	const int max_val = (1 << chan->scan_type.realbits);
-+	unsigned int reg;
-+
-+	switch (info) {
-+	case 0:
-+		if (val >= max_val || val < 0)
-+			return -EINVAL;
-+		val <<= chan->scan_type.shift;
-+		break;
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		if (val >= 128 || val < -128)
-+			return -EINVAL;
-+		break;
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		if (val >= 32 || val < -32)
-+			return -EINVAL;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	reg = ad5764_chan_info_to_reg(chan, info);
-+	return ad5764_write(indio_dev, reg, (u16)val);
-+}
-+
-+static int ad5764_get_channel_vref(struct ad5764_state *st,
-+	unsigned int channel)
-+{
-+	if (st->chip_info->int_vref)
-+		return st->chip_info->int_vref;
-+	else
-+		return regulator_get_voltage(st->vref_reg[channel / 2].consumer);
-+}
-+
-+static int ad5764_read_raw(struct iio_dev *indio_dev,
-+	struct iio_chan_spec const *chan, int *val, int *val2, long info)
-+{
-+	struct ad5764_state *st = iio_priv(indio_dev);
-+	unsigned long scale_uv;
-+	unsigned int reg;
-+	int vref;
-+	int ret;
-+
-+	switch (info) {
-+	case 0:
-+		reg = AD5764_REG_DATA(chan->address);
-+		ret = ad5764_read(indio_dev, reg, val);
-+		if (ret < 0)
-+			return ret;
-+		*val >>= chan->scan_type.shift;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		reg = AD5764_REG_OFFSET(chan->address);
-+		ret = ad5764_read(indio_dev, reg, val);
-+		if (ret < 0)
-+			return ret;
-+		*val = sign_extend32(*val, 7);
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		reg = AD5764_REG_FINE_GAIN(chan->address);
-+		ret = ad5764_read(indio_dev, reg, val);
-+		if (ret < 0)
-+			return ret;
-+		*val = sign_extend32(*val, 5);
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		/* vout = 4 * vref + ((dac_code / 65535) - 0.5) */
-+		vref = ad5764_get_channel_vref(st, chan->channel);
-+		if (vref < 0)
-+			return vref;
-+
-+		scale_uv = (vref * 4 * 100) >> chan->scan_type.realbits;
-+		*val = scale_uv / 100000;
-+		*val2 = (scale_uv % 100000) * 10;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_OFFSET:
-+		*val = -(1 << chan->scan_type.realbits) / 2;
-+		return IIO_VAL_INT;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info ad5764_info = {
-+	.read_raw = ad5764_read_raw,
-+	.write_raw = ad5764_write_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int __devinit ad5764_probe(struct spi_device *spi)
-+{
-+	enum ad5764_type type = spi_get_device_id(spi)->driver_data;
-+	struct iio_dev *indio_dev;
-+	struct ad5764_state *st;
-+	int ret;
-+
-+	indio_dev = iio_allocate_device(sizeof(*st));
-+	if (indio_dev == NULL) {
-+		dev_err(&spi->dev, "Failed to allocate iio device\n");
-+		return -ENOMEM;
-+	}
-+
-+	st = iio_priv(indio_dev);
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	st->spi = spi;
-+	st->chip_info = &ad5764_chip_infos[type];
-+
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->info = &ad5764_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->num_channels = AD5764_NUM_CHANNELS;
-+	indio_dev->channels = st->chip_info->channels;
-+
-+	if (st->chip_info->int_vref == 0) {
-+		st->vref_reg[0].supply = "vrefAB";
-+		st->vref_reg[1].supply = "vrefCD";
-+
-+		ret = regulator_bulk_get(&st->spi->dev,
-+			ARRAY_SIZE(st->vref_reg), st->vref_reg);
-+		if (ret) {
-+			dev_err(&spi->dev, "Failed to request vref regulators: %d\n",
-+				ret);
-+			goto error_free;
-+		}
-+
-+		ret = regulator_bulk_enable(ARRAY_SIZE(st->vref_reg),
-+			st->vref_reg);
-+		if (ret) {
-+			dev_err(&spi->dev, "Failed to enable vref regulators: %d\n",
-+				ret);
-+			goto error_free_reg;
-+		}
-+	}
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret) {
-+		dev_err(&spi->dev, "Failed to register iio device: %d\n", ret);
-+		goto error_disable_reg;
-+	}
-+
-+	return 0;
-+
-+error_disable_reg:
-+	if (st->chip_info->int_vref == 0)
-+		regulator_bulk_disable(ARRAY_SIZE(st->vref_reg), st->vref_reg);
-+error_free_reg:
-+	if (st->chip_info->int_vref == 0)
-+		regulator_bulk_free(ARRAY_SIZE(st->vref_reg), st->vref_reg);
-+error_free:
-+	iio_free_device(indio_dev);
-+
-+	return ret;
-+}
-+
-+static int __devexit ad5764_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct ad5764_state *st = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	if (st->chip_info->int_vref == 0) {
-+		regulator_bulk_disable(ARRAY_SIZE(st->vref_reg), st->vref_reg);
-+		regulator_bulk_free(ARRAY_SIZE(st->vref_reg), st->vref_reg);
-+	}
-+
-+	iio_free_device(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id ad5764_ids[] = {
-+	{ "ad5744", ID_AD5744 },
-+	{ "ad5744r", ID_AD5744R },
-+	{ "ad5764", ID_AD5764 },
-+	{ "ad5764r", ID_AD5764R },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, ad5764_ids);
-+
-+static struct spi_driver ad5764_driver = {
-+	.driver = {
-+		.name = "ad5764",
-+		.owner = THIS_MODULE,
-+	},
-+	.probe = ad5764_probe,
-+	.remove = __devexit_p(ad5764_remove),
-+	.id_table = ad5764_ids,
-+};
-+
-+static int __init ad5764_spi_init(void)
-+{
-+	return spi_register_driver(&ad5764_driver);
-+}
-+module_init(ad5764_spi_init);
-+
-+static void __exit ad5764_spi_exit(void)
-+{
-+	spi_unregister_driver(&ad5764_driver);
-+}
-+module_exit(ad5764_spi_exit);
-+
-+MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
-+MODULE_DESCRIPTION("Analog Devices AD5744/AD5744R/AD5764/AD5764R DAC");
-+MODULE_LICENSE("GPL v2");
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index 3fac9b1..941db3a 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -975,7 +975,6 @@ MODULE_DEVICE_TABLE(spi, ad7280_id);
+ static struct spi_driver ad7280_driver = {
+ 	.driver = {
+ 		.name	= "ad7280",
+-		.bus	= &spi_bus_type,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad7280_probe,
+diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
+index 3ccd4b4..656b77b 100644
+--- a/drivers/staging/iio/adc/ad7298_core.c
++++ b/drivers/staging/iio/adc/ad7298_core.c
+@@ -276,7 +276,6 @@ MODULE_DEVICE_TABLE(spi, ad7298_id);
+ static struct spi_driver ad7298_driver = {
+ 	.driver = {
+ 		.name	= "ad7298",
+-		.bus	= &spi_bus_type,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad7298_probe,
+diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
+index 93b2bef..a42dd19 100644
+--- a/drivers/staging/iio/adc/ad7476_core.c
++++ b/drivers/staging/iio/adc/ad7476_core.c
+@@ -242,7 +242,6 @@ MODULE_DEVICE_TABLE(spi, ad7476_id);
+ static struct spi_driver ad7476_driver = {
+ 	.driver = {
+ 		.name	= "ad7476",
+-		.bus	= &spi_bus_type,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad7476_probe,
+diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
+index c88d97a..98e6e49 100644
+--- a/drivers/staging/iio/adc/ad7606_spi.c
++++ b/drivers/staging/iio/adc/ad7606_spi.c
+@@ -102,7 +102,6 @@ MODULE_DEVICE_TABLE(spi, ad7606_id);
+ static struct spi_driver ad7606_driver = {
+ 	.driver = {
+ 		.name = "ad7606",
+-		.bus = &spi_bus_type,
+ 		.owner = THIS_MODULE,
+ 		.pm    = AD7606_SPI_PM_OPS,
+ 	},
+diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+index 635c7ba..5665dee 100644
+--- a/drivers/staging/iio/adc/ad7780.c
++++ b/drivers/staging/iio/adc/ad7780.c
+@@ -277,7 +277,6 @@ MODULE_DEVICE_TABLE(spi, ad7780_id);
+ static struct spi_driver ad7780_driver = {
+ 	.driver = {
+ 		.name	= "ad7780",
+-		.bus	= &spi_bus_type,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad7780_probe,
+diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
+index 362cc31..a70e53a 100644
+--- a/drivers/staging/iio/adc/ad7793.c
++++ b/drivers/staging/iio/adc/ad7793.c
+@@ -1041,7 +1041,6 @@ MODULE_DEVICE_TABLE(spi, ad7793_id);
+ static struct spi_driver ad7793_driver = {
+ 	.driver = {
+ 		.name	= "ad7793",
+-		.bus	= &spi_bus_type,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad7793_probe,
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index 7a344a2..a38a1a9 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -460,7 +460,6 @@ MODULE_DEVICE_TABLE(spi, ad7816_id);
+ static struct spi_driver ad7816_driver = {
+ 	.driver = {
+ 		.name = "ad7816",
+-		.bus = &spi_bus_type,
+ 		.owner = THIS_MODULE,
+ 	},
+ 	.probe = ad7816_probe,
+diff --git a/drivers/staging/iio/adc/ad7887_core.c b/drivers/staging/iio/adc/ad7887_core.c
+index 8f48659..ab7a5a2 100644
+--- a/drivers/staging/iio/adc/ad7887_core.c
++++ b/drivers/staging/iio/adc/ad7887_core.c
+@@ -251,7 +251,6 @@ MODULE_DEVICE_TABLE(spi, ad7887_id);
+ static struct spi_driver ad7887_driver = {
+ 	.driver = {
+ 		.name	= "ad7887",
+-		.bus	= &spi_bus_type,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad7887_probe,
+diff --git a/drivers/staging/iio/adc/adt7310.c b/drivers/staging/iio/adc/adt7310.c
+index c937ac1..ea9fd43 100644
+--- a/drivers/staging/iio/adc/adt7310.c
++++ b/drivers/staging/iio/adc/adt7310.c
+@@ -877,7 +877,6 @@ MODULE_DEVICE_TABLE(spi, adt7310_id);
+ static struct spi_driver adt7310_driver = {
+ 	.driver = {
+ 		.name = "adt7310",
+-		.bus = &spi_bus_type,
+ 		.owner = THIS_MODULE,
+ 	},
+ 	.probe = adt7310_probe,
+diff --git a/drivers/staging/iio/addac/adt7316-spi.c b/drivers/staging/iio/addac/adt7316-spi.c
+index 369d4d0..1f75e1b 100644
+--- a/drivers/staging/iio/addac/adt7316-spi.c
++++ b/drivers/staging/iio/addac/adt7316-spi.c
+@@ -151,7 +151,6 @@ static int adt7316_spi_resume(struct spi_device *spi_dev)
+ static struct spi_driver adt7316_driver = {
+ 	.driver = {
+ 		.name = "adt7316",
+-		.bus = &spi_bus_type,
+ 		.owner = THIS_MODULE,
+ 	},
+ 	.probe = adt7316_spi_probe,
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index 9d53b10..bfd88fa 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -440,7 +440,6 @@ MODULE_DEVICE_TABLE(spi, ad5446_id);
+ static struct spi_driver ad5446_driver = {
+ 	.driver = {
+ 		.name	= "ad5446",
+-		.bus	= &spi_bus_type,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad5446_probe,
+diff --git a/drivers/staging/iio/dds/ad9832.c b/drivers/staging/iio/dds/ad9832.c
+index 1c87820..d612d3d 100644
+--- a/drivers/staging/iio/dds/ad9832.c
++++ b/drivers/staging/iio/dds/ad9832.c
+@@ -349,7 +349,6 @@ MODULE_DEVICE_TABLE(spi, ad9832_id);
+ static struct spi_driver ad9832_driver = {
+ 	.driver = {
+ 		.name	= "ad9832",
+-		.bus	= &spi_bus_type,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad9832_probe,
+diff --git a/drivers/staging/iio/dds/ad9834.c b/drivers/staging/iio/dds/ad9834.c
+index cd10479..59a2813 100644
+--- a/drivers/staging/iio/dds/ad9834.c
++++ b/drivers/staging/iio/dds/ad9834.c
+@@ -440,7 +440,6 @@ MODULE_DEVICE_TABLE(spi, ad9834_id);
+ static struct spi_driver ad9834_driver = {
+ 	.driver = {
+ 		.name	= "ad9834",
+-		.bus	= &spi_bus_type,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad9834_probe,
 -- 
 1.7.7.3
 
