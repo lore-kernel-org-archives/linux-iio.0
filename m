@@ -3,197 +3,69 @@ From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	greg@kroah.com
 Cc: lars@metafoo.de,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 01/19] staging:iio:buffer drop bpe field.
-Date: Mon,  5 Dec 2011 22:18:12 +0000
-Message-Id: <1323123510-21388-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1323123510-21388-1-git-send-email-jic23@kernel.org>
-References: <1323123510-21388-1-git-send-email-jic23@kernel.org>
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/5]  staging:iio: inkern pull interfaces for staging tree.
+Date: Mon,  5 Dec 2011 21:55:59 +0000
+Message-Id: <1323122164-32314-1-git-send-email-jic23@kernel.org>
 Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Hi Greg,
 
-Has no remaining users.
+This set is a little bit of a novelty.  It's actually a direct lift
+of a series that has been proposed and reviewed against the
+set of patches for the core of IIO outside of the staging
+tree.  We need it here in staging for two reasons.
 
-Signed-off-by: Jonathan Cameron <jic23@cam.ac.uk>
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/accel/adis16201_ring.c    |    1 -
- drivers/staging/iio/accel/adis16203_ring.c    |    1 -
- drivers/staging/iio/accel/adis16204_ring.c    |    1 -
- drivers/staging/iio/accel/adis16209_ring.c    |    1 -
- drivers/staging/iio/accel/adis16240_ring.c    |    1 -
- drivers/staging/iio/accel/lis3l02dq_ring.c    |    1 -
- drivers/staging/iio/accel/sca3000_ring.c      |    2 --
- drivers/staging/iio/adc/ad7606_ring.c         |    2 --
- drivers/staging/iio/buffer.h                  |    2 --
- drivers/staging/iio/gyro/adis16260_ring.c     |    1 -
- drivers/staging/iio/iio_simple_dummy_buffer.c |    2 --
- drivers/staging/iio/imu/adis16400_ring.c      |    1 -
- 12 files changed, 0 insertions(+), 16 deletions(-)
+1) To allow for drivers using this to exist in the staging tree
+with all the stuff that is there but not yet ready to go out
+of staging.
 
-diff --git a/drivers/staging/iio/accel/adis16201_ring.c b/drivers/staging/iio/accel/adis16201_ring.c
-index 0016ed3..184c9dd 100644
---- a/drivers/staging/iio/accel/adis16201_ring.c
-+++ b/drivers/staging/iio/accel/adis16201_ring.c
-@@ -116,7 +116,6 @@ int adis16201_configure_ring(struct iio_dev *indio_dev)
- 	}
- 	indio_dev->buffer = ring;
- 	/* Effectively select the ring buffer implementation */
--	ring->bpe = 2;
- 	ring->scan_timestamp = true;
- 	ring->access = &ring_sw_access_funcs;
- 	ring->setup_ops = &adis16201_ring_setup_ops;
-diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
-index 1fdfe6f..da170c8 100644
---- a/drivers/staging/iio/accel/adis16203_ring.c
-+++ b/drivers/staging/iio/accel/adis16203_ring.c
-@@ -118,7 +118,6 @@ int adis16203_configure_ring(struct iio_dev *indio_dev)
- 	}
- 	indio_dev->buffer = ring;
- 	/* Effectively select the ring buffer implementation */
--	ring->bpe = 2;
- 	ring->scan_timestamp = true;
- 	ring->access = &ring_sw_access_funcs;
- 	ring->setup_ops = &adis16203_ring_setup_ops;
-diff --git a/drivers/staging/iio/accel/adis16204_ring.c b/drivers/staging/iio/accel/adis16204_ring.c
-index 6fd3d8f..1094564 100644
---- a/drivers/staging/iio/accel/adis16204_ring.c
-+++ b/drivers/staging/iio/accel/adis16204_ring.c
-@@ -114,7 +114,6 @@ int adis16204_configure_ring(struct iio_dev *indio_dev)
- 	indio_dev->buffer = ring;
- 	/* Effectively select the ring buffer implementation */
- 	ring->access = &ring_sw_access_funcs;
--	ring->bpe = 2;
- 	ring->scan_timestamp = true;
- 	ring->setup_ops = &adis16204_ring_setup_ops;
- 	ring->owner = THIS_MODULE;
-diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
-index d17e39d..e9158ed 100644
---- a/drivers/staging/iio/accel/adis16209_ring.c
-+++ b/drivers/staging/iio/accel/adis16209_ring.c
-@@ -114,7 +114,6 @@ int adis16209_configure_ring(struct iio_dev *indio_dev)
- 	indio_dev->buffer = ring;
- 	/* Effectively select the ring buffer implementation */
- 	ring->access = &ring_sw_access_funcs;
--	ring->bpe = 2;
- 	ring->scan_timestamp = true;
- 	ring->setup_ops = &adis16209_ring_setup_ops;
- 	ring->owner = THIS_MODULE;
-diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
-index b907ca3..5b02e5a 100644
---- a/drivers/staging/iio/accel/adis16240_ring.c
-+++ b/drivers/staging/iio/accel/adis16240_ring.c
-@@ -111,7 +111,6 @@ int adis16240_configure_ring(struct iio_dev *indio_dev)
- 	indio_dev->buffer = ring;
- 	/* Effectively select the ring buffer implementation */
- 	ring->access = &ring_sw_access_funcs;
--	ring->bpe = 2;
- 	ring->scan_timestamp = true;
- 	ring->setup_ops = &adis16240_ring_setup_ops;
- 	ring->owner = THIS_MODULE;
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index a900502..f5fe332 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -436,7 +436,6 @@ int lis3l02dq_configure_buffer(struct iio_dev *indio_dev)
- 	indio_dev->buffer = buffer;
- 	/* Effectively select the buffer implementation */
- 	indio_dev->buffer->access = &lis3l02dq_access_funcs;
--	buffer->bpe = 2;
- 
- 	buffer->scan_timestamp = true;
- 	buffer->setup_ops = &lis3l02dq_buffer_setup_ops;
-diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
-index 685ded8..4e1d938 100644
---- a/drivers/staging/iio/accel/sca3000_ring.c
-+++ b/drivers/staging/iio/accel/sca3000_ring.c
-@@ -146,7 +146,6 @@ static int sca3000_ring_get_bytes_per_datum(struct iio_buffer *r)
- }
- 
- static IIO_BUFFER_ENABLE_ATTR;
--static IIO_BUFFER_BYTES_PER_DATUM_ATTR;
- static IIO_BUFFER_LENGTH_ATTR;
- 
- /**
-@@ -243,7 +242,6 @@ static IIO_DEVICE_ATTR(in_accel_scale,
-  */
- static struct attribute *sca3000_ring_attributes[] = {
- 	&dev_attr_length.attr,
--	&dev_attr_bytes_per_datum.attr,
- 	&dev_attr_enable.attr,
- 	&iio_dev_attr_50_percent.dev_attr.attr,
- 	&iio_dev_attr_75_percent.dev_attr.attr,
-diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
-index af6780a..203c914 100644
---- a/drivers/staging/iio/adc/ad7606_ring.c
-+++ b/drivers/staging/iio/adc/ad7606_ring.c
-@@ -136,8 +136,6 @@ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
- 
- 	/* Effectively select the ring buffer implementation */
- 	indio_dev->buffer->access = &ring_sw_access_funcs;
--	indio_dev->buffer->bpe =
--		st->chip_info->channels[0].scan_type.storagebits / 8;
- 	indio_dev->pollfunc = iio_alloc_pollfunc(&ad7606_trigger_handler_th_bh,
- 						 &ad7606_trigger_handler_th_bh,
- 						 0,
-diff --git a/drivers/staging/iio/buffer.h b/drivers/staging/iio/buffer.h
-index 5282441..97d59d9 100644
---- a/drivers/staging/iio/buffer.h
-+++ b/drivers/staging/iio/buffer.h
-@@ -86,7 +86,6 @@ struct iio_buffer_setup_ops {
-  * @owner:		module that owns the buffer (for ref counting)
-  * @length:		[DEVICE] number of datums in buffer
-  * @bytes_per_datum:	[DEVICE] size of individual datum including timestamp
-- * @bpe:		[DEVICE] size of individual channel value
-  * @scan_el_attrs:	[DRIVER] control of scan elements if that scan mode
-  *			control method is used
-  * @scan_count:	[INTERN] the number of elements in the current scan mode
-@@ -103,7 +102,6 @@ struct iio_buffer {
- 	struct module				*owner;
- 	int					length;
- 	int					bytes_per_datum;
--	int					bpe;
- 	struct attribute_group			*scan_el_attrs;
- 	int					scan_count;
- 	long					*scan_mask;
-diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
-index 52a9e78..c8d22f5 100644
---- a/drivers/staging/iio/gyro/adis16260_ring.c
-+++ b/drivers/staging/iio/gyro/adis16260_ring.c
-@@ -116,7 +116,6 @@ int adis16260_configure_ring(struct iio_dev *indio_dev)
- 	indio_dev->buffer = ring;
- 	/* Effectively select the ring buffer implementation */
- 	ring->access = &ring_sw_access_funcs;
--	ring->bpe = 2;
- 	ring->scan_timestamp = true;
- 	ring->setup_ops = &adis16260_ring_setup_ops;
- 	ring->owner = THIS_MODULE;
-diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
-index edad0e7..1f1c273 100644
---- a/drivers/staging/iio/iio_simple_dummy_buffer.c
-+++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
-@@ -142,8 +142,6 @@ int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev)
- 	/* Tell the core how to access the buffer */
- 	buffer->access = &kfifo_access_funcs;
- 
--	/* Number of bytes per element */
--	buffer->bpe = 2;
- 	/* Enable timestamps by default */
- 	buffer->scan_timestamp = true;
- 
-diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
-index fd886bf..cee61aa 100644
---- a/drivers/staging/iio/imu/adis16400_ring.c
-+++ b/drivers/staging/iio/imu/adis16400_ring.c
-@@ -186,7 +186,6 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
- 	indio_dev->buffer = ring;
- 	/* Effectively select the ring buffer implementation */
- 	ring->access = &ring_sw_access_funcs;
--	ring->bpe = 2;
- 	ring->scan_timestamp = true;
- 	ring->setup_ops = &adis16400_ring_setup_ops;
- 	ring->owner = THIS_MODULE;
+2) To allow development of the push in kernel interface stuff (triggered
+capture) to procede.  We have no where near enough of the core
+ready to go out of staging yet to be able to do that work there.
+
+Anyhow, very little review here because it was all in the other thread.
+
+For reference:
+https://lkml.org/lkml/2011/11/7/258
+
+I haven't lifted the acks across because they were obviously not
+able to consider any issues of interaction with the rest of IIO
+given they were only looking at a subset.  (Not that I think
+there are any!).
+
+Lars-Peter pointed out a silly mess up to do with two patches
+getting weirdly split up so that is fixed here wrt to the version
+I posted to linux-iio.
+
+Thanks,
+
+Jonathan
+
+Jonathan Cameron (5):
+  staging:iio: core: add datasheet_name to chan_spec
+  staging:iio:adc:max1363 add datasheet_name entries.
+  staging:iio:core add in kernel interface mapping and getting IIO
+    channels.
+  staging;iio: move iio data return types into types.h for use by
+    inkern
+  staging:iio::hwmon interface client driver.
+
+ drivers/staging/Makefile                |    2 +-
+ drivers/staging/iio/Kconfig             |    8 +
+ drivers/staging/iio/Makefile            |    4 +-
+ drivers/staging/iio/adc/max1363_core.c  |    2 +
+ drivers/staging/iio/iio.h               |   17 ++-
+ drivers/staging/iio/iio_hwmon.c         |  225 ++++++++++++++++++++++++++
+ drivers/staging/iio/industrialio-core.c |  268 ++++++++++++++++++++++++++++++-
+ drivers/staging/iio/inkern.c            |   21 +++
+ drivers/staging/iio/inkern.h            |   86 ++++++++++
+ drivers/staging/iio/types.h             |    4 +
+ 10 files changed, 623 insertions(+), 14 deletions(-)
+ create mode 100644 drivers/staging/iio/iio_hwmon.c
+ create mode 100644 drivers/staging/iio/inkern.c
+ create mode 100644 drivers/staging/iio/inkern.h
+
 -- 
 1.7.7.4
