@@ -1,22 +1,18 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from tx2ehsobe003.messaging.microsoft.com ([65.55.88.13]:8346 "EHLO
-	TX2EHSOBE006.bigfish.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932432Ab1LEQIp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Dec 2011 11:08:45 -0500
+Return-Path: <lars@metafoo.de>
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Greg Kroah-Hartman <gregkh@suse.de>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	<devel@driverdev.osuosl.org>, <linux-iio@vger.kernel.org>,
-	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] staging:iio:dac: Add AD5380 driver
-Date: Mon, 5 Dec 2011 17:08:53 +0100
-Message-ID: <1323101333-26426-1-git-send-email-lars@metafoo.de>
+CC: Jonathan Cameron <jic23@kernel.org>, Michael Hennerich
+	<michael.hennerich@analog.com>, <devel@driverdev.osuosl.org>,
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2] staging:iio:dac: Add AD5380 driver
+Date: Tue, 6 Dec 2011 10:07:02 +0100
+Message-ID: <1323162422-19025-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1323101333-26426-1-git-send-email-lars@metafoo.de>
+References: <1323101333-26426-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 This patch adds support for the Analog Devices D5380, AD5381,
 AD5382, AD5383, AD5384, AD5390, AD5391, AD5392 multi-channel
@@ -24,6 +20,9 @@ Digital to Analog Converters.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
+---
+Changes since v1:
+	* Fix typo in the chip_info table.
 ---
  drivers/staging/iio/dac/Kconfig  |   13 +
  drivers/staging/iio/dac/Makefile |    1 +
@@ -69,7 +68,7 @@ index 2bd6b55..8ab1d26 100644
  obj-$(CONFIG_AD5064) += ad5064.o
 diff --git a/drivers/staging/iio/dac/ad5380.c b/drivers/staging/iio/dac/ad5380.c
 new file mode 100644
-index 0000000..9d91ccd
+index 0000000..eff97ae0
 --- /dev/null
 +++ b/drivers/staging/iio/dac/ad5380.c
 @@ -0,0 +1,676 @@
@@ -222,7 +221,7 @@ index 0000000..9d91ccd
 +		.num_channels = 16,
 +		.int_vref = 1250000,
 +	},
-+	[ID_AD5392_5] = {
++	[ID_AD5391_5] = {
 +		.channel_template = AD5380_CHANNEL(12),
 +		.num_channels = 16,
 +		.int_vref = 2500000,
@@ -751,5 +750,3 @@ index 0000000..9d91ccd
 +MODULE_LICENSE("GPL v2");
 -- 
 1.7.7.3
-
-
