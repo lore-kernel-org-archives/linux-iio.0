@@ -1,130 +1,202 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57620 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754158Ab1LLVaI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 12 Dec 2011 16:30:08 -0500
-Message-ID: <4EE67266.1050508@kernel.org>
-Date: Mon, 12 Dec 2011 21:30:14 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-CC: linux-iio@vger.kernel.org,
-	Patrice Vilchez <patrice.vilchez@atmel.com>,
+Received: from mail.free-electrons.com ([88.190.12.23]:41959 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756504Ab1LGS0M (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 7 Dec 2011 13:26:12 -0500
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: linux-iio@vger.kernel.org
+Cc: Patrice Vilchez <patrice.vilchez@atmel.com>,
 	Nicolas Ferre <nicolas.ferre@atmel.com>,
 	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Subject: Re: [PATCH 5/6] AT91: IIO: cosmetic fixes, better error messages
-References: <1323282340-24475-1-git-send-email-maxime.ripard@free-electrons.com> <1323282340-24475-6-git-send-email-maxime.ripard@free-electrons.com> <4EE3703A.1060703@kernel.org> <4EE5E104.3070206@free-electrons.com>
-In-Reply-To: <4EE5E104.3070206@free-electrons.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: [PATCH 4/6] AT91: IIO: Move the SoC specific informations to the ADC driver
+Date: Wed,  7 Dec 2011 19:25:38 +0100
+Message-Id: <1323282340-24475-5-git-send-email-maxime.ripard@free-electrons.com>
+In-Reply-To: <1323282340-24475-1-git-send-email-maxime.ripard@free-electrons.com>
+References: <1323282340-24475-1-git-send-email-maxime.ripard@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/12/2011 11:09 AM, Maxime Ripard wrote:
-> Hi Jonathan,
-> 
-> Ok, I will merge this patch with the other patchset and resend a version
-> of the other patchset.
-> 
-> I suppose you also want the fourth patch merged ?
-If they aren't how you would have written it from scratch, then yes
-please (the answer that saves me reading that patch - daughter doing 30
-second count down for a story ;)
-> 
-> Maxime
-> 
-> On 10/12/2011 15:44, Jonathan Cameron wrote:
->> All sensible but given I haven't merged anything (as being slow with
->> both trees just now), I'd rather see these pushed down into the
->> various places they were first created...
->>
->> Jonathan
->>
->> On 12/07/2011 06:25 PM, Maxime Ripard wrote:
->>> Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
->>>
->>> Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
->>> Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
->>> Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
->>> ---
->>>  drivers/staging/iio/adc/at91_adc.c |   34 +++++++++++++++++++---------------
->>>  1 files changed, 19 insertions(+), 15 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/adc/at91_adc.c b/drivers/staging/iio/adc/at91_adc.c
->>> index 4a0421e..9d6e351 100644
->>> --- a/drivers/staging/iio/adc/at91_adc.c
->>> +++ b/drivers/staging/iio/adc/at91_adc.c
->>> @@ -42,16 +42,16 @@ struct at91_adc_desc {
->>>  };
->>>  
->>>  struct at91_adc_state {
->>> -	struct clk *clk;
->>> -	bool done;
->>> -	struct mutex lock;
->>> -	int irq;
->>> -	wait_queue_head_t wq_data_avail;
->>> -	u16 last_value;
->>> -	void __iomem *reg_base;
->>> -	unsigned int vref_mv;
->>> -	unsigned long channels_mask;
->>> -	struct at91_adc_desc *desc;
->>> +	u32			channels_mask;
->>> +	struct clk		*clk;
->>> +	bool			done;
->>> +	struct at91_adc_desc	*desc;
->>> +	int			irq;
->>> +	u16			last_value;
->>> +	struct mutex		lock;
->>> +	void __iomem		*reg_base;
->>> +	u32			vref_mv;
->>> +	wait_queue_head_t	wq_data_avail;
->>>  };
->>>  
->>>  static struct at91_adc_desc at91_adc_desc_sam9g20 = {
->>> @@ -103,7 +103,7 @@ static irqreturn_t at91_adc_eoc_trigger(int irq, void *private)
->>>  }
->>>  
->>>  static int at91_adc_channel_init(struct iio_dev *idev,
->>> -				struct at91_adc_data *pdata)
->>> +				 struct at91_adc_data *pdata)
->>>  {
->>>  	struct at91_adc_state *st = iio_priv(idev);
->>>  	struct iio_chan_spec *chan_array;
->>> @@ -139,8 +139,8 @@ static void at91_adc_channel_remove(struct iio_dev *idev)
->>>  }
->>>  
->>>  static int at91_adc_read_raw(struct iio_dev *idev,
->>> -			    struct iio_chan_spec const *chan,
->>> -			    int *val, int *val2, long mask)
->>> +			     struct iio_chan_spec const *chan,
->>> +			     int *val, int *val2, long mask)
->>>  {
->>>  	struct at91_adc_state *st = iio_priv(idev);
->>>  	int ret;
->>> @@ -310,8 +310,10 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
->>>  
->>>  	/* Setup the ADC channels available on the board */
->>>  	ret = at91_adc_channel_init(idev, pdata);
->>> -	if (ret < 0)
->>> +	if (ret < 0) {
->>> +		dev_err(&pdev->dev, "Couldn't initialize the channels.\n");
->>>  		goto error_free_clk;
->>> +	}
->>>  
->>>  	init_waitqueue_head(&st->wq_data_avail);
->>>  	mutex_init(&st->lock);
->>> @@ -320,8 +322,10 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
->>>  	st->channels_mask = pdata->channels_used;
->>>  
->>>  	ret = iio_device_register(idev);
->>> -	if (ret < 0)
->>> +	if (ret < 0) {
->>> +		dev_err(&pdev->dev, "Couldn't register the device.\n");
->>>  		goto error_free_channels;
->>> +	}
->>>  
->>>  	return 0;
->>>  
->>
-> 
-> 
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+
+Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+---
+ arch/arm/mach-at91/at91sam9260_devices.c |    9 -----
+ drivers/staging/iio/adc/at91_adc.c       |   52 ++++++++++++++++++++++++++---
+ include/linux/platform_data/at91_adc.h   |   20 ++++-------
+ 3 files changed, 53 insertions(+), 28 deletions(-)
+
+diff --git a/arch/arm/mach-at91/at91sam9260_devices.c b/arch/arm/mach-at91/at91sam9260_devices.c
+index eb914c1..67dad94 100644
+--- a/arch/arm/mach-at91/at91sam9260_devices.c
++++ b/arch/arm/mach-at91/at91sam9260_devices.c
+@@ -1365,15 +1365,6 @@ void __init at91_add_device_adc(struct at91_adc_data *data)
+ 	if (test_bit(3, &data->channels_used))
+ 		at91_set_A_periph(AT91_PIN_PC3, 0);
+ 
+-	/*
+-	 * The electrical characteristics part of the AT91SAM9G20 datasheet
+-	 * sets the ADC clock to 5MHz.
+-	 */
+-	data->adc_clock = 5000000;
+-
+-	data->num_channels = 4;
+-	data->startup_time = 10;
+-
+ 	adc_data = *data;
+ 	platform_device_register(&at91_adc_device);
+ }
+diff --git a/drivers/staging/iio/adc/at91_adc.c b/drivers/staging/iio/adc/at91_adc.c
+index d10df7a..4a0421e 100644
+--- a/drivers/staging/iio/adc/at91_adc.c
++++ b/drivers/staging/iio/adc/at91_adc.c
+@@ -24,6 +24,22 @@
+ #include <linux/platform_data/at91_adc.h>
+ 
+ #include <mach/at91_adc.h>
++#include <mach/cpu.h>
++
++/**
++ * struct at91_adc_desc - description of the ADC on the board
++ * @clock:		ADC clock as specified by the datasheet, in Hz.
++ * @num_channels:	global number of channels available on the board (to
++			specify which channels are indeed in use on the
++			board, see the channels_used bitmask in the platform
++			data)
++ * @startup_time:	startup time of the ADC in microseconds
++ */
++struct at91_adc_desc {
++	u32			clock;
++	u8			num_channels;
++	u8			startup_time;
++};
+ 
+ struct at91_adc_state {
+ 	struct clk *clk;
+@@ -35,8 +51,25 @@ struct at91_adc_state {
+ 	void __iomem *reg_base;
+ 	unsigned int vref_mv;
+ 	unsigned long channels_mask;
++	struct at91_adc_desc *desc;
++};
++
++static struct at91_adc_desc at91_adc_desc_sam9g20 = {
++	.clock = 5000000,
++	.num_channels = 4,
++	.startup_time = 10,
+ };
+ 
++static int at91_adc_select_soc(struct at91_adc_state *st)
++{
++	if (cpu_is_at91sam9g20()) {
++		st->desc = &at91_adc_desc_sam9g20;
++		return 0;
++	}
++
++	return -ENODEV;
++}
++
+ static inline u32 at91_adc_reg_read(struct at91_adc_state *st,
+ 				    u8 reg)
+ {
+@@ -72,18 +105,19 @@ static irqreturn_t at91_adc_eoc_trigger(int irq, void *private)
+ static int at91_adc_channel_init(struct iio_dev *idev,
+ 				struct at91_adc_data *pdata)
+ {
++	struct at91_adc_state *st = iio_priv(idev);
+ 	struct iio_chan_spec *chan_array;
+ 	int bit, idx = 0;
+ 
+ 	idev->num_channels = bitmap_weight(&pdata->channels_used,
+-					   pdata->num_channels);
++					   st->desc->num_channels);
+ 	chan_array = kcalloc(idev->num_channels, sizeof(struct iio_chan_spec),
+ 			     GFP_KERNEL);
+ 
+ 	if (chan_array == NULL)
+ 		return -ENOMEM;
+ 
+-	for_each_set_bit(bit, &pdata->channels_used, pdata->num_channels) {
++	for_each_set_bit(bit, &pdata->channels_used, st->desc->num_channels) {
+ 		struct iio_chan_spec *chan = chan_array + idx;
+ 		chan->type = IIO_VOLTAGE;
+ 		chan->indexed = 1;
+@@ -186,6 +220,12 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+ 	idev->info = &at91_adc_info;
+ 
+ 	st = iio_priv(idev);
++	ret = at91_adc_select_soc(st);
++	if (ret) {
++		dev_err(&pdev->dev, "SoC unknown\n");
++		goto error_free_device;
++	}
++
+ 	st->irq = platform_get_irq(pdev, 0);
+ 	if (st->irq < 0) {
+ 		dev_err(&pdev->dev, "No IRQ ID is designated\n");
+@@ -238,7 +278,7 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+ 		goto error_free_clk;
+ 	}
+ 
+-	if (!pdata->adc_clock) {
++	if (!st->desc->clock) {
+ 		dev_err(&pdev->dev, "No ADCClock available.\n");
+ 		ret = -EINVAL;
+ 		goto error_free_clk;
+@@ -249,9 +289,9 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+ 	 * datasheet : ADC Clock = MCK / ((Prescaler + 1) * 2), ADC Clock being
+ 	 * specified by the electrical characteristics of the board.
+ 	 */
+-	prsc = (mstrclk / (2 * pdata->adc_clock)) - 1;
++	prsc = (mstrclk / (2 * st->desc->clock)) - 1;
+ 
+-	if (!pdata->startup_time) {
++	if (!st->desc->startup_time) {
+ 		dev_err(&pdev->dev, "No startup time available.\n");
+ 		ret = -EINVAL;
+ 		goto error_free_clk;
+@@ -262,7 +302,7 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+ 	 * defined in the electrical characteristics of the board, divided by 8.
+ 	 * The formula thus is : Startup Time = (ticks + 1) * 8 / ADC Clock
+ 	 */
+-	ticks = round_up((pdata->startup_time * pdata->adc_clock /
++	ticks = round_up((st->desc->startup_time * st->desc->clock /
+ 			  1000000) - 1, 8) / 8;
+ 	at91_adc_reg_write(st, AT91_ADC_MR,
+ 			  (AT91_ADC_PRESCAL_(prsc) & AT91_ADC_PRESCAL) |
+diff --git a/include/linux/platform_data/at91_adc.h b/include/linux/platform_data/at91_adc.h
+index 1e1813d..ab43de8 100644
+--- a/include/linux/platform_data/at91_adc.h
++++ b/include/linux/platform_data/at91_adc.h
+@@ -15,20 +15,14 @@
+ #ifndef _AT91_ADC_H_
+ #define _AT91_ADC_H_
+ 
++/**
++ * struct at91_adc_data - platform data for ADC driver
++ * @channels_use:	channels in use on the board as a bitmask
++ * @vref:		Reference voltage for the ADC in millvolts
++ */
+ struct at91_adc_data {
+-	/* ADC Clock as specified by the datasheet, in Hz. */
+-	unsigned int adc_clock;
+-	/*
+-	 * Global number of channels available (to specify which channels are
+-	 * indeed used on the board, see the channels_used bitmask).
+-	 */
+-	u8 num_channels;
+-	/* Channels in use on the board as a bitmask */
+-	unsigned long channels_used;
+-	/* Startup time of the ADC, in microseconds. */
+-	u8 startup_time;
+-	/* Reference voltage for the ADC in millivolts */
+-	unsigned short vref;
++	u32	channels_used;
++	u16	vref;
+ };
+ 
+ extern void __init at91_add_device_adc(struct at91_adc_data *data);
+-- 
+1.7.4.1
 
