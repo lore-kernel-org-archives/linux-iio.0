@@ -1,73 +1,56 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([88.190.12.23]:41950 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756504Ab1LGS0G (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 7 Dec 2011 13:26:06 -0500
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: linux-iio@vger.kernel.org
-Cc: Patrice Vilchez <patrice.vilchez@atmel.com>,
-	Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Subject: [PATCH 1/6] ARM: AT91: Add platform data for the ADCs
-Date: Wed,  7 Dec 2011 19:25:35 +0100
-Message-Id: <1323282340-24475-2-git-send-email-maxime.ripard@free-electrons.com>
-In-Reply-To: <1323282340-24475-1-git-send-email-maxime.ripard@free-electrons.com>
-References: <1323282340-24475-1-git-send-email-maxime.ripard@free-electrons.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio: Fix scan mask update
+Date: Wed, 7 Dec 2011 15:43:44 +0100
+Message-ID: <1323269024-21656-1-git-send-email-lars@metafoo.de>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+When updating the scan mask we have to check the actual scan mask for if the
+channel is already enabled, not the matching scan mask from the available
+scan masks. The bit will already be set there and as a result the actual
+scan mask will not get updated and the channel stays disabled.
 
-Cc: Patrice Vilchez <patrice.vilchez@atmel.com>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- include/linux/platform_data/at91_adc.h |   36 ++++++++++++++++++++++++++++++++
- 1 files changed, 36 insertions(+), 0 deletions(-)
- create mode 100644 include/linux/platform_data/at91_adc.h
+ drivers/staging/iio/industrialio-buffer.c |   12 ++----------
+ 1 files changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/platform_data/at91_adc.h b/include/linux/platform_data/at91_adc.h
-new file mode 100644
-index 0000000..1e1813d
---- /dev/null
-+++ b/include/linux/platform_data/at91_adc.h
-@@ -0,0 +1,36 @@
-+/*
-+ * Copyright (C) 2011 Free Electrons
-+ *
-+ * This software is licensed under the terms of the GNU General Public
-+ * License version 2, as published by the Free Software Foundation, and
-+ * may be copied, distributed, and modified under those terms.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+
-+#ifndef _AT91_ADC_H_
-+#define _AT91_ADC_H_
-+
-+struct at91_adc_data {
-+	/* ADC Clock as specified by the datasheet, in Hz. */
-+	unsigned int adc_clock;
-+	/*
-+	 * Global number of channels available (to specify which channels are
-+	 * indeed used on the board, see the channels_used bitmask).
-+	 */
-+	u8 num_channels;
-+	/* Channels in use on the board as a bitmask */
-+	unsigned long channels_used;
-+	/* Startup time of the ADC, in microseconds. */
-+	u8 startup_time;
-+	/* Reference voltage for the ADC in millivolts */
-+	unsigned short vref;
-+};
-+
-+extern void __init at91_add_device_adc(struct at91_adc_data *data);
-+
-+#endif
+diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c
+index f629e8b..a539c7c 100644
+--- a/drivers/staging/iio/industrialio-buffer.c
++++ b/drivers/staging/iio/industrialio-buffer.c
+@@ -171,7 +171,7 @@ static ssize_t iio_scan_el_store(struct device *dev,
+ error_ret:
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+-	return ret ? ret : len;
++	return ret < 0 ? ret : len;
+ 
+ }
+ 
+@@ -617,16 +617,8 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,
+ 
+ 	if (!buffer->scan_mask)
+ 		return 0;
+-	if (indio_dev->available_scan_masks)
+-		mask = iio_scan_mask_match(indio_dev->available_scan_masks,
+-					   indio_dev->masklength,
+-					   buffer->scan_mask);
+-	else
+-		mask = buffer->scan_mask;
+-	if (!mask)
+-		return 0;
+ 
+-	return test_bit(bit, mask);
++	return test_bit(bit, buffer->scan_mask);
+ };
+ EXPORT_SYMBOL_GPL(iio_scan_mask_query);
+ 
 -- 
-1.7.4.1
-
+1.7.7.3
