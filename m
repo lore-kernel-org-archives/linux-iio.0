@@ -1,65 +1,43 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4EE087E2.5040901@kernel.org>
-Date: Thu, 08 Dec 2011 09:48:18 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:kfifo_buf: Fix potential buffer overflow in iio_read_first_n_kfifo
+Date: Wed, 7 Dec 2011 15:43:34 +0100
+Message-ID: <1323269014-21611-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
- Michael Hennerich <michael.hennerich@analog.com>,
- linux-iio@vger.kernel.org, device-drivers-devel@blackfin.uclinux.org,
- drivers@analog.com
-Subject: Re: [PATCH] staging:iio: Fix scan mask update
-References: <1323269024-21656-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1323269024-21656-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On 12/07/2011 02:43 PM, Lars-Peter Clausen wrote:
-> When updating the scan mask we have to check the actual scan mask for if the
-> channel is already enabled, not the matching scan mask from the available
-> scan masks. The bit will already be set there and as a result the actual
-> scan mask will not get updated and the channel stays disabled.
-Dratt, I messed this case up didn't I!  I guess my tests only make
-changes that effect the scan mask.  Oops.
+n is the number of bytes to read, not the number of samples. So if there is
+enough data available we will write to the userspace buffer beyond its bounds.
+Fix this by copying n bytes maximum. Also round n down to the next multiple of
+the sample size, so we will only read complete samples. If the buffer is too
+small to hold at least one sample return -EINVAL.
 
-Thanks for the catch.  This is clearly a hole in my tests...
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/kfifo_buf.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
 
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-
-> ---
->  drivers/staging/iio/industrialio-buffer.c |   12 ++----------
->  1 files changed, 2 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c
-> index f629e8b..a539c7c 100644
-> --- a/drivers/staging/iio/industrialio-buffer.c
-> +++ b/drivers/staging/iio/industrialio-buffer.c
-> @@ -171,7 +171,7 @@ static ssize_t iio_scan_el_store(struct device *dev,
->  error_ret:
->  	mutex_unlock(&indio_dev->mlock);
->  
-> -	return ret ? ret : len;
-> +	return ret < 0 ? ret : len;
->  
->  }
->  
-> @@ -617,16 +617,8 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,
->  
->  	if (!buffer->scan_mask)
->  		return 0;
-> -	if (indio_dev->available_scan_masks)
-> -		mask = iio_scan_mask_match(indio_dev->available_scan_masks,
-> -					   indio_dev->masklength,
-> -					   buffer->scan_mask);
-> -	else
-> -		mask = buffer->scan_mask;
-> -	if (!mask)
-> -		return 0;
->  
-> -	return test_bit(bit, mask);
-> +	return test_bit(bit, buffer->scan_mask);
->  };
->  EXPORT_SYMBOL_GPL(iio_scan_mask_query);
->  
+diff --git a/drivers/staging/iio/kfifo_buf.c b/drivers/staging/iio/kfifo_buf.c
+index a64ebbf..930029b 100644
+--- a/drivers/staging/iio/kfifo_buf.c
++++ b/drivers/staging/iio/kfifo_buf.c
+@@ -161,7 +161,11 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
+ 	int ret, copied;
+ 	struct iio_kfifo *kf = iio_to_kfifo(r);
+ 
+-	ret = kfifo_to_user(&kf->kf, buf, r->bytes_per_datum*n, &copied);
++	if (n < r->bytes_per_datum)
++		return -EINVAL;
++
++	n = rounddown(n, r->bytes_per_datum);
++	ret = kfifo_to_user(&kf->kf, buf, n, &copied);
+ 
+ 	return copied;
+ }
+-- 
+1.7.7.3
