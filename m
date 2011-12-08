@@ -1,63 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:49679 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751519Ab1LRTof (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 18 Dec 2011 14:44:35 -0500
-Message-ID: <4EEE4286.5040101@metafoo.de>
-Date: Sun, 18 Dec 2011 20:44:06 +0100
+Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:35986
+	"EHLO VA3EHSOBE009.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751197Ab1LHRfg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 Dec 2011 12:35:36 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
+To: Greg Kroah-Hartman <gregkh@suse.de>
+CC: Jonathan Cameron <jic23@kernel.org>, <devel@driverdev.osuosl.org>,
+	<linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/3] staging:iio:kfifo_buf: Fix potential buffer overflow in iio_read_first_n_kfifo
+Date: Thu, 8 Dec 2011 18:35:52 +0100
+Message-ID: <1323365753-7645-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1323365753-7645-1-git-send-email-lars@metafoo.de>
+References: <1323365753-7645-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Greg KH <greg@kroah.com>, Greg Kroah-Hartman <gregkh@suse.de>,
-	devel@driverdev.osuosl.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] staging:iio: Fix scan mask update
-References: <1323365753-7645-1-git-send-email-lars@metafoo.de> <1323365753-7645-3-git-send-email-lars@metafoo.de> <20111208201841.GA338@kroah.com> <4EE1D9B9.3000309@metafoo.de> <20111209151102.GA18821@kroah.com> <4EEE2A9F.4080602@kernel.org>
-In-Reply-To: <4EEE2A9F.4080602@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/18/2011 07:02 PM, Jonathan Cameron wrote:
-> On 12/09/2011 03:11 PM, Greg KH wrote:
->> On Fri, Dec 09, 2011 at 10:49:45AM +0100, Lars-Peter Clausen wrote:
->>> On 12/08/2011 09:18 PM, Greg KH wrote:
->>>> On Thu, Dec 08, 2011 at 06:35:53PM +0100, Lars-Peter Clausen wrote=
-:
->>>>> When updating the scan mask we have to check the actual scan mask=
- for if the
->>>>> channel is already enabled, not the matching scan mask from the a=
-vailable
->>>>> scan masks. The bit will already be set there and as a result the=
- actual
->>>>> scan mask will not get updated and the channel stays disabled.
->>>>>
->>>>> Also fix the return value of iio_scan_el_store which would return=
- 1 instead of
->>>>> the number of bytes written if the channel was already active in =
-the scan mask.
->>>>
->>>> You just added a complier warning with this patch:
->>>>   CC [M]  drivers/staging/iio/industrialio-buffer.o
->>>> drivers/staging/iio/industrialio-buffer.c: In function =E2=80=98ii=
-o_scan_mask_query=E2=80=99:
->>>> drivers/staging/iio/industrialio-buffer.c:621:8: warning: unused v=
-ariable =E2=80=98mask=E2=80=99 [-Wunused-variable]
->>>>
->>>> So I didn't apply it.
->>>
->>> Actually you did. At least it is in staging-next. Should I resend a=
- updated
->>> patch or just a patch removing the now unused mask variable.
->>
->> Ugh, you are right, I was messing with my scripts to apply patches a=
-t
->> the time, and forgot to delete this branch.
->>
->> So, please send a follow-on patch to fix the warning.
->>
-> Lars-Peter, have you sent such a patch to Greg?  I'm still seeing thi=
-s
-> warning hence the bump! Just wondering if this got lost in amongst
-> everything else that is going on.
+n is the number of bytes to read, not the number of samples. So if there is
+enough data available we will write to the userspace buffer beyond its bounds.
+Fix this by copying n bytes maximum. Also round n down to the next multiple of
+the sample size, so we will only read complete samples. If the buffer is too
+small to hold at least one sample return -EINVAL.
 
-Haven't send it out yet. Will do tomorrow.
+Also update the documentation of read_first_n to reflect the fact that 'n' is
+supposed to be in bytes and not in samples.
+
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/buffer.h    |    2 +-
+ drivers/staging/iio/kfifo_buf.c |    6 +++++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/iio/buffer.h b/drivers/staging/iio/buffer.h
+index c697099..44593b2 100644
+--- a/drivers/staging/iio/buffer.h
++++ b/drivers/staging/iio/buffer.h
+@@ -21,7 +21,7 @@ struct iio_buffer;
+  * @mark_in_use:	reference counting, typically to prevent module removal
+  * @unmark_in_use:	reduce reference count when no longer using buffer
+  * @store_to:		actually store stuff to the buffer
+- * @read_first_n:	try to get a specified number of elements (must exist)
++ * @read_first_n:	try to get a specified number of bytes (must exist)
+  * @mark_param_change:	notify buffer that some relevant parameter has changed
+  *			Often this means the underlying storage may need to
+  *			change.
+diff --git a/drivers/staging/iio/kfifo_buf.c b/drivers/staging/iio/kfifo_buf.c
+index d8867ab..b69cca5 100644
+--- a/drivers/staging/iio/kfifo_buf.c
++++ b/drivers/staging/iio/kfifo_buf.c
+@@ -160,7 +160,11 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
+ 	int ret, copied;
+ 	struct iio_kfifo *kf = iio_to_kfifo(r);
+ 
+-	ret = kfifo_to_user(&kf->kf, buf, r->bytes_per_datum*n, &copied);
++	if (n < r->bytes_per_datum)
++		return -EINVAL;
++
++	n = rounddown(n, r->bytes_per_datum);
++	ret = kfifo_to_user(&kf->kf, buf, n, &copied);
+ 
+ 	return copied;
+ }
+-- 
+1.7.7.3
+
+
