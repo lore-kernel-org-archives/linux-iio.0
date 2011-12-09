@@ -1,69 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:35986
-	"EHLO VA3EHSOBE009.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751197Ab1LHRfg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 Dec 2011 12:35:36 -0500
+Received: from smtp-out-081.synserver.de ([212.40.185.81]:1046 "HELO
+	smtp-out-081.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1751452Ab1LIJ54 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2011 04:57:56 -0500
+Message-ID: <4EE1DBBB.7060609@metafoo.de>
+Date: Fri, 09 Dec 2011 10:58:19 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
-To: Greg Kroah-Hartman <gregkh@suse.de>
-CC: Jonathan Cameron <jic23@kernel.org>, <devel@driverdev.osuosl.org>,
-	<linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/3] staging:iio:kfifo_buf: Fix potential buffer overflow in iio_read_first_n_kfifo
-Date: Thu, 8 Dec 2011 18:35:52 +0100
-Message-ID: <1323365753-7645-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1323365753-7645-1-git-send-email-lars@metafoo.de>
-References: <1323365753-7645-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Greg KH <greg@kroah.com>
+CC: Greg Kroah-Hartman <gregkh@suse.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	devel@driverdev.osuosl.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/3] staging:iio:kfifo_buf: Fix potential buffer overflow
+ in iio_read_first_n_kfifo
+References: <1323365753-7645-1-git-send-email-lars@metafoo.de> <1323365753-7645-2-git-send-email-lars@metafoo.de> <20111208201722.GA31926@kroah.com>
+In-Reply-To: <20111208201722.GA31926@kroah.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-n is the number of bytes to read, not the number of samples. So if there is
-enough data available we will write to the userspace buffer beyond its bounds.
-Fix this by copying n bytes maximum. Also round n down to the next multiple of
-the sample size, so we will only read complete samples. If the buffer is too
-small to hold at least one sample return -EINVAL.
+On 12/08/2011 09:17 PM, Greg KH wrote:
+> On Thu, Dec 08, 2011 at 06:35:52PM +0100, Lars-Peter Clausen wrote:
+>> n is the number of bytes to read, not the number of samples. So if there is
+>> enough data available we will write to the userspace buffer beyond its bounds.
+>> Fix this by copying n bytes maximum. Also round n down to the next multiple of
+>> the sample size, so we will only read complete samples. If the buffer is too
+>> small to hold at least one sample return -EINVAL.
+>>
+>> Also update the documentation of read_first_n to reflect the fact that 'n' is
+>> supposed to be in bytes and not in samples.
+>>
+>> Acked-by: Jonathan Cameron <jic23@kernel.org>
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>> ---
+>>  drivers/staging/iio/buffer.h    |    2 +-
+> 
+> This patch no longer applies to my tree, care to refresh it and resend
+> it?
 
-Also update the documentation of read_first_n to reflect the fact that 'n' is
-supposed to be in bytes and not in samples.
+Hi Greg,
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/buffer.h    |    2 +-
- drivers/staging/iio/kfifo_buf.c |    6 +++++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+I just rebased the patch on top of the current staging-next and it is
+identically to this one. Could you try to re-apply it, if you still have it?
+Otherwise I'll send it out again.
 
-diff --git a/drivers/staging/iio/buffer.h b/drivers/staging/iio/buffer.h
-index c697099..44593b2 100644
---- a/drivers/staging/iio/buffer.h
-+++ b/drivers/staging/iio/buffer.h
-@@ -21,7 +21,7 @@ struct iio_buffer;
-  * @mark_in_use:	reference counting, typically to prevent module removal
-  * @unmark_in_use:	reduce reference count when no longer using buffer
-  * @store_to:		actually store stuff to the buffer
-- * @read_first_n:	try to get a specified number of elements (must exist)
-+ * @read_first_n:	try to get a specified number of bytes (must exist)
-  * @mark_param_change:	notify buffer that some relevant parameter has changed
-  *			Often this means the underlying storage may need to
-  *			change.
-diff --git a/drivers/staging/iio/kfifo_buf.c b/drivers/staging/iio/kfifo_buf.c
-index d8867ab..b69cca5 100644
---- a/drivers/staging/iio/kfifo_buf.c
-+++ b/drivers/staging/iio/kfifo_buf.c
-@@ -160,7 +160,11 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
- 	int ret, copied;
- 	struct iio_kfifo *kf = iio_to_kfifo(r);
- 
--	ret = kfifo_to_user(&kf->kf, buf, r->bytes_per_datum*n, &copied);
-+	if (n < r->bytes_per_datum)
-+		return -EINVAL;
-+
-+	n = rounddown(n, r->bytes_per_datum);
-+	ret = kfifo_to_user(&kf->kf, buf, n, &copied);
- 
- 	return copied;
- }
--- 
-1.7.7.3
-
-
+Thanks,
+- Lars
