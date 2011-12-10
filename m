@@ -1,33 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from out2.smtp.messagingengine.com ([66.111.4.26]:34654 "EHLO
-	out2.smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750855Ab1LHUYo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 Dec 2011 15:24:44 -0500
-Received: from compute1.internal (compute1.nyi.mail.srv.osa [10.202.2.41])
-	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id 7BA302124C
-	for <linux-iio@vger.kernel.org>; Thu,  8 Dec 2011 15:24:43 -0500 (EST)
-Date: Thu, 8 Dec 2011 12:14:57 -0800
-From: Greg KH <greg@kroah.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, lars@metafoo.de
-Subject: Re: [PATCH 00/19] staging:iio:buffer clean ups.
-Message-ID: <20111208201457.GA27664@kroah.com>
-References: <1323123510-21388-1-git-send-email-jic23@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35248 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751157Ab1LJOAv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Dec 2011 09:00:51 -0500
+Message-ID: <4EE36616.3000305@kernel.org>
+Date: Sat, 10 Dec 2011 14:00:54 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1323123510-21388-1-git-send-email-jic23@kernel.org>
+To: Greg KH <greg@kroah.com>
+CC: linux-iio@vger.kernel.org, lars@metafoo.de
+Subject: Re: [PATCH 00/19] staging:iio:buffer clean ups.
+References: <1323123510-21388-1-git-send-email-jic23@kernel.org> <20111208201457.GA27664@kroah.com>
+In-Reply-To: <20111208201457.GA27664@kroah.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Dec 05, 2011 at 10:18:11PM +0000, Jonathan Cameron wrote:
-> Hi Greg,
+On 12/08/2011 08:14 PM, Greg KH wrote:
+> On Mon, Dec 05, 2011 at 10:18:11PM +0000, Jonathan Cameron wrote:
+>> Hi Greg,
+>>
+>> Dependent on previous two series:
+>>
+>> Add scan demux unit..
+>> iio:staging:inkern pull interface for staging tree.
 > 
-> Dependent on previous two series:
+> Hm, not really, it applied even though I didn't apply that second
+> series, hope I didn't mess anything really up now...
 > 
-> Add scan demux unit..
-> iio:staging:inkern pull interface for staging tree.
+> greg k-h
+Cool. I thought they touched enough similar stuff to cause trouble.
+Guess we were lucky.  Rebasing my tree shows nothing weird occuring
+so should be all good.
 
-Hm, not really, it applied even though I didn't apply that second
-series, hope I didn't mess anything really up now...
+Thanks,
 
-greg k-h
+Jonathan
