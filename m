@@ -1,196 +1,67 @@
-Return-Path: <jic23@cam.ac.uk>
-References: <1323684526-11134-1-git-send-email-lars@metafoo.de> <20111213004506.GA11553@kroah.com> <4EE7145F.9040003@metafoo.de> <20111213235926.GA23916@kroah.com>
-In-Reply-To: <20111213235926.GA23916@kroah.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:59775
+	"EHLO VA3EHSOBE007.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1750799Ab1LLIcs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 12 Dec 2011 03:32:48 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Greg Kroah-Hartman <gregkh@suse.de>
+CC: Jonathan Cameron <jic23@kernel.org>, <devel@driverdev.osuosl.org>,
+	<linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:kfifo_buf: Fix potential buffer overflow in iio_read_first_n_kfifo
+Date: Mon, 12 Dec 2011 09:33:14 +0100
+Message-ID: <1323678794-6806-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] staging:iio: Add wrapper functions around buffer access ops
-From: Jonathan Cameron <jic23@cam.ac.uk>
-Date: Wed, 14 Dec 2011 07:19:27 +0000
-To: Greg KH <greg@kroah.com>,Lars-Peter Clausen <lars@metafoo.de>
-CC: Greg Kroah-Hartman <gregkh@suse.de>,Jonathan Cameron <jic23@kernel.org>,devel@driverdev.osuosl.org,linux-iio@vger.kernel.org
-Message-ID: <b46a9322-2dc4-43f9-9f71-65b6546a904c@email.android.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+n is the number of bytes to read, not the number of samples. So if there is
+enough data available we will write to the userspace buffer beyond its bounds.
+Fix this by copying n bytes maximum. Also round n down to the next multiple of
+the sample size, so we will only read complete samples. If the buffer is too
+small to hold at least one sample return -EINVAL.
 
+Also update the documentation of read_first_n to reflect the fact that 'n' is
+supposed to be in bytes and not in samples.
 
-Greg KH <greg@kroah.com> wrote:
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/buffer.h    |    2 +-
+ drivers/staging/iio/kfifo_buf.c |    6 +++++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
->On Tue, Dec 13, 2011 at 10:01:19AM +010=
-0, Lars-Peter Clausen wrote:
->> On 12/13/2011 01:45 AM, Greg KH wrote:
->> >=
- On Mon, Dec 12, 2011 at 11:08:46AM +0100, Lars-Peter Clausen wrote:
->> >> =
-Add some convenience wrapper functions around the buffer access
->operations=
-. This
->> >> makes the resulting code both a bit easier to read and to writ=
-e.
->> > 
->> > Yeah, but why are you abstracting this away?
->> > 
->> 
->> Bec=
-ause it's nicer to read and to write :) This is a purely cosmetic
->patch
->>=
- which is supposed to ease to code flow a bit.
->> 
->> But it also hides the=
- actual implementation from the user, which
->makes it
->> easier to change t=
-he implementation at a later point without having
->to patch
->> each user.
->=
-> 
->> And of course it brings consistency to the users of these functions
->=
-in regard
->> to whether a callback is checked, because it is optional, or n=
-ot,
->because it is
->> mandatory.
->
->Ok, but you aren't consistent in your e=
-rror codes or checking it seems.
->
->> >> +static inline int buffer_store_to=
-(struct iio_buffer *buffer, u8
->*data,
->> >> +	s64 timestamp)
->> >> +{
->> >=
-> +	return buffer->access->store_to(buffer, data, timestamp);
->> > 
->> > WH=
-y didn't you check this one here?
->> 
->> Because the callback is not really=
- optional.
->
->And these are all documented, right?
->
->> >> +static inline i=
-nt buffer_mark_param_change(struct iio_buffer
->*buffer)
->> >> +{
->> >> +	if=
- (buffer->access->mark_param_change)
->> >> +		return buffer->access->mark_p=
-aram_change(buffer);
->> >> +
->> >> +	return 0;
->> > 
->> > Why 0?  Not an er=
-ror?
->> 
->> Why an error, not 0?
->> 
->> If the buffer doesn't implement a m=
-ark_param_change callback it is
->probably not
->> interested in being notifi=
-ed about changes. So not implementing the
->function is
->> not an error to t=
-he caller.
->
->Ok, documenting this would be nice...
->
->> >> +static inline =
-int buffer_get_length(struct iio_buffer *buffer)
->> >> +{
->> >> +	if (buffe=
-r->access->get_length)
->> >> +		return buffer->access->get_length(buffer);
-=
->> >> +
->> >> +	return -ENOSYS;
->> > 
->> > Here you return an error, but wh=
-y ENOSYS?
->> > 
->> > Consistancy is key, and you don't have it here at all.=
-  Or if you
->do, I
->> > sure don't understand it...
->> 
->> Well, different =
-types of functions require different semantics. While
->the
->> previous ones=
- did either return 0 in case of success or a error value
->in case
->> of an =
-error, buffer_get_length returns an integer value where 0 is a
->valid
->> va=
-lue. Since we can't make any meaningful assumptions about the
->buffer size =
-if
->> the callback is not implemented we return an error value. Why ENOSYS?=
-
->Because
->> it is the code for 'function not implemented' and is used thro=
-ughout
->the kernel
->> in similar situations.
->
->Is the caller always suppos=
-ed to check this?  If so, please mark the
->function as such so the compiler=
- will complain if it isn't.
->
->> >> --- a/drivers/staging/iio/industrialio-=
-buffer.c
->> >> +++ b/drivers/staging/iio/industrialio-buffer.c
->> >> @@ -43=
-,9 +43,9 @@ ssize_t iio_buffer_read_first_n_outer(struct
->file *filp, char =
-__user *buf,
->> >>  	struct iio_dev *indio_dev =3D filp->private_data;
->> >=
->  	struct iio_buffer *rb =3D indio_dev->buffer;
->> >>  
->> >> -	if (!rb ||=
- !rb->access->read_first_n)
->> >> +	if (!rb)
->> >>  		return -EINVAL;
->> >>=
- -	return rb->access->read_first_n(rb, n, buf);
->> >> +	return buffer_read_=
-first_n(rb, n, buf);
->> > 
->> > Oops, you just crashed if there wasn't a re=
-ad_first_n() function
->here.
->> 
->> I suppose it's pretty save to assume th=
-at if we have a buffer
->implementation
->> where you can't read any samples =
-from it is broken anyway.
->
->I would think so, but the original code didn't=
- think so :)
-
-This isn't actually true as the data may leave iio. Still, if=
- the driver doesn't know that something buggy is going on!  The callback bu=
-ffer in my rfc of a few weeks ago has no read back abilities.
->
->greg k-h
->=
---
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in=
-
->the body of a message to majordomo@vger.kernel.org
->More majordomo info a=
-t  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/staging/iio/buffer.h b/drivers/staging/iio/buffer.h
+index c697099..44593b2 100644
+--- a/drivers/staging/iio/buffer.h
++++ b/drivers/staging/iio/buffer.h
+@@ -21,7 +21,7 @@ struct iio_buffer;
+  * @mark_in_use:	reference counting, typically to prevent module removal
+  * @unmark_in_use:	reduce reference count when no longer using buffer
+  * @store_to:		actually store stuff to the buffer
+- * @read_first_n:	try to get a specified number of elements (must exist)
++ * @read_first_n:	try to get a specified number of bytes (must exist)
+  * @mark_param_change:	notify buffer that some relevant parameter has changed
+  *			Often this means the underlying storage may need to
+  *			change.
+diff --git a/drivers/staging/iio/kfifo_buf.c b/drivers/staging/iio/kfifo_buf.c
+index d8867ab..b69cca5 100644
+--- a/drivers/staging/iio/kfifo_buf.c
++++ b/drivers/staging/iio/kfifo_buf.c
+@@ -160,7 +160,11 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
+ 	int ret, copied;
+ 	struct iio_kfifo *kf = iio_to_kfifo(r);
+ 
+-	ret = kfifo_to_user(&kf->kf, buf, r->bytes_per_datum*n, &copied);
++	if (n < r->bytes_per_datum)
++		return -EINVAL;
++
++	n = rounddown(n, r->bytes_per_datum);
++	ret = kfifo_to_user(&kf->kf, buf, n, &copied);
+ 
+ 	return copied;
+ }
 -- 
-Sent from my Android pho=
-ne 
-with K-9 Mail. Please excuse my brevity.
+1.7.7.3
+
+
