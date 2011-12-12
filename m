@@ -1,182 +1,156 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:52094 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752134Ab1LMOzv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Dec 2011 09:55:51 -0500
-Message-ID: <4EE76746.5020501@metafoo.de>
-Date: Tue, 13 Dec 2011 15:55:02 +0100
+Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:45559
+	"EHLO VA3EHSOBE007.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752097Ab1LLKnJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 12 Dec 2011 05:43:09 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH v2 01/13] staging:iio:ring_sw: Add helper function for
- initializing simple setups
-References: <1323686585-15181-1-git-send-email-lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 13/13] staging:iio:meter:ade7758: Use new ringbuffer setup helper function
+Date: Mon, 12 Dec 2011 11:43:05 +0100
+Message-ID: <1323686585-15181-13-git-send-email-lars@metafoo.de>
 In-Reply-To: <1323686585-15181-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <1323686585-15181-1-git-send-email-lars@metafoo.de>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/12/2011 11:42 AM, Lars-Peter Clausen wrote:
-> Add a helper function for executing the common tasks which are usually involved
-> in setting up a simple software ringbuffer. It will allocate the buffer,
-> allocate the pollfunc and register the buffer.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> 
-> ---
-> Changes since v1:
-> 	Added an optional setup_ops parameter to iio_sw_rb_simple_setup which allows
-> 	a driver to provide it's own setup_ops which is sometimes necessary if for
-> 	example the device needs to enter a special mode before the conversions
-> 	starts and should leave after the conversions are done. This change allows
-> 	to convert some more drivers. Infact now almost all users of the ring_sw
-> 	buffer use this helper function.
+Use the new ringbuffer setup helper function to allocate and register buffer and
+pollfunc.
 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/meter/ade7758.h      |    8 ------
+ drivers/staging/iio/meter/ade7758_core.c |   11 ---------
+ drivers/staging/iio/meter/ade7758_ring.c |   36 ++++-------------------------
+ 3 files changed, 5 insertions(+), 50 deletions(-)
 
-I've reworked this another time, so no need to review/ack this series.
+diff --git a/drivers/staging/iio/meter/ade7758.h b/drivers/staging/iio/meter/ade7758.h
+index bdd1b05..2a6c4ad 100644
+--- a/drivers/staging/iio/meter/ade7758.h
++++ b/drivers/staging/iio/meter/ade7758.h
+@@ -150,7 +150,6 @@ ssize_t ade7758_read_data_from_ring(struct device *dev,
+ int ade7758_configure_ring(struct iio_dev *indio_dev);
+ void ade7758_unconfigure_ring(struct iio_dev *indio_dev);
+ 
+-void ade7758_uninitialize_ring(struct iio_dev *indio_dev);
+ int ade7758_set_irq(struct device *dev, bool enable);
+ 
+ int ade7758_spi_write_reg_8(struct device *dev,
+@@ -175,13 +174,6 @@ static int ade7758_configure_ring(struct iio_dev *indio_dev)
+ static inline void ade7758_unconfigure_ring(struct iio_dev *indio_dev)
+ {
+ }
+-static inline int ade7758_initialize_ring(struct iio_ring_buffer *ring)
+-{
+-	return 0;
+-}
+-static inline void ade7758_uninitialize_ring(struct iio_dev *indio_dev)
+-{
+-}
+ #endif /* CONFIG_IIO_BUFFER */
+ 
+ #endif
+diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
+index 9dc881f..fd1993a 100644
+--- a/drivers/staging/iio/meter/ade7758_core.c
++++ b/drivers/staging/iio/meter/ade7758_core.c
+@@ -774,14 +774,6 @@ static int __devinit ade7758_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto error_free_tx;
+ 
+-	ret = iio_buffer_register(indio_dev,
+-				  &ade7758_channels[0],
+-				  ARRAY_SIZE(ade7758_channels));
+-	if (ret) {
+-		dev_err(&spi->dev, "failed to initialize the ring\n");
+-		goto error_unreg_ring_funcs;
+-	}
+-
+ 	/* Get the device into a sane initial state */
+ 	ret = ade7758_initial_setup(indio_dev);
+ 	if (ret)
+@@ -803,8 +795,6 @@ error_remove_trigger:
+ 	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
+ 		ade7758_remove_trigger(indio_dev);
+ error_uninitialize_ring:
+-	ade7758_uninitialize_ring(indio_dev);
+-error_unreg_ring_funcs:
+ 	ade7758_unconfigure_ring(indio_dev);
+ error_free_tx:
+ 	kfree(st->tx);
+@@ -828,7 +818,6 @@ static int ade7758_remove(struct spi_device *spi)
+ 		goto err_ret;
+ 
+ 	ade7758_remove_trigger(indio_dev);
+-	ade7758_uninitialize_ring(indio_dev);
+ 	ade7758_unconfigure_ring(indio_dev);
+ 	kfree(st->tx);
+ 	kfree(st->rx);
+diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+index c5c522b..808e6f9 100644
+--- a/drivers/staging/iio/meter/ade7758_ring.c
++++ b/drivers/staging/iio/meter/ade7758_ring.c
+@@ -129,35 +129,18 @@ static const struct iio_buffer_setup_ops ade7758_ring_setup_ops = {
+ 
+ void ade7758_unconfigure_ring(struct iio_dev *indio_dev)
+ {
+-	iio_dealloc_pollfunc(indio_dev->pollfunc);
+-	iio_sw_rb_free(indio_dev->buffer);
++	iio_sw_rb_simple_cleanup(indio_dev);
+ }
+ 
+ int ade7758_configure_ring(struct iio_dev *indio_dev)
+ {
+ 	struct ade7758_state *st = iio_priv(indio_dev);
+-	int ret = 0;
++	int ret;
+ 
+-	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
+-	if (!indio_dev->buffer) {
+-		ret = -ENOMEM;
++	ret = iio_sw_rb_simple_setup(indio_dev, &iio_pollfunc_store_time,
++			&ade7758_trigger_handler, &ade7758_ring_setup_ops);
++	if (ret)
+ 		return ret;
+-	}
+-
+-	indio_dev->setup_ops = &ade7758_ring_setup_ops;
+-
+-	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+-						 &ade7758_trigger_handler,
+-						 0,
+-						 indio_dev,
+-						 "ade7759_consumer%d",
+-						 indio_dev->id);
+-	if (indio_dev->pollfunc == NULL) {
+-		ret = -ENOMEM;
+-		goto error_iio_sw_rb_free;
+-	}
+-
+-	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
+ 
+ 	st->tx_buf[0] = ADE7758_READ_REG(ADE7758_RSTATUS);
+ 	st->tx_buf[1] = 0;
+@@ -193,13 +176,4 @@ int ade7758_configure_ring(struct iio_dev *indio_dev)
+ 	spi_message_add_tail(&st->ring_xfer[3], &st->ring_msg);
+ 
+ 	return 0;
+-
+-error_iio_sw_rb_free:
+-	iio_sw_rb_free(indio_dev->buffer);
+-	return ret;
+-}
+-
+-void ade7758_uninitialize_ring(struct iio_dev *indio_dev)
+-{
+-	iio_buffer_unregister(indio_dev);
+ }
+-- 
+1.7.7.3
 
-I've renamed iio_sw_rb_simple_setup to iio_triggered_buffer_setup because
-that's what it more or less is. I've also added another parameter to pass the
-buffer allocate function, so this can also be used with the kfifo buffer
-implementation. Will send out the updated patches later.
-
-> ---
->  drivers/staging/iio/ring_sw.c |   88 +++++++++++++++++++++++++++++++++++++++++
->  drivers/staging/iio/ring_sw.h |    9 ++++
->  2 files changed, 97 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
-> index 98b66a0..9b57ced 100644
-> --- a/drivers/staging/iio/ring_sw.c
-> +++ b/drivers/staging/iio/ring_sw.c
-> @@ -16,6 +16,7 @@
->  #include <linux/poll.h>
->  #include "ring_sw.h"
->  #include "trigger.h"
-> +#include "trigger_consumer.h"
->  
->  /**
->   * struct iio_sw_ring_buffer - software ring buffer
-> @@ -402,5 +403,92 @@ const struct iio_buffer_access_funcs ring_sw_access_funcs = {
->  };
->  EXPORT_SYMBOL(ring_sw_access_funcs);
->  
-> +static const struct iio_buffer_setup_ops iio_sw_rb_simple_setup_ops = {
-> +	.preenable = &iio_sw_buffer_preenable,
-> +	.postenable = &iio_triggered_buffer_postenable,
-> +	.predisable = &iio_triggered_buffer_predisable,
-> +};
-> +
-> +/**
-> + * iio_sw_rb_simple_setup() - Setup simple software ringbuffer and pollfunc
-> + * @indio_dev:		IIO device structure
-> + * @pollfunc_bh:	Function which will be used as pollfunc bottom half
-> + * @pollfunc_th:	Function which will be used as pollfunc top half
-> + * @setup_ops:		Buffer setup functions to use for this device.
-> + *			If NULL the default setup functions for triggered
-> + *			buffers will be used.
-> + *
-> + * This function combines some common tasks which will normally be performed
-> + * when setting up a simple software ringbuffer. It will allocate the ringbuffer
-> + * and the pollfunc, as well as register the buffer with IIO core.
-> + * Before calling this function the indio_dev structure should already be
-> + * completly initzialized but not yet registered.
-> + *
-> + * To free the resources allocated by this function iio_sw_rb_simple_cleanup
-> + * should be called.
-> + */
-> +int iio_sw_rb_simple_setup(struct iio_dev *indio_dev,
-> +	irqreturn_t (*pollfunc_bh)(int irq, void *p),
-> +	irqreturn_t (*pollfunc_th)(int irq, void *p),
-> +	const struct iio_buffer_setup_ops *setup_ops)
-> +{
-> +	int ret;
-> +
-> +	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
-> +	if (!indio_dev->buffer) {
-> +		ret = -ENOMEM;
-> +		goto error_ret;
-> +	}
-> +
-> +	indio_dev->pollfunc = iio_alloc_pollfunc(pollfunc_bh,
-> +						 pollfunc_th,
-> +						 IRQF_ONESHOT,
-> +						 indio_dev,
-> +						 "%s_consumer%d",
-> +						 indio_dev->name,
-> +						 indio_dev->id);
-> +	if (indio_dev->pollfunc == NULL) {
-> +		ret = -ENOMEM;
-> +		goto error_deallocate_sw_rb;
-> +	}
-> +
-> +	/* Ring buffer functions - here trigger setup related */
-> +	if (setup_ops)
-> +		indio_dev->setup_ops = setup_ops;
-> +	else
-> +		indio_dev->setup_ops = &iio_sw_rb_simple_setup_ops;
-> +
-> +	/* Flag that polled ring buffering is possible */
-> +	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
-> +
-> +	ret = iio_buffer_register(indio_dev,
-> +				  indio_dev->channels,
-> +				  indio_dev->num_channels);
-> +	if (ret)
-> +		goto error_dealloc_pollfunc;
-> +
-> +	return 0;
-> +
-> +error_dealloc_pollfunc:
-> +	iio_dealloc_pollfunc(indio_dev->pollfunc);
-> +error_deallocate_sw_rb:
-> +	iio_sw_rb_free(indio_dev->buffer);
-> +error_ret:
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(iio_sw_rb_simple_setup);
-> +
-> +/**
-> + * iio_sw_rb_simple_cleanup() - Free resources allocated by iio_sw_rb_simple_setup
-> + * @indio_dev:		IIO device structure
-> + */
-> +void iio_sw_rb_simple_cleanup(struct iio_dev *indio_dev)
-> +{
-> +	iio_buffer_unregister(indio_dev);
-> +	iio_dealloc_pollfunc(indio_dev->pollfunc);
-> +	iio_sw_rb_free(indio_dev->buffer);
-> +}
-> +EXPORT_SYMBOL(iio_sw_rb_simple_cleanup);
-> +
->  MODULE_DESCRIPTION("Industrialio I/O software ring buffer");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/staging/iio/ring_sw.h b/drivers/staging/iio/ring_sw.h
-> index e6a6e2c..3a61fe3 100644
-> --- a/drivers/staging/iio/ring_sw.h
-> +++ b/drivers/staging/iio/ring_sw.h
-> @@ -23,6 +23,8 @@
->  
->  #ifndef _IIO_RING_SW_H_
->  #define _IIO_RING_SW_H_
-> +
-> +#include <linux/interrupt.h>
->  #include "buffer.h"
->  
->  /**
-> @@ -32,4 +34,11 @@ extern const struct iio_buffer_access_funcs ring_sw_access_funcs;
->  
->  struct iio_buffer *iio_sw_rb_allocate(struct iio_dev *indio_dev);
->  void iio_sw_rb_free(struct iio_buffer *ring);
-> +
-> +int iio_sw_rb_simple_setup(struct iio_dev *indio_dev,
-> +	irqreturn_t (*pollfunc_bh)(int irq, void *p),
-> +	irqreturn_t (*pollfunc_th)(int irq, void *p),
-> +	const struct iio_buffer_setup_ops *setup_ops);
-> +void iio_sw_rb_simple_cleanup(struct iio_dev *indio_dev);
-> +
->  #endif /* _IIO_RING_SW_H_ */
 
