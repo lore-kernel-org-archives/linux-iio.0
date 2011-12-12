@@ -1,108 +1,125 @@
-Return-Path: <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:47225
+	"EHLO VA3EHSOBE009.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751423Ab1LLKml (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 12 Dec 2011 05:42:41 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 CC: Michael Hennerich <michael.hennerich@analog.com>,
-	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
-	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 03/13] staging:iio:adc:ad7192: Use new ringbuffer setup helper function
-Date: Mon, 12 Dec 2011 11:42:55 +0100
-Message-ID: <1323686585-15181-3-git-send-email-lars@metafoo.de>
+	<linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 02/13] staging:iio:accel:adis16201: Use new ringbuffer setup helper function
+Date: Mon, 12 Dec 2011 11:42:54 +0100
+Message-ID: <1323686585-15181-2-git-send-email-lars@metafoo.de>
 In-Reply-To: <1323686585-15181-1-git-send-email-lars@metafoo.de>
 References: <1323686585-15181-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 Use the new ringbuffer setup helper function to allocate and register buffer and
 pollfunc.
 
+Also as part of the conversion drop scan_timestamp being enabled by default,
+since it is a left over of an earlier cleanup.
+
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad7192.c |   47 ++++---------------------------------
- 1 files changed, 5 insertions(+), 42 deletions(-)
+ drivers/staging/iio/accel/adis16201_core.c |   11 --------
+ drivers/staging/iio/accel/adis16201_ring.c |   39 ++-------------------------
+ 2 files changed, 3 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index ab0cd10..39ad143 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -554,41 +554,13 @@ static const struct iio_buffer_setup_ops ad7192_ring_setup_ops = {
+diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
+index ed97da2..29e3c91 100644
+--- a/drivers/staging/iio/accel/adis16201_core.c
++++ b/drivers/staging/iio/accel/adis16201_core.c
+@@ -491,14 +491,6 @@ static int __devinit adis16201_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto error_free_dev;
  
- static int ad7192_register_ring_funcs_and_init(struct iio_dev *indio_dev)
- {
--	int ret;
--
--	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
--	if (!indio_dev->buffer) {
--		ret = -ENOMEM;
--		goto error_ret;
--	}
--	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
--						 &ad7192_trigger_handler,
--						 IRQF_ONESHOT,
--						 indio_dev,
--						 "ad7192_consumer%d",
--						 indio_dev->id);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
--		goto error_deallocate_sw_rb;
+-	ret = iio_buffer_register(indio_dev,
+-				  adis16201_channels,
+-				  ARRAY_SIZE(adis16201_channels));
+-	if (ret) {
+-		printk(KERN_ERR "failed to initialize the ring\n");
+-		goto error_unreg_ring_funcs;
 -	}
 -
--	/* Ring buffer functions - here trigger setup related */
--	indio_dev->setup_ops = &ad7192_ring_setup_ops;
--
--	/* Flag that polled ring buffering is possible */
--	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
--	return 0;
--
--error_deallocate_sw_rb:
--	iio_sw_rb_free(indio_dev->buffer);
--error_ret:
--	return ret;
-+	return iio_sw_rb_simple_setup(indio_dev, iio_pollfunc_store_time,
-+			ad7192_trigger_handler, &ad7192_ring_setup_ops);
- }
+ 	if (spi->irq) {
+ 		ret = adis16201_probe_trigger(indio_dev);
+ 		if (ret)
+@@ -518,8 +510,6 @@ static int __devinit adis16201_probe(struct spi_device *spi)
+ error_remove_trigger:
+ 	adis16201_remove_trigger(indio_dev);
+ error_uninitialize_ring:
+-	iio_buffer_unregister(indio_dev);
+-error_unreg_ring_funcs:
+ 	adis16201_unconfigure_ring(indio_dev);
+ error_free_dev:
+ 	iio_free_device(indio_dev);
+@@ -533,7 +523,6 @@ static int adis16201_remove(struct spi_device *spi)
  
- static void ad7192_ring_cleanup(struct iio_dev *indio_dev)
+ 	iio_device_unregister(indio_dev);
+ 	adis16201_remove_trigger(indio_dev);
+-	iio_buffer_unregister(indio_dev);
+ 	adis16201_unconfigure_ring(indio_dev);
+ 	iio_free_device(indio_dev);
+ 
+diff --git a/drivers/staging/iio/accel/adis16201_ring.c b/drivers/staging/iio/accel/adis16201_ring.c
+index 97f9e6b..43da221 100644
+--- a/drivers/staging/iio/accel/adis16201_ring.c
++++ b/drivers/staging/iio/accel/adis16201_ring.c
+@@ -94,44 +94,11 @@ static irqreturn_t adis16201_trigger_handler(int irq, void *p)
+ 
+ void adis16201_unconfigure_ring(struct iio_dev *indio_dev)
  {
 -	iio_dealloc_pollfunc(indio_dev->pollfunc);
 -	iio_sw_rb_free(indio_dev->buffer);
 +	iio_sw_rb_simple_cleanup(indio_dev);
  }
  
- /**
-@@ -1076,23 +1048,15 @@ static int __devinit ad7192_probe(struct spi_device *spi)
- 	if (ret)
- 		goto error_ring_cleanup;
- 
--	ret = iio_buffer_register(indio_dev,
--				  indio_dev->channels,
--				  indio_dev->num_channels);
--	if (ret)
--		goto error_remove_trigger;
+-static const struct iio_buffer_setup_ops adis16201_ring_setup_ops = {
+-	.preenable = &iio_sw_buffer_preenable,
+-	.postenable = &iio_triggered_buffer_postenable,
+-	.predisable = &iio_triggered_buffer_predisable,
+-};
 -
- 	ret = ad7192_setup(st);
- 	if (ret)
--		goto error_unreg_ring;
-+		goto error_remove_trigger;
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
--		goto error_unreg_ring;
-+		goto error_remove_trigger;
- 	return 0;
- 
--error_unreg_ring:
--	iio_buffer_unregister(indio_dev);
- error_remove_trigger:
- 	ad7192_remove_trigger(indio_dev);
- error_ring_cleanup:
-@@ -1115,7 +1079,6 @@ static int ad7192_remove(struct spi_device *spi)
- 	struct ad7192_state *st = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
--	iio_buffer_unregister(indio_dev);
- 	ad7192_remove_trigger(indio_dev);
- 	ad7192_ring_cleanup(indio_dev);
- 
+ int adis16201_configure_ring(struct iio_dev *indio_dev)
+ {
+-	int ret = 0;
+-	struct iio_buffer *ring;
+-
+-	ring = iio_sw_rb_allocate(indio_dev);
+-	if (!ring) {
+-		ret = -ENOMEM;
+-		return ret;
+-	}
+-	indio_dev->buffer = ring;
+-	ring->scan_timestamp = true;
+-	indio_dev->setup_ops = &adis16201_ring_setup_ops;
+-
+-	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+-						 &adis16201_trigger_handler,
+-						 IRQF_ONESHOT,
+-						 indio_dev,
+-						 "adis16201_consumer%d",
+-						 indio_dev->id);
+-	if (indio_dev->pollfunc == NULL) {
+-		ret = -ENOMEM;
+-		goto error_iio_sw_rb_free;
+-	}
+-
+-	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
+-	return 0;
+-error_iio_sw_rb_free:
+-	iio_sw_rb_free(indio_dev->buffer);
+-	return ret;
++	return iio_sw_rb_simple_setup(indio_dev, &iio_pollfunc_store_time,
++			&adis16201_trigger_handler, NULL);
+ }
 -- 
 1.7.7.3
+
+
