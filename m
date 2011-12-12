@@ -1,58 +1,127 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4EE90304.8080902@kernel.org>
-Date: Wed, 14 Dec 2011 20:11:48 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Dan Carpenter <dan.carpenter@oracle.com>
-CC: Johannes Tenschert <Johannes.Tenschert@informatik.stud.uni-erlangen.de>,
- devel@linuxdriverproject.org, linux-iio@vger.kernel.org, gregkh@suse.de,
- jic23@cam.ac.uk, jbrenner@taosinc.com
-Subject: Re: staging: iio: light: obsolete use of strict_strtoul v2
-References: <1323733102-7868-1-git-send-email-Johannes.Tenschert@informatik.stud.uni-erlangen.de> <20111213063350.GF3503@mwanda>
-In-Reply-To: <20111213063350.GF3503@mwanda>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <Johannes.Tenschert@informatik.stud.uni-erlangen.de>
+From: Johannes Tenschert <Johannes.Tenschert@informatik.stud.uni-erlangen.de>
+To: devel@linuxdriverproject.org
+Cc: jic23@cam.ac.uk,
+	gregkh@suse.de,
+	jbrenner@taosinc.com,
+	linux-iio@vger.kernel.org,
+	Johannes Tenschert <Johannes.Tenschert@informatik.stud.uni-erlangen.de>
+Subject: [PATCH v2 2/2] staging: iio: light: tsl2583.c: obsolete use of strict_strtoul
+Date: Tue, 13 Dec 2011 00:38:22 +0100
+Message-Id: <1323733102-7868-3-git-send-email-Johannes.Tenschert@informatik.stud.uni-erlangen.de>
+In-Reply-To: <1323733102-7868-1-git-send-email-Johannes.Tenschert@informatik.stud.uni-erlangen.de>
+References: <1323733102-7868-1-git-send-email-Johannes.Tenschert@informatik.stud.uni-erlangen.de>
 List-ID: <linux-iio@vger.kernel.org>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+The function strict_strtoul is obsolete and replaced by kstrtouint
+and kstrtoint.
 
-On 12/13/2011 06:33 AM, Dan Carpenter wrote:
-> On Tue, Dec 13, 2011 at 12:38:20AM +0100, Johannes Tenschert 
-> wrote:
->> Hi,
->> 
->> I changed the patch to use the right kstrto* as Dan Carpenter 
->> suggested, but I'm not familiar enough with the code to fix the 
->> divide by zero bug in a good way.
->> 
->> I also didn't change taos_settings because I don't know it well 
->> enough and don't want to introduce new bugs. So kstrtoint was 
->> used provisional to set it.
-> 
-> Yah, yah.  Neither of us know the code, so hopefully the iio people
-> can comment.
-I'm feeling lazy lets leave it for Jon when he gets to it ;)
+If kstrto* fails its return code is returned instead of -EINVAL.
 
-(bug description is with the previous version of this patch in Dan's
-response where he cc'd various people in).
+Signed-off-by: Johannes Tenschert <Johannes.Tenschert@informatik.stud.uni-erlangen.de>
+---
+ drivers/staging/iio/light/tsl2583.c |   48 +++++++++++++++++++++-------------
+ 1 files changed, 30 insertions(+), 18 deletions(-)
 
-Jonathan
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iQIcBAEBAgAGBQJO6QLWAAoJEFSFNJnE9BaIvsYQALzcJmYzwfS6TSuKeWW/FIxt
-zoddt9yjr/XP+nhLBxnPQo06hsgp8e0yxPIpe1xV+FFryb22eOLXXdCchbXSc5bE
-UeKuwQjgtilLZYFAWxc5VvscaYtLvo82swyeDe8YldbQykXVYRuZcFebH2p1YQUU
-ai3R7ykErgYft+39AwIaxS9irZoVte2+IhKazBuCs6JYebCJ3sBS6/5YFJDyI87Z
-jLxPy69yhRBwv++rQ7gQwH1Z43DnYYfbxVbO/ZaD5we+2YnpAAc7IpSN4ZA5b34t
-KdyFBJlC1RTSZc9qQfI4Jm50JFGvFXwMxD6wdbpOjzwq6rjvrAYlk/W9GI9OtScN
-fhgpC3mGBKO059jrO34JWNtbuwl3QLmfIuqCRKiUX+yeKGJQpSMxIron0E6Hf2m7
-FKSHtjlflsyIXwH0w1AtDxzqBhcn+AWB5agyDBX3oZEeIOS8id41ISIFpYQEk5xH
-H2zG7YTzWQQVBStQlCEpgzqbGg2JTGElQJifBk677pZ7F09MHLnZiK+qbnALBaqO
-3rDBA9ZbZckohtm2YCHPiT8dTNfT2yby3XMG5y12VNxPnSNRN+HrOBYa5FLESY7d
-rgl9vdCLhJUSxF68/t1WsAZ5l/box9gqjqIz1QjNBIi9J14uQvF4LklASI55GVWk
-d/WsoXgigTeuWld24BRc
-=aw+/
------END PGP SIGNATURE-----
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 5b6455a..8c751e0 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -493,10 +493,12 @@ static ssize_t taos_power_state_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	unsigned long value;
++	unsigned int value;
++	int ret;
+ 
+-	if (strict_strtoul(buf, 0, &value))
+-		return -EINVAL;
++	ret = kstrtouint(buf, 0, &value);
++	if (ret)
++		return ret;
+ 
+ 	if (value == 0)
+ 		taos_chip_off(indio_dev);
+@@ -536,10 +538,12 @@ static ssize_t taos_gain_store(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-	unsigned long value;
++	unsigned int value;
++	int ret;
+ 
+-	if (strict_strtoul(buf, 0, &value))
+-		return -EINVAL;
++	ret = kstrtouint(buf, 0, &value);
++	if (ret)
++		return ret;
+ 
+ 	switch (value) {
+ 	case 1:
+@@ -582,10 +586,12 @@ static ssize_t taos_als_time_store(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-	unsigned long value;
++	int value;
++	int ret;
+ 
+-	if (strict_strtoul(buf, 0, &value))
+-		return -EINVAL;
++	ret = kstrtoint(buf, 0, &value);
++	if (ret)
++		return ret;
+ 
+ 	if ((value < 50) || (value > 650))
+ 		return -EINVAL;
+@@ -619,10 +625,12 @@ static ssize_t taos_als_trim_store(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-	unsigned long value;
++	int value;
++	int ret;
+ 
+-	if (strict_strtoul(buf, 0, &value))
+-		return -EINVAL;
++	ret = kstrtoint(buf, 0, &value);
++	if (ret)
++		return ret;
+ 
+ 	if (value)
+ 		chip->taos_settings.als_gain_trim = value;
+@@ -644,10 +652,12 @@ static ssize_t taos_als_cal_target_store(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-	unsigned long value;
++	int value;
++	int ret;
+ 
+-	if (strict_strtoul(buf, 0, &value))
+-		return -EINVAL;
++	ret = kstrtoint(buf, 0, &value);
++	if (ret)
++		return ret;
+ 
+ 	if (value)
+ 		chip->taos_settings.als_cal_target = value;
+@@ -671,10 +681,12 @@ static ssize_t taos_do_calibrate(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	unsigned long value;
++	unsigned int value;
++	int ret;
+ 
+-	if (strict_strtoul(buf, 0, &value))
+-		return -EINVAL;
++	ret = kstrtouint(buf, 0, &value);
++	if (ret)
++		return ret;
+ 
+ 	if (value == 1)
+ 		taos_als_calibrate(indio_dev);
+-- 
+1.7.5.4
