@@ -1,23 +1,17 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from tx2ehsobe004.messaging.microsoft.com ([65.55.88.14]:11773 "EHLO
-	TX2EHSOBE009.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752330Ab1LLKnU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 12 Dec 2011 05:43:20 -0500
+Return-Path: <lars@metafoo.de>
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 CC: Michael Hennerich <michael.hennerich@analog.com>,
-	<linux-iio@vger.kernel.org>,
-	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 05/13] staging:iio:adc:ad7476: Use new ringbuffer setup helper function
-Date: Mon, 12 Dec 2011 11:42:57 +0100
-Message-ID: <1323686585-15181-5-git-send-email-lars@metafoo.de>
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 04/13] staging:iio:adc:ad7298: Use new ringbuffer setup helper function
+Date: Mon, 12 Dec 2011 11:42:56 +0100
+Message-ID: <1323686585-15181-4-git-send-email-lars@metafoo.de>
 In-Reply-To: <1323686585-15181-1-git-send-email-lars@metafoo.de>
 References: <1323686585-15181-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 Use the new ringbuffer setup helper function to allocate and register buffer and
 pollfunc.
@@ -27,153 +21,181 @@ since it is a left over of an earlier cleanup.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad7476.h      |    1 -
- drivers/staging/iio/adc/ad7476_core.c |    9 ----
- drivers/staging/iio/adc/ad7476_ring.c |   79 +++------------------------------
- 3 files changed, 6 insertions(+), 83 deletions(-)
+ drivers/staging/iio/adc/ad7298.h      |    6 ++-
+ drivers/staging/iio/adc/ad7298_core.c |   11 +----
+ drivers/staging/iio/adc/ad7298_ring.c |   73 +++++----------------------------
+ 3 files changed, 17 insertions(+), 73 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
-index 27f696c..b1dd931 100644
---- a/drivers/staging/iio/adc/ad7476.h
-+++ b/drivers/staging/iio/adc/ad7476.h
-@@ -27,7 +27,6 @@ struct ad7476_state {
+diff --git a/drivers/staging/iio/adc/ad7298.h b/drivers/staging/iio/adc/ad7298.h
+index a0e5dea..18f2787 100644
+--- a/drivers/staging/iio/adc/ad7298.h
++++ b/drivers/staging/iio/adc/ad7298.h
+@@ -38,7 +38,6 @@ struct ad7298_platform_data {
+ struct ad7298_state {
  	struct spi_device		*spi;
- 	const struct ad7476_chip_info	*chip_info;
  	struct regulator		*reg;
 -	size_t				d_size;
  	u16				int_vref_mv;
- 	struct spi_transfer		xfer;
- 	struct spi_message		msg;
-diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
-index be02979..15eda34 100644
---- a/drivers/staging/iio/adc/ad7476_core.c
-+++ b/drivers/staging/iio/adc/ad7476_core.c
-@@ -179,20 +179,12 @@ static int __devinit ad7476_probe(struct spi_device *spi)
+ 	unsigned			ext_ref;
+ 	struct spi_transfer		ring_xfer[10];
+@@ -56,6 +55,8 @@ struct ad7298_state {
+ #ifdef CONFIG_IIO_BUFFER
+ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+ void ad7298_ring_cleanup(struct iio_dev *indio_dev);
++int ad7298_update_scan_mode(struct iio_dev *indio_dev,
++	const unsigned long *active_scan_mask);
+ #else /* CONFIG_IIO_BUFFER */
+ 
+ static inline int
+@@ -67,5 +68,8 @@ ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ static inline void ad7298_ring_cleanup(struct iio_dev *indio_dev)
+ {
+ }
++
++#define ad7298_update_scan_mode NULL
++
+ #endif /* CONFIG_IIO_BUFFER */
+ #endif /* IIO_ADC_AD7298_H_ */
+diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
+index a8341f2..d435a2c 100644
+--- a/drivers/staging/iio/adc/ad7298_core.c
++++ b/drivers/staging/iio/adc/ad7298_core.c
+@@ -160,6 +160,7 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
+ 
+ static const struct iio_info ad7298_info = {
+ 	.read_raw = &ad7298_read_raw,
++	.update_scan_mode = ad7298_update_scan_mode,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+@@ -220,19 +221,12 @@ static int __devinit ad7298_probe(struct spi_device *spi)
  	if (ret)
  		goto error_disable_reg;
  
 -	ret = iio_buffer_register(indio_dev,
--				  st->chip_info->channel,
--				  ARRAY_SIZE(st->chip_info->channel));
+-				  &ad7298_channels[1], /* skip temp0 */
+-				  ARRAY_SIZE(ad7298_channels) - 1);
 -	if (ret)
 -		goto error_cleanup_ring;
--
  	ret = iio_device_register(indio_dev);
  	if (ret)
- 		goto error_ring_unregister;
+-		goto error_unregister_ring;
++		goto error_cleanup_ring;
+ 
  	return 0;
  
- error_ring_unregister:
+-error_unregister_ring:
 -	iio_buffer_unregister(indio_dev);
--error_cleanup_ring:
- 	ad7476_ring_cleanup(indio_dev);
+ error_cleanup_ring:
+ 	ad7298_ring_cleanup(indio_dev);
  error_disable_reg:
- 	if (!IS_ERR(st->reg))
-@@ -212,7 +204,6 @@ static int ad7476_remove(struct spi_device *spi)
- 	struct ad7476_state *st = iio_priv(indio_dev);
+@@ -252,7 +246,6 @@ static int __devexit ad7298_remove(struct spi_device *spi)
+ 	struct ad7298_state *st = iio_priv(indio_dev);
  
  	iio_device_unregister(indio_dev);
 -	iio_buffer_unregister(indio_dev);
- 	ad7476_ring_cleanup(indio_dev);
+ 	ad7298_ring_cleanup(indio_dev);
  	if (!IS_ERR(st->reg)) {
  		regulator_disable(st->reg);
-diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
-index 35a8576..a451102 100644
---- a/drivers/staging/iio/adc/ad7476_ring.c
-+++ b/drivers/staging/iio/adc/ad7476_ring.c
-@@ -20,46 +20,17 @@
+diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
+index feeb0ee..8a10473 100644
+--- a/drivers/staging/iio/adc/ad7298_ring.c
++++ b/drivers/staging/iio/adc/ad7298_ring.c
+@@ -19,39 +19,21 @@
+ #include "ad7298.h"
  
- #include "ad7476.h"
- 
--/**
-- * ad7476_ring_preenable() setup the parameters of the ring before enabling
+ /**
+- * ad7298_ring_preenable() setup the parameters of the ring before enabling
 - *
-- * The complex nature of the setting of the nuber of bytes per datum is due
+- * The complex nature of the setting of the number of bytes per datum is due
 - * to this driver currently ensuring that the timestamp is stored at an 8
 - * byte boundary.
-- **/
--static int ad7476_ring_preenable(struct iio_dev *indio_dev)
--{
--	struct ad7476_state *st = iio_priv(indio_dev);
++ * ad7298_update_scan_mode() setup the spi transfer buffer for the new scan mask
+  **/
+-static int ad7298_ring_preenable(struct iio_dev *indio_dev)
++int ad7298_update_scan_mode(struct iio_dev *indio_dev,
++	const unsigned long *active_scan_mask)
+ {
+ 	struct ad7298_state *st = iio_priv(indio_dev);
 -	struct iio_buffer *ring = indio_dev->buffer;
--
--	st->d_size = bitmap_weight(indio_dev->active_scan_mask,
--				   indio_dev->masklength) *
--		st->chip_info->channel[0].scan_type.storagebits / 8;
+-	size_t d_size;
+ 	int i, m;
+ 	unsigned short command;
+-	int scan_count = bitmap_weight(indio_dev->active_scan_mask,
++	int scan_count = bitmap_weight(active_scan_mask,
+ 				       indio_dev->masklength);
+-	d_size = scan_count * (AD7298_STORAGE_BITS / 8);
 -
 -	if (ring->scan_timestamp) {
--		st->d_size += sizeof(s64);
+-		d_size += sizeof(s64);
 -
--		if (st->d_size % sizeof(s64))
--			st->d_size += sizeof(s64) - (st->d_size % sizeof(s64));
+-		if (d_size % sizeof(s64))
+-			d_size += sizeof(s64) - (d_size % sizeof(s64));
 -	}
 -
--	if (indio_dev->buffer->access->set_bytes_per_datum)
--		indio_dev->buffer->access->
--			set_bytes_per_datum(indio_dev->buffer, st->d_size);
+-	if (ring->access->set_bytes_per_datum)
+-		ring->access->set_bytes_per_datum(ring, d_size);
 -
--	return 0;
--}
--
- static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
- {
- 	struct iio_poll_func *pf = p;
+-	st->d_size = d_size;
+ 
+ 	command = AD7298_WRITE | st->ext_ref;
+ 
+ 	for (i = 0, m = AD7298_CH(0); i < AD7298_MAX_CHAN; i++, m >>= 1)
+-		if (test_bit(i, indio_dev->active_scan_mask))
++		if (test_bit(i, active_scan_mask))
+ 			command |= m;
+ 
+ 	st->tx_buf[0] = cpu_to_be16(command);
+@@ -92,6 +74,7 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
  	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct ad7476_state *st = iio_priv(indio_dev);
-+	unsigned int bpd = buffer_get_bytes_per_datum(indio_dev->buffer);
+ 	struct ad7298_state *st = iio_priv(indio_dev);
+ 	struct iio_buffer *ring = indio_dev->buffer;
++	unsigned int bpd = buffer_get_bytes_per_datum(ring);
  	s64 time_ns;
- 	__u8 *rxbuf;
- 	int b_sent;
+ 	__u16 buf[16];
+ 	int b_sent, i;
+@@ -102,7 +85,7 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
  
--	rxbuf = kzalloc(st->d_size, GFP_KERNEL);
-+	rxbuf = kzalloc(bpd, GFP_KERNEL);
- 	if (rxbuf == NULL)
- 		return -ENOMEM;
- 
-@@ -71,7 +42,7 @@ static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
- 	time_ns = iio_get_time_ns();
- 
- 	if (indio_dev->buffer->scan_timestamp)
--		memcpy(rxbuf + st->d_size - sizeof(s64),
-+		memcpy(rxbuf + bpd - sizeof(s64),
+ 	if (ring->scan_timestamp) {
+ 		time_ns = iio_get_time_ns();
+-		memcpy((u8 *)buf + st->d_size - sizeof(s64),
++		memcpy((u8 *)buf + bpd - sizeof(s64),
  			&time_ns, sizeof(time_ns));
+ 	}
  
- 	indio_dev->buffer->access->store_to(indio_dev->buffer, rxbuf, time_ns);
-@@ -82,51 +53,13 @@ done:
+@@ -116,49 +99,13 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
  	return IRQ_HANDLED;
  }
  
--static const struct iio_buffer_setup_ops ad7476_ring_setup_ops = {
--	.preenable = &ad7476_ring_preenable,
+-static const struct iio_buffer_setup_ops ad7298_ring_setup_ops = {
+-	.preenable = &ad7298_ring_preenable,
 -	.postenable = &iio_triggered_buffer_postenable,
 -	.predisable = &iio_triggered_buffer_predisable,
 -};
 -
- int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  {
--	struct ad7476_state *st = iio_priv(indio_dev);
--	int ret = 0;
+-	int ret;
 -
 -	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
 -	if (!indio_dev->buffer) {
 -		ret = -ENOMEM;
 -		goto error_ret;
 -	}
--	indio_dev->pollfunc
--		= iio_alloc_pollfunc(NULL,
--				     &ad7476_trigger_handler,
--				     IRQF_ONESHOT,
--				     indio_dev,
--				     "%s_consumer%d",
--				     spi_get_device_id(st->spi)->name,
--				     indio_dev->id);
+-	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
+-						 &ad7298_trigger_handler,
+-						 IRQF_ONESHOT,
+-						 indio_dev,
+-						 "ad7298_consumer%d",
+-						 indio_dev->id);
+-
 -	if (indio_dev->pollfunc == NULL) {
 -		ret = -ENOMEM;
 -		goto error_deallocate_sw_rb;
 -	}
 -
 -	/* Ring buffer functions - here trigger setup related */
--	indio_dev->setup_ops = &ad7476_ring_setup_ops;
+-	indio_dev->setup_ops = &ad7298_ring_setup_ops;
 -	indio_dev->buffer->scan_timestamp = true;
 -
 -	/* Flag that polled ring buffering is possible */
@@ -184,11 +206,11 @@ index 35a8576..a451102 100644
 -	iio_sw_rb_free(indio_dev->buffer);
 -error_ret:
 -	return ret;
-+	return iio_sw_rb_simple_setup(indio_dev, NULL, &ad7476_trigger_handler,
++	return iio_sw_rb_simple_setup(indio_dev, NULL, &ad7298_trigger_handler,
 +			NULL);
  }
  
- void ad7476_ring_cleanup(struct iio_dev *indio_dev)
+ void ad7298_ring_cleanup(struct iio_dev *indio_dev)
  {
 -	iio_dealloc_pollfunc(indio_dev->pollfunc);
 -	iio_sw_rb_free(indio_dev->buffer);
@@ -196,5 +218,3 @@ index 35a8576..a451102 100644
  }
 -- 
 1.7.7.3
-
-
