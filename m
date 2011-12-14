@@ -1,76 +1,32 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:56415 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755364Ab1LNUt2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 14 Dec 2011 15:49:28 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org, greg@kroah.com
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 1/2] staging:iio: Make sure all triggers have a trigger_ops for the owner field.
-Date: Wed, 14 Dec 2011 20:49:30 +0000
-Message-Id: <1323895771-9940-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1323895771-9940-1-git-send-email-jic23@kernel.org>
-References: <1323895771-9940-1-git-send-email-jic23@kernel.org>
+Received: from smtp-out-093.synserver.de ([212.40.185.93]:1080 "HELO
+	smtp-out-093.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1753657Ab1LNNVT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 14 Dec 2011 08:21:19 -0500
+Message-ID: <4EE8A2E6.6070807@metafoo.de>
+Date: Wed, 14 Dec 2011 14:21:42 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Should we make mark_param_change buffer implementation internal?
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The core needs the owner field to prevent module removal whilst in use and
-uses it without confirming that the trigger_ops structure actually exists.
+Hi,
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7192.c |    6 +++++-
- drivers/staging/iio/adc/ad7793.c |    5 +++++
- 2 files changed, 10 insertions(+), 1 deletions(-)
+Right now we have a mark_param_change callback in the buffer access
+functions struct, which should be called whenever the parameters (length,
+bytes per datum) of the buffer change. Each buffer implementation calls
+their own mark_param_change callback in their set_length and
+set_bytes_per_datum callbacks. Additionally mark_param_change gets called
+when the user changes the buffer length. So in this case it will get called
+twice.
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 66cc507..6114601 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -609,6 +609,10 @@ static irqreturn_t ad7192_data_rdy_trig_poll(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
-+static struct iio_trigger_ops ad7192_trigger_ops = {
-+	.owner = THIS_MODULE,
-+};
-+
- static int ad7192_probe_trigger(struct iio_dev *indio_dev)
- {
- 	struct ad7192_state *st = iio_priv(indio_dev);
-@@ -621,7 +625,7 @@ static int ad7192_probe_trigger(struct iio_dev *indio_dev)
- 		ret = -ENOMEM;
- 		goto error_ret;
- 	}
--
-+	st->trig->ops = &ad7192_trigger_ops;
- 	ret = request_irq(st->spi->irq,
- 			  ad7192_data_rdy_trig_poll,
- 			  IRQF_TRIGGER_LOW,
-diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index 4047c5d..6e03bfb 100644
---- a/drivers/staging/iio/adc/ad7793.c
-+++ b/drivers/staging/iio/adc/ad7793.c
-@@ -475,6 +475,10 @@ static irqreturn_t ad7793_data_rdy_trig_poll(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
-+static struct iio_trigger_ops ad7793_trigger_ops = {
-+	.owner = THIS_MODULE,
-+};
-+
- static int ad7793_probe_trigger(struct iio_dev *indio_dev)
- {
- 	struct ad7793_state *st = iio_priv(indio_dev);
-@@ -487,6 +491,7 @@ static int ad7793_probe_trigger(struct iio_dev *indio_dev)
- 		ret = -ENOMEM;
- 		goto error_ret;
- 	}
-+	st->trig->ops = &ad7793_trigger_ops;
- 
- 	ret = request_irq(st->spi->irq,
- 			  ad7793_data_rdy_trig_poll,
--- 
-1.7.7.4
+So I'm wondering if we should make it completely buffer implementation
+internal and not export it in the buffer access functions struct, since the
+buffer implementation will probably know best anyway if one of it's
+parameters has changed.
 
+- Lars
