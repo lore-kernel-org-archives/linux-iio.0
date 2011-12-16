@@ -1,63 +1,73 @@
 Return-Path: <lars@metafoo.de>
-Message-ID: <4EEE4315.1080200@metafoo.de>
-Date: Sun, 18 Dec 2011 20:46:29 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 4/4] staging:iio:events: Add poll support
+Date: Fri, 16 Dec 2011 18:12:22 +0100
+Message-ID: <1324055542-31272-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1324055542-31272-1-git-send-email-lars@metafoo.de>
+References: <1324055542-31272-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
- Michael Hennerich <michael.hennerich@analog.com>,
- linux-iio@vger.kernel.org, device-drivers-devel@blackfin.uclinux.org,
- drivers@analog.com
-Subject: Re: [PATCH 1/4] staging:iio: Factor out event handling into its own
- file
-References: <1324055542-31272-1-git-send-email-lars@metafoo.de> <4EEE2E9E.7070102@kernel.org> <4EEE2FC3.5000705@kernel.org>
-In-Reply-To: <4EEE2FC3.5000705@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On 12/18/2011 07:24 PM, Jonathan Cameron wrote:
-> On 12/18/2011 06:19 PM, Jonathan Cameron wrote:
->> On 12/16/2011 05:12 PM, Lars-Peter Clausen wrote:
->>> The core iio file has gotten quite cluttered over time. This patch moves
->>> the event handling code into its own file.
->> A small comment here wrt to ease of review. When doing
->> a whole scale move like this, it is helpful to state
->> where any necessary code changes were... That way I can
->> just assume you cut and paste the rest rather than having
->> to check that.
->>>
->>> This has also the advantage that industrialio-core.c is now closer again to
->>> its counterpart in the outofstaging branch.
->> Definitely in favour of this change.
->>
->> Assuming it isn't in a later patch, there are a few undocumented
->> structure elements that could do with documenting ;)
->> More 'interestingly' there are a few that don't exist and are
->> documented.  All my fault of course, but seeing as you are
->> cleaning this code up... (looks hopeful)
->> Obviously shouldn't be part of this patch.  Either insert
->> one fixing it first, or do it at the end as a cleanup patch.
->>
->> So all in all, the patch is fine, I just noticed some unrelated bits
->> whilst reading it ;)  Events as you have no doubt noticed are
->> probably our most dubious corner (or were until this set).
->>>
-> I really ought not to leave my build tests running in the background
-> whilst sending emails acking things.  Looks like you have some issues...
-> 
-> drivers/staging/iio/industrialio-event.c:84:17: error: undefined
-> identifier 'TASK_INTERRUPTIBLE'
-> drivers/staging/iio/industrialio-event.c:114:23: error: undefined
-> identifier 'TASK_INTERRUPTIBLE'
-> drivers/staging/iio/industrialio-event.c:114:23: error: undefined
-> identifier 'signal_pending'
-> drivers/staging/iio/industrialio-event.c:114:23: error: undefined
-> identifier 'schedule'
-> 
-> Can't chase this down right now, but I'm guessing missing header
-> at least on arm.
-> 
-> adding include of sched.h does the job.
+Add poll support to the event queue. This will allow us to check for pending
+events in a application's event loop using poll() or similar. Since we already
+have support for blocking reads adding poll support as well is trivial.
 
-Makes me wonder if wait.h should include sched.h. But I'll add it the this
-patch as well.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/industrialio-event.c |   22 +++++++++++++++++++++-
+ 1 files changed, 21 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/staging/iio/industrialio-event.c b/drivers/staging/iio/industrialio-event.c
+index ef4943a..2263269 100644
+--- a/drivers/staging/iio/industrialio-event.c
++++ b/drivers/staging/iio/industrialio-event.c
+@@ -56,7 +56,7 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+ 
+ 		ret = kfifo_put(&ev_int->det_events, &ev);
+ 		if (ret != 0)
+-			wake_up_locked(&ev_int->wait);
++			wake_up_locked_poll(&ev_int->wait, POLLIN);
+ 	}
+ 	spin_unlock(&ev_int->wait.lock);
+ 
+@@ -64,6 +64,25 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+ }
+ EXPORT_SYMBOL(iio_push_event);
+ 
++/**
++ * iio_event_poll() - poll the event queue to find out if it has data
++ */
++static unsigned int iio_event_poll(struct file *filep,
++			     struct poll_table_struct *wait)
++{
++	struct iio_event_interface *ev_int = filep->private_data;
++	unsigned int events = 0;
++
++	poll_wait(filep, &ev_int->wait, wait);
++
++	spin_lock(&ev_int->wait.lock);
++	if (!kfifo_is_empty(&ev_int->det_events))
++		events = POLLIN | POLLRDNORM;
++	spin_unlock(&ev_int->wait.lock);
++
++	return events;
++}
++
+ static ssize_t iio_event_chrdev_read(struct file *filep,
+ 				     char __user *buf,
+ 				     size_t count,
+@@ -112,6 +131,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+ 
+ static const struct file_operations iio_event_chrdev_fileops = {
+ 	.read =  iio_event_chrdev_read,
++	.poll =  iio_event_poll,
+ 	.release = iio_event_chrdev_release,
+ 	.owner = THIS_MODULE,
+ 	.llseek = noop_llseek,
+-- 
+1.7.7.3
