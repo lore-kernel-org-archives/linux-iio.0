@@ -1,57 +1,59 @@
 Return-Path: <lars@metafoo.de>
-Message-ID: <4EEFAC89.8070703@metafoo.de>
-Date: Mon, 19 Dec 2011 22:28:41 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 6/6] staging:iio:events: Use non-atmoic bitops
+Date: Mon, 19 Dec 2011 11:29:40 +0100
+Message-ID: <1324290580-17511-6-git-send-email-lars@metafoo.de>
+In-Reply-To: <1324290580-17511-1-git-send-email-lars@metafoo.de>
+References: <1324290580-17511-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
- Michael Hennerich <michael.hennerich@analog.com>,
- linux-iio@vger.kernel.org, device-drivers-devel@blackfin.uclinux.org,
- drivers@analog.com
-Subject: Re: [PATCH v2 1/6] staging:iio: Update iio_event_interface documentation
-References: <1324290580-17511-1-git-send-email-lars@metafoo.de> <4EEFA4C3.4030607@kernel.org>
-In-Reply-To: <4EEFA4C3.4030607@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On 12/19/2011 09:55 PM, Jonathan Cameron wrote:
-> On 12/19/2011 10:29 AM, Lars-Peter Clausen wrote:
->> The documentation for the iio_event_interface does not match the actual struct
->> anymore. This patch removes the documentation for non-existing fields and adds
->> documentation for missing fields.
->>
-> Thanks for cleaning that up.  We could add that the dev_attr_list is for
-> internal management only but I guess that easily established from
-> how it is use...
+We always hold the waitqueue lock when modifying the flags field. So it is safe
+to use the non-atomic bitops here instead of the atomic versions.
 
-All of the fields are more or less internal, since the struct is only defined
-in this c file, so don't know if it makes sense to explicitly state it for
-dev_attr_list.
+The lock has to be held, because we need to clear the busy flag and flush the
+event fifo in one atomic operation when closing the event file descriptor.
 
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
->> ---
->>  drivers/staging/iio/industrialio-core.c |    3 ++-
->>  1 files changed, 2 insertions(+), 1 deletions(-)
->>
->> diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
->> index 2eef85f..23dd624 100644
->> --- a/drivers/staging/iio/industrialio-core.c
->> +++ b/drivers/staging/iio/industrialio-core.c
->> @@ -112,13 +112,14 @@ struct iio_detected_event_list {
->>  
->>  /**
->>   * struct iio_event_interface - chrdev interface for an event line
->> - * @dev:		device assocated with event interface
->>   * @wait:		wait queue to allow blocking reads of events
->>   * @event_list_lock:	mutex to protect the list of detected events
->>   * @det_events:		list of detected events
->>   * @max_events:		maximum number of events before new ones are dropped
->>   * @current_events:	number of events in detected list
->> + * @dev_attr_list:	list of event interface sysfs attribute
->>   * @flags:		file operations related flags including busy flag.
->> + * @group:		event interface sysfs attribute group
->>   */
->>  struct iio_event_interface {
->>  	wait_queue_head_t			wait;
-> 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/industrialio-event.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/staging/iio/industrialio-event.c b/drivers/staging/iio/industrialio-event.c
+index 58243d9..5e461e1 100644
+--- a/drivers/staging/iio/industrialio-event.c
++++ b/drivers/staging/iio/industrialio-event.c
+@@ -124,7 +124,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+ 	struct iio_event_interface *ev_int = filep->private_data;
+ 
+ 	spin_lock(&ev_int->wait.lock);
+-	clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
++	__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+ 	/*
+ 	 * In order to maintain a clean state for reopening,
+ 	 * clear out any awaiting events. The mask will prevent
+@@ -153,7 +153,7 @@ int iio_event_getfd(struct iio_dev *indio_dev)
+ 		return -ENODEV;
+ 
+ 	spin_lock(&ev_int->wait.lock);
+-	if (test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
++	if (__test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+ 		spin_unlock(&ev_int->wait.lock);
+ 		return -EBUSY;
+ 	}
+@@ -162,7 +162,7 @@ int iio_event_getfd(struct iio_dev *indio_dev)
+ 				&iio_event_chrdev_fileops, ev_int, O_RDONLY);
+ 	if (fd < 0) {
+ 		spin_lock(&ev_int->wait.lock);
+-		clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
++		__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+ 		spin_unlock(&ev_int->wait.lock);
+ 	}
+ 	return fd;
+-- 
+1.7.7.3
