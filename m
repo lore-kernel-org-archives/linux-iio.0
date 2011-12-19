@@ -1,47 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from am1ehsobe003.messaging.microsoft.com ([213.199.154.206]:23966
-	"EHLO AM1EHSOBE003.bigfish.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752322Ab1LSLxc convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 19 Dec 2011 06:53:32 -0500
+Return-Path: <lars@metafoo.de>
 From: Lars-Peter Clausen <lars@metafoo.de>
-To: Greg Kroah-Hartman <gregkh@suse.de>
-CC: Jonathan Cameron <jic23@kernel.org>, <devel@driverdev.osuosl.org>,
-	<linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] staging:iio: Remove unused variable
-Date: Mon, 19 Dec 2011 12:54:07 +0100
-Message-ID: <1324295647-25993-1-git-send-email-lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Michael Hennerich <michael.hennerich@analog.com>,
+	<linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<drivers@analog.com>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 1/6] staging:iio: Update iio_event_interface documentation
+Date: Mon, 19 Dec 2011 11:29:35 +0100
+Message-ID: <1324290580-17511-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-=46ixes the following warning:
-	drivers/staging/iio/industrialio-buffer.c: In function =E2=80=98iio_sc=
-an_mask_query=E2=80=99:
-	drivers/staging/iio/industrialio-buffer.c:620: warning: unused variabl=
-e =E2=80=98mask=E2=80=99
+The documentation for the iio_event_interface does not match the actual struct
+anymore. This patch removes the documentation for non-existing fields and adds
+documentation for missing fields.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/industrialio-buffer.c |    2 --
- 1 files changed, 0 insertions(+), 2 deletions(-)
+ drivers/staging/iio/industrialio-core.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/stagin=
-g/iio/industrialio-buffer.c
-index a03a574..68db2d2 100644
---- a/drivers/staging/iio/industrialio-buffer.c
-+++ b/drivers/staging/iio/industrialio-buffer.c
-@@ -617,8 +617,6 @@ EXPORT_SYMBOL_GPL(iio_scan_mask_set);
- int iio_scan_mask_query(struct iio_dev *indio_dev,
- 			struct iio_buffer *buffer, int bit)
- {
--	long *mask;
--
- 	if (bit > indio_dev->masklength)
- 		return -EINVAL;
-=20
---=20
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 2eef85f..23dd624 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -112,13 +112,14 @@ struct iio_detected_event_list {
+ 
+ /**
+  * struct iio_event_interface - chrdev interface for an event line
+- * @dev:		device assocated with event interface
+  * @wait:		wait queue to allow blocking reads of events
+  * @event_list_lock:	mutex to protect the list of detected events
+  * @det_events:		list of detected events
+  * @max_events:		maximum number of events before new ones are dropped
+  * @current_events:	number of events in detected list
++ * @dev_attr_list:	list of event interface sysfs attribute
+  * @flags:		file operations related flags including busy flag.
++ * @group:		event interface sysfs attribute group
+  */
+ struct iio_event_interface {
+ 	wait_queue_head_t			wait;
+-- 
 1.7.7.3
-
-
