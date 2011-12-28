@@ -1,197 +1,473 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4EECBB29.8070102@kernel.org>
-Date: Sat, 17 Dec 2011 15:54:17 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Greg KH <greg@kroah.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, archive@jic23.retrosnub.co.uk,
- linux-iio@vger.kernel.org, lars@metafoo.de,
- Mark Brown <broonie@opensource.wolfsonmicro.com>,
- Linus Walleij <linus.walleij@linaro.org>,
- "arnd@arndb.de" <arnd@arndb.de>,
- Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH 3/5] staging:iio:core add in kernel interface mapping
- and getting IIO channels.
-References: <1323122164-32314-1-git-send-email-jic23@kernel.org> <1323122164-32314-4-git-send-email-jic23@kernel.org> <20111208194057.GA28532@kroah.com> <4EE39205.6030109@kernel.org> <20111210191524.GA17929@kroah.com> <20111216085057.3DE4240390@saturn.retrosnub.co.uk> <20111216162457.GA5403@kroah.com> <4EEB9ED8.8060704@cam.ac.uk> <20111216222332.GA6610@kroah.com>
-In-Reply-To: <20111216222332.GA6610@kroah.com>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-210.synserver.de ([212.40.185.210]:1152 "EHLO
+	smtp-out-210.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753667Ab1L1Lbf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 28 Dec 2011 06:31:35 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio: Setup buffer access functions when allocating the buffer
+Date: Wed, 28 Dec 2011 12:32:13 +0100
+Message-Id: <1325071933-5380-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 12/16/2011 10:23 PM, Greg KH wrote:
-> On Fri, Dec 16, 2011 at 07:41:12PM +0000, Jonathan Cameron wrote:
->>>>> for a world of hurt...
->>>> The entire purpose of this list is to allow a small built in chunk of
->>>> code to fill it up (typically from board files) whilst the rest of
->>> IIO can
->>>> still be built as a module.
->>>
->>> Why are you trying to do that?
->> Because I don't see any other remotely elegant way of doing it.
->> We need a mapping from this output channel on this device to this
->> input for this device that is using it as a service on a channel
->> by channel basis with a single output able to be used by many
->> inputs.
-> 
-> Who needs that mapping?
-Any driver that needs to read/write (via a dac rather than
-a regulator - and yes there is clearly a blurred line there) a voltage
-(or other channel type) and doesn't have the support on chip.  Currently
-we have hwmon and input bridge drivers for iio
-supported parts.  Some channels are mapped to hwmon and some to input
-on the same underlying adc.  The main interest is from the SoC side
-of thing where this sort of sharing is common.  That's why Mark, Linus
-are Arnd are cc'd on this. I've also added Maxime given the at91 adc
-driver is a clasic example.
-> 
->> This look up table (which is just a list to allow the more complex
->> boards to fill it from various places) serves that purpose.
-> 
-> And how is that shown by just a "bare" list being exported?
-A bare is list only exported purely to allow to core parts of
-IIO to comunicate.  Nothing else should ever touch that list.
-Yes it should have had some locking (I fully except that).
-It was a means of allowing IIO to remain buildable as a module.
-To my mind that is a good thing, you evidently disagree.
-Some input from the SoC guys here would be good.
-  If you need
-> to provide such a mapping, then by all means do so, but do so in a
-> documented way with the proper locking for any data structures (which
-> again, was the most obvious bug you had with this patch.)
-I accept the locking and documentation points and will add those.
-> 
->>>> All but one function that touches this are in
->>>> the IIO core modules.  I can wrap this up but only at considerable
->>> cost
->>>> (the wrappers will basically be the various list functions with a
->>> lock taken
->>>> - I'll add one of those).  I can write extreme warnings around it
->>> saying
->>>> that it strictly for use by the IIO core.  Would that be acceptable?
->>>
->>> I still don't understand the point of the list.  Why is this somehow
->>> different from any other bus in the kernel in that the only way to
->>> "register" a device is to actually register the device.
->> It is not for registering a device. It is for associations between
->> devices. Similar to the regulator API. That provides a means to request
->> a voltage from another device, this provides a means of reading from a
->> device.
-> 
-> Ok, then show how that works somehow?  Again, a list doesn't show that
-> to me.
-Read the functions using the list and you'll have your answer.  You are
-focusing on the list when that really isn't the interface at all.
-I will happily write extremely dire warnings around that list if that
-helps.
-> 
->> Ultimately it's a convenient way of passing platform data.  We could
->> pass it into every single supplier device (in a similar way to
->> regulators) as platform data.  Thus every iio device would have to
->> handle platform data and pass it on to the core, or, as here, we can
->> separate it out.
-> 
-> Having a function for all of the drivers to call to provide this
-> information seems like the most obvious way to do this in a proper way,
-> why not do that?
-Because that means replacing the current platform data of ever single
-driver. We can do this, but its messy and painful and breaks every
-current user (yes they are out of tree given we are in staging and hence
-can't have platform dat in tree - still I dislike pissing our users
-off.)  The driver it self has no interest whatsoever in this data.
+Setup the buffer access functions in the buffer allocate function. There is no
+need to let each driver handle this on its own.
 
-> 
->>>> Clearly this element should stay in the IIO directory once the rest
->>> of
->>>> the header has gone into include/linux/iio/.  I can do that division
->>> now
->>>> so the separation is more apparent.
->>>>
->>>> So in summary two options exist.
->>>>
->>>> 1) Leave as is with a suitable warning and maybe rename to make it
->>> appear
->>>> less friendly.
->>>> 2) Wrap it so we end up with accessors that are pretty much the
->>> standard
->>>> list accessors just with one parameter fixed and trivial locking.
->>> This isn't
->>>> too painful but seems conceptually wrong to me.
->>>> 3) Move everything that uses it into the bit that gets built in even
->>>> if IIO is a module.
->>>
->>> There should never be a "bit that is always built in if IIO is a
->>> module", sorry.
->> The only alternative is to make ever single IIO driver take platform
->> data to specify it's consumers and immediately pass it into the core.
->> It is only the core that cares.
-> 
-> What's wrong with a function call to the IIO core by the drivers?
-Why pass data through them that they don't care about and won't touch?
-> 
->>>> This last one will lead to an explosion in what is exported from IIO
->>> as we
->>>> will still need to have the divide between the bit that can be
->>> modular and
->>>> that which cannot somewhere! (which is why I didn't suggest it
->>>> before).
->>>
->>> Why are you trying to make such a strange distinction here?  If a
->>> device
->>> uses IIO, then you need to have the IIO core.
->> When that driver is loaded, not when the board file sets up it's
->> association with IIO.  It will not be dependent on the driver
->> supplying the channel anyway so we will need the backoff and
->> try again stuff to make this work.
->>
->> Why have I done it like this?
->>
->> Because this way we get a fairly clean addition to the subsystem
->> without having to rewrite every single driver's probe routine
->> which is the only other way making the data available that I can
->> see.
-> 
-> Rewriting all probe functions really shouldn't be hard as you have to
-> just change from manipulating this list by-hand, to making a function
-> call.  That sounds like an easy thing to do, and something that should
-> be done, right?
-That plus add a level of indirection to every driver that currently
-has any platform data (which covers the vast majority).  Either
-the array of consumers has to be added to their existing pd which is
-clunky and driver specific or we have another structure with optional
-consumer data and another level of platform data to pass in what the
-driver actually cares about.  Note throughout that we are passing data
-that is completely irrelevant to the driver.  We are doing all this
-to support a usecase that isn't even relevant to many IIO drivers.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 
-> 
->>> It can be built as a
->>> module or not, again, just like any other bus in the kernel.
->> Bus maybe, but other subsystems providing a 'service' like we
->> have here for iio such as regulators, pinmux etc cannot be built
->> as modules.  There the arguement was they were core to the
->> board; that is not typically true of IIO.
-> 
-> Then keep the IIO core from being built as a module if that is the
-> requirement here.
-A painful cost just to avoid having this one list (with locking added).
-Not huge, but I really don't understand why this trivial list export
-such a problem. (though there were clearly elements that could be
-improved around it).
-Note in the multiboard kernels that people are working for on for arm
-etc we would just have added this to all configurations if only one
-actually needs it.
-> 
-> Or, just be sure to initialize it early enough in the boot process that
-> it happens before the drivers are, and then, it can be a module, as long
-> as any driver that uses it is also a module, right?
-There is a whole back off and try again infrastructure for module
-loading.  Why not use that? (once/if it merges).  There is no
-reason to get into the whole game of messing around with load
-orders.
-> 
-> Again, just like all other busses :)
-> 
-> thanks,
-Glad this came up before I tried to push the non staging version
-as clearly there are questions to be addressed.
+---
+Jonathan, since there has been some discussion around this patch I would like
+you to confirm your Acked-by for this patch again, if you still think this
+patch is OK as is.
+---
+ drivers/staging/iio/accel/adis16201_ring.c      |    2 -
+ drivers/staging/iio/accel/adis16203_ring.c      |    2 -
+ drivers/staging/iio/accel/adis16204_ring.c      |    2 -
+ drivers/staging/iio/accel/adis16209_ring.c      |    2 -
+ drivers/staging/iio/accel/adis16240_ring.c      |    2 -
+ drivers/staging/iio/accel/lis3l02dq.h           |    2 -
+ drivers/staging/iio/accel/lis3l02dq_ring.c      |    2 -
+ drivers/staging/iio/adc/ad7192.c                |    2 -
+ drivers/staging/iio/adc/ad7298_ring.c           |    3 -
+ drivers/staging/iio/adc/ad7476_ring.c           |    2 -
+ drivers/staging/iio/adc/ad7606_ring.c           |    2 -
+ drivers/staging/iio/adc/ad7793.c                |    2 -
+ drivers/staging/iio/adc/ad7887_ring.c           |    2 -
+ drivers/staging/iio/adc/ad799x_ring.c           |    2 -
+ drivers/staging/iio/adc/max1363_ring.c          |    2 -
+ drivers/staging/iio/gyro/adis16260_ring.c       |    2 -
+ drivers/staging/iio/iio_simple_dummy_buffer.c   |    2 -
+ drivers/staging/iio/impedance-analyzer/ad5933.c |    3 -
+ drivers/staging/iio/imu/adis16400_ring.c        |    2 -
+ drivers/staging/iio/kfifo_buf.c                 |   46 +++++++++++-----------
+ drivers/staging/iio/kfifo_buf.h                 |    2 -
+ drivers/staging/iio/meter/ade7758_ring.c        |    2 -
+ drivers/staging/iio/ring_sw.c                   |   22 +++++-----
+ drivers/staging/iio/ring_sw.h                   |    5 --
+ 24 files changed, 34 insertions(+), 83 deletions(-)
 
-Jonathan
+diff --git a/drivers/staging/iio/accel/adis16201_ring.c b/drivers/staging/iio/accel/adis16201_ring.c
+index 26c610f..97f9e6b 100644
+--- a/drivers/staging/iio/accel/adis16201_ring.c
++++ b/drivers/staging/iio/accel/adis16201_ring.c
+@@ -115,9 +115,7 @@ int adis16201_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+ 	ring->scan_timestamp = true;
+-	ring->access = &ring_sw_access_funcs;
+ 	indio_dev->setup_ops = &adis16201_ring_setup_ops;
+ 
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
+index 064640d..6a8963d 100644
+--- a/drivers/staging/iio/accel/adis16203_ring.c
++++ b/drivers/staging/iio/accel/adis16203_ring.c
+@@ -117,9 +117,7 @@ int adis16203_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+ 	ring->scan_timestamp = true;
+-	ring->access = &ring_sw_access_funcs;
+ 	indio_dev->setup_ops = &adis16203_ring_setup_ops;
+ 
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+diff --git a/drivers/staging/iio/accel/adis16204_ring.c b/drivers/staging/iio/accel/adis16204_ring.c
+index 4081179..5c8ab73 100644
+--- a/drivers/staging/iio/accel/adis16204_ring.c
++++ b/drivers/staging/iio/accel/adis16204_ring.c
+@@ -112,8 +112,6 @@ int adis16204_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+-	ring->access = &ring_sw_access_funcs;
+ 	ring->scan_timestamp = true;
+ 	indio_dev->setup_ops = &adis16204_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
+index 2a6fd334..57254b6 100644
+--- a/drivers/staging/iio/accel/adis16209_ring.c
++++ b/drivers/staging/iio/accel/adis16209_ring.c
+@@ -113,8 +113,6 @@ int adis16209_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+-	ring->access = &ring_sw_access_funcs;
+ 	ring->scan_timestamp = true;
+ 	indio_dev->setup_ops = &adis16209_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
+index e23622d..43ba84e 100644
+--- a/drivers/staging/iio/accel/adis16240_ring.c
++++ b/drivers/staging/iio/accel/adis16240_ring.c
+@@ -110,8 +110,6 @@ int adis16240_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+-	ring->access = &ring_sw_access_funcs;
+ 	ring->scan_timestamp = true;
+ 	indio_dev->setup_ops = &adis16240_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
+index 2db383f..ae5f225 100644
+--- a/drivers/staging/iio/accel/lis3l02dq.h
++++ b/drivers/staging/iio/accel/lis3l02dq.h
+@@ -187,12 +187,10 @@ void lis3l02dq_unconfigure_buffer(struct iio_dev *indio_dev);
+ #ifdef CONFIG_LIS3L02DQ_BUF_RING_SW
+ #define lis3l02dq_free_buf iio_sw_rb_free
+ #define lis3l02dq_alloc_buf iio_sw_rb_allocate
+-#define lis3l02dq_access_funcs ring_sw_access_funcs
+ #endif
+ #ifdef CONFIG_LIS3L02DQ_BUF_KFIFO
+ #define lis3l02dq_free_buf iio_kfifo_free
+ #define lis3l02dq_alloc_buf iio_kfifo_allocate
+-#define lis3l02dq_access_funcs kfifo_access_funcs
+ #endif
+ irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private);
+ #define lis3l02dq_th lis3l02dq_data_rdy_trig_poll
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index 98c5c92..ca0a1fe 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -406,8 +406,6 @@ int lis3l02dq_configure_buffer(struct iio_dev *indio_dev)
+ 		return -ENOMEM;
+ 
+ 	indio_dev->buffer = buffer;
+-	/* Effectively select the buffer implementation */
+-	indio_dev->buffer->access = &lis3l02dq_access_funcs;
+ 
+ 	buffer->scan_timestamp = true;
+ 	indio_dev->setup_ops = &lis3l02dq_buffer_setup_ops;
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index dfeb4ba..654f7fb 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -561,8 +561,6 @@ static int ad7192_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+ 						 &ad7192_trigger_handler,
+ 						 IRQF_ONESHOT,
+diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
+index d1a12dd..feeb0ee 100644
+--- a/drivers/staging/iio/adc/ad7298_ring.c
++++ b/drivers/staging/iio/adc/ad7298_ring.c
+@@ -131,9 +131,6 @@ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+-
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
+ 						 &ad7298_trigger_handler,
+ 						 IRQF_ONESHOT,
+diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
+index 4e298b2..35a8576 100644
+--- a/drivers/staging/iio/adc/ad7476_ring.c
++++ b/drivers/staging/iio/adc/ad7476_ring.c
+@@ -98,8 +98,6 @@ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc
+ 		= iio_alloc_pollfunc(NULL,
+ 				     &ad7476_trigger_handler,
+diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+index e8f94a1..1ef9fbc 100644
+--- a/drivers/staging/iio/adc/ad7606_ring.c
++++ b/drivers/staging/iio/adc/ad7606_ring.c
+@@ -110,8 +110,6 @@ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		goto error_ret;
+ 	}
+ 
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&ad7606_trigger_handler_th_bh,
+ 						 &ad7606_trigger_handler_th_bh,
+ 						 0,
+diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
+index accf325..fc9ebf1 100644
+--- a/drivers/staging/iio/adc/ad7793.c
++++ b/drivers/staging/iio/adc/ad7793.c
+@@ -427,8 +427,6 @@ static int ad7793_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+ 						 &ad7793_trigger_handler,
+ 						 IRQF_ONESHOT,
+diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
+index 85076cd..d180907 100644
+--- a/drivers/staging/iio/adc/ad7887_ring.c
++++ b/drivers/staging/iio/adc/ad7887_ring.c
+@@ -131,8 +131,6 @@ int ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+ 						 &ad7887_trigger_handler,
+ 						 IRQF_ONESHOT,
+diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
+index 5dded9e..28e9a41 100644
+--- a/drivers/staging/iio/adc/ad799x_ring.c
++++ b/drivers/staging/iio/adc/ad799x_ring.c
+@@ -141,8 +141,6 @@ int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
+ 						 &ad799x_trigger_handler,
+ 						 IRQF_ONESHOT,
+diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
+index f730b3f..d0a60a3 100644
+--- a/drivers/staging/iio/adc/max1363_ring.c
++++ b/drivers/staging/iio/adc/max1363_ring.c
+@@ -116,8 +116,6 @@ int max1363_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_deallocate_sw_rb;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	/* Ring buffer functions - here trigger setup related */
+ 	indio_dev->setup_ops = &max1363_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
+index 699a615..711f151 100644
+--- a/drivers/staging/iio/gyro/adis16260_ring.c
++++ b/drivers/staging/iio/gyro/adis16260_ring.c
+@@ -115,8 +115,6 @@ int adis16260_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+-	ring->access = &ring_sw_access_funcs;
+ 	ring->scan_timestamp = true;
+ 	indio_dev->setup_ops = &adis16260_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
+index d6a1c0e..bb4daf7 100644
+--- a/drivers/staging/iio/iio_simple_dummy_buffer.c
++++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
+@@ -142,8 +142,6 @@ int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev)
+ 	}
+ 
+ 	indio_dev->buffer = buffer;
+-	/* Tell the core how to access the buffer */
+-	buffer->access = &kfifo_access_funcs;
+ 
+ 	/* Enable timestamps by default */
+ 	buffer->scan_timestamp = true;
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index f02d1c0..4138082 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -607,9 +607,6 @@ static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	if (!indio_dev->buffer)
+ 		return -ENOMEM;
+ 
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+-
+ 	/* Ring buffer functions - here trigger setup related */
+ 	indio_dev->setup_ops = &ad5933_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
+index ac22de5..8daa038 100644
+--- a/drivers/staging/iio/imu/adis16400_ring.c
++++ b/drivers/staging/iio/imu/adis16400_ring.c
+@@ -187,8 +187,6 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+-	ring->access = &ring_sw_access_funcs;
+ 	ring->scan_timestamp = true;
+ 	indio_dev->setup_ops = &adis16400_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/kfifo_buf.c b/drivers/staging/iio/kfifo_buf.c
+index e1e9c06..9f3bd59 100644
+--- a/drivers/staging/iio/kfifo_buf.c
++++ b/drivers/staging/iio/kfifo_buf.c
+@@ -59,21 +59,6 @@ static struct attribute_group iio_kfifo_attribute_group = {
+ 	.name = "buffer",
+ };
+ 
+-struct iio_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev)
+-{
+-	struct iio_kfifo *kf;
+-
+-	kf = kzalloc(sizeof *kf, GFP_KERNEL);
+-	if (!kf)
+-		return NULL;
+-	kf->update_needed = true;
+-	iio_buffer_init(&kf->buffer);
+-	kf->buffer.attrs = &iio_kfifo_attribute_group;
+-
+-	return &kf->buffer;
+-}
+-EXPORT_SYMBOL(iio_kfifo_allocate);
+-
+ static int iio_get_bytes_per_datum_kfifo(struct iio_buffer *r)
+ {
+ 	return r->bytes_per_datum;
+@@ -104,12 +89,6 @@ static int iio_set_length_kfifo(struct iio_buffer *r, int length)
+ 	return 0;
+ }
+ 
+-void iio_kfifo_free(struct iio_buffer *r)
+-{
+-	kfree(iio_to_kfifo(r));
+-}
+-EXPORT_SYMBOL(iio_kfifo_free);
+-
+ static int iio_store_to_kfifo(struct iio_buffer *r,
+ 			      u8 *data,
+ 			      s64 timestamp)
+@@ -137,7 +116,7 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
+ 	return copied;
+ }
+ 
+-const struct iio_buffer_access_funcs kfifo_access_funcs = {
++static const struct iio_buffer_access_funcs kfifo_access_funcs = {
+ 	.store_to = &iio_store_to_kfifo,
+ 	.read_first_n = &iio_read_first_n_kfifo,
+ 	.request_update = &iio_request_update_kfifo,
+@@ -146,6 +125,27 @@ const struct iio_buffer_access_funcs kfifo_access_funcs = {
+ 	.get_length = &iio_get_length_kfifo,
+ 	.set_length = &iio_set_length_kfifo,
+ };
+-EXPORT_SYMBOL(kfifo_access_funcs);
++
++struct iio_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev)
++{
++	struct iio_kfifo *kf;
++
++	kf = kzalloc(sizeof *kf, GFP_KERNEL);
++	if (!kf)
++		return NULL;
++	kf->update_needed = true;
++	iio_buffer_init(&kf->buffer);
++	kf->buffer.attrs = &iio_kfifo_attribute_group;
++	kf->buffer.access = &kfifo_access_funcs;
++
++	return &kf->buffer;
++}
++EXPORT_SYMBOL(iio_kfifo_allocate);
++
++void iio_kfifo_free(struct iio_buffer *r)
++{
++	kfree(iio_to_kfifo(r));
++}
++EXPORT_SYMBOL(iio_kfifo_free);
+ 
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/staging/iio/kfifo_buf.h b/drivers/staging/iio/kfifo_buf.h
+index cc2bd9a..9f7da01 100644
+--- a/drivers/staging/iio/kfifo_buf.h
++++ b/drivers/staging/iio/kfifo_buf.h
+@@ -3,8 +3,6 @@
+ #include "iio.h"
+ #include "buffer.h"
+ 
+-extern const struct iio_buffer_access_funcs kfifo_access_funcs;
+-
+ struct iio_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev);
+ void iio_kfifo_free(struct iio_buffer *r);
+ 
+diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+index f29f2b2..c5c522b 100644
+--- a/drivers/staging/iio/meter/ade7758_ring.c
++++ b/drivers/staging/iio/meter/ade7758_ring.c
+@@ -144,8 +144,6 @@ int ade7758_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->setup_ops = &ade7758_ring_setup_ops;
+ 
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
+index 3e24ec4..94d77ce 100644
+--- a/drivers/staging/iio/ring_sw.c
++++ b/drivers/staging/iio/ring_sw.c
+@@ -329,6 +329,16 @@ static struct attribute_group iio_ring_attribute_group = {
+ 	.name = "buffer",
+ };
+ 
++static struct iio_buffer_access_funcs ring_sw_access_funcs = {
++	.store_to = &iio_store_to_sw_rb,
++	.read_first_n = &iio_read_first_n_sw_rb,
++	.request_update = &iio_request_update_sw_rb,
++	.get_bytes_per_datum = &iio_get_bytes_per_datum_sw_rb,
++	.set_bytes_per_datum = &iio_set_bytes_per_datum_sw_rb,
++	.get_length = &iio_get_length_sw_rb,
++	.set_length = &iio_set_length_sw_rb,
++};
++
+ struct iio_buffer *iio_sw_rb_allocate(struct iio_dev *indio_dev)
+ {
+ 	struct iio_buffer *buf;
+@@ -341,6 +351,7 @@ struct iio_buffer *iio_sw_rb_allocate(struct iio_dev *indio_dev)
+ 	buf = &ring->buf;
+ 	iio_buffer_init(buf);
+ 	buf->attrs = &iio_ring_attribute_group;
++	buf->access = &ring_sw_access_funcs;
+ 
+ 	return buf;
+ }
+@@ -352,16 +363,5 @@ void iio_sw_rb_free(struct iio_buffer *r)
+ }
+ EXPORT_SYMBOL(iio_sw_rb_free);
+ 
+-const struct iio_buffer_access_funcs ring_sw_access_funcs = {
+-	.store_to = &iio_store_to_sw_rb,
+-	.read_first_n = &iio_read_first_n_sw_rb,
+-	.request_update = &iio_request_update_sw_rb,
+-	.get_bytes_per_datum = &iio_get_bytes_per_datum_sw_rb,
+-	.set_bytes_per_datum = &iio_set_bytes_per_datum_sw_rb,
+-	.get_length = &iio_get_length_sw_rb,
+-	.set_length = &iio_set_length_sw_rb,
+-};
+-EXPORT_SYMBOL(ring_sw_access_funcs);
+-
+ MODULE_DESCRIPTION("Industrialio I/O software ring buffer");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/staging/iio/ring_sw.h b/drivers/staging/iio/ring_sw.h
+index e6a6e2c..7556e21 100644
+--- a/drivers/staging/iio/ring_sw.h
++++ b/drivers/staging/iio/ring_sw.h
+@@ -25,11 +25,6 @@
+ #define _IIO_RING_SW_H_
+ #include "buffer.h"
+ 
+-/**
+- * ring_sw_access_funcs - access functions for a software ring buffer
+- **/
+-extern const struct iio_buffer_access_funcs ring_sw_access_funcs;
+-
+ struct iio_buffer *iio_sw_rb_allocate(struct iio_dev *indio_dev);
+ void iio_sw_rb_free(struct iio_buffer *ring);
+ #endif /* _IIO_RING_SW_H_ */
+-- 
+1.7.7.3
+
