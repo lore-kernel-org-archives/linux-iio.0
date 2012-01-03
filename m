@@ -1,1038 +1,473 @@
-Return-Path: <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from va3ehsobe006.messaging.microsoft.com ([216.32.180.16]:35981
+	"EHLO VA3EHSOBE009.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752045Ab2ACKCO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Jan 2012 05:02:14 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Greg Kroah-Hartman <gregkh@suse.de>
 CC: Jonathan Cameron <jic23@kernel.org>, <devel@driverdev.osuosl.org>,
 	<linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/6] staging:iio: Factor out event handling into its own file
-Date: Tue, 3 Jan 2012 14:59:38 +0100
-Message-ID: <1325599182-5376-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1325599182-5376-1-git-send-email-lars@metafoo.de>
-References: <1325599182-5376-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH] staging:iio: Setup buffer access functions when allocating the buffer
+Date: Tue, 3 Jan 2012 11:02:51 +0100
+Message-ID: <1325584971-32387-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The core iio file has gotten quite cluttered over time. This patch moves
-the event handling code into its own file. Since the event handling code is
-largely independent from the core code the only code changes necessary for
-this are to make the moved iio_device_register_eventset,
-iio_device_unregister_eventset and iio_event_getfd functions non static.
-
-This has also the advantage that industrialio-core.c is now closer again to
-its counterpart in the outofstaging branch.
+Setup the buffer access functions in the buffer allocate function. There is no
+need to let each driver handle this on its own.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
-
 ---
-Changes since v1:
-	* Add missing include to sched.h
----
- drivers/staging/iio/Makefile             |    2 +-
- drivers/staging/iio/iio_core.h           |    4 +
- drivers/staging/iio/industrialio-core.c  |  459 ----------------------------
- drivers/staging/iio/industrialio-event.c |  483 ++++++++++++++++++++++++++++++
- 4 files changed, 488 insertions(+), 460 deletions(-)
- create mode 100644 drivers/staging/iio/industrialio-event.c
+ drivers/staging/iio/accel/adis16201_ring.c      |    2 -
+ drivers/staging/iio/accel/adis16203_ring.c      |    2 -
+ drivers/staging/iio/accel/adis16204_ring.c      |    2 -
+ drivers/staging/iio/accel/adis16209_ring.c      |    2 -
+ drivers/staging/iio/accel/adis16240_ring.c      |    2 -
+ drivers/staging/iio/accel/lis3l02dq.h           |    2 -
+ drivers/staging/iio/accel/lis3l02dq_ring.c      |    2 -
+ drivers/staging/iio/adc/ad7192.c                |    2 -
+ drivers/staging/iio/adc/ad7298_ring.c           |    3 -
+ drivers/staging/iio/adc/ad7476_ring.c           |    2 -
+ drivers/staging/iio/adc/ad7606_ring.c           |    2 -
+ drivers/staging/iio/adc/ad7793.c                |    2 -
+ drivers/staging/iio/adc/ad7887_ring.c           |    2 -
+ drivers/staging/iio/adc/ad799x_ring.c           |    2 -
+ drivers/staging/iio/adc/max1363_ring.c          |    2 -
+ drivers/staging/iio/gyro/adis16260_ring.c       |    2 -
+ drivers/staging/iio/iio_simple_dummy_buffer.c   |    2 -
+ drivers/staging/iio/impedance-analyzer/ad5933.c |    3 -
+ drivers/staging/iio/imu/adis16400_ring.c        |    2 -
+ drivers/staging/iio/kfifo_buf.c                 |   46 +++++++++++-----------
+ drivers/staging/iio/kfifo_buf.h                 |    2 -
+ drivers/staging/iio/meter/ade7758_ring.c        |    2 -
+ drivers/staging/iio/ring_sw.c                   |   22 +++++-----
+ drivers/staging/iio/ring_sw.h                   |    5 --
+ 24 files changed, 34 insertions(+), 83 deletions(-)
 
-diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
-index 1340aea..657710b 100644
---- a/drivers/staging/iio/Makefile
-+++ b/drivers/staging/iio/Makefile
-@@ -3,7 +3,7 @@
- #
+diff --git a/drivers/staging/iio/accel/adis16201_ring.c b/drivers/staging/iio/accel/adis16201_ring.c
+index 26c610f..97f9e6b 100644
+--- a/drivers/staging/iio/accel/adis16201_ring.c
++++ b/drivers/staging/iio/accel/adis16201_ring.c
+@@ -115,9 +115,7 @@ int adis16201_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+ 	ring->scan_timestamp = true;
+-	ring->access = &ring_sw_access_funcs;
+ 	indio_dev->setup_ops = &adis16201_ring_setup_ops;
  
- obj-$(CONFIG_IIO) += industrialio.o
--industrialio-y := industrialio-core.o
-+industrialio-y := industrialio-core.o industrialio-event.o
- industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
- industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
+index 064640d..6a8963d 100644
+--- a/drivers/staging/iio/accel/adis16203_ring.c
++++ b/drivers/staging/iio/accel/adis16203_ring.c
+@@ -117,9 +117,7 @@ int adis16203_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+ 	ring->scan_timestamp = true;
+-	ring->access = &ring_sw_access_funcs;
+ 	indio_dev->setup_ops = &adis16203_ring_setup_ops;
  
-diff --git a/drivers/staging/iio/iio_core.h b/drivers/staging/iio/iio_core.h
-index 107cfb1..c9dfcba 100644
---- a/drivers/staging/iio/iio_core.h
-+++ b/drivers/staging/iio/iio_core.h
-@@ -49,4 +49,8 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+diff --git a/drivers/staging/iio/accel/adis16204_ring.c b/drivers/staging/iio/accel/adis16204_ring.c
+index 4081179..5c8ab73 100644
+--- a/drivers/staging/iio/accel/adis16204_ring.c
++++ b/drivers/staging/iio/accel/adis16204_ring.c
+@@ -112,8 +112,6 @@ int adis16204_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+-	ring->access = &ring_sw_access_funcs;
+ 	ring->scan_timestamp = true;
+ 	indio_dev->setup_ops = &adis16204_ring_setup_ops;
  
+diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
+index 2a6fd334..57254b6 100644
+--- a/drivers/staging/iio/accel/adis16209_ring.c
++++ b/drivers/staging/iio/accel/adis16209_ring.c
+@@ -113,8 +113,6 @@ int adis16209_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+-	ring->access = &ring_sw_access_funcs;
+ 	ring->scan_timestamp = true;
+ 	indio_dev->setup_ops = &adis16209_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
+index e23622d..43ba84e 100644
+--- a/drivers/staging/iio/accel/adis16240_ring.c
++++ b/drivers/staging/iio/accel/adis16240_ring.c
+@@ -110,8 +110,6 @@ int adis16240_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+-	ring->access = &ring_sw_access_funcs;
+ 	ring->scan_timestamp = true;
+ 	indio_dev->setup_ops = &adis16240_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
+index 2db383f..ae5f225 100644
+--- a/drivers/staging/iio/accel/lis3l02dq.h
++++ b/drivers/staging/iio/accel/lis3l02dq.h
+@@ -187,12 +187,10 @@ void lis3l02dq_unconfigure_buffer(struct iio_dev *indio_dev);
+ #ifdef CONFIG_LIS3L02DQ_BUF_RING_SW
+ #define lis3l02dq_free_buf iio_sw_rb_free
+ #define lis3l02dq_alloc_buf iio_sw_rb_allocate
+-#define lis3l02dq_access_funcs ring_sw_access_funcs
  #endif
- 
-+int iio_device_register_eventset(struct iio_dev *indio_dev);
-+void iio_device_unregister_eventset(struct iio_dev *indio_dev);
-+int iio_event_getfd(struct iio_dev *indio_dev);
-+
+ #ifdef CONFIG_LIS3L02DQ_BUF_KFIFO
+ #define lis3l02dq_free_buf iio_kfifo_free
+ #define lis3l02dq_alloc_buf iio_kfifo_allocate
+-#define lis3l02dq_access_funcs kfifo_access_funcs
  #endif
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 580f373..e4824fe 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -100,72 +100,6 @@ const struct iio_chan_spec
- 	return NULL;
+ irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private);
+ #define lis3l02dq_th lis3l02dq_data_rdy_trig_poll
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index 98c5c92..ca0a1fe 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -406,8 +406,6 @@ int lis3l02dq_configure_buffer(struct iio_dev *indio_dev)
+ 		return -ENOMEM;
+ 
+ 	indio_dev->buffer = buffer;
+-	/* Effectively select the buffer implementation */
+-	indio_dev->buffer->access = &lis3l02dq_access_funcs;
+ 
+ 	buffer->scan_timestamp = true;
+ 	indio_dev->setup_ops = &lis3l02dq_buffer_setup_ops;
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index dfeb4ba..654f7fb 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -561,8 +561,6 @@ static int ad7192_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+ 						 &ad7192_trigger_handler,
+ 						 IRQF_ONESHOT,
+diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
+index d1a12dd..feeb0ee 100644
+--- a/drivers/staging/iio/adc/ad7298_ring.c
++++ b/drivers/staging/iio/adc/ad7298_ring.c
+@@ -131,9 +131,6 @@ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+-
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
+ 						 &ad7298_trigger_handler,
+ 						 IRQF_ONESHOT,
+diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
+index 4e298b2..35a8576 100644
+--- a/drivers/staging/iio/adc/ad7476_ring.c
++++ b/drivers/staging/iio/adc/ad7476_ring.c
+@@ -98,8 +98,6 @@ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc
+ 		= iio_alloc_pollfunc(NULL,
+ 				     &ad7476_trigger_handler,
+diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+index e8f94a1..1ef9fbc 100644
+--- a/drivers/staging/iio/adc/ad7606_ring.c
++++ b/drivers/staging/iio/adc/ad7606_ring.c
+@@ -110,8 +110,6 @@ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		goto error_ret;
+ 	}
+ 
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&ad7606_trigger_handler_th_bh,
+ 						 &ad7606_trigger_handler_th_bh,
+ 						 0,
+diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
+index accf325..fc9ebf1 100644
+--- a/drivers/staging/iio/adc/ad7793.c
++++ b/drivers/staging/iio/adc/ad7793.c
+@@ -427,8 +427,6 @@ static int ad7793_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+ 						 &ad7793_trigger_handler,
+ 						 IRQF_ONESHOT,
+diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
+index 85076cd..d180907 100644
+--- a/drivers/staging/iio/adc/ad7887_ring.c
++++ b/drivers/staging/iio/adc/ad7887_ring.c
+@@ -131,8 +131,6 @@ int ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+ 						 &ad7887_trigger_handler,
+ 						 IRQF_ONESHOT,
+diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
+index 5dded9e..28e9a41 100644
+--- a/drivers/staging/iio/adc/ad799x_ring.c
++++ b/drivers/staging/iio/adc/ad799x_ring.c
+@@ -141,8 +141,6 @@ int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
+ 						 &ad799x_trigger_handler,
+ 						 IRQF_ONESHOT,
+diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
+index f730b3f..d0a60a3 100644
+--- a/drivers/staging/iio/adc/max1363_ring.c
++++ b/drivers/staging/iio/adc/max1363_ring.c
+@@ -116,8 +116,6 @@ int max1363_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_deallocate_sw_rb;
+ 	}
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	/* Ring buffer functions - here trigger setup related */
+ 	indio_dev->setup_ops = &max1363_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
+index 699a615..711f151 100644
+--- a/drivers/staging/iio/gyro/adis16260_ring.c
++++ b/drivers/staging/iio/gyro/adis16260_ring.c
+@@ -115,8 +115,6 @@ int adis16260_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+-	ring->access = &ring_sw_access_funcs;
+ 	ring->scan_timestamp = true;
+ 	indio_dev->setup_ops = &adis16260_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
+index d6a1c0e..bb4daf7 100644
+--- a/drivers/staging/iio/iio_simple_dummy_buffer.c
++++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
+@@ -142,8 +142,6 @@ int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev)
+ 	}
+ 
+ 	indio_dev->buffer = buffer;
+-	/* Tell the core how to access the buffer */
+-	buffer->access = &kfifo_access_funcs;
+ 
+ 	/* Enable timestamps by default */
+ 	buffer->scan_timestamp = true;
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index f02d1c0..4138082 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -607,9 +607,6 @@ static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	if (!indio_dev->buffer)
+ 		return -ENOMEM;
+ 
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+-
+ 	/* Ring buffer functions - here trigger setup related */
+ 	indio_dev->setup_ops = &ad5933_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
+index ac22de5..8daa038 100644
+--- a/drivers/staging/iio/imu/adis16400_ring.c
++++ b/drivers/staging/iio/imu/adis16400_ring.c
+@@ -187,8 +187,6 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 	indio_dev->buffer = ring;
+-	/* Effectively select the ring buffer implementation */
+-	ring->access = &ring_sw_access_funcs;
+ 	ring->scan_timestamp = true;
+ 	indio_dev->setup_ops = &adis16400_ring_setup_ops;
+ 
+diff --git a/drivers/staging/iio/kfifo_buf.c b/drivers/staging/iio/kfifo_buf.c
+index e1e9c06..9f3bd59 100644
+--- a/drivers/staging/iio/kfifo_buf.c
++++ b/drivers/staging/iio/kfifo_buf.c
+@@ -59,21 +59,6 @@ static struct attribute_group iio_kfifo_attribute_group = {
+ 	.name = "buffer",
+ };
+ 
+-struct iio_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev)
+-{
+-	struct iio_kfifo *kf;
+-
+-	kf = kzalloc(sizeof *kf, GFP_KERNEL);
+-	if (!kf)
+-		return NULL;
+-	kf->update_needed = true;
+-	iio_buffer_init(&kf->buffer);
+-	kf->buffer.attrs = &iio_kfifo_attribute_group;
+-
+-	return &kf->buffer;
+-}
+-EXPORT_SYMBOL(iio_kfifo_allocate);
+-
+ static int iio_get_bytes_per_datum_kfifo(struct iio_buffer *r)
+ {
+ 	return r->bytes_per_datum;
+@@ -104,12 +89,6 @@ static int iio_set_length_kfifo(struct iio_buffer *r, int length)
+ 	return 0;
  }
+ 
+-void iio_kfifo_free(struct iio_buffer *r)
+-{
+-	kfree(iio_to_kfifo(r));
+-}
+-EXPORT_SYMBOL(iio_kfifo_free);
+-
+ static int iio_store_to_kfifo(struct iio_buffer *r,
+ 			      u8 *data,
+ 			      s64 timestamp)
+@@ -137,7 +116,7 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
+ 	return copied;
+ }
+ 
+-const struct iio_buffer_access_funcs kfifo_access_funcs = {
++static const struct iio_buffer_access_funcs kfifo_access_funcs = {
+ 	.store_to = &iio_store_to_kfifo,
+ 	.read_first_n = &iio_read_first_n_kfifo,
+ 	.request_update = &iio_request_update_kfifo,
+@@ -146,6 +125,27 @@ const struct iio_buffer_access_funcs kfifo_access_funcs = {
+ 	.get_length = &iio_get_length_kfifo,
+ 	.set_length = &iio_set_length_kfifo,
+ };
+-EXPORT_SYMBOL(kfifo_access_funcs);
++
++struct iio_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev)
++{
++	struct iio_kfifo *kf;
++
++	kf = kzalloc(sizeof *kf, GFP_KERNEL);
++	if (!kf)
++		return NULL;
++	kf->update_needed = true;
++	iio_buffer_init(&kf->buffer);
++	kf->buffer.attrs = &iio_kfifo_attribute_group;
++	kf->buffer.access = &kfifo_access_funcs;
++
++	return &kf->buffer;
++}
++EXPORT_SYMBOL(iio_kfifo_allocate);
++
++void iio_kfifo_free(struct iio_buffer *r)
++{
++	kfree(iio_to_kfifo(r));
++}
++EXPORT_SYMBOL(iio_kfifo_free);
+ 
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/staging/iio/kfifo_buf.h b/drivers/staging/iio/kfifo_buf.h
+index cc2bd9a..9f7da01 100644
+--- a/drivers/staging/iio/kfifo_buf.h
++++ b/drivers/staging/iio/kfifo_buf.h
+@@ -3,8 +3,6 @@
+ #include "iio.h"
+ #include "buffer.h"
+ 
+-extern const struct iio_buffer_access_funcs kfifo_access_funcs;
+-
+ struct iio_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev);
+ void iio_kfifo_free(struct iio_buffer *r);
+ 
+diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+index f29f2b2..c5c522b 100644
+--- a/drivers/staging/iio/meter/ade7758_ring.c
++++ b/drivers/staging/iio/meter/ade7758_ring.c
+@@ -144,8 +144,6 @@ int ade7758_configure_ring(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 
+-	/* Effectively select the ring buffer implementation */
+-	indio_dev->buffer->access = &ring_sw_access_funcs;
+ 	indio_dev->setup_ops = &ade7758_ring_setup_ops;
+ 
+ 	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
+index 3e24ec4..eeac0da 100644
+--- a/drivers/staging/iio/ring_sw.c
++++ b/drivers/staging/iio/ring_sw.c
+@@ -329,6 +329,16 @@ static struct attribute_group iio_ring_attribute_group = {
+ 	.name = "buffer",
+ };
+ 
++static const struct iio_buffer_access_funcs ring_sw_access_funcs = {
++	.store_to = &iio_store_to_sw_rb,
++	.read_first_n = &iio_read_first_n_sw_rb,
++	.request_update = &iio_request_update_sw_rb,
++	.get_bytes_per_datum = &iio_get_bytes_per_datum_sw_rb,
++	.set_bytes_per_datum = &iio_set_bytes_per_datum_sw_rb,
++	.get_length = &iio_get_length_sw_rb,
++	.set_length = &iio_set_length_sw_rb,
++};
++
+ struct iio_buffer *iio_sw_rb_allocate(struct iio_dev *indio_dev)
+ {
+ 	struct iio_buffer *buf;
+@@ -341,6 +351,7 @@ struct iio_buffer *iio_sw_rb_allocate(struct iio_dev *indio_dev)
+ 	buf = &ring->buf;
+ 	iio_buffer_init(buf);
+ 	buf->attrs = &iio_ring_attribute_group;
++	buf->access = &ring_sw_access_funcs;
+ 
+ 	return buf;
+ }
+@@ -352,16 +363,5 @@ void iio_sw_rb_free(struct iio_buffer *r)
+ }
+ EXPORT_SYMBOL(iio_sw_rb_free);
+ 
+-const struct iio_buffer_access_funcs ring_sw_access_funcs = {
+-	.store_to = &iio_store_to_sw_rb,
+-	.read_first_n = &iio_read_first_n_sw_rb,
+-	.request_update = &iio_request_update_sw_rb,
+-	.get_bytes_per_datum = &iio_get_bytes_per_datum_sw_rb,
+-	.set_bytes_per_datum = &iio_set_bytes_per_datum_sw_rb,
+-	.get_length = &iio_get_length_sw_rb,
+-	.set_length = &iio_set_length_sw_rb,
+-};
+-EXPORT_SYMBOL(ring_sw_access_funcs);
+-
+ MODULE_DESCRIPTION("Industrialio I/O software ring buffer");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/staging/iio/ring_sw.h b/drivers/staging/iio/ring_sw.h
+index e6a6e2c..7556e21 100644
+--- a/drivers/staging/iio/ring_sw.h
++++ b/drivers/staging/iio/ring_sw.h
+@@ -25,11 +25,6 @@
+ #define _IIO_RING_SW_H_
+ #include "buffer.h"
  
 -/**
-- * struct iio_detected_event_list - list element for events that have occurred
-- * @list:		linked list header
-- * @ev:			the event itself
-- */
--struct iio_detected_event_list {
--	struct list_head		list;
--	struct iio_event_data		ev;
--};
+- * ring_sw_access_funcs - access functions for a software ring buffer
+- **/
+-extern const struct iio_buffer_access_funcs ring_sw_access_funcs;
 -
--/**
-- * struct iio_event_interface - chrdev interface for an event line
-- * @wait:		wait queue to allow blocking reads of events
-- * @event_list_lock:	mutex to protect the list of detected events
-- * @det_events:		list of detected events
-- * @max_events:		maximum number of events before new ones are dropped
-- * @current_events:	number of events in detected list
-- * @dev_attr_list:	list of event interface sysfs attribute
-- * @flags:		file operations related flags including busy flag.
-- * @group:		event interface sysfs attribute group
-- */
--struct iio_event_interface {
--	wait_queue_head_t			wait;
--	struct mutex				event_list_lock;
--	struct list_head			det_events;
--	int					max_events;
--	int					current_events;
--	struct list_head dev_attr_list;
--	unsigned long flags;
--	struct attribute_group			group;
--};
--
--int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
--{
--	struct iio_event_interface *ev_int = indio_dev->event_interface;
--	struct iio_detected_event_list *ev;
--	int ret = 0;
--
--	/* Does anyone care? */
--	mutex_lock(&ev_int->event_list_lock);
--	if (test_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
--		if (ev_int->current_events == ev_int->max_events) {
--			mutex_unlock(&ev_int->event_list_lock);
--			return 0;
--		}
--		ev = kmalloc(sizeof(*ev), GFP_KERNEL);
--		if (ev == NULL) {
--			ret = -ENOMEM;
--			mutex_unlock(&ev_int->event_list_lock);
--			goto error_ret;
--		}
--		ev->ev.id = ev_code;
--		ev->ev.timestamp = timestamp;
--
--		list_add_tail(&ev->list, &ev_int->det_events);
--		ev_int->current_events++;
--		mutex_unlock(&ev_int->event_list_lock);
--		wake_up_interruptible(&ev_int->wait);
--	} else
--		mutex_unlock(&ev_int->event_list_lock);
--
--error_ret:
--	return ret;
--}
--EXPORT_SYMBOL(iio_push_event);
--
- /* This turns up an awful lot */
- ssize_t iio_read_const_attr(struct device *dev,
- 			    struct device_attribute *attr,
-@@ -175,110 +109,6 @@ ssize_t iio_read_const_attr(struct device *dev,
- }
- EXPORT_SYMBOL(iio_read_const_attr);
- 
--static ssize_t iio_event_chrdev_read(struct file *filep,
--				     char __user *buf,
--				     size_t count,
--				     loff_t *f_ps)
--{
--	struct iio_event_interface *ev_int = filep->private_data;
--	struct iio_detected_event_list *el;
--	size_t len = sizeof(el->ev);
--	int ret;
--
--	if (count < len)
--		return -EINVAL;
--
--	mutex_lock(&ev_int->event_list_lock);
--	if (list_empty(&ev_int->det_events)) {
--		if (filep->f_flags & O_NONBLOCK) {
--			ret = -EAGAIN;
--			goto error_mutex_unlock;
--		}
--		mutex_unlock(&ev_int->event_list_lock);
--		/* Blocking on device; waiting for something to be there */
--		ret = wait_event_interruptible(ev_int->wait,
--					       !list_empty(&ev_int
--							   ->det_events));
--		if (ret)
--			goto error_ret;
--		/* Single access device so no one else can get the data */
--		mutex_lock(&ev_int->event_list_lock);
--	}
--
--	el = list_first_entry(&ev_int->det_events,
--			      struct iio_detected_event_list,
--			      list);
--	if (copy_to_user(buf, &(el->ev), len)) {
--		ret = -EFAULT;
--		goto error_mutex_unlock;
--	}
--	list_del(&el->list);
--	ev_int->current_events--;
--	mutex_unlock(&ev_int->event_list_lock);
--	kfree(el);
--
--	return len;
--
--error_mutex_unlock:
--	mutex_unlock(&ev_int->event_list_lock);
--error_ret:
--
--	return ret;
--}
--
--static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
--{
--	struct iio_event_interface *ev_int = filep->private_data;
--	struct iio_detected_event_list *el, *t;
--
--	mutex_lock(&ev_int->event_list_lock);
--	clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
--	/*
--	 * In order to maintain a clean state for reopening,
--	 * clear out any awaiting events. The mask will prevent
--	 * any new __iio_push_event calls running.
--	 */
--	list_for_each_entry_safe(el, t, &ev_int->det_events, list) {
--		list_del(&el->list);
--		kfree(el);
--	}
--	ev_int->current_events = 0;
--	mutex_unlock(&ev_int->event_list_lock);
--
--	return 0;
--}
--
--static const struct file_operations iio_event_chrdev_fileops = {
--	.read =  iio_event_chrdev_read,
--	.release = iio_event_chrdev_release,
--	.owner = THIS_MODULE,
--	.llseek = noop_llseek,
--};
--
--static int iio_event_getfd(struct iio_dev *indio_dev)
--{
--	struct iio_event_interface *ev_int = indio_dev->event_interface;
--	int fd;
--
--	if (ev_int == NULL)
--		return -ENODEV;
--
--	mutex_lock(&ev_int->event_list_lock);
--	if (test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
--		mutex_unlock(&ev_int->event_list_lock);
--		return -EBUSY;
--	}
--	mutex_unlock(&ev_int->event_list_lock);
--	fd = anon_inode_getfd("iio:event",
--				&iio_event_chrdev_fileops, ev_int, O_RDONLY);
--	if (fd < 0) {
--		mutex_lock(&ev_int->event_list_lock);
--		clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
--		mutex_unlock(&ev_int->event_list_lock);
--	}
--	return fd;
--}
--
- static int __init iio_init(void)
- {
- 	int ret;
-@@ -727,295 +557,6 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
- 	kfree(indio_dev->chan_attr_group.attrs);
- }
- 
--static const char * const iio_ev_type_text[] = {
--	[IIO_EV_TYPE_THRESH] = "thresh",
--	[IIO_EV_TYPE_MAG] = "mag",
--	[IIO_EV_TYPE_ROC] = "roc",
--	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
--	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
--};
--
--static const char * const iio_ev_dir_text[] = {
--	[IIO_EV_DIR_EITHER] = "either",
--	[IIO_EV_DIR_RISING] = "rising",
--	[IIO_EV_DIR_FALLING] = "falling"
--};
--
--static ssize_t iio_ev_state_store(struct device *dev,
--				  struct device_attribute *attr,
--				  const char *buf,
--				  size_t len)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int ret;
--	bool val;
--
--	ret = strtobool(buf, &val);
--	if (ret < 0)
--		return ret;
--
--	ret = indio_dev->info->write_event_config(indio_dev,
--						  this_attr->address,
--						  val);
--	return (ret < 0) ? ret : len;
--}
--
--static ssize_t iio_ev_state_show(struct device *dev,
--				 struct device_attribute *attr,
--				 char *buf)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int val = indio_dev->info->read_event_config(indio_dev,
--						     this_attr->address);
--
--	if (val < 0)
--		return val;
--	else
--		return sprintf(buf, "%d\n", val);
--}
--
--static ssize_t iio_ev_value_show(struct device *dev,
--				 struct device_attribute *attr,
--				 char *buf)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int val, ret;
--
--	ret = indio_dev->info->read_event_value(indio_dev,
--						this_attr->address, &val);
--	if (ret < 0)
--		return ret;
--
--	return sprintf(buf, "%d\n", val);
--}
--
--static ssize_t iio_ev_value_store(struct device *dev,
--				  struct device_attribute *attr,
--				  const char *buf,
--				  size_t len)
--{
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	unsigned long val;
--	int ret;
--
--	if (!indio_dev->info->write_event_value)
--		return -EINVAL;
--
--	ret = strict_strtoul(buf, 10, &val);
--	if (ret)
--		return ret;
--
--	ret = indio_dev->info->write_event_value(indio_dev, this_attr->address,
--						 val);
--	if (ret < 0)
--		return ret;
--
--	return len;
--}
--
--static int iio_device_add_event_sysfs(struct iio_dev *indio_dev,
--				      struct iio_chan_spec const *chan)
--{
--	int ret = 0, i, attrcount = 0;
--	u64 mask = 0;
--	char *postfix;
--	if (!chan->event_mask)
--		return 0;
--
--	for_each_set_bit(i, &chan->event_mask, sizeof(chan->event_mask)*8) {
--		postfix = kasprintf(GFP_KERNEL, "%s_%s_en",
--				    iio_ev_type_text[i/IIO_EV_DIR_MAX],
--				    iio_ev_dir_text[i%IIO_EV_DIR_MAX]);
--		if (postfix == NULL) {
--			ret = -ENOMEM;
--			goto error_ret;
--		}
--		if (chan->modified)
--			mask = IIO_MOD_EVENT_CODE(chan->type, 0, chan->channel,
--						  i/IIO_EV_DIR_MAX,
--						  i%IIO_EV_DIR_MAX);
--		else if (chan->differential)
--			mask = IIO_EVENT_CODE(chan->type,
--					      0, 0,
--					      i%IIO_EV_DIR_MAX,
--					      i/IIO_EV_DIR_MAX,
--					      0,
--					      chan->channel,
--					      chan->channel2);
--		else
--			mask = IIO_UNMOD_EVENT_CODE(chan->type,
--						    chan->channel,
--						    i/IIO_EV_DIR_MAX,
--						    i%IIO_EV_DIR_MAX);
--
--		ret = __iio_add_chan_devattr(postfix,
--					     chan,
--					     &iio_ev_state_show,
--					     iio_ev_state_store,
--					     mask,
--					     0,
--					     &indio_dev->dev,
--					     &indio_dev->event_interface->
--					     dev_attr_list);
--		kfree(postfix);
--		if (ret)
--			goto error_ret;
--		attrcount++;
--		postfix = kasprintf(GFP_KERNEL, "%s_%s_value",
--				    iio_ev_type_text[i/IIO_EV_DIR_MAX],
--				    iio_ev_dir_text[i%IIO_EV_DIR_MAX]);
--		if (postfix == NULL) {
--			ret = -ENOMEM;
--			goto error_ret;
--		}
--		ret = __iio_add_chan_devattr(postfix, chan,
--					     iio_ev_value_show,
--					     iio_ev_value_store,
--					     mask,
--					     0,
--					     &indio_dev->dev,
--					     &indio_dev->event_interface->
--					     dev_attr_list);
--		kfree(postfix);
--		if (ret)
--			goto error_ret;
--		attrcount++;
--	}
--	ret = attrcount;
--error_ret:
--	return ret;
--}
--
--static inline void __iio_remove_event_config_attrs(struct iio_dev *indio_dev)
--{
--	struct iio_dev_attr *p, *n;
--	list_for_each_entry_safe(p, n,
--				 &indio_dev->event_interface->
--				 dev_attr_list, l) {
--		kfree(p->dev_attr.attr.name);
--		kfree(p);
--	}
--}
--
--static inline int __iio_add_event_config_attrs(struct iio_dev *indio_dev)
--{
--	int j, ret, attrcount = 0;
--
--	INIT_LIST_HEAD(&indio_dev->event_interface->dev_attr_list);
--	/* Dynically created from the channels array */
--	for (j = 0; j < indio_dev->num_channels; j++) {
--		ret = iio_device_add_event_sysfs(indio_dev,
--						 &indio_dev->channels[j]);
--		if (ret < 0)
--			goto error_clear_attrs;
--		attrcount += ret;
--	}
--	return attrcount;
--
--error_clear_attrs:
--	__iio_remove_event_config_attrs(indio_dev);
--
--	return ret;
--}
--
--static bool iio_check_for_dynamic_events(struct iio_dev *indio_dev)
--{
--	int j;
--
--	for (j = 0; j < indio_dev->num_channels; j++)
--		if (indio_dev->channels[j].event_mask != 0)
--			return true;
--	return false;
--}
--
--static void iio_setup_ev_int(struct iio_event_interface *ev_int)
--{
--	mutex_init(&ev_int->event_list_lock);
--	/* discussion point - make this variable? */
--	ev_int->max_events = 10;
--	ev_int->current_events = 0;
--	INIT_LIST_HEAD(&ev_int->det_events);
--	init_waitqueue_head(&ev_int->wait);
--}
--
--static const char *iio_event_group_name = "events";
--static int iio_device_register_eventset(struct iio_dev *indio_dev)
--{
--	struct iio_dev_attr *p;
--	int ret = 0, attrcount_orig = 0, attrcount, attrn;
--	struct attribute **attr;
--
--	if (!(indio_dev->info->event_attrs ||
--	      iio_check_for_dynamic_events(indio_dev)))
--		return 0;
--
--	indio_dev->event_interface =
--		kzalloc(sizeof(struct iio_event_interface), GFP_KERNEL);
--	if (indio_dev->event_interface == NULL) {
--		ret = -ENOMEM;
--		goto error_ret;
--	}
--
--	iio_setup_ev_int(indio_dev->event_interface);
--	if (indio_dev->info->event_attrs != NULL) {
--		attr = indio_dev->info->event_attrs->attrs;
--		while (*attr++ != NULL)
--			attrcount_orig++;
--	}
--	attrcount = attrcount_orig;
--	if (indio_dev->channels) {
--		ret = __iio_add_event_config_attrs(indio_dev);
--		if (ret < 0)
--			goto error_free_setup_event_lines;
--		attrcount += ret;
--	}
--
--	indio_dev->event_interface->group.name = iio_event_group_name;
--	indio_dev->event_interface->group.attrs = kcalloc(attrcount + 1,
--							  sizeof(indio_dev->event_interface->group.attrs[0]),
--							  GFP_KERNEL);
--	if (indio_dev->event_interface->group.attrs == NULL) {
--		ret = -ENOMEM;
--		goto error_free_setup_event_lines;
--	}
--	if (indio_dev->info->event_attrs)
--		memcpy(indio_dev->event_interface->group.attrs,
--		       indio_dev->info->event_attrs->attrs,
--		       sizeof(indio_dev->event_interface->group.attrs[0])
--		       *attrcount_orig);
--	attrn = attrcount_orig;
--	/* Add all elements from the list. */
--	list_for_each_entry(p,
--			    &indio_dev->event_interface->dev_attr_list,
--			    l)
--		indio_dev->event_interface->group.attrs[attrn++] =
--			&p->dev_attr.attr;
--	indio_dev->groups[indio_dev->groupcounter++] =
--		&indio_dev->event_interface->group;
--
--	return 0;
--
--error_free_setup_event_lines:
--	__iio_remove_event_config_attrs(indio_dev);
--	kfree(indio_dev->event_interface);
--error_ret:
--
--	return ret;
--}
--
--static void iio_device_unregister_eventset(struct iio_dev *indio_dev)
--{
--	if (indio_dev->event_interface == NULL)
--		return;
--	__iio_remove_event_config_attrs(indio_dev);
--	kfree(indio_dev->event_interface->group.attrs);
--	kfree(indio_dev->event_interface);
--}
--
- static void iio_dev_release(struct device *device)
- {
- 	struct iio_dev *indio_dev = container_of(device, struct iio_dev, dev);
-diff --git a/drivers/staging/iio/industrialio-event.c b/drivers/staging/iio/industrialio-event.c
-new file mode 100644
-index 0000000..a7b345d
---- /dev/null
-+++ b/drivers/staging/iio/industrialio-event.c
-@@ -0,0 +1,483 @@
-+/* Industrial I/O event handling
-+ *
-+ * Copyright (c) 2008 Jonathan Cameron
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ *
-+ * Based on elements of hwmon and input subsystems.
-+ */
-+
-+#include <linux/anon_inodes.h>
-+#include <linux/device.h>
-+#include <linux/fs.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/sched.h>
-+#include <linux/slab.h>
-+#include <linux/uaccess.h>
-+#include <linux/wait.h>
-+#include "iio.h"
-+#include "iio_core.h"
-+#include "sysfs.h"
-+#include "events.h"
-+
-+/**
-+ * struct iio_detected_event_list - list element for events that have occurred
-+ * @list:		linked list header
-+ * @ev:			the event itself
-+ */
-+struct iio_detected_event_list {
-+	struct list_head		list;
-+	struct iio_event_data		ev;
-+};
-+
-+/**
-+ * struct iio_event_interface - chrdev interface for an event line
-+ * @wait:		wait queue to allow blocking reads of events
-+ * @event_list_lock:	mutex to protect the list of detected events
-+ * @det_events:		list of detected events
-+ * @max_events:		maximum number of events before new ones are dropped
-+ * @current_events:	number of events in detected list
-+ * @dev_attr_list:	list of event interface sysfs attribute
-+ * @flags:		file operations related flags including busy flag.
-+ * @group:		event interface sysfs attribute group
-+ */
-+struct iio_event_interface {
-+	wait_queue_head_t	wait;
-+	struct mutex		event_list_lock;
-+	struct list_head	det_events;
-+	int			max_events;
-+	int			current_events;
-+	struct list_head	dev_attr_list;
-+	unsigned long		flags;
-+	struct attribute_group	group;
-+};
-+
-+int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
-+{
-+	struct iio_event_interface *ev_int = indio_dev->event_interface;
-+	struct iio_detected_event_list *ev;
-+	int ret = 0;
-+
-+	/* Does anyone care? */
-+	mutex_lock(&ev_int->event_list_lock);
-+	if (test_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
-+		if (ev_int->current_events == ev_int->max_events) {
-+			mutex_unlock(&ev_int->event_list_lock);
-+			return 0;
-+		}
-+		ev = kmalloc(sizeof(*ev), GFP_KERNEL);
-+		if (ev == NULL) {
-+			ret = -ENOMEM;
-+			mutex_unlock(&ev_int->event_list_lock);
-+			goto error_ret;
-+		}
-+		ev->ev.id = ev_code;
-+		ev->ev.timestamp = timestamp;
-+
-+		list_add_tail(&ev->list, &ev_int->det_events);
-+		ev_int->current_events++;
-+		mutex_unlock(&ev_int->event_list_lock);
-+		wake_up_interruptible(&ev_int->wait);
-+	} else
-+		mutex_unlock(&ev_int->event_list_lock);
-+
-+error_ret:
-+	return ret;
-+}
-+EXPORT_SYMBOL(iio_push_event);
-+
-+static ssize_t iio_event_chrdev_read(struct file *filep,
-+				     char __user *buf,
-+				     size_t count,
-+				     loff_t *f_ps)
-+{
-+	struct iio_event_interface *ev_int = filep->private_data;
-+	struct iio_detected_event_list *el;
-+	size_t len = sizeof(el->ev);
-+	int ret;
-+
-+	if (count < len)
-+		return -EINVAL;
-+
-+	mutex_lock(&ev_int->event_list_lock);
-+	if (list_empty(&ev_int->det_events)) {
-+		if (filep->f_flags & O_NONBLOCK) {
-+			ret = -EAGAIN;
-+			goto error_mutex_unlock;
-+		}
-+		mutex_unlock(&ev_int->event_list_lock);
-+		/* Blocking on device; waiting for something to be there */
-+		ret = wait_event_interruptible(ev_int->wait,
-+					       !list_empty(&ev_int
-+							   ->det_events));
-+		if (ret)
-+			goto error_ret;
-+		/* Single access device so no one else can get the data */
-+		mutex_lock(&ev_int->event_list_lock);
-+	}
-+
-+	el = list_first_entry(&ev_int->det_events,
-+			      struct iio_detected_event_list,
-+			      list);
-+	if (copy_to_user(buf, &(el->ev), len)) {
-+		ret = -EFAULT;
-+		goto error_mutex_unlock;
-+	}
-+	list_del(&el->list);
-+	ev_int->current_events--;
-+	mutex_unlock(&ev_int->event_list_lock);
-+	kfree(el);
-+
-+	return len;
-+
-+error_mutex_unlock:
-+	mutex_unlock(&ev_int->event_list_lock);
-+error_ret:
-+
-+	return ret;
-+}
-+
-+static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
-+{
-+	struct iio_event_interface *ev_int = filep->private_data;
-+	struct iio_detected_event_list *el, *t;
-+
-+	mutex_lock(&ev_int->event_list_lock);
-+	clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
-+	/*
-+	 * In order to maintain a clean state for reopening,
-+	 * clear out any awaiting events. The mask will prevent
-+	 * any new __iio_push_event calls running.
-+	 */
-+	list_for_each_entry_safe(el, t, &ev_int->det_events, list) {
-+		list_del(&el->list);
-+		kfree(el);
-+	}
-+	ev_int->current_events = 0;
-+	mutex_unlock(&ev_int->event_list_lock);
-+
-+	return 0;
-+}
-+
-+static const struct file_operations iio_event_chrdev_fileops = {
-+	.read =  iio_event_chrdev_read,
-+	.release = iio_event_chrdev_release,
-+	.owner = THIS_MODULE,
-+	.llseek = noop_llseek,
-+};
-+
-+int iio_event_getfd(struct iio_dev *indio_dev)
-+{
-+	struct iio_event_interface *ev_int = indio_dev->event_interface;
-+	int fd;
-+
-+	if (ev_int == NULL)
-+		return -ENODEV;
-+
-+	mutex_lock(&ev_int->event_list_lock);
-+	if (test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
-+		mutex_unlock(&ev_int->event_list_lock);
-+		return -EBUSY;
-+	}
-+	mutex_unlock(&ev_int->event_list_lock);
-+	fd = anon_inode_getfd("iio:event",
-+				&iio_event_chrdev_fileops, ev_int, O_RDONLY);
-+	if (fd < 0) {
-+		mutex_lock(&ev_int->event_list_lock);
-+		clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
-+		mutex_unlock(&ev_int->event_list_lock);
-+	}
-+	return fd;
-+}
-+
-+static const char * const iio_ev_type_text[] = {
-+	[IIO_EV_TYPE_THRESH] = "thresh",
-+	[IIO_EV_TYPE_MAG] = "mag",
-+	[IIO_EV_TYPE_ROC] = "roc",
-+	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
-+	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
-+};
-+
-+static const char * const iio_ev_dir_text[] = {
-+	[IIO_EV_DIR_EITHER] = "either",
-+	[IIO_EV_DIR_RISING] = "rising",
-+	[IIO_EV_DIR_FALLING] = "falling"
-+};
-+
-+static ssize_t iio_ev_state_store(struct device *dev,
-+				  struct device_attribute *attr,
-+				  const char *buf,
-+				  size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int ret;
-+	bool val;
-+
-+	ret = strtobool(buf, &val);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = indio_dev->info->write_event_config(indio_dev,
-+						  this_attr->address,
-+						  val);
-+	return (ret < 0) ? ret : len;
-+}
-+
-+static ssize_t iio_ev_state_show(struct device *dev,
-+				 struct device_attribute *attr,
-+				 char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int val = indio_dev->info->read_event_config(indio_dev,
-+						     this_attr->address);
-+
-+	if (val < 0)
-+		return val;
-+	else
-+		return sprintf(buf, "%d\n", val);
-+}
-+
-+static ssize_t iio_ev_value_show(struct device *dev,
-+				 struct device_attribute *attr,
-+				 char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int val, ret;
-+
-+	ret = indio_dev->info->read_event_value(indio_dev,
-+						this_attr->address, &val);
-+	if (ret < 0)
-+		return ret;
-+
-+	return sprintf(buf, "%d\n", val);
-+}
-+
-+static ssize_t iio_ev_value_store(struct device *dev,
-+				  struct device_attribute *attr,
-+				  const char *buf,
-+				  size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	unsigned long val;
-+	int ret;
-+
-+	if (!indio_dev->info->write_event_value)
-+		return -EINVAL;
-+
-+	ret = strict_strtoul(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	ret = indio_dev->info->write_event_value(indio_dev, this_attr->address,
-+						 val);
-+	if (ret < 0)
-+		return ret;
-+
-+	return len;
-+}
-+
-+static int iio_device_add_event_sysfs(struct iio_dev *indio_dev,
-+				      struct iio_chan_spec const *chan)
-+{
-+	int ret = 0, i, attrcount = 0;
-+	u64 mask = 0;
-+	char *postfix;
-+	if (!chan->event_mask)
-+		return 0;
-+
-+	for_each_set_bit(i, &chan->event_mask, sizeof(chan->event_mask)*8) {
-+		postfix = kasprintf(GFP_KERNEL, "%s_%s_en",
-+				    iio_ev_type_text[i/IIO_EV_DIR_MAX],
-+				    iio_ev_dir_text[i%IIO_EV_DIR_MAX]);
-+		if (postfix == NULL) {
-+			ret = -ENOMEM;
-+			goto error_ret;
-+		}
-+		if (chan->modified)
-+			mask = IIO_MOD_EVENT_CODE(chan->type, 0, chan->channel,
-+						  i/IIO_EV_DIR_MAX,
-+						  i%IIO_EV_DIR_MAX);
-+		else if (chan->differential)
-+			mask = IIO_EVENT_CODE(chan->type,
-+					      0, 0,
-+					      i%IIO_EV_DIR_MAX,
-+					      i/IIO_EV_DIR_MAX,
-+					      0,
-+					      chan->channel,
-+					      chan->channel2);
-+		else
-+			mask = IIO_UNMOD_EVENT_CODE(chan->type,
-+						    chan->channel,
-+						    i/IIO_EV_DIR_MAX,
-+						    i%IIO_EV_DIR_MAX);
-+
-+		ret = __iio_add_chan_devattr(postfix,
-+					     chan,
-+					     &iio_ev_state_show,
-+					     iio_ev_state_store,
-+					     mask,
-+					     0,
-+					     &indio_dev->dev,
-+					     &indio_dev->event_interface->
-+					     dev_attr_list);
-+		kfree(postfix);
-+		if (ret)
-+			goto error_ret;
-+		attrcount++;
-+		postfix = kasprintf(GFP_KERNEL, "%s_%s_value",
-+				    iio_ev_type_text[i/IIO_EV_DIR_MAX],
-+				    iio_ev_dir_text[i%IIO_EV_DIR_MAX]);
-+		if (postfix == NULL) {
-+			ret = -ENOMEM;
-+			goto error_ret;
-+		}
-+		ret = __iio_add_chan_devattr(postfix, chan,
-+					     iio_ev_value_show,
-+					     iio_ev_value_store,
-+					     mask,
-+					     0,
-+					     &indio_dev->dev,
-+					     &indio_dev->event_interface->
-+					     dev_attr_list);
-+		kfree(postfix);
-+		if (ret)
-+			goto error_ret;
-+		attrcount++;
-+	}
-+	ret = attrcount;
-+error_ret:
-+	return ret;
-+}
-+
-+static inline void __iio_remove_event_config_attrs(struct iio_dev *indio_dev)
-+{
-+	struct iio_dev_attr *p, *n;
-+	list_for_each_entry_safe(p, n,
-+				 &indio_dev->event_interface->
-+				 dev_attr_list, l) {
-+		kfree(p->dev_attr.attr.name);
-+		kfree(p);
-+	}
-+}
-+
-+static inline int __iio_add_event_config_attrs(struct iio_dev *indio_dev)
-+{
-+	int j, ret, attrcount = 0;
-+
-+	INIT_LIST_HEAD(&indio_dev->event_interface->dev_attr_list);
-+	/* Dynically created from the channels array */
-+	for (j = 0; j < indio_dev->num_channels; j++) {
-+		ret = iio_device_add_event_sysfs(indio_dev,
-+						 &indio_dev->channels[j]);
-+		if (ret < 0)
-+			goto error_clear_attrs;
-+		attrcount += ret;
-+	}
-+	return attrcount;
-+
-+error_clear_attrs:
-+	__iio_remove_event_config_attrs(indio_dev);
-+
-+	return ret;
-+}
-+
-+static bool iio_check_for_dynamic_events(struct iio_dev *indio_dev)
-+{
-+	int j;
-+
-+	for (j = 0; j < indio_dev->num_channels; j++)
-+		if (indio_dev->channels[j].event_mask != 0)
-+			return true;
-+	return false;
-+}
-+
-+static void iio_setup_ev_int(struct iio_event_interface *ev_int)
-+{
-+	mutex_init(&ev_int->event_list_lock);
-+	/* discussion point - make this variable? */
-+	ev_int->max_events = 10;
-+	ev_int->current_events = 0;
-+	INIT_LIST_HEAD(&ev_int->det_events);
-+	init_waitqueue_head(&ev_int->wait);
-+}
-+
-+static const char *iio_event_group_name = "events";
-+int iio_device_register_eventset(struct iio_dev *indio_dev)
-+{
-+	struct iio_dev_attr *p;
-+	int ret = 0, attrcount_orig = 0, attrcount, attrn;
-+	struct attribute **attr;
-+
-+	if (!(indio_dev->info->event_attrs ||
-+	      iio_check_for_dynamic_events(indio_dev)))
-+		return 0;
-+
-+	indio_dev->event_interface =
-+		kzalloc(sizeof(struct iio_event_interface), GFP_KERNEL);
-+	if (indio_dev->event_interface == NULL) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+
-+	iio_setup_ev_int(indio_dev->event_interface);
-+	if (indio_dev->info->event_attrs != NULL) {
-+		attr = indio_dev->info->event_attrs->attrs;
-+		while (*attr++ != NULL)
-+			attrcount_orig++;
-+	}
-+	attrcount = attrcount_orig;
-+	if (indio_dev->channels) {
-+		ret = __iio_add_event_config_attrs(indio_dev);
-+		if (ret < 0)
-+			goto error_free_setup_event_lines;
-+		attrcount += ret;
-+	}
-+
-+	indio_dev->event_interface->group.name = iio_event_group_name;
-+	indio_dev->event_interface->group.attrs = kcalloc(attrcount + 1,
-+							  sizeof(indio_dev->event_interface->group.attrs[0]),
-+							  GFP_KERNEL);
-+	if (indio_dev->event_interface->group.attrs == NULL) {
-+		ret = -ENOMEM;
-+		goto error_free_setup_event_lines;
-+	}
-+	if (indio_dev->info->event_attrs)
-+		memcpy(indio_dev->event_interface->group.attrs,
-+		       indio_dev->info->event_attrs->attrs,
-+		       sizeof(indio_dev->event_interface->group.attrs[0])
-+		       *attrcount_orig);
-+	attrn = attrcount_orig;
-+	/* Add all elements from the list. */
-+	list_for_each_entry(p,
-+			    &indio_dev->event_interface->dev_attr_list,
-+			    l)
-+		indio_dev->event_interface->group.attrs[attrn++] =
-+			&p->dev_attr.attr;
-+	indio_dev->groups[indio_dev->groupcounter++] =
-+		&indio_dev->event_interface->group;
-+
-+	return 0;
-+
-+error_free_setup_event_lines:
-+	__iio_remove_event_config_attrs(indio_dev);
-+	kfree(indio_dev->event_interface);
-+error_ret:
-+
-+	return ret;
-+}
-+
-+void iio_device_unregister_eventset(struct iio_dev *indio_dev)
-+{
-+	if (indio_dev->event_interface == NULL)
-+		return;
-+	__iio_remove_event_config_attrs(indio_dev);
-+	kfree(indio_dev->event_interface->group.attrs);
-+	kfree(indio_dev->event_interface);
-+}
+ struct iio_buffer *iio_sw_rb_allocate(struct iio_dev *indio_dev);
+ void iio_sw_rb_free(struct iio_buffer *ring);
+ #endif /* _IIO_RING_SW_H_ */
 -- 
 1.7.7.3
+
+
