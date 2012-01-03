@@ -1,66 +1,81 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from va3ehsobe004.messaging.microsoft.com ([216.32.180.14]:39572
-	"EHLO VA3EHSOBE004.bigfish.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751574Ab2ACN7m (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Jan 2012 08:59:42 -0500
+Return-Path: <lars@metafoo.de>
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Greg Kroah-Hartman <gregkh@suse.de>
 CC: Jonathan Cameron <jic23@kernel.org>, <devel@driverdev.osuosl.org>,
 	<linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 6/6] staging:iio:events: Use non-atmoic bitops
-Date: Tue, 3 Jan 2012 14:59:42 +0100
-Message-ID: <1325599182-5376-6-git-send-email-lars@metafoo.de>
+Subject: [PATCH 5/6] staging:iio:events: Add poll support
+Date: Tue, 3 Jan 2012 14:59:41 +0100
+Message-ID: <1325599182-5376-5-git-send-email-lars@metafoo.de>
 In-Reply-To: <1325599182-5376-1-git-send-email-lars@metafoo.de>
 References: <1325599182-5376-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-We always hold the waitqueue lock when modifying the flags field. So it is safe
-to use the non-atomic bitops here instead of the atomic versions.
-
-The lock has to be held, because we need to clear the busy flag and flush the
-event FIFO in one atomic operation when closing the event file descriptor.
+Add poll support to the event queue. This will allow us to check for pending
+events in a application's event loop using poll() or similar. Since we already
+have support for blocking reads adding poll support as well is trivial.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/industrialio-event.c |    6 +++---
- 1 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/staging/iio/industrialio-event.c |   23 ++++++++++++++++++++++-
+ 1 files changed, 22 insertions(+), 1 deletions(-)
 
 diff --git a/drivers/staging/iio/industrialio-event.c b/drivers/staging/iio/industrialio-event.c
-index 800f67d..66d320b 100644
+index f0c41f1..800f67d 100644
 --- a/drivers/staging/iio/industrialio-event.c
 +++ b/drivers/staging/iio/industrialio-event.c
-@@ -124,7 +124,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
- 	struct iio_event_interface *ev_int = filep->private_data;
+@@ -15,6 +15,7 @@
+ #include <linux/kernel.h>
+ #include <linux/kfifo.h>
+ #include <linux/module.h>
++#include <linux/poll.h>
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+ #include <linux/uaccess.h>
+@@ -57,7 +58,7 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
  
- 	spin_lock(&ev_int->wait.lock);
--	clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
-+	__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
- 	/*
- 	 * In order to maintain a clean state for reopening,
- 	 * clear out any awaiting events. The mask will prevent
-@@ -153,7 +153,7 @@ int iio_event_getfd(struct iio_dev *indio_dev)
- 		return -ENODEV;
+ 		copied = kfifo_put(&ev_int->det_events, &ev);
+ 		if (copied != 0)
+-			wake_up_locked(&ev_int->wait);
++			wake_up_locked_poll(&ev_int->wait, POLLIN);
+ 	}
+ 	spin_unlock(&ev_int->wait.lock);
  
- 	spin_lock(&ev_int->wait.lock);
--	if (test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
-+	if (__test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
- 		spin_unlock(&ev_int->wait.lock);
- 		return -EBUSY;
- 	}
-@@ -162,7 +162,7 @@ int iio_event_getfd(struct iio_dev *indio_dev)
- 				&iio_event_chrdev_fileops, ev_int, O_RDONLY);
- 	if (fd < 0) {
- 		spin_lock(&ev_int->wait.lock);
--		clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
-+		__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
- 		spin_unlock(&ev_int->wait.lock);
- 	}
- 	return fd;
+@@ -65,6 +66,25 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+ }
+ EXPORT_SYMBOL(iio_push_event);
+ 
++/**
++ * iio_event_poll() - poll the event queue to find out if it has data
++ */
++static unsigned int iio_event_poll(struct file *filep,
++			     struct poll_table_struct *wait)
++{
++	struct iio_event_interface *ev_int = filep->private_data;
++	unsigned int events = 0;
++
++	poll_wait(filep, &ev_int->wait, wait);
++
++	spin_lock(&ev_int->wait.lock);
++	if (!kfifo_is_empty(&ev_int->det_events))
++		events = POLLIN | POLLRDNORM;
++	spin_unlock(&ev_int->wait.lock);
++
++	return events;
++}
++
+ static ssize_t iio_event_chrdev_read(struct file *filep,
+ 				     char __user *buf,
+ 				     size_t count,
+@@ -118,6 +138,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+ 
+ static const struct file_operations iio_event_chrdev_fileops = {
+ 	.read =  iio_event_chrdev_read,
++	.poll =  iio_event_poll,
+ 	.release = iio_event_chrdev_release,
+ 	.owner = THIS_MODULE,
+ 	.llseek = noop_llseek,
 -- 
 1.7.7.3
-
-
