@@ -1,57 +1,30 @@
-Return-Path: <glikely@secretlab.ca>
-Sender: Grant Likely <glikely@secretlab.ca>
-Date: Mon, 2 Jan 2012 01:58:51 -0700
-From: Grant Likely <grant.likely@secretlab.ca>
-To: Olof Johansson <olof@lixom.net>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>, Greg Kroah-Hartman <gregkh@suse.de>,
-	linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
-Subject: Re: [PATCH] staging:iio: isl29018: add of_match table for
- device-tree probing
-Message-ID: <20120102085851.GL18381@ponder.secretlab.ca>
-References: <1324608283-3128-1-git-send-email-olof@lixom.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-01.vtx.ch ([194.38.175.90]:36852 "EHLO smtp-01.vtx.ch"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751627Ab2ACJg7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 3 Jan 2012 04:36:59 -0500
+Message-ID: <4F02CC55.9080206@flytec.ch>
+Date: Tue, 03 Jan 2012 10:37:25 +0100
+From: Duss Pirmin <pirmin.duss@flytec.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1324608283-3128-1-git-send-email-olof@lixom.net>
-List-ID: <linux-iio@vger.kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [Patch v2.1] Adds support for the Texas Instruments ADS1110 adc.
+References: <Prayer.1.3.4.1112230809290.970@hermes-2.csi.cam.ac.uk> <1324630944-3668-1-git-send-email-pirmin.duss@flytec.ch> <4EFF699B.1000802@kernel.org>
+In-Reply-To: <4EFF699B.1000802@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Dec 22, 2011 at 06:44:43PM -0800, Olof Johansson wrote:
-> As simple as can be right now; just one ID and no custom properties to parse.
-> 
-> Signed-off-by: Olof Johansson <olof@lixom.net>
+>> +
+>> +	/* read the config register from the chip */
+>> +	ret = ads1110_i2c_read_config(chip,&chip->config);
+>> +	if (ret != 3)
+>> +		goto error_free_dev;
+> Any chance this could be ret == 2?  If so you are returning a non
+> error in a case where there has been one...  Odd case, but might as
+> well get it right.
 
-Acked-by: Grant Likely <grant.likely@secretlab.ca>
+ads1110_i2c_read_config returns number of bytes read or a negative error 
+value. If we could not read three bytes there was an error.
 
-> ---
->  drivers/staging/iio/light/isl29018.c |    7 +++++++
->  1 files changed, 7 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-> index 849d6a5..38ec52b 100644
-> --- a/drivers/staging/iio/light/isl29018.c
-> +++ b/drivers/staging/iio/light/isl29018.c
-> @@ -592,11 +592,18 @@ static const struct i2c_device_id isl29018_id[] = {
->  
->  MODULE_DEVICE_TABLE(i2c, isl29018_id);
->  
-> +static const struct of_device_id isl29018_of_match[] = {
-> +	{ .compatible = "invn,isl29018", },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, isl29018_of_match);
-> +
->  static struct i2c_driver isl29018_driver = {
->  	.class	= I2C_CLASS_HWMON,
->  	.driver	 = {
->  			.name = "isl29018",
->  			.owner = THIS_MODULE,
-> +			.of_match_table = isl29018_of_match,
->  		    },
->  	.probe	 = isl29018_probe,
->  	.remove	 = __devexit_p(isl29018_remove),
-> -- 
-> 1.7.8.GIT
-> 
-> _______________________________________________
-> devicetree-discuss mailing list
-> devicetree-discuss@lists.ozlabs.org
-> https://lists.ozlabs.org/listinfo/devicetree-discuss
