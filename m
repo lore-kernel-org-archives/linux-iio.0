@@ -1,56 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:49911 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754179Ab2ACRRE convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Jan 2012 12:17:04 -0500
-References: <1325602497-7030-1-git-send-email-lars@metafoo.de> <1325602497-7030-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1325602497-7030-2-git-send-email-lars@metafoo.de>
+Received: from am1ehsobe002.messaging.microsoft.com ([213.199.154.205]:2614
+	"EHLO AM1EHSOBE002.bigfish.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752572Ab2ACN7P (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Jan 2012 08:59:15 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Greg Kroah-Hartman <gregkh@suse.de>
+CC: Jonathan Cameron <jic23@kernel.org>, <devel@driverdev.osuosl.org>,
+	<linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/6] staging:iio: Update iio_event_interface documentation
+Date: Tue, 3 Jan 2012 14:59:37 +0100
+Message-ID: <1325599182-5376-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 2/3] staging:iio: Add missing event code extract macros
-From: Jonathan Cameron <jic23@cam.ac.uk>
-Date: Tue, 03 Jan 2012 17:16:51 +0000
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Message-ID: <7bf32d13-da04-4ce0-a563-392972cfe25f@email.android.com>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The documentation for the iio_event_interface does not match the actual struct
+anymore. This patch removes the documentation for non-existing fields and adds
+documentation for missing fields.
 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/industrialio-core.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-Lars-Peter Clausen <lars@metafoo.de> wrote:
-
->Add macros for extracting whether the event is for a differential
->channel and
->the second channel number from the event code. These were the only two
->fields
->which did not have such an macro yet.
->
->Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
- Acked-by: Jonathan Cameron <jic23@kernel.org> 
->---
-> drivers/staging/iio/events.h |    2 ++
-> 1 files changed, 2 insertions(+), 0 deletions(-)
->
->diff --git a/drivers/staging/iio/events.h
->b/drivers/staging/iio/events.h
->index 416800e..c25f0e3 100644
->--- a/drivers/staging/iio/events.h
->+++ b/drivers/staging/iio/events.h
->@@ -97,7 +97,9 @@ enum iio_event_direction {
->/* Event code number extraction depends on which type of event we have.
->  * Perhaps review this function in the future*/
-> #define IIO_EVENT_CODE_EXTRACT_CHAN(mask) ((__s16)(mask & 0xFFFF))
->+#define IIO_EVENT_CODE_EXTRACT_CHAN2(mask) ((__s16)(((mask) >> 16) &
->0xFFFF))
-> 
-> #define IIO_EVENT_CODE_EXTRACT_MODIFIER(mask) ((mask >> 40) & 0xFF)
->+#define IIO_EVENT_CODE_EXTRACT_DIFF(mask) (((mask) >> 55) & 0x1)
-> 
-> #endif
->-- 
->1.7.7.3
-
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 19f897f..580f373 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -112,13 +112,14 @@ struct iio_detected_event_list {
+ 
+ /**
+  * struct iio_event_interface - chrdev interface for an event line
+- * @dev:		device assocated with event interface
+  * @wait:		wait queue to allow blocking reads of events
+  * @event_list_lock:	mutex to protect the list of detected events
+  * @det_events:		list of detected events
+  * @max_events:		maximum number of events before new ones are dropped
+  * @current_events:	number of events in detected list
++ * @dev_attr_list:	list of event interface sysfs attribute
+  * @flags:		file operations related flags including busy flag.
++ * @group:		event interface sysfs attribute group
+  */
+ struct iio_event_interface {
+ 	wait_queue_head_t			wait;
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.7.7.3
+
+
