@@ -1,94 +1,54 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: pirmin.duss@flytec.ch,
-	lars@metafoo.de,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 1/6] staging:iio:adc:ad7192 unwind use of is_visible for attribute group.
-Date: Sat,  7 Jan 2012 10:25:16 +0000
-Message-Id: <1325931921-14547-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1325931921-14547-1-git-send-email-jic23@kernel.org>
-References: <1325931921-14547-1-git-send-email-jic23@kernel.org>
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:34192 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751006Ab2AGKH0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 7 Jan 2012 05:07:26 -0500
+Message-ID: <4F081977.2000807@cam.ac.uk>
+Date: Sat, 07 Jan 2012 10:07:51 +0000
+From: Jonathan Cameron <jic23@cam.ac.uk>
+MIME-Version: 1.0
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Greg Kroah-Hartman <gregkh@suse.de>,
+	"arnd@arndb.de" <arnd@arndb.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: No pull request for IIO this merge window (out of staging)
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-It saves a couple of lines of code but reduces simplicity of code.
-I generally wish to discourage use of is_visible throughout IIO.
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/adc/ad7192.c |   43 ++++++++++++++++++++++---------------
- 1 files changed, 25 insertions(+), 18 deletions(-)
+I thought I should write a quick email updating people on the current
+situation.
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index dfeb4ba..881c5e5 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -824,25 +824,20 @@ static struct attribute *ad7192_attributes[] = {
- 	NULL
- };
- 
--static mode_t ad7192_attr_is_visible(struct kobject *kobj,
--				     struct attribute *attr, int n)
--{
--	struct device *dev = container_of(kobj, struct device, kobj);
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ad7192_state *st = iio_priv(indio_dev);
--
--	mode_t mode = attr->mode;
--
--	if ((st->devid != ID_AD7195) &&
--		(attr == &iio_dev_attr_ac_excitation_en.dev_attr.attr))
--		mode = 0;
--
--	return mode;
--}
--
- static const struct attribute_group ad7192_attribute_group = {
- 	.attrs = ad7192_attributes,
--	.is_visible = ad7192_attr_is_visible,
-+};
-+
-+static struct attribute *ad7195_attributes[] = {
-+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-+	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
-+	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
-+	&iio_dev_attr_bridge_switch_en.dev_attr.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group ad7195_attribute_group = {
-+	.attrs = ad7195_attributes,
- };
- 
- static int ad7192_read_raw(struct iio_dev *indio_dev,
-@@ -972,6 +967,15 @@ static const struct iio_info ad7192_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
-+static const struct iio_info ad7195_info = {
-+	.read_raw = &ad7192_read_raw,
-+	.write_raw = &ad7192_write_raw,
-+	.write_raw_get_fmt = &ad7192_write_raw_get_fmt,
-+	.attrs = &ad7195_attribute_group,
-+	.validate_trigger = ad7192_validate_trigger,
-+	.driver_module = THIS_MODULE,
-+};
-+
- #define AD7192_CHAN_DIFF(_chan, _chan2, _name, _address, _si)		\
- 	{ .type = IIO_VOLTAGE,						\
- 	  .differential = 1,						\
-@@ -1064,7 +1068,10 @@ static int __devinit ad7192_probe(struct spi_device *spi)
- 	indio_dev->channels = ad7192_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(ad7192_channels);
- 	indio_dev->available_scan_masks = st->available_scan_masks;
--	indio_dev->info = &ad7192_info;
-+	if (st->devid == ID_AD7195)
-+		indio_dev->info = &ad7195_info;
-+	else
-+		indio_dev->info = &ad7192_info;
- 
- 	for (i = 0; i < indio_dev->num_channels; i++)
- 		st->available_scan_masks[i] = (1 << i) | (1 <<
--- 
-1.7.7.4
+Original plan was to send Linus a pull request for the basic core
+support and 'pull' in-kernel interfaces.  When I backported the 'pull'
+in-kernel interfaces to the staging tree (for speed they had been
+developed against the simpler core support rather than the main version
+of IIO in staging - seemed a good idea at the time), Greg KH took a look
+and has raised some significant issues that we still need to address.
+The sticky point is a disagreement about the best means of handling
+mappings between channels on a child device and the IIO device.
+
+Hence I have no intention of sending Linus a pull request for moving
+any of IIO out of staging until these issues have been sorted out.
+
+Saddly my time has now become rather more restricted so I am taking
+longer to persue these issues.  Things aren't too bad as others have
+stepped up to assist with the day to day burden of patch review and work
+on the staging tree (thanks!).
+
+Anyhow there have been lots of nice cleanups of the staging tree and
+new work there, so it's not as though things aren't progressing. They
+merely aren't going entirely according to plan!  Lots of good work
+coming from Lars-Peter at ADI in particular. We also have our first SoC
+adc driver from Maxime Ripard and some TI discrete device support from
+Duss Pirmin.
+
+Thanks
+
+Jonathan
+
