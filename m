@@ -1,44 +1,48 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4F0F356A.9000109@kernel.org>
-Date: Thu, 12 Jan 2012 19:32:58 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk
-Subject: Re: [PATCH 1/3] staging: iio: core: fix argument of iio_buffer_register
- (must be const)
-References: <1326124974-7288-1-git-send-email-manuel.stahl@iis.fraunhofer.de> <4F0F34F4.9070108@kernel.org>
-In-Reply-To: <4F0F34F4.9070108@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from relay02-haj2.antispameurope.com ([83.246.65.52]:34289 "EHLO
+	relay02-haj2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932188Ab2AIQIq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Jan 2012 11:08:46 -0500
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Subject: [PATCH 3/3] staging: iio: core: add error message when buffer length is zero
+Date: Mon,  9 Jan 2012 17:02:54 +0100
+Message-Id: <1326124974-7288-3-git-send-email-manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <1326124974-7288-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+References: <1326124974-7288-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+To: jic23@cam.ac.uk
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01/12/2012 07:31 PM, Jonathan Cameron wrote:
-> Oops. One trivial point here.  Perhaps the commit message could make it
-> clear that this is for the stub?  Had me briefly confused.  Either way
-> fine with me.
-> 
-> On 01/09/2012 04:02 PM, Manuel Stahl wrote:
->> Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-> Acked-by: Jonathan Cameron <jic23@cam.ac.uk>
-Sorry, finger memory.
-Acked-by: Jonathan Cameron <jic23@kernel.org>
->> ---
->>  drivers/staging/iio/buffer.h |    4 ++--
->>  1 files changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/staging/iio/buffer.h b/drivers/staging/iio/buffer.h
->> index 44593b2..1a35006 100644
->> --- a/drivers/staging/iio/buffer.h
->> +++ b/drivers/staging/iio/buffer.h
->> @@ -197,8 +197,8 @@ int iio_sw_buffer_preenable(struct iio_dev *indio_dev);
->>  #else /* CONFIG_IIO_BUFFER */
->>  
->>  static inline int iio_buffer_register(struct iio_dev *indio_dev,
->> -					   struct iio_chan_spec *channels,
->> -					   int num_channels)
->> +				      const struct iio_chan_spec *channels,
->> +				      int num_channels)
->>  {
->>  	return 0;
->>  }
-> 
+Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+---
+ drivers/staging/iio/industrialio-buffer.c |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c
+index f5c4999..c789d39 100644
+--- a/drivers/staging/iio/industrialio-buffer.c
++++ b/drivers/staging/iio/industrialio-buffer.c
+@@ -426,6 +426,17 @@ ssize_t iio_buffer_store_enable(struct device *dev,
+ 		goto done;
+ 	}
+ 	if (requested_state) {
++		if (buffer->access->get_length) {
++			ret = buffer->access->get_length(buffer);
++			if (ret <= 0) {
++				printk(KERN_INFO
++				       "Buffer not started: "
++				       "buffer length must be greater than zero\n");
++				ret = -EINVAL;
++				goto error_ret;
++			}
++		}
++
+ 		if (indio_dev->setup_ops->preenable) {
+ 			ret = indio_dev->setup_ops->preenable(indio_dev);
+ 			if (ret) {
+-- 
+1.7.3.rc1
+
