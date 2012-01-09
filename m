@@ -1,41 +1,39 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <4F0C0B8A.7040309@metafoo.de>
-Date: Tue, 10 Jan 2012 10:57:30 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Pirmin Duss <pirmin.duss@flytec.ch>
-CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH V3.1] adds support for Texas Instruments ads1110 adc
-References: <4F059EFC.5020902@metafoo.de> <1325842505-17619-1-git-send-email-pirmin.duss@flytec.ch>
-In-Reply-To: <1325842505-17619-1-git-send-email-pirmin.duss@flytec.ch>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from relay02-haj2.antispameurope.com ([83.246.65.52]:34288 "EHLO
+	relay02-haj2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932255Ab2AIQIq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Jan 2012 11:08:46 -0500
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Subject: [PATCH 1/3] staging: iio: core: fix argument of iio_buffer_register (must be const)
+Date: Mon,  9 Jan 2012 17:02:52 +0100
+Message-Id: <1326124974-7288-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+To: jic23@cam.ac.uk
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01/06/2012 10:35 AM, Pirmin Duss wrote:
-> From: Pirmin Duss (Flytec) <pirmin.duss@flytec.ch>
-> 
-[...]
-> +
-> +static struct i2c_driver ads1110_driver = {
-> +	.driver = {
-> +		.name = "ads1110",
-> +	},
-> +	.probe = ads1110_probe,
-> +	.remove = __devexit_p(ads1110_remove),
-> +	.id_table = ads1110_id,
-> +};
-> +
-> +static int __init ads1110_init(void)
-> +{
-> +	return i2c_add_driver(&ads1110_driver);
-> +}
-> +module_init(ads1110_init);
-> +
-> +static void __exit ads1110_exit(void)
-> +{
-> +	i2c_del_driver(&ads1110_driver);
-> +}
-> +module_exit(ads1110_exit);
+Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+---
+ drivers/staging/iio/buffer.h |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-Now that staging-next contains this macro please use
-module_i2c_driver(ads1110_driver) here.
+diff --git a/drivers/staging/iio/buffer.h b/drivers/staging/iio/buffer.h
+index 44593b2..1a35006 100644
+--- a/drivers/staging/iio/buffer.h
++++ b/drivers/staging/iio/buffer.h
+@@ -197,8 +197,8 @@ int iio_sw_buffer_preenable(struct iio_dev *indio_dev);
+ #else /* CONFIG_IIO_BUFFER */
+ 
+ static inline int iio_buffer_register(struct iio_dev *indio_dev,
+-					   struct iio_chan_spec *channels,
+-					   int num_channels)
++				      const struct iio_chan_spec *channels,
++				      int num_channels)
+ {
+ 	return 0;
+ }
+-- 
+1.7.3.rc1
+
