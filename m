@@ -1,144 +1,402 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from na3sys009aog110.obsmtp.com ([74.125.149.203]:46063 "EHLO
-	na3sys009aog110.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1758847Ab2AMTGG convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 13 Jan 2012 14:06:06 -0500
-Received: by obbwc12 with SMTP id wc12so2642135obb.15
-        for <linux-iio@vger.kernel.org>; Fri, 13 Jan 2012 11:06:04 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <Prayer.1.3.4.1201131227560.21317@hermes-2.csi.cam.ac.uk>
-References: <CAHFNHeW=XM0=c-PiOtttzgL68jrAwPyeM-iZMQffVx2yq3BN-g@mail.gmail.com>
-	<4F0F3DFD.6010106@metafoo.de>
-	<CAHFNHeW79qOv8=VudvRZsbR3C4DcMhWA-bqhC1k+R7dj5XNYqw@mail.gmail.com>
-	<4F0F5FC4.3080008@metafoo.de>
-	<CAHFNHeU3SgdgOqM_4z5Ys2w06dJ2+r7xu-VzT5-Fsk4a9QNMtA@mail.gmail.com>
-	<Prayer.1.3.4.1201131227560.21317@hermes-2.csi.cam.ac.uk>
-Date: Fri, 13 Jan 2012 11:06:03 -0800
-Message-ID: <CAHFNHeXutmUdAA17f8xJERitrQHAie3CYNmA3xDvS66DC1GmEw@mail.gmail.com>
-Subject: Re: drv2665 driver placement query
-From: "Palande, Ameya" <ameya.palande@ti.com>
-To: "J.I. Cameron" <jic23@cam.ac.uk>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtp-03.vtx.ch ([194.38.175.92]:49667 "EHLO smtp-03.vtx.ch"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752933Ab2AKHTe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 11 Jan 2012 02:19:34 -0500
+From: Pirmin Duss <pirmin.duss@flytec.ch>
+To: linux-iio@vger.kernel.org
+Cc: Duss Pirmin <pirmin.duss@flytec.ch>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH V3.2] adds support for Texas Instruments ads1110 adc
+Date: Wed, 11 Jan 2012 08:19:56 +0100
+Message-Id: <1326266396-7689-1-git-send-email-pirmin.duss@flytec.ch>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Jan 13, 2012 at 4:27 AM, J.I. Cameron <jic23@cam.ac.uk> wrote:
-> On Jan 12 2012, Palande, Ameya wrote:
->
->> On Thu, Jan 12, 2012 at 2:33 PM, Lars-Peter Clausen <lars@metafoo.de=
->
->> wrote:
->>>
->>> On 01/12/2012 11:05 PM, Palande, Ameya wrote:
->>>>
->>>> Hi Lars,
->>>>
->>>> On Thu, Jan 12, 2012 at 12:09 PM, Lars-Peter Clausen <lars@metafoo=
-=2Ede>
->>>> wrote:
->>>>>
->>>>> Hi,
->>>>>
->>>>> On 01/12/2012 08:39 PM, Palande, Ameya wrote:
->>>>>>
->>>>>> Hi,
->>>>>>
->>>>>> I submitted a driver for Texas Instruments DRV2665 chip for plac=
-ing it
->>>>>> under "drivers/misc".
->>>>>> But I guess it is more appropriate to put it under
->>>>>> "drivers/staging/iio"
->>>>>> Reference: https://lkml.org/lkml/2012/1/10/31
->>>>>
->>>>>
->>>>>>
->>>>>> Here is the description of the chip:
->>>>>>
->>>>>> DRV2665 IC drives piezo actuator which enables a wide variety of
->>>>>> high-resolution haptic effects, including feedback localized to
->>>>>> specific areas of the device, as well as vibrations and pulses t=
-hat
->>>>>> change in frequency based on how the user is interacting with th=
-e
->>>>>> device.
->>>>>>
->>>>>> Can you tell me where should I put it under "staging/iio" ?
->>>>>>
->>>>>
->>>>>
->>>>> I had a short look at your driver and it looks to me as if all it=
- does
->>>>> is
->>>>> expose the raw registers as sysfs attributes. So I think one thin=
-g you
->>>>> first
->>>>> have to do is to figure out a generic interface for the device cl=
-ass.
->>>>> How does
->>>>> a application usually use these kinds of devices, how can the int=
-erface
->>>>> be
->>>>> abstracted, so it applies to a wider range of devices of this cla=
-ss and
->>>>> not
->>>>> only to this one specific device.
->>>>
->>>>
->>>> Workflow for using DRV2665 is:
->>>> 1. Set the desired configuration
->>>> 2. Send waveform data to data register
->>>
->>>
->>> Well that's basically the work-flow for every driver ;) Setup confi=
-g,
->>> write data.
->>>
->>> But the data and config also have a meaning. So what is the high-le=
-vel
->>> task a
->>> software want to perform when setting certain up a configuration?
->>
->>
->> Configuration can include:
->> 1. Selecting FIFO or Analog input
->> 2. Selecting timeout period between when the FIFO runs empty and the
->> DRV2665 goes into idle mode
->> 3. Overriding bit for the boost converter and amplifier enables
->> 4. Programing the GAIN control
->>
->>> A good start would probably to break the config register down into =
-it's
->>> different elements and don't expose the raw register anymore.
->>
->>
->> Thank for suggesting it! I will implement that.
->> However my original question is still unanswered: Where should I pla=
-ce
->> this driver in iio?
->
->
-> Any chance of a datasheet? =A0At the moment it looks like something t=
-hat might
-> fit
-> better in either input (stuff is there for force feedback joysticks e=
-tc),
-> or I believe there was some work on a general haptics framework a whi=
-le back
-> (though google implies that kind of disappeard). =A0I'm not against i=
-t going
-> in IIO (probably in a new category) but only if it doesn't fit better
-> elsewhere!
+From: Duss Pirmin <pirmin.duss@flytec.ch>
 
-Unfortunately datasheet is not yet public. Main purpose of this chip
-is to customize the haptics effect.
-IMHO it doesn't fit in input subsystem.
+Version 3.2
+	fixes coding errors found by Lars-Peter Clausen
+	uses the new module_i2c_driver() macro
+Version 3.1
+	patch against staging-next
+Version 3
+	removed boiler plate comments
+	removed table for gain/scale
+	removed trivial wrapper function
+	added locking around access to configuration
+	scale is done via infomask
 
-[Touch event] -> [user space analyzer] -> [drv2665]
+Signed-off-by: Duss Pirmin <pirmin.duss@flytec.ch>
+---
+ drivers/staging/iio/adc/Kconfig   |   10 ++
+ drivers/staging/iio/adc/Makefile  |    1 +
+ drivers/staging/iio/adc/ads1110.c |  322 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 333 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/ads1110.c
 
-User space analyzer component will generate a waveform depending on
-touch event it receives from touchscreen and this is fed to drv2665.
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index d9decea..ab516dd 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -145,6 +145,16 @@ config AD7192
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7192.
+ 
++config ADS1110
++	tristate "Texas Instruments ADS1110 Analog Digital Converter driver"
++	depends on I2C
++	help
++		Say yes here to build support for Texas Instruments ads1110 ADC.
++		Provides direct access via sysfs.
++
++		To compile this driver as a module, choose M here: the
++		module will be called ads1110.
++
+ config ADT7310
+ 	tristate "Analog Devices ADT7310 temperature sensor driver"
+ 	depends on SPI
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index ceee7f3..5551e03 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -34,6 +34,7 @@ obj-$(CONFIG_AD7780) += ad7780.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+ obj-$(CONFIG_AD7816) += ad7816.o
+ obj-$(CONFIG_AD7192) += ad7192.o
++obj-$(CONFIG_ADS1110) += ads1110.o
+ obj-$(CONFIG_ADT7310) += adt7310.o
+ obj-$(CONFIG_ADT7410) += adt7410.o
+ obj-$(CONFIG_AD7280) += ad7280a.o
+diff --git a/drivers/staging/iio/adc/ads1110.c b/drivers/staging/iio/adc/ads1110.c
+new file mode 100644
+index 0000000..69b4d52
+--- /dev/null
++++ b/drivers/staging/iio/adc/ads1110.c
+@@ -0,0 +1,322 @@
++/*
++ * Driver for Texas Instruments ads1110 ADC.
++ *
++ * Datashhet con be found on: http://www.ti.com/lit/ds/symlink/ads1110.pdf
++ *
++ * Copyright 2011 Flytec AG.
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/err.h>
++
++#include "../iio.h"
++#include "../sysfs.h"
++
++#define ADS1110_DATA_BYTES		2
++#define ADS1110_CONFIG_BYTES		3
++
++#define ADS1110_CYC_MASK		0x0C
++#define ADS1110_CYC_SHIFT		2
++#define ADS1110_CYC_15			3
++#define ADS1110_CYC_30			2
++#define ADS1110_CYC_60			1
++#define ADS1110_CYC_240			0
++
++#define ADS1110_PGA_MASK		0x03
++#define ADS1110_PGA_COUNT		4
++
++struct ads1110_chip_info {
++	struct i2c_client	*client;
++	u8	config;
++};
++
++static const unsigned int ads1110_frequencies[] = {
++	[ADS1110_CYC_240] = 240,
++	[ADS1110_CYC_60] = 60,
++	[ADS1110_CYC_30] = 30,
++	[ADS1110_CYC_15] = 15,
++};
++
++static const struct iio_chan_spec ads1110_channels[] = {
++	IIO_CHAN(IIO_VOLTAGE, 0, 1, 0, NULL, 0, 0,
++		(IIO_CHAN_INFO_SCALE_SEPARATE_BIT), 0, 0,
++		IIO_ST('s', 16, 16, 0), 0),
++};
++
++static int ads1110_i2c_read_config(struct ads1110_chip_info *chip, u8 *data)
++{
++	int ret = 0;
++	u8 tmp[ADS1110_CONFIG_BYTES];
++
++	ret = i2c_master_recv(chip->client, tmp, ADS1110_CONFIG_BYTES);
++	if (ret != ADS1110_CONFIG_BYTES) {
++		dev_err(&chip->client->dev, "I2C read error\n");
++		return -EIO;
++	}
++
++	*data = tmp[2];
++
++	return 0;
++}
++
++static int ads1110_i2c_read_data(struct ads1110_chip_info *chip, int *data)
++{
++	int ret = 0;
++	__be16 tmp;
++
++	ret = i2c_master_recv(chip->client, (char *)&tmp, ADS1110_DATA_BYTES);
++	if (ret != ADS1110_DATA_BYTES) {
++		dev_err(&chip->client->dev, "I2C read error\n");
++		return -EIO;
++	}
++
++	*data = be16_to_cpu(tmp);
++
++	return 0;
++}
++
++static ssize_t ads1110_read_frequency(struct device *dev,
++				      struct device_attribute *attr,
++				      char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ads1110_chip_info *st = iio_priv(indio_dev);
++	u8 cfg;
++
++	mutex_lock(&indio_dev->mlock);
++	cfg = ((st->config & ADS1110_CYC_MASK) >> ADS1110_CYC_SHIFT);
++	mutex_unlock(&indio_dev->mlock);
++
++	return sprintf(buf, "%d\n", ads1110_frequencies[cfg]);
++}
++
++static ssize_t ads1110_write_frequency(struct device *dev,
++				       struct device_attribute *attr,
++				       const char *buf,
++				       size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct ads1110_chip_info *st = iio_priv(indio_dev);
++	unsigned long lval;
++	int ret, i;
++
++	mutex_lock(&indio_dev->mlock);
++	ret = kstrtoul(buf, 10, &lval);
++	if (ret)
++		goto out;
++
++	for (i = 0; i < ARRAY_SIZE(ads1110_frequencies); i++)
++		if (lval == ads1110_frequencies[i])
++			break;
++
++	if (i == ARRAY_SIZE(ads1110_frequencies)) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	st->config &= ~ADS1110_CYC_MASK;
++	st->config |= (i << ADS1110_CYC_SHIFT);
++
++	ret = i2c_master_send(st->client, &st->config, 1);
++	if (ret < 0) {
++		ret = -EIO;
++		dev_err(&st->client->dev, "I2C write error\n");
++	}
++
++out:
++	mutex_unlock(&indio_dev->mlock);
++	return ret < 0 ? ret : len;
++}
++
++static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
++		ads1110_read_frequency,
++		ads1110_write_frequency);
++
++static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("240 60 30 15");
++
++static IIO_CONST_ATTR(in_in_scale_available, "1 2 4 8");
++
++static int ads1110_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val,
++			    int *val2,
++			    long mask)
++{
++	struct ads1110_chip_info *st = iio_priv(indio_dev);
++	int ret, data, gain;
++
++	switch (mask) {
++	case 0:
++		mutex_lock(&indio_dev->mlock);
++		ret = ads1110_i2c_read_data(st, &data);
++		if (ret < 0)
++			return -EIO;
++
++		mutex_unlock(&indio_dev->mlock);
++
++		*val = data;
++
++		return IIO_VAL_INT;
++
++	case (IIO_CHAN_INFO_SCALE):
++
++		mutex_lock(&indio_dev->mlock);
++		gain = 1 << (st->config & ADS1110_PGA_MASK);
++		mutex_unlock(&indio_dev->mlock);
++
++		*val = gain;
++
++		return IIO_VAL_INT;
++	}
++	return -EINVAL;
++}
++
++static int ads1110_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val,
++			     int val2,
++			     long mask)
++{
++	struct ads1110_chip_info *st = iio_priv(indio_dev);
++	int ret, i;
++	unsigned int tmp;
++
++	mutex_lock(&indio_dev->mlock);
++	switch (mask) {
++	case (IIO_CHAN_INFO_SCALE):
++		ret = -EINVAL;
++		for (i = 0; i < ADS1110_PGA_COUNT; i++) {
++			if (val == (1 << i)) {
++				tmp = st->config;
++
++				st->config &= ~ADS1110_PGA_MASK;
++				st->config |= i;
++
++				if (tmp != st->config) {
++					ret = i2c_master_send(st->client,
++						&st->config, 1);
++					if (ret < 0) {
++						ret = -EIO;
++						dev_err(&st->client->dev,
++							"I2C write error\n");
++						goto out;
++					}
++				}
++				ret = 0;
++
++				break;
++			}
++		}
++		break;
++	default:
++		ret = -EINVAL;
++	}
++out:
++	mutex_unlock(&indio_dev->mlock);
++	return ret;
++}
++
++
++static struct attribute *ads1110_attributes[] = {
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	&iio_dev_attr_sampling_frequency.dev_attr.attr,
++	&iio_const_attr_in_in_scale_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ads1110_attribute_group = {
++	.attrs = ads1110_attributes,
++};
++
++static const struct iio_info ads1110_info = {
++	.attrs = &ads1110_attribute_group,
++	.read_raw = &ads1110_read_raw,
++	.write_raw = &ads1110_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int __devinit ads1110_probe(struct i2c_client *client,
++				   const struct i2c_device_id *id)
++{
++	int ret;
++	struct ads1110_chip_info *chip;
++	struct iio_dev *indio_dev;
++
++	indio_dev = iio_allocate_device(sizeof(*chip));
++	if (indio_dev == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++	chip = iio_priv(indio_dev);
++
++	/* this is only used for device removal purposes  */
++	i2c_set_clientdata(client, indio_dev);
++
++	chip->client = client;
++
++	/* Establish that the iio_dev is a child of the i2c device */
++	indio_dev->name = id->name;
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &ads1110_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ads1110_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ads1110_channels);
++
++	/* read the config register from the chip */
++	ret = ads1110_i2c_read_config(chip, &chip->config);
++	if (ret < 0)
++		goto error_free_dev;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_free_dev;
++
++	dev_err(&client->dev, "%s ADC registered.\n", id->name);
++
++	return 0;
++
++error_free_dev:
++	iio_free_device(indio_dev);
++	kfree(chip);
++error_ret:
++	return ret;
++}
++
++static int __devexit ads1110_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++	iio_free_device(indio_dev);
++
++	return 0;
++}
++
++static const struct i2c_device_id ads1110_id[] = {
++	{ "ads1110", 0x00 },
++	{},
++};
++
++MODULE_DEVICE_TABLE(i2c, ads1110_id);
++
++static struct i2c_driver ads1110_driver = {
++	.driver = {
++		.name = "ads1110",
++	},
++	.probe = ads1110_probe,
++	.remove = __devexit_p(ads1110_remove),
++	.id_table = ads1110_id,
++};
++
++module_i2c_driver(ads1110_driver);
++
++MODULE_AUTHOR("Duss Pirmin <pirmin.duss@flytec.ch>");
++MODULE_DESCRIPTION("Texas Instruments ads1110 adc driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.7.2.5
 
-Cheers,
-Ameya.
