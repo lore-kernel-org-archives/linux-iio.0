@@ -1,68 +1,115 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4F252456.4040700@kernel.org>
-Date: Sun, 29 Jan 2012 10:49:58 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
+Return-Path: <SRS0=Ypv7=7Y=gmx.de=g.liakhovetski@srs.kundenserver.de>
+Date: Fri, 13 Jan 2012 10:07:19 +0100 (CET)
+From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
- Michael Hennerich <michael.hennerich@analog.com>,
- linux-iio@vger.kernel.org, device-drivers-devel@blackfin.uclinux.org,
- drivers@analog.com
-Subject: Re: [PATCH v2 6/6] staging:iio:events: Use non-atmoic bitops
-References: <1324290580-17511-1-git-send-email-lars@metafoo.de> <1324290580-17511-6-git-send-email-lars@metafoo.de> <4EEFA5C2.70604@kernel.org>
-In-Reply-To: <4EEFA5C2.70604@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+cc: Greg Kroah-Hartman <gregkh@suse.de>, Jean Delvare <khali@linux-fr.org>,
+    Grant Likely <grant.likely@secretlab.ca>,
+    Jonathan Cameron <jic23@kernel.org>,
+    Michael Hennerich <Michael.Hennerich@analog.com>,
+    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+    linux-i2c@vger.kernel.org, spi-devel-general@lists.sourceforge.net
+Subject: Re: [PATCH 1/5] drivercore: Generalize module_platform_driver
+In-Reply-To: <1321434819-23678-2-git-send-email-lars@metafoo.de>
+Message-ID: <Pine.LNX.4.64.1201131003270.29680@axis700.grange>
+References: <1321434819-23678-1-git-send-email-lars@metafoo.de>
+ <1321434819-23678-2-git-send-email-lars@metafoo.de>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-On 12/19/2011 08:59 PM, Jonathan Cameron wrote:
-> On 12/19/2011 10:29 AM, Lars-Peter Clausen wrote:
->> We always hold the waitqueue lock when modifying the flags field. So it is safe
->> to use the non-atomic bitops here instead of the atomic versions.
->>
->> The lock has to be held, because we need to clear the busy flag and flush the
->> event fifo in one atomic operation when closing the event file descriptor.
-> Good spot.  Glad to be rid of these.  Thanks for doing this series, all
-> excellent tidying up and general reworking!
-Have these gone to Greg?  Sorry, have lost track.
+I didn't find this patch either in "next" or in Greg's "driver-core" 
+trees, so, couldn't generate a patch and had to comment here:
 
-If not, atmoic -> atomic in the patch title!
+On Wed, 16 Nov 2011, Lars-Peter Clausen wrote:
 
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
->> ---
->>  drivers/staging/iio/industrialio-event.c |    6 +++---
->>  1 files changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/staging/iio/industrialio-event.c b/drivers/staging/iio/industrialio-event.c
->> index 58243d9..5e461e1 100644
->> --- a/drivers/staging/iio/industrialio-event.c
->> +++ b/drivers/staging/iio/industrialio-event.c
->> @@ -124,7 +124,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
->>  	struct iio_event_interface *ev_int = filep->private_data;
->>  
->>  	spin_lock(&ev_int->wait.lock);
->> -	clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
->> +	__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
->>  	/*
->>  	 * In order to maintain a clean state for reopening,
->>  	 * clear out any awaiting events. The mask will prevent
->> @@ -153,7 +153,7 @@ int iio_event_getfd(struct iio_dev *indio_dev)
->>  		return -ENODEV;
->>  
->>  	spin_lock(&ev_int->wait.lock);
->> -	if (test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
->> +	if (__test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
->>  		spin_unlock(&ev_int->wait.lock);
->>  		return -EBUSY;
->>  	}
->> @@ -162,7 +162,7 @@ int iio_event_getfd(struct iio_dev *indio_dev)
->>  				&iio_event_chrdev_fileops, ev_int, O_RDONLY);
->>  	if (fd < 0) {
->>  		spin_lock(&ev_int->wait.lock);
->> -		clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
->> +		__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
->>  		spin_unlock(&ev_int->wait.lock);
->>  	}
->>  	return fd;
+> This patch generalizes the module_platform_driver macro and introduces a new
+> module_driver macro. The module_driver macro takes a driver name, a register
+> and a unregister function for this driver type. Using these it construct the
+> module init and exit sections which register and unregister the driver. Since
+> such init/exit sections are commonly found in drivers this macro can be used
+> to eliminate a lot of boilerplate code.
 > 
+> The macro is not intended to be used by driver modules directly, instead it
+> should be used to generate bus specific macros for registering drivers like
+> the module_platform_driver macro.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+>  include/linux/init.h            |   21 +++++++++++++++++++++
+>  include/linux/platform_device.h |   12 ++----------
+>  2 files changed, 23 insertions(+), 10 deletions(-)
+> 
+> diff --git a/include/linux/init.h b/include/linux/init.h
+> index 9146f39..3e2d238 100644
+> --- a/include/linux/init.h
+> +++ b/include/linux/init.h
+> @@ -346,4 +346,25 @@ void __init parse_early_options(char *cmdline);
+>  #define __exit_p(x) NULL
+>  #endif
+>  
+> +/**
+> + * module_driver() - Helper macro for drivers that don't do anything
+> + * special in module init/exit. This eliminates a lot of boilerplate.
+> + * Each module may only use this macro once, and calling it replaces
+> + * module_init() and module_exit().
+> + * Use this macro to construct bus specific macros for registering
+> + * drivers.
+> + */
+> +#define module_driver(__driver, __register, __unregister) \
+> +static int __init __driver##_init(void) \
+> +{ \
+> +	return __register(&(__driver)); \
+> +} \
+> +module_init(__driver##_init); \
+> +static void __exit __driver##_exit(void) \
+> +{ \
+> +	__unregister(&(__driver)); \
+> +} \
+> +module_exit(__driver##_exit);
+
+Shall we maybe remove the trailing semicolon above?
+
+Thanks
+Guennadi
+
+> +
+>  #endif /* _LINUX_INIT_H */
+> +
+> diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+> index 2a23f7d..165a8d1 100644
+> --- a/include/linux/platform_device.h
+> +++ b/include/linux/platform_device.h
+> @@ -196,16 +196,8 @@ static inline void platform_set_drvdata(struct platform_device *pdev, void *data
+>   * calling it replaces module_init() and module_exit()
+>   */
+>  #define module_platform_driver(__platform_driver) \
+> -static int __init __platform_driver##_init(void) \
+> -{ \
+> -	return platform_driver_register(&(__platform_driver)); \
+> -} \
+> -module_init(__platform_driver##_init); \
+> -static void __exit __platform_driver##_exit(void) \
+> -{ \
+> -	platform_driver_unregister(&(__platform_driver)); \
+> -} \
+> -module_exit(__platform_driver##_exit);
+> +	module_driver(__platform_driver, platform_driver_register, \
+> +			platform_driver_unregister)
+>  
+>  extern struct platform_device *platform_create_bundle(struct platform_driver *driver,
+>  					int (*probe)(struct platform_device *),
+> -- 
+> 1.7.7.1
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> 
+
+---
+Guennadi Liakhovetski, Ph.D.
+Freelance Open-Source Software Developer
+http://www.open-technology.de/
