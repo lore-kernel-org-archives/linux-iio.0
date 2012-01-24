@@ -1,111 +1,87 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:49994 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752110Ab2A2LGZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jan 2012 06:06:25 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: greg@kroah.com
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 2/5] staging:iio:dds:ad9834 unwind use of is_visible for attrs.
-Date: Sun, 29 Jan 2012 11:07:01 +0000
-Message-Id: <1327835224-20956-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1327835224-20956-1-git-send-email-jic23@kernel.org>
-References: <1327835145-20886-1-git-send-email-jic23@kernel.org>
- <1327835224-20956-1-git-send-email-jic23@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <w.sang@pengutronix.de>
+Date: Tue, 24 Jan 2012 14:14:27 +0100
+From: Wolfram Sang <w.sang@pengutronix.de>
+To: Marek Vasut <marek.vasut@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, Wolfgang Denk <wd@denx.de>,
+	Peter Rusko <rusko.peter@prolan.hu>, Stefano Babic <sbabic@denx.de>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [RFC] IIO LRADC for mach-mxs
+Message-ID: <20120124131427.GE2609@pengutronix.de>
+References: <201201241408.08083.marek.vasut@gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="sfyO1m2EN8ZOtJL6"
+In-Reply-To: <201201241408.08083.marek.vasut@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Trivial usecase in which just having two different attr
-groups covers all options.  Slightly more code, but a simpler
-to follow result.
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/dds/ad9834.c |   53 +++++++++++++++++++++++---------------
- 1 files changed, 32 insertions(+), 21 deletions(-)
+--sfyO1m2EN8ZOtJL6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/staging/iio/dds/ad9834.c b/drivers/staging/iio/dds/ad9834.c
-index 5e67104..38a2de0 100644
---- a/drivers/staging/iio/dds/ad9834.c
-+++ b/drivers/staging/iio/dds/ad9834.c
-@@ -281,29 +281,27 @@ static struct attribute *ad9834_attributes[] = {
- 	NULL,
- };
- 
--static umode_t ad9834_attr_is_visible(struct kobject *kobj,
--				     struct attribute *attr, int n)
--{
--	struct device *dev = container_of(kobj, struct device, kobj);
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
--	struct ad9834_state *st = iio_priv(indio_dev);
--
--	umode_t mode = attr->mode;
--
--	if (((st->devid == ID_AD9833) || (st->devid == ID_AD9837)) &&
--		((attr == &iio_dev_attr_dds0_out1_enable.dev_attr.attr) ||
--		(attr == &iio_dev_attr_dds0_out1_wavetype.dev_attr.attr) ||
--		(attr ==
--		&iio_dev_attr_dds0_out1_wavetype_available.dev_attr.attr) ||
--		(attr == &iio_dev_attr_dds0_pincontrol_en.dev_attr.attr)))
--		mode = 0;
--
--	return mode;
--}
-+static struct attribute *ad9833_attributes[] = {
-+	&iio_dev_attr_dds0_freq0.dev_attr.attr,
-+	&iio_dev_attr_dds0_freq1.dev_attr.attr,
-+	&iio_const_attr_dds0_freq_scale.dev_attr.attr,
-+	&iio_dev_attr_dds0_phase0.dev_attr.attr,
-+	&iio_dev_attr_dds0_phase1.dev_attr.attr,
-+	&iio_const_attr_dds0_phase_scale.dev_attr.attr,
-+	&iio_dev_attr_dds0_freqsymbol.dev_attr.attr,
-+	&iio_dev_attr_dds0_phasesymbol.dev_attr.attr,
-+	&iio_dev_attr_dds0_out_enable.dev_attr.attr,
-+	&iio_dev_attr_dds0_out0_wavetype.dev_attr.attr,
-+	&iio_dev_attr_dds0_out0_wavetype_available.dev_attr.attr,
-+	NULL,
-+};
- 
- static const struct attribute_group ad9834_attribute_group = {
- 	.attrs = ad9834_attributes,
--	.is_visible = ad9834_attr_is_visible,
-+};
-+
-+static const struct attribute_group ad9833_attribute_group = {
-+	.attrs = ad9833_attributes,
- };
- 
- static const struct iio_info ad9834_info = {
-@@ -311,6 +309,11 @@ static const struct iio_info ad9834_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
-+static const struct iio_info ad9833_info = {
-+	.attrs = &ad9833_attribute_group,
-+	.driver_module = THIS_MODULE,
-+};
-+
- static int __devinit ad9834_probe(struct spi_device *spi)
- {
- 	struct ad9834_platform_data *pdata = spi->dev.platform_data;
-@@ -344,7 +347,15 @@ static int __devinit ad9834_probe(struct spi_device *spi)
- 	st->reg = reg;
- 	indio_dev->dev.parent = &spi->dev;
- 	indio_dev->name = spi_get_device_id(spi)->name;
--	indio_dev->info = &ad9834_info;
-+	switch (st->devid) {
-+	case ID_AD9833:
-+	case ID_AD9837:
-+		indio_dev->info = &ad9833_info;
-+		break;
-+	default:
-+		indio_dev->info = &ad9834_info;
-+		break;
-+	}
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	/* Setup default messages */
--- 
-1.7.8.4
+On Tue, Jan 24, 2012 at 02:08:07PM +0100, Marek Vasut wrote:
+> Hi guys,
+>=20
+> I've been playing with a custom mxs board recently and I'd like to tinker=
+ with=20
+> ADC. Well, apparently there was some effort but it died silently.
+>=20
+> Now, there are two approaches how to go about the MXS IIO LRADC. Firstly =
+though,=20
+> here are some hw details:
+>=20
+> 1) The ADC has 16 channels in total, some dedicated to particular function
+> 2) The ADC can sample only up to 8 channels at the same time
+> 3) The ADC delay triggers can trigger only up to 4 kinds of sampling for =
+those=20
+> up to 8 selected channel
+>=20
+> So how should we go about this:
+>=20
+> A) Implement functions, to configure and select a channel at probe-time a=
+nd then=20
+> never allow (at runtime) different channel to be selected.
+>=20
+> + Channel configuration is static, passed via plat_data
+> + The channels don't need to be reconfigured =3D> when data are demanded,=
+ the=20
+> channel doesn't need to be reconfigured (if it's not configured in one of=
+ those=20
+> 8 options) and the user doesn't need to wait for data.
+> - Only 8 channels can be used
+>=20
+> B) Allow channel to be configured on-demand -- when it's value is request=
+ed, it=20
+> is configured (if it's not already) for the particular function.
+>=20
+> + All 16 channels can be used
+> - It's clunky and fragile to breakage
+> - It's hard to implement good channel replacement algo (replacement as on=
+ the=20
+> delay triggers and on those 8 slots)
+>=20
+> Which way do you consider better ?
 
+CCing Jonathan and the iio-list (as found in MAINTAINERS). They probably
+have more experience regardings those scenarios?
+
+--=20
+Pengutronix e.K.                           | Wolfram Sang                |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+
+--sfyO1m2EN8ZOtJL6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iEYEARECAAYFAk8errMACgkQD27XaX1/VRuj5ACgxga8wEf13X5XJFc39u0okn1R
+PNAAoL0YwwaMPs/BoqhYh5EzXCbRiSPj
+=Itzz
+-----END PGP SIGNATURE-----
+
+--sfyO1m2EN8ZOtJL6--
