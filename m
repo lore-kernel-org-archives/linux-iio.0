@@ -14,87 +14,296 @@ Cc: greg@kroah.com,
 	zdevai@gmail.com,
 	w.sang@pengutronix.de,
 	marek.vasut@gmail.com,
+	Jonathan Cameron <jic23@cam.ac.uk>,
 	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 4/5] staging:iio:Documentation in kernel pull description.
-Date: Sun, 29 Jan 2012 11:46:53 +0000
-Message-Id: <1327837614-24176-5-git-send-email-jic23@kernel.org>
+Subject: [PATCH 3/5] staging:iio::hwmon interface client driver.
+Date: Sun, 29 Jan 2012 11:46:52 +0000
+Message-Id: <1327837614-24176-4-git-send-email-jic23@kernel.org>
 In-Reply-To: <1327837614-24176-1-git-send-email-jic23@kernel.org>
 References: <1327837614-24176-1-git-send-email-jic23@kernel.org>
 Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Very basic description of the way iio consumers work and how to use
-this functionality.
+From: Jonathan Cameron <jic23@cam.ac.uk>
+
+Direct copy of version proposed for the non staging branch.
+Needed here to allow testing of more advanced inkernel
+interface code.
+
+Minimal support of simple in, curr and temp attributes
+so far.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/Documentation/inkernel.txt |   59 ++++++++++++++++++++++++
- 1 files changed, 59 insertions(+), 0 deletions(-)
+ drivers/staging/iio/Kconfig     |    9 ++
+ drivers/staging/iio/Makefile    |    2 +
+ drivers/staging/iio/iio_hwmon.c |  226 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 237 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/staging/iio/Documentation/inkernel.txt b/drivers/staging/iio/Documentation/inkernel.txt
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index 65c2a8e..dab0189 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -18,6 +18,15 @@ config IIO_INKERN
+ 	help
+ 	  Support in kernel users of IIO device drivers.
+ 
++config IIO_ST_HWMON
++	tristate "Hwmon driver that uses channels specified via iio maps"
++	depends on HWMON
++	depends on IIO_INKERN
++	help
++	  This is a platform driver that in combination with a suitable
++	  map allows IIO devices to provide  basic hwmon functionality
++	  for those channels specified in the map.
++
+ config IIO_BUFFER
+ 	bool "Enable buffer support within IIO"
+ 	help
+diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
+index 5da4c78..3ca3ffb 100644
+--- a/drivers/staging/iio/Makefile
++++ b/drivers/staging/iio/Makefile
+@@ -17,6 +17,8 @@ iio_dummy-$(CONFIG_IIO_SIMPLE_DUMMY_BUFFER) += iio_simple_dummy_buffer.o
+ 
+ obj-$(CONFIG_IIO_DUMMY_EVGEN) += iio_dummy_evgen.o
+ 
++obj-$(CONFIG_IIO_ST_HWMON) += iio_hwmon.o
++
+ obj-y += accel/
+ obj-y += adc/
+ obj-y += addac/
+diff --git a/drivers/staging/iio/iio_hwmon.c b/drivers/staging/iio/iio_hwmon.c
 new file mode 100644
-index 0000000..b9a4d0a
+index 0000000..17deb0b
 --- /dev/null
-+++ b/drivers/staging/iio/Documentation/inkernel.txt
-@@ -0,0 +1,59 @@
-+Industrial I/O Subsystemm in kernel consumers.
++++ b/drivers/staging/iio/iio_hwmon.c
+@@ -0,0 +1,226 @@
++/* Hwmon client for industrial I/O devices
++ *
++ * Copyright (c) 2011 Jonathan Cameron
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
 +
-+The IIO subsystem can act as a layer under other elements of the kernel
-+providing a means of obtaining adc type readings or of driving dac type
-+signals.  The functionality supported will grow as use cases arise.
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/err.h>
++#include <linux/platform_device.h>
++#include <linux/hwmon.h>
++#include <linux/hwmon-sysfs.h>
++#include "consumer.h"
++#include "types.h"
 +
-+Describing the channel mapping (iio/machine.h)
-+
-+Channel associations are described using:
-+
-+struct iio_map {
-+	const char *adc_channel_label;
-+	struct device *consumer_dev;
-+	const char *consumer_dev_name;
-+	const char *consumer_channel;
++/**
++ * struct iio_hwmon_state - device instance state
++ * @channels:		filled with array of channels from iio
++ * @num_channels:	number of channels in channels (saves counting twice)
++ * @hwmon_dev:		associated hwmon device
++ * @attr_group:	the group of attributes
++ * @attrs:		null terminated array of attribute pointers.
++ */
++struct iio_hwmon_state {
++	struct iio_channel *channels;
++	int num_channels;
++	struct device *hwmon_dev;
++	struct attribute_group attr_group;
++	struct attribute **attrs;
 +};
 +
-+adc_channel label identifies the channel on the IIO device by being
-+matched against the datasheet_name field of the iio_chan_spec.
++/*
++ * Assumes that IIO and hwmon operate in the same base units.
++ * This is supposed to be true, but needs verification for
++ * new channel types.
++ */
++static ssize_t iio_hwmon_read_val(struct device *dev,
++				  struct device_attribute *attr,
++				  char *buf)
++{
++	long result;
++	int val, ret, scaleint, scalepart;
++	struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
++	struct iio_hwmon_state *state = dev_get_drvdata(dev);
 +
-+consumer_dev or consumer_dev_name allow identification of the consumer device.
-+These are then used to find the channel mapping from the consumer device (see
-+below).
++	/*
++	 * No locking between this pair, so theoretically possible
++	 * the scale has changed.
++	 */
++	ret = iio_st_read_channel_raw(&state->channels[sattr->index],
++				      &val);
++	if (ret < 0)
++		return ret;
 +
-+Finally consumer_channel is a string identifying the channel to the consumer.
-+(Perhaps 'battery_voltage' or similar).
++	ret = iio_st_read_channel_scale(&state->channels[sattr->index],
++					&scaleint, &scalepart);
++	if (ret < 0)
++		return ret;
++	switch (ret) {
++	case IIO_VAL_INT:
++		result = val * scaleint;
++		break;
++	case IIO_VAL_INT_PLUS_MICRO:
++		result = (s64)val * (s64)scaleint +
++			div_s64((s64)val * (s64)scalepart, 1000000LL);
++		break;
++	case IIO_VAL_INT_PLUS_NANO:
++		result = (s64)val * (s64)scaleint +
++			div_s64((s64)val * (s64)scalepart, 1000000000LL);
++		break;
++	default:
++		return -EINVAL;
++	}
++	return sprintf(buf, "%ld\n", result);
++}
 +
-+An array of these structures is then passed to the IIO driver.
++static void iio_hwmon_free_attrs(struct iio_hwmon_state *st)
++{
++	int i;
++	struct sensor_device_attribute *a;
++	for (i = 0; i < st->num_channels; i++)
++		if (st->attrs[i]) {
++			a = to_sensor_dev_attr(
++				container_of(st->attrs[i],
++					     struct device_attribute,
++					     attr));
++			kfree(a);
++		}
++}
 +
-+Supporting in kernel interfaces in the driver (driver.h)
++static int __devinit iio_hwmon_probe(struct platform_device *pdev)
++{
++	struct iio_hwmon_state *st;
++	struct sensor_device_attribute *a;
++	int ret, i;
++	int in_i = 1, temp_i = 1, curr_i = 1;
 +
-+The driver must provide datasheet_name values for its channels and
-+must pass the iio_map structures and a pointer to its own iio_dev structure
-+ on to the core via a call to iio_map_array_register.  On removal,
-+iio_map_array_unregister reverses this process.
++	st = kzalloc(sizeof(*st), GFP_KERNEL);
++	if (st == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
 +
-+The result of this is that the IIO core now has all the information needed
-+to associate a given channel with the consumer requesting it.
++	st->channels = iio_st_channel_get_all(&pdev->dev, NULL);
++	if (IS_ERR(st->channels)) {
++		ret = PTR_ERR(st->channels);
++		goto error_free_state;
++	}
 +
-+Acting as an IIO consumer (consumer.h)
++	/* count how many attributes we have */
++	while (st->channels[st->num_channels].indio_dev)
++		st->num_channels++;
 +
-+The consumer first has to obtain an iio_channel structure from the core
-+by calling iio_channel_get().  The correct channel is identified by:
++	st->attrs = kzalloc(sizeof(st->attrs) * (st->num_channels + 1),
++			    GFP_KERNEL);
++	if (st->attrs == NULL) {
++		ret = -ENOMEM;
++		goto error_release_channels;
++	}
++	for (i = 0; i < st->num_channels; i++) {
++		a = kzalloc(sizeof(*a), GFP_KERNEL);
++		if (a == NULL) {
++			ret = -ENOMEM;
++			goto error_free_attrs;
++		}
 +
-+* matching dev or dev_name against consumer_dev and consumer_dev_name
-+* matching consumer_channel against consumer_channel in the map
++		sysfs_attr_init(&a->dev_attr.attr);
++		switch (iio_st_get_channel_type(&st->channels[i])) {
++		case IIO_VOLTAGE:
++			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
++							  "in%d_input",
++							  in_i++);
++			break;
++		case IIO_TEMP:
++			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
++							  "temp%d_input",
++							  temp_i++);
++			break;
++		case IIO_CURRENT:
++			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
++							  "curr%d_input",
++							  curr_i++);
++			break;
++		default:
++			ret = -EINVAL;
++			kfree(a);
++			goto error_free_attrs;
++		}
++		if (a->dev_attr.attr.name == NULL) {
++			kfree(a);
++			ret = -ENOMEM;
++			goto error_free_attrs;
++		}
++		a->dev_attr.show = iio_hwmon_read_val;
++		a->dev_attr.attr.mode = S_IRUGO;
++		a->index = i;
++		st->attrs[i] = &a->dev_attr.attr;
++	}
 +
-+There are then a number of functions that can be used to get information
-+about this channel such as it's current reading.
++	st->attr_group.attrs = st->attrs;
++	platform_set_drvdata(pdev, st);
++	ret = sysfs_create_group(&pdev->dev.kobj, &st->attr_group);
++	if (ret < 0)
++		goto error_free_attrs;
 +
-+e.g.
-+iio_st_read_channel_raw() - get a reading
-+iio_st_read_channel_type() - get the type of channel
++	st->hwmon_dev = hwmon_device_register(&pdev->dev);
++	if (IS_ERR(st->hwmon_dev)) {
++		ret = PTR_ERR(st->hwmon_dev);
++		goto error_remove_group;
++	}
++	return 0;
 +
-+There is also provision for retrieving all of the channels associated
-+with a given consumer.  This is useful for generic drivers such as
-+iio_hwmon where the number and naming of channels is not known by the
-+consumer driver.  To do this, use iio_st_channel_get_all.
++error_remove_group:
++	sysfs_remove_group(&pdev->dev.kobj, &st->attr_group);
++error_free_attrs:
++	iio_hwmon_free_attrs(st);
++	kfree(st->attrs);
++error_release_channels:
++	iio_st_channel_release_all(st->channels);
++error_free_state:
++	kfree(st);
++error_ret:
++	return ret;
++}
 +
++static int __devexit iio_hwmon_remove(struct platform_device *pdev)
++{
++	struct iio_hwmon_state *st = platform_get_drvdata(pdev);
++
++	hwmon_device_unregister(st->hwmon_dev);
++	sysfs_remove_group(&pdev->dev.kobj, &st->attr_group);
++	iio_hwmon_free_attrs(st);
++	kfree(st->attrs);
++	iio_st_channel_release_all(st->channels);
++
++	return 0;
++}
++
++static struct platform_driver __refdata iio_hwmon_driver = {
++	.driver = {
++		.name = "iio_hwmon",
++		.owner = THIS_MODULE,
++	},
++	.probe = iio_hwmon_probe,
++	.remove = __devexit_p(iio_hwmon_remove),
++};
++
++static int iio_inkern_init(void)
++{
++	return platform_driver_register(&iio_hwmon_driver);
++}
++module_init(iio_inkern_init);
++
++static void iio_inkern_exit(void)
++{
++	platform_driver_unregister(&iio_hwmon_driver);
++}
++module_exit(iio_inkern_exit);
++
++MODULE_AUTHOR("Jonathan Cameron <jic23@cam.ac.uk>");
++MODULE_DESCRIPTION("IIO to hwmon driver");
++MODULE_LICENSE("GPL v2");
 -- 
 1.7.8.4
