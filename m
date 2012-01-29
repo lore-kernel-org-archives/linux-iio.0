@@ -1,77 +1,172 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <4F003B47.2060900@metafoo.de>
-Date: Sun, 01 Jan 2012 11:53:59 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <jic23@kernel.org>
+Message-ID: <4F258D7D.9090000@kernel.org>
+Date: Sun, 29 Jan 2012 18:18:37 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Pirmin Duss <pirmin.duss@flytec.ch>, linux-iio@vger.kernel.org,
- "J . I . Cameron" <jic23@cam.ac.uk>
-Subject: Re: [Patch v2.1] Adds support for the Texas Instruments ADS1110 adc.
-References: <Prayer.1.3.4.1112230809290.970@hermes-2.csi.cam.ac.uk> <1324630944-3668-1-git-send-email-pirmin.duss@flytec.ch> <4EFF699B.1000802@kernel.org>
-In-Reply-To: <4EFF699B.1000802@kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+ Michael Hennerich <michael.hennerich@analog.com>,
+ linux-iio@vger.kernel.org, device-drivers-devel@blackfin.uclinux.org,
+ drivers@analog.com
+Subject: Re: [PATCH v2 4/6] staging:iio:events: Use waitqueue lock to protect
+ event queue
+References: <1324290580-17511-1-git-send-email-lars@metafoo.de> <1324290580-17511-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1324290580-17511-4-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-> On 12/23/2011 09:02 AM, Pirmin Duss wrote:
->> +
-> Why the values in this table?  I'm not seeing that field
-> used anywhere...  Actually, other than address are these
-> different?  If not from a kernel point of view we almost
-> certainly don't care, so just have one ads1110 entry in
-> here...
->> +static const struct i2c_device_id ads1110_id[] = {
->> +	{ "ads1110-ed0", 0x48 },
->> +	{ "ads1110-ed1", 0x49 },
->> +	{ "ads1110-ed2", 0x50 },
->> +	{ "ads1110-ed3", 0x51 },
->> +	{ "ads1110-ed4", 0x52 },
->> +	{ "ads1110-ed5", 0x53 },
->> +	{ "ads1110-ed6", 0x54 },
->> +	{ "ads1110-ed7", 0x55 },
->> +	{},
->> +};
->> +
->> +MODULE_DEVICE_TABLE(i2c, ads1110_id);
->> +
->> +static struct i2c_driver ads1110_driver = {
->> +	.driver = {
->> +		.name = "ads1110",
->> +	},
->> +	.probe = ads1110_probe,
->> +	.remove = __devexit_p(ads1110_remove),
->> +	.id_table = ads1110_id,
->> +};
->> +
->> +static int __init ads1110_init(void)
->> +{
->> +	return i2c_add_driver(&ads1110_driver);
->> +}
->> +
->> +static void __exit ads1110_exit(void)
->> +{
->> +	i2c_del_driver(&ads1110_driver);
->> +}
->> +
->> +MODULE_AUTHOR("Duss Pirmin <pirmin.duss@flytec.ch>");
->> +MODULE_DESCRIPTION("Texas Instruments ads1110 adc driver");
->> +MODULE_LICENSE("GPL v2");
->> +
->> +module_init(ads1110_init);
-> I believe convension puts immediately after each relevant function.
->> +module_exit(ads1110_exit);
+On 12/19/2011 10:29 AM, Lars-Peter Clausen wrote:
+> Use the waitqueue lock to protect the event queue instead of a custom mutex.
+> This has the advantage that we can call the waitqueue operations with the lock
+> held, which simplifies the code flow a bit.
 > 
-> There is a whole load of boiler plate removal code from Lars-Peter,
-> but I'm not entirely sure on what the status is. Either you should
-> provide him with a patch that uses that stuff or if Lars-Peter
-> prefers he can just add this to his conversions.
-> The core support is in driver-core for next (I think - certainly
-> in linux next).
+> Acked-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Hmm.. I really should have noticed this before.. If this hasn't gone to
+Greg already, can you also clear out the documentation for
+event_list_lock within struct iio_event_interface.  Cleaner to do it
+here than in a follow up patch.
 
-The other patches which remove this kind of boilerplate from IIO drivers have
-already been applied to driver-core-next. If the module_i2c_driver macro shows
-up in staging-next before this patch is ready, the cleanup can be added
-directly to the patch it-self, otherwise we can do it later.
+diff --git a/drivers/staging/iio/industrialio-event.c
+b/drivers/staging/iio/industrialio-event.c
+index 5e461e1..0703d6d 100644
+--- a/drivers/staging/iio/industrialio-event.c
++++ b/drivers/staging/iio/industrialio-event.c
+@@ -28,7 +28,6 @@
+ /**
+  * struct iio_event_interface - chrdev interface for an event line
+  * @wait:              wait queue to allow blocking reads of events
+- * @event_list_lock:   mutex to protect the list of detected events
+  * @det_events:                list of detected events
+  * @dev_attr_list:     list of event interface sysfs attribute
+  * @flags:             file operations related flags including busy flag.
 
+
+> ---
+>  drivers/staging/iio/industrialio-event.c |   45 ++++++++++++-----------------
+>  1 files changed, 19 insertions(+), 26 deletions(-)
 > 
-> See  https://lkml.org/lkml/2011/11/16/78
-> 
+> diff --git a/drivers/staging/iio/industrialio-event.c b/drivers/staging/iio/industrialio-event.c
+> index d63aa0b..b5f7a2c 100644
+> --- a/drivers/staging/iio/industrialio-event.c
+> +++ b/drivers/staging/iio/industrialio-event.c
+> @@ -34,8 +34,7 @@
+>   * @group:		event interface sysfs attribute group
+>   */
+>  struct iio_event_interface {
+> -	wait_queue_head_t	wait;
+> -	struct mutex		event_list_lock;
+> +	wait_queue_head_t			wait;
+>  	DECLARE_KFIFO(det_events, struct iio_event_data, 16);
+>  
+>  	struct list_head	dev_attr_list;
+> @@ -50,19 +49,17 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+>  	int copied;
+>  
+>  	/* Does anyone care? */
+> -	mutex_lock(&ev_int->event_list_lock);
+> +	spin_lock(&ev_int->wait.lock);
+>  	if (test_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+>  
+>  		ev.id = ev_code;
+>  		ev.timestamp = timestamp;
+>  
+>  		copied = kfifo_put(&ev_int->det_events, &ev);
+> -
+> -		mutex_unlock(&ev_int->event_list_lock);
+>  		if (copied != 0)
+> -			wake_up_interruptible(&ev_int->wait);
+> -	} else
+> -		mutex_unlock(&ev_int->event_list_lock);
+> +			wake_up_locked(&ev_int->wait);
+> +	}
+> +	spin_unlock(&ev_int->wait.lock);
+>  
+>  	return 0;
+>  }
+> @@ -80,28 +77,25 @@ static ssize_t iio_event_chrdev_read(struct file *filep,
+>  	if (count < sizeof(struct iio_event_data))
+>  		return -EINVAL;
+>  
+> -	mutex_lock(&ev_int->event_list_lock);
+> +	spin_lock(&ev_int->wait.lock);
+>  	if (kfifo_is_empty(&ev_int->det_events)) {
+>  		if (filep->f_flags & O_NONBLOCK) {
+>  			ret = -EAGAIN;
+> -			goto error_mutex_unlock;
+> +			goto error_unlock;
+>  		}
+> -		mutex_unlock(&ev_int->event_list_lock);
+>  		/* Blocking on device; waiting for something to be there */
+> -		ret = wait_event_interruptible(ev_int->wait,
+> +		ret = wait_event_interruptible_locked(ev_int->wait,
+>  					!kfifo_is_empty(&ev_int->det_events));
+>  		if (ret)
+> -			goto error_ret;
+> +			goto error_unlock;
+>  		/* Single access device so no one else can get the data */
+> -		mutex_lock(&ev_int->event_list_lock);
+>  	}
+>  
+> -	mutex_unlock(&ev_int->event_list_lock);
+>  	ret = kfifo_to_user(&ev_int->det_events, buf, count, &copied);
+>  
+> -error_mutex_unlock:
+> -	mutex_unlock(&ev_int->event_list_lock);
+> -error_ret:
+> +error_unlock:
+> +	spin_unlock(&ev_int->wait.lock);
+> +
+>  	return ret ? ret : copied;
+>  }
+>  
+> @@ -109,7 +103,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+>  {
+>  	struct iio_event_interface *ev_int = filep->private_data;
+>  
+> -	mutex_lock(&ev_int->event_list_lock);
+> +	spin_lock(&ev_int->wait.lock);
+>  	clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+>  	/*
+>  	 * In order to maintain a clean state for reopening,
+> @@ -117,7 +111,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+>  	 * any new __iio_push_event calls running.
+>  	 */
+>  	kfifo_reset_out(&ev_int->det_events);
+> -	mutex_unlock(&ev_int->event_list_lock);
+> +	spin_unlock(&ev_int->wait.lock);
+>  
+>  	return 0;
+>  }
+> @@ -137,18 +131,18 @@ int iio_event_getfd(struct iio_dev *indio_dev)
+>  	if (ev_int == NULL)
+>  		return -ENODEV;
+>  
+> -	mutex_lock(&ev_int->event_list_lock);
+> +	spin_lock(&ev_int->wait.lock);
+>  	if (test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+> -		mutex_unlock(&ev_int->event_list_lock);
+> +		spin_unlock(&ev_int->wait.lock);
+>  		return -EBUSY;
+>  	}
+> -	mutex_unlock(&ev_int->event_list_lock);
+> +	spin_unlock(&ev_int->wait.lock);
+>  	fd = anon_inode_getfd("iio:event",
+>  				&iio_event_chrdev_fileops, ev_int, O_RDONLY);
+>  	if (fd < 0) {
+> -		mutex_lock(&ev_int->event_list_lock);
+> +		spin_lock(&ev_int->wait.lock);
+>  		clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+> -		mutex_unlock(&ev_int->event_list_lock);
+> +		spin_unlock(&ev_int->wait.lock);
+>  	}
+>  	return fd;
+>  }
+> @@ -357,7 +351,6 @@ static bool iio_check_for_dynamic_events(struct iio_dev *indio_dev)
+>  
+>  static void iio_setup_ev_int(struct iio_event_interface *ev_int)
+>  {
+> -	mutex_init(&ev_int->event_list_lock);
+>  	INIT_KFIFO(ev_int->det_events);
+>  	init_waitqueue_head(&ev_int->wait);
+>  }
