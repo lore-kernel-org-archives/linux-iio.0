@@ -1,40 +1,77 @@
-Return-Path: <jj@chaosbits.net>
-Date: Mon, 5 Dec 2011 23:48:05 +0100 (CET)
-From: Jesper Juhl <jj@chaosbits.net>
-To: Greg KH <greg@kroah.com>
-cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-    linux-kernel@vger.kernel.org,
-    Paul Gortmaker <paul.gortmaker@windriver.com>,
-    Michael Hennerich <michael.hennerich@analog.com>,
-    Greg Kroah-Hartman <gregkh@suse.de>, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH] [staging] iio, adc: Do not leak memory in
- ad7280_event_handler()
-In-Reply-To: <20111127004325.GA21259@kroah.com>
-Message-ID: <alpine.LNX.2.00.1112052347440.7382@swampdragon.chaosbits.net>
-References: <alpine.LNX.2.00.1111062246580.5763@swampdragon.chaosbits.net> <20111127004325.GA21259@kroah.com>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-Path: <jic23@hermes.cam.ac.uk>
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: greg@kroah.com,
+	guenter.roeck@ericsson.com,
+	khali@linux-fr.org,
+	dmitry.torokhov@gmail.com,
+	broonie@opensource.wolfsonmicro.com,
+	alan@lxorguk.ukuu.org.uk,
+	arnd@arndb.de,
+	linus.walleij@linaro.org,
+	maxime.ripard@free-electrons.com,
+	thomas.petazzoni@free-electrons.com,
+	zdevai@gmail.com,
+	w.sang@pengutronix.de,
+	marek.vasut@gmail.com,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [RFC PATCH 0/5 V5] IIO: in kernel pull interfaces.
+Date: Sun, 29 Jan 2012 11:46:49 +0000
+Message-Id: <1327837614-24176-1-git-send-email-jic23@kernel.org>
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 26 Nov 2011, Greg KH wrote:
+Hi All,
 
-> On Sun, Nov 06, 2011 at 10:49:22PM +0100, Jesper Juhl wrote:
-> > If ad7280_read_all_channels() returns <0 then we'll leak the memory
-> > allocated to 'channels' when we return and that variable goes out of
-> > scope.
-> > This patch fixes the leak.
-> 
-> This patch no longer applies to my tree, can you redo it against the
-> next linux-next release and resend it?
-> 
-> thanks,
-> 
-> greg k-h
+Firstly this is an RFC rather than a final proposal because I know there is
+an issue with the provider being removed before the consumer.  It will be easy
+to make this less likely to happen, but I am not entirely sure how to avoid
+any possible race (suggestion welcome).
 
-Sure. I'll take a look at it this weekend.
+Greg KH raised significant issues with how I originally proposed doing this
+map registration (consumer - provider association).  Hence this version is
+a lot more conventional (you may well notice that even the header naming is
+lifted from the regulator framework).  The original proposal registered this
+mapping completely independent of the iio drivers, thus requiring no in driver
+changes.  This version requires passing the mapping through them.  There are
+advantages to both approaches and we can always bolt the driver independent
+version back in if there is sufficient justification for it at a later date.
 
+Note that this series is against the full IIO tree in staging.
+
+All comments welcome.
+
+Jonathan
+
+Jonathan Cameron (5):
+  staging:iio:core add in kernel interface mapping and getting IIO
+    channels.
+  staging:iio: move iio data return types into types.h for use by
+    inkern
+  staging:iio::hwmon interface client driver.
+  staging:iio:Documentation in kernel pull description.
+  stargate2: example of map configuration for iio to hwmon example.
+
+ arch/arm/mach-pxa/stargate2.c                  |   22 ++
+ drivers/staging/iio/Documentation/inkernel.txt |   59 ++++++
+ drivers/staging/iio/Kconfig                    |   16 ++-
+ drivers/staging/iio/Makefile                   |    4 +-
+ drivers/staging/iio/consumer.h                 |  103 ++++++++++
+ drivers/staging/iio/driver.h                   |   34 +++
+ drivers/staging/iio/iio.h                      |    6 -
+ drivers/staging/iio/iio_core.h                 |    3 +
+ drivers/staging/iio/iio_hwmon.c                |  226 +++++++++++++++++++++
+ drivers/staging/iio/industrialio-core.c        |    2 +-
+ drivers/staging/iio/inkern.c                   |  256 ++++++++++++++++++++++++
+ drivers/staging/iio/machine.h                  |   30 +++
+ drivers/staging/iio/types.h                    |    4 +
+ 13 files changed, 756 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/staging/iio/Documentation/inkernel.txt
+ create mode 100644 drivers/staging/iio/consumer.h
+ create mode 100644 drivers/staging/iio/driver.h
+ create mode 100644 drivers/staging/iio/iio_hwmon.c
+ create mode 100644 drivers/staging/iio/inkern.c
+ create mode 100644 drivers/staging/iio/machine.h
 
 -- 
-Jesper Juhl <jj@chaosbits.net>       http://www.chaosbits.net/
-Don't top-post http://www.catb.org/jargon/html/T/top-post.html
-Plain text mails only, please.
+1.7.8.4
