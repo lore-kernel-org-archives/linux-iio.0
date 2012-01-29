@@ -1,67 +1,59 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4F26FD82.0@kernel.org>
-Date: Mon, 30 Jan 2012 20:28:50 +0000
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:49644 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752049Ab2A2LFH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jan 2012 06:05:07 -0500
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-CC: linux-iio@vger.kernel.org, greg@kroah.com,
- guenter.roeck@ericsson.com, khali@linux-fr.org,
- dmitry.torokhov@gmail.com, alan@lxorguk.ukuu.org.uk, arnd@arndb.de,
- linus.walleij@linaro.org, maxime.ripard@free-electrons.com,
- thomas.petazzoni@free-electrons.com, zdevai@gmail.com,
- w.sang@pengutronix.de, marek.vasut@gmail.com,
- Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH 1/5] staging:iio:core add in kernel interface mapping
- and getting IIO channels.
-References: <1327837614-24176-1-git-send-email-jic23@kernel.org> <1327837614-24176-2-git-send-email-jic23@kernel.org> <20120130202226.GB9672@opensource.wolfsonmicro.com>
-In-Reply-To: <20120130202226.GB9672@opensource.wolfsonmicro.com>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: greg@kroah.com
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/5] Remove use of isvisible for attr groups that are coppied.
+Date: Sun, 29 Jan 2012 11:05:45 +0000
+Message-Id: <1327835145-20886-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi Greg,
 
-On 01/30/2012 08:22 PM, Mark Brown wrote:
-> On Sun, Jan 29, 2012 at 11:46:50AM +0000, Jonathan Cameron wrote:
-> 
->> -static struct device_type iio_dev_type = { +struct device_type
->> iio_dev_type = { .name = "iio_device", .release =
->> iio_dev_release, };
-> 
-> Why is this exported?
-oops.  Hangover from previous version I think. Thanks for pointing it out.
-> 
->> +	mutex_lock(&iio_map_list_lock); +	while ((maps[i].consumer_dev
->> != NULL) || +	       (maps[i].consumer_dev_name != NULL)) {
-> 
-> I'd suggest just dropping the struct device - the reason we support
-> the struct device directly in the regulator API is that we
-> originally had only a struct device and kept the code around as a
-> transition measure (though now it's so old we should be able to
-> kill it off).  This would simplify the code and the interface a
-> bit.
-Ah, that explains your comment on the 5th patch.  Alright, I'll let this
-sit for a few days and if no one comes up with a good reason not to
-we'll go with just the dev_name option.
+These are all fixes.
+
+These patches were originally part of a series that squished the attribute
+groups entirely, but whilst everyone was happy with these, the final patch
+was dropped.
+
+Anyhow, the eventual attribute groups that get registered are mostly
+built from the iio_chan_spec structures. These groups are just used
+to pass in bits the core doesn't handle.  This made it it rather
+difficult to ensure that the is_visible function was consistent
+(as it would be applied to a much larger set than apparent if we
+coppied it on as is) and in the vast majority of cases its use was
+trivial anyway.
+
+If a good reason for using is_visible comes up, then the right option will be
+to first verifying if the element comes from these attribute
+groups that are passed in before calling the is_visible function provided
+in these groups.  Anyhow, not too bad, but not currently necessary.
+
+Even if we do put this in, these cases are easier to read (and in somecases
+shorter) when not using it.
 
 Jonathan
 
+Jonathan Cameron (5):
+  staging:iio:adc:ad7192 unwind use of is_visible for attribute group.
+  staging:iio:dds:ad9834 unwind use of is_visible for attrs.
+  staging:iio:dac:ad5446 unwind use of is_visible for attrs.
+  staging:iio:adc:ad7606 unwind use of is_visible for attrs.
+  staging:iio:adc:adt7310/7410 sticking plaster fix for broken event
+    attrs.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+ drivers/staging/iio/adc/ad7192.c      |   43 ++++++++++-------
+ drivers/staging/iio/adc/ad7606_core.c |   83 +++++++++++++++++++++------------
+ drivers/staging/iio/adc/adt7310.c     |   21 ++-------
+ drivers/staging/iio/adc/adt7410.c     |   21 ++-------
+ drivers/staging/iio/dac/ad5446.c      |   33 ++++---------
+ drivers/staging/iio/dds/ad9834.c      |   53 +++++++++++++--------
+ 6 files changed, 128 insertions(+), 126 deletions(-)
 
-iQIcBAEBAgAGBQJPJv2CAAoJEFSFNJnE9BaIfRYP/R9nGQIY7sCm4UsdBZldyW93
-8Eu0jPMXJs/YLgc7zSJisFqUQNS4BJjORVDh2AcV/hu7FXaxtD6QhxaC3/RMjwfa
-EgElSYU7N2yPThJLXh1w12qgvt6+zxAT+Gnv11pHeaf6gZrXU2IUBy1FlExCudpI
-hc+CnDSSHjZk6aJKWmockmcmwlSGLy4WV7nH4S907pzm2yXnI9UqvVaHwPVtO/Yl
-rZyrZo6T8C4Xw2GeB5QdZ4GNXRuNUOezc1OfqdK/FKj3lVo23ZsAfoMoKkS33ZWF
-zjU8deSJY6VSYhfJtnfv7ucv5GjjhbuWSGZP0VD/BR+eTjWD54EasVv5AqwOz/Iz
-wwbvanHTqsVrEBU76733wvWRFelZXgzYhFoQYEucQB5F4KCtqO1OTi62stDCXLLR
-Z9ygHH92t7TlsKbxaMGL8gU7jGDeIytuHgJW2BXd8ekwQr4fdY7eBwoW4A+TRSKl
-rCNSp5iuKIXjyQ8ZJviOKXlZDJa2/5mYuDO8juQFcYshe+X29pbsrybLPkBBKdhl
-GxOi8DtiMVPCiHB63bKGXhqe38jNeHK0hboiREHZgnEt1/a+ZkLDVnWtLQcUBuBo
-UfLfuzQju/DrtqnWj8asmRzpsA675Lh1xmdLU0tv/NEb/aOGnIAy3+BAhhiq2g1w
-OU87P/vuWQrgl1D/jUEh
-=l3HK
------END PGP SIGNATURE-----
+-- 
+1.7.8.4
+
