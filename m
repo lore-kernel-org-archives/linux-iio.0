@@ -1,64 +1,100 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4F271048.4060608@kernel.org>
-Date: Mon, 30 Jan 2012 21:48:56 +0000
+Return-Path: <jic23@hermes.cam.ac.uk>
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-CC: linux-iio@vger.kernel.org, greg@kroah.com,
- guenter.roeck@ericsson.com, khali@linux-fr.org,
- dmitry.torokhov@gmail.com, alan@lxorguk.ukuu.org.uk, arnd@arndb.de,
- linus.walleij@linaro.org, maxime.ripard@free-electrons.com,
- thomas.petazzoni@free-electrons.com, zdevai@gmail.com,
- w.sang@pengutronix.de, marek.vasut@gmail.com,
- Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH 5/5] stargate2: example of map configuration for iio to
- hwmon example.
-References: <1327837614-24176-1-git-send-email-jic23@kernel.org> <1327837614-24176-6-git-send-email-jic23@kernel.org> <20120130193350.GA9672@opensource.wolfsonmicro.com> <4F26FCE2.1030705@kernel.org> <20120130212253.GC9672@opensource.wolfsonmicro.com>
-In-Reply-To: <20120130212253.GC9672@opensource.wolfsonmicro.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: linux-iio@vger.kernel.org
+Cc: greg@kroah.com,
+	guenter.roeck@ericsson.com,
+	khali@linux-fr.org,
+	dmitry.torokhov@gmail.com,
+	broonie@opensource.wolfsonmicro.com,
+	alan@lxorguk.ukuu.org.uk,
+	arnd@arndb.de,
+	linus.walleij@linaro.org,
+	maxime.ripard@free-electrons.com,
+	thomas.petazzoni@free-electrons.com,
+	zdevai@gmail.com,
+	w.sang@pengutronix.de,
+	marek.vasut@gmail.com,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 4/5] staging:iio:Documentation in kernel pull description.
+Date: Sun, 29 Jan 2012 11:46:53 +0000
+Message-Id: <1327837614-24176-5-git-send-email-jic23@kernel.org>
+In-Reply-To: <1327837614-24176-1-git-send-email-jic23@kernel.org>
+References: <1327837614-24176-1-git-send-email-jic23@kernel.org>
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Very basic description of the way iio consumers work and how to use
+this functionality.
 
-On 01/30/2012 09:22 PM, Mark Brown wrote:
-> On Mon, Jan 30, 2012 at 08:26:10PM +0000, Jonathan Cameron wrote:
->> On 01/30/2012 07:33 PM, Mark Brown wrote:
->>> On Sun, Jan 29, 2012 at 11:46:54AM +0000, Jonathan Cameron
->>> wrote:
-> 
->>>> +static struct iio_map max1363_consumer_map[] = { +	{ + 
->>>> .adc_channel_label = "AIN1", +		.consumer_dev = 
->>>> &iio_hwmon_test.dev, +		.consumer_channel = "testchan1",
-> 
->>> I do think it's better to use dev_name here rather than a
->>> struct device pointer - for several of the buses it's not
->>> actually possible to get a struct device until a device has
->>> been instantiated which isn't helpful for setting up the
->>> mappings.
-> 
->> We allow both.  In cases like this where the dev pointer is
->> explicitly available what gain do we get from not using it?
-> 
-> You avoid user confusion from having two ways of doing the same
-> thing and you save a little complexity in the implementation.  The
-> user confusion does happen in practice.
-Good reasoning.  Will drop the dev pointer option.
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/Documentation/inkernel.txt |   59 ++++++++++++++++++++++++
+ 1 files changed, 59 insertions(+), 0 deletions(-)
 
-iQIcBAEBAgAGBQJPJxBHAAoJEFSFNJnE9BaIGUwP/2SQjWhWZP28GWpWemx5Av7O
-5CUKvDZ/qk+ehevvp0fOKOD/DvciSNWDd/dTmGRllbYzpz7RkbGmV9sm+BFydqyG
-beTzbF5h5vuvCNfvVrXwePh2/fcm3kSMIOYQSnaDmn5rmZTR0qK6nkh1GdBtMa2T
-Hbk+qjdQFcrAvQcL1R4FQO+kq2xS/F3zQAt1rqxu4e+JWQjYDmGCK9zeWjJDmakv
-2DDeUUezNIA0tjvQy9EUOdybtoKvBlmgTujwCX2qpeyJTll2yxPuWFx8nB7oNGCQ
-ljoa9YO6mpRgiAQNpnvOeMLtAwa3EjEZLf1XBRRXUPoAvehcPLdL5C3IaxzpmaTY
-r7qXAPWwMPGIj5pTXdP1mQleZiepdKi3oOWygBjG8nKDqcLjuiMBPaE+S6xjIn4O
-dseszmeWhOsQgdBr3CpkaqBZrT3NDKcHkaFyThCQCDBIATTEK5LVgGVi9KX3toAe
-Emov7mOW+xSTJ2CLtbrmmjRm/mJSCXUVPBurD+LTXJnxOmCipTmd0Gt/s8dzPyd0
-uaY4XBSypYjUvakFgazuZ13pgDvfbQe329ShRNzM4CAPboy8q/X1W/JDsZvfJqrj
-oo04TKVxjbg44FjzhbxxBIavq+BUIdJMW4/MCt5YRq5rZPHq5E0TAbZ4tQpmvHUJ
-I9UZthFWchN/lD2AEteV
-=QK3s
------END PGP SIGNATURE-----
+diff --git a/drivers/staging/iio/Documentation/inkernel.txt b/drivers/staging/iio/Documentation/inkernel.txt
+new file mode 100644
+index 0000000..b9a4d0a
+--- /dev/null
++++ b/drivers/staging/iio/Documentation/inkernel.txt
+@@ -0,0 +1,59 @@
++Industrial I/O Subsystemm in kernel consumers.
++
++The IIO subsystem can act as a layer under other elements of the kernel
++providing a means of obtaining adc type readings or of driving dac type
++signals.  The functionality supported will grow as use cases arise.
++
++Describing the channel mapping (iio/machine.h)
++
++Channel associations are described using:
++
++struct iio_map {
++	const char *adc_channel_label;
++	struct device *consumer_dev;
++	const char *consumer_dev_name;
++	const char *consumer_channel;
++};
++
++adc_channel label identifies the channel on the IIO device by being
++matched against the datasheet_name field of the iio_chan_spec.
++
++consumer_dev or consumer_dev_name allow identification of the consumer device.
++These are then used to find the channel mapping from the consumer device (see
++below).
++
++Finally consumer_channel is a string identifying the channel to the consumer.
++(Perhaps 'battery_voltage' or similar).
++
++An array of these structures is then passed to the IIO driver.
++
++Supporting in kernel interfaces in the driver (driver.h)
++
++The driver must provide datasheet_name values for its channels and
++must pass the iio_map structures and a pointer to its own iio_dev structure
++ on to the core via a call to iio_map_array_register.  On removal,
++iio_map_array_unregister reverses this process.
++
++The result of this is that the IIO core now has all the information needed
++to associate a given channel with the consumer requesting it.
++
++Acting as an IIO consumer (consumer.h)
++
++The consumer first has to obtain an iio_channel structure from the core
++by calling iio_channel_get().  The correct channel is identified by:
++
++* matching dev or dev_name against consumer_dev and consumer_dev_name
++* matching consumer_channel against consumer_channel in the map
++
++There are then a number of functions that can be used to get information
++about this channel such as it's current reading.
++
++e.g.
++iio_st_read_channel_raw() - get a reading
++iio_st_read_channel_type() - get the type of channel
++
++There is also provision for retrieving all of the channels associated
++with a given consumer.  This is useful for generic drivers such as
++iio_hwmon where the number and naming of channels is not known by the
++consumer driver.  To do this, use iio_st_channel_get_all.
++
+-- 
+1.7.8.4
