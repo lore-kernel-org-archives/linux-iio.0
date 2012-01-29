@@ -1,41 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:45561 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753905Ab2AaU6B (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 31 Jan 2012 15:58:01 -0500
-Message-ID: <4F285602.8010002@cam.ac.uk>
-Date: Tue, 31 Jan 2012 20:58:42 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <jic23@kernel.org>
+Message-ID: <4F252456.4040700@kernel.org>
+Date: Sun, 29 Jan 2012 10:49:58 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH v2 4/6] staging:iio:events: Use waitqueue lock to protect
- event queue
-References: <1324290580-17511-1-git-send-email-lars@metafoo.de> <1324290580-17511-4-git-send-email-lars@metafoo.de> <4F258D7D.9090000@kernel.org> <4F282445.8000906@metafoo.de>
-In-Reply-To: <4F282445.8000906@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+ Michael Hennerich <michael.hennerich@analog.com>,
+ linux-iio@vger.kernel.org, device-drivers-devel@blackfin.uclinux.org,
+ drivers@analog.com
+Subject: Re: [PATCH v2 6/6] staging:iio:events: Use non-atmoic bitops
+References: <1324290580-17511-1-git-send-email-lars@metafoo.de> <1324290580-17511-6-git-send-email-lars@metafoo.de> <4EEFA5C2.70604@kernel.org>
+In-Reply-To: <4EEFA5C2.70604@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 01/31/2012 05:26 PM, Lars-Peter Clausen wrote:
-> On 01/29/2012 07:18 PM, Jonathan Cameron wrote:
->> On 12/19/2011 10:29 AM, Lars-Peter Clausen wrote:
->>> Use the waitqueue lock to protect the event queue instead of a custom mutex.
->>> This has the advantage that we can call the waitqueue operations with the lock
->>> held, which simplifies the code flow a bit.
->>>
->>> Acked-by: Jonathan Cameron <jic23@kernel.org>
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> Hmm.. I really should have noticed this before.. If this hasn't gone to
->> Greg already, can you also clear out the documentation for
->> event_list_lock within struct iio_event_interface.  Cleaner to do it
->> here than in a follow up patch.
+On 12/19/2011 08:59 PM, Jonathan Cameron wrote:
+> On 12/19/2011 10:29 AM, Lars-Peter Clausen wrote:
+>> We always hold the waitqueue lock when modifying the flags field. So it is safe
+>> to use the non-atomic bitops here instead of the atomic versions.
+>>
+>> The lock has to be held, because we need to clear the busy flag and flush the
+>> event fifo in one atomic operation when closing the event file descriptor.
+> Good spot.  Glad to be rid of these.  Thanks for doing this series, all
+> excellent tidying up and general reworking!
+Have these gone to Greg?  Sorry, have lost track.
+
+If not, atmoic -> atomic in the patch title!
+
+>>
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> Acked-by: Jonathan Cameron <jic23@kernel.org>
+>> ---
+>>  drivers/staging/iio/industrialio-event.c |    6 +++---
+>>  1 files changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/industrialio-event.c b/drivers/staging/iio/industrialio-event.c
+>> index 58243d9..5e461e1 100644
+>> --- a/drivers/staging/iio/industrialio-event.c
+>> +++ b/drivers/staging/iio/industrialio-event.c
+>> @@ -124,7 +124,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+>>  	struct iio_event_interface *ev_int = filep->private_data;
+>>  
+>>  	spin_lock(&ev_int->wait.lock);
+>> -	clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+>> +	__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+>>  	/*
+>>  	 * In order to maintain a clean state for reopening,
+>>  	 * clear out any awaiting events. The mask will prevent
+>> @@ -153,7 +153,7 @@ int iio_event_getfd(struct iio_dev *indio_dev)
+>>  		return -ENODEV;
+>>  
+>>  	spin_lock(&ev_int->wait.lock);
+>> -	if (test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+>> +	if (__test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+>>  		spin_unlock(&ev_int->wait.lock);
+>>  		return -EBUSY;
+>>  	}
+>> @@ -162,7 +162,7 @@ int iio_event_getfd(struct iio_dev *indio_dev)
+>>  				&iio_event_chrdev_fileops, ev_int, O_RDONLY);
+>>  	if (fd < 0) {
+>>  		spin_lock(&ev_int->wait.lock);
+>> -		clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+>> +		__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+>>  		spin_unlock(&ev_int->wait.lock);
+>>  	}
+>>  	return fd;
 > 
-> Yes, the whole series has already been send to Greg, but since he hasn't
-> applied it yet, I suppose I could resend it with your fixes.
-Either that or just send Greg a small follow up (or I'll get to it at
-somepoint) None of it is remotely critical!
-
