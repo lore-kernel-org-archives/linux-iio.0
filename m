@@ -1,95 +1,63 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: greg@kroah.com,
-	guenter.roeck@ericsson.com,
-	khali@linux-fr.org,
-	dmitry.torokhov@gmail.com,
-	broonie@opensource.wolfsonmicro.com,
-	alan@lxorguk.ukuu.org.uk,
-	arnd@arndb.de,
-	linus.walleij@linaro.org,
+Return-Path: <broonie@opensource.wolfsonmicro.com>
+Date: Mon, 30 Jan 2012 19:33:50 +0000
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, greg@kroah.com, guenter.roeck@ericsson.com,
+	khali@linux-fr.org, dmitry.torokhov@gmail.com,
+	alan@lxorguk.ukuu.org.uk, arnd@arndb.de, linus.walleij@linaro.org,
 	maxime.ripard@free-electrons.com,
-	thomas.petazzoni@free-electrons.com,
-	zdevai@gmail.com,
-	w.sang@pengutronix.de,
-	marek.vasut@gmail.com,
+	thomas.petazzoni@free-electrons.com, zdevai@gmail.com,
+	w.sang@pengutronix.de, marek.vasut@gmail.com,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: [PATCH 5/5] stargate2: example of map configuration for iio to hwmon example.
-Date: Sun, 29 Jan 2012 11:46:54 +0000
-Message-Id: <1327837614-24176-6-git-send-email-jic23@kernel.org>
-In-Reply-To: <1327837614-24176-1-git-send-email-jic23@kernel.org>
+Subject: Re: [PATCH 5/5] stargate2: example of map configuration for iio to
+ hwmon example.
+Message-ID: <20120130193350.GA9672@opensource.wolfsonmicro.com>
 References: <1327837614-24176-1-git-send-email-jic23@kernel.org>
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+ <1327837614-24176-6-git-send-email-jic23@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="lrZ03NoBR/3+SXJZ"
+In-Reply-To: <1327837614-24176-6-git-send-email-jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Jonathan Cameron <jic23@cam.ac.uk>
 
-Do not commit.
----
- arch/arm/mach-pxa/stargate2.c |   22 ++++++++++++++++++++++
- 1 files changed, 22 insertions(+), 0 deletions(-)
+--lrZ03NoBR/3+SXJZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/arch/arm/mach-pxa/stargate2.c b/arch/arm/mach-pxa/stargate2.c
-index b0656e15..d2d9a27 100644
---- a/arch/arm/mach-pxa/stargate2.c
-+++ b/arch/arm/mach-pxa/stargate2.c
-@@ -54,6 +54,8 @@
- #include <linux/mfd/da903x.h>
- #include <linux/sht15.h>
- 
-+#include "../../../drivers/staging/iio/machine.h"
-+
- #include "devices.h"
- #include "generic.h"
- 
-@@ -406,6 +408,23 @@ static struct i2c_pxa_platform_data i2c_pdata = {
- 	.fast_mode = 1,
- };
- 
-+static struct platform_device iio_hwmon_test = {
-+	.name = "iio_hwmon",
-+};
-+
-+static struct iio_map max1363_consumer_map[] = {
-+	{
-+		.adc_channel_label = "AIN1",
-+		.consumer_dev = &iio_hwmon_test.dev,
-+		.consumer_channel = "testchan1",
-+	}, {
-+		.adc_channel_label = "AIN2",
-+		.consumer_dev = &iio_hwmon_test.dev,
-+		.consumer_channel = "testchan2",
-+	},
-+	{}
-+};
-+
- static void __init imote2_stargate2_init(void)
- {
- 
-@@ -561,6 +580,7 @@ static struct i2c_board_info __initdata imote2_i2c_board_info[] = {
- 		 * pull up resistors are missing.
- 		 */
- 		.irq = PXA_GPIO_TO_IRQ(99),
-+		.platform_data = max1363_consumer_map,
- 	}, { /* ITS400 Sensor board only */
- 		.type = "tsl2561",
- 		.addr = 0x49,
-@@ -945,6 +965,7 @@ static struct i2c_board_info __initdata stargate2_i2c_board_info[] = {
- 		 * pull up resistors are missing.
- 		 */
- 		.irq = PXA_GPIO_TO_IRQ(99),
-+		.platform_data = max1363_consumer_map,
- 	}, { /* ITS400 Sensor board only */
- 		.type = "tsl2561",
- 		.addr = 0x49,
-@@ -977,6 +998,7 @@ static struct platform_device *stargate2_devices[] = {
- 	&stargate2_sram,
- 	&smc91x_device,
- 	&sht15,
-+	&iio_hwmon_test,
- };
- 
- static void __init stargate2_init(void)
--- 
-1.7.8.4
+On Sun, Jan 29, 2012 at 11:46:54AM +0000, Jonathan Cameron wrote:
+
+> +static struct iio_map max1363_consumer_map[] = {
+> +	{
+> +		.adc_channel_label = "AIN1",
+> +		.consumer_dev = &iio_hwmon_test.dev,
+> +		.consumer_channel = "testchan1",
+
+I do think it's better to use dev_name here rather than a struct device
+pointer - for several of the buses it's not actually possible to get a
+struct device until a device has been instantiated which isn't helpful
+for setting up the mappings.
+
+--lrZ03NoBR/3+SXJZ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAEBAgAGBQJPJvBvAAoJEBus8iNuMP3dkeAP/3TTbqSMzsNK9jDp0ZziM+Pg
+XnOcVlrUD258u4K1n1gV+yLIKcPgEWc1lcPlR/gmdr3AEEumxb+aJuXmyHSqTOFM
+Txhj+R1+GH02N/HhVOGwZnWQervdxTIwqNRGVahmaTzqsnPBLdD1P4gRUw73FtYV
+xUCNnMFWOGWc8CPYMK448kNj1glz+zCUxv6SWAPPuiST3FsIRwGd4yEyeg24kVaZ
+kLWn4vvTXWKX1HGGSEKiUoUNfcA+HG8p6XvBGKdhi7+rbZR9WIKfdHZ7h0VLmzKc
+viWzBomDi/8AYhITV0z76ncDFzt13YXxGpegbzXB1D6CFTyS3kZZ+y1k67Q08Pxc
+W1zomFL7VBcyssLOby7RiX94XL5F0KzRyQxeMaHVhevFW2bn03nS23kDM23h3TnN
+4ZAatzv96kpvYm+PQR48tU/PvPtC8abJrNaEesPrx0evMWn9Hqx1sZ3UYHhaI+qB
+Hf/8KG5YJjWqR4PwwMQj+gEtcjHgZ3q31Sp8NDjb5OmbSTDLQlTDwLgnGOSdye2V
+ZV98HjyHWPOd6DlxAo7uXfevvR2qv3oCeke1zDxzAhmSIBYz572S0syEe3T4fZET
+U3URH0xSCfwsVFJ38W9+IBxEs9r/dLqMRBQZlvEVg2Uhm4PtqLr5SsHUPV2Qi0Uo
+/pw/khonxEJqba7/Oiun
+=2p8S
+-----END PGP SIGNATURE-----
+
+--lrZ03NoBR/3+SXJZ--
