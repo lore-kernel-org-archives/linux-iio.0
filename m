@@ -1,42 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:36039 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754136Ab2BITGY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Feb 2012 14:06:24 -0500
-Message-ID: <4F341926.5090902@metafoo.de>
-Date: Thu, 09 Feb 2012 20:06:14 +0100
+Received: from am1ehsobe004.messaging.microsoft.com ([213.199.154.207]:55033
+	"EHLO AM1EHSOBE001.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753353Ab2BASop (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Feb 2012 13:44:45 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
+To: Greg Kroah-Hartman <gregkh@suse.de>
+CC: Jonathan Cameron <jic23@kernel.org>, <devel@driverdev.osuosl.org>,
+	<linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 0/6] staging:iio: Event handling updates
+Date: Wed, 1 Feb 2012 19:45:50 +0100
+Message-ID: <1328121956-29596-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Jonathan Cameron <jic23@kernel.org>, devel@driverdev.osuosl.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/6] staging:iio: Update iio_event_interface documentation
-References: <1328131074-2739-1-git-send-email-lars@metafoo.de> <1328131074-2739-2-git-send-email-lars@metafoo.de> <20120209181240.GA1340@kroah.com>
-In-Reply-To: <20120209181240.GA1340@kroah.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/09/2012 07:12 PM, Greg Kroah-Hartman wrote:
-> On Wed, Feb 01, 2012 at 10:17:49PM +0100, Lars-Peter Clausen wrote:
->> The documentation for the iio_event_interface does not match the actual struct
->> anymore. This patch removes the documentation for non-existing fields and adds
->> documentation for missing fields.
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> Acked-by: Jonathan Cameron <jic23@kernel.org>
->> ---
->>  drivers/staging/iio/industrialio-core.c |    3 ++-
->>  1 files changed, 2 insertions(+), 1 deletions(-)
-> 
-> This patch fails to apply to my tree, possibly because of your other
-> patches I accepted.
-> 
-> Care to redo this series against the next linux-next release and resend?
-> 
+Hi Greg,
 
-You've applied v1 of the series, but the diffwas only a minor documentation fix
-anyway, so I'll sent it as an individual patch.
+This series is a resend of the same series form early January, with two minor
+issues in patch 4 and 5 being fixed. Also the order of patch 5 and 6 in the
+series has been changed.
 
-Thanks,
+The series starts with fixing some documentation issues for the
+iio_event_interface struct. The second patch moves the IIO event handling code
+from the IIO core file to its own file with the next patches containing some
+cleanups to the event handling code. The last patch implements poll support for
+IIO event handling fds.
+
 - Lars
+
+Lars-Peter Clausen (6):
+  staging:iio: Update iio_event_interface documentation
+  staging:iio: Factor out event handling into its own file
+  staging:iio:events: Use kfifo for event queue
+  staging:iio:events: Use waitqueue lock to protect event queue
+  staging:iio:events: Use non-atomic bitops
+  staging:iio:events: Add poll support
+
+ drivers/staging/iio/Makefile             |    2 +-
+ drivers/staging/iio/iio_core.h           |    4 +
+ drivers/staging/iio/industrialio-core.c  |  458 ------------------------------
+ drivers/staging/iio/industrialio-event.c |  453 +++++++++++++++++++++++++++++
+ 4 files changed, 458 insertions(+), 459 deletions(-)
+ create mode 100644 drivers/staging/iio/industrialio-event.c
+
+-- 
+1.7.8.3
+
+
