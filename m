@@ -5,39 +5,77 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 0/6] staging:iio: Event handling updates
-Date: Wed,  1 Feb 2012 22:17:48 +0100
-Message-Id: <1328131074-2739-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH v2 6/6] staging:iio:events: Add poll support
+Date: Wed,  1 Feb 2012 22:17:54 +0100
+Message-Id: <1328131074-2739-7-git-send-email-lars@metafoo.de>
+In-Reply-To: <1328131074-2739-1-git-send-email-lars@metafoo.de>
+References: <1328131074-2739-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Greg,
+Add poll support to the event queue. This will allow us to check for pending
+events in a application's event loop using poll() or similar. Since we already
+have support for blocking reads adding poll support as well is trivial.
 
-This series is a resend of the same series form early January, with two minor
-issues in patch 4 and 5 being fixed. Also the order of patch 5 and 6 in the
-series has been changed.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/industrialio-event.c |   23 ++++++++++++++++++++++-
+ 1 files changed, 22 insertions(+), 1 deletions(-)
 
-The series starts with fixing some documentation issues for the
-iio_event_interface struct. The second patch moves the IIO event handling code
-from the IIO core file to its own file with the next patches containing some
-cleanups to the event handling code. The last patch implements poll support for
-IIO event handling fds.
-
-- Lars
-
-Lars-Peter Clausen (6):
-  staging:iio: Update iio_event_interface documentation
-  staging:iio: Factor out event handling into its own file
-  staging:iio:events: Use kfifo for event queue
-  staging:iio:events: Use waitqueue lock to protect event queue
-  staging:iio:events: Use non-atomic bitops
-  staging:iio:events: Add poll support
-
- drivers/staging/iio/Makefile             |    2 +-
- drivers/staging/iio/iio_core.h           |    4 +
- drivers/staging/iio/industrialio-core.c  |  458 ------------------------------
- drivers/staging/iio/industrialio-event.c |  453 +++++++++++++++++++++++++++++
- 4 files changed, 458 insertions(+), 459 deletions(-)
- create mode 100644 drivers/staging/iio/industrialio-event.c
-
+diff --git a/drivers/staging/iio/industrialio-event.c b/drivers/staging/iio/industrialio-event.c
+index 14e505a..5fdf739 100644
+--- a/drivers/staging/iio/industrialio-event.c
++++ b/drivers/staging/iio/industrialio-event.c
+@@ -15,6 +15,7 @@
+ #include <linux/kernel.h>
+ #include <linux/kfifo.h>
+ #include <linux/module.h>
++#include <linux/poll.h>
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+ #include <linux/uaccess.h>
+@@ -56,7 +57,7 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+ 
+ 		copied = kfifo_put(&ev_int->det_events, &ev);
+ 		if (copied != 0)
+-			wake_up_locked(&ev_int->wait);
++			wake_up_locked_poll(&ev_int->wait, POLLIN);
+ 	}
+ 	spin_unlock(&ev_int->wait.lock);
+ 
+@@ -64,6 +65,25 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+ }
+ EXPORT_SYMBOL(iio_push_event);
+ 
++/**
++ * iio_event_poll() - poll the event queue to find out if it has data
++ */
++static unsigned int iio_event_poll(struct file *filep,
++			     struct poll_table_struct *wait)
++{
++	struct iio_event_interface *ev_int = filep->private_data;
++	unsigned int events = 0;
++
++	poll_wait(filep, &ev_int->wait, wait);
++
++	spin_lock(&ev_int->wait.lock);
++	if (!kfifo_is_empty(&ev_int->det_events))
++		events = POLLIN | POLLRDNORM;
++	spin_unlock(&ev_int->wait.lock);
++
++	return events;
++}
++
+ static ssize_t iio_event_chrdev_read(struct file *filep,
+ 				     char __user *buf,
+ 				     size_t count,
+@@ -117,6 +137,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+ 
+ static const struct file_operations iio_event_chrdev_fileops = {
+ 	.read =  iio_event_chrdev_read,
++	.poll =  iio_event_poll,
+ 	.release = iio_event_chrdev_release,
+ 	.owner = THIS_MODULE,
+ 	.llseek = noop_llseek,
 -- 
 1.7.8.3
