@@ -1,50 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from am1ehsobe004.messaging.microsoft.com ([213.199.154.207]:55033
-	"EHLO AM1EHSOBE001.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753353Ab2BASop (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Feb 2012 13:44:45 -0500
+Return-Path: <lars@metafoo.de>
+Message-ID: <4F299764.8090605@metafoo.de>
+Date: Wed, 01 Feb 2012 20:49:56 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
-To: Greg Kroah-Hartman <gregkh@suse.de>
-CC: Jonathan Cameron <jic23@kernel.org>, <devel@driverdev.osuosl.org>,
-	<linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 0/6] staging:iio: Event handling updates
-Date: Wed, 1 Feb 2012 19:45:50 +0100
-Message-ID: <1328121956-29596-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@kernel.org>, devel@driverdev.osuosl.org,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 0/6] staging:iio: Event handling updates
+References: <1328121956-29596-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1328121956-29596-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Greg,
-
-This series is a resend of the same series form early January, with two minor
-issues in patch 4 and 5 being fixed. Also the order of patch 5 and 6 in the
-series has been changed.
-
-The series starts with fixing some documentation issues for the
-iio_event_interface struct. The second patch moves the IIO event handling code
-from the IIO core file to its own file with the next patches containing some
-cleanups to the event handling code. The last patch implements poll support for
-IIO event handling fds.
-
-- Lars
-
-Lars-Peter Clausen (6):
-  staging:iio: Update iio_event_interface documentation
-  staging:iio: Factor out event handling into its own file
-  staging:iio:events: Use kfifo for event queue
-  staging:iio:events: Use waitqueue lock to protect event queue
-  staging:iio:events: Use non-atomic bitops
-  staging:iio:events: Add poll support
-
- drivers/staging/iio/Makefile             |    2 +-
- drivers/staging/iio/iio_core.h           |    4 +
- drivers/staging/iio/industrialio-core.c  |  458 ------------------------------
- drivers/staging/iio/industrialio-event.c |  453 +++++++++++++++++++++++++++++
- 4 files changed, 458 insertions(+), 459 deletions(-)
- create mode 100644 drivers/staging/iio/industrialio-event.c
-
--- 
-1.7.8.3
+On 02/01/2012 07:45 PM, Lars-Peter Clausen wrote:
+> Hi Greg,
+> 
+> This series is a resend of the same series form early January, with two minor
+> issues in patch 4 and 5 being fixed. Also the order of patch 5 and 6 in the
+> series has been changed.
+> 
+> The series starts with fixing some documentation issues for the
+> iio_event_interface struct. The second patch moves the IIO event handling code
+> from the IIO core file to its own file with the next patches containing some
+> cleanups to the event handling code. The last patch implements poll support for
+> IIO event handling fds.
+> 
+> - Lars
+> 
 
 
+Sorry for the noise, greg's old email address is already dead, I'll have to
+resend this series.
