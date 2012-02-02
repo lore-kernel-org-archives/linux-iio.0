@@ -1,219 +1,482 @@
-Return-Path: <wellsk40@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:33849 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756214Ab2BBPwS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 2 Feb 2012 10:52:18 -0500
+Message-ID: <4F2AB0F8.7030601@cam.ac.uk>
+Date: Thu, 02 Feb 2012 15:51:20 +0000
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-In-Reply-To: <1328194978-20064-1-git-send-email-stigge@antcom.de>
-References: <1328194978-20064-1-git-send-email-stigge@antcom.de>
-Date: Thu, 2 Feb 2012 14:53:15 -0800
-Message-ID: <CADEiroq7=c6gqc-nT3V_HHDWhExfWw=hFY4XVz+-7UYd4Zze4w@mail.gmail.com>
-Subject: Re: [PATCH] ARM: LPC32xx: ADC support
-From: Kevin Wells <wellsk40@gmail.com>
 To: stigge@antcom.de
-Cc: w.sang@pengutronix.de, linus.walleij@linaro.org,
+CC: w.sang@pengutronix.de, linus.walleij@linaro.org,
 	linux-kernel@vger.kernel.org, kevin.wells@nxp.com,
-	linux-arm-kernel@lists.infradead.org, jic23@cam.ac.uk,
-	gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+	linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: Re: [PATCH] ARM: LPC32xx: ADC support
+References: <1328194978-20064-1-git-send-email-stigge@antcom.de>
+In-Reply-To: <1328194978-20064-1-git-send-email-stigge@antcom.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Feb 2, 2012 at 7:02 AM,  <stigge@antcom.de> wrote:
+My comments are down near the iio bits.
 > This patch adds a 3-channel ADC driver for the LPC32xx ARM SoC
 >
-> Signed-off-by: Roland Stigge <stigge@antcom.de>
+> Signed-off-by: Roland Stigge<stigge@antcom.de>
 >
-> diff --git a/arch/arm/mach-lpc32xx/clock.c b/arch/arm/mach-lpc32xx/clock.=
-c
+> diff --git a/arch/arm/mach-lpc32xx/clock.c b/arch/arm/mach-lpc32xx/clock.c
 > index c269ef5..9cda6fa 100644
 > --- a/arch/arm/mach-lpc32xx/clock.c
 > +++ b/arch/arm/mach-lpc32xx/clock.c
-> @@ -760,6 +760,36 @@ static struct clk clk_tsc =3D {
-> =A0 =A0 =A0 =A0.get_rate =A0 =A0 =A0 =3D local_return_parent_rate,
-> =A0};
+> @@ -760,6 +760,36 @@ static struct clk clk_tsc = {
+>   	.get_rate	= local_return_parent_rate,
+>   };
 >
 > +static int adc_onoff_enable(struct clk *clk, int enable)
 > +{
-> + =A0 =A0 =A0 u32 tmp;
+> +	u32 tmp;
 > +
-> + =A0 =A0 =A0 /* Use PERIPH_CLOCK */
-> + =A0 =A0 =A0 tmp =3D __raw_readl(LPC32XX_CLKPWR_ADC_CLK_CTRL_1);
-> + =A0 =A0 =A0 tmp |=3D LPC32XX_CLKPWR_ADCCTRL1_PCLK_SEL;
-> + =A0 =A0 =A0 /*
-> + =A0 =A0 =A0 =A0* Set clock divider so that we have equal to or less tha=
-n
-> + =A0 =A0 =A0 =A0* 4.5MHz clock at ADC
-> + =A0 =A0 =A0 =A0*/
-> + =A0 =A0 =A0 tmp |=3D clk->get_rate(clk) / 4500000 + 1;
-> + =A0 =A0 =A0 __raw_writel(tmp, LPC32XX_CLKPWR_ADC_CLK_CTRL_1);
-
-For this clock, also set clk->rate =3D (actual rate of the ADC input clock)=
-.
-Something like clk->rate =3D clk->get_rate(clk->parent) / (computed divider=
-)
-If the clk->rate stays at 0, the clk_get_rate() function for the ADC will
-return 13Mhz instead of around 4.5MHz.
-
-(I know the driver doesn't use clk_get_rate(), but this might save some
-debugging later if it ever does).
-
+> +	/* Use PERIPH_CLOCK */
+> +	tmp = __raw_readl(LPC32XX_CLKPWR_ADC_CLK_CTRL_1);
+> +	tmp |= LPC32XX_CLKPWR_ADCCTRL1_PCLK_SEL;
+> +	/*
+> +	 * Set clock divider so that we have equal to or less than
+> +	 * 4.5MHz clock at ADC
+> +	 */
+> +	tmp |= clk->get_rate(clk) / 4500000 + 1;
+> +	__raw_writel(tmp, LPC32XX_CLKPWR_ADC_CLK_CTRL_1);
 > +
-> + =A0 =A0 =A0 if (enable =3D=3D 0)
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 __raw_writel(0, clk->enable_reg);
-> + =A0 =A0 =A0 else
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 __raw_writel(clk->enable_mask, clk->enable_=
-reg);
+> +	if (enable == 0)
+> +		__raw_writel(0, clk->enable_reg);
+> +	else
+> +		__raw_writel(clk->enable_mask, clk->enable_reg);
 > +
-> + =A0 =A0 =A0 return 0;
+> +	return 0;
 > +}
 > +
-
-...
-...
-
-> +config LPC32XX_ADC
-> + =A0 =A0 =A0 tristate "NXP LPC32XX ADC"
-> + =A0 =A0 =A0 depends on ARCH_LPC32XX && !TOUCHSCREEN_LPC32XX
-> + =A0 =A0 =A0 help
-> + =A0 =A0 =A0 =A0 Say yes here to build support for the integrated ADC in=
-side the
-> + =A0 =A0 =A0 =A0 LPC32XX SoC. Note that this feature uses the same hardw=
-are as the
-> + =A0 =A0 =A0 =A0 touchscreen driver, so you can only select one of the t=
-wo drivers
-> + =A0 =A0 =A0 =A0 (lpc32xx_adc or lpc32xx_ts). Provides direct access via=
- sysfs.
-
-I like how clean this driver is. Thanks for taking the time to write and su=
-bmit
-this.
-
+> +static struct clk clk_adc = {
+> +	.parent		=&clk_pclk,
+> +	.enable		= adc_onoff_enable,
+> +	.enable_reg	= LPC32XX_CLKPWR_ADC_CLK_CTRL,
+> +	.enable_mask	= LPC32XX_CLKPWR_ADC32CLKCTRL_CLK_EN,
+> +	.get_rate	= local_return_parent_rate,
+> +};
 > +
-> =A0endmenu
-> diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/M=
-akefile
+>   static int mmc_onoff_enable(struct clk *clk, int enable)
+>   {
+>   	u32 tmp;
+> @@ -1097,6 +1127,7 @@ static struct clk_lookup lookups[] = {
+>   	_REGISTER_CLOCK("dev:ssp1", NULL, clk_ssp1)
+>   	_REGISTER_CLOCK("lpc32xx_keys.0", NULL, clk_kscan)
+>   	_REGISTER_CLOCK("lpc32xx-nand.0", "nand_ck", clk_nand)
+> +	_REGISTER_CLOCK("lpc32xx-adc", NULL, clk_adc)
+>   	_REGISTER_CLOCK(NULL, "i2s0_ck", clk_i2s0)
+>   	_REGISTER_CLOCK(NULL, "i2s1_ck", clk_i2s1)
+>   	_REGISTER_CLOCK("ts-lpc32xx", NULL, clk_tsc)
+> diff --git a/arch/arm/mach-lpc32xx/common.c b/arch/arm/mach-lpc32xx/common.c
+> index f220eb0..2f869c0 100644
+> --- a/arch/arm/mach-lpc32xx/common.c
+> +++ b/arch/arm/mach-lpc32xx/common.c
+> @@ -137,6 +137,27 @@ struct platform_device lpc32xx_rtc_device = {
+>   	.resource = lpc32xx_rtc_resources,
+>   };
+>
+> +/*
+> + * ADC support
+> + */
+> +static struct resource adc_resources[] = {
+> +	{
+> +		.start = LPC32XX_ADC_BASE,
+> +		.end = LPC32XX_ADC_BASE + SZ_4K - 1,
+> +		.flags = IORESOURCE_MEM,
+> +	}, {
+> +		.start = IRQ_LPC32XX_TS_IRQ,
+> +		.end = IRQ_LPC32XX_TS_IRQ,
+> +		.flags = IORESOURCE_IRQ,
+> +	},
+> +};
+> +struct platform_device lpc32xx_adc_device = {
+> +	.name =  "lpc32xx-adc",
+> +	.id = -1,
+> +	.num_resources = ARRAY_SIZE(adc_resources),
+> +	.resource = adc_resources,
+> +};
+> +
+>   #if defined(CONFIG_USB_OHCI_HCD)
+>   /* The dmamask must be set for OHCI to work */
+>   static u64 ohci_dmamask = ~(u32) 0;
+> diff --git a/arch/arm/mach-lpc32xx/common.h b/arch/arm/mach-lpc32xx/common.h
+> index e42d702..5bf0050 100644
+> --- a/arch/arm/mach-lpc32xx/common.h
+> +++ b/arch/arm/mach-lpc32xx/common.h
+> @@ -30,6 +30,7 @@ extern struct platform_device lpc32xx_i2c0_device;
+>   extern struct platform_device lpc32xx_i2c1_device;
+>   extern struct platform_device lpc32xx_i2c2_device;
+>   extern struct platform_device lpc32xx_tsc_device;
+> +extern struct platform_device lpc32xx_adc_device;
+>   extern struct platform_device lpc32xx_rtc_device;
+>   extern struct platform_device lpc32xx_ohci_device;
+>
+> diff --git a/arch/arm/mach-lpc32xx/phy3250.c b/arch/arm/mach-lpc32xx/phy3250.c
+> index 69a5ceb..23b484c 100644
+> --- a/arch/arm/mach-lpc32xx/phy3250.c
+> +++ b/arch/arm/mach-lpc32xx/phy3250.c
+> @@ -317,6 +317,9 @@ static struct platform_device *phy3250_devs[] __initdata = {
+>   #if defined(CONFIG_LPC_ENET)
+>   	&lpc32xx_net_device,
+>   #endif
+> +#if defined(CONFIG_LPC32XX_ADC)
+> +	&lpc32xx_adc_device,
+> +#endif
+>   };
+>
+>   static struct amba_device *amba_devs[] __initdata = {
+> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+> index d9decea..592eabd 100644
+> --- a/drivers/staging/iio/adc/Kconfig
+> +++ b/drivers/staging/iio/adc/Kconfig
+> @@ -193,4 +193,13 @@ config MAX1363_RING_BUFFER
+>   	  Say yes here to include ring buffer support in the MAX1363
+>   	  ADC driver.
+>
+> +config LPC32XX_ADC
+> +	tristate "NXP LPC32XX ADC"
+> +	depends on ARCH_LPC32XX&&  !TOUCHSCREEN_LPC32XX
+> +	help
+> +	  Say yes here to build support for the integrated ADC inside the
+> +	  LPC32XX SoC. Note that this feature uses the same hardware as the
+> +	  touchscreen driver, so you can only select one of the two drivers
+> +	  (lpc32xx_adc or lpc32xx_ts). Provides direct access via sysfs.
+This should be a good base for messing around with the in kernel 
+interfaces then ;)
+> +
+>   endmenu
+
+A few structural changes needed, mainly to catch up with newer 
+interfaces than used here, but
+fundamentally sound.
+> diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
 > index ceee7f3..f83ab95 100644
 > --- a/drivers/staging/iio/adc/Makefile
 > +++ b/drivers/staging/iio/adc/Makefile
-> @@ -37,3 +37,4 @@ obj-$(CONFIG_AD7192) +=3D ad7192.o
-
-...
-...
-
-> + =A0 =A0 =A0 platform_set_drvdata(pdev, info);
+> @@ -37,3 +37,4 @@ obj-$(CONFIG_AD7192) += ad7192.o
+>   obj-$(CONFIG_ADT7310) += adt7310.o
+>   obj-$(CONFIG_ADT7410) += adt7410.o
+>   obj-$(CONFIG_AD7280) += ad7280a.o
+> +obj-$(CONFIG_LPC32XX_ADC) += lpc32xx_adc.o
+> diff --git a/drivers/staging/iio/adc/lpc32xx_adc.c b/drivers/staging/iio/adc/lpc32xx_adc.c
+> new file mode 100644
+> index 0000000..6b27446
+> --- /dev/null
+> +++ b/drivers/staging/iio/adc/lpc32xx_adc.c
+> @@ -0,0 +1,286 @@
+> +/*
+> + *  lpc32xx_adc.c - Support for ADC in LPC32XX
+> + *
+> + *  Copyright (C) 2011 Roland Stigge<stigge@antcom.de>
+> + *
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License as published by
+> + *  the Free Software Foundation; either version 2 of the License, or
+> + *  (at your option) any later version.
+> + *
+> + *  This program is distributed in the hope that it will be useful,
+> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + *  GNU General Public License for more details.
+> + *
+> + *  You should have received a copy of the GNU General Public License
+> + *  along with this program; if not, write to the Free Software
+> + *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+> + */
 > +
-> + =A0 =A0 =A0 device_init_wakeup(&pdev->dev, 1);
-
-I don't think you need this for this driver.
-
-> + =A0 =A0 =A0 init_completion(&info->completion);
+> +#include<linux/module.h>
+> +#include<linux/platform_device.h>
+> +#include<linux/interrupt.h>
+> +#include<linux/device.h>
+> +#include<linux/kernel.h>
+> +#include<linux/slab.h>
+> +#include<linux/io.h>
+> +#include<linux/clk.h>
+> +#include<linux/err.h>
+> +#include<linux/completion.h>
 > +
-> + =A0 =A0 =A0 printk(KERN_INFO "LPC32XX ADC driver loaded, IRQ %d\n", inf=
-o->irq);
-
-dev_info instead of printk
-
+> +#include "../iio.h"
+> +#include "../sysfs.h"
 > +
-> + =A0 =A0 =A0 return 0;
+> +/*
+> + * LPC32XX registers definitions
+> + */
+> +
+> +#define LPC32XX_ADC_SELECT(x)	((x) + 0x04)
+> +#define LPC32XX_ADC_CTRL(x)	((x) + 0x08)
+> +#define LPC32XX_ADC_VALUE(x)	((x) + 0x48)
+> +
+> +/* Bit definitions for LPC32XX_ADC_SELECT: */
+> +#define AD_REFm         0x00000200 /* constant, always write this value! */
+> +#define AD_REFp		0x00000080 /* constant, always write this value! */
+> +#define AD_IN		0x00000010 /* multiple of this is the */
+> +				   /* channel number: 0, 1, 2 */
+> +#define AD_INTERNAL	0x00000004 /* constant, always write this value! */
+> +
+> +/* Bit definitions for LPC32XX_ADC_CTRL: */
+> +#define AD_STROBE	0x00000002
+> +#define AD_PDN_CTRL	0x00000004
+> +
+> +/* Bit definitions for LPC32XX_ADC_VALUE: */
+> +#define ADC_VALUE_MASK	0x000003FF
+> +
+> +#define MOD_NAME "lpc32xx-adc"
+> +
+> +/*
+> + * chip specifc information
+> + */
+> +
+> +struct lpc32xx_adc_info {
+> +	struct iio_dev *dev;
+> +	void __iomem *adc_base;
+irq is only used where the platform device is readily available so you could
+drop it from this structure.
+
+There is provision in iio via the iio_device_allocate parameter and iio_priv
+to embed this structure within an iio_dev structure.  It makes for a 
+cleaner code
+but will require a trivial bit of reorganizing in your probe and remove
+> +	int irq;
+> +	struct clk *clk;
+> +	struct completion completion;
+> +
+> +	u32 value;
+> +};
+> +
+> +/*
+> + * sysfs nodes
+> + */
+> +static ssize_t lpc32xx_adin_value(struct device *dev,
+> +		struct device_attribute *attr,
+> +		char *buf)
+> +{
+> +	struct iio_dev *dev_info = dev_get_drvdata(dev);
+> +	struct lpc32xx_adc_info *info = iio_priv(dev_info);
+> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> +	int result;
+> +
+> +	mutex_lock(&dev_info->mlock);
+> +	/* Measurement setup */
+> +	__raw_writel(AD_INTERNAL | (AD_IN * this_attr->address) |
+> +		AD_REFp | AD_REFm,
+> +		LPC32XX_ADC_SELECT(info->adc_base));
+> +	/* Trigger conversion */
+> +	__raw_writel(AD_PDN_CTRL | AD_STROBE,
+> +		LPC32XX_ADC_CTRL(info->adc_base));
+> +
+> +	wait_for_completion(&info->completion); /* set by ISR */
+> +
+> +	result = sprintf(buf, "%d\n", info->value);
+> +
+> +	mutex_unlock(&dev_info->mlock);
+> +
+> +	return result;
+> +}
+> +
+> +static IIO_DEVICE_ATTR(in0_raw, S_IRUGO, lpc32xx_adin_value, NULL, 0);
+> +static IIO_DEVICE_ATTR(in1_raw, S_IRUGO, lpc32xx_adin_value, NULL, 1);
+> +static IIO_DEVICE_ATTR(in2_raw, S_IRUGO, lpc32xx_adin_value, NULL, 2);
+> +
+> +static struct attribute *lpc32xx_adin_attributes[] = {
+> +	&iio_dev_attr_in0_raw.dev_attr.attr,
+> +	&iio_dev_attr_in1_raw.dev_attr.attr,
+> +	&iio_dev_attr_in2_raw.dev_attr.attr,
+> +	NULL,
+Please use iio_chan_info structures and the read_raw callback
+rather than doing these attributes like this.  That will make for a much 
+easier
+job if anyone ever wants to use the inkernel interfaces (highly likely 
+with a soc adc).
+
+
+> +};
+> +
+> +static const struct attribute_group lpc32xx_adin_attribute_group = {
+> +	.attrs = lpc32xx_adin_attributes,
+> +};
+> +
+> +static const struct iio_info lpc32xx_adc_iio_info = {
+> +	.attrs =&lpc32xx_adin_attribute_group,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static irqreturn_t lpc32xx_adc_isr(int irq, void *dev_id)
+> +{
+> +	struct lpc32xx_adc_info *info = (struct lpc32xx_adc_info *) dev_id;
+> +
+> +	/* Read value and clear irq */
+> +	info->value = __raw_readl(LPC32XX_ADC_VALUE(info->adc_base))&
+> +				ADC_VALUE_MASK;
+> +	complete(&info->completion);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int __devinit lpc32xx_adc_probe(struct platform_device *pdev)
+> +{
+> +	struct lpc32xx_adc_info *info = NULL;
+> +	struct resource *res;
+> +	int retval = -ENODEV;
+> +	struct iio_dev *iodev = NULL;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (!res) {
+> +		dev_err(&pdev->dev, "failed to get platform I/O memory\n");
+> +		retval = -EBUSY;
+> +		goto errout1;
+> +	}
+> +
+> +	iodev = iio_allocate_device(sizeof(struct lpc32xx_adc_info));
+> +	if (!iodev) {
+> +		dev_err(&pdev->dev, "failed allocating iio device\n");
+> +		retval = -ENOMEM;
+> +		goto errout1;
+> +	}
+> +
+> +	info = iio_priv(iodev);
+> +	info->dev = iodev;
+> +
+> +	info->adc_base = ioremap(res->start, res->end - res->start + 1);
+> +	if (!info->adc_base) {
+> +		dev_err(&pdev->dev, "failed mapping memory\n");
+> +		retval = -EBUSY;
+> +		goto errout3;
+> +	}
+> +
+> +	iodev->name = MOD_NAME;
+> +	iodev->dev.parent =&pdev->dev;
+> +	iodev->info =&lpc32xx_adc_iio_info;
+> +	iodev->modes = INDIO_DIRECT_MODE;
+> +
+> +	retval = iio_device_register(iodev);
+> +	if (retval)
+> +		goto errout4;
+Generally we'd make the iio_device_register call only after everything 
+else is set up as it is
+at this point that the userspace interface becomes active.  Hence there 
+might be a racecondition
+if someone reads just after here.  I haven't checked thoroughly, but as 
+a general rule, keeping
+any interfaces from becoming available until everything else is done 
+makes for easier to review
+code if nothing else!
+> +
+> +	info->clk = clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(info->clk)) {
+> +		dev_err(&pdev->dev, "failed getting clock\n");
+> +		goto errout5;
+> +	}
+> +	clk_enable(info->clk);
+> +
+> +	info->irq = platform_get_irq(pdev, 0);
+> +	if ((info->irq<  0) || (info->irq>= NR_IRQS)) {
+> +		dev_err(&pdev->dev, "failed getting interrupt resource\n");
+> +		retval = -EINVAL;
+> +		goto errout6;
+> +	}
+> +
+> +	retval = request_irq(info->irq, lpc32xx_adc_isr, 0, MOD_NAME, info);
+> +	if (retval<  0) {
+> +		dev_err(&pdev->dev, "failed requesting interrupt\n");
+> +		goto errout6;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, info);
+> +
+> +	device_init_wakeup(&pdev->dev, 1);
+> +	init_completion(&info->completion);
+> +
+> +	printk(KERN_INFO "LPC32XX ADC driver loaded, IRQ %d\n", info->irq);
+> +
+> +	return 0;
 > +
 > +errout6:
-> + =A0 =A0 =A0 clk_disable(info->clk);
-> + =A0 =A0 =A0 clk_put(info->clk);
+> +	clk_disable(info->clk);
+> +	clk_put(info->clk);
 > +errout5:
-> + =A0 =A0 =A0 iio_device_unregister(info->dev);
+> +	iio_device_unregister(info->dev);
 > +errout4:
-> + =A0 =A0 =A0 iounmap(info->adc_base);
+> +	iounmap(info->adc_base);
 > +errout3:
-> + =A0 =A0 =A0 iio_free_device(info->dev);
+> +	iio_free_device(info->dev);
 > +errout1:
-> + =A0 =A0 =A0 return retval;
+> +	return retval;
 > +}
 > +
 > +static int __devexit lpc32xx_adc_remove(struct platform_device *pdev)
 > +{
-> + =A0 =A0 =A0 struct lpc32xx_adc_info *info =3D platform_get_drvdata(pdev=
-);
+> +	struct lpc32xx_adc_info *info = platform_get_drvdata(pdev);
 > +
-> + =A0 =A0 =A0 free_irq(info->irq, info->dev);
-> + =A0 =A0 =A0 platform_set_drvdata(pdev, NULL);
-> + =A0 =A0 =A0 clk_disable(info->clk);
-> + =A0 =A0 =A0 clk_put(info->clk);
-> + =A0 =A0 =A0 iio_device_unregister(info->dev);
-> + =A0 =A0 =A0 iio_free_device(info->dev);
-> + =A0 =A0 =A0 iounmap(info->adc_base);
-> + =A0 =A0 =A0 kfree(info);
-
-This may be ok. Needs a sanity check only.
-kfree() is used in remove() but not used in probe() failure path. Might be
-missing in probe() or not needed here.
-
+> +	free_irq(info->irq, info->dev);
+> +	platform_set_drvdata(pdev, NULL);
+> +	clk_disable(info->clk);
+> +	clk_put(info->clk);
+> +	iio_device_unregister(info->dev);
+> +	iio_free_device(info->dev);
+> +	iounmap(info->adc_base);
+> +	kfree(info);
 > +
-> + =A0 =A0 =A0 printk(KERN_INFO "LPC32XX ADC driver unloaded\n");
-
-dev_info()
-
+> +	printk(KERN_INFO "LPC32XX ADC driver unloaded\n");
 > +
-> + =A0 =A0 =A0 return 0;
+> +	return 0;
 > +}
 > +
 > +#if defined(CONFIG_SUSPEND)
 > +static int lpc32xx_adc_suspend(struct device *dev)
 > +{
-> + =A0 =A0 =A0 struct lpc32xx_adc_info *info =3D dev_get_drvdata(dev);
+> +	struct lpc32xx_adc_info *info = dev_get_drvdata(dev);
 > +
-> + =A0 =A0 =A0 clk_disable(info->clk);
-
-The ADC block doesn't have to remain clocked when it's not being used.
-You might just encapsulate the main ADC read code with clock enable/disable
-and remove the suspend code and enable/disable code in probe/remove.
-This should save a little power when the ADC is idle.
-
-> + =A0 =A0 =A0 return 0;
+> +	clk_disable(info->clk);
+> +	return 0;
 > +}
 > +
 > +static int lpc32xx_adc_resume(struct device *dev)
 > +{
-> + =A0 =A0 =A0 struct lpc32xx_adc_info *info =3D dev_get_drvdata(dev);
+> +	struct lpc32xx_adc_info *info = dev_get_drvdata(dev);
 > +
-> + =A0 =A0 =A0 clk_enable(info->clk);
-> + =A0 =A0 =A0 return 0;
+> +	clk_enable(info->clk);
+> +	return 0;
 > +}
 > +
-> +static const struct dev_pm_ops lpc32xx_adc_pm_ops =3D {
-> + =A0 =A0 =A0 .suspend =A0 =A0 =A0 =A0=3D lpc32xx_adc_suspend,
-> + =A0 =A0 =A0 .resume =A0 =A0 =A0 =A0 =3D lpc32xx_adc_resume,
+> +static const struct dev_pm_ops lpc32xx_adc_pm_ops = {
+> +	.suspend	= lpc32xx_adc_suspend,
+> +	.resume		= lpc32xx_adc_resume,
 > +};
 > +#define LPC32XX_ADC_PM_OPS (&lpc32xx_adc_pm_ops)
 > +#else
 > +#define LPC32XX_ADC_PM_OPS NULL
 > +#endif
 > +
-> +static struct platform_driver lpc32xx_adc_driver =3D {
-> + =A0 =A0 =A0 .probe =A0 =A0 =A0 =A0 =A0=3D lpc32xx_adc_probe,
-> + =A0 =A0 =A0 .remove =A0 =A0 =A0 =A0 =3D __devexit_p(lpc32xx_adc_remove)=
-,
-> + =A0 =A0 =A0 .driver =A0 =A0 =A0 =A0 =3D {
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 .name =A0 =3D MOD_NAME,
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 .owner =A0=3D THIS_MODULE,
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 .pm =A0 =A0 =3D LPC32XX_ADC_PM_OPS,
-> + =A0 =A0 =A0 },
+> +static struct platform_driver lpc32xx_adc_driver = {
+> +	.probe		= lpc32xx_adc_probe,
+> +	.remove		= __devexit_p(lpc32xx_adc_remove),
+> +	.driver		= {
+> +		.name	= MOD_NAME,
+> +		.owner	= THIS_MODULE,
+> +		.pm	= LPC32XX_ADC_PM_OPS,
+> +	},
 > +};
 > +
 > +static int __init lpc32xx_adc_init(void)
 > +{
-> + =A0 =A0 =A0 return platform_driver_register(&lpc32xx_adc_driver);
+> +	return platform_driver_register(&lpc32xx_adc_driver);
 > +}
 > +
 > +static void __exit lpc32xx_adc_exit(void)
 > +{
-> + =A0 =A0 =A0 platform_driver_unregister(&lpc32xx_adc_driver);
+> +	platform_driver_unregister(&lpc32xx_adc_driver);
 > +}
 > +
 > +module_init(lpc32xx_adc_init);
 > +module_exit(lpc32xx_adc_exit);
 > +
-> +MODULE_AUTHOR("Roland Stigge <stigge@antcom.de>");
+> +MODULE_AUTHOR("Roland Stigge<stigge@antcom.de>");
 > +MODULE_DESCRIPTION("LPC32XX ADC driver");
 > +MODULE_LICENSE("GPL");
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
