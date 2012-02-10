@@ -1,53 +1,61 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Fri, 10 Feb 2012 10:30:33 -0800
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, devel@driverdev.osuosl.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/4] staging:iio: Rename IIO_EVENT_CODE_EXTRACT_NUM to
- IIO_EVENT_CODE_EXTRACT_CHAN
-Message-ID: <20120210183033.GA18845@kroah.com>
-References: <1328897701-24032-1-git-send-email-lars@metafoo.de>
- <1328897701-24032-2-git-send-email-lars@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1328897701-24032-2-git-send-email-lars@metafoo.de>
+Return-Path: <marek.vasut@gmail.com>
+From: Marek Vasut <marek.vasut@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Marek Vasut <marek.vasut@gmail.com>,
+	Wolfgang Denk <wd@denx.de>,
+	Stefano Babic <sbabic@denx.de>,
+	Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH 1/2] [RFC] Add per-channel oversampling count
+Date: Fri, 10 Feb 2012 06:52:05 +0100
+Message-Id: <1328853126-16578-1-git-send-email-marek.vasut@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Feb 10, 2012 at 07:14:59PM +0100, Lars-Peter Clausen wrote:
-> We call this field "chan" throughout IIO with the exception of this one=
- macro.
-> Rename it to be more consistent.
->=20
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/events.h |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
->=20
-> diff --git a/drivers/staging/iio/events.h b/drivers/staging/iio/events.=
-h
-> index bfb6340..416800e 100644
-> --- a/drivers/staging/iio/events.h
-> +++ b/drivers/staging/iio/events.h
-> @@ -96,7 +96,7 @@ enum iio_event_direction {
-> =20
->  /* Event code number extraction depends on which type of event we have=
-.
->   * Perhaps review this function in the future*/
-> -#define IIO_EVENT_CODE_EXTRACT_NUM(mask) ((__s16)(mask & 0xFFFF))
-> +#define IIO_EVENT_CODE_EXTRACT_CHAN(mask) ((__s16)(mask & 0xFFFF))
+This allows each channel to configure it's oversampling count.
 
-Nice, but then you just broke the build:
+Signed-off-by: Marek Vasut <marek.vasut@gmail.com>
+Cc: Wolfgang Denk <wd@denx.de>
+Cc: Stefano Babic <sbabic@denx.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+---
+ drivers/staging/iio/iio.h               |    5 +++++
+ drivers/staging/iio/industrialio-core.c |    1 +
+ 2 files changed, 6 insertions(+), 0 deletions(-)
 
-drivers/staging/iio/adc/ad799x_core.c: In function =E2=80=98ad799x_write_=
-event_value=E2=80=99:
-drivers/staging/iio/adc/ad799x_core.c:259:2: error: implicit declaration =
-of function =E2=80=98IIO_EVENT_CODE_EXTRACT_NUM=E2=80=99 [-Werror=3Dimpli=
-cit-function-declaration]
-cc1: some warnings being treated as errors
-
-Please be more careful when sending patches, I've dropped all 4 of
-these...
-
-greg k-h
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index b3a1740..0b626ae 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -36,6 +36,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW,
+ 	IIO_CHAN_INFO_AVERAGE_RAW,
+ 	IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY,
++	IIO_CHAN_INFO_OVERSAMPLE_COUNT,
+ };
+ 
+ #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
+@@ -81,6 +82,10 @@ enum iio_chan_info_enum {
+ #define IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SEPARATE_BIT \
+ 	IIO_CHAN_INFO_SEPARATE_BIT(			       \
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)
++#define IIO_CHAN_INFO_OVERSAMPLE_COUNT_SEPARATE_BIT		\
++	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_OVERSAMPLE_COUNT)
++#define IIO_CHAN_INFO_OVERSAMPLE_COUNT_SHARED_BIT		\
++	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_OVERSAMPLE_COUNT)
+ 
+ enum iio_endian {
+ 	IIO_CPU,
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 9c41c83..05b6fdd 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -87,6 +87,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_AVERAGE_RAW] = "mean_raw",
+ 	[IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY]
+ 	= "filter_low_pass_3db_frequency",
++	[IIO_CHAN_INFO_OVERSAMPLE_COUNT] = "oversample_count",
+ };
+ 
+ const struct iio_chan_spec
+-- 
+1.7.8.3
