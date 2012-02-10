@@ -1,44 +1,51 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59320 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753955Ab2BJVuv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Feb 2012 16:50:51 -0500
-Message-ID: <4F359170.9040106@kernel.org>
-Date: Fri, 10 Feb 2012 21:51:44 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] staging:iio: Remove declaration for non existing
- function
-References: <1328898269-26197-1-git-send-email-lars@metafoo.de>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/2] staging:iio: Remove noop calls to __iio_update_buffer
+Date: Fri, 10 Feb 2012 19:24:29 +0100
+Message-Id: <1328898269-26197-2-git-send-email-lars@metafoo.de>
 In-Reply-To: <1328898269-26197-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+References: <1328898269-26197-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/10/2012 06:24 PM, Lars-Peter Clausen wrote:
-> The declaration for iio_buffer_deinit has been around for quite some time, but
-> the function itself has never been added. So remove the declaration.
-> 
-oops
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/buffer.h |    2 --
->  1 files changed, 0 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/buffer.h b/drivers/staging/iio/buffer.h
-> index 6fb6e64..df2046d 100644
-> --- a/drivers/staging/iio/buffer.h
-> +++ b/drivers/staging/iio/buffer.h
-> @@ -91,8 +91,6 @@ struct iio_buffer {
->   **/
->  void iio_buffer_init(struct iio_buffer *buffer);
->  
-> -void iio_buffer_deinit(struct iio_buffer *buffer);
-> -
->  /**
->   * __iio_update_buffer() - update common elements of buffers
->   * @buffer:		buffer that is the event source
+__iio_update_buffer updates the buffer's bytes_per_datum and length attributes.
+But in these two cases we indirectly just pass the existing values, so the call
+becomes a noop and can be removed.
 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+We might as well also remove the function itself, since these are the only two
+users. What do you think?
+---
+ drivers/staging/iio/kfifo_buf.c |    1 -
+ drivers/staging/iio/ring_sw.c   |    1 -
+ 2 files changed, 0 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/iio/kfifo_buf.c b/drivers/staging/iio/kfifo_buf.c
+index 9f3bd59..468e202 100644
+--- a/drivers/staging/iio/kfifo_buf.c
++++ b/drivers/staging/iio/kfifo_buf.c
+@@ -22,7 +22,6 @@ static inline int __iio_allocate_kfifo(struct iio_kfifo *buf,
+ 	if ((length == 0) || (bytes_per_datum == 0))
+ 		return -EINVAL;
+ 
+-	__iio_update_buffer(&buf->buffer, bytes_per_datum, length);
+ 	return kfifo_alloc(&buf->kf, bytes_per_datum*length, GFP_KERNEL);
+ }
+ 
+diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
+index eeac0da..5664372 100644
+--- a/drivers/staging/iio/ring_sw.c
++++ b/drivers/staging/iio/ring_sw.c
+@@ -46,7 +46,6 @@ static inline int __iio_allocate_sw_ring_buffer(struct iio_sw_ring_buffer *ring,
+ {
+ 	if ((length == 0) || (bytes_per_datum == 0))
+ 		return -EINVAL;
+-	__iio_update_buffer(&ring->buf, bytes_per_datum, length);
+ 	ring->data = kmalloc(length*ring->buf.bytes_per_datum, GFP_ATOMIC);
+ 	ring->read_p = NULL;
+ 	ring->write_p = NULL;
+-- 
+1.7.9
