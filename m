@@ -1,415 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:47266 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752593Ab2BNR34 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 14 Feb 2012 12:29:56 -0500
-References: <1329235140-26895-1-git-send-email-stigge@antcom.de>
-In-Reply-To: <1329235140-26895-1-git-send-email-stigge@antcom.de>
+Received: from wp188.webpack.hosteurope.de ([80.237.132.195]:36605 "EHLO
+	wp188.webpack.hosteurope.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1760679Ab2BNOfp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 14 Feb 2012 09:35:45 -0500
+From: Danny Kukawka <danny.kukawka@bisect.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Danny Kukawka <dkukawka@suse.de>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] adis16080: fix compiler -Wuninitialized
+Date: Tue, 14 Feb 2012 15:35:36 +0100
+Message-Id: <1329230136-26576-1-git-send-email-danny.kukawka@bisect.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v3] ARM: LPC32xx: ADC support
-From: Jonathan Cameron <jic23@cam.ac.uk>
-Date: Tue, 14 Feb 2012 17:28:30 +0000
-To: Roland Stigge <stigge@antcom.de>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, kevin.wells@nxp.com,
-	w.sang@pengutronix.de, linux-arm-kernel@lists.infradead.org
-Message-ID: <a05faf3c-9a30-4562-bb86-f4d73b9e240f@email.android.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+=46ix for:
+drivers/staging/iio/gyro/adis16080_core.c: In function
+  =E2=80=98adis16080_read_raw=E2=80=99:
+drivers/staging/iio/gyro/adis16080_core.c:99:8: warning: =E2=80=98ut=E2=
+=80=99
+  may be used uninitialized in this function [-Wuninitialized]
 
+Initialize ut and change error handling from adis16080_read_raw().
 
-Roland Stigge <stigge@antcom.de> wrote:
+Signed-off-by: Danny Kukawka <danny.kukawka@bisect.de>
+---
+ drivers/staging/iio/gyro/adis16080_core.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
->This patch adds a 3-channel ADC driver for the LPC32xx ARM SoC
->
->Signed-off-by: Roland Stigge <stigge@antcom.de>
->
- Acked-by: Jonathan Cameron <jic23@kernel.org> for split version...  send iio part to Greg kh for merge ccing linux-iio. Please check it against staging-next just before you do as that can move fast.
->---
-> arch/arm/mach-lpc32xx/clock.c         |   36 +++++
-> arch/arm/mach-lpc32xx/common.c        |   22 +++
-> arch/arm/mach-lpc32xx/common.h        |    1 
-> arch/arm/mach-lpc32xx/phy3250.c       |    3 
-> drivers/staging/iio/adc/Kconfig       |    9 +
-> drivers/staging/iio/adc/Makefile      |    1 
->drivers/staging/iio/adc/lpc32xx_adc.c |  237
->++++++++++++++++++++++++++++++++++
-> 7 files changed, 309 insertions(+)
->
->--- linux-arm-soc.orig/arch/arm/mach-lpc32xx/clock.c
->+++ linux-arm-soc/arch/arm/mach-lpc32xx/clock.c
->@@ -721,6 +721,41 @@ static struct clk clk_tsc = {
-> 	.get_rate	= local_return_parent_rate,
-> };
-> 
->+static int adc_onoff_enable(struct clk *clk, int enable)
->+{
->+	u32 tmp;
->+	u32 divider;
->+
->+	/* Use PERIPH_CLOCK */
->+	tmp = __raw_readl(LPC32XX_CLKPWR_ADC_CLK_CTRL_1);
->+	tmp |= LPC32XX_CLKPWR_ADCCTRL1_PCLK_SEL;
->+	/*
->+	 * Set clock divider so that we have equal to or less than
->+	 * 4.5MHz clock at ADC
->+	 */
->+	divider = clk->get_rate(clk) / 4500000 + 1;
->+	tmp |= divider;
->+	__raw_writel(tmp, LPC32XX_CLKPWR_ADC_CLK_CTRL_1);
->+
->+	/* synchronize rate of this clock w/ actual HW setting */
->+	clk->rate = clk->get_rate(clk->parent) / divider;
->+
->+	if (enable == 0)
->+		__raw_writel(0, clk->enable_reg);
->+	else
->+		__raw_writel(clk->enable_mask, clk->enable_reg);
->+
->+	return 0;
->+}
->+
->+static struct clk clk_adc = {
->+	.parent		= &clk_pclk,
->+	.enable		= adc_onoff_enable,
->+	.enable_reg	= LPC32XX_CLKPWR_ADC_CLK_CTRL,
->+	.enable_mask	= LPC32XX_CLKPWR_ADC32CLKCTRL_CLK_EN,
->+	.get_rate	= local_return_parent_rate,
->+};
->+
-> static int mmc_onoff_enable(struct clk *clk, int enable)
-> {
-> 	u32 tmp;
->@@ -1055,6 +1090,7 @@ static struct clk_lookup lookups[] = {
-> 	_REGISTER_CLOCK("dev:ssp1", NULL, clk_ssp1)
-> 	_REGISTER_CLOCK("lpc32xx_keys.0", NULL, clk_kscan)
-> 	_REGISTER_CLOCK("lpc32xx-nand.0", "nand_ck", clk_nand)
->+	_REGISTER_CLOCK("lpc32xx-adc", NULL, clk_adc)
-> 	_REGISTER_CLOCK(NULL, "i2s0_ck", clk_i2s0)
-> 	_REGISTER_CLOCK(NULL, "i2s1_ck", clk_i2s1)
-> 	_REGISTER_CLOCK("ts-lpc32xx", NULL, clk_tsc)
->--- linux-arm-soc.orig/arch/arm/mach-lpc32xx/common.c
->+++ linux-arm-soc/arch/arm/mach-lpc32xx/common.c
->@@ -138,6 +138,28 @@ struct platform_device lpc32xx_rtc_devic
-> };
-> 
-> /*
->+ * ADC support
->+ */
->+static struct resource adc_resources[] = {
->+	{
->+		.start = LPC32XX_ADC_BASE,
->+		.end = LPC32XX_ADC_BASE + SZ_4K - 1,
->+		.flags = IORESOURCE_MEM,
->+	}, {
->+		.start = IRQ_LPC32XX_TS_IRQ,
->+		.end = IRQ_LPC32XX_TS_IRQ,
->+		.flags = IORESOURCE_IRQ,
->+	},
->+};
->+
->+struct platform_device lpc32xx_adc_device = {
->+	.name =  "lpc32xx-adc",
->+	.id = -1,
->+	.num_resources = ARRAY_SIZE(adc_resources),
->+	.resource = adc_resources,
->+};
->+
->+/*
->  * Returns the unique ID for the device
->  */
-> void lpc32xx_get_uid(u32 devid[4])
->--- linux-arm-soc.orig/arch/arm/mach-lpc32xx/common.h
->+++ linux-arm-soc/arch/arm/mach-lpc32xx/common.h
->@@ -29,6 +29,7 @@ extern struct platform_device lpc32xx_i2
-> extern struct platform_device lpc32xx_i2c1_device;
-> extern struct platform_device lpc32xx_i2c2_device;
-> extern struct platform_device lpc32xx_tsc_device;
->+extern struct platform_device lpc32xx_adc_device;
-> extern struct platform_device lpc32xx_rtc_device;
-> 
-> /*
->--- linux-arm-soc.orig/arch/arm/mach-lpc32xx/phy3250.c
->+++ linux-arm-soc/arch/arm/mach-lpc32xx/phy3250.c
->@@ -252,6 +252,9 @@ static struct platform_device *phy3250_d
-> 	&lpc32xx_i2c2_device,
-> 	&lpc32xx_watchdog_device,
-> 	&lpc32xx_gpio_led_device,
->+#if defined(CONFIG_LPC32XX_ADC)
->+	&lpc32xx_adc_device,
->+#endif
-> };
-> 
-> static struct amba_device *amba_devs[] __initdata = {
->--- linux-arm-soc.orig/drivers/staging/iio/adc/Kconfig
->+++ linux-arm-soc/drivers/staging/iio/adc/Kconfig
->@@ -193,4 +193,13 @@ config MAX1363_RING_BUFFER
-> 	  Say yes here to include ring buffer support in the MAX1363
-> 	  ADC driver.
-> 
->+config LPC32XX_ADC
->+	tristate "NXP LPC32XX ADC"
->+	depends on ARCH_LPC32XX && !TOUCHSCREEN_LPC32XX
->+	help
->+	  Say yes here to build support for the integrated ADC inside the
->+	  LPC32XX SoC. Note that this feature uses the same hardware as the
->+	  touchscreen driver, so you can only select one of the two drivers
->+	  (lpc32xx_adc or lpc32xx_ts). Provides direct access via sysfs.
->+
-> endmenu
->--- linux-arm-soc.orig/drivers/staging/iio/adc/Makefile
->+++ linux-arm-soc/drivers/staging/iio/adc/Makefile
->@@ -37,3 +37,4 @@ obj-$(CONFIG_AD7192) += ad7192.o
-> obj-$(CONFIG_ADT7310) += adt7310.o
-> obj-$(CONFIG_ADT7410) += adt7410.o
-> obj-$(CONFIG_AD7280) += ad7280a.o
->+obj-$(CONFIG_LPC32XX_ADC) += lpc32xx_adc.o
->--- /dev/null
->+++ linux-arm-soc/drivers/staging/iio/adc/lpc32xx_adc.c
->@@ -0,0 +1,237 @@
->+/*
->+ *  lpc32xx_adc.c - Support for ADC in LPC32XX
->+ *
->+ *  3-channel, 10-bit ADC
->+ *
->+ *  Copyright (C) 2011, 2012 Roland Stigge <stigge@antcom.de>
->+ *
->+ *  This program is free software; you can redistribute it and/or
->modify
->+ *  it under the terms of the GNU General Public License as published
->by
->+ *  the Free Software Foundation; either version 2 of the License, or
->+ *  (at your option) any later version.
->+ *
->+ *  This program is distributed in the hope that it will be useful,
->+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
->+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->+ *  GNU General Public License for more details.
->+ *
->+ *  You should have received a copy of the GNU General Public License
->+ *  along with this program; if not, write to the Free Software
->+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
->+ */
->+
->+#include <linux/module.h>
->+#include <linux/platform_device.h>
->+#include <linux/interrupt.h>
->+#include <linux/device.h>
->+#include <linux/kernel.h>
->+#include <linux/slab.h>
->+#include <linux/io.h>
->+#include <linux/clk.h>
->+#include <linux/err.h>
->+#include <linux/completion.h>
->+
->+#include "../iio.h"
->+#include "../sysfs.h"
->+
->+/*
->+ * LPC32XX registers definitions
->+ */
->+#define LPC32XX_ADC_SELECT(x)	((x) + 0x04)
->+#define LPC32XX_ADC_CTRL(x)	((x) + 0x08)
->+#define LPC32XX_ADC_VALUE(x)	((x) + 0x48)
->+
->+/* Bit definitions for LPC32XX_ADC_SELECT: */
->+#define AD_REFm         0x00000200 /* constant, always write this
->value! */
->+#define AD_REFp		0x00000080 /* constant, always write this value! */
->+#define AD_IN		0x00000010 /* multiple of this is the */
->+				   /* channel number: 0, 1, 2 */
->+#define AD_INTERNAL	0x00000004 /* constant, always write this value!
->*/
->+
->+/* Bit definitions for LPC32XX_ADC_CTRL: */
->+#define AD_STROBE	0x00000002
->+#define AD_PDN_CTRL	0x00000004
->+
->+/* Bit definitions for LPC32XX_ADC_VALUE: */
->+#define ADC_VALUE_MASK	0x000003FF
->+
->+#define MOD_NAME "lpc32xx-adc"
->+
->+struct lpc32xx_adc_info {
->+	void __iomem *adc_base;
->+	struct clk *clk;
->+	struct completion completion;
->+
->+	u32 value;
->+};
->+
->+static int lpc32xx_read_raw(struct iio_dev *indio_dev,
->+				struct iio_chan_spec const *chan,
->+				int *val,
->+				int *val2,
->+				long mask)
->+{
->+	struct lpc32xx_adc_info *info = iio_priv(indio_dev);
->+
->+	if (mask == 0) {
->+		mutex_lock(&indio_dev->mlock);
->+		clk_enable(info->clk);
->+		/* Measurement setup */
->+		__raw_writel(AD_INTERNAL | (chan->address) | AD_REFp | AD_REFm,
->+			LPC32XX_ADC_SELECT(info->adc_base));
->+		/* Trigger conversion */
->+		__raw_writel(AD_PDN_CTRL | AD_STROBE,
->+			LPC32XX_ADC_CTRL(info->adc_base));
->+		wait_for_completion(&info->completion); /* set by ISR */
->+		clk_disable(info->clk);
->+		*val = info->value;
->+		mutex_unlock(&indio_dev->mlock);
->+
->+		return IIO_VAL_INT;
->+	}
->+
->+	return -EINVAL;
->+}
->+
->+static const struct iio_info lpc32xx_adc_iio_info = {
->+	.read_raw = &lpc32xx_read_raw,
->+	.driver_module = THIS_MODULE,
->+};
->+
->+#define LPC32XX_ADC_CHANNEL(_index) {		\
->+	.type = IIO_VOLTAGE,			\
->+	.indexed = 1,				\
->+	.channel = _index,			\
->+	.address = AD_IN * _index,		\
->+	.scan_index = _index,			\
->+}
->+
->+static struct iio_chan_spec lpc32xx_adc_iio_channels[] = {
->+	LPC32XX_ADC_CHANNEL(0),
->+	LPC32XX_ADC_CHANNEL(1),
->+	LPC32XX_ADC_CHANNEL(2),
->+};
->+
->+static irqreturn_t lpc32xx_adc_isr(int irq, void *dev_id)
->+{
->+	struct lpc32xx_adc_info *info = (struct lpc32xx_adc_info *) dev_id;
->+
->+	/* Read value and clear irq */
->+	info->value = __raw_readl(LPC32XX_ADC_VALUE(info->adc_base)) &
->+				ADC_VALUE_MASK;
->+	complete(&info->completion);
->+
->+	return IRQ_HANDLED;
->+}
->+
->+static int __devinit lpc32xx_adc_probe(struct platform_device *pdev)
->+{
->+	struct lpc32xx_adc_info *info = NULL;
->+	struct resource *res;
->+	int retval = -ENODEV;
->+	struct iio_dev *iodev = NULL;
->+	int irq;
->+
->+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->+	if (!res) {
->+		dev_err(&pdev->dev, "failed to get platform I/O memory\n");
->+		retval = -EBUSY;
->+		goto errout1;
->+	}
->+
->+	iodev = iio_allocate_device(sizeof(struct lpc32xx_adc_info));
->+	if (!iodev) {
->+		dev_err(&pdev->dev, "failed allocating iio device\n");
->+		retval = -ENOMEM;
->+		goto errout1;
->+	}
->+
->+	info = iio_priv(iodev);
->+
->+	info->adc_base = ioremap(res->start, res->end - res->start + 1);
->+	if (!info->adc_base) {
->+		dev_err(&pdev->dev, "failed mapping memory\n");
->+		retval = -EBUSY;
->+		goto errout2;
->+	}
->+
->+	info->clk = clk_get(&pdev->dev, NULL);
->+	if (IS_ERR(info->clk)) {
->+		dev_err(&pdev->dev, "failed getting clock\n");
->+		goto errout3;
->+	}
->+
->+	irq = platform_get_irq(pdev, 0);
->+	if ((irq < 0) || (irq >= NR_IRQS)) {
->+		dev_err(&pdev->dev, "failed getting interrupt resource\n");
->+		retval = -EINVAL;
->+		goto errout4;
->+	}
->+
->+	retval = request_irq(irq, lpc32xx_adc_isr, 0, MOD_NAME, info);
->+	if (retval < 0) {
->+		dev_err(&pdev->dev, "failed requesting interrupt\n");
->+		goto errout4;
->+	}
->+
->+	platform_set_drvdata(pdev, iodev);
->+
->+	init_completion(&info->completion);
->+
->+	iodev->name = MOD_NAME;
->+	iodev->dev.parent = &pdev->dev;
->+	iodev->info = &lpc32xx_adc_iio_info;
->+	iodev->modes = INDIO_DIRECT_MODE;
->+	iodev->channels = lpc32xx_adc_iio_channels;
->+	iodev->num_channels = ARRAY_SIZE(lpc32xx_adc_iio_channels);
->+
->+	retval = iio_device_register(iodev);
->+	if (retval)
->+		goto errout5;
->+
->+	dev_info(&pdev->dev, "LPC32XX ADC driver loaded, IRQ %d\n", irq);
->+
->+	return 0;
->+
->+errout5:
->+	free_irq(irq, iodev);
->+errout4:
->+	clk_put(info->clk);
->+errout3:
->+	iounmap(info->adc_base);
->+errout2:
->+	iio_free_device(iodev);
->+errout1:
->+	return retval;
->+}
->+
->+static int __devexit lpc32xx_adc_remove(struct platform_device *pdev)
->+{
->+	struct iio_dev *iodev = platform_get_drvdata(pdev);
->+	struct lpc32xx_adc_info *info = iio_priv(iodev);
->+	int irq = platform_get_irq(pdev, 0);
->+
->+	iio_device_unregister(iodev);
->+	free_irq(irq, iodev);
->+	platform_set_drvdata(pdev, NULL);
->+	clk_put(info->clk);
->+	iounmap(info->adc_base);
->+	iio_free_device(iodev);
->+
->+	return 0;
->+}
->+
->+static struct platform_driver lpc32xx_adc_driver = {
->+	.probe		= lpc32xx_adc_probe,
->+	.remove		= __devexit_p(lpc32xx_adc_remove),
->+	.driver		= {
->+		.name	= MOD_NAME,
->+		.owner	= THIS_MODULE,
->+	},
->+};
->+
->+module_platform_driver(lpc32xx_adc_driver);
->+
->+MODULE_AUTHOR("Roland Stigge <stigge@antcom.de>");
->+MODULE_DESCRIPTION("LPC32XX ADC driver");
->+MODULE_LICENSE("GPL");
+diff --git a/drivers/staging/iio/gyro/adis16080_core.c b/drivers/stagin=
+g/iio/gyro/adis16080_core.c
+index 1815490..e0b2a29 100644
+--- a/drivers/staging/iio/gyro/adis16080_core.c
++++ b/drivers/staging/iio/gyro/adis16080_core.c
+@@ -82,7 +82,7 @@ static int adis16080_read_raw(struct iio_dev *indio_d=
+ev,
+ 			     long mask)
+ {
+ 	int ret =3D -EINVAL;
+-	u16 ut;
++	u16 ut =3D 0;
+ 	/* Take the iio_dev status lock */
+=20
+ 	mutex_lock(&indio_dev->mlock);
+@@ -94,7 +94,7 @@ static int adis16080_read_raw(struct iio_dev *indio_d=
+ev,
+ 		if (ret < 0)
+ 			break;
+ 		ret =3D adis16080_spi_read(indio_dev, &ut);
+-		if (ret < 0)
++		if (ret)
+ 			break;
+ 		*val =3D ut;
+ 		ret =3D IIO_VAL_INT;
+--=20
+1.7.7.3
 
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
