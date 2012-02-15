@@ -1,59 +1,99 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:38598 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753888Ab2BYLSN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 25 Feb 2012 06:18:13 -0500
-Message-ID: <4F48C3AA.9060304@cam.ac.uk>
-Date: Sat, 25 Feb 2012 11:19:06 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	guenter.roeck@ericsson.com, khali@linux-fr.org,
-	dmitry.torokhov@gmail.com, broonie@opensource.wolfsonmicro.com,
-	alan@lxorguk.ukuu.org.uk, arnd@arndb.de, linus.walleij@linaro.org,
+Return-Path: <jic23@hermes.cam.ac.uk>
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: greg@kroah.com,
+	guenter.roeck@ericsson.com,
+	khali@linux-fr.org,
+	dmitry.torokhov@gmail.com,
+	broonie@opensource.wolfsonmicro.com,
+	alan@lxorguk.ukuu.org.uk,
+	arnd@arndb.de,
+	linus.walleij@linaro.org,
 	maxime.ripard@free-electrons.com,
-	thomas.petazzoni@free-electrons.com, zdevai@gmail.com,
-	w.sang@pengutronix.de, marek.vasut@gmail.com
-Subject: Re: [PATCH 6/6] stargate2: example of map configuration for iio to
- hwmon example.
-References: <1329335285-31006-1-git-send-email-jic23@kernel.org> <1329335285-31006-7-git-send-email-jic23@kernel.org> <4F3C1EAC.9090809@kernel.org> <20120224200712.GA24588@kroah.com>
-In-Reply-To: <20120224200712.GA24588@kroah.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	thomas.petazzoni@free-electrons.com,
+	zdevai@gmail.com,
+	w.sang@pengutronix.de,
+	marek.vasut@gmail.com,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 5/6] staging:iio:Documentation in kernel pull description.
+Date: Wed, 15 Feb 2012 19:48:04 +0000
+Message-Id: <1329335285-31006-6-git-send-email-jic23@kernel.org>
+In-Reply-To: <1329335285-31006-1-git-send-email-jic23@kernel.org>
+References: <1329335285-31006-1-git-send-email-jic23@kernel.org>
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/24/2012 08:07 PM, Greg KH wrote:
-> On Wed, Feb 15, 2012 at 09:07:56PM +0000, Jonathan Cameron wrote:
->> On 02/15/2012 07:48 PM, Jonathan Cameron wrote:
->>> From: Jonathan Cameron <jic23@cam.ac.uk>
->>>
->>> Do not commit.
->> Whilst this example was never meant to be committed, the obvious flaw
->> is that max1363 doesn't actually support these interfaces because
->> I left one patch out. Lets call it 5.5 and stick it before this one.
-> 
-> Huh?  I don't understand what you mean here, should I not apply this
-> one?
-Sorry, the confusion here comes from the fact that this set was not
-yet meant to be a merge request but rather had been sent out for review.
-You were explicitly cc'd because of the issues you had raised with the
-previous version (that were hopefully fixed to your satisfaction here).
-This final patch was there to show how things worked, but should
-obvously not merge as it uses headers in staging from outside (under
-arch).  The board isn't actually wired like this anyway!
+Very basic description of the way iio consumers work and how to use
+this functionality.
 
-Having said that, the only reason I hadn't sent a new version was a
-nasty cold so thanks for merging the first 5.  The 5.5 one was only
-really required to support this example, so whilst harmless it wasn't
-important and I'll tack it on the next set I send out.
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/Documentation/inkernel.txt |   58 ++++++++++++++++++++++++
+ 1 files changed, 58 insertions(+), 0 deletions(-)
 
-Thanks again for pulling these.  I guess that means you are happy
-with the new version!
-
-Jonathan
-> 
-> confused,
-> 
-> greg k-h
-
+diff --git a/drivers/staging/iio/Documentation/inkernel.txt b/drivers/staging/iio/Documentation/inkernel.txt
+new file mode 100644
+index 0000000..a05823e
+--- /dev/null
++++ b/drivers/staging/iio/Documentation/inkernel.txt
+@@ -0,0 +1,58 @@
++Industrial I/O Subsystem in kernel consumers.
++
++The IIO subsystem can act as a layer under other elements of the kernel
++providing a means of obtaining ADC type readings or of driving DAC type
++signals.  The functionality supported will grow as use cases arise.
++
++Describing the channel mapping (iio/machine.h)
++
++Channel associations are described using:
++
++struct iio_map {
++	const char *adc_channel_label;
++	const char *consumer_dev_name;
++	const char *consumer_channel;
++};
++
++adc_channel_label identifies the channel on the IIO device by being
++matched against the datasheet_name field of the iio_chan_spec.
++
++consumer_dev_name allows identification of the consumer device.
++This are then used to find the channel mapping from the consumer device (see
++below).
++
++Finally consumer_channel is a string identifying the channel to the consumer.
++(Perhaps 'battery_voltage' or similar).
++
++An array of these structures is then passed to the IIO driver.
++
++Supporting in kernel interfaces in the driver (driver.h)
++
++The driver must provide datasheet_name values for its channels and
++must pass the iio_map structures and a pointer to its own iio_dev structure
++ on to the core via a call to iio_map_array_register.  On removal,
++iio_map_array_unregister reverses this process.
++
++The result of this is that the IIO core now has all the information needed
++to associate a given channel with the consumer requesting it.
++
++Acting as an IIO consumer (consumer.h)
++
++The consumer first has to obtain an iio_channel structure from the core
++by calling iio_channel_get().  The correct channel is identified by:
++
++* matching dev or dev_name against consumer_dev and consumer_dev_name
++* matching consumer_channel against consumer_channel in the map
++
++There are then a number of functions that can be used to get information
++about this channel such as it's current reading.
++
++e.g.
++iio_st_read_channel_raw() - get a reading
++iio_st_read_channel_type() - get the type of channel
++
++There is also provision for retrieving all of the channels associated
++with a given consumer.  This is useful for generic drivers such as
++iio_hwmon where the number and naming of channels is not known by the
++consumer driver.  To do this, use iio_st_channel_get_all.
++
+-- 
+1.7.8.4
