@@ -1,80 +1,158 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: greg@kroah.com,
-	guenter.roeck@ericsson.com,
-	khali@linux-fr.org,
-	dmitry.torokhov@gmail.com,
-	broonie@opensource.wolfsonmicro.com,
-	alan@lxorguk.ukuu.org.uk,
-	arnd@arndb.de,
-	linus.walleij@linaro.org,
-	maxime.ripard@free-electrons.com,
-	thomas.petazzoni@free-electrons.com,
-	zdevai@gmail.com,
-	w.sang@pengutronix.de,
-	marek.vasut@gmail.com,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 1/6] staging:iio:core set the iio_dev.info pointer to null on unregister under lock.
-Date: Wed, 15 Feb 2012 19:48:00 +0000
-Message-Id: <1329335285-31006-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1329335285-31006-1-git-send-email-jic23@kernel.org>
-References: <1329335285-31006-1-git-send-email-jic23@kernel.org>
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+Return-Path: <akshay.s@ti.com>
+From: "Shankarmurthy, Akshay" <akshay.s@ti.com>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "jic23@cam.ac.uk"
+	<jic23@cam.ac.uk>
+Subject: eCAP driver
+Date: Wed, 15 Feb 2012 10:20:47 +0000
+Message-ID: <6F6B80BD2E18844D97BB4B51FE3705C831768D51@DBDE01.ent.ti.com>
+Content-Type: multipart/alternative;
+	boundary="_000_6F6B80BD2E18844D97BB4B51FE3705C831768D51DBDE01entticom_"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-This prevents use of provider callbacks after it has been unregistered.
-Note that all code using this that can be called from a consumer *must*
-check the pointer before using and hold the info_exist_lock throughout
-the usage of the callbacks in info.
+--_000_6F6B80BD2E18844D97BB4B51FE3705C831768D51DBDE01entticom_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/iio.h               |    2 ++
- drivers/staging/iio/industrialio-core.c |    4 ++++
- 2 files changed, 6 insertions(+), 0 deletions(-)
+Hi folks,
 
-diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index be6ced3..478dbe5 100644
---- a/drivers/staging/iio/iio.h
-+++ b/drivers/staging/iio/iio.h
-@@ -310,6 +310,7 @@ struct iio_buffer_setup_ops {
-  * @chan_attr_group:	[INTERN] group for all attrs in base directory
-  * @name:		[DRIVER] name of the device.
-  * @info:		[DRIVER] callbacks and constant info from driver
-+ * @info_exist_lock:	[INTERN] lock to prevent use during removal
-  * @chrdev:		[INTERN] associated character device
-  * @groups:		[INTERN] attribute groups
-  * @groupcounter:	[INTERN] index of next attribute group
-@@ -340,6 +341,7 @@ struct iio_dev {
- 	struct attribute_group		chan_attr_group;
- 	const char			*name;
- 	const struct iio_info		*info;
-+	struct mutex			info_exist_lock;
- 	const struct iio_buffer_setup_ops	*setup_ops;
- 	struct cdev			chrdev;
- #define IIO_MAX_GROUPS 6
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index e4824fe..3a2d080 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -594,6 +594,7 @@ struct iio_dev *iio_allocate_device(int sizeof_priv)
- 		device_initialize(&dev->dev);
- 		dev_set_drvdata(&dev->dev, (void *)dev);
- 		mutex_init(&dev->mlock);
-+		mutex_init(&dev->info_exist_lock);
- 
- 		dev->id = ida_simple_get(&iio_ida, 0, 0, GFP_KERNEL);
- 		if (dev->id < 0) {
-@@ -718,6 +719,9 @@ EXPORT_SYMBOL(iio_device_register);
- 
- void iio_device_unregister(struct iio_dev *indio_dev)
- {
-+	mutex_lock(&indio_dev->info_exist_lock);
-+	indio_dev->info = NULL;
-+	mutex_unlock(&indio_dev->info_exist_lock);
- 	device_unregister(&indio_dev->dev);
- }
- EXPORT_SYMBOL(iio_device_unregister);
--- 
-1.7.8.4
+I am developing a driver for eCAP peripheral and I feel it should come unde=
+r driver/staging/iio directory. Kindly go through the below eCAP brief desc=
+ription and let me know whether I can put the driver inside iio directory.
+
+eCAP (enhanced capture) module can be used to compute frequency and duty cy=
+cle % of the incoming pwm wave.  This module includes dedicated input pin, =
+32bit up counter and capture registers. PWM wave whose frequency needs to b=
+e computed should be fed to this dedicated pin. Counter ticks on the refere=
+nce clock. eCAP latches the counter value to the capture registers dependin=
+g upon the rising and falling edge of the incoming pwm wave. Values in the =
+counter register are used to calculate the frequency and duty cycle %.
+
+Regards,
+Akshay
+
+
+--_000_6F6B80BD2E18844D97BB4B51FE3705C831768D51DBDE01entticom_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:x=3D"urn:schemas-microsoft-com:office:excel" xmlns:p=3D"urn:schemas-m=
+icrosoft-com:office:powerpoint" xmlns:a=3D"urn:schemas-microsoft-com:office=
+:access" xmlns:dt=3D"uuid:C2F41010-65B3-11d1-A29F-00AA00C14882" xmlns:s=3D"=
+uuid:BDC6E3F0-6DA3-11d1-A2A3-00AA00C14882" xmlns:rs=3D"urn:schemas-microsof=
+t-com:rowset" xmlns:z=3D"#RowsetSchema" xmlns:b=3D"urn:schemas-microsoft-co=
+m:office:publisher" xmlns:ss=3D"urn:schemas-microsoft-com:office:spreadshee=
+t" xmlns:c=3D"urn:schemas-microsoft-com:office:component:spreadsheet" xmlns=
+:odc=3D"urn:schemas-microsoft-com:office:odc" xmlns:oa=3D"urn:schemas-micro=
+soft-com:office:activation" xmlns:html=3D"http://www.w3.org/TR/REC-html40" =
+xmlns:q=3D"http://schemas.xmlsoap.org/soap/envelope/" xmlns:rtc=3D"http://m=
+icrosoft.com/officenet/conferencing" xmlns:D=3D"DAV:" xmlns:Repl=3D"http://=
+schemas.microsoft.com/repl/" xmlns:mt=3D"http://schemas.microsoft.com/share=
+point/soap/meetings/" xmlns:x2=3D"http://schemas.microsoft.com/office/excel=
+/2003/xml" xmlns:ppda=3D"http://www.passport.com/NameSpace.xsd" xmlns:ois=
+=3D"http://schemas.microsoft.com/sharepoint/soap/ois/" xmlns:dir=3D"http://=
+schemas.microsoft.com/sharepoint/soap/directory/" xmlns:ds=3D"http://www.w3=
+.org/2000/09/xmldsig#" xmlns:dsp=3D"http://schemas.microsoft.com/sharepoint=
+/dsp" xmlns:udc=3D"http://schemas.microsoft.com/data/udc" xmlns:xsd=3D"http=
+://www.w3.org/2001/XMLSchema" xmlns:sub=3D"http://schemas.microsoft.com/sha=
+repoint/soap/2002/1/alerts/" xmlns:ec=3D"http://www.w3.org/2001/04/xmlenc#"=
+ xmlns:sp=3D"http://schemas.microsoft.com/sharepoint/" xmlns:sps=3D"http://=
+schemas.microsoft.com/sharepoint/soap/" xmlns:xsi=3D"http://www.w3.org/2001=
+/XMLSchema-instance" xmlns:udcs=3D"http://schemas.microsoft.com/data/udc/so=
+ap" xmlns:udcxf=3D"http://schemas.microsoft.com/data/udc/xmlfile" xmlns:udc=
+p2p=3D"http://schemas.microsoft.com/data/udc/parttopart" xmlns:wf=3D"http:/=
+/schemas.microsoft.com/sharepoint/soap/workflow/" xmlns:dsss=3D"http://sche=
+mas.microsoft.com/office/2006/digsig-setup" xmlns:dssi=3D"http://schemas.mi=
+crosoft.com/office/2006/digsig" xmlns:mdssi=3D"http://schemas.openxmlformat=
+s.org/package/2006/digital-signature" xmlns:mver=3D"http://schemas.openxmlf=
+ormats.org/markup-compatibility/2006" xmlns:m=3D"http://schemas.microsoft.c=
+om/office/2004/12/omml" xmlns:mrels=3D"http://schemas.openxmlformats.org/pa=
+ckage/2006/relationships" xmlns:spwp=3D"http://microsoft.com/sharepoint/web=
+partpages" xmlns:ex12t=3D"http://schemas.microsoft.com/exchange/services/20=
+06/types" xmlns:ex12m=3D"http://schemas.microsoft.com/exchange/services/200=
+6/messages" xmlns:pptsl=3D"http://schemas.microsoft.com/sharepoint/soap/Sli=
+deLibrary/" xmlns:spsl=3D"http://microsoft.com/webservices/SharePointPortal=
+Server/PublishedLinksService" xmlns:Z=3D"urn:schemas-microsoft-com:" xmlns:=
+st=3D"&#1;" xmlns=3D"http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<meta name=3D"Generator" content=3D"Microsoft Word 12 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.Section1
+	{page:Section1;}
+-->
+</style><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext=3D"edit">
+  <o:idmap v:ext=3D"edit" data=3D"1" />
+ </o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"blue" vlink=3D"purple">
+<div class=3D"Section1">
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt">Hi folks,<o:p></o:p=
+></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt"><o:p>&nbsp;</o:p></=
+span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt">I am developing a d=
+river for eCAP peripheral and I feel it should come under driver/staging/ii=
+o directory. Kindly go through the below eCAP brief description and let me =
+know whether I can put the driver inside
+ iio directory.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt"><o:p>&nbsp;</o:p></=
+span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt">eCAP (enhanced capt=
+ure) module can be used to compute frequency and duty cycle % of the incomi=
+ng pwm wave. &nbsp;This module includes dedicated input pin, 32bit up count=
+er and capture registers. PWM wave whose
+ frequency needs to be computed should be<span style=3D"color:#1F497D"> </s=
+pan>fed to this dedicated pin. Counter ticks on the reference clock.&nbsp;e=
+CAP latches the counter value to the capture registers depending upon the r=
+ising and falling edge of the incoming
+ pwm wave. Values in the counter register are used to calculate the frequen=
+cy and duty cycle %.
+<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt"><o:p>&nbsp;</o:p></=
+span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt">Regards,<o:p></o:p>=
+</span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt">Akshay </span><span=
+ style=3D"font-size:14.0pt"><o:p></o:p></span></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+</div>
+</body>
+</html>
+
+--_000_6F6B80BD2E18844D97BB4B51FE3705C831768D51DBDE01entticom_--
