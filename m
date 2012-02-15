@@ -14,69 +14,84 @@ Cc: greg@kroah.com,
 	zdevai@gmail.com,
 	w.sang@pengutronix.de,
 	marek.vasut@gmail.com,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 5.5/6] staging:iio:max1363 enable use with inkernel interfaces.
-Date: Wed, 15 Feb 2012 21:11:59 +0000
-Message-Id: <1329340319-3569-1-git-send-email-jic23@kernel.org>
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: [PATCH 6/6] stargate2: example of map configuration for iio to hwmon example.
+Date: Wed, 15 Feb 2012 19:48:05 +0000
+Message-Id: <1329335285-31006-7-git-send-email-jic23@kernel.org>
 In-Reply-To: <1329335285-31006-1-git-send-email-jic23@kernel.org>
 References: <1329335285-31006-1-git-send-email-jic23@kernel.org>
 Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+From: Jonathan Cameron <jic23@cam.ac.uk>
+
+Do not commit.
 ---
-Oops patch 6 doesn't make much sense without this driver support.
+ arch/arm/mach-pxa/stargate2.c |   24 ++++++++++++++++++++++++
+ 1 files changed, 24 insertions(+), 0 deletions(-)
 
- drivers/staging/iio/adc/max1363_core.c |    9 ++++++++-
- 1 files changed, 8 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
-index 3a5bd20..29ab0aa 100644
---- a/drivers/staging/iio/adc/max1363_core.c
-+++ b/drivers/staging/iio/adc/max1363_core.c
-@@ -36,6 +36,7 @@
- #include "../sysfs.h"
- #include "../events.h"
- #include "../buffer.h"
-+#include "../driver.h"
+diff --git a/arch/arm/mach-pxa/stargate2.c b/arch/arm/mach-pxa/stargate2.c
+index b0656e15..ce7f0a3 100644
+--- a/arch/arm/mach-pxa/stargate2.c
++++ b/arch/arm/mach-pxa/stargate2.c
+@@ -54,6 +54,8 @@
+ #include <linux/mfd/da903x.h>
+ #include <linux/sht15.h>
  
- #include "max1363.h"
++#include "../../../drivers/staging/iio/machine.h"
++
+ #include "devices.h"
+ #include "generic.h"
  
-@@ -1268,6 +1269,9 @@ static int __devinit max1363_probe(struct i2c_client *client,
- 		ret = -ENOMEM;
- 		goto error_disable_reg;
- 	}
-+	ret = iio_map_array_register(indio_dev, client->dev.platform_data);
-+	if (ret < 0)
-+		goto error_free_device;
- 	st = iio_priv(indio_dev);
- 	st->reg = reg;
- 	/* this is only used for device removal purposes */
-@@ -1281,7 +1285,7 @@ static int __devinit max1363_probe(struct i2c_client *client,
- 			  (st->chip_info->num_modes + 1), GFP_KERNEL);
- 	if (!indio_dev->available_scan_masks) {
- 		ret = -ENOMEM;
--		goto error_free_device;
-+		goto error_unregister_map;
- 	}
+@@ -406,6 +408,25 @@ static struct i2c_pxa_platform_data i2c_pdata = {
+ 	.fast_mode = 1,
+ };
  
- 	for (i = 0; i < st->chip_info->num_modes; i++)
-@@ -1337,6 +1341,8 @@ error_cleanup_ring:
- 	max1363_ring_cleanup(indio_dev);
- error_free_available_scan_masks:
- 	kfree(indio_dev->available_scan_masks);
-+error_unregister_map:
-+	iio_map_array_unregister(indio_dev, client->dev.platform_data);
- error_free_device:
- 	iio_free_device(indio_dev);
- error_disable_reg:
-@@ -1363,6 +1369,7 @@ static int max1363_remove(struct i2c_client *client)
- 		regulator_disable(reg);
- 		regulator_put(reg);
- 	}
-+	iio_map_array_unregister(indio_dev, client->dev.platform_data);
- 	iio_free_device(indio_dev);
++static struct iio_map max1363_consumer_map[] = {
++	{
++		.adc_channel_label = "AIN1",
++		.consumer_dev_name = "iio_hwmon.0",
++		.consumer_channel = "testchan1",
++	}, {
++		.adc_channel_label = "AIN2",
++		.consumer_dev_name = "iio_hwmon.0",
++		.consumer_channel = "testchan2",
++	},
++	{}
++};
++
++static struct platform_device iio_hwmon_test = {
++	.name = "iio_hwmon",
++};
++
++
++
+ static void __init imote2_stargate2_init(void)
+ {
  
- 	return 0;
+@@ -561,6 +582,7 @@ static struct i2c_board_info __initdata imote2_i2c_board_info[] = {
+ 		 * pull up resistors are missing.
+ 		 */
+ 		.irq = PXA_GPIO_TO_IRQ(99),
++		.platform_data = max1363_consumer_map,
+ 	}, { /* ITS400 Sensor board only */
+ 		.type = "tsl2561",
+ 		.addr = 0x49,
+@@ -945,6 +967,7 @@ static struct i2c_board_info __initdata stargate2_i2c_board_info[] = {
+ 		 * pull up resistors are missing.
+ 		 */
+ 		.irq = PXA_GPIO_TO_IRQ(99),
++		.platform_data = max1363_consumer_map,
+ 	}, { /* ITS400 Sensor board only */
+ 		.type = "tsl2561",
+ 		.addr = 0x49,
+@@ -977,6 +1000,7 @@ static struct platform_device *stargate2_devices[] = {
+ 	&stargate2_sram,
+ 	&smc91x_device,
+ 	&sht15,
++	&iio_hwmon_test,
+ };
+ 
+ static void __init stargate2_init(void)
 -- 
 1.7.8.4
