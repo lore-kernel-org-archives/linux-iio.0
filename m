@@ -1,112 +1,137 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f46.google.com ([74.125.83.46]:64894 "EHLO
-	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755173Ab2BSWRq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Feb 2012 17:17:46 -0500
-Date: Sun, 19 Feb 2012 23:17:47 +0100
-From: Lukasz Majewski <majess1982@gmail.com>
-To: linux-rt-users@vger.kernel.org
-Cc: Andy O'Brien <aobrien@greenseainc.com>,
-	platform-driver-x86@vger.kernel.org, linux-8086@vger.kernel.org,
-	linux-iio@vger.kernel.org, Lukasz Majewski <majess1982@gmail.com>,
-	linux-embedded@vger.kernel.org, soc@dmp.com.tw
-Subject: [Vortex86] External SPI
-Message-ID: <20120219231747.12c66365@jawa>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from ch1ehsobe001.messaging.microsoft.com ([216.32.181.181]:41586
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751917Ab2BQMsQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 17 Feb 2012 07:48:16 -0500
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>, <grant.likely@secretlab.ca>
+CC: <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 1/4] iio: core: constitfy available_scan_mask
+Date: Fri, 17 Feb 2012 13:46:09 +0100
+Message-ID: <1329482772-18054-1-git-send-email-michael.hennerich@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi all,
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-I posses a Vortex86DX SoC based computer.
+The core must not modify available_scan_mask, because it causes problems
+with drivers where multiple instances of the driver share the same mask set.
+So make this explicit by marking available scan masks as const.
 
-According to the spec it has two SPI interfaces - namely: internal -
-access to BIOS and external, which is connected to serial memory
-(MX25L3205 [1])
+The max1363 driver needs some minor adjustment to accommodate this change.
 
-My application requires reading data from SPI sensor. I've given a shot
-for a bitbang SPI driver. It worked, but slow access to
-GPIOs caused a very slow transmission. 
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/adc/max1363_core.c    |   36 +++++++++++++++++++---------
+ drivers/staging/iio/iio.h                 |    4 +-
+ drivers/staging/iio/industrialio-buffer.c |    6 ++--
+ 3 files changed, 29 insertions(+), 17 deletions(-)
 
-For speed up I've decided to unsolder the memory [1] and solder the
-sensor (via 8cm cables).
+diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
+index 3a5bd20..7f39ca3 100644
+--- a/drivers/staging/iio/adc/max1363_core.c
++++ b/drivers/staging/iio/adc/max1363_core.c
+@@ -1245,10 +1245,31 @@ static int max1363_initial_setup(struct max1363_state *st)
+ 	return max1363_set_scan_mode(st);
+ }
+ 
++static int __devinit max1363_alloc_scan_masks(struct iio_dev *indio_dev)
++{
++	struct max1363_state *st = iio_priv(indio_dev);
++	unsigned long *masks;
++	int i;
++
++	masks = kzalloc(BITS_TO_LONGS(MAX1363_MAX_CHANNELS)*sizeof(long)*
++			  (st->chip_info->num_modes + 1), GFP_KERNEL);
++	if (!masks)
++		return -ENOMEM;
++
++	for (i = 0; i < st->chip_info->num_modes; i++)
++		bitmap_copy(masks + BITS_TO_LONGS(MAX1363_MAX_CHANNELS)*i,
++			    max1363_mode_table[st->chip_info->mode_list[i]]
++			    .modemask, MAX1363_MAX_CHANNELS);
++
++	indio_dev->available_scan_masks = masks;
++
++	return 0;
++}
++
+ static int __devinit max1363_probe(struct i2c_client *client,
+ 				   const struct i2c_device_id *id)
+ {
+-	int ret, i;
++	int ret;
+ 	struct max1363_state *st;
+ 	struct iio_dev *indio_dev;
+ 	struct regulator *reg;
+@@ -1276,19 +1297,10 @@ static int __devinit max1363_probe(struct i2c_client *client,
+ 	st->chip_info = &max1363_chip_info_tbl[id->driver_data];
+ 	st->client = client;
+ 
+-	indio_dev->available_scan_masks
+-		= kzalloc(BITS_TO_LONGS(MAX1363_MAX_CHANNELS)*sizeof(long)*
+-			  (st->chip_info->num_modes + 1), GFP_KERNEL);
+-	if (!indio_dev->available_scan_masks) {
+-		ret = -ENOMEM;
++	ret = max1363_alloc_scan_masks(indio_dev);
++	if (ret)
+ 		goto error_free_device;
+-	}
+ 
+-	for (i = 0; i < st->chip_info->num_modes; i++)
+-		bitmap_copy(indio_dev->available_scan_masks +
+-			    BITS_TO_LONGS(MAX1363_MAX_CHANNELS)*i,
+-			    max1363_mode_table[st->chip_info->mode_list[i]]
+-			    .modemask, MAX1363_MAX_CHANNELS);
+ 	/* Estabilish that the iio_dev is a child of the i2c device */
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->name = id->name;
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index be6ced3..42a362c 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -327,9 +327,9 @@ struct iio_dev {
+ 	struct iio_buffer		*buffer;
+ 	struct mutex			mlock;
+ 
+-	unsigned long			*available_scan_masks;
++	const unsigned long		*available_scan_masks;
+ 	unsigned			masklength;
+-	unsigned long			*active_scan_mask;
++	const unsigned long		*active_scan_mask;
+ 	struct iio_trigger		*trig;
+ 	struct iio_poll_func		*pollfunc;
+ 
+diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c
+index d7b1e9e..386ba76 100644
+--- a/drivers/staging/iio/industrialio-buffer.c
++++ b/drivers/staging/iio/industrialio-buffer.c
+@@ -489,9 +489,9 @@ ssize_t iio_buffer_show_enable(struct device *dev,
+ EXPORT_SYMBOL(iio_buffer_show_enable);
+ 
+ /* note NULL used as error indicator as it doesn't make sense. */
+-static unsigned long *iio_scan_mask_match(unsigned long *av_masks,
++static const unsigned long *iio_scan_mask_match(const unsigned long *av_masks,
+ 					  unsigned int masklength,
+-					  unsigned long *mask)
++					  const unsigned long *mask)
+ {
+ 	if (bitmap_empty(mask, masklength))
+ 		return NULL;
+@@ -554,7 +554,7 @@ EXPORT_SYMBOL(iio_sw_buffer_preenable);
+ int iio_scan_mask_set(struct iio_dev *indio_dev,
+ 		      struct iio_buffer *buffer, int bit)
+ {
+-	unsigned long *mask;
++	const unsigned long *mask;
+ 	unsigned long *trialmask;
+ 
+ 	trialmask = kmalloc(sizeof(*trialmask)*
+-- 
+1.7.0.4
 
-Unfortunately, documents provided from DM&P[2]:  [3] , [4] give some
-hints on setting up a base address to get access to the SPI memory
-region, and proper GPIO configuration.
-
-What they DO NOT tell is how to perform the SPI transmission.
-
-SPI controller address map:
-BA is the Base Address
-
-BA + 08h External SPI Output Data Register (8 bit transfer)
-BA + 09h External SPI Input Register
-BA + 0Ah External SPI Control Register
-BA + 0Bh External SPI Status Register
-BA + 0Ch External SPI Chip Select Register
-BA + 0Dh External SPI Error Status Register
-
-I've discovered that:
- - Access (read/write) to control register (CS) is not causing the clock
-   generation
- - The Chip Select line is directly controlled by bit 0 (1 << 0) in the
-   "Chip Select Regsiter". It must be explicitly changed (by writing
-   data to the register) to toggle CS line state. After that the WCTE
-   bit at "Error Status Register" is set to 1 (which means "controller
-   busy")
- - To send data via SPI, one needs to write the data to the 8 bit
-   "Output Data Register". It seems, that writing data starts clock
-   generation. For correct transmission one needs to wait until the ODC
-   bit at "Status Register" is set to 1.
-
-The _problem_ is with reading data (with full or half duplex):
-
-Inserting:
-rx = inb(addr + 0x09); // "SPI Input Register" is not causing
-reading data.
-
-However:
-Writing data to the "SPI Input Register":
-   outb(0x00, addr + 0x09) // the CLK generation starts
-   and waiting for IDR bit at "Status Register" set to 1, causes
-   operation:
-   rx = inb(addr + 0x09); 
-   to read correct data.
-
-
-The above only works when FIFO is enabled (bit FIEN - 4 at "Control
-Register")
-
-The problem is, that the sent data seems to be
-somewhat random (e.g. the first/last send data) and
-I don't have a feeling that I'm fully controlling the operation of SPI.
-
-Conclusion:
- - outb is needed to force SPI block to start generating SCLK (also
-   when one wants to read data).
- - FIFO is involved in reading data from SPI - I don't know how to
-   control it.
- - It seems, that the controller is half-duplex.
-
-I suspect, that this simple type of controller has been also used at
-other SoC's. Maybe it is an FPGA based design, or some standard Intel's
-chip (like 8255). I was asking "uncle google" but with no satisfactory
-results.
-
-
-Has someone dealt with a similar controller? Any advice? Hint?
-
-
-links:
-[1] MX25L3205 - SPI flash memory
-http://www.mxic.com.tw/QuickPlace/hq/Main.nsf/h_Toc/5c179475fbb1d010482574440028bdf4/?OpenDocument
-[2] http://www.dmp.com.tw/tech/vortex86dx/
-[3] "DM&P Vortex86 Series (SX/DX/MX) Software Programming Reference"
-[4] "Vortex86DX Fact Sheet 32-BIT x86 SoC"
-
-
-Best regards,
-Lukasz Majewski
 
