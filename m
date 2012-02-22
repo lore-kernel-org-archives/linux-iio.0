@@ -1,128 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44385 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750773Ab2B2UPc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Feb 2012 15:15:32 -0500
-Message-ID: <4F4E87A9.2030202@kernel.org>
-Date: Wed, 29 Feb 2012 20:16:41 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from db3ehsobe005.messaging.microsoft.com ([213.199.154.143]:27437
+	"EHLO DB3EHSOBE006.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751334Ab2BVMdT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Feb 2012 07:33:19 -0500
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 2/3] iio: core: Avoid NULL pointer de-ref in case indio_dev->setup_ops are not in use
+Date: Wed, 22 Feb 2012 13:30:14 +0100
+Message-ID: <1329913815-5382-2-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1329913815-5382-1-git-send-email-michael.hennerich@analog.com>
+References: <1329913815-5382-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH 3/3] iio: Convert platform_drivers to use module_platform_driver
-References: <1329913815-5382-1-git-send-email-michael.hennerich@analog.com> <1329913815-5382-3-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1329913815-5382-3-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/22/2012 12:30 PM, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
-> 
-> No functional changes.
-> 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/adc/ad7606_par.c               |   13 +------------
->  drivers/staging/iio/trigger/iio-trig-bfin-timer.c  |   12 +-----------
->  drivers/staging/iio/trigger/iio-trig-gpio.c        |   12 +-----------
->  .../staging/iio/trigger/iio-trig-periodic-rtc.c    |   12 +-----------
->  4 files changed, 4 insertions(+), 45 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-> index cff9756..bb152a8 100644
-> --- a/drivers/staging/iio/adc/ad7606_par.c
-> +++ b/drivers/staging/iio/adc/ad7606_par.c
-> @@ -173,18 +173,7 @@ static struct platform_driver ad7606_driver = {
->  	},
->  };
->  
-> -static int __init ad7606_init(void)
-> -{
-> -	return platform_driver_register(&ad7606_driver);
-> -}
-> -
-> -static void __exit ad7606_cleanup(void)
-> -{
-> -	platform_driver_unregister(&ad7606_driver);
-> -}
-> -
-> -module_init(ad7606_init);
-> -module_exit(ad7606_cleanup);
-> +module_platform_driver(ad7606_driver);
->  
->  MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
->  MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
-> diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> index 1cbb25d..665653d 100644
-> --- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> +++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> @@ -232,17 +232,7 @@ static struct platform_driver iio_bfin_tmr_trigger_driver = {
->  	.remove = __devexit_p(iio_bfin_tmr_trigger_remove),
->  };
->  
-> -static int __init iio_bfin_tmr_trig_init(void)
-> -{
-> -	return platform_driver_register(&iio_bfin_tmr_trigger_driver);
-> -}
-> -module_init(iio_bfin_tmr_trig_init);
-> -
-> -static void __exit iio_bfin_tmr_trig_exit(void)
-> -{
-> -	platform_driver_unregister(&iio_bfin_tmr_trigger_driver);
-> -}
-> -module_exit(iio_bfin_tmr_trig_exit);
-> +module_platform_driver(iio_bfin_tmr_trigger_driver);
->  
->  MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
->  MODULE_DESCRIPTION("Blackfin system timer based trigger for the iio subsystem");
-> diff --git a/drivers/staging/iio/trigger/iio-trig-gpio.c b/drivers/staging/iio/trigger/iio-trig-gpio.c
-> index f2a6559..a346594 100644
-> --- a/drivers/staging/iio/trigger/iio-trig-gpio.c
-> +++ b/drivers/staging/iio/trigger/iio-trig-gpio.c
-> @@ -160,17 +160,7 @@ static struct platform_driver iio_gpio_trigger_driver = {
->  	},
->  };
->  
-> -static int __init iio_gpio_trig_init(void)
-> -{
-> -	return platform_driver_register(&iio_gpio_trigger_driver);
-> -}
-> -module_init(iio_gpio_trig_init);
-> -
-> -static void __exit iio_gpio_trig_exit(void)
-> -{
-> -	platform_driver_unregister(&iio_gpio_trigger_driver);
-> -}
-> -module_exit(iio_gpio_trig_exit);
-> +module_platform_driver(iio_gpio_trigger_driver);
->  
->  MODULE_AUTHOR("Jonathan Cameron <jic23@cam.ac.uk>");
->  MODULE_DESCRIPTION("Example gpio trigger for the iio subsystem");
-> diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> index bd7416b..a80cf67 100644
-> --- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> +++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> @@ -195,18 +195,8 @@ static struct platform_driver iio_trig_periodic_rtc_driver = {
->  	},
->  };
->  
-> -static int __init iio_trig_periodic_rtc_init(void)
-> -{
-> -	return platform_driver_register(&iio_trig_periodic_rtc_driver);
-> -}
-> -
-> -static void __exit iio_trig_periodic_rtc_exit(void)
-> -{
-> -	return platform_driver_unregister(&iio_trig_periodic_rtc_driver);
-> -}
-> +module_platform_driver(iio_trig_periodic_rtc_driver);
->  
-> -module_init(iio_trig_periodic_rtc_init);
-> -module_exit(iio_trig_periodic_rtc_exit);
->  MODULE_AUTHOR("Jonathan Cameron <jic23@cam.ac.uk>");
->  MODULE_DESCRIPTION("Periodic realtime clock  trigger for the iio subsystem");
->  MODULE_LICENSE("GPL v2");
+From: Michael Hennerich <michael.hennerich@analog.com>
+
+Drivers may not need setup_ops at all, so let the core supply
+some empty ops.
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/industrialio-core.c |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 82c9128..6fc1430 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -800,6 +800,8 @@ static const struct file_operations iio_buffer_fileops = {
+ 	.compat_ioctl = iio_ioctl,
+ };
+ 
++static const struct iio_buffer_setup_ops noop_ring_setup_ops;
++
+ int iio_device_register(struct iio_dev *indio_dev)
+ {
+ 	int ret;
+@@ -828,6 +830,10 @@ int iio_device_register(struct iio_dev *indio_dev)
+ 	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
+ 		iio_device_register_trigger_consumer(indio_dev);
+ 
++	if ((indio_dev->modes & INDIO_ALL_BUFFER_MODES) &&
++		indio_dev->setup_ops == NULL)
++		indio_dev->setup_ops = &noop_ring_setup_ops;
++
+ 	ret = device_add(&indio_dev->dev);
+ 	if (ret < 0)
+ 		goto error_unreg_eventset;
+-- 
+1.7.0.4
+
 
