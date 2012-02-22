@@ -1,330 +1,328 @@
-Return-Path: <justinmattock@gmail.com>
-From: "Justin P. Mattock" <justinmattock@gmail.com>
-To: trivial@vger.kernel
-Cc: linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	gregkh@linuxfoundation.org,
-	jic23@cam.ac.uk,
-	"Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH]drivers:staging:iio Fix typos and comments in staging iio.
-Date: Mon, 27 Feb 2012 07:26:03 -0800
-Message-Id: <1330356363-3208-1-git-send-email-justinmattock@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from va3ehsobe003.messaging.microsoft.com ([216.32.180.13]:34853
+	"EHLO VA3EHSOBE003.bigfish.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751871Ab2BVMjW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Feb 2012 07:39:22 -0500
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [RFC] iio: amplifiers: New driver for AD8366 Dual-Digital Variable Gain Amplifier
+Date: Wed, 22 Feb 2012 13:36:22 +0100
+Message-ID: <1329914182-5428-1-git-send-email-michael.hennerich@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: "Justin P. Mattock" <justinmattock@gmail.com>
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-The below patch fixes some comments and some typos that I have found
-while reading drivers/staging/iio/*
-
-Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
-
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/Documentation/device.txt |    2 +-
- drivers/staging/iio/Kconfig                  |    2 +-
- drivers/staging/iio/accel/lis3l02dq_ring.c   |    2 +-
- drivers/staging/iio/accel/sca3000.h          |    2 +-
- drivers/staging/iio/adc/ad7476_ring.c        |    2 +-
- drivers/staging/iio/adc/ad799x_ring.c        |    2 +-
- drivers/staging/iio/adc/max1363_core.c       |    2 +-
- drivers/staging/iio/dac/ad5446.c             |    2 +-
- drivers/staging/iio/iio.h                    |    8 ++++----
- drivers/staging/iio/iio_dummy_evgen.c        |    2 +-
- drivers/staging/iio/industrialio-core.c      |    8 ++++----
- drivers/staging/iio/light/tsl2583.c          |    2 +-
- drivers/staging/iio/magnetometer/hmc5843.c   |    6 +++---
- drivers/staging/iio/meter/ade7758_ring.c     |    2 +-
- drivers/staging/iio/meter/meter.h            |    2 +-
- drivers/staging/iio/ring_sw.c                |    4 ++--
- 16 files changed, 25 insertions(+), 25 deletions(-)
+ drivers/staging/iio/Kconfig             |    1 +
+ drivers/staging/iio/Makefile            |    1 +
+ drivers/staging/iio/amplifiers/Kconfig  |   17 +++
+ drivers/staging/iio/amplifiers/Makefile |    5 +
+ drivers/staging/iio/amplifiers/ad8366.c |  228 +++++++++++++++++++++++++++++++
+ 5 files changed, 252 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/amplifiers/Kconfig
+ create mode 100644 drivers/staging/iio/amplifiers/Makefile
+ create mode 100644 drivers/staging/iio/amplifiers/ad8366.c
 
-diff --git a/drivers/staging/iio/Documentation/device.txt b/drivers/staging/iio/Documentation/device.txt
-index 1abb80c..8926f24 100644
---- a/drivers/staging/iio/Documentation/device.txt
-+++ b/drivers/staging/iio/Documentation/device.txt
-@@ -62,7 +62,7 @@ Then fill in the following:
- 	An optional associated buffer.
- - indio_dev->pollfunc:
- 	Poll function related elements. This controls what occurs when a trigger
--	to which this device is attached sends and event.
-+	to which this device is attached sends an event.
- - indio_dev->channels:
- 	Specification of device channels. Most attributes etc are built
- 	form this spec.
 diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
-index 90162aa..8312dcb 100644
+index 2b56823..fd7a164 100644
 --- a/drivers/staging/iio/Kconfig
 +++ b/drivers/staging/iio/Kconfig
-@@ -79,7 +79,7 @@ config IIO_SIMPLE_DUMMY
-        help
- 	 Driver intended mainly as documentation for how to write
- 	 a driver. May also be useful for testing userspace code
--	 without hardward.
-+	 without hardware.
- 
- if IIO_SIMPLE_DUMMY
- 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index 98c5c92..d812e03 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -239,7 +239,7 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 	__lis3l02dq_write_data_ready_config(&indio_dev->dev, state);
- 	if (state == false) {
- 		/*
--		 * A possible quirk with teh handler is currently worked around
-+		 * A possible quirk with the handler is currently worked around
- 		 *  by ensuring outstanding read events are cleared.
- 		 */
- 		ret = lis3l02dq_read_all(indio_dev, NULL);
-diff --git a/drivers/staging/iio/accel/sca3000.h b/drivers/staging/iio/accel/sca3000.h
-index ad38dd9..131daac 100644
---- a/drivers/staging/iio/accel/sca3000.h
-+++ b/drivers/staging/iio/accel/sca3000.h
-@@ -136,7 +136,7 @@
- #define SCA3000_INT_MASK_ACTIVE_HIGH		0x01
- #define SCA3000_INT_MASK_ACTIVE_LOW		0x00
- 
--/* Values of mulipexed registers (write to ctrl_data after select) */
-+/* Values of multiplexed registers (write to ctrl_data after select) */
- #define SCA3000_REG_ADDR_CTRL_DATA		0x22
- 
- /* Measurement modes available on some sca3000 series chips. Code assumes others
-diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
-index 4e298b2..b58b482 100644
---- a/drivers/staging/iio/adc/ad7476_ring.c
-+++ b/drivers/staging/iio/adc/ad7476_ring.c
-@@ -23,7 +23,7 @@
- /**
-  * ad7476_ring_preenable() setup the parameters of the ring before enabling
-  *
-- * The complex nature of the setting of the nuber of bytes per datum is due
-+ * The complex nature of the setting of the number of bytes per datum is due
-  * to this driver currently ensuring that the timestamp is stored at an 8
-  * byte boundary.
-  **/
-diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
-index 5dded9e..da12ec2 100644
---- a/drivers/staging/iio/adc/ad799x_ring.c
-+++ b/drivers/staging/iio/adc/ad799x_ring.c
-@@ -26,7 +26,7 @@
- /**
-  * ad799x_ring_preenable() setup the parameters of the ring before enabling
-  *
-- * The complex nature of the setting of the nuber of bytes per datum is due
-+ * The complex nature of the setting of the number of bytes per datum is due
-  * to this driver currently ensuring that the timestamp is stored at an 8
-  * byte boundary.
-  **/
-diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
-index b92cb4a..79f016a 100644
---- a/drivers/staging/iio/adc/max1363_core.c
-+++ b/drivers/staging/iio/adc/max1363_core.c
-@@ -341,7 +341,7 @@ static struct iio_chan_spec max1361_channels[] =
- static struct iio_chan_spec max1363_channels[] =
- 	MAX1363_4X_CHANS(12, MAX1363_EV_M);
- 
--/* Appies to max1236, max1237 */
-+/* Applies to max1236, max1237 */
- static const enum max1363_modes max1236_mode_list[] = {
- 	_s0, _s1, _s2, _s3,
- 	s0to1, s0to2, s0to3,
-diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
-index 693e748..2d8660e 100644
---- a/drivers/staging/iio/dac/ad5446.c
-+++ b/drivers/staging/iio/dac/ad5446.c
-@@ -350,7 +350,7 @@ static int __devinit ad5446_probe(struct spi_device *spi)
- 	st->reg = reg;
- 	st->spi = spi;
- 
--	/* Estabilish that the iio_dev is a child of the spi device */
-+	/* Establish that the iio_dev is a child of the spi device */
- 	indio_dev->dev.parent = &spi->dev;
- 	indio_dev->name = spi_get_device_id(spi)->name;
- 	indio_dev->info = &ad5446_info;
-diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index be6ced3..de94ff9 100644
---- a/drivers/staging/iio/iio.h
-+++ b/drivers/staging/iio/iio.h
-@@ -26,7 +26,7 @@ enum iio_data_type {
- 
- /* Could add the raw attributes as well - allowing buffer only devices */
- enum iio_chan_info_enum {
--	/* 0 is reserverd for raw attributes */
-+	/* 0 is reserved for raw attributes */
- 	IIO_CHAN_INFO_SCALE = 1,
- 	IIO_CHAN_INFO_OFFSET,
- 	IIO_CHAN_INFO_CALIBSCALE,
-@@ -91,7 +91,7 @@ enum iio_endian {
- /**
-  * struct iio_chan_spec - specification of a single channel
-  * @type:		What type of measurement is the channel making.
-- * @channel:		What number or name do we wish to asign the channel.
-+ * @channel:		What number or name do we wish to assign the channel.
-  * @channel2:		If there is a second number for a differential
-  *			channel then this is it. If modified is set then the
-  *			value here specifies the modifier.
-@@ -111,7 +111,7 @@ enum iio_endian {
-  *			informative name. Note this has no effect codes etc,
-  *			unlike modifiers.
-  * @datasheet_name:	A name used in in kernel mapping of channels. It should
-- *			corrspond to the first name that the channel is referred
-+ *			correspond to the first name that the channel is referred
-  *			to by in the datasheet (e.g. IND), or the nearest
-  *			possible compound name (e.g. IND-INC).
-  * @processed_val:	Flag to specify the data access attribute should be
-@@ -226,7 +226,7 @@ struct iio_dev;
-  * @write_event_config:	set if the event is enabled.
-  * @read_event_value:	read a value associated with the event. Meaning
-  *			is event dependant. event_code specifies which event.
-- * @write_event_value:	write the value associate with the event.
-+ * @write_event_value:	write the value associated with the event.
-  *			Meaning is event dependent.
-  * @validate_trigger:	function to validate the trigger when the
-  *			current trigger gets changed.
-diff --git a/drivers/staging/iio/iio_dummy_evgen.c b/drivers/staging/iio/iio_dummy_evgen.c
-index cdbf289..f39f346 100644
---- a/drivers/staging/iio/iio_dummy_evgen.c
-+++ b/drivers/staging/iio/iio_dummy_evgen.c
-@@ -32,7 +32,7 @@
-  * @chip: irq chip we are faking
-  * @base: base of irq range
-  * @enabled: mask of which irqs are enabled
-- * @inuse: mask of which irqs actually have anyone connected
-+ * @inuse: mask of which irqs are connected
-  * @lock: protect the evgen state
-  */
- struct iio_dummy_eventgen {
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 19f897f..592c56a 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -112,7 +112,7 @@ struct iio_detected_event_list {
- 
- /**
-  * struct iio_event_interface - chrdev interface for an event line
-- * @dev:		device assocated with event interface
-+ * @dev:		device associated with event interface
-  * @wait:		wait queue to allow blocking reads of events
-  * @event_list_lock:	mutex to protect the list of detected events
-  * @det_events:		list of detected events
-@@ -455,7 +455,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
- 		goto error_ret;
- 	}
- 
--	if (chan->differential) { /* Differential  can not have modifier */
-+	if (chan->differential) { /* Differential can not have modifier */
- 		if (generic)
- 			name_format
- 				= kasprintf(GFP_KERNEL, "%s_%s-%s_%s",
-@@ -663,7 +663,7 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
- 	attrcount = attrcount_orig;
- 	/*
- 	 * New channel registration method - relies on the fact a group does
--	 *  not need to be initialized if it is name is NULL.
-+	 * not need to be initialized if it is name is NULL.
- 	 */
- 	INIT_LIST_HEAD(&indio_dev->channel_attr_list);
- 	if (indio_dev->channels)
-@@ -905,7 +905,7 @@ static inline int __iio_add_event_config_attrs(struct iio_dev *indio_dev)
- 	int j, ret, attrcount = 0;
- 
- 	INIT_LIST_HEAD(&indio_dev->event_interface->dev_attr_list);
--	/* Dynically created from the channels array */
-+	/* Dynamically created from the channels array */
- 	for (j = 0; j < indio_dev->num_channels; j++) {
- 		ret = iio_device_add_event_sysfs(indio_dev,
- 						 &indio_dev->channels[j]);
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 5b6455a..9ef4677 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -113,7 +113,7 @@ struct taos_lux {
- 
- /* This structure is intentionally large to accommodate updates via sysfs. */
- /* Sized to 11 = max 10 segments + 1 termination segment */
--/* Assumption is is one and only one type of glass used  */
-+/* Assumption is one and only one type of glass used  */
- static struct taos_lux taos_device_lux[11] = {
- 	{  9830,  8520, 15729 },
- 	{ 12452, 10807, 23344 },
-diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-index f2e85a9..a962469 100644
---- a/drivers/staging/iio/magnetometer/hmc5843.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843.c
-@@ -86,7 +86,7 @@
- #define	RATE_NOT_USED				0x07
- 
- /*
-- * Device Configutration
-+ * Device Configuration
-  */
- #define	CONF_NORMAL				0x00
- #define	CONF_POSITIVE_BIAS			0x01
-@@ -142,7 +142,7 @@ static s32 hmc5843_configure(struct i2c_client *client,
- 					(operating_mode & 0x03));
- }
- 
--/* Return the measurement value from the  specified channel */
-+/* Return the measurement value from the specified channel */
- static int hmc5843_read_measurement(struct iio_dev *indio_dev,
- 				    int address,
- 				    int *val)
-@@ -169,7 +169,7 @@ static int hmc5843_read_measurement(struct iio_dev *indio_dev,
- /*
-  * From the datasheet
-  * 0 - Continuous-Conversion Mode: In continuous-conversion mode, the
-- * device continuously performs conversions an places the result in the
-+ * device continuously performs conversions and places the result in the
-  * data register.
-  *
-  * 1 - Single-Conversion Mode : device performs a single measurement,
-diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
-index f29f2b2..bdef0e2c 100644
---- a/drivers/staging/iio/meter/ade7758_ring.c
-+++ b/drivers/staging/iio/meter/ade7758_ring.c
-@@ -85,7 +85,7 @@ static irqreturn_t ade7758_trigger_handler(int irq, void *p)
- /**
-  * ade7758_ring_preenable() setup the parameters of the ring before enabling
-  *
-- * The complex nature of the setting of the nuber of bytes per datum is due
-+ * The complex nature of the setting of the number of bytes per datum is due
-  * to this driver currently ensuring that the timestamp is stored at an 8
-  * byte boundary.
-  **/
-diff --git a/drivers/staging/iio/meter/meter.h b/drivers/staging/iio/meter/meter.h
-index 142c50d..6a3db14 100644
---- a/drivers/staging/iio/meter/meter.h
-+++ b/drivers/staging/iio/meter/meter.h
-@@ -362,7 +362,7 @@
- #define IIO_EVENT_ATTR_CYCEND(_evlist, _show, _store, _mask) \
- 	IIO_EVENT_ATTR_SH(cycend, _evlist, _show, _store, _mask)
- 
--/* on the rising and falling edge of the the voltage waveform */
-+/* on the rising and falling edge of the voltage waveform */
- #define IIO_EVENT_ATTR_ZERO_CROSS(_evlist, _show, _store, _mask) \
- 	IIO_EVENT_ATTR_SH(zero_cross, _evlist, _show, _store, _mask)
- 
-diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
-index 3e24ec4..681d6d4 100644
---- a/drivers/staging/iio/ring_sw.c
-+++ b/drivers/staging/iio/ring_sw.c
-@@ -147,7 +147,7 @@ static int iio_read_first_n_sw_rb(struct iio_buffer *r,
- 	size_t data_available, buffer_size;
- 
- 	/* A userspace program has probably made an error if it tries to
--	 *  read something that is not a whole number of bpds.
-+	 * read something that is not a whole number of bpds.
- 	 * Return an error.
- 	 */
- 	if (n % ring->buf.bytes_per_datum) {
-@@ -229,7 +229,7 @@ static int iio_read_first_n_sw_rb(struct iio_buffer *r,
- 
- 	/* setup the next read position */
- 	/* Beware, this may fail due to concurrency fun and games.
--	 *  Possible that sufficient fill commands have run to push the read
-+	 * Possible that sufficient fill commands have run to push the read
- 	 * pointer past where we would be after the rip. If this occurs, leave
- 	 * it be.
- 	 */
--- 
-1.7.5.4
+@@ -59,6 +59,7 @@ config IIO_CONSUMERS_PER_TRIGGER
+ source "drivers/staging/iio/accel/Kconfig"
+ source "drivers/staging/iio/adc/Kconfig"
+ source "drivers/staging/iio/addac/Kconfig"
++source "drivers/staging/iio/amplifiers/Kconfig"
+ source "drivers/staging/iio/cdc/Kconfig"
+ source "drivers/staging/iio/dac/Kconfig"
+ source "drivers/staging/iio/frequency/Kconfig"
+diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
+index 0161095..c52cde3 100644
+--- a/drivers/staging/iio/Makefile
++++ b/drivers/staging/iio/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_IIO_DUMMY_EVGEN) += iio_dummy_evgen.o
+ obj-y += accel/
+ obj-y += adc/
+ obj-y += addac/
++obj-y += amplifiers/
+ obj-y += cdc/
+ obj-y += dac/
+ obj-y += frequency/
+diff --git a/drivers/staging/iio/amplifiers/Kconfig b/drivers/staging/iio/amplifiers/Kconfig
+new file mode 100644
+index 0000000..05d707e
+--- /dev/null
++++ b/drivers/staging/iio/amplifiers/Kconfig
+@@ -0,0 +1,17 @@
++#
++# Gain Amplifiers, etc.
++#
++menu "Amplifiers"
++
++config AD8366
++	tristate "Analog Devices AD8366 VGA"
++	depends on SPI
++	select BITREVERSE
++	help
++	  Say yes here to build support for Analog Devices AD8366
++	  SPI Dual-Digital Variable Gain Amplifier (VGA).
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad8366.
++
++endmenu
+diff --git a/drivers/staging/iio/amplifiers/Makefile b/drivers/staging/iio/amplifiers/Makefile
+new file mode 100644
+index 0000000..a6ca366
+--- /dev/null
++++ b/drivers/staging/iio/amplifiers/Makefile
+@@ -0,0 +1,5 @@
++#
++# Makefile iio/amplifiers
++#
++
++obj-$(CONFIG_AD8366) += ad8366.o
+diff --git a/drivers/staging/iio/amplifiers/ad8366.c b/drivers/staging/iio/amplifiers/ad8366.c
+new file mode 100644
+index 0000000..187606f
+--- /dev/null
++++ b/drivers/staging/iio/amplifiers/ad8366.c
+@@ -0,0 +1,228 @@
++/*
++ * AD8366 SPI Dual-Digital Variable Gain Amplifier (VGA)
++ *
++ * Copyright 2012 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/spi/spi.h>
++#include <linux/regulator/consumer.h>
++#include <linux/err.h>
++#include <linux/module.h>
++#include <linux/bitrev.h>
++
++#include "../iio.h"
++#include "../sysfs.h"
++
++struct ad8366_state {
++	struct spi_device	*spi;
++	struct regulator	*reg;
++	unsigned char		ch_a;
++	unsigned char		ch_b;
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++	unsigned char		data[2] ____cacheline_aligned;
++};
++
++static int ad8366_write(struct iio_dev *indio_dev,
++			unsigned char ch_a, char unsigned ch_b)
++{
++	struct ad8366_state *st = iio_priv(indio_dev);
++	int ret;
++
++	ch_a = bitrev8(ch_a & 0x3F);
++	ch_b = bitrev8(ch_b & 0x3F);
++
++	st->data[0] = ch_b >> 4;
++	st->data[1] = (ch_b << 4) | (ch_a >> 2);
++
++	ret = spi_write(st->spi, st->data, ARRAY_SIZE(st->data));
++	if (ret < 0)
++		dev_err(&indio_dev->dev, "write failed (%d)", ret);
++
++	return ret;
++}
++
++static int ad8366_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val,
++			   int *val2,
++			   long m)
++{
++	struct ad8366_state *st = iio_priv(indio_dev);
++	int ret;
++	unsigned code;
++
++	mutex_lock(&indio_dev->mlock);
++	switch (m) {
++	case 0:
++		if (chan->channel == 0)
++			code = st->ch_a;
++		else
++			code = st->ch_b;
++
++		/* Values in dB */
++		code = code * 253 + 4500;
++		*val = code / 1000;
++		*val2 = (code % 1000) * 1000;
++
++		ret = IIO_VAL_INT_PLUS_MICRO;
++		break;
++	default:
++		ret = -EINVAL;
++	}
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++};
++
++static int ad8366_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val,
++			    int val2,
++			    long mask)
++{
++	struct ad8366_state *st = iio_priv(indio_dev);
++	unsigned code;
++	int ret;
++
++	/* Values in dB */
++	code = (((u8)val * 1000) + ((u32)val2 / 1000));
++
++	if (code > 20500 || code < 4500)
++		return -EINVAL;
++
++	code = (code - 4500) / 253;
++
++	mutex_lock(&indio_dev->mlock);
++	switch (mask) {
++	case 0:
++		if (chan->channel == 0)
++			st->ch_a = code;
++		else
++			st->ch_b = code;
++
++		ret = ad8366_write(indio_dev, st->ch_a, st->ch_b);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static const struct iio_info ad8366_info = {
++	.read_raw = &ad8366_read_raw,
++	.write_raw = &ad8366_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++#define AD8366_CHAN(_channel, _name) {			\
++	.type = IIO_ALTVOLTAGE,				\
++	.output = 1,					\
++	.indexed = 1,					\
++	.processed_val = 1,				\
++	.channel = _channel,				\
++	.extend_name = _name,				\
++}
++
++static const struct iio_chan_spec ad8366_channels[] = {
++	AD8366_CHAN(0, "gain"),
++	AD8366_CHAN(1, "gain"),
++};
++
++static int __devinit ad8366_probe(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev;
++	struct ad8366_state *st;
++	int ret;
++
++	indio_dev = iio_allocate_device(sizeof(*st));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++
++	st->reg = regulator_get(&spi->dev, "vcc");
++	if (!IS_ERR(st->reg)) {
++		ret = regulator_enable(st->reg);
++		if (ret)
++			goto error_put_reg;
++	}
++
++	spi_set_drvdata(spi, indio_dev);
++	st->spi = spi;
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->info = &ad8366_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ad8366_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ad8366_channels);
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_disable_reg;
++
++	ad8366_write(indio_dev, 0 , 0);
++
++	return 0;
++
++error_disable_reg:
++	if (!IS_ERR(st->reg))
++		regulator_disable(st->reg);
++error_put_reg:
++	if (!IS_ERR(st->reg))
++		regulator_put(st->reg);
++
++	iio_free_device(indio_dev);
++
++	return ret;
++}
++
++static int __devexit ad8366_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct ad8366_state *st = iio_priv(indio_dev);
++	struct regulator *reg = st->reg;
++
++	iio_device_unregister(indio_dev);
++
++	if (!IS_ERR(reg)) {
++		regulator_disable(reg);
++		regulator_put(reg);
++	}
++
++	iio_free_device(indio_dev);
++
++	return 0;
++}
++
++static const struct spi_device_id ad8366_id[] = {
++	{"ad8366", 0},
++	{}
++};
++
++static struct spi_driver ad8366_driver = {
++	.driver = {
++		.name	= KBUILD_MODNAME,
++		.owner	= THIS_MODULE,
++	},
++	.probe		= ad8366_probe,
++	.remove		= __devexit_p(ad8366_remove),
++	.id_table	= ad8366_id,
++};
++
++module_spi_driver(ad8366_driver);
++
++MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
++MODULE_DESCRIPTION("Analog Devices AD8366 VGA");
++MODULE_LICENSE("GPL v2");
+--
+1.7.0.4
+
+
