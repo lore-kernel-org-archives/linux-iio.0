@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from va3ehsobe003.messaging.microsoft.com ([216.32.180.13]:34853
-	"EHLO VA3EHSOBE003.bigfish.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751871Ab2BVMjW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Feb 2012 07:39:22 -0500
+Received: from am1ehsobe003.messaging.microsoft.com ([213.199.154.206]:32199
+	"EHLO AM1EHSOBE005.bigfish.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751065Ab2BVMdT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Feb 2012 07:33:19 -0500
 From: <michael.hennerich@analog.com>
 To: <jic23@kernel.org>
 CC: <linux-iio@vger.kernel.org>,
 	<device-drivers-devel@blackfin.uclinux.org>, <drivers@analog.com>,
 	Michael Hennerich <michael.hennerich@analog.com>
-Subject: [RFC] iio: amplifiers: New driver for AD8366 Dual-Digital Variable Gain Amplifier
-Date: Wed, 22 Feb 2012 13:36:22 +0100
-Message-ID: <1329914182-5428-1-git-send-email-michael.hennerich@analog.com>
+Subject: [PATCH 1/3] iio: core: Introduce debugfs support, add support for direct register access
+Date: Wed, 22 Feb 2012 13:30:13 +0100
+Message-ID: <1329913815-5382-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
@@ -18,310 +18,283 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
+Changes since V1:
+
+debugfs:
+
+Exclude iio debugfs code in case CONFIG_DEBUG_FS isn't enabled.
+	Introduce helper function iio_get_debugfs_dentry.
+	Document additions to struct iio_dev
+
+iio_debugfs_read_reg:
+	Use snprintf.
+	Use a shorter fixed length.
+	Introduce len instead of pointer math.
+
+iio_debugfs_write_reg:
+	Fix return value use PTR_ERR.
+	sscanf scan hex, decimal and octal.
+	Ensure zero terminated string.
+
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- drivers/staging/iio/Kconfig             |    1 +
- drivers/staging/iio/Makefile            |    1 +
- drivers/staging/iio/amplifiers/Kconfig  |   17 +++
- drivers/staging/iio/amplifiers/Makefile |    5 +
- drivers/staging/iio/amplifiers/ad8366.c |  228 +++++++++++++++++++++++++++++++
- 5 files changed, 252 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/amplifiers/Kconfig
- create mode 100644 drivers/staging/iio/amplifiers/Makefile
- create mode 100644 drivers/staging/iio/amplifiers/ad8366.c
+ drivers/staging/iio/iio.h               |   27 ++++++-
+ drivers/staging/iio/industrialio-core.c |  137 ++++++++++++++++++++++++++++++-
+ 2 files changed, 162 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
-index 2b56823..fd7a164 100644
---- a/drivers/staging/iio/Kconfig
-+++ b/drivers/staging/iio/Kconfig
-@@ -59,6 +59,7 @@ config IIO_CONSUMERS_PER_TRIGGER
- source "drivers/staging/iio/accel/Kconfig"
- source "drivers/staging/iio/adc/Kconfig"
- source "drivers/staging/iio/addac/Kconfig"
-+source "drivers/staging/iio/amplifiers/Kconfig"
- source "drivers/staging/iio/cdc/Kconfig"
- source "drivers/staging/iio/dac/Kconfig"
- source "drivers/staging/iio/frequency/Kconfig"
-diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
-index 0161095..c52cde3 100644
---- a/drivers/staging/iio/Makefile
-+++ b/drivers/staging/iio/Makefile
-@@ -20,6 +20,7 @@ obj-$(CONFIG_IIO_DUMMY_EVGEN) += iio_dummy_evgen.o
- obj-y += accel/
- obj-y += adc/
- obj-y += addac/
-+obj-y += amplifiers/
- obj-y += cdc/
- obj-y += dac/
- obj-y += frequency/
-diff --git a/drivers/staging/iio/amplifiers/Kconfig b/drivers/staging/iio/amplifiers/Kconfig
-new file mode 100644
-index 0000000..05d707e
---- /dev/null
-+++ b/drivers/staging/iio/amplifiers/Kconfig
-@@ -0,0 +1,17 @@
-+#
-+# Gain Amplifiers, etc.
-+#
-+menu "Amplifiers"
-+
-+config AD8366
-+	tristate "Analog Devices AD8366 VGA"
-+	depends on SPI
-+	select BITREVERSE
-+	help
-+	  Say yes here to build support for Analog Devices AD8366
-+	  SPI Dual-Digital Variable Gain Amplifier (VGA).
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ad8366.
-+
-+endmenu
-diff --git a/drivers/staging/iio/amplifiers/Makefile b/drivers/staging/iio/amplifiers/Makefile
-new file mode 100644
-index 0000000..a6ca366
---- /dev/null
-+++ b/drivers/staging/iio/amplifiers/Makefile
-@@ -0,0 +1,5 @@
-+#
-+# Makefile iio/amplifiers
-+#
-+
-+obj-$(CONFIG_AD8366) += ad8366.o
-diff --git a/drivers/staging/iio/amplifiers/ad8366.c b/drivers/staging/iio/amplifiers/ad8366.c
-new file mode 100644
-index 0000000..187606f
---- /dev/null
-+++ b/drivers/staging/iio/amplifiers/ad8366.c
-@@ -0,0 +1,228 @@
-+/*
-+ * AD8366 SPI Dual-Digital Variable Gain Amplifier (VGA)
-+ *
-+ * Copyright 2012 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
-+#include <linux/spi/spi.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/err.h>
-+#include <linux/module.h>
-+#include <linux/bitrev.h>
-+
-+#include "../iio.h"
-+#include "../sysfs.h"
-+
-+struct ad8366_state {
-+	struct spi_device	*spi;
-+	struct regulator	*reg;
-+	unsigned char		ch_a;
-+	unsigned char		ch_b;
-+	/*
-+	 * DMA (thus cache coherency maintenance) requires the
-+	 * transfer buffers to live in their own cache lines.
-+	 */
-+	unsigned char		data[2] ____cacheline_aligned;
-+};
-+
-+static int ad8366_write(struct iio_dev *indio_dev,
-+			unsigned char ch_a, char unsigned ch_b)
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index 42a362c..baf3c45 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -269,6 +269,9 @@ struct iio_info {
+ 				struct iio_trigger *trig);
+ 	int (*update_scan_mode)(struct iio_dev *indio_dev,
+ 				const unsigned long *scan_mask);
++	int (*debugfs_reg_access)(struct iio_dev *indio_dev,
++				  unsigned reg, unsigned writeval,
++				  unsigned *readval);
+ };
+
+ /**
+@@ -314,7 +317,9 @@ struct iio_buffer_setup_ops {
+  * @groups:		[INTERN] attribute groups
+  * @groupcounter:	[INTERN] index of next attribute group
+  * @flags:		[INTERN] file ops related flags including busy flag.
+- **/
++ * @debugfs_dentry:	[INTERN] device specific debugfs dentry.
++ * @cached_reg_addr:	[INTERN] cached register address for debugfs reads.
++**/
+ struct iio_dev {
+ 	int				id;
+
+@@ -347,6 +352,10 @@ struct iio_dev {
+ 	int				groupcounter;
+
+ 	unsigned long			flags;
++#if defined(CONFIG_DEBUG_FS)
++	struct dentry			*debugfs_dentry;
++	unsigned			cached_reg_addr;
++#endif
+ };
+
+ /**
+@@ -424,4 +433,20 @@ static inline bool iio_buffer_enabled(struct iio_dev *indio_dev)
+ 		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE);
+ };
+
++/**
++ * iio_get_debugfs_dentry() - helper function to get the debugfs_dentry
++ * @indio_dev:		IIO device info structure for device
++ **/
++#if defined(CONFIG_DEBUG_FS)
++static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
 +{
-+	struct ad8366_state *st = iio_priv(indio_dev);
-+	int ret;
++	return indio_dev->debugfs_dentry;
++};
++#else
++static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
++{
++	return NULL;
++};
++#endif
 +
-+	ch_a = bitrev8(ch_a & 0x3F);
-+	ch_b = bitrev8(ch_b & 0x3F);
+ #endif /* _INDUSTRIAL_IO_H_ */
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index e4824fe..82c9128 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -22,6 +22,7 @@
+ #include <linux/cdev.h>
+ #include <linux/slab.h>
+ #include <linux/anon_inodes.h>
++#include <linux/debugfs.h>
+ #include "iio.h"
+ #include "iio_core.h"
+ #include "iio_core_trigger.h"
+@@ -39,6 +40,8 @@ struct bus_type iio_bus_type = {
+ };
+ EXPORT_SYMBOL(iio_bus_type);
+
++static struct dentry *iio_debugfs_dentry;
 +
-+	st->data[0] = ch_b >> 4;
-+	st->data[1] = (ch_b << 4) | (ch_a >> 2);
+ static const char * const iio_data_type_name[] = {
+ 	[IIO_RAW] = "raw",
+ 	[IIO_PROCESSED] = "input",
+@@ -129,6 +132,8 @@ static int __init iio_init(void)
+ 		goto error_unregister_bus_type;
+ 	}
+
++	iio_debugfs_dentry = debugfs_create_dir("iio", NULL);
 +
-+	ret = spi_write(st->spi, st->data, ARRAY_SIZE(st->data));
-+	if (ret < 0)
-+		dev_err(&indio_dev->dev, "write failed (%d)", ret);
-+
-+	return ret;
+ 	return 0;
+
+ error_unregister_bus_type:
+@@ -142,8 +147,129 @@ static void __exit iio_exit(void)
+ 	if (iio_devt)
+ 		unregister_chrdev_region(iio_devt, IIO_DEV_MAX);
+ 	bus_unregister(&iio_bus_type);
++	debugfs_remove_recursive(iio_debugfs_dentry);
 +}
 +
-+static int ad8366_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val,
-+			   int *val2,
-+			   long m)
++#if defined(CONFIG_DEBUG_FS)
++static int iio_debugfs_open(struct inode *inode, struct file *file)
 +{
-+	struct ad8366_state *st = iio_priv(indio_dev);
-+	int ret;
-+	unsigned code;
++	if (inode->i_private)
++		file->private_data = inode->i_private;
 +
-+	mutex_lock(&indio_dev->mlock);
-+	switch (m) {
-+	case 0:
-+		if (chan->channel == 0)
-+			code = st->ch_a;
-+		else
-+			code = st->ch_b;
-+
-+		/* Values in dB */
-+		code = code * 253 + 4500;
-+		*val = code / 1000;
-+		*val2 = (code % 1000) * 1000;
-+
-+		ret = IIO_VAL_INT_PLUS_MICRO;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret;
-+};
-+
-+static int ad8366_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val,
-+			    int val2,
-+			    long mask)
-+{
-+	struct ad8366_state *st = iio_priv(indio_dev);
-+	unsigned code;
-+	int ret;
-+
-+	/* Values in dB */
-+	code = (((u8)val * 1000) + ((u32)val2 / 1000));
-+
-+	if (code > 20500 || code < 4500)
-+		return -EINVAL;
-+
-+	code = (code - 4500) / 253;
-+
-+	mutex_lock(&indio_dev->mlock);
-+	switch (mask) {
-+	case 0:
-+		if (chan->channel == 0)
-+			st->ch_a = code;
-+		else
-+			st->ch_b = code;
-+
-+		ret = ad8366_write(indio_dev, st->ch_a, st->ch_b);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret;
++	return 0;
 +}
 +
-+static const struct iio_info ad8366_info = {
-+	.read_raw = &ad8366_read_raw,
-+	.write_raw = &ad8366_write_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+#define AD8366_CHAN(_channel, _name) {			\
-+	.type = IIO_ALTVOLTAGE,				\
-+	.output = 1,					\
-+	.indexed = 1,					\
-+	.processed_val = 1,				\
-+	.channel = _channel,				\
-+	.extend_name = _name,				\
-+}
-+
-+static const struct iio_chan_spec ad8366_channels[] = {
-+	AD8366_CHAN(0, "gain"),
-+	AD8366_CHAN(1, "gain"),
-+};
-+
-+static int __devinit ad8366_probe(struct spi_device *spi)
++static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
++			      size_t count, loff_t *ppos)
 +{
-+	struct iio_dev *indio_dev;
-+	struct ad8366_state *st;
++	struct iio_dev *indio_dev = file->private_data;
++	char buf[20];
++	unsigned val = 0;
++	ssize_t len;
 +	int ret;
 +
-+	indio_dev = iio_allocate_device(sizeof(*st));
-+	if (indio_dev == NULL)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+
-+	st->reg = regulator_get(&spi->dev, "vcc");
-+	if (!IS_ERR(st->reg)) {
-+		ret = regulator_enable(st->reg);
-+		if (ret)
-+			goto error_put_reg;
-+	}
-+
-+	spi_set_drvdata(spi, indio_dev);
-+	st->spi = spi;
-+
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->info = &ad8366_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = ad8366_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(ad8366_channels);
-+
-+	ret = iio_device_register(indio_dev);
++	ret = indio_dev->info->debugfs_reg_access(indio_dev,
++						  indio_dev->cached_reg_addr,
++						  0, &val);
 +	if (ret)
-+		goto error_disable_reg;
++		dev_err(indio_dev->dev.parent, "%s: read failed\n", __func__);
 +
-+	ad8366_write(indio_dev, 0 , 0);
++	len = snprintf(buf, sizeof(buf), "0x%X\n", val);
 +
-+	return 0;
-+
-+error_disable_reg:
-+	if (!IS_ERR(st->reg))
-+		regulator_disable(st->reg);
-+error_put_reg:
-+	if (!IS_ERR(st->reg))
-+		regulator_put(st->reg);
-+
-+	iio_free_device(indio_dev);
-+
-+	return ret;
++	return simple_read_from_buffer(userbuf, count, ppos, buf, len);
 +}
 +
-+static int __devexit ad8366_remove(struct spi_device *spi)
++static ssize_t iio_debugfs_write_reg(struct file *file,
++		     const char __user *userbuf, size_t count, loff_t *ppos)
 +{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct ad8366_state *st = iio_priv(indio_dev);
-+	struct regulator *reg = st->reg;
++	struct iio_dev *indio_dev = file->private_data;
++	unsigned reg, val;
++	char buf[80];
++	int ret;
 +
-+	iio_device_unregister(indio_dev);
++	count = min_t(size_t, count, (sizeof(buf)-1));
++	if (copy_from_user(buf, userbuf, count))
++		return -EFAULT;
 +
-+	if (!IS_ERR(reg)) {
-+		regulator_disable(reg);
-+		regulator_put(reg);
++	buf[count] = 0;
++
++	ret = sscanf(buf, "%i %i", &reg, &val);
++
++	switch (ret) {
++	case 1:
++		indio_dev->cached_reg_addr = reg;
++		break;
++	case 2:
++		indio_dev->cached_reg_addr = reg;
++		ret = indio_dev->info->debugfs_reg_access(indio_dev, reg,
++							  val, NULL);
++		if (ret) {
++			dev_err(indio_dev->dev.parent, "%s: write failed\n",
++				__func__);
++			return ret;
++		}
++		break;
++	default:
++		return -EINVAL;
 +	}
 +
-+	iio_free_device(indio_dev);
++	return count;
++}
++
++static const struct file_operations iio_debugfs_reg_fops = {
++	.open = iio_debugfs_open,
++	.read = iio_debugfs_read_reg,
++	.write = iio_debugfs_write_reg,
++};
++
++static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
++{
++	debugfs_remove_recursive(indio_dev->debugfs_dentry);
+ }
+
++static int iio_device_register_debugfs(struct iio_dev *indio_dev)
++{
++	struct dentry *d;
++
++	if (indio_dev->info->debugfs_reg_access == NULL)
++		return 0;
++
++	if (IS_ERR(iio_debugfs_dentry))
++		return 0;
++
++	indio_dev->debugfs_dentry =
++		debugfs_create_dir(dev_name(&indio_dev->dev),
++				   iio_debugfs_dentry);
++	if (IS_ERR(indio_dev->debugfs_dentry))
++		return PTR_ERR(indio_dev->debugfs_dentry);
++
++	if (indio_dev->debugfs_dentry == NULL) {
++		dev_warn(indio_dev->dev.parent,
++			 "Failed to create debugfs directory\n");
++		return -EFAULT;
++	}
++
++	d = debugfs_create_file("direct_reg_access", 0644,
++				indio_dev->debugfs_dentry,
++				indio_dev, &iio_debugfs_reg_fops);
++	if (!d) {
++		iio_device_unregister_debugfs(indio_dev);
++		return -ENOMEM;
++	}
 +
 +	return 0;
 +}
++#else
++static int iio_device_register_debugfs(struct iio_dev *indio_dev)
++{
++	return 0;
++}
 +
-+static const struct spi_device_id ad8366_id[] = {
-+	{"ad8366", 0},
-+	{}
-+};
++static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
++{
++}
++#endif /* CONFIG_DEBUG_FS */
 +
-+static struct spi_driver ad8366_driver = {
-+	.driver = {
-+		.name	= KBUILD_MODNAME,
-+		.owner	= THIS_MODULE,
-+	},
-+	.probe		= ad8366_probe,
-+	.remove		= __devexit_p(ad8366_remove),
-+	.id_table	= ad8366_id,
-+};
-+
-+module_spi_driver(ad8366_driver);
-+
-+MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-+MODULE_DESCRIPTION("Analog Devices AD8366 VGA");
-+MODULE_LICENSE("GPL v2");
+ static ssize_t iio_read_channel_info(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     char *buf)
+@@ -565,6 +691,7 @@ static void iio_dev_release(struct device *device)
+ 		iio_device_unregister_trigger_consumer(indio_dev);
+ 	iio_device_unregister_eventset(indio_dev);
+ 	iio_device_unregister_sysfs(indio_dev);
++	iio_device_unregister_debugfs(indio_dev);
+ }
+
+ static struct device_type iio_dev_type = {
+@@ -680,11 +807,17 @@ int iio_device_register(struct iio_dev *indio_dev)
+ 	/* configure elements for the chrdev */
+ 	indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
+
++	ret = iio_device_register_debugfs(indio_dev);
++	if (ret) {
++		dev_err(indio_dev->dev.parent,
++			"Failed to register debugfs interfaces\n");
++		goto error_ret;
++	}
+ 	ret = iio_device_register_sysfs(indio_dev);
+ 	if (ret) {
+ 		dev_err(indio_dev->dev.parent,
+ 			"Failed to register sysfs interfaces\n");
+-		goto error_ret;
++		goto error_unreg_debugfs;
+ 	}
+ 	ret = iio_device_register_eventset(indio_dev);
+ 	if (ret) {
+@@ -711,6 +844,8 @@ error_unreg_eventset:
+ 	iio_device_unregister_eventset(indio_dev);
+ error_free_sysfs:
+ 	iio_device_unregister_sysfs(indio_dev);
++error_unreg_debugfs:
++	iio_device_unregister_debugfs(indio_dev);
+ error_ret:
+ 	return ret;
+ }
 --
 1.7.0.4
 
