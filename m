@@ -1,115 +1,44 @@
-Return-Path: <SRS0=Ypv7=7Y=gmx.de=g.liakhovetski@srs.kundenserver.de>
-Date: Fri, 13 Jan 2012 10:07:19 +0100 (CET)
-From: Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-To: Lars-Peter Clausen <lars@metafoo.de>
-cc: Greg Kroah-Hartman <gregkh@suse.de>, Jean Delvare <khali@linux-fr.org>,
-    Grant Likely <grant.likely@secretlab.ca>,
-    Jonathan Cameron <jic23@kernel.org>,
-    Michael Hennerich <Michael.Hennerich@analog.com>,
-    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-    linux-i2c@vger.kernel.org, spi-devel-general@lists.sourceforge.net
-Subject: Re: [PATCH 1/5] drivercore: Generalize module_platform_driver
-In-Reply-To: <1321434819-23678-2-git-send-email-lars@metafoo.de>
-Message-ID: <Pine.LNX.4.64.1201131003270.29680@axis700.grange>
-References: <1321434819-23678-1-git-send-email-lars@metafoo.de>
- <1321434819-23678-2-git-send-email-lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([88.190.12.23]:49044 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758012Ab2B2OcU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Feb 2012 09:32:20 -0500
+Message-ID: <4F4E36E6.1010704@free-electrons.com>
+Date: Wed, 29 Feb 2012 15:32:06 +0100
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+To: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: IIO irq allocation fails on AT91SAM9G45
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-I didn't find this patch either in "next" or in Greg's "driver-core" 
-trees, so, couldn't generate a patch and had to comment here:
+Hi everyone,
 
-On Wed, 16 Nov 2011, Lars-Peter Clausen wrote:
+I'm working on adding the support for the AT91SAM9M10G45-EK board from
+Atmel for the at91_adc driver I previously posted, and I encounter some
+weird issue here.
 
-> This patch generalizes the module_platform_driver macro and introduces a new
-> module_driver macro. The module_driver macro takes a driver name, a register
-> and a unregister function for this driver type. Using these it construct the
-> module init and exit sections which register and unregister the driver. Since
-> such init/exit sections are commonly found in drivers this macro can be used
-> to eliminate a lot of boilerplate code.
-> 
-> The macro is not intended to be used by driver modules directly, instead it
-> should be used to generate bus specific macros for registering drivers like
-> the module_platform_driver macro.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  include/linux/init.h            |   21 +++++++++++++++++++++
->  include/linux/platform_device.h |   12 ++----------
->  2 files changed, 23 insertions(+), 10 deletions(-)
-> 
-> diff --git a/include/linux/init.h b/include/linux/init.h
-> index 9146f39..3e2d238 100644
-> --- a/include/linux/init.h
-> +++ b/include/linux/init.h
-> @@ -346,4 +346,25 @@ void __init parse_early_options(char *cmdline);
->  #define __exit_p(x) NULL
->  #endif
->  
-> +/**
-> + * module_driver() - Helper macro for drivers that don't do anything
-> + * special in module init/exit. This eliminates a lot of boilerplate.
-> + * Each module may only use this macro once, and calling it replaces
-> + * module_init() and module_exit().
-> + * Use this macro to construct bus specific macros for registering
-> + * drivers.
-> + */
-> +#define module_driver(__driver, __register, __unregister) \
-> +static int __init __driver##_init(void) \
-> +{ \
-> +	return __register(&(__driver)); \
-> +} \
-> +module_init(__driver##_init); \
-> +static void __exit __driver##_exit(void) \
-> +{ \
-> +	__unregister(&(__driver)); \
-> +} \
-> +module_exit(__driver##_exit);
+When calling the iio_allocate_trigger
+(http://lxr.free-electrons.com/source/drivers/staging/iio/industrialio-trigger.c?a=arm#L421)
+from my driver on the G45, it returns ENOMEM, while on the
+AT91SAM9G20-EK board, it works perfectly.
 
-Shall we maybe remove the trailing semicolon above?
+Digging a bit into it, it seems that the call to irq_alloc_descs is
+returning the error (the value of CONFIG_IIO_CONSUMERS_PER_TRIGGER is 2
+in my configuration, which seems pretty reasonable and is the default
+value anyway), which is itself getting that return value from
+irq_expand_nr_irqs.
 
-Thanks
-Guennadi
+Here, I'm left confused, I don't know this part of the kernel anymore,
+and most importantly, it seems to be pretty-much arch-independant, while
+the nature of my issue seems really platform-dependant.
 
-> +
->  #endif /* _LINUX_INIT_H */
-> +
-> diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
-> index 2a23f7d..165a8d1 100644
-> --- a/include/linux/platform_device.h
-> +++ b/include/linux/platform_device.h
-> @@ -196,16 +196,8 @@ static inline void platform_set_drvdata(struct platform_device *pdev, void *data
->   * calling it replaces module_init() and module_exit()
->   */
->  #define module_platform_driver(__platform_driver) \
-> -static int __init __platform_driver##_init(void) \
-> -{ \
-> -	return platform_driver_register(&(__platform_driver)); \
-> -} \
-> -module_init(__platform_driver##_init); \
-> -static void __exit __platform_driver##_exit(void) \
-> -{ \
-> -	platform_driver_unregister(&(__platform_driver)); \
-> -} \
-> -module_exit(__platform_driver##_exit);
-> +	module_driver(__platform_driver, platform_driver_register, \
-> +			platform_driver_unregister)
->  
->  extern struct platform_device *platform_create_bundle(struct platform_driver *driver,
->  					int (*probe)(struct platform_device *),
-> -- 
-> 1.7.7.1
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> 
+Do you have any clue of what's going on here ?
 
----
-Guennadi Liakhovetski, Ph.D.
-Freelance Open-Source Software Developer
-http://www.open-technology.de/
+Thanks,
+-- 
+Maxime Ripard, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
