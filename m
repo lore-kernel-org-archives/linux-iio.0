@@ -1,48 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from am1ehsobe002.messaging.microsoft.com ([213.199.154.205]:52189
-	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755708Ab2CVJF5 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 22 Mar 2012 05:05:57 -0400
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>,
-	Jonathan Cameron <jic23@kernel.org>
+Received: from tx2ehsobe002.messaging.microsoft.com ([65.55.88.12]:35454 "EHLO
+	TX2EHSOBE004.bigfish.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965538Ab2CAJqP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Mar 2012 04:46:15 -0500
+Message-ID: <4F4F450D.9040509@analog.com>
+Date: Thu, 1 Mar 2012 10:44:45 +0100
+From: Michael Hennerich <michael.hennerich@analog.com>
+Reply-To: <michael.hennerich@analog.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
 CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"device-drivers-devel@blackfin.uclinux.org"
 	<device-drivers-devel@blackfin.uclinux.org>,
 	Drivers <Drivers@analog.com>
-Date: Thu, 22 Mar 2012 09:05:34 +0000
-Subject: RE: [RFC] iio: amplifiers: New driver for AD8366 Dual-Digital
- Variable Gain Amplifier
-Message-ID: <544AC56F16B56944AEC3BD4E3D5917714BCC4C6C30@LIMKCMBX1.ad.analog.com>
-References: <1329914182-5428-1-git-send-email-michael.hennerich@analog.com>
- <4F6A2D2B.9050400@kernel.org>
- <20120321195942.GO3226@opensource.wolfsonmicro.com>
-In-Reply-To: <20120321195942.GO3226@opensource.wolfsonmicro.com>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Subject: Re: [PATCH 1/3] iio: core: Introduce debugfs support, add support
+ for direct register access
+References: <1329913815-5382-1-git-send-email-michael.hennerich@analog.com> <4F4E8738.3080202@kernel.org>
+In-Reply-To: <4F4E8738.3080202@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Mark Brown wrote on 2012-03-21:
-> On Wed, Mar 21, 2012 at 07:34:03PM +0000, Jonathan Cameron wrote:
+On 02/29/2012 09:14 PM, Jonathan Cameron wrote:
+> On 02/22/2012 12:30 PM, michael.hennerich@analog.com wrote:
+>> From: Michael Hennerich<michael.hennerich@analog.com>
+> Looks fine. One trivial formatting quirk inline and a question
+> about the recursive call (though I can't see it doing any harm!)
 >
->> I've pulled Mark into the cc as he might have come across similar
->> devices from the audio side of things and hence have some experience
->> around this question...
->
-> How to represent gains from amplifiers?  Audio specifies gains as dB
-> between input and output; generic stuff like IIO may want to do that
-> using a linear scale (or have the option).
+>> Changes since V1:
+>>
+>> debugfs:
+>>
+>> Exclude iio debugfs code in case CONFIG_DEBUG_FS isn't enabled.
+>>        Introduce helper function iio_get_debugfs_dentry.
+>>        Document additions to struct iio_dev
+>>
+>> iio_debugfs_read_reg:
+>>        Use snprintf.
+>>        Use a shorter fixed length.
+>>        Introduce len instead of pointer math.
+>>
+>> iio_debugfs_write_reg:
+>>        Fix return value use PTR_ERR.
+>>        sscanf scan hex, decimal and octal.
+>>        Ensure zero terminated string.
+>>
+>> Signed-off-by: Michael Hennerich<michael.hennerich@analog.com>
+> Acked-by: Jonathan Cameron<jic23@kernel.org>
+>>   #endif /* _INDUSTRIAL_IO_H_ */
+>> diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+>> index e4824fe..82c9128 100644
+>> --- a/drivers/staging/iio/industrialio-core.c
+>> +++ b/drivers/staging/iio/industrialio-core.c
+>> @@ -22,6 +22,7 @@
+>>   #include<linux/cdev.h>
+>>   #include<linux/slab.h>
+>>   #include<linux/anon_inodes.h>
+>> +#include<linux/debugfs.h>
+>>   #include "iio.h"
+>>   #include "iio_core.h"
+>>   #include "iio_core_trigger.h"
+>> @@ -39,6 +40,8 @@ struct bus_type iio_bus_type = {
+>>   };
+>>   EXPORT_SYMBOL(iio_bus_type);
+>>
+>> +static struct dentry *iio_debugfs_dentry;
+>> +
+>>   static const char * const iio_data_type_name[] = {
+>>        [IIO_RAW] = "raw",
+>>        [IIO_PROCESSED] = "input",
+>> @@ -129,6 +132,8 @@ static int __init iio_init(void)
+>>                goto error_unregister_bus_type;
+>>        }
+>>
+>> +     iio_debugfs_dentry = debugfs_create_dir("iio", NULL);
+>> +
+>>        return 0;
+>>
+>>   error_unregister_bus_type:
+>> @@ -142,8 +147,129 @@ static void __exit iio_exit(void)
+>>        if (iio_devt)
+>>                unregister_chrdev_region(iio_devt, IIO_DEV_MAX);
+>>        bus_unregister(&iio_bus_type);
+>> +     debugfs_remove_recursive(iio_debugfs_dentry);
+> Not sure it matters, but shouldn't we have cleared everything other than
+> the directory before this gets called?  If so why the recursive version?
 
-All VGAs I know describe the gain in dB.
+Hi Jonathan,
 
+Thanks for the review.
+
+The recursive version doesn't harm. But right you are -
+debugfs_remove() is the cleaner option.
+I'll fix this up before sending on to Greg.
+
+-- 
 Greetings,
 Michael
 
 --
 Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
 Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret Seif
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
+Margaret Seif
 
 
