@@ -1,28 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo-p05-ob.rzone.de ([81.169.146.181]:30853 "EHLO
-	mo-p05-ob.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932614Ab2CZPjB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Mar 2012 11:39:01 -0400
-From: Stefan Roese <sr@denx.de>
-To: lm-sensors@lm-sensors.org
-Subject: Location for ADC driver
-Date: Mon, 26 Mar 2012 17:33:38 +0200
-Cc: linux-iio@vger.kernel.org
+Return-Path: <LW@KARO-electronics.de>
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org,
+	=?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Subject: [PATCH] BUGFIX: staging:iio:core add missing increment of loop index in iio_map_array_unregister()
+Date: Sat, 24 Mar 2012 07:19:25 +0100
+Message-Id: <1332569965-18350-1-git-send-email-LW@KARO-electronics.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201203261733.38794.sr@denx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+staging:iio:core add missing increment of loop index in iio_map_array_unregister()
 
-I'll start porting a driver for the ST SPEAr600 SoC internal ADC in a short 
-while. First I thought it would be located in drivers/hwmon with its 
-infrastructure. Then I noticed the drivers/staging/iio/adc directory.
+Signed-off-by: Lothar Waßmann <LW@KARO-electronics.de>
+---
+ drivers/staging/iio/inkern.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-So my question is, where should such an SoC internal ADC driver best be 
-placed? hwmon or iio/adc? Or can I choose freely?
-
-Thanks,
-Stefan
+diff --git a/drivers/staging/iio/inkern.c b/drivers/staging/iio/inkern.c
+index de2c8ea..ef07a02b 100644
+--- a/drivers/staging/iio/inkern.c
++++ b/drivers/staging/iio/inkern.c
+@@ -82,6 +82,7 @@ int iio_map_array_unregister(struct iio_dev *indio_dev,
+ 			ret = -ENODEV;
+ 			goto error_ret;
+ 		}
++		i++;
+ 	}
+ error_ret:
+ 	mutex_unlock(&iio_map_list_lock);
+-- 
+1.7.2.5
