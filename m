@@ -1,74 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38733 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754643Ab2DMIA4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 04:00:56 -0400
-Message-ID: <4F87DD2D.70109@kernel.org>
-Date: Fri, 13 Apr 2012 09:00:45 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:49997 "EHLO
+	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1756905Ab2DDQfG convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Apr 2012 12:35:06 -0400
 MIME-Version: 1.0
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-CC: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Patrice Vilchez <patrice.vilchez@atmel.com>,
-	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-	Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Subject: Re: [PATCH 1/5] ARM: AT91: Add platform data for the AT91 ADCs
-References: <1333641684-20325-1-git-send-email-maxime.ripard@free-electrons.com> <1333641684-20325-2-git-send-email-maxime.ripard@free-electrons.com>
-In-Reply-To: <1333641684-20325-2-git-send-email-maxime.ripard@free-electrons.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+	charset="us-ascii"
+Subject: tsl2x7x driver Sampling frequency
+Date: Wed, 4 Apr 2012 11:40:56 -0500
+Message-ID: <B4B07CCC7B7A084E989CF9386538EA1D0120B9AB@exchsrvr.taosinc.com>
+From: "Jon Brenner" <jbrenner@TAOSinc.com>
+To: <jic23@kernel.org>
+Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 4/5/2012 5:01 PM, Maxime Ripard wrote:
-> The AT91 SoCs often embeds an ADC. This patch adds the needed
-> platform data to specify the informations required by the driver
-> to work properly.
->
-> For now, we only need the reference voltage and which channels
-> are available on the board.
-Trivial, though I'm in a fussy mood so see below.
->
-> Signed-off-by: Maxime Ripard<maxime.ripard@free-electrons.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
->
-> Cc: Nicolas Ferre<nicolas.ferre@atmel.com>
-> Cc: Patrice Vilchez<patrice.vilchez@atmel.com>
-> Cc: Thomas Petazzoni<thomas.petazzoni@free-electrons.com>
-> Cc: Jean-Christophe PLAGNIOL-VILLARD<plagnioj@jcrosoft.com>
-> ---
->   include/linux/platform_data/at91_adc.h |   23 +++++++++++++++++++++++
->   1 files changed, 23 insertions(+), 0 deletions(-)
->   create mode 100644 include/linux/platform_data/at91_adc.h
->
-> diff --git a/include/linux/platform_data/at91_adc.h b/include/linux/platform_data/at91_adc.h
-> new file mode 100644
-> index 0000000..1f71510
-> --- /dev/null
-> +++ b/include/linux/platform_data/at91_adc.h
-> @@ -0,0 +1,23 @@
-> +/*
-> + * Copyright (C) 2011 Free Electrons
-> + *
-> + * Licensed under the GPLv2 or later.
-If we are really being nitpicky, no point in the next blank line!
-> + *
-> + */
-> +
-> +#ifndef _AT91_ADC_H_
-> +#define _AT91_ADC_H_
-> +
-> +/**
-> + * struct at91_adc_data - platform data for ADC driver
-> + * @channels_used:	channels in use on the board as a bitmask
-> + * @vref:		Reference voltage for the ADC in millivolts
-> + */
-> +struct at91_adc_data {
-> +	unsigned long	channels_used;
-> +	u16		vref;
-> +};
-> +
-> +extern void __init at91_add_device_adc(struct at91_adc_data *data);
-> +
-> +#endif
+Jonathon,
 
+You wrote;
+<snip>
+Units don't look right for sampling frequency.  Sorry, but that's an abi
+
+issue so even if it is
+fiddly to do the conversion to Hz it needs to be done.
+</snip>
+
+Need some help here.
+In the tsl2x7x driver sampling frequency is being used for setting
+"persistence register".
+It's actually a H/W filter.
+Here is an abstract from the data sheet:
+--
+Persistence Register (0x0C)
+The persistence register controls the filtering interrupt capabilities
+of the device. Configurable filtering is
+provided to allow interrupts to be generated after each ADC integration
+cycle or if the ADC integration has
+produced a result that is outside of the values specified by threshold
+register for some specified amount of time.
+Separate filtering is provided for proximity and ALS functions. ALS
+interrupts are generated using C0DATA.
+--
+The value provided here by the ABI is actually the number of
+'consecutive values out of range'.
+
+The H/W takes care of counting the consecutive values out of range and
+issues and interrupt when reached.
+
+The timing (or frequency) of these out of range values are based on the
+ALS or Prox integration time (determined by that respective setting).
+That being the case a fixed table of sampling "frequencies" cannot be
+reasonably defined - as the frequency can vary widely, based on other
+settings.
+
+So the register really is set to the desired number of 'values out of
+range'.  
+To add another slight twist, the value (number of out of range)
+increases by 1 until 5, then by 5 until 60 - with the caveat that a
+value of 0 generates an interrupt every ALS or Prox integration cycle . 
+
+Since the sysfs-bus-iio doc contained a close match with respect to the
+operation:
+Description:
+		Some devices have internal clocks.  This parameter sets
+the
+		resulting sampling frequency.  In many devices this
+		parameter has an effect on input filters etc rather than
+		simply controlling when the input is sampled.  As this
+		effects datardy triggers, hardware buffers and the sysfs
+		direct access interfaces, it may be found in any of the
+		relevant directories.  If it effects all of the above
+		then it is to be found in the base device directory.
+
+Thus we used "sampling_frequency" - but now I am wondering if it should
+be something else. 
+
+If this is better suited for a different ABI please tell me what that
+would be. 
+
+Please help!
+
+Jon
