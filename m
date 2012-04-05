@@ -1,127 +1,183 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:44944 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932211Ab2DDRTp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Apr 2012 13:19:45 -0400
-Message-ID: <4F7C82A6.80706@cam.ac.uk>
-Date: Wed, 04 Apr 2012 18:19:34 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:1584 "EHLO
+	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753080Ab2DEUsT convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 5 Apr 2012 16:48:19 -0400
 MIME-Version: 1.0
-To: Jon Brenner <jbrenner@TAOSinc.com>
-CC: jic23@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dg77.kim@samsung.com
-Subject: Re: tsl2x7x driver Sampling frequency
-References: <B4B07CCC7B7A084E989CF9386538EA1D0120B9AB@exchsrvr.taosinc.com>
-In-Reply-To: <B4B07CCC7B7A084E989CF9386538EA1D0120B9AB@exchsrvr.taosinc.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+	charset="us-ascii"
+Subject: RE: tsl2x7x driver Sampling frequency
+Date: Thu, 5 Apr 2012 15:54:08 -0500
+Message-ID: <B4B07CCC7B7A084E989CF9386538EA1D01255E9B@exchsrvr.taosinc.com>
+In-Reply-To: <4F7C82A6.80706@cam.ac.uk>
+References: <B4B07CCC7B7A084E989CF9386538EA1D0120B9AB@exchsrvr.taosinc.com> <4F7C82A6.80706@cam.ac.uk>
+From: "Jon Brenner" <jbrenner@TAOSinc.com>
+To: "Jonathan Cameron" <jic23@cam.ac.uk>
+Cc: <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <dg77.kim@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/04/2012 05:40 PM, Jon Brenner wrote:
-> Jonathon,
-> 
-> You wrote;
-> <snip>
-> Units don't look right for sampling frequency.  Sorry, but that's an abi
-> 
-> issue so even if it is
-> fiddly to do the conversion to Hz it needs to be done.
-> </snip>
-> 
-> Need some help here.
-> In the tsl2x7x driver sampling frequency is being used for setting
-> "persistence register".
-> It's actually a H/W filter.
-Gah, you mentioned this before and I meant to look back at the previous
-times we have hit this particular type of control (it's pretty common!)
+Jonathon,
+So are you saying that I should change (remove) the sampling_frequency
+ABI, and implement 2 new (to this driver) ABIs called:
+in_intensity0_thresh_period, and in_proximity0_thresh_period?
 
-> Here is an abstract from the data sheet:
-> --
-> Persistence Register (0x0C)
-> The persistence register controls the filtering interrupt capabilities
-> of the device. Configurable filtering is
-> provided to allow interrupts to be generated after each ADC integration
-> cycle or if the ADC integration has
-> produced a result that is outside of the values specified by threshold
-> register for some specified amount of time.
-> Separate filtering is provided for proximity and ALS functions. ALS
-> interrupts are generated using C0DATA.
-> --
-> The value provided here by the ABI is actually the number of
-> 'consecutive values out of range'.
-> 
-> The H/W takes care of counting the consecutive values out of range and
-> issues and interrupt when reached.
-> 
-> The timing (or frequency) of these out of range values are based on the
-> ALS or Prox integration time (determined by that respective setting).
-> That being the case a fixed table of sampling "frequencies" cannot be
-> reasonably defined - as the frequency can vary widely, based on other
-> settings.
-> 
-> So the register really is set to the desired number of 'values out of
-> range'.  
-> To add another slight twist, the value (number of out of range)
-> increases by 1 until 5, then by 5 until 60 - with the caveat that a
-> value of 0 generates an interrupt every ALS or Prox integration cycle . 
-> 
-> Since the sysfs-bus-iio doc contained a close match with respect to the
-> operation:
-> Description:
-> 		Some devices have internal clocks.  This parameter sets
-> the
-> 		resulting sampling frequency.  In many devices this
-> 		parameter has an effect on input filters etc rather than
-> 		simply controlling when the input is sampled.  As this
-> 		effects datardy triggers, hardware buffers and the sysfs
-> 		direct access interfaces, it may be found in any of the
-> 		relevant directories.  If it effects all of the above
-> 		then it is to be found in the base device directory.
-> 
-> Thus we used "sampling_frequency" - but now I am wondering if it should
-> be something else. 
-> 
-> If this is better suited for a different ABI please tell me what that
-> would be. 
-I'd argue this should really be sampling frequency anyway.  It's
-actually a common enough thing to see.
-I was sure we'd hit this before and indeed we did with the
-tmd277711 driver back in 2010 (hit the mailing list archives for that
-one).  Dongguen Kim was the author (cc'd).  Actually grep shows
-that my own sca3000 driver has this too (it's been a while!)
+Since the minimum H/W filter time (based on an minimum ALS or Prox
+integration resolution) we're working with here is 2.7ms, and a maximum
+filter time of  up to 162ms (60 out of range * 2.7), the value is
+adjusted in milliseconds  (Khz).
+Is this acceptable?
 
-It's actually made it through in the abi docs for all sorts of event
-types though I think the only correct user is the sca3000 accelerometer.
-Description is...
-	Period of time (in seconds) for which the condition must be
-	met before an event is generated. If direction is not
-	specified then this period applies to both directions.
+What about _thresh_period_available?
 
-I know it is annoying that this parameter in side the device is very
-heavily dependent on other controls (often the case with this sort of
-thing) but to have a remotely consistent interface we have to define
-a standard unit.  Hence the 'right' way to handle this is to have a
-cached value in seconds and then work out the nearest possible setting
-when ever anything else that effects it is changed. Fiddly, but we
-are playing this game all over the place in other drivers.
+I guess I could simply use the simple computed value of [ X = Atime *
+Integration] and display the values from minimum up to [60 * X] - but
+that seems kind of silly.
+Could simply a min and a max period be presented?
 
-So here you are going to have
+Caveat:  A or P integration times could be changed 'post' selection of
+the _thresh_period which would of course then impact the _thresh_period.
 
-in_intensity0_thresh_period and in_proximity0_thresh_period
+Oh what a tangled web..
 
-Both probably taking values as INT_PLUS_MICRO.
+Jon
 
-Note that we have other filters controls for events such as
-hysterisis which is common on raw adc's.
-
-
-Jonathan
+> -----Original Message-----
+> From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
+> Sent: Wednesday, April 04, 2012 12:20 PM
+> To: Jon Brenner
+> Cc: jic23@kernel.org; linux-iio@vger.kernel.org;
+linux-kernel@vger.kernel.org;
+> dg77.kim@samsung.com
+> Subject: Re: tsl2x7x driver Sampling frequency
 > 
-> Please help!
+> On 04/04/2012 05:40 PM, Jon Brenner wrote:
+> > Jonathon,
+> >
+> > You wrote;
+> > <snip>
+> > Units don't look right for sampling frequency.  Sorry, but that's an
+> > abi
+> >
+> > issue so even if it is
+> > fiddly to do the conversion to Hz it needs to be done.
+> > </snip>
+> >
+> > Need some help here.
+> > In the tsl2x7x driver sampling frequency is being used for setting
+> > "persistence register".
+> > It's actually a H/W filter.
+> Gah, you mentioned this before and I meant to look back at the
+previous times
+> we have hit this particular type of control (it's pretty common!)
 > 
-> Jon
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > Here is an abstract from the data sheet:
+> > --
+> > Persistence Register (0x0C)
+> > The persistence register controls the filtering interrupt
+capabilities
+> > of the device. Configurable filtering is provided to allow
+interrupts
+> > to be generated after each ADC integration cycle or if the ADC
+> > integration has produced a result that is outside of the values
+> > specified by threshold register for some specified amount of time.
+> > Separate filtering is provided for proximity and ALS functions. ALS
+> > interrupts are generated using C0DATA.
+> > --
+> > The value provided here by the ABI is actually the number of
+> > 'consecutive values out of range'.
+> >
+> > The H/W takes care of counting the consecutive values out of range
+and
+> > issues and interrupt when reached.
+> >
+> > The timing (or frequency) of these out of range values are based on
+> > the ALS or Prox integration time (determined by that respective
+setting).
+> > That being the case a fixed table of sampling "frequencies" cannot
+be
+> > reasonably defined - as the frequency can vary widely, based on
+other
+> > settings.
+> >
+> > So the register really is set to the desired number of 'values out
+of
+> > range'.
+> > To add another slight twist, the value (number of out of range)
+> > increases by 1 until 5, then by 5 until 60 - with the caveat that a
+> > value of 0 generates an interrupt every ALS or Prox integration
+cycle .
+> >
+> > Since the sysfs-bus-iio doc contained a close match with respect to
+> > the
+> > operation:
+> > Description:
+> > 		Some devices have internal clocks.  This parameter sets
+the
+> > 		resulting sampling frequency.  In many devices this
+> > 		parameter has an effect on input filters etc rather than
+> > 		simply controlling when the input is sampled.  As this
+> > 		effects datardy triggers, hardware buffers and the sysfs
+> > 		direct access interfaces, it may be found in any of the
+> > 		relevant directories.  If it effects all of the above
+> > 		then it is to be found in the base device directory.
+> >
+> > Thus we used "sampling_frequency" - but now I am wondering if it
+> > should be something else.
+> >
+> > If this is better suited for a different ABI please tell me what
+that
+> > would be.
+> I'd argue this should really be sampling frequency anyway.  It's
+actually a
+> common enough thing to see.
+> I was sure we'd hit this before and indeed we did with the
+> tmd277711 driver back in 2010 (hit the mailing list archives for that
+one).
+> Dongguen Kim was the author (cc'd).  Actually grep shows that my own
+sca3000
+> driver has this too (it's been a while!)
+> 
+> It's actually made it through in the abi docs for all sorts of event
+types though I
+> think the only correct user is the sca3000 accelerometer.
+> Description is...
+> 	Period of time (in seconds) for which the condition must be
+> 	met before an event is generated. If direction is not
+> 	specified then this period applies to both directions.
+> 
+> I know it is annoying that this parameter in side the device is very
+heavily
+> dependent on other controls (often the case with this sort of
+> thing) but to have a remotely consistent interface we have to define a
+standard
+> unit.  Hence the 'right' way to handle this is to have a cached value
+in seconds
+> and then work out the nearest possible setting when ever anything else
+that
+> effects it is changed. Fiddly, but we are playing this game all over
+the place in
+> other drivers.
+> 
+> So here you are going to have
+> 
+> in_intensity0_thresh_period and in_proximity0_thresh_period
+> 
+> Both probably taking values as INT_PLUS_MICRO.
+> 
+> Note that we have other filters controls for events such as hysterisis
+which is
+> common on raw adc's.
+> 
+> 
+> Jonathan
+> >
+> > Please help!
+> >
+> > Jon
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-iio"
+> > in the body of a message to majordomo@vger.kernel.org More majordomo
+> > info at  http://vger.kernel.org/majordomo-info.html
 
