@@ -1,56 +1,77 @@
-Return-Path: <omaplinuxkernel@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.01.1204101115470.17667@pmeerw.net>
-References: <alpine.DEB.2.01.1204101115470.17667@pmeerw.net>
-Date: Tue, 10 Apr 2012 15:30:55 +0530
-Message-ID: <CAM=Q2csVsYXEvhN7v8SK4R=UpaEW2ELBmx42TcwpFMs_j6-5xg@mail.gmail.com>
-Subject: Re: proximity sensor, input
-From: Shubhrajyoti Datta <omaplinuxkernel@gmail.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from hqemgate04.nvidia.com ([216.228.121.35]:8437 "EHLO
+	hqemgate04.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756117Ab2DIMgv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Apr 2012 08:36:51 -0400
+From: Preetham Chandru <pchandru@nvidia.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Stephen Warren <swarren@nvidia.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Andrew Chew <achew@nvidia.com>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+	Preetham Chandru <pchandru@nvidia.com>,
+	Laxman Dewangan <ldewangan@nvidia.com>
+Subject: [PATCH] staging: iio: ak8975: Remove i2c client data corruption
+Date: Mon,  9 Apr 2012 18:05:01 +0530
+Message-Id: <1333974901-24282-1-git-send-email-pchandru@nvidia.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Peter,
+i2c client data set is of type struct indio_dev pointer and hence the
+pointer returned from i2c_get_clientdata() should be assigned to
+an object of type struct indio_dev and not to an object of type
+struct ak8975_data.
 
-Can you explain more about how your proximity device is?
-How does it report through gpio / irq etc ?
+Also in ak8975_probe() client data should be set first
+before calling ak8975_setup() as it references the client data.
 
-Thanks,
-Shubhro
+Signed-off-by: Preetham Chandru R <pchandru@nvidia.com>
+CC: Laxman Dewangan <ldewangan@nvidia.com>
+---
+ drivers/staging/iio/magnetometer/ak8975.c |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+index d5ddac3..ebc2d08 100644
+--- a/drivers/staging/iio/magnetometer/ak8975.c
++++ b/drivers/staging/iio/magnetometer/ak8975.c
+@@ -108,7 +108,8 @@ static const int ak8975_index_to_reg[] = {
+ static int ak8975_write_data(struct i2c_client *client,
+ 			     u8 reg, u8 val, u8 mask, u8 shift)
+ {
+-	struct ak8975_data *data = i2c_get_clientdata(client);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct ak8975_data *data = iio_priv(indio_dev);
+ 	u8 regval;
+ 	int ret;
+ 
+@@ -159,7 +160,8 @@ static int ak8975_read_data(struct i2c_client *client,
+  */
+ static int ak8975_setup(struct i2c_client *client)
+ {
+-	struct ak8975_data *data = i2c_get_clientdata(client);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct ak8975_data *data = iio_priv(indio_dev);
+ 	u8 device_id;
+ 	int ret;
+ 
+@@ -509,6 +511,7 @@ static int ak8975_probe(struct i2c_client *client,
+ 		goto exit_gpio;
+ 	}
+ 	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
+ 	/* Perform some basic start-of-day setup of the device. */
+ 	err = ak8975_setup(client);
+ 	if (err < 0) {
+@@ -516,7 +519,6 @@ static int ak8975_probe(struct i2c_client *client,
+ 		goto exit_free_iio;
+ 	}
+ 
+-	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 	mutex_init(&data->lock);
+ 	data->eoc_irq = client->irq;
+-- 
+1.7.0.4
 
-
-On Tue, Apr 10, 2012 at 3:17 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
-> Hello,
->
-> I am wondering how to support proximity sensors; goal is to trigger some
-> application event when an object comes close (in that sense, the proximit=
-y
-> sensor is used like a button)
->
-> there are several places in the kernel doing similar things:
-> e.g. input/misc/gp2ap0002a00f.c
-> e.g. drivers/misc/bh1770glc.c
-> e.g. drivers/staging/iio/isl29018.c
->
-> iio seems to be most active and has IIO_PROXIMITY, but I do not see how
-> the application is easily notified: iio collects merely collects the
-> sensor data
->
-> drivers in misc just create some custom sysfs interface
->
-> input/misc has just one driver dealing with proximity
->
-> is there some advise where proximity driver support might best fit?
->
-> thanks, regards, p.
->
-> --
->
-> Peter Meerwald
-> +43-664-2444418 (mobile)
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
