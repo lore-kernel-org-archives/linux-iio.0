@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:36128 "EHLO
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:36142 "EHLO
 	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759398Ab2DJU1v (ORCPT
+	with ESMTP id S1759399Ab2DJU1v (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Apr 2012 16:27:51 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: device-drivers-devel@blackfin.uclinux.org,
 	michael.hennerich@analog.com, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 04/10] staging:iio:dac Add IIO_CHAN_INFO_VALUE entries to all drivers.
-Date: Tue, 10 Apr 2012 21:27:37 +0100
-Message-Id: <1334089663-22900-5-git-send-email-jic23@kernel.org>
+Subject: [PATCH 03/10] staging:iio:adc Add IIO_CHAN_INFO_VALUE entries to all drivers.
+Date: Tue, 10 Apr 2012 21:27:36 +0100
+Message-Id: <1334089663-22900-4-git-send-email-jic23@kernel.org>
 In-Reply-To: <1334089663-22900-1-git-send-email-jic23@kernel.org>
 References: <1334089663-22900-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -19,320 +19,784 @@ Precursor to making value read / write attribute optional.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/dac/ad5064.c      |    7 ++++---
- drivers/staging/iio/dac/ad5360.c      |    7 ++++---
- drivers/staging/iio/dac/ad5380.c      |    7 ++++---
- drivers/staging/iio/dac/ad5421.c      |    7 ++++---
- drivers/staging/iio/dac/ad5446.c      |    5 +++--
- drivers/staging/iio/dac/ad5504.c      |    7 ++++---
- drivers/staging/iio/dac/ad5624r_spi.c |    5 +++--
- drivers/staging/iio/dac/ad5686.c      |    7 ++++---
- drivers/staging/iio/dac/ad5764.c      |    7 ++++---
- drivers/staging/iio/dac/ad5791.c      |    7 ++++---
- 10 files changed, 38 insertions(+), 28 deletions(-)
+ drivers/staging/iio/adc/ad7192.c       |    9 ++++---
+ drivers/staging/iio/adc/ad7280a.c      |    7 ++++--
+ drivers/staging/iio/adc/ad7291.c       |    8 ++++---
+ drivers/staging/iio/adc/ad7298_core.c  |    8 ++++---
+ drivers/staging/iio/adc/ad7476_core.c  |    5 ++--
+ drivers/staging/iio/adc/ad7606_core.c  |   19 ++++++++-------
+ drivers/staging/iio/adc/ad7780.c       |    8 ++++---
+ drivers/staging/iio/adc/ad7793.c       |   38 +++++++++++++++++++-----------
+ drivers/staging/iio/adc/ad7887_core.c  |    8 ++++---
+ drivers/staging/iio/adc/ad799x_core.c  |   40 +++++++++++++++++++++++++++++++-
+ drivers/staging/iio/adc/lpc32xx_adc.c  |   15 ++++++------
+ drivers/staging/iio/adc/max1363_core.c |    5 ++--
+ 12 files changed, 119 insertions(+), 51 deletions(-)
 
-diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
-index 06b1627..c99af05 100644
---- a/drivers/staging/iio/dac/ad5064.c
-+++ b/drivers/staging/iio/dac/ad5064.c
-@@ -235,7 +235,7 @@ static int ad5064_read_raw(struct iio_dev *indio_dev,
- 	int scale_uv;
- 
- 	switch (m) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		*val = st->dac_cache[chan->channel];
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
-@@ -260,7 +260,7 @@ static int ad5064_write_raw(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	switch (mask) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		if (val > (1 << chan->scan_type.realbits) || val < 0)
- 			return -EINVAL;
- 
-@@ -308,7 +308,8 @@ static struct iio_chan_spec_ext_info ad5064_ext_info[] = {
- 	.indexed = 1,						\
- 	.output = 1,						\
- 	.channel = (chan),					\
--	.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,	\
-+	.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |		\
-+	IIO_CHAN_INFO_SCALE_SEPARATE_BIT,			\
- 	.address = AD5064_ADDR_DAC(chan),			\
- 	.scan_type = IIO_ST('u', (bits), 16, 20 - (bits)),	\
- 	.ext_info = ad5064_ext_info,				\
-diff --git a/drivers/staging/iio/dac/ad5360.c b/drivers/staging/iio/dac/ad5360.c
-index cec3693..973c836 100644
---- a/drivers/staging/iio/dac/ad5360.c
-+++ b/drivers/staging/iio/dac/ad5360.c
-@@ -103,7 +103,8 @@ enum ad5360_type {
- 	.type = IIO_VOLTAGE,					\
- 	.indexed = 1,						\
- 	.output = 1,						\
--	.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT |	\
-+	.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |		\
-+		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |		\
- 		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |		\
- 		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |	\
- 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,	\
-@@ -319,7 +320,7 @@ static int ad5360_write_raw(struct iio_dev *indio_dev,
- 	unsigned int ofs_index;
- 
- 	switch (mask) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		if (val >= max_val || val < 0)
- 			return -EINVAL;
- 
-@@ -376,7 +377,7 @@ static int ad5360_read_raw(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	switch (m) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		ret = ad5360_read(indio_dev, AD5360_READBACK_X1A,
- 			chan->address);
- 		if (ret < 0)
-diff --git a/drivers/staging/iio/dac/ad5380.c b/drivers/staging/iio/dac/ad5380.c
-index 4c50716..c7de8a7 100644
---- a/drivers/staging/iio/dac/ad5380.c
-+++ b/drivers/staging/iio/dac/ad5380.c
-@@ -85,7 +85,8 @@ enum ad5380_type {
- 	.type = IIO_VOLTAGE,					\
- 	.indexed = 1,						\
- 	.output = 1,						\
--	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |		\
-+	.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |		\
-+		IIO_CHAN_INFO_SCALE_SHARED_BIT |		\
- 		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
- 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
- 	.scan_type = IIO_ST('u', (_bits), 16, 14 - (_bits))	\
-@@ -292,7 +293,7 @@ static int ad5380_write_raw(struct iio_dev *indio_dev,
- 	struct ad5380_state *st = iio_priv(indio_dev);
- 
- 	switch (info) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 	case IIO_CHAN_INFO_CALIBSCALE:
- 		if (val >= max_val || val < 0)
- 			return -EINVAL;
-@@ -322,7 +323,7 @@ static int ad5380_read_raw(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	switch (info) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 	case IIO_CHAN_INFO_CALIBSCALE:
- 		ret = regmap_read(st->regmap, ad5380_info_to_reg(chan, info),
- 					val);
-diff --git a/drivers/staging/iio/dac/ad5421.c b/drivers/staging/iio/dac/ad5421.c
-index 0b040b2..628bc8e 100644
---- a/drivers/staging/iio/dac/ad5421.c
-+++ b/drivers/staging/iio/dac/ad5421.c
-@@ -87,7 +87,8 @@ static const struct iio_chan_spec ad5421_channels[] = {
- 		.indexed = 1,
- 		.output = 1,
- 		.channel = 0,
--		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
-+			IIO_CHAN_INFO_SCALE_SHARED_BIT |
- 			IIO_CHAN_INFO_OFFSET_SHARED_BIT |
- 			IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
- 			IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
-@@ -304,7 +305,7 @@ static int ad5421_read_raw(struct iio_dev *indio_dev,
- 		return -EINVAL;
- 
- 	switch (m) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		ret = ad5421_read(indio_dev, AD5421_REG_DAC_DATA);
- 		if (ret < 0)
- 			return ret;
-@@ -340,7 +341,7 @@ static int ad5421_write_raw(struct iio_dev *indio_dev,
- 	const unsigned int max_val = 1 << 16;
- 
- 	switch (mask) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		if (val >= max_val || val < 0)
- 			return -EINVAL;
- 
-diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
-index 633ffbb..0feb18f 100644
---- a/drivers/staging/iio/dac/ad5446.c
-+++ b/drivers/staging/iio/dac/ad5446.c
-@@ -158,7 +158,8 @@ static const struct attribute_group ad5446_attribute_group = {
- 	.indexed = 1, \
- 	.output = 1, \
- 	.channel = 0, \
--	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT, \
-+	.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT | \
-+	IIO_CHAN_INFO_SCALE_SHARED_BIT,	\
- 	.scan_type = IIO_ST('u', (bits), (storage), (shift)) \
- }
- 
-@@ -274,7 +275,7 @@ static int ad5446_write_raw(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	switch (mask) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
- 			return -EINVAL;
- 
-diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
-index bc17205..abed37e 100644
---- a/drivers/staging/iio/dac/ad5504.c
-+++ b/drivers/staging/iio/dac/ad5504.c
-@@ -27,7 +27,8 @@
- 	.indexed = 1, \
- 	.output = 1, \
- 	.channel = (_chan), \
--	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT, \
-+	.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT | \
-+		     IIO_CHAN_INFO_SCALE_SHARED_BIT, \
- 	.address = AD5504_ADDR_DAC(_chan), \
- 	.scan_type = IIO_ST('u', 12, 16, 0), \
- }
-@@ -81,7 +82,7 @@ static int ad5504_read_raw(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	switch (m) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		ret = ad5504_spi_read(st->spi, chan->address);
- 		if (ret < 0)
- 			return ret;
-@@ -109,7 +110,7 @@ static int ad5504_write_raw(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	switch (mask) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
- 			return -EINVAL;
- 
-diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
-index 10c7484..d5de032 100644
---- a/drivers/staging/iio/dac/ad5624r_spi.c
-+++ b/drivers/staging/iio/dac/ad5624r_spi.c
-@@ -26,7 +26,8 @@
- 	.indexed = 1, \
- 	.output = 1, \
- 	.channel = (_chan), \
--	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT, \
-+	.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT | \
-+		     IIO_CHAN_INFO_SCALE_SHARED_BIT, \
- 	.address = (_chan), \
- 	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits)), \
- }
-@@ -122,7 +123,7 @@ static int ad5624r_write_raw(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	switch (mask) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
- 			return -EINVAL;
- 
-diff --git a/drivers/staging/iio/dac/ad5686.c b/drivers/staging/iio/dac/ad5686.c
-index 2415a6e..43ac81b 100644
---- a/drivers/staging/iio/dac/ad5686.c
-+++ b/drivers/staging/iio/dac/ad5686.c
-@@ -98,7 +98,8 @@ enum ad5686_supported_device_ids {
- 		.indexed = 1,					\
- 		.output = 1,					\
- 		.channel = chan,				\
--		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,	\
-+		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |	\
-+		IIO_CHAN_INFO_SCALE_SHARED_BIT,			\
- 		.address = AD5686_ADDR_DAC(chan),			\
- 		.scan_type = IIO_ST('u', bits, 16, shift)	\
- }
-@@ -296,7 +297,7 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index 9fd6d63..9d3e037 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -981,7 +981,8 @@ static const struct iio_info ad7195_info = {
+ 	  .extend_name = _name,						\
+ 	  .channel = _chan,						\
+ 	  .channel2 = _chan2,						\
+-	  .info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,		\
++	  .info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |		\
++	  IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
+ 	  .address = _address,						\
+ 	  .scan_index = _si,						\
+ 	  .scan_type =  IIO_ST('s', 24, 32, 0)}
+@@ -990,7 +991,8 @@ static const struct iio_info ad7195_info = {
+ 	{ .type = IIO_VOLTAGE,						\
+ 	  .indexed = 1,							\
+ 	  .channel = _chan,						\
+-	  .info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,		\
++	  .info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |		\
++	  IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
+ 	  .address = _address,						\
+ 	  .scan_index = _si,						\
+ 	  .scan_type =  IIO_ST('s', 24, 32, 0)}
+@@ -999,7 +1001,8 @@ static const struct iio_info ad7195_info = {
+ 	{ .type = IIO_TEMP,						\
+ 	  .indexed = 1,							\
+ 	  .channel = _chan,						\
+-	  .info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,		\
++	  .info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |		\
++	  IIO_CHAN_INFO_SCALE_SEPARATE_BIT,				\
+ 	  .address = _address,						\
+ 	  .scan_index = _si,						\
+ 	  .scan_type =  IIO_ST('s', 24, 32, 0)}
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index 7dbd681..592b4e7 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -508,6 +508,7 @@ static int ad7280_channel_init(struct ad7280_state *st)
+ 			}
+ 			st->channels[cnt].indexed = 1;
+ 			st->channels[cnt].info_mask =
++				IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
+ 				IIO_CHAN_INFO_SCALE_SHARED_BIT;
+ 			st->channels[cnt].address =
+ 				AD7280A_DEVADDR(dev) << 8 | ch;
+@@ -524,7 +525,9 @@ static int ad7280_channel_init(struct ad7280_state *st)
+ 	st->channels[cnt].channel2 = dev * 6;
+ 	st->channels[cnt].address = AD7280A_ALL_CELLS;
+ 	st->channels[cnt].indexed = 1;
+-	st->channels[cnt].info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT;
++	st->channels[cnt].info_mask =
++		IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT;
+ 	st->channels[cnt].scan_index = cnt;
+ 	st->channels[cnt].scan_type.sign = 'u';
+ 	st->channels[cnt].scan_type.realbits = 32;
+@@ -788,7 +791,7 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
  	int ret;
  
  	switch (m) {
 -	case 0:
 +	case IIO_CHAN_INFO_VALUE:
  		mutex_lock(&indio_dev->mlock);
- 		ret = ad5686_spi_read(st, chan->address);
- 		mutex_unlock(&indio_dev->mlock);
-@@ -326,7 +327,7 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 	int ret;
+ 		if (chan->address == AD7280A_ALL_CELLS)
+ 			ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
+diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
+index 81d6b61..2ece689 100644
+--- a/drivers/staging/iio/adc/ad7291.c
++++ b/drivers/staging/iio/adc/ad7291.c
+@@ -461,7 +461,7 @@ static int ad7291_read_raw(struct iio_dev *indio_dev,
+ 	s16 signval;
  
  	switch (mask) {
 -	case 0:
 +	case IIO_CHAN_INFO_VALUE:
- 		if (val > (1 << chan->scan_type.realbits) || val < 0)
- 			return -EINVAL;
- 
-diff --git a/drivers/staging/iio/dac/ad5764.c b/drivers/staging/iio/dac/ad5764.c
-index f73a730..b14f364 100644
---- a/drivers/staging/iio/dac/ad5764.c
-+++ b/drivers/staging/iio/dac/ad5764.c
-@@ -79,7 +79,8 @@ enum ad5764_type {
- 	.output = 1,						\
- 	.channel = (_chan),					\
- 	.address = (_chan),					\
--	.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |		\
-+	.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |		\
-+		IIO_CHAN_INFO_OFFSET_SHARED_BIT |		\
- 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |		\
- 		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
- 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
-@@ -188,7 +189,7 @@ static int ad5764_write_raw(struct iio_dev *indio_dev,
- 	unsigned int reg;
- 
- 	switch (info) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		if (val >= max_val || val < 0)
- 			return -EINVAL;
- 		val <<= chan->scan_type.shift;
-@@ -228,7 +229,7 @@ static int ad5764_read_raw(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	switch (info) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		reg = AD5764_REG_DATA(chan->address);
- 		ret = ad5764_read(indio_dev, reg, val);
- 		if (ret < 0)
-diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
-index ac45636..85b3dea 100644
---- a/drivers/staging/iio/dac/ad5791.c
-+++ b/drivers/staging/iio/dac/ad5791.c
-@@ -78,7 +78,8 @@ static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
- 	.indexed = 1,					\
- 	.address = AD5791_ADDR_DAC0,			\
- 	.channel = 0,					\
--	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT | \
-+	.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |	\
-+		IIO_CHAN_INFO_SCALE_SHARED_BIT |	\
- 		IIO_CHAN_INFO_OFFSET_SHARED_BIT,	\
- 	.scan_type = IIO_ST('u', bits, 24, shift)	\
- }
-@@ -231,7 +232,7 @@ static int ad5791_read_raw(struct iio_dev *indio_dev,
- 	int ret;
+ 		switch (chan->type) {
+ 		case IIO_VOLTAGE:
+ 			mutex_lock(&chip->state_lock);
+@@ -536,7 +536,8 @@ static int ad7291_read_raw(struct iio_dev *indio_dev,
+ #define AD7291_VOLTAGE_CHAN(_chan)					\
+ {									\
+ 	.type = IIO_VOLTAGE,						\
+-	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,			\
++	.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |			\
++	IIO_CHAN_INFO_SCALE_SHARED_BIT,					\
+ 	.indexed = 1,							\
+ 	.channel = _chan,						\
+ 	.event_mask = IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING)|\
+@@ -554,7 +555,8 @@ static const struct iio_chan_spec ad7291_channels[] = {
+ 	AD7291_VOLTAGE_CHAN(7),
+ 	{
+ 		.type = IIO_TEMP,
+-		.info_mask = IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++				IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT |
+ 				IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 		.indexed = 1,
+ 		.channel = 0,
+diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
+index 0cdde18..6f58135 100644
+--- a/drivers/staging/iio/adc/ad7298_core.c
++++ b/drivers/staging/iio/adc/ad7298_core.c
+@@ -27,7 +27,8 @@
+ 		.type = IIO_VOLTAGE,					\
+ 		.indexed = 1,						\
+ 		.channel = index,					\
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,		\
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
+ 		.address = index,					\
+ 		.scan_index = index,					\
+ 		.scan_type = {						\
+@@ -42,7 +43,8 @@ static struct iio_chan_spec ad7298_channels[] = {
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 		.address = 9,
+ 		.scan_index = AD7298_CH_TEMP,
+ 		.scan_type = {
+@@ -130,7 +132,7 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
+ 	unsigned int scale_uv;
  
  	switch (m) {
 -	case 0:
 +	case IIO_CHAN_INFO_VALUE:
- 		ret = ad5791_spi_read(st->spi, chan->address, val);
- 		if (ret)
- 			return ret;
-@@ -263,7 +264,7 @@ static int ad5791_write_raw(struct iio_dev *indio_dev,
- 	struct ad5791_state *st = iio_priv(indio_dev);
+ 		mutex_lock(&indio_dev->mlock);
+ 		if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
+ 			ret = -EBUSY;
+diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
+index a703693..c4e94c9 100644
+--- a/drivers/staging/iio/adc/ad7476_core.c
++++ b/drivers/staging/iio/adc/ad7476_core.c
+@@ -43,7 +43,7 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+ 	unsigned int scale_uv;
  
- 	switch (mask) {
+ 	switch (m) {
 -	case 0:
 +	case IIO_CHAN_INFO_VALUE:
- 		val &= AD5791_RES_MASK(chan->scan_type.realbits);
- 		val <<= chan->scan_type.shift;
+ 		mutex_lock(&indio_dev->mlock);
+ 		if (iio_buffer_enabled(indio_dev))
+ 			ret = -EBUSY;
+@@ -70,7 +70,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+ 	{							\
+ 	.type = IIO_VOLTAGE,					\
+ 	.indexed = 1,						\
+-	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,		\
++	.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |		\
++	IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
+ 	.scan_type = {						\
+ 		.sign = 'u',					\
+ 		.realbits = bits,				\
+diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+index 97e8d3d..9ff38a8 100644
+--- a/drivers/staging/iio/adc/ad7606_core.c
++++ b/drivers/staging/iio/adc/ad7606_core.c
+@@ -88,7 +88,7 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
+ 	unsigned int scale_uv;
  
+ 	switch (m) {
+-	case 0:
++	case IIO_CHAN_INFO_VALUE:
+ 		mutex_lock(&indio_dev->mlock);
+ 		if (iio_buffer_enabled(indio_dev))
+ 			ret = -EBUSY;
+@@ -229,14 +229,15 @@ static const struct attribute_group ad7606_attribute_group_range = {
+ 	.attrs = ad7606_attributes_range,
+ };
+ 
+-#define AD7606_CHANNEL(num)				\
+-	{						\
+-		.type = IIO_VOLTAGE,			\
+-		.indexed = 1,				\
+-		.channel = num,				\
+-		.address = num,				\
+-		.scan_index = num,			\
+-		.scan_type = IIO_ST('s', 16, 16, 0),	\
++#define AD7606_CHANNEL(num)					\
++	{							\
++		.type = IIO_VOLTAGE,				\
++		.indexed = 1,					\
++		.channel = num,					\
++		.address = num,					\
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,	\
++		.scan_index = num,				\
++		.scan_type = IIO_ST('s', 16, 16, 0),		\
+ 	}
+ 
+ static struct iio_chan_spec ad7606_8_channels[] = {
+diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+index 4f0a6c9..8aa3cf5 100644
+--- a/drivers/staging/iio/adc/ad7780.c
++++ b/drivers/staging/iio/adc/ad7780.c
+@@ -94,7 +94,7 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
+ 	unsigned long scale_uv;
+ 
+ 	switch (m) {
+-	case 0:
++	case IIO_CHAN_INFO_VALUE:
+ 		mutex_lock(&indio_dev->mlock);
+ 		ret = ad7780_read(st, &smpl);
+ 		mutex_unlock(&indio_dev->mlock);
+@@ -130,7 +130,8 @@ static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
+ 			.type = IIO_VOLTAGE,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_type = {
+ 				.sign = 's',
+ 				.realbits = 24,
+@@ -144,7 +145,8 @@ static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
+ 			.type = IIO_VOLTAGE,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_type = {
+ 				.sign = 's',
+ 				.realbits = 20,
+diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
+index 84ecde1..f7f7648d6 100644
+--- a/drivers/staging/iio/adc/ad7793.c
++++ b/drivers/staging/iio/adc/ad7793.c
+@@ -630,7 +630,7 @@ static int ad7793_read_raw(struct iio_dev *indio_dev,
+ 	bool unipolar = !!(st->conf & AD7793_CONF_UNIPOLAR);
+ 
+ 	switch (m) {
+-	case 0:
++	case IIO_CHAN_INFO_VALUE:
+ 		mutex_lock(&indio_dev->mlock);
+ 		if (iio_buffer_enabled(indio_dev))
+ 			ret = -EBUSY;
+@@ -760,7 +760,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.channel = 0,
+ 			.channel2 = 0,
+ 			.address = AD7793_CH_AIN1P_AIN1M,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 0,
+ 			.scan_type = IIO_ST('s', 24, 32, 0)
+ 		},
+@@ -771,7 +772,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.channel = 1,
+ 			.channel2 = 1,
+ 			.address = AD7793_CH_AIN2P_AIN2M,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 1,
+ 			.scan_type = IIO_ST('s', 24, 32, 0)
+ 		},
+@@ -782,7 +784,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.channel = 2,
+ 			.channel2 = 2,
+ 			.address = AD7793_CH_AIN3P_AIN3M,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 2,
+ 			.scan_type = IIO_ST('s', 24, 32, 0)
+ 		},
+@@ -794,7 +797,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.channel = 2,
+ 			.channel2 = 2,
+ 			.address = AD7793_CH_AIN1M_AIN1M,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 2,
+ 			.scan_type = IIO_ST('s', 24, 32, 0)
+ 		},
+@@ -803,7 +807,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.indexed = 1,
+ 			.channel = 0,
+ 			.address = AD7793_CH_TEMP,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 			.scan_index = 4,
+ 			.scan_type = IIO_ST('s', 24, 32, 0),
+ 		},
+@@ -813,7 +818,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.indexed = 1,
+ 			.channel = 4,
+ 			.address = AD7793_CH_AVDD_MONITOR,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 			.scan_index = 5,
+ 			.scan_type = IIO_ST('s', 24, 32, 0),
+ 		},
+@@ -827,7 +833,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.channel = 0,
+ 			.channel2 = 0,
+ 			.address = AD7793_CH_AIN1P_AIN1M,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 0,
+ 			.scan_type = IIO_ST('s', 16, 32, 0)
+ 		},
+@@ -838,7 +845,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.channel = 1,
+ 			.channel2 = 1,
+ 			.address = AD7793_CH_AIN2P_AIN2M,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 1,
+ 			.scan_type = IIO_ST('s', 16, 32, 0)
+ 		},
+@@ -849,7 +857,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.channel = 2,
+ 			.channel2 = 2,
+ 			.address = AD7793_CH_AIN3P_AIN3M,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 2,
+ 			.scan_type = IIO_ST('s', 16, 32, 0)
+ 		},
+@@ -861,7 +870,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.channel = 2,
+ 			.channel2 = 2,
+ 			.address = AD7793_CH_AIN1M_AIN1M,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 2,
+ 			.scan_type = IIO_ST('s', 16, 32, 0)
+ 		},
+@@ -870,7 +880,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.indexed = 1,
+ 			.channel = 0,
+ 			.address = AD7793_CH_TEMP,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 			.scan_index = 4,
+ 			.scan_type = IIO_ST('s', 16, 32, 0),
+ 		},
+@@ -880,7 +891,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.indexed = 1,
+ 			.channel = 4,
+ 			.address = AD7793_CH_AVDD_MONITOR,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 			.scan_index = 5,
+ 			.scan_type = IIO_ST('s', 16, 32, 0),
+ 		},
+diff --git a/drivers/staging/iio/adc/ad7887_core.c b/drivers/staging/iio/adc/ad7887_core.c
+index e9bbc3e..ec27915 100644
+--- a/drivers/staging/iio/adc/ad7887_core.c
++++ b/drivers/staging/iio/adc/ad7887_core.c
+@@ -42,7 +42,7 @@ static int ad7887_read_raw(struct iio_dev *indio_dev,
+ 	unsigned int scale_uv;
+ 
+ 	switch (m) {
+-	case 0:
++	case IIO_CHAN_INFO_VALUE:
+ 		mutex_lock(&indio_dev->mlock);
+ 		if (iio_buffer_enabled(indio_dev))
+ 			ret = -EBUSY;
+@@ -75,7 +75,8 @@ static const struct ad7887_chip_info ad7887_chip_info_tbl[] = {
+ 			.type = IIO_VOLTAGE,
+ 			.indexed = 1,
+ 			.channel = 1,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.address = 1,
+ 			.scan_index = 1,
+ 			.scan_type = IIO_ST('u', 12, 16, 0),
+@@ -84,7 +85,8 @@ static const struct ad7887_chip_info ad7887_chip_info_tbl[] = {
+ 			.type = IIO_VOLTAGE,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.address = 0,
+ 			.scan_index = 0,
+ 			.scan_type = IIO_ST('u', 12, 16, 0),
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index a845866..72bece7 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -148,7 +148,7 @@ static int ad799x_read_raw(struct iio_dev *indio_dev,
+ 	unsigned int scale_uv;
+ 
+ 	switch (m) {
+-	case 0:
++	case IIO_CHAN_INFO_VALUE:
+ 		mutex_lock(&indio_dev->mlock);
+ 		if (iio_buffer_enabled(indio_dev))
+ 			ret = -EBUSY;
+@@ -454,6 +454,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 0,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 0,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 			},
+@@ -461,6 +462,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 1,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 1,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 			},
+@@ -468,6 +470,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 2,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 2,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 			},
+@@ -475,6 +478,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 3,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 3,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 			},
+@@ -490,6 +494,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 0,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 0,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 			},
+@@ -497,6 +502,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 1,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 1,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 			},
+@@ -504,6 +510,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 2,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 2,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 			},
+@@ -511,6 +518,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 3,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 3,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 			},
+@@ -526,6 +534,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 0,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 0,
+ 				.scan_type = IIO_ST('u', 8, 16, 4),
+ 			},
+@@ -533,6 +542,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 1,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 1,
+ 				.scan_type = IIO_ST('u', 8, 16, 4),
+ 			},
+@@ -540,6 +550,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 2,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 2,
+ 				.scan_type = IIO_ST('u', 8, 16, 4),
+ 			},
+@@ -547,6 +558,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 3,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 3,
+ 				.scan_type = IIO_ST('u', 8, 16, 4),
+ 			},
+@@ -562,6 +574,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 0,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 0,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -570,6 +583,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 1,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 1,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -587,6 +601,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 0,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 0,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -596,6 +611,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.indexed = 1,
+ 				.channel = 1,
+ 				.scan_index = 1,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 				.event_mask = AD799X_EV_MASK,
+ 			},
+@@ -603,6 +619,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 2,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 2,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -611,6 +628,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 3,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 3,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -628,6 +646,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 0,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 0,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -636,6 +655,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 1,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 1,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -644,6 +664,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 2,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 2,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -652,6 +673,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 3,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 3,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -669,6 +691,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 0,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 0,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -677,6 +700,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 1,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 1,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -685,6 +709,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 2,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 2,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -693,6 +718,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 3,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 3,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -701,6 +727,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 4,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 4,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 			},
+@@ -708,6 +735,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 5,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 5,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 			},
+@@ -715,6 +743,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 6,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 6,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 			},
+@@ -722,6 +751,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 7,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 7,
+ 				.scan_type = IIO_ST('u', 10, 16, 2),
+ 			},
+@@ -738,6 +768,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 0,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 0,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -746,6 +777,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 1,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 1,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -754,6 +786,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 2,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 2,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -762,6 +795,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 3,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 3,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 				.event_mask = AD799X_EV_MASK,
+@@ -770,6 +804,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 4,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 4,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 			},
+@@ -777,6 +812,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 5,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 5,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 			},
+@@ -784,6 +820,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 6,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 6,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 			},
+@@ -791,6 +828,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				.type = IIO_VOLTAGE,
+ 				.indexed = 1,
+ 				.channel = 7,
++				.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
+ 				.scan_index = 7,
+ 				.scan_type = IIO_ST('u', 12, 16, 0),
+ 			},
+diff --git a/drivers/staging/iio/adc/lpc32xx_adc.c b/drivers/staging/iio/adc/lpc32xx_adc.c
+index dfc9033..403ad15 100644
+--- a/drivers/staging/iio/adc/lpc32xx_adc.c
++++ b/drivers/staging/iio/adc/lpc32xx_adc.c
+@@ -73,7 +73,7 @@ static int lpc32xx_read_raw(struct iio_dev *indio_dev,
+ {
+ 	struct lpc32xx_adc_info *info = iio_priv(indio_dev);
+ 
+-	if (mask == 0) {
++	if (mask == IIO_CHAN_INFO_VALUE) {
+ 		mutex_lock(&indio_dev->mlock);
+ 		clk_enable(info->clk);
+ 		/* Measurement setup */
+@@ -98,12 +98,13 @@ static const struct iio_info lpc32xx_adc_iio_info = {
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+-#define LPC32XX_ADC_CHANNEL(_index) {		\
+-	.type = IIO_VOLTAGE,			\
+-	.indexed = 1,				\
+-	.channel = _index,			\
+-	.address = AD_IN * _index,		\
+-	.scan_index = _index,			\
++#define LPC32XX_ADC_CHANNEL(_index) {			\
++	.type = IIO_VOLTAGE,				\
++	.indexed = 1,					\
++	.channel = _index,				\
++			.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,	\
++	.address = AD_IN * _index,			\
++	.scan_index = _index,				\
+ }
+ 
+ static struct iio_chan_spec lpc32xx_adc_iio_channels[] = {
+diff --git a/drivers/staging/iio/adc/max1363_core.c b/drivers/staging/iio/adc/max1363_core.c
+index 9d7db7f..4a95d78 100644
+--- a/drivers/staging/iio/adc/max1363_core.c
++++ b/drivers/staging/iio/adc/max1363_core.c
+@@ -249,7 +249,7 @@ static int max1363_read_raw(struct iio_dev *indio_dev,
+ 	struct max1363_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 	switch (m) {
+-	case 0:
++	case IIO_CHAN_INFO_VALUE:
+ 		ret = max1363_read_single_chan(indio_dev, chan, val, m);
+ 		if (ret < 0)
+ 			return ret;
+@@ -282,7 +282,8 @@ static const enum max1363_modes max1363_mode_list[] = {
+ #define MAX1363_EV_M						\
+ 	(IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING)	\
+ 	 | IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING))
+-#define MAX1363_INFO_MASK IIO_CHAN_INFO_SCALE_SHARED_BIT
++#define MAX1363_INFO_MASK (IIO_CHAN_INFO_VALUE_SEPARATE_BIT |	\
++			   IIO_CHAN_INFO_SCALE_SHARED_BIT)
+ #define MAX1363_CHAN_U(num, addr, si, bits, evmask)			\
+ 	{								\
+ 		.type = IIO_VOLTAGE,					\
 -- 
 1.7.9.4
 
