@@ -1,69 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:36148 "EHLO
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:36137 "EHLO
 	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759425Ab2DJU1u (ORCPT
+	with ESMTP id S1759420Ab2DJU1u (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Apr 2012 16:27:50 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: device-drivers-devel@blackfin.uclinux.org,
 	michael.hennerich@analog.com, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 10/10] staging:iio: Make read / write attributes for channel values optional.
-Date: Tue, 10 Apr 2012 21:27:43 +0100
-Message-Id: <1334089663-22900-11-git-send-email-jic23@kernel.org>
+Subject: [PATCH 08/10] staging:iio:magnetometer Add IIO_CHAN_INFO_VALUE entries to all drivers.
+Date: Tue, 10 Apr 2012 21:27:41 +0100
+Message-Id: <1334089663-22900-9-git-send-email-jic23@kernel.org>
 In-Reply-To: <1334089663-22900-1-git-send-email-jic23@kernel.org>
 References: <1334089663-22900-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Until now all channels have had read/write attributes. This patch
-allows for channels where we can't actually read the value (or for
-output devices, write it!)
+Precursor to making value read / write attribute optional.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/industrialio-core.c |   29 +++++++++++++++--------------
- 1 file changed, 15 insertions(+), 14 deletions(-)
+ drivers/staging/iio/magnetometer/ak8975.c  |    5 +++--
+ drivers/staging/iio/magnetometer/hmc5843.c |    5 +++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index a4ac061..2b51178 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -581,20 +581,21 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+index d5ddac3..9a595f5 100644
+--- a/drivers/staging/iio/magnetometer/ak8975.c
++++ b/drivers/staging/iio/magnetometer/ak8975.c
+@@ -429,7 +429,7 @@ static int ak8975_read_raw(struct iio_dev *indio_dev,
+ 	struct ak8975_data *data = iio_priv(indio_dev);
  
- 	if (chan->channel < 0)
- 		return 0;
--
--	ret = __iio_add_chan_devattr(iio_data_type_name[chan->processed_val],
--				     chan,
--				     &iio_read_channel_info,
--				     (chan->output ?
--				      &iio_write_channel_info : NULL),
--				     0,
--				     0,
--				     &indio_dev->dev,
--				     &indio_dev->channel_attr_list);
--	if (ret)
--		goto error_ret;
--	attrcount++;
--
-+	if (chan->info_mask & IIO_CHAN_INFO_VALUE_SEPARATE_BIT) {
-+		ret = __iio_add_chan_devattr(iio_data_type_name[chan->
-+								processed_val],
-+					     chan,
-+					     &iio_read_channel_info,
-+					     (chan->output ?
-+					      &iio_write_channel_info : NULL),
-+					     0,
-+					     0,
-+					     &indio_dev->dev,
-+					     &indio_dev->channel_attr_list);
-+		if (ret)
-+			goto error_ret;
-+		attrcount++;
-+	}
- 	for_each_set_bit_from(i, &chan->info_mask, sizeof(long)*8) {
- 		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i/2],
- 					     chan,
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_VALUE:
+ 		return ak8975_read_axis(indio_dev, chan->address, val);
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = data->raw_to_gauss[chan->address];
+@@ -443,7 +443,8 @@ static int ak8975_read_raw(struct iio_dev *indio_dev,
+ 		.type = IIO_MAGN,					\
+ 		.modified = 1,						\
+ 		.channel2 = IIO_MOD_##axis,				\
+-		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,	\
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |		\
++			     IIO_CHAN_INFO_SCALE_SEPARATE_BIT,		\
+ 		.address = index,					\
+ 	}
+ 
+diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
+index 91dd3da..6dc0ad6e 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843.c
++++ b/drivers/staging/iio/magnetometer/hmc5843.c
+@@ -459,7 +459,7 @@ static int hmc5843_read_raw(struct iio_dev *indio_dev,
+ 	struct hmc5843_data *data = iio_priv(indio_dev);
+ 
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_VALUE:
+ 		return hmc5843_read_measurement(indio_dev,
+ 						chan->address,
+ 						val);
+@@ -476,7 +476,8 @@ static int hmc5843_read_raw(struct iio_dev *indio_dev,
+ 		.type = IIO_MAGN,					\
+ 		.modified = 1,						\
+ 		.channel2 = IIO_MOD_##axis,				\
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,		\
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |		\
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,		\
+ 		.address = add						\
+ 	}
+ 
 -- 
 1.7.9.4
 
