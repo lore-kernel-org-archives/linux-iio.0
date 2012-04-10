@@ -1,46 +1,29 @@
-Return-Path: <sr@denx.de>
-From: Stefan Roese <sr@denx.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH] staging:iio:adc: Add SPEAr ADC driver
-Date: Thu, 12 Apr 2012 08:01:04 +0200
-Cc: linux-iio@vger.kernel.org,
- devicetree-discuss@ozlabs.org,
- spear-devel@list.st.com,
- Viresh Kumar <viresh.kumar@st.com>
-References: <1334150388-23296-1-git-send-email-sr@denx.de> <4F8589E4.7020809@cam.ac.uk>
-In-Reply-To: <4F8589E4.7020809@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40915 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753595Ab2DJUne (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Apr 2012 16:43:34 -0400
+Received: from [192.168.0.5] (cpc1-cmbg6-0-0-cust492.5-4.cable.virginmedia.com [81.101.137.237])
+	by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id CA6C240382
+	for <linux-iio@vger.kernel.org>; Tue, 10 Apr 2012 21:43:32 +0100 (BST)
+Message-ID: <4F849B74.4000406@kernel.org>
+Date: Tue, 10 Apr 2012 21:43:32 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Message-Id: <201204120801.05269.sr@denx.de>
-List-ID: <linux-iio@vger.kernel.org>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: IIO tree on kernel.org updated.
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wednesday 11 April 2012 15:40:52 Jonathan Cameron wrote:
-> On 4/11/2012 2:19 PM, Stefan Roese wrote:
-> > This patch implements the basic single data conversion support for
-> > the SPEAr600 SoC ADC. The register layout of SPEAr600 differs a bit
-> > from other SPEAr SoC variants (e.g. SPEAr3xx). These differences are
-> > handled via DT compatible testing. Resuling in a multi-arch binary.
-> 
-> Resulting
-> 
-> > This driver is currently tested only on SPEAr600. Futur patches may add
-> > support for other SoC variants (SPEAr3xx) and features like software
-> > buffer or DMA.
-> 
-> Future
-> 
-> Ironically that's about it wrt to comments. Couple of totally trivial
-> bits inline.
-> Basically I'm happy, so if/when someone acks the device tree side of
-> things, please
-> clean up the trivial bits and send on to GregKH.
-> 
-> Nice short, clean driver.  The small line count lured me into reviewing
-> it ahead of
-> some others in my review pile!
+Hi All,
 
-Jonathan, thanks for the quick review. I'll address you comments and send an 
-updated patch shortly.
+I've just pushed out a master branch to my kernel.org tree
+with everything I posted today in it.
 
-Stefan
+There are a couple of patches in there that I'd almost guarantee
+have broken a driver or two so please do test them if you have
+the time.
+
+
+Jonathan
