@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:36125 "EHLO
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:36143 "EHLO
 	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759389Ab2DJU1u (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Apr 2012 16:27:50 -0400
+	with ESMTP id S1759424Ab2DJU1v (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Apr 2012 16:27:51 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: device-drivers-devel@blackfin.uclinux.org,
 	michael.hennerich@analog.com, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 07/10] staging:iio:light Add IIO_CHAN_INFO_VALUE entries to all drivers.
-Date: Tue, 10 Apr 2012 21:27:40 +0100
-Message-Id: <1334089663-22900-8-git-send-email-jic23@kernel.org>
+Subject: [PATCH 06/10] staging:iio:imu Add IIO_CHAN_INFO_VALUE entries to all drivers.
+Date: Tue, 10 Apr 2012 21:27:39 +0100
+Message-Id: <1334089663-22900-7-git-send-email-jic23@kernel.org>
 In-Reply-To: <1334089663-22900-1-git-send-email-jic23@kernel.org>
 References: <1334089663-22900-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -19,81 +19,415 @@ Precursor to making value read / write attribute optional.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/light/isl29018.c |    7 +++++--
- drivers/staging/iio/light/tsl2563.c  |    9 ++++++---
- 2 files changed, 11 insertions(+), 5 deletions(-)
+ drivers/staging/iio/imu/adis16400_core.c |  121 ++++++++++++++++++++----------
+ 1 file changed, 80 insertions(+), 41 deletions(-)
 
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 38ec52b..f134d58 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -383,7 +383,7 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index a027d6d..f8baeff 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -545,7 +545,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	s16 val16;
  
- 	mutex_lock(&chip->lock);
  	switch (mask) {
 -	case 0:
 +	case IIO_CHAN_INFO_VALUE:
- 		switch (chan->type) {
- 		case IIO_LIGHT:
- 			ret = isl29018_read_lux(client, val);
-@@ -420,14 +420,17 @@ static const struct iio_chan_spec isl29018_channels[] = {
+ 		mutex_lock(&indio_dev->mlock);
+ 		ret = adis16400_spi_read_reg_16(indio_dev,
+ 				adis16400_addresses[chan->address][0],
+@@ -635,7 +635,8 @@ static struct iio_chan_spec adis16400_channels[] = {
  		.indexed = 1,
  		.channel = 0,
- 		.processed_val = IIO_PROCESSED,
--		.info_mask = IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
+ 		.extend_name = "supply",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
 +		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
-+		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
- 	}, {
- 		.type = IIO_INTENSITY,
++		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 		.address = in_supply,
+ 		.scan_index = ADIS16400_SCAN_SUPPLY,
+ 		.scan_type = IIO_ST('u', 14, 16, 0)
+@@ -643,7 +644,8 @@ static struct iio_chan_spec adis16400_channels[] = {
+ 		.type = IIO_ANGL_VEL,
  		.modified = 1,
-+		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
- 		.channel2 = IIO_MOD_LIGHT_IR,
- 	}, {
- 		/* Unindexed in current ABI.  But perhaps it should be. */
- 		.type = IIO_PROXIMITY,
-+		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
- 	}
- };
- 
-diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
-index beb51d71..859e211 100644
---- a/drivers/staging/iio/light/tsl2563.c
-+++ b/drivers/staging/iio/light/tsl2563.c
-@@ -485,7 +485,7 @@ static int tsl2563_read_raw(struct iio_dev *indio_dev,
- 
- 	mutex_lock(&chip->lock);
- 	switch (m) {
--	case 0:
-+	case IIO_CHAN_INFO_VALUE:
- 		switch (chan->type) {
- 		case IIO_LIGHT:
- 			ret = tsl2563_get_adc(chip);
-@@ -535,12 +535,14 @@ static const struct iio_chan_spec tsl2563_channels[] = {
- 		.type = IIO_LIGHT,
+ 		.channel2 = IIO_MOD_X,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = gyro_x,
+@@ -653,7 +655,8 @@ static struct iio_chan_spec adis16400_channels[] = {
+ 		.type = IIO_ANGL_VEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Y,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = gyro_y,
+@@ -663,7 +666,8 @@ static struct iio_chan_spec adis16400_channels[] = {
+ 		.type = IIO_ANGL_VEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Z,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = gyro_z,
+@@ -673,7 +677,8 @@ static struct iio_chan_spec adis16400_channels[] = {
+ 		.type = IIO_ACCEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_X,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_x,
+@@ -683,7 +688,8 @@ static struct iio_chan_spec adis16400_channels[] = {
+ 		.type = IIO_ACCEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Y,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_y,
+@@ -693,7 +699,8 @@ static struct iio_chan_spec adis16400_channels[] = {
+ 		.type = IIO_ACCEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Z,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_z,
+@@ -703,7 +710,8 @@ static struct iio_chan_spec adis16400_channels[] = {
+ 		.type = IIO_MAGN,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_X,
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = magn_x,
+ 		.scan_index = ADIS16400_SCAN_MAGN_X,
+@@ -712,7 +720,8 @@ static struct iio_chan_spec adis16400_channels[] = {
+ 		.type = IIO_MAGN,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Y,
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = magn_y,
+ 		.scan_index = ADIS16400_SCAN_MAGN_Y,
+@@ -721,7 +730,8 @@ static struct iio_chan_spec adis16400_channels[] = {
+ 		.type = IIO_MAGN,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Z,
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = magn_z,
+ 		.scan_index = ADIS16400_SCAN_MAGN_Z,
+@@ -730,7 +740,8 @@ static struct iio_chan_spec adis16400_channels[] = {
+ 		.type = IIO_TEMP,
  		.indexed = 1,
- 		.processed_val = 1,
-+		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT,
  		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 		.address = temp,
+ 		.scan_index = ADIS16400_SCAN_TEMP,
+@@ -739,7 +750,8 @@ static struct iio_chan_spec adis16400_channels[] = {
+ 		.type = IIO_VOLTAGE,
+ 		.indexed = 1,
+ 		.channel = 1,
+-		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 		.address = in1,
+ 		.scan_index = ADIS16400_SCAN_ADC_0,
+ 		.scan_type = IIO_ST('s', 12, 16, 0),
+@@ -753,7 +765,8 @@ static struct iio_chan_spec adis16350_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.extend_name = "supply",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 		.address = in_supply,
+ 		.scan_index = ADIS16400_SCAN_SUPPLY,
+ 		.scan_type = IIO_ST('u', 12, 16, 0)
+@@ -761,7 +774,8 @@ static struct iio_chan_spec adis16350_channels[] = {
+ 		.type = IIO_ANGL_VEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_X,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = gyro_x,
+@@ -771,7 +785,8 @@ static struct iio_chan_spec adis16350_channels[] = {
+ 		.type = IIO_ANGL_VEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Y,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = gyro_y,
+@@ -781,17 +796,19 @@ static struct iio_chan_spec adis16350_channels[] = {
+ 		.type = IIO_ANGL_VEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Z,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = gyro_z,
+ 		.scan_index = ADIS16400_SCAN_GYRO_Z,
+ 		.scan_type = IIO_ST('s', 14, 16, 0),
  	}, {
- 		.type = IIO_INTENSITY,
+-	.type = IIO_ACCEL,
++		.type = IIO_ACCEL,
  		.modified = 1,
- 		.channel2 = IIO_MOD_LIGHT_BOTH,
--		.info_mask = IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
+ 		.channel2 = IIO_MOD_X,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
 +		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
-+		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
- 		.event_mask = (IIO_EV_BIT(IIO_EV_TYPE_THRESH,
- 					  IIO_EV_DIR_RISING) |
- 			       IIO_EV_BIT(IIO_EV_TYPE_THRESH,
-@@ -549,7 +551,8 @@ static const struct iio_chan_spec tsl2563_channels[] = {
- 		.type = IIO_INTENSITY,
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_x,
+@@ -801,7 +818,8 @@ static struct iio_chan_spec adis16350_channels[] = {
+ 		.type = IIO_ACCEL,
  		.modified = 1,
- 		.channel2 = IIO_MOD_LIGHT_IR,
--		.info_mask = IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
+ 		.channel2 = IIO_MOD_Y,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
 +		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
-+		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
- 	}
- };
- 
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_y,
+@@ -811,7 +829,8 @@ static struct iio_chan_spec adis16350_channels[] = {
+ 		.type = IIO_ACCEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Z,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_z,
+@@ -822,7 +841,8 @@ static struct iio_chan_spec adis16350_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.extend_name = "x",
+-		.info_mask = IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = temp0,
+@@ -833,7 +853,8 @@ static struct iio_chan_spec adis16350_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 1,
+ 		.extend_name = "y",
+-		.info_mask = IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = temp1,
+@@ -844,7 +865,8 @@ static struct iio_chan_spec adis16350_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 2,
+ 		.extend_name = "z",
+-		.info_mask = IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 		.address = temp2,
+ 		.scan_index = ADIS16350_SCAN_TEMP_Z,
+@@ -853,7 +875,8 @@ static struct iio_chan_spec adis16350_channels[] = {
+ 		.type = IIO_VOLTAGE,
+ 		.indexed = 1,
+ 		.channel = 1,
+-		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 		.address = in1,
+ 		.scan_index = ADIS16350_SCAN_ADC_0,
+ 		.scan_type = IIO_ST('s', 12, 16, 0),
+@@ -867,7 +890,8 @@ static struct iio_chan_spec adis16300_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.extend_name = "supply",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 		.address = in_supply,
+ 		.scan_index = ADIS16400_SCAN_SUPPLY,
+ 		.scan_type = IIO_ST('u', 12, 16, 0)
+@@ -875,7 +899,8 @@ static struct iio_chan_spec adis16300_channels[] = {
+ 		.type = IIO_ANGL_VEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_X,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = gyro_x,
+@@ -885,7 +910,8 @@ static struct iio_chan_spec adis16300_channels[] = {
+ 		.type = IIO_ACCEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_X,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_x,
+@@ -895,7 +921,8 @@ static struct iio_chan_spec adis16300_channels[] = {
+ 		.type = IIO_ACCEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Y,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_y,
+@@ -905,7 +932,8 @@ static struct iio_chan_spec adis16300_channels[] = {
+ 		.type = IIO_ACCEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Z,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_z,
+@@ -915,7 +943,8 @@ static struct iio_chan_spec adis16300_channels[] = {
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 		.address = temp,
+ 		.scan_index = ADIS16400_SCAN_TEMP,
+@@ -924,7 +953,8 @@ static struct iio_chan_spec adis16300_channels[] = {
+ 		.type = IIO_VOLTAGE,
+ 		.indexed = 1,
+ 		.channel = 1,
+-		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 		.address = in1,
+ 		.scan_index = ADIS16350_SCAN_ADC_0,
+ 		.scan_type = IIO_ST('s', 12, 16, 0),
+@@ -932,7 +962,8 @@ static struct iio_chan_spec adis16300_channels[] = {
+ 		.type = IIO_INCLI,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_X,
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = incli_x,
+ 		.scan_index = ADIS16300_SCAN_INCLI_X,
+ 		.scan_type = IIO_ST('s', 13, 16, 0),
+@@ -940,7 +971,8 @@ static struct iio_chan_spec adis16300_channels[] = {
+ 		.type = IIO_INCLI,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Y,
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = incli_y,
+ 		.scan_index = ADIS16300_SCAN_INCLI_Y,
+ 		.scan_type = IIO_ST('s', 13, 16, 0),
+@@ -953,7 +985,8 @@ static const struct iio_chan_spec adis16334_channels[] = {
+ 		.type = IIO_ANGL_VEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_X,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = gyro_x,
+@@ -963,7 +996,8 @@ static const struct iio_chan_spec adis16334_channels[] = {
+ 		.type = IIO_ANGL_VEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Y,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = gyro_y,
+@@ -973,7 +1007,8 @@ static const struct iio_chan_spec adis16334_channels[] = {
+ 		.type = IIO_ANGL_VEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Z,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = gyro_z,
+@@ -983,7 +1018,8 @@ static const struct iio_chan_spec adis16334_channels[] = {
+ 		.type = IIO_ACCEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_X,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_x,
+@@ -993,7 +1029,8 @@ static const struct iio_chan_spec adis16334_channels[] = {
+ 		.type = IIO_ACCEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Y,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_y,
+@@ -1003,7 +1040,8 @@ static const struct iio_chan_spec adis16334_channels[] = {
+ 		.type = IIO_ACCEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_Z,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT,
+ 		.address = accel_z,
+@@ -1013,7 +1051,8 @@ static const struct iio_chan_spec adis16334_channels[] = {
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_VALUE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = accel_z,
+ 		.scan_index = ADIS16400_SCAN_ACC_Z,
 -- 
 1.7.9.4
 
