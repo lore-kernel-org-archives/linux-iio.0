@@ -1,229 +1,103 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4F8C83D5.20201@kernel.org>
-Date: Mon, 16 Apr 2012 21:40:53 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:36129 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759396Ab2DJU1u (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Apr 2012 16:27:50 -0400
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org, device-drivers-devel@blackfin.uclinux.org,
- greg@kroah.com, dmitry.torokhov@gmail.com,
- broonie@opensource.wolfsonmicro.com, alan@lxorguk.ukuu.org.uk,
- arnd@arndb.de, linus.walleij@linaro.org,
- maxime.ripard@free-electrons.com, thomas.petazzoni@free-electrons.com,
- zdevai@gmail.com, w.sang@pengutronix.de, marek.vasut@gmail.com,
- Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH 1/4] staging:iio: make all buffer access pass through
- the buffer_list
-References: <1334090294-23407-1-git-send-email-jic23@kernel.org> <1334090294-23407-2-git-send-email-jic23@kernel.org> <4F8C41F5.2010807@metafoo.de>
-In-Reply-To: <4F8C41F5.2010807@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: device-drivers-devel@blackfin.uclinux.org,
+	michael.hennerich@analog.com, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 00/10] IIO: Make the value attribute optional for channels
+Date: Tue, 10 Apr 2012 21:27:33 +0100
+Message-Id: <1334089663-22900-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/16/2012 04:59 PM, Lars-Peter Clausen wrote:
-> On 04/10/2012 10:38 PM, Jonathan Cameron wrote:
->> From: Jonathan Cameron <jic23@cam.ac.uk>
->>
->> Crucial step in allowing multiple interfaces.
->>
->> Main stages:
->>
->> 1) Ensure no trigger_handler touches the buffers directly.
->> They should only care about active_scan_mask and scan_timestamp
->> in indio_dev.
->> 2) Ensure all setup ops for the buffers act on the general mode
->> and the individual buffers in a consistent fashion.
->> 3) Make use of iio_sw_buffer_preenable where possibe. It's never
->> in a particular fast path so even if overcomplex it is worth
->> using to cut down on code duplication.
-> 
-> In my opinion it would have been better to split 1, 2 and 3 into different
-> patches.
-I think you are being way too generous.  This is an awful patch with
-all sorts of different things going on at the same time.  Sorry for
-wasting your time.  I'll put out a series with the various bits broken
-out...
-> 
-> The driver specific bits look good, but I can't really say I do understand
-> all that's changed in the core right now.
-> 
->> [...]
->>  
->>  int iio_update_demux(struct iio_dev *indio_dev)
->>  {
->>  	const struct iio_chan_spec *ch;
->> -	struct iio_buffer *buffer = indio_dev->buffer;
->> -	int ret, in_ind = -1, out_ind, length;
->> -	unsigned in_loc = 0, out_loc = 0;
->> +	struct iio_buffer *buffer;
->>  	struct iio_demux_table *p, *q;
->> +	int ret;
->>  
->> -	/* Clear out any old demux */
->> -	list_for_each_entry_safe(p, q, &buffer->demux_list, l) {
->> -		list_del(&p->l);
->> -		kfree(p);
->> -	}
->> -	kfree(buffer->demux_bounce);
->> -	buffer->demux_bounce = NULL;
->> -
->> -	/* First work out which scan mode we will actually have */
->> -	if (bitmap_equal(indio_dev->active_scan_mask,
->> -			 buffer->scan_mask,
->> -			 indio_dev->masklength))
->> -		return 0;
->> +	list_for_each_entry(buffer, &indio_dev->buffer_list, buffer_list) {
->> +		unsigned in_loc = 0, out_loc = 0;
->> +		int in_ind = -1, out_ind, length;
-> 
-> How about using a outer function here which loops over the buffers and a
-> inner function, which handles a single buffer? This keeps the indention
-> level low and also makes the diffstat a lot more readable.
-> 
->>  
->> -	/* Now we have the two masks, work from least sig and build up sizes */
->> -	for_each_set_bit(out_ind,
->> -			 indio_dev->active_scan_mask,
->> -			 indio_dev->masklength) {
->> -		in_ind = find_next_bit(indio_dev->active_scan_mask,
->> -				       indio_dev->masklength,
->> -				       in_ind + 1);
->> -		while (in_ind != out_ind) {
->> +		/* Clear out any old demux */
->> +		list_for_each_entry_safe(p, q, &buffer->demux_list, l) {
->> +			list_del(&p->l);
->> +			kfree(p);
->> +		}
->> +		kfree(buffer->demux_bounce);
->> +		buffer->demux_bounce = NULL;
->> +
->> +		/* First work out which scan mode we will actually have */
->> +		if (bitmap_equal(indio_dev->active_scan_mask,
->> +				 buffer->scan_mask,
->> +				 indio_dev->masklength))
->> +			return 0;
->> +
->> +		/*
->> +		 * Now we have the two masks, work from least sig
->> +		 * and build up sizes.
->> +		 */
->> +		for_each_set_bit(out_ind,
->> +				 indio_dev->active_scan_mask,
->> +				 indio_dev->masklength) {
->>  			in_ind = find_next_bit(indio_dev->active_scan_mask,
->>  					       indio_dev->masklength,
->>  					       in_ind + 1);
->> +			while (in_ind != out_ind) {
->> +				in_ind = find_next_bit(indio_dev->
->> +						       active_scan_mask,
->> +						       indio_dev->masklength,
->> +						       in_ind + 1);
->> +				ch = iio_find_channel_from_si(indio_dev,
->> +							      in_ind);
->> +				length = ch->scan_type.storagebits/8;
->> +				/* Make sure we are aligned */
->> +				in_loc += length;
->> +				if (in_loc % length)
->> +					in_loc += length - in_loc % length;
->> +			}
->> +			p = kmalloc(sizeof(*p), GFP_KERNEL);
->> +			if (p == NULL) {
->> +				ret = -ENOMEM;
->> +				goto error_clear_mux_table;
->> +			}
->>  			ch = iio_find_channel_from_si(indio_dev, in_ind);
->>  			length = ch->scan_type.storagebits/8;
->> -			/* Make sure we are aligned */
->> -			in_loc += length;
->> +			if (out_loc % length)
->> +				out_loc += length - out_loc % length;
->>  			if (in_loc % length)
->>  				in_loc += length - in_loc % length;
->> +			p->from = in_loc;
->> +			p->to = out_loc;
->> +			p->length = length;
->> +			list_add_tail(&p->l, &buffer->demux_list);
->> +			out_loc += length;
->> +			in_loc += length;
->>  		}
->> -		p = kmalloc(sizeof(*p), GFP_KERNEL);
->> -		if (p == NULL) {
->> -			ret = -ENOMEM;
->> -			goto error_clear_mux_table;
->> +		/* Relies on scan_timestamp being last */
->> +		if (buffer->scan_timestamp) {
->> +			p = kmalloc(sizeof(*p), GFP_KERNEL);
->> +			if (p == NULL) {
->> +				ret = -ENOMEM;
->> +				goto error_clear_mux_table;
->> +			}
->> +			ch = iio_find_channel_from_si(indio_dev,
->> +						      indio_dev->
->> +						      scan_index_timestamp);
->> +			length = ch->scan_type.storagebits/8;
->> +			if (out_loc % length)
->> +				out_loc += length - out_loc % length;
->> +			if (in_loc % length)
->> +				in_loc += length - in_loc % length;
->> +			p->from = in_loc;
->> +			p->to = out_loc;
->> +			p->length = length;
->> +			list_add_tail(&p->l, &buffer->demux_list);
->> +			out_loc += length;
->> +			in_loc += length;
->>  		}
->> -		ch = iio_find_channel_from_si(indio_dev, in_ind);
->> -		length = ch->scan_type.storagebits/8;
->> -		if (out_loc % length)
->> -			out_loc += length - out_loc % length;
->> -		if (in_loc % length)
->> -			in_loc += length - in_loc % length;
->> -		p->from = in_loc;
->> -		p->to = out_loc;
->> -		p->length = length;
->> -		list_add_tail(&p->l, &buffer->demux_list);
->> -		out_loc += length;
->> -		in_loc += length;
->> -	}
->> -	/* Relies on scan_timestamp being last */
->> -	if (buffer->scan_timestamp) {
->> -		p = kmalloc(sizeof(*p), GFP_KERNEL);
->> -		if (p == NULL) {
->> +		buffer->demux_bounce = kzalloc(out_loc, GFP_KERNEL);
->> +		if (buffer->demux_bounce == NULL) {
->>  			ret = -ENOMEM;
->>  			goto error_clear_mux_table;
->>  		}
->> -		ch = iio_find_channel_from_si(indio_dev,
->> -			buffer->scan_index_timestamp);
->> -		length = ch->scan_type.storagebits/8;
->> -		if (out_loc % length)
->> -			out_loc += length - out_loc % length;
->> -		if (in_loc % length)
->> -			in_loc += length - in_loc % length;
->> -		p->from = in_loc;
->> -		p->to = out_loc;
->> -		p->length = length;
->> -		list_add_tail(&p->l, &buffer->demux_list);
->> -		out_loc += length;
->> -		in_loc += length;
->> -	}
->> -	buffer->demux_bounce = kzalloc(out_loc, GFP_KERNEL);
->> -	if (buffer->demux_bounce == NULL) {
->> -		ret = -ENOMEM;
->> -		goto error_clear_mux_table;
->>  	}
->>  	return 0;
->>  
->>  error_clear_mux_table:
->> -	list_for_each_entry_safe(p, q, &buffer->demux_list, l) {
->> -		list_del(&p->l);
->> -		kfree(p);
->> +	list_for_each_entry(buffer, &indio_dev->buffer_list, buffer_list) {
->> +		list_for_each_entry_safe(p, q, &buffer->demux_list, l) {
->> +			list_del(&p->l);
->> +			kfree(p);
->> +		}
->>  	}
->>  	return ret;
->>  }
-> 
-> 
+Dear All,
+
+This came out of a discussion about Michael's variable gain amplifier
+driver the other day.  We have devices that have a channel that we
+can't actually read, but know other things about. (there are other
+cases that we have previously fudged around).
+
+Anyhow, here is the promised series making the value optional.
+Has recieved limited testing and I may well have fried someones
+driver so please do take a look and test test test!
+
+Dependent on the IIO_CHAN removal series.
+
+Note I'll probably handle this set a little differently from
+usual and send the first 9 to Greg asap, but hold the 10th
+that actually makes them active until I'm sure there aren't
+any drivers going to cross with it and end up broken.
+
+Jonathan
+
+
+
+Jonathan Cameron (10):
+  staging:iio: add a value element to the info_mask
+  staging:iio:accelerometer Add IIO_CHAN_INFO_VALUE entries to all
+    drivers.
+  staging:iio:adc Add IIO_CHAN_INFO_VALUE entries to all drivers.
+  staging:iio:dac Add IIO_CHAN_INFO_VALUE entries to all drivers.
+  staging:iio:gyro Add IIO_CHAN_INFO_VALUE entries to all drivers.
+  staging:iio:imu Add IIO_CHAN_INFO_VALUE entries to all drivers.
+  staging:iio:light Add IIO_CHAN_INFO_VALUE entries to all drivers.
+  staging:iio:magnetometer Add IIO_CHAN_INFO_VALUE entries to all
+    drivers.
+  staging:iio:resolver Add IIO_CHAN_INFO_VALUE entries to all drivers.
+  staging:iio: Make read / write attributes for channel values
+    optional.
+
+ drivers/staging/iio/accel/adis16201_core.c |   23 ++++--
+ drivers/staging/iio/accel/adis16203_core.c |   15 ++--
+ drivers/staging/iio/accel/adis16204_core.c |   15 ++--
+ drivers/staging/iio/accel/adis16209_core.c |   22 +++--
+ drivers/staging/iio/accel/adis16220_core.c |   13 ++-
+ drivers/staging/iio/accel/adis16240_core.c |   16 ++--
+ drivers/staging/iio/accel/kxsd9.c          |    4 +-
+ drivers/staging/iio/accel/lis3l02dq_core.c |    3 +-
+ drivers/staging/iio/accel/sca3000_core.c   |    2 +-
+ drivers/staging/iio/adc/ad7192.c           |    9 ++-
+ drivers/staging/iio/adc/ad7280a.c          |    7 +-
+ drivers/staging/iio/adc/ad7291.c           |    8 +-
+ drivers/staging/iio/adc/ad7298_core.c      |    8 +-
+ drivers/staging/iio/adc/ad7476_core.c      |    5 +-
+ drivers/staging/iio/adc/ad7606_core.c      |   19 ++---
+ drivers/staging/iio/adc/ad7780.c           |    8 +-
+ drivers/staging/iio/adc/ad7793.c           |   38 ++++++---
+ drivers/staging/iio/adc/ad7887_core.c      |    8 +-
+ drivers/staging/iio/adc/ad799x_core.c      |   40 ++++++++-
+ drivers/staging/iio/adc/lpc32xx_adc.c      |   15 ++--
+ drivers/staging/iio/adc/max1363_core.c     |    5 +-
+ drivers/staging/iio/dac/ad5064.c           |    7 +-
+ drivers/staging/iio/dac/ad5360.c           |    7 +-
+ drivers/staging/iio/dac/ad5380.c           |    7 +-
+ drivers/staging/iio/dac/ad5421.c           |    7 +-
+ drivers/staging/iio/dac/ad5446.c           |    5 +-
+ drivers/staging/iio/dac/ad5504.c           |    7 +-
+ drivers/staging/iio/dac/ad5624r_spi.c      |    5 +-
+ drivers/staging/iio/dac/ad5686.c           |    7 +-
+ drivers/staging/iio/dac/ad5764.c           |    7 +-
+ drivers/staging/iio/dac/ad5791.c           |    7 +-
+ drivers/staging/iio/gyro/adis16060_core.c  |    8 +-
+ drivers/staging/iio/gyro/adis16080_core.c  |    6 +-
+ drivers/staging/iio/gyro/adis16130_core.c  |    2 +
+ drivers/staging/iio/gyro/adis16260_core.c  |   15 ++--
+ drivers/staging/iio/gyro/adxrs450_core.c   |   14 ++--
+ drivers/staging/iio/iio.h                  |    4 +-
+ drivers/staging/iio/imu/adis16400_core.c   |  121 ++++++++++++++++++----------
+ drivers/staging/iio/industrialio-core.c    |   34 ++++----
+ drivers/staging/iio/light/isl29018.c       |    7 +-
+ drivers/staging/iio/light/tsl2563.c        |    9 ++-
+ drivers/staging/iio/magnetometer/ak8975.c  |    5 +-
+ drivers/staging/iio/magnetometer/hmc5843.c |    5 +-
+ drivers/staging/iio/resolver/ad2s1200.c    |    2 +
+ drivers/staging/iio/resolver/ad2s1210.c    |    2 +
+ drivers/staging/iio/resolver/ad2s90.c      |    1 +
+ 46 files changed, 388 insertions(+), 196 deletions(-)
+
+-- 
+1.7.9.4
+
