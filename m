@@ -1,14 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo-p05-ob.rzone.de ([81.169.146.180]:45746 "EHLO
+Received: from mo-p05-ob.rzone.de ([81.169.146.182]:32789 "EHLO
 	mo-p05-ob.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754870Ab2DLJGB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Apr 2012 05:06:01 -0400
+	with ESMTP id S1753849Ab2DLIh0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Apr 2012 04:37:26 -0400
 From: Stefan Roese <sr@denx.de>
 To: linux-iio@vger.kernel.org, devicetree-discuss@ozlabs.org
-Cc: spear-devel@list.st.com, Greg KH <greg@kroah.com>
-Subject: [PATCH v3] staging:iio:adc: Add SPEAr ADC driver
-Date: Thu, 12 Apr 2012 11:05:35 +0200
-Message-Id: <1334221535-8923-1-git-send-email-sr@denx.de>
+Cc: spear-devel@list.st.com, Greg KH <greg@kroah.com>,
+	Viresh Kumar <viresh.kumar@st.com>
+Subject: [PATCH v2] staging:iio:adc: Add SPEAr ADC driver
+Date: Thu, 12 Apr 2012 10:36:59 +0200
+Message-Id: <1334219819-2260-1-git-send-email-sr@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -23,14 +24,9 @@ buffer or DMA.
 
 Signed-off-by: Stefan Roese <sr@denx.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
-Acked-by: Viresh Kumar <viresh.kumar@st.com>
 Cc: Greg KH <greg@kroah.com>
+Cc: Viresh Kumar <viresh.kumar@st.com>
 ---
-v3:
-- Used devm_request_irq() instead of request_irq and removed free_irq()
-- Added clk_disable() and clk_unprepare() in error path and
-  spear_adc_remove()
-
 v2:
 - Minor spelling fixes pointed out by Jonathan
 - Renamed scale_uv to scale_mv
@@ -42,8 +38,8 @@ v2:
  .../bindings/staging/iio/adc/spear-adc.txt         |   26 ++
  drivers/staging/iio/adc/Kconfig                    |    7 +
  drivers/staging/iio/adc/Makefile                   |    1 +
- drivers/staging/iio/adc/spear_adc.c                |  447 ++++++++++++++++++++
- 4 files changed, 481 insertions(+)
+ drivers/staging/iio/adc/spear_adc.c                |  444 ++++++++++++++++++++
+ 4 files changed, 478 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/staging/iio/adc/spear-adc.txt
  create mode 100644 drivers/staging/iio/adc/spear_adc.c
 
@@ -106,10 +102,10 @@ index f83ab95..14e98b6 100644
 +obj-$(CONFIG_SPEAR_ADC) += spear_adc.o
 diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
 new file mode 100644
-index 0000000..bea5778
+index 0000000..d5b6730
 --- /dev/null
 +++ b/drivers/staging/iio/adc/spear_adc.c
-@@ -0,0 +1,447 @@
+@@ -0,0 +1,444 @@
 +/*
 + * ST SPEAr ADC driver
 + *
@@ -405,7 +401,6 @@ index 0000000..bea5778
 +static int __devinit spear_adc_probe(struct platform_device *pdev)
 +{
 +	struct device_node *np = pdev->dev.of_node;
-+	struct device *dev = &pdev->dev;
 +	struct spear_adc_info *info;
 +	struct iio_dev *iodev = NULL;
 +	int ret = -ENODEV;
@@ -413,7 +408,7 @@ index 0000000..bea5778
 +
 +	iodev = iio_allocate_device(sizeof(struct spear_adc_info));
 +	if (!iodev) {
-+		dev_err(dev, "failed allocating iio device\n");
++		dev_err(&pdev->dev, "failed allocating iio device\n");
 +		ret = -ENOMEM;
 +		goto errout1;
 +	}
@@ -428,49 +423,49 @@ index 0000000..bea5778
 +	 */
 +	info->adc_base_spear6xx = of_iomap(np, 0);
 +	if (!info->adc_base_spear6xx) {
-+		dev_err(dev, "failed mapping memory\n");
++		dev_err(&pdev->dev, "failed mapping memory\n");
 +		ret = -ENOMEM;
 +		goto errout2;
 +	}
 +	info->adc_base_spear3xx =
 +		(struct adc_regs_spear3xx *)info->adc_base_spear6xx;
 +
-+	info->clk = clk_get(dev, NULL);
++	info->clk = clk_get(&pdev->dev, NULL);
 +	if (IS_ERR(info->clk)) {
-+		dev_err(dev, "failed getting clock\n");
++		dev_err(&pdev->dev, "failed getting clock\n");
 +		goto errout3;
 +	}
 +
 +	ret = clk_prepare(info->clk);
 +	if (ret) {
-+		dev_err(dev, "failed preparing clock\n");
-+		goto errout4;
++		dev_err(&pdev->dev, "failed preparing clock\n");
++		goto errout3;
 +	}
 +
 +	ret = clk_enable(info->clk);
 +	if (ret) {
-+		dev_err(dev, "failed enabling clock\n");
-+		goto errout5;
++		dev_err(&pdev->dev, "failed enabling clock\n");
++		goto errout3;
 +	}
 +
 +	irq = platform_get_irq(pdev, 0);
 +	if ((irq < 0) || (irq >= NR_IRQS)) {
-+		dev_err(dev, "failed getting interrupt resource\n");
++		dev_err(&pdev->dev, "failed getting interrupt resource\n");
 +		ret = -EINVAL;
-+		goto errout6;
++		goto errout4;
 +	}
 +
-+	ret = devm_request_irq(dev, irq, spear_adc_isr, 0, MOD_NAME, info);
++	ret = request_irq(irq, spear_adc_isr, 0, MOD_NAME, info);
 +	if (ret < 0) {
-+		dev_err(dev, "failed requesting interrupt\n");
-+		goto errout6;
++		dev_err(&pdev->dev, "failed requesting interrupt\n");
++		goto errout4;
 +	}
 +
 +	if (of_property_read_u32(np, "sampling-frequency",
 +				 &info->sampling_freq)) {
-+		dev_err(dev, "sampling-frequency missing in DT\n");
++		dev_err(&pdev->dev, "sampling-frequency missing in DT\n");
 +		ret = -EINVAL;
-+		goto errout6;
++		goto errout5;
 +	}
 +
 +	/*
@@ -492,7 +487,7 @@ index 0000000..bea5778
 +	init_completion(&info->completion);
 +
 +	iodev->name = MOD_NAME;
-+	iodev->dev.parent = dev;
++	iodev->dev.parent = &pdev->dev;
 +	iodev->info = &spear_adc_iio_info;
 +	iodev->modes = INDIO_DIRECT_MODE;
 +	iodev->channels = spear_adc_iio_channels;
@@ -500,16 +495,14 @@ index 0000000..bea5778
 +
 +	ret = iio_device_register(iodev);
 +	if (ret)
-+		goto errout6;
++		goto errout5;
 +
-+	dev_info(dev, "SPEAR ADC driver loaded, IRQ %d\n", irq);
++	dev_info(&pdev->dev, "SPEAR ADC driver loaded, IRQ %d\n", irq);
 +
 +	return 0;
 +
-+errout6:
-+	clk_disable(info->clk);
 +errout5:
-+	clk_unprepare(info->clk);
++	free_irq(irq, iodev);
 +errout4:
 +	clk_put(info->clk);
 +errout3:
@@ -524,11 +517,11 @@ index 0000000..bea5778
 +{
 +	struct iio_dev *iodev = platform_get_drvdata(pdev);
 +	struct spear_adc_info *info = iio_priv(iodev);
++	int irq = platform_get_irq(pdev, 0);
 +
 +	iio_device_unregister(iodev);
++	free_irq(irq, iodev);
 +	platform_set_drvdata(pdev, NULL);
-+	clk_disable(info->clk);
-+	clk_unprepare(info->clk);
 +	clk_put(info->clk);
 +	iounmap(info->adc_base_spear6xx);
 +	iio_free_device(iodev);
