@@ -1,86 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:47758 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934800Ab2DMKFo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 06:05:44 -0400
-Message-ID: <4F87FA6D.7080700@cam.ac.uk>
-Date: Fri, 13 Apr 2012 11:05:33 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Laxman Dewangan <ldewangan@nvidia.com>
-CC: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"grant.likely@secretlab.ca" <grant.likely@secretlab.ca>,
-	"rob.herring@calxeda.com" <rob.herring@calxeda.com>,
-	"jbrenner@taosinc.com" <jbrenner@taosinc.com>,
-	Rhyland Klein <rklein@nvidia.com>, "max@stro.at" <max@stro.at>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"devicetree-discuss@lists.ozlabs.org"
-	<devicetree-discuss@lists.ozlabs.org>
-Subject: Re: [PATCH V4 2/2] staging: iio: add driver for isl29028
-References: <1334239266-29505-1-git-send-email-ldewangan@nvidia.com> <1334239266-29505-3-git-send-email-ldewangan@nvidia.com> <4F86E7F9.7000303@cam.ac.uk> <4F87F662.7040204@nvidia.com>
-In-Reply-To: <4F87F662.7040204@nvidia.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <ldewangan@nvidia.com>
+From: Laxman Dewangan <ldewangan@nvidia.com>
+To: jic23@cam.ac.uk, gregkh@linuxfoundation.org, grant.likely@secretlab.ca,
+        rob.herring@calxeda.com, jbrenner@taosinc.com, rklein@nvidia.com,
+        max@stro.at
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
+        Laxman Dewangan <ldewangan@nvidia.com>
+Subject: [PATCH V4 1/2] staging: iio: add channel info for sampling frequency
+Date: Thu, 12 Apr 2012 19:31:05 +0530
+Message-Id: <1334239266-29505-2-git-send-email-ldewangan@nvidia.com>
+In-Reply-To: <1334239266-29505-1-git-send-email-ldewangan@nvidia.com>
+References: <1334239266-29505-1-git-send-email-ldewangan@nvidia.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 4/13/2012 10:48 AM, Laxman Dewangan wrote:
-> On Thursday 12 April 2012 08:04 PM, Jonathan Cameron wrote:
->> On 4/12/2012 3:01 PM, Laxman Dewangan wrote:
->>> Intersil's ISL29028 is concurrent Ambient Light and
->>> Proximity Sensor device.
->>> Add driver to access the light and IR intensity and
->>> proximity value via iio interface.
->> Very nearly there.  The available attributes need to match naming
->> of what they are providing values for. (we need a better way of handling
->> these but that's a job for another day).
->>
->> Otherwise, all good.
->
-> Fine, I will do change.
->
->>> +     mutex_unlock(&chip->lock);
->>> +     return ret;
->>> +}
->>> +
->>> +static IIO_CONST_ATTR(proximity_sampling_frequency_available,
->>> +                             "1, 3, 5, 10, 13, 20, 83, 100");
->>> +static IIO_CONST_ATTR(illuminance_scale_available, "125, 2000");
->>> +
->>> +#define ISL29028_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
->>> +#define ISL29028_CONST_ATTR(name) 
->>> (&iio_const_attr_##name.dev_attr.attr)
->>> +static struct attribute *isl29028_attributes[] = {
->>> +     ISL29028_CONST_ATTR(proximity_sampling_frequency_available),
->> tiny disconnect now that you have in_proximity0_sampling frequency, this
->> should be in_proximity0_sampling_frequency_available
->>
->
-> I saw the attribute appear as
-> in_illuminance_input
-> in_illuminance_scale
-> in_intensity_raw
-> in_proximity_raw
-> in_proximity_sampling_frequency
->
->
-> As I have not set  the .indexed to non-zero,  I will go as non-indexd 
-> name like
-> in_proximity_sampling_frequency_available.
-Fair enough.
->
->>> +     ISL29028_CONST_ATTR(illuminance_scale_available),
->> snap here (sorry, missed that last time).
->>
->> in_illuminance0_scale_available
->>
->
-> I think should be in_illuminance_scale_available
-yup
->
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Adding channel info IIO_CHAN_INFO_SAMP_FREQ to select
+different sampling frequency per channel wise.
 
+Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
+---
+changes from V3:
+ - Change the info name to "sampling_frequency"
+
+ drivers/staging/iio/iio.h               |    5 +++++
+ drivers/staging/iio/industrialio-core.c |    1 +
+ 2 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index b9cd454..9aa0dd5 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -36,6 +36,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW,
+ 	IIO_CHAN_INFO_AVERAGE_RAW,
+ 	IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY,
++	IIO_CHAN_INFO_SAMP_FREQ,
+ };
+ 
+ #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
+@@ -81,6 +82,10 @@ enum iio_chan_info_enum {
+ #define IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SEPARATE_BIT \
+ 	IIO_CHAN_INFO_SEPARATE_BIT(			       \
+ 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)
++#define IIO_CHAN_INFO_SAMP_FREQ_SEPARATE_BIT		\
++	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_SAMP_FREQ)
++#define IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT			\
++	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_SAMP_FREQ)
+ 
+ enum iio_endian {
+ 	IIO_CPU,
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index d303bfb..9e42713 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -90,6 +90,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_AVERAGE_RAW] = "mean_raw",
+ 	[IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY]
+ 	= "filter_low_pass_3db_frequency",
++	[IIO_CHAN_INFO_SAMP_FREQ] = "sampling_frequency",
+ };
+ 
+ const struct iio_chan_spec
+-- 
+1.7.1.1
