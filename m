@@ -1,143 +1,147 @@
-Return-Path: <jic23@cam.ac.uk>
-Message-ID: <4F8840EA.5010904@cam.ac.uk>
-Date: Fri, 13 Apr 2012 16:06:18 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 00/13 V2] IIO: Make the value attribute optional for channels
-References: <1334311471-23054-1-git-send-email-jic23@kernel.org> <4F8838C8.5010900@metafoo.de>
-In-Reply-To: <4F8838C8.5010900@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:37400 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758359Ab2DMKEh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 06:04:37 -0400
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 13/13] staging:iio: drop procesed_val element of chan_spec.
+Date: Fri, 13 Apr 2012 11:04:31 +0100
+Message-Id: <1334311471-23054-14-git-send-email-jic23@kernel.org>
+In-Reply-To: <1334311471-23054-1-git-send-email-jic23@kernel.org>
+References: <1334311471-23054-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 4/13/2012 3:31 PM, Lars-Peter Clausen wrote:
-> On 04/13/2012 12:04 PM, Jonathan Cameron wrote:
->> This is as per Lars-Peter's suggestion + actually covers 'all' (I hope)
->> of the drivers rather than missing cdc and impedance directories.
-> Ok, this one is not so easy to verify. I tried to and couldn't find anything
-> expect two minor formatting issues. So feel free to add
->
-> Acked-by: Lars-Peter Clausen<lars@metafoo.de>
->
-> to all of the patches.
->
-> But you missed the meter subdirectory and the dummy driver, I'll send the
-> patches as a follow up.
-dratt... Forgot the dummy driver, but could have sworn I did the meter 
-directory!
-Oh well and thanks for the review. I'll pull in your two, fix the 
-formatting issues and push
-on to Greg sometime soon.
->
->> So now we have IIO_CHAN_INFO_RAW and IIO_CHAN_INFO_PROCESSED.
->>
->> This lets us drop a chunk of special case logic and generally cleans
->> things up.  On top of this allows channels with no reading or writing
->> abilities which was the original point.
->>
->> Jonathan
->>
->> original patch message was:
->>
->> Dear All,
->>
->> This came out of a discussion about Michael's variable gain amplifier
->> driver the other day.  We have devices that have a channel that we
->> can't actually read, but know other things about. (there are other
->> cases that we have previously fudged around).
->>
->> Anyhow, here is the promised series making the value optional.
->> Has recieved limited testing and I may well have fried someones
->> driver so please do take a look and test test test!
->>
->> Dependent on the IIO_CHAN removal series.
->>
->> Note I'll probably handle this set a little differently from
->> usual and send the first 9 to Greg asap, but hold the 10th
->> that actually makes them active until I'm sure there aren't
->> any drivers going to cross with it and end up broken.
->>
->> Jonathan
->>
->> Jonathan Cameron (13):
->>    staging:iio: add a raw and processed elements to info_mask
->>    staging:iio:accel Add IIO_CHAN_INFO_RAW entries to all drivers.
->>    staging:iio:adc Add IIO_CHAN_INFO_RAW entries to all drivers.
->>    staging:iio:dac Add IIO_CHAN_INFO_RAW entries to all drivers.
->>    staging:iio:gyro Add IIO_CHAN_INFO_RAW entries to all drivers.
->>    staging:iio:imu Add IIO_CHAN_INFO_RAW entries to all drivers.
->>    staging:iio:light Add IIO_CHAN_INFO_RAW/PROCESSED entries to all
->>      drivers.
->>    staging:iio:magnetometer Add IIO_CHAN_INFO_RAW entries to all
->>      drivers.
->>    staging:iio:resolver Add IIO_CHAN_INFO_RAW entries to all drivers.
->>    staging:iio:impedance Add IIO_CHAN_INFO_RAW/PROCESSED entries to all
->>      drivers.
->>    staging:iio:cdc Add IIO_CHAN_INFO_RAW/PROCESSED entries to all
->>      drivers.
->>    staging:iio: Make read / write attributes for channel values
->>      optional.
->>    staging:iio: drop procesed_val element of chan_spec.
->>
->>   drivers/staging/iio/accel/adis16201_core.c      |   25 +++--
->>   drivers/staging/iio/accel/adis16203_core.c      |   17 ++-
->>   drivers/staging/iio/accel/adis16204_core.c      |   17 ++-
->>   drivers/staging/iio/accel/adis16209_core.c      |   24 +++--
->>   drivers/staging/iio/accel/adis16220_core.c      |   15 ++-
->>   drivers/staging/iio/accel/adis16240_core.c      |   18 +++-
->>   drivers/staging/iio/accel/kxsd9.c               |    6 +-
->>   drivers/staging/iio/accel/lis3l02dq_core.c      |    5 +-
->>   drivers/staging/iio/accel/sca3000_core.c        |    4 +-
->>   drivers/staging/iio/adc/ad7192.c                |   11 ++-
->>   drivers/staging/iio/adc/ad7280a.c               |    7 +-
->>   drivers/staging/iio/adc/ad7291.c                |    8 +-
->>   drivers/staging/iio/adc/ad7298_core.c           |    8 +-
->>   drivers/staging/iio/adc/ad7476_core.c           |    5 +-
->>   drivers/staging/iio/adc/ad7606_core.c           |   19 ++--
->>   drivers/staging/iio/adc/ad7780.c                |    8 +-
->>   drivers/staging/iio/adc/ad7793.c                |   38 +++++---
->>   drivers/staging/iio/adc/ad7887_core.c           |    8 +-
->>   drivers/staging/iio/adc/ad799x_core.c           |   40 +++++++-
->>   drivers/staging/iio/adc/lpc32xx_adc.c           |   15 ++--
->>   drivers/staging/iio/adc/max1363_core.c          |    5 +-
->>   drivers/staging/iio/adc/spear_adc.c             |    5 +-
->>   drivers/staging/iio/cdc/ad7150.c                |    8 +-
->>   drivers/staging/iio/cdc/ad7152.c                |   14 ++-
->>   drivers/staging/iio/cdc/ad7746.c                |   25 +++--
->>   drivers/staging/iio/dac/ad5064.c                |    7 +-
->>   drivers/staging/iio/dac/ad5360.c                |    7 +-
->>   drivers/staging/iio/dac/ad5380.c                |    7 +-
->>   drivers/staging/iio/dac/ad5421.c                |    7 +-
->>   drivers/staging/iio/dac/ad5446.c                |    5 +-
->>   drivers/staging/iio/dac/ad5504.c                |    7 +-
->>   drivers/staging/iio/dac/ad5624r_spi.c           |    5 +-
->>   drivers/staging/iio/dac/ad5686.c                |    7 +-
->>   drivers/staging/iio/dac/ad5764.c                |    7 +-
->>   drivers/staging/iio/dac/ad5791.c                |    7 +-
->>   drivers/staging/iio/gyro/adis16060_core.c       |    8 +-
->>   drivers/staging/iio/gyro/adis16080_core.c       |    6 +-
->>   drivers/staging/iio/gyro/adis16130_core.c       |    2 +
->>   drivers/staging/iio/gyro/adis16260_core.c       |   15 ++-
->>   drivers/staging/iio/gyro/adxrs450_core.c        |   14 ++-
->>   drivers/staging/iio/iio.h                       |   22 +++--
->>   drivers/staging/iio/impedance-analyzer/ad5933.c |   11 ++-
->>   drivers/staging/iio/imu/adis16400_core.c        |  121 +++++++++++++++--------
->>   drivers/staging/iio/industrialio-core.c         |   24 +----
->>   drivers/staging/iio/light/isl29018.c            |    9 +-
->>   drivers/staging/iio/light/tsl2563.c             |   11 ++-
->>   drivers/staging/iio/magnetometer/ak8975.c       |    5 +-
->>   drivers/staging/iio/magnetometer/hmc5843.c      |    5 +-
->>   drivers/staging/iio/resolver/ad2s1200.c         |    2 +
->>   drivers/staging/iio/resolver/ad2s1210.c         |    2 +
->>   drivers/staging/iio/resolver/ad2s90.c           |    1 +
->>   51 files changed, 436 insertions(+), 243 deletions(-)
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+There is no longer any need for this as we have separate
+info_mask elements for raw and processed value reads.
+
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/cdc/ad7746.c                |    2 --
+ drivers/staging/iio/iio.h                       |   13 ++++++-------
+ drivers/staging/iio/impedance-analyzer/ad5933.c |    1 -
+ drivers/staging/iio/industrialio-core.c         |    5 -----
+ drivers/staging/iio/light/isl29018.c            |    1 -
+ drivers/staging/iio/light/tsl2563.c             |    1 -
+ 6 files changed, 6 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index 6c75605..750bf4b 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -142,7 +142,6 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.processed_val = IIO_PROCESSED,
+ 		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
+ 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
+ 			AD7746_VTSETUP_VTMD_INT_TEMP,
+@@ -151,7 +150,6 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+ 		.channel = 1,
+-		.processed_val = IIO_PROCESSED,
+ 		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
+ 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
+ 			AD7746_VTSETUP_VTMD_EXT_TEMP,
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index 16b6901..6770ec8 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -19,12 +19,6 @@
+  * Currently assumes nano seconds.
+  */
+ 
+-enum iio_data_type {
+-	IIO_RAW,
+-	IIO_PROCESSED,
+-};
+-
+-/* Could add the raw attributes as well - allowing buffer only devices */
+ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_RAW = 0,
+ 	IIO_CHAN_INFO_PROCESSED,
+@@ -138,11 +132,17 @@ struct iio_chan_spec_ext_info {
+  *			informative name. Note this has no effect codes etc,
+  *			unlike modifiers.
+  * @datasheet_name:	A name used in in kernel mapping of channels. It should
++<<<<<<< HEAD
+  *			correspond to the first name that the channel is referred
+  *			to by in the datasheet (e.g. IND), or the nearest
+  *			possible compound name (e.g. IND-INC).
+  * @processed_val:	Flag to specify the data access attribute should be
+  *			*_input rather than *_raw.
++=======
++ *			correspond to the first name that the channel is
++ *			referred to by in the datasheet (e.g. IND), or the
++ *			nearest	possible compound name (e.g. IND-INC).
++>>>>>>> adbde46... staging:iio: drop procesed_val element of chan_spec.
+  * @modified:		Does a modifier apply to this channel. What these are
+  *			depends on the channel type.  Modifier is set in
+  *			channel2. Examples are IIO_MOD_X for axial sensors about
+@@ -171,7 +171,6 @@ struct iio_chan_spec {
+ 	const struct iio_chan_spec_ext_info *ext_info;
+ 	const char		*extend_name;
+ 	const char		*datasheet_name;
+-	unsigned		processed_val:1;
+ 	unsigned		modified:1;
+ 	unsigned		indexed:1;
+ 	unsigned		output:1;
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 9d5738a..93e5a71 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -112,7 +112,6 @@ static struct iio_chan_spec ad5933_channels[] = {
+ 	{
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+-		.processed_val = 1,
+ 		.channel = 0,
+ 		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
+ 		.address = AD5933_REG_TEMP_DATA,
+diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
+index 20bed97..80c1b8b 100644
+--- a/drivers/staging/iio/industrialio-core.c
++++ b/drivers/staging/iio/industrialio-core.c
+@@ -42,11 +42,6 @@ EXPORT_SYMBOL(iio_bus_type);
+ 
+ static struct dentry *iio_debugfs_dentry;
+ 
+-static const char * const iio_data_type_name[] = {
+-	[IIO_RAW] = "raw",
+-	[IIO_PROCESSED] = "input",
+-};
+-
+ static const char * const iio_direction[] = {
+ 	[0] = "in",
+ 	[1] = "out",
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 350f12c..073e899 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -420,7 +420,6 @@ static const struct iio_chan_spec isl29018_channels[] = {
+ 		.type = IIO_LIGHT,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.processed_val = IIO_PROCESSED,
+ 		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
+ 	}, {
+diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
+index a334a88..a1e5cbe 100644
+--- a/drivers/staging/iio/light/tsl2563.c
++++ b/drivers/staging/iio/light/tsl2563.c
+@@ -535,7 +535,6 @@ static const struct iio_chan_spec tsl2563_channels[] = {
+ 	{
+ 		.type = IIO_LIGHT,
+ 		.indexed = 1,
+-		.processed_val = 1,
+ 		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
+ 		.channel = 0,
+ 	}, {
+-- 
+1.7.0.4
+
