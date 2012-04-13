@@ -1,55 +1,295 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:60235 "EHLO
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:60227 "EHLO
 	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932961Ab2DMJnI (ORCPT
+	with ESMTP id S932798Ab2DMJnI (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 05:43:08 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 14/14] staging:iio:core drop the IIO_CHAN macro for ease of maintenance.
-Date: Fri, 13 Apr 2012 10:43:00 +0100
-Message-Id: <1334310180-22170-15-git-send-email-jic23@kernel.org>
+Subject: [PATCH 13/14] staging:iio:meter:ade7758 unwind use of IIO_CHAN macro.
+Date: Fri, 13 Apr 2012 10:42:59 +0100
+Message-Id: <1334310180-22170-14-git-send-email-jic23@kernel.org>
 In-Reply-To: <1334310180-22170-1-git-send-email-jic23@kernel.org>
 References: <1334310180-22170-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-I was warned long ago that this macro would cause trouble but didn't
-heed the advice, hence I'm unwinding it now!
+This macro is being removed to simplify ongoing maintenance
+so we need to unwind and remaining users.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/iio.h |   17 -----------------
- 1 files changed, 0 insertions(+), 17 deletions(-)
+ drivers/staging/iio/meter/ade7758_core.c |  256 +++++++++++++++++++++++-------
+ 1 files changed, 196 insertions(+), 60 deletions(-)
 
-diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
-index 4824812..fa6fca0 100644
---- a/drivers/staging/iio/iio.h
-+++ b/drivers/staging/iio/iio.h
-@@ -176,23 +176,6 @@ struct iio_chan_spec {
- #define IIO_ST(si, rb, sb, sh)						\
- 	{ .sign = si, .realbits = rb, .storagebits = sb, .shift = sh }
+diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
+index 9374d6b..4d6bffa 100644
+--- a/drivers/staging/iio/meter/ade7758_core.c
++++ b/drivers/staging/iio/meter/ade7758_core.c
+@@ -662,66 +662,202 @@ static const struct attribute_group ade7758_attribute_group = {
+ };
  
--/* Macro assumes input channels */
--#define IIO_CHAN(_type, _mod, _indexed, _proc, _name, _chan, _chan2, \
--		 _inf_mask, _address, _si, _stype, _event_mask)		\
--	{ .type = _type,						\
--	  .output = 0,							\
--	  .modified = _mod,						\
--	  .indexed = _indexed,						\
--	  .processed_val = _proc,					\
--	  .extend_name = _name,						\
--	  .channel = _chan,						\
--	  .channel2 = _chan2,						\
--	  .info_mask = _inf_mask,					\
--	  .address = _address,						\
--	  .scan_index = _si,						\
--	  .scan_type = _stype,						\
--	  .event_mask = _event_mask }
--
- #define IIO_CHAN_SOFT_TIMESTAMP(_si)					\
- 	{ .type = IIO_TIMESTAMP, .channel = -1,				\
- 			.scan_index = _si, .scan_type = IIO_ST('s', 64, 64, 0) }
+ static struct iio_chan_spec ade7758_channels[] = {
+-	IIO_CHAN(IIO_VOLTAGE, 0, 1, 0, "raw", 0, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_A, AD7758_VOLTAGE),
+-		0, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_CURRENT, 0, 1, 0, "raw", 0, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_A, AD7758_CURRENT),
+-		1, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_POWER, 0, 1, 0, "apparent_raw", 0, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_A, AD7758_APP_PWR),
+-		2, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_POWER, 0, 1, 0, "active_raw", 0, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_A, AD7758_ACT_PWR),
+-		3, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_POWER, 0, 1, 0, "reactive_raw", 0, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_A, AD7758_REACT_PWR),
+-		4, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_VOLTAGE, 0, 1, 0, "raw", 1, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_B, AD7758_VOLTAGE),
+-		5, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_CURRENT, 0, 1, 0, "raw", 1, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_B, AD7758_CURRENT),
+-		6, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_POWER, 0, 1, 0, "apparent_raw", 1, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_B, AD7758_APP_PWR),
+-		7, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_POWER, 0, 1, 0, "active_raw", 1, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_B, AD7758_ACT_PWR),
+-		8, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_POWER, 0, 1, 0, "reactive_raw", 1, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_B, AD7758_REACT_PWR),
+-		9, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_VOLTAGE, 0, 1, 0, "raw", 2, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_C, AD7758_VOLTAGE),
+-		10, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_CURRENT, 0, 1, 0, "raw", 2, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_C, AD7758_CURRENT),
+-		11, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_POWER, 0, 1, 0, "apparent_raw", 2, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_C, AD7758_APP_PWR),
+-		12, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_POWER, 0, 1, 0, "active_raw", 2, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_C, AD7758_ACT_PWR),
+-		13, IIO_ST('s', 24, 32, 0), 0),
+-	IIO_CHAN(IIO_POWER, 0, 1, 0, "reactive_raw", 2, 0,
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		AD7758_WT(AD7758_PHASE_C, AD7758_REACT_PWR),
+-		14, IIO_ST('s', 24, 32, 0), 0),
++	{
++		.type = IIO_VOLTAGE,
++		.indexed = 1,
++		.channel = 0,
++		.extend_name = "raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_A, AD7758_VOLTAGE),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_CURRENT,
++		.indexed = 1,
++		.channel = 0,
++		.extend_name = "raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_A, AD7758_CURRENT),
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_POWER,
++		.indexed = 1,
++		.channel = 0,
++		.extend_name = "apparent_raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_A, AD7758_APP_PWR),
++		.scan_index = 2,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_POWER,
++		.indexed = 1,
++		.channel = 0,
++		.extend_name = "active_raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_A, AD7758_ACT_PWR),
++		.scan_index = 3,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_POWER,
++		.indexed = 1,
++		.channel = 0,
++		.extend_name = "reactive_raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_A, AD7758_REACT_PWR),
++		.scan_index = 4,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_VOLTAGE,
++		.indexed = 1,
++		.channel = 1,
++		.extend_name = "raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_B, AD7758_VOLTAGE),
++		.scan_index = 5,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_CURRENT,
++		.indexed = 1,
++		.channel = 1,
++		.extend_name = "raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_B, AD7758_CURRENT),
++		.scan_index = 6,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_POWER,
++		.indexed = 1,
++		.channel = 1,
++		.extend_name = "apparent_raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_B, AD7758_APP_PWR),
++		.scan_index = 7,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_POWER,
++		.indexed = 1,
++		.channel = 1,
++		.extend_name = "active_raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_B, AD7758_ACT_PWR),
++		.scan_index = 8,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_POWER,
++		.indexed = 1,
++		.channel = 1,
++		.extend_name = "reactive_raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_B, AD7758_REACT_PWR),
++		.scan_index = 9,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_VOLTAGE,
++		.indexed = 1,
++		.channel = 2,
++		.extend_name = "raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_C, AD7758_VOLTAGE),
++		.scan_index = 10,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_CURRENT,
++		.indexed = 1,
++		.channel = 2,
++		.extend_name = "raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_C, AD7758_CURRENT),
++		.scan_index = 11,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_POWER,
++		.indexed = 1,
++		.channel = 2,
++		.extend_name = "apparent_raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_C, AD7758_APP_PWR),
++		.scan_index = 12,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_POWER,
++		.indexed = 1,
++		.channel = 2,
++		.extend_name = "active_raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_C, AD7758_ACT_PWR),
++		.scan_index = 13,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	}, {
++		.type = IIO_POWER,
++		.indexed = 1,
++		.channel = 2,
++		.extend_name = "reactive_raw",
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = AD7758_WT(AD7758_PHASE_C, AD7758_REACT_PWR),
++		.scan_index = 14,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++		},
++	},
+ 	IIO_CHAN_SOFT_TIMESTAMP(15),
+ };
+ 
 -- 
 1.7.0.4
 
