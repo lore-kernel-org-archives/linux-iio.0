@@ -1,240 +1,338 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:37372 "EHLO
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:37366 "EHLO
 	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758309Ab2DMKEg (ORCPT
+	with ESMTP id S1758299Ab2DMKEg (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 06:04:36 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 05/13] staging:iio:gyro Add IIO_CHAN_INFO_RAW entries to all drivers.
-Date: Fri, 13 Apr 2012 11:04:23 +0100
-Message-Id: <1334311471-23054-6-git-send-email-jic23@kernel.org>
+Subject: [PATCH 04/13] staging:iio:dac Add IIO_CHAN_INFO_RAW entries to all drivers.
+Date: Fri, 13 Apr 2012 11:04:22 +0100
+Message-Id: <1334311471-23054-5-git-send-email-jic23@kernel.org>
 In-Reply-To: <1334311471-23054-1-git-send-email-jic23@kernel.org>
 References: <1334311471-23054-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 Precursor to making value read / write attribute optional.
-No processed values in gyroscopes.
+No processed versions in DACs.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/gyro/adis16060_core.c |    8 ++++++--
- drivers/staging/iio/gyro/adis16080_core.c |    6 +++++-
- drivers/staging/iio/gyro/adis16130_core.c |    2 ++
- drivers/staging/iio/gyro/adis16260_core.c |   15 ++++++++++-----
- drivers/staging/iio/gyro/adxrs450_core.c  |   14 +++++++++-----
- 5 files changed, 32 insertions(+), 13 deletions(-)
+ drivers/staging/iio/dac/ad5064.c      |    7 ++++---
+ drivers/staging/iio/dac/ad5360.c      |    7 ++++---
+ drivers/staging/iio/dac/ad5380.c      |    7 ++++---
+ drivers/staging/iio/dac/ad5421.c      |    7 ++++---
+ drivers/staging/iio/dac/ad5446.c      |    5 +++--
+ drivers/staging/iio/dac/ad5504.c      |    7 ++++---
+ drivers/staging/iio/dac/ad5624r_spi.c |    5 +++--
+ drivers/staging/iio/dac/ad5686.c      |    7 ++++---
+ drivers/staging/iio/dac/ad5764.c      |    7 ++++---
+ drivers/staging/iio/dac/ad5791.c      |    7 ++++---
+ 10 files changed, 38 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/staging/iio/gyro/adis16060_core.c b/drivers/staging/iio/gyro/adis16060_core.c
-index 02cc234..2f841cb 100644
---- a/drivers/staging/iio/gyro/adis16060_core.c
-+++ b/drivers/staging/iio/gyro/adis16060_core.c
-@@ -85,7 +85,7 @@ static int adis16060_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
+index 06b1627..21893ed 100644
+--- a/drivers/staging/iio/dac/ad5064.c
++++ b/drivers/staging/iio/dac/ad5064.c
+@@ -235,7 +235,7 @@ static int ad5064_read_raw(struct iio_dev *indio_dev,
+ 	int scale_uv;
+ 
+ 	switch (m) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		*val = st->dac_cache[chan->channel];
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+@@ -260,7 +260,7 @@ static int ad5064_write_raw(struct iio_dev *indio_dev,
  	int ret;
  
  	switch (mask) {
 -	case 0:
 +	case IIO_CHAN_INFO_RAW:
- 		/* Take the iio_dev status lock */
- 		mutex_lock(&indio_dev->mlock);
- 		ret = adis16060_spi_write(indio_dev, chan->address);
-@@ -120,22 +120,26 @@ static const struct iio_chan_spec adis16060_channels[] = {
- 		.type = IIO_ANGL_VEL,
- 		.modified = 1,
- 		.channel2 = IIO_MOD_Z,
-+		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
- 		.address = ADIS16060_GYRO,
- 	}, {
- 		.type = IIO_VOLTAGE,
+ 		if (val > (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+@@ -308,7 +308,8 @@ static struct iio_chan_spec_ext_info ad5064_ext_info[] = {
+ 	.indexed = 1,						\
+ 	.output = 1,						\
+ 	.channel = (chan),					\
+-	.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,	\
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
++	IIO_CHAN_INFO_SCALE_SEPARATE_BIT,			\
+ 	.address = AD5064_ADDR_DAC(chan),			\
+ 	.scan_type = IIO_ST('u', (bits), 16, 20 - (bits)),	\
+ 	.ext_info = ad5064_ext_info,				\
+diff --git a/drivers/staging/iio/dac/ad5360.c b/drivers/staging/iio/dac/ad5360.c
+index cec3693..cb6160d 100644
+--- a/drivers/staging/iio/dac/ad5360.c
++++ b/drivers/staging/iio/dac/ad5360.c
+@@ -103,7 +103,8 @@ enum ad5360_type {
+ 	.type = IIO_VOLTAGE,					\
+ 	.indexed = 1,						\
+ 	.output = 1,						\
+-	.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT |	\
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |		\
+ 		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |		\
+ 		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |	\
+ 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,	\
+@@ -319,7 +320,7 @@ static int ad5360_write_raw(struct iio_dev *indio_dev,
+ 	unsigned int ofs_index;
+ 
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		if (val >= max_val || val < 0)
+ 			return -EINVAL;
+ 
+@@ -376,7 +377,7 @@ static int ad5360_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	switch (m) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		ret = ad5360_read(indio_dev, AD5360_READBACK_X1A,
+ 			chan->address);
+ 		if (ret < 0)
+diff --git a/drivers/staging/iio/dac/ad5380.c b/drivers/staging/iio/dac/ad5380.c
+index 4c50716..1d384f0 100644
+--- a/drivers/staging/iio/dac/ad5380.c
++++ b/drivers/staging/iio/dac/ad5380.c
+@@ -85,7 +85,8 @@ enum ad5380_type {
+ 	.type = IIO_VOLTAGE,					\
+ 	.indexed = 1,						\
+ 	.output = 1,						\
+-	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |		\
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_SCALE_SHARED_BIT |		\
+ 		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
+ 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
+ 	.scan_type = IIO_ST('u', (_bits), 16, 14 - (_bits))	\
+@@ -292,7 +293,7 @@ static int ad5380_write_raw(struct iio_dev *indio_dev,
+ 	struct ad5380_state *st = iio_priv(indio_dev);
+ 
+ 	switch (info) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 	case IIO_CHAN_INFO_CALIBSCALE:
+ 		if (val >= max_val || val < 0)
+ 			return -EINVAL;
+@@ -322,7 +323,7 @@ static int ad5380_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	switch (info) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 	case IIO_CHAN_INFO_CALIBSCALE:
+ 		ret = regmap_read(st->regmap, ad5380_info_to_reg(chan, info),
+ 					val);
+diff --git a/drivers/staging/iio/dac/ad5421.c b/drivers/staging/iio/dac/ad5421.c
+index 0b040b2..a8b5211 100644
+--- a/drivers/staging/iio/dac/ad5421.c
++++ b/drivers/staging/iio/dac/ad5421.c
+@@ -87,7 +87,8 @@ static const struct iio_chan_spec ad5421_channels[] = {
  		.indexed = 1,
+ 		.output = 1,
  		.channel = 0,
-+		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
- 		.address = ADIS16060_AIN1,
- 	}, {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 1,
-+		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
- 		.address = ADIS16060_AIN2,
- 	}, {
- 		.type = IIO_TEMP,
- 		.indexed = 1,
- 		.channel = 0,
--		.info_mask = IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
 +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-+		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
- 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
- 		.address = ADIS16060_TEMP_OUT,
- 	}
-diff --git a/drivers/staging/iio/gyro/adis16080_core.c b/drivers/staging/iio/gyro/adis16080_core.c
-index 1815490..608b93d 100644
---- a/drivers/staging/iio/gyro/adis16080_core.c
-+++ b/drivers/staging/iio/gyro/adis16080_core.c
-@@ -87,7 +87,7 @@ static int adis16080_read_raw(struct iio_dev *indio_dev,
++			IIO_CHAN_INFO_SCALE_SHARED_BIT |
+ 			IIO_CHAN_INFO_OFFSET_SHARED_BIT |
+ 			IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
+@@ -304,7 +305,7 @@ static int ad5421_read_raw(struct iio_dev *indio_dev,
+ 		return -EINVAL;
  
- 	mutex_lock(&indio_dev->mlock);
+ 	switch (m) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		ret = ad5421_read(indio_dev, AD5421_REG_DAC_DATA);
+ 		if (ret < 0)
+ 			return ret;
+@@ -340,7 +341,7 @@ static int ad5421_write_raw(struct iio_dev *indio_dev,
+ 	const unsigned int max_val = 1 << 16;
+ 
  	switch (mask) {
 -	case 0:
 +	case IIO_CHAN_INFO_RAW:
- 		ret = adis16080_spi_write(indio_dev,
- 					  chan->address |
- 					  ADIS16080_DIN_WRITE);
-@@ -110,21 +110,25 @@ static const struct iio_chan_spec adis16080_channels[] = {
- 		.type = IIO_ANGL_VEL,
- 		.modified = 1,
- 		.channel2 = IIO_MOD_Z,
-+		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
- 		.address = ADIS16080_DIN_GYRO,
- 	}, {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 0,
-+		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
- 		.address = ADIS16080_DIN_AIN1,
- 	}, {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 1,
-+		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
- 		.address = ADIS16080_DIN_AIN2,
- 	}, {
- 		.type = IIO_TEMP,
- 		.indexed = 1,
- 		.channel = 0,
-+		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
- 		.address = ADIS16080_DIN_TEMP,
- 	}
- };
-diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
-index 947eb86..257bdf2 100644
---- a/drivers/staging/iio/gyro/adis16130_core.c
-+++ b/drivers/staging/iio/gyro/adis16130_core.c
-@@ -100,11 +100,13 @@ static const struct iio_chan_spec adis16130_channels[] = {
- 		.type = IIO_ANGL_VEL,
- 		.modified = 1,
- 		.channel2 = IIO_MOD_Z,
-+		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
- 		.address = ADIS16130_RATEDATA,
- 	}, {
- 		.type = IIO_TEMP,
- 		.indexed = 1,
- 		.channel = 0,
-+		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
- 		.address = ADIS16130_TEMPDATA,
- 	}
- };
-diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-index 92f024e..bb23018 100644
---- a/drivers/staging/iio/gyro/adis16260_core.c
-+++ b/drivers/staging/iio/gyro/adis16260_core.c
-@@ -393,7 +393,8 @@ enum adis16260_channel {
- 			.type = IIO_ANGL_VEL,				\
- 			.modified = 1,					\
- 			.channel2 = mod,				\
--			.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT | \
-+			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
-+			IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |		\
- 			IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
- 			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,		\
- 			.address = gyro,				\
-@@ -407,6 +408,7 @@ enum adis16260_channel {
- 			.type = IIO_ANGL,				\
- 			.modified = 1,					\
- 			.channel2 = mod,				\
-+			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,	\
- 			.address = angle,				\
- 			.scan_index = ADIS16260_SCAN_ANGL,		\
- 			.scan_type = {					\
-@@ -418,7 +420,8 @@ enum adis16260_channel {
- 			.type = IIO_TEMP,				\
- 			.indexed = 1,					\
- 			.channel = 0,					\
--			.info_mask = IIO_CHAN_INFO_OFFSET_SEPARATE_BIT | \
-+			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
-+			IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |		\
- 			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,		\
- 			.address = temp,				\
- 			.scan_index = ADIS16260_SCAN_TEMP,		\
-@@ -432,7 +435,8 @@ enum adis16260_channel {
- 			.indexed = 1,					\
- 			.channel = 0,					\
- 			.extend_name = "supply",			\
--			.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,	\
-+			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
-+			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,		\
- 			.address = in_supply,				\
- 			.scan_index = ADIS16260_SCAN_SUPPLY,		\
- 			.scan_type = {					\
-@@ -444,7 +448,8 @@ enum adis16260_channel {
- 			.type = IIO_VOLTAGE,				\
- 			.indexed = 1,					\
- 			.channel = 1,					\
--			.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,	\
-+			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
-+			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,		\
- 			.address = in_aux,				\
- 			.scan_index = ADIS16260_SCAN_AUX_ADC,		\
- 			.scan_type = {					\
-@@ -481,7 +486,7 @@ static int adis16260_read_raw(struct iio_dev *indio_dev,
- 	s16 val16;
+ 		if (val >= max_val || val < 0)
+ 			return -EINVAL;
+ 
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index 633ffbb..ec6968b 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -158,7 +158,8 @@ static const struct attribute_group ad5446_attribute_group = {
+ 	.indexed = 1, \
+ 	.output = 1, \
+ 	.channel = 0, \
+-	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT, \
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
++	IIO_CHAN_INFO_SCALE_SHARED_BIT,	\
+ 	.scan_type = IIO_ST('u', (bits), (storage), (shift)) \
+ }
+ 
+@@ -274,7 +275,7 @@ static int ad5446_write_raw(struct iio_dev *indio_dev,
+ 	int ret;
  
  	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
+index bc17205..796691e 100644
+--- a/drivers/staging/iio/dac/ad5504.c
++++ b/drivers/staging/iio/dac/ad5504.c
+@@ -27,7 +27,8 @@
+ 	.indexed = 1, \
+ 	.output = 1, \
+ 	.channel = (_chan), \
+-	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT, \
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
++		     IIO_CHAN_INFO_SCALE_SHARED_BIT, \
+ 	.address = AD5504_ADDR_DAC(_chan), \
+ 	.scan_type = IIO_ST('u', 12, 16, 0), \
+ }
+@@ -81,7 +82,7 @@ static int ad5504_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	switch (m) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		ret = ad5504_spi_read(st->spi, chan->address);
+ 		if (ret < 0)
+ 			return ret;
+@@ -109,7 +110,7 @@ static int ad5504_write_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
+index 10c7484..74eb889 100644
+--- a/drivers/staging/iio/dac/ad5624r_spi.c
++++ b/drivers/staging/iio/dac/ad5624r_spi.c
+@@ -26,7 +26,8 @@
+ 	.indexed = 1, \
+ 	.output = 1, \
+ 	.channel = (_chan), \
+-	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT, \
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
++		     IIO_CHAN_INFO_SCALE_SHARED_BIT, \
+ 	.address = (_chan), \
+ 	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits)), \
+ }
+@@ -122,7 +123,7 @@ static int ad5624r_write_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+diff --git a/drivers/staging/iio/dac/ad5686.c b/drivers/staging/iio/dac/ad5686.c
+index 2415a6e..b8acd7e 100644
+--- a/drivers/staging/iio/dac/ad5686.c
++++ b/drivers/staging/iio/dac/ad5686.c
+@@ -98,7 +98,8 @@ enum ad5686_supported_device_ids {
+ 		.indexed = 1,					\
+ 		.output = 1,					\
+ 		.channel = chan,				\
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,	\
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
++		IIO_CHAN_INFO_SCALE_SHARED_BIT,			\
+ 		.address = AD5686_ADDR_DAC(chan),			\
+ 		.scan_type = IIO_ST('u', bits, 16, shift)	\
+ }
+@@ -296,7 +297,7 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	switch (m) {
 -	case 0:
 +	case IIO_CHAN_INFO_RAW:
  		mutex_lock(&indio_dev->mlock);
- 		addr = adis16260_addresses[chan->address][0];
- 		ret = adis16260_spi_read_reg_16(indio_dev, addr, &val16);
-diff --git a/drivers/staging/iio/gyro/adxrs450_core.c b/drivers/staging/iio/gyro/adxrs450_core.c
-index 15e2496..1293505 100644
---- a/drivers/staging/iio/gyro/adxrs450_core.c
-+++ b/drivers/staging/iio/gyro/adxrs450_core.c
-@@ -265,7 +265,7 @@ static int adxrs450_read_raw(struct iio_dev *indio_dev,
- 	s16 t;
+ 		ret = ad5686_spi_read(st, chan->address);
+ 		mutex_unlock(&indio_dev->mlock);
+@@ -326,7 +327,7 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
+ 	int ret;
  
  	switch (mask) {
 -	case 0:
 +	case IIO_CHAN_INFO_RAW:
- 		switch (chan->type) {
- 		case IIO_ANGL_VEL:
- 			ret = adxrs450_spi_sensor_data(indio_dev, &t);
-@@ -329,14 +329,16 @@ static const struct iio_chan_spec adxrs450_channels[2][2] = {
- 			.type = IIO_ANGL_VEL,
- 			.modified = 1,
- 			.channel2 = IIO_MOD_Z,
--			.info_mask = IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
-+			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-+			IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
- 			IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SEPARATE_BIT |
- 			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
- 		}, {
- 			.type = IIO_TEMP,
- 			.indexed = 1,
- 			.channel = 0,
--			.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-+			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-+			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
- 		}
- 	},
- 	[ID_ADXRS453] = {
-@@ -344,13 +346,15 @@ static const struct iio_chan_spec adxrs450_channels[2][2] = {
- 			.type = IIO_ANGL_VEL,
- 			.modified = 1,
- 			.channel2 = IIO_MOD_Z,
--			.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
-+			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-+			IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
- 			IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SEPARATE_BIT,
- 		}, {
- 			.type = IIO_TEMP,
- 			.indexed = 1,
- 			.channel = 0,
--			.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-+			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-+			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
- 		}
- 	},
- };
+ 		if (val > (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+diff --git a/drivers/staging/iio/dac/ad5764.c b/drivers/staging/iio/dac/ad5764.c
+index f73a730..1c9ff4f 100644
+--- a/drivers/staging/iio/dac/ad5764.c
++++ b/drivers/staging/iio/dac/ad5764.c
+@@ -79,7 +79,8 @@ enum ad5764_type {
+ 	.output = 1,						\
+ 	.channel = (_chan),					\
+ 	.address = (_chan),					\
+-	.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |		\
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_OFFSET_SHARED_BIT |		\
+ 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |		\
+ 		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
+ 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
+@@ -188,7 +189,7 @@ static int ad5764_write_raw(struct iio_dev *indio_dev,
+ 	unsigned int reg;
+ 
+ 	switch (info) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		if (val >= max_val || val < 0)
+ 			return -EINVAL;
+ 		val <<= chan->scan_type.shift;
+@@ -228,7 +229,7 @@ static int ad5764_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	switch (info) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		reg = AD5764_REG_DATA(chan->address);
+ 		ret = ad5764_read(indio_dev, reg, val);
+ 		if (ret < 0)
+diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
+index ac45636..cdb7b10 100644
+--- a/drivers/staging/iio/dac/ad5791.c
++++ b/drivers/staging/iio/dac/ad5791.c
+@@ -78,7 +78,8 @@ static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
+ 	.indexed = 1,					\
+ 	.address = AD5791_ADDR_DAC0,			\
+ 	.channel = 0,					\
+-	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT | \
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
++		IIO_CHAN_INFO_SCALE_SHARED_BIT |	\
+ 		IIO_CHAN_INFO_OFFSET_SHARED_BIT,	\
+ 	.scan_type = IIO_ST('u', bits, 24, shift)	\
+ }
+@@ -231,7 +232,7 @@ static int ad5791_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	switch (m) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		ret = ad5791_spi_read(st->spi, chan->address, val);
+ 		if (ret)
+ 			return ret;
+@@ -263,7 +264,7 @@ static int ad5791_write_raw(struct iio_dev *indio_dev,
+ 	struct ad5791_state *st = iio_priv(indio_dev);
+ 
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		val &= AD5791_RES_MASK(chan->scan_type.realbits);
+ 		val <<= chan->scan_type.shift;
+ 
 -- 
 1.7.0.4
 
