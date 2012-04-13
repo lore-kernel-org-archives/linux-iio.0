@@ -1,14 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-152.synserver.de ([212.40.185.152]:1040 "EHLO
+Received: from smtp-out-152.synserver.de ([212.40.185.152]:1115 "EHLO
 	smtp-out-147.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752819Ab2DMOta (ORCPT
+	by vger.kernel.org with ESMTP id S1752727Ab2DMOta (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 10:49:30 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/2] staging:iio: Add IIO_CHAN_INFO_RAW entries to the dummy driver
-Date: Fri, 13 Apr 2012 16:51:08 +0200
-Message-Id: <1334328669-31201-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH 2/2] staging:iio:meter Add IIO_CHAN_INFO_RAW entries to all drivers.
+Date: Fri, 13 Apr 2012 16:51:09 +0200
+Message-Id: <1334328669-31201-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1334328669-31201-1-git-send-email-lars@metafoo.de>
+References: <1334328669-31201-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -17,81 +19,163 @@ No processed values in resolvers at the moment.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/iio_simple_dummy.c |   19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ drivers/staging/iio/meter/ade7758_core.c |   45 ++++++++++++++++++++----------
+ 1 file changed, 30 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
-index e3a9457..dbeb04c 100644
---- a/drivers/staging/iio/iio_simple_dummy.c
-+++ b/drivers/staging/iio/iio_simple_dummy.c
-@@ -73,6 +73,12 @@ static struct iio_chan_spec iio_dummy_channels[] = {
- 		/* What other information is available? */
- 		.info_mask =
- 		/*
-+		 * in_voltage0_raw
-+		 * Raw (unscaled no bias removal etc) measurement
-+		 * from the device.
-+		 */
-+		IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-+		/*
- 		 * in_voltage0_offset
- 		 * Offset for userspace to apply prior to scale
- 		 * when converting to standard units (microvolts)
-@@ -114,6 +120,12 @@ static struct iio_chan_spec iio_dummy_channels[] = {
- 		.channel2 = 2,
- 		.info_mask =
- 		/*
-+		 * in_voltage1-voltage2_raw
-+		 * Raw (unscaled no bias removal etc) measurement
-+		 * from the device.
-+		 */
-+		IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-+		/*
- 		 * in_voltage-voltage_scale
- 		 * Shared version of scale - shared by differential
- 		 * input channels of type IIO_VOLTAGE.
-@@ -135,6 +147,7 @@ static struct iio_chan_spec iio_dummy_channels[] = {
- 		.channel = 3,
- 		.channel2 = 4,
- 		.info_mask =
-+		IIO_CHAN_INFO_RAW_SEPARATE_BIT |
- 		IIO_CHAN_INFO_SCALE_SHARED_BIT,
- 		.scan_index = diffvoltage3m4,
- 		.scan_type = {
-@@ -154,6 +167,7 @@ static struct iio_chan_spec iio_dummy_channels[] = {
- 		/* Channel 2 is use for modifiers */
- 		.channel2 = IIO_MOD_X,
- 		.info_mask =
-+		IIO_CHAN_INFO_RAW_SEPARATE_BIT |
- 		/*
- 		 * Internal bias correction value. Applied
- 		 * by the hardware or driver prior to userspace
-@@ -177,6 +191,7 @@ static struct iio_chan_spec iio_dummy_channels[] = {
- 	/* DAC channel out_voltage0_raw */
- 	{
- 		.type = IIO_VOLTAGE,
-+		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
- 		.output = 1,
+diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
+index 4d6bffa..729c033 100644
+--- a/drivers/staging/iio/meter/ade7758_core.c
++++ b/drivers/staging/iio/meter/ade7758_core.c
+@@ -667,7 +667,8 @@ static struct iio_chan_spec ade7758_channels[] = {
  		.indexed = 1,
  		.channel = 0,
-@@ -203,7 +218,7 @@ static int iio_dummy_read_raw(struct iio_dev *indio_dev,
- 
- 	mutex_lock(&st->lock);
- 	switch (mask) {
--	case 0: /* magic value - channel value read */
-+	case IIO_CHAN_INFO_RAW: /* magic value - channel value read */
- 		switch (chan->type) {
- 		case IIO_VOLTAGE:
- 			if (chan->output) {
-@@ -290,7 +305,7 @@ static int iio_dummy_write_raw(struct iio_dev *indio_dev,
- 	struct iio_dummy_state *st = iio_priv(indio_dev);
- 
- 	switch (mask) {
--	case 0:
-+	case IIO_CHAN_INFO_RAW:
- 		if (chan->output == 0)
- 			return -EINVAL;
- 
+ 		.extend_name = "raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_A, AD7758_VOLTAGE),
+ 		.scan_index = 0,
+ 		.scan_type = {
+@@ -680,7 +681,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.extend_name = "raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_A, AD7758_CURRENT),
+ 		.scan_index = 1,
+ 		.scan_type = {
+@@ -693,7 +695,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.extend_name = "apparent_raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_A, AD7758_APP_PWR),
+ 		.scan_index = 2,
+ 		.scan_type = {
+@@ -706,7 +709,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.extend_name = "active_raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_A, AD7758_ACT_PWR),
+ 		.scan_index = 3,
+ 		.scan_type = {
+@@ -719,7 +723,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.extend_name = "reactive_raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_A, AD7758_REACT_PWR),
+ 		.scan_index = 4,
+ 		.scan_type = {
+@@ -732,7 +737,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 1,
+ 		.extend_name = "raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_B, AD7758_VOLTAGE),
+ 		.scan_index = 5,
+ 		.scan_type = {
+@@ -745,7 +751,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 1,
+ 		.extend_name = "raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_B, AD7758_CURRENT),
+ 		.scan_index = 6,
+ 		.scan_type = {
+@@ -758,7 +765,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 1,
+ 		.extend_name = "apparent_raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_B, AD7758_APP_PWR),
+ 		.scan_index = 7,
+ 		.scan_type = {
+@@ -771,7 +779,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 1,
+ 		.extend_name = "active_raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_B, AD7758_ACT_PWR),
+ 		.scan_index = 8,
+ 		.scan_type = {
+@@ -784,7 +793,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 1,
+ 		.extend_name = "reactive_raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_B, AD7758_REACT_PWR),
+ 		.scan_index = 9,
+ 		.scan_type = {
+@@ -797,7 +807,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 2,
+ 		.extend_name = "raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_C, AD7758_VOLTAGE),
+ 		.scan_index = 10,
+ 		.scan_type = {
+@@ -810,7 +821,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 2,
+ 		.extend_name = "raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_C, AD7758_CURRENT),
+ 		.scan_index = 11,
+ 		.scan_type = {
+@@ -823,7 +835,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 2,
+ 		.extend_name = "apparent_raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_C, AD7758_APP_PWR),
+ 		.scan_index = 12,
+ 		.scan_type = {
+@@ -836,7 +849,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 2,
+ 		.extend_name = "active_raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_C, AD7758_ACT_PWR),
+ 		.scan_index = 13,
+ 		.scan_type = {
+@@ -849,7 +863,8 @@ static struct iio_chan_spec ade7758_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 2,
+ 		.extend_name = "reactive_raw",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			     IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7758_WT(AD7758_PHASE_C, AD7758_REACT_PWR),
+ 		.scan_index = 14,
+ 		.scan_type = {
 -- 
 1.7.9.5
 
