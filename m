@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:60159 "EHLO
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:60163 "EHLO
 	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934476Ab2DMJnH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 05:43:07 -0400
+	with ESMTP id S934357Ab2DMJnG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 05:43:06 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 03/14] staging:iio:accel:adis16204 unwind use of IIO_CHAN macro.
-Date: Fri, 13 Apr 2012 10:42:49 +0100
-Message-Id: <1334310180-22170-4-git-send-email-jic23@kernel.org>
+Subject: [PATCH 02/14] staging:iio:accel:adis16203 unwind use of IIO_CHAN macro.
+Date: Fri, 13 Apr 2012 10:42:48 +0100
+Message-Id: <1334310180-22170-3-git-send-email-jic23@kernel.org>
 In-Reply-To: <1334310180-22170-1-git-send-email-jic23@kernel.org>
 References: <1334310180-22170-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -17,57 +17,51 @@ List-Id: linux-iio@vger.kernel.org
 This macro is being removed to simplify ongoing maintenance
 so we need to unwind and remaining users.
 
-Note that previously the supply was not indexed. I have made
-it indexed for consistency with other similar devices and
-for internal consistency with the aux adc port.
-
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 Acked-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/accel/adis16204_core.c |   92 ++++++++++++++++++++--------
- 1 files changed, 67 insertions(+), 25 deletions(-)
+ drivers/staging/iio/accel/adis16203_core.c |   87 ++++++++++++++++++++-------
+ 1 files changed, 64 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
-index fa89364..fdf31f1 100644
---- a/drivers/staging/iio/accel/adis16204_core.c
-+++ b/drivers/staging/iio/accel/adis16204_core.c
-@@ -444,31 +444,73 @@ static int adis16204_write_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
+index 1a5140f..b50f04d 100644
+--- a/drivers/staging/iio/accel/adis16203_core.c
++++ b/drivers/staging/iio/accel/adis16203_core.c
+@@ -372,29 +372,70 @@ static int adis16203_read_raw(struct iio_dev *indio_dev,
  }
  
- static struct iio_chan_spec adis16204_channels[] = {
--	IIO_CHAN(IIO_VOLTAGE, 0, 0, 0, "supply", 0, 0,
+ static struct iio_chan_spec adis16203_channels[] = {
+-	IIO_CHAN(IIO_VOLTAGE, 0, 1, 0, "supply", 0, 0,
 -		 IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
--		 in_supply, ADIS16204_SCAN_SUPPLY,
+-		 in_supply, ADIS16203_SCAN_SUPPLY,
 -		 IIO_ST('u', 12, 16, 0), 0),
 -	IIO_CHAN(IIO_VOLTAGE, 0, 1, 0, NULL, 1, 0,
 -		 IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
--		 in_aux, ADIS16204_SCAN_AUX_ADC,
+-		 in_aux, ADIS16203_SCAN_AUX_ADC,
 -		 IIO_ST('u', 12, 16, 0), 0),
+-	IIO_CHAN(IIO_INCLI, 1, 0, 0, NULL, 0, IIO_MOD_X,
+-		 IIO_CHAN_INFO_SCALE_SHARED_BIT |
+-		 IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
+-		 incli_x, ADIS16203_SCAN_INCLI_X,
+-		 IIO_ST('s', 14, 16, 0), 0),
+-	/* Fixme: Not what it appears to be - see data sheet */
+-	IIO_CHAN(IIO_INCLI, 1, 0, 0, NULL, 0, IIO_MOD_Y,
+-		 IIO_CHAN_INFO_SCALE_SHARED_BIT,
+-		 incli_y, ADIS16203_SCAN_INCLI_Y,
+-		 IIO_ST('s', 14, 16, 0), 0),
 -	IIO_CHAN(IIO_TEMP, 0, 1, 0, NULL, 0, 0,
 -		 IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
 -		 IIO_CHAN_INFO_OFFSET_SEPARATE_BIT,
--		 temp, ADIS16204_SCAN_TEMP,
+-		 temp, ADIS16203_SCAN_TEMP,
 -		 IIO_ST('u', 12, 16, 0), 0),
--	IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_X,
--		 IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
--		 IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
--		 IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
--		 accel_x, ADIS16204_SCAN_ACC_X,
--		 IIO_ST('s', 14, 16, 0), 0),
--	IIO_CHAN(IIO_ACCEL, 1, 0, 0, NULL, 0, IIO_MOD_Y,
--		 IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
--		 IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
--		 IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
--		 accel_y, ADIS16204_SCAN_ACC_Y,
--		 IIO_ST('s', 14, 16, 0), 0),
 +	{
 +		.type = IIO_VOLTAGE,
-+		.indexed = 1, /* Note was not previously indexed */
++		.indexed = 1,
 +		.channel = 0,
 +		.extend_name = "supply",
 +		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
 +		.address = in_supply,
-+		.scan_index = ADIS16204_SCAN_SUPPLY,
++		.scan_index = ADIS16203_SCAN_SUPPLY,
 +		.scan_type = {
 +			.sign = 'u',
 +			.realbits = 12,
@@ -79,10 +73,35 @@ index fa89364..fdf31f1 100644
 +		.channel = 1,
 +		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
 +		.address = in_aux,
-+		.scan_index = ADIS16204_SCAN_AUX_ADC,
++		.scan_index = ADIS16203_SCAN_AUX_ADC,
 +		.scan_type = {
 +			.sign = 'u',
 +			.realbits = 12,
++			.storagebits = 16,
++		},
++	}, {
++		.type = IIO_INCLI,
++		.modified = 1,
++		.channel2 = IIO_MOD_X,
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
++		.address = incli_x,
++		.scan_index = ADIS16203_SCAN_INCLI_X,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 14,
++			.storagebits = 16,
++		},
++	}, { /* Fixme: Not what it appears to be - see data sheet */
++		.type = IIO_INCLI,
++		.modified = 1,
++		.channel2 = IIO_MOD_Y,
++		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.address = incli_y,
++		.scan_index = ADIS16203_SCAN_INCLI_Y,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 14,
 +			.storagebits = 16,
 +		},
 +	}, {
@@ -92,38 +111,10 @@ index fa89364..fdf31f1 100644
 +		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
 +		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT,
 +		.address = temp,
-+		.scan_index = ADIS16204_SCAN_TEMP,
++		.scan_index = ADIS16203_SCAN_TEMP,
 +		.scan_type = {
 +			.sign = 'u',
 +			.realbits = 12,
-+			.storagebits = 16,
-+		},
-+	}, {
-+		.type = IIO_ACCEL,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_X,
-+		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
-+		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
-+		IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
-+		.address = accel_x,
-+		.scan_index = ADIS16204_SCAN_ACC_X,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 14,
-+			.storagebits = 16,
-+		},
-+	}, {
-+		.type = IIO_ACCEL,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_Y,
-+		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
-+		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
-+		IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
-+		.address = accel_y,
-+		.scan_index = ADIS16204_SCAN_ACC_Y,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 14,
 +			.storagebits = 16,
 +		},
 +	},
