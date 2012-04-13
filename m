@@ -1,13 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate03.nvidia.com ([216.228.121.140]:15644 "EHLO
-	hqemgate03.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932087Ab2DMKAL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 06:00:11 -0400
-Message-ID: <4F87F662.7040204@nvidia.com>
-Date: Fri, 13 Apr 2012 15:18:18 +0530
-From: Laxman Dewangan <ldewangan@nvidia.com>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:47758 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S934800Ab2DMKFo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 06:05:44 -0400
+Message-ID: <4F87FA6D.7080700@cam.ac.uk>
+Date: Fri, 13 Apr 2012 11:05:33 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
+To: Laxman Dewangan <ldewangan@nvidia.com>
 CC: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
 	"grant.likely@secretlab.ca" <grant.likely@secretlab.ca>,
 	"rob.herring@calxeda.com" <rob.herring@calxeda.com>,
@@ -19,59 +19,68 @@ CC: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
 	"devicetree-discuss@lists.ozlabs.org"
 	<devicetree-discuss@lists.ozlabs.org>
 Subject: Re: [PATCH V4 2/2] staging: iio: add driver for isl29028
-References: <1334239266-29505-1-git-send-email-ldewangan@nvidia.com> <1334239266-29505-3-git-send-email-ldewangan@nvidia.com> <4F86E7F9.7000303@cam.ac.uk>
-In-Reply-To: <4F86E7F9.7000303@cam.ac.uk>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+References: <1334239266-29505-1-git-send-email-ldewangan@nvidia.com> <1334239266-29505-3-git-send-email-ldewangan@nvidia.com> <4F86E7F9.7000303@cam.ac.uk> <4F87F662.7040204@nvidia.com>
+In-Reply-To: <4F87F662.7040204@nvidia.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thursday 12 April 2012 08:04 PM, Jonathan Cameron wrote:
-> On 4/12/2012 3:01 PM, Laxman Dewangan wrote:
->> Intersil's ISL29028 is concurrent Ambient Light and
->> Proximity Sensor device.
->> Add driver to access the light and IR intensity and
->> proximity value via iio interface.
-> Very nearly there.  The available attributes need to match naming
-> of what they are providing values for. (we need a better way of handling
-> these but that's a job for another day).
+On 4/13/2012 10:48 AM, Laxman Dewangan wrote:
+> On Thursday 12 April 2012 08:04 PM, Jonathan Cameron wrote:
+>> On 4/12/2012 3:01 PM, Laxman Dewangan wrote:
+>>> Intersil's ISL29028 is concurrent Ambient Light and
+>>> Proximity Sensor device.
+>>> Add driver to access the light and IR intensity and
+>>> proximity value via iio interface.
+>> Very nearly there.  The available attributes need to match naming
+>> of what they are providing values for. (we need a better way of handling
+>> these but that's a job for another day).
+>>
+>> Otherwise, all good.
 >
-> Otherwise, all good.
-
-Fine, I will do change.
-
->> +     mutex_unlock(&chip->lock);
->> +     return ret;
->> +}
->> +
->> +static IIO_CONST_ATTR(proximity_sampling_frequency_available,
->> +                             "1, 3, 5, 10, 13, 20, 83, 100");
->> +static IIO_CONST_ATTR(illuminance_scale_available, "125, 2000");
->> +
->> +#define ISL29028_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
->> +#define ISL29028_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
->> +static struct attribute *isl29028_attributes[] = {
->> +     ISL29028_CONST_ATTR(proximity_sampling_frequency_available),
-> tiny disconnect now that you have in_proximity0_sampling frequency, this
-> should be in_proximity0_sampling_frequency_available
+> Fine, I will do change.
 >
-
-I saw the attribute appear as
-in_illuminance_input
-in_illuminance_scale
-in_intensity_raw
-in_proximity_raw
-in_proximity_sampling_frequency
-
-
-As I have not set  the .indexed to non-zero,  I will go as non-indexd 
-name like
-in_proximity_sampling_frequency_available.
-
->> +     ISL29028_CONST_ATTR(illuminance_scale_available),
-> snap here (sorry, missed that last time).
+>>> +     mutex_unlock(&chip->lock);
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static IIO_CONST_ATTR(proximity_sampling_frequency_available,
+>>> +                             "1, 3, 5, 10, 13, 20, 83, 100");
+>>> +static IIO_CONST_ATTR(illuminance_scale_available, "125, 2000");
+>>> +
+>>> +#define ISL29028_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+>>> +#define ISL29028_CONST_ATTR(name) 
+>>> (&iio_const_attr_##name.dev_attr.attr)
+>>> +static struct attribute *isl29028_attributes[] = {
+>>> +     ISL29028_CONST_ATTR(proximity_sampling_frequency_available),
+>> tiny disconnect now that you have in_proximity0_sampling frequency, this
+>> should be in_proximity0_sampling_frequency_available
+>>
 >
-> in_illuminance0_scale_available
+> I saw the attribute appear as
+> in_illuminance_input
+> in_illuminance_scale
+> in_intensity_raw
+> in_proximity_raw
+> in_proximity_sampling_frequency
 >
-
-I think should be in_illuminance_scale_available
+>
+> As I have not set  the .indexed to non-zero,  I will go as non-indexd 
+> name like
+> in_proximity_sampling_frequency_available.
+Fair enough.
+>
+>>> +     ISL29028_CONST_ATTR(illuminance_scale_available),
+>> snap here (sorry, missed that last time).
+>>
+>> in_illuminance0_scale_available
+>>
+>
+> I think should be in_illuminance_scale_available
+yup
+>
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
