@@ -1,74 +1,203 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:37397 "EHLO
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:37393 "EHLO
 	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758354Ab2DMKEg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 06:04:36 -0400
+	with ESMTP id S1758351Ab2DMKEh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2012 06:04:37 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 12/13] staging:iio: Make read / write attributes for channel values optional.
-Date: Fri, 13 Apr 2012 11:04:30 +0100
-Message-Id: <1334311471-23054-13-git-send-email-jic23@kernel.org>
+Subject: [PATCH 11/13] staging:iio:cdc Add IIO_CHAN_INFO_RAW/PROCESSED entries to all drivers.
+Date: Fri, 13 Apr 2012 11:04:29 +0100
+Message-Id: <1334311471-23054-12-git-send-email-jic23@kernel.org>
 In-Reply-To: <1334311471-23054-1-git-send-email-jic23@kernel.org>
 References: <1334311471-23054-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Until now all channels have had read/write attributes. This patch
-allows for channels where we can't actually read the value (or for
-output devices, write it!)
-
-v2 introduces separate elements for processed and raw thus removing
-some special case code from the core.  Thanks to Lars-Peter for an
-excellent suggestion!
+Precursor to making value read / write attribute optional.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/industrialio-core.c |   20 ++++----------------
- 1 files changed, 4 insertions(+), 16 deletions(-)
+ drivers/staging/iio/cdc/ad7150.c |    8 +++++---
+ drivers/staging/iio/cdc/ad7152.c |   14 +++++++++-----
+ drivers/staging/iio/cdc/ad7746.c |   23 ++++++++++++++++-------
+ 3 files changed, 30 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/staging/iio/industrialio-core.c b/drivers/staging/iio/industrialio-core.c
-index 1969a21..20bed97 100644
---- a/drivers/staging/iio/industrialio-core.c
-+++ b/drivers/staging/iio/industrialio-core.c
-@@ -80,6 +80,8 @@ static const char * const iio_modifier_names[] = {
+diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
+index e4a08dc..116e6c2 100644
+--- a/drivers/staging/iio/cdc/ad7150.c
++++ b/drivers/staging/iio/cdc/ad7150.c
+@@ -104,7 +104,7 @@ static int ad7150_read_raw(struct iio_dev *indio_dev,
+ 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
  
- /* relies on pairs of these shared then separate */
- static const char * const iio_chan_info_postfix[] = {
-+	[IIO_CHAN_INFO_RAW] = "raw",
-+	[IIO_CHAN_INFO_PROCESSED] = "input",
- 	[IIO_CHAN_INFO_SCALE] = "scale",
- 	[IIO_CHAN_INFO_OFFSET] = "offset",
- 	[IIO_CHAN_INFO_CALIBSCALE] = "calibscale",
-@@ -576,26 +578,12 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
- 					struct iio_chan_spec const *chan)
- {
- 	int ret, attrcount = 0;
--	int i = 4;
-+	int i;
- 	const struct iio_chan_spec_ext_info *ext_info;
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		ret = i2c_smbus_read_word_data(chip->client,
+ 					ad7150_addresses[chan->channel][0]);
+ 		if (ret < 0)
+@@ -429,7 +429,8 @@ static const struct iio_chan_spec ad7150_channels[] = {
+ 		.type = IIO_CAPACITANCE,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT,
+ 		.event_mask =
+ 		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) |
+ 		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING) |
+@@ -441,7 +442,8 @@ static const struct iio_chan_spec ad7150_channels[] = {
+ 		.type = IIO_CAPACITANCE,
+ 		.indexed = 1,
+ 		.channel = 1,
+-		.info_mask = IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT,
+ 		.event_mask =
+ 		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) |
+ 		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING) |
+diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
+index fdb83c3..1067ce5 100644
+--- a/drivers/staging/iio/cdc/ad7152.c
++++ b/drivers/staging/iio/cdc/ad7152.c
+@@ -329,7 +329,7 @@ static int ad7152_read_raw(struct iio_dev *indio_dev,
+ 	mutex_lock(&indio_dev->mlock);
  
- 	if (chan->channel < 0)
- 		return 0;
--
--	ret = __iio_add_chan_devattr(iio_data_type_name[chan->processed_val],
--				     chan,
--				     &iio_read_channel_info,
--				     (chan->output ?
--				      &iio_write_channel_info : NULL),
--				     0,
--				     0,
--				     &indio_dev->dev,
--				     &indio_dev->channel_attr_list);
--	if (ret)
--		goto error_ret;
--	attrcount++;
--
--	for_each_set_bit_from(i, &chan->info_mask, sizeof(long)*8) {
-+	for_each_set_bit(i, &chan->info_mask, sizeof(long)*8) {
- 		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i/2],
- 					     chan,
- 					     &iio_read_channel_info,
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		/* First set whether in differential mode */
+ 
+ 		regval = chip->setup[chan->channel];
+@@ -436,7 +436,8 @@ static const struct iio_chan_spec ad7152_channels[] = {
+ 		.type = IIO_CAPACITANCE,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 	}, {
+@@ -445,14 +446,16 @@ static const struct iio_chan_spec ad7152_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.channel2 = 2,
+-		.info_mask = IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 	}, {
+ 		.type = IIO_CAPACITANCE,
+ 		.indexed = 1,
+ 		.channel = 1,
+-		.info_mask = IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 	}, {
+@@ -461,7 +464,8 @@ static const struct iio_chan_spec ad7152_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 1,
+ 		.channel2 = 3,
+-		.info_mask = IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 	}
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index 40b8512..6c75605 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -123,7 +123,8 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 		.type = IIO_VOLTAGE,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
+ 			AD7746_VTSETUP_VTMD_EXT_VIN,
+ 	},
+@@ -132,7 +133,8 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 1,
+ 		.extend_name = "supply",
+-		.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
+ 			AD7746_VTSETUP_VTMD_VDD_MON,
+ 	},
+@@ -141,6 +143,7 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.processed_val = IIO_PROCESSED,
++		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
+ 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
+ 			AD7746_VTSETUP_VTMD_INT_TEMP,
+ 	},
+@@ -149,6 +152,7 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 1,
+ 		.processed_val = IIO_PROCESSED,
++		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
+ 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
+ 			AD7746_VTSETUP_VTMD_EXT_TEMP,
+ 	},
+@@ -156,7 +160,8 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 		.type = IIO_CAPACITANCE,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
+ 		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+@@ -168,7 +173,8 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.channel2 = 2,
+-		.info_mask = IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
+ 		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+@@ -179,7 +185,8 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 		.type = IIO_CAPACITANCE,
+ 		.indexed = 1,
+ 		.channel = 1,
+-		.info_mask = IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
+ 		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+@@ -192,7 +199,8 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 1,
+ 		.channel2 = 3,
+-		.info_mask = IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
+ 		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+ 		IIO_CHAN_INFO_SCALE_SHARED_BIT,
+@@ -572,7 +580,8 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+ 	mutex_lock(&indio_dev->mlock);
+ 
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_PROCESSED:
+ 		ret = ad7746_select_channel(indio_dev, chan);
+ 		if (ret < 0)
+ 			goto out;
 -- 
 1.7.0.4
 
