@@ -1,43 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate03.nvidia.com ([216.228.121.140]:4768 "EHLO
-	hqemgate03.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752302Ab2DQGq0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Apr 2012 02:46:26 -0400
+Received: from hqemgate04.nvidia.com ([216.228.121.35]:14540 "EHLO
+	hqemgate04.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750699Ab2DPP5x (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Apr 2012 11:57:53 -0400
 From: Laxman Dewangan <ldewangan@nvidia.com>
-To: grant.likely@secretlab.ca, rob.herring@calxeda.com,
-	rdunlap@xenotime.net, linux@arm.linux.org.uk, jic23@cam.ac.uk,
-	gregkh@linuxfoundation.org, broonie@opensource.wolfsonmicro.com,
-	swarren@nvidia.com, cbouatmailru@gmail.com, olof@lixom.net,
-	linus.walleij@linaro.org, lars@metafoo.de, bfreed@chromium.org,
-	grundler@chromium.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+To: jic23@cam.ac.uk, gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
 Cc: Laxman Dewangan <ldewangan@nvidia.com>
-Subject: [PATCH 1/3] devicetree: Document Intersil Corporation vendor prefix
-Date: Tue, 17 Apr 2012 12:15:53 +0530
-Message-Id: <1334645155-13799-2-git-send-email-ldewangan@nvidia.com>
-In-Reply-To: <1334645155-13799-1-git-send-email-ldewangan@nvidia.com>
-References: <1334645155-13799-1-git-send-email-ldewangan@nvidia.com>
+Subject: [PATCH] staging: iio: light: isl29028: fix correct mask value
+Date: Mon, 16 Apr 2012 21:27:42 +0530
+Message-Id: <1334591862-5169-1-git-send-email-ldewangan@nvidia.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The mask value in the read_raw/write_raw is absolute
+value, not the bit position value.
+Fixing this in the implemented function to check value,
+not with the bit position value.
+
 Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
 ---
- .../devicetree/bindings/vendor-prefixes.txt        |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+Somehow this was missed on my testing.
+I tested today again with linux next and found this issue.
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index 82ac057..89650da 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -22,6 +22,7 @@ hp	Hewlett Packard
- ibm	International Business Machines (IBM)
- idt	Integrated Device Technologies, Inc.
- intercontrol	Inter Control Group
-+isl	Intersil Corporation
- linux	Linux-specific binding
- marvell	Marvell Technology Group Ltd.
- maxim	Maxim Integrated Products
+ drivers/staging/iio/light/isl29028.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
+index e705e45..4e6ac24 100644
+--- a/drivers/staging/iio/light/isl29028.c
++++ b/drivers/staging/iio/light/isl29028.c
+@@ -272,7 +272,7 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
+ 	mutex_lock(&chip->lock);
+ 	switch (chan->type) {
+ 	case IIO_PROXIMITY:
+-		if (mask != IIO_CHAN_INFO_SAMP_FREQ_SEPARATE_BIT) {
++		if (mask != IIO_CHAN_INFO_SAMP_FREQ) {
+ 			dev_err(chip->dev,
+ 				"proximity: mask value 0x%08lx not supported\n",
+ 				mask);
+@@ -294,7 +294,7 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
+ 		break;
+ 
+ 	case IIO_LIGHT:
+-		if (mask != IIO_CHAN_INFO_SCALE_SEPARATE_BIT) {
++		if (mask != IIO_CHAN_INFO_SCALE) {
+ 			dev_err(chip->dev,
+ 				"light: mask value 0x%08lx not supported\n",
+ 				mask);
+@@ -349,14 +349,14 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
+ 		ret = IIO_VAL_INT;
+ 		break;
+ 
+-	case IIO_CHAN_INFO_SAMP_FREQ_SEPARATE_BIT:
++	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		if (chan->type != IIO_PROXIMITY)
+ 			break;
+ 		*val = chip->prox_sampling;
+ 		ret = IIO_VAL_INT;
+ 		break;
+ 
+-	case IIO_CHAN_INFO_SCALE_SEPARATE_BIT:
++	case IIO_CHAN_INFO_SCALE:
+ 		if (chan->type != IIO_LIGHT)
+ 			break;
+ 		*val = chip->lux_scale;
 -- 
 1.7.1.1
 
