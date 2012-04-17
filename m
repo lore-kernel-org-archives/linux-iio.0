@@ -1,45 +1,57 @@
-Return-Path: <ldewangan@nvidia.com>
-From: Laxman Dewangan <ldewangan@nvidia.com>
-To: grant.likely@secretlab.ca, rob.herring@calxeda.com, rdunlap@xenotime.net,
-        linux@arm.linux.org.uk, jic23@cam.ac.uk, gregkh@linuxfoundation.org,
-        broonie@opensource.wolfsonmicro.com, swarren@nvidia.com,
-        cbouatmailru@gmail.com, olof@lixom.net, linus.walleij@linaro.org,
-        lars@metafoo.de, bfreed@chromium.org, grundler@chromium.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org
-Cc: Laxman Dewangan <ldewangan@nvidia.com>
-Subject: [PATCH 3/3] ARM: dt: tegra_ventana: als and proximity sensor isl29018 support
-Date: Tue, 17 Apr 2012 12:15:55 +0530
-Message-Id: <1334645155-13799-4-git-send-email-ldewangan@nvidia.com>
-In-Reply-To: <1334645155-13799-1-git-send-email-ldewangan@nvidia.com>
-References: <1334645155-13799-1-git-send-email-ldewangan@nvidia.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from avon.wwwdotorg.org ([70.85.31.133]:59552 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752081Ab2DQWfO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Apr 2012 18:35:14 -0400
+Message-ID: <4F8DF01D.9040900@wwwdotorg.org>
+Date: Tue, 17 Apr 2012 16:35:09 -0600
+From: Stephen Warren <swarren@wwwdotorg.org>
+MIME-Version: 1.0
+To: Laxman Dewangan <ldewangan@nvidia.com>, olof@lixom.net
+CC: Colin Cross <ccross@android.com>, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH 3/3] ARM: dt: tegra_ventana: als and proximity sensor
+ isl29018 support
+References: <1334645155-13799-1-git-send-email-ldewangan@nvidia.com> <1334645155-13799-4-git-send-email-ldewangan@nvidia.com>
+In-Reply-To: <1334645155-13799-4-git-send-email-ldewangan@nvidia.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add the device info for ALS and proximity sensor isl29018.
-This device is connected on i2c0 bus.
+On 04/17/2012 12:45 AM, Laxman Dewangan wrote:
+> Add the device info for ALS and proximity sensor isl29018.
 
-Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
----
- arch/arm/boot/dts/tegra-ventana.dts |    6 ++++++
- 1 files changed, 6 insertions(+), 0 deletions(-)
+(There were a ton of irrelevant people CC'd on this patch; I cut them
+out, but kept the lists in case anyone was interested in the replies.
+The most relevant list, linux-tegra, also wasn't CC'd)
 
-diff --git a/arch/arm/boot/dts/tegra-ventana.dts b/arch/arm/boot/dts/tegra-ventana.dts
-index 71eb2e5..dd474e1 100644
---- a/arch/arm/boot/dts/tegra-ventana.dts
-+++ b/arch/arm/boot/dts/tegra-ventana.dts
-@@ -256,6 +256,12 @@
- 			micdet-delay = <100>;
- 			gpio-cfg = < 0xffffffff 0xffffffff 0 0xffffffff 0xffffffff >;
- 		};
-+
-+		/* ALS and proximity sensor */
-+		isl29018: isl29018@44 {
-+			compatible = "isl,isl29018";
-+			reg = <0x44>;
-+		};
- 	};
- 
- 	i2c@7000c400 {
--- 
-1.7.1.1
+> diff --git a/arch/arm/boot/dts/tegra-ventana.dts b/arch/arm/boot/dts/tegra-ventana.dts
+
+> +		/* ALS and proximity sensor */
+
+> +		isl29018: isl29018@44 {
+
+I don't think the label "isl29018:" serves any purpose; nothing else
+needs to refer to this node.
+
+I note from http://patchwork.ozlabs.org/patch/132936/ that:
+
+a) Perhaps the vendor prefix should be "isil" not "isl". Olof, can you
+please comment here?
+
+b) There's an interrupt signal connected to the device. Can you please
+add that, irrespective of whether the driver uses it.
+
+c) This device is also present on Seaboard. Can you update
+tegra-seaboard.dts too? You can find the relevant bus from the link above.
+
+Thanks.
+
+> +			compatible = "isl,isl29018";
+> +			reg = <0x44>;
+> +		};
+>  	};
+>  
+>  	i2c@7000c400 {
