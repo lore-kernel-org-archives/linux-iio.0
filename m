@@ -1,75 +1,309 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:41071 "EHLO
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:41067 "EHLO
 	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753244Ab2DRNOE (ORCPT
+	with ESMTP id S1752022Ab2DRNOE (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Apr 2012 09:14:04 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 14/14] staging:iio: pull out demux cleanup for a particular buffer.
-Date: Wed, 18 Apr 2012 14:13:54 +0100
-Message-Id: <1334754834-13622-15-git-send-email-jic23@kernel.org>
+Subject: [PATCH 13/14] staging:iio: Add caching of scan_timestamp to the core as well as buffers.
+Date: Wed, 18 Apr 2012 14:13:53 +0100
+Message-Id: <1334754834-13622-14-git-send-email-jic23@kernel.org>
 In-Reply-To: <1334754834-13622-1-git-send-email-jic23@kernel.org>
 References: <1334754834-13622-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This will come in handy again when we move to multiple buffers
-so lets pull it out into a little utility function now.
+This will be needed when multiple buffer support is added.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/industrialio-buffer.c |   22 +++++++++++++---------
- 1 files changed, 13 insertions(+), 9 deletions(-)
+ drivers/staging/iio/accel/adis16201_ring.c    |    2 +-
+ drivers/staging/iio/accel/adis16203_ring.c    |    2 +-
+ drivers/staging/iio/accel/adis16204_ring.c    |    2 +-
+ drivers/staging/iio/accel/adis16209_ring.c    |    2 +-
+ drivers/staging/iio/accel/adis16240_ring.c    |    2 +-
+ drivers/staging/iio/accel/lis3l02dq_ring.c    |    2 +-
+ drivers/staging/iio/adc/ad7192.c              |    2 +-
+ drivers/staging/iio/adc/ad7298_ring.c         |    2 +-
+ drivers/staging/iio/adc/ad7476_ring.c         |    2 +-
+ drivers/staging/iio/adc/ad7606_ring.c         |    5 ++---
+ drivers/staging/iio/adc/ad7793.c              |    2 +-
+ drivers/staging/iio/adc/ad7887_ring.c         |    2 +-
+ drivers/staging/iio/adc/ad799x_ring.c         |    2 +-
+ drivers/staging/iio/adc/max1363_ring.c        |    4 ++--
+ drivers/staging/iio/gyro/adis16260_ring.c     |    2 +-
+ drivers/staging/iio/iio.h                     |    2 ++
+ drivers/staging/iio/iio_simple_dummy_buffer.c |    2 +-
+ drivers/staging/iio/industrialio-buffer.c     |    1 +
+ drivers/staging/iio/meter/ade7758_ring.c      |    2 +-
+ 19 files changed, 22 insertions(+), 20 deletions(-)
 
+diff --git a/drivers/staging/iio/accel/adis16201_ring.c b/drivers/staging/iio/accel/adis16201_ring.c
+index 1370e32..49912e2 100644
+--- a/drivers/staging/iio/accel/adis16201_ring.c
++++ b/drivers/staging/iio/accel/adis16201_ring.c
+@@ -80,7 +80,7 @@ static irqreturn_t adis16201_trigger_handler(int irq, void *p)
+ 			data[i] = be16_to_cpup((__be16 *)&(st->rx[i*2]));
+ 
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+-	if (ring->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+ 	ring->access->store_to(ring, (u8 *)data, pf->timestamp);
+diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
+index 86f4efb..5c40f6c 100644
+--- a/drivers/staging/iio/accel/adis16203_ring.c
++++ b/drivers/staging/iio/accel/adis16203_ring.c
+@@ -80,7 +80,7 @@ static irqreturn_t adis16203_trigger_handler(int irq, void *p)
+ 			data[i] = be16_to_cpup((__be16 *)&(st->rx[i*2]));
+ 
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+-	if (ring->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+ 	ring->access->store_to(ring,
+diff --git a/drivers/staging/iio/accel/adis16204_ring.c b/drivers/staging/iio/accel/adis16204_ring.c
+index 34ef11f..bf5488e 100644
+--- a/drivers/staging/iio/accel/adis16204_ring.c
++++ b/drivers/staging/iio/accel/adis16204_ring.c
+@@ -77,7 +77,7 @@ static irqreturn_t adis16204_trigger_handler(int irq, void *p)
+ 			data[i] = be16_to_cpup((__be16 *)&(st->rx[i*2]));
+ 
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+-	if (ring->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+ 	ring->access->store_to(ring, (u8 *)data, pf->timestamp);
+diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
+index 1424d48..3101c53 100644
+--- a/drivers/staging/iio/accel/adis16209_ring.c
++++ b/drivers/staging/iio/accel/adis16209_ring.c
+@@ -77,7 +77,7 @@ static irqreturn_t adis16209_trigger_handler(int irq, void *p)
+ 			data[i] = be16_to_cpup((__be16 *)&(st->rx[i*2]));
+ 
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+-	if (ring->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+ 	ring->access->store_to(ring, (u8 *)data, pf->timestamp);
+diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
+index 9ff0634..c4459f7 100644
+--- a/drivers/staging/iio/accel/adis16240_ring.c
++++ b/drivers/staging/iio/accel/adis16240_ring.c
+@@ -75,7 +75,7 @@ static irqreturn_t adis16240_trigger_handler(int irq, void *p)
+ 			data[i] = be16_to_cpup((__be16 *)&(st->rx[i*2]));
+ 
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+-	if (ring->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+ 	ring->access->store_to(ring, (u8 *)data, pf->timestamp);
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index 3bdc102..ebd5b4d 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -150,7 +150,7 @@ static irqreturn_t lis3l02dq_trigger_handler(int irq, void *p)
+ 		len = lis3l02dq_get_buffer_element(indio_dev, data);
+ 
+ 	  /* Guaranteed to be aligned with 8 byte boundary */
+-	if (buffer->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		*(s64 *)(((phys_addr_t)data + len
+ 				+ sizeof(s64) - 1) & ~(sizeof(s64) - 1))
+ 			= pf->timestamp;
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index 25ef3c3..5d31685 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -521,7 +521,7 @@ static irqreturn_t ad7192_trigger_handler(int irq, void *p)
+ 				  indio_dev->channels[0].scan_type.realbits/8);
+ 
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+-	if (ring->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		dat64[1] = pf->timestamp;
+ 
+ 	ring->access->store_to(ring, (u8 *)dat64, pf->timestamp);
+diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
+index 5c13690..538e3b3 100644
+--- a/drivers/staging/iio/adc/ad7298_ring.c
++++ b/drivers/staging/iio/adc/ad7298_ring.c
+@@ -92,7 +92,7 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+ 	if (b_sent)
+ 		return b_sent;
+ 
+-	if (ring->scan_timestamp) {
++	if (indio_dev->scan_timestamp) {
+ 		time_ns = iio_get_time_ns();
+ 		memcpy((u8 *)buf + indio_dev->scan_bytes - sizeof(s64),
+ 			&time_ns, sizeof(time_ns));
+diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
+index a090bc3..8534f6b 100644
+--- a/drivers/staging/iio/adc/ad7476_ring.c
++++ b/drivers/staging/iio/adc/ad7476_ring.c
+@@ -40,7 +40,7 @@ static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+ 
+ 	time_ns = iio_get_time_ns();
+ 
+-	if (indio_dev->buffer->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		memcpy(rxbuf + indio_dev->scan_bytes - sizeof(s64),
+ 			&time_ns, sizeof(time_ns));
+ 
+diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+index 6cbf242..007b600 100644
+--- a/drivers/staging/iio/adc/ad7606_ring.c
++++ b/drivers/staging/iio/adc/ad7606_ring.c
+@@ -81,9 +81,8 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
+ 
+ 	time_ns = iio_get_time_ns();
+ 
+-	if (ring->scan_timestamp)
+-		*((s64 *)(buf + ring->access->get_bytes_per_datum(ring) -
+-			  sizeof(s64))) = time_ns;
++	if (indio_dev->scan_timestamp)
++		*((s64 *)(buf + indio_dev->scan_bytes - sizeof(s64))) = time_ns;
+ 
+ 	ring->access->store_to(indio_dev->buffer, buf, time_ns);
+ done:
+diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
+index 2aeeaa2..7f68c7c 100644
+--- a/drivers/staging/iio/adc/ad7793.c
++++ b/drivers/staging/iio/adc/ad7793.c
+@@ -386,7 +386,7 @@ static irqreturn_t ad7793_trigger_handler(int irq, void *p)
+ 				  indio_dev->channels[0].scan_type.realbits/8);
+ 
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+-	if (ring->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		dat64[1] = pf->timestamp;
+ 
+ 	ring->access->store_to(ring, (u8 *)dat64, pf->timestamp);
+diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
+index 442994e..d9f5264 100644
+--- a/drivers/staging/iio/adc/ad7887_ring.c
++++ b/drivers/staging/iio/adc/ad7887_ring.c
+@@ -92,7 +92,7 @@ static irqreturn_t ad7887_trigger_handler(int irq, void *p)
+ 	time_ns = iio_get_time_ns();
+ 
+ 	memcpy(buf, st->data, bytes);
+-	if (ring->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		memcpy(buf + indio_dev->scan_bytes - sizeof(s64),
+ 		       &time_ns, sizeof(time_ns));
+ 
+diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
+index dfdbf92..5190e50 100644
+--- a/drivers/staging/iio/adc/ad799x_ring.c
++++ b/drivers/staging/iio/adc/ad799x_ring.c
+@@ -95,7 +95,7 @@ static irqreturn_t ad799x_trigger_handler(int irq, void *p)
+ 
+ 	time_ns = iio_get_time_ns();
+ 
+-	if (ring->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		memcpy(rxbuf + indio_dev->scan_bytes - sizeof(s64),
+ 			&time_ns, sizeof(time_ns));
+ 
+diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
+index d0a60a3..8372e98 100644
+--- a/drivers/staging/iio/adc/max1363_ring.c
++++ b/drivers/staging/iio/adc/max1363_ring.c
+@@ -54,7 +54,7 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
+ 		d_size = numvals*2;
+ 	else
+ 		d_size = numvals;
+-	if (indio_dev->buffer->scan_timestamp) {
++	if (indio_dev->scan_timestamp) {
+ 		d_size += sizeof(s64);
+ 		if (d_size % sizeof(s64))
+ 			d_size += sizeof(s64) - (d_size % sizeof(s64));
+@@ -78,7 +78,7 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
+ 
+ 	time_ns = iio_get_time_ns();
+ 
+-	if (indio_dev->buffer->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		memcpy(rxbuf + d_size - sizeof(s64), &time_ns, sizeof(time_ns));
+ 	iio_push_to_buffer(indio_dev->buffer, rxbuf, time_ns);
+ 
+diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
+index 18fc73c..046f84d 100644
+--- a/drivers/staging/iio/gyro/adis16260_ring.c
++++ b/drivers/staging/iio/gyro/adis16260_ring.c
+@@ -80,7 +80,7 @@ static irqreturn_t adis16260_trigger_handler(int irq, void *p)
+ 			data[i] = be16_to_cpup((__be16 *)&(st->rx[i*2]));
+ 
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+-	if (ring->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+ 	ring->access->store_to(ring, (u8 *)data, pf->timestamp);
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index 7a10aed..0770340 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -306,6 +306,7 @@ struct iio_buffer_setup_ops {
+  * @masklength:		[INTERN] the length of the mask established from
+  *			channels
+  * @active_scan_mask:	[INTERN] union of all scan masks requested by buffers
++ * @scan_timestamp:	[INTERN] set if any buffers have requested timestamp
+  * @scan_index_timestamp:[INTERN] cache of the index to the timestamp
+  * @trig:		[INTERN] current device trigger (buffer modes)
+  * @pollfunc:		[DRIVER] function run on trigger being received
+@@ -342,6 +343,7 @@ struct iio_dev {
+ 	const unsigned long		*available_scan_masks;
+ 	unsigned			masklength;
+ 	const unsigned long		*active_scan_mask;
++	bool				scan_timestamp;
+ 	unsigned			scan_index_timestamp;
+ 	struct iio_trigger		*trig;
+ 	struct iio_poll_func		*pollfunc;
+diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
+index 61a2622..49e7aa1 100644
+--- a/drivers/staging/iio/iio_simple_dummy_buffer.c
++++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
+@@ -84,7 +84,7 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
+ 		}
+ 	}
+ 	/* Store a timestampe at an 8 byte boundary */
+-	if (buffer->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		*(s64 *)(((phys_addr_t)data + len
+ 				+ sizeof(s64) - 1) & ~(sizeof(s64) - 1))
+ 			= iio_get_time_ns();
 diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c
-index 6c329f9..b409b95 100644
+index f6cb0ab..6c329f9 100644
 --- a/drivers/staging/iio/industrialio-buffer.c
 +++ b/drivers/staging/iio/industrialio-buffer.c
-@@ -655,19 +655,25 @@ int iio_push_to_buffer(struct iio_buffer *buffer, unsigned char *data,
- }
- EXPORT_SYMBOL_GPL(iio_push_to_buffer);
+@@ -185,6 +185,7 @@ static ssize_t iio_scan_el_ts_store(struct device *dev,
+ 		goto error_ret;
+ 	}
+ 	indio_dev->buffer->scan_timestamp = state;
++	indio_dev->scan_timestamp = state;
+ error_ret:
+ 	mutex_unlock(&indio_dev->mlock);
  
-+static void iio_buffer_demux_free(struct iio_buffer *buffer)
-+{
-+	struct iio_demux_table *p, *q;
-+	list_for_each_entry_safe(p, q, &buffer->demux_list, l) {
-+		list_del(&p->l);
-+		kfree(p);
-+	}
-+}
-+
- int iio_update_demux(struct iio_dev *indio_dev)
- {
- 	const struct iio_chan_spec *ch;
- 	struct iio_buffer *buffer = indio_dev->buffer;
- 	int ret, in_ind = -1, out_ind, length;
- 	unsigned in_loc = 0, out_loc = 0;
--	struct iio_demux_table *p, *q;
-+	struct iio_demux_table *p;
+diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+index 3dfd788..b37bc98 100644
+--- a/drivers/staging/iio/meter/ade7758_ring.c
++++ b/drivers/staging/iio/meter/ade7758_ring.c
+@@ -72,7 +72,7 @@ static irqreturn_t ade7758_trigger_handler(int irq, void *p)
+ 			*dat32 = get_unaligned_be32(&st->rx_buf[5]) & 0xFFFFFF;
  
- 	/* Clear out any old demux */
--	list_for_each_entry_safe(p, q, &buffer->demux_list, l) {
--		list_del(&p->l);
--		kfree(p);
--	}
-+	iio_buffer_demux_free(buffer);
- 	kfree(buffer->demux_bounce);
- 	buffer->demux_bounce = NULL;
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+-	if (ring->scan_timestamp)
++	if (indio_dev->scan_timestamp)
+ 		dat64[1] = pf->timestamp;
  
-@@ -742,10 +748,8 @@ int iio_update_demux(struct iio_dev *indio_dev)
- 	return 0;
- 
- error_clear_mux_table:
--	list_for_each_entry_safe(p, q, &buffer->demux_list, l) {
--		list_del(&p->l);
--		kfree(p);
--	}
-+	iio_buffer_demux_free(buffer);
-+
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(iio_update_demux);
+ 	ring->access->store_to(ring, (u8 *)dat64, pf->timestamp);
 -- 
 1.7.0.4
 
