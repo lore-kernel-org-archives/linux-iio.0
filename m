@@ -1,56 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yx0-f174.google.com ([209.85.213.174]:47151 "EHLO
-	mail-yx0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755358Ab2DXHmf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Apr 2012 03:42:35 -0400
-Received: by yenl12 with SMTP id l12so142771yen.19
-        for <linux-iio@vger.kernel.org>; Tue, 24 Apr 2012 00:42:35 -0700 (PDT)
+Received: from hqemgate03.nvidia.com ([216.228.121.140]:5831 "EHLO
+	hqemgate03.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750956Ab2DRHEL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Apr 2012 03:04:11 -0400
+Message-ID: <4F8E6756.80006@nvidia.com>
+Date: Wed, 18 Apr 2012 12:33:50 +0530
+From: Laxman Dewangan <ldewangan@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <4F8FD709.60308@nvidia.com>
-References: <1334645155-13799-1-git-send-email-ldewangan@nvidia.com>
-	<1334645155-13799-4-git-send-email-ldewangan@nvidia.com>
-	<4F8DF01D.9040900@wwwdotorg.org>
-	<4F8FD709.60308@nvidia.com>
-Date: Tue, 24 Apr 2012 09:42:35 +0200
-Message-ID: <CACRpkdY5_F91oxzTScoBehABDHZBgZy1HkDK1okUq2uTLHh=Mg@mail.gmail.com>
-Subject: Re: [PATCH 3/3] ARM: dt: tegra_ventana: als and proximity sensor
- isl29018 support
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Laxman Dewangan <ldewangan@nvidia.com>
-Cc: Stephen Warren <swarren@wwwdotorg.org>,
-	"olof@lixom.net" <olof@lixom.net>,
+To: Stephen Warren <swarren@wwwdotorg.org>
+CC: "olof@lixom.net" <olof@lixom.net>,
 	Colin Cross <ccross@android.com>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"linux-arm-kernel@lists.infradead.org"
 	<linux-arm-kernel@lists.infradead.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-	Mark Brown <broonie@opensource.wolfsonmicro.com>,
-	Grant Likely <grant.likely@secretlab.ca>
-Content-Type: text/plain; charset=ISO-8859-1
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH 3/3] ARM: dt: tegra_ventana: als and proximity sensor
+ isl29018 support
+References: <1334645155-13799-1-git-send-email-ldewangan@nvidia.com> <1334645155-13799-4-git-send-email-ldewangan@nvidia.com> <4F8DF01D.9040900@wwwdotorg.org>
+In-Reply-To: <4F8DF01D.9040900@wwwdotorg.org>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Apr 19, 2012 at 11:12 AM, Laxman Dewangan <ldewangan@nvidia.com> wrote:
-> On Wednesday 18 April 2012 04:05 AM, Stephen Warren wrote:
->>
->> On 04/17/2012 12:45 AM, Laxman Dewangan wrote:
->>>
->>> Add the device info for ALS and proximity sensor isl29018.
->>
->>
->> a) Perhaps the vendor prefix should be "isil" not "isl". Olof, can you
->> please comment here?
->>
+On Wednesday 18 April 2012 04:05 AM, Stephen Warren wrote:
+> On 04/17/2012 12:45 AM, Laxman Dewangan wrote:
+>> Add the device info for ALS and proximity sensor isl29018.
+>> +		isl29018: isl29018@44 {
+> I don't think the label "isl29018:" serves any purpose; nothing else
+> needs to refer to this node.
 >
-> Any comments on this? I think "isil" is good as it is the symbol in nasdaq
-> also: Intersil Corporation (ISIL).
-> If no objection than I can send my next version of patch ;)
+> I note from http://patchwork.ozlabs.org/patch/132936/ that:
 >
-> Adding LinusW, Mark and Grant if they have any comment here.
+> a) Perhaps the vendor prefix should be "isil" not "isl". Olof, can you
+> please comment here?
 
-Like most of the kernel people I don't care much about that as long
-as the string is unique ... your pick is likely the best.
+> b) There's an interrupt signal connected to the device. Can you please
+> add that, irrespective of whether the driver uses it.
+>
 
-Linus Walleij
+Will do.
+> c) This device is also present on Seaboard. Can you update
+> tegra-seaboard.dts too? You can find the relevant bus from the link above.
+>
+Will do.
+
+
+I will wait for finalizing the vendor prefix before creating the next patch.
+This will impact the driver also.
+
