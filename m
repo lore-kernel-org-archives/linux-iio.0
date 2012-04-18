@@ -1,81 +1,102 @@
-Return-Path: <jic23@cam.ac.uk>
-References: <1334754834-13622-1-git-send-email-jic23@kernel.org> <1334754834-13622-5-git-send-email-jic23@kernel.org> <4F91944F.3070701@metafoo.de>
-In-Reply-To: <4F91944F.3070701@metafoo.de>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="----7Z4WO889FZXC5PQ1P57FWPSEOD6JBK"
-Subject: Re: [PATCH 04/14] staging:iio: add caching of the number of bytes in a scan.
-From: Jonathan Cameron <jic23@cam.ac.uk>
-Date: Fri, 20 Apr 2012 18:02:22 +0100
-To: Lars-Peter Clausen <lars@metafoo.de>,Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Message-ID: <0a602972-fb5c-43b6-a1ff-ec292dea5ad0@email.android.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:41009 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753020Ab2DRNOC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Apr 2012 09:14:02 -0400
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 03/14] staging:iio: scan_index_timestamp move to iio_dev from buffer
+Date: Wed, 18 Apr 2012 14:13:43 +0100
+Message-Id: <1334754834-13622-4-git-send-email-jic23@kernel.org>
+In-Reply-To: <1334754834-13622-1-git-send-email-jic23@kernel.org>
+References: <1334754834-13622-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-------7Z4WO889FZXC5PQ1P57FWPSEOD6JBK
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
- charset=UTF-8
+This is just a locally cached value that is device specific (rather
+than buffer specific.) Hence it wants to come out of the buffer before
+we add multiple buffer support.
 
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/buffer.h              |    2 --
+ drivers/staging/iio/iio.h                 |    2 ++
+ drivers/staging/iio/industrialio-buffer.c |    7 +++----
+ 3 files changed, 5 insertions(+), 6 deletions(-)
 
-Odd will chase that down. Probably wasn't on a clean tree. Thanks!
-
+diff --git a/drivers/staging/iio/buffer.h b/drivers/staging/iio/buffer.h
+index df2046d..3d3ea9e 100644
+--- a/drivers/staging/iio/buffer.h
++++ b/drivers/staging/iio/buffer.h
+@@ -56,7 +56,6 @@ struct iio_buffer_access_funcs {
+  * @scan_el_attrs:	[DRIVER] control of scan elements if that scan mode
+  *			control method is used
+  * @scan_mask:		[INTERN] bitmask used in masking scan mode elements
+- * @scan_index_timestamp:[INTERN] cache of the index to the timestamp
+  * @scan_timestamp:	[INTERN] does the scan mode include a timestamp
+  * @access:		[DRIVER] buffer access functions associated with the
+  *			implementation.
+@@ -74,7 +73,6 @@ struct iio_buffer {
+ 	struct attribute_group			*scan_el_attrs;
+ 	long					*scan_mask;
+ 	bool					scan_timestamp;
+-	unsigned				scan_index_timestamp;
+ 	const struct iio_buffer_access_funcs	*access;
+ 	struct list_head			scan_el_dev_attr_list;
+ 	struct attribute_group			scan_el_group;
+diff --git a/drivers/staging/iio/iio.h b/drivers/staging/iio/iio.h
+index a562763..6832c98 100644
+--- a/drivers/staging/iio/iio.h
++++ b/drivers/staging/iio/iio.h
+@@ -305,6 +305,7 @@ struct iio_buffer_setup_ops {
+  * @masklength:		[INTERN] the length of the mask established from
+  *			channels
+  * @active_scan_mask:	[INTERN] union of all scan masks requested by buffers
++ * @scan_index_timestamp:[INTERN] cache of the index to the timestamp
+  * @trig:		[INTERN] current device trigger (buffer modes)
+  * @pollfunc:		[DRIVER] function run on trigger being received
+  * @channels:		[DRIVER] channel specification structure table
+@@ -339,6 +340,7 @@ struct iio_dev {
+ 	const unsigned long		*available_scan_masks;
+ 	unsigned			masklength;
+ 	const unsigned long		*active_scan_mask;
++	unsigned			scan_index_timestamp;
+ 	struct iio_trigger		*trig;
+ 	struct iio_poll_func		*pollfunc;
+ 
+diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c
+index 639b41a..efa44c4 100644
+--- a/drivers/staging/iio/industrialio-buffer.c
++++ b/drivers/staging/iio/industrialio-buffer.c
+@@ -296,7 +296,7 @@ int iio_buffer_register(struct iio_dev *indio_dev,
+ 				goto error_cleanup_dynamic;
+ 			attrcount += ret;
+ 			if (channels[i].type == IIO_TIMESTAMP)
+-				buffer->scan_index_timestamp =
++				indio_dev->scan_index_timestamp =
+ 					channels[i].scan_index;
+ 		}
+ 		if (indio_dev->masklength && buffer->scan_mask == NULL) {
+@@ -525,8 +525,7 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev, const long *mask,
+ 	}
+ 	if (timestamp) {
+ 		ch = iio_find_channel_from_si(indio_dev,
+-					      indio_dev
+-					      ->buffer->scan_index_timestamp);
++					      indio_dev->scan_index_timestamp);
+ 		length = ch->scan_type.storagebits / 8;
+ 		bytes = ALIGN(bytes, length);
+ 		bytes += length;
+@@ -721,7 +720,7 @@ int iio_update_demux(struct iio_dev *indio_dev)
+ 			goto error_clear_mux_table;
+ 		}
+ 		ch = iio_find_channel_from_si(indio_dev,
+-			buffer->scan_index_timestamp);
++			indio_dev->scan_index_timestamp);
+ 		length = ch->scan_type.storagebits/8;
+ 		if (out_loc % length)
+ 			out_loc += length - out_loc % length;
 -- 
-Se=
-nt from my Android phone with K-9 Mail. Please excuse my brevity.
+1.7.0.4
 
-Lars-Pet=
-er Clausen <lars@metafoo.de> wrote:
-
-On 04/18/2012 03:13 PM, Jonathan Camer=
-on wrote:
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> ---
-> [...=
-]
-> diff --git a/drivers/staging/iio/industrialio-buffer.c b/drivers/stagin=
-g/iio/industrialio-buffer.c
-> index efa44c4..f6cb0ab 100644
-> --- a/drivers=
-/staging/iio/industrialio-buffer.c
-> +++ b/drivers/staging/iio/industrialio=
--buffer.c
-> @@ -536,13 +536,13 @@ static int iio_compute_scan_bytes(struct =
-iio_dev *indio_dev, const long *mask,
-> int iio_sw_buffer_preenable(struct =
-iio_dev *indio_dev)
-> {
-> 	struct iio_buffer *buffer =3D indio_dev->buffer;=
-
-> -	unsigned bytes =3D 0;
-
-This line didn't apply.
-
-
-------7Z4WO889FZXC5PQ1P57FWPSEOD6JBK
-Content-Type: text/html;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-
-<html><head></head><body><br>
-Odd will chase that down.  Probably wasn&#39;=
-t on a clean tree.  Thanks!<br>
-<br>
--- <br>
-Sent from my Android phone wit=
-h K-9 Mail. Please excuse my brevity.<br><br><div class=3D"gmail_quote">Lar=
-s-Peter Clausen &lt;lars@metafoo.de&gt; wrote:<blockquote class=3D"gmail_qu=
-ote" style=3D"margin: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(204, 20=
-4, 204); padding-left: 1ex;">
-<pre style=3D"white-space: pre-wrap; word-wra=
-p:break-word; font-family: sans-serif">On 04/18/2012 03:13 PM, Jonathan Cam=
-eron wrote:<br />&gt; Signed-off-by: Jonathan Cameron &lt;jic23@kernel.org&=
-gt;<br />&gt; ---<br />&gt; [...]<br />&gt; diff --git a/drivers/staging/ii=
-o/industrialio-buffer.c b/drivers/staging/iio/industrialio-buffer.c<br />&g=
-t; index efa44c4..f6cb0ab 100644<br />&gt; --- a/drivers/staging/iio/indust=
-rialio-buffer.c<br />&gt; +++ b/drivers/staging/iio/industrialio-buffer.c<b=
-r />&gt; @@ -536,13 +536,13 @@ static int iio_compute_scan_bytes(struct iio=
-_dev *indio_dev, const long *mask,<br />&gt;  int iio_sw_buffer_preenable(s=
-truct iio_dev *indio_dev)<br />&gt;  {<br />&gt;  	struct iio_buffer *buffe=
-r =3D indio_dev-&gt;buffer;<br />&gt; -	unsigned bytes =3D 0;<br /><br />Th=
-is line didn't apply.<br /></pre></blockquote></div></body></html>
-------7Z4WO889FZXC5PQ1P57FWPSEOD6JBK--
