@@ -1,15 +1,8 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate03.nvidia.com ([216.228.121.140]:1758 "EHLO
-	hqemgate03.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750777Ab2DRGUM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Apr 2012 02:20:12 -0400
-Message-ID: <4F8E5CFD.4040501@nvidia.com>
-Date: Wed, 18 Apr 2012 11:49:41 +0530
-From: Laxman Dewangan <ldewangan@nvidia.com>
-MIME-Version: 1.0
-To: Bryan Freed <bfreed@chromium.org>,
-	Mark Brown <broonie@opensource.wolfsonmicro.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
+Return-Path: <broonie@opensource.wolfsonmicro.com>
+Date: Wed, 18 Apr 2012 09:16:47 +0100
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+To: Laxman Dewangan <ldewangan@nvidia.com>
+Cc: Bryan Freed <bfreed@chromium.org>, Jonathan Cameron <jic23@cam.ac.uk>,
 	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
 	"max@stro.at" <max@stro.at>,
 	"jbrenner@taosinc.com" <jbrenner@taosinc.com>,
@@ -20,45 +13,68 @@ CC: Jonathan Cameron <jic23@cam.ac.uk>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH] staging: iio: light: isl29018: use regmap for register
  access
-References: <1334652631-21032-1-git-send-email-ldewangan@nvidia.com>	<4F8D5506.6070105@cam.ac.uk>	<4F8D5B09.8080309@nvidia.com> <CAEYUcX3TbXFmKYCvfz00tpJ3K0bSExnQxV1R==dP=+vsK54KPQ@mail.gmail.com>
-In-Reply-To: <CAEYUcX3TbXFmKYCvfz00tpJ3K0bSExnQxV1R==dP=+vsK54KPQ@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
-
-Including Mark here for more insight/comment.
-
-On Tuesday 17 April 2012 11:26 PM, Bryan Freed wrote:
-> Hey Laxman, Jonathan.
->
-> The regmap is pretty new to me.  In looking at it, I see
-> _regmap_write() will regcache_write() before attempting to write to
-> the device.
-> This effectively updates the cached value even when the device write
-> fails, which is the opposite of the current isl29018 cache policy.
->
-> It looks like we tried to change the policy back in August and got
-> this response:
->    >  I did change one basic behavior that I think was also broken: cache
->    >  the value regardless of if the transaction completed successfully or
->    >  not.
->    Don't do that.  That means userspace will get an invalid value if it reads
->    in the meantime. If you have an error on a hardware bus - tell userspace about
->    it and don't 'guess' what is in the register.
-> See http://driverdev.linuxdriverproject.org/pipermail/devel/2011-August/020256.html
-> for details.
->
-> The result is likely to be that after a failed write to one field of a
-> register, the next successful write to another field of that register
-> will update them both.
-
-yes, the caching is done before actual transfer and it can make cache 
-dirty in case of transfer failure.
-I am not sure what should be correct handling here: make cache dirty or 
-revert the value to original one?
-But using the regmap will provide the common behavior across the driver 
-and all driver will have same behavior rather than handling on 
-differently across driver.
-So if there is any other policy for this, it will be same for all driver.
+Message-ID: <20120418081647.GA3021@opensource.wolfsonmicro.com>
+References: <1334652631-21032-1-git-send-email-ldewangan@nvidia.com>
+ <4F8D5506.6070105@cam.ac.uk>
+ <4F8D5B09.8080309@nvidia.com>
+ <CAEYUcX3TbXFmKYCvfz00tpJ3K0bSExnQxV1R==dP=+vsK54KPQ@mail.gmail.com>
+ <4F8E5CFD.4040501@nvidia.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="J/dobhs11T7y2rNN"
+In-Reply-To: <4F8E5CFD.4040501@nvidia.com>
+List-ID: <linux-iio@vger.kernel.org>
 
 
+--J/dobhs11T7y2rNN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Wed, Apr 18, 2012 at 11:49:41AM +0530, Laxman Dewangan wrote:
+
+> yes, the caching is done before actual transfer and it can make
+> cache dirty in case of transfer failure.
+> I am not sure what should be correct handling here: make cache dirty
+> or revert the value to original one?
+> But using the regmap will provide the common behavior across the
+> driver and all driver will have same behavior rather than handling
+> on differently across driver.
+> So if there is any other policy for this, it will be same for all driver.
+
+I'd mark the cache as dirty I guess, though you'll then need to arrange
+to resync it at some point (presumably after you've taken recovery
+action) so that won't be enough by itself.  Or reset the device and
+bring it back up manually if you think that might work.
+
+regmap doesn't make much effort here since if physical I/O has started
+failing you've generally lost the plot completely, 90% of the time it's
+not going to be possible to reover the situation at all and if you can
+then there's a couple of different strategies that might work and which
+one is appropriate is going to depend on the device.  I'll do a patch to
+flag the cache as dirty since I can't see how it'd make the situation
+any worse but the driver will still need to do something to handle this
+situation for that to take any effect.
+
+--J/dobhs11T7y2rNN
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIbBAEBAgAGBQJPjnhCAAoJEBus8iNuMP3dUuYP+L7taxPH8VxlVaGDLVuJhetu
+6SOfxL6/0YDCz8WKttaBSdmtMQH7kL52B+ykGk3TRie2WFzlNgP33q4VOYXdnB2K
+qlKENO2jx9IoaaQkb1L+NjwukIF1T/0E5VzFT7/wHdqMr+7TyA8fwVM8tBqGiw9t
+0iA9xuU0PolyNtUVhtbwR6r3yuOVBHDaJbFrwvPdP5b2Oq/FLXiQ4t0XYL9fzmbC
+Zz9zYK2gB3rvqkJM8PD7TzlxOa5OKG5GoDnZFCc5uLamtYTOlv0F+z+O4wgirPTU
+9DxujVfH8EpnxITEuFvLXLohROgcDYHu1iMRG7TvXdSD6KRZxjXvsq04rCtAuGRq
+6jYO8F8lynqtFrHr0YUFYK4sU97wJ1wDBxzLvMD4mrJKUX/9P+viEUtqSEhsB8MQ
+cG6avWtX9q4fjD4bAopEx5GwWeIg5LbX5A8w4kqs7Wnt2Kb5RktooGUyT8ubPHJ3
+JDc8DuuvKLRBKJXDaDL5dv1ZoiFsNw3Uj49ncLYcQXvjd25BrRpD+P3u/m9M5S94
+0JvD3kfL0rBRISDZGKFMKOyz72MBzuU8HBieNMJKII0Z+YyQCjOCczz38oqmm+jt
+txf06eOPSmKrYXHEyn/X/r3R+HQ1X92e7TxoWwe5yHER0D+ISeEvdy9EOie5ejSp
+IDraGkcNr5UknydR9j0=
+=BvsX
+-----END PGP SIGNATURE-----
+
+--J/dobhs11T7y2rNN--
