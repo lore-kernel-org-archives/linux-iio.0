@@ -1,51 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vb0-f46.google.com ([209.85.212.46]:63740 "EHLO
-	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751492Ab2DQUvz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Apr 2012 16:51:55 -0400
-Received: by vbbff1 with SMTP id ff1so4502632vbb.19
-        for <linux-iio@vger.kernel.org>; Tue, 17 Apr 2012 13:51:54 -0700 (PDT)
+Received: from [178.18.118.26] ([178.18.118.26]:60471 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-FAIL-FAIL-OK-OK)
+	by vger.kernel.org with ESMTP id S1751350Ab2DRIqA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Apr 2012 04:46:00 -0400
+Message-ID: <4F8E7F3E.5080406@kernel.org>
+Date: Wed, 18 Apr 2012 09:45:50 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Date: Tue, 17 Apr 2012 22:51:53 +0200
-Message-ID: <CAAfyv35jTq6eSM4gEarUiZQRQy0pOBKev-LzohvQe40k2TuXMQ@mail.gmail.com>
-Subject: adding hmc5883 driver
-From: Marek Belisko <marek.belisko@open-nandra.com>
-To: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+To: Marek Belisko <marek.belisko@open-nandra.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: adding hmc5883 driver
+References: <CAAfyv35jTq6eSM4gEarUiZQRQy0pOBKev-LzohvQe40k2TuXMQ@mail.gmail.com>
+In-Reply-To: <CAAfyv35jTq6eSM4gEarUiZQRQy0pOBKev-LzohvQe40k2TuXMQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On 4/17/2012 9:51 PM, Marek Belisko wrote:
+> Hi,
+>
+> I'm owner gta04 board which have hmc5883 compass.
+> I'm currently using hmc5843 iio staging driver with some hacks
+> (difference is only
+> for range and rate values) which is working fine. I would like ask for
+> opinion how to properly
+> add new device.
+>
+> IMO options are:
+> 1. add hmc5883 to DEVICE_TABLE with some flags and then use proper values for
+> one or another device (possibly rename driver to hmc58x3)
+Don't rename the driver.  Convention is the driver is named after the 
+first device it supports.
+Nothing stops it supporting lots more.  See the adc/max1363 for a big 
+example.
+Wild card naming goes horribly wrong from time to time as marketting 
+departments like
+to name their products in illogical ways.
 
-I'm owner gta04 board which have hmc5883 compass.
-I'm currently using hmc5843 iio staging driver with some hacks
-(difference is only
-for range and rate values) which is working fine. I would like ask for
-opinion how to properly
-add new device.
+Otherwise, this is probably the best option given they sound pretty similar.
+>
+> 2. separate common functions from existing driver and use custom setup
+> for hmc5843
+> and hmc5883.
+One driver sounds more sensible in this case.
+>
+> Is there another way which I overlooked?
+>
+> Thanks,
+>
+> marek
+>
 
-IMO options are:
-1. add hmc5883 to DEVICE_TABLE with some flags and then use proper values for
-one or another device (possibly rename driver to hmc58x3)
-
-2. separate common functions from existing driver and use custom setup
-for hmc5843
-and hmc5883.
-
-Is there another way which I overlooked?
-
-Thanks,
-
-marek
-
--- 
-as simple and primitive as possible
--------------------------------------------------
-Marek Belisko - OPEN-NANDRA
-Freelance Developer
-
-Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
-Tel: +421 915 052 184
-skype: marekwhite
-icq: 290551086
-web: http://open-nandra.com
