@@ -1,58 +1,48 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4F95BEE0.6090803@kernel.org>
-Date: Mon, 23 Apr 2012 21:43:12 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
- device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH 3/8] staging:iio:dac:ad5446: Do not check for individual
- chip ids in probe
-References: <1335203497-11041-1-git-send-email-lars@metafoo.de> <1335203497-11041-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1335203497-11041-3-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-085.synserver.de ([212.40.185.85]:1059 "EHLO
+	smtp-out-078.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753504Ab2DWRtT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Apr 2012 13:49:19 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/8] staging:iio:dac:ad5446: Remove unused struct field
+Date: Mon, 23 Apr 2012 19:51:31 +0200
+Message-Id: <1335203497-11041-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1335203497-11041-1-git-send-email-lars@metafoo.de>
+References: <1335203497-11041-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/23/2012 06:51 PM, Lars-Peter Clausen wrote:
-> Use the chip_info's int_vref_mv field to decide whether a certain chip has a
-> internal reference or not. There is no need to check for individual chip ids.
-> 
-That does indeed do the job.
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/dac/ad5446.c |   20 +++++---------------
->  1 file changed, 5 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
-> index 0cfe445..9d9a452 100644
-> --- a/drivers/staging/iio/dac/ad5446.c
-> +++ b/drivers/staging/iio/dac/ad5446.c
-> @@ -355,22 +355,12 @@ static int __devinit ad5446_probe(struct spi_device *spi)
->  	spi_message_init(&st->msg);
->  	spi_message_add_tail(&st->xfer, &st->msg);
->  
-> -	switch (spi_get_device_id(spi)->driver_data) {
-> -	case ID_AD5620_2500:
-> -	case ID_AD5620_1250:
-> -	case ID_AD5640_2500:
-> -	case ID_AD5640_1250:
-> -	case ID_AD5660_2500:
-> -	case ID_AD5660_1250:
-> +	if (st->chip_info->int_vref_mv)
->  		st->vref_mv = st->chip_info->int_vref_mv;
-> -		break;
-> -	default:
-> -		if (voltage_uv)
-> -			st->vref_mv = voltage_uv / 1000;
-> -		else
-> -			dev_warn(&spi->dev,
-> -				 "reference voltage unspecified\n");
-> -	}
-> +	else if (voltage_uv)
-> +		st->vref_mv = voltage_uv / 1000;
-> +	else
-> +		dev_warn(&spi->dev, "reference voltage unspecified\n");
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret)
+Remove the unused "poll_work" field from the ad5446_state struct.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/dac/ad5446.h |    2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/staging/iio/dac/ad5446.h b/drivers/staging/iio/dac/ad5446.h
+index 4ea3476..72ad07f 100644
+--- a/drivers/staging/iio/dac/ad5446.h
++++ b/drivers/staging/iio/dac/ad5446.h
+@@ -34,7 +34,6 @@
+  * @spi:		spi_device
+  * @chip_info:		chip model specific constants, available modes etc
+  * @reg:		supply regulator
+- * @poll_work:		bottom half of polling interrupt handler
+  * @vref_mv:		actual reference voltage used
+  * @xfer:		default spi transfer
+  * @msg:		default spi message
+@@ -45,7 +44,6 @@ struct ad5446_state {
+ 	struct spi_device		*spi;
+ 	const struct ad5446_chip_info	*chip_info;
+ 	struct regulator		*reg;
+-	struct work_struct		poll_work;
+ 	unsigned short			vref_mv;
+ 	unsigned			cached_val;
+ 	unsigned			pwr_down_mode;
+-- 
+1.7.9.5
+
