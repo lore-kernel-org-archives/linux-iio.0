@@ -1,53 +1,43 @@
-Return-Path: <ldewangan@nvidia.com>
-From: Laxman Dewangan <ldewangan@nvidia.com>
-To: gregkh@linuxfoundation.org, jic23@cam.ac.uk, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc: Laxman Dewangan <ldewangan@nvidia.com>
-Subject: [RESEND PATCH V2] staging: iio: light: of: Fix vendor prefix of isl29018/isl29028
-Date: Tue, 24 Apr 2012 11:41:38 +0530
-Message-Id: <1335247898-31710-1-git-send-email-ldewangan@nvidia.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-085.synserver.de ([212.40.185.85]:1071 "EHLO
+	smtp-out-078.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753547Ab2DWRtT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Apr 2012 13:49:19 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/8] staging:iio:dac:ad5446: Do not exit powerdown when writing a sample
+Date: Mon, 23 Apr 2012 19:51:30 +0200
+Message-Id: <1335203497-11041-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-ISL29018/ISL29028 is from Intersil Corporation and making the
-vendor prefix for this part as "isil" for OF compatibity.
+Both the powerdown mode bits and the sample value are stored in the same
+register, so writing a sample while the device is powered down will clear the
+power down bits. To avoid this only update the cached value when the device is
+powered down.
 
-Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
-Changes from V1:
-- Vendor prefix is now "isil"
+ drivers/staging/iio/dac/ad5446.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-As per Greg's request, resending this patch, removing 2/4 as this can
-be go independently.
-
- drivers/staging/iio/light/isl29018.c |    2 +-
- drivers/staging/iio/light/isl29028.c |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 073e899..1ec2dac 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -596,7 +596,7 @@ static const struct i2c_device_id isl29018_id[] = {
- MODULE_DEVICE_TABLE(i2c, isl29018_id);
- 
- static const struct of_device_id isl29018_of_match[] = {
--	{ .compatible = "invn,isl29018", },
-+	{ .compatible = "isil,isl29018", },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, isl29018_of_match);
-diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-index 4ac49aa..7057d9b 100644
---- a/drivers/staging/iio/light/isl29028.c
-+++ b/drivers/staging/iio/light/isl29028.c
-@@ -542,7 +542,7 @@ static const struct i2c_device_id isl29028_id[] = {
- MODULE_DEVICE_TABLE(i2c, isl29028_id);
- 
- static const struct of_device_id isl29028_of_match[] = {
--	{ .compatible = "isl,isl29028", },
-+	{ .compatible = "isil,isl29028", },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, isl29028_of_match);
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index ec6968b..0cfe445 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -282,7 +282,8 @@ static int ad5446_write_raw(struct iio_dev *indio_dev,
+ 		val <<= chan->scan_type.shift;
+ 		mutex_lock(&indio_dev->mlock);
+ 		st->cached_val = val;
+-		st->chip_info->store_sample(st, val);
++		if (!st->pwr_down)
++			st->chip_info->store_sample(st, val);
+ 		ret = spi_sync(st->spi, &st->msg);
+ 		mutex_unlock(&indio_dev->mlock);
+ 		break;
 -- 
-1.7.1.1
+1.7.9.5
+
