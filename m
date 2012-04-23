@@ -1,47 +1,41 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate04.nvidia.com ([216.228.121.35]:15283 "EHLO
-	hqemgate04.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753489Ab2DWMMx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Apr 2012 08:12:53 -0400
+Return-Path: <ldewangan@nvidia.com>
 From: Laxman Dewangan <ldewangan@nvidia.com>
-To: grant.likely@secretlab.ca, rob.herring@calxeda.com,
-	rob@landley.net, linux@arm.linux.org.uk, jic23@cam.ac.uk,
-	gregkh@linuxfoundation.org, swarren@nvidia.com, olof@lixom.net,
-	devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-tegra@vger.kernel.org
+To: grant.likely@secretlab.ca, rob.herring@calxeda.com, rob@landley.net,
+        linux@arm.linux.org.uk, jic23@cam.ac.uk, gregkh@linuxfoundation.org,
+        swarren@nvidia.com, olof@lixom.net,
+        devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-tegra@vger.kernel.org
 Cc: Laxman Dewangan <ldewangan@nvidia.com>
-Subject: [PATCH V2 0/4] ARM: tegra: enable ALS and proximity sensors
-Date: Mon, 23 Apr 2012 17:41:32 +0530
-Message-Id: <1335183097-21104-1-git-send-email-ldewangan@nvidia.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH V2 4/4] ARM: tegra: defconfig: add ISL29028
+Date: Mon, 23 Apr 2012 17:41:37 +0530
+Message-Id: <1335183097-21104-6-git-send-email-ldewangan@nvidia.com>
+In-Reply-To: <1335183097-21104-1-git-send-email-ldewangan@nvidia.com>
+References: <1335183097-21104-1-git-send-email-ldewangan@nvidia.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Tegra based platform are using the Intersil's ALS and proximity sensor
-ISL29018 and ISL29028.
-Enabling this sensor in Tegra based platform through device tree. Following
-changes are done:
-- Add vendor prefix for Intersil Corporation in document.
-- Change the vendor prefix in driver to reflect as per document.
-- Enable the instance of the sensor in Tegra platform ventana, seaboard and
-  cardhu.
+The ISL29028 is ALS and proximity sensor and used in
+tegra cardhu.
 
+Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
+---
 Changes from V1:
-- Change the vendor prefix for Intersil to "isil".
-- Added irq numbers when enabling driver in dts file.
+ - No change.
 
-Laxman Dewangan (4):
-  devicetree: Document Intersil Corporation vendor prefix
-  staging: iio: light: of: Fix vendor prefix of isl29018/isl29028
-  ARM: dt: tegra: enable als and proximity sensor
-  ARM: tegra: defconfig: add ISL29028
+ arch/arm/configs/tegra_defconfig |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
- .../devicetree/bindings/vendor-prefixes.txt        |    1 +
- arch/arm/boot/dts/tegra-cardhu.dts                 |    8 ++++++++
- arch/arm/boot/dts/tegra-seaboard.dts               |    8 ++++++++
- arch/arm/boot/dts/tegra-ventana.dts                |    8 ++++++++
- arch/arm/configs/tegra_defconfig                   |    1 +
- drivers/staging/iio/light/isl29018.c               |    2 +-
- drivers/staging/iio/light/isl29028.c               |    2 +-
- 7 files changed, 28 insertions(+), 2 deletions(-)
-
+diff --git a/arch/arm/configs/tegra_defconfig b/arch/arm/configs/tegra_defconfig
+index 66c2dce..99c3e66 100644
+--- a/arch/arm/configs/tegra_defconfig
++++ b/arch/arm/configs/tegra_defconfig
+@@ -138,6 +138,7 @@ CONFIG_RTC_DRV_TEGRA=y
+ CONFIG_STAGING=y
+ CONFIG_IIO=y
+ CONFIG_SENSORS_ISL29018=y
++CONFIG_SENSORS_ISL29028=y
+ CONFIG_SENSORS_AK8975=y
+ CONFIG_MFD_NVEC=y
+ CONFIG_KEYBOARD_NVEC=y
+-- 
+1.7.1.1
