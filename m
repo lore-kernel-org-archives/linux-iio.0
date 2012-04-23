@@ -1,43 +1,47 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4F95BE84.9030601@kernel.org>
-Date: Mon, 23 Apr 2012 21:41:40 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
- device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH 2/8] staging:iio:dac:ad5446: Remove unused struct field
-References: <1335203497-11041-1-git-send-email-lars@metafoo.de> <1335203497-11041-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1335203497-11041-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from hqemgate04.nvidia.com ([216.228.121.35]:15283 "EHLO
+	hqemgate04.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753489Ab2DWMMx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Apr 2012 08:12:53 -0400
+From: Laxman Dewangan <ldewangan@nvidia.com>
+To: grant.likely@secretlab.ca, rob.herring@calxeda.com,
+	rob@landley.net, linux@arm.linux.org.uk, jic23@cam.ac.uk,
+	gregkh@linuxfoundation.org, swarren@nvidia.com, olof@lixom.net,
+	devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Cc: Laxman Dewangan <ldewangan@nvidia.com>
+Subject: [PATCH V2 0/4] ARM: tegra: enable ALS and proximity sensors
+Date: Mon, 23 Apr 2012 17:41:32 +0530
+Message-Id: <1335183097-21104-1-git-send-email-ldewangan@nvidia.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/23/2012 06:51 PM, Lars-Peter Clausen wrote:
-> Remove the unused "poll_work" field from the ad5446_state struct.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/dac/ad5446.h |    2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/dac/ad5446.h b/drivers/staging/iio/dac/ad5446.h
-> index 4ea3476..72ad07f 100644
-> --- a/drivers/staging/iio/dac/ad5446.h
-> +++ b/drivers/staging/iio/dac/ad5446.h
-> @@ -34,7 +34,6 @@
->   * @spi:		spi_device
->   * @chip_info:		chip model specific constants, available modes etc
->   * @reg:		supply regulator
-> - * @poll_work:		bottom half of polling interrupt handler
->   * @vref_mv:		actual reference voltage used
->   * @xfer:		default spi transfer
->   * @msg:		default spi message
-> @@ -45,7 +44,6 @@ struct ad5446_state {
->  	struct spi_device		*spi;
->  	const struct ad5446_chip_info	*chip_info;
->  	struct regulator		*reg;
-> -	struct work_struct		poll_work;
->  	unsigned short			vref_mv;
->  	unsigned			cached_val;
->  	unsigned			pwr_down_mode;
+Tegra based platform are using the Intersil's ALS and proximity sensor
+ISL29018 and ISL29028.
+Enabling this sensor in Tegra based platform through device tree. Following
+changes are done:
+- Add vendor prefix for Intersil Corporation in document.
+- Change the vendor prefix in driver to reflect as per document.
+- Enable the instance of the sensor in Tegra platform ventana, seaboard and
+  cardhu.
+
+Changes from V1:
+- Change the vendor prefix for Intersil to "isil".
+- Added irq numbers when enabling driver in dts file.
+
+Laxman Dewangan (4):
+  devicetree: Document Intersil Corporation vendor prefix
+  staging: iio: light: of: Fix vendor prefix of isl29018/isl29028
+  ARM: dt: tegra: enable als and proximity sensor
+  ARM: tegra: defconfig: add ISL29028
+
+ .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+ arch/arm/boot/dts/tegra-cardhu.dts                 |    8 ++++++++
+ arch/arm/boot/dts/tegra-seaboard.dts               |    8 ++++++++
+ arch/arm/boot/dts/tegra-ventana.dts                |    8 ++++++++
+ arch/arm/configs/tegra_defconfig                   |    1 +
+ drivers/staging/iio/light/isl29018.c               |    2 +-
+ drivers/staging/iio/light/isl29028.c               |    2 +-
+ 7 files changed, 28 insertions(+), 2 deletions(-)
+
