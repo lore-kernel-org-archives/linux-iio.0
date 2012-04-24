@@ -5,65 +5,53 @@ Cc: linux-iio@vger.kernel.org,
 	device-drivers-devel@blackfin.uclinux.org,
 	drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 06/11] staging:iio:dac:ad5446: Remove duplicated chip_info entries
-Date: Tue, 24 Apr 2012 18:49:36 +0200
-Message-Id: <1335286181-20474-6-git-send-email-lars@metafoo.de>
+Subject: [PATCH v2 05/11] staging:iio:dac:ad5446: Do not check for individual chip ids in probe
+Date: Tue, 24 Apr 2012 18:49:35 +0200
+Message-Id: <1335286181-20474-5-git-send-email-lars@metafoo.de>
 In-Reply-To: <1335286181-20474-1-git-send-email-lars@metafoo.de>
 References: <1335286181-20474-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-There are three identical chip_info entries. Remove two of them and use the id
-of the remaining entry for all three device table entries.
+Use the chip_info's int_vref_mv field to decide whether a certain chip has a
+internal reference or not. There is no need to check for individual chip ids.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/dac/ad5446.c |   12 ++----------
- drivers/staging/iio/dac/ad5446.h |    2 --
- 2 files changed, 2 insertions(+), 12 deletions(-)
+ drivers/staging/iio/dac/ad5446.c |   20 +++++---------------
+ 1 file changed, 5 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
-index 659d083..00eece4 100644
+index 2ce6b5b..659d083 100644
 --- a/drivers/staging/iio/dac/ad5446.c
 +++ b/drivers/staging/iio/dac/ad5446.c
-@@ -174,14 +174,6 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
- 		.channel = AD5446_CHANNEL(16, 16, 0),
- 		.store_sample = ad5446_store_sample,
- 	},
--	[ID_AD5542A] = {
--		.channel = AD5446_CHANNEL(16, 16, 0),
--		.store_sample = ad5446_store_sample,
--	},
--	[ID_AD5543] = {
--		.channel = AD5446_CHANNEL(16, 16, 0),
--		.store_sample = ad5446_store_sample,
--	},
- 	[ID_AD5512A] = {
- 		.channel = AD5446_CHANNEL(12, 16, 4),
- 		.store_sample = ad5446_store_sample,
-@@ -389,8 +381,8 @@ static const struct spi_device_id ad5446_id[] = {
- 	{"ad5446", ID_AD5446},
- 	{"ad5512a", ID_AD5512A},
- 	{"ad5541a", ID_AD5541A},
--	{"ad5542a", ID_AD5542A},
--	{"ad5543", ID_AD5543},
-+	{"ad5542a", ID_AD5541A}, /* ad5541a and ad5542a are compatible */
-+	{"ad5543", ID_AD5541A}, /* ad5541a and ad5543 are compatible */
- 	{"ad5553", ID_AD5553},
- 	{"ad5601", ID_AD5601},
- 	{"ad5611", ID_AD5611},
-diff --git a/drivers/staging/iio/dac/ad5446.h b/drivers/staging/iio/dac/ad5446.h
-index 29aa0dc..0651816 100644
---- a/drivers/staging/iio/dac/ad5446.h
-+++ b/drivers/staging/iio/dac/ad5446.h
-@@ -74,8 +74,6 @@ enum ad5446_supported_device_ids {
- 	ID_AD5444,
- 	ID_AD5446,
- 	ID_AD5541A,
--	ID_AD5542A,
--	ID_AD5543,
- 	ID_AD5512A,
- 	ID_AD5553,
- 	ID_AD5601,
+@@ -344,22 +344,12 @@ static int __devinit ad5446_probe(struct spi_device *spi)
+ 	indio_dev->channels = &st->chip_info->channel;
+ 	indio_dev->num_channels = 1;
+ 
+-	switch (spi_get_device_id(spi)->driver_data) {
+-	case ID_AD5620_2500:
+-	case ID_AD5620_1250:
+-	case ID_AD5640_2500:
+-	case ID_AD5640_1250:
+-	case ID_AD5660_2500:
+-	case ID_AD5660_1250:
++	if (st->chip_info->int_vref_mv)
+ 		st->vref_mv = st->chip_info->int_vref_mv;
+-		break;
+-	default:
+-		if (voltage_uv)
+-			st->vref_mv = voltage_uv / 1000;
+-		else
+-			dev_warn(&spi->dev,
+-				 "reference voltage unspecified\n");
+-	}
++	else if (voltage_uv)
++		st->vref_mv = voltage_uv / 1000;
++	else
++		dev_warn(&spi->dev, "reference voltage unspecified\n");
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
 -- 
 1.7.9.5
