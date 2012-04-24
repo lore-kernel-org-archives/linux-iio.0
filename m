@@ -1,224 +1,279 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4F96DB22.5070602@kernel.org>
-Date: Tue, 24 Apr 2012 17:56:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
- device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
-Subject: Re: [PATCH v2 08/11] staging:iio:dac:ad5446: Consolidate store_sample
- and store_pwr_down functions
-References: <1335286181-20474-1-git-send-email-lars@metafoo.de> <1335286181-20474-8-git-send-email-lars@metafoo.de>
-In-Reply-To: <1335286181-20474-8-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	device-drivers-devel@blackfin.uclinux.org,
+	drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 07/11] staging:iio:dac:ad5446: Convert to extended channel attributes
+Date: Tue, 24 Apr 2012 18:49:37 +0200
+Message-Id: <1335286181-20474-7-git-send-email-lars@metafoo.de>
+In-Reply-To: <1335286181-20474-1-git-send-email-lars@metafoo.de>
+References: <1335286181-20474-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 04/24/2012 05:49 PM, Lars-Peter Clausen wrote:
-> The devices supported by this drivers only have a single shift register, which
-> contains both the power down mode and the output sample. So writing the power
-> down mode and the output sample can be done by the same function. Call this
-> function prepare_write as it will prepare the spi message for a write. Also
-> introduce a small helper function which performs the whole write by calling the
-> chip the specific prepare function followed by a spi_sync.
-> 
-> The two power down bits are always placed ontop of the msb of the output sample,
-> so we can easily calculate their position by adding the channels shift to the
-> channels realbits.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Use extended channel attributes instead of raw sysfs files for the additional
+channel attributes.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/dac/ad5446.c |   75 +++++++++++++-------------------------
->  drivers/staging/iio/dac/ad5446.h |    6 +--
->  2 files changed, 28 insertions(+), 53 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
-> index 20c414c..731cd05 100644
-> --- a/drivers/staging/iio/dac/ad5446.c
-> +++ b/drivers/staging/iio/dac/ad5446.c
-> @@ -24,35 +24,16 @@
->  
->  #include "ad5446.h"
->  
-> -static int ad5446_store_sample(struct ad5446_state *st, unsigned val)
-> +static int ad5446_write(struct ad5446_state *st, unsigned val)
->  {
->  	__be16 data = cpu_to_be16(val);
->  	return spi_write(st->spi, &data, sizeof(data));
->  }
->  
-> -static int ad5660_store_sample(struct ad5446_state *st, unsigned val)
-> +static int ad5660_write(struct ad5446_state *st, unsigned val)
->  {
->  	uint8_t data[3];
->  
-> -	val |= AD5660_LOAD;
-> -	data[0] = (val >> 16) & 0xFF;
-> -	data[1] = (val >> 8) & 0xFF;
-> -	data[2] = val & 0xFF;
-> -
-> -	return spi_write(st->spi, data, sizeof(data));
-> -}
-> -
-> -static int ad5620_store_pwr_down(struct ad5446_state *st, unsigned mode)
-> -{
-> -	__be16 data = cpu_to_be16(mode << 14);
-> -	return spi_write(st->spi, &data, sizeof(data));
-> -}
-> -
-> -static int ad5660_store_pwr_down(struct ad5446_state *st, unsigned mode)
-> -{
-> -	unsigned val = mode << 16;
-> -	uint8_t data[3];
-> -
->  	data[0] = (val >> 16) & 0xFF;
->  	data[1] = (val >> 8) & 0xFF;
->  	data[2] = val & 0xFF;
-> @@ -114,6 +95,8 @@ static ssize_t ad5446_write_dac_powerdown(struct iio_dev *indio_dev,
->  					    const char *buf, size_t len)
->  {
->  	struct ad5446_state *st = iio_priv(indio_dev);
-> +	unsigned int shift;
-> +	unsigned int val;
->  	bool powerdown;
->  	int ret;
->  
-> @@ -124,11 +107,14 @@ static ssize_t ad5446_write_dac_powerdown(struct iio_dev *indio_dev,
->  	mutex_lock(&indio_dev->mlock);
->  	st->pwr_down = powerdown;
->  
-> -	if (st->pwr_down)
-> -		ret = st->chip_info->store_pwr_down(st, st->pwr_down_mode);
-> -	else
-> -		ret = st->chip_info->store_sample(st, st->cached_val);
-> +	if (st->pwr_down) {
-> +		shift = chan->scan_type.realbits + chan->scan_type.shift;
-> +		val = st->pwr_down_mode << shift;
-> +	} else {
-> +		val = st->cached_val;
-> +	}
->  
-> +	ret = st->chip_info->write(st, val);
->  	mutex_unlock(&indio_dev->mlock);
->  
->  	return ret ? ret : len;
-> @@ -171,74 +157,65 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info_powerdown[] = {
->  static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
->  	[ID_AD5444] = {
->  		.channel = AD5446_CHANNEL(12, 16, 2),
-> -		.store_sample = ad5446_store_sample,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5446] = {
->  		.channel = AD5446_CHANNEL(14, 16, 0),
-> -		.store_sample = ad5446_store_sample,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5541A] = {
->  		.channel = AD5446_CHANNEL(16, 16, 0),
-> -		.store_sample = ad5446_store_sample,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5512A] = {
->  		.channel = AD5446_CHANNEL(12, 16, 4),
-> -		.store_sample = ad5446_store_sample,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5553] = {
->  		.channel = AD5446_CHANNEL(14, 16, 0),
-> -		.store_sample = ad5446_store_sample,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5601] = {
->  		.channel = AD5446_CHANNEL_POWERDOWN(8, 16, 6),
-> -		.store_sample = ad5446_store_sample,
-> -		.store_pwr_down = ad5620_store_pwr_down,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5611] = {
->  		.channel = AD5446_CHANNEL_POWERDOWN(10, 16, 4),
-> -		.store_sample = ad5446_store_sample,
-> -		.store_pwr_down = ad5620_store_pwr_down,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5621] = {
->  		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
-> -		.store_sample = ad5446_store_sample,
-> -		.store_pwr_down = ad5620_store_pwr_down,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5620_2500] = {
->  		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
->  		.int_vref_mv = 2500,
-> -		.store_sample = ad5446_store_sample,
-> -		.store_pwr_down = ad5620_store_pwr_down,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5620_1250] = {
->  		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
->  		.int_vref_mv = 1250,
-> -		.store_sample = ad5446_store_sample,
-> -		.store_pwr_down = ad5620_store_pwr_down,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5640_2500] = {
->  		.channel = AD5446_CHANNEL_POWERDOWN(14, 16, 0),
->  		.int_vref_mv = 2500,
-> -		.store_sample = ad5446_store_sample,
-> -		.store_pwr_down = ad5620_store_pwr_down,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5640_1250] = {
->  		.channel = AD5446_CHANNEL_POWERDOWN(14, 16, 0),
->  		.int_vref_mv = 1250,
-> -		.store_sample = ad5446_store_sample,
-> -		.store_pwr_down = ad5620_store_pwr_down,
-> +		.write = ad5446_write,
->  	},
->  	[ID_AD5660_2500] = {
->  		.channel = AD5446_CHANNEL_POWERDOWN(16, 16, 0),
->  		.int_vref_mv = 2500,
-> -		.store_sample = ad5660_store_sample,
-> -		.store_pwr_down = ad5660_store_pwr_down,
-> +		.write = ad5660_write,
->  	},
->  	[ID_AD5660_1250] = {
->  		.channel = AD5446_CHANNEL_POWERDOWN(16, 16, 0),
->  		.int_vref_mv = 1250,
-> -		.store_sample = ad5660_store_sample,
-> -		.store_pwr_down = ad5660_store_pwr_down,
-> +		.write = ad5660_write,
->  	},
->  };
->  
-> @@ -280,7 +257,7 @@ static int ad5446_write_raw(struct iio_dev *indio_dev,
->  		mutex_lock(&indio_dev->mlock);
->  		st->cached_val = val;
->  		if (!st->pwr_down)
-> -			ret = st->chip_info->store_sample(st, val);
-> +			ret = st->chip_info->write(st, val);
->  		mutex_unlock(&indio_dev->mlock);
->  		break;
->  	default:
-> diff --git a/drivers/staging/iio/dac/ad5446.h b/drivers/staging/iio/dac/ad5446.h
-> index 0651816..1a0fb4a 100644
-> --- a/drivers/staging/iio/dac/ad5446.h
-> +++ b/drivers/staging/iio/dac/ad5446.h
-> @@ -51,15 +51,13 @@ struct ad5446_state {
->   * struct ad5446_chip_info - chip specific information
->   * @channel:		channel spec for the DAC
->   * @int_vref_mv:	AD5620/40/60: the internal reference voltage
-> - * @store_sample:	chip specific helper function to store the datum
-> - * @store_sample:	chip specific helper function to store the powerpown cmd
-> + * @write:		chip specific helper function to write to the register
->   */
->  
->  struct ad5446_chip_info {
->  	struct iio_chan_spec	channel;
->  	u16			int_vref_mv;
-> -	int (*store_sample)	(struct ad5446_state *st, unsigned val);
-> -	int (*store_pwr_down)	(struct ad5446_state *st, unsigned mode);
-> +	int			(*write)(struct ad5446_state *st, unsigned val);
->  };
->  
->  /**
+---
+ drivers/staging/iio/dac/ad5446.c |  139 +++++++++++++++++++-------------------
+ 1 file changed, 68 insertions(+), 71 deletions(-)
+
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index 00eece4..20c414c 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -60,64 +60,69 @@ static int ad5660_store_pwr_down(struct ad5446_state *st, unsigned mode)
+ 	return spi_write(st->spi, data, sizeof(data));
+ }
+ 
+-static ssize_t ad5446_write_powerdown_mode(struct device *dev,
+-				       struct device_attribute *attr,
+-				       const char *buf, size_t len)
++static const char * const ad5446_powerdown_modes[] = {
++	"", "1kohm_to_gnd", "100kohm_to_gnd", "three_state"
++};
++
++static ssize_t ad5446_read_powerdown_mode_available(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, char *buf)
++{
++	return sprintf(buf, "%s %s %s\n", ad5446_powerdown_modes[1],
++		ad5446_powerdown_modes[2], ad5446_powerdown_modes[3]);
++}
++
++static ssize_t ad5446_write_powerdown_mode(struct iio_dev *indio_dev,
++					    const struct iio_chan_spec *chan,
++					    const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5446_state *st = iio_priv(indio_dev);
++	int i;
+ 
+-	if (sysfs_streq(buf, "1kohm_to_gnd"))
+-		st->pwr_down_mode = MODE_PWRDWN_1k;
+-	else if (sysfs_streq(buf, "100kohm_to_gnd"))
+-		st->pwr_down_mode = MODE_PWRDWN_100k;
+-	else if (sysfs_streq(buf, "three_state"))
+-		st->pwr_down_mode = MODE_PWRDWN_TRISTATE;
+-	else
++	for (i = 1; i < ARRAY_SIZE(ad5446_powerdown_modes); i++) {
++		if (sysfs_streq(buf, ad5446_powerdown_modes[i])) {
++			st->pwr_down_mode = i;
++			break;
++		}
++	}
++
++	if (i == ARRAY_SIZE(ad5446_powerdown_modes))
+ 		return -EINVAL;
+ 
+ 	return len;
+ }
+ 
+-static ssize_t ad5446_read_powerdown_mode(struct device *dev,
+-				      struct device_attribute *attr, char *buf)
++static ssize_t ad5446_read_powerdown_mode(struct iio_dev *indio_dev,
++					   const struct iio_chan_spec *chan,
++					   char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5446_state *st = iio_priv(indio_dev);
+ 
+-	char mode[][15] = {"", "1kohm_to_gnd", "100kohm_to_gnd", "three_state"};
+-
+-	return sprintf(buf, "%s\n", mode[st->pwr_down_mode]);
++	return sprintf(buf, "%s\n", ad5446_powerdown_modes[st->pwr_down_mode]);
+ }
+ 
+-static ssize_t ad5446_read_dac_powerdown(struct device *dev,
+-					   struct device_attribute *attr,
++static ssize_t ad5446_read_dac_powerdown(struct iio_dev *indio_dev,
++					   const struct iio_chan_spec *chan,
+ 					   char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5446_state *st = iio_priv(indio_dev);
+ 
+ 	return sprintf(buf, "%d\n", st->pwr_down);
+ }
+ 
+-static ssize_t ad5446_write_dac_powerdown(struct device *dev,
+-					    struct device_attribute *attr,
++static ssize_t ad5446_write_dac_powerdown(struct iio_dev *indio_dev,
++					    const struct iio_chan_spec *chan,
+ 					    const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5446_state *st = iio_priv(indio_dev);
+-	unsigned long readin;
++	bool powerdown;
+ 	int ret;
+ 
+-	ret = strict_strtol(buf, 10, &readin);
++	ret = strtobool(buf, &powerdown);
+ 	if (ret)
+ 		return ret;
+ 
+-	if (readin > 1)
+-		ret = -EINVAL;
+-
+ 	mutex_lock(&indio_dev->mlock);
+-	st->pwr_down = readin;
++	st->pwr_down = powerdown;
+ 
+ 	if (st->pwr_down)
+ 		ret = st->chip_info->store_pwr_down(st, st->pwr_down_mode);
+@@ -129,38 +134,40 @@ static ssize_t ad5446_write_dac_powerdown(struct device *dev,
+ 	return ret ? ret : len;
+ }
+ 
+-static IIO_DEVICE_ATTR(out_voltage_powerdown_mode, S_IRUGO | S_IWUSR,
+-			ad5446_read_powerdown_mode,
+-			ad5446_write_powerdown_mode, 0);
+-
+-static IIO_CONST_ATTR(out_voltage_powerdown_mode_available,
+-			"1kohm_to_gnd 100kohm_to_gnd three_state");
+-
+-static IIO_DEVICE_ATTR(out_voltage0_powerdown, S_IRUGO | S_IWUSR,
+-			ad5446_read_dac_powerdown,
+-			ad5446_write_dac_powerdown, 0);
+-
+-static struct attribute *ad5446_attributes[] = {
+-	&iio_dev_attr_out_voltage0_powerdown.dev_attr.attr,
+-	&iio_dev_attr_out_voltage_powerdown_mode.dev_attr.attr,
+-	&iio_const_attr_out_voltage_powerdown_mode_available.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ad5446_attribute_group = {
+-	.attrs = ad5446_attributes,
++static const struct iio_chan_spec_ext_info ad5064_ext_info_powerdown[] = {
++	{
++		.name = "powerdown",
++		.read = ad5446_read_dac_powerdown,
++		.write = ad5446_write_dac_powerdown,
++	}, {
++		.name = "powerdown_mode",
++		.read = ad5446_read_powerdown_mode,
++		.write = ad5446_write_powerdown_mode,
++	}, {
++		.name = "powerdown_mode_available",
++		.shared = true,
++		.read = ad5446_read_powerdown_mode_available,
++	},
++	{ },
+ };
+ 
+-#define AD5446_CHANNEL(bits, storage, shift) { \
++#define _AD5446_CHANNEL(bits, storage, shift, ext) { \
+ 	.type = IIO_VOLTAGE, \
+ 	.indexed = 1, \
+ 	.output = 1, \
+ 	.channel = 0, \
+ 	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+ 	IIO_CHAN_INFO_SCALE_SHARED_BIT,	\
+-	.scan_type = IIO_ST('u', (bits), (storage), (shift)) \
++	.scan_type = IIO_ST('u', (bits), (storage), (shift)), \
++	.ext_info = (ext), \
+ }
+ 
++#define AD5446_CHANNEL(bits, storage, shift) \
++	_AD5446_CHANNEL(bits, storage, shift, NULL)
++
++#define AD5446_CHANNEL_POWERDOWN(bits, storage, shift) \
++	_AD5446_CHANNEL(bits, storage, shift, ad5064_ext_info_powerdown)
++
+ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
+ 	[ID_AD5444] = {
+ 		.channel = AD5446_CHANNEL(12, 16, 2),
+@@ -183,52 +190,52 @@ static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
+ 		.store_sample = ad5446_store_sample,
+ 	},
+ 	[ID_AD5601] = {
+-		.channel = AD5446_CHANNEL(8, 16, 6),
++		.channel = AD5446_CHANNEL_POWERDOWN(8, 16, 6),
+ 		.store_sample = ad5446_store_sample,
+ 		.store_pwr_down = ad5620_store_pwr_down,
+ 	},
+ 	[ID_AD5611] = {
+-		.channel = AD5446_CHANNEL(10, 16, 4),
++		.channel = AD5446_CHANNEL_POWERDOWN(10, 16, 4),
+ 		.store_sample = ad5446_store_sample,
+ 		.store_pwr_down = ad5620_store_pwr_down,
+ 	},
+ 	[ID_AD5621] = {
+-		.channel = AD5446_CHANNEL(12, 16, 2),
++		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
+ 		.store_sample = ad5446_store_sample,
+ 		.store_pwr_down = ad5620_store_pwr_down,
+ 	},
+ 	[ID_AD5620_2500] = {
+-		.channel = AD5446_CHANNEL(12, 16, 2),
++		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
+ 		.int_vref_mv = 2500,
+ 		.store_sample = ad5446_store_sample,
+ 		.store_pwr_down = ad5620_store_pwr_down,
+ 	},
+ 	[ID_AD5620_1250] = {
+-		.channel = AD5446_CHANNEL(12, 16, 2),
++		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
+ 		.int_vref_mv = 1250,
+ 		.store_sample = ad5446_store_sample,
+ 		.store_pwr_down = ad5620_store_pwr_down,
+ 	},
+ 	[ID_AD5640_2500] = {
+-		.channel = AD5446_CHANNEL(14, 16, 0),
++		.channel = AD5446_CHANNEL_POWERDOWN(14, 16, 0),
+ 		.int_vref_mv = 2500,
+ 		.store_sample = ad5446_store_sample,
+ 		.store_pwr_down = ad5620_store_pwr_down,
+ 	},
+ 	[ID_AD5640_1250] = {
+-		.channel = AD5446_CHANNEL(14, 16, 0),
++		.channel = AD5446_CHANNEL_POWERDOWN(14, 16, 0),
+ 		.int_vref_mv = 1250,
+ 		.store_sample = ad5446_store_sample,
+ 		.store_pwr_down = ad5620_store_pwr_down,
+ 	},
+ 	[ID_AD5660_2500] = {
+-		.channel = AD5446_CHANNEL(16, 16, 0),
++		.channel = AD5446_CHANNEL_POWERDOWN(16, 16, 0),
+ 		.int_vref_mv = 2500,
+ 		.store_sample = ad5660_store_sample,
+ 		.store_pwr_down = ad5660_store_pwr_down,
+ 	},
+ 	[ID_AD5660_1250] = {
+-		.channel = AD5446_CHANNEL(16, 16, 0),
++		.channel = AD5446_CHANNEL_POWERDOWN(16, 16, 0),
+ 		.int_vref_mv = 1250,
+ 		.store_sample = ad5660_store_sample,
+ 		.store_pwr_down = ad5660_store_pwr_down,
+@@ -286,13 +293,6 @@ static int ad5446_write_raw(struct iio_dev *indio_dev,
+ static const struct iio_info ad5446_info = {
+ 	.read_raw = ad5446_read_raw,
+ 	.write_raw = ad5446_write_raw,
+-	.attrs = &ad5446_attribute_group,
+-	.driver_module = THIS_MODULE,
+-};
+-
+-static const struct iio_info ad5446_info_no_pwr_down = {
+-	.read_raw = ad5446_read_raw,
+-	.write_raw = ad5446_write_raw,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+@@ -328,10 +328,7 @@ static int __devinit ad5446_probe(struct spi_device *spi)
+ 	/* Establish that the iio_dev is a child of the spi device */
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->name = spi_get_device_id(spi)->name;
+-	if (st->chip_info->store_pwr_down)
+-		indio_dev->info = &ad5446_info;
+-	else
+-		indio_dev->info = &ad5446_info_no_pwr_down;
++	indio_dev->info = &ad5446_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->channels = &st->chip_info->channel;
+ 	indio_dev->num_channels = 1;
+-- 
+1.7.9.5
