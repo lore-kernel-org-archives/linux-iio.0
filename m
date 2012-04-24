@@ -1,47 +1,48 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org,
-	drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 11/11] staging:iio:dac:ad5446: Update Kconfig entry
-Date: Tue, 24 Apr 2012 18:49:41 +0200
-Message-Id: <1335286181-20474-11-git-send-email-lars@metafoo.de>
-In-Reply-To: <1335286181-20474-1-git-send-email-lars@metafoo.de>
-References: <1335286181-20474-1-git-send-email-lars@metafoo.de>
+Return-Path: <jic23@kernel.org>
+Message-ID: <4F96DB9C.4060106@kernel.org>
+Date: Tue, 24 Apr 2012 17:58:04 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+ device-drivers-devel@blackfin.uclinux.org, drivers@analog.com
+Subject: Re: [PATCH v2 11/11] staging:iio:dac:ad5446: Update Kconfig entry
+References: <1335286181-20474-1-git-send-email-lars@metafoo.de> <1335286181-20474-11-git-send-email-lars@metafoo.de>
+In-Reply-To: <1335286181-20474-11-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-There is one device supported by the driver which is not listed in the Kconfig
-help test. This patch adds it. Also we are past the point were we can possible
-fit all devices supported by the driver in the Kconfig entry title, so just list
-the initial device that was supported by this driver and note that similar
-devices are supported as well.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/dac/Kconfig |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
-index a57803a..a626f03 100644
---- a/drivers/staging/iio/dac/Kconfig
-+++ b/drivers/staging/iio/dac/Kconfig
-@@ -56,12 +56,12 @@ config AD5624R_SPI
- 	  AD5664R converters (DAC). This driver uses the common SPI interface.
- 
- config AD5446
--	tristate "Analog Devices AD5444/6, AD5620/40/60 and AD5542A/12A DAC SPI driver"
-+	tristate "Analog Devices AD5446 and similar single channel DACs driver"
- 	depends on SPI
- 	help
- 	  Say yes here to build support for Analog Devices AD5444, AD5446,
--	  AD5512A, AD5542A, AD5543, AD5553, AD5601, AD5611, AD5620, AD5621,
--	  AD5640, AD5660, AD5662 DACs.
-+	  AD5512A, AD5541A, AD5542A, AD5543, AD5553, AD5601, AD5611, AD5620,
-+	  AD5621, AD5640, AD5660, AD5662 DACs.
- 
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad5446.
--- 
-1.7.9.5
+On 04/24/2012 05:49 PM, Lars-Peter Clausen wrote:
+> There is one device supported by the driver which is not listed in the Kconfig
+> help test. This patch adds it. Also we are past the point were we can possible
+> fit all devices supported by the driver in the Kconfig entry title, so just list
+> the initial device that was supported by this driver and note that similar
+> devices are supported as well.
+> 
+Nice cleanup series.
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  drivers/staging/iio/dac/Kconfig |    6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
+> index a57803a..a626f03 100644
+> --- a/drivers/staging/iio/dac/Kconfig
+> +++ b/drivers/staging/iio/dac/Kconfig
+> @@ -56,12 +56,12 @@ config AD5624R_SPI
+>  	  AD5664R converters (DAC). This driver uses the common SPI interface.
+>  
+>  config AD5446
+> -	tristate "Analog Devices AD5444/6, AD5620/40/60 and AD5542A/12A DAC SPI driver"
+> +	tristate "Analog Devices AD5446 and similar single channel DACs driver"
+>  	depends on SPI
+>  	help
+>  	  Say yes here to build support for Analog Devices AD5444, AD5446,
+> -	  AD5512A, AD5542A, AD5543, AD5553, AD5601, AD5611, AD5620, AD5621,
+> -	  AD5640, AD5660, AD5662 DACs.
+> +	  AD5512A, AD5541A, AD5542A, AD5543, AD5553, AD5601, AD5611, AD5620,
+> +	  AD5621, AD5640, AD5660, AD5662 DACs.
+>  
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called ad5446.
