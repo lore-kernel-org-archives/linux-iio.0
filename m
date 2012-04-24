@@ -5,52 +5,43 @@ Cc: linux-iio@vger.kernel.org,
 	device-drivers-devel@blackfin.uclinux.org,
 	drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 01/11] staging:iio:dac:ad5446: Do not exit powerdown when writing a sample
-Date: Tue, 24 Apr 2012 18:49:31 +0200
-Message-Id: <1335286181-20474-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH v2 11/11] staging:iio:dac:ad5446: Update Kconfig entry
+Date: Tue, 24 Apr 2012 18:49:41 +0200
+Message-Id: <1335286181-20474-11-git-send-email-lars@metafoo.de>
+In-Reply-To: <1335286181-20474-1-git-send-email-lars@metafoo.de>
+References: <1335286181-20474-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Both the powerdown mode bits and the sample value are stored in the same
-register, so writing a sample while the device is powered down will clear the
-power down bits. To avoid this only update the cached value when the device is
-powered down.
+There is one device supported by the driver which is not listed in the Kconfig
+help test. This patch adds it. Also we are past the point were we can possible
+fit all devices supported by the driver in the Kconfig entry title, so just list
+the initial device that was supported by this driver and note that similar
+devices are supported as well.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-
-----
-v1 actually had a small bug in that it would still write to the device's
-register when the sample was updated while the device was powered down. This was
-not critical since it would send out the powerdown mode again.
 ---
- drivers/staging/iio/dac/ad5446.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/staging/iio/dac/Kconfig |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
-index ec6968b..de796c2 100644
---- a/drivers/staging/iio/dac/ad5446.c
-+++ b/drivers/staging/iio/dac/ad5446.c
-@@ -272,7 +272,7 @@ static int ad5446_write_raw(struct iio_dev *indio_dev,
- 			       long mask)
- {
- 	struct ad5446_state *st = iio_priv(indio_dev);
--	int ret;
-+	int ret = 0;
+diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/staging/iio/dac/Kconfig
+index a57803a..a626f03 100644
+--- a/drivers/staging/iio/dac/Kconfig
++++ b/drivers/staging/iio/dac/Kconfig
+@@ -56,12 +56,12 @@ config AD5624R_SPI
+ 	  AD5664R converters (DAC). This driver uses the common SPI interface.
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -282,8 +282,10 @@ static int ad5446_write_raw(struct iio_dev *indio_dev,
- 		val <<= chan->scan_type.shift;
- 		mutex_lock(&indio_dev->mlock);
- 		st->cached_val = val;
--		st->chip_info->store_sample(st, val);
--		ret = spi_sync(st->spi, &st->msg);
-+		if (!st->pwr_down) {
-+			st->chip_info->store_sample(st, val);
-+			ret = spi_sync(st->spi, &st->msg);
-+		}
- 		mutex_unlock(&indio_dev->mlock);
- 		break;
- 	default:
+ config AD5446
+-	tristate "Analog Devices AD5444/6, AD5620/40/60 and AD5542A/12A DAC SPI driver"
++	tristate "Analog Devices AD5446 and similar single channel DACs driver"
+ 	depends on SPI
+ 	help
+ 	  Say yes here to build support for Analog Devices AD5444, AD5446,
+-	  AD5512A, AD5542A, AD5543, AD5553, AD5601, AD5611, AD5620, AD5621,
+-	  AD5640, AD5660, AD5662 DACs.
++	  AD5512A, AD5541A, AD5542A, AD5543, AD5553, AD5601, AD5611, AD5620,
++	  AD5621, AD5640, AD5660, AD5662 DACs.
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad5446.
 -- 
 1.7.9.5
