@@ -1,39 +1,32 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:34515 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752006Ab2DYSNX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Apr 2012 14:13:23 -0400
-Received: by pbbro12 with SMTP id ro12so1756025pbb.19
-        for <linux-iio@vger.kernel.org>; Wed, 25 Apr 2012 11:13:23 -0700 (PDT)
-Date: Wed, 25 Apr 2012 11:13:19 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 0/5] IIO: Move the core out of staging.
-Message-ID: <20120425181319.GA22984@kroah.com>
-References: <1335365700-1138-1-git-send-email-jic23@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:43723 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752434Ab2DYOzH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Apr 2012 10:55:07 -0400
+From: Jonathan Cameron <jic23@kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 5/5] IIO: Move the core abi documentation from staging
+Date: Wed, 25 Apr 2012 15:55:00 +0100
+Message-Id: <1335365700-1138-6-git-send-email-jic23@kernel.org>
 In-Reply-To: <1335365700-1138-1-git-send-email-jic23@kernel.org>
+References: <1335365700-1138-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Apr 25, 2012 at 03:54:55PM +0100, Jonathan Cameron wrote:
-> Hi Greg,
-> 
-> Here is the promised patch series.
-> 
-> I stalled it for a few days over whether we should switch some of the
-> Kconfig selects to depends.  Lars-Peter talked me out of it arguing
-> it made little sense to users.  There are some cleanups to be made
-> there but they can occur at a later date.
-> 
-> Clearly there are lots more docs to move, but some of those need going
-> over with a fine toothed comb as they have rotted somewhat.  We'll
-> work on that in the near future.
+This file contains only the most generic elements. Other
+class specific and device specific ABI documents will follow
+over time.
 
-Very nicely done, I've applied this to the staging-next tree.
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ .../ABI/testing}/sysfs-bus-iio                     |    0
+ 1 files changed, 0 insertions(+), 0 deletions(-)
 
-Congrats, now the real work begins :)
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+similarity index 100%
+rename from drivers/staging/iio/Documentation/sysfs-bus-iio
+rename to Documentation/ABI/testing/sysfs-bus-iio
+-- 
+1.7.0.4
 
-greg k-h
