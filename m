@@ -1,17 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-136.synserver.de ([212.40.185.136]:1061 "EHLO
-	smtp-out-129.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1755046Ab2DZLdG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Apr 2012 07:33:06 -0400
+Received: from smtp-out-106.synserver.de ([212.40.185.106]:1039 "EHLO
+	smtp-out-098.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1757446Ab2DYTFW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Apr 2012 15:05:22 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>, devel@driverdev.osuosl.org,
-	linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
 Subject: [PATCH] staging:iio: Streamline API function naming
-Date: Thu, 26 Apr 2012 13:35:01 +0200
-Message-Id: <1335440101-25004-1-git-send-email-lars@metafoo.de>
+Date: Wed, 25 Apr 2012 21:07:48 +0200
+Message-Id: <1335380868-10584-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -64,99 +61,98 @@ comments and documentation.
 </smpl>
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/iio/industrialio-core.c                     |    8 ++++----
- drivers/iio/industrialio-trigger.c                  |   14 +++++++-------
- drivers/staging/iio/Documentation/device.txt        |    4 ++--
- drivers/staging/iio/Documentation/trigger.txt       |    2 +-
- drivers/staging/iio/accel/adis16201_core.c          |    6 +++---
- drivers/staging/iio/accel/adis16201_trigger.c       |    6 +++---
- drivers/staging/iio/accel/adis16203_core.c          |    6 +++---
- drivers/staging/iio/accel/adis16203_trigger.c       |    6 +++---
- drivers/staging/iio/accel/adis16204_core.c          |    6 +++---
- drivers/staging/iio/accel/adis16204_trigger.c       |    6 +++---
- drivers/staging/iio/accel/adis16209_core.c          |    6 +++---
- drivers/staging/iio/accel/adis16209_trigger.c       |    6 +++---
- drivers/staging/iio/accel/adis16220_core.c          |    6 +++---
- drivers/staging/iio/accel/adis16240_core.c          |    6 +++---
- drivers/staging/iio/accel/adis16240_trigger.c       |    6 +++---
- drivers/staging/iio/accel/kxsd9.c                   |    6 +++---
- drivers/staging/iio/accel/lis3l02dq_core.c          |    6 +++---
- drivers/staging/iio/accel/lis3l02dq_ring.c          |    6 +++---
- drivers/staging/iio/accel/sca3000_core.c            |    6 +++---
- drivers/staging/iio/adc/ad7192.c                    |   10 +++++-----
- drivers/staging/iio/adc/ad7280a.c                   |    6 +++---
- drivers/staging/iio/adc/ad7291.c                    |    6 +++---
- drivers/staging/iio/adc/ad7298_core.c               |    6 +++---
- drivers/staging/iio/adc/ad7476_core.c               |    6 +++---
- drivers/staging/iio/adc/ad7606_core.c               |    6 +++---
- drivers/staging/iio/adc/ad7780.c                    |    6 +++---
- drivers/staging/iio/adc/ad7793.c                    |   12 ++++++------
- drivers/staging/iio/adc/ad7816.c                    |    6 +++---
- drivers/staging/iio/adc/ad7887_core.c               |    6 +++---
- drivers/staging/iio/adc/ad799x_core.c               |    6 +++---
- drivers/staging/iio/adc/adt7310.c                   |    6 +++---
- drivers/staging/iio/adc/adt7410.c                   |    6 +++---
- drivers/staging/iio/adc/lpc32xx_adc.c               |    6 +++---
- drivers/staging/iio/adc/max1363_core.c              |    6 +++---
- drivers/staging/iio/adc/spear_adc.c                 |    6 +++---
- drivers/staging/iio/addac/adt7316.c                 |    6 +++---
- drivers/staging/iio/cdc/ad7150.c                    |    6 +++---
- drivers/staging/iio/cdc/ad7152.c                    |    6 +++---
- drivers/staging/iio/cdc/ad7746.c                    |    6 +++---
- drivers/staging/iio/dac/ad5064.c                    |    6 +++---
- drivers/staging/iio/dac/ad5360.c                    |    6 +++---
- drivers/staging/iio/dac/ad5380.c                    |    6 +++---
- drivers/staging/iio/dac/ad5421.c                    |    6 +++---
- drivers/staging/iio/dac/ad5446.c                    |    6 +++---
- drivers/staging/iio/dac/ad5504.c                    |    6 +++---
- drivers/staging/iio/dac/ad5624r_spi.c               |    6 +++---
- drivers/staging/iio/dac/ad5686.c                    |    6 +++---
- drivers/staging/iio/dac/ad5764.c                    |    6 +++---
- drivers/staging/iio/dac/ad5791.c                    |    6 +++---
- drivers/staging/iio/dac/max517.c                    |    6 +++---
- drivers/staging/iio/dds/ad5930.c                    |    6 +++---
- drivers/staging/iio/dds/ad9832.c                    |    6 +++---
- drivers/staging/iio/dds/ad9834.c                    |    6 +++---
- drivers/staging/iio/dds/ad9850.c                    |    6 +++---
- drivers/staging/iio/dds/ad9852.c                    |    6 +++---
- drivers/staging/iio/dds/ad9910.c                    |    6 +++---
- drivers/staging/iio/dds/ad9951.c                    |    6 +++---
- drivers/staging/iio/gyro/adis16060_core.c           |    6 +++---
- drivers/staging/iio/gyro/adis16080_core.c           |    6 +++---
- drivers/staging/iio/gyro/adis16130_core.c           |    6 +++---
- drivers/staging/iio/gyro/adis16260_core.c           |    6 +++---
- drivers/staging/iio/gyro/adis16260_trigger.c        |    6 +++---
- drivers/staging/iio/gyro/adxrs450_core.c            |    6 +++---
- drivers/staging/iio/iio_simple_dummy.c              |    6 +++---
- drivers/staging/iio/impedance-analyzer/ad5933.c     |    6 +++---
- drivers/staging/iio/imu/adis16400_core.c            |    6 +++---
- drivers/staging/iio/imu/adis16400_trigger.c         |    6 +++---
- drivers/staging/iio/light/isl29018.c                |    6 +++---
- drivers/staging/iio/light/isl29028.c                |    6 +++---
- drivers/staging/iio/light/tsl2563.c                 |    6 +++---
- drivers/staging/iio/light/tsl2583.c                 |    6 +++---
- drivers/staging/iio/light/tsl2x7x_core.c            |    6 +++---
- drivers/staging/iio/magnetometer/ak8975.c           |    6 +++---
- drivers/staging/iio/magnetometer/hmc5843.c          |    6 +++---
- drivers/staging/iio/meter/ade7753.c                 |    6 +++---
- drivers/staging/iio/meter/ade7754.c                 |    6 +++---
- drivers/staging/iio/meter/ade7758_core.c            |    6 +++---
- drivers/staging/iio/meter/ade7758_trigger.c         |    6 +++---
- drivers/staging/iio/meter/ade7759.c                 |    6 +++---
- drivers/staging/iio/meter/ade7854-i2c.c             |    4 ++--
- drivers/staging/iio/meter/ade7854-spi.c             |    4 ++--
- drivers/staging/iio/meter/ade7854.c                 |    4 ++--
- drivers/staging/iio/resolver/ad2s1200.c             |    6 +++---
- drivers/staging/iio/resolver/ad2s1210.c             |    6 +++---
- drivers/staging/iio/resolver/ad2s90.c               |    6 +++---
- drivers/staging/iio/trigger/iio-trig-bfin-timer.c   |    6 +++---
- drivers/staging/iio/trigger/iio-trig-gpio.c         |    6 +++---
- drivers/staging/iio/trigger/iio-trig-periodic-rtc.c |    4 ++--
- drivers/staging/iio/trigger/iio-trig-sysfs.c        |    6 +++---
- include/linux/iio/iio.h                             |   12 ++++++------
- include/linux/iio/trigger.h                         |    8 ++++----
+ drivers/iio/industrialio-core.c                    |    8 ++++----
+ drivers/iio/industrialio-trigger.c                 |   14 +++++++-------
+ drivers/staging/iio/Documentation/device.txt       |    4 ++--
+ drivers/staging/iio/Documentation/trigger.txt      |    2 +-
+ drivers/staging/iio/accel/adis16201_core.c         |    6 +++---
+ drivers/staging/iio/accel/adis16201_trigger.c      |    6 +++---
+ drivers/staging/iio/accel/adis16203_core.c         |    6 +++---
+ drivers/staging/iio/accel/adis16203_trigger.c      |    6 +++---
+ drivers/staging/iio/accel/adis16204_core.c         |    6 +++---
+ drivers/staging/iio/accel/adis16204_trigger.c      |    6 +++---
+ drivers/staging/iio/accel/adis16209_core.c         |    6 +++---
+ drivers/staging/iio/accel/adis16209_trigger.c      |    6 +++---
+ drivers/staging/iio/accel/adis16220_core.c         |    6 +++---
+ drivers/staging/iio/accel/adis16240_core.c         |    6 +++---
+ drivers/staging/iio/accel/adis16240_trigger.c      |    6 +++---
+ drivers/staging/iio/accel/kxsd9.c                  |    6 +++---
+ drivers/staging/iio/accel/lis3l02dq_core.c         |    6 +++---
+ drivers/staging/iio/accel/lis3l02dq_ring.c         |    6 +++---
+ drivers/staging/iio/accel/sca3000_core.c           |    6 +++---
+ drivers/staging/iio/adc/ad7192.c                   |   10 +++++-----
+ drivers/staging/iio/adc/ad7280a.c                  |    6 +++---
+ drivers/staging/iio/adc/ad7291.c                   |    6 +++---
+ drivers/staging/iio/adc/ad7298_core.c              |    6 +++---
+ drivers/staging/iio/adc/ad7476_core.c              |    6 +++---
+ drivers/staging/iio/adc/ad7606_core.c              |    6 +++---
+ drivers/staging/iio/adc/ad7780.c                   |    6 +++---
+ drivers/staging/iio/adc/ad7793.c                   |   12 ++++++------
+ drivers/staging/iio/adc/ad7816.c                   |    6 +++---
+ drivers/staging/iio/adc/ad7887_core.c              |    6 +++---
+ drivers/staging/iio/adc/ad799x_core.c              |    6 +++---
+ drivers/staging/iio/adc/adt7310.c                  |    6 +++---
+ drivers/staging/iio/adc/adt7410.c                  |    6 +++---
+ drivers/staging/iio/adc/lpc32xx_adc.c              |    6 +++---
+ drivers/staging/iio/adc/max1363_core.c             |    6 +++---
+ drivers/staging/iio/adc/spear_adc.c                |    6 +++---
+ drivers/staging/iio/addac/adt7316.c                |    6 +++---
+ drivers/staging/iio/cdc/ad7150.c                   |    6 +++---
+ drivers/staging/iio/cdc/ad7152.c                   |    6 +++---
+ drivers/staging/iio/cdc/ad7746.c                   |    6 +++---
+ drivers/staging/iio/dac/ad5064.c                   |    6 +++---
+ drivers/staging/iio/dac/ad5360.c                   |    6 +++---
+ drivers/staging/iio/dac/ad5380.c                   |    6 +++---
+ drivers/staging/iio/dac/ad5421.c                   |    6 +++---
+ drivers/staging/iio/dac/ad5446.c                   |    6 +++---
+ drivers/staging/iio/dac/ad5504.c                   |    6 +++---
+ drivers/staging/iio/dac/ad5624r_spi.c              |    6 +++---
+ drivers/staging/iio/dac/ad5686.c                   |    6 +++---
+ drivers/staging/iio/dac/ad5764.c                   |    6 +++---
+ drivers/staging/iio/dac/ad5791.c                   |    6 +++---
+ drivers/staging/iio/dac/max517.c                   |    6 +++---
+ drivers/staging/iio/dds/ad5930.c                   |    6 +++---
+ drivers/staging/iio/dds/ad9832.c                   |    6 +++---
+ drivers/staging/iio/dds/ad9834.c                   |    6 +++---
+ drivers/staging/iio/dds/ad9850.c                   |    6 +++---
+ drivers/staging/iio/dds/ad9852.c                   |    6 +++---
+ drivers/staging/iio/dds/ad9910.c                   |    6 +++---
+ drivers/staging/iio/dds/ad9951.c                   |    6 +++---
+ drivers/staging/iio/gyro/adis16060_core.c          |    6 +++---
+ drivers/staging/iio/gyro/adis16080_core.c          |    6 +++---
+ drivers/staging/iio/gyro/adis16130_core.c          |    6 +++---
+ drivers/staging/iio/gyro/adis16260_core.c          |    6 +++---
+ drivers/staging/iio/gyro/adis16260_trigger.c       |    6 +++---
+ drivers/staging/iio/gyro/adxrs450_core.c           |    6 +++---
+ drivers/staging/iio/iio_simple_dummy.c             |    6 +++---
+ drivers/staging/iio/impedance-analyzer/ad5933.c    |    6 +++---
+ drivers/staging/iio/imu/adis16400_core.c           |    6 +++---
+ drivers/staging/iio/imu/adis16400_trigger.c        |    6 +++---
+ drivers/staging/iio/light/isl29018.c               |    6 +++---
+ drivers/staging/iio/light/isl29028.c               |    6 +++---
+ drivers/staging/iio/light/tsl2563.c                |    6 +++---
+ drivers/staging/iio/light/tsl2583.c                |    6 +++---
+ drivers/staging/iio/light/tsl2x7x_core.c           |    6 +++---
+ drivers/staging/iio/magnetometer/ak8975.c          |    6 +++---
+ drivers/staging/iio/magnetometer/hmc5843.c         |    6 +++---
+ drivers/staging/iio/meter/ade7753.c                |    6 +++---
+ drivers/staging/iio/meter/ade7754.c                |    6 +++---
+ drivers/staging/iio/meter/ade7758_core.c           |    6 +++---
+ drivers/staging/iio/meter/ade7758_trigger.c        |    6 +++---
+ drivers/staging/iio/meter/ade7759.c                |    6 +++---
+ drivers/staging/iio/meter/ade7854-i2c.c            |    4 ++--
+ drivers/staging/iio/meter/ade7854-spi.c            |    4 ++--
+ drivers/staging/iio/meter/ade7854.c                |    4 ++--
+ drivers/staging/iio/resolver/ad2s1200.c            |    6 +++---
+ drivers/staging/iio/resolver/ad2s1210.c            |    6 +++---
+ drivers/staging/iio/resolver/ad2s90.c              |    6 +++---
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.c  |    6 +++---
+ drivers/staging/iio/trigger/iio-trig-gpio.c        |    6 +++---
+ .../staging/iio/trigger/iio-trig-periodic-rtc.c    |    4 ++--
+ drivers/staging/iio/trigger/iio-trig-sysfs.c       |    6 +++---
+ include/linux/iio/iio.h                            |   12 ++++++------
+ include/linux/iio/trigger.h                        |    8 ++++----
  91 files changed, 280 insertions(+), 280 deletions(-)
 
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
@@ -2977,5 +2973,5 @@ index 1cfca23..a981994 100644
  
  #endif /* _IIO_TRIGGER_H_ */
 -- 
-1.7.10
+1.7.9.5
 
