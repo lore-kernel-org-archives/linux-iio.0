@@ -1,59 +1,180 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:45814 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756214Ab2DZQOX convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Apr 2012 12:14:23 -0400
-References: <1335443643-20439-1-git-send-email-michael.hennerich@analog.com> <4F9948D7.20109@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D5917714E7965F942@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917714E7965F942@LIMKCMBX1.ad.analog.com>
+Received: from ch1ehsobe004.messaging.microsoft.com ([216.32.181.184]:20345
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755555Ab2DZMeQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Apr 2012 08:34:16 -0400
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 4/4] iio: core: iio_chan_spec_ext_info: Add private handle
+Date: Thu, 26 Apr 2012 14:34:03 +0200
+Message-ID: <1335443643-20439-4-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1335443643-20439-1-git-send-email-michael.hennerich@analog.com>
+References: <1335443643-20439-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: RE: [PATCH 1/4] iio: Rename iio/dds to iio/frequency
-From: Jonathan Cameron <jic23@cam.ac.uk>
-Date: Thu, 26 Apr 2012 17:14:06 +0100
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "jic23@kernel.org" <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Message-ID: <dc2ece51-6655-4915-ac3f-39a583c54751@email.android.com>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+From: Michael Hennerich <michael.hennerich@analog.com>
 
+There is currently no user, but we might need it in future.
+So better add it now, before we have to convert drivers afterwards.
 
-"Hennerich, Michael" <Michael.Hennerich@analog.com> wrote:
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/iio/industrialio-core.c  |    5 +++--
+ drivers/staging/iio/dac/ad5064.c |   12 +++++++-----
+ drivers/staging/iio/dac/ad5446.c |    6 +++++-
+ include/linux/iio/iio.h          |   11 +++++++----
+ 4 files changed, 22 insertions(+), 12 deletions(-)
 
->Jonathan Cameron wrote on 2012-04-26:
->> On 4/26/2012 1:34 PM, michael.hennerich@analog.com wrote:
->>> From: Michael Hennerich<michael.hennerich@analog.com>
->>>
->>> Generalize naming to allow other frequency synthesis techniques as
->>> well. No functional changes.
->> Other than doing git --format-patch -M to generate this, fine with
->me.
->> One thought though. Do we want a separate directory for frequency
->> measurement devices from frequency generating ones?  If so might want
->to
->> pick a naming that allows for that...
->
->Hi Jonathan,
->
->Right now I'm happy with a single directory, potentially covering both
->type of devices.
->
-Works for me so.
-
-Acked-by: Jonathan Cameron <jic23@kernel.org>
->
->Greetings,
->Michael
->
->--
->Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
->Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
->Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
->Margaret Seif
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1c55d2b..8f72ab8 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -281,7 +281,7 @@ static ssize_t iio_read_channel_ext_info(struct device *dev,
+ 
+ 	ext_info = &this_attr->c->ext_info[this_attr->address];
+ 
+-	return ext_info->read(indio_dev, this_attr->c, buf);
++	return ext_info->read(indio_dev, ext_info->private, this_attr->c, buf);
+ }
+ 
+ static ssize_t iio_write_channel_ext_info(struct device *dev,
+@@ -295,7 +295,8 @@ static ssize_t iio_write_channel_ext_info(struct device *dev,
+ 
+ 	ext_info = &this_attr->c->ext_info[this_attr->address];
+ 
+-	return ext_info->write(indio_dev, this_attr->c, buf, len);
++	return ext_info->write(indio_dev, ext_info->private,
++			       this_attr->c, buf, len);
+ }
+ 
+ static ssize_t iio_read_channel_info(struct device *dev,
+diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
+index c0fad4f..e06f1d1 100644
+--- a/drivers/staging/iio/dac/ad5064.c
++++ b/drivers/staging/iio/dac/ad5064.c
+@@ -144,14 +144,14 @@ static const char ad5064_powerdown_modes[][15] = {
+ };
+ 
+ static ssize_t ad5064_read_powerdown_mode_available(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, char *buf)
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+ {
+ 	return sprintf(buf, "%s %s %s\n", ad5064_powerdown_modes[1],
+ 		ad5064_powerdown_modes[2], ad5064_powerdown_modes[3]);
+ }
+ 
+ static ssize_t ad5064_read_powerdown_mode(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, char *buf)
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+ {
+ 	struct ad5064_state *st = iio_priv(indio_dev);
+ 
+@@ -160,7 +160,8 @@ static ssize_t ad5064_read_powerdown_mode(struct iio_dev *indio_dev,
+ }
+ 
+ static ssize_t ad5064_write_powerdown_mode(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, const char *buf, size_t len)
++	uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
++	size_t len)
+ {
+ 	struct ad5064_state *st = iio_priv(indio_dev);
+ 	unsigned int mode, i;
+@@ -187,7 +188,7 @@ static ssize_t ad5064_write_powerdown_mode(struct iio_dev *indio_dev,
+ }
+ 
+ static ssize_t ad5064_read_dac_powerdown(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, char *buf)
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+ {
+ 	struct ad5064_state *st = iio_priv(indio_dev);
+ 
+@@ -195,7 +196,8 @@ static ssize_t ad5064_read_dac_powerdown(struct iio_dev *indio_dev,
+ }
+ 
+ static ssize_t ad5064_write_dac_powerdown(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, const char *buf, size_t len)
++	 uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
++	 size_t len)
+ {
+ 	struct ad5064_state *st = iio_priv(indio_dev);
+ 	bool pwr_down;
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index 62ad1d5..55e34d4 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -46,13 +46,14 @@ static const char * const ad5446_powerdown_modes[] = {
+ };
+ 
+ static ssize_t ad5446_read_powerdown_mode_available(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, char *buf)
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+ {
+ 	return sprintf(buf, "%s %s %s\n", ad5446_powerdown_modes[1],
+ 		ad5446_powerdown_modes[2], ad5446_powerdown_modes[3]);
+ }
+ 
+ static ssize_t ad5446_write_powerdown_mode(struct iio_dev *indio_dev,
++					    uintptr_t private,
+ 					    const struct iio_chan_spec *chan,
+ 					    const char *buf, size_t len)
+ {
+@@ -73,6 +74,7 @@ static ssize_t ad5446_write_powerdown_mode(struct iio_dev *indio_dev,
+ }
+ 
+ static ssize_t ad5446_read_powerdown_mode(struct iio_dev *indio_dev,
++					   uintptr_t private,
+ 					   const struct iio_chan_spec *chan,
+ 					   char *buf)
+ {
+@@ -82,6 +84,7 @@ static ssize_t ad5446_read_powerdown_mode(struct iio_dev *indio_dev,
+ }
+ 
+ static ssize_t ad5446_read_dac_powerdown(struct iio_dev *indio_dev,
++					   uintptr_t private,
+ 					   const struct iio_chan_spec *chan,
+ 					   char *buf)
+ {
+@@ -91,6 +94,7 @@ static ssize_t ad5446_read_dac_powerdown(struct iio_dev *indio_dev,
+ }
+ 
+ static ssize_t ad5446_write_dac_powerdown(struct iio_dev *indio_dev,
++					    uintptr_t private,
+ 					    const struct iio_chan_spec *chan,
+ 					    const char *buf, size_t len)
+ {
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 0e826af..263b430 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -111,14 +111,17 @@ struct iio_dev;
+  * @shared:	Whether this attribute is shared between all channels.
+  * @read:	Read callback for this info attribute, may be NULL.
+  * @write:	Write callback for this info attribute, may be NULL.
++ * @private:	Data private to the driver.
+  */
+ struct iio_chan_spec_ext_info {
+ 	const char *name;
+ 	bool shared;
+-	ssize_t (*read)(struct iio_dev *, struct iio_chan_spec const *,
+-			char *buf);
+-	ssize_t (*write)(struct iio_dev *, struct iio_chan_spec const *,
+-			const char *buf, size_t len);
++	ssize_t (*read)(struct iio_dev *, uintptr_t private,
++			struct iio_chan_spec const *, char *buf);
++	ssize_t (*write)(struct iio_dev *, uintptr_t private,
++			 struct iio_chan_spec const *, const char *buf,
++			 size_t len);
++	uintptr_t private;
+ };
+ 
+ /**
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.7.0.4
+
+
