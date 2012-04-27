@@ -1,35 +1,132 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <4F9EDBF9.5000806@metafoo.de>
-Date: Mon, 30 Apr 2012 20:37:45 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from va3ehsobe005.messaging.microsoft.com ([216.32.180.31]:38536
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1759829Ab2D0I6r (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Apr 2012 04:58:47 -0400
+From: <michael.hennerich@analog.com>
+To: <gregkh@linuxfoundation.org>
+CC: <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 1/4] iio: Rename iio/dds to iio/frequency
+Date: Fri, 27 Apr 2012 10:58:33 +0200
+Message-ID: <1335517116-32307-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: add mcp4725 I2C DAC driver
-References: <4F9E6909.6090409@cam.ac.uk> <1335794080-6398-1-git-send-email-pmeerw@pmeerw.net> <4F9EA43F.7000803@cam.ac.uk>
-In-Reply-To: <4F9EA43F.7000803@cam.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/30/2012 04:39 PM, Jonathan Cameron wrote:
-> On 4/30/2012 2:54 PM, Peter Meerwald wrote:
->> v2 (based on comments from Jonathan Cameron and Lars-Peter Clausen):
->> * did NOT switch to chan_spec yet
-> I guess from this you are intending to? I guess whether we merge this as
-> is depends
-> on what timescale you are thinking of to make that change?
->> * rebase to staging-next tree, update iio header locations
->> * dropped dac.h #include, not needed
->> * strict_strtol() ->  kstrtol()
->> * call iio_device_unregister() in remove()
->> * everything in one patch
-> If you want to send it on to Greg KH now and Lars-Peter is happy, then
-> that's fine by me.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-I don't think it's a good idea to introduce new non chan_spec drivers.
-Especially for simple drivers like this one where it is relatively easy to add
-chan_spec support. So no ack from my side, but that's not necessarily a blocker
-for the patch.
+Generalize naming to allow other frequency synthesis techniques as well.
+No functional changes.
 
->> Signed-off-by: Peter Meerwald<pmeerw@pmeerw.net>
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/Kconfig                     |    2 +-
+ drivers/staging/iio/Makefile                    |    2 +-
+ drivers/staging/iio/{dds => frequency}/Kconfig  |    0
+ drivers/staging/iio/{dds => frequency}/Makefile |    0
+ drivers/staging/iio/{dds => frequency}/ad5930.c |    0
+ drivers/staging/iio/{dds => frequency}/ad9832.c |    0
+ drivers/staging/iio/{dds => frequency}/ad9832.h |    0
+ drivers/staging/iio/{dds => frequency}/ad9834.c |    0
+ drivers/staging/iio/{dds => frequency}/ad9834.h |    0
+ drivers/staging/iio/{dds => frequency}/ad9850.c |    0
+ drivers/staging/iio/{dds => frequency}/ad9852.c |    0
+ drivers/staging/iio/{dds => frequency}/ad9910.c |    0
+ drivers/staging/iio/{dds => frequency}/ad9951.c |    0
+ drivers/staging/iio/{dds => frequency}/dds.h    |    0
+ 14 files changed, 2 insertions(+), 2 deletions(-)
+ rename drivers/staging/iio/{dds => frequency}/Kconfig (100%)
+ rename drivers/staging/iio/{dds => frequency}/Makefile (100%)
+ rename drivers/staging/iio/{dds => frequency}/ad5930.c (100%)
+ rename drivers/staging/iio/{dds => frequency}/ad9832.c (100%)
+ rename drivers/staging/iio/{dds => frequency}/ad9832.h (100%)
+ rename drivers/staging/iio/{dds => frequency}/ad9834.c (100%)
+ rename drivers/staging/iio/{dds => frequency}/ad9834.h (100%)
+ rename drivers/staging/iio/{dds => frequency}/ad9850.c (100%)
+ rename drivers/staging/iio/{dds => frequency}/ad9852.c (100%)
+ rename drivers/staging/iio/{dds => frequency}/ad9910.c (100%)
+ rename drivers/staging/iio/{dds => frequency}/ad9951.c (100%)
+ rename drivers/staging/iio/{dds => frequency}/dds.h (100%)
+
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index c1054a1..3c8e5ec 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -30,7 +30,7 @@ source "drivers/staging/iio/adc/Kconfig"
+ source "drivers/staging/iio/addac/Kconfig"
+ source "drivers/staging/iio/cdc/Kconfig"
+ source "drivers/staging/iio/dac/Kconfig"
+-source "drivers/staging/iio/dds/Kconfig"
++source "drivers/staging/iio/frequency/Kconfig"
+ source "drivers/staging/iio/gyro/Kconfig"
+ source "drivers/staging/iio/impedance-analyzer/Kconfig"
+ source "drivers/staging/iio/imu/Kconfig"
+diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
+index 2acd42f..6a46d5a 100644
+--- a/drivers/staging/iio/Makefile
++++ b/drivers/staging/iio/Makefile
+@@ -18,7 +18,7 @@ obj-y += adc/
+ obj-y += addac/
+ obj-y += cdc/
+ obj-y += dac/
+-obj-y += dds/
++obj-y += frequency/
+ obj-y += gyro/
+ obj-y += impedance-analyzer/
+ obj-y += imu/
+diff --git a/drivers/staging/iio/dds/Kconfig b/drivers/staging/iio/frequency/Kconfig
+similarity index 100%
+rename from drivers/staging/iio/dds/Kconfig
+rename to drivers/staging/iio/frequency/Kconfig
+diff --git a/drivers/staging/iio/dds/Makefile b/drivers/staging/iio/frequency/Makefile
+similarity index 100%
+rename from drivers/staging/iio/dds/Makefile
+rename to drivers/staging/iio/frequency/Makefile
+diff --git a/drivers/staging/iio/dds/ad5930.c b/drivers/staging/iio/frequency/ad5930.c
+similarity index 100%
+rename from drivers/staging/iio/dds/ad5930.c
+rename to drivers/staging/iio/frequency/ad5930.c
+diff --git a/drivers/staging/iio/dds/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+similarity index 100%
+rename from drivers/staging/iio/dds/ad9832.c
+rename to drivers/staging/iio/frequency/ad9832.c
+diff --git a/drivers/staging/iio/dds/ad9832.h b/drivers/staging/iio/frequency/ad9832.h
+similarity index 100%
+rename from drivers/staging/iio/dds/ad9832.h
+rename to drivers/staging/iio/frequency/ad9832.h
+diff --git a/drivers/staging/iio/dds/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+similarity index 100%
+rename from drivers/staging/iio/dds/ad9834.c
+rename to drivers/staging/iio/frequency/ad9834.c
+diff --git a/drivers/staging/iio/dds/ad9834.h b/drivers/staging/iio/frequency/ad9834.h
+similarity index 100%
+rename from drivers/staging/iio/dds/ad9834.h
+rename to drivers/staging/iio/frequency/ad9834.h
+diff --git a/drivers/staging/iio/dds/ad9850.c b/drivers/staging/iio/frequency/ad9850.c
+similarity index 100%
+rename from drivers/staging/iio/dds/ad9850.c
+rename to drivers/staging/iio/frequency/ad9850.c
+diff --git a/drivers/staging/iio/dds/ad9852.c b/drivers/staging/iio/frequency/ad9852.c
+similarity index 100%
+rename from drivers/staging/iio/dds/ad9852.c
+rename to drivers/staging/iio/frequency/ad9852.c
+diff --git a/drivers/staging/iio/dds/ad9910.c b/drivers/staging/iio/frequency/ad9910.c
+similarity index 100%
+rename from drivers/staging/iio/dds/ad9910.c
+rename to drivers/staging/iio/frequency/ad9910.c
+diff --git a/drivers/staging/iio/dds/ad9951.c b/drivers/staging/iio/frequency/ad9951.c
+similarity index 100%
+rename from drivers/staging/iio/dds/ad9951.c
+rename to drivers/staging/iio/frequency/ad9951.c
+diff --git a/drivers/staging/iio/dds/dds.h b/drivers/staging/iio/frequency/dds.h
+similarity index 100%
+rename from drivers/staging/iio/dds/dds.h
+rename to drivers/staging/iio/frequency/dds.h
+--
+1.7.0.4
+
+
