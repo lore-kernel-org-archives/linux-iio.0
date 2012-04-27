@@ -1,16 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from va3ehsobe005.messaging.microsoft.com ([216.32.180.31]:38536
-	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1759829Ab2D0I6r (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Apr 2012 04:58:47 -0400
+Received: from ch1ehsobe004.messaging.microsoft.com ([216.32.181.184]:55618
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1759842Ab2D0I6u (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Apr 2012 04:58:50 -0400
 From: <michael.hennerich@analog.com>
 To: <gregkh@linuxfoundation.org>
 CC: <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
 	<device-drivers-devel@blackfin.uclinux.org>,
 	Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 1/4] iio: Rename iio/dds to iio/frequency
-Date: Fri, 27 Apr 2012 10:58:33 +0200
-Message-ID: <1335517116-32307-1-git-send-email-michael.hennerich@analog.com>
+Subject: [PATCH 4/4] iio: core: iio_chan_spec_ext_info: Add private handle
+Date: Fri, 27 Apr 2012 10:58:36 +0200
+Message-ID: <1335517116-32307-4-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1335517116-32307-1-git-send-email-michael.hennerich@analog.com>
+References: <1335517116-32307-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
@@ -18,114 +20,161 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-Generalize naming to allow other frequency synthesis techniques as well.
-No functional changes.
+There is currently no user, but we might need it in future.
+So better add it now, before we have to convert drivers afterwards.
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/Kconfig                     |    2 +-
- drivers/staging/iio/Makefile                    |    2 +-
- drivers/staging/iio/{dds => frequency}/Kconfig  |    0
- drivers/staging/iio/{dds => frequency}/Makefile |    0
- drivers/staging/iio/{dds => frequency}/ad5930.c |    0
- drivers/staging/iio/{dds => frequency}/ad9832.c |    0
- drivers/staging/iio/{dds => frequency}/ad9832.h |    0
- drivers/staging/iio/{dds => frequency}/ad9834.c |    0
- drivers/staging/iio/{dds => frequency}/ad9834.h |    0
- drivers/staging/iio/{dds => frequency}/ad9850.c |    0
- drivers/staging/iio/{dds => frequency}/ad9852.c |    0
- drivers/staging/iio/{dds => frequency}/ad9910.c |    0
- drivers/staging/iio/{dds => frequency}/ad9951.c |    0
- drivers/staging/iio/{dds => frequency}/dds.h    |    0
- 14 files changed, 2 insertions(+), 2 deletions(-)
- rename drivers/staging/iio/{dds => frequency}/Kconfig (100%)
- rename drivers/staging/iio/{dds => frequency}/Makefile (100%)
- rename drivers/staging/iio/{dds => frequency}/ad5930.c (100%)
- rename drivers/staging/iio/{dds => frequency}/ad9832.c (100%)
- rename drivers/staging/iio/{dds => frequency}/ad9832.h (100%)
- rename drivers/staging/iio/{dds => frequency}/ad9834.c (100%)
- rename drivers/staging/iio/{dds => frequency}/ad9834.h (100%)
- rename drivers/staging/iio/{dds => frequency}/ad9850.c (100%)
- rename drivers/staging/iio/{dds => frequency}/ad9852.c (100%)
- rename drivers/staging/iio/{dds => frequency}/ad9910.c (100%)
- rename drivers/staging/iio/{dds => frequency}/ad9951.c (100%)
- rename drivers/staging/iio/{dds => frequency}/dds.h (100%)
+ drivers/iio/industrialio-core.c  |    5 +++--
+ drivers/staging/iio/dac/ad5064.c |   12 +++++++-----
+ drivers/staging/iio/dac/ad5446.c |    6 +++++-
+ include/linux/iio/iio.h          |   11 +++++++----
+ 4 files changed, 22 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
-index c1054a1..3c8e5ec 100644
---- a/drivers/staging/iio/Kconfig
-+++ b/drivers/staging/iio/Kconfig
-@@ -30,7 +30,7 @@ source "drivers/staging/iio/adc/Kconfig"
- source "drivers/staging/iio/addac/Kconfig"
- source "drivers/staging/iio/cdc/Kconfig"
- source "drivers/staging/iio/dac/Kconfig"
--source "drivers/staging/iio/dds/Kconfig"
-+source "drivers/staging/iio/frequency/Kconfig"
- source "drivers/staging/iio/gyro/Kconfig"
- source "drivers/staging/iio/impedance-analyzer/Kconfig"
- source "drivers/staging/iio/imu/Kconfig"
-diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
-index 2acd42f..6a46d5a 100644
---- a/drivers/staging/iio/Makefile
-+++ b/drivers/staging/iio/Makefile
-@@ -18,7 +18,7 @@ obj-y += adc/
- obj-y += addac/
- obj-y += cdc/
- obj-y += dac/
--obj-y += dds/
-+obj-y += frequency/
- obj-y += gyro/
- obj-y += impedance-analyzer/
- obj-y += imu/
-diff --git a/drivers/staging/iio/dds/Kconfig b/drivers/staging/iio/frequency/Kconfig
-similarity index 100%
-rename from drivers/staging/iio/dds/Kconfig
-rename to drivers/staging/iio/frequency/Kconfig
-diff --git a/drivers/staging/iio/dds/Makefile b/drivers/staging/iio/frequency/Makefile
-similarity index 100%
-rename from drivers/staging/iio/dds/Makefile
-rename to drivers/staging/iio/frequency/Makefile
-diff --git a/drivers/staging/iio/dds/ad5930.c b/drivers/staging/iio/frequency/ad5930.c
-similarity index 100%
-rename from drivers/staging/iio/dds/ad5930.c
-rename to drivers/staging/iio/frequency/ad5930.c
-diff --git a/drivers/staging/iio/dds/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-similarity index 100%
-rename from drivers/staging/iio/dds/ad9832.c
-rename to drivers/staging/iio/frequency/ad9832.c
-diff --git a/drivers/staging/iio/dds/ad9832.h b/drivers/staging/iio/frequency/ad9832.h
-similarity index 100%
-rename from drivers/staging/iio/dds/ad9832.h
-rename to drivers/staging/iio/frequency/ad9832.h
-diff --git a/drivers/staging/iio/dds/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-similarity index 100%
-rename from drivers/staging/iio/dds/ad9834.c
-rename to drivers/staging/iio/frequency/ad9834.c
-diff --git a/drivers/staging/iio/dds/ad9834.h b/drivers/staging/iio/frequency/ad9834.h
-similarity index 100%
-rename from drivers/staging/iio/dds/ad9834.h
-rename to drivers/staging/iio/frequency/ad9834.h
-diff --git a/drivers/staging/iio/dds/ad9850.c b/drivers/staging/iio/frequency/ad9850.c
-similarity index 100%
-rename from drivers/staging/iio/dds/ad9850.c
-rename to drivers/staging/iio/frequency/ad9850.c
-diff --git a/drivers/staging/iio/dds/ad9852.c b/drivers/staging/iio/frequency/ad9852.c
-similarity index 100%
-rename from drivers/staging/iio/dds/ad9852.c
-rename to drivers/staging/iio/frequency/ad9852.c
-diff --git a/drivers/staging/iio/dds/ad9910.c b/drivers/staging/iio/frequency/ad9910.c
-similarity index 100%
-rename from drivers/staging/iio/dds/ad9910.c
-rename to drivers/staging/iio/frequency/ad9910.c
-diff --git a/drivers/staging/iio/dds/ad9951.c b/drivers/staging/iio/frequency/ad9951.c
-similarity index 100%
-rename from drivers/staging/iio/dds/ad9951.c
-rename to drivers/staging/iio/frequency/ad9951.c
-diff --git a/drivers/staging/iio/dds/dds.h b/drivers/staging/iio/frequency/dds.h
-similarity index 100%
-rename from drivers/staging/iio/dds/dds.h
-rename to drivers/staging/iio/frequency/dds.h
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1c55d2b..8f72ab8 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -281,7 +281,7 @@ static ssize_t iio_read_channel_ext_info(struct device *dev,
+
+ 	ext_info = &this_attr->c->ext_info[this_attr->address];
+
+-	return ext_info->read(indio_dev, this_attr->c, buf);
++	return ext_info->read(indio_dev, ext_info->private, this_attr->c, buf);
+ }
+
+ static ssize_t iio_write_channel_ext_info(struct device *dev,
+@@ -295,7 +295,8 @@ static ssize_t iio_write_channel_ext_info(struct device *dev,
+
+ 	ext_info = &this_attr->c->ext_info[this_attr->address];
+
+-	return ext_info->write(indio_dev, this_attr->c, buf, len);
++	return ext_info->write(indio_dev, ext_info->private,
++			       this_attr->c, buf, len);
+ }
+
+ static ssize_t iio_read_channel_info(struct device *dev,
+diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
+index c0fad4f..e06f1d1 100644
+--- a/drivers/staging/iio/dac/ad5064.c
++++ b/drivers/staging/iio/dac/ad5064.c
+@@ -144,14 +144,14 @@ static const char ad5064_powerdown_modes[][15] = {
+ };
+
+ static ssize_t ad5064_read_powerdown_mode_available(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, char *buf)
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+ {
+ 	return sprintf(buf, "%s %s %s\n", ad5064_powerdown_modes[1],
+ 		ad5064_powerdown_modes[2], ad5064_powerdown_modes[3]);
+ }
+
+ static ssize_t ad5064_read_powerdown_mode(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, char *buf)
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+ {
+ 	struct ad5064_state *st = iio_priv(indio_dev);
+
+@@ -160,7 +160,8 @@ static ssize_t ad5064_read_powerdown_mode(struct iio_dev *indio_dev,
+ }
+
+ static ssize_t ad5064_write_powerdown_mode(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, const char *buf, size_t len)
++	uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
++	size_t len)
+ {
+ 	struct ad5064_state *st = iio_priv(indio_dev);
+ 	unsigned int mode, i;
+@@ -187,7 +188,7 @@ static ssize_t ad5064_write_powerdown_mode(struct iio_dev *indio_dev,
+ }
+
+ static ssize_t ad5064_read_dac_powerdown(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, char *buf)
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+ {
+ 	struct ad5064_state *st = iio_priv(indio_dev);
+
+@@ -195,7 +196,8 @@ static ssize_t ad5064_read_dac_powerdown(struct iio_dev *indio_dev,
+ }
+
+ static ssize_t ad5064_write_dac_powerdown(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, const char *buf, size_t len)
++	 uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
++	 size_t len)
+ {
+ 	struct ad5064_state *st = iio_priv(indio_dev);
+ 	bool pwr_down;
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index 62ad1d5..55e34d4 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -46,13 +46,14 @@ static const char * const ad5446_powerdown_modes[] = {
+ };
+
+ static ssize_t ad5446_read_powerdown_mode_available(struct iio_dev *indio_dev,
+-	const struct iio_chan_spec *chan, char *buf)
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+ {
+ 	return sprintf(buf, "%s %s %s\n", ad5446_powerdown_modes[1],
+ 		ad5446_powerdown_modes[2], ad5446_powerdown_modes[3]);
+ }
+
+ static ssize_t ad5446_write_powerdown_mode(struct iio_dev *indio_dev,
++					    uintptr_t private,
+ 					    const struct iio_chan_spec *chan,
+ 					    const char *buf, size_t len)
+ {
+@@ -73,6 +74,7 @@ static ssize_t ad5446_write_powerdown_mode(struct iio_dev *indio_dev,
+ }
+
+ static ssize_t ad5446_read_powerdown_mode(struct iio_dev *indio_dev,
++					   uintptr_t private,
+ 					   const struct iio_chan_spec *chan,
+ 					   char *buf)
+ {
+@@ -82,6 +84,7 @@ static ssize_t ad5446_read_powerdown_mode(struct iio_dev *indio_dev,
+ }
+
+ static ssize_t ad5446_read_dac_powerdown(struct iio_dev *indio_dev,
++					   uintptr_t private,
+ 					   const struct iio_chan_spec *chan,
+ 					   char *buf)
+ {
+@@ -91,6 +94,7 @@ static ssize_t ad5446_read_dac_powerdown(struct iio_dev *indio_dev,
+ }
+
+ static ssize_t ad5446_write_dac_powerdown(struct iio_dev *indio_dev,
++					    uintptr_t private,
+ 					    const struct iio_chan_spec *chan,
+ 					    const char *buf, size_t len)
+ {
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 0e826af..263b430 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -111,14 +111,17 @@ struct iio_dev;
+  * @shared:	Whether this attribute is shared between all channels.
+  * @read:	Read callback for this info attribute, may be NULL.
+  * @write:	Write callback for this info attribute, may be NULL.
++ * @private:	Data private to the driver.
+  */
+ struct iio_chan_spec_ext_info {
+ 	const char *name;
+ 	bool shared;
+-	ssize_t (*read)(struct iio_dev *, struct iio_chan_spec const *,
+-			char *buf);
+-	ssize_t (*write)(struct iio_dev *, struct iio_chan_spec const *,
+-			const char *buf, size_t len);
++	ssize_t (*read)(struct iio_dev *, uintptr_t private,
++			struct iio_chan_spec const *, char *buf);
++	ssize_t (*write)(struct iio_dev *, uintptr_t private,
++			 struct iio_chan_spec const *, const char *buf,
++			 size_t len);
++	uintptr_t private;
+ };
+
+ /**
 --
 1.7.0.4
 
