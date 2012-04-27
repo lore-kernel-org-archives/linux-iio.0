@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ch1ehsobe004.messaging.microsoft.com ([216.32.181.184]:55618
-	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1759842Ab2D0I6u (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Apr 2012 04:58:50 -0400
+Received: from va3ehsobe010.messaging.microsoft.com ([216.32.180.30]:30053
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1759841Ab2D0I6v (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Apr 2012 04:58:51 -0400
 From: <michael.hennerich@analog.com>
 To: <gregkh@linuxfoundation.org>
 CC: <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
 	<device-drivers-devel@blackfin.uclinux.org>,
 	Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 4/4] iio: core: iio_chan_spec_ext_info: Add private handle
-Date: Fri, 27 Apr 2012 10:58:36 +0200
-Message-ID: <1335517116-32307-4-git-send-email-michael.hennerich@analog.com>
+Subject: [PATCH 3/4] iio: frequency: Update DDS drivers to use new channel naming convention
+Date: Fri, 27 Apr 2012 10:58:35 +0200
+Message-ID: <1335517116-32307-3-git-send-email-michael.hennerich@analog.com>
 In-Reply-To: <1335517116-32307-1-git-send-email-michael.hennerich@analog.com>
 References: <1335517116-32307-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
@@ -20,161 +20,409 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-There is currently no user, but we might need it in future.
-So better add it now, before we have to convert drivers afterwards.
-
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/iio/industrialio-core.c  |    5 +++--
- drivers/staging/iio/dac/ad5064.c |   12 +++++++-----
- drivers/staging/iio/dac/ad5446.c |    6 +++++-
- include/linux/iio/iio.h          |   11 +++++++----
- 4 files changed, 22 insertions(+), 12 deletions(-)
+ .../staging/iio/Documentation/sysfs-bus-iio-dds    |   81 ++++++++++----------
+ drivers/staging/iio/frequency/ad9832.c             |   24 +++---
+ drivers/staging/iio/frequency/ad9834.c             |   56 +++++++-------
+ drivers/staging/iio/frequency/dds.h                |   54 +++++++-------
+ 4 files changed, 109 insertions(+), 106 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 1c55d2b..8f72ab8 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -281,7 +281,7 @@ static ssize_t iio_read_channel_ext_info(struct device *dev,
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-dds b/drivers/staging/iio/Documentation/sysfs-bus-iio-dds
+index ffdd547..ee8c509 100644
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio-dds
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-dds
+@@ -1,83 +1,86 @@
 
- 	ext_info = &this_attr->c->ext_info[this_attr->address];
+-What:		/sys/bus/iio/devices/.../ddsX_freqY
++What:		/sys/bus/iio/devices/.../out_altvoltageX_frequencyY
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Stores frequency into tuning word Y.
+-		There will be more than one ddsX_freqY file, which allows for
+-		pin controlled FSK Frequency Shift Keying
+-		(ddsX_pincontrol_freq_en is active) or the user can control
+-		the desired active tuning word by writing Y to the
+-		ddsX_freqsymbol file.
++		There will be more than one out_altvoltageX_frequencyY file,
++		which allows for pin controlled FSK Frequency Shift Keying
++		(out_altvoltageX_pincontrol_frequency_en is active) or the user
++		can control the desired active tuning word by writing Y to the
++		out_altvoltageX_frequencysymbol file.
 
--	return ext_info->read(indio_dev, this_attr->c, buf);
-+	return ext_info->read(indio_dev, ext_info->private, this_attr->c, buf);
- }
+-What:		/sys/bus/iio/devices/.../ddsX_freqY_scale
++What:		/sys/bus/iio/devices/.../out_altvoltageX_frequencyY_scale
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Scale to be applied to ddsX_freqY in order to obtain the
+-		desired value in Hz. If shared across all frequency registers
+-		Y is not present. It is also possible X is not present if
+-		shared across all channels.
++		Scale to be applied to out_altvoltageX_frequencyY in order to
++		obtain the desired value in Hz. If shared across all frequency
++		registers Y is not present. It is also possible X is not present
++		if shared across all channels.
 
- static ssize_t iio_write_channel_ext_info(struct device *dev,
-@@ -295,7 +295,8 @@ static ssize_t iio_write_channel_ext_info(struct device *dev,
+-What:		/sys/bus/iio/devices/.../ddsX_freqsymbol
++What:		/sys/bus/iio/devices/.../out_altvoltageX_frequencysymbol
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Specifies the active output frequency tuning word. The value
+-		corresponds to the Y in ddsX_freqY. To exit this mode the user
+-		can write ddsX_pincontrol_freq_en or ddsX_out_enable file.
++		corresponds to the Y in out_altvoltageX_frequencyY.
++		To exit this mode the user can write
++		out_altvoltageX_pincontrol_frequency_en or
++		out_altvoltageX_out_enable file.
 
- 	ext_info = &this_attr->c->ext_info[this_attr->address];
+-What:		/sys/bus/iio/devices/.../ddsX_phaseY
++What:		/sys/bus/iio/devices/.../out_altvoltageX_phaseY
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Stores phase into Y.
+-		There will be more than one ddsX_phaseY file, which allows for
+-		pin controlled PSK Phase Shift Keying
+-		(ddsX_pincontrol_phase_en is active) or the user can
++		There will be more than one out_altvoltageX_phaseY file, which
++		allows for pin controlled PSK Phase Shift Keying
++		(out_altvoltageX_pincontrol_phase_en is active) or the user can
+ 		control the desired phase Y which is added to the phase
+-		accumulator output by writing Y to the en_phase file.
++		accumulator output by writing Y to the phase_en file.
 
--	return ext_info->write(indio_dev, this_attr->c, buf, len);
-+	return ext_info->write(indio_dev, ext_info->private,
-+			       this_attr->c, buf, len);
- }
+-What:		/sys/bus/iio/devices/.../ddsX_phaseY_scale
++What:		/sys/bus/iio/devices/.../out_altvoltageX_phaseY_scale
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Scale to be applied to ddsX_phaseY in order to obtain the
+-		desired value in rad. If shared across all phase registers
++		Scale to be applied to out_altvoltageX_phaseY in order to obtain
++		the desired value in rad. If shared across all phase registers
+ 		Y is not present. It is also possible X is not present if
+ 		shared across all channels.
 
- static ssize_t iio_read_channel_info(struct device *dev,
-diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
-index c0fad4f..e06f1d1 100644
---- a/drivers/staging/iio/dac/ad5064.c
-+++ b/drivers/staging/iio/dac/ad5064.c
-@@ -144,14 +144,14 @@ static const char ad5064_powerdown_modes[][15] = {
+-What:		/sys/bus/iio/devices/.../ddsX_phasesymbol
++What:		/sys/bus/iio/devices/.../out_altvoltageX_phasesymbol
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Specifies the active phase Y which is added to the phase
+ 		accumulator output. The value corresponds to the Y in
+-		ddsX_phaseY. To exit this mode the user can write
+-		ddsX_pincontrol_phase_en or disable file.
++		out_altvoltageX_phaseY. To exit this mode the user can write
++		out_altvoltageX_pincontrol_phase_en or disable file.
+
+-What:		/sys/bus/iio/devices/.../ddsX_pincontrol_en
+-What:		/sys/bus/iio/devices/.../ddsX_pincontrol_freq_en
+-What:		/sys/bus/iio/devices/.../ddsX_pincontrol_phase_en
++What:		/sys/bus/iio/devices/.../out_altvoltageX_pincontrol_en
++What:		/sys/bus/iio/devices/.../out_altvoltageX_pincontrol_frequency_en
++What:		/sys/bus/iio/devices/.../out_altvoltageX_pincontrol_phase_en
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		ddsX_pincontrol_en: Both, the active frequency and phase is
+-		controlled by the respective phase and frequency control inputs.
+-		In case the device in question allows to independent controls,
+-		then there are dedicated files (ddsX_pincontrol_freq_en,
+-		ddsX_pincontrol_phase_en).
++		out_altvoltageX_pincontrol_en: Both, the active frequency and
++		phase is controlled by the respective phase and frequency
++		control inputs. In case the device in features independent
++		controls, then there are dedicated files
++		(out_altvoltageX_pincontrol_frequency_en,
++		out_altvoltageX_pincontrol_phase_en).
+
+-What:		/sys/bus/iio/devices/.../ddsX_out_enable
+-What:		/sys/bus/iio/devices/.../ddsX_outY_enable
++What:		/sys/bus/iio/devices/.../out_altvoltageX_out_enable
++What:		/sys/bus/iio/devices/.../out_altvoltageX_outY_enable
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		ddsX_outY_enable controls signal generation on output Y of
+-		channel X. Y may be suppressed if all channels are
++		out_altvoltageX_outY_enable controls signal generation on
++		output Y of channel X. Y may be suppressed if all channels are
+ 		controlled together.
+
+-What:		/sys/bus/iio/devices/.../ddsX_outY_wavetype
++What:		/sys/bus/iio/devices/.../out_altvoltageX_outY_wavetype
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -86,7 +89,7 @@ Description:
+ 		For a list of available output waveform options read
+ 		available_output_modes.
+
+-What:		/sys/bus/iio/devices/.../ddsX_outY_wavetype_available
++What:		/sys/bus/iio/devices/.../out_altvoltageX_outY_wavetype_available
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+index 57627ff..160443b 100644
+--- a/drivers/staging/iio/frequency/ad9832.c
++++ b/drivers/staging/iio/frequency/ad9832.c
+@@ -177,18 +177,18 @@ static IIO_DEV_ATTR_OUT_ENABLE(0, S_IWUSR, NULL,
+ 				ad9832_write, AD9832_OUTPUT_EN);
+
+ static struct attribute *ad9832_attributes[] = {
+-	&iio_dev_attr_dds0_freq0.dev_attr.attr,
+-	&iio_dev_attr_dds0_freq1.dev_attr.attr,
+-	&iio_const_attr_dds0_freq_scale.dev_attr.attr,
+-	&iio_dev_attr_dds0_phase0.dev_attr.attr,
+-	&iio_dev_attr_dds0_phase1.dev_attr.attr,
+-	&iio_dev_attr_dds0_phase2.dev_attr.attr,
+-	&iio_dev_attr_dds0_phase3.dev_attr.attr,
+-	&iio_const_attr_dds0_phase_scale.dev_attr.attr,
+-	&iio_dev_attr_dds0_pincontrol_en.dev_attr.attr,
+-	&iio_dev_attr_dds0_freqsymbol.dev_attr.attr,
+-	&iio_dev_attr_dds0_phasesymbol.dev_attr.attr,
+-	&iio_dev_attr_dds0_out_enable.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_frequency0.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_frequency1.dev_attr.attr,
++	&iio_const_attr_out_altvoltage0_frequency_scale.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_phase0.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_phase1.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_phase2.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_phase3.dev_attr.attr,
++	&iio_const_attr_out_altvoltage0_phase_scale.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_pincontrol_en.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_frequencysymbol.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_phasesymbol.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_out_enable.dev_attr.attr,
+ 	NULL,
  };
 
- static ssize_t ad5064_read_powerdown_mode_available(struct iio_dev *indio_dev,
--	const struct iio_chan_spec *chan, char *buf)
-+	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
- {
- 	return sprintf(buf, "%s %s %s\n", ad5064_powerdown_modes[1],
- 		ad5064_powerdown_modes[2], ad5064_powerdown_modes[3]);
+diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+index 9b2c879..21ad827 100644
+--- a/drivers/staging/iio/frequency/ad9834.c
++++ b/drivers/staging/iio/frequency/ad9834.c
+@@ -218,7 +218,7 @@ static ssize_t ad9834_show_out0_wavetype_available(struct device *dev,
  }
 
- static ssize_t ad5064_read_powerdown_mode(struct iio_dev *indio_dev,
--	const struct iio_chan_spec *chan, char *buf)
-+	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
- {
- 	struct ad5064_state *st = iio_priv(indio_dev);
 
-@@ -160,7 +160,8 @@ static ssize_t ad5064_read_powerdown_mode(struct iio_dev *indio_dev,
+-static IIO_DEVICE_ATTR(dds0_out0_wavetype_available, S_IRUGO,
++static IIO_DEVICE_ATTR(out_altvoltage0_out0_wavetype_available, S_IRUGO,
+ 		       ad9834_show_out0_wavetype_available, NULL, 0);
+
+ static ssize_t ad9834_show_out1_wavetype_available(struct device *dev,
+@@ -237,7 +237,7 @@ static ssize_t ad9834_show_out1_wavetype_available(struct device *dev,
+ 	return sprintf(buf, "%s\n", str);
  }
 
- static ssize_t ad5064_write_powerdown_mode(struct iio_dev *indio_dev,
--	const struct iio_chan_spec *chan, const char *buf, size_t len)
-+	uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
-+	size_t len)
- {
- 	struct ad5064_state *st = iio_priv(indio_dev);
- 	unsigned int mode, i;
-@@ -187,7 +188,7 @@ static ssize_t ad5064_write_powerdown_mode(struct iio_dev *indio_dev,
- }
-
- static ssize_t ad5064_read_dac_powerdown(struct iio_dev *indio_dev,
--	const struct iio_chan_spec *chan, char *buf)
-+	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
- {
- 	struct ad5064_state *st = iio_priv(indio_dev);
-
-@@ -195,7 +196,8 @@ static ssize_t ad5064_read_dac_powerdown(struct iio_dev *indio_dev,
- }
-
- static ssize_t ad5064_write_dac_powerdown(struct iio_dev *indio_dev,
--	const struct iio_chan_spec *chan, const char *buf, size_t len)
-+	 uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
-+	 size_t len)
- {
- 	struct ad5064_state *st = iio_priv(indio_dev);
- 	bool pwr_down;
-diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
-index 62ad1d5..55e34d4 100644
---- a/drivers/staging/iio/dac/ad5446.c
-+++ b/drivers/staging/iio/dac/ad5446.c
-@@ -46,13 +46,14 @@ static const char * const ad5446_powerdown_modes[] = {
- };
-
- static ssize_t ad5446_read_powerdown_mode_available(struct iio_dev *indio_dev,
--	const struct iio_chan_spec *chan, char *buf)
-+	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
- {
- 	return sprintf(buf, "%s %s %s\n", ad5446_powerdown_modes[1],
- 		ad5446_powerdown_modes[2], ad5446_powerdown_modes[3]);
- }
-
- static ssize_t ad5446_write_powerdown_mode(struct iio_dev *indio_dev,
-+					    uintptr_t private,
- 					    const struct iio_chan_spec *chan,
- 					    const char *buf, size_t len)
- {
-@@ -73,6 +74,7 @@ static ssize_t ad5446_write_powerdown_mode(struct iio_dev *indio_dev,
- }
-
- static ssize_t ad5446_read_powerdown_mode(struct iio_dev *indio_dev,
-+					   uintptr_t private,
- 					   const struct iio_chan_spec *chan,
- 					   char *buf)
- {
-@@ -82,6 +84,7 @@ static ssize_t ad5446_read_powerdown_mode(struct iio_dev *indio_dev,
- }
-
- static ssize_t ad5446_read_dac_powerdown(struct iio_dev *indio_dev,
-+					   uintptr_t private,
- 					   const struct iio_chan_spec *chan,
- 					   char *buf)
- {
-@@ -91,6 +94,7 @@ static ssize_t ad5446_read_dac_powerdown(struct iio_dev *indio_dev,
- }
-
- static ssize_t ad5446_write_dac_powerdown(struct iio_dev *indio_dev,
-+					    uintptr_t private,
- 					    const struct iio_chan_spec *chan,
- 					    const char *buf, size_t len)
- {
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 0e826af..263b430 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -111,14 +111,17 @@ struct iio_dev;
-  * @shared:	Whether this attribute is shared between all channels.
-  * @read:	Read callback for this info attribute, may be NULL.
-  * @write:	Write callback for this info attribute, may be NULL.
-+ * @private:	Data private to the driver.
-  */
- struct iio_chan_spec_ext_info {
- 	const char *name;
- 	bool shared;
--	ssize_t (*read)(struct iio_dev *, struct iio_chan_spec const *,
--			char *buf);
--	ssize_t (*write)(struct iio_dev *, struct iio_chan_spec const *,
--			const char *buf, size_t len);
-+	ssize_t (*read)(struct iio_dev *, uintptr_t private,
-+			struct iio_chan_spec const *, char *buf);
-+	ssize_t (*write)(struct iio_dev *, uintptr_t private,
-+			 struct iio_chan_spec const *, const char *buf,
-+			 size_t len);
-+	uintptr_t private;
- };
+-static IIO_DEVICE_ATTR(dds0_out1_wavetype_available, S_IRUGO,
++static IIO_DEVICE_ATTR(out_altvoltage0_out1_wavetype_available, S_IRUGO,
+ 		       ad9834_show_out1_wavetype_available, NULL, 0);
 
  /**
+@@ -263,36 +263,36 @@ static IIO_DEV_ATTR_OUT_WAVETYPE(0, 0, ad9834_store_wavetype, 0);
+ static IIO_DEV_ATTR_OUT_WAVETYPE(0, 1, ad9834_store_wavetype, 1);
+
+ static struct attribute *ad9834_attributes[] = {
+-	&iio_dev_attr_dds0_freq0.dev_attr.attr,
+-	&iio_dev_attr_dds0_freq1.dev_attr.attr,
+-	&iio_const_attr_dds0_freq_scale.dev_attr.attr,
+-	&iio_dev_attr_dds0_phase0.dev_attr.attr,
+-	&iio_dev_attr_dds0_phase1.dev_attr.attr,
+-	&iio_const_attr_dds0_phase_scale.dev_attr.attr,
+-	&iio_dev_attr_dds0_pincontrol_en.dev_attr.attr,
+-	&iio_dev_attr_dds0_freqsymbol.dev_attr.attr,
+-	&iio_dev_attr_dds0_phasesymbol.dev_attr.attr,
+-	&iio_dev_attr_dds0_out_enable.dev_attr.attr,
+-	&iio_dev_attr_dds0_out1_enable.dev_attr.attr,
+-	&iio_dev_attr_dds0_out0_wavetype.dev_attr.attr,
+-	&iio_dev_attr_dds0_out1_wavetype.dev_attr.attr,
+-	&iio_dev_attr_dds0_out0_wavetype_available.dev_attr.attr,
+-	&iio_dev_attr_dds0_out1_wavetype_available.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_frequency0.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_frequency1.dev_attr.attr,
++	&iio_const_attr_out_altvoltage0_frequency_scale.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_phase0.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_phase1.dev_attr.attr,
++	&iio_const_attr_out_altvoltage0_phase_scale.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_pincontrol_en.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_frequencysymbol.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_phasesymbol.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_out_enable.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_out1_enable.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_out0_wavetype.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_out1_wavetype.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_out0_wavetype_available.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_out1_wavetype_available.dev_attr.attr,
+ 	NULL,
+ };
+
+ static struct attribute *ad9833_attributes[] = {
+-	&iio_dev_attr_dds0_freq0.dev_attr.attr,
+-	&iio_dev_attr_dds0_freq1.dev_attr.attr,
+-	&iio_const_attr_dds0_freq_scale.dev_attr.attr,
+-	&iio_dev_attr_dds0_phase0.dev_attr.attr,
+-	&iio_dev_attr_dds0_phase1.dev_attr.attr,
+-	&iio_const_attr_dds0_phase_scale.dev_attr.attr,
+-	&iio_dev_attr_dds0_freqsymbol.dev_attr.attr,
+-	&iio_dev_attr_dds0_phasesymbol.dev_attr.attr,
+-	&iio_dev_attr_dds0_out_enable.dev_attr.attr,
+-	&iio_dev_attr_dds0_out0_wavetype.dev_attr.attr,
+-	&iio_dev_attr_dds0_out0_wavetype_available.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_frequency0.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_frequency1.dev_attr.attr,
++	&iio_const_attr_out_altvoltage0_frequency_scale.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_phase0.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_phase1.dev_attr.attr,
++	&iio_const_attr_out_altvoltage0_phase_scale.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_frequencysymbol.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_phasesymbol.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_out_enable.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_out0_wavetype.dev_attr.attr,
++	&iio_dev_attr_out_altvoltage0_out0_wavetype_available.dev_attr.attr,
+ 	NULL,
+ };
+
+diff --git a/drivers/staging/iio/frequency/dds.h b/drivers/staging/iio/frequency/dds.h
+index d8ac3a9..c3342f6 100644
+--- a/drivers/staging/iio/frequency/dds.h
++++ b/drivers/staging/iio/frequency/dds.h
+@@ -7,104 +7,104 @@
+  */
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_freqY
++ * /sys/bus/iio/devices/.../out_altvoltageX_frequencyY
+  */
+
+ #define IIO_DEV_ATTR_FREQ(_channel, _num, _mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(dds##_channel##_freq##_num,			\
++	IIO_DEVICE_ATTR(out_altvoltage##_channel##_frequency##_num,	\
+ 			_mode, _show, _store, _addr)
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_freqY_scale
++ * /sys/bus/iio/devices/.../out_altvoltageX_frequencyY_scale
+  */
+
+ #define IIO_CONST_ATTR_FREQ_SCALE(_channel, _string)			\
+-	IIO_CONST_ATTR(dds##_channel##_freq_scale, _string)
++	IIO_CONST_ATTR(out_altvoltage##_channel##_frequency_scale, _string)
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_freqsymbol
++ * /sys/bus/iio/devices/.../out_altvoltageX_frequencysymbol
+  */
+
+ #define IIO_DEV_ATTR_FREQSYMBOL(_channel, _mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(dds##_channel##_freqsymbol,			\
++	IIO_DEVICE_ATTR(out_altvoltage##_channel##_frequencysymbol,	\
+ 			_mode, _show, _store, _addr);
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_phaseY
++ * /sys/bus/iio/devices/.../out_altvoltageX_phaseY
+  */
+
+ #define IIO_DEV_ATTR_PHASE(_channel, _num, _mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(dds##_channel##_phase##_num,			\
++	IIO_DEVICE_ATTR(out_altvoltage##_channel##_phase##_num,		\
+ 			_mode, _show, _store, _addr)
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_phaseY_scale
++ * /sys/bus/iio/devices/.../out_altvoltageX_phaseY_scale
+  */
+
+ #define IIO_CONST_ATTR_PHASE_SCALE(_channel, _string)			\
+-	IIO_CONST_ATTR(dds##_channel##_phase_scale, _string)
++	IIO_CONST_ATTR(out_altvoltage##_channel##_phase_scale, _string)
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_phasesymbol
++ * /sys/bus/iio/devices/.../out_altvoltageX_phasesymbol
+  */
+
+ #define IIO_DEV_ATTR_PHASESYMBOL(_channel, _mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(dds##_channel##_phasesymbol,			\
++	IIO_DEVICE_ATTR(out_altvoltage##_channel##_phasesymbol,		\
+ 			_mode, _show, _store, _addr);
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_pincontrol_en
++ * /sys/bus/iio/devices/.../out_altvoltageX_pincontrol_en
+  */
+
+ #define IIO_DEV_ATTR_PINCONTROL_EN(_channel, _mode, _show, _store, _addr)\
+-	IIO_DEVICE_ATTR(dds##_channel##_pincontrol_en,			\
++	IIO_DEVICE_ATTR(out_altvoltage##_channel##_pincontrol_en,	\
+ 			_mode, _show, _store, _addr);
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_pincontrol_freq_en
++ * /sys/bus/iio/devices/.../out_altvoltageX_pincontrol_frequency_en
+  */
+
+ #define IIO_DEV_ATTR_PINCONTROL_FREQ_EN(_channel, _mode, _show, _store, _addr)\
+-	IIO_DEVICE_ATTR(dds##_channel##_pincontrol_freq_en,		\
++	IIO_DEVICE_ATTR(out_altvoltage##_channel##_pincontrol_frequency_en,\
+ 			_mode, _show, _store, _addr);
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_pincontrol_phase_en
++ * /sys/bus/iio/devices/.../out_altvoltageX_pincontrol_phase_en
+  */
+
+ #define IIO_DEV_ATTR_PINCONTROL_PHASE_EN(_channel, _mode, _show, _store, _addr)\
+-	IIO_DEVICE_ATTR(dds##_channel##_pincontrol_phase_en,		\
++	IIO_DEVICE_ATTR(out_altvoltage##_channel##_pincontrol_phase_en,	\
+ 			_mode, _show, _store, _addr);
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_out_enable
++ * /sys/bus/iio/devices/.../out_altvoltageX_out_enable
+  */
+
+ #define IIO_DEV_ATTR_OUT_ENABLE(_channel, _mode, _show, _store, _addr)	\
+-	IIO_DEVICE_ATTR(dds##_channel##_out_enable,			\
++	IIO_DEVICE_ATTR(out_altvoltage##_channel##_out_enable,		\
+ 			_mode, _show, _store, _addr);
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_outY_enable
++ * /sys/bus/iio/devices/.../out_altvoltageX_outY_enable
+  */
+
+ #define IIO_DEV_ATTR_OUTY_ENABLE(_channel, _output,			\
+ 			_mode, _show, _store, _addr)			\
+-	IIO_DEVICE_ATTR(dds##_channel##_out##_output##_enable,		\
++	IIO_DEVICE_ATTR(out_altvoltage##_channel##_out##_output##_enable,\
+ 			_mode, _show, _store, _addr);
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_outY_wavetype
++ * /sys/bus/iio/devices/.../out_altvoltageX_outY_wavetype
+  */
+
+ #define IIO_DEV_ATTR_OUT_WAVETYPE(_channel, _output, _store, _addr)	\
+-	IIO_DEVICE_ATTR(dds##_channel##_out##_output##_wavetype,	\
++	IIO_DEVICE_ATTR(out_altvoltage##_channel##_out##_output##_wavetype,\
+ 			S_IWUSR, NULL, _store, _addr);
+
+ /**
+- * /sys/bus/iio/devices/.../ddsX_outY_wavetype_available
++ * /sys/bus/iio/devices/.../out_altvoltageX_outY_wavetype_available
+  */
+
+ #define IIO_CONST_ATTR_OUT_WAVETYPES_AVAILABLE(_channel, _output, _modes)\
+-	IIO_CONST_ATTR(dds##_channel##_out##_output##_wavetype_available,\
+-			_modes);
++	IIO_CONST_ATTR(							\
++	out_altvoltage##_channel##_out##_output##_wavetype_available, _modes);
 --
 1.7.0.4
 
