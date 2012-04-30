@@ -1,34 +1,37 @@
-Return-Path: <Michael.Hennerich@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from tx2ehsobe002.messaging.microsoft.com ([65.55.88.12]:32485 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755044Ab2D3M2M (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Apr 2012 08:28:12 -0400
 From: <michael.hennerich@analog.com>
-To: <gregkh@linuxfoundation.org>
-CC: <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-	<device-drivers-devel@blackfin.uclinux.org>, Michael Hennerich
-	<michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>,
+	Michael Hennerich <michael.hennerich@analog.com>
 Subject: [PATCH] staging: iio: adc: convert ADI drivers to use kfifo.
-Date: Mon, 30 Apr 2012 16:06:12 +0200
-Message-ID: <1335794772-31926-1-git-send-email-michael.hennerich@analog.com>
+Date: Mon, 30 Apr 2012 14:27:58 +0200
+Message-ID: <1335788878-30687-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
 sw_ring is depreciated and therefore won't move out of staging.
 Prerequisite for lifting affected drivers is to convert them to kfifo.
-Update copyright.
 
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
  drivers/staging/iio/adc/Kconfig       |   12 ++++++------
- drivers/staging/iio/adc/ad7192.c      |   14 +++++++-------
- drivers/staging/iio/adc/ad7298_ring.c |   14 +++++++-------
- drivers/staging/iio/adc/ad7476_ring.c |   14 +++++++-------
- drivers/staging/iio/adc/ad7606_ring.c |   16 ++++++++--------
- drivers/staging/iio/adc/ad7793.c      |   14 +++++++-------
- drivers/staging/iio/adc/ad7887_ring.c |   14 +++++++-------
- drivers/staging/iio/adc/ad799x_ring.c |   14 +++++++-------
- 8 files changed, 56 insertions(+), 56 deletions(-)
+ drivers/staging/iio/adc/ad7192.c      |   12 ++++++------
+ drivers/staging/iio/adc/ad7298_ring.c |   12 ++++++------
+ drivers/staging/iio/adc/ad7476_ring.c |   12 ++++++------
+ drivers/staging/iio/adc/ad7606_ring.c |   12 ++++++------
+ drivers/staging/iio/adc/ad7793.c      |   12 ++++++------
+ drivers/staging/iio/adc/ad7887_ring.c |   12 ++++++------
+ drivers/staging/iio/adc/ad799x_ring.c |   12 ++++++------
+ 8 files changed, 48 insertions(+), 48 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
 index 9ae5467..2490dd2 100644
@@ -89,18 +92,9 @@ index 9ae5467..2490dd2 100644
  	help
  	  Say yes here to build support for Analog Devices AD7190,
 diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 7b44705..d5655e3 100644
+index 7b44705..c9b4605 100644
 --- a/drivers/staging/iio/adc/ad7192.c
 +++ b/drivers/staging/iio/adc/ad7192.c
-@@ -1,7 +1,7 @@
- /*
-  * AD7190 AD7192 AD7195 SPI ADC driver
-  *
-- * Copyright 2011 Analog Devices Inc.
-+ * Copyright 2011-2012 Analog Devices Inc.
-  *
-  * Licensed under the GPL-2.
-  */
 @@ -20,7 +20,7 @@
  #include <linux/iio/iio.h>
  #include <linux/iio/sysfs.h>
@@ -109,11 +103,11 @@ index 7b44705..d5655e3 100644
 +#include <linux/iio/kfifo_buf.h>
  #include <linux/iio/trigger.h>
  #include <linux/iio/trigger_consumer.h>
-
+ 
 @@ -544,7 +544,7 @@ static int ad7192_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  {
  	int ret;
-
+ 
 -	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
 +	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
  	if (!indio_dev->buffer) {
@@ -126,12 +120,12 @@ index 7b44705..d5655e3 100644
 -		goto error_deallocate_sw_rb;
 +		goto error_deallocate_kfifo;
  	}
-
+ 
  	/* Ring buffer functions - here trigger setup related */
 @@ -567,8 +567,8 @@ static int ad7192_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
  	return 0;
-
+ 
 -error_deallocate_sw_rb:
 -	iio_sw_rb_free(indio_dev->buffer);
 +error_deallocate_kfifo:
@@ -146,52 +140,43 @@ index 7b44705..d5655e3 100644
 -	iio_sw_rb_free(indio_dev->buffer);
 +	iio_kfifo_free(indio_dev->buffer);
  }
-
+ 
  /**
 diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
-index 943caa3..908a3e5 100644
+index 943caa3..0da017e 100644
 --- a/drivers/staging/iio/adc/ad7298_ring.c
 +++ b/drivers/staging/iio/adc/ad7298_ring.c
-@@ -1,7 +1,7 @@
- /*
-  * AD7298 SPI ADC driver
-  *
-- * Copyright 2011 Analog Devices Inc.
-+ * Copyright 2011-2012 Analog Devices Inc.
-  *
-  * Licensed under the GPL-2.
-  */
 @@ -13,7 +13,7 @@
-
+ 
  #include <linux/iio/iio.h>
  #include <linux/iio/buffer.h>
 -#include "../ring_sw.h"
 +#include <linux/iio/kfifo_buf.h>
  #include <linux/iio/trigger_consumer.h>
-
+ 
  #include "ad7298.h"
 @@ -118,7 +118,7 @@ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  {
  	int ret;
-
+ 
 -	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
 +	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
  	if (!indio_dev->buffer) {
  		ret = -ENOMEM;
  		goto error_ret;
 @@ -132,7 +132,7 @@ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-
+ 
  	if (indio_dev->pollfunc == NULL) {
  		ret = -ENOMEM;
 -		goto error_deallocate_sw_rb;
 +		goto error_deallocate_kfifo;
  	}
-
+ 
  	/* Ring buffer functions - here trigger setup related */
 @@ -143,8 +143,8 @@ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
  	return 0;
-
+ 
 -error_deallocate_sw_rb:
 -	iio_sw_rb_free(indio_dev->buffer);
 +error_deallocate_kfifo:
@@ -207,29 +192,22 @@ index 943caa3..908a3e5 100644
 +	iio_kfifo_free(indio_dev->buffer);
  }
 diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
-index 5140389..383611b 100644
+index 5140389..fb50b20 100644
 --- a/drivers/staging/iio/adc/ad7476_ring.c
 +++ b/drivers/staging/iio/adc/ad7476_ring.c
-@@ -1,5 +1,5 @@
- /*
-- * Copyright 2010 Analog Devices Inc.
-+ * Copyright 2010-2012 Analog Devices Inc.
-  * Copyright (C) 2008 Jonathan Cameron
-  *
-  * Licensed under the GPL-2 or later.
 @@ -15,7 +15,7 @@
-
+ 
  #include <linux/iio/iio.h>
  #include <linux/iio/buffer.h>
 -#include "../ring_sw.h"
 +#include <linux/iio/kfifo_buf.h>
  #include <linux/iio/trigger_consumer.h>
-
+ 
  #include "ad7476.h"
 @@ -63,7 +63,7 @@ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  	struct ad7476_state *st = iio_priv(indio_dev);
  	int ret = 0;
-
+ 
 -	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
 +	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
  	if (!indio_dev->buffer) {
@@ -242,12 +220,12 @@ index 5140389..383611b 100644
 -		goto error_deallocate_sw_rb;
 +		goto error_deallocate_kfifo;
  	}
-
+ 
  	/* Ring buffer functions - here trigger setup related */
 @@ -89,8 +89,8 @@ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
  	return 0;
-
+ 
 -error_deallocate_sw_rb:
 -	iio_sw_rb_free(indio_dev->buffer);
 +error_deallocate_kfifo:
@@ -263,54 +241,40 @@ index 5140389..383611b 100644
 +	iio_kfifo_free(indio_dev->buffer);
  }
 diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
-index 3dd9602..24ce8fc 100644
+index 3dd9602..3faff0e 100644
 --- a/drivers/staging/iio/adc/ad7606_ring.c
 +++ b/drivers/staging/iio/adc/ad7606_ring.c
-@@ -1,5 +1,5 @@
- /*
-- * Copyright 2011 Analog Devices Inc.
-+ * Copyright 2011-2012 Analog Devices Inc.
-  *
-  * Licensed under the GPL-2.
-  *
 @@ -13,7 +13,7 @@
-
+ 
  #include <linux/iio/iio.h>
  #include <linux/iio/buffer.h>
 -#include "../ring_sw.h"
 +#include <linux/iio/kfifo_buf.h>
  #include <linux/iio/trigger_consumer.h>
-
+ 
  #include "ad7606.h"
 @@ -102,7 +102,7 @@ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  	struct ad7606_state *st = iio_priv(indio_dev);
  	int ret;
-
+ 
 -	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
 +	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
  	if (!indio_dev->buffer) {
  		ret = -ENOMEM;
  		goto error_ret;
-@@ -117,13 +117,13 @@ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+@@ -117,7 +117,7 @@ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  						 indio_dev->id);
  	if (indio_dev->pollfunc == NULL) {
  		ret = -ENOMEM;
 -		goto error_deallocate_sw_rb;
 +		goto error_deallocate_kfifo;
  	}
-
+ 
  	/* Ring buffer functions - here trigger setup related */
-
- 	indio_dev->setup_ops = &ad7606_ring_setup_ops;
--	indio_dev->buffer->scan_timestamp = true ;
-+	indio_dev->buffer->scan_timestamp = true;
-
- 	INIT_WORK(&st->poll_work, &ad7606_poll_bh_to_ring);
-
 @@ -131,8 +131,8 @@ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
  	return 0;
-
+ 
 -error_deallocate_sw_rb:
 -	iio_sw_rb_free(indio_dev->buffer);
 +error_deallocate_kfifo:
@@ -326,18 +290,9 @@ index 3dd9602..24ce8fc 100644
 +	iio_kfifo_free(indio_dev->buffer);
  }
 diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index 8ffdd80..61df796 100644
+index 8ffdd80..c40f766 100644
 --- a/drivers/staging/iio/adc/ad7793.c
 +++ b/drivers/staging/iio/adc/ad7793.c
-@@ -1,7 +1,7 @@
- /*
-  * AD7792/AD7793 SPI ADC driver
-  *
-- * Copyright 2011 Analog Devices Inc.
-+ * Copyright 2011-2012 Analog Devices Inc.
-  *
-  * Licensed under the GPL-2.
-  */
 @@ -21,7 +21,7 @@
  #include <linux/iio/iio.h>
  #include <linux/iio/sysfs.h>
@@ -346,11 +301,11 @@ index 8ffdd80..61df796 100644
 +#include <linux/iio/kfifo_buf.h>
  #include <linux/iio/trigger.h>
  #include <linux/iio/trigger_consumer.h>
-
+ 
 @@ -409,7 +409,7 @@ static int ad7793_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  {
  	int ret;
-
+ 
 -	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
 +	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
  	if (!indio_dev->buffer) {
@@ -363,12 +318,12 @@ index 8ffdd80..61df796 100644
 -		goto error_deallocate_sw_rb;
 +		goto error_deallocate_kfifo;
  	}
-
+ 
  	/* Ring buffer functions - here trigger setup related */
 @@ -432,8 +432,8 @@ static int ad7793_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
  	return 0;
-
+ 
 -error_deallocate_sw_rb:
 -	iio_sw_rb_free(indio_dev->buffer);
 +error_deallocate_kfifo:
@@ -383,32 +338,25 @@ index 8ffdd80..61df796 100644
 -	iio_sw_rb_free(indio_dev->buffer);
 +	iio_kfifo_free(indio_dev->buffer);
  }
-
+ 
  /**
 diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
-index f1846db..fd91384 100644
+index f1846db..92735c6 100644
 --- a/drivers/staging/iio/adc/ad7887_ring.c
 +++ b/drivers/staging/iio/adc/ad7887_ring.c
-@@ -1,5 +1,5 @@
- /*
-- * Copyright 2010-2011 Analog Devices Inc.
-+ * Copyright 2010-2012 Analog Devices Inc.
-  * Copyright (C) 2008 Jonathan Cameron
-  *
-  * Licensed under the GPL-2.
 @@ -14,7 +14,7 @@
-
+ 
  #include <linux/iio/iio.h>
  #include <linux/iio/buffer.h>
 -#include "../ring_sw.h"
 +#include <linux/iio/kfifo_buf.h>
  #include <linux/iio/trigger_consumer.h>
-
+ 
  #include "ad7887.h"
 @@ -114,7 +114,7 @@ int ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  {
  	int ret;
-
+ 
 -	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
 +	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
  	if (!indio_dev->buffer) {
@@ -426,7 +374,7 @@ index f1846db..fd91384 100644
 @@ -136,8 +136,8 @@ int ad7887_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
  	return 0;
-
+ 
 -error_deallocate_sw_rb:
 -	iio_sw_rb_free(indio_dev->buffer);
 +error_deallocate_kfifo:
@@ -442,29 +390,22 @@ index f1846db..fd91384 100644
 +	iio_kfifo_free(indio_dev->buffer);
  }
 diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
-index 18366b5..1c7ff44 100644
+index 18366b5..10bcb81 100644
 --- a/drivers/staging/iio/adc/ad799x_ring.c
 +++ b/drivers/staging/iio/adc/ad799x_ring.c
-@@ -1,5 +1,5 @@
- /*
-- * Copyright (C) 2010 Michael Hennerich, Analog Devices Inc.
-+ * Copyright (C) 2010-2012 Michael Hennerich, Analog Devices Inc.
-  * Copyright (C) 2008-2010 Jonathan Cameron
-  *
-  * This program is free software; you can redistribute it and/or modify
 @@ -18,7 +18,7 @@
-
+ 
  #include <linux/iio/iio.h>
  #include <linux/iio/buffer.h>
 -#include "../ring_sw.h"
 +#include <linux/iio/kfifo_buf.h>
  #include <linux/iio/trigger_consumer.h>
-
+ 
  #include "ad799x.h"
 @@ -120,7 +120,7 @@ int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  {
  	int ret = 0;
-
+ 
 -	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
 +	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
  	if (!indio_dev->buffer) {
@@ -477,12 +418,12 @@ index 18366b5..1c7ff44 100644
 -		goto error_deallocate_sw_rb;
 +		goto error_deallocate_kfifo;
  	}
-
+ 
  	/* Ring buffer functions - here trigger setup related */
 @@ -145,8 +145,8 @@ int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
  	return 0;
-
+ 
 -error_deallocate_sw_rb:
 -	iio_sw_rb_free(indio_dev->buffer);
 +error_deallocate_kfifo:
@@ -497,5 +438,7 @@ index 18366b5..1c7ff44 100644
 -	iio_sw_rb_free(indio_dev->buffer);
 +	iio_kfifo_free(indio_dev->buffer);
  }
---
+-- 
 1.7.0.4
+
+
