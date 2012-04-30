@@ -1,53 +1,32 @@
 Return-Path: <dan.carpenter@oracle.com>
-Date: Mon, 30 Apr 2012 23:04:44 +0300
+Date: Mon, 30 Apr 2012 23:18:56 +0300
 From: Dan Carpenter <dan.carpenter@oracle.com>
 To: joseph daniel <josephdanielwalter@gmail.com>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+Cc: devel@driverdev.osuosl.org, Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wolfram Sang <w.sang@pengutronix.de>,
+        Wolfram Sang <w.sang@pengutronix.de>, linux-kernel@vger.kernel.org,
         Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+        Jonathan Cameron <jic23@cam.ac.uk>
 Subject: Re: [PATCH] staging/iio/meter: fix the coding style problem
-Message-ID: <20120430200444.GM6447@mwanda>
+Message-ID: <20120430201855.GN6447@mwanda>
 References: <1335813977-8096-1-git-send-email-josephdanielwalter@gmail.com>
+ <20120430200444.GM6447@mwanda>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1335813977-8096-1-git-send-email-josephdanielwalter@gmail.com>
+In-Reply-To: <20120430200444.GM6447@mwanda>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, May 01, 2012 at 01:26:17AM +0600, joseph daniel wrote:
-> 
-> Signed-off-by: joseph daniel <josephdanielwalter@gmail.com>
-> ---
-> Hi Lars,
-> 	Thanks for review. how about the below change?
+On Mon, Apr 30, 2012 at 11:04:44PM +0300, Dan Carpenter wrote:
+> On Tue, May 01, 2012 at 01:26:17AM +0600, joseph daniel wrote:
+> > 
+> > Signed-off-by: joseph daniel <josephdanielwalter@gmail.com>
+> > ---
+> > Hi Lars,
+> > 	Thanks for review. how about the below change?
 
-Slow down.  There is no rush.  It's better to sit on patches
-overnight so you can review them carefully the next day.  Take the
-time to write a proper changelog...
-
->  drivers/staging/iio/meter/ade7854-i2c.c |    6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
-> index 1e1faa0..52bdb05 100644
-> --- a/drivers/staging/iio/meter/ade7854-i2c.c
-> +++ b/drivers/staging/iio/meter/ade7854-i2c.c
-> @@ -181,6 +181,7 @@ static int ade7854_i2c_read_reg_32(struct device *dev,
->  {
->  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
-> +	uint32_t value;
-
-Use the endian notation here:
-
-	__be32 value;
-
-http://lwn.net/Articles/205624/
-
-The rest looks fine to me.  Package it up like a proper patch and
-resend.
+Lar's review is the correct one.  It's cleaner to use
+get_unaligned_be32().  You'll need to include <asm/unaligned.h>
 
 regards,
 dan carpenter
