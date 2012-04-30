@@ -1,54 +1,50 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from na3sys009aog129.obsmtp.com ([74.125.149.142]:43045 "HELO
-	na3sys009aog129.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with SMTP id S1756638Ab2D3UMI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Apr 2012 16:12:08 -0400
-Received: by wgbdr13 with SMTP id dr13so867824wgb.1
-        for <linux-iio@vger.kernel.org>; Mon, 30 Apr 2012 13:12:06 -0700 (PDT)
-From: Ge Gao <ggao@invensense.com>
-MIME-Version: 1.0
-Date: Mon, 30 Apr 2012 13:03:46 -0700
-Message-ID: <abd67b68b54fc6c88b83c91a200ace5e@mail.gmail.com>
-Subject: different data rate in IIO ?
-To: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <josephdanielwalter@gmail.com>
+From: joseph daniel <josephdanielwalter@gmail.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Wolfram Sang <w.sang@pengutronix.de>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Cc: joseph daniel <josephdanielwalter@gmail.com>
+Subject: [PATCH] staging/iio/meter: fix the coding style problem
+Date: Tue,  1 May 2012 01:26:17 +0600
+Message-Id: <1335813977-8096-1-git-send-email-josephdanielwalter@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Dear all,
-I am currently developing a driver for a chip that has gyro,
-accelerometer and compass sensor together and these sensor data could come
-at different rate. There could be more data coming from this chip because
-this chip has on-chip CPU to do some data processing. The IIO subsystem is
-in some sense "fixed" once "enable" is 1. "Fixed" means the element and
-sequence inside ring buffer is fixed. For example, if MPU9150,
-which is a 9-axis chip, containing gyro, accelerometer and compass, is
-developed, the
-ring buffer would have byte_per_datum of 32 bytes(6 + 6 + 6  = 18; 18
-rounding up to 24; and 24 plus timestamp) if all sensors and all axis are
-enabled . So every data packet should contain this amount of data no
-matter what. If I have gyro running at 200 HZ, accelerometer running at
-100Hz and compass running at 50 Hz, this will have problems. Because I
-can't provide accelerometer data and compass data for each packet. Some
-packets could miss data. I have to fake data for these packets, either by
-repeating or other non-standard ways.  Is this supposed to be? Because we
-could have other data item which is even slower(10HZ quaternion data, for
-example). This way, it will be more trouble. Because each data element has
-different rate, while IIO needs them at the same rate.
-                The best way is to have a header for each packet to
-indicate what packet it is. But this way seems to violate the design goal
-of IIO.  That would be more like input subsystem because input subsystem
-uses different code type to distinguish different type of data thus
-allowing different data type mixed together. If such driver is written,
-all files under "scan_element" would be meaningless and useless.
-	I got some suggestions about using multiple IIO devices in one
-driver because one IIO device can only has one ring buffer. It could be OK
-to handle this. However, since IIO device allocation is to allocate the
-private data directly along with IIO device, it seems one IIO driver can
-only have one IIO device. Could IIO kernel accept such practice that one
-IIO
-driver has more than one IIO device? Or could there be some changes in
-the IIO code such that such scenario is taken care of in the future?
-Thanks.
 
-Ge
+Signed-off-by: joseph daniel <josephdanielwalter@gmail.com>
+---
+Hi Lars,
+	Thanks for review. how about the below change?
+ drivers/staging/iio/meter/ade7854-i2c.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
+index 1e1faa0..52bdb05 100644
+--- a/drivers/staging/iio/meter/ade7854-i2c.c
++++ b/drivers/staging/iio/meter/ade7854-i2c.c
+@@ -181,6 +181,7 @@ static int ade7854_i2c_read_reg_32(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ade7854_state *st = iio_priv(indio_dev);
++	uint32_t value;
+ 	int ret;
+ 
+ 	mutex_lock(&st->buf_lock);
+@@ -195,7 +196,10 @@ static int ade7854_i2c_read_reg_32(struct device *dev,
+ 	if (ret)
+ 		goto out;
+ 
+-	*val = (st->rx[0] << 24) | (st->rx[1] << 16) | (st->rx[2] << 8) | st->rx[3];
++	memcpy(&value, st->rx, sizeof(uint32_t));
++
++	*val = be32_to_cpu(value);
++
+ out:
+ 	mutex_unlock(&st->buf_lock);
+ 	return ret;
+-- 
+1.7.9.5
