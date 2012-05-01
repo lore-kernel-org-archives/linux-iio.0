@@ -1,194 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:50354 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754480Ab2EBOgH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 May 2012 10:36:07 -0400
-Message-ID: <4FA1464E.3070103@cam.ac.uk>
-Date: Wed, 02 May 2012 15:35:58 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "jic23@kernel.org" <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH] iio: documentation: Add out_altvoltage and friends
-References: <1335957844-6172-1-git-send-email-michael.hennerich@analog.com> <544AC56F16B56944AEC3BD4E3D5917714E79716CB1@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917714E79716CB1@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: gregkh@linuxfoundation.org
+Cc: linux-iio@vger.kernel.org,
+	jic23@cam.ac.uk,
+	lars@metafoo.de,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: call iio_device_unregister() in max517_remove()
+Date: Wed,  2 May 2012 01:13:33 +0200
+Message-Id: <1335914013-27747-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 5/2/2012 12:55 PM, Hennerich, Michael wrote:
-> Hi Jonathan,
->
-> I wonder how we want to organize our documentation.
-> Maintain only one file Documentation/ABI/testing/sysfs-bus-iio?
->
-> Or potentially multiple in Documentation/iio covering
-> untypical and device specific attributes?
-Keep things flat whilst there is a reasonable amount of overlap.
-Might be worth splitting things out for the really odd devices.
-Also any attributes that are in a single driver only can go
-in a device specific file.
+Reported-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 
-Lets see how things go.  Nothing stops us reorganising the docs
-whenever we like!
->
-> Documentation/iio/sysfs-bus-frequency-xxx
-> Documentation/iio/sysfs-bus-light-xxx
-> ...
->
-> Greetings,
-> Michael
->
-> --
-> Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-> Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-> Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret Seif
->
->
->> -----Original Message-----
->> From: michael.hennerich@analog.com
->> [mailto:michael.hennerich@analog.com]
->> Sent: Wednesday, May 02, 2012 1:24 PM
->> To: jic23@kernel.org
->> Cc: linux-iio@vger.kernel.org; device-drivers-
->> devel@blackfin.uclinux.org; Hennerich, Michael
->> Subject: [PATCH] iio: documentation: Add out_altvoltage and friends
->>
->> From: Michael Hennerich<michael.hennerich@analog.com>
->>
->> Continuous frequency/clock generating devices, such as DDSs or PLLs
->> should use out_altvolatge.
->>
->> Signed-off-by: Michael Hennerich<michael.hennerich@analog.com>
->> ---
->>   Documentation/ABI/testing/sysfs-bus-iio |   31
->> +++++++++++++++++++++++++++++++
->>   1 files changed, 31 insertions(+), 0 deletions(-)
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio
->> b/Documentation/ABI/testing/sysfs-bus-iio
->> index 2ce4dad..f757a30 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->> @@ -219,6 +219,7 @@ What:
->>        /sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
->>   What:
->>        /sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
->>   What:                /sys/bus/iio/devices/iio:deviceX/in_voltage_scale
->>   What:                /sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
->> +What:
->>        /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
->>   What:                /sys/bus/iio/devices/iio:deviceX/in_accel_scale
->>   What:                /sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
->>   What:                /sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
->> @@ -273,6 +274,7 @@ What:
->>        /sys/bus/iio/devices/iio:deviceX/in_accel_scale_available
->>   What:                /sys/.../iio:deviceX/in_voltageX_scale_available
->>   What:                /sys/.../iio:deviceX/in_voltage-
->> voltage_scale_available
->>   What:                /sys/.../iio:deviceX/out_voltageX_scale_available
->> +What:                /sys/.../iio:deviceX/out_altvoltageX_scale_available
->>   What:                /sys/.../iio:deviceX/in_capacitance_scale_available
->>   KernelVersion:       2.635
->>   Contact:     linux-iio@vger.kernel.org
->> @@ -291,14 +293,19 @@ Description:
->>                gives the 3dB frequency of the filter in Hz.
->>
->>   What:                /sys/bus/iio/devices/iio:deviceX/out_voltageY_raw
->> +What:                /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_raw
->>   KernelVersion:       2.6.37
->>   Contact:     linux-iio@vger.kernel.org
->>   Description:
->>                Raw (unscaled, no bias etc.) output voltage for
->>                channel Y.  The number must always be specified and
->>                unique if the output corresponds to a single channel.
->> +             While DAC like devices typically use out_voltage,
->> +             a continuous frequency generating device, such as
->> +             a DDS or PLL should use out_altvolatge.
->>
->>   What:                /sys/bus/iio/devices/iio:deviceX/out_voltageY&Z_raw
->> +What:
->>        /sys/bus/iio/devices/iio:deviceX/out_altvoltageY&Z_raw
->>   KernelVersion:       2.6.37
->>   Contact:     linux-iio@vger.kernel.org
->>   Description:
->> @@ -309,6 +316,8 @@ Description:
->>
->>   What:
->>        /sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown_mode
->>   What:
->>        /sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown_mode
->> +What:
->>        /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown_mode
->> +What:
->>        /sys/bus/iio/devices/iio:deviceX/out_altvoltage_powerdown_mode
->>   KernelVersion:       2.6.38
->>   Contact:     linux-iio@vger.kernel.org
->>   Description:
->> @@ -323,6 +332,8 @@ Description:
->>
->>   What:
->>        /sys/.../iio:deviceX/out_votlageY_powerdown_mode_available
->>   What:
->>        /sys/.../iio:deviceX/out_voltage_powerdown_mode_available
->> +What:
->>        /sys/.../iio:deviceX/out_altvotlageY_powerdown_mode_available
->> +What:
->>        /sys/.../iio:deviceX/out_altvoltage_powerdown_mode_available
->>   KernelVersion:       2.6.38
->>   Contact:     linux-iio@vger.kernel.org
->>   Description:
->> @@ -331,6 +342,8 @@ Description:
->>
->>   What:
->>        /sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown
->>   What:
->>        /sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown
->> +What:
->>        /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown
->> +What:
->>        /sys/bus/iio/devices/iio:deviceX/out_altvoltage_powerdown
->>   KernelVersion:       2.6.38
->>   Contact:     linux-iio@vger.kernel.org
->>   Description:
->> @@ -339,6 +352,24 @@ Description:
->>                normal operation. Y may be suppressed if all outputs are
->>                controlled together.
->>
->> +What:
->>        /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency
->> +KernelVersion:       3.4.0
->> +Contact:     linux-iio@vger.kernel.org
->> +Description:
->> +             Output frequency for channel Y in Hz. The number must
->> always be
->> +             specified and unique if the output corresponds to a single
->> +             channel.
->> +
->> +What:
->>        /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_phase
->> +KernelVersion:       3.4.0
->> +Contact:     linux-iio@vger.kernel.org
->> +Description:
->> +             Phase in radians of one frequency/clock output Y
->> +             (out_altvoltageY) relative to another frequency/clock
->> output
->> +             (out_altvoltageZ) of the device X. The number must always
->> be
->> +             specified and unique if the output corresponds to a single
->> +             channel.
->> +
->>   What:                /sys/bus/iio/devices/iio:deviceX/events
->>   KernelVersion:       2.6.35
->>   Contact:     linux-iio@vger.kernel.org
->> --
->> 1.7.0.4
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+---
+ drivers/staging/iio/dac/max517.c |    1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/staging/iio/dac/max517.c b/drivers/staging/iio/dac/max517.c
+index 60aef18..672fa51 100644
+--- a/drivers/staging/iio/dac/max517.c
++++ b/drivers/staging/iio/dac/max517.c
+@@ -264,6 +264,7 @@ exit:
+ 
+ static int max517_remove(struct i2c_client *client)
+ {
++	iio_device_unregister(i2c_get_clientdata(client));
+ 	iio_device_free(i2c_get_clientdata(client));
+ 
+ 	return 0;
+-- 
+1.7.9.5
