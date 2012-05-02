@@ -1,63 +1,124 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:48341 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753423Ab2ECH2G (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 May 2012 03:28:06 -0400
-Message-ID: <4FA2337B.70609@cam.ac.uk>
-Date: Thu, 03 May 2012 08:27:55 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from db3ehsobe001.messaging.microsoft.com ([213.199.154.139]:29283
+	"EHLO db3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752390Ab2EBLYV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 2 May 2012 07:24:21 -0400
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] iio: documentation: Add out_altvoltage and friends
+Date: Wed, 2 May 2012 13:24:04 +0200
+Message-ID: <1335957844-6172-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: Axel Lin <axel.lin@gmail.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] IIO: industrialio-core: Use simple_open
-References: <1336009851.3590.4.camel@phoenix> <544AC56F16B56944AEC3BD4E3D5917714E79717075@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917714E79717075@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 5/3/2012 7:49 AM, Hennerich, Michael wrote:
-> Axel Lin wrote on 2012-05-03:
->> Use simple_open to replace iio_debugfs_open.
->>
->> Signed-off-by: Axel Lin<axel.lin@gmail.com>
-> Acked-by: Michael Hennerich<michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
->> ---
->>   drivers/iio/industrialio-core.c |   10 +---------
->>   1 files changed, 1 insertions(+), 9 deletions(-)
->> diff --git a/drivers/iio/industrialio-core.c
->> b/drivers/iio/industrialio-core.c index 72e33b8..52aa44a 100644 ---
->> a/drivers/iio/industrialio-core.c +++ b/drivers/iio/industrialio-core.c
->> @@ -152,14 +152,6 @@ static void __exit iio_exit(void)
->>   }
->>
->>   #if defined(CONFIG_DEBUG_FS)
->> -static int iio_debugfs_open(struct inode *inode, struct file *file) -{
->> -     if (inode->i_private) -         file->private_data = inode->i_private; -
->> -     return 0; -} -
->>   static ssize_t iio_debugfs_read_reg(struct file *file, char __user
->>   *userbuf,                          size_t count, loff_t *ppos) {
->> @@ -218,7 +210,7 @@ static ssize_t iio_debugfs_write_reg(struct file
->> *file,
->>   }
->>
->>   static const struct file_operations iio_debugfs_reg_fops = {
->> -     .open = iio_debugfs_open,
->> +     .open = simple_open,
->>        .read = iio_debugfs_read_reg,
->>        .write = iio_debugfs_write_reg,
->>   };
-> Greetings,
-> Michael
->
-> --
-> Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-> Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-> Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret Seif
->
->
+From: Michael Hennerich <michael.hennerich@analog.com>
+
+Continuous frequency/clock generating devices, such as DDSs or PLLs
+should use out_altvolatge.
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio |   31 +++++++++++++++++++++++++++++++
+ 1 files changed, 31 insertions(+), 0 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 2ce4dad..f757a30 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -219,6 +219,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
+@@ -273,6 +274,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale_available
+ What:		/sys/.../iio:deviceX/in_voltageX_scale_available
+ What:		/sys/.../iio:deviceX/in_voltage-voltage_scale_available
+ What:		/sys/.../iio:deviceX/out_voltageX_scale_available
++What:		/sys/.../iio:deviceX/out_altvoltageX_scale_available
+ What:		/sys/.../iio:deviceX/in_capacitance_scale_available
+ KernelVersion:	2.635
+ Contact:	linux-iio@vger.kernel.org
+@@ -291,14 +293,19 @@ Description:
+ 		gives the 3dB frequency of the filter in Hz.
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_raw
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_raw
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Raw (unscaled, no bias etc.) output voltage for
+ 		channel Y.  The number must always be specified and
+ 		unique if the output corresponds to a single channel.
++		While DAC like devices typically use out_voltage,
++		a continuous frequency generating device, such as
++		a DDS or PLL should use out_altvolatge.
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY&Z_raw
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY&Z_raw
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -309,6 +316,8 @@ Description:
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown_mode
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown_mode
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown_mode
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltage_powerdown_mode
+ KernelVersion:	2.6.38
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -323,6 +332,8 @@ Description:
+ 
+ What:		/sys/.../iio:deviceX/out_votlageY_powerdown_mode_available
+ What:		/sys/.../iio:deviceX/out_voltage_powerdown_mode_available
++What:		/sys/.../iio:deviceX/out_altvotlageY_powerdown_mode_available
++What:		/sys/.../iio:deviceX/out_altvoltage_powerdown_mode_available
+ KernelVersion:	2.6.38
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -331,6 +342,8 @@ Description:
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltage_powerdown
+ KernelVersion:	2.6.38
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -339,6 +352,24 @@ Description:
+ 		normal operation. Y may be suppressed if all outputs are
+ 		controlled together.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Output frequency for channel Y in Hz. The number must always be
++		specified and unique if the output corresponds to a single
++		channel.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_phase
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Phase in radians of one frequency/clock output Y
++		(out_altvoltageY) relative to another frequency/clock output
++		(out_altvoltageZ) of the device X. The number must always be
++		specified and unique if the output corresponds to a single
++		channel.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/events
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+-- 
+1.7.0.4
+
 
