@@ -1,46 +1,49 @@
-Return-Path: <jhovold@gmail.com>
-Date: Thu, 3 May 2012 19:31:59 +0200
-From: Johan Hovold <jhovold@gmail.com>
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Cc: Rob Landley <rob@landley.net>, Richard Purdie <rpurdie@rpsys.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Florian Tobias Schandinat <FlorianSchandinat@gmx.de>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] mfd: add LM3533 lighting-power core driver
-Message-ID: <20120503173159.GH15752@localhost>
-References: <1336040799-18433-2-git-send-email-jhovold@gmail.com>
- <20120503103848.GB3955@opensource.wolfsonmicro.com>
- <20120503112803.GA15752@localhost>
- <20120503113801.GE3955@opensource.wolfsonmicro.com>
- <20120503150040.GC15752@localhost>
- <20120503152407.GK3955@opensource.wolfsonmicro.com>
- <20120503165437.GF15752@localhost>
- <20120503165748.GS3955@opensource.wolfsonmicro.com>
- <20120503171402.GG15752@localhost>
- <20120503172309.GT3955@opensource.wolfsonmicro.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20120503172309.GT3955@opensource.wolfsonmicro.com>
+Return-Path: <axel.lin@gmail.com>
+Message-ID: <1336009851.3590.4.camel@phoenix>
+Subject: [PATCH] IIO: industrialio-core: Use simple_open
+From: Axel Lin <axel.lin@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org, Greg
+	Kroah-Hartman <gregkh@linuxfoundation.org>
+Date: Thu, 03 May 2012 09:50:51 +0800
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, May 03, 2012 at 06:23:10PM +0100, Mark Brown wrote:
-> On Thu, May 03, 2012 at 07:14:02PM +0200, Johan Hovold wrote:
-> 
-> > Assigning a current sink to a control bank corresponds, then, to
-> > setting, for example, output_lvled3 to (led) 1.
-> 
-> This seems sensible enough, though it does feel like what we're offering
-> up to the LED subsystem is relly the LED control banks rather than the
-> LEDs themselves - or some mix of this and other stuff.
+Use simple_open to replace iio_debugfs_open.
 
-Exactly. That's why I've tried to refer to the led devices as "logical
-leds" as they may be connected to more than one output (the physical
-leds).
+Signed-off-by: Axel Lin <axel.lin@gmail.com>
+---
+ drivers/iio/industrialio-core.c |   10 +---------
+ 1 files changed, 1 insertions(+), 9 deletions(-)
 
-Johan
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 72e33b8..52aa44a 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -152,14 +152,6 @@ static void __exit iio_exit(void)
+ }
+ 
+ #if defined(CONFIG_DEBUG_FS)
+-static int iio_debugfs_open(struct inode *inode, struct file *file)
+-{
+-	if (inode->i_private)
+-		file->private_data = inode->i_private;
+-
+-	return 0;
+-}
+-
+ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
+ 			      size_t count, loff_t *ppos)
+ {
+@@ -218,7 +210,7 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
+ }
+ 
+ static const struct file_operations iio_debugfs_reg_fops = {
+-	.open = iio_debugfs_open,
++	.open = simple_open,
+ 	.read = iio_debugfs_read_reg,
+ 	.write = iio_debugfs_write_reg,
+ };
+-- 
+1.7.5.4
