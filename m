@@ -1,44 +1,92 @@
-Return-Path: <axel.lin@gmail.com>
-Message-ID: <1336057018.4205.2.camel@phoenix>
-Subject: [PATCH] IIO: industrialio-core: Checking NULL instead of IS_ERR for
- debugfs_create_dir()
-From: Axel Lin <axel.lin@gmail.com>
-To: linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>, Michael Hennerich
- <michael.hennerich@analog.com>, linux-iio@vger.kernel.org, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Thu, 03 May 2012 22:56:58 +0800
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Return-Path: <jhovold@gmail.com>
+From: Johan Hovold <jhovold@gmail.com>
+To: Rob Landley <rob@landley.net>,
+	Richard Purdie <rpurdie@rpsys.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Florian Tobias Schandinat <FlorianSchandinat@gmx.de>
+Cc: Arnd Bergmann <arnd@arndb.de>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-fbdev@vger.kernel.org,
+	Johan Hovold <jhovold@gmail.com>
+Subject: [PATCH v2 0/4] mfd: add LM3533 lighting-power chip driver
+Date: Thu,  3 May 2012 12:26:35 +0200
+Message-Id: <1336040799-18433-1-git-send-email-jhovold@gmail.com>
+In-Reply-To: <1334935826-12527-1-git-send-email-jhovold@gmail.com>
+References: <1334935826-12527-1-git-send-email-jhovold@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-If defined CONFIG_DEBUG_FS, debugfs_create_dir returns NULL on failure.
+These patches (against v3.4-rc5) add support for the National Semiconductor /
+Texas Instruments LM3533 lighting-power chip.
 
-Signed-off-by: Axel Lin <axel.lin@gmail.com>
----
- drivers/iio/industrialio-core.c |    5 +----
- 1 files changed, 1 insertions(+), 4 deletions(-)
+This multi-function device has four LEDs, two backlights and an
+ambient-light-sensor interface.
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 72e33b8..c74412b 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -235,15 +235,12 @@ static int iio_device_register_debugfs(struct iio_dev *indio_dev)
- 	if (indio_dev->info->debugfs_reg_access == NULL)
- 		return 0;
- 
--	if (IS_ERR(iio_debugfs_dentry))
-+	if (!iio_debugfs_dentry)
- 		return 0;
- 
- 	indio_dev->debugfs_dentry =
- 		debugfs_create_dir(dev_name(&indio_dev->dev),
- 				   iio_debugfs_dentry);
--	if (IS_ERR(indio_dev->debugfs_dentry))
--		return PTR_ERR(indio_dev->debugfs_dentry);
--
- 	if (indio_dev->debugfs_dentry == NULL) {
- 		dev_warn(indio_dev->dev.parent,
- 			 "Failed to create debugfs directory\n");
+The LEDs and backlights can be controlled directly, through PWM input,
+or by the ambient-light-sensor interface. Hardware-accelerated blinking is
+provided for the LEDs.
+
+ALS control is done through defining five light zones and three sets of
+corresponding brightness target levels. The ALS iio-driver provides raw and
+mean adc readings along with the current light zone through sysfs. A threshold
+event can be generated on zone changes.
+
+Further details and specifications are now available from:
+
+        http://www.ti.com/product/lm3533
+
+Changes since v1 includes a rewrite of the ambient-light-sensor driver against
+iio, the addition of sysfs-ABI documentation, and a switch to regmap for
+register io.
+
+This work has been done on behalf of National Semiconductor / Texas
+Instruments.
+
+Thanks,
+Johan
+
+
+Johan Hovold (4):
+  mfd: add LM3533 lighting-power core driver
+  iio: add LM3533 ambient light sensor driver
+  leds: add LM3533 LED driver
+  backlight: add LM3533 backlight driver
+
+ .../ABI/testing/sysfs-bus-i2c-devices-lm3533       |   38 +
+ .../testing/sysfs-class-backlight-driver-lm3533    |   50 ++
+ .../ABI/testing/sysfs-class-led-driver-lm3533      |   67 ++
+ drivers/leds/Kconfig                               |   13 +
+ drivers/leds/Makefile                              |    1 +
+ drivers/leds/leds-lm3533.c                         |  741 ++++++++++++++++++++
+ drivers/mfd/Kconfig                                |   13 +
+ drivers/mfd/Makefile                               |    1 +
+ drivers/mfd/lm3533-core.c                          |  717 +++++++++++++++++++
+ drivers/mfd/lm3533-ctrlbank.c                      |  134 ++++
+ .../Documentation/sysfs-bus-iio-light-lm3533-als   |   62 ++
+ drivers/staging/iio/light/Kconfig                  |   16 +
+ drivers/staging/iio/light/Makefile                 |    1 +
+ drivers/staging/iio/light/lm3533-als.c             |  617 ++++++++++++++++
+ drivers/video/backlight/Kconfig                    |   12 +
+ drivers/video/backlight/Makefile                   |    1 +
+ drivers/video/backlight/lm3533_bl.c                |  458 ++++++++++++
+ include/linux/mfd/lm3533.h                         |   89 +++
+ 18 files changed, 3031 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-i2c-devices-lm3533
+ create mode 100644 Documentation/ABI/testing/sysfs-class-backlight-driver-lm3533
+ create mode 100644 Documentation/ABI/testing/sysfs-class-led-driver-lm3533
+ create mode 100644 drivers/leds/leds-lm3533.c
+ create mode 100644 drivers/mfd/lm3533-core.c
+ create mode 100644 drivers/mfd/lm3533-ctrlbank.c
+ create mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-light-lm3533-als
+ create mode 100644 drivers/staging/iio/light/lm3533-als.c
+ create mode 100644 drivers/video/backlight/lm3533_bl.c
+ create mode 100644 include/linux/mfd/lm3533.h
+
 -- 
-1.7.5.4
+1.7.8.5
