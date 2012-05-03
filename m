@@ -15,19 +15,19 @@ Cc: Arnd Bergmann <arnd@arndb.de>,
 	devel@driverdev.osuosl.org,
 	linux-fbdev@vger.kernel.org,
 	Johan Hovold <jhovold@gmail.com>
-Subject: [PATCH v2 4/4] backlight: add LM3533 backlight driver
-Date: Thu,  3 May 2012 12:26:39 +0200
-Message-Id: <1336040799-18433-5-git-send-email-jhovold@gmail.com>
+Subject: [PATCH v2 3/4] leds: add LM3533 LED driver
+Date: Thu,  3 May 2012 12:26:38 +0200
+Message-Id: <1336040799-18433-4-git-send-email-jhovold@gmail.com>
 In-Reply-To: <1336040799-18433-1-git-send-email-jhovold@gmail.com>
 References: <1334935826-12527-1-git-send-email-jhovold@gmail.com>
  <1336040799-18433-1-git-send-email-jhovold@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add sub-driver for the backlights on National Semiconductor / TI LM3533
+Add sub-driver for the LEDs on National Semiconductor / TI LM3533
 lighting power chips.
 
-The chip provides 256 brightness levels and ambient-light-sensor and pwm
-input control.
+The chip provides 256 brightness levels, hardware accelerated blinking
+as well as ambient-light-sensor and pwm input control.
 
 Signed-off-by: Johan Hovold <jhovold@gmail.com>
 ---
@@ -37,39 +37,56 @@ v2:
  - open code max_current/pwm macros
 
 
- .../testing/sysfs-class-backlight-driver-lm3533    |   50 +++
- drivers/video/backlight/Kconfig                    |   12 +
- drivers/video/backlight/Makefile                   |    1 +
- drivers/video/backlight/lm3533_bl.c                |  458 ++++++++++++++++++++
- 4 files changed, 521 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-class-backlight-driver-lm3533
- create mode 100644 drivers/video/backlight/lm3533_bl.c
+ .../ABI/testing/sysfs-class-led-driver-lm3533      |   67 ++
+ drivers/leds/Kconfig                               |   13 +
+ drivers/leds/Makefile                              |    1 +
+ drivers/leds/leds-lm3533.c                         |  741 ++++++++++++++++++++
+ 4 files changed, 822 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-led-driver-lm3533
+ create mode 100644 drivers/leds/leds-lm3533.c
 
-diff --git a/Documentation/ABI/testing/sysfs-class-backlight-driver-lm3533 b/Documentation/ABI/testing/sysfs-class-backlight-driver-lm3533
+diff --git a/Documentation/ABI/testing/sysfs-class-led-driver-lm3533 b/Documentation/ABI/testing/sysfs-class-led-driver-lm3533
 new file mode 100644
-index 0000000..866fd3e
+index 0000000..fc1ee04
 --- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-class-backlight-driver-lm3533
-@@ -0,0 +1,50 @@
-+What:		/sys/class/backlight/<backlight>/als
++++ b/Documentation/ABI/testing/sysfs-class-led-driver-lm3533
+@@ -0,0 +1,67 @@
++What:		/sys/class/leds/<led>/als
 +Date:		April 2012
 +KernelVersion:	3.5
 +Contact:	Johan Hovold <jhovold@gmail.com>
 +Description:
-+		Set the ALS-control mode (0,..2), where
++		Set the ALS-control mode (0, 2, 3), where
 +
 +		0 - disabled
-+		1 - ALS-mapper 1 (backlight 0)
-+		2 - ALS-mapper 2 (backlight 1)
++		2 - ALS-mapper 2
++		3 - ALS-mapper 3
 +
-+What:		/sys/class/backlight/<backlight>/id
++What:		/sys/class/leds/<led>/falltime
++What:		/sys/class/leds/<led>/risetime
 +Date:		April 2012
 +KernelVersion:	3.5
 +Contact:	Johan Hovold <jhovold@gmail.com>
 +Description:
-+		Get the id of this backlight (0, 1).
++		Set the pattern generator fall and rise times (0..7), where
 +
-+What:		/sys/class/backlight/<backlight>/linear
++		0 - 2048 us
++		1 - 262 ms
++		2 - 524 ms
++		3 - 1.049 s
++		4 - 2.097 s
++		5 - 4.194 s
++		6 - 8.389 s
++		7 - 16.78 s
++
++What:		/sys/class/leds/<led>/id
++Date:		April 2012
++KernelVersion:	3.5
++Contact:	Johan Hovold <jhovold@gmail.com>
++Description:
++		Get the id of this led (0..3).
++
++What:		/sys/class/leds/<led>/linear
 +Date:		April 2012
 +KernelVersion:	3.5
 +Contact:	Johan Hovold <jhovold@gmail.com>
@@ -79,7 +96,7 @@ index 0000000..866fd3e
 +		0 - exponential mode
 +		1 - linear mode
 +
-+What:		/sys/class/backlight/<backlight>/max_current
++What:		/sys/class/leds/<led>/max_current
 +Date:		April 2012
 +KernelVersion:	3.5
 +Contact:	Johan Hovold <jhovold@gmail.com>
@@ -88,7 +105,7 @@ index 0000000..866fd3e
 +
 +		I_{LED_FULLSCALE} = 5mA + max_current * 0.8mA
 +
-+What:		/sys/class/backlight/<backlight>/pwm
++What:		/sys/class/leds/<led>/pwm
 +Date:		April 2012
 +KernelVersion:	3.5
 +Contact:	Johan Hovold <jhovold@gmail.com>
@@ -101,49 +118,50 @@ index 0000000..866fd3e
 +		bit 2 - PWM-input enabled in Zone 1
 +		bit 1 - PWM-input enabled in Zone 0
 +		bit 0 - PWM-input enabled
-diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/Kconfig
-index af16884..fa2b037 100644
---- a/drivers/video/backlight/Kconfig
-+++ b/drivers/video/backlight/Kconfig
-@@ -184,6 +184,18 @@ config BACKLIGHT_GENERIC
- 	  known as the Corgi backlight driver. If you have a Sharp Zaurus
- 	  SL-C7xx, SL-Cxx00 or SL-6000x say y.
+diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
+index ff4b8cf..19bd829 100644
+--- a/drivers/leds/Kconfig
++++ b/drivers/leds/Kconfig
+@@ -50,6 +50,19 @@ config LEDS_LM3530
+ 	  controlled manually or using PWM input or using ambient
+ 	  light automatically.
  
-+config BACKLIGHT_LM3533
-+	tristate "Backlight Driver for LM3533"
-+	depends on BACKLIGHT_CLASS_DEVICE
++config LEDS_LM3533
++	tristate "LED support for LM3533"
++	depends on LEDS_CLASS
 +	depends on MFD_LM3533
 +	help
-+	  Say Y to enable the backlight driver for National Semiconductor / TI
-+	  LM3533 Lighting Power chips.
++	  This option enables support for the LEDs on National Semiconductor /
++	  TI LM3533 Lighting Power chips.
 +
-+	  The backlights can be controlled directly, through PWM input, or by
-+	  the ambient-light-sensor interface. The chip supports 256 brightness
-+	  levels.
++	  The LEDs can be controlled directly, through PWM input, or by the
++	  ambient-light-sensor interface. The chip supports
++	  hardware-accelerated blinking with maximum on and off periods of 9.8
++	  and 77 seconds respectively.
 +
- config BACKLIGHT_LOCOMO
- 	tristate "Sharp LOCOMO LCD/Backlight Driver"
- 	depends on SHARP_LOCOMO
-diff --git a/drivers/video/backlight/Makefile b/drivers/video/backlight/Makefile
-index 36855ae..a2ac9cf 100644
---- a/drivers/video/backlight/Makefile
-+++ b/drivers/video/backlight/Makefile
-@@ -21,6 +21,7 @@ obj-$(CONFIG_BACKLIGHT_EP93XX)	+= ep93xx_bl.o
- obj-$(CONFIG_BACKLIGHT_GENERIC)	+= generic_bl.o
- obj-$(CONFIG_BACKLIGHT_HP700)	+= jornada720_bl.o
- obj-$(CONFIG_BACKLIGHT_HP680)	+= hp680_bl.o
-+obj-$(CONFIG_BACKLIGHT_LM3533)	+= lm3533_bl.o
- obj-$(CONFIG_BACKLIGHT_LOCOMO)	+= locomolcd.o
- obj-$(CONFIG_BACKLIGHT_LP855X)	+= lp855x_bl.o
- obj-$(CONFIG_BACKLIGHT_OMAP1)	+= omap1_bl.o
-diff --git a/drivers/video/backlight/lm3533_bl.c b/drivers/video/backlight/lm3533_bl.c
+ config LEDS_LOCOMO
+ 	tristate "LED Support for Locomo device"
+ 	depends on LEDS_CLASS
+diff --git a/drivers/leds/Makefile b/drivers/leds/Makefile
+index 890481c..f39a526 100644
+--- a/drivers/leds/Makefile
++++ b/drivers/leds/Makefile
+@@ -10,6 +10,7 @@ obj-$(CONFIG_LEDS_ATMEL_PWM)		+= leds-atmel-pwm.o
+ obj-$(CONFIG_LEDS_BD2802)		+= leds-bd2802.o
+ obj-$(CONFIG_LEDS_LOCOMO)		+= leds-locomo.o
+ obj-$(CONFIG_LEDS_LM3530)		+= leds-lm3530.o
++obj-$(CONFIG_LEDS_LM3533)		+= leds-lm3533.o
+ obj-$(CONFIG_LEDS_MIKROTIK_RB532)	+= leds-rb532.o
+ obj-$(CONFIG_LEDS_S3C24XX)		+= leds-s3c24xx.o
+ obj-$(CONFIG_LEDS_NET48XX)		+= leds-net48xx.o
+diff --git a/drivers/leds/leds-lm3533.c b/drivers/leds/leds-lm3533.c
 new file mode 100644
-index 0000000..4100c7a
+index 0000000..7d02f4b
 --- /dev/null
-+++ b/drivers/video/backlight/lm3533_bl.c
-@@ -0,0 +1,458 @@
++++ b/drivers/leds/leds-lm3533.c
+@@ -0,0 +1,741 @@
 +/*
-+ * lm3533-bl.c -- LM3533 Backlight driver
++ * leds-lm3533.c -- LM3533 LED driver
 + *
 + * Copyright (C) 2011-2012 Texas Instruments
 + *
@@ -157,97 +175,398 @@ index 0000000..4100c7a
 +
 +#include <linux/module.h>
 +#include <linux/init.h>
++#include <linux/leds.h>
++#include <linux/mfd/core.h>
++#include <linux/mutex.h>
 +#include <linux/platform_device.h>
-+#include <linux/backlight.h>
-+#include <linux/fb.h>
 +#include <linux/slab.h>
++#include <linux/workqueue.h>
 +
 +#include <linux/mfd/lm3533.h>
 +
 +
-+#define LM3533_HVCTRLBANK_COUNT		2
-+#define LM3533_BL_MAX_BRIGHTNESS	255
++#define LM3533_LVCTRLBANK_MIN		2
++#define LM3533_LVCTRLBANK_MAX		5
++#define LM3533_LVCTRLBANK_COUNT		4
++#define LM3533_RISEFALLTIME_MAX		7
++#define LM3533_ALS_LV_MIN		2
++#define LM3533_ALS_LV_MAX		3
 +
-+#define LM3533_REG_CTRLBANK_AB_BCONF	0x1a
++#define LM3533_REG_CTRLBANK_BCONF_BASE		0x1b
++#define LM3533_REG_PATTERN_ENABLE		0x28
++#define LM3533_REG_PATTERN_LOW_TIME_BASE	0x71
++#define LM3533_REG_PATTERN_HIGH_TIME_BASE	0x72
++#define LM3533_REG_PATTERN_RISETIME_BASE	0x74
++#define LM3533_REG_PATTERN_FALLTIME_BASE	0x75
++
++#define LM3533_REG_PATTERN_STEP			0x10
++
++#define LM3533_REG_CTRLBANK_BCONF_MAPPING_MASK	0x04
++#define LM3533_REG_CTRLBANK_BCONF_ALS_MASK	0x03
++
++#define LM3533_LED_FLAG_PATTERN_ENABLE		1
 +
 +
-+struct lm3533_bl {
++struct lm3533_led {
 +	struct lm3533 *lm3533;
 +	struct lm3533_ctrlbank cb;
-+	struct backlight_device *bd;
++	struct led_classdev cdev;
 +	int id;
++
++	struct mutex mutex;
++	unsigned long flags;
++
++	struct work_struct work;
++	u8 new_brightness;
 +};
 +
++#define to_lm3533_led(_cdev) \
++	container_of(_cdev, struct lm3533_led, cdev)
 +
-+static inline int lm3533_bl_get_ctrlbank_id(struct lm3533_bl *bl)
++
++static inline int lm3533_led_get_ctrlbank_id(struct lm3533_led *led)
 +{
-+	return bl->id;
++	return led->id + 2;
 +}
 +
-+static int lm3533_bl_update_status(struct backlight_device *bd)
++static inline u8 lm3533_led_get_lv_reg(struct lm3533_led *led, u8 base)
 +{
-+	struct lm3533_bl *bl = bl_get_data(bd);
-+	int brightness = bd->props.brightness;
-+
-+	if (bd->props.power != FB_BLANK_UNBLANK)
-+		brightness = 0;
-+	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
-+		brightness = 0;
-+
-+	return lm3533_ctrlbank_set_brightness(&bl->cb, (u8)brightness);
++	return base + led->id;
 +}
 +
-+static int lm3533_bl_get_brightness(struct backlight_device *bd)
++static inline u8 lm3533_led_get_pattern(struct lm3533_led *led)
 +{
-+	struct lm3533_bl *bl = bl_get_data(bd);
++	return led->id;
++}
++
++static inline u8 lm3533_led_get_pattern_reg(struct lm3533_led *led,
++								u8 base)
++{
++	return base + lm3533_led_get_pattern(led) * LM3533_REG_PATTERN_STEP;
++}
++
++static int lm3533_led_pattern_enable(struct lm3533_led *led, int enable)
++{
++	u8 mask;
++	u8 val;
++	int pattern;
++	int state;
++	int ret = 0;
++
++	dev_dbg(led->cdev.dev, "%s - %d\n", __func__, enable);
++
++	mutex_lock(&led->mutex);
++
++	state = test_bit(LM3533_LED_FLAG_PATTERN_ENABLE, &led->flags);
++	if ((enable && state) || (!enable && !state))
++		goto out;
++
++	pattern = lm3533_led_get_pattern(led);
++	mask = 1 << (2 * pattern);
++
++	if (enable)
++		val = mask;
++	else
++		val = 0;
++
++	ret = lm3533_update(led->lm3533, LM3533_REG_PATTERN_ENABLE, val, mask);
++	if (ret) {
++		dev_err(led->cdev.dev, "failed to enable pattern %d (%d)\n",
++							pattern, enable);
++		goto out;
++	}
++
++	__change_bit(LM3533_LED_FLAG_PATTERN_ENABLE, &led->flags);
++out:
++	mutex_unlock(&led->mutex);
++
++	return ret;
++}
++
++static void lm3533_led_work(struct work_struct *work)
++{
++	struct lm3533_led *led = container_of(work, struct lm3533_led, work);
++
++	dev_dbg(led->cdev.dev, "%s - %u\n", __func__, led->new_brightness);
++
++	if (led->new_brightness == 0)
++		lm3533_led_pattern_enable(led, 0);	/* disable blink */
++
++	lm3533_ctrlbank_set_brightness(&led->cb, led->new_brightness);
++}
++
++static void lm3533_led_set(struct led_classdev *cdev,
++						enum led_brightness value)
++{
++	struct lm3533_led *led = to_lm3533_led(cdev);
++
++	dev_dbg(led->cdev.dev, "%s - %d\n", __func__, value);
++
++	led->new_brightness = value;
++	schedule_work(&led->work);
++}
++
++static enum led_brightness lm3533_led_get(struct led_classdev *cdev)
++{
++	struct lm3533_led *led = to_lm3533_led(cdev);
 +	u8 val;
 +	int ret;
 +
-+	ret = lm3533_ctrlbank_get_brightness(&bl->cb, &val);
++	ret = lm3533_ctrlbank_get_brightness(&led->cb, &val);
 +	if (ret)
 +		return ret;
++
++	dev_dbg(led->cdev.dev, "%s - %u\n", __func__, val);
 +
 +	return val;
 +}
 +
-+static const struct backlight_ops lm3533_bl_ops = {
-+	.get_brightness	= lm3533_bl_get_brightness,
-+	.update_status	= lm3533_bl_update_status,
-+};
++/* Pattern generator defines -- delays in us */
++#define LM3533_LED_DELAY_GROUP1_BASE	0x00
++#define LM3533_LED_DELAY_GROUP2_BASE	0x3d
++#define LM3533_LED_DELAY_GROUP3_BASE	0x80
++#define LM3533_LED_DELAY_MAX		0xff
++
++#define LM3533_LED_DELAY_GROUP1_STEP	16384
++#define LM3533_LED_DELAY_GROUP2_STEP	131072
++#define LM3533_LED_DELAY_GROUP3_STEP	524288
++#define LM3533_LED_DELAY_GROUP1_MIN	16384
++#define LM3533_LED_DELAY_GROUP2_MIN	1130496
++#define LM3533_LED_DELAY_GROUP3_MIN	10305536
++#define LM3533_LED_DELAY_GROUP1_MAX	999424
++#define LM3533_LED_DELAY_GROUP2_MAX	9781248
++#define LM3533_LED_DELAY_GROUP3_MAX	76890112
++
++/* Delay limits in ms */
++#define LM3533_LED_DELAY_ON_MAX		9845
++#define LM3533_LED_DELAY_OFF_MAX	77140
++
++static int time_to_val(long *t, long t_min, long t_max, long t_step,
++							int v_min, int v_max)
++{
++	int val;
++
++	*t += t_step / 2;
++	val = (*t - t_min) / t_step + v_min;
++	val = clamp(val, v_min, v_max);
++	*t = t_step * (val - v_min) + t_min;
++
++	return val;
++}
++
++static int lm3533_led_get_delay(long *delay)
++{
++	int val;
++
++	*delay *= 1000;
++
++	if (*delay >= LM3533_LED_DELAY_GROUP3_MIN -
++					LM3533_LED_DELAY_GROUP3_STEP / 2) {
++		val = time_to_val(delay, LM3533_LED_DELAY_GROUP3_MIN,
++					LM3533_LED_DELAY_GROUP3_MAX,
++					LM3533_LED_DELAY_GROUP3_STEP,
++					LM3533_LED_DELAY_GROUP3_BASE,
++					0xff);
++	} else if (*delay >= LM3533_LED_DELAY_GROUP2_MIN -
++					LM3533_LED_DELAY_GROUP2_STEP / 2) {
++		val = time_to_val(delay, LM3533_LED_DELAY_GROUP2_MIN,
++					LM3533_LED_DELAY_GROUP2_MAX,
++					LM3533_LED_DELAY_GROUP2_STEP,
++					LM3533_LED_DELAY_GROUP2_BASE,
++					LM3533_LED_DELAY_GROUP3_BASE - 1);
++	} else {
++		val = time_to_val(delay, LM3533_LED_DELAY_GROUP1_MIN,
++					LM3533_LED_DELAY_GROUP1_MAX,
++					LM3533_LED_DELAY_GROUP1_STEP,
++					LM3533_LED_DELAY_GROUP1_BASE,
++					LM3533_LED_DELAY_GROUP2_BASE - 1);
++	}
++
++	*delay /= 1000;
++
++	return val;
++}
++
++static int lm3533_led_delay_set(struct lm3533_led *led, u8 base,
++							unsigned long *delay)
++{
++	u8 val;
++	u8 reg;
++	long t;
++	int ret;
++
++	t = *delay;
++	val = lm3533_led_get_delay(&t);
++
++	dev_dbg(led->cdev.dev, "%s - %lu: %ld (0x%02x)\n", __func__,
++							*delay, t, val);
++	reg = lm3533_led_get_pattern_reg(led, base);
++	ret = lm3533_write(led->lm3533, reg, val);
++	if (ret)
++		dev_err(led->cdev.dev, "failed to set delay (%02x)\n", reg);
++
++	*delay = t;
++
++	return ret;
++}
++
++static int lm3533_led_delay_on_set(struct lm3533_led *led, unsigned long *t)
++{
++	*t = min_t(long, *t, LM3533_LED_DELAY_GROUP2_MAX / 1000);
++
++	return lm3533_led_delay_set(led, LM3533_REG_PATTERN_HIGH_TIME_BASE, t);
++}
++
++static int lm3533_led_delay_off_set(struct lm3533_led *led, unsigned long *t)
++{
++	*t = min_t(long, *t, LM3533_LED_DELAY_GROUP3_MAX / 1000);
++
++	return lm3533_led_delay_set(led, LM3533_REG_PATTERN_LOW_TIME_BASE, t);
++}
++
++static int lm3533_led_blink_set(struct led_classdev *cdev,
++				unsigned long *delay_on,
++				unsigned long *delay_off)
++{
++	struct lm3533_led *led = to_lm3533_led(cdev);
++	int ret;
++
++	dev_dbg(led->cdev.dev, "%s - on = %lu, off = %lu\n", __func__,
++							*delay_on, *delay_off);
++
++	if (*delay_on > LM3533_LED_DELAY_ON_MAX ||
++					*delay_off > LM3533_LED_DELAY_OFF_MAX)
++		return -EINVAL;
++
++	if (*delay_on == 0 && *delay_off == 0) {
++		*delay_on = 500;
++		*delay_off = 500;
++	}
++
++	ret = lm3533_led_delay_on_set(led, delay_on);
++	if (ret)
++		return ret;
++
++	ret = lm3533_led_delay_off_set(led, delay_off);
++	if (ret)
++		return ret;
++
++	return lm3533_led_pattern_enable(led, 1);
++}
 +
 +static ssize_t show_id(struct device *dev,
 +				struct device_attribute *attr, char *buf)
 +{
-+	struct lm3533_bl *bl = dev_get_drvdata(dev);
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
 +
-+	return scnprintf(buf, PAGE_SIZE, "%d\n", bl->id);
++	return scnprintf(buf, PAGE_SIZE, "%d\n", led->id);
++}
++
++/*
++ * Pattern generator rise/fall times:
++ *
++ *   0 - 2048 us (default)
++ *   1 - 262 ms
++ *   2 - 524 ms
++ *   3 - 1.049 s
++ *   4 - 2.097 s
++ *   5 - 4.194 s
++ *   6 - 8.389 s
++ *   7 - 16.78 s
++ */
++static ssize_t show_risefalltime(struct device *dev,
++					struct device_attribute *attr,
++					char *buf, u8 base)
++{
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
++	ssize_t ret;
++	u8 reg;
++	u8 val;
++
++	reg = lm3533_led_get_pattern_reg(led, base);
++	ret = lm3533_read(led->lm3533, reg, &val);
++	if (ret)
++		return ret;
++
++	return scnprintf(buf, PAGE_SIZE, "%x\n", val);
++}
++
++static ssize_t show_risetime(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	return show_risefalltime(dev, attr, buf,
++					LM3533_REG_PATTERN_RISETIME_BASE);
++}
++
++static ssize_t show_falltime(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	return show_risefalltime(dev, attr, buf,
++					LM3533_REG_PATTERN_FALLTIME_BASE);
++}
++
++static ssize_t store_risefalltime(struct device *dev,
++					struct device_attribute *attr,
++					const char *buf, size_t len, u8 base)
++{
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
++	u8 val;
++	u8 reg;
++	int ret;
++
++	if (kstrtou8(buf, 0, &val) || val > LM3533_RISEFALLTIME_MAX)
++		return -EINVAL;
++
++	reg = lm3533_led_get_pattern_reg(led, base);
++	ret = lm3533_write(led->lm3533, reg, val);
++	if (ret)
++		return ret;
++
++	return len;
++}
++
++static ssize_t store_risetime(struct device *dev,
++					struct device_attribute *attr,
++					const char *buf, size_t len)
++{
++	return store_risefalltime(dev, attr, buf, len,
++					LM3533_REG_PATTERN_RISETIME_BASE);
++}
++
++static ssize_t store_falltime(struct device *dev,
++					struct device_attribute *attr,
++					const char *buf, size_t len)
++{
++	return store_risefalltime(dev, attr, buf, len,
++					LM3533_REG_PATTERN_FALLTIME_BASE);
 +}
 +
 +/*
 + * ALS-control setting:
 + *
 + *   0 - ALS disabled
-+ *   1 - ALS-mapper 1 (backlight 0)
-+ *   2 - ALS-mapper 2 (backlight 1)
++ *   2 - ALS-mapper 2
++ *   3 - ALS-mapper 3
 + */
 +static ssize_t show_als(struct device *dev,
 +				struct device_attribute *attr, char *buf)
 +{
-+	struct lm3533_bl *bl = dev_get_drvdata(dev);
-+	int ctrlbank = lm3533_bl_get_ctrlbank_id(bl);
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
++	u8 reg;
 +	u8 val;
-+	u8 mask;
 +	int als;
 +	int ret;
 +
-+	ret = lm3533_read(bl->lm3533, LM3533_REG_CTRLBANK_AB_BCONF, &val);
++	reg = lm3533_led_get_lv_reg(led, LM3533_REG_CTRLBANK_BCONF_BASE);
++	ret = lm3533_read(led->lm3533, reg, &val);
 +	if (ret)
 +		return ret;
 +
-+	mask = 2 * ctrlbank;
-+	als = val & mask;
-+	if (als)
-+		als = ctrlbank + 1;
++	als = val & LM3533_REG_CTRLBANK_BCONF_ALS_MASK;
 +
 +	return scnprintf(buf, PAGE_SIZE, "%d\n", als);
 +}
@@ -256,28 +575,23 @@ index 0000000..4100c7a
 +					struct device_attribute *attr,
 +					const char *buf, size_t len)
 +{
-+	struct lm3533_bl *bl = dev_get_drvdata(dev);
-+	int ctrlbank = lm3533_bl_get_ctrlbank_id(bl);
-+	int als;
-+	u8 val;
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
++	u8 als;
++	u8 reg;
 +	u8 mask;
 +	int ret;
 +
-+	if (kstrtoint(buf, 0, &als))
++	if (kstrtou8(buf, 0, &als))
 +		return -EINVAL;
 +
-+	if (als != 0 && (als != ctrlbank + 1))
++	if (als != 0 && (als < LM3533_ALS_LV_MIN || als > LM3533_ALS_LV_MAX))
 +		return -EINVAL;
 +
-+	mask = 1 << (2 * ctrlbank);
++	reg = lm3533_led_get_lv_reg(led, LM3533_REG_CTRLBANK_BCONF_BASE);
++	mask = LM3533_REG_CTRLBANK_BCONF_ALS_MASK;
 +
-+	if (als)
-+		val = mask;
-+	else
-+		val = 0;
-+
-+	ret = lm3533_update(bl->lm3533, LM3533_REG_CTRLBANK_AB_BCONF, val,
-+									mask);
++	ret = lm3533_update(led->lm3533, reg, als, mask);
 +	if (ret)
 +		return ret;
 +
@@ -287,19 +601,19 @@ index 0000000..4100c7a
 +static ssize_t show_linear(struct device *dev,
 +				struct device_attribute *attr, char *buf)
 +{
-+	struct lm3533_bl *bl = dev_get_drvdata(dev);
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
++	u8 reg;
 +	u8 val;
-+	u8 mask;
 +	int linear;
 +	int ret;
 +
-+	ret = lm3533_read(bl->lm3533, LM3533_REG_CTRLBANK_AB_BCONF, &val);
++	reg = lm3533_led_get_lv_reg(led, LM3533_REG_CTRLBANK_BCONF_BASE);
++	ret = lm3533_read(led->lm3533, reg, &val);
 +	if (ret)
 +		return ret;
 +
-+	mask = 1 << (2 * lm3533_bl_get_ctrlbank_id(bl) + 1);
-+
-+	if (val & mask)
++	if (val & LM3533_REG_CTRLBANK_BCONF_MAPPING_MASK)
 +		linear = 1;
 +	else
 +		linear = 0;
@@ -311,8 +625,10 @@ index 0000000..4100c7a
 +					struct device_attribute *attr,
 +					const char *buf, size_t len)
 +{
-+	struct lm3533_bl *bl = dev_get_drvdata(dev);
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
 +	unsigned long linear;
++	u8 reg;
 +	u8 mask;
 +	u8 val;
 +	int ret;
@@ -320,15 +636,15 @@ index 0000000..4100c7a
 +	if (kstrtoul(buf, 0, &linear))
 +		return -EINVAL;
 +
-+	mask = 1 << (2 * lm3533_bl_get_ctrlbank_id(bl) + 1);
++	reg = lm3533_led_get_lv_reg(led, LM3533_REG_CTRLBANK_BCONF_BASE);
++	mask = LM3533_REG_CTRLBANK_BCONF_MAPPING_MASK;
 +
 +	if (linear)
 +		val = mask;
 +	else
 +		val = 0;
 +
-+	ret = lm3533_update(bl->lm3533, LM3533_REG_CTRLBANK_AB_BCONF, val,
-+									mask);
++	ret = lm3533_update(led->lm3533, reg, val, mask);
 +	if (ret)
 +		return ret;
 +
@@ -339,11 +655,12 @@ index 0000000..4100c7a
 +					struct device_attribute *attr,
 +					char *buf)
 +{
-+	struct lm3533_bl *bl = dev_get_drvdata(dev);
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
 +	u8 val;
 +	int ret;
 +
-+	ret = lm3533_ctrlbank_get_max_current(&bl->cb, &val);
++	ret = lm3533_ctrlbank_get_max_current(&led->cb, &val);
 +	if (ret)
 +		return ret;
 +
@@ -354,14 +671,15 @@ index 0000000..4100c7a
 +					struct device_attribute *attr,
 +					const char *buf, size_t len)
 +{
-+	struct lm3533_bl *bl = dev_get_drvdata(dev);
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
 +	u8 val;
 +	int ret;
 +
 +	if (kstrtou8(buf, 0, &val))
 +		return -EINVAL;
 +
-+	ret = lm3533_ctrlbank_set_max_current(&bl->cb, val);
++	ret = lm3533_ctrlbank_set_max_current(&led->cb, val);
 +	if (ret)
 +		return ret;
 +
@@ -372,11 +690,12 @@ index 0000000..4100c7a
 +					struct device_attribute *attr,
 +					char *buf)
 +{
-+	struct lm3533_bl *bl = dev_get_drvdata(dev);
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
 +	u8 val;
 +	int ret;
 +
-+	ret = lm3533_ctrlbank_get_pwm(&bl->cb, &val);
++	ret = lm3533_ctrlbank_get_pwm(&led->cb, &val);
 +	if (ret)
 +		return ret;
 +
@@ -387,14 +706,15 @@ index 0000000..4100c7a
 +					struct device_attribute *attr,
 +					const char *buf, size_t len)
 +{
-+	struct lm3533_bl *bl = dev_get_drvdata(dev);
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
 +	u8 val;
 +	int ret;
 +
 +	if (kstrtou8(buf, 0, &val))
 +		return -EINVAL;
 +
-+	ret = lm3533_ctrlbank_set_pwm(&bl->cb, val);
++	ret = lm3533_ctrlbank_set_pwm(&led->cb, val);
 +	if (ret)
 +		return ret;
 +
@@ -402,59 +722,62 @@ index 0000000..4100c7a
 +}
 +
 +static LM3533_ATTR_RW(als);
++static LM3533_ATTR_RW(falltime);
 +static LM3533_ATTR_RO(id);
 +static LM3533_ATTR_RW(linear);
 +static LM3533_ATTR_RW(max_current);
 +static LM3533_ATTR_RW(pwm);
++static LM3533_ATTR_RW(risetime);
 +
-+static struct attribute *lm3533_bl_attributes[] = {
++static struct attribute *lm3533_led_attributes[] = {
 +	&dev_attr_als.attr,
++	&dev_attr_falltime.attr,
 +	&dev_attr_id.attr,
 +	&dev_attr_linear.attr,
 +	&dev_attr_max_current.attr,
 +	&dev_attr_pwm.attr,
++	&dev_attr_risetime.attr,
 +	NULL,
 +};
 +
-+static mode_t lm3533_bl_attr_is_visible(struct kobject *kobj,
++static mode_t lm3533_led_attr_is_visible(struct kobject *kobj,
 +					     struct attribute *attr, int n)
 +{
 +	struct device *dev = container_of(kobj, struct device, kobj);
-+	struct lm3533_bl *bl = dev_get_drvdata(dev);
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct lm3533_led *led = to_lm3533_led(led_cdev);
 +	mode_t mode = attr->mode;
 +
 +	if (attr == &dev_attr_als.attr) {
-+		if (!bl->lm3533->have_als)
++		if (!led->lm3533->have_als)
 +			mode = 0;
 +	}
 +
 +	return mode;
 +};
 +
-+static struct attribute_group lm3533_bl_attribute_group = {
-+	.is_visible	= lm3533_bl_attr_is_visible,
-+	.attrs		= lm3533_bl_attributes
++static struct attribute_group lm3533_led_attribute_group = {
++	.is_visible	= lm3533_led_attr_is_visible,
++	.attrs		= lm3533_led_attributes
 +};
 +
-+static int __devinit lm3533_bl_setup(struct lm3533_bl *bl,
-+					struct lm3533_bl_platform_data *pdata)
++static int __devinit lm3533_led_setup(struct lm3533_led *led,
++					struct lm3533_led_platform_data *pdata)
 +{
 +	int ret;
 +
-+	ret = lm3533_ctrlbank_set_max_current(&bl->cb, pdata->max_current);
++	ret = lm3533_ctrlbank_set_max_current(&led->cb, pdata->max_current);
 +	if (ret)
 +		return ret;
 +
-+	return lm3533_ctrlbank_set_pwm(&bl->cb, pdata->pwm);
++	return lm3533_ctrlbank_set_pwm(&led->cb, pdata->pwm);
 +}
 +
-+static int __devinit lm3533_bl_probe(struct platform_device *pdev)
++static int __devinit lm3533_led_probe(struct platform_device *pdev)
 +{
 +	struct lm3533 *lm3533;
-+	struct lm3533_bl_platform_data *pdata;
-+	struct lm3533_bl *bl;
-+	struct backlight_device *bd;
-+	struct backlight_properties props;
++	struct lm3533_led_platform_data *pdata;
++	struct lm3533_led *led;
 +	int ret;
 +
 +	dev_dbg(&pdev->dev, "%s\n", __func__);
@@ -469,136 +792,114 @@ index 0000000..4100c7a
 +		return -EINVAL;
 +	}
 +
-+	if (pdev->id < 0 || pdev->id >= LM3533_HVCTRLBANK_COUNT) {
-+		dev_err(&pdev->dev, "illegal backlight id %d\n", pdev->id);
++	if (pdev->id < 0 || pdev->id >= LM3533_LVCTRLBANK_COUNT) {
++		dev_err(&pdev->dev, "illegal LED id %d\n", pdev->id);
 +		return -EINVAL;
 +	}
 +
-+	bl = kzalloc(sizeof(*bl), GFP_KERNEL);
-+	if (!bl) {
-+		dev_err(&pdev->dev,
-+				"failed to allocate memory for backlight\n");
++	led = kzalloc(sizeof(*led), GFP_KERNEL);
++	if (!led)
 +		return -ENOMEM;
-+	}
 +
-+	bl->lm3533 = lm3533;
-+	bl->id = pdev->id;
++	led->lm3533 = lm3533;
++	led->cdev.name = pdata->name;
++	led->cdev.default_trigger = pdata->default_trigger;
++	led->cdev.brightness_set = lm3533_led_set;
++	led->cdev.brightness_get = lm3533_led_get;
++	led->cdev.blink_set = lm3533_led_blink_set;
++	led->cdev.brightness = LED_OFF;
++	led->id = pdev->id;
 +
-+	bl->cb.lm3533 = lm3533;
-+	bl->cb.id = lm3533_bl_get_ctrlbank_id(bl);
-+	bl->cb.dev = NULL;			/* until registered */
++	mutex_init(&led->mutex);
++	INIT_WORK(&led->work, lm3533_led_work);
 +
-+	memset(&props, 0, sizeof(props));
-+	props.type = BACKLIGHT_RAW;
-+	props.max_brightness = LM3533_BL_MAX_BRIGHTNESS;
-+	props.brightness = pdata->default_brightness;
-+	bd = backlight_device_register(pdata->name, pdev->dev.parent, bl,
-+						&lm3533_bl_ops, &props);
-+	if (IS_ERR(bd)) {
-+		dev_err(&pdev->dev, "failed to register backlight device\n");
-+		ret = PTR_ERR(bd);
++	/* The class framework makes a callback to get brightness during
++	 * registration so use parent device (for error reporting) until
++	 * registered.
++	 */
++	led->cb.lm3533 = lm3533;
++	led->cb.id = lm3533_led_get_ctrlbank_id(led);
++	led->cb.dev = lm3533->dev;
++
++	platform_set_drvdata(pdev, led);
++
++	ret = led_classdev_register(pdev->dev.parent, &led->cdev);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to register LED %d\n", pdev->id);
 +		goto err_free;
 +	}
 +
-+	bl->bd = bd;
-+	bl->cb.dev = &bl->bd->dev;
++	led->cb.dev = led->cdev.dev;
 +
-+	platform_set_drvdata(pdev, bl);
-+
-+	ret = sysfs_create_group(&bd->dev.kobj, &lm3533_bl_attribute_group);
++	ret = sysfs_create_group(&led->cdev.dev->kobj,
++						&lm3533_led_attribute_group);
 +	if (ret < 0) {
 +		dev_err(&pdev->dev, "failed to create sysfs attributes\n");
 +		goto err_unregister;
 +	}
 +
-+	backlight_update_status(bd);
-+
-+	ret = lm3533_bl_setup(bl, pdata);
++	ret = lm3533_led_setup(led, pdata);
 +	if (ret)
 +		goto err_sysfs_remove;
 +
-+	ret = lm3533_ctrlbank_enable(&bl->cb);
++	ret = lm3533_ctrlbank_enable(&led->cb);
 +	if (ret)
 +		goto err_sysfs_remove;
 +
 +	return 0;
 +
 +err_sysfs_remove:
-+	sysfs_remove_group(&bd->dev.kobj, &lm3533_bl_attribute_group);
++	sysfs_remove_group(&led->cdev.dev->kobj, &lm3533_led_attribute_group);
 +err_unregister:
-+	backlight_device_unregister(bd);
++	led_classdev_unregister(&led->cdev);
++	flush_work_sync(&led->work);
 +err_free:
-+	kfree(bl);
++	kfree(led);
 +
 +	return ret;
 +}
 +
-+static int __devexit lm3533_bl_remove(struct platform_device *pdev)
++static int __devexit lm3533_led_remove(struct platform_device *pdev)
 +{
-+	struct lm3533_bl *bl = platform_get_drvdata(pdev);
-+	struct backlight_device *bd = bl->bd;
++	struct lm3533_led *led = platform_get_drvdata(pdev);
 +
-+	dev_dbg(&bd->dev, "%s\n", __func__);
++	dev_dbg(&pdev->dev, "%s\n", __func__);
 +
-+	bd->props.power = FB_BLANK_POWERDOWN;
-+	bd->props.brightness = 0;
-+
-+	lm3533_ctrlbank_disable(&bl->cb);
-+	sysfs_remove_group(&bd->dev.kobj, &lm3533_bl_attribute_group);
-+	backlight_device_unregister(bd);
-+	kfree(bl);
++	lm3533_ctrlbank_disable(&led->cb);
++	sysfs_remove_group(&led->cdev.dev->kobj, &lm3533_led_attribute_group);
++	led_classdev_unregister(&led->cdev);
++	flush_work_sync(&led->work);
++	kfree(led);
 +
 +	return 0;
 +}
 +
-+#ifdef CONFIG_PM
-+static int lm3533_bl_suspend(struct platform_device *pdev, pm_message_t state)
++static void lm3533_led_shutdown(struct platform_device *pdev)
 +{
-+	struct lm3533_bl *bl = platform_get_drvdata(pdev);
++
++	struct lm3533_led *led = platform_get_drvdata(pdev);
 +
 +	dev_dbg(&pdev->dev, "%s\n", __func__);
 +
-+	return lm3533_ctrlbank_disable(&bl->cb);
++	lm3533_ctrlbank_disable(&led->cb);
++	lm3533_led_set(&led->cdev, LED_OFF);		/* disable blink */
++	flush_work_sync(&led->work);
 +}
 +
-+static int lm3533_bl_resume(struct platform_device *pdev)
-+{
-+	struct lm3533_bl *bl = platform_get_drvdata(pdev);
-+
-+	dev_dbg(&pdev->dev, "%s\n", __func__);
-+
-+	return lm3533_ctrlbank_enable(&bl->cb);
-+}
-+#else
-+#define lm3533_bl_suspend	NULL
-+#define lm3533_bl_resume	NULL
-+#endif
-+
-+static void lm3533_bl_shutdown(struct platform_device *pdev)
-+{
-+	struct lm3533_bl *bl = platform_get_drvdata(pdev);
-+
-+	dev_dbg(&pdev->dev, "%s\n", __func__);
-+
-+	lm3533_ctrlbank_disable(&bl->cb);
-+}
-+
-+static struct platform_driver lm3533_bl_driver = {
++static struct platform_driver lm3533_led_driver = {
 +	.driver = {
-+		.name	= "lm3533-backlight",
-+		.owner	= THIS_MODULE,
++		.name = "lm3533-leds",
++		.owner = THIS_MODULE,
 +	},
-+	.probe		= lm3533_bl_probe,
-+	.remove		= __devexit_p(lm3533_bl_remove),
-+	.shutdown	= lm3533_bl_shutdown,
-+	.suspend	= lm3533_bl_suspend,
-+	.resume		= lm3533_bl_resume,
++	.probe		= lm3533_led_probe,
++	.remove		= __devexit_p(lm3533_led_remove),
++	.shutdown	= lm3533_led_shutdown,
 +};
-+module_platform_driver(lm3533_bl_driver);
++module_platform_driver(lm3533_led_driver);
 +
 +MODULE_AUTHOR("Johan Hovold <jhovold@gmail.com>");
-+MODULE_DESCRIPTION("LM3533 Backlight driver");
++MODULE_DESCRIPTION("LM3533 LED driver");
 +MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:lm3533-backlight");
++MODULE_ALIAS("platform:lm3533-leds");
 -- 
 1.7.8.5
