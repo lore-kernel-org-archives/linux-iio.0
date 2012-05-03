@@ -1,7 +1,7 @@
-Return-Path: <jhovold@gmail.com>
-Date: Thu, 3 May 2012 19:14:02 +0200
-From: Johan Hovold <jhovold@gmail.com>
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
+Return-Path: <broonie@opensource.wolfsonmicro.com>
+Date: Thu, 3 May 2012 18:23:10 +0100
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+To: Johan Hovold <jhovold@gmail.com>
 Cc: Rob Landley <rob@landley.net>, Richard Purdie <rpurdie@rpsys.net>,
 	Samuel Ortiz <sameo@linux.intel.com>,
 	Jonathan Cameron <jic23@cam.ac.uk>,
@@ -13,9 +13,8 @@ Cc: Rob Landley <rob@landley.net>, Richard Purdie <rpurdie@rpsys.net>,
 	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
 	linux-fbdev@vger.kernel.org
 Subject: Re: [PATCH v2 1/4] mfd: add LM3533 lighting-power core driver
-Message-ID: <20120503171402.GG15752@localhost>
-References: <1334935826-12527-1-git-send-email-jhovold@gmail.com>
- <1336040799-18433-1-git-send-email-jhovold@gmail.com>
+Message-ID: <20120503172309.GT3955@opensource.wolfsonmicro.com>
+References: <1336040799-18433-1-git-send-email-jhovold@gmail.com>
  <1336040799-18433-2-git-send-email-jhovold@gmail.com>
  <20120503103848.GB3955@opensource.wolfsonmicro.com>
  <20120503112803.GA15752@localhost>
@@ -24,45 +23,47 @@ References: <1334935826-12527-1-git-send-email-jhovold@gmail.com>
  <20120503152407.GK3955@opensource.wolfsonmicro.com>
  <20120503165437.GF15752@localhost>
  <20120503165748.GS3955@opensource.wolfsonmicro.com>
+ <20120503171402.GG15752@localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20120503165748.GS3955@opensource.wolfsonmicro.com>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="7Ha3rcGc4ZVRbLT1"
+In-Reply-To: <20120503171402.GG15752@localhost>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, May 03, 2012 at 05:57:49PM +0100, Mark Brown wrote:
-> On Thu, May 03, 2012 at 06:54:37PM +0200, Johan Hovold wrote:
-> > On Thu, May 03, 2012 at 04:24:07PM +0100, Mark Brown wrote:
-> 
-> > > I'm not sure exactly which control that is?
-> 
-> > That would be the output_lvled[n] (n = 1..5) attributes. For example, to
-> > have all five low-voltage sinks blink synchronously, you could assign 0
-> > to all these five attributes, and set a timer trigger for the led device
-> > which has id 0.
-> 
-> Sorry, I meant "what exactly does this do in hardware".
 
->From the datasheet (page 14):
+--7Ha3rcGc4ZVRbLT1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-	"CONTROL BANK MAPPING
-	 Control of the LM3533's current sinks is not done directly, but
-	 through the programming of Control Banks. The current sinks are
-	 then assigned to the programmed Control Bank. This allows for
-	 a wide variety of current control possibilities where LEDs can
-	 be grouped and controlled via specific Control Banks (see
-	 Figure 3)."
+On Thu, May 03, 2012 at 07:14:02PM +0200, Johan Hovold wrote:
 
-It is the control banks that has a brightness settings or can be
-programmed to blink, that is, they correspond to the logical LEDs and
-backlights.
+> Assigning a current sink to a control bank corresponds, then, to
+> setting, for example, output_lvled3 to (led) 1.
 
-Assigning a current sink to a control bank corresponds, then, to
-setting, for example, output_lvled3 to (led) 1.
+This seems sensible enough, though it does feel like what we're offering
+up to the LED subsystem is relly the LED control banks rather than the
+LEDs themselves - or some mix of this and other stuff.
 
-[ Figure 3 on page 16 of the data sheet may be instructive. In the
-  figure,  BANK A and B corresponds to the two backlight devices, and
-  BANK C through F corresponds to the four led devices. Note that there
-  are more outputs (current sinks) than control banks. ]
+--7Ha3rcGc4ZVRbLT1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-Thanks,
-Johan
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBAgAGBQJPor7yAAoJEBus8iNuMP3doTAQAJbTPKp+sTnKvltziyw51dLx
+GhKI4d8jp5P/v0e5Ljto/+b4EQPY5IOkWZiCRpshUv/Uq5pRo9fO1MztwFGTW9pB
+WntV0NASs/cCA6HWKcwg+S5Dls/cFt3kzzfJGiwgSd60yuE6PvK1hi6s5LSFP8xM
+4MixB7LB45F4oqOrO1JCTrmmdMpTVu57C6jWjqk5oRoBhXNaj97S9M9/U8jSpwg9
++QXU0LiyCl0cBS1DlH7kr2MTjbxVOMH+wGDI8DFOesce/T0ATrRIXriqBk4clwc0
+V/8LKZvpRX3wzqSBEUptdzMCyzLZFa5/daqB8+NMKA3Q29XSlnZeQoO40cDNTbGa
+oPfAZRBrD51P6+qZ+jUxs5MJN1T+nLtLo3ZzGkG+ve+gMHKFjiNy2sO7eA7ceU1i
+UGkLtTq/vzHos0h4Ws/62cUTKSPGIE4hpSk3JWvH5rQEb3/s4ukIOvRVBUQt8EHw
+MLSAX5VpZzAJlivwdqLUuAV8yHqLtMQFgQf/fWVUw11s+uDrFW66fW53vW5LVLoj
+IdbFq1MaU6Gy9hjaOKgBn9y2s7YDVZZ39gS+UKIkQLvHFJqqtPtOD44kIyLA2p9Z
+GmYWxpCKfsnyH8r2ohNLW/kdxQTo0xJAGy8LZPNdiV/8WzsX2trJz9z31sYWAn63
+X/b6HlJWTeVszT2DD8jv
+=ac5q
+-----END PGP SIGNATURE-----
+
+--7Ha3rcGc4ZVRbLT1--
