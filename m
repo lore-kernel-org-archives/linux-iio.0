@@ -1,7 +1,7 @@
-Return-Path: <broonie@opensource.wolfsonmicro.com>
-Date: Thu, 3 May 2012 15:51:08 +0100
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
-To: Johan Hovold <jhovold@gmail.com>
+Return-Path: <jhovold@gmail.com>
+Date: Thu, 3 May 2012 18:46:41 +0200
+From: Johan Hovold <jhovold@gmail.com>
+To: Mark Brown <broonie@opensource.wolfsonmicro.com>
 Cc: Rob Landley <rob@landley.net>, Richard Purdie <rpurdie@rpsys.net>,
 	Samuel Ortiz <sameo@linux.intel.com>,
 	Jonathan Cameron <jic23@cam.ac.uk>,
@@ -13,81 +13,66 @@ Cc: Rob Landley <rob@landley.net>, Richard Purdie <rpurdie@rpsys.net>,
 	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
 	linux-fbdev@vger.kernel.org
 Subject: Re: [PATCH v2 3/4] leds: add LM3533 LED driver
-Message-ID: <20120503145108.GI3955@opensource.wolfsonmicro.com>
+Message-ID: <20120503164641.GE15752@localhost>
 References: <1334935826-12527-1-git-send-email-jhovold@gmail.com>
  <1336040799-18433-1-git-send-email-jhovold@gmail.com>
  <1336040799-18433-4-git-send-email-jhovold@gmail.com>
  <20120503104344.GC3955@opensource.wolfsonmicro.com>
  <20120503115059.GB15752@localhost>
+ <20120503145108.GI3955@opensource.wolfsonmicro.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="dCSxeJc5W8HZXZrD"
-In-Reply-To: <20120503115059.GB15752@localhost>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20120503145108.GI3955@opensource.wolfsonmicro.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+On Thu, May 03, 2012 at 03:51:08PM +0100, Mark Brown wrote:
+> On Thu, May 03, 2012 at 01:50:59PM +0200, Johan Hovold wrote:
+> > On Thu, May 03, 2012 at 11:43:44AM +0100, Mark Brown wrote:
+> 
+> > > > +		5 - 4.194 s
+> > > > +		6 - 8.389 s
+> > > > +		7 - 16.78 s
+> 
+> > > Shouldn't these be controlled by led_blink_set() rather than a custom
+> > > ABI?
+> 
+> > led_blink_set controls the on/off times, but the LM3533 has the two
+> > additional rise and fall-time settings which determine the transition
+> > time between these states.
+> 
+> Hrm.  In that case these rise times are very large - I'd expect them to
+> cause issues with led_set_blink() users?
 
---dCSxeJc5W8HZXZrD
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+They are. The default settings (as fast a transition as possible) will
+probably what most people use, and if they start fiddling with the
+transition times they probably know what they're doing.
 
-On Thu, May 03, 2012 at 01:50:59PM +0200, Johan Hovold wrote:
-> On Thu, May 03, 2012 at 11:43:44AM +0100, Mark Brown wrote:
+> Though actually I suspect the
+> solution here is to pull these out into the framework later; we can
+> probably simulate reasonably in software with a lot of brightness
+> variable LEDs.
 
-> > > +		5 - 4.194 s
-> > > +		6 - 8.389 s
-> > > +		7 - 16.78 s
+Ok.
 
-> > Shouldn't these be controlled by led_blink_set() rather than a custom
-> > ABI?
+> > > > +What:		/sys/class/leds/<led>/max_current
+> 
+> > > Shouldn't this be set by platform data, the maximum current you can push
+> > > through the LEDs seems like a board dependant thing which won't change
+> > > dynamically at runtime.  The brightness can already be varied.
+> 
+> > I fully agree and it is possible to set via the platform data for that
+> > reason. The end-customer, however, insisted that even this setting be
+> > available through sysfs to facilitate their integration and testing.
+> 
+> > I'd be willing drop this attribute if requested, as it would only be used
+> > during integration and could easily be added back by the end-customer if
+> > needed.
+> 
+> I'd strongly suggest removing this for mainline.  If it's present it
+> should at least be limited to the maximum specified in platform data
+> (just for safety if nothing else).
 
-> led_blink_set controls the on/off times, but the LM3533 has the two
-> additional rise and fall-time settings which determine the transition
-> time between these states.
+Agreed.
 
-Hrm.  In that case these rise times are very large - I'd expect them to
-cause issues with led_set_blink() users?  Though actually I suspect the
-solution here is to pull these out into the framework later; we can
-probably simulate reasonably in software with a lot of brightness
-variable LEDs.
-
-> > > +What:		/sys/class/leds/<led>/max_current
-
-> > Shouldn't this be set by platform data, the maximum current you can push
-> > through the LEDs seems like a board dependant thing which won't change
-> > dynamically at runtime.  The brightness can already be varied.
-
-> I fully agree and it is possible to set via the platform data for that
-> reason. The end-customer, however, insisted that even this setting be
-> available through sysfs to facilitate their integration and testing.
-
-> I'd be willing drop this attribute if requested, as it would only be used
-> during integration and could easily be added back by the end-customer if
-> needed.
-
-I'd strongly suggest removing this for mainline.  If it's present it
-should at least be limited to the maximum specified in platform data
-(just for safety if nothing else).
-
---dCSxeJc5W8HZXZrD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJPoptPAAoJEBus8iNuMP3dnG4QAJZ8QTyGyPgEBIQu7u2wLHPX
-+3T6HRWNeshaF+PCv23EyHr+YmOW62yQa3Z450P0Zym6LfIO3UiciCMOXALariUz
-XB+ynKoKW+5e9jbaZv67fwMZ31vjjYo8x5B4D+ueEIZTZFy0RQqgUoqYxDo0CuQt
-b+iAjRXy6/Bg890VYmL4lBTzfrDfco33uSJYCow0ixNZ237aCZnNjVEMks4TZ10O
-+cLkGiUqtQ6BM0SwD5JNITiPDjFcNyHj3rJbkfoD5Y9kXZq64f1tmTi1Lxz7KnnE
-PMMjIv1BEcuUPbgn1QiWE4VR8S/ShpE7j8u5bI9z12b3XYucaI8OMOiorPdywylZ
-Yc8suNDg4lSZaADcWxPwcEP36npdTiA7rVvHixnl5aMzFYxceq4RdPxLtDGW/Znh
-oLFEHVtt18Cw0lMXPjOB2jdgdyL+PmQxtNSRkWQf6tRgJ+SjEvbB7URW1BbU0h78
-9JlmUf1LaQdEb9Nuoa5H4jtwI8IOkBKE8G0UZMbJrSfxiqvEYEGCJ6A2H3Kma6No
-7evhq3jT+EaSd3vgKgcWU2pVOrMbPi+20PhQ+hPuJw5Rr1TIllp6mSqhHveHw0O5
-UWWM/kVLzdPM02V7nWMJ9H5a1IzyfMs5a5aLj12A5VKUh/7KlcKAGlity8+cgPWt
-oXUONtw/gd82qeS0QrPY
-=mn64
------END PGP SIGNATURE-----
-
---dCSxeJc5W8HZXZrD--
+Thanks,
+Johan
