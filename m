@@ -1,72 +1,1088 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FB753F4.2080004@kernel.org>
-Date: Sat, 19 May 2012 09:04:04 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Johan Hovold <jhovold@gmail.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, Rob Landley <rob@landley.net>,
- Richard Purdie <rpurdie@rpsys.net>,
- Samuel Ortiz <sameo@linux.intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Florian Tobias Schandinat <FlorianSchandinat@gmx.de>,
- Arnd Bergmann <arnd@arndb.de>,
- Andrew Morton <akpm@linux-foundation.org>,
- Mark Brown <broonie@opensource.wolfsonmicro.com>,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
- linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] iio: add LM3533 ambient light sensor driver
-References: <1336040799-18433-3-git-send-email-jhovold@gmail.com> <4FA26E9A.8080209@cam.ac.uk> <20120503163617.GD15752@localhost> <4FA923E7.6050707@cam.ac.uk> <20120515164456.GB15632@localhost> <4FB2B5EE.6080009@kernel.org> <20120516130507.GA10774@localhost> <4FB3B7DA.5050306@cam.ac.uk> <20120518122725.GB20467@localhost> <4FB68809.2010009@kernel.org> <20120518175742.GA12894@localhost>
-In-Reply-To: <20120518175742.GA12894@localhost>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <jhovold@gmail.com>
+From: Johan Hovold <jhovold@gmail.com>
+To: Rob Landley <rob@landley.net>,
+	Richard Purdie <rpurdie@rpsys.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Florian Tobias Schandinat <FlorianSchandinat@gmx.de>
+Cc: Arnd Bergmann <arnd@arndb.de>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-fbdev@vger.kernel.org,
+	Johan Hovold <jhovold@gmail.com>
+Subject: [PATCH v2 1/4] mfd: add LM3533 lighting-power core driver
+Date: Thu,  3 May 2012 12:26:36 +0200
+Message-Id: <1336040799-18433-2-git-send-email-jhovold@gmail.com>
+In-Reply-To: <1336040799-18433-1-git-send-email-jhovold@gmail.com>
+References: <1334935826-12527-1-git-send-email-jhovold@gmail.com>
+ <1336040799-18433-1-git-send-email-jhovold@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/18/2012 06:57 PM, Johan Hovold wrote:
-> On Fri, May 18, 2012 at 06:34:01PM +0100, Jonathan Cameron wrote:
->> On 05/18/2012 01:27 PM, Johan Hovold wrote:
-> 
-> [...]
-> 
->>> I really think that this should remain a device specific attribute as I
->>> originally suggested. It's an integration parameter that needs to be set
->>> precisely depending on the actual hardware setup (which analog light
->>> sensor and other external components). 
->> Then it shouldn't be exposed to userspace.  If there is reason to vary
->> it from userspace then it is a calibration parameter and should be
->> treated like the other ones we have, if not it should be done from
->> dt or platform data.
->>>
->>> The lm3533 also supports two types of light sensors: pwm- and analog-
->>> output ones. The resistor select settings only applies when in analog
->>> mode as the input is always high impedance otherwise. Thus a generic
->>> attribute (such as calibscale or hardware gain) shouldn't be used as it
->>> will have no effect whatsoever in PWM-mode.
->>>
->>> I'm thus back at my original proposal, albeit with a different name (I
->>> think a lot of this discussion could have been avoided had I not
->>> misnamed the parameter "gain"): 
->>>
->>> What:		/sys/bus/iio/devices/iio:deviceX/r_select
->>> Description:
->>> 		Set the ALS internal pull-down resistor for analog input mode
->>> 		(1..127), such that,
->>>
->>> 		R_als = 200000 / r_select	(ohm)
->>>
->>> 		This setting is ignored in PWM-mode (input is always high
->>> 		impedance in PWM-mode).
->>>
->>> I don't think much is gained from using ohm as the unit: it just adds
->>> complexity and the selected resistor setting will likely not match the
->>> input value anyway. It's better that the chip integrators have full
->>> control over which resistor setting is actually used so that it matches
->>> external components.
->> This smacks of something that should never be exposed to users.
->> I'd hide it away in platform data.
-> 
-> Fair enough. I'll drop the sysfs param and submit a patch for mfd-next
-> which adds r_select to the platform data.
-> 
-cool. I'll review the rest of the patch with the assumption you'll do this.
+Add support for National Semiconductor / TI LM3533 lighting power chips.
 
-Jonathan
+This is the core driver which provides register access over I2C and
+registers the ambient-light-sensor, LED and backlight sub-drivers.
+
+Signed-off-by: Johan Hovold <jhovold@gmail.com>
+---
+
+v2:
+ - add sysfs-ABI documentation
+ - merge i2c implementation with core
+ - use regmap and kill custom debugfs interface
+
+
+ .../ABI/testing/sysfs-bus-i2c-devices-lm3533       |   38 +
+ drivers/mfd/Kconfig                                |   13 +
+ drivers/mfd/Makefile                               |    1 +
+ drivers/mfd/lm3533-core.c                          |  717 ++++++++++++++++++++
+ drivers/mfd/lm3533-ctrlbank.c                      |  134 ++++
+ include/linux/mfd/lm3533.h                         |   89 +++
+ 6 files changed, 992 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-i2c-devices-lm3533
+ create mode 100644 drivers/mfd/lm3533-core.c
+ create mode 100644 drivers/mfd/lm3533-ctrlbank.c
+ create mode 100644 include/linux/mfd/lm3533.h
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-i2c-devices-lm3533 b/Documentation/ABI/testing/sysfs-bus-i2c-devices-lm3533
+new file mode 100644
+index 0000000..5700721
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-i2c-devices-lm3533
+@@ -0,0 +1,38 @@
++What:		/sys/bus/i2c/devices/.../boost_freq
++Date:		April 2012
++KernelVersion:	3.5
++Contact:	Johan Hovold <jhovold@gmail.com>
++Description:
++		Set the boost converter switching frequency (0, 1), where
++
++		0 -  500Hz
++		1 - 1000Hz
++
++What:		/sys/bus/i2c/devices/.../boost_ovp
++Date:		April 2012
++KernelVersion:	3.5
++Contact:	Johan Hovold <jhovold@gmail.com>
++Description:
++		Set the boost converter over-voltage protection threshold
++		(0..3), where
++
++		0 - 16V
++		1 - 24V
++		2 - 32V
++		3 - 40V
++
++What:		/sys/bus/i2c/devices/.../output_hvled[n]
++Date:		April 2012
++KernelVersion:	3.5
++Contact:	Johan Hovold <jhovold@gmail.com>
++Description:
++		Set the controlling backlight device for high-voltage current
++		sink HVLED[n] (n = 1, 2) (0, 1).
++
++What:		/sys/bus/i2c/devices/.../output_lvled[n]
++Date:		April 2012
++KernelVersion:	3.5
++Contact:	Johan Hovold <jhovold@gmail.com>
++Description:
++		Set the controlling led device for low-voltage current sink
++		LVLED[n] (n = 1..5) (0..3).
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 11e4438..8fe0771 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -106,6 +106,19 @@ config UCB1400_CORE
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ucb1400_core.
+ 
++config MFD_LM3533
++	tristate "LM3533 Lighting Power chip"
++	depends on I2C
++	select MFD_CORE
++	select REGMAP_I2C
++	help
++	  Say yes here to enable support for National Semiconductor / TI
++	  LM3533 Lighting Power chips.
++
++	  This driver provides common support for accessing the device;
++	  additional drivers must be enabled in order to use the LED,
++	  backlight or ambient-light-sensor functionality of the device.
++
+ config TPS6105X
+ 	tristate "TPS61050/61052 Boost Converters"
+ 	depends on I2C
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 05fa538..b6fe0a5 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -116,3 +116,4 @@ obj-$(CONFIG_MFD_INTEL_MSIC)	+= intel_msic.o
+ obj-$(CONFIG_MFD_RC5T583)	+= rc5t583.o rc5t583-irq.o
+ obj-$(CONFIG_MFD_S5M_CORE)	+= s5m-core.o s5m-irq.o
+ obj-$(CONFIG_MFD_ANATOP)	+= anatop-mfd.o
++obj-$(CONFIG_MFD_LM3533)	+= lm3533-core.o lm3533-ctrlbank.o
+diff --git a/drivers/mfd/lm3533-core.c b/drivers/mfd/lm3533-core.c
+new file mode 100644
+index 0000000..75f4b7f
+--- /dev/null
++++ b/drivers/mfd/lm3533-core.c
+@@ -0,0 +1,717 @@
++/*
++ * lm3533-core.c -- LM3533 Core
++ *
++ * Copyright (C) 2011-2012 Texas Instruments
++ *
++ * Author: Johan Hovold <jhovold@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under  the terms of the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the License, or (at your
++ * option) any later version.
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/err.h>
++#include <linux/gpio.h>
++#include <linux/i2c.h>
++#include <linux/mfd/core.h>
++#include <linux/regmap.h>
++#include <linux/seq_file.h>
++#include <linux/slab.h>
++#include <linux/uaccess.h>
++
++#include <linux/mfd/lm3533.h>
++
++
++#define LM3533_BOOST_OVP_MAX		0x03
++#define LM3533_BOOST_OVP_MASK		0x06
++#define LM3533_BOOST_OVP_SHIFT		1
++
++#define LM3533_BOOST_FREQ_MAX		0x01
++#define LM3533_BOOST_FREQ_MASK		0x01
++#define LM3533_BOOST_FREQ_SHIFT		0
++
++#define LM3533_BL_ID_MASK		1
++#define LM3533_LED_ID_MASK		3
++#define LM3533_BL_ID_MAX		1
++#define LM3533_LED_ID_MAX		3
++
++#define LM3533_HVLED_ID_MAX		2
++#define LM3533_LVLED_ID_MAX		5
++
++#define LM3533_REG_OUTPUT_CONF1		0x10
++#define LM3533_REG_OUTPUT_CONF2		0x11
++#define LM3533_REG_BOOST_PWM		0x2c
++
++#define LM3533_REG_MAX			0xb2
++
++
++static struct mfd_cell lm3533_als_devs[] = {
++	{
++		.name	= "lm3533-als",
++		.id	= -1,
++	},
++};
++
++static struct mfd_cell lm3533_bl_devs[] = {
++	{
++		.name	= "lm3533-backlight",
++		.id	= 0,
++	},
++	{
++		.name	= "lm3533-backlight",
++		.id	= 1,
++	},
++};
++
++static struct mfd_cell lm3533_led_devs[] = {
++	{
++		.name	= "lm3533-leds",
++		.id	= 0,
++	},
++	{
++		.name	= "lm3533-leds",
++		.id	= 1,
++	},
++	{
++		.name	= "lm3533-leds",
++		.id	= 2,
++	},
++	{
++		.name	= "lm3533-leds",
++		.id	= 3,
++	},
++};
++
++int lm3533_read(struct lm3533 *lm3533, u8 reg, u8 *val)
++{
++	int tmp;
++	int ret;
++
++	ret = regmap_read(lm3533->regmap, reg, &tmp);
++	if (ret < 0) {
++		dev_err(lm3533->dev, "failed to read register %02x: %d\n",
++								reg, ret);
++		return ret;
++	}
++
++	*val = tmp;
++
++	dev_dbg(lm3533->dev, "read [%02x]: %02x\n", reg, *val);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(lm3533_read);
++
++int lm3533_write(struct lm3533 *lm3533, u8 reg, u8 val)
++{
++	int ret;
++
++	dev_dbg(lm3533->dev, "write [%02x]: %02x\n", reg, val);
++
++	ret = regmap_write(lm3533->regmap, reg, val);
++	if (ret < 0) {
++		dev_err(lm3533->dev, "failed to write register %02x: %d\n",
++								reg, ret);
++	}
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(lm3533_write);
++
++int lm3533_update(struct lm3533 *lm3533, u8 reg, u8 val, u8 mask)
++{
++	int ret;
++
++	dev_dbg(lm3533->dev, "update [%02x]: %02x/%02x\n", reg, val, mask);
++
++	ret = regmap_update_bits(lm3533->regmap, reg, val, mask);
++	if (ret < 0) {
++		dev_err(lm3533->dev, "failed to update register %02x: %d\n",
++								reg, ret);
++	}
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(lm3533_update);
++
++/*
++ * HVLED output config -- output hvled controlled by backlight bl
++ */
++static int lm3533_set_hvled_config(struct lm3533 *lm3533, u8 hvled, u8 bl)
++{
++	u8 val;
++	u8 mask;
++	int shift;
++	int ret;
++
++	if (hvled == 0 || hvled > LM3533_HVLED_ID_MAX)
++		return -EINVAL;
++
++	if (bl > LM3533_BL_ID_MAX)
++		return -EINVAL;
++
++	shift = hvled - 1;
++	mask = LM3533_BL_ID_MASK << shift;
++	val = bl << shift;
++
++	ret = lm3533_update(lm3533, LM3533_REG_OUTPUT_CONF1, val, mask);
++	if (ret)
++		dev_err(lm3533->dev, "failed to set hvled config\n");
++
++	return ret;
++}
++
++/*
++ * LVLED output config -- output lvled controlled by LED led
++ */
++static int lm3533_set_lvled_config(struct lm3533 *lm3533, u8 lvled, u8 led)
++{
++	u8 reg;
++	u8 val;
++	u8 mask;
++	int shift;
++	int ret;
++
++	if (lvled == 0 || lvled > LM3533_LVLED_ID_MAX)
++		return -EINVAL;
++
++	if (led > LM3533_LED_ID_MAX)
++		return -EINVAL;
++
++	if (lvled < 4) {
++		reg = LM3533_REG_OUTPUT_CONF1;
++		shift = 2 * lvled;
++	} else {
++		reg = LM3533_REG_OUTPUT_CONF2;
++		shift = 2 * (lvled - 4);
++	}
++
++	mask = LM3533_LED_ID_MASK << shift;
++	val = led << shift;
++
++	ret = lm3533_update(lm3533, reg, val, mask);
++	if (ret)
++		dev_err(lm3533->dev, "failed to set lvled config\n");
++
++	return ret;
++}
++
++static void lm3533_enable(struct lm3533 *lm3533)
++{
++	if (gpio_is_valid(lm3533->gpio_hwen))
++		gpio_set_value(lm3533->gpio_hwen, 1);
++}
++
++static void lm3533_disable(struct lm3533 *lm3533)
++{
++	if (gpio_is_valid(lm3533->gpio_hwen))
++		gpio_set_value(lm3533->gpio_hwen, 0);
++}
++
++enum lm3533_attribute_type {
++	LM3533_ATTR_TYPE_BACKLIGHT,
++	LM3533_ATTR_TYPE_LED,
++};
++
++struct lm3533_device_attribute {
++	struct device_attribute dev_attr;
++	enum lm3533_attribute_type type;
++	union {
++		struct {
++			u8 id;
++		} output;
++		struct {
++			u8 reg;
++			u8 shift;
++			u8 mask;
++			u8 max;
++		} generic;
++	} u;
++};
++
++#define to_lm3533_dev_attr(_attr) \
++	container_of(_attr, struct lm3533_device_attribute, dev_attr)
++
++static ssize_t show_lm3533_reg(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct lm3533 *lm3533 = dev_get_drvdata(dev);
++	struct lm3533_device_attribute *lattr = to_lm3533_dev_attr(attr);
++	u8 val;
++	int ret;
++
++	ret = lm3533_read(lm3533, lattr->u.generic.reg, &val);
++	if (ret)
++		return ret;
++
++	val = (val & lattr->u.generic.mask) >> lattr->u.generic.shift;
++
++	return scnprintf(buf, PAGE_SIZE, "%u\n", val);
++}
++
++static ssize_t store_lm3533_reg(struct device *dev,
++						struct device_attribute *attr,
++						const char *buf, size_t len)
++{
++	struct lm3533 *lm3533 = dev_get_drvdata(dev);
++	struct lm3533_device_attribute *lattr = to_lm3533_dev_attr(attr);
++	u8 val;
++	int ret;
++
++	if (kstrtou8(buf, 0, &val) || val > lattr->u.generic.max)
++		return -EINVAL;
++
++	val = val << lattr->u.generic.shift;
++	ret = lm3533_update(lm3533, lattr->u.generic.reg, val,
++							lattr->u.generic.mask);
++	if (ret)
++		return ret;
++
++	return len;
++}
++
++#define GENERIC_ATTR(_reg, _max, _mask, _shift) \
++	{ .reg		= _reg, \
++	  .max		= _max, \
++	  .mask		= _mask, \
++	  .shift	= _shift }
++
++#define LM3533_GENERIC_ATTR(_name, _mode, _show, _store, _type,	\
++						_reg, _max, _mask, _shift) \
++	struct lm3533_device_attribute lm3533_dev_attr_##_name = { \
++		.dev_attr	= __ATTR(_name, _mode, _show, _store), \
++		.type		= _type, \
++		.u.generic	= GENERIC_ATTR(_reg, _max, _mask, _shift) }
++
++#define LM3533_GENERIC_ATTR_RW(_name, _type, _reg, _max, _mask, _shift) \
++	LM3533_GENERIC_ATTR(_name, S_IRUGO | S_IWUSR, \
++					show_lm3533_reg, store_lm3533_reg, \
++					_type, _reg, _max, _mask, _shift)
++
++#define LM3533_BOOST_ATTR_RW(_name, _NAME) \
++	LM3533_GENERIC_ATTR_RW(_name, LM3533_ATTR_TYPE_BACKLIGHT, \
++				LM3533_REG_BOOST_PWM, LM3533_##_NAME##_MAX, \
++				LM3533_##_NAME##_MASK, LM3533_##_NAME##_SHIFT)
++/*
++ * Boost Over Voltage Protection Select
++ *
++ *   0 - 16 V (default)
++ *   1 - 24 V
++ *   2 - 32 V
++ *   3 - 40 V
++ */
++static LM3533_BOOST_ATTR_RW(boost_ovp, BOOST_OVP);
++
++/*
++ * Boost Frequency Select
++ *
++ *   0 - 500 kHz (default)
++ *   1 - 1 MHz
++ */
++static LM3533_BOOST_ATTR_RW(boost_freq, BOOST_FREQ);
++
++static ssize_t show_output(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct lm3533 *lm3533 = dev_get_drvdata(dev);
++	struct lm3533_device_attribute *lattr = to_lm3533_dev_attr(attr);
++	int id = lattr->u.output.id;
++	u8 reg;
++	u8 val;
++	u8 mask;
++	int shift;
++	int ret;
++
++	if (lattr->type == LM3533_ATTR_TYPE_BACKLIGHT) {
++		reg = LM3533_REG_OUTPUT_CONF1;
++		shift = id - 1;
++		mask = LM3533_BL_ID_MASK << shift;
++	} else {
++		if (id < 4) {
++			reg = LM3533_REG_OUTPUT_CONF1;
++			shift = 2 * id;
++		} else {
++			reg = LM3533_REG_OUTPUT_CONF2;
++			shift = 2 * (id - 4);
++		}
++		mask = LM3533_LED_ID_MASK << shift;
++	}
++
++	ret = lm3533_read(lm3533, reg, &val);
++	if (ret)
++		return ret;
++
++	val = (val & mask) >> shift;
++
++	return scnprintf(buf, PAGE_SIZE, "%u\n", val);
++}
++
++static ssize_t store_output(struct device *dev,
++					struct device_attribute *attr,
++					const char *buf, size_t len)
++{
++	struct lm3533 *lm3533 = dev_get_drvdata(dev);
++	struct lm3533_device_attribute *lattr = to_lm3533_dev_attr(attr);
++	int id = lattr->u.output.id;
++	u8 val;
++	int ret;
++
++	if (kstrtou8(buf, 0, &val))
++		return -EINVAL;
++
++	if (lattr->type == LM3533_ATTR_TYPE_BACKLIGHT)
++		ret = lm3533_set_hvled_config(lm3533, id, val);
++	else
++		ret = lm3533_set_lvled_config(lm3533, id, val);
++
++	if (ret)
++		return ret;
++
++	return len;
++}
++
++#define LM3533_OUTPUT_ATTR(_name, _mode, _show, _store, _type, _id) \
++	struct lm3533_device_attribute lm3533_dev_attr_##_name = \
++		{ .dev_attr	= __ATTR(_name, _mode, _show, _store), \
++		  .type		= _type, \
++		  .u.output	= { .id = _id }, }
++
++#define LM3533_OUTPUT_ATTR_RW(_name, _type, _id) \
++	LM3533_OUTPUT_ATTR(output_##_name, S_IRUGO | S_IWUSR, \
++					show_output, store_output, _type, _id)
++
++#define LM3533_OUTPUT_HVLED_ATTR_RW(_nr) \
++	LM3533_OUTPUT_ATTR_RW(hvled##_nr, LM3533_ATTR_TYPE_BACKLIGHT, _nr)
++#define LM3533_OUTPUT_LVLED_ATTR_RW(_nr) \
++	LM3533_OUTPUT_ATTR_RW(lvled##_nr, LM3533_ATTR_TYPE_LED, _nr)
++/*
++ * Output config:
++ *
++ * output_hvled<nr>	0-1
++ * output_lvled<nr>	0-3
++ */
++static LM3533_OUTPUT_HVLED_ATTR_RW(1);
++static LM3533_OUTPUT_HVLED_ATTR_RW(2);
++static LM3533_OUTPUT_LVLED_ATTR_RW(1);
++static LM3533_OUTPUT_LVLED_ATTR_RW(2);
++static LM3533_OUTPUT_LVLED_ATTR_RW(3);
++static LM3533_OUTPUT_LVLED_ATTR_RW(4);
++static LM3533_OUTPUT_LVLED_ATTR_RW(5);
++
++static struct attribute *lm3533_attributes[] = {
++	&lm3533_dev_attr_boost_freq.dev_attr.attr,
++	&lm3533_dev_attr_boost_ovp.dev_attr.attr,
++	&lm3533_dev_attr_output_hvled1.dev_attr.attr,
++	&lm3533_dev_attr_output_hvled2.dev_attr.attr,
++	&lm3533_dev_attr_output_lvled1.dev_attr.attr,
++	&lm3533_dev_attr_output_lvled2.dev_attr.attr,
++	&lm3533_dev_attr_output_lvled3.dev_attr.attr,
++	&lm3533_dev_attr_output_lvled4.dev_attr.attr,
++	&lm3533_dev_attr_output_lvled5.dev_attr.attr,
++	NULL,
++};
++
++#define to_dev_attr(_attr) \
++	container_of(_attr, struct device_attribute, attr)
++
++static mode_t lm3533_attr_is_visible(struct kobject *kobj,
++					     struct attribute *attr, int n)
++{
++	struct device *dev = container_of(kobj, struct device, kobj);
++	struct lm3533 *lm3533 = dev_get_drvdata(dev);
++	struct device_attribute *dattr = to_dev_attr(attr);
++	struct lm3533_device_attribute *lattr = to_lm3533_dev_attr(dattr);
++	enum lm3533_attribute_type type = lattr->type;
++	mode_t mode = attr->mode;
++
++	if (!lm3533->have_backlights && type == LM3533_ATTR_TYPE_BACKLIGHT)
++		mode = 0;
++	else if (!lm3533->have_leds && type == LM3533_ATTR_TYPE_LED)
++		mode = 0;
++
++	return mode;
++};
++
++static struct attribute_group lm3533_attribute_group = {
++	.is_visible	= lm3533_attr_is_visible,
++	.attrs		= lm3533_attributes
++};
++
++static int __devinit lm3533_device_als_init(struct lm3533 *lm3533)
++{
++	struct lm3533_platform_data *pdata = lm3533->dev->platform_data;
++	int ret;
++
++	if (!pdata->als)
++		return 0;
++
++	lm3533_als_devs[0].platform_data = pdata->als;
++	lm3533_als_devs[0].pdata_size = sizeof(*pdata->als);
++
++	ret = mfd_add_devices(lm3533->dev, 0, lm3533_als_devs, 1, NULL, 0);
++	if (ret) {
++		dev_err(lm3533->dev, "failed to add ALS device\n");
++		return ret;
++	}
++
++	lm3533->have_als = 1;
++
++	return 0;
++}
++
++static int __devinit lm3533_device_bl_init(struct lm3533 *lm3533)
++{
++	struct lm3533_platform_data *pdata = lm3533->dev->platform_data;
++	int i;
++	int ret;
++
++	if (!pdata->backlights || pdata->num_backlights == 0)
++		return 0;
++
++	if (pdata->num_backlights > ARRAY_SIZE(lm3533_bl_devs))
++		pdata->num_backlights = ARRAY_SIZE(lm3533_bl_devs);
++
++	for (i = 0; i < pdata->num_backlights; ++i) {
++		lm3533_bl_devs[i].platform_data = &pdata->backlights[i];
++		lm3533_bl_devs[i].pdata_size = sizeof(pdata->backlights[i]);
++	}
++
++	ret = mfd_add_devices(lm3533->dev, 0, lm3533_bl_devs,
++					pdata->num_backlights, NULL, 0);
++	if (ret) {
++		dev_err(lm3533->dev, "failed to add backlight devices\n");
++		return ret;
++	}
++
++	lm3533->have_backlights = 1;
++
++	return 0;
++}
++
++static int __devinit lm3533_device_led_init(struct lm3533 *lm3533)
++{
++	struct lm3533_platform_data *pdata = lm3533->dev->platform_data;
++	int i;
++	int ret;
++
++	if (!pdata->leds || pdata->num_leds == 0)
++		return 0;
++
++	if (pdata->num_leds > ARRAY_SIZE(lm3533_led_devs))
++		pdata->num_leds = ARRAY_SIZE(lm3533_led_devs);
++
++	for (i = 0; i < pdata->num_leds; ++i) {
++		lm3533_led_devs[i].platform_data = &pdata->leds[i];
++		lm3533_led_devs[i].pdata_size = sizeof(pdata->leds[i]);
++	}
++
++	ret = mfd_add_devices(lm3533->dev, 0, lm3533_led_devs,
++						pdata->num_leds, NULL, 0);
++	if (ret) {
++		dev_err(lm3533->dev, "failed to add LED devices\n");
++		return ret;
++	}
++
++	lm3533->have_leds = 1;
++
++	return 0;
++}
++
++static int __devinit lm3533_device_init(struct lm3533 *lm3533)
++{
++	struct lm3533_platform_data *pdata = lm3533->dev->platform_data;
++	int ret;
++
++	dev_dbg(lm3533->dev, "%s\n", __func__);
++
++	if (!pdata) {
++		dev_err(lm3533->dev, "no platform data\n");
++		return -EINVAL;
++	}
++
++	lm3533->gpio_hwen = pdata->gpio_hwen;
++
++	dev_set_drvdata(lm3533->dev, lm3533);
++
++	if (gpio_is_valid(lm3533->gpio_hwen)) {
++		ret = gpio_request_one(lm3533->gpio_hwen, GPIOF_OUT_INIT_LOW,
++								"lm3533-hwen");
++		if (ret < 0) {
++			dev_err(lm3533->dev,
++				"failed to request HWEN GPIO %d\n",
++				lm3533->gpio_hwen);
++			return ret;
++		}
++	}
++
++	lm3533_enable(lm3533);
++
++	lm3533_device_als_init(lm3533);
++	lm3533_device_bl_init(lm3533);
++	lm3533_device_led_init(lm3533);
++
++	ret = sysfs_create_group(&lm3533->dev->kobj, &lm3533_attribute_group);
++	if (ret < 0) {
++		dev_err(lm3533->dev, "failed to create sysfs attributes\n");
++		goto err_unregister;
++	}
++
++	return 0;
++
++err_unregister:
++	mfd_remove_devices(lm3533->dev);
++	lm3533_disable(lm3533);
++	if (gpio_is_valid(lm3533->gpio_hwen))
++		gpio_free(lm3533->gpio_hwen);
++
++	return ret;
++}
++
++static void __devexit lm3533_device_exit(struct lm3533 *lm3533)
++{
++	dev_dbg(lm3533->dev, "%s\n", __func__);
++
++	sysfs_remove_group(&lm3533->dev->kobj, &lm3533_attribute_group);
++
++	mfd_remove_devices(lm3533->dev);
++	lm3533_disable(lm3533);
++	if (gpio_is_valid(lm3533->gpio_hwen))
++		gpio_free(lm3533->gpio_hwen);
++}
++
++static bool lm3533_readable_register(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case 0x10 ... 0x2c:
++	case 0x30 ... 0x38:
++	case 0x40 ... 0x45:
++	case 0x50 ... 0x57:
++	case 0x60 ... 0x6e:
++	case 0x70 ... 0x75:
++	case 0x80 ... 0x85:
++	case 0x90 ... 0x95:
++	case 0xa0 ... 0xa5:
++	case 0xb0 ... 0xb2:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static bool lm3533_volatile_register(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case 0x34:		/* zone */
++	case 0x37 ... 0x38:	/* adc */
++	case 0xb0 ... 0xb1:	/* fault */
++		return true;
++	default:
++		return false;
++	}
++}
++
++static bool lm3533_precious_register(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case 0x34:		/* zone */
++		return true;
++	default:
++		return false;
++	}
++}
++
++static struct regmap_config regmap_config = {
++	.reg_bits	= 8,
++	.val_bits	= 8,
++	.max_register	= LM3533_REG_MAX,
++	.readable_reg	= lm3533_readable_register,
++	.volatile_reg	= lm3533_volatile_register,
++	.precious_reg	= lm3533_precious_register,
++};
++
++static int __devinit lm3533_i2c_probe(struct i2c_client *i2c,
++					const struct i2c_device_id *id)
++{
++	struct lm3533 *lm3533;
++	int ret;
++
++	dev_dbg(&i2c->dev, "%s\n", __func__);
++
++	lm3533 = kzalloc(sizeof(*lm3533), GFP_KERNEL);
++	if (!lm3533)
++		return -ENOMEM;
++
++	i2c_set_clientdata(i2c, lm3533);
++
++	lm3533->regmap = regmap_init_i2c(i2c, &regmap_config);
++	if (IS_ERR(lm3533->regmap)) {
++		ret = PTR_ERR(lm3533->regmap);
++		goto err_regmap;
++	}
++
++	lm3533->dev = &i2c->dev;
++	lm3533->irq = i2c->irq;
++
++	ret = lm3533_device_init(lm3533);
++	if (ret)
++		goto err_dev;
++
++	return 0;
++
++err_dev:
++	regmap_exit(lm3533->regmap);
++err_regmap:
++	kfree(lm3533);
++
++	return ret;
++}
++
++static int __devexit lm3533_i2c_remove(struct i2c_client *i2c)
++{
++	struct lm3533 *lm3533 = i2c_get_clientdata(i2c);
++
++	dev_dbg(&i2c->dev, "%s\n", __func__);
++
++	lm3533_device_exit(lm3533);
++	regmap_exit(lm3533->regmap);
++
++	kfree(lm3533);
++
++	return 0;
++}
++
++static const struct i2c_device_id lm3533_i2c_ids[] = {
++	{ "lm3533", 0 },
++	{ },
++};
++MODULE_DEVICE_TABLE(i2c, lm3533_i2c_ids);
++
++static struct i2c_driver lm3533_i2c_driver = {
++	.driver = {
++		   .name = "lm3533",
++		   .owner = THIS_MODULE,
++	},
++	.id_table	= lm3533_i2c_ids,
++	.probe		= lm3533_i2c_probe,
++	.remove		= __devexit_p(lm3533_i2c_remove),
++};
++
++static int __init lm3533_i2c_init(void)
++{
++	return i2c_add_driver(&lm3533_i2c_driver);
++}
++subsys_initcall(lm3533_i2c_init);
++
++static void __exit lm3533_i2c_exit(void)
++{
++	i2c_del_driver(&lm3533_i2c_driver);
++}
++module_exit(lm3533_i2c_exit);
++
++MODULE_AUTHOR("Johan Hovold <jhovold@gmail.com>");
++MODULE_DESCRIPTION("LM3533 Core");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/mfd/lm3533-ctrlbank.c b/drivers/mfd/lm3533-ctrlbank.c
+new file mode 100644
+index 0000000..c2732a3
+--- /dev/null
++++ b/drivers/mfd/lm3533-ctrlbank.c
+@@ -0,0 +1,134 @@
++/*
++ * lm3533-ctrlbank.c -- LM3533 Generic Control Bank interface
++ *
++ * Copyright (C) 2011-2012 Texas Instruments
++ *
++ * Author: Johan Hovold <jhovold@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under  the terms of the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the License, or (at your
++ * option) any later version.
++ */
++
++#include <linux/device.h>
++#include <linux/module.h>
++
++#include <linux/mfd/lm3533.h>
++
++
++#define LM3533_BRIGHTNESS_MAX		255
++#define LM3533_MAX_CURRENT_MAX		31
++#define LM3533_PWM_MAX			0x3f
++
++#define LM3533_REG_PWM_BASE		0x14
++#define LM3533_REG_MAX_CURRENT_BASE	0x1f
++#define LM3533_REG_CTRLBANK_ENABLE	0x27
++#define LM3533_REG_BRIGHTNESS_BASE	0x40
++
++
++static inline u8 lm3533_ctrlbank_get_reg(struct lm3533_ctrlbank *cb, u8 base)
++{
++	return base + cb->id;
++}
++
++int lm3533_ctrlbank_enable(struct lm3533_ctrlbank *cb)
++{
++	u8 mask;
++	int ret;
++
++	dev_dbg(cb->dev, "%s - %d\n", __func__, cb->id);
++
++	mask = 1 << cb->id;
++	ret = lm3533_update(cb->lm3533, LM3533_REG_CTRLBANK_ENABLE,
++								mask, mask);
++	if (ret)
++		dev_err(cb->dev, "failed to enable ctrlbank %d\n", cb->id);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(lm3533_ctrlbank_enable);
++
++int lm3533_ctrlbank_disable(struct lm3533_ctrlbank *cb)
++{
++	u8 mask;
++	int ret;
++
++	dev_dbg(cb->dev, "%s - %d\n", __func__, cb->id);
++
++	mask = 1 << cb->id;
++	ret = lm3533_update(cb->lm3533, LM3533_REG_CTRLBANK_ENABLE, 0, mask);
++	if (ret)
++		dev_err(cb->dev, "failed to disable ctrlbank %d\n", cb->id);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(lm3533_ctrlbank_disable);
++
++#define lm3533_ctrlbank_set(_name, _NAME)				\
++int lm3533_ctrlbank_set_##_name(struct lm3533_ctrlbank *cb, u8 val)	\
++{									\
++	u8 reg;								\
++	int ret;							\
++									\
++	if (val > LM3533_##_NAME##_MAX)					\
++		return -EINVAL;						\
++									\
++	reg = lm3533_ctrlbank_get_reg(cb, LM3533_REG_##_NAME##_BASE);	\
++	ret = lm3533_write(cb->lm3533, reg, val);			\
++	if (ret)							\
++		dev_err(cb->dev, "failed to set " #_name "\n");		\
++									\
++	return ret;							\
++}									\
++EXPORT_SYMBOL_GPL(lm3533_ctrlbank_set_##_name);
++
++#define lm3533_ctrlbank_get(_name, _NAME)				\
++int lm3533_ctrlbank_get_##_name(struct lm3533_ctrlbank *cb, u8 *val)	\
++{									\
++	u8 reg;								\
++	int ret;							\
++									\
++	reg = lm3533_ctrlbank_get_reg(cb, LM3533_REG_##_NAME##_BASE);	\
++	ret = lm3533_read(cb->lm3533, reg, val);			\
++	if (ret)							\
++		dev_err(cb->dev, "failed to get " #_name "\n");		\
++									\
++	return ret;							\
++}									\
++EXPORT_SYMBOL_GPL(lm3533_ctrlbank_get_##_name);
++
++lm3533_ctrlbank_set(brightness, BRIGHTNESS);
++lm3533_ctrlbank_get(brightness, BRIGHTNESS);
++
++/*
++ * Full scale current.
++ *
++ * Imax = 5 + val * 0.8 mA, e.g.:
++ *
++ *    0 - 5 mA
++ *     ...
++ *   19 - 20.2 mA (default)
++ *     ...
++ *   31 - 29.8 mA
++ */
++lm3533_ctrlbank_set(max_current, MAX_CURRENT);
++lm3533_ctrlbank_get(max_current, MAX_CURRENT);
++
++/*
++ * PWM-input control mask:
++ *
++ *   bit 5 - PWM-input enabled in Zone 4
++ *   bit 4 - PWM-input enabled in Zone 3
++ *   bit 3 - PWM-input enabled in Zone 2
++ *   bit 2 - PWM-input enabled in Zone 1
++ *   bit 1 - PWM-input enabled in Zone 0
++ *   bit 0 - PWM-input enabled
++ */
++lm3533_ctrlbank_set(pwm, PWM);
++lm3533_ctrlbank_get(pwm, PWM);
++
++
++MODULE_AUTHOR("Johan Hovold <jhovold@gmail.com>");
++MODULE_DESCRIPTION("LM3533 Control Bank interface");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/mfd/lm3533.h b/include/linux/mfd/lm3533.h
+new file mode 100644
+index 0000000..75f85f3
+--- /dev/null
++++ b/include/linux/mfd/lm3533.h
+@@ -0,0 +1,89 @@
++/*
++ * lm3533.h -- LM3533 interface
++ *
++ * Copyright (C) 2011-2012 Texas Instruments
++ *
++ * Author: Johan Hovold <jhovold@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under  the terms of the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the License, or (at your
++ * option) any later version.
++ */
++
++#ifndef __LINUX_MFD_LM3533_H
++#define __LINUX_MFD_LM3533_H
++
++#define LM3533_ATTR_RO(_name) \
++	DEVICE_ATTR(_name, S_IRUGO, show_##_name, NULL)
++#define LM3533_ATTR_RW(_name) \
++	DEVICE_ATTR(_name, S_IRUGO | S_IWUSR , show_##_name, store_##_name)
++
++struct device;
++struct regmap;
++
++struct lm3533 {
++	struct device *dev;
++
++	struct regmap *regmap;
++
++	int gpio_hwen;
++	int irq;
++
++	unsigned have_als:1;
++	unsigned have_backlights:1;
++	unsigned have_leds:1;
++};
++
++struct lm3533_ctrlbank {
++	struct lm3533 *lm3533;
++	struct device *dev;
++	int id;
++};
++
++struct lm3533_als_platform_data {
++	unsigned pwm_mode:1;		/* PWM input mode (default analog) */
++};
++
++struct lm3533_bl_platform_data {
++	char *name;
++	u8 default_brightness;		/* 0 - 255 */
++	u8 max_current;			/* 0 - 31 */
++	u8 pwm;				/* 0 - 0x3f */
++};
++
++struct lm3533_led_platform_data {
++	char *name;
++	const char *default_trigger;
++	u8 max_current;			/* 0 - 31 */
++	u8 pwm;				/* 0 - 0x3f */
++};
++
++struct lm3533_platform_data {
++	int gpio_hwen;
++
++	struct lm3533_als_platform_data *als;
++
++	struct lm3533_bl_platform_data *backlights;
++	int num_backlights;
++
++	struct lm3533_led_platform_data *leds;
++	int num_leds;
++};
++
++extern int lm3533_ctrlbank_enable(struct lm3533_ctrlbank *cb);
++extern int lm3533_ctrlbank_disable(struct lm3533_ctrlbank *cb);
++
++extern int lm3533_ctrlbank_set_brightness(struct lm3533_ctrlbank *cb, u8 val);
++extern int lm3533_ctrlbank_get_brightness(struct lm3533_ctrlbank *cb, u8 *val);
++extern int lm3533_ctrlbank_set_max_current(struct lm3533_ctrlbank *cb, u8 val);
++extern int lm3533_ctrlbank_get_max_current(struct lm3533_ctrlbank *cb,
++								u8 *val);
++extern int lm3533_ctrlbank_set_pwm(struct lm3533_ctrlbank *cb, u8 val);
++extern int lm3533_ctrlbank_get_pwm(struct lm3533_ctrlbank *cb, u8 *val);
++
++extern int lm3533_read(struct lm3533 *lm3533, u8 reg, u8 *val);
++extern int lm3533_write(struct lm3533 *lm3533, u8 reg, u8 val);
++extern int lm3533_update(struct lm3533 *lm3533, u8 reg, u8 val, u8 mask);
++
++#endif	/* __LINUX_MFD_LM3533_H */
+-- 
+1.7.8.5
