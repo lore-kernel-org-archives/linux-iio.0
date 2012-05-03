@@ -1,7 +1,7 @@
-Return-Path: <broonie@opensource.wolfsonmicro.com>
-Date: Thu, 3 May 2012 11:38:48 +0100
-From: Mark Brown <broonie@opensource.wolfsonmicro.com>
-To: Johan Hovold <jhovold@gmail.com>
+Return-Path: <jhovold@gmail.com>
+Date: Thu, 3 May 2012 13:28:03 +0200
+From: Johan Hovold <jhovold@gmail.com>
+To: Mark Brown <broonie@opensource.wolfsonmicro.com>
 Cc: Rob Landley <rob@landley.net>, Richard Purdie <rpurdie@rpsys.net>,
 	Samuel Ortiz <sameo@linux.intel.com>,
 	Jonathan Cameron <jic23@cam.ac.uk>,
@@ -13,62 +13,57 @@ Cc: Rob Landley <rob@landley.net>, Richard Purdie <rpurdie@rpsys.net>,
 	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
 	linux-fbdev@vger.kernel.org
 Subject: Re: [PATCH v2 1/4] mfd: add LM3533 lighting-power core driver
-Message-ID: <20120503103848.GB3955@opensource.wolfsonmicro.com>
+Message-ID: <20120503112803.GA15752@localhost>
 References: <1334935826-12527-1-git-send-email-jhovold@gmail.com>
  <1336040799-18433-1-git-send-email-jhovold@gmail.com>
  <1336040799-18433-2-git-send-email-jhovold@gmail.com>
+ <20120503103848.GB3955@opensource.wolfsonmicro.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="H+4ONPRPur6+Ovig"
-In-Reply-To: <1336040799-18433-2-git-send-email-jhovold@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20120503103848.GB3955@opensource.wolfsonmicro.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+On Thu, May 03, 2012 at 11:38:48AM +0100, Mark Brown wrote:
+> On Thu, May 03, 2012 at 12:26:36PM +0200, Johan Hovold wrote:
+> > Add support for National Semiconductor / TI LM3533 lighting power chips.
+> > 
+> > This is the core driver which provides register access over I2C and
+> > registers the ambient-light-sensor, LED and backlight sub-drivers.
+> 
+> Reviwed-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
+> 
+> though
+> 
+> > +	dev_dbg(lm3533->dev, "read [%02x]: %02x\n", reg, *val);
+> 
+> I'd expect you can drop these log messages, if there's stuff like this
+> missing we should add it to regmap.  At the minute the regmap logging is
+> via trace points rather than debug logs as you can leave them enabled
+> all the time.
 
---H+4ONPRPur6+Ovig
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+If such debugging is added to regmap we still need a way to enable them
+per driver (or rather regmap) to not clutter the logs.
 
-On Thu, May 03, 2012 at 12:26:36PM +0200, Johan Hovold wrote:
-> Add support for National Semiconductor / TI LM3533 lighting power chips.
->=20
-> This is the core driver which provides register access over I2C and
-> registers the ambient-light-sensor, LED and backlight sub-drivers.
+These three dev_dbg statements are extremely useful during debugging /
+development especially in combination with the other dynamic printks in
+these drivers.
 
-Reviwed-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
+I'd actually prefer just keeping them for now.
+ 
+> Might also be worth moving some of the sysfs stuff to live with the
+> relevant drivers.
 
-though
+Which attributes do you have in mind?
 
-> +	dev_dbg(lm3533->dev, "read [%02x]: %02x\n", reg, *val);
+The boost_freq and boost_ovp affect both backlight devices (i.e. cannot
+be set separately) and as such belong in the parent driver IMO.
 
-I'd expect you can drop these log messages, if there's stuff like this
-missing we should add it to regmap.  At the minute the regmap logging is
-via trace points rather than debug logs as you can leave them enabled
-all the time.
+Same with the output_hvled{1..2}, output_lvled{1..5} attributes. The
+chip has four logical LEDs ("control banks") but five low-voltage output
+sinks. The five output_lvled attributes determine the mapping and as
+such belong in the parent driver. The two logical backlight devices can
+likewise be used to control either or both high-voltage outputs and
+belong in the parent driver for the same reasons.
 
-Might also be worth moving some of the sysfs stuff to live with the
-relevant drivers.
-
---H+4ONPRPur6+Ovig
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJPomAuAAoJEBus8iNuMP3dGzYP/RRhvihM4RxQYmx0YBkTm8U7
-ohi9ZbGh8VybP9Ab0liq2FRufhrEM4WLn9AgnVqwuAMrBKcUGfYmC8mvPhMpPrTe
-z42KAL2G2bdoes042F3gOIVkzEX6ARH1kRYP2WTkOaMqB1zXp80EPbGPtzohQFOB
-aq9Oeoyrk5FP8RNeNAXDRAIXGCL8JMbnXI77DbVlU+AEcGhfVHPXe9M7BOQhd167
-cu3dvgKBVFlLnWPKVCdOIGB0T21n+MUkHjNM8YMtouPPJQWBJW3s9gtIFFlJhKlX
-N0sjVex7Uag36cXyRTISChcGaaGTmxdmmRC+9cc/jXkTALSdyg8fTZmW5AJShDK4
-rN8cZ0VMxlbStKOMfaNxjcFnZT99HPy4yqlFsHJ5TL7+4hF1bszql2C6JXzm5x5Z
-hYd69a4zTBozG256Di6bGfTlq+Z7IlAusq8gp34+rJngFaguEKF31qQ2sSd7QWnK
-eMDRdJyPtCa1r7+tC5/Bte5ssMOrGQqsLFHYf9rXOSoOpCN2wkQn30yzkAC/ZZOB
-Iw0DBJRs+UgWQQ1Wd3koonMu3W4yT3K8cnv7Xsc+LDrXOm6rSlE8jQu+acD8R4MN
-RJctRjEhAQf1J/6bOeC0NXXR1RiFD9EvRLuN+FfVZP8EoLZNIObwE3KDUSHwyiVP
-XX3c4VG3X0AkP2mA0Z/m
-=r8lq
------END PGP SIGNATURE-----
-
---H+4ONPRPur6+Ovig--
+Thanks,
+Johan
