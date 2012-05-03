@@ -1,49 +1,42 @@
-Return-Path: <axel.lin@gmail.com>
-Message-ID: <1336009851.3590.4.camel@phoenix>
-Subject: [PATCH] IIO: industrialio-core: Use simple_open
-From: Axel Lin <axel.lin@gmail.com>
-To: linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org, Greg
-	Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Thu, 03 May 2012 09:50:51 +0800
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Axel Lin <axel.lin@gmail.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Date: Thu, 3 May 2012 07:49:05 +0100
+Subject: RE: [PATCH] IIO: industrialio-core: Use simple_open
+Message-ID: <544AC56F16B56944AEC3BD4E3D5917714E79717075@LIMKCMBX1.ad.analog.com>
+References: <1336009851.3590.4.camel@phoenix>
+In-Reply-To: <1336009851.3590.4.camel@phoenix>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Use simple_open to replace iio_debugfs_open.
-
-Signed-off-by: Axel Lin <axel.lin@gmail.com>
----
- drivers/iio/industrialio-core.c |   10 +---------
- 1 files changed, 1 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 72e33b8..52aa44a 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -152,14 +152,6 @@ static void __exit iio_exit(void)
- }
- 
- #if defined(CONFIG_DEBUG_FS)
--static int iio_debugfs_open(struct inode *inode, struct file *file)
--{
--	if (inode->i_private)
--		file->private_data = inode->i_private;
--
--	return 0;
--}
--
- static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
- 			      size_t count, loff_t *ppos)
- {
-@@ -218,7 +210,7 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
- }
- 
- static const struct file_operations iio_debugfs_reg_fops = {
--	.open = iio_debugfs_open,
-+	.open = simple_open,
- 	.read = iio_debugfs_read_reg,
- 	.write = iio_debugfs_write_reg,
- };
--- 
-1.7.5.4
+QXhlbCBMaW4gd3JvdGUgb24gMjAxMi0wNS0wMzoNCj4gVXNlIHNpbXBsZV9vcGVuIHRvIHJlcGxh
+Y2UgaWlvX2RlYnVnZnNfb3Blbi4NCj4NCj4gU2lnbmVkLW9mZi1ieTogQXhlbCBMaW4gPGF4ZWwu
+bGluQGdtYWlsLmNvbT4NCkFja2VkLWJ5OiBNaWNoYWVsIEhlbm5lcmljaCA8bWljaGFlbC5oZW5u
+ZXJpY2hAYW5hbG9nLmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL2lpby9pbmR1c3RyaWFsaW8tY29y
+ZS5jIHwgICAxMCArLS0tLS0tLS0tDQo+ICAxIGZpbGVzIGNoYW5nZWQsIDEgaW5zZXJ0aW9ucygr
+KSwgOSBkZWxldGlvbnMoLSkNCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2luZHVzdHJpYWxp
+by1jb3JlLmMNCj4gYi9kcml2ZXJzL2lpby9pbmR1c3RyaWFsaW8tY29yZS5jIGluZGV4IDcyZTMz
+YjguLjUyYWE0NGEgMTAwNjQ0IC0tLQ0KPiBhL2RyaXZlcnMvaWlvL2luZHVzdHJpYWxpby1jb3Jl
+LmMgKysrIGIvZHJpdmVycy9paW8vaW5kdXN0cmlhbGlvLWNvcmUuYw0KPiBAQCAtMTUyLDE0ICsx
+NTIsNiBAQCBzdGF0aWMgdm9pZCBfX2V4aXQgaWlvX2V4aXQodm9pZCkNCj4gIH0NCj4NCj4gICNp
+ZiBkZWZpbmVkKENPTkZJR19ERUJVR19GUykNCj4gLXN0YXRpYyBpbnQgaWlvX2RlYnVnZnNfb3Bl
+bihzdHJ1Y3QgaW5vZGUgKmlub2RlLCBzdHJ1Y3QgZmlsZSAqZmlsZSkgLXsNCj4gLSAgICAgaWYg
+KGlub2RlLT5pX3ByaXZhdGUpIC0gICAgICAgICBmaWxlLT5wcml2YXRlX2RhdGEgPSBpbm9kZS0+
+aV9wcml2YXRlOyAtDQo+IC0gICAgIHJldHVybiAwOyAtfSAtDQo+ICBzdGF0aWMgc3NpemVfdCBp
+aW9fZGVidWdmc19yZWFkX3JlZyhzdHJ1Y3QgZmlsZSAqZmlsZSwgY2hhciBfX3VzZXINCj4gICp1
+c2VyYnVmLCAgICAgICAgICAgICAgICAgICAgICAgICAgc2l6ZV90IGNvdW50LCBsb2ZmX3QgKnBw
+b3MpIHsNCj4gQEAgLTIxOCw3ICsyMTAsNyBAQCBzdGF0aWMgc3NpemVfdCBpaW9fZGVidWdmc193
+cml0ZV9yZWcoc3RydWN0IGZpbGUNCj4gKmZpbGUsDQo+ICB9DQo+DQo+ICBzdGF0aWMgY29uc3Qg
+c3RydWN0IGZpbGVfb3BlcmF0aW9ucyBpaW9fZGVidWdmc19yZWdfZm9wcyA9IHsNCj4gLSAgICAg
+Lm9wZW4gPSBpaW9fZGVidWdmc19vcGVuLA0KPiArICAgICAub3BlbiA9IHNpbXBsZV9vcGVuLA0K
+PiAgICAgICAucmVhZCA9IGlpb19kZWJ1Z2ZzX3JlYWRfcmVnLA0KPiAgICAgICAud3JpdGUgPSBp
+aW9fZGVidWdmc193cml0ZV9yZWcsDQo+ICB9Ow0KDQpHcmVldGluZ3MsDQpNaWNoYWVsDQoNCi0t
+DQpBbmFsb2cgRGV2aWNlcyBHbWJIICAgICAgV2lsaGVsbS1XYWdlbmZlbGQtU3RyLiA2ICAgICAg
+ODA4MDcgTXVlbmNoZW4NClNpdHogZGVyIEdlc2VsbHNjaGFmdDogTXVlbmNoZW47IFJlZ2lzdGVy
+Z2VyaWNodDogTXVlbmNoZW4gSFJCIDQwMzY4Ow0KR2VzY2hhZWZ0c2Z1ZWhyZXI6RHIuQ2Fyc3Rl
+biBTdWNrcm93LCBUaG9tYXMgV2Vzc2VsLCBXaWxsaWFtIEEuIE1hcnRpbiwgTWFyZ2FyZXQgU2Vp
+Zg0KDQoNCg==
