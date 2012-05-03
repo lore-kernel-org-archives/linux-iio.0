@@ -1,38 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56847 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758115Ab2EKMeU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 May 2012 08:34:20 -0400
-Message-ID: <4FAD0746.9020603@kernel.org>
-Date: Fri, 11 May 2012 13:34:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org,
-	device-drivers-devel@blackfin.uclinux.org
-Subject: Re: [PATCH 2/3] iio: documentation: create frequency sub-folder and
- move dds docs
-References: <1336138266-25480-1-git-send-email-michael.hennerich@analog.com> <1336138266-25480-2-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1336138266-25480-2-git-send-email-michael.hennerich@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <axel.lin@gmail.com>
+Message-ID: <1336057018.4205.2.camel@phoenix>
+Subject: [PATCH] IIO: industrialio-core: Checking NULL instead of IS_ERR for
+ debugfs_create_dir()
+From: Axel Lin <axel.lin@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>, Michael Hennerich
+ <michael.hennerich@analog.com>, linux-iio@vger.kernel.org, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>
+Date: Thu, 03 May 2012 22:56:58 +0800
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 5/4/2012 2:31 PM, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich<michael.hennerich@analog.com>
-Hmm.. May not make sense as the Documentation/ABI/testing is flat...
+If defined CONFIG_DEBUG_FS, debugfs_create_dir returns NULL on failure.
 
-We might want to do this for Documentation/iio/ but that doesn't cover 
-this file...
->
-> Signed-off-by: Michael Hennerich<michael.hennerich@analog.com>
-> ---
->   .../{ =>  frequency}/sysfs-bus-iio-dds              |    0
->   1 files changed, 0 insertions(+), 0 deletions(-)
->   rename drivers/staging/iio/Documentation/{ =>  frequency}/sysfs-bus-iio-dds (100%)
->
-> diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-dds b/drivers/staging/iio/Documentation/frequency/sysfs-bus-iio-dds
-> similarity index 100%
-> rename from drivers/staging/iio/Documentation/sysfs-bus-iio-dds
-> rename to drivers/staging/iio/Documentation/frequency/sysfs-bus-iio-dds
+Signed-off-by: Axel Lin <axel.lin@gmail.com>
+---
+ drivers/iio/industrialio-core.c |    5 +----
+ 1 files changed, 1 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 72e33b8..c74412b 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -235,15 +235,12 @@ static int iio_device_register_debugfs(struct iio_dev *indio_dev)
+ 	if (indio_dev->info->debugfs_reg_access == NULL)
+ 		return 0;
+ 
+-	if (IS_ERR(iio_debugfs_dentry))
++	if (!iio_debugfs_dentry)
+ 		return 0;
+ 
+ 	indio_dev->debugfs_dentry =
+ 		debugfs_create_dir(dev_name(&indio_dev->dev),
+ 				   iio_debugfs_dentry);
+-	if (IS_ERR(indio_dev->debugfs_dentry))
+-		return PTR_ERR(indio_dev->debugfs_dentry);
+-
+ 	if (indio_dev->debugfs_dentry == NULL) {
+ 		dev_warn(indio_dev->dev.parent,
+ 			 "Failed to create debugfs directory\n");
+-- 
+1.7.5.4
