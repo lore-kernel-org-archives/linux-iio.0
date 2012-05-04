@@ -1,48 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:53137 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752866Ab2EDOmP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 May 2012 10:42:15 -0400
-Message-ID: <4FA3EAC2.2080005@cam.ac.uk>
-Date: Fri, 04 May 2012 15:42:10 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from ch1ehsobe001.messaging.microsoft.com ([216.32.181.181]:36199
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1758162Ab2EDNbO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 May 2012 09:31:14 -0400
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 2/3] iio: documentation: create frequency sub-folder and move dds docs
+Date: Fri, 4 May 2012 15:31:05 +0200
+Message-ID: <1336138266-25480-2-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1336138266-25480-1-git-send-email-michael.hennerich@analog.com>
+References: <1336138266-25480-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: "jic23@kernel.org" <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH 3/3] iio: frequency: New driver for AD9523 SPI Low Jitter
- Clock Generator
-References: <1336138266-25480-1-git-send-email-michael.hennerich@analog.com> <1336138266-25480-3-git-send-email-michael.hennerich@analog.com> <4FA3DE8E.6050802@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D5917714E797B4F51@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917714E797B4F51@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 5/4/2012 3:00 PM, Hennerich, Michael wrote:
-> Jonathan Cameron wrote on 2012-05-04:
->> On 5/4/2012 2:31 PM, michael.hennerich@analog.com wrote:
->>> From: Michael Hennerich<michael.hennerich@analog.com>
->> Before I dive in here too far, let me ask the stupid question.
->>
->> Whilst I know nothing much about it, why is the kernel's clock framework
->> unsuitable for this device?
-> Hi Jonathan,
->
-> I think we had a similar discussion before.
->
-> The in-kernel clock infrastructure HAVE_CLK<linux/clk.h>  is not suitable
-> since it is designed for SoC like systems.
->
-> 1) The API is exported by arch and platform code.
-> 2) Data structures differ between the different implementations.
-> 3) Coexistence with other clock providers is by design impossible.
->
-> Greetings,
-> Michael
->
-Does ring a bell now you mention it :) Thanks for the summary.  I can 
-imagine
-there may be a suggestion to look at overcoming the above in the long term,
-but can't see it being worth while for a small number of parts.
+From: Michael Hennerich <michael.hennerich@analog.com>
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ .../{ => frequency}/sysfs-bus-iio-dds              |    0
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+ rename drivers/staging/iio/Documentation/{ => frequency}/sysfs-bus-iio-dds (100%)
+
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-dds b/drivers/staging/iio/Documentation/frequency/sysfs-bus-iio-dds
+similarity index 100%
+rename from drivers/staging/iio/Documentation/sysfs-bus-iio-dds
+rename to drivers/staging/iio/Documentation/frequency/sysfs-bus-iio-dds
+-- 
+1.7.0.4
+
+
