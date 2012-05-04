@@ -1,116 +1,124 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:60513 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754550Ab2EHMl1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 May 2012 08:41:27 -0400
-Message-ID: <4FA9146F.5050802@cam.ac.uk>
-Date: Tue, 08 May 2012 13:41:19 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from tx2ehsobe005.messaging.microsoft.com ([65.55.88.15]:31175 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756056Ab2EDNbO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 May 2012 09:31:14 -0400
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 1/3] iio: documentation: Add out_altvoltage and friends
+Date: Fri, 4 May 2012 15:31:04 +0200
+Message-ID: <1336138266-25480-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-CC: Masanari Iida <standby24x7@gmail.com>,
-	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH] staging, iio: Fix typo in iio
-References: <1336407522-13818-1-git-send-email-standby24x7@gmail.com> <544AC56F16B56944AEC3BD4E3D5917714E797B53AE@LIMKCMBX1.ad.analog.com>
-In-Reply-To: <544AC56F16B56944AEC3BD4E3D5917714E797B53AE@LIMKCMBX1.ad.analog.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 5/7/2012 8:35 PM, Hennerich, Michael wrote:
-> Masanari Iida wrote on 2012-05-07:
->> Correct spelling typo in staging/iio
->>
->> Signed-off-by: Masanari Iida<standby24x7@gmail.com>
-> Acked-by: Michael Hennerich<michael.hennerich@analog.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Please send to Gregkh@linuxfoundation.org
->> ---
->>   drivers/staging/iio/TODO                      | 2 +-
->>   drivers/staging/iio/gyro/adxrs450.h           | 2 +-
->>   drivers/staging/iio/iio_simple_dummy_buffer.c | 4 ++--
->>   drivers/staging/iio/iio_simple_dummy_events.c | 2 +-
->>   4 files changed, 5 insertions(+), 5 deletions(-)
->> diff --git a/drivers/staging/iio/TODO b/drivers/staging/iio/TODO
->> index d1ad35e..cf3f948 100644
->> --- a/drivers/staging/iio/TODO
->> +++ b/drivers/staging/iio/TODO
->> @@ -67,7 +67,7 @@ e-mailing the normal IIO list (see below).
->>
->>   Documentation
->>   1) Lots of cleanup and expansion.
->> -2) Some device require indvidual docs.
->> +2) Some device require individual docs.
->>
->>   Contact: Jonathan Cameron<jic23@cam.ac.uk>.
->>   Mailing list: linux-iio@vger.kernel.org
->> diff --git a/drivers/staging/iio/gyro/adxrs450.h
->> b/drivers/staging/iio/gyro/adxrs450.h index af0c870..f8cf21f 100644 ---
->> a/drivers/staging/iio/gyro/adxrs450.h +++
->> b/drivers/staging/iio/gyro/adxrs450.h @@ -49,7 +49,7 @@ enum {
->>    * @us:                      actual spi_device
->>    * @buf_lock:                mutex to protect tx and rx
->>    * @tx:                      transmit buffer
->> - * @rx:                      recieve buffer
->> + * @rx:                      receive buffer
->>    **/
->>   struct adxrs450_state {
->>        struct spi_device       *us;
->> diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c
->> b/drivers/staging/iio/iio_simple_dummy_buffer.c index bb4daf7..389c18a
->> 100644 --- a/drivers/staging/iio/iio_simple_dummy_buffer.c +++
->> b/drivers/staging/iio/iio_simple_dummy_buffer.c @@ -37,7 +37,7 @@ static
->> const s16 fakedata[] = {
->>    * @irq: the interrupt number
->>    * @p: private data - always a pointer to the poll func.
->>    *
->> - * This is the guts of buffered capture. On a trigger event occuring,
->> + * This is the guts of buffered capture. On a trigger event occurring,
->>    * if the pollfunc is attached then this handler is called as a
->>    threaded * interrupt (and hence may sleep). It is responsible for
->>    grabbing data * from the device and pushing it into the associated
->>    buffer.
->> @@ -64,7 +64,7 @@ static irqreturn_t iio_simple_dummy_trigger_h(int
->> irq, void *p)
->>                 *   up a fast read.  The capture will consist of all of them.           *
->>   Hence we just call the grab data function and fill the                *   buffer
->>   without processing.
->> -              * sofware scans: can be considered to be random access
->> +              * software scans: can be considered to be random access
->>                 *   so efficient reading is just a case of minimal bus
->>                 *   transactions.
->>                 * software culled hardware scans:
->> diff --git a/drivers/staging/iio/iio_simple_dummy_events.c
->> b/drivers/staging/iio/iio_simple_dummy_events.c index 449c7a5..368317b
->> 100644 --- a/drivers/staging/iio/iio_simple_dummy_events.c +++
->> b/drivers/staging/iio/iio_simple_dummy_events.c @@ -122,7 +122,7 @@ int
->> iio_simple_dummy_write_event_value(struct iio_dev *indio_dev,
->>    * @private: pointer to device instance state.
->>    *
->>    * This handler is responsible for querying the device to find out
->> what
->> - * event occured and for then pushing that event towards userspace.
->> + * event occurred and for then pushing that event towards userspace.
->>    * Here only one event occurs so we push that directly on with locally
->>    * grabbed timestamp.
->>    */
-> Greetings,
-> Michael
->
-> --
-> Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-> Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-> Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Margaret Seif
->
->
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Continuous frequency/clock generating devices, such as DDSs or PLLs
+should use out_altvoltage.
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio |   31 +++++++++++++++++++++++++++++++
+ 1 files changed, 31 insertions(+), 0 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 2ce4dad..ccd8c84 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -219,6 +219,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
+@@ -273,6 +274,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale_available
+ What:		/sys/.../iio:deviceX/in_voltageX_scale_available
+ What:		/sys/.../iio:deviceX/in_voltage-voltage_scale_available
+ What:		/sys/.../iio:deviceX/out_voltageX_scale_available
++What:		/sys/.../iio:deviceX/out_altvoltageX_scale_available
+ What:		/sys/.../iio:deviceX/in_capacitance_scale_available
+ KernelVersion:	2.635
+ Contact:	linux-iio@vger.kernel.org
+@@ -291,14 +293,19 @@ Description:
+ 		gives the 3dB frequency of the filter in Hz.
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_raw
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_raw
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Raw (unscaled, no bias etc.) output voltage for
+ 		channel Y.  The number must always be specified and
+ 		unique if the output corresponds to a single channel.
++		While DAC like devices typically use out_voltage,
++		a continuous frequency generating device, such as
++		a DDS or PLL should use out_altvoltage.
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY&Z_raw
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY&Z_raw
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -309,6 +316,8 @@ Description:
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown_mode
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown_mode
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown_mode
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltage_powerdown_mode
+ KernelVersion:	2.6.38
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -323,6 +332,8 @@ Description:
+ 
+ What:		/sys/.../iio:deviceX/out_votlageY_powerdown_mode_available
+ What:		/sys/.../iio:deviceX/out_voltage_powerdown_mode_available
++What:		/sys/.../iio:deviceX/out_altvotlageY_powerdown_mode_available
++What:		/sys/.../iio:deviceX/out_altvoltage_powerdown_mode_available
+ KernelVersion:	2.6.38
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -331,6 +342,8 @@ Description:
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltage_powerdown
+ KernelVersion:	2.6.38
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -339,6 +352,24 @@ Description:
+ 		normal operation. Y may be suppressed if all outputs are
+ 		controlled together.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Output frequency for channel Y in Hz. The number must always be
++		specified and unique if the output corresponds to a single
++		channel.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_phase
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Phase in radians of one frequency/clock output Y
++		(out_altvoltageY) relative to another frequency/clock output
++		(out_altvoltageZ) of the device X. The number must always be
++		specified and unique if the output corresponds to a single
++		channel.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/events
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+-- 
+1.7.0.4
+
 
