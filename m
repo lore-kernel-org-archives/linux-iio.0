@@ -1,89 +1,100 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:60070 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753203Ab2EHMxu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 May 2012 08:53:50 -0400
-Message-ID: <4FA9175B.6010206@cam.ac.uk>
-Date: Tue, 08 May 2012 13:53:47 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>,
-	Drivers <Drivers@analog.com>,
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "device-drivers-devel@blackfin.uclinux.org"
+	<device-drivers-devel@blackfin.uclinux.org>, Drivers <Drivers@analog.com>,
 	Mark Brown <broonie@opensource.wolfsonmicro.com>
-Subject: Re: [RFC] iio: amplifiers: New driver for AD8366 Dual-Digital Variable
- Gain Amplifier
-References: <1329914182-5428-1-git-send-email-michael.hennerich@analog.com> <4F6A2D2B.9050400@kernel.org> <4F6AE844.7020102@analog.com> <4F6AEC83.8010009@cam.ac.uk> <4FA7E373.2080704@analog.com> <4FA7E78E.6050406@analog.com>
-In-Reply-To: <4FA7E78E.6050406@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Tue, 8 May 2012 14:26:16 +0100
+Subject: RE: [RFC] iio: amplifiers: New driver for AD8366 Dual-Digital
+ Variable Gain Amplifier
+Message-ID: <544AC56F16B56944AEC3BD4E3D5917714E797B56F9@LIMKCMBX1.ad.analog.com>
+References: <1329914182-5428-1-git-send-email-michael.hennerich@analog.com>
+ <4F6A2D2B.9050400@kernel.org> <4F6AE844.7020102@analog.com>
+ <4F6AEC83.8010009@cam.ac.uk> <4FA7E373.2080704@analog.com>
+ <4FA7E78E.6050406@analog.com> <4FA9175B.6010206@cam.ac.uk>
+In-Reply-To: <4FA9175B.6010206@cam.ac.uk>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 5/7/2012 4:17 PM, Michael Hennerich wrote:
-> On 05/07/2012 05:00 PM, Michael Hennerich wrote:
->> On 03/22/2012 10:10 AM, Jonathan Cameron wrote:
->>> On 3/22/2012 8:52 AM, Michael Hennerich wrote:
->>>> On 03/21/2012 08:34 PM, Jonathan Cameron wrote:
->>>>> On 02/22/2012 12:36 PM, michael.hennerich@analog.com wrote:
->>>>>> From: Michael Hennerich<michael.hennerich@analog.com>
->>>>> Sorry for the slow response on this one. Been off sick...
->>>>>
->>>>> Anyhow, I'm still not sure what the right interface for this type
->>>>> of device is.
->>>>>
->>>>> The obvious options are:
->>>>>
->>>>> 1) Make gain an IIO type (doesn't make much sense as gain is only 
->>>>> going
->>>>> to be of one particular existing type).
->>>>> 2) Have it as an IIO_ALTVOLTAGE channel as you have here and use 
->>>>> extend
->>>>> name.  Any real reason for picking altvoltage rather than voltage?
->>>> I'm open for advice. Since I made the amplifier being an OUT type 
->>>> device
->>>> I chose IIO_ALTVOLTAGE analogous to our DDS/PLL drivers.
->>>> Some VGAs/PGAs work from DC, but typically VGAs are HF devices.
->>> Hmm.. Don't suppose it really matters but we ought to aim for 
->>> consistency
->>> (by review) at least.  This particular part is DC through to 600MHz.
->>>>> Clearly gain has the same meaning in either case (assuming it's 
->>>>> linear).
->>>>> 3) Make a change to core to allow a channel to have elements in
->>>>> info_mask but not actually to have a raw access.  Not entirely sure
->>>>> how we will do that cleanly.  Also it's not clear whether the gain
->>>>> would be an IN or an OUT channel type!
->>>> Well - having the ability for channels without raw access element
->>>> would be of interest.
->>> True enough.  Cleanest way to do this that I can think of is to make 
->>> a tree
->>> wide change to add the raw element to the info_mask.  We could allow 
->>> for
->>> a zero info_mask value actually being the equivalent of having only 
->>> a raw
->>> channel.  It's invasive but if we agreee it should be done now is
->>> probably the
->>> best time to do it (just post merge window etc).
->> Hi Jonathan,
->>
->> Thanks for getting this in place.
->>
+Jonathan Cameron wrote on 2012-05-08:
+> On 5/7/2012 4:17 PM, Michael Hennerich wrote:
+>> On 05/07/2012 05:00 PM, Michael Hennerich wrote:
+>>> On 03/22/2012 10:10 AM, Jonathan Cameron wrote:
+>>>> On 3/22/2012 8:52 AM, Michael Hennerich wrote:
+>>>>> On 03/21/2012 08:34 PM, Jonathan Cameron wrote:
+>>>>>> On 02/22/2012 12:36 PM, michael.hennerich@analog.com wrote:
+>>>>>>> From: Michael Hennerich<michael.hennerich@analog.com>
+>>>>>> Sorry for the slow response on this one. Been off sick...
+>>>>>>
+>>>>>> Anyhow, I'm still not sure what the right interface for this type
+>>>>>> of device is.
+>>>>>>
+>>>>>> The obvious options are:
+>>>>>>
+>>>>>> 1) Make gain an IIO type (doesn't make much sense as gain is only
+>>>>>> going
+>>>>>> to be of one particular existing type).
+>>>>>> 2) Have it as an IIO_ALTVOLTAGE channel as you have here and use
+>>>>>> extend
+>>>>>> name.  Any real reason for picking altvoltage rather than
+> voltage?
+>>>>> I'm open for advice. Since I made the amplifier being an OUT type
+>>>>> device
+>>>>> I chose IIO_ALTVOLTAGE analogous to our DDS/PLL drivers.
+>>>>> Some VGAs/PGAs work from DC, but typically VGAs are HF devices.
+>>>> Hmm.. Don't suppose it really matters but we ought to aim for
+>>>> consistency
+>>>> (by review) at least.  This particular part is DC through to
+> 600MHz.
+>>>>>> Clearly gain has the same meaning in either case (assuming it's
+>>>>>> linear). 3) Make a change to core to allow a channel to have
+>>>>>> elements in info_mask but not actually to have a raw access.  Not
+>>>>>> entirely sure how we will do that cleanly.  Also it's not clear
+>>>>>> whether the gain would be an IN or an OUT channel type!
+>>>>> Well - having the ability for channels without raw access element
+>>>>> would be of interest.
+>>>> True enough.  Cleanest way to do this that I can think of is to make
+>>>> a tree wide change to add the raw element to the info_mask.  We could
+>>>> allow for a zero info_mask value actually being the equivalent of
+>>>> having only a raw channel.  It's invasive but if we agreee it should
+>>>> be done now is probably the best time to do it (just post merge
+>>>> window etc).
+>>> Hi Jonathan,
 >>>
->>> Whilst here, we clearly need way of destinguishing values in DB from 
->>> linear
->>> gains.  Could add a new return type for read_raw callbacks?
+>>> Thanks for getting this in place.
+>>>
+>>>>
+>>>> Whilst here, we clearly need way of destinguishing values in DB from
+>>>> linear gains.  Could add a new return type for read_raw callbacks?
+>>>
+>>> Does something like this work for you?
+>>> Also wondering if we should introduce IIO_CHAN_INFO_GAIN
+>>> for amplifier type devices?
 >>
->> Does something like this work for you?
->> Also wondering if we should introduce IIO_CHAN_INFO_GAIN
->> for amplifier type devices?
->
-> Thinking about it a bit more - why not have iio_chan_type:IIO_GAIN?
-Lack of consistency with other devices.  If we have a pga on the front
-of an adc then the type is voltage and control is done via relevant info
-element.
-How is this any different?
+>> Thinking about it a bit more - why not have iio_chan_type:IIO_GAIN?
+> Lack of consistency with other devices.  If we have a pga on the front
+> of an adc then the type is voltage and control is done via relevant info
+> element. How is this any different?
 
+Well there can be several types of amplifiers voltage, current or none-elec=
+tronic
+such as optical amplifiers.
 
+The key element GAIN of an amplifier is only the ratio between input and ou=
+tput.
+The unit cancels out, so why bother with voltage or current?
+That's why I proposed IIO_GAIN.
+Anyways I'm fine with IIO_VOLTAGE for now, but I would like to use IIO_CHAN=
+_INFO_GAIN
+and not IIO_CHAN_INFO_SCALE?
 
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Mar=
+garet Seif
