@@ -1,52 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f174.google.com ([209.85.217.174]:45445 "EHLO
-	mail-lb0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751398Ab2EIJzy convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 May 2012 05:55:54 -0400
-Received: by lbbgm6 with SMTP id gm6so55452lbb.19
-        for <linux-iio@vger.kernel.org>; Wed, 09 May 2012 02:55:53 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1336515606-12364-1-git-send-email-pmeerw@pmeerw.net>
-References: <1336515606-12364-1-git-send-email-pmeerw@pmeerw.net>
-Date: Wed, 9 May 2012 15:25:52 +0530
-Message-ID: <CAM=Q2cuuki_4jJoCdLOrdHVVk-yKSOyaLL3dcbY_SzxJXvt8Kg@mail.gmail.com>
+Received: from ns.pmeerw.net ([87.118.82.44]:56252 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757968Ab2EINdF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 9 May 2012 09:33:05 -0400
+Date: Wed, 9 May 2012 15:33:04 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Shubhrajyoti Datta <omaplinuxkernel@gmail.com>
+cc: linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de
 Subject: Re: iio: v2, add support for HMC5883/HMC5883L to HMC5843 driver
-From: Shubhrajyoti Datta <omaplinuxkernel@gmail.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de
-Content-Type: text/plain; charset=ISO-8859-1
+In-Reply-To: <CAM=Q2cuuki_4jJoCdLOrdHVVk-yKSOyaLL3dcbY_SzxJXvt8Kg@mail.gmail.com>
+Message-ID: <alpine.DEB.2.01.1205091524570.5308@pmeerw.net>
+References: <1336515606-12364-1-git-send-email-pmeerw@pmeerw.net> <CAM=Q2cuuki_4jJoCdLOrdHVVk-yKSOyaLL3dcbY_SzxJXvt8Kg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Peter,
+Hello,
 
-On Wed, May 9, 2012 at 3:49 AM, Peter Meerwald <pmeerw@pmeerw.net> wrot=
-e:
-> here is my updated patch series to extend the HMC5843 magnetometer
-> driver to support the HMC5883/HMC5883L devices
->
-> patch 1 fixes access issues to the hmc5843 private data,
-> patches 2 to 7 are preparatory patches,
-> patch 8 actually brings in the support for the new devices
->
-> the timeout in the read loop has not yet been implemented (suggestion=
-s by
-> Lars-Peter Clausen)
->
-> the driver has a severe limitation: X/Y/Z must ALL be read to allow n=
-ew
-> data to become available (the device goes into a locked state until a=
-ll
-> are read)
+> > the driver has a severe limitation: X/Y/Z must ALL be read to allow new
+> > data to become available (the device goes into a locked state until all
+> > are read)
 
-Thats a limitation comming from the data sheet right?
+> Thats a limitation comming from the data sheet right?
 
-Are you suggesting a read all and report only requested?
-to work round that.
+yes, it affects all devices (hmc5843/5883/5883l)
 
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" =
-in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at =A0http://vger.kernel.org/majordomo-info.html
+> Are you suggesting a read all and report only requested?
+> to work round that.
+
+probably yes
+
+I brought it up to see if there are ideas for a solution; maybe the issue 
+is more common and this should be solved at iio core level?
+
+with individual reads for X/Y/Z there is no guarantee that all values come 
+from the same measurement cycle ('atomic read')
+
+the hmc58x3 'solves' this with the lock logic and introduces another issue
+
+maybe iio should only allow reads to all data elements at once?
+
+regards, p.
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
