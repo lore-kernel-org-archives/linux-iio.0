@@ -1,101 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([88.190.12.23]:47143 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752687Ab2EINCd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 May 2012 09:02:33 -0400
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: thomas@free-electrons.com, patrice.vilchez@atmel.com,
-	plagnioj@jcrosoft.com, grant.likely@secretlab.ca
-Subject: [PATCH 1/9] ARM: AT91: Add platform data for the AT91 ADCs
-Date: Wed,  9 May 2012 15:02:00 +0200
-Message-Id: <1336568528-29877-2-git-send-email-maxime.ripard@free-electrons.com>
-In-Reply-To: <1336568528-29877-1-git-send-email-maxime.ripard@free-electrons.com>
-References: <1336568528-29877-1-git-send-email-maxime.ripard@free-electrons.com>
+Received: from tx2ehsobe004.messaging.microsoft.com ([65.55.88.14]:19266 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755354Ab2EIKgS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 May 2012 06:36:18 -0400
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 1/3] iio: core: introduce dB scle: IIO_VAL_INT_PLUS_MICRO_DB
+Date: Wed, 9 May 2012 12:36:12 +0200
+Message-ID: <1336559774-21136-1-git-send-email-michael.hennerich@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The AT91 SoCs often embeds an ADC. This patch adds the needed
-platform data to specify the informations required by the driver
-to work properly.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-For now, we only need the reference voltage and which channels
-are available on the board.
-
-Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 ---
- include/linux/platform_data/at91_adc.h |   61 ++++++++++++++++++++++++++++++++
- 1 file changed, 61 insertions(+)
- create mode 100644 include/linux/platform_data/at91_adc.h
+ drivers/iio/industrialio-core.c |   19 +++++++++++++------
+ include/linux/iio/types.h       |    1 +
+ 2 files changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/platform_data/at91_adc.h b/include/linux/platform_data/at91_adc.h
-new file mode 100644
-index 0000000..f9e2f00
---- /dev/null
-+++ b/include/linux/platform_data/at91_adc.h
-@@ -0,0 +1,61 @@
-+/*
-+ * Copyright (C) 2011 Free Electrons
-+ *
-+ * Licensed under the GPLv2 or later.
-+ */
-+
-+#ifndef _AT91_ADC_H_
-+#define _AT91_ADC_H_
-+
-+/**
-+ * struct at91_adc_reg_desc - Various informations relative to registers
-+ * @channel_base:	Base address for the channel data registers
-+ * @drdy_mask:		Mask of the DRDY field in the relevant registers
-+			(Interruptions registers mostly)
-+ * @status_register:	Address of the Interrupt Status Register
-+ * @trigger_register:	Address of the Trigger setup register
-+ */
-+struct at91_adc_reg_desc {
-+	u8	channel_base;
-+	u32	drdy_mask;
-+	u8	status_register;
-+	u8	trigger_register;
-+};
-+
-+/**
-+ * struct at91_adc_trigger - description of triggers
-+ * @name:		name of the trigger advertised to the user
-+ * @value:		value to set in the ADC's mode register to enable
-+			the trigger
-+ * @is_external:	is the trigger relies on an external pin ?
-+ */
-+struct at91_adc_trigger {
-+	const char	*name;
-+	u8		value;
-+	bool		is_external;
-+};
-+
-+/**
-+ * struct at91_adc_data - platform data for ADC driver
-+ * @channels_used:		channels in use on the board as a bitmask
-+ * @num_channels:		global number of channels available on the board
-+ * @registers:			Registers definition on the board
-+ * @startup_time:		startup time of the ADC in microseconds
-+ * @trigger_list:		Triggers available in the ADC
-+ * @trigger_number:		Number of triggers available in the ADC
-+ * @use_external_triggers:	does the board has external triggers availables
-+ * @vref:			Reference voltage for the ADC in millivolts
-+ */
-+struct at91_adc_data {
-+	unsigned long			channels_used;
-+	u8				num_channels;
-+	struct at91_adc_reg_desc	*registers;
-+	u8				startup_time;
-+	struct at91_adc_trigger		*trigger_list;
-+	u8				trigger_number;
-+	bool				use_external_triggers;
-+	u16				vref;
-+};
-+
-+extern void __init at91_add_device_adc(struct at91_adc_data *data);
-+#endif
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 72e33b8..e799d35 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -306,26 +306,33 @@ static ssize_t iio_read_channel_info(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int val, val2;
++	bool scale_db = false;
+ 	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+ 					    &val, &val2, this_attr->address);
+ 
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (ret == IIO_VAL_INT)
++	switch (ret) {
++	case IIO_VAL_INT:
+ 		return sprintf(buf, "%d\n", val);
+-	else if (ret == IIO_VAL_INT_PLUS_MICRO) {
++	case IIO_VAL_INT_PLUS_MICRO_DB:
++		scale_db = true;
++	case IIO_VAL_INT_PLUS_MICRO:
+ 		if (val2 < 0)
+-			return sprintf(buf, "-%d.%06u\n", val, -val2);
++			return sprintf(buf, "-%d.%06u%s\n", val, -val2,
++				scale_db ? " dB" : "");
+ 		else
+-			return sprintf(buf, "%d.%06u\n", val, val2);
+-	} else if (ret == IIO_VAL_INT_PLUS_NANO) {
++			return sprintf(buf, "%d.%06u%s\n", val, val2,
++				scale_db ? " dB" : "");
++	case IIO_VAL_INT_PLUS_NANO:
+ 		if (val2 < 0)
+ 			return sprintf(buf, "-%d.%09u\n", val, -val2);
+ 		else
+ 			return sprintf(buf, "%d.%09u\n", val, val2);
+-	} else
++	default:
+ 		return 0;
++	}
+ }
+ 
+ static ssize_t iio_write_channel_info(struct device *dev,
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index a471fd5..1b073b1 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -50,5 +50,6 @@ enum iio_modifier {
+ #define IIO_VAL_INT 1
+ #define IIO_VAL_INT_PLUS_MICRO 2
+ #define IIO_VAL_INT_PLUS_NANO 3
++#define IIO_VAL_INT_PLUS_MICRO_DB 4
+ 
+ #endif /* _IIO_TYPES_H_ */
 -- 
-1.7.9.5
+1.7.0.4
+
 
