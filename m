@@ -1,57 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:39686 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752557Ab2EKHgQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 May 2012 03:36:16 -0400
-Message-ID: <4FACC16B.2060106@cam.ac.uk>
-Date: Fri, 11 May 2012 08:36:11 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from va3ehsobe004.messaging.microsoft.com ([216.32.180.14]:53412
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755354Ab2EIKgQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 May 2012 06:36:16 -0400
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 2/3] iio: core: introduce IIO_CHAN_INFO_HARDWAREGAIN
+Date: Wed, 9 May 2012 12:36:13 +0200
+Message-ID: <1336559774-21136-2-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1336559774-21136-1-git-send-email-michael.hennerich@analog.com>
+References: <1336559774-21136-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH 3/3] iio: amplifiers: New driver for AD8366 Dual-Digital
- Variable Gain Amplifier
-References: <1336559774-21136-1-git-send-email-michael.hennerich@analog.com> <1336559774-21136-3-git-send-email-michael.hennerich@analog.com> <4FAB859F.2060103@kernel.org> <4FACC07A.8080600@analog.com>
-In-Reply-To: <4FACC07A.8080600@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 5/11/2012 8:32 AM, Michael Hennerich wrote:
-> On 05/10/2012 11:08 AM, Jonathan Cameron wrote:
->> On 5/9/2012 11:36 AM, michael.hennerich@analog.com wrote:
->>> From: Michael Hennerich<michael.hennerich@analog.com>
->>>
->>> Changes since V1:
->>>
->>> Apply review feedback:
->>> Introduce and use IIO_CHAN_INFO_HARDWAREGAIN
->>> Introduce and use Use IIO_VAL_INT_PLUS_MICRO_DB
->>>
->>> Modify out of staging include paths.
->>> Convert to new iio core API naming.
->> For reasons I don't understand thunderbird on windows (yes I'm doing
->> this whilst waiting for something to run at the day job), is wrecking
->> spacing in subtle ways despite being in plain text mode... Grr.
->>
->> Anyhow, my only real comment is that I think we may want a little more
->> value sanity checking in the write_raw function. Not critical as
->> hopefully no one will write anything stupid to that, but nice to lock
->> down anyway if you have the time.
-> Hi Jonathan,
->
-> Will add a check for val < 0 || val2 < 0.
-> If you don't mind I'll target the patch to the out of staging iio folder.
-Yes, that would be good.  I'll start discouraging any drivers going into 
-staging unless there are unresolved abi issues.
->
-> drivers/iio/amplifiers/ad8366.c
->
->>> Signed-off-by: Michael Hennerich<michael.hennerich@analog.com>
->> Acked-by: Jonathan Cameron<jic23@kernel.org>
->>
->
+From: Michael Hennerich <michael.hennerich@analog.com>
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio |    7 +++++++
+ drivers/iio/industrialio-core.c         |    1 +
+ include/linux/iio/iio.h                 |    5 +++++
+ 3 files changed, 13 insertions(+), 0 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index ccd8c84..cfedf63 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -282,6 +282,13 @@ Description:
+ 		If a discrete set of scale values are available, they
+ 		are listed in this attribute.
+ 
++What		/sys/bus/iio/devices/iio:deviceX/out_voltageY_hardwaregain
++KernelVersion:	2.6.35
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware applied gain factor. If shared across all channels,
++		<type>_hardwaregain is used.
++
+ What:		/sys/.../in_accel_filter_low_pass_3db_frequency
+ What:		/sys/.../in_magn_filter_low_pass_3db_frequency
+ What:		/sys/.../in_anglvel_filter_low_pass_3db_frequency
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index e799d35..874fb70 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -91,6 +91,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_SAMP_FREQ] = "sampling_frequency",
+ 	[IIO_CHAN_INFO_FREQUENCY] = "frequency",
+ 	[IIO_CHAN_INFO_PHASE] = "phase",
++	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
+ };
+ 
+ const struct iio_chan_spec
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 6fdbdb8..897c6b0 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -34,6 +34,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_SAMP_FREQ,
+ 	IIO_CHAN_INFO_FREQUENCY,
+ 	IIO_CHAN_INFO_PHASE,
++	IIO_CHAN_INFO_HARDWAREGAIN,
+ };
+ 
+ #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
+@@ -95,6 +96,10 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_PHASE)
+ #define IIO_CHAN_INFO_PHASE_SHARED_BIT			\
+ 	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_PHASE)
++#define IIO_CHAN_INFO_HARDWAREGAIN_SEPARATE_BIT			\
++	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
++#define IIO_CHAN_INFO_HARDWAREGAIN_SHARED_BIT			\
++	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
+ 
+ enum iio_endian {
+ 	IIO_CPU,
+-- 
+1.7.0.4
+
 
