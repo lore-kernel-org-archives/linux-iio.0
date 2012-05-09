@@ -1,43 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.171]:60864 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756728Ab2EIOqs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 May 2012 10:46:48 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCHv3] Add ADC driver for Atmel G20, G45 and X5 boards
-Date: Wed, 9 May 2012 14:46:40 +0000
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Olof Johansson <olof@lixom.net>, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, thomas@free-electrons.com,
-	patrice.vilchez@atmel.com, plagnioj@jcrosoft.com
-References: <1336554366-16957-1-git-send-email-maxime.ripard@free-electrons.com> <4FAA7CB6.8030506@atmel.com>
-In-Reply-To: <4FAA7CB6.8030506@atmel.com>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Message-Id: <201205091446.40849.arnd@arndb.de>
+Received: from mail.free-electrons.com ([88.190.12.23]:45340 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758864Ab2EIJHH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 May 2012 05:07:07 -0400
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: thomas@free-electrons.com, patrice.vilchez@atmel.com,
+	nicolas.ferre@atmel.com, plagnioj@jcrosoft.com
+Subject: [PATCH 9/9] Add DTSI for the G20 SoC
+Date: Wed,  9 May 2012 11:06:06 +0200
+Message-Id: <1336554366-16957-10-git-send-email-maxime.ripard@free-electrons.com>
+In-Reply-To: <1336554366-16957-1-git-send-email-maxime.ripard@free-electrons.com>
+References: <1336554366-16957-1-git-send-email-maxime.ripard@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wednesday 09 May 2012, Nicolas Ferre wrote:
-> Jonathan, Arnd, Olof,
-> 
-> As explained by Maxime, this patch series is adding the Atmel ADC driver
-> to the out-of-staging iio subsystem. It relies on patches that are in
-> staging-next.
-> On the other hand, I really wouldn't like to split the series between
-> iio and arm-soc...
-> My question is: would it be possible to take this series in Jonathan
-> iio/staging-next git tree for inclusion in 3.5? Arnd & Olof, is it ok
-> for you? Do you want to add your Acked-by on some patches?
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+---
+ arch/arm/boot/dts/at91sam9g20.dtsi |   35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-Hmm, if we would do only the DT-based probing for this, it would be
-very simple to split the patches between the two branches, but with
-the dependency on the platform_data definition, we can't do that.
+diff --git a/arch/arm/boot/dts/at91sam9g20.dtsi b/arch/arm/boot/dts/at91sam9g20.dtsi
+index 773ef48..2b1ad83 100644
+--- a/arch/arm/boot/dts/at91sam9g20.dtsi
++++ b/arch/arm/boot/dts/at91sam9g20.dtsi
+@@ -197,6 +197,41 @@
+ 				interrupts = <10 4>;
+ 				status = "disabled";
+ 			};
++
++			adc0: adc@fffe0000 {
++				compatible = "atmel,at91sam9g20-adc";
++				reg = <0xfffe0000 0x100>;
++				interrupts = <5 4>;
++				atmel,adc-use-external-triggers;
++				atmel,adc-channels-used = <0xf>;
++				atmel,adc-vref = <3300>;
++				atmel,adc-num-channels = <4>;
++				atmel,adc-startup-time = <10>;
++				atmel,adc-channel-base = <0x30>;
++				atmel,adc-drdy-mask = <0x10000>;
++				atmel,adc-status-register = <0x1c>;
++				atmel,adc-trigger-register = <0x04>;
++
++				trigger@0 {
++					trigger-name = "timer-counter-0";
++					trigger-value = <0x1>;
++				};
++				trigger@1 {
++					trigger-name = "timer-counter-1";
++					trigger-value = <0x3>;
++				};
++
++				trigger@2 {
++					trigger-name = "timer-counter-2";
++					trigger-value = <0x5>;
++				};
++
++				trigger@3 {
++					trigger-name = "external";
++					trigger-value = <0x13>;
++					trigger-external;
++				};
++			};
+ 		};
+ 
+ 		nand0: nand@40000000 {
+-- 
+1.7.9.5
 
-If you think we still need the platform_data, I guess it can go in
-the iio tree, but I'd be happier if we didn't need it any more.
-
-	Arnd
