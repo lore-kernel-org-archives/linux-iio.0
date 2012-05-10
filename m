@@ -1,116 +1,97 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FB1412D.5020908@kernel.org>
-Date: Mon, 14 May 2012 18:30:21 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <ggao@invensense.com>
+From: Ge Gao <ggao@invensense.com>
 MIME-Version: 1.0
-To: Ge Gao <ggao@invensense.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: trigger removal problem.
-References: <dca0c620c60e1144778bfea74da1336b@mail.gmail.com> <4FACC265.4000408@cam.ac.uk> <26bba6e6470eba82ab34f37d5a7a69da@mail.gmail.com> <4FAE2635.5090604@kernel.org> <db7757fa754546d268093a0c8df8528f@mail.gmail.com>
-In-Reply-To: <db7757fa754546d268093a0c8df8528f@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Date: Thu, 10 May 2012 16:42:19 -0700
+Message-ID: <a29bae2d2e7e26ca76d6d3209f0e387b@mail.gmail.com>
+Subject: trigger removal problems.
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Content-Type: multipart/alternative; boundary=0016e6d784fdb09de504bfb72bee
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/14/2012 05:54 PM, Ge Gao wrote:
-> It is about 7000 lines. It contains seven ".c" files and three ".h" files.
-> This is a driver that can drive all invensense MPU chips(MPU3500, MPU3050,
-> MPU6050, MPU9150) and support all the features of the chip.
-Cool. Sounds like quite a beast ;)
+--0016e6d784fdb09de504bfb72bee
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
 
-Ideal would be to introduce the driver as a number of patches, but if
-that really isn't possible see whether you will break the
-vger.kernel.org limit of 100,000 characters.
+Dear all,
 
-Another option is to attach it as a patch file, but that tends to reduce
-the number of people who take a look drastically!
+                I am building my IIO driver as a module and will constantly
+need to use =93insmod=94 and =93rmmod=94 to install it and remove it due to
+development. However, I found that if I write anything to the
+=93trigger/current_trigger=94, it will not be able to remove it. The error =
+code
+is (11). Even I write =93null=94 to it, it will not be able to be removed.
+However, If I don=92t write anything to it, just insmod and rmmod, it will =
+be
+remove successfully. Any idea what could cause this problem? I followed
+what is in the IIO subsystem driver to write my driver. I can post it if
+anyone want to take a look.
 
-If you want to send me a copy of the raw patch I'd be happy to advise
-on whether it can be sensibly broken up into smaller parts.  I'll only
-do a formal review once it is on the list though!
+                Thanks.
 
-Jonathan
-> 
-> Ge
-> 
-> 
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@kernel.org]
-> Sent: Saturday, May 12, 2012 1:58 AM
-> To: Ge Gao
-> Cc: Jonathan Cameron; linux-iio@vger.kernel.org
-> Subject: Re: trigger removal problem.
-> 
-> On 05/11/2012 06:45 PM, Ge Gao wrote:
->> I found that if I write "NULL" to the "current_trigger", it will not
->> be able to be removed. However, if I write a valid trigger name, such
->> as the one in my driver code, it can be removed. Looks strange. But
->> solve the problem anyway.
->> I actually want to submit my driver code to you. However, it is pretty
->> big(it supports all invensense sensors, which are similar but some
->> differences still). Is that possible I package the code and send it
->> directly?
-> Much better to do it as an inline patch in an email if you can.
-> 
-> Attachements are just about alright if you really can't do that.
-> Just how many lines of code are we talking?
-> 
-> 
->> Thanks for your help.
->>
->> Ge
->>
->>
->> -----Original Message-----
->> From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
->> Sent: Friday, May 11, 2012 12:40 AM
->> To: Ge Gao
->> Cc: linux-iio@vger.kernel.org
->> Subject: Re: trigger removal problem.
->>
->> On 5/11/2012 12:53 AM, Ge Gao wrote:
->>> Dear all,
->>>
->>>                  I am building my IIO driver as a module and will
->>> constantly need to use "insmod" and "rmmod" to install it and remove
->>> it due to development. However, I found that if I write anything to
->>> the "trigger/current_trigger", it will not be able to remove it. The
->>> error code is (11). Even I write "null" to it, it will not be able to
->>> be removed.
->>> However, If I don't write anything to it, just insmod and rmmod, it
->>> will be remove successfully. Any idea what could cause this problem?
->>> I followed what is in the IIO subsystem driver to write my driver. I
->>> can post it if anyone want to take a look.
->> Hi Ge,
->>
->> I'm afraid I won't be able to do any testing until at least tomorrow.
->> There are a few things that could give more information though in the
->> meantime:
->>
->> * Could you try the above, but note down the reference counts that
->> lsmod will give you for the various drivers at each step of the
->> process. (before connecting the trigger, whilst it is connected and upon
-> disconnecting).
->>
->> * Is there anything left when you read 'current_trigger' after writing
->> an invalid name to it?
->>
->> *  Are you using an existing trigger or is it also part of you driver?
->>
->> Having the source code when I dig futher into this would also be
-> helpful.
->>
->> Anyone else seen anything similar?  I haven't run any removal
->> hammering tests for a month or so, so something might have slipped into
-> the core...
->>
->> Jonathan
->>>
->>>                  Thanks.
->>>
->>>
->>>
->>> Ge
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->>> in the body of a message to majordomo@vger.kernel.org More majordomo
->>> info at  http://vger.kernel.org/majordomo-info.html
+
+
+Ge
+
+--0016e6d784fdb09de504bfb72bee
+Content-Type: text/html; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3Dus-ascii"><meta name=3D"Generator" content=3D"Microsoft Word 14 (filtere=
+d medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:"\@SimSun";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri","sans-serif";}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style></head><body lang=3D"EN-US" link=3D"blue" vlink=3D"purple"><div =
+class=3D"WordSection1"><p class=3D"MsoNormal">Dear all,</p><p class=3D"MsoN=
+ormal">=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 I am building my IIO d=
+river as a module and will constantly need to use =93insmod=94 and =93rmmod=
+=94 to install it and remove it due to development. However, I found that i=
+f I write anything to the =93trigger/current_trigger=94, it will not be abl=
+e to remove it. The error code is (11). Even I write =93null=94 to it, it w=
+ill not be able to be removed. However, If I don=92t write anything to it, =
+just insmod and rmmod, it will be remove successfully. Any idea what could =
+cause this problem? I followed what is in the IIO subsystem driver to write=
+ my driver. I can post it if anyone want to take a look.</p>
+<p class=3D"MsoNormal">=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 Thanks=
+.</p><p class=3D"MsoNormal">=A0</p><p class=3D"MsoNormal">Ge</p><p class=3D=
+"MsoNormal">=A0</p></div></body></html>
+
+--0016e6d784fdb09de504bfb72bee--
