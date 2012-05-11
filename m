@@ -1,63 +1,146 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FAE2376.4020205@kernel.org>
-Date: Sat, 12 May 2012 09:46:46 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 17/24] staging:iio:gyro: Use dev_to_iio_dev()
-References: <1336741127-29552-1-git-send-email-lars@metafoo.de> <1336741127-29552-17-git-send-email-lars@metafoo.de>
-In-Reply-To: <1336741127-29552-17-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 16/24] staging:iio:frequency: Use dev_to_iio_dev()
+Date: Fri, 11 May 2012 14:58:39 +0200
+Message-Id: <1336741127-29552-16-git-send-email-lars@metafoo.de>
+In-Reply-To: <1336741127-29552-1-git-send-email-lars@metafoo.de>
+References: <1336741127-29552-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/11/2012 01:58 PM, Lars-Peter Clausen wrote:
-> Replace open-coded instances of getting a iio_dev struct from a device struct
-> with dev_to_iio_dev().
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/gyro/adis16260_core.c |    8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-> index d7979cf..ec765f9 100644
-> --- a/drivers/staging/iio/gyro/adis16260_core.c
-> +++ b/drivers/staging/iio/gyro/adis16260_core.c
-> @@ -149,7 +149,7 @@ static ssize_t adis16260_read_frequency_available(struct device *dev,
->  						  struct device_attribute *attr,
->  						  char *buf)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct adis16260_state *st = iio_priv(indio_dev);
->  	if (spi_get_device_id(st->us)->driver_data)
->  		return sprintf(buf, "%s\n", "0.129 ~ 256");
-> @@ -161,7 +161,7 @@ static ssize_t adis16260_read_frequency(struct device *dev,
->  		struct device_attribute *attr,
->  		char *buf)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct adis16260_state *st = iio_priv(indio_dev);
->  	int ret, len = 0;
->  	u16 t;
-> @@ -186,7 +186,7 @@ static ssize_t adis16260_write_frequency(struct device *dev,
->  		const char *buf,
->  		size_t len)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct adis16260_state *st = iio_priv(indio_dev);
->  	long val;
->  	int ret;
-> @@ -237,7 +237,7 @@ static ssize_t adis16260_write_reset(struct device *dev,
->  		struct device_attribute *attr,
->  		const char *buf, size_t len)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	if (len < 1)
->  		return -EINVAL;
->  	switch (buf[0]) {
+Replace open-coded instances of getting a iio_dev struct from a device struct
+with dev_to_iio_dev().
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/frequency/ad5930.c |    2 +-
+ drivers/staging/iio/frequency/ad9832.c |    2 +-
+ drivers/staging/iio/frequency/ad9834.c |    8 ++++----
+ drivers/staging/iio/frequency/ad9850.c |    2 +-
+ drivers/staging/iio/frequency/ad9852.c |    2 +-
+ drivers/staging/iio/frequency/ad9910.c |    2 +-
+ drivers/staging/iio/frequency/ad9951.c |    2 +-
+ 7 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/staging/iio/frequency/ad5930.c b/drivers/staging/iio/frequency/ad5930.c
+index 97542fc..2d541d0 100644
+--- a/drivers/staging/iio/frequency/ad5930.c
++++ b/drivers/staging/iio/frequency/ad5930.c
+@@ -48,7 +48,7 @@ static ssize_t ad5930_set_parameter(struct device *dev,
+ 	struct spi_transfer xfer;
+ 	int ret;
+ 	struct ad5903_config *config = (struct ad5903_config *)buf;
+-	struct iio_dev *idev = dev_get_drvdata(dev);
++	struct iio_dev *idev = dev_to_iio_dev(dev);
+ 	struct ad5930_state *st = iio_priv(idev);
+ 
+ 	config->control = (config->control & ~value_mask);
+diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+index 2f9abac..fed3940 100644
+--- a/drivers/staging/iio/frequency/ad9832.c
++++ b/drivers/staging/iio/frequency/ad9832.c
+@@ -77,7 +77,7 @@ static ssize_t ad9832_write(struct device *dev,
+ 		const char *buf,
+ 		size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad9832_state *st = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret;
+diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+index f4b581f..1b2dc74 100644
+--- a/drivers/staging/iio/frequency/ad9834.c
++++ b/drivers/staging/iio/frequency/ad9834.c
+@@ -66,7 +66,7 @@ static ssize_t ad9834_write(struct device *dev,
+ 		const char *buf,
+ 		size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad9834_state *st = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret;
+@@ -145,7 +145,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
+ 				 const char *buf,
+ 				 size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad9834_state *st = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret = 0;
+@@ -203,7 +203,7 @@ static ssize_t ad9834_show_out0_wavetype_available(struct device *dev,
+ 						struct device_attribute *attr,
+ 						char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad9834_state *st = iio_priv(indio_dev);
+ 	char *str;
+ 
+@@ -225,7 +225,7 @@ static ssize_t ad9834_show_out1_wavetype_available(struct device *dev,
+ 						struct device_attribute *attr,
+ 						char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad9834_state *st = iio_priv(indio_dev);
+ 	char *str;
+ 
+diff --git a/drivers/staging/iio/frequency/ad9850.c b/drivers/staging/iio/frequency/ad9850.c
+index 39f12a6..74abee0 100644
+--- a/drivers/staging/iio/frequency/ad9850.c
++++ b/drivers/staging/iio/frequency/ad9850.c
+@@ -43,7 +43,7 @@ static ssize_t ad9850_set_parameter(struct device *dev,
+ 	struct spi_transfer xfer;
+ 	int ret;
+ 	struct ad9850_config *config = (struct ad9850_config *)buf;
+-	struct iio_dev *idev = dev_get_drvdata(dev);
++	struct iio_dev *idev = dev_to_iio_dev(dev);
+ 	struct ad9850_state *st = iio_priv(idev);
+ 
+ 	xfer.len = len;
+diff --git a/drivers/staging/iio/frequency/ad9852.c b/drivers/staging/iio/frequency/ad9852.c
+index 58d4bf8..fd9d14a 100644
+--- a/drivers/staging/iio/frequency/ad9852.c
++++ b/drivers/staging/iio/frequency/ad9852.c
+@@ -71,7 +71,7 @@ static ssize_t ad9852_set_parameter(struct device *dev,
+ 	struct spi_transfer xfer;
+ 	int ret;
+ 	struct ad9852_config *config = (struct ad9852_config *)buf;
+-	struct iio_dev *idev = dev_get_drvdata(dev);
++	struct iio_dev *idev = dev_to_iio_dev(dev);
+ 	struct ad9852_state *st = iio_priv(idev);
+ 
+ 	xfer.len = 3;
+diff --git a/drivers/staging/iio/frequency/ad9910.c b/drivers/staging/iio/frequency/ad9910.c
+index 6e7a97e..5a7ba30 100644
+--- a/drivers/staging/iio/frequency/ad9910.c
++++ b/drivers/staging/iio/frequency/ad9910.c
+@@ -123,7 +123,7 @@ static ssize_t ad9910_set_parameter(struct device *dev,
+ 	struct spi_transfer xfer;
+ 	int ret;
+ 	struct ad9910_config *config = (struct ad9910_config *)buf;
+-	struct iio_dev *idev = dev_get_drvdata(dev);
++	struct iio_dev *idev = dev_to_iio_dev(dev);
+ 	struct ad9910_state *st = iio_priv(idev);
+ 
+ 	xfer.len = 5;
+diff --git a/drivers/staging/iio/frequency/ad9951.c b/drivers/staging/iio/frequency/ad9951.c
+index 19ba721..ba6f49f 100644
+--- a/drivers/staging/iio/frequency/ad9951.c
++++ b/drivers/staging/iio/frequency/ad9951.c
+@@ -64,7 +64,7 @@ static ssize_t ad9951_set_parameter(struct device *dev,
+ 	struct spi_transfer xfer;
+ 	int ret;
+ 	struct ad9951_config *config = (struct ad9951_config *)buf;
+-	struct iio_dev *idev = dev_get_drvdata(dev);
++	struct iio_dev *idev = dev_to_iio_dev(dev);
+ 	struct ad9951_state *st = iio_priv(idev);
+ 
+ 	xfer.len = 3;
+-- 
+1.7.10
