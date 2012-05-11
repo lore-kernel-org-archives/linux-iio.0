@@ -1,516 +1,143 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FAE245E.9020806@kernel.org>
-Date: Sat, 12 May 2012 09:50:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 23/24] staging:iio:meter: Use dev_to_iio_dev()
-References: <1336741127-29552-1-git-send-email-lars@metafoo.de> <1336741127-29552-23-git-send-email-lars@metafoo.de>
-In-Reply-To: <1336741127-29552-23-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 22/24] staging:iio:resolver: Use dev_to_iio_dev()
+Date: Fri, 11 May 2012 14:58:45 +0200
+Message-Id: <1336741127-29552-22-git-send-email-lars@metafoo.de>
+In-Reply-To: <1336741127-29552-1-git-send-email-lars@metafoo.de>
+References: <1336741127-29552-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/11/2012 01:58 PM, Lars-Peter Clausen wrote:
-> Replace open-coded instances of getting a iio_dev struct from a device struct
-> with dev_to_iio_dev().
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/meter/ade7753.c      |   12 ++++++------
->  drivers/staging/iio/meter/ade7754.c      |   12 ++++++------
->  drivers/staging/iio/meter/ade7758_core.c |   14 +++++++-------
->  drivers/staging/iio/meter/ade7759.c      |   12 ++++++------
->  drivers/staging/iio/meter/ade7854-i2c.c  |   16 ++++++++--------
->  drivers/staging/iio/meter/ade7854-spi.c  |   16 ++++++++--------
->  drivers/staging/iio/meter/ade7854.c      |   20 ++++++++++----------
->  7 files changed, 51 insertions(+), 51 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
-> index 280331b..f04ece7 100644
-> --- a/drivers/staging/iio/meter/ade7753.c
-> +++ b/drivers/staging/iio/meter/ade7753.c
-> @@ -28,7 +28,7 @@ static int ade7753_spi_write_reg_8(struct device *dev,
->  				   u8 val)
->  {
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7753_state *st = iio_priv(indio_dev);
->  
->  	mutex_lock(&st->buf_lock);
-> @@ -46,7 +46,7 @@ static int ade7753_spi_write_reg_16(struct device *dev,
->  		u16 value)
->  {
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7753_state *st = iio_priv(indio_dev);
->  
->  	mutex_lock(&st->buf_lock);
-> @@ -63,7 +63,7 @@ static int ade7753_spi_read_reg_8(struct device *dev,
->  		u8 reg_address,
->  		u8 *val)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7753_state *st = iio_priv(indio_dev);
->  	ssize_t ret;
->  
-> @@ -82,7 +82,7 @@ static int ade7753_spi_read_reg_16(struct device *dev,
->  		u8 reg_address,
->  		u16 *val)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7753_state *st = iio_priv(indio_dev);
->  	ssize_t ret;
->  
-> @@ -104,7 +104,7 @@ static int ade7753_spi_read_reg_24(struct device *dev,
->  		u32 *val)
->  {
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7753_state *st = iio_priv(indio_dev);
->  	int ret;
->  	struct spi_transfer xfers[] = {
-> @@ -416,7 +416,7 @@ static ssize_t ade7753_write_frequency(struct device *dev,
->  		const char *buf,
->  		size_t len)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7753_state *st = iio_priv(indio_dev);
->  	unsigned long val;
->  	int ret;
-> diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
-> index 59a2e3e..6cee28a 100644
-> --- a/drivers/staging/iio/meter/ade7754.c
-> +++ b/drivers/staging/iio/meter/ade7754.c
-> @@ -28,7 +28,7 @@ static int ade7754_spi_write_reg_8(struct device *dev,
->  		u8 val)
->  {
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7754_state *st = iio_priv(indio_dev);
->  
->  	mutex_lock(&st->buf_lock);
-> @@ -46,7 +46,7 @@ static int ade7754_spi_write_reg_16(struct device *dev,
->  		u16 value)
->  {
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7754_state *st = iio_priv(indio_dev);
->  
->  	mutex_lock(&st->buf_lock);
-> @@ -63,7 +63,7 @@ static int ade7754_spi_read_reg_8(struct device *dev,
->  		u8 reg_address,
->  		u8 *val)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7754_state *st = iio_priv(indio_dev);
->  	int ret;
->  
-> @@ -82,7 +82,7 @@ static int ade7754_spi_read_reg_16(struct device *dev,
->  		u8 reg_address,
->  		u16 *val)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7754_state *st = iio_priv(indio_dev);
->  	int ret;
->  
-> @@ -104,7 +104,7 @@ static int ade7754_spi_read_reg_24(struct device *dev,
->  		u32 *val)
->  {
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7754_state *st = iio_priv(indio_dev);
->  	int ret;
->  	struct spi_transfer xfers[] = {
-> @@ -436,7 +436,7 @@ static ssize_t ade7754_write_frequency(struct device *dev,
->  		const char *buf,
->  		size_t len)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7754_state *st = iio_priv(indio_dev);
->  	unsigned long val;
->  	int ret;
-> diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
-> index 1a5c9c4..96d6114 100644
-> --- a/drivers/staging/iio/meter/ade7758_core.c
-> +++ b/drivers/staging/iio/meter/ade7758_core.c
-> @@ -29,7 +29,7 @@ int ade7758_spi_write_reg_8(struct device *dev,
->  		u8 val)
->  {
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7758_state *st = iio_priv(indio_dev);
->  
->  	mutex_lock(&st->buf_lock);
-> @@ -48,7 +48,7 @@ static int ade7758_spi_write_reg_16(struct device *dev,
->  {
->  	int ret;
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7758_state *st = iio_priv(indio_dev);
->  	struct spi_transfer xfers[] = {
->  		{
-> @@ -77,7 +77,7 @@ static int ade7758_spi_write_reg_24(struct device *dev,
->  {
->  	int ret;
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7758_state *st = iio_priv(indio_dev);
->  	struct spi_transfer xfers[] = {
->  		{
-> @@ -106,7 +106,7 @@ int ade7758_spi_read_reg_8(struct device *dev,
->  		u8 *val)
->  {
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7758_state *st = iio_priv(indio_dev);
->  	int ret;
->  	struct spi_transfer xfers[] = {
-> @@ -149,7 +149,7 @@ static int ade7758_spi_read_reg_16(struct device *dev,
->  		u16 *val)
->  {
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7758_state *st = iio_priv(indio_dev);
->  	int ret;
->  	struct spi_transfer xfers[] = {
-> @@ -195,7 +195,7 @@ static int ade7758_spi_read_reg_24(struct device *dev,
->  		u32 *val)
->  {
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7758_state *st = iio_priv(indio_dev);
->  	int ret;
->  	struct spi_transfer xfers[] = {
-> @@ -534,7 +534,7 @@ static ssize_t ade7758_write_frequency(struct device *dev,
->  		const char *buf,
->  		size_t len)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	unsigned long val;
->  	int ret;
->  	u8 reg, t;
-> diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-> index 91add54..b3f7e0f 100644
-> --- a/drivers/staging/iio/meter/ade7759.c
-> +++ b/drivers/staging/iio/meter/ade7759.c
-> @@ -28,7 +28,7 @@ static int ade7759_spi_write_reg_8(struct device *dev,
->  		u8 val)
->  {
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7759_state *st = iio_priv(indio_dev);
->  
->  	mutex_lock(&st->buf_lock);
-> @@ -46,7 +46,7 @@ static int ade7759_spi_write_reg_16(struct device *dev,
->  		u16 value)
->  {
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7759_state *st = iio_priv(indio_dev);
->  
->  	mutex_lock(&st->buf_lock);
-> @@ -63,7 +63,7 @@ static int ade7759_spi_read_reg_8(struct device *dev,
->  		u8 reg_address,
->  		u8 *val)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7759_state *st = iio_priv(indio_dev);
->  	int ret;
->  
-> @@ -82,7 +82,7 @@ static int ade7759_spi_read_reg_16(struct device *dev,
->  		u8 reg_address,
->  		u16 *val)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7759_state *st = iio_priv(indio_dev);
->  	int ret;
->  
-> @@ -104,7 +104,7 @@ static int ade7759_spi_read_reg_40(struct device *dev,
->  		u64 *val)
->  {
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7759_state *st = iio_priv(indio_dev);
->  	int ret;
->  	struct spi_transfer xfers[] = {
-> @@ -376,7 +376,7 @@ static ssize_t ade7759_write_frequency(struct device *dev,
->  		const char *buf,
->  		size_t len)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7759_state *st = iio_priv(indio_dev);
->  	unsigned long val;
->  	int ret;
-> diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
-> index 527aa97..0609046 100644
-> --- a/drivers/staging/iio/meter/ade7854-i2c.c
-> +++ b/drivers/staging/iio/meter/ade7854-i2c.c
-> @@ -20,7 +20,7 @@ static int ade7854_i2c_write_reg_8(struct device *dev,
->  		u8 value)
->  {
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  
->  	mutex_lock(&st->buf_lock);
-> @@ -39,7 +39,7 @@ static int ade7854_i2c_write_reg_16(struct device *dev,
->  		u16 value)
->  {
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  
->  	mutex_lock(&st->buf_lock);
-> @@ -59,7 +59,7 @@ static int ade7854_i2c_write_reg_24(struct device *dev,
->  		u32 value)
->  {
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  
->  	mutex_lock(&st->buf_lock);
-> @@ -80,7 +80,7 @@ static int ade7854_i2c_write_reg_32(struct device *dev,
->  		u32 value)
->  {
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  
->  	mutex_lock(&st->buf_lock);
-> @@ -101,7 +101,7 @@ static int ade7854_i2c_read_reg_8(struct device *dev,
->  		u16 reg_address,
->  		u8 *val)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	int ret;
->  
-> @@ -127,7 +127,7 @@ static int ade7854_i2c_read_reg_16(struct device *dev,
->  		u16 reg_address,
->  		u16 *val)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	int ret;
->  
-> @@ -153,7 +153,7 @@ static int ade7854_i2c_read_reg_24(struct device *dev,
->  		u16 reg_address,
->  		u32 *val)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	int ret;
->  
-> @@ -179,7 +179,7 @@ static int ade7854_i2c_read_reg_32(struct device *dev,
->  		u16 reg_address,
->  		u32 *val)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	int ret;
->  
-> diff --git a/drivers/staging/iio/meter/ade7854-spi.c b/drivers/staging/iio/meter/ade7854-spi.c
-> index eaafaef..9fb2f8b 100644
-> --- a/drivers/staging/iio/meter/ade7854-spi.c
-> +++ b/drivers/staging/iio/meter/ade7854-spi.c
-> @@ -21,7 +21,7 @@ static int ade7854_spi_write_reg_8(struct device *dev,
->  {
->  	int ret;
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	struct spi_transfer xfer = {
->  		.tx_buf = st->tx,
-> @@ -49,7 +49,7 @@ static int ade7854_spi_write_reg_16(struct device *dev,
->  {
->  	int ret;
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	struct spi_transfer xfer = {
->  		.tx_buf = st->tx,
-> @@ -78,7 +78,7 @@ static int ade7854_spi_write_reg_24(struct device *dev,
->  {
->  	int ret;
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	struct spi_transfer xfer = {
->  		.tx_buf = st->tx,
-> @@ -108,7 +108,7 @@ static int ade7854_spi_write_reg_32(struct device *dev,
->  {
->  	int ret;
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	struct spi_transfer xfer = {
->  		.tx_buf = st->tx,
-> @@ -138,7 +138,7 @@ static int ade7854_spi_read_reg_8(struct device *dev,
->  		u8 *val)
->  {
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	int ret;
->  	struct spi_transfer xfers[] = {
-> @@ -180,7 +180,7 @@ static int ade7854_spi_read_reg_16(struct device *dev,
->  		u16 *val)
->  {
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	int ret;
->  	struct spi_transfer xfers[] = {
-> @@ -221,7 +221,7 @@ static int ade7854_spi_read_reg_24(struct device *dev,
->  		u32 *val)
->  {
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	int ret;
->  	struct spi_transfer xfers[] = {
-> @@ -263,7 +263,7 @@ static int ade7854_spi_read_reg_32(struct device *dev,
->  		u32 *val)
->  {
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	int ret;
->  	struct spi_transfer xfers[] = {
-> diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
-> index fa3ba01..c642da8 100644
-> --- a/drivers/staging/iio/meter/ade7854.c
-> +++ b/drivers/staging/iio/meter/ade7854.c
-> @@ -28,7 +28,7 @@ static ssize_t ade7854_read_8bit(struct device *dev,
->  {
->  	int ret;
->  	u8 val = 0;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  
-> @@ -45,7 +45,7 @@ static ssize_t ade7854_read_16bit(struct device *dev,
->  {
->  	int ret;
->  	u16 val = 0;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  
-> @@ -62,7 +62,7 @@ static ssize_t ade7854_read_24bit(struct device *dev,
->  {
->  	int ret;
->  	u32 val;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  
-> @@ -80,7 +80,7 @@ static ssize_t ade7854_read_32bit(struct device *dev,
->  	int ret;
->  	u32 val = 0;
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  
->  	ret = st->read_reg_32(dev, this_attr->address, &val);
-> @@ -96,7 +96,7 @@ static ssize_t ade7854_write_8bit(struct device *dev,
->  		size_t len)
->  {
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  
->  	int ret;
-> @@ -117,7 +117,7 @@ static ssize_t ade7854_write_16bit(struct device *dev,
->  		size_t len)
->  {
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  
->  	int ret;
-> @@ -138,7 +138,7 @@ static ssize_t ade7854_write_24bit(struct device *dev,
->  		size_t len)
->  {
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  
->  	int ret;
-> @@ -159,7 +159,7 @@ static ssize_t ade7854_write_32bit(struct device *dev,
->  		size_t len)
->  {
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  
->  	int ret;
-> @@ -176,7 +176,7 @@ error_ret:
->  
->  static int ade7854_reset(struct device *dev)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	u16 val;
->  
-> @@ -425,7 +425,7 @@ static IIO_DEV_ATTR_CVAHR(ade7854_read_32bit,
->  
->  static int ade7854_set_irq(struct device *dev, bool enable)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  
->  	int ret;
+Replace open-coded instances of getting a iio_dev struct from a device struct
+with dev_to_iio_dev().
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/resolver/ad2s1210.c |   26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+index a236ddb..f313859 100644
+--- a/drivers/staging/iio/resolver/ad2s1210.c
++++ b/drivers/staging/iio/resolver/ad2s1210.c
+@@ -200,7 +200,7 @@ static ssize_t ad2s1210_store_softreset(struct device *dev,
+ 					const char *buf,
+ 					size_t len)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	int ret;
+ 
+ 	mutex_lock(&st->lock);
+@@ -214,7 +214,7 @@ static ssize_t ad2s1210_show_fclkin(struct device *dev,
+ 				    struct device_attribute *attr,
+ 				    char *buf)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	return sprintf(buf, "%d\n", st->fclkin);
+ }
+ 
+@@ -223,7 +223,7 @@ static ssize_t ad2s1210_store_fclkin(struct device *dev,
+ 				     const char *buf,
+ 				     size_t len)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	unsigned long fclkin;
+ 	int ret;
+ 
+@@ -252,7 +252,7 @@ static ssize_t ad2s1210_show_fexcit(struct device *dev,
+ 				    struct device_attribute *attr,
+ 				    char *buf)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	return sprintf(buf, "%d\n", st->fexcit);
+ }
+ 
+@@ -260,7 +260,7 @@ static ssize_t ad2s1210_store_fexcit(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     const char *buf, size_t len)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	unsigned long fexcit;
+ 	int ret;
+ 
+@@ -287,7 +287,7 @@ static ssize_t ad2s1210_show_control(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     char *buf)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	int ret;
+ 	mutex_lock(&st->lock);
+ 	ret = ad2s1210_config_read(st, AD2S1210_REG_CONTROL);
+@@ -299,7 +299,7 @@ static ssize_t ad2s1210_store_control(struct device *dev,
+ 			struct device_attribute *attr,
+ 			const char *buf, size_t len)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	unsigned long udata;
+ 	unsigned char data;
+ 	int ret;
+@@ -345,7 +345,7 @@ error_ret:
+ static ssize_t ad2s1210_show_resolution(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	return sprintf(buf, "%d\n", st->resolution);
+ }
+ 
+@@ -353,7 +353,7 @@ static ssize_t ad2s1210_store_resolution(struct device *dev,
+ 			struct device_attribute *attr,
+ 			const char *buf, size_t len)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	unsigned char data;
+ 	unsigned long udata;
+ 	int ret;
+@@ -403,7 +403,7 @@ error_ret:
+ static ssize_t ad2s1210_show_fault(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	int ret;
+ 
+ 	mutex_lock(&st->lock);
+@@ -418,7 +418,7 @@ static ssize_t ad2s1210_clear_fault(struct device *dev,
+ 				    const char *buf,
+ 				    size_t len)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	int ret;
+ 
+ 	mutex_lock(&st->lock);
+@@ -441,7 +441,7 @@ static ssize_t ad2s1210_show_reg(struct device *dev,
+ 				 struct device_attribute *attr,
+ 				 char *buf)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	struct iio_dev_attr *iattr = to_iio_dev_attr(attr);
+ 	int ret;
+ 
+@@ -455,7 +455,7 @@ static ssize_t ad2s1210_show_reg(struct device *dev,
+ static ssize_t ad2s1210_store_reg(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
++	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 	unsigned long data;
+ 	int ret;
+ 	struct iio_dev_attr *iattr = to_iio_dev_attr(attr);
+-- 
+1.7.10
