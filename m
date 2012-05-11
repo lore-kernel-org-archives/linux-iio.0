@@ -1,54 +1,221 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FAE1F10.80404@kernel.org>
-Date: Sat, 12 May 2012 09:28:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 03/24] staging:iio:adis16203_read_ring_data: Pass IIO
- device directly
-References: <1336741127-29552-1-git-send-email-lars@metafoo.de> <1336741127-29552-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1336741127-29552-3-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 02/24] iio: Use dev_to_iio_dev()
+Date: Fri, 11 May 2012 14:58:25 +0200
+Message-Id: <1336741127-29552-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1336741127-29552-1-git-send-email-lars@metafoo.de>
+References: <1336741127-29552-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/11/2012 01:58 PM, Lars-Peter Clausen wrote:
-> When calling adis16203_read_ring_data we pass the device struct of embedded in
-> the IIO device only to look up the IIO device from the device struct again right
-> away. This patch changes the code to pass the IIO device directly.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/accel/adis16203_ring.c |    7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
-> index 2171f74..2a25d36 100644
-> --- a/drivers/staging/iio/accel/adis16203_ring.c
-> +++ b/drivers/staging/iio/accel/adis16203_ring.c
-> @@ -12,13 +12,12 @@
->  
->  /**
->   * adis16203_read_ring_data() read data registers which will be placed into ring
-> - * @dev: device associated with child of actual device (iio_dev or iio_trig)
-> + * @indio_dev: The IIO device
->   * @rx: somewhere to pass back the value read
->   **/
-> -static int adis16203_read_ring_data(struct device *dev, u8 *rx)
-> +static int adis16203_read_ring_data(struct iio_dev *indio_dev, u8 *rx)
->  {
->  	struct spi_message msg;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct adis16203_state *st = iio_priv(indio_dev);
->  	struct spi_transfer xfers[ADIS16203_OUTPUTS + 1];
->  	int ret;
-> @@ -74,7 +73,7 @@ static irqreturn_t adis16203_trigger_handler(int irq, void *p)
->  	}
->  
->  	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength) &&
-> -	    adis16203_read_ring_data(&indio_dev->dev, st->rx) >= 0)
-> +	    adis16203_read_ring_data(indio_dev, st->rx) >= 0)
->  		for (; i < bitmap_weight(indio_dev->active_scan_mask,
->  					 indio_dev->masklength); i++)
->  			data[i] = be16_to_cpup((__be16 *)&(st->rx[i*2]));
+Replace open-coded instances of getting a iio_dev struct from a device struct
+with dev_to_iio_dev().
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-buffer.c  |   16 ++++++++--------
+ drivers/iio/industrialio-core.c    |   12 ++++++------
+ drivers/iio/industrialio-event.c   |    8 ++++----
+ drivers/iio/industrialio-trigger.c |    4 ++--
+ 4 files changed, 20 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index b5b2c38..ac185b8 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -105,7 +105,7 @@ static ssize_t iio_scan_el_show(struct device *dev,
+ 				char *buf)
+ {
+ 	int ret;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 
+ 	ret = test_bit(to_iio_dev_attr(attr)->address,
+ 		       indio_dev->buffer->scan_mask);
+@@ -126,7 +126,7 @@ static ssize_t iio_scan_el_store(struct device *dev,
+ {
+ 	int ret;
+ 	bool state;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_buffer *buffer = indio_dev->buffer;
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 
+@@ -162,7 +162,7 @@ static ssize_t iio_scan_el_ts_show(struct device *dev,
+ 				   struct device_attribute *attr,
+ 				   char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	return sprintf(buf, "%d\n", indio_dev->buffer->scan_timestamp);
+ }
+ 
+@@ -172,7 +172,7 @@ static ssize_t iio_scan_el_ts_store(struct device *dev,
+ 				    size_t len)
+ {
+ 	int ret;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	bool state;
+ 
+ 	ret = strtobool(buf, &state);
+@@ -352,7 +352,7 @@ ssize_t iio_buffer_read_length(struct device *dev,
+ 			       struct device_attribute *attr,
+ 			       char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_buffer *buffer = indio_dev->buffer;
+ 
+ 	if (buffer->access->get_length)
+@@ -370,7 +370,7 @@ ssize_t iio_buffer_write_length(struct device *dev,
+ {
+ 	int ret;
+ 	ulong val;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_buffer *buffer = indio_dev->buffer;
+ 
+ 	ret = strict_strtoul(buf, 10, &val);
+@@ -403,7 +403,7 @@ ssize_t iio_buffer_store_enable(struct device *dev,
+ 	int ret;
+ 	bool requested_state, current_state;
+ 	int previous_mode;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_buffer *buffer = indio_dev->buffer;
+ 
+ 	mutex_lock(&indio_dev->mlock);
+@@ -489,7 +489,7 @@ ssize_t iio_buffer_show_enable(struct device *dev,
+ 			       struct device_attribute *attr,
+ 			       char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	return sprintf(buf, "%d\n", iio_buffer_enabled(indio_dev));
+ }
+ EXPORT_SYMBOL(iio_buffer_show_enable);
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index dfa272d..ae3f5ed 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -264,7 +264,7 @@ static ssize_t iio_read_channel_ext_info(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	const struct iio_chan_spec_ext_info *ext_info;
+ 
+@@ -278,7 +278,7 @@ static ssize_t iio_write_channel_ext_info(struct device *dev,
+ 				     const char *buf,
+ 					 size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	const struct iio_chan_spec_ext_info *ext_info;
+ 
+@@ -292,7 +292,7 @@ static ssize_t iio_read_channel_info(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int val, val2;
+ 	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+@@ -322,7 +322,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 				      const char *buf,
+ 				      size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret, integer = 0, fract = 0, fract_mult = 100000;
+ 	bool integer_part = true, negative = false;
+@@ -630,7 +630,7 @@ static ssize_t iio_show_dev_name(struct device *dev,
+ 				 struct device_attribute *attr,
+ 				 char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	return sprintf(buf, "%s\n", indio_dev->name);
+ }
+ 
+@@ -716,7 +716,7 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
+ 
+ static void iio_dev_release(struct device *device)
+ {
+-	struct iio_dev *indio_dev = container_of(device, struct iio_dev, dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(device);
+ 	cdev_del(&indio_dev->chrdev);
+ 	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
+ 		iio_device_unregister_trigger_consumer(indio_dev);
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index 5fcf50b..b49059d 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -186,7 +186,7 @@ static ssize_t iio_ev_state_store(struct device *dev,
+ 				  const char *buf,
+ 				  size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret;
+ 	bool val;
+@@ -205,7 +205,7 @@ static ssize_t iio_ev_state_show(struct device *dev,
+ 				 struct device_attribute *attr,
+ 				 char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int val = indio_dev->info->read_event_config(indio_dev,
+ 						     this_attr->address);
+@@ -220,7 +220,7 @@ static ssize_t iio_ev_value_show(struct device *dev,
+ 				 struct device_attribute *attr,
+ 				 char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int val, ret;
+ 
+@@ -237,7 +237,7 @@ static ssize_t iio_ev_value_store(struct device *dev,
+ 				  const char *buf,
+ 				  size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	unsigned long val;
+ 	int ret;
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 1dbd7b8..0f582df 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -310,7 +310,7 @@ static ssize_t iio_trigger_read_current(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 
+ 	if (indio_dev->trig)
+ 		return sprintf(buf, "%s\n", indio_dev->trig->name);
+@@ -329,7 +329,7 @@ static ssize_t iio_trigger_write_current(struct device *dev,
+ 					 const char *buf,
+ 					 size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_trigger *oldtrig = indio_dev->trig;
+ 	struct iio_trigger *trig;
+ 	int ret;
+-- 
+1.7.10
