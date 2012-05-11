@@ -1,47 +1,138 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:52914 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751618Ab2EMPC7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 13 May 2012 11:02:59 -0400
-Message-ID: <4FAFCD5D.2090805@metafoo.de>
-Date: Sun, 13 May 2012 17:03:57 +0200
+Return-Path: <lars@metafoo.de>
 From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Roland Stigge <stigge@antcom.de>
-CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/3] staging:iio:dac:max517: Convert to channel spec
-References: <1336755862-24184-1-git-send-email-lars@metafoo.de> <1336755862-24184-2-git-send-email-lars@metafoo.de> <4FAEB14A.8020408@kernel.org> <4FAED9AD.4020803@antcom.de> <4FAF61CF.6070509@metafoo.de> <4FAF79AB.1080906@antcom.de> <4FAF7CDE.8070507@metafoo.de> <4FAF81E5.8070700@antcom.de>
-In-Reply-To: <4FAF81E5.8070700@antcom.de>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [RFC 1/8] iio: Add helper functions for enum style channel attributes
+Date: Fri, 11 May 2012 17:53:48 +0200
+Message-Id: <1336751635-7934-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/13/2012 11:41 AM, Roland Stigge wrote:
-> On 13/05/12 11:20, Lars-Peter Clausen wrote:
-> [regarding the "1&2" output]
->> You can only set the same value on both
->> outputs simultaneously, which I think has not so many practical use-cases.
-> 
-> _If_ you want to switch outputs "simultaneously", it's hard to do with
-> the max51x chips due to relatively slow I2C communication. Don't have
-> timing diagrams right now how close you get if you switch the two
-> outputs directly one after another, though.
+We often have the case were we do have a enum style channel attribute. These
+attributes have in common that they are a list of string values which usually
+map in a 1-to-1 fashion to integer values.
 
-Hm, I thought the whole purpose of the "1&2" attribute was to update them
-simultaneously. According to the datasheet the chip will latch new values on a
-stop condition. So if you write both channels in one transfer they will be
-updated simultaneously. If you don't care about that you might as well just
-update the channels by writing to their respective attribute.
+This patch implements some common helper code for implementing enum style
+channel attributes using extended channel attributes. The helper functions take
+care of converting between the string and integer values, as well providing a
+function for "_available" attributes which list all available enum items.
 
-> 
-> But right, it's not highest priority...
-> 
->> You'd rather want to set two different values on output 1 and 2.
-> 
-> We have and will have attributes for those anyway, don't we?
-> 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-core.c |   57 +++++++++++++++++++++++++++++++++++++++
+ include/linux/iio/iio.h         |   32 ++++++++++++++++++++++
+ 2 files changed, 89 insertions(+)
 
-Yes, sure. But again I meant simultaneously, which will be possible with buffer
-output support.
-
-- Lars
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index b39a587..241be03 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -288,6 +288,63 @@ static ssize_t iio_write_channel_ext_info(struct device *dev,
+ 			       this_attr->c, buf, len);
+ }
+ 
++ssize_t iio_enum_available_read(struct iio_dev *indio_dev,
++	uintptr_t priv, const struct iio_chan_spec *chan, char *buf)
++{
++	const struct iio_enum *e = (const struct iio_enum *)priv;
++	char *tmp = buf;
++	unsigned int i;
++
++	if (!e->num_items)
++		return 0;
++
++	for (i = 0; i < e->num_items; ++i)
++		tmp += sprintf(tmp, "%s ", e->items[i]);
++
++	/* replace last space with a newline */
++	*(tmp - 1) = '\n';
++
++	return tmp - buf;
++}
++EXPORT_SYMBOL_GPL(iio_enum_available_read);
++
++ssize_t iio_enum_read(struct iio_dev *indio_dev,
++	uintptr_t priv, const struct iio_chan_spec *chan, char *buf)
++{
++	const struct iio_enum *e = (const struct iio_enum *)priv;
++	int i;
++
++	i = e->get(indio_dev, chan);
++	if (i < 0)
++		return i;
++	else if (i >= e->num_items)
++		return -EINVAL;
++
++	return sprintf(buf, "%s\n", e->items[i]);
++}
++EXPORT_SYMBOL_GPL(iio_enum_read);
++
++ssize_t iio_enum_write(struct iio_dev *indio_dev,
++	uintptr_t priv, const struct iio_chan_spec *chan, const char *buf,
++	size_t len)
++{
++	const struct iio_enum *e = (const struct iio_enum *)priv;
++	unsigned int i;
++	int ret;
++
++	for (i = 0; i < e->num_items; i++) {
++		if (sysfs_streq(buf, e->items[i]))
++			break;
++	}
++
++	if (i == e->num_items)
++		return -EINVAL;
++
++	ret = e->set(indio_dev, chan, i);
++	return ret ? ret : len;
++}
++EXPORT_SYMBOL_GPL(iio_enum_write);
++
+ static ssize_t iio_read_channel_info(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     char *buf)
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 6fdbdb8..602f118 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -124,6 +124,38 @@ struct iio_chan_spec_ext_info {
+ 	uintptr_t private;
+ };
+ 
++struct iio_enum {
++	const char * const *items;
++	unsigned int num_items;
++	int (*set)(struct iio_dev *, const struct iio_chan_spec *, unsigned int);
++	int (*get)(struct iio_dev *, const struct iio_chan_spec *);
++};
++
++ssize_t iio_enum_available_read(struct iio_dev *indio_dev,
++	uintptr_t priv, const struct iio_chan_spec *chan, char *buf);
++ssize_t iio_enum_read(struct iio_dev *indio_dev,
++	uintptr_t priv, const struct iio_chan_spec *chan, char *buf);
++ssize_t iio_enum_write(struct iio_dev *indio_dev,
++	uintptr_t priv, const struct iio_chan_spec *chan, const char *buf,
++	size_t len);
++
++#define IIO_ENUM(_name, _shared, _e) \
++{ \
++	.name = (_name), \
++	.shared = (_shared), \
++	.read = iio_enum_read, \
++	.write = iio_enum_write, \
++	.private = (uintptr_t)(_e), \
++}
++
++#define IIO_ENUM_AVAILABLE(_name, _e) \
++{ \
++	.name = (_name "_available"), \
++	.shared = true, \
++	.read = iio_enum_available_read, \
++	.private = (uintptr_t)(_e), \
++}
++
+ /**
+  * struct iio_chan_spec - specification of a single channel
+  * @type:		What type of measurement is the channel making.
+-- 
+1.7.10
