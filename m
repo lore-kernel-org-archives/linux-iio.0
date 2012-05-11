@@ -1,294 +1,258 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FB14C07.5020104@kernel.org>
-Date: Mon, 14 May 2012 19:16:39 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [RFC 6/8] staging:iio:dac:ad5624r: Convert to extended channel
- attributes
-References: <1336751635-7934-1-git-send-email-lars@metafoo.de> <1336751635-7934-6-git-send-email-lars@metafoo.de>
-In-Reply-To: <1336751635-7934-6-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [RFC 5/8] staging:iio:dac:ad5504: Convert to extended channel attributes
+Date: Fri, 11 May 2012 17:53:52 +0200
+Message-Id: <1336751635-7934-5-git-send-email-lars@metafoo.de>
+In-Reply-To: <1336751635-7934-1-git-send-email-lars@metafoo.de>
+References: <1336751635-7934-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/11/2012 04:53 PM, Lars-Peter Clausen wrote:
-> Use extended channel attributes instead of raw sysfs files for the additional
-> channel attributes. This allows us to remove some boilerplate code.
-> 
-Another nitpick inline.
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/dac/ad5624r_spi.c |  209 ++++++++++++++-------------------
->  1 file changed, 91 insertions(+), 118 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
-> index 646b448..ef6a320 100644
-> --- a/drivers/staging/iio/dac/ad5624r_spi.c
-> +++ b/drivers/staging/iio/dac/ad5624r_spi.c
-> @@ -21,56 +21,6 @@
->  
->  #include "ad5624r.h"
->  
-> -#define AD5624R_CHANNEL(_chan, _bits) { \
-> -	.type = IIO_VOLTAGE, \
-> -	.indexed = 1, \
-> -	.output = 1, \
-> -	.channel = (_chan), \
-> -	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
-> -		     IIO_CHAN_INFO_SCALE_SHARED_BIT, \
-> -	.address = (_chan), \
-> -	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits)), \
-> -}
-> -
-> -#define DECLARE_AD5624R_CHANNELS(_name, _bits) \
-> -	const struct iio_chan_spec _name##_channels[] = { \
-> -		AD5624R_CHANNEL(0, _bits), \
-> -		AD5624R_CHANNEL(1, _bits), \
-> -		AD5624R_CHANNEL(2, _bits), \
-> -		AD5624R_CHANNEL(3, _bits), \
-> -}
-> -
-> -static DECLARE_AD5624R_CHANNELS(ad5624r, 12);
-> -static DECLARE_AD5624R_CHANNELS(ad5644r, 14);
-> -static DECLARE_AD5624R_CHANNELS(ad5664r, 16);
-> -
-> -static const struct ad5624r_chip_info ad5624r_chip_info_tbl[] = {
-> -	[ID_AD5624R3] = {
-> -		.channels = ad5624r_channels,
-> -		.int_vref_mv = 1250,
-> -	},
-> -	[ID_AD5624R5] = {
-> -		.channels = ad5624r_channels,
-> -		.int_vref_mv = 2500,
-> -	},
-> -	[ID_AD5644R3] = {
-> -		.channels = ad5644r_channels,
-> -		.int_vref_mv = 1250,
-> -	},
-> -	[ID_AD5644R5] = {
-> -		.channels = ad5644r_channels,
-> -		.int_vref_mv = 2500,
-> -	},
-> -	[ID_AD5664R3] = {
-> -		.channels = ad5664r_channels,
-> -		.int_vref_mv = 1250,
-> -	},
-> -	[ID_AD5664R5] = {
-> -		.channels = ad5664r_channels,
-> -		.int_vref_mv = 2500,
-> -	},
-> -};
-> -
->  static int ad5624r_spi_write(struct spi_device *spi,
->  			     u8 cmd, u8 addr, u16 val, u8 len)
->  {
-> @@ -138,67 +88,62 @@ static int ad5624r_write_raw(struct iio_dev *indio_dev,
->  	return -EINVAL;
->  }
->  
-> -static ssize_t ad5624r_read_powerdown_mode(struct device *dev,
-> -				      struct device_attribute *attr, char *buf)
-> +static const char * const ad5624r_powerdown_modes[] = {
-> +	"1kohm_to_gnd",
-> +	"100kohm_to_gnd",
-> +	"three_state"
-> +};
-> +
-> +static int ad5624r_get_powerdown_mode(struct iio_dev *indio_dev,
-> +	const struct iio_chan_spec *chan)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct ad5624r_state *st = iio_priv(indio_dev);
->  
-> -	char mode[][15] = {"", "1kohm_to_gnd", "100kohm_to_gnd", "three_state"};
-> -
-> -	return sprintf(buf, "%s\n", mode[st->pwr_down_mode]);
-> +	return st->pwr_down_mode;
->  }
->  
-> -static ssize_t ad5624r_write_powerdown_mode(struct device *dev,
-> -				       struct device_attribute *attr,
-> -				       const char *buf, size_t len)
-> +static int ad5624r_set_powerdown_mode(struct iio_dev *indio_dev,
-> +	const struct iio_chan_spec *chan, unsigned int mode)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct ad5624r_state *st = iio_priv(indio_dev);
-> -	int ret;
->  
-> -	if (sysfs_streq(buf, "1kohm_to_gnd"))
-> -		st->pwr_down_mode = AD5624R_LDAC_PWRDN_1K;
-> -	else if (sysfs_streq(buf, "100kohm_to_gnd"))
-> -		st->pwr_down_mode = AD5624R_LDAC_PWRDN_100K;
-> -	else if (sysfs_streq(buf, "three_state"))
-> -		st->pwr_down_mode = AD5624R_LDAC_PWRDN_3STATE;
-> -	else
-> -		ret = -EINVAL;
-> +	st->pwr_down_mode = mode;
->  
-> -	return ret ? ret : len;
-> +	return 0;
->  }
->  
-> -static ssize_t ad5624r_read_dac_powerdown(struct device *dev,
-> -					   struct device_attribute *attr,
-> -					   char *buf)
-> +static const struct iio_enum ad5624r_powerdown_mode_enum = {
-> +	.items = ad5624r_powerdown_modes,
-> +	.num_items = ARRAY_SIZE(ad5624r_powerdown_modes),
-> +	.get = ad5624r_get_powerdown_mode,
-> +	.set = ad5624r_set_powerdown_mode,
-> +};
-> +
-> +static ssize_t ad5624r_read_dac_powerdown(struct iio_dev *indio_dev,
-> +	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
->  {
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct ad5624r_state *st = iio_priv(indio_dev);
-> -	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  
->  	return sprintf(buf, "%d\n",
-> -			!!(st->pwr_down_mask & (1 << this_attr->address)));
-> +			!!(st->pwr_down_mask & (1 << chan->channel)));
->  }
->  
-> -static ssize_t ad5624r_write_dac_powerdown(struct device *dev,
-> -					    struct device_attribute *attr,
-> -					    const char *buf, size_t len)
-> +static ssize_t ad5624r_write_dac_powerdown(struct iio_dev *indio_dev,
-> +	uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
-> +	size_t len)
->  {
->  	long readin;
->  	int ret;
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct ad5624r_state *st = iio_priv(indio_dev);
-> -	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  
->  	ret = strict_strtol(buf, 10, &readin);
->  	if (ret)
->  		return ret;
->  
->  	if (readin == 1)
-> -		st->pwr_down_mask |= (1 << this_attr->address);
-> +		st->pwr_down_mask |= (1 << chan->channel);
->  	else if (!readin)
-> -		st->pwr_down_mask &= ~(1 << this_attr->address);
-> +		st->pwr_down_mask &= ~(1 << chan->channel);
->  	else
->  		ret = -EINVAL;
->  
-> @@ -209,47 +154,75 @@ static ssize_t ad5624r_write_dac_powerdown(struct device *dev,
->  	return ret ? ret : len;
->  }
->  
-> -static IIO_DEVICE_ATTR(out_voltage_powerdown_mode, S_IRUGO |
-> -			S_IWUSR, ad5624r_read_powerdown_mode,
-> -			ad5624r_write_powerdown_mode, 0);
-> -
-> -static IIO_CONST_ATTR(out_voltage_powerdown_mode_available,
-> -			"1kohm_to_gnd 100kohm_to_gnd three_state");
-> -
-> -#define IIO_DEV_ATTR_DAC_POWERDOWN(_num, _show, _store, _addr)		\
-> -	IIO_DEVICE_ATTR(out_voltage##_num##_powerdown,			\
-> -			S_IRUGO | S_IWUSR, _show, _store, _addr)
-> -
-> -static IIO_DEV_ATTR_DAC_POWERDOWN(0, ad5624r_read_dac_powerdown,
-> -				   ad5624r_write_dac_powerdown, 0);
-> -static IIO_DEV_ATTR_DAC_POWERDOWN(1, ad5624r_read_dac_powerdown,
-> -				   ad5624r_write_dac_powerdown, 1);
-> -static IIO_DEV_ATTR_DAC_POWERDOWN(2, ad5624r_read_dac_powerdown,
-> -				   ad5624r_write_dac_powerdown, 2);
-> -static IIO_DEV_ATTR_DAC_POWERDOWN(3, ad5624r_read_dac_powerdown,
-> -				   ad5624r_write_dac_powerdown, 3);
-> -
-> -static struct attribute *ad5624r_attributes[] = {
-> -	&iio_dev_attr_out_voltage0_powerdown.dev_attr.attr,
-> -	&iio_dev_attr_out_voltage1_powerdown.dev_attr.attr,
-> -	&iio_dev_attr_out_voltage2_powerdown.dev_attr.attr,
-> -	&iio_dev_attr_out_voltage3_powerdown.dev_attr.attr,
-> -	&iio_dev_attr_out_voltage_powerdown_mode.dev_attr.attr,
-> -	&iio_const_attr_out_voltage_powerdown_mode_available.dev_attr.attr,
-> -	NULL,
-> -};
-> -
-> -static const struct attribute_group ad5624r_attribute_group = {
-> -	.attrs = ad5624r_attributes,
-> -};
-> -
->  static const struct iio_info ad5624r_info = {
->  	.write_raw = ad5624r_write_raw,
->  	.read_raw = ad5624r_read_raw,
-> -	.attrs = &ad5624r_attribute_group,
->  	.driver_module = THIS_MODULE,
->  };
->  
-> +static const struct iio_chan_spec_ext_info ad5624r_ext_info[] = {
-> +	{
-> +		.name = "powerdown",
-> +		.read = ad5624r_read_dac_powerdown,
-> +		.write = ad5624r_write_dac_powerdown,
-> +	},
-> +	IIO_ENUM("powerdown_mode", true, &ad5624r_powerdown_mode_enum),
-> +	IIO_ENUM_AVAILABLE("powerdown_mode", &ad5624r_powerdown_mode_enum),
-> +	{ },
-> +};
-> +
-> +#define AD5624R_CHANNEL(_chan, _bits) { \
-> +	.type = IIO_VOLTAGE, \
-> +	.indexed = 1, \
-> +	.output = 1, \
-> +	.channel = (_chan), \
-> +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
-> +		     IIO_CHAN_INFO_SCALE_SHARED_BIT, \
-> +	.address = (_chan), \
-> +	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits)), \
-> +	.ext_info = ad5624r_ext_info, \
-> +}
-> +
-> +#define DECLARE_AD5624R_CHANNELS(_name, _bits) \
-> +	const struct iio_chan_spec _name##_channels[] = { \
-> +		AD5624R_CHANNEL(0, _bits), \
-> +		AD5624R_CHANNEL(1, _bits), \
-> +		AD5624R_CHANNEL(2, _bits), \
-> +		AD5624R_CHANNEL(3, _bits), \
-> +}
-> +
-> +static DECLARE_AD5624R_CHANNELS(ad5624r, 12);
-> +static DECLARE_AD5624R_CHANNELS(ad5644r, 14);
-> +static DECLARE_AD5624R_CHANNELS(ad5664r, 16);
-> +
-> +static const struct ad5624r_chip_info ad5624r_chip_info_tbl[] = {
-> +	[ID_AD5624R3] = {
-> +		.channels = ad5624r_channels,
-> +		.int_vref_mv = 1250,
-> +	},
-> +	[ID_AD5624R5] = {
-> +		.channels = ad5624r_channels,
-> +		.int_vref_mv = 2500,
-> +	},
-> +	[ID_AD5644R3] = {
-> +		.channels = ad5644r_channels,
-> +		.int_vref_mv = 1250,
-> +	},
-> +	[ID_AD5644R5] = {
-> +		.channels = ad5644r_channels,
-> +		.int_vref_mv = 2500,
-> +	},
-> +	[ID_AD5664R3] = {
-> +		.channels = ad5664r_channels,
-> +		.int_vref_mv = 1250,
-> +	},
-> +	[ID_AD5664R5] = {
-> +		.channels = ad5664r_channels,
-> +		.int_vref_mv = 2500,
-> +	},
-> +};
-> +
-one too many blank lines.
-> +
->  static int __devinit ad5624r_probe(struct spi_device *spi)
->  {
->  	struct ad5624r_state *st;
+Use extended channel attributes instead of raw sysfs files for the additional
+channel attributes. This allows us to remove some boilerplate code.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/dac/ad5504.c |  164 ++++++++++++++------------------------
+ 1 file changed, 58 insertions(+), 106 deletions(-)
+
+diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
+index db84d85..07b31f4 100644
+--- a/drivers/staging/iio/dac/ad5504.c
++++ b/drivers/staging/iio/dac/ad5504.c
+@@ -22,24 +22,6 @@
+ 
+ #include "ad5504.h"
+ 
+-#define AD5504_CHANNEL(_chan) { \
+-	.type = IIO_VOLTAGE, \
+-	.indexed = 1, \
+-	.output = 1, \
+-	.channel = (_chan), \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		     IIO_CHAN_INFO_SCALE_SHARED_BIT, \
+-	.address = AD5504_ADDR_DAC(_chan), \
+-	.scan_type = IIO_ST('u', 12, 16, 0), \
+-}
+-
+-static const struct iio_chan_spec ad5504_channels[] = {
+-	AD5504_CHANNEL(0),
+-	AD5504_CHANNEL(1),
+-	AD5504_CHANNEL(2),
+-	AD5504_CHANNEL(3),
+-};
+-
+ static int ad5504_spi_write(struct spi_device *spi, u8 addr, u16 val)
+ {
+ 	u16 tmp = cpu_to_be16(AD5504_CMD_WRITE |
+@@ -122,65 +104,60 @@ static int ad5504_write_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
+-static ssize_t ad5504_read_powerdown_mode(struct device *dev,
+-				      struct device_attribute *attr, char *buf)
++static const char * const ad5504_powerdown_modes[] = {
++	"20kohm_to_gnd",
++	"three_state",
++};
++
++static int ad5504_get_powerdown_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+ 
+-	const char mode[][14] = {"20kohm_to_gnd", "three_state"};
+-
+-	return sprintf(buf, "%s\n", mode[st->pwr_down_mode]);
++	return st->pwr_down_mode;
+ }
+ 
+-static ssize_t ad5504_write_powerdown_mode(struct device *dev,
+-				       struct device_attribute *attr,
+-				       const char *buf, size_t len)
++static int ad5504_set_powerdown_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, unsigned int mode)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+-	int ret;
+-
+-	if (sysfs_streq(buf, "20kohm_to_gnd"))
+-		st->pwr_down_mode = AD5504_DAC_PWRDN_20K;
+-	else if (sysfs_streq(buf, "three_state"))
+-		st->pwr_down_mode = AD5504_DAC_PWRDN_3STATE;
+-	else
+-		ret = -EINVAL;
+ 
+-	return ret ? ret : len;
++	st->pwr_down_mode = mode;
++	return 0;
+ }
+ 
+-static ssize_t ad5504_read_dac_powerdown(struct device *dev,
+-					   struct device_attribute *attr,
+-					   char *buf)
++static const struct iio_enum ad5504_powerdown_mode_enum = {
++	.items = ad5504_powerdown_modes,
++	.num_items = ARRAY_SIZE(ad5504_powerdown_modes),
++	.get = ad5504_get_powerdown_mode,
++	.set = ad5504_set_powerdown_mode,
++};
++
++static ssize_t ad5504_read_dac_powerdown(struct iio_dev *indio_dev,
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 
+ 	return sprintf(buf, "%d\n",
+-			!(st->pwr_down_mask & (1 << this_attr->address)));
++			!(st->pwr_down_mask & (1 << chan->channel)));
+ }
+ 
+-static ssize_t ad5504_write_dac_powerdown(struct device *dev,
+-					    struct device_attribute *attr,
+-					    const char *buf, size_t len)
++static ssize_t ad5504_write_dac_powerdown(struct iio_dev *indio_dev,
++	uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
++	size_t len)
+ {
+ 	long readin;
+ 	int ret;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 
+ 	ret = strict_strtol(buf, 10, &readin);
+ 	if (ret)
+ 		return ret;
+ 
+ 	if (readin == 0)
+-		st->pwr_down_mask |= (1 << this_attr->address);
++		st->pwr_down_mask |= (1 << chan->channel);
+ 	else if (readin == 1)
+-		st->pwr_down_mask &= ~(1 << this_attr->address);
++		st->pwr_down_mask &= ~(1 << chan->channel);
+ 	else
+ 		ret = -EINVAL;
+ 
+@@ -194,50 +171,6 @@ static ssize_t ad5504_write_dac_powerdown(struct device *dev,
+ 	return ret ? ret : len;
+ }
+ 
+-static IIO_DEVICE_ATTR(out_voltage_powerdown_mode, S_IRUGO |
+-			S_IWUSR, ad5504_read_powerdown_mode,
+-			ad5504_write_powerdown_mode, 0);
+-
+-static IIO_CONST_ATTR(out_voltage_powerdown_mode_available,
+-			"20kohm_to_gnd three_state");
+-
+-#define IIO_DEV_ATTR_DAC_POWERDOWN(_num, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(out_voltage##_num##_powerdown,			\
+-			S_IRUGO | S_IWUSR, _show, _store, _addr)
+-static IIO_DEV_ATTR_DAC_POWERDOWN(0, ad5504_read_dac_powerdown,
+-				   ad5504_write_dac_powerdown, 0);
+-static IIO_DEV_ATTR_DAC_POWERDOWN(1, ad5504_read_dac_powerdown,
+-				   ad5504_write_dac_powerdown, 1);
+-static IIO_DEV_ATTR_DAC_POWERDOWN(2, ad5504_read_dac_powerdown,
+-				   ad5504_write_dac_powerdown, 2);
+-static IIO_DEV_ATTR_DAC_POWERDOWN(3, ad5504_read_dac_powerdown,
+-				   ad5504_write_dac_powerdown, 3);
+-
+-static struct attribute *ad5504_attributes[] = {
+-	&iio_dev_attr_out_voltage0_powerdown.dev_attr.attr,
+-	&iio_dev_attr_out_voltage1_powerdown.dev_attr.attr,
+-	&iio_dev_attr_out_voltage2_powerdown.dev_attr.attr,
+-	&iio_dev_attr_out_voltage3_powerdown.dev_attr.attr,
+-	&iio_dev_attr_out_voltage_powerdown_mode.dev_attr.attr,
+-	&iio_const_attr_out_voltage_powerdown_mode_available.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ad5504_attribute_group = {
+-	.attrs = ad5504_attributes,
+-};
+-
+-static struct attribute *ad5501_attributes[] = {
+-	&iio_dev_attr_out_voltage0_powerdown.dev_attr.attr,
+-	&iio_dev_attr_out_voltage_powerdown_mode.dev_attr.attr,
+-	&iio_const_attr_out_voltage_powerdown_mode_available.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ad5501_attribute_group = {
+-	.attrs = ad5501_attributes,
+-};
+-
+ static IIO_CONST_ATTR(temp0_thresh_rising_value, "110000");
+ static IIO_CONST_ATTR(temp0_thresh_rising_en, "1");
+ 
+@@ -267,17 +200,38 @@ static irqreturn_t ad5504_event_handler(int irq, void *private)
+ static const struct iio_info ad5504_info = {
+ 	.write_raw = ad5504_write_raw,
+ 	.read_raw = ad5504_read_raw,
+-	.attrs = &ad5504_attribute_group,
+ 	.event_attrs = &ad5504_ev_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+-static const struct iio_info ad5501_info = {
+-	.write_raw = ad5504_write_raw,
+-	.read_raw = ad5504_read_raw,
+-	.attrs = &ad5501_attribute_group,
+-	.event_attrs = &ad5504_ev_attribute_group,
+-	.driver_module = THIS_MODULE,
++static const struct iio_chan_spec_ext_info ad5504_ext_info[] = {
++	{
++		.name = "powerdown",
++		.read = ad5504_read_dac_powerdown,
++		.write = ad5504_write_dac_powerdown,
++	},
++	IIO_ENUM("powerdown_mode", true, &ad5504_powerdown_mode_enum),
++	IIO_ENUM_AVAILABLE("powerdown_mode", &ad5504_powerdown_mode_enum),
++	{ },
++};
++
++#define AD5504_CHANNEL(_chan) { \
++	.type = IIO_VOLTAGE, \
++	.indexed = 1, \
++	.output = 1, \
++	.channel = (_chan), \
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
++		     IIO_CHAN_INFO_SCALE_SHARED_BIT, \
++	.address = AD5504_ADDR_DAC(_chan), \
++	.scan_type = IIO_ST('u', 12, 16, 0), \
++	.ext_info = ad5504_ext_info, \
++}
++
++static const struct iio_chan_spec ad5504_channels[] = {
++	AD5504_CHANNEL(0),
++	AD5504_CHANNEL(1),
++	AD5504_CHANNEL(2),
++	AD5504_CHANNEL(3),
+ };
+ 
+ static int __devinit ad5504_probe(struct spi_device *spi)
+@@ -315,13 +269,11 @@ static int __devinit ad5504_probe(struct spi_device *spi)
+ 	st->spi = spi;
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->name = spi_get_device_id(st->spi)->name;
+-	if (spi_get_device_id(st->spi)->driver_data == ID_AD5501) {
+-		indio_dev->info = &ad5501_info;
++	indio_dev->info = &ad5504_info;
++	if (spi_get_device_id(st->spi)->driver_data == ID_AD5501)
+ 		indio_dev->num_channels = 1;
+-	} else {
+-		indio_dev->info = &ad5504_info;
++	else
+ 		indio_dev->num_channels = 4;
+-	}
+ 	indio_dev->channels = ad5504_channels;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-- 
+1.7.10
