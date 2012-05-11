@@ -1,224 +1,152 @@
 Return-Path: <lars@metafoo.de>
 From: Lars-Peter Clausen <lars@metafoo.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
-	devel@driverdev.osuosl.org,
-	linux-iio@vger.kernel.org,
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 02/23] iio: Use dev_to_iio_dev()
-Date: Sat, 12 May 2012 15:39:33 +0200
-Message-Id: <1336829994-7857-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1336829994-7857-1-git-send-email-lars@metafoo.de>
-References: <1336829994-7857-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH 1/3] staging:iio:dac: Remove unused dac.h includes
+Date: Fri, 11 May 2012 19:04:20 +0200
+Message-Id: <1336755862-24184-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Replace open-coded instances of getting a iio_dev struct from a device struct
-with dev_to_iio_dev().
+None of these drivers use anything from dac.h, so remove the include.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/iio/industrialio-buffer.c  |   16 ++++++++--------
- drivers/iio/industrialio-core.c    |   12 ++++++------
- drivers/iio/industrialio-event.c   |    8 ++++----
- drivers/iio/industrialio-trigger.c |    4 ++--
- 4 files changed, 20 insertions(+), 20 deletions(-)
+ drivers/staging/iio/dac/ad5064.c      |    1 -
+ drivers/staging/iio/dac/ad5360.c      |    1 -
+ drivers/staging/iio/dac/ad5380.c      |    2 --
+ drivers/staging/iio/dac/ad5421.c      |    1 -
+ drivers/staging/iio/dac/ad5446.c      |    1 -
+ drivers/staging/iio/dac/ad5504.c      |    2 +-
+ drivers/staging/iio/dac/ad5624r_spi.c |    2 +-
+ drivers/staging/iio/dac/ad5686.c      |    1 -
+ drivers/staging/iio/dac/ad5764.c      |    1 -
+ drivers/staging/iio/dac/ad5791.c      |    2 +-
+ 10 files changed, 3 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index b5b2c38..ac185b8 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -105,7 +105,7 @@ static ssize_t iio_scan_el_show(struct device *dev,
- 				char *buf)
- {
- 	int ret;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
+index 2394f05..276af02 100644
+--- a/drivers/staging/iio/dac/ad5064.c
++++ b/drivers/staging/iio/dac/ad5064.c
+@@ -18,7 +18,6 @@
  
- 	ret = test_bit(to_iio_dev_attr(attr)->address,
- 		       indio_dev->buffer->scan_mask);
-@@ -126,7 +126,7 @@ static ssize_t iio_scan_el_store(struct device *dev,
- {
- 	int ret;
- 	bool state;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_buffer *buffer = indio_dev->buffer;
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include "dac.h"
  
-@@ -162,7 +162,7 @@ static ssize_t iio_scan_el_ts_show(struct device *dev,
- 				   struct device_attribute *attr,
- 				   char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	return sprintf(buf, "%d\n", indio_dev->buffer->scan_timestamp);
- }
+ #define AD5064_MAX_DAC_CHANNELS			8
+ #define AD5064_MAX_VREFS			4
+diff --git a/drivers/staging/iio/dac/ad5360.c b/drivers/staging/iio/dac/ad5360.c
+index 26cac42..0304079 100644
+--- a/drivers/staging/iio/dac/ad5360.c
++++ b/drivers/staging/iio/dac/ad5360.c
+@@ -18,7 +18,6 @@
  
-@@ -172,7 +172,7 @@ static ssize_t iio_scan_el_ts_store(struct device *dev,
- 				    size_t len)
- {
- 	int ret;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	bool state;
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include "dac.h"
  
- 	ret = strtobool(buf, &state);
-@@ -352,7 +352,7 @@ ssize_t iio_buffer_read_length(struct device *dev,
- 			       struct device_attribute *attr,
- 			       char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_buffer *buffer = indio_dev->buffer;
+ #define AD5360_CMD(x)				((x) << 22)
+ #define AD5360_ADDR(x)				((x) << 16)
+diff --git a/drivers/staging/iio/dac/ad5380.c b/drivers/staging/iio/dac/ad5380.c
+index 7a35cc6..5dfb445 100644
+--- a/drivers/staging/iio/dac/ad5380.c
++++ b/drivers/staging/iio/dac/ad5380.c
+@@ -20,8 +20,6 @@
  
- 	if (buffer->access->get_length)
-@@ -370,7 +370,7 @@ ssize_t iio_buffer_write_length(struct device *dev,
- {
- 	int ret;
- 	ulong val;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_buffer *buffer = indio_dev->buffer;
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include "dac.h"
+-
  
- 	ret = strict_strtoul(buf, 10, &val);
-@@ -403,7 +403,7 @@ ssize_t iio_buffer_store_enable(struct device *dev,
- 	int ret;
- 	bool requested_state, current_state;
- 	int previous_mode;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_buffer *buffer = indio_dev->buffer;
+ #define AD5380_REG_DATA(x)	(((x) << 2) | 3)
+ #define AD5380_REG_OFFSET(x)	(((x) << 2) | 2)
+diff --git a/drivers/staging/iio/dac/ad5421.c b/drivers/staging/iio/dac/ad5421.c
+index ffbd4c2..ea2f83b 100644
+--- a/drivers/staging/iio/dac/ad5421.c
++++ b/drivers/staging/iio/dac/ad5421.c
+@@ -19,7 +19,6 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/events.h>
+-#include "dac.h"
+ #include "ad5421.h"
  
- 	mutex_lock(&indio_dev->mlock);
-@@ -489,7 +489,7 @@ ssize_t iio_buffer_show_enable(struct device *dev,
- 			       struct device_attribute *attr,
- 			       char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	return sprintf(buf, "%d\n", iio_buffer_enabled(indio_dev));
- }
- EXPORT_SYMBOL(iio_buffer_show_enable);
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index b39a587..3bdf5b2 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -264,7 +264,7 @@ static ssize_t iio_read_channel_ext_info(struct device *dev,
- 				     struct device_attribute *attr,
- 				     char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	const struct iio_chan_spec_ext_info *ext_info;
  
-@@ -278,7 +278,7 @@ static ssize_t iio_write_channel_ext_info(struct device *dev,
- 				     const char *buf,
- 					 size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	const struct iio_chan_spec_ext_info *ext_info;
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index b6b7eec..f769b74 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -20,7 +20,6 @@
  
-@@ -292,7 +292,7 @@ static ssize_t iio_read_channel_info(struct device *dev,
- 				     struct device_attribute *attr,
- 				     char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int val, val2;
- 	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
-@@ -322,7 +322,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 				      const char *buf,
- 				      size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int ret, integer = 0, fract = 0, fract_mult = 100000;
- 	bool integer_part = true, negative = false;
-@@ -630,7 +630,7 @@ static ssize_t iio_show_dev_name(struct device *dev,
- 				 struct device_attribute *attr,
- 				 char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	return sprintf(buf, "%s\n", indio_dev->name);
- }
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include "dac.h"
  
-@@ -716,7 +716,7 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
+ #include "ad5446.h"
  
- static void iio_dev_release(struct device *device)
- {
--	struct iio_dev *indio_dev = container_of(device, struct iio_dev, dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(device);
- 	cdev_del(&indio_dev->chrdev);
- 	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
- 		iio_device_unregister_trigger_consumer(indio_dev);
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index 5fcf50b..b49059d 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -186,7 +186,7 @@ static ssize_t iio_ev_state_store(struct device *dev,
- 				  const char *buf,
- 				  size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int ret;
- 	bool val;
-@@ -205,7 +205,7 @@ static ssize_t iio_ev_state_show(struct device *dev,
- 				 struct device_attribute *attr,
- 				 char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int val = indio_dev->info->read_event_config(indio_dev,
- 						     this_attr->address);
-@@ -220,7 +220,7 @@ static ssize_t iio_ev_value_show(struct device *dev,
- 				 struct device_attribute *attr,
- 				 char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int val, ret;
+diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
+index 19e65e1..07b31f4 100644
+--- a/drivers/staging/iio/dac/ad5504.c
++++ b/drivers/staging/iio/dac/ad5504.c
+@@ -19,7 +19,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/events.h>
+-#include "dac.h"
++
+ #include "ad5504.h"
  
-@@ -237,7 +237,7 @@ static ssize_t iio_ev_value_store(struct device *dev,
- 				  const char *buf,
- 				  size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	unsigned long val;
- 	int ret;
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index 1dbd7b8..0f582df 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -310,7 +310,7 @@ static ssize_t iio_trigger_read_current(struct device *dev,
- 					struct device_attribute *attr,
- 					char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ static int ad5504_spi_write(struct spi_device *spi, u8 addr, u16 val)
+diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
+index 2ce0544..ef6a320 100644
+--- a/drivers/staging/iio/dac/ad5624r_spi.c
++++ b/drivers/staging/iio/dac/ad5624r_spi.c
+@@ -18,7 +18,7 @@
  
- 	if (indio_dev->trig)
- 		return sprintf(buf, "%s\n", indio_dev->trig->name);
-@@ -329,7 +329,7 @@ static ssize_t iio_trigger_write_current(struct device *dev,
- 					 const char *buf,
- 					 size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_trigger *oldtrig = indio_dev->trig;
- 	struct iio_trigger *trig;
- 	int ret;
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include "dac.h"
++
+ #include "ad5624r.h"
+ 
+ static int ad5624r_spi_write(struct spi_device *spi,
+diff --git a/drivers/staging/iio/dac/ad5686.c b/drivers/staging/iio/dac/ad5686.c
+index a3881d7..cf833c9 100644
+--- a/drivers/staging/iio/dac/ad5686.c
++++ b/drivers/staging/iio/dac/ad5686.c
+@@ -18,7 +18,6 @@
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include "dac.h"
+ 
+ #define AD5686_DAC_CHANNELS			4
+ 
+diff --git a/drivers/staging/iio/dac/ad5764.c b/drivers/staging/iio/dac/ad5764.c
+index 03dbd93..ffce304 100644
+--- a/drivers/staging/iio/dac/ad5764.c
++++ b/drivers/staging/iio/dac/ad5764.c
+@@ -18,7 +18,6 @@
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include "dac.h"
+ 
+ #define AD5764_REG_SF_NOP			0x0
+ #define AD5764_REG_SF_CONFIG			0x1
+diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
+index ad33725..4e955ed 100644
+--- a/drivers/staging/iio/dac/ad5791.c
++++ b/drivers/staging/iio/dac/ad5791.c
+@@ -19,7 +19,7 @@
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include "dac.h"
++
+ #include "ad5791.h"
+ 
+ static int ad5791_spi_write(struct spi_device *spi, u8 addr, u32 val)
 -- 
 1.7.10
