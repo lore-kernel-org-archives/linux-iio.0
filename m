@@ -1,16 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from tx2ehsobe005.messaging.microsoft.com ([65.55.88.15]:33025 "EHLO
-	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1758155Ab2EKJgz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 May 2012 05:36:55 -0400
+Received: from ch1ehsobe001.messaging.microsoft.com ([216.32.181.181]:10968
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1758155Ab2EKJg6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 May 2012 05:36:58 -0400
 From: <michael.hennerich@analog.com>
 To: <gregkh@linuxfoundation.org>
 CC: <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
 	<device-drivers-devel@blackfin.uclinux.org>,
 	Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 1/3] iio: core: introduce dB scle: IIO_VAL_INT_PLUS_MICRO_DB
-Date: Fri, 11 May 2012 11:36:52 +0200
-Message-ID: <1336729014-26855-1-git-send-email-michael.hennerich@analog.com>
+Subject: [PATCH 3/3] iio: amplifiers: New driver for AD8366 Dual-Digital Variable Gain Amplifier
+Date: Fri, 11 May 2012 11:36:54 +0200
+Message-ID: <1336729014-26855-3-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1336729014-26855-1-git-send-email-michael.hennerich@analog.com>
+References: <1336729014-26855-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
@@ -18,68 +20,315 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
+Changes since V1:
+
+Apply review feedback:
+	Introduce and use IIO_CHAN_INFO_HARDWAREGAIN
+	Introduce and use Use IIO_VAL_INT_PLUS_MICRO_DB
+
+Modify out of staging include paths.
+Convert to new iio core API naming.
+
+Changes since V2:
+
+more sanity checking in write_raw
+
 Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Jonathan Cameron<jic23@kernel.org>
 ---
- drivers/iio/industrialio-core.c |   19 +++++++++++++------
- include/linux/iio/types.h       |    1 +
- 2 files changed, 14 insertions(+), 6 deletions(-)
+ drivers/iio/Kconfig             |    2 +
+ drivers/iio/Makefile            |    2 +
+ drivers/iio/amplifiers/Kconfig  |   17 +++
+ drivers/iio/amplifiers/Makefile |    5 +
+ drivers/iio/amplifiers/ad8366.c |  222 +++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 248 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/iio/amplifiers/Kconfig
+ create mode 100644 drivers/iio/amplifiers/Makefile
+ create mode 100644 drivers/iio/amplifiers/ad8366.c
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index b39a587..425cd4c 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -295,26 +295,33 @@ static ssize_t iio_read_channel_info(struct device *dev,
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int val, val2;
-+	bool scale_db = false;
- 	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
- 					    &val, &val2, this_attr->address);
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 3ab7d48..bb1e35c 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -48,4 +48,6 @@ config IIO_CONSUMERS_PER_TRIGGER
+ 	This value controls the maximum number of consumers that a
+ 	given trigger may handle. Default is 2.
 
- 	if (ret < 0)
- 		return ret;
++source "drivers/iio/amplifiers/Kconfig"
++
+ endif # IIO
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index d5fc57d..5552491 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -8,3 +8,5 @@ industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+ industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
 
--	if (ret == IIO_VAL_INT)
-+	switch (ret) {
-+	case IIO_VAL_INT:
- 		return sprintf(buf, "%d\n", val);
--	else if (ret == IIO_VAL_INT_PLUS_MICRO) {
-+	case IIO_VAL_INT_PLUS_MICRO_DB:
-+		scale_db = true;
-+	case IIO_VAL_INT_PLUS_MICRO:
- 		if (val2 < 0)
--			return sprintf(buf, "-%d.%06u\n", val, -val2);
-+			return sprintf(buf, "-%d.%06u%s\n", val, -val2,
-+				scale_db ? " dB" : "");
- 		else
--			return sprintf(buf, "%d.%06u\n", val, val2);
--	} else if (ret == IIO_VAL_INT_PLUS_NANO) {
-+			return sprintf(buf, "%d.%06u%s\n", val, val2,
-+				scale_db ? " dB" : "");
-+	case IIO_VAL_INT_PLUS_NANO:
- 		if (val2 < 0)
- 			return sprintf(buf, "-%d.%09u\n", val, -val2);
- 		else
- 			return sprintf(buf, "%d.%09u\n", val, val2);
--	} else
+ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
++
++obj-y += amplifiers/
+diff --git a/drivers/iio/amplifiers/Kconfig b/drivers/iio/amplifiers/Kconfig
+new file mode 100644
+index 0000000..05d707e
+--- /dev/null
++++ b/drivers/iio/amplifiers/Kconfig
+@@ -0,0 +1,17 @@
++#
++# Gain Amplifiers, etc.
++#
++menu "Amplifiers"
++
++config AD8366
++	tristate "Analog Devices AD8366 VGA"
++	depends on SPI
++	select BITREVERSE
++	help
++	  Say yes here to build support for Analog Devices AD8366
++	  SPI Dual-Digital Variable Gain Amplifier (VGA).
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad8366.
++
++endmenu
+diff --git a/drivers/iio/amplifiers/Makefile b/drivers/iio/amplifiers/Makefile
+new file mode 100644
+index 0000000..a6ca366
+--- /dev/null
++++ b/drivers/iio/amplifiers/Makefile
+@@ -0,0 +1,5 @@
++#
++# Makefile iio/amplifiers
++#
++
++obj-$(CONFIG_AD8366) += ad8366.o
+diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
+new file mode 100644
+index 0000000..d8281cd
+--- /dev/null
++++ b/drivers/iio/amplifiers/ad8366.c
+@@ -0,0 +1,222 @@
++/*
++ * AD8366 SPI Dual-Digital Variable Gain Amplifier (VGA)
++ *
++ * Copyright 2012 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/spi/spi.h>
++#include <linux/regulator/consumer.h>
++#include <linux/err.h>
++#include <linux/module.h>
++#include <linux/bitrev.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++struct ad8366_state {
++	struct spi_device	*spi;
++	struct regulator	*reg;
++	unsigned char		ch[2];
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++	unsigned char		data[2] ____cacheline_aligned;
++};
++
++static int ad8366_write(struct iio_dev *indio_dev,
++			unsigned char ch_a, char unsigned ch_b)
++{
++	struct ad8366_state *st = iio_priv(indio_dev);
++	int ret;
++
++	ch_a = bitrev8(ch_a & 0x3F);
++	ch_b = bitrev8(ch_b & 0x3F);
++
++	st->data[0] = ch_b >> 4;
++	st->data[1] = (ch_b << 4) | (ch_a >> 2);
++
++	ret = spi_write(st->spi, st->data, ARRAY_SIZE(st->data));
++	if (ret < 0)
++		dev_err(&indio_dev->dev, "write failed (%d)", ret);
++
++	return ret;
++}
++
++static int ad8366_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val,
++			   int *val2,
++			   long m)
++{
++	struct ad8366_state *st = iio_priv(indio_dev);
++	int ret;
++	unsigned code;
++
++	mutex_lock(&indio_dev->mlock);
++	switch (m) {
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		code = st->ch[chan->channel];
++
++		/* Values in dB */
++		code = code * 253 + 4500;
++		*val = code / 1000;
++		*val2 = (code % 1000) * 1000;
++
++		ret = IIO_VAL_INT_PLUS_MICRO_DB;
++		break;
 +	default:
- 		return 0;
++		ret = -EINVAL;
 +	}
- }
-
- static ssize_t iio_write_channel_info(struct device *dev,
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index a471fd5..1b073b1 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -50,5 +50,6 @@ enum iio_modifier {
- #define IIO_VAL_INT 1
- #define IIO_VAL_INT_PLUS_MICRO 2
- #define IIO_VAL_INT_PLUS_NANO 3
-+#define IIO_VAL_INT_PLUS_MICRO_DB 4
-
- #endif /* _IIO_TYPES_H_ */
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++};
++
++static int ad8366_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val,
++			    int val2,
++			    long mask)
++{
++	struct ad8366_state *st = iio_priv(indio_dev);
++	unsigned code;
++	int ret;
++
++	if (val < 0 || val2 < 0)
++		return -EINVAL;
++
++	/* Values in dB */
++	code = (((u8)val * 1000) + ((u32)val2 / 1000));
++
++	if (code > 20500 || code < 4500)
++		return -EINVAL;
++
++	code = (code - 4500) / 253;
++
++	mutex_lock(&indio_dev->mlock);
++	switch (mask) {
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		st->ch[chan->channel] = code;
++		ret = ad8366_write(indio_dev, st->ch[0], st->ch[1]);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static const struct iio_info ad8366_info = {
++	.read_raw = &ad8366_read_raw,
++	.write_raw = &ad8366_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++#define AD8366_CHAN(_channel) {				\
++	.type = IIO_VOLTAGE,				\
++	.output = 1,					\
++	.indexed = 1,					\
++	.channel = _channel,				\
++	.info_mask = IIO_CHAN_INFO_HARDWAREGAIN_SEPARATE_BIT,\
++}
++
++static const struct iio_chan_spec ad8366_channels[] = {
++	AD8366_CHAN(0),
++	AD8366_CHAN(1),
++};
++
++static int __devinit ad8366_probe(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev;
++	struct ad8366_state *st;
++	int ret;
++
++	indio_dev = iio_device_alloc(sizeof(*st));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++
++	st->reg = regulator_get(&spi->dev, "vcc");
++	if (!IS_ERR(st->reg)) {
++		ret = regulator_enable(st->reg);
++		if (ret)
++			goto error_put_reg;
++	}
++
++	spi_set_drvdata(spi, indio_dev);
++	st->spi = spi;
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->info = &ad8366_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ad8366_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ad8366_channels);
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_disable_reg;
++
++	ad8366_write(indio_dev, 0 , 0);
++
++	return 0;
++
++error_disable_reg:
++	if (!IS_ERR(st->reg))
++		regulator_disable(st->reg);
++error_put_reg:
++	if (!IS_ERR(st->reg))
++		regulator_put(st->reg);
++
++	iio_device_free(indio_dev);
++
++	return ret;
++}
++
++static int __devexit ad8366_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct ad8366_state *st = iio_priv(indio_dev);
++	struct regulator *reg = st->reg;
++
++	iio_device_unregister(indio_dev);
++
++	if (!IS_ERR(reg)) {
++		regulator_disable(reg);
++		regulator_put(reg);
++	}
++
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++static const struct spi_device_id ad8366_id[] = {
++	{"ad8366", 0},
++	{}
++};
++
++static struct spi_driver ad8366_driver = {
++	.driver = {
++		.name	= KBUILD_MODNAME,
++		.owner	= THIS_MODULE,
++	},
++	.probe		= ad8366_probe,
++	.remove		= __devexit_p(ad8366_remove),
++	.id_table	= ad8366_id,
++};
++
++module_spi_driver(ad8366_driver);
++
++MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
++MODULE_DESCRIPTION("Analog Devices AD8366 VGA");
++MODULE_LICENSE("GPL v2");
 --
 1.7.0.4
 
