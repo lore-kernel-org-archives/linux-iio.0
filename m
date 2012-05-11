@@ -1,130 +1,28 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FB14559.2080702@kernel.org>
-Date: Mon, 14 May 2012 18:48:09 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [RFC 2/8] staging:iio:dac:ad5064: Use iio_enum for powerdown
- modes
-References: <1336751635-7934-1-git-send-email-lars@metafoo.de> <1336751635-7934-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1336751635-7934-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([88.190.12.23]:47656 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759632Ab2EKNgH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 May 2012 09:36:07 -0400
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: gregkh@linuxfoundation.org
+Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	thomas@free-electrons.com, patrice.vilchez@atmel.com,
+	plagnioj@jcrosoft.com, jic23@kernel.org, nicolas.ferre@atmel.com
+Subject: [PATCHv5] Add ADC driver for Atmel G20, G45 and X5 boards
+Date: Fri, 11 May 2012 15:35:31 +0200
+Message-Id: <1336743340-4578-1-git-send-email-maxime.ripard@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 05/11/2012 04:53 PM, Lars-Peter Clausen wrote:
-> This allows us to remove some boilerplate code for comparing and formatting the
-> enum strings.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/dac/ad5064.c |   65 ++++++++++++--------------------------
->  1 file changed, 21 insertions(+), 44 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
-> index da0fa12..276af02 100644
-> --- a/drivers/staging/iio/dac/ad5064.c
-> +++ b/drivers/staging/iio/dac/ad5064.c
-> @@ -135,57 +135,42 @@ static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
->  	return ret;
->  }
->  
-> -static const char ad5064_powerdown_modes[][15] = {
-> -	[AD5064_LDAC_PWRDN_NONE]	= "",
-> -	[AD5064_LDAC_PWRDN_1K]		= "1kohm_to_gnd",
-> -	[AD5064_LDAC_PWRDN_100K]	= "100kohm_to_gnd",
-> -	[AD5064_LDAC_PWRDN_3STATE]	= "three_state",
-> +static const char * const ad5064_powerdown_modes[] = {
-> +	"1kohm_to_gnd",
-> +	"100kohm_to_gnd",
-> +	"three_state",
->  };
->  
-> -static ssize_t ad5064_read_powerdown_mode_available(struct iio_dev *indio_dev,
-> -	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
-> -{
-> -	return sprintf(buf, "%s %s %s\n", ad5064_powerdown_modes[1],
-> -		ad5064_powerdown_modes[2], ad5064_powerdown_modes[3]);
-> -}
-> -
-> -static ssize_t ad5064_read_powerdown_mode(struct iio_dev *indio_dev,
-> -	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
-> +static int ad5064_get_powerdown_mode(struct iio_dev *indio_dev,
-> +	const struct iio_chan_spec *chan)
->  {
->  	struct ad5064_state *st = iio_priv(indio_dev);
->  
-> -	return sprintf(buf, "%s\n",
-> -		ad5064_powerdown_modes[st->pwr_down_mode[chan->channel]]);
-> +	return st->pwr_down_mode[chan->channel] - 1;
->  }
->  
-> -static ssize_t ad5064_write_powerdown_mode(struct iio_dev *indio_dev,
-> -	uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
-> -	size_t len)
-> +static int ad5064_set_powerdown_mode(struct iio_dev *indio_dev,
-> +	const struct iio_chan_spec *chan, unsigned int mode)
->  {
->  	struct ad5064_state *st = iio_priv(indio_dev);
-> -	unsigned int mode, i;
->  	int ret;
->  
-> -	mode = 0;
-> -
-> -	for (i = 1; i < ARRAY_SIZE(ad5064_powerdown_modes); ++i) {
-> -		if (sysfs_streq(buf, ad5064_powerdown_modes[i])) {
-> -			mode = i;
-> -			break;
-> -		}
-> -	}
-> -	if (mode == 0)
-> -		return  -EINVAL;
-> -
->  	mutex_lock(&indio_dev->mlock);
-> -	st->pwr_down_mode[chan->channel] = mode;
-> +	st->pwr_down_mode[chan->channel] = mode + 1;
->  
->  	ret = ad5064_sync_powerdown_mode(st, chan->channel);
->  	mutex_unlock(&indio_dev->mlock);
->  
-> -	return ret ? ret : len;
-> +	return ret;
->  }
->  
-> +static const struct iio_enum ad5064_powerdown_mode_enum = {
-> +	.items = ad5064_powerdown_modes,
-> +	.num_items = ARRAY_SIZE(ad5064_powerdown_modes),
-> +	.get = ad5064_get_powerdown_mode,
-> +	.set = ad5064_set_powerdown_mode,
-> +};
-> +
->  static ssize_t ad5064_read_dac_powerdown(struct iio_dev *indio_dev,
->  	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
->  {
-> @@ -285,22 +270,14 @@ static const struct iio_info ad5064_info = {
->  	.driver_module = THIS_MODULE,
->  };
->  
-> -static struct iio_chan_spec_ext_info ad5064_ext_info[] = {
-> +static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
->  	{
->  		.name = "powerdown",
->  		.read = ad5064_read_dac_powerdown,
->  		.write = ad5064_write_dac_powerdown,
->  	},
-> -	{
-> -		.name = "powerdown_mode",
-> -		.read = ad5064_read_powerdown_mode,
-> -		.write = ad5064_write_powerdown_mode,
-> -	},
-> -	{
-> -		.name = "powerdown_mode_available",
-> -		.shared = true,
-> -		.read = ad5064_read_powerdown_mode_available,
-> -	},
-> +	IIO_ENUM("powerdown_mode", false, &ad5064_powerdown_mode_enum),
-> +	IIO_ENUM_AVAILABLE("powerdown_mode", &ad5064_powerdown_mode_enum),
->  	{ },
->  };
->  
+Hi Greg,
+
+Here is a patchset adding an IIO driver for various Atmel SoCs.
+As it relies on out-of-staging-IIO, which is still in staging-next, it
+seems that you should be the one merging it.
+
+As you can see, it got an acked-by all the maintainers involved in this
+patch, so it should be pretty good for inclusion.
+
+Thanks,
+Maxime
+
