@@ -1,108 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-184.synserver.de ([212.40.185.184]:1306 "EHLO
-	smtp-out-167.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754192Ab2EKLoL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 May 2012 07:44:11 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/2] iio: Fix potential use after free
-Date: Fri, 11 May 2012 13:46:56 +0200
-Message-Id: <1336736816-15678-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1336736816-15678-1-git-send-email-lars@metafoo.de>
-References: <1336736816-15678-1-git-send-email-lars@metafoo.de>
+Received: from tx2ehsobe005.messaging.microsoft.com ([65.55.88.15]:33025 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1758155Ab2EKJgz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 May 2012 05:36:55 -0400
+From: <michael.hennerich@analog.com>
+To: <gregkh@linuxfoundation.org>
+CC: <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+	<device-drivers-devel@blackfin.uclinux.org>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 1/3] iio: core: introduce dB scle: IIO_VAL_INT_PLUS_MICRO_DB
+Date: Fri, 11 May 2012 11:36:52 +0200
+Message-ID: <1336729014-26855-1-git-send-email-michael.hennerich@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-There is no guarantee that the last reference to the iio device has already been
-dropped when iio_device_free is called. This means that we can up calling
-iio_dev_release after iio_device_free which will lead to a use after free. As
-the general rule the struct containing the device should always be freed in the
-release callback.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-This is what this patch does it moves freeing the iio device struct as well as
-releasing the idr reference to the release callback. To ensure that the device
-is not freed before calling iio_device_free the device_unregister call in
-iio_device_unregister is broken apart. iio_device_unregister will now only call
-device_del to remove the device from the system and iio_device_free will call
-put_device to drop the reference we obtained in iio_devce_alloc.
-
-We also have to take care that calling iio_device_free without having called
-iio_device_register still works (i.e. this can happen if something failed during
-device initialization). For this to work properly two minor changes were
-necessary: channel_attr_list needs to be initialized in iio_device_alloc and we
-have to check whether the chrdev has been registered before releasing it in
-iio_device_release.
-
-This change also brings iio_device_unregister and iio_device_free more in sync
-with iio_device_register and iio_device_alloc which call device_add and
-device_initialize respectively.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Acked-by: Jonathan Cameron<jic23@kernel.org>
 ---
- drivers/iio/industrialio-core.c |   16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/iio/industrialio-core.c |   19 +++++++++++++------
+ include/linux/iio/types.h       |    1 +
+ 2 files changed, 14 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index b39a587..3b57f80 100644
+index b39a587..425cd4c 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -653,7 +653,6 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
- 	 * New channel registration method - relies on the fact a group does
- 	 * not need to be initialized if it is name is NULL.
- 	 */
--	INIT_LIST_HEAD(&indio_dev->channel_attr_list);
- 	if (indio_dev->channels)
- 		for (i = 0; i < indio_dev->num_channels; i++) {
- 			ret = iio_device_add_channel_sysfs(indio_dev,
-@@ -717,12 +716,16 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
- static void iio_dev_release(struct device *device)
- {
- 	struct iio_dev *indio_dev = container_of(device, struct iio_dev, dev);
--	cdev_del(&indio_dev->chrdev);
-+	if (indio_dev->chrdev.dev)
-+		cdev_del(&indio_dev->chrdev);
- 	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
- 		iio_device_unregister_trigger_consumer(indio_dev);
- 	iio_device_unregister_eventset(indio_dev);
- 	iio_device_unregister_sysfs(indio_dev);
- 	iio_device_unregister_debugfs(indio_dev);
-+
-+	ida_simple_remove(&iio_ida, indio_dev->id);
-+	kfree(indio_dev);
+@@ -295,26 +295,33 @@ static ssize_t iio_read_channel_info(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int val, val2;
++	bool scale_db = false;
+ 	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+ 					    &val, &val2, this_attr->address);
+
+ 	if (ret < 0)
+ 		return ret;
+
+-	if (ret == IIO_VAL_INT)
++	switch (ret) {
++	case IIO_VAL_INT:
+ 		return sprintf(buf, "%d\n", val);
+-	else if (ret == IIO_VAL_INT_PLUS_MICRO) {
++	case IIO_VAL_INT_PLUS_MICRO_DB:
++		scale_db = true;
++	case IIO_VAL_INT_PLUS_MICRO:
+ 		if (val2 < 0)
+-			return sprintf(buf, "-%d.%06u\n", val, -val2);
++			return sprintf(buf, "-%d.%06u%s\n", val, -val2,
++				scale_db ? " dB" : "");
+ 		else
+-			return sprintf(buf, "%d.%06u\n", val, val2);
+-	} else if (ret == IIO_VAL_INT_PLUS_NANO) {
++			return sprintf(buf, "%d.%06u%s\n", val, val2,
++				scale_db ? " dB" : "");
++	case IIO_VAL_INT_PLUS_NANO:
+ 		if (val2 < 0)
+ 			return sprintf(buf, "-%d.%09u\n", val, -val2);
+ 		else
+ 			return sprintf(buf, "%d.%09u\n", val, val2);
+-	} else
++	default:
+ 		return 0;
++	}
  }
- 
- static struct device_type iio_dev_type = {
-@@ -753,6 +756,7 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
- 		dev_set_drvdata(&dev->dev, (void *)dev);
- 		mutex_init(&dev->mlock);
- 		mutex_init(&dev->info_exist_lock);
-+		INIT_LIST_HEAD(&dev->channel_attr_list);
- 
- 		dev->id = ida_simple_get(&iio_ida, 0, 0, GFP_KERNEL);
- 		if (dev->id < 0) {
-@@ -770,10 +774,8 @@ EXPORT_SYMBOL(iio_device_alloc);
- 
- void iio_device_free(struct iio_dev *dev)
- {
--	if (dev) {
--		ida_simple_remove(&iio_ida, dev->id);
--		kfree(dev);
--	}
-+	if (dev)
-+		put_device(&dev->dev);
- }
- EXPORT_SYMBOL(iio_device_free);
- 
-@@ -894,7 +896,7 @@ void iio_device_unregister(struct iio_dev *indio_dev)
- 	mutex_lock(&indio_dev->info_exist_lock);
- 	indio_dev->info = NULL;
- 	mutex_unlock(&indio_dev->info_exist_lock);
--	device_unregister(&indio_dev->dev);
-+	device_del(&indio_dev->dev);
- }
- EXPORT_SYMBOL(iio_device_unregister);
- subsys_initcall(iio_init);
--- 
-1.7.10
+
+ static ssize_t iio_write_channel_info(struct device *dev,
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index a471fd5..1b073b1 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -50,5 +50,6 @@ enum iio_modifier {
+ #define IIO_VAL_INT 1
+ #define IIO_VAL_INT_PLUS_MICRO 2
+ #define IIO_VAL_INT_PLUS_NANO 3
++#define IIO_VAL_INT_PLUS_MICRO_DB 4
+
+ #endif /* _IIO_TYPES_H_ */
+--
+1.7.0.4
+
 
