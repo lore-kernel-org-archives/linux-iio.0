@@ -5,9 +5,9 @@ Cc: Jonathan Cameron <jic23@cam.ac.uk>,
 	devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 22/23] staging:iio:resolver: Use dev_to_iio_dev()
-Date: Sat, 12 May 2012 15:39:53 +0200
-Message-Id: <1336829994-7857-22-git-send-email-lars@metafoo.de>
+Subject: [PATCH 21/23] staging:iio:magnetometer: Use dev_to_iio_dev()
+Date: Sat, 12 May 2012 15:39:52 +0200
+Message-Id: <1336829994-7857-21-git-send-email-lars@metafoo.de>
 In-Reply-To: <1336829994-7857-1-git-send-email-lars@metafoo.de>
 References: <1336829994-7857-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
@@ -18,129 +18,107 @@ with dev_to_iio_dev().
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/resolver/ad2s1210.c |   26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/staging/iio/magnetometer/ak8975.c  |    4 ++--
+ drivers/staging/iio/magnetometer/hmc5843.c |   16 ++++++++--------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index a236ddb..f313859 100644
---- a/drivers/staging/iio/resolver/ad2s1210.c
-+++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -200,7 +200,7 @@ static ssize_t ad2s1210_store_softreset(struct device *dev,
- 					const char *buf,
- 					size_t len)
+diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+index 93026c5..5834e4a 100644
+--- a/drivers/staging/iio/magnetometer/ak8975.c
++++ b/drivers/staging/iio/magnetometer/ak8975.c
+@@ -242,7 +242,7 @@ static int ak8975_setup(struct i2c_client *client)
+ static ssize_t show_mode(struct device *dev, struct device_attribute *devattr,
+ 			 char *buf)
  {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	int ret;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ak8975_data *data = iio_priv(indio_dev);
  
- 	mutex_lock(&st->lock);
-@@ -214,7 +214,7 @@ static ssize_t ad2s1210_show_fclkin(struct device *dev,
- 				    struct device_attribute *attr,
- 				    char *buf)
+ 	return sprintf(buf, "%u\n", data->mode);
+@@ -255,7 +255,7 @@ static ssize_t show_mode(struct device *dev, struct device_attribute *devattr,
+ static ssize_t store_mode(struct device *dev, struct device_attribute *devattr,
+ 			  const char *buf, size_t count)
  {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	return sprintf(buf, "%d\n", st->fclkin);
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ak8975_data *data = iio_priv(indio_dev);
+ 	struct i2c_client *client = data->client;
+ 	bool value;
+diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
+index 3ec6518..e3e65ea 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843.c
++++ b/drivers/staging/iio/magnetometer/hmc5843.c
+@@ -184,7 +184,7 @@ static ssize_t hmc5843_show_operating_mode(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct hmc5843_data *data = iio_priv(indio_dev);
+ 	return sprintf(buf, "%d\n", data->operating_mode);
  }
- 
-@@ -223,7 +223,7 @@ static ssize_t ad2s1210_store_fclkin(struct device *dev,
- 				     const char *buf,
- 				     size_t len)
+@@ -194,7 +194,7 @@ static ssize_t hmc5843_set_operating_mode(struct device *dev,
+ 				const char *buf,
+ 				size_t count)
  {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	unsigned long fclkin;
- 	int ret;
- 
-@@ -252,7 +252,7 @@ static ssize_t ad2s1210_show_fexcit(struct device *dev,
- 				    struct device_attribute *attr,
- 				    char *buf)
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
+ 	struct hmc5843_data *data = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+@@ -260,7 +260,7 @@ static ssize_t hmc5843_show_measurement_configuration(struct device *dev,
+ 						struct device_attribute *attr,
+ 						char *buf)
  {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	return sprintf(buf, "%d\n", st->fexcit);
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct hmc5843_data *data = iio_priv(indio_dev);
+ 	return sprintf(buf, "%d\n", data->meas_conf);
  }
+@@ -270,7 +270,7 @@ static ssize_t hmc5843_set_measurement_configuration(struct device *dev,
+ 						const char *buf,
+ 						size_t count)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
+ 	struct hmc5843_data *data = i2c_get_clientdata(client);
+ 	unsigned long meas_conf = 0;
+@@ -331,7 +331,7 @@ static ssize_t set_sampling_frequency(struct device *dev,
+ 					const char *buf, size_t count)
+ {
  
-@@ -260,7 +260,7 @@ static ssize_t ad2s1210_store_fexcit(struct device *dev,
- 				     struct device_attribute *attr,
- 				     const char *buf, size_t len)
- {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	unsigned long fexcit;
- 	int ret;
- 
-@@ -287,7 +287,7 @@ static ssize_t ad2s1210_show_control(struct device *dev,
- 				     struct device_attribute *attr,
- 				     char *buf)
- {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	int ret;
- 	mutex_lock(&st->lock);
- 	ret = ad2s1210_config_read(st, AD2S1210_REG_CONTROL);
-@@ -299,7 +299,7 @@ static ssize_t ad2s1210_store_control(struct device *dev,
- 			struct device_attribute *attr,
- 			const char *buf, size_t len)
- {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	unsigned long udata;
- 	unsigned char data;
- 	int ret;
-@@ -345,7 +345,7 @@ error_ret:
- static ssize_t ad2s1210_show_resolution(struct device *dev,
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
+ 	struct hmc5843_data *data = iio_priv(indio_dev);
+ 	unsigned long rate = 0;
+@@ -369,7 +369,7 @@ exit:
+ static ssize_t show_sampling_frequency(struct device *dev,
  			struct device_attribute *attr, char *buf)
  {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	return sprintf(buf, "%d\n", st->resolution);
- }
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	s32 rate;
+@@ -404,7 +404,7 @@ static ssize_t show_range(struct device *dev,
+ 				char *buf)
+ {
+ 	u8 range;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct hmc5843_data *data = iio_priv(indio_dev);
  
-@@ -353,7 +353,7 @@ static ssize_t ad2s1210_store_resolution(struct device *dev,
- 			struct device_attribute *attr,
- 			const char *buf, size_t len)
+ 	range = data->range;
+@@ -416,7 +416,7 @@ static ssize_t set_range(struct device *dev,
+ 			const char *buf,
+ 			size_t count)
  {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	unsigned char data;
- 	unsigned long udata;
- 	int ret;
-@@ -403,7 +403,7 @@ error_ret:
- static ssize_t ad2s1210_show_fault(struct device *dev,
- 			struct device_attribute *attr, char *buf)
- {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	int ret;
- 
- 	mutex_lock(&st->lock);
-@@ -418,7 +418,7 @@ static ssize_t ad2s1210_clear_fault(struct device *dev,
- 				    const char *buf,
- 				    size_t len)
- {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	int ret;
- 
- 	mutex_lock(&st->lock);
-@@ -441,7 +441,7 @@ static ssize_t ad2s1210_show_reg(struct device *dev,
- 				 struct device_attribute *attr,
- 				 char *buf)
- {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	struct iio_dev_attr *iattr = to_iio_dev_attr(attr);
- 	int ret;
- 
-@@ -455,7 +455,7 @@ static ssize_t ad2s1210_show_reg(struct device *dev,
- static ssize_t ad2s1210_store_reg(struct device *dev,
- 		struct device_attribute *attr, const char *buf, size_t len)
- {
--	struct ad2s1210_state *st = iio_priv(dev_get_drvdata(dev));
-+	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
- 	unsigned long data;
- 	int ret;
- 	struct iio_dev_attr *iattr = to_iio_dev_attr(attr);
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	struct hmc5843_data *data = iio_priv(indio_dev);
 -- 
 1.7.10
