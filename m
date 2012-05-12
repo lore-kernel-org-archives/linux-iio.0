@@ -1,144 +1,145 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 14/24] staging:iio:cdc: Use dev_to_iio_dev()
-Date: Fri, 11 May 2012 14:58:37 +0200
-Message-Id: <1336741127-29552-14-git-send-email-lars@metafoo.de>
-In-Reply-To: <1336741127-29552-1-git-send-email-lars@metafoo.de>
-References: <1336741127-29552-1-git-send-email-lars@metafoo.de>
+Return-Path: <jic23@kernel.org>
+Message-ID: <4FAE230E.7020204@kernel.org>
+Date: Sat, 12 May 2012 09:45:02 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 14/24] staging:iio:cdc: Use dev_to_iio_dev()
+References: <1336741127-29552-1-git-send-email-lars@metafoo.de> <1336741127-29552-14-git-send-email-lars@metafoo.de>
+In-Reply-To: <1336741127-29552-14-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Replace open-coded instances of getting a iio_dev struct from a device struct
-with dev_to_iio_dev().
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/cdc/ad7150.c |    4 ++--
- drivers/staging/iio/cdc/ad7152.c |    6 +++---
- drivers/staging/iio/cdc/ad7746.c |   14 +++++++-------
- 3 files changed, 12 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-index 1447076..a16d1a2 100644
---- a/drivers/staging/iio/cdc/ad7150.c
-+++ b/drivers/staging/iio/cdc/ad7150.c
-@@ -341,7 +341,7 @@ static ssize_t ad7150_show_timeout(struct device *dev,
- 				   struct device_attribute *attr,
- 				   char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	u8 value;
-@@ -370,7 +370,7 @@ static ssize_t ad7150_store_timeout(struct device *dev,
- 		const char *buf,
- 		size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(this_attr->address);
-diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
-index 195d907..98c3015 100644
---- a/drivers/staging/iio/cdc/ad7152.c
-+++ b/drivers/staging/iio/cdc/ad7152.c
-@@ -97,7 +97,7 @@ static inline ssize_t ad7152_start_calib(struct device *dev,
- 					 size_t len,
- 					 u8 regval)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7152_chip_info *chip = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	bool doit;
-@@ -169,7 +169,7 @@ static ssize_t ad7152_show_filter_rate_setup(struct device *dev,
- 		struct device_attribute *attr,
- 		char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7152_chip_info *chip = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n",
-@@ -181,7 +181,7 @@ static ssize_t ad7152_store_filter_rate_setup(struct device *dev,
- 		const char *buf,
- 		size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7152_chip_info *chip = iio_priv(indio_dev);
- 	u8 data;
- 	int ret, i;
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index e936831..754e11e 100644
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -286,7 +286,7 @@ static inline ssize_t ad7746_start_calib(struct device *dev,
- 					 size_t len,
- 					 u8 regval)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
- 	bool doit;
- 	int ret, timeout = 10;
-@@ -325,7 +325,7 @@ static ssize_t ad7746_start_offset_calib(struct device *dev,
- 					 const char *buf,
- 					 size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	int ret = ad7746_select_channel(indio_dev,
- 			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
- 	if (ret < 0)
-@@ -340,7 +340,7 @@ static ssize_t ad7746_start_gain_calib(struct device *dev,
- 				       const char *buf,
- 				       size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	int ret = ad7746_select_channel(indio_dev,
- 			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
- 	if (ret < 0)
-@@ -365,7 +365,7 @@ static ssize_t ad7746_show_cap_filter_rate_setup(struct device *dev,
- 		struct device_attribute *attr,
- 		char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", ad7746_cap_filter_rate_table[
-@@ -377,7 +377,7 @@ static ssize_t ad7746_store_cap_filter_rate_setup(struct device *dev,
- 		const char *buf,
- 		size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
- 	u8 data;
- 	int ret, i;
-@@ -405,7 +405,7 @@ static ssize_t ad7746_show_vt_filter_rate_setup(struct device *dev,
- 		struct device_attribute *attr,
- 		char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", ad7746_vt_filter_rate_table[
-@@ -417,7 +417,7 @@ static ssize_t ad7746_store_vt_filter_rate_setup(struct device *dev,
- 		const char *buf,
- 		size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
- 	u8 data;
- 	int ret, i;
--- 
-1.7.10
+On 05/11/2012 01:58 PM, Lars-Peter Clausen wrote:
+> Replace open-coded instances of getting a iio_dev struct from a device struct
+> with dev_to_iio_dev().
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  drivers/staging/iio/cdc/ad7150.c |    4 ++--
+>  drivers/staging/iio/cdc/ad7152.c |    6 +++---
+>  drivers/staging/iio/cdc/ad7746.c |   14 +++++++-------
+>  3 files changed, 12 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
+> index 1447076..a16d1a2 100644
+> --- a/drivers/staging/iio/cdc/ad7150.c
+> +++ b/drivers/staging/iio/cdc/ad7150.c
+> @@ -341,7 +341,7 @@ static ssize_t ad7150_show_timeout(struct device *dev,
+>  				   struct device_attribute *attr,
+>  				   char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7150_chip_info *chip = iio_priv(indio_dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  	u8 value;
+> @@ -370,7 +370,7 @@ static ssize_t ad7150_store_timeout(struct device *dev,
+>  		const char *buf,
+>  		size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7150_chip_info *chip = iio_priv(indio_dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(this_attr->address);
+> diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
+> index 195d907..98c3015 100644
+> --- a/drivers/staging/iio/cdc/ad7152.c
+> +++ b/drivers/staging/iio/cdc/ad7152.c
+> @@ -97,7 +97,7 @@ static inline ssize_t ad7152_start_calib(struct device *dev,
+>  					 size_t len,
+>  					 u8 regval)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7152_chip_info *chip = iio_priv(indio_dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  	bool doit;
+> @@ -169,7 +169,7 @@ static ssize_t ad7152_show_filter_rate_setup(struct device *dev,
+>  		struct device_attribute *attr,
+>  		char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7152_chip_info *chip = iio_priv(indio_dev);
+>  
+>  	return sprintf(buf, "%d\n",
+> @@ -181,7 +181,7 @@ static ssize_t ad7152_store_filter_rate_setup(struct device *dev,
+>  		const char *buf,
+>  		size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7152_chip_info *chip = iio_priv(indio_dev);
+>  	u8 data;
+>  	int ret, i;
+> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+> index e936831..754e11e 100644
+> --- a/drivers/staging/iio/cdc/ad7746.c
+> +++ b/drivers/staging/iio/cdc/ad7746.c
+> @@ -286,7 +286,7 @@ static inline ssize_t ad7746_start_calib(struct device *dev,
+>  					 size_t len,
+>  					 u8 regval)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+>  	bool doit;
+>  	int ret, timeout = 10;
+> @@ -325,7 +325,7 @@ static ssize_t ad7746_start_offset_calib(struct device *dev,
+>  					 const char *buf,
+>  					 size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	int ret = ad7746_select_channel(indio_dev,
+>  			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
+>  	if (ret < 0)
+> @@ -340,7 +340,7 @@ static ssize_t ad7746_start_gain_calib(struct device *dev,
+>  				       const char *buf,
+>  				       size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	int ret = ad7746_select_channel(indio_dev,
+>  			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
+>  	if (ret < 0)
+> @@ -365,7 +365,7 @@ static ssize_t ad7746_show_cap_filter_rate_setup(struct device *dev,
+>  		struct device_attribute *attr,
+>  		char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+>  
+>  	return sprintf(buf, "%d\n", ad7746_cap_filter_rate_table[
+> @@ -377,7 +377,7 @@ static ssize_t ad7746_store_cap_filter_rate_setup(struct device *dev,
+>  		const char *buf,
+>  		size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+>  	u8 data;
+>  	int ret, i;
+> @@ -405,7 +405,7 @@ static ssize_t ad7746_show_vt_filter_rate_setup(struct device *dev,
+>  		struct device_attribute *attr,
+>  		char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+>  
+>  	return sprintf(buf, "%d\n", ad7746_vt_filter_rate_table[
+> @@ -417,7 +417,7 @@ static ssize_t ad7746_store_vt_filter_rate_setup(struct device *dev,
+>  		const char *buf,
+>  		size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+>  	u8 data;
+>  	int ret, i;
