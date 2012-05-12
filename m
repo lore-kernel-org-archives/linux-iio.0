@@ -1,277 +1,273 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-184.synserver.de ([212.40.185.184]:1064 "EHLO
-	smtp-out-184.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759740Ab2EKM4O (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 May 2012 08:56:14 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 15/24] staging:iio:dac: Use dev_to_iio_dev()
-Date: Fri, 11 May 2012 14:58:38 +0200
-Message-Id: <1336741127-29552-15-git-send-email-lars@metafoo.de>
-In-Reply-To: <1336741127-29552-1-git-send-email-lars@metafoo.de>
-References: <1336741127-29552-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@kernel.org>
+Message-ID: <4FAE233C.4030100@kernel.org>
+Date: Sat, 12 May 2012 09:45:48 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 15/24] staging:iio:dac: Use dev_to_iio_dev()
+References: <1336741127-29552-1-git-send-email-lars@metafoo.de> <1336741127-29552-15-git-send-email-lars@metafoo.de>
+In-Reply-To: <1336741127-29552-15-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Replace open-coded instances of getting a iio_dev struct from a device struct
-with dev_to_iio_dev().
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/dac/ad5360.c      |    4 ++--
- drivers/staging/iio/dac/ad5380.c      |    8 ++++----
- drivers/staging/iio/dac/ad5504.c      |    8 ++++----
- drivers/staging/iio/dac/ad5624r_spi.c |    8 ++++----
- drivers/staging/iio/dac/ad5686.c      |    8 ++++----
- drivers/staging/iio/dac/ad5791.c      |    8 ++++----
- drivers/staging/iio/dac/max517.c      |    4 ++--
- 7 files changed, 24 insertions(+), 24 deletions(-)
-
-diff --git a/drivers/staging/iio/dac/ad5360.c b/drivers/staging/iio/dac/ad5360.c
-index 26cac42..38660ef 100644
---- a/drivers/staging/iio/dac/ad5360.c
-+++ b/drivers/staging/iio/dac/ad5360.c
-@@ -251,7 +251,7 @@ static ssize_t ad5360_read_dac_powerdown(struct device *dev,
- 					   struct device_attribute *attr,
- 					   char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5360_state *st = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", (bool)(st->ctrl & AD5360_SF_CTRL_PWR_DOWN));
-@@ -279,7 +279,7 @@ static int ad5360_update_ctrl(struct iio_dev *indio_dev, unsigned int set,
- static ssize_t ad5360_write_dac_powerdown(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	bool pwr_down;
- 	int ret;
- 
-diff --git a/drivers/staging/iio/dac/ad5380.c b/drivers/staging/iio/dac/ad5380.c
-index 4afb099..370d284 100644
---- a/drivers/staging/iio/dac/ad5380.c
-+++ b/drivers/staging/iio/dac/ad5380.c
-@@ -168,7 +168,7 @@ static const struct ad5380_chip_info ad5380_chip_info_tbl[] = {
- static ssize_t ad5380_read_dac_powerdown(struct device *dev,
- 	struct device_attribute *attr, char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5380_state *st = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", st->pwr_down);
-@@ -177,7 +177,7 @@ static ssize_t ad5380_read_dac_powerdown(struct device *dev,
- static ssize_t ad5380_write_dac_powerdown(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5380_state *st = iio_priv(indio_dev);
- 	bool pwr_down;
- 	int ret;
-@@ -213,7 +213,7 @@ static const char ad5380_powerdown_modes[][15] = {
- static ssize_t ad5380_read_powerdown_mode(struct device *dev,
- 	struct device_attribute *attr, char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5380_state *st = iio_priv(indio_dev);
- 	unsigned int mode;
- 	int ret;
-@@ -230,7 +230,7 @@ static ssize_t ad5380_read_powerdown_mode(struct device *dev,
- static ssize_t ad5380_write_powerdown_mode(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5380_state *st = iio_priv(indio_dev);
- 	unsigned int i;
- 	int ret;
-diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
-index e47f4d0..019cf15 100644
---- a/drivers/staging/iio/dac/ad5504.c
-+++ b/drivers/staging/iio/dac/ad5504.c
-@@ -125,7 +125,7 @@ static int ad5504_write_raw(struct iio_dev *indio_dev,
- static ssize_t ad5504_read_powerdown_mode(struct device *dev,
- 				      struct device_attribute *attr, char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5504_state *st = iio_priv(indio_dev);
- 
- 	const char mode[][14] = {"20kohm_to_gnd", "three_state"};
-@@ -137,7 +137,7 @@ static ssize_t ad5504_write_powerdown_mode(struct device *dev,
- 				       struct device_attribute *attr,
- 				       const char *buf, size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5504_state *st = iio_priv(indio_dev);
- 	int ret;
- 
-@@ -155,7 +155,7 @@ static ssize_t ad5504_read_dac_powerdown(struct device *dev,
- 					   struct device_attribute *attr,
- 					   char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5504_state *st = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 
-@@ -169,7 +169,7 @@ static ssize_t ad5504_write_dac_powerdown(struct device *dev,
- {
- 	long readin;
- 	int ret;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5504_state *st = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 
-diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
-index cde4a9f..42ff644 100644
---- a/drivers/staging/iio/dac/ad5624r_spi.c
-+++ b/drivers/staging/iio/dac/ad5624r_spi.c
-@@ -141,7 +141,7 @@ static int ad5624r_write_raw(struct iio_dev *indio_dev,
- static ssize_t ad5624r_read_powerdown_mode(struct device *dev,
- 				      struct device_attribute *attr, char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5624r_state *st = iio_priv(indio_dev);
- 
- 	char mode[][15] = {"", "1kohm_to_gnd", "100kohm_to_gnd", "three_state"};
-@@ -153,7 +153,7 @@ static ssize_t ad5624r_write_powerdown_mode(struct device *dev,
- 				       struct device_attribute *attr,
- 				       const char *buf, size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5624r_state *st = iio_priv(indio_dev);
- 	int ret;
- 
-@@ -173,7 +173,7 @@ static ssize_t ad5624r_read_dac_powerdown(struct device *dev,
- 					   struct device_attribute *attr,
- 					   char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5624r_state *st = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 
-@@ -187,7 +187,7 @@ static ssize_t ad5624r_write_dac_powerdown(struct device *dev,
- {
- 	long readin;
- 	int ret;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5624r_state *st = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 
-diff --git a/drivers/staging/iio/dac/ad5686.c b/drivers/staging/iio/dac/ad5686.c
-index 6a74436..c1e903e 100644
---- a/drivers/staging/iio/dac/ad5686.c
-+++ b/drivers/staging/iio/dac/ad5686.c
-@@ -173,7 +173,7 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
- static ssize_t ad5686_read_powerdown_mode(struct device *dev,
- 				      struct device_attribute *attr, char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5686_state *st = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 
-@@ -187,7 +187,7 @@ static ssize_t ad5686_write_powerdown_mode(struct device *dev,
- 				       struct device_attribute *attr,
- 				       const char *buf, size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5686_state *st = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	unsigned mode;
-@@ -211,7 +211,7 @@ static ssize_t ad5686_read_dac_powerdown(struct device *dev,
- 					   struct device_attribute *attr,
- 					   char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5686_state *st = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 
-@@ -225,7 +225,7 @@ static ssize_t ad5686_write_dac_powerdown(struct device *dev,
- {
- 	bool readin;
- 	int ret;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5686_state *st = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 
-diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
-index 1cc75e6..13d8b5b 100644
---- a/drivers/staging/iio/dac/ad5791.c
-+++ b/drivers/staging/iio/dac/ad5791.c
-@@ -94,7 +94,7 @@ static const struct iio_chan_spec ad5791_channels[] = {
- static ssize_t ad5791_read_powerdown_mode(struct device *dev,
- 				      struct device_attribute *attr, char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5791_state *st = iio_priv(indio_dev);
- 
- 	const char mode[][14] = {"6kohm_to_gnd", "three_state"};
-@@ -106,7 +106,7 @@ static ssize_t ad5791_write_powerdown_mode(struct device *dev,
- 				       struct device_attribute *attr,
- 				       const char *buf, size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5791_state *st = iio_priv(indio_dev);
- 	int ret;
- 
-@@ -124,7 +124,7 @@ static ssize_t ad5791_read_dac_powerdown(struct device *dev,
- 					   struct device_attribute *attr,
- 					   char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5791_state *st = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", st->pwr_down);
-@@ -136,7 +136,7 @@ static ssize_t ad5791_write_dac_powerdown(struct device *dev,
- {
- 	long readin;
- 	int ret;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5791_state *st = iio_priv(indio_dev);
- 
- 	ret = strict_strtol(buf, 10, &readin);
-diff --git a/drivers/staging/iio/dac/max517.c b/drivers/staging/iio/dac/max517.c
-index 65d6349..5287cad 100644
---- a/drivers/staging/iio/dac/max517.c
-+++ b/drivers/staging/iio/dac/max517.c
-@@ -59,7 +59,7 @@ static ssize_t max517_set_value(struct device *dev,
- 				 struct device_attribute *attr,
- 				 const char *buf, size_t count, int channel)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct max517_data *data = iio_priv(indio_dev);
- 	struct i2c_client *client = data->client;
- 	u8 outbuf[4]; /* 1x or 2x command + value */
-@@ -128,7 +128,7 @@ static ssize_t max517_show_scale(struct device *dev,
- 				struct device_attribute *attr,
- 				char *buf, int channel)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct max517_data *data = iio_priv(indio_dev);
- 	/* Corresponds to Vref / 2^(bits) */
- 	unsigned int scale_uv = (data->vref_mv[channel - 1] * 1000) >> 8;
--- 
-1.7.10
-
+On 05/11/2012 01:58 PM, Lars-Peter Clausen wrote:
+> Replace open-coded instances of getting a iio_dev struct from a device struct
+> with dev_to_iio_dev().
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  drivers/staging/iio/dac/ad5360.c      |    4 ++--
+>  drivers/staging/iio/dac/ad5380.c      |    8 ++++----
+>  drivers/staging/iio/dac/ad5504.c      |    8 ++++----
+>  drivers/staging/iio/dac/ad5624r_spi.c |    8 ++++----
+>  drivers/staging/iio/dac/ad5686.c      |    8 ++++----
+>  drivers/staging/iio/dac/ad5791.c      |    8 ++++----
+>  drivers/staging/iio/dac/max517.c      |    4 ++--
+>  7 files changed, 24 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/dac/ad5360.c b/drivers/staging/iio/dac/ad5360.c
+> index 26cac42..38660ef 100644
+> --- a/drivers/staging/iio/dac/ad5360.c
+> +++ b/drivers/staging/iio/dac/ad5360.c
+> @@ -251,7 +251,7 @@ static ssize_t ad5360_read_dac_powerdown(struct device *dev,
+>  					   struct device_attribute *attr,
+>  					   char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5360_state *st = iio_priv(indio_dev);
+>  
+>  	return sprintf(buf, "%d\n", (bool)(st->ctrl & AD5360_SF_CTRL_PWR_DOWN));
+> @@ -279,7 +279,7 @@ static int ad5360_update_ctrl(struct iio_dev *indio_dev, unsigned int set,
+>  static ssize_t ad5360_write_dac_powerdown(struct device *dev,
+>  	struct device_attribute *attr, const char *buf, size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	bool pwr_down;
+>  	int ret;
+>  
+> diff --git a/drivers/staging/iio/dac/ad5380.c b/drivers/staging/iio/dac/ad5380.c
+> index 4afb099..370d284 100644
+> --- a/drivers/staging/iio/dac/ad5380.c
+> +++ b/drivers/staging/iio/dac/ad5380.c
+> @@ -168,7 +168,7 @@ static const struct ad5380_chip_info ad5380_chip_info_tbl[] = {
+>  static ssize_t ad5380_read_dac_powerdown(struct device *dev,
+>  	struct device_attribute *attr, char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5380_state *st = iio_priv(indio_dev);
+>  
+>  	return sprintf(buf, "%d\n", st->pwr_down);
+> @@ -177,7 +177,7 @@ static ssize_t ad5380_read_dac_powerdown(struct device *dev,
+>  static ssize_t ad5380_write_dac_powerdown(struct device *dev,
+>  	struct device_attribute *attr, const char *buf, size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5380_state *st = iio_priv(indio_dev);
+>  	bool pwr_down;
+>  	int ret;
+> @@ -213,7 +213,7 @@ static const char ad5380_powerdown_modes[][15] = {
+>  static ssize_t ad5380_read_powerdown_mode(struct device *dev,
+>  	struct device_attribute *attr, char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5380_state *st = iio_priv(indio_dev);
+>  	unsigned int mode;
+>  	int ret;
+> @@ -230,7 +230,7 @@ static ssize_t ad5380_read_powerdown_mode(struct device *dev,
+>  static ssize_t ad5380_write_powerdown_mode(struct device *dev,
+>  	struct device_attribute *attr, const char *buf, size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5380_state *st = iio_priv(indio_dev);
+>  	unsigned int i;
+>  	int ret;
+> diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
+> index e47f4d0..019cf15 100644
+> --- a/drivers/staging/iio/dac/ad5504.c
+> +++ b/drivers/staging/iio/dac/ad5504.c
+> @@ -125,7 +125,7 @@ static int ad5504_write_raw(struct iio_dev *indio_dev,
+>  static ssize_t ad5504_read_powerdown_mode(struct device *dev,
+>  				      struct device_attribute *attr, char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5504_state *st = iio_priv(indio_dev);
+>  
+>  	const char mode[][14] = {"20kohm_to_gnd", "three_state"};
+> @@ -137,7 +137,7 @@ static ssize_t ad5504_write_powerdown_mode(struct device *dev,
+>  				       struct device_attribute *attr,
+>  				       const char *buf, size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5504_state *st = iio_priv(indio_dev);
+>  	int ret;
+>  
+> @@ -155,7 +155,7 @@ static ssize_t ad5504_read_dac_powerdown(struct device *dev,
+>  					   struct device_attribute *attr,
+>  					   char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5504_state *st = iio_priv(indio_dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  
+> @@ -169,7 +169,7 @@ static ssize_t ad5504_write_dac_powerdown(struct device *dev,
+>  {
+>  	long readin;
+>  	int ret;
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5504_state *st = iio_priv(indio_dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  
+> diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
+> index cde4a9f..42ff644 100644
+> --- a/drivers/staging/iio/dac/ad5624r_spi.c
+> +++ b/drivers/staging/iio/dac/ad5624r_spi.c
+> @@ -141,7 +141,7 @@ static int ad5624r_write_raw(struct iio_dev *indio_dev,
+>  static ssize_t ad5624r_read_powerdown_mode(struct device *dev,
+>  				      struct device_attribute *attr, char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5624r_state *st = iio_priv(indio_dev);
+>  
+>  	char mode[][15] = {"", "1kohm_to_gnd", "100kohm_to_gnd", "three_state"};
+> @@ -153,7 +153,7 @@ static ssize_t ad5624r_write_powerdown_mode(struct device *dev,
+>  				       struct device_attribute *attr,
+>  				       const char *buf, size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5624r_state *st = iio_priv(indio_dev);
+>  	int ret;
+>  
+> @@ -173,7 +173,7 @@ static ssize_t ad5624r_read_dac_powerdown(struct device *dev,
+>  					   struct device_attribute *attr,
+>  					   char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5624r_state *st = iio_priv(indio_dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  
+> @@ -187,7 +187,7 @@ static ssize_t ad5624r_write_dac_powerdown(struct device *dev,
+>  {
+>  	long readin;
+>  	int ret;
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5624r_state *st = iio_priv(indio_dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  
+> diff --git a/drivers/staging/iio/dac/ad5686.c b/drivers/staging/iio/dac/ad5686.c
+> index 6a74436..c1e903e 100644
+> --- a/drivers/staging/iio/dac/ad5686.c
+> +++ b/drivers/staging/iio/dac/ad5686.c
+> @@ -173,7 +173,7 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
+>  static ssize_t ad5686_read_powerdown_mode(struct device *dev,
+>  				      struct device_attribute *attr, char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5686_state *st = iio_priv(indio_dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  
+> @@ -187,7 +187,7 @@ static ssize_t ad5686_write_powerdown_mode(struct device *dev,
+>  				       struct device_attribute *attr,
+>  				       const char *buf, size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5686_state *st = iio_priv(indio_dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  	unsigned mode;
+> @@ -211,7 +211,7 @@ static ssize_t ad5686_read_dac_powerdown(struct device *dev,
+>  					   struct device_attribute *attr,
+>  					   char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5686_state *st = iio_priv(indio_dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  
+> @@ -225,7 +225,7 @@ static ssize_t ad5686_write_dac_powerdown(struct device *dev,
+>  {
+>  	bool readin;
+>  	int ret;
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5686_state *st = iio_priv(indio_dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  
+> diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
+> index 1cc75e6..13d8b5b 100644
+> --- a/drivers/staging/iio/dac/ad5791.c
+> +++ b/drivers/staging/iio/dac/ad5791.c
+> @@ -94,7 +94,7 @@ static const struct iio_chan_spec ad5791_channels[] = {
+>  static ssize_t ad5791_read_powerdown_mode(struct device *dev,
+>  				      struct device_attribute *attr, char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5791_state *st = iio_priv(indio_dev);
+>  
+>  	const char mode[][14] = {"6kohm_to_gnd", "three_state"};
+> @@ -106,7 +106,7 @@ static ssize_t ad5791_write_powerdown_mode(struct device *dev,
+>  				       struct device_attribute *attr,
+>  				       const char *buf, size_t len)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5791_state *st = iio_priv(indio_dev);
+>  	int ret;
+>  
+> @@ -124,7 +124,7 @@ static ssize_t ad5791_read_dac_powerdown(struct device *dev,
+>  					   struct device_attribute *attr,
+>  					   char *buf)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5791_state *st = iio_priv(indio_dev);
+>  
+>  	return sprintf(buf, "%d\n", st->pwr_down);
+> @@ -136,7 +136,7 @@ static ssize_t ad5791_write_dac_powerdown(struct device *dev,
+>  {
+>  	long readin;
+>  	int ret;
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad5791_state *st = iio_priv(indio_dev);
+>  
+>  	ret = strict_strtol(buf, 10, &readin);
+> diff --git a/drivers/staging/iio/dac/max517.c b/drivers/staging/iio/dac/max517.c
+> index 65d6349..5287cad 100644
+> --- a/drivers/staging/iio/dac/max517.c
+> +++ b/drivers/staging/iio/dac/max517.c
+> @@ -59,7 +59,7 @@ static ssize_t max517_set_value(struct device *dev,
+>  				 struct device_attribute *attr,
+>  				 const char *buf, size_t count, int channel)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct max517_data *data = iio_priv(indio_dev);
+>  	struct i2c_client *client = data->client;
+>  	u8 outbuf[4]; /* 1x or 2x command + value */
+> @@ -128,7 +128,7 @@ static ssize_t max517_show_scale(struct device *dev,
+>  				struct device_attribute *attr,
+>  				char *buf, int channel)
+>  {
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct max517_data *data = iio_priv(indio_dev);
+>  	/* Corresponds to Vref / 2^(bits) */
+>  	unsigned int scale_uv = (data->vref_mv[channel - 1] * 1000) >> 8;
