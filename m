@@ -5,70 +5,49 @@ Cc: Jonathan Cameron <jic23@cam.ac.uk>,
 	devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 10/23] staging:iio:adis16400_ring: Pass IIO device directly
-Date: Sat, 12 May 2012 15:39:41 +0200
-Message-Id: <1336829994-7857-10-git-send-email-lars@metafoo.de>
+Subject: [PATCH 09/23] staging:iio:ade7758_spi_read_burst: Pass IIO device directly
+Date: Sat, 12 May 2012 15:39:40 +0200
+Message-Id: <1336829994-7857-9-git-send-email-lars@metafoo.de>
 In-Reply-To: <1336829994-7857-1-git-send-email-lars@metafoo.de>
 References: <1336829994-7857-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-When calling adis16350_spi_read_all and adis16400_spi_read_burst we pass the
-device struct of embedded in the IIO device only to look up the IIO device from
-the device struct again right away. This patch changes the code to pass the IIO
-device directly.
+When calling ade7758_spi_read_burst we pass the device struct of embedded in the
+IIO device only to look up the IIO device from the device struct again right
+away. This patch changes the code to pass the IIO device directly.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/imu/adis16400_ring.c |   12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/staging/iio/meter/ade7758_ring.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
-index e43c0e2..809e2c4 100644
---- a/drivers/staging/iio/imu/adis16400_ring.c
-+++ b/drivers/staging/iio/imu/adis16400_ring.c
-@@ -13,13 +13,12 @@
+diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+index 7b9be8a..92159f2 100644
+--- a/drivers/staging/iio/meter/ade7758_ring.c
++++ b/drivers/staging/iio/meter/ade7758_ring.c
+@@ -19,11 +19,10 @@
  
  /**
-  * adis16400_spi_read_burst() - read all data registers
+  * ade7758_spi_read_burst() - read data registers
 - * @dev: device associated with child of actual device (iio_dev or iio_trig)
 + * @indio_dev: the IIO device
-  * @rx: somewhere to pass back the value read (min size is 24 bytes)
   **/
--static int adis16400_spi_read_burst(struct device *dev, u8 *rx)
-+static int adis16400_spi_read_burst(struct iio_dev *indio_dev, u8 *rx)
+-static int ade7758_spi_read_burst(struct device *dev)
++static int ade7758_spi_read_burst(struct iio_dev *indio_dev)
  {
- 	struct spi_message msg;
 -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct adis16400_state *st = iio_priv(indio_dev);
- 	u32 old_speed_hz = st->us->max_speed_hz;
+ 	struct ade7758_state *st = iio_priv(indio_dev);
  	int ret;
-@@ -71,9 +70,8 @@ static const u16 read_all_tx_array[] = {
- 	cpu_to_be16(ADIS16400_READ_REG(ADIS16400_AUX_ADC)),
- };
  
--static int adis16350_spi_read_all(struct device *dev, u8 *rx)
-+static int adis16350_spi_read_all(struct iio_dev *indio_dev, u8 *rx)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct adis16400_state *st = iio_priv(indio_dev);
+@@ -68,7 +67,7 @@ static irqreturn_t ade7758_trigger_handler(int irq, void *p)
+ 	u32 *dat32 = (u32 *)dat64;
  
- 	struct spi_message msg;
-@@ -132,13 +130,13 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
+ 	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength))
+-		if (ade7758_spi_read_burst(&indio_dev->dev) >= 0)
++		if (ade7758_spi_read_burst(indio_dev) >= 0)
+ 			*dat32 = get_unaligned_be32(&st->rx_buf[5]) & 0xFFFFFF;
  
- 	if (scan_count) {
- 		if (st->variant->flags & ADIS16400_NO_BURST) {
--			ret = adis16350_spi_read_all(&indio_dev->dev, st->rx);
-+			ret = adis16350_spi_read_all(indio_dev, st->rx);
- 			if (ret < 0)
- 				goto err;
- 			for (; i < scan_count; i++)
- 				data[i]	= *(s16 *)(st->rx + i*2);
- 		} else {
--			ret = adis16400_spi_read_burst(&indio_dev->dev, st->rx);
-+			ret = adis16400_spi_read_burst(indio_dev, st->rx);
- 			if (ret < 0)
- 				goto err;
- 			for (; i < scan_count; i++) {
+ 	/* Guaranteed to be aligned with 8 byte boundary */
 -- 
 1.7.10
