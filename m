@@ -5,9 +5,9 @@ Cc: Jonathan Cameron <jic23@cam.ac.uk>,
 	devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 21/23] staging:iio:magnetometer: Use dev_to_iio_dev()
-Date: Sat, 12 May 2012 15:39:52 +0200
-Message-Id: <1336829994-7857-21-git-send-email-lars@metafoo.de>
+Subject: [PATCH 20/23] staging:iio:light: Use dev_to_iio_dev()
+Date: Sat, 12 May 2012 15:39:51 +0200
+Message-Id: <1336829994-7857-20-git-send-email-lars@metafoo.de>
 In-Reply-To: <1336829994-7857-1-git-send-email-lars@metafoo.de>
 References: <1336829994-7857-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
@@ -18,107 +18,338 @@ with dev_to_iio_dev().
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/magnetometer/ak8975.c  |    4 ++--
- drivers/staging/iio/magnetometer/hmc5843.c |   16 ++++++++--------
- 2 files changed, 10 insertions(+), 10 deletions(-)
+ drivers/staging/iio/light/isl29018.c     |   12 ++++-----
+ drivers/staging/iio/light/tsl2583.c      |   26 +++++++++----------
+ drivers/staging/iio/light/tsl2x7x_core.c |   40 +++++++++++++++---------------
+ 3 files changed, 39 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-index 93026c5..5834e4a 100644
---- a/drivers/staging/iio/magnetometer/ak8975.c
-+++ b/drivers/staging/iio/magnetometer/ak8975.c
-@@ -242,7 +242,7 @@ static int ak8975_setup(struct i2c_client *client)
- static ssize_t show_mode(struct device *dev, struct device_attribute *devattr,
- 			 char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ak8975_data *data = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%u\n", data->mode);
-@@ -255,7 +255,7 @@ static ssize_t show_mode(struct device *dev, struct device_attribute *devattr,
- static ssize_t store_mode(struct device *dev, struct device_attribute *devattr,
- 			  const char *buf, size_t count)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ak8975_data *data = iio_priv(indio_dev);
- 	struct i2c_client *client = data->client;
- 	bool value;
-diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-index 3ec6518..e3e65ea 100644
---- a/drivers/staging/iio/magnetometer/hmc5843.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843.c
-@@ -184,7 +184,7 @@ static ssize_t hmc5843_show_operating_mode(struct device *dev,
- 					struct device_attribute *attr,
- 					char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct hmc5843_data *data = iio_priv(indio_dev);
- 	return sprintf(buf, "%d\n", data->operating_mode);
- }
-@@ -194,7 +194,7 @@ static ssize_t hmc5843_set_operating_mode(struct device *dev,
- 				const char *buf,
- 				size_t count)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
- 	struct hmc5843_data *data = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-@@ -260,7 +260,7 @@ static ssize_t hmc5843_show_measurement_configuration(struct device *dev,
- 						struct device_attribute *attr,
- 						char *buf)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct hmc5843_data *data = iio_priv(indio_dev);
- 	return sprintf(buf, "%d\n", data->meas_conf);
- }
-@@ -270,7 +270,7 @@ static ssize_t hmc5843_set_measurement_configuration(struct device *dev,
- 						const char *buf,
- 						size_t count)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
- 	struct hmc5843_data *data = i2c_get_clientdata(client);
- 	unsigned long meas_conf = 0;
-@@ -331,7 +331,7 @@ static ssize_t set_sampling_frequency(struct device *dev,
- 					const char *buf, size_t count)
- {
- 
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
- 	struct hmc5843_data *data = iio_priv(indio_dev);
- 	unsigned long rate = 0;
-@@ -369,7 +369,7 @@ exit:
- static ssize_t show_sampling_frequency(struct device *dev,
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 2d23c6a..0abbf18 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -214,7 +214,7 @@ static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
+ static ssize_t show_range(struct device *dev,
  			struct device_attribute *attr, char *buf)
  {
 -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
 +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	s32 rate;
-@@ -404,7 +404,7 @@ static ssize_t show_range(struct device *dev,
- 				char *buf)
- {
- 	u8 range;
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct hmc5843_data *data = iio_priv(indio_dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
  
- 	range = data->range;
-@@ -416,7 +416,7 @@ static ssize_t set_range(struct device *dev,
- 			const char *buf,
- 			size_t count)
+ 	return sprintf(buf, "%u\n", chip->range);
+@@ -223,7 +223,7 @@ static ssize_t show_range(struct device *dev,
+ static ssize_t store_range(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
  {
 -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
 +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	struct hmc5843_data *data = iio_priv(indio_dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 	int status;
+ 	unsigned long lval;
+@@ -256,7 +256,7 @@ static ssize_t store_range(struct device *dev,
+ static ssize_t show_resolution(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 
+ 	return sprintf(buf, "%u\n", chip->adc_bit);
+@@ -265,7 +265,7 @@ static ssize_t show_resolution(struct device *dev,
+ static ssize_t store_resolution(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 	int status;
+ 	unsigned long lval;
+@@ -295,7 +295,7 @@ static ssize_t store_resolution(struct device *dev,
+ static ssize_t show_prox_infrared_supression(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 
+ 	/* return the "proximity scheme" i.e. if the chip does on chip
+@@ -306,7 +306,7 @@ static ssize_t show_prox_infrared_supression(struct device *dev,
+ static ssize_t store_prox_infrared_supression(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 	unsigned long lval;
+ 
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 5ff391e..5e23ad5 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -483,7 +483,7 @@ static int taos_chip_off(struct iio_dev *indio_dev)
+ static ssize_t taos_power_state_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 
+ 	return sprintf(buf, "%d\n", chip->taos_chip_status);
+@@ -492,7 +492,7 @@ static ssize_t taos_power_state_show(struct device *dev,
+ static ssize_t taos_power_state_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	unsigned long value;
+ 
+ 	if (strict_strtoul(buf, 0, &value))
+@@ -509,7 +509,7 @@ static ssize_t taos_power_state_store(struct device *dev,
+ static ssize_t taos_gain_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 	char gain[4] = {0};
+ 
+@@ -534,7 +534,7 @@ static ssize_t taos_gain_show(struct device *dev,
+ static ssize_t taos_gain_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 	unsigned long value;
+ 
+@@ -571,7 +571,7 @@ static ssize_t taos_gain_available_show(struct device *dev,
+ static ssize_t taos_als_time_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 
+ 	return sprintf(buf, "%d\n", chip->taos_settings.als_time);
+@@ -580,7 +580,7 @@ static ssize_t taos_als_time_show(struct device *dev,
+ static ssize_t taos_als_time_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 	unsigned long value;
+ 
+@@ -608,7 +608,7 @@ static ssize_t taos_als_time_available_show(struct device *dev,
+ static ssize_t taos_als_trim_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 
+ 	return sprintf(buf, "%d\n", chip->taos_settings.als_gain_trim);
+@@ -617,7 +617,7 @@ static ssize_t taos_als_trim_show(struct device *dev,
+ static ssize_t taos_als_trim_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 	unsigned long value;
+ 
+@@ -633,7 +633,7 @@ static ssize_t taos_als_trim_store(struct device *dev,
+ static ssize_t taos_als_cal_target_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 
+ 	return sprintf(buf, "%d\n", chip->taos_settings.als_cal_target);
+@@ -642,7 +642,7 @@ static ssize_t taos_als_cal_target_show(struct device *dev,
+ static ssize_t taos_als_cal_target_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 	unsigned long value;
+ 
+@@ -660,7 +660,7 @@ static ssize_t taos_lux_show(struct device *dev, struct device_attribute *attr,
+ {
+ 	int ret;
+ 
+-	ret = taos_get_lux(dev_get_drvdata(dev));
++	ret = taos_get_lux(dev_to_iio_dev(dev));
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -670,7 +670,7 @@ static ssize_t taos_lux_show(struct device *dev, struct device_attribute *attr,
+ static ssize_t taos_do_calibrate(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	unsigned long value;
+ 
+ 	if (strict_strtoul(buf, 0, &value))
+@@ -708,7 +708,7 @@ static ssize_t taos_luxtable_show(struct device *dev,
+ static ssize_t taos_luxtable_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 	int value[ARRAY_SIZE(taos_device_lux)*3 + 1];
+ 	int n;
+diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
+index efbc4d2..c3b05a1 100755
+--- a/drivers/staging/iio/light/tsl2x7x_core.c
++++ b/drivers/staging/iio/light/tsl2x7x_core.c
+@@ -971,7 +971,7 @@ static void tsl2x7x_prox_cal(struct iio_dev *indio_dev)
+ static ssize_t tsl2x7x_power_state_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
+ 
+ 	return snprintf(buf, PAGE_SIZE, "%d\n", chip->tsl2x7x_chip_status);
+ }
+@@ -979,7 +979,7 @@ static ssize_t tsl2x7x_power_state_show(struct device *dev,
+ static ssize_t tsl2x7x_power_state_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	bool value;
+ 
+ 	if (strtobool(buf, &value))
+@@ -996,7 +996,7 @@ static ssize_t tsl2x7x_power_state_store(struct device *dev,
+ static ssize_t tsl2x7x_gain_available_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
+ 
+ 	switch (chip->id) {
+ 	case tsl2571:
+@@ -1020,7 +1020,7 @@ static ssize_t tsl2x7x_prox_gain_available_show(struct device *dev,
+ static ssize_t tsl2x7x_als_time_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
+ 	int y, z;
+ 
+ 	y = (TSL2X7X_MAX_TIMER_CNT - (u8)chip->tsl2x7x_settings.als_time) + 1;
+@@ -1034,8 +1034,8 @@ static ssize_t tsl2x7x_als_time_show(struct device *dev,
+ static ssize_t tsl2x7x_als_time_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+ 	struct tsl2x7x_parse_result result;
+ 
+ 	result.integer = 0;
+@@ -1062,7 +1062,7 @@ static IIO_CONST_ATTR(in_illuminance0_integration_time_available,
+ static ssize_t tsl2x7x_als_cal_target_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
+ 
+ 	return snprintf(buf, PAGE_SIZE, "%d\n",
+ 			chip->tsl2x7x_settings.als_cal_target);
+@@ -1071,8 +1071,8 @@ static ssize_t tsl2x7x_als_cal_target_show(struct device *dev,
+ static ssize_t tsl2x7x_als_cal_target_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+ 	unsigned long value;
+ 
+ 	if (kstrtoul(buf, 0, &value))
+@@ -1090,7 +1090,7 @@ static ssize_t tsl2x7x_als_cal_target_store(struct device *dev,
+ static ssize_t tsl2x7x_als_persistence_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
+ 	int y, z, filter_delay;
+ 
+ 	/* Determine integration time */
+@@ -1106,8 +1106,8 @@ static ssize_t tsl2x7x_als_persistence_show(struct device *dev,
+ static ssize_t tsl2x7x_als_persistence_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+ 	struct tsl2x7x_parse_result result;
+ 	int y, z, filter_delay;
+ 
+@@ -1136,7 +1136,7 @@ static ssize_t tsl2x7x_als_persistence_store(struct device *dev,
+ static ssize_t tsl2x7x_prox_persistence_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
+ 	int y, z, filter_delay;
+ 
+ 	/* Determine integration time */
+@@ -1152,8 +1152,8 @@ static ssize_t tsl2x7x_prox_persistence_show(struct device *dev,
+ static ssize_t tsl2x7x_prox_persistence_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+ 	struct tsl2x7x_parse_result result;
+ 	int y, z, filter_delay;
+ 
+@@ -1182,7 +1182,7 @@ static ssize_t tsl2x7x_prox_persistence_store(struct device *dev,
+ static ssize_t tsl2x7x_do_calibrate(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	bool value;
+ 
+ 	if (strtobool(buf, &value))
+@@ -1199,7 +1199,7 @@ static ssize_t tsl2x7x_do_calibrate(struct device *dev,
+ static ssize_t tsl2x7x_luxtable_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
+ 	int i = 0;
+ 	int offset = 0;
+ 
+@@ -1224,8 +1224,8 @@ static ssize_t tsl2x7x_luxtable_show(struct device *dev,
+ static ssize_t tsl2x7x_luxtable_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct tsl2X7X_chip *chip = iio_priv(dev_get_drvdata(dev));
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+ 	int value[ARRAY_SIZE(chip->tsl2x7x_device_lux)*3 + 1];
+ 	int n;
+ 
+@@ -1263,7 +1263,7 @@ static ssize_t tsl2x7x_luxtable_store(struct device *dev,
+ static ssize_t tsl2x7x_do_prox_calibrate(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	bool value;
+ 
+ 	if (strtobool(buf, &value))
 -- 
 1.7.10
