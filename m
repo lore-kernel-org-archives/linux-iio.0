@@ -5,9 +5,9 @@ Cc: Jonathan Cameron <jic23@cam.ac.uk>,
 	devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 19/23] staging:iio:imu: Use dev_to_iio_dev()
-Date: Sat, 12 May 2012 15:39:50 +0200
-Message-Id: <1336829994-7857-19-git-send-email-lars@metafoo.de>
+Subject: [PATCH 18/23] staging:iio:impedance-analyzer: Use dev_to_iio_dev()
+Date: Sat, 12 May 2012 15:39:49 +0200
+Message-Id: <1336829994-7857-18-git-send-email-lars@metafoo.de>
 In-Reply-To: <1336829994-7857-1-git-send-email-lars@metafoo.de>
 References: <1336829994-7857-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
@@ -18,39 +18,48 @@ with dev_to_iio_dev().
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/imu/adis16400_core.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/staging/iio/impedance-analyzer/ad5933.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-index 5015f82..1f6bd85 100644
---- a/drivers/staging/iio/imu/adis16400_core.c
-+++ b/drivers/staging/iio/imu/adis16400_core.c
-@@ -179,7 +179,7 @@ static ssize_t adis16400_read_frequency(struct device *dev,
- 		struct device_attribute *attr,
- 		char *buf)
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 359a794..a8e51bc 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -291,7 +291,7 @@ static ssize_t ad5933_show_frequency(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
  {
 -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
 +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	int ret, len = 0;
- 	ret = adis16400_get_freq(indio_dev);
- 	if (ret < 0)
-@@ -225,7 +225,7 @@ static ssize_t adis16400_write_frequency(struct device *dev,
- 		const char *buf,
- 		size_t len)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct adis16400_state *st = iio_priv(indio_dev);
- 	long val;
+ 	struct ad5933_state *st = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
  	int ret;
-@@ -279,7 +279,7 @@ static ssize_t adis16400_write_reset(struct device *dev,
- 	if (ret < 0)
- 		return ret;
- 	if (val) {
--		ret = adis16400_reset(dev_get_drvdata(dev));
-+		ret = adis16400_reset(dev_to_iio_dev(dev));
- 		if (ret < 0)
- 			return ret;
- 	}
+@@ -320,7 +320,7 @@ static ssize_t ad5933_store_frequency(struct device *dev,
+ 					 const char *buf,
+ 					 size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad5933_state *st = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	long val;
+@@ -354,7 +354,7 @@ static ssize_t ad5933_show(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad5933_state *st = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret = 0, len = 0;
+@@ -397,7 +397,7 @@ static ssize_t ad5933_store(struct device *dev,
+ 					 const char *buf,
+ 					 size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad5933_state *st = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	long val;
 -- 
 1.7.10
