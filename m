@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:42416 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:42411 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932587Ab2ENW3B (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S932538Ab2ENW3B (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Mon, 14 May 2012 18:29:01 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
 Cc: lars@metafoo.de, jic23@kernel.org, marek.belisko@gmail.com,
 	shubhrajyoti@ti.com, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 4/9] iio: rework sampling rate setting in hmc5843
-Date: Tue, 15 May 2012 00:27:29 +0200
-Message-Id: <1337034454-29717-5-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH 3/9] iio: rename and prefix CONSTANTs to distinguish between HMC5843 and HMC5883
+Date: Tue, 15 May 2012 00:27:28 +0200
+Message-Id: <1337034454-29717-4-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1337034454-29717-1-git-send-email-pmeerw@pmeerw.net>
 References: <1337034454-29717-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
@@ -19,87 +19,259 @@ From: Peter Meerwald <p.meerwald@bct-electronic.com>
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- drivers/staging/iio/magnetometer/hmc5843.c |   51 +++++++++++++---------------
- 1 files changed, 24 insertions(+), 27 deletions(-)
+ drivers/staging/iio/magnetometer/hmc5843.c |  128 +++++++++++++++------------
+ 1 files changed, 71 insertions(+), 57 deletions(-)
 
 diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-index 1318f7d..6888e04 100644
+index 018d3d8..1318f7d 100644
 --- a/drivers/staging/iio/magnetometer/hmc5843.c
 +++ b/drivers/staging/iio/magnetometer/hmc5843.c
-@@ -85,14 +85,6 @@
-  */
- #define HMC5843_RATE_OFFSET			0x02
- #define HMC5843_RATE_BITMASK			0x1C
--#define RATE_5					0x00
--#define RATE_10					0x01
--#define RATE_20					0x02
--#define RATE_50					0x03
--#define RATE_100				0x04
--#define RATE_200				0x05
--#define RATE_500				0x06
+@@ -25,8 +25,6 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ 
+-#define HMC5843_I2C_ADDRESS			0x1E
 -
- #define HMC5843_RATE_NOT_USED			0x07
+ #define HMC5843_CONFIG_REG_A			0x00
+ #define HMC5843_CONFIG_REG_B			0x01
+ #define HMC5843_MODE_REG			0x02
+@@ -36,65 +34,80 @@
+ #define HMC5843_DATA_OUT_Y_LSB_REG		0x06
+ #define HMC5843_DATA_OUT_Z_MSB_REG		0x07
+ #define HMC5843_DATA_OUT_Z_LSB_REG		0x08
++/* Beware: Y and Z are exchanged on HMC5883 */
++#define HMC5883_DATA_OUT_Z_MSB_REG		0x05
++#define HMC5883_DATA_OUT_Z_LSB_REG		0x06
++#define HMC5883_DATA_OUT_Y_MSB_REG		0x07
++#define HMC5883_DATA_OUT_Y_LSB_REG		0x08
+ #define HMC5843_STATUS_REG			0x09
+ #define HMC5843_ID_REG_A			0x0A
+ #define HMC5843_ID_REG_B			0x0B
+ #define HMC5843_ID_REG_C			0x0C
+ 
++
++/*
++ * Beware: identification of the HMC5883 is still "H43";
++ * I2C address is also unchanged
++ */
+ #define HMC5843_ID_REG_LENGTH			0x03
+ #define HMC5843_ID_STRING			"H43"
++#define HMC5843_I2C_ADDRESS			0x1E
  
  /*
-@@ -342,6 +334,21 @@ static s32 hmc5843_set_rate(struct i2c_client *client,
+- * Range settings in  (+-)Ga
+- * */
+-#define RANGE_GAIN_OFFSET			0x05
+-
+-#define	RANGE_0_7				0x00
+-#define	RANGE_1_0				0x01 /* default */
+-#define	RANGE_1_5				0x02
+-#define	RANGE_2_0				0x03
+-#define	RANGE_3_2				0x04
+-#define	RANGE_3_8				0x05
+-#define	RANGE_4_5				0x06
+-#define	RANGE_6_5				0x07 /* Not recommended */
++ * Range gain settings in (+-)Ga
++ * Beware: HMC5843 and HMC5883 have different recommended sensor field
++ * ranges; default corresponds to +-1.0 Ga and +-1.3 Ga, respectively
++ */
++#define HMC5843_RANGE_GAIN_OFFSET		0x05
++#define HMC5843_RANGE_GAIN_DEFAULT		0x01
++#define HMC5843_RANGE_GAIN_MAX			0x07
+ 
+ /*
+  * Device status
+  */
+-#define	DATA_READY				0x01
+-#define	DATA_OUTPUT_LOCK			0x02
+-#define	VOLTAGE_REGULATOR_ENABLED		0x04
++#define HMC5843_DATA_READY			0x01
++#define HMC5843_DATA_OUTPUT_LOCK		0x02
++/* Does not exist on HMC5883, not used */
++#define HMC5843_VOLTAGE_REGULATOR_ENABLED	0x04
+ 
+ /*
+  * Mode register configuration
+  */
+-#define	MODE_CONVERSION_CONTINUOUS		0x00
+-#define	MODE_CONVERSION_SINGLE			0x01
+-#define	MODE_IDLE				0x02
+-#define	MODE_SLEEP				0x03
+-
+-/* Minimum Data Output Rate in 1/10 Hz  */
+-#define RATE_OFFSET				0x02
+-#define RATE_BITMASK				0x1C
+-#define	RATE_5					0x00
+-#define	RATE_10					0x01
+-#define	RATE_20					0x02
+-#define	RATE_50					0x03
+-#define	RATE_100				0x04
+-#define	RATE_200				0x05
+-#define	RATE_500				0x06
+-#define	RATE_NOT_USED				0x07
++#define HMC5843_MODE_CONVERSION_CONTINUOUS	0x00
++#define HMC5843_MODE_CONVERSION_SINGLE		0x01
++#define HMC5843_MODE_IDLE			0x02
++#define HMC5843_MODE_SLEEP			0x03
++#define HMC5843_MODE_MASK			0x03
++
++/*
++ * HMC5843: Minimum data output rate
++ * HMC5883: Typical data output rate
++ */
++#define HMC5843_RATE_OFFSET			0x02
++#define HMC5843_RATE_BITMASK			0x1C
++#define RATE_5					0x00
++#define RATE_10					0x01
++#define RATE_20					0x02
++#define RATE_50					0x03
++#define RATE_100				0x04
++#define RATE_200				0x05
++#define RATE_500				0x06
++
++#define HMC5843_RATE_NOT_USED			0x07
+ 
+ /*
+- * Device Configuration
++ * Device measurement configuration
+  */
+-#define	CONF_NORMAL				0x00
+-#define	CONF_POSITIVE_BIAS			0x01
+-#define	CONF_NEGATIVE_BIAS			0x02
+-#define	CONF_NOT_USED				0x03
+-#define	MEAS_CONF_MASK				0x03
++#define HMC5843_MEAS_CONF_NORMAL		0x00
++#define HMC5843_MEAS_CONF_POSITIVE_BIAS		0x01
++#define HMC5843_MEAS_CONF_NEGATIVE_BIAS		0x02
++#define HMC5843_MEAS_CONF_NOT_USED		0x03
++#define HMC5843_MEAS_CONF_MASK			0x03
+ 
+-static int hmc5843_regval_to_nanoscale[] = {
++/*
++ * Scaling factors: 10000000/Gain
++ */
++static const int hmc5843_regval_to_nanoscale[] = {
+ 	6173, 7692, 10309, 12821, 18868, 21739, 25641, 35714
+ };
+ 
+@@ -120,7 +133,7 @@ static const char * const regval_to_samp_freq[] = {
+ 
+ /* Addresses to scan: 0x1E */
+ static const unsigned short normal_i2c[] = { HMC5843_I2C_ADDRESS,
+-							I2C_CLIENT_END };
++					     I2C_CLIENT_END };
+ 
+ /* Each client has this additional data */
+ struct hmc5843_data {
+@@ -139,7 +152,7 @@ static s32 hmc5843_configure(struct i2c_client *client,
+ 	/* The lower two bits contain the current conversion mode */
+ 	return i2c_smbus_write_byte_data(client,
+ 					HMC5843_MODE_REG,
+-					(operating_mode & 0x03));
++					operating_mode & HMC5843_MODE_MASK);
+ }
+ 
+ /* Return the measurement value from the specified channel */
+@@ -153,7 +166,7 @@ static int hmc5843_read_measurement(struct iio_dev *indio_dev,
+ 
+ 	mutex_lock(&data->lock);
+ 	result = i2c_smbus_read_byte_data(client, HMC5843_STATUS_REG);
+-	while (!(result & DATA_READY))
++	while (!(result & HMC5843_DATA_READY))
+ 		result = i2c_smbus_read_byte_data(client, HMC5843_STATUS_REG);
+ 
+ 	result = i2c_smbus_read_word_data(client, address);
+@@ -208,7 +221,7 @@ static ssize_t hmc5843_set_operating_mode(struct device *dev,
+ 		goto exit;
+ 	}
+ 	dev_dbg(dev, "set Conversion mode to %lu\n", operating_mode);
+-	if (operating_mode > MODE_SLEEP) {
++	if (operating_mode > HMC5843_MODE_SLEEP) {
+ 		count = -EINVAL;
+ 		goto exit;
+ 	}
+@@ -253,7 +266,8 @@ static s32 hmc5843_set_meas_conf(struct i2c_client *client,
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 	struct hmc5843_data *data = iio_priv(indio_dev);
+ 	u8 reg_val;
+-	reg_val = (meas_conf & MEAS_CONF_MASK) |  (data->rate << RATE_OFFSET);
++	reg_val = (meas_conf & HMC5843_MEAS_CONF_MASK) |
++		(data->rate << HMC5843_RATE_OFFSET);
  	return i2c_smbus_write_byte_data(client, HMC5843_CONFIG_REG_A, reg_val);
  }
  
-+static int hmc5843_check_sampling_frequency(struct hmc5843_data *data,
-+						const char *buf)
-+{
-+	const char * const *samp_freq = regval_to_samp_freq;
-+	int i;
-+
-+	for (i = 0; i < HMC5843_RATE_NOT_USED; i++) {
-+		if (strncmp(buf, samp_freq[i],
-+			strlen(samp_freq[i])) == 0)
-+			return i;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- static ssize_t set_sampling_frequency(struct device *dev,
- 					struct device_attribute *attr,
- 					const char *buf, size_t count)
-@@ -350,27 +357,17 @@ static ssize_t set_sampling_frequency(struct device *dev,
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
+@@ -319,8 +333,8 @@ static s32 hmc5843_set_rate(struct i2c_client *client,
  	struct hmc5843_data *data = iio_priv(indio_dev);
--	unsigned long rate = 0;
--
--	if (strncmp(buf, "0.5" , 3) == 0)
--		rate = RATE_5;
--	else if (strncmp(buf, "1" , 1) == 0)
--		rate = RATE_10;
--	else if (strncmp(buf, "2", 1) == 0)
--		rate = RATE_20;
--	else if (strncmp(buf, "5", 1) == 0)
--		rate = RATE_50;
--	else if (strncmp(buf, "10", 2) == 0)
--		rate = RATE_100;
--	else if (strncmp(buf, "20" , 2) == 0)
--		rate = RATE_200;
--	else if (strncmp(buf, "50" , 2) == 0)
--		rate = RATE_500;
--	else
--		return -EINVAL;
-+	int rate;
-+
-+	rate = hmc5843_check_sampling_frequency(data, buf);
-+	if (rate < 0) {
-+		dev_err(&client->dev,
-+			"sampling frequency is not supported\n");
-+		return rate;
-+	}
+ 	u8 reg_val;
  
- 	mutex_lock(&data->lock);
--	dev_dbg(dev, "set rate to %lu\n", rate);
-+	dev_dbg(dev, "set rate to %d\n", rate);
- 	if (hmc5843_set_rate(client, rate)) {
+-	reg_val = (data->meas_conf) |  (rate << RATE_OFFSET);
+-	if (rate >= RATE_NOT_USED) {
++	reg_val = (data->meas_conf) |  (rate << HMC5843_RATE_OFFSET);
++	if (rate >= HMC5843_RATE_NOT_USED) {
+ 		dev_err(&client->dev,
+ 			"This data output rate is not supported\n");
+ 		return -EINVAL;
+@@ -379,7 +393,7 @@ static ssize_t show_sampling_frequency(struct device *dev,
+ 	rate = i2c_smbus_read_byte_data(client,  this_attr->address);
+ 	if (rate < 0)
+ 		return rate;
+-	rate = (rate & RATE_BITMASK) >> RATE_OFFSET;
++	rate = (rate & HMC5843_RATE_BITMASK) >> HMC5843_RATE_OFFSET;
+ 	return sprintf(buf, "%s\n", regval_to_samp_freq[rate]);
+ }
+ static IIO_DEVICE_ATTR(sampling_frequency,
+@@ -432,13 +446,13 @@ static ssize_t set_range(struct device *dev,
+ 	}
+ 	dev_dbg(dev, "set range to %lu\n", range);
+ 
+-	if (range > RANGE_6_5) {
++	if (range > HMC5843_RANGE_GAIN_MAX) {
  		count = -EINVAL;
  		goto exit;
+ 	}
+ 
+ 	data->range = range;
+-	range = range << RANGE_GAIN_OFFSET;
++	range = range << HMC5843_RANGE_GAIN_OFFSET;
+ 	if (i2c_smbus_write_byte_data(client, this_attr->address, range))
+ 		count = -EINVAL;
+ 
+@@ -553,12 +567,12 @@ static int hmc5843_probe(struct i2c_client *client,
+ 		err = -ENOMEM;
+ 		goto exit;
+ 	}
+-	data = iio_priv(indio_dev);
+-	/* default settings at probe */
+ 
+-	data->meas_conf = CONF_NORMAL;
+-	data->range = RANGE_1_0;
+-	data->operating_mode = MODE_CONVERSION_CONTINUOUS;
++	/* default settings at probe */
++	data = iio_priv(indio_dev);
++	data->meas_conf = HMC5843_MEAS_CONF_NORMAL;
++	data->range = HMC5843_RANGE_GAIN_DEFAULT;
++	data->operating_mode = HMC5843_MODE_CONVERSION_CONTINUOUS;
+ 
+ 	i2c_set_clientdata(client, indio_dev);
+ 
+@@ -587,7 +601,7 @@ static int hmc5843_remove(struct i2c_client *client)
+ 
+ 	iio_device_unregister(indio_dev);
+ 	 /*  sleep mode to save power */
+-	hmc5843_configure(client, MODE_SLEEP);
++	hmc5843_configure(client, HMC5843_MODE_SLEEP);
+ 	iio_device_free(indio_dev);
+ 
+ 	return 0;
+@@ -596,7 +610,7 @@ static int hmc5843_remove(struct i2c_client *client)
+ #ifdef CONFIG_PM_SLEEP
+ static int hmc5843_suspend(struct device *dev)
+ {
+-	hmc5843_configure(to_i2c_client(dev), MODE_SLEEP);
++	hmc5843_configure(to_i2c_client(dev), HMC5843_MODE_SLEEP);
+ 	return 0;
+ }
+ 
 -- 
 1.7.5.4
 
