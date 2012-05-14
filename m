@@ -1,133 +1,116 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FACC464.9010404@kernel.org>
-Date: Fri, 11 May 2012 08:48:52 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:55625 "EHLO
+	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752341Ab2ENPzr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 May 2012 11:55:47 -0400
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: Jon Brenner <jbrenner@taosinc.com>,
- linux-iio <linux-iio@vger.kernel.org>,
- Alan Cox <alan@lxorguk.ukuu.org.uk>, samu.p.onkalo@nokia.com,
- daniel@caiaq.de, giometti@linux.it, khali@linux-fr.org,
- amit.kucheria@verdurent.com, Laxman Dewangan <ldewangan@nvidia.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH V1] RFC - Proposed IIO Documentation patch to add CCT
- and RGBC data
-References: <1335907654.766.24.camel@jonz-ub2> <4FA0F2A7.1040003@cam.ac.uk>
-In-Reply-To: <4FA0F2A7.1040003@cam.ac.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;
+	charset="utf-8"
+Subject: RE: [PATCH V1] RFC - Proposed IIO Documentation patch to add CCT and RGBC data
+Date: Mon, 14 May 2012 11:02:19 -0500
+Message-ID: <B4B07CCC7B7A084E989CF9386538EA1D013EC04D@exchsrvr.taosinc.com>
+In-Reply-To: <4FACC464.9010404@kernel.org>
+References: <1335907654.766.24.camel@jonz-ub2> <4FA0F2A7.1040003@cam.ac.uk> <4FACC464.9010404@kernel.org>
+From: "Jon Brenner" <jbrenner@TAOSinc.com>
+To: "Jonathan Cameron" <jic23@kernel.org>,
+	"Jonathan Cameron" <jic23@cam.ac.uk>
+Cc: "linux-iio" <linux-iio@vger.kernel.org>,
+	"Alan Cox" <alan@lxorguk.ukuu.org.uk>, <samu.p.onkalo@nokia.com>,
+	<daniel@caiaq.de>, <giometti@linux.it>, <khali@linux-fr.org>,
+	<amit.kucheria@verdurent.com>,
+	"Laxman Dewangan" <ldewangan@nvidia.com>,
+	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 5/2/2012 9:39 AM, Jonathan Cameron wrote:
-> Added cc's
->
-> Jon, remember to wrap emails at 80 chars please!
->> Request for Comments -
->>
->> Documentation patch to add Correlated Color Temperature (CCT) and RGBC
->> (red/green/blue/clear) data.
->>
->> The addition of CCT and RGBC is afforded by utilizing a 'real channel'
->> type of IIO_CCT, and 4 modifiers of IIO_MOD_LIGHT_CLEAR,
->> IIO_MOD_LIGHT_RED, IIO_MOD_LIGHT_GREEN, and IIO_MOD_LIGHT_BLUE, found
->> in types.h.
-If we were to apply this to the existing sensors, how do we distinguish
-between 'clear' vs the visable+infrared option that is there already?
-I note below that you have distinguished this by saying it is on
-a colour sensor only.  That seems a little bit inconsistent given
-a single wide band sensor might be measuring the same thing...
-
-I'm fine with the colour ones btw but one query below..
->> A trivial addition to industrialio-core.c is required.
->>
->> in_cct0_input will return typically return the color temperature
->> expressed in kelvins.
->>
->> IIO_MODIFIERs are respective of the associated light frequencies for
->> each of the channels.
->>
->>
->>
->>
->>
->>
->> Signed-off-by: Jon Brenner<jbrenner@taosinc.com>
->> ---
->> .../staging/iio/Documentation/sysfs-bus-iio-light | 46
->> ++++++++++++++++++++
->> 1 files changed, 46 insertions(+), 0 deletions(-)
->>
->> diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
->> b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
->> index 715c74d..bd42baf 100644
->> --- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
->> +++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
->> @@ -34,6 +34,15 @@ Description:
->> it comes back in SI units, it should also include _input else it
->> should include _raw to signify it is not in SI units.
->>
->> +What: /sys/bus/iio/devices/device[n]/in_cct0[_input|_raw]
->> +KernelVersion: 3.4.0
->> +Contact: linux-iio@vger.kernel.org
->> +Description:
->> + This should return the correlated color temperature from the
->> + light sensor. If it comes back in SI units, it should also
->> + include _input else it should include _raw to signify it is not
->> + in SI units.
->> +
->> What: /sys/.../device[n]/proximity_on_chip_ambient_infrared_supression
->> KernelVersion: 2.6.37
->> Contact: linux-iio@vger.kernel.org
->> @@ -82,3 +91,40 @@ Contact: linux-iio@vger.kernel.org
->> Description:
->> This property gets/sets the table of coefficients
->> used in calculating illuminance in lux.
->> +
->> +What: /sys/bus/iio/devices/device[n]/in_intensity_clear[_input|_raw]
->> +KernelVersion: 3.4.0
->> +Contact: linux-iio@vger.kernel.org
->> +Description:
->> + This property is supported by sensors that have a RGBC
->> + sensing mode. This value should be the output from a reading
->> + and if expressed in SI units, should include _input. If this
->> + value is not in SI units, then it should include _raw.
->> +
->> +What: /sys/bus/iio/devices/device[n]/in_intensity_red[_input|_raw]
->> +KernelVersion: 3.4.0
->> +Contact: linux-iio@vger.kernel.org
->> +Description:
->> + This property is supported by sensors that have a RGBC
->> + sensing mode. This value should be the output from a reading
->> + and if expressed in SI units, should include _input. If this
->> + value is not in SI units, then it should include _raw.
-Err. What are the SI units of intensity?
->> +
->> +What: /sys/bus/iio/devices/device[n]/in_intensity_green[_input|_raw]
->> +KernelVersion: 3.4.0
->> +Contact: linux-iio@vger.kernel.org
->> +Description:
->> + This property is supported by sensors that have a RGBC
->> + sensing mode. This value should be the output from a reading
->> + and if expressed in SI units, should include _input. If this
->> + value is not in SI units, then it should include _raw.
->> +
->> +What: /sys/bus/iio/devices/device[n]/in_intensity_blue[_input|_raw]
->> +KernelVersion: 3.4.0
->> +Contact: linux-iio@vger.kernel.org
->> +Description:
->> + This property is supported by sensors that have a RGBC
->> + sensing mode. This value should be the output from a reading
->> + and if expressed in SI units, should include _input. If this
->> + value is not in SI units, then it should include _raw.
->> +
->> --
->> 1.7.4.1
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at http://vger.kernel.org/majordomo-info.html
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at http://vger.kernel.org/majordomo-info.html
+SW4gbGluZS4uDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBKb25hdGhhbiBD
+YW1lcm9uIFttYWlsdG86amljMjNAa2VybmVsLm9yZ10gDQpTZW50OiBGcmlkYXksIE1heSAxMSwg
+MjAxMiAyOjQ5IEFNDQpUbzogSm9uYXRoYW4gQ2FtZXJvbg0KQ2M6IEpvbiBCcmVubmVyOyBsaW51
+eC1paW87IEFsYW4gQ294OyBzYW11LnAub25rYWxvQG5va2lhLmNvbTsgZGFuaWVsQGNhaWFxLmRl
+OyBnaW9tZXR0aUBsaW51eC5pdDsga2hhbGlAbGludXgtZnIub3JnOyBhbWl0Lmt1Y2hlcmlhQHZl
+cmR1cmVudC5jb207IExheG1hbiBEZXdhbmdhbjsgR3JlZyBLcm9haC1IYXJ0bWFuDQpTdWJqZWN0
+OiBSZTogW1BBVENIIFYxXSBSRkMgLSBQcm9wb3NlZCBJSU8gRG9jdW1lbnRhdGlvbiBwYXRjaCB0
+byBhZGQgQ0NUIGFuZCBSR0JDIGRhdGENCg0KT24gNS8yLzIwMTIgOTozOSBBTSwgSm9uYXRoYW4g
+Q2FtZXJvbiB3cm90ZToNCj4gQWRkZWQgY2Mncw0KPg0KPiBKb24sIHJlbWVtYmVyIHRvIHdyYXAg
+ZW1haWxzIGF0IDgwIGNoYXJzIHBsZWFzZSENCj4+IFJlcXVlc3QgZm9yIENvbW1lbnRzIC0NCj4+
+DQo+PiBEb2N1bWVudGF0aW9uIHBhdGNoIHRvIGFkZCBDb3JyZWxhdGVkIENvbG9yIFRlbXBlcmF0
+dXJlIChDQ1QpIGFuZCANCj4+IFJHQkMNCj4+IChyZWQvZ3JlZW4vYmx1ZS9jbGVhcikgZGF0YS4N
+Cj4+DQo+PiBUaGUgYWRkaXRpb24gb2YgQ0NUIGFuZCBSR0JDIGlzIGFmZm9yZGVkIGJ5IHV0aWxp
+emluZyBhICdyZWFsIGNoYW5uZWwnDQo+PiB0eXBlIG9mIElJT19DQ1QsIGFuZCA0IG1vZGlmaWVy
+cyBvZiBJSU9fTU9EX0xJR0hUX0NMRUFSLCANCj4+IElJT19NT0RfTElHSFRfUkVELCBJSU9fTU9E
+X0xJR0hUX0dSRUVOLCBhbmQgSUlPX01PRF9MSUdIVF9CTFVFLCBmb3VuZCANCj4+IGluIHR5cGVz
+LmguDQpJZiB3ZSB3ZXJlIHRvIGFwcGx5IHRoaXMgdG8gdGhlIGV4aXN0aW5nIHNlbnNvcnMsIGhv
+dyBkbyB3ZSBkaXN0aW5ndWlzaCBiZXR3ZWVuICdjbGVhcicgdnMgdGhlIHZpc2FibGUraW5mcmFy
+ZWQgb3B0aW9uIHRoYXQgaXMgdGhlcmUgYWxyZWFkeT8NCkkgbm90ZSBiZWxvdyB0aGF0IHlvdSBo
+YXZlIGRpc3Rpbmd1aXNoZWQgdGhpcyBieSBzYXlpbmcgaXQgaXMgb24gYSBjb2xvdXIgc2Vuc29y
+IG9ubHkuICBUaGF0IHNlZW1zIGEgbGl0dGxlIGJpdCBpbmNvbnNpc3RlbnQgZ2l2ZW4gYSBzaW5n
+bGUgd2lkZSBiYW5kIHNlbnNvciBtaWdodCBiZSBtZWFzdXJpbmcgdGhlIHNhbWUgdGhpbmcuLi4N
+Cg0KSSdtIGZpbmUgd2l0aCB0aGUgY29sb3VyIG9uZXMgYnR3IGJ1dCBvbmUgcXVlcnkgYmVsb3cu
+Lg0KPj4gQSB0cml2aWFsIGFkZGl0aW9uIHRvIGluZHVzdHJpYWxpby1jb3JlLmMgaXMgcmVxdWly
+ZWQuDQo+Pg0KPj4gaW5fY2N0MF9pbnB1dCB3aWxsIHJldHVybiB0eXBpY2FsbHkgcmV0dXJuIHRo
+ZSBjb2xvciB0ZW1wZXJhdHVyZSANCj4+IGV4cHJlc3NlZCBpbiBrZWx2aW5zLg0KPj4NCj4+IElJ
+T19NT0RJRklFUnMgYXJlIHJlc3BlY3RpdmUgb2YgdGhlIGFzc29jaWF0ZWQgbGlnaHQgZnJlcXVl
+bmNpZXMgZm9yIA0KPj4gZWFjaCBvZiB0aGUgY2hhbm5lbHMuDQo+Pg0KPj4NCj4+DQo+Pg0KPj4N
+Cj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBKb24gQnJlbm5lcjxqYnJlbm5lckB0YW9zaW5jLmNvbT4N
+Cj4+IC0tLQ0KPj4gLi4uL3N0YWdpbmcvaWlvL0RvY3VtZW50YXRpb24vc3lzZnMtYnVzLWlpby1s
+aWdodCB8IDQ2DQo+PiArKysrKysrKysrKysrKysrKysrKw0KPj4gMSBmaWxlcyBjaGFuZ2VkLCA0
+NiBpbnNlcnRpb25zKCspLCAwIGRlbGV0aW9ucygtKQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9kcml2
+ZXJzL3N0YWdpbmcvaWlvL0RvY3VtZW50YXRpb24vc3lzZnMtYnVzLWlpby1saWdodA0KPj4gYi9k
+cml2ZXJzL3N0YWdpbmcvaWlvL0RvY3VtZW50YXRpb24vc3lzZnMtYnVzLWlpby1saWdodA0KPj4g
+aW5kZXggNzE1Yzc0ZC4uYmQ0MmJhZiAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9p
+aW8vRG9jdW1lbnRhdGlvbi9zeXNmcy1idXMtaWlvLWxpZ2h0DQo+PiArKysgYi9kcml2ZXJzL3N0
+YWdpbmcvaWlvL0RvY3VtZW50YXRpb24vc3lzZnMtYnVzLWlpby1saWdodA0KPj4gQEAgLTM0LDYg
+KzM0LDE1IEBAIERlc2NyaXB0aW9uOg0KPj4gaXQgY29tZXMgYmFjayBpbiBTSSB1bml0cywgaXQg
+c2hvdWxkIGFsc28gaW5jbHVkZSBfaW5wdXQgZWxzZSBpdCANCj4+IHNob3VsZCBpbmNsdWRlIF9y
+YXcgdG8gc2lnbmlmeSBpdCBpcyBub3QgaW4gU0kgdW5pdHMuDQo+Pg0KPj4gK1doYXQ6IC9zeXMv
+YnVzL2lpby9kZXZpY2VzL2RldmljZVtuXS9pbl9jY3QwW19pbnB1dHxfcmF3XQ0KPj4gK0tlcm5l
+bFZlcnNpb246IDMuNC4wDQo+PiArQ29udGFjdDogbGludXgtaWlvQHZnZXIua2VybmVsLm9yZw0K
+Pj4gK0Rlc2NyaXB0aW9uOg0KPj4gKyBUaGlzIHNob3VsZCByZXR1cm4gdGhlIGNvcnJlbGF0ZWQg
+Y29sb3IgdGVtcGVyYXR1cmUgZnJvbSB0aGUgIGxpZ2h0IA0KPj4gK3NlbnNvci4gSWYgaXQgY29t
+ZXMgYmFjayBpbiBTSSB1bml0cywgaXQgc2hvdWxkIGFsc28gIGluY2x1ZGUgX2lucHV0IA0KPj4g
+K2Vsc2UgaXQgc2hvdWxkIGluY2x1ZGUgX3JhdyB0byBzaWduaWZ5IGl0IGlzIG5vdCAgaW4gU0kg
+dW5pdHMuDQo+PiArDQo+PiBXaGF0OiANCj4+IC9zeXMvLi4uL2RldmljZVtuXS9wcm94aW1pdHlf
+b25fY2hpcF9hbWJpZW50X2luZnJhcmVkX3N1cHJlc3Npb24NCj4+IEtlcm5lbFZlcnNpb246IDIu
+Ni4zNw0KPj4gQ29udGFjdDogbGludXgtaWlvQHZnZXIua2VybmVsLm9yZw0KPj4gQEAgLTgyLDMg
+KzkxLDQwIEBAIENvbnRhY3Q6IGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmcNCj4+IERlc2NyaXB0
+aW9uOg0KPj4gVGhpcyBwcm9wZXJ0eSBnZXRzL3NldHMgdGhlIHRhYmxlIG9mIGNvZWZmaWNpZW50
+cyB1c2VkIGluIGNhbGN1bGF0aW5nIA0KPj4gaWxsdW1pbmFuY2UgaW4gbHV4Lg0KPj4gKw0KPj4g
+K1doYXQ6IC9zeXMvYnVzL2lpby9kZXZpY2VzL2RldmljZVtuXS9pbl9pbnRlbnNpdHlfY2xlYXJb
+X2lucHV0fF9yYXddDQo+PiArS2VybmVsVmVyc2lvbjogMy40LjANCj4+ICtDb250YWN0OiBsaW51
+eC1paW9Admdlci5rZXJuZWwub3JnDQo+PiArRGVzY3JpcHRpb246DQo+PiArIFRoaXMgcHJvcGVy
+dHkgaXMgc3VwcG9ydGVkIGJ5IHNlbnNvcnMgdGhhdCBoYXZlIGEgUkdCQyAgc2Vuc2luZyANCj4+
+ICttb2RlLiBUaGlzIHZhbHVlIHNob3VsZCBiZSB0aGUgb3V0cHV0IGZyb20gYSByZWFkaW5nICBh
+bmQgaWYgDQo+PiArZXhwcmVzc2VkIGluIFNJIHVuaXRzLCBzaG91bGQgaW5jbHVkZSBfaW5wdXQu
+IElmIHRoaXMgIHZhbHVlIGlzIG5vdCANCj4+ICtpbiBTSSB1bml0cywgdGhlbiBpdCBzaG91bGQg
+aW5jbHVkZSBfcmF3Lg0KPj4gKw0KPj4gK1doYXQ6IC9zeXMvYnVzL2lpby9kZXZpY2VzL2Rldmlj
+ZVtuXS9pbl9pbnRlbnNpdHlfcmVkW19pbnB1dHxfcmF3XQ0KPj4gK0tlcm5lbFZlcnNpb246IDMu
+NC4wDQo+PiArQ29udGFjdDogbGludXgtaWlvQHZnZXIua2VybmVsLm9yZw0KPj4gK0Rlc2NyaXB0
+aW9uOg0KPj4gKyBUaGlzIHByb3BlcnR5IGlzIHN1cHBvcnRlZCBieSBzZW5zb3JzIHRoYXQgaGF2
+ZSBhIFJHQkMgIHNlbnNpbmcgDQo+PiArbW9kZS4gVGhpcyB2YWx1ZSBzaG91bGQgYmUgdGhlIG91
+dHB1dCBmcm9tIGEgcmVhZGluZyAgYW5kIGlmIA0KPj4gK2V4cHJlc3NlZCBpbiBTSSB1bml0cywg
+c2hvdWxkIGluY2x1ZGUgX2lucHV0LiBJZiB0aGlzICB2YWx1ZSBpcyBub3QgDQo+PiAraW4gU0kg
+dW5pdHMsIHRoZW4gaXQgc2hvdWxkIGluY2x1ZGUgX3Jhdy4NCkVyci4gV2hhdCBhcmUgdGhlIFNJ
+IHVuaXRzIG9mIGludGVuc2l0eT8NCmlycmFkaWFuY2UgaWUuIHVXL3NxIE1pbC4NCiANCj4+ICsN
+Cj4+ICtXaGF0OiAvc3lzL2J1cy9paW8vZGV2aWNlcy9kZXZpY2Vbbl0vaW5faW50ZW5zaXR5X2dy
+ZWVuW19pbnB1dHxfcmF3XQ0KPj4gK0tlcm5lbFZlcnNpb246IDMuNC4wDQo+PiArQ29udGFjdDog
+bGludXgtaWlvQHZnZXIua2VybmVsLm9yZw0KPj4gK0Rlc2NyaXB0aW9uOg0KPj4gKyBUaGlzIHBy
+b3BlcnR5IGlzIHN1cHBvcnRlZCBieSBzZW5zb3JzIHRoYXQgaGF2ZSBhIFJHQkMgIHNlbnNpbmcg
+DQo+PiArbW9kZS4gVGhpcyB2YWx1ZSBzaG91bGQgYmUgdGhlIG91dHB1dCBmcm9tIGEgcmVhZGlu
+ZyAgYW5kIGlmIA0KPj4gK2V4cHJlc3NlZCBpbiBTSSB1bml0cywgc2hvdWxkIGluY2x1ZGUgX2lu
+cHV0LiBJZiB0aGlzICB2YWx1ZSBpcyBub3QgDQo+PiAraW4gU0kgdW5pdHMsIHRoZW4gaXQgc2hv
+dWxkIGluY2x1ZGUgX3Jhdy4NCj4+ICsNCj4+ICtXaGF0OiAvc3lzL2J1cy9paW8vZGV2aWNlcy9k
+ZXZpY2Vbbl0vaW5faW50ZW5zaXR5X2JsdWVbX2lucHV0fF9yYXddDQo+PiArS2VybmVsVmVyc2lv
+bjogMy40LjANCj4+ICtDb250YWN0OiBsaW51eC1paW9Admdlci5rZXJuZWwub3JnDQo+PiArRGVz
+Y3JpcHRpb246DQo+PiArIFRoaXMgcHJvcGVydHkgaXMgc3VwcG9ydGVkIGJ5IHNlbnNvcnMgdGhh
+dCBoYXZlIGEgUkdCQyAgc2Vuc2luZyANCj4+ICttb2RlLiBUaGlzIHZhbHVlIHNob3VsZCBiZSB0
+aGUgb3V0cHV0IGZyb20gYSByZWFkaW5nICBhbmQgaWYgDQo+PiArZXhwcmVzc2VkIGluIFNJIHVu
+aXRzLCBzaG91bGQgaW5jbHVkZSBfaW5wdXQuIElmIHRoaXMgIHZhbHVlIGlzIG5vdCANCj4+ICtp
+biBTSSB1bml0cywgdGhlbiBpdCBzaG91bGQgaW5jbHVkZSBfcmF3Lg0KPj4gKw0KPj4gLS0NCj4+
+IDEuNy40LjENCj4+DQo+PiAtLQ0KPj4gVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGxpc3Q6IHNl
+bmQgdGhlIGxpbmUgInVuc3Vic2NyaWJlIGxpbnV4LWlpbyIgDQo+PiBpbiB0aGUgYm9keSBvZiBh
+IG1lc3NhZ2UgdG8gbWFqb3Jkb21vQHZnZXIua2VybmVsLm9yZyBNb3JlIG1ham9yZG9tbyANCj4+
+IGluZm8gYXQgaHR0cDovL3ZnZXIua2VybmVsLm9yZy9tYWpvcmRvbW8taW5mby5odG1sDQo+DQo+
+IC0tDQo+IFRvIHVuc3Vic2NyaWJlIGZyb20gdGhpcyBsaXN0OiBzZW5kIHRoZSBsaW5lICJ1bnN1
+YnNjcmliZSBsaW51eC1paW8iIA0KPiBpbiB0aGUgYm9keSBvZiBhIG1lc3NhZ2UgdG8gbWFqb3Jk
+b21vQHZnZXIua2VybmVsLm9yZyBNb3JlIG1ham9yZG9tbyANCj4gaW5mbyBhdCBodHRwOi8vdmdl
+ci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwNCg0K
