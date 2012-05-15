@@ -1,91 +1,142 @@
-Return-Path: <ggao@invensense.com>
-From: Ge Gao <ggao@invensense.com>
-References: <6e6a0f27b1900226df5350cc320f25bb@mail.gmail.com>
- <9d0339d0-2cde-4605-a8b0-99f568d05eb8@email.android.com> <4FB35420.4020001@cam.ac.uk>
-In-Reply-To: <4FB35420.4020001@cam.ac.uk>
-MIME-Version: 1.0
-Date: Wed, 16 May 2012 10:16:48 -0700
-Message-ID: <911a9107977d704ed7f0c218a15b8c38@mail.gmail.com>
-Subject: RE: sw_ring.c poll problem
-To: Jonathan Cameron <jic23@cam.ac.uk>, Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:50505 "EHLO
+	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S966750Ab2EOU6f convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 May 2012 16:58:35 -0400
+Subject: [PATCH V1] IIO channel type and modifiers for CCT and RGBC data
+From: Jon Brenner <jbrenner@taosinc.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio <linux-iio@vger.kernel.org>,
+	Linux Kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 15 May 2012 15:58:49 -0500
+Message-ID: <1337115529.2399.3.camel@jonz-ub2>
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Dear Jonathan,
-	Thank you very much for the information .  I will switch to kfifo. The
-problem was that a lot of drivers,  which are already in the kernel,  seem
-to use sw_ring, I was following other driver's route to do it.
-	There is no problem with the sw_ring if we follow the way it should be
-used. However, the motion integration algorithm requires that the data comes
-in immediately when it is available and don't lose data. This half full
-requirement poses some problems. If we set the buffer length too small, we
-could lose data if the CPU is accidently delayed. If we set the length too
-big, it will take a while for the data to come and the data becomes too old
-when it comes to user application. It would be better that we have a ring
-buffer that is long enough yet the poll will pass when there is only one
-sample in the ring buffer. Hopefully, this kfifo can do the job.
-	Now that I understand the mechanism underneath, I will switch to kfifo for
-our driver resubmitted patch.
+Add iio channel type and modifiers for Correlated Color Temperature (CCT)
+and RGBC (red/green/blue/clear) data.
+Add CCT and RGBC descriptions in documentation.
 
-Best regards,
+Signed-off-by: Jon Brenner <jbrenner@taosinc.com>
+---
+ drivers/iio/industrialio-core.c                    |    5 ++
+ .../staging/iio/Documentation/sysfs-bus-iio-light  |   50 ++++++++++++++++++++
+ include/linux/iio/types.h                          |    5 ++
+ 3 files changed, 60 insertions(+), 0 deletions(-)
 
-Ge GAO
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1ddd886..34d8cc9 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -64,6 +64,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_TIMESTAMP] = "timestamp",
+ 	[IIO_CAPACITANCE] = "capacitance",
+ 	[IIO_ALTVOLTAGE] = "altvoltage",
++	[IIO_CCT] = "cct",
+ };
 
+ static const char * const iio_modifier_names[] = {
+@@ -72,6 +73,10 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_Z] = "z",
+ 	[IIO_MOD_LIGHT_BOTH] = "both",
+ 	[IIO_MOD_LIGHT_IR] = "ir",
++	[IIO_MOD_LIGHT_CLEAR] = "clear",
++	[IIO_MOD_LIGHT_RED] = "red",
++	[IIO_MOD_LIGHT_GREEN] = "green",
++	[IIO_MOD_LIGHT_BLUE] = "blue",
+ };
 
------Original Message-----
-From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
-Sent: Wednesday, May 16, 2012 12:16 AM
-To: Ge Gao; Jonathan Cameron
-Cc: linux-iio@vger.kernel.org
-Subject: Re: sw_ring.c poll problem
+ /* relies on pairs of these shared then separate */
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+index 715c74d..f9a4145 100644
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+@@ -34,6 +34,15 @@ Description:
+ 		it comes back in SI units, it should also include _input else it
+ 		should include _raw to signify it is not in SI units.
 
-On 5/16/2012 6:46 AM, Jonathan Cameron wrote:
->
->
-> Ge Gao<ggao@invensense.com>  wrote:
->
->> Dear all,
->> 	I found that ring_sw.c the poll function has to read half of the
->> data for poll to work. Basically, you have to fill half of the ring
->> buffer in order for poll to be triggrerred. You have to also read
->> more than half of the data for poll to be disappeared. This would
->> pose problems. If you have big ring buffer, the data will lost its
->> immediacy. If you have small ring buffer, the data could lost if not
->> buffered enough. Is that possible this poll action configurable? Or I
->> missed anything.
->
-> Use kfifobuf instead. Sw _ring is going away anyway.
++What:		/sys/bus/iio/devices/device[n]/in_cct0[_input|_raw]
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This should return the correlated color temperature from the
++		light sensor. If it comes back in SI units, it should also
++		include _input else it should include _raw to signify it is not
++		in SI units.
++
+ What:		/sys/.../device[n]/proximity_on_chip_ambient_infrared_supression
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+@@ -82,3 +91,44 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		This property gets/sets the table of coefficients
+ 		used in calculating illuminance in lux.
++
++What:		/sys/bus/iio/devices/device[n]/in_intensity_clear[_input|_raw]
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This property is supported by sensors that have a RGBC
++		sensing mode. This value should be the output from a reading
++		and if expressed in SI units, should include _input. If this
++		value is not in SI units (e.g. irradiance, uW/mm), then it should
++		include _raw.
++
++What:		/sys/bus/iio/devices/device[n]/in_intensity_red[_input|_raw]
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This property is supported by sensors that have a RGBC
++		sensing mode. This value should be the output from a reading
++		and if expressed in SI units, should include _input. If this
++		value is not in SI units (e.g. irradiance, uW/mm), then it should
++		include _raw.
++
++What:		/sys/bus/iio/devices/device[n]/in_intensity_green[_input|_raw]
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This property is supported by sensors that have a RGBC
++		sensing mode. This value should be the output from a reading
++		and if expressed in SI units, should include _input. If this
++		value is not in SI units (e.g. irradiance, uW/mm), then it should
++		include _raw.
++
++What:		/sys/bus/iio/devices/device[n]/in_intensity_blue[_input|_raw]
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This property is supported by sensors that have a RGBC
++		sensing mode. This value should be the output from a reading
++		and if expressed in SI units, should include _input. If this
++		value is not in SI units (e.g. irradiance, uW/mm), then it should
++		include _raw.
++
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 1b073b1..a7de5d9 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -28,6 +28,7 @@ enum iio_chan_type {
+ 	IIO_TIMESTAMP,
+ 	IIO_CAPACITANCE,
+ 	IIO_ALTVOLTAGE,
++	IIO_CCT,
+ };
 
-Hi Ge,
+ enum iio_modifier {
+@@ -45,6 +46,10 @@ enum iio_modifier {
+ 	IIO_MOD_X_OR_Y_OR_Z,
+ 	IIO_MOD_LIGHT_BOTH,
+ 	IIO_MOD_LIGHT_IR,
++	IIO_MOD_LIGHT_CLEAR,
++	IIO_MOD_LIGHT_RED,
++	IIO_MOD_LIGHT_GREEN,
++	IIO_MOD_LIGHT_BLUE,
+ };
 
-I realised after sending that message that I was being rather dismissive of
-your query.  Got up far too early this morning (as every morning ;)
+ #define IIO_VAL_INT 1
+--
+1.7.4.1
 
-Anyhow, to give more details. sw_ring is probably never going to make it out
-of staging, hence the move to kfifo_buf. At somepoint we need to work out
-how to do equivalent functionality of sw_ring but I've not had time to more
-than start looking into this.
-
-As you saw, poll on sw_ring is a watershead signal indicating (in theory and
-last I checked it worked) that the ring is more than half full.
-Any read that takes the fill level below half (test code just reads half the
-size of the buffer), should allow a new passing of the watershead to
-resignal poll. It's entirely possible there is a bug in there though I know
-it is been getting a fair bit of testing with some other drivers so could be
-todo with the precise way you are reading it hitting some corner case? (I'm
-stretching...)
-
-Right now I'd just move over to kfifo_buf if I were you. It's much more
-'standard' in that it's a fifo and poll indicates if there is anything there
-at all.
->> 	Thanks.
->>
->> Best regards,
->>
->> Ge GAO
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->> in the body of a message to majordomo@vger.kernel.org More majordomo
->> info at  http://vger.kernel.org/majordomo-info.html
->
