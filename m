@@ -1,103 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:56429 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757021Ab2EPQXq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 16 May 2012 12:23:46 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 4/9] iio: rework sampling rate setting in hmc5843
-Date: Wed, 16 May 2012 18:22:06 +0200
-Message-Id: <1337185331-26616-5-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1337185331-26616-1-git-send-email-pmeerw@pmeerw.net>
+Received: from mail-pz0-f46.google.com ([209.85.210.46]:33411 "EHLO
+	mail-pz0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965838Ab2EPUaH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 May 2012 16:30:07 -0400
+Received: by dady13 with SMTP id y13so1464908dad.19
+        for <linux-iio@vger.kernel.org>; Wed, 16 May 2012 13:30:06 -0700 (PDT)
+Date: Wed, 16 May 2012 13:29:59 -0700
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 4/9] staging: iio: rework sampling rate setting in hmc5843
+Message-ID: <20120516202959.GA32210@kroah.com>
 References: <1337185331-26616-1-git-send-email-pmeerw@pmeerw.net>
+ <1337185331-26616-5-git-send-email-pmeerw@pmeerw.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1337185331-26616-5-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/magnetometer/hmc5843.c |   51 +++++++++++++---------------
- 1 files changed, 24 insertions(+), 27 deletions(-)
+On Wed, May 16, 2012 at 06:22:06PM +0200, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  drivers/staging/iio/magnetometer/hmc5843.c |   51 +++++++++++++---------------
+>  1 files changed, 24 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-index 1318f7d..6888e04 100644
---- a/drivers/staging/iio/magnetometer/hmc5843.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843.c
-@@ -85,14 +85,6 @@
-  */
- #define HMC5843_RATE_OFFSET			0x02
- #define HMC5843_RATE_BITMASK			0x1C
--#define RATE_5					0x00
--#define RATE_10					0x01
--#define RATE_20					0x02
--#define RATE_50					0x03
--#define RATE_100				0x04
--#define RATE_200				0x05
--#define RATE_500				0x06
--
- #define HMC5843_RATE_NOT_USED			0x07
- 
- /*
-@@ -342,6 +334,21 @@ static s32 hmc5843_set_rate(struct i2c_client *client,
- 	return i2c_smbus_write_byte_data(client, HMC5843_CONFIG_REG_A, reg_val);
- }
- 
-+static int hmc5843_check_sampling_frequency(struct hmc5843_data *data,
-+						const char *buf)
-+{
-+	const char * const *samp_freq = regval_to_samp_freq;
-+	int i;
-+
-+	for (i = 0; i < HMC5843_RATE_NOT_USED; i++) {
-+		if (strncmp(buf, samp_freq[i],
-+			strlen(samp_freq[i])) == 0)
-+			return i;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- static ssize_t set_sampling_frequency(struct device *dev,
- 					struct device_attribute *attr,
- 					const char *buf, size_t count)
-@@ -350,27 +357,17 @@ static ssize_t set_sampling_frequency(struct device *dev,
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
- 	struct hmc5843_data *data = iio_priv(indio_dev);
--	unsigned long rate = 0;
--
--	if (strncmp(buf, "0.5" , 3) == 0)
--		rate = RATE_5;
--	else if (strncmp(buf, "1" , 1) == 0)
--		rate = RATE_10;
--	else if (strncmp(buf, "2", 1) == 0)
--		rate = RATE_20;
--	else if (strncmp(buf, "5", 1) == 0)
--		rate = RATE_50;
--	else if (strncmp(buf, "10", 2) == 0)
--		rate = RATE_100;
--	else if (strncmp(buf, "20" , 2) == 0)
--		rate = RATE_200;
--	else if (strncmp(buf, "50" , 2) == 0)
--		rate = RATE_500;
--	else
--		return -EINVAL;
-+	int rate;
-+
-+	rate = hmc5843_check_sampling_frequency(data, buf);
-+	if (rate < 0) {
-+		dev_err(&client->dev,
-+			"sampling frequency is not supported\n");
-+		return rate;
-+	}
- 
- 	mutex_lock(&data->lock);
--	dev_dbg(dev, "set rate to %lu\n", rate);
-+	dev_dbg(dev, "set rate to %d\n", rate);
- 	if (hmc5843_set_rate(client, rate)) {
- 		count = -EINVAL;
- 		goto exit;
--- 
-1.7.5.4
+I don't know what tree you made these against, but there is fuzz and I
+can't apply it.  I was able to resolve the first 3 patches, but here's
+where it got messier.
 
+Please rebase the rest of these patches on the staging-next branch and
+resend them so that I can properly apply them.
+
+thansk,
+
+greg k-h
