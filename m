@@ -1,77 +1,118 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:56423 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751811Ab2EPQXq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 16 May 2012 12:23:46 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 1/9] iio: fix access to hmc5843 private data
-Date: Wed, 16 May 2012 18:22:03 +0200
-Message-Id: <1337185331-26616-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1337185331-26616-1-git-send-email-pmeerw@pmeerw.net>
-References: <1337185331-26616-1-git-send-email-pmeerw@pmeerw.net>
+Received: from 90-46-11-204.rar.beartech.net ([204.11.46.90]:27084 "EHLO
+	exchsrvr.taosinc.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755757Ab2EPPqZ convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 May 2012 11:46:25 -0400
+Subject: [PATCH V2] IIO channel type and modifiers for CCT and RGBC data
+From: Jon Brenner <jbrenner@taosinc.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio <linux-iio@vger.kernel.org>,
+	Linux Kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 16 May 2012 10:46:42 -0500
+Message-ID: <1337183202.6344.1.camel@jonz-ub2>
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-i2c_get_clientdata(client) points to iio_dev, not hmc5843_data; fixes
-issue similar to 62d2feb9803f18c4e3c8a1a2c7e30a54df8a1d72
+Add iio channel type and modifiers for Correlated Color Temperature (CCT)
+and RGBC (red/green/blue/clear) data.
+Add CCT and RGBC descriptions to documentation.
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Acked-by: Shubhrajyoti D <shubhrajyoti@ti.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+Changes:
+Revised/condensed RGBC descriptions.
+
+Signed-off-by: Jon Brenner <jbrenner@taosinc.com>
 ---
- drivers/staging/iio/magnetometer/hmc5843.c |   14 +++++++++-----
- 1 files changed, 9 insertions(+), 5 deletions(-)
+ drivers/iio/industrialio-core.c                    |    5 ++++
+ .../staging/iio/Documentation/sysfs-bus-iio-light  |   23 ++++++++++++++++++++
+ include/linux/iio/types.h                          |    5 ++++
+ 3 files changed, 33 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-index 3ec6518..9725cf8 100644
---- a/drivers/staging/iio/magnetometer/hmc5843.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843.c
-@@ -250,7 +250,8 @@ static IIO_DEVICE_ATTR(operating_mode,
- static s32 hmc5843_set_meas_conf(struct i2c_client *client,
- 				      u8 meas_conf)
- {
--	struct hmc5843_data *data = i2c_get_clientdata(client);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct hmc5843_data *data = iio_priv(indio_dev);
- 	u8 reg_val;
- 	reg_val = (meas_conf & MEAS_CONF_MASK) |  (data->rate << RATE_OFFSET);
- 	return i2c_smbus_write_byte_data(client, HMC5843_CONFIG_REG_A, reg_val);
-@@ -272,7 +273,7 @@ static ssize_t hmc5843_set_measurement_configuration(struct device *dev,
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
--	struct hmc5843_data *data = i2c_get_clientdata(client);
-+	struct hmc5843_data *data = iio_priv(indio_dev);
- 	unsigned long meas_conf = 0;
- 	int error = strict_strtoul(buf, 10, &meas_conf);
- 	if (error)
-@@ -314,7 +315,8 @@ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("0.5 1 2 5 10 20 50");
- static s32 hmc5843_set_rate(struct i2c_client *client,
- 				u8 rate)
- {
--	struct hmc5843_data *data = i2c_get_clientdata(client);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct hmc5843_data *data = iio_priv(indio_dev);
- 	u8 reg_val;
- 
- 	reg_val = (data->meas_conf) |  (rate << RATE_OFFSET);
-@@ -600,8 +602,12 @@ static int hmc5843_suspend(struct device *dev)
- 
- static int hmc5843_resume(struct device *dev)
- {
--	struct hmc5843_data *data = i2c_get_clientdata(to_i2c_client(dev));
--	hmc5843_configure(to_i2c_client(dev), data->operating_mode);
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct hmc5843_data *data = iio_priv(indio_dev);
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1ddd886..34d8cc9 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -64,6 +64,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_TIMESTAMP] = "timestamp",
+ 	[IIO_CAPACITANCE] = "capacitance",
+ 	[IIO_ALTVOLTAGE] = "altvoltage",
++	[IIO_CCT] = "cct",
+ };
+
+ static const char * const iio_modifier_names[] = {
+@@ -72,6 +73,10 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_Z] = "z",
+ 	[IIO_MOD_LIGHT_BOTH] = "both",
+ 	[IIO_MOD_LIGHT_IR] = "ir",
++	[IIO_MOD_LIGHT_CLEAR] = "clear",
++	[IIO_MOD_LIGHT_RED] = "red",
++	[IIO_MOD_LIGHT_GREEN] = "green",
++	[IIO_MOD_LIGHT_BLUE] = "blue",
+ };
+
+ /* relies on pairs of these shared then separate */
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+index 715c74d..83a2876 100644
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+@@ -34,6 +34,15 @@ Description:
+ 		it comes back in SI units, it should also include _input else it
+ 		should include _raw to signify it is not in SI units.
+
++What:		/sys/bus/iio/devices/device[n]/in_cct0[_input|_raw]
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This should return the correlated color temperature from the
++		light sensor. If it comes back in SI units, it should also
++		include _input else it should include _raw to signify it is not
++		in SI units.
 +
-+	hmc5843_configure(client, data->operating_mode);
+ What:		/sys/.../device[n]/proximity_on_chip_ambient_infrared_supression
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+@@ -82,3 +91,17 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		This property gets/sets the table of coefficients
+ 		used in calculating illuminance in lux.
 +
- 	return 0;
- }
- 
--- 
-1.7.5.4
++What:		/sys/bus/iio/devices/device[n]/in_intensity_clear[_input|_raw]
++What:		/sys/bus/iio/devices/device[n]/in_intensity_red[_input|_raw]
++What:		/sys/bus/iio/devices/device[n]/in_intensity_green[_input|_raw]
++What:		/sys/bus/iio/devices/device[n]/in_intensity_blue[_input|_raw]
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This property is supported by sensors that have a RGBC
++		sensing mode. This value should be the output from a reading
++		and if expressed in SI units, should include _input. If this
++		value is not in SI units (irradiance, uW/mm), then it should
++		include _raw.
++
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 1b073b1..a7de5d9 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -28,6 +28,7 @@ enum iio_chan_type {
+ 	IIO_TIMESTAMP,
+ 	IIO_CAPACITANCE,
+ 	IIO_ALTVOLTAGE,
++	IIO_CCT,
+ };
+
+ enum iio_modifier {
+@@ -45,6 +46,10 @@ enum iio_modifier {
+ 	IIO_MOD_X_OR_Y_OR_Z,
+ 	IIO_MOD_LIGHT_BOTH,
+ 	IIO_MOD_LIGHT_IR,
++	IIO_MOD_LIGHT_CLEAR,
++	IIO_MOD_LIGHT_RED,
++	IIO_MOD_LIGHT_GREEN,
++	IIO_MOD_LIGHT_BLUE,
+ };
+
+ #define IIO_VAL_INT 1
+--
+1.7.4.1
 
