@@ -12,13 +12,12 @@ Cc: Rob Landley <rob@landley.net>,
 	linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
 	Johan Hovold <jhovold@gmail.com>
-Subject: [PATCH v3] iio: add LM3533 ambient-light-sensor driver
-Date: Tue, 15 May 2012 18:46:36 +0200
-Message-Id: <1337100396-29024-1-git-send-email-jhovold@gmail.com>
-In-Reply-To: <1336040799-18433-3-git-send-email-jhovold@gmail.com>
-References: <1336040799-18433-3-git-send-email-jhovold@gmail.com>
+Subject: [PATCH v4] iio: add LM3533 ambient-light-sensor driver
+Date: Fri, 18 May 2012 15:07:41 +0200
+Message-Id: <1337346461-31220-1-git-send-email-jhovold@gmail.com>
+In-Reply-To: <1337100396-29024-1-git-send-email-jhovold@gmail.com>
+References: <1337100396-29024-1-git-send-email-jhovold@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 Add sub-driver for the ambient-light-sensor interface on National
@@ -35,13 +34,8 @@ changes.
 Signed-off-by: Johan Hovold <jhovold@gmail.com>
 ---
 
-This is a v3 rebased against staging-next of today (93c66ee1186a). Note
-that I added calibscale to the platform data and that the modification
-of the header file probably needs to go in via mfd once we have agreed
-on the type.
-
-Thanks,
-Johan
+Note that addition of r_select to the platform data probably needs to go
+in via mfd.
 
 
 v2:
@@ -61,35 +55,45 @@ v3
    - use dev_to_iio_dev
    - add IIO_CHAN_INFO_RAW to info mask
    - use iio_device_{alloc,free}
+v4
+ - move to driver/iio/light
+ - add events/in_illuminance0_threshY_hysteresis attributes
+ - fix device zone-boundary quirkiness
+ - clean up attribute handling
+ - replace calibscale with device-specific r_select attribute
 
 
- .../Documentation/sysfs-bus-iio-light-lm3533-als   |   52 ++
- drivers/staging/iio/light/Kconfig                  |   16 +
- drivers/staging/iio/light/Makefile                 |    1 +
- drivers/staging/iio/light/lm3533-als.c             |  726 ++++++++++++++++++++
- include/linux/mfd/lm3533.h                         |    3 +
- 5 files changed, 798 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-light-lm3533-als
- create mode 100644 drivers/staging/iio/light/lm3533-als.c
+ .../ABI/testing/sysfs-bus-iio-light-lm3533-als     |   64 ++
+ drivers/iio/Kconfig                                |    1 +
+ drivers/iio/Makefile                               |    1 +
+ drivers/iio/light/Kconfig                          |   22 +
+ drivers/iio/light/Makefile                         |    5 +
+ drivers/iio/light/lm3533-als.c                     |  941 ++++++++++++++++++++
+ include/linux/mfd/lm3533.h                         |    1 +
+ 7 files changed, 1035 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
+ create mode 100644 drivers/iio/light/Kconfig
+ create mode 100644 drivers/iio/light/Makefile
+ create mode 100644 drivers/iio/light/lm3533-als.c
 
-diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light-lm3533-als b/drivers/staging/iio/Documentation/sysfs-bus-iio-light-lm3533-als
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als b/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
 new file mode 100644
-index 0000000..ba31538
+index 0000000..7ea1770
 --- /dev/null
-+++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light-lm3533-als
-@@ -0,0 +1,52 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance0_calibscale
++++ b/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
+@@ -0,0 +1,64 @@
++What:		/sys/bus/iio/devices/iio:deviceX/r_select
 +Date:		April 2012
 +KernelVersion:	3.5
 +Contact:	Johan Hovold <jhovold@gmail.com>
 +Description:
-+		Set the ALS calibration scale (internal resistors) for
-+		analog input mode, where the scale factor is the current in uA
-+		at 2V full-scale (10..1270, 10uA step), that is,
++		Set the ALS internal pull-down resistor for analog input mode
++		(1..127), such that,
 +
-+		R_als = 2V / in_illuminance0_calibscale
++		R_als = 200000 / r_select	(ohm)
 +
-+		This setting is ignored in PWM mode.
++		This setting is ignored in PWM-mode (input is always high
++		impedance in PWM-mode).
 +
 +What:		/sys/.../events/in_illuminance0_thresh_either_en
 +Date:		April 2012
@@ -101,6 +105,15 @@ index 0000000..ba31538
 +		The corresponding light zone can be read from
 +		in_illuminance0_zone.
 +
++What:		/sys/.../events/in_illuminance0_threshY_hysteresis
++Date:		May 2012
++KernelVersion:	3.5
++Contact:	Johan Hovold <jhovold@gmail.com>
++Description:
++		Get the hysteresis for thresholds Y, that is,
++
++		threshY_hysteresis = threshY_raising - threshY_falling
++
 +What:		/sys/.../events/illuminance_threshY_falling_value
 +What:		/sys/.../events/illuminance_threshY_raising_value
 +Date:		April 2012
@@ -110,6 +123,9 @@ index 0000000..ba31538
 +		Specifies the value of threshold that the device is
 +		comparing against for the events enabled by
 +		in_illuminance0_thresh_either_en, where Y in 0..3.
++
++		Note that threshY_falling must be less than or equal to
++		threshY_raising.
 +
 +		These thresholds correspond to the eight zone-boundary
 +		registers (boundaryY_{low,high}) and defines the five light
@@ -130,14 +146,37 @@ index 0000000..ba31538
 +Description:
 +		Set the target brightness for ALS-mapper Y in light zone Z
 +		(0..255), where Y in 1..3 and Z in 0..4.
-diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-index 4bed30e..2170124 100644
---- a/drivers/staging/iio/light/Kconfig
-+++ b/drivers/staging/iio/light/Kconfig
-@@ -35,6 +35,22 @@ config SENSORS_TSL2563
- 	 This driver can also be built as a module.  If so, the module
- 	 will be called tsl2563.
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 56eecef..cacc74d 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -50,5 +50,6 @@ config IIO_CONSUMERS_PER_TRIGGER
  
+ source "drivers/iio/adc/Kconfig"
+ source "drivers/iio/amplifiers/Kconfig"
++source "drivers/iio/light/Kconfig"
+ 
+ endif # IIO
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index e425afd..060b674 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -11,3 +11,4 @@ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
+ 
+ obj-y += adc/
+ obj-y += amplifiers/
++obj-y += light/
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+new file mode 100644
+index 0000000..7738a58
+--- /dev/null
++++ b/drivers/iio/light/Kconfig
+@@ -0,0 +1,22 @@
++#
++# Light sensors
++#
++menu "Light sensors"
++
 +config SENSORS_LM3533
 +	tristate "LM3533 ambient light sensor"
 +	depends on MFD_LM3533
@@ -154,26 +193,24 @@ index 4bed30e..2170124 100644
 +	  light zone through sysfs. A threshold event can be generated on zone
 +	  changes.
 +
- config TSL2583
- 	tristate "TAOS TSL2580, TSL2581 and TSL2583 light-to-digital converters"
- 	depends on I2C
-diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
-index 141af1e..a8c6144 100644
---- a/drivers/staging/iio/light/Makefile
-+++ b/drivers/staging/iio/light/Makefile
-@@ -5,5 +5,6 @@
- obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
- obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
- obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
-+obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
- obj-$(CONFIG_TSL2583)	+= tsl2583.o
- obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
-diff --git a/drivers/staging/iio/light/lm3533-als.c b/drivers/staging/iio/light/lm3533-als.c
++endmenu
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
 new file mode 100644
-index 0000000..75b315c
+index 0000000..c1c23a0
 --- /dev/null
-+++ b/drivers/staging/iio/light/lm3533-als.c
-@@ -0,0 +1,726 @@
++++ b/drivers/iio/light/Makefile
+@@ -0,0 +1,5 @@
++#
++# Makefile for IIO Light sensors
++#
++
++obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
+new file mode 100644
+index 0000000..5944ac1
+--- /dev/null
++++ b/drivers/iio/light/lm3533-als.c
+@@ -0,0 +1,941 @@
 +/*
 + * lm3533-als.c -- LM3533 Ambient Light Sensor driver
 + *
@@ -194,6 +231,7 @@ index 0000000..75b315c
 +#include <linux/iio/events.h>
 +#include <linux/iio/iio.h>
 +#include <linux/module.h>
++#include <linux/mutex.h>
 +#include <linux/mfd/core.h>
 +#include <linux/platform_device.h>
 +#include <linux/slab.h>
@@ -202,12 +240,11 @@ index 0000000..75b315c
 +#include <linux/mfd/lm3533.h>
 +
 +
-+#define LM3533_ALS_ADC_MAX			0xff
-+#define LM3533_ALS_BOUNDARY_MAX			LM3533_ALS_ADC_MAX
-+#define LM3533_ALS_CALIBSCALE_MIN		10
-+#define LM3533_ALS_CALIBSCALE_MAX		1270
-+#define LM3533_ALS_CALIBSCALE_STEP		10
-+#define LM3533_ALS_TARGET_MAX			LM3533_ALS_ADC_MAX
++#define LM3533_ALS_RESISTOR_MIN			1
++#define LM3533_ALS_RESISTOR_MAX			127
++#define LM3533_ALS_MAPPER_MIN			1
++#define LM3533_ALS_MAPPER_MAX			3
++#define LM3533_ALS_THRESH_MAX			3
 +#define LM3533_ALS_ZONE_MAX			4
 +
 +#define LM3533_REG_ALS_RESISTOR_SELECT		0x30
@@ -215,29 +252,8 @@ index 0000000..75b315c
 +#define LM3533_REG_ALS_ZONE_INFO		0x34
 +#define LM3533_REG_ALS_READ_ADC_RAW		0x37
 +#define LM3533_REG_ALS_READ_ADC_AVERAGE		0x38
-+#define LM3533_REG_ALS_BOUNDARY0_HIGH		0x50
-+#define LM3533_REG_ALS_BOUNDARY0_LOW		0x51
-+#define LM3533_REG_ALS_BOUNDARY1_HIGH		0x52
-+#define LM3533_REG_ALS_BOUNDARY1_LOW		0x53
-+#define LM3533_REG_ALS_BOUNDARY2_HIGH		0x54
-+#define LM3533_REG_ALS_BOUNDARY2_LOW		0x55
-+#define LM3533_REG_ALS_BOUNDARY3_HIGH		0x56
-+#define LM3533_REG_ALS_BOUNDARY3_LOW		0x57
-+#define LM3533_REG_ALS_M1_TARGET_0		0x60
-+#define LM3533_REG_ALS_M1_TARGET_1		0x61
-+#define LM3533_REG_ALS_M1_TARGET_2		0x62
-+#define LM3533_REG_ALS_M1_TARGET_3		0x63
-+#define LM3533_REG_ALS_M1_TARGET_4		0x64
-+#define LM3533_REG_ALS_M2_TARGET_0		0x65
-+#define LM3533_REG_ALS_M2_TARGET_1		0x66
-+#define LM3533_REG_ALS_M2_TARGET_2		0x67
-+#define LM3533_REG_ALS_M2_TARGET_3		0x68
-+#define LM3533_REG_ALS_M2_TARGET_4		0x69
-+#define LM3533_REG_ALS_M3_TARGET_0		0x6a
-+#define LM3533_REG_ALS_M3_TARGET_1		0x6b
-+#define LM3533_REG_ALS_M3_TARGET_2		0x6c
-+#define LM3533_REG_ALS_M3_TARGET_3		0x6d
-+#define LM3533_REG_ALS_M3_TARGET_4		0x6e
++#define LM3533_REG_ALS_BOUNDARY_BASE		0x50
++#define LM3533_REG_ALS_TARGET_BASE		0x60
 +
 +#define LM3533_ALS_ENABLE_MASK			0x01
 +#define LM3533_ALS_INPUT_MODE_MASK		0x02
@@ -258,6 +274,7 @@ index 0000000..75b315c
 +	int pwm_mode:1;
 +
 +	atomic_t zone;
++	struct mutex thresh_mutex;
 +};
 +
 +
@@ -285,54 +302,6 @@ index 0000000..75b315c
 +	return 0;
 +}
 +
-+static int lm3533_als_get_calibscale(struct iio_dev *indio_dev, int *scale)
-+{
-+	struct lm3533_als *als = iio_priv(indio_dev);
-+	u8 val;
-+	int ret;
-+
-+	/* calibscale is ignored in pwm-mode */
-+	if (als->pwm_mode) {
-+		*scale = 0;
-+		return 0;
-+	}
-+
-+	ret = lm3533_read(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, &val);
-+	if (ret) {
-+		dev_err(&indio_dev->dev, "failed to read calibscale\n");
-+		return ret;
-+	}
-+
-+	*scale = val * LM3533_ALS_CALIBSCALE_STEP;
-+
-+	return 0;
-+}
-+
-+static int lm3533_als_set_calibscale(struct iio_dev *indio_dev, int scale)
-+{
-+	struct lm3533_als *als = iio_priv(indio_dev);
-+	u8 val;
-+	int ret;
-+
-+	/* calibscale is ignored in pwm-mode */
-+	if (als->pwm_mode)
-+		return -EINVAL;
-+
-+	if (scale < LM3533_ALS_CALIBSCALE_MIN ||
-+					scale > LM3533_ALS_CALIBSCALE_MAX)
-+		return -EINVAL;
-+
-+	val = (u8)(scale / LM3533_ALS_CALIBSCALE_STEP);
-+
-+	ret = lm3533_write(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, val);
-+	if (ret) {
-+		dev_err(&indio_dev->dev, "failed to write calibscale\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
 +static int lm3533_als_read_raw(struct iio_dev *indio_dev,
 +				struct iio_chan_spec const *chan,
 +				int *val, int *val2, long mask)
@@ -346,9 +315,6 @@ index 0000000..75b315c
 +	case IIO_CHAN_INFO_AVERAGE_RAW:
 +		ret = lm3533_als_get_adc(indio_dev, true, val);
 +		break;
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		ret = lm3533_als_get_calibscale(indio_dev, val);
-+		break;
 +	default:
 +		return -EINVAL;
 +	}
@@ -359,23 +325,12 @@ index 0000000..75b315c
 +	return IIO_VAL_INT;
 +}
 +
-+static int lm3533_als_write_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int val, int val2, long mask)
-+{
-+	if (mask != IIO_CHAN_INFO_CALIBSCALE)
-+		return -EINVAL;
-+
-+	return lm3533_als_set_calibscale(indio_dev, val);
-+}
-+
 +static const struct iio_chan_spec lm3533_als_channels[] = {
 +	{
 +		.type		= IIO_LIGHT,
 +		.channel	= 0,
 +		.indexed	= 1,
 +		.info_mask	= (IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT |
-+				   IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
 +				   IIO_CHAN_INFO_RAW_SEPARATE_BIT),
 +	}
 +};
@@ -463,6 +418,194 @@ index 0000000..75b315c
 +	return 0;
 +}
 +
++static int lm3533_als_get_resistor(struct iio_dev *indio_dev, u8 *val)
++{
++	struct lm3533_als *als = iio_priv(indio_dev);
++	int ret;
++
++	if (als->pwm_mode) {
++		*val = 0;		/* always high impedance */
++		return 0;
++	}
++
++	ret = lm3533_read(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, val);
++	if (ret) {
++		dev_err(&indio_dev->dev, "failed to get resistor\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static int lm3533_als_set_resistor(struct iio_dev *indio_dev, u8 val)
++{
++	struct lm3533_als *als = iio_priv(indio_dev);
++	int ret;
++
++	if (als->pwm_mode)
++		return -EPERM;		/* always high impedance */
++
++	if (val < LM3533_ALS_RESISTOR_MIN || val > LM3533_ALS_RESISTOR_MAX)
++		return -EINVAL;
++
++	ret = lm3533_write(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, val);
++	if (ret) {
++		dev_err(&indio_dev->dev, "failed to set resistor\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++/*
++ * nr   -- als mapper 1..3
++ * zone -- als zone 0..4
++ */
++static inline u8 lm3533_als_get_target_reg(unsigned nr, unsigned zone)
++{
++	return LM3533_REG_ALS_TARGET_BASE + 5 * (nr - 1) + zone;
++}
++
++static int lm3533_als_get_target(struct iio_dev *indio_dev, unsigned nr,
++							unsigned zone, u8 *val)
++{
++	struct lm3533_als *als = iio_priv(indio_dev);
++	u8 reg;
++	int ret;
++
++	if (nr < LM3533_ALS_MAPPER_MIN || nr > LM3533_ALS_MAPPER_MAX)
++		return -EINVAL;
++
++	if (zone > LM3533_ALS_ZONE_MAX)
++		return -EINVAL;
++
++	reg = lm3533_als_get_target_reg(nr, zone);
++	ret = lm3533_read(als->lm3533, reg, val);
++	if (ret)
++		dev_err(&indio_dev->dev, "failed to get target brightness\n");
++
++	return ret;
++}
++
++static int lm3533_als_set_target(struct iio_dev *indio_dev, unsigned nr,
++							unsigned zone, u8 val)
++{
++	struct lm3533_als *als = iio_priv(indio_dev);
++	u8 reg;
++	int ret;
++
++	if (nr < LM3533_ALS_MAPPER_MIN || nr > LM3533_ALS_MAPPER_MAX)
++		return -EINVAL;
++
++	if (zone > LM3533_ALS_ZONE_MAX)
++		return -EINVAL;
++
++	reg = lm3533_als_get_target_reg(nr, zone);
++	ret = lm3533_write(als->lm3533, reg, val);
++	if (ret)
++		dev_err(&indio_dev->dev, "failed to set target brightness\n");
++
++	return ret;
++}
++
++static inline u8 lm3533_als_get_threshold_reg(unsigned nr, bool raising)
++{
++	u8 offset;
++
++	if (raising)
++		offset = 0;
++	else
++		offset = 1;
++
++	return LM3533_REG_ALS_BOUNDARY_BASE + 2 * nr + offset;
++}
++
++static int lm3533_als_get_threshold(struct iio_dev *indio_dev, unsigned nr,
++							bool raising, u8 *val)
++{
++	struct lm3533_als *als = iio_priv(indio_dev);
++	u8 reg;
++	int ret;
++
++	if (nr > LM3533_ALS_THRESH_MAX)
++		return -EINVAL;
++
++	reg = lm3533_als_get_threshold_reg(nr, raising);
++	ret = lm3533_read(als->lm3533, reg, val);
++	if (ret)
++		dev_err(&indio_dev->dev, "failed to get threshold\n");
++
++	return ret;
++}
++
++static int lm3533_als_set_threshold(struct iio_dev *indio_dev, unsigned nr,
++							bool raising, u8 val)
++{
++	struct lm3533_als *als = iio_priv(indio_dev);
++	u8 val2;
++	u8 reg;
++	u8 reg2;
++	int ret;
++
++	if (nr > LM3533_ALS_THRESH_MAX)
++		return -EINVAL;
++
++	reg = lm3533_als_get_threshold_reg(nr, raising);
++	reg2 = lm3533_als_get_threshold_reg(nr, !raising);
++
++	mutex_lock(&als->thresh_mutex);
++	ret = lm3533_read(als->lm3533, reg2, &val2);
++	if (ret) {
++		dev_err(&indio_dev->dev, "failed to get threshold\n");
++		goto out;
++	}
++	/*
++	 * This device does not allow negative hysteresis (in fact, it uses
++	 * whichever value is smaller as the lower bound) so we need to make
++	 * sure that thresh_falling <= thresh_raising.
++	 */
++	if ((raising && (val < val2)) || (!raising && (val > val2))) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	ret = lm3533_write(als->lm3533, reg, val);
++	if (ret) {
++		dev_err(&indio_dev->dev, "failed to set threshold\n");
++		goto out;
++	}
++out:
++	mutex_unlock(&als->thresh_mutex);
++
++	return ret;
++}
++
++static int lm3533_als_get_hysteresis(struct iio_dev *indio_dev, unsigned nr,
++								u8 *val)
++{
++	struct lm3533_als *als = iio_priv(indio_dev);
++	u8 falling;
++	u8 raising;
++	int ret;
++
++	if (nr > LM3533_ALS_THRESH_MAX)
++		return -EINVAL;
++
++	mutex_lock(&als->thresh_mutex);
++	ret = lm3533_als_get_threshold(indio_dev, nr, false, &falling);
++	if (ret)
++		goto out;
++	ret = lm3533_als_get_threshold(indio_dev, nr, true, &raising);
++	if (ret)
++		goto out;
++
++	*val = raising - falling;
++out:
++	mutex_unlock(&als->thresh_mutex);
++
++	return ret;
++}
++
 +static int show_thresh_either_en(struct device *dev,
 +					struct device_attribute *attr,
 +					char *buf)
@@ -545,116 +688,147 @@ index 0000000..75b315c
 +	return scnprintf(buf, PAGE_SIZE, "%u\n", zone);
 +}
 +
-+struct lm3533_device_attribute {
-+	struct device_attribute dev_attr;
-+	u8 reg;
-+	u8 max;
-+};
-+
-+static inline struct lm3533_device_attribute *
-+to_lm3533_dev_attr(struct device_attribute *attr)
-+{
-+	return container_of(attr, struct lm3533_device_attribute, dev_attr);
-+}
-+
-+static ssize_t show_lm3533_als_reg(struct device *dev,
-+					struct device_attribute *attr,
-+					char *buf)
++static ssize_t show_r_select(struct device *dev,
++				struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct lm3533_als *als = iio_priv(indio_dev);
-+	struct lm3533_device_attribute *lm3533_attr = to_lm3533_dev_attr(attr);
-+	u8 val;
++	u8 r_select;
 +	int ret;
 +
-+	ret = lm3533_read(als->lm3533, lm3533_attr->reg, &val);
++	ret = lm3533_als_get_resistor(indio_dev, &r_select);
 +	if (ret)
 +		return ret;
 +
-+	return scnprintf(buf, PAGE_SIZE, "%u\n", val);
++	return scnprintf(buf, PAGE_SIZE, "%u\n", r_select);
 +}
 +
-+static ssize_t store_lm3533_als_reg(struct device *dev,
++static int store_r_select(struct device *dev,
 +					struct device_attribute *attr,
 +					const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct lm3533_als *als = iio_priv(indio_dev);
-+	struct lm3533_device_attribute *lm3533_attr = to_lm3533_dev_attr(attr);
-+	u8 val;
++	unsigned long r_select;
 +	int ret;
 +
-+	if (kstrtou8(buf, 0, &val) || val > lm3533_attr->max)
++	if (kstrtoul(buf, 0, &r_select))
 +		return -EINVAL;
 +
-+	ret = lm3533_write(als->lm3533, lm3533_attr->reg, val);
++	ret = lm3533_als_set_resistor(indio_dev, r_select);
 +	if (ret)
 +		return ret;
 +
 +	return len;
 +}
 +
-+#define REG_ATTR(_name, _mode, _show, _store, _reg, _max) \
-+	{ .dev_attr = __ATTR(_name, _mode, _show, _store), \
-+	  .reg = _reg, \
-+	  .max = _max }
++enum lm3533_als_attribute_type {
++	LM3533_ATTR_TYPE_HYSTERESIS,
++	LM3533_ATTR_TYPE_TARGET,
++	LM3533_ATTR_TYPE_THRESH_FALLING,
++	LM3533_ATTR_TYPE_THRESH_RAISING,
++};
 +
-+#define LM3533_REG_ATTR(_name, _mode, _show, _store, _reg, _max) \
-+	struct lm3533_device_attribute lm3533_dev_attr_##_name \
-+		= REG_ATTR(_name, _mode, _show, _store, _reg, _max)
++struct lm3533_als_attribute {
++	struct device_attribute dev_attr;
++	enum lm3533_als_attribute_type type;
++	u8 val1;
++	u8 val2;
++};
 +
-+#define LM3533_REG_ATTR_RW(_name, _reg, _max) \
-+	LM3533_REG_ATTR(_name, S_IRUGO | S_IWUSR, show_lm3533_als_reg, \
-+					store_lm3533_als_reg, _reg, _max)
++static inline struct lm3533_als_attribute *
++to_lm3533_als_attr(struct device_attribute *attr)
++{
++	return container_of(attr, struct lm3533_als_attribute, dev_attr);
++}
 +
-+#define ALS_THRESH_FALLING_ATTR_RW(_nr) \
-+	LM3533_REG_ATTR_RW(in_illuminance0_thresh##_nr##_falling_value, \
-+		LM3533_REG_ALS_BOUNDARY##_nr##_LOW, LM3533_ALS_BOUNDARY_MAX)
++static ssize_t show_als_attr(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct lm3533_als_attribute *als_attr = to_lm3533_als_attr(attr);
++	u8 val;
++	int ret;
 +
-+#define ALS_THRESH_RAISING_ATTR_RW(_nr) \
-+	LM3533_REG_ATTR_RW(in_illuminance0_thresh##_nr##_raising_value, \
-+		LM3533_REG_ALS_BOUNDARY##_nr##_HIGH, LM3533_ALS_BOUNDARY_MAX)
++	switch (als_attr->type) {
++	case LM3533_ATTR_TYPE_HYSTERESIS:
++		ret = lm3533_als_get_hysteresis(indio_dev, als_attr->val1,
++									&val);
++		break;
++	case LM3533_ATTR_TYPE_TARGET:
++		ret = lm3533_als_get_target(indio_dev, als_attr->val1,
++							als_attr->val2, &val);
++		break;
++	case LM3533_ATTR_TYPE_THRESH_FALLING:
++		ret = lm3533_als_get_threshold(indio_dev, als_attr->val1,
++								false, &val);
++		break;
++	case LM3533_ATTR_TYPE_THRESH_RAISING:
++		ret = lm3533_als_get_threshold(indio_dev, als_attr->val1,
++								true, &val);
++		break;
++	default:
++		WARN(1, "%s - bad attribute type %d\n", __func__,
++							als_attr->type);
++		ret = -ENXIO;
++	}
 +
-+/*
-+ * ALS Zone thresholds (boundaries)
-+ *
-+ * in_illuminance0_thresh[0-3]_falling_value	0-255
-+ * in_illuminance0_thresh[0-3]_raising_value	0-255
-+ */
-+static ALS_THRESH_FALLING_ATTR_RW(0);
-+static ALS_THRESH_FALLING_ATTR_RW(1);
-+static ALS_THRESH_FALLING_ATTR_RW(2);
-+static ALS_THRESH_FALLING_ATTR_RW(3);
++	if (ret)
++		return ret;
 +
-+static ALS_THRESH_RAISING_ATTR_RW(0);
-+static ALS_THRESH_RAISING_ATTR_RW(1);
-+static ALS_THRESH_RAISING_ATTR_RW(2);
-+static ALS_THRESH_RAISING_ATTR_RW(3);
++	return scnprintf(buf, PAGE_SIZE, "%u\n", val);
++}
 +
-+#define LM3533_ALS_ATTR_RO(_name) \
-+	DEVICE_ATTR(in_illuminance0_##_name, S_IRUGO, show_##_name, NULL)
-+#define LM3533_ALS_ATTR_RW(_name) \
-+	DEVICE_ATTR(in_illuminance0_##_name, S_IRUGO | S_IWUSR , \
-+						show_##_name, store_##_name)
++static ssize_t store_als_attr(struct device *dev,
++					struct device_attribute *attr,
++					const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct lm3533_als_attribute *als_attr = to_lm3533_als_attr(attr);
++	u8 val;
++	int ret;
 +
-+/*
-+ * ALS Zone threshold-event enable
-+ *
-+ * in_illuminance0_thresh_either_en		0,1
-+ */
-+static LM3533_ALS_ATTR_RW(thresh_either_en);
++	if (kstrtou8(buf, 0, &val))
++		return -EINVAL;
 +
-+/*
-+ * ALS Current Zone
-+ *
-+ * in_illuminance0_zone		0-4
-+ */
-+static LM3533_ALS_ATTR_RO(zone);
++	switch (als_attr->type) {
++	case LM3533_ATTR_TYPE_TARGET:
++		ret = lm3533_als_set_target(indio_dev, als_attr->val1,
++							als_attr->val2, val);
++		break;
++	case LM3533_ATTR_TYPE_THRESH_FALLING:
++		ret = lm3533_als_set_threshold(indio_dev, als_attr->val1,
++								false, val);
++		break;
++	case LM3533_ATTR_TYPE_THRESH_RAISING:
++		ret = lm3533_als_set_threshold(indio_dev, als_attr->val1,
++								true, val);
++		break;
++	default:
++		WARN(1, "%s - bad attribute type %d\n", __func__,
++							als_attr->type);
++		ret = -ENXIO;
++	}
 +
-+#define ALS_TARGET_ATTR_RW(_mapper, _nr) \
-+	LM3533_REG_ATTR_RW(target##_mapper##_##_nr, \
-+		LM3533_REG_ALS_M##_mapper##_TARGET_##_nr, LM3533_ALS_TARGET_MAX)
++	if (ret)
++		return ret;
 +
++	return len;
++}
++
++#define ALS_ATTR(_name, _mode, _show, _store, _type, _val1, _val2)	\
++	{ .dev_attr	= __ATTR(_name, _mode, _show, _store),		\
++	  .type		= _type,					\
++	  .val1		= _val1,					\
++	  .val2		= _val2 }
++
++#define LM3533_ALS_ATTR(_name, _mode, _show, _store, _type, _val1, _val2) \
++	struct lm3533_als_attribute lm3533_als_attr_##_name =		  \
++		ALS_ATTR(_name, _mode, _show, _store, _type, _val1, _val2)
++
++#define ALS_TARGET_ATTR_RW(_nr, _zone)					\
++	LM3533_ALS_ATTR(target##_nr##_##_zone, S_IRUGO | S_IWUSR,	\
++				show_als_attr, store_als_attr,		\
++				LM3533_ATTR_TYPE_TARGET, _nr, _zone)
 +/*
 + * ALS Mapper targets
 + *
@@ -678,16 +852,92 @@ index 0000000..75b315c
 +static ALS_TARGET_ATTR_RW(3, 3);
 +static ALS_TARGET_ATTR_RW(3, 4);
 +
++#define ALS_THRESH_FALLING_ATTR_RW(_nr)					\
++	LM3533_ALS_ATTR(in_illuminance0_thresh##_nr##_falling_value,	\
++			S_IRUGO | S_IWUSR,				\
++			show_als_attr, store_als_attr,		\
++			LM3533_ATTR_TYPE_THRESH_FALLING, _nr, 0)
++
++#define ALS_THRESH_RAISING_ATTR_RW(_nr)					\
++	LM3533_ALS_ATTR(in_illuminance0_thresh##_nr##_raising_value,	\
++			S_IRUGO | S_IWUSR,				\
++			show_als_attr, store_als_attr,			\
++			LM3533_ATTR_TYPE_THRESH_RAISING, _nr, 0)
++/*
++ * ALS Zone thresholds (boundaries)
++ *
++ * in_illuminance0_thresh[0-3]_falling_value	0-255
++ * in_illuminance0_thresh[0-3]_raising_value	0-255
++ */
++static ALS_THRESH_FALLING_ATTR_RW(0);
++static ALS_THRESH_FALLING_ATTR_RW(1);
++static ALS_THRESH_FALLING_ATTR_RW(2);
++static ALS_THRESH_FALLING_ATTR_RW(3);
++
++static ALS_THRESH_RAISING_ATTR_RW(0);
++static ALS_THRESH_RAISING_ATTR_RW(1);
++static ALS_THRESH_RAISING_ATTR_RW(2);
++static ALS_THRESH_RAISING_ATTR_RW(3);
++
++#define ALS_HYSTERESIS_ATTR_RO(_nr)					\
++	LM3533_ALS_ATTR(in_illuminance0_thresh##_nr##_hysteresis,	\
++			S_IRUGO, show_als_attr, NULL,			\
++			LM3533_ATTR_TYPE_HYSTERESIS, _nr, 0)
++/*
++ * ALS Zone threshold hysteresis
++ *
++ * threshY_hysteresis = threshY_raising - threshY_falling
++ *
++ * in_illuminance0_thresh[0-3]_hysteresis	0-255
++ * in_illuminance0_thresh[0-3]_hysteresis	0-255
++ */
++static ALS_HYSTERESIS_ATTR_RO(0);
++static ALS_HYSTERESIS_ATTR_RO(1);
++static ALS_HYSTERESIS_ATTR_RO(2);
++static ALS_HYSTERESIS_ATTR_RO(3);
++
++#define ILLUMINANCE_ATTR_RO(_name) \
++	DEVICE_ATTR(in_illuminance0_##_name, S_IRUGO, show_##_name, NULL)
++#define ILLUMINANCE_ATTR_RW(_name) \
++	DEVICE_ATTR(in_illuminance0_##_name, S_IRUGO | S_IWUSR , \
++						show_##_name, store_##_name)
++/*
++ * ALS Zone threshold-event enable
++ *
++ * in_illuminance0_thresh_either_en		0,1
++ */
++static ILLUMINANCE_ATTR_RW(thresh_either_en);
++
++/*
++ * ALS Current Zone
++ *
++ * in_illuminance0_zone		0-4
++ */
++static ILLUMINANCE_ATTR_RO(zone);
++
++/*
++ * ALS internal pull-down resistor select (analog mode)
++ *
++ * r_select	1-127
++ *
++ * R_als = 200000 / r_select (ohm)
++ */
++static LM3533_ATTR_RW(r_select);
++
 +static struct attribute *lm3533_als_event_attributes[] = {
 +	&dev_attr_in_illuminance0_thresh_either_en.attr,
-+	&lm3533_dev_attr_in_illuminance0_thresh0_falling_value.dev_attr.attr,
-+	&lm3533_dev_attr_in_illuminance0_thresh0_raising_value.dev_attr.attr,
-+	&lm3533_dev_attr_in_illuminance0_thresh1_falling_value.dev_attr.attr,
-+	&lm3533_dev_attr_in_illuminance0_thresh1_raising_value.dev_attr.attr,
-+	&lm3533_dev_attr_in_illuminance0_thresh2_falling_value.dev_attr.attr,
-+	&lm3533_dev_attr_in_illuminance0_thresh2_raising_value.dev_attr.attr,
-+	&lm3533_dev_attr_in_illuminance0_thresh3_falling_value.dev_attr.attr,
-+	&lm3533_dev_attr_in_illuminance0_thresh3_raising_value.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh0_falling_value.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh0_hysteresis.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh0_raising_value.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh1_falling_value.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh1_hysteresis.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh1_raising_value.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh2_falling_value.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh2_hysteresis.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh2_raising_value.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh3_falling_value.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh3_hysteresis.dev_attr.attr,
++	&lm3533_als_attr_in_illuminance0_thresh3_raising_value.dev_attr.attr,
 +	NULL
 +};
 +
@@ -696,21 +946,22 @@ index 0000000..75b315c
 +};
 +
 +static struct attribute *lm3533_als_attributes[] = {
-+	&lm3533_dev_attr_target1_0.dev_attr.attr,
-+	&lm3533_dev_attr_target1_1.dev_attr.attr,
-+	&lm3533_dev_attr_target1_2.dev_attr.attr,
-+	&lm3533_dev_attr_target1_3.dev_attr.attr,
-+	&lm3533_dev_attr_target1_4.dev_attr.attr,
-+	&lm3533_dev_attr_target2_0.dev_attr.attr,
-+	&lm3533_dev_attr_target2_1.dev_attr.attr,
-+	&lm3533_dev_attr_target2_2.dev_attr.attr,
-+	&lm3533_dev_attr_target2_3.dev_attr.attr,
-+	&lm3533_dev_attr_target2_4.dev_attr.attr,
-+	&lm3533_dev_attr_target3_0.dev_attr.attr,
-+	&lm3533_dev_attr_target3_1.dev_attr.attr,
-+	&lm3533_dev_attr_target3_2.dev_attr.attr,
-+	&lm3533_dev_attr_target3_3.dev_attr.attr,
-+	&lm3533_dev_attr_target3_4.dev_attr.attr,
++	&dev_attr_r_select.attr,
++	&lm3533_als_attr_target1_0.dev_attr.attr,
++	&lm3533_als_attr_target1_1.dev_attr.attr,
++	&lm3533_als_attr_target1_2.dev_attr.attr,
++	&lm3533_als_attr_target1_3.dev_attr.attr,
++	&lm3533_als_attr_target1_4.dev_attr.attr,
++	&lm3533_als_attr_target2_0.dev_attr.attr,
++	&lm3533_als_attr_target2_1.dev_attr.attr,
++	&lm3533_als_attr_target2_2.dev_attr.attr,
++	&lm3533_als_attr_target2_3.dev_attr.attr,
++	&lm3533_als_attr_target2_4.dev_attr.attr,
++	&lm3533_als_attr_target3_0.dev_attr.attr,
++	&lm3533_als_attr_target3_1.dev_attr.attr,
++	&lm3533_als_attr_target3_2.dev_attr.attr,
++	&lm3533_als_attr_target3_3.dev_attr.attr,
++	&lm3533_als_attr_target3_4.dev_attr.attr,
 +	&dev_attr_in_illuminance0_zone.attr,
 +	NULL
 +};
@@ -750,8 +1001,9 @@ index 0000000..75b315c
 +	if (ret)
 +		return ret;
 +
++	/* ALS input is always high impedance in PWM-mode. */
 +	if (!pdata->pwm_mode) {
-+		ret = lm3533_als_set_calibscale(indio_dev, pdata->calibscale);
++		ret = lm3533_als_set_resistor(indio_dev, pdata->r_select);
 +		if (ret)
 +			return ret;
 +	}
@@ -790,7 +1042,6 @@ index 0000000..75b315c
 +	.event_attrs	= &lm3533_als_event_attribute_group,
 +	.driver_module	= THIS_MODULE,
 +	.read_raw	= &lm3533_als_read_raw,
-+	.write_raw	= &lm3533_als_write_raw,
 +};
 +
 +static int __devinit lm3533_als_probe(struct platform_device *pdev)
@@ -829,6 +1080,7 @@ index 0000000..75b315c
 +	als->irq = lm3533->irq;
 +	als->pwm_mode = pdata->pwm_mode;
 +	atomic_set(&als->zone, 0);
++	mutex_init(&als->thresh_mutex);
 +
 +	if (als->irq) {
 +		ret = request_threaded_irq(als->irq, NULL, lm3533_als_isr,
@@ -901,16 +1153,14 @@ index 0000000..75b315c
 +MODULE_LICENSE("GPL");
 +MODULE_ALIAS("platform:lm3533-als");
 diff --git a/include/linux/mfd/lm3533.h b/include/linux/mfd/lm3533.h
-index 9660feb..c1404cc 100644
+index 9660feb..594bc59 100644
 --- a/include/linux/mfd/lm3533.h
 +++ b/include/linux/mfd/lm3533.h
-@@ -43,6 +43,9 @@ struct lm3533_ctrlbank {
+@@ -43,6 +43,7 @@ struct lm3533_ctrlbank {
  
  struct lm3533_als_platform_data {
  	unsigned pwm_mode:1;		/* PWM input mode (default analog) */
-+	u16 calibscale;			/* 10 - 1270 uA (10 uA step), current
-+					 * at 2V full-scale (analog mode)
-+					 */
++	u8 r_select;			/* 1 - 127 (ignored in PWM-mode) */
  };
  
  struct lm3533_bl_platform_data {
