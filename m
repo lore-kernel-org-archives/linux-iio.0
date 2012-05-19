@@ -1,15 +1,9 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:60690 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756682Ab2EVJP3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 May 2012 05:15:29 -0400
-Message-ID: <4FBB5927.30905@cam.ac.uk>
-Date: Tue, 22 May 2012 10:15:19 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Johan Hovold <jhovold@gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>, Rob Landley <rob@landley.net>,
-	Richard Purdie <rpurdie@rpsys.net>,
+Return-Path: <jhovold@gmail.com>
+Date: Sat, 19 May 2012 18:30:08 +0200
+From: Johan Hovold <jhovold@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Johan Hovold <jhovold@gmail.com>, Jonathan Cameron <jic23@cam.ac.uk>,
+	Rob Landley <rob@landley.net>, Richard Purdie <rpurdie@rpsys.net>,
 	Samuel Ortiz <sameo@linux.intel.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Florian Tobias Schandinat <FlorianSchandinat@gmx.de>,
@@ -17,396 +11,909 @@ CC: Jonathan Cameron <jic23@kernel.org>, Rob Landley <rob@landley.net>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	Mark Brown <broonie@opensource.wolfsonmicro.com>,
 	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>
+	linux-iio@vger.kernel.org
 Subject: Re: [PATCH v4] iio: add LM3533 ambient-light-sensor driver
-References: <1337100396-29024-1-git-send-email-jhovold@gmail.com> <1337346461-31220-1-git-send-email-jhovold@gmail.com> <4FB75E57.9020003@kernel.org> <20120521095010.GD21033@localhost> <4FBA6F37.4000609@kernel.org> <20120521220754.GA6659@localhost> <4FBB3C88.6040009@cam.ac.uk> <20120522090945.GB7323@localhost>
-In-Reply-To: <20120522090945.GB7323@localhost>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Message-ID: <20120519163008.GA21033@localhost>
+References: <1337100396-29024-1-git-send-email-jhovold@gmail.com>
+ <1337346461-31220-1-git-send-email-jhovold@gmail.com>
+ <4FB75E57.9020003@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <4FB75E57.9020003@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 5/22/2012 10:09 AM, Johan Hovold wrote:
-> On Tue, May 22, 2012 at 08:13:12AM +0100, Jonathan Cameron wrote:
->> On 5/21/2012 11:07 PM, Johan Hovold wrote:
->>> On Mon, May 21, 2012 at 05:37:11PM +0100, Jonathan Cameron wrote:
->>>> Michael cc'd for comments on core support of some stuff that is also
->>>> in frequency drivers down the end of the email.
->>>>
->>>> On 05/21/2012 10:50 AM, Johan Hovold wrote:
->>>>> On Sat, May 19, 2012 at 09:48:23AM +0100, Jonathan Cameron wrote:
->>>>>> On 05/18/2012 02:07 PM, Johan Hovold wrote:
->>>>>>> Add sub-driver for the ambient-light-sensor interface on National
->>>>>>> Semiconductor / TI LM3533 lighting power chips.
->>>>>>>
->>>>>>> The sensor interface can be used to control the LEDs and backlights of
->>>>>>> the chip through defining five light zones and three sets of
->>>>>>> corresponding brightness target levels.
->>>>>>>
->>>>>>> The driver provides raw and mean adc readings along with the current
->>>>>>> light zone through sysfs. A threshold event can be generated on zone
->>>>>>> changes.
->>>>>>
->>>>>> Hi Johan,
->>>>>>
->>>>>> I hate to be a pain with this one, but it's a complex beast and I'd
->>>>>> really like to get the interface right first time - particularly as
->>>>>> you are going in after the move out of staging.
->>>>>>
->>>>>>
->>>>>> Queries for you.
->>>>>> 1) Ordering in the probe function. Normally expect iio_device_register
->>>>>> to be the last call. Why not here?
->>>>>> 2) Worth combining enable / disable into one as very similar functions?
->>>>>> 3) Suspicious code in als_set_input_mode
->>>>>>
->>>>>> Naming of the target values.  I think we can make the naming of these
->>>>>> fit in much better with the normal abi which is going to be all for the
->>>>>> good in the long run.  They are basically current output channels
->>>>>> with a controllable set of steps (where we don't have direct control
->>>>>> of which one we are in).  This is very similar to the frequency controls
->>>>>> on some of Analog's dds that we have a well defined interface for.
->>>>>>
->>>>>> More detail below, but in summary.
->>>>>>
->>>>>> out_currentX_currentY_raw for channel X value for zone Y.
->>>>>>
->>>>>> Jonathan
->>>>>>>
->>>>>>> Signed-off-by: Johan Hovold<jhovold@gmail.com>
->>>>>>> ---
->>>>>>>
->>>>>>> Note that addition of r_select to the platform data probably needs to go
->>>>>>> in via mfd.
->>>>>>>
->>>>>>>
->>>>>>> v2:
->>>>>>>    - reimplement using iio
->>>>>>>    - add sysfs-ABI documentation
->>>>>>> v3
->>>>>>>    - use indexed channel
->>>>>>>    - fix sysfs-ABI documentation typo and style
->>>>>>>    - replace gain attribute with in_illuminance0_calibscale
->>>>>>>    - add calibscale to platform data
->>>>>>>    - fix adc register definitions
->>>>>>>    - replace to_lm3533_dev_attr macro with inline function
->>>>>>>    - fix device used for error reporting at irq allocation
->>>>>>>    - use iio device for error reporting during setup/enable
->>>>>>>    - rebase on staging-next
->>>>>>>      - fix header include paths
->>>>>>>      - use dev_to_iio_dev
->>>>>>>      - add IIO_CHAN_INFO_RAW to info mask
->>>>>>>      - use iio_device_{alloc,free}
->>>>>>> v4
->>>>>>>    - move to driver/iio/light
->>>>>>>    - add events/in_illuminance0_threshY_hysteresis attributes
->>>>>>>    - fix device zone-boundary quirkiness
->>>>>>>    - clean up attribute handling
->>>>>>>    - replace calibscale with device-specific r_select attribute
->>>>>>>
->>>>>>>
->>>>>>>    .../ABI/testing/sysfs-bus-iio-light-lm3533-als     |   64 ++
->>>>>>>    drivers/iio/Kconfig                                |    1 +
->>>>>>>    drivers/iio/Makefile                               |    1 +
->>>>>>>    drivers/iio/light/Kconfig                          |   22 +
->>>>>>>    drivers/iio/light/Makefile                         |    5 +
->>>>>>>    drivers/iio/light/lm3533-als.c                     |  941 ++++++++++++++++++++
->>>>>>>    include/linux/mfd/lm3533.h                         |    1 +
->>>>>>>    7 files changed, 1035 insertions(+), 0 deletions(-)
->>>>>>>    create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
->>>>>>>    create mode 100644 drivers/iio/light/Kconfig
->>>>>>>    create mode 100644 drivers/iio/light/Makefile
->>>>>>>    create mode 100644 drivers/iio/light/lm3533-als.c
->>>>>>>
->>>>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als b/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
->>>>>>> new file mode 100644
->>>>>>> index 0000000..7ea1770
->>>>>>> --- /dev/null
->>>>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
->>>>>>> @@ -0,0 +1,64 @@
->>>>>>> +What:		/sys/bus/iio/devices/iio:deviceX/r_select
->>>>>>> +Date:		April 2012
->>>>>>> +KernelVersion:	3.5
->>>>>>> +Contact:	Johan Hovold<jhovold@gmail.com>
->>>>>>> +Description:
->>>>>>> +		Set the ALS internal pull-down resistor for analog input mode
->>>>>>> +		(1..127), such that,
->>>>>>> +
->>>>>>> +		R_als = 200000 / r_select	(ohm)
->>>>>>> +
->>>>>>> +		This setting is ignored in PWM-mode (input is always high
->>>>>>> +		impedance in PWM-mode).
->>>>>>> +
->>>>>>> +What:		/sys/.../events/in_illuminance0_thresh_either_en
->>>>>>> +Date:		April 2012
->>>>>>> +KernelVersion:	3.5
->>>>>>> +Contact:	Johan Hovold<jhovold@gmail.com>
->>>>>>> +Description:
->>>>>>> +		Event generated when channel passes one of the four thresholds
->>>>>>> +		in each direction (rising|falling) and a zone change occurs.
->>>>>>> +		The corresponding light zone can be read from
->>>>>>> +		in_illuminance0_zone.
->>>>>>> +
->>>>>>> +What:		/sys/.../events/in_illuminance0_threshY_hysteresis
->>>>>>> +Date:		May 2012
->>>>>>> +KernelVersion:	3.5
->>>>>>> +Contact:	Johan Hovold<jhovold@gmail.com>
->>>>>>> +Description:
->>>>>>> +		Get the hysteresis for thresholds Y, that is,
->>>>>>> +
->>>>>>> +		threshY_hysteresis = threshY_raising - threshY_falling
->>>>>>> +
->>>>>>> +What:		/sys/.../events/illuminance_threshY_falling_value
->>>>>>> +What:		/sys/.../events/illuminance_threshY_raising_value
->>>>>>> +Date:		April 2012
->>>>>>> +KernelVersion:	3.5
->>>>>>> +Contact:	Johan Hovold<jhovold@gmail.com>
->>>>>>> +Description:
->>>>>>> +		Specifies the value of threshold that the device is
->>>>>>> +		comparing against for the events enabled by
->>>>>>> +		in_illuminance0_thresh_either_en, where Y in 0..3.
->>>>>>> +
->>>>>>> +		Note that threshY_falling must be less than or equal to
->>>>>>> +		threshY_raising.
->>>>>>> +
->>>>>>> +		These thresholds correspond to the eight zone-boundary
->>>>>>> +		registers (boundaryY_{low,high}) and defines the five light
->>>>>>> +		zones.
->>>>>>> +
->>>>>>> +What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance0_zone
->>>>>>> +Date:		April 2012
->>>>>>> +KernelVersion:	3.5
->>>>>>> +Contact:	Johan Hovold<jhovold@gmail.com>
->>>>>>> +Description:
->>>>>>> +		Get the current light zone (0..4) as defined by the
->>>>>>> +		in_illuminance0_threshY_{falling,rising} thresholds.
->>>>>>> +
->>>>>>> +What:		/sys/bus/iio/devices/iio:deviceX/targetY_Z
->>>>>>> +Date:		April 2012
->>>>>>> +KernelVersion:	3.5
->>>>>>> +Contact:	Johan Hovold<jhovold@gmail.com>
->>>>>>> +Description:
->>>>>>> +		Set the target brightness for ALS-mapper Y in light zone Z
->>>>>>> +		(0..255), where Y in 1..3 and Z in 0..4.
->>>>>>
->>>>>> What are the units of this?
->>>>>
->>>>> The datasheet reads "percent of the full-scale current" (actually depends
->>>>> somewhat on whether the als is in linear or exponential mode). When the
->>>>> leds or backlights are in PWM-mode (not the ALS necessarily), these
->>>>> values are interpreted as a scale factor which is applied to the output
->>>>> current determined by the PWM-signal.
->>>>>
->>>>> Either way it could indeed be considered a raw output current (which
->>>>> could be manipulated later by various factors).
->>>> Fine.... Theoretically if at all possible we'd want the conversion
->>>> factors to get it to an actual current (in amps) to be available though.
->>>> (tend to relax that if there are unknowable elements or they aren't
->>>> specified by board file etc).
->>>
->>> Hmmm. I'm starting to get a feeling that we're over-doing this. The ALS
->>> on the lm3533 isn't a general purpose sensor. It's simply a way to
->>> control the leds and backlights of that device. So what you do is to
->>> determine the full-scale current (max current at maximum brightness 0xff
->>> in this case -- set in board file). Then the ALS input range is divided
->>> in 5 zones, and for each zone you set a brightness as a percent of the
->>> full-scale current. You relly don't care about amps (except for the
->>> maximum determined by the setup).
->> Then no need to provide scale etc.
->
-> Good.
->
->>> The equation's for determining the current are available in the
->>> datasheets however, but they depend on which mapping mode (linear or
->>> exponential) and can also be effected by PWM-input duty cycle etc. For
->>> this particular device, I really don't see the point in trying to
->>> determine actual current in amps in all these settings.
->> We can always add it later if anyone cares.
->>>
->>> Note also that the actual output current cannot be determined in the
->>> ALS as the required factors are only set/known in the led/backlight
->>> devices (mapping mode, pwm-mode).
->> Could query it back if it was useful, but sounds like probably not.
->> If we don't provide the information it can't be wrong...
->
-> Problem is that we would have three out_currentY_raw channels generating
-> up to five different output currents depending on the configuration of
-> the five controlled devices...
-Gah.  So if we did do this, we'd have to define all 5.  What a pain.
-Lest just skip that for now then.
->
->> I'd basically missunderstood where the division between the sensor and
->> the led/backlight drivers lay.  I think I'm happy now with where you
->> have it.
->
-> Great.
->
->>>
->>>>>> Also arguably is it not the als that this is related to, but rather
->>>>>> the light source?
->>>>>
->>>>> Well, it would be a raw output, mapping the measured LUX.
->>>> Fair enough, though I wonder if we are stepping on led / backlight
->>>> classes stuff with this.
->>>
->>> Keeping the target sets and the mapper terminology could still be an
->>> option.
->>>
->>> ALS input mode is a special mode of the LEDs and backlights which
->>> overrides the direct current control. It's indeed a special-purpose
->>> device.
->> Yup, I understand you now!
->>>
->>>>>> A quick datasheet browse says that these are current targets? If so I
->>>>>> wonder if we can make that explicit...  Could treat them as 3 output
->>>>>> channels and have indexed values like we do for frequencies in dds
->>>>>> devices (where external hardware is controlling them.
->>>>>
->>>>> I think I like this.
->>>>>
->>>>>> Hmm. lets see.
->>>>>>
->>>>>> out_currentX_currentY_raw
->>>>>> (the double naming is a bit clunky but corresponds to frequency devices
->>>>>> where we have
->>>>>> out_altvoltageX_frequencyY_raw
->>>>>>
->>>>>> Hence we'd treat you 3 mapers as indexed channels 0,1,2 and the zones
->>>>>> as indexed values they can take 0,1,2,3,4
->>>>>> out_currentX_raw is not read only and gives you the current for whichever
->>>>>> zone the device is currently in.
->>>>>
->>>>> I take it you mean "out_currentX_raw is read only".
->>>> yes. I do indeed. oops.
->>>>>
->>>>>> This may seem convoluted but I'd really rather have something generalizable
->>>>>> for this if we possibly can.  We'd still need documentation to say what is
->>>>>> controlling these, but at least they'd fit within our more general abi.
->>>>>>
->>>>>> What do you think?
->>>>>
->>>>> I like it. From a user perspective it's mainly a change of names (and
->>>>> indexes). But conceptually it's perhaps more clear: the als maps it's
->>>>> input to an output current, which, just like a PWM-signal, could be used
->>>>> as an input to the LEDs and backlights to determine their outputs.
->>>>>
->>>>> I'd have to modify the LED and backlight interfaces somewhat to reflect
->>>>> the changed indexes and terminology (e.g. "output channel" rather
->>>>> than "ALS mapper"). Something like:
->>>>>
->>>>> 	als_en		-- enable als input mode (0,1)
->>>>> 	als_channel	-- which out_currentX to use as input (0..2) in
->>>>> 			   als input mode
->>>> Not entirely sure I'm happy with this. Would rather it was done
->>>> on a per channel basis, so in_illuminance0_ *
->>>>   From point of view of sensors I don't really care if it is an als or
->>>> measuring something active (hence inherently not ambient!)
->>>
->>> Not sure I understood that. What is it you don't like about it?  You
->>> need to keep in mind what is actually there; three sets of target
->>> values per zone of which one set is dedicated to the first backlight
->>> device. That means, that the ALS mapper (or channel if we want to
->>> use that terminology) needs to be set in the actual devices and not
->>> the other way round. [ The als_en and als_channel attributes would
->>> belong to the led/backlight devices. ]
->> Ah. THat last bit in brackets is what I'd missed ;)  That's fine with me
->> then.
->
-> Suspected that. ;)
->
->>> What did you mean by "per channel basis, so in_illuminance0_ *"?
->>>
->>> Again it's a special purpose device -- the lm3533 leds and backlights
->>> are controlled in hw by the on-chip als interface. We can't just use any
->>> generic iio device for this.
->> sure. Had missunderstood completely.
->>>
->>>> Silly question but how is the out_current related to the input in als
->>>> mode?
->>>
->>> 1. raw adc input is averaged
->>> 2. mean adc input is mapped to zone using zone registers ("thresholds")
->>> 3. zone is mapped to a percentage using ALS mapper registers, that is,
->>>      three sets of 8-bit values per zone. Which set is used can be set on
->>>      a per-device (led, backlight) basis
->>> 4. the percentage is applied to the per-device full-scale current to
->>>      determine the actual output. How this mapping is done depends on if
->>>      linear or exponential mapping mode is set (also per-device).
->>>
->> All makes sense now.  Thanks for the clarification.
->>
->>> [ And things can get even more complicated if the devices are in
->>>     PWM-mode, but this is roughly the full picture. ]
->>>
->>> And all of the above is done in hw.
->>>
->>> So, we're only using out_current channels because it maybe fits iio
->>> better. For anyone familiar with the lm3533 this may even just confuse
->>> things.
->> I'm realy keen to do this primarily because we may well hit similar
->> devices at a later stage and it's much nicer to generalize earlier
->> than go through supporting the old method in parallel for years...
->> What we have here is general enough to support a wide range of possible
->> devices so lets go with it.
->
-> Ok.
->
->>> There are only the three tables of values that maps a zone to an output
->>> percentage (e.g. half brightness in zone 2).
->>
->> One last question.  Are the als ->  LEd /backlight mapping something a
->> device user would ever change?  If not the most general option would be
->> to use the iio inkernel mapping interfaces to do the assignments. Gives
->> you a clean easy way to allow reading back of current brightness in the
->> led drivers etc...
->
-> Are you referring to the als_channel settings above (i.e., which output
-> current is used as device input is ALS mode)? I think that may be the
-> case. You could have two sets of brightness values and quickly be able
-> to switch from one to another (e.g., for PM reasons).
->
-> Wouldn't it be possible to both allow users to change this and to add
-> support for iio in-kernel mappings later if needed?
-In theory yes.  No core support for dynamically messing with this as
-such but not to hard to do.
->
-> The mapping has the following constraints by the way:
->
-> 	backlight.0	->	out_current0
-> 	backlight.1	->	out_current1
-> 	led.[0-4]	->	out_current[1-2]
->
-> So it would only be possible to change the mapping for the leds and
-> only to select between two channels.
->
-> Is there anything preventing the led driver acting as IIO consumer to
-> set up a map to both channels and then decide which to read from
-> depending on als_channel?
-hmm. That mapping would need to be at the consumer side I think.
->
->>>>> So to summarise, we get the following new sysfs-entries for the ALS
->>>>> (where the first set replace targetX_Y):
->>>>>
->>>>> 	out_currentX_currentY_raw	r/w, (0..255), X in 0..2, Y in 0..4
->>>>> 	out_currentX_raw		ro (0..255), X in 0..2
->>>>>
->>>>> Is there any support in core for the first set or should I simply
->>>>> rename my target attributes?
->>>> No support in the core yet for this sort of thing..
->>>> Michael, any thoughts on this? In a sense it's very similar to
->>>> out_altvoltageX_frequencyY_raw etc...
->
-> Core support could be added later as long as we get the naming right in
-> lm3533, right?
->
-> I'm really keen to get this one into 3.5 (along with the rest of the
-> MFD-driver) and I know Greg usually sends his merge requests early...
-> But if I understand you correctly, it should be possible to apply
-> lm3533-als v5 now?
-Err.  I'll try and have a quick last look shortly.
+On Sat, May 19, 2012 at 09:48:23AM +0100, Jonathan Cameron wrote:
+> On 05/18/2012 02:07 PM, Johan Hovold wrote:
+> > Add sub-driver for the ambient-light-sensor interface on National
+> > Semiconductor / TI LM3533 lighting power chips.
+> > 
+> > The sensor interface can be used to control the LEDs and backlights of
+> > the chip through defining five light zones and three sets of
+> > corresponding brightness target levels.
+> > 
+> > The driver provides raw and mean adc readings along with the current
+> > light zone through sysfs. A threshold event can be generated on zone
+> > changes.
+> 
+> Hi Johan,
+> 
+> I hate to be a pain with this one, but it's a complex beast and I'd
+> really like to get the interface right first time - particularly as
+> you are going in after the move out of staging.
+> 
+> 
+> Queries for you.
+> 1) Ordering in the probe function. Normally expect iio_device_register
+> to be the last call. Why not here?
+> 2) Worth combining enable / disable into one as very similar functions?
+> 3) Suspicious code in als_set_input_mode
 
-Jonathan
->
-> Thanks,
-> Johan
+Good points. See my answers inline below.
+ 
+> Naming of the target values.  I think we can make the naming of these
+> fit in much better with the normal abi which is going to be all for the
+> good in the long run.  They are basically current output channels
+> with a controllable set of steps (where we don't have direct control
+> of which one we are in).  This is very similar to the frequency controls
+> on some of Analog's dds that we have a well defined interface for.
+> 
+> More detail below, but in summary.
+> 
+> out_currentX_currentY_raw for channel X value for zone Y.
 
+Interesting. I'll have to think this through and get back to you.
+
+Thanks for looking at this so quickly!
+
+Johan
+
+> Jonathan
+> > 
+> > Signed-off-by: Johan Hovold <jhovold@gmail.com>
+> > ---
+> > 
+> > Note that addition of r_select to the platform data probably needs to go
+> > in via mfd.
+> > 
+> > 
+> > v2:
+> >  - reimplement using iio
+> >  - add sysfs-ABI documentation
+> > v3
+> >  - use indexed channel
+> >  - fix sysfs-ABI documentation typo and style
+> >  - replace gain attribute with in_illuminance0_calibscale
+> >  - add calibscale to platform data
+> >  - fix adc register definitions
+> >  - replace to_lm3533_dev_attr macro with inline function
+> >  - fix device used for error reporting at irq allocation
+> >  - use iio device for error reporting during setup/enable
+> >  - rebase on staging-next
+> >    - fix header include paths
+> >    - use dev_to_iio_dev
+> >    - add IIO_CHAN_INFO_RAW to info mask
+> >    - use iio_device_{alloc,free}
+> > v4
+> >  - move to driver/iio/light
+> >  - add events/in_illuminance0_threshY_hysteresis attributes
+> >  - fix device zone-boundary quirkiness
+> >  - clean up attribute handling
+> >  - replace calibscale with device-specific r_select attribute
+> > 
+> > 
+> >  .../ABI/testing/sysfs-bus-iio-light-lm3533-als     |   64 ++
+> >  drivers/iio/Kconfig                                |    1 +
+> >  drivers/iio/Makefile                               |    1 +
+> >  drivers/iio/light/Kconfig                          |   22 +
+> >  drivers/iio/light/Makefile                         |    5 +
+> >  drivers/iio/light/lm3533-als.c                     |  941 ++++++++++++++++++++
+> >  include/linux/mfd/lm3533.h                         |    1 +
+> >  7 files changed, 1035 insertions(+), 0 deletions(-)
+> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
+> >  create mode 100644 drivers/iio/light/Kconfig
+> >  create mode 100644 drivers/iio/light/Makefile
+> >  create mode 100644 drivers/iio/light/lm3533-als.c
+> > 
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als b/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
+> > new file mode 100644
+> > index 0000000..7ea1770
+> > --- /dev/null
+> > +++ b/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
+> > @@ -0,0 +1,64 @@
+> > +What:		/sys/bus/iio/devices/iio:deviceX/r_select
+> > +Date:		April 2012
+> > +KernelVersion:	3.5
+> > +Contact:	Johan Hovold <jhovold@gmail.com>
+> > +Description:
+> > +		Set the ALS internal pull-down resistor for analog input mode
+> > +		(1..127), such that,
+> > +
+> > +		R_als = 200000 / r_select	(ohm)
+> > +
+> > +		This setting is ignored in PWM-mode (input is always high
+> > +		impedance in PWM-mode).
+> > +
+> > +What:		/sys/.../events/in_illuminance0_thresh_either_en
+> > +Date:		April 2012
+> > +KernelVersion:	3.5
+> > +Contact:	Johan Hovold <jhovold@gmail.com>
+> > +Description:
+> > +		Event generated when channel passes one of the four thresholds
+> > +		in each direction (rising|falling) and a zone change occurs.
+> > +		The corresponding light zone can be read from
+> > +		in_illuminance0_zone.
+> > +
+> > +What:		/sys/.../events/in_illuminance0_threshY_hysteresis
+> > +Date:		May 2012
+> > +KernelVersion:	3.5
+> > +Contact:	Johan Hovold <jhovold@gmail.com>
+> > +Description:
+> > +		Get the hysteresis for thresholds Y, that is,
+> > +
+> > +		threshY_hysteresis = threshY_raising - threshY_falling
+> > +
+> > +What:		/sys/.../events/illuminance_threshY_falling_value
+> > +What:		/sys/.../events/illuminance_threshY_raising_value
+> > +Date:		April 2012
+> > +KernelVersion:	3.5
+> > +Contact:	Johan Hovold <jhovold@gmail.com>
+> > +Description:
+> > +		Specifies the value of threshold that the device is
+> > +		comparing against for the events enabled by
+> > +		in_illuminance0_thresh_either_en, where Y in 0..3.
+> > +
+> > +		Note that threshY_falling must be less than or equal to
+> > +		threshY_raising.
+> > +
+> > +		These thresholds correspond to the eight zone-boundary
+> > +		registers (boundaryY_{low,high}) and defines the five light
+> > +		zones.
+> > +
+> > +What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance0_zone
+> > +Date:		April 2012
+> > +KernelVersion:	3.5
+> > +Contact:	Johan Hovold <jhovold@gmail.com>
+> > +Description:
+> > +		Get the current light zone (0..4) as defined by the
+> > +		in_illuminance0_threshY_{falling,rising} thresholds.
+> > +
+> > +What:		/sys/bus/iio/devices/iio:deviceX/targetY_Z
+> > +Date:		April 2012
+> > +KernelVersion:	3.5
+> > +Contact:	Johan Hovold <jhovold@gmail.com>
+> > +Description:
+> > +		Set the target brightness for ALS-mapper Y in light zone Z
+> > +		(0..255), where Y in 1..3 and Z in 0..4.
+> 
+> What are the units of this?  Also arguably is it not the als that this
+> is related to, but rather the light source?  A quick datasheet browse says
+> that these are current targets? If so I wonder if we can make that
+> explicit...  Could treat them as 3 output channels and have indexed values
+> like we do for frequencies in dds devices (where external hardware is
+> controlling them.
+> 
+> Hmm. lets see.
+> 
+> out_currentX_currentY_raw
+> (the double naming is a bit clunky but corresponds to frequency devices
+> where we have
+> out_altvoltageX_frequencyY_raw
+> 
+> Hence we'd treat you 3 mapers as indexed channels 0,1,2 and the zones
+> as indexed values they can take 0,1,2,3,4
+> out_currentX_raw is not read only and gives you the current for whichever
+> zone the device is currently in.
+> 
+> This may seem convoluted but I'd really rather have something generalizable
+> for this if we possibly can.  We'd still need documentation to say what is
+> controlling these, but at least they'd fit within our more general abi.
+> 
+> What do you think?
+
+I'll get back to you on this shortly.
+ 
+[...]
+
+> > +struct lm3533_als {
+> > +	struct lm3533 *lm3533;
+> > +
+> > +	unsigned long flags;
+> > +	int irq;
+> > +
+> Boolean might be better as it's not a though this will save
+> space!
+
+I've used bit fields consistently for such flags in lm3533, although the
+type below should have been unsigned. The space required is the same
+either way in this case. I'll go with bool.
+
+> > +	int pwm_mode:1;
+> > +
+> > +	atomic_t zone;
+> > +	struct mutex thresh_mutex;
+> > +};
+> Rarely a reason for more than one blank line in my opinion...
+
+Now you're picky. :)
+
+Separating defines, declarations and definitions using an additional
+blank line should be pretty uncontroversial. But again, if you insist,
+I'll drop it.
+
+> > +
+> > +
+> May be roll this into it's one call site. will make for marginally
+> less code I think..
+
+I did before, but separated it out when I added calibscale. I prefer to
+keep it separate for readability reasons (especially if we're going to
+add output channels).
+
+> > +static int lm3533_als_get_adc(struct iio_dev *indio_dev, bool average,
+> > +								int *adc)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	u8 reg;
+> > +	u8 val;
+> > +	int ret;
+> > +
+> > +	if (average)
+> > +		reg = LM3533_REG_ALS_READ_ADC_AVERAGE;
+> > +	else
+> > +		reg = LM3533_REG_ALS_READ_ADC_RAW;
+> > +
+> > +	ret = lm3533_read(als->lm3533, reg, &val);
+> > +	if (ret) {
+> > +		dev_err(&indio_dev->dev, "failed to read adc\n");
+> > +		return ret;
+> > +	}
+> > +
+> > +	*adc = val;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int lm3533_als_read_raw(struct iio_dev *indio_dev,
+> > +				struct iio_chan_spec const *chan,
+> > +				int *val, int *val2, long mask)
+> > +{
+> > +	int ret;
+> > +
+> > +	switch (mask) {
+> > +	case 0:
+> > +		ret = lm3533_als_get_adc(indio_dev, false, val);
+> > +		break;
+> > +	case IIO_CHAN_INFO_AVERAGE_RAW:
+> > +		ret = lm3533_als_get_adc(indio_dev, true, val);
+> > +		break;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return IIO_VAL_INT;
+> > +}
+> > +
+> Why have an array?  Just use the address and set the num_channels = 1;
+
+For consistency. If you ever add channels you'd need to turn it into an
+array again anyway (and we are considering output channels now).
+
+This is a pretty common practise for example in board files.
+
+> > +static const struct iio_chan_spec lm3533_als_channels[] = {
+> > +	{
+> > +		.type		= IIO_LIGHT,
+> > +		.channel	= 0,
+> > +		.indexed	= 1,
+> > +		.info_mask	= (IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT |
+> > +				   IIO_CHAN_INFO_RAW_SEPARATE_BIT),
+> > +	}
+> > +};
+> > +
+> > +static int lm3533_als_get_zone(struct iio_dev *indio_dev, u8 *zone)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	u8 val;
+> > +	int ret;
+> > +
+> > +	ret = lm3533_read(als->lm3533, LM3533_REG_ALS_ZONE_INFO, &val);
+> > +	if (ret) {
+> > +		dev_err(&indio_dev->dev, "failed to read zone\n");
+> > +		return ret;
+> > +	}
+> > +
+> > +	val = (val & LM3533_ALS_ZONE_MASK) >> LM3533_ALS_ZONE_SHIFT;
+> > +	*zone = min_t(u8, val, LM3533_ALS_ZONE_MAX);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static irqreturn_t lm3533_als_isr(int irq, void *dev_id)
+> > +{
+> > +
+> > +	struct iio_dev *indio_dev = dev_id;
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	u8 zone;
+> > +	int ret;
+> > +
+> > +	/* Clear interrupt by reading the ALS zone register. */
+> > +	ret = lm3533_als_get_zone(indio_dev, &zone);
+> > +	if (ret)
+> > +		goto out;
+> > +
+> > +	atomic_set(&als->zone, zone);
+> > +
+> > +	iio_push_event(indio_dev,
+> > +		       IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
+> > +					    0,
+> > +					    IIO_EV_TYPE_THRESH,
+> > +					    IIO_EV_DIR_EITHER),
+> > +		       iio_get_time_ns());
+> > +out:
+> > +	return IRQ_HANDLED;
+> > +}
+> > +
+> could just roll this into the one call point, it's not exactly complex.
+
+For readability and consistency reasons I'd like to keep it separate. If
+you look at the call point in store_thresh_either_en it really makes
+sense to break this one out. The consistency argument is that most
+register accesses have their dedicated set/get functions.
+
+[ The reordering of probe / remove discussed below will also introduce
+  a second call point. ]
+
+> > +static int lm3533_als_set_int_mode(struct iio_dev *indio_dev, int enable)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	u8 mask = LM3533_ALS_INT_ENABLE_MASK;
+> > +	u8 val;
+> > +	int ret;
+> > +
+> > +	if (enable)
+> > +		val = mask;
+> > +	else
+> > +		val = 0;
+> > +
+> > +	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_ZONE_INFO, val, mask);
+> > +	if (ret) {
+> > +		dev_err(&indio_dev->dev, "failed to set int mode %d\n",
+> > +								enable);
+> > +		return ret;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int lm3533_als_get_int_mode(struct iio_dev *indio_dev, int *enable)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	u8 mask = LM3533_ALS_INT_ENABLE_MASK;
+> > +	u8 val;
+> > +	int ret;
+> > +
+> > +	ret = lm3533_read(als->lm3533, LM3533_REG_ALS_ZONE_INFO, &val);
+> > +	if (ret) {
+> > +		dev_err(&indio_dev->dev, "failed to get int mode\n");
+> > +		return ret;
+> > +	}
+> > +
+> > +	*enable = !!(val & mask);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> Given only accessed from one place, why not just roll it in there?
+
+I've dropped this one completely along with the r_select sysfs attribute
+as it is now write only (from platform data).
+
+> > +static int lm3533_als_get_resistor(struct iio_dev *indio_dev, u8 *val)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	int ret;
+> > +
+> > +	if (als->pwm_mode) {
+> > +		*val = 0;		/* always high impedance */
+> > +		return 0;
+> > +	}
+> > +
+> > +	ret = lm3533_read(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, val);
+> > +	if (ret) {
+> > +		dev_err(&indio_dev->dev, "failed to get resistor\n");
+> > +		return ret;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int lm3533_als_set_resistor(struct iio_dev *indio_dev, u8 val)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	int ret;
+> > +
+> > +	if (als->pwm_mode)
+> > +		return -EPERM;		/* always high impedance */
+> > +
+> > +	if (val < LM3533_ALS_RESISTOR_MIN || val > LM3533_ALS_RESISTOR_MAX)
+> > +		return -EINVAL;
+> > +
+> > +	ret = lm3533_write(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, val);
+> > +	if (ret) {
+> > +		dev_err(&indio_dev->dev, "failed to set resistor\n");
+> > +		return ret;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+
+[...]
+
+> > +static int lm3533_als_set_target(struct iio_dev *indio_dev, unsigned nr,
+> > +							unsigned zone, u8 val)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	u8 reg;
+> > +	int ret;
+> > +
+> > +	if (nr < LM3533_ALS_MAPPER_MIN || nr > LM3533_ALS_MAPPER_MAX)
+> > +		return -EINVAL;
+> > +
+> > +	if (zone > LM3533_ALS_ZONE_MAX)
+> > +		return -EINVAL;
+> > +
+> > +	reg = lm3533_als_get_target_reg(nr, zone);
+> > +	ret = lm3533_write(als->lm3533, reg, val);
+> I wouldn't bother with the intermediate  but up to you...
+> 
+> ret = lm3533_write(als->lm3533, lm3533_als_get_target_reg(nr, zone), val);
+
+I prefer the expanded form.
+
+> > +	if (ret)
+> > +		dev_err(&indio_dev->dev, "failed to set target brightness\n");
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static inline u8 lm3533_als_get_threshold_reg(unsigned nr, bool raising)
+> > +{
+> > +	u8 offset;
+> > +
+> offset = !raising;
+
+Ok.
+
+> > +	if (raising)
+> > +		offset = 0;
+> > +	else
+> > +		offset = 1;
+> > +
+> > +	return LM3533_REG_ALS_BOUNDARY_BASE + 2 * nr + offset;
+> > +}
+> > +
+> > +static int lm3533_als_get_threshold(struct iio_dev *indio_dev, unsigned nr,
+> > +							bool raising, u8 *val)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	u8 reg;
+> > +	int ret;
+> > +
+> > +	if (nr > LM3533_ALS_THRESH_MAX)
+> > +		return -EINVAL;
+> > +
+> > +	reg = lm3533_als_get_threshold_reg(nr, raising);
+> > +	ret = lm3533_read(als->lm3533, reg, val);
+> > +	if (ret)
+> > +		dev_err(&indio_dev->dev, "failed to get threshold\n");
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static int lm3533_als_set_threshold(struct iio_dev *indio_dev, unsigned nr,
+> > +							bool raising, u8 val)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	u8 val2;
+> > +	u8 reg;
+> > +	u8 reg2;
+> u8 val2, reg, reg2; Shorter and still obvious.
+
+I try to avoid doing multiple declarations on a single line, but in this
+case, perhaps
+
+	u8 val2;
+	u8 reg, reg2;
+
+would be consistent with the rest of the code.
+
+> > +	int ret;
+> > +
+> > +	if (nr > LM3533_ALS_THRESH_MAX)
+> > +		return -EINVAL;
+> > +
+> > +	reg = lm3533_als_get_threshold_reg(nr, raising);
+> > +	reg2 = lm3533_als_get_threshold_reg(nr, !raising);
+> > +
+> > +	mutex_lock(&als->thresh_mutex);
+> > +	ret = lm3533_read(als->lm3533, reg2, &val2);
+> > +	if (ret) {
+> > +		dev_err(&indio_dev->dev, "failed to get threshold\n");
+> > +		goto out;
+> > +	}
+> > +	/*
+> > +	 * This device does not allow negative hysteresis (in fact, it uses
+> > +	 * whichever value is smaller as the lower bound) so we need to make
+> > +	 * sure that thresh_falling <= thresh_raising.
+> > +	 */
+> > +	if ((raising && (val < val2)) || (!raising && (val > val2))) {
+> > +		ret = -EINVAL;
+> > +		goto out;
+> > +	}
+> > +
+> > +	ret = lm3533_write(als->lm3533, reg, val);
+> > +	if (ret) {
+> > +		dev_err(&indio_dev->dev, "failed to set threshold\n");
+> > +		goto out;
+> > +	}
+> > +out:
+> > +	mutex_unlock(&als->thresh_mutex);
+> > +
+> > +	return ret;
+> > +}
+
+[...]
+
+> > +static ssize_t store_als_attr(struct device *dev,
+> > +					struct device_attribute *attr,
+> > +					const char *buf, size_t len)
+> > +{
+> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > +	struct lm3533_als_attribute *als_attr = to_lm3533_als_attr(attr);
+> > +	u8 val;
+> > +	int ret;
+> > +
+> > +	if (kstrtou8(buf, 0, &val))
+> > +		return -EINVAL;
+> > +
+> > +	switch (als_attr->type) {
+> > +	case LM3533_ATTR_TYPE_TARGET:
+> > +		ret = lm3533_als_set_target(indio_dev, als_attr->val1,
+> > +							als_attr->val2, val);
+> > +		break;
+> > +	case LM3533_ATTR_TYPE_THRESH_FALLING:
+> > +		ret = lm3533_als_set_threshold(indio_dev, als_attr->val1,
+> > +								false, val);
+> > +		break;
+> > +	case LM3533_ATTR_TYPE_THRESH_RAISING:
+> > +		ret = lm3533_als_set_threshold(indio_dev, als_attr->val1,
+> > +								true, val);
+> > +		break;
+> > +	default:
+> I'd be tempted to drop this. It is easy to verify whether it will occur.
+
+Drop the WARN and simply return -ENXIO, you mean?
+
+> > +		WARN(1, "%s - bad attribute type %d\n", __func__,
+> > +							als_attr->type);
+> > +		ret = -ENXIO;
+> > +	}
+> > +
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return len;
+> > +}
+
+[...]
+
+> > +static struct attribute *lm3533_als_event_attributes[] = {
+> > +	&dev_attr_in_illuminance0_thresh_either_en.attr,
+> > +	&lm3533_als_attr_in_illuminance0_thresh0_falling_value.dev_attr.attr,
+> > +	&lm3533_als_attr_in_illuminance0_thresh0_hysteresis.dev_attr.attr,
+> Just to verify the hysteresis applies to bother thresh0_falling and
+> thresh0_rising?
+
+Yes, we have the following situation (just to reiterate):
+
+	...
+		zone 1
+
+	thresh0_raising		52
+
+	thresh0_falling		50
+
+		zone 0
+
+If the ALS is in zone 0 and the (8-bit) average input raises above
+thresh0_raising (52) it enters zone 1. The ALS will not re-enter zone 0 until
+the input drops below thresh0_falling (50). The hysteresis is the
+difference between the two thresholds, that is, 52 - 50 = 2 in this
+case.
+
+> > +	&lm3533_als_attr_in_illuminance0_thresh0_raising_value.dev_attr.attr,
+> > +	&lm3533_als_attr_in_illuminance0_thresh1_falling_value.dev_attr.attr,
+> > +	&lm3533_als_attr_in_illuminance0_thresh1_hysteresis.dev_attr.attr,
+> > +	&lm3533_als_attr_in_illuminance0_thresh1_raising_value.dev_attr.attr,
+> > +	&lm3533_als_attr_in_illuminance0_thresh2_falling_value.dev_attr.attr,
+> > +	&lm3533_als_attr_in_illuminance0_thresh2_hysteresis.dev_attr.attr,
+> > +	&lm3533_als_attr_in_illuminance0_thresh2_raising_value.dev_attr.attr,
+> > +	&lm3533_als_attr_in_illuminance0_thresh3_falling_value.dev_attr.attr,
+> > +	&lm3533_als_attr_in_illuminance0_thresh3_hysteresis.dev_attr.attr,
+> > +	&lm3533_als_attr_in_illuminance0_thresh3_raising_value.dev_attr.attr,
+> > +	NULL
+> > +};
+> > +
+> > +static struct attribute_group lm3533_als_event_attribute_group = {
+> > +	.attrs = lm3533_als_event_attributes
+> > +};
+> > +
+> > +static struct attribute *lm3533_als_attributes[] = {
+> > +	&dev_attr_r_select.attr,
+> Just to keep info in one place. We agreed in other branch
+> of thread that r_select would be done with platform data.
+
+Indeed. I've dropped it from sysfs.
+
+> I wonder if we can make the naming a little clearer for these.. hmm.
+> > +	&lm3533_als_attr_target1_0.dev_attr.attr,
+> > +	&lm3533_als_attr_target1_1.dev_attr.attr,
+> > +	&lm3533_als_attr_target1_2.dev_attr.attr,
+> > +	&lm3533_als_attr_target1_3.dev_attr.attr,
+> > +	&lm3533_als_attr_target1_4.dev_attr.attr,
+> > +	&lm3533_als_attr_target2_0.dev_attr.attr,
+> > +	&lm3533_als_attr_target2_1.dev_attr.attr,
+> > +	&lm3533_als_attr_target2_2.dev_attr.attr,
+> > +	&lm3533_als_attr_target2_3.dev_attr.attr,
+> > +	&lm3533_als_attr_target2_4.dev_attr.attr,
+> > +	&lm3533_als_attr_target3_0.dev_attr.attr,
+> > +	&lm3533_als_attr_target3_1.dev_attr.attr,
+> > +	&lm3533_als_attr_target3_2.dev_attr.attr,
+> > +	&lm3533_als_attr_target3_3.dev_attr.attr,
+> > +	&lm3533_als_attr_target3_4.dev_attr.attr,
+> > +	&dev_attr_in_illuminance0_zone.attr,
+> > +	NULL
+> > +};
+> > +
+> > +static struct attribute_group lm3533_als_attribute_group = {
+> > +	.attrs = lm3533_als_attributes
+> > +};
+> > +
+> > +static int __devinit lm3533_als_set_input_mode(struct iio_dev *indio_dev,
+> > +								int pwm_mode)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	u8 mask = LM3533_ALS_INPUT_MODE_MASK;
+> > +	u8 val;
+> Just use mask directly, why introduce val as well
+> (particularly as you don't use it ;)
+> > +	int ret;
+> > +
+> > +	if (pwm_mode)
+> > +		val = mask;	/* pwm input */
+> > +	else
+> > +		val = 0;	/* analog input */
+> > +
+> Why have val?
+> > +	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_CONF, mask, mask);
+
+This is supposed to read lm3533_update(..., val, mask). Thanks for
+catching this.
+
+> > +	if (ret) {
+> > +		dev_err(&indio_dev->dev,
+> > +				"failed to set input mode %d\n", pwm_mode);
+> > +	}
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static int __devinit lm3533_als_setup(struct iio_dev *indio_dev,
+> > +					struct lm3533_als_platform_data *pdata)
+> > +{
+> > +	int ret;
+> > +
+> > +	ret = lm3533_als_set_input_mode(indio_dev, pdata->pwm_mode);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	/* ALS input is always high impedance in PWM-mode. */
+> > +	if (!pdata->pwm_mode) {
+> > +		ret = lm3533_als_set_resistor(indio_dev, pdata->r_select);
+> > +		if (ret)
+> > +			return ret;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> This enable / disable pair does rather look like it could
+> be combined into one function and save a few lines of repeated
+> code
+
+They could but at the expense of some readability (als_enable(...,
+false) rather than als_disable(...)) and really not much gain in terms
+of fewer line of code as you'd need to add conditionals both for the
+register value and error message.
+
+This is the style I've used in the other drivers so if you don't mind
+terribly, I'd suggest not merging them if only for consistency.
+
+> > +static int __devinit lm3533_als_enable(struct iio_dev *indio_dev)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	u8 mask = LM3533_ALS_ENABLE_MASK;
+> > +	int ret;
+> > +
+> > +	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_CONF, mask, mask);
+> > +	if (ret)
+> > +		dev_err(&indio_dev->dev, "failed to enable ALS\n");
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static int __devexit lm3533_als_disable(struct iio_dev *indio_dev)
+> > +{
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +	u8 mask = LM3533_ALS_ENABLE_MASK;
+> > +	int ret;
+> > +
+> > +	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_CONF, 0, mask);
+> > +	if (ret)
+> > +		dev_err(&indio_dev->dev, "failed to disable ALS\n");
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static const struct iio_info lm3533_als_info = {
+> > +	.attrs		= &lm3533_als_attribute_group,
+> > +	.event_attrs	= &lm3533_als_event_attribute_group,
+> > +	.driver_module	= THIS_MODULE,
+> > +	.read_raw	= &lm3533_als_read_raw,
+> > +};
+> > +
+> > +static int __devinit lm3533_als_probe(struct platform_device *pdev)
+> > +{
+> > +	struct lm3533 *lm3533;
+> > +	struct lm3533_als_platform_data *pdata;
+> > +	struct lm3533_als *als;
+> > +	struct iio_dev *indio_dev;
+> > +	int ret;
+> > +
+> > +	dev_dbg(&pdev->dev, "%s\n", __func__);
+> > +
+> > +	lm3533 = dev_get_drvdata(pdev->dev.parent);
+> > +	if (!lm3533)
+> > +		return -EINVAL;
+> > +
+> > +	pdata = pdev->dev.platform_data;
+> > +	if (!pdata) {
+> > +		dev_err(&pdev->dev, "no platform data\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	indio_dev = iio_device_alloc(sizeof(*als));
+> > +	if (!indio_dev)
+> > +		return -ENOMEM;
+> > +
+> > +	indio_dev->info = &lm3533_als_info;
+> > +	indio_dev->channels = lm3533_als_channels;
+> > +	indio_dev->num_channels = ARRAY_SIZE(lm3533_als_channels);
+> > +	indio_dev->name = "lm3533-als";
+> > +	indio_dev->dev.parent = pdev->dev.parent;
+> > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> > +
+> > +	als = iio_priv(indio_dev);
+> > +	als->lm3533 = lm3533;
+> > +	als->irq = lm3533->irq;
+> > +	als->pwm_mode = pdata->pwm_mode;
+> > +	atomic_set(&als->zone, 0);
+> > +	mutex_init(&als->thresh_mutex);
+> > +
+> > +	if (als->irq) {
+> > +		ret = request_threaded_irq(als->irq, NULL, lm3533_als_isr,
+> > +						IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+> > +						indio_dev->name, indio_dev);
+> > +		if (ret) {
+> > +			dev_err(&pdev->dev, "failed to request irq %d\n",
+> > +								als->irq);
+> > +			goto err_free_dev;
+> > +		}
+> > +	}
+> > +
+> > +	platform_set_drvdata(pdev, indio_dev);
+> > +
+> amongst other things this register does the creation of the
+> sysfs attributes.  Is there a race here if a read on one of
+> those occurs before the setup stuff below?
+
+The enable call simply enables the adc so, for example, target or
+threshold values could be updated before. Worst case is that you get a
+zero reading from the adc before the adc is enabled. The zone algorithm
+takes some time to settle either way.
+
+> Normally I'd expect this call to the last one in the probe
+> function.  Why did you chose this ordering?
+
+The main reason in this case was to be able to use the iio device for
+error reporting. The setup function called set_resistor which was also
+possible to set from sysfs (and for consistency all error reporting
+after probe is done using the iio device).
+
+But since we've now dropped the r_select attribute, I could use the
+platform device for reporting all errors during setup and make sure the
+iio device is registered last. I'll do this.
+
+> > +	ret = iio_device_register(indio_dev);
+> > +	if (ret) {
+> > +		dev_err(&pdev->dev, "failed to register ALS\n");
+> > +		goto err_free_irq;
+> > +	}
+> > +
+> > +	ret = lm3533_als_setup(indio_dev, pdata);
+> > +	if (ret)
+> > +		goto err_unregister;
+> > +
+> > +	ret = lm3533_als_enable(indio_dev);
+> > +	if (ret)
+> > +		goto err_unregister;
+> > +
+> > +	return 0;
+> > +
+> > +err_unregister:
+> > +	iio_device_unregister(indio_dev);
+> > +err_free_irq:
+> > +	if (als->irq)
+> > +		free_irq(als->irq, indio_dev);
+> > +err_free_dev:
+> > +	iio_device_free(indio_dev);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static int __devexit lm3533_als_remove(struct platform_device *pdev)
+> > +{
+> > +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> > +	struct lm3533_als *als = iio_priv(indio_dev);
+> > +
+> > +	dev_dbg(&pdev->dev, "%s\n", __func__);
+> > +
+> > +	lm3533_als_disable(indio_dev);
+> > +	iio_device_unregister(indio_dev);
+> > +	if (als->irq)
+> > +		free_irq(als->irq, indio_dev);
+> > +	iio_device_free(indio_dev);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static struct platform_driver lm3533_als_driver = {
+> > +	.driver	= {
+> > +		.name	= "lm3533-als",
+> > +		.owner	= THIS_MODULE,
+> > +	},
+> > +	.probe		= lm3533_als_probe,
+> > +	.remove		= __devexit_p(lm3533_als_remove),
+> > +};
+> > +module_platform_driver(lm3533_als_driver);
+> > +
+> > +MODULE_AUTHOR("Johan Hovold <jhovold@gmail.com>");
+> > +MODULE_DESCRIPTION("LM3533 Ambient Light Sensor driver");
+> > +MODULE_LICENSE("GPL");
+> > +MODULE_ALIAS("platform:lm3533-als");
+> > diff --git a/include/linux/mfd/lm3533.h b/include/linux/mfd/lm3533.h
+> > index 9660feb..594bc59 100644
+> > --- a/include/linux/mfd/lm3533.h
+> > +++ b/include/linux/mfd/lm3533.h
+> > @@ -43,6 +43,7 @@ struct lm3533_ctrlbank {
+> >  
+> >  struct lm3533_als_platform_data {
+> >  	unsigned pwm_mode:1;		/* PWM input mode (default analog) */
+> > +	u8 r_select;			/* 1 - 127 (ignored in PWM-mode) */
+> >  };
+> >  
+> >  struct lm3533_bl_platform_data {
+> 
