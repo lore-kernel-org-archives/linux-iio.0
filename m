@@ -1,129 +1,48 @@
-Return-Path: <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-046.synserver.de ([212.40.185.46]:1065 "EHLO
+	smtp-out-044.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1756438Ab2EUITA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 May 2012 04:19:00 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 02/18] staging:iio:dac:ad5064: Use iio_enum for powerdown modes
-Date: Mon, 21 May 2012 13:42:51 +0200
-Message-Id: <1337600587-19848-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1337600587-19848-1-git-send-email-lars@metafoo.de>
-References: <1337600587-19848-1-git-send-email-lars@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/2] iio: Add iio_device_get()
+Date: Mon, 21 May 2012 10:21:53 +0200
+Message-Id: <1337588514-23938-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This allows us to remove some boilerplate code for comparing and formatting the
-enum strings.
+This patch add the iio_device_get() function, which increases the reference
+count of a iio device. The matching function to decrease the reference count -
+iio_device_put() - already exists.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/dac/ad5064.c |   65 ++++++++++++--------------------------
- 1 file changed, 21 insertions(+), 44 deletions(-)
+ include/linux/iio/iio.h |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
-index 047148a..2394f05 100644
---- a/drivers/staging/iio/dac/ad5064.c
-+++ b/drivers/staging/iio/dac/ad5064.c
-@@ -136,57 +136,42 @@ static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
- 	return ret;
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 3a4f6a3..3238fa3 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -438,6 +438,17 @@ static inline struct iio_dev *dev_to_iio_dev(struct device *dev)
+ 	return container_of(dev, struct iio_dev, dev);
  }
  
--static const char ad5064_powerdown_modes[][15] = {
--	[AD5064_LDAC_PWRDN_NONE]	= "",
--	[AD5064_LDAC_PWRDN_1K]		= "1kohm_to_gnd",
--	[AD5064_LDAC_PWRDN_100K]	= "100kohm_to_gnd",
--	[AD5064_LDAC_PWRDN_3STATE]	= "three_state",
-+static const char * const ad5064_powerdown_modes[] = {
-+	"1kohm_to_gnd",
-+	"100kohm_to_gnd",
-+	"three_state",
- };
- 
--static ssize_t ad5064_read_powerdown_mode_available(struct iio_dev *indio_dev,
--	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
--{
--	return sprintf(buf, "%s %s %s\n", ad5064_powerdown_modes[1],
--		ad5064_powerdown_modes[2], ad5064_powerdown_modes[3]);
--}
--
--static ssize_t ad5064_read_powerdown_mode(struct iio_dev *indio_dev,
--	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
-+static int ad5064_get_powerdown_mode(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan)
- {
- 	struct ad5064_state *st = iio_priv(indio_dev);
- 
--	return sprintf(buf, "%s\n",
--		ad5064_powerdown_modes[st->pwr_down_mode[chan->channel]]);
-+	return st->pwr_down_mode[chan->channel] - 1;
- }
- 
--static ssize_t ad5064_write_powerdown_mode(struct iio_dev *indio_dev,
--	uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
--	size_t len)
-+static int ad5064_set_powerdown_mode(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, unsigned int mode)
- {
- 	struct ad5064_state *st = iio_priv(indio_dev);
--	unsigned int mode, i;
- 	int ret;
- 
--	mode = 0;
--
--	for (i = 1; i < ARRAY_SIZE(ad5064_powerdown_modes); ++i) {
--		if (sysfs_streq(buf, ad5064_powerdown_modes[i])) {
--			mode = i;
--			break;
--		}
--	}
--	if (mode == 0)
--		return  -EINVAL;
--
- 	mutex_lock(&indio_dev->mlock);
--	st->pwr_down_mode[chan->channel] = mode;
-+	st->pwr_down_mode[chan->channel] = mode + 1;
- 
- 	ret = ad5064_sync_powerdown_mode(st, chan->channel);
- 	mutex_unlock(&indio_dev->mlock);
- 
--	return ret ? ret : len;
-+	return ret;
- }
- 
-+static const struct iio_enum ad5064_powerdown_mode_enum = {
-+	.items = ad5064_powerdown_modes,
-+	.num_items = ARRAY_SIZE(ad5064_powerdown_modes),
-+	.get = ad5064_get_powerdown_mode,
-+	.set = ad5064_set_powerdown_mode,
-+};
++/**
++ * iio_device_get() - increment reference count for the device
++ * @indio_dev: IIO device structure
++ *
++ * Returns: The passed IIO device
++ **/
++static inline struct iio_dev *iio_device_get(struct iio_dev *indio_dev)
++{
++	return indio_dev ? dev_to_iio_dev(get_device(&indio_dev->dev)) : NULL;
++}
 +
- static ssize_t ad5064_read_dac_powerdown(struct iio_dev *indio_dev,
- 	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
- {
-@@ -286,22 +271,14 @@ static const struct iio_info ad5064_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
--static struct iio_chan_spec_ext_info ad5064_ext_info[] = {
-+static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
- 	{
- 		.name = "powerdown",
- 		.read = ad5064_read_dac_powerdown,
- 		.write = ad5064_write_dac_powerdown,
- 	},
--	{
--		.name = "powerdown_mode",
--		.read = ad5064_read_powerdown_mode,
--		.write = ad5064_write_powerdown_mode,
--	},
--	{
--		.name = "powerdown_mode_available",
--		.shared = true,
--		.read = ad5064_read_powerdown_mode_available,
--	},
-+	IIO_ENUM("powerdown_mode", false, &ad5064_powerdown_mode_enum),
-+	IIO_ENUM_AVAILABLE("powerdown_mode", &ad5064_powerdown_mode_enum),
- 	{ },
- };
- 
+ /* Can we make this smaller? */
+ #define IIO_ALIGN L1_CACHE_BYTES
+ /**
 -- 
 1.7.10
+
