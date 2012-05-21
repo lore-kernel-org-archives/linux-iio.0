@@ -1,334 +1,122 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-046.synserver.de ([212.40.185.46]:1086 "EHLO
+Received: from smtp-out-046.synserver.de ([212.40.185.46]:1494 "EHLO
 	smtp-out-044.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751829Ab2EULkJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 May 2012 07:40:09 -0400
+	by vger.kernel.org with ESMTP id S1752247Ab2EULkL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 May 2012 07:40:11 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 04/18] staging:iio:dac:ad5380: Convert to extended channel attributes
-Date: Mon, 21 May 2012 13:42:53 +0200
-Message-Id: <1337600587-19848-4-git-send-email-lars@metafoo.de>
+Subject: [PATCH 03/18] staging:iio:dac:ad5446: Use iio_enum for powerdown modes
+Date: Mon, 21 May 2012 13:42:52 +0200
+Message-Id: <1337600587-19848-3-git-send-email-lars@metafoo.de>
 In-Reply-To: <1337600587-19848-1-git-send-email-lars@metafoo.de>
 References: <1337600587-19848-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Use extended channel attributes instead of raw sysfs files for the additional
-channel attributes. This allows us to remove some boilerplate code.
+This allows us to remove some boilerplate code for comparing and formatting the
+enum strings.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/dac/ad5380.c |  250 ++++++++++++++++++--------------------
- 1 file changed, 116 insertions(+), 134 deletions(-)
+ drivers/staging/iio/dac/ad5446.c |   55 +++++++++++++-------------------------
+ 1 file changed, 19 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/staging/iio/dac/ad5380.c b/drivers/staging/iio/dac/ad5380.c
-index 370d284..7a35cc6 100644
---- a/drivers/staging/iio/dac/ad5380.c
-+++ b/drivers/staging/iio/dac/ad5380.c
-@@ -81,103 +81,18 @@ enum ad5380_type {
- 	ID_AD5392_5,
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
+index daa65b3..1774f7f 100644
+--- a/drivers/staging/iio/dac/ad5446.c
++++ b/drivers/staging/iio/dac/ad5446.c
+@@ -42,47 +42,34 @@ static int ad5660_write(struct ad5446_state *st, unsigned val)
+ }
+ 
+ static const char * const ad5446_powerdown_modes[] = {
+-	"", "1kohm_to_gnd", "100kohm_to_gnd", "three_state"
++	"1kohm_to_gnd", "100kohm_to_gnd", "three_state"
  };
  
--#define AD5380_CHANNEL(_bits) {					\
--	.type = IIO_VOLTAGE,					\
--	.indexed = 1,						\
--	.output = 1,						\
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
--		IIO_CHAN_INFO_SCALE_SHARED_BIT |		\
--		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
--		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
--	.scan_type = IIO_ST('u', (_bits), 16, 14 - (_bits))	\
+-static ssize_t ad5446_read_powerdown_mode_available(struct iio_dev *indio_dev,
+-	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+-{
+-	return sprintf(buf, "%s %s %s\n", ad5446_powerdown_modes[1],
+-		ad5446_powerdown_modes[2], ad5446_powerdown_modes[3]);
 -}
 -
--static const struct ad5380_chip_info ad5380_chip_info_tbl[] = {
--	[ID_AD5380_3] = {
--		.channel_template = AD5380_CHANNEL(14),
--		.num_channels = 40,
--		.int_vref = 1250000,
--	},
--	[ID_AD5380_5] = {
--		.channel_template = AD5380_CHANNEL(14),
--		.num_channels = 40,
--		.int_vref = 2500000,
--	},
--	[ID_AD5381_3] = {
--		.channel_template = AD5380_CHANNEL(12),
--		.num_channels = 16,
--		.int_vref = 1250000,
--	},
--	[ID_AD5381_5] = {
--		.channel_template = AD5380_CHANNEL(12),
--		.num_channels = 16,
--		.int_vref = 2500000,
--	},
--	[ID_AD5382_3] = {
--		.channel_template = AD5380_CHANNEL(14),
--		.num_channels = 32,
--		.int_vref = 1250000,
--	},
--	[ID_AD5382_5] = {
--		.channel_template = AD5380_CHANNEL(14),
--		.num_channels = 32,
--		.int_vref = 2500000,
--	},
--	[ID_AD5383_3] = {
--		.channel_template = AD5380_CHANNEL(12),
--		.num_channels = 32,
--		.int_vref = 1250000,
--	},
--	[ID_AD5383_5] = {
--		.channel_template = AD5380_CHANNEL(12),
--		.num_channels = 32,
--		.int_vref = 2500000,
--	},
--	[ID_AD5390_3] = {
--		.channel_template = AD5380_CHANNEL(14),
--		.num_channels = 16,
--		.int_vref = 1250000,
--	},
--	[ID_AD5390_5] = {
--		.channel_template = AD5380_CHANNEL(14),
--		.num_channels = 16,
--		.int_vref = 2500000,
--	},
--	[ID_AD5391_3] = {
--		.channel_template = AD5380_CHANNEL(12),
--		.num_channels = 16,
--		.int_vref = 1250000,
--	},
--	[ID_AD5391_5] = {
--		.channel_template = AD5380_CHANNEL(12),
--		.num_channels = 16,
--		.int_vref = 2500000,
--	},
--	[ID_AD5392_3] = {
--		.channel_template = AD5380_CHANNEL(14),
--		.num_channels = 8,
--		.int_vref = 1250000,
--	},
--	[ID_AD5392_5] = {
--		.channel_template = AD5380_CHANNEL(14),
--		.num_channels = 8,
--		.int_vref = 2500000,
--	},
--};
--
--static ssize_t ad5380_read_dac_powerdown(struct device *dev,
--	struct device_attribute *attr, char *buf)
-+static ssize_t ad5380_read_dac_powerdown(struct iio_dev *indio_dev,
-+	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
- {
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5380_state *st = iio_priv(indio_dev);
- 
- 	return sprintf(buf, "%d\n", st->pwr_down);
- }
- 
--static ssize_t ad5380_write_dac_powerdown(struct device *dev,
--	struct device_attribute *attr, const char *buf, size_t len)
-+static ssize_t ad5380_write_dac_powerdown(struct iio_dev *indio_dev,
-+	 uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
-+	 size_t len)
- {
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5380_state *st = iio_priv(indio_dev);
- 	bool pwr_down;
- 	int ret;
-@@ -200,20 +115,14 @@ static ssize_t ad5380_write_dac_powerdown(struct device *dev,
- 	return ret ? ret : len;
- }
- 
--static IIO_DEVICE_ATTR(out_voltage_powerdown,
--			S_IRUGO | S_IWUSR,
--			ad5380_read_dac_powerdown,
--			ad5380_write_dac_powerdown, 0);
--
--static const char ad5380_powerdown_modes[][15] = {
--	[0]	= "100kohm_to_gnd",
--	[1]	= "three_state",
-+static const char * const ad5380_powerdown_modes[] = {
-+	"100kohm_to_gnd",
-+	"three_state",
- };
- 
--static ssize_t ad5380_read_powerdown_mode(struct device *dev,
--	struct device_attribute *attr, char *buf)
-+static int ad5380_get_powerdown_mode(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan)
- {
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5380_state *st = iio_priv(indio_dev);
- 	unsigned int mode;
- 	int ret;
-@@ -224,49 +133,27 @@ static ssize_t ad5380_read_powerdown_mode(struct device *dev,
- 
- 	mode = (mode >> AD5380_CTRL_PWR_DOWN_MODE_OFFSET) & 1;
- 
--	return sprintf(buf, "%s\n", ad5380_powerdown_modes[mode]);
-+	return mode;
- }
- 
--static ssize_t ad5380_write_powerdown_mode(struct device *dev,
--	struct device_attribute *attr, const char *buf, size_t len)
-+static int ad5380_set_powerdown_mode(struct iio_dev *indio_dev,
+-static ssize_t ad5446_write_powerdown_mode(struct iio_dev *indio_dev,
+-					    uintptr_t private,
+-					    const struct iio_chan_spec *chan,
+-					    const char *buf, size_t len)
++static int ad5446_set_powerdown_mode(struct iio_dev *indio_dev,
 +	const struct iio_chan_spec *chan, unsigned int mode)
  {
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad5380_state *st = iio_priv(indio_dev);
--	unsigned int i;
- 	int ret;
- 
--	for (i = 0; i < ARRAY_SIZE(ad5380_powerdown_modes); ++i) {
--		if (sysfs_streq(buf, ad5380_powerdown_modes[i]))
+ 	struct ad5446_state *st = iio_priv(indio_dev);
+-	int i;
+-
+-	for (i = 1; i < ARRAY_SIZE(ad5446_powerdown_modes); i++) {
+-		if (sysfs_streq(buf, ad5446_powerdown_modes[i])) {
+-			st->pwr_down_mode = i;
 -			break;
+-		}
 -	}
--
--	if (i == ARRAY_SIZE(ad5380_powerdown_modes))
--		return -EINVAL;
--
- 	ret = regmap_update_bits(st->regmap, AD5380_REG_SF_CTRL,
- 		1 << AD5380_CTRL_PWR_DOWN_MODE_OFFSET,
--		i << AD5380_CTRL_PWR_DOWN_MODE_OFFSET);
-+		mode << AD5380_CTRL_PWR_DOWN_MODE_OFFSET);
  
--	return ret ? ret : len;
-+	return ret;
+-	if (i == ARRAY_SIZE(ad5446_powerdown_modes))
+-		return -EINVAL;
++	st->pwr_down_mode = mode + 1;
+ 
+-	return len;
++	return 0;
  }
  
--static IIO_DEVICE_ATTR(out_voltage_powerdown_mode,
--			S_IRUGO | S_IWUSR,
--			ad5380_read_powerdown_mode,
--			ad5380_write_powerdown_mode, 0);
--
--static IIO_CONST_ATTR(out_voltage_powerdown_mode_available,
--			"100kohm_to_gnd three_state");
--
--static struct attribute *ad5380_attributes[] = {
--	&iio_dev_attr_out_voltage_powerdown.dev_attr.attr,
--	&iio_dev_attr_out_voltage_powerdown_mode.dev_attr.attr,
--	&iio_const_attr_out_voltage_powerdown_mode_available.dev_attr.attr,
--	NULL,
--};
--
--static const struct attribute_group ad5380_attribute_group = {
--	.attrs = ad5380_attributes,
-+static const struct iio_enum ad5380_powerdown_mode_enum = {
-+	.items = ad5380_powerdown_modes,
-+	.num_items = ARRAY_SIZE(ad5380_powerdown_modes),
-+	.get = ad5380_get_powerdown_mode,
-+	.set = ad5380_set_powerdown_mode,
- };
- 
- static unsigned int ad5380_info_to_reg(struct iio_chan_spec const *chan,
-@@ -354,10 +241,105 @@ static int ad5380_read_raw(struct iio_dev *indio_dev,
- static const struct iio_info ad5380_info = {
- 	.read_raw = ad5380_read_raw,
- 	.write_raw = ad5380_write_raw,
--	.attrs = &ad5380_attribute_group,
- 	.driver_module = THIS_MODULE,
- };
- 
-+static struct iio_chan_spec_ext_info ad5380_ext_info[] = {
-+	{
-+		.name = "powerdown",
-+		.read = ad5380_read_dac_powerdown,
-+		.write = ad5380_write_dac_powerdown,
-+	},
-+	IIO_ENUM("powerdown_mode", true, &ad5380_powerdown_mode_enum),
-+	IIO_ENUM_AVAILABLE("powerdown_mode", &ad5380_powerdown_mode_enum),
-+	{ },
-+};
-+
-+#define AD5380_CHANNEL(_bits) {					\
-+	.type = IIO_VOLTAGE,					\
-+	.indexed = 1,						\
-+	.output = 1,						\
-+	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
-+		IIO_CHAN_INFO_SCALE_SHARED_BIT |		\
-+		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
-+		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
-+	.scan_type = IIO_ST('u', (_bits), 16, 14 - (_bits)),	\
-+	.ext_info = ad5380_ext_info,				\
-+}
-+
-+static const struct ad5380_chip_info ad5380_chip_info_tbl[] = {
-+	[ID_AD5380_3] = {
-+		.channel_template = AD5380_CHANNEL(14),
-+		.num_channels = 40,
-+		.int_vref = 1250000,
-+	},
-+	[ID_AD5380_5] = {
-+		.channel_template = AD5380_CHANNEL(14),
-+		.num_channels = 40,
-+		.int_vref = 2500000,
-+	},
-+	[ID_AD5381_3] = {
-+		.channel_template = AD5380_CHANNEL(12),
-+		.num_channels = 16,
-+		.int_vref = 1250000,
-+	},
-+	[ID_AD5381_5] = {
-+		.channel_template = AD5380_CHANNEL(12),
-+		.num_channels = 16,
-+		.int_vref = 2500000,
-+	},
-+	[ID_AD5382_3] = {
-+		.channel_template = AD5380_CHANNEL(14),
-+		.num_channels = 32,
-+		.int_vref = 1250000,
-+	},
-+	[ID_AD5382_5] = {
-+		.channel_template = AD5380_CHANNEL(14),
-+		.num_channels = 32,
-+		.int_vref = 2500000,
-+	},
-+	[ID_AD5383_3] = {
-+		.channel_template = AD5380_CHANNEL(12),
-+		.num_channels = 32,
-+		.int_vref = 1250000,
-+	},
-+	[ID_AD5383_5] = {
-+		.channel_template = AD5380_CHANNEL(12),
-+		.num_channels = 32,
-+		.int_vref = 2500000,
-+	},
-+	[ID_AD5390_3] = {
-+		.channel_template = AD5380_CHANNEL(14),
-+		.num_channels = 16,
-+		.int_vref = 1250000,
-+	},
-+	[ID_AD5390_5] = {
-+		.channel_template = AD5380_CHANNEL(14),
-+		.num_channels = 16,
-+		.int_vref = 2500000,
-+	},
-+	[ID_AD5391_3] = {
-+		.channel_template = AD5380_CHANNEL(12),
-+		.num_channels = 16,
-+		.int_vref = 1250000,
-+	},
-+	[ID_AD5391_5] = {
-+		.channel_template = AD5380_CHANNEL(12),
-+		.num_channels = 16,
-+		.int_vref = 2500000,
-+	},
-+	[ID_AD5392_3] = {
-+		.channel_template = AD5380_CHANNEL(14),
-+		.num_channels = 8,
-+		.int_vref = 1250000,
-+	},
-+	[ID_AD5392_5] = {
-+		.channel_template = AD5380_CHANNEL(14),
-+		.num_channels = 8,
-+		.int_vref = 2500000,
-+	},
-+};
-+
- static int __devinit ad5380_alloc_channels(struct iio_dev *indio_dev)
+-static ssize_t ad5446_read_powerdown_mode(struct iio_dev *indio_dev,
+-					   uintptr_t private,
+-					   const struct iio_chan_spec *chan,
+-					   char *buf)
++static int ad5446_get_powerdown_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan)
  {
- 	struct ad5380_state *st = iio_priv(indio_dev);
+ 	struct ad5446_state *st = iio_priv(indio_dev);
+ 
+-	return sprintf(buf, "%s\n", ad5446_powerdown_modes[st->pwr_down_mode]);
++	return st->pwr_down_mode - 1;
+ }
+ 
++static const struct iio_enum ad5446_powerdown_mode_enum = {
++	.items = ad5446_powerdown_modes,
++	.num_items = ARRAY_SIZE(ad5446_powerdown_modes),
++	.get = ad5446_get_powerdown_mode,
++	.set = ad5446_set_powerdown_mode,
++};
++
+ static ssize_t ad5446_read_dac_powerdown(struct iio_dev *indio_dev,
+ 					   uintptr_t private,
+ 					   const struct iio_chan_spec *chan,
+@@ -129,15 +116,9 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info_powerdown[] = {
+ 		.name = "powerdown",
+ 		.read = ad5446_read_dac_powerdown,
+ 		.write = ad5446_write_dac_powerdown,
+-	}, {
+-		.name = "powerdown_mode",
+-		.read = ad5446_read_powerdown_mode,
+-		.write = ad5446_write_powerdown_mode,
+-	}, {
+-		.name = "powerdown_mode_available",
+-		.shared = true,
+-		.read = ad5446_read_powerdown_mode_available,
+ 	},
++	IIO_ENUM("powerdown_mode", false, &ad5446_powerdown_mode_enum),
++	IIO_ENUM_AVAILABLE("powerdown_mode", &ad5446_powerdown_mode_enum),
+ 	{ },
+ };
+ 
+@@ -321,6 +302,8 @@ static int __devinit ad5446_probe(struct spi_device *spi)
+ 	indio_dev->channels = &st->chip_info->channel;
+ 	indio_dev->num_channels = 1;
+ 
++	st->pwr_down_mode = MODE_PWRDWN_1k;
++
+ 	if (st->chip_info->int_vref_mv)
+ 		st->vref_mv = st->chip_info->int_vref_mv;
+ 	else if (voltage_uv)
 -- 
 1.7.10
 
