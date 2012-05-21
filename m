@@ -13,11 +13,11 @@ Cc: Rob Landley <rob@landley.net>,
 	linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	Johan Hovold <jhovold@gmail.com>
-Subject: [PATCH v4] iio: add LM3533 ambient-light-sensor driver
-Date: Fri, 18 May 2012 15:07:41 +0200
-Message-Id: <1337346461-31220-1-git-send-email-jhovold@gmail.com>
-In-Reply-To: <1337100396-29024-1-git-send-email-jhovold@gmail.com>
-References: <1337100396-29024-1-git-send-email-jhovold@gmail.com>
+Subject: [PATCH v5] iio: add LM3533 ambient-light-sensor driver
+Date: Mon, 21 May 2012 14:18:06 +0200
+Message-Id: <1337602686-28007-1-git-send-email-jhovold@gmail.com>
+In-Reply-To: <1337346461-31220-1-git-send-email-jhovold@gmail.com>
+References: <1337346461-31220-1-git-send-email-jhovold@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 Add sub-driver for the ambient-light-sensor interface on National
@@ -25,18 +25,15 @@ Semiconductor / TI LM3533 lighting power chips.
 
 The sensor interface can be used to control the LEDs and backlights of
 the chip through defining five light zones and three sets of
-corresponding brightness target levels.
+corresponding output-current values.
 
 The driver provides raw and mean adc readings along with the current
 light zone through sysfs. A threshold event can be generated on zone
-changes.
+changes. The ALS-control output values can be set per zone for the three
+current output channels.
 
 Signed-off-by: Johan Hovold <jhovold@gmail.com>
 ---
-
-Note that addition of r_select to the platform data probably needs to go
-in via mfd.
-
 
 v2:
  - reimplement using iio
@@ -61,16 +58,22 @@ v4
  - fix device zone-boundary quirkiness
  - clean up attribute handling
  - replace calibscale with device-specific r_select attribute
+v5
+ - drop r_select from sysfs ABI
+ - fix set_input_mode
+ - minor style changes
+ - register iio device last at probe
+ - use dev_name for iio_dev and irq name
+ - add out_currentY channels
 
 
- .../ABI/testing/sysfs-bus-iio-light-lm3533-als     |   64 ++
+ .../ABI/testing/sysfs-bus-iio-light-lm3533-als     |   62 ++
  drivers/iio/Kconfig                                |    1 +
  drivers/iio/Makefile                               |    1 +
  drivers/iio/light/Kconfig                          |   22 +
  drivers/iio/light/Makefile                         |    5 +
- drivers/iio/light/lm3533-als.c                     |  941 ++++++++++++++++++++
- include/linux/mfd/lm3533.h                         |    1 +
- 7 files changed, 1035 insertions(+), 0 deletions(-)
+ drivers/iio/light/lm3533-als.c                     |  932 ++++++++++++++++++++
+ 6 files changed, 1023 insertions(+), 0 deletions(-)
  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
  create mode 100644 drivers/iio/light/Kconfig
  create mode 100644 drivers/iio/light/Makefile
@@ -78,23 +81,10 @@ v4
 
 diff --git a/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als b/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
 new file mode 100644
-index 0000000..7ea1770
+index 0000000..694a52c
 --- /dev/null
 +++ b/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
-@@ -0,0 +1,64 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/r_select
-+Date:		April 2012
-+KernelVersion:	3.5
-+Contact:	Johan Hovold <jhovold@gmail.com>
-+Description:
-+		Set the ALS internal pull-down resistor for analog input mode
-+		(1..127), such that,
-+
-+		R_als = 200000 / r_select	(ohm)
-+
-+		This setting is ignored in PWM-mode (input is always high
-+		impedance in PWM-mode).
-+
+@@ -0,0 +1,62 @@
 +What:		/sys/.../events/in_illuminance0_thresh_either_en
 +Date:		April 2012
 +KernelVersion:	3.5
@@ -120,9 +110,9 @@ index 0000000..7ea1770
 +KernelVersion:	3.5
 +Contact:	Johan Hovold <jhovold@gmail.com>
 +Description:
-+		Specifies the value of threshold that the device is
-+		comparing against for the events enabled by
-+		in_illuminance0_thresh_either_en, where Y in 0..3.
++		Specifies the value of threshold that the device is comparing
++		against for the events enabled by
++		in_illuminance0_thresh_either_en (0..255), where Y in 0..3.
 +
 +		Note that threshY_falling must be less than or equal to
 +		threshY_raising.
@@ -139,13 +129,24 @@ index 0000000..7ea1770
 +		Get the current light zone (0..4) as defined by the
 +		in_illuminance0_threshY_{falling,rising} thresholds.
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/targetY_Z
-+Date:		April 2012
++What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_raw
++Date:		May 2012
 +KernelVersion:	3.5
 +Contact:	Johan Hovold <jhovold@gmail.com>
 +Description:
-+		Set the target brightness for ALS-mapper Y in light zone Z
-+		(0..255), where Y in 1..3 and Z in 0..4.
++		Get output current for channel Y (0..255), that is,
++		out_currentY_currentZ_raw, where Z is the current zone.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_currentZ_raw
++Date:		May 2012
++KernelVersion:	3.5
++Contact:	Johan Hovold <jhovold@gmail.com>
++Description:
++		Set the output current for channel out_currentY when in zone
++		Z (0..255), where Y in 0..2 and Z in 0..4.
++
++		These values correspond to the ALS-mapper target registers for
++		ALS-mapper Y + 1.
 diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
 index 56eecef..cacc74d 100644
 --- a/drivers/iio/Kconfig
@@ -168,7 +169,7 @@ index e425afd..060b674 100644
 +obj-y += light/
 diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
 new file mode 100644
-index 0000000..7738a58
+index 0000000..db5618e
 --- /dev/null
 +++ b/drivers/iio/light/Kconfig
 @@ -0,0 +1,22 @@
@@ -187,12 +188,12 @@ index 0000000..7738a58
 +
 +	  The sensor interface can be used to control the LEDs and backlights
 +	  of the chip through defining five light zones and three sets of
-+	  corresponding brightness target levels.
++	  corresponding output-current values.
 +
 +	  The driver provides raw and mean adc readings along with the current
 +	  light zone through sysfs. A threshold event can be generated on zone
-+	  changes.
-+
++	  changes. The ALS-control output values can be set per zone for the
++	  three current output channels.
 +endmenu
 diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
 new file mode 100644
@@ -207,10 +208,10 @@ index 0000000..c1c23a0
 +obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
 diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
 new file mode 100644
-index 0000000..5944ac1
+index 0000000..c3e7bac
 --- /dev/null
 +++ b/drivers/iio/light/lm3533-als.c
-@@ -0,0 +1,941 @@
+@@ -0,0 +1,932 @@
 +/*
 + * lm3533-als.c -- LM3533 Ambient Light Sensor driver
 + *
@@ -242,8 +243,7 @@ index 0000000..5944ac1
 +
 +#define LM3533_ALS_RESISTOR_MIN			1
 +#define LM3533_ALS_RESISTOR_MAX			127
-+#define LM3533_ALS_MAPPER_MIN			1
-+#define LM3533_ALS_MAPPER_MAX			3
++#define LM3533_ALS_CHANNEL_CURRENT_MAX		2
 +#define LM3533_ALS_THRESH_MAX			3
 +#define LM3533_ALS_ZONE_MAX			4
 +
@@ -267,11 +267,10 @@ index 0000000..5944ac1
 +
 +struct lm3533_als {
 +	struct lm3533 *lm3533;
++	struct platform_device *pdev;
 +
 +	unsigned long flags;
 +	int irq;
-+
-+	int pwm_mode:1;
 +
 +	atomic_t zone;
 +	struct mutex thresh_mutex;
@@ -302,40 +301,7 @@ index 0000000..5944ac1
 +	return 0;
 +}
 +
-+static int lm3533_als_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	int ret;
-+
-+	switch (mask) {
-+	case 0:
-+		ret = lm3533_als_get_adc(indio_dev, false, val);
-+		break;
-+	case IIO_CHAN_INFO_AVERAGE_RAW:
-+		ret = lm3533_als_get_adc(indio_dev, true, val);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	if (ret)
-+		return ret;
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static const struct iio_chan_spec lm3533_als_channels[] = {
-+	{
-+		.type		= IIO_LIGHT,
-+		.channel	= 0,
-+		.indexed	= 1,
-+		.info_mask	= (IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT |
-+				   IIO_CHAN_INFO_RAW_SEPARATE_BIT),
-+	}
-+};
-+
-+static int lm3533_als_get_zone(struct iio_dev *indio_dev, u8 *zone)
++static int _lm3533_als_get_zone(struct iio_dev *indio_dev, u8 *zone)
 +{
 +	struct lm3533_als *als = iio_priv(indio_dev);
 +	u8 val;
@@ -353,6 +319,148 @@ index 0000000..5944ac1
 +	return 0;
 +}
 +
++static int lm3533_als_get_zone(struct iio_dev *indio_dev, u8 *zone)
++{
++	struct lm3533_als *als = iio_priv(indio_dev);
++	int ret;
++
++	if (test_bit(LM3533_ALS_FLAG_INT_ENABLED, &als->flags)) {
++		*zone = atomic_read(&als->zone);
++	} else {
++		ret = _lm3533_als_get_zone(indio_dev, zone);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
++/*
++ * channel	output channel 0..2
++ * zone		zone 0..4
++ */
++static inline u8 lm3533_als_get_target_reg(unsigned channel, unsigned zone)
++{
++	return LM3533_REG_ALS_TARGET_BASE + 5 * channel + zone;
++}
++
++static int lm3533_als_get_target(struct iio_dev *indio_dev, unsigned channel,
++							unsigned zone, u8 *val)
++{
++	struct lm3533_als *als = iio_priv(indio_dev);
++	u8 reg;
++	int ret;
++
++	if (channel > LM3533_ALS_CHANNEL_CURRENT_MAX)
++		return -EINVAL;
++
++	if (zone > LM3533_ALS_ZONE_MAX)
++		return -EINVAL;
++
++	reg = lm3533_als_get_target_reg(channel, zone);
++	ret = lm3533_read(als->lm3533, reg, val);
++	if (ret)
++		dev_err(&indio_dev->dev, "failed to get target current\n");
++
++	return ret;
++}
++
++static int lm3533_als_set_target(struct iio_dev *indio_dev, unsigned channel,
++							unsigned zone, u8 val)
++{
++	struct lm3533_als *als = iio_priv(indio_dev);
++	u8 reg;
++	int ret;
++
++	if (channel > LM3533_ALS_CHANNEL_CURRENT_MAX)
++		return -EINVAL;
++
++	if (zone > LM3533_ALS_ZONE_MAX)
++		return -EINVAL;
++
++	reg = lm3533_als_get_target_reg(channel, zone);
++	ret = lm3533_write(als->lm3533, reg, val);
++	if (ret)
++		dev_err(&indio_dev->dev, "failed to set target current\n");
++
++	return ret;
++}
++
++static int lm3533_als_get_current(struct iio_dev *indio_dev, unsigned channel,
++								int *val)
++{
++	u8 zone;
++	u8 target;
++	int ret;
++
++	ret = lm3533_als_get_zone(indio_dev, &zone);
++	if (ret)
++		return ret;
++
++	ret = lm3533_als_get_target(indio_dev, channel, zone, &target);
++	if (ret)
++		return ret;
++
++	*val = target;
++
++	return 0;
++}
++
++static int lm3533_als_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	int ret;
++
++	switch (mask) {
++	case 0:
++		switch (chan->type) {
++		case IIO_LIGHT:
++			ret = lm3533_als_get_adc(indio_dev, false, val);
++			break;
++		case IIO_CURRENT:
++			ret = lm3533_als_get_current(indio_dev, chan->channel,
++									val);
++			break;
++		default:
++			return -EINVAL;
++		}
++		break;
++	case IIO_CHAN_INFO_AVERAGE_RAW:
++		ret = lm3533_als_get_adc(indio_dev, true, val);
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	if (ret)
++		return ret;
++
++	return IIO_VAL_INT;
++}
++
++#define CHANNEL_CURRENT(_channel)					\
++	{								\
++		.type		= IIO_CURRENT,				\
++		.channel	= _channel,				\
++		.indexed	= true,					\
++		.output		= true,					\
++		.info_mask	= IIO_CHAN_INFO_RAW_SEPARATE_BIT,	\
++	}
++
++static const struct iio_chan_spec lm3533_als_channels[] = {
++	{
++		.type		= IIO_LIGHT,
++		.channel	= 0,
++		.indexed	= true,
++		.info_mask	= (IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT |
++				   IIO_CHAN_INFO_RAW_SEPARATE_BIT),
++	},
++	CHANNEL_CURRENT(0),
++	CHANNEL_CURRENT(1),
++	CHANNEL_CURRENT(2),
++};
++
 +static irqreturn_t lm3533_als_isr(int irq, void *dev_id)
 +{
 +
@@ -362,7 +470,7 @@ index 0000000..5944ac1
 +	int ret;
 +
 +	/* Clear interrupt by reading the ALS zone register. */
-+	ret = lm3533_als_get_zone(indio_dev, &zone);
++	ret = _lm3533_als_get_zone(indio_dev, &zone);
 +	if (ret)
 +		goto out;
 +
@@ -418,104 +526,9 @@ index 0000000..5944ac1
 +	return 0;
 +}
 +
-+static int lm3533_als_get_resistor(struct iio_dev *indio_dev, u8 *val)
-+{
-+	struct lm3533_als *als = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (als->pwm_mode) {
-+		*val = 0;		/* always high impedance */
-+		return 0;
-+	}
-+
-+	ret = lm3533_read(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, val);
-+	if (ret) {
-+		dev_err(&indio_dev->dev, "failed to get resistor\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int lm3533_als_set_resistor(struct iio_dev *indio_dev, u8 val)
-+{
-+	struct lm3533_als *als = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (als->pwm_mode)
-+		return -EPERM;		/* always high impedance */
-+
-+	if (val < LM3533_ALS_RESISTOR_MIN || val > LM3533_ALS_RESISTOR_MAX)
-+		return -EINVAL;
-+
-+	ret = lm3533_write(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, val);
-+	if (ret) {
-+		dev_err(&indio_dev->dev, "failed to set resistor\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+/*
-+ * nr   -- als mapper 1..3
-+ * zone -- als zone 0..4
-+ */
-+static inline u8 lm3533_als_get_target_reg(unsigned nr, unsigned zone)
-+{
-+	return LM3533_REG_ALS_TARGET_BASE + 5 * (nr - 1) + zone;
-+}
-+
-+static int lm3533_als_get_target(struct iio_dev *indio_dev, unsigned nr,
-+							unsigned zone, u8 *val)
-+{
-+	struct lm3533_als *als = iio_priv(indio_dev);
-+	u8 reg;
-+	int ret;
-+
-+	if (nr < LM3533_ALS_MAPPER_MIN || nr > LM3533_ALS_MAPPER_MAX)
-+		return -EINVAL;
-+
-+	if (zone > LM3533_ALS_ZONE_MAX)
-+		return -EINVAL;
-+
-+	reg = lm3533_als_get_target_reg(nr, zone);
-+	ret = lm3533_read(als->lm3533, reg, val);
-+	if (ret)
-+		dev_err(&indio_dev->dev, "failed to get target brightness\n");
-+
-+	return ret;
-+}
-+
-+static int lm3533_als_set_target(struct iio_dev *indio_dev, unsigned nr,
-+							unsigned zone, u8 val)
-+{
-+	struct lm3533_als *als = iio_priv(indio_dev);
-+	u8 reg;
-+	int ret;
-+
-+	if (nr < LM3533_ALS_MAPPER_MIN || nr > LM3533_ALS_MAPPER_MAX)
-+		return -EINVAL;
-+
-+	if (zone > LM3533_ALS_ZONE_MAX)
-+		return -EINVAL;
-+
-+	reg = lm3533_als_get_target_reg(nr, zone);
-+	ret = lm3533_write(als->lm3533, reg, val);
-+	if (ret)
-+		dev_err(&indio_dev->dev, "failed to set target brightness\n");
-+
-+	return ret;
-+}
-+
 +static inline u8 lm3533_als_get_threshold_reg(unsigned nr, bool raising)
 +{
-+	u8 offset;
-+
-+	if (raising)
-+		offset = 0;
-+	else
-+		offset = 1;
++	u8 offset = !raising;
 +
 +	return LM3533_REG_ALS_BOUNDARY_BASE + 2 * nr + offset;
 +}
@@ -543,8 +556,7 @@ index 0000000..5944ac1
 +{
 +	struct lm3533_als *als = iio_priv(indio_dev);
 +	u8 val2;
-+	u8 reg;
-+	u8 reg2;
++	u8 reg, reg2;
 +	int ret;
 +
 +	if (nr > LM3533_ALS_THRESH_MAX)
@@ -673,51 +685,14 @@ index 0000000..5944ac1
 +				struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct lm3533_als *als = iio_priv(indio_dev);
 +	u8 zone;
 +	int ret;
 +
-+	if (test_bit(LM3533_ALS_FLAG_INT_ENABLED, &als->flags)) {
-+		zone = atomic_read(&als->zone);
-+	} else {
-+		ret = lm3533_als_get_zone(indio_dev, &zone);
-+		if (ret)
-+			return ret;
-+	}
++	ret = lm3533_als_get_zone(indio_dev, &zone);
++	if (ret)
++		return ret;
 +
 +	return scnprintf(buf, PAGE_SIZE, "%u\n", zone);
-+}
-+
-+static ssize_t show_r_select(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	u8 r_select;
-+	int ret;
-+
-+	ret = lm3533_als_get_resistor(indio_dev, &r_select);
-+	if (ret)
-+		return ret;
-+
-+	return scnprintf(buf, PAGE_SIZE, "%u\n", r_select);
-+}
-+
-+static int store_r_select(struct device *dev,
-+					struct device_attribute *attr,
-+					const char *buf, size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	unsigned long r_select;
-+	int ret;
-+
-+	if (kstrtoul(buf, 0, &r_select))
-+		return -EINVAL;
-+
-+	ret = lm3533_als_set_resistor(indio_dev, r_select);
-+	if (ret)
-+		return ret;
-+
-+	return len;
 +}
 +
 +enum lm3533_als_attribute_type {
@@ -767,8 +742,6 @@ index 0000000..5944ac1
 +								true, &val);
 +		break;
 +	default:
-+		WARN(1, "%s - bad attribute type %d\n", __func__,
-+							als_attr->type);
 +		ret = -ENXIO;
 +	}
 +
@@ -804,8 +777,6 @@ index 0000000..5944ac1
 +								true, val);
 +		break;
 +	default:
-+		WARN(1, "%s - bad attribute type %d\n", __func__,
-+							als_attr->type);
 +		ret = -ENXIO;
 +	}
 +
@@ -825,15 +796,22 @@ index 0000000..5944ac1
 +	struct lm3533_als_attribute lm3533_als_attr_##_name =		  \
 +		ALS_ATTR(_name, _mode, _show, _store, _type, _val1, _val2)
 +
-+#define ALS_TARGET_ATTR_RW(_nr, _zone)					\
-+	LM3533_ALS_ATTR(target##_nr##_##_zone, S_IRUGO | S_IWUSR,	\
++#define ALS_TARGET_ATTR_RW(_channel, _zone)				\
++	LM3533_ALS_ATTR(out_current##_channel##_current##_zone##_raw,	\
++				S_IRUGO | S_IWUSR,			\
 +				show_als_attr, store_als_attr,		\
-+				LM3533_ATTR_TYPE_TARGET, _nr, _zone)
++				LM3533_ATTR_TYPE_TARGET, _channel, _zone)
 +/*
-+ * ALS Mapper targets
++ * ALS output current values (ALS mapper targets)
 + *
-+ * target[1-3]_[0-4]		0-255
++ * out_current[0-2]_current[0-4]_raw		0-255
 + */
++static ALS_TARGET_ATTR_RW(0, 0);
++static ALS_TARGET_ATTR_RW(0, 1);
++static ALS_TARGET_ATTR_RW(0, 2);
++static ALS_TARGET_ATTR_RW(0, 3);
++static ALS_TARGET_ATTR_RW(0, 4);
++
 +static ALS_TARGET_ATTR_RW(1, 0);
 +static ALS_TARGET_ATTR_RW(1, 1);
 +static ALS_TARGET_ATTR_RW(1, 2);
@@ -845,12 +823,6 @@ index 0000000..5944ac1
 +static ALS_TARGET_ATTR_RW(2, 2);
 +static ALS_TARGET_ATTR_RW(2, 3);
 +static ALS_TARGET_ATTR_RW(2, 4);
-+
-+static ALS_TARGET_ATTR_RW(3, 0);
-+static ALS_TARGET_ATTR_RW(3, 1);
-+static ALS_TARGET_ATTR_RW(3, 2);
-+static ALS_TARGET_ATTR_RW(3, 3);
-+static ALS_TARGET_ATTR_RW(3, 4);
 +
 +#define ALS_THRESH_FALLING_ATTR_RW(_nr)					\
 +	LM3533_ALS_ATTR(in_illuminance0_thresh##_nr##_falling_value,	\
@@ -915,15 +887,6 @@ index 0000000..5944ac1
 + */
 +static ILLUMINANCE_ATTR_RO(zone);
 +
-+/*
-+ * ALS internal pull-down resistor select (analog mode)
-+ *
-+ * r_select	1-127
-+ *
-+ * R_als = 200000 / r_select (ohm)
-+ */
-+static LM3533_ATTR_RW(r_select);
-+
 +static struct attribute *lm3533_als_event_attributes[] = {
 +	&dev_attr_in_illuminance0_thresh_either_en.attr,
 +	&lm3533_als_attr_in_illuminance0_thresh0_falling_value.dev_attr.attr,
@@ -946,23 +909,22 @@ index 0000000..5944ac1
 +};
 +
 +static struct attribute *lm3533_als_attributes[] = {
-+	&dev_attr_r_select.attr,
-+	&lm3533_als_attr_target1_0.dev_attr.attr,
-+	&lm3533_als_attr_target1_1.dev_attr.attr,
-+	&lm3533_als_attr_target1_2.dev_attr.attr,
-+	&lm3533_als_attr_target1_3.dev_attr.attr,
-+	&lm3533_als_attr_target1_4.dev_attr.attr,
-+	&lm3533_als_attr_target2_0.dev_attr.attr,
-+	&lm3533_als_attr_target2_1.dev_attr.attr,
-+	&lm3533_als_attr_target2_2.dev_attr.attr,
-+	&lm3533_als_attr_target2_3.dev_attr.attr,
-+	&lm3533_als_attr_target2_4.dev_attr.attr,
-+	&lm3533_als_attr_target3_0.dev_attr.attr,
-+	&lm3533_als_attr_target3_1.dev_attr.attr,
-+	&lm3533_als_attr_target3_2.dev_attr.attr,
-+	&lm3533_als_attr_target3_3.dev_attr.attr,
-+	&lm3533_als_attr_target3_4.dev_attr.attr,
 +	&dev_attr_in_illuminance0_zone.attr,
++	&lm3533_als_attr_out_current0_current0_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current0_current1_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current0_current2_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current0_current3_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current0_current4_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current1_current0_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current1_current1_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current1_current2_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current1_current3_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current1_current4_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current2_current0_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current2_current1_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current2_current2_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current2_current3_raw.dev_attr.attr,
++	&lm3533_als_attr_out_current2_current4_raw.dev_attr.attr,
 +	NULL
 +};
 +
@@ -970,10 +932,9 @@ index 0000000..5944ac1
 +	.attrs = lm3533_als_attributes
 +};
 +
-+static int __devinit lm3533_als_set_input_mode(struct iio_dev *indio_dev,
-+								int pwm_mode)
++static int __devinit lm3533_als_set_input_mode(struct lm3533_als *als,
++								bool pwm_mode)
 +{
-+	struct lm3533_als *als = iio_priv(indio_dev);
 +	u8 mask = LM3533_ALS_INPUT_MODE_MASK;
 +	u8 val;
 +	int ret;
@@ -983,27 +944,44 @@ index 0000000..5944ac1
 +	else
 +		val = 0;	/* analog input */
 +
-+	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_CONF, mask, mask);
++	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_CONF, val, mask);
 +	if (ret) {
-+		dev_err(&indio_dev->dev,
-+				"failed to set input mode %d\n", pwm_mode);
++		dev_err(&als->pdev->dev, "failed to set input mode %d\n",
++								pwm_mode);
++		return ret;
 +	}
 +
-+	return ret;
++	return 0;
 +}
 +
-+static int __devinit lm3533_als_setup(struct iio_dev *indio_dev,
++static int __devinit lm3533_als_set_resistor(struct lm3533_als *als, u8 val)
++{
++	int ret;
++
++	if (val < LM3533_ALS_RESISTOR_MIN || val > LM3533_ALS_RESISTOR_MAX)
++		return -EINVAL;
++
++	ret = lm3533_write(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, val);
++	if (ret) {
++		dev_err(&als->pdev->dev, "failed to set resistor\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static int __devinit lm3533_als_setup(struct lm3533_als *als,
 +					struct lm3533_als_platform_data *pdata)
 +{
 +	int ret;
 +
-+	ret = lm3533_als_set_input_mode(indio_dev, pdata->pwm_mode);
++	ret = lm3533_als_set_input_mode(als, pdata->pwm_mode);
 +	if (ret)
 +		return ret;
 +
 +	/* ALS input is always high impedance in PWM-mode. */
 +	if (!pdata->pwm_mode) {
-+		ret = lm3533_als_set_resistor(indio_dev, pdata->r_select);
++		ret = lm3533_als_set_resistor(als, pdata->r_select);
 +		if (ret)
 +			return ret;
 +	}
@@ -1011,28 +989,50 @@ index 0000000..5944ac1
 +	return 0;
 +}
 +
-+static int __devinit lm3533_als_enable(struct iio_dev *indio_dev)
++static int __devinit lm3533_als_setup_irq(struct lm3533_als *als, void *dev)
 +{
-+	struct lm3533_als *als = iio_priv(indio_dev);
++	u8 mask = LM3533_ALS_INT_ENABLE_MASK;
++	int ret;
++
++	/* Make sure interrupts are disabled. */
++	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_ZONE_INFO, 0, mask);
++	if (ret) {
++		dev_err(&als->pdev->dev, "failed to disable interrupts\n");
++		return ret;
++	}
++
++	ret = request_threaded_irq(als->irq, NULL, lm3533_als_isr,
++					IRQF_TRIGGER_LOW | IRQF_ONESHOT,
++					dev_name(&als->pdev->dev), dev);
++	if (ret) {
++		dev_err(&als->pdev->dev, "failed to request irq %d\n",
++								als->irq);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int __devinit lm3533_als_enable(struct lm3533_als *als)
++{
 +	u8 mask = LM3533_ALS_ENABLE_MASK;
 +	int ret;
 +
 +	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_CONF, mask, mask);
 +	if (ret)
-+		dev_err(&indio_dev->dev, "failed to enable ALS\n");
++		dev_err(&als->pdev->dev, "failed to enable ALS\n");
 +
 +	return ret;
 +}
 +
-+static int __devexit lm3533_als_disable(struct iio_dev *indio_dev)
++static int lm3533_als_disable(struct lm3533_als *als)
 +{
-+	struct lm3533_als *als = iio_priv(indio_dev);
 +	u8 mask = LM3533_ALS_ENABLE_MASK;
 +	int ret;
 +
 +	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_CONF, 0, mask);
 +	if (ret)
-+		dev_err(&indio_dev->dev, "failed to disable ALS\n");
++		dev_err(&als->pdev->dev, "failed to disable ALS\n");
 +
 +	return ret;
 +}
@@ -1052,8 +1052,6 @@ index 0000000..5944ac1
 +	struct iio_dev *indio_dev;
 +	int ret;
 +
-+	dev_dbg(&pdev->dev, "%s\n", __func__);
-+
 +	lm3533 = dev_get_drvdata(pdev->dev.parent);
 +	if (!lm3533)
 +		return -EINVAL;
@@ -1071,48 +1069,43 @@ index 0000000..5944ac1
 +	indio_dev->info = &lm3533_als_info;
 +	indio_dev->channels = lm3533_als_channels;
 +	indio_dev->num_channels = ARRAY_SIZE(lm3533_als_channels);
-+	indio_dev->name = "lm3533-als";
++	indio_dev->name = dev_name(&pdev->dev);
 +	indio_dev->dev.parent = pdev->dev.parent;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
 +
 +	als = iio_priv(indio_dev);
 +	als->lm3533 = lm3533;
++	als->pdev = pdev;
 +	als->irq = lm3533->irq;
-+	als->pwm_mode = pdata->pwm_mode;
 +	atomic_set(&als->zone, 0);
 +	mutex_init(&als->thresh_mutex);
 +
++	platform_set_drvdata(pdev, indio_dev);
++
 +	if (als->irq) {
-+		ret = request_threaded_irq(als->irq, NULL, lm3533_als_isr,
-+						IRQF_TRIGGER_LOW | IRQF_ONESHOT,
-+						indio_dev->name, indio_dev);
-+		if (ret) {
-+			dev_err(&pdev->dev, "failed to request irq %d\n",
-+								als->irq);
++		ret = lm3533_als_setup_irq(als, indio_dev);
++		if (ret)
 +			goto err_free_dev;
-+		}
 +	}
 +
-+	platform_set_drvdata(pdev, indio_dev);
++	ret = lm3533_als_setup(als, pdata);
++	if (ret)
++		goto err_free_irq;
++
++	ret = lm3533_als_enable(als);
++	if (ret)
++		goto err_free_irq;
 +
 +	ret = iio_device_register(indio_dev);
 +	if (ret) {
 +		dev_err(&pdev->dev, "failed to register ALS\n");
-+		goto err_free_irq;
++		goto err_disable;
 +	}
-+
-+	ret = lm3533_als_setup(indio_dev, pdata);
-+	if (ret)
-+		goto err_unregister;
-+
-+	ret = lm3533_als_enable(indio_dev);
-+	if (ret)
-+		goto err_unregister;
 +
 +	return 0;
 +
-+err_unregister:
-+	iio_device_unregister(indio_dev);
++err_disable:
++	lm3533_als_disable(als);
 +err_free_irq:
 +	if (als->irq)
 +		free_irq(als->irq, indio_dev);
@@ -1127,10 +1120,9 @@ index 0000000..5944ac1
 +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 +	struct lm3533_als *als = iio_priv(indio_dev);
 +
-+	dev_dbg(&pdev->dev, "%s\n", __func__);
-+
-+	lm3533_als_disable(indio_dev);
++	lm3533_als_set_int_mode(indio_dev, false);
 +	iio_device_unregister(indio_dev);
++	lm3533_als_disable(als);
 +	if (als->irq)
 +		free_irq(als->irq, indio_dev);
 +	iio_device_free(indio_dev);
@@ -1152,17 +1144,5 @@ index 0000000..5944ac1
 +MODULE_DESCRIPTION("LM3533 Ambient Light Sensor driver");
 +MODULE_LICENSE("GPL");
 +MODULE_ALIAS("platform:lm3533-als");
-diff --git a/include/linux/mfd/lm3533.h b/include/linux/mfd/lm3533.h
-index 9660feb..594bc59 100644
---- a/include/linux/mfd/lm3533.h
-+++ b/include/linux/mfd/lm3533.h
-@@ -43,6 +43,7 @@ struct lm3533_ctrlbank {
- 
- struct lm3533_als_platform_data {
- 	unsigned pwm_mode:1;		/* PWM input mode (default analog) */
-+	u8 r_select;			/* 1 - 127 (ignored in PWM-mode) */
- };
- 
- struct lm3533_bl_platform_data {
 -- 
 1.7.8.5
