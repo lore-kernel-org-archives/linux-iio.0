@@ -3,153 +3,197 @@ From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 09/18] staging:iio:dac: Remove unused dac.h includes
-Date: Mon, 21 May 2012 13:42:58 +0200
-Message-Id: <1337600587-19848-9-git-send-email-lars@metafoo.de>
+Subject: [PATCH 08/18] staging:iio:dac:ad5791: Convert to extended channel attributes
+Date: Mon, 21 May 2012 13:42:57 +0200
+Message-Id: <1337600587-19848-8-git-send-email-lars@metafoo.de>
 In-Reply-To: <1337600587-19848-1-git-send-email-lars@metafoo.de>
 References: <1337600587-19848-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-None of these drivers use anything from dac.h, so remove the include.
+Use extended channel attributes instead of raw sysfs files for the additional
+channel attributes. This allows us to remove some boilerplate code.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/dac/ad5064.c      |    1 -
- drivers/staging/iio/dac/ad5360.c      |    1 -
- drivers/staging/iio/dac/ad5380.c      |    2 --
- drivers/staging/iio/dac/ad5421.c      |    1 -
- drivers/staging/iio/dac/ad5446.c      |    1 -
- drivers/staging/iio/dac/ad5504.c      |    2 +-
- drivers/staging/iio/dac/ad5624r_spi.c |    2 +-
- drivers/staging/iio/dac/ad5686.c      |    1 -
- drivers/staging/iio/dac/ad5764.c      |    1 -
- drivers/staging/iio/dac/ad5791.c      |    2 +-
- 10 files changed, 3 insertions(+), 11 deletions(-)
+ drivers/staging/iio/dac/ad5791.c |  122 +++++++++++++++++---------------------
+ 1 file changed, 53 insertions(+), 69 deletions(-)
 
-diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/staging/iio/dac/ad5064.c
-index 2394f05..276af02 100644
---- a/drivers/staging/iio/dac/ad5064.c
-+++ b/drivers/staging/iio/dac/ad5064.c
-@@ -18,7 +18,6 @@
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
--#include "dac.h"
- 
- #define AD5064_MAX_DAC_CHANNELS			8
- #define AD5064_MAX_VREFS			4
-diff --git a/drivers/staging/iio/dac/ad5360.c b/drivers/staging/iio/dac/ad5360.c
-index 38660ef..8fce84f 100644
---- a/drivers/staging/iio/dac/ad5360.c
-+++ b/drivers/staging/iio/dac/ad5360.c
-@@ -18,7 +18,6 @@
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
--#include "dac.h"
- 
- #define AD5360_CMD(x)				((x) << 22)
- #define AD5360_ADDR(x)				((x) << 16)
-diff --git a/drivers/staging/iio/dac/ad5380.c b/drivers/staging/iio/dac/ad5380.c
-index 7a35cc6..5dfb445 100644
---- a/drivers/staging/iio/dac/ad5380.c
-+++ b/drivers/staging/iio/dac/ad5380.c
-@@ -20,8 +20,6 @@
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
--#include "dac.h"
--
- 
- #define AD5380_REG_DATA(x)	(((x) << 2) | 3)
- #define AD5380_REG_OFFSET(x)	(((x) << 2) | 2)
-diff --git a/drivers/staging/iio/dac/ad5421.c b/drivers/staging/iio/dac/ad5421.c
-index ffbd4c2..ea2f83b 100644
---- a/drivers/staging/iio/dac/ad5421.c
-+++ b/drivers/staging/iio/dac/ad5421.c
-@@ -19,7 +19,6 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/iio/events.h>
--#include "dac.h"
- #include "ad5421.h"
- 
- 
-diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/staging/iio/dac/ad5446.c
-index 1774f7f..49f557f 100644
---- a/drivers/staging/iio/dac/ad5446.c
-+++ b/drivers/staging/iio/dac/ad5446.c
-@@ -20,7 +20,6 @@
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
--#include "dac.h"
- 
- #include "ad5446.h"
- 
-diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/staging/iio/dac/ad5504.c
-index b4afdb3..25a04d3 100644
---- a/drivers/staging/iio/dac/ad5504.c
-+++ b/drivers/staging/iio/dac/ad5504.c
-@@ -19,7 +19,7 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/iio/events.h>
--#include "dac.h"
-+
- #include "ad5504.h"
- 
- static int ad5504_spi_write(struct spi_device *spi, u8 addr, u16 val)
-diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/staging/iio/dac/ad5624r_spi.c
-index 4c95eae..7524f96 100644
---- a/drivers/staging/iio/dac/ad5624r_spi.c
-+++ b/drivers/staging/iio/dac/ad5624r_spi.c
-@@ -18,7 +18,7 @@
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
--#include "dac.h"
-+
- #include "ad5624r.h"
- 
- static int ad5624r_spi_write(struct spi_device *spi,
-diff --git a/drivers/staging/iio/dac/ad5686.c b/drivers/staging/iio/dac/ad5686.c
-index f07e197..6948d75 100644
---- a/drivers/staging/iio/dac/ad5686.c
-+++ b/drivers/staging/iio/dac/ad5686.c
-@@ -18,7 +18,6 @@
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
--#include "dac.h"
- 
- #define AD5686_DAC_CHANNELS			4
- 
-diff --git a/drivers/staging/iio/dac/ad5764.c b/drivers/staging/iio/dac/ad5764.c
-index 03dbd93..ffce304 100644
---- a/drivers/staging/iio/dac/ad5764.c
-+++ b/drivers/staging/iio/dac/ad5764.c
-@@ -18,7 +18,6 @@
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
--#include "dac.h"
- 
- #define AD5764_REG_SF_NOP			0x0
- #define AD5764_REG_SF_CONFIG			0x1
 diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/staging/iio/dac/ad5791.c
-index ad33725..4e955ed 100644
+index 13d8b5b..ad33725 100644
 --- a/drivers/staging/iio/dac/ad5791.c
 +++ b/drivers/staging/iio/dac/ad5791.c
-@@ -19,7 +19,7 @@
+@@ -72,71 +72,50 @@ static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
+ 	return ret;
+ }
  
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
--#include "dac.h"
+-#define AD5791_CHAN(bits, shift) {			\
+-	.type = IIO_VOLTAGE,				\
+-	.output = 1,					\
+-	.indexed = 1,					\
+-	.address = AD5791_ADDR_DAC0,			\
+-	.channel = 0,					\
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT |	\
+-		IIO_CHAN_INFO_OFFSET_SHARED_BIT,	\
+-	.scan_type = IIO_ST('u', bits, 24, shift)	\
+-}
+-
+-static const struct iio_chan_spec ad5791_channels[] = {
+-	[ID_AD5760] = AD5791_CHAN(16, 4),
+-	[ID_AD5780] = AD5791_CHAN(18, 2),
+-	[ID_AD5781] = AD5791_CHAN(18, 2),
+-	[ID_AD5791] = AD5791_CHAN(20, 0)
++static const char * const ad5791_powerdown_modes[] = {
++	"6kohm_to_gnd",
++	"three_state",
+ };
+ 
+-static ssize_t ad5791_read_powerdown_mode(struct device *dev,
+-				      struct device_attribute *attr, char *buf)
++static int ad5791_get_powerdown_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad5791_state *st = iio_priv(indio_dev);
+ 
+-	const char mode[][14] = {"6kohm_to_gnd", "three_state"};
+-
+-	return sprintf(buf, "%s\n", mode[st->pwr_down_mode]);
++	return st->pwr_down_mode;
+ }
+ 
+-static ssize_t ad5791_write_powerdown_mode(struct device *dev,
+-				       struct device_attribute *attr,
+-				       const char *buf, size_t len)
++static int ad5791_set_powerdown_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, unsigned int mode)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad5791_state *st = iio_priv(indio_dev);
+-	int ret;
+ 
+-	if (sysfs_streq(buf, "6kohm_to_gnd"))
+-		st->pwr_down_mode = AD5791_DAC_PWRDN_6K;
+-	else if (sysfs_streq(buf, "three_state"))
+-		st->pwr_down_mode = AD5791_DAC_PWRDN_3STATE;
+-	else
+-		ret = -EINVAL;
++	st->pwr_down_mode = mode;
+ 
+-	return ret ? ret : len;
++	return 0;
+ }
+ 
+-static ssize_t ad5791_read_dac_powerdown(struct device *dev,
+-					   struct device_attribute *attr,
+-					   char *buf)
++static const struct iio_enum ad5791_powerdown_mode_enum = {
++	.items = ad5791_powerdown_modes,
++	.num_items = ARRAY_SIZE(ad5791_powerdown_modes),
++	.get = ad5791_get_powerdown_mode,
++	.set = ad5791_set_powerdown_mode,
++};
 +
- #include "ad5791.h"
++static ssize_t ad5791_read_dac_powerdown(struct iio_dev *indio_dev,
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad5791_state *st = iio_priv(indio_dev);
  
- static int ad5791_spi_write(struct spi_device *spi, u8 addr, u32 val)
+ 	return sprintf(buf, "%d\n", st->pwr_down);
+ }
+ 
+-static ssize_t ad5791_write_dac_powerdown(struct device *dev,
+-					    struct device_attribute *attr,
+-					    const char *buf, size_t len)
++static ssize_t ad5791_write_dac_powerdown(struct iio_dev *indio_dev,
++	 uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
++	 size_t len)
+ {
+ 	long readin;
+ 	int ret;
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad5791_state *st = iio_priv(indio_dev);
+ 
+ 	ret = strict_strtol(buf, 10, &readin);
+@@ -160,31 +139,6 @@ static ssize_t ad5791_write_dac_powerdown(struct device *dev,
+ 	return ret ? ret : len;
+ }
+ 
+-static IIO_DEVICE_ATTR(out_voltage_powerdown_mode, S_IRUGO |
+-			S_IWUSR, ad5791_read_powerdown_mode,
+-			ad5791_write_powerdown_mode, 0);
+-
+-static IIO_CONST_ATTR(out_voltage_powerdown_mode_available,
+-			"6kohm_to_gnd three_state");
+-
+-#define IIO_DEV_ATTR_DAC_POWERDOWN(_num, _show, _store, _addr)		\
+-	IIO_DEVICE_ATTR(out_voltage##_num##_powerdown,			\
+-			S_IRUGO | S_IWUSR, _show, _store, _addr)
+-
+-static IIO_DEV_ATTR_DAC_POWERDOWN(0, ad5791_read_dac_powerdown,
+-				   ad5791_write_dac_powerdown, 0);
+-
+-static struct attribute *ad5791_attributes[] = {
+-	&iio_dev_attr_out_voltage0_powerdown.dev_attr.attr,
+-	&iio_dev_attr_out_voltage_powerdown_mode.dev_attr.attr,
+-	&iio_const_attr_out_voltage_powerdown_mode_available.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ad5791_attribute_group = {
+-	.attrs = ad5791_attributes,
+-};
+-
+ static int ad5791_get_lin_comp(unsigned int span)
+ {
+ 	if (span <= 10000)
+@@ -254,6 +208,37 @@ static int ad5791_read_raw(struct iio_dev *indio_dev,
+ 
+ };
+ 
++static const struct iio_chan_spec_ext_info ad5791_ext_info[] = {
++	{
++		.name = "powerdown",
++		.shared = true,
++		.read = ad5791_read_dac_powerdown,
++		.write = ad5791_write_dac_powerdown,
++	},
++	IIO_ENUM("powerdown_mode", true, &ad5791_powerdown_mode_enum),
++	IIO_ENUM_AVAILABLE("powerdown_mode", &ad5791_powerdown_mode_enum),
++	{ },
++};
++
++#define AD5791_CHAN(bits, shift) {			\
++	.type = IIO_VOLTAGE,				\
++	.output = 1,					\
++	.indexed = 1,					\
++	.address = AD5791_ADDR_DAC0,			\
++	.channel = 0,					\
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
++		IIO_CHAN_INFO_SCALE_SHARED_BIT |	\
++		IIO_CHAN_INFO_OFFSET_SHARED_BIT,	\
++	.scan_type = IIO_ST('u', bits, 24, shift),	\
++	.ext_info = ad5791_ext_info,			\
++}
++
++static const struct iio_chan_spec ad5791_channels[] = {
++	[ID_AD5760] = AD5791_CHAN(16, 4),
++	[ID_AD5780] = AD5791_CHAN(18, 2),
++	[ID_AD5781] = AD5791_CHAN(18, 2),
++	[ID_AD5791] = AD5791_CHAN(20, 0)
++};
+ 
+ static int ad5791_write_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *chan,
+@@ -278,7 +263,6 @@ static int ad5791_write_raw(struct iio_dev *indio_dev,
+ static const struct iio_info ad5791_info = {
+ 	.read_raw = &ad5791_read_raw,
+ 	.write_raw = &ad5791_write_raw,
+-	.attrs = &ad5791_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
 -- 
 1.7.10
