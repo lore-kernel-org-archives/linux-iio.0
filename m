@@ -1,55 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38427 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757422Ab2E3SWH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 May 2012 14:22:07 -0400
-Message-ID: <4FC67365.4080409@kernel.org>
-Date: Wed, 30 May 2012 20:22:13 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Shubhrajyoti D <shubhrajyoti@ti.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: ak8975: Make it behave better as modules
-References: <1338217921-23174-1-git-send-email-shubhrajyoti@ti.com> <1338217921-23174-2-git-send-email-shubhrajyoti@ti.com>
-In-Reply-To: <1338217921-23174-2-git-send-email-shubhrajyoti@ti.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mail-lb0-f174.google.com ([209.85.217.174]:44523 "EHLO
+	mail-lb0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757826Ab2EVKaO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 May 2012 06:30:14 -0400
+From: Johan Hovold <jhovold@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, Johan Hovold <jhovold@gmail.com>
+Subject: [PATCH] staging:iio: remove num_interrupt_lines from documentation
+Date: Tue, 22 May 2012 12:30:02 +0200
+Message-Id: <1337682602-15105-1-git-send-email-jhovold@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/28/2012 04:12 PM, Shubhrajyoti D wrote:
-> The memory regions of the probe and remove are move
-> to __devinit and __devexit respectively.
-> 
-> Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
-> dont have hardware. Untested.
-Can't see any way this could cause trouble, so fine to merge
-anyway...
-> 
->  drivers/staging/iio/magnetometer/ak8975.c |    4 ++--
->  1 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-> index 5834e4a..7562caf 100644
-> --- a/drivers/staging/iio/magnetometer/ak8975.c
-> +++ b/drivers/staging/iio/magnetometer/ak8975.c
-> @@ -471,7 +471,7 @@ static const struct iio_info ak8975_info = {
->  	.driver_module = THIS_MODULE,
->  };
->  
-> -static int ak8975_probe(struct i2c_client *client,
-> +static int __devinit ak8975_probe(struct i2c_client *client,
->  			const struct i2c_device_id *id)
->  {
->  	struct ak8975_data *data;
-> @@ -545,7 +545,7 @@ exit:
->  	return err;
->  }
->  
-> -static int ak8975_remove(struct i2c_client *client)
-> +static int __devexit ak8975_remove(struct i2c_client *client)
->  {
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct ak8975_data *data = iio_priv(indio_dev);
+Commit 5aa9618896e0ba49 ("staging:iio: remove broken support for
+multiple event interfaces.") removed the num_interrupt_lines field from
+struct iio_info but the documentation was never updated.
+
+Signed-off-by: Johan Hovold <jhovold@gmail.com>
+---
+ drivers/staging/iio/Documentation/device.txt |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/iio/Documentation/device.txt b/drivers/staging/iio/Documentation/device.txt
+index 0338c7c..f03fbd3 100644
+--- a/drivers/staging/iio/Documentation/device.txt
++++ b/drivers/staging/iio/Documentation/device.txt
+@@ -29,8 +29,6 @@ Then fill in the following:
+ 	* info->driver_module:
+ 		Set to THIS_MODULE. Used to ensure correct ownership
+ 		of various resources allocate by the core.
+-	* info->num_interrupt_lines:
+-		Number of event triggering hardware lines the device has.
+ 	* info->event_attrs:
+ 		Attributes used to enable / disable hardware events.
+ 	* info->attrs:
+-- 
+1.7.8.5
 
