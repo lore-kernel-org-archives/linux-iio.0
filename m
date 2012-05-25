@@ -1,17 +1,18 @@
-Return-Path: <stigge@antcom.de>
-Message-ID: <4FBFE2A4.1090108@antcom.de>
-Date: Fri, 25 May 2012 21:51:00 +0200
-From: Roland Stigge <stigge@antcom.de>
+Return-Path: <lars@metafoo.de>
+Message-ID: <4FBFB2DB.6020702@metafoo.de>
+Date: Fri, 25 May 2012 18:27:07 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+ Roland Stigge <stigge@antcom.de>
 Subject: Re: [PATCH 10/18] staging:iio:dac:max517: Convert to channel spec
 References: <1337600587-19848-1-git-send-email-lars@metafoo.de> <1337600587-19848-10-git-send-email-lars@metafoo.de>
 In-Reply-To: <1337600587-19848-10-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-On 21/05/12 13:42, Lars-Peter Clausen wrote:
+On 05/21/2012 01:42 PM, Lars-Peter Clausen wrote:
 > Convert the max517 driver to channel spec. As part of the conversion the
 > "out_voltage_1&2_raw" property, which updates both channel 1 and 2
 > simultaneously with the same value, is lost, since this is not really covered by
@@ -25,7 +26,12 @@ On 21/05/12 13:42, Lars-Peter Clausen wrote:
 > Cc: Roland Stigge <stigge@antcom.de>
 > Acked-by: Jonathan Cameron <jic23@kernel.org>
 
-Acked-by: Roland Stigge <stigge@antcom.de>
+Hi Roland,
+
+Any chance to get a Acked-by from you for this patch
+
+Thanks,
+- Lars
 
 > ---
 > Changes since v1:
