@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46080 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48609 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754953Ab2E1UGp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 May 2012 16:06:45 -0400
-Message-ID: <4FC3E8E2.9050904@kernel.org>
-Date: Mon, 28 May 2012 22:06:42 +0100
+	with ESMTP id S1750732Ab2EZJKi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 May 2012 05:10:38 -0400
+Message-ID: <4FC0AC19.6080903@kernel.org>
+Date: Sat, 26 May 2012 11:10:33 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
@@ -68,6 +68,9 @@ On 05/22/2012 06:56 AM, Lars-Peter Clausen wrote:
 > The last parameter has to be 1 now, since we want to store one record. And I
 > think we can still use kfifo_in(...), the macro magic take care of doing the
 > right thing.
+good point on the macro. I got lost following that the first time, but
+with the alloc as above, recsize will be zero and all it will fall
+through to this.
 > 
 >>  	if (ret != r->bytes_per_datum)
 >>  		return -EBUSY;
@@ -79,10 +82,10 @@ On 05/22/2012 06:56 AM, Lars-Peter Clausen wrote:
 >> -	ret = kfifo_to_user(&kf->kf, buf, n, &copied);
 > 
 > Same here. n needs to be n / r->bytes_per_datum
-Actually nope. That's the the one case where it is in bytes.  It's
-saying how long the destination buffer is rather than how many records
-to copy.  Couldn't for a minute work out why I was getting hardly any
-data!  Anyhow, new version comming up shortly...
+indeed it does. also looks like the kfifo_to_user macro will work I think...
+
+Will resend.  Having one of those fun days of bisecting at the moment to
+find out what broke my test board...
 > 
 >> +	ret = __kfifo_to_user((struct __kfifo *)&kf->kf, buf, n, &copied);
 >>  
