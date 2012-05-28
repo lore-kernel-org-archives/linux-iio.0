@@ -1,81 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46139 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753567Ab2E1UMN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 May 2012 16:12:13 -0400
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH] iio:kfifo_buf  Take advantage of the fixed record size used in IIO
-Date: Mon, 28 May 2012 22:12:14 +0100
-Message-Id: <1338239534-8275-1-git-send-email-jic23@kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:57390 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750802Ab2E1PMH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 28 May 2012 11:12:07 -0400
+Received: from dbdp20.itg.ti.com ([172.24.170.38])
+	by arroyo.ext.ti.com (8.13.7/8.13.7) with ESMTP id q4SFC50u001050
+	for <linux-iio@vger.kernel.org>; Mon, 28 May 2012 10:12:05 -0500
+Received: from DBDE71.ent.ti.com (localhost [127.0.0.1])
+	by dbdp20.itg.ti.com (8.13.8/8.13.8) with ESMTP id q4SFC4pR017210
+	for <linux-iio@vger.kernel.org>; Mon, 28 May 2012 20:42:04 +0530 (IST)
+From: Shubhrajyoti D <shubhrajyoti@ti.com>
+To: <linux-iio@vger.kernel.org>
+CC: Shubhrajyoti D <shubhrajyoti@ti.com>
+Subject: [PATCH 1/2] iio: hmc5843: Make it behave better as modules
+Date: Mon, 28 May 2012 20:42:00 +0530
+Message-ID: <1338217921-23174-1-git-send-email-shubhrajyoti@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-By bypassing the standard macros for setting up the kfifo we can
-take advantage of the fixed record size implementation without
-having to have a type to pass in (from which the size of an element
-is normally established).
+The memory regions of the probe and remove are move
+to __devinit and __devexit respectively.
 
-In IIO we have variable 'scans' as our records in which any element
-can be present or not.  They do not however vary when we are
-actually filling or reading from the buffer.  Thus we have a fixed
-record size whenever we are actually running.  As setup and tear
-down are not in the fast path we can take the overhead of reinitializing
-the kfifo every time.
-
-This is an RFC as
-
-a) I'm far from sure I got it right. (I didn't first time round)
-b) There is probably a better way of doing it!
-
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
 ---
- drivers/iio/kfifo_buf.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ drivers/staging/iio/magnetometer/hmc5843.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
-index 6bf9d05..6ec763f 100644
---- a/drivers/iio/kfifo_buf.c
-+++ b/drivers/iio/kfifo_buf.c
-@@ -22,7 +22,8 @@ static inline int __iio_allocate_kfifo(struct iio_kfifo *buf,
- 		return -EINVAL;
+diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
+index c1fa09f..6c3e50f 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843.c
++++ b/drivers/staging/iio/magnetometer/hmc5843.c
+@@ -665,7 +665,7 @@ static const struct iio_info hmc5843_info = {
+ 	.driver_module = THIS_MODULE,
+ };
  
- 	__iio_update_buffer(&buf->buffer, bytes_per_datum, length);
--	return kfifo_alloc(&buf->kf, bytes_per_datum*length, GFP_KERNEL);
-+	return __kfifo_alloc((struct __kfifo *)&buf->kf, length,
-+			     bytes_per_datum, GFP_KERNEL);
- }
- 
- static int iio_request_update_kfifo(struct iio_buffer *r)
-@@ -94,9 +95,10 @@ static int iio_store_to_kfifo(struct iio_buffer *r,
+-static int hmc5843_probe(struct i2c_client *client,
++static int __devinit hmc5843_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
  {
- 	int ret;
- 	struct iio_kfifo *kf = iio_to_kfifo(r);
--	ret = kfifo_in(&kf->kf, data, r->bytes_per_datum);
--	if (ret != r->bytes_per_datum)
-+	ret = kfifo_in(&kf->kf, data, 1);
-+	if (ret != 1)
- 		return -EBUSY;
-+
- 	return 0;
+ 	struct hmc5843_data *data;
+@@ -704,7 +704,7 @@ exit:
+ 	return err;
  }
  
-@@ -106,11 +108,12 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
- 	int ret, copied;
- 	struct iio_kfifo *kf = iio_to_kfifo(r);
+-static int hmc5843_remove(struct i2c_client *client)
++static int __devexit hmc5843_remove(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
  
--	if (n < r->bytes_per_datum)
-+	if (n < r->bytes_per_datum || r->bytes_per_datum == 0)
- 		return -EINVAL;
- 
--	n = rounddown(n, r->bytes_per_datum);
- 	ret = kfifo_to_user(&kf->kf, buf, n, &copied);
-+	if (ret < 0)
-+		return ret;
- 
- 	return copied;
- }
+@@ -755,7 +755,7 @@ static struct i2c_driver hmc5843_driver = {
+ 	},
+ 	.id_table	= hmc5843_id,
+ 	.probe		= hmc5843_probe,
+-	.remove		= hmc5843_remove,
++	.remove		= __devexit_p(hmc5843_remove),
+ 	.detect		= hmc5843_detect,
+ 	.address_list	= normal_i2c,
+ };
 -- 
-1.7.10.2
+1.7.5.4
 
