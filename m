@@ -1,18 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46160 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46139 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754275Ab2E1UNQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 May 2012 16:13:16 -0400
+	with ESMTP id S1753567Ab2E1UMN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 May 2012 16:12:13 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH V2] iio:kfifo_buf  Take advantage of the fixed record size used in IIO
-Date: Mon, 28 May 2012 22:13:16 +0100
-Message-Id: <1338239596-8415-1-git-send-email-jic23@kernel.org>
+Subject: [PATCH] iio:kfifo_buf  Take advantage of the fixed record size used in IIO
+Date: Mon, 28 May 2012 22:12:14 +0100
+Message-Id: <1338239534-8275-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
-
-Sorry all, forgot to up the version number of the patch.
 
 By bypassing the standard macros for setting up the kfifo we can
 take advantage of the fixed record size implementation without
