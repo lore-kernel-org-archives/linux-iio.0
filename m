@@ -1,163 +1,168 @@
 Return-Path: <jic23@kernel.org>
+Message-ID: <4FC6786F.701@kernel.org>
+Date: Wed, 30 May 2012 20:43:43 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 6/8] staging:iio:accel:adis16204 support the rss channel via chan spec.
-Date: Wed, 30 May 2012 20:41:04 +0100
-Message-Id: <1338406866-3833-7-git-send-email-jic23@kernel.org>
-In-Reply-To: <1338406866-3833-1-git-send-email-jic23@kernel.org>
-References: <1338406866-3833-1-git-send-email-jic23@kernel.org>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 6/8] staging:iio:accel:adis16204 support the rss channel
+ via chan spec.
+References: <1338406866-3833-1-git-send-email-jic23@kernel.org> <1338406866-3833-7-git-send-email-jic23@kernel.org>
+In-Reply-To: <1338406866-3833-7-git-send-email-jic23@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Reduces code and makes this channel available within the kernel.
-Note that it is not added to the buffer, thus maintaining the
-previous functionality of this driver.
-
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/accel/adis16204_core.c |   83 ++++++++++------------------
- 1 file changed, 29 insertions(+), 54 deletions(-)
-
-diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
-index a36135d..cb8701d 100644
---- a/drivers/staging/iio/accel/adis16204_core.c
-+++ b/drivers/staging/iio/accel/adis16204_core.c
-@@ -169,32 +169,6 @@ error_ret:
- 	return ret;
- }
- 
--static ssize_t adis16204_read_14bit_signed(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	s16 val = 0;
--	ssize_t ret;
--
--	mutex_lock(&indio_dev->mlock);
--
--	ret = adis16204_spi_read_reg_16(indio_dev,
--					this_attr->address, (u16 *)&val);
--	if (!ret) {
--		if (val & ADIS16204_ERROR_ACTIVE)
--			adis16204_check_status(indio_dev);
--
--		val = ((s16)(val << 2) >> 2);
--		ret = sprintf(buf, "%d\n", val);
--	}
--
--	mutex_unlock(&indio_dev->mlock);
--
--	return ret;
--}
--
- static int adis16204_reset(struct iio_dev *indio_dev)
- {
- 	int ret;
-@@ -282,16 +256,6 @@ err_ret:
- }
- 
- /* Unique to this driver currently */
--#define IIO_DEV_ATTR_ACCEL_XY(_show, _addr)			\
--	IIO_DEVICE_ATTR(in_accel_xy, S_IRUGO, _show, NULL, _addr)
--#define IIO_DEV_ATTR_ACCEL_XYPEAK(_show, _addr)		\
--	IIO_DEVICE_ATTR(in_accel_xypeak, S_IRUGO, _show, NULL, _addr)
--
--static IIO_DEV_ATTR_ACCEL_XY(adis16204_read_14bit_signed,
--		ADIS16204_XY_RSS_OUT);
--static IIO_DEV_ATTR_ACCEL_XYPEAK(adis16204_read_14bit_signed,
--		ADIS16204_XY_PEAK_OUT);
--static IIO_CONST_ATTR(in_accel_xy_scale, "0.017125");
- 
- enum adis16204_channel {
- 	in_supply,
-@@ -299,9 +263,10 @@ enum adis16204_channel {
- 	temp,
- 	accel_x,
- 	accel_y,
-+	accel_xy,
- };
- 
--static u8 adis16204_addresses[5][3] = {
-+static u8 adis16204_addresses[6][3] = {
- 	[in_supply] = { ADIS16204_SUPPLY_OUT },
- 	[in_aux] = { ADIS16204_AUX_ADC },
- 	[temp] = { ADIS16204_TEMP_OUT },
-@@ -309,6 +274,8 @@ static u8 adis16204_addresses[5][3] = {
- 		      ADIS16204_X_PEAK_OUT },
- 	[accel_y] = { ADIS16204_XACCL_OUT, ADIS16204_YACCL_NULL,
- 		      ADIS16204_Y_PEAK_OUT },
-+	[accel_xy] = { ADIS16204_XY_RSS_OUT, 0,
-+		       ADIS16204_XY_PEAK_OUT },
- };
- 
- static int adis16204_read_raw(struct iio_dev *indio_dev,
-@@ -362,10 +329,16 @@ static int adis16204_read_raw(struct iio_dev *indio_dev,
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_ACCEL:
- 			*val = 0;
--			if (chan->channel2 == IIO_CHAN_MOD_X)
--				*val2 = 17125;
--			else
--				*val2 = 8407;
-+			switch (chan->channel2) {
-+			case IIO_MOD_X:
-+			case IIO_MOD_ROOT_SUM_SQUARED_X_Y:
-+ 				*val2 = 17125;
-+				break;
-+			case IIO_MOD_Y:
-+			case IIO_MOD_Z:
-+ 				*val2 = 8407;
-+				break;
-+			}
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		default:
- 			return -EINVAL;
-@@ -498,21 +471,23 @@ static struct iio_chan_spec adis16204_channels[] = {
- 		},
- 	},
- 	IIO_CHAN_SOFT_TIMESTAMP(5),
--};
--
--static struct attribute *adis16204_attributes[] = {
--	&iio_dev_attr_in_accel_xy.dev_attr.attr,
--	&iio_dev_attr_in_accel_xypeak.dev_attr.attr,
--	&iio_const_attr_in_accel_xy_scale.dev_attr.attr,
--	NULL
--};
--
--static const struct attribute_group adis16204_attribute_group = {
--	.attrs = adis16204_attributes,
-+	{
-+		.type = IIO_ACCEL,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_ROOT_SUM_SQUARED_X_Y,
-+		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-+		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
-+		IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
-+		.address = accel_xy,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 14,
-+			.storagebits = 16,
-+		},
-+	}
- };
- 
- static const struct iio_info adis16204_info = {
--	.attrs = &adis16204_attribute_group,
- 	.read_raw = &adis16204_read_raw,
- 	.write_raw = &adis16204_write_raw,
- 	.driver_module = THIS_MODULE,
-@@ -549,7 +524,7 @@ static int __devinit adis16204_probe(struct spi_device *spi)
- 
- 	ret = iio_buffer_register(indio_dev,
- 				  adis16204_channels,
--				  ARRAY_SIZE(adis16204_channels));
-+				  6);
- 	if (ret) {
- 		printk(KERN_ERR "failed to initialize the ring\n");
- 		goto error_unreg_ring_funcs;
--- 
-1.7.10.2
+On 05/30/2012 08:41 PM, Jonathan Cameron wrote:
+> Reduces code and makes this channel available within the kernel.
+> Note that it is not added to the buffer, thus maintaining the
+> previous functionality of this driver.
+Sorry all, clean forgot to run checkpatch on this and some
+tab / space mess has snuck in.  Will fixup, please just
+pretend it isn't there!
+> 
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  drivers/staging/iio/accel/adis16204_core.c |   83 ++++++++++------------------
+>  1 file changed, 29 insertions(+), 54 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
+> index a36135d..cb8701d 100644
+> --- a/drivers/staging/iio/accel/adis16204_core.c
+> +++ b/drivers/staging/iio/accel/adis16204_core.c
+> @@ -169,32 +169,6 @@ error_ret:
+>  	return ret;
+>  }
+>  
+> -static ssize_t adis16204_read_14bit_signed(struct device *dev,
+> -		struct device_attribute *attr,
+> -		char *buf)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> -	s16 val = 0;
+> -	ssize_t ret;
+> -
+> -	mutex_lock(&indio_dev->mlock);
+> -
+> -	ret = adis16204_spi_read_reg_16(indio_dev,
+> -					this_attr->address, (u16 *)&val);
+> -	if (!ret) {
+> -		if (val & ADIS16204_ERROR_ACTIVE)
+> -			adis16204_check_status(indio_dev);
+> -
+> -		val = ((s16)(val << 2) >> 2);
+> -		ret = sprintf(buf, "%d\n", val);
+> -	}
+> -
+> -	mutex_unlock(&indio_dev->mlock);
+> -
+> -	return ret;
+> -}
+> -
+>  static int adis16204_reset(struct iio_dev *indio_dev)
+>  {
+>  	int ret;
+> @@ -282,16 +256,6 @@ err_ret:
+>  }
+>  
+>  /* Unique to this driver currently */
+> -#define IIO_DEV_ATTR_ACCEL_XY(_show, _addr)			\
+> -	IIO_DEVICE_ATTR(in_accel_xy, S_IRUGO, _show, NULL, _addr)
+> -#define IIO_DEV_ATTR_ACCEL_XYPEAK(_show, _addr)		\
+> -	IIO_DEVICE_ATTR(in_accel_xypeak, S_IRUGO, _show, NULL, _addr)
+> -
+> -static IIO_DEV_ATTR_ACCEL_XY(adis16204_read_14bit_signed,
+> -		ADIS16204_XY_RSS_OUT);
+> -static IIO_DEV_ATTR_ACCEL_XYPEAK(adis16204_read_14bit_signed,
+> -		ADIS16204_XY_PEAK_OUT);
+> -static IIO_CONST_ATTR(in_accel_xy_scale, "0.017125");
+>  
+>  enum adis16204_channel {
+>  	in_supply,
+> @@ -299,9 +263,10 @@ enum adis16204_channel {
+>  	temp,
+>  	accel_x,
+>  	accel_y,
+> +	accel_xy,
+>  };
+>  
+> -static u8 adis16204_addresses[5][3] = {
+> +static u8 adis16204_addresses[6][3] = {
+>  	[in_supply] = { ADIS16204_SUPPLY_OUT },
+>  	[in_aux] = { ADIS16204_AUX_ADC },
+>  	[temp] = { ADIS16204_TEMP_OUT },
+> @@ -309,6 +274,8 @@ static u8 adis16204_addresses[5][3] = {
+>  		      ADIS16204_X_PEAK_OUT },
+>  	[accel_y] = { ADIS16204_XACCL_OUT, ADIS16204_YACCL_NULL,
+>  		      ADIS16204_Y_PEAK_OUT },
+> +	[accel_xy] = { ADIS16204_XY_RSS_OUT, 0,
+> +		       ADIS16204_XY_PEAK_OUT },
+>  };
+>  
+>  static int adis16204_read_raw(struct iio_dev *indio_dev,
+> @@ -362,10 +329,16 @@ static int adis16204_read_raw(struct iio_dev *indio_dev,
+>  			return IIO_VAL_INT_PLUS_MICRO;
+>  		case IIO_ACCEL:
+>  			*val = 0;
+> -			if (chan->channel2 == IIO_CHAN_MOD_X)
+> -				*val2 = 17125;
+> -			else
+> -				*val2 = 8407;
+> +			switch (chan->channel2) {
+> +			case IIO_MOD_X:
+> +			case IIO_MOD_ROOT_SUM_SQUARED_X_Y:
+> + 				*val2 = 17125;
+> +				break;
+> +			case IIO_MOD_Y:
+> +			case IIO_MOD_Z:
+> + 				*val2 = 8407;
+> +				break;
+> +			}
+>  			return IIO_VAL_INT_PLUS_MICRO;
+>  		default:
+>  			return -EINVAL;
+> @@ -498,21 +471,23 @@ static struct iio_chan_spec adis16204_channels[] = {
+>  		},
+>  	},
+>  	IIO_CHAN_SOFT_TIMESTAMP(5),
+> -};
+> -
+> -static struct attribute *adis16204_attributes[] = {
+> -	&iio_dev_attr_in_accel_xy.dev_attr.attr,
+> -	&iio_dev_attr_in_accel_xypeak.dev_attr.attr,
+> -	&iio_const_attr_in_accel_xy_scale.dev_attr.attr,
+> -	NULL
+> -};
+> -
+> -static const struct attribute_group adis16204_attribute_group = {
+> -	.attrs = adis16204_attributes,
+> +	{
+> +		.type = IIO_ACCEL,
+> +		.modified = 1,
+> +		.channel2 = IIO_MOD_ROOT_SUM_SQUARED_X_Y,
+> +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+> +		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
+> +		IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
+> +		.address = accel_xy,
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 14,
+> +			.storagebits = 16,
+> +		},
+> +	}
+>  };
+>  
+>  static const struct iio_info adis16204_info = {
+> -	.attrs = &adis16204_attribute_group,
+>  	.read_raw = &adis16204_read_raw,
+>  	.write_raw = &adis16204_write_raw,
+>  	.driver_module = THIS_MODULE,
+> @@ -549,7 +524,7 @@ static int __devinit adis16204_probe(struct spi_device *spi)
+>  
+>  	ret = iio_buffer_register(indio_dev,
+>  				  adis16204_channels,
+> -				  ARRAY_SIZE(adis16204_channels));
+> +				  6);
+>  	if (ret) {
+>  		printk(KERN_ERR "failed to initialize the ring\n");
+>  		goto error_unreg_ring_funcs;
