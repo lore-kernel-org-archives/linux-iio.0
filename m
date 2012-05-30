@@ -2,67 +2,946 @@ Return-Path: <jic23@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 2/4] staging:iio:in kernel users: Add a data field for channel specific info.
-Date: Wed, 30 May 2012 20:36:32 +0100
-Message-Id: <1338406594-14550-3-git-send-email-jic23@kernel.org>
+Subject: [PATCH 1/4] staging:iio: Add support for multiple buffers
+Date: Wed, 30 May 2012 20:36:31 +0100
+Message-Id: <1338406594-14550-2-git-send-email-jic23@kernel.org>
 In-Reply-To: <1338406594-14550-1-git-send-email-jic23@kernel.org>
 References: <1338406594-14550-1-git-send-email-jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Used to allow information about a given channel mapping to be passed
-through from board files to the consumer drivers.
+Route all buffer writes through the demux.
+Addition or removal of a buffer results in tear down and
+setup of all the buffers for a given device.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/iio/inkern.c         |    1 +
- include/linux/iio/consumer.h |    2 ++
- include/linux/iio/machine.h  |    2 ++
- 3 files changed, 5 insertions(+)
+ drivers/iio/industrialio-buffer.c               |  335 +++++++++++++++--------
+ drivers/iio/industrialio-core.c                 |    1 +
+ drivers/staging/iio/accel/adis16201_ring.c      |    4 +-
+ drivers/staging/iio/accel/adis16203_ring.c      |    6 +-
+ drivers/staging/iio/accel/adis16204_ring.c      |    3 +-
+ drivers/staging/iio/accel/adis16209_ring.c      |    3 +-
+ drivers/staging/iio/accel/adis16240_ring.c      |    4 +-
+ drivers/staging/iio/accel/lis3l02dq_ring.c      |    3 +-
+ drivers/staging/iio/adc/ad7192.c                |    3 +-
+ drivers/staging/iio/adc/ad7298_ring.c           |    5 +-
+ drivers/staging/iio/adc/ad7476_ring.c           |    2 +-
+ drivers/staging/iio/adc/ad7606_ring.c           |    3 +-
+ drivers/staging/iio/adc/ad7793.c                |    3 +-
+ drivers/staging/iio/adc/ad7887_ring.c           |    2 +-
+ drivers/staging/iio/adc/ad799x_ring.c           |    3 +-
+ drivers/staging/iio/adc/max1363_ring.c          |    2 +-
+ drivers/staging/iio/gyro/adis16260_ring.c       |    3 +-
+ drivers/staging/iio/iio_simple_dummy_buffer.c   |    5 +-
+ drivers/staging/iio/impedance-analyzer/ad5933.c |    3 +-
+ drivers/staging/iio/imu/adis16400_ring.c        |    2 +-
+ drivers/staging/iio/meter/ade7758_ring.c        |    3 +-
+ include/linux/iio/buffer.h                      |   24 +-
+ include/linux/iio/iio.h                         |    2 +
+ 23 files changed, 267 insertions(+), 157 deletions(-)
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 6c03cf5..c1ea198 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -188,6 +188,7 @@ struct iio_channel *iio_channel_get_all(const char *name)
- 		if (name && strcmp(name, c->map->consumer_dev_name) != 0)
- 			continue;
- 		chans[mapind].indio_dev = c->indio_dev;
-+		chans[mapind].data = c->map->consumer_data;
- 		chans[mapind].channel =
- 			iio_chan_spec_from_name(chans[mapind].indio_dev,
- 						c->map->adc_channel_label);
-diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-index e2657e6..26040c2 100644
---- a/include/linux/iio/consumer.h
-+++ b/include/linux/iio/consumer.h
-@@ -18,10 +18,12 @@ struct iio_chan_spec;
-  * struct iio_channel - everything needed for a consumer to use a channel
-  * @indio_dev:		Device on which the channel exists.
-  * @channel:		Full description of the channel.
-+ * @data:		Data about the channel used by consumer.
-  */
- struct iio_channel {
- 	struct iio_dev *indio_dev;
- 	const struct iio_chan_spec *channel;
-+	void *data;
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index ac185b8..b04b543 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -31,6 +31,16 @@ static const char * const iio_endian_prefix[] = {
+ 	[IIO_LE] = "le",
+ };
+ 
++static bool iio_buffer_is_primary_active(struct iio_dev *indio_dev)
++{
++	struct list_head *p;
++
++	list_for_each(p, &indio_dev->buffer_list)
++		if (p == &indio_dev->buffer->buffer_list)
++			return true;
++	return false;
++}
++
+ /**
+  * iio_buffer_read_first_n_outer() - chrdev read for buffer access
+  *
+@@ -134,7 +144,7 @@ static ssize_t iio_scan_el_store(struct device *dev,
+ 	if (ret < 0)
+ 		return ret;
+ 	mutex_lock(&indio_dev->mlock);
+-	if (iio_buffer_enabled(indio_dev)) {
++	if (iio_buffer_is_primary_active(indio_dev)) {
+ 		ret = -EBUSY;
+ 		goto error_ret;
+ 	}
+@@ -180,12 +190,11 @@ static ssize_t iio_scan_el_ts_store(struct device *dev,
+ 		return ret;
+ 
+ 	mutex_lock(&indio_dev->mlock);
+-	if (iio_buffer_enabled(indio_dev)) {
++	if (iio_buffer_is_primary_active(indio_dev)) {
+ 		ret = -EBUSY;
+ 		goto error_ret;
+ 	}
+ 	indio_dev->buffer->scan_timestamp = state;
+-	indio_dev->scan_timestamp = state;
+ error_ret:
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+@@ -395,96 +404,6 @@ ssize_t iio_buffer_write_length(struct device *dev,
+ }
+ EXPORT_SYMBOL(iio_buffer_write_length);
+ 
+-ssize_t iio_buffer_store_enable(struct device *dev,
+-				struct device_attribute *attr,
+-				const char *buf,
+-				size_t len)
+-{
+-	int ret;
+-	bool requested_state, current_state;
+-	int previous_mode;
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
+-
+-	mutex_lock(&indio_dev->mlock);
+-	previous_mode = indio_dev->currentmode;
+-	requested_state = !(buf[0] == '0');
+-	current_state = iio_buffer_enabled(indio_dev);
+-	if (current_state == requested_state) {
+-		printk(KERN_INFO "iio-buffer, current state requested again\n");
+-		goto done;
+-	}
+-	if (requested_state) {
+-		if (indio_dev->setup_ops->preenable) {
+-			ret = indio_dev->setup_ops->preenable(indio_dev);
+-			if (ret) {
+-				printk(KERN_ERR
+-				       "Buffer not started:"
+-				       "buffer preenable failed\n");
+-				goto error_ret;
+-			}
+-		}
+-		if (buffer->access->request_update) {
+-			ret = buffer->access->request_update(buffer);
+-			if (ret) {
+-				printk(KERN_INFO
+-				       "Buffer not started:"
+-				       "buffer parameter update failed\n");
+-				goto error_ret;
+-			}
+-		}
+-		/* Definitely possible for devices to support both of these.*/
+-		if (indio_dev->modes & INDIO_BUFFER_TRIGGERED) {
+-			if (!indio_dev->trig) {
+-				printk(KERN_INFO
+-				       "Buffer not started: no trigger\n");
+-				ret = -EINVAL;
+-				goto error_ret;
+-			}
+-			indio_dev->currentmode = INDIO_BUFFER_TRIGGERED;
+-		} else if (indio_dev->modes & INDIO_BUFFER_HARDWARE)
+-			indio_dev->currentmode = INDIO_BUFFER_HARDWARE;
+-		else { /* should never be reached */
+-			ret = -EINVAL;
+-			goto error_ret;
+-		}
+-
+-		if (indio_dev->setup_ops->postenable) {
+-			ret = indio_dev->setup_ops->postenable(indio_dev);
+-			if (ret) {
+-				printk(KERN_INFO
+-				       "Buffer not started:"
+-				       "postenable failed\n");
+-				indio_dev->currentmode = previous_mode;
+-				if (indio_dev->setup_ops->postdisable)
+-					indio_dev->setup_ops->
+-						postdisable(indio_dev);
+-				goto error_ret;
+-			}
+-		}
+-	} else {
+-		if (indio_dev->setup_ops->predisable) {
+-			ret = indio_dev->setup_ops->predisable(indio_dev);
+-			if (ret)
+-				goto error_ret;
+-		}
+-		indio_dev->currentmode = INDIO_DIRECT_MODE;
+-		if (indio_dev->setup_ops->postdisable) {
+-			ret = indio_dev->setup_ops->postdisable(indio_dev);
+-			if (ret)
+-				goto error_ret;
+-		}
+-	}
+-done:
+-	mutex_unlock(&indio_dev->mlock);
+-	return len;
+-
+-error_ret:
+-	mutex_unlock(&indio_dev->mlock);
+-	return ret;
+-}
+-EXPORT_SYMBOL(iio_buffer_store_enable);
+-
+ ssize_t iio_buffer_show_enable(struct device *dev,
+ 			       struct device_attribute *attr,
+ 			       char *buf)
+@@ -534,31 +453,186 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev, const long *mask,
+ 	return bytes;
+ }
+ 
+-int iio_sw_buffer_preenable(struct iio_dev *indio_dev)
++int iio_update_buffers(struct iio_dev *indio_dev,
++		       struct iio_buffer *insert_buffer,
++		       struct iio_buffer *remove_buffer)
+ {
+-	struct iio_buffer *buffer = indio_dev->buffer;
+-	dev_dbg(&indio_dev->dev, "%s\n", __func__);
++	int ret;
++	struct iio_buffer *buffer;
++	unsigned long *compound_mask;
+ 
+-	/* How much space will the demuxed element take? */
+-	indio_dev->scan_bytes =
+-		iio_compute_scan_bytes(indio_dev, buffer->scan_mask,
+-				       buffer->scan_timestamp);
+-	buffer->access->set_bytes_per_datum(buffer, indio_dev->scan_bytes);
++	/* Wind down existing buffers - iff there are any */
++	if (!list_empty(&indio_dev->buffer_list)) {
++		if (indio_dev->setup_ops->predisable) {
++			ret = indio_dev->setup_ops->predisable(indio_dev);
++			if (ret)
++				goto error_ret;
++		}
++		indio_dev->currentmode = INDIO_DIRECT_MODE;
++		if (indio_dev->setup_ops->postdisable) {
++			ret = indio_dev->setup_ops->postdisable(indio_dev);
++			if (ret)
++				goto error_ret;
++		}
++	}
++	if (!indio_dev->available_scan_masks)
++		kfree(indio_dev->active_scan_mask);
++
++	if (insert_buffer)
++		list_add(&insert_buffer->buffer_list, &indio_dev->buffer_list);
++	if (remove_buffer)
++		list_del(&remove_buffer->buffer_list);
++
++	/* If no buffers in list, we are done */
++	if (list_empty(&indio_dev->buffer_list))
++		return 0;
+ 
+ 	/* What scan mask do we actually have ?*/
++	compound_mask = kzalloc(BITS_TO_LONGS(indio_dev->masklength)
++				*sizeof(long), GFP_KERNEL);
++	if (compound_mask == NULL)
++		return -ENOMEM;
++	list_for_each_entry(buffer, &indio_dev->buffer_list, buffer_list) {
++		bitmap_or(compound_mask, compound_mask, buffer->scan_mask,
++			  indio_dev->masklength);
++		indio_dev->scan_timestamp |= buffer->scan_timestamp;
++	}
+ 	if (indio_dev->available_scan_masks)
+ 		indio_dev->active_scan_mask =
+ 			iio_scan_mask_match(indio_dev->available_scan_masks,
+ 					    indio_dev->masklength,
+-					    buffer->scan_mask);
++					    compound_mask);
+ 	else
+-		indio_dev->active_scan_mask = buffer->scan_mask;
++		indio_dev->active_scan_mask = compound_mask;
++
+ 	iio_update_demux(indio_dev);
+ 
+-	if (indio_dev->info->update_scan_mode)
+-		return indio_dev->info
++	/* Wind up again */
++	if (indio_dev->setup_ops->preenable) {
++		ret = indio_dev->setup_ops->preenable(indio_dev);
++		if (ret) {
++			printk(KERN_ERR
++			       "Buffer not started:"
++			       "buffer preenable failed\n");
++			goto error_free_compound_mask;
++		}
++	}
++	indio_dev->scan_bytes =
++		iio_compute_scan_bytes(indio_dev,
++				       indio_dev->active_scan_mask,
++				       indio_dev->scan_timestamp);
++	list_for_each_entry(buffer, &indio_dev->buffer_list, buffer_list)
++		if (buffer->access->request_update) {
++			ret = buffer->access->request_update(buffer);
++			if (ret) {
++				printk(KERN_INFO
++				       "Buffer not started:"
++				       "buffer parameter update failed\n");
++				goto error_ret;
++			}
++		}
++	if (indio_dev->info->update_scan_mode) {
++		ret = indio_dev->info
+ 			->update_scan_mode(indio_dev,
+ 					   indio_dev->active_scan_mask);
++		if (ret < 0)
++			goto error_free_compound_mask;
++	}
++	/* Definitely possible for devices to support both of these.*/
++	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED) {
++		if (!indio_dev->trig) {
++			printk(KERN_INFO "Buffer not started: no trigger\n");
++			ret = -EINVAL;
++			goto error_free_compound_mask;
++		}
++		indio_dev->currentmode = INDIO_BUFFER_TRIGGERED;
++	} else if (indio_dev->modes & INDIO_BUFFER_HARDWARE) {
++		indio_dev->currentmode = INDIO_BUFFER_HARDWARE;
++	} else { /* should never be reached */
++		ret = -EINVAL;
++		goto error_free_compound_mask;
++	}
++
++	if (indio_dev->setup_ops->postenable) {
++		ret = indio_dev->setup_ops->postenable(indio_dev);
++		if (ret) {
++			printk(KERN_INFO
++			       "Buffer not started: postenable failed\n");
++			indio_dev->currentmode = INDIO_DIRECT_MODE;
++			if (indio_dev->setup_ops->postdisable)
++				indio_dev->setup_ops->postdisable(indio_dev);
++			goto error_free_compound_mask;
++		}
++	}
++error_free_compound_mask:
++	indio_dev->active_scan_mask = NULL;
++	kfree(compound_mask);
++error_ret:
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iio_update_buffers);
++
++ssize_t iio_buffer_store_enable(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf,
++				size_t len)
++{
++	int ret;
++	bool requested_state;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct iio_buffer *pbuf = indio_dev->buffer;
++	struct list_head *p;
++	bool inlist = false;
++
++	ret = strtobool(buf, &requested_state);
++	if (ret < 0)
++		return ret;
++
++	mutex_lock(&indio_dev->mlock);
++
++	/* Find out if it is in the list */
++	list_for_each(p, &indio_dev->buffer_list)
++		if (p == &pbuf->buffer_list) {
++			inlist = true;
++			break;
++		}
++	/* Already enabled */
++	if (inlist && requested_state)
++		goto done;
++	/* Already disabled */
++	if (!inlist && !requested_state)
++		goto done;
++
++	if (requested_state)
++		ret = iio_update_buffers(indio_dev,
++					 indio_dev->buffer, NULL);
++	else
++		ret = iio_update_buffers(indio_dev,
++					 NULL, indio_dev->buffer);
++
++	if (ret < 0)
++		goto done;
++done:
++	mutex_unlock(&indio_dev->mlock);
++	return (ret < 0) ? ret : len;
++}
++EXPORT_SYMBOL(iio_buffer_store_enable);
++
++int iio_sw_buffer_preenable(struct iio_dev *indio_dev)
++{
++	struct iio_buffer *buffer;
++	unsigned bytes;
++	dev_dbg(&indio_dev->dev, "%s\n", __func__);
++
++	list_for_each_entry(buffer, &indio_dev->buffer_list, buffer_list)
++		if (buffer->access->set_bytes_per_datum) {
++			bytes = iio_compute_scan_bytes(indio_dev,
++						       buffer->scan_mask,
++						       buffer->scan_timestamp);
++
++			buffer->access->set_bytes_per_datum(buffer, bytes);
++		}
+ 	return 0;
+ }
+ EXPORT_SYMBOL(iio_sw_buffer_preenable);
+@@ -567,7 +641,11 @@ EXPORT_SYMBOL(iio_sw_buffer_preenable);
+  * iio_scan_mask_set() - set particular bit in the scan mask
+  * @buffer: the buffer whose scan mask we are interested in
+  * @bit: the bit to be set.
+- **/
++ *
++ * Note that at this point we have no way of knowing what other
++ * buffers might request, hence this code only verifies that the
++ * individual buffers request is plausible.
++ */
+ int iio_scan_mask_set(struct iio_dev *indio_dev,
+ 		      struct iio_buffer *buffer, int bit)
+ {
+@@ -597,7 +675,7 @@ int iio_scan_mask_set(struct iio_dev *indio_dev,
+ 			return -EINVAL;
+ 		}
+ 	}
+-	bitmap_copy(buffer->scan_mask, trialmask, indio_dev->masklength);
++	set_bit(bit, buffer->scan_mask);
+ 
+ 	kfree(trialmask);
+ 
+@@ -646,14 +724,13 @@ static unsigned char *iio_demux(struct iio_buffer *buffer,
+ 	return buffer->demux_bounce;
+ }
+ 
+-int iio_push_to_buffer(struct iio_buffer *buffer, unsigned char *data,
++static int iio_push_to_buffer(struct iio_buffer *buffer, unsigned char *data,
+ 		       s64 timestamp)
+ {
+ 	unsigned char *dataout = iio_demux(buffer, data);
+ 
+ 	return buffer->access->store_to(buffer, dataout, timestamp);
+ }
+-EXPORT_SYMBOL_GPL(iio_push_to_buffer);
+ 
+ static void iio_buffer_demux_free(struct iio_buffer *buffer)
+ {
+@@ -664,10 +741,27 @@ static void iio_buffer_demux_free(struct iio_buffer *buffer)
+ 	}
+ }
+ 
+-int iio_update_demux(struct iio_dev *indio_dev)
++
++int iio_push_to_buffers(struct iio_dev *indio_dev, unsigned char *data,
++			s64 timestamp)
++{
++	int ret;
++	struct iio_buffer *buf;
++
++	list_for_each_entry(buf, &indio_dev->buffer_list, buffer_list) {
++		ret = iio_push_to_buffer(buf, data, timestamp);
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(iio_push_to_buffers);
++
++static int iio_buffer_update_demux(struct iio_dev *indio_dev,
++				   struct iio_buffer *buffer)
+ {
+ 	const struct iio_chan_spec *ch;
+-	struct iio_buffer *buffer = indio_dev->buffer;
+ 	int ret, in_ind = -1, out_ind, length;
+ 	unsigned in_loc = 0, out_loc = 0;
+ 	struct iio_demux_table *p;
+@@ -752,4 +846,23 @@ error_clear_mux_table:
+ 
+ 	return ret;
+ }
++
++int iio_update_demux(struct iio_dev *indio_dev)
++{
++	struct iio_buffer *buffer;
++	int ret;
++
++	list_for_each_entry(buffer, &indio_dev->buffer_list, buffer_list) {
++		ret = iio_buffer_update_demux(indio_dev, buffer);
++		if (ret < 0)
++			goto error_clear_mux_table;
++	}
++	return 0;
++
++error_clear_mux_table:
++	list_for_each_entry(buffer, &indio_dev->buffer_list, buffer_list)
++		iio_buffer_demux_free(buffer);
++
++	return ret;
++}
+ EXPORT_SYMBOL_GPL(iio_update_demux);
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 07b053b..aa2edf4 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -834,6 +834,7 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
+ 			return NULL;
+ 		}
+ 		dev_set_name(&dev->dev, "iio:device%d", dev->id);
++		INIT_LIST_HEAD(&dev->buffer_list);
+ 	}
+ 
+ 	return dev;
+diff --git a/drivers/staging/iio/accel/adis16201_ring.c b/drivers/staging/iio/accel/adis16201_ring.c
+index 247602a..64ba02a 100644
+--- a/drivers/staging/iio/accel/adis16201_ring.c
++++ b/drivers/staging/iio/accel/adis16201_ring.c
+@@ -62,8 +62,6 @@ static irqreturn_t adis16201_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct adis16201_state *st = iio_priv(indio_dev);
+-	struct iio_buffer *ring = indio_dev->buffer;
+-
+ 	int i = 0;
+ 	s16 *data;
+ 
+@@ -83,7 +81,7 @@ static irqreturn_t adis16201_trigger_handler(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+-	ring->access->store_to(ring, (u8 *)data, pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *)data, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	kfree(data);
+diff --git a/drivers/staging/iio/accel/adis16203_ring.c b/drivers/staging/iio/accel/adis16203_ring.c
+index 7bbd2c2..57480f4 100644
+--- a/drivers/staging/iio/accel/adis16203_ring.c
++++ b/drivers/staging/iio/accel/adis16203_ring.c
+@@ -61,8 +61,6 @@ static irqreturn_t adis16203_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct adis16203_state *st = iio_priv(indio_dev);
+-	struct iio_buffer *ring = indio_dev->buffer;
+-
+ 	int i = 0;
+ 	s16 *data;
+ 
+@@ -82,9 +80,7 @@ static irqreturn_t adis16203_trigger_handler(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+-	ring->access->store_to(ring,
+-			      (u8 *)data,
+-			      pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *)data, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	kfree(data);
+diff --git a/drivers/staging/iio/accel/adis16204_ring.c b/drivers/staging/iio/accel/adis16204_ring.c
+index f73518b..3a5d459 100644
+--- a/drivers/staging/iio/accel/adis16204_ring.c
++++ b/drivers/staging/iio/accel/adis16204_ring.c
+@@ -59,7 +59,6 @@ static irqreturn_t adis16204_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct adis16204_state *st = iio_priv(indio_dev);
+-	struct iio_buffer *ring = indio_dev->buffer;
+ 	int i = 0;
+ 	s16 *data;
+ 
+@@ -79,7 +78,7 @@ static irqreturn_t adis16204_trigger_handler(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+-	ring->access->store_to(ring, (u8 *)data, pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *)data, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	kfree(data);
+diff --git a/drivers/staging/iio/accel/adis16209_ring.c b/drivers/staging/iio/accel/adis16209_ring.c
+index 0906075..155fc79 100644
+--- a/drivers/staging/iio/accel/adis16209_ring.c
++++ b/drivers/staging/iio/accel/adis16209_ring.c
+@@ -59,7 +59,6 @@ static irqreturn_t adis16209_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct adis16209_state *st = iio_priv(indio_dev);
+-	struct iio_buffer *ring = indio_dev->buffer;
+ 	int i = 0;
+ 	s16 *data;
+ 
+@@ -79,7 +78,7 @@ static irqreturn_t adis16209_trigger_handler(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+-	ring->access->store_to(ring, (u8 *)data, pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *)data, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	kfree(data);
+diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
+index 86a2a47..dec6646 100644
+--- a/drivers/staging/iio/accel/adis16240_ring.c
++++ b/drivers/staging/iio/accel/adis16240_ring.c
+@@ -56,8 +56,6 @@ static irqreturn_t adis16240_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct adis16240_state *st = iio_priv(indio_dev);
+-	struct iio_buffer *ring = indio_dev->buffer;
+-
+ 	int i = 0;
+ 	s16 *data;
+ 
+@@ -77,7 +75,7 @@ static irqreturn_t adis16240_trigger_handler(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+-	ring->access->store_to(ring, (u8 *)data, pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *)data, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	kfree(data);
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index 51b00df..7129e22 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -135,7 +135,6 @@ static irqreturn_t lis3l02dq_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+-	struct iio_buffer *buffer = indio_dev->buffer;
+ 	int len = 0;
+ 	char *data;
+ 
+@@ -154,7 +153,7 @@ static irqreturn_t lis3l02dq_trigger_handler(int irq, void *p)
+ 		*(s64 *)(((phys_addr_t)data + len
+ 				+ sizeof(s64) - 1) & ~(sizeof(s64) - 1))
+ 			= pf->timestamp;
+-	buffer->access->store_to(buffer, (u8 *)data, pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *)data, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	kfree(data);
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index 5eaeaf1..b6b32f6 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -510,7 +510,6 @@ static irqreturn_t ad7192_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+-	struct iio_buffer *ring = indio_dev->buffer;
+ 	struct ad7192_state *st = iio_priv(indio_dev);
+ 	s64 dat64[2];
+ 	s32 *dat32 = (s32 *)dat64;
+@@ -524,7 +523,7 @@ static irqreturn_t ad7192_trigger_handler(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		dat64[1] = pf->timestamp;
+ 
+-	ring->access->store_to(ring, (u8 *)dat64, pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *)dat64, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	st->irq_dis = false;
+diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
+index 908a3e5..146afd8 100644
+--- a/drivers/staging/iio/adc/ad7298_ring.c
++++ b/drivers/staging/iio/adc/ad7298_ring.c
+@@ -83,7 +83,6 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad7298_state *st = iio_priv(indio_dev);
+-	struct iio_buffer *ring = indio_dev->buffer;
+ 	s64 time_ns;
+ 	__u16 buf[16];
+ 	int b_sent, i;
+@@ -99,10 +98,10 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+ 	}
+ 
+ 	for (i = 0; i < bitmap_weight(indio_dev->active_scan_mask,
+-						 indio_dev->masklength); i++)
++				      indio_dev->masklength); i++)
+ 		buf[i] = be16_to_cpu(st->rx_buf[i]);
+ 
+-	indio_dev->buffer->access->store_to(ring, (u8 *)buf, time_ns);
++	iio_push_to_buffers(indio_dev, (u8 *)buf, time_ns);
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+ 	return IRQ_HANDLED;
+diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
+index 383611b..950a11e 100644
+--- a/drivers/staging/iio/adc/ad7476_ring.c
++++ b/drivers/staging/iio/adc/ad7476_ring.c
+@@ -44,7 +44,7 @@ static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+ 		memcpy(rxbuf + indio_dev->scan_bytes - sizeof(s64),
+ 			&time_ns, sizeof(time_ns));
+ 
+-	indio_dev->buffer->access->store_to(indio_dev->buffer, rxbuf, time_ns);
++	iio_push_to_buffers(indio_dev, rxbuf, time_ns);
+ done:
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	kfree(rxbuf);
+diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+index 24ce8fc..497c1fc 100644
+--- a/drivers/staging/iio/adc/ad7606_ring.c
++++ b/drivers/staging/iio/adc/ad7606_ring.c
+@@ -46,7 +46,6 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
+ 	struct ad7606_state *st = container_of(work_s, struct ad7606_state,
+ 						poll_work);
+ 	struct iio_dev *indio_dev = iio_priv_to_dev(st);
+-	struct iio_buffer *ring = indio_dev->buffer;
+ 	s64 time_ns;
+ 	__u8 *buf;
+ 	int ret;
+@@ -84,7 +83,7 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
+ 	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(buf + indio_dev->scan_bytes - sizeof(s64))) = time_ns;
+ 
+-	ring->access->store_to(indio_dev->buffer, buf, time_ns);
++	iio_push_to_buffers(indio_dev, buf, time_ns);
+ done:
+ 	gpio_set_value(st->pdata->gpio_convst, 0);
+ 	iio_trigger_notify_done(indio_dev->trig);
+diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
+index b36556f..22875a5 100644
+--- a/drivers/staging/iio/adc/ad7793.c
++++ b/drivers/staging/iio/adc/ad7793.c
+@@ -375,7 +375,6 @@ static irqreturn_t ad7793_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+-	struct iio_buffer *ring = indio_dev->buffer;
+ 	struct ad7793_state *st = iio_priv(indio_dev);
+ 	s64 dat64[2];
+ 	s32 *dat32 = (s32 *)dat64;
+@@ -389,7 +388,7 @@ static irqreturn_t ad7793_trigger_handler(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		dat64[1] = pf->timestamp;
+ 
+-	ring->access->store_to(ring, (u8 *)dat64, pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *)dat64, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	st->irq_dis = false;
+diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
+index fd91384..9e11052 100644
+--- a/drivers/staging/iio/adc/ad7887_ring.c
++++ b/drivers/staging/iio/adc/ad7887_ring.c
+@@ -95,7 +95,7 @@ static irqreturn_t ad7887_trigger_handler(int irq, void *p)
+ 		memcpy(buf + indio_dev->scan_bytes - sizeof(s64),
+ 		       &time_ns, sizeof(time_ns));
+ 
+-	indio_dev->buffer->access->store_to(indio_dev->buffer, buf, time_ns);
++	iio_push_to_buffers(indio_dev, buf, time_ns);
+ done:
+ 	kfree(buf);
+ 	iio_trigger_notify_done(indio_dev->trig);
+diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
+index 1c7ff44..5d567fe 100644
+--- a/drivers/staging/iio/adc/ad799x_ring.c
++++ b/drivers/staging/iio/adc/ad799x_ring.c
+@@ -56,7 +56,6 @@ static irqreturn_t ad799x_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad799x_state *st = iio_priv(indio_dev);
+-	struct iio_buffer *ring = indio_dev->buffer;
+ 	s64 time_ns;
+ 	__u8 *rxbuf;
+ 	int b_sent;
+@@ -99,7 +98,7 @@ static irqreturn_t ad799x_trigger_handler(int irq, void *p)
+ 		memcpy(rxbuf + indio_dev->scan_bytes - sizeof(s64),
+ 			&time_ns, sizeof(time_ns));
+ 
+-	ring->access->store_to(indio_dev->buffer, rxbuf, time_ns);
++	iio_push_to_buffers(indio_dev, rxbuf, time_ns);
+ done:
+ 	kfree(rxbuf);
+ 	if (b_sent < 0)
+diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
+index b302013..73273c0 100644
+--- a/drivers/staging/iio/adc/max1363_ring.c
++++ b/drivers/staging/iio/adc/max1363_ring.c
+@@ -80,7 +80,7 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
+ 
+ 	if (indio_dev->scan_timestamp)
+ 		memcpy(rxbuf + d_size - sizeof(s64), &time_ns, sizeof(time_ns));
+-	iio_push_to_buffer(indio_dev->buffer, rxbuf, time_ns);
++	iio_push_to_buffers(indio_dev, rxbuf, time_ns);
+ 
+ done:
+ 	iio_trigger_notify_done(indio_dev->trig);
+diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
+index 0fe2d9d..4922a6d 100644
+--- a/drivers/staging/iio/gyro/adis16260_ring.c
++++ b/drivers/staging/iio/gyro/adis16260_ring.c
+@@ -62,7 +62,6 @@ static irqreturn_t adis16260_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct adis16260_state *st = iio_priv(indio_dev);
+-	struct iio_buffer *ring = indio_dev->buffer;
+ 	int i = 0;
+ 	s16 *data;
+ 
+@@ -82,7 +81,7 @@ static irqreturn_t adis16260_trigger_handler(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 
+-	ring->access->store_to(ring, (u8 *)data, pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *)data, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	kfree(data);
+diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
+index fdfc873..5931cbb 100644
+--- a/drivers/staging/iio/iio_simple_dummy_buffer.c
++++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
+@@ -46,7 +46,6 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+-	struct iio_buffer *buffer = indio_dev->buffer;
+ 	int len = 0;
+ 	u16 *data;
+ 
+@@ -76,7 +75,7 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
+ 		     i < bitmap_weight(indio_dev->active_scan_mask,
+ 				       indio_dev->masklength);
+ 		     i++) {
+-			j = find_next_bit(buffer->scan_mask,
++			j = find_next_bit(indio_dev->buffer->scan_mask,
+ 					  indio_dev->masklength, j + 1);
+ 			/* random access read form the 'device' */
+ 			data[i] = fakedata[j];
+@@ -88,7 +87,7 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
+ 		*(s64 *)(((phys_addr_t)data + len
+ 				+ sizeof(s64) - 1) & ~(sizeof(s64) - 1))
+ 			= iio_get_time_ns();
+-	buffer->access->store_to(buffer, (u8 *)data, pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *)data, pf->timestamp);
+ 
+ 	kfree(data);
+ 
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index a8e51bc..3599ec1 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -647,7 +647,6 @@ static void ad5933_work(struct work_struct *work)
+ 	struct ad5933_state *st = container_of(work,
+ 		struct ad5933_state, work.work);
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(st->client);
+-	struct iio_buffer *ring = indio_dev->buffer;
+ 	signed short buf[2];
+ 	unsigned char status;
+ 
+@@ -678,7 +677,7 @@ static void ad5933_work(struct work_struct *work)
+ 			buf[0] = be16_to_cpu(buf[0]);
+ 		}
+ 		/* save datum to the ring */
+-		ring->access->store_to(ring, (u8 *)buf, iio_get_time_ns());
++		iio_push_to_buffers(indio_dev, (u8 *)buf, iio_get_time_ns());
+ 	} else {
+ 		/* no data available - try again later */
+ 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
+diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
+index 809e2c4..4c0dac8 100644
+--- a/drivers/staging/iio/imu/adis16400_ring.c
++++ b/drivers/staging/iio/imu/adis16400_ring.c
+@@ -150,7 +150,7 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
+ 	/* Guaranteed to be aligned with 8 byte boundary */
+ 	if (ring->scan_timestamp)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+-	ring->access->store_to(indio_dev->buffer, (u8 *) data, pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *) data, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+index 92159f2..0b0edd2 100644
+--- a/drivers/staging/iio/meter/ade7758_ring.c
++++ b/drivers/staging/iio/meter/ade7758_ring.c
+@@ -61,7 +61,6 @@ static irqreturn_t ade7758_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+-	struct iio_buffer *ring = indio_dev->buffer;
+ 	struct ade7758_state *st = iio_priv(indio_dev);
+ 	s64 dat64[2];
+ 	u32 *dat32 = (u32 *)dat64;
+@@ -74,7 +73,7 @@ static irqreturn_t ade7758_trigger_handler(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		dat64[1] = pf->timestamp;
+ 
+-	ring->access->store_to(ring, (u8 *)dat64, pf->timestamp);
++	iio_push_to_buffers(indio_dev, (u8 *)dat64, pf->timestamp);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+index fb0fe46..22f7bfd 100644
+--- a/include/linux/iio/buffer.h
++++ b/include/linux/iio/buffer.h
+@@ -66,7 +66,8 @@ struct iio_buffer_access_funcs {
+  * @stufftoread:	[INTERN] flag to indicate new data.
+  * @demux_list:		[INTERN] list of operations required to demux the scan.
+  * @demux_bounce:	[INTERN] buffer for doing gather from incoming scan.
+- **/
++ * @buffer_list:	[INTERN] entry in the devices list of current buffers.
++ */
+ struct iio_buffer {
+ 	int					length;
+ 	int					bytes_per_datum;
+@@ -81,9 +82,22 @@ struct iio_buffer {
+ 	const struct attribute_group *attrs;
+ 	struct list_head			demux_list;
+ 	unsigned char				*demux_bounce;
++	struct list_head			buffer_list;
  };
  
  /**
-diff --git a/include/linux/iio/machine.h b/include/linux/iio/machine.h
-index 0b1f19b..7409100 100644
---- a/include/linux/iio/machine.h
-+++ b/include/linux/iio/machine.h
-@@ -16,9 +16,11 @@
-  * @consumer_dev_name:	Name to uniquely identify the consumer device.
-  * @consumer_channel:	Unique name used to idenitify the channel on the
-  *			consumer side.
-+ * @consumer_data:	Data about the channel for use by the consumer driver.
++ * iio_update_buffers() - add or remove buffer from active list
++ * @indio_dev:		device to add buffer to
++ * @insert_buffer:	buffer to insert
++ * @remove_buffer:	buffer_to_remove
++ *
++ * Note this will tear down the all buffering and build it up again
++ */
++int iio_update_buffers(struct iio_dev *indio_dev,
++		       struct iio_buffer *insert_buffer,
++		       struct iio_buffer *remove_buffer);
++
++/**
+  * iio_buffer_init() - Initialize the buffer structure
+  * @buffer: buffer to be initialized
+  **/
+@@ -114,12 +128,12 @@ int iio_scan_mask_set(struct iio_dev *indio_dev,
+ 		      struct iio_buffer *buffer, int bit);
+ 
+ /**
+- * iio_push_to_buffer() - push to a registered buffer.
+- * @buffer:		IIO buffer structure for device
+- * @scan:		Full scan.
++ * iio_push_to_buffers() - push to a registered buffer.
++ * @indio_dev:		iio_dev structure for device.
++ * @data:		Full scan.
+  * @timestamp:
   */
- struct iio_map {
- 	const char *adc_channel_label;
- 	const char *consumer_dev_name;
- 	const char *consumer_channel;
-+	void *consumer_data;
- };
+-int iio_push_to_buffer(struct iio_buffer *buffer, unsigned char *data,
++int iio_push_to_buffers(struct iio_dev *indio_dev, unsigned char *data,
+ 		       s64 timestamp);
+ 
+ int iio_update_demux(struct iio_dev *indio_dev);
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 7378bbd..e486216 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -381,6 +381,7 @@ struct iio_buffer_setup_ops {
+  *			and owner
+  * @event_interface:	[INTERN] event chrdevs associated with interrupt lines
+  * @buffer:		[DRIVER] any buffer present
++ * @buffer_list:	[INTERN] list of all buffers currently attached
+  * @scan_bytes:		[INTERN] num bytes captured to be fed to buffer demux
+  * @mlock:		[INTERN] lock used to prevent simultaneous device state
+  *			changes
+@@ -419,6 +420,7 @@ struct iio_dev {
+ 	struct iio_event_interface	*event_interface;
+ 
+ 	struct iio_buffer		*buffer;
++	struct list_head		buffer_list;
+ 	int				scan_bytes;
+ 	struct mutex			mlock;
+ 
 -- 
 1.7.10.2
