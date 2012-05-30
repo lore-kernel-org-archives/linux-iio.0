@@ -2,53 +2,45 @@ Return-Path: <jic23@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 8/8] staging:iio: Add some missing peak elements to the info_mask
-Date: Wed, 30 May 2012 20:41:06 +0100
-Message-Id: <1338406866-3833-9-git-send-email-jic23@kernel.org>
+Subject: [PATCH 7/8] IIO: Add a modifier for x^2+y^2+z^2
+Date: Wed, 30 May 2012 20:41:05 +0100
+Message-Id: <1338406866-3833-8-git-send-email-jic23@kernel.org>
 In-Reply-To: <1338406866-3833-1-git-send-email-jic23@kernel.org>
 References: <1338406866-3833-1-git-send-email-jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-These are supported by raw_read but not actually there.
+There will probably be a number of such modifiers eventually but
+this one is used in the adis16240 accelerometer driver.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/accel/adis16240_core.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/iio/industrialio-core.c |    1 +
+ include/linux/iio/types.h       |    1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-index 2df39d1..3f30a99 100644
---- a/drivers/staging/iio/accel/adis16240_core.c
-+++ b/drivers/staging/iio/accel/adis16240_core.c
-@@ -481,7 +481,8 @@ static struct iio_chan_spec adis16240_channels[] = {
- 		.channel2 = IIO_MOD_X,
- 		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
- 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
--		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
-+		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
-+		IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
- 		.address = accel_x,
- 		.scan_index = ADIS16240_SCAN_ACC_X,
- 		.scan_type = {
-@@ -495,7 +496,8 @@ static struct iio_chan_spec adis16240_channels[] = {
- 		.channel2 = IIO_MOD_Y,
- 		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
- 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
--		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
-+		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
-+		IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
- 		.address = accel_y,
- 		.scan_index = ADIS16240_SCAN_ACC_Y,
- 		.scan_type = {
-@@ -509,7 +511,8 @@ static struct iio_chan_spec adis16240_channels[] = {
- 		.channel2 = IIO_MOD_Z,
- 		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
- 		IIO_CHAN_INFO_SCALE_SHARED_BIT |
--		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
-+		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
-+		IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
- 		.address = accel_z,
- 		.scan_index = ADIS16240_SCAN_ACC_Z,
- 		.scan_type = {
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 071fbf1..6c433e8 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -71,6 +71,7 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_Y] = "y",
+ 	[IIO_MOD_Z] = "z",
+ 	[IIO_MOD_ROOT_SUM_SQUARED_X_Y] = "sqrt(x^2+y^2)",
++	[IIO_MOD_SUM_SQUARED_X_Y_Z] = "x^2+y^2+z^2",
+ 	[IIO_MOD_LIGHT_BOTH] = "both",
+ 	[IIO_MOD_LIGHT_IR] = "ir",
+ };
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index ab907bf..2ca6058 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -46,6 +46,7 @@ enum iio_modifier {
+ 	IIO_MOD_LIGHT_BOTH,
+ 	IIO_MOD_LIGHT_IR,
+ 	IIO_MOD_ROOT_SUM_SQUARED_X_Y,
++	IIO_MOD_SUM_SQUARED_X_Y_Z,
+ };
+ 
+ #define IIO_VAL_INT 1
 -- 
 1.7.10.2
