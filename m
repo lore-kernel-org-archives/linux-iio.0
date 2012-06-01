@@ -2,13 +2,13 @@ Return-Path: <Michael.Hennerich@analog.com>
 From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
 	<linux-iio@vger.kernel.org>
-Date: Fri, 1 Jun 2012 10:23:13 +0100
-Subject: RE: [PATCH 3/8] staging:iio:imu:adis16400 drop sysfs interface for
+Date: Fri, 1 Jun 2012 10:23:39 +0100
+Subject: RE: [PATCH 2/8] staging:iio:gyro:adis16260 drop sysfs interface for
  manual device reset.
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177150C0FE65BF@LIMKCMBX1.ad.analog.com>
+Message-ID: <544AC56F16B56944AEC3BD4E3D59177150C0FE65C2@LIMKCMBX1.ad.analog.com>
 References: <1338406866-3833-1-git-send-email-jic23@kernel.org>
- <1338406866-3833-4-git-send-email-jic23@kernel.org>
-In-Reply-To: <1338406866-3833-4-git-send-email-jic23@kernel.org>
+ <1338406866-3833-3-git-send-email-jic23@kernel.org>
+In-Reply-To: <1338406866-3833-3-git-send-email-jic23@kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
@@ -20,48 +20,46 @@ Jonathan Cameron wrote on 2012-05-30:
 > Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 > ---
->  drivers/staging/iio/imu/adis16400_core.c |   22 ----------------------
->  1 file changed, 22 deletions(-)
-> diff --git a/drivers/staging/iio/imu/adis16400_core.c
-> b/drivers/staging/iio/imu/adis16400_core.c index 1f6bd85..57b165d 100644
-> --- a/drivers/staging/iio/imu/adis16400_core.c +++
-> b/drivers/staging/iio/imu/adis16400_core.c @@ -268,25 +268,6 @@ static
-> int adis16400_reset(struct iio_dev *indio_dev)
+>  drivers/staging/iio/gyro/adis16260_core.c |   19 -------------------
+>  1 file changed, 19 deletions(-)
+> diff --git a/drivers/staging/iio/gyro/adis16260_core.c
+> b/drivers/staging/iio/gyro/adis16260_core.c index ec765f9..a19bf44
+> 100644 --- a/drivers/staging/iio/gyro/adis16260_core.c +++
+> b/drivers/staging/iio/gyro/adis16260_core.c @@ -233,22 +233,6 @@ static
+> int adis16260_reset(struct iio_dev *indio_dev)
 >       return ret;
 >  }
-> -static ssize_t adis16400_write_reset(struct device *dev,
+> -static ssize_t adis16260_write_reset(struct device *dev,
 > -             struct device_attribute *attr,
 > -             const char *buf, size_t len)
 > -{
-> -     bool val;
-> -     int ret;
-> -
-> -     ret =3D strtobool(buf, &val);
-> -     if (ret < 0)
-> -             return ret;
-> -     if (val) {
-> -             ret =3D adis16400_reset(dev_to_iio_dev(dev));
-> -             if (ret < 0)
-> -                     return ret;
+> -     struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
+> -     if (len < 1)
+> -             return -EINVAL;
+> -     switch (buf[0]) {
+> -     case '1':
+> -     case 'y':
+> -     case 'Y':
+> -             return adis16260_reset(indio_dev);
 > -     }
-> -
-> -     return len;
+> -     return -EINVAL;
 > -}
 > -
->  int adis16400_set_irq(struct iio_dev *indio_dev, bool enable) {      int
->  ret; @@ -454,8 +435,6 @@ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR |
->  S_IRUGO,                           adis16400_read_frequency,
->  adis16400_write_frequency);
-> -static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16400_write_reset, 0);
+>  int adis16260_set_irq(struct iio_dev *indio_dev, bool enable) {      int
+>  ret; @@ -375,8 +359,6 @@ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR |
+>  S_IRUGO,             adis16260_read_frequency,               adis16260_w=
+rite_frequency);
+> -static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16260_write_reset, 0);
 > -
->  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("409 546 819 1638");
+>  static IIO_DEVICE_ATTR(sampling_frequency_available,
+>                      S_IRUGO, adis16260_read_frequency_available, NULL,
+> 0);
 >
->  enum adis16400_chan {
-> @@ -1064,7 +1043,6 @@ static const struct iio_chan_spec
-> adis16334_channels[] =3D {
->  static struct attribute *adis16400_attributes[] =3D {
+> @@ -604,7 +586,6 @@ static int adis16260_write_raw(struct iio_dev
+> *indio_dev,
+>  static struct attribute *adis16260_attributes[] =3D {
 >       &iio_dev_attr_sampling_frequency.dev_attr.attr,
->       &iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>       &iio_dev_attr_sampling_frequency_available.dev_attr.attr,
 >  -    &iio_dev_attr_reset.dev_attr.attr,      NULL };
 
 Greetings,
