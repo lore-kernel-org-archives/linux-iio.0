@@ -1,34 +1,62 @@
-Return-Path: <sachin.kamat@linaro.org>
-From: Sachin Kamat <sachin.kamat@linaro.org>
-To: linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org,
-	gregkh@linuxfoundation.org,
-	jic23@cam.ac.uk,
-	sachin.kamat@linaro.org,
-	patches@linaro.org
-Subject: [PATCH] staging: iio: Remove version.h header file inclusion
-Date: Mon,  4 Jun 2012 11:34:49 +0530
-Message-Id: <1338789889-14049-1-git-send-email-sachin.kamat@linaro.org>
+Return-Path: <leed.aguilar@ti.com>
+From: Leed Aguilar <leed.aguilar@ti.com>
+To: <linux-iio@vger.kernel.org>
+CC: Leed Aguilar <leed.aguilar@ti.com>, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v3] staging:iio:magnetometer:ak8975: use gpio_request_one api
+Date: Fri, 1 Jun 2012 11:36:46 -0400
+Message-ID: <1338565006-5682-1-git-send-email-leed.aguilar@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-version.h header file is no longer required.
+Use gpio_request_one api, it looks cleaner.
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Signed-off-by: Leed Aguilar <leed.aguilar@ti.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/light/tsl2x7x_core.c |    1 -
- 1 files changed, 0 insertions(+), 1 deletions(-)
+ drivers/staging/iio/magnetometer/Kconfig  |    2 +-
+ drivers/staging/iio/magnetometer/ak8975.c |   10 +---------
+ 2 files changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
-index c3b05a1..040da4a 100755
---- a/drivers/staging/iio/light/tsl2x7x_core.c
-+++ b/drivers/staging/iio/light/tsl2x7x_core.c
-@@ -27,7 +27,6 @@
- #include <linux/interrupt.h>
- #include <linux/slab.h>
- #include <linux/module.h>
--#include <linux/version.h>
- #include <linux/iio/events.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
+diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
+index 722c4e1..e81dd9c 100644
+--- a/drivers/staging/iio/magnetometer/Kconfig
++++ b/drivers/staging/iio/magnetometer/Kconfig
+@@ -6,7 +6,7 @@ menu "Magnetometer sensors"
+ config SENSORS_AK8975
+ 	tristate "Asahi Kasei AK8975 3-Axis Magnetometer"
+ 	depends on I2C
+-	depends on GENERIC_GPIO
++	depends on GPIOLIB
+ 	help
+ 	  Say yes here to build support for Asahi Kasei AK8975 3-Axis
+ 	  Magnetometer.
+diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
+index ebc2d08..52833cd 100644
+--- a/drivers/staging/iio/magnetometer/ak8975.c
++++ b/drivers/staging/iio/magnetometer/ak8975.c
+@@ -487,21 +487,13 @@ static int ak8975_probe(struct i2c_client *client,
+ 	/* We may not have a GPIO based IRQ to scan, that is fine, we will
+ 	   poll if so */
+ 	if (gpio_is_valid(eoc_gpio)) {
+-		err = gpio_request(eoc_gpio, "ak_8975");
++		err = gpio_request_one(eoc_gpio, GPIOF_IN, "ak_8975");
+ 		if (err < 0) {
+ 			dev_err(&client->dev,
+ 				"failed to request GPIO %d, error %d\n",
+ 							eoc_gpio, err);
+ 			goto exit;
+ 		}
+-
+-		err = gpio_direction_input(eoc_gpio);
+-		if (err < 0) {
+-			dev_err(&client->dev,
+-				"Failed to configure input direction for GPIO %d, error %d\n",
+-						eoc_gpio, err);
+-			goto exit_gpio;
+-		}
+ 	}
+ 
+ 	/* Register with IIO */
 -- 
-1.7.4.1
+1.7.1
