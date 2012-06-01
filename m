@@ -1,52 +1,69 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55769 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753767Ab2FAIAy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jun 2012 04:00:54 -0400
-Message-ID: <4FC876B2.7080501@kernel.org>
-Date: Fri, 01 Jun 2012 09:00:50 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+Date: Fri, 1 Jun 2012 10:25:04 +0100
+Subject: RE: [PATCH 8/8] staging:iio: Add some missing peak elements to the
+ info_mask
+Message-ID: <544AC56F16B56944AEC3BD4E3D59177150C0FE65D2@LIMKCMBX1.ad.analog.com>
+References: <1338406866-3833-1-git-send-email-jic23@kernel.org>
+ <1338406866-3833-9-git-send-email-jic23@kernel.org>
+In-Reply-To: <1338406866-3833-9-git-send-email-jic23@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Laxman Dewangan <ldewangan@nvidia.com>
-CC: Leed Aguilar <leed.aguilar@ti.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] staging:iio:magnetometer:ak8975: remove 'mode' attribute
-References: <1338470063-19227-1-git-send-email-leed.aguilar@ti.com> <4FC7809F.9020902@nvidia.com>
-In-Reply-To: <4FC7809F.9020902@nvidia.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 5/31/2012 3:30 PM, Laxman Dewangan wrote:
-> On Thursday 31 May 2012 06:44 PM, Leed Aguilar wrote:
->> The raw data reading process (ak8975_read_axis) sets the
->> single measurement mode to take a sample and once the
->> conversion is completed the device enters into power-down
->> mode automatically, therefore there is no need to enable
->> a flag for this to happen.
->>
->> Signed-off-by: Leed Aguilar<leed.aguilar@ti.com>
->> Cc: Jonathan Cameron<jic23@kernel.org>
->> Cc: Laxman Dewangan<ldewangan@nvidia.com>
->> ---
+Jonathan Cameron wrote on 2012-05-30:
+> These are supported by raw_read but not actually there.
 >
-> Acked-by: Laxman Dewanagan <ldewangan@nvidia.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 
-Please send a copy with the acks to GregKH@linuxfoundation.org
->
->
-> Looks good to me.
->
-> ----------------------------------------------------------------------------------- 
->
-> This email message is for the sole use of the intended recipient(s) 
-> and may contain
-> confidential information.  Any unauthorized review, use, disclosure or 
-> distribution
-> is prohibited.  If you are not the intended recipient, please contact 
-> the sender by
-> reply email and destroy all copies of the original message.
-> ----------------------------------------------------------------------------------- 
->
+> ---
+>  drivers/staging/iio/accel/adis16240_core.c |    9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> diff --git a/drivers/staging/iio/accel/adis16240_core.c
+> b/drivers/staging/iio/accel/adis16240_core.c index 2df39d1..3f30a99
+> 100644 --- a/drivers/staging/iio/accel/adis16240_core.c +++
+> b/drivers/staging/iio/accel/adis16240_core.c @@ -481,7 +481,8 @@ static
+> struct iio_chan_spec adis16240_channels[] =3D {
+>               .channel2 =3D IIO_MOD_X,
+>               .info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+>               IIO_CHAN_INFO_SCALE_SHARED_BIT |
+> -             IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
+> +             IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+> +             IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
+>               .address =3D accel_x,
+>               .scan_index =3D ADIS16240_SCAN_ACC_X,
+>               .scan_type =3D {
+> @@ -495,7 +496,8 @@ static struct iio_chan_spec adis16240_channels[] =3D
+> {
+>               .channel2 =3D IIO_MOD_Y,
+>               .info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+>               IIO_CHAN_INFO_SCALE_SHARED_BIT |
+> -             IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
+> +             IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+> +             IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
+>               .address =3D accel_y,
+>               .scan_index =3D ADIS16240_SCAN_ACC_Y,
+>               .scan_type =3D {
+> @@ -509,7 +511,8 @@ static struct iio_chan_spec adis16240_channels[] =3D
+> {
+>               .channel2 =3D IIO_MOD_Z,
+>               .info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+>               IIO_CHAN_INFO_SCALE_SHARED_BIT |
+> -             IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
+> +             IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+> +             IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
+>               .address =3D accel_z,
+>               .scan_index =3D ADIS16240_SCAN_ACC_Z,
+>               .scan_type =3D {
 
+Greetings,
+Michael
+
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Mar=
+garet Seif
