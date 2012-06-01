@@ -1,80 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:59100 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753788Ab2FFPfJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jun 2012 11:35:09 -0400
-Message-ID: <4FCF78A7.3040606@cam.ac.uk>
-Date: Wed, 06 Jun 2012 16:35:03 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55751 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758694Ab2FAH7U (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jun 2012 03:59:20 -0400
+Message-ID: <4FC8764C.9050700@kernel.org>
+Date: Fri, 01 Jun 2012 08:59:08 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH,] IIO: Add additional modifier names
-References: <1338508298-21748-1-git-send-email-srinivas.pandruvada@intel.com> <4FCF2011.4030206@cam.ac.uk> <4FA419E87744DF4DAECD5BCE1214B7A91931B3ED@ORSMSX104.amr.corp.intel.com>
-In-Reply-To: <4FA419E87744DF4DAECD5BCE1214B7A91931B3ED@ORSMSX104.amr.corp.intel.com>
+To: Ge Gao <ggao@invensense.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: A IIO trigger problem/bug.
+References: <CAE9_fz=THxH8DRwbJMGONJC3szwiJ9DM=NF0HM-e19nqXmtcHQ@mail.gmail.com>
+In-Reply-To: <CAE9_fz=THxH8DRwbJMGONJC3szwiJ9DM=NF0HM-e19nqXmtcHQ@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 6/6/2012 4:04 PM, Pandruvada, Srinivas wrote:
+On 5/31/2012 4:56 PM, Ge Gao wrote:
 >
-> I am going to submit a series of patches for HID sensors, mostly targeted towards slates and tablets. For Accelerometer/Gyro/Magnetometer, I am using
-> IIO_MOD_X_AND_Y_AND_Z for sending  x, y and z sample in one report. So user space like Android can get all three values together .
-That really isn't the intent with those.  If you want to send reports 
-coherently in one go, the buffered interface is the way to go.
+>     I met a strange problem concerning IIO driver. I wrote a driver 
+> that has trigger, ring buffer,just the standard way of doing things. 
+> It sometimes runs OK. However, I found sometimes, the trigger is NOT 
+> triggered at all. I am using a hardware interrupt to trigger a 
+> threaded ISR and post-ISR. I can see the interrupt coming correctly. 
+> By using "cat /proc/interrupts", I can see that the number of triggers 
+> stays the same while the number of interrupt increases steadily. 
+It's been a while since I looked at this corner, but IIRC the basic 
+principal is to prevent the driver
+read out code from being reentrant. Thus if your trigger is occuring 
+faster than the driver is
+capable of reading from the device then triggers will be dropped.
+It's possible that we have a bug in there that means it is not 
+succesfully recovering from the trigger being dropped.
 
-Basically doing it the way you are going for does not generalize well
-which makes for a nightmare in the long run...
->
-> I can change to more explicit names as you suggested. Let me know if you want me to submit patch for this.
->
-> Thanks,
-> Srinivas
->
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
-> Sent: Wednesday, June 06, 2012 2:17 AM
-> To: Pandruvada, Srinivas
-> Cc: linux-iio@vger.kernel.org
-> Subject: Re: [PATCH,] IIO: Add additional modifier names
->
-> On 6/1/2012 12:51 AM, srinivas pandruvada wrote:
->> Added additional modifier names in the list for the supported types.
->> Otherwise it substitutes (null) in the filename.
->>
->> Signed-off-by: srinivas pandruvada<srinivas.pandruvada@intel.com>
->
-> When we originally introducted the concept of these, the intent was to have rather more explicit naming. Hence [IIO_MOD_X_AND_Y_AND_Z] = "x&y&z", [IIO_MOD_X_OR_Y_OR_Z] = "x|y|z",
->
-> It costs a small amount of effort in escape characters, but gives a much more meaningful naming to the resulting attributes.
->
-> They aren't there in the core code because nothing using chan_spec based registration was using these (they were needed for modifiers of rather obscure events).  What have you actually needed them for?
->
->
-> Jonathan
->> ---
->>    drivers/staging/iio/industrialio-core.c |    8 ++++++++
->>    1 files changed, 8 insertions(+), 0 deletions(-)
->>
->> diff --git a/drivers/staging/iio/industrialio-core.c
->> b/drivers/staging/iio/industrialio-core.c
->> index d303bfb..65d40ce 100644
->> --- a/drivers/staging/iio/industrialio-core.c
->> +++ b/drivers/staging/iio/industrialio-core.c
->> @@ -76,6 +76,14 @@ static const char * const iio_modifier_names[] = {
->>    	[IIO_MOD_Z] = "z",
->>    	[IIO_MOD_LIGHT_BOTH] = "both",
->>    	[IIO_MOD_LIGHT_IR] = "ir",
->> +	[IIO_MOD_X_AND_Y] = "xy",
->> +	[IIO_MOD_X_AND_Z] = "xz",
->> +	[IIO_MOD_Y_AND_Z] = "yz",
->> +	[IIO_MOD_X_AND_Y_AND_Z] = "xyz",
->> +	[IIO_MOD_X_OR_Y] = "x_y",
->> +	[IIO_MOD_X_OR_Z] = "x_z",
->> +	[IIO_MOD_Y_OR_Z] = "y_z",
->> +	[IIO_MOD_X_OR_Y_OR_Z] = "x_y_z",
->>    };
->>
->>    /* relies on pairs of these shared then separate */
->
+One thought would be that you weren't clearing the interrupt unless a 
+read occurs, but that doesn't seem
+to be the case here given you are seeing /proc/interrupts continue to 
+increase...
+
+The driver controls masking (typically through IRQF_ONESHOT) of an 
+interrupt that is in turn fed by a second
+interrupt handler - the one in your driver handling the actual hardware 
+interrupt.
+
+I can't immediately spot why trig->usecount would be wrong.   Just as a 
+test could you drop the test for it
+entirely and see if that makes things work as expected?  That will break 
+having multiple users of the trigger,
+but might give us some clues as to what is happening.  Otherwise, please 
+add some printk's to the relevant
+places and lets see what is happening.  With your usecase 
+trig->use_count should only ever be 0 or 1
+and if it is still 1 in iio_trigger_poll, we'll have some clue what is 
+happening...
+
 
