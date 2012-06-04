@@ -5,42 +5,75 @@ Cc: Jonathan Cameron <jic23@cam.ac.uk>,
 	devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/2] iio: Add iio_device_get()
-Date: Mon,  4 Jun 2012 10:50:02 +0200
-Message-Id: <1338799803-4347-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH 2/2] iio:inkern: Use iio_device_{get,put}
+Date: Mon,  4 Jun 2012 10:50:03 +0200
+Message-Id: <1338799803-4347-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1338799803-4347-1-git-send-email-lars@metafoo.de>
+References: <1338799803-4347-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch add the iio_device_get() function, which increases the reference
-count of a iio device. The matching function to decrease the reference count -
-iio_device_put() - already exists.
+Use iio_device_get and iio_device_put instead of open-coding it.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- include/linux/iio/iio.h |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/iio/inkern.c |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 3a4f6a3..3238fa3 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -438,6 +438,17 @@ static inline struct iio_dev *dev_to_iio_dev(struct device *dev)
- 	return container_of(dev, struct iio_dev, dev);
- }
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 9226458..d4760bd 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -125,7 +125,7 @@ struct iio_channel *iio_st_channel_get(const char *name,
+ 		     strcmp(channel_name, c_i->map->consumer_channel) != 0))
+ 			continue;
+ 		c = c_i;
+-		get_device(&c->indio_dev->dev);
++		iio_device_get(c->indio_dev);
+ 		break;
+ 	}
+ 	mutex_unlock(&iio_map_list_lock);
+@@ -149,7 +149,7 @@ EXPORT_SYMBOL_GPL(iio_st_channel_get);
  
-+/**
-+ * iio_device_get() - increment reference count for the device
-+ * @indio_dev: IIO device structure
-+ *
-+ * Returns: The passed IIO device
-+ **/
-+static inline struct iio_dev *iio_device_get(struct iio_dev *indio_dev)
-+{
-+	return indio_dev ? dev_to_iio_dev(get_device(&indio_dev->dev)) : NULL;
-+}
-+
- /* Can we make this smaller? */
- #define IIO_ALIGN L1_CACHE_BYTES
- /**
+ void iio_st_channel_release(struct iio_channel *channel)
+ {
+-	put_device(&channel->indio_dev->dev);
++	iio_device_put(channel->indio_dev);
+ 	kfree(channel);
+ }
+ EXPORT_SYMBOL_GPL(iio_st_channel_release);
+@@ -195,10 +195,10 @@ struct iio_channel *iio_st_channel_get_all(const char *name)
+ 						c->map->adc_channel_label);
+ 		if (chans[mapind].channel == NULL) {
+ 			ret = -EINVAL;
+-			put_device(&chans[mapind].indio_dev->dev);
++			iio_device_put(chans[mapind].indio_dev);
+ 			goto error_free_chans;
+ 		}
+-		get_device(&chans[mapind].indio_dev->dev);
++		iio_device_get(chans[mapind].indio_dev);
+ 		mapind++;
+ 	}
+ 	mutex_unlock(&iio_map_list_lock);
+@@ -210,8 +210,7 @@ struct iio_channel *iio_st_channel_get_all(const char *name)
+ 
+ error_free_chans:
+ 	for (i = 0; i < nummaps; i++)
+-		if (chans[i].indio_dev)
+-			put_device(&chans[i].indio_dev->dev);
++		iio_device_put(chans[i].indio_dev);
+ 	kfree(chans);
+ error_ret:
+ 	mutex_unlock(&iio_map_list_lock);
+@@ -225,7 +224,7 @@ void iio_st_channel_release_all(struct iio_channel *channels)
+ 	struct iio_channel *chan = &channels[0];
+ 
+ 	while (chan->indio_dev) {
+-		put_device(&chan->indio_dev->dev);
++		iio_device_put(chan->indio_dev);
+ 		chan++;
+ 	}
+ 	kfree(channels);
 -- 
 1.7.10
