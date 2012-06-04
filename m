@@ -1,56 +1,296 @@
-Return-Path: <dan.carpenter@oracle.com>
-Date: Mon, 4 Jun 2012 23:36:55 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devel@driverdev.osuosl.org, linux-iio@vger.kernel.org,
-        Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH 01/18] iio: Add helper functions for enum style channel
- attributes
-Message-ID: <20120604203655.GA4297@mwanda>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	devel@driverdev.osuosl.org,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 18/18] staging:iio: Move DAC drivers out of staging
+Date: Mon,  4 Jun 2012 11:36:28 +0200
+Message-Id: <1338802588-10585-18-git-send-email-lars@metafoo.de>
+In-Reply-To: <1338802588-10585-1-git-send-email-lars@metafoo.de>
 References: <1338802588-10585-1-git-send-email-lars@metafoo.de>
- <20120604105510.GB4400@mwanda>
- <4FCD16AB.5020909@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <4FCD16AB.5020909@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Jun 04, 2012 at 10:12:27PM +0200, Lars-Peter Clausen wrote:
-> On 06/04/2012 12:55 PM, Dan Carpenter wrote:
-> > On Mon, Jun 04, 2012 at 11:36:11AM +0200, Lars-Peter Clausen wrote:
-> >> +ssize_t iio_enum_available_read(struct iio_dev *indio_dev,
-> >> +	uintptr_t priv, const struct iio_chan_spec *chan, char *buf)
-> >> +{
-> >> +	const struct iio_enum *e = (const struct iio_enum *)priv;
-> >> +	unsigned int i;
-> >> +	size_t len = 0;
-> >> +
-> >> +	if (!e->num_items)
-> >> +		return 0;
-> >> +
-> >> +	for (i = 0; i < e->num_items; ++i)
-> >> +		len += snprintf(buf + len, PAGE_SIZE - len, "%s ", e->items[i]);
-> >> +
-> >> +	/* replace last space with a newline */
-> >> +	buf[len - 1] = '\n';
-> >> +
-> > 
-> > It would be better to use scnprintf() here instead of snprintf().
-> > snprintf() returns the number of characters that would have been
-> > printed if there were space (not counting the NULL), so len - 1 can
-> > be beyond the end of the array.
-> 
-> It's even worse, if len is greater than PAGE_SIZE we'll pass a pretty large
-> number for the buffer size to snprintf and it will happily write beyond the
-> buffers limits. So as it is right now the snprintf isn't really any better than
-> a sprintf. I'll resend the patch with scnprintf.
+The IIO DAC drivers are in a reasonably good shape. They all make use of channel
+spec and non of them provides non-documented sysfs attributes. Code style should
+be OK as well, both checkpatch and coccicheck only report trivial issues.
 
-No.  Negative numbers just trigger the WARN_ON_ONCE() in
-vsnprintf() and not print anything.
+So lets move the whole folder out of staging.
 
-Although, in user space, snprintf() does treat negatives as a large
-positive.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/iio/Kconfig                                 |    1 +
+ drivers/iio/Makefile                                |    1 +
+ drivers/{staging => }/iio/dac/Kconfig               |    0
+ drivers/{staging => }/iio/dac/Makefile              |    0
+ drivers/{staging => }/iio/dac/ad5064.c              |    0
+ drivers/{staging => }/iio/dac/ad5360.c              |    0
+ drivers/{staging => }/iio/dac/ad5380.c              |    0
+ drivers/{staging => }/iio/dac/ad5421.c              |    2 +-
+ drivers/{staging => }/iio/dac/ad5446.c              |    0
+ drivers/{staging => }/iio/dac/ad5446.h              |    0
+ drivers/{staging => }/iio/dac/ad5504.c              |    3 +--
+ drivers/{staging => }/iio/dac/ad5624r.h             |    0
+ drivers/{staging => }/iio/dac/ad5624r_spi.c         |    0
+ drivers/{staging => }/iio/dac/ad5686.c              |    0
+ drivers/{staging => }/iio/dac/ad5764.c              |    0
+ drivers/{staging => }/iio/dac/ad5791.c              |    3 +--
+ drivers/{staging => }/iio/dac/max517.c              |    3 +--
+ drivers/staging/iio/Kconfig                         |    1 -
+ drivers/staging/iio/Makefile                        |    1 -
+ {drivers/staging => include/linux}/iio/dac/ad5421.h |    4 ----
+ {drivers/staging => include/linux}/iio/dac/ad5504.h |    4 ----
+ {drivers/staging => include/linux}/iio/dac/ad5791.h |    4 ----
+ {drivers/staging => include/linux}/iio/dac/max517.h |    4 ----
+ 23 files changed, 6 insertions(+), 25 deletions(-)
+ rename drivers/{staging => }/iio/dac/Kconfig (100%)
+ rename drivers/{staging => }/iio/dac/Makefile (100%)
+ rename drivers/{staging => }/iio/dac/ad5064.c (100%)
+ rename drivers/{staging => }/iio/dac/ad5360.c (100%)
+ rename drivers/{staging => }/iio/dac/ad5380.c (100%)
+ rename drivers/{staging => }/iio/dac/ad5421.c (99%)
+ rename drivers/{staging => }/iio/dac/ad5446.c (100%)
+ rename drivers/{staging => }/iio/dac/ad5446.h (100%)
+ rename drivers/{staging => }/iio/dac/ad5504.c (99%)
+ rename drivers/{staging => }/iio/dac/ad5624r.h (100%)
+ rename drivers/{staging => }/iio/dac/ad5624r_spi.c (100%)
+ rename drivers/{staging => }/iio/dac/ad5686.c (100%)
+ rename drivers/{staging => }/iio/dac/ad5764.c (100%)
+ rename drivers/{staging => }/iio/dac/ad5791.c (99%)
+ rename drivers/{staging => }/iio/dac/max517.c (99%)
+ rename {drivers/staging => include/linux}/iio/dac/ad5421.h (92%)
+ rename {drivers/staging => include/linux}/iio/dac/ad5504.h (74%)
+ rename {drivers/staging => include/linux}/iio/dac/ad5791.h (87%)
+ rename {drivers/staging => include/linux}/iio/dac/max517.h (76%)
 
-regards,
-dan carpenter
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 56eecef..62fda86 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -50,5 +50,6 @@ config IIO_CONSUMERS_PER_TRIGGER
+ 
+ source "drivers/iio/adc/Kconfig"
+ source "drivers/iio/amplifiers/Kconfig"
++source "drivers/iio/dac/Kconfig"
+ 
+ endif # IIO
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index e425afd..30a9144 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -11,3 +11,4 @@ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
+ 
+ obj-y += adc/
+ obj-y += amplifiers/
++obj-y += dac/
+diff --git a/drivers/staging/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+similarity index 100%
+rename from drivers/staging/iio/dac/Kconfig
+rename to drivers/iio/dac/Kconfig
+diff --git a/drivers/staging/iio/dac/Makefile b/drivers/iio/dac/Makefile
+similarity index 100%
+rename from drivers/staging/iio/dac/Makefile
+rename to drivers/iio/dac/Makefile
+diff --git a/drivers/staging/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+similarity index 100%
+rename from drivers/staging/iio/dac/ad5064.c
+rename to drivers/iio/dac/ad5064.c
+diff --git a/drivers/staging/iio/dac/ad5360.c b/drivers/iio/dac/ad5360.c
+similarity index 100%
+rename from drivers/staging/iio/dac/ad5360.c
+rename to drivers/iio/dac/ad5360.c
+diff --git a/drivers/staging/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c
+similarity index 100%
+rename from drivers/staging/iio/dac/ad5380.c
+rename to drivers/iio/dac/ad5380.c
+diff --git a/drivers/staging/iio/dac/ad5421.c b/drivers/iio/dac/ad5421.c
+similarity index 99%
+rename from drivers/staging/iio/dac/ad5421.c
+rename to drivers/iio/dac/ad5421.c
+index ea2f83b..cdbc5bf 100644
+--- a/drivers/staging/iio/dac/ad5421.c
++++ b/drivers/iio/dac/ad5421.c
+@@ -19,7 +19,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/events.h>
+-#include "ad5421.h"
++#include <linux/iio/dac/ad5421.h>
+ 
+ 
+ #define AD5421_REG_DAC_DATA		0x1
+diff --git a/drivers/staging/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
+similarity index 100%
+rename from drivers/staging/iio/dac/ad5446.c
+rename to drivers/iio/dac/ad5446.c
+diff --git a/drivers/staging/iio/dac/ad5446.h b/drivers/iio/dac/ad5446.h
+similarity index 100%
+rename from drivers/staging/iio/dac/ad5446.h
+rename to drivers/iio/dac/ad5446.h
+diff --git a/drivers/staging/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
+similarity index 99%
+rename from drivers/staging/iio/dac/ad5504.c
+rename to drivers/iio/dac/ad5504.c
+index 1289e9b..242bdc7 100644
+--- a/drivers/staging/iio/dac/ad5504.c
++++ b/drivers/iio/dac/ad5504.c
+@@ -19,8 +19,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/events.h>
+-
+-#include "ad5504.h"
++#include <linux/iio/dac/ad5504.h>
+ 
+ #define AD5505_BITS			12
+ #define AD5504_RES_MASK			((1 << (AD5505_BITS)) - 1)
+diff --git a/drivers/staging/iio/dac/ad5624r.h b/drivers/iio/dac/ad5624r.h
+similarity index 100%
+rename from drivers/staging/iio/dac/ad5624r.h
+rename to drivers/iio/dac/ad5624r.h
+diff --git a/drivers/staging/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
+similarity index 100%
+rename from drivers/staging/iio/dac/ad5624r_spi.c
+rename to drivers/iio/dac/ad5624r_spi.c
+diff --git a/drivers/staging/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+similarity index 100%
+rename from drivers/staging/iio/dac/ad5686.c
+rename to drivers/iio/dac/ad5686.c
+diff --git a/drivers/staging/iio/dac/ad5764.c b/drivers/iio/dac/ad5764.c
+similarity index 100%
+rename from drivers/staging/iio/dac/ad5764.c
+rename to drivers/iio/dac/ad5764.c
+diff --git a/drivers/staging/iio/dac/ad5791.c b/drivers/iio/dac/ad5791.c
+similarity index 99%
+rename from drivers/staging/iio/dac/ad5791.c
+rename to drivers/iio/dac/ad5791.c
+index 5de28c2..2bd2e37 100644
+--- a/drivers/staging/iio/dac/ad5791.c
++++ b/drivers/iio/dac/ad5791.c
+@@ -19,8 +19,7 @@
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-
+-#include "ad5791.h"
++#include <linux/iio/dac/ad5791.h>
+ 
+ #define AD5791_RES_MASK(x)		((1 << (x)) - 1)
+ #define AD5791_DAC_MASK			AD5791_RES_MASK(20)
+diff --git a/drivers/staging/iio/dac/max517.c b/drivers/iio/dac/max517.c
+similarity index 99%
+rename from drivers/staging/iio/dac/max517.c
+rename to drivers/iio/dac/max517.c
+index 403e06f..92c77c8 100644
+--- a/drivers/staging/iio/dac/max517.c
++++ b/drivers/iio/dac/max517.c
+@@ -27,8 +27,7 @@
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-
+-#include "max517.h"
++#include <linux/iio/dac/max517.h>
+ 
+ #define MAX517_DRV_NAME	"max517"
+ 
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index 3c8e5ec..04cd6ec 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -29,7 +29,6 @@ source "drivers/staging/iio/accel/Kconfig"
+ source "drivers/staging/iio/adc/Kconfig"
+ source "drivers/staging/iio/addac/Kconfig"
+ source "drivers/staging/iio/cdc/Kconfig"
+-source "drivers/staging/iio/dac/Kconfig"
+ source "drivers/staging/iio/frequency/Kconfig"
+ source "drivers/staging/iio/gyro/Kconfig"
+ source "drivers/staging/iio/impedance-analyzer/Kconfig"
+diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
+index 6a46d5a..fa6937d 100644
+--- a/drivers/staging/iio/Makefile
++++ b/drivers/staging/iio/Makefile
+@@ -17,7 +17,6 @@ obj-y += accel/
+ obj-y += adc/
+ obj-y += addac/
+ obj-y += cdc/
+-obj-y += dac/
+ obj-y += frequency/
+ obj-y += gyro/
+ obj-y += impedance-analyzer/
+diff --git a/drivers/staging/iio/dac/ad5421.h b/include/linux/iio/dac/ad5421.h
+similarity index 92%
+rename from drivers/staging/iio/dac/ad5421.h
+rename to include/linux/iio/dac/ad5421.h
+index cd2bb84..8fd8f05 100644
+--- a/drivers/staging/iio/dac/ad5421.h
++++ b/include/linux/iio/dac/ad5421.h
+@@ -1,10 +1,6 @@
+ #ifndef __IIO_DAC_AD5421_H__
+ #define __IIO_DAC_AD5421_H__
+ 
+-/*
+- * TODO: This file needs to go into include/linux/iio
+- */
+-
+ /**
+  * enum ad5421_current_range - Current range the AD5421 is configured for.
+  * @AD5421_CURRENT_RANGE_4mA_20mA: 4 mA to 20 mA (RANGE1,0 pins = 00)
+diff --git a/drivers/staging/iio/dac/ad5504.h b/include/linux/iio/dac/ad5504.h
+similarity index 74%
+rename from drivers/staging/iio/dac/ad5504.h
+rename to include/linux/iio/dac/ad5504.h
+index d4980bf..4389537 100644
+--- a/drivers/staging/iio/dac/ad5504.h
++++ b/include/linux/iio/dac/ad5504.h
+@@ -9,10 +9,6 @@
+ #ifndef SPI_AD5504_H_
+ #define SPI_AD5504_H_
+ 
+-/*
+- * TODO: struct ad5504_platform_data needs to go into include/linux/iio
+- */
+-
+ struct ad5504_platform_data {
+ 	u16				vref_mv;
+ };
+diff --git a/drivers/staging/iio/dac/ad5791.h b/include/linux/iio/dac/ad5791.h
+similarity index 87%
+rename from drivers/staging/iio/dac/ad5791.h
+rename to include/linux/iio/dac/ad5791.h
+index 87a6c92..45ee281 100644
+--- a/drivers/staging/iio/dac/ad5791.h
++++ b/include/linux/iio/dac/ad5791.h
+@@ -9,10 +9,6 @@
+ #ifndef SPI_AD5791_H_
+ #define SPI_AD5791_H_
+ 
+-/*
+- * TODO: struct ad5791_platform_data needs to go into include/linux/iio
+- */
+-
+ /**
+  * struct ad5791_platform_data - platform specific information
+  * @vref_pos_mv:	Vdd Positive Analog Supply Volatge (mV)
+diff --git a/drivers/staging/iio/dac/max517.h b/include/linux/iio/dac/max517.h
+similarity index 76%
+rename from drivers/staging/iio/dac/max517.h
+rename to include/linux/iio/dac/max517.h
+index 8106cf2..f6d1d25 100644
+--- a/drivers/staging/iio/dac/max517.h
++++ b/include/linux/iio/dac/max517.h
+@@ -8,10 +8,6 @@
+ #ifndef IIO_DAC_MAX517_H_
+ #define IIO_DAC_MAX517_H_
+ 
+-/*
+- * TODO: struct max517_platform_data needs to go into include/linux/iio
+- */
+-
+ struct max517_platform_data {
+ 	u16				vref_mv[2];
+ };
+-- 
+1.7.10
