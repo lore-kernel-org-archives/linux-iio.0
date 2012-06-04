@@ -1,104 +1,34 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
-	devel@driverdev.osuosl.org,
-	linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] iio: Fix potential use after free
-Date: Mon,  4 Jun 2012 10:41:42 +0200
-Message-Id: <1338799302-29102-1-git-send-email-lars@metafoo.de>
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org,
+	gregkh@linuxfoundation.org,
+	jic23@cam.ac.uk,
+	sachin.kamat@linaro.org,
+	patches@linaro.org
+Subject: [PATCH] staging: iio: Remove version.h header file inclusion
+Date: Mon,  4 Jun 2012 11:34:49 +0530
+Message-Id: <1338789889-14049-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-There is no guarantee that the last reference to the iio device has already been
-dropped when iio_device_free is called. This means that we can up calling
-iio_dev_release after iio_device_free which will lead to a use after free. As
-the general rule the struct containing the device should always be freed in the
-release callback.
+version.h header file is no longer required.
 
-This is what this patch does, it moves freeing the iio device struct as well as
-releasing the idr reference to the release callback. To ensure that the device
-is not freed before calling iio_device_free the device_unregister call in
-iio_device_unregister is broken apart. iio_device_unregister will now only call
-device_del to remove the device from the system and iio_device_free will call
-put_device to drop the reference we obtained in iio_devce_alloc.
-
-We also have to take care that calling iio_device_free without having called
-iio_device_register still works (i.e. this can happen if something failed during
-device initialization). For this to work properly two minor changes were
-necessary: channel_attr_list needs to be initialized in iio_device_alloc and we
-have to check whether the chrdev has been registered before releasing it in
-iio_device_release.
-
-This change also brings iio_device_unregister and iio_device_free more in sync
-with iio_device_register and iio_device_alloc which call device_add and
-device_initialize respectively.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/iio/industrialio-core.c |   16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/staging/iio/light/tsl2x7x_core.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 1ddd886..4f947e4 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -661,7 +661,6 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
- 	 * New channel registration method - relies on the fact a group does
- 	 * not need to be initialized if it is name is NULL.
- 	 */
--	INIT_LIST_HEAD(&indio_dev->channel_attr_list);
- 	if (indio_dev->channels)
- 		for (i = 0; i < indio_dev->num_channels; i++) {
- 			ret = iio_device_add_channel_sysfs(indio_dev,
-@@ -725,12 +724,16 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
- static void iio_dev_release(struct device *device)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(device);
--	cdev_del(&indio_dev->chrdev);
-+	if (indio_dev->chrdev.dev)
-+		cdev_del(&indio_dev->chrdev);
- 	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
- 		iio_device_unregister_trigger_consumer(indio_dev);
- 	iio_device_unregister_eventset(indio_dev);
- 	iio_device_unregister_sysfs(indio_dev);
- 	iio_device_unregister_debugfs(indio_dev);
-+
-+	ida_simple_remove(&iio_ida, indio_dev->id);
-+	kfree(indio_dev);
- }
- 
- static struct device_type iio_dev_type = {
-@@ -761,6 +764,7 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
- 		dev_set_drvdata(&dev->dev, (void *)dev);
- 		mutex_init(&dev->mlock);
- 		mutex_init(&dev->info_exist_lock);
-+		INIT_LIST_HEAD(&dev->channel_attr_list);
- 
- 		dev->id = ida_simple_get(&iio_ida, 0, 0, GFP_KERNEL);
- 		if (dev->id < 0) {
-@@ -778,10 +782,8 @@ EXPORT_SYMBOL(iio_device_alloc);
- 
- void iio_device_free(struct iio_dev *dev)
- {
--	if (dev) {
--		ida_simple_remove(&iio_ida, dev->id);
--		kfree(dev);
--	}
-+	if (dev)
-+		put_device(&dev->dev);
- }
- EXPORT_SYMBOL(iio_device_free);
- 
-@@ -902,7 +904,7 @@ void iio_device_unregister(struct iio_dev *indio_dev)
- 	mutex_lock(&indio_dev->info_exist_lock);
- 	indio_dev->info = NULL;
- 	mutex_unlock(&indio_dev->info_exist_lock);
--	device_unregister(&indio_dev->dev);
-+	device_del(&indio_dev->dev);
- }
- EXPORT_SYMBOL(iio_device_unregister);
- subsys_initcall(iio_init);
+diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
+index c3b05a1..040da4a 100755
+--- a/drivers/staging/iio/light/tsl2x7x_core.c
++++ b/drivers/staging/iio/light/tsl2x7x_core.c
+@@ -27,7 +27,6 @@
+ #include <linux/interrupt.h>
+ #include <linux/slab.h>
+ #include <linux/module.h>
+-#include <linux/version.h>
+ #include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
 -- 
-1.7.10
+1.7.4.1
