@@ -5,75 +5,100 @@ Cc: Jonathan Cameron <jic23@cam.ac.uk>,
 	devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/2] iio:inkern: Use iio_device_{get,put}
-Date: Mon,  4 Jun 2012 10:50:03 +0200
-Message-Id: <1338799803-4347-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1338799803-4347-1-git-send-email-lars@metafoo.de>
-References: <1338799803-4347-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH] iio: Fix potential use after free
+Date: Mon,  4 Jun 2012 10:41:42 +0200
+Message-Id: <1338799302-29102-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Use iio_device_get and iio_device_put instead of open-coding it.
+There is no guarantee that the last reference to the iio device has already been
+dropped when iio_device_free is called. This means that we can up calling
+iio_dev_release after iio_device_free which will lead to a use after free. As
+the general rule the struct containing the device should always be freed in the
+release callback.
+
+This is what this patch does, it moves freeing the iio device struct as well as
+releasing the idr reference to the release callback. To ensure that the device
+is not freed before calling iio_device_free the device_unregister call in
+iio_device_unregister is broken apart. iio_device_unregister will now only call
+device_del to remove the device from the system and iio_device_free will call
+put_device to drop the reference we obtained in iio_devce_alloc.
+
+We also have to take care that calling iio_device_free without having called
+iio_device_register still works (i.e. this can happen if something failed during
+device initialization). For this to work properly two minor changes were
+necessary: channel_attr_list needs to be initialized in iio_device_alloc and we
+have to check whether the chrdev has been registered before releasing it in
+iio_device_release.
+
+This change also brings iio_device_unregister and iio_device_free more in sync
+with iio_device_register and iio_device_alloc which call device_add and
+device_initialize respectively.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/inkern.c |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/iio/industrialio-core.c |   16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 9226458..d4760bd 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -125,7 +125,7 @@ struct iio_channel *iio_st_channel_get(const char *name,
- 		     strcmp(channel_name, c_i->map->consumer_channel) != 0))
- 			continue;
- 		c = c_i;
--		get_device(&c->indio_dev->dev);
-+		iio_device_get(c->indio_dev);
- 		break;
- 	}
- 	mutex_unlock(&iio_map_list_lock);
-@@ -149,7 +149,7 @@ EXPORT_SYMBOL_GPL(iio_st_channel_get);
- 
- void iio_st_channel_release(struct iio_channel *channel)
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1ddd886..4f947e4 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -661,7 +661,6 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+ 	 * New channel registration method - relies on the fact a group does
+ 	 * not need to be initialized if it is name is NULL.
+ 	 */
+-	INIT_LIST_HEAD(&indio_dev->channel_attr_list);
+ 	if (indio_dev->channels)
+ 		for (i = 0; i < indio_dev->num_channels; i++) {
+ 			ret = iio_device_add_channel_sysfs(indio_dev,
+@@ -725,12 +724,16 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
+ static void iio_dev_release(struct device *device)
  {
--	put_device(&channel->indio_dev->dev);
-+	iio_device_put(channel->indio_dev);
- 	kfree(channel);
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(device);
+-	cdev_del(&indio_dev->chrdev);
++	if (indio_dev->chrdev.dev)
++		cdev_del(&indio_dev->chrdev);
+ 	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
+ 		iio_device_unregister_trigger_consumer(indio_dev);
+ 	iio_device_unregister_eventset(indio_dev);
+ 	iio_device_unregister_sysfs(indio_dev);
+ 	iio_device_unregister_debugfs(indio_dev);
++
++	ida_simple_remove(&iio_ida, indio_dev->id);
++	kfree(indio_dev);
  }
- EXPORT_SYMBOL_GPL(iio_st_channel_release);
-@@ -195,10 +195,10 @@ struct iio_channel *iio_st_channel_get_all(const char *name)
- 						c->map->adc_channel_label);
- 		if (chans[mapind].channel == NULL) {
- 			ret = -EINVAL;
--			put_device(&chans[mapind].indio_dev->dev);
-+			iio_device_put(chans[mapind].indio_dev);
- 			goto error_free_chans;
- 		}
--		get_device(&chans[mapind].indio_dev->dev);
-+		iio_device_get(chans[mapind].indio_dev);
- 		mapind++;
- 	}
- 	mutex_unlock(&iio_map_list_lock);
-@@ -210,8 +210,7 @@ struct iio_channel *iio_st_channel_get_all(const char *name)
  
- error_free_chans:
- 	for (i = 0; i < nummaps; i++)
--		if (chans[i].indio_dev)
--			put_device(&chans[i].indio_dev->dev);
-+		iio_device_put(chans[i].indio_dev);
- 	kfree(chans);
- error_ret:
- 	mutex_unlock(&iio_map_list_lock);
-@@ -225,7 +224,7 @@ void iio_st_channel_release_all(struct iio_channel *channels)
- 	struct iio_channel *chan = &channels[0];
+ static struct device_type iio_dev_type = {
+@@ -761,6 +764,7 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
+ 		dev_set_drvdata(&dev->dev, (void *)dev);
+ 		mutex_init(&dev->mlock);
+ 		mutex_init(&dev->info_exist_lock);
++		INIT_LIST_HEAD(&dev->channel_attr_list);
  
- 	while (chan->indio_dev) {
--		put_device(&chan->indio_dev->dev);
-+		iio_device_put(chan->indio_dev);
- 		chan++;
- 	}
- 	kfree(channels);
+ 		dev->id = ida_simple_get(&iio_ida, 0, 0, GFP_KERNEL);
+ 		if (dev->id < 0) {
+@@ -778,10 +782,8 @@ EXPORT_SYMBOL(iio_device_alloc);
+ 
+ void iio_device_free(struct iio_dev *dev)
+ {
+-	if (dev) {
+-		ida_simple_remove(&iio_ida, dev->id);
+-		kfree(dev);
+-	}
++	if (dev)
++		put_device(&dev->dev);
+ }
+ EXPORT_SYMBOL(iio_device_free);
+ 
+@@ -902,7 +904,7 @@ void iio_device_unregister(struct iio_dev *indio_dev)
+ 	mutex_lock(&indio_dev->info_exist_lock);
+ 	indio_dev->info = NULL;
+ 	mutex_unlock(&indio_dev->info_exist_lock);
+-	device_unregister(&indio_dev->dev);
++	device_del(&indio_dev->dev);
+ }
+ EXPORT_SYMBOL(iio_device_unregister);
+ subsys_initcall(iio_init);
 -- 
 1.7.10
