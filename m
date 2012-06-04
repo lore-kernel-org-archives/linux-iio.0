@@ -1,42 +1,60 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: <michael.hennerich@analog.com>
-To: <gregkh@linuxfoundation.org>
-CC: <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-	<device-drivers-devel@blackfin.uclinux.org>, Michael Hennerich
-	<michael.hennerich@analog.com>
-Subject: [PATCH] iio: adf4350: fix compiler warning [-Wuninitialized]
-Date: Tue, 5 Jun 2012 11:52:18 +0200
-Message-ID: <1338889939-28705-1-git-send-email-michael.hennerich@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from devils.ext.ti.com ([198.47.26.153]:46440 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756199Ab2FDJlQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Jun 2012 05:41:16 -0400
+From: Shubhrajyoti D <shubhrajyoti@ti.com>
+To: <linux-iio@vger.kernel.org>
+CC: <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+	Shubhrajyoti D <shubhrajyoti@ti.com>
+Subject: [PATCH 1/2] iio: hmc5843: Make it behave better as modules
+Date: Mon, 4 Jun 2012 15:11:04 +0530
+Message-ID: <1338802865-31160-1-git-send-email-shubhrajyoti@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+The memory regions of the probe and remove are move
+to __devinit and __devexit respectively.
 
-drivers/iio/frequency/adf4350.c:316:32: warning: =E2=80=98val=E2=80=99 ma=
-y be used uninitialized in this function
-[-Wuninitialized]
-
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Shubhrajyoti D <shubhrajyoti@ti.com>
 ---
- drivers/iio/frequency/adf4350.c |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
+ drivers/staging/iio/magnetometer/hmc5843.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4=
-350.c
-index fd4c850..2d09f82 100644
---- a/drivers/iio/frequency/adf4350.c
-+++ b/drivers/iio/frequency/adf4350.c
-@@ -310,6 +310,8 @@ static ssize_t adf4350_read(struct iio_dev *indio_dev=
-,
- 	case ADF4350_PWRDOWN:
- 		val =3D !!(st->regs[ADF4350_REG2] & ADF4350_REG2_POWER_DOWN_EN);
- 		break;
-+	default:
-+		ret =3D -ENODEV;
- 	}
- 	mutex_unlock(&indio_dev->mlock);
-=20
---=20
-1.7.0.4
+diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
+index c1fa09f..6c3e50f 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843.c
++++ b/drivers/staging/iio/magnetometer/hmc5843.c
+@@ -665,7 +665,7 @@ static const struct iio_info hmc5843_info = {
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+-static int hmc5843_probe(struct i2c_client *client,
++static int __devinit hmc5843_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
+ {
+ 	struct hmc5843_data *data;
+@@ -704,7 +704,7 @@ exit:
+ 	return err;
+ }
+ 
+-static int hmc5843_remove(struct i2c_client *client)
++static int __devexit hmc5843_remove(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 
+@@ -755,7 +755,7 @@ static struct i2c_driver hmc5843_driver = {
+ 	},
+ 	.id_table	= hmc5843_id,
+ 	.probe		= hmc5843_probe,
+-	.remove		= hmc5843_remove,
++	.remove		= __devexit_p(hmc5843_remove),
+ 	.detect		= hmc5843_detect,
+ 	.address_list	= normal_i2c,
+ };
+-- 
+1.7.5.4
+
