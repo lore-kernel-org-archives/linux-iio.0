@@ -1,40 +1,56 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:42159 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752783Ab2FNHTK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jun 2012 03:19:10 -0400
-Message-ID: <4FD9906C.7090400@cam.ac.uk>
-Date: Thu, 14 Jun 2012 08:19:08 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Mon, 4 Jun 2012 21:11:28 -0700
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Johan Hovold <jhovold@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Jonathan Cameron <jic23@cam.ac.uk>,
+	Rob Landley <rob@landley.net>, Richard Purdie <rpurdie@rpsys.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Florian Tobias Schandinat <FlorianSchandinat@gmx.de>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v5] iio: add LM3533 ambient-light-sensor driver
+Message-ID: <20120605041128.GA30374@kroah.com>
+References: <1337346461-31220-1-git-send-email-jhovold@gmail.com>
+ <1337602686-28007-1-git-send-email-jhovold@gmail.com>
+ <4FBB5A13.4060301@kernel.org>
+ <20120522094020.GC7323@localhost>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: Jon Brenner <jbrenner@taosinc.com>,
-	linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH V2] IIO channel type and modifiers for CCT and RGBC data
-References: <1337183202.6344.1.camel@jonz-ub2> <alpine.DEB.2.01.1206140006370.29697@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.01.1206140006370.29697@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20120522094020.GC7323@localhost>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 6/13/2012 11:09 PM, Peter Meerwald wrote:
->
->> Add iio channel type and modifiers for Correlated Color Temperature (CCT)
->> and RGBC (red/green/blue/clear) data.
->
->> +What:		/sys/bus/iio/devices/device[n]/in_intensity_clear[_input|_raw]
->> +What:		/sys/bus/iio/devices/device[n]/in_intensity_red[_input|_raw]
->> +What:		/sys/bus/iio/devices/device[n]/in_intensity_green[_input|_raw]
->> +What:		/sys/bus/iio/devices/device[n]/in_intensity_blue[_input|_raw]
->> +KernelVersion:	3.4.0
->> +Contact:	linux-iio@vger.kernel.org
->> +Description:
->> +		This property is supported by sensors that have a RGBC
->> +		sensing mode. This value should be the output from a reading
->> +		and if expressed in SI units, should include _input. If this
->> +		value is not in SI units (irradiance, uW/mm), then it should
->> +		include _raw.
->
-> should the irradiance unit be uW/mm^2 ??
-or just W/m^2? Whichever people prefer! Good spot Peter.
+On Tue, May 22, 2012 at 11:40:20AM +0200, Johan Hovold wrote:
+> On Tue, May 22, 2012 at 10:19:15AM +0100, Jonathan Cameron wrote:
+> > On 5/21/2012 1:18 PM, Johan Hovold wrote:
+> > > Add sub-driver for the ambient-light-sensor interface on National
+> > > Semiconductor / TI LM3533 lighting power chips.
+> > >
+> > > The sensor interface can be used to control the LEDs and backlights of
+> > > the chip through defining five light zones and three sets of
+> > > corresponding output-current values.
+> > >
+> > > The driver provides raw and mean adc readings along with the current
+> > > light zone through sysfs. A threshold event can be generated on zone
+> > > changes. The ALS-control output values can be set per zone for the three
+> > > current output channels.
+> > There are a few bits of documentation I'd rather were in
+> > sysfs-bus-iio but we can move them any time.
+> > 
+> > I haven't compile tested as no machine availability till this evening.
+> > Please do one last sanity check against staging-next.
+> 
+> Tested against staging-next of today (c3c6cc91b0ae7b).
+> 
+> Greg, any chance you can pick this one up for 3.5?
 
+To late for 3.5, the merge window for new stuff closed a week or so
+before 3.4 came out, as stuff needs to be tested in linux-next.
+
+I've queued it up now to be merge in 3.6.
+
+thanks,
+
+greg k-h
