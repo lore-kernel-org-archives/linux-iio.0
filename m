@@ -1,76 +1,41 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <4FD1AE08.3080602@metafoo.de>
-Date: Fri, 08 Jun 2012 09:47:20 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-128.synserver.de ([212.40.185.128]:1060 "EHLO
+	smtp-out-123.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753262Ab2FEQVG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jun 2012 12:21:06 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/9] staging:iio: Add helper function for initializing
- triggered buffers
-References: <1338983756-31243-1-git-send-email-lars@metafoo.de> <1338983756-31243-2-git-send-email-lars@metafoo.de> <4FD0FC70.2060906@kernel.org>
-In-Reply-To: <4FD0FC70.2060906@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>, devel@driverdev.osuosl.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio: iio_enum_available_read: Prevent possible buffer overflow
+Date: Tue,  5 Jun 2012 18:24:12 +0200
+Message-Id: <1338913452-26786-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/07/2012 09:09 PM, Jonathan Cameron wrote:
-> On 06/06/2012 12:55 PM, Lars-Peter Clausen wrote:
->> Add a helper function for executing the common tasks which are usually involved
->> in setting up a simple triggered buffer. It will allocate the buffer, allocate
->> the pollfunc and register the buffer.
-> 
-> Hi Lars-Peter,
-> 
-> Sorry for the delay in reviewing this.
-> 
-I usually need longer to respond than you do, so no problem.
+Use scnprint instead of snprintf, because snprintf returns the number of bytes
+that would have been written to the buffer if there was enough space, and as a
+result writing to buf[len-1] might cause a access beyond the buffers limits.
 
-> I'm not entirely sure how this will stand in the long run but the stats
-> speak for themselves...
-> 
-> Pain that it has to be yet another module but your logic is sound.
-> Perhaps naming it industrialio-triggered-buffer-helper might
-> make it's purpose a tiny bit clearer?
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yeah, I had that name going through my mind as well but decided against it,
-because it is rather long.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 56a3c0b..cf9ecd0 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -300,7 +300,7 @@ ssize_t iio_enum_available_read(struct iio_dev *indio_dev,
+ 		return 0;
+ 
+ 	for (i = 0; i < e->num_items; ++i)
+-		len += snprintf(buf + len, PAGE_SIZE - len, "%s ", e->items[i]);
++		len += scnprintf(buf + len, PAGE_SIZE - len, "%s ", e->items[i]);
+ 
+ 	/* replace last space with a newline */
+ 	buf[len - 1] = '\n';
+-- 
+1.7.10
 
-> 
-> Otherwise, this needs it's own header for point of view of code
-> separation (as it's a separate module).
-
-Yep, already had that on my todolist for v2.
-
-> 
-> Beyond that fine by me.
-
-Thanks.
-
-> 
-> [...]
->> diff --git a/drivers/iio/industrialio-triggered-buffer.c b/drivers/iio/industrialio-triggered-buffer.c
->> new file mode 100644
->> index 0000000..653ebe5
->> --- /dev/null
->> +++ b/drivers/iio/industrialio-triggered-buffer.c
-[...]
->> +/**
->> + * iio_triggered_buffer_setup() - Setup simple software ringbuffer and pollfunc
->> + * @indio_dev:		IIO device structure
->> + * @pollfunc_bh:	Function which will be used as pollfunc bottom half
->> + * @pollfunc_th:	Function which will be used as pollfunc top half
->> + * @setup_ops:		Buffer setup functions to use for this device.
->> + *			If NULL the default setup functions for triggered
->> + *			buffers will be used.
->> + *
->> + * This function combines some common tasks which will normally be performed
->> + * when setting up a triggered buffer. It will allocate the buffer and the
->> + * pollfunc, as well as register the buffer with IIO core.
->> + *
->> + * Before calling this function the indio_dev structure should already be
->> + * completly initzialized but not yet registered.
-> I'd rather you listed exactly what needs to have happened.
-> iio_device_alloc I think...
-
-Everything needs to have happened, except for iio_device_register. I'll add
-a sentence which that the function should be called right before
-iio_device_register.
