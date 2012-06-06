@@ -1,28 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-137.synserver.de ([212.40.185.137]:1050 "EHLO
-	smtp-out-133.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1757183Ab2FFREJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jun 2012 13:04:09 -0400
-Message-ID: <4FCF8E4D.70105@metafoo.de>
-Date: Wed, 06 Jun 2012 19:07:25 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Received: from mga14.intel.com ([143.182.124.37]:5295 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751712Ab2FFRHW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 6 Jun 2012 13:07:22 -0400
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
 CC: Jonathan Cameron <jic23@cam.ac.uk>,
 	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH, 4/7] HID-Sensors: Added accelerometer 3D
-References: <1338997164-5077-1-git-send-email-srinivas.pandruvada@intel.com> <1338997164-5077-5-git-send-email-srinivas.pandruvada@intel.com> <c31622ba-ce24-494c-8c28-d66747eff659@email.android.com> <4FA419E87744DF4DAECD5BCE1214B7A91931B547@ORSMSX104.amr.corp.intel.com>
-In-Reply-To: <4FA419E87744DF4DAECD5BCE1214B7A91931B547@ORSMSX104.amr.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: RE: [PATCH, 4/7] HID-Sensors: Added accelerometer 3D
+Date: Wed, 6 Jun 2012 17:06:14 +0000
+Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A91931B570@ORSMSX104.amr.corp.intel.com>
+References: <1338997164-5077-1-git-send-email-srinivas.pandruvada@intel.com>
+ <1338997164-5077-5-git-send-email-srinivas.pandruvada@intel.com>
+ <c31622ba-ce24-494c-8c28-d66747eff659@email.android.com>
+ <4FA419E87744DF4DAECD5BCE1214B7A91931B547@ORSMSX104.amr.corp.intel.com>
+ <4FCF8E4D.70105@metafoo.de>
+In-Reply-To: <4FCF8E4D.70105@metafoo.de>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/06/2012 06:57 PM, Pandruvada, Srinivas wrote:
-> The USB sensor spec has a report structure which it sends as part of report descriptor we get during initial plug in. [...]
-
-Is the USB sensor spec publicly available somewhere?
-
-Thanks,
-- Lars
-
+WWVzLiBZb3UgY2FuIGRvd25sb2FkIGZyb206DQp3d3cudXNiLm9yZy9kZXZlbG9wZXJzL2hpZHBh
+Z2UvSFVUUlIzOWIucGRmDQoNClRoYW5rcywNClNyaW5pdmFzDQoNCi0tLS0tT3JpZ2luYWwgTWVz
+c2FnZS0tLS0tDQpGcm9tOiBMYXJzLVBldGVyIENsYXVzZW4gW21haWx0bzpsYXJzQG1ldGFmb28u
+ZGVdIA0KU2VudDogV2VkbmVzZGF5LCBKdW5lIDA2LCAyMDEyIDEwOjA3IEFNDQpUbzogUGFuZHJ1
+dmFkYSwgU3Jpbml2YXMNCkNjOiBKb25hdGhhbiBDYW1lcm9uOyBsaW51eC1pbnB1dEB2Z2VyLmtl
+cm5lbC5vcmc7IGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmcNClN1YmplY3Q6IFJlOiBbUEFUQ0gs
+IDQvN10gSElELVNlbnNvcnM6IEFkZGVkIGFjY2VsZXJvbWV0ZXIgM0QNCg0KT24gMDYvMDYvMjAx
+MiAwNjo1NyBQTSwgUGFuZHJ1dmFkYSwgU3Jpbml2YXMgd3JvdGU6DQo+IFRoZSBVU0Igc2Vuc29y
+IHNwZWMgaGFzIGEgcmVwb3J0IHN0cnVjdHVyZSB3aGljaCBpdCBzZW5kcyBhcyBwYXJ0IG9mIHJl
+cG9ydCBkZXNjcmlwdG9yIHdlIGdldCBkdXJpbmcgaW5pdGlhbCBwbHVnIGluLiBbLi4uXQ0KDQpJ
+cyB0aGUgVVNCIHNlbnNvciBzcGVjIHB1YmxpY2x5IGF2YWlsYWJsZSBzb21ld2hlcmU/DQoNClRo
+YW5rcywNCi0gTGFycw0KDQo=
