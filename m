@@ -1,54 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:53121 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:53122 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758083Ab2FFT6b (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S1758094Ab2FFT6b (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Wed, 6 Jun 2012 15:58:31 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
 Cc: Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 1/2] iio: fix typos in iio.h
-Date: Wed,  6 Jun 2012 21:58:24 +0200
-Message-Id: <1339012705-6334-1-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH 2/2] iio: mark parameters with @ in comment
+Date: Wed,  6 Jun 2012 21:58:25 +0200
+Message-Id: <1339012705-6334-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1339012705-6334-1-git-send-email-pmeerw@pmeerw.net>
+References: <1339012705-6334-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 
 ---
- include/linux/iio/iio.h |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/linux/iio/iio.h |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 944c635..9d9b55a 100644
+index 9d9b55a..e3cab18 100644
 --- a/include/linux/iio/iio.h
 +++ b/include/linux/iio/iio.h
-@@ -131,7 +131,7 @@ struct iio_chan_spec_ext_info {
+@@ -131,10 +131,10 @@ struct iio_chan_spec_ext_info {
  
  /**
   * struct iio_enum - Enum channel info attribute
-- * items: A array of strings.
-+ * items: An array of strings.
-  * num_items: Length of the item array.
-  * set: Set callback function, may be NULL.
-  * get: Get callback function, may be NULL.
-@@ -218,7 +218,7 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
-  * @extend_name:	Allows labeling of channel attributes with an
-  *			informative name. Note this has no effect codes etc,
-  *			unlike modifiers.
-- * @datasheet_name:	A name used in in kernel mapping of channels. It should
-+ * @datasheet_name:	A name used in kernel mapping of channels. It should
-  *			correspond to the first name that the channel is referred
-  *			to by in the datasheet (e.g. IND), or the nearest
-  *			possible compound name (e.g. IND-INC).
-@@ -393,7 +393,7 @@ struct iio_buffer_setup_ops {
-  * @trig:		[INTERN] current device trigger (buffer modes)
-  * @pollfunc:		[DRIVER] function run on trigger being received
-  * @channels:		[DRIVER] channel specification structure table
-- * @num_channels:	[DRIVER] number of chanels specified in @channels.
-+ * @num_channels:	[DRIVER] number of channels specified in @channels.
-  * @channel_attr_list:	[INTERN] keep track of automatically created channel
-  *			attributes
-  * @chan_attr_group:	[INTERN] group for all attrs in base directory
+- * items: An array of strings.
+- * num_items: Length of the item array.
+- * set: Set callback function, may be NULL.
+- * get: Get callback function, may be NULL.
++ * @items: An array of strings.
++ * @num_items: Length of the item array.
++ * @set: Set callback function, may be NULL.
++ * @get: Get callback function, may be NULL.
+  *
+  * The iio_enum struct can be used to implement enum style channel attributes.
+  * Enum style attributes are those which have a set of strings which map to
 -- 
 1.7.9.5
 
