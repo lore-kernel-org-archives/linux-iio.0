@@ -1,76 +1,80 @@
-Return-Path: <srinivas.pandruvada@intel.com>
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: RE: [PATCH,] IIO: Add additional modifier names
-Date: Wed, 6 Jun 2012 15:04:56 +0000
-Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A91931B3ED@ORSMSX104.amr.corp.intel.com>
-References: <1338508298-21748-1-git-send-email-srinivas.pandruvada@intel.com>
- <4FCF2011.4030206@cam.ac.uk>
-In-Reply-To: <4FCF2011.4030206@cam.ac.uk>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:59100 "EHLO
+	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753788Ab2FFPfJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jun 2012 11:35:09 -0400
+Message-ID: <4FCF78A7.3040606@cam.ac.uk>
+Date: Wed, 06 Jun 2012 16:35:03 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
-
-
-I am going to submit a series of patches for HID sensors, mostly targeted t=
-owards slates and tablets. For Accelerometer/Gyro/Magnetometer, I am using
-IIO_MOD_X_AND_Y_AND_Z for sending  x, y and z sample in one report. So user=
- space like Android can get all three values together .=20
-
-I can change to more explicit names as you suggested. Let me know if you wa=
-nt me to submit patch for this.
-
-Thanks,
-Srinivas
-
------Original Message-----
-From: Jonathan Cameron [mailto:jic23@cam.ac.uk]=20
-Sent: Wednesday, June 06, 2012 2:17 AM
-To: Pandruvada, Srinivas
-Cc: linux-iio@vger.kernel.org
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Subject: Re: [PATCH,] IIO: Add additional modifier names
+References: <1338508298-21748-1-git-send-email-srinivas.pandruvada@intel.com> <4FCF2011.4030206@cam.ac.uk> <4FA419E87744DF4DAECD5BCE1214B7A91931B3ED@ORSMSX104.amr.corp.intel.com>
+In-Reply-To: <4FA419E87744DF4DAECD5BCE1214B7A91931B3ED@ORSMSX104.amr.corp.intel.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 6/1/2012 12:51 AM, srinivas pandruvada wrote:
-> Added additional modifier names in the list for the supported types.=20
-> Otherwise it substitutes (null) in the filename.
+On 6/6/2012 4:04 PM, Pandruvada, Srinivas wrote:
 >
-> Signed-off-by: srinivas pandruvada<srinivas.pandruvada@intel.com>
+> I am going to submit a series of patches for HID sensors, mostly targeted towards slates and tablets. For Accelerometer/Gyro/Magnetometer, I am using
+> IIO_MOD_X_AND_Y_AND_Z for sending  x, y and z sample in one report. So user space like Android can get all three values together .
+That really isn't the intent with those.  If you want to send reports 
+coherently in one go, the buffered interface is the way to go.
 
-When we originally introducted the concept of these, the intent was to have=
- rather more explicit naming. Hence [IIO_MOD_X_AND_Y_AND_Z] =3D "x&y&z", [I=
-IO_MOD_X_OR_Y_OR_Z] =3D "x|y|z",
-
-It costs a small amount of effort in escape characters, but gives a much mo=
-re meaningful naming to the resulting attributes.
-
-They aren't there in the core code because nothing using chan_spec based re=
-gistration was using these (they were needed for modifiers of rather obscur=
-e events).  What have you actually needed them for?
-
-
-Jonathan
-> ---
->   drivers/staging/iio/industrialio-core.c |    8 ++++++++
->   1 files changed, 8 insertions(+), 0 deletions(-)
+Basically doing it the way you are going for does not generalize well
+which makes for a nightmare in the long run...
 >
-> diff --git a/drivers/staging/iio/industrialio-core.c=20
-> b/drivers/staging/iio/industrialio-core.c
-> index d303bfb..65d40ce 100644
-> --- a/drivers/staging/iio/industrialio-core.c
-> +++ b/drivers/staging/iio/industrialio-core.c
-> @@ -76,6 +76,14 @@ static const char * const iio_modifier_names[] =3D {
->   	[IIO_MOD_Z] =3D "z",
->   	[IIO_MOD_LIGHT_BOTH] =3D "both",
->   	[IIO_MOD_LIGHT_IR] =3D "ir",
-> +	[IIO_MOD_X_AND_Y] =3D "xy",
-> +	[IIO_MOD_X_AND_Z] =3D "xz",
-> +	[IIO_MOD_Y_AND_Z] =3D "yz",
-> +	[IIO_MOD_X_AND_Y_AND_Z] =3D "xyz",
-> +	[IIO_MOD_X_OR_Y] =3D "x_y",
-> +	[IIO_MOD_X_OR_Z] =3D "x_z",
-> +	[IIO_MOD_Y_OR_Z] =3D "y_z",
-> +	[IIO_MOD_X_OR_Y_OR_Z] =3D "x_y_z",
->   };
+> I can change to more explicit names as you suggested. Let me know if you want me to submit patch for this.
 >
->   /* relies on pairs of these shared then separate */
+> Thanks,
+> Srinivas
+>
+> -----Original Message-----
+> From: Jonathan Cameron [mailto:jic23@cam.ac.uk]
+> Sent: Wednesday, June 06, 2012 2:17 AM
+> To: Pandruvada, Srinivas
+> Cc: linux-iio@vger.kernel.org
+> Subject: Re: [PATCH,] IIO: Add additional modifier names
+>
+> On 6/1/2012 12:51 AM, srinivas pandruvada wrote:
+>> Added additional modifier names in the list for the supported types.
+>> Otherwise it substitutes (null) in the filename.
+>>
+>> Signed-off-by: srinivas pandruvada<srinivas.pandruvada@intel.com>
+>
+> When we originally introducted the concept of these, the intent was to have rather more explicit naming. Hence [IIO_MOD_X_AND_Y_AND_Z] = "x&y&z", [IIO_MOD_X_OR_Y_OR_Z] = "x|y|z",
+>
+> It costs a small amount of effort in escape characters, but gives a much more meaningful naming to the resulting attributes.
+>
+> They aren't there in the core code because nothing using chan_spec based registration was using these (they were needed for modifiers of rather obscure events).  What have you actually needed them for?
+>
+>
+> Jonathan
+>> ---
+>>    drivers/staging/iio/industrialio-core.c |    8 ++++++++
+>>    1 files changed, 8 insertions(+), 0 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/industrialio-core.c
+>> b/drivers/staging/iio/industrialio-core.c
+>> index d303bfb..65d40ce 100644
+>> --- a/drivers/staging/iio/industrialio-core.c
+>> +++ b/drivers/staging/iio/industrialio-core.c
+>> @@ -76,6 +76,14 @@ static const char * const iio_modifier_names[] = {
+>>    	[IIO_MOD_Z] = "z",
+>>    	[IIO_MOD_LIGHT_BOTH] = "both",
+>>    	[IIO_MOD_LIGHT_IR] = "ir",
+>> +	[IIO_MOD_X_AND_Y] = "xy",
+>> +	[IIO_MOD_X_AND_Z] = "xz",
+>> +	[IIO_MOD_Y_AND_Z] = "yz",
+>> +	[IIO_MOD_X_AND_Y_AND_Z] = "xyz",
+>> +	[IIO_MOD_X_OR_Y] = "x_y",
+>> +	[IIO_MOD_X_OR_Z] = "x_z",
+>> +	[IIO_MOD_Y_OR_Z] = "y_z",
+>> +	[IIO_MOD_X_OR_Y_OR_Z] = "x_y_z",
+>>    };
+>>
+>>    /* relies on pairs of these shared then separate */
+>
+
