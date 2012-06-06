@@ -1,121 +1,109 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FD109CE.8040903@kernel.org>
-Date: Thu, 07 Jun 2012 21:06:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/9] staging:iio:adc:ad7192: Use new triggered buffer
- setup helper function
-References: <1338983756-31243-1-git-send-email-lars@metafoo.de> <1338983756-31243-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1338983756-31243-4-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-134.synserver.de ([212.40.185.134]:1163 "EHLO
+	smtp-out-123.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752813Ab2FFMAS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jun 2012 08:00:18 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: [PATCH 2/9] iio:adc:at91: Use new triggered buffer setup helper
+Date: Wed,  6 Jun 2012 13:55:49 +0200
+Message-Id: <1338983756-31243-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1338983756-31243-1-git-send-email-lars@metafoo.de>
+References: <1338983756-31243-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/06/2012 12:55 PM, Lars-Peter Clausen wrote:
-> Use the new triggered buffer setup helper function to allocate and register
-> buffer and pollfunc.
-Same comment about the select IIO_TRIGGER
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/adc/Kconfig  |    1 +
->  drivers/staging/iio/adc/ad7192.c |   47 ++++----------------------------------
->  2 files changed, 6 insertions(+), 42 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-> index 2490dd2..8958fca 100644
-> --- a/drivers/staging/iio/adc/Kconfig
-> +++ b/drivers/staging/iio/adc/Kconfig
-> @@ -137,6 +137,7 @@ config AD7192
->  	select IIO_BUFFER
->  	select IIO_KFIFO_BUF
->  	select IIO_TRIGGER
-> +	select IIO_TRIGGERED_BUFFER
->  	help
->  	  Say yes here to build support for Analog Devices AD7190,
->  	  AD7192 or AD7195 SPI analog to digital converters (ADC).
-> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> index 5eaeaf1..548c8bf 100644
-> --- a/drivers/staging/iio/adc/ad7192.c
-> +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -542,41 +542,13 @@ static const struct iio_buffer_setup_ops ad7192_ring_setup_ops = {
->  
->  static int ad7192_register_ring_funcs_and_init(struct iio_dev *indio_dev)
->  {
-> -	int ret;
-> -
-> -	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
-> -	if (!indio_dev->buffer) {
-> -		ret = -ENOMEM;
-> -		goto error_ret;
-> -	}
-> -	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
-> -						 &ad7192_trigger_handler,
-> -						 IRQF_ONESHOT,
-> -						 indio_dev,
-> -						 "ad7192_consumer%d",
-> -						 indio_dev->id);
-> -	if (indio_dev->pollfunc == NULL) {
-> -		ret = -ENOMEM;
-> -		goto error_deallocate_kfifo;
-> -	}
-> -
-> -	/* Ring buffer functions - here trigger setup related */
-> -	indio_dev->setup_ops = &ad7192_ring_setup_ops;
-> -
-> -	/* Flag that polled ring buffering is possible */
-> -	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
-> -	return 0;
-> -
-> -error_deallocate_kfifo:
-> -	iio_kfifo_free(indio_dev->buffer);
-> -error_ret:
-> -	return ret;
-> +	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> +			&ad7192_trigger_handler, &ad7192_ring_setup_ops);
->  }
->  
->  static void ad7192_ring_cleanup(struct iio_dev *indio_dev)
->  {
-> -	iio_dealloc_pollfunc(indio_dev->pollfunc);
-> -	iio_kfifo_free(indio_dev->buffer);
-> +	iio_triggered_buffer_cleanup(indio_dev);
->  }
->  
->  /**
-> @@ -1077,23 +1049,15 @@ static int __devinit ad7192_probe(struct spi_device *spi)
->  	if (ret)
->  		goto error_ring_cleanup;
->  
-> -	ret = iio_buffer_register(indio_dev,
-> -				  indio_dev->channels,
-> -				  indio_dev->num_channels);
-> -	if (ret)
-> -		goto error_remove_trigger;
-> -
->  	ret = ad7192_setup(st);
->  	if (ret)
-> -		goto error_unreg_ring;
-> +		goto error_remove_trigger;
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret < 0)
-> -		goto error_unreg_ring;
-> +		goto error_remove_trigger;
->  	return 0;
->  
-> -error_unreg_ring:
-> -	iio_buffer_unregister(indio_dev);
->  error_remove_trigger:
->  	ad7192_remove_trigger(indio_dev);
->  error_ring_cleanup:
-> @@ -1116,7 +1080,6 @@ static int ad7192_remove(struct spi_device *spi)
->  	struct ad7192_state *st = iio_priv(indio_dev);
->  
->  	iio_device_unregister(indio_dev);
-> -	iio_buffer_unregister(indio_dev);
->  	ad7192_remove_trigger(indio_dev);
->  	ad7192_ring_cleanup(indio_dev);
->  
+Use the new triggered buffer setup helper function to allocate and register
+buffer and pollfunc.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
+---
+ drivers/iio/adc/Kconfig    |    2 +-
+ drivers/iio/adc/at91_adc.c |   49 +++-----------------------------------------
+ 2 files changed, 4 insertions(+), 47 deletions(-)
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 9a0df81..bbd2291 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -7,7 +7,7 @@ config AT91_ADC
+ 	tristate "Atmel AT91 ADC"
+ 	depends on ARCH_AT91
+ 	select IIO_BUFFER
+-	select IIO_KFIFO_BUF
++	select IIO_TRIGGERED_BUFFER
+ 	select IIO_TRIGGER
+ 	select SYSFS
+ 	help
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index f18a95d..ad2934a 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -318,58 +318,15 @@ static void at91_adc_trigger_remove(struct iio_dev *idev)
+ 	}
+ }
+ 
+-static const struct iio_buffer_setup_ops at91_adc_buffer_ops = {
+-	.preenable = &iio_sw_buffer_preenable,
+-	.postenable = &iio_triggered_buffer_postenable,
+-	.predisable = &iio_triggered_buffer_predisable,
+-};
+-
+ static int at91_adc_buffer_init(struct iio_dev *idev)
+ {
+-	int ret;
+-
+-	idev->buffer = iio_kfifo_allocate(idev);
+-	if (!idev->buffer) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-
+-	idev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+-					    &at91_adc_trigger_handler,
+-					    IRQF_ONESHOT,
+-					    idev,
+-					    "%s-consumer%d",
+-					    idev->name,
+-					    idev->id);
+-	if (idev->pollfunc == NULL) {
+-		ret = -ENOMEM;
+-		goto error_pollfunc;
+-	}
+-
+-	idev->setup_ops = &at91_adc_buffer_ops;
+-	idev->modes |= INDIO_BUFFER_TRIGGERED;
+-
+-	ret = iio_buffer_register(idev,
+-				  idev->channels,
+-				  idev->num_channels);
+-	if (ret)
+-		goto error_register;
+-
+-	return 0;
+-
+-error_register:
+-	iio_dealloc_pollfunc(idev->pollfunc);
+-error_pollfunc:
+-	iio_kfifo_free(idev->buffer);
+-error_ret:
+-	return ret;
++	return iio_triggered_buffer_setup(idev, &iio_pollfunc_store_time,
++		&at91_adc_trigger_handler, NULL);
+ }
+ 
+ static void at91_adc_buffer_remove(struct iio_dev *idev)
+ {
+-	iio_buffer_unregister(idev);
+-	iio_dealloc_pollfunc(idev->pollfunc);
+-	iio_kfifo_free(idev->buffer);
++	iio_triggered_buffer_cleanup(idev);
+ }
+ 
+ static int at91_adc_read_raw(struct iio_dev *idev,
+-- 
+1.7.10
+
