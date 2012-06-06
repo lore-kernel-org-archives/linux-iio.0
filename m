@@ -1,55 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:42323 "EHLO arroyo.ext.ti.com"
+Received: from ns.pmeerw.net ([87.118.82.44]:53121 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757128Ab2FFVSz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 6 Jun 2012 17:18:55 -0400
-From: Leed Aguilar <leed.aguilar@ti.com>
-To: <linux-kernel@vger.kernel.org>
-CC: <gregkh@linuxfoundation.org>, <leed.aguilar@ti.com>,
-	<linux-iio@vger.kernel.org>
-Subject: [PATCH 1/3] staging:iio:magnetometer:ak8975: set power-down mode after reading fuse ROM data
-Date: Wed, 6 Jun 2012 16:14:56 -0400
-Message-ID: <1339013696-15436-1-git-send-email-leed.aguilar@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+	id S1758083Ab2FFT6b (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 6 Jun 2012 15:58:31 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 1/2] iio: fix typos in iio.h
+Date: Wed,  6 Jun 2012 21:58:24 +0200
+Message-Id: <1339012705-6334-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fuse ROM data access mode is the only mode which does not
-transition to power-down mode automatically.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 
-As per the AK8975 data sheet, it is recomended to set the
-power-down mode first before attempting to change into
-another mode.
-
-Signed-off-by: Leed Aguilar <leed.aguilar@ti.com>
-Acked-by: Laxman Dewangan <ldewangan@nvidia.com>
 ---
- drivers/staging/iio/magnetometer/ak8975.c |   11 +++++++++++
- 1 files changed, 11 insertions(+), 0 deletions(-)
+ include/linux/iio/iio.h |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-index 7562caf..001b3bf 100644
---- a/drivers/staging/iio/magnetometer/ak8975.c
-+++ b/drivers/staging/iio/magnetometer/ak8975.c
-@@ -194,6 +194,17 @@ static int ak8975_setup(struct i2c_client *client)
- 		return ret;
- 	}
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 944c635..9d9b55a 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -131,7 +131,7 @@ struct iio_chan_spec_ext_info {
  
-+	/* After reading fuse ROM data set power-down mode */
-+	ret = ak8975_write_data(client,
-+				AK8975_REG_CNTL,
-+				AK8975_REG_CNTL_MODE_POWER_DOWN,
-+				AK8975_REG_CNTL_MODE_MASK,
-+				AK8975_REG_CNTL_MODE_SHIFT);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "Error in setting power-down mode\n");
-+		return ret;
-+	}
-+
- /*
-  * Precalculate scale factor (in Gauss units) for each axis and
-  * store in the device data.
+ /**
+  * struct iio_enum - Enum channel info attribute
+- * items: A array of strings.
++ * items: An array of strings.
+  * num_items: Length of the item array.
+  * set: Set callback function, may be NULL.
+  * get: Get callback function, may be NULL.
+@@ -218,7 +218,7 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
+  * @extend_name:	Allows labeling of channel attributes with an
+  *			informative name. Note this has no effect codes etc,
+  *			unlike modifiers.
+- * @datasheet_name:	A name used in in kernel mapping of channels. It should
++ * @datasheet_name:	A name used in kernel mapping of channels. It should
+  *			correspond to the first name that the channel is referred
+  *			to by in the datasheet (e.g. IND), or the nearest
+  *			possible compound name (e.g. IND-INC).
+@@ -393,7 +393,7 @@ struct iio_buffer_setup_ops {
+  * @trig:		[INTERN] current device trigger (buffer modes)
+  * @pollfunc:		[DRIVER] function run on trigger being received
+  * @channels:		[DRIVER] channel specification structure table
+- * @num_channels:	[DRIVER] number of chanels specified in @channels.
++ * @num_channels:	[DRIVER] number of channels specified in @channels.
+  * @channel_attr_list:	[INTERN] keep track of automatically created channel
+  *			attributes
+  * @chan_attr_group:	[INTERN] group for all attrs in base directory
 -- 
-1.7.1
+1.7.9.5
 
