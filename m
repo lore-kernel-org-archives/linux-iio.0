@@ -1,135 +1,203 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FD10B3E.3070304@kernel.org>
-Date: Thu, 07 Jun 2012 21:12:46 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 5/9] staging:iio:adc:ad7476: Use new triggered buffer
- setup helper function
-References: <1338983756-31243-1-git-send-email-lars@metafoo.de> <1338983756-31243-6-git-send-email-lars@metafoo.de>
-In-Reply-To: <1338983756-31243-6-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-134.synserver.de ([212.40.185.134]:1224 "EHLO
+	smtp-out-123.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753128Ab2FFMAT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jun 2012 08:00:19 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 4/9] staging:iio:adc:ad7298: Use new triggered buffer setup helper function
+Date: Wed,  6 Jun 2012 13:55:51 +0200
+Message-Id: <1338983756-31243-5-git-send-email-lars@metafoo.de>
+In-Reply-To: <1338983756-31243-1-git-send-email-lars@metafoo.de>
+References: <1338983756-31243-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/06/2012 12:55 PM, Lars-Peter Clausen wrote:
-> Use the new triggered buffer setup helper function to allocate and register
-> buffer and pollfunc.
-> 
-> Also as part of the conversion drop scan_timestamp being enabled by default,
-> since it is a left over of an earlier cleanup.
-Drop the excess select statements and I'm happy...
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/adc/Kconfig       |    1 +
->  drivers/staging/iio/adc/ad7476_core.c |    9 -------
->  drivers/staging/iio/adc/ad7476_ring.c |   44 +++------------------------------
->  3 files changed, 4 insertions(+), 50 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-> index b9ff3d3..2f057e4 100644
-> --- a/drivers/staging/iio/adc/Kconfig
-> +++ b/drivers/staging/iio/adc/Kconfig
-> @@ -75,6 +75,7 @@ config AD7476
->  	select IIO_BUFFER
->  	select IIO_KFIFO_BUF
->  	select IIO_TRIGGER
-here again and IIO_KFIFO_BUF as well this time...
-> +	select IIO_TRIGGERED_BUFFER
->  	help
->  	  Say yes here to build support for Analog Devices
->  	  AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468, AD7495
-> diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
-> index be1c260..4d30a79 100644
-> --- a/drivers/staging/iio/adc/ad7476_core.c
-> +++ b/drivers/staging/iio/adc/ad7476_core.c
-> @@ -177,20 +177,12 @@ static int __devinit ad7476_probe(struct spi_device *spi)
->  	if (ret)
->  		goto error_disable_reg;
->  
-> -	ret = iio_buffer_register(indio_dev,
-> -				  st->chip_info->channel,
-> -				  ARRAY_SIZE(st->chip_info->channel));
-> -	if (ret)
-> -		goto error_cleanup_ring;
-> -
->  	ret = iio_device_register(indio_dev);
->  	if (ret)
->  		goto error_ring_unregister;
->  	return 0;
->  
->  error_ring_unregister:
-> -	iio_buffer_unregister(indio_dev);
-> -error_cleanup_ring:
->  	ad7476_ring_cleanup(indio_dev);
->  error_disable_reg:
->  	if (!IS_ERR(st->reg))
-> @@ -210,7 +202,6 @@ static int ad7476_remove(struct spi_device *spi)
->  	struct ad7476_state *st = iio_priv(indio_dev);
->  
->  	iio_device_unregister(indio_dev);
-> -	iio_buffer_unregister(indio_dev);
->  	ad7476_ring_cleanup(indio_dev);
->  	if (!IS_ERR(st->reg)) {
->  		regulator_disable(st->reg);
-> diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
-> index 383611b..176c050 100644
-> --- a/drivers/staging/iio/adc/ad7476_ring.c
-> +++ b/drivers/staging/iio/adc/ad7476_ring.c
-> @@ -52,51 +52,13 @@ done:
->  	return IRQ_HANDLED;
->  }
->  
-> -static const struct iio_buffer_setup_ops ad7476_ring_setup_ops = {
-> -	.preenable = &iio_sw_buffer_preenable,
-> -	.postenable = &iio_triggered_buffer_postenable,
-> -	.predisable = &iio_triggered_buffer_predisable,
-> -};
-> -
->  int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
->  {
-> -	struct ad7476_state *st = iio_priv(indio_dev);
-> -	int ret = 0;
-> -
-> -	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
-> -	if (!indio_dev->buffer) {
-> -		ret = -ENOMEM;
-> -		goto error_ret;
-> -	}
-> -	indio_dev->pollfunc
-> -		= iio_alloc_pollfunc(NULL,
-> -				     &ad7476_trigger_handler,
-> -				     IRQF_ONESHOT,
-> -				     indio_dev,
-> -				     "%s_consumer%d",
-> -				     spi_get_device_id(st->spi)->name,
-> -				     indio_dev->id);
-> -	if (indio_dev->pollfunc == NULL) {
-> -		ret = -ENOMEM;
-> -		goto error_deallocate_kfifo;
-> -	}
-> -
-> -	/* Ring buffer functions - here trigger setup related */
-> -	indio_dev->setup_ops = &ad7476_ring_setup_ops;
-> -	indio_dev->buffer->scan_timestamp = true;
-> -
-> -	/* Flag that polled ring buffering is possible */
-> -	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
-> -	return 0;
-> -
-> -error_deallocate_kfifo:
-> -	iio_kfifo_free(indio_dev->buffer);
-> -error_ret:
-> -	return ret;
-> +	return iio_triggered_buffer_setup(indio_dev, NULL,
-> +			&ad7476_trigger_handler, NULL);
->  }
->  
->  void ad7476_ring_cleanup(struct iio_dev *indio_dev)
->  {
-> -	iio_dealloc_pollfunc(indio_dev->pollfunc);
-> -	iio_kfifo_free(indio_dev->buffer);
-> +	iio_triggered_buffer_cleanup(indio_dev);
->  }
+Use the new triggered buffer setup helper function to allocate and register
+buffer and pollfunc.
+
+Also as part of the conversion drop scan_timestamp being enabled by default,
+since it is a left over of an earlier cleanup.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/Kconfig       |    1 +
+ drivers/staging/iio/adc/ad7298.h      |    5 +++
+ drivers/staging/iio/adc/ad7298_core.c |   11 ++----
+ drivers/staging/iio/adc/ad7298_ring.c |   62 +++++----------------------------
+ 4 files changed, 17 insertions(+), 62 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 8958fca..b9ff3d3 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -13,6 +13,7 @@ config AD7291
+ config AD7298
+ 	tristate "Analog Devices AD7298 ADC driver"
+ 	depends on SPI
++	select IIO_TRIGGERED_BUFFER if IIO_BUFFER
+ 	help
+ 	  Say yes here to build support for Analog Devices AD7298
+ 	  8 Channel ADC with temperature sensor.
+diff --git a/drivers/staging/iio/adc/ad7298.h b/drivers/staging/iio/adc/ad7298.h
+index 5051a7e..18f2787 100644
+--- a/drivers/staging/iio/adc/ad7298.h
++++ b/drivers/staging/iio/adc/ad7298.h
+@@ -55,6 +55,8 @@ struct ad7298_state {
+ #ifdef CONFIG_IIO_BUFFER
+ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+ void ad7298_ring_cleanup(struct iio_dev *indio_dev);
++int ad7298_update_scan_mode(struct iio_dev *indio_dev,
++	const unsigned long *active_scan_mask);
+ #else /* CONFIG_IIO_BUFFER */
+ 
+ static inline int
+@@ -66,5 +68,8 @@ ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ static inline void ad7298_ring_cleanup(struct iio_dev *indio_dev)
+ {
+ }
++
++#define ad7298_update_scan_mode NULL
++
+ #endif /* CONFIG_IIO_BUFFER */
+ #endif /* IIO_ADC_AD7298_H_ */
+diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
+index c90f2b3..5e68bad 100644
+--- a/drivers/staging/iio/adc/ad7298_core.c
++++ b/drivers/staging/iio/adc/ad7298_core.c
+@@ -171,6 +171,7 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
+ 
+ static const struct iio_info ad7298_info = {
+ 	.read_raw = &ad7298_read_raw,
++	.update_scan_mode = ad7298_update_scan_mode,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+@@ -231,19 +232,12 @@ static int __devinit ad7298_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto error_disable_reg;
+ 
+-	ret = iio_buffer_register(indio_dev,
+-				  &ad7298_channels[1], /* skip temp0 */
+-				  ARRAY_SIZE(ad7298_channels) - 1);
+-	if (ret)
+-		goto error_cleanup_ring;
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+-		goto error_unregister_ring;
++		goto error_cleanup_ring;
+ 
+ 	return 0;
+ 
+-error_unregister_ring:
+-	iio_buffer_unregister(indio_dev);
+ error_cleanup_ring:
+ 	ad7298_ring_cleanup(indio_dev);
+ error_disable_reg:
+@@ -263,7 +257,6 @@ static int __devexit ad7298_remove(struct spi_device *spi)
+ 	struct ad7298_state *st = iio_priv(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
+-	iio_buffer_unregister(indio_dev);
+ 	ad7298_ring_cleanup(indio_dev);
+ 	if (!IS_ERR(st->reg)) {
+ 		regulator_disable(st->reg);
+diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
+index 908a3e5..597a78f 100644
+--- a/drivers/staging/iio/adc/ad7298_ring.c
++++ b/drivers/staging/iio/adc/ad7298_ring.c
+@@ -19,31 +19,23 @@
+ #include "ad7298.h"
+ 
+ /**
+- * ad7298_ring_preenable() setup the parameters of the ring before enabling
+- *
+- * The complex nature of the setting of the number of bytes per datum is due
+- * to this driver currently ensuring that the timestamp is stored at an 8
+- * byte boundary.
++ * ad7298_update_scan_mode() setup the spi transfer buffer for the new scan mask
+  **/
+-static int ad7298_ring_preenable(struct iio_dev *indio_dev)
++int ad7298_update_scan_mode(struct iio_dev *indio_dev,
++	const unsigned long *active_scan_mask)
+ {
+ 	struct ad7298_state *st = iio_priv(indio_dev);
+ 	int i, m;
+ 	unsigned short command;
+-	int scan_count, ret;
+-
+-	ret = iio_sw_buffer_preenable(indio_dev);
+-	if (ret < 0)
+-		return ret;
++	int scan_count;
+ 
+ 	/* Now compute overall size */
+-	scan_count = bitmap_weight(indio_dev->active_scan_mask,
+-				   indio_dev->masklength);
++	scan_count = bitmap_weight(active_scan_mask, indio_dev->masklength);
+ 
+ 	command = AD7298_WRITE | st->ext_ref;
+ 
+ 	for (i = 0, m = AD7298_CH(0); i < AD7298_MAX_CHAN; i++, m >>= 1)
+-		if (test_bit(i, indio_dev->active_scan_mask))
++		if (test_bit(i, active_scan_mask))
+ 			command |= m;
+ 
+ 	st->tx_buf[0] = cpu_to_be16(command);
+@@ -108,49 +100,13 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static const struct iio_buffer_setup_ops ad7298_ring_setup_ops = {
+-	.preenable = &ad7298_ring_preenable,
+-	.postenable = &iio_triggered_buffer_postenable,
+-	.predisable = &iio_triggered_buffer_predisable,
+-};
+-
+ int ad7298_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ {
+-	int ret;
+-
+-	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
+-	if (!indio_dev->buffer) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
+-						 &ad7298_trigger_handler,
+-						 IRQF_ONESHOT,
+-						 indio_dev,
+-						 "ad7298_consumer%d",
+-						 indio_dev->id);
+-
+-	if (indio_dev->pollfunc == NULL) {
+-		ret = -ENOMEM;
+-		goto error_deallocate_kfifo;
+-	}
+-
+-	/* Ring buffer functions - here trigger setup related */
+-	indio_dev->setup_ops = &ad7298_ring_setup_ops;
+-	indio_dev->buffer->scan_timestamp = true;
+-
+-	/* Flag that polled ring buffering is possible */
+-	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
+-	return 0;
+-
+-error_deallocate_kfifo:
+-	iio_kfifo_free(indio_dev->buffer);
+-error_ret:
+-	return ret;
++	return iio_triggered_buffer_setup(indio_dev, NULL,
++			&ad7298_trigger_handler, NULL);
+ }
+ 
+ void ad7298_ring_cleanup(struct iio_dev *indio_dev)
+ {
+-	iio_dealloc_pollfunc(indio_dev->pollfunc);
+-	iio_kfifo_free(indio_dev->buffer);
++	iio_triggered_buffer_cleanup(indio_dev);
+ }
+-- 
+1.7.10
+
