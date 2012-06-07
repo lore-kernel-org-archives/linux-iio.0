@@ -1,70 +1,325 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35757 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753227Ab2FGPBK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Jun 2012 11:01:10 -0400
-Message-ID: <4FD0D04A.6050504@kernel.org>
-Date: Thu, 07 Jun 2012 17:01:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Roland Stigge <stigge@antcom.de>
-CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: max517: mark probe() and remove() with __devinit
- and __devexit
-References: <1339057907-17381-1-git-send-email-pmeerw@pmeerw.net> <1339057907-17381-2-git-send-email-pmeerw@pmeerw.net> <4FD07F69.3040600@antcom.de>
-In-Reply-To: <4FD07F69.3040600@antcom.de>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: add mcp4725 I2C DAC driver
+Date: Thu,  7 Jun 2012 10:30:09 +0200
+Message-Id: <1339057809-17345-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/07/2012 11:16 AM, Roland Stigge wrote:
-> On 07/06/12 10:31, Peter Meerwald wrote:
->> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> 
-> Acked-by: Roland Stigge <stigge@antcom.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+v4:
+* remove unused indio_dev pointer in mcp4725_data (Jonathan Cameron)
+* use u16 instead of unsigned short in mcp4725_data (Jonathan Cameron)
+* #include mcp4725.h from linux/iio/dac/
 
-Please send on to Greg KH.
+v3:
+* move from staging to drivers/iio
+* switch to chan_spec
+* dev_get_drvdata() -> dev_to_iio_dev()
+* annotate probe() and remove() with __devinit and __devexit
 
-> 
->> ---
->>  drivers/iio/dac/max517.c |    6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
->> index 352abe2..c3d748c 100644
->> --- a/drivers/iio/dac/max517.c
->> +++ b/drivers/iio/dac/max517.c
->> @@ -156,7 +156,7 @@ static const struct iio_chan_spec max517_channels[] = {
->>  	MAX517_CHANNEL(1)
->>  };
->>  
->> -static int max517_probe(struct i2c_client *client,
->> +static int __devinit max517_probe(struct i2c_client *client,
->>  			const struct i2c_device_id *id)
->>  {
->>  	struct max517_data *data;
->> @@ -210,7 +210,7 @@ exit:
->>  	return err;
->>  }
->>  
->> -static int max517_remove(struct i2c_client *client)
->> +static int __devexit max517_remove(struct i2c_client *client)
->>  {
->>  	iio_device_unregister(i2c_get_clientdata(client));
->>  	iio_device_free(i2c_get_clientdata(client));
->> @@ -232,7 +232,7 @@ static struct i2c_driver max517_driver = {
->>  		.pm		= MAX517_PM_OPS,
->>  	},
->>  	.probe		= max517_probe,
->> -	.remove		= max517_remove,
->> +	.remove		=  __devexit_p(max517_remove),
->>  	.id_table	= max517_id,
->>  };
->>  module_i2c_driver(max517_driver);
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+v2 (based on comments from Jonathan Cameron and Lars-Peter Clausen):
+* did NOT switch to chan_spec yet
+* rebase to staging-next tree, update iio header locations
+* dropped dac.h #include, not needed
+* strict_strtol() -> kstrtol()
+* call iio_device_unregister() in remove()
+* everything in one patch
 
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/dac/Kconfig         |   11 ++
+ drivers/iio/dac/Makefile        |    1 +
+ drivers/iio/dac/mcp4725.c       |  227 +++++++++++++++++++++++++++++++++++++++
+ include/linux/iio/dac/mcp4725.h |   16 +++
+ 4 files changed, 255 insertions(+)
+ create mode 100644 drivers/iio/dac/mcp4725.c
+ create mode 100644 include/linux/iio/dac/mcp4725.h
+
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index a626f03..92fb3a0 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -118,4 +118,15 @@ config MAX517
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called max517.
+ 
++config MCP4725
++	tristate "MCP4725 DAC driver"
++	depends on I2C
++	---help---
++	  Say Y here if you want to build a driver for the Microchip
++	  MCP 4725 12-bit digital-to-analog converter (DAC) with I2C
++	  interface.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called mcp4725.
++
+ endmenu
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index 8ab1d26..9ea3cee 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -13,3 +13,4 @@ obj-$(CONFIG_AD5764) += ad5764.o
+ obj-$(CONFIG_AD5791) += ad5791.o
+ obj-$(CONFIG_AD5686) += ad5686.o
+ obj-$(CONFIG_MAX517) += max517.o
++obj-$(CONFIG_MCP4725) += mcp4725.o
+diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+new file mode 100644
+index 0000000..d500693
+--- /dev/null
++++ b/drivers/iio/dac/mcp4725.c
+@@ -0,0 +1,227 @@
++/*
++ * mcp4725.c - Support for Microchip MCP4725
++ *
++ * Copyright (C) 2012 Peter Meerwald <pmeerw@pmeerw.net>
++ *
++ * Based on max517 by Roland Stigge <stigge@antcom.de>
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * driver for the Microchip I2C 12-bit digital-to-analog converter (DAC)
++ * (7-bit I2C slave address 0x60, the three LSBs can be configured in
++ * hardware)
++ *
++ * writing the DAC value to EEPROM is not supported
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/i2c.h>
++#include <linux/err.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#include <linux/iio/dac/mcp4725.h>
++
++#define MCP4725_DRV_NAME "mcp4725"
++
++struct mcp4725_data {
++	struct i2c_client *client;
++	u16 vref_mv;
++	u16 dac_value;
++};
++
++#ifdef CONFIG_PM_SLEEP
++static int mcp4725_suspend(struct device *dev)
++{
++	u8 outbuf[2];
++
++	outbuf[0] = 0x3 << 4; /* power-down bits, 500 kOhm resistor */
++	outbuf[1] = 0;
++
++	return i2c_master_send(to_i2c_client(dev), &outbuf, 2);
++}
++
++static int mcp4725_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mcp4725_data *data = iio_priv(indio_dev);
++	u8 outbuf[2];
++
++	/* restore previous DAC value */
++	outbuf[0] = (data->dac_value >> 8) & 0xf;
++	outbuf[1] = data->dac_value & 0xff;
++
++	return i2c_master_send(to_i2c_client(dev), &outbuf, 2);
++}
++
++static SIMPLE_DEV_PM_OPS(mcp4725_pm_ops, mcp4725_suspend, mcp4725_resume);
++#define MCP4725_PM_OPS (&mcp4725_pm_ops)
++#else
++#define MCP4725_PM_OPS NULL
++#endif
++
++static const struct iio_chan_spec mcp4725_channel = {
++	.type		= IIO_VOLTAGE,
++	.indexed	= 1,
++	.output		= 1,
++	.channel	= 0,
++	.info_mask	= IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			  IIO_CHAN_INFO_SCALE_SHARED_BIT,
++	.scan_type	= IIO_ST('u', 12, 16, 0),
++};
++
++static int mcp4725_set_value(struct iio_dev *indio_dev, int val)
++{
++	struct mcp4725_data *data = iio_priv(indio_dev);
++	u8 outbuf[2];
++	int ret;
++
++	if (val >= (1 << 12) || val < 0)
++		return -EINVAL;
++
++	outbuf[0] = (val >> 8) & 0xf;
++	outbuf[1] = val & 0xff;
++
++	ret = i2c_master_send(data->client, outbuf, 2);
++	if (ret < 0)
++		return ret;
++	else if (ret != 2)
++		return -EIO;
++	else
++		return 0;
++}
++
++static int mcp4725_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	struct mcp4725_data *data = iio_priv(indio_dev);
++	unsigned long scale_uv;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		*val = data->dac_value;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		scale_uv = (data->vref_mv * 1000) >> 12;
++		*val =  scale_uv / 1000000;
++		*val2 = scale_uv % 1000000;
++		return IIO_VAL_INT_PLUS_MICRO;
++	}
++	return -EINVAL;
++}
++
++static int mcp4725_write_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int val, int val2, long mask)
++{
++	struct mcp4725_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = mcp4725_set_value(indio_dev, val);
++		data->dac_value = val;
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++static const struct iio_info mcp4725_info = {
++	.read_raw = mcp4725_read_raw,
++	.write_raw = mcp4725_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int __devinit mcp4725_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	struct mcp4725_data *data;
++	struct iio_dev *indio_dev;
++	struct mcp4725_platform_data *platform_data = client->dev.platform_data;
++	u8 inbuf[3];
++	int err;
++
++	if (!platform_data || !platform_data->vref_mv) {
++		dev_err(&client->dev, "invalid platform data");
++		err = -EINVAL;
++		goto exit;
++	}
++
++	indio_dev = iio_device_alloc(sizeof(*data));
++	if (indio_dev == NULL) {
++		err = -ENOMEM;
++		goto exit;
++	}
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &mcp4725_info;
++	indio_dev->channels = &mcp4725_channel;
++	indio_dev->num_channels = 1;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	data->vref_mv = platform_data->vref_mv;
++
++	/* read current DAC value */
++	err = i2c_master_recv(client, inbuf, 3);
++	if (err < 0) {
++		dev_err(&client->dev, "failed to read DAC value");
++		goto exit_free_device;
++	}
++	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
++
++	err = iio_device_register(indio_dev);
++	if (err)
++		goto exit_free_device;
++
++	dev_info(&client->dev, "MCP4725 DAC registered\n");
++
++	return 0;
++
++exit_free_device:
++	iio_device_free(indio_dev);
++exit:
++	return err;
++}
++
++static int __devexit mcp4725_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++static const struct i2c_device_id mcp4725_id[] = {
++	{ "mcp4725", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, mcp4725_id);
++
++static struct i2c_driver mcp4725_driver = {
++	.driver = {
++		.name	= MCP4725_DRV_NAME,
++		.pm	= MCP4725_PM_OPS,
++	},
++	.probe		= mcp4725_probe,
++	.remove		= __devexit_p(mcp4725_remove),
++	.id_table	= mcp4725_id,
++};
++module_i2c_driver(mcp4725_driver);
++
++MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
++MODULE_DESCRIPTION("MCP4725 12-bit DAC");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/iio/dac/mcp4725.h b/include/linux/iio/dac/mcp4725.h
+new file mode 100644
+index 0000000..91530e6
+--- /dev/null
++++ b/include/linux/iio/dac/mcp4725.h
+@@ -0,0 +1,16 @@
++/*
++ * MCP4725 DAC driver
++ *
++ * Copyright (C) 2012 Peter Meerwald <pmeerw@pmeerw.net>
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++#ifndef IIO_DAC_MCP4725_H_
++#define IIO_DAC_MCP4725_H_
++
++struct mcp4725_platform_data {
++	u16 vref_mv;
++};
++
++#endif /* IIO_DAC_MCP4725_H_ */
+-- 
+1.7.9.5
