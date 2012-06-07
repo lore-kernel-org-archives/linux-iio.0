@@ -1,201 +1,199 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-134.synserver.de ([212.40.185.134]:1152 "EHLO
-	smtp-out-123.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751719Ab2FFMA2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jun 2012 08:00:28 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 9/9] staging:iio:adc:ad799x: Use new triggered buffer setup helper function
-Date: Wed,  6 Jun 2012 13:55:56 +0200
-Message-Id: <1338983756-31243-10-git-send-email-lars@metafoo.de>
-In-Reply-To: <1338983756-31243-1-git-send-email-lars@metafoo.de>
-References: <1338983756-31243-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@kernel.org>
+Message-ID: <4FD10C89.8080506@kernel.org>
+Date: Thu, 07 Jun 2012 21:18:17 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 9/9] staging:iio:adc:ad799x: Use new triggered buffer
+ setup helper function
+References: <1338983756-31243-1-git-send-email-lars@metafoo.de> <1338983756-31243-10-git-send-email-lars@metafoo.de>
+In-Reply-To: <1338983756-31243-10-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Use the new triggered buffer setup helper function to allocate and register
-buffer and pollfunc.
+On 06/06/2012 12:55 PM, Lars-Peter Clausen wrote:
+> Use the new triggered buffer setup helper function to allocate and register
+> buffer and pollfunc.
+> 
+> Also as part of the conversion drop scan_timestamp being enabled by default,
+> since it is a left over of an earlier cleanup.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 
-Also as part of the conversion drop scan_timestamp being enabled by default,
-since it is a left over of an earlier cleanup.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/Kconfig       |    1 +
- drivers/staging/iio/adc/ad799x.h      |    2 --
- drivers/staging/iio/adc/ad799x_core.c |   25 +++++++------
- drivers/staging/iio/adc/ad799x_ring.c |   63 ++-------------------------------
- 4 files changed, 19 insertions(+), 72 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index 36cca0e..6fa3264 100644
---- a/drivers/staging/iio/adc/Kconfig
-+++ b/drivers/staging/iio/adc/Kconfig
-@@ -66,6 +66,7 @@ config AD799X_RING_BUFFER
- 	depends on AD799X
- 	select IIO_BUFFER
- 	select IIO_KFIFO_BUF
-+	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Say yes here to include ring buffer support in the AD799X
- 	  ADC driver.
-diff --git a/drivers/staging/iio/adc/ad799x.h b/drivers/staging/iio/adc/ad799x.h
-index 99f8abe..3e363c4 100644
---- a/drivers/staging/iio/adc/ad799x.h
-+++ b/drivers/staging/iio/adc/ad799x.h
-@@ -120,8 +120,6 @@ struct ad799x_platform_data {
- 	u16				vref_mv;
- };
- 
--int ad7997_8_set_scan_mode(struct ad799x_state *st, unsigned mask);
--
- #ifdef CONFIG_AD799X_RING_BUFFER
- int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev);
- void ad799x_ring_cleanup(struct iio_dev *indio_dev);
-diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
-index 80e0c6e..2d4bda9 100644
---- a/drivers/staging/iio/adc/ad799x_core.c
-+++ b/drivers/staging/iio/adc/ad799x_core.c
-@@ -99,10 +99,21 @@ static int ad799x_i2c_write8(struct ad799x_state *st, u8 reg, u8 data)
- 	return ret;
- }
- 
--int ad7997_8_set_scan_mode(struct ad799x_state *st, unsigned mask)
-+static int ad7997_8_update_scan_mode(struct iio_dev *indio_dev,
-+	const unsigned long *scan_mask)
- {
--	return ad799x_i2c_write16(st, AD7998_CONF_REG,
--		st->config | (mask << AD799X_CHANNEL_SHIFT));
-+	struct ad799x_state *st = iio_priv(indio_dev);
-+
-+	switch (st->id) {
-+	case ad7997:
-+	case ad7998:
-+		return ad799x_i2c_write16(st, AD7998_CONF_REG,
-+			st->config | (*scan_mask << AD799X_CHANNEL_SHIFT));
-+	default:
-+		break;
-+	}
-+
-+	return 0;
- }
- 
- static int ad799x_scan_direct(struct ad799x_state *st, unsigned ch)
-@@ -442,6 +453,7 @@ static const struct iio_info ad7993_4_7_8_info = {
- 	.read_event_value = &ad799x_read_event_value,
- 	.write_event_value = &ad799x_write_event_value,
- 	.driver_module = THIS_MODULE,
-+	.update_scan_mode = ad7997_8_update_scan_mode,
- };
- 
- #define AD799X_EV_MASK (IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) | \
-@@ -887,12 +899,6 @@ static int __devinit ad799x_probe(struct i2c_client *client,
- 	if (ret)
- 		goto error_disable_reg;
- 
--	ret = iio_buffer_register(indio_dev,
--				  indio_dev->channels,
--				  indio_dev->num_channels);
--	if (ret)
--		goto error_cleanup_ring;
--
- 	if (client->irq > 0) {
- 		ret = request_threaded_irq(client->irq,
- 					   NULL,
-@@ -934,7 +940,6 @@ static __devexit int ad799x_remove(struct i2c_client *client)
- 	if (client->irq > 0)
- 		free_irq(client->irq, indio_dev);
- 
--	iio_buffer_unregister(indio_dev);
- 	ad799x_ring_cleanup(indio_dev);
- 	if (!IS_ERR(st->reg)) {
- 		regulator_disable(st->reg);
-diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
-index 1c7ff44..da8d468 100644
---- a/drivers/staging/iio/adc/ad799x_ring.c
-+++ b/drivers/staging/iio/adc/ad799x_ring.c
-@@ -24,27 +24,6 @@
- #include "ad799x.h"
- 
- /**
-- * ad799x_ring_preenable() setup the parameters of the ring before enabling
-- *
-- * The complex nature of the setting of the number of bytes per datum is due
-- * to this driver currently ensuring that the timestamp is stored at an 8
-- * byte boundary.
-- **/
--static int ad799x_ring_preenable(struct iio_dev *indio_dev)
--{
--	struct ad799x_state *st = iio_priv(indio_dev);
--	/*
--	 * Need to figure out the current mode based upon the requested
--	 * scan mask in iio_dev
--	 */
--
--	if (st->id == ad7997 || st->id == ad7998)
--		ad7997_8_set_scan_mode(st, *indio_dev->active_scan_mask);
--
--	return iio_sw_buffer_preenable(indio_dev);
--}
--
--/**
-  * ad799x_trigger_handler() bh of trigger launched polling to ring buffer
-  *
-  * Currently there is no option in this driver to disable the saving of
-@@ -110,49 +89,13 @@ out:
- 	return IRQ_HANDLED;
- }
- 
--static const struct iio_buffer_setup_ops ad799x_buf_setup_ops = {
--	.preenable = &ad799x_ring_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
--};
--
- int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev)
- {
--	int ret = 0;
--
--	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
--	if (!indio_dev->buffer) {
--		ret = -ENOMEM;
--		goto error_ret;
--	}
--	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
--						 &ad799x_trigger_handler,
--						 IRQF_ONESHOT,
--						 indio_dev,
--						 "%s_consumer%d",
--						 indio_dev->name,
--						 indio_dev->id);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
--		goto error_deallocate_kfifo;
--	}
--
--	/* Ring buffer functions - here trigger setup related */
--	indio_dev->setup_ops = &ad799x_buf_setup_ops;
--	indio_dev->buffer->scan_timestamp = true;
--
--	/* Flag that polled ring buffering is possible */
--	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
--	return 0;
--
--error_deallocate_kfifo:
--	iio_kfifo_free(indio_dev->buffer);
--error_ret:
--	return ret;
-+	return iio_triggered_buffer_setup(indio_dev, NULL,
-+		&ad799x_trigger_handler, NULL);
- }
- 
- void ad799x_ring_cleanup(struct iio_dev *indio_dev)
- {
--	iio_dealloc_pollfunc(indio_dev->pollfunc);
--	iio_kfifo_free(indio_dev->buffer);
-+	iio_triggered_buffer_cleanup(indio_dev);
- }
--- 
-1.7.10
-
+> ---
+>  drivers/staging/iio/adc/Kconfig       |    1 +
+>  drivers/staging/iio/adc/ad799x.h      |    2 --
+>  drivers/staging/iio/adc/ad799x_core.c |   25 +++++++------
+>  drivers/staging/iio/adc/ad799x_ring.c |   63 ++-------------------------------
+>  4 files changed, 19 insertions(+), 72 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+> index 36cca0e..6fa3264 100644
+> --- a/drivers/staging/iio/adc/Kconfig
+> +++ b/drivers/staging/iio/adc/Kconfig
+> @@ -66,6 +66,7 @@ config AD799X_RING_BUFFER
+>  	depends on AD799X
+>  	select IIO_BUFFER
+>  	select IIO_KFIFO_BUF
+> +	select IIO_TRIGGERED_BUFFER
+>  	help
+>  	  Say yes here to include ring buffer support in the AD799X
+>  	  ADC driver.
+> diff --git a/drivers/staging/iio/adc/ad799x.h b/drivers/staging/iio/adc/ad799x.h
+> index 99f8abe..3e363c4 100644
+> --- a/drivers/staging/iio/adc/ad799x.h
+> +++ b/drivers/staging/iio/adc/ad799x.h
+> @@ -120,8 +120,6 @@ struct ad799x_platform_data {
+>  	u16				vref_mv;
+>  };
+>  
+> -int ad7997_8_set_scan_mode(struct ad799x_state *st, unsigned mask);
+> -
+>  #ifdef CONFIG_AD799X_RING_BUFFER
+>  int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+>  void ad799x_ring_cleanup(struct iio_dev *indio_dev);
+> diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+> index 80e0c6e..2d4bda9 100644
+> --- a/drivers/staging/iio/adc/ad799x_core.c
+> +++ b/drivers/staging/iio/adc/ad799x_core.c
+> @@ -99,10 +99,21 @@ static int ad799x_i2c_write8(struct ad799x_state *st, u8 reg, u8 data)
+>  	return ret;
+>  }
+>  
+> -int ad7997_8_set_scan_mode(struct ad799x_state *st, unsigned mask)
+> +static int ad7997_8_update_scan_mode(struct iio_dev *indio_dev,
+> +	const unsigned long *scan_mask)
+>  {
+> -	return ad799x_i2c_write16(st, AD7998_CONF_REG,
+> -		st->config | (mask << AD799X_CHANNEL_SHIFT));
+> +	struct ad799x_state *st = iio_priv(indio_dev);
+> +
+> +	switch (st->id) {
+> +	case ad7997:
+> +	case ad7998:
+> +		return ad799x_i2c_write16(st, AD7998_CONF_REG,
+> +			st->config | (*scan_mask << AD799X_CHANNEL_SHIFT));
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return 0;
+>  }
+>  
+>  static int ad799x_scan_direct(struct ad799x_state *st, unsigned ch)
+> @@ -442,6 +453,7 @@ static const struct iio_info ad7993_4_7_8_info = {
+>  	.read_event_value = &ad799x_read_event_value,
+>  	.write_event_value = &ad799x_write_event_value,
+>  	.driver_module = THIS_MODULE,
+> +	.update_scan_mode = ad7997_8_update_scan_mode,
+>  };
+>  
+>  #define AD799X_EV_MASK (IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) | \
+> @@ -887,12 +899,6 @@ static int __devinit ad799x_probe(struct i2c_client *client,
+>  	if (ret)
+>  		goto error_disable_reg;
+>  
+> -	ret = iio_buffer_register(indio_dev,
+> -				  indio_dev->channels,
+> -				  indio_dev->num_channels);
+> -	if (ret)
+> -		goto error_cleanup_ring;
+> -
+>  	if (client->irq > 0) {
+>  		ret = request_threaded_irq(client->irq,
+>  					   NULL,
+> @@ -934,7 +940,6 @@ static __devexit int ad799x_remove(struct i2c_client *client)
+>  	if (client->irq > 0)
+>  		free_irq(client->irq, indio_dev);
+>  
+> -	iio_buffer_unregister(indio_dev);
+>  	ad799x_ring_cleanup(indio_dev);
+>  	if (!IS_ERR(st->reg)) {
+>  		regulator_disable(st->reg);
+> diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
+> index 1c7ff44..da8d468 100644
+> --- a/drivers/staging/iio/adc/ad799x_ring.c
+> +++ b/drivers/staging/iio/adc/ad799x_ring.c
+> @@ -24,27 +24,6 @@
+>  #include "ad799x.h"
+>  
+>  /**
+> - * ad799x_ring_preenable() setup the parameters of the ring before enabling
+> - *
+> - * The complex nature of the setting of the number of bytes per datum is due
+> - * to this driver currently ensuring that the timestamp is stored at an 8
+> - * byte boundary.
+> - **/
+> -static int ad799x_ring_preenable(struct iio_dev *indio_dev)
+> -{
+> -	struct ad799x_state *st = iio_priv(indio_dev);
+> -	/*
+> -	 * Need to figure out the current mode based upon the requested
+> -	 * scan mask in iio_dev
+> -	 */
+> -
+> -	if (st->id == ad7997 || st->id == ad7998)
+> -		ad7997_8_set_scan_mode(st, *indio_dev->active_scan_mask);
+> -
+> -	return iio_sw_buffer_preenable(indio_dev);
+> -}
+> -
+> -/**
+>   * ad799x_trigger_handler() bh of trigger launched polling to ring buffer
+>   *
+>   * Currently there is no option in this driver to disable the saving of
+> @@ -110,49 +89,13 @@ out:
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -static const struct iio_buffer_setup_ops ad799x_buf_setup_ops = {
+> -	.preenable = &ad799x_ring_preenable,
+> -	.postenable = &iio_triggered_buffer_postenable,
+> -	.predisable = &iio_triggered_buffer_predisable,
+> -};
+> -
+>  int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+>  {
+> -	int ret = 0;
+> -
+> -	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
+> -	if (!indio_dev->buffer) {
+> -		ret = -ENOMEM;
+> -		goto error_ret;
+> -	}
+> -	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
+> -						 &ad799x_trigger_handler,
+> -						 IRQF_ONESHOT,
+> -						 indio_dev,
+> -						 "%s_consumer%d",
+> -						 indio_dev->name,
+> -						 indio_dev->id);
+> -	if (indio_dev->pollfunc == NULL) {
+> -		ret = -ENOMEM;
+> -		goto error_deallocate_kfifo;
+> -	}
+> -
+> -	/* Ring buffer functions - here trigger setup related */
+> -	indio_dev->setup_ops = &ad799x_buf_setup_ops;
+> -	indio_dev->buffer->scan_timestamp = true;
+> -
+> -	/* Flag that polled ring buffering is possible */
+> -	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
+> -	return 0;
+> -
+> -error_deallocate_kfifo:
+> -	iio_kfifo_free(indio_dev->buffer);
+> -error_ret:
+> -	return ret;
+> +	return iio_triggered_buffer_setup(indio_dev, NULL,
+> +		&ad799x_trigger_handler, NULL);
+>  }
+>  
+>  void ad799x_ring_cleanup(struct iio_dev *indio_dev)
+>  {
+> -	iio_dealloc_pollfunc(indio_dev->pollfunc);
+> -	iio_kfifo_free(indio_dev->buffer);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+>  }
