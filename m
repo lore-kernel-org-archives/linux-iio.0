@@ -1,48 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35761 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753184Ab2FGPBr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Jun 2012 11:01:47 -0400
-Message-ID: <4FD0D077.7080803@kernel.org>
-Date: Thu, 07 Jun 2012 17:01:59 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Roland Stigge <stigge@antcom.de>
-CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: remove indio_dev pointer from max517_data
-References: <1339057907-17381-1-git-send-email-pmeerw@pmeerw.net> <4FD07F42.5060007@antcom.de>
-In-Reply-To: <4FD07F42.5060007@antcom.de>
-Content-Type: text/plain; charset=UTF-8
+Received: from ns.pmeerw.net ([87.118.82.44]:42700 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1760147Ab2FGIbt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 7 Jun 2012 04:31:49 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: stigge@antcom.de, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 2/2] iio: max517: mark probe() and remove() with __devinit and __devexit
+Date: Thu,  7 Jun 2012 10:31:47 +0200
+Message-Id: <1339057907-17381-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1339057907-17381-1-git-send-email-pmeerw@pmeerw.net>
+References: <1339057907-17381-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/07/2012 11:15 AM, Roland Stigge wrote:
-> On 07/06/12 10:31, Peter Meerwald wrote:
->> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> 
-Well that would explain where the other one came from ;)
-> Acked-by: Roland Stigge <stigge@antcom.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> 
->> ---
->>  drivers/iio/dac/max517.c |    1 -
->>  1 file changed, 1 deletion(-)
->>
->> diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
->> index 92c77c8..352abe2 100644
->> --- a/drivers/iio/dac/max517.c
->> +++ b/drivers/iio/dac/max517.c
->> @@ -43,7 +43,6 @@ enum max517_device_ids {
->>  };
->>  
->>  struct max517_data {
->> -	struct iio_dev		*indio_dev;
->>  	struct i2c_client	*client;
->>  	unsigned short		vref_mv[2];
->>  };
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/dac/max517.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
+index 352abe2..c3d748c 100644
+--- a/drivers/iio/dac/max517.c
++++ b/drivers/iio/dac/max517.c
+@@ -156,7 +156,7 @@ static const struct iio_chan_spec max517_channels[] = {
+ 	MAX517_CHANNEL(1)
+ };
+ 
+-static int max517_probe(struct i2c_client *client,
++static int __devinit max517_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
+ {
+ 	struct max517_data *data;
+@@ -210,7 +210,7 @@ exit:
+ 	return err;
+ }
+ 
+-static int max517_remove(struct i2c_client *client)
++static int __devexit max517_remove(struct i2c_client *client)
+ {
+ 	iio_device_unregister(i2c_get_clientdata(client));
+ 	iio_device_free(i2c_get_clientdata(client));
+@@ -232,7 +232,7 @@ static struct i2c_driver max517_driver = {
+ 		.pm		= MAX517_PM_OPS,
+ 	},
+ 	.probe		= max517_probe,
+-	.remove		= max517_remove,
++	.remove		=  __devexit_p(max517_remove),
+ 	.id_table	= max517_id,
+ };
+ module_i2c_driver(max517_driver);
+-- 
+1.7.9.5
 
