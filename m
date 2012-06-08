@@ -3,9 +3,11 @@ From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [v2 1/9] staging:iio: Add helper function for initializing triggered buffers
-Date: Fri,  8 Jun 2012 10:48:44 +0200
-Message-Id: <1339145332-26811-1-git-send-email-lars@metafoo.de>
+Subject: [PATCG v3 1/9] staging:iio: Add helper function for initializing triggered buffers
+Date: Fri,  8 Jun 2012 14:13:13 +0200
+Message-Id: <1339157593-15821-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1339145332-26811-1-git-send-email-lars@metafoo.de>
+References: <1339145332-26811-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
 Add a helper function for executing the common tasks which are usually involved
@@ -15,6 +17,11 @@ allocate the pollfunc and register the buffer.
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 
 ---
+Changes since v2:
+	* Add missing header...
+
+	I've only resent this one patch for v3 since all the others are unchanged.
+
 Changes since v1:
 	* Move function declarations to their own header
 	* Mention that iio_triggered_buffer_setup should usually be called right
@@ -24,8 +31,10 @@ Changes since v1:
  drivers/iio/Kconfig                         |    7 ++
  drivers/iio/Makefile                        |    1 +
  drivers/iio/industrialio-triggered-buffer.c |  110 +++++++++++++++++++++++++++
- 3 files changed, 118 insertions(+)
+ include/linux/iio/triggered_buffer.h        |   15 ++++
+ 4 files changed, 133 insertions(+)
  create mode 100644 drivers/iio/industrialio-triggered-buffer.c
+ create mode 100644 include/linux/iio/triggered_buffer.h
 
 diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
 index 103349f..612073f 100644
@@ -173,5 +182,26 @@ index 0000000..a462a57
 +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
 +MODULE_DESCRIPTION("IIO helper functions for setting up triggered buffers");
 +MODULE_LICENSE("GPL");
+diff --git a/include/linux/iio/triggered_buffer.h b/include/linux/iio/triggered_buffer.h
+new file mode 100644
+index 0000000..c378ebe
+--- /dev/null
++++ b/include/linux/iio/triggered_buffer.h
+@@ -0,0 +1,15 @@
++#ifndef _LINUX_IIO_TRIGGERED_BUFFER_H_
++#define _LINUX_IIO_TRIGGERED_BUFFER_H_
++
++#include <linux/interrupt.h>
++
++struct iio_dev;
++struct iio_buffer_setup_ops;
++
++int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
++	irqreturn_t (*pollfunc_bh)(int irq, void *p),
++	irqreturn_t (*pollfunc_th)(int irq, void *p),
++	const struct iio_buffer_setup_ops *setup_ops);
++void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev);
++
++#endif
 -- 
 1.7.10
