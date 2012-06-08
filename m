@@ -1,292 +1,120 @@
-Return-Path: <Michael.Hennerich@analog.com>
-From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-Date: Fri, 1 Jun 2012 10:24:13 +0100
-Subject: RE: [PATCH 1/8] staging:iio:accel drop sysfs interface for
- resetting devices.
-Message-ID: <544AC56F16B56944AEC3BD4E3D59177150C0FE65C7@LIMKCMBX1.ad.analog.com>
-References: <1338406866-3833-1-git-send-email-jic23@kernel.org>
- <1338406866-3833-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1338406866-3833-2-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <lars@metafoo.de>
+Message-ID: <4FD219D9.5010008@metafoo.de>
+Date: Fri, 08 Jun 2012 17:27:21 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH 4/4] staging:iio: Proof of concept input driver.
+References: <1338406594-14550-1-git-send-email-jic23@kernel.org> <1338406594-14550-5-git-send-email-jic23@kernel.org>
+In-Reply-To: <1338406594-14550-5-git-send-email-jic23@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron wrote on 2012-05-30:
-> There is no reason why userspace should want to do this manually.
-> Hence, lets drop this abi.
->
+On 05/30/2012 09:36 PM, Jonathan Cameron wrote:
+> From: Jonathan Cameron <jic23@cam.ac.uk>
+> 
+> This is no where near ready to merge.  Lots of stuff missing.
+> 
 > Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 > ---
->  drivers/staging/iio/accel/adis16201_core.c |   27 --------------------
->  ------ drivers/staging/iio/accel/adis16203_core.c |   28
->  -------------------- ------- drivers/staging/iio/accel/adis16204_core.c
->  |   20 ------------------- drivers/staging/iio/accel/adis16209_core.c |
->    29 -------------------- --------
->  drivers/staging/iio/accel/adis16220_core.c |   24 --------------------
->  --- drivers/staging/iio/accel/adis16240_core.c |   20
->  ------------------- 6 files changed, 148 deletions(-)
-> diff --git a/drivers/staging/iio/accel/adis16201_core.c
-> b/drivers/staging/iio/accel/adis16201_core.c index 02b3409..204106b
-> 100644 --- a/drivers/staging/iio/accel/adis16201_core.c +++
-> b/drivers/staging/iio/accel/adis16201_core.c @@ -159,21 +159,6 @@ static
-> int adis16201_reset(struct iio_dev *indio_dev)
->       return ret;
->  }
-> -static ssize_t adis16201_write_reset(struct device *dev,
-> -             struct device_attribute *attr,
-> -             const char *buf, size_t len)
-> -{
-> -     int ret;
-> -     bool res;
-> -
-> -     if (len < 1)
-> -             return -EINVAL;
-> -     ret =3D strtobool(buf, &res);
-> -     if (ret || !res)
-> -             return ret;
-> -     return adis16201_reset(dev_to_iio_dev(dev));
-> -}
-> -
->  int adis16201_set_irq(struct iio_dev *indio_dev, bool enable)
->  {
->       int ret =3D 0;
-> @@ -507,19 +492,7 @@ static struct iio_chan_spec adis16201_channels[] =3D
-> {
->       IIO_CHAN_SOFT_TIMESTAMP(7)
->  };
-> -static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16201_write_reset, 0);
-> - -static struct attribute *adis16201_attributes[] =3D {
-> -     &iio_dev_attr_reset.dev_attr.attr, -    NULL -}; - -static const st=
-ruct
-> attribute_group adis16201_attribute_group =3D { -       .attrs =3D
-> adis16201_attributes, -}; -
->  static const struct iio_info adis16201_info =3D { -    .attrs =3D
->  &adis16201_attribute_group,  .read_raw =3D &adis16201_read_raw,
->       .write_raw =3D &adis16201_write_raw,      .driver_module =3D THIS_M=
-ODULE,
-> diff --git a/drivers/staging/iio/accel/adis16203_core.c
-> b/drivers/staging/iio/accel/adis16203_core.c index 15d46bf..22085e9
-> 100644 --- a/drivers/staging/iio/accel/adis16203_core.c +++
-> b/drivers/staging/iio/accel/adis16203_core.c @@ -178,22 +178,6 @@ static
-> int adis16203_reset(struct iio_dev *indio_dev)
->       return ret;
->  }
-> -static ssize_t adis16203_write_reset(struct device *dev,
-> -             struct device_attribute *attr,
-> -             const char *buf, size_t len)
-> -{
-> -     struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> -     if (len < 1)
-> -             return -EINVAL;
-> -     switch (buf[0]) {
-> -     case '1':
-> -     case 'y':
-> -     case 'Y':
-> -             return adis16203_reset(indio_dev);
-> -     }
-> -     return -EINVAL;
-> -}
-> -
->  int adis16203_set_irq(struct iio_dev *indio_dev, bool enable)
->  {
->       int ret =3D 0;
-> @@ -444,19 +428,7 @@ static struct iio_chan_spec adis16203_channels[] =3D
-> {
->       IIO_CHAN_SOFT_TIMESTAMP(5),
->  };
-> -static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16203_write_reset, 0);
-> - -static struct attribute *adis16203_attributes[] =3D {
-> -     &iio_dev_attr_reset.dev_attr.attr, -    NULL -}; - -static const st=
-ruct
-> attribute_group adis16203_attribute_group =3D { -       .attrs =3D
-> adis16203_attributes, -}; -
->  static const struct iio_info adis16203_info =3D { -    .attrs =3D
->  &adis16203_attribute_group,  .read_raw =3D &adis16203_read_raw,
->       .write_raw =3D &adis16203_write_raw,      .driver_module =3D THIS_M=
-ODULE,
-> diff --git a/drivers/staging/iio/accel/adis16204_core.c
-> b/drivers/staging/iio/accel/adis16204_core.c index ac9d95e..5c02bc6
-> 100644 --- a/drivers/staging/iio/accel/adis16204_core.c +++
-> b/drivers/staging/iio/accel/adis16204_core.c @@ -207,23 +207,6 @@ static
-> int adis16204_reset(struct iio_dev *indio_dev)
->       return ret;
->  }
-> -static ssize_t adis16204_write_reset(struct device *dev,
-> -             struct device_attribute *attr,
-> -             const char *buf, size_t len)
-> -{
-> -     struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> -
-> -     if (len < 1)
-> -             return -EINVAL;
-> -     switch (buf[0]) {
-> -     case '1':
-> -     case 'y':
-> -     case 'Y':
-> -             return adis16204_reset(indio_dev);
-> -     }
-> -     return -EINVAL;
-> -}
-> -
->  int adis16204_set_irq(struct iio_dev *indio_dev, bool enable)
->  {
->       int ret =3D 0;
-> @@ -310,8 +293,6 @@ static
-> IIO_DEV_ATTR_ACCEL_XYPEAK(adis16204_read_14bit_signed,
->               ADIS16204_XY_PEAK_OUT);
->  static IIO_CONST_ATTR(in_accel_xy_scale, "0.017125");
-> -static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16204_write_reset, 0);
-> -
->  enum adis16204_channel {
->       in_supply,
->       in_aux,
-> @@ -520,7 +501,6 @@ static struct iio_chan_spec adis16204_channels[] =3D
-> {
->  };
->
->  static struct attribute *adis16204_attributes[] =3D {
->  -    &iio_dev_attr_reset.dev_attr.attr,
->       &iio_dev_attr_in_accel_xy.dev_attr.attr,
->       &iio_dev_attr_in_accel_xypeak.dev_attr.attr,
->       &iio_const_attr_in_accel_xy_scale.dev_attr.attr,
-> diff --git a/drivers/staging/iio/accel/adis16209_core.c
-> b/drivers/staging/iio/accel/adis16209_core.c index f6fd0d3..f4c82f1
-> 100644 --- a/drivers/staging/iio/accel/adis16209_core.c +++
-> b/drivers/staging/iio/accel/adis16209_core.c @@ -153,23 +153,6 @@ static
-> int adis16209_reset(struct iio_dev *indio_dev)
->       return ret;
->  }
-> -static ssize_t adis16209_write_reset(struct device *dev,
-> -             struct device_attribute *attr,
-> -             const char *buf, size_t len)
-> -{
-> -     struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> -
-> -     if (len < 1)
-> -             return -EINVAL;
-> -     switch (buf[0]) {
-> -     case '1':
-> -     case 'y':
-> -     case 'Y':
-> -             return adis16209_reset(indio_dev);
-> -     }
-> -     return -EINVAL;
-> -}
-> -
->  int adis16209_set_irq(struct iio_dev *indio_dev, bool enable)
->  {
->       int ret =3D 0;
-> @@ -519,19 +502,7 @@ static struct iio_chan_spec adis16209_channels[] =3D
-> {
->       IIO_CHAN_SOFT_TIMESTAMP(8)
->  };
-> -static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16209_write_reset, 0);
-> - -static struct attribute *adis16209_attributes[] =3D {
-> -     &iio_dev_attr_reset.dev_attr.attr, -    NULL -}; - -static const st=
-ruct
-> attribute_group adis16209_attribute_group =3D { -       .attrs =3D
-> adis16209_attributes, -}; -
->  static const struct iio_info adis16209_info =3D { -    .attrs =3D
->  &adis16209_attribute_group,  .read_raw =3D &adis16209_read_raw,
->       .write_raw =3D &adis16209_write_raw,      .driver_module =3D THIS_M=
-ODULE,
-> diff --git a/drivers/staging/iio/accel/adis16220_core.c
-> b/drivers/staging/iio/accel/adis16220_core.c index 6a9ac89..2877410
-> 100644 --- a/drivers/staging/iio/accel/adis16220_core.c +++
-> b/drivers/staging/iio/accel/adis16220_core.c @@ -204,26 +204,6 @@ static
-> int adis16220_reset(struct iio_dev *indio_dev)
->       return ret;
->  }
-> -static ssize_t adis16220_write_reset(struct device *dev,
-> -             struct device_attribute *attr,
-> -             const char *buf, size_t len)
-> -{
-> -     struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> -     bool val;
-> -     int ret;
-> -
-> -     ret =3D strtobool(buf, &val);
-> -     if (ret)
-> -             return ret;
-> -     if (!val)
-> -             return -EINVAL;
-> -
-> -     ret =3D adis16220_reset(indio_dev);
-> -     if (ret)
-> -             return ret;
-> -     return len;
-> -}
-> -
->  static ssize_t adis16220_write_capture(struct device *dev,           str=
-uct
->  device_attribute *attr,              const char *buf, size_t len) @@ -45=
-4,9 +434,6
->  @@ static struct bin_attribute adc2_bin =3D {  .size =3D
->  ADIS16220_CAPTURE_SIZE, };
-> -static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL,
-> -             adis16220_write_reset, 0);
-> -
->  #define IIO_DEV_ATTR_CAPTURE(_store)                         \
->       IIO_DEVICE_ATTR(capture, S_IWUSR, NULL, _store, 0)
-> @@ -611,7 +588,6 @@ static const struct iio_chan_spec
-> adis16220_channels[] =3D {
->  };
->
->  static struct attribute *adis16220_attributes[] =3D {
->  -    &iio_dev_attr_reset.dev_attr.attr,
->       &iio_dev_attr_capture.dev_attr.attr,
->       &iio_dev_attr_capture_count.dev_attr.attr,      NULL
-> diff --git a/drivers/staging/iio/accel/adis16240_core.c
-> b/drivers/staging/iio/accel/adis16240_core.c index 8b15eae..2df39d1
-> 100644 --- a/drivers/staging/iio/accel/adis16240_core.c +++
-> b/drivers/staging/iio/accel/adis16240_core.c @@ -199,23 +199,6 @@ static
-> int adis16240_reset(struct iio_dev *indio_dev)
->       return ret;
->  }
-> -static ssize_t adis16240_write_reset(struct device *dev,
-> -             struct device_attribute *attr,
-> -             const char *buf, size_t len)
-> -{
-> -     struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> -
-> -     if (len < 1)
-> -             return -EINVAL;
-> -     switch (buf[0]) {
-> -     case '1':
-> -     case 'y':
-> -     case 'Y':
-> -             return adis16240_reset(indio_dev);
-> -     }
-> -     return -EINVAL;
-> -}
-> -
->  int adis16240_set_irq(struct iio_dev *indio_dev, bool enable)
->  {
->       int ret =3D 0;
-> @@ -329,8 +312,6 @@ static
-> IIO_DEVICE_ATTR(in_accel_xyz_squared_peak_raw, S_IRUGO,
->                      adis16240_read_12bit_signed, NULL,
->                      ADIS16240_XYZPEAK_OUT);
-> -static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, adis16240_write_reset, 0);
-> -
->  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("4096");
->
->  enum adis16240_chan {
-> @@ -556,7 +537,6 @@ static struct iio_chan_spec adis16240_channels[] =3D
-> {
->  static struct attribute *adis16240_attributes[] =3D {
->       &iio_dev_attr_in_accel_xyz_squared_peak_raw.dev_attr.attr,
->       &iio_const_attr_sampling_frequency_available.dev_attr.attr,
->  -    &iio_dev_attr_reset.dev_attr.attr,      NULL };
+>  drivers/staging/iio/Kconfig     |   11 +++
+>  drivers/staging/iio/Makefile    |    1 +
+>  drivers/staging/iio/iio_input.c |  176 +++++++++++++++++++++++++++++++++++++++
+>  drivers/staging/iio/iio_input.h |   23 +++++
+>  4 files changed, 211 insertions(+)
+> 
+> diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+> index 04cd6ec..022463e 100644
+> --- a/drivers/staging/iio/Kconfig
+> +++ b/drivers/staging/iio/Kconfig
+> @@ -4,6 +4,17 @@
+[...]
+> +};
+> +
+> +static int iio_channel_value(u8 *data,
+> +			     const struct iio_chan_spec *chan,
+> +			     int *val)
+> +{
+> +	int value;
+> +
+> +	if (chan->scan_type.sign == 's') {
+> +		switch (chan->scan_type.storagebits) {
+> +		case 8:
+> +			value = *(s8 *)(data);
+> +			break;
+> +		case 16:
+> +			value = *(s16 *)(data);
+> +			break;
+> +		case 32:
+> +			value = *(s32 *)(data);
+> +			break;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +		value >>= chan->scan_type.shift;
+> +		value &= (1 << chan->scan_type.realbits) - 1;
+> +		value = (value << (sizeof(value)*8 - chan->scan_type.realbits))
+> +			>> (sizeof(value)*8 - chan->scan_type.realbits);
 
-Greetings,
-Michael
+This looks scarey. There is a sign_extend32 function. It probably makes
+sense to add one which works on ints. Btw. I think until the sign extension
+the type should still be unsigned. This will also get rid of the duplicated
+code.
 
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin, Mar=
-garet Seif
+> +	} else {
+> +		switch (chan->scan_type.storagebits) {
+> +		case 8:
+> +			value = *(u8 *)(data);
+> +			break;
+> +		case 16:
+> +			value = *(u16 *)(data);
+> +			break;
+> +		case 32:
+> +			value = *(u32 *)(data);
+> +			break;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +		value >>= chan->scan_type.shift;
+> +		value &= (1 << chan->scan_type.realbits) - 1;
+> +	}
+> +	*val = value;
+
+This function probably needs to be extended to deal with the endianness
+field of the scan type at some point.
+> +
+> +	return 0;
+> +}
+> +
+> +static int iio_input_store_to(u8 *data, void *private)
+> +{
+> +	struct iio_input_state *st = private;
+> +	struct iio_channel *channel;
+> +	struct iio_input_channel_data *input_data;
+> +	int offset = 0;
+> +	int value, ret;
+> +
+> +	channel = iio_channel_cb_get_channels(st->buff);
+> +	while (channel->indio_dev) {
+> +		input_data = channel->data;
+> +		offset = ALIGN(offset,
+> +			       channel->channel->scan_type.storagebits/8);
+> +		offset += channel->channel->scan_type.storagebits/8;
+
+Maybe I'm missing something, but shouldn't offset be increased after reading
+the data?
+
+> +		ret = iio_channel_value(&data[offset],
+> +					channel->channel,
+> +					&value);
+> +		if (ret < 0)
+> +			return ret;
+> +		input_report_abs(st->idev, input_data->code, value);
+> +	}
+> +	input_sync(st->idev);
+> +
+> +	return 0;
+> +}
+> +
+[...]
