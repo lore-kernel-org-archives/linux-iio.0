@@ -1,40 +1,33 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:50719 "EHLO
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:39789 "EHLO
 	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755154Ab2FHMLP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Jun 2012 08:11:15 -0400
-Message-ID: <4FD1EBDE.8000202@cam.ac.uk>
-Date: Fri, 08 Jun 2012 13:11:10 +0100
+	with ESMTP id S1751704Ab2FHLgj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Jun 2012 07:36:39 -0400
+Message-ID: <4FD1E3C2.1060100@cam.ac.uk>
+Date: Fri, 08 Jun 2012 12:36:34 +0100
 From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCG v3 1/9] staging:iio: Add helper function for initializing
- triggered buffers
-References: <1339145332-26811-1-git-send-email-lars@metafoo.de> <1339157593-15821-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1339157593-15821-1-git-send-email-lars@metafoo.de>
+Subject: Re: [v2 1/9] staging:iio: Add helper function for initializing triggered
+ buffers
+References: <1339145332-26811-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1339145332-26811-1-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 6/8/2012 1:13 PM, Lars-Peter Clausen wrote:
+On 6/8/2012 9:48 AM, Lars-Peter Clausen wrote:
 > Add a helper function for executing the common tasks which are usually involved
 > in setting up a simple software ringbuffer. It will allocate the buffer,
 > allocate the pollfunc and register the buffer.
 >
 > Signed-off-by: Lars-Peter Clausen<lars@metafoo.de>
-Other than the patch title...
-
-Acked-by: Jonathan Cameron <jic23@kernel.org>
 >
 > ---
-> Changes since v2:
-> 	* Add missing header...
->
-> 	I've only resent this one patch for v3 since all the others are unchanged.
->
 > Changes since v1:
 > 	* Move function declarations to their own header
+And forgot to add said header...
 > 	* Mention that iio_triggered_buffer_setup should usually be called right
 > 	  before iio_device_register
 > 	* Minor code cleanups
@@ -42,10 +35,8 @@ Acked-by: Jonathan Cameron <jic23@kernel.org>
 >   drivers/iio/Kconfig                         |    7 ++
 >   drivers/iio/Makefile                        |    1 +
 >   drivers/iio/industrialio-triggered-buffer.c |  110 +++++++++++++++++++++++++++
->   include/linux/iio/triggered_buffer.h        |   15 ++++
->   4 files changed, 133 insertions(+)
+>   3 files changed, 118 insertions(+)
 >   create mode 100644 drivers/iio/industrialio-triggered-buffer.c
->   create mode 100644 include/linux/iio/triggered_buffer.h
 >
 > diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
 > index 103349f..612073f 100644
@@ -193,25 +184,4 @@ Acked-by: Jonathan Cameron <jic23@kernel.org>
 > +MODULE_AUTHOR("Lars-Peter Clausen<lars@metafoo.de>");
 > +MODULE_DESCRIPTION("IIO helper functions for setting up triggered buffers");
 > +MODULE_LICENSE("GPL");
-> diff --git a/include/linux/iio/triggered_buffer.h b/include/linux/iio/triggered_buffer.h
-> new file mode 100644
-> index 0000000..c378ebe
-> --- /dev/null
-> +++ b/include/linux/iio/triggered_buffer.h
-> @@ -0,0 +1,15 @@
-> +#ifndef _LINUX_IIO_TRIGGERED_BUFFER_H_
-> +#define _LINUX_IIO_TRIGGERED_BUFFER_H_
-> +
-> +#include<linux/interrupt.h>
-> +
-> +struct iio_dev;
-> +struct iio_buffer_setup_ops;
-> +
-> +int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
-> +	irqreturn_t (*pollfunc_bh)(int irq, void *p),
-> +	irqreturn_t (*pollfunc_th)(int irq, void *p),
-> +	const struct iio_buffer_setup_ops *setup_ops);
-> +void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev);
-> +
-> +#endif
 
