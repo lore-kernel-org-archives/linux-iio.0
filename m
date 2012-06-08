@@ -1,187 +1,204 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:39789 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751704Ab2FHLgj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Jun 2012 07:36:39 -0400
-Message-ID: <4FD1E3C2.1060100@cam.ac.uk>
-Date: Fri, 08 Jun 2012 12:36:34 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [v2 1/9] staging:iio: Add helper function for initializing triggered
- buffers
-References: <1339145332-26811-1-git-send-email-lars@metafoo.de>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [v2 9/9] staging:iio:adc:ad799x: Use new triggered buffer setup helper function
+Date: Fri,  8 Jun 2012 10:48:52 +0200
+Message-Id: <1339145332-26811-9-git-send-email-lars@metafoo.de>
 In-Reply-To: <1339145332-26811-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+References: <1339145332-26811-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 6/8/2012 9:48 AM, Lars-Peter Clausen wrote:
-> Add a helper function for executing the common tasks which are usually involved
-> in setting up a simple software ringbuffer. It will allocate the buffer,
-> allocate the pollfunc and register the buffer.
->
-> Signed-off-by: Lars-Peter Clausen<lars@metafoo.de>
->
-> ---
-> Changes since v1:
-> 	* Move function declarations to their own header
-And forgot to add said header...
-> 	* Mention that iio_triggered_buffer_setup should usually be called right
-> 	  before iio_device_register
-> 	* Minor code cleanups
-> ---
->   drivers/iio/Kconfig                         |    7 ++
->   drivers/iio/Makefile                        |    1 +
->   drivers/iio/industrialio-triggered-buffer.c |  110 +++++++++++++++++++++++++++
->   3 files changed, 118 insertions(+)
->   create mode 100644 drivers/iio/industrialio-triggered-buffer.c
->
-> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-> index 103349f..612073f 100644
-> --- a/drivers/iio/Kconfig
-> +++ b/drivers/iio/Kconfig
-> @@ -30,6 +30,13 @@ config IIO_KFIFO_BUF
->   	  no buffer events so it is up to userspace to work out how
->   	  often to read from the buffer.
->
-> +config IIO_TRIGGERED_BUFFER
-> +	tristate
-> +	select IIO_TRIGGER
-> +	select IIO_KFIFO_BUF
-> +	help
-> +	  Provides helper functions for setting up triggered buffers.
-> +
->   endif # IIO_BUFFER
->
->   config IIO_TRIGGER
-> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-> index c38fa2a..34309ab 100644
-> --- a/drivers/iio/Makefile
-> +++ b/drivers/iio/Makefile
-> @@ -7,6 +7,7 @@ industrialio-y := industrialio-core.o industrialio-event.o inkern.o
->   industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
->   industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
->
-> +obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
->   obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
->
->   obj-y += adc/
-> diff --git a/drivers/iio/industrialio-triggered-buffer.c b/drivers/iio/industrialio-triggered-buffer.c
-> new file mode 100644
-> index 0000000..a462a57
-> --- /dev/null
-> +++ b/drivers/iio/industrialio-triggered-buffer.c
-> @@ -0,0 +1,110 @@
-> + /*
-> + * Copyright (c) 2012 Analog Devices, Inc.
-> + *  Author: Lars-Peter Clausen<lars@metafoo.de>
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published by
-> + * the Free Software Foundation.
-> + */
-> +
-> +#include<linux/kernel.h>
-> +#include<linux/export.h>
-> +#include<linux/module.h>
-> +#include<linux/iio/iio.h>
-> +#include<linux/iio/buffer.h>
-> +#include<linux/iio/kfifo_buf.h>
-> +#include<linux/iio/triggered_buffer.h>
-> +#include<linux/iio/trigger_consumer.h>
-> +
-> +static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
-> +	.preenable =&iio_sw_buffer_preenable,
-> +	.postenable =&iio_triggered_buffer_postenable,
-> +	.predisable =&iio_triggered_buffer_predisable,
-> +};
-> +
-> +/**
-> + * iio_triggered_buffer_setup() - Setup triggered buffer and pollfunc
-> + * @indio_dev:		IIO device structure
-> + * @pollfunc_bh:	Function which will be used as pollfunc bottom half
-> + * @pollfunc_th:	Function which will be used as pollfunc top half
-> + * @setup_ops:		Buffer setup functions to use for this device.
-> + *			If NULL the default setup functions for triggered
-> + *			buffers will be used.
-> + *
-> + * This function combines some common tasks which will normally be performed
-> + * when setting up a triggered buffer. It will allocate the buffer and the
-> + * pollfunc, as well as register the buffer with IIO core.
-> + *
-> + * Before calling this function the indio_dev structure should already be
-> + * completely initialized but not yet registered. In practice this means that
-> + * this function should be called right before iio_device_register().
-> + *
-> + * To free the resources allocated by this function
-> + * iio_triggered_buffer_cleanup() should be called.
-> + */
-> +int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
-> +	irqreturn_t (*pollfunc_bh)(int irq, void *p),
-> +	irqreturn_t (*pollfunc_th)(int irq, void *p),
-> +	const struct iio_buffer_setup_ops *setup_ops)
-> +{
-> +	int ret;
-> +
-> +	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
-> +	if (!indio_dev->buffer) {
-> +		ret = -ENOMEM;
-> +		goto error_ret;
-> +	}
-> +
-> +	indio_dev->pollfunc = iio_alloc_pollfunc(pollfunc_bh,
-> +						 pollfunc_th,
-> +						 IRQF_ONESHOT,
-> +						 indio_dev,
-> +						 "%s_consumer%d",
-> +						 indio_dev->name,
-> +						 indio_dev->id);
-> +	if (indio_dev->pollfunc == NULL) {
-> +		ret = -ENOMEM;
-> +		goto error_kfifo_free;
-> +	}
-> +
-> +	/* Ring buffer functions - here trigger setup related */
-> +	if (setup_ops)
-> +		indio_dev->setup_ops = setup_ops;
-> +	else
-> +		indio_dev->setup_ops =&iio_triggered_buffer_setup_ops;
-> +
-> +	/* Flag that polled ring buffering is possible */
-> +	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
-> +
-> +	ret = iio_buffer_register(indio_dev,
-> +				  indio_dev->channels,
-> +				  indio_dev->num_channels);
-> +	if (ret)
-> +		goto error_dealloc_pollfunc;
-> +
-> +	return 0;
-> +
-> +error_dealloc_pollfunc:
-> +	iio_dealloc_pollfunc(indio_dev->pollfunc);
-> +error_kfifo_free:
-> +	iio_kfifo_free(indio_dev->buffer);
-> +error_ret:
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(iio_triggered_buffer_setup);
-> +
-> +/**
-> + * iio_triggered_buffer_cleanup() - Free resources allocated by iio_triggered_buffer_setup()
-> + * @indio_dev: IIO device structure
-> + */
-> +void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev)
-> +{
-> +	iio_buffer_unregister(indio_dev);
-> +	iio_dealloc_pollfunc(indio_dev->pollfunc);
-> +	iio_kfifo_free(indio_dev->buffer);
-> +}
-> +EXPORT_SYMBOL(iio_triggered_buffer_cleanup);
-> +
-> +MODULE_AUTHOR("Lars-Peter Clausen<lars@metafoo.de>");
-> +MODULE_DESCRIPTION("IIO helper functions for setting up triggered buffers");
-> +MODULE_LICENSE("GPL");
+Use the new triggered buffer setup helper function to allocate and register
+buffer and pollfunc.
 
+Also as part of the conversion drop scan_timestamp being enabled by default,
+since it is a left over of an earlier cleanup.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/Kconfig       |    2 +-
+ drivers/staging/iio/adc/ad799x.h      |    2 -
+ drivers/staging/iio/adc/ad799x_core.c |   25 ++++++++-----
+ drivers/staging/iio/adc/ad799x_ring.c |   65 ++-------------------------------
+ 4 files changed, 20 insertions(+), 74 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index e3fdb84..67711b7 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -63,7 +63,7 @@ config AD799X_RING_BUFFER
+ 	bool "Analog Devices AD799x: use ring buffer"
+ 	depends on AD799X
+ 	select IIO_BUFFER
+-	select IIO_KFIFO_BUF
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say yes here to include ring buffer support in the AD799X
+ 	  ADC driver.
+diff --git a/drivers/staging/iio/adc/ad799x.h b/drivers/staging/iio/adc/ad799x.h
+index 99f8abe..3e363c4 100644
+--- a/drivers/staging/iio/adc/ad799x.h
++++ b/drivers/staging/iio/adc/ad799x.h
+@@ -120,8 +120,6 @@ struct ad799x_platform_data {
+ 	u16				vref_mv;
+ };
+ 
+-int ad7997_8_set_scan_mode(struct ad799x_state *st, unsigned mask);
+-
+ #ifdef CONFIG_AD799X_RING_BUFFER
+ int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+ void ad799x_ring_cleanup(struct iio_dev *indio_dev);
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index 80e0c6e..2d4bda9 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -99,10 +99,21 @@ static int ad799x_i2c_write8(struct ad799x_state *st, u8 reg, u8 data)
+ 	return ret;
+ }
+ 
+-int ad7997_8_set_scan_mode(struct ad799x_state *st, unsigned mask)
++static int ad7997_8_update_scan_mode(struct iio_dev *indio_dev,
++	const unsigned long *scan_mask)
+ {
+-	return ad799x_i2c_write16(st, AD7998_CONF_REG,
+-		st->config | (mask << AD799X_CHANNEL_SHIFT));
++	struct ad799x_state *st = iio_priv(indio_dev);
++
++	switch (st->id) {
++	case ad7997:
++	case ad7998:
++		return ad799x_i2c_write16(st, AD7998_CONF_REG,
++			st->config | (*scan_mask << AD799X_CHANNEL_SHIFT));
++	default:
++		break;
++	}
++
++	return 0;
+ }
+ 
+ static int ad799x_scan_direct(struct ad799x_state *st, unsigned ch)
+@@ -442,6 +453,7 @@ static const struct iio_info ad7993_4_7_8_info = {
+ 	.read_event_value = &ad799x_read_event_value,
+ 	.write_event_value = &ad799x_write_event_value,
+ 	.driver_module = THIS_MODULE,
++	.update_scan_mode = ad7997_8_update_scan_mode,
+ };
+ 
+ #define AD799X_EV_MASK (IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) | \
+@@ -887,12 +899,6 @@ static int __devinit ad799x_probe(struct i2c_client *client,
+ 	if (ret)
+ 		goto error_disable_reg;
+ 
+-	ret = iio_buffer_register(indio_dev,
+-				  indio_dev->channels,
+-				  indio_dev->num_channels);
+-	if (ret)
+-		goto error_cleanup_ring;
+-
+ 	if (client->irq > 0) {
+ 		ret = request_threaded_irq(client->irq,
+ 					   NULL,
+@@ -934,7 +940,6 @@ static __devexit int ad799x_remove(struct i2c_client *client)
+ 	if (client->irq > 0)
+ 		free_irq(client->irq, indio_dev);
+ 
+-	iio_buffer_unregister(indio_dev);
+ 	ad799x_ring_cleanup(indio_dev);
+ 	if (!IS_ERR(st->reg)) {
+ 		regulator_disable(st->reg);
+diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
+index 1c7ff44..0882c9e 100644
+--- a/drivers/staging/iio/adc/ad799x_ring.c
++++ b/drivers/staging/iio/adc/ad799x_ring.c
+@@ -18,33 +18,12 @@
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/buffer.h>
+-#include <linux/iio/kfifo_buf.h>
+ #include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ 
+ #include "ad799x.h"
+ 
+ /**
+- * ad799x_ring_preenable() setup the parameters of the ring before enabling
+- *
+- * The complex nature of the setting of the number of bytes per datum is due
+- * to this driver currently ensuring that the timestamp is stored at an 8
+- * byte boundary.
+- **/
+-static int ad799x_ring_preenable(struct iio_dev *indio_dev)
+-{
+-	struct ad799x_state *st = iio_priv(indio_dev);
+-	/*
+-	 * Need to figure out the current mode based upon the requested
+-	 * scan mask in iio_dev
+-	 */
+-
+-	if (st->id == ad7997 || st->id == ad7998)
+-		ad7997_8_set_scan_mode(st, *indio_dev->active_scan_mask);
+-
+-	return iio_sw_buffer_preenable(indio_dev);
+-}
+-
+-/**
+  * ad799x_trigger_handler() bh of trigger launched polling to ring buffer
+  *
+  * Currently there is no option in this driver to disable the saving of
+@@ -110,49 +89,13 @@ out:
+ 	return IRQ_HANDLED;
+ }
+ 
+-static const struct iio_buffer_setup_ops ad799x_buf_setup_ops = {
+-	.preenable = &ad799x_ring_preenable,
+-	.postenable = &iio_triggered_buffer_postenable,
+-	.predisable = &iio_triggered_buffer_predisable,
+-};
+-
+ int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ {
+-	int ret = 0;
+-
+-	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
+-	if (!indio_dev->buffer) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
+-						 &ad799x_trigger_handler,
+-						 IRQF_ONESHOT,
+-						 indio_dev,
+-						 "%s_consumer%d",
+-						 indio_dev->name,
+-						 indio_dev->id);
+-	if (indio_dev->pollfunc == NULL) {
+-		ret = -ENOMEM;
+-		goto error_deallocate_kfifo;
+-	}
+-
+-	/* Ring buffer functions - here trigger setup related */
+-	indio_dev->setup_ops = &ad799x_buf_setup_ops;
+-	indio_dev->buffer->scan_timestamp = true;
+-
+-	/* Flag that polled ring buffering is possible */
+-	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
+-	return 0;
+-
+-error_deallocate_kfifo:
+-	iio_kfifo_free(indio_dev->buffer);
+-error_ret:
+-	return ret;
++	return iio_triggered_buffer_setup(indio_dev, NULL,
++		&ad799x_trigger_handler, NULL);
+ }
+ 
+ void ad799x_ring_cleanup(struct iio_dev *indio_dev)
+ {
+-	iio_dealloc_pollfunc(indio_dev->pollfunc);
+-	iio_kfifo_free(indio_dev->buffer);
++	iio_triggered_buffer_cleanup(indio_dev);
+ }
+-- 
+1.7.10
