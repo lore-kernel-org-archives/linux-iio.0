@@ -1,42 +1,32 @@
-Return-Path: <omaplinuxkernel@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <4FD5D83E.3040504@metafoo.de>
-References: <1339401064-5218-1-git-send-email-michael.hennerich@analog.com>
-	<CAM=Q2ctNYnq9S9fr4K6sh+k3311nMON8Yho+-vAdd3dSdOXRHg@mail.gmail.com>
-	<4FD5B743.7070500@analog.com>
-	<CAM=Q2csVnSs_gicDyMdKZYPNf6qC8FYD1sOcBBJ+5tSEScpu8Q@mail.gmail.com>
-	<4FD5D83E.3040504@metafoo.de>
-Date: Mon, 11 Jun 2012 17:59:04 +0530
-Message-ID: <CAM=Q2csxqNYuLzwig5f9MWc=k8thyM7EPsvc71yd395MURLtsQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: ad9523: Fix argument type mismatch
-From: Shubhrajyoti Datta <omaplinuxkernel@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: michael.hennerich@analog.com,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jic23@kernel.org" <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"device-drivers-devel@blackfin.uclinux.org" <device-drivers-devel@blackfin.uclinux.org>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:57983 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753005Ab2FJWjc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 10 Jun 2012 18:39:32 -0400
+Received: from sirene.lan (83-215-0-241.stadt.dyn.salzburg-online.at [83.215.0.241])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	(Authenticated sender: pmeerw)
+	by pmeerw.net (Postfix) with ESMTPSA id BEF8BC50173
+	for <linux-iio@vger.kernel.org>; Mon, 11 Jun 2012 00:39:30 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Subject: iio: vcnl4000 ALS/proximity driver
+Date: Mon, 11 Jun 2012 00:39:20 +0200
+Message-Id: <1339367961-22456-1-git-send-email-pmeerw@pmeerw.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jun 11, 2012 at 5:06 PM, Lars-Peter Clausen <lars@metafoo.de> wrote=
-:
-> On 06/11/2012 01:17 PM, Shubhrajyoti Datta wrote:
->> Hi Michael,
->>
->> On Mon, Jun 11, 2012 at 2:45 PM, Michael Hennerich
->> <michael.hennerich@analog.com> wrote:
->> [..]
->>>>> =A0static int ad9523_vco_out_map(struct iio_dev *indio_dev,
->>>>> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned ch=
-, bool out)
->>>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned ch=
-, unsigned out)
->>>>
->>>> Unsigned defaults to unsigned int right shouldnt it be a char?
->>>> Or am I missing something.
->>>>
+I'm submitting a minimal, work-in-progress driver for the 
+Vishay VCNL4000 combined ambient light/proximity sensor to -staging
 
->
-> The code is fine as it is, the assignment does an implicit type cast.
+the driver is missing a way to adjust the IR current determining 
+the range for proximity sensing
 
-Ok got is now . Apologies for the noise.
+is scale/calibscale desirable?
+I am lost with the meaning and use of IIO modifiers...
+
+ultimately, periodic proximity sensing and thresholding with event 
+handling should be implemented... I do have a misc/input driver for 
+that but want to built upon IIO
+
