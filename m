@@ -1,209 +1,303 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-52.csi.cam.ac.uk ([131.111.8.152]:43721 "EHLO
-	ppsw-52.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751374Ab2FLKvV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Jun 2012 06:51:21 -0400
-Message-ID: <4FD71F27.9010001@cam.ac.uk>
-Date: Tue, 12 Jun 2012 11:51:19 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: nitpicking on sysfs-bus-iio
-References: <1339494541-15018-1-git-send-email-pmeerw@pmeerw.net> <1339494541-15018-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1339494541-15018-2-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	lars@metafoo.de,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH v2] iio: add vcnl4000 combined ALS and proximity sensor
+Date: Mon, 11 Jun 2012 23:25:15 +0200
+Message-Id: <1339449915-7542-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 6/12/2012 10:49 AM, Peter Meerwald wrote:
-> From: Peter Meerwald<p.meerwald@bct-electronic.com>
->
-Thanks for doing this.  I'm fine with the vast majority of these.
-Exceptions are the period after etc.
-and I'd prefer the powerdown mode options to be documented
-under the current location. +  they are not examples
-but rather the complete list of accepted options. Any
-new ones must be documented here (if any have slipped
-by do point them out!).
+minimal driver, submitting to staging
 
-> Signed-off-by: Peter Meerwald<pmeerw@pmeerw.net>
->
-> ---
->   Documentation/ABI/testing/sysfs-bus-iio |   58 +++++++++++++++----------------
->   1 files changed, 28 insertions(+), 30 deletions(-)
->
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 5bc8a47..8b0dc4f 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -42,7 +42,7 @@ Description:
->   		resulting sampling frequency.  In many devices this
->   		parameter has an effect on input filters etc rather than
->   		simply controlling when the input is sampled.  As this
-> -		effects datardy triggers, hardware buffers and the sysfs
-> +		effects data ready triggers, hardware buffers and the sysfs
->   		direct access interfaces, it may be found in any of the
->   		relevant directories.  If it effects all of the above
->   		then it is to be found in the base device directory.
-> @@ -148,10 +148,9 @@ KernelVersion:	2.6.35
->   Contact:	linux-iio@vger.kernel.org
->   Description:
->   		Angular velocity about axis x, y or z (may be arbitrarily
-> -		assigned) Data converted by application of offset then scale to
-> -		radians per second. Has all the equivalent parameters as
-> -		per voltageY. Units after application of scale and offset are
-> -		radians per second.
-> +		assigned). Has all the equivalent parameters as	per voltageY.
-> +		Units after application of scale and offset are	radians per
-> +		second.
->
->   What:		/sys/bus/iio/devices/iio:deviceX/in_incli_x_raw
->   What:		/sys/bus/iio/devices/iio:deviceX/in_incli_y_raw
-> @@ -161,7 +160,7 @@ Contact:	linux-iio@vger.kernel.org
->   Description:
->   		Inclination raw reading about axis x, y or z (may be
->   		arbitrarily assigned). Data converted by application of offset
-> -		and scale to Degrees.
-> +		and scale to degrees.
->
->   What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_raw
->   What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_raw
-> @@ -203,7 +202,7 @@ Contact:	linux-iio@vger.kernel.org
->   Description:
->   		If known for a device, offset to be added to<type>[Y]_raw prior
->   		to scaling by<type>[Y]_scale in order to obtain value in the
-> -		<type>  units as specified in<type>[y]_raw documentation.
-> +		<type>  units as specified in<type>[Y]_raw documentation.
->   		Not present if the offset is always 0 or unknown. If Y or
->   		axis<x|y|z>  is not present, then the offset applies to all
->   		in channels of<type>.
-> @@ -248,7 +247,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calibbias
->   KernelVersion:	2.6.35
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> -		Hardware applied calibration offset. (assumed to fix production
-> +		Hardware applied calibration offset (assumed to fix production
->   		inaccuracies).
->
->   What		/sys/bus/iio/devices/iio:deviceX/in_voltageY_calibscale
-> @@ -265,7 +264,7 @@ what		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calibscale
->   KernelVersion:	2.6.35
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> -		Hardware applied calibration scale factor. (assumed to fix
-> +		Hardware applied calibration scale factor (assumed to fix
->   		production inaccuracies).  If shared across all channels,
->   		<type>_calibscale is used.
->
-> @@ -277,7 +276,7 @@ What:		/sys/.../iio:deviceX/in_capacitance_scale_available
->   KernelVersion:	2.635
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> -		If a discrete set of scale values are available, they
-> +		If a discrete set of scale values is available, they
->   		are listed in this attribute.
->
->   What		/sys/bus/iio/devices/iio:deviceX/out_voltageY_hardwaregain
-> @@ -301,7 +300,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_raw
->   KernelVersion:	2.6.37
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> -		Raw (unscaled, no bias etc.) output voltage for
-> +		Raw (unscaled, no bias etc) output voltage for
->   		channel Y.  The number must always be specified and
->   		unique if the output corresponds to a single channel.
->
-> @@ -309,7 +308,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY&Z_raw
->   KernelVersion:	2.6.37
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> -		Raw (unscaled, no bias etc.) output voltage for an aggregate of
-> +		Raw (unscaled, no bias etc) output voltage for an aggregate of
-etc should always be followed by a period...
->   		channel Y, channel Z, etc.  This interface is available in cases
->   		where a single output sets the value for multiple channels
->   		simultaneously.
-> @@ -319,22 +318,20 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown_mode
->   KernelVersion:	2.6.38
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> -		Specifies the output powerdown mode.
-> -		DAC output stage is disconnected from the amplifier and
-> -		1kohm_to_gnd: connected to ground via an 1kOhm resistor
-> -		100kohm_to_gnd: connected to ground via an 100kOhm resistor
-> -		three_state: left floating
-> -		For a list of available output power down options read
-> -		outX_powerdown_mode_available. If Y is not present the
-> -		mode is shared across all outputs.
-> +		Specifies the output powerdown mode. For a list of available
-> +		output power down options read outX_powerdown_mode_available.
-> +		If Y is	not present the	mode is shared across all outputs.
->
->   What:		/sys/.../iio:deviceX/out_votlageY_powerdown_mode_available
->   What:		/sys/.../iio:deviceX/out_voltage_powerdown_mode_available
->   KernelVersion:	2.6.38
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> -		Lists all available output power down modes.
-> -		If Y is not present the mode is shared across all outputs.
-> +		Lists all available output power down modes (e.g. 1kohm_to_gnd:
-> +		connected to ground via an 1kOhm resistor, 100kohm_to_gnd:
-> +		connected to ground via an 100kOhm resistor, three_state:
-> +		left floating).	If Y is not present the mode is shared across
-> +		all outputs.
-I'd rather see the listing under out_voltageY_powerdown_mode than here.
-That's the key sysfs element, this one is just a convenient listing of 
-what is available.
->
->   What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown
->   What:		/sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown
-> @@ -342,9 +339,10 @@ KernelVersion:	2.6.38
->   Contact:	linux-iio@vger.kernel.org
->   Description:
->   		Writing 1 causes output Y to enter the power down mode specified
-> -		by the corresponding outY_powerdown_mode. Clearing returns to
-> -		normal operation. Y may be suppressed if all outputs are
-> -		controlled together.
-> +		by the corresponding outY_powerdown_mode. DAC output stage is
-> +		disconnected from the amplifier.Clearing returns to normal
-> +		operation. Y may be suppressed if all outputs are controlled
-> +		together.
->
->   What:		/sys/bus/iio/devices/iio:deviceX/events
->   KernelVersion:	2.6.35
-> @@ -390,12 +388,12 @@ Description:
->   		different values, but the device can only enable both thresholds
->   		or neither.
->   		Note the driver will assume the last p events requested are
-> -		to be enabled where p is however many it supports (which may
-> -		vary depending on the exact set requested. So if you want to be
-> +		to be enabled where p is how many it supports (which may vary
-> +		depending on the exact set requested. So if you want to be
->   		sure you have set what you think you have, check the contents of
->   		these attributes after everything is configured. Drivers may
->   		have to buffer any parameters so that they are consistent when
-> -		a given event type is enabled a future point (and not those for
-> +		a given event type is enabled at a future point (and not those for
->   		whatever event was previously enabled).
->
->   What:		/sys/.../iio:deviceX/events/in_accel_x_roc_rising_en
-> @@ -671,7 +669,7 @@ What:		/sys/.../buffer/scan_elements/in_anglvel_type
->   What:		/sys/.../buffer/scan_elements/in_magn_type
->   What:		/sys/.../buffer/scan_elements/in_incli_type
->   What:		/sys/.../buffer/scan_elements/in_voltageY_type
-> -What:		/sys/.../buffer/scan_elements/in_voltage-in_type
-> +What:		/sys/.../buffer/scan_elements/in_voltage_type
->   What:		/sys/.../buffer/scan_elements/in_voltageY_supply_type
->   What:		/sys/.../buffer/scan_elements/in_timestamp_type
->   KernelVersion:	2.6.37
-> @@ -692,7 +690,7 @@ Description:
->   		the buffer output value appropriately.  The storagebits value
->   		also specifies the data alignment.  So s48/64>>2 will be a
->   		signed 48 bit integer stored in a 64 bit location aligned to
-> -		a a64 bit boundary. To obtain the clean value, shift right 2
-> +		a 64 bit boundary. To obtain the clean value, shift right 2
->   		and apply a mask to zero the top 16 bits of the result.
->   		For other storage combinations this attribute will be extended
->   		appropriately.
+v2 (address comments by Lars-Peter Clausen and Jonathan Cameron)
+* unify code for reading PS and AL data into
+  parameterized _measure() function
+* limit wait for data to become ready within 20 tries
+* drop IIO_LIGHT channel, add SCALE to IIO_INTENSITY
+* drop extra string arguments used for logging purpose only
 
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/staging/iio/light/Kconfig    |   11 ++
+ drivers/staging/iio/light/Makefile   |    1 +
+ drivers/staging/iio/light/vcnl4000.c |  238 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 250 insertions(+)
+ create mode 100644 drivers/staging/iio/light/vcnl4000.c
+
+diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
+index 4bed30e..6b8d022 100644
+--- a/drivers/staging/iio/light/Kconfig
++++ b/drivers/staging/iio/light/Kconfig
+@@ -50,4 +50,15 @@ config TSL2x7x
+ 	 tmd2672, tsl2772, tmd2772 devices.
+ 	 Provides iio_events and direct access via sysfs.
+ 
++config SENSORS_VCNL4000
++	tristate "VCNL4000 combined ALS and proximity sensor"
++	depends on I2C
++	default n
++	---help---
++	  Say Y here if you want to build a driver for the VCNL4000
++	  combined ambient light and proximity sensor.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called vcnl4000.
++
+ endmenu
+diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
+index 141af1e..ea2c2f2 100644
+--- a/drivers/staging/iio/light/Makefile
++++ b/drivers/staging/iio/light/Makefile
+@@ -7,3 +7,4 @@ obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
+ obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
+ obj-$(CONFIG_TSL2583)	+= tsl2583.o
+ obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
++obj-$(CONFIG_SENSORS_VCNL4000)	+= vcnl4000.o
+diff --git a/drivers/staging/iio/light/vcnl4000.c b/drivers/staging/iio/light/vcnl4000.c
+new file mode 100644
+index 0000000..7a28d9e
+--- /dev/null
++++ b/drivers/staging/iio/light/vcnl4000.c
+@@ -0,0 +1,238 @@
++/*
++ * vcnl4000.c - Support for Vishay VCNL4000 combined ambient light and
++ * proximity sensor
++ *
++ * Copyright 2012 Peter Meerwald <pmeerw@pmeerw.net>
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * IIO driver for VCNL4000 (7-bit I2C slave address 0x13)
++ *
++ * TODO:
++ *   allow to adjust IR current
++ *   need scale/calibscale?
++ *   proximity threshold and event handling
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/err.h>
++#include <linux/delay.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define VCNL4000_DRV_NAME "vcnl4000"
++
++#define VCNL4000_COMMAND	0x80 /* Command register */
++#define VCNL4000_PROD_REV	0x81 /* Product ID and Revision ID */
++#define VCNL4000_LED_CURRENT	0x83 /* IR LED current for proximity mode */
++#define VCNL4000_AL_PARAM	0x84 /* Ambient light parameter register */
++#define VCNL4000_AL_RESULT_HI	0x85 /* Ambient light result register, MSB */
++#define VCNL4000_AL_RESULT_LO	0x86 /* Ambient light result register, LSB */
++#define VCNL4000_PS_RESULT_HI	0x87 /* Proximity result register, MSB */
++#define VCNL4000_PS_RESULT_LO	0x88 /* Proximity result register, LSB */
++#define VCNL4000_PS_MEAS_FREQ	0x89 /* Proximity measurement signal frequency */
++#define VCNL4000_PS_MOD_ADJ	0x8a /* Proximity modulator timing adjustment */
++
++/* Bit masks for COMMAND register */
++#define VCNL4000_AL_RDY		0x40 /* ALS data ready? */
++#define VCNL4000_PS_RDY		0x20 /* proximity data ready? */
++#define VCNL4000_AL_OD		0x10 /* start on-demand ALS measurement */
++#define VCNL4000_PS_OD		0x08 /* start on-demand proximity measurement */
++
++struct vcnl4000_data {
++	struct i2c_client *client;
++};
++
++static const struct i2c_device_id vcnl4000_id[] = {
++	{ "vcnl4000", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, vcnl4000_id);
++
++static int vcnl4000_read(struct vcnl4000_data *data, u8 reg)
++{
++	int ret = i2c_smbus_read_byte_data(data->client, reg);
++	if (ret < 0)
++		dev_err(&data->client->dev,
++			"vcnl4000_read() failed, error %d\n", ret);
++	return ret;
++}
++
++static int vcnl4000_write(struct vcnl4000_data *data, u8 reg, u8 val)
++{
++	int ret = i2c_smbus_write_byte_data(data->client, reg, val);
++	if (ret < 0)
++		dev_err(&data->client->dev,
++			"vcnl4000_write() failed, error %d\n", ret);
++	return ret;
++}
++
++static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
++				u8 rdy_mask, u8 data_reg, int *val)
++{
++	int tries = 20;
++	u16 buf;
++	int ret;
++
++	ret = vcnl4000_write(data, VCNL4000_COMMAND, req_mask);
++	if (ret < 0)
++		return ret;
++
++	/* wait for data to become ready */
++	while (tries--) {
++		ret = vcnl4000_read(data, VCNL4000_COMMAND);
++		if (ret < 0)
++			return ret;
++		if (ret & rdy_mask)
++			break;
++		msleep(1);
++	}
++
++	if (tries < 0) {
++		dev_err(&data->client->dev,
++			"vcnl4000_measure() failed, data not ready\n");
++		return -EIO;
++	}
++
++	ret = i2c_smbus_read_i2c_block_data(data->client,
++		data_reg, sizeof(buf), (u8 *) &buf);
++	if (ret < 0) {
++		dev_err(&data->client->dev,
++			"vcnl4000_measure() failed, error %d\n", ret);
++		return ret;
++	}
++
++	*val = be16_to_cpu(buf);
++
++	return 0;
++}
++
++static const struct iio_chan_spec vcnl4000_channels[] = {
++	{
++		.type = IIO_INTENSITY,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
++			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++	}, {
++		.type = IIO_PROXIMITY,
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++	}
++};
++
++static int vcnl4000_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	int ret = -EINVAL;
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_INTENSITY:
++			ret = vcnl4000_measure(data,
++				VCNL4000_AL_OD, VCNL4000_AL_RDY,
++				VCNL4000_AL_RESULT_HI, val);
++			if (ret < 0)
++				return ret;
++			ret = IIO_VAL_INT;
++			break;
++		case IIO_PROXIMITY:
++			ret = vcnl4000_measure(data,
++				VCNL4000_PS_OD, VCNL4000_PS_RDY,
++				VCNL4000_PS_RESULT_HI, val);
++			if (ret < 0)
++				return ret;
++			ret = IIO_VAL_INT;
++			break;
++		default:
++			break;
++		}
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		if (chan->type == IIO_INTENSITY) {
++			*val = 0;
++			*val2 = 250000;
++			ret = IIO_VAL_INT_PLUS_MICRO;
++		}
++		break;
++	default:
++		break;
++	}
++
++	return ret;
++}
++
++static const struct iio_info vcnl4000_info = {
++	.read_raw = vcnl4000_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int __devinit vcnl4000_probe(struct i2c_client *client,
++					const struct i2c_device_id *id)
++{
++	struct vcnl4000_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = iio_device_alloc(sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	ret = vcnl4000_read(data, VCNL4000_PROD_REV);
++	if (ret < 0)
++		goto error_free_dev;
++
++	dev_info(&client->dev, "VCNL4000 Ambient light/proximity sensor, "
++		"Prod %02x, Rev: %02x\n", ret >> 4, ret & 0xf);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &vcnl4000_info;
++	indio_dev->channels = vcnl4000_channels;
++	indio_dev->num_channels = ARRAY_SIZE(vcnl4000_channels);
++	indio_dev->name = VCNL4000_DRV_NAME;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		goto error_free_dev;
++
++	return 0;
++
++error_free_dev:
++	iio_device_free(indio_dev);
++	return ret;
++}
++
++static int __devexit vcnl4000_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++static struct i2c_driver vcnl4000_driver = {
++	.driver = {
++		.name   = VCNL4000_DRV_NAME,
++		.owner  = THIS_MODULE,
++	},
++	.probe  = vcnl4000_probe,
++	.remove = __devexit_p(vcnl4000_remove),
++	.id_table = vcnl4000_id,
++};
++
++module_i2c_driver(vcnl4000_driver);
++
++MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
++MODULE_DESCRIPTION("Vishay VCNL4000 proximity/ambient light sensor driver");
++MODULE_LICENSE("GPL");
+-- 
+1.7.9.5
