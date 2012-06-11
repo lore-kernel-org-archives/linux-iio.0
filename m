@@ -1,11 +1,11 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53251 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752618Ab2FKSNd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jun 2012 14:13:33 -0400
-Message-ID: <4FD63541.6000505@kernel.org>
-Date: Mon, 11 Jun 2012 19:13:21 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from smtp-out-194.synserver.de ([212.40.185.194]:1103 "EHLO
+	smtp-out-178.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752154Ab2FKLJm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jun 2012 07:09:42 -0400
+Message-ID: <4FD5D2C5.9090803@metafoo.de>
+Date: Mon, 11 Jun 2012 13:13:09 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
 To: Peter Meerwald <pmeerw@pmeerw.net>
 CC: linux-iio@vger.kernel.org
@@ -16,78 +16,15 @@ Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/10/2012 11:39 PM, Peter Meerwald wrote:
+On 06/11/2012 12:39 AM, Peter Meerwald wrote:
 > minimal driver, submitting to staging
 > 
-If we are happy interfaces that are here aren't going to change,
-skip the staging bit and submit under drivers/iio directly.
-Nothing wrong with a driver supporting some functionality!
-
-Obviously I'm not going to repeat Lars-Peter's comments
-(or not most of them anyway ;)
-
-Mostly short and clean which always makes me happy.
-
 > Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+
+Just some minor nitpicks inline.
+
 > ---
->  drivers/staging/iio/light/Kconfig    |   11 ++
->  drivers/staging/iio/light/Makefile   |    1 +
->  drivers/staging/iio/light/vcnl4000.c |  265 ++++++++++++++++++++++++++++++++++
->  3 files changed, 277 insertions(+)
->  create mode 100644 drivers/staging/iio/light/vcnl4000.c
-> 
-> diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-> index 4bed30e..6b8d022 100644
-> --- a/drivers/staging/iio/light/Kconfig
-> +++ b/drivers/staging/iio/light/Kconfig
-> @@ -50,4 +50,15 @@ config TSL2x7x
->  	 tmd2672, tsl2772, tmd2772 devices.
->  	 Provides iio_events and direct access via sysfs.
->  
-> +config SENSORS_VCNL4000
-> +	tristate "VCNL4000 combined ALS and proximity sensor"
-> +	depends on I2C
-> +	default n
-> +	---help---
-> +	  Say Y here if you want to build a driver for the VCNL4000
-> +	  combined ambient light and proximity sensor.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called vcnl4000.
-> +
->  endmenu
-> diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
-> index 141af1e..ea2c2f2 100644
-> --- a/drivers/staging/iio/light/Makefile
-> +++ b/drivers/staging/iio/light/Makefile
-> @@ -7,3 +7,4 @@ obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
->  obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
->  obj-$(CONFIG_TSL2583)	+= tsl2583.o
->  obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
-> +obj-$(CONFIG_SENSORS_VCNL4000)	+= vcnl4000.o
-> diff --git a/drivers/staging/iio/light/vcnl4000.c b/drivers/staging/iio/light/vcnl4000.c
-> new file mode 100644
-> index 0000000..c513b4b
-> --- /dev/null
-> +++ b/drivers/staging/iio/light/vcnl4000.c
-> @@ -0,0 +1,265 @@
-> +/*
-> + * vcnl4000.c - Support for Vishay VCNL4000 combined ambient light and
-> + * proximity sensor
-> + *
-> + * Copyright 2012 Peter Meerwald <pmeerw@pmeerw.net>
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * IIO driver for VCNL4000 (7-bit I2C slave address 0x13)
-> + *
-> + * TODO:
-> + *   allow to adjust IR current
-> + *   need scale/calibscale?
-> + *   proximity threshold and event handling
-> + */
+> [...]
 > +
 > +#include <linux/module.h>
 > +#include <linux/i2c.h>
@@ -132,13 +69,6 @@ Mostly short and clean which always makes me happy.
 > +		dev_err(&data->client->dev,
 > +			"vcnl4000_read(%s) failed, error %d\n",
 > +			msg, ret);
-Personally I'm a fan of not bothering to wrap standard functions like
-this.  The debugging info (which 'should' never happen) isn't
-worth the added lines of code...  Still if you are particularly
-attached to them, I'm not that bothered.  I'm particularly
-anti the passing of a string purely to paste into an error
-message....
-
 > +	return ret;
 > +}
 > +
@@ -157,6 +87,9 @@ message....
 > +static int vcnl4000_get_als(struct vcnl4000_data *data, int *val)
 > +{
 > +	u16 buf;
+
+__be16
+
 > +	int ret;
 > +
 > +	ret = vcnl4000_write(data, VCNL4000_COMMAND,
@@ -170,18 +103,23 @@ message....
 > +		if (ret < 0)
 > +			return ret;
 > +	} while (!(ret & VCNL4000_ALS_RDY));
+
+This should have a timeout, so it does not get stuck in a endless loop in
+case there is an issue with the hardware.
+
 > +
 > +	ret = i2c_smbus_read_i2c_block_data(data->client,
 > +		VCNL4000_AL_RESULT_HI, sizeof(buf), (u8 *) &buf);
 > +	if (ret < 0) {
 > +		dev_err(&data->client->dev,
 > +			"i2c_smbus_read_block_data() failed, error %d\n", ret);
-More informative to say what the read is of? Don't think we care
-that it was a block data read...
 > +		return ret;
 > +	}
 > +
 > +	*val = __be16_to_cpu(buf);
+
+just be16_to_cpu, without the underscores
+
 > +
 > +	return 0;
 > +}
@@ -190,6 +128,11 @@ that it was a block data read...
 > +{
 > +	u16 buf;
 > +	int ret;
+
+This function has the same structure as the one above, maybe put this in a
+common function which takes the OD and RDY bits and the RESULT register as
+parameters.
+
 > +
 > +	ret = vcnl4000_write(data, VCNL4000_COMMAND,
 > +		VCNL4000_PS_OD, "COMMAND");
@@ -225,8 +168,6 @@ that it was a block data read...
 > +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
 > +	}, {
 > +		.type = IIO_LIGHT,
-Some indication of what frequency range is covered would be good.
-The modifiers are a bit less than ideal but there we are ;)
 > +		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
 > +	}
 > +};
@@ -263,9 +204,11 @@ The modifiers are a bit less than ideal but there we are ;)
 > +			if (ret < 0)
 > +				return ret;
 > +			*val = (*val + 3) / 4;
+
+Does it make sense to do this processing here? Or should it rather return
+the raw value and have a scale attribute?
+
 > +			ret = IIO_VAL_INT;
-Wouldn't bothere with both processed and raw here given simplicity
-of the calculation. Pick one and run with it.
 > +		}
 > +		break;
 > +	default:
@@ -305,7 +248,9 @@ of the calculation. Pick one and run with it.
 > +	ret = vcnl4000_read(data, VCNL4000_LED_CURRENT, "LED_CURRENT");
 > +	if (ret < 0)
 > +		goto error_free_dev;
-Why?
+
+The result of this read is never used.
+
 > +
 > +	indio_dev->dev.parent = &client->dev;
 > +	indio_dev->info = &vcnl4000_info;
@@ -325,29 +270,4 @@ Why?
 > +	return ret;
 > +}
 > +
-> +static int __devexit vcnl4000_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_device_free(indio_dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct i2c_driver vcnl4000_driver = {
-> +	.driver = {
-> +		.name   = VCNL4000_DRV_NAME,
-> +		.owner  = THIS_MODULE,
-> +	},
-> +	.probe  = vcnl4000_probe,
-> +	.remove = __devexit_p(vcnl4000_remove),
-> +	.id_table = vcnl4000_id,
-> +};
-> +
-> +module_i2c_driver(vcnl4000_driver);
-> +
-> +MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
-> +MODULE_DESCRIPTION("Vishay VCNL4000 proximity/ambient light sensor driver");
-> +MODULE_LICENSE("GPL");
-
+> +[...]
