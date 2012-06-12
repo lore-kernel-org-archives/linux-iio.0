@@ -1,69 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41573 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751378Ab2FRHiO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jun 2012 03:38:14 -0400
-Message-ID: <4FDEDADC.4030704@kernel.org>
-Date: Mon, 18 Jun 2012 08:38:04 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, omaplinuxkernel@gmail.com,
-	lars@metafoo.de
-Subject: Re: [PATCH v3] iio: add vcnl4000 combined ALS and proximity sensor
-References: <1339532615-4511-1-git-send-email-pmeerw@pmeerw.net> <4FDB323F.4090306@kernel.org> <alpine.DEB.2.01.1206171500540.8174@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.01.1206171500540.8174@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from ns.pmeerw.net ([87.118.82.44]:49705 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750987Ab2FLNjf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 12 Jun 2012 09:39:35 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH RESEND v2 1/4] iio: fix typos in iio.h
+Date: Tue, 12 Jun 2012 15:38:45 +0200
+Message-Id: <1339508328-8116-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 6/17/2012 2:18 PM, Peter Meerwald wrote:
-> Hello,
->
->> Couple of nitpicks inline.  My biggest question about
->> this driver is why are you submitting it to staging?
->> Can't see any reason it can't go directly into drivers/iio/light.
-> thank you for reviewing; reason for staging is that I consider the driver
-> incomplete because IR current control and proximity thresholding/event
-> handling is missing -- I plan to add these as soon as I have figured out
-> how to do that properly in IIO; I moved the driver out of staging
-> nevertheless
-cool.  I'm keen to move everything we possibly can out of staging
-(when ready!) to make for a vaguely sensible bit of code management in
-the long run.
->
->>> +config SENSORS_VCNL4000
->>> +	tristate "VCNL4000 combined ALS and proximity sensor"
->> How did we end up with that SENSORS prefix.  I think it might be a legacy of
->> a few drivers that were intially submitted to hwmon and moved here.
->> Probably best to drop it.
-> drivers/iio/light/Kconfig has CONFIG_SENSORS_LM3533
-> drivers/staging/iio/light/Kconfig has 3x CONFIG_SENSORS, 2x CONFIG_
-> drivers/staging/iio/magnetometer has CONFIG_SENSORS_
->
-> hwmon/ and misc/ uses CONFIG_SENSORS; I wonder how many sensor drivers do
-> not fly SENSORS_?
-The misc ones are mostly drivers that were initially submitted to hwmon (or
-I guess have copied the sensors bit off drivers that were.)  Same is true of
-the ones in IIO.
->
-> patch to remove SENSORS_ for IIO is following
-Be careful with this one, whilst it would be nice, it may break lots of 
-peoples config
-files.  Probably best to leave be for existing drivers.
->
->>> +		.type = IIO_INTENSITY,
->>> +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
->>> +			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
->> IIO_INTENSITY was originally introduced because we had a set of light sensors
->> where their was no simple relationship between them and anything in SI units.
->> If we can convert to illuminance as here via a simple scaling and offset
->> then I'd be tempted to make this IIO_LIGHT (and hence illuminance_raw)
->> with illuminance_scale and illuminance_offset
-> I have switched it to IIO_LIGHT, I was taking the conservative route with
-> IIO_INTENSITY; I have to trust the data sheet...
-Don't we all from time to time. Sometimes they are even right!
->
-> regards, p.
->
+From: Peter Meerwald <p.meerwald@bct-electronic.com>
+
+v2: 
+* "used in in-kernel" (Jonathan Cameron)
+
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+
+---
+ include/linux/iio/iio.h |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 944c635..9d9b55a 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -131,7 +131,7 @@ struct iio_chan_spec_ext_info {
+ 
+ /**
+  * struct iio_enum - Enum channel info attribute
+- * items: A array of strings.
++ * items: An array of strings.
+  * num_items: Length of the item array.
+  * set: Set callback function, may be NULL.
+  * get: Get callback function, may be NULL.
+@@ -218,7 +218,7 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
+  * @extend_name:	Allows labeling of channel attributes with an
+  *			informative name. Note this has no effect codes etc,
+  *			unlike modifiers.
+- * @datasheet_name:	A name used in in kernel mapping of channels. It should
++ * @datasheet_name:	A name used in in-kernel mapping of channels. It should
+  *			correspond to the first name that the channel is referred
+  *			to by in the datasheet (e.g. IND), or the nearest
+  *			possible compound name (e.g. IND-INC).
+@@ -393,7 +393,7 @@ struct iio_buffer_setup_ops {
+  * @trig:		[INTERN] current device trigger (buffer modes)
+  * @pollfunc:		[DRIVER] function run on trigger being received
+  * @channels:		[DRIVER] channel specification structure table
+- * @num_channels:	[DRIVER] number of chanels specified in @channels.
++ * @num_channels:	[DRIVER] number of channels specified in @channels.
+  * @channel_attr_list:	[INTERN] keep track of automatically created channel
+  *			attributes
+  * @chan_attr_group:	[INTERN] group for all attrs in base directory
+-- 
+1.7.5.4
 
