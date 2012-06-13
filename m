@@ -1,74 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:54909 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756014Ab2FNN6H (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jun 2012 09:58:07 -0400
-Message-ID: <4FD9EDEC.9020707@cam.ac.uk>
-Date: Thu, 14 Jun 2012 14:58:04 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Jiri Kosina <jkosina@suse.cz>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: let the doc follow core code move
-References: <alpine.LNX.2.00.1206141527230.8644@pobox.suse.cz> <4FD9E917.8020602@cam.ac.uk> <alpine.LNX.2.00.1206141544080.8644@pobox.suse.cz>
-In-Reply-To: <alpine.LNX.2.00.1206141544080.8644@pobox.suse.cz>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from ns.pmeerw.net ([87.118.82.44]:55179 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752374Ab2FMS1x (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 13 Jun 2012 14:27:53 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: fix spelling of suppression in isl29018
+Date: Wed, 13 Jun 2012 20:27:51 +0200
+Message-Id: <1339612071-9441-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 6/14/2012 2:45 PM, Jiri Kosina wrote:
-> On Thu, 14 Jun 2012, Jonathan Cameron wrote:
->
->>> As the IIO core code has been moved out of staging, let the appropriate
->>> documentation appear in Documentation/iio (which is what
->>> drivers/iio/Kconfig suggests as a location to look for it anyway).
->>>
->> I'd really rather not do this just yet.  There are elements that are out
->> of date or downright wrong in here. Much like the drivers, these should
->> get some careful review before they go anywhere.
->>
->> For now we have carefully only moved abi docs that have been
->> carefully sanity checked first (and even then a few 'interesting'
->> corners made it through).
->>
->> Obviously we'd like to do that pretty soon!
->> In the meantime it comes down to that old story of wrong docs
->> perhaps being worse than no docs.
->
-> Oh well, I see.
->
-> So at least we need the patch below.
-Fair enough I suppose.
->
->
->
->
-> From: Jiri Kosina<jkosina@suse.cz>
-> Subject: [PATCH] iio: drop wrong reference from Kconfig
->
-> The documentation lives in drivers/staging/iio/Documentation, but
-> according to Jonathan it's obsolete and needs fixing.
->
-> Signed-off-by: Jiri Kosina<jkosina@suse.cz>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->   drivers/iio/Kconfig |    3 +--
->   1 files changed, 1 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-> index 56eecef..2ec93da 100644
-> --- a/drivers/iio/Kconfig
-> +++ b/drivers/iio/Kconfig
-> @@ -8,8 +8,7 @@ menuconfig IIO
->   	help
->   	  The industrial I/O subsystem provides a unified framework for
->   	  drivers for many different types of embedded sensors using a
-> -	  number of different physical interfaces (i2c, spi, etc). See
-> -	  Documentation/iio for more information.
-> +	  number of different physical interfaces (i2c, spi, etc).
->
->   if IIO
->
->
+beware, does change the ABI as proximity_on_chip_ambient_infrared_supression
+is changed to proximity_on_chip_ambient_infrared_suppression
+
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ .../staging/iio/Documentation/sysfs-bus-iio-light  |    2 +-
+ drivers/staging/iio/light/isl29018.c               |   16 ++++++++--------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+index 715c74d..d52be03 100644
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+@@ -34,7 +34,7 @@ Description:
+ 		it comes back in SI units, it should also include _input else it
+ 		should include _raw to signify it is not in SI units.
+ 
+-What:		/sys/.../device[n]/proximity_on_chip_ambient_infrared_supression
++What:		/sys/.../device[n]/proximity_on_chip_ambient_infrared_suppression
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 0abbf18..31d22f5 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -292,18 +292,18 @@ static ssize_t store_resolution(struct device *dev,
+ }
+ 
+ /* proximity scheme */
+-static ssize_t show_prox_infrared_supression(struct device *dev,
++static ssize_t show_prox_infrared_suppression(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 
+ 	/* return the "proximity scheme" i.e. if the chip does on chip
+-	infrared supression (1 means perform on chip supression) */
++	infrared suppression (1 means perform on chip suppression) */
+ 	return sprintf(buf, "%d\n", chip->prox_scheme);
+ }
+ 
+-static ssize_t store_prox_infrared_supression(struct device *dev,
++static ssize_t store_prox_infrared_suppression(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+@@ -318,7 +318,7 @@ static ssize_t store_prox_infrared_supression(struct device *dev,
+ 	}
+ 
+ 	/* get the  "proximity scheme" i.e. if the chip does on chip
+-	infrared supression (1 means perform on chip supression) */
++	infrared suppression (1 means perform on chip suppression) */
+ 	mutex_lock(&chip->lock);
+ 	chip->prox_scheme = (int)lval;
+ 	mutex_unlock(&chip->lock);
+@@ -413,10 +413,10 @@ static IIO_CONST_ATTR(range_available, "1000 4000 16000 64000");
+ static IIO_CONST_ATTR(adc_resolution_available, "4 8 12 16");
+ static IIO_DEVICE_ATTR(adc_resolution, S_IRUGO | S_IWUSR,
+ 					show_resolution, store_resolution, 0);
+-static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_supression,
++static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
+ 					S_IRUGO | S_IWUSR,
+-					show_prox_infrared_supression,
+-					store_prox_infrared_supression, 0);
++					show_prox_infrared_suppression,
++					store_prox_infrared_suppression, 0);
+ 
+ #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+ #define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
+@@ -425,7 +425,7 @@ static struct attribute *isl29018_attributes[] = {
+ 	ISL29018_CONST_ATTR(range_available),
+ 	ISL29018_DEV_ATTR(adc_resolution),
+ 	ISL29018_CONST_ATTR(adc_resolution_available),
+-	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_supression),
++	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_suppression),
+ 	NULL
+ };
+ 
+-- 
+1.7.9.5
 
