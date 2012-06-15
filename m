@@ -5,34 +5,41 @@ Cc: Jonathan Cameron <jic23@cam.ac.uk>,
 	devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/4] staging:iio:adis16400: Fix ADIS16300 temperature address
-Date: Fri, 15 Jun 2012 18:11:50 +0200
-Message-Id: <1339776712-26059-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1339776712-26059-1-git-send-email-lars@metafoo.de>
-References: <1339776712-26059-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH] iio:buffer: Fix NULL pointer deref caused by empty scan mask
+Date: Fri, 15 Jun 2012 18:08:59 +0200
+Message-Id: <1339776539-22034-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-The ADIS16300 uses the same address for the temperature register as the
-ADIS16350 and not the same as the ADIS16400.
+iio_scan_mask_match() returns NULL if the passed in scan mask is empty. This
+will happen if no channel has been selected and buffer is enabled.
+iio_sw_buffer_preenable() will assign NULL to indio_dev->active_scan_mask in
+this case. As a result iio_update_demux() will cause a NULL pointer deref,
+because it expects active_scan_mask to be non-NULL.
+
+Since it does not make much sense to start data capture if there is no data to
+capture this patch updates the code to fail gracefully in iio_scan_mask_match()
+instead of crashing the kernel.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/imu/adis16400_core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/industrialio-buffer.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-index 1f6bd85..1c9931e 100644
---- a/drivers/staging/iio/imu/adis16400_core.c
-+++ b/drivers/staging/iio/imu/adis16400_core.c
-@@ -946,7 +946,7 @@ static struct iio_chan_spec adis16300_channels[] = {
- 		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
- 		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
- 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
--		.address = temp,
-+		.address = temp0,
- 		.scan_index = ADIS16400_SCAN_TEMP,
- 		.scan_type = IIO_ST('s', 12, 16, 0),
- 	}, {
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index ac185b8..2f35db9 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -553,6 +553,10 @@ int iio_sw_buffer_preenable(struct iio_dev *indio_dev)
+ 					    buffer->scan_mask);
+ 	else
+ 		indio_dev->active_scan_mask = buffer->scan_mask;
++
++	if (indio_dev->active_scan_mask == NULL)
++		return -EINVAL;
++
+ 	iio_update_demux(indio_dev);
+ 
+ 	if (indio_dev->info->update_scan_mode)
 -- 
 1.7.10
