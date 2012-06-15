@@ -1,66 +1,91 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42062 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756774Ab2FONMG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Jun 2012 09:12:06 -0400
-Message-ID: <4FDB34A2.8090801@kernel.org>
-Date: Fri, 15 Jun 2012 14:12:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: srinivas pandruvada <srinivas.pandruvada@intel.com>
-CC: linux-iio@vger.kernel.org, Jiri Kosina <jkosina@suse.cz>
-Subject: Re: [PATCH 0/8] HID-Sensor: v2
+Return-Path: <srinivas.pandruvada@intel.com>
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jiri Kosina
+	<jkosina@suse.cz>
+Subject: RE: [PATCH 0/8] HID-Sensor: v2
+Date: Fri, 15 Jun 2012 15:31:13 +0000
+Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A919336273@ORSMSX104.amr.corp.intel.com>
 References: <1339293198-10404-1-git-send-email-srinivas.pandruvada@intel.com>
-In-Reply-To: <1339293198-10404-1-git-send-email-srinivas.pandruvada@intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+ <4FDB34A2.8090801@kernel.org>
+In-Reply-To: <4FDB34A2.8090801@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
+
+> Had few questions on data format for floating point. This spec uses.
+> - First of size of each field is specified in report descriptor. So it=20
+> is variable
+yuk. Thats annoying.  I guess we'll have to extend the scan_type bit of IIO=
+_CHAN to include this.
+
+Currently I am setting real bits and storage bits of a channel, to specify =
+size. Just before registering channel to IIO, setting these values.
+
+Thanks,
+Srinivas
+
+-----Original Message-----
+From: Jonathan Cameron [mailto:jic23@kernel.org]=20
+Sent: Friday, June 15, 2012 6:12 AM
+To: Pandruvada, Srinivas
+Cc: linux-iio@vger.kernel.org; Jiri Kosina
+Subject: Re: [PATCH 0/8] HID-Sensor: v2
 
 On 6/10/2012 2:53 AM, srinivas pandruvada wrote:
 > Submitting v2.
 > Changes compared to version 1:
 >
 > - Replaced Ring-SW with KFiFO
-> - Accel-3d, Gyro-3D and Compass-3D uses 3 different channels for X, Y and Z
+> - Accel-3d, Gyro-3D and Compass-3D uses 3 different channels for X, Y=20
+> and Z
 > - SysFS (
-> --- Changed "polling_interval" to sampling_frequency (IIO_DEV_ATTR_SAMP_FREQ) with units HZ
-> --- Changed "sensitivity" to hyst_raw, which is already used by some ADC modules
-> --- Removed "Activate". No longer need this. Using trigger state to activate/deactivate
+> --- Changed "polling_interval" to sampling_frequency=20
+> (IIO_DEV_ATTR_SAMP_FREQ) with units HZ
+> --- Changed "sensitivity" to hyst_raw, which is already used by some=20
+> ADC modules
+> --- Removed "Activate". No longer need this. Using trigger state to=20
+> activate/deactivate
 > )
-> - Removed sysfs attributes for "xxx_offset". Instead using mask 0 in read_raw. So each
-> sensor have only channels, sampling_frequency and hyst_raw as the ABI.
+> - Removed sysfs attributes for "xxx_offset". Instead using mask 0 in=20
+> read_raw. So each sensor have only channels, sampling_frequency and hyst_=
+raw as the ABI.
 > - Additional patch to enable ST Micro sensor hub
 >
 > TBD for v3
-> - Use Lars-Peter's patch: "v2 1/9 patch: Add helper function for initialize trigger buffers). Want to make sure
-> that API is final.
+> - Use Lars-Peter's patch: "v2 1/9 patch: Add helper function for=20
+> initialize trigger buffers). Want to make sure that API is final.
 >
 > DATA Format examples:
 > Had few questions on data format for floating point. This spec uses.
-> - First of size of each field is specified in report descriptor. So it is variable
-yuk. Thats annoying.  I guess we'll have to extend the scan_type bit of 
-IIO_CHAN to include this.
-> - It uses VT_F16Ex format. For example VTF16E0 means 16 bit float with unit exponent 0.
+> - First of size of each field is specified in report descriptor. So it=20
+> is variable
+yuk. Thats annoying.  I guess we'll have to extend the scan_type bit of IIO=
+_CHAN to include this.
+> - It uses VT_F16Ex format. For example VTF16E0 means 16 bit float with un=
+it exponent 0.
 > Refer to Page 43 of the "HID Sensor Usage Table"
 > For example, if the size is 16 bits
 > 0xFFF4 with VTF16E14 format ->  -0.12
 > 0xFFF8 with VTF16E14 format ->  -0.08
 > 0x0067 with VTF16E14 format ->  +1.03
 >
-> I tried sensor hubs from two different makers. One use 16 bit and other uses 32 bit for accelerometer.
+> I tried sensor hubs from two different makers. One use 16 bit and other u=
+ses 32 bit for accelerometer.
 > Also the unit expo is different for them. Also units are different.
 That shouldn't be a problem.
 > Possible IIO addition:
-> I wish we can add two more items for unit and unit_expo in IIO_CHAN_INFO_XXXX. So that we can add
-> them during channel definition. Currently I am using offset and scale, which doesn't actually mean
-> this.
-I am a little unclear on why they are different, ulitmately we are not 
-have variable units for a given sensor type.
-That way just lies a whole pile of pain for userspace libraries.   They 
-are offsets and scales even if framed in
-different terminology as far as I can see.
+> I wish we can add two more items for unit and unit_expo in=20
+> IIO_CHAN_INFO_XXXX. So that we can add them during channel definition.=20
+> Currently I am using offset and scale, which doesn't actually mean this.
+I am a little unclear on why they are different, ulitmately we are not have=
+ variable units for a given sensor type.
+That way just lies a whole pile of pain for userspace libraries.   They=20
+are offsets and scales even if framed in different terminology as far as I =
+can see.
 
-> I think conversion should be done is user space based on the info provided.
+> I think conversion should be done is user space based on the info provide=
+d.
 >
 > Srinivas pandruvada (5):
 >    HID-Sensors: Common attributes and interfaces
@@ -87,7 +112,8 @@ different terminology as far as I can see.
 >   drivers/staging/hid-sensors/hid-sensor-buffer.c    |   98 +++
 >   .../staging/hid-sensors/hid-sensor-compass-3d.c    |  375 ++++++++++
 >   drivers/staging/hid-sensors/hid-sensor-gyro-3d.c   |  375 ++++++++++
->   drivers/staging/hid-sensors/hid-sensor-hub.c       |  747 ++++++++++++++++++++
+>   drivers/staging/hid-sensors/hid-sensor-hub.c       |  747 +++++++++++++=
++++++++
 >   drivers/staging/hid-sensors/hid-sensor-ids.h       |  117 +++
 >   drivers/staging/hid-sensors/hid-sensor-interface.h |   95 +++
 >   drivers/staging/hid-sensors/hid-sensor-trigger.c   |   83 +++
@@ -106,4 +132,3 @@ different terminology as far as I can see.
 >   create mode 100644 drivers/staging/hid-sensors/hid-sensor-interface.h
 >   create mode 100644 drivers/staging/hid-sensors/hid-sensor-trigger.c
 >
-
