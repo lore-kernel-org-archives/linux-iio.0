@@ -5,74 +5,32 @@ Cc: Jonathan Cameron <jic23@cam.ac.uk>,
 	devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] staging:iio: Remove superfluous flush_scheduled_work
-Date: Fri, 15 Jun 2012 18:14:36 +0200
-Message-Id: <1339776877-26509-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH 1/4] staging:iio:adis16400: Fix ADIS16300 ROLL_OUT register address
+Date: Fri, 15 Jun 2012 18:11:49 +0200
+Message-Id: <1339776712-26059-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-None of these drivers ever schedule any work, so there is no need to flush any
-scheduled work when the driver is removed.
+In the current driver ROLL_OUT register address is the same as the PITCH_OUT
+register address. This patch fixes it to use the correct address.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/accel/adis16209_core.c |    2 --
- drivers/staging/iio/accel/adis16220_core.c |    2 --
- drivers/staging/iio/accel/adis16240_core.c |    2 --
- drivers/staging/iio/gyro/adis16260_core.c  |    2 --
- 4 files changed, 8 deletions(-)
+ drivers/staging/iio/imu/adis16400.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-index f6fd0d3..6fc426e 100644
---- a/drivers/staging/iio/accel/adis16209_core.c
-+++ b/drivers/staging/iio/accel/adis16209_core.c
-@@ -606,8 +606,6 @@ static int adis16209_remove(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
+index 83d133e..1f4e987 100644
+--- a/drivers/staging/iio/imu/adis16400.h
++++ b/drivers/staging/iio/imu/adis16400.h
+@@ -42,7 +42,7 @@
+ #define ADIS16350_ZTEMP_OUT 0x14 /* Z-axis gyroscope temperature measurement */
  
--	flush_scheduled_work();
--
- 	iio_device_unregister(indio_dev);
- 	adis16209_remove_trigger(indio_dev);
- 	iio_buffer_unregister(indio_dev);
-diff --git a/drivers/staging/iio/accel/adis16220_core.c b/drivers/staging/iio/accel/adis16220_core.c
-index 6a9ac89..af5c576 100644
---- a/drivers/staging/iio/accel/adis16220_core.c
-+++ b/drivers/staging/iio/accel/adis16220_core.c
-@@ -694,8 +694,6 @@ static int adis16220_remove(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ #define ADIS16300_PITCH_OUT 0x12 /* X axis inclinometer output measurement */
+-#define ADIS16300_ROLL_OUT  0x12 /* Y axis inclinometer output measurement */
++#define ADIS16300_ROLL_OUT  0x14 /* Y axis inclinometer output measurement */
  
--	flush_scheduled_work();
--
- 	sysfs_remove_bin_file(&indio_dev->dev.kobj, &adc2_bin);
- 	sysfs_remove_bin_file(&indio_dev->dev.kobj, &adc1_bin);
- 	sysfs_remove_bin_file(&indio_dev->dev.kobj, &accel_bin);
-diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-index 8b15eae..2f59f83 100644
---- a/drivers/staging/iio/accel/adis16240_core.c
-+++ b/drivers/staging/iio/accel/adis16240_core.c
-@@ -641,8 +641,6 @@ static int adis16240_remove(struct spi_device *spi)
- 
- 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
- 
--	flush_scheduled_work();
--
- 	iio_device_unregister(indio_dev);
- 	adis16240_remove_trigger(indio_dev);
- 	iio_buffer_unregister(indio_dev);
-diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-index ec765f9..fdb84cc 100644
---- a/drivers/staging/iio/gyro/adis16260_core.c
-+++ b/drivers/staging/iio/gyro/adis16260_core.c
-@@ -728,8 +728,6 @@ static int adis16260_remove(struct spi_device *spi)
- 	if (ret)
- 		goto err_ret;
- 
--	flush_scheduled_work();
--
- 	adis16260_remove_trigger(indio_dev);
- 	iio_buffer_unregister(indio_dev);
- 	adis16260_unconfigure_ring(indio_dev);
+ /* Calibration parameters */
+ #define ADIS16400_XGYRO_OFF 0x1A /* X-axis gyroscope bias offset factor */
 -- 
 1.7.10
