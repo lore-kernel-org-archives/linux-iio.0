@@ -1,57 +1,118 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:48647 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:48645 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754732Ab2FORZc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 15 Jun 2012 13:25:32 -0400
+	id S1754426Ab2FORZb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 15 Jun 2012 13:25:31 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 6/6] iio: iio/events.h typos
-Date: Fri, 15 Jun 2012 19:25:28 +0200
-Message-Id: <1339781128-2718-6-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH 5/6] iio staging: typos
+Date: Fri, 15 Jun 2012 19:25:27 +0200
+Message-Id: <1339781128-2718-5-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1339781128-2718-1-git-send-email-pmeerw@pmeerw.net>
 References: <1339781128-2718-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+typos in comments, fix ring_sw module description
+
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 
 ---
- include/linux/iio/events.h |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/staging/iio/Documentation/device.txt   |   10 +++++-----
+ drivers/staging/iio/Documentation/overview.txt |    2 +-
+ drivers/staging/iio/Documentation/ring.txt     |    4 ++--
+ drivers/staging/iio/ring_sw.c                  |    4 ++--
+ 4 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/iio/events.h b/include/linux/iio/events.h
-index b5acbf9..13ce220 100644
---- a/include/linux/iio/events.h
-+++ b/include/linux/iio/events.h
-@@ -46,7 +46,7 @@ enum iio_event_direction {
-  * @diff:	Whether the event is for an differential channel or not.
-  * @modifier:	Modifier for the channel. Should be one of enum iio_modifier.
-  * @direction:	Direction of the event. One of enum iio_event_direction.
-- * @type:	Type of the event. Should be one enum iio_event_type.
-+ * @type:	Type of the event. Should be one of enum iio_event_type.
-  * @chan:	Channel number for non-differential channels.
-  * @chan1:	First channel number for differential channels.
-  * @chan2:	Second channel number for differential channels.
-@@ -69,7 +69,7 @@ enum iio_event_direction {
-  * @chan_type:	Type of the channel. Should be one of enum iio_chan_type.
-  * @number:	Channel number.
-  * @modifier:	Modifier for the channel. Should be one of enum iio_modifier.
-- * @type:	Type of the event. Should be one enum iio_event_type.
-+ * @type:	Type of the event. Should be one of enum iio_event_type.
-  * @direction:	Direction of the event. One of enum iio_event_direction.
-  */
+diff --git a/drivers/staging/iio/Documentation/device.txt b/drivers/staging/iio/Documentation/device.txt
+index f03fbd3..ea08d62 100644
+--- a/drivers/staging/iio/Documentation/device.txt
++++ b/drivers/staging/iio/Documentation/device.txt
+@@ -12,7 +12,7 @@ struct iio_dev *indio_dev = iio_device_alloc(sizeof(struct chip_state));
+ where chip_state is a structure of local state data for this instance of
+ the chip.
  
-@@ -81,7 +81,7 @@ enum iio_event_direction {
-  * IIO_UNMOD_EVENT_CODE() - create event identifier for unmodified channels
-  * @chan_type:	Type of the channel. Should be one of enum iio_chan_type.
-  * @number:	Channel number.
-- * @type:	Type of the event. Should be one enum iio_event_type.
-+ * @type:	Type of the event. Should be one of enum iio_event_type.
-  * @direction:	Direction of the event. One of enum iio_event_direction.
-  */
+-That data can be accessed using iio_priv(struct iio_dev *)
++That data can be accessed using iio_priv(struct iio_dev *).
  
+ Then fill in the following:
+ 
+@@ -39,7 +39,7 @@ Then fill in the following:
+ 		and for associate parameters such as offsets and scales.
+ 	* info->write_raw:
+ 		Raw value writing function. Used for writable device values such
+-		as DAC values and caliboffset.
++		as DAC values and calibbias.
+ 	* info->read_event_config:
+ 		Typically only set if there are some interrupt lines.  This
+ 		is used to read if an on sensor event detector is enabled.
+@@ -62,8 +62,8 @@ Then fill in the following:
+ 	Poll function related elements. This controls what occurs when a trigger
+ 	to which this device is attached sends an event.
+ - indio_dev->channels:
+-	Specification of device channels. Most attributes etc are built
+-	form this spec.
++	Specification of device channels. Most attributes etc. are built
++	from this spec.
+ - indio_dev->num_channels:
+ 	How many channels are there?
+ 
+@@ -76,4 +76,4 @@ be registered afterwards (otherwise the whole parentage of devices
+ gets confused)
+ 
+ On remove, iio_device_unregister(indio_dev) will remove the device from
+-the core, and iio_device_free will clean up.
++the core, and iio_device_free(indio_dev) will clean up.
+diff --git a/drivers/staging/iio/Documentation/overview.txt b/drivers/staging/iio/Documentation/overview.txt
+index afc39ec..43f92b0 100644
+--- a/drivers/staging/iio/Documentation/overview.txt
++++ b/drivers/staging/iio/Documentation/overview.txt
+@@ -8,7 +8,7 @@ actual devices combine some ADCs with digital to analog converters
+ The aim is to fill the gap between the somewhat similar hwmon and
+ input subsystems.  Hwmon is very much directed at low sample rate
+ sensors used in applications such as fan speed control and temperature
+-measurement.  Input is, as it's name suggests focused on input
++measurement.  Input is, as its name suggests focused on input
+ devices. In some cases there is considerable overlap between these and
+ IIO.
+ 
+diff --git a/drivers/staging/iio/Documentation/ring.txt b/drivers/staging/iio/Documentation/ring.txt
+index e338077..e1da433 100644
+--- a/drivers/staging/iio/Documentation/ring.txt
++++ b/drivers/staging/iio/Documentation/ring.txt
+@@ -15,8 +15,8 @@ struct iio_ring_buffer contains a struct iio_ring_setup_ops *setup_ops
+ which in turn contains the 4 function pointers
+ (preenable, postenable, predisable and postdisable).
+ These are used to perform device specific steps on either side
+-of the core changing it's current mode to indicate that the buffer
+-is enabled or disabled (along with enabling triggering etc as appropriate).
++of the core changing its current mode to indicate that the buffer
++is enabled or disabled (along with enabling triggering etc. as appropriate).
+ 
+ Also in struct iio_ring_buffer is a struct iio_ring_access_funcs.
+ The function pointers within here are used to allow the core to handle
+diff --git a/drivers/staging/iio/ring_sw.c b/drivers/staging/iio/ring_sw.c
+index 9358c6c..f61c8fd 100644
+--- a/drivers/staging/iio/ring_sw.c
++++ b/drivers/staging/iio/ring_sw.c
+@@ -24,7 +24,7 @@
+  * @read_p:		read pointer (oldest available)
+  * @write_p:		write pointer
+  * @half_p:		half buffer length behind write_p (event generation)
+- * @update_needed:	flag to indicated change in size requested
++ * @update_needed:	flag to indicate change in size requested
+  *
+  * Note that the first element of all ring buffers must be a
+  * struct iio_buffer.
+@@ -363,5 +363,5 @@ void iio_sw_rb_free(struct iio_buffer *r)
+ }
+ EXPORT_SYMBOL(iio_sw_rb_free);
+ 
+-MODULE_DESCRIPTION("Industrialio I/O software ring buffer");
++MODULE_DESCRIPTION("Industrial I/O software ring buffer");
+ MODULE_LICENSE("GPL");
 -- 
 1.7.9.5
 
