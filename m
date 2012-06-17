@@ -1,57 +1,94 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41626 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751185Ab2FRHkp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jun 2012 03:40:45 -0400
-Message-ID: <4FDEDB7B.7080703@kernel.org>
-Date: Mon, 18 Jun 2012 08:40:43 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio staging: fix typos in tsl*: register
-References: <1339952599-22105-1-git-send-email-pmeerw@pmeerw.net> <1339952599-22105-3-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1339952599-22105-3-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH RESEND] iio staging: fix spelling of suppression in isl29018
+Date: Sun, 17 Jun 2012 19:03:14 +0200
+Message-Id: <1339952599-22105-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1339952599-22105-1-git-send-email-pmeerw@pmeerw.net>
+References: <1339952599-22105-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 6/17/2012 6:03 PM, Peter Meerwald wrote:
-Nothing like copy and paste for repeating errors ;)
-> Signed-off-by: Peter Meerwald<pmeerw@pmeerw.net>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+beware, does change the ABI as proximity_on_chip_ambient_infrared_supression
+is changed to proximity_on_chip_ambient_infrared_suppression
 
-Thanks for these Peter.  I like short patches I can reviews whilst 
-drinking a coffee :)
-> ---
->   drivers/staging/iio/light/tsl2583.c      |    2 +-
->   drivers/staging/iio/light/tsl2x7x_core.c |    2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-> index 5e23ad5..6d2f4c6 100644
-> --- a/drivers/staging/iio/light/tsl2583.c
-> +++ b/drivers/staging/iio/light/tsl2583.c
-> @@ -410,7 +410,7 @@ static int taos_chip_on(struct iio_dev *indio_dev)
->   		return -EINVAL;
->   	}
->
-> -	/* determine als integration regster */
-> +	/* determine als integration register */
->   	als_count = (chip->taos_settings.als_time * 100 + 135) / 270;
->   	if (als_count == 0)
->   		als_count = 1; /* ensure at least one cycle */
-> diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
-> index 040da4a..fdf75e4 100644
-> --- a/drivers/staging/iio/light/tsl2x7x_core.c
-> +++ b/drivers/staging/iio/light/tsl2x7x_core.c
-> @@ -736,7 +736,7 @@ static int tsl2x7x_chip_on(struct iio_dev *indio_dev)
->   		return -EINVAL;
->   	}
->
-> -	/* determine als integration regster */
-> +	/* determine als integration register */
->   	als_count = (chip->tsl2x7x_settings.als_time * 100 + 135) / 270;
->   	if (als_count == 0)
->   		als_count = 1; /* ensure at least one cycle */
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ .../staging/iio/Documentation/sysfs-bus-iio-light  |    2 +-
+ drivers/staging/iio/light/isl29018.c               |   16 ++++++++--------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+index 715c74d..d52be03 100644
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
++++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
+@@ -34,7 +34,7 @@ Description:
+ 		it comes back in SI units, it should also include _input else it
+ 		should include _raw to signify it is not in SI units.
+ 
+-What:		/sys/.../device[n]/proximity_on_chip_ambient_infrared_supression
++What:		/sys/.../device[n]/proximity_on_chip_ambient_infrared_suppression
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 0abbf18..31d22f5 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -292,18 +292,18 @@ static ssize_t store_resolution(struct device *dev,
+ }
+ 
+ /* proximity scheme */
+-static ssize_t show_prox_infrared_supression(struct device *dev,
++static ssize_t show_prox_infrared_suppression(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 
+ 	/* return the "proximity scheme" i.e. if the chip does on chip
+-	infrared supression (1 means perform on chip supression) */
++	infrared suppression (1 means perform on chip suppression) */
+ 	return sprintf(buf, "%d\n", chip->prox_scheme);
+ }
+ 
+-static ssize_t store_prox_infrared_supression(struct device *dev,
++static ssize_t store_prox_infrared_suppression(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+@@ -318,7 +318,7 @@ static ssize_t store_prox_infrared_supression(struct device *dev,
+ 	}
+ 
+ 	/* get the  "proximity scheme" i.e. if the chip does on chip
+-	infrared supression (1 means perform on chip supression) */
++	infrared suppression (1 means perform on chip suppression) */
+ 	mutex_lock(&chip->lock);
+ 	chip->prox_scheme = (int)lval;
+ 	mutex_unlock(&chip->lock);
+@@ -413,10 +413,10 @@ static IIO_CONST_ATTR(range_available, "1000 4000 16000 64000");
+ static IIO_CONST_ATTR(adc_resolution_available, "4 8 12 16");
+ static IIO_DEVICE_ATTR(adc_resolution, S_IRUGO | S_IWUSR,
+ 					show_resolution, store_resolution, 0);
+-static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_supression,
++static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
+ 					S_IRUGO | S_IWUSR,
+-					show_prox_infrared_supression,
+-					store_prox_infrared_supression, 0);
++					show_prox_infrared_suppression,
++					store_prox_infrared_suppression, 0);
+ 
+ #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+ #define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
+@@ -425,7 +425,7 @@ static struct attribute *isl29018_attributes[] = {
+ 	ISL29018_CONST_ATTR(range_available),
+ 	ISL29018_DEV_ATTR(adc_resolution),
+ 	ISL29018_CONST_ATTR(adc_resolution_available),
+-	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_supression),
++	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_suppression),
+ 	NULL
+ };
+ 
+-- 
+1.7.9.5
