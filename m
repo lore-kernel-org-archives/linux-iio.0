@@ -1,94 +1,135 @@
-Return-Path: <pmeerw@pmeerw.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:57667 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757220Ab2FQNUI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 17 Jun 2012 09:20:08 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH RESEND] iio staging: fix spelling of suppression in isl29018
-Date: Sun, 17 Jun 2012 19:03:14 +0200
-Message-Id: <1339952599-22105-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1339952599-22105-1-git-send-email-pmeerw@pmeerw.net>
-References: <1339952599-22105-1-git-send-email-pmeerw@pmeerw.net>
-List-ID: <linux-iio@vger.kernel.org>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: remove SENSORS_ from Kconfig
+Date: Sun, 17 Jun 2012 15:20:06 +0200
+Message-Id: <1339939206-19073-1-git-send-email-pmeerw@pmeerw.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-beware, does change the ABI as proximity_on_chip_ambient_infrared_supression
-is changed to proximity_on_chip_ambient_infrared_suppression
+IIO sensors are not supposed to be prefixed SENSORS_, cleanup for
+consistency
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- .../staging/iio/Documentation/sysfs-bus-iio-light  |    2 +-
- drivers/staging/iio/light/isl29018.c               |   16 ++++++++--------
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ drivers/iio/light/Kconfig                 |    2 +-
+ drivers/iio/light/Makefile                |    2 +-
+ drivers/staging/iio/light/Kconfig         |    6 +++---
+ drivers/staging/iio/light/Makefile        |    6 +++---
+ drivers/staging/iio/magnetometer/Kconfig  |    4 ++--
+ drivers/staging/iio/magnetometer/Makefile |    4 ++--
+ 6 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-index 715c74d..d52be03 100644
---- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-+++ b/drivers/staging/iio/Documentation/sysfs-bus-iio-light
-@@ -34,7 +34,7 @@ Description:
- 		it comes back in SI units, it should also include _input else it
- 		should include _raw to signify it is not in SI units.
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index f3ea90d..8bc9675 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -3,7 +3,7 @@
+ #
+ menu "Light sensors"
  
--What:		/sys/.../device[n]/proximity_on_chip_ambient_infrared_supression
-+What:		/sys/.../device[n]/proximity_on_chip_ambient_infrared_suppression
- KernelVersion:	2.6.37
- Contact:	linux-iio@vger.kernel.org
- Description:
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 0abbf18..31d22f5 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -292,18 +292,18 @@ static ssize_t store_resolution(struct device *dev,
- }
+-config SENSORS_LM3533
++config LM3533
+ 	tristate "LM3533 ambient light sensor"
+ 	depends on MFD_LM3533
+ 	help
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 06fa4d3..5ae2737 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -2,5 +2,5 @@
+ # Makefile for IIO Light sensors
+ #
  
- /* proximity scheme */
--static ssize_t show_prox_infrared_supression(struct device *dev,
-+static ssize_t show_prox_infrared_suppression(struct device *dev,
- 			struct device_attribute *attr, char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct isl29018_chip *chip = iio_priv(indio_dev);
+-obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
++obj-$(CONFIG_LM3533)		+= lm3533-als.o
+ obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
+diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
+index 4bed30e..0f251e4 100644
+--- a/drivers/staging/iio/light/Kconfig
++++ b/drivers/staging/iio/light/Kconfig
+@@ -3,7 +3,7 @@
+ #
+ menu "Light sensors"
  
- 	/* return the "proximity scheme" i.e. if the chip does on chip
--	infrared supression (1 means perform on chip supression) */
-+	infrared suppression (1 means perform on chip suppression) */
- 	return sprintf(buf, "%d\n", chip->prox_scheme);
- }
+-config SENSORS_ISL29018
++config ISL29018
+ 	tristate "ISL 29018 light and proximity sensor"
+ 	depends on I2C
+ 	select REGMAP_I2C
+@@ -15,7 +15,7 @@ config SENSORS_ISL29018
+ 	 in lux, proximity infrared sensing and normal infrared sensing.
+ 	 Data from sensor is accessible via sysfs.
  
--static ssize_t store_prox_infrared_supression(struct device *dev,
-+static ssize_t store_prox_infrared_suppression(struct device *dev,
- 		struct device_attribute *attr, const char *buf, size_t count)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-@@ -318,7 +318,7 @@ static ssize_t store_prox_infrared_supression(struct device *dev,
- 	}
+-config SENSORS_ISL29028
++config ISL29028
+ 	tristate "Intersil ISL29028 Concurrent Light and Proximity Sensor"
+ 	depends on I2C
+ 	select REGMAP_I2C
+@@ -25,7 +25,7 @@ config SENSORS_ISL29028
+ 	 Proximity value via iio. The ISL29028 provides the concurrent sensing
+ 	 of ambient light and proximity.
  
- 	/* get the  "proximity scheme" i.e. if the chip does on chip
--	infrared supression (1 means perform on chip supression) */
-+	infrared suppression (1 means perform on chip suppression) */
- 	mutex_lock(&chip->lock);
- 	chip->prox_scheme = (int)lval;
- 	mutex_unlock(&chip->lock);
-@@ -413,10 +413,10 @@ static IIO_CONST_ATTR(range_available, "1000 4000 16000 64000");
- static IIO_CONST_ATTR(adc_resolution_available, "4 8 12 16");
- static IIO_DEVICE_ATTR(adc_resolution, S_IRUGO | S_IWUSR,
- 					show_resolution, store_resolution, 0);
--static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_supression,
-+static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
- 					S_IRUGO | S_IWUSR,
--					show_prox_infrared_supression,
--					store_prox_infrared_supression, 0);
-+					show_prox_infrared_suppression,
-+					store_prox_infrared_suppression, 0);
+-config SENSORS_TSL2563
++config TSL2563
+ 	tristate "TAOS TSL2560, TSL2561, TSL2562 and TSL2563 ambient light sensors"
+ 	depends on I2C
+ 	help
+diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
+index 141af1e..d718a07 100644
+--- a/drivers/staging/iio/light/Makefile
++++ b/drivers/staging/iio/light/Makefile
+@@ -2,8 +2,8 @@
+ # Makefile for industrial I/O Light sensors
+ #
  
- #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
- #define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
-@@ -425,7 +425,7 @@ static struct attribute *isl29018_attributes[] = {
- 	ISL29018_CONST_ATTR(range_available),
- 	ISL29018_DEV_ATTR(adc_resolution),
- 	ISL29018_CONST_ATTR(adc_resolution_available),
--	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_supression),
-+	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_suppression),
- 	NULL
- };
+-obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+-obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
+-obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
++obj-$(CONFIG_TSL2563)	+= tsl2563.o
++obj-$(CONFIG_ISL29018)	+= isl29018.o
++obj-$(CONFIG_ISL29028)	+= isl29028.o
+ obj-$(CONFIG_TSL2583)	+= tsl2583.o
+ obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
+diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
+index df5e0d4..84a6c0f 100644
+--- a/drivers/staging/iio/magnetometer/Kconfig
++++ b/drivers/staging/iio/magnetometer/Kconfig
+@@ -3,7 +3,7 @@
+ #
+ menu "Magnetometer sensors"
  
+-config SENSORS_AK8975
++config AK8975
+ 	tristate "Asahi Kasei AK8975 3-Axis Magnetometer"
+ 	depends on I2C
+ 	depends on GPIOLIB
+@@ -14,7 +14,7 @@ config SENSORS_AK8975
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called ak8975.
+ 
+-config SENSORS_HMC5843
++config HMC5843
+ 	tristate "Honeywell HMC5843/5883/5883L 3-Axis Magnetometer"
+ 	depends on I2C
+ 	help
+diff --git a/drivers/staging/iio/magnetometer/Makefile b/drivers/staging/iio/magnetometer/Makefile
+index f2a753f..79331bb 100644
+--- a/drivers/staging/iio/magnetometer/Makefile
++++ b/drivers/staging/iio/magnetometer/Makefile
+@@ -2,5 +2,5 @@
+ # Makefile for industrial I/O Magnetometer sensors
+ #
+ 
+-obj-$(CONFIG_SENSORS_AK8975)	+= ak8975.o
+-obj-$(CONFIG_SENSORS_HMC5843)	+= hmc5843.o
++obj-$(CONFIG_AK8975)	+= ak8975.o
++obj-$(CONFIG_HMC5843)	+= hmc5843.o
 -- 
 1.7.9.5
+
