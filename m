@@ -1,307 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41938 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756838Ab2FONCB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Jun 2012 09:02:01 -0400
-Message-ID: <4FDB323F.4090306@kernel.org>
-Date: Fri, 15 Jun 2012 14:01:51 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, omaplinuxkernel@gmail.com,
-	lars@metafoo.de
+Return-Path: <pmeerw@pmeerw.net>
+Date: Sun, 17 Jun 2012 15:18:30 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: linux-iio@vger.kernel.org, omaplinuxkernel@gmail.com, lars@metafoo.de
 Subject: Re: [PATCH v3] iio: add vcnl4000 combined ALS and proximity sensor
-References: <1339532615-4511-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1339532615-4511-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <4FDB323F.4090306@kernel.org>
+Message-ID: <alpine.DEB.2.01.1206171500540.8174@pmeerw.net>
+References: <1339532615-4511-1-git-send-email-pmeerw@pmeerw.net> <4FDB323F.4090306@kernel.org>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On 6/12/2012 9:23 PM, Peter Meerwald wrote:
-> minimal driver, submitting to staging
-Couple of nitpicks inline.  My biggest question about
-this driver is why are you submitting it to staging?
-Can't see any reason it can't go directly into drivers/iio/light.
+Hello,
 
->
-> v3 (address comments by Shubhrajyoti Datta)
-> * cleanup Kconfig entry
-> * call I2C read/write functions directly
->
-> v2 (address comments by Lars-Peter Clausen and Jonathan Cameron)
-> * unify code for reading PS and AL data into
->    parameterized _measure() function
-> * limit wait for data to become ready within 20 tries
-> * drop IIO_LIGHT channel, add SCALE to IIO_INTENSITY
-> * drop extra string arguments used for logging purpose only
->
-> Signed-off-by: Peter Meerwald<pmeerw@pmeerw.net>
-> ---
->   drivers/staging/iio/light/Kconfig    |   10 ++
->   drivers/staging/iio/light/Makefile   |    1 +
->   drivers/staging/iio/light/vcnl4000.c |  217 ++++++++++++++++++++++++++++++++++
->   3 files changed, 228 insertions(+)
->   create mode 100644 drivers/staging/iio/light/vcnl4000.c
->
-> diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-> index 4bed30e..26834da 100644
-> --- a/drivers/staging/iio/light/Kconfig
-> +++ b/drivers/staging/iio/light/Kconfig
-> @@ -50,4 +50,14 @@ config TSL2x7x
->   	 tmd2672, tsl2772, tmd2772 devices.
->   	 Provides iio_events and direct access via sysfs.
->
-> +config SENSORS_VCNL4000
-> +	tristate "VCNL4000 combined ALS and proximity sensor"
-> +	depends on I2C
-> +	help
-> +	 Say Y here if you want to build a driver for the Vishay VCNL4000
-> +	 combined ambient light and proximity sensor.
-> +
-> +	 To compile this driver as a module, choose M here: the
-> +	 module will be called vcnl4000.
-How did we end up with that SENSORS prefix.  I think it might be a legacy of
-a few drivers that were intially submitted to hwmon and moved here.
-Probably best to drop it.
-> +
->   endmenu
-> diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
-> index 141af1e..ea2c2f2 100644
-> --- a/drivers/staging/iio/light/Makefile
-> +++ b/drivers/staging/iio/light/Makefile
-> @@ -7,3 +7,4 @@ obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
->   obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
->   obj-$(CONFIG_TSL2583)	+= tsl2583.o
->   obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
-> +obj-$(CONFIG_SENSORS_VCNL4000)	+= vcnl4000.o
-> diff --git a/drivers/staging/iio/light/vcnl4000.c b/drivers/staging/iio/light/vcnl4000.c
-> new file mode 100644
-> index 0000000..13d1c77
-> --- /dev/null
-> +++ b/drivers/staging/iio/light/vcnl4000.c
-> @@ -0,0 +1,217 @@
-> +/*
-> + * vcnl4000.c - Support for Vishay VCNL4000 combined ambient light and
-> + * proximity sensor
-> + *
-> + * Copyright 2012 Peter Meerwald<pmeerw@pmeerw.net>
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * IIO driver for VCNL4000 (7-bit I2C slave address 0x13)
-> + *
-> + * TODO:
-> + *   allow to adjust IR current
-> + *   need scale/calibscale?
-> + *   proximity threshold and event handling
-> + */
-> +
-> +#include<linux/module.h>
-> +#include<linux/i2c.h>
-> +#include<linux/err.h>
-> +#include<linux/delay.h>
-> +
-> +#include<linux/iio/iio.h>
-> +#include<linux/iio/sysfs.h>
-> +
-> +#define VCNL4000_DRV_NAME "vcnl4000"
-> +
-> +#define VCNL4000_COMMAND	0x80 /* Command register */
-> +#define VCNL4000_PROD_REV	0x81 /* Product ID and Revision ID */
-> +#define VCNL4000_LED_CURRENT	0x83 /* IR LED current for proximity mode */
-> +#define VCNL4000_AL_PARAM	0x84 /* Ambient light parameter register */
-> +#define VCNL4000_AL_RESULT_HI	0x85 /* Ambient light result register, MSB */
-> +#define VCNL4000_AL_RESULT_LO	0x86 /* Ambient light result register, LSB */
-> +#define VCNL4000_PS_RESULT_HI	0x87 /* Proximity result register, MSB */
-> +#define VCNL4000_PS_RESULT_LO	0x88 /* Proximity result register, LSB */
-> +#define VCNL4000_PS_MEAS_FREQ	0x89 /* Proximity measurement signal frequency */
-> +#define VCNL4000_PS_MOD_ADJ	0x8a /* Proximity modulator timing adjustment */
-> +
-> +/* Bit masks for COMMAND register */
-> +#define VCNL4000_AL_RDY		0x40 /* ALS data ready? */
-> +#define VCNL4000_PS_RDY		0x20 /* proximity data ready? */
-> +#define VCNL4000_AL_OD		0x10 /* start on-demand ALS measurement */
-> +#define VCNL4000_PS_OD		0x08 /* start on-demand proximity measurement */
-> +
-> +struct vcnl4000_data {
-> +	struct i2c_client *client;
-> +};
-> +
-> +static const struct i2c_device_id vcnl4000_id[] = {
-> +	{ "vcnl4000", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, vcnl4000_id);
-> +
-> +static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
-> +				u8 rdy_mask, u8 data_reg, int *val)
-> +{
-> +	int tries = 20;
-> +	u16 buf;
-> +	int ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND, req_mask);
-> +	if (ret<  0)
-> +		return ret;
-> +
-> +	/* wait for data to become ready */
-> +	while (tries--) {
-> +		ret = i2c_smbus_read_byte_data(data->client, VCNL4000_COMMAND);
-> +		if (ret<  0)
-> +			return ret;
-> +		if (ret&  rdy_mask)
-> +			break;
-> +		msleep(1);
-> +	}
-> +
-> +	if (tries<  0) {
-> +		dev_err(&data->client->dev,
-> +			"vcnl4000_measure() failed, data not ready\n");
-> +		return -EIO;
-> +	}
-> +
-> +	ret = i2c_smbus_read_i2c_block_data(data->client,
-> +		data_reg, sizeof(buf), (u8 *)&buf);
-> +	if (ret<  0)
-> +		return ret;
-> +
-> +	*val = be16_to_cpu(buf);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_chan_spec vcnl4000_channels[] = {
-> +	{
-> +		.type = IIO_INTENSITY,
-> +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-> +			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-IIO_INTENSITY was originally introduced because we had a set of light 
-sensors
-where their was no simple relationship between them and anything in SI 
-units.
-If we can convert to illuminance as here via a simple scaling and offset
-then I'd be tempted to make this IIO_LIGHT (and hence illuminance_raw)
-with illuminance_scale and illuminance_offset
-> +	}, {
-> +		.type = IIO_PROXIMITY,
-> +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-> +	}
-> +};
-> +
-> +static int vcnl4000_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	int ret = -EINVAL;
-> +	struct vcnl4000_data *data = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		switch (chan->type) {
-> +		case IIO_INTENSITY:
-> +			ret = vcnl4000_measure(data,
-> +				VCNL4000_AL_OD, VCNL4000_AL_RDY,
-> +				VCNL4000_AL_RESULT_HI, val);
-> +			if (ret<  0)
-> +				return ret;
-> +			ret = IIO_VAL_INT;
-> +			break;
-> +		case IIO_PROXIMITY:
-> +			ret = vcnl4000_measure(data,
-> +				VCNL4000_PS_OD, VCNL4000_PS_RDY,
-> +				VCNL4000_PS_RESULT_HI, val);
-> +			if (ret<  0)
-> +				return ret;
-> +			ret = IIO_VAL_INT;
-> +			break;
-> +		default:
-> +			break;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_INTENSITY) {
-> +			*val = 0;
-> +			*val2 = 250000;
-> +			ret = IIO_VAL_INT_PLUS_MICRO;
-> +		}
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info vcnl4000_info = {
-> +	.read_raw = vcnl4000_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int __devinit vcnl4000_probe(struct i2c_client *client,
-> +					const struct i2c_device_id *id)
-> +{
-> +	struct vcnl4000_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = iio_device_alloc(sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_PROD_REV);
-> +	if (ret<  0)
-> +		goto error_free_dev;
-> +
-> +	dev_info(&client->dev, "VCNL4000 Ambient light/proximity sensor, "
-> +		"Prod %02x, Rev: %02x\n", ret>>  4, ret&  0xf);
-> +
-> +	indio_dev->dev.parent =&client->dev;
-> +	indio_dev->info =&vcnl4000_info;
-> +	indio_dev->channels = vcnl4000_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(vcnl4000_channels);
-> +	indio_dev->name = VCNL4000_DRV_NAME;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret<  0)
-> +		goto error_free_dev;
-> +
-> +	return 0;
-> +
-> +error_free_dev:
-> +	iio_device_free(indio_dev);
-> +	return ret;
-> +}
-> +
-> +static int __devexit vcnl4000_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_device_free(indio_dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct i2c_driver vcnl4000_driver = {
-> +	.driver = {
-> +		.name   = VCNL4000_DRV_NAME,
-> +		.owner  = THIS_MODULE,
-> +	},
-> +	.probe  = vcnl4000_probe,
-> +	.remove = __devexit_p(vcnl4000_remove),
-> +	.id_table = vcnl4000_id,
-> +};
-> +
-> +module_i2c_driver(vcnl4000_driver);
-> +
-> +MODULE_AUTHOR("Peter Meerwald<pmeerw@pmeerw.net>");
-> +MODULE_DESCRIPTION("Vishay VCNL4000 proximity/ambient light sensor driver");
-> +MODULE_LICENSE("GPL");
+> Couple of nitpicks inline.  My biggest question about
+> this driver is why are you submitting it to staging?
+> Can't see any reason it can't go directly into drivers/iio/light.
 
+thank you for reviewing; reason for staging is that I consider the driver 
+incomplete because IR current control and proximity thresholding/event 
+handling is missing -- I plan to add these as soon as I have figured out 
+how to do that properly in IIO; I moved the driver out of staging 
+nevertheless
+
+> > +config SENSORS_VCNL4000
+> > +	tristate "VCNL4000 combined ALS and proximity sensor"
+> How did we end up with that SENSORS prefix.  I think it might be a legacy of
+> a few drivers that were intially submitted to hwmon and moved here.
+> Probably best to drop it.
+
+drivers/iio/light/Kconfig has CONFIG_SENSORS_LM3533
+drivers/staging/iio/light/Kconfig has 3x CONFIG_SENSORS, 2x CONFIG_
+drivers/staging/iio/magnetometer has CONFIG_SENSORS_
+
+hwmon/ and misc/ uses CONFIG_SENSORS; I wonder how many sensor drivers do 
+not fly SENSORS_?
+
+patch to remove SENSORS_ for IIO is following
+
+> > +		.type = IIO_INTENSITY,
+> > +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+> > +			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+> IIO_INTENSITY was originally introduced because we had a set of light sensors
+> where their was no simple relationship between them and anything in SI units.
+> If we can convert to illuminance as here via a simple scaling and offset
+> then I'd be tempted to make this IIO_LIGHT (and hence illuminance_raw)
+> with illuminance_scale and illuminance_offset
+
+I have switched it to IIO_LIGHT, I was taking the conservative route with 
+IIO_INTENSITY; I have to trust the data sheet...
+
+regards, p.
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
