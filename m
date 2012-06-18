@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-105.synserver.de ([212.40.185.105]:1099 "EHLO
+Received: from smtp-out-105.synserver.de ([212.40.185.105]:1040 "EHLO
 	smtp-out-099.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751246Ab2FRLla (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jun 2012 07:41:30 -0400
+	by vger.kernel.org with ESMTP id S1751958Ab2FRLl2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jun 2012 07:41:28 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v4 07/10] staging:iio:adc:ad7606: Use new triggered buffer setup helper function
-Date: Mon, 18 Jun 2012 13:45:00 +0200
-Message-Id: <1340019903-13305-7-git-send-email-lars@metafoo.de>
+Subject: [PATCH v4 06/10] staging:iio:adc:ad7476: Use new triggered buffer setup helper function
+Date: Mon, 18 Jun 2012 13:44:59 +0200
+Message-Id: <1340019903-13305-6-git-send-email-lars@metafoo.de>
 In-Reply-To: <1340019903-13305-1-git-send-email-lars@metafoo.de>
 References: <1340019903-13305-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
@@ -26,62 +26,62 @@ Acked-by: Jonathan Cameron <jic23@kernel.org>
 No changes in v4
 ---
  drivers/staging/iio/adc/Kconfig       |    3 +--
- drivers/staging/iio/adc/ad7606_core.c |    9 -------
- drivers/staging/iio/adc/ad7606_ring.c |   46 ++++-----------------------------
- 3 files changed, 6 insertions(+), 52 deletions(-)
+ drivers/staging/iio/adc/ad7476_core.c |    9 -------
+ drivers/staging/iio/adc/ad7476_ring.c |   46 +++------------------------------
+ 3 files changed, 5 insertions(+), 53 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index c5f5651..ca46627 100644
+index bb6fffd..c5f5651 100644
 --- a/drivers/staging/iio/adc/Kconfig
 +++ b/drivers/staging/iio/adc/Kconfig
-@@ -25,8 +25,7 @@ config AD7606
- 	tristate "Analog Devices AD7606 ADC driver"
- 	depends on GPIOLIB
+@@ -73,8 +73,7 @@ config AD7476
+ 	tristate "Analog Devices AD7475/6/7/8 AD7466/7/8 and AD7495 ADC driver"
+ 	depends on SPI
  	select IIO_BUFFER
--	select IIO_TRIGGER
 -	select IIO_KFIFO_BUF
+-	select IIO_TRIGGER
 +	select IIO_TRIGGERED_BUFFER
  	help
- 	  Say yes here to build support for Analog Devices:
- 	  ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
-diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-index a13afff..ccb97fe 100644
---- a/drivers/staging/iio/adc/ad7606_core.c
-+++ b/drivers/staging/iio/adc/ad7606_core.c
-@@ -533,20 +533,12 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
+ 	  Say yes here to build support for Analog Devices
+ 	  AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468, AD7495
+diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
+index be1c260..4d30a79 100644
+--- a/drivers/staging/iio/adc/ad7476_core.c
++++ b/drivers/staging/iio/adc/ad7476_core.c
+@@ -177,20 +177,12 @@ static int __devinit ad7476_probe(struct spi_device *spi)
  	if (ret)
- 		goto error_free_irq;
+ 		goto error_disable_reg;
  
 -	ret = iio_buffer_register(indio_dev,
--				  indio_dev->channels,
--				  indio_dev->num_channels);
+-				  st->chip_info->channel,
+-				  ARRAY_SIZE(st->chip_info->channel));
 -	if (ret)
 -		goto error_cleanup_ring;
+-
  	ret = iio_device_register(indio_dev);
  	if (ret)
- 		goto error_unregister_ring;
+ 		goto error_ring_unregister;
+ 	return 0;
  
- 	return indio_dev;
- error_unregister_ring:
+ error_ring_unregister:
 -	iio_buffer_unregister(indio_dev);
--
 -error_cleanup_ring:
- 	ad7606_ring_cleanup(indio_dev);
- 
- error_free_irq:
-@@ -571,7 +563,6 @@ int ad7606_remove(struct iio_dev *indio_dev, int irq)
- 	struct ad7606_state *st = iio_priv(indio_dev);
+ 	ad7476_ring_cleanup(indio_dev);
+ error_disable_reg:
+ 	if (!IS_ERR(st->reg))
+@@ -210,7 +202,6 @@ static int ad7476_remove(struct spi_device *spi)
+ 	struct ad7476_state *st = iio_priv(indio_dev);
  
  	iio_device_unregister(indio_dev);
 -	iio_buffer_unregister(indio_dev);
- 	ad7606_ring_cleanup(indio_dev);
- 
- 	free_irq(irq, indio_dev);
-diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
-index 24ce8fc..f15afe4 100644
---- a/drivers/staging/iio/adc/ad7606_ring.c
-+++ b/drivers/staging/iio/adc/ad7606_ring.c
-@@ -13,8 +13,8 @@
+ 	ad7476_ring_cleanup(indio_dev);
+ 	if (!IS_ERR(st->reg)) {
+ 		regulator_disable(st->reg);
+diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
+index 383611b..10f8b8d 100644
+--- a/drivers/staging/iio/adc/ad7476_ring.c
++++ b/drivers/staging/iio/adc/ad7476_ring.c
+@@ -15,8 +15,8 @@
  
  #include <linux/iio/iio.h>
  #include <linux/iio/buffer.h>
@@ -89,48 +89,45 @@ index 24ce8fc..f15afe4 100644
  #include <linux/iio/trigger_consumer.h>
 +#include <linux/iio/triggered_buffer.h>
  
- #include "ad7606.h"
+ #include "ad7476.h"
  
-@@ -91,54 +91,18 @@ done:
- 	kfree(buf);
+@@ -52,51 +52,13 @@ done:
+ 	return IRQ_HANDLED;
  }
  
--static const struct iio_buffer_setup_ops ad7606_ring_setup_ops = {
+-static const struct iio_buffer_setup_ops ad7476_ring_setup_ops = {
 -	.preenable = &iio_sw_buffer_preenable,
 -	.postenable = &iio_triggered_buffer_postenable,
 -	.predisable = &iio_triggered_buffer_predisable,
 -};
 -
- int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
  {
- 	struct ad7606_state *st = iio_priv(indio_dev);
--	int ret;
+-	struct ad7476_state *st = iio_priv(indio_dev);
+-	int ret = 0;
 -
 -	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
 -	if (!indio_dev->buffer) {
 -		ret = -ENOMEM;
 -		goto error_ret;
 -	}
--
--	indio_dev->pollfunc = iio_alloc_pollfunc(&ad7606_trigger_handler_th_bh,
--						 &ad7606_trigger_handler_th_bh,
--						 0,
--						 indio_dev,
--						 "%s_consumer%d",
--						 indio_dev->name,
--						 indio_dev->id);
+-	indio_dev->pollfunc
+-		= iio_alloc_pollfunc(NULL,
+-				     &ad7476_trigger_handler,
+-				     IRQF_ONESHOT,
+-				     indio_dev,
+-				     "%s_consumer%d",
+-				     spi_get_device_id(st->spi)->name,
+-				     indio_dev->id);
 -	if (indio_dev->pollfunc == NULL) {
 -		ret = -ENOMEM;
 -		goto error_deallocate_kfifo;
 -	}
 -
 -	/* Ring buffer functions - here trigger setup related */
--
--	indio_dev->setup_ops = &ad7606_ring_setup_ops;
+-	indio_dev->setup_ops = &ad7476_ring_setup_ops;
 -	indio_dev->buffer->scan_timestamp = true;
- 
- 	INIT_WORK(&st->poll_work, &ad7606_poll_bh_to_ring);
- 
+-
 -	/* Flag that polled ring buffering is possible */
 -	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
 -	return 0;
@@ -139,12 +136,11 @@ index 24ce8fc..f15afe4 100644
 -	iio_kfifo_free(indio_dev->buffer);
 -error_ret:
 -	return ret;
-+	return iio_triggered_buffer_setup(indio_dev,
-+		&ad7606_trigger_handler_th_bh, &ad7606_trigger_handler_th_bh,
-+		NULL);
++	return iio_triggered_buffer_setup(indio_dev, NULL,
++			&ad7476_trigger_handler, NULL);
  }
  
- void ad7606_ring_cleanup(struct iio_dev *indio_dev)
+ void ad7476_ring_cleanup(struct iio_dev *indio_dev)
  {
 -	iio_dealloc_pollfunc(indio_dev->pollfunc);
 -	iio_kfifo_free(indio_dev->buffer);
