@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-105.synserver.de ([212.40.185.105]:1100 "EHLO
+Received: from smtp-out-105.synserver.de ([212.40.185.105]:1094 "EHLO
 	smtp-out-099.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751461Ab2FRLl2 (ORCPT
+	by vger.kernel.org with ESMTP id S1751877Ab2FRLl2 (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jun 2012 07:41:28 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v4 04/10] staging:iio:adc:ad7192: Use new triggered buffer setup helper function
-Date: Mon, 18 Jun 2012 13:44:57 +0200
-Message-Id: <1340019903-13305-4-git-send-email-lars@metafoo.de>
+Subject: [PATCH v4 03/10] iio:adc:at91: Use new triggered buffer setup helper
+Date: Mon, 18 Jun 2012 13:44:56 +0200
+Message-Id: <1340019903-13305-3-git-send-email-lars@metafoo.de>
 In-Reply-To: <1340019903-13305-1-git-send-email-lars@metafoo.de>
 References: <1340019903-13305-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
@@ -19,121 +19,105 @@ buffer and pollfunc.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
 ---
 No changes in v4
 ---
- drivers/staging/iio/adc/Kconfig  |    3 +--
- drivers/staging/iio/adc/ad7192.c |   49 +++++---------------------------------
- 2 files changed, 7 insertions(+), 45 deletions(-)
+ drivers/iio/adc/Kconfig    |    3 +--
+ drivers/iio/adc/at91_adc.c |   51 ++++----------------------------------------
+ 2 files changed, 5 insertions(+), 49 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index 8f1b3af..7cdf421 100644
---- a/drivers/staging/iio/adc/Kconfig
-+++ b/drivers/staging/iio/adc/Kconfig
-@@ -136,8 +136,7 @@ config AD7192
- 	tristate "Analog Devices AD7190 AD7192 AD7195 ADC driver"
- 	depends on SPI
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 9a0df81..4f7f584 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -7,8 +7,7 @@ config AT91_ADC
+ 	tristate "Atmel AT91 ADC"
+ 	depends on ARCH_AT91
  	select IIO_BUFFER
 -	select IIO_KFIFO_BUF
 -	select IIO_TRIGGER
 +	select IIO_TRIGGERED_BUFFER
+ 	select SYSFS
  	help
- 	  Say yes here to build support for Analog Devices AD7190,
- 	  AD7192 or AD7195 SPI analog to digital converters (ADC).
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 5eaeaf1..839f17c 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -20,9 +20,9 @@
+ 	  Say yes here to build support for Atmel AT91 ADC.
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index f18a95d..6a08469 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -26,9 +26,9 @@
+ 
  #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
  #include <linux/iio/buffer.h>
 -#include <linux/iio/kfifo_buf.h>
  #include <linux/iio/trigger.h>
  #include <linux/iio/trigger_consumer.h>
 +#include <linux/iio/triggered_buffer.h>
  
- #include "ad7192.h"
+ #include <mach/at91_adc.h>
  
-@@ -542,41 +542,13 @@ static const struct iio_buffer_setup_ops ad7192_ring_setup_ops = {
+@@ -318,58 +318,15 @@ static void at91_adc_trigger_remove(struct iio_dev *idev)
+ 	}
+ }
  
- static int ad7192_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+-static const struct iio_buffer_setup_ops at91_adc_buffer_ops = {
+-	.preenable = &iio_sw_buffer_preenable,
+-	.postenable = &iio_triggered_buffer_postenable,
+-	.predisable = &iio_triggered_buffer_predisable,
+-};
+-
+ static int at91_adc_buffer_init(struct iio_dev *idev)
  {
 -	int ret;
 -
--	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
--	if (!indio_dev->buffer) {
+-	idev->buffer = iio_kfifo_allocate(idev);
+-	if (!idev->buffer) {
 -		ret = -ENOMEM;
 -		goto error_ret;
 -	}
--	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
--						 &ad7192_trigger_handler,
--						 IRQF_ONESHOT,
--						 indio_dev,
--						 "ad7192_consumer%d",
--						 indio_dev->id);
--	if (indio_dev->pollfunc == NULL) {
+-
+-	idev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+-					    &at91_adc_trigger_handler,
+-					    IRQF_ONESHOT,
+-					    idev,
+-					    "%s-consumer%d",
+-					    idev->name,
+-					    idev->id);
+-	if (idev->pollfunc == NULL) {
 -		ret = -ENOMEM;
--		goto error_deallocate_kfifo;
+-		goto error_pollfunc;
 -	}
 -
--	/* Ring buffer functions - here trigger setup related */
--	indio_dev->setup_ops = &ad7192_ring_setup_ops;
+-	idev->setup_ops = &at91_adc_buffer_ops;
+-	idev->modes |= INDIO_BUFFER_TRIGGERED;
 -
--	/* Flag that polled ring buffering is possible */
--	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
+-	ret = iio_buffer_register(idev,
+-				  idev->channels,
+-				  idev->num_channels);
+-	if (ret)
+-		goto error_register;
+-
 -	return 0;
 -
--error_deallocate_kfifo:
--	iio_kfifo_free(indio_dev->buffer);
+-error_register:
+-	iio_dealloc_pollfunc(idev->pollfunc);
+-error_pollfunc:
+-	iio_kfifo_free(idev->buffer);
 -error_ret:
 -	return ret;
-+	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+			&ad7192_trigger_handler, &ad7192_ring_setup_ops);
++	return iio_triggered_buffer_setup(idev, &iio_pollfunc_store_time,
++		&at91_adc_trigger_handler, NULL);
  }
  
- static void ad7192_ring_cleanup(struct iio_dev *indio_dev)
+ static void at91_adc_buffer_remove(struct iio_dev *idev)
  {
--	iio_dealloc_pollfunc(indio_dev->pollfunc);
--	iio_kfifo_free(indio_dev->buffer);
-+	iio_triggered_buffer_cleanup(indio_dev);
+-	iio_buffer_unregister(idev);
+-	iio_dealloc_pollfunc(idev->pollfunc);
+-	iio_kfifo_free(idev->buffer);
++	iio_triggered_buffer_cleanup(idev);
  }
  
- /**
-@@ -1077,23 +1049,15 @@ static int __devinit ad7192_probe(struct spi_device *spi)
- 	if (ret)
- 		goto error_ring_cleanup;
- 
--	ret = iio_buffer_register(indio_dev,
--				  indio_dev->channels,
--				  indio_dev->num_channels);
--	if (ret)
--		goto error_remove_trigger;
--
- 	ret = ad7192_setup(st);
- 	if (ret)
--		goto error_unreg_ring;
-+		goto error_remove_trigger;
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
--		goto error_unreg_ring;
-+		goto error_remove_trigger;
- 	return 0;
- 
--error_unreg_ring:
--	iio_buffer_unregister(indio_dev);
- error_remove_trigger:
- 	ad7192_remove_trigger(indio_dev);
- error_ring_cleanup:
-@@ -1116,7 +1080,6 @@ static int ad7192_remove(struct spi_device *spi)
- 	struct ad7192_state *st = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
--	iio_buffer_unregister(indio_dev);
- 	ad7192_remove_trigger(indio_dev);
- 	ad7192_ring_cleanup(indio_dev);
- 
+ static int at91_adc_read_raw(struct iio_dev *idev,
 -- 
 1.7.10
 
