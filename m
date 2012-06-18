@@ -1,99 +1,597 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-141.synserver.de ([212.40.185.141]:1082 "EHLO
-	smtp-out-140.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751861Ab2FRRoU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jun 2012 13:44:20 -0400
+Received: from smtp-out-136.synserver.de ([212.40.185.136]:1175 "EHLO
+	smtp-out-133.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1750871Ab2FRRKm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jun 2012 13:10:42 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] staging:iio:sysfs-trigger: Use irq_work to properly active trigger
-Date: Mon, 18 Jun 2012 19:47:54 +0200
-Message-Id: <1340041674-21408-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH] staging:iio:adc: Add AD7265/AD7266 support
+Date: Mon, 18 Jun 2012 19:14:16 +0200
+Message-Id: <1340039656-19403-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Since iio_trigger_poll() calls generic_handle_irq() it need to be called from
-hardirq context. The sysfs trigger is kicked from userspace, so it is obviously
-not possible to fulfill this requirement by calling iio_trigger_poll directly.
-As a workaround commit 1f785681 ("staging:iio:trigger sysfs userspace trigger
-rework.") added iio_trigger_poll_chained() which uses handle_nested_irq instead
-of generic_handle_irq. This in itself is a hack and only works by chance.
-handle_nested_irq is intended to be called from the threaded interrupt handler
-of the parent IRQ. Using handle_nested_irq is also problematic since it will
-only call the threaded handler of the IRQ. But quite a few IIO drivers rely on
-their hardirq handler being called or undefined behaviour will occur.
-
-This patch uses the irq_work framework to schedule the call to
-iio_trigger_poll() from hardirq context, which fixes the issues described above.
+This patch adds support for the Analog Devices AD7265 and AD7266
+Analog-to-Digital converters.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/trigger/Kconfig          |    2 ++
- drivers/staging/iio/trigger/iio-trig-sysfs.c |   14 +++++++++++++-
- 2 files changed, 15 insertions(+), 1 deletion(-)
+ drivers/iio/adc/Kconfig              |   10 +
+ drivers/iio/adc/Makefile             |    1 +
+ drivers/iio/adc/ad7266.c             |  470 ++++++++++++++++++++++++++++++++++
+ include/linux/platform_data/ad7266.h |   54 ++++
+ 4 files changed, 535 insertions(+)
+ create mode 100644 drivers/iio/adc/ad7266.c
+ create mode 100644 include/linux/platform_data/ad7266.h
 
-diff --git a/drivers/staging/iio/trigger/Kconfig b/drivers/staging/iio/trigger/Kconfig
-index b8abf54..7d32075 100644
---- a/drivers/staging/iio/trigger/Kconfig
-+++ b/drivers/staging/iio/trigger/Kconfig
-@@ -21,6 +21,8 @@ config IIO_GPIO_TRIGGER
- config IIO_SYSFS_TRIGGER
- 	tristate "SYSFS trigger"
- 	depends on SYSFS
-+	depends on HAVE_IRQ_WORK
-+	select IRQ_WORK
- 	help
- 	  Provides support for using SYSFS entry as IIO triggers.
- 	  If unsure, say N (but it's safe to say "Y").
-diff --git a/drivers/staging/iio/trigger/iio-trig-sysfs.c b/drivers/staging/iio/trigger/iio-trig-sysfs.c
-index fee4746..34566b5 100644
---- a/drivers/staging/iio/trigger/iio-trig-sysfs.c
-+++ b/drivers/staging/iio/trigger/iio-trig-sysfs.c
-@@ -10,12 +10,14 @@
- #include <linux/platform_device.h>
- #include <linux/slab.h>
- #include <linux/list.h>
-+#include <linux/irq_work.h>
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 9a0df81..1af72d9 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -3,6 +3,16 @@
+ #
+ menu "Analog to digital converters"
  
- #include <linux/iio/iio.h>
- #include <linux/iio/trigger.h>
++config AD7266
++	tristate "Analog Devices AD7265/AD7266 ADC driver"
++	depends on SPI_MASTER
++	select IIO_BUFFER
++	select IIO_TRIGGER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for Analog Devices AD7265 and AD7266
++	  ADCs.
++
+ config AT91_ADC
+ 	tristate "Atmel AT91 ADC"
+ 	depends on ARCH_AT91
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 175c8d4..52eec25 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -2,4 +2,5 @@
+ # Makefile for IIO ADC drivers
+ #
  
- struct iio_sysfs_trig {
- 	struct iio_trigger *trig;
-+	struct irq_work work;
- 	int id;
- 	struct list_head l;
- };
-@@ -89,11 +91,18 @@ static struct device iio_sysfs_trig_dev = {
- 	.release = &iio_trigger_sysfs_release,
- };
- 
-+static void iio_sysfs_trigger_work(struct irq_work *work)
++obj-$(CONFIG_AD7266) += ad7266.o
+ obj-$(CONFIG_AT91_ADC) += at91_adc.o
+diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
+new file mode 100644
+index 0000000..4a9983e
+--- /dev/null
++++ b/drivers/iio/adc/ad7266.c
+@@ -0,0 +1,470 @@
++/*
++ * AD7266/65 SPI ADC driver
++ *
++ * Copyright 2012 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/spi/spi.h>
++#include <linux/regulator/consumer.h>
++#include <linux/err.h>
++#include <linux/gpio.h>
++#include <linux/module.h>
++
++#include <linux/interrupt.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/buffer.h>
++
++#include <linux/platform_data/ad7266.h>
++
++struct ad7266_state {
++	struct spi_device	*spi;
++	struct regulator	*reg;
++	unsigned long		vref_uv;
++
++	struct spi_transfer	single_xfer[3];
++	struct spi_message	single_msg;
++
++	enum ad7266_range	range;
++	enum ad7266_mode	mode;
++	bool			fixed_addr;
++	struct gpio		gpios[3];
++
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++	uint8_t data[ALIGN(4, sizeof(s64)) + sizeof(s64)] ____cacheline_aligned;
++};
++
++static int ad7266_wakeup(struct ad7266_state *st)
 +{
-+	struct iio_sysfs_trig *trig = container_of(work, struct iio_sysfs_trig, work);
-+	iio_trigger_poll(trig->trig, 0);
++	/* Any read with >= 2 bytes will wake the device */
++	return spi_read(st->spi, st->data, 2);
 +}
 +
- static ssize_t iio_sysfs_trigger_poll(struct device *dev,
- 		struct device_attribute *attr, const char *buf, size_t count)
- {
- 	struct iio_trigger *trig = to_iio_trigger(dev);
--	iio_trigger_poll_chained(trig, 0);
-+	struct iio_sysfs_trig *sysfs_trig = trig->private_data;
-+	irq_work_queue(&sysfs_trig->work);
- 
- 	return count;
- }
-@@ -148,6 +157,9 @@ static int iio_sysfs_trigger_probe(int id)
- 	t->trig->dev.groups = iio_sysfs_trigger_attr_groups;
- 	t->trig->ops = &iio_sysfs_trigger_ops;
- 	t->trig->dev.parent = &iio_sysfs_trig_dev;
-+	t->trig->private_data = t;
++static int ad7266_powerdown(struct ad7266_state *st)
++{
++	/* Any read with < 2 bytes will wake the device */
++	return spi_read(st->spi, st->data, 1);
++}
 +
-+	init_irq_work(&t->work, iio_sysfs_trigger_work);
- 
- 	ret = iio_trigger_register(t->trig);
- 	if (ret)
++static int ad7266_preenable(struct iio_dev *indio_dev)
++{
++	struct ad7266_state *st = iio_priv(indio_dev);
++	int ret;
++
++	ret = ad7266_wakeup(st);
++	if (ret)
++		return ret;
++
++	ret = iio_sw_buffer_preenable(indio_dev);
++	if (ret)
++		ad7266_powerdown(st);
++
++	return ret;
++}
++
++static int ad7266_postdisable(struct iio_dev *indio_dev)
++{
++	struct ad7266_state *st = iio_priv(indio_dev);
++	return ad7266_powerdown(st);
++}
++
++static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
++	.preenable = &ad7266_preenable,
++	.postenable = &iio_triggered_buffer_postenable,
++	.predisable = &iio_triggered_buffer_predisable,
++	.postdisable = &ad7266_postdisable,
++};
++
++static irqreturn_t ad7266_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct iio_buffer *buffer = indio_dev->buffer;
++	struct ad7266_state *st = iio_priv(indio_dev);
++	int ret;
++
++	ret = spi_read(st->spi, st->data, 4);
++	if (ret == 0) {
++		if (indio_dev->scan_timestamp)
++			((s64 *)st->data)[1] = pf->timestamp;
++		iio_push_to_buffer(buffer, (u8 *)st->data, pf->timestamp);
++	}
++
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static void ad7266_select_input(struct ad7266_state *st, unsigned int nr)
++{
++	unsigned int i;
++
++	if (st->fixed_addr)
++		return;
++
++	switch (st->mode) {
++	case AD7266_MODE_SINGLE_ENDED:
++		nr >>= 1;
++		break;
++	case AD7266_MODE_PSEUDO_DIFF:
++		nr |= 1;
++		break;
++	case AD7266_MODE_DIFF:
++		nr &= ~1;
++		break;
++	}
++
++	for (i = 0; i < 3; ++i)
++		gpio_set_value(st->gpios[i].gpio, (bool)(nr & BIT(i)));
++}
++
++int ad7266_update_scan_mode(struct iio_dev *indio_dev,
++	const unsigned long *scan_mask)
++{
++	struct ad7266_state *st = iio_priv(indio_dev);
++	unsigned int nr = find_first_bit(scan_mask, indio_dev->masklength);
++
++	ad7266_select_input(st, nr);
++
++	return 0;
++}
++
++static int ad7266_read_single(struct ad7266_state *st, int *val,
++	unsigned int address)
++{
++	int ret;
++
++	ad7266_select_input(st, address);
++
++	ret = spi_sync(st->spi, &st->single_msg);
++	*val = be16_to_cpu(st->data[address % 2]);
++
++	return ret;
++}
++
++static int ad7266_read_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int *val, int *val2, long m)
++{
++	struct ad7266_state *st = iio_priv(indio_dev);
++	unsigned long scale_uv;
++	int ret;
++
++	switch (m) {
++	case IIO_CHAN_INFO_RAW:
++		if (iio_buffer_enabled(indio_dev))
++			return -EBUSY;
++
++		ret = ad7266_read_single(st, val, chan->address);
++		if (ret)
++			return ret;
++
++		*val = (*val >> 2) & 0xfff;
++		if (chan->scan_type.sign == 's')
++			*val = sign_extend32(*val, 11);
++
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		scale_uv = (st->vref_uv * 100);
++		if (st->range == AD7266_RANGE_2VREF)
++			scale_uv *= 2;
++
++		scale_uv >>= chan->scan_type.realbits;
++		*val =  scale_uv / 100000;
++		*val2 = (scale_uv % 100000) * 10;
++		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_OFFSET:
++		if (st->range == AD7266_RANGE_2VREF &&
++			st->mode == AD7266_MODE_SINGLE_ENDED)
++			*val = -2048;
++		else
++			*val = 0;
++		return IIO_VAL_INT;
++	}
++	return -EINVAL;
++}
++
++#define AD7266_CHAN(_chan, _sign) {			\
++	.type = IIO_VOLTAGE,				\
++	.indexed = 1,					\
++	.channel = (_chan),				\
++	.address = (_chan),				\
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT	\
++		| IIO_CHAN_INFO_SCALE_SHARED_BIT	\
++		| IIO_CHAN_INFO_OFFSET_SHARED_BIT,	\
++	.scan_index = (_chan),				\
++	.scan_type = IIO_ST((_sign), 12, 16, 2),	\
++}
++
++#define AD7266_DECLARE_SINGLE_ENDED_CHANNELS(_name, _sign) \
++const struct iio_chan_spec ad7266_channels_##_name[] = { \
++	AD7266_CHAN(0, (_sign)), \
++	AD7266_CHAN(1, (_sign)), \
++	AD7266_CHAN(2, (_sign)), \
++	AD7266_CHAN(3, (_sign)), \
++	AD7266_CHAN(4, (_sign)), \
++	AD7266_CHAN(5, (_sign)), \
++	AD7266_CHAN(6, (_sign)), \
++	AD7266_CHAN(7, (_sign)), \
++	AD7266_CHAN(8, (_sign)), \
++	AD7266_CHAN(9, (_sign)), \
++	AD7266_CHAN(10, (_sign)), \
++	AD7266_CHAN(11, (_sign)), \
++};
++
++static AD7266_DECLARE_SINGLE_ENDED_CHANNELS(u, 'u');
++static AD7266_DECLARE_SINGLE_ENDED_CHANNELS(s, 's');
++
++#define AD7266_CHAN_DIFF(_chan) {			\
++	.type = IIO_VOLTAGE,				\
++	.indexed = 1,					\
++	.channel = (_chan) * 2,				\
++	.channel2 = (_chan) * 2 + 1,			\
++	.address = (_chan),				\
++	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT,	\
++	.scan_index = (_chan),				\
++	.scan_type = IIO_ST('s', 12, 16, 2),		\
++	.differential = 1,				\
++}
++
++static const struct iio_chan_spec ad7266_channels_diff[] = {
++	AD7266_CHAN_DIFF(0),
++	AD7266_CHAN_DIFF(1),
++	AD7266_CHAN_DIFF(2),
++	AD7266_CHAN_DIFF(3),
++	AD7266_CHAN_DIFF(4),
++	AD7266_CHAN_DIFF(5),
++};
++
++static const struct iio_info ad7266_info = {
++	.read_raw = &ad7266_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static unsigned long ad7266_available_scan_masks[] = {
++	0x003,
++	0x00c,
++	0x030,
++	0x0c0,
++	0x300,
++	0xc00,
++	0x000,
++};
++
++static unsigned long ad7266_available_scan_masks_diff[] = {
++	0x003,
++	0x00c,
++	0x030,
++	0x000,
++};
++
++static unsigned long ad7266_available_scan_masks_fixed[] = {
++	0x003,
++	0x000,
++};
++
++static const char * const ad7266_gpio_labels[] = {
++	"AD0", "AD1", "AD2",
++};
++
++static int __devinit ad7266_alloc_channels(struct iio_dev *indio_dev)
++{
++	struct ad7266_state *st = iio_priv(indio_dev);
++	const struct iio_chan_spec *channel_template;
++	struct iio_chan_spec *channels;
++	unsigned long *scan_masks;
++	unsigned int num_channels;
++
++	if (st->mode == AD7266_MODE_SINGLE_ENDED) {
++		if (st->range == AD7266_RANGE_VREF) {
++			channel_template = ad7266_channels_u;
++			num_channels = ARRAY_SIZE(ad7266_channels_u);
++		} else {
++			channel_template = ad7266_channels_s;
++			num_channels = ARRAY_SIZE(ad7266_channels_s);
++		}
++		scan_masks = ad7266_available_scan_masks;
++	} else {
++		channel_template = ad7266_channels_diff;
++		num_channels = ARRAY_SIZE(ad7266_channels_diff);
++		scan_masks = ad7266_available_scan_masks_diff;
++	}
++
++	if (!st->fixed_addr) {
++		indio_dev->available_scan_masks = scan_masks;
++		indio_dev->masklength = indio_dev->num_channels;
++	} else {
++		indio_dev->available_scan_masks = ad7266_available_scan_masks_fixed;
++		indio_dev->masklength = 2;
++		num_channels = 2;
++	}
++
++	channels = kcalloc(num_channels + 1, sizeof(*channels),
++			GFP_KERNEL);
++	if (!channels)
++		return -ENOMEM;
++
++	memcpy(channels, channel_template, num_channels * sizeof(*channels));
++	channels[num_channels] =
++		(struct iio_chan_spec)IIO_CHAN_SOFT_TIMESTAMP(num_channels);
++
++	indio_dev->num_channels = num_channels + 1;
++	indio_dev->channels = channels;
++
++	return 0;
++}
++
++static int __devinit ad7266_probe(struct spi_device *spi)
++{
++	struct ad7266_platform_data *pdata = spi->dev.platform_data;
++	struct iio_dev *indio_dev;
++	struct ad7266_state *st;
++	unsigned int i;
++	int ret;
++
++	indio_dev = iio_device_alloc(sizeof(*st));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++
++	st->reg = regulator_get(&spi->dev, "vref");
++	if (!IS_ERR_OR_NULL(st->reg)) {
++		ret = regulator_enable(st->reg);
++		if (ret)
++			goto error_put_reg;
++
++		st->vref_uv = regulator_get_voltage(st->reg);
++	} else {
++		/* Use internal reference */
++		st->vref_uv = 2500000;
++	}
++
++	if (pdata) {
++		st->fixed_addr = pdata->fixed_addr;
++		st->mode = pdata->mode;
++		st->range = pdata->range;
++
++		if (!st->fixed_addr) {
++			for (i = 0; i < ARRAY_SIZE(st->gpios); ++i) {
++				st->gpios[i].gpio = pdata->addr_gpios[i];
++				st->gpios[i].flags = GPIOF_OUT_INIT_LOW;
++				st->gpios[i].label = ad7266_gpio_labels[i];
++			}
++			ret = gpio_request_array(st->gpios,
++				ARRAY_SIZE(st->gpios));
++			if (ret)
++				goto error_disable_reg;
++		}
++	} else {
++		st->fixed_addr = true;
++		st->range = AD7266_RANGE_VREF;
++		st->mode = AD7266_MODE_DIFF;
++	}
++
++	spi_set_drvdata(spi, indio_dev);
++	st->spi = spi;
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &ad7266_info;
++
++	ret = ad7266_alloc_channels(indio_dev);
++	if (ret)
++		goto error_free_gpios;
++
++	/* wakeup */
++	st->single_xfer[0].rx_buf = &st->data;
++	st->single_xfer[0].len = 2;
++	st->single_xfer[0].cs_change = 1;
++	/* conversion */
++	st->single_xfer[1].rx_buf = &st->data;
++	st->single_xfer[1].len = 4;
++	st->single_xfer[1].cs_change = 1;
++	/* powerdown */
++	st->single_xfer[2].tx_buf = &st->data;
++	st->single_xfer[2].len = 1;
++
++	spi_message_init(&st->single_msg);
++	spi_message_add_tail(&st->single_xfer[0], &st->single_msg);
++	spi_message_add_tail(&st->single_xfer[1], &st->single_msg);
++	spi_message_add_tail(&st->single_xfer[2], &st->single_msg);
++
++	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
++		&ad7266_trigger_handler, &iio_triggered_buffer_setup_ops);
++	if (ret)
++		goto error_free_channels;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_buffer_cleanup;
++
++	return 0;
++
++error_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
++error_free_channels:
++	kfree(indio_dev->channels);
++error_free_gpios:
++	gpio_free_array(st->gpios, ARRAY_SIZE(st->gpios));
++error_disable_reg:
++	if (!IS_ERR_OR_NULL(st->reg))
++		regulator_disable(st->reg);
++error_put_reg:
++	if (!IS_ERR_OR_NULL(st->reg))
++		regulator_put(st->reg);
++
++	iio_device_free(indio_dev);
++
++	return ret;
++}
++
++static int __devexit ad7266_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct ad7266_state *st = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++	kfree(indio_dev->channels);
++	gpio_free_array(st->gpios, ARRAY_SIZE(st->gpios));
++	if (!IS_ERR_OR_NULL(st->reg)) {
++		regulator_disable(st->reg);
++		regulator_put(st->reg);
++	}
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++static const struct spi_device_id ad7266_id[] = {
++	{"ad7265", 0},
++	{"ad7266", 0},
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, ad7266_id);
++
++static struct spi_driver ad7266_driver = {
++	.driver = {
++		.name	= "ad7266",
++		.owner	= THIS_MODULE,
++	},
++	.probe		= ad7266_probe,
++	.remove		= __devexit_p(ad7266_remove),
++	.id_table	= ad7266_id,
++};
++module_spi_driver(ad7266_driver);
++
++MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
++MODULE_DESCRIPTION("Analog Devices AD7266/65 ADC");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/platform_data/ad7266.h b/include/linux/platform_data/ad7266.h
+new file mode 100644
+index 0000000..eabfdcb
+--- /dev/null
++++ b/include/linux/platform_data/ad7266.h
+@@ -0,0 +1,54 @@
++/*
++ * AD7266/65 SPI ADC driver
++ *
++ * Copyright 2012 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#ifndef __IIO_ADC_AD7266_H__
++#define __IIO_ADC_AD7266_H__
++
++/**
++ * enum ad7266_range - AD7266 reference voltage range
++ * @AD7266_RANGE_VREF: Device is configured for input range 0V - VREF
++ *			(RANGE pin set to low)
++ * @AD7266_RANGE_2VREF: Device is configured for input range 0V - 2VREF
++ *			(RANGE pin set to high)
++ */
++enum ad7266_range {
++	AD7266_RANGE_VREF,
++	AD7266_RANGE_2VREF,
++};
++
++/**
++ * enum ad7266_mode - AD7266 sample mode
++ * @AD7266_MODE_DIFF: Device is configured for full differential mode
++ *				(SGL/DIFF pin set to low, AD0 pin set to low)
++ * @AD7266_MODE_PSEUDO_DIFF: Device is configured for pseudo differential mode
++ *				(SGL/DIFF pin set to low, AD0 pin set to high)
++ * @AD7266_MODE_SINGLE_ENDED: Device is configured for single-ended mode
++ *				(SGL/DIFF pin set to high)
++ */
++enum ad7266_mode {
++	AD7266_MODE_DIFF,
++	AD7266_MODE_PSEUDO_DIFF,
++	AD7266_MODE_SINGLE_ENDED,
++};
++
++/**
++ * struct ad7266_platform_data - Platform data for the AD7266 driver
++ * @range: Reference voltage range the device is configured for
++ * @mode: Sample mode the device is configured for
++ * @fixed_addr: Whether the address pins are hard-wired
++ * @addr_gpios: GPIOs used for controlling the address pins, only used if
++ *		fixed_addr is set to false.
++ */
++struct ad7266_platform_data {
++	enum ad7266_range range;
++	enum ad7266_mode mode;
++	bool fixed_addr;
++	unsigned int addr_gpios[3];
++};
++
++#endif
 -- 
 1.7.10
 
