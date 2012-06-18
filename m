@@ -1,24 +1,19 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:51273 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:47278 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750756Ab2FSH64 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 Jun 2012 03:58:56 -0400
+	id S1751388Ab2FRSdJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 18 Jun 2012 14:33:09 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v5] iio: add vcnl4000 combined ALS and proximity sensor
-Date: Tue, 19 Jun 2012 09:58:54 +0200
-Message-Id: <1340092734-9212-1-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH v4] iio: add vcnl4000 combined ALS and proximity sensor
+Date: Mon, 18 Jun 2012 20:33:00 +0200
+Message-Id: <1340044387-2725-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-minimal driver, no IR current control and proximity/event
-handling yet
-
-v5:
-* checkpatch warnings
-* increase msleep() to 20 ms when waiting for data ready as
-  measurement/conversion can take up to 100 ms, 1 ms is too short
+minimal driver, no IR current control and proximity/event handling
+yet
 
 v4 (address comments by Jonathan Cameron)
 * remove SENSORS_ prefix in Kconfig
@@ -38,11 +33,12 @@ v2 (address comments by Lars-Peter Clausen and Jonathan Cameron)
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
+
 ---
  drivers/iio/light/Kconfig    |   11 +++
  drivers/iio/light/Makefile   |    1 +
- drivers/iio/light/vcnl4000.c |  217 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 229 insertions(+)
+ drivers/iio/light/vcnl4000.c |  216 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 228 insertions(+)
  create mode 100644 drivers/iio/light/vcnl4000.c
 
 diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
@@ -76,10 +72,10 @@ index c1c23a0..06fa4d3 100644
 +obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
 new file mode 100644
-index 0000000..e49cb97
+index 0000000..c278495
 --- /dev/null
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -0,0 +1,217 @@
+@@ -0,0 +1,216 @@
 +/*
 + * vcnl4000.c - Support for Vishay VCNL4000 combined ambient light and
 + * proximity sensor
@@ -115,7 +111,7 @@ index 0000000..e49cb97
 +#define VCNL4000_AL_RESULT_LO	0x86 /* Ambient light result register, LSB */
 +#define VCNL4000_PS_RESULT_HI	0x87 /* Proximity result register, MSB */
 +#define VCNL4000_PS_RESULT_LO	0x88 /* Proximity result register, LSB */
-+#define VCNL4000_PS_MEAS_FREQ	0x89 /* Proximity test signal frequency */
++#define VCNL4000_PS_MEAS_FREQ	0x89 /* Proximity measurement signal frequency */
 +#define VCNL4000_PS_MOD_ADJ	0x8a /* Proximity modulator timing adjustment */
 +
 +/* Bit masks for COMMAND register */
@@ -141,8 +137,7 @@ index 0000000..e49cb97
 +	u16 buf;
 +	int ret;
 +
-+	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND,
-+					req_mask);
++	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND, req_mask);
 +	if (ret < 0)
 +		return ret;
 +
@@ -153,7 +148,7 @@ index 0000000..e49cb97
 +			return ret;
 +		if (ret & rdy_mask)
 +			break;
-+		msleep(20); /* measurement takes up to 100 ms */
++		msleep(1);
 +	}
 +
 +	if (tries < 0) {
@@ -251,8 +246,8 @@ index 0000000..e49cb97
 +	if (ret < 0)
 +		goto error_free_dev;
 +
-+	dev_info(&client->dev, "VCNL4000 Ambient light/proximity sensor, Prod %02x, Rev: %02x\n",
-+		ret >> 4, ret & 0xf);
++	dev_info(&client->dev, "VCNL4000 Ambient light/proximity sensor, "
++		"Prod %02x, Rev: %02x\n", ret >> 4, ret & 0xf);
 +
 +	indio_dev->dev.parent = &client->dev;
 +	indio_dev->info = &vcnl4000_info;
