@@ -1,46 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:38191 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1761526Ab2FVHgY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jun 2012 03:36:24 -0400
-Message-ID: <4FE42073.4080102@cam.ac.uk>
-Date: Fri, 22 Jun 2012 08:36:19 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/3] iio staging: simplify timestamp alignment in iio_simple_dummy
-References: <1340312559-32753-1-git-send-email-pmeerw@pmeerw.net> <1340312559-32753-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1340312559-32753-2-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from smtp-out-070.synserver.de ([212.40.185.70]:1203 "EHLO
+	smtp-out-069.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1759921Ab2FURHW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jun 2012 13:07:22 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>, devel@driverdev.osuosl.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/2] staging:iio:trigger: Use to_iio_trigger() instead of dev_get_drvdata()
+Date: Thu, 21 Jun 2012 19:10:59 +0200
+Message-Id: <1340298660-9362-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 6/21/2012 10:02 PM, Peter Meerwald wrote:
+Use to_iio_trigger(dev) instead of dev_get_drvdata(dev). Both will return the
+trigger which belongs to the device, but the the first on is a bit more
+lightweight. Also this will eventually free up the drvdata pointer of the device
+for driver specific data.
 
-Hmm. I wonder how many other hand rolled versions of this are kicking 
-about..
-  Good spot. Thanks,
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->   drivers/staging/iio/iio_simple_dummy_buffer.c |    3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
-> index d911960..f4415da 100644
-> --- a/drivers/staging/iio/iio_simple_dummy_buffer.c
-> +++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
-> @@ -85,8 +85,7 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
->   	}
->   	/* Store a timestampe at an 8 byte boundary */
->   	if (indio_dev->scan_timestamp)
-> -		*(s64 *)(((phys_addr_t)data + len
-> -				+ sizeof(s64) - 1) & ~(sizeof(s64) - 1))
-> +		*(s64 *)((phys_addr_t)data + ALIGN(len, sizeof(s64)))
+---
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.c   |    4 ++--
+ drivers/staging/iio/trigger/iio-trig-periodic-rtc.c |    4 ++--
+ drivers/staging/iio/trigger/iio-trig-sysfs.c        |    2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
->   	buffer->access->store_to(buffer, (u8 *)data, pf->timestamp);
->
->
-
+diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+index f85734d..ce6a7b1 100644
+--- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
++++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+@@ -60,7 +60,7 @@ struct bfin_tmr_state {
+ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
+ {
+-	struct iio_trigger *trig = dev_get_drvdata(dev);
++	struct iio_trigger *trig = to_iio_trigger(dev);
+ 	struct bfin_tmr_state *st = trig->private_data;
+ 	long val;
+ 	int ret;
+@@ -97,7 +97,7 @@ static ssize_t iio_bfin_tmr_frequency_show(struct device *dev,
+ 				 struct device_attribute *attr,
+ 				 char *buf)
+ {
+-	struct iio_trigger *trig = dev_get_drvdata(dev);
++	struct iio_trigger *trig = to_iio_trigger(dev);
+ 	struct bfin_tmr_state *st = trig->private_data;
+ 
+ 	return sprintf(buf, "%lu\n",
+diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+index 9f2d055..4ceaa18 100644
+--- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
++++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+@@ -41,7 +41,7 @@ static ssize_t iio_trig_periodic_read_freq(struct device *dev,
+ 					   struct device_attribute *attr,
+ 					   char *buf)
+ {
+-	struct iio_trigger *trig = dev_get_drvdata(dev);
++	struct iio_trigger *trig = to_iio_trigger(dev);
+ 	struct iio_prtc_trigger_info *trig_info = trig->private_data;
+ 	return sprintf(buf, "%u\n", trig_info->frequency);
+ }
+@@ -51,7 +51,7 @@ static ssize_t iio_trig_periodic_write_freq(struct device *dev,
+ 					    const char *buf,
+ 					    size_t len)
+ {
+-	struct iio_trigger *trig = dev_get_drvdata(dev);
++	struct iio_trigger *trig = to_iio_trigger(dev);
+ 	struct iio_prtc_trigger_info *trig_info = trig->private_data;
+ 	unsigned long val;
+ 	int ret;
+diff --git a/drivers/staging/iio/trigger/iio-trig-sysfs.c b/drivers/staging/iio/trigger/iio-trig-sysfs.c
+index 552763b..fee4746 100644
+--- a/drivers/staging/iio/trigger/iio-trig-sysfs.c
++++ b/drivers/staging/iio/trigger/iio-trig-sysfs.c
+@@ -92,7 +92,7 @@ static struct device iio_sysfs_trig_dev = {
+ static ssize_t iio_sysfs_trigger_poll(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
+ {
+-	struct iio_trigger *trig = dev_get_drvdata(dev);
++	struct iio_trigger *trig = to_iio_trigger(dev);
+ 	iio_trigger_poll_chained(trig, 0);
+ 
+ 	return count;
+-- 
+1.7.10
 
