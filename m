@@ -1,44 +1,39 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FE8CC12.3040109@kernel.org>
-Date: Mon, 25 Jun 2012 21:37:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 5/7] iio staging: fix warning 'static but used in inline function'
+Date: Mon, 25 Jun 2012 21:11:43 +0200
+Message-Id: <1340651505-31081-5-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1340651505-31081-1-git-send-email-pmeerw@pmeerw.net>
+References: <1340651505-31081-1-git-send-email-pmeerw@pmeerw.net>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk
-Subject: Re: [PATCH 6/7] iio staging: use PRId64 format specifier for int64_t
-References: <1340651505-31081-1-git-send-email-pmeerw@pmeerw.net> <1340651505-31081-6-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1340651505-31081-6-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-New one to me, but fair enough.
+iio_utils.h:367:10: warning: =E2=80=98iioutils_break_up_name=E2=80=99 is =
+static but used in inline function =E2=80=98build_channel_array=E2=80=99 =
+which is not static [enabled by default]
 
-On 06/25/2012 08:11 PM, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/Documentation/generic_buffer.c |    3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/Documentation/generic_buffer.c b/drivers/staging/iio/Documentation/generic_buffer.c
-> index ab228b4..1dd0681 100644
-> --- a/drivers/staging/iio/Documentation/generic_buffer.c
-> +++ b/drivers/staging/iio/Documentation/generic_buffer.c
-> @@ -29,6 +29,7 @@
->  #include <string.h>
->  #include <poll.h>
->  #include <endian.h>
-> +#include <inttypes.h>
->  #include "iio_utils.h"
->  
->  /**
-> @@ -111,7 +112,7 @@ void process_scan(char *data,
->  				/* special case for timestamp */
->  				if (channels[k].scale == 1.0f &&
->  				    channels[k].offset == 0.0f)
-> -					printf(" %lld", val);
-> +					printf(" %" PRId64, val);
->  				else
->  					printf("%05f ", ((float)val +
->  							 channels[k].offset)*
-> 
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/staging/iio/Documentation/iio_utils.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/stag=
+ing/iio/Documentation/iio_utils.h
+index d9439f8..9c7a5aa 100644
+--- a/drivers/staging/iio/Documentation/iio_utils.h
++++ b/drivers/staging/iio/Documentation/iio_utils.h
+@@ -27,7 +27,7 @@ const char *iio_dir =3D "/sys/bus/iio/devices/";
+  * @full_name: the full channel name
+  * @generic_name: the output generic channel name
+  **/
+-static int iioutils_break_up_name(const char *full_name,
++inline int iioutils_break_up_name(const char *full_name,
+ 				  char **generic_name)
+ {
+ 	char *current;
+--=20
+1.7.9.5
