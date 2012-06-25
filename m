@@ -1,52 +1,43 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FE8C9D3.8010703@kernel.org>
-Date: Mon, 25 Jun 2012 21:28:03 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk
-Subject: Re: [PATCH 2/7] iio staging: remove unused variable
-References: <1340651505-31081-1-git-send-email-pmeerw@pmeerw.net> <1340651505-31081-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1340651505-31081-2-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-006.synserver.de ([212.40.185.6]:1085 "EHLO
+	smtp-out-245.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752176Ab2FYNjT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jun 2012 09:39:19 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio:adc:at91: Relase mutex on error path in at91_adc_read_raw
+Date: Mon, 25 Jun 2012 15:43:00 +0200
+Message-Id: <1340631780-14685-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Missing sign off.
+This issue was reported by the mini_lock.cocci coccinelle semantic patch.
 
-Just got the same warnings testing the previous patch as you
-did so yup agreed with this one.  Do remember to add your sign off
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/adc/at91_adc.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 6a08469..f61780a 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -349,9 +349,11 @@ static int at91_adc_read_raw(struct iio_dev *idev,
+ 						       st->done,
+ 						       msecs_to_jiffies(1000));
+ 		if (ret == 0)
+-			return -ETIMEDOUT;
+-		else if (ret < 0)
++			ret = -ETIMEDOUT;
++		if (ret < 0) {
++			mutex_unlock(&st->lock);
+ 			return ret;
++		}
+ 
+ 		*val = st->last_value;
+ 
+-- 
+1.7.10
 
-> ---
->  drivers/staging/iio/Documentation/generic_buffer.c |    2 --
->  drivers/staging/iio/Documentation/iio_utils.h      |    2 +-
->  2 files changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/Documentation/generic_buffer.c b/drivers/staging/iio/Documentation/generic_buffer.c
-> index 8d6e91c..81358ac 100644
-> --- a/drivers/staging/iio/Documentation/generic_buffer.c
-> +++ b/drivers/staging/iio/Documentation/generic_buffer.c
-> @@ -131,8 +131,6 @@ int main(int argc, char **argv)
->  
->  
->  	int ret, c, i, j, toread;
-> -
-> -	FILE *fp_ev;
->  	int fp;
->  
->  	int num_channels;
-> diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
-> index 6f3a392..6fe8540 100644
-> --- a/drivers/staging/iio/Documentation/iio_utils.h
-> +++ b/drivers/staging/iio/Documentation/iio_utils.h
-> @@ -280,7 +280,7 @@ inline int build_channel_array(const char *device_dir,
->  {
->  	DIR *dp;
->  	FILE *sysfsfp;
-> -	int count, temp, i;
-> +	int count, i;
->  	struct iio_channel_info *current;
->  	int ret;
->  	const struct dirent *ent;
-> 
