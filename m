@@ -1,69 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:41252 "EHLO mga02.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:56353 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757792Ab2FZBEq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S1757794Ab2FZBEq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Mon, 25 Jun 2012 21:04:46 -0400
 From: srinivas pandruvada <srinivas.pandruvada@intel.com>
 To: linux-iio@vger.kernel.org
 Cc: jic23.cam.ac.uk@vger.kernel.org, jkosina@suse.cz,
 	linux-input@vger.kernel.org,
 	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH, 6/6] HID-Sensors: Added ALS
-Date: Mon, 25 Jun 2012 17:54:14 -0700
-Message-Id: <1340672054-16591-7-git-send-email-srinivas.pandruvada@intel.com>
+Subject: [PATCH, 5/6] HID-Sensors: Added Compass 3D
+Date: Mon, 25 Jun 2012 17:54:13 -0700
+Message-Id: <1340672054-16591-6-git-send-email-srinivas.pandruvada@intel.com>
 In-Reply-To: <1340672054-16591-1-git-send-email-srinivas.pandruvada@intel.com>
 References: <1340672054-16591-1-git-send-email-srinivas.pandruvada@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added usage id processing for ALS. This uses IIO
+Added usage id processing for Gyroscope 3D. This uses IIO
 interfaces for triggerred buffer to present data to user
 mode.This uses HID sensor framework for registering callback
 events from the sensor hub.
 
 Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 ---
- drivers/staging/iio/light/Kconfig          |   10 +
- drivers/staging/iio/light/Makefile         |    2 +
- drivers/staging/iio/light/hid-sensor-als.c |  478 ++++++++++++++++++++++++++++
- 3 files changed, 490 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/light/hid-sensor-als.c
+ drivers/staging/iio/magnetometer/Kconfig           |   10 +
+ drivers/staging/iio/magnetometer/Makefile          |    2 +
+ .../iio/magnetometer/hid-sensor-compass-3d.c       |  538 ++++++++++++++++++++
+ 3 files changed, 550 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/staging/iio/magnetometer/hid-sensor-compass-3d.c
 
-diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-index e7e9159..59e4745 100644
---- a/drivers/staging/iio/light/Kconfig
-+++ b/drivers/staging/iio/light/Kconfig
-@@ -31,4 +31,14 @@ config TSL2583
- 	 Provides support for the TAOS tsl2580, tsl2581 and tsl2583 devices.
- 	 Access ALS data via iio, sysfs.
+diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
+index 722c4e1..2999daf 100644
+--- a/drivers/staging/iio/magnetometer/Kconfig
++++ b/drivers/staging/iio/magnetometer/Kconfig
+@@ -24,4 +24,14 @@ config SENSORS_HMC5843
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called hmc5843
  
-+config HID_SENSOR_ALS
++config HID_SENSOR_COMPASS_3D
 +	depends on HID_SENSOR_HUB
 +	select IIO_BUFFER
 +	select IIO_TRIGGER
 +	select IIO_TRIGGERED_BUFFER
-+	tristate "HID Ambient Light Sensor"
++	tristate "HID Compass 3D"
 +	help
 +	  Say yes here to build support for the HID SENSOR
-+	  ALS.
++	  Compass-3D.
 +
  endmenu
-diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
-index 3011fbf..9b90d84 100644
---- a/drivers/staging/iio/light/Makefile
-+++ b/drivers/staging/iio/light/Makefile
-@@ -5,3 +5,5 @@
- obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
- obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
- obj-$(CONFIG_TSL2583)	+= tsl2583.o
-+hid-sensor-als-drv-y  := hid-sensor-als.o
-+obj-$(CONFIG_HID_SENSOR_ALS) += hid-sensor-als-drv.o
-diff --git a/drivers/staging/iio/light/hid-sensor-als.c b/drivers/staging/iio/light/hid-sensor-als.c
+diff --git a/drivers/staging/iio/magnetometer/Makefile b/drivers/staging/iio/magnetometer/Makefile
+index f2a753f..85f6a70 100644
+--- a/drivers/staging/iio/magnetometer/Makefile
++++ b/drivers/staging/iio/magnetometer/Makefile
+@@ -4,3 +4,5 @@
+ 
+ obj-$(CONFIG_SENSORS_AK8975)	+= ak8975.o
+ obj-$(CONFIG_SENSORS_HMC5843)	+= hmc5843.o
++hid-sensor-compass-3d-drv-y  := hid-sensor-compass-3d.o
++obj-$(CONFIG_HID_SENSOR_COMPASS_3D) += hid-sensor-compass-3d-drv.o
+diff --git a/drivers/staging/iio/magnetometer/hid-sensor-compass-3d.c b/drivers/staging/iio/magnetometer/hid-sensor-compass-3d.c
 new file mode 100644
-index 0000000..cfcda5d
+index 0000000..58908b7
 --- /dev/null
-+++ b/drivers/staging/iio/light/hid-sensor-als.c
-@@ -0,0 +1,478 @@
++++ b/drivers/staging/iio/magnetometer/hid-sensor-compass-3d.c
+@@ -0,0 +1,538 @@
 +/*
 + * HID Sensors Driver
 + * Copyright (c) 2012, Intel Corporation.
@@ -97,20 +97,26 @@ index 0000000..cfcda5d
 +#include "../triggered_buffer.h"
 +
 +/*Format: HID-SENSOR-usage_id_in_hex*/
-+#define DRIVER_NAME "HID-SENSOR-200041"
++#define DRIVER_NAME "HID-SENSOR-200083"
 +
-+#define CHANNEL_SCAN_INDEX_ILLUM 0
++#define CHANNEL_SCAN_INDEX_X 0
++#define CHANNEL_SCAN_INDEX_Y 1
++#define CHANNEL_SCAN_INDEX_Z 2
 +
-+struct als_sample {
-+	u16 illum;
-+};
++struct compass_3d_sample {
++	u32 compass_x;
++	u32 compass_y;
++	u32 compass_z;
++} __packed;
 +
-+struct als_state {
++struct compass_3d_state {
 +	struct hid_sensor_hub_device *hsdev;
 +	struct platform_device *pdev;
 +	struct hid_sensor_common_attributes *common_attrb;
-+	struct hid_sensor_hub_attribute_info als_illum;
-+	struct als_sample als_sample_data;
++	struct hid_sensor_hub_attribute_info compass_x;
++	struct hid_sensor_hub_attribute_info compass_y;
++	struct hid_sensor_hub_attribute_info compass_z;
++	struct compass_3d_sample compass_sample_data;
 +	bool data_ready;
 +};
 +
@@ -118,7 +124,7 @@ index 0000000..cfcda5d
 +						bool state)
 +{
 +	struct iio_dev *indio_dev = trig->private_data;
-+	struct als_state *st = iio_priv(indio_dev);
++	struct compass_3d_state *st = iio_priv(indio_dev);
 +	int state_val;
 +	char buffer[16];
 +
@@ -173,30 +179,44 @@ index 0000000..cfcda5d
 +	return ret;
 +}
 +
-+static struct iio_chan_spec als_channels[] = {
++static struct iio_chan_spec compass_3d_channels[] = {
 +	{
-+		.type = IIO_INTENSITY,
++		.type = IIO_MAGN,
 +		.modified = 1,
-+		.channel2 = IIO_MOD_LIGHT_BOTH,
++		.channel2 = IIO_MOD_X,
 +		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
 +		IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+		.scan_index = CHANNEL_SCAN_INDEX_ILLUM,
++		.scan_index = CHANNEL_SCAN_INDEX_X,
++	}, {
++		.type = IIO_MAGN,
++		.modified = 1,
++		.channel2 = IIO_MOD_Y,
++		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.scan_index = CHANNEL_SCAN_INDEX_Y,
++	}, {
++		.type = IIO_MAGN,
++		.modified = 1,
++		.channel2 = IIO_MOD_Z,
++		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.scan_index = CHANNEL_SCAN_INDEX_Z,
 +	}
 +};
 +
-+static void als_adjust_channel_bit_mask(int channel, int size)
++static void compass_3d_adjust_channel_bit_mask(int channel, int size)
 +{
-+	als_channels[channel].scan_type.sign = 's';
-+	als_channels[channel].scan_type.realbits = size * 8;
-+	als_channels[channel].scan_type.storagebits = sizeof(u32) * 8;
++	compass_3d_channels[channel].scan_type.sign = 's';
++	compass_3d_channels[channel].scan_type.realbits = size * 8;
++	compass_3d_channels[channel].scan_type.storagebits = sizeof(u32) * 8;
 +}
 +
-+static int als_read_raw(struct iio_dev *indio_dev,
++static int compass_3d_read_raw(struct iio_dev *indio_dev,
 +			      struct iio_chan_spec const *chan,
 +			      int *val, int *val2,
 +			      long mask)
 +{
-+	struct als_state *als_state = iio_priv(indio_dev);
++	struct compass_3d_state *compass_state = iio_priv(indio_dev);
 +	int report_id = -1;
 +	u32 address;
 +
@@ -205,10 +225,20 @@ index 0000000..cfcda5d
 +	switch (mask) {
 +	case 0:
 +		switch (chan->scan_index) {
-+		case  CHANNEL_SCAN_INDEX_ILLUM:
-+			report_id = als_state->als_illum.report_id;
++		case  CHANNEL_SCAN_INDEX_X:
++			report_id = compass_state->compass_x.report_id;
 +			address =
-+			HID_USAGE_SENSOR_DATA_LIGHT_ILLUMINANCE;
++			HID_USAGE_SENSOR_DATA_ORIENTATION_MAGNETIC_FLUX_X_AXIS;
++			break;
++		case  CHANNEL_SCAN_INDEX_Y:
++			report_id = compass_state->compass_y.report_id;
++			address =
++			HID_USAGE_SENSOR_DATA_ORIENTATION_MAGNETIC_FLUX_Y_AXIS;
++			break;
++		case  CHANNEL_SCAN_INDEX_Z:
++			report_id = compass_state->compass_z.report_id;
++			address =
++			HID_USAGE_SENSOR_DATA_ORIENTATION_MAGNETIC_FLUX_Z_AXIS;
 +			break;
 +		default:
 +			report_id = -1;
@@ -216,17 +246,17 @@ index 0000000..cfcda5d
 +		}
 +		if (report_id >= 0)
 +			*val = sensor_hub_input_attr_get_raw_value(
-+				als_state->hsdev,
-+				HID_USAGE_SENSOR_ALS, address,
++				compass_state->hsdev,
++				HID_USAGE_SENSOR_COMPASS_3D, address,
 +				report_id);
 +		else
 +			*val = 0;
 +		break;
 +	case IIO_CHAN_INFO_SCALE:
-+		*val = als_state->als_illum.units;
++		*val = compass_state->compass_x.units;
 +		break;
 +	case IIO_CHAN_INFO_OFFSET:
-+		*val = als_state->als_illum.unit_expo;
++		*val = compass_state->compass_x.unit_expo;
 +		break;
 +	default:
 +		break;
@@ -234,7 +264,7 @@ index 0000000..cfcda5d
 +	return IIO_VAL_INT;
 +}
 +
-+static int als_write_raw(struct iio_dev *indio_dev,
++static int compass_3d_write_raw(struct iio_dev *indio_dev,
 +			       struct iio_chan_spec const *chan,
 +			       int val,
 +			       int val2,
@@ -244,78 +274,78 @@ index 0000000..cfcda5d
 +	return 0;
 +}
 +
-+static ssize_t hid_sensor_als_read_hyst_raw(struct device *dev,
++static ssize_t hid_sensor_compass_3d_read_hyst_raw(struct device *dev,
 +				struct device_attribute *attr,
 +				char *buf)
 +{
 +	int len;
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct als_state *als_state = iio_priv(indio_dev);
-+	len = hid_sensor_read_hyst_raw(als_state->common_attrb, strlen(buf),
++	struct compass_3d_state *compass_state = iio_priv(indio_dev);
++	len = hid_sensor_read_hyst_raw(compass_state->common_attrb, strlen(buf),
 +					buf);
 +	return len;
 +}
 +
-+static ssize_t hid_sensor_als_write_hyst_raw(struct device *dev,
++static ssize_t hid_sensor_compass_3d_write_hyst_raw(struct device *dev,
 +		struct device_attribute *attr,
 +		const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct als_state *als_state = iio_priv(indio_dev);
-+	return hid_sensor_write_hyst_raw(als_state->common_attrb,
++	struct compass_3d_state *compass_state = iio_priv(indio_dev);
++	return hid_sensor_write_hyst_raw(compass_state->common_attrb,
 +					strlen(buf), buf);
 +}
 +
-+static ssize_t hid_sensor_read_als_samp_freq(struct device *dev,
++static ssize_t hid_sensor_read_compass_3d_samp_freq(struct device *dev,
 +				struct device_attribute *attr,
 +				char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct als_state *als_state = iio_priv(indio_dev);
++	struct compass_3d_state *compass_state = iio_priv(indio_dev);
 +
-+	return hid_sensor_read_samp_freq(als_state->common_attrb,
++	return hid_sensor_read_samp_freq(compass_state->common_attrb,
 +					strlen(buf), buf);
 +}
 +
-+static ssize_t hid_sensor_write_als_samp_freq(struct device *dev,
++static ssize_t hid_sensor_write_compass_3d_samp_freq(struct device *dev,
 +		struct device_attribute *attr,
 +		const char *buf, size_t len)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct als_state *als_state = iio_priv(indio_dev);
++	struct compass_3d_state *compass_state = iio_priv(indio_dev);
 +
-+	return hid_sensor_write_samp_freq(als_state->common_attrb,
++	return hid_sensor_write_samp_freq(compass_state->common_attrb,
 +					strlen(buf), buf);
 +}
 +
 +static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-+			hid_sensor_read_als_samp_freq,
-+			hid_sensor_write_als_samp_freq);
++			hid_sensor_read_compass_3d_samp_freq,
++			hid_sensor_write_compass_3d_samp_freq);
 +
 +#define IIO_DEV_ATTR_HYSTERESIS(_mode, _show, _store, _addr)        \
 +	IIO_DEVICE_ATTR(hyst_raw, _mode, _show, _store, _addr)
 +
 +static IIO_DEV_ATTR_HYSTERESIS(S_IWUSR | S_IRUSR,
-+			hid_sensor_als_read_hyst_raw,
-+			hid_sensor_als_write_hyst_raw,
++			hid_sensor_compass_3d_read_hyst_raw,
++			hid_sensor_compass_3d_write_hyst_raw,
 +			HID_USAGE_SENSOR_PROPERTY_CHANGE_SENSITIVITY_ABS);
 +
-+static struct attribute *als_attributes[] = {
++static struct attribute *compass_3d_attributes[] = {
 +	/* common attributes */
 +	&iio_dev_attr_sampling_frequency.dev_attr.attr,
 +	&iio_dev_attr_hyst_raw.dev_attr.attr,
 +	NULL,
 +};
 +
-+static const struct attribute_group als_attribute_group = {
-+	.attrs = als_attributes,
++static const struct attribute_group compass_3d_attribute_group = {
++	.attrs = compass_3d_attributes,
 +};
 +
-+static const struct iio_info als_info = {
-+	.attrs = &als_attribute_group,
++static const struct iio_info compass_3d_info = {
++	.attrs = &compass_3d_attribute_group,
 +	.driver_module = THIS_MODULE,
-+	.read_raw = &als_read_raw,
-+	.write_raw = &als_write_raw,
++	.read_raw = &compass_3d_read_raw,
++	.write_raw = &compass_3d_write_raw,
 +};
 +
 +void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
@@ -340,35 +370,44 @@ index 0000000..cfcda5d
 +	return IRQ_HANDLED;
 +}
 +
-+int als_proc_event(struct hid_sensor_hub_device *hsdev, unsigned usage_id,
++int compass_3d_proc_event(struct hid_sensor_hub_device *hsdev,
++			unsigned usage_id,
 +			void *priv)
 +{
 +	struct iio_dev *indio_dev =
 +				(struct iio_dev *)platform_get_drvdata(priv);
-+	struct als_state *als_state = iio_priv(indio_dev);
++	struct compass_3d_state *compass_state = iio_priv(indio_dev);
 +
-+	dev_dbg(&indio_dev->dev, "als_proc_event\n");
-+	if (als_state->data_ready)
++	dev_dbg(&indio_dev->dev, "compass_3d_proc_event\n");
++	if (compass_state->data_ready)
 +		hid_sensor_push_data(indio_dev,
-+				(u8 *)&als_state->als_sample_data,
-+				sizeof(struct als_sample));
++				(u8 *)&compass_state->compass_sample_data,
++				sizeof(struct compass_3d_sample));
 +	return 0;
 +}
 +
 +/* Capture samples in local storage */
-+int als_capture_sample(struct hid_sensor_hub_device *hsdev,
++int compass_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
 +				unsigned usage_id,
 +				size_t raw_len, char *raw_data,
 +				void *priv)
 +{
 +	struct iio_dev *indio_dev =
 +			(struct iio_dev *)platform_get_drvdata(priv);
-+	struct als_state *als_state = iio_priv(indio_dev);
++	struct compass_3d_state *compass_state = iio_priv(indio_dev);
 +
 +	switch (usage_id) {
-+	case HID_USAGE_SENSOR_DATA_LIGHT_ILLUMINANCE:
-+		als_state->als_sample_data.illum =
-+		*(u16 *)raw_data;
++	case HID_USAGE_SENSOR_DATA_ORIENTATION_MAGNETIC_FLUX_X_AXIS:
++		compass_state->compass_sample_data.compass_x =
++		*(u32 *)raw_data;
++		break;
++	case HID_USAGE_SENSOR_DATA_ORIENTATION_MAGNETIC_FLUX_Y_AXIS:
++		compass_state->compass_sample_data.compass_y =
++		*(u32 *)raw_data;
++		break;
++	case HID_USAGE_SENSOR_DATA_ORIENTATION_MAGNETIC_FLUX_Z_AXIS:
++		compass_state->compass_sample_data.compass_z =
++		*(u32 *)raw_data;
 +		break;
 +	default:
 +		break;
@@ -377,62 +416,79 @@ index 0000000..cfcda5d
 +}
 +
 +/* Parse report which is specific to an usage id*/
-+static int als_parse_report(struct hid_sensor_hub_device *hsdev,
++static int compass_3d_parse_report(struct hid_sensor_hub_device *hsdev,
 +				unsigned usage_id,
-+				struct als_state *st)
++				struct compass_3d_state *st)
 +{
 +	int ret;
 +
 +	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
 +			usage_id,
-+			HID_USAGE_SENSOR_DATA_LIGHT_ILLUMINANCE,
-+			&st->als_illum);
-+	als_adjust_channel_bit_mask(CHANNEL_SCAN_INDEX_ILLUM,
-+					st->als_illum.size);
++			HID_USAGE_SENSOR_DATA_ORIENTATION_MAGNETIC_FLUX_X_AXIS,
++			&st->compass_x);
++	compass_3d_adjust_channel_bit_mask(CHANNEL_SCAN_INDEX_X,
++					st->compass_x.size);
 +
-+	dev_dbg(&st->pdev->dev, "als %x:%x\n", st->als_illum.index,
-+			st->als_illum.report_id);
++	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
++			usage_id,
++			HID_USAGE_SENSOR_DATA_ORIENTATION_MAGNETIC_FLUX_Y_AXIS,
++			&st->compass_y);
++	compass_3d_adjust_channel_bit_mask(CHANNEL_SCAN_INDEX_Y,
++					st->compass_y.size);
++
++	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
++			usage_id,
++			HID_USAGE_SENSOR_DATA_ORIENTATION_MAGNETIC_FLUX_Z_AXIS,
++			&st->compass_z);
++	compass_3d_adjust_channel_bit_mask(CHANNEL_SCAN_INDEX_Z,
++					st->compass_z.size);
++
++	dev_dbg(&st->pdev->dev, "compass_3d %x:%x, %x:%x, %x:%x\n",
++			st->compass_x.index,
++			st->compass_x.report_id,
++			st->compass_y.index, st->compass_y.report_id,
++			st->compass_z.index, st->compass_z.report_id);
 +
 +	return 0;
 +}
 +
 +/* Entry function to initialize the processing for usage id */
-+static int als_init(struct platform_device *pdev,
++static int compass_3d_init(struct platform_device *pdev,
 +			struct hid_sensor_hub_device *hsdev,
 +			unsigned usage_id)
 +{
 +	int ret = 0;
-+	static char *name = "als";
++	static char *name = "compass_3d";
 +	struct iio_dev *indio_dev;
-+	struct als_state *als_state;
++	struct compass_3d_state *compass_state;
 +
-+	indio_dev = iio_allocate_device(sizeof(struct als_state));
++	indio_dev = iio_allocate_device(sizeof(struct compass_3d_state));
 +	if (indio_dev == NULL) {
 +		ret = -ENOMEM;
 +		goto error_ret;
 +	}
 +	platform_set_drvdata(pdev, indio_dev);
-+	als_state = iio_priv(indio_dev);
-+	als_state->hsdev = hsdev;
-+	als_state->pdev = pdev;
-+	als_state->common_attrb = sensor_hub_allocate_common_attributes(
-+					hsdev, HID_USAGE_SENSOR_ALS);
-+	if (als_state->common_attrb == NULL) {
++	compass_state = iio_priv(indio_dev);
++	compass_state->hsdev = hsdev;
++	compass_state->pdev = pdev;
++	compass_state->common_attrb = sensor_hub_allocate_common_attributes(
++					hsdev, HID_USAGE_SENSOR_COMPASS_3D);
++	if (compass_state->common_attrb == NULL) {
 +		ret = -ENOMEM;
 +		goto error_free_dev;
 +	}
 +
-+	ret = als_parse_report(hsdev, usage_id, als_state);
++	ret = compass_3d_parse_report(hsdev, usage_id, compass_state);
 +	if (ret) {
 +		dev_err(&pdev->dev, "failed to setup attributes\n");
 +		goto error_free_dev;
 +	}
 +
-+	indio_dev->channels = als_channels;
++	indio_dev->channels = compass_3d_channels;
 +	indio_dev->num_channels =
-+				ARRAY_SIZE(als_channels);
++				ARRAY_SIZE(compass_3d_channels);
 +	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &als_info;
++	indio_dev->info = &compass_3d_info;
 +	indio_dev->name = name;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
 +
@@ -443,8 +499,12 @@ index 0000000..cfcda5d
 +		goto error_free_dev;
 +	}
 +	iio_scan_mask_set(indio_dev, indio_dev->buffer,
-+			   CHANNEL_SCAN_INDEX_ILLUM);
-+	als_state->data_ready = false;
++			   CHANNEL_SCAN_INDEX_X);
++	iio_scan_mask_set(indio_dev, indio_dev->buffer,
++			   CHANNEL_SCAN_INDEX_Y);
++	iio_scan_mask_set(indio_dev, indio_dev->buffer,
++			   CHANNEL_SCAN_INDEX_Z);
++	compass_state->data_ready = false;
 +	ret = hid_sensor_setup_trigger(indio_dev, name);
 +	if (ret < 0) {
 +		dev_err(&pdev->dev, "trigger setup failed\n");
@@ -468,11 +528,11 @@ index 0000000..cfcda5d
 +	return ret;
 +}
 +
-+static int als_exit(struct platform_device *pdev)
++static int compass_3d_exit(struct platform_device *pdev)
 +{
 +	int ret = 0;
 +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct als_state *st = iio_priv(indio_dev);
++	struct compass_3d_state *st = iio_priv(indio_dev);
 +
 +	iio_device_unregister(indio_dev);
 +	hid_sensor_remove_trigger(indio_dev);
@@ -482,64 +542,64 @@ index 0000000..cfcda5d
 +	return ret;
 +}
 +
-+static struct hid_sensor_hub_callbacks als_callbacks = {
-+	.send_event = als_proc_event,
-+	.capture_sample = als_capture_sample,
++static struct hid_sensor_hub_callbacks compass_3d_callbacks = {
++	.send_event = compass_3d_proc_event,
++	.capture_sample = compass_3d_capture_sample,
 +};
 +
-+static int __devinit hid_als_probe(struct platform_device *pdev)
++static int __devinit hid_compass_3d_probe(struct platform_device *pdev)
 +{
 +	int ret;
 +	u32 *pdata = (u32 *)pdev->dev.platform_data;
 +	struct hid_sensor_hub_device *hsdev;
 +
 +	hsdev = (struct hid_sensor_hub_device *)*pdata;
-+	ret = als_init(pdev, hsdev, HID_USAGE_SENSOR_ALS);
++	ret = compass_3d_init(pdev, hsdev, HID_USAGE_SENSOR_COMPASS_3D);
 +	if (ret < 0) {
-+		dev_err(&pdev->dev, "als_init failed\n");
++		dev_err(&pdev->dev, "compass_3d_init failed\n");
 +		return ret;
 +	}
-+	als_callbacks.pdev = pdev;
-+	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_ALS,
-+					&als_callbacks);
++	compass_3d_callbacks.pdev = pdev;
++	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_COMPASS_3D,
++					&compass_3d_callbacks);
 +	return 0;
 +}
 +
-+static int __devinit hid_als_remove(struct platform_device *pdev)
++static int __devinit hid_compass_3d_remove(struct platform_device *pdev)
 +{
 +	u32 *pdata = (u32 *)pdev->dev.platform_data;
 +	struct hid_sensor_hub_device *hsdev;
 +
 +	hsdev = (struct hid_sensor_hub_device *)*pdata;
-+	als_exit(pdev);
-+	return sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_ALS);
++	compass_3d_exit(pdev);
++	return sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_COMPASS_3D);
 +}
 +
-+static struct platform_driver hid_als_platform_driver = {
++static struct platform_driver hid_compass_3d_platform_driver = {
 +	.driver = {
 +		.name	= DRIVER_NAME,
 +		.owner	= THIS_MODULE,
 +	},
-+	.probe		= hid_als_probe,
-+	.remove		= hid_als_remove,
++	.probe		= hid_compass_3d_probe,
++	.remove		= hid_compass_3d_remove,
 +};
 +
 +/*--------------------------------------------------------------------------*/
 +
-+static int __init hid_als_init(void)
++static int __init hid_compass_3d_init(void)
 +{
-+	return platform_driver_register(&hid_als_platform_driver);
++	return platform_driver_register(&hid_compass_3d_platform_driver);
 +}
 +
-+static void __exit hid_als_exit(void)
++static void __exit hid_compass_3d_exit(void)
 +{
-+	platform_driver_unregister(&hid_als_platform_driver);
++	platform_driver_unregister(&hid_compass_3d_platform_driver);
 +}
 +
-+module_init(hid_als_init);
-+module_exit(hid_als_exit);
++module_init(hid_compass_3d_init);
++module_exit(hid_compass_3d_exit);
 +
-+MODULE_DESCRIPTION("HID Sensor ALS");
++MODULE_DESCRIPTION("HID Sensor Compass 3D");
 +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
 +MODULE_LICENSE("GPL");
 -- 
