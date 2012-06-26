@@ -1,93 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:33469 "EHLO mga01.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:24029 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757849Ab2FZQA3 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jun 2012 12:00:29 -0400
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: Jiri Kosina <jkosina@suse.cz>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"jic23.cam.ac.uk@suse.de" <jic23.cam.ac.uk@suse.de>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-Subject: RE: [PATCH, 2/6] HID-Sensors: Sensor framework
-Date: Tue, 26 Jun 2012 16:00:27 +0000
-Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A91933EBDE@ORSMSX104.amr.corp.intel.com>
+	id S1755767Ab2FZBEo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 25 Jun 2012 21:04:44 -0400
+From: srinivas pandruvada <srinivas.pandruvada@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23.cam.ac.uk@vger.kernel.org, jkosina@suse.cz,
+	linux-input@vger.kernel.org,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: [PATCH, 1/6] HID Sensors: Add to special driver list
+Date: Mon, 25 Jun 2012 17:54:09 -0700
+Message-Id: <1340672054-16591-2-git-send-email-srinivas.pandruvada@intel.com>
+In-Reply-To: <1340672054-16591-1-git-send-email-srinivas.pandruvada@intel.com>
 References: <1340672054-16591-1-git-send-email-srinivas.pandruvada@intel.com>
- <1340672054-16591-3-git-send-email-srinivas.pandruvada@intel.com>
- <alpine.LNX.2.00.1206261356160.18612@pobox.suse.cz>
-In-Reply-To: <alpine.LNX.2.00.1206261356160.18612@pobox.suse.cz>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-OK. I can use debugfs. If you have some other comments, I can bundle all of them together in the next set.
+Adding Intel and STM sensor hub in the list of drivers with
+specialized driver.
 
-Thanks,
-Srinivas
+Change-Id: I91591b663f62a29ac4823f3c6f282d9da22a141a
+Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
+---
+ drivers/hid/hid-core.c |   10 ++++++++++
+ drivers/hid/hid-ids.h  |    6 ++++++
+ 2 files changed, 16 insertions(+), 0 deletions(-)
 
------Original Message-----
-From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-owner@vger.kernel.org] On Behalf Of Jiri Kosina
-Sent: Tuesday, June 26, 2012 5:02 AM
-To: Pandruvada, Srinivas
-Cc: linux-iio@vger.kernel.org; jic23.cam.ac.uk@suse.de; linux-input@vger.kernel.org
-Subject: Re: [PATCH, 2/6] HID-Sensors: Sensor framework
+diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+index b7d758c..5eb3faa 100644
+--- a/drivers/hid/hid-core.c
++++ b/drivers/hid/hid-core.c
+@@ -1444,6 +1444,14 @@ static const struct hid_device_id hid_have_special_driver[] = {
+  	{ HID_USB_DEVICE(USB_VENDOR_ID_IDEACOM, USB_DEVICE_ID_IDEACOM_IDC6650) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_HOLTEK, USB_DEVICE_ID_HOLTEK_ON_LINE_GRIP) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_ILITEK, USB_DEVICE_ID_ILITEK_MULTITOUCH) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
++					USB_DEVICE_ID_SENSOR_HUB_1020) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
++					USB_DEVICE_ID_SENSOR_HUB_09FA) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
++					USB_DEVICE_ID_SENSOR_HUB_1020) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
++					USB_DEVICE_ID_SENSOR_HUB_09FA) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_IRTOUCHSYSTEMS, USB_DEVICE_ID_IRTOUCH_INFRARED_USB) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_KENSINGTON, USB_DEVICE_ID_KS_SLIMBLADE) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_KEYTOUCH, USB_DEVICE_ID_KEYTOUCH_IEC) },
+@@ -1548,6 +1556,8 @@ static const struct hid_device_id hid_have_special_driver[] = {
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_STANTUM_STM, USB_DEVICE_ID_MTP_STM) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_STANTUM_SITRONIX, USB_DEVICE_ID_MTP_SITRONIX) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_SUNPLUS, USB_DEVICE_ID_SUNPLUS_WDESKTOP) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_STANTUM_STM,
++			 USB_DEVICE_ID_SENSOR_HUB_7014) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb300) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb304) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb323) },
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index e39aecb..928fe57 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -401,6 +401,11 @@
+ #define USB_VENDOR_ID_IMATION		0x0718
+ #define USB_DEVICE_ID_DISC_STAKKA	0xd000
+ 
++#define USB_VENDOR_ID_INTEL_8086	0x8086
++#define USB_VENDOR_ID_INTEL_8087	0x8087
++#define USB_DEVICE_ID_SENSOR_HUB_1020	0x1020
++#define USB_DEVICE_ID_SENSOR_HUB_09FA	0x09FA
++
+ #define USB_VENDOR_ID_IRTOUCHSYSTEMS	0x6615
+ #define USB_DEVICE_ID_IRTOUCH_INFRARED_USB	0x0070
+ 
+@@ -664,6 +669,7 @@
+ 
+ #define USB_VENDOR_ID_STANTUM_STM		0x0483
+ #define USB_DEVICE_ID_MTP_STM		0x3261
++#define USB_DEVICE_ID_SENSOR_HUB_7014	0x7014
+ 
+ #define USB_VENDOR_ID_STANTUM_SITRONIX		0x1403
+ #define USB_DEVICE_ID_MTP_SITRONIX		0x5001
+-- 
+1.7.7.6
 
-On Mon, 25 Jun 2012, srinivas pandruvada wrote:
-
-> Adding processing for HID Sensor usage table as defined by HID 1.12, 
-> Request #: HUTRR39, dated 05 May, 2011.
-> This driver uses HID driver framework to register, send and receive 
-> events.
-> This uses MFD framework, so that actual processing for a specific 
-> usage id can be done in a different driver. For example an 
-> accelerometer driver can be a separate driver and use the interface 
-> provided by this driver to register for events.
-> 
-> Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
-> ---
->  drivers/hid/Kconfig            |   18 +
->  drivers/hid/Makefile           |    1 +
->  drivers/hid/hid-sensor-hub.c   |  883 ++++++++++++++++++++++++++++++++++++++++
->  include/linux/hid-sensor-hub.h |   99 +++++
->  include/linux/hid-sensor-ids.h |  116 ++++++
->  5 files changed, 1117 insertions(+), 0 deletions(-)  create mode 
-> 100644 drivers/hid/hid-sensor-hub.c  create mode 100644 
-> include/linux/hid-sensor-hub.h  create mode 100644 
-> include/linux/hid-sensor-ids.h
-> 
-> diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig index 
-> ffddcba..0c86ab0 100644
-> --- a/drivers/hid/Kconfig
-> +++ b/drivers/hid/Kconfig
-> @@ -644,6 +644,24 @@ config HID_ZYDACRON
->  	---help---
->  	Support for Zydacron remote control.
->  
-> +config HID_SENSOR_HUB
-> +	tristate "HID Sensors framework support"
-> +	depends on USB_HID
-> +	select MFD_CORE
-> +	default n
-> +	-- help---
-> +	  Support for HID Sensor framework. This will provide MFD framework for
-> +	  adding different sensors, using HID sensor usage table. This defines
-> +	  a set of interface functions to register callbacks for events so
-> +	  that the events are transferred to user space using either input
-> +	  or IIO ineterfaces.
-> +
-> +config HID_SENSOR_HUB_DEBUG
-> +	tristate "HID Sensor debug support"
-> +	default n
-> +	-- help---
-> +	  Debug support for Hid sensors. Enable this flag to debug only.
-> +
-
-Why not use debugfs (which is what the rest of the HID code and drivers do for debugging)?
-
-Thanks,
-
---
-Jiri Kosina
-SUSE Labs
---
-To unsubscribe from this list: send the line "unsubscribe linux-iio" in the body of a message to majordomo@vger.kernel.org More majordomo info at  http://vger.kernel.org/majordomo-info.html
