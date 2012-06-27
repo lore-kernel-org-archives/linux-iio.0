@@ -1,159 +1,60 @@
-Return-Path: <Michael.Hennerich@analog.com>
-Message-ID: <4FA9427A.4050702@analog.com>
-Date: Tue, 8 May 2012 17:57:46 +0200
-From: Michael Hennerich <michael.hennerich@analog.com>
-Reply-To: <michael.hennerich@analog.com>
-MIME-Version: 1.0
+Return-Path: <jbe@pengutronix.de>
+From: Juergen Beisert <jbe@pengutronix.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>, Drivers <Drivers@analog.com>,
-	Mark Brown <broonie@opensource.wolfsonmicro.com>
-Subject: Re: [RFC] iio: amplifiers: New driver for AD8366 Dual-Digital Variable
- Gain Amplifier
-References: <1329914182-5428-1-git-send-email-michael.hennerich@analog.com> <4F6A2D2B.9050400@kernel.org> <4F6AE844.7020102@analog.com> <4F6AEC83.8010009@cam.ac.uk> <4FA7E373.2080704@analog.com> <4FA7E78E.6050406@analog.com> <4FA9175B.6010206@cam.ac.uk> <544AC56F16B56944AEC3BD4E3D5917714E797B56F9@LIMKCMBX1.ad.analog.com> <4FA92081.9060205@cam.ac.uk> <4FA93225.3060406@analog.com> <4FA93387.7060801@cam.ac.uk>
-In-Reply-To: <4FA93387.7060801@cam.ac.uk>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Subject: Re: i.MX28 die temperature
+Date: Wed, 27 Jun 2012 14:33:15 +0200
+Cc: Marek Vasut <marex@denx.de>,
+ linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
+References: <330B740BA662BF4E8386F534DF556ED819731A@AEDCEXC09.aei.com> <201206271400.11727.marex@denx.de> <4FEAF75E.5090505@cam.ac.uk>
+In-Reply-To: <4FEAF75E.5090505@cam.ac.uk>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Message-Id: <201206271433.15303.jbe@pengutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/08/2012 04:53 PM, Jonathan Cameron wrote:
-> On 5/8/2012 3:48 PM, Michael Hennerich wrote:
->> On 05/08/2012 03:32 PM, Jonathan Cameron wrote:
->>> On 5/8/2012 2:26 PM, Hennerich, Michael wrote:
->>>> Jonathan Cameron wrote on 2012-05-08:
->>>>> On 5/7/2012 4:17 PM, Michael Hennerich wrote:
->>>>>> On 05/07/2012 05:00 PM, Michael Hennerich wrote:
->>>>>>> On 03/22/2012 10:10 AM, Jonathan Cameron wrote:
->>>>>>>> On 3/22/2012 8:52 AM, Michael Hennerich wrote:
->>>>>>>>> On 03/21/2012 08:34 PM, Jonathan Cameron wrote:
->>>>>>>>>> On 02/22/2012 12:36 PM, michael.hennerich@analog.com wrote:
->>>>>>>>>>> From: Michael Hennerich<michael.hennerich@analog.com>
->>>>>>>>>> Sorry for the slow response on this one. Been off sick...
->>>>>>>>>>
->>>>>>>>>> Anyhow, I'm still not sure what the right interface for this type
->>>>>>>>>> of device is.
->>>>>>>>>>
->>>>>>>>>> The obvious options are:
->>>>>>>>>>
->>>>>>>>>> 1) Make gain an IIO type (doesn't make much sense as gain is only
->>>>>>>>>> going
->>>>>>>>>> to be of one particular existing type).
->>>>>>>>>> 2) Have it as an IIO_ALTVOLTAGE channel as you have here and use
->>>>>>>>>> extend
->>>>>>>>>> name.  Any real reason for picking altvoltage rather than
->>>>> voltage?
->>>>>>>>> I'm open for advice. Since I made the amplifier being an OUT type
->>>>>>>>> device
->>>>>>>>> I chose IIO_ALTVOLTAGE analogous to our DDS/PLL drivers.
->>>>>>>>> Some VGAs/PGAs work from DC, but typically VGAs are HF devices.
->>>>>>>> Hmm.. Don't suppose it really matters but we ought to aim for
->>>>>>>> consistency
->>>>>>>> (by review) at least.  This particular part is DC through to
->>>>> 600MHz.
->>>>>>>>>> Clearly gain has the same meaning in either case (assuming it's
->>>>>>>>>> linear). 3) Make a change to core to allow a channel to have
->>>>>>>>>> elements in info_mask but not actually to have a raw access.  Not
->>>>>>>>>> entirely sure how we will do that cleanly.  Also it's not clear
->>>>>>>>>> whether the gain would be an IN or an OUT channel type!
->>>>>>>>> Well - having the ability for channels without raw access element
->>>>>>>>> would be of interest.
->>>>>>>> True enough.  Cleanest way to do this that I can think of is to
->>>>>>>> make
->>>>>>>> a tree wide change to add the raw element to the info_mask.  We
->>>>>>>> could
->>>>>>>> allow for a zero info_mask value actually being the equivalent of
->>>>>>>> having only a raw channel.  It's invasive but if we agreee it
->>>>>>>> should
->>>>>>>> be done now is probably the best time to do it (just post merge
->>>>>>>> window etc).
->>>>>>> Hi Jonathan,
->>>>>>>
->>>>>>> Thanks for getting this in place.
->>>>>>>
->>>>>>>> Whilst here, we clearly need way of destinguishing values in DB
->>>>>>>> from
->>>>>>>> linear gains.  Could add a new return type for read_raw callbacks?
->>>>>>> Does something like this work for you?
->>>>>>> Also wondering if we should introduce IIO_CHAN_INFO_GAIN
->>>>>>> for amplifier type devices?
->>>>>> Thinking about it a bit more - why not have iio_chan_type:IIO_GAIN?
->>>>> Lack of consistency with other devices.  If we have a pga on the front
->>>>> of an adc then the type is voltage and control is done via relevant
->>>>> info
->>>>> element. How is this any different?
->>>> Well there can be several types of amplifiers voltage, current or
->>>> none-electronic
->>>> such as optical amplifiers.
->>> Quite.  But a given amplier only does one type.  Hence arguement still
->>> stands...  The only
->>> exception is an analog device such as an accelerometer wired up to a
->>> conventional adc,
->>> but then we don't handle that anyway...
->>>> The key element GAIN of an amplifier is only the ratio between input
->>>> and output.
->>>> The unit cancels out, so why bother with voltage or current?
->>> Far as I know you can't use a voltage amplifier for current
->>> amplificiation or the other way around,
->>> so still makes sence to keep them alongside the type.  The voltage vs
->>> altvoltage is a bit of
->>> a pain but I guess no cunning plan is perfect..
->> It really depends on the external circuit.
->> But I agree programmable current amplifiers are rare.
->> More overlap is between IIO_VOLTAGE and IIO_POWER.
-> Fair point... Whilst there is an issue here, i'm still unconvinced that
-> an IIO_GAIN type makes sense..
->>>> That's why I proposed IIO_GAIN.
->>>> Anyways I'm fine with IIO_VOLTAGE for now, but I would like to use
->>>> IIO_CHAN_INFO_GAIN
->>>> and not IIO_CHAN_INFO_SCALE?
->>> Its internally applied so actually IIO_CHAN_INFO_CALIBSCALE is the
->>> relevant one.
->>> I'm really keen to stick to the existing ones purely because this does
->>> look exactly like a
->>> pga front end as found on numerous adcs.  Why treat it differently just
->>> because it is
->>> in a different package?  We may need to be clever about routing between
->>> parts sometime
->>> in the future but would be best to keep it simple for now?
->> I know it's important to stay consistent.
->> But when talking about characteristics of an amplifier -
->> CALIBSCALE doesn't really sound well and SCALE is for sure not
->> applicable.
->>
->> What        /sys/bus/iio/devices/iio:deviceX/in_voltageY_calibscale
->> Description:
->>          Hardware applied calibration scale factor. (assumed to fix
->>          production inaccuracies).  If shared across all channels,
->> <type>_calibscale is used.
->>
->> Apart from 'calibration' and  'production inaccuracies' -
->> Technically seen it does the right thing.
->> But you need some imagination to use CALIBSCALE for gain.
-> Perhaps we can rename this?  Maybe hardwaregain or
-> something like that?   Can always allow both for a bit and
-> do a smooth transition over to the new choice?
-Hardwargain sound good to me. I've no problem keeping CALIBSCALE
-where it's applicable and matches the purpose.
+Hi Jonathan,
 
--Michael
+Jonathan Cameron wrote:
+> [...]
+> >>>>> [...]
+> >>>>>
+> >>>>>>> Take a look at:
+> >>>>>>> http://www.spinics.net/lists/linux-iio/msg04345.html
+> >>>>>>
+> >>>>>> Any progress here with inclusion in some git tree?
+> >>>>>
+> >>>>> Well ... I recently raised from the dead. It's on the schedule,
+> >>>>> obviously help is welcome.
+> >>>>
+> >>>> I tried a little bit with your driver. The disadvantage I see is, its
+> >>>> claims all the free AD channels. But a few of them can also act as a
+> >>>> touchscreen controller. Shouldn't be the driver handle the channel
+> >>>> usage dynamically?
+> >>>
+> >>> I wonder, I'd rather see this driver behave as a composite driver, what
+> >>> do you think?
+> >>
+> >> Alternative (though it's still in development) would be to use IIO
+> >> as the ADC layer and sit the other parts on top.
+> >
+> > I think you need to adjust a few bits there and there in the hardware to
+> > behave as a touchscreen. Will IIO be able to handle that somehow ?
+>
+> No means of doing it yet.  I'm not entirely sure this can be done
+> generically. I'm not really familiar enough with touchscreen adcs as
+> none of my boards have one.  At worst I'm sure we can put some
+> hooks in to get hold of the underlying device if necessary.
 
->
-> Jonathan
->
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+It requires a more or less complex state-machine to switch the used 4 or 5 
+pins to different modes to measure the X/Y position and the pressure. And 
+these pins interfere with the ADC input pins.
 
+> [...]
 
+Regards,
+Juergen
 -- 
-Greetings,
-Michael
-
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
-Margaret Seif
+Pengutronix e.K.                              | Juergen Beisert             |
+Linux Solutions for Science and Industry      | http://www.pengutronix.de/  |
