@@ -1,35 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-130.synserver.de ([212.40.185.130]:1088 "EHLO
-	smtp-out-120.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1756482Ab2F0JIG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jun 2012 05:08:06 -0400
-Message-ID: <4FEACE58.20008@metafoo.de>
-Date: Wed, 27 Jun 2012 11:11:52 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mga09.intel.com ([134.134.136.24]:26577 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756108Ab2F0P2Z convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jun 2012 11:28:25 -0400
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"jic23.cam.ac.uk@vger.kernel.org" <jic23.cam.ac.uk@vger.kernel.org>,
+	"jkosina@suse.cz" <jkosina@suse.cz>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+Subject: RE: [PATCH, 3/6] HID-Sensors: Added accelerometer 3D
+Date: Wed, 27 Jun 2012 15:28:05 +0000
+Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A91933F4DA@ORSMSX104.amr.corp.intel.com>
+References: <1340672054-16591-1-git-send-email-srinivas.pandruvada@intel.com>
+ <1340672054-16591-4-git-send-email-srinivas.pandruvada@intel.com>
+ <4FEACE58.20008@metafoo.de>
+In-Reply-To: <4FEACE58.20008@metafoo.de>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: srinivas pandruvada <srinivas.pandruvada@intel.com>
-CC: linux-iio@vger.kernel.org, jic23.cam.ac.uk@vger.kernel.org,
-	jkosina@suse.cz, linux-input@vger.kernel.org
-Subject: Re: [PATCH, 3/6] HID-Sensors: Added accelerometer 3D
-References: <1340672054-16591-1-git-send-email-srinivas.pandruvada@intel.com> <1340672054-16591-4-git-send-email-srinivas.pandruvada@intel.com>
-In-Reply-To: <1340672054-16591-4-git-send-email-srinivas.pandruvada@intel.com>
-Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi,
+
+Thanks for the comments. 
+
+<IIO has moved out of staging in 3.5, so this won't build with the latest upstream>
+Can you please let me know which tree it is merged? I don't see in Linus's tree. I can see in gregkh/staging.git. But don't see your latest changes.
+
+<The trigger code looks pretty similar in all your IIO drivers, maybe it makes sense to put this into a common module.>
+I had this separate before, but once I had to move each driver to its sensor type directory, I merged it. I like to have common module for this. Where are the common modules go in iio directory? 
+
+Thanks,
+Srinivas
+
+
+
+
+
+
+
+
+-----Original Message-----
+From: Lars-Peter Clausen [mailto:lars@metafoo.de] 
+Sent: Wednesday, June 27, 2012 2:12 AM
+To: Pandruvada, Srinivas
+Cc: linux-iio@vger.kernel.org; jic23.cam.ac.uk@vger.kernel.org; jkosina@suse.cz; linux-input@vger.kernel.org
+Subject: Re: [PATCH, 3/6] HID-Sensors: Added accelerometer 3D
+
 On 06/26/2012 02:54 AM, srinivas pandruvada wrote:
-> Added usage id processing for Accelrometer 3D. This uses IIO
-> interfaces for triggerred buffer to present data to user
-> mode.This uses HID sensor framework for registering callback
-> events from the sensor hub.
+> Added usage id processing for Accelrometer 3D. This uses IIO 
+> interfaces for triggerred buffer to present data to user mode.This 
+> uses HID sensor framework for registering callback events from the 
+> sensor hub.
 
 Hi,
 
-Some comments inline, similar comments also apply for the other IIO drivers
-in this series.
+Some comments inline, similar comments also apply for the other IIO drivers in this series.
 
 > [...]
-> diff --git a/drivers/staging/iio/accel/hid-sensor-accel-3d.c b/drivers/staging/iio/accel/hid-sensor-accel-3d.c
+> diff --git a/drivers/staging/iio/accel/hid-sensor-accel-3d.c 
+> b/drivers/staging/iio/accel/hid-sensor-accel-3d.c
 > new file mode 100644
 > index 0000000..77d4663
 > --- /dev/null
@@ -50,12 +81,11 @@ in this series.
 > +#include "../trigger_consumer.h"
 > +#include "../triggered_buffer.h"
 
-IIO has moved out of staging in 3.5, so this wont build with the latest
-upstream.
+IIO has moved out of staging in 3.5, so this wont build with the latest upstream.
 
 > +
-> +/*Format: HID-SENSOR-usage_id_in_hex*/
-> +#define DRIVER_NAME "HID-SENSOR-200073"
+> +/*Format: HID-SENSOR-usage_id_in_hex*/ #define DRIVER_NAME 
+> +"HID-SENSOR-200073"
 > +
 > +#define CHANNEL_SCAN_INDEX_X 0
 > +#define CHANNEL_SCAN_INDEX_Y 1
@@ -92,7 +122,8 @@ upstream.
 > +	state_val = state ? 1 : 0;
 > +	sprintf(buffer, "%d", state_val);
 > +	hid_sensor_write_report_state(st->common_attrb, strlen(buffer), buffer);
-> +	hid_sensor_write_power_state(st->common_attrb, strlen(buffer), buffer);
+> +	hid_sensor_write_power_state(st->common_attrb, strlen(buffer), 
+> +buffer);
 
 
 This looks kind of odd, passing a integer by using a string.
@@ -101,8 +132,7 @@ This looks kind of odd, passing a integer by using a string.
 > +	return 0;
 > +}
 > +
-> +void hid_sensor_remove_trigger(struct iio_dev *indio_dev)
-> +{
+> +void hid_sensor_remove_trigger(struct iio_dev *indio_dev) {
 > +	iio_trigger_unregister(indio_dev->trig);
 > +	iio_free_trigger(indio_dev->trig);
 > +}
@@ -112,8 +142,7 @@ This looks kind of odd, passing a integer by using a string.
 > +	.set_trigger_state = &hid_sensor_data_rdy_trigger_set_state,
 > +};
 > +
-> +int hid_sensor_setup_trigger(struct iio_dev *indio_dev, char *name)
-> +{
+> +int hid_sensor_setup_trigger(struct iio_dev *indio_dev, char *name) {
 > +	int ret;
 > +	struct iio_trigger *trig;
 > +
@@ -142,8 +171,7 @@ This looks kind of odd, passing a integer by using a string.
 > +}
 > +
 
-The trigger code looks pretty similar in all your IIO drivers, maybe it
-makes sense to put this into a common module.
+The trigger code looks pretty similar in all your IIO drivers, maybe it makes sense to put this into a common module.
 
 
 > +static struct iio_chan_spec accel_3d_channels[] = {
@@ -171,14 +199,12 @@ makes sense to put this into a common module.
 > +	}
 > +};
 > +
-> +static void accel_3d_adjust_channel_bit_mask(int channel, int size)
-> +{
+> +static void accel_3d_adjust_channel_bit_mask(int channel, int size) {
 > +	accel_3d_channels[channel].scan_type.sign = 's';
 > +	accel_3d_channels[channel].scan_type.realbits = size * 8;
 > +	accel_3d_channels[channel].scan_type.storagebits = sizeof(u32) * 8;
 
-I would this expect to fail badly if there were two devices with different
-specs registered at the same time.
+I would this expect to fail badly if there were two devices with different specs registered at the same time.
 
 > +}
 > +
@@ -245,8 +271,7 @@ specs registered at the same time.
 > +	return 0;
 > +}
 
-If you don't want to do anything here just don't set the callback in the
-iio_info struct.
+If you don't want to do anything here just don't set the callback in the iio_info struct.
 
 > +
 > +static ssize_t hid_sensor_accel_3d_read_hyst_raw(struct device *dev,
@@ -326,8 +351,8 @@ This doesn't make sense, buf is empty at this point, so a strlen will return 0.
 > +	.write_raw = &accel_3d_write_raw,
 > +};
 > +
-> +void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
-> +{
+> +void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int 
+> +len) {
 > +	struct iio_buffer *buffer = indio_dev->buffer;
 > +	s64 timestamp = iio_get_time_ns();
 > +	int datum_sz;
@@ -340,25 +365,20 @@ This doesn't make sense, buf is empty at this point, so a strlen will return 0.
 > +				datum_sz);
 > +		return;
 > +	}
-> +	buffer->access->store_to(buffer, (u8 *)data, timestamp);
-> +}
+> +	buffer->access->store_to(buffer, (u8 *)data, timestamp); }
 > +
-> +static irqreturn_t hid_sensor_trigger_handler(int irq, void *p)
-> +{
+> +static irqreturn_t hid_sensor_trigger_handler(int irq, void *p) {
 > +	return IRQ_HANDLED;
 > +}
 
-If you don't want to do anything here just pass NULL to
-iio_triggered_buffer_setup.
+If you don't want to do anything here just pass NULL to iio_triggered_buffer_setup.
 
 > [...]
-> +static int __init hid_accel_3d_init(void)
-> +{
+> +static int __init hid_accel_3d_init(void) {
 > +	return platform_driver_register(&hid_accel_3d_platform_driver);
 > +}
 > +
-> +static void __exit hid_accel_3d_exit(void)
-> +{
+> +static void __exit hid_accel_3d_exit(void) {
 > +	platform_driver_unregister(&hid_accel_3d_platform_driver);
 > +}
 > +
@@ -368,7 +388,7 @@ iio_triggered_buffer_setup.
 module_platform_driver(hid_accel_3d_platform_driver);
 
 > +
-> +MODULE_DESCRIPTION("HID Sensor Accel 3D");
-> +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
+> +MODULE_DESCRIPTION("HID Sensor Accel 3D"); MODULE_AUTHOR("Srinivas 
+> +Pandruvada <srinivas.pandruvada@intel.com>");
 > +MODULE_LICENSE("GPL");
 
