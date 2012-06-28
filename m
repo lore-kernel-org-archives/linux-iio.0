@@ -1,61 +1,152 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49081 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754249Ab2F3MY2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jun 2012 08:24:28 -0400
-Message-ID: <4FEEEFF8.8050305@kernel.org>
-Date: Sat, 30 Jun 2012 13:24:24 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <ggao@invensense.com>
+From: Ge Gao <ggao@invensense.com>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO fixes v3.5-rc4
+Date: Thu, 28 Jun 2012 11:32:34 -0700
+Message-ID: <4ef0a03cae85f8c81bec8ef179e6bc69@mail.gmail.com>
+Subject: [PATCH 4/4] IIO: Invensense MPU6050/MPU9150 driver submit
+To: linux-iio@vger.kernel.org
+Cc: linux-iio-owner@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Content-Type: multipart/mixed; boundary=e0cb4e43d0cd40dd9504c38c8e6f
+List-ID: <linux-iio@vger.kernel.org>
+
+--e0cb4e43d0cd40dd9504c38c8e6f
+Content-Type: multipart/alternative; boundary=e0cb4e43d0cd40dd8f04c38c8e6d
+
+--e0cb4e43d0cd40dd8f04c38c8e6d
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
 
-Hi Greg,
 
-Please consider pulling the following fixes.
 
-I've based these on your staging-linus branch which happens
-right now to be v3.5-rc4.
+--e0cb4e43d0cd40dd8f04c38c8e6d
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-None are exactly critical if you want to hold them for the next
-merge window.
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3Dus-ascii"><meta name=3D"Generator" content=3D"Microsoft Word 14 (filtere=
+d medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:"\@SimSun";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri","sans-serif";}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style></head><body lang=3D"EN-US" link=3D"blue" vlink=3D"purple"><div =
+class=3D"WordSection1"><p class=3D"MsoNormal">=A0</p></div></body></html>
 
-Obviously any suggestions / requests on how to do these pull
-requests welcomed!
+--e0cb4e43d0cd40dd8f04c38c8e6d--
 
-The following changes since commit 6b16351acbd415e66ba16bf7d473ece1574cf0bc:
+--e0cb4e43d0cd40dd9504c38c8e6f
+Content-Type: application/octet-stream;
+	name="0004-Invensense-MPU6050-MPU9150-driver.patch"
+Content-Disposition: attachment;
+	filename="0004-Invensense-MPU6050-MPU9150-driver.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: 9de57be094c77046_0.1
 
-  Linux 3.5-rc4 (2012-06-24 12:53:04 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git fixes-togreg
-
-for you to fetch changes up to 06d5199d4c53615338d0453b62458cd82fb88f33:
-
-  staging:iio: Add some missing peak elements to the info_mask
-(2012-06-30 10:12:36 +0100)
-
-----------------------------------------------------------------
-Jonathan Cameron (2):
-      staging:iio:accel:adis16204 fix bug in channel modifier handling
-      staging:iio: Add some missing peak elements to the info_mask
-
-Lars-Peter Clausen (1):
-      staging:iio:ad7793: Fix scan index for the "shorted" channel
-
-Peter Meerwald (3):
-      iio staging: fix potential resource leak in generic_buffer
-      iio staging: fix potential memory/resource leaks in
-find_type_by_name()
-      iio staging: fix resource leak in _write_sysfs_int()
-
- drivers/staging/iio/Documentation/iio_utils.h | 24 +++++++++++++++++++-----
- drivers/staging/iio/accel/adis16204_core.c    |  2 +-
- drivers/staging/iio/accel/adis16240_core.c    |  9 ++++++---
- drivers/staging/iio/adc/ad7793.c              |  4 ++--
- 4 files changed, 28 insertions(+), 11 deletions(-)
+RnJvbSBlMmU4Mjk0YzIxMWJjZDY3NjFlM2YzZTk5ODA3MjJlMTFkZGExYWZhIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBHZSBHYW8gPGdnYW9AaW52ZW5zZW5zZS5jb20+CkRhdGU6IFRo
+dSwgMjggSnVuIDIwMTIgMTE6MDc6MzUgLTA3MDAKU3ViamVjdDogW1BBVENIIDQvNF0gICAgICAg
+ICBJbnZlbnNlbnNlIE1QVTYwNTAvTVBVOTE1MCBkcml2ZXIuCgogICAgICAgICAgLS1NUFU2MDUw
+L01QVTkxNTAgZHJpdmVyLgogICAgICAgICAgLS1TZWNvbmRhcnkgYnVzIGZvciBBS004OTc1L0FL
+TTg5NjMvQUtNODk3MiBzdXBwb3J0LgogICAgICAgICAgLS1rZXJuZWwgZml4IGZvciBLZmlmbyBw
+b2xsIHN1cHBvcnQgZnJvbSBKb25hbnRoYW4uCiAgICAgICAgICAtLUtmaWZvIGJ1ZyBmaXguIE5l
+ZWQgdG8gY2hlY2sgYXZhaWxhYmxlIHNwYWNlIGJlZm9yZSBzdG9yZS4KICAgICAgICAgIC0tYWRk
+IG5ldyBJSU8gdHlwZSBmb3IgcXVhdGVybmlvbi4KCkNoYW5nZS1JZDogSTRiMzAxNDU0YzBlOGFm
+NTdhYzlkYjc2MDJhMTRiZTVhNjIzZDVhOTQKU2lnbmVkLW9mZi1ieTogR2UgR2FvIDxnZ2FvQGlu
+dmVuc2Vuc2UuY29tPgotLS0KIGRyaXZlcnMvc3RhZ2luZy9paW8vaW5kdXN0cmlhbGlvLWJ1ZmZl
+ci5jIHwgICAgMyArKysKIGRyaXZlcnMvc3RhZ2luZy9paW8vaW5kdXN0cmlhbGlvLWNvcmUuYyAg
+IHwgICAgMiArKwogZHJpdmVycy9zdGFnaW5nL2lpby9rZmlmb19idWYuYyAgICAgICAgICAgfCAg
+IDIxICsrKysrKysrKysrKysrKysrKy0tLQogZHJpdmVycy9zdGFnaW5nL2lpby90eXBlcy5oICAg
+ICAgICAgICAgICAgfCAgICAyICsrCiA0IGZpbGVzIGNoYW5nZWQsIDI1IGluc2VydGlvbnMoKyks
+IDMgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9pbmR1c3Ry
+aWFsaW8tYnVmZmVyLmMgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2luZHVzdHJpYWxpby1idWZmZXIu
+YwppbmRleCAzODZiYTc2Li4xY2ViYTBjIDEwMDY0NAotLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlv
+L2luZHVzdHJpYWxpby1idWZmZXIuYworKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2luZHVzdHJp
+YWxpby1idWZmZXIuYwpAQCAtNTYsMTAgKzU2LDEzIEBAIHVuc2lnbmVkIGludCBpaW9fYnVmZmVy
+X3BvbGwoc3RydWN0IGZpbGUgKmZpbHAsCiB7CiAJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9
+IGZpbHAtPnByaXZhdGVfZGF0YTsKIAlzdHJ1Y3QgaWlvX2J1ZmZlciAqcmIgPSBpbmRpb19kZXYt
+PmJ1ZmZlcjsKKwlpZiAocmItPnN0dWZmdG9yZWFkKQorCQlyZXR1cm4gUE9MTElOIHwgUE9MTFJE
+Tk9STTsKIAogCXBvbGxfd2FpdChmaWxwLCAmcmItPnBvbGxxLCB3YWl0KTsKIAlpZiAocmItPnN0
+dWZmdG9yZWFkKQogCQlyZXR1cm4gUE9MTElOIHwgUE9MTFJETk9STTsKKwogCS8qIG5lZWQgYSB3
+YXkgb2Yga25vd2luZyBpZiB0aGVyZSBtYXkgYmUgZW5vdWdoIGRhdGEuLi4gKi8KIAlyZXR1cm4g
+MDsKIH0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vaW5kdXN0cmlhbGlvLWNvcmUu
+YyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vaW5kdXN0cmlhbGlvLWNvcmUuYwppbmRleCBkMzAzYmZi
+Li5kZWI4MGFhIDEwMDY0NAotLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2luZHVzdHJpYWxpby1j
+b3JlLmMKKysrIGIvZHJpdmVycy9zdGFnaW5nL2lpby9pbmR1c3RyaWFsaW8tY29yZS5jCkBAIC02
+OCw2ICs2OCw3IEBAIHN0YXRpYyBjb25zdCBjaGFyICogY29uc3QgaWlvX2NoYW5fdHlwZV9uYW1l
+X3NwZWNbXSA9IHsKIAlbSUlPX0FOR0xdID0gImFuZ2wiLAogCVtJSU9fVElNRVNUQU1QXSA9ICJ0
+aW1lc3RhbXAiLAogCVtJSU9fQ0FQQUNJVEFOQ0VdID0gImNhcGFjaXRhbmNlIiwKKwlbSUlPX1FV
+QVRFUk5JT05dID0gInF1YXRlcm5pb24iLAogfTsKIAogc3RhdGljIGNvbnN0IGNoYXIgKiBjb25z
+dCBpaW9fbW9kaWZpZXJfbmFtZXNbXSA9IHsKQEAgLTc2LDYgKzc3LDcgQEAgc3RhdGljIGNvbnN0
+IGNoYXIgKiBjb25zdCBpaW9fbW9kaWZpZXJfbmFtZXNbXSA9IHsKIAlbSUlPX01PRF9aXSA9ICJ6
+IiwKIAlbSUlPX01PRF9MSUdIVF9CT1RIXSA9ICJib3RoIiwKIAlbSUlPX01PRF9MSUdIVF9JUl0g
+PSAiaXIiLAorCVtJSU9fTU9EX1JdICA9ICJyIiwKIH07CiAKIC8qIHJlbGllcyBvbiBwYWlycyBv
+ZiB0aGVzZSBzaGFyZWQgdGhlbiBzZXBhcmF0ZSAqLwpkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFn
+aW5nL2lpby9rZmlmb19idWYuYyBiL2RyaXZlcnMvc3RhZ2luZy9paW8va2ZpZm9fYnVmLmMKaW5k
+ZXggOWYzYmQ1OS4uZTQyYjdlNyAxMDA2NDQKLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lpby9rZmlm
+b19idWYuYworKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2tmaWZvX2J1Zi5jCkBAIC0zLDYgKzMs
+NyBAQAogI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPgogI2luY2x1ZGUgPGxpbnV4L2RldmljZS5o
+PgogI2luY2x1ZGUgPGxpbnV4L3dvcmtxdWV1ZS5oPgorI2luY2x1ZGUgPGxpbnV4L3NjaGVkLmg+
+CiAjaW5jbHVkZSA8bGludXgva2ZpZm8uaD4KICNpbmNsdWRlIDxsaW51eC9tdXRleC5oPgogCkBA
+IC0zNiw2ICszNyw3IEBAIHN0YXRpYyBpbnQgaWlvX3JlcXVlc3RfdXBkYXRlX2tmaWZvKHN0cnVj
+dCBpaW9fYnVmZmVyICpyKQogCWtmaWZvX2ZyZWUoJmJ1Zi0+a2YpOwogCXJldCA9IF9faWlvX2Fs
+bG9jYXRlX2tmaWZvKGJ1ZiwgYnVmLT5idWZmZXIuYnl0ZXNfcGVyX2RhdHVtLAogCQkJCSAgIGJ1
+Zi0+YnVmZmVyLmxlbmd0aCk7CisJci0+c3R1ZmZ0b3JlYWQgPSBmYWxzZTsKIGVycm9yX3JldDoK
+IAlyZXR1cm4gcmV0OwogfQpAQCAtOTUsOSArOTcsMTYgQEAgc3RhdGljIGludCBpaW9fc3RvcmVf
+dG9fa2ZpZm8oc3RydWN0IGlpb19idWZmZXIgKnIsCiB7CiAJaW50IHJldDsKIAlzdHJ1Y3QgaWlv
+X2tmaWZvICprZiA9IGlpb190b19rZmlmbyhyKTsKLQlyZXQgPSBrZmlmb19pbigma2YtPmtmLCBk
+YXRhLCByLT5ieXRlc19wZXJfZGF0dW0pOwotCWlmIChyZXQgIT0gci0+Ynl0ZXNfcGVyX2RhdHVt
+KQotCQlyZXR1cm4gLUVCVVNZOworCWlmIChrZmlmb19hdmFpbCgma2YtPmtmKSA+PSByLT5ieXRl
+c19wZXJfZGF0dW0pIHsKKwkJcmV0ID0ga2ZpZm9faW4oJmtmLT5rZiwgZGF0YSwgci0+Ynl0ZXNf
+cGVyX2RhdHVtKTsKKwkJaWYgKHJldCAhPSByLT5ieXRlc19wZXJfZGF0dW0pCisJCQlyZXR1cm4g
+LUVCVVNZOworCX0gZWxzZSB7CisJCXJldHVybiAtRU5PTUVNOworCX0KKwlyLT5zdHVmZnRvcmVh
+ZCA9IHRydWU7CisJd2FrZV91cF9pbnRlcnJ1cHRpYmxlKCZyLT5wb2xscSk7CisKIAlyZXR1cm4g
+MDsKIH0KIApAQCAtMTEzLDYgKzEyMiwxMiBAQCBzdGF0aWMgaW50IGlpb19yZWFkX2ZpcnN0X25f
+a2ZpZm8oc3RydWN0IGlpb19idWZmZXIgKnIsCiAJbiA9IHJvdW5kZG93bihuLCByLT5ieXRlc19w
+ZXJfZGF0dW0pOwogCXJldCA9IGtmaWZvX3RvX3VzZXIoJmtmLT5rZiwgYnVmLCBuLCAmY29waWVk
+KTsKIAorCWlmIChrZmlmb19pc19lbXB0eSgma2YtPmtmKSkKKwkJci0+c3R1ZmZ0b3JlYWQgPSBm
+YWxzZTsKKwkvKiB2ZXJpZnkgaXQgaXMgc3RpbGwgZW1wdHkgdG8gYXZvaWQgcmFjZSAqLworCWlm
+ICgha2ZpZm9faXNfZW1wdHkoJmtmLT5rZikpCisJCXItPnN0dWZmdG9yZWFkID0gdHJ1ZTsKKwog
+CXJldHVybiBjb3BpZWQ7CiB9CiAKZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vdHlw
+ZXMuaCBiL2RyaXZlcnMvc3RhZ2luZy9paW8vdHlwZXMuaAppbmRleCAwYzMyMTM2Li4yOTFjNzgz
+IDEwMDY0NAotLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL3R5cGVzLmgKKysrIGIvZHJpdmVycy9z
+dGFnaW5nL2lpby90eXBlcy5oCkBAIC0yNyw2ICsyNyw3IEBAIGVudW0gaWlvX2NoYW5fdHlwZSB7
+CiAJSUlPX0FOR0wsCiAJSUlPX1RJTUVTVEFNUCwKIAlJSU9fQ0FQQUNJVEFOQ0UsCisJSUlPX1FV
+QVRFUk5JT04sCiB9OwogCiBlbnVtIGlpb19tb2RpZmllciB7CkBAIC00NCw2ICs0NSw3IEBAIGVu
+dW0gaWlvX21vZGlmaWVyIHsKIAlJSU9fTU9EX1hfT1JfWV9PUl9aLAogCUlJT19NT0RfTElHSFRf
+Qk9USCwKIAlJSU9fTU9EX0xJR0hUX0lSLAorCUlJT19NT0RfUiwKIH07CiAKICNkZWZpbmUgSUlP
+X1ZBTF9JTlQgMQotLSAKMS43LjAuNAoK
+--e0cb4e43d0cd40dd9504c38c8e6f--
