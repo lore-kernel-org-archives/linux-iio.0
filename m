@@ -2,7 +2,7 @@ Return-Path: <marex@denx.de>
 From: Marek Vasut <marex@denx.de>
 To: Juergen Beisert <jbe@pengutronix.de>
 Subject: Re: i.MX28 die temperature
-Date: Thu, 28 Jun 2012 00:58:26 +0200
+Date: Thu, 28 Jun 2012 05:05:41 +0200
 Cc: Jonathan Cameron <jic23@cam.ac.uk>,
  linux-iio@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org
@@ -11,27 +11,46 @@ In-Reply-To: <201206271433.15303.jbe@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: Text/Plain;
   charset="us-ascii"
-Message-Id: <201206280058.26485.marex@denx.de>
+Message-Id: <201206280505.41201.marex@denx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
 Dear Juergen Beisert,
 
 [...]
-> 
-> It requires a more or less complex state-machine to switch the used 4 or 5
-> pins to different modes to measure the X/Y position and the pressure. And
-> these pins interfere with the ADC input pins.
-> 
+
+So, I've been thinking about mapping channels and delay slots at runtime. Is it 
+really necessary? I know it's really cool and all, but it adds a lot of 
+complexity. For starters, I was thinking we should try to do static mapping. And 
+when that's all perfected, go further and try doing it dynamically. What do you 
+think about the following DT binding:
+
+lradc@80050000 {
+        compatible = "fsl,imx28-lradc";
+        reg = <0x80050000 2000>;
+        interrupts = <10 14 15 16 17 18 19
+                        20 21 22 23 24 25>;
+        fsl,delay-freq = <10 100 50 60>;
+        fsl,delay-repeat = <3 10 5 6>;
+        fsl,delay-channels = <
+                0 2 0 3 0 4 0 5
+                1 8 1 9 2 12 3 13>;
+        status = "disabled";
+};
+
+fsl,delay-freq would be an array (for all four delay channels) of their sampling 
+frequencies.
+
+fsl,delay-repeat would be an array (for all four delay channels) of the 
+oversampling count.
+
+fsl,delay-channels would be an array (for all four delay channels) of touples of 
+delay channel, adc channel. In the above example, it's ADC channels 2,3,4,5 
+mapped to delay channel 0, ADC channels 8,9 mapped to delay channel 1 etc.
+
+Now, it might be dumb, advice is welcome!
+
 > > [...]
-
-I said I'll go through it, but it seems the IIO changed again, so I'll need to 
-wrap my head around new stuff in there.
-
-Besides, I have a feeling that the driver, as is, just simply doesn't fit in as 
-it should. I'm discussing with Jonathan, since I can't really make heads or 
-tails from the IIO api. It's way too complex and unless I really missed 
-something, way underdocumented.
-
+> 
 > Regards,
 > Juergen
 
