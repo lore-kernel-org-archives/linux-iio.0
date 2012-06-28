@@ -1,69 +1,59 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: Juergen Beisert <jbe@pengutronix.de>
-Subject: Re: i.MX28 die temperature
-Date: Thu, 28 Jun 2012 17:42:47 +0200
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
- linux-iio@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
-References: <330B740BA662BF4E8386F534DF556ED819731A@AEDCEXC09.aei.com> <201206271433.15303.jbe@pengutronix.de> <201206280505.41201.marex@denx.de>
-In-Reply-To: <201206280505.41201.marex@denx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:59312 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753514Ab2F1IAJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jun 2012 04:00:09 -0400
+Message-ID: <4FEC0F04.90001@cam.ac.uk>
+Date: Thu, 28 Jun 2012 09:00:04 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201206281742.47936.marex@denx.de>
-List-ID: <linux-iio@vger.kernel.org>
+To: Marek Vasut <marex@denx.de>
+CC: Juergen Beisert <jbe@pengutronix.de>, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: i.MX28 die temperature
+References: <330B740BA662BF4E8386F534DF556ED819731A@AEDCEXC09.aei.com> <4FEAF75E.5090505@cam.ac.uk> <201206271433.15303.jbe@pengutronix.de> <201206280058.26485.marex@denx.de>
+In-Reply-To: <201206280058.26485.marex@denx.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Dear Marek Vasut,
-
+On 6/27/2012 11:58 PM, Marek Vasut wrote:
 > Dear Juergen Beisert,
-> 
+>
 > [...]
-> 
-> So, I've been thinking about mapping channels and delay slots at runtime.
-> Is it really necessary? I know it's really cool and all, but it adds a lot
-> of complexity. For starters, I was thinking we should try to do static
-> mapping. And when that's all perfected, go further and try doing it
-> dynamically. What do you think about the following DT binding:
-> 
-> lradc@80050000 {
->         compatible = "fsl,imx28-lradc";
->         reg = <0x80050000 2000>;
->         interrupts = <10 14 15 16 17 18 19
->                         20 21 22 23 24 25>;
->         fsl,delay-freq = <10 100 50 60>;
->         fsl,delay-repeat = <3 10 5 6>;
->         fsl,delay-channels = <
->                 0 2 0 3 0 4 0 5
->                 1 8 1 9 2 12 3 13>;
+>>
+>> It requires a more or less complex state-machine to switch the used 4 or 5
+>> pins to different modes to measure the X/Y position and the pressure. And
+>> these pins interfere with the ADC input pins.
+>>
+>>> [...]
+>
+> I said I'll go through it, but it seems the IIO changed again, so I'll need to
+> wrap my head around new stuff in there.
+Yeah, sorry about that - people keep wanting new stuff ;)
+>
+> Besides, I have a feeling that the driver, as is, just simply doesn't fit in as
+> it should. I'm discussing with Jonathan, since I can't really make heads or
+> tails from the IIO api. It's way too complex and unless I really missed
+> something, way underdocumented.
+Any documentation writers welcome!
+The real trick currently is to
+a) figure out what is similar an already present
+b) figure out if that driver is actually a good starting point. If it's
+left staging then it's clean, but there may be a closer 'clean' driver
+still in staging.
+
+Having had documentation continually get left behind we did add
+a 'dummy' driver that covers most stuff with lots of comments.
+(still in staging at the mo staging/iio/iio_simple_dummy*)
 
 
-btw. I don't like the idea of those tuples here ... any hint how to do it 
-better?
-
->         status = "disabled";
-> };
-> 
-> fsl,delay-freq would be an array (for all four delay channels) of their
-> sampling frequencies.
-> 
-> fsl,delay-repeat would be an array (for all four delay channels) of the
-> oversampling count.
-> 
-> fsl,delay-channels would be an array (for all four delay channels) of
-> touples of delay channel, adc channel. In the above example, it's ADC
-> channels 2,3,4,5 mapped to delay channel 0, ADC channels 8,9 mapped to
-> delay channel 1 etc.
-> 
-> Now, it might be dumb, advice is welcome!
-> 
-> > > [...]
-> > 
-> > Regards,
-> > Juergen
-> 
+>
+>> Regards,
+>> Juergen
+>
 > Best regards,
 > Marek Vasut
+>
 
-Best regards,
-Marek Vasut
+
