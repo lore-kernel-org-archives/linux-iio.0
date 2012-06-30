@@ -1,76 +1,317 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:35185 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754036Ab2F3TGR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jun 2012 15:06:17 -0400
+Return-Path: <jic23@hermes.cam.ac.uk>
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 0/4 V3] staging:iio: Add support for multiple buffers
-Date: Sat, 30 Jun 2012 20:06:03 +0100
-Message-Id: <1341083167-30515-1-git-send-email-jic23@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 4/4] staging:iio: Proof of concept input driver.
+Date: Sat, 30 Jun 2012 20:06:07 +0100
+Message-Id: <1341083167-30515-5-git-send-email-jic23@kernel.org>
+In-Reply-To: <1341083167-30515-1-git-send-email-jic23@kernel.org>
+References: <1341083167-30515-1-git-send-email-jic23@kernel.org>
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Changes since V2.
+From: Jonathan Cameron <jic23@cam.ac.uk>
 
-Improved handling of error conditions in the buffer insertion and
-removal code.  (suggested by Lars-Peter).  I want to take another
-look at these, but didn't want to keep people from testing this
-in the meantime.
+This is no where near ready to merge.  Lots of stuff missing.
 
-Also a number of minor fixes that came up during testing.
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/Kconfig     |  11 ++
+ drivers/staging/iio/Makefile    |   1 +
+ drivers/staging/iio/iio_input.c | 221 ++++++++++++++++++++++++++++++++++++++++
+ drivers/staging/iio/iio_input.h |  23 +++++
+ 4 files changed, 256 insertions(+)
 
-Thanks,
-
-Jonathan
-
-Jonathan Cameron (4):
-  staging:iio: Add support for multiple buffers
-  staging:iio:in kernel users: Add a data field for channel specific
-    info.
-  staging:iio: add a callback buffer for in kernel push interface
-  staging:iio: Proof of concept input driver.
-
- drivers/iio/Kconfig                             |   6 +
- drivers/iio/Makefile                            |   1 +
- drivers/iio/adc/at91_adc.c                      |   4 +-
- drivers/iio/buffer_cb.c                         | 115 +++++++
- drivers/iio/industrialio-buffer.c               | 378 ++++++++++++++++--------
- drivers/iio/industrialio-core.c                 |   1 +
- drivers/iio/inkern.c                            |   1 +
- drivers/staging/iio/Kconfig                     |  11 +
- drivers/staging/iio/Makefile                    |   1 +
- drivers/staging/iio/accel/adis16201_ring.c      |   4 +-
- drivers/staging/iio/accel/adis16203_ring.c      |   6 +-
- drivers/staging/iio/accel/adis16204_ring.c      |   3 +-
- drivers/staging/iio/accel/adis16209_ring.c      |   3 +-
- drivers/staging/iio/accel/adis16240_ring.c      |   4 +-
- drivers/staging/iio/accel/lis3l02dq_ring.c      |   3 +-
- drivers/staging/iio/adc/ad7192.c                |   3 +-
- drivers/staging/iio/adc/ad7298_ring.c           |   5 +-
- drivers/staging/iio/adc/ad7476_ring.c           |   2 +-
- drivers/staging/iio/adc/ad7606_ring.c           |   3 +-
- drivers/staging/iio/adc/ad7793.c                |   3 +-
- drivers/staging/iio/adc/ad7887_ring.c           |   2 +-
- drivers/staging/iio/adc/ad799x_ring.c           |   3 +-
- drivers/staging/iio/adc/max1363_ring.c          |   2 +-
- drivers/staging/iio/gyro/adis16260_ring.c       |   3 +-
- drivers/staging/iio/iio_input.c                 | 221 ++++++++++++++
- drivers/staging/iio/iio_input.h                 |  23 ++
- drivers/staging/iio/iio_simple_dummy_buffer.c   |   5 +-
- drivers/staging/iio/impedance-analyzer/ad5933.c |   3 +-
- drivers/staging/iio/imu/adis16400_ring.c        |   2 +-
- drivers/staging/iio/meter/ade7758_ring.c        |   3 +-
- include/linux/iio/buffer.h                      |  24 +-
- include/linux/iio/consumer.h                    |  48 +++
- include/linux/iio/iio.h                         |   2 +
- include/linux/iio/machine.h                     |   2 +
- 34 files changed, 734 insertions(+), 166 deletions(-)
- create mode 100644 drivers/iio/buffer_cb.c
- create mode 100644 drivers/staging/iio/iio_input.c
- create mode 100644 drivers/staging/iio/iio_input.h
-
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index 04cd6ec..022463e 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -4,6 +4,17 @@
+ menu "IIO staging drivers"
+ 	depends on IIO
+ 
++config IIO_ST_INPUT
++	tristate "Input driver that uses channels specified via iio maps"
++	depends on INPUT
++	depends on IIO_BUFFER
++	select IIO_BUFFER_CB
++	help
++	  Client driver for IIO via the push interfaces.  Used to provide
++	  and input interface for IIO devices that can feed a buffer on
++	  a trigger interrupt.  Note that all channels must come from a
++	  single IIO supported device.
++
+ config IIO_ST_HWMON
+ 	tristate "Hwmon driver that uses channels specified via iio maps"
+ 	depends on HWMON
+diff --git a/drivers/staging/iio/Makefile b/drivers/staging/iio/Makefile
+index fa6937d..9e71498 100644
+--- a/drivers/staging/iio/Makefile
++++ b/drivers/staging/iio/Makefile
+@@ -12,6 +12,7 @@ iio_dummy-$(CONFIG_IIO_SIMPLE_DUMMY_BUFFER) += iio_simple_dummy_buffer.o
+ obj-$(CONFIG_IIO_DUMMY_EVGEN) += iio_dummy_evgen.o
+ 
+ obj-$(CONFIG_IIO_ST_HWMON) += iio_hwmon.o
++obj-$(CONFIG_IIO_ST_INPUT) += iio_input.o
+ 
+ obj-y += accel/
+ obj-y += adc/
+diff --git a/drivers/staging/iio/iio_input.c b/drivers/staging/iio/iio_input.c
+new file mode 100644
+index 0000000..207a392
+--- /dev/null
++++ b/drivers/staging/iio/iio_input.c
+@@ -0,0 +1,221 @@
++/*
++ * The industrial I/O input client driver
++ *
++ * Copyright (c) 2011 Jonathan Cameron
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
++
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/err.h>
++#include <linux/platform_device.h>
++#include <linux/input.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/consumer.h>
++#include "iio_input.h"
++
++struct iio_input_state {
++	struct iio_cb_buffer *buff;
++	struct input_dev *idev;
++};
++
++static int iio_channel_value(u8 *data,
++			     const struct iio_chan_spec *chan,
++			     s32 *val)
++{
++	u32 value = 0;
++
++	if (chan->scan_type.sign == 's') {
++		switch (chan->scan_type.storagebits) {
++		case 8:
++			value = *(s8 *)(data);
++			break;
++		case 16:
++			switch (chan->scan_type.endianness) {
++			case IIO_CPU:
++				value = *(s16 *)(data);
++				break;
++			case IIO_BE:
++				value = be16_to_cpu(*(__be16 *)data);
++				break;
++			case IIO_LE:
++				value = le16_to_cpu(*(__le16 *)data);
++				break;
++			}
++			break;
++		case 32:
++			switch (chan->scan_type.endianness) {
++			case IIO_CPU:
++				value = *(s32 *)(data);
++				break;
++			case IIO_BE:
++				value = be32_to_cpu(*(__be32 *)data);
++				break;
++			case IIO_LE:
++				value = le32_to_cpu(*(__le32  *)data);
++				break;
++			}
++			break;
++		default:
++			return -EINVAL;
++		}
++		*val = sign_extend32(value, chan->scan_type.storagebits);
++	} else {
++		switch (chan->scan_type.storagebits) {
++		case 8:
++			value = *(u8 *)(data);
++			break;
++		case 16:
++			switch (chan->scan_type.endianness) {
++			case IIO_CPU:
++				value = *(u16 *)(data);
++				break;
++			case IIO_BE:
++				value = be16_to_cpu(*(__be16 *)data);
++				break;
++			case IIO_LE:
++				value = le16_to_cpu(*(__le16 *)data);
++				break;
++			}
++			break;
++		case 32:
++			switch (chan->scan_type.endianness) {
++			case IIO_CPU:
++				value = *(u32 *)(data);
++				break;
++			case IIO_BE:
++				value = be32_to_cpu(*(__be32 *)data);
++				break;
++			case IIO_LE:
++				value = le32_to_cpu(*(__le32 *)data);
++				break;
++			}
++			break;
++		default:
++			return -EINVAL;
++		}
++		value >>= chan->scan_type.shift;
++		value &= (1 << chan->scan_type.realbits) - 1;
++		*val = value;
++	}
++
++	return 0;
++}
++
++static int iio_input_store_to(u8 *data, void *private)
++{
++	struct iio_input_state *st = private;
++	struct iio_channel *channel;
++	struct iio_input_channel_data *input_data;
++	int offset = 0;
++	s32 value;
++	int ret;
++
++	channel = iio_channel_cb_get_channels(st->buff);
++	while (channel->indio_dev) {
++		input_data = channel->data;
++		offset = ALIGN(offset,
++			       channel->channel->scan_type.storagebits/8);
++		ret = iio_channel_value(&data[offset],
++					channel->channel,
++					&value);
++		if (ret < 0)
++			return ret;
++		offset += channel->channel->scan_type.storagebits/8;
++
++		input_report_abs(st->idev, input_data->code, value);
++		channel++;
++	}
++	input_sync(st->idev);
++
++	return 0;
++}
++
++static int __devinit iio_input_probe(struct platform_device *pdev)
++{
++	struct iio_input_state *st;
++	int ret;
++	struct iio_channel *channel;
++	struct iio_input_channel_data *input_data;
++
++	st = kzalloc(sizeof(*st), GFP_KERNEL);
++	if (st == NULL)
++		return -ENOMEM;
++	platform_set_drvdata(pdev, st);
++	st->buff = iio_channel_get_all_cb(dev_name(&pdev->dev),
++					  &iio_input_store_to,
++					  st);
++	if (IS_ERR(st->buff)) {
++		ret = PTR_ERR(st->buff);
++		goto error_free_state;
++	}
++
++	st->idev = input_allocate_device();
++	if (!st->idev) {
++		ret = -ENOMEM;
++		goto error_channels_release_all;
++	}
++
++	__set_bit(EV_ABS, st->idev->evbit);
++	channel = iio_channel_cb_get_channels(st->buff);
++	while (channel->indio_dev) {
++		input_data = channel->data;
++		input_set_abs_params(st->idev, input_data->code,
++				     input_data->min,
++				     input_data->max,
++				     input_data->fuzz,
++				     input_data->flat);
++		channel++;
++	}
++
++	ret = input_register_device(st->idev);
++	if (ret < 0)
++		goto error_free_idev;
++
++	/* NORMALLY IN THE OPEN */
++	ret = iio_channel_start_all_cb(st->buff);
++	if (ret < 0)
++		goto error_unregister_input;
++
++	return 0;
++error_unregister_input:
++	input_unregister_device(st->idev);
++error_free_idev:
++	input_free_device(st->idev);
++error_channels_release_all:
++	iio_channel_release_all_cb(st->buff);
++error_free_state:
++	kfree(st);
++	return ret;
++}
++
++static int __devexit iio_input_remove(struct platform_device *pdev)
++{
++	struct iio_input_state *st = platform_get_drvdata(pdev);
++	/* NORMALLY IN THE CLOSE */
++	iio_channel_stop_all_cb(st->buff);
++	input_unregister_device(st->idev);
++	iio_channel_release_all_cb(st->buff);
++
++	kfree(st);
++	return 0;
++}
++
++static struct platform_driver iio_input_driver = {
++	.driver = {
++		.name = "iio_input_bridge",
++		.owner = THIS_MODULE,
++	},
++	.probe = iio_input_probe,
++	.remove = __devexit_p(iio_input_remove),
++};
++
++module_platform_driver(iio_input_driver);
++
++MODULE_AUTHOR("Jonathan Cameron <jic23@cam.ac.uk>");
++MODULE_DESCRIPTION("IIO input buffer driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/staging/iio/iio_input.h b/drivers/staging/iio/iio_input.h
+new file mode 100644
+index 0000000..cfd1d34
+--- /dev/null
++++ b/drivers/staging/iio/iio_input.h
+@@ -0,0 +1,23 @@
++/*
++ * The industrial I/O input client driver
++ *
++ * Copyright (c) 2011 Jonathan Cameron
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
++
++/**
++ * iio_input_channel_data - description of the channel for input subsystem
++ * @code:	Absolute axis.
++ * @min:	Minimum value.
++ * @max:	Maximum value.
++ * @fuzz:	Used to filter noise from the event stream.
++ * @flat:	Values within this value will be discarded by joydev
++ *		and reported as 0 instead.
++ */
++struct iio_input_channel_data {
++	unsigned int code;
++	int min, max, fuzz, flat;
++};
 -- 
 1.7.11.1
-
