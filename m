@@ -1,28 +1,35 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:56559 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753290Ab2F3Wro (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 30 Jun 2012 18:47:44 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 0/2] IIO: Kfifo usage improvements
-Date: Sat, 30 Jun 2012 13:52:41 +0100
-Message-Id: <1341060763-9602-1-git-send-email-jic23@kernel.org>
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 1/3] iio staging: missing newline in printf
+Date: Sun,  1 Jul 2012 00:47:41 +0200
+Message-Id: <1341096463-13789-1-git-send-email-pmeerw@pmeerw.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi All,
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/staging/iio/Documentation/iio_utils.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-These have both been on the list before in various forms, be
-it burried deep in threads.
-
-Anyhow, please test these and review.
-
-Jonathan
-
-Jonathan Cameron (2):
-  iio:kfifo_buf  Take advantage of the fixed record size used in IIO
-  iio: kfifo - add poll support.
-
- drivers/iio/kfifo_buf.c | 28 ++++++++++++++++++++++------
- 1 file changed, 22 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
+index 5244fa0..cf32ae0 100644
+--- a/drivers/staging/iio/Documentation/iio_utils.h
++++ b/drivers/staging/iio/Documentation/iio_utils.h
+@@ -453,7 +453,7 @@ inline int find_type_by_name(const char *name, const char *type)
+ 
+ 	dp = opendir(iio_dir);
+ 	if (dp == NULL) {
+-		printf("No industrialio devices available");
++		printf("No industrialio devices available\n");
+ 		return -ENODEV;
+ 	}
+ 
 -- 
-1.7.11.1
+1.7.9.5
+
