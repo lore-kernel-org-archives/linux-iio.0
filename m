@@ -1,43 +1,22 @@
-Return-Path: <pmeerw@pmeerw.net>
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@cam.ac.uk,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 1/3] iio staging: fix potential resource leak in generic_buffer
-Date: Mon, 25 Jun 2012 23:13:24 +0200
-Message-Id: <1340658806-5609-1-git-send-email-pmeerw@pmeerw.net>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49217 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754716Ab2F3MlO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jun 2012 08:41:14 -0400
+Message-ID: <4FEEF3E9.6000403@kernel.org>
+Date: Sat, 30 Jun 2012 13:41:13 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio staging: fix potential resource leak in generic_buffer
+References: <1340658806-5609-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1340658806-5609-1-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
----
- drivers/staging/iio/Documentation/iio_utils.h |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+On 06/25/2012 10:13 PM, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+All add to fixes-togreg and pull request sent. Thanks.
 
-diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
-index c0448b3..9241288 100644
---- a/drivers/staging/iio/Documentation/iio_utils.h
-+++ b/drivers/staging/iio/Documentation/iio_utils.h
-@@ -158,7 +158,8 @@ inline int iioutils_get_type(unsigned *is_signed,
- 				     &padint, shift);
- 			if (ret < 0) {
- 				printf("failed to pass scan type description\n");
--				return ret;
-+				ret = -errno;
-+				goto error_close_sysfsfp;
- 			}
- 			*be = (endianchar == 'b');
- 			*bytes = padint / 8;
-@@ -174,7 +175,11 @@ inline int iioutils_get_type(unsigned *is_signed,
- 			free(filename);
- 
- 			filename = 0;
-+			sysfsfp = 0;
- 		}
-+error_close_sysfsfp:
-+	if (sysfsfp)
-+		fclose(sysfsfp);
- error_free_filename:
- 	if (filename)
- 		free(filename);
--- 
-1.7.9.5
