@@ -1,130 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-137.synserver.de ([212.40.185.137]:1094 "EHLO
+Received: from smtp-out-137.synserver.de ([212.40.185.137]:1129 "EHLO
 	smtp-out-134.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752262Ab2GBMkz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jul 2012 08:40:55 -0400
+	by vger.kernel.org with ESMTP id S1752467Ab2GBMk4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jul 2012 08:40:56 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/5] iio: Add callback to check whether a scan mask is valid
-Date: Mon,  2 Jul 2012 14:44:39 +0200
-Message-Id: <1341233083-8765-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH 5/5] staging:iio:ade7758: Use iio_validate_scan_mask_onehot
+Date: Mon,  2 Jul 2012 14:44:43 +0200
+Message-Id: <1341233083-8765-5-git-send-email-lars@metafoo.de>
+In-Reply-To: <1341233083-8765-1-git-send-email-lars@metafoo.de>
+References: <1341233083-8765-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This is useful for cases where the number of valid scan masks grows
-exponentially, but it is rather easy to check whether a mask is valid or not
-programmatically.
-
-An example of such a case is a device with multiple ADCs where each ADC has a
-upstream MUX, which allows to select from a number of physical channels.
-
-  +-------+   +-------+
-  |       |   |       | --- Channel 1
-  | ADC 1 |---| MUX 1 | ---   ...
-  |       |   |       | --- Channel M
-  +-------+   +-------+
-
-     .            .            .
-     .            .            .
-     .            .            .
-
-  +-------+   +-------+
-  |       |   |       | --- Channel M * N + 1
-  | ADC N |---| MUX N | ---       ...
-  |       |   |       | --- Channel M * N + M
-  +-------+   +-------+
-
-The number of necessary scan masks for this case is (M+1)**N - 1, on the other
-hand it is easy to check whether the subsets for each ADC of the scanmask have
-only one bit set.
+Only one of the channels of the ade7758 may be sampled at a time. Use the new
+validate_scan_mask callback and the iio_validate_scan_mask_onehot function to
+implement this restriction. Previously this was implemented using
+available_scan_masks, but this requires a individual scan mask for each channel.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/industrialio-buffer.c |   27 ++++++++++++++++++++-------
- include/linux/iio/iio.h           |    4 ++++
- 2 files changed, 24 insertions(+), 7 deletions(-)
+ drivers/staging/iio/meter/ade7758.h      |    1 -
+ drivers/staging/iio/meter/ade7758_core.c |    7 +------
+ drivers/staging/iio/meter/ade7758_ring.c |    1 +
+ 3 files changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 3d8d187..cc5db36 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -570,6 +570,15 @@ int iio_sw_buffer_preenable(struct iio_dev *indio_dev)
- }
- EXPORT_SYMBOL(iio_sw_buffer_preenable);
+diff --git a/drivers/staging/iio/meter/ade7758.h b/drivers/staging/iio/meter/ade7758.h
+index bdd1b05..ec202b4 100644
+--- a/drivers/staging/iio/meter/ade7758.h
++++ b/drivers/staging/iio/meter/ade7758.h
+@@ -122,7 +122,6 @@ struct ade7758_state {
+ 	u8			*tx;
+ 	u8			*rx;
+ 	struct mutex		buf_lock;
+-	unsigned long		available_scan_masks[AD7758_NUM_WAVESRC];
+ 	struct iio_chan_spec	*ade7758_ring_channels;
+ 	struct spi_transfer	ring_xfer[4];
+ 	struct spi_message	ring_msg;
+diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
+index 96d6114..7014a00 100644
+--- a/drivers/staging/iio/meter/ade7758_core.c
++++ b/drivers/staging/iio/meter/ade7758_core.c
+@@ -883,7 +883,7 @@ static const struct iio_info ade7758_info = {
  
-+static bool iio_validate_scan_mask(struct iio_dev *indio_dev,
-+	const unsigned long *mask)
-+{
-+	if (!indio_dev->setup_ops->validate_scan_mask)
-+		return true;
-+
-+	return indio_dev->setup_ops->validate_scan_mask(indio_dev, mask);
-+}
-+
- /**
-  * iio_scan_mask_set() - set particular bit in the scan mask
-  * @buffer: the buffer whose scan mask we are interested in
-@@ -589,27 +598,31 @@ int iio_scan_mask_set(struct iio_dev *indio_dev,
- 		return -ENOMEM;
- 	if (!indio_dev->masklength) {
- 		WARN_ON("trying to set scanmask prior to registering buffer\n");
--		kfree(trialmask);
--		return -EINVAL;
-+		goto err_invalid_mask;
- 	}
- 	bitmap_copy(trialmask, buffer->scan_mask, indio_dev->masklength);
- 	set_bit(bit, trialmask);
+ static int __devinit ade7758_probe(struct spi_device *spi)
+ {
+-	int i, ret;
++	int ret;
+ 	struct ade7758_state *st;
+ 	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
  
-+	if (!iio_validate_scan_mask(indio_dev, trialmask))
-+		goto err_invalid_mask;
-+
- 	if (indio_dev->available_scan_masks) {
- 		mask = iio_scan_mask_match(indio_dev->available_scan_masks,
- 					   indio_dev->masklength,
- 					   trialmask);
--		if (!mask) {
--			kfree(trialmask);
--			return -EINVAL;
--		}
-+		if (!mask)
-+			goto err_invalid_mask;
- 	}
- 	bitmap_copy(buffer->scan_mask, trialmask, indio_dev->masklength);
+@@ -916,11 +916,6 @@ static int __devinit ade7758_probe(struct spi_device *spi)
+ 	indio_dev->info = &ade7758_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
  
- 	kfree(trialmask);
- 
- 	return 0;
--};
-+
-+err_invalid_mask:
-+	kfree(trialmask);
-+	return -EINVAL;
-+}
- EXPORT_SYMBOL_GPL(iio_scan_mask_set);
- 
- int iio_scan_mask_query(struct iio_dev *indio_dev,
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 2afbb6f..be82936 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -363,12 +363,16 @@ struct iio_info {
-  * @predisable:		[DRIVER] function to run prior to marking buffer
-  *			disabled
-  * @postdisable:	[DRIVER] function to run after marking buffer disabled
-+ * @validate_scan_mask: [DRIVER] function callback to check whether a given
-+ *			scan mask is valid for the device.
-  */
- struct iio_buffer_setup_ops {
- 	int				(*preenable)(struct iio_dev *);
- 	int				(*postenable)(struct iio_dev *);
- 	int				(*predisable)(struct iio_dev *);
- 	int				(*postdisable)(struct iio_dev *);
-+	bool (*validate_scan_mask)(struct iio_dev *indio_dev,
-+				   const unsigned long *scan_mask);
+-	for (i = 0; i < AD7758_NUM_WAVESRC; i++)
+-		set_bit(i, &st->available_scan_masks[i]);
+-
+-	indio_dev->available_scan_masks = st->available_scan_masks;
+-
+ 	ret = ade7758_configure_ring(indio_dev);
+ 	if (ret)
+ 		goto error_free_tx;
+diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+index 92159f2..1ce10b2 100644
+--- a/drivers/staging/iio/meter/ade7758_ring.c
++++ b/drivers/staging/iio/meter/ade7758_ring.c
+@@ -114,6 +114,7 @@ static const struct iio_buffer_setup_ops ade7758_ring_setup_ops = {
+ 	.preenable = &ade7758_ring_preenable,
+ 	.postenable = &iio_triggered_buffer_postenable,
+ 	.predisable = &iio_triggered_buffer_predisable,
++	.validate_scan_mask = &iio_validate_scan_mask_onehot,
  };
  
- /**
+ void ade7758_unconfigure_ring(struct iio_dev *indio_dev)
 -- 
 1.7.10
 
