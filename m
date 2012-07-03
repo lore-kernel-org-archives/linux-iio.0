@@ -1,52 +1,48 @@
-Return-Path: <wd@denx.de>
-To: Marek Vasut <marex@denx.de>
-cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-    Jonathan Cameron <jic23@kernel.org>,
-    Juergen Beisert <jbe@pengutronix.de>
-From: Wolfgang Denk <wd@denx.de>
-Subject: Re: [PATCH] IIO: Add basic MXS LRADC driver
-MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-In-reply-to: <1341368129-20468-1-git-send-email-marex@denx.de>
-References: <1341368129-20468-1-git-send-email-marex@denx.de>
-Date: Wed, 04 Jul 2012 06:30:02 +0200
-Message-Id: <20120704043002.F0AF4202270@gemini.denx.de>
+Return-Path: <sha@pengutronix.de>
+From: Sascha Hauer <s.hauer@pengutronix.de>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	Sonic Zhang <sonic.zhang@analog.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH] stagin iio adt7410: use local platformdata if none is specified
+Date: Tue,  3 Jul 2012 11:27:53 +0200
+Message-Id: <1341307673-7936-1-git-send-email-s.hauer@pengutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Dear Marek,
+The adt7410 expects information about an irq in platform_data.
+The driver can work without an irq, so make platform_data optional
+by specifying a dummy platform_data if the device has none.
 
-In message <1341368129-20468-1-git-send-email-marex@denx.de> you wrote:
-> This driver is very basic. It supports userland trigger, buffer and
-> raw access to channels. The support for delay channels is missing
-> altogether.
-...
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+---
 
-> +#define	LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
-> +#define	LRADC_CH_NUM_SAMPLES_OFFSET		24
+This should have been part of the other series for the adt7410 I just sent,
+but I overlooked this patch.
 
-	#define LRADC_CH_NUM_SAMPLES_OFFSET	24
-	#define	LRADC_CH_NUM_SAMPLES_MASK	(0x1f << LRADC_CH_NUM_SAMPLES_OFFSET)
+ drivers/staging/iio/adc/adt7410.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-> +#define	LRADC_DELAY_TRIGGER_LRADCS_MASK		(0xff << 24)
-> +#define	LRADC_DELAY_TRIGGER_LRADCS_OFFSET	24
-
-Ditto.
-
-> +#define	LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
-> +#define	LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
-> +#define	LRADC_DELAY_LOOP_COUNT_MASK		(0x1f << 11)
-> +#define	LRADC_DELAY_LOOP_COUNT_OFFSET		11
-
-Ditto.
-
-Please use the symbolic names you define.
-
-Best regards,
-
-Wolfgang Denk
-
+diff --git a/drivers/staging/iio/adc/adt7410.c b/drivers/staging/iio/adc/adt7410.c
+index 917b692..d7d9ad9 100644
+--- a/drivers/staging/iio/adc/adt7410.c
++++ b/drivers/staging/iio/adc/adt7410.c
+@@ -720,6 +720,7 @@ static int __devinit adt7410_probe(struct i2c_client *client,
+ 	struct iio_dev *indio_dev;
+ 	int ret = 0;
+ 	unsigned long *adt7410_platform_data = client->dev.platform_data;
++	unsigned long local_pdata[] = {0, 0};
+ 
+ 	indio_dev = iio_device_alloc(sizeof(*chip));
+ 	if (indio_dev == NULL) {
+@@ -737,6 +738,9 @@ static int __devinit adt7410_probe(struct i2c_client *client,
+ 	indio_dev->info = &adt7410_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
++	if (!adt7410_platform_data)
++		adt7410_platform_data = local_pdata;
++
+ 	/* CT critcal temperature event. line 0 */
+ 	if (client->irq) {
+ 		ret = request_threaded_irq(client->irq,
 -- 
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-The speed of time is one second per second.
+1.7.10
