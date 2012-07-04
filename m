@@ -1,48 +1,68 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FF85A07.3030704@kernel.org>
-Date: Sat, 07 Jul 2012 16:47:19 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 01/11] staging:iio:ad7298: Do not return error code in
- interrupt handler
-References: <1341418173-3217-1-git-send-email-lars@metafoo.de>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 11/11] staging:iio:adis16400: Do not return error code in the interrupt handler
+Date: Wed,  4 Jul 2012 18:09:33 +0200
+Message-Id: <1341418173-3217-11-git-send-email-lars@metafoo.de>
 In-Reply-To: <1341418173-3217-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <1341418173-3217-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/04/2012 05:09 PM, Lars-Peter Clausen wrote:
-> The interrupt handler should only ever return one of the three irqreturn_t
-> constants and not an error code. Also make sure to always call
-> iio_trigger_notify_done before leaving the trigger handler.
-> 
-merged all. Thanks.
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  drivers/staging/iio/adc/ad7298_ring.c |    4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
-> index cd3e9cb..fd1d855 100644
-> --- a/drivers/staging/iio/adc/ad7298_ring.c
-> +++ b/drivers/staging/iio/adc/ad7298_ring.c
-> @@ -82,7 +82,7 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
->  
->  	b_sent = spi_sync(st->spi, &st->ring_msg);
->  	if (b_sent)
-> -		return b_sent;
-> +		goto done;
->  
->  	if (indio_dev->scan_timestamp) {
->  		time_ns = iio_get_time_ns();
-> @@ -95,6 +95,8 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
->  		buf[i] = be16_to_cpu(st->rx_buf[i]);
->  
->  	indio_dev->buffer->access->store_to(ring, (u8 *)buf, time_ns);
-> +
-> +done:
->  	iio_trigger_notify_done(indio_dev->trig);
->  
->  	return IRQ_HANDLED;
-> 
+The interrupt handler should only ever return one of the three irqreturn_t
+constants and not an error code. Also make sure to always call
+iio_trigger_notify_done before leaving the trigger handler.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/imu/adis16400_ring.c |   13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
+index 809e2c4..beec650 100644
+--- a/drivers/staging/iio/imu/adis16400_ring.c
++++ b/drivers/staging/iio/imu/adis16400_ring.c
+@@ -125,20 +125,20 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
+ 	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+ 	if (data == NULL) {
+ 		dev_err(&st->us->dev, "memory alloc failed in ring bh");
+-		return -ENOMEM;
++		goto done;
+ 	}
+ 
+ 	if (scan_count) {
+ 		if (st->variant->flags & ADIS16400_NO_BURST) {
+ 			ret = adis16350_spi_read_all(indio_dev, st->rx);
+ 			if (ret < 0)
+-				goto err;
++				goto done;
+ 			for (; i < scan_count; i++)
+ 				data[i]	= *(s16 *)(st->rx + i*2);
+ 		} else {
+ 			ret = adis16400_spi_read_burst(indio_dev, st->rx);
+ 			if (ret < 0)
+-				goto err;
++				goto done;
+ 			for (; i < scan_count; i++) {
+ 				j = __ffs(mask);
+ 				mask &= ~(1 << j);
+@@ -152,14 +152,11 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
+ 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
+ 	ring->access->store_to(indio_dev->buffer, (u8 *) data, pf->timestamp);
+ 
++done:
++	kfree(data);
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+-	kfree(data);
+ 	return IRQ_HANDLED;
+-
+-err:
+-	kfree(data);
+-	return ret;
+ }
+ 
+ void adis16400_unconfigure_ring(struct iio_dev *indio_dev)
+-- 
+1.7.10
