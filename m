@@ -3,9 +3,9 @@ From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 11/11] staging:iio:adis16400: Do not return error code in the interrupt handler
-Date: Wed,  4 Jul 2012 18:09:33 +0200
-Message-Id: <1341418173-3217-11-git-send-email-lars@metafoo.de>
+Subject: [PATCH 10/11] staging:iio:adis16260: Do not return error code in the interrupt handler
+Date: Wed,  4 Jul 2012 18:09:32 +0200
+Message-Id: <1341418173-3217-10-git-send-email-lars@metafoo.de>
 In-Reply-To: <1341418173-3217-1-git-send-email-lars@metafoo.de>
 References: <1341418173-3217-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
@@ -16,14 +16,14 @@ iio_trigger_notify_done before leaving the trigger handler.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/imu/adis16400_ring.c |   13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ drivers/staging/iio/gyro/adis16260_ring.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
-index 809e2c4..beec650 100644
---- a/drivers/staging/iio/imu/adis16400_ring.c
-+++ b/drivers/staging/iio/imu/adis16400_ring.c
-@@ -125,20 +125,20 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
+diff --git a/drivers/staging/iio/gyro/adis16260_ring.c b/drivers/staging/iio/gyro/adis16260_ring.c
+index 0fe2d9d..eeee8e7 100644
+--- a/drivers/staging/iio/gyro/adis16260_ring.c
++++ b/drivers/staging/iio/gyro/adis16260_ring.c
+@@ -69,7 +69,7 @@ static irqreturn_t adis16260_trigger_handler(int irq, void *p)
  	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
  	if (data == NULL) {
  		dev_err(&st->us->dev, "memory alloc failed in ring bh");
@@ -31,38 +31,17 @@ index 809e2c4..beec650 100644
 +		goto done;
  	}
  
- 	if (scan_count) {
- 		if (st->variant->flags & ADIS16400_NO_BURST) {
- 			ret = adis16350_spi_read_all(indio_dev, st->rx);
- 			if (ret < 0)
--				goto err;
-+				goto done;
- 			for (; i < scan_count; i++)
- 				data[i]	= *(s16 *)(st->rx + i*2);
- 		} else {
- 			ret = adis16400_spi_read_burst(indio_dev, st->rx);
- 			if (ret < 0)
--				goto err;
-+				goto done;
- 			for (; i < scan_count; i++) {
- 				j = __ffs(mask);
- 				mask &= ~(1 << j);
-@@ -152,14 +152,11 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
- 		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
- 	ring->access->store_to(indio_dev->buffer, (u8 *) data, pf->timestamp);
+ 	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength) &&
+@@ -84,8 +84,9 @@ static irqreturn_t adis16260_trigger_handler(int irq, void *p)
  
+ 	ring->access->store_to(ring, (u8 *)data, pf->timestamp);
+ 
+-	iio_trigger_notify_done(indio_dev->trig);
+ 	kfree(data);
 +done:
-+	kfree(data);
- 	iio_trigger_notify_done(indio_dev->trig);
++	iio_trigger_notify_done(indio_dev->trig);
  
--	kfree(data);
  	return IRQ_HANDLED;
--
--err:
--	kfree(data);
--	return ret;
  }
- 
- void adis16400_unconfigure_ring(struct iio_dev *indio_dev)
 -- 
 1.7.10
