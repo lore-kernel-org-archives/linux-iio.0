@@ -6,61 +6,61 @@ Cc: linux-input@vger.kernel.org,
 	lars@metafoo.de,
 	jic23@cam.ac.uk,
 	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 6/8] HID-Sensors: Added Gyroscope 3D
-Date: Wed,  4 Jul 2012 12:52:10 -0700
-Message-Id: <1341431532-15060-7-git-send-email-srinivas.pandruvada@intel.com>
+Subject: [PATCH 5/8] HID-Sensors: Added accelerometer 3D
+Date: Wed,  4 Jul 2012 12:52:09 -0700
+Message-Id: <1341431532-15060-6-git-send-email-srinivas.pandruvada@intel.com>
 In-Reply-To: <1341431532-15060-1-git-send-email-srinivas.pandruvada@intel.com>
 References: <1341431532-15060-1-git-send-email-srinivas.pandruvada@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Added usage id processing for Gyroscope 3D. This uses IIO
+Added usage id processing for Accelerometer 3D.This uses IIO
 interfaces for triggerred buffer to present data to user
 mode.This uses HID sensor framework for registering callback
 events from the sensor hub.
 
 Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 ---
- drivers/staging/iio/gyro/Kconfig              |   10 +
- drivers/staging/iio/gyro/Makefile             |    3 +
- drivers/staging/iio/gyro/hid-sensor-gyro-3d.c |  451 +++++++++++++++++++++++++
+ drivers/staging/iio/accel/Kconfig               |   10 +
+ drivers/staging/iio/accel/Makefile              |    3 +
+ drivers/staging/iio/accel/hid-sensor-accel-3d.c |  451 +++++++++++++++++++++++
  3 files changed, 464 insertions(+), 0 deletions(-)
- create mode 100644 drivers/staging/iio/gyro/hid-sensor-gyro-3d.c
+ create mode 100644 drivers/staging/iio/accel/hid-sensor-accel-3d.c
 
-diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
-index ea295b2..a02e7dc 100644
---- a/drivers/staging/iio/gyro/Kconfig
-+++ b/drivers/staging/iio/gyro/Kconfig
-@@ -46,4 +46,14 @@ config ADXRS450
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called adxrs450.
+diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
+index 5ab7167..6ab1efa 100644
+--- a/drivers/staging/iio/accel/Kconfig
++++ b/drivers/staging/iio/accel/Kconfig
+@@ -102,4 +102,14 @@ config SCA3000
+ 	  Say yes here to build support for the VTI SCA3000 series of SPI
+ 	  accelerometers. These devices use a hardware ring buffer.
  
-+config HID_SENSOR_GYRO_3D
++config HID_SENSOR_ACCEL_3D
 +	depends on HID_SENSOR_HUB
 +	select IIO_BUFFER
 +	select IIO_TRIGGERED_BUFFER
 +	select HID_SENSOR_IIO_COMMON
-+	tristate "HID Gyroscope 3D"
++	tristate "HID Acelerometers 3D"
 +	help
 +	  Say yes here to build support for the HID SENSOR
-+	  Gyroscope 3G.
++	  accelerometers 3G.
 +
  endmenu
-diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
-index 9ba5ec1..9d30039 100644
---- a/drivers/staging/iio/gyro/Makefile
-+++ b/drivers/staging/iio/gyro/Makefile
-@@ -20,3 +20,6 @@ obj-$(CONFIG_ADIS16251) += adis16251.o
+diff --git a/drivers/staging/iio/accel/Makefile b/drivers/staging/iio/accel/Makefile
+index 95c6666..2ae9865 100644
+--- a/drivers/staging/iio/accel/Makefile
++++ b/drivers/staging/iio/accel/Makefile
+@@ -33,3 +33,6 @@ obj-$(CONFIG_LIS3L02DQ)	+= lis3l02dq.o
  
- adxrs450-y             := adxrs450_core.o
- obj-$(CONFIG_ADXRS450) += adxrs450.o
+ sca3000-y		:= sca3000_core.o sca3000_ring.o
+ obj-$(CONFIG_SCA3000)	+= sca3000.o
 +
-+hid-sensor-gyro-3d-drv-y := hid-sensor-gyro-3d.o
-+obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d-drv.o
-diff --git a/drivers/staging/iio/gyro/hid-sensor-gyro-3d.c b/drivers/staging/iio/gyro/hid-sensor-gyro-3d.c
++hid-sensor-accel-3d-drv-y := hid-sensor-accel-3d.o
++obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d-drv.o
+diff --git a/drivers/staging/iio/accel/hid-sensor-accel-3d.c b/drivers/staging/iio/accel/hid-sensor-accel-3d.c
 new file mode 100644
-index 0000000..c5bd126
+index 0000000..1ee65ce
 --- /dev/null
-+++ b/drivers/staging/iio/gyro/hid-sensor-gyro-3d.c
++++ b/drivers/staging/iio/accel/hid-sensor-accel-3d.c
 @@ -0,0 +1,451 @@
 +/*
 + * HID Sensors Driver
@@ -96,43 +96,43 @@ index 0000000..c5bd126
 +#include "../common/hid-sensors/hid-sensor-trigger.h"
 +
 +/*Format: HID-SENSOR-usage_id_in_hex*/
-+#define DRIVER_NAME "HID-SENSOR-200076"
++#define DRIVER_NAME "HID-SENSOR-200073"
 +
 +#define CHANNEL_SCAN_INDEX_X 0
 +#define CHANNEL_SCAN_INDEX_Y 1
 +#define CHANNEL_SCAN_INDEX_Z 2
 +
-+struct gyro_3d_sample {
-+	u32 gyro_x;
-+	u32 gyro_y;
-+	u32 gyro_z;
++struct accel_3d_sample {
++	u32 accel_x;
++	u32 accel_y;
++	u32 accel_z;
 +} __packed;
 +
-+struct gyro_3d_state {
-+	struct hid_sensor_hub_attribute_info gyro_x;
-+	struct hid_sensor_hub_attribute_info gyro_y;
-+	struct hid_sensor_hub_attribute_info gyro_z;
-+	struct gyro_3d_sample gyro_sample_data;
++struct accel_3d_state {
++	struct hid_sensor_hub_attribute_info accel_x;
++	struct hid_sensor_hub_attribute_info accel_y;
++	struct hid_sensor_hub_attribute_info accel_z;
++	struct accel_3d_sample accel_sample_data;
 +};
 +
 +/* Channel definitions */
-+static struct iio_chan_spec gyro_3d_channels[] = {
++static struct iio_chan_spec accel_3d_channels[] = {
 +	{
-+		.type = IIO_ANGL_VEL,
++		.type = IIO_ACCEL,
 +		.modified = 1,
 +		.channel2 = IIO_MOD_X,
 +		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
 +		IIO_CHAN_INFO_SCALE_SHARED_BIT,
 +		.scan_index = CHANNEL_SCAN_INDEX_X,
 +	}, {
-+		.type = IIO_ANGL_VEL,
++		.type = IIO_ACCEL,
 +		.modified = 1,
 +		.channel2 = IIO_MOD_Y,
 +		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
 +		IIO_CHAN_INFO_SCALE_SHARED_BIT,
 +		.scan_index = CHANNEL_SCAN_INDEX_Y,
 +	}, {
-+		.type = IIO_ANGL_VEL,
++		.type = IIO_ACCEL,
 +		.modified = 1,
 +		.channel2 = IIO_MOD_Z,
 +		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
@@ -142,22 +142,22 @@ index 0000000..c5bd126
 +};
 +
 +/* Adjust channel real bits based on report descriptor */
-+static void gyro_3d_adjust_channel_bit_mask(int channel, int size)
++static void accel_3d_adjust_channel_bit_mask(int channel, int size)
 +{
-+	gyro_3d_channels[channel].scan_type.sign = 's';
-+	gyro_3d_channels[channel].scan_type.realbits = size * 8;
-+	gyro_3d_channels[channel].scan_type.storagebits = sizeof(u32) * 8;
++	accel_3d_channels[channel].scan_type.sign = 's';
++	accel_3d_channels[channel].scan_type.realbits = size * 8;
++	accel_3d_channels[channel].scan_type.storagebits = sizeof(u32) * 8;
 +}
 +
 +/* Channel read_raw handler */
-+static int gyro_3d_read_raw(struct iio_dev *indio_dev,
++static int accel_3d_read_raw(struct iio_dev *indio_dev,
 +			      struct iio_chan_spec const *chan,
 +			      int *val, int *val2,
 +			      long mask)
 +{
 +	struct hid_sensor_attributes *st = iio_priv(indio_dev);
-+	struct gyro_3d_state *gyro_state =
-+			(struct gyro_3d_state *)st->private;
++	struct accel_3d_state *accel_state =
++			(struct accel_3d_state *)st->private;
 +	int report_id = -1;
 +	u32 address;
 +
@@ -167,19 +167,19 @@ index 0000000..c5bd126
 +	case 0:
 +		switch (chan->scan_index) {
 +		case  CHANNEL_SCAN_INDEX_X:
-+			report_id = gyro_state->gyro_x.report_id;
++			report_id = accel_state->accel_x.report_id;
 +			address =
-+			HID_USAGE_SENSOR_DATA_MOTION_ANGULAR_VELOCITY_X_AXIS;
++			HID_USAGE_SENSOR_DATA_MOTION_ACCELERATION_X_AXIS;
 +			break;
 +		case  CHANNEL_SCAN_INDEX_Y:
-+			report_id = gyro_state->gyro_y.report_id;
++			report_id = accel_state->accel_y.report_id;
 +			address =
-+			HID_USAGE_SENSOR_DATA_MOTION_ANGULAR_VELOCITY_Y_AXIS;
++			HID_USAGE_SENSOR_DATA_MOTION_ACCELERATION_Y_AXIS;
 +			break;
 +		case  CHANNEL_SCAN_INDEX_Z:
-+			report_id = gyro_state->gyro_z.report_id;
++			report_id = accel_state->accel_z.report_id;
 +			address =
-+			HID_USAGE_SENSOR_DATA_MOTION_ANGULAR_VELOCITY_Z_AXIS;
++			HID_USAGE_SENSOR_DATA_MOTION_ACCELERATION_Z_AXIS;
 +			break;
 +		default:
 +			report_id = -1;
@@ -188,16 +188,16 @@ index 0000000..c5bd126
 +		if (report_id >= 0)
 +			*val = sensor_hub_input_attr_get_raw_value(
 +				st->hsdev,
-+				HID_USAGE_SENSOR_GYRO_3D, address,
++				HID_USAGE_SENSOR_ACCEL_3D, address,
 +				report_id);
 +		else
 +			*val = 0;
 +		break;
 +	case IIO_CHAN_INFO_SCALE:
-+		*val = gyro_state->gyro_x.units;
++		*val = accel_state->accel_x.units;
 +		break;
 +	case IIO_CHAN_INFO_OFFSET:
-+		*val = gyro_state->gyro_x.unit_expo;
++		*val = accel_state->accel_x.unit_expo;
 +		break;
 +	default:
 +		break;
@@ -215,21 +215,21 @@ index 0000000..c5bd126
 +			hid_sensor_read_hyst_raw,
 +			hid_sensor_write_hyst_raw);
 +
-+static struct attribute *gyro_3d_attributes[] = {
++static struct attribute *accel_3d_attributes[] = {
 +	/* common attributes */
 +	&iio_dev_attr_sampling_frequency.dev_attr.attr,
 +	&iio_dev_attr_hyst_raw.dev_attr.attr,
 +	NULL,
 +};
 +
-+static const struct attribute_group gyro_3d_attribute_group = {
-+	.attrs = gyro_3d_attributes,
++static const struct attribute_group accel_3d_attribute_group = {
++	.attrs = accel_3d_attributes,
 +};
 +
-+static const struct iio_info gyro_3d_info = {
-+	.attrs = &gyro_3d_attribute_group,
++static const struct iio_info accel_3d_info = {
++	.attrs = &accel_3d_attribute_group,
 +	.driver_module = THIS_MODULE,
-+	.read_raw = &gyro_3d_read_raw,
++	.read_raw = &accel_3d_read_raw,
 +};
 +
 +/* Function to push data to buffer */
@@ -254,25 +254,25 @@ index 0000000..c5bd126
 +}
 +
 +/* Callback handler to send event after all samples are received and captured */
-+int gyro_3d_proc_event(struct hid_sensor_hub_device *hsdev, unsigned usage_id,
++int accel_3d_proc_event(struct hid_sensor_hub_device *hsdev, unsigned usage_id,
 +			void *priv)
 +{
 +	struct iio_dev *indio_dev =
 +				(struct iio_dev *)platform_get_drvdata(priv);
 +	struct hid_sensor_attributes *st = iio_priv(indio_dev);
-+	struct gyro_3d_state *gyro_state =
-+			(struct gyro_3d_state *)st->private;
++	struct accel_3d_state *accel_state =
++			(struct accel_3d_state *)st->private;
 +
-+	dev_dbg(&indio_dev->dev, "gyro_3d_proc_event [%d]\n", st->data_ready);
++	dev_dbg(&indio_dev->dev, "accel_3d_proc_event [%d]\n", st->data_ready);
 +	if (st->data_ready)
 +		hid_sensor_push_data(indio_dev,
-+				(u8 *)&gyro_state->gyro_sample_data,
-+				sizeof(struct gyro_3d_sample));
++				(u8 *)&accel_state->accel_sample_data,
++				sizeof(struct accel_3d_sample));
 +	return 0;
 +}
 +
 +/* Capture samples in local storage */
-+int gyro_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
++int accel_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
 +				unsigned usage_id,
 +				size_t raw_len, char *raw_data,
 +				void *priv)
@@ -280,20 +280,20 @@ index 0000000..c5bd126
 +	struct iio_dev *indio_dev =
 +			(struct iio_dev *)platform_get_drvdata(priv);
 +	struct hid_sensor_attributes *st = iio_priv(indio_dev);
-+	struct gyro_3d_state *gyro_state =
-+			(struct gyro_3d_state *)st->private;
++	struct accel_3d_state *accel_state =
++			(struct accel_3d_state *)st->private;
 +
 +	switch (usage_id) {
-+	case HID_USAGE_SENSOR_DATA_MOTION_ANGULAR_VELOCITY_X_AXIS:
-+		gyro_state->gyro_sample_data.gyro_x =
++	case HID_USAGE_SENSOR_DATA_MOTION_ACCELERATION_X_AXIS:
++		accel_state->accel_sample_data.accel_x =
 +		*(u32 *)raw_data;
 +		break;
-+	case HID_USAGE_SENSOR_DATA_MOTION_ANGULAR_VELOCITY_Y_AXIS:
-+		gyro_state->gyro_sample_data.gyro_y =
++	case HID_USAGE_SENSOR_DATA_MOTION_ACCELERATION_Y_AXIS:
++		accel_state->accel_sample_data.accel_y =
 +		*(u32 *)raw_data;
 +		break;
-+	case HID_USAGE_SENSOR_DATA_MOTION_ANGULAR_VELOCITY_Z_AXIS:
-+		gyro_state->gyro_sample_data.gyro_z =
++	case HID_USAGE_SENSOR_DATA_MOTION_ACCELERATION_Z_AXIS:
++		accel_state->accel_sample_data.accel_z =
 +		*(u32 *)raw_data;
 +		break;
 +	default:
@@ -303,56 +303,56 @@ index 0000000..c5bd126
 +}
 +
 +/* Parse report which is specific to an usage id*/
-+static int gyro_3d_parse_report(struct platform_device *pdev,
++static int accel_3d_parse_report(struct platform_device *pdev,
 +				struct hid_sensor_hub_device *hsdev,
 +				unsigned usage_id,
-+				struct gyro_3d_state *st)
++				struct accel_3d_state *st)
 +{
 +	int ret;
 +
 +	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
 +			usage_id,
-+			HID_USAGE_SENSOR_DATA_MOTION_ANGULAR_VELOCITY_X_AXIS,
-+			&st->gyro_x);
-+	gyro_3d_adjust_channel_bit_mask(CHANNEL_SCAN_INDEX_X,
-+					st->gyro_x.size);
++			HID_USAGE_SENSOR_DATA_MOTION_ACCELERATION_X_AXIS,
++			&st->accel_x);
++	accel_3d_adjust_channel_bit_mask(CHANNEL_SCAN_INDEX_X,
++					st->accel_x.size);
 +
 +	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
 +			usage_id,
-+			HID_USAGE_SENSOR_DATA_MOTION_ANGULAR_VELOCITY_Y_AXIS,
-+			&st->gyro_y);
-+	gyro_3d_adjust_channel_bit_mask(CHANNEL_SCAN_INDEX_Y,
-+					st->gyro_y.size);
++			HID_USAGE_SENSOR_DATA_MOTION_ACCELERATION_Y_AXIS,
++			&st->accel_y);
++	accel_3d_adjust_channel_bit_mask(CHANNEL_SCAN_INDEX_Y,
++					st->accel_y.size);
 +
 +	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
 +			usage_id,
-+			HID_USAGE_SENSOR_DATA_MOTION_ANGULAR_VELOCITY_Z_AXIS,
-+			&st->gyro_z);
-+	gyro_3d_adjust_channel_bit_mask(CHANNEL_SCAN_INDEX_Z,
-+					st->gyro_z.size);
++			HID_USAGE_SENSOR_DATA_MOTION_ACCELERATION_Z_AXIS,
++			&st->accel_z);
++	accel_3d_adjust_channel_bit_mask(CHANNEL_SCAN_INDEX_Z,
++					st->accel_z.size);
 +
-+	dev_dbg(&pdev->dev, "gyro_3d %x:%x, %x:%x, %x:%x\n",
-+			st->gyro_x.index,
-+			st->gyro_x.report_id,
-+			st->gyro_y.index, st->gyro_y.report_id,
-+			st->gyro_z.index, st->gyro_z.report_id);
++	dev_dbg(&pdev->dev, "accel_3d %x:%x, %x:%x, %x:%x\n",
++			st->accel_x.index,
++			st->accel_x.report_id,
++			st->accel_y.index, st->accel_y.report_id,
++			st->accel_z.index, st->accel_z.report_id);
 +
 +	return 0;
 +}
 +
 +/* Function to initialize the processing for usage id */
-+static int gyro_3d_init(struct platform_device *pdev,
++static int accel_3d_init(struct platform_device *pdev,
 +			struct hid_sensor_hub_device *hsdev,
 +			unsigned usage_id)
 +{
 +	int ret = 0;
-+	static char *name = "gyro_3d";
++	static char *name = "accel_3d";
 +	struct iio_dev *indio_dev;
-+	struct gyro_3d_state *gyro_state;
++	struct accel_3d_state *accel_state;
 +	struct hid_sensor_attributes *st;
 +
-+	gyro_state = kzalloc(sizeof(struct gyro_3d_state), GFP_KERNEL);
-+	if (gyro_state == NULL) {
++	accel_state = kzalloc(sizeof(struct accel_3d_state), GFP_KERNEL);
++	if (accel_state == NULL) {
 +		ret = -ENOMEM;
 +		goto error_ret;
 +	}
@@ -366,7 +366,7 @@ index 0000000..c5bd126
 +	st = iio_priv(indio_dev);
 +	st->hsdev = hsdev;
 +	st->pdev = pdev;
-+	st->private = (void *)gyro_state;
++	st->private = (void *)accel_state;
 +
 +	ret = hid_sensor_parse_common_attributes(hsdev, usage_id, st);
 +	if (ret) {
@@ -374,14 +374,14 @@ index 0000000..c5bd126
 +		goto error_free_dev;
 +	}
 +
-+	ret = gyro_3d_parse_report(pdev, hsdev, usage_id, gyro_state);
++	ret = accel_3d_parse_report(pdev, hsdev, usage_id, accel_state);
 +	if (ret) {
 +		dev_err(&pdev->dev, "failed to setup attributes\n");
 +		goto error_free_dev;
 +	}
 +
-+	indio_dev->channels = kmemdup(gyro_3d_channels,
-+					sizeof(gyro_3d_channels),
++	indio_dev->channels = kmemdup(accel_3d_channels,
++					sizeof(accel_3d_channels),
 +					GFP_KERNEL);
 +	if (!indio_dev->channels) {
 +		dev_err(&pdev->dev, "failed to duplicate channels\n");
@@ -389,9 +389,9 @@ index 0000000..c5bd126
 +	}
 +
 +	indio_dev->num_channels =
-+				ARRAY_SIZE(gyro_3d_channels);
++				ARRAY_SIZE(accel_3d_channels);
 +	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &gyro_3d_info;
++	indio_dev->info = &accel_3d_info;
 +	indio_dev->name = name;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
 +
@@ -430,87 +430,87 @@ index 0000000..c5bd126
 +error_free_dev:
 +	iio_device_free(indio_dev);
 +error_free_state:
-+	kfree(gyro_state);
++	kfree(accel_state);
 +error_ret:
 +	return ret;
 +}
 +
 +/* Function to deinitialize the processing for usage id */
-+static int gyro_3d_exit(struct platform_device *pdev)
++static int accel_3d_exit(struct platform_device *pdev)
 +{
 +	int ret = 0;
 +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 +	struct hid_sensor_attributes *st = iio_priv(indio_dev);
-+	struct gyro_3d_state *gyro_state =
-+			(struct gyro_3d_state *)st->private;
++	struct accel_3d_state *accel_state =
++			(struct accel_3d_state *)st->private;
 +
 +	iio_device_unregister(indio_dev);
 +	hid_sensor_remove_trigger(indio_dev);
 +	iio_triggered_buffer_cleanup(indio_dev);
 +	kfree(indio_dev->channels);
 +	iio_device_free(indio_dev);
-+	kfree(gyro_state);
++	kfree(accel_state);
 +	return ret;
 +}
 +
-+static struct hid_sensor_hub_callbacks gyro_3d_callbacks = {
-+	.send_event = gyro_3d_proc_event,
-+	.capture_sample = gyro_3d_capture_sample,
++static struct hid_sensor_hub_callbacks accel_3d_callbacks = {
++	.send_event = accel_3d_proc_event,
++	.capture_sample = accel_3d_capture_sample,
 +};
 +
-+static int __devinit hid_gyro_3d_probe(struct platform_device *pdev)
++static int __devinit hid_accel_3d_probe(struct platform_device *pdev)
 +{
 +	int ret;
 +	u32 *pdata = (u32 *)pdev->dev.platform_data;
 +	struct hid_sensor_hub_device *hsdev;
 +
 +	hsdev = (struct hid_sensor_hub_device *)*pdata;
-+	ret = gyro_3d_init(pdev, hsdev, HID_USAGE_SENSOR_GYRO_3D);
++	ret = accel_3d_init(pdev, hsdev, HID_USAGE_SENSOR_ACCEL_3D);
 +	if (ret < 0) {
-+		dev_err(&pdev->dev, "gyro_3d_init failed\n");
++		dev_err(&pdev->dev, "accel_3d_init failed\n");
 +		return ret;
 +	}
-+	gyro_3d_callbacks.pdev = pdev;
-+	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D,
-+					&gyro_3d_callbacks);
++	accel_3d_callbacks.pdev = pdev;
++	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_ACCEL_3D,
++					&accel_3d_callbacks);
 +	return 0;
 +}
 +
-+static int __devinit hid_gyro_3d_remove(struct platform_device *pdev)
++static int __devinit hid_accel_3d_remove(struct platform_device *pdev)
 +{
 +	u32 *pdata = (u32 *)pdev->dev.platform_data;
 +	struct hid_sensor_hub_device *hsdev;
 +
 +	hsdev = (struct hid_sensor_hub_device *)*pdata;
-+	gyro_3d_exit(pdev);
-+	return sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
++	accel_3d_exit(pdev);
++	return sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_ACCEL_3D);
 +}
 +
-+static struct platform_driver hid_gyro_3d_platform_driver = {
++static struct platform_driver hid_accel_3d_platform_driver = {
 +	.driver = {
 +		.name	= DRIVER_NAME,
 +		.owner	= THIS_MODULE,
 +	},
-+	.probe		= hid_gyro_3d_probe,
-+	.remove		= hid_gyro_3d_remove,
++	.probe		= hid_accel_3d_probe,
++	.remove		= hid_accel_3d_remove,
 +};
 +
 +/*--------------------------------------------------------------------------*/
 +
-+static int __init hid_gyro_3d_init(void)
++static int __init hid_accel_3d_init(void)
 +{
-+	return platform_driver_register(&hid_gyro_3d_platform_driver);
++	return platform_driver_register(&hid_accel_3d_platform_driver);
 +}
 +
-+static void __exit hid_gyro_3d_exit(void)
++static void __exit hid_accel_3d_exit(void)
 +{
-+	platform_driver_unregister(&hid_gyro_3d_platform_driver);
++	platform_driver_unregister(&hid_accel_3d_platform_driver);
 +}
 +
-+module_init(hid_gyro_3d_init);
-+module_exit(hid_gyro_3d_exit);
++module_init(hid_accel_3d_init);
++module_exit(hid_accel_3d_exit);
 +
-+MODULE_DESCRIPTION("HID Sensor Gyro 3D");
++MODULE_DESCRIPTION("HID Sensor Accel 3D");
 +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
 +MODULE_LICENSE("GPL");
 -- 
