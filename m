@@ -1,110 +1,109 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FF94B30.5070401@kernel.org>
-Date: Sun, 08 Jul 2012 09:56:16 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:trigger: Register sysfs file statically
-References: <1341478626-29167-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1341478626-29167-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <srinivas.pandruvada@intel.com>
+From: srinivas pandruvada <srinivas.pandruvada@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-input@vger.kernel.org,
+	jkosina@suse.cz,
+	lars@metafoo.de,
+	jic23@cam.ac.uk,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: [PATCH 0/8] HID-Sensor v4
+Date: Wed,  4 Jul 2012 12:52:04 -0700
+Message-Id: <1341431532-15060-1-git-send-email-srinivas.pandruvada@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/05/2012 09:57 AM, Lars-Peter Clausen wrote:
-> The name sysfs attribute is the same for all triggers, so there is no need to
-> register them dynamically at runtime. Create a attribute group for it and set it
-> up for the bus attribute group. This also avoids a possible race condition
-> where the uevent for the device is sent before the name sysfs attribute has been
-> added.
-Hmm. I thought this wouldn't work having run into problems before
-with initializing sysfs groups twice. Afterall we poke the same group in
-via the groups bit of device when creating these.  It appears this
-particular combination is fine though as it doesn't have to create a
-directory (which is where issues otherwise occur).  Nice clean up.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-merged.
-> ---
->  drivers/iio/industrialio-trigger.c |   38 ++++++++++++------------------------
->  1 file changed, 13 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index ec653fb..24ed31f 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -51,25 +51,19 @@ static ssize_t iio_trigger_read_name(struct device *dev,
->  
->  static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
->  
-> -/**
-> - * iio_trigger_register_sysfs() - create a device for this trigger
-> - * @trig_info:	the trigger
-> - *
-> - * Also adds any control attribute registered by the trigger driver
-> - **/
-> -static int iio_trigger_register_sysfs(struct iio_trigger *trig_info)
-> -{
-> -	return sysfs_add_file_to_group(&trig_info->dev.kobj,
-> -				       &dev_attr_name.attr,
-> -				       NULL);
-> -}
-> +static struct attribute *iio_trig_dev_attrs[] = {
-> +	&dev_attr_name.attr,
-> +	NULL,
-> +};
->  
-> -static void iio_trigger_unregister_sysfs(struct iio_trigger *trig_info)
-> -{
-> -	sysfs_remove_file_from_group(&trig_info->dev.kobj,
-> -					   &dev_attr_name.attr,
-> -					   NULL);
-> -}
-> +static struct attribute_group iio_trig_attr_group = {
-> +	.attrs	= iio_trig_dev_attrs,
-> +};
-> +
-> +static const struct attribute_group *iio_trig_attr_groups[] = {
-> +	&iio_trig_attr_group,
-> +	NULL
-> +};
->  
->  int iio_trigger_register(struct iio_trigger *trig_info)
->  {
-> @@ -88,10 +82,6 @@ int iio_trigger_register(struct iio_trigger *trig_info)
->  	if (ret)
->  		goto error_unregister_id;
->  
-> -	ret = iio_trigger_register_sysfs(trig_info);
-> -	if (ret)
-> -		goto error_device_del;
-> -
->  	/* Add to list of available triggers held by the IIO core */
->  	mutex_lock(&iio_trigger_list_lock);
->  	list_add_tail(&trig_info->list, &iio_trigger_list);
-> @@ -99,8 +89,6 @@ int iio_trigger_register(struct iio_trigger *trig_info)
->  
->  	return 0;
->  
-> -error_device_del:
-> -	device_del(&trig_info->dev);
->  error_unregister_id:
->  	ida_simple_remove(&iio_trigger_ida, trig_info->id);
->  error_ret:
-> @@ -114,7 +102,6 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
->  	list_del(&trig_info->list);
->  	mutex_unlock(&iio_trigger_list_lock);
->  
-> -	iio_trigger_unregister_sysfs(trig_info);
->  	ida_simple_remove(&iio_trigger_ida, trig_info->id);
->  	/* Possible issue in here */
->  	device_unregister(&trig_info->dev);
-> @@ -406,6 +393,7 @@ static void iio_trig_release(struct device *device)
->  
->  static struct device_type iio_trig_type = {
->  	.release = iio_trig_release,
-> +	.groups = iio_trig_attr_groups,
->  };
->  
->  static void iio_trig_subirqmask(struct irq_data *d)
-> 
+v4:
+Addressed comments from Lars-Peter Clausen and Jiri Kosina.
+- Added Documentation/hid/hid-sensor.txt
+- As suggested, created iio/common folder which can contain common code for iio sensor driver.This contain common module to process trigger and attributes
+- Removed empty callback functions.
+- Duplicating channel structure for an IIO driver instance.
+
+v3 :
+- Using TRIGGERRED BUFFER
+- Using MFD framework
+The sensor hub driver is submiited to drivers/hid. This contains core processing of hid sensor
+usage table, registers as an hid driver and adds registration function for routing data
+to individual sensor driver. So core driver independent of user mode interface method (IIO/input etc.)
+
+- Submiiting four drivers for Accelerometer-3D, Gyro-3D, Compass-3D and ALS. These uses IIO triggered
+buffer interface. They are childrens of hid sensor hub driver.
+They reside in iio/accel, iio/gyro iio/magnetometer and iio/light.
+
+- Still using driver/staging/iio. Not able to test with driver/iio.
+
+v2 :
+- Replaced Ring-SW with KFiFO
+- Accel-3d, Gyro-3D and Compass-3D uses 3 different channels for X, Y and Z
+- SysFS (
+--- Changed "polling_interval" to sampling_frequency (IIO_DEV_ATTR_SAMP_FREQ) with units HZ
+--- Changed "sensitivity" to hyst_raw, which is already used by some ADC modules
+--- Removed "Activate". No longer need this. Using trigger state to activate/deactivate
+)
+- Removed sysfs attributes for "xxx_offset". Instead using mask 0 in read_raw. So each
+sensor have only channels, sampling_frequency and hyst_raw as the ABI.
+- Additional patch to enable ST Micro sensor hub-
+
+v1:
+Base implementation for comments
+
+
+srinivas pandruvada (8):
+  HID-Sensors: Documentation
+  HID Sensors: Add to special driver list
+  HID-Sensors: Sensor framework
+  HID-Sensors: Common attribute and trigger
+  HID-Sensors: Added accelerometer 3D
+  HID-Sensors: Added Gyroscope 3D
+  HID-Sensors: Added Compass/Magnetometer 3D
+  HID-Sensors: Added ALS
+
+ Documentation/hid/hid-sensor.txt                   |  139 +++++
+ drivers/hid/Kconfig                                |   12 +
+ drivers/hid/Makefile                               |    1 +
+ drivers/hid/hid-core.c                             |   10 +
+ drivers/hid/hid-ids.h                              |    6 +
+ drivers/hid/hid-sensor-hub.c                       |  630 ++++++++++++++++++++
+ drivers/staging/iio/Kconfig                        |    1 +
+ drivers/staging/iio/Makefile                       |    1 +
+ drivers/staging/iio/accel/Kconfig                  |   10 +
+ drivers/staging/iio/accel/Makefile                 |    3 +
+ drivers/staging/iio/accel/hid-sensor-accel-3d.c    |  451 ++++++++++++++
+ drivers/staging/iio/common/Kconfig                 |    6 +
+ drivers/staging/iio/common/Makefile                |    5 +
+ drivers/staging/iio/common/hid-sensors/Kconfig     |   21 +
+ drivers/staging/iio/common/hid-sensors/Makefile    |    6 +
+ .../iio/common/hid-sensors/hid-sensor-attributes.c |  182 ++++++
+ .../iio/common/hid-sensors/hid-sensor-attributes.h |   60 ++
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    |  104 ++++
+ .../iio/common/hid-sensors/hid-sensor-trigger.h    |   27 +
+ drivers/staging/iio/gyro/Kconfig                   |   10 +
+ drivers/staging/iio/gyro/Makefile                  |    3 +
+ drivers/staging/iio/gyro/hid-sensor-gyro-3d.c      |  451 ++++++++++++++
+ drivers/staging/iio/light/Kconfig                  |   10 +
+ drivers/staging/iio/light/Makefile                 |    3 +
+ drivers/staging/iio/light/hid-sensor-als.c         |  380 ++++++++++++
+ drivers/staging/iio/magnetometer/Kconfig           |   10 +
+ drivers/staging/iio/magnetometer/Makefile          |    3 +
+ .../staging/iio/magnetometer/hid-sensor-magn-3d.c  |  451 ++++++++++++++
+ include/linux/hid-sensor-hub.h                     |   72 +++
+ include/linux/hid-sensor-ids.h                     |  116 ++++
+ 30 files changed, 3184 insertions(+), 0 deletions(-)
+ create mode 100755 Documentation/hid/hid-sensor.txt
+ create mode 100644 drivers/hid/hid-sensor-hub.c
+ create mode 100644 drivers/staging/iio/accel/hid-sensor-accel-3d.c
+ create mode 100644 drivers/staging/iio/common/Kconfig
+ create mode 100644 drivers/staging/iio/common/Makefile
+ create mode 100644 drivers/staging/iio/common/hid-sensors/Kconfig
+ create mode 100644 drivers/staging/iio/common/hid-sensors/Makefile
+ create mode 100644 drivers/staging/iio/common/hid-sensors/hid-sensor-attributes.c
+ create mode 100644 drivers/staging/iio/common/hid-sensors/hid-sensor-attributes.h
+ create mode 100644 drivers/staging/iio/common/hid-sensors/hid-sensor-trigger.c
+ create mode 100644 drivers/staging/iio/common/hid-sensors/hid-sensor-trigger.h
+ create mode 100644 drivers/staging/iio/gyro/hid-sensor-gyro-3d.c
+ create mode 100644 drivers/staging/iio/light/hid-sensor-als.c
+ create mode 100644 drivers/staging/iio/magnetometer/hid-sensor-magn-3d.c
+ create mode 100644 include/linux/hid-sensor-hub.h
+ create mode 100644 include/linux/hid-sensor-ids.h
+
+-- 
+1.7.7.6
