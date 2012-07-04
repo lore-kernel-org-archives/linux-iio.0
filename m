@@ -1,191 +1,52 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: "Lars-Peter Clausen" <lars@metafoo.de>
+Return-Path: <wd@denx.de>
+To: Marek Vasut <marex@denx.de>
+cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+    Jonathan Cameron <jic23@kernel.org>,
+    Juergen Beisert <jbe@pengutronix.de>
+From: Wolfgang Denk <wd@denx.de>
 Subject: Re: [PATCH] IIO: Add basic MXS LRADC driver
-Date: Thu, 5 Jul 2012 21:53:17 +0200
-Cc: linux-iio@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Jonathan Cameron <jic23@kernel.org>,
- Wolfgang Denk <wd@denx.de>,
- Juergen Beisert <jbe@pengutronix.de>
-References: <1341368129-20468-1-git-send-email-marex@denx.de> <201207050148.27289.marex@denx.de> <4FF55149.2080801@metafoo.de>
-In-Reply-To: <4FF55149.2080801@metafoo.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201207052153.17551.marex@denx.de>
+Content-type: text/plain; charset=UTF-8
+In-reply-to: <1341368129-20468-1-git-send-email-marex@denx.de>
+References: <1341368129-20468-1-git-send-email-marex@denx.de>
+Date: Wed, 04 Jul 2012 06:30:02 +0200
+Message-Id: <20120704043002.F0AF4202270@gemini.denx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Dear Lars-Peter Clausen,
+Dear Marek,
 
-> On 07/05/2012 01:48 AM, Marek Vasut wrote:
-> > Dear Lars-Peter Clausen,
-> > 
-> >> On 07/04/2012 04:15 AM, Marek Vasut wrote:
-> >>> This driver is very basic. It supports userland trigger, buffer and
-> >>> raw access to channels. The support for delay channels is missing
-> >>> altogether.
-> >>> 
-> >>> Signed-off-by: Marek Vasut <marex@denx.de>
-> >>> Cc: Jonathan Cameron <jic23@kernel.org>
-> >>> Cc: Wolfgang Denk <wd@denx.de>
-> >>> Cc: Juergen Beisert <jbe@pengutronix.de>
-> >>> [...]
-> >> 
-> >> The overall structure looks good, but a few things need to be addressed.
-> >> I also think the driver doesn't have to go through staging and could be
-> >> put in to the out-of-staging part of iio.
-> > 
-> > Come and rip me to shreds ;-)
-> > 
-> > [...]
-> > 
-> >>> +	wait_queue_head_t	wq_data_avail[LRADC_MAX_MAPPED_CHANS];
-> >>> +	bool			wq_done[LRADC_MAX_MAPPED_CHANS];
-> >> 
-> >> This and it's usage looks a bit like an open-coded struct completion.
-> > 
-> > Indeed, completion is good for this :)
-> > 
-> >>> +};
-> >>> +
-> >>> +struct mxs_lradc_data {
-> >>> +	struct mxs_lradc	*lradc;
-> >>> +};
-> >> 
-> >> Is there any reason not to use the mxs_lradc struct directly has the iio
-> >> data?
-> > 
-> > I explained it below in the patch. I hope we'll eventually support the
-> > delay triggers, which will need 4 separate IIO devices. And this is
-> > where this structure will be augmented by other components.
-> 
-> Ok I saw the comment, but it wasn't obvious to me that delay channels will
-> require multiple IIO devices. Might make sense to state this explicitly.
+In message <1341368129-20468-1-git-send-email-marex@denx.de> you wrote:
+> This driver is very basic. It supports userland trigger, buffer and
+> raw access to channels. The support for delay channels is missing
+> altogether.
+...
 
-Certainly. We had a discussion with jonathan about that, it's not completely 
-settled. Maybe I'll just do it your way. afterall.
+> +#define	LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
+> +#define	LRADC_CH_NUM_SAMPLES_OFFSET		24
 
-> >>> [...]
-> >>> 
-> >>> +
-> >>> +/*
-> >>> + * Channel management
-> >>> + *
-> >>> + * This involves crazy mapping between 8 virtual channels the CTRL4
-> >>> register + * can harbor and 16 channels total this hardware supports.
-> >>> + */
-> >> 
-> >> I suppose this means only a maximum 8 channels can be active at a time.
-> >> I've recently posted a patch which makes it easy to implement such a
-> >> restriction. http://www.spinics.net/lists/linux-iio/msg05936.html and
-> >> http://www.spinics.net/lists/linux-iio/msg05935.html for an example
-> >> validate callback implementation. In your case you'd check for
-> >> bitmap_weight(...) <= 8. Those patches are not yet in IIO though.
-> > 
-> > This is good. When do you expect this to hit linux-next possibly? Or at
-> > least linux-iio?
-> 
-> soon, hopefully.
-> 
-> > [..]
-> > 
-> >>> +static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
-> >>> +			const struct iio_chan_spec *chan,
-> >>> +			int *val, int *val2, long m)
-> >>> +{
-> >>> +	struct mxs_lradc_data *data = iio_priv(iio_dev);
-> >>> +	struct mxs_lradc *lradc = data->lradc;
-> >>> +	int ret, slot;
-> >>> +
-> >>> +	if (m != 0)
-> >> 
-> >> I'd use the symbolic constant here IIO_CHAN_INFO_RAW
-> >> 
-> >>> +		return -EINVAL;
-> >>> +
-> >>> +	/* Map channel. */
-> >>> +	slot = mxs_lradc_map_channel(lradc, chan->channel,
-> >>> LRADC_CHAN_FLAG_RAW); +	if (slot < 0)
-> >>> +		return slot;
-> >>> +
-> >>> +	/* Start sampling. */
-> >>> +	mxs_lradc_run_slots(lradc, 1 << slot);
-> >>> +
-> >>> +	/* Wait for completion on the channel, 1 second max. */
-> >>> +	lradc->wq_done[slot] = false;
-> >>> +	ret = wait_event_interruptible_timeout(lradc->wq_data_avail[slot],
-> >>> +					       lradc->wq_done[slot],
-> >>> +					       msecs_to_jiffies(1000));
-> >>> +	if (!ret) {
-> 
-> Just noticed this, wait_event_interruptible_timeout can return an error
-> value, e.g. if it has been interrupted.
+	#define LRADC_CH_NUM_SAMPLES_OFFSET	24
+	#define	LRADC_CH_NUM_SAMPLES_MASK	(0x1f << LRADC_CH_NUM_SAMPLES_OFFSET)
 
-I replaced this with killable completion.
+> +#define	LRADC_DELAY_TRIGGER_LRADCS_MASK		(0xff << 24)
+> +#define	LRADC_DELAY_TRIGGER_LRADCS_OFFSET	24
 
-> >>> +		ret = -ETIMEDOUT;
-> >>> +		goto err;
-> >>> +	}
-> >>> +
-> >> 
-> >> How well will this work if the device is currrently in buffered mode?
-> >> Maybe it's better do disablow it by checking iio_buffer_enabled and
-> >> return -EBUSY if it returns true;
-> > 
-> > I believe this should work perfectly OK, why won't it ? I tried to avoid
-> > such artificial limitation.
-> 
-> I suppose it is fine, but not knowing the hardware, what does
-> mxs_lradc_run_slots do exactly?
+Ditto.
 
-Starts the sampling of the channels that are specific in the mask passed to this 
-function. But they must be mapped first.
+> +#define	LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
+> +#define	LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
+> +#define	LRADC_DELAY_LOOP_COUNT_MASK		(0x1f << 11)
+> +#define	LRADC_DELAY_LOOP_COUNT_OFFSET		11
 
-> > [...]
-> > 
-> >>> +static int mxs_lradc_configure_trigger(struct iio_trigger *trig, bool
-> >>> state) +{
-> >>> +	struct iio_dev *iio = trig->private_data;
-> >>> +	struct mxs_lradc_data *data = iio_priv(iio);
-> >>> +	struct mxs_lradc *lradc = data->lradc;
-> >>> +	struct iio_buffer *buffer = iio->buffer;
-> >>> +	int slot, bit, ret = 0;
-> >>> +	uint8_t map = 0;
-> >>> +	unsigned long chans = 0;
-> >>> +
-> >>> +	if (!state)
-> >>> +		goto exit;
-> >>> +
-> >>> +	lradc->buffer = kmalloc(iio->scan_bytes, GFP_KERNEL);
-> >>> +	if (!lradc->buffer)
-> >>> +		return -ENOMEM;
-> >>> +
-> >>> +	for_each_set_bit(bit, buffer->scan_mask, LRADC_MAX_TOTAL_CHANS) {
-> >>> +		slot = mxs_lradc_map_channel(lradc, bit, LRADC_CHAN_FLAG_BUF);
-> >>> +
-> >>> +		if (slot < 0) {
-> >>> +			ret = -EINVAL;
-> >>> +			goto exit;
-> >>> +		}
-> >>> +		map |= 1 << slot;
-> >>> +		chans |= 1 << bit;
-> >>> +	}
-> >> 
-> >> I think this should go into the buffer preenable and postdisable
-> >> callbacks.
-> > 
-> > How much of it, only the slot mapping or the allocation too ?
-> 
-> Yeah I guess it is a bit tricky in this case. A good rule of thumb is to
-> ask yourself whether the driver will (hypothetically) still work if
-> another trigger is used. So the buffer allocation should certainly be
-> handled by the buffer code, either the prenable or the update_scan_mode
-> callback. The channel mapping part is not so obvious, but I'd put it in
-> the
-> preenable/postdisable callbacks as well.
+Ditto.
 
-All right, I'll look into this in a bit :)
+Please use the symbolic names you define.
 
 Best regards,
-Marek Vasut
+
+Wolfgang Denk
+
+-- 
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+The speed of time is one second per second.
