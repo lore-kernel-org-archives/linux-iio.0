@@ -3,9 +3,9 @@ From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 08/11] staging:iio:lis3l02dq: Do not return error code in interrupt handler
-Date: Wed,  4 Jul 2012 18:09:30 +0200
-Message-Id: <1341418173-3217-8-git-send-email-lars@metafoo.de>
+Subject: [PATCH 07/11] staging:iio:max1363: Do not return error code in interrupt handler
+Date: Wed,  4 Jul 2012 18:09:29 +0200
+Message-Id: <1341418173-3217-7-git-send-email-lars@metafoo.de>
 In-Reply-To: <1341418173-3217-1-git-send-email-lars@metafoo.de>
 References: <1341418173-3217-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
@@ -16,32 +16,26 @@ iio_trigger_notify_done before leaving the trigger handler.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/accel/lis3l02dq_ring.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/staging/iio/adc/max1363_ring.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index 51b00df..d7f8af7 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -143,7 +143,7 @@ static irqreturn_t lis3l02dq_trigger_handler(int irq, void *p)
- 	if (data == NULL) {
- 		dev_err(indio_dev->dev.parent,
- 			"memory alloc failed in buffer bh");
+diff --git a/drivers/staging/iio/adc/max1363_ring.c b/drivers/staging/iio/adc/max1363_ring.c
+index b302013..bf6b0c2 100644
+--- a/drivers/staging/iio/adc/max1363_ring.c
++++ b/drivers/staging/iio/adc/max1363_ring.c
+@@ -64,11 +64,11 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
+ 	 * no harm.
+ 	 */
+ 	if (numvals == 0)
+-		return IRQ_HANDLED;
++		goto done;
+ 
+ 	rxbuf = kmalloc(d_size,	GFP_KERNEL);
+ 	if (rxbuf == NULL)
 -		return -ENOMEM;
 +		goto done;
- 	}
- 
- 	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength))
-@@ -156,8 +156,9 @@ static irqreturn_t lis3l02dq_trigger_handler(int irq, void *p)
- 			= pf->timestamp;
- 	buffer->access->store_to(buffer, (u8 *)data, pf->timestamp);
- 
--	iio_trigger_notify_done(indio_dev->trig);
- 	kfree(data);
-+done:
-+	iio_trigger_notify_done(indio_dev->trig);
- 	return IRQ_HANDLED;
- }
- 
+ 	if (st->chip_info->bits != 8)
+ 		b_sent = i2c_master_recv(st->client, rxbuf, numvals*2);
+ 	else
 -- 
 1.7.10
