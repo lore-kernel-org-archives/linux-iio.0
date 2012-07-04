@@ -1,188 +1,43 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Thu, 5 Jul 2012 02:56:32 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: srinivas pandruvada <srinivas.pandruvada@intel.com>
-cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org, jkosina@suse.cz,
-    lars@metafoo.de, jic23@cam.ac.uk
-Subject: Re: [PATCH 1/8] HID-Sensors: Documentation
-In-Reply-To: <1341431532-15060-2-git-send-email-srinivas.pandruvada@intel.com>
-Message-ID: <alpine.DEB.2.01.1207050243500.22508@pmeerw.net>
-References: <1341431532-15060-1-git-send-email-srinivas.pandruvada@intel.com> <1341431532-15060-2-git-send-email-srinivas.pandruvada@intel.com>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 01/11] staging:iio:ad7298: Do not return error code in interrupt handler
+Date: Wed,  4 Jul 2012 18:09:23 +0200
+Message-Id: <1341418173-3217-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
+The interrupt handler should only ever return one of the three irqreturn_t
+constants and not an error code. Also make sure to always call
+iio_trigger_notify_done before leaving the trigger handler.
 
-nitpicking below
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/ad7298_ring.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-> Added a summary of HID sensor framework.
-> 
-> Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
-> ---
->  Documentation/hid/hid-sensor.txt |  139 ++++++++++++++++++++++++++++++++++++++
->  1 files changed, 139 insertions(+), 0 deletions(-)
->  create mode 100755 Documentation/hid/hid-sensor.txt
-> 
-> diff --git a/Documentation/hid/hid-sensor.txt b/Documentation/hid/hid-sensor.txt
-> new file mode 100755
-> index 0000000..a4b565f
-> --- /dev/null
-> +++ b/Documentation/hid/hid-sensor.txt
-> @@ -0,0 +1,139 @@
-> +
-> +HID Sensors Framework
-> +======================
-> +HID sensor framework provides necessary interfaces to implement sensor drivers,
-> +which are connected to a sensor hub. The sensor hub is HID device and it provides
-is a HID device
-> +a report descriptor confirming to HID 1.12 sensor usage tables.
-conforming
-> +
-> +Description from the HID 1.12 "HID Sensor Usages" specification:
-> +"Standardization of HID usages for sensors would allow (but not require) sensor
-> +hardware vendors to provide a consistent Plug And Play interface at the USB boundary,
-> +Thereby enabling some operating systems to incorporate common device drivers that
-thereby
-> +could be reused between vendors, alleviating any need for the vendors to provide
-> +the drivers themselves."
-> +
-> +This specification describes many usage IDs, which describe the type of sensor
-> +and also the individual data fields. Each sensor can have variable number of
-> +data fields and length and order is specified in the report descriptor. For
-maybe a comma after fields?
-> +example a part of report descriptor can look like:
-> +
-> +   INPUT(1)[INPUT]
-> + ..
-> +    Field(2)
-> +      Physical(0020.0073)
-> +      Usage(1)
-> +        0020.045f
-> +      Logical Minimum(-32767)
-> +      Logical Maximum(32767)
-> +      Report Size(8)
-> +      Report Count(1)
-> +      Report Offset(16)
-> +      Flags(Variable Absolute)
-> +..
-> +..
-> +
-> +The report is indicating "sensor page (0x20)" contains an accelerometer-3D (0x73).
-> +This accelerometer-3D has some fields. Here for example field 2 is motion intensity
-> +(0x045f) with a logical minimum value of -32767 and logical maximum of 32767. The
-> +order of fields and length of each field is important as the input event raw
-> +data will use this format.
-> +
-> +
-> +Implementation
-> +=================
-> +
-> +This specification defines many different types of sensors with different set of
-sets
-> +data fields. It is difficult to have a common input event to user space applications,
-> +for different sensors. For example an accelerometer can send X,Y and Z data, whereas
-> +an ambient light sensor can send illumination data. 
-> +So the implementation has two parts:
-> +- Core hid driver
-> +- Individual sensor processing part (sensor drivers)
-> +
-> +Core driver
-> +-----------
-> +The core driver registers (hid-sensor-hub) registers as a HID driver. It parses
-> +report descriptors and identifies all the sensors present. It adds an MFD device
-> +with name HID-SENSOR-xxxx (where xxxx is usage id from the specification).
-> +For example 
-> +HID-SENSOR-200073 is registered for an Accelerometer 3D driver.
-> +So if any driver with this name is inserted, then the probe routine for that
-> +function will be called. So an accelerometer processing driver can register
-> +with this name and will be probed if there is an accelerometer-3D is detected.
-accelerometer-3D detected.
-> +
-> +The core driver provides a set of APIs which can be used by the processing
-> +drivers to register and get events for that usage id. Also it provides a parsing
-> +functions, get and set each input/feature/output report.
-Also it provides parsing functions which get and set eaach 
-input/feature/output report. ??
-> +
-> +Individual sensor processing part (sensor drivers)
-> +-----------
-> +The processing driver will use interface provided by core driver to parse
-an interface provided by the core driver
-> +the report and get the indexes of the fields and also can get events. This driver
-> +can use IIO interface to use the standard ABI defined for a type of sensor.
-> +
-> +
-> +Core driver Interface
-> +=====================
-> +
-> +Callback structure:
-> +Each processing driver can use this structure to set some callbacks.
-> +	int (*suspend)(..): Callback when HID suspend is received
-> +	int (*resume)(..): Callback when HID resume is received
-> +	int (*capture_sample)(..): Capture a sample for one of its data field
-fields
-> +	int (*send_event)(..): One complete event is received which can have
-> +                               multiple data fields. 
-> +
-> +
-> +Registration functions:
-> +int sensor_hub_register_callback(struct hid_sensor_hub_device *hsdev,
-> +			u32 usage_id,
-> +			struct hid_sensor_hub_callbacks *usage_callback):
-> +
-> +Registers callbacks for an usage id.
-> +
-> +
-> +int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
-> +			u32 usage_id):
-> +
-> +Removes callbacks for an usage id.
-> +
-> +
-> +Parsing function:
-> +int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
-> +			u8 type,
-> +			u32 usage_id, u32 attr_usage_id,
-> +			struct hid_sensor_hub_attribute_info *info);
-> +
-> +A processing driver can look for some field of interest and check if it exists
-> +in a report descriptor. If it exists the it will store necessary information
-it exists it will
-> +so that that field can be set or get individually.
-so that fields
-> +These indexes avoid searching every time and getting field index to get or set.
-> +
-> +
-> +Set Feature report
-> +int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-> +			u32 field_index, s32 value);
-> +
-> +This interface is used to set a value for a field in feature report. For example
-> +if there is a field report_interval, which is parsed by a call to 
-> +sensor_hub_input_get_attribute_info before, then it can directly set that individual
-> +field.
-> +
-> +int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-> +			u32 field_index, s32 *value);
-> +
-> +
-> +This interface is used to get a value for a field in input report. For example
-> +if there is a field report_interval, which is parsed by a call to 
-> +sensor_hub_input_get_attribute_info before, then it can directly get that individual
-> +field value.
-> +
-> +int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
-> +			u32 usage_id,
-> +			u32 attr_usage_id, u32 report_id);
-> +
-> +This is used to get a particular field value through input reports. For example
-> +accelerometer wants to poll X axis value, then it can call this function with
-> +the usage id of X axis. HID sensors can provide events, so this is not necessary
-> +to poll for any field. If there is some new sample, the core driver will call
-> +registered callback function to process the sample.
-> 
-
+diff --git a/drivers/staging/iio/adc/ad7298_ring.c b/drivers/staging/iio/adc/ad7298_ring.c
+index cd3e9cb..fd1d855 100644
+--- a/drivers/staging/iio/adc/ad7298_ring.c
++++ b/drivers/staging/iio/adc/ad7298_ring.c
+@@ -82,7 +82,7 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+ 
+ 	b_sent = spi_sync(st->spi, &st->ring_msg);
+ 	if (b_sent)
+-		return b_sent;
++		goto done;
+ 
+ 	if (indio_dev->scan_timestamp) {
+ 		time_ns = iio_get_time_ns();
+@@ -95,6 +95,8 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+ 		buf[i] = be16_to_cpu(st->rx_buf[i]);
+ 
+ 	indio_dev->buffer->access->store_to(ring, (u8 *)buf, time_ns);
++
++done:
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+ 	return IRQ_HANDLED;
 -- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+1.7.10
