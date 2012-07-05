@@ -1,83 +1,101 @@
 Return-Path: <lars@metafoo.de>
-Message-ID: <4FFBF5FC.2090809@metafoo.de>
-Date: Tue, 10 Jul 2012 11:29:32 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: anish singh <anish198519851985@gmail.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: adc-jack-driver opinion related to IIO
-References: <CAK7N6voPsDGJLoh71Kgcz=bnWDE4QYmXjOrMv0x+bN7RTCHF3g@mail.gmail.com> <4FF6E766.7000503@cam.ac.uk> <1341593155.1533.24.camel@anish-Inspiron-N5050> <4FF72C00.3070300@metafoo.de> <CAK7N6vpwgHcNF7wj=eXMdKZUcX9anY7oCvPeZdG1ePEREaCDcg@mail.gmail.com>
-In-Reply-To: <CAK7N6vpwgHcNF7wj=eXMdKZUcX9anY7oCvPeZdG1ePEREaCDcg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio:trigger: Register sysfs file statically
+Date: Thu,  5 Jul 2012 10:57:06 +0200
+Message-Id: <1341478626-29167-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/10/2012 10:29 AM, anish singh wrote:
-> On Fri, Jul 6, 2012 at 11:48 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 07/06/2012 06:45 PM, anish kumar wrote:
->>> On Fri, 2012-07-06 at 14:25 +0100, Jonathan Cameron wrote:
->>>> On 7/6/2012 1:00 PM, anish singh wrote:
->>>>> Hello Jonathan,
->>>>>
->>>>> I would be extremely happy if I can get your opinion on this.
->>>>>
->>>>> Recently Myungjoo Ham had posted Extcon: adc-jack driver patch.
->>>>>
->>>>> Description of this driver:
->>>>> This is basically a Headset(jack) driver.Once the headset is inserted
->>>>> a irq_handler is called and in this handler we have a callback(this
->>>>> callback calls into pmic driver to get the adc value) to get
->>>>> the adc value to determine the kind of headset: This headset could
->>>>> be headset with mic, headset without mic or headset with
->>>>> keys(volume-up/down) attached to it.One we have found out the kind
->>>>> of headset we use extcon framework to notify the other interested drivers or
->>>>> userspace that a headset with so and so capabilities has been inserted.
->>>>>
->>>>> Question:
->>>>> Does this driver fall into IIO as pointed by Mark Brown in his review comments?
->>>> The driver itself probably doesn't, but the adc part does in that IIO
->>>> provides a means of talking to the relevant adc.
->>>>>
->>>>> Why do we need to use IIO to get the adc value?As for different boards the
->>>>> method of getting adc is different.How does IIO help in this?
->>>> Ultimately, IIO in this case is acting as an infrastructure for ALL
->>>> adcs. E.g. for different boards you'll need a mapping to tell it which
->>>> adc channel is connected but that is it.  Hence you don't need a
->>>> specific callback for each pmic as you will be using generic interfaces
->>>> to query it.
->>> After having a brief glance at IIO below is my understanding:
->>> IIO is used to provide standard interfaces in the form of sysfs to
->>> userspace _ONLY_.
->>>
->>> My requirement:
->>> ADC-JACK-Driver should get the adc value from other driver i.e. PMIC
->>> driver.Here the requirement is communication between two drivers in
->>> kernel.Can IIO be used here?
->>>
->>> I had a look at drivers/staging/iio/Documentation/Overview.txt and some
->>> ADC drivers.
->>
->> Hi,
->>
->> There is a new experimental in kernel API, which lets you write IIO clients
->> in the kernel.
->>
->> See: drivers/iio/inkern.h
->> and drivers/staging/iio/iio_hwmon.c
-> Thanks for this.So below is my understanding:
-> 1.The driver which will provide adc value should first register itself with IIO
-> core by specifiying it channels(struct iio_map should be used) and what
-> values we can expect from it.
-> 2.The driver which is interested in reading the adc values should call
-> iio_channel_get
-> to get the channel.
-> 3.Once the channel is obtained we can call iio_st_read_channel_raw function to
-> read the values.
-> 
-> Is my understanding right or I am completely lost here?
+The name sysfs attribute is the same for all triggers, so there is no need to
+register them dynamically at runtime. Create a attribute group for it and set it
+up for the bus attribute group. This also avoids a possible race condition
+where the uevent for the device is sent before the name sysfs attribute has been
+added.
 
-Yes, that sounds about right.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-trigger.c |   38 ++++++++++++------------------------
+ 1 file changed, 13 insertions(+), 25 deletions(-)
 
-Btw. iio_st_read_channel_raw has been renamed to iio_read_channel_raw
-
-- Lars
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index ec653fb..24ed31f 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -51,25 +51,19 @@ static ssize_t iio_trigger_read_name(struct device *dev,
+ 
+ static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
+ 
+-/**
+- * iio_trigger_register_sysfs() - create a device for this trigger
+- * @trig_info:	the trigger
+- *
+- * Also adds any control attribute registered by the trigger driver
+- **/
+-static int iio_trigger_register_sysfs(struct iio_trigger *trig_info)
+-{
+-	return sysfs_add_file_to_group(&trig_info->dev.kobj,
+-				       &dev_attr_name.attr,
+-				       NULL);
+-}
++static struct attribute *iio_trig_dev_attrs[] = {
++	&dev_attr_name.attr,
++	NULL,
++};
+ 
+-static void iio_trigger_unregister_sysfs(struct iio_trigger *trig_info)
+-{
+-	sysfs_remove_file_from_group(&trig_info->dev.kobj,
+-					   &dev_attr_name.attr,
+-					   NULL);
+-}
++static struct attribute_group iio_trig_attr_group = {
++	.attrs	= iio_trig_dev_attrs,
++};
++
++static const struct attribute_group *iio_trig_attr_groups[] = {
++	&iio_trig_attr_group,
++	NULL
++};
+ 
+ int iio_trigger_register(struct iio_trigger *trig_info)
+ {
+@@ -88,10 +82,6 @@ int iio_trigger_register(struct iio_trigger *trig_info)
+ 	if (ret)
+ 		goto error_unregister_id;
+ 
+-	ret = iio_trigger_register_sysfs(trig_info);
+-	if (ret)
+-		goto error_device_del;
+-
+ 	/* Add to list of available triggers held by the IIO core */
+ 	mutex_lock(&iio_trigger_list_lock);
+ 	list_add_tail(&trig_info->list, &iio_trigger_list);
+@@ -99,8 +89,6 @@ int iio_trigger_register(struct iio_trigger *trig_info)
+ 
+ 	return 0;
+ 
+-error_device_del:
+-	device_del(&trig_info->dev);
+ error_unregister_id:
+ 	ida_simple_remove(&iio_trigger_ida, trig_info->id);
+ error_ret:
+@@ -114,7 +102,6 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
+ 	list_del(&trig_info->list);
+ 	mutex_unlock(&iio_trigger_list_lock);
+ 
+-	iio_trigger_unregister_sysfs(trig_info);
+ 	ida_simple_remove(&iio_trigger_ida, trig_info->id);
+ 	/* Possible issue in here */
+ 	device_unregister(&trig_info->dev);
+@@ -406,6 +393,7 @@ static void iio_trig_release(struct device *device)
+ 
+ static struct device_type iio_trig_type = {
+ 	.release = iio_trig_release,
++	.groups = iio_trig_attr_groups,
+ };
+ 
+ static void iio_trig_subirqmask(struct irq_data *d)
+-- 
+1.7.10
