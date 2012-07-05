@@ -1,22 +1,22 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FF9BF4F.9070204@kernel.org>
-Date: Sun, 08 Jul 2012 18:11:43 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
+Return-Path: <pmeerw@pmeerw.net>
+Date: Thu, 5 Jul 2012 02:56:32 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
 To: srinivas pandruvada <srinivas.pandruvada@intel.com>
-CC: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- jkosina@suse.cz, lars@metafoo.de, jic23@cam.ac.uk
+cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org, jkosina@suse.cz,
+    lars@metafoo.de, jic23@cam.ac.uk
 Subject: Re: [PATCH 1/8] HID-Sensors: Documentation
-References: <1341431532-15060-1-git-send-email-srinivas.pandruvada@intel.com> <1341431532-15060-2-git-send-email-srinivas.pandruvada@intel.com>
 In-Reply-To: <1341431532-15060-2-git-send-email-srinivas.pandruvada@intel.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Message-ID: <alpine.DEB.2.01.1207050243500.22508@pmeerw.net>
+References: <1341431532-15060-1-git-send-email-srinivas.pandruvada@intel.com> <1341431532-15060-2-git-send-email-srinivas.pandruvada@intel.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/04/2012 08:52 PM, srinivas pandruvada wrote:
+
+nitpicking below
+
 > Added a summary of HID sensor framework.
 > 
-A nice description.  One additional nitpick (I think) on top of Peters.
-(and mine really is a nitpick ;)
 > Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 > ---
 >  Documentation/hid/hid-sensor.txt |  139 ++++++++++++++++++++++++++++++++++++++
@@ -34,18 +34,22 @@ A nice description.  One additional nitpick (I think) on top of Peters.
 > +======================
 > +HID sensor framework provides necessary interfaces to implement sensor drivers,
 > +which are connected to a sensor hub. The sensor hub is HID device and it provides
+is a HID device
 > +a report descriptor confirming to HID 1.12 sensor usage tables.
+conforming
 > +
 > +Description from the HID 1.12 "HID Sensor Usages" specification:
 > +"Standardization of HID usages for sensors would allow (but not require) sensor
 > +hardware vendors to provide a consistent Plug And Play interface at the USB boundary,
 > +Thereby enabling some operating systems to incorporate common device drivers that
+thereby
 > +could be reused between vendors, alleviating any need for the vendors to provide
 > +the drivers themselves."
 > +
 > +This specification describes many usage IDs, which describe the type of sensor
 > +and also the individual data fields. Each sensor can have variable number of
 > +data fields and length and order is specified in the report descriptor. For
+maybe a comma after fields?
 > +example a part of report descriptor can look like:
 > +
 > +   INPUT(1)[INPUT]
@@ -74,6 +78,7 @@ A nice description.  One additional nitpick (I think) on top of Peters.
 > +=================
 > +
 > +This specification defines many different types of sensors with different set of
+sets
 > +data fields. It is difficult to have a common input event to user space applications,
 > +for different sensors. For example an accelerometer can send X,Y and Z data, whereas
 > +an ambient light sensor can send illumination data. 
@@ -91,14 +96,18 @@ A nice description.  One additional nitpick (I think) on top of Peters.
 > +So if any driver with this name is inserted, then the probe routine for that
 > +function will be called. So an accelerometer processing driver can register
 > +with this name and will be probed if there is an accelerometer-3D is detected.
+accelerometer-3D detected.
 > +
 > +The core driver provides a set of APIs which can be used by the processing
 > +drivers to register and get events for that usage id. Also it provides a parsing
 > +functions, get and set each input/feature/output report.
+Also it provides parsing functions which get and set eaach 
+input/feature/output report. ??
 > +
 > +Individual sensor processing part (sensor drivers)
 > +-----------
 > +The processing driver will use interface provided by core driver to parse
+an interface provided by the core driver
 > +the report and get the indexes of the fields and also can get events. This driver
 > +can use IIO interface to use the standard ABI defined for a type of sensor.
 > +
@@ -111,6 +120,7 @@ A nice description.  One additional nitpick (I think) on top of Peters.
 > +	int (*suspend)(..): Callback when HID suspend is received
 > +	int (*resume)(..): Callback when HID resume is received
 > +	int (*capture_sample)(..): Capture a sample for one of its data field
+fields
 > +	int (*send_event)(..): One complete event is received which can have
 > +                               multiple data fields. 
 > +
@@ -137,7 +147,9 @@ A nice description.  One additional nitpick (I think) on top of Peters.
 > +
 > +A processing driver can look for some field of interest and check if it exists
 > +in a report descriptor. If it exists the it will store necessary information
+it exists it will
 > +so that that field can be set or get individually.
+so that fields
 > +These indexes avoid searching every time and getting field index to get or set.
 > +
 > +
@@ -153,7 +165,6 @@ A nice description.  One additional nitpick (I think) on top of Peters.
 > +int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
 > +			u32 field_index, s32 *value);
 > +
-nitpick. Inconsistent blank lines (2 here, 1 in other similar loations).
 > +
 > +This interface is used to get a value for a field in input report. For example
 > +if there is a field report_interval, which is parsed by a call to 
@@ -170,3 +181,8 @@ nitpick. Inconsistent blank lines (2 here, 1 in other similar loations).
 > +to poll for any field. If there is some new sample, the core driver will call
 > +registered callback function to process the sample.
 > 
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
