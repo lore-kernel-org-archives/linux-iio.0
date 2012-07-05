@@ -1,36 +1,58 @@
-Return-Path: <dh.herrmann@googlemail.com>
-MIME-Version: 1.0
-In-Reply-To: <1341431532-15060-6-git-send-email-srinivas.pandruvada@intel.com>
+Return-Path: <srinivas.pandruvada@intel.com>
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: David Herrmann <dh.herrmann@googlemail.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"jkosina@suse.cz" <jkosina@suse.cz>, "lars@metafoo.de" <lars@metafoo.de>,
+	"jic23@cam.ac.uk" <jic23@cam.ac.uk>
+Subject: RE: [PATCH 5/8] HID-Sensors: Added accelerometer 3D
+Date: Thu, 5 Jul 2012 15:32:42 +0000
+Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A91935DF35@ORSMSX104.amr.corp.intel.com>
 References: <1341431532-15060-1-git-send-email-srinivas.pandruvada@intel.com>
 	<1341431532-15060-6-git-send-email-srinivas.pandruvada@intel.com>
-Date: Wed, 4 Jul 2012 23:27:38 +0200
-Message-ID: <CANq1E4R8yutQ0QWw_No4fHDwmp=YkCX_xz7KJ7gfRoy2F40CZw@mail.gmail.com>
-Subject: Re: [PATCH 5/8] HID-Sensors: Added accelerometer 3D
-From: David Herrmann <dh.herrmann@googlemail.com>
-To: srinivas pandruvada <srinivas.pandruvada@intel.com>
-Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org, jkosina@suse.cz,
-	lars@metafoo.de, jic23@cam.ac.uk
-Content-Type: text/plain; charset=ISO-8859-1
+ <CANq1E4R8yutQ0QWw_No4fHDwmp=YkCX_xz7KJ7gfRoy2F40CZw@mail.gmail.com>
+In-Reply-To: <CANq1E4R8yutQ0QWw_No4fHDwmp=YkCX_xz7KJ7gfRoy2F40CZw@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
+
+Hi David,
+
+It is a typo. There are three places in Kconfig Help, "3G" is typed instead=
+ of "3D". I will correct this.
+
+Thanks,
+Srinivas
+
+-----Original Message-----
+From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-owner@vger.kernel.o=
+rg] On Behalf Of David Herrmann
+Sent: Wednesday, July 04, 2012 2:28 PM
+To: Pandruvada, Srinivas
+Cc: linux-iio@vger.kernel.org; linux-input@vger.kernel.org; jkosina@suse.cz=
+; lars@metafoo.de; jic23@cam.ac.uk
+Subject: Re: [PATCH 5/8] HID-Sensors: Added accelerometer 3D
 
 Hi Srinivas
 
-On Wed, Jul 4, 2012 at 9:52 PM, srinivas pandruvada
-<srinivas.pandruvada@intel.com> wrote:
-> Added usage id processing for Accelerometer 3D.This uses IIO
-> interfaces for triggerred buffer to present data to user
-> mode.This uses HID sensor framework for registering callback
-> events from the sensor hub.
+On Wed, Jul 4, 2012 at 9:52 PM, srinivas pandruvada <srinivas.pandruvada@in=
+tel.com> wrote:
+> Added usage id processing for Accelerometer 3D.This uses IIO=20
+> interfaces for triggerred buffer to present data to user mode.This=20
+> uses HID sensor framework for registering callback events from the=20
+> sensor hub.
 >
 > Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 > ---
 >  drivers/staging/iio/accel/Kconfig               |   10 +
 >  drivers/staging/iio/accel/Makefile              |    3 +
->  drivers/staging/iio/accel/hid-sensor-accel-3d.c |  451 +++++++++++++++++++++++
->  3 files changed, 464 insertions(+), 0 deletions(-)
->  create mode 100644 drivers/staging/iio/accel/hid-sensor-accel-3d.c
+>  drivers/staging/iio/accel/hid-sensor-accel-3d.c |  451=20
+> +++++++++++++++++++++++
+>  3 files changed, 464 insertions(+), 0 deletions(-)  create mode=20
+> 100644 drivers/staging/iio/accel/hid-sensor-accel-3d.c
 >
-> diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
+> diff --git a/drivers/staging/iio/accel/Kconfig=20
+> b/drivers/staging/iio/accel/Kconfig
 > index 5ab7167..6ab1efa 100644
 > --- a/drivers/staging/iio/accel/Kconfig
 > +++ b/drivers/staging/iio/accel/Kconfig
@@ -48,10 +70,12 @@ On Wed, Jul 4, 2012 at 9:52 PM, srinivas pandruvada
 > +         Say yes here to build support for the HID SENSOR
 > +         accelerometers 3G.
 
-Maybe it's just me missing something, but why do all the Kconfig
-entries mention "3G" instead of "3D"? I couldn't find any other place
-where "3G" is used, only lots of "3D". What does 3G stand for?
+Maybe it's just me missing something, but why do all the Kconfig entries me=
+ntion "3G" instead of "3D"? I couldn't find any other place where "3G" is u=
+sed, only lots of "3D". What does 3G stand for?
 
-Or maybe I just didn't pay enough attention.. ;)
-Regards
-David
+Or maybe I just didn't pay enough attention.. ;) Regards David
+--
+To unsubscribe from this list: send the line "unsubscribe linux-iio" in the=
+ body of a message to majordomo@vger.kernel.org More majordomo info at  htt=
+p://vger.kernel.org/majordomo-info.html
