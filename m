@@ -1,38 +1,45 @@
 Return-Path: <gregkh@linuxfoundation.org>
-Date: Fri, 6 Jul 2012 16:06:24 -0700
+Date: Fri, 6 Jul 2012 16:03:27 -0700
 From: Greg KH <gregkh@linuxfoundation.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO new stuff - staging-next with IIO fixes merged.
-Message-ID: <20120706230624.GB22495@kroah.com>
-References: <4FEEF254.4060501@kernel.org>
+Subject: Re: [PULL] IIO fixes v3.5-rc4
+Message-ID: <20120706230327.GA22495@kroah.com>
+References: <4FEEEFF8.8050305@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <4FEEF254.4060501@kernel.org>
+In-Reply-To: <4FEEEFF8.8050305@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Jun 30, 2012 at 01:34:28PM +0100, Jonathan Cameron wrote:
+On Sat, Jun 30, 2012 at 01:24:24PM +0100, Jonathan Cameron wrote:
 > Hi Greg,
 > 
-> I'm afraid I'm not that familiar with the complexities
-> of pull requests.  What does one do as here if the patches
-> are dependent on fixes in a separate series?  I merged
-> in the fixes-togreg branch before applying these.
+> Please consider pulling the following fixes.
 > 
-> What is the standard way of handling this?
+> I've based these on your staging-linus branch which happens
+> right now to be v3.5-rc4.
+> 
+> None are exactly critical if you want to hold them for the next
+> merge window.
+> 
+> Obviously any suggestions / requests on how to do these pull
+> requests welcomed!
+> 
+> The following changes since commit 6b16351acbd415e66ba16bf7d473ece1574cf0bc:
+> 
+>   Linux 3.5-rc4 (2012-06-24 12:53:04 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git fixes-togreg
 
-Don't do the merge.  I can easily do it if it's needed (here it wasn't
-as I ended up pulling both into the -next branch.)
+I took these into the staging-next tree as they didn't look all that
+important for 3.5-final.
 
-Don't do merges at all, let me do them, that makes things "cleaner" and
-keeps the history easier to follow and is generally nicer.  I would
-rather there be conflicts and figure them out and fix them, than have
-you have to do them (although help in figuring them out is always
-appreciated.)
-
-Oh, and a signed tag would be great as mentioned before.  I've pulled
-and pushed this, and the other pull request out.  Hopefully it made
-things easier for you, it sure made things easier for me :)
+As for pull requests, this was great, but could you use signed tags to
+create a pull request?  That way the information you provided here will
+be in the merge message, and I will have a better chance that I, and
+others, "know" it came from you.
 
 thanks,
 
