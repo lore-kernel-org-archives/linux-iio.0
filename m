@@ -1,101 +1,110 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] iio:trigger: Register sysfs file statically
-Date: Thu,  5 Jul 2012 10:57:06 +0200
-Message-Id: <1341478626-29167-1-git-send-email-lars@metafoo.de>
+Return-Path: <jic23@kernel.org>
+Message-ID: <4FF94B30.5070401@kernel.org>
+Date: Sun, 08 Jul 2012 09:56:16 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio:trigger: Register sysfs file statically
+References: <1341478626-29167-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1341478626-29167-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-The name sysfs attribute is the same for all triggers, so there is no need to
-register them dynamically at runtime. Create a attribute group for it and set it
-up for the bus attribute group. This also avoids a possible race condition
-where the uevent for the device is sent before the name sysfs attribute has been
-added.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/industrialio-trigger.c |   38 ++++++++++++------------------------
- 1 file changed, 13 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index ec653fb..24ed31f 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -51,25 +51,19 @@ static ssize_t iio_trigger_read_name(struct device *dev,
- 
- static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
- 
--/**
-- * iio_trigger_register_sysfs() - create a device for this trigger
-- * @trig_info:	the trigger
-- *
-- * Also adds any control attribute registered by the trigger driver
-- **/
--static int iio_trigger_register_sysfs(struct iio_trigger *trig_info)
--{
--	return sysfs_add_file_to_group(&trig_info->dev.kobj,
--				       &dev_attr_name.attr,
--				       NULL);
--}
-+static struct attribute *iio_trig_dev_attrs[] = {
-+	&dev_attr_name.attr,
-+	NULL,
-+};
- 
--static void iio_trigger_unregister_sysfs(struct iio_trigger *trig_info)
--{
--	sysfs_remove_file_from_group(&trig_info->dev.kobj,
--					   &dev_attr_name.attr,
--					   NULL);
--}
-+static struct attribute_group iio_trig_attr_group = {
-+	.attrs	= iio_trig_dev_attrs,
-+};
-+
-+static const struct attribute_group *iio_trig_attr_groups[] = {
-+	&iio_trig_attr_group,
-+	NULL
-+};
- 
- int iio_trigger_register(struct iio_trigger *trig_info)
- {
-@@ -88,10 +82,6 @@ int iio_trigger_register(struct iio_trigger *trig_info)
- 	if (ret)
- 		goto error_unregister_id;
- 
--	ret = iio_trigger_register_sysfs(trig_info);
--	if (ret)
--		goto error_device_del;
--
- 	/* Add to list of available triggers held by the IIO core */
- 	mutex_lock(&iio_trigger_list_lock);
- 	list_add_tail(&trig_info->list, &iio_trigger_list);
-@@ -99,8 +89,6 @@ int iio_trigger_register(struct iio_trigger *trig_info)
- 
- 	return 0;
- 
--error_device_del:
--	device_del(&trig_info->dev);
- error_unregister_id:
- 	ida_simple_remove(&iio_trigger_ida, trig_info->id);
- error_ret:
-@@ -114,7 +102,6 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
- 	list_del(&trig_info->list);
- 	mutex_unlock(&iio_trigger_list_lock);
- 
--	iio_trigger_unregister_sysfs(trig_info);
- 	ida_simple_remove(&iio_trigger_ida, trig_info->id);
- 	/* Possible issue in here */
- 	device_unregister(&trig_info->dev);
-@@ -406,6 +393,7 @@ static void iio_trig_release(struct device *device)
- 
- static struct device_type iio_trig_type = {
- 	.release = iio_trig_release,
-+	.groups = iio_trig_attr_groups,
- };
- 
- static void iio_trig_subirqmask(struct irq_data *d)
--- 
-1.7.10
+On 07/05/2012 09:57 AM, Lars-Peter Clausen wrote:
+> The name sysfs attribute is the same for all triggers, so there is no need to
+> register them dynamically at runtime. Create a attribute group for it and set it
+> up for the bus attribute group. This also avoids a possible race condition
+> where the uevent for the device is sent before the name sysfs attribute has been
+> added.
+Hmm. I thought this wouldn't work having run into problems before
+with initializing sysfs groups twice. Afterall we poke the same group in
+via the groups bit of device when creating these.  It appears this
+particular combination is fine though as it doesn't have to create a
+directory (which is where issues otherwise occur).  Nice clean up.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+merged.
+> ---
+>  drivers/iio/industrialio-trigger.c |   38 ++++++++++++------------------------
+>  1 file changed, 13 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> index ec653fb..24ed31f 100644
+> --- a/drivers/iio/industrialio-trigger.c
+> +++ b/drivers/iio/industrialio-trigger.c
+> @@ -51,25 +51,19 @@ static ssize_t iio_trigger_read_name(struct device *dev,
+>  
+>  static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
+>  
+> -/**
+> - * iio_trigger_register_sysfs() - create a device for this trigger
+> - * @trig_info:	the trigger
+> - *
+> - * Also adds any control attribute registered by the trigger driver
+> - **/
+> -static int iio_trigger_register_sysfs(struct iio_trigger *trig_info)
+> -{
+> -	return sysfs_add_file_to_group(&trig_info->dev.kobj,
+> -				       &dev_attr_name.attr,
+> -				       NULL);
+> -}
+> +static struct attribute *iio_trig_dev_attrs[] = {
+> +	&dev_attr_name.attr,
+> +	NULL,
+> +};
+>  
+> -static void iio_trigger_unregister_sysfs(struct iio_trigger *trig_info)
+> -{
+> -	sysfs_remove_file_from_group(&trig_info->dev.kobj,
+> -					   &dev_attr_name.attr,
+> -					   NULL);
+> -}
+> +static struct attribute_group iio_trig_attr_group = {
+> +	.attrs	= iio_trig_dev_attrs,
+> +};
+> +
+> +static const struct attribute_group *iio_trig_attr_groups[] = {
+> +	&iio_trig_attr_group,
+> +	NULL
+> +};
+>  
+>  int iio_trigger_register(struct iio_trigger *trig_info)
+>  {
+> @@ -88,10 +82,6 @@ int iio_trigger_register(struct iio_trigger *trig_info)
+>  	if (ret)
+>  		goto error_unregister_id;
+>  
+> -	ret = iio_trigger_register_sysfs(trig_info);
+> -	if (ret)
+> -		goto error_device_del;
+> -
+>  	/* Add to list of available triggers held by the IIO core */
+>  	mutex_lock(&iio_trigger_list_lock);
+>  	list_add_tail(&trig_info->list, &iio_trigger_list);
+> @@ -99,8 +89,6 @@ int iio_trigger_register(struct iio_trigger *trig_info)
+>  
+>  	return 0;
+>  
+> -error_device_del:
+> -	device_del(&trig_info->dev);
+>  error_unregister_id:
+>  	ida_simple_remove(&iio_trigger_ida, trig_info->id);
+>  error_ret:
+> @@ -114,7 +102,6 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
+>  	list_del(&trig_info->list);
+>  	mutex_unlock(&iio_trigger_list_lock);
+>  
+> -	iio_trigger_unregister_sysfs(trig_info);
+>  	ida_simple_remove(&iio_trigger_ida, trig_info->id);
+>  	/* Possible issue in here */
+>  	device_unregister(&trig_info->dev);
+> @@ -406,6 +393,7 @@ static void iio_trig_release(struct device *device)
+>  
+>  static struct device_type iio_trig_type = {
+>  	.release = iio_trig_release,
+> +	.groups = iio_trig_attr_groups,
+>  };
+>  
+>  static void iio_trig_subirqmask(struct irq_data *d)
+> 
