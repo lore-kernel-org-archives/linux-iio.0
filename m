@@ -1,45 +1,36 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54636 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752181Ab2GCR1b (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Jul 2012 13:27:31 -0400
-Message-ID: <4FF32B7D.40303@kernel.org>
-Date: Tue, 03 Jul 2012 18:27:25 +0100
+Return-Path: <jic23@kernel.org>
+Message-ID: <4FF95490.6080803@kernel.org>
+Date: Sun, 08 Jul 2012 10:36:16 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/3] iio: another typo in comment
-References: <1341096463-13789-1-git-send-email-pmeerw@pmeerw.net> <1341096463-13789-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1341096463-13789-2-git-send-email-pmeerw@pmeerw.net>
+Subject: Re: [PATCH] iio: Fix inkern remove incorrect put of device
+References: <1341060923-10311-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <1341060923-10311-1-git-send-email-jic23@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/30/2012 11:47 PM, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+On 06/30/2012 01:55 PM, Jonathan Cameron wrote:
+> The device_get is after this point so on error we should not be
+> removing it.
+> 
+merged to fixes.
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 > ---
->  include/linux/iio/iio.h |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/inkern.c | 1 -
+>  1 file changed, 1 deletion(-)
 > 
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index 2afbb6f..72f8851 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -220,7 +220,7 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
->   *			unlike modifiers.
->   * @datasheet_name:	A name used in in-kernel mapping of channels. It should
->   *			correspond to the first name that the channel is referred
-> - *			to by in the datasheet (e.g. IND), or the nearest
-> + *			to in the datasheet (e.g. IND), or the nearest
-Nope. The original is correct English. Referred to implies some sort of
-transference, referred to by implies that this name is used.
-
-There might be a better way of putting it, but it's not that uncommon a
-usage.
->   *			possible compound name (e.g. IND-INC).
->   * @modified:		Does a modifier apply to this channel. What these are
->   *			depends on the channel type.  Modifier is set in
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index 9a46ca6..e2aded0 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -193,7 +193,6 @@ struct iio_channel *iio_channel_get_all(const char *name)
+>  						c->map->adc_channel_label);
+>  		if (chans[mapind].channel == NULL) {
+>  			ret = -EINVAL;
+> -			iio_device_put(chans[mapind].indio_dev);
+>  			goto error_free_chans;
+>  		}
+>  		iio_device_get(chans[mapind].indio_dev);
 > 
-
-
