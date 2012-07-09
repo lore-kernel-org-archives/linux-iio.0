@@ -1,53 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:46885 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753224Ab2GJKpY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jul 2012 06:45:24 -0400
-From: Marek Vasut <marex@denx.de>
-To: Juergen Beisert <jbe@pengutronix.de>
-Subject: Re: [PATCH] IIO: Add basic MXS LRADC driver
-Date: Tue, 10 Jul 2012 12:45:22 +0200
-Cc: linux-arm-kernel@lists.infradead.org,
-	"Lars-Peter Clausen" <lars@metafoo.de>, linux-iio@vger.kernel.org
-References: <1341368129-20468-1-git-send-email-marex@denx.de> <4FFC056B.7020106@metafoo.de> <201207101241.24151.jbe@pengutronix.de>
-In-Reply-To: <201207101241.24151.jbe@pengutronix.de>
+Received: from smtp-out-150.synserver.de ([212.40.185.150]:1092 "EHLO
+	smtp-out-150.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752108Ab2GIJsu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Jul 2012 05:48:50 -0400
+Message-ID: <4FFAA9E8.6050906@metafoo.de>
+Date: Mon, 09 Jul 2012 11:52:40 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201207101245.23047.marex@denx.de>
+To: Juergen Beisert <jbe@pengutronix.de>
+CC: Marek Vasut <marex@denx.de>, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] IIO: Add basic MXS LRADC driver
+References: <1341368129-20468-1-git-send-email-marex@denx.de> <201207091119.44952.jbe@pengutronix.de>
+In-Reply-To: <201207091119.44952.jbe@pengutronix.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear Juergen Beisert,
-
-[...]
-
-> > >> But wait, you're getting interrupts on channel 0. Doesn't seem quite
-> > >> right. Did you happen to poke into the code and see where the issue
-> > >> might be?
-> > > 
-> > > No yet. But if you think this is not the intended behaviour of your
-> > > driver I will do a deeper look.
-> > 
-> > I don't know the hardware, but from what I've seen in the driver this
-> > behavior looks correct. When reading a physical channel the channel will
-> > be mapped to the first free virtual channel, afterward it is unmapped
-> > again.
+On 07/09/2012 11:19 AM, Juergen Beisert wrote:
+> Hi Marek,
 > 
-> Makes sense.
+> Marek Vasut wrote:
+>> This driver is very basic. It supports userland trigger, buffer and
+>> raw access to channels. The support for delay channels is missing
+>> altogether.
+>>
+>> Signed-off-by: Marek Vasut <marex@denx.de>
+>> Cc: Jonathan Cameron <jic23@kernel.org>
+>> Cc: Wolfgang Denk <wd@denx.de>
+>> Cc: Juergen Beisert <jbe@pengutronix.de>
+>> ---
+>>  drivers/staging/iio/adc/Kconfig     |   12 +
+>>  drivers/staging/iio/adc/Makefile    |    1 +
+>>  drivers/staging/iio/adc/mxs-lradc.c |  619 +++++++++++++++++++++++++++++++++++
+>>  3 files changed, 632 insertions(+) 
+>>  create mode 100644 drivers/staging/iio/adc/mxs-lradc.c
+>>
+>> [...]
 > 
-> > So if you are only reading a single channel it will always be mapped to
-> > first virtual channel. If you'd be using buffered mode and read multiple
-> > channels at once you'll probably get multiple interrupts on different
-> > virtual channels.
+> sorry for the delay, too much work at the same time. When I try to compile
+> your code I get:
 > 
-> So, the driver's behaviour is intended. Sorry for the noise.
+> drivers/staging/iio/adc/mxs-lradc.c:42:40: fatal error: linux/iio/triggered_buffer.h: No such file or directory
+> 
 
-Heh, my own driver confused me. I really better get back to this thing, I even 
-have the touchscreen part in the works. Sorry for the confusion.
+This file only got added recently, right now it is only in staging/staging-next
 
-> Regards,
-> Juergen
+- Lars
 
-Best regards,
-Marek Vasut
