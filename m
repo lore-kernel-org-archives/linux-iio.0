@@ -1,50 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45760 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757882Ab2GLTYm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Jul 2012 15:24:42 -0400
-Message-ID: <4FFF2479.6000801@kernel.org>
-Date: Thu, 12 Jul 2012 20:24:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, lars@metafoo.de
-Subject: Re: [PATCH v5] iio: add adjd_s311 I2C digital color sensor driver
-References: <1341955964-17975-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1341955964-17975-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mga09.intel.com ([134.134.136.24]:33275 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753198Ab2GIUdH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 9 Jul 2012 16:33:07 -0400
+From: srinivas pandruvada <srinivas.pandruvada@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: [PATCH] IIO: core: Add hysteresis in channel spec
+Date: Mon,  9 Jul 2012 13:22:31 -0700
+Message-Id: <1341865351-6673-1-git-send-email-srinivas.pandruvada@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/10/2012 10:32 PM, Peter Meerwald wrote:
-> sensor has 4 channels (10-bit each, R/G/B and clear), sensitivity
-> and gain is controlled in the driver by ext_info integration_time
-> and CHAN_INFO_HARDWAREGAIN
-> 
-> driver supports triggered buffer and IIO_CHAN_INFO_RAW to get the
-> sensor data
-> 
-> v5: address comments by Jonathan Cameron
-> * use macro for channel declaration
-> * get timestamp right before measurement
-> * cleanups
-> 
-> v4: address comments by Lars-Peter Clausen
-> * make sure trigger handler is exited with iio_trigger_notify_done()
->   and IRQ_HANDLED
-> * kfree()/kalloc() -> krealloc()
-> 
-> v3:
-> * fix warnings
-> 
-> v2: address comments by Lars-Peter Clausen
-> * buffer allocation now in update_scan_mode instead of in trigger
->   handler
-> * simplify trigger code (assume active_scan_mask is not empty, use
->   for_each_set_bit, use iio_push_to_buffer)
-> * reorder entry in Makefile and Kconfig
-> * fix remove
-> 
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Added hysteresis to the list of channel info enumeration, shared
+/separate bit defines and to postfix channel info strings.
 
-merged to togreg branch and pull request sent.
+Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
+---
+ drivers/iio/industrialio-core.c |    1 +
+ include/linux/iio/iio.h         |    5 +++++
+ 2 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1ddd886..ceb5d90 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -92,6 +92,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_FREQUENCY] = "frequency",
+ 	[IIO_CHAN_INFO_PHASE] = "phase",
+ 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
++	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
+ };
+ 
+ const struct iio_chan_spec
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 3a4f6a3..9ed1063 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -35,6 +35,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_FREQUENCY,
+ 	IIO_CHAN_INFO_PHASE,
+ 	IIO_CHAN_INFO_HARDWAREGAIN,
++	IIO_CHAN_INFO_HYSTERESIS,
+ };
+ 
+ #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
+@@ -100,6 +101,10 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
+ #define IIO_CHAN_INFO_HARDWAREGAIN_SHARED_BIT			\
+ 	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
++#define IIO_CHAN_INFO_HYSTERESIS_SEPARATE_BIT			\
++	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HYSTERESIS)
++#define IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT			\
++	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HYSTERESIS)
+ 
+ enum iio_endian {
+ 	IIO_CPU,
+-- 
+1.7.7.6
+
