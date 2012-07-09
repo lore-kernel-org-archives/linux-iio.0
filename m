@@ -3,76 +3,67 @@ From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 3/6] staging:iio:ad7192: Use iio_validate_scan_mask_onehot
-Date: Mon,  9 Jul 2012 11:00:49 +0200
-Message-Id: <1341824452-28803-3-git-send-email-lars@metafoo.de>
+Subject: [PATCH v2 2/6] iio: Introduce iio_validate_scan_mask_onehot
+Date: Mon,  9 Jul 2012 11:00:48 +0200
+Message-Id: <1341824452-28803-2-git-send-email-lars@metafoo.de>
 In-Reply-To: <1341824452-28803-1-git-send-email-lars@metafoo.de>
 References: <1341824452-28803-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Only one of the channels of the ad7192 may be sampled at a time. Use the new
-validate_scan_mask callback and the iio_validate_scan_mask_onehot function to
-implement this restriction. Previously this was implemented using
-available_scan_masks, but this requires a individual scan mask for each channel.
-
-Also the previous code was adding the scan index of the timestamp channel to
-each available scan mask, this is not required though since the timestamp
-channel is not restricted by the available scan masks and can be enabled or
-disabled independently. So the new code does not have to take care of this.
+Add a helper function for validating a scan mask for devices where exactly one
+channel must be selected during sampling. This is a common case among devices
+which have scan mask restrictions so it makes sense to provide this function in
+the core.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
-No changes since v1
+Make the check more strict and only accept scanmasks with exactly one bit set
+instead of one or less bits set.
 ---
- drivers/staging/iio/adc/ad7192.c |   10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ drivers/iio/industrialio-buffer.c |   16 ++++++++++++++++
+ include/linux/iio/buffer.h        |    3 +++
+ 2 files changed, 19 insertions(+)
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 839f17c..22c3923 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -146,7 +146,6 @@ struct ad7192_state {
- 	u32				mode;
- 	u32				conf;
- 	u32				scale_avail[8][2];
--	long				available_scan_masks[9];
- 	u8				gpocon;
- 	u8				devid;
- 	/*
-@@ -538,6 +537,7 @@ static const struct iio_buffer_setup_ops ad7192_ring_setup_ops = {
- 	.postenable = &iio_triggered_buffer_postenable,
- 	.predisable = &iio_triggered_buffer_predisable,
- 	.postdisable = &ad7192_ring_postdisable,
-+	.validate_scan_mask = &iio_validate_scan_mask_onehot,
- };
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index cc5db36..6e00042 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -570,6 +570,22 @@ int iio_sw_buffer_preenable(struct iio_dev *indio_dev)
+ }
+ EXPORT_SYMBOL(iio_sw_buffer_preenable);
  
- static int ad7192_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-@@ -984,7 +984,7 @@ static int __devinit ad7192_probe(struct spi_device *spi)
- 	struct ad7192_platform_data *pdata = spi->dev.platform_data;
- 	struct ad7192_state *st;
- 	struct iio_dev *indio_dev;
--	int ret, i , voltage_uv = 0;
-+	int ret , voltage_uv = 0;
++/**
++ * iio_validate_scan_mask_onehot() - Validates that exactly one channel is selected
++ * @indio_dev: the iio device
++ * @mask: scan mask to be checked
++ *
++ * Return true if exactly one bit is set in the scan mask, false otherwise. It
++ * can be used for devices where only one channel can be active for sampling at
++ * a time.
++ */
++bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
++	const unsigned long *mask)
++{
++	return bitmap_weight(mask, indio_dev->masklength) == 1;
++}
++EXPORT_SYMBOL_GPL(iio_validate_scan_mask_onehot);
++
+ static bool iio_validate_scan_mask(struct iio_dev *indio_dev,
+ 	const unsigned long *mask)
+ {
+diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+index ad4fb1a..cc92713 100644
+--- a/include/linux/iio/buffer.h
++++ b/include/linux/iio/buffer.h
+@@ -174,6 +174,9 @@ ssize_t iio_buffer_show_enable(struct device *dev,
  
- 	if (!pdata) {
- 		dev_err(&spi->dev, "no platform data?\n");
-@@ -1028,17 +1028,11 @@ static int __devinit ad7192_probe(struct spi_device *spi)
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = ad7192_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(ad7192_channels);
--	indio_dev->available_scan_masks = st->available_scan_masks;
- 	if (st->devid == ID_AD7195)
- 		indio_dev->info = &ad7195_info;
- 	else
- 		indio_dev->info = &ad7192_info;
+ int iio_sw_buffer_preenable(struct iio_dev *indio_dev);
  
--	for (i = 0; i < indio_dev->num_channels; i++)
--		st->available_scan_masks[i] = (1 << i) | (1 <<
--			indio_dev->channels[indio_dev->num_channels - 1].
--			scan_index);
--
- 	init_waitqueue_head(&st->wq_data_avail);
++bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
++	const unsigned long *mask);
++
+ #else /* CONFIG_IIO_BUFFER */
  
- 	ret = ad7192_register_ring_funcs_and_init(indio_dev);
+ static inline int iio_buffer_register(struct iio_dev *indio_dev,
 -- 
 1.7.10.4
