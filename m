@@ -1,66 +1,31 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <4FFC6DF7.4050602@kernel.org>
-Date: Tue, 10 Jul 2012 19:01:27 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Tue, 10 Jul 2012 20:15:33 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: Jon Brenner <jbrenner@taosinc.com>, linux-iio <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH V2] IIO channel type and modifiers for CCT and RGBC
+ data
+In-Reply-To: <4FFC6DF7.4050602@kernel.org>
+Message-ID: <alpine.DEB.2.01.1207102014100.19634@pmeerw.net>
+References: <1337183202.6344.1.camel@jonz-ub2> <alpine.DEB.2.01.1206140006370.29697@pmeerw.net> <4FD9906C.7090400@cam.ac.uk> <4FFBE302.40606@kernel.org> <4FFC6DF7.4050602@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>
-CC: Peter Meerwald <pmeerw@pmeerw.net>,
- Jon Brenner <jbrenner@taosinc.com>,
- linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH V2] IIO channel type and modifiers for CCT and RGBC data
-References: <1337183202.6344.1.camel@jonz-ub2> <alpine.DEB.2.01.1206140006370.29697@pmeerw.net> <4FD9906C.7090400@cam.ac.uk> <4FFBE302.40606@kernel.org>
-In-Reply-To: <4FFBE302.40606@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/10/2012 09:08 AM, Jonathan Cameron wrote:
-> Jon,
-> 
-> Peter raised the question below about this.
-> 
-> Now we have two varients of this patch. As it was original yours
-> Jon, could you rustle up a new version incorporating Peter's
-> one and if both of you sign off / ack it, I'll merge it.
 
-At Jon's request I've made the minor change below and done the merge
-with the current tree.  Could people take a look to make sure I haven't
-messed it up (was a little fiddly due to changing context).
+> I'll send out the pull if no one shouts. It's getting vaguely near the
+> end of this cycle...
 
-I'll send out the pull if no one shouts. It's getting vaguely near the
-end of this cycle...
+I'm happy this got merged finally
 
-Jonathan
-> 
-> Jonathan
->> On 6/13/2012 11:09 PM, Peter Meerwald wrote:
->>>
->>>> Add iio channel type and modifiers for Correlated Color Temperature
->>>> (CCT)
->>>> and RGBC (red/green/blue/clear) data.
->>>
->>>> +What:
->>>> /sys/bus/iio/devices/device[n]/in_intensity_clear[_input|_raw]
->>>> +What:
->>>> /sys/bus/iio/devices/device[n]/in_intensity_red[_input|_raw]
->>>> +What:
->>>> /sys/bus/iio/devices/device[n]/in_intensity_green[_input|_raw]
->>>> +What:
->>>> /sys/bus/iio/devices/device[n]/in_intensity_blue[_input|_raw]
->>>> +KernelVersion:    3.4.0
->>>> +Contact:    linux-iio@vger.kernel.org
->>>> +Description:
->>>> +        This property is supported by sensors that have a RGBC
->>>> +        sensing mode. This value should be the output from a reading
->>>> +        and if expressed in SI units, should include _input. If this
->>>> +        value is not in SI units (irradiance, uW/mm), then it should
->>>> +        include _raw.
->>>
->>> should the irradiance unit be uW/mm^2 ??
->> or just W/m^2? Whichever people prefer! Good spot Peter.
->>
->> -- 
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> 
+> >>>> +KernelVersion:    3.4.0
+> >>>> +Contact:    linux-iio@vger.kernel.org
+
+should be 3.6?
+
+regards, p.
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
