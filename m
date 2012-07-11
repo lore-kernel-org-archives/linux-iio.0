@@ -1,35 +1,98 @@
-Return-Path: <rdunlap@xenotime.net>
-Message-ID: <4FFD1458.6000404@xenotime.net>
-Date: Tue, 10 Jul 2012 22:51:20 -0700
-From: Randy Dunlap <rdunlap@xenotime.net>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Randy Dunlap <rdunlap@xenotime.net>,
+	linux-next@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio: ad5064: Move bus write callbacks to #if protected sections
+Date: Wed, 11 Jul 2012 10:01:30 +0200
+Message-Id: <1341993690-19125-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <4FFD1458.6000404@xenotime.net>
+References: <4FFD1458.6000404@xenotime.net>
 MIME-Version: 1.0
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-CC: linux-next@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
- linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
- Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: linux-next: Tree for July 10 (iio)
-References: <20120710174320.3b7dd806e20ee74ca1b1685f@canb.auug.org.au>
-In-Reply-To: <20120710174320.3b7dd806e20ee74ca1b1685f@canb.auug.org.au>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/10/2012 12:43 AM, Stephen Rothwell wrote:
+Move the SPI and I2C specific write callbacks to the respective
+"#if IS_ENABLED(CONFIG_SPI_MASTER)" and "#if IS_ENABLED(CONFIG_I2C)"
+protected sections of the code.
 
-> Hi all,
-> 
-> Changes since 20120709:
-> 
+This fixes the following warning which occurs if CONFIG_I2C is not set:
+	drivers/iio/dac/ad5064.c: In function ‘ad5064_i2c_write’:
+	drivers/iio/dac/ad5064.c:132: error: implicit declaration of function ‘i2c_master_send’
 
+And the follwing warning which occurs when CONFIG_SPI_MASTER is not set:
+	drivers/iio/dac/ad5064.c:137: warning: ‘ad5064_spi_write’ defined but not used
 
+Reported-by: Randy Dunlap <rdunlap@xenotime.net>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/dac/ad5064.c |   38 +++++++++++++++++++-------------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
-on x86_64:
-
-drivers/iio/dac/ad5064.c: In function 'ad5064_i2c_write':
-drivers/iio/dac/ad5064.c:132:2: error: implicit declaration of function 'i2c_master_send'
-
-
-
-
+diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+index aa739c4..de2c368 100644
+--- a/drivers/iio/dac/ad5064.c
++++ b/drivers/iio/dac/ad5064.c
+@@ -122,25 +122,6 @@ enum ad5064_type {
+ 	ID_AD5668_2,
+ };
+ 
+-static int ad5064_i2c_write(struct ad5064_state *st, unsigned int cmd,
+-	unsigned int addr, unsigned int val)
+-{
+-	struct i2c_client *i2c = to_i2c_client(st->dev);
+-
+-	st->data.i2c[0] = (cmd << 4) | addr;
+-	put_unaligned_be16(val, &st->data.i2c[1]);
+-	return i2c_master_send(i2c, st->data.i2c, 3);
+-}
+-
+-static int ad5064_spi_write(struct ad5064_state *st, unsigned int cmd,
+-	unsigned int addr, unsigned int val)
+-{
+-	struct spi_device *spi = to_spi_device(st->dev);
+-
+-	st->data.spi = cpu_to_be32(AD5064_CMD(cmd) | AD5064_ADDR(addr) | val);
+-	return spi_write(spi, &st->data.spi, sizeof(st->data.spi));
+-}
+-
+ static int ad5064_write(struct ad5064_state *st, unsigned int cmd,
+ 	unsigned int addr, unsigned int val, unsigned int shift)
+ {
+@@ -533,6 +514,15 @@ static int __devexit ad5064_remove(struct device *dev)
+ 
+ #if IS_ENABLED(CONFIG_SPI_MASTER)
+ 
++static int ad5064_spi_write(struct ad5064_state *st, unsigned int cmd,
++	unsigned int addr, unsigned int val)
++{
++	struct spi_device *spi = to_spi_device(st->dev);
++
++	st->data.spi = cpu_to_be32(AD5064_CMD(cmd) | AD5064_ADDR(addr) | val);
++	return spi_write(spi, &st->data.spi, sizeof(st->data.spi));
++}
++
+ static int __devinit ad5064_spi_probe(struct spi_device *spi)
+ {
+ 	const struct spi_device_id *id = spi_get_device_id(spi);
+@@ -596,6 +586,16 @@ static inline void ad5064_spi_unregister_driver(void) { }
+ 
+ #if IS_ENABLED(CONFIG_I2C)
+ 
++static int ad5064_i2c_write(struct ad5064_state *st, unsigned int cmd,
++	unsigned int addr, unsigned int val)
++{
++	struct i2c_client *i2c = to_i2c_client(st->dev);
++
++	st->data.i2c[0] = (cmd << 4) | addr;
++	put_unaligned_be16(val, &st->data.i2c[1]);
++	return i2c_master_send(i2c, st->data.i2c, 3);
++}
++
+ static int __devinit ad5064_i2c_probe(struct i2c_client *i2c,
+ 	const struct i2c_device_id *id)
+ {
 -- 
-
-~Randy
+1.7.10.4
