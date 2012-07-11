@@ -1,48 +1,35 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45757 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755728Ab2GLTYE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Jul 2012 15:24:04 -0400
-Message-ID: <4FFF2452.5050003@kernel.org>
-Date: Thu, 12 Jul 2012 20:24:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <rdunlap@xenotime.net>
+Message-ID: <4FFD1458.6000404@xenotime.net>
+Date: Tue, 10 Jul 2012 22:51:20 -0700
+From: Randy Dunlap <rdunlap@xenotime.net>
 MIME-Version: 1.0
-To: Dan Carpenter <dan.carpenter@oracle.com>
-CC: linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [patch] iio: double unlock on error path
-References: <20120711063443.GE11812@elgon.mountain>
-In-Reply-To: <20120711063443.GE11812@elgon.mountain>
+To: Stephen Rothwell <sfr@canb.auug.org.au>
+CC: linux-next@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+ linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+ Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: linux-next: Tree for July 10 (iio)
+References: <20120710174320.3b7dd806e20ee74ca1b1685f@canb.auug.org.au>
+In-Reply-To: <20120710174320.3b7dd806e20ee74ca1b1685f@canb.auug.org.au>
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/11/2012 07:34 AM, Dan Carpenter wrote:
-> We should be holding the mutex when we goto error_free_chans.
-> 
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-merged to fixes-togreg branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+On 07/10/2012 12:43 AM, Stephen Rothwell wrote:
 
-and pull request sent.  Thanks.
+> Hi all,
 > 
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index e2aded0..b5afc2f 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -198,11 +198,12 @@ struct iio_channel *iio_channel_get_all(const char *name)
->  		iio_device_get(chans[mapind].indio_dev);
->  		mapind++;
->  	}
-> -	mutex_unlock(&iio_map_list_lock);
->  	if (mapind == 0) {
->  		ret = -ENODEV;
->  		goto error_free_chans;
->  	}
-> +	mutex_unlock(&iio_map_list_lock);
-> +
->  	return chans;
->  
->  error_free_chans:
+> Changes since 20120709:
 > 
 
 
+
+on x86_64:
+
+drivers/iio/dac/ad5064.c: In function 'ad5064_i2c_write':
+drivers/iio/dac/ad5064.c:132:2: error: implicit declaration of function 'i2c_master_send'
+
+
+
+
+-- 
+
+~Randy
