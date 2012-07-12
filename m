@@ -1,70 +1,71 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jon Brenner <jbrenner@taosinc.com>
-Subject: [PATCH 2/4] staging:iio:tsl2x7x: Fix client data inconsistency
-Date: Fri, 13 Jul 2012 14:04:07 +0200
-Message-Id: <1342181050-22579-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1342181050-22579-1-git-send-email-lars@metafoo.de>
-References: <1342181050-22579-1-git-send-email-lars@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45724 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757823Ab2GLTVF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Jul 2012 15:21:05 -0400
+Message-ID: <4FFF239F.5090502@kernel.org>
+Date: Thu, 12 Jul 2012 20:21:03 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [GIT PULL] IIO enhancements for staging-next
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-In probe the I2C client data is set to the iio_dev struct in probe(), but
-assumed to be the tsl2X7X_chip struct in remove(). Fix this by reading the
-client data back as iio_dev as well.
+The following changes since commit c732a24c5a9392cf3738f5957e0d97d37c09e6e1:
 
-The issue has been discovered using the following coccinelle patch:
+  staging:iio:adt7410: use local platformdata if none is specified
+(2012-07-08 10:39:59 +0100)
 
-// <smpl>
-@r1@
-type T;
-T data;
-expression dev;
-@@
-(
-i2c_set_clientdata(dev, (void *)data)
-|
-i2c_set_clientdata(dev, data)
-)
+are available in the git repository at:
 
-@r2@
-type r1.T;
-T data;
-position p;
-expression dev;
-@@
-data = i2c_get_clientdata@p(dev)
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+tags/togreg-3.6a
 
-@depends on r1@
-position p != r2.p;
-expression dev;
-identifier data;
-@@
-*data = i2c_get_clientdata@p(dev)
-// </smpl>
+for you to fetch changes up to bbdb822c4c3f8dbefd8f6dc84f6d98c33af6e051:
 
-Cc: Jon Brenner <jbrenner@taosinc.com>
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/light/tsl2x7x_core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+  iio: add adjd_s311 I2C digital color sensor driver (2012-07-12
+17:45:34 +0100)
 
-diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
-index fdf75e4..7944686 100644
---- a/drivers/staging/iio/light/tsl2x7x_core.c
-+++ b/drivers/staging/iio/light/tsl2x7x_core.c
-@@ -2028,8 +2028,8 @@ static int tsl2x7x_resume(struct device *dev)
- 
- static int __devexit tsl2x7x_remove(struct i2c_client *client)
- {
--	struct tsl2X7X_chip *chip = i2c_get_clientdata(client);
--	struct iio_dev *indio_dev = iio_priv_to_dev(chip);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
- 
- 	tsl2x7x_chip_off(indio_dev);
- 
--- 
-1.7.10.4
+----------------------------------------------------------------
+One new driver and a couple of nice cleanups.
+
+----------------------------------------------------------------
+I'm still working on a coherent tag naming. Suggestions welcome!
+
+Jon Brenner (1):
+      IIO channel type and modifiers for CCT and RGBC data
+
+Jonathan Cameron (1):
+      iio: Trivial documentation fix to correct kernel version info in
+   21cd1fab058671313f7c178b640999fcd0d8de21
+
+Lars-Peter Clausen (5):
+      iio: Add callback to check whether a scan mask is valid
+      iio: Introduce iio_validate_scan_mask_onehot
+      staging:iio:ad7192: Use iio_validate_scan_mask_onehot
+      staging:iio:ad7793: Use iio_validate_scan_mask_onehot
+      staging:iio:ade7758: Use iio_validate_scan_mask_onehot
+
+Peter Meerwald (1):
+      iio: add adjd_s311 I2C digital color sensor driver
+
+ drivers/iio/industrialio-buffer.c                  |  43 ++-
+ drivers/iio/industrialio-core.c                    |   5 +
+ drivers/iio/light/Kconfig                          |  12 +
+ drivers/iio/light/Makefile                         |   1 +
+ drivers/iio/light/adjd_s311.c                      | 364
++++++++++++++++++++++
+ .../staging/iio/Documentation/sysfs-bus-iio-light  |  23 ++
+ drivers/staging/iio/adc/ad7192.c                   |  10 +-
+ drivers/staging/iio/adc/ad7793.c                   |  14 +-
+ drivers/staging/iio/meter/ade7758.h                |   1 -
+ drivers/staging/iio/meter/ade7758_core.c           |   7 +-
+ drivers/staging/iio/meter/ade7758_ring.c           |   1 +
+ include/linux/iio/buffer.h                         |   3 +
+ include/linux/iio/iio.h                            |   4 +
+ include/linux/iio/types.h                          |   5 +
+ 14 files changed, 460 insertions(+), 33 deletions(-)
+ create mode 100644 drivers/iio/light/adjd_s311.c
