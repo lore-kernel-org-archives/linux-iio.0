@@ -3,16 +3,17 @@ From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Roland Stigge <stigge@antcom.de>
-Subject: [PATCH 3/4] staging:iio:lpc32xx_adc: Ensure request_irq and free_irq dev_id parameter match
-Date: Fri, 13 Jul 2012 14:04:08 +0200
-Message-Id: <1342181050-22579-3-git-send-email-lars@metafoo.de>
+	Jon Brenner <jbrenner@taosinc.com>
+Subject: [PATCH 2/4] staging:iio:tsl2x7x: Fix client data inconsistency
+Date: Fri, 13 Jul 2012 14:04:07 +0200
+Message-Id: <1342181050-22579-2-git-send-email-lars@metafoo.de>
 In-Reply-To: <1342181050-22579-1-git-send-email-lars@metafoo.de>
 References: <1342181050-22579-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-The data parameters for request_irq and free_irq have to match, otherwise the
-IRQ wont be freed.
+In probe the I2C client data is set to the iio_dev struct in probe(), but
+assumed to be the tsl2X7X_chip struct in remove(). Fix this by reading the
+client data back as iio_dev as well.
 
 The issue has been discovered using the following coccinelle patch:
 
@@ -20,62 +21,50 @@ The issue has been discovered using the following coccinelle patch:
 @r1@
 type T;
 T data;
+expression dev;
 @@
 (
-request_irq(..., (void *)data)
+i2c_set_clientdata(dev, (void *)data)
 |
-request_irq(..., data)
-|
-request_threaded_irq(..., (void *)data)
-|
-request_threaded_irq(..., data)
+i2c_set_clientdata(dev, data)
 )
 
 @r2@
 type r1.T;
 T data;
 position p;
+expression dev;
 @@
-(
-free_irq@p(..., (void *)data)
-|
-free_irq@p(..., data)
-)
+data = i2c_get_clientdata@p(dev)
 
 @depends on r1@
 position p != r2.p;
+expression dev;
+identifier data;
 @@
-*free_irq@p(...)
-
+*data = i2c_get_clientdata@p(dev)
 // </smpl>
 
-Cc: Roland Stigge <stigge@antcom.de>
+Cc: Jon Brenner <jbrenner@taosinc.com>
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/lpc32xx_adc.c |    4 ++--
+ drivers/staging/iio/light/tsl2x7x_core.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/lpc32xx_adc.c b/drivers/staging/iio/adc/lpc32xx_adc.c
-index 9690306..348d051 100644
---- a/drivers/staging/iio/adc/lpc32xx_adc.c
-+++ b/drivers/staging/iio/adc/lpc32xx_adc.c
-@@ -196,7 +196,7 @@ static int __devinit lpc32xx_adc_probe(struct platform_device *pdev)
- 	return 0;
+diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
+index fdf75e4..7944686 100644
+--- a/drivers/staging/iio/light/tsl2x7x_core.c
++++ b/drivers/staging/iio/light/tsl2x7x_core.c
+@@ -2028,8 +2028,8 @@ static int tsl2x7x_resume(struct device *dev)
  
- errout5:
--	free_irq(irq, iodev);
-+	free_irq(irq, info);
- errout4:
- 	clk_put(info->clk);
- errout3:
-@@ -214,7 +214,7 @@ static int __devexit lpc32xx_adc_remove(struct platform_device *pdev)
- 	int irq = platform_get_irq(pdev, 0);
+ static int __devexit tsl2x7x_remove(struct i2c_client *client)
+ {
+-	struct tsl2X7X_chip *chip = i2c_get_clientdata(client);
+-	struct iio_dev *indio_dev = iio_priv_to_dev(chip);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
  
- 	iio_device_unregister(iodev);
--	free_irq(irq, iodev);
-+	free_irq(irq, info);
- 	platform_set_drvdata(pdev, NULL);
- 	clk_put(info->clk);
- 	iounmap(info->adc_base);
+ 	tsl2x7x_chip_off(indio_dev);
+ 
 -- 
 1.7.10.4
