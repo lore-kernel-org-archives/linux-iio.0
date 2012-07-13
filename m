@@ -3,10 +3,10 @@ From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Jon Brenner <jbrenner@taosinc.com>
-Subject: [PATCH 4/4] staging:iio:tsl2x7x: Ensure request_irq and free_irq dev_id parameter match
-Date: Fri, 13 Jul 2012 14:04:09 +0200
-Message-Id: <1342181050-22579-4-git-send-email-lars@metafoo.de>
+	Roland Stigge <stigge@antcom.de>
+Subject: [PATCH 3/4] staging:iio:lpc32xx_adc: Ensure request_irq and free_irq dev_id parameter match
+Date: Fri, 13 Jul 2012 14:04:08 +0200
+Message-Id: <1342181050-22579-3-git-send-email-lars@metafoo.de>
 In-Reply-To: <1342181050-22579-1-git-send-email-lars@metafoo.de>
 References: <1342181050-22579-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
@@ -49,30 +49,33 @@ position p != r2.p;
 
 // </smpl>
 
-Cc: Jon Brenner <jbrenner@taosinc.com>
+Cc: Roland Stigge <stigge@antcom.de>
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/light/tsl2x7x_core.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/staging/iio/adc/lpc32xx_adc.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
-index 7944686..497a977 100644
---- a/drivers/staging/iio/light/tsl2x7x_core.c
-+++ b/drivers/staging/iio/light/tsl2x7x_core.c
-@@ -2029,13 +2029,12 @@ static int tsl2x7x_resume(struct device *dev)
- static int __devexit tsl2x7x_remove(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+diff --git a/drivers/staging/iio/adc/lpc32xx_adc.c b/drivers/staging/iio/adc/lpc32xx_adc.c
+index 9690306..348d051 100644
+--- a/drivers/staging/iio/adc/lpc32xx_adc.c
++++ b/drivers/staging/iio/adc/lpc32xx_adc.c
+@@ -196,7 +196,7 @@ static int __devinit lpc32xx_adc_probe(struct platform_device *pdev)
+ 	return 0;
  
- 	tsl2x7x_chip_off(indio_dev);
+ errout5:
+-	free_irq(irq, iodev);
++	free_irq(irq, info);
+ errout4:
+ 	clk_put(info->clk);
+ errout3:
+@@ -214,7 +214,7 @@ static int __devexit lpc32xx_adc_remove(struct platform_device *pdev)
+ 	int irq = platform_get_irq(pdev, 0);
  
- 	iio_device_unregister(indio_dev);
- 	if (client->irq)
--		free_irq(client->irq, chip->client->name);
-+		free_irq(client->irq, indio_dev);
- 
- 	iio_device_free(indio_dev);
- 
+ 	iio_device_unregister(iodev);
+-	free_irq(irq, iodev);
++	free_irq(irq, info);
+ 	platform_set_drvdata(pdev, NULL);
+ 	clk_put(info->clk);
+ 	iounmap(info->adc_base);
 -- 
 1.7.10.4
