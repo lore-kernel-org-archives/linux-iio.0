@@ -1,47 +1,56 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <50046AF2.8020907@gmx.de>
-Date: Mon, 16 Jul 2012 21:26:42 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46489 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750808Ab2GOSTl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Jul 2012 14:19:41 -0400
+Message-ID: <500309B8.60009@kernel.org>
+Date: Sun, 15 Jul 2012 19:19:36 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH 1/2] fixes for adt7410
-References: <50032AC1.1030207@gmx.de> <50032F46.9040904@metafoo.de> <50033B3F.70304@gmx.de> <5003E635.8080200@metafoo.de>
-In-Reply-To: <5003E635.8080200@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [GIT PULL] iio fixes for staging/staging-next.
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Lars-Peter Clausen schrieb:
-> On 07/15/2012 11:50 PM, Hartmut Knaack wrote:
->> Lars-Peter Clausen schrieb:
->>> On 07/15/2012 10:40 PM, Hartmut Knaack wrote:
->>>> This patch adds some checks prior to accessing device attribute lists in industrialio-event.c.
->>>>
->>>> Signed-off-by: Harmut Knaack <knaack.h@gmx.de>
->>>> ---
->>>> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
->>>> index b49059d..fe68e90 100644
->>>> --- a/drivers/iio/industrialio-event.c
->>>> +++ b/drivers/iio/industrialio-event.c
->>>> @@ -425,11 +425,13 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
->>>>                 *attrcount_orig);
->>>>      attrn = attrcount_orig;
->>>>      /* Add all elements from the list. */
->>>> -    list_for_each_entry(p,
->>>> -                &indio_dev->event_interface->dev_attr_list,
->>>> -                l)
->>>> -        indio_dev->event_interface->group.attrs[attrn++] =
->>>> -            &p->dev_attr.attr;
->>>> +    if (indio_dev->event_interface->dev_attr_list.next)
->>> next should never be NULL. If it is this means that INIT_LIST_HEAD has not
->>> been called on the list and the correct fix is to make sure that it is called.
->> Exactly. If the channels-attributes have not been set, INIT_LIST_HEAD (called through __iio_add_event_config_attrs) is not called. So, should we just stop instantiating the device if it does not have channel information?
-> The correct fix is to call INIT_LIST_HEAD right after the struct which
-> contains the list has been allocated. Sascha already sent a patch which does
-> this as well. See: http://www.spinics.net/lists/linux-iio/msg05946.html
->
-> - Lars
->
-Alright, never mind then. I'm looking forward to see those changes in mainline kernel :-)
+The following changes since commit 2b6e6b8042a9f783170b0a15e0550a075381726e:
 
-Hartmut
+  staging: comedi: rtd520: remove RtdDio0Read macro (2012-07-13 08:12:31 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git fixes-togreg
+
+for you to fetch changes up to dcbc3c414e62faa4e1a1e17421f89eceea6bee30:
+
+  iio staging: fix cast warning and cleanup alignment code (2012-07-15 17:33:18 +0100)
+
+----------------------------------------------------------------
+3 types of fix here.
+
+1) Incorrect pointer casting via phys_addr_t which causes
+   trouble on some architectures.
+2) request_irq and free_irq dev_id parameters not matching.
+3) Inconsistencies in client_data for some i2c devices
+(writing one pointer and expecting another later).
+
+----------------------------------------------------------------
+Lars-Peter Clausen (4):
+      staging:iio:adis16260: Fix drvdata inconsistency
+      staging:iio:tsl2x7x: Fix client data inconsistency
+      staging:iio:lpc32xx_adc: Ensure request_irq and free_irq dev_id parameter match
+      staging:iio:tsl2x7x: Ensure request_irq and free_irq dev_id parameter match
+
+Peter Meerwald (3):
+      iio: fix pointer cast warning
+      iio staging: fix cast warning
+      iio staging: fix cast warning and cleanup alignment code
+
+ drivers/iio/light/adjd_s311.c                 | 2 +-
+ drivers/staging/iio/accel/lis3l02dq_ring.c    | 3 +--
+ drivers/staging/iio/adc/lpc32xx_adc.c         | 4 ++--
+ drivers/staging/iio/gyro/adis16260_core.c     | 2 +-
+ drivers/staging/iio/iio_simple_dummy_buffer.c | 2 +-
+ drivers/staging/iio/light/tsl2x7x_core.c      | 5 ++---
+ 6 files changed, 8 insertions(+), 10 deletions(-)
