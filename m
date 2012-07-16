@@ -1,43 +1,47 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5003E635.8080200@metafoo.de>
-Date: Mon, 16 Jul 2012 12:00:21 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <50046AF2.8020907@gmx.de>
+Date: Mon, 16 Jul 2012 21:26:42 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>
+To: Lars-Peter Clausen <lars@metafoo.de>
 CC: linux-iio@vger.kernel.org, jic23@kernel.org
 Subject: Re: [PATCH 1/2] fixes for adt7410
-References: <50032AC1.1030207@gmx.de> <50032F46.9040904@metafoo.de> <50033B3F.70304@gmx.de>
-In-Reply-To: <50033B3F.70304@gmx.de>
+References: <50032AC1.1030207@gmx.de> <50032F46.9040904@metafoo.de> <50033B3F.70304@gmx.de> <5003E635.8080200@metafoo.de>
+In-Reply-To: <5003E635.8080200@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/15/2012 11:50 PM, Hartmut Knaack wrote:
-> Lars-Peter Clausen schrieb:
->> On 07/15/2012 10:40 PM, Hartmut Knaack wrote:
->>> This patch adds some checks prior to accessing device attribute lists in industrialio-event.c.
->>>
->>> Signed-off-by: Harmut Knaack <knaack.h@gmx.de>
->>> ---
->>> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
->>> index b49059d..fe68e90 100644
->>> --- a/drivers/iio/industrialio-event.c
->>> +++ b/drivers/iio/industrialio-event.c
->>> @@ -425,11 +425,13 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
->>>                 *attrcount_orig);
->>>      attrn = attrcount_orig;
->>>      /* Add all elements from the list. */
->>> -    list_for_each_entry(p,
->>> -                &indio_dev->event_interface->dev_attr_list,
->>> -                l)
->>> -        indio_dev->event_interface->group.attrs[attrn++] =
->>> -            &p->dev_attr.attr;
->>> +    if (indio_dev->event_interface->dev_attr_list.next)
->> next should never be NULL. If it is this means that INIT_LIST_HEAD has not
->> been called on the list and the correct fix is to make sure that it is called.
-> Exactly. If the channels-attributes have not been set, INIT_LIST_HEAD (called through __iio_add_event_config_attrs) is not called. So, should we just stop instantiating the device if it does not have channel information?
+Lars-Peter Clausen schrieb:
+> On 07/15/2012 11:50 PM, Hartmut Knaack wrote:
+>> Lars-Peter Clausen schrieb:
+>>> On 07/15/2012 10:40 PM, Hartmut Knaack wrote:
+>>>> This patch adds some checks prior to accessing device attribute lists in industrialio-event.c.
+>>>>
+>>>> Signed-off-by: Harmut Knaack <knaack.h@gmx.de>
+>>>> ---
+>>>> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+>>>> index b49059d..fe68e90 100644
+>>>> --- a/drivers/iio/industrialio-event.c
+>>>> +++ b/drivers/iio/industrialio-event.c
+>>>> @@ -425,11 +425,13 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
+>>>>                 *attrcount_orig);
+>>>>      attrn = attrcount_orig;
+>>>>      /* Add all elements from the list. */
+>>>> -    list_for_each_entry(p,
+>>>> -                &indio_dev->event_interface->dev_attr_list,
+>>>> -                l)
+>>>> -        indio_dev->event_interface->group.attrs[attrn++] =
+>>>> -            &p->dev_attr.attr;
+>>>> +    if (indio_dev->event_interface->dev_attr_list.next)
+>>> next should never be NULL. If it is this means that INIT_LIST_HEAD has not
+>>> been called on the list and the correct fix is to make sure that it is called.
+>> Exactly. If the channels-attributes have not been set, INIT_LIST_HEAD (called through __iio_add_event_config_attrs) is not called. So, should we just stop instantiating the device if it does not have channel information?
+> The correct fix is to call INIT_LIST_HEAD right after the struct which
+> contains the list has been allocated. Sascha already sent a patch which does
+> this as well. See: http://www.spinics.net/lists/linux-iio/msg05946.html
+>
+> - Lars
+>
+Alright, never mind then. I'm looking forward to see those changes in mainline kernel :-)
 
-The correct fix is to call INIT_LIST_HEAD right after the struct which
-contains the list has been allocated. Sascha already sent a patch which does
-this as well. See: http://www.spinics.net/lists/linux-iio/msg05946.html
-
-- Lars
+Hartmut
