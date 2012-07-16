@@ -1,38 +1,34 @@
-Return-Path: <jic23@cam.ac.uk>
-Message-ID: <5003FAA7.4070602@cam.ac.uk>
-Date: Mon, 16 Jul 2012 12:27:35 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52606 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751410Ab2GPI0Z (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jul 2012 04:26:25 -0400
+Received: from [192.168.27.111] (unknown [81.138.163.57])
+	by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 2B6A14026C
+	for <linux-iio@vger.kernel.org>; Mon, 16 Jul 2012 09:26:22 +0100 (BST)
+Message-ID: <5003D02D.10601@kernel.org>
+Date: Mon, 16 Jul 2012 09:26:21 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: Michael Hennerich <michael.hennerich@analog.com>,
- "jic23@kernel.org" <jic23@kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "device-drivers-devel@blackfin.uclinux.org" <device-drivers-devel@blackfin.uclinux.org>,
- "fengguang.wu@intel.com" <fengguang.wu@intel.com>
-Subject: Re: [PATCH] iio: staging: ad7298_ring: Fix maybe-uninitialized warning
-References: <1342428125-31577-1-git-send-email-michael.hennerich@analog.com> <alpine.DEB.2.01.1207161124570.18056@pmeerw.net> <5003E3B1.909@analog.com> <alpine.DEB.2.01.1207161155350.18056@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.01.1207161155350.18056@pmeerw.net>
+To: linux-iio <linux-iio@vger.kernel.org>
+Subject: IIO 3.6 merge window now closed.
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 7/16/2012 11:02 AM, Peter Meerwald wrote:
->
->> Well - calling a function to initialize a variable which isn't being used
->> anywhere doesn't make more sense.
->
->> IMHO a more adequate fix would be to remove the timestamp argument from
->> store_to(),
->> since it isn't used anywhere.
->
-> so
-> indio_dev->buffer->access->store_to(ring, (u8 *)buf, time_ns);
-> should become
-> iio_push_to_buffer(buffer, (u8 *)data->buffer, time_ns);
-> and you suggest to drop the last argument?
->
-> I wasn't aware that timestamp is not used; at least iio_store_to_kfifo()
-> and iio_store_to_sw_ring() just ignore it
->
-Yes. Been meaning to clean that up for a while, but as one of the
-multiple buffer patches removes all those calls anyway I'll
-kill it whilst doing that.
+Hi All,
+
+As Linus has pretty much said he won't do another release
+candidate, the 3.6 merge window will open in approximately
+1 week. For IIO I'm copying Greg's policy with staging
+(for obvious reasons ;) and closing our merge window now.
+Rather tediously this means cutting a few of my own patches
+off. Oh well got to be fair about things and I'll have those
+queued up for 3.7 nice and early!
+
+Obviously fixes can still get queued up for 3.6, but will probably
+not go upstream until after 3.6-rc1.  As ever, please make
+sure that fixes are entirely separate from improvements
+/ feature enhancements / new drivers.
+
+Jonathan
