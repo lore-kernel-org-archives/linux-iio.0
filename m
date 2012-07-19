@@ -4,138 +4,78 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	jkosina@suse.cz,
 	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 5/9] HID-Sensors: Common attribute and trigger
-Date: Thu, 19 Jul 2012 11:17:27 -0700
-Message-Id: <1342721851-2655-6-git-send-email-srinivas.pandruvada@intel.com>
+Subject: [PATCH 4/9] HID-Sensors: Sensor framework
+Date: Thu, 19 Jul 2012 11:17:26 -0700
+Message-Id: <1342721851-2655-5-git-send-email-srinivas.pandruvada@intel.com>
 In-Reply-To: <1342721851-2655-1-git-send-email-srinivas.pandruvada@intel.com>
 References: <1342721851-2655-1-git-send-email-srinivas.pandruvada@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch contains the common code, which is used by all HID sensors.
-There are some common set of attributes, which every hid sensor
-needs it. This patch contains all such attributes processing.
-Also the trigger interface is common among all HID sensors. This
-patch contains common trigger functions utilized by all HID sensors.
+Adding processing for HID Sensor usage table as defined by
+HID 1.12, Request #: HUTRR39, dated 05 May, 2011.
+This driver uses HID driver framework to register, send and
+receive events.
+This uses MFD framework, so that actual processing for a
+specific usage id can be done in a different driver. For
+example an accelerometer driver can be a separate driver and
+use the interface provided by this driver to register for
+events.
 
 Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 ---
- drivers/iio/Kconfig                                |    1 +
- drivers/iio/Makefile                               |    1 +
- drivers/iio/common/Kconfig                         |    6 +
- drivers/iio/common/Makefile                        |    9 +
- drivers/iio/common/hid-sensors/Kconfig             |   26 ++
- drivers/iio/common/hid-sensors/Makefile            |    6 +
- .../iio/common/hid-sensors/hid-sensor-attributes.c |  277 ++++++++++++++++++++
- .../iio/common/hid-sensors/hid-sensor-attributes.h |   58 ++++
- .../iio/common/hid-sensors/hid-sensor-trigger.c    |  103 ++++++++
- .../iio/common/hid-sensors/hid-sensor-trigger.h    |   25 ++
- 10 files changed, 512 insertions(+), 0 deletions(-)
- create mode 100644 drivers/iio/common/Kconfig
- create mode 100644 drivers/iio/common/Makefile
- create mode 100644 drivers/iio/common/hid-sensors/Kconfig
- create mode 100644 drivers/iio/common/hid-sensors/Makefile
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-attributes.c
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-attributes.h
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-trigger.c
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-trigger.h
+ drivers/hid/Kconfig            |   14 +
+ drivers/hid/Makefile           |    1 +
+ drivers/hid/hid-sensor-hub.c   |  681 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/hid-sensor-hub.h |  160 ++++++++++
+ include/linux/hid-sensor-ids.h |  111 +++++++
+ 5 files changed, 967 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/hid/hid-sensor-hub.c
+ create mode 100644 include/linux/hid-sensor-hub.h
+ create mode 100644 include/linux/hid-sensor-ids.h
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index df0c23a..61646c7 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -56,5 +56,6 @@ config IIO_CONSUMERS_PER_TRIGGER
+diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
+index bef04c1..a9fd774 100644
+--- a/drivers/hid/Kconfig
++++ b/drivers/hid/Kconfig
+@@ -653,6 +653,20 @@ config HID_ZYDACRON
+ 	---help---
+ 	Support for Zydacron remote control.
  
- source "drivers/iio/adc/Kconfig"
- source "drivers/iio/amplifiers/Kconfig"
-+source "drivers/iio/common/Kconfig"
++config HID_SENSOR_HUB
++	tristate "HID Sensors framework support"
++	depends on USB_HID
++	select MFD_CORE
++	default n
++	-- help---
++	  Support for HID Sensor framework. This creates a MFD instance
++	  for a sensor hub and identifies all the sensors connected to it.
++	  Each sensor is registered as a MFD cell, so that sensor specific
++	  processing can be done in a separate driver. Each sensor
++	  drivers can use the service provided by this driver to register
++	  for events and handle data streams. Each sensor driver can format
++	  data and present to user mode using input or IIO interface.
++
+ endmenu
  
- endif # IIO
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 8244bab..db0a043 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -12,3 +12,4 @@ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
+ endif # HID
+diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
+index ca6cc9f..08f9d8f 100644
+--- a/drivers/hid/Makefile
++++ b/drivers/hid/Makefile
+@@ -87,6 +87,7 @@ obj-$(CONFIG_HID_ZYDACRON)	+= hid-zydacron.o
+ obj-$(CONFIG_HID_WACOM)		+= hid-wacom.o
+ obj-$(CONFIG_HID_WALTOP)	+= hid-waltop.o
+ obj-$(CONFIG_HID_WIIMOTE)	+= hid-wiimote.o
++obj-$(CONFIG_HID_SENSOR_HUB)	+= hid-sensor-hub.o
  
- obj-y += adc/
- obj-y += amplifiers/
-+obj-y += common/
-diff --git a/drivers/iio/common/Kconfig b/drivers/iio/common/Kconfig
+ obj-$(CONFIG_USB_HID)		+= usbhid/
+ obj-$(CONFIG_USB_MOUSE)		+= usbhid/
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
 new file mode 100644
-index 0000000..97ef666
+index 0000000..98c1a77
 --- /dev/null
-+++ b/drivers/iio/common/Kconfig
-@@ -0,0 +1,6 @@
-+#
-+# IIO common modules
-+#
-+
-+source "drivers/iio/common/hid-sensors/Kconfig"
-+
-diff --git a/drivers/iio/common/Makefile b/drivers/iio/common/Makefile
-new file mode 100644
-index 0000000..8158400
---- /dev/null
-+++ b/drivers/iio/common/Makefile
-@@ -0,0 +1,9 @@
-+#
-+# Makefile for the IIO common modules.
-+# Common modules contains modules, which can be shared among multiple
-+# IIO modules. For example if the trigger processing is common for
-+# multiple IIO modules then this can be moved to a common module
-+# instead of duplicating in each module.
-+#
-+
-+obj-y += hid-sensors/
-diff --git a/drivers/iio/common/hid-sensors/Kconfig b/drivers/iio/common/hid-sensors/Kconfig
-new file mode 100644
-index 0000000..8e63d81
---- /dev/null
-+++ b/drivers/iio/common/hid-sensors/Kconfig
-@@ -0,0 +1,26 @@
-+#
-+# Hid Sensor common modules
-+#
-+menu "Hid Sensor IIO Common"
-+
-+config HID_SENSOR_IIO_COMMON
-+	tristate "Common modules for all HID Sensor IIO drivers"
-+	depends on HID_SENSOR_HUB
-+	select IIO_TRIGGER if IIO_BUFFER
-+	help
-+	  Say yes here to build support for HID sensor to use
-+	  HID sensor common processing for attributes and IIO triggers.
-+	  There are many attributes which can be shared among multiple
-+	  HID sensor drivers, this module contains processing for those
-+	  attributes.
-+
-+config HID_SENSOR_ENUM_BASE_QUIRKS
-+	tristate "ENUM base quirks for HID Sensor IIO drivers"
-+	depends on HID_SENSOR_IIO_COMMON
-+	help
-+	  Say yes here to build support for sensor hub FW using
-+	  enumeration, which is using 1 as base instead of 0.
-+	  Since logical minimum is still set 0 instead of 1,
-+	  there is no easy way to differentiate.
-+
-+endmenu
-diff --git a/drivers/iio/common/hid-sensors/Makefile b/drivers/iio/common/hid-sensors/Makefile
-new file mode 100644
-index 0000000..1f463e0
---- /dev/null
-+++ b/drivers/iio/common/hid-sensors/Makefile
-@@ -0,0 +1,6 @@
-+#
-+# Makefile for the Hid sensor common modules.
-+#
-+
-+obj-$(CONFIG_HID_SENSOR_IIO_COMMON) += hid-sensor-iio-common.o
-+hid-sensor-iio-common-y := hid-sensor-attributes.o hid-sensor-trigger.o
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-new file mode 100644
-index 0000000..1c121fa
---- /dev/null
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-@@ -0,0 +1,277 @@
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -0,0 +1,681 @@
 +/*
 + * HID Sensors Driver
 + * Copyright (c) 2012, Intel Corporation.
@@ -155,443 +95,674 @@ index 0000000..1c121fa
 + *
 + */
 +#include <linux/device.h>
-+#include <linux/platform_device.h>
++#include <linux/hid.h>
++#include <linux/usb.h>
++#include "usbhid/usbhid.h"
 +#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
 +#include <linux/slab.h>
++#include <linux/mfd/core.h>
++#include <linux/list.h>
++#include <linux/hid-sensor-ids.h>
 +#include <linux/hid-sensor-hub.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include "hid-sensor-attributes.h"
++#include "hid-ids.h"
 +
-+static void set_bit_range(u32 *num, int start, int end)
-+{
-+	int i;
-+	for (i = start; i < end+1; ++i)
-+		*num |= BIT(i);
-+}
-+
-+static int pow(u32 val, int power)
-+{
-+	int i;
-+	int ret = 1;
-+	for (i = 0; i < power; ++i)
-+		ret = ret * val;
-+
-+	return ret;
-+}
-+
-+static void single_prec_div(int dividend, int divisor, int *whole,
-+				int *micro_frac)
-+{
-+	int rem;
-+	int exp = 0;
-+
-+	*micro_frac = 0;
-+	if (divisor == 0) {
-+		*whole = 0;
-+		return;
-+	}
-+	*whole = dividend/divisor;
-+	rem = dividend % divisor;
-+	if (rem) {
-+		while (rem <= divisor) {
-+			rem *= 10;
-+			exp++;
-+		}
-+		*micro_frac = (rem / divisor) * pow(10, 6 - exp);
-+	}
-+}
-+
-+static u32 hex_to_dec_integer(u32 value)
-+{
-+	unsigned int mask = 0xF;
-+	unsigned int ret = 0;
-+	unsigned int val;
-+	int i, j;
-+
-+	for (i = 0, j = 0; i < sizeof(value)*2; i += 4, ++j) {
-+		val = (value & mask) >> i;
-+		if (val)
-+			ret = ret + val * pow(16, j);
-+		mask = mask << 4;
-+	}
-+
-+	return ret;
-+}
-+
-+static void split_micro_fraction(unsigned int no, int exp, int *val1, int *val2)
-+{
-+	*val1 = no/pow(10, exp);
-+	*val2 = no%pow(10, exp) * pow(10, 6-exp);
-+}
-+
-+/*
-+VTF format uses exponent and variable size format.
-+For example if the size is 2 bytes
-+0x0067 with VTF16E14 format -> +1.03
-+To convert just change to 0x67 to decimal and use two decimal as E14 stands
-+for 10^-2.
-+For negative numbers subtract number from 0xFFFF for two bytes and add 1
-+0xFFF4 with VTF16E14 format -> -0.12
-+So here FFFF-FFF4+1 = 0x0c = 12. With two decimal and sign, it will be -0.12
-+*/
-+static void convert_from_vtf_format(u32 value, int size, int exp,
-+					int *val1, int *val2)
-+{
-+	u32 val = value;
-+	u32 mask = 0;
-+	int sign = 1;
-+
-+	if (value & BIT(size*8-1)) {
-+		set_bit_range(&mask, 0, size*8-1);
-+		val = mask-value+1;
-+		sign = -1;
-+	}
-+	exp = hid_sensor_convert_exponent(exp);
-+	if (exp >= 0) {
-+		*val1 = sign * val * pow(10, exp);
-+		*val2 = 0;
-+	} else {
-+		val = hex_to_dec_integer(val);
-+		split_micro_fraction(val, -exp, val1, val2);
-+		if (*val1)
-+			*val1 = sign * (*val1);
-+		else
-+			*val2 = sign * (*val2);
-+	}
-+}
-+
-+static u32 convert_to_vtf_format(int size, int exp, int val1, int val2)
-+{
-+	u32 value = 0;
-+	u32 mask = 0;
-+	int sign = 1;
-+
-+	if (val1 < 0 || val2 < 0)
-+		sign = -1;
-+	exp = hid_sensor_convert_exponent(exp);
-+	if (exp < 0) {
-+		value = abs(val1) * pow(10, -exp);
-+		value += abs(val2) / pow(10, 6+exp);
-+	} else {
-+		value = abs(val1) / pow(10, exp);
-+	}
-+	if (sign < 0) {
-+		set_bit_range(&mask, 0, size*8-1);
-+		value = mask-value+1;
-+	}
-+
-+	return value;
-+}
-+
-+int hid_sensor_read_samp_freq_value(struct hid_sensor_attributes *st,
-+				int *val1, int *val2)
-+{
-+	s32 value;
-+	int ret;
-+
-+	ret = sensor_hub_get_feature(st->hsdev,
-+		st->poll.report_id,
-+		st->poll.index, &value);
-+	if (ret < 0 || value < 0)
-+		*val1 = *val2 = 0;
-+	else {
-+		if (st->poll.units == HID_USAGE_SENSOR_UNITS_MILLISECOND)
-+			single_prec_div(1000, value, val1, val2);
-+		else if (st->poll.units == HID_USAGE_SENSOR_UNITS_SECOND)
-+			single_prec_div(1, value, val1, val2);
-+		else
-+			*val1 = *val2 = 0;
-+	}
-+
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+EXPORT_SYMBOL(hid_sensor_read_samp_freq_value);
-+
-+int hid_sensor_write_samp_freq_value(struct hid_sensor_attributes *st,
-+				int val1, int val2)
-+{
-+	s32 value;
-+	int ret;
-+
-+	value = val1 * pow(10, 6) + val2;
-+	if (value) {
-+		if (st->poll.units == HID_USAGE_SENSOR_UNITS_MILLISECOND)
-+			value = pow(10, 9)/value;
-+		else if (st->poll.units == HID_USAGE_SENSOR_UNITS_SECOND)
-+			value = pow(10, 6)/value;
-+		else
-+			value = 0;
-+	}
-+	ret = sensor_hub_set_feature(st->hsdev,
-+		st->poll.report_id,
-+		st->poll.index, value);
-+	if (ret < 0 || value < 0)
-+		ret = -EINVAL;
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(hid_sensor_write_samp_freq_value);
-+
-+int hid_sensor_read_raw_hyst_value(struct hid_sensor_attributes *st,
-+				int *val1, int *val2)
-+{
-+	s32 value;
-+	int ret;
-+
-+	ret = sensor_hub_get_feature(st->hsdev,
-+		st->sensitivity.report_id,
-+		st->sensitivity.index, &value);
-+	if (ret < 0 || value < 0)
-+		*val1 = *val2 = 0;
-+	else {
-+		convert_from_vtf_format(value, st->sensitivity.size,
-+					st->sensitivity.unit_expo,
-+					val1, val2);
-+	}
-+
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+EXPORT_SYMBOL(hid_sensor_read_raw_hyst_value);
-+
-+int hid_sensor_write_raw_hyst_value(struct hid_sensor_attributes *st,
-+					int val1, int val2)
-+{
-+	s32 value;
-+	int ret;
-+
-+	value = convert_to_vtf_format(st->sensitivity.size,
-+				st->sensitivity.unit_expo,
-+				val1, val2);
-+	ret = sensor_hub_set_feature(st->hsdev,
-+		st->sensitivity.report_id,
-+		st->sensitivity.index, value);
-+	if (ret < 0 || value < 0)
-+		ret = -EINVAL;
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(hid_sensor_write_raw_hyst_value);
-+
-+int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
-+					u32 usage_id,
-+					struct hid_sensor_attributes *st)
-+{
-+
-+	sensor_hub_input_get_attribute_info(hsdev,
-+					HID_FEATURE_REPORT, usage_id,
-+					HID_USAGE_SENSOR_PROP_REPORT_INTERVAL,
-+					&st->poll);
-+
-+	sensor_hub_input_get_attribute_info(hsdev,
-+					HID_FEATURE_REPORT, usage_id,
-+					HID_USAGE_SENSOR_PROP_REPORT_STATE,
-+					&st->report_state);
-+
-+	sensor_hub_input_get_attribute_info(hsdev,
-+					HID_FEATURE_REPORT, usage_id,
-+					HID_USAGE_SENSOR_PROY_POWER_STATE,
-+					&st->power_state);
-+
-+	sensor_hub_input_get_attribute_info(hsdev,
-+			HID_FEATURE_REPORT, usage_id,
-+			HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS,
-+			 &st->sensitivity);
-+
-+	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x\n",
-+			st->poll.index, st->poll.report_id,
-+			st->report_state.index, st->report_state.report_id,
-+			st->power_state.index, st->power_state.report_id,
-+			st->sensitivity.index, st->sensitivity.report_id);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(hid_sensor_parse_common_attributes);
-+
-+MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
-+MODULE_DESCRIPTION("HID Sensor common attribute processing");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.h b/drivers/iio/common/hid-sensors/hid-sensor-attributes.h
-new file mode 100644
-index 0000000..2dfe888
---- /dev/null
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.h
-@@ -0,0 +1,58 @@
-+/*
-+ * HID Sensors Driver
-+ * Copyright (c) 2012, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-+ *
++/**
++ * struct sensor_hub_pending - Synchronous read pending information
++ * @status:		Pending status true/false.
++ * @ready:		Completion synchronization data.
++ * @usage_id:		Usage id for physical device, E.g. Gyro usage id.
++ * @attr_usage_id:	Usage Id of a field, E.g. X-AXIS for a gyro.
++ * @raw_size:		Response size for a read request.
++ * @raw_data:		Place holder for received response.
 + */
-+#ifndef _HID_SENSORS_ATTRIBUTES_H
-+#define _HID_SENSORS_ATTRIBUTES_H
++struct sensor_hub_pending {
++	bool status;
++	struct completion ready;
++	u32 usage_id;
++	u32 attr_usage_id;
++	int raw_size;
++	u8  *raw_data;
++};
 +
-+/* Common sysfs attributes for HID sensors */
-+struct hid_sensor_attributes {
++/**
++ * struct sensor_hub_data - Hold a instance data for a HID hub device
++ * @hs_dev:		Stored hid instance for current hub device.
++ * @mutex:		Mutex to serialize synchronous request.
++ * @lock:		Spin lock to protect pending request structure.
++ * @pending:		Holds information of pending sync read request.
++ * @hid_sensor_hub_client_devs:	Stores all MFD cells for a hub instance.
++ * @hid_sensor_client_cnt: Number of MFD cells, (no of sensors attached).
++ */
++struct sensor_hub_data {
 +	struct hid_sensor_hub_device *hsdev;
-+	struct platform_device *pdev;
-+	unsigned usage_id;
-+	bool data_ready;
-+	struct hid_sensor_hub_attribute_info poll;
-+	struct hid_sensor_hub_attribute_info report_state;
-+	struct hid_sensor_hub_attribute_info power_state;
-+	struct hid_sensor_hub_attribute_info sensitivity;
-+	void *private;
++	struct mutex mutex;
++	spinlock_t lock;
++	struct sensor_hub_pending pending;
++	struct list_head dyn_callback_list;
++	spinlock_t dyn_lock;
++	struct mfd_cell *hid_sensor_hub_client_devs;
++	int hid_sensor_client_cnt;
 +};
 +
-+/*Convert from hid unit expo to regular exponent*/
-+static inline int hid_sensor_convert_exponent(int unit_expo)
++/**
++ * hid_sensor_hub_callbacks_list - Stores callback list
++ * @list:		list head.
++ * @usage_id:		usage id for a physical device.
++ * @usage_callbacks:	Stores registered callback functions.
++ * @priv:		Private data for a physical device.
++ */
++struct hid_sensor_hub_callbacks_list {
++	struct list_head list;
++	u32 usage_id;
++	struct hid_sensor_hub_callbacks *usage_callback;
++	void *priv;
++};
++
++static int sensor_hub_check_for_sensor_page(struct hid_device *hdev)
 +{
-+	if (unit_expo < 0x08)
-+		return unit_expo;
-+	else if (unit_expo <= 0x0f)
-+		return -(0x0f-unit_expo+1);
-+	else
-+		return 0;
++	int i;
++	int ret = -EINVAL;
++
++	for (i = 0; i < hdev->maxcollection; i++) {
++		struct hid_collection *col = &hdev->collection[i];
++		if (col->type == HID_COLLECTION_PHYSICAL &&
++		   (col->usage & HID_USAGE_PAGE) == HID_UP_SENSOR) {
++			ret = 0;
++			break;
++		}
++	}
++
++	return ret;
 +}
 +
-+int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
-+					u32 usage_id,
-+					struct hid_sensor_attributes *st);
-+int hid_sensor_write_raw_hyst_value(struct hid_sensor_attributes *st,
-+					int val1, int val2);
-+int hid_sensor_read_raw_hyst_value(struct hid_sensor_attributes *st,
-+					int *val1, int *val2);
-+int hid_sensor_write_samp_freq_value(struct hid_sensor_attributes *st,
-+					int val1, int val2);
-+int hid_sensor_read_samp_freq_value(struct hid_sensor_attributes *st,
-+					int *val1, int *val2);
-+
-+#endif
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-new file mode 100644
-index 0000000..9a49cf9
---- /dev/null
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -0,0 +1,103 @@
-+/*
-+ * HID Sensors Driver
-+ * Copyright (c) 2012, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-+ *
-+ */
-+#include <linux/device.h>
-+#include <linux/platform_device.h>
-+#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/slab.h>
-+#include <linux/hid-sensor-hub.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/sysfs.h>
-+#include "hid-sensor-attributes.h"
-+
-+static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
-+						bool state)
++static struct hid_report *sensor_hub_report(int id, struct hid_device *hdev,
++						int dir)
 +{
-+	struct iio_dev *indio_dev = trig->private_data;
-+	struct hid_sensor_attributes *st = iio_priv(indio_dev);
-+	int state_val;
++	struct hid_report *report;
 +
-+	dev_dbg(&indio_dev->dev, "hid_sensor_data_rdy_trigger_set_state %d\n",
-+			state);
-+	state_val = state ? 1 : 0;
-+#if (defined CONFIG_HID_SENSOR_ENUM_BASE_QUIRKS) || \
-+	(defined CONFIG_HID_SENSOR_ENUM_BASE_QUIRKS_MODULE)
-+	++state_val;
-+#endif
-+	st->data_ready = state;
-+	sensor_hub_set_feature(st->hsdev, st->power_state.report_id,
-+					st->power_state.index,
-+					(s32)state_val);
++	list_for_each_entry(report, &hdev->report_enum[dir].report_list, list) {
++		if (report->id == id)
++			return report;
++	}
++	hid_warn(hdev, "No report with id 0x%x found\n", id);
 +
-+	sensor_hub_set_feature(st->hsdev, st->report_state.report_id,
-+					st->report_state.index,
-+					(s32)state_val);
++	return NULL;
++}
++
++static int sensor_hub_get_physical_device_count(
++				struct hid_report_enum *report_enum)
++{
++	struct hid_report *report;
++	struct hid_field *field;
++	int cnt = 0;
++
++	list_for_each_entry(report, &report_enum->report_list, list) {
++		field = report->field[0];
++		if (report->maxfield && field &&
++					field->physical)
++			cnt++;
++	}
++
++	return cnt;
++}
++
++static struct hid_sensor_hub_callbacks *sensor_hub_get_callback(
++					struct hid_device *hdev,
++					u32 usage_id, void **priv)
++{
++	struct hid_sensor_hub_callbacks_list *callback;
++	struct sensor_hub_data *pdata = hid_get_drvdata(hdev);
++
++	spin_lock(&pdata->dyn_lock);
++	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
++		if (callback->usage_id == usage_id) {
++			*priv = callback->priv;
++			spin_unlock(&pdata->dyn_lock);
++			return callback->usage_callback;
++		}
++	spin_unlock(&pdata->dyn_lock);
++
++	return NULL;
++}
++
++int sensor_hub_register_callback(struct hid_sensor_hub_device *hsdev,
++			u32 usage_id,
++			struct hid_sensor_hub_callbacks *usage_callback)
++{
++	struct hid_sensor_hub_callbacks_list *callback;
++	struct sensor_hub_data *pdata = hid_get_drvdata(hsdev->hdev);
++
++	spin_lock(&pdata->dyn_lock);
++	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
++		if (callback->usage_id == usage_id) {
++			spin_unlock(&pdata->dyn_lock);
++			return -EINVAL;
++		}
++	callback = kzalloc(sizeof(*callback), GFP_KERNEL);
++	if (!callback) {
++		spin_unlock(&pdata->dyn_lock);
++		return -ENOMEM;
++	}
++	callback->usage_callback = usage_callback;
++	callback->usage_id = usage_id;
++	callback->priv = NULL;
++	list_add_tail(&callback->list, &pdata->dyn_callback_list);
++	spin_unlock(&pdata->dyn_lock);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(sensor_hub_register_callback);
++
++int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
++				u32 usage_id)
++{
++	struct hid_sensor_hub_callbacks_list *callback;
++	struct sensor_hub_data *pdata = hid_get_drvdata(hsdev->hdev);
++
++	spin_lock(&pdata->dyn_lock);
++	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
++		if (callback->usage_id == usage_id) {
++			list_del(&callback->list);
++			kfree(callback);
++			break;
++		}
++	spin_unlock(&pdata->dyn_lock);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(sensor_hub_remove_callback);
++
++int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
++				u32 field_index, s32 value)
++{
++	struct hid_report *report;
++	struct sensor_hub_data *data =  hid_get_drvdata(hsdev->hdev);
++	int ret = 0;
++
++	if (report_id < 0)
++		return -EINVAL;
++
++	mutex_lock(&data->mutex);
++	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
++	if (!report || (field_index >=  report->maxfield)) {
++		ret = -EINVAL;
++		goto done_proc;
++	}
++	hid_set_field(report->field[field_index], 0, value);
++	usbhid_submit_report(hsdev->hdev, report, USB_DIR_OUT);
++	usbhid_wait_io(hsdev->hdev);
++
++done_proc:
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(sensor_hub_set_feature);
++
++int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
++				u32 field_index, s32 *value)
++{
++	struct hid_report *report;
++	struct sensor_hub_data *data =  hid_get_drvdata(hsdev->hdev);
++	int ret = 0;
++
++	if (report_id < 0)
++		return -EINVAL;
++
++	mutex_lock(&data->mutex);
++	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
++	if (!report || (field_index >=  report->maxfield)) {
++		ret = -EINVAL;
++		goto done_proc;
++	}
++	usbhid_submit_report(hsdev->hdev, report, USB_DIR_IN);
++	usbhid_wait_io(hsdev->hdev);
++	*value = report->field[field_index]->value[0];
++
++done_proc:
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(sensor_hub_get_feature);
++
++
++int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
++					u32 usage_id,
++					u32 attr_usage_id, u32 report_id)
++{
++	struct sensor_hub_data *data =  hid_get_drvdata(hsdev->hdev);
++	unsigned long flags;
++	struct hid_report *report;
++	int ret_val = 0;
++
++	if (report_id < 0)
++		return -EINVAL;
++
++	mutex_lock(&data->mutex);
++	memset(&data->pending, 0, sizeof(data->pending));
++	init_completion(&data->pending.ready);
++	data->pending.usage_id = usage_id;
++	data->pending.attr_usage_id = attr_usage_id;
++	data->pending.raw_size = 0;
++
++	spin_lock_irqsave(&data->lock, flags);
++	data->pending.status = true;
++	report = sensor_hub_report(report_id, hsdev->hdev, HID_INPUT_REPORT);
++	if (!report) {
++		spin_unlock_irqrestore(&data->lock, flags);
++		goto err_free;
++	}
++	usbhid_submit_report(hsdev->hdev, report, USB_DIR_IN);
++	spin_unlock_irqrestore(&data->lock, flags);
++	wait_for_completion_interruptible_timeout(&data->pending.ready, HZ*5);
++	switch (data->pending.raw_size) {
++	case 1:
++		ret_val = *(u8 *)data->pending.raw_data;
++		break;
++	case 2:
++		ret_val = *(u16 *)data->pending.raw_data;
++		break;
++	case 4:
++		ret_val = *(u32 *)data->pending.raw_data;
++		break;
++	default:
++		ret_val = 0;
++	}
++	kfree(data->pending.raw_data);
++
++err_free:
++	data->pending.status = false;
++	mutex_unlock(&data->mutex);
++
++	return ret_val;
++}
++EXPORT_SYMBOL_GPL(sensor_hub_input_attr_get_raw_value);
++
++int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
++				u8 type,
++				u32 usage_id,
++				u32 attr_usage_id,
++				struct hid_sensor_hub_attribute_info *info)
++{
++	int ret = -1;
++	int i, j;
++	int collection_index = -1;
++	struct hid_report *report;
++	struct hid_field *field;
++	struct hid_report_enum *report_enum;
++	struct hid_device *hdev = hsdev->hdev;
++
++	/* Initialize with defaults */
++	info->usage_id = usage_id;
++	info->attrib_id =  attr_usage_id;
++	info->report_id = -1;
++	info->index = -1;
++	info->units = -1;
++	info->unit_expo = -1;
++
++	for (i = 0; i < hdev->maxcollection; ++i) {
++		struct hid_collection *collection = &hdev->collection[i];
++		if (usage_id == collection->usage) {
++			collection_index = i;
++			break;
++		}
++	}
++	if (collection_index == -1)
++		goto err_ret;
++
++	report_enum = &hdev->report_enum[type];
++	list_for_each_entry(report, &report_enum->report_list, list) {
++		for (i = 0; i < report->maxfield; ++i) {
++			field = report->field[i];
++			if (field->physical == usage_id &&
++				field->logical == attr_usage_id) {
++				info->index = i;
++				info->report_id = report->id;
++				info->units = field->unit;
++				info->unit_expo = field->unit_exponent;
++				info->size = field->report_size/8;
++				ret = 0;
++			} else {
++				for (j = 0; j < field->maxusage; ++j) {
++					if (field->usage[j].hid ==
++					attr_usage_id &&
++					field->usage[j].collection_index ==
++					collection_index)  {
++						info->index = i;
++						info->report_id = report->id;
++						info->units = field->unit;
++						info->unit_expo =
++							field->unit_exponent;
++						info->size =
++							field->report_size/8;
++						ret = 0;
++						break;
++					}
++				}
++			}
++			if (ret == 0)
++				break;
++		}
++	}
++
++err_ret:
++	return ret;
++}
++EXPORT_SYMBOL_GPL(sensor_hub_input_get_attribute_info);
++
++#ifdef CONFIG_PM
++static int sensor_hub_suspend(struct hid_device *hdev, pm_message_t message)
++{
++	struct sensor_hub_data *pdata =  hid_get_drvdata(hdev);
++	struct hid_sensor_hub_callbacks_list *callback;
++
++	hid_dbg(hdev, " sensor_hub_suspend\n");
++	spin_lock(&pdata->dyn_lock);
++	list_for_each_entry(callback, &pdata->dyn_callback_list, list) {
++		if (callback->usage_callback->suspend)
++			callback->usage_callback->suspend(
++					pdata->hsdev, callback->priv);
++	}
++	spin_unlock(&pdata->dyn_lock);
 +
 +	return 0;
 +}
 +
-+void hid_sensor_remove_trigger(struct iio_dev *indio_dev)
++static int sensor_hub_resume(struct hid_device *hdev)
 +{
-+	iio_trigger_unregister(indio_dev->trig);
-+	iio_trigger_free(indio_dev->trig);
++	struct sensor_hub_data *pdata =  hid_get_drvdata(hdev);
++	struct hid_sensor_hub_callbacks_list *callback;
++
++	hid_dbg(hdev, " sensor_hub_resume\n");
++	spin_lock(&pdata->dyn_lock);
++	list_for_each_entry(callback, &pdata->dyn_callback_list, list) {
++		if (callback->usage_callback->resume)
++			callback->usage_callback->resume(
++					pdata->hsdev, callback->priv);
++	}
++	spin_unlock(&pdata->dyn_lock);
++
++	return 0;
 +}
-+EXPORT_SYMBOL(hid_sensor_remove_trigger);
 +
-+static const struct iio_trigger_ops hid_sensor_trigger_ops = {
-+	.owner = THIS_MODULE,
-+	.set_trigger_state = &hid_sensor_data_rdy_trigger_set_state,
-+};
++static int sensor_hub_reset_resume(struct hid_device *hdev)
++{
++	return 0;
++}
++#endif
++/*
++ * Handle raw report as sent by device
++ */
++static int sensor_hub_raw_event(struct hid_device *hdev,
++		struct hid_report *report, u8 *raw_data, int size)
++{
++	int i;
++	u8 *ptr;
++	int sz;
++	struct sensor_hub_data *pdata = hid_get_drvdata(hdev);
++	unsigned long flags;
++	struct hid_sensor_hub_callbacks *callback = NULL;
++	struct hid_collection *collection = NULL;
++	void *priv = NULL;
 +
-+int hid_sensor_setup_trigger(struct iio_dev *indio_dev, char *name)
++	hid_dbg(hdev, "sensor_hub_raw_event report id:0x%x size:%d type:%d\n",
++			 report->id, size, report->type);
++	hid_dbg(hdev, "maxfield:%d\n", report->maxfield);
++	if (report->type != HID_INPUT_REPORT)
++		return 1;
++
++	ptr = raw_data;
++	ptr++; /*Skip report id*/
++
++	if (!report)
++		goto err_report;
++
++	spin_lock_irqsave(&pdata->lock, flags);
++
++	for (i = 0; i < report->maxfield; ++i) {
++
++		hid_dbg(hdev, "%d collection_index:%x hid:%x sz:%x\n",
++				i, report->field[i]->usage->collection_index,
++				report->field[i]->usage->hid,
++				report->field[i]->report_size/8);
++
++		sz = report->field[i]->report_size/8;
++		if (pdata->pending.status && pdata->pending.attr_usage_id ==
++				report->field[i]->usage->hid) {
++			hid_dbg(hdev, "data was pending ...\n");
++			pdata->pending.raw_data = kmalloc(sz, GFP_KERNEL);
++			if (pdata->pending.raw_data) {
++				memcpy(pdata->pending.raw_data, ptr, sz);
++				pdata->pending.raw_size  = sz;
++			} else
++				pdata->pending.raw_size = 0;
++			complete(&pdata->pending.ready);
++		}
++		collection = &hdev->collection[
++				report->field[i]->usage->collection_index];
++		hid_dbg(hdev, "collection->usage %x\n",
++					collection->usage);
++		callback = sensor_hub_get_callback(pdata->hsdev->hdev,
++						report->field[i]->physical,
++							&priv);
++		if (callback && callback->capture_sample) {
++			if (report->field[i]->logical)
++				callback->capture_sample(pdata->hsdev,
++					report->field[i]->logical, sz, ptr,
++					callback->pdev);
++			else
++				callback->capture_sample(pdata->hsdev,
++					report->field[i]->usage->hid, sz, ptr,
++					callback->pdev);
++		}
++		ptr += sz;
++	}
++	if (callback && collection && callback->send_event)
++		callback->send_event(pdata->hsdev, collection->usage,
++				callback->pdev);
++	spin_unlock_irqrestore(&pdata->lock, flags);
++
++err_report:
++	return 1;
++}
++
++static int sensor_hub_probe(struct hid_device *hdev,
++				const struct hid_device_id *id)
 +{
 +	int ret;
-+	struct iio_trigger *trig;
++	struct sensor_hub_data *sd;
++	int i;
++	char *name;
++	struct hid_report *report;
++	struct hid_report_enum *report_enum;
++	struct hid_field *field;
++	int dev_cnt;
 +
-+	trig = iio_trigger_alloc("%s-dev%d", name, indio_dev->id);
-+	if (trig == NULL) {
-+		dev_err(&indio_dev->dev, "Trigger Allocate Failed\n");
++	sd = kzalloc(sizeof(struct sensor_hub_data), GFP_KERNEL);
++	if (!sd) {
++		hid_err(hdev, "cannot allocate Sensor data\n");
++		return -ENOMEM;
++	}
++	sd->hsdev = kzalloc(sizeof(struct hid_sensor_hub_device), GFP_KERNEL);
++	if (!sd->hsdev) {
++		hid_err(hdev, "cannot allocate hid_sensor_hub_device\n");
 +		ret = -ENOMEM;
-+		goto error_ret;
++		goto err_free_hub;
 +	}
-+
-+	trig->dev.parent = indio_dev->dev.parent;
-+	trig->private_data = (void *)indio_dev;
-+	trig->ops = &hid_sensor_trigger_ops;
-+	ret = iio_trigger_register(trig);
-+
++	hid_set_drvdata(hdev, sd);
++	sd->hsdev->hdev = hdev;
++	sd->hsdev->vendor_id = hdev->vendor;
++	sd->hsdev->product_id = hdev->product;
++	spin_lock_init(&sd->lock);
++	spin_lock_init(&sd->dyn_lock);
++	mutex_init(&sd->mutex);
++	ret = hid_parse(hdev);
 +	if (ret) {
-+		dev_err(&indio_dev->dev, "Trigger Register Failed\n");
-+		goto error_free_trig;
++		hid_err(hdev, "parse failed\n");
++		goto err_free;
 +	}
-+	indio_dev->trig = trig;
++	if (sensor_hub_check_for_sensor_page(hdev) < 0) {
++		hid_err(hdev, "sensor page not found\n");
++		goto err_free;
++	}
++	INIT_LIST_HEAD(&hdev->inputs);
++
++	hdev->claimed = HID_CLAIMED_INPUT;
++	ret = hid_hw_start(hdev, 0);
++	if (ret) {
++		hid_err(hdev, "hw start failed\n");
++		goto err_free;
++	}
++	ret = hid_hw_open(hdev);
++	if (ret) {
++		hid_err(hdev, "failed to open input interrupt pipe\n");
++		goto err_stop_hw;
++	}
++
++	INIT_LIST_HEAD(&sd->dyn_callback_list);
++	sd->hid_sensor_client_cnt = 0;
++	report_enum = &hdev->report_enum[HID_INPUT_REPORT];
++
++	dev_cnt = sensor_hub_get_physical_device_count(report_enum);
++	sd->hid_sensor_hub_client_devs = kmalloc(dev_cnt *
++						sizeof(struct mfd_cell),
++						GFP_KERNEL);
++	if (sd->hid_sensor_hub_client_devs == NULL) {
++		hid_err(hdev,
++			"Failed to allocate memory for mfd cells\n");
++			ret = -ENOMEM;
++			goto err_close;
++	}
++	list_for_each_entry(report, &report_enum->report_list, list) {
++		hid_dbg(hdev, "Report id:%x\n", report->id);
++		field = report->field[0];
++		if (report->maxfield && field &&
++					field->physical) {
++			name = kasprintf(GFP_KERNEL, "HID-SENSOR-%x",
++						field->physical);
++			if (name  == NULL) {
++				hid_err(hdev,
++					"Failed MFD device name\n");
++					ret = -ENOMEM;
++					goto err_free_cells;
++			}
++			sd->hid_sensor_hub_client_devs[
++				sd->hid_sensor_client_cnt].name = name;
++			sd->hid_sensor_hub_client_devs[
++				sd->hid_sensor_client_cnt].platform_data =
++						sd->hsdev;
++			sd->hid_sensor_hub_client_devs[
++				sd->hid_sensor_client_cnt].pdata_size =
++						sizeof(*sd->hsdev);
++			hid_dbg(hdev, "Adding %s:%x\n", name,
++					(unsigned int)sd);
++			sd->hid_sensor_client_cnt++;
++		}
++	}
++	ret = mfd_add_devices(&hdev->dev, 0, sd->hid_sensor_hub_client_devs,
++		sd->hid_sensor_client_cnt, NULL, 0);
++	if (ret < 0)
++		goto err_free_names;
 +
 +	return ret;
 +
-+error_free_trig:
-+	iio_trigger_free(trig);
-+error_ret:
++err_free_names:
++	for (i = 0; i < sd->hid_sensor_client_cnt ; ++i)
++		kfree(sd->hid_sensor_hub_client_devs[i].name);
++err_free_cells:
++	kfree(sd->hid_sensor_hub_client_devs);
++err_close:
++	hid_hw_stop(hdev);
++	hid_hw_close(hdev);
++err_stop_hw:
++	hid_hw_stop(hdev);
++err_free:
++	kfree(sd->hsdev);
++err_free_hub:
++	kfree(sd);
++
 +	return ret;
 +}
-+EXPORT_SYMBOL(hid_sensor_setup_trigger);
 +
++static void sensor_hub_remove(struct hid_device *hdev)
++{
++	struct sensor_hub_data *data = hid_get_drvdata(hdev);
++	unsigned long flags;
++	int i;
++
++	hid_dbg(hdev, " hardware removed\n");
++	hdev->claimed &= ~HID_CLAIMED_INPUT;
++	hid_hw_stop(hdev);
++	hid_hw_close(hdev);
++	spin_lock_irqsave(&data->lock, flags);
++	if (data->pending.status)
++		complete(&data->pending.ready);
++	spin_unlock_irqrestore(&data->lock, flags);
++	mfd_remove_devices(&hdev->dev);
++	for (i = 0; i < data->hid_sensor_client_cnt ; ++i)
++		kfree(data->hid_sensor_hub_client_devs[i].name);
++	kfree(data->hid_sensor_hub_client_devs);
++	hid_set_drvdata(hdev, NULL);
++	mutex_destroy(&data->mutex);
++	kfree(data->hsdev);
++	kfree(data);
++}
++
++static const struct hid_device_id sensor_hub_devices[] = {
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
++			USB_DEVICE_ID_SENSOR_HUB_1020) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
++			USB_DEVICE_ID_SENSOR_HUB_1020) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
++			USB_DEVICE_ID_SENSOR_HUB_09FA) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
++			USB_DEVICE_ID_SENSOR_HUB_09FA) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_STANTUM_STM,
++			USB_DEVICE_ID_SENSOR_HUB_7014) },
++	{ }
++};
++
++static const struct hid_usage_id sensor_hub_grabbed_usages[] = {
++	{ HID_ANY_ID, HID_ANY_ID, HID_ANY_ID },
++	{ HID_ANY_ID - 1, HID_ANY_ID - 1, HID_ANY_ID - 1 }
++};
++
++static struct hid_driver sensor_hub_driver = {
++	.name = "hid-sensor-hub",
++	.id_table = sensor_hub_devices,
++	.probe = sensor_hub_probe,
++	.remove = sensor_hub_remove,
++	.raw_event = sensor_hub_raw_event,
++#ifdef CONFIG_PM
++	.suspend = sensor_hub_suspend,
++	.resume =  sensor_hub_resume,
++	.reset_resume =  sensor_hub_reset_resume,
++#endif
++};
++
++static int __init sensor_hub_init(void)
++{
++	return hid_register_driver(&sensor_hub_driver);
++}
++
++static void __exit sensor_hub_exit(void)
++{
++	hid_unregister_driver(&sensor_hub_driver);
++}
++
++module_init(sensor_hub_init);
++module_exit(sensor_hub_exit);
++
++MODULE_DESCRIPTION("HID Sensor Hub driver");
 +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
-+MODULE_DESCRIPTION("HID Sensor trigger processing");
 +MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.h b/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
 new file mode 100644
-index 0000000..05b05d1
+index 0000000..a0283c0
 --- /dev/null
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
-@@ -0,0 +1,25 @@
++++ b/include/linux/hid-sensor-hub.h
+@@ -0,0 +1,160 @@
 +/*
 + * HID Sensors Driver
 + * Copyright (c) 2012, Intel Corporation.
@@ -610,11 +781,263 @@ index 0000000..05b05d1
 + * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
 + *
 + */
-+#ifndef _HID_SENSOR_TRIGGER_H
-+#define _HID_SENSOR_TRIGGER_H
++#ifndef _HID_SENSORS_HUB_H
++#define _HID_SENSORS_HUB_H
 +
-+int hid_sensor_setup_trigger(struct iio_dev *indio_dev, char *name);
-+void hid_sensor_remove_trigger(struct iio_dev *indio_dev);
++#include <linux/hid.h>
++#include <linux/hid-sensor-ids.h>
++
++/**
++ * struct hid_sensor_hub_attribute_info - Attribute info
++ * @usage_id:		Parent usage id of a physical device.
++ * @attrib_id:		Attribute id for this attribute.
++ * @report_id:		Report id in which this information resides.
++ * @index:		Field index in the report.
++ * @units:		Measurment unit for this attribute.
++ * @unit_expo:		Exponent used in the data.
++ * @size:		Size in bytes for data size.
++ */
++struct hid_sensor_hub_attribute_info {
++	u32 usage_id;
++	u32 attrib_id;
++	s32 report_id;
++	s32 index;
++	s32 units;
++	s32 unit_expo;
++	s32 size;
++};
++
++/**
++ * struct hid_sensor_hub_device - Stores the hub instance data
++ * @hdev:		Stores the hid instance.
++ * @vendor_id:		Vendor id of hub device.
++ * @product_id:		Product id of hub device.
++ */
++struct hid_sensor_hub_device {
++	struct hid_device *hdev;
++	u32 vendor_id;
++	u32 product_id;
++};
++
++/**
++ * struct hid_sensor_hub_callbacks - Client callback functions
++ * @pdev:		Platform device instance of the client driver.
++ * @suspend:		Suspend callback.
++ * @resume:		Resume callback.
++ * @capture_sample:	Callback to get a sample.
++ * @send_event:		Send notification to indicate all samples are
++ *			captured, process and send event
++ */
++struct hid_sensor_hub_callbacks {
++	struct platform_device *pdev;
++	int (*suspend)(struct hid_sensor_hub_device *hsdev, void *priv);
++	int (*resume)(struct hid_sensor_hub_device *hsdev, void *priv);
++	int (*capture_sample)(struct hid_sensor_hub_device *hsdev,
++			u32 usage_id, size_t raw_len, char *raw_data,
++			void *priv);
++	int (*send_event)(struct hid_sensor_hub_device *hsdev, u32 usage_id,
++			 void *priv);
++};
++
++/* Registeration functions */
++
++/**
++* sensor_hub_register_callback() - Register client callbacks
++* @hsdev:	Hub device instance.
++* @usage_id:	Usage id of the client (E.g. 0x200076 for Gyro).
++* @usage_callback: Callback function storage
++*
++* Used to register callbacks by client processing drivers. Sensor
++* hub core driver will call these callbacks to offload processing
++* of data streams and notifications.
++*/
++int sensor_hub_register_callback(struct hid_sensor_hub_device *hsdev,
++			u32 usage_id,
++			struct hid_sensor_hub_callbacks *usage_callback);
++
++/**
++* sensor_hub_remove_callback() - Remove client callbacks
++* @hsdev:	Hub device instance.
++* @usage_id:	Usage id of the client (E.g. 0x200076 for Gyro).
++*
++* If there is a callback registred, this call will remove that
++* callbacks, so that it will stop data and event notifications.
++*/
++int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
++			u32 usage_id);
++
++
++/* Hid sensor hub core interfaces */
++
++/**
++* sensor_hub_input_get_attribute_info() - Get an attribute information
++* @hsdev:	Hub device instance.
++* @type:	Type of this attribute, input/output/feature
++* @usage_id:	Attribute usage id of parent physical device as per spec
++* @attr_usage_id:	Attribute usage id as per spec
++* @info:	return information about attribute after parsing report
++*
++* Parses report and returns the attribute information such as report id,
++* field index, units and exponet etc.
++*/
++int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
++			u8 type,
++			u32 usage_id, u32 attr_usage_id,
++			struct hid_sensor_hub_attribute_info *info);
++
++/**
++* sensor_hub_input_attr_get_raw_value() - Synchronous read request
++* @usage_id:	Attribute usage id of parent physical device as per spec
++* @attr_usage_id:	Attribute usage id as per spec
++* @report_id:	Report id to look for
++*
++* Issues a synchronous read request for an input attribute. Returns
++* data upto 32 bits. Since client can get events, so this call should
++* not be used for data paths, this will impact performance.
++*/
++
++int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
++			u32 usage_id,
++			u32 attr_usage_id, u32 report_id);
++/**
++* sensor_hub_set_feature() - Feature set request
++* @report_id:	Report id to look for
++* @field_index:	Field index inside a report
++* @value:	Value to set
++*
++* Used to set a field in feature report. For example this can set polling
++* interval, sensitivity, activate/deactivate state.
++*/
++int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
++			u32 field_index, s32 value);
++
++/**
++* sensor_hub_get_feature() - Feature get request
++* @report_id:	Report id to look for
++* @field_index:	Field index inside a report
++* @value:	Place holder for return value
++*
++* Used to get a field in feature report. For example this can get polling
++* interval, sensitivity, activate/deactivate state.
++*/
++int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
++			u32 field_index, s32 *value);
++#endif
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+new file mode 100644
+index 0000000..292e80f
+--- /dev/null
++++ b/include/linux/hid-sensor-ids.h
+@@ -0,0 +1,111 @@
++/*
++ * HID Sensors Driver
++ * Copyright (c) 2012, Intel Corporation.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program; if not, write to the Free Software Foundation, Inc.,
++ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
++ *
++ */
++#ifndef _HID_SENSORS_IDS_H
++#define _HID_SENSORS_IDS_H
++
++#define HID_UP_SENSOR						0x00200000
++
++/* Accel 3D (200073) */
++#define HID_USAGE_SENSOR_ACCEL_3D				0x200073
++#define HID_USAGE_SENSOR_ACCEL_X_AXIS				0x200453
++#define HID_USAGE_SENSOR_ACCEL_Y_AXIS				0x200454
++#define HID_USAGE_SENSOR_ACCEL_Z_AXIS				0x200455
++
++/* ALS (200041) */
++#define HID_USAGE_SENSOR_ALS					0x200041
++#define HID_USAGE_SENSOR_LIGHT_ILLUM				0x2004d1
++
++/* Gyro 3D: (200076) */
++#define HID_USAGE_SENSOR_GYRO_3D				0x200076
++#define HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXIS			0x200457
++#define HID_USAGE_SENSOR_ANGL_VELOCITY_Y_AXIS			0x200458
++#define HID_USAGE_SENSOR_ANGL_VELOCITY_Z_AXIS			0x200459
++
++/*ORIENTATION: Compass 3D: (200083) */
++#define HID_USAGE_SENSOR_COMPASS_3D				0x200083
++#define HID_USAGE_SENSOR_ORIENT_MAGN_HEADING			0x200471
++#define HID_USAGE_SENSOR_ORIENT_MAGN_HEADING_X			0x200472
++#define HID_USAGE_SENSOR_ORIENT_MAGN_HEADING_Y			0x200473
++#define HID_USAGE_SENSOR_ORIENT_MAGN_HEADING_Z			0x200474
++
++#define HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH			0x200475
++#define HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH			0x200476
++#define HID_USAGE_SENSOR_ORIENT_MAGN_NORTH			0x200477
++#define HID_USAGE_SENSOR_ORIENT_TRUE_NORTH			0x200478
++
++#define HID_USAGE_SENSOR_ORIENT_DISTANCE			0x200479
++#define HID_USAGE_SENSOR_ORIENT_DISTANCE_X			0x20047A
++#define HID_USAGE_SENSOR_ORIENT_DISTANCE_Y			0x20047B
++#define HID_USAGE_SENSOR_ORIENT_DISTANCE_Z			0x20047C
++#define HID_USAGE_SENSOR_ORIENT_DISTANCE_OUT_OF_RANGE		0x20047D
++#define HID_USAGE_SENSOR_ORIENT_TILT				0x20047E
++#define HID_USAGE_SENSOR_ORIENT_TILT_X				0x20047F
++#define HID_USAGE_SENSOR_ORIENT_TILT_Y				0x200480
++#define HID_USAGE_SENSOR_ORIENT_TILT_Z				0x200481
++#define HID_USAGE_SENSOR_ORIENT_ROTATION_MATRIX			0x200482
++#define HID_USAGE_SENSOR_ORIENT_QUATERNION			0x200483
++#define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX			0x200484
++
++#define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS		0x200485
++#define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS		0x200486
++#define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS		0x200487
++
++/* Units */
++#define HID_USAGE_SENSOR_UNITS_NOT_SPECIFIED			0x00
++#define HID_USAGE_SENSOR_UNITS_LUX				0x01
++#define HID_USAGE_SENSOR_UNITS_KELVIN				0x01000100
++#define HID_USAGE_SENSOR_UNITS_FAHRENHEIT			0x03000100
++#define HID_USAGE_SENSOR_UNITS_PASCAL				0xF1E1
++#define HID_USAGE_SENSOR_UNITS_NEWTON				0x11E1
++#define HID_USAGE_SENSOR_UNITS_METERS_PER_SECOND		0x11F0
++#define HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD		0x11E0
++#define HID_USAGE_SENSOR_UNITS_FARAD				0xE14F2000
++#define HID_USAGE_SENSOR_UNITS_AMPERE				0x01001000
++#define HID_USAGE_SENSOR_UNITS_WATT				0x21d1
++#define HID_USAGE_SENSOR_UNITS_HENRY				0x21E1E000
++#define HID_USAGE_SENSOR_UNITS_OHM				0x21D1E000
++#define HID_USAGE_SENSOR_UNITS_VOLT				0x21D1F000
++#define HID_USAGE_SENSOR_UNITS_HERTZ				0x01F0
++#define HID_USAGE_SENSOR_UNITS_DEGREES_PER_SEC_SQRD		0x14E0
++#define HID_USAGE_SENSOR_UNITS_RADIANS				0x12
++#define HID_USAGE_SENSOR_UNITS_RADIANS_PER_SECOND		0x12F0
++#define HID_USAGE_SENSOR_UNITS_RADIANS_PER_SEC_SQRD		0x12E0
++#define HID_USAGE_SENSOR_UNITS_SECOND				0x0110
++#define HID_USAGE_SENSOR_UNITS_GAUSS				0x01E1F000
++#define HID_USAGE_SENSOR_UNITS_GRAM				0x0101
++#define HID_USAGE_SENSOR_UNITS_CENTIMETER			0x11
++#define HID_USAGE_SENSOR_UNITS_G				0x1A
++#define HID_USAGE_SENSOR_UNITS_MILLISECOND			0x19
++#define HID_USAGE_SENSOR_UNITS_PERCENT				0x17
++#define HID_USAGE_SENSOR_UNITS_DEGREES				0x14
++#define HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND		0x15
++
++/* Common selectors */
++#define HID_USAGE_SENSOR_PROP_REPORT_INTERVAL			0x20030E
++#define HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS			0x20030F
++#define HID_USAGE_SENSOR_PROP_SENSITIVITY_RANGE_PCT		0x200310
++#define HID_USAGE_SENSOR_PROP_SENSITIVITY_REL_PCT		0x200311
++#define HID_USAGE_SENSOR_PROP_ACCURACY				0x200312
++#define HID_USAGE_SENSOR_PROP_RESOLUTION			0x200313
++#define HID_USAGE_SENSOR_PROP_RANGE_MAXIMUM			0x200314
++#define HID_USAGE_SENSOR_PROP_RANGE_MINIMUM			0x200315
++#define HID_USAGE_SENSOR_PROP_REPORT_STATE			0x200316
++#define HID_USAGE_SENSOR_PROY_POWER_STATE			0x200319
 +
 +#endif
 -- 
