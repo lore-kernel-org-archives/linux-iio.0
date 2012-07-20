@@ -1,56 +1,92 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <500C5445.3090900@kernel.org>
-Date: Sun, 22 Jul 2012 20:28:05 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <device-drivers-devel@blackfin.uclinux.org>,
+	<Andrei.Cozma@analog.com>, Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH] iio: frequency: ADF4350: Fix potential reference div factor overflow.
+Date: Fri, 20 Jul 2012 10:31:50 +0200
+Message-ID: <1342773110-20722-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: Devendra Naga <develkernel412222@gmail.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] staging/iio: use module_platform_driver macro
-References: <1342860895-19401-1-git-send-email-develkernel412222@gmail.com>
-In-Reply-To: <1342860895-19401-1-git-send-email-develkernel412222@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/21/2012 09:54 AM, Devendra Naga wrote:
-> the code which under _init and _exit does only the platform_driver_register
-> and platform_driver_unregister, and nothing else,
-> so its better to use the module_platform_driver macro rather duplicating
-> its implementation
-> 
-> Signed-off-by: Devendra Naga <develkernel412222@gmail.com>
-Thanks.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Queued this up for when I resume sending pull requests to Greg
-post merge window.
-> ---
-> 
->  drivers/staging/iio/iio_hwmon.c |   12 +-----------
->  1 file changed, 1 insertion(+), 11 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/iio_hwmon.c b/drivers/staging/iio/iio_hwmon.c
-> index 27d27ec..4bb017a 100644
-> --- a/drivers/staging/iio/iio_hwmon.c
-> +++ b/drivers/staging/iio/iio_hwmon.c
-> @@ -215,17 +215,7 @@ static struct platform_driver __refdata iio_hwmon_driver = {
->  	.remove = __devexit_p(iio_hwmon_remove),
->  };
->  
-> -static int iio_inkern_init(void)
-> -{
-> -	return platform_driver_register(&iio_hwmon_driver);
-> -}
-> -module_init(iio_inkern_init);
-> -
-> -static void iio_inkern_exit(void)
-> -{
-> -	platform_driver_unregister(&iio_hwmon_driver);
-> -}
-> -module_exit(iio_inkern_exit);
-> +module_platform_driver(iio_hwmon_driver);
->  
->  MODULE_AUTHOR("Jonathan Cameron <jic23@cam.ac.uk>");
->  MODULE_DESCRIPTION("IIO to hwmon driver");
-> 
+With small channel spacing values and high reference frequencies it is
+possible to exceed the range of the 10-bit counter.
+Workaround by checking the range and widening some constrains.
+
+We don't use the REG1_PHASE value in this case the datasheet recommends to set
+it to 1 if not used.
+
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/iio/frequency/adf4350.c       |   24 +++++++++++++++---------
+ include/linux/iio/frequency/adf4350.h |    2 ++
+ 2 files changed, 17 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index 59fbb3a..e35bb8f 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -129,7 +129,7 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
+ {
+ 	struct adf4350_platform_data *pdata = st->pdata;
+ 	u64 tmp;
+-	u32 div_gcd, prescaler;
++	u32 div_gcd, prescaler, chspc;
+ 	u16 mdiv, r_cnt = 0;
+ 	u8 band_sel_div;
+ 
+@@ -158,14 +158,20 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
+ 	if (pdata->ref_div_factor)
+ 		r_cnt = pdata->ref_div_factor - 1;
+ 
+-	do  {
+-		r_cnt = adf4350_tune_r_cnt(st, r_cnt);
++	chspc = st->chspc;
+ 
+-		st->r1_mod = st->fpfd / st->chspc;
+-		while (st->r1_mod > ADF4350_MAX_MODULUS) {
+-			r_cnt = adf4350_tune_r_cnt(st, r_cnt);
+-			st->r1_mod = st->fpfd / st->chspc;
+-		}
++	do  {
++		do {
++			do {
++				r_cnt = adf4350_tune_r_cnt(st, r_cnt);
++				st->r1_mod = st->fpfd / chspc;
++				if (r_cnt > ADF4350_MAX_R_CNT) {
++					/* try higher spacing values */
++					chspc++;
++					r_cnt = 0;
++				}
++			} while ((st->r1_mod > ADF4350_MAX_MODULUS) && r_cnt);
++		} while (r_cnt == 0);
+ 
+ 		tmp = freq * (u64)st->r1_mod + (st->fpfd > 1);
+ 		do_div(tmp, st->fpfd); /* Div round closest (n + d/2)/d */
+@@ -194,7 +200,7 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
+ 	st->regs[ADF4350_REG0] = ADF4350_REG0_INT(st->r0_int) |
+ 				 ADF4350_REG0_FRACT(st->r0_fract);
+ 
+-	st->regs[ADF4350_REG1] = ADF4350_REG1_PHASE(0) |
++	st->regs[ADF4350_REG1] = ADF4350_REG1_PHASE(1) |
+ 				 ADF4350_REG1_MOD(st->r1_mod) |
+ 				 prescaler;
+ 
+diff --git a/include/linux/iio/frequency/adf4350.h b/include/linux/iio/frequency/adf4350.h
+index b76b4a8..be91f34 100644
+--- a/include/linux/iio/frequency/adf4350.h
++++ b/include/linux/iio/frequency/adf4350.h
+@@ -87,6 +87,8 @@
+ #define ADF4350_MAX_BANDSEL_CLK		125000 /* Hz */
+ #define ADF4350_MAX_FREQ_REFIN		250000000 /* Hz */
+ #define ADF4350_MAX_MODULUS		4095
++#define ADF4350_MAX_R_CNT		1023
++
+ 
+ /**
+  * struct adf4350_platform_data - platform specific information
+-- 
+1.7.0.4
