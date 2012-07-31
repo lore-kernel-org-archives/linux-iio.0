@@ -1,111 +1,168 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <50032AD8.9040103@gmx.de>
-Date: Sun, 15 Jul 2012 22:40:56 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: linux-iio@vger.kernel.org
-CC: jic23@kernel.org
-Subject: [PATCH 0/2] fixes for adt7410
-Content-Type: text/plain; charset=ISO-8859-15
+Return-Path: <Julia.Lawall@lip6.fr>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: kernel-janitors@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] drivers/iio/adc/at91_adc.c: use devm_ functions
+Date: Tue, 31 Jul 2012 12:09:43 +0200
+Message-Id: <1343729383-30073-1-git-send-email-Julia.Lawall@lip6.fr>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patchset makes the ADT7410 usable. Main reason was the following error when trying to register one of these devices:
-[  180.945561] BUG: unable to handle kernel NULL pointer dereference at   (null)
-[  180.945592] IP: [<f84b1e80>] iio_device_register_eventset+0x380/0x3a0 [industrialio]
-This happens, since in industrialio-events.c __iio_add_event_config_attrs (which does a INIT_LIST_HEAD) is not called, if the channels attribute of the device is not set. As a result, list_for_each_entry causes those NULL pointer dereference problems. So, before trying to access those list elements, we check for their existence (also in unregister functions).
-Now the adt7410.c ended in some complex changes - my apologies for this:
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-  * check for exact values provided through sysfs, otherwise output a verbose error/usage message for: sample mode, resolution, event mode
-  * adt7410_show_id: I don't see a point in masking out some LSBs, if they get shifted to oblivion, anyway -> no more need for ADT7410_MANUFACTORY_ID_MASK
-  * adt7410_convert_temperature: in 13 bit mode, the driver assumed the data to be stored in bits 0-12, but according to the data sheet, it is stored in bits 3-15. Temperature readings were always around 200(°C), while real temperature was something around 20(°C). Simple fix: mask out bits 0-2 in 13 bit mode and use the 16 bit routines from that point on.
-  * adt7410_set_t_bound: handle float values provided through sysfs properly. Also, simplify treatment of 13 bit values by masking out bits 0-2.
-  * adt7410_probe, adt7410_remove: fix another possible NULL pointer dereference issue, in case no platform data is provided. Sync chip->config with the config register
+The various devm_ functions allocate memory that is released when a driver
+detaches.  This patch uses these functions for data that is allocated in
+the probe function of a platform device and is only freed in the remove
+function.
 
-Device instanciation, reading sysfs-values and removal work smoothly, now. Based on recent official git kernel.
+The call to platform_get_resource(pdev, IORESOURCE_MEM, 0) is moved closer
+to the new call to devm_request_and_ioremap where its result is first
+used.  devm_request_and_ioremap takes case of the NULL test on the result
+of platform_get_resource(pdev, IORESOURCE_MEM, 0), so that is dropped.
 
-Remaining issue: writing any value to sysfs (mode, resolution, ...) files causes infinite call of the appropriate store function. I have no clue where to look for a start. For demonstration, I added some printk's to the store function. This is a piece of the results, it keeps repeating forever:
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-[ 3257.158462] Set Resolution 1
-[ 3257.158478] Set Resolution 2, data: 16
-[ 3257.174151] Set Resolution 3, ret: 0
-[ 3257.174157] Set Resolution 4, config: 0
-[ 3257.174160] Set Resolution 4.2
-[ 3257.182143] Set Resolution 6
-[ 3257.182148] Set Resolution 7, ret: 0
-[ 3257.182159] Set Resolution 1
-[ 3257.182163] Set Resolution 2, data: 16
-[ 3257.198140] Set Resolution 3, ret: 0
-[ 3257.198145] Set Resolution 4, config: 0
-[ 3257.198147] Set Resolution 4.2
-[ 3257.206139] Set Resolution 6
-[ 3257.206144] Set Resolution 7, ret: 0
-[ 3257.206150] Set Resolution 1
-[ 3257.206154] Set Resolution 2, data: 16
-[ 3257.222147] Set Resolution 3, ret: 0
-[ 3257.222158] Set Resolution 4, config: 0
-[ 3257.222161] Set Resolution 4.2
-[ 3257.230135] Set Resolution 6
-[ 3257.230141] Set Resolution 7, ret: 0
-[ 3257.230154] Set Resolution 1
-[ 3257.230159] Set Resolution 2, data: 16
-[ 3257.246132] Set Resolution 3, ret: 0
-[ 3257.246137] Set Resolution 4, config: 0
-[ 3257.246140] Set Resolution 4.2
-[ 3257.254130] Set Resolution 6
-[ 3257.254135] Set Resolution 7, ret: 0
+---
+Not compiled.
 
-The function looks like this:
+ drivers/iio/adc/at91_adc.c |   56 +++++++++++----------------------------------
+ 1 file changed, 14 insertions(+), 42 deletions(-)
 
-static ssize_t adt7410_store_resolution(struct device *dev,
-        struct device_attribute *attr,
-        const char *buf,
-        size_t len)
-{
-    struct iio_dev *dev_info = dev_to_iio_dev(dev);
-    struct adt7410_chip_info *chip = iio_priv(dev_info);
-    unsigned long data;
-    u16 config;
-    int ret;
-
-    printk(KERN_ERR "Set Resolution 1\n");
-    ret = strict_strtoul(buf, 10, &data);
-    printk(KERN_ERR "Set Resolution 2, data: %u\n", data);
-    if (ret)
-        return -EINVAL;
-
-    ret = adt7410_i2c_read_byte(chip, ADT7410_CONFIG, &chip->config);
-    printk(KERN_ERR "Set Resolution 3, ret: %i\n", ret);
-    if (ret)
-        return -EIO;
-
-    config = chip->config & (~ADT7410_RESOLUTION);
-    printk(KERN_ERR "Set Resolution 4, config: %i\n", config);
-    switch (data) {
-        case 13:
-            config |= 0;
-            printk(KERN_ERR "Set Resolution 4.1,\n");
-            break;
-        case 16:
-            config |= ADT7410_RESOLUTION;
-            printk(KERN_ERR "Set Resolution 4.2\n");
-            break;
-        default:
-            printk(KERN_ERR "Invalid value, valid are 13 and 16\n");
-    }
-/*    if (data) {
-        printk(KERN_ERR "Set Resolution 5\n");
-   
-        config |= ADT7410_RESOLUTION;
-    }
-*/
-    ret = adt7410_i2c_write_byte(chip, ADT7410_CONFIG, config);
-    printk(KERN_ERR "Set Resolution 6\n");
-    if (ret)
-        return -EIO;
-
-    chip->config = config;
-    printk(KERN_ERR "Set Resolution 7, ret: %i\n", ret);
-   
-
-    return ret;
-}
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index f61780a..b0277bf 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -545,13 +545,6 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+ 		goto error_free_device;
+ 	}
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res) {
+-		dev_err(&pdev->dev, "No resource defined\n");
+-		ret = -ENXIO;
+-		goto error_ret;
+-	}
+-
+ 	platform_set_drvdata(pdev, idev);
+ 
+ 	idev->dev.parent = &pdev->dev;
+@@ -566,18 +559,13 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+ 		goto error_free_device;
+ 	}
+ 
+-	if (!request_mem_region(res->start, resource_size(res),
+-				"AT91 adc registers")) {
+-		dev_err(&pdev->dev, "Resources are unavailable.\n");
+-		ret = -EBUSY;
+-		goto error_free_device;
+-	}
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 
+-	st->reg_base = ioremap(res->start, resource_size(res));
++	st->reg_base = devm_request_and_ioremap(&pdev->dev, res);
+ 	if (!st->reg_base) {
+ 		dev_err(&pdev->dev, "Failed to map registers.\n");
+ 		ret = -ENOMEM;
+-		goto error_release_mem;
++		goto error_free_device;
+ 	}
+ 
+ 	/*
+@@ -585,27 +573,27 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+ 	 */
+ 	at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_SWRST);
+ 	at91_adc_writel(st, AT91_ADC_IDR, 0xFFFFFFFF);
+-	ret = request_irq(st->irq,
+-			  at91_adc_eoc_trigger,
+-			  0,
+-			  pdev->dev.driver->name,
+-			  idev);
++	ret = devm_request_irq(&pdev->dev, st->irq,
++			       at91_adc_eoc_trigger,
++			       0,
++			       pdev->dev.driver->name,
++			       idev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Failed to allocate IRQ.\n");
+-		goto error_unmap_reg;
++		goto error_free_device;
+ 	}
+ 
+-	st->clk = clk_get(&pdev->dev, "adc_clk");
++	st->clk = devm_clk_get(&pdev->dev, "adc_clk");
+ 	if (IS_ERR(st->clk)) {
+ 		dev_err(&pdev->dev, "Failed to get the clock.\n");
+ 		ret = PTR_ERR(st->clk);
+-		goto error_free_irq;
++		goto error_free_device;
+ 	}
+ 
+ 	ret = clk_prepare(st->clk);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Could not prepare the clock.\n");
+-		goto error_free_clk;
++		goto error_free_device;
+ 	}
+ 
+ 	ret = clk_enable(st->clk);
+@@ -614,7 +602,7 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+ 		goto error_unprepare_clk;
+ 	}
+ 
+-	st->adc_clk = clk_get(&pdev->dev, "adc_op_clk");
++	st->adc_clk = devm_clk_get(&pdev->dev, "adc_op_clk");
+ 	if (IS_ERR(st->adc_clk)) {
+ 		dev_err(&pdev->dev, "Failed to get the ADC clock.\n");
+ 		ret = PTR_ERR(st->clk);
+@@ -624,7 +612,7 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+ 	ret = clk_prepare(st->adc_clk);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Could not prepare the ADC clock.\n");
+-		goto error_free_adc_clk;
++		goto error_disable_clk;
+ 	}
+ 
+ 	ret = clk_enable(st->adc_clk);
+@@ -697,20 +685,10 @@ error_disable_adc_clk:
+ 	clk_disable(st->adc_clk);
+ error_unprepare_adc_clk:
+ 	clk_unprepare(st->adc_clk);
+-error_free_adc_clk:
+-	clk_put(st->adc_clk);
+ error_disable_clk:
+ 	clk_disable(st->clk);
+ error_unprepare_clk:
+ 	clk_unprepare(st->clk);
+-error_free_clk:
+-	clk_put(st->clk);
+-error_free_irq:
+-	free_irq(st->irq, idev);
+-error_unmap_reg:
+-	iounmap(st->reg_base);
+-error_release_mem:
+-	release_mem_region(res->start, resource_size(res));
+ error_free_device:
+ 	iio_device_free(idev);
+ error_ret:
+@@ -720,20 +698,14 @@ error_ret:
+ static int __devexit at91_adc_remove(struct platform_device *pdev)
+ {
+ 	struct iio_dev *idev = platform_get_drvdata(pdev);
+-	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	struct at91_adc_state *st = iio_priv(idev);
+ 
+ 	iio_device_unregister(idev);
+ 	at91_adc_trigger_remove(idev);
+ 	at91_adc_buffer_remove(idev);
+ 	clk_disable_unprepare(st->adc_clk);
+-	clk_put(st->adc_clk);
+ 	clk_disable(st->clk);
+ 	clk_unprepare(st->clk);
+-	clk_put(st->clk);
+-	free_irq(st->irq, idev);
+-	iounmap(st->reg_base);
+-	release_mem_region(res->start, resource_size(res));
+ 	iio_device_free(idev);
+ 
+ 	return 0;
