@@ -1,82 +1,65 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5017EA72.8030003@metafoo.de>
-Date: Tue, 31 Jul 2012 16:23:46 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Julia Lawall <julia.lawall@lip6.fr>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, kernel-janitors@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- rob.herring@calxeda.com
+Return-Path: <julia.lawall@lip6.fr>
+Date: Tue, 31 Jul 2012 15:54:29 +0200 (CEST)
+From: Julia Lawall <julia.lawall@lip6.fr>
+To: Lars-Peter Clausen <lars@metafoo.de>
+cc: Julia Lawall <Julia.Lawall@lip6.fr>, Jonathan Cameron <jic23@cam.ac.uk>,
+    kernel-janitors@vger.kernel.org, linux-iio@vger.kernel.org,
+    linux-kernel@vger.kernel.org, rob.herring@calxeda.com
 Subject: Re: [PATCH] drivers/iio/adc/at91_adc.c: use devm_ functions
-References: <1343729383-30073-1-git-send-email-Julia.Lawall@lip6.fr> <5017D148.6030006@metafoo.de> <alpine.DEB.2.02.1207311552440.1894@hadrien>
-In-Reply-To: <alpine.DEB.2.02.1207311552440.1894@hadrien>
-Content-Type: text/plain; charset=ISO-8859-1
+In-Reply-To: <5017D148.6030006@metafoo.de>
+Message-ID: <alpine.DEB.2.02.1207311552440.1894@hadrien>
+References: <1343729383-30073-1-git-send-email-Julia.Lawall@lip6.fr> <5017D148.6030006@metafoo.de>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/31/2012 03:54 PM, Julia Lawall wrote:
-> 
-> 
-> On Tue, 31 Jul 2012, Lars-Peter Clausen wrote:
-> 
->> Hi,
->>
->> On 07/31/2012 12:09 PM, Julia Lawall wrote:
->>> From: Julia Lawall <Julia.Lawall@lip6.fr>
->>> @@ -720,20 +698,14 @@ error_ret:
->>>  static int __devexit at91_adc_remove(struct platform_device *pdev)
->>>  {
->>>  	struct iio_dev *idev = platform_get_drvdata(pdev);
->>> -	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>>  	struct at91_adc_state *st = iio_priv(idev);
->>>
->>>  	iio_device_unregister(idev);
->>> [...]
->>> -	free_irq(st->irq, idev);
->>> [...]
->>>  	iio_device_free(idev);
->>
->> I think we have to be careful here. The interrupted is now freed after the
->> device has been freed, which means that it could trigger after the device
->> has been freed. And since we use the device in the interrupt handler we'll
->> get a use after free.
-> 
-> Perhaps the same would be true in the following code, from the file
-> drivers/edac/highbank_l2_edac.c:
-> 
->         res = devm_request_irq(&pdev->dev, drvdata->sb_irq,
->                                highbank_l2_err_handler,
->                                0, dev_name(&pdev->dev), dci);
->         if (res < 0)
->                 goto err;
-> 
->         dci->mod_name = dev_name(&pdev->dev);
->         dci->dev_name = dev_name(&pdev->dev);
-> 
->         if (edac_device_add_device(dci))
->                 goto err;
-> 
->         devres_close_group(&pdev->dev, NULL);
->         return 0;
-> err:
->     	devres_release_group(&pdev->dev, NULL);
->         edac_device_free_ctl_info(dci);
 
-Yes looks like this has the same issue.
 
-> 
-> Is devm_request_irq perhaps not a very good idea?
-> 
+On Tue, 31 Jul 2012, Lars-Peter Clausen wrote:
 
-devm_request_irq has to be used carefully. It is ok to use it if the objects
-which are accessed in the interrupt handler are also devres managed. devres
-will free objects in the reverse order of which they are allocated.
+> Hi,
+>
+> On 07/31/2012 12:09 PM, Julia Lawall wrote:
+> > From: Julia Lawall <Julia.Lawall@lip6.fr>
+> > @@ -720,20 +698,14 @@ error_ret:
+> >  static int __devexit at91_adc_remove(struct platform_device *pdev)
+> >  {
+> >  	struct iio_dev *idev = platform_get_drvdata(pdev);
+> > -	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> >  	struct at91_adc_state *st = iio_priv(idev);
+> >
+> >  	iio_device_unregister(idev);
+> > [...]
+> > -	free_irq(st->irq, idev);
+> > [...]
+> >  	iio_device_free(idev);
+>
+> I think we have to be careful here. The interrupted is now freed after the
+> device has been freed, which means that it could trigger after the device
+> has been freed. And since we use the device in the interrupt handler we'll
+> get a use after free.
 
-E.g. if you do
+Perhaps the same would be true in the following code, from the file
+drivers/edac/highbank_l2_edac.c:
 
-obj = dev_kzalloc(...);
-...
-devm_request_irq(..., obj);
+        res = devm_request_irq(&pdev->dev, drvdata->sb_irq,
+                               highbank_l2_err_handler,
+                               0, dev_name(&pdev->dev), dci);
+        if (res < 0)
+                goto err;
 
-it is save to use, because 'obj' will be freed after the IRQ has been freed.
+        dci->mod_name = dev_name(&pdev->dev);
+        dci->dev_name = dev_name(&pdev->dev);
 
-- Lars
+        if (edac_device_add_device(dci))
+                goto err;
+
+        devres_close_group(&pdev->dev, NULL);
+        return 0;
+err:
+    	devres_release_group(&pdev->dev, NULL);
+        edac_device_free_ctl_info(dci);
+
+Is devm_request_irq perhaps not a very good idea?
+
+julia
