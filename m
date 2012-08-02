@@ -1,28 +1,49 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-Message-ID: <4FFC8369.6000700@jic23.retrosnub.co.uk>
-Date: Tue, 10 Jul 2012 20:32:57 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: Jonathan Cameron <jic23@kernel.org>,
- Jon Brenner <jbrenner@taosinc.com>,
- linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH V2] IIO channel type and modifiers for CCT and RGBC data
-References: <1337183202.6344.1.camel@jonz-ub2> <alpine.DEB.2.01.1206140006370.29697@pmeerw.net> <4FD9906C.7090400@cam.ac.uk> <4FFBE302.40606@kernel.org> <4FFC6DF7.4050602@kernel.org> <alpine.DEB.2.01.1207102014100.19634@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.01.1207102014100.19634@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <axel.lin@gmail.com>
+Message-ID: <1343902209.1207.2.camel@phoenix>
+Subject: [PATCH] iio: lm3533-als: Fix build warnings
+From: Axel Lin <axel.lin@gmail.com>
+To: Johan Hovold <jhovold@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Greg Kroah-Hartman
+	 <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Date: Thu, 02 Aug 2012 18:10:09 +0800
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/10/2012 07:15 PM, Peter Meerwald wrote:
->> I'll send out the pull if no one shouts. It's getting vaguely near the
->> end of this cycle...
-> I'm happy this got merged finally
->
->>>>>> +KernelVersion:    3.4.0
->>>>>> +Contact:    linux-iio@vger.kernel.org
-> should be 3.6?
-Good spot. I'll do a trivial fixup patch to follow it.
-Will add a reported-by.
->
-> regards, p.
->
+Fix below build warnings:
+  CC [M]  drivers/iio/light/lm3533-als.o
+drivers/iio/light/lm3533-als.c:667:8: warning: initialization from incompatible pointer type [enabled by default]
+drivers/iio/light/lm3533-als.c:667:8: warning: (near initialization for 'dev_attr_in_illuminance0_thresh_either_en.show') [enabled by default]
+drivers/iio/light/lm3533-als.c:667:8: warning: initialization from incompatible pointer type [enabled by default]
+drivers/iio/light/lm3533-als.c:667:8: warning: (near initialization for 'dev_attr_in_illuminance0_thresh_either_en.store') [enabled by default]
+
+Signed-off-by: Axel Lin <axel.lin@gmail.com>
+---
+ drivers/iio/light/lm3533-als.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
+index c3e7bac..e45712a9 100644
+--- a/drivers/iio/light/lm3533-als.c
++++ b/drivers/iio/light/lm3533-als.c
+@@ -404,7 +404,7 @@ out:
+ 	return ret;
+ }
+ 
+-static int show_thresh_either_en(struct device *dev,
++static ssize_t show_thresh_either_en(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+ {
+@@ -424,7 +424,7 @@ static int show_thresh_either_en(struct device *dev,
+ 	return scnprintf(buf, PAGE_SIZE, "%u\n", enable);
+ }
+ 
+-static int store_thresh_either_en(struct device *dev,
++static ssize_t store_thresh_either_en(struct device *dev,
+ 					struct device_attribute *attr,
+ 					const char *buf, size_t len)
+ {
+-- 
+1.7.9.5
