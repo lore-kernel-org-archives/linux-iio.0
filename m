@@ -1,41 +1,35 @@
-Return-Path: <anish198519851985@gmail.com>
-Subject: Re: [PATCH] Extcon: adc_jack: adc-jack driver to support 3.5 pi or
- simliar devices
-From: anish kumar <anish198519851985@gmail.com>
-To: myungjoo.ham@samsung.com
-Cc: =?UTF-8?Q?=EC=B5=9C=EC=B0=AC=EC=9A=B0?= <cw00.choi@samsung.com>,
- "jic23@cam.ac.uk" <jic23@cam.ac.uk>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>,  "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, ANISH KUMAR <anish.singh@samsung.com>
-In-Reply-To: <29824246.53241344219316571.JavaMail.weblogic@epml13>
-References: <29824246.53241344219316571.JavaMail.weblogic@epml13>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sun, 05 Aug 2012 19:44:00 -0700
-Message-ID: <1344221040.1516.0.camel@anish-Inspiron-N5050>
-Mime-Version: 1.0
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: linux-iio@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org,
+	Marek Vasut <marex@denx.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Juergen Beisert <jbe@pengutronix.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Wolfgang Denk <wd@denx.de>
+Subject: [PATCH 0/3] i.MX28 LRADC driver
+Date: Fri,  3 Aug 2012 17:28:38 +0200
+Message-Id: <1344007721-11595-1-git-send-email-marex@denx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 2012-08-06 at 02:15 +0000, 함명주 wrote:
-> > From: anish kumar <anish198519851985@gmail.com>
-> > 
-> > External connector devices that decides connection information based on
-> > ADC values may use adc-jack device driver. The user simply needs to
-> > provide a table of adc range and connection states. Then, extcon
-> > framework will automatically notify others.
-> > 
-> > Signed-off-by: anish kumar <anish.singh@samsung.com>
-> 
-> - Please remove "get_adc" callbacks still remaining in the header file
-> (and its comments)
-aha.Forgot to remove this.
-> 
-> - Let's not modify un-related driver code (in Kconfig, extcon-gpio)
-I think this was unintended(my mistake).Sending the patch again.
-> 
-> Except that, things look good.
-> 
-> 
-> Cheers
-> MyungJoo
-> 
-> 
+Introduce the i.MX28 LRADC driver and support tech that comes with it.
+
+Marek Vasut (3):
+  IIO: Add 4-byte unsigned reads into generic-buffer example
+  IIO: Add basic MXS LRADC driver
+  IIO: arm: Add LRADC to i.MX28 dts
+
+ arch/arm/boot/dts/imx28.dtsi                       |    3 +
+ drivers/staging/iio/Documentation/generic_buffer.c |   10 +
+ drivers/staging/iio/adc/Kconfig                    |   12 +
+ drivers/staging/iio/adc/Makefile                   |    1 +
+ drivers/staging/iio/adc/mxs-lradc.c                |  591 ++++++++++++++++++++
+ 5 files changed, 617 insertions(+)
+ create mode 100644 drivers/staging/iio/adc/mxs-lradc.c
+
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Juergen Beisert <jbe@pengutronix.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Wolfgang Denk <wd@denx.de>
+-- 
+1.7.10.4
