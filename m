@@ -1,16 +1,15 @@
 Return-Path: <>
 From: anish kumar <anish198519851985@gmail.com>
-To: lars@metafoo.de
-Cc: cw00.choi@samsung.com,
+To: cw00.choi@samsung.com,
 	myungjoo.ham@samsung.com,
-	jic23@cam.ac.uk,
-	linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+Cc: linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	anish kumar <anish198519851985@gmail.com>,
 	anish kumar <anish.singh@samsung.com>
-Subject: [PATCH] [PATCH V2]Extcon: adc_jack: adc-jack driver to support 3.5 pi or simliar devices
-Date: Mon,  6 Aug 2012 16:28:00 -0700
-Message-Id: <1344295680-21064-1-git-send-email-anish198519851985@gmail.com>
+Subject: 
+Date: Mon,  6 Aug 2012 09:59:03 -0700
+Message-Id: <1344272343-23953-1-git-send-email-anish198519851985@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 From: anish kumar <anish198519851985@gmail.com>
@@ -20,15 +19,11 @@ ADC values may use adc-jack device driver. The user simply needs to
 provide a table of adc range and connection states. Then, extcon
 framework will automatically notify others.
 
-Changes in V1:
+Changes in this version:
 added Lars-Peter Clausen suggested changes:
 Using macros to get rid of boiler plate code such as devm_kzalloc
 and module_platform_driver.Other changes suggested are related to
 coding guidelines.
-
-Changes in this version:
-Removed some unnecessary checks and changed the way we are un-regitering
-extcon and freeing the irq while removing.
 
 Signed-off-by: anish kumar <anish.singh@samsung.com>
 Signed-off-by: MyungJoo Ham <myungjoo.ham@samsung.com>
@@ -36,8 +31,8 @@ Signed-off-by: MyungJoo Ham <myungjoo.ham@samsung.com>
  drivers/extcon/Kconfig          |    5 +
  drivers/extcon/Makefile         |    1 +
  drivers/extcon/adc_jack.c       |  193 +++++++++++++++++++++++++++++++++++++++
- include/linux/extcon/adc_jack.h |   76 +++++++++++++++
- 4 files changed, 275 insertions(+), 0 deletions(-)
+ include/linux/extcon/adc_jack.h |   77 ++++++++++++++++
+ 4 files changed, 276 insertions(+), 0 deletions(-)
  create mode 100644 drivers/extcon/adc_jack.c
  create mode 100644 include/linux/extcon/adc_jack.h
 
@@ -71,7 +66,7 @@ index 88961b3..d95c5ea 100644
  obj-$(CONFIG_EXTCON_ARIZONA)	+= extcon-arizona.o
 diff --git a/drivers/extcon/adc_jack.c b/drivers/extcon/adc_jack.c
 new file mode 100644
-index 0000000..7a1aeb7
+index 0000000..8b80af0
 --- /dev/null
 +++ b/drivers/extcon/adc_jack.c
 @@ -0,0 +1,193 @@
@@ -111,7 +106,7 @@ index 0000000..7a1aeb7
 + * @handling_delay      - interrupt handler will schedule extcon event
 + *                      handling at handling_delay jiffies.
 + * @handler     - extcon event handler called by interrupt handler.
-+ * @chan	- iio channel being queried.
++ * @get_adc     - a callback to get ADC value to identify state.
 + */
 +struct adc_jack_data {
 +	struct extcon_dev edev;
@@ -166,7 +161,7 @@ index 0000000..7a1aeb7
 +	return IRQ_HANDLED;
 +}
 +
-+static int __devinit adc_jack_probe(struct platform_device *pdev)
++static int adc_jack_probe(struct platform_device *pdev)
 +{
 +	struct adc_jack_data *data;
 +	struct adc_jack_pdata *pdata = pdev->dev.platform_data;
@@ -190,7 +185,7 @@ index 0000000..7a1aeb7
 +		err = -EINVAL;
 +		dev_err(&pdev->dev, "error: pdata->cable_names size = %d\n",
 +			i - 1);
-+		goto out;
++		goto err_alloc;
 +	}
 +	data->num_cables = i;
 +
@@ -198,7 +193,7 @@ index 0000000..7a1aeb7
 +	    !pdata->adc_condition[0].state) {
 +		err = -EINVAL;
 +		dev_err(&pdev->dev, "error: adc_condition not defined.\n");
-+		goto out;
++		goto err_alloc;
 +	}
 +	data->adc_condition = pdata->adc_condition;
 +
@@ -211,7 +206,7 @@ index 0000000..7a1aeb7
 +						pdata->consumer_channel);
 +	if (IS_ERR(data->chan)) {
 +		err = PTR_ERR(data->chan);
-+		goto out;
++		goto err_alloc;
 +	}
 +
 +	data->handling_delay = msecs_to_jiffies(pdata->handling_delay_ms);
@@ -222,14 +217,9 @@ index 0000000..7a1aeb7
 +
 +	err = extcon_dev_register(&data->edev, &pdev->dev);
 +	if (err)
-+		goto out;
++		goto err_initwork;
 +
 +	data->irq = platform_get_irq(pdev, 0);
-+	if (!data->irq) {
-+		dev_err(&pdev->dev, "platform_get_irq failed\n");
-+		err = -ENODEV;
-+		goto err_irq;
-+	}
 +
 +	err = request_any_context_irq(data->irq, adc_jack_irq_thread,
 +				pdata->irq_flags, pdata->name, data);
@@ -244,6 +234,10 @@ index 0000000..7a1aeb7
 +
 +err_irq:
 +	extcon_dev_unregister(&data->edev);
++err_initwork:
++	cancel_delayed_work_sync(&data->handler);
++err_alloc:
++	kfree(data);
 +out:
 +	return err;
 +}
@@ -252,8 +246,9 @@ index 0000000..7a1aeb7
 +{
 +	struct adc_jack_data *data = platform_get_drvdata(pdev);
 +
-+	free_irq(data->irq, data);
 +	extcon_dev_unregister(&data->edev);
++	if (data->irq)
++		free_irq(data->irq, data);
 +
 +	return 0;
 +}
@@ -270,10 +265,10 @@ index 0000000..7a1aeb7
 +module_platform_driver(adc_jack_driver);
 diff --git a/include/linux/extcon/adc_jack.h b/include/linux/extcon/adc_jack.h
 new file mode 100644
-index 0000000..79299a5
+index 0000000..ca4d1cd
 --- /dev/null
 +++ b/include/linux/extcon/adc_jack.h
-@@ -0,0 +1,76 @@
+@@ -0,0 +1,77 @@
 +/*
 + * include/linux/extcon/adc_jack.h
 + *
@@ -317,9 +312,6 @@ index 0000000..79299a5
 +/**
 + * struct adc_jack_pdata - platform data for adc jack device.
 + * @name	- name of the extcon device. If null, "adc-jack" is used.
-+ * @consumer_channel - Unique name to identify the channel on the consumer
-+ *                   side. This typically describes the channels use within
-+ *                   the consumer. E.g. 'battery_voltage'
 + * @cable_names	- array of cable names ending with null. If the array itself
 + *		if null, extcon standard cable names are chosen.
 + * @adc_contition	- array of struct adc_jack_cond conditions ending
@@ -333,6 +325,7 @@ index 0000000..79299a5
 + *			milli-seconds after the interrupt occurs. You may
 + *			describe such delays with @handling_delay_ms, which
 + *			is rounded-off by jiffies.
++ * @get_adc	- the callback to read ADC value to identify cable states.
 + */
 +struct adc_jack_pdata {
 +	const char *name;
@@ -347,6 +340,9 @@ index 0000000..79299a5
 +
 +	unsigned long irq_flags;
 +	unsigned long handling_delay_ms; /* in ms */
++
++	/* When we have ADC subsystem, this can be generalized. */
++	int (*get_adc)(u32 *value);
 +};
 +
 +#endif /* _EXTCON_ADC_JACK_H */
