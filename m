@@ -4,94 +4,92 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	jkosina@suse.cz,
 	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 6/9] HID-Sensors: Added accelerometer 3D
-Date: Tue,  7 Aug 2012 09:29:00 -0700
-Message-Id: <1344356943-23313-7-git-send-email-srinivas.pandruvada@intel.com>
+Subject: [PATCH 9/9] HID-Sensors: Added ALS
+Date: Tue,  7 Aug 2012 09:29:03 -0700
+Message-Id: <1344356943-23313-10-git-send-email-srinivas.pandruvada@intel.com>
 In-Reply-To: <1344356943-23313-1-git-send-email-srinivas.pandruvada@intel.com>
 References: <1344356943-23313-1-git-send-email-srinivas.pandruvada@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Added usage id processing for Accelerometer 3D.This uses IIO
+Added usage id processing for ALS. This uses IIO
 interfaces for triggerred buffer to present data to user
 mode.This uses HID sensor framework for registering callback
 events from the sensor hub.
 
 Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 ---
- drivers/iio/Kconfig                     |    1 +
- drivers/iio/Makefile                    |    1 +
- drivers/iio/accel/Kconfig               |   16 ++
- drivers/iio/accel/Makefile              |    6 +
- drivers/iio/accel/hid-sensor-accel-3d.c |  419 +++++++++++++++++++++++++++++++
- 5 files changed, 443 insertions(+), 0 deletions(-)
- create mode 100644 drivers/iio/accel/Kconfig
- create mode 100644 drivers/iio/accel/Makefile
- create mode 100644 drivers/iio/accel/hid-sensor-accel-3d.c
+ drivers/iio/Kconfig                |    1 +
+ drivers/iio/Makefile               |    1 +
+ drivers/iio/light/Kconfig          |   16 ++
+ drivers/iio/light/Makefile         |    6 +
+ drivers/iio/light/hid-sensor-als.c |  386 ++++++++++++++++++++++++++++++++++++
+ 5 files changed, 410 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/iio/light/Kconfig
+ create mode 100644 drivers/iio/light/Makefile
+ create mode 100644 drivers/iio/light/hid-sensor-als.c
 
 diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 61646c7..eb78b0f 100644
+index cdb3cfb..80b6b30 100644
 --- a/drivers/iio/Kconfig
 +++ b/drivers/iio/Kconfig
-@@ -54,6 +54,7 @@ config IIO_CONSUMERS_PER_TRIGGER
- 	This value controls the maximum number of consumers that a
- 	given trigger may handle. Default is 2.
- 
-+source "drivers/iio/accel/Kconfig"
- source "drivers/iio/adc/Kconfig"
+@@ -59,6 +59,7 @@ source "drivers/iio/adc/Kconfig"
  source "drivers/iio/amplifiers/Kconfig"
  source "drivers/iio/common/Kconfig"
+ source "drivers/iio/gyro/Kconfig"
++source "drivers/iio/light/Kconfig"
+ source "drivers/iio/magnetometer/Kconfig"
+ 
+ endif # IIO
 diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index db0a043..aed602a 100644
+index 71b643a..e1aa434 100644
 --- a/drivers/iio/Makefile
 +++ b/drivers/iio/Makefile
-@@ -10,6 +10,7 @@ industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
- obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
- obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
- 
-+obj-y += accel/
- obj-y += adc/
+@@ -15,4 +15,5 @@ obj-y += adc/
  obj-y += amplifiers/
  obj-y += common/
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+ obj-y += gyro/
++obj-y += light/
+ obj-y += magnetometer/
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
 new file mode 100644
-index 0000000..b2510c4
+index 0000000..6944c8b
 --- /dev/null
-+++ b/drivers/iio/accel/Kconfig
++++ b/drivers/iio/light/Kconfig
 @@ -0,0 +1,16 @@
 +#
-+# Accelerometer drivers
++# Light sensors
 +#
-+menu "Accelerometers"
++menu "Light sensors"
 +
-+config HID_SENSOR_ACCEL_3D
++config HID_SENSOR_ALS
 +	depends on HID_SENSOR_HUB
 +	select IIO_BUFFER
 +	select IIO_TRIGGERED_BUFFER
 +	select HID_SENSOR_IIO_COMMON
-+	tristate "HID Acelerometers 3D"
++	tristate "HID ALS"
 +	help
 +	  Say yes here to build support for the HID SENSOR
-+	  accelerometers 3D.
++	  Ambient light sensor.
 +
 +endmenu
-diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
 new file mode 100644
-index 0000000..657d671
+index 0000000..f14d94c
 --- /dev/null
-+++ b/drivers/iio/accel/Makefile
++++ b/drivers/iio/light/Makefile
 @@ -0,0 +1,6 @@
 +#
-+# Makefile for industrial I/O accelerometer drivers
++# Makefile for industrial I/O Light sensor drivers
 +#
 +
-+hid-sensor-accel-3d-drv-y := hid-sensor-accel-3d.o
-+obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d-drv.o
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
++hid-sensor-als-drv-y := hid-sensor-als.o
++obj-$(CONFIG_HID_SENSOR_ALS) += hid-sensor-als-drv.o
+diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
 new file mode 100644
-index 0000000..33aa97c
+index 0000000..2cff7d5
 --- /dev/null
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -0,0 +1,419 @@
++++ b/drivers/iio/light/hid-sensor-als.c
+@@ -0,0 +1,386 @@
 +/*
 + * HID Sensors Driver
 + * Copyright (c) 2012, Intel Corporation.
@@ -126,64 +124,35 @@ index 0000000..33aa97c
 +#include "../common/hid-sensors/hid-sensor-trigger.h"
 +
 +/*Format: HID-SENSOR-usage_id_in_hex*/
-+/*Usage ID from spec for Accelerometer-3D: 0x200073*/
-+#define DRIVER_NAME "HID-SENSOR-200073"
++/*Usage ID from spec for Accelerometer-3D: 0x200041*/
++#define DRIVER_NAME "HID-SENSOR-200041"
 +
-+enum accel_3d_channel {
-+	CHANNEL_SCAN_INDEX_X,
-+	CHANNEL_SCAN_INDEX_Y,
-+	CHANNEL_SCAN_INDEX_Z,
-+	ACCEL_3D_CHANNEL_MAX,
-+};
++#define CHANNEL_SCAN_INDEX_ILLUM 0
 +
-+struct accel_3d_state {
++struct als_state {
 +	struct hid_sensor_hub_callbacks callbacks;
 +	struct hid_sensor_iio_common common_attributes;
-+	struct hid_sensor_hub_attribute_info accel[ACCEL_3D_CHANNEL_MAX];
-+	u32 accel_val[ACCEL_3D_CHANNEL_MAX];
-+};
-+
-+static const u32 accel_3d_addresses[ACCEL_3D_CHANNEL_MAX] = {
-+	HID_USAGE_SENSOR_ACCEL_X_AXIS,
-+	HID_USAGE_SENSOR_ACCEL_Y_AXIS,
-+	HID_USAGE_SENSOR_ACCEL_Z_AXIS
++	struct hid_sensor_hub_attribute_info als_illum;
++	u32 illum;
 +};
 +
 +/* Channel definitions */
-+static const struct iio_chan_spec accel_3d_channels[] = {
++static const struct iio_chan_spec als_channels[] = {
 +	{
-+		.type = IIO_ACCEL,
++		.type = IIO_INTENSITY,
 +		.modified = 1,
-+		.channel2 = IIO_MOD_X,
++		.channel2 = IIO_MOD_LIGHT_BOTH,
 +		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
 +		IIO_CHAN_INFO_SCALE_SHARED_BIT |
 +		IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT |
 +		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
-+		.scan_index = CHANNEL_SCAN_INDEX_X,
-+	}, {
-+		.type = IIO_ACCEL,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_Y,
-+		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
-+		IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+		IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT |
-+		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
-+		.scan_index = CHANNEL_SCAN_INDEX_Y,
-+	}, {
-+		.type = IIO_ACCEL,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_Z,
-+		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
-+		IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+		IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT |
-+		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
-+		.scan_index = CHANNEL_SCAN_INDEX_Z,
++		.scan_index = CHANNEL_SCAN_INDEX_ILLUM,
 +	}
 +};
 +
 +/* Adjust channel real bits based on report descriptor */
-+static void accel_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
-+						int channel, int size)
++static void als_adjust_channel_bit_mask(struct iio_chan_spec *channels,
++					int channel, int size)
 +{
 +	channels[channel].scan_type.sign = 's';
 +	/* Real storage bits will change based on the report desc. */
@@ -193,12 +162,12 @@ index 0000000..33aa97c
 +}
 +
 +/* Channel read_raw handler */
-+static int accel_3d_read_raw(struct iio_dev *indio_dev,
++static int als_read_raw(struct iio_dev *indio_dev,
 +			      struct iio_chan_spec const *chan,
 +			      int *val, int *val2,
 +			      long mask)
 +{
-+	struct accel_3d_state *accel_state = iio_priv(indio_dev);
++	struct als_state *als_state = iio_priv(indio_dev);
 +	int report_id = -1;
 +	u32 address;
 +	int ret;
@@ -208,12 +177,20 @@ index 0000000..33aa97c
 +	*val2 = 0;
 +	switch (mask) {
 +	case 0:
-+		report_id = accel_state->accel[chan->scan_index].report_id;
-+		address = accel_3d_addresses[chan->scan_index];
++		switch (chan->scan_index) {
++		case  CHANNEL_SCAN_INDEX_ILLUM:
++			report_id = als_state->als_illum.report_id;
++			address =
++			HID_USAGE_SENSOR_LIGHT_ILLUM;
++			break;
++		default:
++			report_id = -1;
++			break;
++		}
 +		if (report_id >= 0)
 +			*val = sensor_hub_input_attr_get_raw_value(
-+				accel_state->common_attributes.hsdev,
-+				HID_USAGE_SENSOR_ACCEL_3D, address,
++				als_state->common_attributes.hsdev,
++				HID_USAGE_SENSOR_ALS, address,
 +				report_id);
 +		else {
 +			*val = 0;
@@ -222,22 +199,22 @@ index 0000000..33aa97c
 +		ret_type = IIO_VAL_INT;
 +		break;
 +	case IIO_CHAN_INFO_SCALE:
-+		*val = accel_state->accel[CHANNEL_SCAN_INDEX_X].units;
++		*val = als_state->als_illum.units;
 +		ret_type = IIO_VAL_INT;
 +		break;
 +	case IIO_CHAN_INFO_OFFSET:
 +		*val = hid_sensor_convert_exponent(
-+			accel_state->accel[CHANNEL_SCAN_INDEX_X].unit_expo);
++				als_state->als_illum.unit_expo);
 +		ret_type = IIO_VAL_INT;
 +		break;
 +	case IIO_CHAN_INFO_SAMP_FREQ:
 +		ret = hid_sensor_read_samp_freq_value(
-+			&accel_state->common_attributes, val, val2);
++				&als_state->common_attributes, val, val2);
 +		ret_type = IIO_VAL_INT_PLUS_MICRO;
 +		break;
 +	case IIO_CHAN_INFO_HYSTERESIS:
 +		ret = hid_sensor_read_raw_hyst_value(
-+			&accel_state->common_attributes, val, val2);
++				&als_state->common_attributes, val, val2);
 +		ret_type = IIO_VAL_INT_PLUS_MICRO;
 +		break;
 +	default:
@@ -249,23 +226,23 @@ index 0000000..33aa97c
 +}
 +
 +/* Channel write_raw handler */
-+static int accel_3d_write_raw(struct iio_dev *indio_dev,
++static int als_write_raw(struct iio_dev *indio_dev,
 +			       struct iio_chan_spec const *chan,
 +			       int val,
 +			       int val2,
 +			       long mask)
 +{
-+	struct accel_3d_state *accel_state = iio_priv(indio_dev);
++	struct als_state *als_state = iio_priv(indio_dev);
 +	int ret = 0;
 +
 +	switch (mask) {
 +	case IIO_CHAN_INFO_SAMP_FREQ:
 +		ret = hid_sensor_write_samp_freq_value(
-+				&accel_state->common_attributes, val, val2);
++				&als_state->common_attributes, val, val2);
 +		break;
 +	case IIO_CHAN_INFO_HYSTERESIS:
 +		ret = hid_sensor_write_raw_hyst_value(
-+				&accel_state->common_attributes, val, val2);
++				&als_state->common_attributes, val, val2);
 +		break;
 +	default:
 +		ret = -EINVAL;
@@ -274,18 +251,18 @@ index 0000000..33aa97c
 +	return ret;
 +}
 +
-+static int accel_3d_write_raw_get_fmt(struct iio_dev *indio_dev,
++static int als_write_raw_get_fmt(struct iio_dev *indio_dev,
 +			       struct iio_chan_spec const *chan,
 +			       long mask)
 +{
 +	return IIO_VAL_INT_PLUS_MICRO;
 +}
 +
-+static const struct iio_info accel_3d_info = {
++static const struct iio_info als_info = {
 +	.driver_module = THIS_MODULE,
-+	.read_raw = &accel_3d_read_raw,
-+	.write_raw = &accel_3d_write_raw,
-+	.write_raw_get_fmt = &accel_3d_write_raw_get_fmt,
++	.read_raw = &als_read_raw,
++	.write_raw = &als_write_raw,
++	.write_raw_get_fmt = &als_write_raw_get_fmt,
 +};
 +
 +/* Function to push data to buffer */
@@ -310,43 +287,38 @@ index 0000000..33aa97c
 +}
 +
 +/* Callback handler to send event after all samples are received and captured */
-+static int accel_3d_proc_event(struct hid_sensor_hub_device *hsdev,
++static int als_proc_event(struct hid_sensor_hub_device *hsdev,
 +				unsigned usage_id,
 +				void *priv)
 +{
 +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-+	struct accel_3d_state *accel_state = iio_priv(indio_dev);
++	struct als_state *als_state = iio_priv(indio_dev);
 +
-+	dev_dbg(&indio_dev->dev, "accel_3d_proc_event [%d]\n",
-+				accel_state->common_attributes.data_ready);
-+	if (accel_state->common_attributes.data_ready)
++	dev_dbg(&indio_dev->dev, "als_proc_event [%d]\n",
++				als_state->common_attributes.data_ready);
++	if (als_state->common_attributes.data_ready)
 +		hid_sensor_push_data(indio_dev,
-+				(u8 *)accel_state->accel_val,
-+				sizeof(accel_state->accel_val));
++				(u8 *)&als_state->illum,
++				sizeof(als_state->illum));
 +
 +	return 0;
 +}
 +
 +/* Capture samples in local storage */
-+static int accel_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
++static int als_capture_sample(struct hid_sensor_hub_device *hsdev,
 +				unsigned usage_id,
 +				size_t raw_len, char *raw_data,
 +				void *priv)
 +{
 +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-+	struct accel_3d_state *accel_state = iio_priv(indio_dev);
-+	int offset;
++	struct als_state *als_state = iio_priv(indio_dev);
 +	int ret = -EINVAL;
 +
 +	switch (usage_id) {
-+	case HID_USAGE_SENSOR_ACCEL_X_AXIS:
-+	case HID_USAGE_SENSOR_ACCEL_Y_AXIS:
-+	case HID_USAGE_SENSOR_ACCEL_Z_AXIS:
-+		offset = usage_id - HID_USAGE_SENSOR_ACCEL_X_AXIS;
-+		accel_state->accel_val[CHANNEL_SCAN_INDEX_X + offset] =
-+						*(u32 *)raw_data;
++	case HID_USAGE_SENSOR_LIGHT_ILLUM:
++		als_state->illum = *(u32 *)raw_data;
 +		ret = 0;
-+	break;
++		break;
 +	default:
 +		break;
 +	}
@@ -355,84 +327,77 @@ index 0000000..33aa97c
 +}
 +
 +/* Parse report which is specific to an usage id*/
-+static int accel_3d_parse_report(struct platform_device *pdev,
++static int als_parse_report(struct platform_device *pdev,
 +				struct hid_sensor_hub_device *hsdev,
 +				struct iio_chan_spec *channels,
 +				unsigned usage_id,
-+				struct accel_3d_state *st)
++				struct als_state *st)
 +{
 +	int ret;
-+	int i;
 +
-+	for (i = 0; i <= CHANNEL_SCAN_INDEX_Z; ++i) {
-+		ret = sensor_hub_input_get_attribute_info(hsdev,
-+				HID_INPUT_REPORT,
-+				usage_id,
-+				HID_USAGE_SENSOR_ACCEL_X_AXIS + i,
-+				&st->accel[CHANNEL_SCAN_INDEX_X + i]);
-+		if (ret < 0)
-+			break;
-+		accel_3d_adjust_channel_bit_mask(channels,
-+				CHANNEL_SCAN_INDEX_X + i,
-+				st->accel[CHANNEL_SCAN_INDEX_X + i].size);
-+	}
-+	dev_dbg(&pdev->dev, "accel_3d %x:%x, %x:%x, %x:%x\n",
-+			st->accel[0].index,
-+			st->accel[0].report_id,
-+			st->accel[1].index, st->accel[1].report_id,
-+			st->accel[2].index, st->accel[2].report_id);
++	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
++			usage_id,
++			HID_USAGE_SENSOR_LIGHT_ILLUM,
++			&st->als_illum);
++	if (ret < 0)
++		return ret;
++	als_adjust_channel_bit_mask(channels, CHANNEL_SCAN_INDEX_ILLUM,
++					st->als_illum.size);
++
++	dev_dbg(&pdev->dev, "als %x:%x\n", st->als_illum.index,
++			st->als_illum.report_id);
 +
 +	return ret;
 +}
 +
 +/* Function to initialize the processing for usage id */
-+static int __devinit hid_accel_3d_probe(struct platform_device *pdev)
++static int __devinit hid_als_probe(struct platform_device *pdev)
 +{
 +	int ret = 0;
-+	static const char *name = "accel_3d";
++	static const char *name = "als";
 +	struct iio_dev *indio_dev;
-+	struct accel_3d_state *accel_state;
++	struct als_state *als_state;
 +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
 +	struct iio_chan_spec *channels;
 +
-+	indio_dev = iio_device_alloc(sizeof(struct accel_3d_state));
++	indio_dev = iio_device_alloc(sizeof(struct als_state));
 +	if (indio_dev == NULL) {
 +		ret = -ENOMEM;
 +		goto error_ret;
 +	}
 +	platform_set_drvdata(pdev, indio_dev);
 +
-+	accel_state = iio_priv(indio_dev);
-+	accel_state->common_attributes.hsdev = hsdev;
-+	accel_state->common_attributes.pdev = pdev;
++	als_state = iio_priv(indio_dev);
++	als_state->common_attributes.hsdev = hsdev;
++	als_state->common_attributes.pdev = pdev;
 +
-+	ret = hid_sensor_parse_common_attributes(hsdev,
-+					HID_USAGE_SENSOR_ACCEL_3D,
-+					&accel_state->common_attributes);
++	ret = hid_sensor_parse_common_attributes(hsdev, HID_USAGE_SENSOR_ALS,
++					&als_state->common_attributes);
 +	if (ret) {
 +		dev_err(&pdev->dev, "failed to setup common attributes\n");
 +		goto error_free_dev;
 +	}
 +
-+	channels = kmemdup(accel_3d_channels,
-+					sizeof(accel_3d_channels),
++	channels = kmemdup(als_channels,
++					sizeof(als_channels),
 +					GFP_KERNEL);
 +	if (!channels) {
 +		dev_err(&pdev->dev, "failed to duplicate channels\n");
 +		goto error_free_dev;
 +	}
 +
-+	ret = accel_3d_parse_report(pdev, hsdev, channels,
-+					HID_USAGE_SENSOR_ACCEL_3D, accel_state);
++	ret = als_parse_report(pdev, hsdev, channels,
++				HID_USAGE_SENSOR_ALS, als_state);
 +	if (ret) {
 +		dev_err(&pdev->dev, "failed to setup attributes\n");
 +		goto error_free_dev_mem;
 +	}
 +
 +	indio_dev->channels = channels;
-+	indio_dev->num_channels = ARRAY_SIZE(accel_3d_channels);
++	indio_dev->num_channels =
++				ARRAY_SIZE(als_channels);
 +	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &accel_3d_info;
++	indio_dev->info = &als_info;
 +	indio_dev->name = name;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
 +
@@ -442,9 +407,9 @@ index 0000000..33aa97c
 +		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
 +		goto error_free_dev_mem;
 +	}
-+	accel_state->common_attributes.data_ready = false;
++	als_state->common_attributes.data_ready = false;
 +	ret = hid_sensor_setup_trigger(indio_dev, name,
-+					&accel_state->common_attributes);
++				&als_state->common_attributes);
 +	if (ret < 0) {
 +		dev_err(&pdev->dev, "trigger setup failed\n");
 +		goto error_unreg_buffer_funcs;
@@ -456,11 +421,11 @@ index 0000000..33aa97c
 +		goto error_remove_trigger;
 +	}
 +
-+	accel_state->callbacks.send_event = accel_3d_proc_event;
-+	accel_state->callbacks.capture_sample = accel_3d_capture_sample;
-+	accel_state->callbacks.pdev = pdev;
-+	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_ACCEL_3D,
-+					&accel_state->callbacks);
++	als_state->callbacks.send_event = als_proc_event;
++	als_state->callbacks.capture_sample = als_capture_sample;
++	als_state->callbacks.pdev = pdev;
++	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_ALS,
++					&als_state->callbacks);
 +	if (ret < 0) {
 +		dev_err(&pdev->dev, "callback reg failed\n");
 +		goto error_iio_unreg;
@@ -483,12 +448,12 @@ index 0000000..33aa97c
 +}
 +
 +/* Function to deinitialize the processing for usage id */
-+static int __devinit hid_accel_3d_remove(struct platform_device *pdev)
++static int __devinit hid_als_remove(struct platform_device *pdev)
 +{
 +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
 +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 +
-+	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_ACCEL_3D);
++	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_ALS);
 +	iio_device_unregister(indio_dev);
 +	hid_sensor_remove_trigger(indio_dev);
 +	iio_triggered_buffer_cleanup(indio_dev);
@@ -498,17 +463,17 @@ index 0000000..33aa97c
 +	return 0;
 +}
 +
-+static struct platform_driver hid_accel_3d_platform_driver = {
++static struct platform_driver hid_als_platform_driver = {
 +	.driver = {
 +		.name	= DRIVER_NAME,
 +		.owner	= THIS_MODULE,
 +	},
-+	.probe		= hid_accel_3d_probe,
-+	.remove		= hid_accel_3d_remove,
++	.probe		= hid_als_probe,
++	.remove		= hid_als_remove,
 +};
-+module_platform_driver(hid_accel_3d_platform_driver);
++module_platform_driver(hid_als_platform_driver);
 +
-+MODULE_DESCRIPTION("HID Sensor Accel 3D");
++MODULE_DESCRIPTION("HID Sensor ALS");
 +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
 +MODULE_LICENSE("GPL");
 -- 
