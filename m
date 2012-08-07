@@ -4,73 +4,56 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	jkosina@suse.cz,
 	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 3/9] HID Sensors: Add to special driver list
-Date: Tue,  7 Aug 2012 09:28:57 -0700
-Message-Id: <1344356943-23313-4-git-send-email-srinivas.pandruvada@intel.com>
+Subject: [PATCH 1/9] IIO: core: Add hysteresis in channel spec
+Date: Tue,  7 Aug 2012 09:28:55 -0700
+Message-Id: <1344356943-23313-2-git-send-email-srinivas.pandruvada@intel.com>
 In-Reply-To: <1344356943-23313-1-git-send-email-srinivas.pandruvada@intel.com>
 References: <1344356943-23313-1-git-send-email-srinivas.pandruvada@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Adding Intel and STM sensor hub in the list of drivers with
-specialized driver.
+Added hysteresis to the list of channel info enumeration, shared
+/separate bit defines and to postfix channel info strings.
 
 Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 ---
- drivers/hid/hid-core.c |   10 ++++++++++
- drivers/hid/hid-ids.h  |    6 ++++++
- 2 files changed, 16 insertions(+), 0 deletions(-)
+ drivers/iio/industrialio-core.c |    1 +
+ include/linux/iio/iio.h         |    5 +++++
+ 2 files changed, 6 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index 4c87276..a402013 100644
---- a/drivers/hid/hid-core.c
-+++ b/drivers/hid/hid-core.c
-@@ -1539,6 +1539,14 @@ static const struct hid_device_id hid_have_special_driver[] = {
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_GYRATION, USB_DEVICE_ID_GYRATION_REMOTE_2) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_GYRATION, USB_DEVICE_ID_GYRATION_REMOTE_3) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_HOLTEK, USB_DEVICE_ID_HOLTEK_ON_LINE_GRIP) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
-+					USB_DEVICE_ID_SENSOR_HUB_1020) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
-+					USB_DEVICE_ID_SENSOR_HUB_09FA) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
-+					USB_DEVICE_ID_SENSOR_HUB_1020) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
-+					USB_DEVICE_ID_SENSOR_HUB_09FA) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_KENSINGTON, USB_DEVICE_ID_KS_SLIMBLADE) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_KEYTOUCH, USB_DEVICE_ID_KEYTOUCH_IEC) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_KYE, USB_DEVICE_ID_KYE_ERGO_525V) },
-@@ -1629,6 +1637,8 @@ static const struct hid_device_id hid_have_special_driver[] = {
- 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_PS3_CONTROLLER) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_VAIO_VGX_MOUSE) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_SUNPLUS, USB_DEVICE_ID_SUNPLUS_WDESKTOP) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_STANTUM_STM,
-+			 USB_DEVICE_ID_SENSOR_HUB_7014) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb300) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb304) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb323) },
-diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index 875ff45..d3cf8eb 100644
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -413,6 +413,11 @@
- #define USB_VENDOR_ID_IMATION		0x0718
- #define USB_DEVICE_ID_DISC_STAKKA	0xd000
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 4f947e4..536ba75 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -92,6 +92,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_FREQUENCY] = "frequency",
+ 	[IIO_CHAN_INFO_PHASE] = "phase",
+ 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
++	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
+ };
  
-+#define USB_VENDOR_ID_INTEL_8086	0x8086
-+#define USB_VENDOR_ID_INTEL_8087	0x8087
-+#define USB_DEVICE_ID_SENSOR_HUB_1020	0x1020
-+#define USB_DEVICE_ID_SENSOR_HUB_09FA	0x09FA
-+
- #define USB_VENDOR_ID_IRTOUCHSYSTEMS	0x6615
- #define USB_DEVICE_ID_IRTOUCH_INFRARED_USB	0x0070
+ const struct iio_chan_spec
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 3a4f6a3..9ed1063 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -35,6 +35,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_FREQUENCY,
+ 	IIO_CHAN_INFO_PHASE,
+ 	IIO_CHAN_INFO_HARDWAREGAIN,
++	IIO_CHAN_INFO_HYSTERESIS,
+ };
  
-@@ -679,6 +684,7 @@
+ #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
+@@ -100,6 +101,10 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
+ #define IIO_CHAN_INFO_HARDWAREGAIN_SHARED_BIT			\
+ 	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
++#define IIO_CHAN_INFO_HYSTERESIS_SEPARATE_BIT			\
++	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HYSTERESIS)
++#define IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT			\
++	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HYSTERESIS)
  
- #define USB_VENDOR_ID_STANTUM_STM		0x0483
- #define USB_DEVICE_ID_MTP_STM		0x3261
-+#define USB_DEVICE_ID_SENSOR_HUB_7014	0x7014
- 
- #define USB_VENDOR_ID_STANTUM_SITRONIX		0x1403
- #define USB_DEVICE_ID_MTP_SITRONIX		0x5001
+ enum iio_endian {
+ 	IIO_CPU,
 -- 
 1.7.7.6
