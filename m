@@ -4,589 +4,165 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	jkosina@suse.cz,
 	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 5/9] HID-Sensors: Common attribute and trigger
-Date: Tue,  7 Aug 2012 09:28:59 -0700
-Message-Id: <1344356943-23313-6-git-send-email-srinivas.pandruvada@intel.com>
+Subject: [PATCH 2/9] HID-Sensors: Documentation
+Date: Tue,  7 Aug 2012 09:28:56 -0700
+Message-Id: <1344356943-23313-3-git-send-email-srinivas.pandruvada@intel.com>
 In-Reply-To: <1344356943-23313-1-git-send-email-srinivas.pandruvada@intel.com>
 References: <1344356943-23313-1-git-send-email-srinivas.pandruvada@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch contains the common code, which is used by all HID sensors.
-There are some common set of attributes, which every hid sensor
-needs it. This patch contains all such attributes processing.
-Also the trigger interface is common among all HID sensors. This
-patch contains common trigger functions utilized by all HID sensors.
+Added a summary of HID sensor framework.
 
 Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 ---
- drivers/iio/Kconfig                                |    1 +
- drivers/iio/Makefile                               |    1 +
- drivers/iio/common/Kconfig                         |    6 +
- drivers/iio/common/Makefile                        |    9 +
- drivers/iio/common/hid-sensors/Kconfig             |   26 ++
- drivers/iio/common/hid-sensors/Makefile            |    6 +
- .../iio/common/hid-sensors/hid-sensor-attributes.c |  250 ++++++++++++++++++++
- .../iio/common/hid-sensors/hid-sensor-attributes.h |   57 +++++
- .../iio/common/hid-sensors/hid-sensor-trigger.c    |  101 ++++++++
- .../iio/common/hid-sensors/hid-sensor-trigger.h    |   26 ++
- 10 files changed, 483 insertions(+), 0 deletions(-)
- create mode 100644 drivers/iio/common/Kconfig
- create mode 100644 drivers/iio/common/Makefile
- create mode 100644 drivers/iio/common/hid-sensors/Kconfig
- create mode 100644 drivers/iio/common/hid-sensors/Makefile
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-attributes.c
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-attributes.h
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-trigger.c
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-trigger.h
+ Documentation/hid/hid-sensor.txt |  139 ++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 139 insertions(+), 0 deletions(-)
+ create mode 100755 Documentation/hid/hid-sensor.txt
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index df0c23a..61646c7 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -56,5 +56,6 @@ config IIO_CONSUMERS_PER_TRIGGER
- 
- source "drivers/iio/adc/Kconfig"
- source "drivers/iio/amplifiers/Kconfig"
-+source "drivers/iio/common/Kconfig"
- 
- endif # IIO
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 8244bab..db0a043 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -12,3 +12,4 @@ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
- 
- obj-y += adc/
- obj-y += amplifiers/
-+obj-y += common/
-diff --git a/drivers/iio/common/Kconfig b/drivers/iio/common/Kconfig
-new file mode 100644
-index 0000000..97ef666
+diff --git a/Documentation/hid/hid-sensor.txt b/Documentation/hid/hid-sensor.txt
+new file mode 100755
+index 0000000..a216dae
 --- /dev/null
-+++ b/drivers/iio/common/Kconfig
-@@ -0,0 +1,6 @@
-+#
-+# IIO common modules
-+#
++++ b/Documentation/hid/hid-sensor.txt
+@@ -0,0 +1,139 @@
 +
-+source "drivers/iio/common/hid-sensors/Kconfig"
++HID Sensors Framework
++======================
++HID sensor framework provides necessary interfaces to implement sensor drivers,
++which are connected to a sensor hub. The sensor hub is a HID device and it provides
++a report descriptor conforming to HID 1.12 sensor usage tables.
 +
-diff --git a/drivers/iio/common/Makefile b/drivers/iio/common/Makefile
-new file mode 100644
-index 0000000..8158400
---- /dev/null
-+++ b/drivers/iio/common/Makefile
-@@ -0,0 +1,9 @@
-+#
-+# Makefile for the IIO common modules.
-+# Common modules contains modules, which can be shared among multiple
-+# IIO modules. For example if the trigger processing is common for
-+# multiple IIO modules then this can be moved to a common module
-+# instead of duplicating in each module.
-+#
++Description from the HID 1.12 "HID Sensor Usages" specification:
++"Standardization of HID usages for sensors would allow (but not require) sensor
++hardware vendors to provide a consistent Plug And Play interface at the USB boundary,
++thereby enabling some operating systems to incorporate common device drivers that
++could be reused between vendors, alleviating any need for the vendors to provide
++the drivers themselves."
 +
-+obj-y += hid-sensors/
-diff --git a/drivers/iio/common/hid-sensors/Kconfig b/drivers/iio/common/hid-sensors/Kconfig
-new file mode 100644
-index 0000000..8e63d81
---- /dev/null
-+++ b/drivers/iio/common/hid-sensors/Kconfig
-@@ -0,0 +1,26 @@
-+#
-+# Hid Sensor common modules
-+#
-+menu "Hid Sensor IIO Common"
++This specification describes many usage IDs, which describe the type of sensor
++and also the individual data fields. Each sensor can have variable number of
++data fields. The length and order is specified in the report descriptor. For
++example a part of report descriptor can look like:
 +
-+config HID_SENSOR_IIO_COMMON
-+	tristate "Common modules for all HID Sensor IIO drivers"
-+	depends on HID_SENSOR_HUB
-+	select IIO_TRIGGER if IIO_BUFFER
-+	help
-+	  Say yes here to build support for HID sensor to use
-+	  HID sensor common processing for attributes and IIO triggers.
-+	  There are many attributes which can be shared among multiple
-+	  HID sensor drivers, this module contains processing for those
-+	  attributes.
++   INPUT(1)[INPUT]
++ ..
++    Field(2)
++      Physical(0020.0073)
++      Usage(1)
++        0020.045f
++      Logical Minimum(-32767)
++      Logical Maximum(32767)
++      Report Size(8)
++      Report Count(1)
++      Report Offset(16)
++      Flags(Variable Absolute)
++..
++..
 +
-+config HID_SENSOR_ENUM_BASE_QUIRKS
-+	tristate "ENUM base quirks for HID Sensor IIO drivers"
-+	depends on HID_SENSOR_IIO_COMMON
-+	help
-+	  Say yes here to build support for sensor hub FW using
-+	  enumeration, which is using 1 as base instead of 0.
-+	  Since logical minimum is still set 0 instead of 1,
-+	  there is no easy way to differentiate.
++The report is indicating "sensor page (0x20)" contains an accelerometer-3D (0x73).
++This accelerometer-3D has some fields. Here for example field 2 is motion intensity
++(0x045f) with a logical minimum value of -32767 and logical maximum of 32767. The
++order of fields and length of each field is important as the input event raw
++data will use this format.
 +
-+endmenu
-diff --git a/drivers/iio/common/hid-sensors/Makefile b/drivers/iio/common/hid-sensors/Makefile
-new file mode 100644
-index 0000000..1f463e0
---- /dev/null
-+++ b/drivers/iio/common/hid-sensors/Makefile
-@@ -0,0 +1,6 @@
-+#
-+# Makefile for the Hid sensor common modules.
-+#
 +
-+obj-$(CONFIG_HID_SENSOR_IIO_COMMON) += hid-sensor-iio-common.o
-+hid-sensor-iio-common-y := hid-sensor-attributes.o hid-sensor-trigger.o
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-new file mode 100644
-index 0000000..c3b2340
---- /dev/null
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-@@ -0,0 +1,250 @@
-+/*
-+ * HID Sensors Driver
-+ * Copyright (c) 2012, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-+ *
-+ */
-+#include <linux/device.h>
-+#include <linux/platform_device.h>
-+#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/slab.h>
-+#include <linux/hid-sensor-hub.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include "hid-sensor-attributes.h"
++Implementation
++=================
 +
-+static int pow10(unsigned power)
-+{
-+	int i;
-+	int ret = 1;
-+	for (i = 0; i < power; ++i)
-+		ret = ret * 10;
++This specification defines many different types of sensors with different sets of
++data fields. It is difficult to have a common input event to user space applications,
++for different sensors. For example an accelerometer can send X,Y and Z data, whereas
++an ambient light sensor can send illumination data. 
++So the implementation has two parts:
++- Core hid driver
++- Individual sensor processing part (sensor drivers)
 +
-+	return ret;
-+}
++Core driver
++-----------
++The core driver registers (hid-sensor-hub) registers as a HID driver. It parses
++report descriptors and identifies all the sensors present. It adds an MFD device
++with name HID-SENSOR-xxxx (where xxxx is usage id from the specification).
++For example 
++HID-SENSOR-200073 is registered for an Accelerometer 3D driver.
++So if any driver with this name is inserted, then the probe routine for that
++function will be called. So an accelerometer processing driver can register
++with this name and will be probed if there is an accelerometer-3D detected.
 +
-+static void simple_div(int dividend, int divisor, int *whole,
-+				int *micro_frac)
-+{
-+	int rem;
-+	int exp = 0;
++The core driver provides a set of APIs which can be used by the processing
++drivers to register and get events for that usage id. Also it provides parsing
++functions, which get and set each input/feature/output report.
 +
-+	*micro_frac = 0;
-+	if (divisor == 0) {
-+		*whole = 0;
-+		return;
-+	}
-+	*whole = dividend/divisor;
-+	rem = dividend % divisor;
-+	if (rem) {
-+		while (rem <= divisor) {
-+			rem *= 10;
-+			exp++;
-+		}
-+		*micro_frac = (rem / divisor) * pow10(6-exp);
-+	}
-+}
++Individual sensor processing part (sensor drivers)
++-----------
++The processing driver will use an interface provided by the core driver to parse
++the report and get the indexes of the fields and also can get events. This driver
++can use IIO interface to use the standard ABI defined for a type of sensor.
 +
-+static void split_micro_fraction(unsigned int no, int exp, int *val1, int *val2)
-+{
-+	*val1 = no/pow10(exp);
-+	*val2 = no%pow10(exp) * pow10(6-exp);
-+}
 +
-+/*
-+VTF format uses exponent and variable size format.
-+For example if the size is 2 bytes
-+0x0067 with VTF16E14 format -> +1.03
-+To convert just change to 0x67 to decimal and use two decimal as E14 stands
-+for 10^-2.
-+Negative numbers are 2's complement
-+*/
-+static void convert_from_vtf_format(u32 value, int size, int exp,
-+					int *val1, int *val2)
-+{
-+	int sign = 1;
++Core driver Interface
++=====================
 +
-+	if (value & BIT(size*8 - 1)) {
-+		value =  ((1LL << (size * 8)) - value);
-+		sign = -1;
-+	}
-+	exp = hid_sensor_convert_exponent(exp);
-+	if (exp >= 0) {
-+		*val1 = sign * value * pow10(exp);
-+		*val2 = 0;
-+	} else {
-+		split_micro_fraction(value, -exp, val1, val2);
-+		if (*val1)
-+			*val1 = sign * (*val1);
-+		else
-+			*val2 = sign * (*val2);
-+	}
-+}
++Callback structure:
++Each processing driver can use this structure to set some callbacks.
++	int (*suspend)(..): Callback when HID suspend is received
++	int (*resume)(..): Callback when HID resume is received
++	int (*capture_sample)(..): Capture a sample for one of its data fields
++	int (*send_event)(..): One complete event is received which can have
++                               multiple data fields. 
 +
-+static u32 convert_to_vtf_format(int size, int exp, int val1, int val2)
-+{
-+	u32 value;
-+	int sign = 1;
++Registration functions:
++int sensor_hub_register_callback(struct hid_sensor_hub_device *hsdev,
++			u32 usage_id,
++			struct hid_sensor_hub_callbacks *usage_callback):
 +
-+	if (val1 < 0 || val2 < 0)
-+		sign = -1;
-+	exp = hid_sensor_convert_exponent(exp);
-+	if (exp < 0) {
-+		value = abs(val1) * pow10(-exp);
-+		value += abs(val2) / pow10(6+exp);
-+	} else
-+		value = abs(val1) / pow10(exp);
-+	if (sign < 0)
-+		value =  ((1LL << (size * 8)) - value);
++Registers callbacks for an usage id.
 +
-+	return value;
-+}
 +
-+int hid_sensor_read_samp_freq_value(struct hid_sensor_iio_common *st,
-+				int *val1, int *val2)
-+{
-+	s32 value;
-+	int ret;
++int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
++			u32 usage_id):
 +
-+	ret = sensor_hub_get_feature(st->hsdev,
-+		st->poll.report_id,
-+		st->poll.index, &value);
-+	if (ret < 0 || value < 0) {
-+		*val1 = *val2 = 0;
-+		return -EINVAL;
-+	} else {
-+		if (st->poll.units == HID_USAGE_SENSOR_UNITS_MILLISECOND)
-+			simple_div(1000, value, val1, val2);
-+		else if (st->poll.units == HID_USAGE_SENSOR_UNITS_SECOND)
-+			simple_div(1, value, val1, val2);
-+		else {
-+			*val1 = *val2 = 0;
-+			return -EINVAL;
-+		}
-+	}
++Removes callbacks for an usage id.
 +
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+EXPORT_SYMBOL(hid_sensor_read_samp_freq_value);
 +
-+int hid_sensor_write_samp_freq_value(struct hid_sensor_iio_common *st,
-+				int val1, int val2)
-+{
-+	s32 value;
-+	int ret;
++Parsing function:
++int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
++			u8 type,
++			u32 usage_id, u32 attr_usage_id,
++			struct hid_sensor_hub_attribute_info *info);
 +
-+	if (val1 < 0 || val2 < 0)
-+		ret = -EINVAL;
++A processing driver can look for some field of interest and check if it exists
++in a report descriptor. If it exists it will store necessary information
++so that fields can be set or get individually.
++These indexes avoid searching every time and getting field index to get or set.
 +
-+	value = val1 * pow10(6) + val2;
-+	if (value) {
-+		if (st->poll.units == HID_USAGE_SENSOR_UNITS_MILLISECOND)
-+			value = pow10(9)/value;
-+		else if (st->poll.units == HID_USAGE_SENSOR_UNITS_SECOND)
-+			value = pow10(6)/value;
-+		else
-+			value = 0;
-+	}
-+	ret = sensor_hub_set_feature(st->hsdev,
-+		st->poll.report_id,
-+		st->poll.index, value);
-+	if (ret < 0 || value < 0)
-+		ret = -EINVAL;
 +
-+	return ret;
-+}
-+EXPORT_SYMBOL(hid_sensor_write_samp_freq_value);
++Set Feature report
++int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
++			u32 field_index, s32 value);
 +
-+int hid_sensor_read_raw_hyst_value(struct hid_sensor_iio_common *st,
-+				int *val1, int *val2)
-+{
-+	s32 value;
-+	int ret;
++This interface is used to set a value for a field in feature report. For example
++if there is a field report_interval, which is parsed by a call to 
++sensor_hub_input_get_attribute_info before, then it can directly set that individual
++field.
 +
-+	ret = sensor_hub_get_feature(st->hsdev,
-+		st->sensitivity.report_id,
-+		st->sensitivity.index, &value);
-+	if (ret < 0 || value < 0) {
-+		*val1 = *val2 = 0;
-+		return -EINVAL;
-+	} else {
-+		convert_from_vtf_format(value, st->sensitivity.size,
-+					st->sensitivity.unit_expo,
-+					val1, val2);
-+	}
 +
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+EXPORT_SYMBOL(hid_sensor_read_raw_hyst_value);
++int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
++			u32 field_index, s32 *value);
 +
-+int hid_sensor_write_raw_hyst_value(struct hid_sensor_iio_common *st,
-+					int val1, int val2)
-+{
-+	s32 value;
-+	int ret;
++This interface is used to get a value for a field in input report. For example
++if there is a field report_interval, which is parsed by a call to 
++sensor_hub_input_get_attribute_info before, then it can directly get that individual
++field value.
 +
-+	value = convert_to_vtf_format(st->sensitivity.size,
-+				st->sensitivity.unit_expo,
-+				val1, val2);
-+	ret = sensor_hub_set_feature(st->hsdev,
-+		st->sensitivity.report_id,
-+		st->sensitivity.index, value);
-+	if (ret < 0 || value < 0)
-+		ret = -EINVAL;
 +
-+	return ret;
-+}
-+EXPORT_SYMBOL(hid_sensor_write_raw_hyst_value);
++int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
++			u32 usage_id,
++			u32 attr_usage_id, u32 report_id);
 +
-+int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
-+					u32 usage_id,
-+					struct hid_sensor_iio_common *st)
-+{
-+
-+	sensor_hub_input_get_attribute_info(hsdev,
-+					HID_FEATURE_REPORT, usage_id,
-+					HID_USAGE_SENSOR_PROP_REPORT_INTERVAL,
-+					&st->poll);
-+
-+	sensor_hub_input_get_attribute_info(hsdev,
-+					HID_FEATURE_REPORT, usage_id,
-+					HID_USAGE_SENSOR_PROP_REPORT_STATE,
-+					&st->report_state);
-+
-+	sensor_hub_input_get_attribute_info(hsdev,
-+					HID_FEATURE_REPORT, usage_id,
-+					HID_USAGE_SENSOR_PROY_POWER_STATE,
-+					&st->power_state);
-+
-+	sensor_hub_input_get_attribute_info(hsdev,
-+			HID_FEATURE_REPORT, usage_id,
-+			HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS,
-+			 &st->sensitivity);
-+
-+	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x\n",
-+			st->poll.index, st->poll.report_id,
-+			st->report_state.index, st->report_state.report_id,
-+			st->power_state.index, st->power_state.report_id,
-+			st->sensitivity.index, st->sensitivity.report_id);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(hid_sensor_parse_common_attributes);
-+
-+MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
-+MODULE_DESCRIPTION("HID Sensor common attribute processing");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.h b/drivers/iio/common/hid-sensors/hid-sensor-attributes.h
-new file mode 100644
-index 0000000..a4676a0
---- /dev/null
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.h
-@@ -0,0 +1,57 @@
-+/*
-+ * HID Sensors Driver
-+ * Copyright (c) 2012, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-+ *
-+ */
-+#ifndef _HID_SENSORS_ATTRIBUTES_H
-+#define _HID_SENSORS_ATTRIBUTES_H
-+
-+/* Common hid sensor iio structure */
-+struct hid_sensor_iio_common {
-+	struct hid_sensor_hub_device *hsdev;
-+	struct platform_device *pdev;
-+	unsigned usage_id;
-+	bool data_ready;
-+	struct hid_sensor_hub_attribute_info poll;
-+	struct hid_sensor_hub_attribute_info report_state;
-+	struct hid_sensor_hub_attribute_info power_state;
-+	struct hid_sensor_hub_attribute_info sensitivity;
-+};
-+
-+/*Convert from hid unit expo to regular exponent*/
-+static inline int hid_sensor_convert_exponent(int unit_expo)
-+{
-+	if (unit_expo < 0x08)
-+		return unit_expo;
-+	else if (unit_expo <= 0x0f)
-+		return -(0x0f-unit_expo+1);
-+	else
-+		return 0;
-+}
-+
-+int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
-+					u32 usage_id,
-+					struct hid_sensor_iio_common *st);
-+int hid_sensor_write_raw_hyst_value(struct hid_sensor_iio_common *st,
-+					int val1, int val2);
-+int hid_sensor_read_raw_hyst_value(struct hid_sensor_iio_common *st,
-+					int *val1, int *val2);
-+int hid_sensor_write_samp_freq_value(struct hid_sensor_iio_common *st,
-+					int val1, int val2);
-+int hid_sensor_read_samp_freq_value(struct hid_sensor_iio_common *st,
-+					int *val1, int *val2);
-+
-+#endif
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-new file mode 100644
-index 0000000..06ab768
---- /dev/null
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -0,0 +1,101 @@
-+/*
-+ * HID Sensors Driver
-+ * Copyright (c) 2012, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-+ *
-+ */
-+#include <linux/device.h>
-+#include <linux/platform_device.h>
-+#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/slab.h>
-+#include <linux/hid-sensor-hub.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/sysfs.h>
-+#include "hid-sensor-attributes.h"
-+
-+static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
-+						bool state)
-+{
-+	struct hid_sensor_iio_common *st = trig->private_data;
-+	int state_val;
-+
-+	state_val = state ? 1 : 0;
-+#if (defined CONFIG_HID_SENSOR_ENUM_BASE_QUIRKS) || \
-+	(defined CONFIG_HID_SENSOR_ENUM_BASE_QUIRKS_MODULE)
-+	++state_val;
-+#endif
-+	st->data_ready = state;
-+	sensor_hub_set_feature(st->hsdev, st->power_state.report_id,
-+					st->power_state.index,
-+					(s32)state_val);
-+
-+	sensor_hub_set_feature(st->hsdev, st->report_state.report_id,
-+					st->report_state.index,
-+					(s32)state_val);
-+
-+	return 0;
-+}
-+
-+void hid_sensor_remove_trigger(struct iio_dev *indio_dev)
-+{
-+	iio_trigger_unregister(indio_dev->trig);
-+	iio_trigger_free(indio_dev->trig);
-+}
-+EXPORT_SYMBOL(hid_sensor_remove_trigger);
-+
-+static const struct iio_trigger_ops hid_sensor_trigger_ops = {
-+	.owner = THIS_MODULE,
-+	.set_trigger_state = &hid_sensor_data_rdy_trigger_set_state,
-+};
-+
-+int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
-+				struct hid_sensor_iio_common *attrb)
-+{
-+	int ret;
-+	struct iio_trigger *trig;
-+
-+	trig = iio_trigger_alloc("%s-dev%d", name, indio_dev->id);
-+	if (trig == NULL) {
-+		dev_err(&indio_dev->dev, "Trigger Allocate Failed\n");
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+
-+	trig->dev.parent = indio_dev->dev.parent;
-+	trig->private_data = attrb;
-+	trig->ops = &hid_sensor_trigger_ops;
-+	ret = iio_trigger_register(trig);
-+
-+	if (ret) {
-+		dev_err(&indio_dev->dev, "Trigger Register Failed\n");
-+		goto error_free_trig;
-+	}
-+	indio_dev->trig = trig;
-+
-+	return ret;
-+
-+error_free_trig:
-+	iio_trigger_free(trig);
-+error_ret:
-+	return ret;
-+}
-+EXPORT_SYMBOL(hid_sensor_setup_trigger);
-+
-+MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
-+MODULE_DESCRIPTION("HID Sensor trigger processing");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.h b/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
-new file mode 100644
-index 0000000..fd98297
---- /dev/null
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
-@@ -0,0 +1,26 @@
-+/*
-+ * HID Sensors Driver
-+ * Copyright (c) 2012, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-+ *
-+ */
-+#ifndef _HID_SENSOR_TRIGGER_H
-+#define _HID_SENSOR_TRIGGER_H
-+
-+int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
-+				struct hid_sensor_iio_common *attrb);
-+void hid_sensor_remove_trigger(struct iio_dev *indio_dev);
-+
-+#endif
++This is used to get a particular field value through input reports. For example
++accelerometer wants to poll X axis value, then it can call this function with
++the usage id of X axis. HID sensors can provide events, so this is not necessary
++to poll for any field. If there is some new sample, the core driver will call
++registered callback function to process the sample.
 -- 
 1.7.7.6
