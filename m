@@ -4,90 +4,138 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	jkosina@suse.cz,
 	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 7/9] HID-Sensors: Added Gyroscope 3D
-Date: Tue,  7 Aug 2012 09:29:01 -0700
-Message-Id: <1344356943-23313-8-git-send-email-srinivas.pandruvada@intel.com>
+Subject: [PATCH 5/9] HID-Sensors: Common attribute and trigger
+Date: Tue,  7 Aug 2012 09:28:59 -0700
+Message-Id: <1344356943-23313-6-git-send-email-srinivas.pandruvada@intel.com>
 In-Reply-To: <1344356943-23313-1-git-send-email-srinivas.pandruvada@intel.com>
 References: <1344356943-23313-1-git-send-email-srinivas.pandruvada@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Added usage id processing for Gyroscope 3D. This uses IIO
-interfaces for triggerred buffer to present data to user
-mode.This uses HID sensor framework for registering callback
-events from the sensor hub.
+This patch contains the common code, which is used by all HID sensors.
+There are some common set of attributes, which every hid sensor
+needs it. This patch contains all such attributes processing.
+Also the trigger interface is common among all HID sensors. This
+patch contains common trigger functions utilized by all HID sensors.
 
 Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 ---
- drivers/iio/Kconfig                   |    1 +
- drivers/iio/Makefile                  |    1 +
- drivers/iio/gyro/Kconfig              |   16 ++
- drivers/iio/gyro/Makefile             |    6 +
- drivers/iio/gyro/hid-sensor-gyro-3d.c |  419 +++++++++++++++++++++++++++++++++
- 5 files changed, 443 insertions(+), 0 deletions(-)
- create mode 100644 drivers/iio/gyro/Kconfig
- create mode 100644 drivers/iio/gyro/Makefile
- create mode 100644 drivers/iio/gyro/hid-sensor-gyro-3d.c
+ drivers/iio/Kconfig                                |    1 +
+ drivers/iio/Makefile                               |    1 +
+ drivers/iio/common/Kconfig                         |    6 +
+ drivers/iio/common/Makefile                        |    9 +
+ drivers/iio/common/hid-sensors/Kconfig             |   26 ++
+ drivers/iio/common/hid-sensors/Makefile            |    6 +
+ .../iio/common/hid-sensors/hid-sensor-attributes.c |  250 ++++++++++++++++++++
+ .../iio/common/hid-sensors/hid-sensor-attributes.h |   57 +++++
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    |  101 ++++++++
+ .../iio/common/hid-sensors/hid-sensor-trigger.h    |   26 ++
+ 10 files changed, 483 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/iio/common/Kconfig
+ create mode 100644 drivers/iio/common/Makefile
+ create mode 100644 drivers/iio/common/hid-sensors/Kconfig
+ create mode 100644 drivers/iio/common/hid-sensors/Makefile
+ create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+ create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-attributes.h
+ create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+ create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-trigger.h
 
 diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index eb78b0f..20212af 100644
+index df0c23a..61646c7 100644
 --- a/drivers/iio/Kconfig
 +++ b/drivers/iio/Kconfig
-@@ -58,5 +58,6 @@ source "drivers/iio/accel/Kconfig"
+@@ -56,5 +56,6 @@ config IIO_CONSUMERS_PER_TRIGGER
+ 
  source "drivers/iio/adc/Kconfig"
  source "drivers/iio/amplifiers/Kconfig"
- source "drivers/iio/common/Kconfig"
-+source "drivers/iio/gyro/Kconfig"
++source "drivers/iio/common/Kconfig"
  
  endif # IIO
 diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index aed602a..7660bc4 100644
+index 8244bab..db0a043 100644
 --- a/drivers/iio/Makefile
 +++ b/drivers/iio/Makefile
-@@ -14,3 +14,4 @@ obj-y += accel/
+@@ -12,3 +12,4 @@ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
+ 
  obj-y += adc/
  obj-y += amplifiers/
- obj-y += common/
-+obj-y += gyro/
-diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
++obj-y += common/
+diff --git a/drivers/iio/common/Kconfig b/drivers/iio/common/Kconfig
 new file mode 100644
-index 0000000..21e27e2
+index 0000000..97ef666
 --- /dev/null
-+++ b/drivers/iio/gyro/Kconfig
-@@ -0,0 +1,16 @@
-+#
-+# IIO Digital Gyroscope Sensor drivers configuration
-+#
-+menu "Digital gyroscope sensors"
-+
-+config HID_SENSOR_GYRO_3D
-+	depends on HID_SENSOR_HUB
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	select HID_SENSOR_IIO_COMMON
-+	tristate "HID Gyroscope 3D"
-+	help
-+	  Say yes here to build support for the HID SENSOR
-+	  Gyroscope 3D.
-+
-+endmenu
-diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-new file mode 100644
-index 0000000..ab7f8c4
---- /dev/null
-+++ b/drivers/iio/gyro/Makefile
++++ b/drivers/iio/common/Kconfig
 @@ -0,0 +1,6 @@
 +#
-+# Makefile for industrial I/O gyroscope sensor drivers
++# IIO common modules
 +#
 +
-+hid-sensor-gyro-3d-drv-y := hid-sensor-gyro-3d.o
-+obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d-drv.o
-diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
++source "drivers/iio/common/hid-sensors/Kconfig"
++
+diff --git a/drivers/iio/common/Makefile b/drivers/iio/common/Makefile
 new file mode 100644
-index 0000000..6dd114e
+index 0000000..8158400
 --- /dev/null
-+++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-@@ -0,0 +1,419 @@
++++ b/drivers/iio/common/Makefile
+@@ -0,0 +1,9 @@
++#
++# Makefile for the IIO common modules.
++# Common modules contains modules, which can be shared among multiple
++# IIO modules. For example if the trigger processing is common for
++# multiple IIO modules then this can be moved to a common module
++# instead of duplicating in each module.
++#
++
++obj-y += hid-sensors/
+diff --git a/drivers/iio/common/hid-sensors/Kconfig b/drivers/iio/common/hid-sensors/Kconfig
+new file mode 100644
+index 0000000..8e63d81
+--- /dev/null
++++ b/drivers/iio/common/hid-sensors/Kconfig
+@@ -0,0 +1,26 @@
++#
++# Hid Sensor common modules
++#
++menu "Hid Sensor IIO Common"
++
++config HID_SENSOR_IIO_COMMON
++	tristate "Common modules for all HID Sensor IIO drivers"
++	depends on HID_SENSOR_HUB
++	select IIO_TRIGGER if IIO_BUFFER
++	help
++	  Say yes here to build support for HID sensor to use
++	  HID sensor common processing for attributes and IIO triggers.
++	  There are many attributes which can be shared among multiple
++	  HID sensor drivers, this module contains processing for those
++	  attributes.
++
++config HID_SENSOR_ENUM_BASE_QUIRKS
++	tristate "ENUM base quirks for HID Sensor IIO drivers"
++	depends on HID_SENSOR_IIO_COMMON
++	help
++	  Say yes here to build support for sensor hub FW using
++	  enumeration, which is using 1 as base instead of 0.
++	  Since logical minimum is still set 0 instead of 1,
++	  there is no easy way to differentiate.
++
++endmenu
+diff --git a/drivers/iio/common/hid-sensors/Makefile b/drivers/iio/common/hid-sensors/Makefile
+new file mode 100644
+index 0000000..1f463e0
+--- /dev/null
++++ b/drivers/iio/common/hid-sensors/Makefile
+@@ -0,0 +1,6 @@
++#
++# Makefile for the Hid sensor common modules.
++#
++
++obj-$(CONFIG_HID_SENSOR_IIO_COMMON) += hid-sensor-iio-common.o
++hid-sensor-iio-common-y := hid-sensor-attributes.o hid-sensor-trigger.o
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+new file mode 100644
+index 0000000..c3b2340
+--- /dev/null
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -0,0 +1,250 @@
 +/*
 + * HID Sensors Driver
 + * Copyright (c) 2012, Intel Corporation.
@@ -115,397 +163,430 @@ index 0000000..6dd114e
 +#include <linux/hid-sensor-hub.h>
 +#include <linux/iio/iio.h>
 +#include <linux/iio/sysfs.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include "../common/hid-sensors/hid-sensor-attributes.h"
-+#include "../common/hid-sensors/hid-sensor-trigger.h"
++#include "hid-sensor-attributes.h"
 +
-+/*Format: HID-SENSOR-usage_id_in_hex*/
-+/*Usage ID from spec for Gyro-3D: 0x200076*/
-+#define DRIVER_NAME "HID-SENSOR-200076"
-+
-+enum gyro_3d_channel {
-+	CHANNEL_SCAN_INDEX_X,
-+	CHANNEL_SCAN_INDEX_Y,
-+	CHANNEL_SCAN_INDEX_Z,
-+	GYRO_3D_CHANNEL_MAX,
-+};
-+
-+struct gyro_3d_state {
-+	struct hid_sensor_hub_callbacks callbacks;
-+	struct hid_sensor_iio_common common_attributes;
-+	struct hid_sensor_hub_attribute_info gyro[GYRO_3D_CHANNEL_MAX];
-+	u32 gyro_val[GYRO_3D_CHANNEL_MAX];
-+};
-+
-+const u32 gyro_3d_addresses[GYRO_3D_CHANNEL_MAX] = {
-+	HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXIS,
-+	HID_USAGE_SENSOR_ANGL_VELOCITY_Y_AXIS,
-+	HID_USAGE_SENSOR_ANGL_VELOCITY_Z_AXIS
-+};
-+
-+/* Channel definitions */
-+static const struct iio_chan_spec gyro_3d_channels[] = {
-+	{
-+		.type = IIO_ANGL_VEL,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_X,
-+		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
-+		IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+		IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT |
-+		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
-+		.scan_index = CHANNEL_SCAN_INDEX_X,
-+	}, {
-+		.type = IIO_ANGL_VEL,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_Y,
-+		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
-+		IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+		IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT |
-+		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
-+		.scan_index = CHANNEL_SCAN_INDEX_Y,
-+	}, {
-+		.type = IIO_ANGL_VEL,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_Z,
-+		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
-+		IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+		IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT |
-+		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
-+		.scan_index = CHANNEL_SCAN_INDEX_Z,
-+	}
-+};
-+
-+/* Adjust channel real bits based on report descriptor */
-+static void gyro_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
-+						int channel, int size)
++static int pow10(unsigned power)
 +{
-+	channels[channel].scan_type.sign = 's';
-+	/* Real storage bits will change based on the report desc. */
-+	channels[channel].scan_type.realbits = size * 8;
-+	/* Maximum size of a sample to capture is u32 */
-+	channels[channel].scan_type.storagebits = sizeof(u32) * 8;
-+}
-+
-+/* Channel read_raw handler */
-+static int gyro_3d_read_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int *val, int *val2,
-+			      long mask)
-+{
-+	struct gyro_3d_state *gyro_state = iio_priv(indio_dev);
-+	int report_id = -1;
-+	u32 address;
-+	int ret;
-+	int ret_type;
-+
-+	*val = 0;
-+	*val2 = 0;
-+	switch (mask) {
-+	case 0:
-+		report_id = gyro_state->gyro[chan->scan_index].report_id;
-+		address = gyro_3d_addresses[chan->scan_index];
-+		if (report_id >= 0)
-+			*val = sensor_hub_input_attr_get_raw_value(
-+				gyro_state->common_attributes.hsdev,
-+				HID_USAGE_SENSOR_GYRO_3D, address,
-+				report_id);
-+		else {
-+			*val = 0;
-+			return -EINVAL;
-+		}
-+		ret_type = IIO_VAL_INT;
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = gyro_state->gyro[CHANNEL_SCAN_INDEX_X].units;
-+		ret_type = IIO_VAL_INT;
-+		break;
-+	case IIO_CHAN_INFO_OFFSET:
-+		*val = hid_sensor_convert_exponent(
-+			gyro_state->gyro[CHANNEL_SCAN_INDEX_X].unit_expo);
-+		ret_type = IIO_VAL_INT;
-+		break;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = hid_sensor_read_samp_freq_value(
-+			&gyro_state->common_attributes, val, val2);
-+			ret_type = IIO_VAL_INT_PLUS_MICRO;
-+		break;
-+	case IIO_CHAN_INFO_HYSTERESIS:
-+		ret = hid_sensor_read_raw_hyst_value(
-+			&gyro_state->common_attributes, val, val2);
-+		ret_type = IIO_VAL_INT_PLUS_MICRO;
-+		break;
-+	default:
-+		ret_type = -EINVAL;
-+		break;
-+	}
-+
-+	return ret_type;
-+}
-+
-+/* Channel write_raw handler */
-+static int gyro_3d_write_raw(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       int val,
-+			       int val2,
-+			       long mask)
-+{
-+	struct gyro_3d_state *gyro_state = iio_priv(indio_dev);
-+	int ret = 0;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = hid_sensor_write_samp_freq_value(
-+				&gyro_state->common_attributes, val, val2);
-+		break;
-+	case IIO_CHAN_INFO_HYSTERESIS:
-+		ret = hid_sensor_write_raw_hyst_value(
-+				&gyro_state->common_attributes, val, val2);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
++	int i;
++	int ret = 1;
++	for (i = 0; i < power; ++i)
++		ret = ret * 10;
 +
 +	return ret;
 +}
 +
-+static int gyro_3d_write_raw_get_fmt(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       long mask)
++static void simple_div(int dividend, int divisor, int *whole,
++				int *micro_frac)
 +{
++	int rem;
++	int exp = 0;
++
++	*micro_frac = 0;
++	if (divisor == 0) {
++		*whole = 0;
++		return;
++	}
++	*whole = dividend/divisor;
++	rem = dividend % divisor;
++	if (rem) {
++		while (rem <= divisor) {
++			rem *= 10;
++			exp++;
++		}
++		*micro_frac = (rem / divisor) * pow10(6-exp);
++	}
++}
++
++static void split_micro_fraction(unsigned int no, int exp, int *val1, int *val2)
++{
++	*val1 = no/pow10(exp);
++	*val2 = no%pow10(exp) * pow10(6-exp);
++}
++
++/*
++VTF format uses exponent and variable size format.
++For example if the size is 2 bytes
++0x0067 with VTF16E14 format -> +1.03
++To convert just change to 0x67 to decimal and use two decimal as E14 stands
++for 10^-2.
++Negative numbers are 2's complement
++*/
++static void convert_from_vtf_format(u32 value, int size, int exp,
++					int *val1, int *val2)
++{
++	int sign = 1;
++
++	if (value & BIT(size*8 - 1)) {
++		value =  ((1LL << (size * 8)) - value);
++		sign = -1;
++	}
++	exp = hid_sensor_convert_exponent(exp);
++	if (exp >= 0) {
++		*val1 = sign * value * pow10(exp);
++		*val2 = 0;
++	} else {
++		split_micro_fraction(value, -exp, val1, val2);
++		if (*val1)
++			*val1 = sign * (*val1);
++		else
++			*val2 = sign * (*val2);
++	}
++}
++
++static u32 convert_to_vtf_format(int size, int exp, int val1, int val2)
++{
++	u32 value;
++	int sign = 1;
++
++	if (val1 < 0 || val2 < 0)
++		sign = -1;
++	exp = hid_sensor_convert_exponent(exp);
++	if (exp < 0) {
++		value = abs(val1) * pow10(-exp);
++		value += abs(val2) / pow10(6+exp);
++	} else
++		value = abs(val1) / pow10(exp);
++	if (sign < 0)
++		value =  ((1LL << (size * 8)) - value);
++
++	return value;
++}
++
++int hid_sensor_read_samp_freq_value(struct hid_sensor_iio_common *st,
++				int *val1, int *val2)
++{
++	s32 value;
++	int ret;
++
++	ret = sensor_hub_get_feature(st->hsdev,
++		st->poll.report_id,
++		st->poll.index, &value);
++	if (ret < 0 || value < 0) {
++		*val1 = *val2 = 0;
++		return -EINVAL;
++	} else {
++		if (st->poll.units == HID_USAGE_SENSOR_UNITS_MILLISECOND)
++			simple_div(1000, value, val1, val2);
++		else if (st->poll.units == HID_USAGE_SENSOR_UNITS_SECOND)
++			simple_div(1, value, val1, val2);
++		else {
++			*val1 = *val2 = 0;
++			return -EINVAL;
++		}
++	}
++
 +	return IIO_VAL_INT_PLUS_MICRO;
 +}
++EXPORT_SYMBOL(hid_sensor_read_samp_freq_value);
 +
-+static const struct iio_info gyro_3d_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = &gyro_3d_read_raw,
-+	.write_raw = &gyro_3d_write_raw,
-+	.write_raw_get_fmt = &gyro_3d_write_raw_get_fmt,
++int hid_sensor_write_samp_freq_value(struct hid_sensor_iio_common *st,
++				int val1, int val2)
++{
++	s32 value;
++	int ret;
++
++	if (val1 < 0 || val2 < 0)
++		ret = -EINVAL;
++
++	value = val1 * pow10(6) + val2;
++	if (value) {
++		if (st->poll.units == HID_USAGE_SENSOR_UNITS_MILLISECOND)
++			value = pow10(9)/value;
++		else if (st->poll.units == HID_USAGE_SENSOR_UNITS_SECOND)
++			value = pow10(6)/value;
++		else
++			value = 0;
++	}
++	ret = sensor_hub_set_feature(st->hsdev,
++		st->poll.report_id,
++		st->poll.index, value);
++	if (ret < 0 || value < 0)
++		ret = -EINVAL;
++
++	return ret;
++}
++EXPORT_SYMBOL(hid_sensor_write_samp_freq_value);
++
++int hid_sensor_read_raw_hyst_value(struct hid_sensor_iio_common *st,
++				int *val1, int *val2)
++{
++	s32 value;
++	int ret;
++
++	ret = sensor_hub_get_feature(st->hsdev,
++		st->sensitivity.report_id,
++		st->sensitivity.index, &value);
++	if (ret < 0 || value < 0) {
++		*val1 = *val2 = 0;
++		return -EINVAL;
++	} else {
++		convert_from_vtf_format(value, st->sensitivity.size,
++					st->sensitivity.unit_expo,
++					val1, val2);
++	}
++
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++EXPORT_SYMBOL(hid_sensor_read_raw_hyst_value);
++
++int hid_sensor_write_raw_hyst_value(struct hid_sensor_iio_common *st,
++					int val1, int val2)
++{
++	s32 value;
++	int ret;
++
++	value = convert_to_vtf_format(st->sensitivity.size,
++				st->sensitivity.unit_expo,
++				val1, val2);
++	ret = sensor_hub_set_feature(st->hsdev,
++		st->sensitivity.report_id,
++		st->sensitivity.index, value);
++	if (ret < 0 || value < 0)
++		ret = -EINVAL;
++
++	return ret;
++}
++EXPORT_SYMBOL(hid_sensor_write_raw_hyst_value);
++
++int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
++					u32 usage_id,
++					struct hid_sensor_iio_common *st)
++{
++
++	sensor_hub_input_get_attribute_info(hsdev,
++					HID_FEATURE_REPORT, usage_id,
++					HID_USAGE_SENSOR_PROP_REPORT_INTERVAL,
++					&st->poll);
++
++	sensor_hub_input_get_attribute_info(hsdev,
++					HID_FEATURE_REPORT, usage_id,
++					HID_USAGE_SENSOR_PROP_REPORT_STATE,
++					&st->report_state);
++
++	sensor_hub_input_get_attribute_info(hsdev,
++					HID_FEATURE_REPORT, usage_id,
++					HID_USAGE_SENSOR_PROY_POWER_STATE,
++					&st->power_state);
++
++	sensor_hub_input_get_attribute_info(hsdev,
++			HID_FEATURE_REPORT, usage_id,
++			HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS,
++			 &st->sensitivity);
++
++	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x\n",
++			st->poll.index, st->poll.report_id,
++			st->report_state.index, st->report_state.report_id,
++			st->power_state.index, st->power_state.report_id,
++			st->sensitivity.index, st->sensitivity.report_id);
++
++	return 0;
++}
++EXPORT_SYMBOL(hid_sensor_parse_common_attributes);
++
++MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
++MODULE_DESCRIPTION("HID Sensor common attribute processing");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.h b/drivers/iio/common/hid-sensors/hid-sensor-attributes.h
+new file mode 100644
+index 0000000..a4676a0
+--- /dev/null
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.h
+@@ -0,0 +1,57 @@
++/*
++ * HID Sensors Driver
++ * Copyright (c) 2012, Intel Corporation.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program; if not, write to the Free Software Foundation, Inc.,
++ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
++ *
++ */
++#ifndef _HID_SENSORS_ATTRIBUTES_H
++#define _HID_SENSORS_ATTRIBUTES_H
++
++/* Common hid sensor iio structure */
++struct hid_sensor_iio_common {
++	struct hid_sensor_hub_device *hsdev;
++	struct platform_device *pdev;
++	unsigned usage_id;
++	bool data_ready;
++	struct hid_sensor_hub_attribute_info poll;
++	struct hid_sensor_hub_attribute_info report_state;
++	struct hid_sensor_hub_attribute_info power_state;
++	struct hid_sensor_hub_attribute_info sensitivity;
 +};
 +
-+/* Function to push data to buffer */
-+static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
++/*Convert from hid unit expo to regular exponent*/
++static inline int hid_sensor_convert_exponent(int unit_expo)
 +{
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+	s64 timestamp = iio_get_time_ns();
-+	int datum_sz;
-+
-+	dev_dbg(&indio_dev->dev, "hid_sensor_push_data\n");
-+	if (!buffer) {
-+		dev_err(&indio_dev->dev, "Buffer == NULL\n");
-+		return;
-+	}
-+	datum_sz = buffer->access->get_bytes_per_datum(buffer);
-+	if (len > datum_sz) {
-+		dev_err(&indio_dev->dev, "Datum size mismatch %d:%d\n", len,
-+				datum_sz);
-+		return;
-+	}
-+	buffer->access->store_to(buffer, (u8 *)data, timestamp);
++	if (unit_expo < 0x08)
++		return unit_expo;
++	else if (unit_expo <= 0x0f)
++		return -(0x0f-unit_expo+1);
++	else
++		return 0;
 +}
 +
-+/* Callback handler to send event after all samples are received and captured */
-+static int gyro_3d_proc_event(struct hid_sensor_hub_device *hsdev,
-+				unsigned usage_id,
-+				void *priv)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-+	struct gyro_3d_state *gyro_state = iio_priv(indio_dev);
++int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
++					u32 usage_id,
++					struct hid_sensor_iio_common *st);
++int hid_sensor_write_raw_hyst_value(struct hid_sensor_iio_common *st,
++					int val1, int val2);
++int hid_sensor_read_raw_hyst_value(struct hid_sensor_iio_common *st,
++					int *val1, int *val2);
++int hid_sensor_write_samp_freq_value(struct hid_sensor_iio_common *st,
++					int val1, int val2);
++int hid_sensor_read_samp_freq_value(struct hid_sensor_iio_common *st,
++					int *val1, int *val2);
 +
-+	dev_dbg(&indio_dev->dev, "gyro_3d_proc_event [%d]\n",
-+				gyro_state->common_attributes.data_ready);
-+	if (gyro_state->common_attributes.data_ready)
-+		hid_sensor_push_data(indio_dev,
-+				(u8 *)gyro_state->gyro_val,
-+				sizeof(gyro_state->gyro_val));
++#endif
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+new file mode 100644
+index 0000000..06ab768
+--- /dev/null
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -0,0 +1,101 @@
++/*
++ * HID Sensors Driver
++ * Copyright (c) 2012, Intel Corporation.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program; if not, write to the Free Software Foundation, Inc.,
++ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
++ *
++ */
++#include <linux/device.h>
++#include <linux/platform_device.h>
++#include <linux/module.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/slab.h>
++#include <linux/hid-sensor-hub.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/sysfs.h>
++#include "hid-sensor-attributes.h"
++
++static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
++						bool state)
++{
++	struct hid_sensor_iio_common *st = trig->private_data;
++	int state_val;
++
++	state_val = state ? 1 : 0;
++#if (defined CONFIG_HID_SENSOR_ENUM_BASE_QUIRKS) || \
++	(defined CONFIG_HID_SENSOR_ENUM_BASE_QUIRKS_MODULE)
++	++state_val;
++#endif
++	st->data_ready = state;
++	sensor_hub_set_feature(st->hsdev, st->power_state.report_id,
++					st->power_state.index,
++					(s32)state_val);
++
++	sensor_hub_set_feature(st->hsdev, st->report_state.report_id,
++					st->report_state.index,
++					(s32)state_val);
 +
 +	return 0;
 +}
 +
-+/* Capture samples in local storage */
-+static int gyro_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
-+				unsigned usage_id,
-+				size_t raw_len, char *raw_data,
-+				void *priv)
++void hid_sensor_remove_trigger(struct iio_dev *indio_dev)
 +{
-+	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-+	struct gyro_3d_state *gyro_state = iio_priv(indio_dev);
-+	int offset;
-+	int ret = -EINVAL;
-+
-+	switch (usage_id) {
-+	case HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXIS:
-+	case HID_USAGE_SENSOR_ANGL_VELOCITY_Y_AXIS:
-+	case HID_USAGE_SENSOR_ANGL_VELOCITY_Z_AXIS:
-+		offset = usage_id - HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXIS;
-+		gyro_state->gyro_val[CHANNEL_SCAN_INDEX_X + offset] =
-+						*(u32 *)raw_data;
-+		ret = 0;
-+	break;
-+	default:
-+		break;
-+	}
-+
-+	return ret;
++	iio_trigger_unregister(indio_dev->trig);
++	iio_trigger_free(indio_dev->trig);
 +}
++EXPORT_SYMBOL(hid_sensor_remove_trigger);
 +
-+/* Parse report which is specific to an usage id*/
-+static int gyro_3d_parse_report(struct platform_device *pdev,
-+				struct hid_sensor_hub_device *hsdev,
-+				struct iio_chan_spec *channels,
-+				unsigned usage_id,
-+				struct gyro_3d_state *st)
++static const struct iio_trigger_ops hid_sensor_trigger_ops = {
++	.owner = THIS_MODULE,
++	.set_trigger_state = &hid_sensor_data_rdy_trigger_set_state,
++};
++
++int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
++				struct hid_sensor_iio_common *attrb)
 +{
 +	int ret;
-+	int i;
++	struct iio_trigger *trig;
 +
-+	for (i = 0; i <= CHANNEL_SCAN_INDEX_Z; ++i) {
-+		ret = sensor_hub_input_get_attribute_info(hsdev,
-+				HID_INPUT_REPORT,
-+				usage_id,
-+				HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXIS + i,
-+				&st->gyro[CHANNEL_SCAN_INDEX_X + i]);
-+		if (ret < 0)
-+			break;
-+		gyro_3d_adjust_channel_bit_mask(channels,
-+				CHANNEL_SCAN_INDEX_X + i,
-+				st->gyro[CHANNEL_SCAN_INDEX_X + i].size);
-+	}
-+	dev_dbg(&pdev->dev, "gyro_3d %x:%x, %x:%x, %x:%x\n",
-+			st->gyro[0].index,
-+			st->gyro[0].report_id,
-+			st->gyro[1].index, st->gyro[1].report_id,
-+			st->gyro[2].index, st->gyro[2].report_id);
-+
-+	return ret;
-+}
-+
-+/* Function to initialize the processing for usage id */
-+static int __devinit hid_gyro_3d_probe(struct platform_device *pdev)
-+{
-+	int ret = 0;
-+	static const char *name = "gyro_3d";
-+	struct iio_dev *indio_dev;
-+	struct gyro_3d_state *gyro_state;
-+	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-+	struct iio_chan_spec *channels;
-+
-+	indio_dev = iio_device_alloc(sizeof(struct gyro_3d_state));
-+	if (indio_dev == NULL) {
++	trig = iio_trigger_alloc("%s-dev%d", name, indio_dev->id);
++	if (trig == NULL) {
++		dev_err(&indio_dev->dev, "Trigger Allocate Failed\n");
 +		ret = -ENOMEM;
 +		goto error_ret;
 +	}
-+	platform_set_drvdata(pdev, indio_dev);
 +
-+	gyro_state = iio_priv(indio_dev);
-+	gyro_state->common_attributes.hsdev = hsdev;
-+	gyro_state->common_attributes.pdev = pdev;
++	trig->dev.parent = indio_dev->dev.parent;
++	trig->private_data = attrb;
++	trig->ops = &hid_sensor_trigger_ops;
++	ret = iio_trigger_register(trig);
 +
-+	ret = hid_sensor_parse_common_attributes(hsdev,
-+						HID_USAGE_SENSOR_GYRO_3D,
-+						&gyro_state->common_attributes);
 +	if (ret) {
-+		dev_err(&pdev->dev, "failed to setup common attributes\n");
-+		goto error_free_dev;
++		dev_err(&indio_dev->dev, "Trigger Register Failed\n");
++		goto error_free_trig;
 +	}
-+
-+	channels = kmemdup(gyro_3d_channels,
-+					sizeof(gyro_3d_channels),
-+					GFP_KERNEL);
-+	if (!channels) {
-+		dev_err(&pdev->dev, "failed to duplicate channels\n");
-+		goto error_free_dev;
-+	}
-+
-+	ret = gyro_3d_parse_report(pdev, hsdev, channels,
-+					HID_USAGE_SENSOR_GYRO_3D, gyro_state);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to setup attributes\n");
-+		goto error_free_dev_mem;
-+	}
-+
-+	indio_dev->channels = channels;
-+	indio_dev->num_channels = ARRAY_SIZE(gyro_3d_channels);
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &gyro_3d_info;
-+	indio_dev->name = name;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+		NULL, NULL);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
-+		goto error_free_dev_mem;
-+	}
-+	gyro_state->common_attributes.data_ready = false;
-+	ret = hid_sensor_setup_trigger(indio_dev, name,
-+					&gyro_state->common_attributes);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "trigger setup failed\n");
-+		goto error_unreg_buffer_funcs;
-+	}
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "device register failed\n");
-+		goto error_remove_trigger;
-+	}
-+
-+	gyro_state->callbacks.send_event = gyro_3d_proc_event;
-+	gyro_state->callbacks.capture_sample = gyro_3d_capture_sample;
-+	gyro_state->callbacks.pdev = pdev;
-+	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D,
-+					&gyro_state->callbacks);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "callback reg failed\n");
-+		goto error_iio_unreg;
-+	}
++	indio_dev->trig = trig;
 +
 +	return ret;
 +
-+error_iio_unreg:
-+	iio_device_unregister(indio_dev);
-+error_remove_trigger:
-+	hid_sensor_remove_trigger(indio_dev);
-+error_unreg_buffer_funcs:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+error_free_dev_mem:
-+	kfree(indio_dev->channels);
-+error_free_dev:
-+	iio_device_free(indio_dev);
++error_free_trig:
++	iio_trigger_free(trig);
 +error_ret:
 +	return ret;
 +}
++EXPORT_SYMBOL(hid_sensor_setup_trigger);
 +
-+/* Function to deinitialize the processing for usage id */
-+static int __devinit hid_gyro_3d_remove(struct platform_device *pdev)
-+{
-+	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+
-+	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
-+	iio_device_unregister(indio_dev);
-+	hid_sensor_remove_trigger(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	kfree(indio_dev->channels);
-+	iio_device_free(indio_dev);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver hid_gyro_3d_platform_driver = {
-+	.driver = {
-+		.name	= DRIVER_NAME,
-+		.owner	= THIS_MODULE,
-+	},
-+	.probe		= hid_gyro_3d_probe,
-+	.remove		= hid_gyro_3d_remove,
-+};
-+module_platform_driver(hid_gyro_3d_platform_driver);
-+
-+MODULE_DESCRIPTION("HID Sensor Gyroscope 3D");
 +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
++MODULE_DESCRIPTION("HID Sensor trigger processing");
 +MODULE_LICENSE("GPL");
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.h b/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
+new file mode 100644
+index 0000000..fd98297
+--- /dev/null
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
+@@ -0,0 +1,26 @@
++/*
++ * HID Sensors Driver
++ * Copyright (c) 2012, Intel Corporation.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program; if not, write to the Free Software Foundation, Inc.,
++ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
++ *
++ */
++#ifndef _HID_SENSOR_TRIGGER_H
++#define _HID_SENSOR_TRIGGER_H
++
++int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
++				struct hid_sensor_iio_common *attrb);
++void hid_sensor_remove_trigger(struct iio_dev *indio_dev);
++
++#endif
 -- 
 1.7.7.6
