@@ -1,222 +1,382 @@
-Return-Path: <myungjoo.ham@samsung.com>
-Date: Tue, 07 Aug 2012 05:57:37 +0000 (GMT)
-From: MyungJoo Ham <myungjoo.ham@samsung.com>
-Subject: Re: Re: [PATCH V1]Extcon: adc_jack: adc-jack driver to support 3.5 pi
- or simliar devices
-To: anish kumar <anish198519851985@gmail.com>,
- Lars-Peter Clausen <lars@metafoo.de>
-Cc: "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- ANISH KUMAR <anish.singh@samsung.com>,
- =?euc-kr?Q?=C3=D6=C2=F9=BF=EC?= <cw00.choi@samsung.com>
-Reply-to: myungjoo.ham@samsung.com
-MIME-version: 1.0
-Content-type: text/plain; charset=euc-kr
-MIME-version: 1.0
-Message-id: <5370821.92701344319056619.JavaMail.weblogic@epml13>
+Return-Path: <anish198519851985@gmail.com>
+Subject: Re: Re: [PATCH V1]Extcon: adc_jack: adc-jack driver to support 3.5
+ pi or simliar devices
+From: anish kumar <anish198519851985@gmail.com>
+To: myungjoo.ham@samsung.com
+Cc: Lars-Peter Clausen <lars@metafoo.de>, "jic23@cam.ac.uk"
+ <jic23@cam.ac.uk>,  "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, ANISH KUMAR <anish.singh@samsung.com>,
+ =?UTF-8?Q?=EC=B5=9C=EC=B0=AC=EC=9A=B0?= <cw00.choi@samsung.com>
+In-Reply-To: <5370821.92701344319056619.JavaMail.weblogic@epml13>
+References: <5370821.92701344319056619.JavaMail.weblogic@epml13>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 06 Aug 2012 22:59:51 -0700
+Message-ID: <1344319191.1532.20.camel@anish-Inspiron-N5050>
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-PiBGcm9tOiBhbmlzaCBrdW1hciA8YW5pc2gxOTg1MTk4NTE5ODVAZ21haWwuY29tPg0KPiANCj4g
-RXh0ZXJuYWwgY29ubmVjdG9yIGRldmljZXMgdGhhdCBkZWNpZGVzIGNvbm5lY3Rpb24gaW5mb3Jt
-YXRpb24gYmFzZWQgb24NCj4gQURDIHZhbHVlcyBtYXkgdXNlIGFkYy1qYWNrIGRldmljZSBkcml2
-ZXIuIFRoZSB1c2VyIHNpbXBseSBuZWVkcyB0bw0KPiBwcm92aWRlIGEgdGFibGUgb2YgYWRjIHJh
-bmdlIGFuZCBjb25uZWN0aW9uIHN0YXRlcy4gVGhlbiwgZXh0Y29uDQo+IGZyYW1ld29yayB3aWxs
-IGF1dG9tYXRpY2FsbHkgbm90aWZ5IG90aGVycy4NCj4gDQo+IENoYW5nZXMgaW4gdGhpcyB2ZXJz
-aW9uOg0KPiBhZGRlZCBMYXJzLVBldGVyIENsYXVzZW4gc3VnZ2VzdGVkIGNoYW5nZXM6DQo+IFVz
-aW5nIG1hY3JvcyB0byBnZXQgcmlkIG9mIGJvaWxlciBwbGF0ZSBjb2RlIHN1Y2ggYXMgZGV2bV9r
-emFsbG9jDQo+IGFuZCBtb2R1bGVfcGxhdGZvcm1fZHJpdmVyLk90aGVyIGNoYW5nZXMgc3VnZ2Vz
-dGVkIGFyZSByZWxhdGVkIHRvDQo+IGNvZGluZyBndWlkZWxpbmVzLg0KPiANCj4gU2lnbmVkLW9m
-Zi1ieTogYW5pc2gga3VtYXIgPGFuaXNoLnNpbmdoQHNhbXN1bmcuY29tPg0KPiBTaWduZWQtb2Zm
-LWJ5OiBNeXVuZ0pvbyBIYW0gPG15dW5nam9vLmhhbUBzYW1zdW5nLmNvbT4NCg0KSGVsbG8sDQoN
-Cg0KT25lIGxpdHRsZSB0aGluZyB0aGF0IEkndmUgbWlzc2VkIGJlZm9yZToNCg0KQ291bGQgeW91
-IHBsZWFzZSByZW5hbWUgdGhlIGZpbGU/DQoNClRob3VnaCB0aGUgaW5pdGlhbCBmaWxlcyAoY2xh
-c3MgYW5kIGdwaW8pIGRpZG4ndCBkbyBpdCwNCmxpa2Ugb3RoZXIgcmVjZW50IG9uZXMsIGxldCdz
-IHVzZSAnLScgaW5zdGVhZCBvZiAnXycuDQpCZXNpZGVzLCBjb3VsZCB5b3UgcGxlYXNlIHVzZSAi
-ZXh0Y29uIiBwcmVmaXggZm9yIHRoZSBmaWxlbmFtZT8NCg0KVGh1cywgImFkY19qYWNrLmMvaCIg
-LS0+ICJleHRjb24tYWRjLWphY2suYy9oIg0KDQoNCkNoZWVycw0KTXl1bmdKb28NCg0KPiAtLS0N
-Cj4gIGRyaXZlcnMvZXh0Y29uL0tjb25maWcgICAgICAgICAgfCAgICA1ICsNCj4gIGRyaXZlcnMv
-ZXh0Y29uL01ha2VmaWxlICAgICAgICAgfCAgICAxICsNCj4gIGRyaXZlcnMvZXh0Y29uL2FkY19q
-YWNrLmMgICAgICAgfCAgMTkzICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-Kw0KPiAgaW5jbHVkZS9saW51eC9leHRjb24vYWRjX2phY2suaCB8ICAgNzcgKysrKysrKysrKysr
-KysrKw0KPiAgNCBmaWxlcyBjaGFuZ2VkLCAyNzYgaW5zZXJ0aW9ucygrKSwgMCBkZWxldGlvbnMo
-LSkNCj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2V4dGNvbi9hZGNfamFjay5jDQo+ICBj
-cmVhdGUgbW9kZSAxMDA2NDQgaW5jbHVkZS9saW51eC9leHRjb24vYWRjX2phY2suaA0KPiANCj4g
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvZXh0Y29uL0tjb25maWcgYi9kcml2ZXJzL2V4dGNvbi9LY29u
-ZmlnDQo+IGluZGV4IGUxNzVjOGUuLjU5NmUyNzcgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvZXh0
-Y29uL0tjb25maWcNCj4gKysrIGIvZHJpdmVycy9leHRjb24vS2NvbmZpZw0KPiBAQCAtMjEsNiAr
-MjEsMTEgQEAgY29uZmlnIEVYVENPTl9HUElPDQo+ICAJICBTYXkgWSBoZXJlIHRvIGVuYWJsZSBH
-UElPIGJhc2VkIGV4dGNvbiBzdXBwb3J0LiBOb3RlIHRoYXQgR1BJTw0KPiAgCSAgZXh0Y29uIHN1
-cHBvcnRzIHNpbmdsZSBzdGF0ZSBwZXIgZXh0Y29uIGluc3RhbmNlLg0KPiAgDQo+ICtjb25maWcg
-RVhUQ09OX0FEQ19KQUNLDQo+ICsgICAgICAgIHRyaXN0YXRlICJBREMgSmFjayBleHRjb24gc3Vw
-cG9ydCINCj4gKyAgICAgICAgaGVscA0KPiArICAgICAgICAgIFNheSBZIGhlcmUgdG8gZW5hYmxl
-IGV4dGNvbiBkZXZpY2UgZHJpdmVyIGJhc2VkIG9uIEFEQyB2YWx1ZXMuDQo+ICsNCj4gIGNvbmZp
-ZyBFWFRDT05fTUFYNzc2OTMNCj4gIAl0cmlzdGF0ZSAiTUFYNzc2OTMgRVhUQ09OIFN1cHBvcnQi
-DQo+ICAJZGVwZW5kcyBvbiBNRkRfTUFYNzc2OTMNCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZXh0
-Y29uL01ha2VmaWxlIGIvZHJpdmVycy9leHRjb24vTWFrZWZpbGUNCj4gaW5kZXggODg5NjFiMy4u
-ZDk1YzVlYSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9leHRjb24vTWFrZWZpbGUNCj4gKysrIGIv
-ZHJpdmVycy9leHRjb24vTWFrZWZpbGUNCj4gQEAgLTQsNiArNCw3IEBADQo+ICANCj4gIG9iai0k
-KENPTkZJR19FWFRDT04pCQkrPSBleHRjb25fY2xhc3Mubw0KPiAgb2JqLSQoQ09ORklHX0VYVENP
-Tl9HUElPKQkrPSBleHRjb25fZ3Bpby5vDQo+ICtvYmotJChDT05GSUdfRVhUQ09OX0FEQ19KQUNL
-KSAgICs9IGFkY19qYWNrLm8NCj4gIG9iai0kKENPTkZJR19FWFRDT05fTUFYNzc2OTMpCSs9IGV4
-dGNvbi1tYXg3NzY5My5vDQo+ICBvYmotJChDT05GSUdfRVhUQ09OX01BWDg5OTcpCSs9IGV4dGNv
-bi1tYXg4OTk3Lm8NCj4gIG9iai0kKENPTkZJR19FWFRDT05fQVJJWk9OQSkJKz0gZXh0Y29uLWFy
-aXpvbmEubw0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9leHRjb24vYWRjX2phY2suYyBiL2RyaXZl
-cnMvZXh0Y29uL2FkY19qYWNrLmMNCj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4gaW5kZXggMDAw
-MDAwMC4uOGI4MGFmMA0KPiAtLS0gL2Rldi9udWxsDQo+ICsrKyBiL2RyaXZlcnMvZXh0Y29uL2Fk
-Y19qYWNrLmMNCj4gQEAgLTAsMCArMSwxOTMgQEANCj4gKy8qDQo+ICsgKiBkcml2ZXJzL2V4dGNv
-bi9hZGNfamFjay5jDQo+ICsgKg0KPiArICogQW5hbG9nIEphY2sgZXh0Y29uIGRyaXZlciB3aXRo
-IEFEQy1iYXNlZCBkZXRlY3Rpb24gY2FwYWJpbGl0eS4NCj4gKyAqDQo+ICsgKiBDb3B5cmlnaHQg
-KEMpIDIwMTIgU2Ftc3VuZyBFbGVjdHJvbmljcw0KPiArICogTXl1bmdKb28gSGFtIDxteXVuZ2pv
-by5oYW1Ac2Ftc3VuZy5jb20+DQo+ICsgKg0KPiArICogTW9kaWZpZWQgZm9yIGNhbGxpbmcgdG8g
-SUlPIHRvIGdldCBhZGMgYnkgPGFuaXNoLnNpbmdoQHNhbXN1bmcuY29tPg0KPiArICoNCj4gKyAq
-IFRoaXMgcHJvZ3JhbSBpcyBmcmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBh
-bmQvb3IgbW9kaWZ5DQo+ICsgKiBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFs
-IFB1YmxpYyBMaWNlbnNlIHZlcnNpb24gMiBhcw0KPiArICogcHVibGlzaGVkIGJ5IHRoZSBGcmVl
-IFNvZnR3YXJlIEZvdW5kYXRpb24uDQo+ICsgKg0KPiArICovDQo+ICsNCj4gKyNpbmNsdWRlIDxs
-aW51eC9zbGFiLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvZGV2aWNlLmg+DQo+ICsjaW5jbHVkZSA8
-bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvaW50ZXJydXB0Lmg+
-DQo+ICsjaW5jbHVkZSA8bGludXgvd29ya3F1ZXVlLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvaWlv
-L2NvbnN1bWVyLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvZXh0Y29uL2FkY19qYWNrLmg+DQo+ICsj
-aW5jbHVkZSA8bGludXgvZXh0Y29uLmg+DQo+ICsNCj4gKy8qKg0KPiArICogc3RydWN0IGFkY19q
-YWNrX2RhdGEgLSBpbnRlcm5hbCBkYXRhIGZvciBhZGNfamFjayBkZXZpY2UgZHJpdmVyDQo+ICsg
-KiBAZWRldiAgICAgICAgLSBleHRjb24gZGV2aWNlLg0KPiArICogQGNhYmxlX25hbWVzIC0gbGlz
-dCBvZiBzdXBwb3J0ZWQgY2FibGVzLg0KPiArICogQG51bV9jYWJsZXMgIC0gc2l6ZSBvZiBjYWJs
-ZV9uYW1lcy4NCj4gKyAqIEBhZGNfY29uZGl0aW9uICAgICAgIC0gbGlzdCBvZiBhZGMgdmFsdWUg
-Y29uZGl0aW9ucy4NCj4gKyAqIEBudW1fY29uZGl0aW9uICAgICAgIC0gc2l6ZSBvZiBhZGNfY29u
-ZGl0aW9uLg0KPiArICogQGlycSAgICAgICAgIC0gaXJxIG51bWJlciBvZiBhdHRhY2gvZGV0YWNo
-IGV2ZW50ICgwIGlmIG5vdCBleGlzdCkuDQo+ICsgKiBAaGFuZGxpbmdfZGVsYXkgICAgICAtIGlu
-dGVycnVwdCBoYW5kbGVyIHdpbGwgc2NoZWR1bGUgZXh0Y29uIGV2ZW50DQo+ICsgKiAgICAgICAg
-ICAgICAgICAgICAgICBoYW5kbGluZyBhdCBoYW5kbGluZ19kZWxheSBqaWZmaWVzLg0KPiArICog
-QGhhbmRsZXIgICAgIC0gZXh0Y29uIGV2ZW50IGhhbmRsZXIgY2FsbGVkIGJ5IGludGVycnVwdCBo
-YW5kbGVyLg0KPiArICogQGdldF9hZGMgICAgIC0gYSBjYWxsYmFjayB0byBnZXQgQURDIHZhbHVl
-IHRvIGlkZW50aWZ5IHN0YXRlLg0KPiArICovDQo+ICtzdHJ1Y3QgYWRjX2phY2tfZGF0YSB7DQo+
-ICsJc3RydWN0IGV4dGNvbl9kZXYgZWRldjsNCj4gKw0KPiArCWNvbnN0IGNoYXIgKipjYWJsZV9u
-YW1lczsNCj4gKwlpbnQgbnVtX2NhYmxlczsNCj4gKwlzdHJ1Y3QgYWRjX2phY2tfY29uZCAqYWRj
-X2NvbmRpdGlvbjsNCj4gKwlpbnQgbnVtX2NvbmRpdGlvbnM7DQo+ICsNCj4gKwlpbnQgaXJxOw0K
-PiArCXVuc2lnbmVkIGxvbmcgaGFuZGxpbmdfZGVsYXk7IC8qIGluIGppZmZpZXMgKi8NCj4gKwlz
-dHJ1Y3QgZGVsYXllZF93b3JrIGhhbmRsZXI7DQo+ICsNCj4gKwlzdHJ1Y3QgaWlvX2NoYW5uZWwg
-KmNoYW47DQo+ICt9Ow0KPiArDQo+ICtzdGF0aWMgdm9pZCBhZGNfamFja19oYW5kbGVyKHN0cnVj
-dCB3b3JrX3N0cnVjdCAqd29yaykNCj4gK3sNCj4gKwlzdHJ1Y3QgYWRjX2phY2tfZGF0YSAqZGF0
-YSA9IGNvbnRhaW5lcl9vZih0b19kZWxheWVkX3dvcmsod29yayksDQo+ICsJCQkJCQkgIHN0cnVj
-dCBhZGNfamFja19kYXRhLA0KPiArCQkJCQkJICBoYW5kbGVyKTsNCj4gKwl1MzIgc3RhdGUgPSAw
-Ow0KPiArCWludCByZXQsIGFkY192YWw7DQo+ICsJaW50IGk7DQo+ICsNCj4gKwlyZXQgPSBpaW9f
-cmVhZF9jaGFubmVsX3JhdyhkYXRhLT5jaGFuLCAmYWRjX3ZhbCk7DQo+ICsJaWYgKHJldCA8IDAp
-IHsNCj4gKwkJZGV2X2VycihkYXRhLT5lZGV2LmRldiwgInJlYWQgY2hhbm5lbCgpIGVycm9yOiAl
-ZFxuIiwgcmV0KTsNCj4gKwkJcmV0dXJuOw0KPiArCX0NCj4gKw0KPiArCS8qIEdldCBzdGF0ZSBm
-cm9tIGFkYyB2YWx1ZSB3aXRoIGFkY19jb25kaXRpb24gKi8NCj4gKwlmb3IgKGkgPSAwOyBpIDwg
-ZGF0YS0+bnVtX2NvbmRpdGlvbnM7IGkrKykgew0KPiArCQlzdHJ1Y3QgYWRjX2phY2tfY29uZCAq
-ZGVmID0gJmRhdGEtPmFkY19jb25kaXRpb25baV07DQo+ICsJCWlmICghZGVmLT5zdGF0ZSkNCj4g
-KwkJCWJyZWFrOw0KPiArCQlpZiAoZGVmLT5taW5fYWRjIDw9IGFkY192YWwgJiYgZGVmLT5tYXhf
-YWRjID49IGFkY192YWwpIHsNCj4gKwkJCXN0YXRlID0gZGVmLT5zdGF0ZTsNCj4gKwkJCWJyZWFr
-Ow0KPiArCQl9DQo+ICsJfQ0KPiArCS8qIGlmIG5vIGRlZiBoYXMgbWV0LCBpdCBtZWFucyBzdGF0
-ZSA9IDAgKG5vIGNhYmxlcyBhdHRhY2hlZCkgKi8NCj4gKw0KPiArCWV4dGNvbl9zZXRfc3RhdGUo
-JmRhdGEtPmVkZXYsIHN0YXRlKTsNCj4gK30NCj4gKw0KPiArc3RhdGljIGlycXJldHVybl90IGFk
-Y19qYWNrX2lycV90aHJlYWQoaW50IGlycSwgdm9pZCAqX2RhdGEpDQo+ICt7DQo+ICsJc3RydWN0
-IGFkY19qYWNrX2RhdGEgKmRhdGEgPSBfZGF0YTsNCj4gKw0KPiArCXNjaGVkdWxlX2RlbGF5ZWRf
-d29yaygmZGF0YS0+aGFuZGxlciwgZGF0YS0+aGFuZGxpbmdfZGVsYXkpOw0KPiArCXJldHVybiBJ
-UlFfSEFORExFRDsNCj4gK30NCj4gKw0KPiArc3RhdGljIGludCBhZGNfamFja19wcm9iZShzdHJ1
-Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiArew0KPiArCXN0cnVjdCBhZGNfamFja19kYXRh
-ICpkYXRhOw0KPiArCXN0cnVjdCBhZGNfamFja19wZGF0YSAqcGRhdGEgPSBwZGV2LT5kZXYucGxh
-dGZvcm1fZGF0YTsNCj4gKwlpbnQgaSwgZXJyID0gMDsNCj4gKw0KPiArCWRhdGEgPSBkZXZtX2t6
-YWxsb2MoJnBkZXYtPmRldiwgc2l6ZW9mKCpkYXRhKSwgR0ZQX0tFUk5FTCk7DQo+ICsJaWYgKCFk
-YXRhKQ0KPiArCQlyZXR1cm4gLUVOT01FTTsNCj4gKw0KPiArCWRhdGEtPmVkZXYubmFtZSA9IHBk
-YXRhLT5uYW1lOw0KPiArDQo+ICsJaWYgKHBkYXRhLT5jYWJsZV9uYW1lcykNCj4gKwkJZGF0YS0+
-ZWRldi5zdXBwb3J0ZWRfY2FibGUgPSBwZGF0YS0+Y2FibGVfbmFtZXM7DQo+ICsJZWxzZQ0KPiAr
-CQlkYXRhLT5lZGV2LnN1cHBvcnRlZF9jYWJsZSA9IGV4dGNvbl9jYWJsZV9uYW1lOw0KPiArDQo+
-ICsJLyogQ2hlY2sgdGhlIGxlbmd0aCBvZiBhcnJheSBhbmQgc2V0IG51bV9jYWJsZXMgKi8NCj4g
-Kwlmb3IgKGkgPSAwOyBkYXRhLT5lZGV2LnN1cHBvcnRlZF9jYWJsZVtpXTsgaSsrKQ0KPiArCQk7
-DQo+ICsJaWYgKGkgPT0gMCB8fCBpID4gU1VQUE9SVEVEX0NBQkxFX01BWCkgew0KPiArCQllcnIg
-PSAtRUlOVkFMOw0KPiArCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJlcnJvcjogcGRhdGEtPmNhYmxl
-X25hbWVzIHNpemUgPSAlZFxuIiwNCj4gKwkJCWkgLSAxKTsNCj4gKwkJZ290byBlcnJfYWxsb2M7
-DQo+ICsJfQ0KPiArCWRhdGEtPm51bV9jYWJsZXMgPSBpOw0KPiArDQo+ICsJaWYgKCFwZGF0YS0+
-YWRjX2NvbmRpdGlvbiB8fA0KPiArCSAgICAhcGRhdGEtPmFkY19jb25kaXRpb25bMF0uc3RhdGUp
-IHsNCj4gKwkJZXJyID0gLUVJTlZBTDsNCj4gKwkJZGV2X2VycigmcGRldi0+ZGV2LCAiZXJyb3I6
-IGFkY19jb25kaXRpb24gbm90IGRlZmluZWQuXG4iKTsNCj4gKwkJZ290byBlcnJfYWxsb2M7DQo+
-ICsJfQ0KPiArCWRhdGEtPmFkY19jb25kaXRpb24gPSBwZGF0YS0+YWRjX2NvbmRpdGlvbjsNCj4g
-Kw0KPiArCS8qIENoZWNrIHRoZSBsZW5ndGggb2YgYXJyYXkgYW5kIHNldCBudW1fY29uZGl0aW9u
-cyAqLw0KPiArCWZvciAoaSA9IDA7IGRhdGEtPmFkY19jb25kaXRpb25baV0uc3RhdGU7IGkrKykN
-Cj4gKwkJOw0KPiArCWRhdGEtPm51bV9jb25kaXRpb25zID0gaTsNCj4gKw0KPiArCWRhdGEtPmNo
-YW4gPSBpaW9fY2hhbm5lbF9nZXQoZGV2X25hbWUoJnBkZXYtPmRldiksDQo+ICsJCQkJCQlwZGF0
-YS0+Y29uc3VtZXJfY2hhbm5lbCk7DQo+ICsJaWYgKElTX0VSUihkYXRhLT5jaGFuKSkgew0KPiAr
-CQllcnIgPSBQVFJfRVJSKGRhdGEtPmNoYW4pOw0KPiArCQlnb3RvIGVycl9hbGxvYzsNCj4gKwl9
-DQo+ICsNCj4gKwlkYXRhLT5oYW5kbGluZ19kZWxheSA9IG1zZWNzX3RvX2ppZmZpZXMocGRhdGEt
-PmhhbmRsaW5nX2RlbGF5X21zKTsNCj4gKw0KPiArCUlOSVRfREVMQVlFRF9XT1JLX0RFRkVSUkFC
-TEUoJmRhdGEtPmhhbmRsZXIsIGFkY19qYWNrX2hhbmRsZXIpOw0KPiArDQo+ICsJcGxhdGZvcm1f
-c2V0X2RydmRhdGEocGRldiwgZGF0YSk7DQo+ICsNCj4gKwllcnIgPSBleHRjb25fZGV2X3JlZ2lz
-dGVyKCZkYXRhLT5lZGV2LCAmcGRldi0+ZGV2KTsNCj4gKwlpZiAoZXJyKQ0KPiArCQlnb3RvIGVy
-cl9pbml0d29yazsNCj4gKw0KPiArCWRhdGEtPmlycSA9IHBsYXRmb3JtX2dldF9pcnEocGRldiwg
-MCk7DQo+ICsNCj4gKwllcnIgPSByZXF1ZXN0X2FueV9jb250ZXh0X2lycShkYXRhLT5pcnEsIGFk
-Y19qYWNrX2lycV90aHJlYWQsDQo+ICsJCQkJcGRhdGEtPmlycV9mbGFncywgcGRhdGEtPm5hbWUs
-IGRhdGEpOw0KPiArDQo+ICsJaWYgKGVycikgew0KPiArCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJl
-cnJvcjogaXJxICVkXG4iLCBkYXRhLT5pcnEpOw0KPiArCQllcnIgPSAtRUlOVkFMOw0KPiArCQln
-b3RvIGVycl9pcnE7DQo+ICsJfQ0KPiArDQo+ICsJZ290byBvdXQ7DQo+ICsNCj4gK2Vycl9pcnE6
-DQo+ICsJZXh0Y29uX2Rldl91bnJlZ2lzdGVyKCZkYXRhLT5lZGV2KTsNCj4gK2Vycl9pbml0d29y
-azoNCj4gKwljYW5jZWxfZGVsYXllZF93b3JrX3N5bmMoJmRhdGEtPmhhbmRsZXIpOw0KPiArZXJy
-X2FsbG9jOg0KPiArCWtmcmVlKGRhdGEpOw0KPiArb3V0Og0KPiArCXJldHVybiBlcnI7DQo+ICt9
-DQo+ICsNCj4gK3N0YXRpYyBpbnQgX19kZXZleGl0IGFkY19qYWNrX3JlbW92ZShzdHJ1Y3QgcGxh
-dGZvcm1fZGV2aWNlICpwZGV2KQ0KPiArew0KPiArCXN0cnVjdCBhZGNfamFja19kYXRhICpkYXRh
-ID0gcGxhdGZvcm1fZ2V0X2RydmRhdGEocGRldik7DQo+ICsNCj4gKwlleHRjb25fZGV2X3VucmVn
-aXN0ZXIoJmRhdGEtPmVkZXYpOw0KPiArCWlmIChkYXRhLT5pcnEpDQo+ICsJCWZyZWVfaXJxKGRh
-dGEtPmlycSwgZGF0YSk7DQo+ICsNCj4gKwlyZXR1cm4gMDsNCj4gK30NCj4gKw0KPiArc3RhdGlj
-IHN0cnVjdCBwbGF0Zm9ybV9kcml2ZXIgYWRjX2phY2tfZHJpdmVyID0gew0KPiArCS5wcm9iZQkJ
-PSBhZGNfamFja19wcm9iZSwNCj4gKwkucmVtb3ZlCQk9IF9fZGV2ZXhpdF9wKGFkY19qYWNrX3Jl
-bW92ZSksDQo+ICsJLmRyaXZlcgkJPSB7DQo+ICsJCS5uYW1lCT0gImFkYy1qYWNrIiwNCj4gKwkJ
-Lm93bmVyCT0gVEhJU19NT0RVTEUsDQo+ICsJfSwNCj4gK307DQo+ICsNCj4gK21vZHVsZV9wbGF0
-Zm9ybV9kcml2ZXIoYWRjX2phY2tfZHJpdmVyKTsNCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGlu
-dXgvZXh0Y29uL2FkY19qYWNrLmggYi9pbmNsdWRlL2xpbnV4L2V4dGNvbi9hZGNfamFjay5oDQo+
-IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+IGluZGV4IDAwMDAwMDAuLmNhNGQxY2QNCj4gLS0tIC9k
-ZXYvbnVsbA0KPiArKysgYi9pbmNsdWRlL2xpbnV4L2V4dGNvbi9hZGNfamFjay5oDQo+IEBAIC0w
-LDAgKzEsNzcgQEANCj4gKy8qDQo+ICsgKiBpbmNsdWRlL2xpbnV4L2V4dGNvbi9hZGNfamFjay5o
-DQo+ICsgKg0KPiArICogQW5hbG9nIEphY2sgZXh0Y29uIGRyaXZlciB3aXRoIEFEQy1iYXNlZCBk
-ZXRlY3Rpb24gY2FwYWJpbGl0eS4NCj4gKyAqDQo+ICsgKiBDb3B5cmlnaHQgKEMpIDIwMTIgU2Ft
-c3VuZyBFbGVjdHJvbmljcw0KPiArICogTXl1bmdKb28gSGFtIDxteXVuZ2pvby5oYW1Ac2Ftc3Vu
-Zy5jb20+DQo+ICsgKg0KPiArICogVGhpcyBwcm9ncmFtIGlzIGZyZWUgc29mdHdhcmU7IHlvdSBj
-YW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkNCj4gKyAqIGl0IHVuZGVyIHRoZSB0ZXJt
-cyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgdmVyc2lvbiAyIGFzDQo+ICsgKiBw
-dWJsaXNoZWQgYnkgdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbi4NCj4gKyAqDQo+ICsgKi8N
-Cj4gKw0KPiArI2lmbmRlZiBfRVhUQ09OX0FEQ19KQUNLX0hfDQo+ICsjZGVmaW5lIF9FWFRDT05f
-QURDX0pBQ0tfSF8gX19GSUxFX18NCj4gKw0KPiArI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPg0K
-PiArI2luY2x1ZGUgPGxpbnV4L2V4dGNvbi5oPg0KPiArDQo+ICsvKioNCj4gKyAqIHN0cnVjdCBh
-ZGNfamFja19jb25kIC0gY29uZGl0aW9uIHRvIHVzZSBhbiBleHRjb24gc3RhdGUNCj4gKyAqIEBz
-dGF0ZQktIHRoZSBjb3JyZXNwb25kaW5nIGV4dGNvbiBzdGF0ZSAoaWYgMCwgdGhpcyBzdHJ1Y3Qg
-ZGVub3Rlcw0KPiArICoJCXRoZSBsYXN0IGFkY19qYWNrX2NvbmQgZWxlbWVudCBhbW9uZyB0aGUg
-YXJyYXkpDQo+ICsgKiBAbWluX2FkYwktIG1pbiBhZGMgdmFsdWUgZm9yIHRoaXMgY29uZGl0aW9u
-DQo+ICsgKiBAbWF4X2FkYwktIG1heCBhZGMgdmFsdWUgZm9yIHRoaXMgY29uZGl0aW9uDQo+ICsg
-Kg0KPiArICogRm9yIGV4YW1wbGUsIGlmIHsgLnN0YXRlID0gMHgzLCAubWluX2FkYyA9IDEwMCwg
-Lm1heF9hZGMgPSAyMDB9LCBpdCBtZWFucw0KPiArICogdGhhdCBpZiBBREMgdmFsdWUgaXMgYmV0
-d2VlbiAoaW5jbHVzaXZlKSAxMDAgYW5kIDIwMCwgdGhhbiB0aGUgY2FibGUgMCBhbmQNCj4gKyAq
-IDEgYXJlIGF0dGFjaGVkICgxPDwwIHwgMTw8MSA9PSAweDMpDQo+ICsgKg0KPiArICogTm90ZSB0
-aGF0IHlvdSBkb24ndCBuZWVkIHRvIGRlc2NyaWJlIGNvbmRpdGlvbiBmb3IgIm5vIGNhYmxlIGF0
-dGFjaGVkIg0KPiArICogYmVjYXVzZSB3aGVuIG5vIGFkY19qYWNrX2NvbmQgaXMgbWV0LCBzdGF0
-ZSA9IDAgaXMgYXV0b21hdGljYWxseSBjaG9zZW4uDQo+ICsgKi8NCj4gK3N0cnVjdCBhZGNfamFj
-a19jb25kIHsNCj4gKwl1MzIgc3RhdGU7IC8qIGV4dGNvbiBzdGF0ZSB2YWx1ZS4gMCBpZiBpbnZh
-bGlkICovDQo+ICsJdTMyIG1pbl9hZGM7DQo+ICsJdTMyIG1heF9hZGM7DQo+ICt9Ow0KPiArDQo+
-ICsvKioNCj4gKyAqIHN0cnVjdCBhZGNfamFja19wZGF0YSAtIHBsYXRmb3JtIGRhdGEgZm9yIGFk
-YyBqYWNrIGRldmljZS4NCj4gKyAqIEBuYW1lCS0gbmFtZSBvZiB0aGUgZXh0Y29uIGRldmljZS4g
-SWYgbnVsbCwgImFkYy1qYWNrIiBpcyB1c2VkLg0KPiArICogQGNhYmxlX25hbWVzCS0gYXJyYXkg
-b2YgY2FibGUgbmFtZXMgZW5kaW5nIHdpdGggbnVsbC4gSWYgdGhlIGFycmF5IGl0c2VsZg0KPiAr
-ICoJCWlmIG51bGwsIGV4dGNvbiBzdGFuZGFyZCBjYWJsZSBuYW1lcyBhcmUgY2hvc2VuLg0KPiAr
-ICogQGFkY19jb250aXRpb24JLSBhcnJheSBvZiBzdHJ1Y3QgYWRjX2phY2tfY29uZCBjb25kaXRp
-b25zIGVuZGluZw0KPiArICoJCQl3aXRoIC5zdGF0ZSA9IDAgZW50cnkuIFRoaXMgZGVzY3JpYmVz
-IGhvdyB0byBkZWNvZGUNCj4gKyAqCQkJYWRjIHZhbHVlcyBpbnRvIGV4dGNvbiBzdGF0ZS4NCj4g
-KyAqIEBpcnEJCS0gSVJRIG51bWJlciB0aGF0IGlzIHRyaWdnZXJyZWQgYnkgY2FibGUgYXR0YWNo
-L2RldGFjaA0KPiArICoJCWV2ZW50cy4gSWYgaXJxID0gMCwgdXNlIHNob3VsZCBtYW51YWxseSB1
-cGRhdGUgZXh0Y29uIHN0YXRlDQo+ICsgKgkJd2l0aCBleHRjb24gQVBJcy4NCj4gKyAqIEBpcnFf
-ZmxhZ3MJLSBpcnEgZmxhZ3MgdXNlZCBmb3IgdGhlIEBpcnENCj4gKyAqIEBoYW5kbGluZ19kZWxh
-eV9tcwktIGluIHNvbWUgZGV2aWNlcywgd2UgbmVlZCB0byByZWFkIEFEQyB2YWx1ZSBzb21lDQo+
-ICsgKgkJCW1pbGxpLXNlY29uZHMgYWZ0ZXIgdGhlIGludGVycnVwdCBvY2N1cnMuIFlvdSBtYXkN
-Cj4gKyAqCQkJZGVzY3JpYmUgc3VjaCBkZWxheXMgd2l0aCBAaGFuZGxpbmdfZGVsYXlfbXMsIHdo
-aWNoDQo+ICsgKgkJCWlzIHJvdW5kZWQtb2ZmIGJ5IGppZmZpZXMuDQo+ICsgKiBAZ2V0X2FkYwkt
-IHRoZSBjYWxsYmFjayB0byByZWFkIEFEQyB2YWx1ZSB0byBpZGVudGlmeSBjYWJsZSBzdGF0ZXMu
-DQo+ICsgKi8NCj4gK3N0cnVjdCBhZGNfamFja19wZGF0YSB7DQo+ICsJY29uc3QgY2hhciAqbmFt
-ZTsNCj4gKwljb25zdCBjaGFyICpjb25zdW1lcl9jaGFubmVsOw0KPiArCS8qDQo+ICsJICogTlVM
-TCBpZiBzdGFuZGFyZCBleHRjb24gbmFtZXMgYXJlIHVzZWQuDQo+ICsJICogVGhlIGxhc3QgZW50
-cnkgc2hvdWxkIGJlIE5VTEwNCj4gKwkgKi8NCj4gKwljb25zdCBjaGFyICoqY2FibGVfbmFtZXM7
-DQo+ICsJLyogVGhlIGxhc3QgZW50cnkncyBzdGF0ZSBzaG91bGQgYmUgMCAqLw0KPiArCXN0cnVj
-dCBhZGNfamFja19jb25kICphZGNfY29uZGl0aW9uOw0KPiArDQo+ICsJdW5zaWduZWQgbG9uZyBp
-cnFfZmxhZ3M7DQo+ICsJdW5zaWduZWQgbG9uZyBoYW5kbGluZ19kZWxheV9tczsgLyogaW4gbXMg
-Ki8NCj4gKw0KPiArCS8qIFdoZW4gd2UgaGF2ZSBBREMgc3Vic3lzdGVtLCB0aGlzIGNhbiBiZSBn
-ZW5lcmFsaXplZC4gKi8NCj4gKwlpbnQgKCpnZXRfYWRjKSh1MzIgKnZhbHVlKTsNCj4gK307DQo+
-ICsNCj4gKyNlbmRpZiAvKiBfRVhUQ09OX0FEQ19KQUNLX0ggKi8NCj4gLS0gDQo+IDEuNy4xDQo+
-IA0KPiANCj4gDQo+IA0KPiAgICAgICAgDQo+ICAgDQo+ICAgICAgICAgIA0KPiANCg==
+On Tue, 2012-08-07 at 05:57 +0000, MyungJoo Ham wrote:
+> > From: anish kumar <anish198519851985@gmail.com>
+> > 
+> > External connector devices that decides connection information based on
+> > ADC values may use adc-jack device driver. The user simply needs to
+> > provide a table of adc range and connection states. Then, extcon
+> > framework will automatically notify others.
+> > 
+> > Changes in this version:
+> > added Lars-Peter Clausen suggested changes:
+> > Using macros to get rid of boiler plate code such as devm_kzalloc
+> > and module_platform_driver.Other changes suggested are related to
+> > coding guidelines.
+> > 
+> > Signed-off-by: anish kumar <anish.singh@samsung.com>
+> > Signed-off-by: MyungJoo Ham <myungjoo.ham@samsung.com>
+> 
+> Hello,
+> 
+> 
+> One little thing that I've missed before:
+> 
+> Could you please rename the file?
+> 
+> Though the initial files (class and gpio) didn't do it,
+> like other recent ones, let's use '-' instead of '_'.
+> Besides, could you please use "extcon" prefix for the filename?
+> 
+> Thus, "adc_jack.c/h" --> "extcon-adc-jack.c/h"
+Sure updated patch is on the way.
+> 
+> 
+> Cheers
+> MyungJoo
+> 
+> > ---
+> >  drivers/extcon/Kconfig          |    5 +
+> >  drivers/extcon/Makefile         |    1 +
+> >  drivers/extcon/adc_jack.c       |  193 +++++++++++++++++++++++++++++++++++++++
+> >  include/linux/extcon/adc_jack.h |   77 ++++++++++++++++
+> >  4 files changed, 276 insertions(+), 0 deletions(-)
+> >  create mode 100644 drivers/extcon/adc_jack.c
+> >  create mode 100644 include/linux/extcon/adc_jack.h
+> > 
+> > diff --git a/drivers/extcon/Kconfig b/drivers/extcon/Kconfig
+> > index e175c8e..596e277 100644
+> > --- a/drivers/extcon/Kconfig
+> > +++ b/drivers/extcon/Kconfig
+> > @@ -21,6 +21,11 @@ config EXTCON_GPIO
+> >  	  Say Y here to enable GPIO based extcon support. Note that GPIO
+> >  	  extcon supports single state per extcon instance.
+> >  
+> > +config EXTCON_ADC_JACK
+> > +        tristate "ADC Jack extcon support"
+> > +        help
+> > +          Say Y here to enable extcon device driver based on ADC values.
+> > +
+> >  config EXTCON_MAX77693
+> >  	tristate "MAX77693 EXTCON Support"
+> >  	depends on MFD_MAX77693
+> > diff --git a/drivers/extcon/Makefile b/drivers/extcon/Makefile
+> > index 88961b3..d95c5ea 100644
+> > --- a/drivers/extcon/Makefile
+> > +++ b/drivers/extcon/Makefile
+> > @@ -4,6 +4,7 @@
+> >  
+> >  obj-$(CONFIG_EXTCON)		+= extcon_class.o
+> >  obj-$(CONFIG_EXTCON_GPIO)	+= extcon_gpio.o
+> > +obj-$(CONFIG_EXTCON_ADC_JACK)   += adc_jack.o
+> >  obj-$(CONFIG_EXTCON_MAX77693)	+= extcon-max77693.o
+> >  obj-$(CONFIG_EXTCON_MAX8997)	+= extcon-max8997.o
+> >  obj-$(CONFIG_EXTCON_ARIZONA)	+= extcon-arizona.o
+> > diff --git a/drivers/extcon/adc_jack.c b/drivers/extcon/adc_jack.c
+> > new file mode 100644
+> > index 0000000..8b80af0
+> > --- /dev/null
+> > +++ b/drivers/extcon/adc_jack.c
+> > @@ -0,0 +1,193 @@
+> > +/*
+> > + * drivers/extcon/adc_jack.c
+> > + *
+> > + * Analog Jack extcon driver with ADC-based detection capability.
+> > + *
+> > + * Copyright (C) 2012 Samsung Electronics
+> > + * MyungJoo Ham <myungjoo.ham@samsung.com>
+> > + *
+> > + * Modified for calling to IIO to get adc by <anish.singh@samsung.com>
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify
+> > + * it under the terms of the GNU General Public License version 2 as
+> > + * published by the Free Software Foundation.
+> > + *
+> > + */
+> > +
+> > +#include <linux/slab.h>
+> > +#include <linux/device.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/workqueue.h>
+> > +#include <linux/iio/consumer.h>
+> > +#include <linux/extcon/adc_jack.h>
+> > +#include <linux/extcon.h>
+> > +
+> > +/**
+> > + * struct adc_jack_data - internal data for adc_jack device driver
+> > + * @edev        - extcon device.
+> > + * @cable_names - list of supported cables.
+> > + * @num_cables  - size of cable_names.
+> > + * @adc_condition       - list of adc value conditions.
+> > + * @num_condition       - size of adc_condition.
+> > + * @irq         - irq number of attach/detach event (0 if not exist).
+> > + * @handling_delay      - interrupt handler will schedule extcon event
+> > + *                      handling at handling_delay jiffies.
+> > + * @handler     - extcon event handler called by interrupt handler.
+> > + * @get_adc     - a callback to get ADC value to identify state.
+> > + */
+> > +struct adc_jack_data {
+> > +	struct extcon_dev edev;
+> > +
+> > +	const char **cable_names;
+> > +	int num_cables;
+> > +	struct adc_jack_cond *adc_condition;
+> > +	int num_conditions;
+> > +
+> > +	int irq;
+> > +	unsigned long handling_delay; /* in jiffies */
+> > +	struct delayed_work handler;
+> > +
+> > +	struct iio_channel *chan;
+> > +};
+> > +
+> > +static void adc_jack_handler(struct work_struct *work)
+> > +{
+> > +	struct adc_jack_data *data = container_of(to_delayed_work(work),
+> > +						  struct adc_jack_data,
+> > +						  handler);
+> > +	u32 state = 0;
+> > +	int ret, adc_val;
+> > +	int i;
+> > +
+> > +	ret = iio_read_channel_raw(data->chan, &adc_val);
+> > +	if (ret < 0) {
+> > +		dev_err(data->edev.dev, "read channel() error: %d\n", ret);
+> > +		return;
+> > +	}
+> > +
+> > +	/* Get state from adc value with adc_condition */
+> > +	for (i = 0; i < data->num_conditions; i++) {
+> > +		struct adc_jack_cond *def = &data->adc_condition[i];
+> > +		if (!def->state)
+> > +			break;
+> > +		if (def->min_adc <= adc_val && def->max_adc >= adc_val) {
+> > +			state = def->state;
+> > +			break;
+> > +		}
+> > +	}
+> > +	/* if no def has met, it means state = 0 (no cables attached) */
+> > +
+> > +	extcon_set_state(&data->edev, state);
+> > +}
+> > +
+> > +static irqreturn_t adc_jack_irq_thread(int irq, void *_data)
+> > +{
+> > +	struct adc_jack_data *data = _data;
+> > +
+> > +	schedule_delayed_work(&data->handler, data->handling_delay);
+> > +	return IRQ_HANDLED;
+> > +}
+> > +
+> > +static int adc_jack_probe(struct platform_device *pdev)
+> > +{
+> > +	struct adc_jack_data *data;
+> > +	struct adc_jack_pdata *pdata = pdev->dev.platform_data;
+> > +	int i, err = 0;
+> > +
+> > +	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+> > +	if (!data)
+> > +		return -ENOMEM;
+> > +
+> > +	data->edev.name = pdata->name;
+> > +
+> > +	if (pdata->cable_names)
+> > +		data->edev.supported_cable = pdata->cable_names;
+> > +	else
+> > +		data->edev.supported_cable = extcon_cable_name;
+> > +
+> > +	/* Check the length of array and set num_cables */
+> > +	for (i = 0; data->edev.supported_cable[i]; i++)
+> > +		;
+> > +	if (i == 0 || i > SUPPORTED_CABLE_MAX) {
+> > +		err = -EINVAL;
+> > +		dev_err(&pdev->dev, "error: pdata->cable_names size = %d\n",
+> > +			i - 1);
+> > +		goto err_alloc;
+> > +	}
+> > +	data->num_cables = i;
+> > +
+> > +	if (!pdata->adc_condition ||
+> > +	    !pdata->adc_condition[0].state) {
+> > +		err = -EINVAL;
+> > +		dev_err(&pdev->dev, "error: adc_condition not defined.\n");
+> > +		goto err_alloc;
+> > +	}
+> > +	data->adc_condition = pdata->adc_condition;
+> > +
+> > +	/* Check the length of array and set num_conditions */
+> > +	for (i = 0; data->adc_condition[i].state; i++)
+> > +		;
+> > +	data->num_conditions = i;
+> > +
+> > +	data->chan = iio_channel_get(dev_name(&pdev->dev),
+> > +						pdata->consumer_channel);
+> > +	if (IS_ERR(data->chan)) {
+> > +		err = PTR_ERR(data->chan);
+> > +		goto err_alloc;
+> > +	}
+> > +
+> > +	data->handling_delay = msecs_to_jiffies(pdata->handling_delay_ms);
+> > +
+> > +	INIT_DELAYED_WORK_DEFERRABLE(&data->handler, adc_jack_handler);
+> > +
+> > +	platform_set_drvdata(pdev, data);
+> > +
+> > +	err = extcon_dev_register(&data->edev, &pdev->dev);
+> > +	if (err)
+> > +		goto err_initwork;
+> > +
+> > +	data->irq = platform_get_irq(pdev, 0);
+> > +
+> > +	err = request_any_context_irq(data->irq, adc_jack_irq_thread,
+> > +				pdata->irq_flags, pdata->name, data);
+> > +
+> > +	if (err) {
+> > +		dev_err(&pdev->dev, "error: irq %d\n", data->irq);
+> > +		err = -EINVAL;
+> > +		goto err_irq;
+> > +	}
+> > +
+> > +	goto out;
+> > +
+> > +err_irq:
+> > +	extcon_dev_unregister(&data->edev);
+> > +err_initwork:
+> > +	cancel_delayed_work_sync(&data->handler);
+> > +err_alloc:
+> > +	kfree(data);
+> > +out:
+> > +	return err;
+> > +}
+> > +
+> > +static int __devexit adc_jack_remove(struct platform_device *pdev)
+> > +{
+> > +	struct adc_jack_data *data = platform_get_drvdata(pdev);
+> > +
+> > +	extcon_dev_unregister(&data->edev);
+> > +	if (data->irq)
+> > +		free_irq(data->irq, data);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static struct platform_driver adc_jack_driver = {
+> > +	.probe		= adc_jack_probe,
+> > +	.remove		= __devexit_p(adc_jack_remove),
+> > +	.driver		= {
+> > +		.name	= "adc-jack",
+> > +		.owner	= THIS_MODULE,
+> > +	},
+> > +};
+> > +
+> > +module_platform_driver(adc_jack_driver);
+> > diff --git a/include/linux/extcon/adc_jack.h b/include/linux/extcon/adc_jack.h
+> > new file mode 100644
+> > index 0000000..ca4d1cd
+> > --- /dev/null
+> > +++ b/include/linux/extcon/adc_jack.h
+> > @@ -0,0 +1,77 @@
+> > +/*
+> > + * include/linux/extcon/adc_jack.h
+> > + *
+> > + * Analog Jack extcon driver with ADC-based detection capability.
+> > + *
+> > + * Copyright (C) 2012 Samsung Electronics
+> > + * MyungJoo Ham <myungjoo.ham@samsung.com>
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify
+> > + * it under the terms of the GNU General Public License version 2 as
+> > + * published by the Free Software Foundation.
+> > + *
+> > + */
+> > +
+> > +#ifndef _EXTCON_ADC_JACK_H_
+> > +#define _EXTCON_ADC_JACK_H_ __FILE__
+> > +
+> > +#include <linux/module.h>
+> > +#include <linux/extcon.h>
+> > +
+> > +/**
+> > + * struct adc_jack_cond - condition to use an extcon state
+> > + * @state	- the corresponding extcon state (if 0, this struct denotes
+> > + *		the last adc_jack_cond element among the array)
+> > + * @min_adc	- min adc value for this condition
+> > + * @max_adc	- max adc value for this condition
+> > + *
+> > + * For example, if { .state = 0x3, .min_adc = 100, .max_adc = 200}, it means
+> > + * that if ADC value is between (inclusive) 100 and 200, than the cable 0 and
+> > + * 1 are attached (1<<0 | 1<<1 == 0x3)
+> > + *
+> > + * Note that you don't need to describe condition for "no cable attached"
+> > + * because when no adc_jack_cond is met, state = 0 is automatically chosen.
+> > + */
+> > +struct adc_jack_cond {
+> > +	u32 state; /* extcon state value. 0 if invalid */
+> > +	u32 min_adc;
+> > +	u32 max_adc;
+> > +};
+> > +
+> > +/**
+> > + * struct adc_jack_pdata - platform data for adc jack device.
+> > + * @name	- name of the extcon device. If null, "adc-jack" is used.
+> > + * @cable_names	- array of cable names ending with null. If the array itself
+> > + *		if null, extcon standard cable names are chosen.
+> > + * @adc_contition	- array of struct adc_jack_cond conditions ending
+> > + *			with .state = 0 entry. This describes how to decode
+> > + *			adc values into extcon state.
+> > + * @irq		- IRQ number that is triggerred by cable attach/detach
+> > + *		events. If irq = 0, use should manually update extcon state
+> > + *		with extcon APIs.
+> > + * @irq_flags	- irq flags used for the @irq
+> > + * @handling_delay_ms	- in some devices, we need to read ADC value some
+> > + *			milli-seconds after the interrupt occurs. You may
+> > + *			describe such delays with @handling_delay_ms, which
+> > + *			is rounded-off by jiffies.
+> > + * @get_adc	- the callback to read ADC value to identify cable states.
+> > + */
+> > +struct adc_jack_pdata {
+> > +	const char *name;
+> > +	const char *consumer_channel;
+> > +	/*
+> > +	 * NULL if standard extcon names are used.
+> > +	 * The last entry should be NULL
+> > +	 */
+> > +	const char **cable_names;
+> > +	/* The last entry's state should be 0 */
+> > +	struct adc_jack_cond *adc_condition;
+> > +
+> > +	unsigned long irq_flags;
+> > +	unsigned long handling_delay_ms; /* in ms */
+> > +
+> > +	/* When we have ADC subsystem, this can be generalized. */
+> > +	int (*get_adc)(u32 *value);
+> > +};
+> > +
+> > +#endif /* _EXTCON_ADC_JACK_H */
+> > -- 
+> > 1.7.1
+> > 
+> > 
+> > 
+> > 
+> >        
+> >   
+> >          
+> > 
