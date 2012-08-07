@@ -4,92 +4,90 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	jkosina@suse.cz,
 	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 9/9] HID-Sensors: Added ALS
-Date: Tue,  7 Aug 2012 09:29:03 -0700
-Message-Id: <1344356943-23313-10-git-send-email-srinivas.pandruvada@intel.com>
+Subject: [PATCH 8/9] HID-Sensors: Added Compass/Magnetometer 3D
+Date: Tue,  7 Aug 2012 09:29:02 -0700
+Message-Id: <1344356943-23313-9-git-send-email-srinivas.pandruvada@intel.com>
 In-Reply-To: <1344356943-23313-1-git-send-email-srinivas.pandruvada@intel.com>
 References: <1344356943-23313-1-git-send-email-srinivas.pandruvada@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Added usage id processing for ALS. This uses IIO
+Added usage id processing for Compass 3D. This uses IIO
 interfaces for triggerred buffer to present data to user
 mode.This uses HID sensor framework for registering callback
 events from the sensor hub.
 
 Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 ---
- drivers/iio/Kconfig                |    1 +
- drivers/iio/Makefile               |    1 +
- drivers/iio/light/Kconfig          |   16 ++
- drivers/iio/light/Makefile         |    6 +
- drivers/iio/light/hid-sensor-als.c |  386 ++++++++++++++++++++++++++++++++++++
- 5 files changed, 410 insertions(+), 0 deletions(-)
- create mode 100644 drivers/iio/light/Kconfig
- create mode 100644 drivers/iio/light/Makefile
- create mode 100644 drivers/iio/light/hid-sensor-als.c
+ drivers/iio/Kconfig                           |    1 +
+ drivers/iio/Makefile                          |    1 +
+ drivers/iio/magnetometer/Kconfig              |   16 +
+ drivers/iio/magnetometer/Makefile             |    6 +
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c |  420 +++++++++++++++++++++++++
+ 5 files changed, 444 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/iio/magnetometer/Kconfig
+ create mode 100644 drivers/iio/magnetometer/Makefile
+ create mode 100644 drivers/iio/magnetometer/hid-sensor-magn-3d.c
 
 diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index cdb3cfb..80b6b30 100644
+index 20212af..cdb3cfb 100644
 --- a/drivers/iio/Kconfig
 +++ b/drivers/iio/Kconfig
-@@ -59,6 +59,7 @@ source "drivers/iio/adc/Kconfig"
+@@ -59,5 +59,6 @@ source "drivers/iio/adc/Kconfig"
  source "drivers/iio/amplifiers/Kconfig"
  source "drivers/iio/common/Kconfig"
  source "drivers/iio/gyro/Kconfig"
-+source "drivers/iio/light/Kconfig"
- source "drivers/iio/magnetometer/Kconfig"
++source "drivers/iio/magnetometer/Kconfig"
  
  endif # IIO
 diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 71b643a..e1aa434 100644
+index 7660bc4..71b643a 100644
 --- a/drivers/iio/Makefile
 +++ b/drivers/iio/Makefile
-@@ -15,4 +15,5 @@ obj-y += adc/
+@@ -15,3 +15,4 @@ obj-y += adc/
  obj-y += amplifiers/
  obj-y += common/
  obj-y += gyro/
-+obj-y += light/
- obj-y += magnetometer/
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
++obj-y += magnetometer/
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
 new file mode 100644
-index 0000000..6944c8b
+index 0000000..c1f0cdd
 --- /dev/null
-+++ b/drivers/iio/light/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
 @@ -0,0 +1,16 @@
 +#
-+# Light sensors
++# Magnetometer sensors
 +#
-+menu "Light sensors"
++menu "Magnetometer sensors"
 +
-+config HID_SENSOR_ALS
++config HID_SENSOR_MAGNETOMETER_3D
 +	depends on HID_SENSOR_HUB
 +	select IIO_BUFFER
 +	select IIO_TRIGGERED_BUFFER
 +	select HID_SENSOR_IIO_COMMON
-+	tristate "HID ALS"
++	tristate "HID Magenetometer 3D"
 +	help
 +	  Say yes here to build support for the HID SENSOR
-+	  Ambient light sensor.
++	  Magnetometer 3D.
 +
 +endmenu
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
 new file mode 100644
-index 0000000..f14d94c
+index 0000000..cb26b44
 --- /dev/null
-+++ b/drivers/iio/light/Makefile
++++ b/drivers/iio/magnetometer/Makefile
 @@ -0,0 +1,6 @@
 +#
-+# Makefile for industrial I/O Light sensor drivers
++# Makefile for industrial I/O Magnetometer sensor drivers
 +#
 +
-+hid-sensor-als-drv-y := hid-sensor-als.o
-+obj-$(CONFIG_HID_SENSOR_ALS) += hid-sensor-als-drv.o
-diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
++hid-sensor-magn-3d-drv-y := hid-sensor-magn-3d.o
++obj-$(CONFIG_HID_SENSOR_MAGNETOMETER_3D) += hid-sensor-magn-3d-drv.o
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
 new file mode 100644
-index 0000000..2cff7d5
+index 0000000..07591f4
 --- /dev/null
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -0,0 +1,386 @@
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -0,0 +1,420 @@
 +/*
 + * HID Sensors Driver
 + * Copyright (c) 2012, Intel Corporation.
@@ -124,35 +122,64 @@ index 0000000..2cff7d5
 +#include "../common/hid-sensors/hid-sensor-trigger.h"
 +
 +/*Format: HID-SENSOR-usage_id_in_hex*/
-+/*Usage ID from spec for Accelerometer-3D: 0x200041*/
-+#define DRIVER_NAME "HID-SENSOR-200041"
++/*Usage ID from spec for Magnetometer-3D: 0x200083*/
++#define DRIVER_NAME "HID-SENSOR-200083"
 +
-+#define CHANNEL_SCAN_INDEX_ILLUM 0
++enum magn_3d_channel {
++	CHANNEL_SCAN_INDEX_X,
++	CHANNEL_SCAN_INDEX_Y,
++	CHANNEL_SCAN_INDEX_Z,
++	MAGN_3D_CHANNEL_MAX,
++};
 +
-+struct als_state {
++struct magn_3d_state {
 +	struct hid_sensor_hub_callbacks callbacks;
 +	struct hid_sensor_iio_common common_attributes;
-+	struct hid_sensor_hub_attribute_info als_illum;
-+	u32 illum;
++	struct hid_sensor_hub_attribute_info magn[MAGN_3D_CHANNEL_MAX];
++	u32 magn_val[MAGN_3D_CHANNEL_MAX];
++};
++
++static const u32 magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
++	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS,
++	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS,
++	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS
 +};
 +
 +/* Channel definitions */
-+static const struct iio_chan_spec als_channels[] = {
++static const struct iio_chan_spec magn_3d_channels[] = {
 +	{
-+		.type = IIO_INTENSITY,
++		.type = IIO_MAGN,
 +		.modified = 1,
-+		.channel2 = IIO_MOD_LIGHT_BOTH,
++		.channel2 = IIO_MOD_X,
 +		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
 +		IIO_CHAN_INFO_SCALE_SHARED_BIT |
 +		IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT |
 +		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
-+		.scan_index = CHANNEL_SCAN_INDEX_ILLUM,
++		.scan_index = CHANNEL_SCAN_INDEX_X,
++	}, {
++		.type = IIO_MAGN,
++		.modified = 1,
++		.channel2 = IIO_MOD_Y,
++		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT |
++		IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT |
++		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
++		.scan_index = CHANNEL_SCAN_INDEX_Y,
++	}, {
++		.type = IIO_MAGN,
++		.modified = 1,
++		.channel2 = IIO_MOD_Z,
++		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
++		IIO_CHAN_INFO_SCALE_SHARED_BIT |
++		IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT |
++		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
++		.scan_index = CHANNEL_SCAN_INDEX_Z,
 +	}
 +};
 +
 +/* Adjust channel real bits based on report descriptor */
-+static void als_adjust_channel_bit_mask(struct iio_chan_spec *channels,
-+					int channel, int size)
++static void magn_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
++						int channel, int size)
 +{
 +	channels[channel].scan_type.sign = 's';
 +	/* Real storage bits will change based on the report desc. */
@@ -162,12 +189,12 @@ index 0000000..2cff7d5
 +}
 +
 +/* Channel read_raw handler */
-+static int als_read_raw(struct iio_dev *indio_dev,
++static int magn_3d_read_raw(struct iio_dev *indio_dev,
 +			      struct iio_chan_spec const *chan,
 +			      int *val, int *val2,
 +			      long mask)
 +{
-+	struct als_state *als_state = iio_priv(indio_dev);
++	struct magn_3d_state *magn_state = iio_priv(indio_dev);
 +	int report_id = -1;
 +	u32 address;
 +	int ret;
@@ -177,20 +204,13 @@ index 0000000..2cff7d5
 +	*val2 = 0;
 +	switch (mask) {
 +	case 0:
-+		switch (chan->scan_index) {
-+		case  CHANNEL_SCAN_INDEX_ILLUM:
-+			report_id = als_state->als_illum.report_id;
-+			address =
-+			HID_USAGE_SENSOR_LIGHT_ILLUM;
-+			break;
-+		default:
-+			report_id = -1;
-+			break;
-+		}
++		report_id =
++			magn_state->magn[chan->scan_index].report_id;
++		address = magn_3d_addresses[chan->scan_index];
 +		if (report_id >= 0)
 +			*val = sensor_hub_input_attr_get_raw_value(
-+				als_state->common_attributes.hsdev,
-+				HID_USAGE_SENSOR_ALS, address,
++				magn_state->common_attributes.hsdev,
++				HID_USAGE_SENSOR_COMPASS_3D, address,
 +				report_id);
 +		else {
 +			*val = 0;
@@ -199,22 +219,22 @@ index 0000000..2cff7d5
 +		ret_type = IIO_VAL_INT;
 +		break;
 +	case IIO_CHAN_INFO_SCALE:
-+		*val = als_state->als_illum.units;
++		*val = magn_state->magn[CHANNEL_SCAN_INDEX_X].units;
 +		ret_type = IIO_VAL_INT;
 +		break;
 +	case IIO_CHAN_INFO_OFFSET:
 +		*val = hid_sensor_convert_exponent(
-+				als_state->als_illum.unit_expo);
++			magn_state->magn[CHANNEL_SCAN_INDEX_X].unit_expo);
 +		ret_type = IIO_VAL_INT;
 +		break;
 +	case IIO_CHAN_INFO_SAMP_FREQ:
 +		ret = hid_sensor_read_samp_freq_value(
-+				&als_state->common_attributes, val, val2);
++			&magn_state->common_attributes, val, val2);
 +		ret_type = IIO_VAL_INT_PLUS_MICRO;
 +		break;
 +	case IIO_CHAN_INFO_HYSTERESIS:
 +		ret = hid_sensor_read_raw_hyst_value(
-+				&als_state->common_attributes, val, val2);
++			&magn_state->common_attributes, val, val2);
 +		ret_type = IIO_VAL_INT_PLUS_MICRO;
 +		break;
 +	default:
@@ -226,23 +246,23 @@ index 0000000..2cff7d5
 +}
 +
 +/* Channel write_raw handler */
-+static int als_write_raw(struct iio_dev *indio_dev,
++static int magn_3d_write_raw(struct iio_dev *indio_dev,
 +			       struct iio_chan_spec const *chan,
 +			       int val,
 +			       int val2,
 +			       long mask)
 +{
-+	struct als_state *als_state = iio_priv(indio_dev);
++	struct magn_3d_state *magn_state = iio_priv(indio_dev);
 +	int ret = 0;
 +
 +	switch (mask) {
 +	case IIO_CHAN_INFO_SAMP_FREQ:
 +		ret = hid_sensor_write_samp_freq_value(
-+				&als_state->common_attributes, val, val2);
++				&magn_state->common_attributes, val, val2);
 +		break;
 +	case IIO_CHAN_INFO_HYSTERESIS:
 +		ret = hid_sensor_write_raw_hyst_value(
-+				&als_state->common_attributes, val, val2);
++				&magn_state->common_attributes, val, val2);
 +		break;
 +	default:
 +		ret = -EINVAL;
@@ -251,18 +271,18 @@ index 0000000..2cff7d5
 +	return ret;
 +}
 +
-+static int als_write_raw_get_fmt(struct iio_dev *indio_dev,
++static int magn_3d_write_raw_get_fmt(struct iio_dev *indio_dev,
 +			       struct iio_chan_spec const *chan,
 +			       long mask)
 +{
 +	return IIO_VAL_INT_PLUS_MICRO;
 +}
 +
-+static const struct iio_info als_info = {
++static const struct iio_info magn_3d_info = {
 +	.driver_module = THIS_MODULE,
-+	.read_raw = &als_read_raw,
-+	.write_raw = &als_write_raw,
-+	.write_raw_get_fmt = &als_write_raw_get_fmt,
++	.read_raw = &magn_3d_read_raw,
++	.write_raw = &magn_3d_write_raw,
++	.write_raw_get_fmt = &magn_3d_write_raw_get_fmt,
 +};
 +
 +/* Function to push data to buffer */
@@ -287,38 +307,43 @@ index 0000000..2cff7d5
 +}
 +
 +/* Callback handler to send event after all samples are received and captured */
-+static int als_proc_event(struct hid_sensor_hub_device *hsdev,
++static int magn_3d_proc_event(struct hid_sensor_hub_device *hsdev,
 +				unsigned usage_id,
 +				void *priv)
 +{
 +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-+	struct als_state *als_state = iio_priv(indio_dev);
++	struct magn_3d_state *magn_state = iio_priv(indio_dev);
 +
-+	dev_dbg(&indio_dev->dev, "als_proc_event [%d]\n",
-+				als_state->common_attributes.data_ready);
-+	if (als_state->common_attributes.data_ready)
++	dev_dbg(&indio_dev->dev, "magn_3d_proc_event [%d]\n",
++				magn_state->common_attributes.data_ready);
++	if (magn_state->common_attributes.data_ready)
 +		hid_sensor_push_data(indio_dev,
-+				(u8 *)&als_state->illum,
-+				sizeof(als_state->illum));
++				(u8 *)magn_state->magn_val,
++				sizeof(magn_state->magn_val));
 +
 +	return 0;
 +}
 +
 +/* Capture samples in local storage */
-+static int als_capture_sample(struct hid_sensor_hub_device *hsdev,
++static int magn_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
 +				unsigned usage_id,
 +				size_t raw_len, char *raw_data,
 +				void *priv)
 +{
 +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-+	struct als_state *als_state = iio_priv(indio_dev);
++	struct magn_3d_state *magn_state = iio_priv(indio_dev);
++	int offset;
 +	int ret = -EINVAL;
 +
 +	switch (usage_id) {
-+	case HID_USAGE_SENSOR_LIGHT_ILLUM:
-+		als_state->illum = *(u32 *)raw_data;
++	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS:
++	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS:
++	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS:
++		offset = usage_id - HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS;
++		magn_state->magn_val[CHANNEL_SCAN_INDEX_X + offset] =
++						*(u32 *)raw_data;
 +		ret = 0;
-+		break;
++	break;
 +	default:
 +		break;
 +	}
@@ -327,77 +352,84 @@ index 0000000..2cff7d5
 +}
 +
 +/* Parse report which is specific to an usage id*/
-+static int als_parse_report(struct platform_device *pdev,
++static int magn_3d_parse_report(struct platform_device *pdev,
 +				struct hid_sensor_hub_device *hsdev,
 +				struct iio_chan_spec *channels,
 +				unsigned usage_id,
-+				struct als_state *st)
++				struct magn_3d_state *st)
 +{
 +	int ret;
++	int i;
 +
-+	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
-+			usage_id,
-+			HID_USAGE_SENSOR_LIGHT_ILLUM,
-+			&st->als_illum);
-+	if (ret < 0)
-+		return ret;
-+	als_adjust_channel_bit_mask(channels, CHANNEL_SCAN_INDEX_ILLUM,
-+					st->als_illum.size);
-+
-+	dev_dbg(&pdev->dev, "als %x:%x\n", st->als_illum.index,
-+			st->als_illum.report_id);
++	for (i = 0; i <= CHANNEL_SCAN_INDEX_Z; ++i) {
++		ret = sensor_hub_input_get_attribute_info(hsdev,
++				HID_INPUT_REPORT,
++				usage_id,
++				HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS + i,
++				&st->magn[CHANNEL_SCAN_INDEX_X + i]);
++		if (ret < 0)
++			break;
++		magn_3d_adjust_channel_bit_mask(channels,
++				CHANNEL_SCAN_INDEX_X + i,
++				st->magn[CHANNEL_SCAN_INDEX_X + i].size);
++	}
++	dev_dbg(&pdev->dev, "magn_3d %x:%x, %x:%x, %x:%x\n",
++			st->magn[0].index,
++			st->magn[0].report_id,
++			st->magn[1].index, st->magn[1].report_id,
++			st->magn[2].index, st->magn[2].report_id);
 +
 +	return ret;
 +}
 +
 +/* Function to initialize the processing for usage id */
-+static int __devinit hid_als_probe(struct platform_device *pdev)
++static int __devinit hid_magn_3d_probe(struct platform_device *pdev)
 +{
 +	int ret = 0;
-+	static const char *name = "als";
++	static char *name = "magn_3d";
 +	struct iio_dev *indio_dev;
-+	struct als_state *als_state;
++	struct magn_3d_state *magn_state;
 +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
 +	struct iio_chan_spec *channels;
 +
-+	indio_dev = iio_device_alloc(sizeof(struct als_state));
++	indio_dev = iio_device_alloc(sizeof(struct magn_3d_state));
 +	if (indio_dev == NULL) {
 +		ret = -ENOMEM;
 +		goto error_ret;
 +	}
 +	platform_set_drvdata(pdev, indio_dev);
 +
-+	als_state = iio_priv(indio_dev);
-+	als_state->common_attributes.hsdev = hsdev;
-+	als_state->common_attributes.pdev = pdev;
++	magn_state = iio_priv(indio_dev);
++	magn_state->common_attributes.hsdev = hsdev;
++	magn_state->common_attributes.pdev = pdev;
 +
-+	ret = hid_sensor_parse_common_attributes(hsdev, HID_USAGE_SENSOR_ALS,
-+					&als_state->common_attributes);
++	ret = hid_sensor_parse_common_attributes(hsdev,
++				HID_USAGE_SENSOR_COMPASS_3D,
++				&magn_state->common_attributes);
 +	if (ret) {
 +		dev_err(&pdev->dev, "failed to setup common attributes\n");
 +		goto error_free_dev;
 +	}
 +
-+	channels = kmemdup(als_channels,
-+					sizeof(als_channels),
++	channels = kmemdup(magn_3d_channels,
++					sizeof(magn_3d_channels),
 +					GFP_KERNEL);
 +	if (!channels) {
 +		dev_err(&pdev->dev, "failed to duplicate channels\n");
 +		goto error_free_dev;
 +	}
 +
-+	ret = als_parse_report(pdev, hsdev, channels,
-+				HID_USAGE_SENSOR_ALS, als_state);
++	ret = magn_3d_parse_report(pdev, hsdev, channels,
++				HID_USAGE_SENSOR_COMPASS_3D, magn_state);
 +	if (ret) {
 +		dev_err(&pdev->dev, "failed to setup attributes\n");
 +		goto error_free_dev_mem;
 +	}
 +
 +	indio_dev->channels = channels;
-+	indio_dev->num_channels =
-+				ARRAY_SIZE(als_channels);
++	indio_dev->num_channels = ARRAY_SIZE(magn_3d_channels);
 +	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &als_info;
++	indio_dev->info = &magn_3d_info;
 +	indio_dev->name = name;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
 +
@@ -407,9 +439,9 @@ index 0000000..2cff7d5
 +		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
 +		goto error_free_dev_mem;
 +	}
-+	als_state->common_attributes.data_ready = false;
++	magn_state->common_attributes.data_ready = false;
 +	ret = hid_sensor_setup_trigger(indio_dev, name,
-+				&als_state->common_attributes);
++					&magn_state->common_attributes);
 +	if (ret < 0) {
 +		dev_err(&pdev->dev, "trigger setup failed\n");
 +		goto error_unreg_buffer_funcs;
@@ -421,11 +453,11 @@ index 0000000..2cff7d5
 +		goto error_remove_trigger;
 +	}
 +
-+	als_state->callbacks.send_event = als_proc_event;
-+	als_state->callbacks.capture_sample = als_capture_sample;
-+	als_state->callbacks.pdev = pdev;
-+	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_ALS,
-+					&als_state->callbacks);
++	magn_state->callbacks.send_event = magn_3d_proc_event;
++	magn_state->callbacks.capture_sample = magn_3d_capture_sample;
++	magn_state->callbacks.pdev = pdev;
++	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_COMPASS_3D,
++					&magn_state->callbacks);
 +	if (ret < 0) {
 +		dev_err(&pdev->dev, "callback reg failed\n");
 +		goto error_iio_unreg;
@@ -448,12 +480,12 @@ index 0000000..2cff7d5
 +}
 +
 +/* Function to deinitialize the processing for usage id */
-+static int __devinit hid_als_remove(struct platform_device *pdev)
++static int __devinit hid_magn_3d_remove(struct platform_device *pdev)
 +{
 +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
 +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 +
-+	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_ALS);
++	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_COMPASS_3D);
 +	iio_device_unregister(indio_dev);
 +	hid_sensor_remove_trigger(indio_dev);
 +	iio_triggered_buffer_cleanup(indio_dev);
@@ -463,17 +495,17 @@ index 0000000..2cff7d5
 +	return 0;
 +}
 +
-+static struct platform_driver hid_als_platform_driver = {
++static struct platform_driver hid_magn_3d_platform_driver = {
 +	.driver = {
 +		.name	= DRIVER_NAME,
 +		.owner	= THIS_MODULE,
 +	},
-+	.probe		= hid_als_probe,
-+	.remove		= hid_als_remove,
++	.probe		= hid_magn_3d_probe,
++	.remove		= hid_magn_3d_remove,
 +};
-+module_platform_driver(hid_als_platform_driver);
++module_platform_driver(hid_magn_3d_platform_driver);
 +
-+MODULE_DESCRIPTION("HID Sensor ALS");
++MODULE_DESCRIPTION("HID Sensor Magnetometer 3D");
 +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
 +MODULE_LICENSE("GPL");
 -- 
