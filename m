@@ -4,150 +4,83 @@ To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 03/22] staging:iio:ad7793: Report channel offset
-Date: Fri, 10 Aug 2012 18:36:17 +0200
-Message-Id: <1344616596-8026-3-git-send-email-lars@metafoo.de>
+Subject: [PATCH 07/22] staging:iio:ad7793: Remove unused platform_data from device state struct
+Date: Fri, 10 Aug 2012 18:36:21 +0200
+Message-Id: <1344616596-8026-7-git-send-email-lars@metafoo.de>
 In-Reply-To: <1344616596-8026-1-git-send-email-lars@metafoo.de>
 References: <1344616596-8026-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-In bipolar mode there is a a binary offset of 2**(N-1) (with N being the number
-of bits) on the reported value. Currently this value is subtracted when doing a
-manual read. While this works for manual channel readings it does not work for
-buffered mode. So report the offset in the channels offset property, which will
-work in both modes.
+The platform data for the device is only used from within the drivers probe
+callback, so there is no need to keep it around in the devices state struct.
+
+While we are at it mark the platform data struct as const.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad7793.c |   39 +++++++++++++++++++++++++-------------
- 1 file changed, 26 insertions(+), 13 deletions(-)
+ drivers/staging/iio/adc/ad7793.c |   14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index 5e457a4..56014a8 100644
+index 112e2b7..0ba598e 100644
 --- a/drivers/staging/iio/adc/ad7793.c
 +++ b/drivers/staging/iio/adc/ad7793.c
-@@ -604,9 +604,6 @@ static int ad7793_read_raw(struct iio_dev *indio_dev,
- 		*val = (smpl >> chan->scan_type.shift) &
- 			((1 << (chan->scan_type.realbits)) - 1);
- 
--		if (!unipolar)
--			*val -= (1 << (chan->scan_type.realbits - 1));
--
- 		return IIO_VAL_INT;
- 
- 	case IIO_CHAN_INFO_SCALE:
-@@ -639,6 +636,12 @@ static int ad7793_read_raw(struct iio_dev *indio_dev,
- 		*val =  scale_uv;
- 
- 		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_OFFSET:
-+		if (!unipolar)
-+			*val -= (1 << (chan->scan_type.realbits - 1));
-+		else
-+			*val = 0;
-+		return IIO_VAL_INT;
- 	}
- 	return -EINVAL;
+@@ -44,7 +44,6 @@ struct ad7793_state {
+ 	struct iio_trigger		*trig;
+ 	const struct ad7793_chip_info	*chip_info;
+ 	struct regulator		*reg;
+-	struct ad7793_platform_data	*pdata;
+ 	wait_queue_head_t		wq_data_avail;
+ 	bool				done;
+ 	bool				irq_dis;
+@@ -253,7 +252,8 @@ out:
+ 	return ret;
  }
-@@ -720,7 +723,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 			.channel2 = 0,
- 			.address = AD7793_CH_AIN1P_AIN1M,
- 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+			IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
- 			.scan_index = 0,
- 			.scan_type = IIO_ST('u', 24, 32, 0)
- 		},
-@@ -732,7 +736,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 			.channel2 = 1,
- 			.address = AD7793_CH_AIN2P_AIN2M,
- 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+			IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
- 			.scan_index = 1,
- 			.scan_type = IIO_ST('u', 24, 32, 0)
- 		},
-@@ -744,7 +749,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 			.channel2 = 2,
- 			.address = AD7793_CH_AIN3P_AIN3M,
- 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+			IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
- 			.scan_index = 2,
- 			.scan_type = IIO_ST('u', 24, 32, 0)
- 		},
-@@ -757,7 +763,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 			.channel2 = 2,
- 			.address = AD7793_CH_AIN1M_AIN1M,
- 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+			IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
- 			.scan_index = 3,
- 			.scan_type = IIO_ST('u', 24, 32, 0)
- 		},
-@@ -778,7 +785,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 			.channel = 4,
- 			.address = AD7793_CH_AVDD_MONITOR,
- 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-+			IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
-+			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
- 			.scan_index = 5,
- 			.scan_type = IIO_ST('u', 24, 32, 0),
- 		},
-@@ -793,7 +801,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 			.channel2 = 0,
- 			.address = AD7793_CH_AIN1P_AIN1M,
- 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+			IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
- 			.scan_index = 0,
- 			.scan_type = IIO_ST('u', 16, 32, 0)
- 		},
-@@ -805,7 +814,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 			.channel2 = 1,
- 			.address = AD7793_CH_AIN2P_AIN2M,
- 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+			IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
- 			.scan_index = 1,
- 			.scan_type = IIO_ST('u', 16, 32, 0)
- 		},
-@@ -817,7 +827,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 			.channel2 = 2,
- 			.address = AD7793_CH_AIN3P_AIN3M,
- 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+			IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
- 			.scan_index = 2,
- 			.scan_type = IIO_ST('u', 16, 32, 0)
- 		},
-@@ -830,7 +841,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 			.channel2 = 2,
- 			.address = AD7793_CH_AIN1M_AIN1M,
- 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+			IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
- 			.scan_index = 3,
- 			.scan_type = IIO_ST('u', 16, 32, 0)
- 		},
-@@ -851,7 +863,8 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 			.channel = 4,
- 			.address = AD7793_CH_AVDD_MONITOR,
- 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-+			IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
-+			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
- 			.scan_index = 5,
- 			.scan_type = IIO_ST('u', 16, 32, 0),
- 		},
+ 
+-static int ad7793_setup(struct ad7793_state *st)
++static int ad7793_setup(struct ad7793_state *st
++	const struct ad7793_platform_data *pdata)
+ {
+ 	int i, ret = -1;
+ 	unsigned long long scale_uv;
+@@ -277,9 +277,9 @@ static int ad7793_setup(struct ad7793_state *st)
+ 		goto out;
+ 	}
+ 
+-	st->mode  = (st->pdata->mode & ~AD7793_MODE_SEL(-1)) |
++	st->mode  = (pdata->mode & ~AD7793_MODE_SEL(-1)) |
+ 			AD7793_MODE_SEL(AD7793_MODE_IDLE);
+-	st->conf  = st->pdata->conf & ~AD7793_CONF_CHAN(-1);
++	st->conf  = pdata->conf & ~AD7793_CONF_CHAN(-1);
+ 
+ 	ret = ad7793_write_reg(st, AD7793_REG_MODE, sizeof(st->mode), st->mode);
+ 	if (ret)
+@@ -882,7 +882,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 
+ static int __devinit ad7793_probe(struct spi_device *spi)
+ {
+-	struct ad7793_platform_data *pdata = spi->dev.platform_data;
++	const struct ad7793_platform_data *pdata = spi->dev.platform_data;
+ 	struct ad7793_state *st;
+ 	struct iio_dev *indio_dev;
+ 	int ret, voltage_uv = 0;
+@@ -915,8 +915,6 @@ static int __devinit ad7793_probe(struct spi_device *spi)
+ 	st->chip_info =
+ 		&ad7793_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+ 
+-	st->pdata = pdata;
+-
+ 	if (pdata && pdata->vref_mv)
+ 		st->int_vref_mv = pdata->vref_mv;
+ 	else if (voltage_uv)
+@@ -944,7 +942,7 @@ static int __devinit ad7793_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto error_unreg_ring;
+ 
+-	ret = ad7793_setup(st);
++	ret = ad7793_setup(st, pdata);
+ 	if (ret)
+ 		goto error_remove_trigger;
+ 
 -- 
 1.7.10.4
