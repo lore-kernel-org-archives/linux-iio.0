@@ -4,220 +4,335 @@ To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 20/22] staging:iio:ad7793: Add support for ad7794/ad7795
-Date: Fri, 10 Aug 2012 18:36:34 +0200
-Message-Id: <1344616596-8026-20-git-send-email-lars@metafoo.de>
+Subject: [PATCH 17/22] staging:iio:ad7780: Use common Sigma Delta library
+Date: Fri, 10 Aug 2012 18:36:31 +0200
+Message-Id: <1344616596-8026-17-git-send-email-lars@metafoo.de>
 In-Reply-To: <1344616596-8026-1-git-send-email-lars@metafoo.de>
 References: <1344616596-8026-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-The ad7794/ad7795 are similar to the ad7792/ad7793, but have 6 channels instead
-of 3.
+Convert the ad7780 driver to make use of the new common code for devices from
+the Analog Devices Sigma Delta family.
+
+As a bonus the ad7780 driver gains support for buffered mode. Although this is a
+bit tricky. The ad7780 reports in the lower 4 unused bits of the data word the
+internal gain used. The driver will update the scale attribute value depending
+on the gain accordingly, but obviously this will only work if the gain does not
+change while sampling. This is not perfect, but since we store the raw value in
+the buffer an application which is aware of this can extract the gain factor
+from the buffer as well an apply it accordingly.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/Kconfig  |    6 +--
- drivers/staging/iio/adc/ad7793.c |   81 ++++++++++++++++++++++++++------------
- drivers/staging/iio/adc/ad7793.h |   10 ++++-
- 3 files changed, 66 insertions(+), 31 deletions(-)
+ drivers/staging/iio/adc/Kconfig  |    1 +
+ drivers/staging/iio/adc/ad7780.c |  186 ++++++++++++++------------------------
+ 2 files changed, 71 insertions(+), 116 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index 9525308..3894281 100644
+index 67711b7..fc7b7f6 100644
 --- a/drivers/staging/iio/adc/Kconfig
 +++ b/drivers/staging/iio/adc/Kconfig
-@@ -109,12 +109,12 @@ config AD7780
- 	  module will be called ad7780.
- 
- config AD7793
--	tristate "Analog Devices AD7792 AD7793 ADC driver"
-+	tristate "Analog Devices AD7793 and similar ADCs driver"
+@@ -99,6 +99,7 @@ config AD7780
+ 	tristate "Analog Devices AD7780 AD7781 ADC driver"
  	depends on SPI
- 	select AD_SIGMA_DELTA
+ 	depends on GPIOLIB
++	select AD_SIGMA_DELTA
  	help
--	  Say yes here to build support for Analog Devices
--	  AD7792 and AD7793 SPI analog to digital converters (ADC).
-+	  Say yes here to build support for Analog Devices AD7792, AD7793, AD7794
-+	  and AD7795 SPI analog to digital converters (ADC).
- 	  If unsure, say N (but it's safe to say "Y").
+ 	  Say yes here to build support for Analog Devices
+ 	  AD7780 and AD7781 SPI analog to digital converters (ADC).
+diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+index 19ee49c..853f8b1 100644
+--- a/drivers/staging/iio/adc/ad7780.c
++++ b/drivers/staging/iio/adc/ad7780.c
+@@ -20,6 +20,7 @@
  
- 	  To compile this driver as a module, choose M here: the
-diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index ba199fa..1c0f6a1 100644
---- a/drivers/staging/iio/adc/ad7793.c
-+++ b/drivers/staging/iio/adc/ad7793.c
-@@ -1,5 +1,5 @@
- /*
-- * AD7792/AD7793 SPI ADC driver
-+ * AD7792/AD7793/AD7794/AD7795 SPI ADC driver
-  *
-  * Copyright 2011-2012 Analog Devices Inc.
-  *
-@@ -37,7 +37,8 @@
-  */
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/adc/ad_sigma_delta.h>
  
- struct ad7793_chip_info {
--	struct iio_chan_spec	channel[7];
-+	const struct iio_chan_spec *channels;
-+	unsigned int num_channels;
+ #include "ad7780.h"
+ 
+@@ -37,20 +38,13 @@ struct ad7780_chip_info {
  };
  
- struct ad7793_state {
-@@ -55,6 +56,8 @@ struct ad7793_state {
- enum ad7793_supported_device_ids {
- 	ID_AD7792,
- 	ID_AD7793,
-+	ID_AD7794,
-+	ID_AD7795,
+ struct ad7780_state {
+-	struct spi_device		*spi;
+ 	const struct ad7780_chip_info	*chip_info;
+ 	struct regulator		*reg;
+-	struct ad7780_platform_data	*pdata;
+-	wait_queue_head_t		wq_data_avail;
+-	bool				done;
++	int				powerdown_gpio;
++	unsigned int	gain;
+ 	u16				int_vref_mv;
+-	struct spi_transfer		xfer;
+-	struct spi_message		msg;
+-	/*
+-	 * DMA (thus cache coherency maintenance) requires the
+-	 * transfer buffers to live in their own cache lines.
+-	 */
+-	unsigned int			data ____cacheline_aligned;
++
++	struct ad_sigma_delta sd;
  };
  
- static struct ad7793_state *ad_sigma_delta_to_ad7793(struct ad_sigma_delta *sd)
-@@ -126,7 +129,7 @@ static int ad7793_setup(struct iio_dev *indio_dev,
+ enum ad7780_supported_device_ids {
+@@ -58,28 +52,30 @@ enum ad7780_supported_device_ids {
+ 	ID_AD7781,
+ };
  
- 	id &= AD7793_ID_MASK;
+-static int ad7780_read(struct ad7780_state *st, int *val)
++static struct ad7780_state *ad_sigma_delta_to_ad7780(struct ad_sigma_delta *sd)
+ {
+-	int ret;
+-
+-	spi_bus_lock(st->spi->master);
+-
+-	enable_irq(st->spi->irq);
+-	st->done = false;
+-	gpio_set_value(st->pdata->gpio_pdrst, 1);
++	return container_of(sd, struct ad7780_state, sd);
++}
  
--	if (!((id == AD7792_ID) || (id == AD7793_ID))) {
-+	if (!((id == AD7792_ID) || (id == AD7793_ID) || (id == AD7795_ID))) {
- 		dev_err(&st->sd.spi->dev, "device ID query failed\n");
- 		goto out;
+-	ret = wait_event_interruptible(st->wq_data_avail, st->done);
+-	disable_irq_nosync(st->spi->irq);
+-	if (ret)
+-		goto out;
++static int ad7780_set_mode(struct ad_sigma_delta *sigma_delta,
++	enum ad_sigma_delta_mode mode)
++{
++	struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
++	unsigned val;
++
++	switch (mode) {
++	case AD_SD_MODE_SINGLE:
++	case AD_SD_MODE_CONTINUOUS:
++		val = 1;
++		break;
++	default:
++		val = 0;
++		break;
++	}
+ 
+-	ret = spi_sync_locked(st->spi, &st->msg);
+-	*val = be32_to_cpu(st->data);
+-out:
+-	gpio_set_value(st->pdata->gpio_pdrst, 0);
+-	spi_bus_unlock(st->spi->master);
++	gpio_set_value(st->powerdown_gpio, val);
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static int ad7780_read_raw(struct iio_dev *indio_dev,
+@@ -89,89 +85,57 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
+ 			   long m)
+ {
+ 	struct ad7780_state *st = iio_priv(indio_dev);
+-	struct iio_chan_spec channel = st->chip_info->channel;
+-	int ret, smpl = 0;
+ 	unsigned long scale_uv;
+ 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-		mutex_lock(&indio_dev->mlock);
+-		ret = ad7780_read(st, &smpl);
+-		mutex_unlock(&indio_dev->mlock);
+-
+-		if (ret < 0)
+-			return ret;
+-
+-		if ((smpl & AD7780_ERR) ||
+-			!((smpl & AD7780_PAT0) && !(smpl & AD7780_PAT1)))
+-			return -EIO;
+-
+-		*val = (smpl >> channel.scan_type.shift) &
+-			((1 << (channel.scan_type.realbits)) - 1);
+-		*val -= (1 << (channel.scan_type.realbits - 1));
+-
+-		if (!(smpl & AD7780_GAIN))
+-			*val *= 128;
+-
+-		return IIO_VAL_INT;
++		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
+ 	case IIO_CHAN_INFO_SCALE:
+-		scale_uv = (st->int_vref_mv * 100000)
+-			>> (channel.scan_type.realbits - 1);
++		scale_uv = (st->int_vref_mv * 100000 * st->gain)
++			>> (chan->scan_type.realbits - 1);
+ 		*val =  scale_uv / 100000;
+ 		*val2 = (scale_uv % 100000) * 10;
+ 		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_OFFSET:
++		*val -= (1 << (chan->scan_type.realbits - 1));
++		return IIO_VAL_INT;
  	}
-@@ -154,7 +157,7 @@ static int ad7793_setup(struct iio_dev *indio_dev,
- 	/* Populate available ADC input ranges */
- 	for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++) {
- 		scale_uv = ((u64)st->int_vref_mv * 100000000)
--			>> (st->chip_info->channel[0].scan_type.realbits -
-+			>> (st->chip_info->channels[0].scan_type.realbits -
- 			(!!(st->conf & AD7793_CONF_UNIPOLAR) ? 0 : 1));
- 		scale_uv >>= i;
++
+ 	return -EINVAL;
+ }
  
-@@ -382,28 +385,52 @@ static const struct iio_info ad7793_info = {
++static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
++	unsigned int raw_sample)
++{
++	struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
++
++	if ((raw_sample & AD7780_ERR) ||
++		!((raw_sample & AD7780_PAT0) && !(raw_sample & AD7780_PAT1)))
++		return -EIO;
++
++	if (raw_sample & AD7780_GAIN)
++		st->gain = 1;
++	else
++		st->gain = 128;
++
++	return 0;
++}
++
++static const struct ad_sigma_delta_info ad7780_sigma_delta_info = {
++	.set_mode = ad7780_set_mode,
++	.postprocess_sample = ad7780_postprocess_sample,
++	.has_registers = false,
++};
++
+ static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
+ 	[ID_AD7780] = {
+-		.channel = {
+-			.type = IIO_VOLTAGE,
+-			.indexed = 1,
+-			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			IIO_CHAN_INFO_SCALE_SHARED_BIT |
+-			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
+-			.scan_type = {
+-				.sign = 'u',
+-				.realbits = 24,
+-				.storagebits = 32,
+-				.shift = 8,
+-			},
+-		},
++		.channel = AD_SD_CHANNEL(1, 0, 0, 24, 32, 8),
+ 	},
+ 	[ID_AD7781] = {
+-		.channel = {
+-			.type = IIO_VOLTAGE,
+-			.indexed = 1,
+-			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			IIO_CHAN_INFO_SCALE_SHARED_BIT |
+-			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
+-			.scan_type = {
+-				.sign = 'u',
+-				.realbits = 20,
+-				.storagebits = 32,
+-				.shift = 12,
+-			},
+-		},
++		.channel = AD_SD_CHANNEL(1, 0, 0, 20, 32, 12),
+ 	},
+ };
+ 
+-/**
+- *  Interrupt handler
+- */
+-static irqreturn_t ad7780_interrupt(int irq, void *dev_id)
+-{
+-	struct ad7780_state *st = dev_id;
+-
+-	st->done = true;
+-	wake_up_interruptible(&st->wq_data_avail);
+-
+-	return IRQ_HANDLED;
+-};
+-
+ static const struct iio_info ad7780_info = {
+ 	.read_raw = &ad7780_read_raw,
  	.driver_module = THIS_MODULE,
- };
+@@ -194,6 +158,9 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+ 		return -ENOMEM;
  
-+#define DECLARE_AD7793_CHANNELS(_name, _b, _sb) \
-+const struct iio_chan_spec _name##_channels[] = { \
-+	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), 0), \
-+	AD_SD_SHORTED_CHANNEL(3, 0, AD7793_CH_AIN1M_AIN1M, (_b), (_sb), 0), \
-+	AD_SD_TEMP_CHANNEL(4, AD7793_CH_TEMP, (_b), (_sb), 0), \
-+	AD_SD_SUPPLY_CHANNEL(5, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), 0), \
-+	IIO_CHAN_SOFT_TIMESTAMP(6), \
-+}
+ 	st = iio_priv(indio_dev);
++	st->gain = 1;
 +
-+#define DECLARE_AD7795_CHANNELS(_name, _b, _sb) \
-+const struct iio_chan_spec _name##_channels[] = { \
-+	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(3, 3, 3, AD7795_CH_AIN4P_AIN4M, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(4, 4, 4, AD7795_CH_AIN5P_AIN5M, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(5, 5, 5, AD7795_CH_AIN6P_AIN6M, (_b), (_sb), 0), \
-+	AD_SD_SHORTED_CHANNEL(6, 0, AD7795_CH_AIN1M_AIN1M, (_b), (_sb), 0), \
-+	AD_SD_TEMP_CHANNEL(7, AD7793_CH_TEMP, (_b), (_sb), 0), \
-+	AD_SD_SUPPLY_CHANNEL(8, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), 0), \
-+	IIO_CHAN_SOFT_TIMESTAMP(9), \
-+}
-+
-+static DECLARE_AD7793_CHANNELS(ad7792, 16, 32);
-+static DECLARE_AD7793_CHANNELS(ad7793, 24, 32);
-+static DECLARE_AD7795_CHANNELS(ad7794, 16, 32);
-+static DECLARE_AD7795_CHANNELS(ad7795, 24, 32);
-+
- static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
-+	[ID_AD7792] = {
-+		.channels = ad7792_channels,
-+		.num_channels = ARRAY_SIZE(ad7792_channels),
-+	},
- 	[ID_AD7793] = {
--		.channel = {
--			AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, 24, 32, 0),
--			AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, 24, 32, 0),
--			AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, 24, 32, 0),
--			AD_SD_SHORTED_CHANNEL(3, 0, AD7793_CH_AIN1M_AIN1M, 24, 32, 0),
--			AD_SD_TEMP_CHANNEL(4, AD7793_CH_TEMP, 24, 32, 0),
--			AD_SD_SUPPLY_CHANNEL(5, 3, AD7793_CH_AVDD_MONITOR, 24, 32, 0),
--			IIO_CHAN_SOFT_TIMESTAMP(6),
--		},
-+		.channels = ad7793_channels,
-+		.num_channels = ARRAY_SIZE(ad7793_channels),
- 	},
--	[ID_AD7792] = {
--		.channel = {
--			AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, 16, 32, 0),
--			AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, 16, 32, 0),
--			AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, 16, 32, 0),
--			AD_SD_SHORTED_CHANNEL(3, 0, AD7793_CH_AIN1M_AIN1M, 16, 32, 0),
--			AD_SD_TEMP_CHANNEL(4, AD7793_CH_TEMP, 16, 32, 0),
--			AD_SD_SUPPLY_CHANNEL(5, 3, AD7793_CH_AVDD_MONITOR, 16, 32, 0),
--			IIO_CHAN_SOFT_TIMESTAMP(6),
--		},
-+	[ID_AD7794] = {
-+		.channels = ad7794_channels,
-+		.num_channels = ARRAY_SIZE(ad7794_channels),
-+	},
-+	[ID_AD7795] = {
-+		.channels = ad7795_channels,
-+		.num_channels = ARRAY_SIZE(ad7795_channels),
- 	},
- };
++	ad_sd_init(&st->sd, indio_dev, spi, &ad7780_sigma_delta_info);
  
-@@ -456,8 +483,8 @@ static int __devinit ad7793_probe(struct spi_device *spi)
+ 	st->reg = regulator_get(&spi->dev, "vcc");
+ 	if (!IS_ERR(st->reg)) {
+@@ -207,7 +174,7 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+ 	st->chip_info =
+ 		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+ 
+-	st->pdata = pdata;
++	st->powerdown_gpio = pdata->gpio_pdrst;
+ 
+ 	if (pdata && pdata->vref_mv)
+ 		st->int_vref_mv = pdata->vref_mv;
+@@ -217,7 +184,6 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+ 		dev_warn(&spi->dev, "reference voltage unspecified\n");
+ 
+ 	spi_set_drvdata(spi, indio_dev);
+-	st->spi = spi;
+ 
  	indio_dev->dev.parent = &spi->dev;
  	indio_dev->name = spi_get_device_id(spi)->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--	indio_dev->channels = st->chip_info->channel;
--	indio_dev->num_channels = 7;
-+	indio_dev->channels = st->chip_info->channels;
-+	indio_dev->num_channels = st->chip_info->num_channels;
- 	indio_dev->info = &ad7793_info;
+@@ -226,40 +192,27 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+ 	indio_dev->num_channels = 1;
+ 	indio_dev->info = &ad7780_info;
  
- 	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
-@@ -509,6 +536,8 @@ static int ad7793_remove(struct spi_device *spi)
- static const struct spi_device_id ad7793_id[] = {
- 	{"ad7792", ID_AD7792},
- 	{"ad7793", ID_AD7793},
-+	{"ad7794", ID_AD7794},
-+	{"ad7795", ID_AD7795},
- 	{}
- };
- MODULE_DEVICE_TABLE(spi, ad7793_id);
-@@ -525,5 +554,5 @@ static struct spi_driver ad7793_driver = {
- module_spi_driver(ad7793_driver);
+-	init_waitqueue_head(&st->wq_data_avail);
+-
+-	/* Setup default message */
+-
+-	st->xfer.rx_buf = &st->data;
+-	st->xfer.len = st->chip_info->channel.scan_type.storagebits / 8;
+-
+-	spi_message_init(&st->msg);
+-	spi_message_add_tail(&st->xfer, &st->msg);
+-
+-	ret = gpio_request_one(st->pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
++	ret = gpio_request_one(pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
+ 			       "AD7780 /PDRST");
+ 	if (ret) {
+ 		dev_err(&spi->dev, "failed to request GPIO PDRST\n");
+ 		goto error_disable_reg;
+ 	}
  
- MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
--MODULE_DESCRIPTION("Analog Devices AD7792/3 ADC");
-+MODULE_DESCRIPTION("Analog Devices AD7793 and simialr ADCs");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/staging/iio/adc/ad7793.h b/drivers/staging/iio/adc/ad7793.h
-index 0e296d8..8fdd450 100644
---- a/drivers/staging/iio/adc/ad7793.h
-+++ b/drivers/staging/iio/adc/ad7793.h
-@@ -70,8 +70,8 @@
- #define AD7793_CONF_GAIN(x)	(((x) & 0x7) << 8) /* Gain Select */
- #define AD7793_CONF_REFSEL	(1 << 7) /* INT/EXT Reference Select */
- #define AD7793_CONF_BUF		(1 << 4) /* Buffered Mode Enable */
--#define AD7793_CONF_CHAN(x)	((x) & 0x7) /* Channel select */
--#define AD7793_CONF_CHAN_MASK	0x7 /* Channel select mask */
-+#define AD7793_CONF_CHAN(x)	((x) & 0xf) /* Channel select */
-+#define AD7793_CONF_CHAN_MASK	0xf /* Channel select mask */
+-	ret = request_irq(spi->irq, ad7780_interrupt,
+-		IRQF_TRIGGER_FALLING, spi_get_device_id(spi)->name, st);
++	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+ 	if (ret)
+ 		goto error_free_gpio;
  
- #define AD7793_CH_AIN1P_AIN1M	0 /* AIN1(+) - AIN1(-) */
- #define AD7793_CH_AIN2P_AIN2M	1 /* AIN2(+) - AIN2(-) */
-@@ -80,9 +80,15 @@
- #define AD7793_CH_TEMP		6 /* Temp Sensor */
- #define AD7793_CH_AVDD_MONITOR	7 /* AVDD Monitor */
+-	disable_irq(spi->irq);
+-
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+-		goto error_free_irq;
++		goto error_cleanup_buffer_and_trigger;
  
-+#define AD7795_CH_AIN4P_AIN4M	4 /* AIN4(+) - AIN4(-) */
-+#define AD7795_CH_AIN5P_AIN5M	5 /* AIN5(+) - AIN5(-) */
-+#define AD7795_CH_AIN6P_AIN6M	6 /* AIN6(+) - AIN6(-) */
-+#define AD7795_CH_AIN1M_AIN1M	8 /* AIN1(-) - AIN1(-) */
+ 	return 0;
+ 
+-error_free_irq:
+-	free_irq(spi->irq, st);
++error_cleanup_buffer_and_trigger:
++	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+ error_free_gpio:
+-	gpio_free(st->pdata->gpio_pdrst);
++	gpio_free(pdata->gpio_pdrst);
+ error_disable_reg:
+ 	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
+@@ -278,8 +231,9 @@ static int ad7780_remove(struct spi_device *spi)
+ 	struct ad7780_state *st = iio_priv(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
+-	free_irq(spi->irq, st);
+-	gpio_free(st->pdata->gpio_pdrst);
++	ad_sd_cleanup_buffer_and_trigger(indio_dev);
 +
- /* ID Register Bit Designations (AD7793_REG_ID) */
- #define AD7792_ID		0xA
- #define AD7793_ID		0xB
-+#define AD7795_ID		0xF
- #define AD7793_ID_MASK		0xF
- 
- /* IO (Excitation Current Sources) Register Bit Designations (AD7793_REG_IO) */
++	gpio_free(st->powerdown_gpio);
+ 	if (!IS_ERR(st->reg)) {
+ 		regulator_disable(st->reg);
+ 		regulator_put(st->reg);
 -- 
 1.7.10.4
