@@ -4,335 +4,802 @@ To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 17/22] staging:iio:ad7780: Use common Sigma Delta library
-Date: Fri, 10 Aug 2012 18:36:31 +0200
-Message-Id: <1344616596-8026-17-git-send-email-lars@metafoo.de>
+Subject: [PATCH 16/22] iio:adc: Add common code for ADI Sigma Delta devices
+Date: Fri, 10 Aug 2012 18:36:30 +0200
+Message-Id: <1344616596-8026-16-git-send-email-lars@metafoo.de>
 In-Reply-To: <1344616596-8026-1-git-send-email-lars@metafoo.de>
 References: <1344616596-8026-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Convert the ad7780 driver to make use of the new common code for devices from
-the Analog Devices Sigma Delta family.
+Most devices from the Analog Devices Sigma Delta family use a similar scheme for
+communication with the device. This includes register access, as well as trigger
+handling. But each device sub-family has different features and different
+register layouts (some even have no registers at all) and thus it is impractical
+to try to support all of the devices by the same driver. This patch adds a
+common base library for Sigma Delta converter devices. It will be used by
+individual drivers.
 
-As a bonus the ad7780 driver gains support for buffered mode. Although this is a
-bit tricky. The ad7780 reports in the lower 4 unused bits of the data word the
-internal gain used. The driver will update the scale attribute value depending
-on the gain accordingly, but obviously this will only work if the gain does not
-change while sampling. This is not perfect, but since we store the raw value in
-the buffer an application which is aware of this can extract the gain factor
-from the buffer as well an apply it accordingly.
+This code is mostly based on the three existing Sigma Delta drivers the AD7192,
+AD7780 and AD7793, but has been improved for more robustness and flexibility.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/Kconfig  |    1 +
- drivers/staging/iio/adc/ad7780.c |  186 ++++++++++++++------------------------
- 2 files changed, 71 insertions(+), 116 deletions(-)
+ drivers/iio/adc/Kconfig                |    5 +
+ drivers/iio/adc/Makefile               |    1 +
+ drivers/iio/adc/ad_sigma_delta.c       |  557 ++++++++++++++++++++++++++++++++
+ include/linux/iio/adc/ad_sigma_delta.h |  173 ++++++++++
+ 4 files changed, 736 insertions(+)
+ create mode 100644 drivers/iio/adc/ad_sigma_delta.c
+ create mode 100644 include/linux/iio/adc/ad_sigma_delta.h
 
-diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index 67711b7..fc7b7f6 100644
---- a/drivers/staging/iio/adc/Kconfig
-+++ b/drivers/staging/iio/adc/Kconfig
-@@ -99,6 +99,7 @@ config AD7780
- 	tristate "Analog Devices AD7780 AD7781 ADC driver"
- 	depends on SPI
- 	depends on GPIOLIB
-+	select AD_SIGMA_DELTA
- 	help
- 	  Say yes here to build support for Analog Devices
- 	  AD7780 and AD7781 SPI analog to digital converters (ADC).
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index 19ee49c..853f8b1 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -20,6 +20,7 @@
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 8a78b4f..a2c5071 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -3,6 +3,11 @@
+ #
+ menu "Analog to digital converters"
  
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
++config AD_SIGMA_DELTA
++	tristate
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++
+ config AD7266
+ 	tristate "Analog Devices AD7265/AD7266 ADC driver"
+ 	depends on SPI_MASTER
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 52eec25..5989356 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -2,5 +2,6 @@
+ # Makefile for IIO ADC drivers
+ #
+ 
++obj-$(CONFIG_AD_SIGMA_DELTA) += ad_sigma_delta.o
+ obj-$(CONFIG_AD7266) += ad7266.o
+ obj-$(CONFIG_AT91_ADC) += at91_adc.o
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+new file mode 100644
+index 0000000..555feb7
+--- /dev/null
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -0,0 +1,557 @@
++/*
++ * Support code for Analog Devices Sigma-Delta ADCs
++ *
++ * Copyright 2012 Analog Devices Inc.
++ *  Author: Lars-Peter Clausen <lars@metafoo.de>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/interrupt.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/spi/spi.h>
++#include <linux/err.h>
++#include <linux/module.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
 +#include <linux/iio/adc/ad_sigma_delta.h>
- 
- #include "ad7780.h"
- 
-@@ -37,20 +38,13 @@ struct ad7780_chip_info {
- };
- 
- struct ad7780_state {
--	struct spi_device		*spi;
- 	const struct ad7780_chip_info	*chip_info;
- 	struct regulator		*reg;
--	struct ad7780_platform_data	*pdata;
--	wait_queue_head_t		wq_data_avail;
--	bool				done;
-+	int				powerdown_gpio;
-+	unsigned int	gain;
- 	u16				int_vref_mv;
--	struct spi_transfer		xfer;
--	struct spi_message		msg;
--	/*
--	 * DMA (thus cache coherency maintenance) requires the
--	 * transfer buffers to live in their own cache lines.
--	 */
--	unsigned int			data ____cacheline_aligned;
 +
-+	struct ad_sigma_delta sd;
- };
- 
- enum ad7780_supported_device_ids {
-@@ -58,28 +52,30 @@ enum ad7780_supported_device_ids {
- 	ID_AD7781,
- };
- 
--static int ad7780_read(struct ad7780_state *st, int *val)
-+static struct ad7780_state *ad_sigma_delta_to_ad7780(struct ad_sigma_delta *sd)
- {
--	int ret;
--
--	spi_bus_lock(st->spi->master);
--
--	enable_irq(st->spi->irq);
--	st->done = false;
--	gpio_set_value(st->pdata->gpio_pdrst, 1);
-+	return container_of(sd, struct ad7780_state, sd);
-+}
- 
--	ret = wait_event_interruptible(st->wq_data_avail, st->done);
--	disable_irq_nosync(st->spi->irq);
--	if (ret)
--		goto out;
-+static int ad7780_set_mode(struct ad_sigma_delta *sigma_delta,
-+	enum ad_sigma_delta_mode mode)
++#include <asm/unaligned.h>
++
++
++#define AD_SD_COMM_CHAN_MASK	0x3
++
++#define AD_SD_REG_COMM		0x00
++#define AD_SD_REG_DATA		0x03
++
++/**
++ * ad_sd_set_comm() - Set communications register
++ *
++ * @sigma_delta: The sigma delta device
++ * @comm: New value for the communications register
++ */
++void ad_sd_set_comm(struct ad_sigma_delta *sigma_delta, uint8_t comm)
 +{
-+	struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
-+	unsigned val;
++	/* Some variants use the lower two bits of the communications register
++	 * to select the channel */
++	sigma_delta->comm = comm & AD_SD_COMM_CHAN_MASK;
++}
++EXPORT_SYMBOL_GPL(ad_sd_set_comm);
 +
-+	switch (mode) {
-+	case AD_SD_MODE_SINGLE:
-+	case AD_SD_MODE_CONTINUOUS:
-+		val = 1;
++/**
++ * ad_sd_write_reg() - Write a register
++ *
++ * @sigma_delta: The sigma delta device
++ * @reg: Address of the register
++ * @size: Size of the register (0-3)
++ * @val: Value to write to the register
++ *
++ * Returns 0 on success, an error code otherwise.
++ **/
++int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
++	unsigned int size, unsigned int val)
++{
++	uint8_t *data = sigma_delta->data;
++	struct spi_transfer t = {
++		.tx_buf		= data,
++		.len		= size + 1,
++		.cs_change	= sigma_delta->bus_locked,
++	};
++	struct spi_message m;
++	int ret;
++
++	data[0] = (reg << sigma_delta->info->addr_shift) | sigma_delta->comm;
++
++	switch (size) {
++	case 3:
++		data[1] = val >> 16;
++		data[2] = val >> 8;
++		data[3] = val;
++		break;
++	case 2:
++		put_unaligned_be16(val, &data[1]);
++		break;
++	case 1:
++		data[1] = val;
++		break;
++	case 0:
 +		break;
 +	default:
-+		val = 0;
++		return -EINVAL;
++	}
++
++	spi_message_init(&m);
++	spi_message_add_tail(&t, &m);
++
++	if (sigma_delta->bus_locked)
++		ret = spi_sync_locked(sigma_delta->spi, &m);
++	else
++		ret = spi_sync(sigma_delta->spi, &m);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(ad_sd_write_reg);
++
++static int ad_sd_read_reg_raw(struct ad_sigma_delta *sigma_delta,
++	unsigned int reg, unsigned int size, uint8_t *val)
++{
++	uint8_t *data = sigma_delta->data;
++	int ret;
++	struct spi_transfer t[] = {
++		{
++			.tx_buf = data,
++			.len = 1,
++		}, {
++			.rx_buf = val,
++			.len = size,
++			.cs_change = sigma_delta->bus_locked,
++		},
++	};
++	struct spi_message m;
++
++	spi_message_init(&m);
++
++	if (sigma_delta->info->has_registers) {
++		data[0] = reg << sigma_delta->info->addr_shift;
++		data[0] |= sigma_delta->info->read_mask;
++		spi_message_add_tail(&t[0], &m);
++	}
++	spi_message_add_tail(&t[1], &m);
++
++	if (sigma_delta->bus_locked)
++		ret = spi_sync_locked(sigma_delta->spi, &m);
++	else
++		ret = spi_sync(sigma_delta->spi, &m);
++
++	return ret;
++}
++
++/**
++ * ad_sd_read_reg() - Read a register
++ *
++ * @sigma_delta: The sigma delta device
++ * @reg: Address of the register
++ * @size: Size of the register (1-4)
++ * @val: Read value
++ *
++ * Returns 0 on success, an error code otherwise.
++ **/
++int ad_sd_read_reg(struct ad_sigma_delta *sigma_delta,
++	unsigned int reg, unsigned int size, unsigned int *val)
++{
++	int ret;
++
++	ret = ad_sd_read_reg_raw(sigma_delta, reg, size, sigma_delta->data);
++	if (ret < 0)
++		goto out;
++
++	switch (size) {
++	case 4:
++		*val = get_unaligned_be32(sigma_delta->data);
++		break;
++	case 3:
++		*val = (sigma_delta->data[0] << 16) |
++			(sigma_delta->data[1] << 8) |
++			sigma_delta->data[2];
++		break;
++	case 2:
++		*val = get_unaligned_be16(sigma_delta->data);
++		break;
++	case 1:
++		*val = sigma_delta->data[0];
++		break;
++	default:
++		ret = -EINVAL;
 +		break;
 +	}
- 
--	ret = spi_sync_locked(st->spi, &st->msg);
--	*val = be32_to_cpu(st->data);
--out:
--	gpio_set_value(st->pdata->gpio_pdrst, 0);
--	spi_bus_unlock(st->spi->master);
-+	gpio_set_value(st->powerdown_gpio, val);
- 
--	return ret;
-+	return 0;
- }
- 
- static int ad7780_read_raw(struct iio_dev *indio_dev,
-@@ -89,89 +85,57 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
- 			   long m)
- {
- 	struct ad7780_state *st = iio_priv(indio_dev);
--	struct iio_chan_spec channel = st->chip_info->channel;
--	int ret, smpl = 0;
- 	unsigned long scale_uv;
- 
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
--		mutex_lock(&indio_dev->mlock);
--		ret = ad7780_read(st, &smpl);
--		mutex_unlock(&indio_dev->mlock);
--
--		if (ret < 0)
--			return ret;
--
--		if ((smpl & AD7780_ERR) ||
--			!((smpl & AD7780_PAT0) && !(smpl & AD7780_PAT1)))
--			return -EIO;
--
--		*val = (smpl >> channel.scan_type.shift) &
--			((1 << (channel.scan_type.realbits)) - 1);
--		*val -= (1 << (channel.scan_type.realbits - 1));
--
--		if (!(smpl & AD7780_GAIN))
--			*val *= 128;
--
--		return IIO_VAL_INT;
-+		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
- 	case IIO_CHAN_INFO_SCALE:
--		scale_uv = (st->int_vref_mv * 100000)
--			>> (channel.scan_type.realbits - 1);
-+		scale_uv = (st->int_vref_mv * 100000 * st->gain)
-+			>> (chan->scan_type.realbits - 1);
- 		*val =  scale_uv / 100000;
- 		*val2 = (scale_uv % 100000) * 10;
- 		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_OFFSET:
-+		*val -= (1 << (chan->scan_type.realbits - 1));
-+		return IIO_VAL_INT;
- 	}
 +
- 	return -EINVAL;
- }
- 
-+static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
-+	unsigned int raw_sample)
++out:
++	return ret;
++}
++EXPORT_SYMBOL_GPL(ad_sd_read_reg);
++
++static int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
++	unsigned int mode, unsigned int channel)
 +{
-+	struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
++	int ret;
 +
-+	if ((raw_sample & AD7780_ERR) ||
-+		!((raw_sample & AD7780_PAT0) && !(raw_sample & AD7780_PAT1)))
-+		return -EIO;
++	ret = ad_sigma_delta_set_channel(sigma_delta, channel);
++	if (ret)
++		return ret;
 +
-+	if (raw_sample & AD7780_GAIN)
-+		st->gain = 1;
-+	else
-+		st->gain = 128;
++	spi_bus_lock(sigma_delta->spi->master);
++	sigma_delta->bus_locked = true;
++	INIT_COMPLETION(sigma_delta->completion);
++
++	ret = ad_sigma_delta_set_mode(sigma_delta, mode);
++	if (ret < 0)
++		goto out;
++
++	sigma_delta->irq_dis = false;
++	enable_irq(sigma_delta->spi->irq);
++	ret = wait_for_completion_timeout(&sigma_delta->completion, 2*HZ);
++	if (ret == 0) {
++		sigma_delta->irq_dis = true;
++		disable_irq_nosync(sigma_delta->spi->irq);
++		ret = -EIO;
++	} else {
++		ret = 0;
++	}
++out:
++	sigma_delta->bus_locked = false;
++	spi_bus_unlock(sigma_delta->spi->master);
++	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
++
++	return ret;
++}
++
++/**
++ * ad_sd_calibrate_all() - Performs channel calibration
++ * @sigma_delta: The sigma delta device
++ * @cb: Array of channels and calibration type to perform
++ * @n: Number of items in cb
++ *
++ * Returns 0 on success, an error code otherwise.
++ **/
++int ad_sd_calibrate_all(struct ad_sigma_delta *sigma_delta,
++	const struct ad_sd_calib_data *cb, unsigned int n)
++{
++	unsigned int i;
++	int ret;
++
++	for (i = 0; i < n; i++) {
++		ret = ad_sd_calibrate(sigma_delta, cb[i].mode, cb[i].channel);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(ad_sd_calibrate_all);
++
++/**
++ * ad_sigma_delta_single_conversion() - Performs a single data conversion
++ * @indio_dev: The IIO device
++ * @chan: The conversion is done for this channel
++ * @val: Pointer to the location where to store the read value
++ *
++ * Returns: 0 on success, an error value otherwise.
++ */
++int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, int *val)
++{
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++	unsigned int sample, raw_sample;
++	int ret = 0;
++
++	if (iio_buffer_enabled(indio_dev))
++		return -EBUSY;
++
++	mutex_lock(&indio_dev->mlock);
++	ad_sigma_delta_set_channel(sigma_delta, chan->address);
++
++	spi_bus_lock(sigma_delta->spi->master);
++	sigma_delta->bus_locked = true;
++	INIT_COMPLETION(sigma_delta->completion);
++
++	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_SINGLE);
++
++	sigma_delta->irq_dis = false;
++	enable_irq(sigma_delta->spi->irq);
++	ret = wait_for_completion_interruptible_timeout(
++			&sigma_delta->completion, HZ);
++
++	sigma_delta->bus_locked = false;
++	spi_bus_unlock(sigma_delta->spi->master);
++
++	if (ret == 0)
++		ret = -EIO;
++	if (ret < 0)
++		goto out;
++
++	ret = ad_sd_read_reg(sigma_delta, AD_SD_REG_DATA,
++		DIV_ROUND_UP(chan->scan_type.realbits + chan->scan_type.shift, 8),
++		&raw_sample);
++
++out:
++	if (!sigma_delta->irq_dis) {
++		disable_irq_nosync(sigma_delta->spi->irq);
++		sigma_delta->irq_dis = true;
++	}
++
++	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
++	mutex_unlock(&indio_dev->mlock);
++
++	if (ret)
++		return ret;
++
++	sample = raw_sample >> chan->scan_type.shift;
++	sample &= (1 << chan->scan_type.realbits) - 1;
++	*val = sample;
++
++	ret = ad_sigma_delta_postprocess_sample(sigma_delta, raw_sample);
++	if (ret)
++		return ret;
++
++	return IIO_VAL_INT;
++}
++EXPORT_SYMBOL_GPL(ad_sigma_delta_single_conversion);
++
++static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++	unsigned int channel;
++	int ret;
++
++	ret = iio_triggered_buffer_postenable(indio_dev);
++	if (ret < 0)
++		return ret;
++
++	channel = find_first_bit(indio_dev->active_scan_mask,
++				 indio_dev->masklength);
++	ret = ad_sigma_delta_set_channel(sigma_delta,
++		indio_dev->channels[channel].address);
++	if (ret)
++		goto err_predisable;
++
++	spi_bus_lock(sigma_delta->spi->master);
++	sigma_delta->bus_locked = true;
++	ret = ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_CONTINUOUS);
++	if (ret)
++		goto err_unlock;
++
++	sigma_delta->irq_dis = false;
++	enable_irq(sigma_delta->spi->irq);
++
++	return 0;
++
++err_unlock:
++	spi_bus_unlock(sigma_delta->spi->master);
++err_predisable:
++
++	return ret;
++}
++
++static int ad_sd_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++
++	INIT_COMPLETION(sigma_delta->completion);
++	wait_for_completion_timeout(&sigma_delta->completion, HZ);
++
++	if (!sigma_delta->irq_dis) {
++		disable_irq_nosync(sigma_delta->spi->irq);
++		sigma_delta->irq_dis = true;
++	}
++
++	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
++
++	sigma_delta->bus_locked = false;
++	return spi_bus_unlock(sigma_delta->spi->master);
++}
++
++static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++	unsigned int reg_size;
++	uint8_t data[16];
++	int ret;
++
++	memset(data, 0x00, 16);
++
++	/* Guaranteed to be aligned with 8 byte boundary */
++	if (indio_dev->scan_timestamp)
++		((s64 *)data)[1] = pf->timestamp;
++
++	reg_size = indio_dev->channels[0].scan_type.realbits +
++			indio_dev->channels[0].scan_type.shift;
++	reg_size = DIV_ROUND_UP(reg_size, 8);
++
++	switch (reg_size) {
++	case 4:
++	case 2:
++	case 1:
++		ret = ad_sd_read_reg_raw(sigma_delta, AD_SD_REG_DATA,
++			reg_size, &data[0]);
++		break;
++	case 3:
++		/* We store 24 bit samples in a 32 bit word. Keep the upper
++		 * byte set to zero. */
++		ret = ad_sd_read_reg_raw(sigma_delta, AD_SD_REG_DATA,
++			reg_size, &data[1]);
++		break;
++	}
++
++	iio_push_to_buffer(indio_dev->buffer, (uint8_t *)data, pf->timestamp);
++
++	iio_trigger_notify_done(indio_dev->trig);
++	sigma_delta->irq_dis = false;
++	enable_irq(sigma_delta->spi->irq);
++
++	return IRQ_HANDLED;
++}
++
++static const struct iio_buffer_setup_ops ad_sd_buffer_setup_ops = {
++	.preenable = &iio_sw_buffer_preenable,
++	.postenable = &ad_sd_buffer_postenable,
++	.predisable = &iio_triggered_buffer_predisable,
++	.postdisable = &ad_sd_buffer_postdisable,
++	.validate_scan_mask = &iio_validate_scan_mask_onehot,
++};
++
++static irqreturn_t ad_sd_data_rdy_trig_poll(int irq, void *private)
++{
++	struct ad_sigma_delta *sigma_delta = private;
++
++	complete(&sigma_delta->completion);
++	disable_irq_nosync(irq);
++	sigma_delta->irq_dis = true;
++	iio_trigger_poll(sigma_delta->trig, iio_get_time_ns());
++
++	return IRQ_HANDLED;
++}
++
++/**
++ * ad_sd_validate_trigger() - validate_trigger callback for ad_sigma_delta devices
++ * @indio_dev: The IIO device
++ * @trig: The new trigger
++ *
++ * Returns: 0 if the 'trig' matches the trigger registered by the ad_sigma_delta
++ * device, -EINVAL otherwise.
++ */
++int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig)
++{
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++
++	if (sigma_delta->trig != trig)
++		return -EINVAL;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(ad_sd_validate_trigger);
++
++static const struct iio_trigger_ops ad_sd_trigger_ops = {
++	.owner = THIS_MODULE,
++};
++
++static int ad_sd_probe_trigger(struct iio_dev *indio_dev)
++{
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++	int ret;
++
++	sigma_delta->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
++						indio_dev->id);
++	if (sigma_delta->trig == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++	sigma_delta->trig->ops = &ad_sd_trigger_ops;
++	init_completion(&sigma_delta->completion);
++
++	ret = request_irq(sigma_delta->spi->irq,
++			  ad_sd_data_rdy_trig_poll,
++			  IRQF_TRIGGER_LOW,
++			  indio_dev->name,
++			  sigma_delta);
++	if (ret)
++		goto error_free_trig;
++
++	if (!sigma_delta->irq_dis) {
++		sigma_delta->irq_dis = true;
++		disable_irq_nosync(sigma_delta->spi->irq);
++	}
++	sigma_delta->trig->dev.parent = &sigma_delta->spi->dev;
++	sigma_delta->trig->private_data = sigma_delta;
++
++	ret = iio_trigger_register(sigma_delta->trig);
++	if (ret)
++		goto error_free_irq;
++
++	/* select default trigger */
++	indio_dev->trig = sigma_delta->trig;
++
++	return 0;
++
++error_free_irq:
++	free_irq(sigma_delta->spi->irq, sigma_delta);
++error_free_trig:
++	iio_trigger_free(sigma_delta->trig);
++error_ret:
++	return ret;
++}
++
++static void ad_sd_remove_trigger(struct iio_dev *indio_dev)
++{
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++
++	iio_trigger_unregister(sigma_delta->trig);
++	free_irq(sigma_delta->spi->irq, sigma_delta);
++	iio_trigger_free(sigma_delta->trig);
++}
++
++/**
++ * ad_sd_setup_buffer_and_trigger() -
++ * @indio_dev: The IIO device
++ */
++int ad_sd_setup_buffer_and_trigger(struct iio_dev *indio_dev)
++{
++	int ret;
++
++	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
++			&ad_sd_trigger_handler, &ad_sd_buffer_setup_ops);
++	if (ret)
++		return ret;
++
++	ret = ad_sd_probe_trigger(indio_dev);
++	if (ret) {
++		iio_triggered_buffer_cleanup(indio_dev);
++		return ret;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(ad_sd_setup_buffer_and_trigger);
++
++/**
++ * ad_sd_cleanup_buffer_and_trigger() -
++ * @indio_dev: The IIO device
++ */
++void ad_sd_cleanup_buffer_and_trigger(struct iio_dev *indio_dev)
++{
++	ad_sd_remove_trigger(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++}
++EXPORT_SYMBOL_GPL(ad_sd_cleanup_buffer_and_trigger);
++
++/**
++ * ad_sd_init() - Initializes a ad_sigma_delta struct
++ * @sigma_delta: The ad_sigma_delta device
++ * @indio_dev: The IIO device which the Sigma Delta device is used for
++ * @spi: The SPI device for the ad_sigma_delta device
++ * @info: Device specific callbacks and options
++ *
++ * This function needs to be called before any other operations are performed on
++ * the ad_sigma_delta struct.
++ */
++int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
++	struct spi_device *spi, const struct ad_sigma_delta_info *info)
++{
++	sigma_delta->spi = spi;
++	sigma_delta->info = info;
++	iio_device_set_drvdata(indio_dev, sigma_delta);
 +
 +	return 0;
 +}
 +
-+static const struct ad_sigma_delta_info ad7780_sigma_delta_info = {
-+	.set_mode = ad7780_set_mode,
-+	.postprocess_sample = ad7780_postprocess_sample,
-+	.has_registers = false,
++MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
++MODULE_DESCRIPTION("Analog Devices Sigma-Delta ADCs");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+new file mode 100644
+index 0000000..2e4eab9
+--- /dev/null
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -0,0 +1,173 @@
++/*
++ * Support code for Analog Devices Sigma-Delta ADCs
++ *
++ * Copyright 2012 Analog Devices Inc.
++ *  Author: Lars-Peter Clausen <lars@metafoo.de>
++ *
++ * Licensed under the GPL-2.
++ */
++#ifndef __AD_SIGMA_DELTA_H__
++#define __AD_SIGMA_DELTA_H__
++
++enum ad_sigma_delta_mode {
++	AD_SD_MODE_CONTINUOUS = 0,
++	AD_SD_MODE_SINGLE = 1,
++	AD_SD_MODE_IDLE = 2,
++	AD_SD_MODE_POWERDOWN = 3,
 +};
 +
- static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
- 	[ID_AD7780] = {
--		.channel = {
--			.type = IIO_VOLTAGE,
--			.indexed = 1,
--			.channel = 0,
--			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SHARED_BIT |
--			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
--			.scan_type = {
--				.sign = 'u',
--				.realbits = 24,
--				.storagebits = 32,
--				.shift = 8,
--			},
--		},
-+		.channel = AD_SD_CHANNEL(1, 0, 0, 24, 32, 8),
- 	},
- 	[ID_AD7781] = {
--		.channel = {
--			.type = IIO_VOLTAGE,
--			.indexed = 1,
--			.channel = 0,
--			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SHARED_BIT |
--			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
--			.scan_type = {
--				.sign = 'u',
--				.realbits = 20,
--				.storagebits = 32,
--				.shift = 12,
--			},
--		},
-+		.channel = AD_SD_CHANNEL(1, 0, 0, 20, 32, 12),
- 	},
- };
- 
--/**
-- *  Interrupt handler
-- */
--static irqreturn_t ad7780_interrupt(int irq, void *dev_id)
--{
--	struct ad7780_state *st = dev_id;
--
--	st->done = true;
--	wake_up_interruptible(&st->wq_data_avail);
--
--	return IRQ_HANDLED;
--};
--
- static const struct iio_info ad7780_info = {
- 	.read_raw = &ad7780_read_raw,
- 	.driver_module = THIS_MODULE,
-@@ -194,6 +158,9 @@ static int __devinit ad7780_probe(struct spi_device *spi)
- 		return -ENOMEM;
- 
- 	st = iio_priv(indio_dev);
-+	st->gain = 1;
++/**
++ * struct ad_sigma_delta_calib_data - Calibration data for Sigma Delta devices
++ * @mode: Calibration mode.
++ * @channel: Calibration channel.
++ */
++struct ad_sd_calib_data {
++	unsigned int mode;
++	unsigned int channel;
++};
 +
-+	ad_sd_init(&st->sd, indio_dev, spi, &ad7780_sigma_delta_info);
- 
- 	st->reg = regulator_get(&spi->dev, "vcc");
- 	if (!IS_ERR(st->reg)) {
-@@ -207,7 +174,7 @@ static int __devinit ad7780_probe(struct spi_device *spi)
- 	st->chip_info =
- 		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
- 
--	st->pdata = pdata;
-+	st->powerdown_gpio = pdata->gpio_pdrst;
- 
- 	if (pdata && pdata->vref_mv)
- 		st->int_vref_mv = pdata->vref_mv;
-@@ -217,7 +184,6 @@ static int __devinit ad7780_probe(struct spi_device *spi)
- 		dev_warn(&spi->dev, "reference voltage unspecified\n");
- 
- 	spi_set_drvdata(spi, indio_dev);
--	st->spi = spi;
- 
- 	indio_dev->dev.parent = &spi->dev;
- 	indio_dev->name = spi_get_device_id(spi)->name;
-@@ -226,40 +192,27 @@ static int __devinit ad7780_probe(struct spi_device *spi)
- 	indio_dev->num_channels = 1;
- 	indio_dev->info = &ad7780_info;
- 
--	init_waitqueue_head(&st->wq_data_avail);
--
--	/* Setup default message */
--
--	st->xfer.rx_buf = &st->data;
--	st->xfer.len = st->chip_info->channel.scan_type.storagebits / 8;
--
--	spi_message_init(&st->msg);
--	spi_message_add_tail(&st->xfer, &st->msg);
--
--	ret = gpio_request_one(st->pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
-+	ret = gpio_request_one(pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
- 			       "AD7780 /PDRST");
- 	if (ret) {
- 		dev_err(&spi->dev, "failed to request GPIO PDRST\n");
- 		goto error_disable_reg;
- 	}
- 
--	ret = request_irq(spi->irq, ad7780_interrupt,
--		IRQF_TRIGGER_FALLING, spi_get_device_id(spi)->name, st);
-+	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
- 	if (ret)
- 		goto error_free_gpio;
- 
--	disable_irq(spi->irq);
--
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
--		goto error_free_irq;
-+		goto error_cleanup_buffer_and_trigger;
- 
- 	return 0;
- 
--error_free_irq:
--	free_irq(spi->irq, st);
-+error_cleanup_buffer_and_trigger:
-+	ad_sd_cleanup_buffer_and_trigger(indio_dev);
- error_free_gpio:
--	gpio_free(st->pdata->gpio_pdrst);
-+	gpio_free(pdata->gpio_pdrst);
- error_disable_reg:
- 	if (!IS_ERR(st->reg))
- 		regulator_disable(st->reg);
-@@ -278,8 +231,9 @@ static int ad7780_remove(struct spi_device *spi)
- 	struct ad7780_state *st = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
--	free_irq(spi->irq, st);
--	gpio_free(st->pdata->gpio_pdrst);
-+	ad_sd_cleanup_buffer_and_trigger(indio_dev);
++struct ad_sigma_delta;
++struct iio_dev;
 +
-+	gpio_free(st->powerdown_gpio);
- 	if (!IS_ERR(st->reg)) {
- 		regulator_disable(st->reg);
- 		regulator_put(st->reg);
++/**
++ * struct ad_sigma_delta_info - Sigma Delta driver specific callbacks and options
++ * @set_channel: Will be called to select the current channel, may be NULL.
++ * @set_mode: Will be called to select the current mode, may be NULL.
++ * @postprocess_sample: Is called for each sampled data word, can be used to
++ *		modify or drop the sample data, it, may be NULL.
++ * @has_registers: true if the device has writable and readable registers, false
++ *		if there is just one read-only sample data shift register.
++ * @addr_shift: Shift of the register address in the communications register.
++ * @read_mask: Mask for the communications register having the read bit set.
++ */
++struct ad_sigma_delta_info {
++	int (*set_channel)(struct ad_sigma_delta *, unsigned int channel);
++	int (*set_mode)(struct ad_sigma_delta *, enum ad_sigma_delta_mode mode);
++	int (*postprocess_sample)(struct ad_sigma_delta *, unsigned int raw_sample);
++	bool has_registers;
++	unsigned int addr_shift;
++	unsigned int read_mask;
++};
++
++/**
++ * struct ad_sigma_delta - Sigma Delta device struct
++ * @spi: The spi device associated with the Sigma Delta device.
++ * @trig: The IIO trigger associated with the Sigma Delta device.
++ *
++ * Most of the fields are private to the sigma delta library code and should not
++ * be accessed by individual drivers.
++ */
++struct ad_sigma_delta {
++	struct spi_device	*spi;
++	struct iio_trigger	*trig;
++
++/* private: */
++	struct completion	completion;
++	bool			irq_dis;
++
++	bool			bus_locked;
++
++	uint8_t			comm;
++
++	const struct ad_sigma_delta_info *info;
++
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++	uint8_t				data[4] ____cacheline_aligned;
++};
++
++static inline int ad_sigma_delta_set_channel(struct ad_sigma_delta *sd,
++	unsigned int channel)
++{
++	if (sd->info->set_channel)
++		return sd->info->set_channel(sd, channel);
++
++	return 0;
++}
++
++static inline int ad_sigma_delta_set_mode(struct ad_sigma_delta *sd,
++	unsigned int mode)
++{
++	if (sd->info->set_mode)
++		return sd->info->set_mode(sd, mode);
++
++	return 0;
++}
++
++static inline int ad_sigma_delta_postprocess_sample(struct ad_sigma_delta *sd,
++	unsigned int raw_sample)
++{
++	if (sd->info->postprocess_sample)
++		return sd->info->postprocess_sample(sd, raw_sample);
++
++	return 0;
++}
++
++void ad_sd_set_comm(struct ad_sigma_delta *sigma_delta, uint8_t comm);
++int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
++	unsigned int size, unsigned int val);
++int ad_sd_read_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
++	unsigned int size, unsigned int *val);
++
++int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, int *val);
++int ad_sd_calibrate_all(struct ad_sigma_delta *sigma_delta,
++	const struct ad_sd_calib_data *cd, unsigned int n);
++int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
++	struct spi_device *spi, const struct ad_sigma_delta_info *info);
++
++int ad_sd_setup_buffer_and_trigger(struct iio_dev *indio_dev);
++void ad_sd_cleanup_buffer_and_trigger(struct iio_dev *indio_dev);
++
++int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
++
++#define __AD_SD_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
++	_storagebits, _shift, _extend_name, _type) \
++	{ \
++		.type = (_type), \
++		.differential = (_channel2 == -1 ? 0 : 1), \
++		.indexed = 1, \
++		.channel = (_channel1), \
++		.channel2 = (_channel2), \
++		.address = (_address), \
++		.extend_name = (_extend_name), \
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
++			IIO_CHAN_INFO_SCALE_SHARED_BIT | \
++			IIO_CHAN_INFO_OFFSET_SEPARATE_BIT, \
++		.scan_index = (_si), \
++		.scan_type = { \
++			.sign = 'u', \
++			.realbits = (_bits), \
++			.storagebits = (_storagebits), \
++			.shift = (_shift), \
++			.endianness = IIO_BE, \
++		}, \
++	}
++
++#define AD_SD_DIFF_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
++	_storagebits, _shift) \
++	__AD_SD_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
++		_storagebits, _shift, NULL, IIO_VOLTAGE)
++
++#define AD_SD_SHORTED_CHANNEL(_si, _channel, _address, _bits, \
++	_storagebits, _shift) \
++	__AD_SD_CHANNEL(_si, _channel, _channel, _address, _bits, \
++		_storagebits, _shift, "shorted", IIO_VOLTAGE)
++
++#define AD_SD_CHANNEL(_si, _channel, _address, _bits, \
++	_storagebits, _shift) \
++	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
++		_storagebits, _shift, NULL, IIO_VOLTAGE)
++
++#define AD_SD_TEMP_CHANNEL(_si, _address, _bits, _storagebits, _shift) \
++	__AD_SD_CHANNEL(_si, 0, -1, _address, _bits, \
++		_storagebits, _shift, NULL, IIO_TEMP)
++
++#define AD_SD_SUPPLY_CHANNEL(_si, _channel, _address, _bits, _storagebits, \
++	_shift) \
++	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
++		_storagebits, _shift, "supply", IIO_VOLTAGE)
++
++#endif
 -- 
 1.7.10.4
