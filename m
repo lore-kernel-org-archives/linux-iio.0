@@ -4,83 +4,60 @@ To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 07/22] staging:iio:ad7793: Remove unused platform_data from device state struct
-Date: Fri, 10 Aug 2012 18:36:21 +0200
-Message-Id: <1344616596-8026-7-git-send-email-lars@metafoo.de>
+Subject: [PATCH 15/22] iio: Introduce iio_device_{set,get}_drvdata()
+Date: Fri, 10 Aug 2012 18:36:29 +0200
+Message-Id: <1344616596-8026-15-git-send-email-lars@metafoo.de>
 In-Reply-To: <1344616596-8026-1-git-send-email-lars@metafoo.de>
 References: <1344616596-8026-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-The platform data for the device is only used from within the drivers probe
-callback, so there is no need to keep it around in the devices state struct.
+Introduce two new helper functions to attach a arbitrary pointer to a IIO
+device. This is useful to get access to external non-global data from within a
+IIO device callbacks where only the IIO device is available.
 
-While we are at it mark the platform data struct as const.
+Internally these functions use dev_{set,get}_drvdata() on the struct device
+embedded in the IIO device.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad7793.c |   14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ include/linux/iio/iio.h |   25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index 112e2b7..0ba598e 100644
---- a/drivers/staging/iio/adc/ad7793.c
-+++ b/drivers/staging/iio/adc/ad7793.c
-@@ -44,7 +44,6 @@ struct ad7793_state {
- 	struct iio_trigger		*trig;
- 	const struct ad7793_chip_info	*chip_info;
- 	struct regulator		*reg;
--	struct ad7793_platform_data	*pdata;
- 	wait_queue_head_t		wq_data_avail;
- 	bool				done;
- 	bool				irq_dis;
-@@ -253,7 +252,8 @@ out:
- 	return ret;
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index be82936..b18e74e 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -516,6 +516,31 @@ static inline struct iio_dev *iio_device_get(struct iio_dev *indio_dev)
+ 	return indio_dev ? dev_to_iio_dev(get_device(&indio_dev->dev)) : NULL;
  }
  
--static int ad7793_setup(struct ad7793_state *st)
-+static int ad7793_setup(struct ad7793_state *st
-+	const struct ad7793_platform_data *pdata)
- {
- 	int i, ret = -1;
- 	unsigned long long scale_uv;
-@@ -277,9 +277,9 @@ static int ad7793_setup(struct ad7793_state *st)
- 		goto out;
- 	}
- 
--	st->mode  = (st->pdata->mode & ~AD7793_MODE_SEL(-1)) |
-+	st->mode  = (pdata->mode & ~AD7793_MODE_SEL(-1)) |
- 			AD7793_MODE_SEL(AD7793_MODE_IDLE);
--	st->conf  = st->pdata->conf & ~AD7793_CONF_CHAN(-1);
-+	st->conf  = pdata->conf & ~AD7793_CONF_CHAN(-1);
- 
- 	ret = ad7793_write_reg(st, AD7793_REG_MODE, sizeof(st->mode), st->mode);
- 	if (ret)
-@@ -882,7 +882,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 
- static int __devinit ad7793_probe(struct spi_device *spi)
- {
--	struct ad7793_platform_data *pdata = spi->dev.platform_data;
-+	const struct ad7793_platform_data *pdata = spi->dev.platform_data;
- 	struct ad7793_state *st;
- 	struct iio_dev *indio_dev;
- 	int ret, voltage_uv = 0;
-@@ -915,8 +915,6 @@ static int __devinit ad7793_probe(struct spi_device *spi)
- 	st->chip_info =
- 		&ad7793_chip_info_tbl[spi_get_device_id(spi)->driver_data];
- 
--	st->pdata = pdata;
--
- 	if (pdata && pdata->vref_mv)
- 		st->int_vref_mv = pdata->vref_mv;
- 	else if (voltage_uv)
-@@ -944,7 +942,7 @@ static int __devinit ad7793_probe(struct spi_device *spi)
- 	if (ret)
- 		goto error_unreg_ring;
- 
--	ret = ad7793_setup(st);
-+	ret = ad7793_setup(st, pdata);
- 	if (ret)
- 		goto error_remove_trigger;
- 
++
++/**
++ * iio_device_set_drvdata() - Set device driver data
++ * @indio_dev: IIO device structure
++ * @data: Driver specific data
++ *
++ * Allows to attach an arbitrary pointer to an IIO device, which can later be
++ * retrieved by iio_device_get_drvdata().
++ */
++static inline void iio_device_set_drvdata(struct iio_dev *indio_dev, void *data)
++{
++	dev_set_drvdata(&indio_dev->dev, data);
++}
++
++/**
++ * iio_device_get_drvdata() - Get device driver data
++ * @indio_dev: IIO device structure
++ *
++ * Returns the data previously set with iio_device_set_drvdata()
++ */
++static inline void *iio_device_get_drvdata(struct iio_dev *indio_dev)
++{
++	return dev_get_drvdata(&indio_dev->dev);
++}
++
+ /* Can we make this smaller? */
+ #define IIO_ALIGN L1_CACHE_BYTES
+ /**
 -- 
 1.7.10.4
