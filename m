@@ -4,60 +4,140 @@ To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 15/22] iio: Introduce iio_device_{set,get}_drvdata()
-Date: Fri, 10 Aug 2012 18:36:29 +0200
-Message-Id: <1344616596-8026-15-git-send-email-lars@metafoo.de>
+Subject: [PATCH 02/22] staging:iio:ad7793: Mark channels as unsigned
+Date: Fri, 10 Aug 2012 18:36:16 +0200
+Message-Id: <1344616596-8026-2-git-send-email-lars@metafoo.de>
 In-Reply-To: <1344616596-8026-1-git-send-email-lars@metafoo.de>
 References: <1344616596-8026-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Introduce two new helper functions to attach a arbitrary pointer to a IIO
-device. This is useful to get access to external non-global data from within a
-IIO device callbacks where only the IIO device is available.
+The values reported by the AD7793 are unsigned.
+	In uniploar mode:
+			0x000000 is zeroscale
+			0xffffff is fullscale
+	In bipolar mode:
+			0x000000 is negative fullscale
+			0x800000 is zeroscale
+			0xffffff is positive fullscale
 
-Internally these functions use dev_{set,get}_drvdata() on the struct device
-embedded in the IIO device.
+In bipolar mode there is a binary offset, but the values are still unsigned.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- include/linux/iio/iio.h |   25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ drivers/staging/iio/adc/ad7793.c |   24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index be82936..b18e74e 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -516,6 +516,31 @@ static inline struct iio_dev *iio_device_get(struct iio_dev *indio_dev)
- 	return indio_dev ? dev_to_iio_dev(get_device(&indio_dev->dev)) : NULL;
- }
- 
-+
-+/**
-+ * iio_device_set_drvdata() - Set device driver data
-+ * @indio_dev: IIO device structure
-+ * @data: Driver specific data
-+ *
-+ * Allows to attach an arbitrary pointer to an IIO device, which can later be
-+ * retrieved by iio_device_get_drvdata().
-+ */
-+static inline void iio_device_set_drvdata(struct iio_dev *indio_dev, void *data)
-+{
-+	dev_set_drvdata(&indio_dev->dev, data);
-+}
-+
-+/**
-+ * iio_device_get_drvdata() - Get device driver data
-+ * @indio_dev: IIO device structure
-+ *
-+ * Returns the data previously set with iio_device_set_drvdata()
-+ */
-+static inline void *iio_device_get_drvdata(struct iio_dev *indio_dev)
-+{
-+	return dev_get_drvdata(&indio_dev->dev);
-+}
-+
- /* Can we make this smaller? */
- #define IIO_ALIGN L1_CACHE_BYTES
- /**
+diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
+index 1d0cd09..5e457a4 100644
+--- a/drivers/staging/iio/adc/ad7793.c
++++ b/drivers/staging/iio/adc/ad7793.c
+@@ -722,7 +722,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 0,
+-			.scan_type = IIO_ST('s', 24, 32, 0)
++			.scan_type = IIO_ST('u', 24, 32, 0)
+ 		},
+ 		.channel[1] = {
+ 			.type = IIO_VOLTAGE,
+@@ -734,7 +734,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 1,
+-			.scan_type = IIO_ST('s', 24, 32, 0)
++			.scan_type = IIO_ST('u', 24, 32, 0)
+ 		},
+ 		.channel[2] = {
+ 			.type = IIO_VOLTAGE,
+@@ -746,7 +746,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 2,
+-			.scan_type = IIO_ST('s', 24, 32, 0)
++			.scan_type = IIO_ST('u', 24, 32, 0)
+ 		},
+ 		.channel[3] = {
+ 			.type = IIO_VOLTAGE,
+@@ -759,7 +759,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 3,
+-			.scan_type = IIO_ST('s', 24, 32, 0)
++			.scan_type = IIO_ST('u', 24, 32, 0)
+ 		},
+ 		.channel[4] = {
+ 			.type = IIO_TEMP,
+@@ -769,7 +769,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 			.scan_index = 4,
+-			.scan_type = IIO_ST('s', 24, 32, 0),
++			.scan_type = IIO_ST('u', 24, 32, 0),
+ 		},
+ 		.channel[5] = {
+ 			.type = IIO_VOLTAGE,
+@@ -780,7 +780,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 			.scan_index = 5,
+-			.scan_type = IIO_ST('s', 24, 32, 0),
++			.scan_type = IIO_ST('u', 24, 32, 0),
+ 		},
+ 		.channel[6] = IIO_CHAN_SOFT_TIMESTAMP(6),
+ 	},
+@@ -795,7 +795,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 0,
+-			.scan_type = IIO_ST('s', 16, 32, 0)
++			.scan_type = IIO_ST('u', 16, 32, 0)
+ 		},
+ 		.channel[1] = {
+ 			.type = IIO_VOLTAGE,
+@@ -807,7 +807,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 1,
+-			.scan_type = IIO_ST('s', 16, 32, 0)
++			.scan_type = IIO_ST('u', 16, 32, 0)
+ 		},
+ 		.channel[2] = {
+ 			.type = IIO_VOLTAGE,
+@@ -819,7 +819,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 2,
+-			.scan_type = IIO_ST('s', 16, 32, 0)
++			.scan_type = IIO_ST('u', 16, 32, 0)
+ 		},
+ 		.channel[3] = {
+ 			.type = IIO_VOLTAGE,
+@@ -832,7 +832,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SHARED_BIT,
+ 			.scan_index = 3,
+-			.scan_type = IIO_ST('s', 16, 32, 0)
++			.scan_type = IIO_ST('u', 16, 32, 0)
+ 		},
+ 		.channel[4] = {
+ 			.type = IIO_TEMP,
+@@ -842,7 +842,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 			.scan_index = 4,
+-			.scan_type = IIO_ST('s', 16, 32, 0),
++			.scan_type = IIO_ST('u', 16, 32, 0),
+ 		},
+ 		.channel[5] = {
+ 			.type = IIO_VOLTAGE,
+@@ -853,7 +853,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+ 			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+ 			.scan_index = 5,
+-			.scan_type = IIO_ST('s', 16, 32, 0),
++			.scan_type = IIO_ST('u', 16, 32, 0),
+ 		},
+ 		.channel[6] = IIO_CHAN_SOFT_TIMESTAMP(6),
+ 	},
 -- 
 1.7.10.4
