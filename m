@@ -1,107 +1,42 @@
 Return-Path: <lars@metafoo.de>
+Message-ID: <50269871.5030508@metafoo.de>
+Date: Sat, 11 Aug 2012 19:37:53 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 21/22] staging:iio:ad7793: Add ad7785 support
-Date: Fri, 10 Aug 2012 18:36:35 +0200
-Message-Id: <1344616596-8026-21-git-send-email-lars@metafoo.de>
-In-Reply-To: <1344616596-8026-1-git-send-email-lars@metafoo.de>
-References: <1344616596-8026-1-git-send-email-lars@metafoo.de>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+ drivers@analog.com
+Subject: Re: [PATCH 22/22] staging:iio:adc: Add AD7791 driver
+References: <1344616596-8026-1-git-send-email-lars@metafoo.de> <1344616596-8026-22-git-send-email-lars@metafoo.de> <alpine.DEB.2.01.1208111034270.5846@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.01.1208111034270.5846@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-The ad7785 is similar to the ad7792/ad7793, but has 20 bit wide data samples.
+On 08/11/2012 10:41 AM, Peter Meerwald wrote:
+> 
+> two minor comments below
+>
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/Kconfig  |    4 ++--
- drivers/staging/iio/adc/ad7793.c |   27 +++++++++++++++++----------
- 2 files changed, 19 insertions(+), 12 deletions(-)
+Thanks.
 
-diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index 3894281..57dbf6e 100644
---- a/drivers/staging/iio/adc/Kconfig
-+++ b/drivers/staging/iio/adc/Kconfig
-@@ -113,8 +113,8 @@ config AD7793
- 	depends on SPI
- 	select AD_SIGMA_DELTA
- 	help
--	  Say yes here to build support for Analog Devices AD7792, AD7793, AD7794
--	  and AD7795 SPI analog to digital converters (ADC).
-+	  Say yes here to build support for Analog Devices AD7785, AD7792, AD7793,
-+	  AD7794 and AD7795 SPI analog to digital converters (ADC).
- 	  If unsure, say N (but it's safe to say "Y").
- 
- 	  To compile this driver as a module, choose M here: the
-diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index 1c0f6a1..da57130 100644
---- a/drivers/staging/iio/adc/ad7793.c
-+++ b/drivers/staging/iio/adc/ad7793.c
-@@ -1,5 +1,5 @@
- /*
-- * AD7792/AD7793/AD7794/AD7795 SPI ADC driver
-+ * AD7785/AD7792/AD7793/AD7794/AD7795 SPI ADC driver
-  *
-  * Copyright 2011-2012 Analog Devices Inc.
-  *
-@@ -54,6 +54,7 @@ struct ad7793_state {
- };
- 
- enum ad7793_supported_device_ids {
-+	ID_AD7785,
- 	ID_AD7792,
- 	ID_AD7793,
- 	ID_AD7794,
-@@ -385,14 +386,14 @@ static const struct iio_info ad7793_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
--#define DECLARE_AD7793_CHANNELS(_name, _b, _sb) \
-+#define DECLARE_AD7793_CHANNELS(_name, _b, _sb, _s) \
- const struct iio_chan_spec _name##_channels[] = { \
--	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), 0), \
--	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), 0), \
--	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), 0), \
--	AD_SD_SHORTED_CHANNEL(3, 0, AD7793_CH_AIN1M_AIN1M, (_b), (_sb), 0), \
--	AD_SD_TEMP_CHANNEL(4, AD7793_CH_TEMP, (_b), (_sb), 0), \
--	AD_SD_SUPPLY_CHANNEL(5, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), (_s)), \
-+	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), (_s)), \
-+	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), (_s)), \
-+	AD_SD_SHORTED_CHANNEL(3, 0, AD7793_CH_AIN1M_AIN1M, (_b), (_sb), (_s)), \
-+	AD_SD_TEMP_CHANNEL(4, AD7793_CH_TEMP, (_b), (_sb), (_s)), \
-+	AD_SD_SUPPLY_CHANNEL(5, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), (_s)), \
- 	IIO_CHAN_SOFT_TIMESTAMP(6), \
- }
- 
-@@ -410,12 +411,17 @@ const struct iio_chan_spec _name##_channels[] = { \
- 	IIO_CHAN_SOFT_TIMESTAMP(9), \
- }
- 
--static DECLARE_AD7793_CHANNELS(ad7792, 16, 32);
--static DECLARE_AD7793_CHANNELS(ad7793, 24, 32);
-+static DECLARE_AD7793_CHANNELS(ad7785, 20, 32, 4);
-+static DECLARE_AD7793_CHANNELS(ad7792, 16, 32, 0);
-+static DECLARE_AD7793_CHANNELS(ad7793, 24, 32, 0);
- static DECLARE_AD7795_CHANNELS(ad7794, 16, 32);
- static DECLARE_AD7795_CHANNELS(ad7795, 24, 32);
- 
- static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
-+	[ID_AD7785] = {
-+		.channels = ad7785_channels,
-+		.num_channels = ARRAY_SIZE(ad7785_channels),
-+	},
- 	[ID_AD7792] = {
- 		.channels = ad7792_channels,
- 		.num_channels = ARRAY_SIZE(ad7792_channels),
-@@ -534,6 +540,7 @@ static int ad7793_remove(struct spi_device *spi)
- }
- 
- static const struct spi_device_id ad7793_id[] = {
-+	{"ad7785", ID_AD7785},
- 	{"ad7792", ID_AD7792},
- 	{"ad7793", ID_AD7793},
- 	{"ad7794", ID_AD7794},
--- 
-1.7.10.4
+>>[...]
+>> +static const char * const ad7791_sample_freq_avail[] = {
+>> +	[AD7791_FILTER_RATE_120] = "120",
+>> +	[AD7791_FILTER_RATE_100] = "100",
+>> +	[AD7791_FILTER_RATE_33_3] = "33.3",
+>> +	[AD7791_FILTER_RATE_20] = "20",
+>> +	[AD7791_FILTER_RATE_16_6] = "16.6",
+>> +	[AD7791_FILTER_RATE_16_7] = "16.7",
+> 
+> just curious; why is this not in strictly decreasing order?
+> IIO_CONST_ATTR_SAMP_FREQ_AVAIL is...
+
+It doesn't really matter, but to keep the indices in order.
+AD7791_FILTER_RATE_16_6 is 0x4 and AD7791_FILTER_RATE_16_7 is 0x5.
+
+
+> 
+>> +	[AD7791_FILTER_RATE_13_3] = "13.3",
+>> +	[AD7791_FILTER_RATE_9_5] = "9.5",
+>> +};
+>> +
