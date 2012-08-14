@@ -1,49 +1,30 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: linux-iio@vger.kernel.org
-Cc: Marek Vasut <marex@denx.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Juergen Beisert <jbe@pengutronix.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Wolfgang Denk <wd@denx.de>
-Subject: [PATCH 1/3 RESEND] IIO: Add 4-byte unsigned reads into generic-buffer example
-Date: Sun, 12 Aug 2012 17:21:56 +0200
-Message-Id: <1344784918-32352-2-git-send-email-marex@denx.de>
-In-Reply-To: <1344784918-32352-1-git-send-email-marex@denx.de>
+Return-Path: <shawn.guo@linaro.org>
+MIME-Version: 1.0
+In-Reply-To: <201208140410.55405.marex@denx.de>
 References: <1344784918-32352-1-git-send-email-marex@denx.de>
+	<1344784918-32352-4-git-send-email-marex@denx.de>
+	<20120814015649.GD27792@S2101-09.ap.freescale.net>
+	<201208140410.55405.marex@denx.de>
+Date: Tue, 14 Aug 2012 10:23:06 +0800
+Message-ID: <CAAQ0ZWQP4t+ur9tTF3c1qJ4hyE6otsKNfqZ6zjtexdmcVD=qQg@mail.gmail.com>
+Subject: Re: [PATCH 3/3] IIO: arm: Add LRADC to i.MX28 dts
+From: Shawn Guo <shawn.guo@linaro.org>
+To: Marek Vasut <marex@denx.de>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Juergen Beisert <jbe@pengutronix.de>, Lars-Peter Clausen <lars@metafoo.de>, Wolfgang Denk <wd@denx.de>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Add unsigned 32bit-wide reads into the generic-buffer.c
+On 14 August 2012 10:10, Marek Vasut <marex@denx.de> wrote:
+> Dear Shawn Guo,
+>
+>> The patch subject does not look right.
+>
+> Can you fix by hand when applying please?
+>
+I remember I have commented on the similar problem for a couple of
+times.  I can do it for this time, but never later.  Also I will not
+apply it until the driver patch gets accepted.
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Juergen Beisert <jbe@pengutronix.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Wolfgang Denk <wd@denx.de>
----
- drivers/staging/iio/Documentation/generic_buffer.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/staging/iio/Documentation/generic_buffer.c b/drivers/staging/iio/Documentation/generic_buffer.c
-index 827e92d..40d0eca 100644
---- a/drivers/staging/iio/Documentation/generic_buffer.c
-+++ b/drivers/staging/iio/Documentation/generic_buffer.c
-@@ -104,6 +104,16 @@ void process_scan(char *data,
- 			print2byte(*(uint16_t *)(data + channels[k].location),
- 				   &channels[k]);
- 			break;
-+		case 4:
-+			if (!channels[k].is_signed) {
-+				uint32_t val = *(uint32_t *)
-+					(data + channels[k].location);
-+				printf("%05f ", ((float)val +
-+						 channels[k].offset)*
-+				       channels[k].scale);
-+
-+			}
-+			break;
- 		case 8:
- 			if (channels[k].is_signed) {
- 				int64_t val = *(int64_t *)
--- 
-1.7.10.4
+Regards,
+Shawn
