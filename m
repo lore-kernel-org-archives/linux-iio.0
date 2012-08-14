@@ -1,105 +1,348 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <502AB2DF.3080301@kernel.org>
-Date: Tue, 14 Aug 2012 21:19:43 +0100
+Return-Path: <jic23@hermes.cam.ac.uk>
+Message-ID: <502A3F1D.3060309@kernel.org>
+Date: Tue, 14 Aug 2012 13:05:49 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
  drivers@analog.com
-Subject: Re: [PATCH 07/22] staging:iio:ad7793: Remove unused platform_data
- from device state struct
-References: <1344616596-8026-1-git-send-email-lars@metafoo.de> <1344616596-8026-7-git-send-email-lars@metafoo.de> <502AA96C.3090105@kernel.org>
-In-Reply-To: <502AA96C.3090105@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [PATCH 17/22] staging:iio:ad7780: Use common Sigma Delta library
+References: <1344616596-8026-1-git-send-email-lars@metafoo.de> <1344616596-8026-17-git-send-email-lars@metafoo.de>
+In-Reply-To: <1344616596-8026-17-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 08/14/2012 08:39 PM, Jonathan Cameron wrote:
-> On 08/10/2012 05:36 PM, Lars-Peter Clausen wrote:
->> The platform data for the device is only used from within the drivers probe
->> callback, so there is no need to keep it around in the devices state struct.
->>
->> While we are at it mark the platform data struct as const.
->>
-There a couple of obvious bugs in this patch....
+On 10/08/12 17:36, Lars-Peter Clausen wrote:
+> Convert the ad7780 driver to make use of the new common code for devices from
+> the Analog Devices Sigma Delta family.
+>
+> As a bonus the ad7780 driver gains support for buffered mode. Although this is a
+> bit tricky. The ad7780 reports in the lower 4 unused bits of the data word the
+> internal gain used. The driver will update the scale attribute value depending
+> on the gain accordingly, but obviously this will only work if the gain does not
+> change while sampling. This is not perfect, but since we store the raw value in
+> the buffer an application which is aware of this can extract the gain factor
+> from the buffer as well an apply it accordingly.
+A bit ugly as you say.  Given the gain is controlled by external pins, 
+it's probably fair to assume it won't go changing all on it's own...
 
-My plan with these is to first send a series to Greg with the
-fixes in it (not including this which is merely a cleanup?)
-Once that shows up in his trees I'll do a second pull request with
-this + the sigma delta cleanups.
-It is probably the cleanest approach and we aren't pressed for time
-at the moment.  To show what will be in there I will push out
-a new branch to kernel.org shortly togreg-postfixes.
+In the long run we may want to think about how to encode this sort of
+change in the datastream (for the few occasions where it can in theory
+change out of the control of the driver...)
 
-Lars-Peter, please verify that my fixup of this is correct
-(all I've done is build tested it).
-
-
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> ---
->>  drivers/staging/iio/adc/ad7793.c |   14 ++++++--------
->>  1 file changed, 6 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
->> index 112e2b7..0ba598e 100644
->> --- a/drivers/staging/iio/adc/ad7793.c
->> +++ b/drivers/staging/iio/adc/ad7793.c
->> @@ -44,7 +44,6 @@ struct ad7793_state {
->>  	struct iio_trigger		*trig;
->>  	const struct ad7793_chip_info	*chip_info;
->>  	struct regulator		*reg;
->> -	struct ad7793_platform_data	*pdata;
->>  	wait_queue_head_t		wq_data_avail;
->>  	bool				done;
->>  	bool				irq_dis;
->> @@ -253,7 +252,8 @@ out:
->>  	return ret;
->>  }
->>  
->> -static int ad7793_setup(struct ad7793_state *st)
->> +static int ad7793_setup(struct ad7793_state *st
->> +	const struct ad7793_platform_data *pdata)
-> Really odd.  There's a missing comma between the arguments here...
-> I'll fixup.
->>  {
->>  	int i, ret = -1;
->>  	unsigned long long scale_uv;
->> @@ -277,9 +277,9 @@ static int ad7793_setup(struct ad7793_state *st)
->>  		goto out;
->>  	}
->>  
->> -	st->mode  = (st->pdata->mode & ~AD7793_MODE_SEL(-1)) |
->> +	st->mode  = (pdata->mode & ~AD7793_MODE_SEL(-1)) |
->>  			AD7793_MODE_SEL(AD7793_MODE_IDLE);
->> -	st->conf  = st->pdata->conf & ~AD7793_CONF_CHAN(-1);
->> +	st->conf  = pdata->conf & ~AD7793_CONF_CHAN(-1);
->>  
->>  	ret = ad7793_write_reg(st, AD7793_REG_MODE, sizeof(st->mode), st->mode);
->>  	if (ret)
->> @@ -882,7 +882,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
->>  
->>  static int __devinit ad7793_probe(struct spi_device *spi)
->>  {
->> -	struct ad7793_platform_data *pdata = spi->dev.platform_data;
->> +	const struct ad7793_platform_data *pdata = spi->dev.platform_data;
->>  	struct ad7793_state *st;
->>  	struct iio_dev *indio_dev;
->>  	int ret, voltage_uv = 0;
->> @@ -915,8 +915,6 @@ static int __devinit ad7793_probe(struct spi_device *spi)
->>  	st->chip_info =
->>  		&ad7793_chip_info_tbl[spi_get_device_id(spi)->driver_data];
->>  
->> -	st->pdata = pdata;
->> -
->>  	if (pdata && pdata->vref_mv)
->>  		st->int_vref_mv = pdata->vref_mv;
->>  	else if (voltage_uv)
->> @@ -944,7 +942,7 @@ static int __devinit ad7793_probe(struct spi_device *spi)
->>  	if (ret)
->>  		goto error_unreg_ring;
->>  
->> -	ret = ad7793_setup(st);
->> +	ret = ad7793_setup(st, pdata);
->>  	if (ret)
->>  		goto error_remove_trigger;
->>  
->>
+Anyhow, this patch looks good to me. Will pick it up later.
+>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+>   drivers/staging/iio/adc/Kconfig  |    1 +
+>   drivers/staging/iio/adc/ad7780.c |  186 ++++++++++++++------------------------
+>   2 files changed, 71 insertions(+), 116 deletions(-)
+>
+> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+> index 67711b7..fc7b7f6 100644
+> --- a/drivers/staging/iio/adc/Kconfig
+> +++ b/drivers/staging/iio/adc/Kconfig
+> @@ -99,6 +99,7 @@ config AD7780
+>   	tristate "Analog Devices AD7780 AD7781 ADC driver"
+>   	depends on SPI
+>   	depends on GPIOLIB
+> +	select AD_SIGMA_DELTA
+>   	help
+>   	  Say yes here to build support for Analog Devices
+>   	  AD7780 and AD7781 SPI analog to digital converters (ADC).
+> diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+> index 19ee49c..853f8b1 100644
+> --- a/drivers/staging/iio/adc/ad7780.c
+> +++ b/drivers/staging/iio/adc/ad7780.c
+> @@ -20,6 +20,7 @@
+>
+>   #include <linux/iio/iio.h>
+>   #include <linux/iio/sysfs.h>
+> +#include <linux/iio/adc/ad_sigma_delta.h>
+>
+>   #include "ad7780.h"
+>
+> @@ -37,20 +38,13 @@ struct ad7780_chip_info {
+>   };
+>
+>   struct ad7780_state {
+> -	struct spi_device		*spi;
+>   	const struct ad7780_chip_info	*chip_info;
+>   	struct regulator		*reg;
+> -	struct ad7780_platform_data	*pdata;
+> -	wait_queue_head_t		wq_data_avail;
+> -	bool				done;
+> +	int				powerdown_gpio;
+> +	unsigned int	gain;
+>   	u16				int_vref_mv;
+> -	struct spi_transfer		xfer;
+> -	struct spi_message		msg;
+> -	/*
+> -	 * DMA (thus cache coherency maintenance) requires the
+> -	 * transfer buffers to live in their own cache lines.
+> -	 */
+> -	unsigned int			data ____cacheline_aligned;
+> +
+> +	struct ad_sigma_delta sd;
+>   };
+>
+>   enum ad7780_supported_device_ids {
+> @@ -58,28 +52,30 @@ enum ad7780_supported_device_ids {
+>   	ID_AD7781,
+>   };
+>
+> -static int ad7780_read(struct ad7780_state *st, int *val)
+> +static struct ad7780_state *ad_sigma_delta_to_ad7780(struct ad_sigma_delta *sd)
+>   {
+> -	int ret;
+> -
+> -	spi_bus_lock(st->spi->master);
+> -
+> -	enable_irq(st->spi->irq);
+> -	st->done = false;
+> -	gpio_set_value(st->pdata->gpio_pdrst, 1);
+> +	return container_of(sd, struct ad7780_state, sd);
+> +}
+>
+> -	ret = wait_event_interruptible(st->wq_data_avail, st->done);
+> -	disable_irq_nosync(st->spi->irq);
+> -	if (ret)
+> -		goto out;
+> +static int ad7780_set_mode(struct ad_sigma_delta *sigma_delta,
+> +	enum ad_sigma_delta_mode mode)
+> +{
+> +	struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
+> +	unsigned val;
+> +
+> +	switch (mode) {
+> +	case AD_SD_MODE_SINGLE:
+> +	case AD_SD_MODE_CONTINUOUS:
+> +		val = 1;
+> +		break;
+> +	default:
+> +		val = 0;
+> +		break;
+> +	}
+>
+> -	ret = spi_sync_locked(st->spi, &st->msg);
+> -	*val = be32_to_cpu(st->data);
+> -out:
+> -	gpio_set_value(st->pdata->gpio_pdrst, 0);
+> -	spi_bus_unlock(st->spi->master);
+> +	gpio_set_value(st->powerdown_gpio, val);
+>
+> -	return ret;
+> +	return 0;
+>   }
+>
+>   static int ad7780_read_raw(struct iio_dev *indio_dev,
+> @@ -89,89 +85,57 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
+>   			   long m)
+>   {
+>   	struct ad7780_state *st = iio_priv(indio_dev);
+> -	struct iio_chan_spec channel = st->chip_info->channel;
+> -	int ret, smpl = 0;
+>   	unsigned long scale_uv;
+>
+>   	switch (m) {
+>   	case IIO_CHAN_INFO_RAW:
+> -		mutex_lock(&indio_dev->mlock);
+> -		ret = ad7780_read(st, &smpl);
+> -		mutex_unlock(&indio_dev->mlock);
+> -
+> -		if (ret < 0)
+> -			return ret;
+> -
+> -		if ((smpl & AD7780_ERR) ||
+> -			!((smpl & AD7780_PAT0) && !(smpl & AD7780_PAT1)))
+> -			return -EIO;
+> -
+> -		*val = (smpl >> channel.scan_type.shift) &
+> -			((1 << (channel.scan_type.realbits)) - 1);
+> -		*val -= (1 << (channel.scan_type.realbits - 1));
+> -
+> -		if (!(smpl & AD7780_GAIN))
+> -			*val *= 128;
+> -
+> -		return IIO_VAL_INT;
+> +		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
+>   	case IIO_CHAN_INFO_SCALE:
+> -		scale_uv = (st->int_vref_mv * 100000)
+> -			>> (channel.scan_type.realbits - 1);
+> +		scale_uv = (st->int_vref_mv * 100000 * st->gain)
+> +			>> (chan->scan_type.realbits - 1);
+>   		*val =  scale_uv / 100000;
+>   		*val2 = (scale_uv % 100000) * 10;
+>   		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		*val -= (1 << (chan->scan_type.realbits - 1));
+> +		return IIO_VAL_INT;
+>   	}
+> +
+>   	return -EINVAL;
+>   }
+>
+> +static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
+> +	unsigned int raw_sample)
+> +{
+> +	struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
+> +
+> +	if ((raw_sample & AD7780_ERR) ||
+> +		!((raw_sample & AD7780_PAT0) && !(raw_sample & AD7780_PAT1)))
+> +		return -EIO;
+> +
+> +	if (raw_sample & AD7780_GAIN)
+> +		st->gain = 1;
+> +	else
+> +		st->gain = 128;
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct ad_sigma_delta_info ad7780_sigma_delta_info = {
+> +	.set_mode = ad7780_set_mode,
+> +	.postprocess_sample = ad7780_postprocess_sample,
+> +	.has_registers = false,
+> +};
+> +
+>   static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
+>   	[ID_AD7780] = {
+> -		.channel = {
+> -			.type = IIO_VOLTAGE,
+> -			.indexed = 1,
+> -			.channel = 0,
+> -			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+> -			IIO_CHAN_INFO_SCALE_SHARED_BIT |
+> -			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
+> -			.scan_type = {
+> -				.sign = 'u',
+> -				.realbits = 24,
+> -				.storagebits = 32,
+> -				.shift = 8,
+> -			},
+> -		},
+> +		.channel = AD_SD_CHANNEL(1, 0, 0, 24, 32, 8),
+>   	},
+>   	[ID_AD7781] = {
+> -		.channel = {
+> -			.type = IIO_VOLTAGE,
+> -			.indexed = 1,
+> -			.channel = 0,
+> -			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+> -			IIO_CHAN_INFO_SCALE_SHARED_BIT |
+> -			IIO_CHAN_INFO_OFFSET_SHARED_BIT,
+> -			.scan_type = {
+> -				.sign = 'u',
+> -				.realbits = 20,
+> -				.storagebits = 32,
+> -				.shift = 12,
+> -			},
+> -		},
+> +		.channel = AD_SD_CHANNEL(1, 0, 0, 20, 32, 12),
+>   	},
+>   };
+>
+> -/**
+> - *  Interrupt handler
+> - */
+> -static irqreturn_t ad7780_interrupt(int irq, void *dev_id)
+> -{
+> -	struct ad7780_state *st = dev_id;
+> -
+> -	st->done = true;
+> -	wake_up_interruptible(&st->wq_data_avail);
+> -
+> -	return IRQ_HANDLED;
+> -};
+> -
+>   static const struct iio_info ad7780_info = {
+>   	.read_raw = &ad7780_read_raw,
+>   	.driver_module = THIS_MODULE,
+> @@ -194,6 +158,9 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+>   		return -ENOMEM;
+>
+>   	st = iio_priv(indio_dev);
+> +	st->gain = 1;
+> +
+> +	ad_sd_init(&st->sd, indio_dev, spi, &ad7780_sigma_delta_info);
+>
+>   	st->reg = regulator_get(&spi->dev, "vcc");
+>   	if (!IS_ERR(st->reg)) {
+> @@ -207,7 +174,7 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+>   	st->chip_info =
+>   		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+>
+> -	st->pdata = pdata;
+> +	st->powerdown_gpio = pdata->gpio_pdrst;
+>
+>   	if (pdata && pdata->vref_mv)
+>   		st->int_vref_mv = pdata->vref_mv;
+> @@ -217,7 +184,6 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+>   		dev_warn(&spi->dev, "reference voltage unspecified\n");
+>
+>   	spi_set_drvdata(spi, indio_dev);
+> -	st->spi = spi;
+>
+>   	indio_dev->dev.parent = &spi->dev;
+>   	indio_dev->name = spi_get_device_id(spi)->name;
+> @@ -226,40 +192,27 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+>   	indio_dev->num_channels = 1;
+>   	indio_dev->info = &ad7780_info;
+>
+> -	init_waitqueue_head(&st->wq_data_avail);
+> -
+> -	/* Setup default message */
+> -
+> -	st->xfer.rx_buf = &st->data;
+> -	st->xfer.len = st->chip_info->channel.scan_type.storagebits / 8;
+> -
+> -	spi_message_init(&st->msg);
+> -	spi_message_add_tail(&st->xfer, &st->msg);
+> -
+> -	ret = gpio_request_one(st->pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
+> +	ret = gpio_request_one(pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
+>   			       "AD7780 /PDRST");
+>   	if (ret) {
+>   		dev_err(&spi->dev, "failed to request GPIO PDRST\n");
+>   		goto error_disable_reg;
+>   	}
+>
+> -	ret = request_irq(spi->irq, ad7780_interrupt,
+> -		IRQF_TRIGGER_FALLING, spi_get_device_id(spi)->name, st);
+> +	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+>   	if (ret)
+>   		goto error_free_gpio;
+>
+> -	disable_irq(spi->irq);
+> -
+>   	ret = iio_device_register(indio_dev);
+>   	if (ret)
+> -		goto error_free_irq;
+> +		goto error_cleanup_buffer_and_trigger;
+>
+>   	return 0;
+>
+> -error_free_irq:
+> -	free_irq(spi->irq, st);
+> +error_cleanup_buffer_and_trigger:
+> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+>   error_free_gpio:
+> -	gpio_free(st->pdata->gpio_pdrst);
+> +	gpio_free(pdata->gpio_pdrst);
+>   error_disable_reg:
+>   	if (!IS_ERR(st->reg))
+>   		regulator_disable(st->reg);
+> @@ -278,8 +231,9 @@ static int ad7780_remove(struct spi_device *spi)
+>   	struct ad7780_state *st = iio_priv(indio_dev);
+>
+>   	iio_device_unregister(indio_dev);
+> -	free_irq(spi->irq, st);
+> -	gpio_free(st->pdata->gpio_pdrst);
+> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+> +
+> +	gpio_free(st->powerdown_gpio);
+>   	if (!IS_ERR(st->reg)) {
+>   		regulator_disable(st->reg);
+>   		regulator_put(st->reg);
+>
