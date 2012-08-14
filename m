@@ -1,698 +1,815 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: linux-iio@vger.kernel.org
-Cc: Marek Vasut <marex@denx.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Juergen Beisert <jbe@pengutronix.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Shawn Guo <shawn.guo@linaro.org>,
-	Wolfgang Denk <wd@denx.de>
-Subject: [PATCH 2/3 V3] IIO: Add basic MXS LRADC driver
-Date: Sun, 12 Aug 2012 17:21:57 +0200
-Message-Id: <1344784918-32352-3-git-send-email-marex@denx.de>
-In-Reply-To: <1344784918-32352-1-git-send-email-marex@denx.de>
-References: <1344784918-32352-1-git-send-email-marex@denx.de>
+Return-Path: <jic23@kernel.org>
+Message-ID: <502AB2D1.3060000@kernel.org>
+Date: Tue, 14 Aug 2012 21:19:29 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+ drivers@analog.com
+Subject: Re: [PATCH 16/22] iio:adc: Add common code for ADI Sigma Delta devices
+References: <1344616596-8026-1-git-send-email-lars@metafoo.de> <1344616596-8026-16-git-send-email-lars@metafoo.de>
+In-Reply-To: <1344616596-8026-16-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-This driver is very basic. It supports userland trigger, buffer and
-raw access to channels. The support for delay channels is missing
-altogether.
+On 08/10/2012 05:36 PM, Lars-Peter Clausen wrote:
+> Most devices from the Analog Devices Sigma Delta family use a similar scheme for
+> communication with the device. This includes register access, as well as trigger
+> handling. But each device sub-family has different features and different
+> register layouts (some even have no registers at all) and thus it is impractical
+> to try to support all of the devices by the same driver. This patch adds a
+> common base library for Sigma Delta converter devices. It will be used by
+> individual drivers.
+> 
+> This code is mostly based on the three existing Sigma Delta drivers the AD7192,
+> AD7780 and AD7793, but has been improved for more robustness and flexibility.
+> 
+Lars-Peter.
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Juergen Beisert <jbe@pengutronix.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Shawn Guo <shawn.guo@linaro.org>
-Cc: Wolfgang Denk <wd@denx.de>
----
- .../bindings/staging/iio/adc/mxs-lradc.txt         |   15 +
- drivers/staging/iio/adc/Kconfig                    |   12 +
- drivers/staging/iio/adc/Makefile                   |    1 +
- drivers/staging/iio/adc/mxs-lradc.c                |  590 ++++++++++++++++++++
- 4 files changed, 618 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
- create mode 100644 drivers/staging/iio/adc/mxs-lradc.c
+One obvious bug below. I've fixed this up too, please verify the fixed version
+in the togreg-postfixes branch.
 
-V2: Use delay channel 0 in case of buffered sampling so the samples are deployed
-    continuously.
-    Disallow RAW sampling while buffered mode is enabled to simplify code
 
-V3: Fix the INIT_COMPLETION bug to prevent race
-    Add binding documentation
-    Drop redundant headers
-    Use platform_set_drvdata
-    Use HZ instead of msecs_to_jiffies(1000)
-    Don't claim the driver supports MX233 until properly adjusted for MX233
 
-diff --git a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-new file mode 100644
-index 0000000..801d58c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-@@ -0,0 +1,15 @@
-+* Freescale i.MX28 LRADC device driver
-+
-+Required properties:
-+- compatible: Should be "fsl,imx28-lradc"
-+- reg: Address and length of the register set for the device
-+- interrupts: Should contain the LRADC interrupts
-+
-+Examples:
-+
-+	lradc@80050000 {
-+		compatible = "fsl,imx28-lradc";
-+		reg = <0x80050000 0x2000>;
-+		interrupts = <10 14 15 16 17 18 19
-+				20 21 22 23 24 25>;
-+	};
-diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index 67711b7..97ca697 100644
---- a/drivers/staging/iio/adc/Kconfig
-+++ b/drivers/staging/iio/adc/Kconfig
-@@ -200,6 +200,18 @@ config LPC32XX_ADC
- 	  activate only one via device tree selection.  Provides direct access
- 	  via sysfs.
- 
-+config MXS_LRADC
-+	tristate "Freescale i.MX28 LRADC"
-+	depends on ARCH_MXS
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	  Say yes here to build support for i.MX28 LRADC convertor
-+	  built into these chips.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called mxs-lradc.
-+
- config SPEAR_ADC
- 	tristate "ST SPEAr ADC"
- 	depends on PLAT_SPEAR
-diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
-index 14e98b6..ecac9a0 100644
---- a/drivers/staging/iio/adc/Makefile
-+++ b/drivers/staging/iio/adc/Makefile
-@@ -38,4 +38,5 @@ obj-$(CONFIG_ADT7310) += adt7310.o
- obj-$(CONFIG_ADT7410) += adt7410.o
- obj-$(CONFIG_AD7280) += ad7280a.o
- obj-$(CONFIG_LPC32XX_ADC) += lpc32xx_adc.o
-+obj-$(CONFIG_MXS_LRADC) += mxs-lradc.o
- obj-$(CONFIG_SPEAR_ADC) += spear_adc.o
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-new file mode 100644
-index 0000000..b528f71
---- /dev/null
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -0,0 +1,590 @@
-+/*
-+ * Freescale i.MX28 LRADC driver
-+ *
-+ * Copyright (c) 2012 DENX Software Engineering, GmbH.
-+ * Marek Vasut <marex@denx.de>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/interrupt.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/sysfs.h>
-+#include <linux/list.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/spinlock.h>
-+#include <linux/wait.h>
-+#include <linux/sched.h>
-+#include <linux/stmp_device.h>
-+#include <linux/bitops.h>
-+#include <linux/completion.h>
-+
-+#include <mach/mxs.h>
-+#include <mach/common.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+#define DRIVER_NAME		"mxs-lradc"
-+
-+#define LRADC_MAX_DELAY_CHANS	4
-+#define LRADC_MAX_MAPPED_CHANS	8
-+#define LRADC_MAX_TOTAL_CHANS	16
-+
-+#define LRADC_DELAY_TIMER_HZ	2000
-+
-+/*
-+ * Make this runtime configurable if necessary. Currently, if the buffered mode
-+ * is enabled, the LRADC takes LRADC_DELAY_TIMER_LOOP samples of data before
-+ * triggering IRQ. The sampling happens every (LRADC_DELAY_TIMER_PER / 2000)
-+ * seconds. The result is that the samples arrive every 500mS.
-+ */
-+#define LRADC_DELAY_TIMER_PER	200
-+#define LRADC_DELAY_TIMER_LOOP	5
-+
-+static const char * const mxs_lradc_irq_name[] = {
-+	"mxs-lradc-touchscreen",
-+	"mxs-lradc-thresh0",
-+	"mxs-lradc-thresh1",
-+	"mxs-lradc-channel0",
-+	"mxs-lradc-channel1",
-+	"mxs-lradc-channel2",
-+	"mxs-lradc-channel3",
-+	"mxs-lradc-channel4",
-+	"mxs-lradc-channel5",
-+	"mxs-lradc-channel6",
-+	"mxs-lradc-channel7",
-+	"mxs-lradc-button0",
-+	"mxs-lradc-button1",
-+};
-+
-+struct mxs_lradc_chan {
-+	uint8_t				slot;
-+	uint8_t				flags;
-+};
-+
-+struct mxs_lradc {
-+	struct device		*dev;
-+	void __iomem		*base;
-+	int			irq[13];
-+
-+	uint32_t		*buffer;
-+	struct iio_trigger	*trig;
-+
-+	struct mutex		lock;
-+
-+	uint8_t			enable;
-+
-+	struct completion	completion;
-+};
-+
-+#define	LRADC_CTRL0				0x00
-+#define LRADC_CTRL0_TOUCH_DETECT_ENABLE		(1 << 23)
-+#define LRADC_CTRL0_TOUCH_SCREEN_TYPE		(1 << 22)
-+
-+#define	LRADC_CTRL1				0x10
-+#define	LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
-+#define	LRADC_CTRL1_LRADC_IRQ_MASK		0x1fff
-+#define	LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
-+#define	LRADC_CTRL1_LRADC_IRQ_EN_MASK		(0x1fff << 16)
-+
-+#define	LRADC_CTRL2				0x20
-+#define	LRADC_CTRL2_TEMPSENSE_PWD		(1 << 15)
-+
-+#define	LRADC_CH(n)				(0x50 + (0x10 * (n)))
-+#define	LRADC_CH_ACCUMULATE			(1 << 29)
-+#define	LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
-+#define	LRADC_CH_NUM_SAMPLES_OFFSET		24
-+#define	LRADC_CH_VALUE_MASK			0x3ffff
-+#define	LRADC_CH_VALUE_OFFSET			0
-+
-+#define	LRADC_DELAY(n)				(0xd0 + (0x10 * (n)))
-+#define	LRADC_DELAY_TRIGGER_LRADCS_MASK		(0xff << 24)
-+#define	LRADC_DELAY_TRIGGER_LRADCS_OFFSET	24
-+#define	LRADC_DELAY_KICK			(1 << 20)
-+#define	LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
-+#define	LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
-+#define	LRADC_DELAY_LOOP_COUNT_MASK		(0x1f << 11)
-+#define	LRADC_DELAY_LOOP_COUNT_OFFSET		11
-+#define	LRADC_DELAY_DELAY_MASK			0x7ff
-+#define	LRADC_DELAY_DELAY_OFFSET		0
-+
-+#define	LRADC_CTRL4				0x140
-+#define	LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
-+#define	LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
-+
-+/*
-+ * Raw I/O operations
-+ */
-+static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
-+			const struct iio_chan_spec *chan,
-+			int *val, int *val2, long m)
-+{
-+	struct mxs_lradc *lradc = iio_priv(iio_dev);
-+	int ret;
-+
-+	if (m != IIO_CHAN_INFO_RAW)
-+		return -EINVAL;
-+
-+	/* Check for invalid channel */
-+	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
-+		return -EINVAL;
-+
-+	/*
-+	 * See if there is no buffered operation in progess. If there is, simply
-+	 * bail out. This can be improved to support both buffered and raw IO at
-+	 * the same time, yet the code becomes horribly complicated. Therefore I
-+	 * applied KISS principle here.
-+	 */
-+	ret = mutex_trylock(&lradc->lock);
-+	if (!ret)
-+		return -EBUSY;
-+
-+	INIT_COMPLETION(lradc->completion);
-+
-+	/*
-+	 * No buffered operation in progress, map the channel and trigger it.
-+	 * Virtual channel 0 is always used here as the others are always not
-+	 * used if doing raw sampling.
-+	 */
-+	writel(LRADC_CTRL1_LRADC_IRQ_EN_MASK,
-+		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
-+	writel(0xff, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
-+
-+	writel(chan->channel, lradc->base + LRADC_CTRL4);
-+	writel(0, lradc->base + LRADC_CH(0));
-+
-+	/* Enable the IRQ and start sampling the channel. */
-+	writel(LRADC_CTRL1_LRADC_IRQ_EN(0),
-+		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_SET);
-+	writel(1 << 0, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
-+
-+	/* Wait for completion on the channel, 1 second max. */
-+	ret = wait_for_completion_killable_timeout(&lradc->completion, HZ);
-+	if (!ret)
-+		ret = -ETIMEDOUT;
-+	if (ret < 0)
-+		goto err;
-+
-+	/* Read the data. */
-+	*val = readl(lradc->base + LRADC_CH(0)) & LRADC_CH_VALUE_MASK;
-+	ret = IIO_VAL_INT;
-+
-+err:
-+	writel(LRADC_CTRL1_LRADC_IRQ_EN(0),
-+		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
-+
-+	mutex_unlock(&lradc->lock);
-+
-+	return ret;
-+}
-+
-+static const struct iio_info mxs_lradc_iio_info = {
-+	.driver_module		= THIS_MODULE,
-+	.read_raw		= mxs_lradc_read_raw,
-+};
-+
-+/*
-+ * IRQ Handling
-+ */
-+static irqreturn_t mxs_lradc_handle_irq(int irq, void *data)
-+{
-+	struct iio_dev *iio = data;
-+	struct mxs_lradc *lradc = iio_priv(iio);
-+	unsigned long reg = readl(lradc->base + LRADC_CTRL1);
-+
-+	if (!(reg & LRADC_CTRL1_LRADC_IRQ_MASK))
-+		return IRQ_NONE;
-+
-+	/*
-+	 * Touchscreen IRQ handling code shall probably have priority
-+	 * and therefore shall be placed here.
-+	 */
-+
-+	if (iio_buffer_enabled(iio))
-+		iio_trigger_poll(iio->trig, iio_get_time_ns());
-+	else if (reg & LRADC_CTRL1_LRADC_IRQ(0))
-+		complete(&lradc->completion);
-+
-+	writel(reg & LRADC_CTRL1_LRADC_IRQ_MASK,
-+		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+/*
-+ * Trigger handling
-+ */
-+static irqreturn_t mxs_lradc_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *iio = pf->indio_dev;
-+	struct mxs_lradc *lradc = iio_priv(iio);
-+	struct iio_buffer *buffer = iio->buffer;
-+	const uint32_t chan_value = LRADC_CH_ACCUMULATE |
-+		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
-+	int i, j = 0;
-+
-+	for_each_set_bit(i, iio->active_scan_mask, iio->masklength) {
-+		lradc->buffer[j] = readl(lradc->base + LRADC_CH(j));
-+		writel(chan_value, lradc->base + LRADC_CH(j));
-+		lradc->buffer[j] &= LRADC_CH_VALUE_MASK;
-+		lradc->buffer[j] /= LRADC_DELAY_TIMER_LOOP;
-+		j++;
-+	}
-+
-+	if (iio->scan_timestamp) {
-+		s64 *timestamp = (s64 *)((u8 *)lradc->buffer +
-+					ALIGN(j, sizeof(s64)));
-+		*timestamp = pf->timestamp;
-+	}
-+
-+	iio_push_to_buffer(buffer, (u8 *)lradc->buffer, pf->timestamp);
-+
-+	iio_trigger_notify_done(iio->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int mxs_lradc_configure_trigger(struct iio_trigger *trig, bool state)
-+{
-+	struct iio_dev *iio = trig->private_data;
-+	struct mxs_lradc *lradc = iio_priv(iio);
-+	const uint32_t st = state ? STMP_OFFSET_REG_SET : STMP_OFFSET_REG_CLR;
-+
-+	writel(LRADC_DELAY_KICK, lradc->base + LRADC_DELAY(0) + st);
-+
-+	return 0;
-+}
-+
-+static const struct iio_trigger_ops mxs_lradc_trigger_ops = {
-+	.owner = THIS_MODULE,
-+	.set_trigger_state = &mxs_lradc_configure_trigger,
-+};
-+
-+static int mxs_lradc_trigger_init(struct iio_dev *iio)
-+{
-+	int ret;
-+	struct iio_trigger *trig;
-+
-+	trig = iio_trigger_alloc("%s-dev%i", iio->name, iio->id);
-+	if (trig == NULL)
-+		return -ENOMEM;
-+
-+	trig->dev.parent = iio->dev.parent;
-+	trig->private_data = iio;
-+	trig->ops = &mxs_lradc_trigger_ops;
-+
-+	ret = iio_trigger_register(trig);
-+	if (ret) {
-+		iio_trigger_free(trig);
-+		return ret;
-+	}
-+
-+	iio->trig = trig;
-+
-+	return 0;
-+}
-+
-+static void mxs_lradc_trigger_remove(struct iio_dev *iio)
-+{
-+	iio_trigger_unregister(iio->trig);
-+	iio_trigger_free(iio->trig);
-+}
-+
-+static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
-+{
-+	struct mxs_lradc *lradc = iio_priv(iio);
-+	struct iio_buffer *buffer = iio->buffer;
-+	int ret = 0, chan, ofs = 0, enable = 0;
-+	uint32_t ctrl4 = 0;
-+	uint32_t ctrl1_irq = 0;
-+	const uint32_t chan_value = LRADC_CH_ACCUMULATE |
-+		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
-+	const int len = bitmap_weight(buffer->scan_mask, LRADC_MAX_TOTAL_CHANS);
-+
-+	if (!len)
-+		return -EINVAL;
-+
-+	/*
-+	 * Lock the driver so raw access can not be done during buffered
-+	 * operation. This simplifies the code a lot.
-+	 */
-+	ret = mutex_trylock(&lradc->lock);
-+	if (!ret)
-+		return -EBUSY;
-+
-+	lradc->buffer = kmalloc(len * sizeof(*lradc->buffer), GFP_KERNEL);
-+	if (!lradc->buffer) {
-+		ret = -ENOMEM;
-+		goto err_mem;
-+	}
-+
-+	ret = iio_sw_buffer_preenable(iio);
-+	if (ret < 0)
-+		goto err_buf;
-+
-+	writel(LRADC_CTRL1_LRADC_IRQ_EN_MASK,
-+		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
-+	writel(0xff, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
-+
-+	for_each_set_bit(chan, buffer->scan_mask, LRADC_MAX_TOTAL_CHANS) {
-+		ctrl4 |= chan << LRADC_CTRL4_LRADCSELECT_OFFSET(ofs);
-+		ctrl1_irq |= LRADC_CTRL1_LRADC_IRQ_EN(ofs);
-+		writel(chan_value, lradc->base + LRADC_CH(ofs));
-+		enable |= 1 << ofs;
-+		ofs++;
-+	};
-+
-+	writel(LRADC_DELAY_TRIGGER_LRADCS_MASK | LRADC_DELAY_KICK,
-+		lradc->base + LRADC_DELAY(0) + STMP_OFFSET_REG_CLR);
-+
-+	writel(ctrl4, lradc->base + LRADC_CTRL4);
-+	writel(ctrl1_irq, lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_SET);
-+
-+	writel(enable << LRADC_DELAY_TRIGGER_LRADCS_OFFSET,
-+		lradc->base + LRADC_DELAY(0) + STMP_OFFSET_REG_SET);
-+
-+	return 0;
-+
-+err_buf:
-+	kfree(lradc->buffer);
-+err_mem:
-+	mutex_unlock(&lradc->lock);
-+	return ret;
-+}
-+
-+static int mxs_lradc_buffer_postdisable(struct iio_dev *iio)
-+{
-+	struct mxs_lradc *lradc = iio_priv(iio);
-+
-+	writel(LRADC_DELAY_TRIGGER_LRADCS_MASK | LRADC_DELAY_KICK,
-+		lradc->base + LRADC_DELAY(0) + STMP_OFFSET_REG_CLR);
-+
-+	writel(0xff, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
-+	writel(LRADC_CTRL1_LRADC_IRQ_EN_MASK,
-+		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
-+
-+	kfree(lradc->buffer);
-+	mutex_unlock(&lradc->lock);
-+
-+	return 0;
-+}
-+
-+static bool mxs_lradc_validate_scan_mask(struct iio_dev *iio,
-+					const unsigned long *mask)
-+{
-+	const int mw = bitmap_weight(mask, iio->masklength);
-+
-+	return mw <= LRADC_MAX_MAPPED_CHANS;
-+}
-+
-+static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
-+	.preenable = &mxs_lradc_buffer_preenable,
-+	.postenable = &iio_triggered_buffer_postenable,
-+	.predisable = &iio_triggered_buffer_predisable,
-+	.postdisable = &mxs_lradc_buffer_postdisable,
-+	.validate_scan_mask = &mxs_lradc_validate_scan_mask,
-+};
-+
-+/*
-+ * Driver initialization
-+ */
-+
-+#define MXS_ADC_CHAN(idx, chan_type) {				\
-+	.type = (chan_type),					\
-+	.indexed = 1,						\
-+	.scan_index = (idx),					\
-+	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,		\
-+	.channel = (idx),					\
-+	.scan_type = {						\
-+		.sign = 'u',					\
-+		.realbits = 18,					\
-+		.storagebits = 32,				\
-+	},							\
-+}
-+
-+static const struct iio_chan_spec mxs_lradc_chan_spec[] = {
-+	MXS_ADC_CHAN(0, IIO_VOLTAGE),
-+	MXS_ADC_CHAN(1, IIO_VOLTAGE),
-+	MXS_ADC_CHAN(2, IIO_VOLTAGE),
-+	MXS_ADC_CHAN(3, IIO_VOLTAGE),
-+	MXS_ADC_CHAN(4, IIO_VOLTAGE),
-+	MXS_ADC_CHAN(5, IIO_VOLTAGE),
-+	MXS_ADC_CHAN(6, IIO_VOLTAGE),
-+	MXS_ADC_CHAN(7, IIO_VOLTAGE),	/* VBATT */
-+	MXS_ADC_CHAN(8, IIO_TEMP),	/* Temp sense 0 */
-+	MXS_ADC_CHAN(9, IIO_TEMP),	/* Temp sense 1 */
-+	MXS_ADC_CHAN(10, IIO_VOLTAGE),	/* VDDIO */
-+	MXS_ADC_CHAN(11, IIO_VOLTAGE),	/* VTH */
-+	MXS_ADC_CHAN(12, IIO_VOLTAGE),	/* VDDA */
-+	MXS_ADC_CHAN(13, IIO_VOLTAGE),	/* VDDD */
-+	MXS_ADC_CHAN(14, IIO_VOLTAGE),	/* VBG */
-+	MXS_ADC_CHAN(15, IIO_VOLTAGE),	/* VDD5V */
-+};
-+
-+static void mxs_lradc_hw_init(struct mxs_lradc *lradc)
-+{
-+	int i;
-+	const uint32_t cfg =
-+		(LRADC_DELAY_TIMER_PER << LRADC_DELAY_DELAY_OFFSET);
-+
-+	stmp_reset_block(lradc->base);
-+
-+	for (i = 0; i < LRADC_MAX_DELAY_CHANS; i++)
-+		writel(cfg | (1 << (LRADC_DELAY_TRIGGER_DELAYS_OFFSET + i)),
-+			lradc->base + LRADC_DELAY(i));
-+
-+	/* Start internal temperature sensing. */
-+	writel(0, lradc->base + LRADC_CTRL2);
-+}
-+
-+static void mxs_lradc_hw_stop(struct mxs_lradc *lradc)
-+{
-+	int i;
-+
-+	writel(LRADC_CTRL1_LRADC_IRQ_EN_MASK,
-+		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
-+
-+	for (i = 0; i < LRADC_MAX_DELAY_CHANS; i++)
-+		writel(0, lradc->base + LRADC_DELAY(i));
-+}
-+
-+static int __devinit mxs_lradc_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct mxs_lradc *lradc;
-+	struct iio_dev *iio;
-+	struct resource *iores;
-+	int ret = 0;
-+	int i;
-+
-+	/* Allocate the IIO device. */
-+	iio = iio_device_alloc(sizeof(*lradc));
-+	if (!iio) {
-+		dev_err(dev, "Failed to allocate IIO device\n");
-+		return -ENOMEM;
-+	}
-+
-+	lradc = iio_priv(iio);
-+
-+	/* Grab the memory area */
-+	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	lradc->dev = &pdev->dev;
-+	lradc->base = devm_request_and_ioremap(dev, iores);
-+	if (!lradc->base) {
-+		ret = -EADDRNOTAVAIL;
-+		goto err_addr;
-+	}
-+
-+	/* Grab all IRQ sources */
-+	for (i = 0; i < 13; i++) {
-+		lradc->irq[i] = platform_get_irq(pdev, i);
-+		if (lradc->irq[i] < 0) {
-+			ret = -EINVAL;
-+			goto err_addr;
-+		}
-+
-+		ret = devm_request_irq(dev, lradc->irq[i],
-+					mxs_lradc_handle_irq, 0,
-+					mxs_lradc_irq_name[i], iio);
-+		if (ret)
-+			goto err_addr;
-+	}
-+
-+	platform_set_drvdata(pdev, iio);
-+
-+	init_completion(&lradc->completion);
-+	mutex_init(&lradc->lock);
-+
-+	iio->name = pdev->name;
-+	iio->dev.parent = &pdev->dev;
-+	iio->info = &mxs_lradc_iio_info;
-+	iio->modes = INDIO_DIRECT_MODE;
-+	iio->channels = mxs_lradc_chan_spec;
-+	iio->num_channels = ARRAY_SIZE(mxs_lradc_chan_spec);
-+
-+	ret = iio_triggered_buffer_setup(iio, &iio_pollfunc_store_time,
-+				&mxs_lradc_trigger_handler,
-+				&mxs_lradc_buffer_ops);
-+	if (ret)
-+		goto err_addr;
-+
-+	ret = mxs_lradc_trigger_init(iio);
-+	if (ret)
-+		goto err_trig;
-+
-+	/* Register IIO device. */
-+	ret = iio_device_register(iio);
-+	if (ret) {
-+		dev_err(dev, "Failed to register IIO device\n");
-+		goto err_dev;
-+	}
-+
-+	/* Configure the hardware. */
-+	mxs_lradc_hw_init(lradc);
-+
-+	return 0;
-+
-+err_dev:
-+	mxs_lradc_trigger_remove(iio);
-+err_trig:
-+	iio_triggered_buffer_cleanup(iio);
-+err_addr:
-+	iio_device_free(iio);
-+	return ret;
-+}
-+
-+static int __devexit mxs_lradc_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *iio = platform_get_drvdata(pdev);
-+	struct mxs_lradc *lradc = iio_priv(iio);
-+
-+	mxs_lradc_hw_stop(lradc);
-+
-+	iio_device_unregister(iio);
-+	iio_triggered_buffer_cleanup(iio);
-+	mxs_lradc_trigger_remove(iio);
-+	iio_device_free(iio);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id mxs_lradc_dt_ids[] = {
-+	{ .compatible = "fsl,imx28-lradc", },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
-+
-+static struct platform_driver mxs_lradc_driver = {
-+	.driver	= {
-+		.name	= DRIVER_NAME,
-+		.owner	= THIS_MODULE,
-+		.of_match_table = mxs_lradc_dt_ids,
-+	},
-+	.probe	= mxs_lradc_probe,
-+	.remove	= __devexit_p(mxs_lradc_remove),
-+};
-+
-+module_platform_driver(mxs_lradc_driver);
-+
-+MODULE_AUTHOR("Marek Vasut <marex@denx.de>");
-+MODULE_DESCRIPTION("Freescale i.MX28 LRADC driver");
-+MODULE_LICENSE("GPL v2");
--- 
-1.7.10.4
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+>  drivers/iio/adc/Kconfig                |    5 +
+>  drivers/iio/adc/Makefile               |    1 +
+>  drivers/iio/adc/ad_sigma_delta.c       |  557 ++++++++++++++++++++++++++++++++
+>  include/linux/iio/adc/ad_sigma_delta.h |  173 ++++++++++
+>  4 files changed, 736 insertions(+)
+>  create mode 100644 drivers/iio/adc/ad_sigma_delta.c
+>  create mode 100644 include/linux/iio/adc/ad_sigma_delta.h
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 8a78b4f..a2c5071 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -3,6 +3,11 @@
+>  #
+>  menu "Analog to digital converters"
+>  
+> +config AD_SIGMA_DELTA
+> +	tristate
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +
+>  config AD7266
+>  	tristate "Analog Devices AD7265/AD7266 ADC driver"
+>  	depends on SPI_MASTER
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 52eec25..5989356 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -2,5 +2,6 @@
+>  # Makefile for IIO ADC drivers
+>  #
+>  
+> +obj-$(CONFIG_AD_SIGMA_DELTA) += ad_sigma_delta.o
+>  obj-$(CONFIG_AD7266) += ad7266.o
+>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+> diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+> new file mode 100644
+> index 0000000..555feb7
+> --- /dev/null
+> +++ b/drivers/iio/adc/ad_sigma_delta.c
+> @@ -0,0 +1,557 @@
+> +/*
+> + * Support code for Analog Devices Sigma-Delta ADCs
+> + *
+> + * Copyright 2012 Analog Devices Inc.
+> + *  Author: Lars-Peter Clausen <lars@metafoo.de>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/interrupt.h>
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/err.h>
+> +#include <linux/module.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/adc/ad_sigma_delta.h>
+> +
+> +#include <asm/unaligned.h>
+> +
+> +
+> +#define AD_SD_COMM_CHAN_MASK	0x3
+> +
+> +#define AD_SD_REG_COMM		0x00
+> +#define AD_SD_REG_DATA		0x03
+> +
+> +/**
+> + * ad_sd_set_comm() - Set communications register
+> + *
+> + * @sigma_delta: The sigma delta device
+> + * @comm: New value for the communications register
+> + */
+> +void ad_sd_set_comm(struct ad_sigma_delta *sigma_delta, uint8_t comm)
+> +{
+> +	/* Some variants use the lower two bits of the communications register
+> +	 * to select the channel */
+> +	sigma_delta->comm = comm & AD_SD_COMM_CHAN_MASK;
+> +}
+> +EXPORT_SYMBOL_GPL(ad_sd_set_comm);
+> +
+> +/**
+> + * ad_sd_write_reg() - Write a register
+> + *
+> + * @sigma_delta: The sigma delta device
+> + * @reg: Address of the register
+> + * @size: Size of the register (0-3)
+> + * @val: Value to write to the register
+> + *
+> + * Returns 0 on success, an error code otherwise.
+> + **/
+> +int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
+> +	unsigned int size, unsigned int val)
+> +{
+> +	uint8_t *data = sigma_delta->data;
+> +	struct spi_transfer t = {
+> +		.tx_buf		= data,
+> +		.len		= size + 1,
+> +		.cs_change	= sigma_delta->bus_locked,
+> +	};
+> +	struct spi_message m;
+> +	int ret;
+> +
+> +	data[0] = (reg << sigma_delta->info->addr_shift) | sigma_delta->comm;
+> +
+> +	switch (size) {
+> +	case 3:
+> +		data[1] = val >> 16;
+> +		data[2] = val >> 8;
+> +		data[3] = val;
+> +		break;
+> +	case 2:
+> +		put_unaligned_be16(val, &data[1]);
+> +		break;
+> +	case 1:
+> +		data[1] = val;
+> +		break;
+> +	case 0:
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	spi_message_init(&m);
+> +	spi_message_add_tail(&t, &m);
+> +
+> +	if (sigma_delta->bus_locked)
+> +		ret = spi_sync_locked(sigma_delta->spi, &m);
+> +	else
+> +		ret = spi_sync(sigma_delta->spi, &m);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(ad_sd_write_reg);
+> +
+> +static int ad_sd_read_reg_raw(struct ad_sigma_delta *sigma_delta,
+> +	unsigned int reg, unsigned int size, uint8_t *val)
+> +{
+> +	uint8_t *data = sigma_delta->data;
+> +	int ret;
+> +	struct spi_transfer t[] = {
+> +		{
+> +			.tx_buf = data,
+> +			.len = 1,
+> +		}, {
+> +			.rx_buf = val,
+> +			.len = size,
+> +			.cs_change = sigma_delta->bus_locked,
+> +		},
+> +	};
+> +	struct spi_message m;
+> +
+> +	spi_message_init(&m);
+> +
+> +	if (sigma_delta->info->has_registers) {
+> +		data[0] = reg << sigma_delta->info->addr_shift;
+> +		data[0] |= sigma_delta->info->read_mask;
+> +		spi_message_add_tail(&t[0], &m);
+> +	}
+> +	spi_message_add_tail(&t[1], &m);
+> +
+> +	if (sigma_delta->bus_locked)
+> +		ret = spi_sync_locked(sigma_delta->spi, &m);
+> +	else
+> +		ret = spi_sync(sigma_delta->spi, &m);
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + * ad_sd_read_reg() - Read a register
+> + *
+> + * @sigma_delta: The sigma delta device
+> + * @reg: Address of the register
+> + * @size: Size of the register (1-4)
+> + * @val: Read value
+> + *
+> + * Returns 0 on success, an error code otherwise.
+> + **/
+> +int ad_sd_read_reg(struct ad_sigma_delta *sigma_delta,
+> +	unsigned int reg, unsigned int size, unsigned int *val)
+> +{
+> +	int ret;
+> +
+> +	ret = ad_sd_read_reg_raw(sigma_delta, reg, size, sigma_delta->data);
+> +	if (ret < 0)
+> +		goto out;
+> +
+> +	switch (size) {
+> +	case 4:
+> +		*val = get_unaligned_be32(sigma_delta->data);
+> +		break;
+> +	case 3:
+> +		*val = (sigma_delta->data[0] << 16) |
+> +			(sigma_delta->data[1] << 8) |
+> +			sigma_delta->data[2];
+> +		break;
+> +	case 2:
+> +		*val = get_unaligned_be16(sigma_delta->data);
+> +		break;
+> +	case 1:
+> +		*val = sigma_delta->data[0];
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		break;
+> +	}
+> +
+> +out:
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(ad_sd_read_reg);
+> +
+> +static int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
+> +	unsigned int mode, unsigned int channel)
+> +{
+> +	int ret;
+> +
+> +	ret = ad_sigma_delta_set_channel(sigma_delta, channel);
+> +	if (ret)
+> +		return ret;
+> +
+> +	spi_bus_lock(sigma_delta->spi->master);
+> +	sigma_delta->bus_locked = true;
+> +	INIT_COMPLETION(sigma_delta->completion);
+> +
+> +	ret = ad_sigma_delta_set_mode(sigma_delta, mode);
+> +	if (ret < 0)
+> +		goto out;
+> +
+> +	sigma_delta->irq_dis = false;
+> +	enable_irq(sigma_delta->spi->irq);
+> +	ret = wait_for_completion_timeout(&sigma_delta->completion, 2*HZ);
+> +	if (ret == 0) {
+> +		sigma_delta->irq_dis = true;
+> +		disable_irq_nosync(sigma_delta->spi->irq);
+> +		ret = -EIO;
+> +	} else {
+> +		ret = 0;
+> +	}
+> +out:
+> +	sigma_delta->bus_locked = false;
+> +	spi_bus_unlock(sigma_delta->spi->master);
+> +	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + * ad_sd_calibrate_all() - Performs channel calibration
+> + * @sigma_delta: The sigma delta device
+> + * @cb: Array of channels and calibration type to perform
+> + * @n: Number of items in cb
+> + *
+> + * Returns 0 on success, an error code otherwise.
+> + **/
+> +int ad_sd_calibrate_all(struct ad_sigma_delta *sigma_delta,
+> +	const struct ad_sd_calib_data *cb, unsigned int n)
+> +{
+> +	unsigned int i;
+> +	int ret;
+> +
+> +	for (i = 0; i < n; i++) {
+> +		ret = ad_sd_calibrate(sigma_delta, cb[i].mode, cb[i].channel);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(ad_sd_calibrate_all);
+> +
+> +/**
+> + * ad_sigma_delta_single_conversion() - Performs a single data conversion
+> + * @indio_dev: The IIO device
+> + * @chan: The conversion is done for this channel
+> + * @val: Pointer to the location where to store the read value
+> + *
+> + * Returns: 0 on success, an error value otherwise.
+> + */
+> +int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, int *val)
+> +{
+> +	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+> +	unsigned int sample, raw_sample;
+> +	int ret = 0;
+> +
+> +	if (iio_buffer_enabled(indio_dev))
+> +		return -EBUSY;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	ad_sigma_delta_set_channel(sigma_delta, chan->address);
+> +
+> +	spi_bus_lock(sigma_delta->spi->master);
+> +	sigma_delta->bus_locked = true;
+> +	INIT_COMPLETION(sigma_delta->completion);
+> +
+> +	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_SINGLE);
+> +
+> +	sigma_delta->irq_dis = false;
+> +	enable_irq(sigma_delta->spi->irq);
+> +	ret = wait_for_completion_interruptible_timeout(
+> +			&sigma_delta->completion, HZ);
+> +
+> +	sigma_delta->bus_locked = false;
+> +	spi_bus_unlock(sigma_delta->spi->master);
+> +
+> +	if (ret == 0)
+> +		ret = -EIO;
+> +	if (ret < 0)
+> +		goto out;
+> +
+> +	ret = ad_sd_read_reg(sigma_delta, AD_SD_REG_DATA,
+> +		DIV_ROUND_UP(chan->scan_type.realbits + chan->scan_type.shift, 8),
+> +		&raw_sample);
+> +
+> +out:
+> +	if (!sigma_delta->irq_dis) {
+> +		disable_irq_nosync(sigma_delta->spi->irq);
+> +		sigma_delta->irq_dis = true;
+> +	}
+> +
+> +	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	sample = raw_sample >> chan->scan_type.shift;
+> +	sample &= (1 << chan->scan_type.realbits) - 1;
+> +	*val = sample;
+> +
+> +	ret = ad_sigma_delta_postprocess_sample(sigma_delta, raw_sample);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +EXPORT_SYMBOL_GPL(ad_sigma_delta_single_conversion);
+> +
+> +static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
+> +{
+> +	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+> +	unsigned int channel;
+> +	int ret;
+> +
+> +	ret = iio_triggered_buffer_postenable(indio_dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	channel = find_first_bit(indio_dev->active_scan_mask,
+> +				 indio_dev->masklength);
+> +	ret = ad_sigma_delta_set_channel(sigma_delta,
+> +		indio_dev->channels[channel].address);
+> +	if (ret)
+> +		goto err_predisable;
+> +
+> +	spi_bus_lock(sigma_delta->spi->master);
+> +	sigma_delta->bus_locked = true;
+> +	ret = ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_CONTINUOUS);
+> +	if (ret)
+> +		goto err_unlock;
+> +
+> +	sigma_delta->irq_dis = false;
+> +	enable_irq(sigma_delta->spi->irq);
+> +
+> +	return 0;
+> +
+> +err_unlock:
+> +	spi_bus_unlock(sigma_delta->spi->master);
+> +err_predisable:
+> +
+> +	return ret;
+> +}
+> +
+> +static int ad_sd_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+> +
+> +	INIT_COMPLETION(sigma_delta->completion);
+> +	wait_for_completion_timeout(&sigma_delta->completion, HZ);
+> +
+> +	if (!sigma_delta->irq_dis) {
+> +		disable_irq_nosync(sigma_delta->spi->irq);
+> +		sigma_delta->irq_dis = true;
+> +	}
+> +
+> +	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+> +
+> +	sigma_delta->bus_locked = false;
+> +	return spi_bus_unlock(sigma_delta->spi->master);
+> +}
+> +
+> +static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+> +	unsigned int reg_size;
+> +	uint8_t data[16];
+> +	int ret;
+> +
+> +	memset(data, 0x00, 16);
+> +
+> +	/* Guaranteed to be aligned with 8 byte boundary */
+> +	if (indio_dev->scan_timestamp)
+> +		((s64 *)data)[1] = pf->timestamp;
+> +
+> +	reg_size = indio_dev->channels[0].scan_type.realbits +
+> +			indio_dev->channels[0].scan_type.shift;
+> +	reg_size = DIV_ROUND_UP(reg_size, 8);
+> +
+> +	switch (reg_size) {
+> +	case 4:
+> +	case 2:
+> +	case 1:
+> +		ret = ad_sd_read_reg_raw(sigma_delta, AD_SD_REG_DATA,
+> +			reg_size, &data[0]);
+> +		break;
+> +	case 3:
+> +		/* We store 24 bit samples in a 32 bit word. Keep the upper
+> +		 * byte set to zero. */
+> +		ret = ad_sd_read_reg_raw(sigma_delta, AD_SD_REG_DATA,
+> +			reg_size, &data[1]);
+> +		break;
+> +	}
+> +
+> +	iio_push_to_buffer(indio_dev->buffer, (uint8_t *)data, pf->timestamp);
+> +
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +	sigma_delta->irq_dis = false;
+> +	enable_irq(sigma_delta->spi->irq);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static const struct iio_buffer_setup_ops ad_sd_buffer_setup_ops = {
+> +	.preenable = &iio_sw_buffer_preenable,
+> +	.postenable = &ad_sd_buffer_postenable,
+> +	.predisable = &iio_triggered_buffer_predisable,
+> +	.postdisable = &ad_sd_buffer_postdisable,
+> +	.validate_scan_mask = &iio_validate_scan_mask_onehot,
+> +};
+> +
+> +static irqreturn_t ad_sd_data_rdy_trig_poll(int irq, void *private)
+> +{
+> +	struct ad_sigma_delta *sigma_delta = private;
+> +
+> +	complete(&sigma_delta->completion);
+> +	disable_irq_nosync(irq);
+> +	sigma_delta->irq_dis = true;
+> +	iio_trigger_poll(sigma_delta->trig, iio_get_time_ns());
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +/**
+> + * ad_sd_validate_trigger() - validate_trigger callback for ad_sigma_delta devices
+> + * @indio_dev: The IIO device
+> + * @trig: The new trigger
+> + *
+> + * Returns: 0 if the 'trig' matches the trigger registered by the ad_sigma_delta
+> + * device, -EINVAL otherwise.
+> + */
+> +int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig)
+> +{
+> +	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+> +
+> +	if (sigma_delta->trig != trig)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(ad_sd_validate_trigger);
+> +
+> +static const struct iio_trigger_ops ad_sd_trigger_ops = {
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static int ad_sd_probe_trigger(struct iio_dev *indio_dev)
+> +{
+> +	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+> +	int ret;
+> +
+> +	sigma_delta->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
+> +						indio_dev->id);
+> +	if (sigma_delta->trig == NULL) {
+> +		ret = -ENOMEM;
+> +		goto error_ret;
+> +	}
+> +	sigma_delta->trig->ops = &ad_sd_trigger_ops;
+> +	init_completion(&sigma_delta->completion);
+> +
+> +	ret = request_irq(sigma_delta->spi->irq,
+> +			  ad_sd_data_rdy_trig_poll,
+> +			  IRQF_TRIGGER_LOW,
+> +			  indio_dev->name,
+> +			  sigma_delta);
+> +	if (ret)
+> +		goto error_free_trig;
+> +
+> +	if (!sigma_delta->irq_dis) {
+> +		sigma_delta->irq_dis = true;
+> +		disable_irq_nosync(sigma_delta->spi->irq);
+> +	}
+> +	sigma_delta->trig->dev.parent = &sigma_delta->spi->dev;
+> +	sigma_delta->trig->private_data = sigma_delta;
+> +
+> +	ret = iio_trigger_register(sigma_delta->trig);
+> +	if (ret)
+> +		goto error_free_irq;
+> +
+> +	/* select default trigger */
+> +	indio_dev->trig = sigma_delta->trig;
+> +
+> +	return 0;
+> +
+> +error_free_irq:
+> +	free_irq(sigma_delta->spi->irq, sigma_delta);
+> +error_free_trig:
+> +	iio_trigger_free(sigma_delta->trig);
+> +error_ret:
+> +	return ret;
+> +}
+> +
+> +static void ad_sd_remove_trigger(struct iio_dev *indio_dev)
+> +{
+> +	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+> +
+> +	iio_trigger_unregister(sigma_delta->trig);
+> +	free_irq(sigma_delta->spi->irq, sigma_delta);
+> +	iio_trigger_free(sigma_delta->trig);
+> +}
+> +
+> +/**
+> + * ad_sd_setup_buffer_and_trigger() -
+> + * @indio_dev: The IIO device
+> + */
+> +int ad_sd_setup_buffer_and_trigger(struct iio_dev *indio_dev)
+> +{
+> +	int ret;
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+> +			&ad_sd_trigger_handler, &ad_sd_buffer_setup_ops);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ad_sd_probe_trigger(indio_dev);
+> +	if (ret) {
+> +		iio_triggered_buffer_cleanup(indio_dev);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(ad_sd_setup_buffer_and_trigger);
+> +
+> +/**
+> + * ad_sd_cleanup_buffer_and_trigger() -
+> + * @indio_dev: The IIO device
+> + */
+> +void ad_sd_cleanup_buffer_and_trigger(struct iio_dev *indio_dev)
+> +{
+> +	ad_sd_remove_trigger(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +}
+> +EXPORT_SYMBOL_GPL(ad_sd_cleanup_buffer_and_trigger);
+> +
+> +/**
+> + * ad_sd_init() - Initializes a ad_sigma_delta struct
+> + * @sigma_delta: The ad_sigma_delta device
+> + * @indio_dev: The IIO device which the Sigma Delta device is used for
+> + * @spi: The SPI device for the ad_sigma_delta device
+> + * @info: Device specific callbacks and options
+> + *
+> + * This function needs to be called before any other operations are performed on
+> + * the ad_sigma_delta struct.
+> + */
+> +int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
+> +	struct spi_device *spi, const struct ad_sigma_delta_info *info)
+> +{
+> +	sigma_delta->spi = spi;
+> +	sigma_delta->info = info;
+> +	iio_device_set_drvdata(indio_dev, sigma_delta);
+> +
+> +	return 0;
+> +}
+EXPORT_SYMBOL_GPL(ad_sd_init);
+
+> +
+> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
+> +MODULE_DESCRIPTION("Analog Devices Sigma-Delta ADCs");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+> new file mode 100644
+> index 0000000..2e4eab9
+> --- /dev/null
+> +++ b/include/linux/iio/adc/ad_sigma_delta.h
+> @@ -0,0 +1,173 @@
+> +/*
+> + * Support code for Analog Devices Sigma-Delta ADCs
+> + *
+> + * Copyright 2012 Analog Devices Inc.
+> + *  Author: Lars-Peter Clausen <lars@metafoo.de>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +#ifndef __AD_SIGMA_DELTA_H__
+> +#define __AD_SIGMA_DELTA_H__
+> +
+> +enum ad_sigma_delta_mode {
+> +	AD_SD_MODE_CONTINUOUS = 0,
+> +	AD_SD_MODE_SINGLE = 1,
+> +	AD_SD_MODE_IDLE = 2,
+> +	AD_SD_MODE_POWERDOWN = 3,
+> +};
+> +
+> +/**
+> + * struct ad_sigma_delta_calib_data - Calibration data for Sigma Delta devices
+> + * @mode: Calibration mode.
+> + * @channel: Calibration channel.
+> + */
+> +struct ad_sd_calib_data {
+> +	unsigned int mode;
+> +	unsigned int channel;
+> +};
+> +
+> +struct ad_sigma_delta;
+> +struct iio_dev;
+> +
+> +/**
+> + * struct ad_sigma_delta_info - Sigma Delta driver specific callbacks and options
+> + * @set_channel: Will be called to select the current channel, may be NULL.
+> + * @set_mode: Will be called to select the current mode, may be NULL.
+> + * @postprocess_sample: Is called for each sampled data word, can be used to
+> + *		modify or drop the sample data, it, may be NULL.
+> + * @has_registers: true if the device has writable and readable registers, false
+> + *		if there is just one read-only sample data shift register.
+> + * @addr_shift: Shift of the register address in the communications register.
+> + * @read_mask: Mask for the communications register having the read bit set.
+> + */
+> +struct ad_sigma_delta_info {
+> +	int (*set_channel)(struct ad_sigma_delta *, unsigned int channel);
+> +	int (*set_mode)(struct ad_sigma_delta *, enum ad_sigma_delta_mode mode);
+> +	int (*postprocess_sample)(struct ad_sigma_delta *, unsigned int raw_sample);
+> +	bool has_registers;
+> +	unsigned int addr_shift;
+> +	unsigned int read_mask;
+> +};
+> +
+> +/**
+> + * struct ad_sigma_delta - Sigma Delta device struct
+> + * @spi: The spi device associated with the Sigma Delta device.
+> + * @trig: The IIO trigger associated with the Sigma Delta device.
+> + *
+> + * Most of the fields are private to the sigma delta library code and should not
+> + * be accessed by individual drivers.
+> + */
+> +struct ad_sigma_delta {
+> +	struct spi_device	*spi;
+> +	struct iio_trigger	*trig;
+> +
+> +/* private: */
+> +	struct completion	completion;
+> +	bool			irq_dis;
+> +
+> +	bool			bus_locked;
+> +
+> +	uint8_t			comm;
+> +
+> +	const struct ad_sigma_delta_info *info;
+> +
+> +	/*
+> +	 * DMA (thus cache coherency maintenance) requires the
+> +	 * transfer buffers to live in their own cache lines.
+> +	 */
+> +	uint8_t				data[4] ____cacheline_aligned;
+> +};
+> +
+> +static inline int ad_sigma_delta_set_channel(struct ad_sigma_delta *sd,
+> +	unsigned int channel)
+> +{
+> +	if (sd->info->set_channel)
+> +		return sd->info->set_channel(sd, channel);
+> +
+> +	return 0;
+> +}
+> +
+> +static inline int ad_sigma_delta_set_mode(struct ad_sigma_delta *sd,
+> +	unsigned int mode)
+> +{
+> +	if (sd->info->set_mode)
+> +		return sd->info->set_mode(sd, mode);
+> +
+> +	return 0;
+> +}
+> +
+> +static inline int ad_sigma_delta_postprocess_sample(struct ad_sigma_delta *sd,
+> +	unsigned int raw_sample)
+> +{
+> +	if (sd->info->postprocess_sample)
+> +		return sd->info->postprocess_sample(sd, raw_sample);
+> +
+> +	return 0;
+> +}
+> +
+> +void ad_sd_set_comm(struct ad_sigma_delta *sigma_delta, uint8_t comm);
+> +int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
+> +	unsigned int size, unsigned int val);
+> +int ad_sd_read_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
+> +	unsigned int size, unsigned int *val);
+> +
+> +int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, int *val);
+> +int ad_sd_calibrate_all(struct ad_sigma_delta *sigma_delta,
+> +	const struct ad_sd_calib_data *cd, unsigned int n);
+> +int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
+> +	struct spi_device *spi, const struct ad_sigma_delta_info *info);
+> +
+> +int ad_sd_setup_buffer_and_trigger(struct iio_dev *indio_dev);
+> +void ad_sd_cleanup_buffer_and_trigger(struct iio_dev *indio_dev);
+> +
+> +int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
+> +
+> +#define __AD_SD_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
+> +	_storagebits, _shift, _extend_name, _type) \
+> +	{ \
+> +		.type = (_type), \
+> +		.differential = (_channel2 == -1 ? 0 : 1), \
+> +		.indexed = 1, \
+> +		.channel = (_channel1), \
+> +		.channel2 = (_channel2), \
+> +		.address = (_address), \
+> +		.extend_name = (_extend_name), \
+> +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+> +			IIO_CHAN_INFO_SCALE_SHARED_BIT | \
+> +			IIO_CHAN_INFO_OFFSET_SEPARATE_BIT, \
+> +		.scan_index = (_si), \
+> +		.scan_type = { \
+> +			.sign = 'u', \
+> +			.realbits = (_bits), \
+> +			.storagebits = (_storagebits), \
+> +			.shift = (_shift), \
+> +			.endianness = IIO_BE, \
+> +		}, \
+> +	}
+> +
+> +#define AD_SD_DIFF_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
+> +	_storagebits, _shift) \
+> +	__AD_SD_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
+> +		_storagebits, _shift, NULL, IIO_VOLTAGE)
+> +
+> +#define AD_SD_SHORTED_CHANNEL(_si, _channel, _address, _bits, \
+> +	_storagebits, _shift) \
+> +	__AD_SD_CHANNEL(_si, _channel, _channel, _address, _bits, \
+> +		_storagebits, _shift, "shorted", IIO_VOLTAGE)
+> +
+> +#define AD_SD_CHANNEL(_si, _channel, _address, _bits, \
+> +	_storagebits, _shift) \
+> +	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
+> +		_storagebits, _shift, NULL, IIO_VOLTAGE)
+> +
+> +#define AD_SD_TEMP_CHANNEL(_si, _address, _bits, _storagebits, _shift) \
+> +	__AD_SD_CHANNEL(_si, 0, -1, _address, _bits, \
+> +		_storagebits, _shift, NULL, IIO_TEMP)
+> +
+> +#define AD_SD_SUPPLY_CHANNEL(_si, _channel, _address, _bits, _storagebits, \
+> +	_shift) \
+> +	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
+> +		_storagebits, _shift, "supply", IIO_VOLTAGE)
+> +
+> +#endif
+> 
