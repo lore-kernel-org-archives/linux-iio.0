@@ -1,46 +1,52 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5028FD24.1010307@metafoo.de>
-Date: Mon, 13 Aug 2012 15:12:04 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <shawn.guo@linaro.org>
+Date: Tue, 14 Aug 2012 09:56:50 +0800
+From: Shawn Guo <shawn.guo@linaro.org>
+To: Marek Vasut <marex@denx.de>
+CC: <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>, Juergen
+ Beisert <jbe@pengutronix.de>, Lars-Peter Clausen <lars@metafoo.de>, Wolfgang
+ Denk <wd@denx.de>
+Subject: Re: [PATCH 3/3] IIO: arm: Add LRADC to i.MX28 dts
+Message-ID: <20120814015649.GD27792@S2101-09.ap.freescale.net>
+References: <1344784918-32352-1-git-send-email-marex@denx.de>
+ <1344784918-32352-4-git-send-email-marex@denx.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
- drivers@analog.com
-Subject: Re: [PATCH 22/22] staging:iio:adc: Add AD7791 driver
-References: <1344616596-8026-1-git-send-email-lars@metafoo.de> <1344616596-8026-22-git-send-email-lars@metafoo.de>
-In-Reply-To: <1344616596-8026-22-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <1344784918-32352-4-git-send-email-marex@denx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 08/10/2012 06:36 PM, Lars-Peter Clausen wrote:
-> This patch adds support for the Analog Devices AD7787, AD7788, AD7789, AD7790
-> and AD7791 Sigma Delta Analog-to-Digital converters.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+The patch subject does not look right.
+
+ARM: dts: imx28: ...
+
+Regards,
+Shawn
+
+On Sun, Aug 12, 2012 at 05:21:58PM +0200, Marek Vasut wrote:
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Juergen Beisert <jbe@pengutronix.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Shawn Guo <shawn.guo@linaro.org>
+> Cc: Wolfgang Denk <wd@denx.de>
 > ---
-> [...]
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* The monitor channel uses an internal reference. */
-> +		if (chan->address == AD7791_CH_AVDD_MONITOR) {
-> +			scale_nv = 5850000000ULL;
-> +		} else {
-> +			int voltage_uv;
-> +
-> +			voltage_uv = regulator_get_voltage(st->reg);
-> +			if (voltage_uv < 0)
-> +				return voltage_uv;
-> +			scale_nv = voltage_uv * 1000;
-> +		}
-> +		if (unipolar)
-> +			scale_nv >>= chan->scan_type.realbits;
-> +		else
-> +			scale_nv >>= chan->scan_type.realbits - 1;
-> +		*val2 = do_div(scale_nv, 1000000);
-> +		*val = scale_nv;
-> +
-
-Just noticed that the scale is off by a factor of 1000. It reports volts
-while we want milli volts.
-
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	}
+>  arch/arm/boot/dts/imx28.dtsi |    3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/imx28.dtsi b/arch/arm/boot/dts/imx28.dtsi
+> index 2a413ed..ad90c59 100644
+> --- a/arch/arm/boot/dts/imx28.dtsi
+> +++ b/arch/arm/boot/dts/imx28.dtsi
+> @@ -677,7 +677,10 @@
+>  			};
+>  
+>  			lradc@80050000 {
+> +				compatible = "fsl,imx28-lradc";
+>  				reg = <0x80050000 0x2000>;
+> +				interrupts = <10 14 15 16 17 18 19
+> +						20 21 22 23 24 25>;
+>  				status = "disabled";
+>  			};
+>  
+> -- 
+> 1.7.10.4
+> 
