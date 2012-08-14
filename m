@@ -1,24 +1,50 @@
-Return-Path: <shawn.guo@linaro.org>
+Return-Path: <jic23@kernel.org>
+Message-ID: <502AB29F.3070103@kernel.org>
+Date: Tue, 14 Aug 2012 21:18:39 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <201208141433.35819.marex@denx.de>
-References: <1344784918-32352-1-git-send-email-marex@denx.de>
-	<201208140410.55405.marex@denx.de>
-	<CAAQ0ZWQP4t+ur9tTF3c1qJ4hyE6otsKNfqZ6zjtexdmcVD=qQg@mail.gmail.com>
-	<201208141433.35819.marex@denx.de>
-Date: Tue, 14 Aug 2012 21:15:01 +0800
-Message-ID: <CAAQ0ZWSrqUTkRDyYfWv71R3iUtAwtWUxaUkXYEGUPvoK6RFBig@mail.gmail.com>
-Subject: Re: [PATCH 3/3] IIO: arm: Add LRADC to i.MX28 dts
-From: Shawn Guo <shawn.guo@linaro.org>
-To: Marek Vasut <marex@denx.de>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Juergen Beisert <jbe@pengutronix.de>, Lars-Peter Clausen <lars@metafoo.de>, Wolfgang Denk <wd@denx.de>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+ drivers@analog.com
+Subject: Re: [PATCH 22/22] staging:iio:adc: Add AD7791 driver
+References: <1344616596-8026-1-git-send-email-lars@metafoo.de> <1344616596-8026-22-git-send-email-lars@metafoo.de> <5028FD24.1010307@metafoo.de>
+In-Reply-To: <5028FD24.1010307@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-On 14 August 2012 20:33, Marek Vasut <marex@denx.de> wrote:
-> Is there any key to those tags ? Or a document ?
->
-Is there any better document than git log on the file you are committing?
-
-Regards,
-Shawn
+On 08/13/2012 02:12 PM, Lars-Peter Clausen wrote:
+> On 08/10/2012 06:36 PM, Lars-Peter Clausen wrote:
+>> This patch adds support for the Analog Devices AD7787, AD7788, AD7789, AD7790
+>> and AD7791 Sigma Delta Analog-to-Digital converters.
+>>
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>> ---
+>> [...]
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		/* The monitor channel uses an internal reference. */
+>> +		if (chan->address == AD7791_CH_AVDD_MONITOR) {
+>> +			scale_nv = 5850000000ULL;
+>> +		} else {
+>> +			int voltage_uv;
+>> +
+>> +			voltage_uv = regulator_get_voltage(st->reg);
+>> +			if (voltage_uv < 0)
+>> +				return voltage_uv;
+>> +			scale_nv = voltage_uv * 1000;
+>> +		}
+>> +		if (unipolar)
+>> +			scale_nv >>= chan->scan_type.realbits;
+>> +		else
+>> +			scale_nv >>= chan->scan_type.realbits - 1;
+>> +		*val2 = do_div(scale_nv, 1000000);
+>> +		*val = scale_nv;
+>> +
+> 
+> Just noticed that the scale is off by a factor of 1000. It reports volts
+> while we want milli volts.
+I'll definitely ignore this driver for now then :)
+> 
+>> +		return IIO_VAL_INT_PLUS_NANO;
+>> +	}
+> 
+> 
