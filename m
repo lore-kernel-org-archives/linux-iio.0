@@ -1,52 +1,24 @@
 Return-Path: <shawn.guo@linaro.org>
-Date: Tue, 14 Aug 2012 09:56:50 +0800
+MIME-Version: 1.0
+In-Reply-To: <201208141433.35819.marex@denx.de>
+References: <1344784918-32352-1-git-send-email-marex@denx.de>
+	<201208140410.55405.marex@denx.de>
+	<CAAQ0ZWQP4t+ur9tTF3c1qJ4hyE6otsKNfqZ6zjtexdmcVD=qQg@mail.gmail.com>
+	<201208141433.35819.marex@denx.de>
+Date: Tue, 14 Aug 2012 21:15:01 +0800
+Message-ID: <CAAQ0ZWSrqUTkRDyYfWv71R3iUtAwtWUxaUkXYEGUPvoK6RFBig@mail.gmail.com>
+Subject: Re: [PATCH 3/3] IIO: arm: Add LRADC to i.MX28 dts
 From: Shawn Guo <shawn.guo@linaro.org>
 To: Marek Vasut <marex@denx.de>
-CC: <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>, Juergen
- Beisert <jbe@pengutronix.de>, Lars-Peter Clausen <lars@metafoo.de>, Wolfgang
- Denk <wd@denx.de>
-Subject: Re: [PATCH 3/3] IIO: arm: Add LRADC to i.MX28 dts
-Message-ID: <20120814015649.GD27792@S2101-09.ap.freescale.net>
-References: <1344784918-32352-1-git-send-email-marex@denx.de>
- <1344784918-32352-4-git-send-email-marex@denx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <1344784918-32352-4-git-send-email-marex@denx.de>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Juergen Beisert <jbe@pengutronix.de>, Lars-Peter Clausen <lars@metafoo.de>, Wolfgang Denk <wd@denx.de>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-The patch subject does not look right.
-
-ARM: dts: imx28: ...
+On 14 August 2012 20:33, Marek Vasut <marex@denx.de> wrote:
+> Is there any key to those tags ? Or a document ?
+>
+Is there any better document than git log on the file you are committing?
 
 Regards,
 Shawn
-
-On Sun, Aug 12, 2012 at 05:21:58PM +0200, Marek Vasut wrote:
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Juergen Beisert <jbe@pengutronix.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Shawn Guo <shawn.guo@linaro.org>
-> Cc: Wolfgang Denk <wd@denx.de>
-> ---
->  arch/arm/boot/dts/imx28.dtsi |    3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/imx28.dtsi b/arch/arm/boot/dts/imx28.dtsi
-> index 2a413ed..ad90c59 100644
-> --- a/arch/arm/boot/dts/imx28.dtsi
-> +++ b/arch/arm/boot/dts/imx28.dtsi
-> @@ -677,7 +677,10 @@
->  			};
->  
->  			lradc@80050000 {
-> +				compatible = "fsl,imx28-lradc";
->  				reg = <0x80050000 0x2000>;
-> +				interrupts = <10 14 15 16 17 18 19
-> +						20 21 22 23 24 25>;
->  				status = "disabled";
->  			};
->  
-> -- 
-> 1.7.10.4
-> 
