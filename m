@@ -1,119 +1,97 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-Message-ID: <502B6BBA.7090709@jic23.retrosnub.co.uk>
-Date: Wed, 15 Aug 2012 10:28:26 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33434 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755490Ab2HPRR2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2012 13:17:28 -0400
+Message-ID: <502D2B29.8030302@kernel.org>
+Date: Thu, 16 Aug 2012 18:17:29 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@kernel.org>,
- Jonathan Cameron <jic23@cam.ac.uk>,
- linux-iio@vger.kernel.org, drivers@analog.com
-Subject: Re: [PATCH 07/22] staging:iio:ad7793: Remove unused platform_data
- from device state struct
-References: <1344616596-8026-1-git-send-email-lars@metafoo.de> <1344616596-8026-7-git-send-email-lars@metafoo.de> <502AA96C.3090105@kernel.org> <502AB2DF.3080301@kernel.org> <502B65FF.80906@metafoo.de>
-In-Reply-To: <502B65FF.80906@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, Milo Kim <Milo.Kim@ti.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [RFC 1/4] iio: Introduce a new fractional value type
+References: <1345108725-22120-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1345108725-22120-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 15/08/12 10:03, Lars-Peter Clausen wrote:
-> On 08/14/2012 10:19 PM, Jonathan Cameron wrote:
->> On 08/14/2012 08:39 PM, Jonathan Cameron wrote:
->>> On 08/10/2012 05:36 PM, Lars-Peter Clausen wrote:
->>>> The platform data for the device is only used from within the drivers probe
->>>> callback, so there is no need to keep it around in the devices state struct.
->>>>
->>>> While we are at it mark the platform data struct as const.
->>>>
->> There a couple of obvious bugs in this patch....
-> More than just the comma issue?
-Yup, you missed a few uses of pdata. Again in stuff that was removed by 
-later patches...
->
->> My plan with these is to first send a series to Greg with the
->> fixes in it (not including this which is merely a cleanup?)
->> Once that shows up in his trees I'll do a second pull request with
->> this + the sigma delta cleanups.
-> Sounds good.
->
->> It is probably the cleanest approach and we aren't pressed for time
->> at the moment.  To show what will be in there I will push out
->> a new branch to kernel.org shortly togreg-postfixes.
->>
->> Lars-Peter, please verify that my fixup of this is correct
->> (all I've done is build tested it).
-> Will do, thanks.
->
->>
->>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->>>> ---
->>>>   drivers/staging/iio/adc/ad7793.c |   14 ++++++--------
->>>>   1 file changed, 6 insertions(+), 8 deletions(-)
->>>>
->>>> diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
->>>> index 112e2b7..0ba598e 100644
->>>> --- a/drivers/staging/iio/adc/ad7793.c
->>>> +++ b/drivers/staging/iio/adc/ad7793.c
->>>> @@ -44,7 +44,6 @@ struct ad7793_state {
->>>>   	struct iio_trigger		*trig;
->>>>   	const struct ad7793_chip_info	*chip_info;
->>>>   	struct regulator		*reg;
->>>> -	struct ad7793_platform_data	*pdata;
->>>>   	wait_queue_head_t		wq_data_avail;
->>>>   	bool				done;
->>>>   	bool				irq_dis;
->>>> @@ -253,7 +252,8 @@ out:
->>>>   	return ret;
->>>>   }
->>>>   
->>>> -static int ad7793_setup(struct ad7793_state *st)
->>>> +static int ad7793_setup(struct ad7793_state *st
->>>> +	const struct ad7793_platform_data *pdata)
->>> Really odd.  There's a missing comma between the arguments here...
->>> I'll fixup.
->>>>   {
->>>>   	int i, ret = -1;
->>>>   	unsigned long long scale_uv;
->>>> @@ -277,9 +277,9 @@ static int ad7793_setup(struct ad7793_state *st)
->>>>   		goto out;
->>>>   	}
->>>>   
->>>> -	st->mode  = (st->pdata->mode & ~AD7793_MODE_SEL(-1)) |
->>>> +	st->mode  = (pdata->mode & ~AD7793_MODE_SEL(-1)) |
->>>>   			AD7793_MODE_SEL(AD7793_MODE_IDLE);
->>>> -	st->conf  = st->pdata->conf & ~AD7793_CONF_CHAN(-1);
->>>> +	st->conf  = pdata->conf & ~AD7793_CONF_CHAN(-1);
->>>>   
->>>>   	ret = ad7793_write_reg(st, AD7793_REG_MODE, sizeof(st->mode), st->mode);
->>>>   	if (ret)
->>>> @@ -882,7 +882,7 @@ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
->>>>   
->>>>   static int __devinit ad7793_probe(struct spi_device *spi)
->>>>   {
->>>> -	struct ad7793_platform_data *pdata = spi->dev.platform_data;
->>>> +	const struct ad7793_platform_data *pdata = spi->dev.platform_data;
->>>>   	struct ad7793_state *st;
->>>>   	struct iio_dev *indio_dev;
->>>>   	int ret, voltage_uv = 0;
->>>> @@ -915,8 +915,6 @@ static int __devinit ad7793_probe(struct spi_device *spi)
->>>>   	st->chip_info =
->>>>   		&ad7793_chip_info_tbl[spi_get_device_id(spi)->driver_data];
->>>>   
->>>> -	st->pdata = pdata;
->>>> -
->>>>   	if (pdata && pdata->vref_mv)
->>>>   		st->int_vref_mv = pdata->vref_mv;
->>>>   	else if (voltage_uv)
->>>> @@ -944,7 +942,7 @@ static int __devinit ad7793_probe(struct spi_device *spi)
->>>>   	if (ret)
->>>>   		goto error_unreg_ring;
->>>>   
->>>> -	ret = ad7793_setup(st);
->>>> +	ret = ad7793_setup(st, pdata);
->>>>   	if (ret)
->>>>   		goto error_remove_trigger;
->>>>   
->>>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+On 08/16/2012 10:18 AM, Lars-Peter Clausen wrote:
+> This series is just a request for comments right now and at this point it is
+> barley tested.
+> 
+> Currently IIO uses a decimal fixed point representations for real type numbers.
+> This patch introduces a new representation for rational type numbers. The number
+> will be expressed by specifying a numerator and denominator. For converting a
+> raw value to a processed value multiply it by the numerator and divide it by the
+> denominator.
+> 
+> The reasoning for introducing this new type is that for a lot of devices the
+> scale can be represented easily by a fractional number, but it is not possible
+> to represent it as fixed point number without rounding.  E.g. for a simple DAC
+> the scale is often the reference voltage divided by the number of possible
+> values (Usually 2**n_bits - 1). Each driver currently implements the conversion
+> of this fraction to a fixed point number on its own.
+> 
+> Also when it comes to the in-kernel interface this allows to directly use the
+> fractional factors to convert a raw value to a processed value. This should on
+> one hand require less instructions and on the other hand increase the
+> precession.
+Hmm.. Is the range of this going to be large enough?  Or do we need to have
+variants of the fractional value?
+
+Otherwise this looks like a reasonable idea to me. Few comments inline.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+>  drivers/iio/industrialio-core.c |    9 +++++++++
+>  include/linux/iio/types.h       |    1 +
+>  2 files changed, 10 insertions(+)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 2ec266e..69e60c5 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -365,6 +365,7 @@ static ssize_t iio_read_channel_info(struct device *dev,
+>  {
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> +	unsigned long long tmp;
+>  	int val, val2;
+>  	bool scale_db = false;
+>  	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+> @@ -390,6 +391,14 @@ static ssize_t iio_read_channel_info(struct device *dev,
+>  			return sprintf(buf, "-%d.%09u\n", val, -val2);
+>  		else
+>  			return sprintf(buf, "%d.%09u\n", val, val2);
+> +	case IIO_VAL_FRACTIONAL:
+> +		tmp = div_s64((s64)val * 1000000000LL, val2);
+> +		val2 = do_div(tmp, 1000000000LL);
+> +		val = tmp;
+> +		return sprintf(buf, "%d.%09u\n", val, val2);
+> +
+> +		/* Or maybe we could do something like this:
+> +		return sprintf(buf, "%d/%d\n", val, val2); */
+Not sure on this one...  Will wait for anyone elses comments.
+So far we have pretty printed eveything the same. Hence this will
+add a fair bit of complexity to userspace code (and will cause
+issues for any existing code!)
+
+>  	default:
+>  		return 0;
+>  	}
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 44e3977..8ef5fde 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -57,5 +57,6 @@ enum iio_modifier {
+>  #define IIO_VAL_INT_PLUS_MICRO 2
+>  #define IIO_VAL_INT_PLUS_NANO 3
+>  #define IIO_VAL_INT_PLUS_MICRO_DB 4
+> +#define IIO_VAL_FRACTIONAL 5
+I wonder if it is worth leaving a gap here for
+any more of the int plus form?
+>  
+>  #endif /* _IIO_TYPES_H_ */
+> 
