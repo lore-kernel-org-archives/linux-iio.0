@@ -1,81 +1,32 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:8498 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752953Ab2H0QAP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 27 Aug 2012 12:00:15 -0400
-From: srinivas pandruvada <srinivas.pandruvada@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, jkosina@suse.cz,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 3/9] HID Sensors: Add to special driver list
-Date: Mon, 27 Aug 2012 08:49:51 -0700
-Message-Id: <1346082597-768-4-git-send-email-srinivas.pandruvada@intel.com>
-In-Reply-To: <1346082597-768-1-git-send-email-srinivas.pandruvada@intel.com>
-References: <1346082597-768-1-git-send-email-srinivas.pandruvada@intel.com>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:54079 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754967Ab2HPVIC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2012 17:08:02 -0400
+Received: by pbbrr13 with SMTP id rr13so2148679pbb.19
+        for <linux-iio@vger.kernel.org>; Thu, 16 Aug 2012 14:08:01 -0700 (PDT)
+Date: Thu, 16 Aug 2012 14:07:50 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO new drivers and cleanups for 3.7 cycle
+Message-ID: <20120816210750.GA7463@kroah.com>
+References: <502D523A.6050408@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <502D523A.6050408@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Adding Intel and STM sensor hub in the list of drivers with
-specialized driver.
+On Thu, Aug 16, 2012 at 09:04:10PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 0959c63f11c3bbef0a7d6c5011be8d25503f547c:
+> 
+>   zsmalloc: collapse internal .h into .c (2012-08-13 19:34:24 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-v3.7a
 
-Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
----
- drivers/hid/hid-core.c |   10 ++++++++++
- drivers/hid/hid-ids.h  |    6 ++++++
- 2 files changed, 16 insertions(+), 0 deletions(-)
+Pulled and pushed out, thanks.
 
-diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index 8e3a6b2..36c8007 100644
---- a/drivers/hid/hid-core.c
-+++ b/drivers/hid/hid-core.c
-@@ -1536,6 +1536,14 @@ static const struct hid_device_id hid_have_special_driver[] = {
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_GYRATION, USB_DEVICE_ID_GYRATION_REMOTE_2) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_GYRATION, USB_DEVICE_ID_GYRATION_REMOTE_3) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_HOLTEK, USB_DEVICE_ID_HOLTEK_ON_LINE_GRIP) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
-+					USB_DEVICE_ID_SENSOR_HUB_1020) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
-+					USB_DEVICE_ID_SENSOR_HUB_09FA) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
-+					USB_DEVICE_ID_SENSOR_HUB_1020) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
-+					USB_DEVICE_ID_SENSOR_HUB_09FA) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_KENSINGTON, USB_DEVICE_ID_KS_SLIMBLADE) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_KEYTOUCH, USB_DEVICE_ID_KEYTOUCH_IEC) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_KYE, USB_DEVICE_ID_KYE_ERGO_525V) },
-@@ -1626,6 +1634,8 @@ static const struct hid_device_id hid_have_special_driver[] = {
- 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_PS3_CONTROLLER) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_VAIO_VGX_MOUSE) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_SUNPLUS, USB_DEVICE_ID_SUNPLUS_WDESKTOP) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_STANTUM_STM,
-+			 USB_DEVICE_ID_SENSOR_HUB_7014) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb300) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb304) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb323) },
-diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index 9373f53..2f1dc5b 100644
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -407,6 +407,11 @@
- #define USB_VENDOR_ID_IMATION		0x0718
- #define USB_DEVICE_ID_DISC_STAKKA	0xd000
- 
-+#define USB_VENDOR_ID_INTEL_8086	0x8086
-+#define USB_VENDOR_ID_INTEL_8087	0x8087
-+#define USB_DEVICE_ID_SENSOR_HUB_1020	0x1020
-+#define USB_DEVICE_ID_SENSOR_HUB_09FA	0x09FA
-+
- #define USB_VENDOR_ID_IRTOUCHSYSTEMS	0x6615
- #define USB_DEVICE_ID_IRTOUCH_INFRARED_USB	0x0070
- 
-@@ -670,6 +675,7 @@
- 
- #define USB_VENDOR_ID_STANTUM_STM		0x0483
- #define USB_DEVICE_ID_MTP_STM		0x3261
-+#define USB_DEVICE_ID_SENSOR_HUB_7014	0x7014
- 
- #define USB_VENDOR_ID_STANTUM_SITRONIX		0x1403
- #define USB_DEVICE_ID_MTP_SITRONIX		0x5001
--- 
-1.7.7.6
-
+greg k-h
