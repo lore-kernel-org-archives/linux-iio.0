@@ -1,48 +1,73 @@
 Return-Path: <lars@metafoo.de>
-Message-ID: <502CAE74.7060808@metafoo.de>
-Date: Thu, 16 Aug 2012 10:25:24 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: "Kim, Milo" <Milo.Kim@ti.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
- "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 1/3] iio: add iio_read_channel_offset() consumer api
-References: <A874F61F95741C4A9BA573A70FE3998F41EEFD6E@DQHE02.ent.ti.com> <502CACFF.3000105@metafoo.de>
-In-Reply-To: <502CACFF.3000105@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Milo Kim <Milo.Kim@ti.com>,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [RFC 4/4] staging:iio:hwmon bridge: Use iio_read_channel_processed
+Date: Thu, 16 Aug 2012 11:18:45 +0200
+Message-Id: <1345108725-22120-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1345108725-22120-1-git-send-email-lars@metafoo.de>
+References: <1345108725-22120-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 08/16/2012 10:19 AM, Lars-Peter Clausen wrote:
-> On 08/16/2012 09:39 AM, Kim, Milo wrote:
->> This allows the iio consumer to get the offset of the channel.
->> The value of offset can be used when calculating the result such
->> as 'result = raw * scale + offset'.
-> 
-> result = (raw + offset) * scale
-> 
-> Otherwise it looks good, except for:
-> 
->> +/**
->> + * iio_read_channel_offset() - read offset from a given channel
->> + * @channel:		The channel being queried.
->> + * @val:		Offset Value read back.
->> + *
->> + * Note offset can be used in the consumer when calculating the result
->> + * such as 'result = raw * scale + offset'.
->> + */
-> 
-> The documentation should go in the c file.
+Use the iio_read_channel_processed function to read the sample value in the
+proper unit instead of using iio_read_channel_raw and iio_read_channel_scale and
+doing the unit conversion manually.
 
-Just saw that for the other functions in consumer.h it is in the header as
-well, so ignore that comment above.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/iio_hwmon.c |   32 ++++----------------------------
+ 1 file changed, 4 insertions(+), 28 deletions(-)
 
-> 
->> +int iio_read_channel_offset(struct iio_channel *chan, int *val);
->>  #endif
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/staging/iio/iio_hwmon.c b/drivers/staging/iio/iio_hwmon.c
+index 27d27ec..1f221eb 100644
+--- a/drivers/staging/iio/iio_hwmon.c
++++ b/drivers/staging/iio/iio_hwmon.c
+@@ -42,40 +42,16 @@ static ssize_t iio_hwmon_read_val(struct device *dev,
+ 				  struct device_attribute *attr,
+ 				  char *buf)
+ {
+-	long result;
+-	int val, ret, scaleint, scalepart;
++	int result;
++	int ret;
+ 	struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
+ 	struct iio_hwmon_state *state = dev_get_drvdata(dev);
+ 
+-	/*
+-	 * No locking between this pair, so theoretically possible
+-	 * the scale has changed.
+-	 */
+-	ret = iio_read_channel_raw(&state->channels[sattr->index],
+-				      &val);
++	ret = iio_read_channel_processed(&state->channels[sattr->index], &result);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = iio_read_channel_scale(&state->channels[sattr->index],
+-					&scaleint, &scalepart);
+-	if (ret < 0)
+-		return ret;
+-	switch (ret) {
+-	case IIO_VAL_INT:
+-		result = val * scaleint;
+-		break;
+-	case IIO_VAL_INT_PLUS_MICRO:
+-		result = (s64)val * (s64)scaleint +
+-			div_s64((s64)val * (s64)scalepart, 1000000LL);
+-		break;
+-	case IIO_VAL_INT_PLUS_NANO:
+-		result = (s64)val * (s64)scaleint +
+-			div_s64((s64)val * (s64)scalepart, 1000000000LL);
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
+-	return sprintf(buf, "%ld\n", result);
++	return sprintf(buf, "%d\n", result);
+ }
+ 
+ static void iio_hwmon_free_attrs(struct iio_hwmon_state *st)
+-- 
+1.7.10.4
