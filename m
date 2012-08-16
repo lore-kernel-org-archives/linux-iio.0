@@ -1,90 +1,78 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Thu, 16 Aug 2012 09:42:13 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: "Kim, Milo" <Milo.Kim@ti.com>
-cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-    "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-    "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-    "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 1/3] iio: add iio_read_channel_offset() consumer api
-In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F41EEFD6E@DQHE02.ent.ti.com>
-Message-ID: <alpine.DEB.2.01.1208160940380.3550@pmeerw.net>
-References: <A874F61F95741C4A9BA573A70FE3998F41EEFD6E@DQHE02.ent.ti.com>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Milo Kim <Milo.Kim@ti.com>,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [RFC 1/4] iio: Introduce a new fractional value type
+Date: Thu, 16 Aug 2012 11:18:42 +0200
+Message-Id: <1345108725-22120-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
+This series is just a request for comments right now and at this point it is
+barley tested.
 
-comment below
+Currently IIO uses a decimal fixed point representations for real type numbers.
+This patch introduces a new representation for rational type numbers. The number
+will be expressed by specifying a numerator and denominator. For converting a
+raw value to a processed value multiply it by the numerator and divide it by the
+denominator.
 
-p.
+The reasoning for introducing this new type is that for a lot of devices the
+scale can be represented easily by a fractional number, but it is not possible
+to represent it as fixed point number without rounding.  E.g. for a simple DAC
+the scale is often the reference voltage divided by the number of possible
+values (Usually 2**n_bits - 1). Each driver currently implements the conversion
+of this fraction to a fixed point number on its own.
 
-> This allows the iio consumer to get the offset of the channel.
-> The value of offset can be used when calculating the result such
-> as 'result = raw * scale + offset'.
-> 
-> Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
-> ---
->  drivers/iio/inkern.c         |   21 +++++++++++++++++++++
->  include/linux/iio/consumer.h |    9 +++++++++
->  2 files changed, 30 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index b5afc2f..bd09245 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -269,6 +269,27 @@ err_unlock:
->  }
->  EXPORT_SYMBOL_GPL(iio_read_channel_scale);
->  
-> +int iio_read_channel_offset(struct iio_channel *chan, int *val)
-> +{
-> +	int val2, ret;
-> +
-> +	mutex_lock(&chan->indio_dev->info_exist_lock);
-> +	if (chan->indio_dev->info == NULL) {
-> +		ret = -ENODEV;
-> +		goto err_unlock;
-> +	}
-> +
-> +	ret = chan->indio_dev->info->read_raw(chan->indio_dev,
-> +					      chan->channel,
-> +					      val, &val2,
-> +					      IIO_CHAN_INFO_OFFSET);
-> +err_unlock:
-> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_read_channel_offset);
-> +
->  int iio_get_channel_type(struct iio_channel *chan, enum iio_chan_type *type)
->  {
->  	int ret = 0;
-> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-> index e2657e6..d9d69fa 100644
-> --- a/include/linux/iio/consumer.h
-> +++ b/include/linux/iio/consumer.h
-> @@ -93,4 +93,13 @@ int iio_get_channel_type(struct iio_channel *channel,
->  int iio_read_channel_scale(struct iio_channel *chan, int *val,
->  			   int *val2);
->  
-> +/**
-> + * iio_read_channel_offset() - read offset from a given channel
-> + * @channel:		The channel being queried.
+Also when it comes to the in-kernel interface this allows to directly use the
+fractional factors to convert a raw value to a processed value. This should on
+one hand require less instructions and on the other hand increase the
+precession.
 
-the parameter is 'chan', not 'channel'
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-core.c |    9 +++++++++
+ include/linux/iio/types.h       |    1 +
+ 2 files changed, 10 insertions(+)
 
-> + * @val:		Offset Value read back.
-> + *
-> + * Note offset can be used in the consumer when calculating the result
-> + * such as 'result = raw * scale + offset'.
-> + */
-> +int iio_read_channel_offset(struct iio_channel *chan, int *val);
->  #endif
-> 
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 2ec266e..69e60c5 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -365,6 +365,7 @@ static ssize_t iio_read_channel_info(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	unsigned long long tmp;
+ 	int val, val2;
+ 	bool scale_db = false;
+ 	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+@@ -390,6 +391,14 @@ static ssize_t iio_read_channel_info(struct device *dev,
+ 			return sprintf(buf, "-%d.%09u\n", val, -val2);
+ 		else
+ 			return sprintf(buf, "%d.%09u\n", val, val2);
++	case IIO_VAL_FRACTIONAL:
++		tmp = div_s64((s64)val * 1000000000LL, val2);
++		val2 = do_div(tmp, 1000000000LL);
++		val = tmp;
++		return sprintf(buf, "%d.%09u\n", val, val2);
++
++		/* Or maybe we could do something like this:
++		return sprintf(buf, "%d/%d\n", val, val2); */
+ 	default:
+ 		return 0;
+ 	}
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 44e3977..8ef5fde 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -57,5 +57,6 @@ enum iio_modifier {
+ #define IIO_VAL_INT_PLUS_MICRO 2
+ #define IIO_VAL_INT_PLUS_NANO 3
+ #define IIO_VAL_INT_PLUS_MICRO_DB 4
++#define IIO_VAL_FRACTIONAL 5
+ 
+ #endif /* _IIO_TYPES_H_ */
 -- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+1.7.10.4
