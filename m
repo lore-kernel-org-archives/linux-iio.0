@@ -1,41 +1,46 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Milo Kim <Milo.Kim@ti.com>,
-	linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [RFC 3/4] iio:ad5064: Report scale as fractional value
-Date: Thu, 16 Aug 2012 11:18:44 +0200
-Message-Id: <1345108725-22120-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1345108725-22120-1-git-send-email-lars@metafoo.de>
-References: <1345108725-22120-1-git-send-email-lars@metafoo.de>
+Return-Path: <Milo.Kim@ti.com>
+From: "Kim, Milo" <Milo.Kim@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Lars-Peter Clausen <lars@metafoo.de>, "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PATCH 2/3] iio: use IIO_CHAN_INFO_RAW rather than 0
+Date: Thu, 16 Aug 2012 07:39:29 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EEFD76@DQHE02.ent.ti.com>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Report the scale as a fractional value. This avoids having to do the conversion
-from fractional to fixed point manually in the driver.
+(a) For better readability, replace 0 with IIO_CHAN_INFO_RAW.
+(b) Make same line-format as other apis()
+    : iio_read_channel_scale() and iio_read_channel_offset()
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
 ---
- drivers/iio/dac/ad5064.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/iio/inkern.c |    6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-index eb281a2..a163e86 100644
---- a/drivers/iio/dac/ad5064.c
-+++ b/drivers/iio/dac/ad5064.c
-@@ -240,10 +240,9 @@ static int ad5064_read_raw(struct iio_dev *indio_dev,
- 		if (scale_uv < 0)
- 			return scale_uv;
- 
--		scale_uv = (scale_uv * 100) >> chan->scan_type.realbits;
--		*val =  scale_uv / 100000;
--		*val2 = (scale_uv % 100000) * 10;
--		return IIO_VAL_INT_PLUS_MICRO;
-+		*val = scale_uv;
-+		*val2 = ((1 << chan->scan_type.realbits) - 1) * 1000;
-+		return IIO_VAL_FRACTIONAL;
- 	default:
- 		break;
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index bd09245..5103337 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -239,8 +239,10 @@ int iio_read_channel_raw(struct iio_channel *chan, int=
+ *val)
+ 		goto err_unlock;
  	}
--- 
-1.7.10.4
+=20
+-	ret =3D chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
+-					      val, &val2, 0);
++	ret =3D chan->indio_dev->info->read_raw(chan->indio_dev,
++					      chan->channel,
++					      val, &val2,
++					      IIO_CHAN_INFO_RAW);
+ err_unlock:
+ 	mutex_unlock(&chan->indio_dev->info_exist_lock);
+=20
+--=20
+1.7.2.5
+
+
+Best Regards,
+Milo
