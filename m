@@ -1,47 +1,37 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-Message-ID: <502CB031.3040808@jic23.retrosnub.co.uk>
-Date: Thu, 16 Aug 2012 09:32:49 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Return-Path: <Milo.Kim@ti.com>
+From: "Kim, Milo" <Milo.Kim@ti.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+Subject: RE: [PATCH 1/3] iio: add iio_read_channel_offset() consumer api
+Date: Thu, 16 Aug 2012 07:49:13 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EEFDA0@DQHE02.ent.ti.com>
+References: <A874F61F95741C4A9BA573A70FE3998F41EEFD6E@DQHE02.ent.ti.com>
+ <alpine.DEB.2.01.1208160940380.3550@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.01.1208160940380.3550@pmeerw.net>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "Kim, Milo" <Milo.Kim@ti.com>, Jonathan Cameron <jic23@kernel.org>,
- "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 1/3] iio: add iio_read_channel_offset() consumer api
-References: <A874F61F95741C4A9BA573A70FE3998F41EEFD6E@DQHE02.ent.ti.com> <502CACFF.3000105@metafoo.de>
-In-Reply-To: <502CACFF.3000105@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 16/08/12 09:19, Lars-Peter Clausen wrote:
-> On 08/16/2012 09:39 AM, Kim, Milo wrote:
->> This allows the iio consumer to get the offset of the channel.
->> The value of offset can be used when calculating the result such
->> as 'result = raw * scale + offset'.
-> result = (raw + offset) * scale
->
-> Otherwise it looks good, except for:
->
->> +/**
->> + * iio_read_channel_offset() - read offset from a given channel
->> + * @channel:		The channel being queried.
->> + * @val:		Offset Value read back.
->> + *
->> + * Note offset can be used in the consumer when calculating the result
->> + * such as 'result = raw * scale + offset'.
->> + */
-> The documentation should go in the c file.
-I've often wondered about this myself.  Looking quickly about it does
-appear that it is more popular to do it in c file...  Guess I've been wrong
-for quite some time.  For now it's probably better to keep this docs
-in the header and do the move all in one go given all the other docs
-are here in this header.
+> >  int iio_read_channel_scale(struct iio_channel *chan, int *val,
+> >  			   int *val2);
+> >
+> > +/**
+> > + * iio_read_channel_offset() - read offset from a given channel
+> > + * @channel:		The channel being queried.
+>=20
+> the parameter is 'chan', not 'channel'
+>=20
 
-I can see the arguments either way, but have not as yet seen anyone
-stamp their foot on what is the 'one true way'.
+Oops, this is copy-and-paste disaster.
+The description of iio_read_channel_scale() also needs correction.
+Thanks for catching this !
 
->
->> +int iio_read_channel_offset(struct iio_channel *chan, int *val);
->>   #endif
+After getting other feedbacks, separate patch will be submitted.
+
+Best Regards,
+Milo
