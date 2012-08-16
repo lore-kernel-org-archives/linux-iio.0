@@ -1,103 +1,32 @@
-Return-Path: <Milo.Kim@ti.com>
-From: "Kim, Milo" <Milo.Kim@ti.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Jonathan Cameron
-	<jic23@cam.ac.uk>
-Subject: RE: [RFC 2/4] iio:inkern: Add function to read the processed value
-Date: Fri, 17 Aug 2012 01:34:28 +0000
-Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EEFEE1@DQHE02.ent.ti.com>
-References: <1345108725-22120-1-git-send-email-lars@metafoo.de>
- <1345108725-22120-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1345108725-22120-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:54591 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1030304Ab2HPUKw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2012 16:10:52 -0400
+Received: by pbbrr13 with SMTP id rr13so2079785pbb.19
+        for <linux-iio@vger.kernel.org>; Thu, 16 Aug 2012 13:10:52 -0700 (PDT)
+Date: Thu, 16 Aug 2012 13:10:48 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO Fixes for v3.6-rc1
+Message-ID: <20120816201048.GB20219@kroah.com>
+References: <502D4E2B.5010109@kernel.org>
+ <502D517F.7070008@kernel.org>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <502D517F.7070008@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> Add a function to read a processed value from a channel. The function
-> will first
-> attempt to read the IIO_CHAN_INFO_PROCESSED attribute. If that fails it
-> will
-> read the IIO_CHAN_INFO_RAW attribute and convert the result from a raw
-> value to
-> a processed value.
+On Thu, Aug 16, 2012 at 09:01:03PM +0100, Jonathan Cameron wrote:
+> Sorry, messed that request up completely and failed to notice till I
+> made the same mistake again.  In future I'll remember to specify the
+> 'from' of the pull request then it will actually contain something.
 
-Point of view of the iio consumer driver, this patch is quite useful.
-I added some comments below.
+Ok, can you resend it so that I can see the diffstat and the rest to
+know if I got the merge done properly?
 
-> +static int iio_read_channel_offset_unlocked(struct iio_channel *chan,
-> int *val)
-> +{
-> +	int val2;
-	Int unused;
-> +
-> +	return chan->indio_dev->info->read_raw(chan->indio_dev,
-> +					      chan->channel,
-> +					      val, &val2,
-						Val, &unused,
-> +					      IIO_CHAN_INFO_OFFSET);
-> +}
+thanks,
 
-I'd replace 'val2' with 'unused' because val2 is meaningless variable
-in this function.
-
-> +int iio_read_channel_processed(struct iio_channel *chan, int *val)
-> +{
-> +	int val2, ret;
-> +
-> +	mutex_lock(&chan->indio_dev->info_exist_lock);
-> +	if (chan->indio_dev->info =3D=3D NULL) {
-> +		ret =3D -ENODEV;
-> +		goto err_unlock;
-> +	}
-> +
-> +	ret =3D chan->indio_dev->info->read_raw(chan->indio_dev, chan-
-> >channel,
-> +					      val, &val2,
-> IIO_CHAN_INFO_PROCESSED);
-> +	if (ret < 0) {
-> +		ret =3D chan->indio_dev->info->read_raw(chan->indio_dev,
-> chan->channel,
-> +					      val, &val2, IIO_CHAN_INFO_RAW);
-> +		if (ret < 0)
-> +			goto err_unlock;
-> +		ret =3D iio_convert_raw_to_processed_unlocked(chan, *val,
-> val);
-> +	}
-
-What about checking info_mask rather than return value from
-read_raw() with IIO_CHAN_INFO_PROCESSED?
-This way is more understandable for me.
-(if PROCESSED is not set, then try to get raw value and convert)
-
-#define IS_IIO_CHAN_INFO_PROCESSED_SET(chan)		\
-	chan->channel->info_mask & IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT
-
-int iio_read_channel_processed(struct iio_channel *chan, int *val)
-{
-
-...
-
-	if (IS_IIO_CHAN_INFO_PROCESSED_SET(chan)) {
-		ret =3D chan->indio_dev->info->read_raw(chan->indio_dev,
-						chan->channel,
-						val, &val2,
-						IIO_CHAN_INFO_PROCESSED);
-	} else {
-		ret =3D chan->indio_dev->info->read_raw(chan->indio_dev,
-						chan->channel,
-						val, &val2,
-						IIO_CHAN_INFO_RAW);
-		if (ret < 0)
-			goto err_unlock;
-
-		ret =3D iio_convert_raw_to_processed_unlocked(chan, *val, val);
-	}
-...
-
-Here also, it's better to replace 'val2' with 'unused'.
-
-Thank you.
-
-Best Regards,
-Milo
+greg k-h
