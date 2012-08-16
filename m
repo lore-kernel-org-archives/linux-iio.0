@@ -1,45 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vc0-f174.google.com ([209.85.220.174]:43484 "EHLO
-	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1030688Ab2HQD3F (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2012 23:29:05 -0400
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34835 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933220Ab2HPUEL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2012 16:04:11 -0400
+Message-ID: <502D523A.6050408@kernel.org>
+Date: Thu, 16 Aug 2012 21:04:10 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20120816174019.GA10918@kroah.com>
-References: <1344583783-12593-1-git-send-email-anish198519851985@gmail.com>
-	<20120816174019.GA10918@kroah.com>
-Date: Fri, 17 Aug 2012 08:59:04 +0530
-Message-ID: <CAK7N6vpskT=nhBcvdBKopX_oySdH-j_7c62aB1Q5FxGxfjE3cg@mail.gmail.com>
-Subject: Re: [PATCH] [PATCH V6]Extcon: adc_jack: adc-jack driver to support
- 3.5 pi or simliar devices
-From: anish singh <anish198519851985@gmail.com>
 To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	anish kumar <anish.singh@samsung.com>,
-	MyungJoo Ham <myungjoo.ham@samsung.com>
-Content-Type: text/plain; charset=UTF-8
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO new drivers and cleanups for 3.7 cycle
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Aug 16, 2012 at 11:10 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
-> On Fri, Aug 10, 2012 at 12:29:43AM -0700, anish kumar wrote:
->> From: anish kumar <anish198519851985@gmail.com>
->>
->> External connector devices that decides connection information based on
->> ADC values may use adc-jack device driver. The user simply needs to
->> provide a table of adc range and connection states. Then, extcon
->> framework will automatically notify others.
->
-> This patch breaks the build:
->         ERROR: "extcon_cable_name" [drivers/extcon/extcon-adc-jack.ko] undefined!
->
-> And, if you read the comment about extcon_cable_name, it says to not use
-> it like you are trying to use it.
->
-> So, care to fix this up?
-Sorry Greg,I was on travel so couldn't fix it up.However soon I will be sending
-a patch for this.Looks like we can remove the extcon_cable_name altogether
-as it we are anyway getting it from platform data.
->
-> thanks,
->
-> greg k-h
+The following changes since commit 0959c63f11c3bbef0a7d6c5011be8d25503f547c:
+
+  zsmalloc: collapse internal .h into .c (2012-08-13 19:34:24 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-v3.7a
+
+for you to fetch changes up to bc2c90c974a0ed390327bbd94f49269e9f24e280:
+
+  IIO: Add basic MXS LRADC driver (2012-08-16 20:18:38 +0100)
+
+----------------------------------------------------------------
+First set of IIO rework and new drivers for 3.7 cycle.
+
+New MXS adc driver form Marek Vasut with a minor addition
+to the example code to support 4 byte reads.
+
+First of I suspect many devm conversion patches form Julia Lawall
+Some module_platform_driver uses that somehow got missed the
+first time around.
+
+Couple of other useful cleanups.
+
+----------------------------------------------------------------
+Devendra Naga (1):
+      staging/iio: use module_platform_driver macro
+
+Julia Lawall (1):
+      drivers/iio/adc/at91_adc.c: use devm_ functions
+
+Lars-Peter Clausen (2):
+      staging:iio:adis16220: Use kobj_to_dev instead of open-coding it
+      staging:iio: Constify static iio_chan_spec arrays
+
+Marek Vasut (2):
+      IIO: Add 4-byte unsigned reads into generic-buffer example
+      IIO: Add basic MXS LRADC driver
+
+ .../bindings/staging/iio/adc/mxs-lradc.txt         |  15 +
+ drivers/iio/adc/at91_adc.c                         |  42 +-
+ drivers/staging/iio/Documentation/generic_buffer.c |  10 +
+ drivers/staging/iio/accel/adis16201_core.c         |   2 +-
+ drivers/staging/iio/accel/adis16203_core.c         |   2 +-
+ drivers/staging/iio/accel/adis16204_core.c         |   2 +-
+ drivers/staging/iio/accel/adis16209_core.c         |   2 +-
+ drivers/staging/iio/accel/adis16220_core.c         |   9 +-
+ drivers/staging/iio/accel/adis16240_core.c         |   2 +-
+ drivers/staging/iio/accel/kxsd9.c                  |   2 +-
+ drivers/staging/iio/accel/lis3l02dq_core.c         |   2 +-
+ drivers/staging/iio/accel/sca3000_core.c           |   2 +-
+ drivers/staging/iio/adc/Kconfig                    |  12 +
+ drivers/staging/iio/adc/Makefile                   |   1 +
+ drivers/staging/iio/adc/ad7192.c                   |   2 +-
+ drivers/staging/iio/adc/ad7298_core.c              |   2 +-
+ drivers/staging/iio/adc/ad7606.h                   |   2 +-
+ drivers/staging/iio/adc/ad7606_core.c              |   6 +-
+ drivers/staging/iio/adc/lpc32xx_adc.c              |   2 +-
+ drivers/staging/iio/adc/max1363.h                  |   2 +-
+ drivers/staging/iio/adc/max1363_core.c             |  26 +-
+ drivers/staging/iio/adc/mxs-lradc.c                | 590 +++++++++++++++++++++
+ drivers/staging/iio/adc/spear_adc.c                |   2 +-
+ drivers/staging/iio/iio_hwmon.c                    |  12 +-
+ drivers/staging/iio/iio_simple_dummy.c             |   2 +-
+ drivers/staging/iio/impedance-analyzer/ad5933.c    |   2 +-
+ drivers/staging/iio/imu/adis16400_core.c           |   6 +-
+ drivers/staging/iio/meter/ade7758.h                |   2 +-
+ drivers/staging/iio/meter/ade7758_core.c           |   2 +-
+ drivers/staging/iio/resolver/ad2s1210.c            |   2 +-
+ 30 files changed, 678 insertions(+), 89 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+ create mode 100644 drivers/staging/iio/adc/mxs-lradc.c
