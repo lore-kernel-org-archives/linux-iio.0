@@ -1,107 +1,43 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-References: <1341060763-9602-1-git-send-email-jic23@kernel.org> <1341060763-9602-3-git-send-email-jic23@kernel.org> <201208242342.59307.marex@denx.de>
-In-Reply-To: <201208242342.59307.marex@denx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.10]:35792 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S964787Ab2HQC5M (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2012 22:57:12 -0400
+From: Marek Vasut <marex@denx.de>
+To: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH 3/3] IIO: arm: Add LRADC to i.MX28 dts
+Date: Fri, 17 Aug 2012 04:57:03 +0200
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Juergen Beisert <jbe@pengutronix.de>,
+	"Lars-Peter Clausen" <lars@metafoo.de>, Wolfgang Denk <wd@denx.de>
+References: <1344784918-32352-1-git-send-email-marex@denx.de> <1344784918-32352-4-git-send-email-marex@denx.de> <20120817024821.GA24335@S2101-09.ap.freescale.net>
+In-Reply-To: <20120817024821.GA24335@S2101-09.ap.freescale.net>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 2/2] iio: kfifo - add poll support.
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Sat, 25 Aug 2012 09:24:15 +0100
-To: Marek Vasut <marex@denx.de>,Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Message-ID: <5ab3b5d5-5667-45c5-931d-a158e4c553dd@email.android.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201208170457.03686.marex@denx.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+Dear Shawn Guo,
 
+> On Sun, Aug 12, 2012 at 05:21:58PM +0200, Marek Vasut wrote:
+> > Signed-off-by: Marek Vasut <marex@denx.de>
+> > Cc: Jonathan Cameron <jic23@kernel.org>
+> > Cc: Juergen Beisert <jbe@pengutronix.de>
+> > Cc: Lars-Peter Clausen <lars@metafoo.de>
+> > Cc: Shawn Guo <shawn.guo@linaro.org>
+> > Cc: Wolfgang Denk <wd@denx.de>
+> 
+> Applied with subject reworded as below:
+> 
+>   ARM: dts: imx28: Add compatible and interrupt for LRADC
 
-Marek Vasut <marex@denx.de> wrote:
+Thanks ... still, is there some key for those tags? Or do you invent them at 
+random and then let people guess what's right? Some git grep on Documentation 
+directory gets me nothing.
 
->Dear Jonathan Cameron,
->
->> This buffer implementation was missing poll support.
->> 
->> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
->
->Was this ever applied ?
-On todo  list.  Always easier to not get around to my own patches when running low on time.  Will hopefully get time on Monday...
->
->> ---
->>  drivers/iio/kfifo_buf.c | 15 ++++++++++++++-
->>  1 file changed, 14 insertions(+), 1 deletion(-)
->> 
->> diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
->> index 6ec763f..63da424 100644
->> --- a/drivers/iio/kfifo_buf.c
->> +++ b/drivers/iio/kfifo_buf.c
->> @@ -6,6 +6,7 @@
->>  #include <linux/kfifo.h>
->>  #include <linux/mutex.h>
->>  #include <linux/iio/kfifo_buf.h>
->> +#include <linux/sched.h>
->> 
->>  struct iio_kfifo {
->>  	struct iio_buffer buffer;
->> @@ -36,6 +37,7 @@ static int iio_request_update_kfifo(struct
->iio_buffer *r)
->>  	kfifo_free(&buf->kf);
->>  	ret = __iio_allocate_kfifo(buf, buf->buffer.bytes_per_datum,
->>  				   buf->buffer.length);
->> +	r->stufftoread = false;
->>  error_ret:
->>  	return ret;
->>  }
->> @@ -82,6 +84,9 @@ static int iio_set_bytes_per_datum_kfifo(struct
->> iio_buffer *r, size_t bpd)
->> 
->>  static int iio_set_length_kfifo(struct iio_buffer *r, int length)
->>  {
->> +	/* Avoid an invalid state */
->> +	if (length < 2)
->> +		length = 2;
->>  	if (r->length != length) {
->>  		r->length = length;
->>  		iio_mark_update_needed_kfifo(r);
->> @@ -98,6 +103,8 @@ static int iio_store_to_kfifo(struct iio_buffer
->*r,
->>  	ret = kfifo_in(&kf->kf, data, 1);
->>  	if (ret != 1)
->>  		return -EBUSY;
->> +	r->stufftoread = true;
->> +	wake_up_interruptible(&r->pollq);
->> 
->>  	return 0;
->>  }
->> @@ -115,6 +122,12 @@ static int iio_read_first_n_kfifo(struct
->iio_buffer
->> *r, if (ret < 0)
->>  		return ret;
->> 
->> +	if (kfifo_is_empty(&kf->kf))
->> +		r->stufftoread = false;
->> +	/* verify it is still empty to avoid race */
->> +	if (!kfifo_is_empty(&kf->kf))
->> +		r->stufftoread = true;
->> +
->>  	return copied;
->>  }
->> 
->> @@ -139,7 +152,7 @@ struct iio_buffer *iio_kfifo_allocate(struct
->iio_dev
->> *indio_dev) iio_buffer_init(&kf->buffer);
->>  	kf->buffer.attrs = &iio_kfifo_attribute_group;
->>  	kf->buffer.access = &kfifo_access_funcs;
->> -
->> +	kf->buffer.length = 2;
->>  	return &kf->buffer;
->>  }
->>  EXPORT_SYMBOL(iio_kfifo_allocate);
->
->Best regards,
->Marek Vasut
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+TIA
 
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+Best regards,
+Marek Vasut
