@@ -1,78 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34828 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933220Ab2HPUDb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2012 16:03:31 -0400
-Message-ID: <502D5211.5020206@kernel.org>
-Date: Thu, 16 Aug 2012 21:03:29 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-vc0-f174.google.com ([209.85.220.174]:43484 "EHLO
+	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1030688Ab2HQD3F (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2012 23:29:05 -0400
 MIME-Version: 1.0
+In-Reply-To: <20120816174019.GA10918@kroah.com>
+References: <1344583783-12593-1-git-send-email-anish198519851985@gmail.com>
+	<20120816174019.GA10918@kroah.com>
+Date: Fri, 17 Aug 2012 08:59:04 +0530
+Message-ID: <CAK7N6vpskT=nhBcvdBKopX_oySdH-j_7c62aB1Q5FxGxfjE3cg@mail.gmail.com>
+Subject: Re: [PATCH] [PATCH V6]Extcon: adc_jack: adc-jack driver to support
+ 3.5 pi or simliar devices
+From: anish singh <anish198519851985@gmail.com>
 To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL V2] IIO Fixes for v3.6-rc1
-Content-Type: text/plain; charset=ISO-8859-1
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	anish kumar <anish.singh@samsung.com>,
+	MyungJoo Ham <myungjoo.ham@samsung.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-The following changes since commit 0d7614f09c1ebdbaa1599a5aba7593f147bf96ee:
-
-  Linux 3.6-rc1 (2012-08-02 16:38:10 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/v3.6-rc1-iio-fixes
-
-for you to fetch changes up to 95d1c8c7e26e303ccab5b65fe0ce04f70f42ea8a:
-
-  iio: lm3533-als: Fix build warnings (2012-08-16 20:24:38 +0100)
-
-----------------------------------------------------------------
-IIO fixes for v3.6-rc1
-
-These mostly consist of fixes from Lars-Peter Clausen that were
-the first part of a large series reworking the drivers concerned.
-Turns out these drivers had quite a wealth of minor bugs.
-
-Also here are some build warning fixes for lm3533-als and
-adjd_s111 (both new drives in this cycle).
-Final elements are a a div factor overflow and a warning
-related fix in a couple of Analog Devices drivers.
-
-All in all nothing major, but a worthwhile bunch of short
-fixes.
-
-----------------------------------------------------------------
-Alexey Khoroshilov (1):
-      iio/adjd_s311: Fix potential memory leak in adjd_s311_update_scan_mode()
-
-Axel Lin (1):
-      iio: lm3533-als: Fix build warnings
-
-Lars-Peter Clausen (12):
-      staging:iio:ad7793: Add missing break in switch statement
-      staging:iio:ad7793: Mark channels as unsigned
-      staging:iio:ad7793: Report channel offset
-      staging:iio:ad7793: Fix temperature scale and offset
-      staging:iio:ad7793: Follow new IIO naming spec
-      staging:iio:ad7793: Fix internal reference value
-      staging:iio:ad7192: Add missing break in switch statement
-      staging:iio:ad7192: Fix setting ACX
-      staging:iio:ad7192: Mark channels as unsigned
-      staging:iio:ad7192: Report channel offset
-      staging:iio:ad7192: Report offset and scale for temperature channel
-      staging:iio:ad7780: Mark channels as unsigned
-
-Michael Hennerich (2):
-      iio: staging: ad7298_ring: Fix maybe-uninitialized warning
-      iio: frequency: ADF4350: Fix potential reference div factor overflow.
-
- drivers/iio/frequency/adf4350.c       | 24 +++++----
- drivers/iio/light/adjd_s311.c         |  7 +--
- drivers/iio/light/lm3533-als.c        |  4 +-
- drivers/staging/iio/adc/ad7192.c      | 48 +++++++++--------
- drivers/staging/iio/adc/ad7298_ring.c |  2 +-
- drivers/staging/iio/adc/ad7780.c      | 10 ++--
- drivers/staging/iio/adc/ad7793.c      | 99 +++++++++++++++++++++--------------
- include/linux/iio/frequency/adf4350.h |  2 +
- 8 files changed, 116 insertions(+), 80 deletions(-)
+On Thu, Aug 16, 2012 at 11:10 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+> On Fri, Aug 10, 2012 at 12:29:43AM -0700, anish kumar wrote:
+>> From: anish kumar <anish198519851985@gmail.com>
+>>
+>> External connector devices that decides connection information based on
+>> ADC values may use adc-jack device driver. The user simply needs to
+>> provide a table of adc range and connection states. Then, extcon
+>> framework will automatically notify others.
+>
+> This patch breaks the build:
+>         ERROR: "extcon_cable_name" [drivers/extcon/extcon-adc-jack.ko] undefined!
+>
+> And, if you read the comment about extcon_cable_name, it says to not use
+> it like you are trying to use it.
+>
+> So, care to fix this up?
+Sorry Greg,I was on travel so couldn't fix it up.However soon I will be sending
+a patch for this.Looks like we can remove the extcon_cable_name altogether
+as it we are anyway getting it from platform data.
+>
+> thanks,
+>
+> greg k-h
