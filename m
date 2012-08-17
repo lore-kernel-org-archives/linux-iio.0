@@ -1,39 +1,143 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 3/3] iio:trigger_consumer.h: Add missing includes and forward declarations
-Date: Fri, 17 Aug 2012 17:57:46 +0200
-Message-Id: <1345219066-5338-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1345219066-5338-1-git-send-email-lars@metafoo.de>
-References: <1345219066-5338-1-git-send-email-lars@metafoo.de>
+Return-Path: <dan.carpenter@oracle.com>
+Date: Fri, 17 Aug 2012 13:40:31 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Thorsten Nowak <not@iis.fhg.de>
+Cc: Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>,
+        Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+        Jonathan Cameron <jic23@cam.ac.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] staging: iio: Integration gyroscope itg3200
+Message-ID: <20120817104031.GM4559@mwanda>
+References: <1345192038-5665-1-git-send-email-not@iis.fhg.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1345192038-5665-1-git-send-email-not@iis.fhg.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add includes and forward declarations for types used in this file. This avoids
-compile errors if the other files have not been included before.
+On Fri, Aug 17, 2012 at 10:27:18AM +0200, Thorsten Nowak wrote:
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- include/linux/iio/trigger_consumer.h |    6 ++++++
- 1 file changed, 6 insertions(+)
+> +	/* Guaranteed to be aligned with 8 byte boundary */
+> +	if (buffer->scan_timestamp)
+> +		*(s64 *)(((phys_addr_t)st->rx + len
+> +					+ sizeof(s64) - 1) & ~(sizeof(s64) - 1))
+> +		= pf->timestamp;
 
-diff --git a/include/linux/iio/trigger_consumer.h b/include/linux/iio/trigger_consumer.h
-index 762a3d3..c4f8c74 100644
---- a/include/linux/iio/trigger_consumer.h
-+++ b/include/linux/iio/trigger_consumer.h
-@@ -10,6 +10,12 @@
- #ifndef __LINUX_IIO_TRIGGER_CONSUMER_H__
- #define __LINUX_IIO_TRIGGER_CONSUMER_H__
- 
-+#include <linux/interrupt.h>
-+#include <linux/types.h>
-+
-+struct iio_dev;
-+struct iio_trigger;
-+
- /**
-  * struct iio_poll_func - poll function pair
-  *
--- 
-1.7.10.4
+It took me a while to figure this one out.  The indenting is wrong
+and, in fact, the whole statement is horrible to look at.
+
+[snip]
+
+> +static int itg3200_ring_postenable(struct iio_dev *indio_dev)
+> +{
+> +	u8 t;
+> +	int ret;
+> +
+> +	ret = itg3200_spi_read_reg_8(indio_dev,
+> +				     ITG3200_REG_POWER_MANAGEMENT,
+> +				     &t);
+> +	if (ret)
+> +		goto error_ret;
+> +
+> +	if (iio_scan_mask_query(indio_dev->ring, 1))
+> +		t &= ~ITG3200_STANDBY_GYRO_X;
+> +	else
+> +		t |= ~ITG3200_STANDBY_GYRO_X;
+> +
+
+Should this be:
+		t |= ITG3200_STANDBY_GYRO_X;
+like the others?
+
+
+
+> +	if (iio_scan_mask_query(indio_dev->ring, 2))
+> +		t &= ~ITG3200_STANDBY_GYRO_Y;
+> +	else
+> +		t |= ITG3200_STANDBY_GYRO_Y;
+> +
+> +	if (iio_scan_mask_query(indio_dev->ring, 3))
+> +		t &= ITG3200_STANDBY_GYRO_Z;
+> +	else
+> +		t |= ITG3200_STANDBY_GYRO_Z;
+> +
+> +	ret = itg3200_spi_write_reg_8(indio_dev,
+> +				      ITG3200_REG_POWER_MANAGEMENT,
+> +				      t);
+> +	if (ret)
+> +		goto error_ret;
+> +
+> +	return iio_triggered_ring_postenable(indio_dev);
+> +error_ret:
+> +	return ret;
+> +}
+
+[snip]
+
+> +static ssize_t itg3200_write_frequency(struct device *dev,
+> +		struct device_attribute *attr,
+> +		const char *buf,
+> +		size_t len)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	long val;
+> +	int ret;
+> +	u8 t;
+> +
+> +	ret = kstrtol(buf, 10, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_DLPF, &t);
+> +	if (ret)
+> +		goto err_ret;
+> +
+> +	t = ((t & ITG3200_DLPF_CFG_MASK) ? 1000 : 8000) / val - 1;
+
+
+Potential divide by zero bug.  There may be others as well.
+
+> +
+> +	ret = itg3200_write_reg_8(indio_dev, ITG3200_REG_SAMPLE_RATE_DIV, t);
+> +
+> +err_ret:
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret ? ret : len;
+> +}
+> +
+
+[snip]
+
+> +static int itg3200_remove(struct i2c_client *client)
+> +{
+> +	/* int ret; */
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	/*
+> +	ret = itg3200_stop_device(indio_dev);
+> +	if (ret)
+> +		goto err_ret;
+
+Remove these commented out bits before submitting.
+
+> +	*/
+> +
+> +	if (client->irq && gpio_is_valid(irq_to_gpio(client->irq)) > 0)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gpio_is_valid() returns true or false so this should be:
+
+	if (client->irq && gpio_is_valid(irq_to_gpio(client->irq)))
+
+
+> +		itg3200_remove_trigger(indio_dev);
+> +
+
+regards,
+dan carpenter
