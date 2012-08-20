@@ -1,57 +1,36 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34807 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933205Ab2HPUBG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2012 16:01:06 -0400
-Message-ID: <502D517F.7070008@kernel.org>
-Date: Thu, 16 Aug 2012 21:01:03 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <jic23@hermes.cam.ac.uk>
+Message-ID: <5031EDD7.1050404@jic23.retrosnub.co.uk>
+Date: Mon, 20 Aug 2012 08:57:11 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO Fixes for v3.6-rc1
-References: <502D4E2B.5010109@kernel.org>
-In-Reply-To: <502D4E2B.5010109@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Shawn Guo <shawn.guo@linaro.org>
+CC: Marek Vasut <marex@denx.de>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH 3/3] IIO: arm: Add LRADC to i.MX28 dts
+References: <1344784918-32352-1-git-send-email-marex@denx.de> <201208170457.03686.marex@denx.de> <CAAQ0ZWROobdtFkzn9Sr7v5B29zYTQ5YEUZV59kkNE_yv6qbmgQ@mail.gmail.com> <201208191730.31969.marex@denx.de> <5031E753.5070200@jic23.retrosnub.co.uk> <20120820075249.GJ24242@S2101-09.ap.freescale.net>
+In-Reply-To: <20120820075249.GJ24242@S2101-09.ap.freescale.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Sorry, messed that request up completely and failed to notice till I
-made the same mistake again.  In future I'll remember to specify the
-'from' of the pull request then it will actually contain something.
+On 20/08/12 08:52, Shawn Guo wrote:
+> On Mon, Aug 20, 2012 at 08:29:23AM +0100, Jonathan Cameron wrote:
+>> Mostly these prefixes are an excuse for grumpy maintainers to moan
+>> at people :)
+>
+> Yeah, I have to become grumpy when my comment gets ignored and I have
+> to make it right (for several times) to avoid my upstream moaning at me.
+Not at all. My upstream has never moaned at me about it, but I still 
+like to moan about it myself ;)
+>
+> Is it so hard?  You are not creating a new subsystem but just patching
+> an existing file.  A "git log" on the file simply shows you how to do it
+>
+Indeed. A file listing these would be add just one more piece of largely
+pointless horrendous documentation.
 
-Sorry for the noise!
-
-> The following changes since commit 95d1c8c7e26e303ccab5b65fe0ce04f70f42ea8a:
-> 
->   iio: lm3533-als: Fix build warnings (2012-08-16 20:24:38 +0100)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/v3.6-rc1-iio-fixes
-> 
-> for you to fetch changes up to 95d1c8c7e26e303ccab5b65fe0ce04f70f42ea8a:
-> 
->   iio: lm3533-als: Fix build warnings (2012-08-16 20:24:38 +0100)
-> 
-> ----------------------------------------------------------------
-> IIO fixes for v3.6-rc1
-> 
-> These mostly consist of fixes from Lars-Peter Clausen that were
-> the first part of a large series reworking the drivers concerned.
-> Turns out these drivers had quite a wealth of minor bugs.
-> 
-> Also here are some build warning fixes for lm3533-als and
-> adjd_s111 (both new drives in this cycle).
-> Final elements are a a div factor overflow and a warning
-> related fix in a couple of Analog Devices drivers.
-> 
-> All in all nothing major, but a worthwhile bunch of short
-> fixes.
-> 
-> ----------------------------------------------------------------
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Perhaps if Marek feels particularly strongly about this, proposing an
+additional line to for the SubmittingPatches document to say get your
+title format by looking at the log for what you are patching will do
+the job? (I can't immediately spot anything equivalent in there...)
