@@ -1,36 +1,53 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-Message-ID: <5031EDD7.1050404@jic23.retrosnub.co.uk>
-Date: Mon, 20 Aug 2012 08:57:11 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:51813 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755292Ab2HTH3i (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Aug 2012 03:29:38 -0400
+Message-ID: <5031E753.5070200@jic23.retrosnub.co.uk>
+Date: Mon, 20 Aug 2012 08:29:23 +0100
 From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Shawn Guo <shawn.guo@linaro.org>
-CC: Marek Vasut <marex@denx.de>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>
+To: Marek Vasut <marex@denx.de>
+CC: linux-kernel@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>,
+	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
 Subject: Re: [PATCH 3/3] IIO: arm: Add LRADC to i.MX28 dts
-References: <1344784918-32352-1-git-send-email-marex@denx.de> <201208170457.03686.marex@denx.de> <CAAQ0ZWROobdtFkzn9Sr7v5B29zYTQ5YEUZV59kkNE_yv6qbmgQ@mail.gmail.com> <201208191730.31969.marex@denx.de> <5031E753.5070200@jic23.retrosnub.co.uk> <20120820075249.GJ24242@S2101-09.ap.freescale.net>
-In-Reply-To: <20120820075249.GJ24242@S2101-09.ap.freescale.net>
+References: <1344784918-32352-1-git-send-email-marex@denx.de> <201208170457.03686.marex@denx.de> <CAAQ0ZWROobdtFkzn9Sr7v5B29zYTQ5YEUZV59kkNE_yv6qbmgQ@mail.gmail.com> <201208191730.31969.marex@denx.de>
+In-Reply-To: <201208191730.31969.marex@denx.de>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 20/08/12 08:52, Shawn Guo wrote:
-> On Mon, Aug 20, 2012 at 08:29:23AM +0100, Jonathan Cameron wrote:
->> Mostly these prefixes are an excuse for grumpy maintainers to moan
->> at people :)
+On 19/08/12 16:30, Marek Vasut wrote:
+> Dear Shawn Guo,
 >
-> Yeah, I have to become grumpy when my comment gets ignored and I have
-> to make it right (for several times) to avoid my upstream moaning at me.
-Not at all. My upstream has never moaned at me about it, but I still 
-like to moan about it myself ;)
+>> On 17 August 2012 10:57, Marek Vasut <marex@denx.de> wrote:
+>>> Thanks ... still, is there some key for those tags? Or do you invent them
+>>> at random and then let people guess what's right? Some git grep on
+>>> Documentation directory gets me nothing.
+>>
+>> There is no official document for this.
 >
-> Is it so hard?  You are not creating a new subsystem but just patching
-> an existing file.  A "git log" on the file simply shows you how to do it
->
-Indeed. A file listing these would be add just one more piece of largely
-pointless horrendous documentation.
+> Hm, maybe such document can be introduced?
+Sounds like a voluteer ;) More seriously I suspect it would never get
+updated or be correct in the first place. It would be a pile of grief
+for whoever was looking after it.
 
-Perhaps if Marek feels particularly strongly about this, proposing an
-additional line to for the SubmittingPatches document to say get your
-title format by looking at the log for what you are patching will do
-the job? (I can't immediately spot anything equivalent in there...)
+Mostly these prefixes are an excuse for grumpy maintainers to moan
+at people :)
+>
+>> But generally, each subsystem
+>> has a convention on the subject prefix, so that the output of git
+>> commands like git pull, git shortlog looks consistent on the patch
+>> subject, and more importantly people can easily know subsystem the
+>> patch touches.
+>>
+>> The convention for patches touching arch/arm is "ARM: ".
+>>
+>> Regards,
+>> Shawn
+>
+> Best regards,
+> Marek Vasut
+>
+
