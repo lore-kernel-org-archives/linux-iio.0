@@ -1,113 +1,150 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:45761 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753339Ab2HRJUK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Aug 2012 05:20:10 -0400
-Message-ID: <502F5E14.3000003@metafoo.de>
-Date: Sat, 18 Aug 2012 11:19:16 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Dan Carpenter <dan.carpenter@oracle.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [patch] staging:iio: prevent divide by zero bugs
-References: <20120818084830.GC30592@elgon.mountain>
-In-Reply-To: <20120818084830.GC30592@elgon.mountain>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mail-gh0-f174.google.com ([209.85.160.174]:63323 "EHLO
+	mail-gh0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752546Ab2HUO3m (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Aug 2012 10:29:42 -0400
+Received: by ghrr11 with SMTP id r11so5856819ghr.19
+        for <linux-iio@vger.kernel.org>; Tue, 21 Aug 2012 07:29:42 -0700 (PDT)
+From: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, device-drivers-devel@blackfin.uclinux.org,
+	Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+Subject: [PATCH v3.6-rc2 V2 2/2] iio:ad5446: get rid of private header file
+Date: Tue, 21 Aug 2012 10:28:58 -0400
+Message-Id: <1345559338-19509-3-git-send-email-jeff.dagenais@gmail.com>
+In-Reply-To: <1345559338-19509-1-git-send-email-jeff.dagenais@gmail.com>
+References: <502E10A4.1080800@metafoo.de>
+ <1345559338-19509-1-git-send-email-jeff.dagenais@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/18/2012 10:48 AM, Dan Carpenter wrote:
-> "val" is used as a divisor later, so we should check for zero here to
-> avoid a division by zero.
-> 
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Most of the defines in there were not even used, and the structs left are
+private to the .c file. Makes the driver more in line with most of the
+kernel drivers.
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+---
+ drivers/iio/dac/ad5446.c | 35 +++++++++++++++++++++++++-
+ drivers/iio/dac/ad5446.h | 64 ------------------------------------------------
+ 2 files changed, 34 insertions(+), 65 deletions(-)
+ delete mode 100644 drivers/iio/dac/ad5446.h
 
-Thanks.
-
-> 
-> diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-> index 4ce9e3d..e803db1 100644
-> --- a/drivers/staging/iio/imu/adis16400_core.c
-> +++ b/drivers/staging/iio/imu/adis16400_core.c
-> @@ -234,6 +234,8 @@ static ssize_t adis16400_write_frequency(struct device *dev,
->  	ret = strict_strtol(buf, 10, &val);
->  	if (ret)
->  		return ret;
-> +	if (val == 0)
-> +		return -EINVAL;
->  
->  	mutex_lock(&indio_dev->mlock);
->  
-> diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-> index 93aa431..eb8e9d6 100644
-> --- a/drivers/staging/iio/gyro/adis16260_core.c
-> +++ b/drivers/staging/iio/gyro/adis16260_core.c
-> @@ -195,6 +195,8 @@ static ssize_t adis16260_write_frequency(struct device *dev,
->  	ret = strict_strtol(buf, 10, &val);
->  	if (ret)
->  		return ret;
-> +	if (val == 0)
-> +		return -EINVAL;
->  
->  	mutex_lock(&indio_dev->mlock);
->  	if (spi_get_device_id(st->us)) {
-> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> index 405d9a8..942b3ce 100644
-> --- a/drivers/staging/iio/adc/ad7192.c
-> +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -647,6 +647,8 @@ static ssize_t ad7192_write_frequency(struct device *dev,
->  	ret = strict_strtoul(buf, 10, &lval);
->  	if (ret)
->  		return ret;
-> +	if (lval == 0)
-> +		return -EINVAL;
->  
->  	mutex_lock(&indio_dev->mlock);
->  	if (iio_buffer_enabled(indio_dev)) {
-> diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-> index b3f7e0f..eb0a2a9 100644
-> --- a/drivers/staging/iio/meter/ade7759.c
-> +++ b/drivers/staging/iio/meter/ade7759.c
-> @@ -385,6 +385,8 @@ static ssize_t ade7759_write_frequency(struct device *dev,
->  	ret = strict_strtol(buf, 10, &val);
->  	if (ret)
->  		return ret;
-> +	if (val == 0)
-> +		return -EINVAL;
->  
->  	mutex_lock(&indio_dev->mlock);
->  
-> diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
-> index f04ece7..3ccff18 100644
-> --- a/drivers/staging/iio/meter/ade7753.c
-> +++ b/drivers/staging/iio/meter/ade7753.c
-> @@ -425,6 +425,8 @@ static ssize_t ade7753_write_frequency(struct device *dev,
->  	ret = strict_strtol(buf, 10, &val);
->  	if (ret)
->  		return ret;
-> +	if (val == 0)
-> +		return -EINVAL;
->  
->  	mutex_lock(&indio_dev->mlock);
->  
-> diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
-> index 6cee28a..abb1e9c 100644
-> --- a/drivers/staging/iio/meter/ade7754.c
-> +++ b/drivers/staging/iio/meter/ade7754.c
-> @@ -445,6 +445,8 @@ static ssize_t ade7754_write_frequency(struct device *dev,
->  	ret = strict_strtol(buf, 10, &val);
->  	if (ret)
->  		return ret;
-> +	if (val == 0)
-> +		return -EINVAL;
->  
->  	mutex_lock(&indio_dev->mlock);
->  
+diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
+index 241665b..7f11c1c 100644
+--- a/drivers/iio/dac/ad5446.c
++++ b/drivers/iio/dac/ad5446.c
+@@ -22,7 +22,40 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ 
+-#include "ad5446.h"
++#define MODE_PWRDWN_1k		0x1
++#define MODE_PWRDWN_100k	0x2
++#define MODE_PWRDWN_TRISTATE	0x3
++
++/**
++ * struct ad5446_state - driver instance specific data
++ * @spi:		spi_device
++ * @chip_info:		chip model specific constants, available modes etc
++ * @reg:		supply regulator
++ * @vref_mv:		actual reference voltage used
++ */
++
++struct ad5446_state {
++	struct device		*dev;
++	const struct ad5446_chip_info	*chip_info;
++	struct regulator		*reg;
++	unsigned short			vref_mv;
++	unsigned			cached_val;
++	unsigned			pwr_down_mode;
++	unsigned			pwr_down;
++};
++
++/**
++ * struct ad5446_chip_info - chip specific information
++ * @channel:		channel spec for the DAC
++ * @int_vref_mv:	AD5620/40/60: the internal reference voltage
++ * @write:		chip specific helper function to write to the register
++ */
++
++struct ad5446_chip_info {
++	struct iio_chan_spec	channel;
++	u16			int_vref_mv;
++	int			(*write)(struct ad5446_state *st, unsigned val);
++};
+ 
+ static const char * const ad5446_powerdown_modes[] = {
+ 	"1kohm_to_gnd", "100kohm_to_gnd", "three_state"
+diff --git a/drivers/iio/dac/ad5446.h b/drivers/iio/dac/ad5446.h
+deleted file mode 100644
+index 6b7a176..0000000
+--- a/drivers/iio/dac/ad5446.h
++++ /dev/null
+@@ -1,64 +0,0 @@
+-/*
+- * AD5446 SPI DAC driver
+- *
+- * Copyright 2010 Analog Devices Inc.
+- *
+- * Licensed under the GPL-2 or later.
+- */
+-#ifndef IIO_DAC_AD5446_H_
+-#define IIO_DAC_AD5446_H_
+-
+-/* DAC Control Bits */
+-
+-#define AD5446_LOAD		(0x0 << 14) /* Load and update */
+-#define AD5446_SDO_DIS		(0x1 << 14) /* Disable SDO */
+-#define AD5446_NOP		(0x2 << 14) /* No operation */
+-#define AD5446_CLK_RISING	(0x3 << 14) /* Clock data on rising edge */
+-
+-#define AD5620_LOAD		(0x0 << 14) /* Load and update Norm Operation*/
+-#define AD5620_PWRDWN_1k	(0x1 << 14) /* Power-down: 1kOhm to GND */
+-#define AD5620_PWRDWN_100k	(0x2 << 14) /* Power-down: 100kOhm to GND */
+-#define AD5620_PWRDWN_TRISTATE	(0x3 << 14) /* Power-down: Three-state */
+-
+-#define AD5660_LOAD		(0x0 << 16) /* Load and update Norm Operation*/
+-#define AD5660_PWRDWN_1k	(0x1 << 16) /* Power-down: 1kOhm to GND */
+-#define AD5660_PWRDWN_100k	(0x2 << 16) /* Power-down: 100kOhm to GND */
+-#define AD5660_PWRDWN_TRISTATE	(0x3 << 16) /* Power-down: Three-state */
+-
+-#define MODE_PWRDWN_1k		0x1
+-#define MODE_PWRDWN_100k	0x2
+-#define MODE_PWRDWN_TRISTATE	0x3
+-
+-/**
+- * struct ad5446_state - driver instance specific data
+- * @spi:		spi_device
+- * @chip_info:		chip model specific constants, available modes etc
+- * @reg:		supply regulator
+- * @vref_mv:		actual reference voltage used
+- */
+-
+-struct ad5446_state {
+-	struct device		*dev;
+-	const struct ad5446_chip_info	*chip_info;
+-	struct regulator		*reg;
+-	unsigned short			vref_mv;
+-	unsigned			cached_val;
+-	unsigned			pwr_down_mode;
+-	unsigned			pwr_down;
+-};
+-
+-/**
+- * struct ad5446_chip_info - chip specific information
+- * @channel:		channel spec for the DAC
+- * @int_vref_mv:	AD5620/40/60: the internal reference voltage
+- * @write:		chip specific helper function to write to the register
+- */
+-
+-struct ad5446_chip_info {
+-	struct iio_chan_spec	channel;
+-	u16			int_vref_mv;
+-	int			(*write)(struct ad5446_state *st, unsigned val);
+-};
+-
+-
+-#endif /* IIO_DAC_AD5446_H_ */
+-- 
+1.7.11.3
 
