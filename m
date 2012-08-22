@@ -1,405 +1,597 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:54709 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933963Ab2HWLGV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 23 Aug 2012 07:06:21 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-CC: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH 2/5] MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
-Date: Thu, 23 Aug 2012 16:19:57 +0530
-Message-ID: <1345718997-18304-1-git-send-email-rachna@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37419 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933220Ab2HVSYk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Aug 2012 14:24:40 -0400
+Message-ID: <503523DD.2030203@kernel.org>
+Date: Wed, 22 Aug 2012 19:24:29 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+CC: linux-iio@vger.kernel.org, lars@metafoo.de,
+	device-drivers-devel@blackfin.uclinux.org
+Subject: Re: [PATCH v3.6-rc2 V2 1/2] iio:ad5446: Add support for I2C based
+ DACs
+References: <502E10A4.1080800@metafoo.de> <1345559338-19509-1-git-send-email-jeff.dagenais@gmail.com> <1345559338-19509-2-git-send-email-jeff.dagenais@gmail.com>
+In-Reply-To: <1345559338-19509-2-git-send-email-jeff.dagenais@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add the mfd core driver which supports touchscreen
-and ADC.
-With this patch we are only adding infrastructure to
-support the MFD clients.
+On 08/21/2012 03:28 PM, Jean-Francois Dagenais wrote:
+> This patch adds support for I2C based single channel DACs to the ad5446
+> driver. Specifically AD5602, AD5612 and AD5622.
+> 
+> V1: from Lars-Peter Clausen <lars@metafoo.de>
+> V2: Split the device IDs into two enums and move them to the c file.
+Sensible change.  Patch is fine but given we are still well away from
+the merge window I'll wait for Lars-Peter's response before merging this.
 
-Signed-off-by: Patil, Rachna <rachna@ti.com>
----
- drivers/mfd/Kconfig           |    9 ++
- drivers/mfd/Makefile          |    1 +
- drivers/mfd/ti_tscadc.c       |  189 +++++++++++++++++++++++++++++++++++++++++
- include/linux/mfd/ti_tscadc.h |  133 +++++++++++++++++++++++++++++
- 4 files changed, 332 insertions(+), 0 deletions(-)
- create mode 100644 drivers/mfd/ti_tscadc.c
- create mode 100644 include/linux/mfd/ti_tscadc.h
-
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index d1facef..81eb815 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -94,6 +94,15 @@ config MFD_TI_SSP
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ti-ssp.
- 
-+config MFD_TI_TSCADC
-+	tristate "TI ADC / Touch Screen chip support"
-+	depends on ARCH_OMAP2PLUS
-+	help
-+	  If you say yes here you get support for Texas Instruments series
-+	  of Touch Screen /ADC chips.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ti_tscadc.
-+
- config HTC_EGPIO
- 	bool "HTC EGPIO support"
- 	depends on GENERIC_HARDIRQS && GPIOLIB && ARM
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index 79dd22d..1537f74 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -16,6 +16,7 @@ obj-$(CONFIG_HTC_I2CPLD)	+= htc-i2cpld.o
- obj-$(CONFIG_MFD_DAVINCI_VOICECODEC)	+= davinci_voicecodec.o
- obj-$(CONFIG_MFD_DM355EVM_MSP)	+= dm355evm_msp.o
- obj-$(CONFIG_MFD_TI_SSP)	+= ti-ssp.o
-+obj-$(CONFIG_MFD_TI_TSCADC)	+= ti_tscadc.o
- 
- obj-$(CONFIG_MFD_STA2X11)	+= sta2x11-mfd.o
- obj-$(CONFIG_MFD_STMPE)		+= stmpe.o
-diff --git a/drivers/mfd/ti_tscadc.c b/drivers/mfd/ti_tscadc.c
-new file mode 100644
-index 0000000..10c317a
---- /dev/null
-+++ b/drivers/mfd/ti_tscadc.c
-@@ -0,0 +1,189 @@
-+/*
-+ * TI Touch Screen / ADC MFD driver
-+ *
-+ * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation version 2.
-+ *
-+ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-+ * kind, whether express or implied; without even the implied warranty
-+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/slab.h>
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/clk.h>
-+#include <linux/mfd/core.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/mfd/ti_tscadc.h>
-+
-+static unsigned int tscadc_readl(struct ti_tscadc_dev *tsadc, unsigned int reg)
-+{
-+	return readl(tsadc->tscadc_base + reg);
-+}
-+
-+static void tscadc_writel(struct ti_tscadc_dev *tsadc, unsigned int reg,
-+					unsigned int val)
-+{
-+	writel(val, tsadc->tscadc_base + reg);
-+}
-+
-+static void tscadc_idle_config(struct ti_tscadc_dev *config)
-+{
-+	unsigned int	 idleconfig;
-+
-+	idleconfig = STEPCONFIG_YNN | STEPCONFIG_INM_ADCREFM |
-+			STEPCONFIG_INP_ADCREFM | STEPCONFIG_YPN;
-+
-+	tscadc_writel(config, REG_IDLECONFIG, idleconfig);
-+}
-+
-+static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
-+{
-+	struct ti_tscadc_dev		*tscadc;
-+	int				err, ctrl;
-+	int				clk_value, clock_rate;
-+	struct resource			*res;
-+	struct clk			*clk;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		dev_err(&pdev->dev, "no memory resource defined.\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Allocate memory for device */
-+	tscadc = kzalloc(sizeof(struct ti_tscadc_dev), GFP_KERNEL);
-+	if (!tscadc) {
-+		dev_err(&pdev->dev, "failed to allocate memory.\n");
-+		return -ENOMEM;
-+	}
-+
-+	res = request_mem_region(res->start, resource_size(res), pdev->name);
-+	if (!res) {
-+		dev_err(&pdev->dev, "failed to reserve registers.\n");
-+		err = -EBUSY;
-+		goto err_free_mem;
-+	}
-+
-+	tscadc->tscadc_base = ioremap(res->start, resource_size(res));
-+	if (!tscadc->tscadc_base) {
-+		dev_err(&pdev->dev, "failed to map registers.\n");
-+		err = -ENOMEM;
-+		goto err_release_mem;
-+	}
-+
-+	tscadc->irq = platform_get_irq(pdev, 0);
-+	if (tscadc->irq < 0) {
-+		dev_err(&pdev->dev, "no irq ID is specified.\n");
-+		return -ENODEV;
-+	}
-+
-+	tscadc->dev = &pdev->dev;
-+
-+	pm_runtime_enable(&pdev->dev);
-+	pm_runtime_get_sync(&pdev->dev);
-+
-+	/*
-+	 * The TSC_ADC_Subsystem has 2 clock domains
-+	 * OCP_CLK and ADC_CLK.
-+	 * The ADC clock is expected to run at target of 3MHz,
-+	 * and expected to capture 12-bit data at a rate of 200 KSPS.
-+	 * The TSC_ADC_SS controller design assumes the OCP clock is
-+	 * at least 6x faster than the ADC clock.
-+	 */
-+	clk = clk_get(&pdev->dev, "adc_tsc_fck");
-+	if (IS_ERR(clk)) {
-+		dev_err(&pdev->dev, "failed to get TSC fck\n");
-+		err = PTR_ERR(clk);
-+		goto err_fail;
-+	}
-+	clock_rate = clk_get_rate(clk);
-+	clk_put(clk);
-+	clk_value = clock_rate / ADC_CLK;
-+	if (clk_value < MAX_CLK_DIV) {
-+		dev_err(&pdev->dev, "clock input less than min clock requirement\n");
-+		err = -EINVAL;
-+		goto err_fail;
-+	}
-+	/* TSCADC_CLKDIV needs to be configured to the value minus 1 */
-+	clk_value = clk_value - 1;
-+	tscadc_writel(tscadc, REG_CLKDIV, clk_value);
-+
-+	/* Set the control register bits */
-+	ctrl = CNTRLREG_STEPCONFIGWRT |
-+			CNTRLREG_TSCENB |
-+			CNTRLREG_STEPID |
-+			CNTRLREG_4WIRE;
-+	tscadc_writel(tscadc, REG_CTRL, ctrl);
-+
-+	/* Set register bits for Idle Config Mode */
-+	tscadc_idle_config(tscadc);
-+
-+	/* Enable the TSC module enable bit */
-+	ctrl = tscadc_readl(tscadc, REG_CTRL);
-+	ctrl |= CNTRLREG_TSCSSENB;
-+	tscadc_writel(tscadc, REG_CTRL, ctrl);
-+
-+	err = mfd_add_devices(&pdev->dev, pdev->id, tscadc->cells,
-+			TSCADC_CELLS, NULL, 0);
-+	if (err < 0)
-+		goto err_fail;
-+
-+	platform_set_drvdata(pdev, tscadc);
-+	return 0;
-+
-+err_fail:
-+	pm_runtime_put_sync(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+	iounmap(tscadc->tscadc_base);
-+err_release_mem:
-+	release_mem_region(res->start, resource_size(res));
-+	mfd_remove_devices(tscadc->dev);
-+err_free_mem:
-+	platform_set_drvdata(pdev, NULL);
-+	kfree(tscadc);
-+	return err;
-+}
-+
-+static int __devexit ti_tscadc_remove(struct platform_device *pdev)
-+{
-+	struct ti_tscadc_dev	*tscadc = platform_get_drvdata(pdev);
-+	struct resource		*res;
-+
-+	tscadc_writel(tscadc, REG_SE, 0x00);
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	iounmap(tscadc->tscadc_base);
-+	release_mem_region(res->start, resource_size(res));
-+
-+	pm_runtime_put_sync(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+
-+	mfd_remove_devices(tscadc->dev);
-+	kfree(tscadc);
-+
-+	platform_set_drvdata(pdev, NULL);
-+	return 0;
-+}
-+
-+static struct platform_driver ti_tscadc_driver = {
-+	.driver = {
-+		.name   = "ti_tscadc",
-+		.owner	= THIS_MODULE,
-+	},
-+	.probe	= ti_tscadc_probe,
-+	.remove	= __devexit_p(ti_tscadc_remove),
-+
-+};
-+
-+module_platform_driver(ti_tscadc_driver);
-+
-+MODULE_DESCRIPTION("TI touchscreen / ADC MFD controller driver");
-+MODULE_AUTHOR("Rachna Patil <rachna@ti.com>");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/mfd/ti_tscadc.h b/include/linux/mfd/ti_tscadc.h
-new file mode 100644
-index 0000000..c5bfced
---- /dev/null
-+++ b/include/linux/mfd/ti_tscadc.h
-@@ -0,0 +1,133 @@
-+#ifndef __LINUX_TI_TSCADC_MFD_H
-+#define __LINUX_TI_TSCADC_MFD_H
-+
-+/*
-+ * TI Touch Screen / ADC MFD driver
-+ *
-+ * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation version 2.
-+ *
-+ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-+ * kind, whether express or implied; without even the implied warranty
-+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/mfd/core.h>
-+
-+#define REG_RAWIRQSTATUS	0x024
-+#define REG_IRQSTATUS		0x028
-+#define REG_IRQENABLE		0x02C
-+#define REG_IRQCLR		0x030
-+#define REG_IRQWAKEUP		0x034
-+#define REG_CTRL		0x040
-+#define REG_ADCFSM		0x044
-+#define REG_CLKDIV		0x04C
-+#define REG_SE			0x054
-+#define REG_IDLECONFIG		0x058
-+#define REG_CHARGECONFIG	0x05C
-+#define REG_CHARGEDELAY		0x060
-+#define REG_STEPCONFIG(n)	(0x64 + ((n - 1) * 8))
-+#define REG_STEPDELAY(n)	(0x68 + ((n - 1) * 8))
-+#define REG_FIFO0CNT		0xE4
-+#define REG_FIFO0THR		0xE8
-+#define REG_FIFO1CNT		0xF0
-+#define REG_FIFO1THR		0xF4
-+#define REG_FIFO0		0x100
-+#define REG_FIFO1		0x200
-+
-+/*	Register Bitfields	*/
-+/* Step Enable */
-+#define STEPENB_MASK		(0x1FFFF << 0)
-+#define STEPENB(val)		((val) << 0)
-+#define STPENB_STEPENB		STEPENB(0x7FFF)
-+
-+/* IRQ enable */
-+#define IRQENB_FIFO0THRES	BIT(2)
-+#define IRQENB_FIFO1THRES	BIT(5)
-+#define IRQENB_PENUP		BIT(9)
-+#define IRQENB_HW_PEN		BIT(0)
-+
-+/* Step Configuration */
-+#define STEPCONFIG_MODE_MASK	(3 << 0)
-+#define STEPCONFIG_MODE(val)	((val) << 0)
-+#define STEPCONFIG_MODE_HWSYNC	STEPCONFIG_MODE(2)
-+#define STEPCONFIG_AVG_MASK	(7 << 2)
-+#define STEPCONFIG_AVG(val)	((val) << 2)
-+#define STEPCONFIG_AVG_16	STEPCONFIG_AVG(4)
-+#define STEPCONFIG_XPP		BIT(5)
-+#define STEPCONFIG_XNN		BIT(6)
-+#define STEPCONFIG_YPP		BIT(7)
-+#define STEPCONFIG_YNN		BIT(8)
-+#define STEPCONFIG_XNP		BIT(9)
-+#define STEPCONFIG_YPN		BIT(10)
-+#define STEPCONFIG_INM_MASK	(0xF << 15)
-+#define STEPCONFIG_INM(val)	((val) << 15)
-+#define STEPCONFIG_INM_ADCREFM	STEPCONFIG_INM(8)
-+#define STEPCONFIG_INP_MASK	(0xF << 19)
-+#define STEPCONFIG_INP(val)	((val) << 19)
-+#define STEPCONFIG_INP_AN2	STEPCONFIG_INP(2)
-+#define STEPCONFIG_INP_AN3	STEPCONFIG_INP(3)
-+#define STEPCONFIG_INP_AN4	STEPCONFIG_INP(4)
-+#define STEPCONFIG_INP_ADCREFM	STEPCONFIG_INP(8)
-+#define STEPCONFIG_FIFO1	BIT(26)
-+
-+/* Delay register */
-+#define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
-+#define STEPDELAY_OPEN(val)	((val) << 0)
-+#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
-+#define STEPDELAY_SAMPLE_MASK	(0xFF << 24)
-+#define STEPDELAY_SAMPLE(val)	((val) << 24)
-+#define STEPCONFIG_SAMPLEDLY	STEPDELAY_SAMPLE(0)
-+
-+/* Charge Config */
-+#define STEPCHARGE_RFP_MASK	(7 << 12)
-+#define STEPCHARGE_RFP(val)	((val) << 12)
-+#define STEPCHARGE_RFP_XPUL	STEPCHARGE_RFP(1)
-+#define STEPCHARGE_INM_MASK	(0xF << 15)
-+#define STEPCHARGE_INM(val)	((val) << 15)
-+#define STEPCHARGE_INM_AN1	STEPCHARGE_INM(1)
-+#define STEPCHARGE_INP_MASK	(0xF << 19)
-+#define STEPCHARGE_INP(val)	((val) << 19)
-+#define STEPCHARGE_INP_AN1	STEPCHARGE_INP(1)
-+#define STEPCHARGE_RFM_MASK	(3 << 23)
-+#define STEPCHARGE_RFM(val)	((val) << 23)
-+#define STEPCHARGE_RFM_XNUR	STEPCHARGE_RFM(1)
-+
-+/* Charge delay */
-+#define CHARGEDLY_OPEN_MASK	(0x3FFFF << 0)
-+#define CHARGEDLY_OPEN(val)	((val) << 0)
-+#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(1)
-+
-+/* Control register */
-+#define CNTRLREG_TSCSSENB	BIT(0)
-+#define CNTRLREG_STEPID		BIT(1)
-+#define CNTRLREG_STEPCONFIGWRT	BIT(2)
-+#define CNTRLREG_POWERDOWN	BIT(4)
-+#define CNTRLREG_AFE_CTRL_MASK	(3 << 5)
-+#define CNTRLREG_AFE_CTRL(val)	((val) << 5)
-+#define CNTRLREG_4WIRE		CNTRLREG_AFE_CTRL(1)
-+#define CNTRLREG_5WIRE		CNTRLREG_AFE_CTRL(2)
-+#define CNTRLREG_8WIRE		CNTRLREG_AFE_CTRL(3)
-+#define CNTRLREG_TSCENB		BIT(7)
-+
-+#define ADC_CLK			3000000
-+#define	MAX_CLK_DIV		7
-+
-+#define TSCADC_CELLS		0
-+
-+struct mfd_tscadc_board {
-+	struct tsc_data *tsc_init;
-+};
-+
-+struct ti_tscadc_dev {
-+	struct device *dev;
-+	void __iomem *tscadc_base;
-+	int irq;
-+	struct mfd_cell cells[TSCADC_CELLS];
-+};
-+
-+#endif
--- 
-1.7.1
-
+> 
+> Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+> ---
+>  drivers/iio/dac/Kconfig  |   9 +-
+>  drivers/iio/dac/ad5446.c | 402 +++++++++++++++++++++++++++++++++--------------
+>  drivers/iio/dac/ad5446.h |  29 +---
+>  3 files changed, 293 insertions(+), 147 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 1be15fa..293b61d 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -57,11 +57,12 @@ config AD5624R_SPI
+>  
+>  config AD5446
+>  	tristate "Analog Devices AD5446 and similar single channel DACs driver"
+> -	depends on SPI
+> +	depends on (SPI_MASTER || I2C)
+>  	help
+> -	  Say yes here to build support for Analog Devices AD5444, AD5446, AD5450,
+> -	  AD5451, AD5452, AD5453, AD5512A, AD5541A, AD5542A, AD5543, AD5553, AD5601,
+> -	  AD5611, AD5620, AD5621, AD5640, AD5660, AD5662 DACs.
+> +	  Say yes here to build support for Analog Devices AD5602, AD5612, AD5622,
+> +	  AD5444, AD5446, AD5450, AD5451, AD5452, AD5453, AD5512A, AD5541A, AD5542A,
+> +	  AD5543, AD5553, AD5601, AD5611, AD5620, AD5621, AD5640, AD5660, AD5662
+> +	  DACs.
+>  
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called ad5446.
+> diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
+> index 2ca5059..241665b 100644
+> --- a/drivers/iio/dac/ad5446.c
+> +++ b/drivers/iio/dac/ad5446.c
+> @@ -14,6 +14,7 @@
+>  #include <linux/sysfs.h>
+>  #include <linux/list.h>
+>  #include <linux/spi/spi.h>
+> +#include <linux/i2c.h>
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/err.h>
+>  #include <linux/module.h>
+> @@ -23,23 +24,6 @@
+>  
+>  #include "ad5446.h"
+>  
+> -static int ad5446_write(struct ad5446_state *st, unsigned val)
+> -{
+> -	__be16 data = cpu_to_be16(val);
+> -	return spi_write(st->spi, &data, sizeof(data));
+> -}
+> -
+> -static int ad5660_write(struct ad5446_state *st, unsigned val)
+> -{
+> -	uint8_t data[3];
+> -
+> -	data[0] = (val >> 16) & 0xFF;
+> -	data[1] = (val >> 8) & 0xFF;
+> -	data[2] = val & 0xFF;
+> -
+> -	return spi_write(st->spi, data, sizeof(data));
+> -}
+> -
+>  static const char * const ad5446_powerdown_modes[] = {
+>  	"1kohm_to_gnd", "100kohm_to_gnd", "three_state"
+>  };
+> @@ -110,7 +94,7 @@ static ssize_t ad5446_write_dac_powerdown(struct iio_dev *indio_dev,
+>  	return ret ? ret : len;
+>  }
+>  
+> -static const struct iio_chan_spec_ext_info ad5064_ext_info_powerdown[] = {
+> +static const struct iio_chan_spec_ext_info ad5446_ext_info_powerdown[] = {
+>  	{
+>  		.name = "powerdown",
+>  		.read = ad5446_read_dac_powerdown,
+> @@ -136,84 +120,7 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info_powerdown[] = {
+>  	_AD5446_CHANNEL(bits, storage, shift, NULL)
+>  
+>  #define AD5446_CHANNEL_POWERDOWN(bits, storage, shift) \
+> -	_AD5446_CHANNEL(bits, storage, shift, ad5064_ext_info_powerdown)
+> -
+> -static const struct ad5446_chip_info ad5446_chip_info_tbl[] = {
+> -	[ID_AD5444] = {
+> -		.channel = AD5446_CHANNEL(12, 16, 2),
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5446] = {
+> -		.channel = AD5446_CHANNEL(14, 16, 0),
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5450] = {
+> -		.channel = AD5446_CHANNEL(8, 16, 6),
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5451] = {
+> -		.channel = AD5446_CHANNEL(10, 16, 4),
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5541A] = {
+> -		.channel = AD5446_CHANNEL(16, 16, 0),
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5512A] = {
+> -		.channel = AD5446_CHANNEL(12, 16, 4),
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5553] = {
+> -		.channel = AD5446_CHANNEL(14, 16, 0),
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5601] = {
+> -		.channel = AD5446_CHANNEL_POWERDOWN(8, 16, 6),
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5611] = {
+> -		.channel = AD5446_CHANNEL_POWERDOWN(10, 16, 4),
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5621] = {
+> -		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5620_2500] = {
+> -		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
+> -		.int_vref_mv = 2500,
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5620_1250] = {
+> -		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
+> -		.int_vref_mv = 1250,
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5640_2500] = {
+> -		.channel = AD5446_CHANNEL_POWERDOWN(14, 16, 0),
+> -		.int_vref_mv = 2500,
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5640_1250] = {
+> -		.channel = AD5446_CHANNEL_POWERDOWN(14, 16, 0),
+> -		.int_vref_mv = 1250,
+> -		.write = ad5446_write,
+> -	},
+> -	[ID_AD5660_2500] = {
+> -		.channel = AD5446_CHANNEL_POWERDOWN(16, 16, 0),
+> -		.int_vref_mv = 2500,
+> -		.write = ad5660_write,
+> -	},
+> -	[ID_AD5660_1250] = {
+> -		.channel = AD5446_CHANNEL_POWERDOWN(16, 16, 0),
+> -		.int_vref_mv = 1250,
+> -		.write = ad5660_write,
+> -	},
+> -	[ID_AD5662] = {
+> -		.channel = AD5446_CHANNEL_POWERDOWN(16, 16, 0),
+> -		.write = ad5660_write,
+> -	},
+> -};
+> +	_AD5446_CHANNEL(bits, storage, shift, ad5446_ext_info_powerdown)
+>  
+>  static int ad5446_read_raw(struct iio_dev *indio_dev,
+>  			   struct iio_chan_spec const *chan,
+> @@ -272,14 +179,15 @@ static const struct iio_info ad5446_info = {
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> -static int __devinit ad5446_probe(struct spi_device *spi)
+> +static int __devinit ad5446_probe(struct device *dev, const char *name,
+> +	const struct ad5446_chip_info *chip_info)
+>  {
+>  	struct ad5446_state *st;
+>  	struct iio_dev *indio_dev;
+>  	struct regulator *reg;
+>  	int ret, voltage_uv = 0;
+>  
+> -	reg = regulator_get(&spi->dev, "vcc");
+> +	reg = regulator_get(dev, "vcc");
+>  	if (!IS_ERR(reg)) {
+>  		ret = regulator_enable(reg);
+>  		if (ret)
+> @@ -294,16 +202,15 @@ static int __devinit ad5446_probe(struct spi_device *spi)
+>  		goto error_disable_reg;
+>  	}
+>  	st = iio_priv(indio_dev);
+> -	st->chip_info =
+> -		&ad5446_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+> +	st->chip_info = chip_info;
+>  
+> -	spi_set_drvdata(spi, indio_dev);
+> +	dev_set_drvdata(dev, indio_dev);
+>  	st->reg = reg;
+> -	st->spi = spi;
+> +	st->dev = dev;
+>  
+> -	/* Establish that the iio_dev is a child of the spi device */
+> -	indio_dev->dev.parent = &spi->dev;
+> -	indio_dev->name = spi_get_device_id(spi)->name;
+> +	/* Establish that the iio_dev is a child of the device */
+> +	indio_dev->dev.parent = dev;
+> +	indio_dev->name = name;
+>  	indio_dev->info = &ad5446_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->channels = &st->chip_info->channel;
+> @@ -316,7 +223,7 @@ static int __devinit ad5446_probe(struct spi_device *spi)
+>  	else if (voltage_uv)
+>  		st->vref_mv = voltage_uv / 1000;
+>  	else
+> -		dev_warn(&spi->dev, "reference voltage unspecified\n");
+> +		dev_warn(dev, "reference voltage unspecified\n");
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret)
+> @@ -336,9 +243,9 @@ error_put_reg:
+>  	return ret;
+>  }
+>  
+> -static int ad5446_remove(struct spi_device *spi)
+> +static int ad5446_remove(struct device *dev)
+>  {
+> -	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>  	struct ad5446_state *st = iio_priv(indio_dev);
+>  
+>  	iio_device_unregister(indio_dev);
+> @@ -351,7 +258,133 @@ static int ad5446_remove(struct spi_device *spi)
+>  	return 0;
+>  }
+>  
+> -static const struct spi_device_id ad5446_id[] = {
+> +#if IS_ENABLED(CONFIG_SPI_MASTER)
+> +
+> +static int ad5446_write(struct ad5446_state *st, unsigned val)
+> +{
+> +	struct spi_device *spi = to_spi_device(st->dev);
+> +	__be16 data = cpu_to_be16(val);
+> +
+> +	return spi_write(spi, &data, sizeof(data));
+> +}
+> +
+> +static int ad5660_write(struct ad5446_state *st, unsigned val)
+> +{
+> +	struct spi_device *spi = to_spi_device(st->dev);
+> +	uint8_t data[3];
+> +
+> +	data[0] = (val >> 16) & 0xFF;
+> +	data[1] = (val >> 8) & 0xFF;
+> +	data[2] = val & 0xFF;
+> +
+> +	return spi_write(spi, data, sizeof(data));
+> +}
+> +
+> +/**
+> + * ad5446_supported_spi_device_ids:
+> + * The AD5620/40/60 parts are available in different fixed internal reference
+> + * voltage options. The actual part numbers may look differently
+> + * (and a bit cryptic), however this style is used to make clear which
+> + * parts are supported here.
+> + */
+> +enum ad5446_supported_spi_device_ids {
+> +	ID_AD5444,
+> +	ID_AD5446,
+> +	ID_AD5450,
+> +	ID_AD5451,
+> +	ID_AD5541A,
+> +	ID_AD5512A,
+> +	ID_AD5553,
+> +	ID_AD5601,
+> +	ID_AD5611,
+> +	ID_AD5621,
+> +	ID_AD5620_2500,
+> +	ID_AD5620_1250,
+> +	ID_AD5640_2500,
+> +	ID_AD5640_1250,
+> +	ID_AD5660_2500,
+> +	ID_AD5660_1250,
+> +	ID_AD5662,
+> +};
+> +
+> +static const struct ad5446_chip_info ad5446_spi_chip_info[] = {
+> +	[ID_AD5444] = {
+> +		.channel = AD5446_CHANNEL(12, 16, 2),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5446] = {
+> +		.channel = AD5446_CHANNEL(14, 16, 0),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5450] = {
+> +		.channel = AD5446_CHANNEL(8, 16, 6),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5451] = {
+> +		.channel = AD5446_CHANNEL(10, 16, 4),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5541A] = {
+> +		.channel = AD5446_CHANNEL(16, 16, 0),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5512A] = {
+> +		.channel = AD5446_CHANNEL(12, 16, 4),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5553] = {
+> +		.channel = AD5446_CHANNEL(14, 16, 0),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5601] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(8, 16, 6),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5611] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(10, 16, 4),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5621] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5620_2500] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
+> +		.int_vref_mv = 2500,
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5620_1250] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
+> +		.int_vref_mv = 1250,
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5640_2500] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(14, 16, 0),
+> +		.int_vref_mv = 2500,
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5640_1250] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(14, 16, 0),
+> +		.int_vref_mv = 1250,
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5660_2500] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(16, 16, 0),
+> +		.int_vref_mv = 2500,
+> +		.write = ad5660_write,
+> +	},
+> +	[ID_AD5660_1250] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(16, 16, 0),
+> +		.int_vref_mv = 1250,
+> +		.write = ad5660_write,
+> +	},
+> +	[ID_AD5662] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(16, 16, 0),
+> +		.write = ad5660_write,
+> +	},
+> +};
+> +
+> +static const struct spi_device_id ad5446_spi_ids[] = {
+>  	{"ad5444", ID_AD5444},
+>  	{"ad5446", ID_AD5446},
+>  	{"ad5450", ID_AD5450},
+> @@ -375,18 +408,157 @@ static const struct spi_device_id ad5446_id[] = {
+>  	{"ad5662", ID_AD5662},
+>  	{}
+>  };
+> -MODULE_DEVICE_TABLE(spi, ad5446_id);
+> +MODULE_DEVICE_TABLE(spi, ad5446_spi_ids);
+> +
+> +static int __devinit ad5446_spi_probe(struct spi_device *spi)
+> +{
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+> +
+> +	return ad5446_probe(&spi->dev, id->name,
+> +		&ad5446_spi_chip_info[id->driver_data]);
+> +}
+>  
+> -static struct spi_driver ad5446_driver = {
+> +static int __devexit ad5446_spi_remove(struct spi_device *spi)
+> +{
+> +	return ad5446_remove(&spi->dev);
+> +}
+> +
+> +static struct spi_driver ad5446_spi_driver = {
+>  	.driver = {
+>  		.name	= "ad5446",
+>  		.owner	= THIS_MODULE,
+>  	},
+> -	.probe		= ad5446_probe,
+> -	.remove		= __devexit_p(ad5446_remove),
+> -	.id_table	= ad5446_id,
+> +	.probe		= ad5446_spi_probe,
+> +	.remove		= __devexit_p(ad5446_spi_remove),
+> +	.id_table	= ad5446_spi_ids,
+> +};
+> +
+> +static int __init ad5446_spi_register_driver(void)
+> +{
+> +	return spi_register_driver(&ad5446_spi_driver);
+> +}
+> +
+> +static void ad5446_spi_unregister_driver(void)
+> +{
+> +	spi_unregister_driver(&ad5446_spi_driver);
+> +}
+> +
+> +#else
+> +
+> +static inline int ad5446_spi_register_driver(void) { return 0; }
+> +static inline void ad5446_spi_unregister_driver(void) { }
+> +
+> +#endif
+> +
+> +#if IS_ENABLED(CONFIG_I2C)
+> +
+> +static int ad5622_write(struct ad5446_state *st, unsigned val)
+> +{
+> +	struct i2c_client *client = to_i2c_client(st->dev);
+> +	__be16 data = cpu_to_be16(val);
+> +
+> +	return i2c_master_send(client, (char *)&data, sizeof(data));
+> +}
+> +
+> +/**
+> + * ad5446_supported_i2c_device_ids:
+> + * The AD5620/40/60 parts are available in different fixed internal reference
+> + * voltage options. The actual part numbers may look differently
+> + * (and a bit cryptic), however this style is used to make clear which
+> + * parts are supported here.
+> + */
+> +enum ad5446_supported_i2c_device_ids {
+> +	ID_AD5602,
+> +	ID_AD5612,
+> +	ID_AD5622,
+> +};
+> +
+> +static const struct ad5446_chip_info ad5446_i2c_chip_info[] = {
+> +	[ID_AD5602] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(8, 16, 4),
+> +		.write = ad5622_write,
+> +	},
+> +	[ID_AD5612] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(10, 16, 2),
+> +		.write = ad5622_write,
+> +	},
+> +	[ID_AD5622] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 0),
+> +		.write = ad5622_write,
+> +	},
+>  };
+> -module_spi_driver(ad5446_driver);
+> +
+> +static int __devinit ad5446_i2c_probe(struct i2c_client *i2c,
+> +	const struct i2c_device_id *id)
+> +{
+> +	return ad5446_probe(&i2c->dev, id->name,
+> +		&ad5446_i2c_chip_info[id->driver_data]);
+> +}
+> +
+> +static int __devexit ad5446_i2c_remove(struct i2c_client *i2c)
+> +{
+> +	return ad5446_remove(&i2c->dev);
+> +}
+> +
+> +static const struct i2c_device_id ad5446_i2c_ids[] = {
+> +	{"ad5602", ID_AD5602},
+> +	{"ad5612", ID_AD5612},
+> +	{"ad5622", ID_AD5622},
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, ad5446_i2c_ids);
+> +
+> +static struct i2c_driver ad5446_i2c_driver = {
+> +	.driver = {
+> +		   .name = "ad5446",
+> +		   .owner = THIS_MODULE,
+> +	},
+> +	.probe = ad5446_i2c_probe,
+> +	.remove = __devexit_p(ad5446_i2c_remove),
+> +	.id_table = ad5446_i2c_ids,
+> +};
+> +
+> +static int __init ad5446_i2c_register_driver(void)
+> +{
+> +	return i2c_add_driver(&ad5446_i2c_driver);
+> +}
+> +
+> +static void __exit ad5446_i2c_unregister_driver(void)
+> +{
+> +	i2c_del_driver(&ad5446_i2c_driver);
+> +}
+> +
+> +#else
+> +
+> +static inline int ad5446_i2c_register_driver(void) { return 0; }
+> +static inline void ad5446_i2c_unregister_driver(void) { }
+> +
+> +#endif
+> +
+> +static int __init ad5446_init(void)
+> +{
+> +	int ret;
+> +
+> +	ret = ad5446_spi_register_driver();
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ad5446_i2c_register_driver();
+> +	if (ret) {
+> +		ad5446_spi_unregister_driver();
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +module_init(ad5446_init);
+> +
+> +static void __exit ad5446_exit(void)
+> +{
+> +	ad5446_i2c_unregister_driver();
+> +	ad5446_spi_unregister_driver();
+> +}
+> +module_exit(ad5446_exit);
+>  
+>  MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
+>  MODULE_DESCRIPTION("Analog Devices AD5444/AD5446 DAC");
+> diff --git a/drivers/iio/dac/ad5446.h b/drivers/iio/dac/ad5446.h
+> index 2934269..6b7a176 100644
+> --- a/drivers/iio/dac/ad5446.h
+> +++ b/drivers/iio/dac/ad5446.h
+> @@ -38,7 +38,7 @@
+>   */
+>  
+>  struct ad5446_state {
+> -	struct spi_device		*spi;
+> +	struct device		*dev;
+>  	const struct ad5446_chip_info	*chip_info;
+>  	struct regulator		*reg;
+>  	unsigned short			vref_mv;
+> @@ -60,32 +60,5 @@ struct ad5446_chip_info {
+>  	int			(*write)(struct ad5446_state *st, unsigned val);
+>  };
+>  
+> -/**
+> - * ad5446_supported_device_ids:
+> - * The AD5620/40/60 parts are available in different fixed internal reference
+> - * voltage options. The actual part numbers may look differently
+> - * (and a bit cryptic), however this style is used to make clear which
+> - * parts are supported here.
+> - */
+> -
+> -enum ad5446_supported_device_ids {
+> -	ID_AD5444,
+> -	ID_AD5446,
+> -	ID_AD5450,
+> -	ID_AD5451,
+> -	ID_AD5541A,
+> -	ID_AD5512A,
+> -	ID_AD5553,
+> -	ID_AD5601,
+> -	ID_AD5611,
+> -	ID_AD5621,
+> -	ID_AD5620_2500,
+> -	ID_AD5620_1250,
+> -	ID_AD5640_2500,
+> -	ID_AD5640_1250,
+> -	ID_AD5660_2500,
+> -	ID_AD5660_1250,
+> -	ID_AD5662,
+> -};
+>  
+>  #endif /* IIO_DAC_AD5446_H_ */
+> 
