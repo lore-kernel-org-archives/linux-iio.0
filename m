@@ -1,129 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from a83-160-107-163.adsl.xs4all.nl ([83.160.107.163]:41305 "EHLO
-	d4rwin.no-ip.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933189Ab2HWTDx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Aug 2012 15:03:53 -0400
-Date: Thu, 23 Aug 2012 21:02:39 +0200
-From: Matthias Kaehlcke <matthias.list@kaehlcke.net>
-To: "Patil, Rachna" <rachna@ti.com>
-Cc: linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Samuel Ortiz <sameo@linux.intel.com>
-Subject: Re: [PATCH 4/5] IIO : ADC: tiadc: Add support of TI's ADC driver
-Message-ID: <20120823190239.GF27787@darwin>
-References: <1345719021-22835-1-git-send-email-rachna@ti.com>
+Received: from mail-lpp01m010-f46.google.com ([209.85.215.46]:43061 "EHLO
+	mail-lpp01m010-f46.google.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1758804Ab2HVJsY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Aug 2012 05:48:24 -0400
+Date: Wed, 22 Aug 2012 11:48:20 +0200
+From: Johan Hovold <jhovold@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, Axel Lin <axel.lin@gmail.com>
+Cc: Johan Hovold <jhovold@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: lm3533-als: Fix build warnings
+Message-ID: <20120822094820.GA18415@localhost>
+References: <1343902209.1207.2.camel@phoenix>
+ <502AB521.6090201@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1345719021-22835-1-git-send-email-rachna@ti.com>
+In-Reply-To: <502AB521.6090201@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On Tue, Aug 14, 2012 at 09:29:21PM +0100, Jonathan Cameron wrote:
+> On 08/02/2012 11:10 AM, Axel Lin wrote:
+> > Fix below build warnings:
+> >   CC [M]  drivers/iio/light/lm3533-als.o
+> > drivers/iio/light/lm3533-als.c:667:8: warning: initialization from incompatible pointer type [enabled by default]
+> > drivers/iio/light/lm3533-als.c:667:8: warning: (near initialization for 'dev_attr_in_illuminance0_thresh_either_en.show') [enabled by default]
+> > drivers/iio/light/lm3533-als.c:667:8: warning: initialization from incompatible pointer type [enabled by default]
+> > drivers/iio/light/lm3533-als.c:667:8: warning: (near initialization for 'dev_attr_in_illuminance0_thresh_either_en.store') [enabled by default]
+> > 
+> > Signed-off-by: Axel Lin <axel.lin@gmail.com>
+> Thanks queued up.
 
-El Thu, Aug 23, 2012 at 04:20:21PM +0530 Patil, Rachna ha dit:
+Thanks for fixing this and sorry for not responding sooner (vacation...).
 
-> This patch adds support for TI's ADC driver.
-> This is a multifunctional device.
-> Analog input lines are provided on which
-> voltage measurements can be carried out.
-> You can have upto 8 input lines.
-> 
-> Signed-off-by: Patil, Rachna <rachna@ti.com>
-> ---
->
-> diff --git a/drivers/iio/adc/ti_adc.c b/drivers/iio/adc/ti_adc.c
-> ...
-> +static int __devinit tiadc_probe(struct platform_device *pdev)
-> +{
-> +	struct iio_dev		*idev;
-> +	int			err;
-> +	struct adc_device	*adc_dev = NULL;
-> +	struct ti_tscadc_dev	*tscadc_dev = pdev->dev.platform_data;
-> +	struct mfd_tscadc_board	*board_data;
-> +
-> +	board_data = (struct mfd_tscadc_board *)tscadc_dev->dev->platform_data;
-> +	if (!board_data) {
-> +		dev_err(tscadc_dev->dev, "Could not find platform data\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	idev = iio_device_alloc(sizeof(struct adc_device));
-> +	if (idev == NULL) {
-> +		dev_err(&pdev->dev, "failed to allocate iio device.\n");
-> +		err = -ENOMEM;
-> +		goto err_ret;
-> +	}
-> +	adc_dev = iio_priv(idev);
-> +
-> +	tscadc_dev->adc = adc_dev;
-> +	adc_dev->mfd_tscadc = tscadc_dev;
-> +	adc_dev->idev = idev;
-> +	adc_dev->adc_channels = board_data->adc_init->adc_channels;
-> +
-> +	idev->dev.parent = &pdev->dev;
-> +	idev->name = dev_name(&pdev->dev);
-> +	idev->modes = INDIO_DIRECT_MODE;
-> +	idev->info = &tiadc_info;
-> +
-> +	adc_step_config(adc_dev);
-> +
-> +	err = tiadc_channel_init(idev, adc_dev);
-> +	if (err < 0)
-> +		goto err_fail;
-> +
-> +	err = iio_device_register(idev);
-> +	if (err)
-> +		goto err_free_channels;
-> +
-> +	dev_info(&pdev->dev, "attached adc driver\n");
-> +	platform_set_drvdata(pdev, idev);
-> +
-> +	return 0;
-> +
-> +err_free_channels:
-> +	tiadc_channel_remove(idev);
-> +err_fail:
-> +	iio_device_unregister(idev);
-> +	iio_device_free(idev);
-> +err_ret:
-> +	platform_set_drvdata(pdev, NULL);
+Johan
 
-not necessary, the platform device doesn't exist anymore
-
-> +	iio_device_free(idev);
-
-already done some lines above and could be executed without having
-allocated the iio device (when iio_device_alloc() fails)
-
-> +static int __devexit tiadc_remove(struct platform_device *pdev)
-> +{
-> +	struct ti_tscadc_dev   *tscadc_dev = pdev->dev.platform_data;
-> +	struct adc_device	*adc_dev = tscadc_dev->adc;
-> +	struct iio_dev		*idev = adc_dev->idev;
-> +
-> +	iio_device_unregister(idev);
-> +	tiadc_channel_remove(idev);
-> +
-> +	tscadc_dev->adc = NULL;
-> +
-> +	iio_device_free(idev);
-> +	platform_set_drvdata(pdev, NULL);
-
-see above
-
-best regards
-
--- 
-Matthias Kaehlcke
-Embedded Linux Developer
-Amsterdam
-
-               If sharing a thing in no way diminishes it,
-               it is not rightly owned if it is not shared
-                                                                 .''`.
-    using free software / Debian GNU/Linux | http://debian.org  : :'  :
-                                                                `. `'`
-gpg --keyserver pgp.mit.edu --recv-keys 47D8E5D4                  `-
+> > ---
+> >  drivers/iio/light/lm3533-als.c |    4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
+> > index c3e7bac..e45712a9 100644
+> > --- a/drivers/iio/light/lm3533-als.c
+> > +++ b/drivers/iio/light/lm3533-als.c
+> > @@ -404,7 +404,7 @@ out:
+> >  	return ret;
+> >  }
+> >  
+> > -static int show_thresh_either_en(struct device *dev,
+> > +static ssize_t show_thresh_either_en(struct device *dev,
+> >  					struct device_attribute *attr,
+> >  					char *buf)
+> >  {
+> > @@ -424,7 +424,7 @@ static int show_thresh_either_en(struct device *dev,
+> >  	return scnprintf(buf, PAGE_SIZE, "%u\n", enable);
+> >  }
+> >  
+> > -static int store_thresh_either_en(struct device *dev,
+> > +static ssize_t store_thresh_either_en(struct device *dev,
+> >  					struct device_attribute *attr,
+> >  					const char *buf, size_t len)
+> >  {
+> > 
