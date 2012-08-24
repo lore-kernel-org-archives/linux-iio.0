@@ -1,85 +1,91 @@
-Return-Path: <srinivas.pandruvada@intel.com>
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
 To: Jonathan Cameron <jic23@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "jkosina@suse.cz"
-	<jkosina@suse.cz>
-Subject: RE: [PATCH 1/9] IIO: core: Add hysteresis in channel spec
-Date: Fri, 24 Aug 2012 16:47:05 +0000
-Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A9193AD736@ORSMSX104.amr.corp.intel.com>
-References: <1344356943-23313-1-git-send-email-srinivas.pandruvada@intel.com>
- <1344356943-23313-2-git-send-email-srinivas.pandruvada@intel.com>
- <502A1FA9.4030407@kernel.org>
-In-Reply-To: <502A1FA9.4030407@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Subject: Re: [PATCH 2/2] iio: kfifo - add poll support.
+Date: Fri, 24 Aug 2012 23:42:59 +0200
+Cc: linux-iio@vger.kernel.org
+References: <1341060763-9602-1-git-send-email-jic23@kernel.org> <1341060763-9602-3-git-send-email-jic23@kernel.org>
+In-Reply-To: <1341060763-9602-3-git-send-email-jic23@kernel.org>
 MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201208242342.59307.marex@denx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
+Dear Jonathan Cameron,
 
-I will submit a patch once it is merged as this document requires kernel ve=
-rsion.
-Unless merged, I will not know in which kernel version it will be available=
-.
+> This buffer implementation was missing poll support.
+> 
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 
-Thanks,
-Srinivas
+Was this ever applied ?
 
-
------Original Message-----
-From: J.I. Cameron [mailto:jic23@hermes.cam.ac.uk] On Behalf Of Jonathan Ca=
-meron
-Sent: Tuesday, August 14, 2012 2:52 AM
-To: Pandruvada, Srinivas
-Cc: linux-iio@vger.kernel.org; jkosina@suse.cz
-Subject: Re: [PATCH 1/9] IIO: core: Add hysteresis in channel spec
-
-On 07/08/12 17:28, srinivas pandruvada wrote:
-> Added hysteresis to the list of channel info enumeration, shared=20
-> /separate bit defines and to postfix channel info strings.
-
-This needs documentation under
-Documentation/ABI/testing/sysfs-bus-iio
-but it can be a later patch.
-
->
-> Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 > ---
->   drivers/iio/industrialio-core.c |    1 +
->   include/linux/iio/iio.h         |    5 +++++
->   2 files changed, 6 insertions(+), 0 deletions(-)
->
-> diff --git a/drivers/iio/industrialio-core.c=20
-> b/drivers/iio/industrialio-core.c index 4f947e4..536ba75 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -92,6 +92,7 @@ static const char * const iio_chan_info_postfix[] =3D {
->   	[IIO_CHAN_INFO_FREQUENCY] =3D "frequency",
->   	[IIO_CHAN_INFO_PHASE] =3D "phase",
->   	[IIO_CHAN_INFO_HARDWAREGAIN] =3D "hardwaregain",
-> +	[IIO_CHAN_INFO_HYSTERESIS] =3D "hysteresis",
->   };
->  =20
->   const struct iio_chan_spec
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h index=20
-> 3a4f6a3..9ed1063 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -35,6 +35,7 @@ enum iio_chan_info_enum {
->   	IIO_CHAN_INFO_FREQUENCY,
->   	IIO_CHAN_INFO_PHASE,
->   	IIO_CHAN_INFO_HARDWAREGAIN,
-> +	IIO_CHAN_INFO_HYSTERESIS,
->   };
->  =20
->   #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2) @@ -100,6 +101,10=20
-> @@ enum iio_chan_info_enum {
->   	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
->   #define IIO_CHAN_INFO_HARDWAREGAIN_SHARED_BIT			\
->   	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
-> +#define IIO_CHAN_INFO_HYSTERESIS_SEPARATE_BIT			\
-> +	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HYSTERESIS)
-> +#define IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT			\
-> +	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HYSTERESIS)
->  =20
->   enum iio_endian {
->   	IIO_CPU,
+>  drivers/iio/kfifo_buf.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
+> index 6ec763f..63da424 100644
+> --- a/drivers/iio/kfifo_buf.c
+> +++ b/drivers/iio/kfifo_buf.c
+> @@ -6,6 +6,7 @@
+>  #include <linux/kfifo.h>
+>  #include <linux/mutex.h>
+>  #include <linux/iio/kfifo_buf.h>
+> +#include <linux/sched.h>
+> 
+>  struct iio_kfifo {
+>  	struct iio_buffer buffer;
+> @@ -36,6 +37,7 @@ static int iio_request_update_kfifo(struct iio_buffer *r)
+>  	kfifo_free(&buf->kf);
+>  	ret = __iio_allocate_kfifo(buf, buf->buffer.bytes_per_datum,
+>  				   buf->buffer.length);
+> +	r->stufftoread = false;
+>  error_ret:
+>  	return ret;
+>  }
+> @@ -82,6 +84,9 @@ static int iio_set_bytes_per_datum_kfifo(struct
+> iio_buffer *r, size_t bpd)
+> 
+>  static int iio_set_length_kfifo(struct iio_buffer *r, int length)
+>  {
+> +	/* Avoid an invalid state */
+> +	if (length < 2)
+> +		length = 2;
+>  	if (r->length != length) {
+>  		r->length = length;
+>  		iio_mark_update_needed_kfifo(r);
+> @@ -98,6 +103,8 @@ static int iio_store_to_kfifo(struct iio_buffer *r,
+>  	ret = kfifo_in(&kf->kf, data, 1);
+>  	if (ret != 1)
+>  		return -EBUSY;
+> +	r->stufftoread = true;
+> +	wake_up_interruptible(&r->pollq);
+> 
+>  	return 0;
+>  }
+> @@ -115,6 +122,12 @@ static int iio_read_first_n_kfifo(struct iio_buffer
+> *r, if (ret < 0)
+>  		return ret;
+> 
+> +	if (kfifo_is_empty(&kf->kf))
+> +		r->stufftoread = false;
+> +	/* verify it is still empty to avoid race */
+> +	if (!kfifo_is_empty(&kf->kf))
+> +		r->stufftoread = true;
+> +
+>  	return copied;
+>  }
+> 
+> @@ -139,7 +152,7 @@ struct iio_buffer *iio_kfifo_allocate(struct iio_dev
+> *indio_dev) iio_buffer_init(&kf->buffer);
+>  	kf->buffer.attrs = &iio_kfifo_attribute_group;
+>  	kf->buffer.access = &kfifo_access_funcs;
+> -
+> +	kf->buffer.length = 2;
+>  	return &kf->buffer;
+>  }
+>  EXPORT_SYMBOL(iio_kfifo_allocate);
+
+Best regards,
+Marek Vasut
