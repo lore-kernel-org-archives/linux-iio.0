@@ -1,49 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55989 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753634Ab2H0RZT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 13:25:19 -0400
-Message-ID: <503BAD7C.5010608@kernel.org>
-Date: Mon, 27 Aug 2012 18:25:16 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Subject: Re: [PATCH 2/2] iio: kfifo - add poll support.
+Date: Sat, 25 Aug 2012 14:23:24 +0200
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ linux-iio@vger.kernel.org
+References: <1341060763-9602-1-git-send-email-jic23@kernel.org> <201208242342.59307.marex@denx.de> <5ab3b5d5-5667-45c5-931d-a158e4c553dd@email.android.com>
+In-Reply-To: <5ab3b5d5-5667-45c5-931d-a158e4c553dd@email.android.com>
 MIME-Version: 1.0
-To: "Kim, Milo" <Milo.Kim@ti.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 2/3] iio: use IIO_CHAN_INFO_RAW rather than 0
-References: <A874F61F95741C4A9BA573A70FE3998F41EEFD76@DQHE02.ent.ti.com>
-In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F41EEFD76@DQHE02.ent.ti.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201208251423.24791.marex@denx.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/16/2012 08:39 AM, Kim, Milo wrote:
-> (a) For better readability, replace 0 with IIO_CHAN_INFO_RAW.
-> (b) Make same line-format as other apis()
->     : iio_read_channel_scale() and iio_read_channel_offset()
+Dear Jonathan Cameron,
+
+> Marek Vasut <marex@denx.de> wrote:
+> >Dear Jonathan Cameron,
+> >
+> >> This buffer implementation was missing poll support.
+> >> 
+> >> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> >
+> >Was this ever applied ?
 > 
-merged. Thanks.
-> Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
-> ---
->  drivers/iio/inkern.c |    6 ++++--
->  1 files changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index bd09245..5103337 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -239,8 +239,10 @@ int iio_read_channel_raw(struct iio_channel *chan, int *val)
->  		goto err_unlock;
->  	}
->  
-> -	ret = chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
-> -					      val, &val2, 0);
-> +	ret = chan->indio_dev->info->read_raw(chan->indio_dev,
-> +					      chan->channel,
-> +					      val, &val2,
-> +					      IIO_CHAN_INFO_RAW);
->  err_unlock:
->  	mutex_unlock(&chan->indio_dev->info_exist_lock);
->  
-> 
+> On todo  list.  Always easier to not get around to my own patches when
+> running low on time.  Will hopefully get time on Monday...
+
+Don't sweat it, thanks for the update! :)
+[...]
+
+> >Best regards,
+> >Marek Vasut
+
+Best regards,
+Marek Vasut
