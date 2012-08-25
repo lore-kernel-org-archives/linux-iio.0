@@ -1,125 +1,107 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from a83-160-107-163.adsl.xs4all.nl ([83.160.107.163]:41271 "EHLO
-	d4rwin.no-ip.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934232Ab2HWS6E (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Aug 2012 14:58:04 -0400
-Date: Thu, 23 Aug 2012 20:48:31 +0200
-From: Matthias Kaehlcke <matthias.list@kaehlcke.net>
-To: "Patil, Rachna" <rachna@ti.com>
-Cc: linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Samuel Ortiz <sameo@linux.intel.com>
-Subject: Re: [PATCH 2/5] MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
-Message-ID: <20120823184830.GE27787@darwin>
-References: <1345718997-18304-1-git-send-email-rachna@ti.com>
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+References: <1341060763-9602-1-git-send-email-jic23@kernel.org> <1341060763-9602-3-git-send-email-jic23@kernel.org> <201208242342.59307.marex@denx.de>
+In-Reply-To: <201208242342.59307.marex@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1345718997-18304-1-git-send-email-rachna@ti.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 2/2] iio: kfifo - add poll support.
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Sat, 25 Aug 2012 09:24:15 +0100
+To: Marek Vasut <marex@denx.de>,Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org
+Message-ID: <5ab3b5d5-5667-45c5-931d-a158e4c553dd@email.android.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
 
-El Thu, Aug 23, 2012 at 04:19:57PM +0530 Patil, Rachna ha dit:
 
-> Add the mfd core driver which supports touchscreen
-> and ADC.
-> With this patch we are only adding infrastructure to
-> support the MFD clients.
-> 
-> Signed-off-by: Patil, Rachna <rachna@ti.com>
-> ---
-> diff --git a/drivers/mfd/ti_tscadc.c b/drivers/mfd/ti_tscadc.c
-> ...
-> +static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
-> +{
-> +	struct ti_tscadc_dev		*tscadc;
-> +	int				err, ctrl;
-> +	int				clk_value, clock_rate;
-> +	struct resource			*res;
-> +	struct clk			*clk;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	if (!res) {
-> +		dev_err(&pdev->dev, "no memory resource defined.\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* Allocate memory for device */
-> +	tscadc = kzalloc(sizeof(struct ti_tscadc_dev), GFP_KERNEL);
-> +	if (!tscadc) {
-> +		dev_err(&pdev->dev, "failed to allocate memory.\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	res = request_mem_region(res->start, resource_size(res), pdev->name);
-> +	if (!res) {
-> +		dev_err(&pdev->dev, "failed to reserve registers.\n");
-> +		err = -EBUSY;
-> +		goto err_free_mem;
-> +	}
-> +
-> +	tscadc->tscadc_base = ioremap(res->start, resource_size(res));
-> +	if (!tscadc->tscadc_base) {
-> +		dev_err(&pdev->dev, "failed to map registers.\n");
-> +		err = -ENOMEM;
-> +		goto err_release_mem;
-> +	}
-> +
-> +	tscadc->irq = platform_get_irq(pdev, 0);
-> +	if (tscadc->irq < 0) {
-> +		dev_err(&pdev->dev, "no irq ID is specified.\n");
-> +		return -ENODEV;
+Marek Vasut <marex@denx.de> wrote:
 
-goto err_iounmap_mem;
-
-> ...
-> +err_fail:
-> +	pm_runtime_put_sync(&pdev->dev);
-> +	pm_runtime_disable(&pdev->dev);
-> +	iounmap(tscadc->tscadc_base);
-> +err_release_mem:
-> +	release_mem_region(res->start, resource_size(res));
-> +	mfd_remove_devices(tscadc->dev);
-> +err_free_mem:
-> +	platform_set_drvdata(pdev, NULL);
-
-shouldn't be necessary as the platform device doesn't exist any longer
-
-> ...
-> +static int __devexit ti_tscadc_remove(struct platform_device *pdev)
-> +{
-> +	struct ti_tscadc_dev	*tscadc = platform_get_drvdata(pdev);
-> +	struct resource		*res;
-> +
-> +	tscadc_writel(tscadc, REG_SE, 0x00);
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	iounmap(tscadc->tscadc_base);
-> +	release_mem_region(res->start, resource_size(res));
-> +
-> +	pm_runtime_put_sync(&pdev->dev);
-> +	pm_runtime_disable(&pdev->dev);
-> +
-> +	mfd_remove_devices(tscadc->dev);
-> +	kfree(tscadc);
-> +
-> +	platform_set_drvdata(pdev, NULL);
-
-same as above
-
-best regards
+>Dear Jonathan Cameron,
+>
+>> This buffer implementation was missing poll support.
+>> 
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>
+>Was this ever applied ?
+On todo  list.  Always easier to not get around to my own patches when running low on time.  Will hopefully get time on Monday...
+>
+>> ---
+>>  drivers/iio/kfifo_buf.c | 15 ++++++++++++++-
+>>  1 file changed, 14 insertions(+), 1 deletion(-)
+>> 
+>> diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
+>> index 6ec763f..63da424 100644
+>> --- a/drivers/iio/kfifo_buf.c
+>> +++ b/drivers/iio/kfifo_buf.c
+>> @@ -6,6 +6,7 @@
+>>  #include <linux/kfifo.h>
+>>  #include <linux/mutex.h>
+>>  #include <linux/iio/kfifo_buf.h>
+>> +#include <linux/sched.h>
+>> 
+>>  struct iio_kfifo {
+>>  	struct iio_buffer buffer;
+>> @@ -36,6 +37,7 @@ static int iio_request_update_kfifo(struct
+>iio_buffer *r)
+>>  	kfifo_free(&buf->kf);
+>>  	ret = __iio_allocate_kfifo(buf, buf->buffer.bytes_per_datum,
+>>  				   buf->buffer.length);
+>> +	r->stufftoread = false;
+>>  error_ret:
+>>  	return ret;
+>>  }
+>> @@ -82,6 +84,9 @@ static int iio_set_bytes_per_datum_kfifo(struct
+>> iio_buffer *r, size_t bpd)
+>> 
+>>  static int iio_set_length_kfifo(struct iio_buffer *r, int length)
+>>  {
+>> +	/* Avoid an invalid state */
+>> +	if (length < 2)
+>> +		length = 2;
+>>  	if (r->length != length) {
+>>  		r->length = length;
+>>  		iio_mark_update_needed_kfifo(r);
+>> @@ -98,6 +103,8 @@ static int iio_store_to_kfifo(struct iio_buffer
+>*r,
+>>  	ret = kfifo_in(&kf->kf, data, 1);
+>>  	if (ret != 1)
+>>  		return -EBUSY;
+>> +	r->stufftoread = true;
+>> +	wake_up_interruptible(&r->pollq);
+>> 
+>>  	return 0;
+>>  }
+>> @@ -115,6 +122,12 @@ static int iio_read_first_n_kfifo(struct
+>iio_buffer
+>> *r, if (ret < 0)
+>>  		return ret;
+>> 
+>> +	if (kfifo_is_empty(&kf->kf))
+>> +		r->stufftoread = false;
+>> +	/* verify it is still empty to avoid race */
+>> +	if (!kfifo_is_empty(&kf->kf))
+>> +		r->stufftoread = true;
+>> +
+>>  	return copied;
+>>  }
+>> 
+>> @@ -139,7 +152,7 @@ struct iio_buffer *iio_kfifo_allocate(struct
+>iio_dev
+>> *indio_dev) iio_buffer_init(&kf->buffer);
+>>  	kf->buffer.attrs = &iio_kfifo_attribute_group;
+>>  	kf->buffer.access = &kfifo_access_funcs;
+>> -
+>> +	kf->buffer.length = 2;
+>>  	return &kf->buffer;
+>>  }
+>>  EXPORT_SYMBOL(iio_kfifo_allocate);
+>
+>Best regards,
+>Marek Vasut
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
 -- 
-Matthias Kaehlcke
-Embedded Linux Developer
-Amsterdam
-
-         The only way to do great work is to love what you do
-                            (Steve Jobs)
-                                                                 .''`.
-    using free software / Debian GNU/Linux | http://debian.org  : :'  :
-                                                                `. `'`
-gpg --keyserver pgp.mit.edu --recv-keys 47D8E5D4                  `-
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
