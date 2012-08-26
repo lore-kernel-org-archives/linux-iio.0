@@ -1,76 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:54691 "EHLO bear.ext.ti.com"
+Received: from ns.pmeerw.net ([87.118.82.44]:39260 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756318Ab2HWLGE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 23 Aug 2012 07:06:04 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-CC: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH 1/5] input: TSC: ti_tscadc: Rename the existing touchscreen driver
-Date: Thu, 23 Aug 2012 16:19:39 +0530
-Message-ID: <1345718979-17895-1-git-send-email-rachna@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+	id S1750862Ab2HZMnu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 26 Aug 2012 08:43:50 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: document missing elements
+Date: Sun, 26 Aug 2012 14:43:38 +0200
+Message-Id: <1345985019-24288-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1345985019-24288-1-git-send-email-pmeerw@pmeerw.net>
+References: <1345985019-24288-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Make way for addition of MFD driver.
-The existing touchsreen driver is a MFD client.
-For better readability we rename the file to
-indicate its functionality as only touchscreen.
-
-Signed-off-by: Patil, Rachna <rachna@ti.com>
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- drivers/input/touchscreen/Kconfig                  |    4 ++--
- drivers/input/touchscreen/Makefile                 |    2 +-
- .../input/touchscreen/{ti_tscadc.c => ti_tsc.c}    |    0
- 3 files changed, 3 insertions(+), 3 deletions(-)
- rename drivers/input/touchscreen/{ti_tscadc.c => ti_tsc.c} (100%)
+ include/linux/iio/iio.h     |    4 ++++
+ include/linux/iio/trigger.h |    5 +++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
-index 1ba232c..68ac802 100644
---- a/drivers/input/touchscreen/Kconfig
-+++ b/drivers/input/touchscreen/Kconfig
-@@ -529,7 +529,7 @@ config TOUCHSCREEN_TOUCHWIN
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called touchwin.
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index f323e7b..f966a7e 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -229,6 +229,7 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
+  * @indexed:		Specify the channel has a numerical index. If not,
+  *			the channel index number will be suppressed for sysfs
+  *			attributes but not for event codes.
++ * @output:		Channel is output.
+  * @differential:	Channel is differential.
+  */
+ struct iio_chan_spec {
+@@ -312,6 +313,9 @@ struct iio_dev;
+  *			Meaning is event dependent.
+  * @validate_trigger:	function to validate the trigger when the
+  *			current trigger gets changed.
++ * @update_scan_mode:	function to configure device and scan buffer when
++ *			channels have changed
++ * @debugfs_reg_access:	function to read or write register value of device
+  **/
+ struct iio_info {
+ 	struct module			*driver_module;
+diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+index a981994..f0af267 100644
+--- a/include/linux/iio/trigger.h
++++ b/include/linux/iio/trigger.h
+@@ -39,7 +39,7 @@ struct iio_trigger_ops {
  
--config TOUCHSCREEN_TI_TSCADC
-+config TOUCHSCREEN_TI_TSC
- 	tristate "TI Touchscreen Interface"
- 	depends on ARCH_OMAP2PLUS
- 	help
-@@ -539,7 +539,7 @@ config TOUCHSCREEN_TI_TSCADC
- 	  If unsure, say N.
+ /**
+  * struct iio_trigger - industrial I/O trigger device
+- *
++ * @ops:		[DRIVER] operations structure
+  * @id:			[INTERN] unique id number
+  * @name:		[DRIVER] unique name
+  * @dev:		[DRIVER] associated device (if relevant)
+@@ -104,7 +104,8 @@ void iio_trigger_unregister(struct iio_trigger *trig_info);
  
- 	  To compile this driver as a module, choose M here: the
--	  module will be called ti_tscadc.
-+	  module will be called ti_tsc.
- 
- config TOUCHSCREEN_ATMEL_TSADCC
- 	tristate "Atmel Touchscreen Interface"
-diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
-index 178eb12..d579427 100644
---- a/drivers/input/touchscreen/Makefile
-+++ b/drivers/input/touchscreen/Makefile
-@@ -52,7 +52,7 @@ obj-$(CONFIG_TOUCHSCREEN_PIXCIR)	+= pixcir_i2c_ts.o
- obj-$(CONFIG_TOUCHSCREEN_S3C2410)	+= s3c2410_ts.o
- obj-$(CONFIG_TOUCHSCREEN_ST1232)	+= st1232.o
- obj-$(CONFIG_TOUCHSCREEN_STMPE)		+= stmpe-ts.o
--obj-$(CONFIG_TOUCHSCREEN_TI_TSCADC)	+= ti_tscadc.o
-+obj-$(CONFIG_TOUCHSCREEN_TI_TSC)	+= ti_tsc.o
- obj-$(CONFIG_TOUCHSCREEN_TNETV107X)	+= tnetv107x-ts.o
- obj-$(CONFIG_TOUCHSCREEN_TOUCHIT213)	+= touchit213.o
- obj-$(CONFIG_TOUCHSCREEN_TOUCHRIGHT)	+= touchright.o
-diff --git a/drivers/input/touchscreen/ti_tscadc.c b/drivers/input/touchscreen/ti_tsc.c
-similarity index 100%
-rename from drivers/input/touchscreen/ti_tscadc.c
-rename to drivers/input/touchscreen/ti_tsc.c
+ /**
+  * iio_trigger_poll() - called on a trigger occurring
+- * @trig: trigger which occurred
++ * @trig:	trigger which occurred
++ * @time:	timestamp when trigger occurred
+  *
+  * Typically called in relevant hardware interrupt handler.
+  **/
 -- 
-1.7.1
+1.7.9.5
 
