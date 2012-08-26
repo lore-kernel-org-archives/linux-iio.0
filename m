@@ -1,39 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f174.google.com ([209.85.214.174]:49733 "EHLO
-	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750725Ab2H0EBE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 00:01:04 -0400
-MIME-Version: 1.0
-In-Reply-To: <1345996865-32082-2-git-send-email-Julia.Lawall@lip6.fr>
-References: <1345996865-32082-1-git-send-email-Julia.Lawall@lip6.fr>
-	<1345996865-32082-2-git-send-email-Julia.Lawall@lip6.fr>
-Date: Mon, 27 Aug 2012 09:31:03 +0530
-Message-ID: <CAOh2x=mRDLO0fXcZgQ1pa3bAiBksC87cVTniTO_Qz9Ou++OMGg@mail.gmail.com>
-Subject: Re: [PATCH 1/13] drivers/staging/iio/adc/spear_adc.c: use
- clk_prepare_enable and clk_disable_unprepare
-From: viresh kumar <viresh.kumar@linaro.org>
-To: Julia Lawall <Julia.Lawall@lip6.fr>, Stefan Roese <sr@denx.de>,
-	Shiraz HASHIM <shiraz.hashim@st.com>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
-	kernel-janitors@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, spear-devel <spear-devel@list.st.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from ns.pmeerw.net ([87.118.82.44]:39259 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751567Ab2HZMnu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 26 Aug 2012 08:43:50 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: fix typos
+Date: Sun, 26 Aug 2012 14:43:37 +0200
+Message-Id: <1345985019-24288-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Aug 26, 2012 at 9:30 PM, Julia Lawall <Julia.Lawall@lip6.fr> wrote:
-> From: Julia Lawall <Julia.Lawall@lip6.fr>
->
-> Clk_prepare_enable and clk_disable_unprepare combine clk_prepare and
-> clk_enable, and clk_disable and clk_unprepare.  They make the code more
-> concise, and ensure that clk_unprepare is called when clk_enable fails.
->
-> A simplified version of the semantic patch that introduces calls to these
-> functions is as follows: (http://coccinelle.lip6.fr/)
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/industrialio-core.c |    2 +-
+ include/linux/iio/iio.h         |    6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Reviewed-by: Viresh Kumar <viresh.kumar@linaro.org>
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 2ec266e..47c1ffa 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -729,7 +729,7 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+ 	attrcount = attrcount_orig;
+ 	/*
+ 	 * New channel registration method - relies on the fact a group does
+-	 * not need to be initialized if it is name is NULL.
++	 * not need to be initialized if its name is NULL.
+ 	 */
+ 	if (indio_dev->channels)
+ 		for (i = 0; i < indio_dev->num_channels; i++) {
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index be82936..f323e7b 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -164,7 +164,7 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
+  * IIO_ENUM() - Initialize enum extended channel attribute
+  * @_name:	Attribute name
+  * @_shared:	Whether the attribute is shared between all channels
+- * @_e:		Pointer to a iio_enum struct
++ * @_e:		Pointer to an iio_enum struct
+  *
+  * This should usually be used together with IIO_ENUM_AVAILABLE()
+  */
+@@ -180,9 +180,9 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
+ /**
+  * IIO_ENUM_AVAILABLE() - Initialize enum available extended channel attribute
+  * @_name:	Attribute name ("_available" will be appended to the name)
+- * @_e:		Pointer to a iio_enum struct
++ * @_e:		Pointer to an iio_enum struct
+  *
+- * Creates a read only attribute which list all the available enum items in a
++ * Creates a read only attribute which lists all the available enum items in a
+  * space separated list. This should usually be used together with IIO_ENUM()
+  */
+ #define IIO_ENUM_AVAILABLE(_name, _e) \
+-- 
+1.7.9.5
 
-@Stefan/Shiraz: Can you update spear-devel mailing list in MAINTAINERS file
-for this driver?
