@@ -1,789 +1,253 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55858 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753589Ab2H0RHO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 13:07:14 -0400
-Message-ID: <503BA93E.5060205@kernel.org>
-Date: Mon, 27 Aug 2012 18:07:10 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <srinivas.pandruvada@intel.com>
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "Jonathan Cameron (jic23@kernel.org)" <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: KFiFo Poll support
+Date: Mon, 27 Aug 2012 17:24:29 +0000
+Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A9193ADCB4@ORSMSX104.amr.corp.intel.com>
+Content-Type: multipart/alternative;
+	boundary="_000_4FA419E87744DF4DAECD5BCE1214B7A9193ADCB4ORSMSX104amrcor_"
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	drivers@analog.com
-Subject: Re: [PATCH 19/22] staging:iio:ad7192: Use common Sigma Delta library
-References: <1344616596-8026-1-git-send-email-lars@metafoo.de> <1344616596-8026-19-git-send-email-lars@metafoo.de>
-In-Reply-To: <1344616596-8026-19-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/10/2012 05:36 PM, Lars-Peter Clausen wrote:
-> Convert the ad7192 driver to make use of the new common code for devices from
-> the Analog Devices Sigma Delta family.
+--_000_4FA419E87744DF4DAECD5BCE1214B7A9193ADCB4ORSMSX104amrcor_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Lars-Peter.
+Hi Jonathan,
 
-Was just applying these to my togreg branch and ran a few build tests with sparse.
-issue in this and ad7793 came up.
+You have circulated a patch to support polling on KFifo, but that was never=
+ merged.
 
-drivers/staging/iio/adc/ad7793.c:91:21: warning: incorrect type in initializer (incompatible argument 2 (different
-signedness))
-drivers/staging/iio/adc/ad7793.c:91:21:    expected int ( *set_mode )( ... )
-drivers/staging/iio/adc/ad7793.c:91:21:    got int ( static [toplevel] *<noident> )( ... )
+I have used in my tree with your authorship:
 
+commit ae09253bf19a607ea0614051ba0bdb04d5f23689
+Author: Jonathan Cameron <jic23@kernel.org>
+Date:   Fri Jun 8 13:08:53 2012 -0700
 
-Now this is because set_mode takes and integer argument here, but is defined to
-take an enum.
+    KFiFO : Poll support
 
-Why not just take the enum directly?
+    Implements poll system call support on IIO Kfifo buffers.
 
-I'm guessing this is a left over from a cleanup that didn't
-quite get everywhere.  Will convert them over to the enum argument before
-pushing them out, but would like you to take a quick glance at them...
+    Change-Id: I6739382b7b81951e5b4498fc04356b3652941058
+    Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 
-Change given inline below.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  drivers/staging/iio/adc/Kconfig  |    3 +-
->  drivers/staging/iio/adc/ad7192.c |  507 +++++---------------------------------
->  2 files changed, 61 insertions(+), 449 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-> index 05dea3f..9525308 100644
-> --- a/drivers/staging/iio/adc/Kconfig
-> +++ b/drivers/staging/iio/adc/Kconfig
-> @@ -131,8 +131,7 @@ config AD7816
->  config AD7192
->  	tristate "Analog Devices AD7190 AD7192 AD7195 ADC driver"
->  	depends on SPI
-> -	select IIO_BUFFER
-> -	select IIO_TRIGGERED_BUFFER
-> +	select AD_SIGMA_DELTA
->  	help
->  	  Say yes here to build support for Analog Devices AD7190,
->  	  AD7192 or AD7195 SPI analog to digital converters (ADC).
-> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> index cdb4fc4..34a7dee 100644
-> --- a/drivers/staging/iio/adc/ad7192.c
-> +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -23,6 +23,7 @@
->  #include <linux/iio/trigger.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/adc/ad_sigma_delta.h>
->  
->  #include "ad7192.h"
->  
-> @@ -57,6 +58,7 @@
->  
->  /* Mode Register Bit Designations (AD7192_REG_MODE) */
->  #define AD7192_MODE_SEL(x)	(((x) & 0x7) << 21) /* Operation Mode Select */
-> +#define AD7192_MODE_SEL_MASK	(0x7 << 21) /* Operation Mode Select Mask */
->  #define AD7192_MODE_DAT_STA	(1 << 20) /* Status Register transmission */
->  #define AD7192_MODE_CLKSRC(x)	(((x) & 0x3) << 18) /* Clock Source Select */
->  #define AD7192_MODE_SINC3	(1 << 15) /* SINC3 Filter Select */
-> @@ -91,7 +93,8 @@
->  
->  #define AD7192_CONF_CHOP	(1 << 23) /* CHOP enable */
->  #define AD7192_CONF_REFSEL	(1 << 20) /* REFIN1/REFIN2 Reference Select */
-> -#define AD7192_CONF_CHAN(x)	(((x) & 0xFF) << 8) /* Channel select */
-> +#define AD7192_CONF_CHAN(x)	(((1 << (x)) & 0xFF) << 8) /* Channel select */
-> +#define AD7192_CONF_CHAN_MASK	(0xFF << 8) /* Channel select mask */
->  #define AD7192_CONF_BURN	(1 << 7) /* Burnout current enable */
->  #define AD7192_CONF_REFDET	(1 << 6) /* Reference detect enable */
->  #define AD7192_CONF_BUF		(1 << 4) /* Buffered Mode Enable */
-> @@ -133,12 +136,7 @@
->   */
->  
->  struct ad7192_state {
-> -	struct spi_device		*spi;
-> -	struct iio_trigger		*trig;
->  	struct regulator		*reg;
-> -	wait_queue_head_t		wq_data_avail;
-> -	bool				done;
-> -	bool				irq_dis;
->  	u16				int_vref_mv;
->  	u32				mclk;
->  	u32				f_order;
-> @@ -147,178 +145,44 @@ struct ad7192_state {
->  	u32				scale_avail[8][2];
->  	u8				gpocon;
->  	u8				devid;
-> -	/*
-> -	 * DMA (thus cache coherency maintenance) requires the
-> -	 * transfer buffers to live in their own cache lines.
-> -	 */
-> -	u8				data[4] ____cacheline_aligned;
-> -};
-> -
-> -static int __ad7192_write_reg(struct ad7192_state *st, bool locked,
-> -			      bool cs_change, unsigned char reg,
-> -			      unsigned size, unsigned val)
-> -{
-> -	u8 *data = st->data;
-> -	struct spi_transfer t = {
-> -		.tx_buf		= data,
-> -		.len		= size + 1,
-> -		.cs_change	= cs_change,
-> -	};
-> -	struct spi_message m;
-> -
-> -	data[0] = AD7192_COMM_WRITE | AD7192_COMM_ADDR(reg);
-> -
-> -	switch (size) {
-> -	case 3:
-> -		data[1] = val >> 16;
-> -		data[2] = val >> 8;
-> -		data[3] = val;
-> -		break;
-> -	case 2:
-> -		data[1] = val >> 8;
-> -		data[2] = val;
-> -		break;
-> -	case 1:
-> -		data[1] = val;
-> -		break;
-> -	default:
-> -		return -EINVAL;
-> -	}
->  
-> -	spi_message_init(&m);
-> -	spi_message_add_tail(&t, &m);
-> -
-> -	if (locked)
-> -		return spi_sync_locked(st->spi, &m);
-> -	else
-> -		return spi_sync(st->spi, &m);
-> -}
-> +	struct ad_sigma_delta		sd;
-> +};
->  
-> -static int ad7192_write_reg(struct ad7192_state *st,
-> -			    unsigned reg, unsigned size, unsigned val)
-> +static struct ad7192_state *ad_sigma_delta_to_ad7192(struct ad_sigma_delta *sd)
->  {
-> -	return __ad7192_write_reg(st, false, false, reg, size, val);
-> +	return container_of(sd, struct ad7192_state, sd);
->  }
->  
-> -static int __ad7192_read_reg(struct ad7192_state *st, bool locked,
-> -			     bool cs_change, unsigned char reg,
-> -			     int *val, unsigned size)
-> +static int ad7192_set_channel(struct ad_sigma_delta *sd, unsigned int channel)
->  {
-> -	u8 *data = st->data;
-> -	int ret;
-> -	struct spi_transfer t[] = {
-> -		{
-> -			.tx_buf = data,
-> -			.len = 1,
-> -		}, {
-> -			.rx_buf = data,
-> -			.len = size,
-> -			.cs_change = cs_change,
-> -		},
-> -	};
-> -	struct spi_message m;
-> -
-> -	data[0] = AD7192_COMM_READ | AD7192_COMM_ADDR(reg);
-> -
-> -	spi_message_init(&m);
-> -	spi_message_add_tail(&t[0], &m);
-> -	spi_message_add_tail(&t[1], &m);
-> -
-> -	if (locked)
-> -		ret = spi_sync_locked(st->spi, &m);
-> -	else
-> -		ret = spi_sync(st->spi, &m);
-> +	struct ad7192_state *st = ad_sigma_delta_to_ad7192(sd);
->  
-> -	if (ret < 0)
-> -		return ret;
-> +	st->conf &= ~AD7192_CONF_CHAN_MASK;
-> +	st->conf |= AD7192_CONF_CHAN(channel);
->  
-> -	switch (size) {
-> -	case 3:
-> -		*val = data[0] << 16 | data[1] << 8 | data[2];
-> -		break;
-> -	case 2:
-> -		*val = data[0] << 8 | data[1];
-> -		break;
-> -	case 1:
-> -		*val = data[0];
-> -		break;
-> -	default:
-> -		return -EINVAL;
-> -	}
-> -
-> -	return 0;
-> +	return ad_sd_write_reg(&st->sd, AD7192_REG_CONF, 3, st->conf);
->  }
->  
-> -static int ad7192_read_reg(struct ad7192_state *st,
-> -			   unsigned reg, int *val, unsigned size)
-Change is here,
+diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
+index 6bf9d05..e8033a4 100644
+--- a/drivers/iio/kfifo_buf.c
++++ b/drivers/iio/kfifo_buf.c
+@@ -6,6 +6,7 @@
+#include <linux/kfifo.h>
+#include <linux/mutex.h>
+#include <linux/iio/kfifo_buf.h>
++#include <linux/sched.h>
+ struct iio_kfifo {
+               struct iio_buffer buffer;
+@@ -35,6 +36,7 @@ static int iio_request_update_kfifo(struct iio_buffer *r)
+               kfifo_free(&buf->kf);
+               ret =3D __iio_allocate_kfifo(buf, buf->buffer.bytes_per_datu=
+m,
+                                                                  buf->buff=
+er.length);
++             r->stufftoread =3D false;
+error_ret:
+               return ret;
+}
+@@ -97,6 +99,8 @@ static int iio_store_to_kfifo(struct iio_buffer *r,
+               ret =3D kfifo_in(&kf->kf, data, r->bytes_per_datum);
+               if (ret !=3D r->bytes_per_datum)
+                               return -EBUSY;
++             r->stufftoread =3D true;
++             wake_up_interruptible(&r->pollq);
+               return 0;
+}
+@@ -111,6 +115,11 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r=
+,
+                n =3D rounddown(n, r->bytes_per_datum);
+               ret =3D kfifo_to_user(&kf->kf, buf, n, &copied);
++             if (kfifo_is_empty(&kf->kf))
++                             r->stufftoread =3D false;
++             /* verify it is still empty to avoid race */
++             if (!kfifo_is_empty(&kf->kf))
++                             r->stufftoread =3D true;
+                return copied;
+}
 
-static int ad7793_set_mode(struct ad_sigma_delta *sd,
-			   enum ad_sigma_delta_mode mode)
+Thanks,
+Srinivas
 
-> +static int ad7192_set_mode(struct ad_sigma_delta *sd, unsigned int mode)
->  {
-> -	return __ad7192_read_reg(st, 0, 0, reg, val, size);
-> -}
-> -
-> -static int ad7192_read(struct ad7192_state *st, unsigned ch,
-> -		       unsigned len, int *val)
-> -{
-> -	int ret;
-> -	st->conf = (st->conf & ~AD7192_CONF_CHAN(-1)) |
-> -		AD7192_CONF_CHAN(1 << ch);
-> -	st->mode = (st->mode & ~AD7192_MODE_SEL(-1)) |
-> -		AD7192_MODE_SEL(AD7192_MODE_SINGLE);
-> -
-> -	ad7192_write_reg(st, AD7192_REG_CONF, 3, st->conf);
-> +	struct ad7192_state *st = ad_sigma_delta_to_ad7192(sd);
->  
-> -	spi_bus_lock(st->spi->master);
-> -	st->done = false;
-> +	st->mode &= ~AD7192_MODE_SEL_MASK;
-> +	st->mode |= AD7192_MODE_SEL(mode);
->  
-> -	ret = __ad7192_write_reg(st, 1, 1, AD7192_REG_MODE, 3, st->mode);
-> -	if (ret < 0)
-> -		goto out;
-> -
-> -	st->irq_dis = false;
-> -	enable_irq(st->spi->irq);
-> -	wait_event_interruptible(st->wq_data_avail, st->done);
-> -
-> -	ret = __ad7192_read_reg(st, 1, 0, AD7192_REG_DATA, val, len);
-> -out:
-> -	spi_bus_unlock(st->spi->master);
-> -
-> -	return ret;
-> +	return ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
->  }
->  
-> -static int ad7192_calibrate(struct ad7192_state *st, unsigned mode, unsigned ch)
-> -{
-> -	int ret;
-> -
-> -	st->conf = (st->conf & ~AD7192_CONF_CHAN(-1)) |
-> -		AD7192_CONF_CHAN(1 << ch);
-> -	st->mode = (st->mode & ~AD7192_MODE_SEL(-1)) | AD7192_MODE_SEL(mode);
-> -
-> -	ad7192_write_reg(st, AD7192_REG_CONF, 3, st->conf);
-> -
-> -	spi_bus_lock(st->spi->master);
-> -	st->done = false;
-> -
-> -	ret = __ad7192_write_reg(st, 1, 1, AD7192_REG_MODE, 3,
-> -				 (st->devid != ID_AD7195) ?
-> -				 st->mode | AD7192_MODE_CLKDIV :
-> -				 st->mode);
-> -	if (ret < 0)
-> -		goto out;
-> -
-> -	st->irq_dis = false;
-> -	enable_irq(st->spi->irq);
-> -	wait_event_interruptible(st->wq_data_avail, st->done);
-> -
-> -	st->mode = (st->mode & ~AD7192_MODE_SEL(-1)) |
-> -		AD7192_MODE_SEL(AD7192_MODE_IDLE);
-> -
-> -	ret = __ad7192_write_reg(st, 1, 0, AD7192_REG_MODE, 3, st->mode);
-> -out:
-> -	spi_bus_unlock(st->spi->master);
-> -
-> -	return ret;
-> -}
-> +static const struct ad_sigma_delta_info ad7192_sigma_delta_info = {
-> +	.set_channel = ad7192_set_channel,
-> +	.set_mode = ad7192_set_mode,
-> +	.has_registers = true,
-> +	.addr_shift = 3,
-> +	.read_mask = BIT(6),
-> +};
->  
-> -static const u8 ad7192_calib_arr[8][2] = {
-> +static const struct ad_sd_calib_data ad7192_calib_arr[8] = {
->  	{AD7192_MODE_CAL_INT_ZERO, AD7192_CH_AIN1},
->  	{AD7192_MODE_CAL_INT_FULL, AD7192_CH_AIN1},
->  	{AD7192_MODE_CAL_INT_ZERO, AD7192_CH_AIN2},
-> @@ -331,45 +195,34 @@ static const u8 ad7192_calib_arr[8][2] = {
->  
->  static int ad7192_calibrate_all(struct ad7192_state *st)
->  {
-> -	int i, ret;
-> -
-> -	for (i = 0; i < ARRAY_SIZE(ad7192_calib_arr); i++) {
-> -		ret = ad7192_calibrate(st, ad7192_calib_arr[i][0],
-> -				       ad7192_calib_arr[i][1]);
-> -		if (ret)
-> -			goto out;
-> -	}
-> -
-> -	return 0;
-> -out:
-> -	dev_err(&st->spi->dev, "Calibration failed\n");
-> -	return ret;
-> +		return ad_sd_calibrate_all(&st->sd, ad7192_calib_arr,
-> +				ARRAY_SIZE(ad7192_calib_arr));
->  }
->  
->  static int ad7192_setup(struct ad7192_state *st,
->  	const struct ad7192_platform_data *pdata)
->  {
-> -	struct iio_dev *indio_dev = spi_get_drvdata(st->spi);
-> +	struct iio_dev *indio_dev = spi_get_drvdata(st->sd.spi);
->  	unsigned long long scale_uv;
->  	int i, ret, id;
->  	u8 ones[6];
->  
->  	/* reset the serial interface */
->  	memset(&ones, 0xFF, 6);
-> -	ret = spi_write(st->spi, &ones, 6);
-> +	ret = spi_write(st->sd.spi, &ones, 6);
->  	if (ret < 0)
->  		goto out;
->  	msleep(1); /* Wait for at least 500us */
->  
->  	/* write/read test for device presence */
-> -	ret = ad7192_read_reg(st, AD7192_REG_ID, &id, 1);
-> +	ret = ad_sd_read_reg(&st->sd, AD7192_REG_ID, 1, &id);
->  	if (ret)
->  		goto out;
->  
->  	id &= AD7192_ID_MASK;
->  
->  	if (id != st->devid)
-> -		dev_warn(&st->spi->dev, "device ID query failed (0x%X)\n", id);
-> +		dev_warn(&st->sd.spi->dev, "device ID query failed (0x%X)\n", id);
->  
->  	switch (pdata->clock_source_sel) {
->  	case AD7192_CLK_EXT_MCLK1_2:
-> @@ -422,11 +275,11 @@ static int ad7192_setup(struct ad7192_state *st,
->  	if (pdata->burnout_curr_en)
->  		st->conf |= AD7192_CONF_BURN;
->  
-> -	ret = ad7192_write_reg(st, AD7192_REG_MODE, 3, st->mode);
-> +	ret = ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
->  	if (ret)
->  		goto out;
->  
-> -	ret = ad7192_write_reg(st, AD7192_REG_CONF, 3, st->conf);
-> +	ret = ad_sd_write_reg(&st->sd, AD7192_REG_CONF, 3, st->conf);
->  	if (ret)
->  		goto out;
->  
-> @@ -447,181 +300,10 @@ static int ad7192_setup(struct ad7192_state *st,
->  
->  	return 0;
->  out:
-> -	dev_err(&st->spi->dev, "setup failed\n");
-> +	dev_err(&st->sd.spi->dev, "setup failed\n");
->  	return ret;
->  }
->  
-> -static int ad7192_ring_preenable(struct iio_dev *indio_dev)
-> -{
-> -	struct ad7192_state *st = iio_priv(indio_dev);
-> -	unsigned channel;
-> -	int ret;
-> -
-> -	if (bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength))
-> -		return -EINVAL;
-> -
-> -	ret = iio_sw_buffer_preenable(indio_dev);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	channel = find_first_bit(indio_dev->active_scan_mask,
-> -				 indio_dev->masklength);
-> -
-> -	st->mode  = (st->mode & ~AD7192_MODE_SEL(-1)) |
-> -		    AD7192_MODE_SEL(AD7192_MODE_CONT);
-> -	st->conf  = (st->conf & ~AD7192_CONF_CHAN(-1)) |
-> -		    AD7192_CONF_CHAN(1 << indio_dev->channels[channel].address);
-> -
-> -	ad7192_write_reg(st, AD7192_REG_CONF, 3, st->conf);
-> -
-> -	spi_bus_lock(st->spi->master);
-> -	__ad7192_write_reg(st, 1, 1, AD7192_REG_MODE, 3, st->mode);
-> -
-> -	st->irq_dis = false;
-> -	enable_irq(st->spi->irq);
-> -
-> -	return 0;
-> -}
-> -
-> -static int ad7192_ring_postdisable(struct iio_dev *indio_dev)
-> -{
-> -	struct ad7192_state *st = iio_priv(indio_dev);
-> -
-> -	st->mode  = (st->mode & ~AD7192_MODE_SEL(-1)) |
-> -		    AD7192_MODE_SEL(AD7192_MODE_IDLE);
-> -
-> -	st->done = false;
-> -	wait_event_interruptible(st->wq_data_avail, st->done);
-> -
-> -	if (!st->irq_dis)
-> -		disable_irq_nosync(st->spi->irq);
-> -
-> -	__ad7192_write_reg(st, 1, 0, AD7192_REG_MODE, 3, st->mode);
-> -
-> -	return spi_bus_unlock(st->spi->master);
-> -}
-> -
-> -/**
-> - * ad7192_trigger_handler() bh of trigger launched polling to ring buffer
-> - **/
-> -static irqreturn_t ad7192_trigger_handler(int irq, void *p)
-> -{
-> -	struct iio_poll_func *pf = p;
-> -	struct iio_dev *indio_dev = pf->indio_dev;
-> -	struct iio_buffer *ring = indio_dev->buffer;
-> -	struct ad7192_state *st = iio_priv(indio_dev);
-> -	s64 dat64[2];
-> -	s32 *dat32 = (s32 *)dat64;
-> -
-> -	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength))
-> -		__ad7192_read_reg(st, 1, 1, AD7192_REG_DATA,
-> -				  dat32,
-> -				  indio_dev->channels[0].scan_type.realbits/8);
-> -
-> -	/* Guaranteed to be aligned with 8 byte boundary */
-> -	if (indio_dev->scan_timestamp)
-> -		dat64[1] = pf->timestamp;
-> -
-> -	ring->access->store_to(ring, (u8 *)dat64, pf->timestamp);
-> -
-> -	iio_trigger_notify_done(indio_dev->trig);
-> -	st->irq_dis = false;
-> -	enable_irq(st->spi->irq);
-> -
-> -	return IRQ_HANDLED;
-> -}
-> -
-> -static const struct iio_buffer_setup_ops ad7192_ring_setup_ops = {
-> -	.preenable = &ad7192_ring_preenable,
-> -	.postenable = &iio_triggered_buffer_postenable,
-> -	.predisable = &iio_triggered_buffer_predisable,
-> -	.postdisable = &ad7192_ring_postdisable,
-> -	.validate_scan_mask = &iio_validate_scan_mask_onehot,
-> -};
-> -
-> -static int ad7192_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-> -{
-> -	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> -			&ad7192_trigger_handler, &ad7192_ring_setup_ops);
-> -}
-> -
-> -static void ad7192_ring_cleanup(struct iio_dev *indio_dev)
-> -{
-> -	iio_triggered_buffer_cleanup(indio_dev);
-> -}
-> -
-> -/**
-> - * ad7192_data_rdy_trig_poll() the event handler for the data rdy trig
-> - **/
-> -static irqreturn_t ad7192_data_rdy_trig_poll(int irq, void *private)
-> -{
-> -	struct ad7192_state *st = iio_priv(private);
-> -
-> -	st->done = true;
-> -	wake_up_interruptible(&st->wq_data_avail);
-> -	disable_irq_nosync(irq);
-> -	st->irq_dis = true;
-> -	iio_trigger_poll(st->trig, iio_get_time_ns());
-> -
-> -	return IRQ_HANDLED;
-> -}
-> -
-> -static struct iio_trigger_ops ad7192_trigger_ops = {
-> -	.owner = THIS_MODULE,
-> -};
-> -
-> -static int ad7192_probe_trigger(struct iio_dev *indio_dev)
-> -{
-> -	struct ad7192_state *st = iio_priv(indio_dev);
-> -	int ret;
-> -
-> -	st->trig = iio_trigger_alloc("%s-dev%d",
-> -					spi_get_device_id(st->spi)->name,
-> -					indio_dev->id);
-> -	if (st->trig == NULL) {
-> -		ret = -ENOMEM;
-> -		goto error_ret;
-> -	}
-> -	st->trig->ops = &ad7192_trigger_ops;
-> -	ret = request_irq(st->spi->irq,
-> -			  ad7192_data_rdy_trig_poll,
-> -			  IRQF_TRIGGER_LOW,
-> -			  spi_get_device_id(st->spi)->name,
-> -			  indio_dev);
-> -	if (ret)
-> -		goto error_free_trig;
-> -
-> -	disable_irq_nosync(st->spi->irq);
-> -	st->irq_dis = true;
-> -	st->trig->dev.parent = &st->spi->dev;
-> -	st->trig->private_data = indio_dev;
-> -
-> -	ret = iio_trigger_register(st->trig);
-> -
-> -	/* select default trigger */
-> -	indio_dev->trig = st->trig;
-> -	if (ret)
-> -		goto error_free_irq;
-> -
-> -	return 0;
-> -
-> -error_free_irq:
-> -	free_irq(st->spi->irq, indio_dev);
-> -error_free_trig:
-> -	iio_trigger_free(st->trig);
-> -error_ret:
-> -	return ret;
-> -}
-> -
-> -static void ad7192_remove_trigger(struct iio_dev *indio_dev)
-> -{
-> -	struct ad7192_state *st = iio_priv(indio_dev);
-> -
-> -	iio_trigger_unregister(st->trig);
-> -	free_irq(st->spi->irq, indio_dev);
-> -	iio_trigger_free(st->trig);
-> -}
-> -
->  static ssize_t ad7192_read_frequency(struct device *dev,
->  		struct device_attribute *attr,
->  		char *buf)
-> @@ -661,7 +343,7 @@ static ssize_t ad7192_write_frequency(struct device *dev,
->  
->  	st->mode &= ~AD7192_MODE_RATE(-1);
->  	st->mode |= AD7192_MODE_RATE(div);
-> -	ad7192_write_reg(st, AD7192_REG_MODE, 3, st->mode);
-> +	ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
->  
->  out:
->  	mutex_unlock(&indio_dev->mlock);
-> @@ -673,7 +355,6 @@ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
->  		ad7192_read_frequency,
->  		ad7192_write_frequency);
->  
-> -
->  static ssize_t ad7192_show_scale_available(struct device *dev,
->  			struct device_attribute *attr, char *buf)
->  {
-> @@ -745,7 +426,7 @@ static ssize_t ad7192_set(struct device *dev,
->  		else
->  			st->gpocon &= ~AD7192_GPOCON_BPDSW;
->  
-> -		ad7192_write_reg(st, AD7192_REG_GPOCON, 1, st->gpocon);
-> +		ad_sd_write_reg(&st->sd, AD7192_REG_GPOCON, 1, st->gpocon);
->  		break;
->  	case AD7192_REG_MODE:
->  		if (val)
-> @@ -753,7 +434,7 @@ static ssize_t ad7192_set(struct device *dev,
->  		else
->  			st->mode &= ~AD7192_MODE_ACX;
->  
-> -		ad7192_write_reg(st, AD7192_REG_MODE, 3, st->mode);
-> +		ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
->  		break;
->  	default:
->  		ret = -EINVAL;
-> @@ -809,27 +490,11 @@ static int ad7192_read_raw(struct iio_dev *indio_dev,
->  			   long m)
->  {
->  	struct ad7192_state *st = iio_priv(indio_dev);
-> -	int ret, smpl = 0;
->  	bool unipolar = !!(st->conf & AD7192_CONF_UNIPOLAR);
->  
->  	switch (m) {
->  	case IIO_CHAN_INFO_RAW:
-> -		mutex_lock(&indio_dev->mlock);
-> -		if (iio_buffer_enabled(indio_dev))
-> -			ret = -EBUSY;
-> -		else
-> -			ret = ad7192_read(st, chan->address,
-> -					chan->scan_type.realbits / 8, &smpl);
-> -		mutex_unlock(&indio_dev->mlock);
-> -
-> -		if (ret < 0)
-> -			return ret;
-> -
-> -		*val = (smpl >> chan->scan_type.shift) &
-> -			((1 << (chan->scan_type.realbits)) - 1);
-> -
-> -		return IIO_VAL_INT;
-> -
-> +		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
->  	case IIO_CHAN_INFO_SCALE:
->  		switch (chan->type) {
->  		case IIO_VOLTAGE:
-> @@ -880,16 +545,16 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
->  		ret = -EINVAL;
->  		for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++)
->  			if (val2 == st->scale_avail[i][1]) {
-> +				ret = 0;
->  				tmp = st->conf;
->  				st->conf &= ~AD7192_CONF_GAIN(-1);
->  				st->conf |= AD7192_CONF_GAIN(i);
-> -
-> -				if (tmp != st->conf) {
-> -					ad7192_write_reg(st, AD7192_REG_CONF,
-> -							 3, st->conf);
-> -					ad7192_calibrate_all(st);
-> -				}
-> -				ret = 0;
-> +				if (tmp == st->conf)
-> +					break;
-> +				ad_sd_write_reg(&st->sd, AD7192_REG_CONF,
-> +						 3, st->conf);
-> +				ad7192_calibrate_all(st);
-> +				break;
->  			}
->  		break;
->  	default:
-> @@ -901,15 +566,6 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
->  	return ret;
->  }
->  
-> -static int ad7192_validate_trigger(struct iio_dev *indio_dev,
-> -				   struct iio_trigger *trig)
-> -{
-> -	if (indio_dev->trig != trig)
-> -		return -EINVAL;
-> -
-> -	return 0;
-> -}
-> -
->  static int ad7192_write_raw_get_fmt(struct iio_dev *indio_dev,
->  			       struct iio_chan_spec const *chan,
->  			       long mask)
-> @@ -922,7 +578,7 @@ static const struct iio_info ad7192_info = {
->  	.write_raw = &ad7192_write_raw,
->  	.write_raw_get_fmt = &ad7192_write_raw_get_fmt,
->  	.attrs = &ad7192_attribute_group,
-> -	.validate_trigger = ad7192_validate_trigger,
-> +	.validate_trigger = ad_sd_validate_trigger,
->  	.driver_module = THIS_MODULE,
->  };
->  
-> @@ -931,54 +587,19 @@ static const struct iio_info ad7195_info = {
->  	.write_raw = &ad7192_write_raw,
->  	.write_raw_get_fmt = &ad7192_write_raw_get_fmt,
->  	.attrs = &ad7195_attribute_group,
-> -	.validate_trigger = ad7192_validate_trigger,
-> +	.validate_trigger = ad_sd_validate_trigger,
->  	.driver_module = THIS_MODULE,
->  };
->  
-> -#define AD7192_CHAN_DIFF(_chan, _chan2, _name, _address, _si)		\
-> -	{ .type = IIO_VOLTAGE,						\
-> -	  .differential = 1,						\
-> -	  .indexed = 1,							\
-> -	  .extend_name = _name,						\
-> -	  .channel = _chan,						\
-> -	  .channel2 = _chan2,						\
-> -	  .info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |			\
-> -	  IIO_CHAN_INFO_SCALE_SHARED_BIT |				\
-> -	  IIO_CHAN_INFO_OFFSET_SHARED_BIT,				\
-> -	  .address = _address,						\
-> -	  .scan_index = _si,						\
-> -	  .scan_type =  IIO_ST('u', 24, 32, 0)}
-> -
-> -#define AD7192_CHAN(_chan, _address, _si)				\
-> -	{ .type = IIO_VOLTAGE,						\
-> -	  .indexed = 1,							\
-> -	  .channel = _chan,						\
-> -	  .info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |			\
-> -	  IIO_CHAN_INFO_SCALE_SHARED_BIT |				\
-> -	  IIO_CHAN_INFO_OFFSET_SHARED_BIT,				\
-> -	  .address = _address,						\
-> -	  .scan_index = _si,						\
-> -	  .scan_type =  IIO_ST('u', 24, 32, 0)}
-> -
-> -#define AD7192_CHAN_TEMP(_chan, _address, _si)				\
-> -	{ .type = IIO_TEMP,						\
-> -	  .indexed = 1,							\
-> -	  .channel = _chan,						\
-> -	  .info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |			\
-> -	  IIO_CHAN_INFO_SCALE_SEPARATE_BIT,				\
-> -	  .address = _address,						\
-> -	  .scan_index = _si,						\
-> -	  .scan_type =  IIO_ST('u', 24, 32, 0)}
-> -
->  static const struct iio_chan_spec ad7192_channels[] = {
-> -	AD7192_CHAN_DIFF(1, 2, NULL, AD7192_CH_AIN1P_AIN2M, 0),
-> -	AD7192_CHAN_DIFF(3, 4, NULL, AD7192_CH_AIN3P_AIN4M, 1),
-> -	AD7192_CHAN_TEMP(0, AD7192_CH_TEMP, 2),
-> -	AD7192_CHAN_DIFF(2, 2, "shorted", AD7192_CH_AIN2P_AIN2M, 3),
-> -	AD7192_CHAN(1, AD7192_CH_AIN1, 4),
-> -	AD7192_CHAN(2, AD7192_CH_AIN2, 5),
-> -	AD7192_CHAN(3, AD7192_CH_AIN3, 6),
-> -	AD7192_CHAN(4, AD7192_CH_AIN4, 7),
-> +	AD_SD_DIFF_CHANNEL(0, 1, 2, AD7192_CH_AIN1P_AIN2M, 24, 32, 0),
-> +	AD_SD_DIFF_CHANNEL(1, 3, 4, AD7192_CH_AIN3P_AIN4M, 24, 32, 0),
-> +	AD_SD_TEMP_CHANNEL(2, AD7192_CH_TEMP, 24, 32, 0),
-> +	AD_SD_SHORTED_CHANNEL(3, 2, AD7192_CH_AIN2P_AIN2M, 24, 32, 0),
-> +	AD_SD_CHANNEL(4, 1, AD7192_CH_AIN1, 24, 32, 0),
-> +	AD_SD_CHANNEL(5, 2, AD7192_CH_AIN2, 24, 32, 0),
-> +	AD_SD_CHANNEL(6, 3, AD7192_CH_AIN3, 24, 32, 0),
-> +	AD_SD_CHANNEL(7, 4, AD7192_CH_AIN4, 24, 32, 0),
->  	IIO_CHAN_SOFT_TIMESTAMP(8),
->  };
->  
-> @@ -1022,7 +643,6 @@ static int __devinit ad7192_probe(struct spi_device *spi)
->  		dev_warn(&spi->dev, "reference voltage undefined\n");
->  
->  	spi_set_drvdata(spi, indio_dev);
-> -	st->spi = spi;
->  	st->devid = spi_get_device_id(spi)->driver_data;
->  	indio_dev->dev.parent = &spi->dev;
->  	indio_dev->name = spi_get_device_id(spi)->name;
-> @@ -1034,16 +654,12 @@ static int __devinit ad7192_probe(struct spi_device *spi)
->  	else
->  		indio_dev->info = &ad7192_info;
->  
-> -	init_waitqueue_head(&st->wq_data_avail);
-> +	ad_sd_init(&st->sd, indio_dev, spi, &ad7192_sigma_delta_info);
->  
-> -	ret = ad7192_register_ring_funcs_and_init(indio_dev);
-> +	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
->  	if (ret)
->  		goto error_disable_reg;
->  
-> -	ret = ad7192_probe_trigger(indio_dev);
-> -	if (ret)
-> -		goto error_ring_cleanup;
-> -
->  	ret = ad7192_setup(st, pdata);
->  	if (ret)
->  		goto error_remove_trigger;
-> @@ -1054,9 +670,7 @@ static int __devinit ad7192_probe(struct spi_device *spi)
->  	return 0;
->  
->  error_remove_trigger:
-> -	ad7192_remove_trigger(indio_dev);
-> -error_ring_cleanup:
-> -	ad7192_ring_cleanup(indio_dev);
-> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
->  error_disable_reg:
->  	if (!IS_ERR(st->reg))
->  		regulator_disable(st->reg);
-> @@ -1075,8 +689,7 @@ static int ad7192_remove(struct spi_device *spi)
->  	struct ad7192_state *st = iio_priv(indio_dev);
->  
->  	iio_device_unregister(indio_dev);
-> -	ad7192_remove_trigger(indio_dev);
-> -	ad7192_ring_cleanup(indio_dev);
-> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
->  
->  	if (!IS_ERR(st->reg)) {
->  		regulator_disable(st->reg);
-> 
+--_000_4FA419E87744DF4DAECD5BCE1214B7A9193ADCB4ORSMSX104amrcor_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<meta name=3D"Generator" content=3D"Microsoft Word 14 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri","sans-serif";}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"blue" vlink=3D"purple">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal">Hi Jonathan,<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">You have circulated a patch to support polling on KF=
+ifo, but that was never merged.
+<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">I have used in my tree with your authorship:<o:p></o=
+:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">commit ae09253bf19a607ea0614051ba0bdb04d5f23689<o:p>=
+</o:p></p>
+<p class=3D"MsoNormal">Author: Jonathan Cameron &lt;jic23@kernel.org&gt;<o:=
+p></o:p></p>
+<p class=3D"MsoNormal">Date:&nbsp;&nbsp; Fri Jun 8 13:08:53 2012 -0700<o:p>=
+</o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp; KFiFO : Poll support<o:p></o:p></=
+p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp; <o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;Implements poll system call =
+support on IIO Kfifo buffers.<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp; <o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;Change-Id: I6739382b7b81951e=
+5b4498fc04356b3652941058<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp; Signed-off-by: srinivas pandruvad=
+a &lt;srinivas.pandruvada@intel.com&gt;<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/k=
+fifo_buf.c<o:p></o:p></p>
+<p class=3D"MsoNormal">index 6bf9d05..e8033a4 100644<o:p></o:p></p>
+<p class=3D"MsoNormal">--- a/drivers/iio/kfifo_buf.c<o:p></o:p></p>
+<p class=3D"MsoNormal">&#43;&#43;&#43; b/drivers/iio/kfifo_buf.c<o:p></o:p>=
+</p>
+<p class=3D"MsoNormal">@@ -6,6 &#43;6,7 @@<o:p></o:p></p>
+<p class=3D"MsoNormal">#include &lt;linux/kfifo.h&gt;<o:p></o:p></p>
+<p class=3D"MsoNormal">#include &lt;linux/mutex.h&gt;<o:p></o:p></p>
+<p class=3D"MsoNormal">#include &lt;linux/iio/kfifo_buf.h&gt;<o:p></o:p></p=
+>
+<p class=3D"MsoNormal">&#43;#include &lt;linux/sched.h&gt;<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;struct iio_kfifo {<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct iio_buffer buffer;<o:p></o:p></p>
+<p class=3D"MsoNormal">@@ -35,6 &#43;36,7 @@ static int iio_request_update_=
+kfifo(struct iio_buffer *r)<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kfifo_free(&amp;buf-&gt;kf);<o:p></o:p></p=
+>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret =3D __iio_allocate_kfifo(buf, buf-&gt;=
+buffer.bytes_per_datum,<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;buf-&gt;buffer.length);<o:p></o:p></=
+p>
+<p class=3D"MsoNormal">&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp; r-&gt;stufftoread =3D false;<o:p></o:p></p>
+<p class=3D"MsoNormal">error_ret:<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return ret;<o:p></o:p></p>
+<p class=3D"MsoNormal">}<o:p></o:p></p>
+<p class=3D"MsoNormal">@@ -97,6 &#43;99,8 @@ static int iio_store_to_kfifo(=
+struct iio_buffer *r,<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret =3D kfifo_in(&amp;kf-&gt;kf, data, r-&=
+gt;bytes_per_datum);<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (ret !=3D r-&gt;bytes_per_datum)<o:p></=
+o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return -EBUSY;<o:p></=
+o:p></p>
+<p class=3D"MsoNormal">&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp; r-&gt;stufftoread =3D true;<o:p></o:p></p>
+<p class=3D"MsoNormal">&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp; wake_up_interruptible(&amp;r-&gt;pollq);<o:p></o:=
+p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return 0;<o:p></o:p></p>
+<p class=3D"MsoNormal">}<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p></o:p></p>
+<p class=3D"MsoNormal">@@ -111,6 &#43;115,11 @@ static int iio_read_first_n=
+_kfifo(struct iio_buffer *r,<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n =3D rounddown(n, r-&gt;bytes_per_d=
+atum);<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret =3D kfifo_to_user(&amp;kf-&gt;kf, buf,=
+ n, &amp;copied);<o:p></o:p></p>
+<p class=3D"MsoNormal">&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp; if (kfifo_is_empty(&amp;kf-&gt;kf))<o:p></o:p></p=
+>
+<p class=3D"MsoNormal">&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r-&gt;stufftoread =3D false;=
+<o:p></o:p></p>
+<p class=3D"MsoNormal">&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp; /* verify it is still empty to avoid race */<o:p>=
+</o:p></p>
+<p class=3D"MsoNormal">&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp; if (!kfifo_is_empty(&amp;kf-&gt;kf))<o:p></o:p></=
+p>
+<p class=3D"MsoNormal">&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r-&gt;stufftoread =3D true;<=
+o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return copied;<o:p></o:p></p>
+<p class=3D"MsoNormal">}<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">Thanks,<o:p></o:p></p>
+<p class=3D"MsoNormal">Srinivas<o:p></o:p></p>
+</div>
+</body>
+</html>
+
+--_000_4FA419E87744DF4DAECD5BCE1214B7A9193ADCB4ORSMSX104amrcor_--
