@@ -4,89 +4,89 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	jkosina@suse.cz,
 	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 8/9] HID-Sensors: Added Compass/Magnetometer 3D
-Date: Mon, 27 Aug 2012 08:49:56 -0700
-Message-Id: <1346082597-768-9-git-send-email-srinivas.pandruvada@intel.com>
+Subject: [PATCH 7/9] HID-Sensors: Added Gyroscope 3D
+Date: Mon, 27 Aug 2012 08:49:55 -0700
+Message-Id: <1346082597-768-8-git-send-email-srinivas.pandruvada@intel.com>
 In-Reply-To: <1346082597-768-1-git-send-email-srinivas.pandruvada@intel.com>
 References: <1346082597-768-1-git-send-email-srinivas.pandruvada@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Added usage id processing for Compass 3D. This uses IIO
+Added usage id processing for Gyroscope 3D. This uses IIO
 interfaces for triggered buffer to present data to user
 mode.This uses HID sensor framework for registering callback
 events from the sensor hub.
 
 Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
 ---
- drivers/iio/Kconfig                           |    1 +
- drivers/iio/Makefile                          |    1 +
- drivers/iio/magnetometer/Kconfig              |   16 +
- drivers/iio/magnetometer/Makefile             |    5 +
- drivers/iio/magnetometer/hid-sensor-magn-3d.c |  420 +++++++++++++++++++++++++
- 5 files changed, 443 insertions(+), 0 deletions(-)
- create mode 100644 drivers/iio/magnetometer/Kconfig
- create mode 100644 drivers/iio/magnetometer/Makefile
- create mode 100644 drivers/iio/magnetometer/hid-sensor-magn-3d.c
+ drivers/iio/Kconfig                   |    1 +
+ drivers/iio/Makefile                  |    1 +
+ drivers/iio/gyro/Kconfig              |   16 ++
+ drivers/iio/gyro/Makefile             |    5 +
+ drivers/iio/gyro/hid-sensor-gyro-3d.c |  419 +++++++++++++++++++++++++++++++++
+ 5 files changed, 442 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/iio/gyro/Kconfig
+ create mode 100644 drivers/iio/gyro/Makefile
+ create mode 100644 drivers/iio/gyro/hid-sensor-gyro-3d.c
 
 diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 5be46aa..76bb920 100644
+index 6393469..5be46aa 100644
 --- a/drivers/iio/Kconfig
 +++ b/drivers/iio/Kconfig
-@@ -62,5 +62,6 @@ source "drivers/iio/frequency/Kconfig"
+@@ -61,5 +61,6 @@ source "drivers/iio/light/Kconfig"
+ source "drivers/iio/frequency/Kconfig"
  source "drivers/iio/dac/Kconfig"
  source "drivers/iio/common/Kconfig"
- source "drivers/iio/gyro/Kconfig"
-+source "drivers/iio/magnetometer/Kconfig"
++source "drivers/iio/gyro/Kconfig"
  
  endif # IIO
 diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index a6406f7..761f2b6 100644
+index b21215c..a6406f7 100644
 --- a/drivers/iio/Makefile
 +++ b/drivers/iio/Makefile
-@@ -18,3 +18,4 @@ obj-y += frequency/
+@@ -17,3 +17,4 @@ obj-y += light/
+ obj-y += frequency/
  obj-y += dac/
  obj-y += common/
- obj-y += gyro/
-+obj-y += magnetometer/
-diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
++obj-y += gyro/
+diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
 new file mode 100644
-index 0000000..c1f0cdd
+index 0000000..21e27e2
 --- /dev/null
-+++ b/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/gyro/Kconfig
 @@ -0,0 +1,16 @@
 +#
-+# Magnetometer sensors
++# IIO Digital Gyroscope Sensor drivers configuration
 +#
-+menu "Magnetometer sensors"
++menu "Digital gyroscope sensors"
 +
-+config HID_SENSOR_MAGNETOMETER_3D
++config HID_SENSOR_GYRO_3D
 +	depends on HID_SENSOR_HUB
 +	select IIO_BUFFER
 +	select IIO_TRIGGERED_BUFFER
 +	select HID_SENSOR_IIO_COMMON
-+	tristate "HID Magenetometer 3D"
++	tristate "HID Gyroscope 3D"
 +	help
 +	  Say yes here to build support for the HID SENSOR
-+	  Magnetometer 3D.
++	  Gyroscope 3D.
 +
 +endmenu
-diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
+diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
 new file mode 100644
-index 0000000..60dc4f2
+index 0000000..8a895d9
 --- /dev/null
-+++ b/drivers/iio/magnetometer/Makefile
++++ b/drivers/iio/gyro/Makefile
 @@ -0,0 +1,5 @@
 +#
-+# Makefile for industrial I/O Magnetometer sensor drivers
++# Makefile for industrial I/O gyroscope sensor drivers
 +#
 +
-+obj-$(CONFIG_HID_SENSOR_MAGNETOMETER_3D) += hid-sensor-magn-3d.o
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
+diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
 new file mode 100644
-index 0000000..07591f4
+index 0000000..50ec09b
 --- /dev/null
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -0,0 +1,420 @@
++++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+@@ -0,0 +1,419 @@
 +/*
 + * HID Sensors Driver
 + * Copyright (c) 2012, Intel Corporation.
@@ -121,33 +121,33 @@ index 0000000..07591f4
 +#include "../common/hid-sensors/hid-sensor-trigger.h"
 +
 +/*Format: HID-SENSOR-usage_id_in_hex*/
-+/*Usage ID from spec for Magnetometer-3D: 0x200083*/
-+#define DRIVER_NAME "HID-SENSOR-200083"
++/*Usage ID from spec for Gyro-3D: 0x200076*/
++#define DRIVER_NAME "HID-SENSOR-200076"
 +
-+enum magn_3d_channel {
++enum gyro_3d_channel {
 +	CHANNEL_SCAN_INDEX_X,
 +	CHANNEL_SCAN_INDEX_Y,
 +	CHANNEL_SCAN_INDEX_Z,
-+	MAGN_3D_CHANNEL_MAX,
++	GYRO_3D_CHANNEL_MAX,
 +};
 +
-+struct magn_3d_state {
++struct gyro_3d_state {
 +	struct hid_sensor_hub_callbacks callbacks;
 +	struct hid_sensor_iio_common common_attributes;
-+	struct hid_sensor_hub_attribute_info magn[MAGN_3D_CHANNEL_MAX];
-+	u32 magn_val[MAGN_3D_CHANNEL_MAX];
++	struct hid_sensor_hub_attribute_info gyro[GYRO_3D_CHANNEL_MAX];
++	u32 gyro_val[GYRO_3D_CHANNEL_MAX];
 +};
 +
-+static const u32 magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
-+	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS,
-+	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS,
-+	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS
++static const u32 gyro_3d_addresses[GYRO_3D_CHANNEL_MAX] = {
++	HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXIS,
++	HID_USAGE_SENSOR_ANGL_VELOCITY_Y_AXIS,
++	HID_USAGE_SENSOR_ANGL_VELOCITY_Z_AXIS
 +};
 +
 +/* Channel definitions */
-+static const struct iio_chan_spec magn_3d_channels[] = {
++static const struct iio_chan_spec gyro_3d_channels[] = {
 +	{
-+		.type = IIO_MAGN,
++		.type = IIO_ANGL_VEL,
 +		.modified = 1,
 +		.channel2 = IIO_MOD_X,
 +		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
@@ -156,7 +156,7 @@ index 0000000..07591f4
 +		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
 +		.scan_index = CHANNEL_SCAN_INDEX_X,
 +	}, {
-+		.type = IIO_MAGN,
++		.type = IIO_ANGL_VEL,
 +		.modified = 1,
 +		.channel2 = IIO_MOD_Y,
 +		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
@@ -165,7 +165,7 @@ index 0000000..07591f4
 +		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
 +		.scan_index = CHANNEL_SCAN_INDEX_Y,
 +	}, {
-+		.type = IIO_MAGN,
++		.type = IIO_ANGL_VEL,
 +		.modified = 1,
 +		.channel2 = IIO_MOD_Z,
 +		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
@@ -177,7 +177,7 @@ index 0000000..07591f4
 +};
 +
 +/* Adjust channel real bits based on report descriptor */
-+static void magn_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
++static void gyro_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
 +						int channel, int size)
 +{
 +	channels[channel].scan_type.sign = 's';
@@ -188,12 +188,12 @@ index 0000000..07591f4
 +}
 +
 +/* Channel read_raw handler */
-+static int magn_3d_read_raw(struct iio_dev *indio_dev,
++static int gyro_3d_read_raw(struct iio_dev *indio_dev,
 +			      struct iio_chan_spec const *chan,
 +			      int *val, int *val2,
 +			      long mask)
 +{
-+	struct magn_3d_state *magn_state = iio_priv(indio_dev);
++	struct gyro_3d_state *gyro_state = iio_priv(indio_dev);
 +	int report_id = -1;
 +	u32 address;
 +	int ret;
@@ -203,13 +203,12 @@ index 0000000..07591f4
 +	*val2 = 0;
 +	switch (mask) {
 +	case 0:
-+		report_id =
-+			magn_state->magn[chan->scan_index].report_id;
-+		address = magn_3d_addresses[chan->scan_index];
++		report_id = gyro_state->gyro[chan->scan_index].report_id;
++		address = gyro_3d_addresses[chan->scan_index];
 +		if (report_id >= 0)
 +			*val = sensor_hub_input_attr_get_raw_value(
-+				magn_state->common_attributes.hsdev,
-+				HID_USAGE_SENSOR_COMPASS_3D, address,
++				gyro_state->common_attributes.hsdev,
++				HID_USAGE_SENSOR_GYRO_3D, address,
 +				report_id);
 +		else {
 +			*val = 0;
@@ -218,22 +217,22 @@ index 0000000..07591f4
 +		ret_type = IIO_VAL_INT;
 +		break;
 +	case IIO_CHAN_INFO_SCALE:
-+		*val = magn_state->magn[CHANNEL_SCAN_INDEX_X].units;
++		*val = gyro_state->gyro[CHANNEL_SCAN_INDEX_X].units;
 +		ret_type = IIO_VAL_INT;
 +		break;
 +	case IIO_CHAN_INFO_OFFSET:
 +		*val = hid_sensor_convert_exponent(
-+			magn_state->magn[CHANNEL_SCAN_INDEX_X].unit_expo);
++			gyro_state->gyro[CHANNEL_SCAN_INDEX_X].unit_expo);
 +		ret_type = IIO_VAL_INT;
 +		break;
 +	case IIO_CHAN_INFO_SAMP_FREQ:
 +		ret = hid_sensor_read_samp_freq_value(
-+			&magn_state->common_attributes, val, val2);
-+		ret_type = IIO_VAL_INT_PLUS_MICRO;
++			&gyro_state->common_attributes, val, val2);
++			ret_type = IIO_VAL_INT_PLUS_MICRO;
 +		break;
 +	case IIO_CHAN_INFO_HYSTERESIS:
 +		ret = hid_sensor_read_raw_hyst_value(
-+			&magn_state->common_attributes, val, val2);
++			&gyro_state->common_attributes, val, val2);
 +		ret_type = IIO_VAL_INT_PLUS_MICRO;
 +		break;
 +	default:
@@ -245,23 +244,23 @@ index 0000000..07591f4
 +}
 +
 +/* Channel write_raw handler */
-+static int magn_3d_write_raw(struct iio_dev *indio_dev,
++static int gyro_3d_write_raw(struct iio_dev *indio_dev,
 +			       struct iio_chan_spec const *chan,
 +			       int val,
 +			       int val2,
 +			       long mask)
 +{
-+	struct magn_3d_state *magn_state = iio_priv(indio_dev);
++	struct gyro_3d_state *gyro_state = iio_priv(indio_dev);
 +	int ret = 0;
 +
 +	switch (mask) {
 +	case IIO_CHAN_INFO_SAMP_FREQ:
 +		ret = hid_sensor_write_samp_freq_value(
-+				&magn_state->common_attributes, val, val2);
++				&gyro_state->common_attributes, val, val2);
 +		break;
 +	case IIO_CHAN_INFO_HYSTERESIS:
 +		ret = hid_sensor_write_raw_hyst_value(
-+				&magn_state->common_attributes, val, val2);
++				&gyro_state->common_attributes, val, val2);
 +		break;
 +	default:
 +		ret = -EINVAL;
@@ -270,18 +269,18 @@ index 0000000..07591f4
 +	return ret;
 +}
 +
-+static int magn_3d_write_raw_get_fmt(struct iio_dev *indio_dev,
++static int gyro_3d_write_raw_get_fmt(struct iio_dev *indio_dev,
 +			       struct iio_chan_spec const *chan,
 +			       long mask)
 +{
 +	return IIO_VAL_INT_PLUS_MICRO;
 +}
 +
-+static const struct iio_info magn_3d_info = {
++static const struct iio_info gyro_3d_info = {
 +	.driver_module = THIS_MODULE,
-+	.read_raw = &magn_3d_read_raw,
-+	.write_raw = &magn_3d_write_raw,
-+	.write_raw_get_fmt = &magn_3d_write_raw_get_fmt,
++	.read_raw = &gyro_3d_read_raw,
++	.write_raw = &gyro_3d_write_raw,
++	.write_raw_get_fmt = &gyro_3d_write_raw_get_fmt,
 +};
 +
 +/* Function to push data to buffer */
@@ -306,40 +305,40 @@ index 0000000..07591f4
 +}
 +
 +/* Callback handler to send event after all samples are received and captured */
-+static int magn_3d_proc_event(struct hid_sensor_hub_device *hsdev,
++static int gyro_3d_proc_event(struct hid_sensor_hub_device *hsdev,
 +				unsigned usage_id,
 +				void *priv)
 +{
 +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-+	struct magn_3d_state *magn_state = iio_priv(indio_dev);
++	struct gyro_3d_state *gyro_state = iio_priv(indio_dev);
 +
-+	dev_dbg(&indio_dev->dev, "magn_3d_proc_event [%d]\n",
-+				magn_state->common_attributes.data_ready);
-+	if (magn_state->common_attributes.data_ready)
++	dev_dbg(&indio_dev->dev, "gyro_3d_proc_event [%d]\n",
++				gyro_state->common_attributes.data_ready);
++	if (gyro_state->common_attributes.data_ready)
 +		hid_sensor_push_data(indio_dev,
-+				(u8 *)magn_state->magn_val,
-+				sizeof(magn_state->magn_val));
++				(u8 *)gyro_state->gyro_val,
++				sizeof(gyro_state->gyro_val));
 +
 +	return 0;
 +}
 +
 +/* Capture samples in local storage */
-+static int magn_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
++static int gyro_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
 +				unsigned usage_id,
 +				size_t raw_len, char *raw_data,
 +				void *priv)
 +{
 +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-+	struct magn_3d_state *magn_state = iio_priv(indio_dev);
++	struct gyro_3d_state *gyro_state = iio_priv(indio_dev);
 +	int offset;
 +	int ret = -EINVAL;
 +
 +	switch (usage_id) {
-+	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS:
-+	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS:
-+	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS:
-+		offset = usage_id - HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS;
-+		magn_state->magn_val[CHANNEL_SCAN_INDEX_X + offset] =
++	case HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXIS:
++	case HID_USAGE_SENSOR_ANGL_VELOCITY_Y_AXIS:
++	case HID_USAGE_SENSOR_ANGL_VELOCITY_Z_AXIS:
++		offset = usage_id - HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXIS;
++		gyro_state->gyro_val[CHANNEL_SCAN_INDEX_X + offset] =
 +						*(u32 *)raw_data;
 +		ret = 0;
 +	break;
@@ -351,11 +350,11 @@ index 0000000..07591f4
 +}
 +
 +/* Parse report which is specific to an usage id*/
-+static int magn_3d_parse_report(struct platform_device *pdev,
++static int gyro_3d_parse_report(struct platform_device *pdev,
 +				struct hid_sensor_hub_device *hsdev,
 +				struct iio_chan_spec *channels,
 +				unsigned usage_id,
-+				struct magn_3d_state *st)
++				struct gyro_3d_state *st)
 +{
 +	int ret;
 +	int i;
@@ -364,71 +363,71 @@ index 0000000..07591f4
 +		ret = sensor_hub_input_get_attribute_info(hsdev,
 +				HID_INPUT_REPORT,
 +				usage_id,
-+				HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS + i,
-+				&st->magn[CHANNEL_SCAN_INDEX_X + i]);
++				HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXIS + i,
++				&st->gyro[CHANNEL_SCAN_INDEX_X + i]);
 +		if (ret < 0)
 +			break;
-+		magn_3d_adjust_channel_bit_mask(channels,
++		gyro_3d_adjust_channel_bit_mask(channels,
 +				CHANNEL_SCAN_INDEX_X + i,
-+				st->magn[CHANNEL_SCAN_INDEX_X + i].size);
++				st->gyro[CHANNEL_SCAN_INDEX_X + i].size);
 +	}
-+	dev_dbg(&pdev->dev, "magn_3d %x:%x, %x:%x, %x:%x\n",
-+			st->magn[0].index,
-+			st->magn[0].report_id,
-+			st->magn[1].index, st->magn[1].report_id,
-+			st->magn[2].index, st->magn[2].report_id);
++	dev_dbg(&pdev->dev, "gyro_3d %x:%x, %x:%x, %x:%x\n",
++			st->gyro[0].index,
++			st->gyro[0].report_id,
++			st->gyro[1].index, st->gyro[1].report_id,
++			st->gyro[2].index, st->gyro[2].report_id);
 +
 +	return ret;
 +}
 +
 +/* Function to initialize the processing for usage id */
-+static int __devinit hid_magn_3d_probe(struct platform_device *pdev)
++static int __devinit hid_gyro_3d_probe(struct platform_device *pdev)
 +{
 +	int ret = 0;
-+	static char *name = "magn_3d";
++	static const char *name = "gyro_3d";
 +	struct iio_dev *indio_dev;
-+	struct magn_3d_state *magn_state;
++	struct gyro_3d_state *gyro_state;
 +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
 +	struct iio_chan_spec *channels;
 +
-+	indio_dev = iio_device_alloc(sizeof(struct magn_3d_state));
++	indio_dev = iio_device_alloc(sizeof(struct gyro_3d_state));
 +	if (indio_dev == NULL) {
 +		ret = -ENOMEM;
 +		goto error_ret;
 +	}
 +	platform_set_drvdata(pdev, indio_dev);
 +
-+	magn_state = iio_priv(indio_dev);
-+	magn_state->common_attributes.hsdev = hsdev;
-+	magn_state->common_attributes.pdev = pdev;
++	gyro_state = iio_priv(indio_dev);
++	gyro_state->common_attributes.hsdev = hsdev;
++	gyro_state->common_attributes.pdev = pdev;
 +
 +	ret = hid_sensor_parse_common_attributes(hsdev,
-+				HID_USAGE_SENSOR_COMPASS_3D,
-+				&magn_state->common_attributes);
++						HID_USAGE_SENSOR_GYRO_3D,
++						&gyro_state->common_attributes);
 +	if (ret) {
 +		dev_err(&pdev->dev, "failed to setup common attributes\n");
 +		goto error_free_dev;
 +	}
 +
-+	channels = kmemdup(magn_3d_channels,
-+					sizeof(magn_3d_channels),
++	channels = kmemdup(gyro_3d_channels,
++					sizeof(gyro_3d_channels),
 +					GFP_KERNEL);
 +	if (!channels) {
 +		dev_err(&pdev->dev, "failed to duplicate channels\n");
 +		goto error_free_dev;
 +	}
 +
-+	ret = magn_3d_parse_report(pdev, hsdev, channels,
-+				HID_USAGE_SENSOR_COMPASS_3D, magn_state);
++	ret = gyro_3d_parse_report(pdev, hsdev, channels,
++					HID_USAGE_SENSOR_GYRO_3D, gyro_state);
 +	if (ret) {
 +		dev_err(&pdev->dev, "failed to setup attributes\n");
 +		goto error_free_dev_mem;
 +	}
 +
 +	indio_dev->channels = channels;
-+	indio_dev->num_channels = ARRAY_SIZE(magn_3d_channels);
++	indio_dev->num_channels = ARRAY_SIZE(gyro_3d_channels);
 +	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &magn_3d_info;
++	indio_dev->info = &gyro_3d_info;
 +	indio_dev->name = name;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
 +
@@ -438,9 +437,9 @@ index 0000000..07591f4
 +		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
 +		goto error_free_dev_mem;
 +	}
-+	magn_state->common_attributes.data_ready = false;
++	gyro_state->common_attributes.data_ready = false;
 +	ret = hid_sensor_setup_trigger(indio_dev, name,
-+					&magn_state->common_attributes);
++					&gyro_state->common_attributes);
 +	if (ret < 0) {
 +		dev_err(&pdev->dev, "trigger setup failed\n");
 +		goto error_unreg_buffer_funcs;
@@ -452,11 +451,11 @@ index 0000000..07591f4
 +		goto error_remove_trigger;
 +	}
 +
-+	magn_state->callbacks.send_event = magn_3d_proc_event;
-+	magn_state->callbacks.capture_sample = magn_3d_capture_sample;
-+	magn_state->callbacks.pdev = pdev;
-+	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_COMPASS_3D,
-+					&magn_state->callbacks);
++	gyro_state->callbacks.send_event = gyro_3d_proc_event;
++	gyro_state->callbacks.capture_sample = gyro_3d_capture_sample;
++	gyro_state->callbacks.pdev = pdev;
++	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D,
++					&gyro_state->callbacks);
 +	if (ret < 0) {
 +		dev_err(&pdev->dev, "callback reg failed\n");
 +		goto error_iio_unreg;
@@ -479,12 +478,12 @@ index 0000000..07591f4
 +}
 +
 +/* Function to deinitialize the processing for usage id */
-+static int __devinit hid_magn_3d_remove(struct platform_device *pdev)
++static int __devinit hid_gyro_3d_remove(struct platform_device *pdev)
 +{
 +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
 +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 +
-+	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_COMPASS_3D);
++	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
 +	iio_device_unregister(indio_dev);
 +	hid_sensor_remove_trigger(indio_dev);
 +	iio_triggered_buffer_cleanup(indio_dev);
@@ -494,17 +493,17 @@ index 0000000..07591f4
 +	return 0;
 +}
 +
-+static struct platform_driver hid_magn_3d_platform_driver = {
++static struct platform_driver hid_gyro_3d_platform_driver = {
 +	.driver = {
 +		.name	= DRIVER_NAME,
 +		.owner	= THIS_MODULE,
 +	},
-+	.probe		= hid_magn_3d_probe,
-+	.remove		= hid_magn_3d_remove,
++	.probe		= hid_gyro_3d_probe,
++	.remove		= hid_gyro_3d_remove,
 +};
-+module_platform_driver(hid_magn_3d_platform_driver);
++module_platform_driver(hid_gyro_3d_platform_driver);
 +
-+MODULE_DESCRIPTION("HID Sensor Magnetometer 3D");
++MODULE_DESCRIPTION("HID Sensor Gyroscope 3D");
 +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
 +MODULE_LICENSE("GPL");
 -- 
