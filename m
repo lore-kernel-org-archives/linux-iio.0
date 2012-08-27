@@ -1,47 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57403 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56536 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754320Ab2H0UGr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 16:06:47 -0400
-Message-ID: <503BD353.3070203@kernel.org>
-Date: Mon, 27 Aug 2012 21:06:43 +0100
+	with ESMTP id S1753546Ab2H0SGt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 14:06:49 -0400
+Message-ID: <503BB737.6030701@kernel.org>
+Date: Mon, 27 Aug 2012 19:06:47 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: viresh kumar <viresh.kumar@linaro.org>
-CC: Julia Lawall <Julia.Lawall@lip6.fr>, Stefan Roese <sr@denx.de>,
-	Shiraz HASHIM <shiraz.hashim@st.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	kernel-janitors@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, spear-devel <spear-devel@list.st.com>
-Subject: Re: [PATCH 1/13] drivers/staging/iio/adc/spear_adc.c: use clk_prepare_enable
- and clk_disable_unprepare
-References: <1345996865-32082-1-git-send-email-Julia.Lawall@lip6.fr> <1345996865-32082-2-git-send-email-Julia.Lawall@lip6.fr> <CAOh2x=mRDLO0fXcZgQ1pa3bAiBksC87cVTniTO_Qz9Ou++OMGg@mail.gmail.com>
-In-Reply-To: <CAOh2x=mRDLO0fXcZgQ1pa3bAiBksC87cVTniTO_Qz9Ou++OMGg@mail.gmail.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] staging iio: fix potential memory leak in lis3l02dq_ring.c
+References: <1345664238-5446-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1345664238-5446-1-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/27/2012 05:01 AM, viresh kumar wrote:
-> On Sun, Aug 26, 2012 at 9:30 PM, Julia Lawall <Julia.Lawall@lip6.fr> wrote:
->> From: Julia Lawall <Julia.Lawall@lip6.fr>
->>
->> Clk_prepare_enable and clk_disable_unprepare combine clk_prepare and
->> clk_enable, and clk_disable and clk_unprepare.  They make the code more
->> concise, and ensure that clk_unprepare is called when clk_enable fails.
->>
->> A simplified version of the semantic patch that introduces calls to these
->> functions is as follows: (http://coccinelle.lip6.fr/)
+On 08/22/2012 08:37 PM, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Thanks, merged to fixes-togreg.
+> ---
+>  drivers/staging/iio/accel/lis3l02dq_ring.c |    4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> Reviewed-by: Viresh Kumar <viresh.kumar@linaro.org>
-merged to fixes-togreg branch of kernel.org iio.git will push onwards in a few
-days...
-> 
-> @Stefan/Shiraz: Can you update spear-devel mailing list in MAINTAINERS file
-> for this driver?
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+> index 18d108f..f3da590 100644
+> --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
+> +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+> @@ -121,8 +121,10 @@ static int lis3l02dq_get_buffer_element(struct iio_dev *indio_dev,
+>  	if (rx_array == NULL)
+>  		return -ENOMEM;
+>  	ret = lis3l02dq_read_all(indio_dev, rx_array);
+> -	if (ret < 0)
+> +	if (ret < 0) {
+> +		kfree(rx_array);
+>  		return ret;
+> +	}
+>  	for (i = 0; i < scan_count; i++)
+>  		data[i] = combine_8_to_16(rx_array[i*4+1],
+>  					rx_array[i*4+3]);
 > 
