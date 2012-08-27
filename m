@@ -1,116 +1,204 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56471 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56573 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750806Ab2H0SBl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 14:01:41 -0400
-Message-ID: <503BB600.1070703@kernel.org>
-Date: Mon, 27 Aug 2012 19:01:36 +0100
+	with ESMTP id S1750971Ab2H0SK7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 14:10:59 -0400
+Message-ID: <503BB831.7020208@kernel.org>
+Date: Mon, 27 Aug 2012 19:10:57 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Dan Carpenter <dan.carpenter@oracle.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [patch] staging:iio: prevent divide by zero bugs
-References: <20120818084830.GC30592@elgon.mountain>
-In-Reply-To: <20120818084830.GC30592@elgon.mountain>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] staging iio: lis3l02dq cleanup
+References: <1345664526-5957-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1345664526-5957-1-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/18/2012 09:48 AM, Dan Carpenter wrote:
-> "val" is used as a divisor later, so we should check for zero here to
-> avoid a division by zero.
+On 08/22/2012 08:42 PM, Peter Meerwald wrote:
+> fixes some typos, whitespace, comments
+All good stuff thanks.
 > 
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-merged to fixes-togreg branch.
-Thanks.
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+merged to togreg branch of iio.git on kernel.org
 
+> ---
+>  drivers/staging/iio/accel/lis3l02dq.h      |   12 ++++++------
+>  drivers/staging/iio/accel/lis3l02dq_core.c |    4 ++--
+>  drivers/staging/iio/accel/lis3l02dq_ring.c |   28 ++++++++++++++--------------
+>  3 files changed, 22 insertions(+), 22 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-> index 4ce9e3d..e803db1 100644
-> --- a/drivers/staging/iio/imu/adis16400_core.c
-> +++ b/drivers/staging/iio/imu/adis16400_core.c
-> @@ -234,6 +234,8 @@ static ssize_t adis16400_write_frequency(struct device *dev,
->  	ret = strict_strtol(buf, 10, &val);
+> diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
+> index ae5f225..ad51658 100644
+> --- a/drivers/staging/iio/accel/lis3l02dq.h
+> +++ b/drivers/staging/iio/accel/lis3l02dq.h
+> @@ -28,7 +28,7 @@
+>  /* Control Register (1 of 2) */
+>  #define LIS3L02DQ_REG_CTRL_1_ADDR		0x20
+>  /* Power ctrl - either bit set corresponds to on*/
+> -#define LIS3L02DQ_REG_CTRL_1_PD_ON	0xC0
+> +#define LIS3L02DQ_REG_CTRL_1_PD_ON		0xC0
+>  
+>  /* Decimation Factor  */
+>  #define LIS3L02DQ_DEC_MASK			0x30
+> @@ -73,14 +73,14 @@
+>  /* Interrupt related stuff */
+>  #define LIS3L02DQ_REG_WAKE_UP_CFG_ADDR			0x23
+>  
+> -/* Switch from or combination fo conditions to and */
+> +/* Switch from or combination of conditions to and */
+>  #define LIS3L02DQ_REG_WAKE_UP_CFG_BOOLEAN_AND		0x80
+>  
+>  /* Latch interrupt request,
+>   * if on ack must be given by reading the ack register */
+>  #define LIS3L02DQ_REG_WAKE_UP_CFG_LATCH_SRC		0x40
+>  
+> -/* Z Interrupt on High (above threshold)*/
+> +/* Z Interrupt on High (above threshold) */
+>  #define LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Z_HIGH	0x20
+>  /* Z Interrupt on Low */
+>  #define LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Z_LOW	0x10
+> @@ -117,13 +117,13 @@
+>  #define LIS3L02DQ_REG_STATUS_Y_OVERRUN			0x20
+>  #define LIS3L02DQ_REG_STATUS_X_OVERRUN			0x10
+>  /* XYZ new data available - first is all 3 available? */
+> -#define LIS3L02DQ_REG_STATUS_XYZ_NEW_DATA 0x08
+> +#define LIS3L02DQ_REG_STATUS_XYZ_NEW_DATA		0x08
+>  #define LIS3L02DQ_REG_STATUS_Z_NEW_DATA			0x04
+>  #define LIS3L02DQ_REG_STATUS_Y_NEW_DATA			0x02
+>  #define LIS3L02DQ_REG_STATUS_X_NEW_DATA			0x01
+>  
+>  /* The accelerometer readings - low and high bytes.
+> -Form of high byte dependent on justification set in ctrl reg */
+> + * Form of high byte dependent on justification set in ctrl reg */
+>  #define LIS3L02DQ_REG_OUT_X_L_ADDR			0x28
+>  #define LIS3L02DQ_REG_OUT_X_H_ADDR			0x29
+>  #define LIS3L02DQ_REG_OUT_Y_L_ADDR			0x2A
+> @@ -150,9 +150,9 @@ Form of high byte dependent on justification set in ctrl reg */
+>   * struct lis3l02dq_state - device instance specific data
+>   * @us:			actual spi_device
+>   * @trig:		data ready trigger registered with iio
+> + * @buf_lock:		mutex to protect tx and rx
+>   * @tx:			transmit buffer
+>   * @rx:			receive buffer
+> - * @buf_lock:		mutex to protect tx and rx
+>   **/
+>  struct lis3l02dq_state {
+>  	struct spi_device		*us;
+> diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+> index 9d26348..621dbb1 100644
+> --- a/drivers/staging/iio/accel/lis3l02dq_core.c
+> +++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+> @@ -392,7 +392,7 @@ static int lis3l02dq_initial_setup(struct iio_dev *indio_dev)
+>  		dev_err(&st->us->dev, "problem with setup control register 1");
+>  		goto err_ret;
+>  	}
+> -	/* Repeat as sometimes doesn't work first time?*/
+> +	/* Repeat as sometimes doesn't work first time? */
+>  	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+>  					LIS3L02DQ_REG_CTRL_1_ADDR,
+>  					val);
+> @@ -686,7 +686,7 @@ static int __devinit lis3l02dq_probe(struct spi_device *spi)
+>  		goto error_ret;
+>  	}
+>  	st = iio_priv(indio_dev);
+> -	/* this is only used tor removal purposes */
+> +	/* this is only used for removal purposes */
+>  	spi_set_drvdata(spi, indio_dev);
+>  
+>  	st->us = spi;
+> diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+> index f3da590..f41d87f 100644
+> --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
+> +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+> @@ -14,7 +14,7 @@
+>  #include "lis3l02dq.h"
+>  
+>  /**
+> - * combine_8_to_16() utility function to munge to u8s into u16
+> + * combine_8_to_16() utility function to munge two u8s into u16
+>   **/
+>  static inline u16 combine_8_to_16(u8 lower, u8 upper)
+>  {
+> @@ -49,7 +49,7 @@ static const u8 read_all_tx_array[] = {
+>  
+>  /**
+>   * lis3l02dq_read_all() Reads all channels currently selected
+> - * @st:		device specific state
+> + * @indio_dev:	IIO device state
+>   * @rx_array:	(dma capable) receive array, must be at least
+>   *		4*number of channels
+>   **/
+> @@ -172,22 +172,22 @@ __lis3l02dq_write_data_ready_config(struct iio_dev *indio_dev, bool state)
+>  	bool currentlyset;
+>  	struct lis3l02dq_state *st = iio_priv(indio_dev);
+>  
+> -/* Get the current event mask register */
+> +	/* Get the current event mask register */
+>  	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+>  				       LIS3L02DQ_REG_CTRL_2_ADDR,
+>  				       &valold);
 >  	if (ret)
->  		return ret;
-> +	if (val == 0)
-> +		return -EINVAL;
+>  		goto error_ret;
+> -/* Find out if data ready is already on */
+> +	/* Find out if data ready is already on */
+>  	currentlyset
+>  		= valold & LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION;
 >  
->  	mutex_lock(&indio_dev->mlock);
+> -/* Disable requested */
+> +	/* Disable requested */
+>  	if (!state && currentlyset) {
+> -		/* disable the data ready signal */
+> +		/* Disable the data ready signal */
+>  		valold &= ~LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION;
 >  
-> diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-> index 93aa431..eb8e9d6 100644
-> --- a/drivers/staging/iio/gyro/adis16260_core.c
-> +++ b/drivers/staging/iio/gyro/adis16260_core.c
-> @@ -195,6 +195,8 @@ static ssize_t adis16260_write_frequency(struct device *dev,
->  	ret = strict_strtol(buf, 10, &val);
->  	if (ret)
->  		return ret;
-> +	if (val == 0)
-> +		return -EINVAL;
+> -		/* The double write is to overcome a hardware bug?*/
+> +		/* The double write is to overcome a hardware bug? */
+>  		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+>  						LIS3L02DQ_REG_CTRL_2_ADDR,
+>  						valold);
+> @@ -199,10 +199,10 @@ __lis3l02dq_write_data_ready_config(struct iio_dev *indio_dev, bool state)
+>  		if (ret)
+>  			goto error_ret;
+>  		st->trigger_on = false;
+> -/* Enable requested */
+> +	/* Enable requested */
+>  	} else if (state && !currentlyset) {
+> -		/* if not set, enable requested */
+> -		/* first disable all events */
+> +		/* If not set, enable requested
+> +		 * first disable all events */
+>  		ret = lis3l02dq_disable_all_events(indio_dev);
+>  		if (ret < 0)
+>  			goto error_ret;
+> @@ -241,7 +241,7 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>  	if (state == false) {
+>  		/*
+>  		 * A possible quirk with the handler is currently worked around
+> -		 *  by ensuring outstanding read events are cleared.
+> +		 * by ensuring outstanding read events are cleared.
+>  		 */
+>  		ret = lis3l02dq_read_all(indio_dev, NULL);
+>  	}
+> @@ -252,7 +252,7 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>  }
 >  
->  	mutex_lock(&indio_dev->mlock);
->  	if (spi_get_device_id(st->us)) {
-> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> index 405d9a8..942b3ce 100644
-> --- a/drivers/staging/iio/adc/ad7192.c
-> +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -647,6 +647,8 @@ static ssize_t ad7192_write_frequency(struct device *dev,
->  	ret = strict_strtoul(buf, 10, &lval);
->  	if (ret)
->  		return ret;
-> +	if (lval == 0)
-> +		return -EINVAL;
+>  /**
+> - * lis3l02dq_trig_try_reen() try renabling irq for data rdy trigger
+> + * lis3l02dq_trig_try_reen() try reenabling irq for data rdy trigger
+>   * @trig:	the datardy trigger
+>   */
+>  static int lis3l02dq_trig_try_reen(struct iio_trigger *trig)
+> @@ -261,8 +261,8 @@ static int lis3l02dq_trig_try_reen(struct iio_trigger *trig)
+>  	struct lis3l02dq_state *st = iio_priv(indio_dev);
+>  	int i;
 >  
->  	mutex_lock(&indio_dev->mlock);
->  	if (iio_buffer_enabled(indio_dev)) {
-> diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-> index b3f7e0f..eb0a2a9 100644
-> --- a/drivers/staging/iio/meter/ade7759.c
-> +++ b/drivers/staging/iio/meter/ade7759.c
-> @@ -385,6 +385,8 @@ static ssize_t ade7759_write_frequency(struct device *dev,
->  	ret = strict_strtol(buf, 10, &val);
->  	if (ret)
->  		return ret;
-> +	if (val == 0)
-> +		return -EINVAL;
->  
->  	mutex_lock(&indio_dev->mlock);
->  
-> diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
-> index f04ece7..3ccff18 100644
-> --- a/drivers/staging/iio/meter/ade7753.c
-> +++ b/drivers/staging/iio/meter/ade7753.c
-> @@ -425,6 +425,8 @@ static ssize_t ade7753_write_frequency(struct device *dev,
->  	ret = strict_strtol(buf, 10, &val);
->  	if (ret)
->  		return ret;
-> +	if (val == 0)
-> +		return -EINVAL;
->  
->  	mutex_lock(&indio_dev->mlock);
->  
-> diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
-> index 6cee28a..abb1e9c 100644
-> --- a/drivers/staging/iio/meter/ade7754.c
-> +++ b/drivers/staging/iio/meter/ade7754.c
-> @@ -445,6 +445,8 @@ static ssize_t ade7754_write_frequency(struct device *dev,
->  	ret = strict_strtol(buf, 10, &val);
->  	if (ret)
->  		return ret;
-> +	if (val == 0)
-> +		return -EINVAL;
->  
->  	mutex_lock(&indio_dev->mlock);
->  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> -	/* If gpio still high (or high again) */
+> -	/* In theory possible we will need to do this several times */
+> +	/* If gpio still high (or high again)
+> +	 * In theory possible we will need to do this several times */
+>  	for (i = 0; i < 5; i++)
+>  		if (gpio_get_value(irq_to_gpio(st->us->irq)))
+>  			lis3l02dq_read_all(indio_dev, NULL);
 > 
