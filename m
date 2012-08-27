@@ -1,204 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56573 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57403 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750971Ab2H0SK7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 14:10:59 -0400
-Message-ID: <503BB831.7020208@kernel.org>
-Date: Mon, 27 Aug 2012 19:10:57 +0100
+	with ESMTP id S1754320Ab2H0UGr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 16:06:47 -0400
+Message-ID: <503BD353.3070203@kernel.org>
+Date: Mon, 27 Aug 2012 21:06:43 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] staging iio: lis3l02dq cleanup
-References: <1345664526-5957-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1345664526-5957-1-git-send-email-pmeerw@pmeerw.net>
+To: viresh kumar <viresh.kumar@linaro.org>
+CC: Julia Lawall <Julia.Lawall@lip6.fr>, Stefan Roese <sr@denx.de>,
+	Shiraz HASHIM <shiraz.hashim@st.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	kernel-janitors@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org, spear-devel <spear-devel@list.st.com>
+Subject: Re: [PATCH 1/13] drivers/staging/iio/adc/spear_adc.c: use clk_prepare_enable
+ and clk_disable_unprepare
+References: <1345996865-32082-1-git-send-email-Julia.Lawall@lip6.fr> <1345996865-32082-2-git-send-email-Julia.Lawall@lip6.fr> <CAOh2x=mRDLO0fXcZgQ1pa3bAiBksC87cVTniTO_Qz9Ou++OMGg@mail.gmail.com>
+In-Reply-To: <CAOh2x=mRDLO0fXcZgQ1pa3bAiBksC87cVTniTO_Qz9Ou++OMGg@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/22/2012 08:42 PM, Peter Meerwald wrote:
-> fixes some typos, whitespace, comments
-All good stuff thanks.
+On 08/27/2012 05:01 AM, viresh kumar wrote:
+> On Sun, Aug 26, 2012 at 9:30 PM, Julia Lawall <Julia.Lawall@lip6.fr> wrote:
+>> From: Julia Lawall <Julia.Lawall@lip6.fr>
+>>
+>> Clk_prepare_enable and clk_disable_unprepare combine clk_prepare and
+>> clk_enable, and clk_disable and clk_unprepare.  They make the code more
+>> concise, and ensure that clk_unprepare is called when clk_enable fails.
+>>
+>> A simplified version of the semantic patch that introduces calls to these
+>> functions is as follows: (http://coccinelle.lip6.fr/)
 > 
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-merged to togreg branch of iio.git on kernel.org
-
-> ---
->  drivers/staging/iio/accel/lis3l02dq.h      |   12 ++++++------
->  drivers/staging/iio/accel/lis3l02dq_core.c |    4 ++--
->  drivers/staging/iio/accel/lis3l02dq_ring.c |   28 ++++++++++++++--------------
->  3 files changed, 22 insertions(+), 22 deletions(-)
+> Reviewed-by: Viresh Kumar <viresh.kumar@linaro.org>
+merged to fixes-togreg branch of kernel.org iio.git will push onwards in a few
+days...
 > 
-> diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
-> index ae5f225..ad51658 100644
-> --- a/drivers/staging/iio/accel/lis3l02dq.h
-> +++ b/drivers/staging/iio/accel/lis3l02dq.h
-> @@ -28,7 +28,7 @@
->  /* Control Register (1 of 2) */
->  #define LIS3L02DQ_REG_CTRL_1_ADDR		0x20
->  /* Power ctrl - either bit set corresponds to on*/
-> -#define LIS3L02DQ_REG_CTRL_1_PD_ON	0xC0
-> +#define LIS3L02DQ_REG_CTRL_1_PD_ON		0xC0
->  
->  /* Decimation Factor  */
->  #define LIS3L02DQ_DEC_MASK			0x30
-> @@ -73,14 +73,14 @@
->  /* Interrupt related stuff */
->  #define LIS3L02DQ_REG_WAKE_UP_CFG_ADDR			0x23
->  
-> -/* Switch from or combination fo conditions to and */
-> +/* Switch from or combination of conditions to and */
->  #define LIS3L02DQ_REG_WAKE_UP_CFG_BOOLEAN_AND		0x80
->  
->  /* Latch interrupt request,
->   * if on ack must be given by reading the ack register */
->  #define LIS3L02DQ_REG_WAKE_UP_CFG_LATCH_SRC		0x40
->  
-> -/* Z Interrupt on High (above threshold)*/
-> +/* Z Interrupt on High (above threshold) */
->  #define LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Z_HIGH	0x20
->  /* Z Interrupt on Low */
->  #define LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Z_LOW	0x10
-> @@ -117,13 +117,13 @@
->  #define LIS3L02DQ_REG_STATUS_Y_OVERRUN			0x20
->  #define LIS3L02DQ_REG_STATUS_X_OVERRUN			0x10
->  /* XYZ new data available - first is all 3 available? */
-> -#define LIS3L02DQ_REG_STATUS_XYZ_NEW_DATA 0x08
-> +#define LIS3L02DQ_REG_STATUS_XYZ_NEW_DATA		0x08
->  #define LIS3L02DQ_REG_STATUS_Z_NEW_DATA			0x04
->  #define LIS3L02DQ_REG_STATUS_Y_NEW_DATA			0x02
->  #define LIS3L02DQ_REG_STATUS_X_NEW_DATA			0x01
->  
->  /* The accelerometer readings - low and high bytes.
-> -Form of high byte dependent on justification set in ctrl reg */
-> + * Form of high byte dependent on justification set in ctrl reg */
->  #define LIS3L02DQ_REG_OUT_X_L_ADDR			0x28
->  #define LIS3L02DQ_REG_OUT_X_H_ADDR			0x29
->  #define LIS3L02DQ_REG_OUT_Y_L_ADDR			0x2A
-> @@ -150,9 +150,9 @@ Form of high byte dependent on justification set in ctrl reg */
->   * struct lis3l02dq_state - device instance specific data
->   * @us:			actual spi_device
->   * @trig:		data ready trigger registered with iio
-> + * @buf_lock:		mutex to protect tx and rx
->   * @tx:			transmit buffer
->   * @rx:			receive buffer
-> - * @buf_lock:		mutex to protect tx and rx
->   **/
->  struct lis3l02dq_state {
->  	struct spi_device		*us;
-> diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
-> index 9d26348..621dbb1 100644
-> --- a/drivers/staging/iio/accel/lis3l02dq_core.c
-> +++ b/drivers/staging/iio/accel/lis3l02dq_core.c
-> @@ -392,7 +392,7 @@ static int lis3l02dq_initial_setup(struct iio_dev *indio_dev)
->  		dev_err(&st->us->dev, "problem with setup control register 1");
->  		goto err_ret;
->  	}
-> -	/* Repeat as sometimes doesn't work first time?*/
-> +	/* Repeat as sometimes doesn't work first time? */
->  	ret = lis3l02dq_spi_write_reg_8(indio_dev,
->  					LIS3L02DQ_REG_CTRL_1_ADDR,
->  					val);
-> @@ -686,7 +686,7 @@ static int __devinit lis3l02dq_probe(struct spi_device *spi)
->  		goto error_ret;
->  	}
->  	st = iio_priv(indio_dev);
-> -	/* this is only used tor removal purposes */
-> +	/* this is only used for removal purposes */
->  	spi_set_drvdata(spi, indio_dev);
->  
->  	st->us = spi;
-> diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-> index f3da590..f41d87f 100644
-> --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-> +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-> @@ -14,7 +14,7 @@
->  #include "lis3l02dq.h"
->  
->  /**
-> - * combine_8_to_16() utility function to munge to u8s into u16
-> + * combine_8_to_16() utility function to munge two u8s into u16
->   **/
->  static inline u16 combine_8_to_16(u8 lower, u8 upper)
->  {
-> @@ -49,7 +49,7 @@ static const u8 read_all_tx_array[] = {
->  
->  /**
->   * lis3l02dq_read_all() Reads all channels currently selected
-> - * @st:		device specific state
-> + * @indio_dev:	IIO device state
->   * @rx_array:	(dma capable) receive array, must be at least
->   *		4*number of channels
->   **/
-> @@ -172,22 +172,22 @@ __lis3l02dq_write_data_ready_config(struct iio_dev *indio_dev, bool state)
->  	bool currentlyset;
->  	struct lis3l02dq_state *st = iio_priv(indio_dev);
->  
-> -/* Get the current event mask register */
-> +	/* Get the current event mask register */
->  	ret = lis3l02dq_spi_read_reg_8(indio_dev,
->  				       LIS3L02DQ_REG_CTRL_2_ADDR,
->  				       &valold);
->  	if (ret)
->  		goto error_ret;
-> -/* Find out if data ready is already on */
-> +	/* Find out if data ready is already on */
->  	currentlyset
->  		= valold & LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION;
->  
-> -/* Disable requested */
-> +	/* Disable requested */
->  	if (!state && currentlyset) {
-> -		/* disable the data ready signal */
-> +		/* Disable the data ready signal */
->  		valold &= ~LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION;
->  
-> -		/* The double write is to overcome a hardware bug?*/
-> +		/* The double write is to overcome a hardware bug? */
->  		ret = lis3l02dq_spi_write_reg_8(indio_dev,
->  						LIS3L02DQ_REG_CTRL_2_ADDR,
->  						valold);
-> @@ -199,10 +199,10 @@ __lis3l02dq_write_data_ready_config(struct iio_dev *indio_dev, bool state)
->  		if (ret)
->  			goto error_ret;
->  		st->trigger_on = false;
-> -/* Enable requested */
-> +	/* Enable requested */
->  	} else if (state && !currentlyset) {
-> -		/* if not set, enable requested */
-> -		/* first disable all events */
-> +		/* If not set, enable requested
-> +		 * first disable all events */
->  		ret = lis3l02dq_disable_all_events(indio_dev);
->  		if (ret < 0)
->  			goto error_ret;
-> @@ -241,7 +241,7 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
->  	if (state == false) {
->  		/*
->  		 * A possible quirk with the handler is currently worked around
-> -		 *  by ensuring outstanding read events are cleared.
-> +		 * by ensuring outstanding read events are cleared.
->  		 */
->  		ret = lis3l02dq_read_all(indio_dev, NULL);
->  	}
-> @@ -252,7 +252,7 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
->  }
->  
->  /**
-> - * lis3l02dq_trig_try_reen() try renabling irq for data rdy trigger
-> + * lis3l02dq_trig_try_reen() try reenabling irq for data rdy trigger
->   * @trig:	the datardy trigger
->   */
->  static int lis3l02dq_trig_try_reen(struct iio_trigger *trig)
-> @@ -261,8 +261,8 @@ static int lis3l02dq_trig_try_reen(struct iio_trigger *trig)
->  	struct lis3l02dq_state *st = iio_priv(indio_dev);
->  	int i;
->  
-> -	/* If gpio still high (or high again) */
-> -	/* In theory possible we will need to do this several times */
-> +	/* If gpio still high (or high again)
-> +	 * In theory possible we will need to do this several times */
->  	for (i = 0; i < 5; i++)
->  		if (gpio_get_value(irq_to_gpio(st->us->irq)))
->  			lis3l02dq_read_all(indio_dev, NULL);
+> @Stefan/Shiraz: Can you update spear-devel mailing list in MAINTAINERS file
+> for this driver?
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
