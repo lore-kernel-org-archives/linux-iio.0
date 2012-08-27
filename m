@@ -1,42 +1,141 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56536 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57469 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753546Ab2H0SGt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 14:06:49 -0400
-Message-ID: <503BB737.6030701@kernel.org>
-Date: Mon, 27 Aug 2012 19:06:47 +0100
+	with ESMTP id S1754220Ab2H0UMJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 16:12:09 -0400
+Message-ID: <503BD497.9020400@kernel.org>
+Date: Mon, 27 Aug 2012 21:12:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] staging iio: fix potential memory leak in lis3l02dq_ring.c
-References: <1345664238-5446-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1345664238-5446-1-git-send-email-pmeerw@pmeerw.net>
+To: Julia Lawall <Julia.Lawall@lip6.fr>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	kernel-janitors@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 6/13] drivers/iio/adc/at91_adc.c: use clk_prepare_enable
+ and clk_disable_unprepare
+References: <1345996865-32082-1-git-send-email-Julia.Lawall@lip6.fr> <1345996865-32082-7-git-send-email-Julia.Lawall@lip6.fr>
+In-Reply-To: <1345996865-32082-7-git-send-email-Julia.Lawall@lip6.fr>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/22/2012 08:37 PM, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Thanks, merged to fixes-togreg.
-> ---
->  drivers/staging/iio/accel/lis3l02dq_ring.c |    4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+On 08/26/2012 05:00 PM, Julia Lawall wrote:
+> From: Julia Lawall <Julia.Lawall@lip6.fr>
 > 
-> diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-> index 18d108f..f3da590 100644
-> --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-> +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-> @@ -121,8 +121,10 @@ static int lis3l02dq_get_buffer_element(struct iio_dev *indio_dev,
->  	if (rx_array == NULL)
->  		return -ENOMEM;
->  	ret = lis3l02dq_read_all(indio_dev, rx_array);
-> -	if (ret < 0)
-> +	if (ret < 0) {
-> +		kfree(rx_array);
->  		return ret;
-> +	}
->  	for (i = 0; i < scan_count; i++)
->  		data[i] = combine_8_to_16(rx_array[i*4+1],
->  					rx_array[i*4+3]);
+> Clk_prepare_enable and clk_disable_unprepare combine clk_prepare and
+> clk_enable, and clk_disable and clk_unprepare.  They make the code more
+> concise, and ensure that clk_unprepare is called when clk_enable fails.
+> 
+> A simplified version of the semantic patch that introduces calls to these
+> functions is as follows: (http://coccinelle.lip6.fr/)
+> 
+> // <smpl>
+> @@
+> expression e;
+> @@
+> 
+> - clk_prepare(e);
+> - clk_enable(e);
+> + clk_prepare_enable(e);
+> 
+> @@
+> expression e;
+> @@
+> 
+> - clk_disable(e);
+> - clk_unprepare(e);
+> + clk_disable_unprepare(e);
+> // </smpl>
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+merged to togreg branch of
+git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+
+Thanks,
+
+Jonathan
+> 
+> ---
+>  drivers/iio/adc/at91_adc.c |   33 +++++++++------------------------
+>  1 file changed, 9 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> index 98c96f9..c1e4690 100644
+> --- a/drivers/iio/adc/at91_adc.c
+> +++ b/drivers/iio/adc/at91_adc.c
+> @@ -589,18 +589,13 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+>  		goto error_free_irq;
+>  	}
+>  
+> -	ret = clk_prepare(st->clk);
+> +	ret = clk_prepare_enable(st->clk);
+>  	if (ret) {
+> -		dev_err(&pdev->dev, "Could not prepare the clock.\n");
+> +		dev_err(&pdev->dev,
+> +			"Could not prepare or enable the clock.\n");
+>  		goto error_free_irq;
+>  	}
+>  
+> -	ret = clk_enable(st->clk);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "Could not enable the clock.\n");
+> -		goto error_unprepare_clk;
+> -	}
+> -
+>  	st->adc_clk = devm_clk_get(&pdev->dev, "adc_op_clk");
+>  	if (IS_ERR(st->adc_clk)) {
+>  		dev_err(&pdev->dev, "Failed to get the ADC clock.\n");
+> @@ -608,18 +603,13 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+>  		goto error_disable_clk;
+>  	}
+>  
+> -	ret = clk_prepare(st->adc_clk);
+> +	ret = clk_prepare_enable(st->adc_clk);
+>  	if (ret) {
+> -		dev_err(&pdev->dev, "Could not prepare the ADC clock.\n");
+> +		dev_err(&pdev->dev,
+> +			"Could not prepare or enable the ADC clock.\n");
+>  		goto error_disable_clk;
+>  	}
+>  
+> -	ret = clk_enable(st->adc_clk);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "Could not enable the ADC clock.\n");
+> -		goto error_unprepare_adc_clk;
+> -	}
+> -
+>  	/*
+>  	 * Prescaler rate computation using the formula from the Atmel's
+>  	 * datasheet : ADC Clock = MCK / ((Prescaler + 1) * 2), ADC Clock being
+> @@ -681,13 +671,9 @@ error_remove_triggers:
+>  error_unregister_buffer:
+>  	at91_adc_buffer_remove(idev);
+>  error_disable_adc_clk:
+> -	clk_disable(st->adc_clk);
+> -error_unprepare_adc_clk:
+> -	clk_unprepare(st->adc_clk);
+> +	clk_disable_unprepare(st->adc_clk);
+>  error_disable_clk:
+> -	clk_disable(st->clk);
+> -error_unprepare_clk:
+> -	clk_unprepare(st->clk);
+> +	clk_disable_unprepare(st->clk);
+>  error_free_irq:
+>  	free_irq(st->irq, idev);
+>  error_free_device:
+> @@ -705,8 +691,7 @@ static int __devexit at91_adc_remove(struct platform_device *pdev)
+>  	at91_adc_trigger_remove(idev);
+>  	at91_adc_buffer_remove(idev);
+>  	clk_disable_unprepare(st->adc_clk);
+> -	clk_disable(st->clk);
+> -	clk_unprepare(st->clk);
+> +	clk_disable_unprepare(st->clk);
+>  	free_irq(st->irq, idev);
+>  	iio_device_free(idev);
+>  
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
