@@ -1,472 +1,789 @@
-Return-Path: <srinivas.pandruvada@intel.com>
-From: srinivas pandruvada <srinivas.pandruvada@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	jkosina@suse.cz,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 9/9] HID-Sensors: Added ALS
-Date: Mon, 27 Aug 2012 08:49:57 -0700
-Message-Id: <1346082597-768-10-git-send-email-srinivas.pandruvada@intel.com>
-In-Reply-To: <1346082597-768-1-git-send-email-srinivas.pandruvada@intel.com>
-References: <1346082597-768-1-git-send-email-srinivas.pandruvada@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55858 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753589Ab2H0RHO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 13:07:14 -0400
+Message-ID: <503BA93E.5060205@kernel.org>
+Date: Mon, 27 Aug 2012 18:07:10 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH 19/22] staging:iio:ad7192: Use common Sigma Delta library
+References: <1344616596-8026-1-git-send-email-lars@metafoo.de> <1344616596-8026-19-git-send-email-lars@metafoo.de>
+In-Reply-To: <1344616596-8026-19-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Added usage id processing for ALS. This uses IIO
-interfaces for triggered buffer to present data to user
-mode.This uses HID sensor framework for registering callback
-events from the sensor hub.
+On 08/10/2012 05:36 PM, Lars-Peter Clausen wrote:
+> Convert the ad7192 driver to make use of the new common code for devices from
+> the Analog Devices Sigma Delta family.
 
-Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
----
- drivers/iio/Kconfig                |    1 +
- drivers/iio/Makefile               |    1 +
- drivers/iio/light/Kconfig          |   10 +
- drivers/iio/light/Makefile         |    1 +
- drivers/iio/light/hid-sensor-als.c |  386 ++++++++++++++++++++++++++++++++++++
- 5 files changed, 399 insertions(+), 0 deletions(-)
- create mode 100644 drivers/iio/light/hid-sensor-als.c
+Hi Lars-Peter.
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 76bb920..82e3b7d 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -62,6 +62,7 @@ source "drivers/iio/frequency/Kconfig"
- source "drivers/iio/dac/Kconfig"
- source "drivers/iio/common/Kconfig"
- source "drivers/iio/gyro/Kconfig"
-+source "drivers/iio/light/Kconfig"
- source "drivers/iio/magnetometer/Kconfig"
- 
- endif # IIO
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 761f2b6..f7fa3c0 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -18,4 +18,5 @@ obj-y += frequency/
- obj-y += dac/
- obj-y += common/
- obj-y += gyro/
-+obj-y += light/
- obj-y += magnetometer/
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index 91d15d2..1763c9b 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -42,4 +42,14 @@ config VCNL4000
- 	 To compile this driver as a module, choose M here: the
- 	 module will be called vcnl4000.
- 
-+config HID_SENSOR_ALS
-+	depends on HID_SENSOR_HUB
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	select HID_SENSOR_IIO_COMMON
-+	tristate "HID ALS"
-+	help
-+	  Say yes here to build support for the HID SENSOR
-+	  Ambient light sensor.
-+
- endmenu
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index 13f8a78..21a8f0d 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -5,3 +5,4 @@
- obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
- obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
- obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
-+obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
-diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-new file mode 100644
-index 0000000..2cff7d5
---- /dev/null
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -0,0 +1,386 @@
-+/*
-+ * HID Sensors Driver
-+ * Copyright (c) 2012, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-+ *
-+ */
-+#include <linux/device.h>
-+#include <linux/platform_device.h>
-+#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/slab.h>
-+#include <linux/hid-sensor-hub.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include "../common/hid-sensors/hid-sensor-attributes.h"
-+#include "../common/hid-sensors/hid-sensor-trigger.h"
-+
-+/*Format: HID-SENSOR-usage_id_in_hex*/
-+/*Usage ID from spec for Accelerometer-3D: 0x200041*/
-+#define DRIVER_NAME "HID-SENSOR-200041"
-+
-+#define CHANNEL_SCAN_INDEX_ILLUM 0
-+
-+struct als_state {
-+	struct hid_sensor_hub_callbacks callbacks;
-+	struct hid_sensor_iio_common common_attributes;
-+	struct hid_sensor_hub_attribute_info als_illum;
-+	u32 illum;
-+};
-+
-+/* Channel definitions */
-+static const struct iio_chan_spec als_channels[] = {
-+	{
-+		.type = IIO_INTENSITY,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_LIGHT_BOTH,
-+		.info_mask = IIO_CHAN_INFO_OFFSET_SHARED_BIT |
-+		IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+		IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT |
-+		IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT,
-+		.scan_index = CHANNEL_SCAN_INDEX_ILLUM,
-+	}
-+};
-+
-+/* Adjust channel real bits based on report descriptor */
-+static void als_adjust_channel_bit_mask(struct iio_chan_spec *channels,
-+					int channel, int size)
-+{
-+	channels[channel].scan_type.sign = 's';
-+	/* Real storage bits will change based on the report desc. */
-+	channels[channel].scan_type.realbits = size * 8;
-+	/* Maximum size of a sample to capture is u32 */
-+	channels[channel].scan_type.storagebits = sizeof(u32) * 8;
-+}
-+
-+/* Channel read_raw handler */
-+static int als_read_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int *val, int *val2,
-+			      long mask)
-+{
-+	struct als_state *als_state = iio_priv(indio_dev);
-+	int report_id = -1;
-+	u32 address;
-+	int ret;
-+	int ret_type;
-+
-+	*val = 0;
-+	*val2 = 0;
-+	switch (mask) {
-+	case 0:
-+		switch (chan->scan_index) {
-+		case  CHANNEL_SCAN_INDEX_ILLUM:
-+			report_id = als_state->als_illum.report_id;
-+			address =
-+			HID_USAGE_SENSOR_LIGHT_ILLUM;
-+			break;
-+		default:
-+			report_id = -1;
-+			break;
-+		}
-+		if (report_id >= 0)
-+			*val = sensor_hub_input_attr_get_raw_value(
-+				als_state->common_attributes.hsdev,
-+				HID_USAGE_SENSOR_ALS, address,
-+				report_id);
-+		else {
-+			*val = 0;
-+			return -EINVAL;
-+		}
-+		ret_type = IIO_VAL_INT;
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = als_state->als_illum.units;
-+		ret_type = IIO_VAL_INT;
-+		break;
-+	case IIO_CHAN_INFO_OFFSET:
-+		*val = hid_sensor_convert_exponent(
-+				als_state->als_illum.unit_expo);
-+		ret_type = IIO_VAL_INT;
-+		break;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = hid_sensor_read_samp_freq_value(
-+				&als_state->common_attributes, val, val2);
-+		ret_type = IIO_VAL_INT_PLUS_MICRO;
-+		break;
-+	case IIO_CHAN_INFO_HYSTERESIS:
-+		ret = hid_sensor_read_raw_hyst_value(
-+				&als_state->common_attributes, val, val2);
-+		ret_type = IIO_VAL_INT_PLUS_MICRO;
-+		break;
-+	default:
-+		ret_type = -EINVAL;
-+		break;
-+	}
-+
-+	return ret_type;
-+}
-+
-+/* Channel write_raw handler */
-+static int als_write_raw(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       int val,
-+			       int val2,
-+			       long mask)
-+{
-+	struct als_state *als_state = iio_priv(indio_dev);
-+	int ret = 0;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = hid_sensor_write_samp_freq_value(
-+				&als_state->common_attributes, val, val2);
-+		break;
-+	case IIO_CHAN_INFO_HYSTERESIS:
-+		ret = hid_sensor_write_raw_hyst_value(
-+				&als_state->common_attributes, val, val2);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+static int als_write_raw_get_fmt(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       long mask)
-+{
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
-+static const struct iio_info als_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = &als_read_raw,
-+	.write_raw = &als_write_raw,
-+	.write_raw_get_fmt = &als_write_raw_get_fmt,
-+};
-+
-+/* Function to push data to buffer */
-+static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
-+{
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+	s64 timestamp = iio_get_time_ns();
-+	int datum_sz;
-+
-+	dev_dbg(&indio_dev->dev, "hid_sensor_push_data\n");
-+	if (!buffer) {
-+		dev_err(&indio_dev->dev, "Buffer == NULL\n");
-+		return;
-+	}
-+	datum_sz = buffer->access->get_bytes_per_datum(buffer);
-+	if (len > datum_sz) {
-+		dev_err(&indio_dev->dev, "Datum size mismatch %d:%d\n", len,
-+				datum_sz);
-+		return;
-+	}
-+	buffer->access->store_to(buffer, (u8 *)data, timestamp);
-+}
-+
-+/* Callback handler to send event after all samples are received and captured */
-+static int als_proc_event(struct hid_sensor_hub_device *hsdev,
-+				unsigned usage_id,
-+				void *priv)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-+	struct als_state *als_state = iio_priv(indio_dev);
-+
-+	dev_dbg(&indio_dev->dev, "als_proc_event [%d]\n",
-+				als_state->common_attributes.data_ready);
-+	if (als_state->common_attributes.data_ready)
-+		hid_sensor_push_data(indio_dev,
-+				(u8 *)&als_state->illum,
-+				sizeof(als_state->illum));
-+
-+	return 0;
-+}
-+
-+/* Capture samples in local storage */
-+static int als_capture_sample(struct hid_sensor_hub_device *hsdev,
-+				unsigned usage_id,
-+				size_t raw_len, char *raw_data,
-+				void *priv)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-+	struct als_state *als_state = iio_priv(indio_dev);
-+	int ret = -EINVAL;
-+
-+	switch (usage_id) {
-+	case HID_USAGE_SENSOR_LIGHT_ILLUM:
-+		als_state->illum = *(u32 *)raw_data;
-+		ret = 0;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+/* Parse report which is specific to an usage id*/
-+static int als_parse_report(struct platform_device *pdev,
-+				struct hid_sensor_hub_device *hsdev,
-+				struct iio_chan_spec *channels,
-+				unsigned usage_id,
-+				struct als_state *st)
-+{
-+	int ret;
-+
-+	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
-+			usage_id,
-+			HID_USAGE_SENSOR_LIGHT_ILLUM,
-+			&st->als_illum);
-+	if (ret < 0)
-+		return ret;
-+	als_adjust_channel_bit_mask(channels, CHANNEL_SCAN_INDEX_ILLUM,
-+					st->als_illum.size);
-+
-+	dev_dbg(&pdev->dev, "als %x:%x\n", st->als_illum.index,
-+			st->als_illum.report_id);
-+
-+	return ret;
-+}
-+
-+/* Function to initialize the processing for usage id */
-+static int __devinit hid_als_probe(struct platform_device *pdev)
-+{
-+	int ret = 0;
-+	static const char *name = "als";
-+	struct iio_dev *indio_dev;
-+	struct als_state *als_state;
-+	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-+	struct iio_chan_spec *channels;
-+
-+	indio_dev = iio_device_alloc(sizeof(struct als_state));
-+	if (indio_dev == NULL) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+	platform_set_drvdata(pdev, indio_dev);
-+
-+	als_state = iio_priv(indio_dev);
-+	als_state->common_attributes.hsdev = hsdev;
-+	als_state->common_attributes.pdev = pdev;
-+
-+	ret = hid_sensor_parse_common_attributes(hsdev, HID_USAGE_SENSOR_ALS,
-+					&als_state->common_attributes);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to setup common attributes\n");
-+		goto error_free_dev;
-+	}
-+
-+	channels = kmemdup(als_channels,
-+					sizeof(als_channels),
-+					GFP_KERNEL);
-+	if (!channels) {
-+		dev_err(&pdev->dev, "failed to duplicate channels\n");
-+		goto error_free_dev;
-+	}
-+
-+	ret = als_parse_report(pdev, hsdev, channels,
-+				HID_USAGE_SENSOR_ALS, als_state);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to setup attributes\n");
-+		goto error_free_dev_mem;
-+	}
-+
-+	indio_dev->channels = channels;
-+	indio_dev->num_channels =
-+				ARRAY_SIZE(als_channels);
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &als_info;
-+	indio_dev->name = name;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+		NULL, NULL);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
-+		goto error_free_dev_mem;
-+	}
-+	als_state->common_attributes.data_ready = false;
-+	ret = hid_sensor_setup_trigger(indio_dev, name,
-+				&als_state->common_attributes);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "trigger setup failed\n");
-+		goto error_unreg_buffer_funcs;
-+	}
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "device register failed\n");
-+		goto error_remove_trigger;
-+	}
-+
-+	als_state->callbacks.send_event = als_proc_event;
-+	als_state->callbacks.capture_sample = als_capture_sample;
-+	als_state->callbacks.pdev = pdev;
-+	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_ALS,
-+					&als_state->callbacks);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "callback reg failed\n");
-+		goto error_iio_unreg;
-+	}
-+
-+	return ret;
-+
-+error_iio_unreg:
-+	iio_device_unregister(indio_dev);
-+error_remove_trigger:
-+	hid_sensor_remove_trigger(indio_dev);
-+error_unreg_buffer_funcs:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+error_free_dev_mem:
-+	kfree(indio_dev->channels);
-+error_free_dev:
-+	iio_device_free(indio_dev);
-+error_ret:
-+	return ret;
-+}
-+
-+/* Function to deinitialize the processing for usage id */
-+static int __devinit hid_als_remove(struct platform_device *pdev)
-+{
-+	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+
-+	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_ALS);
-+	iio_device_unregister(indio_dev);
-+	hid_sensor_remove_trigger(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	kfree(indio_dev->channels);
-+	iio_device_free(indio_dev);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver hid_als_platform_driver = {
-+	.driver = {
-+		.name	= DRIVER_NAME,
-+		.owner	= THIS_MODULE,
-+	},
-+	.probe		= hid_als_probe,
-+	.remove		= hid_als_remove,
-+};
-+module_platform_driver(hid_als_platform_driver);
-+
-+MODULE_DESCRIPTION("HID Sensor ALS");
-+MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
-+MODULE_LICENSE("GPL");
--- 
-1.7.7.6
+Was just applying these to my togreg branch and ran a few build tests with sparse.
+issue in this and ad7793 came up.
+
+drivers/staging/iio/adc/ad7793.c:91:21: warning: incorrect type in initializer (incompatible argument 2 (different
+signedness))
+drivers/staging/iio/adc/ad7793.c:91:21:    expected int ( *set_mode )( ... )
+drivers/staging/iio/adc/ad7793.c:91:21:    got int ( static [toplevel] *<noident> )( ... )
+
+
+Now this is because set_mode takes and integer argument here, but is defined to
+take an enum.
+
+Why not just take the enum directly?
+
+I'm guessing this is a left over from a cleanup that didn't
+quite get everywhere.  Will convert them over to the enum argument before
+pushing them out, but would like you to take a quick glance at them...
+
+Change given inline below.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+>  drivers/staging/iio/adc/Kconfig  |    3 +-
+>  drivers/staging/iio/adc/ad7192.c |  507 +++++---------------------------------
+>  2 files changed, 61 insertions(+), 449 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+> index 05dea3f..9525308 100644
+> --- a/drivers/staging/iio/adc/Kconfig
+> +++ b/drivers/staging/iio/adc/Kconfig
+> @@ -131,8 +131,7 @@ config AD7816
+>  config AD7192
+>  	tristate "Analog Devices AD7190 AD7192 AD7195 ADC driver"
+>  	depends on SPI
+> -	select IIO_BUFFER
+> -	select IIO_TRIGGERED_BUFFER
+> +	select AD_SIGMA_DELTA
+>  	help
+>  	  Say yes here to build support for Analog Devices AD7190,
+>  	  AD7192 or AD7195 SPI analog to digital converters (ADC).
+> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> index cdb4fc4..34a7dee 100644
+> --- a/drivers/staging/iio/adc/ad7192.c
+> +++ b/drivers/staging/iio/adc/ad7192.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/iio/trigger.h>
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/adc/ad_sigma_delta.h>
+>  
+>  #include "ad7192.h"
+>  
+> @@ -57,6 +58,7 @@
+>  
+>  /* Mode Register Bit Designations (AD7192_REG_MODE) */
+>  #define AD7192_MODE_SEL(x)	(((x) & 0x7) << 21) /* Operation Mode Select */
+> +#define AD7192_MODE_SEL_MASK	(0x7 << 21) /* Operation Mode Select Mask */
+>  #define AD7192_MODE_DAT_STA	(1 << 20) /* Status Register transmission */
+>  #define AD7192_MODE_CLKSRC(x)	(((x) & 0x3) << 18) /* Clock Source Select */
+>  #define AD7192_MODE_SINC3	(1 << 15) /* SINC3 Filter Select */
+> @@ -91,7 +93,8 @@
+>  
+>  #define AD7192_CONF_CHOP	(1 << 23) /* CHOP enable */
+>  #define AD7192_CONF_REFSEL	(1 << 20) /* REFIN1/REFIN2 Reference Select */
+> -#define AD7192_CONF_CHAN(x)	(((x) & 0xFF) << 8) /* Channel select */
+> +#define AD7192_CONF_CHAN(x)	(((1 << (x)) & 0xFF) << 8) /* Channel select */
+> +#define AD7192_CONF_CHAN_MASK	(0xFF << 8) /* Channel select mask */
+>  #define AD7192_CONF_BURN	(1 << 7) /* Burnout current enable */
+>  #define AD7192_CONF_REFDET	(1 << 6) /* Reference detect enable */
+>  #define AD7192_CONF_BUF		(1 << 4) /* Buffered Mode Enable */
+> @@ -133,12 +136,7 @@
+>   */
+>  
+>  struct ad7192_state {
+> -	struct spi_device		*spi;
+> -	struct iio_trigger		*trig;
+>  	struct regulator		*reg;
+> -	wait_queue_head_t		wq_data_avail;
+> -	bool				done;
+> -	bool				irq_dis;
+>  	u16				int_vref_mv;
+>  	u32				mclk;
+>  	u32				f_order;
+> @@ -147,178 +145,44 @@ struct ad7192_state {
+>  	u32				scale_avail[8][2];
+>  	u8				gpocon;
+>  	u8				devid;
+> -	/*
+> -	 * DMA (thus cache coherency maintenance) requires the
+> -	 * transfer buffers to live in their own cache lines.
+> -	 */
+> -	u8				data[4] ____cacheline_aligned;
+> -};
+> -
+> -static int __ad7192_write_reg(struct ad7192_state *st, bool locked,
+> -			      bool cs_change, unsigned char reg,
+> -			      unsigned size, unsigned val)
+> -{
+> -	u8 *data = st->data;
+> -	struct spi_transfer t = {
+> -		.tx_buf		= data,
+> -		.len		= size + 1,
+> -		.cs_change	= cs_change,
+> -	};
+> -	struct spi_message m;
+> -
+> -	data[0] = AD7192_COMM_WRITE | AD7192_COMM_ADDR(reg);
+> -
+> -	switch (size) {
+> -	case 3:
+> -		data[1] = val >> 16;
+> -		data[2] = val >> 8;
+> -		data[3] = val;
+> -		break;
+> -	case 2:
+> -		data[1] = val >> 8;
+> -		data[2] = val;
+> -		break;
+> -	case 1:
+> -		data[1] = val;
+> -		break;
+> -	default:
+> -		return -EINVAL;
+> -	}
+>  
+> -	spi_message_init(&m);
+> -	spi_message_add_tail(&t, &m);
+> -
+> -	if (locked)
+> -		return spi_sync_locked(st->spi, &m);
+> -	else
+> -		return spi_sync(st->spi, &m);
+> -}
+> +	struct ad_sigma_delta		sd;
+> +};
+>  
+> -static int ad7192_write_reg(struct ad7192_state *st,
+> -			    unsigned reg, unsigned size, unsigned val)
+> +static struct ad7192_state *ad_sigma_delta_to_ad7192(struct ad_sigma_delta *sd)
+>  {
+> -	return __ad7192_write_reg(st, false, false, reg, size, val);
+> +	return container_of(sd, struct ad7192_state, sd);
+>  }
+>  
+> -static int __ad7192_read_reg(struct ad7192_state *st, bool locked,
+> -			     bool cs_change, unsigned char reg,
+> -			     int *val, unsigned size)
+> +static int ad7192_set_channel(struct ad_sigma_delta *sd, unsigned int channel)
+>  {
+> -	u8 *data = st->data;
+> -	int ret;
+> -	struct spi_transfer t[] = {
+> -		{
+> -			.tx_buf = data,
+> -			.len = 1,
+> -		}, {
+> -			.rx_buf = data,
+> -			.len = size,
+> -			.cs_change = cs_change,
+> -		},
+> -	};
+> -	struct spi_message m;
+> -
+> -	data[0] = AD7192_COMM_READ | AD7192_COMM_ADDR(reg);
+> -
+> -	spi_message_init(&m);
+> -	spi_message_add_tail(&t[0], &m);
+> -	spi_message_add_tail(&t[1], &m);
+> -
+> -	if (locked)
+> -		ret = spi_sync_locked(st->spi, &m);
+> -	else
+> -		ret = spi_sync(st->spi, &m);
+> +	struct ad7192_state *st = ad_sigma_delta_to_ad7192(sd);
+>  
+> -	if (ret < 0)
+> -		return ret;
+> +	st->conf &= ~AD7192_CONF_CHAN_MASK;
+> +	st->conf |= AD7192_CONF_CHAN(channel);
+>  
+> -	switch (size) {
+> -	case 3:
+> -		*val = data[0] << 16 | data[1] << 8 | data[2];
+> -		break;
+> -	case 2:
+> -		*val = data[0] << 8 | data[1];
+> -		break;
+> -	case 1:
+> -		*val = data[0];
+> -		break;
+> -	default:
+> -		return -EINVAL;
+> -	}
+> -
+> -	return 0;
+> +	return ad_sd_write_reg(&st->sd, AD7192_REG_CONF, 3, st->conf);
+>  }
+>  
+> -static int ad7192_read_reg(struct ad7192_state *st,
+> -			   unsigned reg, int *val, unsigned size)
+Change is here,
+
+static int ad7793_set_mode(struct ad_sigma_delta *sd,
+			   enum ad_sigma_delta_mode mode)
+
+> +static int ad7192_set_mode(struct ad_sigma_delta *sd, unsigned int mode)
+>  {
+> -	return __ad7192_read_reg(st, 0, 0, reg, val, size);
+> -}
+> -
+> -static int ad7192_read(struct ad7192_state *st, unsigned ch,
+> -		       unsigned len, int *val)
+> -{
+> -	int ret;
+> -	st->conf = (st->conf & ~AD7192_CONF_CHAN(-1)) |
+> -		AD7192_CONF_CHAN(1 << ch);
+> -	st->mode = (st->mode & ~AD7192_MODE_SEL(-1)) |
+> -		AD7192_MODE_SEL(AD7192_MODE_SINGLE);
+> -
+> -	ad7192_write_reg(st, AD7192_REG_CONF, 3, st->conf);
+> +	struct ad7192_state *st = ad_sigma_delta_to_ad7192(sd);
+>  
+> -	spi_bus_lock(st->spi->master);
+> -	st->done = false;
+> +	st->mode &= ~AD7192_MODE_SEL_MASK;
+> +	st->mode |= AD7192_MODE_SEL(mode);
+>  
+> -	ret = __ad7192_write_reg(st, 1, 1, AD7192_REG_MODE, 3, st->mode);
+> -	if (ret < 0)
+> -		goto out;
+> -
+> -	st->irq_dis = false;
+> -	enable_irq(st->spi->irq);
+> -	wait_event_interruptible(st->wq_data_avail, st->done);
+> -
+> -	ret = __ad7192_read_reg(st, 1, 0, AD7192_REG_DATA, val, len);
+> -out:
+> -	spi_bus_unlock(st->spi->master);
+> -
+> -	return ret;
+> +	return ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
+>  }
+>  
+> -static int ad7192_calibrate(struct ad7192_state *st, unsigned mode, unsigned ch)
+> -{
+> -	int ret;
+> -
+> -	st->conf = (st->conf & ~AD7192_CONF_CHAN(-1)) |
+> -		AD7192_CONF_CHAN(1 << ch);
+> -	st->mode = (st->mode & ~AD7192_MODE_SEL(-1)) | AD7192_MODE_SEL(mode);
+> -
+> -	ad7192_write_reg(st, AD7192_REG_CONF, 3, st->conf);
+> -
+> -	spi_bus_lock(st->spi->master);
+> -	st->done = false;
+> -
+> -	ret = __ad7192_write_reg(st, 1, 1, AD7192_REG_MODE, 3,
+> -				 (st->devid != ID_AD7195) ?
+> -				 st->mode | AD7192_MODE_CLKDIV :
+> -				 st->mode);
+> -	if (ret < 0)
+> -		goto out;
+> -
+> -	st->irq_dis = false;
+> -	enable_irq(st->spi->irq);
+> -	wait_event_interruptible(st->wq_data_avail, st->done);
+> -
+> -	st->mode = (st->mode & ~AD7192_MODE_SEL(-1)) |
+> -		AD7192_MODE_SEL(AD7192_MODE_IDLE);
+> -
+> -	ret = __ad7192_write_reg(st, 1, 0, AD7192_REG_MODE, 3, st->mode);
+> -out:
+> -	spi_bus_unlock(st->spi->master);
+> -
+> -	return ret;
+> -}
+> +static const struct ad_sigma_delta_info ad7192_sigma_delta_info = {
+> +	.set_channel = ad7192_set_channel,
+> +	.set_mode = ad7192_set_mode,
+> +	.has_registers = true,
+> +	.addr_shift = 3,
+> +	.read_mask = BIT(6),
+> +};
+>  
+> -static const u8 ad7192_calib_arr[8][2] = {
+> +static const struct ad_sd_calib_data ad7192_calib_arr[8] = {
+>  	{AD7192_MODE_CAL_INT_ZERO, AD7192_CH_AIN1},
+>  	{AD7192_MODE_CAL_INT_FULL, AD7192_CH_AIN1},
+>  	{AD7192_MODE_CAL_INT_ZERO, AD7192_CH_AIN2},
+> @@ -331,45 +195,34 @@ static const u8 ad7192_calib_arr[8][2] = {
+>  
+>  static int ad7192_calibrate_all(struct ad7192_state *st)
+>  {
+> -	int i, ret;
+> -
+> -	for (i = 0; i < ARRAY_SIZE(ad7192_calib_arr); i++) {
+> -		ret = ad7192_calibrate(st, ad7192_calib_arr[i][0],
+> -				       ad7192_calib_arr[i][1]);
+> -		if (ret)
+> -			goto out;
+> -	}
+> -
+> -	return 0;
+> -out:
+> -	dev_err(&st->spi->dev, "Calibration failed\n");
+> -	return ret;
+> +		return ad_sd_calibrate_all(&st->sd, ad7192_calib_arr,
+> +				ARRAY_SIZE(ad7192_calib_arr));
+>  }
+>  
+>  static int ad7192_setup(struct ad7192_state *st,
+>  	const struct ad7192_platform_data *pdata)
+>  {
+> -	struct iio_dev *indio_dev = spi_get_drvdata(st->spi);
+> +	struct iio_dev *indio_dev = spi_get_drvdata(st->sd.spi);
+>  	unsigned long long scale_uv;
+>  	int i, ret, id;
+>  	u8 ones[6];
+>  
+>  	/* reset the serial interface */
+>  	memset(&ones, 0xFF, 6);
+> -	ret = spi_write(st->spi, &ones, 6);
+> +	ret = spi_write(st->sd.spi, &ones, 6);
+>  	if (ret < 0)
+>  		goto out;
+>  	msleep(1); /* Wait for at least 500us */
+>  
+>  	/* write/read test for device presence */
+> -	ret = ad7192_read_reg(st, AD7192_REG_ID, &id, 1);
+> +	ret = ad_sd_read_reg(&st->sd, AD7192_REG_ID, 1, &id);
+>  	if (ret)
+>  		goto out;
+>  
+>  	id &= AD7192_ID_MASK;
+>  
+>  	if (id != st->devid)
+> -		dev_warn(&st->spi->dev, "device ID query failed (0x%X)\n", id);
+> +		dev_warn(&st->sd.spi->dev, "device ID query failed (0x%X)\n", id);
+>  
+>  	switch (pdata->clock_source_sel) {
+>  	case AD7192_CLK_EXT_MCLK1_2:
+> @@ -422,11 +275,11 @@ static int ad7192_setup(struct ad7192_state *st,
+>  	if (pdata->burnout_curr_en)
+>  		st->conf |= AD7192_CONF_BURN;
+>  
+> -	ret = ad7192_write_reg(st, AD7192_REG_MODE, 3, st->mode);
+> +	ret = ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
+>  	if (ret)
+>  		goto out;
+>  
+> -	ret = ad7192_write_reg(st, AD7192_REG_CONF, 3, st->conf);
+> +	ret = ad_sd_write_reg(&st->sd, AD7192_REG_CONF, 3, st->conf);
+>  	if (ret)
+>  		goto out;
+>  
+> @@ -447,181 +300,10 @@ static int ad7192_setup(struct ad7192_state *st,
+>  
+>  	return 0;
+>  out:
+> -	dev_err(&st->spi->dev, "setup failed\n");
+> +	dev_err(&st->sd.spi->dev, "setup failed\n");
+>  	return ret;
+>  }
+>  
+> -static int ad7192_ring_preenable(struct iio_dev *indio_dev)
+> -{
+> -	struct ad7192_state *st = iio_priv(indio_dev);
+> -	unsigned channel;
+> -	int ret;
+> -
+> -	if (bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength))
+> -		return -EINVAL;
+> -
+> -	ret = iio_sw_buffer_preenable(indio_dev);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	channel = find_first_bit(indio_dev->active_scan_mask,
+> -				 indio_dev->masklength);
+> -
+> -	st->mode  = (st->mode & ~AD7192_MODE_SEL(-1)) |
+> -		    AD7192_MODE_SEL(AD7192_MODE_CONT);
+> -	st->conf  = (st->conf & ~AD7192_CONF_CHAN(-1)) |
+> -		    AD7192_CONF_CHAN(1 << indio_dev->channels[channel].address);
+> -
+> -	ad7192_write_reg(st, AD7192_REG_CONF, 3, st->conf);
+> -
+> -	spi_bus_lock(st->spi->master);
+> -	__ad7192_write_reg(st, 1, 1, AD7192_REG_MODE, 3, st->mode);
+> -
+> -	st->irq_dis = false;
+> -	enable_irq(st->spi->irq);
+> -
+> -	return 0;
+> -}
+> -
+> -static int ad7192_ring_postdisable(struct iio_dev *indio_dev)
+> -{
+> -	struct ad7192_state *st = iio_priv(indio_dev);
+> -
+> -	st->mode  = (st->mode & ~AD7192_MODE_SEL(-1)) |
+> -		    AD7192_MODE_SEL(AD7192_MODE_IDLE);
+> -
+> -	st->done = false;
+> -	wait_event_interruptible(st->wq_data_avail, st->done);
+> -
+> -	if (!st->irq_dis)
+> -		disable_irq_nosync(st->spi->irq);
+> -
+> -	__ad7192_write_reg(st, 1, 0, AD7192_REG_MODE, 3, st->mode);
+> -
+> -	return spi_bus_unlock(st->spi->master);
+> -}
+> -
+> -/**
+> - * ad7192_trigger_handler() bh of trigger launched polling to ring buffer
+> - **/
+> -static irqreturn_t ad7192_trigger_handler(int irq, void *p)
+> -{
+> -	struct iio_poll_func *pf = p;
+> -	struct iio_dev *indio_dev = pf->indio_dev;
+> -	struct iio_buffer *ring = indio_dev->buffer;
+> -	struct ad7192_state *st = iio_priv(indio_dev);
+> -	s64 dat64[2];
+> -	s32 *dat32 = (s32 *)dat64;
+> -
+> -	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength))
+> -		__ad7192_read_reg(st, 1, 1, AD7192_REG_DATA,
+> -				  dat32,
+> -				  indio_dev->channels[0].scan_type.realbits/8);
+> -
+> -	/* Guaranteed to be aligned with 8 byte boundary */
+> -	if (indio_dev->scan_timestamp)
+> -		dat64[1] = pf->timestamp;
+> -
+> -	ring->access->store_to(ring, (u8 *)dat64, pf->timestamp);
+> -
+> -	iio_trigger_notify_done(indio_dev->trig);
+> -	st->irq_dis = false;
+> -	enable_irq(st->spi->irq);
+> -
+> -	return IRQ_HANDLED;
+> -}
+> -
+> -static const struct iio_buffer_setup_ops ad7192_ring_setup_ops = {
+> -	.preenable = &ad7192_ring_preenable,
+> -	.postenable = &iio_triggered_buffer_postenable,
+> -	.predisable = &iio_triggered_buffer_predisable,
+> -	.postdisable = &ad7192_ring_postdisable,
+> -	.validate_scan_mask = &iio_validate_scan_mask_onehot,
+> -};
+> -
+> -static int ad7192_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+> -{
+> -	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+> -			&ad7192_trigger_handler, &ad7192_ring_setup_ops);
+> -}
+> -
+> -static void ad7192_ring_cleanup(struct iio_dev *indio_dev)
+> -{
+> -	iio_triggered_buffer_cleanup(indio_dev);
+> -}
+> -
+> -/**
+> - * ad7192_data_rdy_trig_poll() the event handler for the data rdy trig
+> - **/
+> -static irqreturn_t ad7192_data_rdy_trig_poll(int irq, void *private)
+> -{
+> -	struct ad7192_state *st = iio_priv(private);
+> -
+> -	st->done = true;
+> -	wake_up_interruptible(&st->wq_data_avail);
+> -	disable_irq_nosync(irq);
+> -	st->irq_dis = true;
+> -	iio_trigger_poll(st->trig, iio_get_time_ns());
+> -
+> -	return IRQ_HANDLED;
+> -}
+> -
+> -static struct iio_trigger_ops ad7192_trigger_ops = {
+> -	.owner = THIS_MODULE,
+> -};
+> -
+> -static int ad7192_probe_trigger(struct iio_dev *indio_dev)
+> -{
+> -	struct ad7192_state *st = iio_priv(indio_dev);
+> -	int ret;
+> -
+> -	st->trig = iio_trigger_alloc("%s-dev%d",
+> -					spi_get_device_id(st->spi)->name,
+> -					indio_dev->id);
+> -	if (st->trig == NULL) {
+> -		ret = -ENOMEM;
+> -		goto error_ret;
+> -	}
+> -	st->trig->ops = &ad7192_trigger_ops;
+> -	ret = request_irq(st->spi->irq,
+> -			  ad7192_data_rdy_trig_poll,
+> -			  IRQF_TRIGGER_LOW,
+> -			  spi_get_device_id(st->spi)->name,
+> -			  indio_dev);
+> -	if (ret)
+> -		goto error_free_trig;
+> -
+> -	disable_irq_nosync(st->spi->irq);
+> -	st->irq_dis = true;
+> -	st->trig->dev.parent = &st->spi->dev;
+> -	st->trig->private_data = indio_dev;
+> -
+> -	ret = iio_trigger_register(st->trig);
+> -
+> -	/* select default trigger */
+> -	indio_dev->trig = st->trig;
+> -	if (ret)
+> -		goto error_free_irq;
+> -
+> -	return 0;
+> -
+> -error_free_irq:
+> -	free_irq(st->spi->irq, indio_dev);
+> -error_free_trig:
+> -	iio_trigger_free(st->trig);
+> -error_ret:
+> -	return ret;
+> -}
+> -
+> -static void ad7192_remove_trigger(struct iio_dev *indio_dev)
+> -{
+> -	struct ad7192_state *st = iio_priv(indio_dev);
+> -
+> -	iio_trigger_unregister(st->trig);
+> -	free_irq(st->spi->irq, indio_dev);
+> -	iio_trigger_free(st->trig);
+> -}
+> -
+>  static ssize_t ad7192_read_frequency(struct device *dev,
+>  		struct device_attribute *attr,
+>  		char *buf)
+> @@ -661,7 +343,7 @@ static ssize_t ad7192_write_frequency(struct device *dev,
+>  
+>  	st->mode &= ~AD7192_MODE_RATE(-1);
+>  	st->mode |= AD7192_MODE_RATE(div);
+> -	ad7192_write_reg(st, AD7192_REG_MODE, 3, st->mode);
+> +	ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
+>  
+>  out:
+>  	mutex_unlock(&indio_dev->mlock);
+> @@ -673,7 +355,6 @@ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+>  		ad7192_read_frequency,
+>  		ad7192_write_frequency);
+>  
+> -
+>  static ssize_t ad7192_show_scale_available(struct device *dev,
+>  			struct device_attribute *attr, char *buf)
+>  {
+> @@ -745,7 +426,7 @@ static ssize_t ad7192_set(struct device *dev,
+>  		else
+>  			st->gpocon &= ~AD7192_GPOCON_BPDSW;
+>  
+> -		ad7192_write_reg(st, AD7192_REG_GPOCON, 1, st->gpocon);
+> +		ad_sd_write_reg(&st->sd, AD7192_REG_GPOCON, 1, st->gpocon);
+>  		break;
+>  	case AD7192_REG_MODE:
+>  		if (val)
+> @@ -753,7 +434,7 @@ static ssize_t ad7192_set(struct device *dev,
+>  		else
+>  			st->mode &= ~AD7192_MODE_ACX;
+>  
+> -		ad7192_write_reg(st, AD7192_REG_MODE, 3, st->mode);
+> +		ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
+>  		break;
+>  	default:
+>  		ret = -EINVAL;
+> @@ -809,27 +490,11 @@ static int ad7192_read_raw(struct iio_dev *indio_dev,
+>  			   long m)
+>  {
+>  	struct ad7192_state *st = iio_priv(indio_dev);
+> -	int ret, smpl = 0;
+>  	bool unipolar = !!(st->conf & AD7192_CONF_UNIPOLAR);
+>  
+>  	switch (m) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		mutex_lock(&indio_dev->mlock);
+> -		if (iio_buffer_enabled(indio_dev))
+> -			ret = -EBUSY;
+> -		else
+> -			ret = ad7192_read(st, chan->address,
+> -					chan->scan_type.realbits / 8, &smpl);
+> -		mutex_unlock(&indio_dev->mlock);
+> -
+> -		if (ret < 0)
+> -			return ret;
+> -
+> -		*val = (smpl >> chan->scan_type.shift) &
+> -			((1 << (chan->scan_type.realbits)) - 1);
+> -
+> -		return IIO_VAL_INT;
+> -
+> +		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
+>  	case IIO_CHAN_INFO_SCALE:
+>  		switch (chan->type) {
+>  		case IIO_VOLTAGE:
+> @@ -880,16 +545,16 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
+>  		ret = -EINVAL;
+>  		for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++)
+>  			if (val2 == st->scale_avail[i][1]) {
+> +				ret = 0;
+>  				tmp = st->conf;
+>  				st->conf &= ~AD7192_CONF_GAIN(-1);
+>  				st->conf |= AD7192_CONF_GAIN(i);
+> -
+> -				if (tmp != st->conf) {
+> -					ad7192_write_reg(st, AD7192_REG_CONF,
+> -							 3, st->conf);
+> -					ad7192_calibrate_all(st);
+> -				}
+> -				ret = 0;
+> +				if (tmp == st->conf)
+> +					break;
+> +				ad_sd_write_reg(&st->sd, AD7192_REG_CONF,
+> +						 3, st->conf);
+> +				ad7192_calibrate_all(st);
+> +				break;
+>  			}
+>  		break;
+>  	default:
+> @@ -901,15 +566,6 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
+>  	return ret;
+>  }
+>  
+> -static int ad7192_validate_trigger(struct iio_dev *indio_dev,
+> -				   struct iio_trigger *trig)
+> -{
+> -	if (indio_dev->trig != trig)
+> -		return -EINVAL;
+> -
+> -	return 0;
+> -}
+> -
+>  static int ad7192_write_raw_get_fmt(struct iio_dev *indio_dev,
+>  			       struct iio_chan_spec const *chan,
+>  			       long mask)
+> @@ -922,7 +578,7 @@ static const struct iio_info ad7192_info = {
+>  	.write_raw = &ad7192_write_raw,
+>  	.write_raw_get_fmt = &ad7192_write_raw_get_fmt,
+>  	.attrs = &ad7192_attribute_group,
+> -	.validate_trigger = ad7192_validate_trigger,
+> +	.validate_trigger = ad_sd_validate_trigger,
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> @@ -931,54 +587,19 @@ static const struct iio_info ad7195_info = {
+>  	.write_raw = &ad7192_write_raw,
+>  	.write_raw_get_fmt = &ad7192_write_raw_get_fmt,
+>  	.attrs = &ad7195_attribute_group,
+> -	.validate_trigger = ad7192_validate_trigger,
+> +	.validate_trigger = ad_sd_validate_trigger,
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> -#define AD7192_CHAN_DIFF(_chan, _chan2, _name, _address, _si)		\
+> -	{ .type = IIO_VOLTAGE,						\
+> -	  .differential = 1,						\
+> -	  .indexed = 1,							\
+> -	  .extend_name = _name,						\
+> -	  .channel = _chan,						\
+> -	  .channel2 = _chan2,						\
+> -	  .info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |			\
+> -	  IIO_CHAN_INFO_SCALE_SHARED_BIT |				\
+> -	  IIO_CHAN_INFO_OFFSET_SHARED_BIT,				\
+> -	  .address = _address,						\
+> -	  .scan_index = _si,						\
+> -	  .scan_type =  IIO_ST('u', 24, 32, 0)}
+> -
+> -#define AD7192_CHAN(_chan, _address, _si)				\
+> -	{ .type = IIO_VOLTAGE,						\
+> -	  .indexed = 1,							\
+> -	  .channel = _chan,						\
+> -	  .info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |			\
+> -	  IIO_CHAN_INFO_SCALE_SHARED_BIT |				\
+> -	  IIO_CHAN_INFO_OFFSET_SHARED_BIT,				\
+> -	  .address = _address,						\
+> -	  .scan_index = _si,						\
+> -	  .scan_type =  IIO_ST('u', 24, 32, 0)}
+> -
+> -#define AD7192_CHAN_TEMP(_chan, _address, _si)				\
+> -	{ .type = IIO_TEMP,						\
+> -	  .indexed = 1,							\
+> -	  .channel = _chan,						\
+> -	  .info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |			\
+> -	  IIO_CHAN_INFO_SCALE_SEPARATE_BIT,				\
+> -	  .address = _address,						\
+> -	  .scan_index = _si,						\
+> -	  .scan_type =  IIO_ST('u', 24, 32, 0)}
+> -
+>  static const struct iio_chan_spec ad7192_channels[] = {
+> -	AD7192_CHAN_DIFF(1, 2, NULL, AD7192_CH_AIN1P_AIN2M, 0),
+> -	AD7192_CHAN_DIFF(3, 4, NULL, AD7192_CH_AIN3P_AIN4M, 1),
+> -	AD7192_CHAN_TEMP(0, AD7192_CH_TEMP, 2),
+> -	AD7192_CHAN_DIFF(2, 2, "shorted", AD7192_CH_AIN2P_AIN2M, 3),
+> -	AD7192_CHAN(1, AD7192_CH_AIN1, 4),
+> -	AD7192_CHAN(2, AD7192_CH_AIN2, 5),
+> -	AD7192_CHAN(3, AD7192_CH_AIN3, 6),
+> -	AD7192_CHAN(4, AD7192_CH_AIN4, 7),
+> +	AD_SD_DIFF_CHANNEL(0, 1, 2, AD7192_CH_AIN1P_AIN2M, 24, 32, 0),
+> +	AD_SD_DIFF_CHANNEL(1, 3, 4, AD7192_CH_AIN3P_AIN4M, 24, 32, 0),
+> +	AD_SD_TEMP_CHANNEL(2, AD7192_CH_TEMP, 24, 32, 0),
+> +	AD_SD_SHORTED_CHANNEL(3, 2, AD7192_CH_AIN2P_AIN2M, 24, 32, 0),
+> +	AD_SD_CHANNEL(4, 1, AD7192_CH_AIN1, 24, 32, 0),
+> +	AD_SD_CHANNEL(5, 2, AD7192_CH_AIN2, 24, 32, 0),
+> +	AD_SD_CHANNEL(6, 3, AD7192_CH_AIN3, 24, 32, 0),
+> +	AD_SD_CHANNEL(7, 4, AD7192_CH_AIN4, 24, 32, 0),
+>  	IIO_CHAN_SOFT_TIMESTAMP(8),
+>  };
+>  
+> @@ -1022,7 +643,6 @@ static int __devinit ad7192_probe(struct spi_device *spi)
+>  		dev_warn(&spi->dev, "reference voltage undefined\n");
+>  
+>  	spi_set_drvdata(spi, indio_dev);
+> -	st->spi = spi;
+>  	st->devid = spi_get_device_id(spi)->driver_data;
+>  	indio_dev->dev.parent = &spi->dev;
+>  	indio_dev->name = spi_get_device_id(spi)->name;
+> @@ -1034,16 +654,12 @@ static int __devinit ad7192_probe(struct spi_device *spi)
+>  	else
+>  		indio_dev->info = &ad7192_info;
+>  
+> -	init_waitqueue_head(&st->wq_data_avail);
+> +	ad_sd_init(&st->sd, indio_dev, spi, &ad7192_sigma_delta_info);
+>  
+> -	ret = ad7192_register_ring_funcs_and_init(indio_dev);
+> +	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+>  	if (ret)
+>  		goto error_disable_reg;
+>  
+> -	ret = ad7192_probe_trigger(indio_dev);
+> -	if (ret)
+> -		goto error_ring_cleanup;
+> -
+>  	ret = ad7192_setup(st, pdata);
+>  	if (ret)
+>  		goto error_remove_trigger;
+> @@ -1054,9 +670,7 @@ static int __devinit ad7192_probe(struct spi_device *spi)
+>  	return 0;
+>  
+>  error_remove_trigger:
+> -	ad7192_remove_trigger(indio_dev);
+> -error_ring_cleanup:
+> -	ad7192_ring_cleanup(indio_dev);
+> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+>  error_disable_reg:
+>  	if (!IS_ERR(st->reg))
+>  		regulator_disable(st->reg);
+> @@ -1075,8 +689,7 @@ static int ad7192_remove(struct spi_device *spi)
+>  	struct ad7192_state *st = iio_priv(indio_dev);
+>  
+>  	iio_device_unregister(indio_dev);
+> -	ad7192_remove_trigger(indio_dev);
+> -	ad7192_ring_cleanup(indio_dev);
+> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+>  
+>  	if (!IS_ERR(st->reg)) {
+>  		regulator_disable(st->reg);
+> 
