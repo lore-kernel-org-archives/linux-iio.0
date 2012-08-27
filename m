@@ -1,141 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:42456 "EHLO arroyo.ext.ti.com"
+Received: from ns.pmeerw.net ([87.118.82.44]:42949 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750744Ab2H1KX6 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Aug 2012 06:23:58 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: Matthias Kaehlcke <matthias.list@kaehlcke.net>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Samuel Ortiz <sameo@linux.intel.com>
-Subject: RE: [PATCH 4/5] IIO : ADC: tiadc: Add support of TI's ADC driver
-Date: Tue, 28 Aug 2012 10:23:34 +0000
-Message-ID: <4CE347531D4CA947960AF71FF095B9323E94FA21@DBDE01.ent.ti.com>
-References: <1345719021-22835-1-git-send-email-rachna@ti.com>
- <20120823190239.GF27787@darwin>
-In-Reply-To: <20120823190239.GF27787@darwin>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+	id S1754218Ab2H0VMs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 27 Aug 2012 17:12:48 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: fix spelling of subsystem
+Date: Mon, 27 Aug 2012 23:12:37 +0200
+Message-Id: <1346101957-9413-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/Kconfig         |    2 +-
+ drivers/staging/iio/Kconfig |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-On Fri, Aug 24, 2012 at 00:32:39, Matthias Kaehlcke wrote:
-> Hi,
-> 
-> El Thu, Aug 23, 2012 at 04:20:21PM +0530 Patil, Rachna ha dit:
-> 
-> > This patch adds support for TI's ADC driver.
-> > This is a multifunctional device.
-> > Analog input lines are provided on which voltage measurements can be 
-> > carried out.
-> > You can have upto 8 input lines.
-> > 
-> > Signed-off-by: Patil, Rachna <rachna@ti.com>
-> > ---
-> >
-> > diff --git a/drivers/iio/adc/ti_adc.c b/drivers/iio/adc/ti_adc.c ...
-> > +static int __devinit tiadc_probe(struct platform_device *pdev) {
-> > +	struct iio_dev		*idev;
-> > +	int			err;
-> > +	struct adc_device	*adc_dev = NULL;
-> > +	struct ti_tscadc_dev	*tscadc_dev = pdev->dev.platform_data;
-> > +	struct mfd_tscadc_board	*board_data;
-> > +
-> > +	board_data = (struct mfd_tscadc_board *)tscadc_dev->dev->platform_data;
-> > +	if (!board_data) {
-> > +		dev_err(tscadc_dev->dev, "Could not find platform data\n");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	idev = iio_device_alloc(sizeof(struct adc_device));
-> > +	if (idev == NULL) {
-> > +		dev_err(&pdev->dev, "failed to allocate iio device.\n");
-> > +		err = -ENOMEM;
-> > +		goto err_ret;
-> > +	}
-> > +	adc_dev = iio_priv(idev);
-> > +
-> > +	tscadc_dev->adc = adc_dev;
-> > +	adc_dev->mfd_tscadc = tscadc_dev;
-> > +	adc_dev->idev = idev;
-> > +	adc_dev->adc_channels = board_data->adc_init->adc_channels;
-> > +
-> > +	idev->dev.parent = &pdev->dev;
-> > +	idev->name = dev_name(&pdev->dev);
-> > +	idev->modes = INDIO_DIRECT_MODE;
-> > +	idev->info = &tiadc_info;
-> > +
-> > +	adc_step_config(adc_dev);
-> > +
-> > +	err = tiadc_channel_init(idev, adc_dev);
-> > +	if (err < 0)
-> > +		goto err_fail;
-> > +
-> > +	err = iio_device_register(idev);
-> > +	if (err)
-> > +		goto err_free_channels;
-> > +
-> > +	dev_info(&pdev->dev, "attached adc driver\n");
-> > +	platform_set_drvdata(pdev, idev);
-> > +
-> > +	return 0;
-> > +
-> > +err_free_channels:
-> > +	tiadc_channel_remove(idev);
-> > +err_fail:
-> > +	iio_device_unregister(idev);
-> > +	iio_device_free(idev);
-> > +err_ret:
-> > +	platform_set_drvdata(pdev, NULL);
-> 
-> not necessary, the platform device doesn't exist anymore
-
-Ok. I will correct this.
-
-> 
-> > +	iio_device_free(idev);
-> 
-> already done some lines above and could be executed without having allocated the iio device (when iio_device_alloc() fails)
-> 
-> > +static int __devexit tiadc_remove(struct platform_device *pdev) {
-> > +	struct ti_tscadc_dev   *tscadc_dev = pdev->dev.platform_data;
-> > +	struct adc_device	*adc_dev = tscadc_dev->adc;
-> > +	struct iio_dev		*idev = adc_dev->idev;
-> > +
-> > +	iio_device_unregister(idev);
-> > +	tiadc_channel_remove(idev);
-> > +
-> > +	tscadc_dev->adc = NULL;
-> > +
-> > +	iio_device_free(idev);
-> > +	platform_set_drvdata(pdev, NULL);
-> 
-> see above
-
-Yes, will correct this as well.
-
-> 
-> best regards
-> 
-> --
-> Matthias Kaehlcke
-> Embedded Linux Developer
-> Amsterdam
-> 
->                If sharing a thing in no way diminishes it,
->                it is not rightly owned if it is not shared
->                                                                  .''`.
->     using free software / Debian GNU/Linux | http://debian.org  : :'  :
->                                                                 `. `'`
-> gpg --keyserver pgp.mit.edu --recv-keys 47D8E5D4                  `-
-> 
-
-Regards,
-Rachna
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index d4984c8..56825e6 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -1,5 +1,5 @@
+ #
+-# Industrial I/O subsytem configuration
++# Industrial I/O subsystem configuration
+ #
+ 
+ menuconfig IIO
+diff --git a/drivers/staging/iio/Kconfig b/drivers/staging/iio/Kconfig
+index 04cd6ec..ca56c75 100644
+--- a/drivers/staging/iio/Kconfig
++++ b/drivers/staging/iio/Kconfig
+@@ -1,5 +1,5 @@
+ #
+-# Industrial I/O subsytem configuration
++# Industrial I/O subsystem configuration
+ #
+ menu "IIO staging drivers"
+ 	depends on IIO
+-- 
+1.7.9.5
 
