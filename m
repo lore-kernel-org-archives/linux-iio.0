@@ -1,41 +1,81 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] IIO: arm: Add LRADC to i.MX28 dts
-Date: Sun, 19 Aug 2012 17:30:31 +0200
-Cc: Shawn Guo <shawn.guo@linaro.org>,
- linux-iio@vger.kernel.org,
- Jonathan Cameron <jic23@kernel.org>,
- "Lars-Peter Clausen" <lars@metafoo.de>
-References: <1344784918-32352-1-git-send-email-marex@denx.de> <201208170457.03686.marex@denx.de> <CAAQ0ZWROobdtFkzn9Sr7v5B29zYTQ5YEUZV59kkNE_yv6qbmgQ@mail.gmail.com>
-In-Reply-To: <CAAQ0ZWROobdtFkzn9Sr7v5B29zYTQ5YEUZV59kkNE_yv6qbmgQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201208191730.31969.marex@denx.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:8498 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752953Ab2H0QAP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 27 Aug 2012 12:00:15 -0400
+From: srinivas pandruvada <srinivas.pandruvada@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, jkosina@suse.cz,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: [PATCH 3/9] HID Sensors: Add to special driver list
+Date: Mon, 27 Aug 2012 08:49:51 -0700
+Message-Id: <1346082597-768-4-git-send-email-srinivas.pandruvada@intel.com>
+In-Reply-To: <1346082597-768-1-git-send-email-srinivas.pandruvada@intel.com>
+References: <1346082597-768-1-git-send-email-srinivas.pandruvada@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Dear Shawn Guo,
+Adding Intel and STM sensor hub in the list of drivers with
+specialized driver.
 
-> On 17 August 2012 10:57, Marek Vasut <marex@denx.de> wrote:
-> > Thanks ... still, is there some key for those tags? Or do you invent them
-> > at random and then let people guess what's right? Some git grep on
-> > Documentation directory gets me nothing.
-> 
-> There is no official document for this.
+Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
+---
+ drivers/hid/hid-core.c |   10 ++++++++++
+ drivers/hid/hid-ids.h  |    6 ++++++
+ 2 files changed, 16 insertions(+), 0 deletions(-)
 
-Hm, maybe such document can be introduced?
+diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+index 8e3a6b2..36c8007 100644
+--- a/drivers/hid/hid-core.c
++++ b/drivers/hid/hid-core.c
+@@ -1536,6 +1536,14 @@ static const struct hid_device_id hid_have_special_driver[] = {
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_GYRATION, USB_DEVICE_ID_GYRATION_REMOTE_2) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_GYRATION, USB_DEVICE_ID_GYRATION_REMOTE_3) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_HOLTEK, USB_DEVICE_ID_HOLTEK_ON_LINE_GRIP) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
++					USB_DEVICE_ID_SENSOR_HUB_1020) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
++					USB_DEVICE_ID_SENSOR_HUB_09FA) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
++					USB_DEVICE_ID_SENSOR_HUB_1020) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
++					USB_DEVICE_ID_SENSOR_HUB_09FA) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_KENSINGTON, USB_DEVICE_ID_KS_SLIMBLADE) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_KEYTOUCH, USB_DEVICE_ID_KEYTOUCH_IEC) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_KYE, USB_DEVICE_ID_KYE_ERGO_525V) },
+@@ -1626,6 +1634,8 @@ static const struct hid_device_id hid_have_special_driver[] = {
+ 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_PS3_CONTROLLER) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_VAIO_VGX_MOUSE) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_SUNPLUS, USB_DEVICE_ID_SUNPLUS_WDESKTOP) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_STANTUM_STM,
++			 USB_DEVICE_ID_SENSOR_HUB_7014) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb300) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb304) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb323) },
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index 9373f53..2f1dc5b 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -407,6 +407,11 @@
+ #define USB_VENDOR_ID_IMATION		0x0718
+ #define USB_DEVICE_ID_DISC_STAKKA	0xd000
+ 
++#define USB_VENDOR_ID_INTEL_8086	0x8086
++#define USB_VENDOR_ID_INTEL_8087	0x8087
++#define USB_DEVICE_ID_SENSOR_HUB_1020	0x1020
++#define USB_DEVICE_ID_SENSOR_HUB_09FA	0x09FA
++
+ #define USB_VENDOR_ID_IRTOUCHSYSTEMS	0x6615
+ #define USB_DEVICE_ID_IRTOUCH_INFRARED_USB	0x0070
+ 
+@@ -670,6 +675,7 @@
+ 
+ #define USB_VENDOR_ID_STANTUM_STM		0x0483
+ #define USB_DEVICE_ID_MTP_STM		0x3261
++#define USB_DEVICE_ID_SENSOR_HUB_7014	0x7014
+ 
+ #define USB_VENDOR_ID_STANTUM_SITRONIX		0x1403
+ #define USB_DEVICE_ID_MTP_SITRONIX		0x5001
+-- 
+1.7.7.6
 
-> But generally, each subsystem
-> has a convention on the subject prefix, so that the output of git
-> commands like git pull, git shortlog looks consistent on the patch
-> subject, and more importantly people can easily know subsystem the
-> patch touches.
-> 
-> The convention for patches touching arch/arm is "ARM: ".
-> 
-> Regards,
-> Shawn
-
-Best regards,
-Marek Vasut
