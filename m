@@ -1,55 +1,141 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57428 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754209Ab2H0UJO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Aug 2012 16:09:14 -0400
-Message-ID: <503BD3E4.4080300@kernel.org>
-Date: Mon, 27 Aug 2012 21:09:08 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: viresh kumar <viresh.kumar@linaro.org>
-CC: Julia Lawall <Julia.Lawall@lip6.fr>, Stefan Roese <sr@denx.de>,
-	Shiraz HASHIM <shiraz.hashim@st.com>,
+Received: from arroyo.ext.ti.com ([192.94.94.40]:42510 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750744Ab2H1KZT convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Aug 2012 06:25:19 -0400
+From: "Patil, Rachna" <rachna@ti.com>
+To: Matthias Kaehlcke <matthias.list@kaehlcke.net>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dmitry Torokhov <dtor@mail.ru>,
 	Jonathan Cameron <jic23@cam.ac.uk>,
-	kernel-janitors@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, spear-devel <spear-devel@list.st.com>
-Subject: Re: [PATCH 1/13] drivers/staging/iio/adc/spear_adc.c: use clk_prepare_enable
- and clk_disable_unprepare
-References: <1345996865-32082-1-git-send-email-Julia.Lawall@lip6.fr> <1345996865-32082-2-git-send-email-Julia.Lawall@lip6.fr> <CAOh2x=mRDLO0fXcZgQ1pa3bAiBksC87cVTniTO_Qz9Ou++OMGg@mail.gmail.com> <503BD353.3070203@kernel.org>
-In-Reply-To: <503BD353.3070203@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+	Samuel Ortiz <sameo@linux.intel.com>
+Subject: RE: [PATCH 2/5] MFD: ti_tscadc: Add support for TI's TSC/ADC
+ MFDevice
+Date: Tue, 28 Aug 2012 10:25:04 +0000
+Message-ID: <4CE347531D4CA947960AF71FF095B9323E94FA2D@DBDE01.ent.ti.com>
+References: <1345718997-18304-1-git-send-email-rachna@ti.com>
+ <20120823184830.GE27787@darwin>
+In-Reply-To: <20120823184830.GE27787@darwin>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/27/2012 09:06 PM, Jonathan Cameron wrote:
-> On 08/27/2012 05:01 AM, viresh kumar wrote:
->> On Sun, Aug 26, 2012 at 9:30 PM, Julia Lawall <Julia.Lawall@lip6.fr> wrote:
->>> From: Julia Lawall <Julia.Lawall@lip6.fr>
->>>
->>> Clk_prepare_enable and clk_disable_unprepare combine clk_prepare and
->>> clk_enable, and clk_disable and clk_unprepare.  They make the code more
->>> concise, and ensure that clk_unprepare is called when clk_enable fails.
->>>
->>> A simplified version of the semantic patch that introduces calls to these
->>> functions is as follows: (http://coccinelle.lip6.fr/)
->>
->> Reviewed-by: Viresh Kumar <viresh.kumar@linaro.org>
-> merged to fixes-togreg branch of kernel.org iio.git will push onwards in a few
-> days...
-sorry, wrong branch as clearly just a cleanup not a fix. Will be in togreg
-branch instead.
->>
->> @Stefan/Shiraz: Can you update spear-devel mailing list in MAINTAINERS file
->> for this driver?
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Hi,
+
+On Fri, Aug 24, 2012 at 00:18:31, Matthias Kaehlcke wrote:
+> Hi,
 > 
+> El Thu, Aug 23, 2012 at 04:19:57PM +0530 Patil, Rachna ha dit:
+> 
+> > Add the mfd core driver which supports touchscreen and ADC.
+> > With this patch we are only adding infrastructure to support the MFD 
+> > clients.
+> > 
+> > Signed-off-by: Patil, Rachna <rachna@ti.com>
+> > ---
+> > diff --git a/drivers/mfd/ti_tscadc.c b/drivers/mfd/ti_tscadc.c ...
+> > +static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
+> > +{
+> > +	struct ti_tscadc_dev		*tscadc;
+> > +	int				err, ctrl;
+> > +	int				clk_value, clock_rate;
+> > +	struct resource			*res;
+> > +	struct clk			*clk;
+> > +
+> > +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > +	if (!res) {
+> > +		dev_err(&pdev->dev, "no memory resource defined.\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	/* Allocate memory for device */
+> > +	tscadc = kzalloc(sizeof(struct ti_tscadc_dev), GFP_KERNEL);
+> > +	if (!tscadc) {
+> > +		dev_err(&pdev->dev, "failed to allocate memory.\n");
+> > +		return -ENOMEM;
+> > +	}
+> > +
+> > +	res = request_mem_region(res->start, resource_size(res), pdev->name);
+> > +	if (!res) {
+> > +		dev_err(&pdev->dev, "failed to reserve registers.\n");
+> > +		err = -EBUSY;
+> > +		goto err_free_mem;
+> > +	}
+> > +
+> > +	tscadc->tscadc_base = ioremap(res->start, resource_size(res));
+> > +	if (!tscadc->tscadc_base) {
+> > +		dev_err(&pdev->dev, "failed to map registers.\n");
+> > +		err = -ENOMEM;
+> > +		goto err_release_mem;
+> > +	}
+> > +
+> > +	tscadc->irq = platform_get_irq(pdev, 0);
+> > +	if (tscadc->irq < 0) {
+> > +		dev_err(&pdev->dev, "no irq ID is specified.\n");
+> > +		return -ENODEV;
+> 
+> goto err_iounmap_mem;
+
+Yes. Will add this.
+
+> 
+> > ...
+> > +err_fail:
+> > +	pm_runtime_put_sync(&pdev->dev);
+> > +	pm_runtime_disable(&pdev->dev);
+> > +	iounmap(tscadc->tscadc_base);
+> > +err_release_mem:
+> > +	release_mem_region(res->start, resource_size(res));
+> > +	mfd_remove_devices(tscadc->dev);
+> > +err_free_mem:
+> > +	platform_set_drvdata(pdev, NULL);
+> 
+> shouldn't be necessary as the platform device doesn't exist any longer
+
+Ok. Will remove this.
+
+> 
+> > ...
+> > +static int __devexit ti_tscadc_remove(struct platform_device *pdev) {
+> > +	struct ti_tscadc_dev	*tscadc = platform_get_drvdata(pdev);
+> > +	struct resource		*res;
+> > +
+> > +	tscadc_writel(tscadc, REG_SE, 0x00);
+> > +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > +	iounmap(tscadc->tscadc_base);
+> > +	release_mem_region(res->start, resource_size(res));
+> > +
+> > +	pm_runtime_put_sync(&pdev->dev);
+> > +	pm_runtime_disable(&pdev->dev);
+> > +
+> > +	mfd_remove_devices(tscadc->dev);
+> > +	kfree(tscadc);
+> > +
+> > +	platform_set_drvdata(pdev, NULL);
+> 
+> same as above
+
+Will correct this as well.
+
+> 
+> best regards
+> 
+> --
+> Matthias Kaehlcke
+> Embedded Linux Developer
+> Amsterdam
+> 
+>          The only way to do great work is to love what you do
+>                             (Steve Jobs)
+>                                                                  .''`.
+>     using free software / Debian GNU/Linux | http://debian.org  : :'  :
+>                                                                 `. `'`
+> gpg --keyserver pgp.mit.edu --recv-keys 47D8E5D4                  `-
+> 
+
+Thanks & Regards,
+Rachna
