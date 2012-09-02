@@ -1,70 +1,35 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5044DD49.1060703@metafoo.de>
-Date: Mon, 03 Sep 2012 18:39:37 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:50956 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754956Ab2IBVhU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Sep 2012 17:37:20 -0400
+Date: Sun, 2 Sep 2012 14:34:50 -0700
+From: Anton Vorontsov <cbouatmailru@gmail.com>
+To: Sannu K <sannumail4foss@gmail.com>
+Cc: anish kumar <anish198519851985@gmail.com>, jic23@cam.ac.uk,
+	linux-iio@vger.kernel.org, dwmw2@infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [RFC]power: battery: Generic battery driver using IIO
+Message-ID: <20120902213450.GA15196@lizard>
+References: <1346600372-3284-1-git-send-email-anish198519851985@gmail.com>
+ <CAJx5wk3URzut+zr3b1ba2oeCyVJ2OSWufwbh_NpnzpcU+C3YXA@mail.gmail.com>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
- drivers@analog.com
-Subject: Re: [PATCH 07/22] staging:iio:ad7793: Remove unused platform_data
- from device state struct
-References: <1344616596-8026-1-git-send-email-lars@metafoo.de> <1344616596-8026-7-git-send-email-lars@metafoo.de> <502AA96C.3090105@kernel.org> <502B6688.6000904@metafoo.de>
-In-Reply-To: <502B6688.6000904@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAJx5wk3URzut+zr3b1ba2oeCyVJ2OSWufwbh_NpnzpcU+C3YXA@mail.gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/15/2012 11:06 AM, Lars-Peter Clausen wrote:
-> On 08/14/2012 09:39 PM, Jonathan Cameron wrote:
->> On 08/10/2012 05:36 PM, Lars-Peter Clausen wrote:
->>> The platform data for the device is only used from within the drivers probe
->>> callback, so there is no need to keep it around in the devices state struct.
->>>
->>> While we are at it mark the platform data struct as const.
->>>
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->>> ---
->>>  drivers/staging/iio/adc/ad7793.c |   14 ++++++--------
->>>  1 file changed, 6 insertions(+), 8 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
->>> index 112e2b7..0ba598e 100644
->>> --- a/drivers/staging/iio/adc/ad7793.c
->>> +++ b/drivers/staging/iio/adc/ad7793.c
->>> @@ -44,7 +44,6 @@ struct ad7793_state {
->>>  	struct iio_trigger		*trig;
->>>  	const struct ad7793_chip_info	*chip_info;
->>>  	struct regulator		*reg;
->>> -	struct ad7793_platform_data	*pdata;
->>>  	wait_queue_head_t		wq_data_avail;
->>>  	bool				done;
->>>  	bool				irq_dis;
->>> @@ -253,7 +252,8 @@ out:
->>>  	return ret;
->>>  }
->>>  
->>> -static int ad7793_setup(struct ad7793_state *st)
->>> +static int ad7793_setup(struct ad7793_state *st
->>> +	const struct ad7793_platform_data *pdata)
->> Really odd.  There's a missing comma between the arguments here...
->> I'll fixup.
-> 
-> I think this happened during a rebase and I never spotted it because it was
-> fixed up in a later commit. Reminds me to run a built tests on each individual
-> patch and not just the whole series together.
+On Sun, Sep 02, 2012 at 09:44:04PM +0530, Sannu K wrote: [...]
+> Just Curious what is the use of this module? Is there any user space
+> program uses this? When ACPI drivers for battery is available how
+> useful will this be?
 
-Ok, to avoid such mistakes in the future I've come up with the following one
-liner shell script. I though it might be worth sharing in case others find
-this useful as well.
+That's mostly for embedded devices. They often have batteries directly
+connected to ADC (analog to digital converters) channels, so that's the
+only way to read e.g. voltage.
 
-#!/bin/sh
-EDITOR="sed -i 's/^\(pick .*\)$/\1\nexec make/'" git rebase -p -i $1
+As for userspace, since it's battery class driver, pretty much every
+userspace stack can use it.
 
-
-Pass it a commit id and it will run `make` for each commit in the range of
-the passed commit up to HEAD. If make fails it will stop at the current commit.
-
-E.g.
-
-`./git-compiletest HEAD~10`
-
-- Lars
+Thanks,
+Anton.
