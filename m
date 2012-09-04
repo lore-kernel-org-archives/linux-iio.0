@@ -1,85 +1,31 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-gg0-f202.google.com ([209.85.161.202]:63974 "EHLO
-	mail-gg0-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753566Ab2IET4L (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Sep 2012 15:56:11 -0400
-Received: by ggnu1 with SMTP id u1so100193ggn.1
-        for <linux-iio@vger.kernel.org>; Wed, 05 Sep 2012 12:56:10 -0700 (PDT)
-From: Bryan Freed <bfreed@chromium.org>
-To: linux-kernel@vger.kernel.org
-Cc: linux-iio@vger.kernel.org, grundler@chromium.org,
-	ldewangan@nvidia.com, lars@metafoo.de, gregkh@linuxfoundation.org,
-	jic23@cam.ac.uk, Bryan Freed <bfreed@chromium.org>
-Subject: [PATCH] iio: isl29018: Support fractional ALS scaling.
-Date: Wed,  5 Sep 2012 12:55:53 -0700
-Message-Id: <1346874953-22353-1-git-send-email-bfreed@chromium.org>
+Received: from ppsw-43.csi.cam.ac.uk ([131.111.8.143]:44040 "EHLO
+	ppsw-43.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756773Ab2IDL7l (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Sep 2012 07:59:41 -0400
+Message-ID: <5045ED39.5030408@jic23.retrosnub.co.uk>
+Date: Tue, 04 Sep 2012 12:59:53 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] staging:iio: Use iio_push_to_buffer
+References: <1346758288-20031-1-git-send-email-lars@metafoo.de> <1346758519-23942-1-git-send-email-lars@metafoo.de> <alpine.DEB.2.01.1209041347230.11872@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.01.1209041347230.11872@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Industrial IO framework supports scaling ADC values by fractions,
-but most drivers default to using whole numbers.
-This change turns on fractional scaling in the isl29018 driver.
+On 04/09/12 12:48, Peter Meerwald wrote:
+>
+>> Consistently use iio_push_to_buffer instead of manually calling the buffers
+>> store_to callback.
+>
+> can we kill the timestamp parameter as an add-on patch?
+>
+> thanks, p.
+>
+Seems reasonable to me.
 
-Signed-off-by: Bryan Freed <bfreed@chromium.org>
----
- drivers/staging/iio/light/isl29018.c |   17 +++++++++++++++--
- 1 files changed, 15 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 31d22f5..6ee5567 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -63,6 +63,7 @@ struct isl29018_chip {
- 	struct regmap		*regmap;
- 	struct mutex		lock;
- 	unsigned int		lux_scale;
-+	unsigned int		lux_uscale;
- 	unsigned int		range;
- 	unsigned int		adc_bit;
- 	int			prox_scheme;
-@@ -145,13 +146,22 @@ static int isl29018_read_sensor_input(struct isl29018_chip *chip, int mode)
- static int isl29018_read_lux(struct isl29018_chip *chip, int *lux)
- {
- 	int lux_data;
-+	unsigned int data_x_range, lux_unshifted;
- 
- 	lux_data = isl29018_read_sensor_input(chip, COMMMAND1_OPMODE_ALS_ONCE);
- 
- 	if (lux_data < 0)
- 		return lux_data;
- 
--	*lux = (lux_data * chip->range * chip->lux_scale) >> chip->adc_bit;
-+	/* To support fractional scaling, separate the unshifted lux
-+	 * into two calculations: int scaling and micro-scaling.
-+	 * lux_uscale ranges from 0-999999, so about 20 bits.  Split
-+	 * the /1,000,000 in two to reduce the risk of over/underflow.
-+	 */
-+	data_x_range = lux_data * chip->range;
-+	lux_unshifted = data_x_range * chip->lux_scale;
-+	lux_unshifted += data_x_range / 1000 * chip->lux_uscale / 1000;
-+	*lux = lux_unshifted >> chip->adc_bit;
- 
- 	return 0;
- }
-@@ -339,6 +349,8 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
- 	mutex_lock(&chip->lock);
- 	if (mask == IIO_CHAN_INFO_CALIBSCALE && chan->type == IIO_LIGHT) {
- 		chip->lux_scale = val;
-+		/* With no write_raw_get_fmt(), val2 is a MICRO fraction. */
-+		chip->lux_uscale = val2;
- 		ret = 0;
- 	}
- 	mutex_unlock(&chip->lock);
-@@ -379,7 +391,8 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_CALIBSCALE:
- 		if (chan->type == IIO_LIGHT) {
- 			*val = chip->lux_scale;
--			ret = IIO_VAL_INT;
-+			*val2 = chip->lux_uscale;
-+			ret = IIO_VAL_INT_PLUS_MICRO;
- 		}
- 		break;
- 	default:
--- 
-1.7.7.3
-
+Jonathan
