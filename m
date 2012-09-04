@@ -1,31 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-43.csi.cam.ac.uk ([131.111.8.143]:44040 "EHLO
-	ppsw-43.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756773Ab2IDL7l (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Sep 2012 07:59:41 -0400
-Message-ID: <5045ED39.5030408@jic23.retrosnub.co.uk>
-Date: Tue, 04 Sep 2012 12:59:53 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] staging:iio: Use iio_push_to_buffer
-References: <1346758288-20031-1-git-send-email-lars@metafoo.de> <1346758519-23942-1-git-send-email-lars@metafoo.de> <alpine.DEB.2.01.1209041347230.11872@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.01.1209041347230.11872@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:55506 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757118Ab2IDPFj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Sep 2012 11:05:39 -0400
+Subject: Re: [PATCH] [RFC]power: battery: Generic battery driver using IIO
+From: anish kumar <anish198519851985@gmail.com>
+Cc: Sannu K <sannumail4foss@gmail.com>, jic23@cam.ac.uk,
+	linux-iio@vger.kernel.org, dwmw2@infradead.org,
+	linux-kernel@vger.kernel.org,
+	Anton Vorontsov <cbouatmailru@gmail.com>
+In-Reply-To: <20120902213450.GA15196@lizard>
+References: <1346600372-3284-1-git-send-email-anish198519851985@gmail.com>
+	 <CAJx5wk3URzut+zr3b1ba2oeCyVJ2OSWufwbh_NpnzpcU+C3YXA@mail.gmail.com>
+	 <20120902213450.GA15196@lizard>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 04 Sep 2012 20:35:22 +0530
+Message-ID: <1346771122.6243.6.camel@anish-Inspiron-N5050>
+Mime-Version: 1.0
+To: unlisted-recipients:; (no To-header on input)
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/09/12 12:48, Peter Meerwald wrote:
->
->> Consistently use iio_push_to_buffer instead of manually calling the buffers
->> store_to callback.
->
-> can we kill the timestamp parameter as an add-on patch?
->
-> thanks, p.
->
-Seems reasonable to me.
+On Sun, 2012-09-02 at 14:34 -0700, Anton Vorontsov wrote:
+> On Sun, Sep 02, 2012 at 09:44:04PM +0530, Sannu K wrote: [...]
+> > Just Curious what is the use of this module? Is there any user space
+> > program uses this? When ACPI drivers for battery is available how
+> > useful will this be?
+> 
+> That's mostly for embedded devices. They often have batteries directly
+> connected to ADC (analog to digital converters) channels, so that's the
+> only way to read e.g. voltage.
+> 
+> As for userspace, since it's battery class driver, pretty much every
+> userspace stack can use it.
+Can I get some review comments on this?
+> 
+> Thanks,
+> Anton.
 
-Jonathan
+
