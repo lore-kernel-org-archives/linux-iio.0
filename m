@@ -1,61 +1,49 @@
-Return-Path: <srinivas.pandruvada@intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	jkosina@suse.cz,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 1/9] iio: core: Add hysteresis in channel spec
-Date: Wed,  5 Sep 2012 05:56:24 -0700
-Message-Id: <1346849792-22417-2-git-send-email-srinivas.pandruvada@intel.com>
-In-Reply-To: <1346849792-22417-1-git-send-email-srinivas.pandruvada@intel.com>
-References: <1346849792-22417-1-git-send-email-srinivas.pandruvada@intel.com>
+Return-Path: <jkosina@suse.cz>
+Date: Wed, 5 Sep 2012 11:41:03 +0200 (CEST)
+From: Jiri Kosina <jkosina@suse.cz>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 0/9] HID-Sensor v8
+In-Reply-To: <20120904212101.GA2463@kroah.com>
+Message-ID: <alpine.LNX.2.00.1209051140250.11079@pobox.suse.cz>
+References: <1346082597-768-1-git-send-email-srinivas.pandruvada@intel.com> <503D1D4F.2030805@kernel.org> <20120904212101.GA2463@kroah.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-From: srinivas pandruvada <srinivas.pandruvada@intel.com>
+On Tue, 4 Sep 2012, Greg KH wrote:
 
-Added hysteresis to the list of channel info enumeration, shared
-/separate bit defines and to postfix channel info strings.
+> > I am pretty happy with the whole series now, so next question from
+> > my end is what route this takes into the kernel?
+> > 
+> > Patch 1 should go through the IIO tree (as it touches
+> > a fairly high churn area of the IIO core).
+> > 
+> > 2-4 are very much in HID...
+> > 5-9 very much IIO.
+> > 
+> > My personal preference is to take the lot though the IIO tree
+> > but then I know we have a few patches in the pipeline that will
+> > touch this driver after it merges (internal api changes) and have
+> > no idea what is going on from the HID side so naturally I full on
+> > the side of least work for me :)
+> > 
+> > Jiri what are you thoughts on this series?
+> > 
+> > CC'd Greg given he's the one who will get the fishy pull request
+> > from me if it goes though IIO...
+> 
+> If Jiri says it is ok, that's fine with me, whatever works easier for
+> you two.
 
-Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
----
- drivers/iio/industrialio-core.c | 1 +
- include/linux/iio/iio.h         | 5 +++++
- 2 files changed, 6 insertions(+)
+I just sent some feedback to Srinivas. After that is handled, I am OK with 
+adding my signoff to the patches creating the HID infrastructure and 
+having it pushed through Greg.
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index fa3b9f5..0499330 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -99,6 +99,7 @@ static const char * const iio_chan_info_postfix[] = {
- 	[IIO_CHAN_INFO_FREQUENCY] = "frequency",
- 	[IIO_CHAN_INFO_PHASE] = "phase",
- 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
-+	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
- };
- 
- const struct iio_chan_spec
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 057d603..30affa5 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -35,6 +35,7 @@ enum iio_chan_info_enum {
- 	IIO_CHAN_INFO_FREQUENCY,
- 	IIO_CHAN_INFO_PHASE,
- 	IIO_CHAN_INFO_HARDWAREGAIN,
-+	IIO_CHAN_INFO_HYSTERESIS,
- };
- 
- #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
-@@ -100,6 +101,10 @@ enum iio_chan_info_enum {
- 	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
- #define IIO_CHAN_INFO_HARDWAREGAIN_SHARED_BIT			\
- 	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
-+#define IIO_CHAN_INFO_HYSTERESIS_SEPARATE_BIT			\
-+	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HYSTERESIS)
-+#define IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT			\
-+	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HYSTERESIS)
- 
- enum iio_endian {
- 	IIO_CPU,
+Thanks,
+
 -- 
-1.7.11.4
+Jiri Kosina
+SUSE Labs
