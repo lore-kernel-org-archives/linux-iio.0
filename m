@@ -3,168 +3,59 @@ From: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	jkosina@suse.cz,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 0/9] HID-Sensor v9
-Date: Wed,  5 Sep 2012 05:56:23 -0700
-Message-Id: <1346849792-22417-1-git-send-email-srinivas.pandruvada@intel.com>
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: [PATCH 1/9] iio: core: Add hysteresis in channel spec
+Date: Wed,  5 Sep 2012 05:56:24 -0700
+Message-Id: <1346849792-22417-2-git-send-email-srinivas.pandruvada@intel.com>
+In-Reply-To: <1346849792-22417-1-git-send-email-srinivas.pandruvada@intel.com>
+References: <1346849792-22417-1-git-send-email-srinivas.pandruvada@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-v9:
-- change commit messages
-- Trivial changes suggested by Jiri
+From: srinivas pandruvada <srinivas.pandruvada@intel.com>
 
-v8:
-- Rebase against staging-next
-- Kernel doc generation warnings
-- Makefile single line/driver
-- Some stubtle warnings on some platforms
+Added hysteresis to the list of channel info enumeration, shared
+/separate bit defines and to postfix channel info strings.
 
-v7:
-- Changes related to pow function
-- channel spec constant for sensors
-- Remove additional init/exit functions
-- Error handling for invalid report ids
-	
-v6:
-- Fix kernel oops during mfd_add_device on some devices
-- Jonathan's suggested change to remove private member from common to associate a \
-sensor type state. The sensor state contains a member to hold all common attributes
-- Fix issue with decimal point interface
+Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
+---
+ drivers/iio/industrialio-core.c | 1 +
+ include/linux/iio/iio.h         | 5 +++++
+ 2 files changed, 6 insertions(+)
 
-v5:
-- Documentation changes as suggested by Peter Meerwald and Jonathan Cameron
-- Change Kconfigs to corrected typo pointed by David Herrmann (3G to 3D \
-(3-dimension)) 
-- Sensor framework changes for comments from Jonathan
--- Modified help to for HID_SENSOR_HUB
--- Removed all size restrictions (#define ...)
--- Use of kasprintf for driver names
--- Removed defines for reports
--- kernel doc for structures
--- Embed pending structure to sensor hub data structure and removed dynamic \
-                allocation of requests
--- Removed unused structure fields
--- Blank line before returns
--- Shorter defines for HID sensor usage id defines
-
-- Common attributes and triggers
--- Removed maximunm sampling freq restrictions
--- Allow decimal format from channel raw read calls with micro fractions
--- Can't get arround FW quirk config with the information from report
-
-- Accelerometer 3D support
--- Changed defines for channels to enums
--- Added hysteresis and sampling frequency to channels definition
--- Simpliefiled state structure
--- Removed casts
--- Error handling
--- Removed channel mask settings
--- Changed to module_platform_driver
-
-v4:
-Addressed comments from Lars-Peter Clausen and Jiri Kosina.
-- Added Documentation/hid/hid-sensor.txt
-- As suggested, created iio/common folder which can contain common code for iio \
-                sensor driver.This contain common module to process trigger and \
-                attributes
-- Removed empty callback functions.
-- Duplicating channel structure for an IIO driver instance.
-
-v3 :
-- Using TRIGGERRED BUFFER
-- Using MFD framework
-The sensor hub driver is submiited to drivers/hid. This contains core processing of \
-hid sensor usage table, registers as an hid driver and adds registration function \
-for routing data to individual sensor driver. So core driver independent of user \
-mode interface method (IIO/input etc.) 
-- Submiiting four drivers for Accelerometer-3D, Gyro-3D, Compass-3D and ALS. These \
-uses IIO triggered buffer interface. They are childrens of hid sensor hub driver.
-They reside in iio/accel, iio/gyro iio/magnetometer and iio/light.
-
-- Still using driver/staging/iio. Not able to test with driver/iio.
-
-v2 :
-- Replaced Ring-SW with KFiFO
-- Accel-3d, Gyro-3D and Compass-3D uses 3 different channels for X, Y and Z
-- SysFS (
---- Changed "polling_interval" to sampling_frequency (IIO_DEV_ATTR_SAMP_FREQ) with \
-                units HZ
---- Changed "sensitivity" to hyst_raw, which is already used by some ADC modules
---- Removed "Activate". No longer need this. Using trigger state to \
-activate/deactivate )
-- Removed sysfs attributes for "xxx_offset". Instead using mask 0 in read_raw. So \
-each sensor have only channels, sampling_frequency and hyst_raw as the ABI.
-- Additional patch to enable ST Micro sensor hub-
-
-v1:
-Base implementation for comments
-
-srinivas pandruvada (9):
-  iio: core: Add hysteresis in channel spec
-  HID: sensors: add documentation
-  HID: sensors: add to special driver list
-  HID: sensors: introduce sensor framework
-  iio: hid-sensors: Common attribute and trigger
-  iio: hid-sensors: Added accelerometer 3D
-  iio: hid-sensors: Added Gyroscope 3D
-  iio: hid-sensors: Added Compass/Magnetometer 3D
-  iio: hid-sensors: Added ALS
-
- Documentation/hid/hid-sensor.txt                   | 140 +++++
- drivers/hid/Kconfig                                |  14 +
- drivers/hid/Makefile                               |   1 +
- drivers/hid/hid-core.c                             |   5 +
- drivers/hid/hid-ids.h                              |   6 +
- drivers/hid/hid-sensor-hub.c                       | 695 +++++++++++++++++++++
- drivers/iio/Kconfig                                |   5 +
- drivers/iio/Makefile                               |   5 +
- drivers/iio/accel/Kconfig                          |  16 +
- drivers/iio/accel/Makefile                         |   5 +
- drivers/iio/accel/hid-sensor-accel-3d.c            | 419 +++++++++++++
- drivers/iio/common/Kconfig                         |   6 +
- drivers/iio/common/Makefile                        |   9 +
- drivers/iio/common/hid-sensors/Kconfig             |  26 +
- drivers/iio/common/hid-sensors/Makefile            |   6 +
- .../iio/common/hid-sensors/hid-sensor-attributes.c | 250 ++++++++
- .../iio/common/hid-sensors/hid-sensor-attributes.h |  57 ++
- .../iio/common/hid-sensors/hid-sensor-trigger.c    | 102 +++
- .../iio/common/hid-sensors/hid-sensor-trigger.h    |  26 +
- drivers/iio/gyro/Kconfig                           |  16 +
- drivers/iio/gyro/Makefile                          |   5 +
- drivers/iio/gyro/hid-sensor-gyro-3d.c              | 419 +++++++++++++
- drivers/iio/industrialio-core.c                    |   1 +
- drivers/iio/light/Kconfig                          |  10 +
- drivers/iio/light/Makefile                         |   1 +
- drivers/iio/light/hid-sensor-als.c                 | 386 ++++++++++++
- drivers/iio/magnetometer/Kconfig                   |  16 +
- drivers/iio/magnetometer/Makefile                  |   5 +
- drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 420 +++++++++++++
- include/linux/hid-sensor-hub.h                     | 160 +++++
- include/linux/hid-sensor-ids.h                     | 112 ++++
- include/linux/iio/iio.h                            |   5 +
- 32 files changed, 3349 insertions(+)
- create mode 100755 Documentation/hid/hid-sensor.txt
- create mode 100644 drivers/hid/hid-sensor-hub.c
- create mode 100644 drivers/iio/accel/Kconfig
- create mode 100644 drivers/iio/accel/Makefile
- create mode 100644 drivers/iio/accel/hid-sensor-accel-3d.c
- create mode 100644 drivers/iio/common/Kconfig
- create mode 100644 drivers/iio/common/Makefile
- create mode 100644 drivers/iio/common/hid-sensors/Kconfig
- create mode 100644 drivers/iio/common/hid-sensors/Makefile
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-attributes.c
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-attributes.h
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-trigger.c
- create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-trigger.h
- create mode 100644 drivers/iio/gyro/Kconfig
- create mode 100644 drivers/iio/gyro/Makefile
- create mode 100644 drivers/iio/gyro/hid-sensor-gyro-3d.c
- create mode 100644 drivers/iio/light/hid-sensor-als.c
- create mode 100644 drivers/iio/magnetometer/Kconfig
- create mode 100644 drivers/iio/magnetometer/Makefile
- create mode 100644 drivers/iio/magnetometer/hid-sensor-magn-3d.c
- create mode 100644 include/linux/hid-sensor-hub.h
- create mode 100644 include/linux/hid-sensor-ids.h
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index fa3b9f5..0499330 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -99,6 +99,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_FREQUENCY] = "frequency",
+ 	[IIO_CHAN_INFO_PHASE] = "phase",
+ 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
++	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
+ };
+ 
+ const struct iio_chan_spec
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 057d603..30affa5 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -35,6 +35,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_FREQUENCY,
+ 	IIO_CHAN_INFO_PHASE,
+ 	IIO_CHAN_INFO_HARDWAREGAIN,
++	IIO_CHAN_INFO_HYSTERESIS,
+ };
+ 
+ #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
+@@ -100,6 +101,10 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
+ #define IIO_CHAN_INFO_HARDWAREGAIN_SHARED_BIT			\
+ 	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
++#define IIO_CHAN_INFO_HYSTERESIS_SEPARATE_BIT			\
++	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HYSTERESIS)
++#define IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT			\
++	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HYSTERESIS)
+ 
+ enum iio_endian {
+ 	IIO_CPU,
 -- 
 1.7.11.4
