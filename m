@@ -1,113 +1,83 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:50498 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751437Ab2IFJu5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Sep 2012 05:50:57 -0400
-Message-ID: <50487207.3040103@jic23.retrosnub.co.uk>
-Date: Thu, 06 Sep 2012 10:51:03 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Return-Path: <jkosina@suse.cz>
+Date: Thu, 6 Sep 2012 11:12:13 +0200 (CEST)
+From: Jiri Kosina <jkosina@suse.cz>
+To: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org
+Subject: Re: [PATCH 3/9] HID: sensors: add to special driver list
+In-Reply-To: <1346849792-22417-4-git-send-email-srinivas.pandruvada@intel.com>
+Message-ID: <alpine.LNX.2.00.1209061112000.23820@pobox.suse.cz>
+References: <1346849792-22417-1-git-send-email-srinivas.pandruvada@intel.com> <1346849792-22417-4-git-send-email-srinivas.pandruvada@intel.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] staging:iio:sysfs-trigger: Use irq_work to properly active
- trigger
-References: <1346922337-17088-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1346922337-17088-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/09/12 10:05, Lars-Peter Clausen wrote:
-> Since iio_trigger_poll() calls generic_handle_irq() it need to be called from
-> hardirq context. The sysfs trigger is kicked from userspace, so it is obviously
-> not possible to fulfill this requirement by calling iio_trigger_poll directly.
-> As a workaround commit 1f785681 ("staging:iio:trigger sysfs userspace trigger
-> rework.") added iio_trigger_poll_chained() which uses handle_nested_irq instead
-> of generic_handle_irq. This in itself is a hack and only works by chance.
-> handle_nested_irq is intended to be called from the threaded interrupt handler
-> of the parent IRQ. Using handle_nested_irq is also problematic since it will
-> only call the threaded handler of the IRQ. But quite a few IIO drivers rely on
-> their hardirq handler being called or undefined behaviour will occur.
->
-> This patch uses the irq_work framework to schedule the call to
-> iio_trigger_poll() from hardirq context, which fixes the issues described above.
->
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+On Wed, 5 Sep 2012, Srinivas Pandruvada wrote:
+
+> From: srinivas pandruvada <srinivas.pandruvada@intel.com>
+> 
+> Adding Intel and STM sensor hub in the list of drivers with
+> specialized driver.
+> 
+> Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
+
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+
 > ---
-> Just a resend, it looks like the patch got list.
-oops.  Will queue it up with the next set. Sorry about that. I thought 
-I'd merged it!
+>  drivers/hid/hid-core.c | 5 +++++
+>  drivers/hid/hid-ids.h  | 6 ++++++
+>  2 files changed, 11 insertions(+)
+> 
+> diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+> index 60ea284..15ffc0a 100644
+> --- a/drivers/hid/hid-core.c
+> +++ b/drivers/hid/hid-core.c
+> @@ -1550,6 +1550,10 @@ static const struct hid_device_id hid_have_special_driver[] = {
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_GYRATION, USB_DEVICE_ID_GYRATION_REMOTE_3) },
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_HOLTEK, USB_DEVICE_ID_HOLTEK_ON_LINE_GRIP) },
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_HOLTEK_ALT, USB_DEVICE_ID_HOLTEK_ALT_KEYBOARD) },
+> +	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086, USB_DEVICE_ID_SENSOR_HUB_1020) },
+> +	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086, USB_DEVICE_ID_SENSOR_HUB_09FA) },
+> +	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087, USB_DEVICE_ID_SENSOR_HUB_1020) },
+> +	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087, USB_DEVICE_ID_SENSOR_HUB_09FA) },
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_KENSINGTON, USB_DEVICE_ID_KS_SLIMBLADE) },
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_KEYTOUCH, USB_DEVICE_ID_KEYTOUCH_IEC) },
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_KYE, USB_DEVICE_ID_KYE_ERGO_525V) },
+> @@ -1642,6 +1646,7 @@ static const struct hid_device_id hid_have_special_driver[] = {
+>  	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_PS3_CONTROLLER) },
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_VAIO_VGX_MOUSE) },
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_SUNPLUS, USB_DEVICE_ID_SUNPLUS_WDESKTOP) },
+> +	{ HID_USB_DEVICE(USB_VENDOR_ID_STANTUM_STM, USB_DEVICE_ID_SENSOR_HUB_7014) },
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb300) },
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb304) },
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb323) },
+> diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+> index 1dcb76f..8a270a3 100644
+> --- a/drivers/hid/hid-ids.h
+> +++ b/drivers/hid/hid-ids.h
+> @@ -419,6 +419,11 @@
+>  #define USB_VENDOR_ID_IMATION		0x0718
+>  #define USB_DEVICE_ID_DISC_STAKKA	0xd000
+>  
+> +#define USB_VENDOR_ID_INTEL_8086	0x8086
+> +#define USB_VENDOR_ID_INTEL_8087	0x8087
+> +#define USB_DEVICE_ID_SENSOR_HUB_1020	0x1020
+> +#define USB_DEVICE_ID_SENSOR_HUB_09FA	0x09FA
+> +
+>  #define USB_VENDOR_ID_IRTOUCHSYSTEMS	0x6615
+>  #define USB_DEVICE_ID_IRTOUCH_INFRARED_USB	0x0070
+>  
+> @@ -695,6 +700,7 @@
+>  
+>  #define USB_VENDOR_ID_STANTUM_STM		0x0483
+>  #define USB_DEVICE_ID_MTP_STM		0x3261
+> +#define USB_DEVICE_ID_SENSOR_HUB_7014	0x7014
+>  
+>  #define USB_VENDOR_ID_STANTUM_SITRONIX		0x1403
+>  #define USB_DEVICE_ID_MTP_SITRONIX		0x5001
+> -- 
+> 1.7.11.4
+> 
 
-Jonathan
-> ---
->   drivers/staging/iio/trigger/Kconfig          |    2 ++
->   drivers/staging/iio/trigger/iio-trig-sysfs.c |   17 ++++++++++++++++-
->   2 files changed, 18 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/staging/iio/trigger/Kconfig b/drivers/staging/iio/trigger/Kconfig
-> index b8abf54..7d32075 100644
-> --- a/drivers/staging/iio/trigger/Kconfig
-> +++ b/drivers/staging/iio/trigger/Kconfig
-> @@ -21,6 +21,8 @@ config IIO_GPIO_TRIGGER
->   config IIO_SYSFS_TRIGGER
->   	tristate "SYSFS trigger"
->   	depends on SYSFS
-> +	depends on HAVE_IRQ_WORK
-> +	select IRQ_WORK
->   	help
->   	  Provides support for using SYSFS entry as IIO triggers.
->   	  If unsure, say N (but it's safe to say "Y").
-> diff --git a/drivers/staging/iio/trigger/iio-trig-sysfs.c b/drivers/staging/iio/trigger/iio-trig-sysfs.c
-> index fee4746..3bac972 100644
-> --- a/drivers/staging/iio/trigger/iio-trig-sysfs.c
-> +++ b/drivers/staging/iio/trigger/iio-trig-sysfs.c
-> @@ -10,12 +10,14 @@
->   #include <linux/platform_device.h>
->   #include <linux/slab.h>
->   #include <linux/list.h>
-> +#include <linux/irq_work.h>
->
->   #include <linux/iio/iio.h>
->   #include <linux/iio/trigger.h>
->
->   struct iio_sysfs_trig {
->   	struct iio_trigger *trig;
-> +	struct irq_work work;
->   	int id;
->   	struct list_head l;
->   };
-> @@ -89,11 +91,21 @@ static struct device iio_sysfs_trig_dev = {
->   	.release = &iio_trigger_sysfs_release,
->   };
->
-> +static void iio_sysfs_trigger_work(struct irq_work *work)
-> +{
-> +	struct iio_sysfs_trig *trig = container_of(work, struct iio_sysfs_trig,
-> +							work);
-> +
-> +	iio_trigger_poll(trig->trig, 0);
-> +}
-> +
->   static ssize_t iio_sysfs_trigger_poll(struct device *dev,
->   		struct device_attribute *attr, const char *buf, size_t count)
->   {
->   	struct iio_trigger *trig = to_iio_trigger(dev);
-> -	iio_trigger_poll_chained(trig, 0);
-> +	struct iio_sysfs_trig *sysfs_trig = trig->private_data;
-> +
-> +	irq_work_queue(&sysfs_trig->work);
->
->   	return count;
->   }
-> @@ -148,6 +160,9 @@ static int iio_sysfs_trigger_probe(int id)
->   	t->trig->dev.groups = iio_sysfs_trigger_attr_groups;
->   	t->trig->ops = &iio_sysfs_trigger_ops;
->   	t->trig->dev.parent = &iio_sysfs_trig_dev;
-> +	t->trig->private_data = t;
-> +
-> +	init_irq_work(&t->work, iio_sysfs_trigger_work);
->
->   	ret = iio_trigger_register(t->trig);
->   	if (ret)
->
-
+-- 
+Jiri Kosina
+SUSE Labs
