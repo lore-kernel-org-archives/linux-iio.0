@@ -1,1066 +1,272 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:33347 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1759245Ab2IEUFg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 5 Sep 2012 16:05:36 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, jkosina@suse.cz,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: [PATCH 4/9] HID: sensors: introduce sensor framework
-Date: Wed,  5 Sep 2012 05:56:27 -0700
-Message-Id: <1346849792-22417-5-git-send-email-srinivas.pandruvada@intel.com>
-In-Reply-To: <1346849792-22417-1-git-send-email-srinivas.pandruvada@intel.com>
-References: <1346849792-22417-1-git-send-email-srinivas.pandruvada@intel.com>
+Received: from smtp-out-233.synserver.de ([212.40.185.233]:1173 "EHLO
+	smtp-out-233.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760604Ab2IGMoK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Sep 2012 08:44:10 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 05/10] staging:iio:ad7476: Squash driver into a single file.
+Date: Fri,  7 Sep 2012 14:44:27 +0200
+Message-Id: <1347021872-7885-5-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347021872-7885-1-git-send-email-lars@metafoo.de>
+References: <1347021872-7885-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: srinivas pandruvada <srinivas.pandruvada@intel.com>
+After the recent cleanups the buffer support is just a single 23 line function.
+This does not really justify a file on its own, so move it to the main driver
+file. And with only one source file left the header file containing the device
+state struct becomes superflousious so move the content of the header
+file to the main driver source file as well.
 
-Adding processing for HID Sensor usage table as defined by
-HID 1.12, Request #: HUTRR39, dated 05 May, 2011.
-This driver uses HID driver framework to register, send and
-receive events.
-This uses MFD framework, so that actual processing for a
-specific usage id can be done in a different driver. For
-example an accelerometer driver can be a separate driver and
-use the interface provided by this driver to register for
-events.
-
-Signed-off-by: srinivas pandruvada <srinivas.pandruvada@intel.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/hid/Kconfig            |  14 +
- drivers/hid/Makefile           |   1 +
- drivers/hid/hid-sensor-hub.c   | 695 +++++++++++++++++++++++++++++++++++++++++
- include/linux/hid-sensor-hub.h | 160 ++++++++++
- include/linux/hid-sensor-ids.h | 112 +++++++
- 5 files changed, 982 insertions(+)
- create mode 100644 drivers/hid/hid-sensor-hub.c
- create mode 100644 include/linux/hid-sensor-hub.h
- create mode 100644 include/linux/hid-sensor-ids.h
+ drivers/staging/iio/adc/Makefile                   |    2 -
+ .../staging/iio/adc/{ad7476_core.c => ad7476.c}    |   82 +++++++++++++++++++-
+ drivers/staging/iio/adc/ad7476.h                   |   56 -------------
+ drivers/staging/iio/adc/ad7476_ring.c              |   57 --------------
+ 4 files changed, 81 insertions(+), 116 deletions(-)
+ rename drivers/staging/iio/adc/{ad7476_core.c => ad7476.c} (73%)
+ delete mode 100644 drivers/staging/iio/adc/ad7476.h
+ delete mode 100644 drivers/staging/iio/adc/ad7476_ring.c
 
-diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
-index fbf4950..f8d3140 100644
---- a/drivers/hid/Kconfig
-+++ b/drivers/hid/Kconfig
-@@ -690,6 +690,20 @@ config HID_ZYDACRON
- 	---help---
- 	Support for Zydacron remote control.
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index ecac9a0..6b60af0 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -17,8 +17,6 @@ ad799x-y := ad799x_core.o
+ ad799x-$(CONFIG_AD799X_RING_BUFFER) += ad799x_ring.o
+ obj-$(CONFIG_AD799X) += ad799x.o
  
-+config HID_SENSOR_HUB
-+	tristate "HID Sensors framework support"
-+	depends on USB_HID
-+	select MFD_CORE
-+	default n
-+	-- help---
-+	  Support for HID Sensor framework. This creates a MFD instance
-+	  for a sensor hub and identifies all the sensors connected to it.
-+	  Each sensor is registered as a MFD cell, so that sensor specific
-+	  processing can be done in a separate driver. Each sensor
-+	  drivers can use the service provided by this driver to register
-+	  for events and handle data streams. Each sensor driver can format
-+	  data and present to user mode using input or IIO interface.
-+
- endmenu
+-ad7476-y := ad7476_core.o
+-ad7476-$(CONFIG_IIO_BUFFER) += ad7476_ring.o
+ obj-$(CONFIG_AD7476) += ad7476.o
  
- endif # HID
-diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
-index f975485..1173d7a 100644
---- a/drivers/hid/Makefile
-+++ b/drivers/hid/Makefile
-@@ -91,6 +91,7 @@ obj-$(CONFIG_HID_ZYDACRON)	+= hid-zydacron.o
- obj-$(CONFIG_HID_WACOM)		+= hid-wacom.o
- obj-$(CONFIG_HID_WALTOP)	+= hid-waltop.o
- obj-$(CONFIG_HID_WIIMOTE)	+= hid-wiimote.o
-+obj-$(CONFIG_HID_SENSOR_HUB)	+= hid-sensor-hub.o
+ ad7887-y := ad7887_core.o
+diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476.c
+similarity index 73%
+rename from drivers/staging/iio/adc/ad7476_core.c
+rename to drivers/staging/iio/adc/ad7476.c
+index 42523e6..13aed0e 100644
+--- a/drivers/staging/iio/adc/ad7476_core.c
++++ b/drivers/staging/iio/adc/ad7476.c
+@@ -18,8 +18,88 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++#define RES_MASK(bits)	((1 << (bits)) - 1)
++
++struct ad7476_chip_info {
++	unsigned int			int_vref_uv;
++	struct iio_chan_spec		channel[2];
++};
++
++struct ad7476_state {
++	struct spi_device		*spi;
++	const struct ad7476_chip_info	*chip_info;
++	struct regulator		*reg;
++	struct spi_transfer		xfer;
++	struct spi_message		msg;
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 * Make the buffer large enough for one 16 bit sample and one 64 bit
++	 * aligned 64 bit timestamp.
++	 */
++	unsigned char data[ALIGN(2, sizeof(s64)) + sizeof(s64)]
++			____cacheline_aligned;
++};
++
++enum ad7476_supported_device_ids {
++	ID_AD7466,
++	ID_AD7467,
++	ID_AD7468,
++	ID_AD7495
++};
++
++#if IS_ENABLED(CONFIG_IIO_BUFFER)
++
++static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ad7476_state *st = iio_priv(indio_dev);
++	s64 time_ns;
++	int b_sent;
++
++	b_sent = spi_read(st->spi, st->data,
++			  st->chip_info->channel[0].scan_type.storagebits / 8);
++	if (b_sent < 0)
++		goto done;
++
++	time_ns = iio_get_time_ns();
++
++	if (indio_dev->scan_timestamp)
++		((s64 *)st->data)[1] = time_ns;
++
++	iio_push_to_buffer(indio_dev->buffer, st->data);
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
++{
++	return iio_triggered_buffer_setup(indio_dev, NULL,
++			&ad7476_trigger_handler, NULL);
++}
++
++static void ad7476_ring_cleanup(struct iio_dev *indio_dev)
++{
++	iio_triggered_buffer_cleanup(indio_dev);
++}
++
++#else
++
++static int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
++{
++	return 0;
++}
++
++static void ad7476_ring_cleanup(struct iio_dev *indio_dev) {}
++
++#endif
  
- obj-$(CONFIG_USB_HID)		+= usbhid/
- obj-$(CONFIG_USB_MOUSE)		+= usbhid/
-diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-new file mode 100644
-index 0000000..34a35ba
---- /dev/null
-+++ b/drivers/hid/hid-sensor-hub.c
-@@ -0,0 +1,695 @@
-+/*
-+ * HID Sensors Driver
-+ * Copyright (c) 2012, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-+ *
-+ */
-+#include <linux/device.h>
-+#include <linux/hid.h>
-+#include <linux/usb.h>
-+#include "usbhid/usbhid.h"
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/mfd/core.h>
-+#include <linux/list.h>
-+#include <linux/hid-sensor-ids.h>
-+#include <linux/hid-sensor-hub.h>
-+#include "hid-ids.h"
-+
-+/**
-+ * struct sensor_hub_pending - Synchronous read pending information
-+ * @status:		Pending status true/false.
-+ * @ready:		Completion synchronization data.
-+ * @usage_id:		Usage id for physical device, E.g. Gyro usage id.
-+ * @attr_usage_id:	Usage Id of a field, E.g. X-AXIS for a gyro.
-+ * @raw_size:		Response size for a read request.
-+ * @raw_data:		Place holder for received response.
-+ */
-+struct sensor_hub_pending {
-+	bool status;
-+	struct completion ready;
-+	u32 usage_id;
-+	u32 attr_usage_id;
-+	int raw_size;
-+	u8  *raw_data;
-+};
-+
-+/**
-+ * struct sensor_hub_data - Hold a instance data for a HID hub device
-+ * @hsdev:		Stored hid instance for current hub device.
-+ * @mutex:		Mutex to serialize synchronous request.
-+ * @lock:		Spin lock to protect pending request structure.
-+ * @pending:		Holds information of pending sync read request.
-+ * @dyn_callback_list:	Holds callback function
-+ * @dyn_callback_lock:	spin lock to protect callback list
-+ * @hid_sensor_hub_client_devs:	Stores all MFD cells for a hub instance.
-+ * @hid_sensor_client_cnt: Number of MFD cells, (no of sensors attached).
-+ */
-+struct sensor_hub_data {
-+	struct hid_sensor_hub_device *hsdev;
-+	struct mutex mutex;
-+	spinlock_t lock;
-+	struct sensor_hub_pending pending;
-+	struct list_head dyn_callback_list;
-+	spinlock_t dyn_callback_lock;
-+	struct mfd_cell *hid_sensor_hub_client_devs;
-+	int hid_sensor_client_cnt;
-+};
-+
-+/**
-+ * struct hid_sensor_hub_callbacks_list - Stores callback list
-+ * @list:		list head.
-+ * @usage_id:		usage id for a physical device.
-+ * @usage_callback:	Stores registered callback functions.
-+ * @priv:		Private data for a physical device.
-+ */
-+struct hid_sensor_hub_callbacks_list {
-+	struct list_head list;
-+	u32 usage_id;
-+	struct hid_sensor_hub_callbacks *usage_callback;
-+	void *priv;
-+};
-+
-+static int sensor_hub_check_for_sensor_page(struct hid_device *hdev)
-+{
-+	int i;
-+	int ret = -EINVAL;
-+
-+	for (i = 0; i < hdev->maxcollection; i++) {
-+		struct hid_collection *col = &hdev->collection[i];
-+		if (col->type == HID_COLLECTION_PHYSICAL &&
-+		   (col->usage & HID_USAGE_PAGE) == HID_UP_SENSOR) {
-+			ret = 0;
-+			break;
-+		}
-+	}
-+
-+	return ret;
-+}
-+
-+static struct hid_report *sensor_hub_report(int id, struct hid_device *hdev,
-+						int dir)
-+{
-+	struct hid_report *report;
-+
-+	list_for_each_entry(report, &hdev->report_enum[dir].report_list, list) {
-+		if (report->id == id)
-+			return report;
-+	}
-+	hid_warn(hdev, "No report with id 0x%x found\n", id);
-+
-+	return NULL;
-+}
-+
-+static int sensor_hub_get_physical_device_count(
-+				struct hid_report_enum *report_enum)
-+{
-+	struct hid_report *report;
-+	struct hid_field *field;
-+	int cnt = 0;
-+
-+	list_for_each_entry(report, &report_enum->report_list, list) {
-+		field = report->field[0];
-+		if (report->maxfield && field &&
-+					field->physical)
-+			cnt++;
-+	}
-+
-+	return cnt;
-+}
-+
-+static void sensor_hub_fill_attr_info(
-+		struct hid_sensor_hub_attribute_info *info,
-+		s32 index, s32 report_id, s32 units, s32 unit_expo, s32 size)
-+{
-+	info->index = index;
-+	info->report_id = report_id;
-+	info->units = units;
-+	info->unit_expo = unit_expo;
-+	info->size = size/8;
-+}
-+
-+static struct hid_sensor_hub_callbacks *sensor_hub_get_callback(
-+					struct hid_device *hdev,
-+					u32 usage_id, void **priv)
-+{
-+	struct hid_sensor_hub_callbacks_list *callback;
-+	struct sensor_hub_data *pdata = hid_get_drvdata(hdev);
-+
-+	spin_lock(&pdata->dyn_callback_lock);
-+	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
-+		if (callback->usage_id == usage_id) {
-+			*priv = callback->priv;
-+			spin_unlock(&pdata->dyn_callback_lock);
-+			return callback->usage_callback;
-+		}
-+	spin_unlock(&pdata->dyn_callback_lock);
-+
-+	return NULL;
-+}
-+
-+int sensor_hub_register_callback(struct hid_sensor_hub_device *hsdev,
-+			u32 usage_id,
-+			struct hid_sensor_hub_callbacks *usage_callback)
-+{
-+	struct hid_sensor_hub_callbacks_list *callback;
-+	struct sensor_hub_data *pdata = hid_get_drvdata(hsdev->hdev);
-+
-+	spin_lock(&pdata->dyn_callback_lock);
-+	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
-+		if (callback->usage_id == usage_id) {
-+			spin_unlock(&pdata->dyn_callback_lock);
-+			return -EINVAL;
-+		}
-+	callback = kzalloc(sizeof(*callback), GFP_KERNEL);
-+	if (!callback) {
-+		spin_unlock(&pdata->dyn_callback_lock);
-+		return -ENOMEM;
-+	}
-+	callback->usage_callback = usage_callback;
-+	callback->usage_id = usage_id;
-+	callback->priv = NULL;
-+	list_add_tail(&callback->list, &pdata->dyn_callback_list);
-+	spin_unlock(&pdata->dyn_callback_lock);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(sensor_hub_register_callback);
-+
-+int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
-+				u32 usage_id)
-+{
-+	struct hid_sensor_hub_callbacks_list *callback;
-+	struct sensor_hub_data *pdata = hid_get_drvdata(hsdev->hdev);
-+
-+	spin_lock(&pdata->dyn_callback_lock);
-+	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
-+		if (callback->usage_id == usage_id) {
-+			list_del(&callback->list);
-+			kfree(callback);
-+			break;
-+		}
-+	spin_unlock(&pdata->dyn_callback_lock);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(sensor_hub_remove_callback);
-+
-+int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-+				u32 field_index, s32 value)
-+{
-+	struct hid_report *report;
-+	struct sensor_hub_data *data =  hid_get_drvdata(hsdev->hdev);
-+	int ret = 0;
-+
-+	if (report_id < 0)
-+		return -EINVAL;
-+
-+	mutex_lock(&data->mutex);
-+	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
-+	if (!report || (field_index >=  report->maxfield)) {
-+		ret = -EINVAL;
-+		goto done_proc;
-+	}
-+	hid_set_field(report->field[field_index], 0, value);
-+	usbhid_submit_report(hsdev->hdev, report, USB_DIR_OUT);
-+	usbhid_wait_io(hsdev->hdev);
-+
-+done_proc:
-+	mutex_unlock(&data->mutex);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(sensor_hub_set_feature);
-+
-+int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-+				u32 field_index, s32 *value)
-+{
-+	struct hid_report *report;
-+	struct sensor_hub_data *data =  hid_get_drvdata(hsdev->hdev);
-+	int ret = 0;
-+
-+	if (report_id < 0)
-+		return -EINVAL;
-+
-+	mutex_lock(&data->mutex);
-+	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
-+	if (!report || (field_index >=  report->maxfield)) {
-+		ret = -EINVAL;
-+		goto done_proc;
-+	}
-+	usbhid_submit_report(hsdev->hdev, report, USB_DIR_IN);
-+	usbhid_wait_io(hsdev->hdev);
-+	*value = report->field[field_index]->value[0];
-+
-+done_proc:
-+	mutex_unlock(&data->mutex);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(sensor_hub_get_feature);
-+
-+
-+int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
-+					u32 usage_id,
-+					u32 attr_usage_id, u32 report_id)
-+{
-+	struct sensor_hub_data *data =  hid_get_drvdata(hsdev->hdev);
-+	unsigned long flags;
-+	struct hid_report *report;
-+	int ret_val = 0;
-+
-+	if (report_id < 0)
-+		return -EINVAL;
-+
-+	mutex_lock(&data->mutex);
-+	memset(&data->pending, 0, sizeof(data->pending));
-+	init_completion(&data->pending.ready);
-+	data->pending.usage_id = usage_id;
-+	data->pending.attr_usage_id = attr_usage_id;
-+	data->pending.raw_size = 0;
-+
-+	spin_lock_irqsave(&data->lock, flags);
-+	data->pending.status = true;
-+	report = sensor_hub_report(report_id, hsdev->hdev, HID_INPUT_REPORT);
-+	if (!report) {
-+		spin_unlock_irqrestore(&data->lock, flags);
-+		goto err_free;
-+	}
-+	usbhid_submit_report(hsdev->hdev, report, USB_DIR_IN);
-+	spin_unlock_irqrestore(&data->lock, flags);
-+	wait_for_completion_interruptible_timeout(&data->pending.ready, HZ*5);
-+	switch (data->pending.raw_size) {
-+	case 1:
-+		ret_val = *(u8 *)data->pending.raw_data;
-+		break;
-+	case 2:
-+		ret_val = *(u16 *)data->pending.raw_data;
-+		break;
-+	case 4:
-+		ret_val = *(u32 *)data->pending.raw_data;
-+		break;
-+	default:
-+		ret_val = 0;
-+	}
-+	kfree(data->pending.raw_data);
-+
-+err_free:
-+	data->pending.status = false;
-+	mutex_unlock(&data->mutex);
-+
-+	return ret_val;
-+}
-+EXPORT_SYMBOL_GPL(sensor_hub_input_attr_get_raw_value);
-+
-+int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
-+				u8 type,
-+				u32 usage_id,
-+				u32 attr_usage_id,
-+				struct hid_sensor_hub_attribute_info *info)
-+{
-+	int ret = -1;
-+	int i, j;
-+	int collection_index = -1;
-+	struct hid_report *report;
-+	struct hid_field *field;
-+	struct hid_report_enum *report_enum;
-+	struct hid_device *hdev = hsdev->hdev;
-+
-+	/* Initialize with defaults */
-+	info->usage_id = usage_id;
-+	info->attrib_id =  attr_usage_id;
-+	info->report_id = -1;
-+	info->index = -1;
-+	info->units = -1;
-+	info->unit_expo = -1;
-+
-+	for (i = 0; i < hdev->maxcollection; ++i) {
-+		struct hid_collection *collection = &hdev->collection[i];
-+		if (usage_id == collection->usage) {
-+			collection_index = i;
-+			break;
-+		}
-+	}
-+	if (collection_index == -1)
-+		goto err_ret;
-+
-+	report_enum = &hdev->report_enum[type];
-+	list_for_each_entry(report, &report_enum->report_list, list) {
-+		for (i = 0; i < report->maxfield; ++i) {
-+			field = report->field[i];
-+			if (field->physical == usage_id &&
-+				field->logical == attr_usage_id) {
-+				sensor_hub_fill_attr_info(info, i, report->id,
-+					field->unit, field->unit_exponent,
-+					field->report_size);
-+				ret = 0;
-+			} else {
-+				for (j = 0; j < field->maxusage; ++j) {
-+					if (field->usage[j].hid ==
-+					attr_usage_id &&
-+					field->usage[j].collection_index ==
-+					collection_index)  {
-+						sensor_hub_fill_attr_info(info,
-+							i, report->id,
-+							field->unit,
-+							field->unit_exponent,
-+							field->report_size);
-+						ret = 0;
-+						break;
-+					}
-+				}
-+			}
-+			if (ret == 0)
-+				break;
-+		}
-+	}
-+
-+err_ret:
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(sensor_hub_input_get_attribute_info);
-+
-+#ifdef CONFIG_PM
-+static int sensor_hub_suspend(struct hid_device *hdev, pm_message_t message)
-+{
-+	struct sensor_hub_data *pdata =  hid_get_drvdata(hdev);
-+	struct hid_sensor_hub_callbacks_list *callback;
-+
-+	hid_dbg(hdev, " sensor_hub_suspend\n");
-+	spin_lock(&pdata->dyn_callback_lock);
-+	list_for_each_entry(callback, &pdata->dyn_callback_list, list) {
-+		if (callback->usage_callback->suspend)
-+			callback->usage_callback->suspend(
-+					pdata->hsdev, callback->priv);
-+	}
-+	spin_unlock(&pdata->dyn_callback_lock);
-+
-+	return 0;
-+}
-+
-+static int sensor_hub_resume(struct hid_device *hdev)
-+{
-+	struct sensor_hub_data *pdata =  hid_get_drvdata(hdev);
-+	struct hid_sensor_hub_callbacks_list *callback;
-+
-+	hid_dbg(hdev, " sensor_hub_resume\n");
-+	spin_lock(&pdata->dyn_callback_lock);
-+	list_for_each_entry(callback, &pdata->dyn_callback_list, list) {
-+		if (callback->usage_callback->resume)
-+			callback->usage_callback->resume(
-+					pdata->hsdev, callback->priv);
-+	}
-+	spin_unlock(&pdata->dyn_callback_lock);
-+
-+	return 0;
-+}
-+
-+static int sensor_hub_reset_resume(struct hid_device *hdev)
-+{
-+	return 0;
-+}
-+#endif
-+/*
-+ * Handle raw report as sent by device
-+ */
-+static int sensor_hub_raw_event(struct hid_device *hdev,
-+		struct hid_report *report, u8 *raw_data, int size)
-+{
-+	int i;
-+	u8 *ptr;
-+	int sz;
-+	struct sensor_hub_data *pdata = hid_get_drvdata(hdev);
-+	unsigned long flags;
-+	struct hid_sensor_hub_callbacks *callback = NULL;
-+	struct hid_collection *collection = NULL;
-+	void *priv = NULL;
-+
-+	hid_dbg(hdev, "sensor_hub_raw_event report id:0x%x size:%d type:%d\n",
-+			 report->id, size, report->type);
-+	hid_dbg(hdev, "maxfield:%d\n", report->maxfield);
-+	if (report->type != HID_INPUT_REPORT)
-+		return 1;
-+
-+	ptr = raw_data;
-+	ptr++; /*Skip report id*/
-+
-+	if (!report)
-+		goto err_report;
-+
-+	spin_lock_irqsave(&pdata->lock, flags);
-+
-+	for (i = 0; i < report->maxfield; ++i) {
-+
-+		hid_dbg(hdev, "%d collection_index:%x hid:%x sz:%x\n",
-+				i, report->field[i]->usage->collection_index,
-+				report->field[i]->usage->hid,
-+				report->field[i]->report_size/8);
-+
-+		sz = report->field[i]->report_size/8;
-+		if (pdata->pending.status && pdata->pending.attr_usage_id ==
-+				report->field[i]->usage->hid) {
-+			hid_dbg(hdev, "data was pending ...\n");
-+			pdata->pending.raw_data = kmalloc(sz, GFP_KERNEL);
-+			if (pdata->pending.raw_data) {
-+				memcpy(pdata->pending.raw_data, ptr, sz);
-+				pdata->pending.raw_size  = sz;
-+			} else
-+				pdata->pending.raw_size = 0;
-+			complete(&pdata->pending.ready);
-+		}
-+		collection = &hdev->collection[
-+				report->field[i]->usage->collection_index];
-+		hid_dbg(hdev, "collection->usage %x\n",
-+					collection->usage);
-+		callback = sensor_hub_get_callback(pdata->hsdev->hdev,
-+						report->field[i]->physical,
-+							&priv);
-+		if (callback && callback->capture_sample) {
-+			if (report->field[i]->logical)
-+				callback->capture_sample(pdata->hsdev,
-+					report->field[i]->logical, sz, ptr,
-+					callback->pdev);
-+			else
-+				callback->capture_sample(pdata->hsdev,
-+					report->field[i]->usage->hid, sz, ptr,
-+					callback->pdev);
-+		}
-+		ptr += sz;
-+	}
-+	if (callback && collection && callback->send_event)
-+		callback->send_event(pdata->hsdev, collection->usage,
-+				callback->pdev);
-+	spin_unlock_irqrestore(&pdata->lock, flags);
-+
-+err_report:
-+	return 1;
-+}
-+
-+static int sensor_hub_probe(struct hid_device *hdev,
-+				const struct hid_device_id *id)
-+{
-+	int ret;
-+	struct sensor_hub_data *sd;
-+	int i;
-+	char *name;
-+	struct hid_report *report;
-+	struct hid_report_enum *report_enum;
-+	struct hid_field *field;
-+	int dev_cnt;
-+
-+	sd = kzalloc(sizeof(struct sensor_hub_data), GFP_KERNEL);
-+	if (!sd) {
-+		hid_err(hdev, "cannot allocate Sensor data\n");
-+		return -ENOMEM;
-+	}
-+	sd->hsdev = kzalloc(sizeof(struct hid_sensor_hub_device), GFP_KERNEL);
-+	if (!sd->hsdev) {
-+		hid_err(hdev, "cannot allocate hid_sensor_hub_device\n");
-+		ret = -ENOMEM;
-+		goto err_free_hub;
-+	}
-+	hid_set_drvdata(hdev, sd);
-+	sd->hsdev->hdev = hdev;
-+	sd->hsdev->vendor_id = hdev->vendor;
-+	sd->hsdev->product_id = hdev->product;
-+	spin_lock_init(&sd->lock);
-+	spin_lock_init(&sd->dyn_callback_lock);
-+	mutex_init(&sd->mutex);
-+	ret = hid_parse(hdev);
-+	if (ret) {
-+		hid_err(hdev, "parse failed\n");
-+		goto err_free;
-+	}
-+	if (sensor_hub_check_for_sensor_page(hdev) < 0) {
-+		hid_err(hdev, "sensor page not found\n");
-+		goto err_free;
-+	}
-+	INIT_LIST_HEAD(&hdev->inputs);
-+
-+	hdev->claimed = HID_CLAIMED_INPUT;
-+	ret = hid_hw_start(hdev, 0);
-+	if (ret) {
-+		hid_err(hdev, "hw start failed\n");
-+		goto err_free;
-+	}
-+	ret = hid_hw_open(hdev);
-+	if (ret) {
-+		hid_err(hdev, "failed to open input interrupt pipe\n");
-+		goto err_stop_hw;
-+	}
-+
-+	INIT_LIST_HEAD(&sd->dyn_callback_list);
-+	sd->hid_sensor_client_cnt = 0;
-+	report_enum = &hdev->report_enum[HID_INPUT_REPORT];
-+
-+	dev_cnt = sensor_hub_get_physical_device_count(report_enum);
-+	if (dev_cnt > HID_MAX_PHY_DEVICES) {
-+		hid_err(hdev, "Invalid Physical device count\n");
-+		ret = -EINVAL;
-+		goto err_close;
-+	}
-+	sd->hid_sensor_hub_client_devs = kzalloc(dev_cnt *
-+						sizeof(struct mfd_cell),
-+						GFP_KERNEL);
-+	if (sd->hid_sensor_hub_client_devs == NULL) {
-+		hid_err(hdev,
-+			"Failed to allocate memory for mfd cells\n");
-+			ret = -ENOMEM;
-+			goto err_close;
-+	}
-+	list_for_each_entry(report, &report_enum->report_list, list) {
-+		hid_dbg(hdev, "Report id:%x\n", report->id);
-+		field = report->field[0];
-+		if (report->maxfield && field &&
-+					field->physical) {
-+			name = kasprintf(GFP_KERNEL, "HID-SENSOR-%x",
-+						field->physical);
-+			if (name  == NULL) {
-+				hid_err(hdev,
-+					"Failed MFD device name\n");
-+					ret = -ENOMEM;
-+					goto err_free_cells;
-+			}
-+			sd->hid_sensor_hub_client_devs[
-+				sd->hid_sensor_client_cnt].name = name;
-+			sd->hid_sensor_hub_client_devs[
-+				sd->hid_sensor_client_cnt].platform_data =
-+						sd->hsdev;
-+			sd->hid_sensor_hub_client_devs[
-+				sd->hid_sensor_client_cnt].pdata_size =
-+						sizeof(*sd->hsdev);
-+			hid_dbg(hdev, "Adding %s:%p\n", name, sd);
-+			sd->hid_sensor_client_cnt++;
-+		}
-+	}
-+	ret = mfd_add_devices(&hdev->dev, 0, sd->hid_sensor_hub_client_devs,
-+		sd->hid_sensor_client_cnt, NULL, 0);
-+	if (ret < 0)
-+		goto err_free_names;
-+
-+	return ret;
-+
-+err_free_names:
-+	for (i = 0; i < sd->hid_sensor_client_cnt ; ++i)
-+		kfree(sd->hid_sensor_hub_client_devs[i].name);
-+err_free_cells:
-+	kfree(sd->hid_sensor_hub_client_devs);
-+err_close:
-+	hid_hw_stop(hdev);
-+	hid_hw_close(hdev);
-+err_stop_hw:
-+	hid_hw_stop(hdev);
-+err_free:
-+	kfree(sd->hsdev);
-+err_free_hub:
-+	kfree(sd);
-+
-+	return ret;
-+}
-+
-+static void sensor_hub_remove(struct hid_device *hdev)
-+{
-+	struct sensor_hub_data *data = hid_get_drvdata(hdev);
-+	unsigned long flags;
-+	int i;
-+
-+	hid_dbg(hdev, " hardware removed\n");
-+	hdev->claimed &= ~HID_CLAIMED_INPUT;
-+	hid_hw_stop(hdev);
-+	hid_hw_close(hdev);
-+	spin_lock_irqsave(&data->lock, flags);
-+	if (data->pending.status)
-+		complete(&data->pending.ready);
-+	spin_unlock_irqrestore(&data->lock, flags);
-+	mfd_remove_devices(&hdev->dev);
-+	for (i = 0; i < data->hid_sensor_client_cnt ; ++i)
-+		kfree(data->hid_sensor_hub_client_devs[i].name);
-+	kfree(data->hid_sensor_hub_client_devs);
-+	hid_set_drvdata(hdev, NULL);
-+	mutex_destroy(&data->mutex);
-+	kfree(data->hsdev);
-+	kfree(data);
-+}
-+
-+static const struct hid_device_id sensor_hub_devices[] = {
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
-+			USB_DEVICE_ID_SENSOR_HUB_1020) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
-+			USB_DEVICE_ID_SENSOR_HUB_1020) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086,
-+			USB_DEVICE_ID_SENSOR_HUB_09FA) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087,
-+			USB_DEVICE_ID_SENSOR_HUB_09FA) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_STANTUM_STM,
-+			USB_DEVICE_ID_SENSOR_HUB_7014) },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(hid, sensor_hub_devices);
-+
-+static const struct hid_usage_id sensor_hub_grabbed_usages[] = {
-+	{ HID_ANY_ID, HID_ANY_ID, HID_ANY_ID },
-+	{ HID_ANY_ID - 1, HID_ANY_ID - 1, HID_ANY_ID - 1 }
-+};
-+
-+static struct hid_driver sensor_hub_driver = {
-+	.name = "hid-sensor-hub",
-+	.id_table = sensor_hub_devices,
-+	.probe = sensor_hub_probe,
-+	.remove = sensor_hub_remove,
-+	.raw_event = sensor_hub_raw_event,
-+#ifdef CONFIG_PM
-+	.suspend = sensor_hub_suspend,
-+	.resume =  sensor_hub_resume,
-+	.reset_resume =  sensor_hub_reset_resume,
-+#endif
-+};
-+
-+static int __init sensor_hub_init(void)
-+{
-+	return hid_register_driver(&sensor_hub_driver);
-+}
-+
-+static void __exit sensor_hub_exit(void)
-+{
-+	hid_unregister_driver(&sensor_hub_driver);
-+}
-+
-+module_init(sensor_hub_init);
-+module_exit(sensor_hub_exit);
-+
-+MODULE_DESCRIPTION("HID Sensor Hub driver");
-+MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-new file mode 100644
-index 0000000..0aa5f4c
---- /dev/null
-+++ b/include/linux/hid-sensor-hub.h
-@@ -0,0 +1,160 @@
-+/*
-+ * HID Sensors Driver
-+ * Copyright (c) 2012, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-+ *
-+ */
-+#ifndef _HID_SENSORS_HUB_H
-+#define _HID_SENSORS_HUB_H
-+
-+#include <linux/hid.h>
-+#include <linux/hid-sensor-ids.h>
-+
-+/**
-+ * struct hid_sensor_hub_attribute_info - Attribute info
-+ * @usage_id:		Parent usage id of a physical device.
-+ * @attrib_id:		Attribute id for this attribute.
-+ * @report_id:		Report id in which this information resides.
-+ * @index:		Field index in the report.
-+ * @units:		Measurment unit for this attribute.
-+ * @unit_expo:		Exponent used in the data.
-+ * @size:		Size in bytes for data size.
-+ */
-+struct hid_sensor_hub_attribute_info {
-+	u32 usage_id;
-+	u32 attrib_id;
-+	s32 report_id;
-+	s32 index;
-+	s32 units;
-+	s32 unit_expo;
-+	s32 size;
-+};
-+
-+/**
-+ * struct hid_sensor_hub_device - Stores the hub instance data
-+ * @hdev:		Stores the hid instance.
-+ * @vendor_id:		Vendor id of hub device.
-+ * @product_id:		Product id of hub device.
-+ */
-+struct hid_sensor_hub_device {
-+	struct hid_device *hdev;
-+	u32 vendor_id;
-+	u32 product_id;
-+};
-+
-+/**
-+ * struct hid_sensor_hub_callbacks - Client callback functions
-+ * @pdev:		Platform device instance of the client driver.
-+ * @suspend:		Suspend callback.
-+ * @resume:		Resume callback.
-+ * @capture_sample:	Callback to get a sample.
-+ * @send_event:		Send notification to indicate all samples are
-+ *			captured, process and send event
-+ */
-+struct hid_sensor_hub_callbacks {
-+	struct platform_device *pdev;
-+	int (*suspend)(struct hid_sensor_hub_device *hsdev, void *priv);
-+	int (*resume)(struct hid_sensor_hub_device *hsdev, void *priv);
-+	int (*capture_sample)(struct hid_sensor_hub_device *hsdev,
-+			u32 usage_id, size_t raw_len, char *raw_data,
-+			void *priv);
-+	int (*send_event)(struct hid_sensor_hub_device *hsdev, u32 usage_id,
-+			 void *priv);
-+};
-+
-+/* Registration functions */
-+
-+/**
-+* sensor_hub_register_callback() - Register client callbacks
-+* @hsdev:	Hub device instance.
-+* @usage_id:	Usage id of the client (E.g. 0x200076 for Gyro).
-+* @usage_callback: Callback function storage
-+*
-+* Used to register callbacks by client processing drivers. Sensor
-+* hub core driver will call these callbacks to offload processing
-+* of data streams and notifications.
-+*/
-+int sensor_hub_register_callback(struct hid_sensor_hub_device *hsdev,
-+			u32 usage_id,
-+			struct hid_sensor_hub_callbacks *usage_callback);
-+
-+/**
-+* sensor_hub_remove_callback() - Remove client callbacks
-+* @hsdev:	Hub device instance.
-+* @usage_id:	Usage id of the client (E.g. 0x200076 for Gyro).
-+*
-+* If there is a callback registred, this call will remove that
-+* callbacks, so that it will stop data and event notifications.
-+*/
-+int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
-+			u32 usage_id);
-+
-+
-+/* Hid sensor hub core interfaces */
-+
-+/**
-+* sensor_hub_input_get_attribute_info() - Get an attribute information
-+* @hsdev:	Hub device instance.
-+* @type:	Type of this attribute, input/output/feature
-+* @usage_id:	Attribute usage id of parent physical device as per spec
-+* @attr_usage_id:	Attribute usage id as per spec
-+* @info:	return information about attribute after parsing report
-+*
-+* Parses report and returns the attribute information such as report id,
-+* field index, units and exponet etc.
-+*/
-+int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
-+			u8 type,
-+			u32 usage_id, u32 attr_usage_id,
-+			struct hid_sensor_hub_attribute_info *info);
-+
-+/**
-+* sensor_hub_input_attr_get_raw_value() - Synchronous read request
-+* @usage_id:	Attribute usage id of parent physical device as per spec
-+* @attr_usage_id:	Attribute usage id as per spec
-+* @report_id:	Report id to look for
-+*
-+* Issues a synchronous read request for an input attribute. Returns
-+* data upto 32 bits. Since client can get events, so this call should
-+* not be used for data paths, this will impact performance.
-+*/
-+
-+int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
-+			u32 usage_id,
-+			u32 attr_usage_id, u32 report_id);
-+/**
-+* sensor_hub_set_feature() - Feature set request
-+* @report_id:	Report id to look for
-+* @field_index:	Field index inside a report
-+* @value:	Value to set
-+*
-+* Used to set a field in feature report. For example this can set polling
-+* interval, sensitivity, activate/deactivate state.
-+*/
-+int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-+			u32 field_index, s32 value);
-+
-+/**
-+* sensor_hub_get_feature() - Feature get request
-+* @report_id:	Report id to look for
-+* @field_index:	Field index inside a report
-+* @value:	Place holder for return value
-+*
-+* Used to get a field in feature report. For example this can get polling
-+* interval, sensitivity, activate/deactivate state.
-+*/
-+int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-+			u32 field_index, s32 *value);
-+#endif
-diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-new file mode 100644
-index 0000000..ca8d7e9
---- /dev/null
-+++ b/include/linux/hid-sensor-ids.h
-@@ -0,0 +1,112 @@
-+/*
-+ * HID Sensors Driver
-+ * Copyright (c) 2012, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program; if not, write to the Free Software Foundation, Inc.,
-+ * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-+ *
-+ */
-+#ifndef _HID_SENSORS_IDS_H
-+#define _HID_SENSORS_IDS_H
-+
-+#define HID_UP_SENSOR						0x00200000
-+#define HID_MAX_PHY_DEVICES					0xFF
-+
-+/* Accel 3D (200073) */
-+#define HID_USAGE_SENSOR_ACCEL_3D				0x200073
-+#define HID_USAGE_SENSOR_ACCEL_X_AXIS				0x200453
-+#define HID_USAGE_SENSOR_ACCEL_Y_AXIS				0x200454
-+#define HID_USAGE_SENSOR_ACCEL_Z_AXIS				0x200455
-+
-+/* ALS (200041) */
-+#define HID_USAGE_SENSOR_ALS					0x200041
-+#define HID_USAGE_SENSOR_LIGHT_ILLUM				0x2004d1
-+
-+/* Gyro 3D: (200076) */
-+#define HID_USAGE_SENSOR_GYRO_3D				0x200076
-+#define HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXIS			0x200457
-+#define HID_USAGE_SENSOR_ANGL_VELOCITY_Y_AXIS			0x200458
-+#define HID_USAGE_SENSOR_ANGL_VELOCITY_Z_AXIS			0x200459
-+
-+/*ORIENTATION: Compass 3D: (200083) */
-+#define HID_USAGE_SENSOR_COMPASS_3D				0x200083
-+#define HID_USAGE_SENSOR_ORIENT_MAGN_HEADING			0x200471
-+#define HID_USAGE_SENSOR_ORIENT_MAGN_HEADING_X			0x200472
-+#define HID_USAGE_SENSOR_ORIENT_MAGN_HEADING_Y			0x200473
-+#define HID_USAGE_SENSOR_ORIENT_MAGN_HEADING_Z			0x200474
-+
-+#define HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH			0x200475
-+#define HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH			0x200476
-+#define HID_USAGE_SENSOR_ORIENT_MAGN_NORTH			0x200477
-+#define HID_USAGE_SENSOR_ORIENT_TRUE_NORTH			0x200478
-+
-+#define HID_USAGE_SENSOR_ORIENT_DISTANCE			0x200479
-+#define HID_USAGE_SENSOR_ORIENT_DISTANCE_X			0x20047A
-+#define HID_USAGE_SENSOR_ORIENT_DISTANCE_Y			0x20047B
-+#define HID_USAGE_SENSOR_ORIENT_DISTANCE_Z			0x20047C
-+#define HID_USAGE_SENSOR_ORIENT_DISTANCE_OUT_OF_RANGE		0x20047D
-+#define HID_USAGE_SENSOR_ORIENT_TILT				0x20047E
-+#define HID_USAGE_SENSOR_ORIENT_TILT_X				0x20047F
-+#define HID_USAGE_SENSOR_ORIENT_TILT_Y				0x200480
-+#define HID_USAGE_SENSOR_ORIENT_TILT_Z				0x200481
-+#define HID_USAGE_SENSOR_ORIENT_ROTATION_MATRIX			0x200482
-+#define HID_USAGE_SENSOR_ORIENT_QUATERNION			0x200483
-+#define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX			0x200484
-+
-+#define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS		0x200485
-+#define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS		0x200486
-+#define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS		0x200487
-+
-+/* Units */
-+#define HID_USAGE_SENSOR_UNITS_NOT_SPECIFIED			0x00
-+#define HID_USAGE_SENSOR_UNITS_LUX				0x01
-+#define HID_USAGE_SENSOR_UNITS_KELVIN				0x01000100
-+#define HID_USAGE_SENSOR_UNITS_FAHRENHEIT			0x03000100
-+#define HID_USAGE_SENSOR_UNITS_PASCAL				0xF1E1
-+#define HID_USAGE_SENSOR_UNITS_NEWTON				0x11E1
-+#define HID_USAGE_SENSOR_UNITS_METERS_PER_SECOND		0x11F0
-+#define HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD		0x11E0
-+#define HID_USAGE_SENSOR_UNITS_FARAD				0xE14F2000
-+#define HID_USAGE_SENSOR_UNITS_AMPERE				0x01001000
-+#define HID_USAGE_SENSOR_UNITS_WATT				0x21d1
-+#define HID_USAGE_SENSOR_UNITS_HENRY				0x21E1E000
-+#define HID_USAGE_SENSOR_UNITS_OHM				0x21D1E000
-+#define HID_USAGE_SENSOR_UNITS_VOLT				0x21D1F000
-+#define HID_USAGE_SENSOR_UNITS_HERTZ				0x01F0
-+#define HID_USAGE_SENSOR_UNITS_DEGREES_PER_SEC_SQRD		0x14E0
-+#define HID_USAGE_SENSOR_UNITS_RADIANS				0x12
-+#define HID_USAGE_SENSOR_UNITS_RADIANS_PER_SECOND		0x12F0
-+#define HID_USAGE_SENSOR_UNITS_RADIANS_PER_SEC_SQRD		0x12E0
-+#define HID_USAGE_SENSOR_UNITS_SECOND				0x0110
-+#define HID_USAGE_SENSOR_UNITS_GAUSS				0x01E1F000
-+#define HID_USAGE_SENSOR_UNITS_GRAM				0x0101
-+#define HID_USAGE_SENSOR_UNITS_CENTIMETER			0x11
-+#define HID_USAGE_SENSOR_UNITS_G				0x1A
-+#define HID_USAGE_SENSOR_UNITS_MILLISECOND			0x19
-+#define HID_USAGE_SENSOR_UNITS_PERCENT				0x17
-+#define HID_USAGE_SENSOR_UNITS_DEGREES				0x14
-+#define HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND		0x15
-+
-+/* Common selectors */
-+#define HID_USAGE_SENSOR_PROP_REPORT_INTERVAL			0x20030E
-+#define HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS			0x20030F
-+#define HID_USAGE_SENSOR_PROP_SENSITIVITY_RANGE_PCT		0x200310
-+#define HID_USAGE_SENSOR_PROP_SENSITIVITY_REL_PCT		0x200311
-+#define HID_USAGE_SENSOR_PROP_ACCURACY				0x200312
-+#define HID_USAGE_SENSOR_PROP_RESOLUTION			0x200313
-+#define HID_USAGE_SENSOR_PROP_RANGE_MAXIMUM			0x200314
-+#define HID_USAGE_SENSOR_PROP_RANGE_MINIMUM			0x200315
-+#define HID_USAGE_SENSOR_PROP_REPORT_STATE			0x200316
-+#define HID_USAGE_SENSOR_PROY_POWER_STATE			0x200319
-+
-+#endif
+-#include "ad7476.h"
+ 
+ static int ad7476_scan_direct(struct ad7476_state *st)
+ {
+diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
+deleted file mode 100644
+index 4ed5494..0000000
+--- a/drivers/staging/iio/adc/ad7476.h
++++ /dev/null
+@@ -1,56 +0,0 @@
+-/*
+- * AD7476/5/7/8 (A) SPI ADC driver
+- *
+- * Copyright 2010 Analog Devices Inc.
+- *
+- * Licensed under the GPL-2 or later.
+- */
+-#ifndef IIO_ADC_AD7476_H_
+-#define IIO_ADC_AD7476_H_
+-
+-#define RES_MASK(bits)	((1 << (bits)) - 1)
+-
+-struct ad7476_chip_info {
+-	unsigned int			int_vref_uv;
+-	struct iio_chan_spec		channel[2];
+-};
+-
+-struct ad7476_state {
+-	struct spi_device		*spi;
+-	const struct ad7476_chip_info	*chip_info;
+-	struct regulator		*reg;
+-	struct spi_transfer		xfer;
+-	struct spi_message		msg;
+-	/*
+-	 * DMA (thus cache coherency maintenance) requires the
+-	 * transfer buffers to live in their own cache lines.
+-	 * Make the buffer large enough for one 16 bit sample and one 64 bit
+-	 * aligned 64 bit timestamp.
+-	 */
+-	unsigned char data[ALIGN(2, sizeof(s64)) + sizeof(s64)]
+-			____cacheline_aligned;
+-};
+-
+-enum ad7476_supported_device_ids {
+-	ID_AD7466,
+-	ID_AD7467,
+-	ID_AD7468,
+-	ID_AD7495
+-};
+-
+-#ifdef CONFIG_IIO_BUFFER
+-int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+-void ad7476_ring_cleanup(struct iio_dev *indio_dev);
+-#else /* CONFIG_IIO_BUFFER */
+-
+-static inline int
+-ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+-{
+-	return 0;
+-}
+-
+-static inline void ad7476_ring_cleanup(struct iio_dev *indio_dev)
+-{
+-}
+-#endif /* CONFIG_IIO_BUFFER */
+-#endif /* IIO_ADC_AD7476_H_ */
+diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
+deleted file mode 100644
+index 185cfde..0000000
+--- a/drivers/staging/iio/adc/ad7476_ring.c
++++ /dev/null
+@@ -1,57 +0,0 @@
+-/*
+- * Copyright 2010-2012 Analog Devices Inc.
+- * Copyright (C) 2008 Jonathan Cameron
+- *
+- * Licensed under the GPL-2 or later.
+- *
+- * ad7476_ring.c
+- */
+-
+-#include <linux/interrupt.h>
+-#include <linux/device.h>
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/spi/spi.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/buffer.h>
+-#include <linux/iio/trigger_consumer.h>
+-#include <linux/iio/triggered_buffer.h>
+-
+-#include "ad7476.h"
+-
+-static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+-{
+-	struct iio_poll_func *pf = p;
+-	struct iio_dev *indio_dev = pf->indio_dev;
+-	struct ad7476_state *st = iio_priv(indio_dev);
+-	s64 time_ns;
+-	int b_sent;
+-
+-	b_sent = spi_read(st->spi, st->data,
+-			  st->chip_info->channel[0].scan_type.storagebits / 8);
+-	if (b_sent < 0)
+-		goto done;
+-
+-	time_ns = iio_get_time_ns();
+-
+-	if (indio_dev->scan_timestamp)
+-		((s64 *)st->data)[1] = time_ns;
+-
+-	iio_push_to_buffer(indio_dev->buffer, st->data);
+-done:
+-	iio_trigger_notify_done(indio_dev->trig);
+-
+-	return IRQ_HANDLED;
+-}
+-
+-int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+-{
+-	return iio_triggered_buffer_setup(indio_dev, NULL,
+-			&ad7476_trigger_handler, NULL);
+-}
+-
+-void ad7476_ring_cleanup(struct iio_dev *indio_dev)
+-{
+-	iio_triggered_buffer_cleanup(indio_dev);
+-}
 -- 
-1.7.11.4
+1.7.10.4
 
