@@ -1,180 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-233.synserver.de ([212.40.185.233]:1170 "EHLO
+Received: from smtp-out-233.synserver.de ([212.40.185.233]:1073 "EHLO
 	smtp-out-233.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760583Ab2IGMoK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Sep 2012 08:44:10 -0400
+	with ESMTP id S933335Ab2IGMoN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Sep 2012 08:44:13 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 04/10] staging:iio:ad7476: Rework reference voltage handling
-Date: Fri,  7 Sep 2012 14:44:26 +0200
-Message-Id: <1347021872-7885-4-git-send-email-lars@metafoo.de>
+Subject: [PATCH 10/10] iio:ad7476: Add support for ad7274/ad7275/ad7276/ad7277/ad7278
+Date: Fri,  7 Sep 2012 14:44:32 +0200
+Message-Id: <1347021872-7885-10-git-send-email-lars@metafoo.de>
 In-Reply-To: <1347021872-7885-1-git-send-email-lars@metafoo.de>
 References: <1347021872-7885-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Slightly rework the reference voltage handling for the ad7476 driver. Now the only
-way to specify a external reference voltage is to use the regulator API,
-previously it was possible to use either platform_data or the regulator API. The
-new way is more consistent with what other drivers do.
-
-Also do not ignore errors when requesting the regulator, since this will cope
-very poorly with e.g. deferred probing.
+The ad7276/ad7277/ad7278 are similar to the ad7476/ad7477/ad7478 but have the
+same number of leading zeros as the ad7940. The ad7274/ad7275 have a extra pin
+for VREF where as for the ad7276/ad7277/ad7278 VREF is taken from VDD, but
+otherwise they are compatible to the ad7276/ad7277.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad7476.h      |   11 +------
- drivers/staging/iio/adc/ad7476_core.c |   56 +++++++++++++++------------------
- 2 files changed, 26 insertions(+), 41 deletions(-)
+ drivers/iio/adc/Kconfig  |    6 +++---
+ drivers/iio/adc/ad7476.c |   20 ++++++++++++++++++++
+ 2 files changed, 23 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
-index c4f1150..4ed5494 100644
---- a/drivers/staging/iio/adc/ad7476.h
-+++ b/drivers/staging/iio/adc/ad7476.h
-@@ -10,16 +10,8 @@
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7152a49..645c052 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -24,9 +24,9 @@ config AD7476
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+-	  Say yes here to build support for Analog Devices AD7475, AD7476, AD7477,
+-	  AD7478, AD7466, AD7467, AD7468, AD7495, AD7910, AD7920, AD7920 SPI analog
+-	  to digital converters (ADC).
++	  Say yes here to build support for Analog Devices AD7274, AD7275, AD7276,
++	  AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
++	  AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
  
- #define RES_MASK(bits)	((1 << (bits)) - 1)
+ 	  If unsure, say N (but it's safe to say "Y").
  
--/*
-- * TODO: struct ad7476_platform_data needs to go into include/linux/iio
-- */
--
--struct ad7476_platform_data {
--	u16				vref_mv;
--};
--
- struct ad7476_chip_info {
--	u16				int_vref_mv;
-+	unsigned int			int_vref_uv;
- 	struct iio_chan_spec		channel[2];
+diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+index 646df45..8c7e206 100644
+--- a/drivers/iio/adc/ad7476.c
++++ b/drivers/iio/adc/ad7476.c
+@@ -45,6 +45,9 @@ struct ad7476_state {
  };
  
-@@ -27,7 +19,6 @@ struct ad7476_state {
- 	struct spi_device		*spi;
- 	const struct ad7476_chip_info	*chip_info;
- 	struct regulator		*reg;
--	u16				int_vref_mv;
- 	struct spi_transfer		xfer;
- 	struct spi_message		msg;
- 	/*
-diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
-index c97300b..42523e6 100644
---- a/drivers/staging/iio/adc/ad7476_core.c
-+++ b/drivers/staging/iio/adc/ad7476_core.c
-@@ -40,7 +40,7 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
- {
- 	int ret;
- 	struct ad7476_state *st = iio_priv(indio_dev);
--	unsigned int scale_uv;
-+	int scale_uv;
+ enum ad7476_supported_device_ids {
++	ID_AD7276,
++	ID_AD7277,
++	ID_AD7278,
+ 	ID_AD7466,
+ 	ID_AD7467,
+ 	ID_AD7468,
+@@ -172,6 +175,18 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+ #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits))
  
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -57,10 +57,16 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
- 			RES_MASK(st->chip_info->channel[0].scan_type.realbits);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		scale_uv = (st->int_vref_mv * 1000)
--			>> st->chip_info->channel[0].scan_type.realbits;
--		*val =  scale_uv/1000;
--		*val2 = (scale_uv%1000)*1000;
-+		if (!st->chip_info->int_vref_uv) {
-+			scale_uv = regulator_get_voltage(st->reg);
-+			if (scale_uv < 0)
-+				return scale_uv;
-+		} else {
-+			scale_uv = st->chip_info->int_vref_uv;
-+		}
-+		scale_uv >>= chan->scan_type.realbits;
-+		*val =  scale_uv / 1000;
-+		*val2 = (scale_uv % 1000) * 1000;
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	}
- 	return -EINVAL;
-@@ -96,7 +102,7 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
- 	[ID_AD7495] = {
+ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
++	[ID_AD7276] = {
++		.channel[0] = AD7940_CHAN(12),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
++	[ID_AD7277] = {
++		.channel[0] = AD7940_CHAN(10),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
++	[ID_AD7278] = {
++		.channel[0] = AD7940_CHAN(8),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
+ 	[ID_AD7466] = {
  		.channel[0] = AD7476_CHAN(12),
  		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
--		.int_vref_mv = 2500,
-+		.int_vref_uv = 2500000,
- 	},
- };
+@@ -280,6 +295,11 @@ static int __devexit ad7476_remove(struct spi_device *spi)
+ }
  
-@@ -107,10 +113,9 @@ static const struct iio_info ad7476_info = {
- 
- static int __devinit ad7476_probe(struct spi_device *spi)
- {
--	struct ad7476_platform_data *pdata = spi->dev.platform_data;
- 	struct ad7476_state *st;
- 	struct iio_dev *indio_dev;
--	int ret, voltage_uv = 0;
-+	int ret;
- 
- 	indio_dev = iio_device_alloc(sizeof(*st));
- 	if (indio_dev == NULL) {
-@@ -118,25 +123,18 @@ static int __devinit ad7476_probe(struct spi_device *spi)
- 		goto error_ret;
- 	}
- 	st = iio_priv(indio_dev);
-+	st->chip_info =
-+		&ad7476_chip_info_tbl[spi_get_device_id(spi)->driver_data];
-+
- 	st->reg = regulator_get(&spi->dev, "vcc");
- 	if (!IS_ERR(st->reg)) {
--		ret = regulator_enable(st->reg);
--		if (ret)
--			goto error_put_reg;
--
--		voltage_uv = regulator_get_voltage(st->reg);
-+		ret = PTR_ERR(st->reg);
-+		goto error_ret;
- 	}
--	st->chip_info =
--		&ad7476_chip_info_tbl[spi_get_device_id(spi)->driver_data];
- 
--	if (st->chip_info->int_vref_mv)
--		st->int_vref_mv = st->chip_info->int_vref_mv;
--	else if (pdata && pdata->vref_mv)
--		st->int_vref_mv = pdata->vref_mv;
--	else if (voltage_uv)
--		st->int_vref_mv = voltage_uv / 1000;
--	else
--		dev_warn(&spi->dev, "reference voltage unspecified\n");
-+	ret = regulator_enable(st->reg);
-+	if (ret)
-+		goto error_put_reg;
- 
- 	spi_set_drvdata(spi, indio_dev);
- 
-@@ -169,11 +167,9 @@ static int __devinit ad7476_probe(struct spi_device *spi)
- error_ring_unregister:
- 	ad7476_ring_cleanup(indio_dev);
- error_disable_reg:
--	if (!IS_ERR(st->reg))
--		regulator_disable(st->reg);
-+	regulator_disable(st->reg);
- error_put_reg:
--	if (!IS_ERR(st->reg))
--		regulator_put(st->reg);
-+	regulator_put(st->reg);
- 	iio_device_free(indio_dev);
- 
- error_ret:
-@@ -187,10 +183,8 @@ static int __devexit ad7476_remove(struct spi_device *spi)
- 
- 	iio_device_unregister(indio_dev);
- 	ad7476_ring_cleanup(indio_dev);
--	if (!IS_ERR(st->reg)) {
--		regulator_disable(st->reg);
--		regulator_put(st->reg);
--	}
-+	regulator_disable(st->reg);
-+	regulator_put(st->reg);
- 	iio_device_free(indio_dev);
- 
- 	return 0;
+ static const struct spi_device_id ad7476_id[] = {
++	{"ad7274", ID_AD7276},
++	{"ad7275", ID_AD7277},
++	{"ad7276", ID_AD7276},
++	{"ad7277", ID_AD7277},
++	{"ad7278", ID_AD7278},
+ 	{"ad7466", ID_AD7466},
+ 	{"ad7467", ID_AD7467},
+ 	{"ad7468", ID_AD7468},
 -- 
 1.7.10.4
 
