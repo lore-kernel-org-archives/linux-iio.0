@@ -1,90 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-233.synserver.de ([212.40.185.233]:1047 "EHLO
-	smtp-out-233.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758104Ab2IGJLm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Sep 2012 05:11:42 -0400
-Message-ID: <5049BA6C.1050309@metafoo.de>
-Date: Fri, 07 Sep 2012 11:12:12 +0200
+Received: from smtp-out-234.synserver.de ([212.40.185.234]:1158 "EHLO
+	smtp-out-233.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1754580Ab2IGQgf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Sep 2012 12:36:35 -0400
+Message-ID: <504A22AD.2050403@metafoo.de>
+Date: Fri, 07 Sep 2012 18:37:01 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org, srinivas.pandruvada@intel.com
-Subject: Re: [PATCH] staging:iio: hid-sensors Use iio_push_to_buffer
-References: <1346966403-14517-1-git-send-email-jic23@kernel.org>
-In-Reply-To: <1346966403-14517-1-git-send-email-jic23@kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH 03/10] staging:iio:ad7476: Avoid alloc/free for each sample
+ in buffered mode
+References: <1347021872-7885-1-git-send-email-lars@metafoo.de> <1347021872-7885-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347021872-7885-3-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/06/2012 11:20 PM, Jonathan Cameron wrote:
-> Consistently use iio_push_to_buffer instead of manually calling the buffers
-> store_to callback.
+On 09/07/2012 02:44 PM, Lars-Peter Clausen wrote:
+> The ad7476 driver has only support for 1 channel ADCs. So the upper limit for
+> the buffer size is the size of one sample plus the size of the timestamp.
+> Preallocate a buffer large enough to hold this to avoid having to allocate and
+> free a new buffer for each sample being captured.
 > 
-> These crossed with Lars-Peter's patch set doing every other case.
-
-Actually I only did this for drivers/staging/iio, the at91_adc driver in
-drivers/iio still uses the store_to callback as well, might make sense to
-convert it as well in this patch.
-
-> 
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 > ---
->  drivers/iio/accel/hid-sensor-accel-3d.c       | 2 +-
->  drivers/iio/gyro/hid-sensor-gyro-3d.c         | 2 +-
->  drivers/iio/light/hid-sensor-als.c            | 2 +-
->  drivers/iio/magnetometer/hid-sensor-magn-3d.c | 2 +-
->  4 files changed, 4 insertions(+), 4 deletions(-)
+>  drivers/staging/iio/adc/ad7476.h      |    5 ++++-
+>  drivers/staging/iio/adc/ad7476_ring.c |   13 +++----------
+>  2 files changed, 7 insertions(+), 11 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-> index 33aa97c..c593eb23 100644
-> --- a/drivers/iio/accel/hid-sensor-accel-3d.c
-> +++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-> @@ -212,7 +212,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
->  				datum_sz);
->  		return;
->  	}
-> -	buffer->access->store_to(buffer, (u8 *)data, timestamp);
-> +	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
->  }
+> diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
+> index 6085fad..c4f1150 100644
+> --- a/drivers/staging/iio/adc/ad7476.h
+> +++ b/drivers/staging/iio/adc/ad7476.h
+> @@ -33,8 +33,11 @@ struct ad7476_state {
+>  	/*
+>  	 * DMA (thus cache coherency maintenance) requires the
+>  	 * transfer buffers to live in their own cache lines.
+> +	 * Make the buffer large enough for one 16 bit sample and one 64 bit
+> +	 * aligned 64 bit timestamp.
+>  	 */
+> -	unsigned char			data[2] ____cacheline_aligned;
+> +	unsigned char data[ALIGN(2, sizeof(s64)) + sizeof(s64)]
+> +			____cacheline_aligned;
+>  };
 >  
->  /* Callback handler to send event after all samples are received and captured */
-> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> index 50ec09b..94a4740 100644
-> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> @@ -212,7 +212,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
->  				datum_sz);
->  		return;
->  	}
-> -	buffer->access->store_to(buffer, (u8 *)data, timestamp);
-> +	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
->  }
+>  enum ad7476_supported_device_ids {
+> diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
+> index 940681f..185cfde 100644
+> --- a/drivers/staging/iio/adc/ad7476_ring.c
+> +++ b/drivers/staging/iio/adc/ad7476_ring.c
+> @@ -26,14 +26,9 @@ static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+>  	struct iio_dev *indio_dev = pf->indio_dev;
+>  	struct ad7476_state *st = iio_priv(indio_dev);
+>  	s64 time_ns;
+> -	__u8 *rxbuf;
+>  	int b_sent;
 >  
->  /* Callback handler to send event after all samples are received and captured */
-> diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-> index 2cff7d5..b3c8e91 100644
-> --- a/drivers/iio/light/hid-sensor-als.c
-> +++ b/drivers/iio/light/hid-sensor-als.c
-> @@ -191,7 +191,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
->  				datum_sz);
->  		return;
->  	}
-> -	buffer->access->store_to(buffer, (u8 *)data, timestamp);
-> +	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
->  }
+> -	rxbuf = kzalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> -	if (rxbuf == NULL)
+> -		goto done;
+> -
+> -	b_sent = spi_read(st->spi, rxbuf,
+> +	b_sent = spi_read(st->spi, st->data,
+>  			  st->chip_info->channel[0].scan_type.storagebits / 8);
+
+I just noticed this can even more be simplified by using the prepared SPI
+message. Unfortunately this will require regeneration of a few more patches.
+I'll resend the whole series next week, after it had some exposure to review.
+
+>  	if (b_sent < 0)
+>  		goto done;
+> @@ -41,13 +36,11 @@ static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+>  	time_ns = iio_get_time_ns();
 >  
->  /* Callback handler to send event after all samples are received and captured */
-> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> index 07591f4..397704e 100644
-> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> @@ -213,7 +213,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
->  				datum_sz);
->  		return;
->  	}
-> -	buffer->access->store_to(buffer, (u8 *)data, timestamp);
-> +	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
->  }
+>  	if (indio_dev->scan_timestamp)
+> -		memcpy(rxbuf + indio_dev->scan_bytes - sizeof(s64),
+> -			&time_ns, sizeof(time_ns));
+> +		((s64 *)st->data)[1] = time_ns;
 >  
->  /* Callback handler to send event after all samples are received and captured */
+> -	iio_push_to_buffer(indio_dev->buffer, rxbuf);
+> +	iio_push_to_buffer(indio_dev->buffer, st->data);
+>  done:
+>  	iio_trigger_notify_done(indio_dev->trig);
+> -	kfree(rxbuf);
+>  
+>  	return IRQ_HANDLED;
+>  }
 
