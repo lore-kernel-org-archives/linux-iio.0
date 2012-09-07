@@ -1,30 +1,97 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5049BA8B.9040602@metafoo.de>
-Date: Fri, 07 Sep 2012 11:12:43 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41844 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753865Ab2IGSIT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Sep 2012 14:08:19 -0400
+Message-ID: <504A380D.9060904@jic23.retrosnub.co.uk>
+Date: Fri, 07 Sep 2012 19:08:13 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: Drop timestamp parameter from buffer store_to callback
-References: <5045ED39.5030408@jic23.retrosnub.co.uk> <1346762330-20360-1-git-send-email-lars@metafoo.de> <504913ED.5040901@kernel.org>
-In-Reply-To: <504913ED.5040901@kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	srinivas.pandruvada@intel.com
+Subject: Re: [PATCH] staging:iio: hid-sensors Use iio_push_to_buffer
+References: <1346966403-14517-1-git-send-email-jic23@kernel.org> <5049BA6C.1050309@metafoo.de>
+In-Reply-To: <5049BA6C.1050309@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 09/06/2012 11:21 PM, Jonathan Cameron wrote:
-> On 09/04/2012 01:38 PM, Lars-Peter Clausen wrote:
->> Drop timestamp parameter from buffer store_to callback and subsequently from
->> iio_push_to_buffer. The timestamp parameter is unused and it seems likely that
->> it will stay unused in the future, so it should be safe to remove it.
-> 
-> Fine by me. I'll add the hid sensor driver that crossed with this patch
-> separately for the first patch, but will have to just drop it in this one.
-> Hope you don't mind!
-> 
-> I'll post the proposed version in a mo.
-
-Sure, no problem.
-
+On 09/07/2012 10:12 AM, Lars-Peter Clausen wrote:
+> On 09/06/2012 11:20 PM, Jonathan Cameron wrote:
+>> Consistently use iio_push_to_buffer instead of manually calling the buffers
+>> store_to callback.
 >>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>> These crossed with Lars-Peter's patch set doing every other case.
+> Actually I only did this for drivers/staging/iio, the at91_adc driver in
+> drivers/iio still uses the store_to callback as well, might make sense to
+> convert it as well in this patch.
+Your second patch did cover the dropping of the timestamp so I'm happy
+to let this one driver go briefly in the interests of not waiting for an ack before pushing these out.  Will send out a
+suitable patch for that one later.
+>
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 >> ---
+>>  drivers/iio/accel/hid-sensor-accel-3d.c       | 2 +-
+>>  drivers/iio/gyro/hid-sensor-gyro-3d.c         | 2 +-
+>>  drivers/iio/light/hid-sensor-als.c            | 2 +-
+>>  drivers/iio/magnetometer/hid-sensor-magn-3d.c | 2 +-
+>>  4 files changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+>> index 33aa97c..c593eb23 100644
+>> --- a/drivers/iio/accel/hid-sensor-accel-3d.c
+>> +++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+>> @@ -212,7 +212,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
+>>  				datum_sz);
+>>  		return;
+>>  	}
+>> -	buffer->access->store_to(buffer, (u8 *)data, timestamp);
+>> +	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
+>>  }
+>>  
+>>  /* Callback handler to send event after all samples are received and captured */
+>> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+>> index 50ec09b..94a4740 100644
+>> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+>> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+>> @@ -212,7 +212,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
+>>  				datum_sz);
+>>  		return;
+>>  	}
+>> -	buffer->access->store_to(buffer, (u8 *)data, timestamp);
+>> +	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
+>>  }
+>>  
+>>  /* Callback handler to send event after all samples are received and captured */
+>> diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+>> index 2cff7d5..b3c8e91 100644
+>> --- a/drivers/iio/light/hid-sensor-als.c
+>> +++ b/drivers/iio/light/hid-sensor-als.c
+>> @@ -191,7 +191,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
+>>  				datum_sz);
+>>  		return;
+>>  	}
+>> -	buffer->access->store_to(buffer, (u8 *)data, timestamp);
+>> +	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
+>>  }
+>>  
+>>  /* Callback handler to send event after all samples are received and captured */
+>> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> index 07591f4..397704e 100644
+>> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> @@ -213,7 +213,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
+>>  				datum_sz);
+>>  		return;
+>>  	}
+>> -	buffer->access->store_to(buffer, (u8 *)data, timestamp);
+>> +	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
+>>  }
+>>  
+>>  /* Callback handler to send event after all samples are received and captured */
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
