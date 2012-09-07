@@ -1,100 +1,339 @@
-Return-Path: <srinivas.pandruvada@intel.com>
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-CC: "lars@metafoo.de" <lars@metafoo.de>
-Subject: RE: [PATCH] staging:iio: hid-sensors Use iio_push_to_buffer
-Date: Thu, 6 Sep 2012 22:17:30 +0000
-Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A9193AF658@ORSMSX104.amr.corp.intel.com>
-References: <1346966403-14517-1-git-send-email-jic23@kernel.org>
-In-Reply-To: <1346966403-14517-1-git-send-email-jic23@kernel.org>
+Return-Path: <Milo.Kim@ti.com>
+From: "Kim, Milo" <Milo.Kim@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, Lars-Peter Clausen <lars@metafoo.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4] iio: adc: add new lp8788 adc driver
+Date: Fri, 7 Sep 2012 08:51:54 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EF4509@DQHE02.ent.ti.com>
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Tested and works for me. You can add my ACK.
+ TI LP8788 PMU provides regulators, battery charger, ADC,
+ RTC, backlight driver and current sinks.
 
------Original Message-----
-From: J.I. Cameron [mailto:jic23@hermes.cam.ac.uk] On Behalf Of Jonathan Ca=
-meron
-Sent: Thursday, September 06, 2012 2:20 PM
-To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de; Pandruvada, Srinivas; Jonathan Cameron
-Subject: [PATCH] staging:iio: hid-sensors Use iio_push_to_buffer
+ This patch enables the LP8788 ADC functions.
 
-Consistently use iio_push_to_buffer instead of manually calling the buffers=
- store_to callback.
+ The LP8788 ADC has 13 ADC input selection and supports 12-bit resolution.
+ Internal operation of getting ADC is access to registers of LP8788.
+ The LP8788 ADC uses exported functions for accessing these registers.
+ (exported by LP8788 MFD device driver)
 
-These crossed with Lars-Peter's patch set doing every other case.
+ This driver supports IIO_CHAN_INFO_RAW and SCALE.
+ The scale is micro unit.
+ So the IIO consumer can get the result as following.
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+   result =3D ADC raw value * (scale_int + scale_part / 1000000)
+
+
+ (The IIO map for the IIO consumer)
+
+ The ADC input can be selective in the platform side.
+ Even though this platform data is not defined,
+ the default IIO map is created for supporting the power supply driver.
+ The battery voltage and temperature are used inside this driver.
+
+ (History)
+
+ Patch v4.
+ Fix adc_raw function: support RAW and SCALE channel info.
+ Change LP8788 ADC platform data - iio map.
+ Enables the default IIO map.
+=20
+ Patch v3.
+ Fix wrong size of allocating iio private data.
+ Fix coding styles.
+
+ Patch v2.
+ Support RAW and SCALE interface for IIO consumer.
+ Clean up the iio channel spec macro.
+
+Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
 ---
- drivers/iio/accel/hid-sensor-accel-3d.c       | 2 +-
- drivers/iio/gyro/hid-sensor-gyro-3d.c         | 2 +-
- drivers/iio/light/hid-sensor-als.c            | 2 +-
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/adc/Kconfig      |    6 ++
+ drivers/iio/adc/Makefile     |    1 +
+ drivers/iio/adc/lp8788_adc.c |  242 ++++++++++++++++++++++++++++++++++++++=
+++++
+ 3 files changed, 249 insertions(+)
+ create mode 100644 drivers/iio/adc/lp8788_adc.c
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hi=
-d-sensor-accel-3d.c
-index 33aa97c..c593eb23 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -212,7 +212,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_=
-dev, u8 *data, int len)
- 				datum_sz);
- 		return;
- 	}
--	buffer->access->store_to(buffer, (u8 *)data, timestamp);
-+	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
- }
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 8a78b4f..30c06ed 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -22,4 +22,10 @@ config AT91_ADC
+ 	help
+ 	  Say yes here to build support for Atmel AT91 ADC.
 =20
- /* Callback handler to send event after all samples are received and captu=
-red */ diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyr=
-o/hid-sensor-gyro-3d.c
-index 50ec09b..94a4740 100644
---- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-+++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-@@ -212,7 +212,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_=
-dev, u8 *data, int len)
- 				datum_sz);
- 		return;
- 	}
--	buffer->access->store_to(buffer, (u8 *)data, timestamp);
-+	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
- }
++config LP8788_ADC
++	bool "LP8788 ADC driver"
++	depends on MFD_LP8788
++	help
++	  Say yes here to build support for TI LP8788 ADC.
++
+ endmenu
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 52eec25..72f9a76 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -4,3 +4,4 @@
 =20
- /* Callback handler to send event after all samples are received and captu=
-red */ diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/=
-hid-sensor-als.c
-index 2cff7d5..b3c8e91 100644
---- a/drivers/iio/light/hid-sensor-als.c
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -191,7 +191,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_=
-dev, u8 *data, int len)
- 				datum_sz);
- 		return;
- 	}
--	buffer->access->store_to(buffer, (u8 *)data, timestamp);
-+	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
- }
-=20
- /* Callback handler to send event after all samples are received and captu=
-red */ diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers=
-/iio/magnetometer/hid-sensor-magn-3d.c
-index 07591f4..397704e 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -213,7 +213,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_=
-dev, u8 *data, int len)
- 				datum_sz);
- 		return;
- 	}
--	buffer->access->store_to(buffer, (u8 *)data, timestamp);
-+	iio_push_to_buffer(buffer, (u8 *)data, timestamp);
- }
-=20
- /* Callback handler to send event after all samples are received and captu=
-red */
---
-1.7.11.4
+ obj-$(CONFIG_AD7266) +=3D ad7266.o
+ obj-$(CONFIG_AT91_ADC) +=3D at91_adc.o
++obj-$(CONFIG_LP8788_ADC) +=3D lp8788_adc.o
+diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
+new file mode 100644
+index 0000000..33d9aaf
+--- /dev/null
++++ b/drivers/iio/adc/lp8788_adc.c
+@@ -0,0 +1,242 @@
++/*
++ * TI LP8788 MFD - ADC driver
++ *
++ * Copyright 2012 Texas Instruments
++ *
++ * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/delay.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/driver.h>
++#include <linux/iio/machine.h>
++#include <linux/mfd/lp8788.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++
++/* register address */
++#define LP8788_ADC_CONF			0x60
++#define LP8788_ADC_RAW			0x61
++#define LP8788_ADC_DONE			0x63
++
++#define ADC_CONV_START			1
++
++struct lp8788_adc {
++	struct lp8788 *lp;
++	struct iio_map *map;
++};
++
++static const int lp8788_scale[LPADC_MAX] =3D {
++	[LPADC_VBATT_5P5] =3D 1343,
++	[LPADC_VIN_CHG]   =3D 3052,
++	[LPADC_IBATT]     =3D 610,
++	[LPADC_IC_TEMP]   =3D 610,
++	[LPADC_VBATT_6P0] =3D 1465,
++	[LPADC_VBATT_5P0] =3D 1221,
++	[LPADC_ADC1]      =3D 610,
++	[LPADC_ADC2]      =3D 610,
++	[LPADC_VDD]       =3D 1025,
++	[LPADC_VCOIN]     =3D 757,
++	[LPADC_VDD_LDO]   =3D 610,
++	[LPADC_ADC3]      =3D 610,
++	[LPADC_ADC4]      =3D 610,
++};
++
++static inline int lp8788_adc_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int *val, int *val2, long mask)
++{
++	struct lp8788_adc *adc =3D iio_priv(indio_dev);
++	int retry =3D 5;
++	unsigned int msb, lsb, result;
++	u8 data, rawdata[2];
++	int size =3D ARRAY_SIZE(rawdata);
++	enum lp8788_adc_id id =3D chan->channel;
++
++	data =3D (id << 1) | ADC_CONV_START;
++	if (lp8788_write_byte(adc->lp, LP8788_ADC_CONF, data))
++		goto err;
++
++	/* retry until adc conversion is done */
++	data =3D 0;
++	while (retry--) {
++		usleep_range(100, 200);
++
++		if (lp8788_read_byte(adc->lp, LP8788_ADC_DONE, &data))
++			goto err;
++
++		/* conversion done */
++		if (data)
++			break;
++	}
++
++	if (lp8788_read_multi_bytes(adc->lp, LP8788_ADC_RAW, rawdata, size))
++		goto err;
++
++	msb =3D (rawdata[0] << 4) & 0x00000ff0;
++	lsb =3D (rawdata[1] >> 4) & 0x0000000f;
++	result =3D msb | lsb;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		*val =3D result;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val =3D (lp8788_scale[id] / 1000) * 1000;
++		*val2 =3D (lp8788_scale[id] % 1000) * 1000000;
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		break;
++	}
++
++err:
++	return -EINVAL;
++}
++
++static const struct iio_info lp8788_adc_info =3D {
++	.read_raw =3D &lp8788_adc_read_raw,
++	.driver_module =3D THIS_MODULE,
++};
++
++#define LP8788_CHAN(_id, _type) {				\
++		.type =3D _type,					\
++		.indexed =3D 1,					\
++		.channel =3D LPADC_##_id,				\
++		.info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
++			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,	\
++		.address =3D LP8788_ADC_RAW,			\
++		.scan_type =3D IIO_ST('u', 12, 16, 0),		\
++		.scan_index =3D 1,				\
++		.datasheet_name =3D #_id,				\
++}
++
++static const struct iio_chan_spec lp8788_adc_channels[] =3D {
++	[LPADC_VBATT_5P5] =3D LP8788_CHAN(VBATT_5P5, IIO_VOLTAGE),
++	[LPADC_VIN_CHG]   =3D LP8788_CHAN(VIN_CHG, IIO_VOLTAGE),
++	[LPADC_IBATT]     =3D LP8788_CHAN(IBATT, IIO_CURRENT),
++	[LPADC_IC_TEMP]   =3D LP8788_CHAN(IC_TEMP, IIO_TEMP),
++	[LPADC_VBATT_6P0] =3D LP8788_CHAN(VBATT_6P0, IIO_VOLTAGE),
++	[LPADC_VBATT_5P0] =3D LP8788_CHAN(VBATT_5P0, IIO_VOLTAGE),
++	[LPADC_ADC1]      =3D LP8788_CHAN(ADC1, IIO_VOLTAGE),
++	[LPADC_ADC2]      =3D LP8788_CHAN(ADC2, IIO_VOLTAGE),
++	[LPADC_VDD]       =3D LP8788_CHAN(VDD, IIO_VOLTAGE),
++	[LPADC_VCOIN]     =3D LP8788_CHAN(VCOIN, IIO_VOLTAGE),
++	[LPADC_VDD_LDO]   =3D LP8788_CHAN(VDD_LDO, IIO_VOLTAGE),
++	[LPADC_ADC3]      =3D LP8788_CHAN(ADC3, IIO_VOLTAGE),
++	[LPADC_ADC4]      =3D LP8788_CHAN(ADC4, IIO_VOLTAGE),
++};
++
++/* default maps used by iio consumer (lp8788-charger driver) */
++static struct iio_map lp8788_default_iio_maps[] =3D {
++	{
++		.consumer_dev_name =3D "lp8788-adc",
++		.consumer_channel =3D "vbatt-5p0",
++		.adc_channel_label =3D "VBATT_5P0",
++	},
++	{
++		.consumer_dev_name =3D "lp8788-adc",
++		.consumer_channel =3D "adc1",
++		.adc_channel_label =3D "ADC1",
++	},
++	{ }
++};
++
++static int lp8788_iio_map_register(struct iio_dev *indio_dev,
++				struct lp8788_platform_data *pdata,
++				struct lp8788_adc *adc)
++{
++	struct iio_map *map;
++	int ret;
++
++	map =3D !pdata || !pdata->adc_pdata ?
++		lp8788_default_iio_maps : pdata->adc_pdata;
++
++	ret =3D iio_map_array_register(indio_dev, map);
++	if (ret) {
++		dev_err(adc->lp->dev, "iio map err: %d\n", ret);
++		return ret;
++	}
++
++	adc->map =3D map;
++	return 0;
++}
++
++static void lp8788_iio_map_unregister(struct iio_dev *indio_dev,
++				struct lp8788_adc *adc)
++{
++	if (adc->map)
++		iio_map_array_unregister(indio_dev, adc->map);
++}
++
++static int __devinit lp8788_adc_probe(struct platform_device *pdev)
++{
++	struct lp8788 *lp =3D dev_get_drvdata(pdev->dev.parent);
++	struct iio_dev *indio_dev;
++	struct lp8788_adc *adc;
++	int ret;
++
++	indio_dev =3D iio_device_alloc(sizeof(*adc));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	adc =3D iio_priv(indio_dev);
++	adc->lp =3D lp;
++	platform_set_drvdata(pdev, indio_dev);
++
++	ret =3D lp8788_iio_map_register(indio_dev, lp->pdata, adc);
++	if (ret)
++		goto err_iio_map;
++
++	indio_dev->dev.parent =3D lp->dev;
++	indio_dev->name =3D pdev->name;
++	indio_dev->modes =3D INDIO_DIRECT_MODE;
++	indio_dev->info =3D &lp8788_adc_info;
++	indio_dev->channels =3D lp8788_adc_channels;
++	indio_dev->num_channels =3D ARRAY_SIZE(lp8788_adc_channels);
++
++	ret =3D iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(lp->dev, "iio dev register err: %d\n", ret);
++		goto err_iio_device;
++	}
++
++	return 0;
++
++err_iio_device:
++	lp8788_iio_map_unregister(indio_dev, adc);
++err_iio_map:
++	iio_device_free(indio_dev);
++	return ret;
++}
++
++static int __devexit lp8788_adc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev =3D  platform_get_drvdata(pdev);
++	struct lp8788_adc *adc =3D iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	lp8788_iio_map_unregister(indio_dev, adc);
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++static struct platform_driver lp8788_adc_driver =3D {
++	.probe =3D lp8788_adc_probe,
++	.remove =3D __devexit_p(lp8788_adc_remove),
++	.driver =3D {
++		.name =3D LP8788_DEV_ADC,
++		.owner =3D THIS_MODULE,
++	},
++};
++module_platform_driver(lp8788_adc_driver);
++
++MODULE_DESCRIPTION("Texas Instruments LP8788 ADC Driver");
++MODULE_AUTHOR("Milo Kim");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:lp8788-adc");
+--=20
+1.7.9.5
+
+
+Best Regards,
+Milo
