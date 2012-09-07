@@ -1,38 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-233.synserver.de ([212.40.185.233]:1093 "EHLO
+Received: from smtp-out-233.synserver.de ([212.40.185.233]:1175 "EHLO
 	smtp-out-233.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760581Ab2IGMoK (ORCPT
+	with ESMTP id S1760610Ab2IGMoK (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Sep 2012 08:44:10 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 06/10] staging:iio:ad7476: Use be16_to_cpup instead of open-coding it
-Date: Fri,  7 Sep 2012 14:44:28 +0200
-Message-Id: <1347021872-7885-6-git-send-email-lars@metafoo.de>
+Subject: [PATCH 02/10] staging:iio:ad7476: Remove duplicated chip info entries
+Date: Fri,  7 Sep 2012 14:44:24 +0200
+Message-Id: <1347021872-7885-2-git-send-email-lars@metafoo.de>
 In-Reply-To: <1347021872-7885-1-git-send-email-lars@metafoo.de>
 References: <1347021872-7885-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Some of the parts supported by this driver are software compatible. The
+difference between them is only in the operating voltage range. So we do not
+need extra chip info entries for them.
+
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad7476.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/iio/adc/ad7476.h      |    4 ----
+ drivers/staging/iio/adc/ad7476_core.c |   30 +++++++-----------------------
+ 2 files changed, 7 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7476.c b/drivers/staging/iio/adc/ad7476.c
-index 13aed0e..845bd28 100644
---- a/drivers/staging/iio/adc/ad7476.c
-+++ b/drivers/staging/iio/adc/ad7476.c
-@@ -109,7 +109,7 @@ static int ad7476_scan_direct(struct ad7476_state *st)
- 	if (ret)
- 		return ret;
+diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
+index b1dd931..6085fad 100644
+--- a/drivers/staging/iio/adc/ad7476.h
++++ b/drivers/staging/iio/adc/ad7476.h
+@@ -41,10 +41,6 @@ enum ad7476_supported_device_ids {
+ 	ID_AD7466,
+ 	ID_AD7467,
+ 	ID_AD7468,
+-	ID_AD7475,
+-	ID_AD7476,
+-	ID_AD7477,
+-	ID_AD7478,
+ 	ID_AD7495
+ };
  
--	return (st->data[0] << 8) | st->data[1];
-+	return be16_to_cpup((__be16 *)st->data);
- }
- 
- static int ad7476_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
+index 33435ed..c97300b 100644
+--- a/drivers/staging/iio/adc/ad7476_core.c
++++ b/drivers/staging/iio/adc/ad7476_core.c
+@@ -93,22 +93,6 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+ 		.channel[0] = AD7476_CHAN(8),
+ 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+ 	},
+-	[ID_AD7475] = {
+-		.channel[0] = AD7476_CHAN(12),
+-		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+-	},
+-	[ID_AD7476] = {
+-		.channel[0] = AD7476_CHAN(12),
+-		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+-	},
+-	[ID_AD7477] = {
+-		.channel[0] = AD7476_CHAN(10),
+-		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+-	},
+-	[ID_AD7478] = {
+-		.channel[0] = AD7476_CHAN(8),
+-		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+-	},
+ 	[ID_AD7495] = {
+ 		.channel[0] = AD7476_CHAN(12),
+ 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+@@ -216,13 +200,13 @@ static const struct spi_device_id ad7476_id[] = {
+ 	{"ad7466", ID_AD7466},
+ 	{"ad7467", ID_AD7467},
+ 	{"ad7468", ID_AD7468},
+-	{"ad7475", ID_AD7475},
+-	{"ad7476", ID_AD7476},
+-	{"ad7476a", ID_AD7476},
+-	{"ad7477", ID_AD7477},
+-	{"ad7477a", ID_AD7477},
+-	{"ad7478", ID_AD7478},
+-	{"ad7478a", ID_AD7478},
++	{"ad7475", ID_AD7466},
++	{"ad7476", ID_AD7466},
++	{"ad7476a", ID_AD7466},
++	{"ad7477", ID_AD7467},
++	{"ad7477a", ID_AD7467},
++	{"ad7478", ID_AD7468},
++	{"ad7478a", ID_AD7468},
+ 	{"ad7495", ID_AD7495},
+ 	{}
+ };
 -- 
 1.7.10.4
 
