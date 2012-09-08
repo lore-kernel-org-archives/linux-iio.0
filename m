@@ -1,63 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46843 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46834 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751917Ab2IHJNM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2012 05:13:12 -0400
-Message-ID: <504B0C27.50006@kernel.org>
-Date: Sat, 08 Sep 2012 10:13:11 +0100
+	with ESMTP id S1751917Ab2IHJMz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2012 05:12:55 -0400
+Message-ID: <504B0C15.4090404@kernel.org>
+Date: Sat, 08 Sep 2012 10:12:53 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
 	drivers@analog.com
-Subject: Re: [PATCH 2/2] iio:ad5446: Add device ids for ad5301/ad5311/ad5321
-References: <1346749816-22877-1-git-send-email-lars@metafoo.de> <1346749816-22877-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1346749816-22877-2-git-send-email-lars@metafoo.de>
+Subject: Re: [PATCH 1/2] iio:ad5446: Add support for the ad5300/ad5310/ad5320
+References: <1346749816-22877-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1346749816-22877-1-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 09/04/2012 10:10 AM, Lars-Peter Clausen wrote:
-> The ad5301/ad5311/ad5321 are software compatible to the ad5602/ad5612/ad5622.
+> The ad5300/ad5310/ad5320 is a family of single channel DACs with a SPI interface
+> similar to the ad5601/ad5611/ad5621 but use a different shift factor for the
+> data word.
+> 
+> While we are at it also reorder the device part numbers in the ad5446 driver
+> Kconfig to be ordered alphabetically.
+Added to togreg branch of iio.git tree.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-added to togreg branch of iio.git tree
 > ---
->  drivers/iio/dac/Kconfig  |    8 ++++----
->  drivers/iio/dac/ad5446.c |    3 +++
->  2 files changed, 7 insertions(+), 4 deletions(-)
+>  drivers/iio/dac/Kconfig  |    6 +++---
+>  drivers/iio/dac/ad5446.c |   18 ++++++++++++++++++
+>  2 files changed, 21 insertions(+), 3 deletions(-)
 > 
 > diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index 7599d62..7845263 100644
+> index 293b61d..7599d62 100644
 > --- a/drivers/iio/dac/Kconfig
 > +++ b/drivers/iio/dac/Kconfig
 > @@ -59,10 +59,10 @@ config AD5446
 >  	tristate "Analog Devices AD5446 and similar single channel DACs driver"
 >  	depends on (SPI_MASTER || I2C)
 >  	help
-> -	  Say yes here to build support for Analog Devices AD5300, AD5310, AD5320,
-> -	  AD5444, AD5446, AD5450, AD5451, AD5452, AD5453, AD5512A, AD5541A, AD5542A,
-> -	  AD5543, AD5553, AD5601, AD5602, AD5611, AD5612, AD5620, AD5621, AD5622,
-> -	  AD5640, AD5660, AD5662 DACs.
-> +	  Say yes here to build support for Analog Devices AD5300, AD5301, AD5310,
-> +	  AD5311, AD5320, AD5321, AD5444, AD5446, AD5450, AD5451, AD5452, AD5453,
-> +	  AD5512A, AD5541A, AD5542A, AD5543, AD5553, AD5601, AD5602, AD5611, AD5612,
-> +	  AD5620, AD5621, AD5622, AD5640, AD5660, AD5662 DACs.
+> -	  Say yes here to build support for Analog Devices AD5602, AD5612, AD5622,
+> +	  Say yes here to build support for Analog Devices AD5300, AD5310, AD5320,
+>  	  AD5444, AD5446, AD5450, AD5451, AD5452, AD5453, AD5512A, AD5541A, AD5542A,
+> -	  AD5543, AD5553, AD5601, AD5611, AD5620, AD5621, AD5640, AD5660, AD5662
+> -	  DACs.
+> +	  AD5543, AD5553, AD5601, AD5602, AD5611, AD5612, AD5620, AD5621, AD5622,
+> +	  AD5640, AD5660, AD5662 DACs.
 >  
 >  	  To compile this driver as a module, choose M here: the
 >  	  module will be called ad5446.
 > diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
-> index 2b0968f..3310cbb 100644
+> index 7f11c1c..2b0968f 100644
 > --- a/drivers/iio/dac/ad5446.c
 > +++ b/drivers/iio/dac/ad5446.c
-> @@ -552,6 +552,9 @@ static int __devexit ad5446_i2c_remove(struct i2c_client *i2c)
->  }
+> @@ -321,6 +321,9 @@ static int ad5660_write(struct ad5446_state *st, unsigned val)
+>   * parts are supported here.
+>   */
+>  enum ad5446_supported_spi_device_ids {
+> +	ID_AD5300,
+> +	ID_AD5310,
+> +	ID_AD5320,
+>  	ID_AD5444,
+>  	ID_AD5446,
+>  	ID_AD5450,
+> @@ -341,6 +344,18 @@ enum ad5446_supported_spi_device_ids {
+>  };
 >  
->  static const struct i2c_device_id ad5446_i2c_ids[] = {
-> +	{"ad5301", ID_AD5602},
-> +	{"ad5311", ID_AD5612},
-> +	{"ad5321", ID_AD5622},
->  	{"ad5602", ID_AD5602},
->  	{"ad5612", ID_AD5612},
->  	{"ad5622", ID_AD5622},
+>  static const struct ad5446_chip_info ad5446_spi_chip_info[] = {
+> +	[ID_AD5300] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(8, 16, 4),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5310] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(10, 16, 2),
+> +		.write = ad5446_write,
+> +	},
+> +	[ID_AD5320] = {
+> +		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 0),
+> +		.write = ad5446_write,
+> +	},
+>  	[ID_AD5444] = {
+>  		.channel = AD5446_CHANNEL(12, 16, 2),
+>  		.write = ad5446_write,
+> @@ -418,6 +433,9 @@ static const struct ad5446_chip_info ad5446_spi_chip_info[] = {
+>  };
+>  
+>  static const struct spi_device_id ad5446_spi_ids[] = {
+> +	{"ad5300", ID_AD5300},
+> +	{"ad5310", ID_AD5310},
+> +	{"ad5320", ID_AD5320},
+>  	{"ad5444", ID_AD5444},
+>  	{"ad5446", ID_AD5446},
+>  	{"ad5450", ID_AD5450},
 > 
