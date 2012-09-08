@@ -1,280 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47106 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47153 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752998Ab2IHJux (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2012 05:50:53 -0400
-Message-ID: <504B14FC.30008@kernel.org>
-Date: Sat, 08 Sep 2012 10:50:52 +0100
+	with ESMTP id S1753081Ab2IHJ50 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2012 05:57:26 -0400
+Message-ID: <504B1684.3010407@kernel.org>
+Date: Sat, 08 Sep 2012 10:57:24 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
 	drivers@analog.com
-Subject: Re: [PATCH 05/10] staging:iio:ad7476: Squash driver into a single
- file.
-References: <1347021872-7885-1-git-send-email-lars@metafoo.de> <1347021872-7885-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347021872-7885-5-git-send-email-lars@metafoo.de>
+Subject: Re: [PATCH 10/10] iio:ad7476: Add support for ad7274/ad7275/ad7276/ad7277/ad7278
+References: <1347021872-7885-1-git-send-email-lars@metafoo.de> <1347021872-7885-10-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347021872-7885-10-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 09/07/2012 01:44 PM, Lars-Peter Clausen wrote:
-> After the recent cleanups the buffer support is just a single 23 line function.
-> This does not really justify a file on its own, so move it to the main driver
-> file. And with only one source file left the header file containing the device
-> state struct becomes superflousious so move the content of the header
-> file to the main driver source file as well.
+> The ad7276/ad7277/ad7278 are similar to the ad7476/ad7477/ad7478 but have the
+> same number of leading zeros as the ad7940. The ad7274/ad7275 have a extra pin
+> for VREF where as for the ad7276/ad7277/ad7278 VREF is taken from VDD, but
+> otherwise they are compatible to the ad7276/ad7277.
 > 
-The move out of staging patch meant I looked at the kconfig entry.
+This and all the other patches I haven't commented on look fine to me.
+Looking forward to the updated series.
 
-This driver selects buffering anyway, so you don't need the ifdef magic..
-Hence drop that in your next version making this patch obviously the correct
-thing to do!
+Hehe. You did a much better job of reviewing your own patches than I did ;)
 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 > ---
->  drivers/staging/iio/adc/Makefile                   |    2 -
->  .../staging/iio/adc/{ad7476_core.c => ad7476.c}    |   82 +++++++++++++++++++-
->  drivers/staging/iio/adc/ad7476.h                   |   56 -------------
->  drivers/staging/iio/adc/ad7476_ring.c              |   57 --------------
->  4 files changed, 81 insertions(+), 116 deletions(-)
->  rename drivers/staging/iio/adc/{ad7476_core.c => ad7476.c} (73%)
->  delete mode 100644 drivers/staging/iio/adc/ad7476.h
->  delete mode 100644 drivers/staging/iio/adc/ad7476_ring.c
+>  drivers/iio/adc/Kconfig  |    6 +++---
+>  drivers/iio/adc/ad7476.c |   20 ++++++++++++++++++++
+>  2 files changed, 23 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
-> index ecac9a0..6b60af0 100644
-> --- a/drivers/staging/iio/adc/Makefile
-> +++ b/drivers/staging/iio/adc/Makefile
-> @@ -17,8 +17,6 @@ ad799x-y := ad799x_core.o
->  ad799x-$(CONFIG_AD799X_RING_BUFFER) += ad799x_ring.o
->  obj-$(CONFIG_AD799X) += ad799x.o
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 7152a49..645c052 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -24,9 +24,9 @@ config AD7476
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+>  	help
+> -	  Say yes here to build support for Analog Devices AD7475, AD7476, AD7477,
+> -	  AD7478, AD7466, AD7467, AD7468, AD7495, AD7910, AD7920, AD7920 SPI analog
+> -	  to digital converters (ADC).
+> +	  Say yes here to build support for Analog Devices AD7274, AD7275, AD7276,
+> +	  AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
+> +	  AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
 >  
-> -ad7476-y := ad7476_core.o
-> -ad7476-$(CONFIG_IIO_BUFFER) += ad7476_ring.o
->  obj-$(CONFIG_AD7476) += ad7476.o
+>  	  If unsure, say N (but it's safe to say "Y").
 >  
->  ad7887-y := ad7887_core.o
-> diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476.c
-> similarity index 73%
-> rename from drivers/staging/iio/adc/ad7476_core.c
-> rename to drivers/staging/iio/adc/ad7476.c
-> index 42523e6..13aed0e 100644
-> --- a/drivers/staging/iio/adc/ad7476_core.c
-> +++ b/drivers/staging/iio/adc/ad7476.c
-> @@ -18,8 +18,88 @@
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +
-> +#define RES_MASK(bits)	((1 << (bits)) - 1)
-> +
-> +struct ad7476_chip_info {
-> +	unsigned int			int_vref_uv;
-> +	struct iio_chan_spec		channel[2];
-> +};
-> +
-> +struct ad7476_state {
-> +	struct spi_device		*spi;
-> +	const struct ad7476_chip_info	*chip_info;
-> +	struct regulator		*reg;
-> +	struct spi_transfer		xfer;
-> +	struct spi_message		msg;
-> +	/*
-> +	 * DMA (thus cache coherency maintenance) requires the
-> +	 * transfer buffers to live in their own cache lines.
-> +	 * Make the buffer large enough for one 16 bit sample and one 64 bit
-> +	 * aligned 64 bit timestamp.
-> +	 */
-> +	unsigned char data[ALIGN(2, sizeof(s64)) + sizeof(s64)]
-> +			____cacheline_aligned;
-> +};
-> +
-> +enum ad7476_supported_device_ids {
-> +	ID_AD7466,
-> +	ID_AD7467,
-> +	ID_AD7468,
-> +	ID_AD7495
-> +};
-> +
-> +#if IS_ENABLED(CONFIG_IIO_BUFFER)
-> +
-> +static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ad7476_state *st = iio_priv(indio_dev);
-> +	s64 time_ns;
-> +	int b_sent;
-> +
-> +	b_sent = spi_read(st->spi, st->data,
-> +			  st->chip_info->channel[0].scan_type.storagebits / 8);
-> +	if (b_sent < 0)
-> +		goto done;
-> +
-> +	time_ns = iio_get_time_ns();
-> +
-> +	if (indio_dev->scan_timestamp)
-> +		((s64 *)st->data)[1] = time_ns;
-> +
-> +	iio_push_to_buffer(indio_dev->buffer, st->data);
-> +done:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-> +{
-> +	return iio_triggered_buffer_setup(indio_dev, NULL,
-> +			&ad7476_trigger_handler, NULL);
-> +}
-> +
-> +static void ad7476_ring_cleanup(struct iio_dev *indio_dev)
-> +{
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +}
-> +
-> +#else
-> +
-> +static int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-> +{
-> +	return 0;
-> +}
-> +
-> +static void ad7476_ring_cleanup(struct iio_dev *indio_dev) {}
-> +
-> +#endif
+> diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+> index 646df45..8c7e206 100644
+> --- a/drivers/iio/adc/ad7476.c
+> +++ b/drivers/iio/adc/ad7476.c
+> @@ -45,6 +45,9 @@ struct ad7476_state {
+>  };
 >  
-> -#include "ad7476.h"
+>  enum ad7476_supported_device_ids {
+> +	ID_AD7276,
+> +	ID_AD7277,
+> +	ID_AD7278,
+>  	ID_AD7466,
+>  	ID_AD7467,
+>  	ID_AD7468,
+> @@ -172,6 +175,18 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+>  #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits))
 >  
->  static int ad7476_scan_direct(struct ad7476_state *st)
->  {
-> diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
-> deleted file mode 100644
-> index 4ed5494..0000000
-> --- a/drivers/staging/iio/adc/ad7476.h
-> +++ /dev/null
-> @@ -1,56 +0,0 @@
-> -/*
-> - * AD7476/5/7/8 (A) SPI ADC driver
-> - *
-> - * Copyright 2010 Analog Devices Inc.
-> - *
-> - * Licensed under the GPL-2 or later.
-> - */
-> -#ifndef IIO_ADC_AD7476_H_
-> -#define IIO_ADC_AD7476_H_
-> -
-> -#define RES_MASK(bits)	((1 << (bits)) - 1)
-> -
-> -struct ad7476_chip_info {
-> -	unsigned int			int_vref_uv;
-> -	struct iio_chan_spec		channel[2];
-> -};
-> -
-> -struct ad7476_state {
-> -	struct spi_device		*spi;
-> -	const struct ad7476_chip_info	*chip_info;
-> -	struct regulator		*reg;
-> -	struct spi_transfer		xfer;
-> -	struct spi_message		msg;
-> -	/*
-> -	 * DMA (thus cache coherency maintenance) requires the
-> -	 * transfer buffers to live in their own cache lines.
-> -	 * Make the buffer large enough for one 16 bit sample and one 64 bit
-> -	 * aligned 64 bit timestamp.
-> -	 */
-> -	unsigned char data[ALIGN(2, sizeof(s64)) + sizeof(s64)]
-> -			____cacheline_aligned;
-> -};
-> -
-> -enum ad7476_supported_device_ids {
-> -	ID_AD7466,
-> -	ID_AD7467,
-> -	ID_AD7468,
-> -	ID_AD7495
-> -};
-> -
-> -#ifdef CONFIG_IIO_BUFFER
-> -int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev);
-> -void ad7476_ring_cleanup(struct iio_dev *indio_dev);
-> -#else /* CONFIG_IIO_BUFFER */
-> -
-> -static inline int
-> -ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-> -{
-> -	return 0;
-> -}
-> -
-> -static inline void ad7476_ring_cleanup(struct iio_dev *indio_dev)
-> -{
-> -}
-> -#endif /* CONFIG_IIO_BUFFER */
-> -#endif /* IIO_ADC_AD7476_H_ */
-> diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
-> deleted file mode 100644
-> index 185cfde..0000000
-> --- a/drivers/staging/iio/adc/ad7476_ring.c
-> +++ /dev/null
-> @@ -1,57 +0,0 @@
-> -/*
-> - * Copyright 2010-2012 Analog Devices Inc.
-> - * Copyright (C) 2008 Jonathan Cameron
-> - *
-> - * Licensed under the GPL-2 or later.
-> - *
-> - * ad7476_ring.c
-> - */
-> -
-> -#include <linux/interrupt.h>
-> -#include <linux/device.h>
-> -#include <linux/kernel.h>
-> -#include <linux/slab.h>
-> -#include <linux/spi/spi.h>
-> -
-> -#include <linux/iio/iio.h>
-> -#include <linux/iio/buffer.h>
-> -#include <linux/iio/trigger_consumer.h>
-> -#include <linux/iio/triggered_buffer.h>
-> -
-> -#include "ad7476.h"
-> -
-> -static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
-> -{
-> -	struct iio_poll_func *pf = p;
-> -	struct iio_dev *indio_dev = pf->indio_dev;
-> -	struct ad7476_state *st = iio_priv(indio_dev);
-> -	s64 time_ns;
-> -	int b_sent;
-> -
-> -	b_sent = spi_read(st->spi, st->data,
-> -			  st->chip_info->channel[0].scan_type.storagebits / 8);
-> -	if (b_sent < 0)
-> -		goto done;
-> -
-> -	time_ns = iio_get_time_ns();
-> -
-> -	if (indio_dev->scan_timestamp)
-> -		((s64 *)st->data)[1] = time_ns;
-> -
-> -	iio_push_to_buffer(indio_dev->buffer, st->data);
-> -done:
-> -	iio_trigger_notify_done(indio_dev->trig);
-> -
-> -	return IRQ_HANDLED;
-> -}
-> -
-> -int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-> -{
-> -	return iio_triggered_buffer_setup(indio_dev, NULL,
-> -			&ad7476_trigger_handler, NULL);
-> -}
-> -
-> -void ad7476_ring_cleanup(struct iio_dev *indio_dev)
-> -{
-> -	iio_triggered_buffer_cleanup(indio_dev);
-> -}
+>  static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+> +	[ID_AD7276] = {
+> +		.channel[0] = AD7940_CHAN(12),
+> +		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> +	},
+> +	[ID_AD7277] = {
+> +		.channel[0] = AD7940_CHAN(10),
+> +		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> +	},
+> +	[ID_AD7278] = {
+> +		.channel[0] = AD7940_CHAN(8),
+> +		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> +	},
+>  	[ID_AD7466] = {
+>  		.channel[0] = AD7476_CHAN(12),
+>  		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> @@ -280,6 +295,11 @@ static int __devexit ad7476_remove(struct spi_device *spi)
+>  }
+>  
+>  static const struct spi_device_id ad7476_id[] = {
+> +	{"ad7274", ID_AD7276},
+> +	{"ad7275", ID_AD7277},
+> +	{"ad7276", ID_AD7276},
+> +	{"ad7277", ID_AD7277},
+> +	{"ad7278", ID_AD7278},
+>  	{"ad7466", ID_AD7466},
+>  	{"ad7467", ID_AD7467},
+>  	{"ad7468", ID_AD7468},
 > 
