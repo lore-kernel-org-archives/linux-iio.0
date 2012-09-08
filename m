@@ -1,96 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46834 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751917Ab2IHJMz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2012 05:12:55 -0400
-Message-ID: <504B0C15.4090404@kernel.org>
-Date: Sat, 08 Sep 2012 10:12:53 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:53852 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752173Ab2IHIha (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2012 04:37:30 -0400
+Date: Sat, 8 Sep 2012 01:34:41 -0700
+From: Anton Vorontsov <cbouatmailru@gmail.com>
+To: anish kumar <anish198519851985@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	dwmw2@infradead.org, linux-kernel@vger.kernel.org, lars@metafoo.de
+Subject: Re: [PATCH] [RFC]power: battery: Generic battery driver using IIO
+Message-ID: <20120908083441.GA21856@lizard>
+References: <1346600372-3284-1-git-send-email-anish198519851985@gmail.com>
+ <5049A7B8.506@kernel.org>
+ <1347088218.5051.152.camel@anish-Inspiron-N5050>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	drivers@analog.com
-Subject: Re: [PATCH 1/2] iio:ad5446: Add support for the ad5300/ad5310/ad5320
-References: <1346749816-22877-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1346749816-22877-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1347088218.5051.152.camel@anish-Inspiron-N5050>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/04/2012 10:10 AM, Lars-Peter Clausen wrote:
-> The ad5300/ad5310/ad5320 is a family of single channel DACs with a SPI interface
-> similar to the ad5601/ad5611/ad5621 but use a different shift factor for the
-> data word.
-> 
-> While we are at it also reorder the device part numbers in the ad5446 driver
-> Kconfig to be ordered alphabetically.
-Added to togreg branch of iio.git tree.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  drivers/iio/dac/Kconfig  |    6 +++---
->  drivers/iio/dac/ad5446.c |   18 ++++++++++++++++++
->  2 files changed, 21 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index 293b61d..7599d62 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -59,10 +59,10 @@ config AD5446
->  	tristate "Analog Devices AD5446 and similar single channel DACs driver"
->  	depends on (SPI_MASTER || I2C)
->  	help
-> -	  Say yes here to build support for Analog Devices AD5602, AD5612, AD5622,
-> +	  Say yes here to build support for Analog Devices AD5300, AD5310, AD5320,
->  	  AD5444, AD5446, AD5450, AD5451, AD5452, AD5453, AD5512A, AD5541A, AD5542A,
-> -	  AD5543, AD5553, AD5601, AD5611, AD5620, AD5621, AD5640, AD5660, AD5662
-> -	  DACs.
-> +	  AD5543, AD5553, AD5601, AD5602, AD5611, AD5612, AD5620, AD5621, AD5622,
-> +	  AD5640, AD5660, AD5662 DACs.
->  
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad5446.
-> diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
-> index 7f11c1c..2b0968f 100644
-> --- a/drivers/iio/dac/ad5446.c
-> +++ b/drivers/iio/dac/ad5446.c
-> @@ -321,6 +321,9 @@ static int ad5660_write(struct ad5446_state *st, unsigned val)
->   * parts are supported here.
->   */
->  enum ad5446_supported_spi_device_ids {
-> +	ID_AD5300,
-> +	ID_AD5310,
-> +	ID_AD5320,
->  	ID_AD5444,
->  	ID_AD5446,
->  	ID_AD5450,
-> @@ -341,6 +344,18 @@ enum ad5446_supported_spi_device_ids {
->  };
->  
->  static const struct ad5446_chip_info ad5446_spi_chip_info[] = {
-> +	[ID_AD5300] = {
-> +		.channel = AD5446_CHANNEL_POWERDOWN(8, 16, 4),
-> +		.write = ad5446_write,
-> +	},
-> +	[ID_AD5310] = {
-> +		.channel = AD5446_CHANNEL_POWERDOWN(10, 16, 2),
-> +		.write = ad5446_write,
-> +	},
-> +	[ID_AD5320] = {
-> +		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 0),
-> +		.write = ad5446_write,
-> +	},
->  	[ID_AD5444] = {
->  		.channel = AD5446_CHANNEL(12, 16, 2),
->  		.write = ad5446_write,
-> @@ -418,6 +433,9 @@ static const struct ad5446_chip_info ad5446_spi_chip_info[] = {
->  };
->  
->  static const struct spi_device_id ad5446_spi_ids[] = {
-> +	{"ad5300", ID_AD5300},
-> +	{"ad5310", ID_AD5310},
-> +	{"ad5320", ID_AD5320},
->  	{"ad5444", ID_AD5444},
->  	{"ad5446", ID_AD5446},
->  	{"ad5450", ID_AD5450},
-> 
+On Sat, Sep 08, 2012 at 12:40:18PM +0530, anish kumar wrote:
+[...]
+> > > Signed-off-by: anish kumar <anish198519851985@gmail.com>
+> > So what happened in 1985?
+> Was hurrying to get an email id :)
+
+I so much understand... ;-)
+
+Much thanks to Lars-Peter and Jonathan, saved me a lot of time reviewing
+the driver.
+
+Anish, the idea of generic IIO driver looks great, I'm impatiently
+waiting for a new revision!
+
+One suggestion: the file name says generic-battery, the code sometimes
+uses generic_adc_battery sometimes generic_battery. I'd suggest being
+consistent, and stick to one naming scheme. I'd prefer
+generic_adc_battery.
+
+Thanks!
+
+Anton.
