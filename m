@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47082 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47106 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752754Ab2IHJrg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2012 05:47:36 -0400
-Message-ID: <504B1436.2010603@kernel.org>
-Date: Sat, 08 Sep 2012 10:47:34 +0100
+	with ESMTP id S1752998Ab2IHJux (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2012 05:50:53 -0400
+Message-ID: <504B14FC.30008@kernel.org>
+Date: Sat, 08 Sep 2012 10:50:52 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
@@ -25,11 +25,11 @@ On 09/07/2012 01:44 PM, Lars-Peter Clausen wrote:
 > state struct becomes superflousious so move the content of the header
 > file to the main driver source file as well.
 > 
+The move out of staging patch meant I looked at the kconfig entry.
 
-A sensible change I think.  Normally we do our best to keep all ifdefs in the
-header, (and hence need the two files) but here the distinction is well
-defined so I agree merging them all makes sense.
-
+This driver selects buffering anyway, so you don't need the ifdef magic..
+Hence drop that in your next version making this patch obviously the correct
+thing to do!
 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 > ---
