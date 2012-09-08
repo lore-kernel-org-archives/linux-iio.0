@@ -1,578 +1,564 @@
-Return-Path: <anish198519851985@gmail.com>
-Subject: Re: [PATCH] [RFC]power: battery: Generic battery driver using IIO
-From: anish kumar <anish198519851985@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, cbou@mail.ru, dwmw2@infradead.org,
- linux-kernel@vger.kernel.org, lars@metafoo.de
-In-Reply-To: <5049A7B8.506@kernel.org>
-References: <1346600372-3284-1-git-send-email-anish198519851985@gmail.com>
-	 <5049A7B8.506@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 08 Sep 2012 12:40:18 +0530
-Message-ID: <1347088218.5051.152.camel@anish-Inspiron-N5050>
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46902 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752547Ab2IHJVM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2012 05:21:12 -0400
+Message-ID: <504B0E07.2060104@kernel.org>
+Date: Sat, 08 Sep 2012 10:21:11 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] staging:iio:adc: Add AD7791 driver
+References: <1346772402-12881-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1346772402-12881-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Thanks for your time.
-On Fri, 2012-09-07 at 08:52 +0100, Jonathan Cameron wrote:
-> On 02/09/12 16:39, anish kumar wrote:
-> > From: anish kumar <anish198519851985@gmail.com>
-> >
-> > This patch is to use IIO to write a generic batttery driver.
-> battery
-> > There are some inherent assumptions here:
-> > 1.User is having both main battery and backup battery.
-> Seems rather like that could be easily enough relaxed or configured via
-> platform data?
-Yes
-> > 2.Both batteries use same channel to get the information.
-> Do you mean same actual channel (physical pin) or same ADC
-> (with appropriate mux etc)?
-As lars pointed out it would be better if we have multiple channels
-per battery.The channel what I am referring here is the name of 
-different channels which will be exported by adc driver to get
-voltage, current and power.
-> >
-> Mostly fine. There are a few corners I didn't understand as I don't
-> have time to dive into the battery framework in the near future. Will 
-> leave it up to those more familiar with that side of things!
+On 09/04/2012 04:26 PM, Lars-Peter Clausen wrote:
+> This patch adds support for the Analog Devices AD7787, AD7788, AD7789, AD7790
+> and AD7791 Sigma Delta Analog-to-Digital converters.
 > 
-> My only real issue is that it would be cleaner to do the individual
-> channels by name rather than a get all as you 'know' here how many
-> channels are expected.
-agreed.
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+added to togreg branch of iio.git
+
+Thanks,
+
 > 
-> Also don't release the IIO channels until you are actually finished
-> using them as holding them should prevent the ADC module from going away
-> underneath you (which is nasty :)
-agreed.
+> ---
+> Changes since v1:
+> 	* Fixed voltage scale
+> 	* Fixed spelling and whitespace errors
+> ---
+>  drivers/iio/adc/Kconfig              |   12 +
+>  drivers/iio/adc/Makefile             |    1 +
+>  drivers/iio/adc/ad7791.c             |  460 ++++++++++++++++++++++++++++++++++
+>  include/linux/platform_data/ad7791.h |   17 ++
+>  4 files changed, 490 insertions(+)
+>  create mode 100644 drivers/iio/adc/ad7791.c
+>  create mode 100644 include/linux/platform_data/ad7791.h
 > 
-> Sorry it took so long to get back to you on this.
-That is the biggest advantage of working in open-source.
-We can take our own time.
-> 
-> So what happened in 1985?
-Was hurrying to get an email id :)
-> 
-> Jonathan
-> > Signed-off-by: anish kumar <anish198519851985@gmail.com>
-> > ---
-> >   drivers/power/Kconfig                 |    8 +
-> >   drivers/power/Makefile                |    1 +
-> >   drivers/power/generic-battery.c       |  374 +++++++++++++++++++++++++++++++++
-> >   include/linux/power/generic-battery.h |   26 +++
-> >   4 files changed, 409 insertions(+), 0 deletions(-)
-> >   create mode 100644 drivers/power/generic-battery.c
-> >   create mode 100644 include/linux/power/generic-battery.h
-> >
-> > diff --git a/drivers/power/Kconfig b/drivers/power/Kconfig
-> > index fcc1bb0..546e86b 100644
-> > --- a/drivers/power/Kconfig
-> > +++ b/drivers/power/Kconfig
-> > @@ -309,6 +309,14 @@ config AB8500_BATTERY_THERM_ON_BATCTRL
-> >   	help
-> >   	  Say Y to enable battery temperature measurements using
-> >   	  thermistor connected on BATCTRL ADC.
-> > +
-> > +config GENERIC_BATTERY
-> > +	tristate "Generic battery support using IIO"
-> > +	depends on IIO
-> > +	help
-> > +	  Say Y here to enable support for the generic battery driver
-> > +	  which uses IIO framework to read adc for it's main and backup
-> ADC
-> > +	  battery.
-> >   endif # POWER_SUPPLY
-> >
-> >   source "drivers/power/avs/Kconfig"
-> > diff --git a/drivers/power/Makefile b/drivers/power/Makefile
-> > index ee58afb..8284f9c 100644
-> > --- a/drivers/power/Makefile
-> > +++ b/drivers/power/Makefile
-> > @@ -45,3 +45,4 @@ obj-$(CONFIG_CHARGER_MAX8997)	+= max8997_charger.o
-> >   obj-$(CONFIG_CHARGER_MAX8998)	+= max8998_charger.o
-> >   obj-$(CONFIG_POWER_AVS)		+= avs/
-> >   obj-$(CONFIG_CHARGER_SMB347)	+= smb347-charger.o
-> > +obj-$(CONFIG_GENERIC_BATTERY)	+= generic-battery.o
-> > diff --git a/drivers/power/generic-battery.c b/drivers/power/generic-battery.c
-> > new file mode 100644
-> > index 0000000..33170b7
-> > --- /dev/null
-> > +++ b/drivers/power/generic-battery.c
-> > @@ -0,0 +1,374 @@
-> > +/*
-> > + * Generice battery driver code using IIO
-> Generic
-> > + * Copyright (C) 2012, Anish Kumar <anish198519851985@gmail.com>
-> > + * based on jz4740-battery.c
-> > + * based on s3c_adc_battery.c
-> > + *
-> > + * This file is subject to the terms and conditions of the GNU General Public
-> > + * License.  See the file COPYING in the main directory of this archive for
-> > + * more details.
-> > + *
-> bonus blank line to remove
-> > + */
-> > +
-> > +#include <linux/interrupt.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/power_supply.h>
-> > +#include <linux/gpio.h>
-> > +#include <linux/err.h>
-> > +#include <linux/timer.h>
-> > +#include <linux/jiffies.h>
-> > +#include <linux/errno.h>
-> > +#include <linux/init.h>
-> > +#include <linux/module.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/iio/consumer.h>
-> > +#include <linux/iio/types.h>
-> > +
-> > +#include <linux/power/generic-battery.h>
-> > +
-> > +#define BAT_POLL_INTERVAL		10000 /* ms */
-> > +#define JITTER_DELAY			500 /* ms */
-> Elements to make configurable?
-Yes probably make it platform data?
-> > +
-> > +enum BAT {
-> > +	MAIN_BAT = 0,
-> > +	BACKUP_BAT,
-> > +	BAT_MAX,
-> > +};
-> > +
-> Document this please. It's not immediately obvious what
-> channel_index is.
-This will be removed as we will be using only one device.
-> 
-> Why not just have a direct pointer to the correct channel?
-> > +struct generic_adc_bat {
-> > +	struct power_supply		psy;
-> > +	struct iio_channel		*channels;
-> > +	int				channel_index;
-> > +};
-> > +
-> > +struct generic_bat {
-> Spacing is a bit random in here
-> > +	struct generic_adc_bat bat[BAT_MAX];
-> > +	struct generic_platform_data	pdata;
-> > +	int				volt_value;
-> > +	int				cur_value;
-> > +	unsigned int			timestamp;
-> > +	int				level;
-> > +	int				status;
-> > +	int				cable_plugged:1;
-> > +};
-> > +
-> > +static struct generic_bat generic_bat = {
-> > +	.bat[MAIN_BAT] = {
-> > +		.psy.name = "main-bat",
-> > +	},
-> > +	.bat[BACKUP_BAT] = {
-> > +		.psy.name = "backup-bat",
-> > +	},
-> > +};
-> > +
-> > +static struct delayed_work bat_work;
-> > +
-> > +static void generic_adc_bat_ext_power_changed(struct power_supply *psy)
-> > +{
-> > +	schedule_delayed_work(&bat_work,
-> > +			msecs_to_jiffies(JITTER_DELAY));
-> > +}
-> > +
-> > +static enum power_supply_property generic_adc_main_bat_props[] = {
-> > +	POWER_SUPPLY_PROP_STATUS,
-> > +	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
-> > +	POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN,
-> > +	POWER_SUPPLY_PROP_CHARGE_NOW,
-> > +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-> > +	POWER_SUPPLY_PROP_CURRENT_NOW,
-> > +	POWER_SUPPLY_PROP_TECHNOLOGY,
-> > +	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
-> > +	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
-> > +	POWER_SUPPLY_PROP_MODEL_NAME,
-> > +};
-> > +
-> > +static int charge_finished(struct generic_bat *bat)
-> > +{
-> > +	return bat->pdata.gpio_inverted ?
-> > +		!gpio_get_value(bat->pdata.gpio_charge_finished) :
-> > +		gpio_get_value(bat->pdata.gpio_charge_finished);
-> > +}
-> > +
-> > +static int generic_adc_bat_get_property(struct power_supply *psy,
-> > +		enum power_supply_property psp,
-> > +		union power_supply_propval *val)
-> > +{
-> > +	struct generic_adc_bat *adc_bat;
-> > +	struct generic_bat *bat;
-> > +	int ret, scaleint, scalepart, iio_val;
-> > +	long result = 0;
-> > +
-> > +	if (!strcmp(psy->name, "main-battery")) {
-> > +		adc_bat = container_of(psy,
-> > +					struct generic_adc_bat, psy);
-> This first statement is I think shared so move it out of the if / else
-This whole logic will change as we will be using only one device and
-if has user has multiple batteries then he can register multiple
-devices.
-> 
-> > +		bat = container_of(adc_bat,
-> > +				struct generic_bat, bat[MAIN_BAT]);
-> > +	} else if (!strcmp(psy->name, "backup-battery")) {
-> > +		adc_bat = container_of(psy, struct generic_adc_bat, psy);
-> > +		bat = container_of(adc_bat,
-> > +				struct generic_bat, bat[BACKUP_BAT]);
-> > +	} else {
-> > +		/* Ideally this should never happen */
-> > +		WARN_ON(1);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	if (!bat) {
-> 	> +		dev_err(psy->dev, "no battery infos ?!\n");
-> > +		return -EINVAL;
-> > +	
-> > +	ret = iio_read_channel_raw(&adc_bat->channels[adc_bat->channel_index],
-> > +			&iio_val);
-> > +	ret = iio_read_channel_scale(&adc_bat->channels[adc_bat->channel_index],
-> > +			&scaleint, &scalepart);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> A quick comment here on what the battery framework is expecting vs IIO
-> supplying would be good.  It may be that this particular output is one 
-> that we should lift over into the core rather than end up with multiple
-> drivers doing the same thing.
-I think for this we need to get all the channels supported by a
-particular adc device and once we get the information regarding the
-channel(current/voltage/power) supported we can find out "What
-information is exported about this channel which may include scale or
-raw adc value".This can be used to call the corresponding API's.
-> 
-> > +	switch (ret) {
-> > +	case IIO_VAL_INT:
-> > +		result = iio_val * scaleint;
-> > +		break;
-> > +	case IIO_VAL_INT_PLUS_MICRO:
-> > +		result = (s64)iio_val * (s64)scaleint +
-> > +			div_s64((s64)iio_val * (s64)scalepart, 1000000LL);
-> > +		break;
-> > +	case IIO_VAL_INT_PLUS_NANO:
-> > +		result = (s64)iio_val * (s64)scaleint +
-> > +			div_s64((s64)iio_val * (s64)scalepart, 1000000000LL);
-> > +		break;
-> > +	}
-> > +
-> > +	switch (psp) {
-> > +	case POWER_SUPPLY_PROP_STATUS:
-> > +		if (bat->pdata.gpio_charge_finished < 0)
-> > +			val->intval = bat->level == 100000 ?
-> > +				POWER_SUPPLY_STATUS_FULL : bat->status;
-> > +		else
-> > +			val->intval = bat->status;
-> > +		return 0;
-> > +	case POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN:
-> > +		val->intval = 0;
-> > +		return 0;
-> > +	case POWER_SUPPLY_PROP_CHARGE_NOW:
-> > +		val->intval = bat->pdata.cal_charge(result);
-> > +		return 0;
-> > +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-> > +		val->intval = result;
-> > +		return 0;
-> > +	case POWER_SUPPLY_PROP_CURRENT_NOW:
-> > +		val->intval = result;
-> > +		return 0;
-> why return from these and break from the later ones (to return much the 
-> same I think...)?
-my mistake.
-> > +	case POWER_SUPPLY_PROP_TECHNOLOGY:
-> > +		val->intval = bat->pdata.battery_info.technology;
-> > +		break;
-> > +	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
-> > +		val->intval = bat->pdata.battery_info.voltage_min_design;
-> > +		break;
-> > +	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
-> > +		val->intval = bat->pdata.battery_info.voltage_max_design;
-> > +		break;
-> > +	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
-> > +		val->intval = bat->pdata.battery_info.charge_full_design;
-> > +		break;
-> > +	case POWER_SUPPLY_PROP_MODEL_NAME:
-> > +		val->strval = bat->pdata.battery_info.name;
-> > +		break;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +	return ret;
-> > +}
-> > +
-> > +static void generic_adc_bat_work(struct work_struct *work)
-> > +{
-> > +	struct generic_bat *bat = &generic_bat;
-> > +	int is_charged;
-> > +	int is_plugged;
-> > +	static int was_plugged;
-> That's nasty. Prevents even the theoretical posibility of multiple 
-> copies of the driver. That should be in the device specific data.
-yes should be part of device specific data.
-> > +
-> > +	/* backup battery doesn't have current monitoring capability anyway */
-> Always or in this particular configuration?
-I was told by Anton Vorontsov.Anyway now this driver will be per device
-so shouldn't matter.
-> 
-> > +	is_plugged = power_supply_am_i_supplied(&bat->bat[MAIN_BAT].psy);
-> > +	bat->cable_plugged = is_plugged;
-> > +	if (is_plugged != was_plugged) {
-> > +		was_plugged = is_plugged;
-> > +		if (is_plugged)
-> > +			bat->status = POWER_SUPPLY_STATUS_CHARGING;
-> > +		else
-> > +			bat->status = POWER_SUPPLY_STATUS_DISCHARGING;
-> > +	} else {
-> > +		if ((bat->pdata.gpio_charge_finished >= 0) && is_plugged) {
-> > +			is_charged = charge_finished(&generic_bat);
-> > +			if (is_charged)
-> > +				bat->status = POWER_SUPPLY_STATUS_FULL;
-> > +			else
-> > +				bat->status = POWER_SUPPLY_STATUS_CHARGING;
-> > +		}
-> > +	}
-> > +
-> > +	power_supply_changed(&bat->bat[MAIN_BAT].psy);
-> > +}
-> > +
-> > +static irqreturn_t generic_adc_bat_charged(int irq, void *dev_id)
-> > +{
-> > +	schedule_delayed_work(&bat_work,
-> > +			msecs_to_jiffies(JITTER_DELAY));
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> > +static int __devinit generic_adc_bat_probe(struct platform_device *pdev)
-> > +{
-> > +	struct generic_platform_data *pdata = pdev->dev.platform_data;
-> > +	struct iio_channel *channels;
-> > +	int num_channels = 0;
-> > +	int ret, i, j, k = 0;
-> > +	enum iio_chan_type type;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(generic_bat.bat); i++) {
-> > +		generic_bat.bat[i].psy.type = POWER_SUPPLY_TYPE_BATTERY;
-> > +		generic_bat.bat[i].psy.properties =
-> > +					generic_adc_main_bat_props;
-> > +		generic_bat.bat[i].psy.num_properties =
-> > +					ARRAY_SIZE(generic_adc_main_bat_props);
-> > +		generic_bat.bat[i].psy.get_property =
-> > +					generic_adc_bat_get_property;
-> > +		generic_bat.bat[i].psy.external_power_changed =
-> > +					generic_adc_bat_ext_power_changed;
-> Could you do this with a static const array?  Looks like there is 
-> nothing dynamic in here and that would make for cleaner code to read. 
-> Given other elements of psy are clearly dynamic (dev pointer) you will 
-> have to memcpy the static version in which is tedious. Still easier
-> to read though in my view.
-> > +	}
-right.
-> > +
-> > +	generic_bat.volt_value = -1;
-> > +	generic_bat.cur_value = -1;
-> > +	generic_bat.cable_plugged = 0;
-> > +	generic_bat.status = POWER_SUPPLY_STATUS_DISCHARGING;
-> > +
-> > +	memcpy(&generic_bat.pdata, pdata, sizeof(struct generic_platform_data));
-> > +
-> Is there anything dynamic in the pdata?  If not it would be cleaner just 
-> to use a pointer to it rather than make a copy (I can't immediately spot 
-> anything but them I'm not familiar with the battery
-> side of things.
-We can just assign it to generic_bat so that it can be used in the
-relevant functions.Otherwise we need to use dev_set_drvdata and
-dev_get_drvdata. 
-> > +	for (i = 0; i < ARRAY_SIZE(generic_bat.bat); i++) {
-> > +		ret = power_supply_register(&pdev->dev,
-> > +				&generic_bat.bat[i].psy);
-> > +		if (ret)
-> > +			goto err_reg_main;
-> > +	}
-> > +
-> > +	channels = iio_channel_get_all(dev_name(&pdev->dev));
-> I would give these explicit names and get the two individual channels by 
-> name. I think it will give you cleaner code.
-Yes, now it will be based on pdata->voltage_channel,
-pdata->current_channel and so on.We will use this to get the channel.
-> > +	if (IS_ERR(channels)) {
-> > +		ret = PTR_ERR(channels);
-> > +		goto err_reg_backup;
-> > +	}
-> > +
-> > +	while (channels[num_channels].indio_dev)
-> > +		num_channels++;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(generic_bat.bat); i++)
-> > +		generic_bat.bat[i].channels = kzalloc(sizeof(struct iio_channel)
-> > +							* BAT_MAX, GFP_KERNEL);
-> > +
-> > +	/* assuming main battery and backup battery is using the same channel */
-> > +	for (i = 0; i < num_channels; i++) {
-> > +		ret = iio_get_channel_type(&channels[i], &type);
-> Using named channels you should 'know' you have the correct type.  You 
-> can of course check if you don't trust your platform data though!
-right.
-> > +		if (ret < 0)
-> > +			goto err_gpio;
-> > +
-> > +		if (type == IIO_VOLTAGE || type == IIO_CURRENT) {
-> > +			for (j = 0; j < BAT_MAX; j++) {
-> > +				generic_bat.bat[j].channel_index = k;
-> > +				generic_bat.bat[j].channels[k] = channels[i];
-> > +			}
-> > +			k++;
-> > +		}
-> > +		continue;
-> > +	}
-> > +
-> > +	INIT_DELAYED_WORK(&bat_work, generic_adc_bat_work);
-> > +
-> > +	if (pdata->gpio_charge_finished >= 0) {
-> > +		ret = gpio_request(pdata->gpio_charge_finished, "charged");
-> > +		if (ret)
-> > +			goto err_gpio;
-> > +
-> > +		ret = request_irq(gpio_to_irq(pdata->gpio_charge_finished),
-> > +				generic_adc_bat_charged,
-> > +				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-> > +				"battery charged", NULL);
-> > +		if (ret)
-> > +			goto err_gpio;
-> > +	}
-> > +
-> > +	dev_info(&pdev->dev, "successfully loaded\n");
-> > +
-> > +	/* Schedule timer to check current status */
-> > +	schedule_delayed_work(&bat_work,
-> > +			msecs_to_jiffies(JITTER_DELAY));
-> > +
-> > +	iio_channel_release_all(channels);
-> Not if you want to prevent the adc driver from being removed from under 
-> you.  They should only be released in the driver removal.
-right.
-> > +
-> > +	return 0;
-> > +
-> > +err_gpio:
-> > +	iio_channel_release_all(channels);
-> > +err_reg_backup:
-> > +	for (i = 0; i < ARRAY_SIZE(generic_bat.bat); i++)
-> > +		power_supply_unregister(&generic_bat.bat[i].psy);
-> > +err_reg_main:
-> > +	return ret;
-> > +}
-> > +
-> > +static int generic_adc_bat_remove(struct platform_device *pdev)
-> > +{
-> > +	int i;
-> > +	struct generic_platform_data *pdata = pdev->dev.platform_data;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(generic_bat.bat); i++)
-> > +		power_supply_unregister(&generic_bat.bat[i].psy);
-> 
-> You should release the IIO channels here when they are no longer needed.
-right.
-> > +
-> > +	if (pdata->gpio_charge_finished >= 0) {
-> I forget, is a gpio index of 0 definitely invalid?
-> > +		free_irq(gpio_to_irq(pdata->gpio_charge_finished), NULL);
-> > +		gpio_free(pdata->gpio_charge_finished);
-> > +	}
-> > +
-> > +	cancel_delayed_work(&bat_work);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +#ifdef CONFIG_PM
-> > +static int generic_adc_bat_suspend(struct platform_device *pdev,
-> > +		pm_message_t state)
-> > +{
-> > +	struct generic_platform_data *pdata = pdev->dev.platform_data;
-> > +	struct generic_bat *bat = container_of(pdata,
-> > +					struct generic_bat, pdata);
-> > +
-> > +	cancel_delayed_work_sync(&bat_work);
-> > +	bat->status = POWER_SUPPLY_STATUS_UNKNOWN;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int generic_adc_bat_resume(struct platform_device *pdev)
-> > +{
-> > +	/* Schedule timer to check current status */
-> > +	schedule_delayed_work(&bat_work,
-> > +			msecs_to_jiffies(JITTER_DELAY));
-> > +
-> > +	return 0;
-> > +}
-> > +#else
-> > +#define generic_adc_bat_suspend NULL
-> > +#define generic_adc_bat_resume NULL
-> > +#endif
-> > +
-> > +static struct platform_driver generic_adc_bat_driver = {
-> > +	.driver		= {
-> > +		.name	= "generic-adc-battery",
-> > +	},
-> > +	.probe		= generic_adc_bat_probe,
-> > +	.remove		= generic_adc_bat_remove,
-> > +	.suspend	= generic_adc_bat_suspend,
-> > +	.resume		= generic_adc_bat_resume,
-> > +};
-> > +
-> > +module_platform_driver(generic_adc_bat_driver);
-> > +
-> > +MODULE_AUTHOR("anish kumar <anish198519851985@gmail.com>");
-> > +MODULE_DESCRIPTION("generic battery driver using IIO");
-> > +MODULE_LICENSE("GPL");
-> > diff --git a/include/linux/power/generic-battery.h b/include/linux/power/generic-battery.h
-> > new file mode 100644
-> > index 0000000..7a43aa0
-> > --- /dev/null
-> > +++ b/include/linux/power/generic-battery.h
-> > @@ -0,0 +1,26 @@
-> > +/*
-> > + * This program is free software; you can redistribute it and/or modify
-> > + * it under the terms of the GNU General Public License version 2 as
-> > + * published by the Free Software Foundation.
-> > + */
-> > +
-> > +#ifndef GENERIC_BATTERY_H
-> > +#define GENERIC_BATTERY_H
-> > +
-> > +#include <linux/power_supply.h>
-> > +
-> > +/**
-> > + * struct generic_platform_data - platform data for generic battery
-> A little inconsistent on capitalization.  (might as well do it now or
-> one of those people who delight in trivial patches will 'tidy' it
-> up for you :)
-I don't mind as it is a good start for people to get familiar with the 
-linux patch process.
-However I will address this valuable comments.
-> > + * @battery_info: Information about the battery
-> > + * @cal_charge: platform callback to calculate charge
-> > + * @gpio_charge_finished: GPIO number used for interrupts
-> > + * @gpio_inverted: Is the gpio inverted?
-> > + */
-> > +struct generic_platform_data {
-> > +	struct power_supply_info battery_info;
-> > +	int	(*cal_charge)(long);
-> > +	int	gpio_charge_finished;
-> > +	int	gpio_inverted;
-> > +};
-> > +
-> > +#endif /* GENERIC_BATTERY_H */
-> >
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index a2c5071..d0ae71e 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -18,6 +18,18 @@ config AD7266
+>  	  Say yes here to build support for Analog Devices AD7265 and AD7266
+>  	  ADCs.
+>  
+> +config AD7791
+> +	tristate "Analog Devices AD7791 ADC driver"
+> +	depends on SPI
+> +	select AD_SIGMA_DELTA
+> +	help
+> +	  Say yes here to build support for Analog Devices AD7787, AD7788, AD7789,
+> +	  AD7790 and AD7791 SPI analog to digital converters (ADC). If unsure, say
+> +	  N (but it is safe to say "Y").
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called ad7791.
+> +
+>  config AT91_ADC
+>  	tristate "Atmel AT91 ADC"
+>  	depends on ARCH_AT91
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 5989356..f187ff6 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -4,4 +4,5 @@
+>  
+>  obj-$(CONFIG_AD_SIGMA_DELTA) += ad_sigma_delta.o
+>  obj-$(CONFIG_AD7266) += ad7266.o
+> +obj-$(CONFIG_AD7791) += ad7791.o
+>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+> diff --git a/drivers/iio/adc/ad7791.c b/drivers/iio/adc/ad7791.c
+> new file mode 100644
+> index 0000000..e937408
+> --- /dev/null
+> +++ b/drivers/iio/adc/ad7791.c
+> @@ -0,0 +1,460 @@
+> +/*
+> + * AD7787/AD7788/AD7789/AD7790/AD7791 SPI ADC driver
+> + *
+> + * Copyright 2012 Analog Devices Inc.
+> + *  Author: Lars-Peter Clausen <lars@metafoo.de>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/interrupt.h>
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/err.h>
+> +#include <linux/sched.h>
+> +#include <linux/delay.h>
+> +#include <linux/module.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/adc/ad_sigma_delta.h>
+> +
+> +#include <linux/platform_data/ad7791.h>
+> +
+> +#define AD7791_REG_COMM			0x0 /* For writes */
+> +#define AD7791_REG_STATUS		0x0 /* For reads */
+> +#define AD7791_REG_MODE			0x1
+> +#define AD7791_REG_FILTER		0x2
+> +#define AD7791_REG_DATA			0x3
+> +
+> +#define AD7791_MODE_CONTINUOUS		0x00
+> +#define AD7791_MODE_SINGLE		0x02
+> +#define AD7791_MODE_POWERDOWN		0x03
+> +
+> +#define AD7791_CH_AIN1P_AIN1N		0x00
+> +#define AD7791_CH_AIN2			0x01
+> +#define AD7791_CH_AIN1N_AIN1N		0x02
+> +#define AD7791_CH_AVDD_MONITOR		0x03
+> +
+> +#define AD7791_FILTER_CLK_DIV_1		(0x0 << 4)
+> +#define AD7791_FILTER_CLK_DIV_2		(0x1 << 4)
+> +#define AD7791_FILTER_CLK_DIV_4		(0x2 << 4)
+> +#define AD7791_FILTER_CLK_DIV_8		(0x3 << 4)
+> +#define AD7791_FILTER_CLK_MASK		(0x3 << 4)
+> +#define AD7791_FILTER_RATE_120		0x0
+> +#define AD7791_FILTER_RATE_100		0x1
+> +#define AD7791_FILTER_RATE_33_3		0x2
+> +#define AD7791_FILTER_RATE_20		0x3
+> +#define AD7791_FILTER_RATE_16_6		0x4
+> +#define AD7791_FILTER_RATE_16_7		0x5
+> +#define AD7791_FILTER_RATE_13_3		0x6
+> +#define AD7791_FILTER_RATE_9_5		0x7
+> +#define AD7791_FILTER_RATE_MASK		0x7
+> +
+> +#define AD7791_MODE_BUFFER		BIT(1)
+> +#define AD7791_MODE_UNIPOLAR		BIT(2)
+> +#define AD7791_MODE_BURNOUT		BIT(3)
+> +#define AD7791_MODE_SEL_MASK		(0x3 << 6)
+> +#define AD7791_MODE_SEL(x)		((x) << 6)
+> +
+> +#define DECLARE_AD7787_CHANNELS(name, bits, storagebits) \
+> +const struct iio_chan_spec name[] = { \
+> +	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
+> +		(bits), (storagebits), 0), \
+> +	AD_SD_CHANNEL(1, 1, AD7791_CH_AIN2, (bits), (storagebits), 0), \
+> +	AD_SD_SHORTED_CHANNEL(2, 0, AD7791_CH_AIN1N_AIN1N, \
+> +		(bits), (storagebits), 0), \
+> +	AD_SD_SUPPLY_CHANNEL(3, 2, AD7791_CH_AVDD_MONITOR,  \
+> +		(bits), (storagebits), 0), \
+> +	IIO_CHAN_SOFT_TIMESTAMP(4), \
+> +}
+> +
+> +#define DECLARE_AD7791_CHANNELS(name, bits, storagebits) \
+> +const struct iio_chan_spec name[] = { \
+> +	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
+> +		(bits), (storagebits), 0), \
+> +	AD_SD_SHORTED_CHANNEL(1, 0, AD7791_CH_AIN1N_AIN1N, \
+> +		(bits), (storagebits), 0), \
+> +	AD_SD_SUPPLY_CHANNEL(2, 1, AD7791_CH_AVDD_MONITOR, \
+> +		(bits), (storagebits), 0), \
+> +	IIO_CHAN_SOFT_TIMESTAMP(3), \
+> +}
+> +
+> +static DECLARE_AD7787_CHANNELS(ad7787_channels, 24, 32);
+> +static DECLARE_AD7791_CHANNELS(ad7790_channels, 16, 16);
+> +static DECLARE_AD7791_CHANNELS(ad7791_channels, 24, 32);
+> +
+> +enum {
+> +	AD7787,
+> +	AD7788,
+> +	AD7789,
+> +	AD7790,
+> +	AD7791,
+> +};
+> +
+> +enum ad7791_chip_info_flags {
+> +	AD7791_FLAG_HAS_FILTER		= (1 << 0),
+> +	AD7791_FLAG_HAS_BUFFER		= (1 << 1),
+> +	AD7791_FLAG_HAS_UNIPOLAR	= (1 << 2),
+> +	AD7791_FLAG_HAS_BURNOUT		= (1 << 3),
+> +};
+> +
+> +struct ad7791_chip_info {
+> +	const struct iio_chan_spec *channels;
+> +	unsigned int num_channels;
+> +	enum ad7791_chip_info_flags flags;
+> +};
+> +
+> +static const struct ad7791_chip_info ad7791_chip_infos[] = {
+> +	[AD7787] = {
+> +		.channels = ad7787_channels,
+> +		.num_channels = ARRAY_SIZE(ad7787_channels),
+> +		.flags = AD7791_FLAG_HAS_FILTER | AD7791_FLAG_HAS_BUFFER |
+> +			AD7791_FLAG_HAS_UNIPOLAR | AD7791_FLAG_HAS_BURNOUT,
+> +	},
+> +	[AD7788] = {
+> +		.channels = ad7790_channels,
+> +		.num_channels = ARRAY_SIZE(ad7790_channels),
+> +		.flags = AD7791_FLAG_HAS_UNIPOLAR,
+> +	},
+> +	[AD7789] = {
+> +		.channels = ad7791_channels,
+> +		.num_channels = ARRAY_SIZE(ad7791_channels),
+> +		.flags = AD7791_FLAG_HAS_UNIPOLAR,
+> +	},
+> +	[AD7790] = {
+> +		.channels = ad7790_channels,
+> +		.num_channels = ARRAY_SIZE(ad7790_channels),
+> +		.flags = AD7791_FLAG_HAS_FILTER | AD7791_FLAG_HAS_BUFFER |
+> +			AD7791_FLAG_HAS_BURNOUT,
+> +	},
+> +	[AD7791] = {
+> +		.channels = ad7791_channels,
+> +		.num_channels = ARRAY_SIZE(ad7791_channels),
+> +		.flags = AD7791_FLAG_HAS_FILTER | AD7791_FLAG_HAS_BUFFER |
+> +			AD7791_FLAG_HAS_UNIPOLAR | AD7791_FLAG_HAS_BURNOUT,
+> +	},
+> +};
+> +
+> +struct ad7791_state {
+> +	struct ad_sigma_delta sd;
+> +	uint8_t mode;
+> +	uint8_t filter;
+> +
+> +	struct regulator *reg;
+> +	const struct ad7791_chip_info *info;
+> +};
+> +
+> +static struct ad7791_state *ad_sigma_delta_to_ad7791(struct ad_sigma_delta *sd)
+> +{
+> +	return container_of(sd, struct ad7791_state, sd);
+> +}
+> +
+> +static int ad7791_set_channel(struct ad_sigma_delta *sd, unsigned int channel)
+> +{
+> +	ad_sd_set_comm(sd, channel);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad7791_set_mode(struct ad_sigma_delta *sd,
+> +	enum ad_sigma_delta_mode mode)
+> +{
+> +	struct ad7791_state *st = ad_sigma_delta_to_ad7791(sd);
+> +
+> +	switch (mode) {
+> +	case AD_SD_MODE_CONTINUOUS:
+> +		mode = AD7791_MODE_CONTINUOUS;
+> +		break;
+> +	case AD_SD_MODE_SINGLE:
+> +		mode = AD7791_MODE_SINGLE;
+> +		break;
+> +	case AD_SD_MODE_IDLE:
+> +	case AD_SD_MODE_POWERDOWN:
+> +		mode = AD7791_MODE_POWERDOWN;
+> +		break;
+> +	}
+> +
+> +	st->mode &= ~AD7791_MODE_SEL_MASK;
+> +	st->mode |= AD7791_MODE_SEL(mode);
+> +
+> +	return ad_sd_write_reg(sd, AD7791_REG_MODE, sizeof(st->mode), st->mode);
+> +}
+> +
+> +static const struct ad_sigma_delta_info ad7791_sigma_delta_info = {
+> +	.set_channel = ad7791_set_channel,
+> +	.set_mode = ad7791_set_mode,
+> +	.has_registers = true,
+> +	.addr_shift = 4,
+> +	.read_mask = BIT(3),
+> +};
+> +
+> +static int ad7791_read_raw(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, int *val, int *val2, long info)
+> +{
+> +	struct ad7791_state *st = iio_priv(indio_dev);
+> +	bool unipolar = !!(st->mode & AD7791_MODE_UNIPOLAR);
+> +	unsigned long long scale_pv;
+> +
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		/**
+> +		 * Unipolar: 0 to VREF
+> +		 * Bipolar -VREF to VREF
+> +		 **/
+> +		if (unipolar)
+> +			*val = 0;
+> +		else
+> +			*val = -(1 << (chan->scan_type.realbits - 1));
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/* The monitor channel uses an internal reference. */
+> +		if (chan->address == AD7791_CH_AVDD_MONITOR) {
+> +			scale_pv = 5850000000000ULL;
+> +		} else {
+> +			int voltage_uv;
+> +
+> +			voltage_uv = regulator_get_voltage(st->reg);
+> +			if (voltage_uv < 0)
+> +				return voltage_uv;
+> +			scale_pv = (unsigned long long)voltage_uv * 1000000;
+> +		}
+> +		if (unipolar)
+> +			scale_pv >>= chan->scan_type.realbits;
+> +		else
+> +			scale_pv >>= chan->scan_type.realbits - 1;
+> +		*val2 = do_div(scale_pv, 1000000000);
+> +		*val = scale_pv;
+> +
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const char * const ad7791_sample_freq_avail[] = {
+> +	[AD7791_FILTER_RATE_120] = "120",
+> +	[AD7791_FILTER_RATE_100] = "100",
+> +	[AD7791_FILTER_RATE_33_3] = "33.3",
+> +	[AD7791_FILTER_RATE_20] = "20",
+> +	[AD7791_FILTER_RATE_16_6] = "16.6",
+> +	[AD7791_FILTER_RATE_16_7] = "16.7",
+> +	[AD7791_FILTER_RATE_13_3] = "13.3",
+> +	[AD7791_FILTER_RATE_9_5] = "9.5",
+> +};
+> +
+> +static ssize_t ad7791_read_frequency(struct device *dev,
+> +	struct device_attribute *attr, char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct ad7791_state *st = iio_priv(indio_dev);
+> +	unsigned int rate = st->filter & AD7791_FILTER_RATE_MASK;
+> +
+> +	return sprintf(buf, "%s\n", ad7791_sample_freq_avail[rate]);
+> +}
+> +
+> +static ssize_t ad7791_write_frequency(struct device *dev,
+> +	struct device_attribute *attr, const char *buf, size_t len)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct ad7791_state *st = iio_priv(indio_dev);
+> +	int i, ret;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	if (iio_buffer_enabled(indio_dev)) {
+> +		mutex_unlock(&indio_dev->mlock);
+> +		return -EBUSY;
+> +	}
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	ret = -EINVAL;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(ad7791_sample_freq_avail); i++) {
+> +		if (sysfs_streq(ad7791_sample_freq_avail[i], buf)) {
+> +
+> +			mutex_lock(&indio_dev->mlock);
+> +			st->filter &= ~AD7791_FILTER_RATE_MASK;
+> +			st->filter |= i;
+> +			ad_sd_write_reg(&st->sd, AD7791_REG_FILTER,
+> +					 sizeof(st->filter), st->filter);
+> +			mutex_unlock(&indio_dev->mlock);
+> +			ret = 0;
+> +			break;
+> +		}
+> +	}
+> +
+> +	return ret ? ret : len;
+> +}
+> +
+> +static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+> +		ad7791_read_frequency,
+> +		ad7791_write_frequency);
+> +
+> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("120 100 33.3 20 16.7 16.6 13.3 9.5");
+> +
+> +static struct attribute *ad7791_attributes[] = {
+> +	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group ad7791_attribute_group = {
+> +	.attrs = ad7791_attributes,
+> +};
+> +
+> +static const struct iio_info ad7791_info = {
+> +	.read_raw = &ad7791_read_raw,
+> +	.attrs = &ad7791_attribute_group,
+> +	.validate_trigger = ad_sd_validate_trigger,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static const struct iio_info ad7791_no_filter_info = {
+> +	.read_raw = &ad7791_read_raw,
+> +	.validate_trigger = ad_sd_validate_trigger,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int __devinit ad7791_setup(struct ad7791_state *st,
+> +	struct ad7791_platform_data *pdata)
+> +{
+> +	/* Set to poweron-reset default values */
+> +	st->mode = AD7791_MODE_BUFFER;
+> +	st->filter = AD7791_FILTER_RATE_16_6;
+> +
+> +	if (!pdata)
+> +		return 0;
+> +
+> +	if ((st->info->flags & AD7791_FLAG_HAS_BUFFER) && !pdata->buffered)
+> +		st->mode &= ~AD7791_MODE_BUFFER;
+> +
+> +	if ((st->info->flags & AD7791_FLAG_HAS_BURNOUT) &&
+> +		pdata->burnout_current)
+> +		st->mode |= AD7791_MODE_BURNOUT;
+> +
+> +	if ((st->info->flags & AD7791_FLAG_HAS_UNIPOLAR) && pdata->unipolar)
+> +		st->mode |= AD7791_MODE_UNIPOLAR;
+> +
+> +	return ad_sd_write_reg(&st->sd, AD7791_REG_MODE, sizeof(st->mode),
+> +		st->mode);
+> +}
+> +
+> +static int __devinit ad7791_probe(struct spi_device *spi)
+> +{
+> +	struct ad7791_platform_data *pdata = spi->dev.platform_data;
+> +	struct iio_dev *indio_dev;
+> +	struct ad7791_state *st;
+> +	int ret;
+> +
+> +	if (!spi->irq) {
+> +		dev_err(&spi->dev, "Missing IRQ.\n");
+> +		return -ENXIO;
+> +	}
+> +
+> +	indio_dev = iio_device_alloc(sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+> +
+> +	st->reg = regulator_get(&spi->dev, "refin");
+> +	if (IS_ERR(st->reg)) {
+> +		ret = PTR_ERR(st->reg);
+> +		goto err_iio_free;
+> +	}
+> +
+> +	ret = regulator_enable(st->reg);
+> +	if (ret)
+> +		goto error_put_reg;
+> +
+> +	st->info = &ad7791_chip_infos[spi_get_device_id(spi)->driver_data];
+> +	ad_sd_init(&st->sd, indio_dev, spi, &ad7791_sigma_delta_info);
+> +
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = st->info->channels;
+> +	indio_dev->num_channels = st->info->num_channels;
+> +	if (st->info->flags & AD7791_FLAG_HAS_FILTER)
+> +		indio_dev->info = &ad7791_info;
+> +	else
+> +		indio_dev->info = &ad7791_no_filter_info;
+> +
+> +	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+> +	if (ret)
+> +		goto error_disable_reg;
+> +
+> +	ret = ad7791_setup(st, pdata);
+> +	if (ret)
+> +		goto error_remove_trigger;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto error_remove_trigger;
+> +
+> +	return 0;
+> +
+> +error_remove_trigger:
+> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+> +error_disable_reg:
+> +	regulator_disable(st->reg);
+> +error_put_reg:
+> +	regulator_put(st->reg);
+> +err_iio_free:
+> +	iio_device_free(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int __devexit ad7791_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct ad7791_state *st = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+> +
+> +	regulator_disable(st->reg);
+> +	regulator_put(st->reg);
+> +
+> +	iio_device_free(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id ad7791_spi_ids[] = {
+> +	{ "ad7787", AD7787 },
+> +	{ "ad7788", AD7788 },
+> +	{ "ad7789", AD7789 },
+> +	{ "ad7790", AD7790 },
+> +	{ "ad7791", AD7791 },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, ad7791_spi_ids);
+> +
+> +static struct spi_driver ad7791_driver = {
+> +	.driver = {
+> +		.name	= "ad7791",
+> +		.owner	= THIS_MODULE,
+> +	},
+> +	.probe		= ad7791_probe,
+> +	.remove		= __devexit_p(ad7791_remove),
+> +	.id_table	= ad7791_spi_ids,
+> +};
+> +module_spi_driver(ad7791_driver);
+> +
+> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
+> +MODULE_DESCRIPTION("Analog Device AD7787/AD7788/AD7789/AD7790/AD7791 ADC driver");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/include/linux/platform_data/ad7791.h b/include/linux/platform_data/ad7791.h
+> new file mode 100644
+> index 0000000..f9e4db1
+> --- /dev/null
+> +++ b/include/linux/platform_data/ad7791.h
+> @@ -0,0 +1,17 @@
+> +#ifndef __LINUX_PLATFORM_DATA_AD7791__
+> +#define __LINUX_PLATFORM_DATA_AD7791__
+> +
+> +/**
+> + * struct ad7791_platform_data - AD7791 device platform data
+> + * @buffered: If set to true configure the device for buffered input mode.
+> + * @burnout_current: If set to true the 100mA burnout current is enabled.
+> + * @unipolar: If set to true sample in unipolar mode, if set to false sample in
+> + *		bipolar mode.
+> + */
+> +struct ad7791_platform_data {
+> +	bool buffered;
+> +	bool burnout_current;
+> +	bool unipolar;
+> +};
+> +
+> +#endif
 > 
