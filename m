@@ -1,101 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46957 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46981 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752647Ab2IHJ3F (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2012 05:29:05 -0400
-Message-ID: <504B0FDF.70004@kernel.org>
-Date: Sat, 08 Sep 2012 10:29:03 +0100
+	with ESMTP id S1752611Ab2IHJdi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2012 05:33:38 -0400
+Message-ID: <504B10EB.7090401@kernel.org>
+Date: Sat, 08 Sep 2012 10:33:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Bryan Freed <bfreed@chromium.org>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	grundler@chromium.org, ldewangan@nvidia.com, lars@metafoo.de,
-	gregkh@linuxfoundation.org, jic23@cam.ac.uk
-Subject: Re: [PATCH] iio: isl29018: Support fractional ALS scaling.
-References: <1346874953-22353-1-git-send-email-bfreed@chromium.org>
-In-Reply-To: <1346874953-22353-1-git-send-email-bfreed@chromium.org>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org,
+	"J. August Brenner" <jbrenner@taosinc.com>
+Subject: Re: [PATCH] iio staging: cleanup documentation for tsl2583
+References: <1346951329-20693-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1346951329-20693-1-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/05/2012 08:55 PM, Bryan Freed wrote:
-> The Industrial IO framework supports scaling ADC values by fractions,
-> but most drivers default to using whole numbers.
-> This change turns on fractional scaling in the isl29018 driver.
+On 09/06/2012 06:08 PM, Peter Meerwald wrote:
+> drop Documentation/sysfs-bus-iio-light-tsl2583 and merge content with
+> Documentation/light/sysfs-bus-iio-light-tsl2583 together with some obvious
+> fixes:
+> in_illuminance0_calibrate -> illuminance0_calibrate
+
+Hmm. arguably it is the driver that is wrong for this first one, not the
+documentation.  If we ever put calibrate into the core it will be named
+in_illuminance0_calibrate given it is easier to over specify the channel
+type than to work out when we don't need to say it is an input.
+
+Otherwise a sensible patch.
+
+Jon, would how much pain would changing the interface to add the in_ prefix
+hurt your customers?  At an absolute push we could keep the existing and add
+a version with the in_ prefix as well (and the deprecate the old one over
+a couple of cycles).
+
+On another note, we should look at doing any other cleanup (beyond this
+good work by Peter!) with a view to getting the TAOS light drivers out of
+staging...
+
+
+> lux_table -> illuminance0_lux_table
 > 
-> Signed-off-by: Bryan Freed <bfreed@chromium.org>
-
-add to togreg branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
-
-Thanks
-
-Technically doing integer + micro values is actually pretty common
-but having calibration scale is less so. Doesn't seem any harm in doing
-it here, though as calibscale is of an arbitary scaling itself, if it
-wasn't an abi change (which this is not) then I'd suggest just doing it
-as a 1000 * the original value.
-
-Still this does the job nicely so thanks!
-
-Jonathan
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: J. August Brenner <jbrenner@taosinc.com>
 > ---
->  drivers/staging/iio/light/isl29018.c |   17 +++++++++++++++--
->  1 files changed, 15 insertions(+), 2 deletions(-)
+>  .../light/sysfs-bus-iio-light-tsl2583              |   16 +++++++++++++++-
+>  .../iio/Documentation/sysfs-bus-iio-light-tsl2583  |   20 --------------------
+>  2 files changed, 15 insertions(+), 21 deletions(-)
+>  delete mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
 > 
-> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-> index 31d22f5..6ee5567 100644
-> --- a/drivers/staging/iio/light/isl29018.c
-> +++ b/drivers/staging/iio/light/isl29018.c
-> @@ -63,6 +63,7 @@ struct isl29018_chip {
->  	struct regmap		*regmap;
->  	struct mutex		lock;
->  	unsigned int		lux_scale;
-> +	unsigned int		lux_uscale;
->  	unsigned int		range;
->  	unsigned int		adc_bit;
->  	int			prox_scheme;
-> @@ -145,13 +146,22 @@ static int isl29018_read_sensor_input(struct isl29018_chip *chip, int mode)
->  static int isl29018_read_lux(struct isl29018_chip *chip, int *lux)
->  {
->  	int lux_data;
-> +	unsigned int data_x_range, lux_unshifted;
->  
->  	lux_data = isl29018_read_sensor_input(chip, COMMMAND1_OPMODE_ALS_ONCE);
->  
->  	if (lux_data < 0)
->  		return lux_data;
->  
-> -	*lux = (lux_data * chip->range * chip->lux_scale) >> chip->adc_bit;
-> +	/* To support fractional scaling, separate the unshifted lux
-> +	 * into two calculations: int scaling and micro-scaling.
-> +	 * lux_uscale ranges from 0-999999, so about 20 bits.  Split
-> +	 * the /1,000,000 in two to reduce the risk of over/underflow.
-> +	 */
-> +	data_x_range = lux_data * chip->range;
-> +	lux_unshifted = data_x_range * chip->lux_scale;
-> +	lux_unshifted += data_x_range / 1000 * chip->lux_uscale / 1000;
-> +	*lux = lux_unshifted >> chip->adc_bit;
->  
->  	return 0;
->  }
-> @@ -339,6 +349,8 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
->  	mutex_lock(&chip->lock);
->  	if (mask == IIO_CHAN_INFO_CALIBSCALE && chan->type == IIO_LIGHT) {
->  		chip->lux_scale = val;
-> +		/* With no write_raw_get_fmt(), val2 is a MICRO fraction. */
-> +		chip->lux_uscale = val2;
->  		ret = 0;
->  	}
->  	mutex_unlock(&chip->lock);
-> @@ -379,7 +391,8 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_CALIBSCALE:
->  		if (chan->type == IIO_LIGHT) {
->  			*val = chip->lux_scale;
-> -			ret = IIO_VAL_INT;
-> +			*val2 = chip->lux_uscale;
-> +			ret = IIO_VAL_INT_PLUS_MICRO;
->  		}
->  		break;
->  	default:
+> diff --git a/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583 b/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583
+> index 470f7ad..e9716b9 100644
+> --- a/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583
+> +++ b/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583
+> @@ -1,6 +1,20 @@
+> -What:		/sys/bus/iio/devices/device[n]/in_illuminance0_calibrate
+> +What:		/sys/bus/iio/devices/device[n]/illuminance0_lux_table
+> +KernelVersion:	2.6.37
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		This property gets/sets the table of coefficients
+> +		used in calculating illuminance in lux.
+> +
+> +What:		/sys/bus/iio/devices/device[n]/illuminance0_calibrate
+>  KernelVersion:	2.6.37
+>  Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		This property causes an internal calibration of the als gain trim
+>  		value which is later used in calculating illuminance in lux.
+> +
+> +What:		/sys/bus/iio/devices/device[n]/illuminance0_input_target
+> +KernelVersion:	2.6.37
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		This property is the known externally illuminance (in lux).
+> +		It is used in the process of calibrating the device accuracy.
+> diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583 b/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
+> deleted file mode 100644
+> index 660781d..0000000
+> --- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
+> +++ /dev/null
+> @@ -1,20 +0,0 @@
+> -What:		/sys/bus/iio/devices/device[n]/lux_table
+> -KernelVersion:	2.6.37
+> -Contact:	linux-iio@vger.kernel.org
+> -Description:
+> -		This property gets/sets the table of coefficients
+> -		used in calculating illuminance in lux.
+> -
+> -What:		/sys/bus/iio/devices/device[n]/illuminance0_calibrate
+> -KernelVersion:	2.6.37
+> -Contact:	linux-iio@vger.kernel.org
+> -Description:
+> -		This property causes an internal calibration of the als gain trim
+> -		value which is later used in calculating illuminance in lux.
+> -
+> -What:		/sys/bus/iio/devices/device[n]/illuminance0_input_target
+> -KernelVersion:	2.6.37
+> -Contact:	linux-iio@vger.kernel.org
+> -Description:
+> -		This property is the known externally illuminance (in lux).
+> -		It is used in the process of calibrating the device accuracy.
 > 
