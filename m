@@ -1,185 +1,33 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-022.synserver.de ([212.40.185.22]:1051 "EHLO
-	smtp-out-022.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751456Ab2IJIeM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2012 04:34:12 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 04/10] staging:iio:ad7476: Rework reference voltage handling
-Date: Mon, 10 Sep 2012 10:34:35 +0200
-Message-Id: <1347266081-6045-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347266081-6045-1-git-send-email-lars@metafoo.de>
-References: <1347266081-6045-1-git-send-email-lars@metafoo.de>
+Received: from mail-ie0-f174.google.com ([209.85.223.174]:60440 "EHLO
+	mail-ie0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751460Ab2IJXQC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2012 19:16:02 -0400
+Received: by ieje11 with SMTP id e11so4373147iej.19
+        for <linux-iio@vger.kernel.org>; Mon, 10 Sep 2012 16:16:02 -0700 (PDT)
+Date: Mon, 10 Sep 2012 16:12:42 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO new device support and cleanups (set 3 for the 3.7
+ cycle)
+Message-ID: <20120910231241.GA19716@kroah.com>
+References: <504C5D32.5030903@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <504C5D32.5030903@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Slightly rework the reference voltage handling for the ad7476 driver. Now the only
-way to specify a external reference voltage is to use the regulator API,
-previously it was possible to use either platform_data or the regulator API. The
-new way is more consistent with what other drivers do.
+On Sun, Sep 09, 2012 at 10:11:14AM +0100, Jonathan Cameron wrote:
+> The following changes since commit 107f04bbce331bf622b901ccec34a124e6b78584:
+> 
+>   staging: usbip: vhci_hcd: fixed suspend-resume loop (2012-09-06 09:31:54 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.7c
 
-Also do not ignore errors when requesting the regulator, since this will cope
-very poorly with e.g. deferred probing.
+Pulled and pushed out, thanks.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-
-----
-Changes since v1:
-		* Fix regulator error handling
----
- drivers/staging/iio/adc/ad7476.h      |   11 +------
- drivers/staging/iio/adc/ad7476_core.c |   58 +++++++++++++++------------------
- 2 files changed, 27 insertions(+), 42 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
-index c4f1150..4ed5494 100644
---- a/drivers/staging/iio/adc/ad7476.h
-+++ b/drivers/staging/iio/adc/ad7476.h
-@@ -10,16 +10,8 @@
- 
- #define RES_MASK(bits)	((1 << (bits)) - 1)
- 
--/*
-- * TODO: struct ad7476_platform_data needs to go into include/linux/iio
-- */
--
--struct ad7476_platform_data {
--	u16				vref_mv;
--};
--
- struct ad7476_chip_info {
--	u16				int_vref_mv;
-+	unsigned int			int_vref_uv;
- 	struct iio_chan_spec		channel[2];
- };
- 
-@@ -27,7 +19,6 @@ struct ad7476_state {
- 	struct spi_device		*spi;
- 	const struct ad7476_chip_info	*chip_info;
- 	struct regulator		*reg;
--	u16				int_vref_mv;
- 	struct spi_transfer		xfer;
- 	struct spi_message		msg;
- 	/*
-diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
-index c97300b..e79a179 100644
---- a/drivers/staging/iio/adc/ad7476_core.c
-+++ b/drivers/staging/iio/adc/ad7476_core.c
-@@ -40,7 +40,7 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
- {
- 	int ret;
- 	struct ad7476_state *st = iio_priv(indio_dev);
--	unsigned int scale_uv;
-+	int scale_uv;
- 
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -57,10 +57,16 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
- 			RES_MASK(st->chip_info->channel[0].scan_type.realbits);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		scale_uv = (st->int_vref_mv * 1000)
--			>> st->chip_info->channel[0].scan_type.realbits;
--		*val =  scale_uv/1000;
--		*val2 = (scale_uv%1000)*1000;
-+		if (!st->chip_info->int_vref_uv) {
-+			scale_uv = regulator_get_voltage(st->reg);
-+			if (scale_uv < 0)
-+				return scale_uv;
-+		} else {
-+			scale_uv = st->chip_info->int_vref_uv;
-+		}
-+		scale_uv >>= chan->scan_type.realbits;
-+		*val =  scale_uv / 1000;
-+		*val2 = (scale_uv % 1000) * 1000;
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	}
- 	return -EINVAL;
-@@ -96,7 +102,7 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
- 	[ID_AD7495] = {
- 		.channel[0] = AD7476_CHAN(12),
- 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
--		.int_vref_mv = 2500,
-+		.int_vref_uv = 2500000,
- 	},
- };
- 
-@@ -107,10 +113,9 @@ static const struct iio_info ad7476_info = {
- 
- static int __devinit ad7476_probe(struct spi_device *spi)
- {
--	struct ad7476_platform_data *pdata = spi->dev.platform_data;
- 	struct ad7476_state *st;
- 	struct iio_dev *indio_dev;
--	int ret, voltage_uv = 0;
-+	int ret;
- 
- 	indio_dev = iio_device_alloc(sizeof(*st));
- 	if (indio_dev == NULL) {
-@@ -118,25 +123,18 @@ static int __devinit ad7476_probe(struct spi_device *spi)
- 		goto error_ret;
- 	}
- 	st = iio_priv(indio_dev);
--	st->reg = regulator_get(&spi->dev, "vcc");
--	if (!IS_ERR(st->reg)) {
--		ret = regulator_enable(st->reg);
--		if (ret)
--			goto error_put_reg;
--
--		voltage_uv = regulator_get_voltage(st->reg);
--	}
- 	st->chip_info =
- 		&ad7476_chip_info_tbl[spi_get_device_id(spi)->driver_data];
- 
--	if (st->chip_info->int_vref_mv)
--		st->int_vref_mv = st->chip_info->int_vref_mv;
--	else if (pdata && pdata->vref_mv)
--		st->int_vref_mv = pdata->vref_mv;
--	else if (voltage_uv)
--		st->int_vref_mv = voltage_uv / 1000;
--	else
--		dev_warn(&spi->dev, "reference voltage unspecified\n");
-+	st->reg = regulator_get(&spi->dev, "vcc");
-+	if (IS_ERR(st->reg)) {
-+		ret = PTR_ERR(st->reg);
-+		goto error_ret;
-+	}
-+
-+	ret = regulator_enable(st->reg);
-+	if (ret)
-+		goto error_put_reg;
- 
- 	spi_set_drvdata(spi, indio_dev);
- 
-@@ -169,11 +167,9 @@ static int __devinit ad7476_probe(struct spi_device *spi)
- error_ring_unregister:
- 	ad7476_ring_cleanup(indio_dev);
- error_disable_reg:
--	if (!IS_ERR(st->reg))
--		regulator_disable(st->reg);
-+	regulator_disable(st->reg);
- error_put_reg:
--	if (!IS_ERR(st->reg))
--		regulator_put(st->reg);
-+	regulator_put(st->reg);
- 	iio_device_free(indio_dev);
- 
- error_ret:
-@@ -187,10 +183,8 @@ static int __devexit ad7476_remove(struct spi_device *spi)
- 
- 	iio_device_unregister(indio_dev);
- 	ad7476_ring_cleanup(indio_dev);
--	if (!IS_ERR(st->reg)) {
--		regulator_disable(st->reg);
--		regulator_put(st->reg);
--	}
-+	regulator_disable(st->reg);
-+	regulator_put(st->reg);
- 	iio_device_free(indio_dev);
- 
- 	return 0;
--- 
-1.7.10.4
-
+greg k-h
