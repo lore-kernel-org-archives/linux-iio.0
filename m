@@ -1,510 +1,390 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:55601 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753740Ab2IJPkp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2012 11:40:45 -0400
-From: anish kumar <anish198519851985@gmail.com>
-To: lars@metafoo.de, jic23@cam.ac.uk, cbou@mail.ru
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	anish kumar <anish198519851985@gmail.com>
-Subject: [PATCH] [RFC]power: battery: Generic battery driver using IIO
-Date: Mon, 10 Sep 2012 21:10:21 +0530
-Message-Id: <1347291621-8530-1-git-send-email-anish198519851985@gmail.com>
+Received: from comal.ext.ti.com ([198.47.26.152]:45883 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750900Ab2IJICQ convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2012 04:02:16 -0400
+From: "Kim, Milo" <Milo.Kim@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH v5] iio: adc: add new lp8788 adc driver
+Date: Mon, 10 Sep 2012 08:02:01 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EF45CC@DQHE02.ent.ti.com>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: anish kumar <anish198519851985@gmail.com>
+ TI LP8788 PMU provides regulators, battery charger, ADC,
+ RTC, backlight driver and current sinks.
 
-This is the cleaned up code after the valuable inputs from
-the Jonathan, Lars and Anton.
+ This patch enables the LP8788 ADC functions.
 
-I have tried to accomodate all the concerns however please
-let me know incase something is missed out.
+ The LP8788 ADC has 13 ADC input selection and supports 12-bit resolution.
+ Internal operation of getting ADC is access to registers of LP8788.
+ The LP8788 ADC uses exported functions for accessing these registers.
+ (exported by LP8788 MFD device driver)
 
-Signed-off-by: anish kumar <anish198519851985@gmail.com>
+ This driver supports IIO_CHAN_INFO_RAW and SCALE.
+ The scale is micro unit.
+ So the IIO consumer can get the result as following.
+
+   result = ADC raw value * (scale_int + scale_part / 1000000)
+
+ (The IIO map for the IIO consumer)
+
+ The ADC input can be selective in the platform side.
+ Even though this platform data is not defined,
+ the default IIO map is created for supporting the power supply driver.
+ The battery voltage and temperature are used inside this driver.
+
+ (History)
+
+ Patch v5.
+ (a) Fix misuse of consumer_name_dev
+   If the IIO consumer device is not defined in the platform side,
+   the default consumer is the lp8788-charger.
+   In this case, the consumer name should be defined as 'lp8788-charger'
+   not driver name itself.
+
+ (b) Add mutex for ADC read operation
+
+ (c) Reorganization on lp8788_adc_read_raw()
+   The LP8788 registers are accessed only when the mask is IIO_CHAN_INFO_RAW.
+   Other cases, no need to read the registers.
+   To make lp8788_adc_read_raw() simple, new lp8788_get_adc_result() is added.
+
+ (d) make LP8788 specific names
+   Add prefix LP8788_ for datasheet_name, channel and ADC channel label of
+   the default IIO maps.
+
+ Patch v4.
+ Fix adc_raw function: support RAW and SCALE channel info.
+ Change LP8788 ADC platform data - the IIO map.
+ Enables the default IIO map.
+
+ Patch v3.
+ Fix wrong size of allocating the IIO private data.
+ Fix coding styles.
+
+ Patch v2.
+ Support RAW and SCALE interface for IIO consumer.
+ Clean up the IIO channel spec macro.
+
+Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
 ---
- drivers/power/generic-adc-battery.c       |  431 +++++++++++++++++++++++++++++
- include/linux/power/generic-adc-battery.h |   33 +++
- 2 files changed, 464 insertions(+), 0 deletions(-)
- create mode 100644 drivers/power/generic-adc-battery.c
- create mode 100644 include/linux/power/generic-adc-battery.h
+ drivers/iio/adc/Kconfig      |    6 +
+ drivers/iio/adc/Makefile     |    1 +
+ drivers/iio/adc/lp8788_adc.c |  270 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 277 insertions(+)
+ create mode 100644 drivers/iio/adc/lp8788_adc.c
 
-diff --git a/drivers/power/generic-adc-battery.c b/drivers/power/generic-adc-battery.c
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 8a78b4f..30c06ed 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -22,4 +22,10 @@ config AT91_ADC
+ 	help
+ 	  Say yes here to build support for Atmel AT91 ADC.
+ 
++config LP8788_ADC
++	bool "LP8788 ADC driver"
++	depends on MFD_LP8788
++	help
++	  Say yes here to build support for TI LP8788 ADC.
++
+ endmenu
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 52eec25..72f9a76 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -4,3 +4,4 @@
+ 
+ obj-$(CONFIG_AD7266) += ad7266.o
+ obj-$(CONFIG_AT91_ADC) += at91_adc.o
++obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
 new file mode 100644
-index 0000000..3459740
+index 0000000..6079f9e
 --- /dev/null
-+++ b/drivers/power/generic-adc-battery.c
-@@ -0,0 +1,431 @@
++++ b/drivers/iio/adc/lp8788_adc.c
+@@ -0,0 +1,270 @@
 +/*
-+ * Generic battery driver code using IIO
-+ * Copyright (C) 2012, Anish Kumar <anish198519851985@gmail.com>
-+ * based on jz4740-battery.c
-+ * based on s3c_adc_battery.c
++ * TI LP8788 MFD - ADC driver
 + *
-+ * This file is subject to the terms and conditions of the GNU General Public
-+ * License.  See the file COPYING in the main directory of this archive for
-+ * more details.
++ * Copyright 2012 Texas Instruments
 + *
-+ */
-+
-+#include <linux/interrupt.h>
-+#include <linux/platform_device.h>
-+#include <linux/power_supply.h>
-+#include <linux/gpio.h>
-+#include <linux/err.h>
-+#include <linux/timer.h>
-+#include <linux/jiffies.h>
-+#include <linux/errno.h>
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/iio/consumer.h>
-+#include <linux/iio/types.h>
-+
-+#include <linux/power/generic-adc-battery.h>
-+
-+#define to_generic_bat(ptr)	\
-+	container_of(ptr, struct generic_adc_bat, ptr)
-+
-+/*
-+ * channel_name suggests the standard channel names for commonly used
-+ * channel types. Please use this names in board file if you support
-+ * all the channel names.
-+ */
-+char channel_name[][BAT_MAX_NAME + 1] = {
-+	[VOLTAGE]	= "voltage",
-+	[CURRENT]	= "current",
-+	[POWER]		= "power",
-+};
-+
-+struct generic_adc_bat {
-+	struct power_supply	psy;
-+	struct iio_channel	**channel;
-+	struct iio_battery_platform_data	pdata;
-+	struct delayed_work bat_work;
-+	int		was_plugged;
-+	int		volt_value;
-+	int		cur_value;
-+	int		level;
-+	int		status;
-+	int		cable_plugged:1;
-+};
-+
-+static void generic_adc_bat_ext_power_changed(struct power_supply *psy)
-+{
-+	struct generic_adc_bat *adc_bat;
-+	adc_bat = to_generic_bat(psy);
-+
-+	schedule_delayed_work(&adc_bat->bat_work,
-+			msecs_to_jiffies(adc_bat->pdata.jitter_delay));
-+}
-+
-+static enum power_supply_property bat_props[] = {
-+	POWER_SUPPLY_PROP_STATUS,
-+	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
-+	POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN,
-+	POWER_SUPPLY_PROP_CHARGE_NOW,
-+	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-+	POWER_SUPPLY_PROP_CURRENT_NOW,
-+	POWER_SUPPLY_PROP_TECHNOLOGY,
-+	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
-+	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
-+	POWER_SUPPLY_PROP_MODEL_NAME,
-+};
-+
-+/*
-+ * This properties are set based on the received platform data and this
-+ * should correspond one-to-one with enum chan_type.
-+ */
-+static enum power_supply_property dyn_props[] = {
-+	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-+	POWER_SUPPLY_PROP_CURRENT_NOW,
-+	POWER_SUPPLY_PROP_POWER_NOW,
-+};
-+
-+static int charge_finished(struct generic_adc_bat *adc_bat)
-+{
-+	return adc_bat->pdata.gpio_inverted ?
-+		!gpio_get_value(adc_bat->pdata.gpio_charge_finished) :
-+		gpio_get_value(adc_bat->pdata.gpio_charge_finished);
-+}
-+
-+static int generic_adc_bat_get_property(struct power_supply *psy,
-+		enum power_supply_property psp,
-+		union power_supply_propval *val)
-+{
-+	struct generic_adc_bat *adc_bat;
-+	int scaleint, scalepart, iio_val, ret = 0;
-+	long result = 0;
-+
-+	adc_bat = to_generic_bat(psy);
-+	if (!adc_bat) {
-+		dev_err(psy->dev, "no battery infos ?!\n");
-+		return -EINVAL;
-+	}
-+
-+	switch (psp) {
-+	case POWER_SUPPLY_PROP_POWER_NOW:
-+		ret = iio_read_channel_raw(adc_bat->channel[POWER],
-+				&iio_val);
-+		ret = iio_read_channel_scale(adc_bat->channel[POWER],
-+				&scaleint, &scalepart);
-+		if (ret < 0)
-+			return ret;
-+		break;
-+	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-+		ret = iio_read_channel_raw(adc_bat->channel[VOLTAGE],
-+				&iio_val);
-+		ret = iio_read_channel_scale(adc_bat->channel[VOLTAGE],
-+				&scaleint, &scalepart);
-+		if (ret < 0)
-+			return ret;
-+		break;
-+	case POWER_SUPPLY_PROP_CURRENT_NOW:
-+		ret = iio_read_channel_raw(adc_bat->channel[CURRENT],
-+				&iio_val);
-+		ret = iio_read_channel_scale(adc_bat->channel[CURRENT],
-+				&scaleint, &scalepart);
-+		if (ret < 0)
-+			return ret;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	switch (ret) {
-+	case IIO_VAL_INT:
-+		result = iio_val * scaleint;
-+		break;
-+	case IIO_VAL_INT_PLUS_MICRO:
-+		result = (s64)iio_val * (s64)scaleint +
-+			div_s64((s64)iio_val * (s64)scalepart, 1000000LL);
-+		break;
-+	case IIO_VAL_INT_PLUS_NANO:
-+		result = (s64)iio_val * (s64)scaleint +
-+			div_s64((s64)iio_val * (s64)scalepart, 1000000000LL);
-+		break;
-+	}
-+
-+	switch (psp) {
-+	case POWER_SUPPLY_PROP_STATUS:
-+		if (adc_bat->pdata.gpio_charge_finished < 0)
-+			val->intval = adc_bat->level == 100000 ?
-+				POWER_SUPPLY_STATUS_FULL : adc_bat->status;
-+		else
-+			val->intval = adc_bat->status;
-+		break;
-+	case POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN:
-+		val->intval = 0;
-+		break;
-+	case POWER_SUPPLY_PROP_CHARGE_NOW:
-+		val->intval = adc_bat->pdata.cal_charge(result);
-+		break;
-+	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-+		val->intval = result;
-+		break;
-+	case POWER_SUPPLY_PROP_CURRENT_NOW:
-+		val->intval = result;
-+		break;
-+	case POWER_SUPPLY_PROP_POWER_NOW:
-+		val->intval = result;
-+		break;
-+	case POWER_SUPPLY_PROP_TECHNOLOGY:
-+		val->intval = adc_bat->pdata.battery_info.technology;
-+		break;
-+	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
-+		val->intval = adc_bat->pdata.battery_info.voltage_min_design;
-+		break;
-+	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
-+		val->intval = adc_bat->pdata.battery_info.voltage_max_design;
-+		break;
-+	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
-+		val->intval = adc_bat->pdata.battery_info.charge_full_design;
-+		break;
-+	case POWER_SUPPLY_PROP_MODEL_NAME:
-+		val->strval = adc_bat->pdata.battery_info.name;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+	return ret;
-+}
-+
-+static struct generic_adc_bat adc_bat = {
-+	.psy.type = POWER_SUPPLY_TYPE_BATTERY,
-+	.psy.get_property =
-+		generic_adc_bat_get_property,
-+	.psy.external_power_changed =
-+		generic_adc_bat_ext_power_changed,
-+};
-+
-+static void generic_adc_bat_work(struct work_struct *work)
-+{
-+	struct generic_adc_bat *adc_bat;
-+	struct delayed_work *delayed_work;
-+	int is_charged;
-+	int is_plugged;
-+
-+	delayed_work = container_of(work,
-+				struct delayed_work, work);
-+	adc_bat = container_of(delayed_work,
-+				struct generic_adc_bat, bat_work);
-+
-+	/* backup battery doesn't have current monitoring capability anyway */
-+	is_plugged = power_supply_am_i_supplied(&adc_bat->psy);
-+	adc_bat->cable_plugged = is_plugged;
-+	if (is_plugged != adc_bat->was_plugged) {
-+		adc_bat->was_plugged = is_plugged;
-+		if (is_plugged)
-+			adc_bat->status = POWER_SUPPLY_STATUS_CHARGING;
-+		else
-+			adc_bat->status = POWER_SUPPLY_STATUS_DISCHARGING;
-+	} else {
-+		if ((adc_bat->pdata.gpio_charge_finished >= 0) && is_plugged) {
-+			is_charged = charge_finished(adc_bat);
-+			if (is_charged)
-+				adc_bat->status = POWER_SUPPLY_STATUS_FULL;
-+			else
-+				adc_bat->status = POWER_SUPPLY_STATUS_CHARGING;
-+		}
-+	}
-+
-+	power_supply_changed(&adc_bat->psy);
-+}
-+
-+static irqreturn_t generic_adc_bat_charged(int irq, void *dev_id)
-+{
-+	struct generic_adc_bat *adc_bat = dev_id;
-+	adc_bat = container_of(&adc_bat->bat_work,
-+				struct generic_adc_bat, bat_work);
-+	schedule_delayed_work(&adc_bat->bat_work,
-+			msecs_to_jiffies(adc_bat->pdata.jitter_delay));
-+	return IRQ_HANDLED;
-+}
-+
-+/* 
-+ * compare the pdata->channel names with the predefined channels and
-+ * returns the index of the channel in channel_name array or -1 in the
-+ * case of not-found.
-+ */
-+int channel_cmp(char *name)
-+{
-+	if (!strcmp(name, channel_name[VOLTAGE]))
-+		return VOLTAGE;
-+	else if (!strcmp(name, channel_name[CURRENT]))
-+		return CURRENT;
-+	else if (!strcmp(name, channel_name[POWER]))
-+		return POWER;
-+	else
-+		return -1;
-+}
-+
-+static int __devinit generic_adc_bat_probe(struct platform_device *pdev)
-+{
-+	struct iio_battery_platform_data *pdata = pdev->dev.platform_data;
-+	int ret, chan_index;
-+
-+	/* copying the battery name from platform data */
-+	adc_bat.psy.name = pdata->battery_name;
-+
-+	/* bootup default values for the battery */
-+	adc_bat.volt_value = -1;
-+	adc_bat.cur_value = -1;
-+	adc_bat.cable_plugged = 0;
-+	adc_bat.status = POWER_SUPPLY_STATUS_DISCHARGING;
-+
-+	/* calculate the total number of channels */
-+	for (chan_index = 0; pdata->channel_name[chan_index]; chan_index++)
-+		;
-+
-+	if (!chan_index) {
-+		pr_err("atleast provide one channel\n");
-+		return -EINVAL;
-+	}
-+
-+	/* copying the static properties and allocating extra memory for holding
-+	 * the extra configurable properties received from platform data.
-+	*/
-+	adc_bat.psy.properties = kzalloc(sizeof(bat_props)
-+					+ sizeof(int)*chan_index, GFP_KERNEL);
-+	if (!adc_bat.psy.properties) {
-+		ret = -ENOMEM;
-+		goto first_mem_fail;
-+	}
-+	memcpy(adc_bat.psy.properties, bat_props, sizeof(bat_props));
-+
-+	/* allocating memory for iio channels */
-+	adc_bat.channel = kzalloc(chan_index * sizeof(struct iio_channel),
-+					GFP_KERNEL);
-+	if (!adc_bat.channel) {
-+		ret = -ENOMEM;
-+		goto second_mem_fail;
-+	}
-+
-+	/*
-+	 * getting channel from iio and copying the battery properties
-+	 * based on the channel set in the platform data.
-+	 */
-+	for (chan_index = 0; pdata->channel_name[chan_index]; chan_index++) {
-+		int channel = channel_cmp(pdata->channel_name[chan_index]);
-+		if (channel < 0) {
-+			ret = -EINVAL;
-+			goto second_mem_fail;
-+		}
-+
-+		adc_bat.channel[chan_index] =
-+		iio_channel_get(dev_name(&pdev->dev),
-+			pdata->channel_name[chan_index]);
-+		if (IS_ERR(adc_bat.channel[chan_index])) {
-+			ret = PTR_ERR(adc_bat.channel[chan_index]);
-+			goto second_mem_fail;
-+		}
-+
-+		memcpy(adc_bat.psy.properties+sizeof(bat_props),
-+			&dyn_props[channel], sizeof(dyn_props[channel]));
-+	}
-+
-+	ret = power_supply_register(&pdev->dev, &adc_bat.psy);
-+	if (ret)
-+		goto err_reg_fail;
-+
-+	INIT_DELAYED_WORK(&adc_bat.bat_work, generic_adc_bat_work);
-+
-+	if (gpio_is_valid(pdata->gpio_charge_finished)) {
-+		ret = gpio_request(pdata->gpio_charge_finished, "charged");
-+		if (ret)
-+			goto err_gpio;
-+
-+		ret = request_irq(gpio_to_irq(pdata->gpio_charge_finished),
-+				generic_adc_bat_charged,
-+				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-+				"battery charged", &adc_bat);
-+		if (ret)
-+			goto err_gpio;
-+	} else
-+		goto err_gpio; /* let's bail out */
-+
-+	platform_set_drvdata(pdev, &adc_bat);
-+	/* Schedule timer to check current status */
-+	schedule_delayed_work(&adc_bat.bat_work,
-+			msecs_to_jiffies(0));
-+	return 0;
-+
-+err_gpio:
-+	power_supply_unregister(&adc_bat.psy);
-+err_reg_fail:
-+	for (chan_index = 0; pdata->channel_name[chan_index]; chan_index++)
-+		iio_channel_release(adc_bat.channel[chan_index]);
-+	kfree(adc_bat.channel);
-+second_mem_fail:
-+	kfree(adc_bat.psy.properties);
-+first_mem_fail:
-+	return ret;
-+}
-+
-+static int generic_adc_bat_remove(struct platform_device *pdev)
-+{
-+	int chan_index;
-+	struct iio_battery_platform_data *pdata = pdev->dev.platform_data;
-+	struct generic_adc_bat *adc_bat = to_generic_bat(pdata);
-+
-+	power_supply_unregister(&adc_bat->psy);
-+
-+	if (pdata->gpio_charge_finished >= 0) {
-+		free_irq(gpio_to_irq(pdata->gpio_charge_finished), NULL);
-+		gpio_free(pdata->gpio_charge_finished);
-+	}
-+
-+	for (chan_index = 0; pdata->channel_name[chan_index]; chan_index++)
-+		iio_channel_release(adc_bat->channel[chan_index]);
-+	cancel_delayed_work(&adc_bat->bat_work);
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM
-+static int generic_adc_bat_suspend(struct device *dev)
-+{
-+	struct generic_adc_bat *adc_bat = dev_get_drvdata(dev);
-+
-+	cancel_delayed_work_sync(&adc_bat->bat_work);
-+	adc_bat->status = POWER_SUPPLY_STATUS_UNKNOWN;
-+	return 0;
-+}
-+
-+static int generic_adc_bat_resume(struct device *dev)
-+{
-+	struct generic_adc_bat *adc_bat = dev_get_drvdata(dev);
-+
-+	/* Schedule timer to check current status */
-+	schedule_delayed_work(&adc_bat->bat_work,
-+			msecs_to_jiffies(adc_bat->pdata.jitter_delay));
-+	return 0;
-+}
-+
-+static const struct dev_pm_ops generic_adc_battery_pm_ops = {
-+	.suspend        = generic_adc_bat_suspend,
-+	.resume         = generic_adc_bat_resume,
-+};
-+
-+#define GENERIC_ADC_BATTERY_PM_OPS       (&generic_adc_battery_pm_ops)
-+#else
-+#define GENERIC_ADC_BATTERY_PM_OPS       (NULL)
-+#endif
-+
-+static struct platform_driver generic_adc_bat_driver = {
-+	.driver		= {
-+		.name	= "generic-adc-battery",
-+		.owner	= THIS_MODULE,
-+		.pm	= GENERIC_ADC_BATTERY_PM_OPS
-+	},
-+	.probe		= generic_adc_bat_probe,
-+	.remove		= generic_adc_bat_remove,
-+};
-+
-+module_platform_driver(generic_adc_bat_driver);
-+
-+MODULE_AUTHOR("anish kumar <anish198519851985@gmail.com>");
-+MODULE_DESCRIPTION("generic battery driver using IIO");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/power/generic-adc-battery.h b/include/linux/power/generic-adc-battery.h
-new file mode 100644
-index 0000000..d7c6d20
---- /dev/null
-+++ b/include/linux/power/generic-adc-battery.h
-@@ -0,0 +1,33 @@
-+/*
++ * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
++ *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License version 2 as
 + * published by the Free Software Foundation.
 + */
 +
-+#ifndef GENERIC_ADC_BATTERY_H
-+#define GENERIC_ADC_BATTERY_H
++#include <linux/delay.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/driver.h>
++#include <linux/iio/machine.h>
++#include <linux/mfd/lp8788.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
 +
-+/* should be enough for the channel names */
-+#define BAT_MAX_NAME	30
++/* register address */
++#define LP8788_ADC_CONF			0x60
++#define LP8788_ADC_RAW			0x61
++#define LP8788_ADC_DONE			0x63
 +
-+enum chan_type {
-+	VOLTAGE = 0,
-+	CURRENT,
-+	POWER,
-+	MAX_CHAN_TYPE
++#define ADC_CONV_START			1
++
++struct lp8788_adc {
++	struct lp8788 *lp;
++	struct iio_map *map;
++	struct mutex lock;
 +};
 +
-+extern char channel_name[][BAT_MAX_NAME + 1];
-+
-+struct iio_battery_platform_data {
-+	struct power_supply_info battery_info;
-+	char	**channel_name;
-+	char	*battery_name;
-+	int	(*cal_charge)(long);
-+	int	gpio_charge_finished;
-+	int	gpio_inverted;
-+	int	bat_poll_interval;
-+	int	jitter_delay;
++static const int lp8788_scale[LPADC_MAX] = {
++	[LPADC_VBATT_5P5] = 1343,
++	[LPADC_VIN_CHG]   = 3052,
++	[LPADC_IBATT]     = 610,
++	[LPADC_IC_TEMP]   = 610,
++	[LPADC_VBATT_6P0] = 1465,
++	[LPADC_VBATT_5P0] = 1221,
++	[LPADC_ADC1]      = 610,
++	[LPADC_ADC2]      = 610,
++	[LPADC_VDD]       = 1025,
++	[LPADC_VCOIN]     = 757,
++	[LPADC_VDD_LDO]   = 610,
++	[LPADC_ADC3]      = 610,
++	[LPADC_ADC4]      = 610,
 +};
 +
-+#endif /* GENERIC_ADC_BATTERY_H */
++static int lp8788_get_adc_result(struct lp8788_adc *adc, enum lp8788_adc_id id,
++				int *val)
++{
++	unsigned int msb;
++	unsigned int lsb;
++	unsigned int result;
++	u8 data;
++	u8 rawdata[2];
++	int size = ARRAY_SIZE(rawdata);
++	int retry = 5;
++	int ret;
++
++	data = (id << 1) | ADC_CONV_START;
++	ret = lp8788_write_byte(adc->lp, LP8788_ADC_CONF, data);
++	if (ret)
++		goto err_io;
++
++	/* retry until adc conversion is done */
++	data = 0;
++	while (retry--) {
++		usleep_range(100, 200);
++
++		ret = lp8788_read_byte(adc->lp, LP8788_ADC_DONE, &data);
++		if (ret)
++			goto err_io;
++
++		/* conversion done */
++		if (data)
++			break;
++	}
++
++	ret = lp8788_read_multi_bytes(adc->lp, LP8788_ADC_RAW, rawdata, size);
++	if (ret)
++		goto err_io;
++
++	msb = (rawdata[0] << 4) & 0x00000ff0;
++	lsb = (rawdata[1] >> 4) & 0x0000000f;
++	result = msb | lsb;
++	*val = result;
++
++	return 0;
++
++err_io:
++	return ret;
++}
++
++static int lp8788_adc_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int *val, int *val2, long mask)
++{
++	struct lp8788_adc *adc = iio_priv(indio_dev);
++	enum lp8788_adc_id id = chan->channel;
++	int ret;
++
++	mutex_lock(&adc->lock);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = lp8788_get_adc_result(adc, id, val) ? -EIO : IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		*val = (lp8788_scale[id] / 1000) * 1000;
++		*val2 = (lp8788_scale[id] % 1000) * 1000000;
++		ret = IIO_VAL_INT_PLUS_MICRO;
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	mutex_unlock(&adc->lock);
++
++	return ret;
++}
++
++static const struct iio_info lp8788_adc_info = {
++	.read_raw = &lp8788_adc_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++#define LP8788_CHAN(_id, _type) {				\
++		.type = _type,					\
++		.indexed = 1,					\
++		.channel = LPADC_##_id,				\
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
++			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,	\
++		.address = LP8788_ADC_RAW,			\
++		.scan_type = IIO_ST('u', 12, 16, 0),		\
++		.scan_index = 1,				\
++		.datasheet_name = "LP8788_"#_id,			\
++}
++
++static const struct iio_chan_spec lp8788_adc_channels[] = {
++	[LPADC_VBATT_5P5] = LP8788_CHAN(VBATT_5P5, IIO_VOLTAGE),
++	[LPADC_VIN_CHG]   = LP8788_CHAN(VIN_CHG, IIO_VOLTAGE),
++	[LPADC_IBATT]     = LP8788_CHAN(IBATT, IIO_CURRENT),
++	[LPADC_IC_TEMP]   = LP8788_CHAN(IC_TEMP, IIO_TEMP),
++	[LPADC_VBATT_6P0] = LP8788_CHAN(VBATT_6P0, IIO_VOLTAGE),
++	[LPADC_VBATT_5P0] = LP8788_CHAN(VBATT_5P0, IIO_VOLTAGE),
++	[LPADC_ADC1]      = LP8788_CHAN(ADC1, IIO_VOLTAGE),
++	[LPADC_ADC2]      = LP8788_CHAN(ADC2, IIO_VOLTAGE),
++	[LPADC_VDD]       = LP8788_CHAN(VDD, IIO_VOLTAGE),
++	[LPADC_VCOIN]     = LP8788_CHAN(VCOIN, IIO_VOLTAGE),
++	[LPADC_VDD_LDO]   = LP8788_CHAN(VDD_LDO, IIO_VOLTAGE),
++	[LPADC_ADC3]      = LP8788_CHAN(ADC3, IIO_VOLTAGE),
++	[LPADC_ADC4]      = LP8788_CHAN(ADC4, IIO_VOLTAGE),
++};
++
++/* default maps used by iio consumer (lp8788-charger driver) */
++static struct iio_map lp8788_default_iio_maps[] = {
++	{
++		.consumer_dev_name = "lp8788-charger",
++		.consumer_channel = "lp8788_vbatt_5p0",
++		.adc_channel_label = "LP8788_VBATT_5P0",
++	},
++	{
++		.consumer_dev_name = "lp8788-charger",
++		.consumer_channel = "lp8788_adc1",
++		.adc_channel_label = "LP8788_ADC1",
++	},
++	{ }
++};
++
++static int lp8788_iio_map_register(struct iio_dev *indio_dev,
++				struct lp8788_platform_data *pdata,
++				struct lp8788_adc *adc)
++{
++	struct iio_map *map;
++	int ret;
++
++	map = !pdata || !pdata->adc_pdata ?
++		lp8788_default_iio_maps : pdata->adc_pdata;
++
++	ret = iio_map_array_register(indio_dev, map);
++	if (ret) {
++		dev_err(adc->lp->dev, "iio map err: %d\n", ret);
++		return ret;
++	}
++
++	adc->map = map;
++	return 0;
++}
++
++static void lp8788_iio_map_unregister(struct iio_dev *indio_dev,
++				struct lp8788_adc *adc)
++{
++	if (adc->map)
++		iio_map_array_unregister(indio_dev, adc->map);
++}
++
++static int __devinit lp8788_adc_probe(struct platform_device *pdev)
++{
++	struct lp8788 *lp = dev_get_drvdata(pdev->dev.parent);
++	struct iio_dev *indio_dev;
++	struct lp8788_adc *adc;
++	int ret;
++
++	indio_dev = iio_device_alloc(sizeof(*adc));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	adc = iio_priv(indio_dev);
++	adc->lp = lp;
++	platform_set_drvdata(pdev, indio_dev);
++
++	ret = lp8788_iio_map_register(indio_dev, lp->pdata, adc);
++	if (ret)
++		goto err_iio_map;
++
++	mutex_init(&adc->lock);
++
++	indio_dev->dev.parent = lp->dev;
++	indio_dev->name = pdev->name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &lp8788_adc_info;
++	indio_dev->channels = lp8788_adc_channels;
++	indio_dev->num_channels = ARRAY_SIZE(lp8788_adc_channels);
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(lp->dev, "iio dev register err: %d\n", ret);
++		goto err_iio_device;
++	}
++
++	return 0;
++
++err_iio_device:
++	lp8788_iio_map_unregister(indio_dev, adc);
++err_iio_map:
++	iio_device_free(indio_dev);
++	return ret;
++}
++
++static int __devexit lp8788_adc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev =  platform_get_drvdata(pdev);
++	struct lp8788_adc *adc = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	lp8788_iio_map_unregister(indio_dev, adc);
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++static struct platform_driver lp8788_adc_driver = {
++	.probe = lp8788_adc_probe,
++	.remove = __devexit_p(lp8788_adc_remove),
++	.driver = {
++		.name = LP8788_DEV_ADC,
++		.owner = THIS_MODULE,
++	},
++};
++module_platform_driver(lp8788_adc_driver);
++
++MODULE_DESCRIPTION("Texas Instruments LP8788 ADC Driver");
++MODULE_AUTHOR("Milo Kim");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:lp8788-adc");
 -- 
-1.7.1
+1.7.9.5
+
+
+Best Regards,
+Milo
 
