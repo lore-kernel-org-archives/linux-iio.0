@@ -1,89 +1,693 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-022.synserver.de ([212.40.185.22]:1140 "EHLO
+Received: from smtp-out-022.synserver.de ([212.40.185.22]:1280 "EHLO
 	smtp-out-022.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750900Ab2IJIeM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2012 04:34:12 -0400
+	with ESMTP id S1750900Ab2IJIeO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2012 04:34:14 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 03/10] staging:iio:ad7476: Avoid alloc/free for each sample in buffered mode
-Date: Mon, 10 Sep 2012 10:34:34 +0200
-Message-Id: <1347266081-6045-3-git-send-email-lars@metafoo.de>
+Subject: [PATCH v2 05/10] staging:iio:ad7476: Squash driver into a single file.
+Date: Mon, 10 Sep 2012 10:34:36 +0200
+Message-Id: <1347266081-6045-5-git-send-email-lars@metafoo.de>
 In-Reply-To: <1347266081-6045-1-git-send-email-lars@metafoo.de>
 References: <1347266081-6045-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ad7476 driver has only support for 1 channel ADCs. So the upper limit for
-the buffer size is the size of one sample plus the size of the timestamp.
-Preallocate a buffer large enough to hold this to avoid having to allocate and
-free a new buffer for each sample being captured.
+After the recent cleanups the buffer support is just a single 23 line function.
+This does not really justify a file on its own, so move it to the main driver
+file. And with only one source file left the header file containing the device
+state struct becomes superflousious so move the content of the header
+file to the main driver source file as well.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 
 ---
 Changes since v1:
-	Use the same prepared spi message as for single transfers in the trigger
-	handler.
+	Since the driver selects buffer support there is no need to #ifdef guard the
+	buffer code in this driver. So build it unconditionally, this gets rid of
+	another couple of boilterplate code.
 ---
- drivers/staging/iio/adc/ad7476.h      |    5 ++++-
- drivers/staging/iio/adc/ad7476_ring.c |   14 +++-----------
- 2 files changed, 7 insertions(+), 12 deletions(-)
+ drivers/staging/iio/adc/Makefile      |    2 -
+ drivers/staging/iio/adc/ad7476.c      |  277 +++++++++++++++++++++++++++++++++
+ drivers/staging/iio/adc/ad7476.h      |   56 -------
+ drivers/staging/iio/adc/ad7476_core.c |  222 --------------------------
+ drivers/staging/iio/adc/ad7476_ring.c |   56 -------
+ 5 files changed, 277 insertions(+), 336 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/ad7476.c
+ delete mode 100644 drivers/staging/iio/adc/ad7476.h
+ delete mode 100644 drivers/staging/iio/adc/ad7476_core.c
+ delete mode 100644 drivers/staging/iio/adc/ad7476_ring.c
 
-diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
-index 6085fad..c4f1150 100644
---- a/drivers/staging/iio/adc/ad7476.h
-+++ b/drivers/staging/iio/adc/ad7476.h
-@@ -33,8 +33,11 @@ struct ad7476_state {
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the
- 	 * transfer buffers to live in their own cache lines.
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index ecac9a0..6b60af0 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -17,8 +17,6 @@ ad799x-y := ad799x_core.o
+ ad799x-$(CONFIG_AD799X_RING_BUFFER) += ad799x_ring.o
+ obj-$(CONFIG_AD799X) += ad799x.o
+ 
+-ad7476-y := ad7476_core.o
+-ad7476-$(CONFIG_IIO_BUFFER) += ad7476_ring.o
+ obj-$(CONFIG_AD7476) += ad7476.o
+ 
+ ad7887-y := ad7887_core.o
+diff --git a/drivers/staging/iio/adc/ad7476.c b/drivers/staging/iio/adc/ad7476.c
+new file mode 100644
+index 0000000..9ddf584
+--- /dev/null
++++ b/drivers/staging/iio/adc/ad7476.c
+@@ -0,0 +1,277 @@
++/*
++ * AD7466/7/8 AD7476/5/7/8 (A) SPI ADC driver
++ *
++ * Copyright 2010 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/spi/spi.h>
++#include <linux/regulator/consumer.h>
++#include <linux/err.h>
++#include <linux/module.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++#define RES_MASK(bits)	((1 << (bits)) - 1)
++
++struct ad7476_chip_info {
++	unsigned int			int_vref_uv;
++	struct iio_chan_spec		channel[2];
++};
++
++struct ad7476_state {
++	struct spi_device		*spi;
++	const struct ad7476_chip_info	*chip_info;
++	struct regulator		*reg;
++	struct spi_transfer		xfer;
++	struct spi_message		msg;
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
 +	 * Make the buffer large enough for one 16 bit sample and one 64 bit
 +	 * aligned 64 bit timestamp.
- 	 */
--	unsigned char			data[2] ____cacheline_aligned;
++	 */
 +	unsigned char data[ALIGN(2, sizeof(s64)) + sizeof(s64)]
 +			____cacheline_aligned;
- };
- 
- enum ad7476_supported_device_ids {
++};
++
++enum ad7476_supported_device_ids {
++	ID_AD7466,
++	ID_AD7467,
++	ID_AD7468,
++	ID_AD7495
++};
++
++static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ad7476_state *st = iio_priv(indio_dev);
++	s64 time_ns;
++	int b_sent;
++
++	b_sent = spi_sync(st->spi, &st->msg);
++	if (b_sent < 0)
++		goto done;
++
++	time_ns = iio_get_time_ns();
++
++	if (indio_dev->scan_timestamp)
++		((s64 *)st->data)[1] = time_ns;
++
++	iio_push_to_buffer(indio_dev->buffer, st->data);
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int ad7476_scan_direct(struct ad7476_state *st)
++{
++	int ret;
++
++	ret = spi_sync(st->spi, &st->msg);
++	if (ret)
++		return ret;
++
++	return (st->data[0] << 8) | st->data[1];
++}
++
++static int ad7476_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val,
++			   int *val2,
++			   long m)
++{
++	int ret;
++	struct ad7476_state *st = iio_priv(indio_dev);
++	int scale_uv;
++
++	switch (m) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&indio_dev->mlock);
++		if (iio_buffer_enabled(indio_dev))
++			ret = -EBUSY;
++		else
++			ret = ad7476_scan_direct(st);
++		mutex_unlock(&indio_dev->mlock);
++
++		if (ret < 0)
++			return ret;
++		*val = (ret >> st->chip_info->channel[0].scan_type.shift) &
++			RES_MASK(st->chip_info->channel[0].scan_type.realbits);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		if (!st->chip_info->int_vref_uv) {
++			scale_uv = regulator_get_voltage(st->reg);
++			if (scale_uv < 0)
++				return scale_uv;
++		} else {
++			scale_uv = st->chip_info->int_vref_uv;
++		}
++		scale_uv >>= chan->scan_type.realbits;
++		*val =  scale_uv / 1000;
++		*val2 = (scale_uv % 1000) * 1000;
++		return IIO_VAL_INT_PLUS_MICRO;
++	}
++	return -EINVAL;
++}
++
++#define AD7476_CHAN(bits)					\
++	{							\
++	.type = IIO_VOLTAGE,					\
++	.indexed = 1,						\
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
++	IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
++	.scan_type = {						\
++		.sign = 'u',					\
++		.realbits = bits,				\
++		.storagebits = 16,				\
++		.shift = 13 - bits,				\
++	},							\
++}
++
++static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
++	[ID_AD7466] = {
++		.channel[0] = AD7476_CHAN(12),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
++	[ID_AD7467] = {
++		.channel[0] = AD7476_CHAN(10),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
++	[ID_AD7468] = {
++		.channel[0] = AD7476_CHAN(8),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
++	[ID_AD7495] = {
++		.channel[0] = AD7476_CHAN(12),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++		.int_vref_uv = 2500000,
++	},
++};
++
++static const struct iio_info ad7476_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = &ad7476_read_raw,
++};
++
++static int __devinit ad7476_probe(struct spi_device *spi)
++{
++	struct ad7476_state *st;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = iio_device_alloc(sizeof(*st));
++	if (indio_dev == NULL) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++	st = iio_priv(indio_dev);
++	st->chip_info =
++		&ad7476_chip_info_tbl[spi_get_device_id(spi)->driver_data];
++
++	st->reg = regulator_get(&spi->dev, "vcc");
++	if (IS_ERR(st->reg)) {
++		ret = PTR_ERR(st->reg);
++		goto error_ret;
++	}
++
++	ret = regulator_enable(st->reg);
++	if (ret)
++		goto error_put_reg;
++
++	spi_set_drvdata(spi, indio_dev);
++
++	st->spi = spi;
++
++	/* Establish that the iio_dev is a child of the spi device */
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = st->chip_info->channel;
++	indio_dev->num_channels = 2;
++	indio_dev->info = &ad7476_info;
++	/* Setup default message */
++
++	st->xfer.rx_buf = &st->data;
++	st->xfer.len = st->chip_info->channel[0].scan_type.storagebits / 8;
++
++	spi_message_init(&st->msg);
++	spi_message_add_tail(&st->xfer, &st->msg);
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++			&ad7476_trigger_handler, NULL);
++	if (ret)
++		goto error_disable_reg;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_ring_unregister;
++	return 0;
++
++error_ring_unregister:
++	iio_triggered_buffer_cleanup(indio_dev);
++error_disable_reg:
++	regulator_disable(st->reg);
++error_put_reg:
++	regulator_put(st->reg);
++	iio_device_free(indio_dev);
++
++error_ret:
++	return ret;
++}
++
++static int __devexit ad7476_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct ad7476_state *st = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++	regulator_disable(st->reg);
++	regulator_put(st->reg);
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++static const struct spi_device_id ad7476_id[] = {
++	{"ad7466", ID_AD7466},
++	{"ad7467", ID_AD7467},
++	{"ad7468", ID_AD7468},
++	{"ad7475", ID_AD7466},
++	{"ad7476", ID_AD7466},
++	{"ad7476a", ID_AD7466},
++	{"ad7477", ID_AD7467},
++	{"ad7477a", ID_AD7467},
++	{"ad7478", ID_AD7468},
++	{"ad7478a", ID_AD7468},
++	{"ad7495", ID_AD7495},
++	{}
++};
++MODULE_DEVICE_TABLE(spi, ad7476_id);
++
++static struct spi_driver ad7476_driver = {
++	.driver = {
++		.name	= "ad7476",
++		.owner	= THIS_MODULE,
++	},
++	.probe		= ad7476_probe,
++	.remove		= __devexit_p(ad7476_remove),
++	.id_table	= ad7476_id,
++};
++module_spi_driver(ad7476_driver);
++
++MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
++MODULE_DESCRIPTION("Analog Devices AD7475/6/7/8(A) AD7466/7/8 ADC");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
+deleted file mode 100644
+index 4ed5494..0000000
+--- a/drivers/staging/iio/adc/ad7476.h
++++ /dev/null
+@@ -1,56 +0,0 @@
+-/*
+- * AD7476/5/7/8 (A) SPI ADC driver
+- *
+- * Copyright 2010 Analog Devices Inc.
+- *
+- * Licensed under the GPL-2 or later.
+- */
+-#ifndef IIO_ADC_AD7476_H_
+-#define IIO_ADC_AD7476_H_
+-
+-#define RES_MASK(bits)	((1 << (bits)) - 1)
+-
+-struct ad7476_chip_info {
+-	unsigned int			int_vref_uv;
+-	struct iio_chan_spec		channel[2];
+-};
+-
+-struct ad7476_state {
+-	struct spi_device		*spi;
+-	const struct ad7476_chip_info	*chip_info;
+-	struct regulator		*reg;
+-	struct spi_transfer		xfer;
+-	struct spi_message		msg;
+-	/*
+-	 * DMA (thus cache coherency maintenance) requires the
+-	 * transfer buffers to live in their own cache lines.
+-	 * Make the buffer large enough for one 16 bit sample and one 64 bit
+-	 * aligned 64 bit timestamp.
+-	 */
+-	unsigned char data[ALIGN(2, sizeof(s64)) + sizeof(s64)]
+-			____cacheline_aligned;
+-};
+-
+-enum ad7476_supported_device_ids {
+-	ID_AD7466,
+-	ID_AD7467,
+-	ID_AD7468,
+-	ID_AD7495
+-};
+-
+-#ifdef CONFIG_IIO_BUFFER
+-int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+-void ad7476_ring_cleanup(struct iio_dev *indio_dev);
+-#else /* CONFIG_IIO_BUFFER */
+-
+-static inline int
+-ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+-{
+-	return 0;
+-}
+-
+-static inline void ad7476_ring_cleanup(struct iio_dev *indio_dev)
+-{
+-}
+-#endif /* CONFIG_IIO_BUFFER */
+-#endif /* IIO_ADC_AD7476_H_ */
+diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
+deleted file mode 100644
+index e79a179..0000000
+--- a/drivers/staging/iio/adc/ad7476_core.c
++++ /dev/null
+@@ -1,222 +0,0 @@
+-/*
+- * AD7466/7/8 AD7476/5/7/8 (A) SPI ADC driver
+- *
+- * Copyright 2010 Analog Devices Inc.
+- *
+- * Licensed under the GPL-2 or later.
+- */
+-
+-#include <linux/device.h>
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/spi/spi.h>
+-#include <linux/regulator/consumer.h>
+-#include <linux/err.h>
+-#include <linux/module.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+-#include <linux/iio/buffer.h>
+-
+-#include "ad7476.h"
+-
+-static int ad7476_scan_direct(struct ad7476_state *st)
+-{
+-	int ret;
+-
+-	ret = spi_sync(st->spi, &st->msg);
+-	if (ret)
+-		return ret;
+-
+-	return (st->data[0] << 8) | st->data[1];
+-}
+-
+-static int ad7476_read_raw(struct iio_dev *indio_dev,
+-			   struct iio_chan_spec const *chan,
+-			   int *val,
+-			   int *val2,
+-			   long m)
+-{
+-	int ret;
+-	struct ad7476_state *st = iio_priv(indio_dev);
+-	int scale_uv;
+-
+-	switch (m) {
+-	case IIO_CHAN_INFO_RAW:
+-		mutex_lock(&indio_dev->mlock);
+-		if (iio_buffer_enabled(indio_dev))
+-			ret = -EBUSY;
+-		else
+-			ret = ad7476_scan_direct(st);
+-		mutex_unlock(&indio_dev->mlock);
+-
+-		if (ret < 0)
+-			return ret;
+-		*val = (ret >> st->chip_info->channel[0].scan_type.shift) &
+-			RES_MASK(st->chip_info->channel[0].scan_type.realbits);
+-		return IIO_VAL_INT;
+-	case IIO_CHAN_INFO_SCALE:
+-		if (!st->chip_info->int_vref_uv) {
+-			scale_uv = regulator_get_voltage(st->reg);
+-			if (scale_uv < 0)
+-				return scale_uv;
+-		} else {
+-			scale_uv = st->chip_info->int_vref_uv;
+-		}
+-		scale_uv >>= chan->scan_type.realbits;
+-		*val =  scale_uv / 1000;
+-		*val2 = (scale_uv % 1000) * 1000;
+-		return IIO_VAL_INT_PLUS_MICRO;
+-	}
+-	return -EINVAL;
+-}
+-
+-#define AD7476_CHAN(bits)					\
+-	{							\
+-	.type = IIO_VOLTAGE,					\
+-	.indexed = 1,						\
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
+-	IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
+-	.scan_type = {						\
+-		.sign = 'u',					\
+-		.realbits = bits,				\
+-		.storagebits = 16,				\
+-		.shift = 13 - bits,				\
+-	},							\
+-}
+-
+-static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+-	[ID_AD7466] = {
+-		.channel[0] = AD7476_CHAN(12),
+-		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+-	},
+-	[ID_AD7467] = {
+-		.channel[0] = AD7476_CHAN(10),
+-		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+-	},
+-	[ID_AD7468] = {
+-		.channel[0] = AD7476_CHAN(8),
+-		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+-	},
+-	[ID_AD7495] = {
+-		.channel[0] = AD7476_CHAN(12),
+-		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+-		.int_vref_uv = 2500000,
+-	},
+-};
+-
+-static const struct iio_info ad7476_info = {
+-	.driver_module = THIS_MODULE,
+-	.read_raw = &ad7476_read_raw,
+-};
+-
+-static int __devinit ad7476_probe(struct spi_device *spi)
+-{
+-	struct ad7476_state *st;
+-	struct iio_dev *indio_dev;
+-	int ret;
+-
+-	indio_dev = iio_device_alloc(sizeof(*st));
+-	if (indio_dev == NULL) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-	st = iio_priv(indio_dev);
+-	st->chip_info =
+-		&ad7476_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+-
+-	st->reg = regulator_get(&spi->dev, "vcc");
+-	if (IS_ERR(st->reg)) {
+-		ret = PTR_ERR(st->reg);
+-		goto error_ret;
+-	}
+-
+-	ret = regulator_enable(st->reg);
+-	if (ret)
+-		goto error_put_reg;
+-
+-	spi_set_drvdata(spi, indio_dev);
+-
+-	st->spi = spi;
+-
+-	/* Establish that the iio_dev is a child of the spi device */
+-	indio_dev->dev.parent = &spi->dev;
+-	indio_dev->name = spi_get_device_id(spi)->name;
+-	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->channels = st->chip_info->channel;
+-	indio_dev->num_channels = 2;
+-	indio_dev->info = &ad7476_info;
+-	/* Setup default message */
+-
+-	st->xfer.rx_buf = &st->data;
+-	st->xfer.len = st->chip_info->channel[0].scan_type.storagebits / 8;
+-
+-	spi_message_init(&st->msg);
+-	spi_message_add_tail(&st->xfer, &st->msg);
+-
+-	ret = ad7476_register_ring_funcs_and_init(indio_dev);
+-	if (ret)
+-		goto error_disable_reg;
+-
+-	ret = iio_device_register(indio_dev);
+-	if (ret)
+-		goto error_ring_unregister;
+-	return 0;
+-
+-error_ring_unregister:
+-	ad7476_ring_cleanup(indio_dev);
+-error_disable_reg:
+-	regulator_disable(st->reg);
+-error_put_reg:
+-	regulator_put(st->reg);
+-	iio_device_free(indio_dev);
+-
+-error_ret:
+-	return ret;
+-}
+-
+-static int __devexit ad7476_remove(struct spi_device *spi)
+-{
+-	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+-	struct ad7476_state *st = iio_priv(indio_dev);
+-
+-	iio_device_unregister(indio_dev);
+-	ad7476_ring_cleanup(indio_dev);
+-	regulator_disable(st->reg);
+-	regulator_put(st->reg);
+-	iio_device_free(indio_dev);
+-
+-	return 0;
+-}
+-
+-static const struct spi_device_id ad7476_id[] = {
+-	{"ad7466", ID_AD7466},
+-	{"ad7467", ID_AD7467},
+-	{"ad7468", ID_AD7468},
+-	{"ad7475", ID_AD7466},
+-	{"ad7476", ID_AD7466},
+-	{"ad7476a", ID_AD7466},
+-	{"ad7477", ID_AD7467},
+-	{"ad7477a", ID_AD7467},
+-	{"ad7478", ID_AD7468},
+-	{"ad7478a", ID_AD7468},
+-	{"ad7495", ID_AD7495},
+-	{}
+-};
+-MODULE_DEVICE_TABLE(spi, ad7476_id);
+-
+-static struct spi_driver ad7476_driver = {
+-	.driver = {
+-		.name	= "ad7476",
+-		.owner	= THIS_MODULE,
+-	},
+-	.probe		= ad7476_probe,
+-	.remove		= __devexit_p(ad7476_remove),
+-	.id_table	= ad7476_id,
+-};
+-module_spi_driver(ad7476_driver);
+-
+-MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
+-MODULE_DESCRIPTION("Analog Devices AD7475/6/7/8(A) AD7466/7/8 ADC");
+-MODULE_LICENSE("GPL v2");
 diff --git a/drivers/staging/iio/adc/ad7476_ring.c b/drivers/staging/iio/adc/ad7476_ring.c
-index 940681f..3c869b0 100644
+deleted file mode 100644
+index 3c869b0..0000000
 --- a/drivers/staging/iio/adc/ad7476_ring.c
-+++ b/drivers/staging/iio/adc/ad7476_ring.c
-@@ -26,28 +26,20 @@ static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct ad7476_state *st = iio_priv(indio_dev);
- 	s64 time_ns;
--	__u8 *rxbuf;
- 	int b_sent;
- 
--	rxbuf = kzalloc(indio_dev->scan_bytes, GFP_KERNEL);
--	if (rxbuf == NULL)
++++ /dev/null
+@@ -1,56 +0,0 @@
+-/*
+- * Copyright 2010-2012 Analog Devices Inc.
+- * Copyright (C) 2008 Jonathan Cameron
+- *
+- * Licensed under the GPL-2 or later.
+- *
+- * ad7476_ring.c
+- */
+-
+-#include <linux/interrupt.h>
+-#include <linux/device.h>
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/spi/spi.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/buffer.h>
+-#include <linux/iio/trigger_consumer.h>
+-#include <linux/iio/triggered_buffer.h>
+-
+-#include "ad7476.h"
+-
+-static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+-{
+-	struct iio_poll_func *pf = p;
+-	struct iio_dev *indio_dev = pf->indio_dev;
+-	struct ad7476_state *st = iio_priv(indio_dev);
+-	s64 time_ns;
+-	int b_sent;
+-
+-	b_sent = spi_sync(st->spi, &st->msg);
+-	if (b_sent < 0)
 -		goto done;
 -
--	b_sent = spi_read(st->spi, rxbuf,
--			  st->chip_info->channel[0].scan_type.storagebits / 8);
-+	b_sent = spi_sync(st->spi, &st->msg);
- 	if (b_sent < 0)
- 		goto done;
- 
- 	time_ns = iio_get_time_ns();
- 
- 	if (indio_dev->scan_timestamp)
--		memcpy(rxbuf + indio_dev->scan_bytes - sizeof(s64),
--			&time_ns, sizeof(time_ns));
-+		((s64 *)st->data)[1] = time_ns;
- 
--	iio_push_to_buffer(indio_dev->buffer, rxbuf);
-+	iio_push_to_buffer(indio_dev->buffer, st->data);
- done:
- 	iio_trigger_notify_done(indio_dev->trig);
--	kfree(rxbuf);
- 
- 	return IRQ_HANDLED;
- }
+-	time_ns = iio_get_time_ns();
+-
+-	if (indio_dev->scan_timestamp)
+-		((s64 *)st->data)[1] = time_ns;
+-
+-	iio_push_to_buffer(indio_dev->buffer, st->data);
+-done:
+-	iio_trigger_notify_done(indio_dev->trig);
+-
+-	return IRQ_HANDLED;
+-}
+-
+-int ad7476_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+-{
+-	return iio_triggered_buffer_setup(indio_dev, NULL,
+-			&ad7476_trigger_handler, NULL);
+-}
+-
+-void ad7476_ring_cleanup(struct iio_dev *indio_dev)
+-{
+-	iio_triggered_buffer_cleanup(indio_dev);
+-}
 -- 
 1.7.10.4
 
