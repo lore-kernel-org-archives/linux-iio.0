@@ -1,107 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58892 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751781Ab2IQVLw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 17:11:52 -0400
-Message-ID: <50579217.9060307@kernel.org>
-Date: Mon, 17 Sep 2012 22:11:51 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: Martin =?utf-8?q?Li=C5=A1ka?= <marxin.liska@gmail.com>
+Subject: Re: ACPI ambient light sensor
+Date: Tue, 11 Sep 2012 10:27:20 +0200
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+ platform-driver-x86@vger.kernel.org,
+ linux-iio@vger.kernel.org,
+ Zhang Rui <rui.zhang@intel.com>,
+ Corentin Chary <corentin.chary@gmail.com>,
+ joeyli <jlee@suse.com>,
+ Len Brown <len.brown@intel.com>,
+ pavel@denx.de,
+ Jonathan Cameron <jic23@kernel.org>,
+ Jon Brenner <jbrenner@taosinc.com>,
+ Peter Meerwald <pmeerw@pmeerw.net>
+References: <CAObPJ3PctmLP56NvmLvJd+4w9e4xeOGSyz24FyBDXBQQVhDhxQ@mail.gmail.com> <4FFADCC2.6080006@cam.ac.uk> <CAObPJ3ORe_MGbmEHzZ4SGqZkn3HCQs+ocSw=Ttb7LbCTNCDkAQ@mail.gmail.com>
+In-Reply-To: <CAObPJ3ORe_MGbmEHzZ4SGqZkn3HCQs+ocSw=Ttb7LbCTNCDkAQ@mail.gmail.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	drivers@analog.com
-Subject: Re: [PATCH 2/4] staging:iio:trigger:bfintmr: Only enable timer when
- necessary
-References: <1347884808-26833-1-git-send-email-lars@metafoo.de> <1347884808-26833-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347884808-26833-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: Text/Plain;
+  charset="utf-8"
+Message-Id: <201209111027.20392.marex@denx.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/17/2012 01:26 PM, Lars-Peter Clausen wrote:
-> This patch hooks up the set_trigger_state callback for the blackfin timer
-> trigger driver and only enables the timer when a trigger consumer requests it to
-> be enabled. There really is no reason to keep the timer running and generate
-> interrupts if nobody is listening to them.
-I'll take your word for this one ;)
+Dear Martin Li=C5=A1ka,
 
-merged to togreg branch of iio.git
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  drivers/staging/iio/trigger/iio-trig-bfin-timer.c |   27 ++++++++++++++++++---
->  1 file changed, 24 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> index 2772ea2..d9d3dc9 100644
-> --- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> +++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> @@ -57,12 +57,28 @@ struct bfin_tmr_state {
->  	int irq;
->  };
->  
-> +static int iio_bfin_tmr_set_state(struct iio_trigger *trig, bool state)
-> +{
-> +	struct bfin_tmr_state *st = trig->private_data;
+[...]
+
 > +
-> +	if (get_gptimer_period(st->t->id) == 0)
-> +		return -EINVAL;
-> +
-> +	if (state)
-> +		enable_gptimers(st->t->bit);
-> +	else
-> +		disable_gptimers(st->t->bit);
-> +
-> +	return 0;
-> +}
-> +
->  static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
->  		struct device_attribute *attr, const char *buf, size_t count)
->  {
->  	struct iio_trigger *trig = to_iio_trigger(dev);
->  	struct bfin_tmr_state *st = trig->private_data;
->  	long val;
-> +	bool enabled;
->  	int ret;
->  
->  	ret = strict_strtoul(buf, 10, &val);
-> @@ -74,7 +90,10 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
->  		goto error_ret;
->  	}
->  
-> -	disable_gptimers(st->t->bit);
-> +	enabled = get_enabled_gptimers() & st->t->bit;
-> +
-> +	if (enabled)
-> +		disable_gptimers(st->t->bit);
->  
->  	if (!val)
->  		goto error_ret;
-> @@ -87,7 +106,9 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
->  
->  	set_gptimer_period(st->t->id, val);
->  	set_gptimer_pwidth(st->t->id, 1);
-> -	enable_gptimers(st->t->bit);
-> +
-> +	if (enabled)
-> +		enable_gptimers(st->t->bit);
->  
->  error_ret:
->  	return ret ? ret : count;
-> @@ -127,7 +148,6 @@ static const struct attribute_group *iio_bfin_tmr_trigger_attr_groups[] = {
->  	NULL
->  };
->  
-> -
->  static irqreturn_t iio_bfin_tmr_trigger_isr(int irq, void *devid)
->  {
->  	struct bfin_tmr_state *st = devid;
-> @@ -151,6 +171,7 @@ static int iio_bfin_tmr_get_number(int irq)
->  
->  static const struct iio_trigger_ops iio_bfin_tmr_trigger_ops = {
->  	.owner = THIS_MODULE,
-> +	.set_trigger_state = iio_bfin_tmr_set_state,
->  };
->  
->  static int __devinit iio_bfin_tmr_trigger_probe(struct platform_device *pdev)
-> 
+> + if (kfifo_is_empty(&kf->kf))
+> + r->stufftoread =3D false;
+> + /* verify it is still empty to avoid race */
+> + if (!kfifo_is_empty(&kf->kf))
+> + r->stufftoread =3D true;
+
+I'd say the formating got pretty messed up, please repost the patch via git=
+=20
+send-email .
+
+[...]
+Best regards,
+Marek Vasut
