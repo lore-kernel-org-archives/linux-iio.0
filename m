@@ -1,418 +1,551 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:48198 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757406Ab2IMK7u (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 13 Sep 2012 06:59:50 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v3 2/5] MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
-Date: Thu, 13 Sep 2012 16:10:16 +0530
-Message-ID: <1347532819-505-3-git-send-email-rachna@ti.com>
-In-Reply-To: <1347532819-505-1-git-send-email-rachna@ti.com>
-References: <1347532819-505-1-git-send-email-rachna@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47152 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751224Ab2IMUj0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Sep 2012 16:39:26 -0400
+Message-ID: <5052447D.8010907@kernel.org>
+Date: Thu, 13 Sep 2012 21:39:25 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: anish kumar <anish198519851985@gmail.com>
+CC: lars@metafoo.de, jic23@cam.ac.uk, cbou@mail.ru,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] power: battery: Generic battery driver using IIO
+References: <1347552992-13836-1-git-send-email-anish198519851985@gmail.com>
+In-Reply-To: <1347552992-13836-1-git-send-email-anish198519851985@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add the mfd core driver which supports touchscreen
-and ADC.
-With this patch we are only adding infrastructure to
-support the MFD clients.
+On 09/13/2012 05:16 PM, anish kumar wrote:
+> From: anish kumar <anish198519851985@gmail.com>
+>
+> In this version:
+> Addressed concerns raised by lars:
+> a. made the adc_bat per device.
+> b. get the IIO channel using hardcoded channel names.
+Couple of bits related to this inline..
 
-Signed-off-by: Patil, Rachna <rachna@ti.com>
----
-Changes in v2:
-	Merged "[PATCH 5/5] MFD: ti_tscadc: Add check on number of i/p channels",
-	patch submitted in previous version into this file.
+> c. Minor issues related to gpio_is_valid and some code
+>    refactoring.
+>
+> Signed-off-by: anish kumar <anish198519851985@gmail.com>
+> ---
+>  drivers/power/generic-adc-battery.c       |  460 +++++++++++++++++++++++++++++
+>  include/linux/power/generic-adc-battery.h |   33 ++
+>  2 files changed, 493 insertions(+), 0 deletions(-)
+>  create mode 100644 drivers/power/generic-adc-battery.c
+>  create mode 100644 include/linux/power/generic-adc-battery.h
+>
+> diff --git a/drivers/power/generic-adc-battery.c b/drivers/power/generic-adc-battery.c
+> new file mode 100644
+> index 0000000..003e0e1
+> --- /dev/null
+> +++ b/drivers/power/generic-adc-battery.c
+> @@ -0,0 +1,460 @@
+> +/*
+> + * Generic battery driver code using IIO
+> + * Copyright (C) 2012, Anish Kumar <anish198519851985@gmail.com>
+> + * based on jz4740-battery.c
+> + * based on s3c_adc_battery.c
+> + *
+> + * This file is subject to the terms and conditions of the GNU General Public
+> + * License.  See the file COPYING in the main directory of this archive for
+> + * more details.
+> + *
+> + */
+> +
+> +#include <linux/interrupt.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/power_supply.h>
+> +#include <linux/gpio.h>
+> +#include <linux/err.h>
+> +#include <linux/timer.h>
+> +#include <linux/jiffies.h>
+> +#include <linux/errno.h>
+> +#include <linux/init.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/iio/consumer.h>
+> +#include <linux/iio/types.h>
+> +
+> +#include <linux/power/generic-adc-battery.h>
+> +
+> +#define to_generic_bat(ptr)	\
+> +	container_of(ptr, struct generic_adc_bat, ptr)
+> +
+> +enum chan_type {
+> +	VOLTAGE = 0,
+> +	CURRENT,
+> +	POWER,
+> +	MAX_CHAN_TYPE
+> +};
+> +
+> +#define CHAN_MAX_NAME 30
+> +/*
+> + * channel_name suggests the standard channel names for commonly used
+> + * channel types.
+> + */
+const
+> +char channel_name[][CHAN_MAX_NAME + 1] = {
+> +	[VOLTAGE]	= "voltage",
+> +	[CURRENT]	= "current",
+> +	[POWER]		= "power",
+> +};
+> +
+> +struct generic_adc_bat {
+> +	struct power_supply	psy;
+> +	struct iio_channel	**channel;
+> +	struct iio_battery_platform_data	*pdata;
+> +	struct delayed_work bat_work;
+> +	int		was_plugged;
+> +	int		volt_value;
+> +	int		cur_value;
+> +	int		level;
+> +	int		status;
+> +	int		cable_plugged:1;
+> +};
+> +
+> +static void generic_adc_bat_ext_power_changed(struct power_supply *psy)
+> +{
+> +	struct generic_adc_bat *adc_bat;
+> +	adc_bat = to_generic_bat(psy);
+> +
+> +	schedule_delayed_work(&adc_bat->bat_work,
+> +			msecs_to_jiffies(adc_bat->pdata->jitter_delay));
+> +}
+> +
+> +static enum power_supply_property bat_props[] = {
+> +	POWER_SUPPLY_PROP_STATUS,
+> +	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
+> +	POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN,
+> +	POWER_SUPPLY_PROP_CHARGE_NOW,
+> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
+> +	POWER_SUPPLY_PROP_CURRENT_NOW,
+> +	POWER_SUPPLY_PROP_TECHNOLOGY,
+> +	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
+> +	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
+> +	POWER_SUPPLY_PROP_MODEL_NAME,
+> +};
+> +
+> +/*
+> + * This properties are set based on the received platform data and this
+> + * should correspond one-to-one with enum chan_type.
+> + */
+> +static enum power_supply_property dyn_props[] = {
+> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
+> +	POWER_SUPPLY_PROP_CURRENT_NOW,
+> +	POWER_SUPPLY_PROP_POWER_NOW,
+> +};
+> +
+> +static int charge_finished(struct generic_adc_bat *adc_bat)
+> +{
+> +	return adc_bat->pdata->gpio_inverted ?
+> +		!gpio_get_value(adc_bat->pdata->gpio_charge_finished) :
+> +		gpio_get_value(adc_bat->pdata->gpio_charge_finished);
+> +}
+> +
+> +long read_scale_channel(struct generic_adc_bat *adc_bat,
+> +			enum power_supply_property psp)
+> +{
+> +	int scaleint, scalepart, iio_val, ret = 0;
+> +	int result = 0;
+> +
+> +	switch (psp) {
+> +	case POWER_SUPPLY_PROP_POWER_NOW:
+> +		ret = iio_read_channel_raw(adc_bat->channel[POWER],
+> +				&iio_val);
+> +		ret = iio_read_channel_scale(adc_bat->channel[POWER],
+> +				&scaleint, &scalepart);
+> +		if (ret < 0)
+> +			return ret;
+> +		break;
+> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+> +		ret = iio_read_channel_raw(adc_bat->channel[VOLTAGE],
+> +				&iio_val);
+> +		ret = iio_read_channel_scale(adc_bat->channel[VOLTAGE],
+> +				&scaleint, &scalepart);
+> +		if (ret < 0)
+> +			return ret;
+> +		break;
+> +	case POWER_SUPPLY_PROP_CURRENT_NOW:
+> +		ret = iio_read_channel_raw(adc_bat->channel[CURRENT],
+> +				&iio_val);
+> +		ret = iio_read_channel_scale(adc_bat->channel[CURRENT],
+> +				&scaleint, &scalepart);
+> +		if (ret < 0)
+> +			return ret;
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	switch (ret) {
+> +	case IIO_VAL_INT:
+> +		result = iio_val * scaleint;
+> +		break;
+> +	case IIO_VAL_INT_PLUS_MICRO:
+> +		result = (s64)iio_val * (s64)scaleint +
+> +			div_s64((s64)iio_val * (s64)scalepart, 1000000LL);
+> +		break;
+> +	case IIO_VAL_INT_PLUS_NANO:
+> +		result = (s64)iio_val * (s64)scaleint +
+> +			div_s64((s64)iio_val * (s64)scalepart, 1000000000LL);
+> +		break;
+> +	}
+> +	return result;
+> +}
+> +
+> +static int generic_adc_bat_get_property(struct power_supply *psy,
+> +		enum power_supply_property psp,
+> +		union power_supply_propval *val)
+> +{
+> +	struct generic_adc_bat *adc_bat;
+> +	int ret = 0;
+> +	long result;
+> +
+> +	adc_bat = to_generic_bat(psy);
+> +	if (!adc_bat) {
+> +		dev_err(psy->dev, "no battery infos ?!\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	result = read_scale_channel(adc_bat, psp);
+> +	if (result < 0) {
+> +		dev_err(psy->dev, "read channel error\n");
+> +		ret =  -EINVAL;
+> +		goto err;
+> +	}
+> +
+> +	switch (psp) {
+> +	case POWER_SUPPLY_PROP_STATUS:
+> +		if (gpio_is_valid(adc_bat->pdata->gpio_charge_finished)) {
+> +			if (adc_bat->pdata->gpio_charge_finished < 0)
+> +				val->intval = adc_bat->level == 100000 ?
+> +					POWER_SUPPLY_STATUS_FULL :
+> +					adc_bat->status;
+> +			else
+> +				val->intval = adc_bat->status;
+> +		}
+> +		break;
+> +	case POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN:
+> +		val->intval = 0;
+> +		break;
+> +	case POWER_SUPPLY_PROP_CHARGE_NOW:
+> +		val->intval = adc_bat->pdata->cal_charge(result);
+> +		break;
+> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+> +		val->intval = result;
+> +		break;
+> +	case POWER_SUPPLY_PROP_CURRENT_NOW:
+> +		val->intval = result;
+> +		break;
+> +	case POWER_SUPPLY_PROP_POWER_NOW:
+> +		val->intval = result;
+> +		break;
+> +	case POWER_SUPPLY_PROP_TECHNOLOGY:
+> +		val->intval = adc_bat->pdata->battery_info.technology;
+> +		break;
+> +	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
+> +		val->intval = adc_bat->pdata->battery_info.voltage_min_design;
+> +		break;
+> +	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
+> +		val->intval = adc_bat->pdata->battery_info.voltage_max_design;
+> +		break;
+> +	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
+> +		val->intval = adc_bat->pdata->battery_info.charge_full_design;
+> +		break;
+> +	case POWER_SUPPLY_PROP_MODEL_NAME:
+> +		val->strval = adc_bat->pdata->battery_info.name;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +err:
+> +	return ret;
+> +}
+> +
+> +static void generic_adc_bat_work(struct work_struct *work)
+> +{
+> +	struct generic_adc_bat *adc_bat;
+> +	struct delayed_work *delayed_work;
+> +	int is_charged;
+> +	int is_plugged;
+> +
+> +	delayed_work = container_of(work,
+> +				struct delayed_work, work);
+> +	adc_bat = container_of(delayed_work,
+> +				struct generic_adc_bat, bat_work);
+> +
+> +	is_plugged = power_supply_am_i_supplied(&adc_bat->psy);
+> +	adc_bat->cable_plugged = is_plugged;
+> +	if (is_plugged != adc_bat->was_plugged) {
+> +		adc_bat->was_plugged = is_plugged;
+> +		if (is_plugged)
+> +			adc_bat->status = POWER_SUPPLY_STATUS_CHARGING;
+> +		else
+> +			adc_bat->status = POWER_SUPPLY_STATUS_DISCHARGING;
+> +	} else {
+> +		if (gpio_is_valid(adc_bat->pdata->gpio_charge_finished)) {
+> +			if ((adc_bat->pdata->gpio_charge_finished >= 0) &&
+> +								is_plugged) {
+> +				is_charged = charge_finished(adc_bat);
+> +				if (is_charged)
+> +					adc_bat->status =
+> +						POWER_SUPPLY_STATUS_FULL;
+> +				else
+> +					adc_bat->status =
+> +						POWER_SUPPLY_STATUS_CHARGING;
+> +			}
+> +		}
+> +	}
+> +
+> +	power_supply_changed(&adc_bat->psy);
+> +}
+> +
+> +static irqreturn_t generic_adc_bat_charged(int irq, void *dev_id)
+> +{
+> +	struct generic_adc_bat *adc_bat = dev_id;
+> +	adc_bat = container_of(&adc_bat->bat_work,
+> +				struct generic_adc_bat, bat_work);
+> +	schedule_delayed_work(&adc_bat->bat_work,
+> +			msecs_to_jiffies(adc_bat->pdata->jitter_delay));
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int __devinit generic_adc_bat_probe(struct platform_device *pdev)
+> +{
+> +	struct generic_adc_bat *adc_bat;
+> +	struct iio_battery_platform_data *pdata = pdev->dev.platform_data;
+> +	int ret, chan_index, fail = 0;
+> +
+> +	adc_bat = devm_kzalloc(&pdev->dev, sizeof(*adc_bat), GFP_KERNEL);
+> +	if (!adc_bat) {
+> +		dev_err(&pdev->dev, "failed to allocate memory\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	/* copying the battery name from platform data */
+> +	adc_bat->psy.name = pdata->battery_name;
+> +
+> +	/* bootup default values for the battery */
+> +	adc_bat->volt_value = -1;
+> +	adc_bat->cur_value = -1;
+> +	adc_bat->cable_plugged = 0;
+> +	adc_bat->status = POWER_SUPPLY_STATUS_DISCHARGING;
+> +	adc_bat->psy.type = POWER_SUPPLY_TYPE_BATTERY;
+> +	adc_bat->psy.get_property =
+> +		generic_adc_bat_get_property;
+> +	adc_bat->psy.external_power_changed =
+> +		generic_adc_bat_ext_power_changed;
+> +
+> +	adc_bat->pdata = pdata;
+> +
+> +	/* calculate the total number of channels */
+> +	for (chan_index = 0; channel_name[chan_index]; chan_index++)
+> +		;
+> +
+> +	if (!chan_index) {
+> +		pr_err("atleast provide one channel\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	/*
+> +	 * copying the static properties and allocating extra memory for holding
+> +	 * the extra configurable properties received from platform data.
+> +	*/
+> +	adc_bat->psy.properties = kzalloc(sizeof(bat_props)
+> +					+ sizeof(int)*chan_index, GFP_KERNEL);
+> +	if (!adc_bat->psy.properties) {
+> +		ret = -ENOMEM;
+> +		goto first_mem_fail;
+> +	}
+> +	memcpy(adc_bat->psy.properties, bat_props, sizeof(bat_props));
+> +
+> +	/* allocating memory for iio channels */
+> +	adc_bat->channel = kzalloc(chan_index * sizeof(struct iio_channel),
+> +					GFP_KERNEL);
+> +	if (!adc_bat->channel) {
+> +		ret = -ENOMEM;
+> +		goto second_mem_fail;
+> +	}
+> +
+> +	/*
+> +	 * getting channel from iio and copying the battery properties
+> +	 * based on the channel supported by consumer device.
+> +	 */
+> +	for (chan_index = 0; channel_name[chan_index]; chan_index++) {
+> +		adc_bat->channel[chan_index] =
+> +		iio_channel_get(dev_name(&pdev->dev),
+> +			channel_name[chan_index]);
+> +		/* we skip for channels which fail */
+> +		if (IS_ERR(adc_bat->channel[chan_index]))
+> +			fail++;
+> +		else {
+> +			static int index;
+> +			memcpy(adc_bat->psy.properties +
+> +				sizeof(bat_props) + sizeof(int)*index,
+> +				&dyn_props[chan_index],
+> +				sizeof(dyn_props[chan_index]));
+> +			index++;
+> +		}
+> +	}
+> +
+> +	/* none of the channels are supported so let's bail out */
+> +	if (fail == chan_index) {
+> +		ret = PTR_ERR(adc_bat->channel[chan_index]);
+> +		goto second_mem_fail;
+> +	}
+> +
+> +	ret = power_supply_register(&pdev->dev, &adc_bat->psy);
+> +	if (ret)
+> +		goto err_reg_fail;
+> +
+> +	INIT_DELAYED_WORK(&adc_bat->bat_work, generic_adc_bat_work);
+> +
+> +	if (gpio_is_valid(pdata->gpio_charge_finished)) {
+> +		ret = gpio_request(pdata->gpio_charge_finished, "charged");
+> +		if (ret)
+> +			goto err_gpio;
+> +
+> +		ret = request_any_context_irq(gpio_to_irq
+> +				(pdata->gpio_charge_finished),
+> +				generic_adc_bat_charged,
+> +				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+> +				"battery charged", &adc_bat);
+> +		if (ret)
+> +			goto err_gpio;
+> +	} else
+> +		goto err_gpio; /* let's bail out */
+> +
+> +	platform_set_drvdata(pdev, &adc_bat);
+> +
+> +	/* Schedule timer to check current status */
+> +	schedule_delayed_work(&adc_bat->bat_work,
+> +			msecs_to_jiffies(0));
+> +	return 0;
+> +
+> +err_gpio:
+> +	power_supply_unregister(&adc_bat->psy);
+> +err_reg_fail:
+> +	for (chan_index = 0; channel_name[chan_index]; chan_index++)
+> +		iio_channel_release(adc_bat->channel[chan_index]);
+> +	kfree(adc_bat->channel);
+> +second_mem_fail:
+> +	kfree(adc_bat->psy.properties);
+> +first_mem_fail:
+> +	return ret;
+> +}
+> +
+> +static int generic_adc_bat_remove(struct platform_device *pdev)
+> +{
+> +	int chan_index;
+> +	struct generic_adc_bat *adc_bat = platform_get_drvdata(pdev);
+> +
+> +	power_supply_unregister(&adc_bat->psy);
+> +
+> +	if (gpio_is_valid(adc_bat->pdata->gpio_charge_finished)) {
+> +		if (adc_bat->pdata->gpio_charge_finished >= 0) {
+> +			free_irq(gpio_to_irq(
+> +				adc_bat->pdata->gpio_charge_finished),
+> +								NULL);
+> +			gpio_free(adc_bat->pdata->gpio_charge_finished);
+> +		}
+> +	}
+> +
+> +	for (chan_index = 0; channel_name[chan_index]; chan_index++)
+> +		iio_channel_release(adc_bat->channel[chan_index]);
+> +	cancel_delayed_work(&adc_bat->bat_work);
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM
+> +static int generic_adc_bat_suspend(struct device *dev)
+> +{
+> +	struct generic_adc_bat *adc_bat = dev_get_drvdata(dev);
+> +
+> +	cancel_delayed_work_sync(&adc_bat->bat_work);
+> +	adc_bat->status = POWER_SUPPLY_STATUS_UNKNOWN;
+> +	return 0;
+> +}
+> +
+> +static int generic_adc_bat_resume(struct device *dev)
+> +{
+> +	struct generic_adc_bat *adc_bat = dev_get_drvdata(dev);
+> +
+> +	/* Schedule timer to check current status */
+> +	schedule_delayed_work(&adc_bat->bat_work,
+> +			msecs_to_jiffies(adc_bat->pdata->jitter_delay));
+> +	return 0;
+> +}
+> +
+> +static const struct dev_pm_ops generic_adc_battery_pm_ops = {
+> +	.suspend        = generic_adc_bat_suspend,
+> +	.resume         = generic_adc_bat_resume,
+> +};
+> +
+> +#define GENERIC_ADC_BATTERY_PM_OPS       (&generic_adc_battery_pm_ops)
+> +#else
+> +#define GENERIC_ADC_BATTERY_PM_OPS       (NULL)
+> +#endif
+> +
+> +static struct platform_driver generic_adc_bat_driver = {
+> +	.driver		= {
+> +		.name	= "generic-adc-battery",
+> +		.owner	= THIS_MODULE,
+> +		.pm	= GENERIC_ADC_BATTERY_PM_OPS
+> +	},
+> +	.probe		= generic_adc_bat_probe,
+> +	.remove		= generic_adc_bat_remove,
+> +};
+> +
+> +module_platform_driver(generic_adc_bat_driver);
+> +
+> +MODULE_AUTHOR("anish kumar <anish198519851985@gmail.com>");
+> +MODULE_DESCRIPTION("generic battery driver using IIO");
+> +MODULE_LICENSE("GPL");
+> diff --git a/include/linux/power/generic-adc-battery.h b/include/linux/power/generic-adc-battery.h
+> new file mode 100644
+> index 0000000..d7c6d20
+> --- /dev/null
+> +++ b/include/linux/power/generic-adc-battery.h
+> @@ -0,0 +1,33 @@
+> +/*
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +
+> +#ifndef GENERIC_ADC_BATTERY_H
+> +#define GENERIC_ADC_BATTERY_H
+> +
+> +/* should be enough for the channel names */
+> +#define BAT_MAX_NAME	30
+> +
+> +enum chan_type {
+> +	VOLTAGE = 0,
+> +	CURRENT,
+> +	POWER,
+> +	MAX_CHAN_TYPE
+> +};
+> +
+why this definition?
+> +extern char channel_name[][BAT_MAX_NAME + 1];
+> +
+> +struct iio_battery_platform_data {
+> +	struct power_supply_info battery_info;
 
-Changes in v3:
-	No changes
+Should this still be here?
+> +	char	**channel_name;
+> +	char	*battery_name;
+> +	int	(*cal_charge)(long);
+> +	int	gpio_charge_finished;
+> +	int	gpio_inverted;
 
- drivers/mfd/Kconfig           |    9 ++
- drivers/mfd/Makefile          |    1 +
- drivers/mfd/ti_tscadc.c       |  193 +++++++++++++++++++++++++++++++++++++++++
- include/linux/mfd/ti_tscadc.h |  133 ++++++++++++++++++++++++++++
- 4 files changed, 336 insertions(+), 0 deletions(-)
- create mode 100644 drivers/mfd/ti_tscadc.c
- create mode 100644 include/linux/mfd/ti_tscadc.h
-
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index d1facef..81eb815 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -94,6 +94,15 @@ config MFD_TI_SSP
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ti-ssp.
- 
-+config MFD_TI_TSCADC
-+	tristate "TI ADC / Touch Screen chip support"
-+	depends on ARCH_OMAP2PLUS
-+	help
-+	  If you say yes here you get support for Texas Instruments series
-+	  of Touch Screen /ADC chips.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ti_tscadc.
-+
- config HTC_EGPIO
- 	bool "HTC EGPIO support"
- 	depends on GENERIC_HARDIRQS && GPIOLIB && ARM
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index 79dd22d..1537f74 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -16,6 +16,7 @@ obj-$(CONFIG_HTC_I2CPLD)	+= htc-i2cpld.o
- obj-$(CONFIG_MFD_DAVINCI_VOICECODEC)	+= davinci_voicecodec.o
- obj-$(CONFIG_MFD_DM355EVM_MSP)	+= dm355evm_msp.o
- obj-$(CONFIG_MFD_TI_SSP)	+= ti-ssp.o
-+obj-$(CONFIG_MFD_TI_TSCADC)	+= ti_tscadc.o
- 
- obj-$(CONFIG_MFD_STA2X11)	+= sta2x11-mfd.o
- obj-$(CONFIG_MFD_STMPE)		+= stmpe.o
-diff --git a/drivers/mfd/ti_tscadc.c b/drivers/mfd/ti_tscadc.c
-new file mode 100644
-index 0000000..ac4bf7b
---- /dev/null
-+++ b/drivers/mfd/ti_tscadc.c
-@@ -0,0 +1,193 @@
-+/*
-+ * TI Touch Screen / ADC MFD driver
-+ *
-+ * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation version 2.
-+ *
-+ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-+ * kind, whether express or implied; without even the implied warranty
-+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/slab.h>
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/clk.h>
-+#include <linux/mfd/core.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/mfd/ti_tscadc.h>
-+
-+static unsigned int tscadc_readl(struct ti_tscadc_dev *tsadc, unsigned int reg)
-+{
-+	return readl(tsadc->tscadc_base + reg);
-+}
-+
-+static void tscadc_writel(struct ti_tscadc_dev *tsadc, unsigned int reg,
-+					unsigned int val)
-+{
-+	writel(val, tsadc->tscadc_base + reg);
-+}
-+
-+static void tscadc_idle_config(struct ti_tscadc_dev *config)
-+{
-+	unsigned int idleconfig;
-+
-+	idleconfig = STEPCONFIG_YNN | STEPCONFIG_INM_ADCREFM |
-+			STEPCONFIG_INP_ADCREFM | STEPCONFIG_YPN;
-+
-+	tscadc_writel(config, REG_IDLECONFIG, idleconfig);
-+}
-+
-+static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
-+{
-+	struct ti_tscadc_dev	*tscadc;
-+	struct resource		*res;
-+	struct clk		*clk;
-+	struct mfd_tscadc_board	*pdata = pdev->dev.platform_data;
-+	int			irq;
-+	int			err, ctrl;
-+	int			clk_value, clock_rate;
-+
-+	if (!pdata) {
-+		dev_err(&pdev->dev, "Could not find platform data\n");
-+		return -EINVAL;
-+	}
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		dev_err(&pdev->dev, "no memory resource defined.\n");
-+		return -EINVAL;
-+	}
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		dev_err(&pdev->dev, "no irq ID is specified.\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Allocate memory for device */
-+	tscadc = kzalloc(sizeof(struct ti_tscadc_dev), GFP_KERNEL);
-+	if (!tscadc) {
-+		dev_err(&pdev->dev, "failed to allocate memory.\n");
-+		return -ENOMEM;
-+	}
-+	tscadc->dev = &pdev->dev;
-+	tscadc->irq = irq;
-+
-+	res = request_mem_region(res->start, resource_size(res), pdev->name);
-+	if (!res) {
-+		dev_err(&pdev->dev, "failed to reserve registers.\n");
-+		err = -EBUSY;
-+		goto err_free_mem;
-+	}
-+
-+	tscadc->tscadc_base = ioremap(res->start, resource_size(res));
-+	if (!tscadc->tscadc_base) {
-+		dev_err(&pdev->dev, "failed to map registers.\n");
-+		err = -ENOMEM;
-+		goto err_release_mem_region;
-+	}
-+
-+	pm_runtime_enable(&pdev->dev);
-+	pm_runtime_get_sync(&pdev->dev);
-+
-+	/*
-+	 * The TSC_ADC_Subsystem has 2 clock domains
-+	 * OCP_CLK and ADC_CLK.
-+	 * The ADC clock is expected to run at target of 3MHz,
-+	 * and expected to capture 12-bit data at a rate of 200 KSPS.
-+	 * The TSC_ADC_SS controller design assumes the OCP clock is
-+	 * at least 6x faster than the ADC clock.
-+	 */
-+	clk = clk_get(&pdev->dev, "adc_tsc_fck");
-+	if (IS_ERR(clk)) {
-+		dev_err(&pdev->dev, "failed to get TSC fck\n");
-+		err = PTR_ERR(clk);
-+		goto err_disable_clk;
-+	}
-+	clock_rate = clk_get_rate(clk);
-+	clk_put(clk);
-+	clk_value = clock_rate / ADC_CLK;
-+	if (clk_value < MAX_CLK_DIV) {
-+		dev_err(&pdev->dev, "clock input less than min clock requirement\n");
-+		err = -EINVAL;
-+		goto err_disable_clk;
-+	}
-+	/* TSCADC_CLKDIV needs to be configured to the value minus 1 */
-+	clk_value = clk_value - 1;
-+	tscadc_writel(tscadc, REG_CLKDIV, clk_value);
-+
-+	/* Set the control register bits */
-+	ctrl = CNTRLREG_STEPCONFIGWRT |
-+			CNTRLREG_TSCENB |
-+			CNTRLREG_STEPID |
-+			CNTRLREG_4WIRE;
-+	tscadc_writel(tscadc, REG_CTRL, ctrl);
-+
-+	/* Set register bits for Idle Config Mode */
-+	tscadc_idle_config(tscadc);
-+
-+	/* Enable the TSC module enable bit */
-+	ctrl = tscadc_readl(tscadc, REG_CTRL);
-+	ctrl |= CNTRLREG_TSCSSENB;
-+	tscadc_writel(tscadc, REG_CTRL, ctrl);
-+
-+	err = mfd_add_devices(&pdev->dev, pdev->id, tscadc->cells,
-+			TSCADC_CELLS, NULL, 0);
-+	if (err < 0)
-+		goto err_disable_clk;
-+
-+	platform_set_drvdata(pdev, tscadc);
-+	return 0;
-+
-+err_disable_clk:
-+	pm_runtime_put_sync(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+	iounmap(tscadc->tscadc_base);
-+err_release_mem_region:
-+	release_mem_region(res->start, resource_size(res));
-+	mfd_remove_devices(tscadc->dev);
-+err_free_mem:
-+	kfree(tscadc);
-+	return err;
-+}
-+
-+static int __devexit ti_tscadc_remove(struct platform_device *pdev)
-+{
-+	struct ti_tscadc_dev	*tscadc = platform_get_drvdata(pdev);
-+	struct resource		*res;
-+
-+	tscadc_writel(tscadc, REG_SE, 0x00);
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	iounmap(tscadc->tscadc_base);
-+	release_mem_region(res->start, resource_size(res));
-+
-+	pm_runtime_put_sync(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+
-+	mfd_remove_devices(tscadc->dev);
-+	kfree(tscadc);
-+	return 0;
-+}
-+
-+static struct platform_driver ti_tscadc_driver = {
-+	.driver = {
-+		.name   = "ti_tscadc",
-+		.owner	= THIS_MODULE,
-+	},
-+	.probe	= ti_tscadc_probe,
-+	.remove	= __devexit_p(ti_tscadc_remove),
-+
-+};
-+
-+module_platform_driver(ti_tscadc_driver);
-+
-+MODULE_DESCRIPTION("TI touchscreen / ADC MFD controller driver");
-+MODULE_AUTHOR("Rachna Patil <rachna@ti.com>");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/mfd/ti_tscadc.h b/include/linux/mfd/ti_tscadc.h
-new file mode 100644
-index 0000000..5bc2d61
---- /dev/null
-+++ b/include/linux/mfd/ti_tscadc.h
-@@ -0,0 +1,133 @@
-+#ifndef __LINUX_TI_TSCADC_MFD_H
-+#define __LINUX_TI_TSCADC_MFD_H
-+
-+/*
-+ * TI Touch Screen / ADC MFD driver
-+ *
-+ * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation version 2.
-+ *
-+ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-+ * kind, whether express or implied; without even the implied warranty
-+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/mfd/core.h>
-+
-+#define REG_RAWIRQSTATUS	0x024
-+#define REG_IRQSTATUS		0x028
-+#define REG_IRQENABLE		0x02C
-+#define REG_IRQCLR		0x030
-+#define REG_IRQWAKEUP		0x034
-+#define REG_CTRL		0x040
-+#define REG_ADCFSM		0x044
-+#define REG_CLKDIV		0x04C
-+#define REG_SE			0x054
-+#define REG_IDLECONFIG		0x058
-+#define REG_CHARGECONFIG	0x05C
-+#define REG_CHARGEDELAY		0x060
-+#define REG_STEPCONFIG(n)	(0x64 + ((n - 1) * 8))
-+#define REG_STEPDELAY(n)	(0x68 + ((n - 1) * 8))
-+#define REG_FIFO0CNT		0xE4
-+#define REG_FIFO0THR		0xE8
-+#define REG_FIFO1CNT		0xF0
-+#define REG_FIFO1THR		0xF4
-+#define REG_FIFO0		0x100
-+#define REG_FIFO1		0x200
-+
-+/*	Register Bitfields	*/
-+/* Step Enable */
-+#define STEPENB_MASK		(0x1FFFF << 0)
-+#define STEPENB(val)		((val) << 0)
-+#define STPENB_STEPENB		STEPENB(0x1FFFF)
-+
-+/* IRQ enable */
-+#define IRQENB_HW_PEN		BIT(0)
-+#define IRQENB_FIFO0THRES	BIT(2)
-+#define IRQENB_FIFO1THRES	BIT(5)
-+#define IRQENB_PENUP		BIT(9)
-+
-+/* Step Configuration */
-+#define STEPCONFIG_MODE_MASK	(3 << 0)
-+#define STEPCONFIG_MODE(val)	((val) << 0)
-+#define STEPCONFIG_MODE_HWSYNC	STEPCONFIG_MODE(2)
-+#define STEPCONFIG_AVG_MASK	(7 << 2)
-+#define STEPCONFIG_AVG(val)	((val) << 2)
-+#define STEPCONFIG_AVG_16	STEPCONFIG_AVG(4)
-+#define STEPCONFIG_XPP		BIT(5)
-+#define STEPCONFIG_XNN		BIT(6)
-+#define STEPCONFIG_YPP		BIT(7)
-+#define STEPCONFIG_YNN		BIT(8)
-+#define STEPCONFIG_XNP		BIT(9)
-+#define STEPCONFIG_YPN		BIT(10)
-+#define STEPCONFIG_INM_MASK	(0xF << 15)
-+#define STEPCONFIG_INM(val)	((val) << 15)
-+#define STEPCONFIG_INM_ADCREFM	STEPCONFIG_INM(8)
-+#define STEPCONFIG_INP_MASK	(0xF << 19)
-+#define STEPCONFIG_INP(val)	((val) << 19)
-+#define STEPCONFIG_INP_AN2	STEPCONFIG_INP(2)
-+#define STEPCONFIG_INP_AN3	STEPCONFIG_INP(3)
-+#define STEPCONFIG_INP_AN4	STEPCONFIG_INP(4)
-+#define STEPCONFIG_INP_ADCREFM	STEPCONFIG_INP(8)
-+#define STEPCONFIG_FIFO1	BIT(26)
-+
-+/* Delay register */
-+#define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
-+#define STEPDELAY_OPEN(val)	((val) << 0)
-+#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
-+#define STEPDELAY_SAMPLE_MASK	(0xFF << 24)
-+#define STEPDELAY_SAMPLE(val)	((val) << 24)
-+#define STEPCONFIG_SAMPLEDLY	STEPDELAY_SAMPLE(0)
-+
-+/* Charge Config */
-+#define STEPCHARGE_RFP_MASK	(7 << 12)
-+#define STEPCHARGE_RFP(val)	((val) << 12)
-+#define STEPCHARGE_RFP_XPUL	STEPCHARGE_RFP(1)
-+#define STEPCHARGE_INM_MASK	(0xF << 15)
-+#define STEPCHARGE_INM(val)	((val) << 15)
-+#define STEPCHARGE_INM_AN1	STEPCHARGE_INM(1)
-+#define STEPCHARGE_INP_MASK	(0xF << 19)
-+#define STEPCHARGE_INP(val)	((val) << 19)
-+#define STEPCHARGE_INP_AN1	STEPCHARGE_INP(1)
-+#define STEPCHARGE_RFM_MASK	(3 << 23)
-+#define STEPCHARGE_RFM(val)	((val) << 23)
-+#define STEPCHARGE_RFM_XNUR	STEPCHARGE_RFM(1)
-+
-+/* Charge delay */
-+#define CHARGEDLY_OPEN_MASK	(0x3FFFF << 0)
-+#define CHARGEDLY_OPEN(val)	((val) << 0)
-+#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(1)
-+
-+/* Control register */
-+#define CNTRLREG_TSCSSENB	BIT(0)
-+#define CNTRLREG_STEPID		BIT(1)
-+#define CNTRLREG_STEPCONFIGWRT	BIT(2)
-+#define CNTRLREG_POWERDOWN	BIT(4)
-+#define CNTRLREG_AFE_CTRL_MASK	(3 << 5)
-+#define CNTRLREG_AFE_CTRL(val)	((val) << 5)
-+#define CNTRLREG_4WIRE		CNTRLREG_AFE_CTRL(1)
-+#define CNTRLREG_5WIRE		CNTRLREG_AFE_CTRL(2)
-+#define CNTRLREG_8WIRE		CNTRLREG_AFE_CTRL(3)
-+#define CNTRLREG_TSCENB		BIT(7)
-+
-+#define ADC_CLK			3000000
-+#define	MAX_CLK_DIV		7
-+
-+#define TSCADC_CELLS		0
-+
-+struct mfd_tscadc_board {
-+	struct tsc_data *tsc_init;
-+};
-+
-+struct ti_tscadc_dev {
-+	struct device *dev;
-+	void __iomem *tscadc_base;
-+	int irq;
-+	struct mfd_cell cells[TSCADC_CELLS];
-+};
-+
-+#endif
--- 
-1.7.0.4
-
+unused..
+> +	int	bat_poll_interval;
+> +	int	jitter_delay;
+> +};
+> +
+> +#endif /* GENERIC_ADC_BATTERY_H */
+>
