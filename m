@@ -1,115 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:35069 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756837Ab2IMK7u (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 13 Sep 2012 06:59:50 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
+Received: from smtp-out-026.synserver.de ([212.40.185.26]:1236 "EHLO
+	smtp-out-026.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932124Ab2IMNCn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Sep 2012 09:02:43 -0400
+Message-ID: <5051D92F.1090309@metafoo.de>
+Date: Thu, 13 Sep 2012 15:01:35 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: "Patil, Rachna" <rachna@ti.com>
+CC: linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v3 1/5] input: TSC: ti_tscadc: Rename the existing touchscreen driver
-Date: Thu, 13 Sep 2012 16:10:15 +0530
-Message-ID: <1347532819-505-2-git-send-email-rachna@ti.com>
-In-Reply-To: <1347532819-505-1-git-send-email-rachna@ti.com>
-References: <1347532819-505-1-git-send-email-rachna@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH v3 5/5] MFD: ti_tscadc: add suspend/resume functionality
+References: <1347532819-505-1-git-send-email-rachna@ti.com> <1347532819-505-6-git-send-email-rachna@ti.com>
+In-Reply-To: <1347532819-505-6-git-send-email-rachna@ti.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Make way for addition of MFD driver.
-The existing touchsreen driver is a MFD client.
-For better readability we rename the file to
-indicate its functionality as only touchscreen.
+On 09/13/2012 12:40 PM, Patil, Rachna wrote:
+> This patch adds support for suspend/resume of
+> TSC/ADC MFDevice.
+> 
+> Signed-off-by: Patil, Rachna <rachna@ti.com>
+> ---
+> Changes in v2:
+> 	Added this patch newly in this patch series.
+> 
+> Changes in v3:
+> 	No changes.
+> 
+>  drivers/iio/adc/ti_adc.c           |   32 ++++++++++++++++++++++++++++++++
+>  drivers/input/touchscreen/ti_tsc.c |   33 +++++++++++++++++++++++++++++++++
+>  drivers/mfd/ti_tscadc.c            |   33 ++++++++++++++++++++++++++++++++-
+>  include/linux/mfd/ti_tscadc.h      |    3 +++
+>  4 files changed, 100 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti_adc.c b/drivers/iio/adc/ti_adc.c
+> index 56f8af2..69f19f0 100644
+> --- a/drivers/iio/adc/ti_adc.c
+> +++ b/drivers/iio/adc/ti_adc.c
+> @@ -207,6 +207,36 @@ static int __devexit tiadc_remove(struct platform_device *pdev)
+>  	return 0;
+>  }
+>  
+[...]
+>  static struct platform_driver tiadc_driver = {
+>  	.driver = {
+>  		.name   = "tiadc",
+> @@ -214,6 +244,8 @@ static struct platform_driver tiadc_driver = {
+>  	},
+>  	.probe	= tiadc_probe,
+>  	.remove	= __devexit_p(tiadc_remove),
+> +	.suspend = adc_suspend,
+> +	.resume = adc_resume,
+>  };
+>  
 
-Signed-off-by: Patil, Rachna <rachna@ti.com>
----
-Changes in v2:
-	Missed changing the name of touchscreen header file
-	in the previous version.
-	Adding the same.
 
-Changes in v3:
-	no changes.
+Using the suspend/resume callbacks is deprecated, please use dev_pm_ops.
+Same comment applies to the other two drivers.
 
- drivers/input/touchscreen/Kconfig                  |    4 ++--
- drivers/input/touchscreen/Makefile                 |    2 +-
- .../input/touchscreen/{ti_tscadc.c => ti_tsc.c}    |    2 +-
- include/linux/input/{ti_tscadc.h => ti_tsc.h}      |    4 ++--
- 4 files changed, 6 insertions(+), 6 deletions(-)
- rename drivers/input/touchscreen/{ti_tscadc.c => ti_tsc.c} (99%)
- rename include/linux/input/{ti_tscadc.h => ti_tsc.h} (90%)
-
-diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
-index 1ba232c..68ac802 100644
---- a/drivers/input/touchscreen/Kconfig
-+++ b/drivers/input/touchscreen/Kconfig
-@@ -529,7 +529,7 @@ config TOUCHSCREEN_TOUCHWIN
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called touchwin.
- 
--config TOUCHSCREEN_TI_TSCADC
-+config TOUCHSCREEN_TI_TSC
- 	tristate "TI Touchscreen Interface"
- 	depends on ARCH_OMAP2PLUS
- 	help
-@@ -539,7 +539,7 @@ config TOUCHSCREEN_TI_TSCADC
- 	  If unsure, say N.
- 
- 	  To compile this driver as a module, choose M here: the
--	  module will be called ti_tscadc.
-+	  module will be called ti_tsc.
- 
- config TOUCHSCREEN_ATMEL_TSADCC
- 	tristate "Atmel Touchscreen Interface"
-diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
-index 178eb12..d579427 100644
---- a/drivers/input/touchscreen/Makefile
-+++ b/drivers/input/touchscreen/Makefile
-@@ -52,7 +52,7 @@ obj-$(CONFIG_TOUCHSCREEN_PIXCIR)	+= pixcir_i2c_ts.o
- obj-$(CONFIG_TOUCHSCREEN_S3C2410)	+= s3c2410_ts.o
- obj-$(CONFIG_TOUCHSCREEN_ST1232)	+= st1232.o
- obj-$(CONFIG_TOUCHSCREEN_STMPE)		+= stmpe-ts.o
--obj-$(CONFIG_TOUCHSCREEN_TI_TSCADC)	+= ti_tscadc.o
-+obj-$(CONFIG_TOUCHSCREEN_TI_TSC)	+= ti_tsc.o
- obj-$(CONFIG_TOUCHSCREEN_TNETV107X)	+= tnetv107x-ts.o
- obj-$(CONFIG_TOUCHSCREEN_TOUCHIT213)	+= touchit213.o
- obj-$(CONFIG_TOUCHSCREEN_TOUCHRIGHT)	+= touchright.o
-diff --git a/drivers/input/touchscreen/ti_tscadc.c b/drivers/input/touchscreen/ti_tsc.c
-similarity index 99%
-rename from drivers/input/touchscreen/ti_tscadc.c
-rename to drivers/input/touchscreen/ti_tsc.c
-index ec0a442..8e94c00 100644
---- a/drivers/input/touchscreen/ti_tscadc.c
-+++ b/drivers/input/touchscreen/ti_tsc.c
-@@ -24,7 +24,7 @@
- #include <linux/clk.h>
- #include <linux/platform_device.h>
- #include <linux/io.h>
--#include <linux/input/ti_tscadc.h>
-+#include <linux/input/ti_tsc.h>
- #include <linux/delay.h>
- 
- #define REG_RAWIRQSTATUS	0x024
-diff --git a/include/linux/input/ti_tscadc.h b/include/linux/input/ti_tsc.h
-similarity index 90%
-rename from include/linux/input/ti_tscadc.h
-rename to include/linux/input/ti_tsc.h
-index ad442a3..5da27d6 100644
---- a/include/linux/input/ti_tscadc.h
-+++ b/include/linux/input/ti_tsc.h
-@@ -1,5 +1,5 @@
--#ifndef __LINUX_TI_TSCADC_H
--#define __LINUX_TI_TSCADC_H
-+#ifndef __LINUX_TI_TSC_H
-+#define __LINUX_TI_TSC_H
- 
- /**
-  * struct tsc_data	Touchscreen wire configuration
--- 
-1.7.0.4
 
