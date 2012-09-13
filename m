@@ -1,79 +1,196 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:48175 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757406Ab2IMK71 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 13 Sep 2012 06:59:27 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v3 0/5] Support for TSC/ADC MFD driver
-Date: Thu, 13 Sep 2012 16:10:14 +0530
-Message-ID: <1347532819-505-1-git-send-email-rachna@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46705 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751551Ab2IMT7p (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Sep 2012 15:59:45 -0400
+Message-ID: <50523B2F.1080102@kernel.org>
+Date: Thu, 13 Sep 2012 20:59:43 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH v2 04/10] staging:iio:ad7476: Rework reference voltage
+ handling
+References: <1347266081-6045-1-git-send-email-lars@metafoo.de> <1347266081-6045-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347266081-6045-4-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch set adds a MFD core driver which registers
-touchscreen and ADC as its client drivers.
-The existing touchscreen has been modified to work as
-a MFD client driver and a new ADC driver has been added
-in the IIO subsystem.
+On 09/10/2012 09:34 AM, Lars-Peter Clausen wrote:
+> Slightly rework the reference voltage handling for the ad7476 driver. Now the only
+> way to specify a external reference voltage is to use the regulator API,
+> previously it was possible to use either platform_data or the regulator API. The
+> new way is more consistent with what other drivers do.
+> 
+> Also do not ignore errors when requesting the regulator, since this will cope
+> very poorly with e.g. deferred probing.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> 
+> ----
+> Changes since v1:
+> 		* Fix regulator error handling
 
-There are 8 analog input lines, which can be used as:
-1. 8 general purpose ADC channels
-2. 4 wire TS, with 4 general purpose ADC channels
-3. 5 wire TS, with 3 general purpose ADC channels
+Not right yet. If the regulator_get fails you will leak the iio_device
 
-This patch set has been tested on AM335x EVM.
+I've fixed up, could you take a look at what I ended up with just
+to be sure I haven't made mistakes.  It was one of those clasic cases
+where a one line change made for some nasty merging...
 
-These set of patches are based on top of Touchscreen patch
-set submitted.
-Subject: [PATCH 0/4] input: TSC: ti_tscadc: TI Touchscreen driver updates [1]
+Anyhow, I've pushed the slightly amended versions out to iio.git togreg branch.
 
-[1] http://www.spinics.net/lists/linux-input/msg22107.html
-
-Changes in v2:
-	Dropped one patch send in the last version after
-	receiving internal comments. I have merged the changes
-	into existing patches.
-	Also added a new patch to support suspend/resume feature.
-	Fixed review comments by Matthias Kaehlcke.
-
-Changes in v3:
-	Addressed review comments by Jonathan Cameron.
-	Improved ADC driver with more readable labels,
-	spaces and comments.
-
-Patil, Rachna (5):
-  input: TSC: ti_tscadc: Rename the existing touchscreen driver
-  MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
-  input: TSC: ti_tsc: Convert TSC into a MFDevice
-  IIO : ADC: tiadc: Add support of TI's ADC driver
-  MFD: ti_tscadc: add suspend/resume functionality
-
- drivers/iio/adc/Kconfig                            |    7 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/ti_adc.c                           |  255 ++++++++++++++++
- drivers/input/touchscreen/Kconfig                  |    4 +-
- drivers/input/touchscreen/Makefile                 |    2 +-
- .../input/touchscreen/{ti_tscadc.c => ti_tsc.c}    |  310 ++++++--------------
- drivers/mfd/Kconfig                                |    9 +
- drivers/mfd/Makefile                               |    1 +
- drivers/mfd/ti_tscadc.c                            |  251 ++++++++++++++++
- include/linux/input/{ti_tscadc.h => ti_tsc.h}      |    4 +-
- include/linux/mfd/ti_tscadc.h                      |  151 ++++++++++
- include/linux/platform_data/ti_adc.h               |   14 +
- 12 files changed, 781 insertions(+), 228 deletions(-)
- create mode 100644 drivers/iio/adc/ti_adc.c
- rename drivers/input/touchscreen/{ti_tscadc.c => ti_tsc.c} (55%)
- create mode 100644 drivers/mfd/ti_tscadc.c
- rename include/linux/input/{ti_tscadc.h => ti_tsc.h} (90%)
- create mode 100644 include/linux/mfd/ti_tscadc.h
- create mode 100644 include/linux/platform_data/ti_adc.h
-
+> ---
+>  drivers/staging/iio/adc/ad7476.h      |   11 +------
+>  drivers/staging/iio/adc/ad7476_core.c |   58 +++++++++++++++------------------
+>  2 files changed, 27 insertions(+), 42 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
+> index c4f1150..4ed5494 100644
+> --- a/drivers/staging/iio/adc/ad7476.h
+> +++ b/drivers/staging/iio/adc/ad7476.h
+> @@ -10,16 +10,8 @@
+>  
+>  #define RES_MASK(bits)	((1 << (bits)) - 1)
+>  
+> -/*
+> - * TODO: struct ad7476_platform_data needs to go into include/linux/iio
+> - */
+> -
+> -struct ad7476_platform_data {
+> -	u16				vref_mv;
+> -};
+> -
+>  struct ad7476_chip_info {
+> -	u16				int_vref_mv;
+> +	unsigned int			int_vref_uv;
+>  	struct iio_chan_spec		channel[2];
+>  };
+>  
+> @@ -27,7 +19,6 @@ struct ad7476_state {
+>  	struct spi_device		*spi;
+>  	const struct ad7476_chip_info	*chip_info;
+>  	struct regulator		*reg;
+> -	u16				int_vref_mv;
+>  	struct spi_transfer		xfer;
+>  	struct spi_message		msg;
+>  	/*
+> diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
+> index c97300b..e79a179 100644
+> --- a/drivers/staging/iio/adc/ad7476_core.c
+> +++ b/drivers/staging/iio/adc/ad7476_core.c
+> @@ -40,7 +40,7 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+>  {
+>  	int ret;
+>  	struct ad7476_state *st = iio_priv(indio_dev);
+> -	unsigned int scale_uv;
+> +	int scale_uv;
+>  
+>  	switch (m) {
+>  	case IIO_CHAN_INFO_RAW:
+> @@ -57,10 +57,16 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+>  			RES_MASK(st->chip_info->channel[0].scan_type.realbits);
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
+> -		scale_uv = (st->int_vref_mv * 1000)
+> -			>> st->chip_info->channel[0].scan_type.realbits;
+> -		*val =  scale_uv/1000;
+> -		*val2 = (scale_uv%1000)*1000;
+> +		if (!st->chip_info->int_vref_uv) {
+> +			scale_uv = regulator_get_voltage(st->reg);
+> +			if (scale_uv < 0)
+> +				return scale_uv;
+> +		} else {
+> +			scale_uv = st->chip_info->int_vref_uv;
+> +		}
+> +		scale_uv >>= chan->scan_type.realbits;
+> +		*val =  scale_uv / 1000;
+> +		*val2 = (scale_uv % 1000) * 1000;
+>  		return IIO_VAL_INT_PLUS_MICRO;
+>  	}
+>  	return -EINVAL;
+> @@ -96,7 +102,7 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+>  	[ID_AD7495] = {
+>  		.channel[0] = AD7476_CHAN(12),
+>  		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> -		.int_vref_mv = 2500,
+> +		.int_vref_uv = 2500000,
+>  	},
+>  };
+>  
+> @@ -107,10 +113,9 @@ static const struct iio_info ad7476_info = {
+>  
+>  static int __devinit ad7476_probe(struct spi_device *spi)
+>  {
+> -	struct ad7476_platform_data *pdata = spi->dev.platform_data;
+>  	struct ad7476_state *st;
+>  	struct iio_dev *indio_dev;
+> -	int ret, voltage_uv = 0;
+> +	int ret;
+>  
+>  	indio_dev = iio_device_alloc(sizeof(*st));
+>  	if (indio_dev == NULL) {
+> @@ -118,25 +123,18 @@ static int __devinit ad7476_probe(struct spi_device *spi)
+>  		goto error_ret;
+>  	}
+>  	st = iio_priv(indio_dev);
+> -	st->reg = regulator_get(&spi->dev, "vcc");
+> -	if (!IS_ERR(st->reg)) {
+> -		ret = regulator_enable(st->reg);
+> -		if (ret)
+> -			goto error_put_reg;
+> -
+> -		voltage_uv = regulator_get_voltage(st->reg);
+> -	}
+>  	st->chip_info =
+>  		&ad7476_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+>  
+> -	if (st->chip_info->int_vref_mv)
+> -		st->int_vref_mv = st->chip_info->int_vref_mv;
+> -	else if (pdata && pdata->vref_mv)
+> -		st->int_vref_mv = pdata->vref_mv;
+> -	else if (voltage_uv)
+> -		st->int_vref_mv = voltage_uv / 1000;
+> -	else
+> -		dev_warn(&spi->dev, "reference voltage unspecified\n");
+> +	st->reg = regulator_get(&spi->dev, "vcc");
+> +	if (IS_ERR(st->reg)) {
+> +		ret = PTR_ERR(st->reg);
+> +		goto error_ret;
+> +	}
+> +
+> +	ret = regulator_enable(st->reg);
+> +	if (ret)
+> +		goto error_put_reg;
+>  
+>  	spi_set_drvdata(spi, indio_dev);
+>  
+> @@ -169,11 +167,9 @@ static int __devinit ad7476_probe(struct spi_device *spi)
+>  error_ring_unregister:
+>  	ad7476_ring_cleanup(indio_dev);
+>  error_disable_reg:
+> -	if (!IS_ERR(st->reg))
+> -		regulator_disable(st->reg);
+> +	regulator_disable(st->reg);
+>  error_put_reg:
+> -	if (!IS_ERR(st->reg))
+> -		regulator_put(st->reg);
+> +	regulator_put(st->reg);
+>  	iio_device_free(indio_dev);
+>  
+>  error_ret:
+> @@ -187,10 +183,8 @@ static int __devexit ad7476_remove(struct spi_device *spi)
+>  
+>  	iio_device_unregister(indio_dev);
+>  	ad7476_ring_cleanup(indio_dev);
+> -	if (!IS_ERR(st->reg)) {
+> -		regulator_disable(st->reg);
+> -		regulator_put(st->reg);
+> -	}
+> +	regulator_disable(st->reg);
+> +	regulator_put(st->reg);
+>  	iio_device_free(indio_dev);
+>  
+>  	return 0;
+> 
