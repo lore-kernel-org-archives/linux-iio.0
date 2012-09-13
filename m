@@ -1,395 +1,825 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:60461 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755004Ab2IMMX4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Sep 2012 08:23:56 -0400
-Message-ID: <5051D05C.4050802@kernel.org>
-Date: Thu, 13 Sep 2012 13:23:56 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: "Kim, Milo" <Milo.Kim@ti.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5] iio: adc: add new lp8788 adc driver
-References: <A874F61F95741C4A9BA573A70FE3998F41EF45CC@DQHE02.ent.ti.com>
-In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F41EF45CC@DQHE02.ent.ti.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from smtp-out-026.synserver.de ([212.40.185.26]:1070 "EHLO
+	smtp-out-026.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932101Ab2IMNNG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Sep 2012 09:13:06 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio:dac: Add ad5755 driver
+Date: Thu, 13 Sep 2012 15:13:35 +0200
+Message-Id: <1347542015-27209-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Couple of nitpicks in line to add to Lars-Peter's ones.
+This patch adds support for the AD5755, AD5755-1, AD5757, AD5735, AD5737 16 and
+14 bit quad-channel DACs. The AD5757/AD5737 only have current outputs, but
+for the AD5755/AD5757 each of the outputs can be configured to either be a
+voltage or a current output. We only allow to configure this at device probe
+time since usually this needs to match the external circuitry and should not be
+changed on the fly.
 
->   TI LP8788 PMU provides regulators, battery charger, ADC,
->   RTC, backlight driver and current sinks.
->
->   This patch enables the LP8788 ADC functions.
->
->   The LP8788 ADC has 13 ADC input selection and supports 12-bit resolution.
->   Internal operation of getting ADC is access to registers of LP8788.
->   The LP8788 ADC uses exported functions for accessing these registers.
->   (exported by LP8788 MFD device driver)
->
->   This driver supports IIO_CHAN_INFO_RAW and SCALE.
->   The scale is micro unit.
->   So the IIO consumer can get the result as following.
->
->     result = ADC raw value * (scale_int + scale_part / 1000000)
->
->   (The IIO map for the IIO consumer)
->
->   The ADC input can be selective in the platform side.
->   Even though this platform data is not defined,
->   the default IIO map is created for supporting the power supply driver.
->   The battery voltage and temperature are used inside this driver.
->
->   (History)
->
->   Patch v5.
->   (a) Fix misuse of consumer_name_dev
->     If the IIO consumer device is not defined in the platform side,
->     the default consumer is the lp8788-charger.
->     In this case, the consumer name should be defined as 'lp8788-charger'
->     not driver name itself.
->
->   (b) Add mutex for ADC read operation
->
->   (c) Reorganization on lp8788_adc_read_raw()
->     The LP8788 registers are accessed only when the mask is IIO_CHAN_INFO_RAW.
->     Other cases, no need to read the registers.
->     To make lp8788_adc_read_raw() simple, new lp8788_get_adc_result() is added.
->
->   (d) make LP8788 specific names
->     Add prefix LP8788_ for datasheet_name, channel and ADC channel label of
->     the default IIO maps.
->
->   Patch v4.
->   Fix adc_raw function: support RAW and SCALE channel info.
->   Change LP8788 ADC platform data - the IIO map.
->   Enables the default IIO map.
->
->   Patch v3.
->   Fix wrong size of allocating the IIO private data.
->   Fix coding styles.
->
->   Patch v2.
->   Support RAW and SCALE interface for IIO consumer.
->   Clean up the IIO channel spec macro.
->
-> Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
-> ---
->   drivers/iio/adc/Kconfig      |    6 +
->   drivers/iio/adc/Makefile     |    1 +
->   drivers/iio/adc/lp8788_adc.c |  270 ++++++++++++++++++++++++++++++++++++++++++
->   3 files changed, 277 insertions(+)
->   create mode 100644 drivers/iio/adc/lp8788_adc.c
->
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 8a78b4f..30c06ed 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -22,4 +22,10 @@ config AT91_ADC
->   	help
->   	  Say yes here to build support for Atmel AT91 ADC.
->
-> +config LP8788_ADC
-> +	bool "LP8788 ADC driver"
-> +	depends on MFD_LP8788
-> +	help
-> +	  Say yes here to build support for TI LP8788 ADC.
-> +
->   endmenu
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 52eec25..72f9a76 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -4,3 +4,4 @@
->
->   obj-$(CONFIG_AD7266) += ad7266.o
->   obj-$(CONFIG_AT91_ADC) += at91_adc.o
-> +obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
-> diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
-> new file mode 100644
-> index 0000000..6079f9e
-> --- /dev/null
-> +++ b/drivers/iio/adc/lp8788_adc.c
-> @@ -0,0 +1,270 @@
-> +/*
-> + * TI LP8788 MFD - ADC driver
-> + *
-> + * Copyright 2012 Texas Instruments
-> + *
-> + * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/driver.h>
-> +#include <linux/iio/machine.h>
-> +#include <linux/mfd/lp8788.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +
-> +/* register address */
-> +#define LP8788_ADC_CONF			0x60
-> +#define LP8788_ADC_RAW			0x61
-> +#define LP8788_ADC_DONE			0x63
-> +
-> +#define ADC_CONV_START			1
-> +
-> +struct lp8788_adc {
-> +	struct lp8788 *lp;
-> +	struct iio_map *map;
-> +	struct mutex lock;
-> +};
-> +
-> +static const int lp8788_scale[LPADC_MAX] = {
-> +	[LPADC_VBATT_5P5] = 1343,
-> +	[LPADC_VIN_CHG]   = 3052,
-> +	[LPADC_IBATT]     = 610,
-> +	[LPADC_IC_TEMP]   = 610,
-> +	[LPADC_VBATT_6P0] = 1465,
-> +	[LPADC_VBATT_5P0] = 1221,
-> +	[LPADC_ADC1]      = 610,
-> +	[LPADC_ADC2]      = 610,
-> +	[LPADC_VDD]       = 1025,
-> +	[LPADC_VCOIN]     = 757,
-> +	[LPADC_VDD_LDO]   = 610,
-> +	[LPADC_ADC3]      = 610,
-> +	[LPADC_ADC4]      = 610,
-> +};
-> +
-> +static int lp8788_get_adc_result(struct lp8788_adc *adc, enum lp8788_adc_id id,
-> +				int *val)
-> +{
-> +	unsigned int msb;
-> +	unsigned int lsb;
-> +	unsigned int result;
-> +	u8 data;
-> +	u8 rawdata[2];
-> +	int size = ARRAY_SIZE(rawdata);
-> +	int retry = 5;
-> +	int ret;
-> +
-> +	data = (id << 1) | ADC_CONV_START;
-> +	ret = lp8788_write_byte(adc->lp, LP8788_ADC_CONF, data);
-> +	if (ret)
-> +		goto err_io;
-> +
-> +	/* retry until adc conversion is done */
-> +	data = 0;
-> +	while (retry--) {
-> +		usleep_range(100, 200);
-> +
-> +		ret = lp8788_read_byte(adc->lp, LP8788_ADC_DONE, &data);
-> +		if (ret)
-> +			goto err_io;
-> +
-> +		/* conversion done */
-> +		if (data)
-> +			break;
-> +	}
-> +
-> +	ret = lp8788_read_multi_bytes(adc->lp, LP8788_ADC_RAW, rawdata, size);
-> +	if (ret)
-> +		goto err_io;
-> +
-> +	msb = (rawdata[0] << 4) & 0x00000ff0;
-> +	lsb = (rawdata[1] >> 4) & 0x0000000f;
-> +	result = msb | lsb;
-> +	*val = result;
-> +
-> +	return 0;
-> +
-> +err_io:
-> +	return ret;
-> +}
-> +
-> +static int lp8788_adc_read_raw(struct iio_dev *indio_dev,
-> +			struct iio_chan_spec const *chan,
-> +			int *val, int *val2, long mask)
-> +{
-> +	struct lp8788_adc *adc = iio_priv(indio_dev);
-> +	enum lp8788_adc_id id = chan->channel;
-> +	int ret;
-> +
-> +	mutex_lock(&adc->lock);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = lp8788_get_adc_result(adc, id, val) ? -EIO : IIO_VAL_INT;
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = (lp8788_scale[id] / 1000) * 1000;
-> +		*val2 = (lp8788_scale[id] % 1000) * 1000000;
-> +		ret = IIO_VAL_INT_PLUS_MICRO;
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +
-> +	mutex_unlock(&adc->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info lp8788_adc_info = {
-> +	.read_raw = &lp8788_adc_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +#define LP8788_CHAN(_id, _type) {				\
-> +		.type = _type,					\
-> +		.indexed = 1,					\
-> +		.channel = LPADC_##_id,				\
-> +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
-> +			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,	\
-> +		.address = LP8788_ADC_RAW,			\
-> +		.scan_type = IIO_ST('u', 12, 16, 0),		\
-> +		.scan_index = 1,				\
-scan_type and scan_index should only be relevant if you are doing 
-buffered capture (unless I'm missing another use of them in here 
-somewhere...)  Hence drop them for now...
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/dac/Kconfig              |   11 +
+ drivers/iio/dac/Makefile             |    1 +
+ drivers/iio/dac/ad5755.c             |  641 ++++++++++++++++++++++++++++++++++
+ include/linux/platform_data/ad5755.h |  103 ++++++
+ 4 files changed, 756 insertions(+)
+ create mode 100644 drivers/iio/dac/ad5755.c
+ create mode 100644 include/linux/platform_data/ad5755.h
 
-> +		.datasheet_name = "LP8788_"#_id,			\
-> +}
-> +
-> +static const struct iio_chan_spec lp8788_adc_channels[] = {
-> +	[LPADC_VBATT_5P5] = LP8788_CHAN(VBATT_5P5, IIO_VOLTAGE),
-> +	[LPADC_VIN_CHG]   = LP8788_CHAN(VIN_CHG, IIO_VOLTAGE),
-> +	[LPADC_IBATT]     = LP8788_CHAN(IBATT, IIO_CURRENT),
-> +	[LPADC_IC_TEMP]   = LP8788_CHAN(IC_TEMP, IIO_TEMP),
-> +	[LPADC_VBATT_6P0] = LP8788_CHAN(VBATT_6P0, IIO_VOLTAGE),
-> +	[LPADC_VBATT_5P0] = LP8788_CHAN(VBATT_5P0, IIO_VOLTAGE),
-> +	[LPADC_ADC1]      = LP8788_CHAN(ADC1, IIO_VOLTAGE),
-> +	[LPADC_ADC2]      = LP8788_CHAN(ADC2, IIO_VOLTAGE),
-> +	[LPADC_VDD]       = LP8788_CHAN(VDD, IIO_VOLTAGE),
-> +	[LPADC_VCOIN]     = LP8788_CHAN(VCOIN, IIO_VOLTAGE),
-> +	[LPADC_VDD_LDO]   = LP8788_CHAN(VDD_LDO, IIO_VOLTAGE),
-> +	[LPADC_ADC3]      = LP8788_CHAN(ADC3, IIO_VOLTAGE),
-> +	[LPADC_ADC4]      = LP8788_CHAN(ADC4, IIO_VOLTAGE),
-> +};
-> +
-> +/* default maps used by iio consumer (lp8788-charger driver) */
-> +static struct iio_map lp8788_default_iio_maps[] = {
-> +	{
-> +		.consumer_dev_name = "lp8788-charger",
-> +		.consumer_channel = "lp8788_vbatt_5p0",
-> +		.adc_channel_label = "LP8788_VBATT_5P0",
-> +	},
-> +	{
-> +		.consumer_dev_name = "lp8788-charger",
-> +		.consumer_channel = "lp8788_adc1",
-> +		.adc_channel_label = "LP8788_ADC1",
-> +	},
-> +	{ }
-> +};
-> +
-> +static int lp8788_iio_map_register(struct iio_dev *indio_dev,
-> +				struct lp8788_platform_data *pdata,
-> +				struct lp8788_adc *adc)
-> +{
-> +	struct iio_map *map;
-> +	int ret;
-> +
-> +	map = !pdata || !pdata->adc_pdata ?
-> +		lp8788_default_iio_maps : pdata->adc_pdata;
-> +
-> +	ret = iio_map_array_register(indio_dev, map);
-> +	if (ret) {
-> +		dev_err(adc->lp->dev, "iio map err: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	adc->map = map;
-> +	return 0;
-> +}
-> +
-> +static void lp8788_iio_map_unregister(struct iio_dev *indio_dev,
-> +				struct lp8788_adc *adc)
-> +{
-Can't immediately see how this runs without adc->map set. If it
-doesn't drop the check.
-> +	if (adc->map)
-> +		iio_map_array_unregister(indio_dev, adc->map);
-> +}
-> +
-> +static int __devinit lp8788_adc_probe(struct platform_device *pdev)
-> +{
-> +	struct lp8788 *lp = dev_get_drvdata(pdev->dev.parent);
-> +	struct iio_dev *indio_dev;
-> +	struct lp8788_adc *adc;
-> +	int ret;
-> +
-> +	indio_dev = iio_device_alloc(sizeof(*adc));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	adc = iio_priv(indio_dev);
-> +	adc->lp = lp;
-> +	platform_set_drvdata(pdev, indio_dev);
-> +
-> +	ret = lp8788_iio_map_register(indio_dev, lp->pdata, adc);
-> +	if (ret)
-> +		goto err_iio_map;
-> +
-> +	mutex_init(&adc->lock);
-> +
-> +	indio_dev->dev.parent = lp->dev;
-> +	indio_dev->name = pdev->name;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &lp8788_adc_info;
-> +	indio_dev->channels = lp8788_adc_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(lp8788_adc_channels);
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret) {
-> +		dev_err(lp->dev, "iio dev register err: %d\n", ret);
-> +		goto err_iio_device;
-> +	}
-> +
-> +	return 0;
-> +
-> +err_iio_device:
-> +	lp8788_iio_map_unregister(indio_dev, adc);
-> +err_iio_map:
-> +	iio_device_free(indio_dev);
-> +	return ret;
-> +}
-> +
-> +static int __devexit lp8788_adc_remove(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev =  platform_get_drvdata(pdev);
-> +	struct lp8788_adc *adc = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	lp8788_iio_map_unregister(indio_dev, adc);
-> +	iio_device_free(indio_dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver lp8788_adc_driver = {
-> +	.probe = lp8788_adc_probe,
-> +	.remove = __devexit_p(lp8788_adc_remove),
-> +	.driver = {
-> +		.name = LP8788_DEV_ADC,
-> +		.owner = THIS_MODULE,
-> +	},
-> +};
-> +module_platform_driver(lp8788_adc_driver);
-> +
-> +MODULE_DESCRIPTION("Texas Instruments LP8788 ADC Driver");
-> +MODULE_AUTHOR("Milo Kim");
-> +MODULE_LICENSE("GPL");
-> +MODULE_ALIAS("platform:lp8788-adc");
->
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 7845263..b1c0ee5 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -77,6 +77,17 @@ config AD5504
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad5504.
+ 
++config AD5755
++	tristate "Analog Devices AD5755/AD5755-1/AD5757/AD5735/AD5737 DAC driver"
++	depends on SPI_MASTER
++	help
++	  Say yes here to build support for Analog Devices AD5755, AD5755-1,
++	  AD5757, AD5735, AD5737 quad channel Digital to
++	  Analog Converter.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad5755.
++
+ config AD5764
+ 	tristate "Analog Devices AD5764/64R/44/44R DAC driver"
+ 	depends on SPI_MASTER
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index 9ea3cee..c0d333b 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -9,6 +9,7 @@ obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
+ obj-$(CONFIG_AD5064) += ad5064.o
+ obj-$(CONFIG_AD5504) += ad5504.o
+ obj-$(CONFIG_AD5446) += ad5446.o
++obj-$(CONFIG_AD5755) += ad5755.o
+ obj-$(CONFIG_AD5764) += ad5764.o
+ obj-$(CONFIG_AD5791) += ad5791.o
+ obj-$(CONFIG_AD5686) += ad5686.o
+diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+new file mode 100644
+index 0000000..2f7e879
+--- /dev/null
++++ b/drivers/iio/dac/ad5755.c
+@@ -0,0 +1,641 @@
++/*
++ * AD5755, AD5755-1, AD5757, AD5735, AD5737 Digital to analog converters driver
++ *
++ * Copyright 2012 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/spi/spi.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/delay.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/platform_data/ad5755.h>
++
++#define AD5755_NUM_CHANNELS 4
++
++#define AD5755_ADDR(x)			((x) << 16)
++
++#define AD5755_WRITE_REG_DATA(chan)	(chan)
++#define AD5755_WRITE_REG_GAIN(chan)	(0x08 | (chan))
++#define AD5755_WRITE_REG_OFFSET(chan)	(0x10 | (chan))
++#define AD5755_WRITE_REG_CTRL(chan)	(0x1c | (chan))
++
++#define AD5755_READ_REG_DATA(chan)	(chan)
++#define AD5755_READ_REG_CTRL(chan)	(0x4 | (chan))
++#define AD5755_READ_REG_GAIN(chan)	(0x8 | (chan))
++#define AD5755_READ_REG_OFFSET(chan)	(0xc | (chan))
++#define AD5755_READ_REG_CLEAR(chan)	(0x10 | (chan))
++#define AD5755_READ_REG_SLEW(chan)	(0x14 | (chan))
++#define AD5755_READ_REG_STATUS		0x18
++#define AD5755_READ_REG_MAIN		0x19
++#define AD5755_READ_REG_DC_DC		0x1a
++
++#define AD5755_CTRL_REG_SLEW	0x0
++#define AD5755_CTRL_REG_MAIN	0x1
++#define AD5755_CTRL_REG_DAC	0x2
++#define AD5755_CTRL_REG_DC_DC	0x3
++#define AD5755_CTRL_REG_SW	0x4
++
++#define AD5755_READ_FLAG 0x800000
++
++#define AD5755_NOOP 0x1CE000
++
++#define AD5755_CTRL_INT_EN			BIT(8)
++#define AD5755_CTRL_CLR_EN			BIT(7)
++#define AD5755_CTRL_OUT_EN			BIT(6)
++#define AD5755_CTRL_RSET			BIT(5)
++#define AD5755_CTRL_DC_DC			BIT(4)
++#define AD5755_CTRL_OVRNG			BIT(3)
++
++/**
++ * struct ad5755_chip_info - chip specific information
++ * @channel_template:	channel specification
++ * @calib_shift:	shift for the calibration data registers
++ * @has_voltage_out:	whether the chip has voltage outputs
++ */
++struct ad5755_chip_info {
++	const struct iio_chan_spec channel_template;
++	unsigned int calib_shift;
++	bool has_voltage_out;
++};
++
++/**
++ * struct ad5755_state - driver instance specific data
++ * @spi:	spi device the driver is attached to
++ * @chip_info:	chip model specific constants, available modes etc
++ * @pwr_down:	bitmask which contains  hether a channel is powered down or not
++ * @ctrl:	software shadow of the channel ctrl registers
++ * @channels:	iio channel spec for the device
++ * @data:	spi transfer buffers
++ */
++struct ad5755_state {
++	struct spi_device		*spi;
++	const struct ad5755_chip_info	*chip_info;
++	unsigned int			pwr_down;
++	unsigned int			ctrl[AD5755_NUM_CHANNELS];
++	struct iio_chan_spec		channels[AD5755_NUM_CHANNELS];
++
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++
++	union {
++		u32 d32;
++		u8 d8[4];
++	} data[2] ____cacheline_aligned;
++};
++
++enum ad5755_type {
++	ID_AD5755,
++	ID_AD5757,
++	ID_AD5735,
++	ID_AD5737,
++};
++
++static int ad5755_write_unlocked(struct iio_dev *indio_dev,
++	unsigned int reg, unsigned int val)
++{
++	struct ad5755_state *st = iio_priv(indio_dev);
++
++	st->data[0].d32 = cpu_to_be32((reg << 16) | val);
++
++	return spi_write(st->spi, &st->data[0].d8[1], 3);
++}
++
++static int ad5755_write_ctrl_unlocked(struct iio_dev *indio_dev,
++	unsigned int channel, unsigned int reg, unsigned int val)
++{
++	return ad5755_write_unlocked(indio_dev,
++		AD5755_WRITE_REG_CTRL(channel), (reg << 13) | val);
++}
++
++static int ad5755_write(struct iio_dev *indio_dev, unsigned int reg,
++	unsigned int val)
++{
++	int ret;
++
++	mutex_lock(&indio_dev->mlock);
++	ret = ad5755_write_unlocked(indio_dev, reg, val);
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static int ad5755_write_ctrl(struct iio_dev *indio_dev, unsigned int channel,
++	unsigned int reg, unsigned int val)
++{
++	int ret;
++
++	mutex_lock(&indio_dev->mlock);
++	ret = ad5755_write_ctrl_unlocked(indio_dev, channel, reg, val);
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static int ad5755_read(struct iio_dev *indio_dev, unsigned int addr)
++{
++	struct ad5755_state *st = iio_priv(indio_dev);
++	struct spi_message m;
++	int ret;
++	struct spi_transfer t[] = {
++		{
++			.tx_buf = &st->data[0].d8[1],
++			.len = 3,
++			.cs_change = 1,
++		}, {
++			.tx_buf = &st->data[1].d8[1],
++			.rx_buf = &st->data[1].d8[1],
++			.len = 3,
++		},
++	};
++
++	spi_message_init(&m);
++	spi_message_add_tail(&t[0], &m);
++	spi_message_add_tail(&t[1], &m);
++
++	mutex_lock(&indio_dev->mlock);
++
++	st->data[0].d32 = cpu_to_be32(AD5755_READ_FLAG | (addr << 16));
++	st->data[1].d32 = cpu_to_be32(AD5755_NOOP);
++
++	ret = spi_sync(st->spi, &m);
++	if (ret >= 0)
++		ret = be32_to_cpu(st->data[1].d32) & 0xffff;
++
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static int ad5755_update_dac_ctrl(struct iio_dev *indio_dev,
++	unsigned int channel, unsigned int set, unsigned int clr)
++{
++	struct ad5755_state *st = iio_priv(indio_dev);
++	int ret;
++
++	st->ctrl[channel] |= set;
++	st->ctrl[channel] &= ~clr;
++
++	ret = ad5755_write_ctrl_unlocked(indio_dev, channel,
++		AD5755_CTRL_REG_DAC, st->ctrl[channel]);
++
++	return ret;
++}
++
++static int ad5755_set_channel_pwr_down(struct iio_dev *indio_dev,
++	unsigned int channel, bool pwr_down)
++{
++	struct ad5755_state *st = iio_priv(indio_dev);
++	unsigned int mask = BIT(channel);
++
++	mutex_lock(&indio_dev->mlock);
++
++	if ((bool)(st->pwr_down & mask) == pwr_down)
++		goto out_unlock;
++
++	if (!pwr_down) {
++		st->pwr_down &= ~mask;
++		ad5755_update_dac_ctrl(indio_dev, channel,
++			AD5755_CTRL_INT_EN | AD5755_CTRL_DC_DC, 0);
++		udelay(200);
++		ad5755_update_dac_ctrl(indio_dev, channel,
++			AD5755_CTRL_OUT_EN, 0);
++	} else {
++		st->pwr_down |= mask;
++		ad5755_update_dac_ctrl(indio_dev, channel,
++			0, AD5755_CTRL_INT_EN | AD5755_CTRL_OUT_EN |
++				AD5755_CTRL_DC_DC);
++	}
++
++out_unlock:
++	mutex_unlock(&indio_dev->mlock);
++
++	return 0;
++}
++
++static void ad5755_get_min_max(struct ad5755_state *st,
++	struct iio_chan_spec const *chan, int *min, int *max)
++{
++	enum ad5755_mode mode = st->ctrl[chan->channel] & 7;
++
++	switch (mode) {
++	case AD5755_MODE_VOLTAGE_0V_5V:
++		*min = 0;
++		*max = 5000;
++		break;
++	case AD5755_MODE_VOLTAGE_0V_10V:
++		*min = 0;
++		*max = 10000;
++		break;
++	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
++		*min = -5000;
++		*max = 5000;
++		break;
++	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
++		*min = -10000;
++		*max = 10000;
++		break;
++	case AD5755_MODE_CURRENT_4mA_20mA:
++		*min = 4;
++		*max = 20;
++		break;
++	case AD5755_MODE_CURRENT_0mA_20mA:
++		*min = 0;
++		*max = 20;
++		break;
++	case AD5755_MODE_CURRENT_0mA_24mA:
++		*min = 0;
++		*max = 24;
++		break;
++	default:
++		*min = 0;
++		*max = 1;
++		break;
++	}
++}
++
++static inline int ad5755_get_offset(struct ad5755_state *st,
++	struct iio_chan_spec const *chan)
++{
++	int min, max;
++
++	ad5755_get_min_max(st, chan, &min, &max);
++	return (min * (1 << chan->scan_type.realbits)) / (max - min);
++}
++
++static inline int ad5755_get_scale(struct ad5755_state *st,
++	struct iio_chan_spec const *chan)
++{
++	int min, max;
++
++	ad5755_get_min_max(st, chan, &min, &max);
++	return ((max - min) * 1000000000ULL) >> chan->scan_type.realbits;
++}
++
++static int ad5755_chan_reg_info(struct ad5755_state *st,
++	struct iio_chan_spec const *chan, long info, bool write,
++	unsigned int *reg, unsigned int *shift, unsigned int *offset)
++{
++	switch (info) {
++	case IIO_CHAN_INFO_RAW:
++		if (write)
++			*reg = AD5755_WRITE_REG_DATA(chan->address);
++		else
++			*reg = AD5755_READ_REG_DATA(chan->address);
++		*shift = chan->scan_type.shift;
++		*offset = 0;
++		break;
++	case IIO_CHAN_INFO_CALIBBIAS:
++		if (write)
++			*reg = AD5755_WRITE_REG_OFFSET(chan->address);
++		else
++			*reg = AD5755_READ_REG_OFFSET(chan->address);
++		*shift = st->chip_info->calib_shift;
++		*offset = 32768;
++		break;
++	case IIO_CHAN_INFO_CALIBSCALE:
++		if (write)
++			*reg =  AD5755_WRITE_REG_GAIN(chan->address);
++		else
++			*reg =  AD5755_READ_REG_GAIN(chan->address);
++		*shift = st->chip_info->calib_shift;
++		*offset = 0;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int ad5755_read_raw(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, int *val, int *val2, long info)
++{
++	struct ad5755_state *st = iio_priv(indio_dev);
++	unsigned int reg, shift, offset;
++	int ret;
++
++	switch (info) {
++	case IIO_CHAN_INFO_SCALE:
++		*val = 0;
++		*val2 = ad5755_get_scale(st, chan);
++		return IIO_VAL_INT_PLUS_NANO;
++	case IIO_CHAN_INFO_OFFSET:
++		*val = ad5755_get_offset(st, chan);
++		return IIO_VAL_INT;
++	default:
++		ret = ad5755_chan_reg_info(st, chan, info, false,
++						&reg, &shift, &offset);
++		if (ret)
++			return ret;
++
++		ret = ad5755_read(indio_dev, reg);
++		if (ret < 0)
++			return ret;
++
++		*val = (ret - offset) >> shift;
++
++		return IIO_VAL_INT;
++	}
++
++	return -EINVAL;
++}
++
++static int ad5755_write_raw(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, int val, int val2, long info)
++{
++	struct ad5755_state *st = iio_priv(indio_dev);
++	unsigned int shift, reg, offset;
++	int ret;
++
++	ret = ad5755_chan_reg_info(st, chan, info, true,
++					&reg, &shift, &offset);
++	if (ret)
++		return ret;
++
++	val <<= shift;
++	val += offset;
++
++	if (val < 0 || val > 0xffff)
++		return -EINVAL;
++
++	return ad5755_write(indio_dev, reg, val);
++}
++
++static ssize_t ad5755_read_powerdown(struct iio_dev *indio_dev, uintptr_t priv,
++	const struct iio_chan_spec *chan, char *buf)
++{
++	struct ad5755_state *st = iio_priv(indio_dev);
++
++	return sprintf(buf, "%d\n", (bool)(st->pwr_down & (1 << chan->channel)));
++}
++
++static ssize_t ad5755_write_powerdown(struct iio_dev *indio_dev, uintptr_t priv,
++	struct iio_chan_spec const *chan, const char *buf, size_t len)
++{
++	bool pwr_down;
++	int ret;
++
++	ret = strtobool(buf, &pwr_down);
++	if (ret)
++		return ret;
++
++	ret = ad5755_set_channel_pwr_down(indio_dev, chan->channel, pwr_down);
++	return ret ? ret : len;
++}
++
++static const struct iio_info ad5755_info = {
++	.read_raw = ad5755_read_raw,
++	.write_raw = ad5755_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static const struct iio_chan_spec_ext_info ad5755_ext_info[] = {
++	{
++		.name = "powerdown",
++		.read = ad5755_read_powerdown,
++		.write = ad5755_write_powerdown,
++	},
++	{ },
++};
++
++#define AD5755_CHANNEL(_bits) {					\
++	.indexed = 1,						\
++	.output = 1,						\
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
++	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits)),	\
++	.ext_info = ad5755_ext_info,				\
++}
++
++static const struct ad5755_chip_info ad5755_chip_info_tbl[] = {
++	[ID_AD5735] = {
++		.channel_template = AD5755_CHANNEL(14),
++		.has_voltage_out = true,
++		.calib_shift = 4,
++	},
++	[ID_AD5737] = {
++		.channel_template = AD5755_CHANNEL(14),
++		.has_voltage_out = false,
++		.calib_shift = 4,
++	},
++	[ID_AD5755] = {
++		.channel_template = AD5755_CHANNEL(16),
++		.has_voltage_out = true,
++		.calib_shift = 0,
++	},
++	[ID_AD5757] = {
++		.channel_template = AD5755_CHANNEL(16),
++		.has_voltage_out = false,
++		.calib_shift = 0,
++	},
++};
++
++static bool ad5755_is_valid_mode(struct ad5755_state *st, enum ad5755_mode mode)
++{
++	switch (mode) {
++	case AD5755_MODE_VOLTAGE_0V_5V:
++	case AD5755_MODE_VOLTAGE_0V_10V:
++	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
++	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
++		return st->chip_info->has_voltage_out;
++	case AD5755_MODE_CURRENT_4mA_20mA:
++	case AD5755_MODE_CURRENT_0mA_20mA:
++	case AD5755_MODE_CURRENT_0mA_24mA:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static int __devinit ad5755_setup_pdata(struct iio_dev *indio_dev,
++	struct ad5755_platform_data *pdata)
++{
++	struct ad5755_state *st = iio_priv(indio_dev);
++	unsigned int ret;
++	unsigned int val;
++	unsigned int i;
++
++	if (!pdata) {
++		for (i = 0; i < ARRAY_SIZE(pdata->dac); ++i) {
++			ret = ad5755_update_dac_ctrl(indio_dev, i,
++					AD5755_MODE_CURRENT_4mA_20mA, 0);
++			if (ret < 0)
++				return ret;
++		}
++		return 0;
++	}
++
++	if (pdata->dc_dc_phase > 3 || pdata->dc_dc_freq > 3 ||
++		pdata->dc_dc_maxv > 3)
++		return -EINVAL;
++
++	val = pdata->dc_dc_maxv;
++	val |= pdata->dc_dc_freq << 2;
++	val |= pdata->dc_dc_phase << 4;
++	if (pdata->ext_dc_dc_compenstation_resistor)
++		val |= (1 << 6);
++
++	ret = ad5755_write_ctrl(indio_dev, 0, AD5755_CTRL_REG_DC_DC, val);
++	if (ret < 0)
++		return ret;
++
++	for (i = 0; i < ARRAY_SIZE(pdata->dac); ++i) {
++		val = pdata->dac[i].slew.step_size;
++		val |= pdata->dac[i].slew.rate;
++		if (pdata->dac[i].slew.enable)
++			val |= (1 << 12);
++
++		ret = ad5755_write_ctrl(indio_dev, i, AD5755_CTRL_REG_SLEW, val);
++		if (ret < 0)
++			return ret;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(pdata->dac); ++i) {
++		if (!ad5755_is_valid_mode(st, pdata->dac[i].mode))
++			return -EINVAL;
++
++		val = 0;
++		if (pdata->dac[i].ext_current_sense_resistor)
++			val |= (1 << 5);
++		if (pdata->dac[i].enable_voltage_overrange)
++			val |= (1 << 3);
++		val |= pdata->dac[i].mode;
++
++		ret = ad5755_update_dac_ctrl(indio_dev, i, val, 0);
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++
++static bool __devinit ad5755_is_voltage_mode(enum ad5755_mode mode)
++{
++	switch (mode) {
++	case AD5755_MODE_VOLTAGE_0V_5V:
++	case AD5755_MODE_VOLTAGE_0V_10V:
++	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
++	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static int __devinit ad5755_init_channels(struct iio_dev *indio_dev,
++	struct ad5755_platform_data *pdata)
++{
++	struct ad5755_state *st = iio_priv(indio_dev);
++	struct iio_chan_spec *channels = st->channels;
++	unsigned int i;
++
++	for (i = 0; i < AD5755_NUM_CHANNELS; ++i) {
++		channels[i] = st->chip_info->channel_template;
++		channels[i].channel = i;
++		channels[i].address = i;
++		if (pdata && ad5755_is_voltage_mode(pdata->dac[i].mode))
++			channels[i].type = IIO_VOLTAGE;
++		else
++			channels[i].type = IIO_CURRENT;
++	}
++
++	indio_dev->channels = channels;
++
++	return 0;
++}
++
++static int __devinit ad5755_probe(struct spi_device *spi)
++{
++	enum ad5755_type type = spi_get_device_id(spi)->driver_data;
++	struct iio_dev *indio_dev;
++	struct ad5755_state *st;
++	int ret;
++
++	indio_dev = iio_device_alloc(sizeof(*st));
++	if (indio_dev == NULL) {
++		dev_err(&spi->dev, "Failed to allocate iio device\n");
++		return  -ENOMEM;
++	}
++
++	st = iio_priv(indio_dev);
++	spi_set_drvdata(spi, indio_dev);
++
++	st->chip_info = &ad5755_chip_info_tbl[type];
++	st->spi = spi;
++	st->pwr_down = 0xf;
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->info = &ad5755_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->num_channels = AD5755_NUM_CHANNELS;
++
++	ret = ad5755_init_channels(indio_dev, dev_get_platdata(&spi->dev));
++	if (ret)
++		goto error_free;
++
++	ret = ad5755_setup_pdata(indio_dev, dev_get_platdata(&spi->dev));
++	if (ret)
++		goto error_free;
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(&spi->dev, "Failed to register iio device: %d\n", ret);
++		goto error_free;
++	}
++
++	return 0;
++
++error_free:
++	iio_device_free(indio_dev);
++
++	return ret;
++}
++
++static int __devexit ad5755_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++
++	iio_device_unregister(indio_dev);
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++static const struct spi_device_id ad5755_id[] = {
++	{ "ad5755", ID_AD5755 },
++	{ "ad5755-1", ID_AD5755 },
++	{ "ad5757", ID_AD5757 },
++	{ "ad5735", ID_AD5735 },
++	{ "ad5737", ID_AD5737 },
++	{}
++};
++MODULE_DEVICE_TABLE(spi, ad5755_id);
++
++static struct spi_driver ad5755_driver = {
++	.driver = {
++		.name = "ad5755",
++		.owner = THIS_MODULE,
++	},
++	.probe = ad5755_probe,
++	.remove = __devexit_p(ad5755_remove),
++	.id_table = ad5755_id,
++};
++module_spi_driver(ad5755_driver);
++
++MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
++MODULE_DESCRIPTION("Analog Devices AD5755/55-1/57/35/37 DAC");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/platform_data/ad5755.h b/include/linux/platform_data/ad5755.h
+new file mode 100644
+index 0000000..a5a1cb7
+--- /dev/null
++++ b/include/linux/platform_data/ad5755.h
+@@ -0,0 +1,103 @@
++/*
++ * Copyright 2012 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++#ifndef __LINUX_PLATFORM_DATA_AD5755_H__
++#define __LINUX_PLATFORM_DATA_AD5755_H__
++
++enum ad5755_mode {
++	AD5755_MODE_VOLTAGE_0V_5V		= 0,
++	AD5755_MODE_VOLTAGE_0V_10V		= 1,
++	AD5755_MODE_VOLTAGE_PLUSMINUS_5V	= 2,
++	AD5755_MODE_VOLTAGE_PLUSMINUS_10V	= 3,
++	AD5755_MODE_CURRENT_4mA_20mA		= 4,
++	AD5755_MODE_CURRENT_0mA_20mA		= 5,
++	AD5755_MODE_CURRENT_0mA_24mA		= 6,
++};
++
++enum ad5755_dc_dc_phase {
++	AD5755_DC_DC_PHASE_ALL_SAME_EDGE		= 0,
++	AD5755_DC_DC_PHASE_A_B_SAME_EDGE_C_D_OPP_EDGE	= 1,
++	AD5755_DC_DC_PHASE_A_C_SAME_EDGE_B_D_OPP_EDGE	= 2,
++	AD5755_DC_DC_PHASE_90_DEGREE			= 3,
++};
++
++enum ad5755_dc_dc_freq {
++	AD5755_DC_DC_FREQ_250kHZ = 0,
++	AD5755_DC_DC_FREQ_410kHZ = 1,
++	AD5755_DC_DC_FREQ_650kHZ = 2,
++};
++
++enum ad5755_dc_dc_maxv {
++	AD5755_DC_DC_MAXV_23V	= 0,
++	AD5755_DC_DC_MAXV_24V5	= 1,
++	AD5755_DC_DC_MAXV_27V	= 2,
++	AD5755_DC_DC_MAXV_29V5	= 3,
++};
++
++enum ad5755_slew_rate {
++	AD5755_SLEW_RATE_64k	= 0,
++	AD5755_SLEW_RATE_32k	= 1,
++	AD5755_SLEW_RATE_16k	= 2,
++	AD5755_SLEW_RATE_8k	= 3,
++	AD5755_SLEW_RATE_4k	= 4,
++	AD5755_SLEW_RATE_2k	= 5,
++	AD5755_SLEW_RATE_1k	= 6,
++	AD5755_SLEW_RATE_500	= 7,
++	AD5755_SLEW_RATE_250	= 8,
++	AD5755_SLEW_RATE_125	= 9,
++	AD5755_SLEW_RATE_64	= 10,
++	AD5755_SLEW_RATE_32	= 11,
++	AD5755_SLEW_RATE_16	= 12,
++	AD5755_SLEW_RATE_8	= 13,
++	AD5755_SLEW_RATE_4	= 14,
++	AD5755_SLEW_RATE_0_5	= 15,
++};
++
++enum ad5755_slew_step_size {
++	AD5755_SLEW_STEP_SIZE_1 = 0,
++	AD5755_SLEW_STEP_SIZE_2 = 1,
++	AD5755_SLEW_STEP_SIZE_4 = 2,
++	AD5755_SLEW_STEP_SIZE_8 = 3,
++	AD5755_SLEW_STEP_SIZE_16 = 4,
++	AD5755_SLEW_STEP_SIZE_32 = 5,
++	AD5755_SLEW_STEP_SIZE_64 = 6,
++	AD5755_SLEW_STEP_SIZE_128 = 7,
++	AD5755_SLEW_STEP_SIZE_256 = 8,
++};
++
++/**
++ * struct ad5755_platform_data - AD5755 DAC driver platform data
++ * @ext_dc_dc_compenstation_resistor: Whether an external DC-DC converter
++ * compensation register is used.
++ * @dc_dc_phase: DC-DC converter phase.
++ * @dc_dc_freq: DC-DC converter frequency.
++ * @dc_dc_maxv: DC-DC maximum allowed boost voltage.
++ * @dac.mode: The mode to be used for the DAC output.
++ * @dac.ext_current_sense_resistor: Whether an external current sense resistor
++ * is used.
++ * @dac.enable_voltage_overrange: Whether to enable 20% voltage output overrange.
++ * @dac.slew.enable: Whether to enable digital slew.
++ * @dac.slew.rate: Slew rate of the digital slew.
++ * @dac.slew.step_size: Slew step size of the digital slew.
++ **/
++struct ad5755_platform_data {
++	bool ext_dc_dc_compenstation_resistor;
++	enum ad5755_dc_dc_phase dc_dc_phase;
++	enum ad5755_dc_dc_freq dc_dc_freq;
++	enum ad5755_dc_dc_maxv dc_dc_maxv;
++
++	struct {
++		enum ad5755_mode mode;
++		bool ext_current_sense_resistor;
++		bool enable_voltage_overrange;
++		struct {
++			bool enable;
++			enum ad5755_slew_rate rate;
++			enum ad5755_slew_step_size step_size;
++		} slew;
++	} dac[4];
++};
++
++#endif
+-- 
+1.7.10.4
 
