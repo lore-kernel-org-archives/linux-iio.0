@@ -1,551 +1,844 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47152 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47106 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751224Ab2IMUj0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Sep 2012 16:39:26 -0400
-Message-ID: <5052447D.8010907@kernel.org>
-Date: Thu, 13 Sep 2012 21:39:25 +0100
+	with ESMTP id S1751090Ab2IMUeO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Sep 2012 16:34:14 -0400
+Message-ID: <50524343.7060301@kernel.org>
+Date: Thu, 13 Sep 2012 21:34:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: anish kumar <anish198519851985@gmail.com>
-CC: lars@metafoo.de, jic23@cam.ac.uk, cbou@mail.ru,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] power: battery: Generic battery driver using IIO
-References: <1347552992-13836-1-git-send-email-anish198519851985@gmail.com>
-In-Reply-To: <1347552992-13836-1-git-send-email-anish198519851985@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org, drivers@analog.com
+Subject: Re: [PATCH] iio:dac: Add ad5755 driver
+References: <1347542015-27209-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347542015-27209-1-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/13/2012 05:16 PM, anish kumar wrote:
-> From: anish kumar <anish198519851985@gmail.com>
+On 09/13/2012 02:13 PM, Lars-Peter Clausen wrote:
+> This patch adds support for the AD5755, AD5755-1, AD5757, AD5735, AD5737 16 and
+> 14 bit quad-channel DACs. The AD5757/AD5737 only have current outputs, but
+> for the AD5755/AD5757 each of the outputs can be configured to either be a
+> voltage or a current output. We only allow to configure this at device probe
+> time since usually this needs to match the external circuitry and should not be
+> changed on the fly.
 >
-> In this version:
-> Addressed concerns raised by lars:
-> a. made the adc_bat per device.
-> b. get the IIO channel using hardcoded channel names.
-Couple of bits related to this inline..
+Fair enough.
 
-> c. Minor issues related to gpio_is_valid and some code
->    refactoring.
->
-> Signed-off-by: anish kumar <anish198519851985@gmail.com>
+Couple of little bits inline.
+
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 > ---
->  drivers/power/generic-adc-battery.c       |  460 +++++++++++++++++++++++++++++
->  include/linux/power/generic-adc-battery.h |   33 ++
->  2 files changed, 493 insertions(+), 0 deletions(-)
->  create mode 100644 drivers/power/generic-adc-battery.c
->  create mode 100644 include/linux/power/generic-adc-battery.h
+>  drivers/iio/dac/Kconfig              |   11 +
+>  drivers/iio/dac/Makefile             |    1 +
+>  drivers/iio/dac/ad5755.c             |  641 ++++++++++++++++++++++++++++++++++
+>  include/linux/platform_data/ad5755.h |  103 ++++++
+>  4 files changed, 756 insertions(+)
+>  create mode 100644 drivers/iio/dac/ad5755.c
+>  create mode 100644 include/linux/platform_data/ad5755.h
 >
-> diff --git a/drivers/power/generic-adc-battery.c b/drivers/power/generic-adc-battery.c
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 7845263..b1c0ee5 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -77,6 +77,17 @@ config AD5504
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called ad5504.
+>
+> +config AD5755
+> +	tristate "Analog Devices AD5755/AD5755-1/AD5757/AD5735/AD5737 DAC driver"
+> +	depends on SPI_MASTER
+> +	help
+> +	  Say yes here to build support for Analog Devices AD5755, AD5755-1,
+> +	  AD5757, AD5735, AD5737 quad channel Digital to
+> +	  Analog Converter.
+Converters. :)
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called ad5755.
+> +
+>  config AD5764
+>  	tristate "Analog Devices AD5764/64R/44/44R DAC driver"
+>  	depends on SPI_MASTER
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index 9ea3cee..c0d333b 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -9,6 +9,7 @@ obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
+>  obj-$(CONFIG_AD5064) += ad5064.o
+>  obj-$(CONFIG_AD5504) += ad5504.o
+>  obj-$(CONFIG_AD5446) += ad5446.o
+> +obj-$(CONFIG_AD5755) += ad5755.o
+>  obj-$(CONFIG_AD5764) += ad5764.o
+>  obj-$(CONFIG_AD5791) += ad5791.o
+>  obj-$(CONFIG_AD5686) += ad5686.o
+> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
 > new file mode 100644
-> index 0000000..003e0e1
+> index 0000000..2f7e879
 > --- /dev/null
-> +++ b/drivers/power/generic-adc-battery.c
-> @@ -0,0 +1,460 @@
+> +++ b/drivers/iio/dac/ad5755.c
+> @@ -0,0 +1,641 @@
 > +/*
-> + * Generic battery driver code using IIO
-> + * Copyright (C) 2012, Anish Kumar <anish198519851985@gmail.com>
-> + * based on jz4740-battery.c
-> + * based on s3c_adc_battery.c
+> + * AD5755, AD5755-1, AD5757, AD5735, AD5737 Digital to analog converters driver
 > + *
-> + * This file is subject to the terms and conditions of the GNU General Public
-> + * License.  See the file COPYING in the main directory of this archive for
-> + * more details.
+> + * Copyright 2012 Analog Devices Inc.
 > + *
+> + * Licensed under the GPL-2.
 > + */
 > +
-> +#include <linux/interrupt.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/power_supply.h>
-> +#include <linux/gpio.h>
+> +#include <linux/device.h>
 > +#include <linux/err.h>
-> +#include <linux/timer.h>
-> +#include <linux/jiffies.h>
-> +#include <linux/errno.h>
-> +#include <linux/init.h>
 > +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/spi/spi.h>
 > +#include <linux/slab.h>
-> +#include <linux/iio/consumer.h>
-> +#include <linux/iio/types.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/delay.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/platform_data/ad5755.h>
 > +
-> +#include <linux/power/generic-adc-battery.h>
+> +#define AD5755_NUM_CHANNELS 4
 > +
-> +#define to_generic_bat(ptr)	\
-> +	container_of(ptr, struct generic_adc_bat, ptr)
+> +#define AD5755_ADDR(x)			((x) << 16)
 > +
-> +enum chan_type {
-> +	VOLTAGE = 0,
-> +	CURRENT,
-> +	POWER,
-> +	MAX_CHAN_TYPE
-> +};
+> +#define AD5755_WRITE_REG_DATA(chan)	(chan)
+> +#define AD5755_WRITE_REG_GAIN(chan)	(0x08 | (chan))
+> +#define AD5755_WRITE_REG_OFFSET(chan)	(0x10 | (chan))
+> +#define AD5755_WRITE_REG_CTRL(chan)	(0x1c | (chan))
 > +
-> +#define CHAN_MAX_NAME 30
-> +/*
-> + * channel_name suggests the standard channel names for commonly used
-> + * channel types.
+> +#define AD5755_READ_REG_DATA(chan)	(chan)
+> +#define AD5755_READ_REG_CTRL(chan)	(0x4 | (chan))
+> +#define AD5755_READ_REG_GAIN(chan)	(0x8 | (chan))
+> +#define AD5755_READ_REG_OFFSET(chan)	(0xc | (chan))
+> +#define AD5755_READ_REG_CLEAR(chan)	(0x10 | (chan))
+> +#define AD5755_READ_REG_SLEW(chan)	(0x14 | (chan))
+> +#define AD5755_READ_REG_STATUS		0x18
+> +#define AD5755_READ_REG_MAIN		0x19
+> +#define AD5755_READ_REG_DC_DC		0x1a
+> +
+> +#define AD5755_CTRL_REG_SLEW	0x0
+> +#define AD5755_CTRL_REG_MAIN	0x1
+> +#define AD5755_CTRL_REG_DAC	0x2
+> +#define AD5755_CTRL_REG_DC_DC	0x3
+> +#define AD5755_CTRL_REG_SW	0x4
+> +
+> +#define AD5755_READ_FLAG 0x800000
+> +
+> +#define AD5755_NOOP 0x1CE000
+> +
+> +#define AD5755_CTRL_INT_EN			BIT(8)
+> +#define AD5755_CTRL_CLR_EN			BIT(7)
+> +#define AD5755_CTRL_OUT_EN			BIT(6)
+> +#define AD5755_CTRL_RSET			BIT(5)
+> +#define AD5755_CTRL_DC_DC			BIT(4)
+> +#define AD5755_CTRL_OVRNG			BIT(3)
+> +
+> +/**
+> + * struct ad5755_chip_info - chip specific information
+> + * @channel_template:	channel specification
+> + * @calib_shift:	shift for the calibration data registers
+> + * @has_voltage_out:	whether the chip has voltage outputs
 > + */
-const
-> +char channel_name[][CHAN_MAX_NAME + 1] = {
-> +	[VOLTAGE]	= "voltage",
-> +	[CURRENT]	= "current",
-> +	[POWER]		= "power",
+> +struct ad5755_chip_info {
+> +	const struct iio_chan_spec channel_template;
+> +	unsigned int calib_shift;
+> +	bool has_voltage_out;
 > +};
 > +
-> +struct generic_adc_bat {
-> +	struct power_supply	psy;
-> +	struct iio_channel	**channel;
-> +	struct iio_battery_platform_data	*pdata;
-> +	struct delayed_work bat_work;
-> +	int		was_plugged;
-> +	int		volt_value;
-> +	int		cur_value;
-> +	int		level;
-> +	int		status;
-> +	int		cable_plugged:1;
-> +};
-> +
-> +static void generic_adc_bat_ext_power_changed(struct power_supply *psy)
-> +{
-> +	struct generic_adc_bat *adc_bat;
-> +	adc_bat = to_generic_bat(psy);
-> +
-> +	schedule_delayed_work(&adc_bat->bat_work,
-> +			msecs_to_jiffies(adc_bat->pdata->jitter_delay));
-> +}
-> +
-> +static enum power_supply_property bat_props[] = {
-> +	POWER_SUPPLY_PROP_STATUS,
-> +	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
-> +	POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN,
-> +	POWER_SUPPLY_PROP_CHARGE_NOW,
-> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-> +	POWER_SUPPLY_PROP_CURRENT_NOW,
-> +	POWER_SUPPLY_PROP_TECHNOLOGY,
-> +	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
-> +	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
-> +	POWER_SUPPLY_PROP_MODEL_NAME,
-> +};
-> +
-> +/*
-> + * This properties are set based on the received platform data and this
-> + * should correspond one-to-one with enum chan_type.
+> +/**
+> + * struct ad5755_state - driver instance specific data
+> + * @spi:	spi device the driver is attached to
+> + * @chip_info:	chip model specific constants, available modes etc
+> + * @pwr_down:	bitmask which contains  hether a channel is powered down or not
+> + * @ctrl:	software shadow of the channel ctrl registers
+> + * @channels:	iio channel spec for the device
+> + * @data:	spi transfer buffers
 > + */
-> +static enum power_supply_property dyn_props[] = {
-> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-> +	POWER_SUPPLY_PROP_CURRENT_NOW,
-> +	POWER_SUPPLY_PROP_POWER_NOW,
-> +};
-> +
-> +static int charge_finished(struct generic_adc_bat *adc_bat)
-> +{
-> +	return adc_bat->pdata->gpio_inverted ?
-> +		!gpio_get_value(adc_bat->pdata->gpio_charge_finished) :
-> +		gpio_get_value(adc_bat->pdata->gpio_charge_finished);
-> +}
-> +
-> +long read_scale_channel(struct generic_adc_bat *adc_bat,
-> +			enum power_supply_property psp)
-> +{
-> +	int scaleint, scalepart, iio_val, ret = 0;
-> +	int result = 0;
-> +
-> +	switch (psp) {
-> +	case POWER_SUPPLY_PROP_POWER_NOW:
-> +		ret = iio_read_channel_raw(adc_bat->channel[POWER],
-> +				&iio_val);
-> +		ret = iio_read_channel_scale(adc_bat->channel[POWER],
-> +				&scaleint, &scalepart);
-> +		if (ret < 0)
-> +			return ret;
-> +		break;
-> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-> +		ret = iio_read_channel_raw(adc_bat->channel[VOLTAGE],
-> +				&iio_val);
-> +		ret = iio_read_channel_scale(adc_bat->channel[VOLTAGE],
-> +				&scaleint, &scalepart);
-> +		if (ret < 0)
-> +			return ret;
-> +		break;
-> +	case POWER_SUPPLY_PROP_CURRENT_NOW:
-> +		ret = iio_read_channel_raw(adc_bat->channel[CURRENT],
-> +				&iio_val);
-> +		ret = iio_read_channel_scale(adc_bat->channel[CURRENT],
-> +				&scaleint, &scalepart);
-> +		if (ret < 0)
-> +			return ret;
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	switch (ret) {
-> +	case IIO_VAL_INT:
-> +		result = iio_val * scaleint;
-> +		break;
-> +	case IIO_VAL_INT_PLUS_MICRO:
-> +		result = (s64)iio_val * (s64)scaleint +
-> +			div_s64((s64)iio_val * (s64)scalepart, 1000000LL);
-> +		break;
-> +	case IIO_VAL_INT_PLUS_NANO:
-> +		result = (s64)iio_val * (s64)scaleint +
-> +			div_s64((s64)iio_val * (s64)scalepart, 1000000000LL);
-> +		break;
-> +	}
-> +	return result;
-> +}
-> +
-> +static int generic_adc_bat_get_property(struct power_supply *psy,
-> +		enum power_supply_property psp,
-> +		union power_supply_propval *val)
-> +{
-> +	struct generic_adc_bat *adc_bat;
-> +	int ret = 0;
-> +	long result;
-> +
-> +	adc_bat = to_generic_bat(psy);
-> +	if (!adc_bat) {
-> +		dev_err(psy->dev, "no battery infos ?!\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	result = read_scale_channel(adc_bat, psp);
-> +	if (result < 0) {
-> +		dev_err(psy->dev, "read channel error\n");
-> +		ret =  -EINVAL;
-> +		goto err;
-> +	}
-> +
-> +	switch (psp) {
-> +	case POWER_SUPPLY_PROP_STATUS:
-> +		if (gpio_is_valid(adc_bat->pdata->gpio_charge_finished)) {
-> +			if (adc_bat->pdata->gpio_charge_finished < 0)
-> +				val->intval = adc_bat->level == 100000 ?
-> +					POWER_SUPPLY_STATUS_FULL :
-> +					adc_bat->status;
-> +			else
-> +				val->intval = adc_bat->status;
-> +		}
-> +		break;
-> +	case POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN:
-> +		val->intval = 0;
-> +		break;
-> +	case POWER_SUPPLY_PROP_CHARGE_NOW:
-> +		val->intval = adc_bat->pdata->cal_charge(result);
-> +		break;
-> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-> +		val->intval = result;
-> +		break;
-> +	case POWER_SUPPLY_PROP_CURRENT_NOW:
-> +		val->intval = result;
-> +		break;
-> +	case POWER_SUPPLY_PROP_POWER_NOW:
-> +		val->intval = result;
-> +		break;
-> +	case POWER_SUPPLY_PROP_TECHNOLOGY:
-> +		val->intval = adc_bat->pdata->battery_info.technology;
-> +		break;
-> +	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
-> +		val->intval = adc_bat->pdata->battery_info.voltage_min_design;
-> +		break;
-> +	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
-> +		val->intval = adc_bat->pdata->battery_info.voltage_max_design;
-> +		break;
-> +	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
-> +		val->intval = adc_bat->pdata->battery_info.charge_full_design;
-> +		break;
-> +	case POWER_SUPPLY_PROP_MODEL_NAME:
-> +		val->strval = adc_bat->pdata->battery_info.name;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +err:
-> +	return ret;
-> +}
-> +
-> +static void generic_adc_bat_work(struct work_struct *work)
-> +{
-> +	struct generic_adc_bat *adc_bat;
-> +	struct delayed_work *delayed_work;
-> +	int is_charged;
-> +	int is_plugged;
-> +
-> +	delayed_work = container_of(work,
-> +				struct delayed_work, work);
-> +	adc_bat = container_of(delayed_work,
-> +				struct generic_adc_bat, bat_work);
-> +
-> +	is_plugged = power_supply_am_i_supplied(&adc_bat->psy);
-> +	adc_bat->cable_plugged = is_plugged;
-> +	if (is_plugged != adc_bat->was_plugged) {
-> +		adc_bat->was_plugged = is_plugged;
-> +		if (is_plugged)
-> +			adc_bat->status = POWER_SUPPLY_STATUS_CHARGING;
-> +		else
-> +			adc_bat->status = POWER_SUPPLY_STATUS_DISCHARGING;
-> +	} else {
-> +		if (gpio_is_valid(adc_bat->pdata->gpio_charge_finished)) {
-> +			if ((adc_bat->pdata->gpio_charge_finished >= 0) &&
-> +								is_plugged) {
-> +				is_charged = charge_finished(adc_bat);
-> +				if (is_charged)
-> +					adc_bat->status =
-> +						POWER_SUPPLY_STATUS_FULL;
-> +				else
-> +					adc_bat->status =
-> +						POWER_SUPPLY_STATUS_CHARGING;
-> +			}
-> +		}
-> +	}
-> +
-> +	power_supply_changed(&adc_bat->psy);
-> +}
-> +
-> +static irqreturn_t generic_adc_bat_charged(int irq, void *dev_id)
-> +{
-> +	struct generic_adc_bat *adc_bat = dev_id;
-> +	adc_bat = container_of(&adc_bat->bat_work,
-> +				struct generic_adc_bat, bat_work);
-> +	schedule_delayed_work(&adc_bat->bat_work,
-> +			msecs_to_jiffies(adc_bat->pdata->jitter_delay));
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int __devinit generic_adc_bat_probe(struct platform_device *pdev)
-> +{
-> +	struct generic_adc_bat *adc_bat;
-> +	struct iio_battery_platform_data *pdata = pdev->dev.platform_data;
-> +	int ret, chan_index, fail = 0;
-> +
-> +	adc_bat = devm_kzalloc(&pdev->dev, sizeof(*adc_bat), GFP_KERNEL);
-> +	if (!adc_bat) {
-> +		dev_err(&pdev->dev, "failed to allocate memory\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	/* copying the battery name from platform data */
-> +	adc_bat->psy.name = pdata->battery_name;
-> +
-> +	/* bootup default values for the battery */
-> +	adc_bat->volt_value = -1;
-> +	adc_bat->cur_value = -1;
-> +	adc_bat->cable_plugged = 0;
-> +	adc_bat->status = POWER_SUPPLY_STATUS_DISCHARGING;
-> +	adc_bat->psy.type = POWER_SUPPLY_TYPE_BATTERY;
-> +	adc_bat->psy.get_property =
-> +		generic_adc_bat_get_property;
-> +	adc_bat->psy.external_power_changed =
-> +		generic_adc_bat_ext_power_changed;
-> +
-> +	adc_bat->pdata = pdata;
-> +
-> +	/* calculate the total number of channels */
-> +	for (chan_index = 0; channel_name[chan_index]; chan_index++)
-> +		;
-> +
-> +	if (!chan_index) {
-> +		pr_err("atleast provide one channel\n");
-> +		return -EINVAL;
-> +	}
+> +struct ad5755_state {
+> +	struct spi_device		*spi;
+> +	const struct ad5755_chip_info	*chip_info;
+> +	unsigned int			pwr_down;
+> +	unsigned int			ctrl[AD5755_NUM_CHANNELS];
+> +	struct iio_chan_spec		channels[AD5755_NUM_CHANNELS];
 > +
 > +	/*
-> +	 * copying the static properties and allocating extra memory for holding
-> +	 * the extra configurable properties received from platform data.
-> +	*/
-> +	adc_bat->psy.properties = kzalloc(sizeof(bat_props)
-> +					+ sizeof(int)*chan_index, GFP_KERNEL);
-> +	if (!adc_bat->psy.properties) {
-> +		ret = -ENOMEM;
-> +		goto first_mem_fail;
-> +	}
-> +	memcpy(adc_bat->psy.properties, bat_props, sizeof(bat_props));
-> +
-> +	/* allocating memory for iio channels */
-> +	adc_bat->channel = kzalloc(chan_index * sizeof(struct iio_channel),
-> +					GFP_KERNEL);
-> +	if (!adc_bat->channel) {
-> +		ret = -ENOMEM;
-> +		goto second_mem_fail;
-> +	}
-> +
-> +	/*
-> +	 * getting channel from iio and copying the battery properties
-> +	 * based on the channel supported by consumer device.
+> +	 * DMA (thus cache coherency maintenance) requires the
+> +	 * transfer buffers to live in their own cache lines.
 > +	 */
-> +	for (chan_index = 0; channel_name[chan_index]; chan_index++) {
-> +		adc_bat->channel[chan_index] =
-> +		iio_channel_get(dev_name(&pdev->dev),
-> +			channel_name[chan_index]);
-> +		/* we skip for channels which fail */
-> +		if (IS_ERR(adc_bat->channel[chan_index]))
-> +			fail++;
-> +		else {
-> +			static int index;
-> +			memcpy(adc_bat->psy.properties +
-> +				sizeof(bat_props) + sizeof(int)*index,
-> +				&dyn_props[chan_index],
-> +				sizeof(dyn_props[chan_index]));
-> +			index++;
-> +		}
-> +	}
 > +
-> +	/* none of the channels are supported so let's bail out */
-> +	if (fail == chan_index) {
-> +		ret = PTR_ERR(adc_bat->channel[chan_index]);
-> +		goto second_mem_fail;
-> +	}
+> +	union {
+> +		u32 d32;
+> +		u8 d8[4];
+> +	} data[2] ____cacheline_aligned;
+> +};
 > +
-> +	ret = power_supply_register(&pdev->dev, &adc_bat->psy);
-> +	if (ret)
-> +		goto err_reg_fail;
+> +enum ad5755_type {
+> +	ID_AD5755,
+> +	ID_AD5757,
+> +	ID_AD5735,
+> +	ID_AD5737,
+> +};
 > +
-> +	INIT_DELAYED_WORK(&adc_bat->bat_work, generic_adc_bat_work);
+> +static int ad5755_write_unlocked(struct iio_dev *indio_dev,
+> +	unsigned int reg, unsigned int val)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
 > +
-> +	if (gpio_is_valid(pdata->gpio_charge_finished)) {
-> +		ret = gpio_request(pdata->gpio_charge_finished, "charged");
-> +		if (ret)
-> +			goto err_gpio;
+> +	st->data[0].d32 = cpu_to_be32((reg << 16) | val);
 > +
-> +		ret = request_any_context_irq(gpio_to_irq
-> +				(pdata->gpio_charge_finished),
-> +				generic_adc_bat_charged,
-> +				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-> +				"battery charged", &adc_bat);
-> +		if (ret)
-> +			goto err_gpio;
-> +	} else
-> +		goto err_gpio; /* let's bail out */
+> +	return spi_write(st->spi, &st->data[0].d8[1], 3);
+> +}
 > +
-> +	platform_set_drvdata(pdev, &adc_bat);
+> +static int ad5755_write_ctrl_unlocked(struct iio_dev *indio_dev,
+> +	unsigned int channel, unsigned int reg, unsigned int val)
+> +{
+> +	return ad5755_write_unlocked(indio_dev,
+> +		AD5755_WRITE_REG_CTRL(channel), (reg << 13) | val);
+> +}
 > +
-> +	/* Schedule timer to check current status */
-> +	schedule_delayed_work(&adc_bat->bat_work,
-> +			msecs_to_jiffies(0));
-> +	return 0;
+> +static int ad5755_write(struct iio_dev *indio_dev, unsigned int reg,
+> +	unsigned int val)
+> +{
+> +	int ret;
 > +
-> +err_gpio:
-> +	power_supply_unregister(&adc_bat->psy);
-> +err_reg_fail:
-> +	for (chan_index = 0; channel_name[chan_index]; chan_index++)
-> +		iio_channel_release(adc_bat->channel[chan_index]);
-> +	kfree(adc_bat->channel);
-> +second_mem_fail:
-> +	kfree(adc_bat->psy.properties);
-> +first_mem_fail:
+> +	mutex_lock(&indio_dev->mlock);
+> +	ret = ad5755_write_unlocked(indio_dev, reg, val);
+> +	mutex_unlock(&indio_dev->mlock);
+> +
 > +	return ret;
 > +}
 > +
-> +static int generic_adc_bat_remove(struct platform_device *pdev)
+> +static int ad5755_write_ctrl(struct iio_dev *indio_dev, unsigned int channel,
+> +	unsigned int reg, unsigned int val)
 > +{
-> +	int chan_index;
-> +	struct generic_adc_bat *adc_bat = platform_get_drvdata(pdev);
+> +	int ret;
 > +
-> +	power_supply_unregister(&adc_bat->psy);
+> +	mutex_lock(&indio_dev->mlock);
+> +	ret = ad5755_write_ctrl_unlocked(indio_dev, channel, reg, val);
+> +	mutex_unlock(&indio_dev->mlock);
 > +
-> +	if (gpio_is_valid(adc_bat->pdata->gpio_charge_finished)) {
-> +		if (adc_bat->pdata->gpio_charge_finished >= 0) {
-> +			free_irq(gpio_to_irq(
-> +				adc_bat->pdata->gpio_charge_finished),
-> +								NULL);
-> +			gpio_free(adc_bat->pdata->gpio_charge_finished);
-> +		}
+> +	return ret;
+> +}
+> +
+> +static int ad5755_read(struct iio_dev *indio_dev, unsigned int addr)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	struct spi_message m;
+> +	int ret;
+> +	struct spi_transfer t[] = {
+> +		{
+> +			.tx_buf = &st->data[0].d8[1],
+> +			.len = 3,
+> +			.cs_change = 1,
+> +		}, {
+> +			.tx_buf = &st->data[1].d8[1],
+> +			.rx_buf = &st->data[1].d8[1],
+> +			.len = 3,
+> +		},
+> +	};
+> +
+> +	spi_message_init(&m);
+> +	spi_message_add_tail(&t[0], &m);
+> +	spi_message_add_tail(&t[1], &m);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	st->data[0].d32 = cpu_to_be32(AD5755_READ_FLAG | (addr << 16));
+> +	st->data[1].d32 = cpu_to_be32(AD5755_NOOP);
+> +
+> +	ret = spi_sync(st->spi, &m);
+> +	if (ret >= 0)
+> +		ret = be32_to_cpu(st->data[1].d32) & 0xffff;
+> +
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ad5755_update_dac_ctrl(struct iio_dev *indio_dev,
+> +	unsigned int channel, unsigned int set, unsigned int clr)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	st->ctrl[channel] |= set;
+> +	st->ctrl[channel] &= ~clr;
+> +
+> +	ret = ad5755_write_ctrl_unlocked(indio_dev, channel,
+> +		AD5755_CTRL_REG_DAC, st->ctrl[channel]);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ad5755_set_channel_pwr_down(struct iio_dev *indio_dev,
+> +	unsigned int channel, bool pwr_down)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	unsigned int mask = BIT(channel);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	if ((bool)(st->pwr_down & mask) == pwr_down)
+> +		goto out_unlock;
+> +
+> +	if (!pwr_down) {
+> +		st->pwr_down &= ~mask;
+> +		ad5755_update_dac_ctrl(indio_dev, channel,
+> +			AD5755_CTRL_INT_EN | AD5755_CTRL_DC_DC, 0);
+> +		udelay(200);
+> +		ad5755_update_dac_ctrl(indio_dev, channel,
+> +			AD5755_CTRL_OUT_EN, 0);
+> +	} else {
+> +		st->pwr_down |= mask;
+> +		ad5755_update_dac_ctrl(indio_dev, channel,
+> +			0, AD5755_CTRL_INT_EN | AD5755_CTRL_OUT_EN |
+> +				AD5755_CTRL_DC_DC);
 > +	}
 > +
-> +	for (chan_index = 0; channel_name[chan_index]; chan_index++)
-> +		iio_channel_release(adc_bat->channel[chan_index]);
-> +	cancel_delayed_work(&adc_bat->bat_work);
+> +out_unlock:
+> +	mutex_unlock(&indio_dev->mlock);
+> +
 > +	return 0;
 > +}
 > +
-> +#ifdef CONFIG_PM
-> +static int generic_adc_bat_suspend(struct device *dev)
+> +static void ad5755_get_min_max(struct ad5755_state *st,
+> +	struct iio_chan_spec const *chan, int *min, int *max)
 > +{
-> +	struct generic_adc_bat *adc_bat = dev_get_drvdata(dev);
+> +	enum ad5755_mode mode = st->ctrl[chan->channel] & 7;
 > +
-> +	cancel_delayed_work_sync(&adc_bat->bat_work);
-> +	adc_bat->status = POWER_SUPPLY_STATUS_UNKNOWN;
-> +	return 0;
+This might be a bit cleaner as a lookup table than as
+a switch statement.
+static const modemaxmin[2][] = {
+       [AD5755_MOD_VOLTAGE_0V_5V] = { 0, 5000},
+etc.
+};
+> +	switch (mode) {
+> +	case AD5755_MODE_VOLTAGE_0V_5V:
+> +		*min = 0;
+> +		*max = 5000;
+> +		break;
+> +	case AD5755_MODE_VOLTAGE_0V_10V:
+> +		*min = 0;
+> +		*max = 10000;
+> +		break;
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> +		*min = -5000;
+> +		*max = 5000;
+> +		break;
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> +		*min = -10000;
+> +		*max = 10000;
+> +		break;
+> +	case AD5755_MODE_CURRENT_4mA_20mA:
+> +		*min = 4;
+> +		*max = 20;
+> +		break;
+> +	case AD5755_MODE_CURRENT_0mA_20mA:
+> +		*min = 0;
+> +		*max = 20;
+> +		break;
+> +	case AD5755_MODE_CURRENT_0mA_24mA:
+> +		*min = 0;
+> +		*max = 24;
+> +		break;
+> +	default:
+When does this apply?
+> +		*min = 0;
+> +		*max = 1;
+> +		break;
+> +	}
 > +}
 > +
-> +static int generic_adc_bat_resume(struct device *dev)
+> +static inline int ad5755_get_offset(struct ad5755_state *st,
+> +	struct iio_chan_spec const *chan)
 > +{
-> +	struct generic_adc_bat *adc_bat = dev_get_drvdata(dev);
+> +	int min, max;
 > +
-> +	/* Schedule timer to check current status */
-> +	schedule_delayed_work(&adc_bat->bat_work,
-> +			msecs_to_jiffies(adc_bat->pdata->jitter_delay));
+> +	ad5755_get_min_max(st, chan, &min, &max);
+> +	return (min * (1 << chan->scan_type.realbits)) / (max - min);
+> +}
+> +
+> +static inline int ad5755_get_scale(struct ad5755_state *st,
+> +	struct iio_chan_spec const *chan)
+> +{
+> +	int min, max;
+> +
+> +	ad5755_get_min_max(st, chan, &min, &max);
+> +	return ((max - min) * 1000000000ULL) >> chan->scan_type.realbits;
+> +}
+> +
+> +static int ad5755_chan_reg_info(struct ad5755_state *st,
+> +	struct iio_chan_spec const *chan, long info, bool write,
+> +	unsigned int *reg, unsigned int *shift, unsigned int *offset)
+> +{
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (write)
+> +			*reg = AD5755_WRITE_REG_DATA(chan->address);
+> +		else
+> +			*reg = AD5755_READ_REG_DATA(chan->address);
+> +		*shift = chan->scan_type.shift;
+> +		*offset = 0;
+> +		break;
+> +	case IIO_CHAN_INFO_CALIBBIAS:
+> +		if (write)
+> +			*reg = AD5755_WRITE_REG_OFFSET(chan->address);
+> +		else
+> +			*reg = AD5755_READ_REG_OFFSET(chan->address);
+> +		*shift = st->chip_info->calib_shift;
+> +		*offset = 32768;
+> +		break;
+> +	case IIO_CHAN_INFO_CALIBSCALE:
+> +		if (write)
+> +			*reg =  AD5755_WRITE_REG_GAIN(chan->address);
+> +		else
+> +			*reg =  AD5755_READ_REG_GAIN(chan->address);
+> +		*shift = st->chip_info->calib_shift;
+> +		*offset = 0;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
 > +	return 0;
 > +}
 > +
-> +static const struct dev_pm_ops generic_adc_battery_pm_ops = {
-> +	.suspend        = generic_adc_bat_suspend,
-> +	.resume         = generic_adc_bat_resume,
+> +static int ad5755_read_raw(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, int *val, int *val2, long info)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	unsigned int reg, shift, offset;
+> +	int ret;
+> +
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 0;
+> +		*val2 = ad5755_get_scale(st, chan);
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		*val = ad5755_get_offset(st, chan);
+> +		return IIO_VAL_INT;
+> +	default:
+hmm. would prefer specific list, but I guess I don't have to look
+far to find it...
+> +		ret = ad5755_chan_reg_info(st, chan, info, false,
+> +						&reg, &shift, &offset);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = ad5755_read(indio_dev, reg);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		*val = (ret - offset) >> shift;
+> +
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ad5755_write_raw(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, int val, int val2, long info)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	unsigned int shift, reg, offset;
+> +	int ret;
+> +
+> +	ret = ad5755_chan_reg_info(st, chan, info, true,
+> +					&reg, &shift, &offset);
+> +	if (ret)
+> +		return ret;
+> +
+> +	val <<= shift;
+> +	val += offset;
+> +
+> +	if (val < 0 || val > 0xffff)
+> +		return -EINVAL;
+> +
+> +	return ad5755_write(indio_dev, reg, val);
+> +}
+> +
+> +static ssize_t ad5755_read_powerdown(struct iio_dev *indio_dev, uintptr_t priv,
+> +	const struct iio_chan_spec *chan, char *buf)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +
+> +	return sprintf(buf, "%d\n", (bool)(st->pwr_down & (1 << chan->channel)));
+> +}
+> +
+> +static ssize_t ad5755_write_powerdown(struct iio_dev *indio_dev, uintptr_t priv,
+> +	struct iio_chan_spec const *chan, const char *buf, size_t len)
+> +{
+> +	bool pwr_down;
+> +	int ret;
+> +
+> +	ret = strtobool(buf, &pwr_down);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ad5755_set_channel_pwr_down(indio_dev, chan->channel, pwr_down);
+> +	return ret ? ret : len;
+> +}
+> +
+> +static const struct iio_info ad5755_info = {
+> +	.read_raw = ad5755_read_raw,
+> +	.write_raw = ad5755_write_raw,
+> +	.driver_module = THIS_MODULE,
 > +};
 > +
-> +#define GENERIC_ADC_BATTERY_PM_OPS       (&generic_adc_battery_pm_ops)
-> +#else
-> +#define GENERIC_ADC_BATTERY_PM_OPS       (NULL)
-> +#endif
-> +
-> +static struct platform_driver generic_adc_bat_driver = {
-> +	.driver		= {
-> +		.name	= "generic-adc-battery",
-> +		.owner	= THIS_MODULE,
-> +		.pm	= GENERIC_ADC_BATTERY_PM_OPS
+> +static const struct iio_chan_spec_ext_info ad5755_ext_info[] = {
+> +	{
+> +		.name = "powerdown",
+> +		.read = ad5755_read_powerdown,
+> +		.write = ad5755_write_powerdown,
 > +	},
-> +	.probe		= generic_adc_bat_probe,
-> +	.remove		= generic_adc_bat_remove,
+> +	{ },
 > +};
 > +
-> +module_platform_driver(generic_adc_bat_driver);
+> +#define AD5755_CHANNEL(_bits) {					\
+> +	.indexed = 1,						\
+> +	.output = 1,						\
+> +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
+> +		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |		\
+> +		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |		\
+> +		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
+> +		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
+> +	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits)),	\
+> +	.ext_info = ad5755_ext_info,				\
+> +}
 > +
-> +MODULE_AUTHOR("anish kumar <anish198519851985@gmail.com>");
-> +MODULE_DESCRIPTION("generic battery driver using IIO");
-> +MODULE_LICENSE("GPL");
-> diff --git a/include/linux/power/generic-adc-battery.h b/include/linux/power/generic-adc-battery.h
+> +static const struct ad5755_chip_info ad5755_chip_info_tbl[] = {
+> +	[ID_AD5735] = {
+> +		.channel_template = AD5755_CHANNEL(14),
+> +		.has_voltage_out = true,
+> +		.calib_shift = 4,
+> +	},
+> +	[ID_AD5737] = {
+> +		.channel_template = AD5755_CHANNEL(14),
+> +		.has_voltage_out = false,
+> +		.calib_shift = 4,
+> +	},
+> +	[ID_AD5755] = {
+> +		.channel_template = AD5755_CHANNEL(16),
+> +		.has_voltage_out = true,
+> +		.calib_shift = 0,
+> +	},
+> +	[ID_AD5757] = {
+> +		.channel_template = AD5755_CHANNEL(16),
+> +		.has_voltage_out = false,
+> +		.calib_shift = 0,
+> +	},
+> +};
+> +
+> +static bool ad5755_is_valid_mode(struct ad5755_state *st, enum ad5755_mode mode)
+> +{
+> +	switch (mode) {
+> +	case AD5755_MODE_VOLTAGE_0V_5V:
+> +	case AD5755_MODE_VOLTAGE_0V_10V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> +		return st->chip_info->has_voltage_out;
+> +	case AD5755_MODE_CURRENT_4mA_20mA:
+> +	case AD5755_MODE_CURRENT_0mA_20mA:
+> +	case AD5755_MODE_CURRENT_0mA_24mA:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static int __devinit ad5755_setup_pdata(struct iio_dev *indio_dev,
+> +	struct ad5755_platform_data *pdata)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	unsigned int ret;
+> +	unsigned int val;
+> +	unsigned int i;
+> +
+> +	if (!pdata) {
+I can see this is nice and brief but for simplicity of code path
+perhaps a default pdata for when it isn't supplied would be clearer
+and make it obvious what state everything ends up in?
+> +		for (i = 0; i < ARRAY_SIZE(pdata->dac); ++i) {
+> +			ret = ad5755_update_dac_ctrl(indio_dev, i,
+> +					AD5755_MODE_CURRENT_4mA_20mA, 0);
+> +			if (ret < 0)
+> +				return ret;
+> +		}
+> +		return 0;
+> +	}
+> +
+> +	if (pdata->dc_dc_phase > 3 || pdata->dc_dc_freq > 3 ||
+> +		pdata->dc_dc_maxv > 3)
+> +		return -EINVAL;
+> +
+> +	val = pdata->dc_dc_maxv;
+> +	val |= pdata->dc_dc_freq << 2;
+> +	val |= pdata->dc_dc_phase << 4;
+> +	if (pdata->ext_dc_dc_compenstation_resistor)
+> +		val |= (1 << 6);
+> +
+> +	ret = ad5755_write_ctrl(indio_dev, 0, AD5755_CTRL_REG_DC_DC, val);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(pdata->dac); ++i) {
+> +		val = pdata->dac[i].slew.step_size;
+> +		val |= pdata->dac[i].slew.rate;
+> +		if (pdata->dac[i].slew.enable)
+> +			val |= (1 << 12);
+> +
+> +		ret = ad5755_write_ctrl(indio_dev, i, AD5755_CTRL_REG_SLEW, val);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	for (i = 0; i < ARRAY_SIZE(pdata->dac); ++i) {
+> +		if (!ad5755_is_valid_mode(st, pdata->dac[i].mode))
+> +			return -EINVAL;
+> +
+> +		val = 0;
+> +		if (pdata->dac[i].ext_current_sense_resistor)
+> +			val |= (1 << 5);
+> +		if (pdata->dac[i].enable_voltage_overrange)
+> +			val |= (1 << 3);
+> +		val |= pdata->dac[i].mode;
+> +
+> +		ret = ad5755_update_dac_ctrl(indio_dev, i, val, 0);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static bool __devinit ad5755_is_voltage_mode(enum ad5755_mode mode)
+> +{
+> +	switch (mode) {
+> +	case AD5755_MODE_VOLTAGE_0V_5V:
+> +	case AD5755_MODE_VOLTAGE_0V_10V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static int __devinit ad5755_init_channels(struct iio_dev *indio_dev,
+> +	struct ad5755_platform_data *pdata)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	struct iio_chan_spec *channels = st->channels;
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < AD5755_NUM_CHANNELS; ++i) {
+> +		channels[i] = st->chip_info->channel_template;
+> +		channels[i].channel = i;
+> +		channels[i].address = i;
+> +		if (pdata && ad5755_is_voltage_mode(pdata->dac[i].mode))
+> +			channels[i].type = IIO_VOLTAGE;
+> +		else
+> +			channels[i].type = IIO_CURRENT;
+> +	}
+> +
+> +	indio_dev->channels = channels;
+> +
+> +	return 0;
+> +}
+> +
+> +static int __devinit ad5755_probe(struct spi_device *spi)
+> +{
+> +	enum ad5755_type type = spi_get_device_id(spi)->driver_data;
+> +	struct iio_dev *indio_dev;
+> +	struct ad5755_state *st;
+> +	int ret;
+> +
+> +	indio_dev = iio_device_alloc(sizeof(*st));
+> +	if (indio_dev == NULL) {
+> +		dev_err(&spi->dev, "Failed to allocate iio device\n");
+> +		return  -ENOMEM;
+> +	}
+> +
+> +	st = iio_priv(indio_dev);
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	st->chip_info = &ad5755_chip_info_tbl[type];
+> +	st->spi = spi;
+> +	st->pwr_down = 0xf;
+> +
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->info = &ad5755_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->num_channels = AD5755_NUM_CHANNELS;
+> +
+> +	ret = ad5755_init_channels(indio_dev, dev_get_platdata(&spi->dev));
+> +	if (ret)
+> +		goto error_free;
+> +
+> +	ret = ad5755_setup_pdata(indio_dev, dev_get_platdata(&spi->dev));
+> +	if (ret)
+> +		goto error_free;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret) {
+> +		dev_err(&spi->dev, "Failed to register iio device: %d\n", ret);
+> +		goto error_free;
+> +	}
+> +
+> +	return 0;
+> +
+> +error_free:
+> +	iio_device_free(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int __devexit ad5755_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_device_free(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id ad5755_id[] = {
+> +	{ "ad5755", ID_AD5755 },
+> +	{ "ad5755-1", ID_AD5755 },
+> +	{ "ad5757", ID_AD5757 },
+> +	{ "ad5735", ID_AD5735 },
+> +	{ "ad5737", ID_AD5737 },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, ad5755_id);
+> +
+> +static struct spi_driver ad5755_driver = {
+> +	.driver = {
+> +		.name = "ad5755",
+> +		.owner = THIS_MODULE,
+> +	},
+> +	.probe = ad5755_probe,
+> +	.remove = __devexit_p(ad5755_remove),
+> +	.id_table = ad5755_id,
+> +};
+> +module_spi_driver(ad5755_driver);
+> +
+> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
+> +MODULE_DESCRIPTION("Analog Devices AD5755/55-1/57/35/37 DAC");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/include/linux/platform_data/ad5755.h b/include/linux/platform_data/ad5755.h
 > new file mode 100644
-> index 0000000..d7c6d20
+> index 0000000..a5a1cb7
 > --- /dev/null
-> +++ b/include/linux/power/generic-adc-battery.h
-> @@ -0,0 +1,33 @@
+> +++ b/include/linux/platform_data/ad5755.h
+> @@ -0,0 +1,103 @@
 > +/*
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
+> + * Copyright 2012 Analog Devices Inc.
+> + *
+> + * Licensed under the GPL-2.
 > + */
+> +#ifndef __LINUX_PLATFORM_DATA_AD5755_H__
+> +#define __LINUX_PLATFORM_DATA_AD5755_H__
 > +
-> +#ifndef GENERIC_ADC_BATTERY_H
-> +#define GENERIC_ADC_BATTERY_H
-> +
-> +/* should be enough for the channel names */
-> +#define BAT_MAX_NAME	30
-> +
-> +enum chan_type {
-> +	VOLTAGE = 0,
-> +	CURRENT,
-> +	POWER,
-> +	MAX_CHAN_TYPE
+> +enum ad5755_mode {
+> +	AD5755_MODE_VOLTAGE_0V_5V		= 0,
+> +	AD5755_MODE_VOLTAGE_0V_10V		= 1,
+> +	AD5755_MODE_VOLTAGE_PLUSMINUS_5V	= 2,
+> +	AD5755_MODE_VOLTAGE_PLUSMINUS_10V	= 3,
+> +	AD5755_MODE_CURRENT_4mA_20mA		= 4,
+> +	AD5755_MODE_CURRENT_0mA_20mA		= 5,
+> +	AD5755_MODE_CURRENT_0mA_24mA		= 6,
 > +};
 > +
-why this definition?
-> +extern char channel_name[][BAT_MAX_NAME + 1];
-> +
-> +struct iio_battery_platform_data {
-> +	struct power_supply_info battery_info;
-
-Should this still be here?
-> +	char	**channel_name;
-> +	char	*battery_name;
-> +	int	(*cal_charge)(long);
-> +	int	gpio_charge_finished;
-> +	int	gpio_inverted;
-
-unused..
-> +	int	bat_poll_interval;
-> +	int	jitter_delay;
+> +enum ad5755_dc_dc_phase {
+> +	AD5755_DC_DC_PHASE_ALL_SAME_EDGE		= 0,
+> +	AD5755_DC_DC_PHASE_A_B_SAME_EDGE_C_D_OPP_EDGE	= 1,
+> +	AD5755_DC_DC_PHASE_A_C_SAME_EDGE_B_D_OPP_EDGE	= 2,
+> +	AD5755_DC_DC_PHASE_90_DEGREE			= 3,
 > +};
 > +
-> +#endif /* GENERIC_ADC_BATTERY_H */
+> +enum ad5755_dc_dc_freq {
+> +	AD5755_DC_DC_FREQ_250kHZ = 0,
+> +	AD5755_DC_DC_FREQ_410kHZ = 1,
+> +	AD5755_DC_DC_FREQ_650kHZ = 2,
+> +};
+> +
+> +enum ad5755_dc_dc_maxv {
+> +	AD5755_DC_DC_MAXV_23V	= 0,
+> +	AD5755_DC_DC_MAXV_24V5	= 1,
+> +	AD5755_DC_DC_MAXV_27V	= 2,
+> +	AD5755_DC_DC_MAXV_29V5	= 3,
+> +};
+> +
+> +enum ad5755_slew_rate {
+> +	AD5755_SLEW_RATE_64k	= 0,
+> +	AD5755_SLEW_RATE_32k	= 1,
+> +	AD5755_SLEW_RATE_16k	= 2,
+> +	AD5755_SLEW_RATE_8k	= 3,
+> +	AD5755_SLEW_RATE_4k	= 4,
+> +	AD5755_SLEW_RATE_2k	= 5,
+> +	AD5755_SLEW_RATE_1k	= 6,
+> +	AD5755_SLEW_RATE_500	= 7,
+> +	AD5755_SLEW_RATE_250	= 8,
+> +	AD5755_SLEW_RATE_125	= 9,
+> +	AD5755_SLEW_RATE_64	= 10,
+> +	AD5755_SLEW_RATE_32	= 11,
+> +	AD5755_SLEW_RATE_16	= 12,
+> +	AD5755_SLEW_RATE_8	= 13,
+> +	AD5755_SLEW_RATE_4	= 14,
+> +	AD5755_SLEW_RATE_0_5	= 15,
+> +};
+> +
+> +enum ad5755_slew_step_size {
+> +	AD5755_SLEW_STEP_SIZE_1 = 0,
+> +	AD5755_SLEW_STEP_SIZE_2 = 1,
+> +	AD5755_SLEW_STEP_SIZE_4 = 2,
+> +	AD5755_SLEW_STEP_SIZE_8 = 3,
+> +	AD5755_SLEW_STEP_SIZE_16 = 4,
+> +	AD5755_SLEW_STEP_SIZE_32 = 5,
+> +	AD5755_SLEW_STEP_SIZE_64 = 6,
+> +	AD5755_SLEW_STEP_SIZE_128 = 7,
+> +	AD5755_SLEW_STEP_SIZE_256 = 8,
+> +};
+> +
+> +/**
+> + * struct ad5755_platform_data - AD5755 DAC driver platform data
+> + * @ext_dc_dc_compenstation_resistor: Whether an external DC-DC converter
+> + * compensation register is used.
+> + * @dc_dc_phase: DC-DC converter phase.
+> + * @dc_dc_freq: DC-DC converter frequency.
+> + * @dc_dc_maxv: DC-DC maximum allowed boost voltage.
+> + * @dac.mode: The mode to be used for the DAC output.
+> + * @dac.ext_current_sense_resistor: Whether an external current sense resistor
+> + * is used.
+> + * @dac.enable_voltage_overrange: Whether to enable 20% voltage output overrange.
+> + * @dac.slew.enable: Whether to enable digital slew.
+> + * @dac.slew.rate: Slew rate of the digital slew.
+> + * @dac.slew.step_size: Slew step size of the digital slew.
+> + **/
+> +struct ad5755_platform_data {
+> +	bool ext_dc_dc_compenstation_resistor;
+> +	enum ad5755_dc_dc_phase dc_dc_phase;
+> +	enum ad5755_dc_dc_freq dc_dc_freq;
+> +	enum ad5755_dc_dc_maxv dc_dc_maxv;
+> +
+> +	struct {
+> +		enum ad5755_mode mode;
+> +		bool ext_current_sense_resistor;
+> +		bool enable_voltage_overrange;
+> +		struct {
+> +			bool enable;
+> +			enum ad5755_slew_rate rate;
+> +			enum ad5755_slew_step_size step_size;
+> +		} slew;
+> +	} dac[4];
+> +};
+> +
+> +#endif
 >
