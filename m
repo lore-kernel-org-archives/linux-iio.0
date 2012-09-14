@@ -1,56 +1,51 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46848 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757791Ab2IMUMn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Sep 2012 16:12:43 -0400
-Message-ID: <50523E39.5080708@kernel.org>
-Date: Thu, 13 Sep 2012 21:12:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <Milo.Kim@ti.com>
+From: "Kim, Milo" <Milo.Kim@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, Lars-Peter Clausen <lars@metafoo.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH RESEND] iio: inkern: allocate zeroed memory
+Date: Fri, 14 Sep 2012 01:24:19 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EF4C3E@DQHE02.ent.ti.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: anish kumar <anish198519851985@gmail.com>
-CC: jic23@cam.ac.uk, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: Documentation change for inkern interface.
-References: <1347133337-7795-1-git-send-email-anish198519851985@gmail.com>
-In-Reply-To: <1347133337-7795-1-git-send-email-anish198519851985@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/08/2012 08:42 PM, anish kumar wrote:
-> From: anish kumar <anish198519851985@gmail.com>
-> 
-> This commit- 314be14bb renamed the _st_ functions to loose the bit
-> that was meant for staging version but forgot to change
-> the documentation which still have _st_ sprinkled in some of the
-> places.
-> 
-> Signed-off-by: anish kumar <anish198519851985@gmail.com>
-merge to togreg branch of
+ Use kzalloc() rather than kmalloc() for initializing the iio_channel struc=
+ture.
+ This patch enables the iio_dev and iio_chan_spec are set to NULL.
+ This may prevent the page fault problem because the pointer of iio_chan_sp=
+ec
+ is initialized as NULL.
 
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+ The iio_chan_spec is updated only in case that the IIO map has
+ specific channel label.
+ When the map has no ADC channel label, then the value of iio_chan_spec
+ remains as invalid pointer.
+ To prevent this problem, the pointer should be initialized as NULL.
 
-> ---
->  drivers/staging/iio/Documentation/inkernel.txt |    6 +++---
->  1 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/Documentation/inkernel.txt b/drivers/staging/iio/Documentation/inkernel.txt
-> index a05823e..ab52840 100644
-> --- a/drivers/staging/iio/Documentation/inkernel.txt
-> +++ b/drivers/staging/iio/Documentation/inkernel.txt
-> @@ -48,11 +48,11 @@ There are then a number of functions that can be used to get information
->  about this channel such as it's current reading.
->  
->  e.g.
-> -iio_st_read_channel_raw() - get a reading
-> -iio_st_read_channel_type() - get the type of channel
-> +iio_read_channel_raw() - get a reading
-> +iio_get_channel_type() - get the type of channel
->  
->  There is also provision for retrieving all of the channels associated
->  with a given consumer.  This is useful for generic drivers such as
->  iio_hwmon where the number and naming of channels is not known by the
-> -consumer driver.  To do this, use iio_st_channel_get_all.
-> +consumer driver.  To do this, use iio_channel_get_all.
->  
-> 
+Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
+---
+ drivers/iio/inkern.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index b5afc2f..1faa240 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -130,7 +130,7 @@ struct iio_channel *iio_channel_get(const char *name, c=
+onst char *channel_name)
+ 	if (c =3D=3D NULL)
+ 		return ERR_PTR(-ENODEV);
+=20
+-	channel =3D kmalloc(sizeof(*channel), GFP_KERNEL);
++	channel =3D kzalloc(sizeof(*channel), GFP_KERNEL);
+ 	if (channel =3D=3D NULL)
+ 		return ERR_PTR(-ENOMEM);
+=20
+--=20
+1.7.9.5
+
+
+Best Regards,
+Milo
