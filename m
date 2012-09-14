@@ -1,53 +1,219 @@
-Return-Path: <Milo.Kim@ti.com>
-From: "Kim, Milo" <Milo.Kim@ti.com>
+Return-Path: <rachna@ti.com>
+From: "Patil, Rachna" <rachna@ti.com>
 To: Jonathan Cameron <jic23@kernel.org>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, Lars-Peter Clausen <lars@metafoo.de>,
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v5] iio: adc: add new lp8788 adc driver
-Date: Fri, 14 Sep 2012 00:33:36 +0000
-Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EF4C03@DQHE02.ent.ti.com>
-References: <A874F61F95741C4A9BA573A70FE3998F41EF45CC@DQHE02.ent.ti.com>
- <5051D05C.4050802@kernel.org>
-In-Reply-To: <5051D05C.4050802@kernel.org>
+        Samuel Ortiz
+	<sameo@linux.intel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Dmitry
+ Torokhov <dtor@mail.ru>, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: RE: [PATCH v3 4/5] IIO : ADC: tiadc: Add support of TI's ADC driver
+Date: Fri, 14 Sep 2012 06:00:41 +0000
+Message-ID: <4CE347531D4CA947960AF71FF095B9323E953D32@DBDE01.ent.ti.com>
+References: <1347532819-505-1-git-send-email-rachna@ti.com>
+ <1347532819-505-5-git-send-email-rachna@ti.com> <5051CDEA.5080200@kernel.org>
+In-Reply-To: <5051CDEA.5080200@kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
+On Thu, Sep 13, 2012 at 17:43:30, Jonathan Cameron wrote:
+> On 13/09/12 11:40, Patil, Rachna wrote:
+> > This patch adds support for TI's ADC driver.
+> > This is a multifunctional device.
+> > Analog input lines are provided on which voltage measurements can be=20
+> > carried out.
+> > You can have upto 8 input lines.
+> >
+> > Signed-off-by: Patil, Rachna <rachna@ti.com>
 >=20
-> Couple of nitpicks in line to add to Lars-Peter's ones.
+> There's a little fuzz in applying this due to other drivers that have gon=
+e in recently.
+>=20
+> Actually this is going to be 'interesting' to merge. Dmitry, Samuel thoug=
+hts on who takes this one and how?  Maybe this is a case for a 'special' br=
+anch pulled into more than one tree?
+>=20
+>=20
+> One minor thing inline.  I have an aversion to dynamic allocation of
+> things that are then constant.
+>=20
+> Also the module name is simply ti_adc. Does seem a little 'vague'
+> given the range of ADC's TI makes :)  Perhaps keep the reference
+> to the tsc in there?  Personally I'd have preferred the whole thing
+> being named after a particular part number (any one it support would
+> do) to avoid a clash in future with a new touch screen adc from TI.
+> Bit late for that though I guess ;)
 
-I really appreciate it.
+Yes, true.
+TI definitely might come up with more IP's of this type.
+This IP(TSC / ADC) is present on AM335x. If necessary we can rename the dri=
+ver to ti_am335x_XXX.
 
-> > +#define LP8788_CHAN(_id, _type) {				\
-> > +		.type =3D _type,					\
-> > +		.indexed =3D 1,					\
-> > +		.channel =3D LPADC_##_id,				\
-> > +		.info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
-> > +			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,	\
-> > +		.address =3D LP8788_ADC_RAW,			\
-> > +		.scan_type =3D IIO_ST('u', 12, 16, 0),		\
-> > +		.scan_index =3D 1,				\
-> scan_type and scan_index should only be relevant if you are doing
-> buffered capture (unless I'm missing another use of them in here
-> somewhere...)  Hence drop them for now...
-
-Thanks for clarifying this.
-
-> > +static void lp8788_iio_map_unregister(struct iio_dev *indio_dev,
-> > +				struct lp8788_adc *adc)
+>=20
+> Jonathan
+> > ---
+> > Changes in v2:
+> > 	Addressed review comments from Matthias Kaehlcke
+> >
+> > Changes in v3:
+> > 	Addressed review comments from Jonathan Cameron.
+> > 	Added comments, new line appropriately.
+> >
+> >   drivers/iio/adc/Kconfig              |    7 +
+> >   drivers/iio/adc/Makefile             |    1 +
+> >   drivers/iio/adc/ti_adc.c             |  223 +++++++++++++++++++++++++=
++++++++++
+> >   drivers/mfd/ti_tscadc.c              |   18 +++-
+> >   include/linux/mfd/ti_tscadc.h        |    9 ++-
+> >   include/linux/platform_data/ti_adc.h |   14 ++
+> >   6 files changed, 270 insertions(+), 2 deletions(-)
+> >   create mode 100644 drivers/iio/adc/ti_adc.c
+> >   create mode 100644 include/linux/platform_data/ti_adc.h
+> >
+> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> > index 8a78b4f..ad32df8 100644
+> > --- a/drivers/iio/adc/Kconfig
+> > +++ b/drivers/iio/adc/Kconfig
+> > @@ -22,4 +22,11 @@ config AT91_ADC
+> >   	help
+> >   	  Say yes here to build support for Atmel AT91 ADC.
+> >
+> > +config TI_ADC
+> > +	tristate "TI's ADC driver"
+> > +	depends on ARCH_OMAP2PLUS
+> > +	help
+> > +	  Say yes here to build support for Texas Instruments ADC
+> > +	  driver which is also a MFD client.
+> > +
+> >   endmenu
+> > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> > index 52eec25..a930cee 100644
+> > --- a/drivers/iio/adc/Makefile
+> > +++ b/drivers/iio/adc/Makefile
+> > @@ -4,3 +4,4 @@
+> >
+> >   obj-$(CONFIG_AD7266) +=3D ad7266.o
+> >   obj-$(CONFIG_AT91_ADC) +=3D at91_adc.o
+> > +obj-$(CONFIG_TI_ADC) +=3D ti_adc.o
+> > diff --git a/drivers/iio/adc/ti_adc.c b/drivers/iio/adc/ti_adc.c
+> > new file mode 100644
+> > index 0000000..56f8af2
+> > --- /dev/null
+> > +++ b/drivers/iio/adc/ti_adc.c
+> > @@ -0,0 +1,223 @@
+> > +/*
+> > + * TI ADC MFD driver
+> > + *
+> > + * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.c=
+om/
+> > + *
+> > + * This program is free software; you can redistribute it and/or
+> > + * modify it under the terms of the GNU General Public License as
+> > + * published by the Free Software Foundation version 2.
+> > + *
+> > + * This program is distributed "as is" WITHOUT ANY WARRANTY of any
+> > + * kind, whether express or implied; without even the implied warranty
+> > + * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> > + * GNU General Public License for more details.
+> > + */
+> > +
+> > +#include <linux/init.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/err.h>
+> > +#include <linux/module.h>
+> > +#include <linux/slab.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/io.h>
+> > +#include <linux/iio/iio.h>
+> > +
+> > +#include <linux/mfd/ti_tscadc.h>
+> > +#include <linux/platform_data/ti_adc.h>
+> > +
+> > +struct adc_device {
+> > +	struct ti_tscadc_dev *mfd_tscadc;
+> > +	struct iio_dev *idev;
+> > +	int channels;
+> > +};
+> > +
+> > +static unsigned int adc_readl(struct adc_device *adc, unsigned int reg=
+)
 > > +{
-> Can't immediately see how this runs without adc->map set. If it
-> doesn't drop the check.
-> > +	if (adc->map)
-> > +		iio_map_array_unregister(indio_dev, adc->map);
+> > +	return readl(adc->mfd_tscadc->tscadc_base + reg);
 > > +}
+> > +
+> > +static void adc_writel(struct adc_device *adc, unsigned int reg,
+> > +					unsigned int val)
+> > +{
+> > +	writel(val, adc->mfd_tscadc->tscadc_base + reg);
+> > +}
+> > +
+> > +static void adc_step_config(struct adc_device *adc_dev)
+> > +{
+> > +	unsigned int    stepconfig;
+> > +	int i, channels =3D 0, steps;
+> > +
+> > +	/*
+> > +	 * There are 16 configurable steps and 8 analog input
+> > +	 * lines available which are shared between Touchscreen and ADC.
+> > +	 *
+> > +	 * Steps backwards i.e. from 16 towards 0 are used by ADC
+> > +	 * depending on number of input lines needed.
+> > +	 * Channel would represent which analog input
+> > +	 * needs to be given to ADC to digitalize data.
+> > +	 */
+> > +
+> > +	steps =3D TOTAL_STEPS - adc_dev->channels;
+> > +	channels =3D TOTAL_CHANNELS - adc_dev->channels;
+> > +
+> > +	stepconfig =3D STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
+> > +
+> > +	for (i =3D (steps + 1); i <=3D TOTAL_STEPS; i++) {
+> > +		adc_writel(adc_dev, REG_STEPCONFIG(i),
+> > +				stepconfig | STEPCONFIG_INP(channels));
+> > +		adc_writel(adc_dev, REG_STEPDELAY(i),
+> > +				STEPCONFIG_OPENDLY);
+> > +		channels++;
+> > +	}
+> > +	adc_writel(adc_dev, REG_SE, STPENB_STEPENB);
+> > +}
+> > +
+> > +static int tiadc_channel_init(struct iio_dev *idev, int channels)
+> > +{
+> > +	struct iio_chan_spec *chan_array;
+> > +	int i;
+> > +
+> > +	idev->num_channels =3D channels;
+> > +	chan_array =3D kcalloc(idev->num_channels, sizeof(struct iio_chan_spe=
+c),
+> > +					GFP_KERNEL);
+> > +
+> > +	if (chan_array =3D=3D NULL)
+> > +		return -ENOMEM;
+> > +
+> Minor point, but I'd be tempted to do this as a static const array and=20
+> then just set num_channels appropriately.  Still it's such a simple=20
+> driver that I'm not that fussed.
 
-You're right. No need to check whether iio_map is valid or not.
-That is already implemented in the iio_map_array_unregister().
-It will be removed in the next patch.
+I looked at some other drivers, they seem to be doing the same way.
+I would like to go with the existing convention.
 
-Thank you.
+> > +	for (i =3D 0; i < (idev->num_channels); i++) {
+> > +		struct iio_chan_spec *chan =3D chan_array + i;
+> > +		chan->type =3D IIO_VOLTAGE;
+> > +		chan->indexed =3D 1;
+> > +		chan->channel =3D i;
+> > +		chan->info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT;
+> > +	}
+> > +
+> > +	idev->channels =3D chan_array;
+> > +
+> > +	return idev->num_channels;
+> > +}
+> > +
 
-Best Regards,
-Milo
+Regards,
+Rachna
