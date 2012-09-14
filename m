@@ -1,90 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-028.synserver.de ([212.40.185.28]:1498 "EHLO
+Received: from smtp-out-028.synserver.de ([212.40.185.28]:1213 "EHLO
 	smtp-out-028.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752548Ab2INI5j (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Sep 2012 04:57:39 -0400
-Message-ID: <5052F1A8.3060502@metafoo.de>
-Date: Fri, 14 Sep 2012 10:58:16 +0200
+	with ESMTP id S1759294Ab2INIfQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Sep 2012 04:35:16 -0400
+Message-ID: <5052EC67.7010706@metafoo.de>
+Date: Fri, 14 Sep 2012 10:35:51 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org, drivers@analog.com
-Subject: Re: [PATCH] iio:dac: Add ad5755 driver
-References: <1347542015-27209-1-git-send-email-lars@metafoo.de> <50524343.7060301@kernel.org>
-In-Reply-To: <50524343.7060301@kernel.org>
+To: "Kim, Milo" <Milo.Kim@ti.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5] iio: adc: add new lp8788 adc driver
+References: <A874F61F95741C4A9BA573A70FE3998F41EF45CC@DQHE02.ent.ti.com> <504DADE1.6010303@metafoo.de> <A874F61F95741C4A9BA573A70FE3998F41EF4BFC@DQHE02.ent.ti.com>
+In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F41EF4BFC@DQHE02.ent.ti.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/13/2012 10:34 PM, Jonathan Cameron wrote:
-> On 09/13/2012 02:13 PM, Lars-Peter Clausen wrote:
->> This patch adds support for the AD5755, AD5755-1, AD5757, AD5735, AD5737 16 and
->> 14 bit quad-channel DACs. The AD5757/AD5737 only have current outputs, but
->> for the AD5755/AD5757 each of the outputs can be configured to either be a
->> voltage or a current output. We only allow to configure this at device probe
->> time since usually this needs to match the external circuitry and should not be
->> changed on the fly.
+On 09/14/2012 02:33 AM, Kim, Milo wrote:
+>> Hi,
 >>
-> Fair enough.
+>> One issue and a couple of nitpicks inline.
 > 
-> Couple of little bits inline.
+> I really appreciate it.
+> Please see my questions below.
+> 
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_RAW:
+>>> +		ret = lp8788_get_adc_result(adc, id, val) ? -EIO :
+>> IIO_VAL_INT;
+>>> +		break;
+>>> +	case IIO_CHAN_INFO_SCALE:
+>>> +		*val = (lp8788_scale[id] / 1000) * 1000;
+>>> +		*val2 = (lp8788_scale[id] % 1000) * 1000000;
+>>
+>> This looks suspicious. E.g. if the entry in your table has the value
+>> "1234"
+>> you'd end up with a scale factor of 1000.234000000. Which looks wrong
+>> for
+>> two reasons, given that you return INT_PLUS_MICRO val2 should never
+>> exceed 6
+>> decimal digits and secondly val is multiplied by a factor of thousand.
+>>
+>> Can you tell us in what unit the values in lp8788_scale are, that would
+>> make
+>> review easier.
+> 
+> The LP8788 has 13 ADC input selection.
+> 
+> ADC selection:
+> Battery voltage, general ADC1 and so on.
+> 
+> ADC result:
+> Result = MAX_VALUE * (raw + 0.5) / 4095  except ADC is the charger voltage
+> If the ADC input is the charger voltage,
+> Result = MAX_VALUE * (raw + 0.5) / (4095 * 0.48)
+> 
+> The raw value is from the registers.
+> It has the range between 0 to 4095. (12bits)
+> 
+> MAX_VALUE is constant for each selection.
+> For the battery voltage, there are three ADC inputs. 5.0/5.5/6.0V
+> Battery voltage for Max 5.0V = 5.0
+> Battery voltage for Max 5.5V = 5.5
+> Battery voltage for Max 6.0V = 6.0
+> Charger = 6.0
+> ADC1 = 2.5 
+> 
+> I'm afraid I still misunderstand how IIO ADC works.
+> Could you me some guide how to setup the scale in the driver?
 
-Thanks for the review.
+The scale is a fixpoint value, which should be multiplied with the raw value
+to get the result in the proper unit. The unit depends on the channel type,
+e.g. for voltage it is mV and for temperature it is C. The number of decimal
+places for the fixed point value depends on whether you return
+INT_PLUS_MICRO it's 6, if you return INT_PLUS_NANO it is 9. The digits
+before the decimal point are stored in "val" the digits after the decimal
+point are stored in "val2".
 
->> +static void ad5755_get_min_max(struct ad5755_state *st,
->> +	struct iio_chan_spec const *chan, int *min, int *max)
->> +{
->> +	enum ad5755_mode mode = st->ctrl[chan->channel] & 7;
->> +
-> This might be a bit cleaner as a lookup table than as
-> a switch statement.
-> static const modemaxmin[2][] = {
->        [AD5755_MOD_VOLTAGE_0V_5V] = { 0, 5000},
-> etc.
-> };
+E.g. if you have
+*val = 1;
+*val2 = 1256;
+return INT_PLUS_MICRO;
 
-Yes, definitely. I actually feel kind of stupid now for implementing this
-with a switch case statement ;)
+your scale factor is 1.001256, if you'd return INT_PLUS_NANO you scale
+factor would be 1.0000001256 instead.
 
->> +	switch (mode) {
->> +	case AD5755_MODE_VOLTAGE_0V_5V:
->> +		*min = 0;
->> +		*max = 5000;
->> +		break;
->> +	case AD5755_MODE_VOLTAGE_0V_10V:
->> +		*min = 0;
->> +		*max = 10000;
->> +		break;
->> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
->> +		*min = -5000;
->> +		*max = 5000;
->> +		break;
->> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
->> +		*min = -10000;
->> +		*max = 10000;
->> +		break;
->> +	case AD5755_MODE_CURRENT_4mA_20mA:
->> +		*min = 4;
->> +		*max = 20;
->> +		break;
->> +	case AD5755_MODE_CURRENT_0mA_20mA:
->> +		*min = 0;
->> +		*max = 20;
->> +		break;
->> +	case AD5755_MODE_CURRENT_0mA_24mA:
->> +		*min = 0;
->> +		*max = 24;
->> +		break;
->> +	default:
-> When does this apply?
+In your case you could for example calculate the voltage scales as:
 
-In practice never. But 'st->ctrl[chan->channel] & 7' could in theory lead
-here, so it was to keep the compiler to not complain about maybe
-uninitialized variables.
+tmp = MAX_VALUE * 1000000 / 4095;
+*val = tmp / 1000000;
+*val2 = tmp % 1000000;
 
->> +		*min = 0;
->> +		*max = 1;
->> +		break;
->> +	}
->> +}
->> 
+This assumes that MAX_VALUE is in millivolt.
+
+E.g. if MAX_VALUE is 5.0V you should get a scale of 1.220703 (val = 1, val2
+= 220703). Since your MAX_VALUE is fixed you can probably just pre-calculate
+the result of MAX_VALUE * 1000000 / 4095 for each channel, similar like you
+already did with your lp8788_scale table.
+
+- Lars
+
+
+
