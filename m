@@ -1,80 +1,213 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-029.synserver.de ([212.40.185.29]:1343 "EHLO
-	smtp-out-029.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757330Ab2INPWa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Sep 2012 11:22:30 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Milo Kim <Milo.Kim@ti.com>,
-	anish kumar <anish198519851985@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/4] iio: Introduce a new fractional value type
-Date: Fri, 14 Sep 2012 17:21:42 +0200
-Message-Id: <1347636104-3419-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347636104-3419-1-git-send-email-lars@metafoo.de>
-References: <1347636104-3419-1-git-send-email-lars@metafoo.de>
+Received: from ppsw-43.csi.cam.ac.uk ([131.111.8.143]:48830 "EHLO
+	ppsw-43.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751417Ab2INJvr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Sep 2012 05:51:47 -0400
+Message-ID: <5052FE39.2020500@kernel.org>
+Date: Fri, 14 Sep 2012 10:51:53 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH v2 04/10] staging:iio:ad7476: Rework reference voltage
+ handling
+References: <1347266081-6045-1-git-send-email-lars@metafoo.de> <1347266081-6045-4-git-send-email-lars@metafoo.de> <50523B2F.1080102@kernel.org> <5052F004.3080304@metafoo.de>
+In-Reply-To: <5052F004.3080304@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently IIO uses a decimal fixed point representations for real type numbers.
-This patch introduces a new representation for rational type numbers. The number
-will be expressed by specifying a numerator and denominator. For converting a
-raw value to a processed value multiply it by the numerator and divide it by the
-denominator.
+On 14/09/12 09:51, Lars-Peter Clausen wrote:
+> On 09/13/2012 09:59 PM, Jonathan Cameron wrote:
+>> On 09/10/2012 09:34 AM, Lars-Peter Clausen wrote:
+>>> Slightly rework the reference voltage handling for the ad7476 driver. Now the only
+>>> way to specify a external reference voltage is to use the regulator API,
+>>> previously it was possible to use either platform_data or the regulator API. The
+>>> new way is more consistent with what other drivers do.
+>>>
+>>> Also do not ignore errors when requesting the regulator, since this will cope
+>>> very poorly with e.g. deferred probing.
+>>>
+>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>>>
+>>> ----
+>>> Changes since v1:
+>>> 		* Fix regulator error handling
+>>
+>> Not right yet. If the regulator_get fails you will leak the iio_device
+>>
+>> I've fixed up, could you take a look at what I ended up with just
+>> to be sure I haven't made mistakes.  It was one of those clasic cases
+>> where a one line change made for some nasty merging...
+>>
+>> Anyhow, I've pushed the slightly amended versions out to iio.git togreg branch.
+>
+> Thanks, looks good. Except for the commit message, which has the changelog
+> between my and your Signed-off-by.
+oops. Will fix that up before pushing out.
 
-The reasoning for introducing this new type is that for a lot of devices the
-scale can be represented easily by a fractional number, but it is not possible
-to represent it as fixed point number without rounding.  E.g. for a simple DAC
-the scale is often the reference voltage divided by the number of possible
-values (Usually 2**n_bits - 1). Each driver currently implements the conversion
-of this fraction to a fixed point number on its own.
-
-Also when it comes to the in-kernel interface this allows to directly use the
-fractional factors to convert a raw value to a processed value. This should on
-one hand require less instructions and on the other hand increase the
-precession.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/industrialio-core.c |    6 ++++++
- include/linux/iio/types.h       |    1 +
- 2 files changed, 7 insertions(+)
-
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 0499330..6eb24db 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -366,6 +366,7 @@ static ssize_t iio_read_channel_info(struct device *dev,
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	unsigned long long tmp;
- 	int val, val2;
- 	bool scale_db = false;
- 	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
-@@ -391,6 +392,11 @@ static ssize_t iio_read_channel_info(struct device *dev,
- 			return sprintf(buf, "-%d.%09u\n", val, -val2);
- 		else
- 			return sprintf(buf, "%d.%09u\n", val, val2);
-+	case IIO_VAL_FRACTIONAL:
-+		tmp = div_s64((s64)val * 1000000000LL, val2);
-+		val2 = do_div(tmp, 1000000000LL);
-+		val = tmp;
-+		return sprintf(buf, "%d.%09u\n", val, val2);
- 	default:
- 		return 0;
- 	}
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 44e3977..5c647ec 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -57,5 +57,6 @@ enum iio_modifier {
- #define IIO_VAL_INT_PLUS_MICRO 2
- #define IIO_VAL_INT_PLUS_NANO 3
- #define IIO_VAL_INT_PLUS_MICRO_DB 4
-+#define IIO_VAL_FRACTIONAL 10
- 
- #endif /* _IIO_TYPES_H_ */
--- 
-1.7.10.4
+*hopes no one is mad enough to base their trees off mine given how often
+I rebase*
+>
+>>
+>>> ---
+>>>   drivers/staging/iio/adc/ad7476.h      |   11 +------
+>>>   drivers/staging/iio/adc/ad7476_core.c |   58 +++++++++++++++------------------
+>>>   2 files changed, 27 insertions(+), 42 deletions(-)
+>>>
+>>> diff --git a/drivers/staging/iio/adc/ad7476.h b/drivers/staging/iio/adc/ad7476.h
+>>> index c4f1150..4ed5494 100644
+>>> --- a/drivers/staging/iio/adc/ad7476.h
+>>> +++ b/drivers/staging/iio/adc/ad7476.h
+>>> @@ -10,16 +10,8 @@
+>>>
+>>>   #define RES_MASK(bits)	((1 << (bits)) - 1)
+>>>
+>>> -/*
+>>> - * TODO: struct ad7476_platform_data needs to go into include/linux/iio
+>>> - */
+>>> -
+>>> -struct ad7476_platform_data {
+>>> -	u16				vref_mv;
+>>> -};
+>>> -
+>>>   struct ad7476_chip_info {
+>>> -	u16				int_vref_mv;
+>>> +	unsigned int			int_vref_uv;
+>>>   	struct iio_chan_spec		channel[2];
+>>>   };
+>>>
+>>> @@ -27,7 +19,6 @@ struct ad7476_state {
+>>>   	struct spi_device		*spi;
+>>>   	const struct ad7476_chip_info	*chip_info;
+>>>   	struct regulator		*reg;
+>>> -	u16				int_vref_mv;
+>>>   	struct spi_transfer		xfer;
+>>>   	struct spi_message		msg;
+>>>   	/*
+>>> diff --git a/drivers/staging/iio/adc/ad7476_core.c b/drivers/staging/iio/adc/ad7476_core.c
+>>> index c97300b..e79a179 100644
+>>> --- a/drivers/staging/iio/adc/ad7476_core.c
+>>> +++ b/drivers/staging/iio/adc/ad7476_core.c
+>>> @@ -40,7 +40,7 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+>>>   {
+>>>   	int ret;
+>>>   	struct ad7476_state *st = iio_priv(indio_dev);
+>>> -	unsigned int scale_uv;
+>>> +	int scale_uv;
+>>>
+>>>   	switch (m) {
+>>>   	case IIO_CHAN_INFO_RAW:
+>>> @@ -57,10 +57,16 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+>>>   			RES_MASK(st->chip_info->channel[0].scan_type.realbits);
+>>>   		return IIO_VAL_INT;
+>>>   	case IIO_CHAN_INFO_SCALE:
+>>> -		scale_uv = (st->int_vref_mv * 1000)
+>>> -			>> st->chip_info->channel[0].scan_type.realbits;
+>>> -		*val =  scale_uv/1000;
+>>> -		*val2 = (scale_uv%1000)*1000;
+>>> +		if (!st->chip_info->int_vref_uv) {
+>>> +			scale_uv = regulator_get_voltage(st->reg);
+>>> +			if (scale_uv < 0)
+>>> +				return scale_uv;
+>>> +		} else {
+>>> +			scale_uv = st->chip_info->int_vref_uv;
+>>> +		}
+>>> +		scale_uv >>= chan->scan_type.realbits;
+>>> +		*val =  scale_uv / 1000;
+>>> +		*val2 = (scale_uv % 1000) * 1000;
+>>>   		return IIO_VAL_INT_PLUS_MICRO;
+>>>   	}
+>>>   	return -EINVAL;
+>>> @@ -96,7 +102,7 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+>>>   	[ID_AD7495] = {
+>>>   		.channel[0] = AD7476_CHAN(12),
+>>>   		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+>>> -		.int_vref_mv = 2500,
+>>> +		.int_vref_uv = 2500000,
+>>>   	},
+>>>   };
+>>>
+>>> @@ -107,10 +113,9 @@ static const struct iio_info ad7476_info = {
+>>>
+>>>   static int __devinit ad7476_probe(struct spi_device *spi)
+>>>   {
+>>> -	struct ad7476_platform_data *pdata = spi->dev.platform_data;
+>>>   	struct ad7476_state *st;
+>>>   	struct iio_dev *indio_dev;
+>>> -	int ret, voltage_uv = 0;
+>>> +	int ret;
+>>>
+>>>   	indio_dev = iio_device_alloc(sizeof(*st));
+>>>   	if (indio_dev == NULL) {
+>>> @@ -118,25 +123,18 @@ static int __devinit ad7476_probe(struct spi_device *spi)
+>>>   		goto error_ret;
+>>>   	}
+>>>   	st = iio_priv(indio_dev);
+>>> -	st->reg = regulator_get(&spi->dev, "vcc");
+>>> -	if (!IS_ERR(st->reg)) {
+>>> -		ret = regulator_enable(st->reg);
+>>> -		if (ret)
+>>> -			goto error_put_reg;
+>>> -
+>>> -		voltage_uv = regulator_get_voltage(st->reg);
+>>> -	}
+>>>   	st->chip_info =
+>>>   		&ad7476_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+>>>
+>>> -	if (st->chip_info->int_vref_mv)
+>>> -		st->int_vref_mv = st->chip_info->int_vref_mv;
+>>> -	else if (pdata && pdata->vref_mv)
+>>> -		st->int_vref_mv = pdata->vref_mv;
+>>> -	else if (voltage_uv)
+>>> -		st->int_vref_mv = voltage_uv / 1000;
+>>> -	else
+>>> -		dev_warn(&spi->dev, "reference voltage unspecified\n");
+>>> +	st->reg = regulator_get(&spi->dev, "vcc");
+>>> +	if (IS_ERR(st->reg)) {
+>>> +		ret = PTR_ERR(st->reg);
+>>> +		goto error_ret;
+>>> +	}
+>>> +
+>>> +	ret = regulator_enable(st->reg);
+>>> +	if (ret)
+>>> +		goto error_put_reg;
+>>>
+>>>   	spi_set_drvdata(spi, indio_dev);
+>>>
+>>> @@ -169,11 +167,9 @@ static int __devinit ad7476_probe(struct spi_device *spi)
+>>>   error_ring_unregister:
+>>>   	ad7476_ring_cleanup(indio_dev);
+>>>   error_disable_reg:
+>>> -	if (!IS_ERR(st->reg))
+>>> -		regulator_disable(st->reg);
+>>> +	regulator_disable(st->reg);
+>>>   error_put_reg:
+>>> -	if (!IS_ERR(st->reg))
+>>> -		regulator_put(st->reg);
+>>> +	regulator_put(st->reg);
+>>>   	iio_device_free(indio_dev);
+>>>
+>>>   error_ret:
+>>> @@ -187,10 +183,8 @@ static int __devexit ad7476_remove(struct spi_device *spi)
+>>>
+>>>   	iio_device_unregister(indio_dev);
+>>>   	ad7476_ring_cleanup(indio_dev);
+>>> -	if (!IS_ERR(st->reg)) {
+>>> -		regulator_disable(st->reg);
+>>> -		regulator_put(st->reg);
+>>> -	}
+>>> +	regulator_disable(st->reg);
+>>> +	regulator_put(st->reg);
+>>>   	iio_device_free(indio_dev);
+>>>
+>>>   	return 0;
+>>>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
 
