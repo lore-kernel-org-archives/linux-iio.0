@@ -1,77 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:49396 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750891Ab2INE7m convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Sep 2012 00:59:42 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: RE: [PATCH v3 5/5] MFD: ti_tscadc: add suspend/resume functionality
-Date: Fri, 14 Sep 2012 04:59:21 +0000
-Message-ID: <4CE347531D4CA947960AF71FF095B9323E953CC3@DBDE01.ent.ti.com>
-References: <1347532819-505-1-git-send-email-rachna@ti.com>
- <1347532819-505-6-git-send-email-rachna@ti.com> <5051D92F.1090309@metafoo.de>
-In-Reply-To: <5051D92F.1090309@metafoo.de>
-Content-Type: text/plain; charset="us-ascii"
+Received: from smtp-out-028.synserver.de ([212.40.185.28]:1498 "EHLO
+	smtp-out-028.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752548Ab2INI5j (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Sep 2012 04:57:39 -0400
+Message-ID: <5052F1A8.3060502@metafoo.de>
+Date: Fri, 14 Sep 2012 10:58:16 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, drivers@analog.com
+Subject: Re: [PATCH] iio:dac: Add ad5755 driver
+References: <1347542015-27209-1-git-send-email-lars@metafoo.de> <50524343.7060301@kernel.org>
+In-Reply-To: <50524343.7060301@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Sep 13, 2012 at 18:31:35, Lars-Peter Clausen wrote:
-> On 09/13/2012 12:40 PM, Patil, Rachna wrote:
-> > This patch adds support for suspend/resume of TSC/ADC MFDevice.
-> > 
-> > Signed-off-by: Patil, Rachna <rachna@ti.com>
-> > ---
-> > Changes in v2:
-> > 	Added this patch newly in this patch series.
-> > 
-> > Changes in v3:
-> > 	No changes.
-> > 
-> >  drivers/iio/adc/ti_adc.c           |   32 ++++++++++++++++++++++++++++++++
-> >  drivers/input/touchscreen/ti_tsc.c |   33 +++++++++++++++++++++++++++++++++
-> >  drivers/mfd/ti_tscadc.c            |   33 ++++++++++++++++++++++++++++++++-
-> >  include/linux/mfd/ti_tscadc.h      |    3 +++
-> >  4 files changed, 100 insertions(+), 1 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/ti_adc.c b/drivers/iio/adc/ti_adc.c index 
-> > 56f8af2..69f19f0 100644
-> > --- a/drivers/iio/adc/ti_adc.c
-> > +++ b/drivers/iio/adc/ti_adc.c
-> > @@ -207,6 +207,36 @@ static int __devexit tiadc_remove(struct platform_device *pdev)
-> >  	return 0;
-> >  }
-> >  
-> [...]
-> >  static struct platform_driver tiadc_driver = {
-> >  	.driver = {
-> >  		.name   = "tiadc",
-> > @@ -214,6 +244,8 @@ static struct platform_driver tiadc_driver = {
-> >  	},
-> >  	.probe	= tiadc_probe,
-> >  	.remove	= __devexit_p(tiadc_remove),
-> > +	.suspend = adc_suspend,
-> > +	.resume = adc_resume,
-> >  };
-> >  
+On 09/13/2012 10:34 PM, Jonathan Cameron wrote:
+> On 09/13/2012 02:13 PM, Lars-Peter Clausen wrote:
+>> This patch adds support for the AD5755, AD5755-1, AD5757, AD5735, AD5737 16 and
+>> 14 bit quad-channel DACs. The AD5757/AD5737 only have current outputs, but
+>> for the AD5755/AD5757 each of the outputs can be configured to either be a
+>> voltage or a current output. We only allow to configure this at device probe
+>> time since usually this needs to match the external circuitry and should not be
+>> changed on the fly.
+>>
+> Fair enough.
 > 
-> 
-> Using the suspend/resume callbacks is deprecated, please use dev_pm_ops.
-> Same comment applies to the other two drivers.
+> Couple of little bits inline.
 
-Ok. I will make changes in all the 3 driver to use dev_pm_ops instead of suspend/resume callbacks.
+Thanks for the review.
 
-Regards,
-Rachna
+>> +static void ad5755_get_min_max(struct ad5755_state *st,
+>> +	struct iio_chan_spec const *chan, int *min, int *max)
+>> +{
+>> +	enum ad5755_mode mode = st->ctrl[chan->channel] & 7;
+>> +
+> This might be a bit cleaner as a lookup table than as
+> a switch statement.
+> static const modemaxmin[2][] = {
+>        [AD5755_MOD_VOLTAGE_0V_5V] = { 0, 5000},
+> etc.
+> };
 
-> 
-> 
-> 
+Yes, definitely. I actually feel kind of stupid now for implementing this
+with a switch case statement ;)
 
+>> +	switch (mode) {
+>> +	case AD5755_MODE_VOLTAGE_0V_5V:
+>> +		*min = 0;
+>> +		*max = 5000;
+>> +		break;
+>> +	case AD5755_MODE_VOLTAGE_0V_10V:
+>> +		*min = 0;
+>> +		*max = 10000;
+>> +		break;
+>> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+>> +		*min = -5000;
+>> +		*max = 5000;
+>> +		break;
+>> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+>> +		*min = -10000;
+>> +		*max = 10000;
+>> +		break;
+>> +	case AD5755_MODE_CURRENT_4mA_20mA:
+>> +		*min = 4;
+>> +		*max = 20;
+>> +		break;
+>> +	case AD5755_MODE_CURRENT_0mA_20mA:
+>> +		*min = 0;
+>> +		*max = 20;
+>> +		break;
+>> +	case AD5755_MODE_CURRENT_0mA_24mA:
+>> +		*min = 0;
+>> +		*max = 24;
+>> +		break;
+>> +	default:
+> When does this apply?
+
+In practice never. But 'st->ctrl[chan->channel] & 7' could in theory lead
+here, so it was to keep the compiler to not complain about maybe
+uninitialized variables.
+
+>> +		*min = 0;
+>> +		*max = 1;
+>> +		break;
+>> +	}
+>> +}
+>> 
