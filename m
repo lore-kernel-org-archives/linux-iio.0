@@ -1,48 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-43.csi.cam.ac.uk ([131.111.8.143]:32778 "EHLO
-	ppsw-43.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752758Ab2IJJMz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2012 05:12:55 -0400
-Message-ID: <504DAF19.3050701@jic23.retrosnub.co.uk>
-Date: Mon, 10 Sep 2012 10:12:57 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-MIME-Version: 1.0
-To: "Kim, Milo" <Milo.Kim@ti.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] iio: inkern: clear allocated memory
-References: <A874F61F95741C4A9BA573A70FE3998F41EF45DC@DQHE02.ent.ti.com>
-In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F41EF45DC@DQHE02.ent.ti.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from smtp-out-029.synserver.de ([212.40.185.29]:1343 "EHLO
+	smtp-out-029.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757330Ab2INPWa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Sep 2012 11:22:30 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Milo Kim <Milo.Kim@ti.com>,
+	anish kumar <anish198519851985@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/4] iio: Introduce a new fractional value type
+Date: Fri, 14 Sep 2012 17:21:42 +0200
+Message-Id: <1347636104-3419-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347636104-3419-1-git-send-email-lars@metafoo.de>
+References: <1347636104-3419-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/09/12 09:02, Kim, Milo wrote:
->   Use kzalloc() rathern than kmalloc() for initializing iio_dev and
->   iio_chan_spec.
-Please state why.  I'm sure I can track it down, but it ought to be
-in the commit comment.
->
-> Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
-> ---
->   drivers/iio/inkern.c |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index b5afc2f..1faa240 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -130,7 +130,7 @@ struct iio_channel *iio_channel_get(const char *name, const char *channel_name)
->   	if (c == NULL)
->   		return ERR_PTR(-ENODEV);
->
-> -	channel = kmalloc(sizeof(*channel), GFP_KERNEL);
-> +	channel = kzalloc(sizeof(*channel), GFP_KERNEL);
->   	if (channel == NULL)
->   		return ERR_PTR(-ENOMEM);
->
->
+Currently IIO uses a decimal fixed point representations for real type numbers.
+This patch introduces a new representation for rational type numbers. The number
+will be expressed by specifying a numerator and denominator. For converting a
+raw value to a processed value multiply it by the numerator and divide it by the
+denominator.
+
+The reasoning for introducing this new type is that for a lot of devices the
+scale can be represented easily by a fractional number, but it is not possible
+to represent it as fixed point number without rounding.  E.g. for a simple DAC
+the scale is often the reference voltage divided by the number of possible
+values (Usually 2**n_bits - 1). Each driver currently implements the conversion
+of this fraction to a fixed point number on its own.
+
+Also when it comes to the in-kernel interface this allows to directly use the
+fractional factors to convert a raw value to a processed value. This should on
+one hand require less instructions and on the other hand increase the
+precession.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-core.c |    6 ++++++
+ include/linux/iio/types.h       |    1 +
+ 2 files changed, 7 insertions(+)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 0499330..6eb24db 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -366,6 +366,7 @@ static ssize_t iio_read_channel_info(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	unsigned long long tmp;
+ 	int val, val2;
+ 	bool scale_db = false;
+ 	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+@@ -391,6 +392,11 @@ static ssize_t iio_read_channel_info(struct device *dev,
+ 			return sprintf(buf, "-%d.%09u\n", val, -val2);
+ 		else
+ 			return sprintf(buf, "%d.%09u\n", val, val2);
++	case IIO_VAL_FRACTIONAL:
++		tmp = div_s64((s64)val * 1000000000LL, val2);
++		val2 = do_div(tmp, 1000000000LL);
++		val = tmp;
++		return sprintf(buf, "%d.%09u\n", val, val2);
+ 	default:
+ 		return 0;
+ 	}
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 44e3977..5c647ec 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -57,5 +57,6 @@ enum iio_modifier {
+ #define IIO_VAL_INT_PLUS_MICRO 2
+ #define IIO_VAL_INT_PLUS_NANO 3
+ #define IIO_VAL_INT_PLUS_MICRO_DB 4
++#define IIO_VAL_FRACTIONAL 10
+ 
+ #endif /* _IIO_TYPES_H_ */
+-- 
+1.7.10.4
 
