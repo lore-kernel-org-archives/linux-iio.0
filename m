@@ -1,83 +1,97 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35075 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752203Ab2IOJNu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Sep 2012 05:13:50 -0400
-Message-ID: <505446CD.1010706@kernel.org>
-Date: Sat, 15 Sep 2012 10:13:49 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
+Return-Path: <Milo.Kim@ti.com>
+From: "Kim, Milo" <Milo.Kim@ti.com>
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	Milo Kim <Milo.Kim@ti.com>,
-	anish kumar <anish198519851985@gmail.com>
-Subject: Re: [PATCH 2/4] iio: Introduce a new fractional value type
-References: <1347636104-3419-1-git-send-email-lars@metafoo.de> <1347636104-3419-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347636104-3419-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+CC: Jonathan Cameron <jic23@kernel.org>, Jonathan Cameron <jic23@cam.ac.uk>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v5] iio: adc: add new lp8788 adc driver
+Date: Sat, 15 Sep 2012 00:15:01 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EF4EE3@DQHE02.ent.ti.com>
+References: <A874F61F95741C4A9BA573A70FE3998F41EF45CC@DQHE02.ent.ti.com>
+ <504DADE1.6010303@metafoo.de>
+ <A874F61F95741C4A9BA573A70FE3998F41EF4BFC@DQHE02.ent.ti.com>
+ <5052EC67.7010706@metafoo.de>
+In-Reply-To: <5052EC67.7010706@metafoo.de>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/14/2012 04:21 PM, Lars-Peter Clausen wrote:
-> Currently IIO uses a decimal fixed point representations for real type numbers.
-> This patch introduces a new representation for rational type numbers. The number
-> will be expressed by specifying a numerator and denominator. For converting a
-> raw value to a processed value multiply it by the numerator and divide it by the
-> denominator.
-> 
-> The reasoning for introducing this new type is that for a lot of devices the
-> scale can be represented easily by a fractional number, but it is not possible
-> to represent it as fixed point number without rounding.  E.g. for a simple DAC
-> the scale is often the reference voltage divided by the number of possible
-> values (Usually 2**n_bits - 1). Each driver currently implements the conversion
-> of this fraction to a fixed point number on its own.
-> 
-> Also when it comes to the in-kernel interface this allows to directly use the
-> fractional factors to convert a raw value to a processed value. This should on
-> one hand require less instructions and on the other hand increase the
-> precession.
-precession -> precision (fixed in merge)
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-merged to togreg branch of iio.git
-> ---
->  drivers/iio/industrialio-core.c |    6 ++++++
->  include/linux/iio/types.h       |    1 +
->  2 files changed, 7 insertions(+)
-> 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 0499330..6eb24db 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -366,6 +366,7 @@ static ssize_t iio_read_channel_info(struct device *dev,
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> +	unsigned long long tmp;
->  	int val, val2;
->  	bool scale_db = false;
->  	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
-> @@ -391,6 +392,11 @@ static ssize_t iio_read_channel_info(struct device *dev,
->  			return sprintf(buf, "-%d.%09u\n", val, -val2);
->  		else
->  			return sprintf(buf, "%d.%09u\n", val, val2);
-> +	case IIO_VAL_FRACTIONAL:
-> +		tmp = div_s64((s64)val * 1000000000LL, val2);
-> +		val2 = do_div(tmp, 1000000000LL);
-> +		val = tmp;
-> +		return sprintf(buf, "%d.%09u\n", val, val2);
->  	default:
->  		return 0;
->  	}
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index 44e3977..5c647ec 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -57,5 +57,6 @@ enum iio_modifier {
->  #define IIO_VAL_INT_PLUS_MICRO 2
->  #define IIO_VAL_INT_PLUS_NANO 3
->  #define IIO_VAL_INT_PLUS_MICRO_DB 4
-> +#define IIO_VAL_FRACTIONAL 10
->  
->  #endif /* _IIO_TYPES_H_ */
-> 
+> > The LP8788 has 13 ADC input selection.
+> >
+> > ADC selection:
+> > Battery voltage, general ADC1 and so on.
+> >
+> > ADC result:
+> > Result =3D MAX_VALUE * (raw + 0.5) / 4095  except ADC is the charger
+> voltage
+> > If the ADC input is the charger voltage,
+> > Result =3D MAX_VALUE * (raw + 0.5) / (4095 * 0.48)
+> >
+> > The raw value is from the registers.
+> > It has the range between 0 to 4095. (12bits)
+> >
+> > MAX_VALUE is constant for each selection.
+> > For the battery voltage, there are three ADC inputs. 5.0/5.5/6.0V
+> > Battery voltage for Max 5.0V =3D 5.0
+> > Battery voltage for Max 5.5V =3D 5.5
+> > Battery voltage for Max 6.0V =3D 6.0
+> > Charger =3D 6.0
+> > ADC1 =3D 2.5
+> >
+> > I'm afraid I still misunderstand how IIO ADC works.
+> > Could you me some guide how to setup the scale in the driver?
+>=20
+> The scale is a fixpoint value, which should be multiplied with the raw
+> value
+> to get the result in the proper unit. The unit depends on the channel
+> type,
+> e.g. for voltage it is mV and for temperature it is C. The number of
+> decimal
+> places for the fixed point value depends on whether you return
+> INT_PLUS_MICRO it's 6, if you return INT_PLUS_NANO it is 9. The digits
+> before the decimal point are stored in "val" the digits after the
+> decimal
+> point are stored in "val2".
+>=20
+> E.g. if you have
+> *val =3D 1;
+> *val2 =3D 1256;
+> return INT_PLUS_MICRO;
+>=20
+> your scale factor is 1.001256, if you'd return INT_PLUS_NANO you scale
+> factor would be 1.0000001256 instead.
+>=20
+> In your case you could for example calculate the voltage scales as:
+>=20
+> tmp =3D MAX_VALUE * 1000000 / 4095;
+> *val =3D tmp / 1000000;
+> *val2 =3D tmp % 1000000;
+>=20
+> This assumes that MAX_VALUE is in millivolt.
+>=20
+> E.g. if MAX_VALUE is 5.0V you should get a scale of 1.220703 (val =3D 1,
+> val2
+> =3D 220703). Since your MAX_VALUE is fixed you can probably just pre-
+> calculate
+> the result of MAX_VALUE * 1000000 / 4095 for each channel, similar like
+> you
+> already did with your lp8788_scale table.
+
+Superb! Thanks a lot for your clear explanation.
+
+I have one more question about the temperature ADC.
+
+The LP8788 has no dedicated temperature ADC, but it provides four
+general inputs - ADC1 to 4.
+The IIO consumer can get the battery temperature among general ADC inputs.
+I think the ADC driver should not assume that ADC1..4 is for the temperatur=
+e,
+because the selection is configurable in the platform side.
+
+Then how can I set the unit of ADC MAX_VALUE?
+I would set the unit of ADC MAX_VALUE to mili (same as voltage) and
+the result is converted by the IIO consumer manually.
+Does it make sense ?
+
+Best Regards,
+Milo
