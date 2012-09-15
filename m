@@ -1,316 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35236 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35025 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753196Ab2IOJ0Y (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Sep 2012 05:26:24 -0400
-Message-ID: <505449BB.5020606@kernel.org>
-Date: Sat, 15 Sep 2012 10:26:19 +0100
+	with ESMTP id S1752531Ab2IOJKH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Sep 2012 05:10:07 -0400
+Message-ID: <505445EE.5050601@kernel.org>
+Date: Sat, 15 Sep 2012 10:10:06 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
 	Milo Kim <Milo.Kim@ti.com>,
 	anish kumar <anish198519851985@gmail.com>
-Subject: Re: [PATCH 3/4] iio:inkern: Add function to read the processed value
-References: <1347636104-3419-1-git-send-email-lars@metafoo.de> <1347636104-3419-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347636104-3419-3-git-send-email-lars@metafoo.de>
+Subject: Re: [PATCH 1/4] iio: consumer.h: Fix kernel doc incosistency
+References: <1347636104-3419-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347636104-3419-1-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 09/14/2012 04:21 PM, Lars-Peter Clausen wrote:
-> Add a function to read a processed value from a channel. The function will first
-> attempt to read the IIO_CHAN_INFO_PROCESSED attribute. If that fails it will
-> read the IIO_CHAN_INFO_RAW attribute and convert the result from a raw value to
-> a processed value.
->
-> The patch also introduces a function to convert raw value to a processed value
-> and exports it, in case a user needs or wants to do the conversion by itself.
-Take another look at this one... Either that or there is a dependency here on something
-you haven't mentioned (and some of the sparse warnings are about stuff entirely in here).
-
-
-drivers/iio/inkern.c:240:47: warning: incorrect type in return expression (invalid types)
-drivers/iio/inkern.c:240:47:    expected incomplete type
-drivers/iio/inkern.c:240:47:    got int
-drivers/iio/inkern.c:254:13: warning: incorrect type in assignment (different base types)
-drivers/iio/inkern.c:254:13:    expected int [signed] [assigned] ret
-drivers/iio/inkern.c:254:13:    got incomplete type
-drivers/iio/inkern.c:269:13: warning: incorrect type in assignment (different base types)
-drivers/iio/inkern.c:269:13:    expected int [signed] ret
-drivers/iio/inkern.c:269:13:    got incomplete type
-drivers/iio/inkern.c:273:20: warning: incorrect type in assignment (different base types)
-drivers/iio/inkern.c:273:20:    expected int [signed] scale_type
-drivers/iio/inkern.c:273:20:    got incomplete type
-drivers/iio/inkern.c:306:5: error: symbol 'iio_convert_raw_to_processed' redeclared with different type (originally
-declared at include/linux/iio/consumer.h:131) - incompatible argument 1 (different modifiers)
-drivers/iio/inkern.c:326:5: error: symbol 'iio_read_channel_processed' redeclared with different type (originally
-declared at include/linux/iio/consumer.h:86) - incompatible argument 1 (different modifiers)
-drivers/iio/inkern.c:362:15: error: undefined identifier 'iio_read_channel'
-  CC [M]  drivers/iio/inkern.o
-drivers/iio/inkern.c:232:8: warning: return type defaults to 'int'
-drivers/iio/inkern.c:306:5: error: conflicting types for 'iio_convert_raw_to_processed'
-include/linux/iio/consumer.h:131:5: note: previous declaration of 'iio_convert_raw_to_processed' was here
-drivers/iio/inkern.c:324:1: error: conflicting types for 'iio_convert_raw_to_processed'
-include/linux/iio/consumer.h:131:5: note: previous declaration of 'iio_convert_raw_to_processed' was here
-drivers/iio/inkern.c:326:5: error: conflicting types for 'iio_read_channel_processed'
-include/linux/iio/consumer.h:86:5: note: previous declaration of 'iio_read_channel_processed' was here
-drivers/iio/inkern.c: In function 'iio_read_channel_processed':
-drivers/iio/inkern.c:328:6: warning: unused variable 'unused'
-drivers/iio/inkern.c: At top level:
-drivers/iio/inkern.c:350:1: error: conflicting types for 'iio_read_channel_processed'
-include/linux/iio/consumer.h:86:5: note: previous declaration of 'iio_read_channel_processed' was here
-drivers/iio/inkern.c: In function 'iio_read_channel_scale':
-drivers/iio/inkern.c:362:2: error: implicit declaration of function 'iio_read_channel'
-make[2]: *** [drivers/iio/inkern.o] Error 1
-
-
-
->
+> For the iio_read_channel_raw and iio_read_channel_scale the kerneldoc comment
+> refers to an argument called "channel", while the argument is called "chan" in
+> the function signature. This leads to the following warnings from kerneldoc:
+> 
+> 	Warning(include/linux/iio/consumer.h:71): No description found for parameter 'chan'
+> 	Warning(include/linux/iio/consumer.h:71): Excess function parameter 'channel' description in 'iio_read_channel_raw'
+> 	Warning(include/linux/iio/consumer.h:109): No description found for parameter 'chan'
+> 	Warning(include/linux/iio/consumer.h:109): Excess function parameter 'channel' description in 'iio_read_channel_scale'
+> 
+> This patch fixes the warnings by naming them consistently.
+> 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+
+Why do it this way round? It is inconsistent with most of the other functions
+in consumer.h and if you were to do this I'd argue in favour of also changing
+the naming in the implementation.. Much easier to just change the documentation
+to match the implementation!
 > ---
->  drivers/iio/inkern.c         |  114 ++++++++++++++++++++++++++++++++++++++----
->  include/linux/iio/consumer.h |   38 ++++++++++++++
->  include/linux/iio/iio.h      |   17 +++++++
->  3 files changed, 160 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index a14e55d..37299bf 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -229,9 +229,21 @@ void iio_channel_release_all(struct iio_channel *channels)
->  }
->  EXPORT_SYMBOL_GPL(iio_channel_release_all);
->
-> +static iio_channel_read(struct iio_channel *chan, int *val, int *val2,
-> +	enum iio_chan_info_enum info)
-> +{
-> +	int unused;
-> +
-> +	if (val2 == NULL)
-> +		val2 = &unused;
-> +
-> +	return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
-> +						val, val2, info);
-> +}
-> +
->  int iio_read_channel_raw(struct iio_channel *chan, int *val)
->  {
-> -	int val2, ret;
-> +	int ret;
->
->  	mutex_lock(&chan->indio_dev->info_exist_lock);
->  	if (chan->indio_dev->info == NULL) {
-> @@ -239,10 +251,7 @@ int iio_read_channel_raw(struct iio_channel *chan, int *val)
->  		goto err_unlock;
->  	}
->
-> -	ret = chan->indio_dev->info->read_raw(chan->indio_dev,
-> -					      chan->channel,
-> -					      val, &val2,
-> -					      IIO_CHAN_INFO_RAW);
-> +	ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_RAW);
->  err_unlock:
->  	mutex_unlock(&chan->indio_dev->info_exist_lock);
->
-> @@ -250,6 +259,96 @@ err_unlock:
->  }
->  EXPORT_SYMBOL_GPL(iio_read_channel_raw);
->
-> +static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
-> +	int raw, int *processed, unsigned int scale)
-> +{
-> +	int scale_type, scale_val, scale_val2, offset;
-> +	s64 raw64 = raw;
-> +	int ret;
-> +
-> +	ret = iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_SCALE);
-> +	if (ret == 0)
-> +		raw64 += offset;
-> +
-> +	scale_type = iio_channel_read(chan, &scale_val, &scale_val2,
-> +					IIO_CHAN_INFO_SCALE);
-> +	if (scale_type < 0)
-> +		return scale_type;
-> +
-> +	switch (scale_type) {
-> +	case IIO_VAL_INT:
-> +		*processed = raw * scale_val;
-> +		break;
-> +	case IIO_VAL_INT_PLUS_MICRO:
-> +		if (scale_val2 < 0)
-> +			*processed = -raw * scale_val;
-> +		else
-> +			*processed = raw * scale_val;
-> +		*processed += div_s64(raw * (s64)scale_val2 * scale, 1000000LL);
-> +		break;
-> +	case IIO_VAL_INT_PLUS_NANO:
-> +		if (scale_val2 < 0)
-> +			*processed = -raw * scale_val;
-> +		else
-> +			*processed = raw * scale_val;
-> +		*processed += div_s64(raw * (s64)scale_val2 * scale, 1000000000LL);
-> +		break;
-> +	case IIO_VAL_FRACTIONAL:
-> +		*processed = div_s64(raw * (s64)scale_val * scale, scale_val2);
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
-> +	int *processed, unsigned int scale)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&chan->indio_dev->info_exist_lock);
-> +	if (chan->indio_dev->info == NULL) {
-> +		ret = -ENODEV;
-> +		goto err_unlock;
-> +	}
-> +
-> +	ret = iio_convert_raw_to_processed_unlocked(chan, raw, processed,
-> +							scale);
-> +err_unlock:
-> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_convert_raw_to_processed);
-> +
-chan not const here but is in the header..
-> +int iio_read_channel_processed(struct iio_channel *chan, int *val)
-> +{
-> +	int unused, ret;
-> +
-> +	mutex_lock(&chan->indio_dev->info_exist_lock);
-> +	if (chan->indio_dev->info == NULL) {
-> +		ret = -ENODEV;
-> +		goto err_unlock;
-> +	}
-> +
-> +	if (iio_channel_has_info(chan->channel, IIO_CHAN_INFO_PROCESSED)) {
-> +		ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_PROCESSED);
-> +	} else {
-> +		ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_RAW);
-> +		if (ret < 0)
-> +			goto err_unlock;
-> +		ret = iio_convert_raw_to_processed_unlocked(chan, *val, val, 1);
-> +	}
-> +
-> +err_unlock:
-> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_read_channel_processed);
-> +
->  int iio_read_channel_scale(struct iio_channel *chan, int *val, int *val2)
->  {
->  	int ret;
-> @@ -260,10 +359,7 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val, int *val2)
->  		goto err_unlock;
->  	}
->
-> -	ret = chan->indio_dev->info->read_raw(chan->indio_dev,
-> -					      chan->channel,
-> -					      val, val2,
-> -					      IIO_CHAN_INFO_SCALE);
-> +	ret = iio_read_channel(chan, val, val2, IIO_CHAN_INFO_SCALE);
->  err_unlock:
->  	mutex_unlock(&chan->indio_dev->info_exist_lock);
->
+>  include/linux/iio/consumer.h |    4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
 > diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-> index 27759ac3..3f66304 100644
+> index 06ab4ec..27759ac3 100644
 > --- a/include/linux/iio/consumer.h
 > +++ b/include/linux/iio/consumer.h
-> @@ -71,6 +71,21 @@ int iio_read_channel_raw(struct iio_channel *channel,
+> @@ -67,7 +67,7 @@ void iio_channel_release_all(struct iio_channel *chan);
+>   * Note raw reads from iio channels are in adc counts and hence
+>   * scale will need to be applied if standard units required.
+>   */
+> -int iio_read_channel_raw(struct iio_channel *chan,
+> +int iio_read_channel_raw(struct iio_channel *channel,
 >  			 int *val);
->
+>  
 >  /**
-> + * iio_read_channel_processed() - read processed value from a given channel
-> + * @channel:		The channel being queried.
-> + * @val:		Value read back.
-> + *
-> + * Returns an error code or 0.
-> + *
-> + * This function will read a processed value from a channel. A processed value
-> + * means that this value will have the correct unit and not some device internal
-> + * representation. If the device does not support reporting a processed value
-> + * the function will query the raw value and the channels scale and offset and
-> + * do the appropriate transformation.
-> + */
-> +int iio_read_channel_processed(const struct iio_channel *channel, int *val);
-> +
-> +/**
->   * iio_get_channel_type() - get the type of a channel
->   * @channel:		The channel being queried.
->   * @type:		The type of the channel.
-> @@ -93,4 +108,27 @@ int iio_get_channel_type(struct iio_channel *channel,
->  int iio_read_channel_scale(struct iio_channel *channel, int *val,
+> @@ -90,7 +90,7 @@ int iio_get_channel_type(struct iio_channel *channel,
+>   * as IIO_VAL_INT_PLUS_MICRO telling us we have a value of val
+>   * + val2/1e6
+>   */
+> -int iio_read_channel_scale(struct iio_channel *chan, int *val,
+> +int iio_read_channel_scale(struct iio_channel *channel, int *val,
 >  			   int *val2);
->
-> +/**
-> + * iio_convert_raw_to_processed() - Converts a raw value to a processed value
-> + * @channel:		The channel being queried
-> + * @raw:		The raw IIO to convert
-> + * @processed:		The result of the conversion
-> + * @scale:		Scale factor to apply during the conversion
-> + *
-> + * Returns an error code or 0.
-> + *
-> + * This function converts a raw value to processed value for a specific channel.
-> + * A raw value is the device internal representation of a sample and the value
-> + * returned by iio_read_channel_raw, so the unit of that value is device
-> + * depended. A processed value on the other hand is value has a normed unit
-> + * according with the IIO specification.
-> + *
-> + * The scale factor allows to increase the precession of the returned value. For
-> + * a scale factor of 1 the function will return the result in the normal IIO
-> + * unit for the channel type. E.g. millivolt for voltage channels, if you want
-> + * nanovolts instead pass 1000 as the scale factor.
-> + */
-> +int iio_convert_raw_to_processed(const struct iio_channel *channel, int raw,
-> +	int *processed, unsigned int scale);
-const here but not in implementation....
-> +
+>  
 >  #endif
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index 30affa5..c0ae76a 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -40,6 +40,8 @@ enum iio_chan_info_enum {
->
->  #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
->  #define IIO_CHAN_INFO_SEPARATE_BIT(type) BIT(type*2 + 1)
-> +#define IIO_CHAN_INFO_BITS(type) (IIO_CHAN_INFO_SHARED_BIT(type) | \
-> +				    IIO_CHAN_INFO_SEPARATE_BIT(type))
->
->  #define IIO_CHAN_INFO_RAW_SEPARATE_BIT			\
->  	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_RAW)
-> @@ -261,6 +263,21 @@ struct iio_chan_spec {
->  	unsigned		differential:1;
->  };
->
-> +
-> +/**
-> + * iio_channel_has_info() - Checks whether a channel supports a info attribute
-> + * @chan: The channel to be queried
-> + * @type: Type of the info attribute to be checked
-> + *
-> + * Returns true if the channels supports reporting values for the given info
-> + * attribute type, false otherwise.
-> + */
-> +static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
-> +	enum iio_chan_info_enum type)
-> +{
-> +	return chan->info_mask & IIO_CHAN_INFO_BITS(type);
-> +}
-> +
->  #define IIO_ST(si, rb, sb, sh)						\
->  	{ .sign = si, .realbits = rb, .storagebits = sb, .shift = sh }
->
->
+> 
