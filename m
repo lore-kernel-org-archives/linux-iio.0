@@ -1,327 +1,595 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35324 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751581Ab2IOJfa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Sep 2012 05:35:30 -0400
-Message-ID: <50544BE1.5000609@kernel.org>
-Date: Sat, 15 Sep 2012 10:35:29 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:44751 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751096Ab2IPPlU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Sep 2012 11:41:20 -0400
+Message-ID: <5055F31E.30905@metafoo.de>
+Date: Sun, 16 Sep 2012 17:41:18 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	Milo Kim <Milo.Kim@ti.com>,
-	anish kumar <anish198519851985@gmail.com>
-Subject: Re: [PATCH 3/4] iio:inkern: Add function to read the processed value
-References: <1347636104-3419-1-git-send-email-lars@metafoo.de> <1347636104-3419-3-git-send-email-lars@metafoo.de> <505449BB.5020606@kernel.org> <50544ADF.8020405@metafoo.de>
-In-Reply-To: <50544ADF.8020405@metafoo.de>
+To: anish kumar <anish198519851985@gmail.com>
+CC: jic23@cam.ac.uk, cbou@mail.ru, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH] [V1]power: battery: Generic battery driver using IIO
+References: <1347779683-5025-1-git-send-email-anish198519851985@gmail.com>
+In-Reply-To: <1347779683-5025-1-git-send-email-anish198519851985@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/15/2012 10:31 AM, Lars-Peter Clausen wrote:
-> On 09/15/2012 11:26 AM, Jonathan Cameron wrote:
->> On 09/14/2012 04:21 PM, Lars-Peter Clausen wrote:
->>> Add a function to read a processed value from a channel. The function will first
->>> attempt to read the IIO_CHAN_INFO_PROCESSED attribute. If that fails it will
->>> read the IIO_CHAN_INFO_RAW attribute and convert the result from a raw value to
->>> a processed value.
->>>
->>> The patch also introduces a function to convert raw value to a processed value
->>> and exports it, in case a user needs or wants to do the conversion by itself.
->> Take another look at this one... Either that or there is a dependency here on something
->> you haven't mentioned (and some of the sparse warnings are about stuff entirely in here).
->>
+On 09/16/2012 09:14 AM, anish kumar wrote:
+> From: anish kumar <anish198519851985@gmail.com>
 > 
-> I should clearly stop sending out patches late in the afternoon... the fixes
-> for all these errors slipped into patch 4...
-*laughs* I didn't think of looking there. Not to worry we all do this sort of thing
-from time to time.  Also, the original fractional series came with a patch for a driver
-(dac i think). I'd like to see that fairly soon to act as an example of it's usage.
+> In last version:
+> Addressed concerns raised by lars:
+> a. made the adc_bat per device.
+> b. get the IIO channel using hardcoded channel names.
+> c. Minor issues related to gpio_is_valid and some code
+>    refactoring.
+> 
+> In this version:
+> Addressed concerns raised by Anton:
+> a. changed the struct name to gab(generic adc battery).
+> b. Added some functions to neaten the code.
+> c. Some minor coding guidelines changes.
+> d. Used the latest function introduce by lars:
+>    iio_read_channel_processed to streamline the code.
+> 
+> Signed-off-by: anish kumar <anish198519851985@gmail.com>
+> ---
+>  drivers/power/generic-adc-battery.c       |  442 +++++++++++++++++++++++++++++
+>  include/linux/power/generic-adc-battery.h |   19 ++
+>  2 files changed, 461 insertions(+), 0 deletions(-)
+>  create mode 100644 drivers/power/generic-adc-battery.c
+>  create mode 100644 include/linux/power/generic-adc-battery.h
+> 
+> diff --git a/drivers/power/generic-adc-battery.c b/drivers/power/generic-adc-battery.c
+> new file mode 100644
+> index 0000000..fd62916
+> --- /dev/null
+> +++ b/drivers/power/generic-adc-battery.c
+> @@ -0,0 +1,442 @@
+> +/*
+> + * Generic battery driver code using IIO
+> + * Copyright (C) 2012, Anish Kumar <anish198519851985@gmail.com>
+> + * based on jz4740-battery.c
+> + * based on s3c_adc_battery.c
+> + *
+> + * This file is subject to the terms and conditions of the GNU General Public
+> + * License.  See the file COPYING in the main directory of this archive for
+> + * more details.
+> + *
+> + */
+> +#include <linux/interrupt.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/power_supply.h>
+> +#include <linux/gpio.h>
+> +#include <linux/err.h>
+> +#include <linux/timer.h>
+> +#include <linux/jiffies.h>
+> +#include <linux/errno.h>
+> +#include <linux/init.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/iio/consumer.h>
+> +#include <linux/iio/types.h>
+> +#include <linux/power/generic-adc-battery.h>
+> +
+> +enum gab_chan_type {
+> +	VOLTAGE = 0,
+> +	CURRENT,
+> +	POWER,
+> +	MAX_CHAN_TYPE
+> +};
+> +
+> +/*
+> + * gab_chan_name suggests the standard channel names for commonly used
+> + * channel types.
+> + */
+> +static char *gab_chan_name[] = {
 
-> 
->>
->> drivers/iio/inkern.c:240:47: warning: incorrect type in return expression (invalid types)
->> drivers/iio/inkern.c:240:47:    expected incomplete type
->> drivers/iio/inkern.c:240:47:    got int
->> drivers/iio/inkern.c:254:13: warning: incorrect type in assignment (different base types)
->> drivers/iio/inkern.c:254:13:    expected int [signed] [assigned] ret
->> drivers/iio/inkern.c:254:13:    got incomplete type
->> drivers/iio/inkern.c:269:13: warning: incorrect type in assignment (different base types)
->> drivers/iio/inkern.c:269:13:    expected int [signed] ret
->> drivers/iio/inkern.c:269:13:    got incomplete type
->> drivers/iio/inkern.c:273:20: warning: incorrect type in assignment (different base types)
->> drivers/iio/inkern.c:273:20:    expected int [signed] scale_type
->> drivers/iio/inkern.c:273:20:    got incomplete type
->> drivers/iio/inkern.c:306:5: error: symbol 'iio_convert_raw_to_processed' redeclared with different type (originally
->> declared at include/linux/iio/consumer.h:131) - incompatible argument 1 (different modifiers)
->> drivers/iio/inkern.c:326:5: error: symbol 'iio_read_channel_processed' redeclared with different type (originally
->> declared at include/linux/iio/consumer.h:86) - incompatible argument 1 (different modifiers)
->> drivers/iio/inkern.c:362:15: error: undefined identifier 'iio_read_channel'
->>   CC [M]  drivers/iio/inkern.o
->> drivers/iio/inkern.c:232:8: warning: return type defaults to 'int'
->> drivers/iio/inkern.c:306:5: error: conflicting types for 'iio_convert_raw_to_processed'
->> include/linux/iio/consumer.h:131:5: note: previous declaration of 'iio_convert_raw_to_processed' was here
->> drivers/iio/inkern.c:324:1: error: conflicting types for 'iio_convert_raw_to_processed'
->> include/linux/iio/consumer.h:131:5: note: previous declaration of 'iio_convert_raw_to_processed' was here
->> drivers/iio/inkern.c:326:5: error: conflicting types for 'iio_read_channel_processed'
->> include/linux/iio/consumer.h:86:5: note: previous declaration of 'iio_read_channel_processed' was here
->> drivers/iio/inkern.c: In function 'iio_read_channel_processed':
->> drivers/iio/inkern.c:328:6: warning: unused variable 'unused'
->> drivers/iio/inkern.c: At top level:
->> drivers/iio/inkern.c:350:1: error: conflicting types for 'iio_read_channel_processed'
->> include/linux/iio/consumer.h:86:5: note: previous declaration of 'iio_read_channel_processed' was here
->> drivers/iio/inkern.c: In function 'iio_read_channel_scale':
->> drivers/iio/inkern.c:362:2: error: implicit declaration of function 'iio_read_channel'
->> make[2]: *** [drivers/iio/inkern.o] Error 1
->>
->>
->>
->>>
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->>> ---
->>>  drivers/iio/inkern.c         |  114 ++++++++++++++++++++++++++++++++++++++----
->>>  include/linux/iio/consumer.h |   38 ++++++++++++++
->>>  include/linux/iio/iio.h      |   17 +++++++
->>>  3 files changed, 160 insertions(+), 9 deletions(-)
->>>
->>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
->>> index a14e55d..37299bf 100644
->>> --- a/drivers/iio/inkern.c
->>> +++ b/drivers/iio/inkern.c
->>> @@ -229,9 +229,21 @@ void iio_channel_release_all(struct iio_channel *channels)
->>>  }
->>>  EXPORT_SYMBOL_GPL(iio_channel_release_all);
->>>
->>> +static iio_channel_read(struct iio_channel *chan, int *val, int *val2,
->>> +	enum iio_chan_info_enum info)
->>> +{
->>> +	int unused;
->>> +
->>> +	if (val2 == NULL)
->>> +		val2 = &unused;
->>> +
->>> +	return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
->>> +						val, val2, info);
->>> +}
->>> +
->>>  int iio_read_channel_raw(struct iio_channel *chan, int *val)
->>>  {
->>> -	int val2, ret;
->>> +	int ret;
->>>
->>>  	mutex_lock(&chan->indio_dev->info_exist_lock);
->>>  	if (chan->indio_dev->info == NULL) {
->>> @@ -239,10 +251,7 @@ int iio_read_channel_raw(struct iio_channel *chan, int *val)
->>>  		goto err_unlock;
->>>  	}
->>>
->>> -	ret = chan->indio_dev->info->read_raw(chan->indio_dev,
->>> -					      chan->channel,
->>> -					      val, &val2,
->>> -					      IIO_CHAN_INFO_RAW);
->>> +	ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_RAW);
->>>  err_unlock:
->>>  	mutex_unlock(&chan->indio_dev->info_exist_lock);
->>>
->>> @@ -250,6 +259,96 @@ err_unlock:
->>>  }
->>>  EXPORT_SYMBOL_GPL(iio_read_channel_raw);
->>>
->>> +static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
->>> +	int raw, int *processed, unsigned int scale)
->>> +{
->>> +	int scale_type, scale_val, scale_val2, offset;
->>> +	s64 raw64 = raw;
->>> +	int ret;
->>> +
->>> +	ret = iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_SCALE);
->>> +	if (ret == 0)
->>> +		raw64 += offset;
->>> +
->>> +	scale_type = iio_channel_read(chan, &scale_val, &scale_val2,
->>> +					IIO_CHAN_INFO_SCALE);
->>> +	if (scale_type < 0)
->>> +		return scale_type;
->>> +
->>> +	switch (scale_type) {
->>> +	case IIO_VAL_INT:
->>> +		*processed = raw * scale_val;
->>> +		break;
->>> +	case IIO_VAL_INT_PLUS_MICRO:
->>> +		if (scale_val2 < 0)
->>> +			*processed = -raw * scale_val;
->>> +		else
->>> +			*processed = raw * scale_val;
->>> +		*processed += div_s64(raw * (s64)scale_val2 * scale, 1000000LL);
->>> +		break;
->>> +	case IIO_VAL_INT_PLUS_NANO:
->>> +		if (scale_val2 < 0)
->>> +			*processed = -raw * scale_val;
->>> +		else
->>> +			*processed = raw * scale_val;
->>> +		*processed += div_s64(raw * (s64)scale_val2 * scale, 1000000000LL);
->>> +		break;
->>> +	case IIO_VAL_FRACTIONAL:
->>> +		*processed = div_s64(raw * (s64)scale_val * scale, scale_val2);
->>> +		break;
->>> +	default:
->>> +		return -EINVAL;
->>> +	}
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
->>> +	int *processed, unsigned int scale)
->>> +{
->>> +	int ret;
->>> +
->>> +	mutex_lock(&chan->indio_dev->info_exist_lock);
->>> +	if (chan->indio_dev->info == NULL) {
->>> +		ret = -ENODEV;
->>> +		goto err_unlock;
->>> +	}
->>> +
->>> +	ret = iio_convert_raw_to_processed_unlocked(chan, raw, processed,
->>> +							scale);
->>> +err_unlock:
->>> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
->>> +
->>> +	return ret;
->>> +}
->>> +EXPORT_SYMBOL_GPL(iio_convert_raw_to_processed);
->>> +
->> chan not const here but is in the header..
->>> +int iio_read_channel_processed(struct iio_channel *chan, int *val)
->>> +{
->>> +	int unused, ret;
->>> +
->>> +	mutex_lock(&chan->indio_dev->info_exist_lock);
->>> +	if (chan->indio_dev->info == NULL) {
->>> +		ret = -ENODEV;
->>> +		goto err_unlock;
->>> +	}
->>> +
->>> +	if (iio_channel_has_info(chan->channel, IIO_CHAN_INFO_PROCESSED)) {
->>> +		ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_PROCESSED);
->>> +	} else {
->>> +		ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_RAW);
->>> +		if (ret < 0)
->>> +			goto err_unlock;
->>> +		ret = iio_convert_raw_to_processed_unlocked(chan, *val, val, 1);
->>> +	}
->>> +
->>> +err_unlock:
->>> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
->>> +
->>> +	return ret;
->>> +}
->>> +EXPORT_SYMBOL_GPL(iio_read_channel_processed);
->>> +
->>>  int iio_read_channel_scale(struct iio_channel *chan, int *val, int *val2)
->>>  {
->>>  	int ret;
->>> @@ -260,10 +359,7 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val, int *val2)
->>>  		goto err_unlock;
->>>  	}
->>>
->>> -	ret = chan->indio_dev->info->read_raw(chan->indio_dev,
->>> -					      chan->channel,
->>> -					      val, val2,
->>> -					      IIO_CHAN_INFO_SCALE);
->>> +	ret = iio_read_channel(chan, val, val2, IIO_CHAN_INFO_SCALE);
->>>  err_unlock:
->>>  	mutex_unlock(&chan->indio_dev->info_exist_lock);
->>>
->>> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
->>> index 27759ac3..3f66304 100644
->>> --- a/include/linux/iio/consumer.h
->>> +++ b/include/linux/iio/consumer.h
->>> @@ -71,6 +71,21 @@ int iio_read_channel_raw(struct iio_channel *channel,
->>>  			 int *val);
->>>
->>>  /**
->>> + * iio_read_channel_processed() - read processed value from a given channel
->>> + * @channel:		The channel being queried.
->>> + * @val:		Value read back.
->>> + *
->>> + * Returns an error code or 0.
->>> + *
->>> + * This function will read a processed value from a channel. A processed value
->>> + * means that this value will have the correct unit and not some device internal
->>> + * representation. If the device does not support reporting a processed value
->>> + * the function will query the raw value and the channels scale and offset and
->>> + * do the appropriate transformation.
->>> + */
->>> +int iio_read_channel_processed(const struct iio_channel *channel, int *val);
->>> +
->>> +/**
->>>   * iio_get_channel_type() - get the type of a channel
->>>   * @channel:		The channel being queried.
->>>   * @type:		The type of the channel.
->>> @@ -93,4 +108,27 @@ int iio_get_channel_type(struct iio_channel *channel,
->>>  int iio_read_channel_scale(struct iio_channel *channel, int *val,
->>>  			   int *val2);
->>>
->>> +/**
->>> + * iio_convert_raw_to_processed() - Converts a raw value to a processed value
->>> + * @channel:		The channel being queried
->>> + * @raw:		The raw IIO to convert
->>> + * @processed:		The result of the conversion
->>> + * @scale:		Scale factor to apply during the conversion
->>> + *
->>> + * Returns an error code or 0.
->>> + *
->>> + * This function converts a raw value to processed value for a specific channel.
->>> + * A raw value is the device internal representation of a sample and the value
->>> + * returned by iio_read_channel_raw, so the unit of that value is device
->>> + * depended. A processed value on the other hand is value has a normed unit
->>> + * according with the IIO specification.
->>> + *
->>> + * The scale factor allows to increase the precession of the returned value. For
->>> + * a scale factor of 1 the function will return the result in the normal IIO
->>> + * unit for the channel type. E.g. millivolt for voltage channels, if you want
->>> + * nanovolts instead pass 1000 as the scale factor.
->>> + */
->>> +int iio_convert_raw_to_processed(const struct iio_channel *channel, int raw,
->>> +	int *processed, unsigned int scale);
->> const here but not in implementation....
->>> +
->>>  #endif
->>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->>> index 30affa5..c0ae76a 100644
->>> --- a/include/linux/iio/iio.h
->>> +++ b/include/linux/iio/iio.h
->>> @@ -40,6 +40,8 @@ enum iio_chan_info_enum {
->>>
->>>  #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
->>>  #define IIO_CHAN_INFO_SEPARATE_BIT(type) BIT(type*2 + 1)
->>> +#define IIO_CHAN_INFO_BITS(type) (IIO_CHAN_INFO_SHARED_BIT(type) | \
->>> +				    IIO_CHAN_INFO_SEPARATE_BIT(type))
->>>
->>>  #define IIO_CHAN_INFO_RAW_SEPARATE_BIT			\
->>>  	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_RAW)
->>> @@ -261,6 +263,21 @@ struct iio_chan_spec {
->>>  	unsigned		differential:1;
->>>  };
->>>
->>> +
->>> +/**
->>> + * iio_channel_has_info() - Checks whether a channel supports a info attribute
->>> + * @chan: The channel to be queried
->>> + * @type: Type of the info attribute to be checked
->>> + *
->>> + * Returns true if the channels supports reporting values for the given info
->>> + * attribute type, false otherwise.
->>> + */
->>> +static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
->>> +	enum iio_chan_info_enum type)
->>> +{
->>> +	return chan->info_mask & IIO_CHAN_INFO_BITS(type);
->>> +}
->>> +
->>>  #define IIO_ST(si, rb, sb, sh)						\
->>>  	{ .sign = si, .realbits = rb, .storagebits = sb, .shift = sh }
->>>
->>>
-> 
+const char *const
+
+> +	[VOLTAGE]	= "voltage",
+> +	[CURRENT]	= "current",
+> +	[POWER]		= "power",
+> +};
+> +
+> +struct gab {
+> +	struct power_supply	psy;
+> +	struct iio_channel	**channel;
+> +	struct gab_platform_data	*pdata;
+> +	struct delayed_work bat_work;
+> +	int		was_plugged;
+> +	int		volt_value;
+> +	int		cur_value;
+
+The two above are never really used.
+
+> +	int		level;
+> +	int		status;
+> +	int		cable_plugged:1;
+> +};
+[...]
+> +static enum power_supply_property gab_props[] = {
+const
+> +	POWER_SUPPLY_PROP_STATUS,
+> +	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
+> +	POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN,
+> +	POWER_SUPPLY_PROP_CHARGE_NOW,
+> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
+> +	POWER_SUPPLY_PROP_CURRENT_NOW,
+> +	POWER_SUPPLY_PROP_TECHNOLOGY,
+> +	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
+> +	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
+> +	POWER_SUPPLY_PROP_MODEL_NAME,
+> +};
+> +
+> +/*
+> + * This properties are set based on the received platform data and this
+> + * should correspond one-to-one with enum chan_type.
+> + */
+> +static enum power_supply_property gab_dyn_props[] = {
+const
+> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
+> +	POWER_SUPPLY_PROP_CURRENT_NOW,
+> +	POWER_SUPPLY_PROP_POWER_NOW,
+> +};
+> +
+> +static bool charge_finished(struct gab *adc_bat)
+
+missing prefix
+
+> +{
+> +	bool ret = gpio_get_value(adc_bat->pdata->gpio_charge_finished);
+> +	bool inv = adc_bat->pdata->gpio_inverted;
+> +
+> +	return ret ^ inv;
+> +}
+> +
+> +int gab_get_status(struct gab *adc_bat)
+static
+> +{
+> +	struct gab_platform_data *pdata = adc_bat->pdata;
+> +	int chg_gpio = pdata->gpio_charge_finished;
+> +
+> +	if (!gpio_is_valid(chg_gpio) || adc_bat->level < 100000)
+
+level is never really set, is it? Also the 100000 seems to come directly from
+the s3c_adc_battery driver, while this value may be different for every
+battery. I'd use the bat_info->charge_full_design here. Also I'd remove the
+!gpio_is_valid(chg_gpio)  I don't see a reason why the battery could not be
+fully charged even though no charger gpio is given.
+
+> +		return adc_bat->status;
+> +
+> +	return POWER_SUPPLY_STATUS_FULL;
+> +}
+> +
+> +enum gab_chan_type gab_prop_to_chan(enum power_supply_property psp)
+static
+> +{
+> +	switch (psp) {
+> +	case POWER_SUPPLY_PROP_POWER_NOW:
+> +		return POWER;
+> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+> +		return VOLTAGE;
+> +	case POWER_SUPPLY_PROP_CURRENT_NOW:
+> +		return CURRENT;
+> +	default:
+> +		WARN_ON(1);
+
+This WARN_ON will be hit quite often.
+
+> +	}
+> +	return POWER;
+> +}
+> +
+> +int read_channel(struct gab *adc_bat, enum power_supply_property psp,
+> +		int *result)
+static
+> +{
+> +	int ret = 0;
+> +	int chan_index;
+> +
+> +	chan_index = gab_prop_to_chan(psp);
+> +	ret = iio_read_channel_processed(adc_bat->channel[chan_index],
+> +			result);
+> +	if (ret < 0)
+> +		pr_err("read channel error\n");
+> +	return ret;
+> +}
+> +
+> +static int gab_get_property(struct power_supply *psy,
+> +		enum power_supply_property psp, union power_supply_propval *val)
+> +{
+> +	struct gab *adc_bat;
+> +	struct gab_platform_data *pdata;
+> +	struct power_supply_info *bat_info;
+> +	int result;
+> +	int ret = 0;
+> +
+> +	adc_bat = to_generic_bat(psy);
+> +	if (!adc_bat) {
+> +		dev_err(psy->dev, "no battery infos ?!\n");
+> +		return -EINVAL;
+> +	}
+> +	pdata = adc_bat->pdata;
+> +	bat_info = &pdata->battery_info;
+> +
+> +	ret = read_channel(adc_bat, psp, &result);
+> +	if (ret < 0)
+> +		goto err;
+> +
+> +	switch (psp) {
+> +	case POWER_SUPPLY_PROP_STATUS:
+> +		gab_get_status(adc_bat);
+> +		break;
+> +	case POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN:
+> +		val->intval = 0;
+> +		break;
+> +	case POWER_SUPPLY_PROP_CHARGE_NOW:
+> +		val->intval = pdata->cal_charge(result);
+> +		break;
+> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+> +		val->intval = result;
+> +		break;
+> +	case POWER_SUPPLY_PROP_CURRENT_NOW:
+> +		val->intval = result;
+> +		break;
+> +	case POWER_SUPPLY_PROP_POWER_NOW:
+> +		val->intval = result;
+
+I'd do it this way, that also avoids all the WARN_ONs earlier
+
+	case POWER_SUPPLY_PROP_VOLTAGE_NOW
+	case POWER_SUPPLY_PROP_CURRENT_NOW:
+	case POWER_SUPPLY_PROP_POWER_NOW:
+		ret = read_channel(adc_bat, psp, &result);
+		if (ret < 0)		
+			return ret
+		val->intval = result;
+
+
+> +		break;
+> +	case POWER_SUPPLY_PROP_TECHNOLOGY:
+> +		val->intval = bat_info->technology;
+> +		break;
+> +	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
+> +		val->intval = bat_info->voltage_min_design;
+> +		break;
+> +	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
+> +		val->intval = bat_info->voltage_max_design;
+> +		break;
+> +	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
+> +		val->intval = bat_info->charge_full_design;
+> +		break;
+> +	case POWER_SUPPLY_PROP_MODEL_NAME:
+> +		val->strval = bat_info->name;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +err:
+> +	return ret;
+> +}
+> +
+> +static void gab_work(struct work_struct *work)
+> +{
+> +	struct gab *adc_bat;
+> +	struct gab_platform_data *pdata;
+> +	struct delayed_work *delayed_work;
+> +	int is_charged;
+> +	int is_plugged;
+> +
+> +	delayed_work = container_of(work, struct delayed_work, work);
+> +	adc_bat = container_of(delayed_work, struct gab, bat_work);
+> +	pdata = adc_bat->pdata;
+> +
+> +	is_plugged = power_supply_am_i_supplied(&adc_bat->psy);
+> +	adc_bat->cable_plugged = is_plugged;
+> +	if (is_plugged != adc_bat->was_plugged) {
+> +		adc_bat->was_plugged = is_plugged;
+
+I don't thin was_plugged is necessary. If is unplugged it is discharging, if it
+is plugged it is either charging or full. And I think that's the logic that
+should be used to set status. Something like.
+
+if (!is_plugged)
+	adc_bat->status =  POWER_SUPPLY_STATUS_DISCHARGING;
+else if (charge_finished(adc_bat))
+	adc_bat->status = POWER_SUPPLY_STATUS_FULL;
+
+Maybe POWER_SUPPLY_STATUS_NOT_CHARGING is the better status here since we do
+not necessarily know that it is full.
+
+else
+	adc_bat->status = POWER_SUPPLY_STATUS_CHARGING;
+
+This assumes that the gpio_is_valid checking is done in charge_finished and if
+it returns false charge_finished just returns false.
+
+> +		if (is_plugged)
+> +			adc_bat->status = POWER_SUPPLY_STATUS_CHARGING;
+> +		else
+> +			adc_bat->status = POWER_SUPPLY_STATUS_DISCHARGING;
+> +	} else {
+> +		if (gpio_is_valid(pdata->gpio_charge_finished)) {
+> +			if (is_plugged) {
+> +				is_charged = charge_finished(adc_bat);
+> +				if (is_charged)
+> +					adc_bat->status =
+> +						POWER_SUPPLY_STATUS_FULL;
+> +				else
+> +					adc_bat->status =
+> +						POWER_SUPPLY_STATUS_CHARGING;
+> +			}
+> +		}
+> +	}
+> +
+> +	power_supply_changed(&adc_bat->psy);
+
+It makes probably sense to make a copy of adc_bat->status and if it did not
+change don't generate an event.
+
+> +}
+> +
+> +static irqreturn_t gab_charged(int irq, void *dev_id)
+> +{
+> +	struct gab *adc_bat = dev_id;
+> +
+> +	schedule_delayed_work(&adc_bat->bat_work,
+> +			msecs_to_jiffies(adc_bat->pdata->jitter_delay));
+
+I would use a default jitter delay if it is 0. Does this make sense?
+
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int __devinit gab_probe(struct platform_device *pdev)
+> +{
+> +	struct gab *adc_bat;
+> +	struct power_supply	*psy;
+> +	struct gab_platform_data *pdata = pdev->dev.platform_data;
+> +	int ret;
+> +	int num_chans;
+> +	int fail = 0;
+> +
+> +	adc_bat = devm_kzalloc(&pdev->dev, sizeof(*adc_bat), GFP_KERNEL);
+> +	if (!adc_bat) {
+> +		dev_err(&pdev->dev, "failed to allocate memory\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	psy = &adc_bat->psy;
+> +
+> +	/* copying the battery name from platform data */
+> +	psy->name = pdata->battery_name;
+> +
+> +	/* bootup default values for the battery */
+> +	adc_bat->volt_value = -1;
+> +	adc_bat->cur_value = -1;
+> +	adc_bat->cable_plugged = 0;
+> +	adc_bat->status = POWER_SUPPLY_STATUS_DISCHARGING;
+> +	psy->type = POWER_SUPPLY_TYPE_BATTERY;
+> +	psy->get_property = gab_get_property;
+> +	psy->external_power_changed = gab_ext_power_changed;
+> +	adc_bat->pdata = pdata;
+> +
+> +	/* calculate the total number of channels */
+> +	num_chans = ARRAY_SIZE(gab_chan_name);
+> +
+> +	/*
+> +	 * copying the static properties and allocating extra memory for holding
+> +	 * the extra configurable properties received from platform data.
+> +	 */
+> +	psy->properties = devm_kzalloc(&pdev->dev, sizeof(gab_props) +
+> +			sizeof(*(psy->properties)) * num_chans,	GFP_KERNEL);
+
+Maybe use kcalloc here with ARRAY_SIZE(gab_props) + ARRAY_SIZE(gab_chan_name)
+as first parameter and sizeof(*psy->properties) as second.
+
+> +	if (!psy->properties) {
+> +		ret = -ENOMEM;
+> +		goto first_mem_fail;
+> +	}
+> +
+> +	memcpy(psy->properties, gab_props, sizeof(gab_props));
+> +
+> +	/* allocating memory for iio channels */
+> +	adc_bat->channel = devm_kzalloc(&pdev->dev,
+> +				num_chans * sizeof(struct iio_channel),
+> +					GFP_KERNEL);
+
+Since the size is const you could just make channel an aray in the gab struct
+and this allocation would not be needed.
+
+> +	if (!adc_bat->channel) {
+> +		ret = -ENOMEM;
+> +		goto first_mem_fail;
+> +	}
+> +
+> +	/*
+> +	 * getting channel from iio and copying the battery properties
+> +	 * based on the channel supported by consumer device.
+> +	 */
+> +	for (num_chans = 0; gab_chan_name[num_chans]; num_chans++) {
+
+This won't work since gab_chan_name is not NULL terminated. Just make it
+num_chans < ARRAY_SIZE(gab_chan_name). Btw. num_chans is really a bad name in
+this case since it is an iterator variable. Just call it chan or something like
+that.
+
+> +		adc_bat->channel[num_chans] =
+> +			iio_channel_get(dev_name(&pdev->dev),
+> +					gab_chan_name[num_chans]);
+> +		/* we skip for channels which fail */
+> +		if (IS_ERR(adc_bat->channel[num_chans])) {
+> +			pr_err("%s failed\n", gab_chan_name[num_chans]);
+
+No error message here it will be quite likely that a battery does not provide
+all three types of channels.
+
+> +			fail++;
+> +		} else {
+> +			static int index;
+
+static?! Move it outsize of the loop an initialize it to ARRAY_SIZE(gab_props)
+then you can skip the "extra + sizeof(gab_props)" here.
+
+> +			memcpy(psy->properties + sizeof(gab_props) +
+> +					sizeof(*(psy->properties))*index,
+> +					&gab_dyn_props[num_chans],
+> +					sizeof(gab_dyn_props[num_chans]));
+> +			index++;
+> +		}
+> +	}
+> +
+> +	/* none of the channels are supported so let's bail out */
+> +	if (fail == num_chans) {
+
+Just check whether index is != 0, you don't need to count the failed requests then.
+
+> +		ret = PTR_ERR(adc_bat->channel[num_chans]);
+
+num_chans will be outside of bounds of channel at this point.
+
+> +		goto first_mem_fail;
+> +	}
+> +
+> +	/*
+> +	 * Total number of properties is equal to static properties
+> +	 * plus the dynamic properties.Some properties may not be set
+> +	 * as come channels may be not be supported by the device.So
+> +	 * we need to take care of that.
+> +	 */
+> +	psy->num_properties = ARRAY_SIZE(gab_props) +
+> +		ARRAY_SIZE(gab_dyn_props) - fail;
+> +
+> +	ret = power_supply_register(&pdev->dev, psy);
+> +	if (ret)
+> +		goto err_reg_fail;
+> +
+> +	INIT_DELAYED_WORK(&adc_bat->bat_work, gab_work);
+> +
+> +	if (gpio_is_valid(pdata->gpio_charge_finished)) {
+> +		int irq;
+> +		ret = gpio_request(pdata->gpio_charge_finished, "charged");
+> +		if (ret)
+> +			goto err_gpio;
+> +
+> +		irq = gpio_to_irq(pdata->gpio_charge_finished);
+> +		ret = request_any_context_irq(irq, gab_charged,
+> +				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+> +				"battery charged", &adc_bat);
+
+Just "adc_bat", not "&adc_bat"
+
+> +		if (ret)
+> +			goto err_gpio;
+
+			You also need to free the if requesting the gpio fails.
+
+> +	} else
+> +		goto err_gpio; /* let's bail out */
+> +
+> +	platform_set_drvdata(pdev, &adc_bat);
+
+Same here
+
+> +
+> +	/* Schedule timer to check current status */
+> +	schedule_delayed_work(&adc_bat->bat_work,
+> +			msecs_to_jiffies(0));
+> +	return 0;
+> +
+> +err_gpio:
+> +	power_supply_unregister(psy);
+> +err_reg_fail:
+> +	for (num_chans = 0; gab_chan_name[num_chans]; num_chans++)
+
+Here again, it's not NULL terminated
+
+> +		iio_channel_release(adc_bat->channel[num_chans]);
+> +first_mem_fail:
+> +	return ret;
+> +}
+> +
+> +static int gab_remove(struct platform_device *pdev)
+__devexit
+> +{
+> +	int num_chans;
+> +	struct gab_platform_data	*pdata;
+> +	struct gab *adc_bat = platform_get_drvdata(pdev);
+> +
+> +	pdata = adc_bat->pdata;
+> +	power_supply_unregister(&adc_bat->psy);
+> +
+> +	if (gpio_is_valid(pdata->gpio_charge_finished)) {
+> +		free_irq(gpio_to_irq(pdata->gpio_charge_finished), NULL);
+
+Needs adc_bat as the second agument
+
+> +		gpio_free(pdata->gpio_charge_finished);
+> +	}
+> +
+> +	for (num_chans = 0; gab_chan_name[num_chans]; num_chans++)
+
+And also here, it's not NULL terminated
+
+> +		iio_channel_release(adc_bat->channel[num_chans]);
+> +	cancel_delayed_work(&adc_bat->bat_work);
+> +	return 0;
+> +}
+> +
+[...]
+> +
+> +static struct platform_driver gab_driver = {
+> +	.driver		= {
+> +		.name	= "generic-adc-battery",
+> +		.owner	= THIS_MODULE,
+> +		.pm	= GAB_PM_OPS
+> +	},
+> +	.probe		= gab_probe,
+> +	.remove		= gab_remove,
+
+__devexit_p
+
+> +};
+> +module_platform_driver(gab_driver);
+> +
+> +MODULE_AUTHOR("anish kumar <anish198519851985@gmail.com>");
+> +MODULE_DESCRIPTION("generic battery driver using IIO");
+> +MODULE_LICENSE("GPL");
+> diff --git a/include/linux/power/generic-adc-battery.h b/include/linux/power/generic-adc-battery.h
+> new file mode 100644
+> index 0000000..8f02e9e
+> --- /dev/null
+> +++ b/include/linux/power/generic-adc-battery.h
+> @@ -0,0 +1,19 @@
+> +/*
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +
+> +#ifndef GENERIC_ADC_BATTERY_H
+> +#define GENERIC_ADC_BATTERY_H
+> +
+
+Kernel doc for the struct would be nice.
+
+> +struct gab_platform_data {
+> +	struct power_supply_info battery_info;
+> +	char	*battery_name;
+
+The power_supply_info struct also has a name field, it would make sense to use it.
+
+> +	int	(*cal_charge)(long value);
+> +	int	gpio_charge_finished;
+> +	bool	gpio_inverted;
+> +	int	jitter_delay;
+> +};
+> +
+> +#endif /* GENERIC_ADC_BATTERY_H */
+
