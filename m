@@ -1,1387 +1,847 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <505D9BB6.2000505@kernel.org>
-Date: Sat, 22 Sep 2012 12:06:30 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58245 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757219Ab2IQT5q (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 15:57:46 -0400
+Message-ID: <505780B7.7090607@kernel.org>
+Date: Mon, 17 Sep 2012 20:57:43 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Swapnil TIWARI <swapnil.tiwari@st.com>
-CC: "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] Staging: iio: gyro: Add STMicroelectronics L3GD20 gyroscope
- device driver
-References: <494E38452A01E745B763C5F242AAA2CCC5111C8FD9@SAFEX1MAIL1.st.com>
-In-Reply-To: <494E38452A01E745B763C5F242AAA2CCC5111C8FD9@SAFEX1MAIL1.st.com>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH v2] iio:dac: Add ad5755 driver
+References: <1347873893-10717-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347873893-10717-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 09/18/2012 08:19 PM, Swapnil TIWARI wrote:
-> Add STMicroelectronics L3GD20 gyroscope device driver
->
->
->
-> Signed-off-by: Swapnil Tiwari <swapnil.tiwari@st.com <mailto:swapnil.tiwari@st.com>>
+On 09/17/2012 10:24 AM, Lars-Peter Clausen wrote:
+> This patch adds support for the AD5755, AD5755-1, AD5757, AD5735, AD5737 16 and
+> 14 bit quad-channel DACs. The AD5757/AD5737 only have current outputs, but
+> for the AD5755/AD5757 each of the outputs can be configured to either be a
+> voltage or a current output. We only allow to configure this at device probe
+> time since usually this needs to match the external circuitry and should not be
+> changed on the fly.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+There were a couple of over 80 character warnings from checkpatch.  As they
+were all trivial cases of long parameter lists I added a couple of line breaks
+to get rid of them.
 
-Hi, couple of standard bits first.
+Otherwise merged to togreg branch,
 
-1) Make sure your code passes checkpatch.pl with no warnings
-(only exception to this is over 80 character lines if you have a good
-reason for doing that).  Of course this might be all down to point 2 :)
-
-2) Check your email client settings (ideally send patches via git send-email
-as that won't mess things up). I can hammer this into basic shape via dos2unix and
-some find and replaces, but I'm not going to bother doing that a second time.
-This email seemed to contain bother html and plain text which wasn't a great start.
-
-If you are having real problems with email clients, then attaching the patch is
-better than nothing.
-
-Anyhow the below should be a cleanish copy of the patch you sent.
-
-Also, don't put comments below the patch, I'll miss them.
-On the note you put about this being in staging because all the other
-gyro drivers were, be brave and put it straight into drivers/iio/gyro.
-The others haven't moved because of any particular problems but more because
-no one has gotten round to it!
-
-
-
-Anyhow, as for the driver.
-
-Mostly good, but a few points to address.
-
-i2c fallback if smbus isn't available.  I don't think there are any parts
-that need this anymore given the i2c core supports emulated smbus over i2c
-and will fall back to it if the hardware support isn't there.  Get rid
-of that and you can squish your read / write functions directly into the call
-sites creately reducing the amount of code.
-
-Drop the embrionic buffer interfaces out of here. Bring them in only when needed.
-
-Should have far fewer explicit attributes given most are supported via the info_mask
-bit of the chan_spec and relevant chunks in read_raw.
-
-My immediate observation on this driver was that it was rather long for a simple
-device with not buffer support.  The above comments should address this somewhat
-and I'll take a closer look at the details in the next revision!
-
-Thanks,
-
-Jonathan
----
- drivers/staging/iio/gyro/Kconfig           |    9 +
- drivers/staging/iio/gyro/Makefile          |    3 +
- drivers/staging/iio/gyro/l3gd20.h          |  155 +++++
- drivers/staging/iio/gyro/l3gd20_gyr_core.c | 1030 ++++++++++++++++++++++++++++
-
-If everything is in one file, drop the _core suffix.
-
-4 files changed, 1197 insertions(+)
- create mode 100644 drivers/staging/iio/gyro/l3gd20.h
- create mode 100644 drivers/staging/iio/gyro/l3gd20_gyr_core.c
-
-diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
-index ea295b2..47698cb 100644
---- a/drivers/staging/iio/gyro/Kconfig
-+++ b/drivers/staging/iio/gyro/Kconfig
-@@ -46,4 +46,13 @@ config ADXRS450
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called adxrs450.
-
-+config L3GD20_GYR_IIO
-+       tristate "STM L3GD20 3 Axis Digital Gyroscope Sensor I2C driver (iio)"
-IIO
-+       depends on I2C
-+       help
-+          Say yes here to build support for the STMicrolectronics L3GD20 3 Axis
-+          Digital .
-+          To compile this driver as a module, choose M here: the module
-+          will be called l3gd20_gyr_iio.
-+
- endmenu
-diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
-index 9ba5ec1..c5d2879 100644
---- a/drivers/staging/iio/gyro/Makefile
-+++ b/drivers/staging/iio/gyro/Makefile
-@@ -20,3 +20,6 @@ obj-$(CONFIG_ADIS16251) += adis16251.o
-
- adxrs450-y             := adxrs450_core.o
- obj-$(CONFIG_ADXRS450) += adxrs450.o
-+
-+l3gd20_gyr-y    := l3gd20_gyr_core.o
-+obj-$(CONFIG_L3GD20_GYR_IIO) += l3gd20_gyr.o
-diff --git a/drivers/staging/iio/gyro/l3gd20.h b/drivers/staging/iio/gyro/l3gd20.h
-new file mode 100644
-index 0000000..0092e88
---- /dev/null
-+++ b/drivers/staging/iio/gyro/l3gd20.h
-@@ -0,0 +1,155 @@
-+/******************** (C) COPYRIGHT 2011 STMicroelectronics ********************
-+*
-+* File Name    : l3gd20_iio.h
-+* Authors : MH - C&I BU - Application Team
-+*         : Matteo Dameno (matteo.dameno@st.com<mailto:matteo.dameno@st.com>
-+*         : author is willing to be considered the contact
-+*         : and update points for the driver.
-If you can edit this at all without the lawyers moaning then...
-1) drop the version number, it won't mean anything to anyone looking at this in the
-future.
-
-If very brave, just just the standard copyright form you see if pretty much every
-other driver.
-
-+* Version : V.2.0.0
-+* Date         : 2011/Aug/16
-+* Description  : L3GD20 3 Axis Digital Gyroscope Sensor device driver iio
-+*         :
-+********************************************************************************
-+*
-+* This program is free software; you can redistribute it and/or modify
-+* it under the terms of the GNU General Public License version 2 as
-+* published by the Free Software Foundation.
-+*
-+* THE PRESENT SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES
-+* OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, FOR THE SOLE
-+* PURPOSE TO SUPPORT YOUR APPLICATION DEVELOPMENT.
-+* AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
-+* INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
-+* CONTENT OF SUCH SOFTWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
-+* INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-Hmm.. got to love lawyers...
-
-+*
-+*******************************************************************************/
-+/*******************************************************************************
-+Version History.
-+ Revision 2.0.0: 2012/Nov/16
-+  first ioo implementation;
-typo, and don't bother. Version history is handled by git from here on.
-This sort of comment section just gets left behind...
-
-+*******************************************************************************/
-+
-+#ifndef __L3GD20_H__
-+#define __L3GD20_H__
-+
-+
-+#define L3GD20_GYR_DEV_NAME         "l3gd20_gyr_iio"
-+
-+#define L3GD20_GYR_FS_250DPS   0x00
-+#define L3GD20_GYR_FS_500DPS   0x10
-+#define L3GD20_GYR_FS_2000DPS  0x30
-+
-
-As defines go, can we not assume on is 1?
-Or just drop this as you don't actually use it.
-+#define L3GD20_GYR_ENABLED     1
-+#define L3GD20_GYR_DISABLED    0
-+
-+
-+#ifdef __KERNEL__
-The fact this implies the above is useful to userspace is a
-little ominous...
-
-+
-+/* to set gpios numb connected to gyro interrupt pins,
-+ * the unused ones have to be set to -EINVAL
-+ */
-+#define DEFAULT_INT1_GPIO      (-EINVAL)
-+#define DEFAULT_INT2_GPIO      (-EINVAL)
-+
-+#define SAD0L                  0x00
-+#define SAD0H                  0x01
-+#define L3GD20_GYR_I2C_SADROOT      0x35
-+#define L3GD20_GYR_I2C_SAD_L        ((L3GD20_GYR_I2C_SADROOT<<1)|SAD0L)
-+#define L3GD20_GYR_I2C_SAD_H        ((L3GD20_GYR_I2C_SADROOT<<1)|SAD0H)
-+
-+#define L3GD20_MIN_POLL_PERIOD_MS   2
-+
-+struct l3gd20_gyr_platform_data {
-As ever with such init, exit callbacks, we need a comment of why these
-would make sense and why for the power_on, power_off it can't be done
-cleaning using say the regulators framework?
-It's pretty unusual to have such callbacks these days in a driver.
-+    int (*init)(void);
-+    void (*exit)(void);
-+    int (*power_on)(void);
-+    int (*power_off)(void);
-+    unsigned int poll_interval;
-+    unsigned int min_interval;
-+
-+    u8 fs_range;
-+    u8 sampling_frequency;
-+
-+    /* set gpio_int[1,2] either to the choosen gpio pin number or to -EINVAL
-+    * if leaved unconnected
-+    */
-+    int gpio_int1;
-+    int gpio_int2;       /* int for fifo */
-Can't name it as such then?  int gpio_fifo for example?
-+
-+    /* axis mapping */
-+    u8 axis_map_x;
-+    u8 axis_map_y;
-+    u8 axis_map_z;
-+
-+    u8 negate_x;
-+    u8 negate_y;
-+    u8 negate_z;
-bitfield?
-+};
-+
-+#ifdef CONFIG_IIO_RING_BUFFER
-That's not existed for some time.... Roughly since the default
-buffer stopped being a ring buffer.
-
-So we have a load of stub code here for some future support?
-If so drop it from this driver and add it only when it is used...
-
-+/* At the moment triggers are only used for ring buffer
-+ * filling. This may change!
-+ */
-Yikes, some one has been cutting and pasting...
-+
-+enum l3gd20_gyr_scan {
-+    L3GD20_GYR_SCAN_GYR_X,
-+    L3GD20_GYR_SCAN_GYR_Y,
-+    L3GD20_GYR_SCAN_GYR_Z,
-+};
-+
-+void l3gd20_gyr_remove_trigger(struct iio_dev *indio_dev);
-+int l3gd20_gyr_probe_trigger(struct iio_dev *indio_dev);
-+
-+ssize_t l3gd20_gyr_read_data_from_ring(struct device *dev,
-+                          struct device_attribute *attr,
-+                          char *buf);
-+
-+
-+int l3gd20_gyr_configure_ring(struct iio_dev *indio_dev);
-+void l3gd20_gyr_unconfigure_ring(struct iio_dev *indio_dev);
-+
-+int l3gd20_gyr_initialize_ring(struct iio_ring_buffer *ring);
-+void l3gd20_gyr_uninitialize_ring(struct iio_ring_buffer *ring);
-+#else /* CONFIG_IIO_RING_BUFFER */
-+
-+static inline void l3gd20_gyr_remove_trigger(struct iio_dev *indio_dev)
-+{
-+}
-+
-+static inline int l3gd20_gyr_probe_trigger(struct iio_dev *indio_dev)
-+{
-+    return 0;
-+}
-+
-+static inline ssize_t
-+l3gd20_gyr_read_data_from_ring(struct device *dev,
-+                     struct device_attribute *attr,
-+                     char *buf)
-+{
-+    return 0;
-+}
-+
-+static int l3gd20_gyr_configure_ring(struct iio_dev *indio_dev)
-+{
-+    return 0;
-+}
-+
-+static inline void l3gd20_gyr_unconfigure_ring(struct iio_dev *indio_dev)
-+{
-+}
-+/*
-+static inline int l3gd20_gyr_initialize_ring(struct iio_ring_buffer *ring)
-+{
-+    return 0;
-+}
-+
-+static inline void l3gd20_gyr_uninitialize_ring(struct iio_ring_buffer *ring)
-+{
-+}
-+*/
-+#endif /* CONFIG_IIO_RING_BUFFER */
-+
-+#endif /* __KERNEL__ */
-+
-+#endif  /* __L3GD20_H__ */
-diff --git a/drivers/staging/iio/gyro/l3gd20_gyr_core.c b/drivers/staging/iio/gyro/l3gd20_gyr_core.c
-new file mode 100644
-index 0000000..65b6ffc
---- /dev/null
-+++ b/drivers/staging/iio/gyro/l3gd20_gyr_core.c
-@@ -0,0 +1,1030 @@
-+/******************** (C) COPYRIGHT 2011 STMicroelectronics ********************
-+*
-+* File Name    : l3gd20_gyr_core_iio.c
-+* Authors : MSH - Motion Mems BU - Application Team
-+*         : Matteo Dameno (matteo.dameno@st.com<mailto:matteo.dameno@st.com>)
-+*         : Swapnil Tiwari (swapnil.tiwari@st.com<mailto:swapnil.tiwari@st.com>)
-+*         : Author is willing to be considered the contact
-+*         : and update points for the driver.*
-+* Version : V.2.0.0
-+* Date         : 2011/Nov/16
-+* Description  : L3GD20 3 Axis Digital Gyroscope Sensor device driver iio
-+*         :
-+********************************************************************************
-+*
-+* This program is free software; you can redistribute it and/or modify
-+* it under the terms of the GNU General Public License version 2 as
-+* published by the Free Software Foundation.
-+*
-+* THE PRESENT SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES
-+* OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, FOR THE SOLE
-+* PURPOSE TO SUPPORT YOUR APPLICATION DEVELOPMENT.
-+* AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
-+* INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
-+* CONTENT OF SUCH SOFTWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
-+* INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-+*
-+********************************************************************************
-+ Revision 2.0.0: 2012/Nov/16
-+  first ioo implementation;
-+
-+*******************************************************************************/
-+
-+#include <linux/err.h>
-+#include <linux/errno.h>
-+#include <linux/delay.h>
-+#include <linux/fs.h>
-+#include <linux/i2c.h>
-+#include <linux/mutex.h>
-+#include <linux/input.h>
-+#include <linux/uaccess.h>
-+#include <linux/workqueue.h>
-+#include <linux/irq.h>
-+#include <linux/gpio.h>
-+#include <linux/interrupt.h>
-+#include <linux/gpio.h>
-+#include <linux/slab.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/sysfs.h>
-+#include <linux/moduleparam.h>
-+#include "linux/iio/iio.h"
-+#include "linux/iio/sysfs.h"
-+#include "l3gd20.h"
-+
-+#define SENSITIVITY_250DPS     "8.75"          /**  mdps/counts */
-+#define SENSITIVITY_500DPS     "17.50"         /**  mdps/counts */
-+#define SENSITIVITY_2000DPS    "70.00"         /**  mdps/counts */
-+
-+#define SCALE_250DPS      "0.000153" /**  (rad/sec)/count */
-+#define SCALE_500DPS      "0.000297" /**  (rad/sec)/count */
-+#define SCALE_2000DPS          "0.001222" /**  (rad/sec)/count */
-+
-+#define GAIN_250DPS       "6548.089087"   /**  count/(rad/sec) */
-+#define GAIN_500DPS       "3370.339971"   /**  count/(rad/sec) */
-+#define GAIN_2000DPS      "818.511136"    /**  count/(rad/sec) */
-+
-+/* l3gd20 gyroscope registers */
-+#define WHO_AM_I    (0x0F)
-+
-+#define CTRL_REG1   (0x20)          /* CTRL REG1 */
-+#define CTRL_REG2   (0x21)          /* CTRL REG2 */
-+#define CTRL_REG3   (0x22)          /* CTRL_REG3 */
-+#define CTRL_REG4   (0x23)          /* CTRL_REG4 */
-+#define CTRL_REG5   (0x24)          /* CTRL_REG5 */
-+#define   REFERENCE  (0x25)          /* REFERENCE REG */
-+
-+#define OUT_X_LSB   (0x28)          /* 1st AXIS OUT REG of 6 */
-+#define OUT_X_MSB   (0x29)
-+#define OUT_Y_LSB   (0x2A)
-+#define OUT_Y_MSB   (0x2B)
-+#define OUT_Z_LSB   (0x2C)
-+#define OUT_Z_MSB   (0x2D)
-+#define   AXISDATA_REG    OUT_X_LSB
-+
-+#define   FIFO_CTRL_REG   (0x2E)          /* FIFO CONTROL REGISTER */
-+#define FIFO_SRC_REG (0x2F)          /* FIFO SOURCE REGISTER */
-+/* */
-+
-+/* CTRL_REG1 */
-+#define ALL_ZEROES        (0x00)
-+#define PM_OFF            (0x00)
-+#define PM_NORMAL         (0x08)
-+#define ENABLE_ALL_AXES        (0x07)
-+#define ENABLE_NO_AXES         (0x00)
-+#define BW00              (0x00)
-+#define BW01              (0x10)
-+#define BW10              (0x20)
-+#define BW11              (0x30)
-+#define CTRL_REG1_BW_MASK (0x30)
-+#define ODR095            (0x00)  /* ODR = 95Hz */
-+#define ODR190            (0x40)  /* ODR = 190Hz */
-+#define ODR380            (0x80)  /* ODR = 380Hz */
-+#define ODR760            (0xC0)  /* ODR = 760Hz */
-+#define CTRL_REG1_ODR_MASK     (0xC0)
-+
-+
-+/* CTRL_REG3 bits */
-+#define   I2_DRDY              (0x08)
-+#define   I2_WTM               (0x04)
-+#define   I2_OVRUN        (0x02)
-+#define   I2_EMPTY        (0x01)
-+#define   I2_NONE              (0x00)
-+#define   I2_MASK              (0x0F)
-+
-+/* CTRL_REG4 bits */
-+#define   FS_MASK              (0x30)
-+#define   BDU_ENABLE      (0x80)
-+
-+/* CTRL_REG5 bits */
-+#define   FIFO_ENABLE          (0x40)
-+#define HPF_ENALBE        (0x11)
-+
-+/* FIFO_CTRL_REG bits */
-+#define   FIFO_MODE_MASK       (0xE0)
-+#define   FIFO_MODE_BYPASS     (0x00)
-+#define   FIFO_MODE_FIFO       (0x20)
-+#define   FIFO_MODE_STREAM     (0x40)
-+#define   FIFO_MODE_STR2FIFO   (0x60)
-+#define   FIFO_MODE_BYPASS2STR (0x80)
-+#define   FIFO_WATERMARK_MASK  (0x1F)
-+
-+#define FIFO_STORED_DATA_MASK  (0x1F)
-+
-+/* I2C multi read/write option*/
-+#define I2C_AUTO_INCREMENT     (0x80)
-+
-+/* RESUME STATE INDICES */
-+#define   RES_CTRL_REG1        0
-+#define   RES_CTRL_REG2        1
-+#define   RES_CTRL_REG3        2
-+#define   RES_CTRL_REG4        3
-+#define   RES_CTRL_REG5        4
-+#define   RES_FIFO_CTRL_REG    5
-+#define   RESUME_ENTRIES       6
-+
-Add a prefix to all the above defines. Otherwise you'll
-get stung at somepoint by one of them turning up defined
-elsewhere in the kernel.
-
-L3GD20_RES_CTRL_REG1 etc.
-+
-+/** Registers Contents */
-+#define WHOAMI_L3GD20     (0x00D4)   /* Expected content for WAI register*/
-+
-+
-+struct output_rate {
-+    unsigned int poll_rate_ms;
-+    u8 sampling_rate_setting;
-+    const char *hz_label;
-+};
-+
-+static const struct output_rate l3gd20_gyr_odr_table[] = {
-+
-+    {    2,   ODR760|BW10,    "760"},
-+    {    3,   ODR380|BW01,    "380"},
-+    {    6,   ODR190|BW00,    "190"},
-+    {    11,  ODR095|BW00,    "95"},
-+};
-+
-+static struct l3gd20_gyr_platform_data default_l3gd20_gyr_pdata = {
-+    .fs_range = L3GD20_GYR_FS_250DPS,
-+    .axis_map_x = 0,
-+    .axis_map_y = 1,
-+    .axis_map_z = 2,
-+    .negate_x = 0,
-+    .negate_y = 0,
-+    .negate_z = 0,
-+
-+    .gpio_int1 = DEFAULT_INT1_GPIO,
-+    .gpio_int2 = DEFAULT_INT2_GPIO,      /* int for fifo */
-+
-Drop the blank line here
-+};
-+
-+struct l3gd20_gyr_status {
-+
-blank line here adds nothing.
-I'd like to see kernel-doc for this structure please.
-+    struct work_struct              work_trigger_to_ring;
-+    s64                        last_timestamp;
-+    struct iio_dev                  *indio_dev;
-+    struct iio_trigger              *trig;
-+
-+    struct i2c_client               *client;
-+    struct l3gd20_gyr_platform_data      *pdata;
-+    int                        use_smbus;
-Would driver prefer this or not?  Unless I am going mad,
-smbus is emulated on all i2c drivers anyway so not sure
-if you'll ever need this check..
-+
-+    struct mutex                    lock;
-+    int                        hw_initialized;
-+
-+    atomic_t                   enabled;
-+
-+    char const                 *scale;
-+    char const                 *gain;
-+
-+    u8                         reg_addr;
-+    u8                         resume_state[RESUME_ENTRIES];
-+
-+
-+    int                        irq1;
-+    int                        irq2;
-+
-+};
-+
-+static int l3gd20_gyr_i2c_read(struct l3gd20_gyr_status *data,
-+                                    u8 *buf, int len)
-+{
-+    int ret;
-+    u8 reg = buf[0];
-+    u8 cmd = reg;
-+
-+    if (len > 1)
-+          cmd = (I2C_AUTO_INCREMENT | reg);
-+    if (data->use_smbus) {
-+          if (len == 1) {
-+               ret = i2c_smbus_read_byte_data(data->client, cmd);
-+               buf[0] = ret & 0xff;
-+#ifdef DEBUG
-Loose these ifdefs as dev_dbg can be turned on and off as appropriate anyway.
-Actually I'd drop this entirely as it doesn't really tell us much of use.
-+               dev_dbg(&data->client->dev,
-+                    "i2c_smbus_read_byte_data: ret=0x%02x, len:%d ,"
-+                    "command=0x%02x, buf[0]=0x%02x\n",
-+                    ret, len, cmd , buf[0]);
-+#endif
-+          } else if (len > 1) {
-+               ret = i2c_smbus_read_i2c_block_data(data->client,
-+                                          cmd, len, buf);
-+#ifdef DEBUG
-+               dev_dbg(&data->client->dev,
-+                    "i2c_smbus_read_i2c_block_data: ret:%d len:%d, "
-+                    "command=0x%02x, ",
-+                    ret, len, cmd);
-+               char ii;
-+               for (ii = 0; ii < len; ii++)
-+                    pr_debug("buf[%d]=0x%02x,\n", ii, buf[ii]);
-+#endif
-+          } else
-+               ret = -1;
-+
-+          if (ret < 0) {
-+               dev_err(&data->client->dev,
-+                    "read transfer error: len:%d, command=0x%02x\n",
-+                    len, cmd);
-+               return 0; /* failure */
-+          }
-+          return len; /* success */
-+    }
-+
-+
-Clunky code, stick this in an else if actually needed so the flow
-is more obvious.
-
-+    ret = i2c_master_send(data->client, &cmd, sizeof(cmd));
-+    if (ret != sizeof(cmd))
-+          return ret;
-+
-+    return i2c_master_recv(data->client, buf, len);
-+}
-Both these functions rather look like they could be dropped entirely
-and i23c_smbus_write_byte_data / i2c_smbus_write_block_data called
-directly where approriate?
-+
-+static int l3gd20_gyr_i2c_write(struct l3gd20_gyr_status *data, u8 *buf,
-+                                          int len)
-+{
-+    int ret;
-+    u8 reg, value;
-+
-+    if (len > 1)
-+          buf[0] = (I2C_AUTO_INCREMENT | buf[0]);
-+
-+    reg = buf[0];
-+    value = buf[1];
-+
-+    if (data->use_smbus) {
-+          if (len == 1) {
-+               ret = i2c_smbus_write_byte_data(data->client, reg,
-+                                               value);
-+#ifdef DEBUG
-+               dev_dbg(&data->client->dev,
-+                    "i2c_smbus_write_byte_data: ret=%d, len:%d, "
-+                    "command=0x%02x, value=0x%02x\n",
-+                    ret, len, reg , value);
-+#endif
-+               return ret;
-+          } else if (len > 1) {
-+               ret = i2c_smbus_write_i2c_block_data(data->client,
-+                                    reg, len, buf + 1);
-+#ifdef DEBUG
-+               dev_dbg(&data->client->dev,
-+                    "i2c_smbus_write_i2c_block_data: ret=%d, "
-+                    "len:%d, command=0x%02x, ",
-+                    ret, len, reg);
-+               char ii;
-+               for (ii = 0; ii < len + 1; ii++)
-+                    pr_debug("value[%d]=0x%02x,\n", ii, buf[ii]);
-+#endif
-+               return ret;
-+          }
-+    }
-+
-+    ret = i2c_master_send(data->client, buf, len+1);
-+    return (ret == len+1) ? 0 : ret;
-+}
-+
-+
-+static int l3gd20_gyr_register_write(struct l3gd20_gyr_status *data,
-+          u8 *buf, u8 reg_address, u8 new_value)
-+{
-+    int err;
-+
-+          /* Sets configuration register at reg_address
-+          *  NOTE: this is a straight overwrite  */
-+          buf[0] = reg_address;
-+          buf[1] = new_value;
-Ugly and will go away if you just support smbus and call
-the right function directly here.
-
-+          err = l3gd20_gyr_i2c_write(data, buf, 1);
-+          if (err < 0)
-+               return err;
-+
-+    return err;
-+}
-+
-+static int l3gd20_gyr_register_read(struct l3gd20_gyr_status *data,
-+                               u8 *buf, u8 reg_address)
-+{
-+
-+    int err = -1;
-+    buf[0] = (reg_address);
-+    err = l3gd20_gyr_i2c_read(data, buf, 1);
-+    return err;
-+}
-+
-+#define L3GD20_INFO_MASK IIO_CHAN_INFO_RAW_SEPARATE_BIT
-+
-+#define L3GD20_CHAN(addr, mod)                      \
-+    {                                    \
-+          .type = IIO_ANGL_VEL,                \
-+          .modified = 1,                       \
-+          .channel2 = mod,                     \
-+          .info_mask = L3GD20_INFO_MASK,             \
-+          .address = addr,                     \
-
-drop scan_type until you add buffered support.
-+          .scan_type = {                       \
-+               .sign = 's',                    \
-+               .realbits = 16,                 \
-+               .storagebits = 16,              \
-+               .shift = 0,                     \
-+          },                              \
-+    }
-+
-+static struct iio_chan_spec l3gd20_channels[] = {
-+    L3GD20_CHAN(OUT_X_LSB, IIO_MOD_X),
-+    L3GD20_CHAN(OUT_Y_LSB, IIO_MOD_Y),
-+    L3GD20_CHAN(OUT_Z_LSB, IIO_MOD_Z),
-+};
-+
-+
-+static int l3gd20_gyr_read_raw(struct iio_dev *indio_dev,
-+                    struct iio_chan_spec const *chan,
-+                    int *val,
-+                    int *val2,
-+                    long mask)
-+{
-+    struct l3gd20_gyr_status *data = iio_priv(indio_dev);
-+    int err;
-+    u8 out_data[2];
-+    s16 val16;
-+    out_data[0] = chan->address;
-+    switch  (mask) {
-+    case IIO_CHAN_INFO_RAW:
-+          mutex_lock(&data->lock);
-+          err = l3gd20_gyr_i2c_read(data, out_data, 2);
-+          mutex_unlock(&data->lock);
-+          if (err < 0)
-+               return err;
-standard endian conversion so use be16_to_cpu (or appropriate alternative
-I'm too sleepy to think about it.)
-+          val16 = ((s16) ((out_data[1]) << 8) | out_data[0]);
-+          *val = val16;
-+          return IIO_VAL_INT;
-+    default:
-+          return -EINVAL;
-+    }
-+}
-+
-+static int l3gd20_gyr_register_update(struct l3gd20_gyr_status *data,
-+          u8 *buf, u8 reg_address, u8 mask, u8 new_bit_values)
-+{
-+    int err = -1;
-+    u8 init_val;
-+    u8 updated_val;
-+    err = l3gd20_gyr_register_read(data, buf, reg_address);
-+    if (!(err < 0)) {
-+          init_val = buf[0];
-+          updated_val = ((mask & new_bit_values) | ((~mask) & init_val));
-+          err = l3gd20_gyr_register_write(data, buf, reg_address,
-+                    updated_val);
-+    }
-+    return err;
-+}
-+
-+static int l3gd20_gyr_hw_init(struct l3gd20_gyr_status *dev_data)
-+{
-+    int err;
-+    u8 buf[6];
-+
-+    pr_info("%s hw init\n", L3GD20_GYR_DEV_NAME);
-+
-+    buf[0] = (CTRL_REG1);
-+    buf[1] = dev_data->resume_state[RES_CTRL_REG1];
-+    buf[2] = dev_data->resume_state[RES_CTRL_REG2];
-+    buf[3] = dev_data->resume_state[RES_CTRL_REG3];
-+    buf[4] = dev_data->resume_state[RES_CTRL_REG4];
-+    buf[5] = dev_data->resume_state[RES_CTRL_REG5];
-+
-+    err = l3gd20_gyr_i2c_write(dev_data, buf, 5);
-+    if (err < 0)
-+          return err;
-+
-+    buf[0] = FIFO_CTRL_REG;
-+    buf[1] = dev_data->resume_state[RES_FIFO_CTRL_REG];
-+    err = l3gd20_gyr_i2c_write(dev_data, buf, 1);
-+    if (err < 0)
-+               return err;
-+
-+    dev_data->hw_initialized = 1;
-+
-+    return err;
-+}
-+
-+static void l3gd20_gyr_device_power_off(struct l3gd20_gyr_status *dev_data)
-+{
-+    int err;
-+    u8 buf[2];
-+
-+    pr_info("%s power off\n", L3GD20_GYR_DEV_NAME);
-+
-+    buf[0] = CTRL_REG1;
-+    buf[1] = PM_OFF;
-+    err = l3gd20_gyr_i2c_write(dev_data, buf, 1);
-+    if (err < 0)
-+          dev_err(&dev_data->client->dev, "soft power off failed\n");
-+
-+    if (dev_data->pdata->power_off) {
-+          dev_data->pdata->power_off();
-+          dev_data->hw_initialized = 0;
-+    }
-+
-+    if (dev_data->hw_initialized)
-+          dev_data->hw_initialized = 0;
-+}
-+
-+static int l3gd20_gyr_device_power_on(struct l3gd20_gyr_status *dev_data)
-+{
-+    int err;
-+
-+    if (dev_data->pdata->power_on) {
-+          err = dev_data->pdata->power_on();
-+          if (err < 0)
-+               return err;
-+    }
-+
-+
-+    if (!dev_data->hw_initialized) {
-+          err = l3gd20_gyr_hw_init(dev_data);
-+          if (err < 0) {
-+               l3gd20_gyr_device_power_off(dev_data);
-+               return err;
-+          }
-+    }
-+
-+    return 0;
-+}
-+
-+
-+static int l3gd20_gyr_enable(struct l3gd20_gyr_status *dev_data)
-+{
-+    int err;
-+
-+    if (!atomic_cmpxchg(&dev_data->enabled, 0, 1)) {
-+
-+          err = l3gd20_gyr_device_power_on(dev_data);
-+          if (err < 0) {
-+               atomic_set(&dev_data->enabled, 0);
-+               return err;
-+          }
-+
-+    }
-+
-+    return 0;
-+}
-+
-+static int l3gd20_gyr_disable(struct l3gd20_gyr_status *dev_data)
-+{
-+
-+    pr_debug("%s: dev_data->enabled = %d\n", __func__,
-+          atomic_read(&dev_data->enabled));
-+
-Nasty, I'd just go with a mutex..
-+    if (atomic_cmpxchg(&dev_data->enabled, 1, 0))
-+          l3gd20_gyr_device_power_off(dev_data);
-+
-+    return 0;
-+}
-+
-+static int l3gd20_gyr_update_fs_range(struct l3gd20_gyr_status *dev_data,
-+                                    u8 new_fs_range)
-+{
-+    int res ;
-+    u8 buf[2];
-+    char const *scale;
-+    char const *gain;
-+    buf[0] = CTRL_REG4;
-+
-+    switch (new_fs_range) {
-+    case L3GD20_GYR_FS_250DPS:
-+          gain = GAIN_250DPS;
-+          scale = SCALE_250DPS;
-+          break;
-+
-+    case L3GD20_GYR_FS_500DPS:
-+          gain = GAIN_500DPS;
-+          scale = SCALE_500DPS;
-+          break;
-+
-+    case L3GD20_GYR_FS_2000DPS:
-+          gain = GAIN_2000DPS;
-+          scale = SCALE_2000DPS;
-+          break;
-+
-+    default:
-+          dev_err(&dev_data->client->dev,
-+                          "invalid fs range requested: %u\n",
-+                          new_fs_range);
-+          return -EINVAL;
-+    }
-+
-+    res = l3gd20_gyr_register_update(dev_data, buf, CTRL_REG4,
-+                                    FS_MASK, new_fs_range);
-+
-+    if (res < 0) {
-+          pr_err("%s : failed to update fs:0x%02x\n",
-+                                    __func__, new_fs_range);
-+          return res;
-+    }
-+    dev_data->resume_state[RES_CTRL_REG4] =
-+          ((FS_MASK & new_fs_range) |
-+          (~FS_MASK & dev_data->resume_state[RES_CTRL_REG4]));
-+    dev_data->gain = gain;
-+    dev_data->scale = scale;
-+    return res;
-+}
-+
-+static int l3gd20_gyr_update_sampling_freq(struct l3gd20_gyr_status *data,
-+                                    u8 freq)
-+{
-+    int res = 0;
-+    u8 buf[2];
-+    u8 new_value;
-+    u8 mask = (CTRL_REG1_ODR_MASK|CTRL_REG1_BW_MASK);
-+
-+
-+    new_value = freq;
-+    res = l3gd20_gyr_register_update(data, buf, CTRL_REG1,
-+                                    mask, new_value);
-+
-+    if (res < 0) {
-+          dev_err(&data->client->dev,
-+               "%s : failed to update sampling frequency setting\n",
-+                                          __func__);
-+          return res;
-+    }
-+    dev_dbg(&data->client->dev, "%s : new_value:0x%02x, freq:0x%02x\n",
-+               __func__, new_value, freq);
-+
-+    data->resume_state[RES_CTRL_REG1] =
-+          ((mask & new_value) |
-+          (~mask & data->resume_state[RES_CTRL_REG1]));
-+
-+    data->pdata->sampling_frequency = new_value;
-+
-+    return res;
-+}
-+
-+static ssize_t l3gd20_gyr_show_sampling_frequency(struct device *dev,
-+                               struct device_attribute *attr,
-+                               char *buf)
-+{
-+    struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+    struct l3gd20_gyr_status *data = iio_priv(indio_dev);
-+    u8 i;
-+    u8 val;
-+
-+
-+    mutex_lock(&data->lock);
-+    val = data->pdata->sampling_frequency;
-+    mutex_unlock(&data->lock);
-+    dev_dbg(dev, "getting sampling frequency: 0x%02x\n", val);
-+
-+    for (i = 0; i < ARRAY_SIZE(l3gd20_gyr_odr_table); i++)
-+          if (l3gd20_gyr_odr_table[i].sampling_rate_setting == val)
-+               break;
-+
-+    return sprintf(buf, "%s\n", l3gd20_gyr_odr_table[i].hz_label);
-+}
-+
-+static ssize_t l3gd20_gyr_store_sampling_frequency(struct device *dev,
-+                               struct device_attribute *attr,
-+                               const char *buf, size_t size)
-+{
-+    struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+    struct l3gd20_gyr_status *data = iio_priv(indio_dev);
-+    u8 found = 0;
-+    u8 i;
-+    u8 ret;
-+
-+    for (i = 0; i < ARRAY_SIZE(l3gd20_gyr_odr_table); i++) {
-+          if (strcmp(buf, l3gd20_gyr_odr_table[i].hz_label) == 0) {
-+               found = 1;
-+               break;
-+          }
-+    }
-+
-+    if (!found) {
-+          dev_err(dev, "trying to set invalid sampling frequency: %s\n"
-+                    "new sampling frequency not set!\n", buf);
-+          return  -EINVAL;
-+    } else {
-+          mutex_lock(&data->lock);
-+          ret = l3gd20_gyr_update_sampling_freq(data,
-+               l3gd20_gyr_odr_table[i].sampling_rate_setting);
-+          if (ret < 0)
-+               goto error;
-+          data->pdata->sampling_frequency =
-+               l3gd20_gyr_odr_table[i].sampling_rate_setting;
-+          dev_info(dev, "set new sampling frequency: %s Hz\n",
-+                          l3gd20_gyr_odr_table[i].hz_label);
-+          mutex_unlock(&data->lock);
-+    }
-+    return size;
-+error:
-+    mutex_unlock(&data->lock);
-+    return ret;
-+}
-+
-+
-+static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-+          l3gd20_gyr_show_sampling_frequency,
-+          l3gd20_gyr_store_sampling_frequency);
-+
-+static ssize_t l3gd20_gyr_show_enable(struct device *dev,
-+                      struct device_attribute *attr, char *buf)
-+{
-+    struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+    struct l3gd20_gyr_status *data = iio_priv(indio_dev);
-+    int val = atomic_read(&data->enabled);
-+    return sprintf(buf, "%d\n", val);
-+}
-+
-+static ssize_t l3gd20_gyr_store_enable(struct device *dev,
-+                      struct device_attribute *attr,
-+                      const char *buf, size_t size)
-+{
-+    struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+    struct l3gd20_gyr_status *data = iio_priv(indio_dev);
-+    unsigned long val;
-+
-+    if (kstrtoul(buf, 10, &val))
-+          return -EINVAL;
-+
-+    if (val)
-+          l3gd20_gyr_enable(data);
-+    else
-+          l3gd20_gyr_disable(data);
-+
-+    return size;
-+}
-+
-+static IIO_DEVICE_ATTR(enable_device,
-+               S_IWUSR | S_IRUGO,
-+               l3gd20_gyr_show_enable,
-+               l3gd20_gyr_store_enable,
-+               0);
-+
-+static ssize_t l3gd20_gyr_show_range(struct device *dev,
-+                          struct device_attribute *attr,
-+                          char *buf)
-+{
-+    struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+    struct l3gd20_gyr_status *data = iio_priv(indio_dev);
-+    int label = 0;
-+    u8 val;
-+    mutex_lock(&data->lock);
-+    val = data->pdata->fs_range;
-+    mutex_unlock(&data->lock);
-+
-+    switch (val) {
-+    case L3GD20_GYR_FS_250DPS:
-+          label = 250;
-+          break;
-+    case L3GD20_GYR_FS_500DPS:
-+          label = 500;
-+          break;
-+    case L3GD20_GYR_FS_2000DPS:
-+          label = 2000;
-+          break;
-+    }
-+
-+    return sprintf(buf, "%d dps\n", label);
-+}
-+
-+static ssize_t l3gd20_gyr_store_range(struct device *dev,
-+                            struct device_attribute *attr,
-+                            const char *buf,
-+                            size_t size)
-+{
-+    struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+    struct l3gd20_gyr_status *data = iio_priv(indio_dev);
-+    unsigned long val;
-+    u8 range;
-+    int err = -1;
-+    if (kstrtoul(buf, 10, &val)) {
-+          dev_err(dev, "invalid range %lu\n. Range not changed", val);
-+          return -EINVAL;
-+    }
-+    switch (val) {
-+    case 250:
-+          range = L3GD20_GYR_FS_250DPS;
-+          break;
-+    case 500:
-+         range = L3GD20_GYR_FS_500DPS;
-+          break;
-+    case 2000:
-+          range = L3GD20_GYR_FS_2000DPS;
-+          break;
-+    default:
-+          dev_err(dev, "invalid range %lu. Range not changed\n", val);
-+          return -EINVAL;
-+    }
-+
-+    mutex_lock(&data->lock);
-+    data->pdata->fs_range = range;
-+    err = l3gd20_gyr_update_fs_range(data, range);
-+    mutex_unlock(&data->lock);
-+    if (err < 0)
-+          goto error;
-+    dev_info(dev, "set range to %lu dps\n", val);
-+    return size;
-+error:
-+    dev_err(dev, "error changing range\n");
-+    return err;
-+}
-+
-+
-+
-Not in the abi. Preference always for scale over range
-(as we need it to do raw -> processed conversion) but
-if you really want range, then in_gyro_range and do it
-via the info mask (if the support isn't there, then propose
-adding it).
-+static IIO_DEVICE_ATTR(gyro_range,
-+               S_IWUSR | S_IRUGO,
-+               l3gd20_gyr_show_range,
-+               l3gd20_gyr_store_range,
-+               0);
-+
-+
-+static IIO_CONST_ATTR(gyro_range_available, "250 500 2000");
-+
-+
-+static ssize_t l3gd20_gyr_show_gain(struct device *dev,
-+                               struct device_attribute *attr,
-+                               char *buf)
-+{
-+    struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+    struct l3gd20_gyr_status *data = iio_priv(indio_dev);
-+    return sprintf(buf, "%s\n", data->gain);
-+}
-+
-+static IIO_DEVICE_ATTR(gyro_gain, S_IRUGO,
-+               l3gd20_gyr_show_gain,
-+               NULL , 0);
-+
-+
-+static ssize_t l3gd20_gyr_show_scale(struct device *dev,
-+                          struct device_attribute *attr,
-+                          char *buf)
-+{
-+    struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+    struct l3gd20_gyr_status *data = iio_priv(indio_dev);
-+    return sprintf(buf, "%s\n", data->scale);
-+}
-+
-+static IIO_DEVICE_ATTR(gyro_scale, S_IRUGO,
-+               l3gd20_gyr_show_scale,
-+               NULL , 0);
-+
-+static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("95 190 380 760");
-+
-+static IIO_CONST_ATTR(name, L3GD20_GYR_DEV_NAME);
-+
-+
-+
-+static struct attribute *l3gd20_gyr_attributes[] = {
-+    &iio_const_attr_name.dev_attr.attr,
-I think that's been handled by the iio core for some time
-but then I may be half asleep this morning...
-
-+    &iio_dev_attr_enable_device.dev_attr.attr,
-+    &iio_const_attr_gyro_range_available.dev_attr.attr,
-+    &iio_dev_attr_gyro_range.dev_attr.attr,
-+    &iio_dev_attr_gyro_gain.dev_attr.attr,
-+    &iio_dev_attr_gyro_scale.dev_attr.attr,
-These aren't abi compliant and equivalents should mostly be
-done via the info_mask and raw_read callback.
-+    &iio_dev_attr_sampling_frequency.dev_attr.attr,
-+    &iio_const_attr_sampling_frequency_available.dev_attr.attr,
-+    NULL
-+};
-+
-+static const struct attribute_group l3gd20_gyr_attribute_group = {
-+    .attrs = l3gd20_gyr_attributes,
-+};
-+
-+static const struct iio_info l3gd20_gyr_info = {
-+    .attrs = &l3gd20_gyr_attribute_group,
-+    .read_raw = &l3gd20_gyr_read_raw,
-+    .driver_module = THIS_MODULE,
-+};
-+
-+static int l3gd20_gyr_validate_pdata(struct l3gd20_gyr_status *dev_data)
-+{
-+
-I'd be cynical and assume this was valid, but if you really want to
-check I don't suppose it does any harm!
-+    if (dev_data->pdata->axis_map_x > 2 ||
-+        dev_data->pdata->axis_map_y > 2 ||
-+        dev_data->pdata->axis_map_z > 2) {
-+          dev_err(&dev_data->client->dev,
-+               "invalid axis_map value x:%u y:%u z%u\n",
-+               dev_data->pdata->axis_map_x,
-+               dev_data->pdata->axis_map_y,
-+               dev_data->pdata->axis_map_z);
-+          return -EINVAL;
-+    }
-+
-
-Just make negate a bit field and this won't be possible.
-
-+    /* Only allow 0 and 1 for negation boolean flag */
-+    if (dev_data->pdata->negate_x > 1 ||
-+        dev_data->pdata->negate_y > 1 ||
-+        dev_data->pdata->negate_z > 1) {
-+          dev_err(&dev_data->client->dev,
-+               "invalid negate value x:%u y:%u z:%u\n",
-+               dev_data->pdata->negate_x,
-+               dev_data->pdata->negate_y,
-+               dev_data->pdata->negate_z);
-+          return -EINVAL;
-+    }
-+
-+    return 0;
-+}
-+
-+static int l3gd20_gyr_probe(struct i2c_client *client,
-+          const struct i2c_device_id *id)
-+{
-+    struct l3gd20_gyr_status *stat;
-+    struct iio_dev *indio_dev;
-+    int err = -1;
-+    u32 smbus_func;
-+    int regdone = 0;
-+    indio_dev = iio_device_alloc(sizeof(*stat));
-+    if (indio_dev == NULL) {
-+          err = -ENOMEM;
-+          dev_err(&client->dev,
-+                    "failed to allocate memory for module stat: "
-+                          "%d\n", err);
-+          goto exit_check_functionality_failed;
-+    }
-+
-+    stat = iio_priv(indio_dev);
-+    smbus_func = I2C_FUNC_SMBUS_BYTE_DATA |
-+               I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_I2C_BLOCK;
-+    pr_info("%s: probe start.\n", L3GD20_GYR_DEV_NAME);
-+
-+    /* Support for both I2C and SMBUS adapter interfaces. */
-+    if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-+          dev_warn(&client->dev, "client not i2c capable\n");
-+          if (i2c_check_functionality(client->adapter, smbus_func)) {
-+               stat->use_smbus = 1;
-+               dev_warn(&client->dev, "client using SMBUS\n");
-+          } else {
-+               err = -ENODEV;
-+               dev_err(&client->dev, "client nor SMBUS capable\n");
-+               stat->use_smbus = 0;
-+               goto exit_check_functionality_failed;
-+          }
-+    }
-+
-+    mutex_init(&stat->lock);
-+    mutex_lock(&stat->lock);
-+    stat->client = client;
-+    i2c_set_clientdata(client, indio_dev);
-+    stat->pdata = kmalloc(sizeof(*stat->pdata), GFP_KERNEL);
-+    if (stat->pdata == NULL) {
-+          err = -ENOMEM;
-+          dev_err(&client->dev,
-+                    "failed to allocate memory for pdata: %d\n",
-+                    err);
-+          goto err_mutexunlock;
-+    }
-+
-+    if (client->dev.platform_data == NULL) {
-+          memcpy(stat->pdata, &default_l3gd20_gyr_pdata,
-+                                    sizeof(*stat->pdata));
-+          dev_info(&client->dev, "using default platform data\n");
-+    } else {
-+          memcpy(stat->pdata, client->dev.platform_data,
-+                                    sizeof(*stat->pdata));
-+    }
-+
-+    err = l3gd20_gyr_validate_pdata(stat);
-+    if (err < 0) {
-+          dev_err(&client->dev, "failed to validate platform data\n");
-+          goto exit_kfree_pdata;
-+    }
-+
-+
-+    if (stat->pdata->init) {
-+          err = stat->pdata->init();
-+          if (err < 0) {
-+               dev_err(&client->dev, "init failed: %d\n", err);
-+               goto err_pdata_init;
-+          }
-+    }
-+
-+    memset(stat->resume_state, 0, ARRAY_SIZE(stat->resume_state));
-+
-+    stat->resume_state[RES_CTRL_REG1] = (ALL_ZEROES | PM_NORMAL
-+                                    | ENABLE_ALL_AXES);
-+    stat->resume_state[RES_CTRL_REG2] = ALL_ZEROES;
-+    stat->resume_state[RES_CTRL_REG3] = ALL_ZEROES;
-+    stat->resume_state[RES_CTRL_REG4] = (ALL_ZEROES | BDU_ENABLE);
-+    stat->resume_state[RES_CTRL_REG5] = ALL_ZEROES;
-+    stat->resume_state[RES_FIFO_CTRL_REG] = ALL_ZEROES;
-+
-+    err = l3gd20_gyr_device_power_on(stat);
-+    if (err < 0) {
-+          dev_err(&client->dev, "power on failed: %d\n", err);
-+          goto exit_kfree_pdata;
-+    }
-+
-+    atomic_set(&stat->enabled, 1);
-+
-+    err = l3gd20_gyr_update_fs_range(stat, stat->pdata->fs_range);
-+    if (err < 0) {
-+          dev_err(&client->dev, "update_fs_range failed\n");
-+          goto  err_power_off;
-+    }
-+
-+    err = l3gd20_gyr_update_sampling_freq(stat,
-+                          stat->pdata->sampling_frequency);
-+    if (err < 0) {
-+          dev_err(&client->dev, "update sampling freq failed\n");
-+          goto  err_power_off;
-+    }
-+
-+    indio_dev->dev.parent = &client->dev;
-+    indio_dev->modes = INDIO_DIRECT_MODE;
-+    indio_dev->info = &l3gd20_gyr_info;
-+    indio_dev->channels = l3gd20_channels;
-+    indio_dev->num_channels = ARRAY_SIZE(l3gd20_channels);
-+
-+    l3gd20_gyr_device_power_off(stat);
-+
-+    /* As default, do not report information */
-+    atomic_set(&stat->enabled, 0);
-+    err = l3gd20_gyr_configure_ring(indio_dev);
-+    if (err)
-+          goto error_free_dev;
-+
-+    err = iio_device_register(indio_dev);
-+    if (err) {
-+          dev_err(&client->dev, "error registering iio dev: %d\n", err);
-+          goto error_unreg_ring_funcs;
-+    }
-+    regdone = 1;
-+
-+    mutex_unlock(&stat->lock);
-+    dev_info(&client->dev, "%s: probed\n", L3GD20_GYR_DEV_NAME);
-+    return 0;
-+
-+
-+
-Firstly you are unwinding this in a different order to creation
-above.  Also, the ring stuff doesn't exist so get rid of it for
-now and bring it in once we have a patch to make it do something.
-
-+error_unreg_ring_funcs:
-+    l3gd20_gyr_unconfigure_ring(stat->indio_dev);
-+error_free_dev:
-+    if (regdone)
-+          iio_device_unregister(indio_dev);
-+    else
-+          iio_device_free(indio_dev);
-+err_power_off:
-+    l3gd20_gyr_device_power_off(stat);
-+err_pdata_init:
-+    if (stat->pdata->exit)
-+          stat->pdata->exit();
-+exit_kfree_pdata:
-+    kfree(stat->pdata);
-+err_mutexunlock:
-+    mutex_unlock(&stat->lock);
-+exit_check_functionality_failed:
-+    pr_err("%s: Driver Init failed\n", L3GD20_GYR_DEV_NAME);
-+    return err;
-+}
-+
-+
-+static int __devexit l3gd20_gyr_remove(struct i2c_client *client)
-+{
-+    struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+    struct l3gd20_gyr_status *dev_data = iio_priv(indio_dev);
-+
-+    iio_device_unregister(indio_dev);
-+    l3gd20_gyr_device_power_off(dev_data);
-+
-+    l3gd20_gyr_unconfigure_ring(indio_dev);
-+    iio_device_free(indio_dev);
-+
-+    return 0;
-+}
-+
-+static const struct i2c_device_id l3gd20_gyr_id[] = {
-+    { L3GD20_GYR_DEV_NAME , 0 },
-+    {},
-+};
-+
-+MODULE_DEVICE_TABLE(i2c, l3gd20_gyr_id);
-+
-+static struct i2c_driver l3gd20_gyr_driver = {
-+    .driver = {
-+               .owner = THIS_MODULE,
-+               .name = L3GD20_GYR_DEV_NAME,
-+            },
-+    .probe = l3gd20_gyr_probe,
-+    .remove = __devexit_p(l3gd20_gyr_remove),
-+    .id_table = l3gd20_gyr_id,
-+};
-+
-+module_i2c_driver(l3gd20_gyr_driver);
-+
-+MODULE_DESCRIPTION("STMicroelectronics l3gd20 digital gyroscope iio driver");
-+MODULE_AUTHOR("Matteo Dameno, Swapnil Tiwari, STMicroelectronics");
-+MODULE_LICENSE("GPL v2");
--- 
-1.7.12
+Thanks - another nice clean driver :)
+> 
+> ---
+> Changes since v1:
+> 	* Use lookup table instead of switch-case for min/max data
+> 	* Provide default platform data
+> 	* Use less magic constants
+fewer (it's that sort of evening)
+> ---
+>  drivers/iio/dac/Kconfig              |   11 +
+>  drivers/iio/dac/Makefile             |    1 +
+>  drivers/iio/dac/ad5755.c             |  646 ++++++++++++++++++++++++++++++++++
+>  include/linux/platform_data/ad5755.h |  103 ++++++
+>  4 files changed, 761 insertions(+)
+>  create mode 100644 drivers/iio/dac/ad5755.c
+>  create mode 100644 include/linux/platform_data/ad5755.h
+> 
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 7845263..b1c0ee5 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -77,6 +77,17 @@ config AD5504
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called ad5504.
+>  
+> +config AD5755
+> +	tristate "Analog Devices AD5755/AD5755-1/AD5757/AD5735/AD5737 DAC driver"
+> +	depends on SPI_MASTER
+> +	help
+> +	  Say yes here to build support for Analog Devices AD5755, AD5755-1,
+> +	  AD5757, AD5735, AD5737 quad channel Digital to
+> +	  Analog Converter.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called ad5755.
+> +
+>  config AD5764
+>  	tristate "Analog Devices AD5764/64R/44/44R DAC driver"
+>  	depends on SPI_MASTER
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index 9ea3cee..c0d333b 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -9,6 +9,7 @@ obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
+>  obj-$(CONFIG_AD5064) += ad5064.o
+>  obj-$(CONFIG_AD5504) += ad5504.o
+>  obj-$(CONFIG_AD5446) += ad5446.o
+> +obj-$(CONFIG_AD5755) += ad5755.o
+>  obj-$(CONFIG_AD5764) += ad5764.o
+>  obj-$(CONFIG_AD5791) += ad5791.o
+>  obj-$(CONFIG_AD5686) += ad5686.o
+> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+> new file mode 100644
+> index 0000000..73a8821
+> --- /dev/null
+> +++ b/drivers/iio/dac/ad5755.c
+> @@ -0,0 +1,646 @@
+> +/*
+> + * AD5755, AD5755-1, AD5757, AD5735, AD5737 Digital to analog converters driver
+> + *
+> + * Copyright 2012 Analog Devices Inc.
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/delay.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/platform_data/ad5755.h>
+> +
+> +#define AD5755_NUM_CHANNELS 4
+> +
+> +#define AD5755_ADDR(x)			((x) << 16)
+> +
+> +#define AD5755_WRITE_REG_DATA(chan)	(chan)
+> +#define AD5755_WRITE_REG_GAIN(chan)	(0x08 | (chan))
+> +#define AD5755_WRITE_REG_OFFSET(chan)	(0x10 | (chan))
+> +#define AD5755_WRITE_REG_CTRL(chan)	(0x1c | (chan))
+> +
+> +#define AD5755_READ_REG_DATA(chan)	(chan)
+> +#define AD5755_READ_REG_CTRL(chan)	(0x4 | (chan))
+> +#define AD5755_READ_REG_GAIN(chan)	(0x8 | (chan))
+> +#define AD5755_READ_REG_OFFSET(chan)	(0xc | (chan))
+> +#define AD5755_READ_REG_CLEAR(chan)	(0x10 | (chan))
+> +#define AD5755_READ_REG_SLEW(chan)	(0x14 | (chan))
+> +#define AD5755_READ_REG_STATUS		0x18
+> +#define AD5755_READ_REG_MAIN		0x19
+> +#define AD5755_READ_REG_DC_DC		0x1a
+> +
+> +#define AD5755_CTRL_REG_SLEW	0x0
+> +#define AD5755_CTRL_REG_MAIN	0x1
+> +#define AD5755_CTRL_REG_DAC	0x2
+> +#define AD5755_CTRL_REG_DC_DC	0x3
+> +#define AD5755_CTRL_REG_SW	0x4
+> +
+> +#define AD5755_READ_FLAG 0x800000
+> +
+> +#define AD5755_NOOP 0x1CE000
+> +
+> +#define AD5755_DAC_INT_EN			BIT(8)
+> +#define AD5755_DAC_CLR_EN			BIT(7)
+> +#define AD5755_DAC_OUT_EN			BIT(6)
+> +#define AD5755_DAC_INT_CURRENT_SENSE_RESISTOR	BIT(5)
+> +#define AD5755_DAC_DC_DC_EN			BIT(4)
+> +#define AD5755_DAC_VOLTAGE_OVERRANGE_EN		BIT(3)
+> +
+> +#define AD5755_DC_DC_MAXV			0
+> +#define AD5755_DC_DC_FREQ_SHIFT			2
+> +#define AD5755_DC_DC_PHASE_SHIFT		4
+> +#define AD5755_EXT_DC_DC_COMP_RES		BIT(6)
+> +
+> +#define AD5755_SLEW_STEP_SIZE_SHIFT		0
+> +#define AD5755_SLEW_RATE_SHIFT			3
+> +#define AD5755_SLEW_ENABLE			BIT(12)
+> +
+> +/**
+> + * struct ad5755_chip_info - chip specific information
+> + * @channel_template:	channel specification
+> + * @calib_shift:	shift for the calibration data registers
+> + * @has_voltage_out:	whether the chip has voltage outputs
+> + */
+> +struct ad5755_chip_info {
+> +	const struct iio_chan_spec channel_template;
+> +	unsigned int calib_shift;
+> +	bool has_voltage_out;
+> +};
+> +
+> +/**
+> + * struct ad5755_state - driver instance specific data
+> + * @spi:	spi device the driver is attached to
+> + * @chip_info:	chip model specific constants, available modes etc
+> + * @pwr_down:	bitmask which contains  hether a channel is powered down or not
+> + * @ctrl:	software shadow of the channel ctrl registers
+> + * @channels:	iio channel spec for the device
+> + * @data:	spi transfer buffers
+> + */
+> +struct ad5755_state {
+> +	struct spi_device		*spi;
+> +	const struct ad5755_chip_info	*chip_info;
+> +	unsigned int			pwr_down;
+> +	unsigned int			ctrl[AD5755_NUM_CHANNELS];
+> +	struct iio_chan_spec		channels[AD5755_NUM_CHANNELS];
+> +
+> +	/*
+> +	 * DMA (thus cache coherency maintenance) requires the
+> +	 * transfer buffers to live in their own cache lines.
+> +	 */
+> +
+> +	union {
+> +		u32 d32;
+> +		u8 d8[4];
+> +	} data[2] ____cacheline_aligned;
+> +};
+> +
+> +enum ad5755_type {
+> +	ID_AD5755,
+> +	ID_AD5757,
+> +	ID_AD5735,
+> +	ID_AD5737,
+> +};
+> +
+> +static int ad5755_write_unlocked(struct iio_dev *indio_dev,
+> +	unsigned int reg, unsigned int val)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +
+> +	st->data[0].d32 = cpu_to_be32((reg << 16) | val);
+> +
+> +	return spi_write(st->spi, &st->data[0].d8[1], 3);
+> +}
+> +
+> +static int ad5755_write_ctrl_unlocked(struct iio_dev *indio_dev,
+> +	unsigned int channel, unsigned int reg, unsigned int val)
+> +{
+> +	return ad5755_write_unlocked(indio_dev,
+> +		AD5755_WRITE_REG_CTRL(channel), (reg << 13) | val);
+> +}
+> +
+> +static int ad5755_write(struct iio_dev *indio_dev, unsigned int reg,
+> +	unsigned int val)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	ret = ad5755_write_unlocked(indio_dev, reg, val);
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ad5755_write_ctrl(struct iio_dev *indio_dev, unsigned int channel,
+> +	unsigned int reg, unsigned int val)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	ret = ad5755_write_ctrl_unlocked(indio_dev, channel, reg, val);
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ad5755_read(struct iio_dev *indio_dev, unsigned int addr)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	struct spi_message m;
+> +	int ret;
+> +	struct spi_transfer t[] = {
+> +		{
+> +			.tx_buf = &st->data[0].d8[1],
+> +			.len = 3,
+> +			.cs_change = 1,
+> +		}, {
+> +			.tx_buf = &st->data[1].d8[1],
+> +			.rx_buf = &st->data[1].d8[1],
+> +			.len = 3,
+> +		},
+> +	};
+> +
+> +	spi_message_init(&m);
+> +	spi_message_add_tail(&t[0], &m);
+> +	spi_message_add_tail(&t[1], &m);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	st->data[0].d32 = cpu_to_be32(AD5755_READ_FLAG | (addr << 16));
+> +	st->data[1].d32 = cpu_to_be32(AD5755_NOOP);
+> +
+> +	ret = spi_sync(st->spi, &m);
+> +	if (ret >= 0)
+> +		ret = be32_to_cpu(st->data[1].d32) & 0xffff;
+> +
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ad5755_update_dac_ctrl(struct iio_dev *indio_dev,
+> +	unsigned int channel, unsigned int set, unsigned int clr)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	st->ctrl[channel] |= set;
+> +	st->ctrl[channel] &= ~clr;
+> +
+> +	ret = ad5755_write_ctrl_unlocked(indio_dev, channel,
+> +		AD5755_CTRL_REG_DAC, st->ctrl[channel]);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ad5755_set_channel_pwr_down(struct iio_dev *indio_dev,
+> +	unsigned int channel, bool pwr_down)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	unsigned int mask = BIT(channel);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	if ((bool)(st->pwr_down & mask) == pwr_down)
+> +		goto out_unlock;
+> +
+> +	if (!pwr_down) {
+> +		st->pwr_down &= ~mask;
+> +		ad5755_update_dac_ctrl(indio_dev, channel,
+> +			AD5755_DAC_INT_EN | AD5755_DAC_DC_DC_EN, 0);
+> +		udelay(200);
+> +		ad5755_update_dac_ctrl(indio_dev, channel,
+> +			AD5755_DAC_OUT_EN, 0);
+> +	} else {
+> +		st->pwr_down |= mask;
+> +		ad5755_update_dac_ctrl(indio_dev, channel,
+> +			0, AD5755_DAC_INT_EN | AD5755_DAC_OUT_EN |
+> +				AD5755_DAC_DC_DC_EN);
+> +	}
+> +
+> +out_unlock:
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return 0;
+> +}
+> +
+> +static const int ad5755_min_max_table[][2] = {
+> +	[AD5755_MODE_VOLTAGE_0V_5V] = { 0, 5000 },
+> +	[AD5755_MODE_VOLTAGE_0V_10V] = { 0, 10000 },
+> +	[AD5755_MODE_VOLTAGE_PLUSMINUS_5V] = { -5000, 5000 },
+> +	[AD5755_MODE_VOLTAGE_PLUSMINUS_10V] = { -10000, 10000 },
+> +	[AD5755_MODE_CURRENT_4mA_20mA] = { 4, 20 },
+> +	[AD5755_MODE_CURRENT_0mA_20mA] = { 0, 20 },
+> +	[AD5755_MODE_CURRENT_0mA_24mA] = { 0, 24 },
+> +};
+> +
+> +static void ad5755_get_min_max(struct ad5755_state *st,
+> +	struct iio_chan_spec const *chan, int *min, int *max)
+> +{
+> +	enum ad5755_mode mode = st->ctrl[chan->channel] & 7;
+> +	*min = ad5755_min_max_table[mode][0];
+> +	*max = ad5755_min_max_table[mode][1];
+> +}
+> +
+> +static inline int ad5755_get_offset(struct ad5755_state *st,
+> +	struct iio_chan_spec const *chan)
+> +{
+> +	int min, max;
+> +
+> +	ad5755_get_min_max(st, chan, &min, &max);
+> +	return (min * (1 << chan->scan_type.realbits)) / (max - min);
+> +}
+> +
+> +static inline int ad5755_get_scale(struct ad5755_state *st,
+> +	struct iio_chan_spec const *chan)
+> +{
+> +	int min, max;
+> +
+> +	ad5755_get_min_max(st, chan, &min, &max);
+> +	return ((max - min) * 1000000000ULL) >> chan->scan_type.realbits;
+> +}
+> +
+> +static int ad5755_chan_reg_info(struct ad5755_state *st,
+> +	struct iio_chan_spec const *chan, long info, bool write,
+> +	unsigned int *reg, unsigned int *shift, unsigned int *offset)
+> +{
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (write)
+> +			*reg = AD5755_WRITE_REG_DATA(chan->address);
+> +		else
+> +			*reg = AD5755_READ_REG_DATA(chan->address);
+> +		*shift = chan->scan_type.shift;
+> +		*offset = 0;
+> +		break;
+> +	case IIO_CHAN_INFO_CALIBBIAS:
+> +		if (write)
+> +			*reg = AD5755_WRITE_REG_OFFSET(chan->address);
+> +		else
+> +			*reg = AD5755_READ_REG_OFFSET(chan->address);
+> +		*shift = st->chip_info->calib_shift;
+> +		*offset = 32768;
+> +		break;
+> +	case IIO_CHAN_INFO_CALIBSCALE:
+> +		if (write)
+> +			*reg =  AD5755_WRITE_REG_GAIN(chan->address);
+> +		else
+> +			*reg =  AD5755_READ_REG_GAIN(chan->address);
+> +		*shift = st->chip_info->calib_shift;
+> +		*offset = 0;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5755_read_raw(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, int *val, int *val2, long info)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	unsigned int reg, shift, offset;
+> +	int ret;
+> +
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 0;
+> +		*val2 = ad5755_get_scale(st, chan);
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		*val = ad5755_get_offset(st, chan);
+> +		return IIO_VAL_INT;
+> +	default:
+> +		ret = ad5755_chan_reg_info(st, chan, info, false,
+> +						&reg, &shift, &offset);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = ad5755_read(indio_dev, reg);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		*val = (ret - offset) >> shift;
+> +
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ad5755_write_raw(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, int val, int val2, long info)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	unsigned int shift, reg, offset;
+> +	int ret;
+> +
+> +	ret = ad5755_chan_reg_info(st, chan, info, true,
+> +					&reg, &shift, &offset);
+> +	if (ret)
+> +		return ret;
+> +
+> +	val <<= shift;
+> +	val += offset;
+> +
+> +	if (val < 0 || val > 0xffff)
+> +		return -EINVAL;
+> +
+> +	return ad5755_write(indio_dev, reg, val);
+> +}
+> +
+> +static ssize_t ad5755_read_powerdown(struct iio_dev *indio_dev, uintptr_t priv,
+> +	const struct iio_chan_spec *chan, char *buf)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +
+> +	return sprintf(buf, "%d\n", (bool)(st->pwr_down & (1 << chan->channel)));
+> +}
+> +
+> +static ssize_t ad5755_write_powerdown(struct iio_dev *indio_dev, uintptr_t priv,
+> +	struct iio_chan_spec const *chan, const char *buf, size_t len)
+> +{
+> +	bool pwr_down;
+> +	int ret;
+> +
+> +	ret = strtobool(buf, &pwr_down);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ad5755_set_channel_pwr_down(indio_dev, chan->channel, pwr_down);
+> +	return ret ? ret : len;
+> +}
+> +
+> +static const struct iio_info ad5755_info = {
+> +	.read_raw = ad5755_read_raw,
+> +	.write_raw = ad5755_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static const struct iio_chan_spec_ext_info ad5755_ext_info[] = {
+> +	{
+> +		.name = "powerdown",
+> +		.read = ad5755_read_powerdown,
+> +		.write = ad5755_write_powerdown,
+> +	},
+> +	{ },
+> +};
+> +
+> +#define AD5755_CHANNEL(_bits) {					\
+> +	.indexed = 1,						\
+> +	.output = 1,						\
+> +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
+> +		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |		\
+> +		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |		\
+> +		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
+> +		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
+> +	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits)),	\
+> +	.ext_info = ad5755_ext_info,				\
+> +}
+> +
+> +static const struct ad5755_chip_info ad5755_chip_info_tbl[] = {
+> +	[ID_AD5735] = {
+> +		.channel_template = AD5755_CHANNEL(14),
+> +		.has_voltage_out = true,
+> +		.calib_shift = 4,
+> +	},
+> +	[ID_AD5737] = {
+> +		.channel_template = AD5755_CHANNEL(14),
+> +		.has_voltage_out = false,
+> +		.calib_shift = 4,
+> +	},
+> +	[ID_AD5755] = {
+> +		.channel_template = AD5755_CHANNEL(16),
+> +		.has_voltage_out = true,
+> +		.calib_shift = 0,
+> +	},
+> +	[ID_AD5757] = {
+> +		.channel_template = AD5755_CHANNEL(16),
+> +		.has_voltage_out = false,
+> +		.calib_shift = 0,
+> +	},
+> +};
+> +
+> +static bool ad5755_is_valid_mode(struct ad5755_state *st, enum ad5755_mode mode)
+> +{
+> +	switch (mode) {
+> +	case AD5755_MODE_VOLTAGE_0V_5V:
+> +	case AD5755_MODE_VOLTAGE_0V_10V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> +		return st->chip_info->has_voltage_out;
+> +	case AD5755_MODE_CURRENT_4mA_20mA:
+> +	case AD5755_MODE_CURRENT_0mA_20mA:
+> +	case AD5755_MODE_CURRENT_0mA_24mA:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static int __devinit ad5755_setup_pdata(struct iio_dev *indio_dev,
+> +	const struct ad5755_platform_data *pdata)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	unsigned int ret;
+> +	unsigned int val;
+> +	unsigned int i;
+> +
+> +	if (pdata->dc_dc_phase > AD5755_DC_DC_PHASE_90_DEGREE ||
+> +		pdata->dc_dc_freq > AD5755_DC_DC_FREQ_650kHZ ||
+> +		pdata->dc_dc_maxv > AD5755_DC_DC_MAXV_29V5)
+> +		return -EINVAL;
+> +
+> +	val = pdata->dc_dc_maxv << AD5755_DC_DC_MAXV;
+> +	val |= pdata->dc_dc_freq << AD5755_DC_DC_FREQ_SHIFT;
+> +	val |= pdata->dc_dc_phase << AD5755_DC_DC_PHASE_SHIFT;
+> +	if (pdata->ext_dc_dc_compenstation_resistor)
+> +		val |= AD5755_EXT_DC_DC_COMP_RES;
+> +
+> +	ret = ad5755_write_ctrl(indio_dev, 0, AD5755_CTRL_REG_DC_DC, val);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(pdata->dac); ++i) {
+> +		val = pdata->dac[i].slew.step_size << AD5755_SLEW_STEP_SIZE_SHIFT;
+> +		val |= pdata->dac[i].slew.rate << AD5755_SLEW_RATE_SHIFT;
+> +		if (pdata->dac[i].slew.enable)
+> +			val |= AD5755_SLEW_ENABLE;
+> +
+> +		ret = ad5755_write_ctrl(indio_dev, i, AD5755_CTRL_REG_SLEW, val);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	for (i = 0; i < ARRAY_SIZE(pdata->dac); ++i) {
+> +		if (!ad5755_is_valid_mode(st, pdata->dac[i].mode))
+> +			return -EINVAL;
+> +
+> +		val = 0;
+> +		if (!pdata->dac[i].ext_current_sense_resistor)
+> +			val |= AD5755_DAC_INT_CURRENT_SENSE_RESISTOR;
+> +		if (pdata->dac[i].enable_voltage_overrange)
+> +			val |= AD5755_DAC_VOLTAGE_OVERRANGE_EN;
+> +		val |= pdata->dac[i].mode;
+> +
+> +		ret = ad5755_update_dac_ctrl(indio_dev, i, val, 0);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static bool __devinit ad5755_is_voltage_mode(enum ad5755_mode mode)
+> +{
+> +	switch (mode) {
+> +	case AD5755_MODE_VOLTAGE_0V_5V:
+> +	case AD5755_MODE_VOLTAGE_0V_10V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_5V:
+> +	case AD5755_MODE_VOLTAGE_PLUSMINUS_10V:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+> +static int __devinit ad5755_init_channels(struct iio_dev *indio_dev,
+> +	const struct ad5755_platform_data *pdata)
+> +{
+> +	struct ad5755_state *st = iio_priv(indio_dev);
+> +	struct iio_chan_spec *channels = st->channels;
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < AD5755_NUM_CHANNELS; ++i) {
+> +		channels[i] = st->chip_info->channel_template;
+> +		channels[i].channel = i;
+> +		channels[i].address = i;
+> +		if (pdata && ad5755_is_voltage_mode(pdata->dac[i].mode))
+> +			channels[i].type = IIO_VOLTAGE;
+> +		else
+> +			channels[i].type = IIO_CURRENT;
+> +	}
+> +
+> +	indio_dev->channels = channels;
+> +
+> +	return 0;
+> +}
+> +
+> +#define AD5755_DEFAULT_DAC_PDATA { \
+> +		.mode = AD5755_MODE_CURRENT_4mA_20mA, \
+> +		.ext_current_sense_resistor = true, \
+> +		.enable_voltage_overrange = false, \
+> +		.slew = { \
+> +			.enable = false, \
+> +			.rate = AD5755_SLEW_RATE_64k, \
+> +			.step_size = AD5755_SLEW_STEP_SIZE_1, \
+> +		}, \
+> +	}
+> +
+> +static const struct ad5755_platform_data ad5755_default_pdata = {
+> +	.ext_dc_dc_compenstation_resistor = false,
+> +	.dc_dc_phase = AD5755_DC_DC_PHASE_ALL_SAME_EDGE,
+> +	.dc_dc_freq = AD5755_DC_DC_FREQ_410kHZ,
+> +	.dc_dc_maxv = AD5755_DC_DC_MAXV_23V,
+> +	.dac = {
+> +		[0] = AD5755_DEFAULT_DAC_PDATA,
+> +		[1] = AD5755_DEFAULT_DAC_PDATA,
+> +		[2] = AD5755_DEFAULT_DAC_PDATA,
+> +		[3] = AD5755_DEFAULT_DAC_PDATA,
+> +	},
+> +};
+> +
+> +static int __devinit ad5755_probe(struct spi_device *spi)
+> +{
+> +	enum ad5755_type type = spi_get_device_id(spi)->driver_data;
+> +	const struct ad5755_platform_data *pdata = dev_get_platdata(&spi->dev);
+> +	struct iio_dev *indio_dev;
+> +	struct ad5755_state *st;
+> +	int ret;
+> +
+> +	indio_dev = iio_device_alloc(sizeof(*st));
+> +	if (indio_dev == NULL) {
+> +		dev_err(&spi->dev, "Failed to allocate iio device\n");
+> +		return  -ENOMEM;
+> +	}
+> +
+> +	st = iio_priv(indio_dev);
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	st->chip_info = &ad5755_chip_info_tbl[type];
+> +	st->spi = spi;
+> +	st->pwr_down = 0xf;
+> +
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->info = &ad5755_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->num_channels = AD5755_NUM_CHANNELS;
+> +
+> +	if (!pdata)
+> +		pdata = &ad5755_default_pdata;
+> +
+> +	ret = ad5755_init_channels(indio_dev, pdata);
+> +	if (ret)
+> +		goto error_free;
+> +
+> +	ret = ad5755_setup_pdata(indio_dev, pdata);
+> +	if (ret)
+> +		goto error_free;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret) {
+> +		dev_err(&spi->dev, "Failed to register iio device: %d\n", ret);
+> +		goto error_free;
+> +	}
+> +
+> +	return 0;
+> +
+> +error_free:
+> +	iio_device_free(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int __devexit ad5755_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_device_free(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id ad5755_id[] = {
+> +	{ "ad5755", ID_AD5755 },
+> +	{ "ad5755-1", ID_AD5755 },
+> +	{ "ad5757", ID_AD5757 },
+> +	{ "ad5735", ID_AD5735 },
+> +	{ "ad5737", ID_AD5737 },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, ad5755_id);
+> +
+> +static struct spi_driver ad5755_driver = {
+> +	.driver = {
+> +		.name = "ad5755",
+> +		.owner = THIS_MODULE,
+> +	},
+> +	.probe = ad5755_probe,
+> +	.remove = __devexit_p(ad5755_remove),
+> +	.id_table = ad5755_id,
+> +};
+> +module_spi_driver(ad5755_driver);
+> +
+> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
+> +MODULE_DESCRIPTION("Analog Devices AD5755/55-1/57/35/37 DAC");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/include/linux/platform_data/ad5755.h b/include/linux/platform_data/ad5755.h
+> new file mode 100644
+> index 0000000..a5a1cb7
+> --- /dev/null
+> +++ b/include/linux/platform_data/ad5755.h
+> @@ -0,0 +1,103 @@
+> +/*
+> + * Copyright 2012 Analog Devices Inc.
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +#ifndef __LINUX_PLATFORM_DATA_AD5755_H__
+> +#define __LINUX_PLATFORM_DATA_AD5755_H__
+> +
+> +enum ad5755_mode {
+> +	AD5755_MODE_VOLTAGE_0V_5V		= 0,
+> +	AD5755_MODE_VOLTAGE_0V_10V		= 1,
+> +	AD5755_MODE_VOLTAGE_PLUSMINUS_5V	= 2,
+> +	AD5755_MODE_VOLTAGE_PLUSMINUS_10V	= 3,
+> +	AD5755_MODE_CURRENT_4mA_20mA		= 4,
+> +	AD5755_MODE_CURRENT_0mA_20mA		= 5,
+> +	AD5755_MODE_CURRENT_0mA_24mA		= 6,
+> +};
+> +
+> +enum ad5755_dc_dc_phase {
+> +	AD5755_DC_DC_PHASE_ALL_SAME_EDGE		= 0,
+> +	AD5755_DC_DC_PHASE_A_B_SAME_EDGE_C_D_OPP_EDGE	= 1,
+> +	AD5755_DC_DC_PHASE_A_C_SAME_EDGE_B_D_OPP_EDGE	= 2,
+> +	AD5755_DC_DC_PHASE_90_DEGREE			= 3,
+> +};
+> +
+> +enum ad5755_dc_dc_freq {
+> +	AD5755_DC_DC_FREQ_250kHZ = 0,
+> +	AD5755_DC_DC_FREQ_410kHZ = 1,
+> +	AD5755_DC_DC_FREQ_650kHZ = 2,
+> +};
+> +
+> +enum ad5755_dc_dc_maxv {
+> +	AD5755_DC_DC_MAXV_23V	= 0,
+> +	AD5755_DC_DC_MAXV_24V5	= 1,
+> +	AD5755_DC_DC_MAXV_27V	= 2,
+> +	AD5755_DC_DC_MAXV_29V5	= 3,
+> +};
+> +
+> +enum ad5755_slew_rate {
+> +	AD5755_SLEW_RATE_64k	= 0,
+> +	AD5755_SLEW_RATE_32k	= 1,
+> +	AD5755_SLEW_RATE_16k	= 2,
+> +	AD5755_SLEW_RATE_8k	= 3,
+> +	AD5755_SLEW_RATE_4k	= 4,
+> +	AD5755_SLEW_RATE_2k	= 5,
+> +	AD5755_SLEW_RATE_1k	= 6,
+> +	AD5755_SLEW_RATE_500	= 7,
+> +	AD5755_SLEW_RATE_250	= 8,
+> +	AD5755_SLEW_RATE_125	= 9,
+> +	AD5755_SLEW_RATE_64	= 10,
+> +	AD5755_SLEW_RATE_32	= 11,
+> +	AD5755_SLEW_RATE_16	= 12,
+> +	AD5755_SLEW_RATE_8	= 13,
+> +	AD5755_SLEW_RATE_4	= 14,
+> +	AD5755_SLEW_RATE_0_5	= 15,
+> +};
+> +
+> +enum ad5755_slew_step_size {
+> +	AD5755_SLEW_STEP_SIZE_1 = 0,
+> +	AD5755_SLEW_STEP_SIZE_2 = 1,
+> +	AD5755_SLEW_STEP_SIZE_4 = 2,
+> +	AD5755_SLEW_STEP_SIZE_8 = 3,
+> +	AD5755_SLEW_STEP_SIZE_16 = 4,
+> +	AD5755_SLEW_STEP_SIZE_32 = 5,
+> +	AD5755_SLEW_STEP_SIZE_64 = 6,
+> +	AD5755_SLEW_STEP_SIZE_128 = 7,
+> +	AD5755_SLEW_STEP_SIZE_256 = 8,
+> +};
+> +
+> +/**
+> + * struct ad5755_platform_data - AD5755 DAC driver platform data
+> + * @ext_dc_dc_compenstation_resistor: Whether an external DC-DC converter
+> + * compensation register is used.
+> + * @dc_dc_phase: DC-DC converter phase.
+> + * @dc_dc_freq: DC-DC converter frequency.
+> + * @dc_dc_maxv: DC-DC maximum allowed boost voltage.
+> + * @dac.mode: The mode to be used for the DAC output.
+> + * @dac.ext_current_sense_resistor: Whether an external current sense resistor
+> + * is used.
+> + * @dac.enable_voltage_overrange: Whether to enable 20% voltage output overrange.
+> + * @dac.slew.enable: Whether to enable digital slew.
+> + * @dac.slew.rate: Slew rate of the digital slew.
+> + * @dac.slew.step_size: Slew step size of the digital slew.
+> + **/
+> +struct ad5755_platform_data {
+> +	bool ext_dc_dc_compenstation_resistor;
+> +	enum ad5755_dc_dc_phase dc_dc_phase;
+> +	enum ad5755_dc_dc_freq dc_dc_freq;
+> +	enum ad5755_dc_dc_maxv dc_dc_maxv;
+> +
+> +	struct {
+> +		enum ad5755_mode mode;
+> +		bool ext_current_sense_resistor;
+> +		bool enable_voltage_overrange;
+> +		struct {
+> +			bool enable;
+> +			enum ad5755_slew_rate rate;
+> +			enum ad5755_slew_step_size step_size;
+> +		} slew;
+> +	} dac[4];
+> +};
+> +
+> +#endif
+> 
