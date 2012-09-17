@@ -1,122 +1,63 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 4/4] iio: ad7476: Add support for the ad7091r
-Date: Mon, 17 Sep 2012 14:26:48 +0200
-Message-Id: <1347884808-26833-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347884808-26833-1-git-send-email-lars@metafoo.de>
-References: <1347884808-26833-1-git-send-email-lars@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:43264 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755231Ab2IQIo5 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 04:44:57 -0400
+From: "Kim, Milo" <Milo.Kim@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH 2/2] iio: inkern: put the IIO device when mem alloc gets
+ failed
+Date: Mon, 17 Sep 2012 08:44:47 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EF50A5@DQHE02.ent.ti.com>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add support for the ad7091r 12 bit ADC to the ad7476 driver. Although the
-ad7091r is not really related to any of the other devices supported by this
-driver, luckily for us there are not so many ways (which are not totally insane)
-how sampling a single channel ADC via SPI can be implemented and support for the
-ad7091r can be added to the driver with just a few adjustments.
+ The reference count of the IIO device is increased if the IIO map has
+ matched consumer name.
+ After then, it tries to allocate the iio_channel which is used by the consumer.
+ If memory allocation gets failed, the reference count should be decreased.
 
-The ad7091r requires an external "conversion start" pulse to start a sample
-conversion. After the conversion has finished the result can be read via SPI. We
-depend on a IIO trigger to generate this signal, as a result only sampling in
-buffered mode and not in manual mode is available.
+ This patch enables restoring the reference count of the IIO device.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
 ---
- drivers/iio/adc/ad7476.c |   30 ++++++++++++++++++++++++++----
- 1 file changed, 26 insertions(+), 4 deletions(-)
+ drivers/iio/inkern.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-index be2098d..7f2f45a 100644
---- a/drivers/iio/adc/ad7476.c
-+++ b/drivers/iio/adc/ad7476.c
-@@ -23,9 +23,12 @@
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 13748c0..aff034b 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -132,7 +132,7 @@ struct iio_channel *iio_channel_get(const char *name, const char *channel_name)
  
- #define RES_MASK(bits)	((1 << (bits)) - 1)
+ 	channel = kzalloc(sizeof(*channel), GFP_KERNEL);
+ 	if (channel == NULL)
+-		return ERR_PTR(-ENOMEM);
++		goto error_no_mem;
  
-+struct ad7476_state;
-+
- struct ad7476_chip_info {
- 	unsigned int			int_vref_uv;
- 	struct iio_chan_spec		channel[2];
-+	void (*reset)(struct ad7476_state *);
- };
+ 	channel->indio_dev = c->indio_dev;
  
- struct ad7476_state {
-@@ -45,6 +48,7 @@ struct ad7476_state {
- };
- 
- enum ad7476_supported_device_ids {
-+	ID_AD7091R,
- 	ID_AD7276,
- 	ID_AD7277,
- 	ID_AD7278,
-@@ -79,6 +83,12 @@ done:
- 	return IRQ_HANDLED;
+@@ -151,6 +151,9 @@ error_no_chan:
+ 	iio_device_put(c->indio_dev);
+ 	kfree(channel);
+ 	return ERR_PTR(-EINVAL);
++error_no_mem:
++	iio_device_put(c->indio_dev);
++	return ERR_PTR(-ENOMEM);
  }
+ EXPORT_SYMBOL_GPL(iio_channel_get);
  
-+static void ad7091_reset(struct ad7476_state *st)
-+{
-+	/* Any transfers with 8 scl cycles will reset the device */
-+	spi_read(st->spi, st->data, 1);
-+}
-+
- static int ad7476_scan_direct(struct ad7476_state *st)
- {
- 	int ret;
-@@ -130,11 +140,11 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
--#define _AD7476_CHAN(bits, _shift)				\
-+#define _AD7476_CHAN(bits, _shift, _info_mask)			\
- 	{							\
- 	.type = IIO_VOLTAGE,					\
- 	.indexed = 1,						\
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
-+	.info_mask = _info_mask |				\
- 	IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
- 	.scan_type = {						\
- 		.sign = 'u',					\
-@@ -145,10 +155,18 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
- 	},							\
- }
- 
--#define AD7476_CHAN(bits) _AD7476_CHAN((bits), 13 - (bits))
--#define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits))
-+#define AD7476_CHAN(bits) _AD7476_CHAN((bits), 13 - (bits), \
-+		IIO_CHAN_INFO_RAW_SEPARATE_BIT)
-+#define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
-+		IIO_CHAN_INFO_RAW_SEPARATE_BIT)
-+#define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
- 
- static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
-+	[ID_AD7091R] = {
-+		.channel[0] = AD7091R_CHAN(12),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-+		.reset = ad7091_reset,
-+	},
- 	[ID_AD7276] = {
- 		.channel[0] = AD7940_CHAN(12),
- 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-@@ -238,6 +256,9 @@ static int __devinit ad7476_probe(struct spi_device *spi)
- 	if (ret)
- 		goto error_disable_reg;
- 
-+	if (st->chip_info->reset)
-+		st->chip_info->reset(st);
-+
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
- 		goto error_ring_unregister;
-@@ -271,6 +292,7 @@ static int __devexit ad7476_remove(struct spi_device *spi)
- }
- 
- static const struct spi_device_id ad7476_id[] = {
-+	{"ad7091r", ID_AD7091R},
- 	{"ad7273", ID_AD7277},
- 	{"ad7274", ID_AD7276},
- 	{"ad7276", ID_AD7276},
 -- 
-1.7.10.4
+1.7.9.5
+
+
+Best Regards,
+Milo
+
+
