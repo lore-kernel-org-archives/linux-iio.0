@@ -1,57 +1,26 @@
-Return-Path: <Milo.Kim@ti.com>
-From: "Kim, Milo" <Milo.Kim@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, Lars-Peter Clausen <lars@metafoo.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/2] iio: inkern: put the IIO device when it fails to
- allocate memory
-Date: Tue, 18 Sep 2012 04:55:53 +0000
-Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EF5397@DQHE02.ent.ti.com>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Mon, 17 Sep 2012 14:44:48 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO new device support and cleanups (set 4 for the 3.7
+ cycle)
+Message-ID: <20120917214448.GB20773@kroah.com>
+References: <505796CD.4090407@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <505796CD.4090407@jic23.retrosnub.co.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
- The reference count of the IIO device is increased if the IIO map has
- matched consumer name.
- After then, it tries to allocate the iio_channel which is used by the cons=
-umer.
- If it fails to allocate memory, the reference count should be decreased.
+On Mon, Sep 17, 2012 at 10:31:57PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 7dd73b866ed656b4ef7b475de4588cb1a3f765d4:
+> 
+>   staging: ipack/bridges/tpci200: Use endianess-aware types where applicable. (2012-09-12 09:56:02 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-v3.7d
 
- This patch enables restoring the reference count of the IIO device.
+Pulled and pushed out, thanks.
 
-Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
----
- drivers/iio/inkern.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 13748c0..aff034b 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -132,7 +132,7 @@ struct iio_channel *iio_channel_get(const char *name, c=
-onst char *channel_name)
-=20
- 	channel =3D kzalloc(sizeof(*channel), GFP_KERNEL);
- 	if (channel =3D=3D NULL)
--		return ERR_PTR(-ENOMEM);
-+		goto error_no_mem;
-=20
- 	channel->indio_dev =3D c->indio_dev;
-=20
-@@ -151,6 +151,9 @@ error_no_chan:
- 	iio_device_put(c->indio_dev);
- 	kfree(channel);
- 	return ERR_PTR(-EINVAL);
-+error_no_mem:
-+	iio_device_put(c->indio_dev);
-+	return ERR_PTR(-ENOMEM);
- }
- EXPORT_SYMBOL_GPL(iio_channel_get);
-=20
---=20
-1.7.9.5
-
-
-Best Regards,
-Milo
+greg k-h
