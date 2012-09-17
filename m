@@ -1,90 +1,279 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:58956 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753574Ab2I2HK3 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Sep 2012 03:10:29 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: "Patil, Rachna" <rachna@ti.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: RE: [PATCH v4 0/5] Support for TSC/ADC MFD driver
-Date: Sat, 29 Sep 2012 07:10:14 +0000
-Message-ID: <4CE347531D4CA947960AF71FF095B9323E958255@DBDE01.ent.ti.com>
-References: <1348636814-14129-1-git-send-email-rachna@ti.com>
-In-Reply-To: <1348636814-14129-1-git-send-email-rachna@ti.com>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <jic23@kernel.org>
+Message-ID: <50578E3A.8080004@kernel.org>
+Date: Mon, 17 Sep 2012 21:55:22 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+ Milo Kim <Milo.Kim@ti.com>,
+ anish kumar <anish198519851985@gmail.com>
+Subject: Re: [PATCH v2 2/3] iio:inkern: Add function to read the processed
+ value
+References: <1347884255-24870-1-git-send-email-lars@metafoo.de> <1347884255-24870-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347884255-24870-2-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+On 09/17/2012 01:17 PM, Lars-Peter Clausen wrote:
+> Add a function to read a processed value from a channel. The function will first
+> attempt to read the IIO_CHAN_INFO_PROCESSED attribute. If that fails it will
+> read the IIO_CHAN_INFO_RAW attribute and convert the result from a raw value to
+> a processed value.
+>
+> The patch also introduces a function to convert raw value to a processed value
+> and exports it, in case a user needs or wants to do the conversion by itself.
+>
+Another patch with a couple of overly long lines where readibility is not hurt
+by breaking them. Hence I have done so when merging.
+Please do fix the trivial stuff from checkpatch.
 
-This is just a gentle reminder for the patch set I had submitted viz. "[PATCH v4 0/5] Support for TSC/ADC MFD driver"
-Can you please accept this patch set?
-This patch set just adds a new driver and does not break anything existing.
+Otherwise a good series and all merged to togreg branch.
 
-Regards,
-Rachna
-
-On Wed, Sep 26, 2012 at 10:50:09, Patil, Rachna wrote:
-> This patch set adds a MFD core driver which registers touchscreen and ADC as its client drivers.
-> The existing touchscreen has been modified to work as a MFD client driver and a new ADC driver has been added in the IIO subsystem.
-> 
-> There are 8 analog input lines, which can be used as:
-> 1. 8 general purpose ADC channels
-> 2. 4 wire TS, with 4 general purpose ADC channels 3. 5 wire TS, with 3 general purpose ADC channels
-> 
-> This patch set has been tested on AM335x EVM.
-> 
-> These set of patches are based on top of Touchscreen patch set submitted.
-> Subject: [PATCH 0/4] input: TSC: ti_tscadc: TI Touchscreen driver updates [1]
-> 
-> [1] http://www.spinics.net/lists/linux-input/msg22107.html
-> 
-> Changes in v2:
-> 	Dropped one patch send in the last version after
-> 	receiving internal comments. I have merged the changes
-> 	into existing patches.
-> 	Also added a new patch to support suspend/resume feature.
-> 	Fixed review comments by Matthias Kaehlcke.
-> 
-> Changes in v3:
-> 	Addressed review comments by Jonathan Cameron.
-> 	Improved ADC driver with more readable labels,
-> 	spaces and comments.
-> 
-> Changes in v4:
-> 	Renamed the drivers from ti_xxx to ti_am335x_xxx.
-> 	For consistency with other drivers renamed idev to indio_dev
-> 	in IIO ADC driver.
-> 	Replaced suspend/resume callbacks with dev_pm_ops.
-> 
-> Patil, Rachna (5):
->   input: TSC: ti_tscadc: Rename the existing touchscreen driver
->   MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
->   input: TSC: ti_tsc: Convert TSC into a MFDevice
->   IIO : ADC: tiadc: Add support of TI's ADC driver
->   MFD: ti_tscadc: add suspend/resume functionality
-> 
->  drivers/iio/adc/Kconfig                            |    7 +
->  drivers/iio/adc/Makefile                           |    1 +
->  drivers/iio/adc/ti_am335x_adc.c                    |  258 ++++++++++++++++
->  drivers/input/touchscreen/Kconfig                  |    4 +-
->  drivers/input/touchscreen/Makefile                 |    2 +-
->  .../touchscreen/{ti_tscadc.c => ti_am335x_tsc.c}   |  319 ++++++--------------
->  drivers/mfd/Kconfig                                |    9 +
->  drivers/mfd/Makefile                               |    1 +
->  drivers/mfd/ti_am335x_tscadc.c                     |  259 ++++++++++++++++
->  .../linux/input/{ti_tscadc.h => ti_am335x_tsc.h}   |    4 +-
->  include/linux/mfd/ti_am335x_tscadc.h               |  151 +++++++++
->  include/linux/platform_data/ti_am335x_adc.h        |   14 +
->  12 files changed, 801 insertions(+), 228 deletions(-)  create mode 100644 drivers/iio/adc/ti_am335x_adc.c  rename drivers/input/touchscreen/{ti_tscadc.c => ti_am335x_tsc.c} (55%)  create mode 100644 drivers/mfd/ti_am335x_tscadc.c  rename include/linux/input/{ti_tscadc.h => ti_am335x_tsc.h} (88%)  create mode 100644 include/linux/mfd/ti_am335x_tscadc.h
->  create mode 100644 include/linux/platform_data/ti_am335x_adc.h
-> 
-> 
-
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+> Changes since v1:
+> 	* Fix mixed up patch fragements between patch 2 and patch 3
+> ---
+>  drivers/iio/inkern.c         |  114 ++++++++++++++++++++++++++++++++++++++----
+>  include/linux/iio/consumer.h |   38 ++++++++++++++
+>  include/linux/iio/iio.h      |   17 +++++++
+>  3 files changed, 160 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index 028c657..e53a7dd 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -229,9 +229,21 @@ void iio_channel_release_all(struct iio_channel *channels)
+>  }
+>  EXPORT_SYMBOL_GPL(iio_channel_release_all);
+>
+> +static int iio_channel_read(struct iio_channel *chan, int *val, int *val2,
+> +	enum iio_chan_info_enum info)
+> +{
+> +	int unused;
+> +
+> +	if (val2 == NULL)
+> +		val2 = &unused;
+> +
+> +	return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
+> +						val, val2, info);
+> +}
+> +
+>  int iio_read_channel_raw(struct iio_channel *chan, int *val)
+>  {
+> -	int val2, ret;
+> +	int ret;
+>
+>  	mutex_lock(&chan->indio_dev->info_exist_lock);
+>  	if (chan->indio_dev->info == NULL) {
+> @@ -239,10 +251,7 @@ int iio_read_channel_raw(struct iio_channel *chan, int *val)
+>  		goto err_unlock;
+>  	}
+>
+> -	ret = chan->indio_dev->info->read_raw(chan->indio_dev,
+> -					      chan->channel,
+> -					      val, &val2,
+> -					      IIO_CHAN_INFO_RAW);
+> +	ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_RAW);
+>  err_unlock:
+>  	mutex_unlock(&chan->indio_dev->info_exist_lock);
+>
+> @@ -250,6 +259,96 @@ err_unlock:
+>  }
+>  EXPORT_SYMBOL_GPL(iio_read_channel_raw);
+>
+> +static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
+> +	int raw, int *processed, unsigned int scale)
+> +{
+> +	int scale_type, scale_val, scale_val2, offset;
+> +	s64 raw64 = raw;
+> +	int ret;
+> +
+> +	ret = iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_SCALE);
+> +	if (ret == 0)
+> +		raw64 += offset;
+> +
+> +	scale_type = iio_channel_read(chan, &scale_val, &scale_val2,
+> +					IIO_CHAN_INFO_SCALE);
+> +	if (scale_type < 0)
+> +		return scale_type;
+> +
+> +	switch (scale_type) {
+> +	case IIO_VAL_INT:
+> +		*processed = raw64 * scale_val;
+> +		break;
+> +	case IIO_VAL_INT_PLUS_MICRO:
+> +		if (scale_val2 < 0)
+> +			*processed = -raw64 * scale_val;
+> +		else
+> +			*processed = raw64 * scale_val;
+> +		*processed += div_s64(raw64 * (s64)scale_val2 * scale, 1000000LL);
+> +		break;
+> +	case IIO_VAL_INT_PLUS_NANO:
+> +		if (scale_val2 < 0)
+> +			*processed = -raw64 * scale_val;
+> +		else
+> +			*processed = raw64 * scale_val;
+> +		*processed += div_s64(raw64 * (s64)scale_val2 * scale, 1000000000LL);
+> +		break;
+> +	case IIO_VAL_FRACTIONAL:
+> +		*processed = div_s64(raw64 * (s64)scale_val * scale, scale_val2);
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
+> +	int *processed, unsigned int scale)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&chan->indio_dev->info_exist_lock);
+> +	if (chan->indio_dev->info == NULL) {
+> +		ret = -ENODEV;
+> +		goto err_unlock;
+> +	}
+> +
+> +	ret = iio_convert_raw_to_processed_unlocked(chan, raw, processed,
+> +							scale);
+> +err_unlock:
+> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iio_convert_raw_to_processed);
+> +
+> +int iio_read_channel_processed(struct iio_channel *chan, int *val)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&chan->indio_dev->info_exist_lock);
+> +	if (chan->indio_dev->info == NULL) {
+> +		ret = -ENODEV;
+> +		goto err_unlock;
+> +	}
+> +
+> +	if (iio_channel_has_info(chan->channel, IIO_CHAN_INFO_PROCESSED)) {
+> +		ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_PROCESSED);
+> +	} else {
+> +		ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_RAW);
+> +		if (ret < 0)
+> +			goto err_unlock;
+> +		ret = iio_convert_raw_to_processed_unlocked(chan, *val, val, 1);
+> +	}
+> +
+> +err_unlock:
+> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iio_read_channel_processed);
+> +
+>  int iio_read_channel_scale(struct iio_channel *chan, int *val, int *val2)
+>  {
+>  	int ret;
+> @@ -260,10 +359,7 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val, int *val2)
+>  		goto err_unlock;
+>  	}
+>
+> -	ret = chan->indio_dev->info->read_raw(chan->indio_dev,
+> -					      chan->channel,
+> -					      val, val2,
+> -					      IIO_CHAN_INFO_SCALE);
+> +	ret = iio_channel_read(chan, val, val2, IIO_CHAN_INFO_SCALE);
+>  err_unlock:
+>  	mutex_unlock(&chan->indio_dev->info_exist_lock);
+>
+> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+> index 62118dd..e875bcf 100644
+> --- a/include/linux/iio/consumer.h
+> +++ b/include/linux/iio/consumer.h
+> @@ -71,6 +71,21 @@ int iio_read_channel_raw(struct iio_channel *chan,
+>  			 int *val);
+>
+>  /**
+> + * iio_read_channel_processed() - read processed value from a given channel
+> + * @chan:		The channel being queried.
+> + * @val:		Value read back.
+> + *
+> + * Returns an error code or 0.
+> + *
+> + * This function will read a processed value from a channel. A processed value
+> + * means that this value will have the correct unit and not some device internal
+> + * representation. If the device does not support reporting a processed value
+> + * the function will query the raw value and the channels scale and offset and
+> + * do the appropriate transformation.
+> + */
+> +int iio_read_channel_processed(struct iio_channel *chan, int *val);
+> +
+> +/**
+>   * iio_get_channel_type() - get the type of a channel
+>   * @channel:		The channel being queried.
+>   * @type:		The type of the channel.
+> @@ -93,4 +108,27 @@ int iio_get_channel_type(struct iio_channel *channel,
+>  int iio_read_channel_scale(struct iio_channel *chan, int *val,
+>  			   int *val2);
+>
+> +/**
+> + * iio_convert_raw_to_processed() - Converts a raw value to a processed value
+> + * @chan:		The channel being queried
+> + * @raw:		The raw IIO to convert
+> + * @processed:		The result of the conversion
+> + * @scale:		Scale factor to apply during the conversion
+> + *
+> + * Returns an error code or 0.
+> + *
+> + * This function converts a raw value to processed value for a specific channel.
+> + * A raw value is the device internal representation of a sample and the value
+> + * returned by iio_read_channel_raw, so the unit of that value is device
+> + * depended. A processed value on the other hand is value has a normed unit
+> + * according with the IIO specification.
+> + *
+> + * The scale factor allows to increase the precession of the returned value. For
+> + * a scale factor of 1 the function will return the result in the normal IIO
+> + * unit for the channel type. E.g. millivolt for voltage channels, if you want
+> + * nanovolts instead pass 1000 as the scale factor.
+> + */
+> +int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
+> +	int *processed, unsigned int scale);
+> +
+>  #endif
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 30affa5..c0ae76a 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -40,6 +40,8 @@ enum iio_chan_info_enum {
+>
+>  #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
+>  #define IIO_CHAN_INFO_SEPARATE_BIT(type) BIT(type*2 + 1)
+> +#define IIO_CHAN_INFO_BITS(type) (IIO_CHAN_INFO_SHARED_BIT(type) | \
+> +				    IIO_CHAN_INFO_SEPARATE_BIT(type))
+>
+>  #define IIO_CHAN_INFO_RAW_SEPARATE_BIT			\
+>  	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_RAW)
+> @@ -261,6 +263,21 @@ struct iio_chan_spec {
+>  	unsigned		differential:1;
+>  };
+>
+> +
+> +/**
+> + * iio_channel_has_info() - Checks whether a channel supports a info attribute
+> + * @chan: The channel to be queried
+> + * @type: Type of the info attribute to be checked
+> + *
+> + * Returns true if the channels supports reporting values for the given info
+> + * attribute type, false otherwise.
+> + */
+> +static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
+> +	enum iio_chan_info_enum type)
+> +{
+> +	return chan->info_mask & IIO_CHAN_INFO_BITS(type);
+> +}
+> +
+>  #define IIO_ST(si, rb, sb, sh)						\
+>  	{ .sign = si, .realbits = rb, .storagebits = sb, .shift = sh }
+>
+>
