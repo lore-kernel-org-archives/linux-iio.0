@@ -1,58 +1,97 @@
-Return-Path: <anish198519851985@gmail.com>
-Subject: Re:iio: Documentation change for inkern interface.
-From: anish kumar <anish198519851985@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-In-Reply-To: <504C688C.3010400@kernel.org>
-References: <1346600372-3284-1-git-send-email-anish198519851985@gmail.com>
-	 <5049A7B8.506@kernel.org> <1347088218.5051.152.camel@anish-Inspiron-N5050>
-	 <504B1941.6000708@kernel.org>
-	 <1347183129.5051.174.camel@anish-Inspiron-N5050>
-	 <504C655D.70901@metafoo.de>  <504C688C.3010400@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 13 Sep 2012 21:26:51 +0530
-Message-ID: <1347551811.1589.82.camel@anish-Inspiron-N5050>
-Mime-Version: 1.0
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/4] staging:iio:trigger:bfintmr: Only enable timer when necessary
+Date: Mon, 17 Sep 2012 14:26:46 +0200
+Message-Id: <1347884808-26833-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347884808-26833-1-git-send-email-lars@metafoo.de>
+References: <1347884808-26833-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello Jonathan,
+This patch hooks up the set_trigger_state callback for the blackfin timer
+trigger driver and only enables the timer when a trigger consumer requests it to
+be enabled. There really is no reason to keep the timer running and generate
+interrupts if nobody is listening to them.
 
-I didn't hear from you on this patch.Probably
-this patch is lost in your box or somehow it
-got missed.
-Is it already applied?
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.c |   27 ++++++++++++++++++---
+ 1 file changed, 24 insertions(+), 3 deletions(-)
 
-a-n-i-s-h
-
-Author: anish kumar <anish198519851985@gmail.com>
-Date:   Sun Sep 9 01:05:26 2012 +0530
-
-    iio: Documentation change for inkern interface.
-    
-    This commit- 314be14bb renamed the _st_ functions to loose the bit
-    that was meant for staging version but forgot to change
-    the documentation which still have _st_ sprinkled in some of the
-    places.
-    
-    Signed-off-by: anish kumar <anish198519851985@gmail.com
-
-diff --git a/drivers/staging/iio/Documentation/inkernel.txt
-b/drivers/staging/iio/Documentation/inkernel.txt
-index a05823e..ab52840 100644
---- a/drivers/staging/iio/Documentation/inkernel.txt
-+++ b/drivers/staging/iio/Documentation/inkernel.txt
-@@ -48,11 +48,11 @@ There are then a number of functions that can be
-used to get information
- about this channel such as it's current reading.
+diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+index 2772ea2..d9d3dc9 100644
+--- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
++++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+@@ -57,12 +57,28 @@ struct bfin_tmr_state {
+ 	int irq;
+ };
  
- e.g.
--iio_st_read_channel_raw() - get a reading
--iio_st_read_channel_type() - get the type of channel
-+iio_read_channel_raw() - get a reading
-+iio_get_channel_type() - get the type of channel
++static int iio_bfin_tmr_set_state(struct iio_trigger *trig, bool state)
++{
++	struct bfin_tmr_state *st = trig->private_data;
++
++	if (get_gptimer_period(st->t->id) == 0)
++		return -EINVAL;
++
++	if (state)
++		enable_gptimers(st->t->bit);
++	else
++		disable_gptimers(st->t->bit);
++
++	return 0;
++}
++
+ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	struct iio_trigger *trig = to_iio_trigger(dev);
+ 	struct bfin_tmr_state *st = trig->private_data;
+ 	long val;
++	bool enabled;
+ 	int ret;
  
- There is also provision for retrieving all of the channels associated
- with a given consumer.  This is useful for generic drivers such as
- iio_hwmon where the number and naming of channels is not known by the
--consumer driver.  To do this, use iio_st_channel_get_all.
-+consumer driver.  To do this, use iio_channel_get_all.
+ 	ret = strict_strtoul(buf, 10, &val);
+@@ -74,7 +90,10 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
+ 		goto error_ret;
+ 	}
+ 
+-	disable_gptimers(st->t->bit);
++	enabled = get_enabled_gptimers() & st->t->bit;
++
++	if (enabled)
++		disable_gptimers(st->t->bit);
+ 
+ 	if (!val)
+ 		goto error_ret;
+@@ -87,7 +106,9 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
+ 
+ 	set_gptimer_period(st->t->id, val);
+ 	set_gptimer_pwidth(st->t->id, 1);
+-	enable_gptimers(st->t->bit);
++
++	if (enabled)
++		enable_gptimers(st->t->bit);
+ 
+ error_ret:
+ 	return ret ? ret : count;
+@@ -127,7 +148,6 @@ static const struct attribute_group *iio_bfin_tmr_trigger_attr_groups[] = {
+ 	NULL
+ };
+ 
+-
+ static irqreturn_t iio_bfin_tmr_trigger_isr(int irq, void *devid)
+ {
+ 	struct bfin_tmr_state *st = devid;
+@@ -151,6 +171,7 @@ static int iio_bfin_tmr_get_number(int irq)
+ 
+ static const struct iio_trigger_ops iio_bfin_tmr_trigger_ops = {
+ 	.owner = THIS_MODULE,
++	.set_trigger_state = iio_bfin_tmr_set_state,
+ };
+ 
+ static int __devinit iio_bfin_tmr_trigger_probe(struct platform_device *pdev)
+-- 
+1.7.10.4
