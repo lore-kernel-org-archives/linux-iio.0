@@ -1,259 +1,136 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:33787 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752119Ab2IZKJT convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Sep 2012 06:09:19 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: "Datta, Shubhrajyoti" <shubhrajyoti@ti.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: RE: [PATCH v4 5/5] MFD: ti_tscadc: add suspend/resume functionality
-Date: Wed, 26 Sep 2012 10:09:03 +0000
-Message-ID: <4CE347531D4CA947960AF71FF095B9323E95738D@DBDE01.ent.ti.com>
-References: <1348636814-14129-1-git-send-email-rachna@ti.com>
- <1348636814-14129-6-git-send-email-rachna@ti.com> <5062A373.4000707@ti.com>
-In-Reply-To: <5062A373.4000707@ti.com>
-Content-Type: text/plain; charset="us-ascii"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58923 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751781Ab2IQVO5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 17:14:57 -0400
+Message-ID: <505792D0.2060307@kernel.org>
+Date: Mon, 17 Sep 2012 22:14:56 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH 4/4] iio: ad7476: Add support for the ad7091r
+References: <1347884808-26833-1-git-send-email-lars@metafoo.de> <1347884808-26833-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347884808-26833-4-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Shubhrajyoti,
-
-On Wed, Sep 26, 2012 at 12:10:51, Datta, Shubhrajyoti wrote:
-> On Wednesday 26 September 2012 10:50 AM, Patil, Rachna wrote:
-> > This patch adds support for suspend/resume of
-> > TSC/ADC MFDevice.
-> this should be merged with the patch adding support else
-> we may end up in a case where patch a does the runtime calls
-> and the call back  handlers added later.
-
-I am adding both the runtime calls and the handlers in this patch.
-I think maintaining this as a separate patch in better in terms
-of readability as well.
-
-Regards,
-Rachna
-
-> >
-> > Signed-off-by: Patil, Rachna <rachna@ti.com>
-> > ---
-> > Changes in v2:
-> > 	Added this patch newly in this patch series.
-> >
-> > Changes in v3:
-> > 	No changes.
-> >
-> > Changes in v4:
-> > 	Replaced suspend/resume callbacks with dev_pm_ops.
-> >
-> >  drivers/iio/adc/ti_am335x_adc.c           |   42 +++++++++++++++++++++++++++++
-> >  drivers/input/touchscreen/ti_am335x_tsc.c |   42 +++++++++++++++++++++++++++++
-> >  drivers/mfd/ti_am335x_tscadc.c            |   41 +++++++++++++++++++++++++++-
-> >  include/linux/mfd/ti_am335x_tscadc.h      |    3 ++
-> >  4 files changed, 127 insertions(+), 1 deletions(-)
-> >
-> > diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> > index 9e1b3ac..b16f944 100644
-> > --- a/drivers/iio/adc/ti_am335x_adc.c
-> > +++ b/drivers/iio/adc/ti_am335x_adc.c
-> > @@ -200,10 +200,52 @@ static int __devexit tiadc_remove(struct platform_device *pdev)
-> >  	return 0;
-> >  }
-> >  
-> > +#ifdef CONFIG_PM
-> > +static int tiadc_suspend(struct device *dev)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> > +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> > +	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
-> > +	unsigned int idle;
-> > +
-> > +	if (!device_may_wakeup(tscadc_dev->dev)) {
-> > +		idle = adc_readl(adc_dev, REG_CTRL);
-> > +		idle &= ~(CNTRLREG_TSCSSENB);
-> > +		adc_writel(adc_dev, REG_CTRL, (idle |
-> > +				CNTRLREG_POWERDOWN));
-> > +	}
-> > +	return 0;
-> > +}
-> > +
-> > +static int tiadc_resume(struct device *dev)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> > +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> > +	unsigned int restore;
-> > +
-> > +	/* Make sure ADC is powered up */
-> > +	restore = adc_readl(adc_dev, REG_CTRL);
-> > +	restore &= ~(CNTRLREG_POWERDOWN);
-> > +	adc_writel(adc_dev, REG_CTRL, restore);
-> > +
-> > +	adc_step_config(adc_dev);
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct dev_pm_ops tiadc_pm_ops = {
-> > +	.suspend = tiadc_suspend,
-> > +	.resume = tiadc_resume,
-> > +};
-> > +#define TIADC_PM_OPS (&tiadc_pm_ops)
-> > +#else
-> > +#define TIADC_PM_OPS NULL
-> > +#endif
-> > +
-> >  static struct platform_driver tiadc_driver = {
-> >  	.driver = {
-> >  		.name   = "tiadc",
-> >  		.owner = THIS_MODULE,
-> > +		.pm	= TIADC_PM_OPS,
-> >  	},
-> >  	.probe	= tiadc_probe,
-> >  	.remove	= __devexit_p(tiadc_remove),
-> > diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-> > index 2d9dec1..b17dbe4 100644
-> > --- a/drivers/input/touchscreen/ti_am335x_tsc.c
-> > +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-> > @@ -338,12 +338,54 @@ static int __devexit tscadc_remove(struct platform_device *pdev)
-> >  	return 0;
-> >  }
-> >  
-> > +#ifdef CONFIG_PM
-> > +static int titsc_suspend(struct device *dev)
-> > +{
-> > +	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
-> > +	struct tscadc *ts_dev = tscadc_dev->tsc;
-> > +	unsigned int idle;
-> > +
-> > +	if (device_may_wakeup(tscadc_dev->dev)) {
-> > +		idle = tscadc_readl(ts_dev, REG_IRQENABLE);
-> > +		tscadc_writel(ts_dev, REG_IRQENABLE,
-> > +				(idle | IRQENB_HW_PEN));
-> > +		tscadc_writel(ts_dev, REG_IRQWAKEUP, IRQWKUP_ENB);
-> > +	}
-> > +	return 0;
-> > +}
-> > +
-> > +static int titsc_resume(struct device *dev)
-> > +{
-> > +	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
-> > +	struct tscadc *ts_dev = tscadc_dev->tsc;
-> > +
-> > +	if (device_may_wakeup(tscadc_dev->dev)) {
-> > +		tscadc_writel(ts_dev, REG_IRQWAKEUP,
-> > +				0x00);
-> > +		tscadc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
-> > +	}
-> > +	tscadc_step_config(ts_dev);
-> > +	tscadc_writel(ts_dev, REG_FIFO0THR,
-> > +			ts_dev->steps_to_configure);
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct dev_pm_ops titsc_pm_ops = {
-> > +	.suspend = titsc_suspend,
-> > +	.resume  = titsc_resume,
-> > +};
-> > +#define TITSC_PM_OPS (&titsc_pm_ops)
-> > +#else
-> > +#define TITSC_PM_OPS NULL
-> > +#endif
-> > +
-> >  static struct platform_driver ti_tsc_driver = {
-> >  	.probe	= tscadc_probe,
-> >  	.remove	= __devexit_p(tscadc_remove),
-> >  	.driver	= {
-> >  		.name   = "tsc",
-> >  		.owner	= THIS_MODULE,
-> > +		.pm	= TITSC_PM_OPS,
-> >  	},
-> >  };
-> >  module_platform_driver(ti_tsc_driver);
-> > diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-> > index 45d66e5..7e949e8 100644
-> > --- a/drivers/mfd/ti_am335x_tscadc.c
-> > +++ b/drivers/mfd/ti_am335x_tscadc.c
-> > @@ -170,6 +170,7 @@ static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
-> >  	if (err < 0)
-> >  		goto err_disable_clk;
-> >  
-> > +	device_init_wakeup(&pdev->dev, true);
-> >  	platform_set_drvdata(pdev, tscadc);
-> >  	return 0;
-> >  
-> > @@ -203,14 +204,52 @@ static int __devexit ti_tscadc_remove(struct platform_device *pdev)
-> >  	return 0;
-> >  }
-> >  
-> > +#ifdef CONFIG_PM
-> > +static int tscadc_suspend(struct device *dev)
-> > +{
-> > +	struct ti_tscadc_dev	*tscadc_dev = dev_get_drvdata(dev);
-> > +
-> > +	tscadc_writel(tscadc_dev, REG_SE, 0x00);
-> > +	pm_runtime_put_sync(dev);
-> > +	return 0;
-> > +}
-> > +
-> > +static int tscadc_resume(struct device *dev)
-> > +{
-> > +	struct ti_tscadc_dev	*tscadc_dev = dev_get_drvdata(dev);
-> > +	unsigned int restore, ctrl;
-> > +
-> > +	pm_runtime_get_sync(dev);
-> > +
-> > +	/* context restore */
-> > +	ctrl = CNTRLREG_STEPCONFIGWRT | CNTRLREG_TSCENB |
-> > +			CNTRLREG_STEPID | CNTRLREG_4WIRE;
-> > +	tscadc_writel(tscadc_dev, REG_CTRL, ctrl);
-> > +	tscadc_idle_config(tscadc_dev);
-> > +	tscadc_writel(tscadc_dev, REG_SE, STPENB_STEPENB);
-> > +	restore = tscadc_readl(tscadc_dev, REG_CTRL);
-> > +	tscadc_writel(tscadc_dev, REG_CTRL,
-> > +			(restore | CNTRLREG_TSCSSENB));
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct dev_pm_ops tscadc_pm_ops = {
-> > +	.suspend = tscadc_suspend,
-> > +	.resume = tscadc_resume,
-> > +};
-> > +#define TSCADC_PM_OPS (&tscadc_pm_ops)
-> > +#else
-> > +#define TSCADC_PM_OPS NULL
-> > +#endif
-> > +
-> >  static struct platform_driver ti_tscadc_driver = {
-> >  	.driver = {
-> >  		.name   = "ti_tscadc",
-> >  		.owner	= THIS_MODULE,
-> > +		.pm	= TSCADC_PM_OPS,
-> >  	},
-> >  	.probe	= ti_tscadc_probe,
-> >  	.remove	= __devexit_p(ti_tscadc_remove),
-> > -
-> >  };
-> >  
-> >  module_platform_driver(ti_tscadc_driver);
-> > diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> > index bd9fe1d..c7facdc 100644
-> > --- a/include/linux/mfd/ti_am335x_tscadc.h
-> > +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> > @@ -40,6 +40,9 @@
-> >  #define REG_FIFO1		0x200
-> >  
-> >  /*	Register Bitfields	*/
-> > +/* IRQ wakeup enable */
-> > +#define IRQWKUP_ENB		BIT(0)
-> > +
-> >  /* Step Enable */
-> >  #define STEPENB_MASK		(0x1FFFF << 0)
-> >  #define STEPENB(val)		((val) << 0)
+On 09/17/2012 01:26 PM, Lars-Peter Clausen wrote:
+> Add support for the ad7091r 12 bit ADC to the ad7476 driver. Although the
+> ad7091r is not really related to any of the other devices supported by this
+> driver, luckily for us there are not so many ways (which are not totally insane)
+> how sampling a single channel ADC via SPI can be implemented and support for the
+> ad7091r can be added to the driver with just a few adjustments.
+Yup, eveything is nice and simple when there is only one channel ;)
 > 
-> 
+> The ad7091r requires an external "conversion start" pulse to start a sample
+> conversion. After the conversion has finished the result can be read via SPI. We
+> depend on a IIO trigger to generate this signal, as a result only sampling in
+> buffered mode and not in manual mode is available.
+This is a little restrictive given we could wire up some magic with a gpio to
+do this, but I guess things like that can be added as and when people care.
+We may need some way of 'knowing' whether a more general trigger has done
+the start pulse or not... Something for another day.
 
+merged to togreg branch of iio.git
+Thanks.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+>  drivers/iio/adc/ad7476.c |   30 ++++++++++++++++++++++++++----
+>  1 file changed, 26 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+> index be2098d..7f2f45a 100644
+> --- a/drivers/iio/adc/ad7476.c
+> +++ b/drivers/iio/adc/ad7476.c
+> @@ -23,9 +23,12 @@
+>  
+>  #define RES_MASK(bits)	((1 << (bits)) - 1)
+>  
+> +struct ad7476_state;
+> +
+>  struct ad7476_chip_info {
+>  	unsigned int			int_vref_uv;
+>  	struct iio_chan_spec		channel[2];
+> +	void (*reset)(struct ad7476_state *);
+>  };
+>  
+>  struct ad7476_state {
+> @@ -45,6 +48,7 @@ struct ad7476_state {
+>  };
+>  
+>  enum ad7476_supported_device_ids {
+> +	ID_AD7091R,
+>  	ID_AD7276,
+>  	ID_AD7277,
+>  	ID_AD7278,
+> @@ -79,6 +83,12 @@ done:
+>  	return IRQ_HANDLED;
+>  }
+>  
+> +static void ad7091_reset(struct ad7476_state *st)
+> +{
+> +	/* Any transfers with 8 scl cycles will reset the device */
+> +	spi_read(st->spi, st->data, 1);
+> +}
+> +
+>  static int ad7476_scan_direct(struct ad7476_state *st)
+>  {
+>  	int ret;
+> @@ -130,11 +140,11 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+>  	return -EINVAL;
+>  }
+>  
+> -#define _AD7476_CHAN(bits, _shift)				\
+> +#define _AD7476_CHAN(bits, _shift, _info_mask)			\
+>  	{							\
+>  	.type = IIO_VOLTAGE,					\
+>  	.indexed = 1,						\
+> -	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
+> +	.info_mask = _info_mask |				\
+>  	IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
+>  	.scan_type = {						\
+>  		.sign = 'u',					\
+> @@ -145,10 +155,18 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+>  	},							\
+>  }
+>  
+> -#define AD7476_CHAN(bits) _AD7476_CHAN((bits), 13 - (bits))
+> -#define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits))
+> +#define AD7476_CHAN(bits) _AD7476_CHAN((bits), 13 - (bits), \
+> +		IIO_CHAN_INFO_RAW_SEPARATE_BIT)
+> +#define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
+> +		IIO_CHAN_INFO_RAW_SEPARATE_BIT)
+> +#define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
+>  
+>  static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+> +	[ID_AD7091R] = {
+> +		.channel[0] = AD7091R_CHAN(12),
+> +		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> +		.reset = ad7091_reset,
+> +	},
+>  	[ID_AD7276] = {
+>  		.channel[0] = AD7940_CHAN(12),
+>  		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> @@ -238,6 +256,9 @@ static int __devinit ad7476_probe(struct spi_device *spi)
+>  	if (ret)
+>  		goto error_disable_reg;
+>  
+> +	if (st->chip_info->reset)
+> +		st->chip_info->reset(st);
+> +
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret)
+>  		goto error_ring_unregister;
+> @@ -271,6 +292,7 @@ static int __devexit ad7476_remove(struct spi_device *spi)
+>  }
+>  
+>  static const struct spi_device_id ad7476_id[] = {
+> +	{"ad7091r", ID_AD7091R},
+>  	{"ad7273", ID_AD7277},
+>  	{"ad7274", ID_AD7276},
+>  	{"ad7276", ID_AD7276},
+> 
