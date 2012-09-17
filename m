@@ -1,61 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52740 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754594Ab2IVJOO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 05:14:14 -0400
-Message-ID: <505D8168.8000003@kernel.org>
-Date: Sat, 22 Sep 2012 10:14:16 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: "Kim, Milo" <Milo.Kim@ti.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] iio: inkern: put the IIO device when it fails to
- allocate memory
-References: <A874F61F95741C4A9BA573A70FE3998F41EF5397@DQHE02.ent.ti.com>
-In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F41EF5397@DQHE02.ent.ti.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtp-out-029.synserver.de ([212.40.185.29]:1035 "EHLO
+	smtp-out-029.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756156Ab2IQM0J (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 08:26:09 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/4] staging:iio:trigger:bfintmr: Avoid divide by zero
+Date: Mon, 17 Sep 2012 14:26:45 +0200
+Message-Id: <1347884808-26833-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/18/2012 05:55 AM, Kim, Milo wrote:
->  The reference count of the IIO device is increased if the IIO map has
->  matched consumer name.
->  After then, it tries to allocate the iio_channel which is used by the consumer.
->  If it fails to allocate memory, the reference count should be decreased.
-> 
->  This patch enables restoring the reference count of the IIO device.
-> 
-> Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
-Thanks add to togreg branch of iio.git
+If the timer frequency has not been configured yet get_gptimer_period() will
+return 0. Handle this case instead of blindly dividing by the returned value.
 
-> ---
->  drivers/iio/inkern.c |    5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index 13748c0..aff034b 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -132,7 +132,7 @@ struct iio_channel *iio_channel_get(const char *name, const char *channel_name)
->  
->  	channel = kzalloc(sizeof(*channel), GFP_KERNEL);
->  	if (channel == NULL)
-> -		return ERR_PTR(-ENOMEM);
-> +		goto error_no_mem;
->  
->  	channel->indio_dev = c->indio_dev;
->  
-> @@ -151,6 +151,9 @@ error_no_chan:
->  	iio_device_put(c->indio_dev);
->  	kfree(channel);
->  	return ERR_PTR(-EINVAL);
-> +error_no_mem:
-> +	iio_device_put(c->indio_dev);
-> +	return ERR_PTR(-ENOMEM);
->  }
->  EXPORT_SYMBOL_GPL(iio_channel_get);
->  
-> 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+index ce6a7b1..2772ea2 100644
+--- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
++++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+@@ -99,9 +99,15 @@ static ssize_t iio_bfin_tmr_frequency_show(struct device *dev,
+ {
+ 	struct iio_trigger *trig = to_iio_trigger(dev);
+ 	struct bfin_tmr_state *st = trig->private_data;
++	unsigned int period = get_gptimer_period(st->t->id);
++	unsigned long val;
+ 
+-	return sprintf(buf, "%lu\n",
+-			get_sclk() / get_gptimer_period(st->t->id));
++	if (period == 0)
++		val = 0;
++	else
++		val = get_sclk() / get_gptimer_period(st->t->id);
++
++	return sprintf(buf, "%lu\n", val);
+ }
+ 
+ static DEVICE_ATTR(frequency, S_IRUGO | S_IWUSR, iio_bfin_tmr_frequency_show,
+-- 
+1.7.10.4
+
