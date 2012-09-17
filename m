@@ -1,93 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-022.synserver.de ([212.40.185.22]:1142 "EHLO
-	smtp-out-022.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752638Ab2IJIeT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2012 04:34:19 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 10/10] iio:ad7476: Add support for ad7274/ad7275/ad7276/ad7277/ad7278
-Date: Mon, 10 Sep 2012 10:34:41 +0200
-Message-Id: <1347266081-6045-10-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347266081-6045-1-git-send-email-lars@metafoo.de>
-References: <1347266081-6045-1-git-send-email-lars@metafoo.de>
+Received: from comal.ext.ti.com ([198.47.26.152]:37419 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751912Ab2IQGMN convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 02:12:13 -0400
+From: "Patil, Rachna" <rachna@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dmitry Torokhov <dtor@mail.ru>
+Subject: RE: [PATCH v3 4/5] IIO : ADC: tiadc: Add support of TI's ADC driver
+Date: Mon, 17 Sep 2012 06:11:53 +0000
+Message-ID: <4CE347531D4CA947960AF71FF095B9323E954363@DBDE01.ent.ti.com>
+References: <1347532819-505-1-git-send-email-rachna@ti.com>
+ <1347532819-505-5-git-send-email-rachna@ti.com>
+ <5051CDEA.5080200@kernel.org>
+ <4CE347531D4CA947960AF71FF095B9323E953D32@DBDE01.ent.ti.com>
+ <5052E8E9.4030206@kernel.org>
+In-Reply-To: <5052E8E9.4030206@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ad7276/ad7277/ad7278 are similar to the ad7476/ad7477/ad7478 but have the
-same number of leading zeros as the ad7940. The ad7274/ad7275 have a extra pin
-for VREF where as for the ad7276/ad7277/ad7278 VREF is taken from VDD, but
-otherwise they are compatible to the ad7276/ad7277.
+On Fri, Sep 14, 2012 at 13:50:57, Jonathan Cameron wrote:
+> On 14/09/12 07:00, Patil, Rachna wrote:
+> > On Thu, Sep 13, 2012 at 17:43:30, Jonathan Cameron wrote:
+> >> On 13/09/12 11:40, Patil, Rachna wrote:
+> >>> This patch adds support for TI's ADC driver.
+> >>> This is a multifunctional device.
+> >>> Analog input lines are provided on which voltage measurements can be 
+> >>> carried out.
+> >>> You can have upto 8 input lines.
+> >>>
+> >>> Signed-off-by: Patil, Rachna <rachna@ti.com>
+> >>
+> >> There's a little fuzz in applying this due to other drivers that have gone in recently.
+> >>
+> >> Actually this is going to be 'interesting' to merge. Dmitry, Samuel thoughts on who takes this one and how?  Maybe this is a case for a 'special' branch pulled into more than one tree?
+> >>
+> >>
+> >> One minor thing inline.  I have an aversion to dynamic allocation of 
+> >> things that are then constant.
+> >>
+> >> Also the module name is simply ti_adc. Does seem a little 'vague'
+> >> given the range of ADC's TI makes :)  Perhaps keep the reference to 
+> >> the tsc in there?  Personally I'd have preferred the whole thing 
+> >> being named after a particular part number (any one it support would
+> >> do) to avoid a clash in future with a new touch screen adc from TI.
+> >> Bit late for that though I guess ;)
+> >
+> > Yes, true.
+> > TI definitely might come up with more IP's of this type.
+> > This IP(TSC / ADC) is present on AM335x. If necessary we can rename the driver to ti_am335x_XXX.
+> I'd be in favour of doing this now rather than when the problem presents itself.  Anyone mind?
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/adc/Kconfig  |    6 +++---
- drivers/iio/adc/ad7476.c |   20 ++++++++++++++++++++
- 2 files changed, 23 insertions(+), 3 deletions(-)
+I will also rename the touchscreen and the MFD driver to reflect the same.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 7152a49..645c052 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -24,9 +24,9 @@ config AD7476
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
--	  Say yes here to build support for Analog Devices AD7475, AD7476, AD7477,
--	  AD7478, AD7466, AD7467, AD7468, AD7495, AD7910, AD7920, AD7920 SPI analog
--	  to digital converters (ADC).
-+	  Say yes here to build support for Analog Devices AD7274, AD7275, AD7276,
-+	  AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
-+	  AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
- 
- 	  If unsure, say N (but it's safe to say "Y").
- 
-diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-index e6c92a5..9cb10f4 100644
---- a/drivers/iio/adc/ad7476.c
-+++ b/drivers/iio/adc/ad7476.c
-@@ -45,6 +45,9 @@ struct ad7476_state {
- };
- 
- enum ad7476_supported_device_ids {
-+	ID_AD7276,
-+	ID_AD7277,
-+	ID_AD7278,
- 	ID_AD7466,
- 	ID_AD7467,
- 	ID_AD7468,
-@@ -146,6 +149,18 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
- #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits))
- 
- static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
-+	[ID_AD7276] = {
-+		.channel[0] = AD7940_CHAN(12),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-+	},
-+	[ID_AD7277] = {
-+		.channel[0] = AD7940_CHAN(10),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-+	},
-+	[ID_AD7278] = {
-+		.channel[0] = AD7940_CHAN(8),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-+	},
- 	[ID_AD7466] = {
- 		.channel[0] = AD7476_CHAN(12),
- 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-@@ -255,6 +270,11 @@ static int __devexit ad7476_remove(struct spi_device *spi)
- }
- 
- static const struct spi_device_id ad7476_id[] = {
-+	{"ad7274", ID_AD7276},
-+	{"ad7275", ID_AD7277},
-+	{"ad7276", ID_AD7276},
-+	{"ad7277", ID_AD7277},
-+	{"ad7278", ID_AD7278},
- 	{"ad7466", ID_AD7466},
- 	{"ad7467", ID_AD7467},
- 	{"ad7468", ID_AD7468},
--- 
-1.7.10.4
+<SNIP>
 
+Regards,
+Rachna
