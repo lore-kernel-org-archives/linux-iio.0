@@ -1,147 +1,78 @@
 Return-Path: <lars@metafoo.de>
-Message-ID: <50582E77.3070808@metafoo.de>
-Date: Tue, 18 Sep 2012 10:19:03 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: "Kim, Milo" <Milo.Kim@ti.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
- Jonathan Cameron <jic23@cam.ac.uk>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6] iio: adc: add new lp8788 adc driver
-References: <A874F61F95741C4A9BA573A70FE3998F41EF510C@DQHE02.ent.ti.com>
-In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F41EF510C@DQHE02.ent.ti.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Milo Kim <Milo.Kim@ti.com>,
+	anish kumar <anish198519851985@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 3/3] staging:iio:hwmon bridge: Use iio_read_channel_processed
+Date: Mon, 17 Sep 2012 14:17:35 +0200
+Message-Id: <1347884255-24870-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347884255-24870-1-git-send-email-lars@metafoo.de>
+References: <1347884255-24870-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 09/17/2012 11:35 AM, Kim, Milo wrote:
->  TI LP8788 PMU provides regulators, battery charger, ADC,
->  RTC, backlight driver and current sinks.
-> 
->  This patch enables the LP8788 ADC functions.
-> 
->  The LP8788 ADC has several ADC input selection and supports 12bit resolution.
->  Internal operation of getting ADC is access to registers of LP8788.
->  The LP8788 ADC uses exported functions for accessing these registers.
->  (exported by LP8788 MFD device driver)
-> 
->  This driver supports IIO_CHAN_INFO_RAW and SCALE.
->  So the IIO consumer can calculate the value with raw and scale.
->  The unit of scale is micro.
-> 
->  (ADC Input Selection)
-> 
->  Voltage: battery voltage (MAX 5.0, 5.5 and 6.0V)
->           charger input voltage
->           four general ADC inputs
->           coin cell voltage
->  Current: battery charging current
->  Temperature: IC temperature
-> 
->  (The IIO map for the IIO consumer)
-> 
->  The ADC input is configurable in the platform side.
->  Even though this platform data is not defined,
->  the default IIO map is created for supporting the power supply driver.
->  The battery voltage and temperature are used inside this driver.
-> 
->  (History)
-> 
->  Patch v6.
->  (a) Fix scale value for each ADC input selection
->  Voltage and current type are mili unit and temperature is degree.
->  To calculate the IC temperature,
->  temp = raw * scaleint + (raw * scalepart)/ 1000000, scaleint is always 0.
->       = raw * 0.061050, raw: 0 ~ 4095
->  Then range of IC temperature(ADC result) is 0 ~ 250'C
-> 
->  (b) Reorganization of the IIO channel Spec
->  Remove address, scan_type and scan_index and rollback the datasheet name.
->  The reason why 'address' field is unnecessary is no relation with each channel.
->  Moreover, to get the raw ADC value, the address info is not only one register
->  but also several registers.
->  Therefore specific function(lp8788_get_adc_result) is called rather than
->  using one 'address' field.
-> 
->  (c) Fix coding style
->  Remove duplicated checking routine while unregistering the IIO map.
->  Fix code for space and parenthesis.
-> 
->  Patch v5.
->  Fix default consumer name as 'lp8788-charger'.
->  Add mutex for ADC read operation.
->  Reorganization on lp8788_adc_read_raw().
-> 
->  Patch v4.
->  Fix adc_raw function: support RAW and SCALE channel info.
->  Change LP8788 ADC platform data - iio map.
->  Enables the default IIO map.
-> 
->  Patch v3.
->  Fix wrong size of allocating iio private data.
->  Fix coding styles.
-> 
->  Patch v2.
->  Support RAW and SCALE interface for IIO consumer.
->  Clean up the iio channel spec macro.
-> 
-> Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
+Use the iio_read_channel_processed function to read the sample value in the
+proper unit instead of using iio_read_channel_raw and iio_read_channel_scale and
+doing the unit conversion manually.
 
-Looks good to me,
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+Changes since v1:
+	* Fix mixed up patch fragements between patch 2 and patch 3
+---
+ drivers/staging/iio/iio_hwmon.c |   33 +++++----------------------------
+ 1 file changed, 5 insertions(+), 28 deletions(-)
 
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-
-One comment though, not sure if it is critical or not.
-
-> +static int lp8788_get_adc_result(struct lp8788_adc *adc, enum lp8788_adc_id id,
-> +				int *val)
-> +{
-> +	unsigned int msb;
-> +	unsigned int lsb;
-> +	unsigned int result;
-> +	u8 data;
-> +	u8 rawdata[2];
-> +	int size = ARRAY_SIZE(rawdata);
-> +	int retry = 5;
-> +	int ret;
-> +
-> +	data = (id << 1) | ADC_CONV_START;
-> +	ret = lp8788_write_byte(adc->lp, LP8788_ADC_CONF, data);
-> +	if (ret)
-> +		goto err_io;
-> +
-> +	/* retry until adc conversion is done */
-> +	data = 0;
-> +	while (retry--) {
-> +		usleep_range(100, 200);
-> +
-> +		ret = lp8788_read_byte(adc->lp, LP8788_ADC_DONE, &data);
-> +		if (ret)
-> +			goto err_io;
-> +
-> +		/* conversion done */
-> +		if (data)
-> +			break;
-
-Could as well go into the while header like this:
-    while (!data && retry--)
-
-> +	}
-> +
-
-You still sample the data, even if there was a timeout and ADC_DONE is not set.
-
-> +	ret = lp8788_read_multi_bytes(adc->lp, LP8788_ADC_RAW, rawdata, size);
-> +	if (ret)
-> +		goto err_io;
-> +
-> +	msb = (rawdata[0] << 4) & 0x00000ff0;
-> +	lsb = (rawdata[1] >> 4) & 0x0000000f;
-> +	result = msb | lsb;
-> +	*val = result;
-> +
-> +	return 0;
-> +
-> +err_io:
-> +	return ret;
-> +}
+diff --git a/drivers/staging/iio/iio_hwmon.c b/drivers/staging/iio/iio_hwmon.c
+index 69d4a3b..5d49122 100644
+--- a/drivers/staging/iio/iio_hwmon.c
++++ b/drivers/staging/iio/iio_hwmon.c
+@@ -42,40 +42,17 @@ static ssize_t iio_hwmon_read_val(struct device *dev,
+ 				  struct device_attribute *attr,
+ 				  char *buf)
+ {
+-	long result;
+-	int val, ret, scaleint, scalepart;
++	int result;
++	int ret;
+ 	struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
+ 	struct iio_hwmon_state *state = dev_get_drvdata(dev);
+ 
+-	/*
+-	 * No locking between this pair, so theoretically possible
+-	 * the scale has changed.
+-	 */
+-	ret = iio_read_channel_raw(&state->channels[sattr->index],
+-				      &val);
++	ret = iio_read_channel_processed(&state->channels[sattr->index],
++					&result);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = iio_read_channel_scale(&state->channels[sattr->index],
+-					&scaleint, &scalepart);
+-	if (ret < 0)
+-		return ret;
+-	switch (ret) {
+-	case IIO_VAL_INT:
+-		result = val * scaleint;
+-		break;
+-	case IIO_VAL_INT_PLUS_MICRO:
+-		result = (s64)val * (s64)scaleint +
+-			div_s64((s64)val * (s64)scalepart, 1000000LL);
+-		break;
+-	case IIO_VAL_INT_PLUS_NANO:
+-		result = (s64)val * (s64)scaleint +
+-			div_s64((s64)val * (s64)scalepart, 1000000000LL);
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
+-	return sprintf(buf, "%ld\n", result);
++	return sprintf(buf, "%d\n", result);
+ }
+ 
+ static void iio_hwmon_free_attrs(struct iio_hwmon_state *st)
+-- 
+1.7.10.4
