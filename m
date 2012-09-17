@@ -1,37 +1,83 @@
-Return-Path: <Milo.Kim@ti.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:47486 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751984Ab2IQJ6F convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 05:58:05 -0400
 From: "Kim, Milo" <Milo.Kim@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-        Lars-Peter Clausen
-	<lars@metafoo.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 2/2] iio: inkern: add error case in iio_channel_get()
-Date: Mon, 17 Sep 2012 08:46:15 +0000
-Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EF50BA@DQHE02.ent.ti.com>
-References: <A874F61F95741C4A9BA573A70FE3998F41EF45EB@DQHE02.ent.ti.com>
- <504DAFF7.1070902@jic23.retrosnub.co.uk>
- <A874F61F95741C4A9BA573A70FE3998F41EF4C19@DQHE02.ent.ti.com>
- <5052E9A3.9030200@kernel.org>
-In-Reply-To: <5052E9A3.9030200@kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 2/2] iio: inkern: put the IIO device when mem alloc gets
+ failed
+Date: Mon, 17 Sep 2012 09:57:52 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EF5120@DQHE02.ent.ti.com>
+References: <A874F61F95741C4A9BA573A70FE3998F41EF50A5@DQHE02.ent.ti.com>
+ <5056EE95.6050101@metafoo.de>
+In-Reply-To: <5056EE95.6050101@metafoo.de>
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> Fine, I'm convinced.  Certainly less weird doing it your way ;)
-> Please do fix up the get all case as well.
+> >  drivers/iio/inkern.c |    5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> > index 13748c0..aff034b 100644
+> > --- a/drivers/iio/inkern.c
+> > +++ b/drivers/iio/inkern.c
+> > @@ -132,7 +132,7 @@ struct iio_channel *iio_channel_get(const char
+> *name, const char *channel_name)
+> >
+> >  	channel = kzalloc(sizeof(*channel), GFP_KERNEL);
+> >  	if (channel == NULL)
+> > -		return ERR_PTR(-ENOMEM);
+> > +		goto error_no_mem;
+> >
+> >  	channel->indio_dev = c->indio_dev;
+> >
+> > @@ -151,6 +151,9 @@ error_no_chan:
+> >  	iio_device_put(c->indio_dev);
+> >  	kfree(channel);
+> >  	return ERR_PTR(-EINVAL);
+> > +error_no_mem:
+> > +	iio_device_put(c->indio_dev);
+> > +	return ERR_PTR(-ENOMEM);
+> >  }
+> >  EXPORT_SYMBOL_GPL(iio_channel_get);
+> >
+> 
+> If you do it that way, you don't really need the goto, something like
+> 
+> error_no_chan:
+>   	kfree(channel);
+> error_no_mem:
+> 	iio_device_put(c->indio_dev);
+> 	return ret
+> 
+> would be better in my opinion. With ret being initialized in the if
+> branch
+> before the goto.
 
-Please refer to chained patches.
-[PATCH 1/2] iio: inkern: add error case in iio_channel_get()
-[PATCH 2/2] iio: inkern: put the IIO device when mem alloc gets failed
+Thanks for your opinion. I was hesitating before sending ;) 
 
-I'd like to mention that these patches are dependent on another fix as belo=
-w.
-[PATCH RESEND] iio: inkern: allocate zeroed memory
+The reason why this patch need separate goto statement is as below.
+ 
+There are two different types when requesting the channel.
+One is a pointer of iio_channel, the other is the error.
+So return type will be two - allocated iio_channel and integer.
+For simplicity, I would use just one return variable when it runs successfully.
+In error cases, do return as explicit name such like ERR_PTR() rather than
+saving into local integer.
 
-Please let me know if any conflicts.
+Just my two cents.
+But your code has better readability.
 
-Thanks !
+Thank you.
 
 Best Regards,
 Milo
+
+
