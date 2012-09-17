@@ -1,48 +1,216 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-029.synserver.de ([212.40.185.29]:1035 "EHLO
+Received: from smtp-out-029.synserver.de ([212.40.185.29]:1049 "EHLO
 	smtp-out-029.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756156Ab2IQM0J (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 08:26:09 -0400
+	with ESMTP id S1756156Ab2IQM0L (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 08:26:11 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/4] staging:iio:trigger:bfintmr: Avoid divide by zero
-Date: Mon, 17 Sep 2012 14:26:45 +0200
-Message-Id: <1347884808-26833-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH 3/4] staging:iio:trigger:bfintmr Add output support
+Date: Mon, 17 Sep 2012 14:26:47 +0200
+Message-Id: <1347884808-26833-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347884808-26833-1-git-send-email-lars@metafoo.de>
+References: <1347884808-26833-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-If the timer frequency has not been configured yet get_gptimer_period() will
-return 0. Handle this case instead of blindly dividing by the returned value.
+Some converters require an external signal to start the conversion. This patch
+adds support to the bfintmr trigger driver to generate such a signal.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/trigger/iio-trig-bfin-timer.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.c |   72 ++++++++++++++++-----
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.h |   24 +++++++
+ 2 files changed, 80 insertions(+), 16 deletions(-)
+ create mode 100644 drivers/staging/iio/trigger/iio-trig-bfin-timer.h
 
 diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-index ce6a7b1..2772ea2 100644
+index d9d3dc9..52062d7 100644
 --- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
 +++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-@@ -99,9 +99,15 @@ static ssize_t iio_bfin_tmr_frequency_show(struct device *dev,
+@@ -14,14 +14,18 @@
+ #include <linux/delay.h>
+ 
+ #include <asm/gptimers.h>
++#include <asm/portmux.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
+ 
++#include "iio-trig-bfin-timer.h"
++
+ struct bfin_timer {
+ 	unsigned short id, bit;
+ 	unsigned long irqbit;
+ 	int irq;
++	int pin;
+ };
+ 
+ /*
+@@ -30,22 +34,22 @@ struct bfin_timer {
+  */
+ 
+ static struct bfin_timer iio_bfin_timer_code[MAX_BLACKFIN_GPTIMERS] = {
+-	{TIMER0_id,  TIMER0bit,  TIMER_STATUS_TIMIL0,  IRQ_TIMER0},
+-	{TIMER1_id,  TIMER1bit,  TIMER_STATUS_TIMIL1,  IRQ_TIMER1},
+-	{TIMER2_id,  TIMER2bit,  TIMER_STATUS_TIMIL2,  IRQ_TIMER2},
++	{TIMER0_id,  TIMER0bit,  TIMER_STATUS_TIMIL0,  IRQ_TIMER0, P_TMR0},
++	{TIMER1_id,  TIMER1bit,  TIMER_STATUS_TIMIL1,  IRQ_TIMER1, P_TMR1},
++	{TIMER2_id,  TIMER2bit,  TIMER_STATUS_TIMIL2,  IRQ_TIMER2, P_TMR2},
+ #if (MAX_BLACKFIN_GPTIMERS > 3)
+-	{TIMER3_id,  TIMER3bit,  TIMER_STATUS_TIMIL3,  IRQ_TIMER3},
+-	{TIMER4_id,  TIMER4bit,  TIMER_STATUS_TIMIL4,  IRQ_TIMER4},
+-	{TIMER5_id,  TIMER5bit,  TIMER_STATUS_TIMIL5,  IRQ_TIMER5},
+-	{TIMER6_id,  TIMER6bit,  TIMER_STATUS_TIMIL6,  IRQ_TIMER6},
+-	{TIMER7_id,  TIMER7bit,  TIMER_STATUS_TIMIL7,  IRQ_TIMER7},
++	{TIMER3_id,  TIMER3bit,  TIMER_STATUS_TIMIL3,  IRQ_TIMER3, P_TMR3},
++	{TIMER4_id,  TIMER4bit,  TIMER_STATUS_TIMIL4,  IRQ_TIMER4, P_TMR4},
++	{TIMER5_id,  TIMER5bit,  TIMER_STATUS_TIMIL5,  IRQ_TIMER5, P_TMR5},
++	{TIMER6_id,  TIMER6bit,  TIMER_STATUS_TIMIL6,  IRQ_TIMER6, P_TMR6},
++	{TIMER7_id,  TIMER7bit,  TIMER_STATUS_TIMIL7,  IRQ_TIMER7, P_TMR7},
+ #endif
+ #if (MAX_BLACKFIN_GPTIMERS > 8)
+-	{TIMER8_id,  TIMER8bit,  TIMER_STATUS_TIMIL8,  IRQ_TIMER8},
+-	{TIMER9_id,  TIMER9bit,  TIMER_STATUS_TIMIL9,  IRQ_TIMER9},
+-	{TIMER10_id, TIMER10bit, TIMER_STATUS_TIMIL10, IRQ_TIMER10},
++	{TIMER8_id,  TIMER8bit,  TIMER_STATUS_TIMIL8,  IRQ_TIMER8, P_TMR8},
++	{TIMER9_id,  TIMER9bit,  TIMER_STATUS_TIMIL9,  IRQ_TIMER9, P_TMR9},
++	{TIMER10_id, TIMER10bit, TIMER_STATUS_TIMIL10, IRQ_TIMER10, P_TMR10},
+ #if (MAX_BLACKFIN_GPTIMERS > 11)
+-	{TIMER11_id, TIMER11bit, TIMER_STATUS_TIMIL11, IRQ_TIMER11},
++	{TIMER11_id, TIMER11bit, TIMER_STATUS_TIMIL11, IRQ_TIMER11, P_TMR11},
+ #endif
+ #endif
+ };
+@@ -54,6 +58,8 @@ struct bfin_tmr_state {
+ 	struct iio_trigger *trig;
+ 	struct bfin_timer *t;
+ 	unsigned timer_num;
++	bool output_enable;
++	unsigned int duty;
+ 	int irq;
+ };
+ 
+@@ -77,7 +83,7 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
  {
  	struct iio_trigger *trig = to_iio_trigger(dev);
  	struct bfin_tmr_state *st = trig->private_data;
-+	unsigned int period = get_gptimer_period(st->t->id);
+-	long val;
 +	unsigned long val;
+ 	bool enabled;
+ 	int ret;
  
--	return sprintf(buf, "%lu\n",
--			get_sclk() / get_gptimer_period(st->t->id));
-+	if (period == 0)
-+		val = 0;
-+	else
-+		val = get_sclk() / get_gptimer_period(st->t->id);
+@@ -99,13 +105,13 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
+ 		goto error_ret;
+ 
+ 	val = get_sclk() / val;
+-	if (val <= 4) {
++	if (val <= 4 || val <= st->duty) {
+ 		ret = -EINVAL;
+ 		goto error_ret;
+ 	}
+ 
+ 	set_gptimer_period(st->t->id, val);
+-	set_gptimer_pwidth(st->t->id, 1);
++	set_gptimer_pwidth(st->t->id, val - st->duty);
+ 
+ 	if (enabled)
+ 		enable_gptimers(st->t->bit);
+@@ -176,7 +182,9 @@ static const struct iio_trigger_ops iio_bfin_tmr_trigger_ops = {
+ 
+ static int __devinit iio_bfin_tmr_trigger_probe(struct platform_device *pdev)
+ {
++	struct iio_bfin_timer_trigger_pdata *pdata = pdev->dev.platform_data;
+ 	struct bfin_tmr_state *st;
++	unsigned int config;
+ 	int ret;
+ 
+ 	st = kzalloc(sizeof(*st), GFP_KERNEL);
+@@ -220,13 +228,43 @@ static int __devinit iio_bfin_tmr_trigger_probe(struct platform_device *pdev)
+ 		goto out4;
+ 	}
+ 
+-	set_gptimer_config(st->t->id, OUT_DIS | PWM_OUT | PERIOD_CNT | IRQ_ENA);
++	config = PWM_OUT | PERIOD_CNT | IRQ_ENA;
 +
-+	return sprintf(buf, "%lu\n", val);
- }
++	if (pdata && pdata->output_enable) {
++		unsigned long long val;
++
++		st->output_enable = true;
++
++		ret = peripheral_request(st->t->pin, st->trig->name);
++		if (ret)
++			goto out_free_irq;
++
++		val = (unsigned long long)get_sclk() * pdata->duty_ns;
++		do_div(val, NSEC_PER_SEC);
++		st->duty = val;
++
++		/**
++		 * The interrupt will be generated at the end of the period,
++		 * since we want the interrupt to be generated at end of the
++		 * pulse we invert both polarity and duty cycle, so that the
++		 * pulse will be generated directly before the interrupt.
++		 */
++		if (pdata->active_low)
++			config |= PULSE_HI;
++	} else {
++		st->duty = 1;
++		config |= OUT_DIS;
++	}
++
++	set_gptimer_config(st->t->id, config);
  
- static DEVICE_ATTR(frequency, S_IRUGO | S_IWUSR, iio_bfin_tmr_frequency_show,
+ 	dev_info(&pdev->dev, "iio trigger Blackfin TMR%d, IRQ-%d",
+ 		 st->timer_num, st->irq);
+ 	platform_set_drvdata(pdev, st);
+ 
+ 	return 0;
++out_free_irq:
++	free_irq(st->irq, st);
+ out4:
+ 	iio_trigger_unregister(st->trig);
+ out2:
+@@ -242,6 +280,8 @@ static int __devexit iio_bfin_tmr_trigger_remove(struct platform_device *pdev)
+ 	struct bfin_tmr_state *st = platform_get_drvdata(pdev);
+ 
+ 	disable_gptimers(st->t->bit);
++	if (st->output_enable)
++		peripheral_free(st->t->pin);
+ 	free_irq(st->irq, st);
+ 	iio_trigger_unregister(st->trig);
+ 	iio_trigger_put(st->trig);
+diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.h b/drivers/staging/iio/trigger/iio-trig-bfin-timer.h
+new file mode 100644
+index 0000000..c07321f
+--- /dev/null
++++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.h
+@@ -0,0 +1,24 @@
++#ifndef __IIO_BFIN_TIMER_TRIGGER_H__
++#define __IIO_BFIN_TIMER_TRIGGER_H__
++
++/**
++ * struct iio_bfin_timer_trigger_pdata - timer trigger platform data
++ * @output_enable: Enable external trigger pulse generation.
++ * @active_low: Whether the trigger pulse is active low.
++ * @duty_ns: Length of the trigger pulse in nanoseconds.
++ *
++ * This struct is used to configure the output pulse generation of the blackfin
++ * timer trigger. If output_enable is set to true an external trigger signal
++ * will generated on the pin corresponding to the timer. This is useful for
++ * converters which needs an external signal to start conversion. active_low and
++ * duty_ns are used to configure the type of the trigger pulse. If output_enable
++ * is set to false no external trigger pulse will be generated and active_low
++ * and duty_ns are ignored.
++ **/
++struct iio_bfin_timer_trigger_pdata {
++	bool output_enable;
++	bool active_low;
++	unsigned int duty_ns;
++};
++
++#endif
 -- 
 1.7.10.4
 
