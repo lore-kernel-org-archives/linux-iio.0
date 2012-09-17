@@ -1,279 +1,122 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <50578E3A.8080004@kernel.org>
-Date: Mon, 17 Sep 2012 21:55:22 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
- Milo Kim <Milo.Kim@ti.com>,
- anish kumar <anish198519851985@gmail.com>
-Subject: Re: [PATCH v2 2/3] iio:inkern: Add function to read the processed
- value
-References: <1347884255-24870-1-git-send-email-lars@metafoo.de> <1347884255-24870-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347884255-24870-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 4/4] iio: ad7476: Add support for the ad7091r
+Date: Mon, 17 Sep 2012 14:26:48 +0200
+Message-Id: <1347884808-26833-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1347884808-26833-1-git-send-email-lars@metafoo.de>
+References: <1347884808-26833-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 09/17/2012 01:17 PM, Lars-Peter Clausen wrote:
-> Add a function to read a processed value from a channel. The function will first
-> attempt to read the IIO_CHAN_INFO_PROCESSED attribute. If that fails it will
-> read the IIO_CHAN_INFO_RAW attribute and convert the result from a raw value to
-> a processed value.
->
-> The patch also introduces a function to convert raw value to a processed value
-> and exports it, in case a user needs or wants to do the conversion by itself.
->
-Another patch with a couple of overly long lines where readibility is not hurt
-by breaking them. Hence I have done so when merging.
-Please do fix the trivial stuff from checkpatch.
+Add support for the ad7091r 12 bit ADC to the ad7476 driver. Although the
+ad7091r is not really related to any of the other devices supported by this
+driver, luckily for us there are not so many ways (which are not totally insane)
+how sampling a single channel ADC via SPI can be implemented and support for the
+ad7091r can be added to the driver with just a few adjustments.
 
-Otherwise a good series and all merged to togreg branch.
+The ad7091r requires an external "conversion start" pulse to start a sample
+conversion. After the conversion has finished the result can be read via SPI. We
+depend on a IIO trigger to generate this signal, as a result only sampling in
+buffered mode and not in manual mode is available.
 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
-> Changes since v1:
-> 	* Fix mixed up patch fragements between patch 2 and patch 3
-> ---
->  drivers/iio/inkern.c         |  114 ++++++++++++++++++++++++++++++++++++++----
->  include/linux/iio/consumer.h |   38 ++++++++++++++
->  include/linux/iio/iio.h      |   17 +++++++
->  3 files changed, 160 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index 028c657..e53a7dd 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -229,9 +229,21 @@ void iio_channel_release_all(struct iio_channel *channels)
->  }
->  EXPORT_SYMBOL_GPL(iio_channel_release_all);
->
-> +static int iio_channel_read(struct iio_channel *chan, int *val, int *val2,
-> +	enum iio_chan_info_enum info)
-> +{
-> +	int unused;
-> +
-> +	if (val2 == NULL)
-> +		val2 = &unused;
-> +
-> +	return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
-> +						val, val2, info);
-> +}
-> +
->  int iio_read_channel_raw(struct iio_channel *chan, int *val)
->  {
-> -	int val2, ret;
-> +	int ret;
->
->  	mutex_lock(&chan->indio_dev->info_exist_lock);
->  	if (chan->indio_dev->info == NULL) {
-> @@ -239,10 +251,7 @@ int iio_read_channel_raw(struct iio_channel *chan, int *val)
->  		goto err_unlock;
->  	}
->
-> -	ret = chan->indio_dev->info->read_raw(chan->indio_dev,
-> -					      chan->channel,
-> -					      val, &val2,
-> -					      IIO_CHAN_INFO_RAW);
-> +	ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_RAW);
->  err_unlock:
->  	mutex_unlock(&chan->indio_dev->info_exist_lock);
->
-> @@ -250,6 +259,96 @@ err_unlock:
->  }
->  EXPORT_SYMBOL_GPL(iio_read_channel_raw);
->
-> +static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
-> +	int raw, int *processed, unsigned int scale)
-> +{
-> +	int scale_type, scale_val, scale_val2, offset;
-> +	s64 raw64 = raw;
-> +	int ret;
-> +
-> +	ret = iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_SCALE);
-> +	if (ret == 0)
-> +		raw64 += offset;
-> +
-> +	scale_type = iio_channel_read(chan, &scale_val, &scale_val2,
-> +					IIO_CHAN_INFO_SCALE);
-> +	if (scale_type < 0)
-> +		return scale_type;
-> +
-> +	switch (scale_type) {
-> +	case IIO_VAL_INT:
-> +		*processed = raw64 * scale_val;
-> +		break;
-> +	case IIO_VAL_INT_PLUS_MICRO:
-> +		if (scale_val2 < 0)
-> +			*processed = -raw64 * scale_val;
-> +		else
-> +			*processed = raw64 * scale_val;
-> +		*processed += div_s64(raw64 * (s64)scale_val2 * scale, 1000000LL);
-> +		break;
-> +	case IIO_VAL_INT_PLUS_NANO:
-> +		if (scale_val2 < 0)
-> +			*processed = -raw64 * scale_val;
-> +		else
-> +			*processed = raw64 * scale_val;
-> +		*processed += div_s64(raw64 * (s64)scale_val2 * scale, 1000000000LL);
-> +		break;
-> +	case IIO_VAL_FRACTIONAL:
-> +		*processed = div_s64(raw64 * (s64)scale_val * scale, scale_val2);
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
-> +	int *processed, unsigned int scale)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&chan->indio_dev->info_exist_lock);
-> +	if (chan->indio_dev->info == NULL) {
-> +		ret = -ENODEV;
-> +		goto err_unlock;
-> +	}
-> +
-> +	ret = iio_convert_raw_to_processed_unlocked(chan, raw, processed,
-> +							scale);
-> +err_unlock:
-> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_convert_raw_to_processed);
-> +
-> +int iio_read_channel_processed(struct iio_channel *chan, int *val)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&chan->indio_dev->info_exist_lock);
-> +	if (chan->indio_dev->info == NULL) {
-> +		ret = -ENODEV;
-> +		goto err_unlock;
-> +	}
-> +
-> +	if (iio_channel_has_info(chan->channel, IIO_CHAN_INFO_PROCESSED)) {
-> +		ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_PROCESSED);
-> +	} else {
-> +		ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_RAW);
-> +		if (ret < 0)
-> +			goto err_unlock;
-> +		ret = iio_convert_raw_to_processed_unlocked(chan, *val, val, 1);
-> +	}
-> +
-> +err_unlock:
-> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_read_channel_processed);
-> +
->  int iio_read_channel_scale(struct iio_channel *chan, int *val, int *val2)
->  {
->  	int ret;
-> @@ -260,10 +359,7 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val, int *val2)
->  		goto err_unlock;
->  	}
->
-> -	ret = chan->indio_dev->info->read_raw(chan->indio_dev,
-> -					      chan->channel,
-> -					      val, val2,
-> -					      IIO_CHAN_INFO_SCALE);
-> +	ret = iio_channel_read(chan, val, val2, IIO_CHAN_INFO_SCALE);
->  err_unlock:
->  	mutex_unlock(&chan->indio_dev->info_exist_lock);
->
-> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-> index 62118dd..e875bcf 100644
-> --- a/include/linux/iio/consumer.h
-> +++ b/include/linux/iio/consumer.h
-> @@ -71,6 +71,21 @@ int iio_read_channel_raw(struct iio_channel *chan,
->  			 int *val);
->
->  /**
-> + * iio_read_channel_processed() - read processed value from a given channel
-> + * @chan:		The channel being queried.
-> + * @val:		Value read back.
-> + *
-> + * Returns an error code or 0.
-> + *
-> + * This function will read a processed value from a channel. A processed value
-> + * means that this value will have the correct unit and not some device internal
-> + * representation. If the device does not support reporting a processed value
-> + * the function will query the raw value and the channels scale and offset and
-> + * do the appropriate transformation.
-> + */
-> +int iio_read_channel_processed(struct iio_channel *chan, int *val);
-> +
-> +/**
->   * iio_get_channel_type() - get the type of a channel
->   * @channel:		The channel being queried.
->   * @type:		The type of the channel.
-> @@ -93,4 +108,27 @@ int iio_get_channel_type(struct iio_channel *channel,
->  int iio_read_channel_scale(struct iio_channel *chan, int *val,
->  			   int *val2);
->
-> +/**
-> + * iio_convert_raw_to_processed() - Converts a raw value to a processed value
-> + * @chan:		The channel being queried
-> + * @raw:		The raw IIO to convert
-> + * @processed:		The result of the conversion
-> + * @scale:		Scale factor to apply during the conversion
-> + *
-> + * Returns an error code or 0.
-> + *
-> + * This function converts a raw value to processed value for a specific channel.
-> + * A raw value is the device internal representation of a sample and the value
-> + * returned by iio_read_channel_raw, so the unit of that value is device
-> + * depended. A processed value on the other hand is value has a normed unit
-> + * according with the IIO specification.
-> + *
-> + * The scale factor allows to increase the precession of the returned value. For
-> + * a scale factor of 1 the function will return the result in the normal IIO
-> + * unit for the channel type. E.g. millivolt for voltage channels, if you want
-> + * nanovolts instead pass 1000 as the scale factor.
-> + */
-> +int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
-> +	int *processed, unsigned int scale);
-> +
->  #endif
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index 30affa5..c0ae76a 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -40,6 +40,8 @@ enum iio_chan_info_enum {
->
->  #define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
->  #define IIO_CHAN_INFO_SEPARATE_BIT(type) BIT(type*2 + 1)
-> +#define IIO_CHAN_INFO_BITS(type) (IIO_CHAN_INFO_SHARED_BIT(type) | \
-> +				    IIO_CHAN_INFO_SEPARATE_BIT(type))
->
->  #define IIO_CHAN_INFO_RAW_SEPARATE_BIT			\
->  	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_RAW)
-> @@ -261,6 +263,21 @@ struct iio_chan_spec {
->  	unsigned		differential:1;
->  };
->
-> +
-> +/**
-> + * iio_channel_has_info() - Checks whether a channel supports a info attribute
-> + * @chan: The channel to be queried
-> + * @type: Type of the info attribute to be checked
-> + *
-> + * Returns true if the channels supports reporting values for the given info
-> + * attribute type, false otherwise.
-> + */
-> +static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
-> +	enum iio_chan_info_enum type)
-> +{
-> +	return chan->info_mask & IIO_CHAN_INFO_BITS(type);
-> +}
-> +
->  #define IIO_ST(si, rb, sb, sh)						\
->  	{ .sign = si, .realbits = rb, .storagebits = sb, .shift = sh }
->
->
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/adc/ad7476.c |   30 ++++++++++++++++++++++++++----
+ 1 file changed, 26 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+index be2098d..7f2f45a 100644
+--- a/drivers/iio/adc/ad7476.c
++++ b/drivers/iio/adc/ad7476.c
+@@ -23,9 +23,12 @@
+ 
+ #define RES_MASK(bits)	((1 << (bits)) - 1)
+ 
++struct ad7476_state;
++
+ struct ad7476_chip_info {
+ 	unsigned int			int_vref_uv;
+ 	struct iio_chan_spec		channel[2];
++	void (*reset)(struct ad7476_state *);
+ };
+ 
+ struct ad7476_state {
+@@ -45,6 +48,7 @@ struct ad7476_state {
+ };
+ 
+ enum ad7476_supported_device_ids {
++	ID_AD7091R,
+ 	ID_AD7276,
+ 	ID_AD7277,
+ 	ID_AD7278,
+@@ -79,6 +83,12 @@ done:
+ 	return IRQ_HANDLED;
+ }
+ 
++static void ad7091_reset(struct ad7476_state *st)
++{
++	/* Any transfers with 8 scl cycles will reset the device */
++	spi_read(st->spi, st->data, 1);
++}
++
+ static int ad7476_scan_direct(struct ad7476_state *st)
+ {
+ 	int ret;
+@@ -130,11 +140,11 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
+-#define _AD7476_CHAN(bits, _shift)				\
++#define _AD7476_CHAN(bits, _shift, _info_mask)			\
+ 	{							\
+ 	.type = IIO_VOLTAGE,					\
+ 	.indexed = 1,						\
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
++	.info_mask = _info_mask |				\
+ 	IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
+ 	.scan_type = {						\
+ 		.sign = 'u',					\
+@@ -145,10 +155,18 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+ 	},							\
+ }
+ 
+-#define AD7476_CHAN(bits) _AD7476_CHAN((bits), 13 - (bits))
+-#define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits))
++#define AD7476_CHAN(bits) _AD7476_CHAN((bits), 13 - (bits), \
++		IIO_CHAN_INFO_RAW_SEPARATE_BIT)
++#define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
++		IIO_CHAN_INFO_RAW_SEPARATE_BIT)
++#define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
+ 
+ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
++	[ID_AD7091R] = {
++		.channel[0] = AD7091R_CHAN(12),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++		.reset = ad7091_reset,
++	},
+ 	[ID_AD7276] = {
+ 		.channel[0] = AD7940_CHAN(12),
+ 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+@@ -238,6 +256,9 @@ static int __devinit ad7476_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto error_disable_reg;
+ 
++	if (st->chip_info->reset)
++		st->chip_info->reset(st);
++
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+ 		goto error_ring_unregister;
+@@ -271,6 +292,7 @@ static int __devexit ad7476_remove(struct spi_device *spi)
+ }
+ 
+ static const struct spi_device_id ad7476_id[] = {
++	{"ad7091r", ID_AD7091R},
+ 	{"ad7273", ID_AD7277},
+ 	{"ad7274", ID_AD7276},
+ 	{"ad7276", ID_AD7276},
+-- 
+1.7.10.4
