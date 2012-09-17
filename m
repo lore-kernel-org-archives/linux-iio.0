@@ -1,128 +1,186 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53681 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752577Ab2IVLLP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 07:11:15 -0400
-Message-ID: <505D9CD1.8030900@kernel.org>
-Date: Sat, 22 Sep 2012 12:11:13 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from smtp-out-029.synserver.de ([212.40.185.29]:1117 "EHLO
+	smtp-out-029.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756041Ab2IQL5R (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 07:57:17 -0400
+Message-ID: <50571045.9030304@metafoo.de>
+Date: Mon, 17 Sep 2012 13:57:57 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO new device support and cleanups (set 5 for the 3.7 cycle)
+To: anish singh <anish198519851985@gmail.com>
+CC: jic23@cam.ac.uk, cbou@mail.ru, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH] [V1]power: battery: Generic battery driver using IIO
+References: <1347779683-5025-1-git-send-email-anish198519851985@gmail.com> <5055F31E.30905@metafoo.de> <CAK7N6vrRF1XdMstnM2UcBof4TM-NR3g7bUBn_noZk+aZZiGyrQ@mail.gmail.com>
+In-Reply-To: <CAK7N6vrRF1XdMstnM2UcBof4TM-NR3g7bUBn_noZk+aZZiGyrQ@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit ba753e41803681d164eb17274b53085c7987d07c:
+On 09/17/2012 05:57 AM, anish singh wrote:
+> Hello Lars,
+> 
+> Thanks for the review.All of you comments are valid but
+> i just have a small question w.r.t one of your comments.
+> Inline below.
+> 
+> On Sun, Sep 16, 2012 at 9:11 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>> On 09/16/2012 09:14 AM, anish kumar wrote:
+>>> From: anish kumar <anish198519851985@gmail.com>
+>>>
+>>> In last version:
+>>> Addressed concerns raised by lars:
+>>> a. made the adc_bat per device.
+>>> b. get the IIO channel using hardcoded channel names.
+>>> c. Minor issues related to gpio_is_valid and some code
+>>>    refactoring.
+>>>
+>>> In this version:
+>>> Addressed concerns raised by Anton:
+>>> a. changed the struct name to gab(generic adc battery).
+>>> b. Added some functions to neaten the code.
+>>> c. Some minor coding guidelines changes.
+>>> d. Used the latest function introduce by lars:
+>>>    iio_read_channel_processed to streamline the code.
+>>>
+>>> Signed-off-by: anish kumar <anish198519851985@gmail.com>
+>>> ---
+>>>  drivers/power/generic-adc-battery.c       |  442 +++++++++++++++++++++++++++++
+>>>  include/linux/power/generic-adc-battery.h |   19 ++
+>>>  2 files changed, 461 insertions(+), 0 deletions(-)
+>>>  create mode 100644 drivers/power/generic-adc-battery.c
+>>>  create mode 100644 include/linux/power/generic-adc-battery.h
+>>>
+>>> diff --git a/drivers/power/generic-adc-battery.c b/drivers/power/generic-adc-battery.c
+>>> new file mode 100644
+>>> index 0000000..fd62916
+>>> --- /dev/null
+>>> +++ b/drivers/power/generic-adc-battery.c
+>>> @@ -0,0 +1,442 @@
+>>> +/*
+>>> + * Generic battery driver code using IIO
+>>> + * Copyright (C) 2012, Anish Kumar <anish198519851985@gmail.com>
+>>> + * based on jz4740-battery.c
+>>> + * based on s3c_adc_battery.c
+>>> + *
+>>> + * This file is subject to the terms and conditions of the GNU General Public
+>>> + * License.  See the file COPYING in the main directory of this archive for
+>>> + * more details.
+>>> + *
+>>> + */
+>>> +#include <linux/interrupt.h>
+>>> +#include <linux/platform_device.h>
+>>> +#include <linux/power_supply.h>
+>>> +#include <linux/gpio.h>
+>>> +#include <linux/err.h>
+>>> +#include <linux/timer.h>
+>>> +#include <linux/jiffies.h>
+>>> +#include <linux/errno.h>
+>>> +#include <linux/init.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/slab.h>
+>>> +#include <linux/iio/consumer.h>
+>>> +#include <linux/iio/types.h>
+>>> +#include <linux/power/generic-adc-battery.h>
+>>> +
+>>> +enum gab_chan_type {
+>>> +     VOLTAGE = 0,
+>>> +     CURRENT,
+>>> +     POWER,
+>>> +     MAX_CHAN_TYPE
+>>> +};
+>>> +
+>>> +/*
+>>> + * gab_chan_name suggests the standard channel names for commonly used
+>>> + * channel types.
+>>> + */
+>>> +static char *gab_chan_name[] = {
+>>
+>> const char *const
+>>
+>>> +     [VOLTAGE]       = "voltage",
+>>> +     [CURRENT]       = "current",
+>>> +     [POWER]         = "power",
+>>> +};
+>>> +
+>>> +struct gab {
+>>> +     struct power_supply     psy;
+>>> +     struct iio_channel      **channel;
+>>> +     struct gab_platform_data        *pdata;
+>>> +     struct delayed_work bat_work;
+>>> +     int             was_plugged;
+>>> +     int             volt_value;
+>>> +     int             cur_value;
+>>
+>> The two above are never really used.
+>>
+>>> +     int             level;
+>>> +     int             status;
+>>> +     int             cable_plugged:1;
+>>> +};
+>> [...]
+>>> +static enum power_supply_property gab_props[] = {
+>> const
+>>> +     POWER_SUPPLY_PROP_STATUS,
+>>> +     POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
+>>> +     POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN,
+>>> +     POWER_SUPPLY_PROP_CHARGE_NOW,
+>>> +     POWER_SUPPLY_PROP_VOLTAGE_NOW,
+>>> +     POWER_SUPPLY_PROP_CURRENT_NOW,
+>>> +     POWER_SUPPLY_PROP_TECHNOLOGY,
+>>> +     POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
+>>> +     POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
+>>> +     POWER_SUPPLY_PROP_MODEL_NAME,
+>>> +};
+>>> +
+>>> +/*
+>>> + * This properties are set based on the received platform data and this
+>>> + * should correspond one-to-one with enum chan_type.
+>>> + */
+>>> +static enum power_supply_property gab_dyn_props[] = {
+>> const
+>>> +     POWER_SUPPLY_PROP_VOLTAGE_NOW,
+>>> +     POWER_SUPPLY_PROP_CURRENT_NOW,
+>>> +     POWER_SUPPLY_PROP_POWER_NOW,
+>>> +};
+>>> +
+>>> +static bool charge_finished(struct gab *adc_bat)
+>>
+>> missing prefix
+>>
+>>> +{
+>>> +     bool ret = gpio_get_value(adc_bat->pdata->gpio_charge_finished);
+>>> +     bool inv = adc_bat->pdata->gpio_inverted;
+>>> +
+>>> +     return ret ^ inv;
+>>> +}
+>>> +
+>>> +int gab_get_status(struct gab *adc_bat)
+>> static
+>>> +{
+>>> +     struct gab_platform_data *pdata = adc_bat->pdata;
+>>> +     int chg_gpio = pdata->gpio_charge_finished;
+>>> +
+>>> +     if (!gpio_is_valid(chg_gpio) || adc_bat->level < 100000)
+>>
+>> level is never really set, is it? Also the 100000 seems to come directly from
+>> the s3c_adc_battery driver, while this value may be different for every
+>> battery. I'd use the bat_info->charge_full_design here. Also I'd remove the
+>> !gpio_is_valid(chg_gpio)  I don't see a reason why the battery could not be
+>> fully charged even though no charger gpio is given.
+> gpio_is_valid is just a call to check if the particular gpio is valid or not[1].
+> I don't seem to understand why we are using it everywhere when only in probe it
+> makes sense as far as my understanding goes.If in probe it is proper then why
+> this check again and again(?) or is it possible that someone else
+> does something somewhere which necessitates this gpio_is_valid check.
+> 
+> And we are using charger gpio in the probe function.
+> 
 
-  Staging: remove CONFIG_EXPERIMENTAL dependancies (2012-09-17 23:02:36 -0700)
+Well, the charger gpio is optional. The behavior of the driver needs to be
+different at some points whether a gpio is provided or not. E.g. if it is
+not provided we do not know whether the device is currently being charged or
+not.
 
-are available in the git repository at:
+- Lars
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-v3.7e
-
-for you to fetch changes up to 3fff22743640637c2b61473d3cc8d7dc2215984f:
-
-  staging:iio:dummy: Fix potential NULL pointer dereference (2012-09-22 10:55:08 +0100)
-
-----------------------------------------------------------------
-Fifth round of new drivers and device support for the IIO
-subsystem in the 3.7 cycle.
-
-Here we have a mixed bag of new stuff, minor fixes and
-more major fixes for drivers added earlier in this cycle.
-
-1) A number of fixes for the HID sensors code added in previous
-pull request.  Typical stuff that has become apparent as more eyes
-have looked at the code post merging. Similar case for the ad5755 dac.
-
-2) Cleanups of error handing in inkern.c - again typical stuff to see
-as code comes into heavier use and people notice the naughty short
-cuts that snuck in originally and kindly fix them.
-
-3) A series from Lars that removes some incorrect error handling
-from the remove functions of a number of drivers.  These have been
-there for a very long time hence I'm not pushing these out for the
-3.6 cycle.
-
-4) Support for more parts in the ad7780 driver.
-
-5) A driver for the adcs on the lp8788 power management unit
-
-6) A client driver for IIO to allow it's ADCs to be used for
-battery status measurement.  Note this driver has some dependencies
-on some utility functions added to IIO in this series, hence it is
-coming via this tree rather than Anton's.
-
-7) A null pointer dereference bug in the 'fake' driver. I'm not
-doing this as a fix for the 3.6 cycle because it only effects
-'fake' hardware and that code is typically only used by people
-investigating how IIO works as part of writing new drivers. Hence
-it's hardly a critical fix.
-
-----------------------------------------------------------------
-Axel Lin (2):
-      HID: hid-sensor-hub: Remove hdev->claimed setting
-      HID: hid-sensor-hub: Fix sensor_hub_probe error handling
-
-Dan Carpenter (3):
-      HID: sensors: use GFP_ATOMIC under spinlock
-      HID: sensors: remove some unneeded checks
-      iio: dac/ad5755: signedness bug in ad5755_setup_pdata()
-
-Kim, Milo (3):
-      iio: inkern: put the IIO device when it fails to allocate memory
-      iio: inkern: clean up error return code
-      iio: adc: add new lp8788 adc driver
-
-Lars-Peter Clausen (11):
-      staging:iio:adis16200: Do not return a error in remove function
-      staging:iio:adis16400: Do not return a error in remove function
-      staging:iio:ade7753: Do not return a error in remove function
-      staging:iio:ade7754: Do not return a error in remove function
-      staging:iio:ade7758: Do not return a error in remove function
-      staging:iio:ade7759: Do not return a error in remove function
-      staging:iio:lis3l02dq: Do not return a error in remove function
-      staging:iio:sca3000: Do not return a error in remove function
-      staging:iio:ad7780: Make powerdown GPIO optional
-      staging:iio:ad7780: Add support for the ad7170/ad7171
-      staging:iio:dummy: Fix potential NULL pointer dereference
-
-Srinivas Pandruvada (1):
-      iio: hid-sensors: Prevent crash during hot-unplug
-
-Stephen Rothwell (1):
-      HID: sensors: fix up for mfd_add_devices() API change
-
-anish kumar (1):
-      power: battery: Generic battery driver using IIO
-
- drivers/hid/hid-sensor-hub.c                       |  29 +-
- drivers/iio/adc/Kconfig                            |   6 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/lp8788_adc.c                       | 264 +++++++++++++
- .../iio/common/hid-sensors/hid-sensor-trigger.c    |   1 +
- drivers/iio/dac/ad5755.c                           |   2 +-
- drivers/iio/inkern.c                               |  16 +-
- drivers/power/Kconfig                              |   7 +
- drivers/power/Makefile                             |   1 +
- drivers/power/generic-adc-battery.c                | 422 +++++++++++++++++++++
- drivers/staging/iio/accel/lis3l02dq_core.c         |  14 +-
- drivers/staging/iio/accel/sca3000_core.c           |   6 +-
- drivers/staging/iio/adc/Kconfig                    |   4 +-
- drivers/staging/iio/adc/ad7780.c                   |  67 +++-
- drivers/staging/iio/gyro/adis16260_core.c          |  10 +-
- drivers/staging/iio/iio_simple_dummy.c             |  20 +-
- drivers/staging/iio/iio_simple_dummy.h             |   6 +-
- drivers/staging/iio/iio_simple_dummy_buffer.c      |  11 +-
- drivers/staging/iio/imu/adis16400_core.c           |   8 +-
- drivers/staging/iio/meter/ade7753.c                |  11 +-
- drivers/staging/iio/meter/ade7754.c                |  10 +-
- drivers/staging/iio/meter/ade7758_core.c           |   9 +-
- drivers/staging/iio/meter/ade7759.c                |   9 +-
- include/linux/power/generic-adc-battery.h          |  29 ++
- 24 files changed, 838 insertions(+), 125 deletions(-)
- create mode 100644 drivers/iio/adc/lp8788_adc.c
- create mode 100644 drivers/power/generic-adc-battery.c
- create mode 100644 include/linux/power/generic-adc-battery.h
