@@ -1,220 +1,110 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58844 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59072 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752532Ab2IQVJi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 17:09:38 -0400
-Message-ID: <5057918F.2020800@kernel.org>
-Date: Mon, 17 Sep 2012 22:09:35 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+	with ESMTP id S1752674Ab2IQVcA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 17:32:00 -0400
+Message-ID: <505796CD.4090407@jic23.retrosnub.co.uk>
+Date: Mon, 17 Sep 2012 22:31:57 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	drivers@analog.com
-Subject: Re: [PATCH 3/4] staging:iio:trigger:bfintmr Add output support
-References: <1347884808-26833-1-git-send-email-lars@metafoo.de> <1347884808-26833-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347884808-26833-3-git-send-email-lars@metafoo.de>
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO new device support and cleanups (set 4 for the 3.7 cycle)
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/17/2012 01:26 PM, Lars-Peter Clausen wrote:
-> Some converters require an external signal to start the conversion. This patch
-> adds support to the bfintmr trigger driver to generate such a signal.
-cute feature.  Much easier than hammering a pin at roughly the right time.
+The following changes since commit 7dd73b866ed656b4ef7b475de4588cb1a3f765d4:
 
-Anyhow merged to togreg branch.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  drivers/staging/iio/trigger/iio-trig-bfin-timer.c |   72 ++++++++++++++++-----
->  drivers/staging/iio/trigger/iio-trig-bfin-timer.h |   24 +++++++
->  2 files changed, 80 insertions(+), 16 deletions(-)
->  create mode 100644 drivers/staging/iio/trigger/iio-trig-bfin-timer.h
-> 
-> diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> index d9d3dc9..52062d7 100644
-> --- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> +++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> @@ -14,14 +14,18 @@
->  #include <linux/delay.h>
->  
->  #include <asm/gptimers.h>
-> +#include <asm/portmux.h>
->  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/trigger.h>
->  
-> +#include "iio-trig-bfin-timer.h"
-> +
->  struct bfin_timer {
->  	unsigned short id, bit;
->  	unsigned long irqbit;
->  	int irq;
-> +	int pin;
->  };
->  
->  /*
-> @@ -30,22 +34,22 @@ struct bfin_timer {
->   */
->  
->  static struct bfin_timer iio_bfin_timer_code[MAX_BLACKFIN_GPTIMERS] = {
-> -	{TIMER0_id,  TIMER0bit,  TIMER_STATUS_TIMIL0,  IRQ_TIMER0},
-> -	{TIMER1_id,  TIMER1bit,  TIMER_STATUS_TIMIL1,  IRQ_TIMER1},
-> -	{TIMER2_id,  TIMER2bit,  TIMER_STATUS_TIMIL2,  IRQ_TIMER2},
-> +	{TIMER0_id,  TIMER0bit,  TIMER_STATUS_TIMIL0,  IRQ_TIMER0, P_TMR0},
-> +	{TIMER1_id,  TIMER1bit,  TIMER_STATUS_TIMIL1,  IRQ_TIMER1, P_TMR1},
-> +	{TIMER2_id,  TIMER2bit,  TIMER_STATUS_TIMIL2,  IRQ_TIMER2, P_TMR2},
->  #if (MAX_BLACKFIN_GPTIMERS > 3)
-> -	{TIMER3_id,  TIMER3bit,  TIMER_STATUS_TIMIL3,  IRQ_TIMER3},
-> -	{TIMER4_id,  TIMER4bit,  TIMER_STATUS_TIMIL4,  IRQ_TIMER4},
-> -	{TIMER5_id,  TIMER5bit,  TIMER_STATUS_TIMIL5,  IRQ_TIMER5},
-> -	{TIMER6_id,  TIMER6bit,  TIMER_STATUS_TIMIL6,  IRQ_TIMER6},
-> -	{TIMER7_id,  TIMER7bit,  TIMER_STATUS_TIMIL7,  IRQ_TIMER7},
-> +	{TIMER3_id,  TIMER3bit,  TIMER_STATUS_TIMIL3,  IRQ_TIMER3, P_TMR3},
-> +	{TIMER4_id,  TIMER4bit,  TIMER_STATUS_TIMIL4,  IRQ_TIMER4, P_TMR4},
-> +	{TIMER5_id,  TIMER5bit,  TIMER_STATUS_TIMIL5,  IRQ_TIMER5, P_TMR5},
-> +	{TIMER6_id,  TIMER6bit,  TIMER_STATUS_TIMIL6,  IRQ_TIMER6, P_TMR6},
-> +	{TIMER7_id,  TIMER7bit,  TIMER_STATUS_TIMIL7,  IRQ_TIMER7, P_TMR7},
->  #endif
->  #if (MAX_BLACKFIN_GPTIMERS > 8)
-> -	{TIMER8_id,  TIMER8bit,  TIMER_STATUS_TIMIL8,  IRQ_TIMER8},
-> -	{TIMER9_id,  TIMER9bit,  TIMER_STATUS_TIMIL9,  IRQ_TIMER9},
-> -	{TIMER10_id, TIMER10bit, TIMER_STATUS_TIMIL10, IRQ_TIMER10},
-> +	{TIMER8_id,  TIMER8bit,  TIMER_STATUS_TIMIL8,  IRQ_TIMER8, P_TMR8},
-> +	{TIMER9_id,  TIMER9bit,  TIMER_STATUS_TIMIL9,  IRQ_TIMER9, P_TMR9},
-> +	{TIMER10_id, TIMER10bit, TIMER_STATUS_TIMIL10, IRQ_TIMER10, P_TMR10},
->  #if (MAX_BLACKFIN_GPTIMERS > 11)
-> -	{TIMER11_id, TIMER11bit, TIMER_STATUS_TIMIL11, IRQ_TIMER11},
-> +	{TIMER11_id, TIMER11bit, TIMER_STATUS_TIMIL11, IRQ_TIMER11, P_TMR11},
->  #endif
->  #endif
->  };
-> @@ -54,6 +58,8 @@ struct bfin_tmr_state {
->  	struct iio_trigger *trig;
->  	struct bfin_timer *t;
->  	unsigned timer_num;
-> +	bool output_enable;
-> +	unsigned int duty;
->  	int irq;
->  };
->  
-> @@ -77,7 +83,7 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
->  {
->  	struct iio_trigger *trig = to_iio_trigger(dev);
->  	struct bfin_tmr_state *st = trig->private_data;
-> -	long val;
-> +	unsigned long val;
->  	bool enabled;
->  	int ret;
->  
-> @@ -99,13 +105,13 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
->  		goto error_ret;
->  
->  	val = get_sclk() / val;
-> -	if (val <= 4) {
-> +	if (val <= 4 || val <= st->duty) {
->  		ret = -EINVAL;
->  		goto error_ret;
->  	}
->  
->  	set_gptimer_period(st->t->id, val);
-> -	set_gptimer_pwidth(st->t->id, 1);
-> +	set_gptimer_pwidth(st->t->id, val - st->duty);
->  
->  	if (enabled)
->  		enable_gptimers(st->t->bit);
-> @@ -176,7 +182,9 @@ static const struct iio_trigger_ops iio_bfin_tmr_trigger_ops = {
->  
->  static int __devinit iio_bfin_tmr_trigger_probe(struct platform_device *pdev)
->  {
-> +	struct iio_bfin_timer_trigger_pdata *pdata = pdev->dev.platform_data;
->  	struct bfin_tmr_state *st;
-> +	unsigned int config;
->  	int ret;
->  
->  	st = kzalloc(sizeof(*st), GFP_KERNEL);
-> @@ -220,13 +228,43 @@ static int __devinit iio_bfin_tmr_trigger_probe(struct platform_device *pdev)
->  		goto out4;
->  	}
->  
-> -	set_gptimer_config(st->t->id, OUT_DIS | PWM_OUT | PERIOD_CNT | IRQ_ENA);
-> +	config = PWM_OUT | PERIOD_CNT | IRQ_ENA;
-> +
-> +	if (pdata && pdata->output_enable) {
-> +		unsigned long long val;
-> +
-> +		st->output_enable = true;
-> +
-> +		ret = peripheral_request(st->t->pin, st->trig->name);
-> +		if (ret)
-> +			goto out_free_irq;
-> +
-> +		val = (unsigned long long)get_sclk() * pdata->duty_ns;
-> +		do_div(val, NSEC_PER_SEC);
-> +		st->duty = val;
-> +
-> +		/**
-> +		 * The interrupt will be generated at the end of the period,
-> +		 * since we want the interrupt to be generated at end of the
-> +		 * pulse we invert both polarity and duty cycle, so that the
-> +		 * pulse will be generated directly before the interrupt.
-> +		 */
-> +		if (pdata->active_low)
-> +			config |= PULSE_HI;
-> +	} else {
-> +		st->duty = 1;
-> +		config |= OUT_DIS;
-> +	}
-> +
-> +	set_gptimer_config(st->t->id, config);
->  
->  	dev_info(&pdev->dev, "iio trigger Blackfin TMR%d, IRQ-%d",
->  		 st->timer_num, st->irq);
->  	platform_set_drvdata(pdev, st);
->  
->  	return 0;
-> +out_free_irq:
-> +	free_irq(st->irq, st);
->  out4:
->  	iio_trigger_unregister(st->trig);
->  out2:
-> @@ -242,6 +280,8 @@ static int __devexit iio_bfin_tmr_trigger_remove(struct platform_device *pdev)
->  	struct bfin_tmr_state *st = platform_get_drvdata(pdev);
->  
->  	disable_gptimers(st->t->bit);
-> +	if (st->output_enable)
-> +		peripheral_free(st->t->pin);
->  	free_irq(st->irq, st);
->  	iio_trigger_unregister(st->trig);
->  	iio_trigger_put(st->trig);
-> diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.h b/drivers/staging/iio/trigger/iio-trig-bfin-timer.h
-> new file mode 100644
-> index 0000000..c07321f
-> --- /dev/null
-> +++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.h
-> @@ -0,0 +1,24 @@
-> +#ifndef __IIO_BFIN_TIMER_TRIGGER_H__
-> +#define __IIO_BFIN_TIMER_TRIGGER_H__
-> +
-> +/**
-> + * struct iio_bfin_timer_trigger_pdata - timer trigger platform data
-> + * @output_enable: Enable external trigger pulse generation.
-> + * @active_low: Whether the trigger pulse is active low.
-> + * @duty_ns: Length of the trigger pulse in nanoseconds.
-> + *
-> + * This struct is used to configure the output pulse generation of the blackfin
-> + * timer trigger. If output_enable is set to true an external trigger signal
-> + * will generated on the pin corresponding to the timer. This is useful for
-> + * converters which needs an external signal to start conversion. active_low and
-> + * duty_ns are used to configure the type of the trigger pulse. If output_enable
-> + * is set to false no external trigger pulse will be generated and active_low
-> + * and duty_ns are ignored.
-> + **/
-> +struct iio_bfin_timer_trigger_pdata {
-> +	bool output_enable;
-> +	bool active_low;
-> +	unsigned int duty_ns;
-> +};
-> +
-> +#endif
-> 
+  staging: ipack/bridges/tpci200: Use endianess-aware types where applicable. (2012-09-12 09:56:02 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-v3.7d
+
+for you to fetch changes up to 87c5b10fd97937796dbf0769e8790a5f275b4a37:
+
+  iio: ad7476: Add support for the ad7091r (2012-09-17 22:10:00 +0100)
+
+----------------------------------------------------------------
+IIO new drivers, features and rework for the 3.7 cycle, 4th set.
+
+Here we have
+
+1) a set cleaning up and moving the ad7476 driver out of staging.
+Support for a number of additional parts is also added to that driver.
+
+2) cleanups from various people for the in kernel interface code as that
+is getting more an more real use and hence people are picking up on
+minor issues that made it through review.  Also a related useful set
+of utility functions to avoid duplicate code for converting IIO
+representations to other forms.
+
+3) a new fractional type for our read_raw / write_raw functions.
+  This allows avoiding loss of accuracy via the in kernel interfaces in some
+  cases as well as being rather convenient for a lot of range -> scale
+  conversions.
+
+4) New AD5755 DAC driver.
+
+5) Some Blackfin timer trigger improvements including hardware pulse control
+for device triggering.
+
+6) Support for the ad7091r in the ad7476 driver.
+
+----------------------------------------------------------------
+Kim, Milo (2):
+      iio: inkern: allocate zeroed memory
+      iio: inkern: add error case in iio_channel_get()
+
+Lars-Peter Clausen (19):
+      staging:iio:ad7476: Fix off by one error for channel shift
+      staging:iio:ad7476: Remove duplicated chip info entries
+      staging:iio:ad7476: Avoid alloc/free for each sample in buffered mode
+      staging:iio:ad7476: Rework reference voltage handling
+      staging:iio:ad7476: Squash driver into a single file.
+      staging:iio:ad7476: Use be16_to_cpup instead of open-coding it
+      iio: Move ad7476 driver out of staging
+      iio:ad7476: Add ad7910/ad7920 device table entries
+      iio:ad7476: Add ad7940 support
+      iio:ad7476: Add support for ad7273/ad7274/ad7276/ad7277/ad7278
+      iio: Introduce a new fractional value type
+      iio:dac: Add ad5755 driver
+      iio: consumer.h: Fix kernel doc incosistency
+      iio:inkern: Add function to read the processed value
+      staging:iio:hwmon bridge: Use iio_read_channel_processed
+      staging:iio:trigger:bfintmr: Avoid divide by zero
+      staging:iio:trigger:bfintmr: Only enable timer when necessary
+      staging:iio:trigger:bfintmr Add output support
+      iio: ad7476: Add support for the ad7091r
+
+anish kumar (1):
+      iio: Documentation change for inkern interface.
+
+ drivers/iio/adc/Kconfig                            |  15 +
+ drivers/iio/adc/Makefile                           |   1 +
+ .../iio/adc/ad7476_core.c => iio/adc/ad7476.c}     | 208 +++++--
+ drivers/iio/dac/Kconfig                            |  11 +
+ drivers/iio/dac/Makefile                           |   1 +
+ drivers/iio/dac/ad5755.c                           | 650 +++++++++++++++++++++
+ drivers/iio/industrialio-core.c                    |   6 +
+ drivers/iio/inkern.c                               | 131 ++++-
+ drivers/staging/iio/Documentation/inkernel.txt     |   6 +-
+ drivers/staging/iio/adc/Kconfig                    |  14 -
+ drivers/staging/iio/adc/Makefile                   |   4 -
+ drivers/staging/iio/adc/ad7476.h                   |  66 ---
+ drivers/staging/iio/adc/ad7476_ring.c              |  64 --
+ drivers/staging/iio/iio_hwmon.c                    |  33 +-
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.c  | 109 +++-
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.h  |  24 +
+ include/linux/iio/consumer.h                       |  42 +-
+ include/linux/iio/iio.h                            |  17 +
+ include/linux/iio/types.h                          |   1 +
+ include/linux/platform_data/ad5755.h               | 103 ++++
+ 20 files changed, 1233 insertions(+), 273 deletions(-)
+ rename drivers/{staging/iio/adc/ad7476_core.c => iio/adc/ad7476.c} (53%)
+ create mode 100644 drivers/iio/dac/ad5755.c
+ delete mode 100644 drivers/staging/iio/adc/ad7476.h
+ delete mode 100644 drivers/staging/iio/adc/ad7476_ring.c
+ create mode 100644 drivers/staging/iio/trigger/iio-trig-bfin-timer.h
+ create mode 100644 include/linux/platform_data/ad5755.h
