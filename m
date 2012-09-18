@@ -1,136 +1,159 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58923 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41754 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751781Ab2IQVO5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Sep 2012 17:14:57 -0400
-Message-ID: <505792D0.2060307@kernel.org>
-Date: Mon, 17 Sep 2012 22:14:56 +0100
+	with ESMTP id S1754739Ab2IRUS2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Sep 2012 16:18:28 -0400
+Message-ID: <5058D711.90803@kernel.org>
+Date: Tue, 18 Sep 2012 21:18:25 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	drivers@analog.com
-Subject: Re: [PATCH 4/4] iio: ad7476: Add support for the ad7091r
-References: <1347884808-26833-1-git-send-email-lars@metafoo.de> <1347884808-26833-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347884808-26833-4-git-send-email-lars@metafoo.de>
+CC: "Kim, Milo" <Milo.Kim@ti.com>, Jonathan Cameron <jic23@cam.ac.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6] iio: adc: add new lp8788 adc driver
+References: <A874F61F95741C4A9BA573A70FE3998F41EF510C@DQHE02.ent.ti.com> <50582E77.3070808@metafoo.de>
+In-Reply-To: <50582E77.3070808@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/17/2012 01:26 PM, Lars-Peter Clausen wrote:
-> Add support for the ad7091r 12 bit ADC to the ad7476 driver. Although the
-> ad7091r is not really related to any of the other devices supported by this
-> driver, luckily for us there are not so many ways (which are not totally insane)
-> how sampling a single channel ADC via SPI can be implemented and support for the
-> ad7091r can be added to the driver with just a few adjustments.
-Yup, eveything is nice and simple when there is only one channel ;)
+On 09/18/2012 09:19 AM, Lars-Peter Clausen wrote:
+> On 09/17/2012 11:35 AM, Kim, Milo wrote:
+>>  TI LP8788 PMU provides regulators, battery charger, ADC,
+>>  RTC, backlight driver and current sinks.
+>>
+>>  This patch enables the LP8788 ADC functions.
+>>
+>>  The LP8788 ADC has several ADC input selection and supports 12bit resolution.
+>>  Internal operation of getting ADC is access to registers of LP8788.
+>>  The LP8788 ADC uses exported functions for accessing these registers.
+>>  (exported by LP8788 MFD device driver)
+>>
+>>  This driver supports IIO_CHAN_INFO_RAW and SCALE.
+>>  So the IIO consumer can calculate the value with raw and scale.
+>>  The unit of scale is micro.
+>>
+>>  (ADC Input Selection)
+>>
+>>  Voltage: battery voltage (MAX 5.0, 5.5 and 6.0V)
+>>           charger input voltage
+>>           four general ADC inputs
+>>           coin cell voltage
+>>  Current: battery charging current
+>>  Temperature: IC temperature
+>>
+>>  (The IIO map for the IIO consumer)
+>>
+>>  The ADC input is configurable in the platform side.
+>>  Even though this platform data is not defined,
+>>  the default IIO map is created for supporting the power supply driver.
+>>  The battery voltage and temperature are used inside this driver.
+>>
+>>  (History)
+>>
+>>  Patch v6.
+>>  (a) Fix scale value for each ADC input selection
+>>  Voltage and current type are mili unit and temperature is degree.
+>>  To calculate the IC temperature,
+>>  temp = raw * scaleint + (raw * scalepart)/ 1000000, scaleint is always 0.
+>>       = raw * 0.061050, raw: 0 ~ 4095
+>>  Then range of IC temperature(ADC result) is 0 ~ 250'C
+>>
+>>  (b) Reorganization of the IIO channel Spec
+>>  Remove address, scan_type and scan_index and rollback the datasheet name.
+>>  The reason why 'address' field is unnecessary is no relation with each channel.
+>>  Moreover, to get the raw ADC value, the address info is not only one register
+>>  but also several registers.
+>>  Therefore specific function(lp8788_get_adc_result) is called rather than
+>>  using one 'address' field.
+>>
+>>  (c) Fix coding style
+>>  Remove duplicated checking routine while unregistering the IIO map.
+>>  Fix code for space and parenthesis.
+>>
+>>  Patch v5.
+>>  Fix default consumer name as 'lp8788-charger'.
+>>  Add mutex for ADC read operation.
+>>  Reorganization on lp8788_adc_read_raw().
+>>
+>>  Patch v4.
+>>  Fix adc_raw function: support RAW and SCALE channel info.
+>>  Change LP8788 ADC platform data - iio map.
+>>  Enables the default IIO map.
+>>
+>>  Patch v3.
+>>  Fix wrong size of allocating iio private data.
+>>  Fix coding styles.
+>>
+>>  Patch v2.
+>>  Support RAW and SCALE interface for IIO consumer.
+>>  Clean up the iio channel spec macro.
+>>
+>> Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
 > 
-> The ad7091r requires an external "conversion start" pulse to start a sample
-> conversion. After the conversion has finished the result can be read via SPI. We
-> depend on a IIO trigger to generate this signal, as a result only sampling in
-> buffered mode and not in manual mode is available.
-This is a little restrictive given we could wire up some magic with a gpio to
-do this, but I guess things like that can be added as and when people care.
-We may need some way of 'knowing' whether a more general trigger has done
-the start pulse or not... Something for another day.
+> Looks good to me,
+> 
+> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+I've added this to my local tree but not pushed out just
+yet on basis you might want to change the behaviour Lars
+has pointed out...
 
-merged to togreg branch of iio.git
-Thanks.
+I don't here it'll go as is in a day or so.
+
+Jonathan
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  drivers/iio/adc/ad7476.c |   30 ++++++++++++++++++++++++++----
->  1 file changed, 26 insertions(+), 4 deletions(-)
+> One comment though, not sure if it is critical or not.
 > 
-> diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-> index be2098d..7f2f45a 100644
-> --- a/drivers/iio/adc/ad7476.c
-> +++ b/drivers/iio/adc/ad7476.c
-> @@ -23,9 +23,12 @@
->  
->  #define RES_MASK(bits)	((1 << (bits)) - 1)
->  
-> +struct ad7476_state;
-> +
->  struct ad7476_chip_info {
->  	unsigned int			int_vref_uv;
->  	struct iio_chan_spec		channel[2];
-> +	void (*reset)(struct ad7476_state *);
->  };
->  
->  struct ad7476_state {
-> @@ -45,6 +48,7 @@ struct ad7476_state {
->  };
->  
->  enum ad7476_supported_device_ids {
-> +	ID_AD7091R,
->  	ID_AD7276,
->  	ID_AD7277,
->  	ID_AD7278,
-> @@ -79,6 +83,12 @@ done:
->  	return IRQ_HANDLED;
->  }
->  
-> +static void ad7091_reset(struct ad7476_state *st)
-> +{
-> +	/* Any transfers with 8 scl cycles will reset the device */
-> +	spi_read(st->spi, st->data, 1);
-> +}
-> +
->  static int ad7476_scan_direct(struct ad7476_state *st)
->  {
->  	int ret;
-> @@ -130,11 +140,11 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
->  	return -EINVAL;
->  }
->  
-> -#define _AD7476_CHAN(bits, _shift)				\
-> +#define _AD7476_CHAN(bits, _shift, _info_mask)			\
->  	{							\
->  	.type = IIO_VOLTAGE,					\
->  	.indexed = 1,						\
-> -	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
-> +	.info_mask = _info_mask |				\
->  	IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
->  	.scan_type = {						\
->  		.sign = 'u',					\
-> @@ -145,10 +155,18 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
->  	},							\
->  }
->  
-> -#define AD7476_CHAN(bits) _AD7476_CHAN((bits), 13 - (bits))
-> -#define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits))
-> +#define AD7476_CHAN(bits) _AD7476_CHAN((bits), 13 - (bits), \
-> +		IIO_CHAN_INFO_RAW_SEPARATE_BIT)
-> +#define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
-> +		IIO_CHAN_INFO_RAW_SEPARATE_BIT)
-> +#define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
->  
->  static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
-> +	[ID_AD7091R] = {
-> +		.channel[0] = AD7091R_CHAN(12),
-> +		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> +		.reset = ad7091_reset,
-> +	},
->  	[ID_AD7276] = {
->  		.channel[0] = AD7940_CHAN(12),
->  		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> @@ -238,6 +256,9 @@ static int __devinit ad7476_probe(struct spi_device *spi)
->  	if (ret)
->  		goto error_disable_reg;
->  
-> +	if (st->chip_info->reset)
-> +		st->chip_info->reset(st);
-> +
->  	ret = iio_device_register(indio_dev);
->  	if (ret)
->  		goto error_ring_unregister;
-> @@ -271,6 +292,7 @@ static int __devexit ad7476_remove(struct spi_device *spi)
->  }
->  
->  static const struct spi_device_id ad7476_id[] = {
-> +	{"ad7091r", ID_AD7091R},
->  	{"ad7273", ID_AD7277},
->  	{"ad7274", ID_AD7276},
->  	{"ad7276", ID_AD7276},
+>> +static int lp8788_get_adc_result(struct lp8788_adc *adc, enum lp8788_adc_id id,
+>> +				int *val)
+>> +{
+>> +	unsigned int msb;
+>> +	unsigned int lsb;
+>> +	unsigned int result;
+>> +	u8 data;
+>> +	u8 rawdata[2];
+>> +	int size = ARRAY_SIZE(rawdata);
+>> +	int retry = 5;
+>> +	int ret;
+>> +
+>> +	data = (id << 1) | ADC_CONV_START;
+>> +	ret = lp8788_write_byte(adc->lp, LP8788_ADC_CONF, data);
+>> +	if (ret)
+>> +		goto err_io;
+>> +
+>> +	/* retry until adc conversion is done */
+>> +	data = 0;
+>> +	while (retry--) {
+>> +		usleep_range(100, 200);
+>> +
+>> +		ret = lp8788_read_byte(adc->lp, LP8788_ADC_DONE, &data);
+>> +		if (ret)
+>> +			goto err_io;
+>> +
+>> +		/* conversion done */
+>> +		if (data)
+>> +			break;
 > 
+> Could as well go into the while header like this:
+>     while (!data && retry--)
+> 
+>> +	}
+>> +
+> 
+> You still sample the data, even if there was a timeout and ADC_DONE is not set.
+> 
+>> +	ret = lp8788_read_multi_bytes(adc->lp, LP8788_ADC_RAW, rawdata, size);
+>> +	if (ret)
+>> +		goto err_io;
+>> +
+>> +	msb = (rawdata[0] << 4) & 0x00000ff0;
+>> +	lsb = (rawdata[1] >> 4) & 0x0000000f;
+>> +	result = msb | lsb;
+>> +	*val = result;
+>> +
+>> +	return 0;
+>> +
+>> +err_io:
+>> +	return ret;
+>> +}
