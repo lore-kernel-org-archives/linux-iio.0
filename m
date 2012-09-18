@@ -1,78 +1,57 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	Milo Kim <Milo.Kim@ti.com>,
-	anish kumar <anish198519851985@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 3/3] staging:iio:hwmon bridge: Use iio_read_channel_processed
-Date: Mon, 17 Sep 2012 14:17:35 +0200
-Message-Id: <1347884255-24870-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1347884255-24870-1-git-send-email-lars@metafoo.de>
-References: <1347884255-24870-1-git-send-email-lars@metafoo.de>
+Return-Path: <Milo.Kim@ti.com>
+From: "Kim, Milo" <Milo.Kim@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, Lars-Peter Clausen <lars@metafoo.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH 1/2] iio: inkern: put the IIO device when it fails to
+ allocate memory
+Date: Tue, 18 Sep 2012 04:55:53 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EF5397@DQHE02.ent.ti.com>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Use the iio_read_channel_processed function to read the sample value in the
-proper unit instead of using iio_read_channel_raw and iio_read_channel_scale and
-doing the unit conversion manually.
+ The reference count of the IIO device is increased if the IIO map has
+ matched consumer name.
+ After then, it tries to allocate the iio_channel which is used by the cons=
+umer.
+ If it fails to allocate memory, the reference count should be decreased.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
-Changes since v1:
-	* Fix mixed up patch fragements between patch 2 and patch 3
----
- drivers/staging/iio/iio_hwmon.c |   33 +++++----------------------------
- 1 file changed, 5 insertions(+), 28 deletions(-)
+ This patch enables restoring the reference count of the IIO device.
 
-diff --git a/drivers/staging/iio/iio_hwmon.c b/drivers/staging/iio/iio_hwmon.c
-index 69d4a3b..5d49122 100644
---- a/drivers/staging/iio/iio_hwmon.c
-+++ b/drivers/staging/iio/iio_hwmon.c
-@@ -42,40 +42,17 @@ static ssize_t iio_hwmon_read_val(struct device *dev,
- 				  struct device_attribute *attr,
- 				  char *buf)
- {
--	long result;
--	int val, ret, scaleint, scalepart;
-+	int result;
-+	int ret;
- 	struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
- 	struct iio_hwmon_state *state = dev_get_drvdata(dev);
- 
--	/*
--	 * No locking between this pair, so theoretically possible
--	 * the scale has changed.
--	 */
--	ret = iio_read_channel_raw(&state->channels[sattr->index],
--				      &val);
-+	ret = iio_read_channel_processed(&state->channels[sattr->index],
-+					&result);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = iio_read_channel_scale(&state->channels[sattr->index],
--					&scaleint, &scalepart);
--	if (ret < 0)
--		return ret;
--	switch (ret) {
--	case IIO_VAL_INT:
--		result = val * scaleint;
--		break;
--	case IIO_VAL_INT_PLUS_MICRO:
--		result = (s64)val * (s64)scaleint +
--			div_s64((s64)val * (s64)scalepart, 1000000LL);
--		break;
--	case IIO_VAL_INT_PLUS_NANO:
--		result = (s64)val * (s64)scaleint +
--			div_s64((s64)val * (s64)scalepart, 1000000000LL);
--		break;
--	default:
--		return -EINVAL;
--	}
--	return sprintf(buf, "%ld\n", result);
-+	return sprintf(buf, "%d\n", result);
+Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
+---
+ drivers/iio/inkern.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 13748c0..aff034b 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -132,7 +132,7 @@ struct iio_channel *iio_channel_get(const char *name, c=
+onst char *channel_name)
+=20
+ 	channel =3D kzalloc(sizeof(*channel), GFP_KERNEL);
+ 	if (channel =3D=3D NULL)
+-		return ERR_PTR(-ENOMEM);
++		goto error_no_mem;
+=20
+ 	channel->indio_dev =3D c->indio_dev;
+=20
+@@ -151,6 +151,9 @@ error_no_chan:
+ 	iio_device_put(c->indio_dev);
+ 	kfree(channel);
+ 	return ERR_PTR(-EINVAL);
++error_no_mem:
++	iio_device_put(c->indio_dev);
++	return ERR_PTR(-ENOMEM);
  }
- 
- static void iio_hwmon_free_attrs(struct iio_hwmon_state *st)
--- 
-1.7.10.4
+ EXPORT_SYMBOL_GPL(iio_channel_get);
+=20
+--=20
+1.7.9.5
+
+
+Best Regards,
+Milo
