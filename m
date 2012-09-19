@@ -1,50 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:57574 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753293Ab2ITAPr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 19 Sep 2012 20:15:47 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH] iio: hid-sensors: Prevent crash during hot-unplug
-Date: Wed, 19 Sep 2012 17:15:44 -0700
-Message-Id: <1348100144-1826-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from mail-ob0-f174.google.com ([209.85.214.174]:35686 "EHLO
+	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756364Ab2ISP5I (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Sep 2012 11:57:08 -0400
+Received: by obbuo13 with SMTP id uo13so539861obb.19
+        for <linux-iio@vger.kernel.org>; Wed, 19 Sep 2012 08:57:07 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <CAEE_umptNVPOYeTANC4mtAo8AxizmFkrFoa0eLGoLFtTRgWzng@mail.gmail.com>
+References: <CAEE_umptNVPOYeTANC4mtAo8AxizmFkrFoa0eLGoLFtTRgWzng@mail.gmail.com>
+Date: Wed, 19 Sep 2012 17:57:07 +0200
+Message-ID: <CAEE_umoJ-QmmFMkiXE0AvC3cE4PoD2DrsivFa-49jS2L=nG0ZA@mail.gmail.com>
+Subject: Fwd: iio_trigger doesn't work
+From: Denis Ciocca <denis.ciocca@gmail.com>
+To: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-When hid sensor hub is unplugged, there is a crash in
-iio_device_unregister_trigger_consumer.
-In a typical IIO driver when remove is called, it will unregister and free
-trigger and then it will call iio_device_free.
-The function iio_trigger_free() will free the allocated memory for trigger.
-If this trigger was assigned to iio_dev->trig, then it should be set to NULL.
-Othewise when iio_device_free() is called later, it finally calls
-iio_device_unregsister_trigger(), which checks for
-       if (indio_dev->trig)
-                iio_trigger_put(indio_dev->trig);
-If indio_dev->trig is not set to NULL, it calls iio_trigger_put on a bad
-pointer causing crash.
-This scenerio can happen in any driver, which is storing trigger pointer in
-iio_dev structure and following current procedure during remove.
+Hi everybody,
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 1 +
- 1 file changed, 1 insertion(+)
+I write in this mailing list because I have some problems to
+understand the trigger event catch and I ask for your help.
 
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-index 12277e8..d4b790d 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -56,6 +56,7 @@ void hid_sensor_remove_trigger(struct iio_dev *indio_dev)
- {
- 	iio_trigger_unregister(indio_dev->trig);
- 	iio_trigger_free(indio_dev->trig);
-+	indio_dev->trig = NULL;
- }
- EXPORT_SYMBOL(hid_sensor_remove_trigger);
- 
--- 
-1.7.11.4
+I write a little driver for accelerometer and the core driver works,
+but now I want to write trigger code. What I understand is that:
 
+1. register iio_trigger;
+2. associate iio_trigger to iio_dev;
+3. associate pollfunc with iio_alloc_pollfunc to iio_info;
+
+when trigger occuring (in my example at hrtimers), I call
+iio_trigger_poll() function and I expect which handler function
+declared inside iio_alloc_pollfunc(...) is called.
+This does not happen!
+
+What I'm doing wrong?
+There is some documentation about this?
+
+Thanks,
+
+Denis
