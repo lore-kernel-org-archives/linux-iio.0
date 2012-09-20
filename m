@@ -1,63 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-051.synserver.de ([212.40.185.51]:1025 "EHLO
-	smtp-out-051.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754594Ab2IVIz7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 04:55:59 -0400
+Received: from smtp-out-050.synserver.de ([212.40.185.50]:1045 "EHLO
+	smtp-out-050.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754586Ab2ITNaE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Sep 2012 09:30:04 -0400
+Message-ID: <505B164B.1010002@metafoo.de>
+Date: Thu, 20 Sep 2012 15:12:43 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 5/8] staging:iio:ade7758: Do not return a error in remove function
-Date: Sat, 22 Sep 2012 10:56:35 +0200
-Message-Id: <1348304198-5793-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1348304198-5793-1-git-send-email-lars@metafoo.de>
-References: <1348304198-5793-1-git-send-email-lars@metafoo.de>
+MIME-Version: 1.0
+To: Denis Ciocca <denis.ciocca@gmail.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: Fwd: iio_trigger doesn't work
+References: <CAEE_umptNVPOYeTANC4mtAo8AxizmFkrFoa0eLGoLFtTRgWzng@mail.gmail.com> <CAEE_umoJ-QmmFMkiXE0AvC3cE4PoD2DrsivFa-49jS2L=nG0ZA@mail.gmail.com> <5059FD50.80604@metafoo.de> <CAEE_umrYWXKz6hOF958E96DhRdafGTtSE7fz0UfdX_rPZrgqTQ@mail.gmail.com> <505B0193.1040605@metafoo.de> <CAEE_umodNxVNqm0NiCvPDTaouL2GsCyd+iLqrAOGcegWE6ocbw@mail.gmail.com>
+In-Reply-To: <CAEE_umodNxVNqm0NiCvPDTaouL2GsCyd+iLqrAOGcegWE6ocbw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-In the Linux device driver model the remove callback is not allowed to fail and
-the device will be removed regardless of the return value of the remove
-callback. So if we abort in the remove function and do not free all resources we
-will create a resource leak. Also all kinds of undefined behaviour are expected
-to happen since the IIO device is still there while its parent is already gone.
+On 09/20/2012 02:44 PM, Denis Ciocca wrote:
+>> Yes, you need a buffer. The trigger won't be activated until the buffer is
+>> active. To activate the buffer you need to select at least one scan element
+>> in the scan_elements subfolder of you IIO device, then set the buffer size
+>> by writing to buffer/length and finally write a 1 to buffer/enable. Now you
+>> should see your acc_trigger_handler being called.
+> 
+> I don't understand what you mean with:
+> "select at least one scan element in the scan_elements subfolder"
+> I have seen the adis16240 accelerometer driver for example but I don't saw
+> anything about scan element. Can you be more specific?
 
-The error which the driver tries to handle in the remove function is
-non-critical, so we can just ignore it and continue to free all resources and
-remove the IIO device.
+So each channel has a scan index. And for each channel you can enable
+whether the channel should be sampled in buffered mode or not. There is a
+sysfs file for each channel which allows you to do this in the scan_elements
+subfolder. In order to start sampling you have to enable at least one
+scan_element by writing a 1 to its enable attribute.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/meter/ade7758_core.c |    9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
-index 958f8f2..a0fef77 100644
---- a/drivers/staging/iio/meter/ade7758_core.c
-+++ b/drivers/staging/iio/meter/ade7758_core.c
-@@ -966,13 +966,9 @@ static int __devexit ade7758_remove(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
- 	struct ade7758_state *st = iio_priv(indio_dev);
--	int ret;
- 
- 	iio_device_unregister(indio_dev);
--	ret = ade7758_stop_device(&indio_dev->dev);
--	if (ret)
--		goto err_ret;
--
-+	ade7758_stop_device(&indio_dev->dev);
- 	ade7758_remove_trigger(indio_dev);
- 	ade7758_uninitialize_ring(indio_dev);
- 	ade7758_unconfigure_ring(indio_dev);
-@@ -981,8 +977,7 @@ static int __devexit ade7758_remove(struct spi_device *spi)
- 
- 	iio_device_free(indio_dev);
- 
--err_ret:
--	return ret;
-+	return 0;
- }
- 
- static const struct spi_device_id ade7758_id[] = {
--- 
-1.7.10.4
-
+- Lars
