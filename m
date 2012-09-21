@@ -1,36 +1,101 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from acsinet15.oracle.com ([141.146.126.227]:22379 "EHLO
-	acsinet15.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755405Ab2ISG1F (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Sep 2012 02:27:05 -0400
-Date: Wed, 19 Sep 2012 09:27:00 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: [patch] iio: dac/ad5755: signedness bug in ad5755_setup_pdata()
-Message-ID: <20120919062700.GA28864@elgon.mountain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: linux-iio@vger.kernel.org,
+	drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/2] staging:iio:ad7780: Make powerdown GPIO optional
+Date: Fri, 21 Sep 2012 15:29:07 +0200
+Message-Id: <1348234148-22669-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-We need "ret" to be signed for the error handling to work correctly.
+Some designs hardwire the PDRST pin to always on. In this case there is no GPIO
+to control the mode of the device, so make the GPIO optional. Since now all of
+the the platform data fields are optional now, make the platform data as a whole
+optional as well.
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/ad7780.c |   31 +++++++++++++++++--------------
+ 1 file changed, 17 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-index e6dbe5f..5db3506 100644
---- a/drivers/iio/dac/ad5755.c
-+++ b/drivers/iio/dac/ad5755.c
-@@ -451,9 +451,9 @@ static int __devinit ad5755_setup_pdata(struct iio_dev *indio_dev,
- 	const struct ad5755_platform_data *pdata)
- {
- 	struct ad5755_state *st = iio_priv(indio_dev);
--	unsigned int ret;
- 	unsigned int val;
- 	unsigned int i;
-+	int ret;
+diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+index 5f807ce..1dd7cdb 100644
+--- a/drivers/staging/iio/adc/ad7780.c
++++ b/drivers/staging/iio/adc/ad7780.c
+@@ -73,7 +73,8 @@ static int ad7780_set_mode(struct ad_sigma_delta *sigma_delta,
+ 		break;
+ 	}
  
- 	if (pdata->dc_dc_phase > AD5755_DC_DC_PHASE_90_DEGREE ||
- 		pdata->dc_dc_freq > AD5755_DC_DC_FREQ_650kHZ ||
+-	gpio_set_value(st->powerdown_gpio, val);
++	if (gpio_is_valid(st->powerdown_gpio))
++		gpio_set_value(st->powerdown_gpio, val);
+ 
+ 	return 0;
+ }
+@@ -148,11 +149,6 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+ 	struct iio_dev *indio_dev;
+ 	int ret, voltage_uv = 0;
+ 
+-	if (!pdata) {
+-		dev_dbg(&spi->dev, "no platform data?\n");
+-		return -ENODEV;
+-	}
+-
+ 	indio_dev = iio_device_alloc(sizeof(*st));
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
+@@ -174,8 +170,6 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+ 	st->chip_info =
+ 		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+ 
+-	st->powerdown_gpio = pdata->gpio_pdrst;
+-
+ 	if (pdata && pdata->vref_mv)
+ 		st->int_vref_mv = pdata->vref_mv;
+ 	else if (voltage_uv)
+@@ -192,11 +186,17 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+ 	indio_dev->num_channels = 1;
+ 	indio_dev->info = &ad7780_info;
+ 
+-	ret = gpio_request_one(pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
++	if (pdata && gpio_is_valid(pdata->gpio_pdrst)) {
++
++		ret = gpio_request_one(pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
+ 			       "AD7780 /PDRST");
+-	if (ret) {
+-		dev_err(&spi->dev, "failed to request GPIO PDRST\n");
+-		goto error_disable_reg;
++		if (ret) {
++			dev_err(&spi->dev, "failed to request GPIO PDRST\n");
++			goto error_disable_reg;
++		}
++		st->powerdown_gpio = pdata->gpio_pdrst;
++	} else {
++		st->powerdown_gpio = -1;
+ 	}
+ 
+ 	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+@@ -212,7 +212,8 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+ error_cleanup_buffer_and_trigger:
+ 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+ error_free_gpio:
+-	gpio_free(pdata->gpio_pdrst);
++	if (pdata && gpio_is_valid(pdata->gpio_pdrst))
++		gpio_free(pdata->gpio_pdrst);
+ error_disable_reg:
+ 	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
+@@ -233,7 +234,9 @@ static int __devexit ad7780_remove(struct spi_device *spi)
+ 	iio_device_unregister(indio_dev);
+ 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+ 
+-	gpio_free(st->powerdown_gpio);
++	if (gpio_is_valid(st->powerdown_gpio))
++		gpio_free(st->powerdown_gpio);
++
+ 	if (!IS_ERR(st->reg)) {
+ 		regulator_disable(st->reg);
+ 		regulator_put(st->reg);
+-- 
+1.7.10.4
