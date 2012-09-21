@@ -4,98 +4,132 @@ To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org,
 	drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/2] staging:iio:ad7780: Make powerdown GPIO optional
-Date: Fri, 21 Sep 2012 15:29:07 +0200
-Message-Id: <1348234148-22669-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH 2/2] staging:iio:ad7780: Add support for the ad7170/ad7171
+Date: Fri, 21 Sep 2012 15:29:08 +0200
+Message-Id: <1348234148-22669-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1348234148-22669-1-git-send-email-lars@metafoo.de>
+References: <1348234148-22669-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Some designs hardwire the PDRST pin to always on. In this case there is no GPIO
-to control the mode of the device, so make the GPIO optional. Since now all of
-the the platform data fields are optional now, make the platform data as a whole
-optional as well.
+The ad7170/ad7171 have a software interface similar to the ad7780. They do not
+have an external pin which allows to change the internal gain and the what is
+used for the gain bit in the ad7780/ad7781 becomes part of the check pattern.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad7780.c |   31 +++++++++++++++++--------------
- 1 file changed, 17 insertions(+), 14 deletions(-)
+ drivers/staging/iio/adc/Kconfig  |    4 ++--
+ drivers/staging/iio/adc/ad7780.c |   36 ++++++++++++++++++++++++++++++------
+ 2 files changed, 32 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 1b4a356..a525143 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -82,12 +82,12 @@ config AD7887
+ 	  module will be called ad7887.
+ 
+ config AD7780
+-	tristate "Analog Devices AD7780 AD7781 ADC driver"
++	tristate "Analog Devices AD7780 and similar ADCs driver"
+ 	depends on SPI
+ 	depends on GPIOLIB
+ 	select AD_SIGMA_DELTA
+ 	help
+-	  Say yes here to build support for Analog Devices
++	  Say yes here to build support for Analog Devices AD7170, AD7171,
+ 	  AD7780 and AD7781 SPI analog to digital converters (ADC).
+ 	  If unsure, say N (but it's safe to say "Y").
+ 
 diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index 5f807ce..1dd7cdb 100644
+index 1dd7cdb..0a1328b 100644
 --- a/drivers/staging/iio/adc/ad7780.c
 +++ b/drivers/staging/iio/adc/ad7780.c
-@@ -73,7 +73,8 @@ static int ad7780_set_mode(struct ad_sigma_delta *sigma_delta,
- 		break;
- 	}
+@@ -1,5 +1,5 @@
+ /*
+- * AD7780/AD7781 SPI ADC driver
++ * AD7170/AD7171 and AD7780/AD7781 SPI ADC driver
+  *
+  * Copyright 2011 Analog Devices Inc.
+  *
+@@ -34,7 +34,9 @@
+ #define AD7780_PAT0	(1 << 0)
  
--	gpio_set_value(st->powerdown_gpio, val);
-+	if (gpio_is_valid(st->powerdown_gpio))
-+		gpio_set_value(st->powerdown_gpio, val);
+ struct ad7780_chip_info {
+-	struct iio_chan_spec		channel;
++	struct iio_chan_spec	channel;
++	unsigned int		pattern_mask;
++	unsigned int		pattern;
+ };
  
- 	return 0;
+ struct ad7780_state {
+@@ -48,6 +50,8 @@ struct ad7780_state {
+ };
+ 
+ enum ad7780_supported_device_ids {
++	ID_AD7170,
++	ID_AD7171,
+ 	ID_AD7780,
+ 	ID_AD7781,
+ };
+@@ -109,9 +113,10 @@ static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
+ 	unsigned int raw_sample)
+ {
+ 	struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
++	const struct ad7780_chip_info *chip_info = st->chip_info;
+ 
+ 	if ((raw_sample & AD7780_ERR) ||
+-		!((raw_sample & AD7780_PAT0) && !(raw_sample & AD7780_PAT1)))
++		((raw_sample & chip_info->pattern_mask) != chip_info->pattern))
+ 		return -EIO;
+ 
+ 	if (raw_sample & AD7780_GAIN)
+@@ -128,12 +133,29 @@ static const struct ad_sigma_delta_info ad7780_sigma_delta_info = {
+ 	.has_registers = false,
+ };
+ 
++#define AD7780_CHANNEL(bits, wordsize) \
++	AD_SD_CHANNEL(1, 0, 0, bits, 32, wordsize - bits)
++
+ static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
++	[ID_AD7170] = {
++		.channel = AD7780_CHANNEL(12, 24),
++		.pattern = 0x5,
++		.pattern_mask = 0x7,
++	},
++	[ID_AD7171] = {
++		.channel = AD7780_CHANNEL(16, 24),
++		.pattern = 0x5,
++		.pattern_mask = 0x7,
++	},
+ 	[ID_AD7780] = {
+-		.channel = AD_SD_CHANNEL(1, 0, 0, 24, 32, 8),
++		.channel = AD7780_CHANNEL(24, 32),
++		.pattern = 0x1,
++		.pattern_mask = 0x3,
+ 	},
+ 	[ID_AD7781] = {
+-		.channel = AD_SD_CHANNEL(1, 0, 0, 20, 32, 12),
++		.channel = AD7780_CHANNEL(20, 32),
++		.pattern = 0x1,
++		.pattern_mask = 0x3,
+ 	},
+ };
+ 
+@@ -247,6 +269,8 @@ static int __devexit ad7780_remove(struct spi_device *spi)
  }
-@@ -148,11 +149,6 @@ static int __devinit ad7780_probe(struct spi_device *spi)
- 	struct iio_dev *indio_dev;
- 	int ret, voltage_uv = 0;
  
--	if (!pdata) {
--		dev_dbg(&spi->dev, "no platform data?\n");
--		return -ENODEV;
--	}
--
- 	indio_dev = iio_device_alloc(sizeof(*st));
- 	if (indio_dev == NULL)
- 		return -ENOMEM;
-@@ -174,8 +170,6 @@ static int __devinit ad7780_probe(struct spi_device *spi)
- 	st->chip_info =
- 		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+ static const struct spi_device_id ad7780_id[] = {
++	{"ad7170", ID_AD7170},
++	{"ad7171", ID_AD7171},
+ 	{"ad7780", ID_AD7780},
+ 	{"ad7781", ID_AD7781},
+ 	{}
+@@ -265,5 +289,5 @@ static struct spi_driver ad7780_driver = {
+ module_spi_driver(ad7780_driver);
  
--	st->powerdown_gpio = pdata->gpio_pdrst;
--
- 	if (pdata && pdata->vref_mv)
- 		st->int_vref_mv = pdata->vref_mv;
- 	else if (voltage_uv)
-@@ -192,11 +186,17 @@ static int __devinit ad7780_probe(struct spi_device *spi)
- 	indio_dev->num_channels = 1;
- 	indio_dev->info = &ad7780_info;
- 
--	ret = gpio_request_one(pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
-+	if (pdata && gpio_is_valid(pdata->gpio_pdrst)) {
-+
-+		ret = gpio_request_one(pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
- 			       "AD7780 /PDRST");
--	if (ret) {
--		dev_err(&spi->dev, "failed to request GPIO PDRST\n");
--		goto error_disable_reg;
-+		if (ret) {
-+			dev_err(&spi->dev, "failed to request GPIO PDRST\n");
-+			goto error_disable_reg;
-+		}
-+		st->powerdown_gpio = pdata->gpio_pdrst;
-+	} else {
-+		st->powerdown_gpio = -1;
- 	}
- 
- 	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
-@@ -212,7 +212,8 @@ static int __devinit ad7780_probe(struct spi_device *spi)
- error_cleanup_buffer_and_trigger:
- 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
- error_free_gpio:
--	gpio_free(pdata->gpio_pdrst);
-+	if (pdata && gpio_is_valid(pdata->gpio_pdrst))
-+		gpio_free(pdata->gpio_pdrst);
- error_disable_reg:
- 	if (!IS_ERR(st->reg))
- 		regulator_disable(st->reg);
-@@ -233,7 +234,9 @@ static int __devexit ad7780_remove(struct spi_device *spi)
- 	iio_device_unregister(indio_dev);
- 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
- 
--	gpio_free(st->powerdown_gpio);
-+	if (gpio_is_valid(st->powerdown_gpio))
-+		gpio_free(st->powerdown_gpio);
-+
- 	if (!IS_ERR(st->reg)) {
- 		regulator_disable(st->reg);
- 		regulator_put(st->reg);
+ MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
+-MODULE_DESCRIPTION("Analog Devices AD7780/1 ADC");
++MODULE_DESCRIPTION("Analog Devices AD7780 and similar ADCs");
+ MODULE_LICENSE("GPL v2");
 -- 
 1.7.10.4
