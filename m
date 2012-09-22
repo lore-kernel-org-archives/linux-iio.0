@@ -1,60 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-051.synserver.de ([212.40.185.51]:1035 "EHLO
-	smtp-out-051.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754516Ab2IVIz4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 04:55:56 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 3/8] staging:iio:ade7753: Do not return a error in remove function
-Date: Sat, 22 Sep 2012 10:56:33 +0200
-Message-Id: <1348304198-5793-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1348304198-5793-1-git-send-email-lars@metafoo.de>
-References: <1348304198-5793-1-git-send-email-lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52740 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754594Ab2IVJOO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 05:14:14 -0400
+Message-ID: <505D8168.8000003@kernel.org>
+Date: Sat, 22 Sep 2012 10:14:16 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: "Kim, Milo" <Milo.Kim@ti.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/2] iio: inkern: put the IIO device when it fails to
+ allocate memory
+References: <A874F61F95741C4A9BA573A70FE3998F41EF5397@DQHE02.ent.ti.com>
+In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F41EF5397@DQHE02.ent.ti.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-In the Linux device driver model the remove callback is not allowed to fail and
-the device will be removed regardless of the return value of the remove
-callback. So if we abort in the remove function and do not free all resources we
-will create a resource leak. Also all kinds of undefined behaviour are expected
-to happen since the IIO device is still there while its parent is already gone.
+On 09/18/2012 05:55 AM, Kim, Milo wrote:
+>  The reference count of the IIO device is increased if the IIO map has
+>  matched consumer name.
+>  After then, it tries to allocate the iio_channel which is used by the consumer.
+>  If it fails to allocate memory, the reference count should be decreased.
+> 
+>  This patch enables restoring the reference count of the IIO device.
+> 
+> Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
+Thanks add to togreg branch of iio.git
 
-The error which the driver tries to handle in the remove function is
-non-critical, so we can just ignore it and continue to free all resources and
-remove the IIO device.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/meter/ade7753.c |   11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
-index 380c05e..8b9eceb 100644
---- a/drivers/staging/iio/meter/ade7753.c
-+++ b/drivers/staging/iio/meter/ade7753.c
-@@ -557,18 +557,13 @@ error_ret:
- /* fixme, confirm ordering in this function */
- static int __devexit ade7753_remove(struct spi_device *spi)
- {
--	int ret;
- 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
- 
- 	iio_device_unregister(indio_dev);
--
--	ret = ade7753_stop_device(&(indio_dev->dev));
--	if (ret)
--		goto err_ret;
--
-+	ade7753_stop_device(&indio_dev->dev);
- 	iio_device_free(indio_dev);
--err_ret:
--	return ret;
-+
-+	return 0;
- }
- 
- static struct spi_driver ade7753_driver = {
--- 
-1.7.10.4
-
+> ---
+>  drivers/iio/inkern.c |    5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index 13748c0..aff034b 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -132,7 +132,7 @@ struct iio_channel *iio_channel_get(const char *name, const char *channel_name)
+>  
+>  	channel = kzalloc(sizeof(*channel), GFP_KERNEL);
+>  	if (channel == NULL)
+> -		return ERR_PTR(-ENOMEM);
+> +		goto error_no_mem;
+>  
+>  	channel->indio_dev = c->indio_dev;
+>  
+> @@ -151,6 +151,9 @@ error_no_chan:
+>  	iio_device_put(c->indio_dev);
+>  	kfree(channel);
+>  	return ERR_PTR(-EINVAL);
+> +error_no_mem:
+> +	iio_device_put(c->indio_dev);
+> +	return ERR_PTR(-ENOMEM);
+>  }
+>  EXPORT_SYMBOL_GPL(iio_channel_get);
+>  
+> 
