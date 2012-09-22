@@ -1,56 +1,110 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52684 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52858 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754587Ab2IVJI3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 05:08:29 -0400
-Message-ID: <505D800C.3070506@kernel.org>
-Date: Sat, 22 Sep 2012 10:08:28 +0100
+	with ESMTP id S1753426Ab2IVJZv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 05:25:51 -0400
+Message-ID: <505D8420.4020703@kernel.org>
+Date: Sat, 22 Sep 2012 10:25:52 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: hid-sensors: Prevent crash during hot-unplug
-References: <1348100144-1826-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1348100144-1826-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH 1/2] staging:iio:ad7780: Make powerdown GPIO optional
+References: <1348234148-22669-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1348234148-22669-1-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/20/2012 01:15 AM, Srinivas Pandruvada wrote:
-> When hid sensor hub is unplugged, there is a crash in
-> iio_device_unregister_trigger_consumer.
-> In a typical IIO driver when remove is called, it will unregister and free
-> trigger and then it will call iio_device_free.
-> The function iio_trigger_free() will free the allocated memory for trigger.
-> If this trigger was assigned to iio_dev->trig, then it should be set to NULL.
-> Othewise when iio_device_free() is called later, it finally calls
-> iio_device_unregsister_trigger(), which checks for
->        if (indio_dev->trig)
->                 iio_trigger_put(indio_dev->trig);
-> If indio_dev->trig is not set to NULL, it calls iio_trigger_put on a bad
-> pointer causing crash.
-> This scenerio can happen in any driver, which is storing trigger pointer in
-> iio_dev structure and following current procedure during remove.
-Added to togreg branch.
-
-Good catch, we'll have to audit other drivers for the same problem.
+On 09/21/2012 02:29 PM, Lars-Peter Clausen wrote:
+> Some designs hardwire the PDRST pin to always on. In this case there is no GPIO
+> to control the mode of the device, so make the GPIO optional. Since now all of
+> the the platform data fields are optional now, make the platform data as a whole
+> optional as well.
 > 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+added to togreg branch of iio.git
 > ---
->  drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/staging/iio/adc/ad7780.c |   31 +++++++++++++++++--------------
+>  1 file changed, 17 insertions(+), 14 deletions(-)
 > 
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> index 12277e8..d4b790d 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> @@ -56,6 +56,7 @@ void hid_sensor_remove_trigger(struct iio_dev *indio_dev)
->  {
->  	iio_trigger_unregister(indio_dev->trig);
->  	iio_trigger_free(indio_dev->trig);
-> +	indio_dev->trig = NULL;
->  }
->  EXPORT_SYMBOL(hid_sensor_remove_trigger);
+> diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+> index 5f807ce..1dd7cdb 100644
+> --- a/drivers/staging/iio/adc/ad7780.c
+> +++ b/drivers/staging/iio/adc/ad7780.c
+> @@ -73,7 +73,8 @@ static int ad7780_set_mode(struct ad_sigma_delta *sigma_delta,
+>  		break;
+>  	}
 >  
+> -	gpio_set_value(st->powerdown_gpio, val);
+> +	if (gpio_is_valid(st->powerdown_gpio))
+> +		gpio_set_value(st->powerdown_gpio, val);
+>  
+>  	return 0;
+>  }
+> @@ -148,11 +149,6 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+>  	struct iio_dev *indio_dev;
+>  	int ret, voltage_uv = 0;
+>  
+> -	if (!pdata) {
+> -		dev_dbg(&spi->dev, "no platform data?\n");
+> -		return -ENODEV;
+> -	}
+> -
+>  	indio_dev = iio_device_alloc(sizeof(*st));
+>  	if (indio_dev == NULL)
+>  		return -ENOMEM;
+> @@ -174,8 +170,6 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+>  	st->chip_info =
+>  		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+>  
+> -	st->powerdown_gpio = pdata->gpio_pdrst;
+> -
+>  	if (pdata && pdata->vref_mv)
+>  		st->int_vref_mv = pdata->vref_mv;
+>  	else if (voltage_uv)
+> @@ -192,11 +186,17 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+>  	indio_dev->num_channels = 1;
+>  	indio_dev->info = &ad7780_info;
+>  
+> -	ret = gpio_request_one(pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
+> +	if (pdata && gpio_is_valid(pdata->gpio_pdrst)) {
+> +
+> +		ret = gpio_request_one(pdata->gpio_pdrst, GPIOF_OUT_INIT_LOW,
+>  			       "AD7780 /PDRST");
+> -	if (ret) {
+> -		dev_err(&spi->dev, "failed to request GPIO PDRST\n");
+> -		goto error_disable_reg;
+> +		if (ret) {
+> +			dev_err(&spi->dev, "failed to request GPIO PDRST\n");
+> +			goto error_disable_reg;
+> +		}
+> +		st->powerdown_gpio = pdata->gpio_pdrst;
+> +	} else {
+> +		st->powerdown_gpio = -1;
+>  	}
+>  
+>  	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+> @@ -212,7 +212,8 @@ static int __devinit ad7780_probe(struct spi_device *spi)
+>  error_cleanup_buffer_and_trigger:
+>  	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+>  error_free_gpio:
+> -	gpio_free(pdata->gpio_pdrst);
+> +	if (pdata && gpio_is_valid(pdata->gpio_pdrst))
+> +		gpio_free(pdata->gpio_pdrst);
+>  error_disable_reg:
+>  	if (!IS_ERR(st->reg))
+>  		regulator_disable(st->reg);
+> @@ -233,7 +234,9 @@ static int __devexit ad7780_remove(struct spi_device *spi)
+>  	iio_device_unregister(indio_dev);
+>  	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+>  
+> -	gpio_free(st->powerdown_gpio);
+> +	if (gpio_is_valid(st->powerdown_gpio))
+> +		gpio_free(st->powerdown_gpio);
+> +
+>  	if (!IS_ERR(st->reg)) {
+>  		regulator_disable(st->reg);
+>  		regulator_put(st->reg);
 > 
