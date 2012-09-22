@@ -1,216 +1,186 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:39763 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757515Ab2IMK7z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Sep 2012 06:59:55 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v3 5/5] MFD: ti_tscadc: add suspend/resume functionality
-Date: Thu, 13 Sep 2012 16:10:19 +0530
-Message-ID: <1347532819-505-6-git-send-email-rachna@ti.com>
-In-Reply-To: <1347532819-505-1-git-send-email-rachna@ti.com>
-References: <1347532819-505-1-git-send-email-rachna@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53145 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753747Ab2IVJ5Y (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 05:57:24 -0400
+Message-ID: <505D8B81.8090301@kernel.org>
+Date: Sat, 22 Sep 2012 10:57:21 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: =?ISO-8859-1?Q?Peter_H=FCwe?= <PeterHuewe@gmx.de>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: OOPS/panic in iio_dummy (v3.6-rc6-176-gabef3bd)
+References: <201209220413.36295.PeterHuewe@gmx.de> <505D725A.4010708@metafoo.de>
+In-Reply-To: <505D725A.4010708@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for suspend/resume of
-TSC/ADC MFDevice.
+On 09/22/2012 09:10 AM, Lars-Peter Clausen wrote:
+> On 09/22/2012 04:13 AM, Peter Hüwe wrote:
+>> Hi,
+>>
+>> loading iio_dummy results in kernel panic as the call to 
+>> iio_buffer_register in iio_dummy_probe is performed with indio_dev->buffer == 
+>> NULL and thus the access to indio_dev->buffer->attrs results in this 
+>> oops/panic.
+>>
+>> Thanks,
+>> Peter
+>>
+> 
+> Hi,
+> 
+> I sent a patch or this a couple of days ago. See
+> http://comments.gmane.org/gmane.linux.kernel.iio/5550
+> 
+> - Lars
 
-Signed-off-by: Patil, Rachna <rachna@ti.com>
----
-Changes in v2:
-	Added this patch newly in this patch series.
+Sorry, I'd completely forgotten that was queued up in my fixes branch.
+As it's only in the dummy driver I've changed my mind and pulled it into
+the togreg branch which will merge for 3.7. It's late in the cycle and
+we are afterall talking about a fix for 'fake' hardware.
 
-Changes in v3:
-	No changes.
-
- drivers/iio/adc/ti_adc.c           |   32 ++++++++++++++++++++++++++++++++
- drivers/input/touchscreen/ti_tsc.c |   33 +++++++++++++++++++++++++++++++++
- drivers/mfd/ti_tscadc.c            |   33 ++++++++++++++++++++++++++++++++-
- include/linux/mfd/ti_tscadc.h      |    3 +++
- 4 files changed, 100 insertions(+), 1 deletions(-)
-
-diff --git a/drivers/iio/adc/ti_adc.c b/drivers/iio/adc/ti_adc.c
-index 56f8af2..69f19f0 100644
---- a/drivers/iio/adc/ti_adc.c
-+++ b/drivers/iio/adc/ti_adc.c
-@@ -207,6 +207,36 @@ static int __devexit tiadc_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static int adc_suspend(struct platform_device *pdev, pm_message_t state)
-+{
-+	struct ti_tscadc_dev   *tscadc_dev = pdev->dev.platform_data;
-+	struct adc_device	*adc_dev = tscadc_dev->adc;
-+	unsigned int idle;
-+
-+	if (!device_may_wakeup(tscadc_dev->dev)) {
-+		idle = adc_readl(adc_dev, REG_CTRL);
-+		idle &= ~(CNTRLREG_TSCSSENB);
-+		adc_writel(adc_dev, REG_CTRL, (idle |
-+				CNTRLREG_POWERDOWN));
-+	}
-+	return 0;
-+}
-+
-+static int adc_resume(struct platform_device *pdev)
-+{
-+	struct ti_tscadc_dev   *tscadc_dev = pdev->dev.platform_data;
-+	struct adc_device	*adc_dev = tscadc_dev->adc;
-+	unsigned int restore;
-+
-+	/* Make sure ADC is powered up */
-+	restore = adc_readl(adc_dev, REG_CTRL);
-+	restore &= ~(CNTRLREG_POWERDOWN);
-+	adc_writel(adc_dev, REG_CTRL, restore);
-+
-+	adc_step_config(adc_dev);
-+	return 0;
-+}
-+
- static struct platform_driver tiadc_driver = {
- 	.driver = {
- 		.name   = "tiadc",
-@@ -214,6 +244,8 @@ static struct platform_driver tiadc_driver = {
- 	},
- 	.probe	= tiadc_probe,
- 	.remove	= __devexit_p(tiadc_remove),
-+	.suspend = adc_suspend,
-+	.resume = adc_resume,
- };
- 
- module_platform_driver(tiadc_driver);
-diff --git a/drivers/input/touchscreen/ti_tsc.c b/drivers/input/touchscreen/ti_tsc.c
-index ca8ce73..f103e5f 100644
---- a/drivers/input/touchscreen/ti_tsc.c
-+++ b/drivers/input/touchscreen/ti_tsc.c
-@@ -338,6 +338,37 @@ static int __devexit tscadc_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static int tsc_suspend(struct platform_device *pdev, pm_message_t state)
-+{
-+	struct ti_tscadc_dev	*tscadc_dev = pdev->dev.platform_data;
-+	struct tscadc		*ts_dev = tscadc_dev->tsc;
-+	unsigned int idle;
-+
-+	if (device_may_wakeup(tscadc_dev->dev)) {
-+		idle = tscadc_readl(ts_dev, REG_IRQENABLE);
-+		tscadc_writel(ts_dev, REG_IRQENABLE,
-+				(idle | IRQENB_HW_PEN));
-+		tscadc_writel(ts_dev, REG_IRQWAKEUP, IRQWKUP_ENB);
-+	}
-+	return 0;
-+}
-+
-+static int tsc_resume(struct platform_device *pdev)
-+{
-+	struct ti_tscadc_dev	*tscadc_dev = pdev->dev.platform_data;
-+	struct tscadc		*ts_dev = tscadc_dev->tsc;
-+
-+	if (device_may_wakeup(tscadc_dev->dev)) {
-+		tscadc_writel(ts_dev, REG_IRQWAKEUP,
-+				0x00);
-+		tscadc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
-+	}
-+	tscadc_step_config(ts_dev);
-+	tscadc_writel(ts_dev, REG_FIFO0THR,
-+			ts_dev->steps_to_configure);
-+	return 0;
-+}
-+
- static struct platform_driver ti_tsc_driver = {
- 	.probe	= tscadc_probe,
- 	.remove	= __devexit_p(tscadc_remove),
-@@ -345,6 +376,8 @@ static struct platform_driver ti_tsc_driver = {
- 		.name   = "tsc",
- 		.owner	= THIS_MODULE,
- 	},
-+	.suspend = tsc_suspend,
-+	.resume = tsc_resume,
- };
- module_platform_driver(ti_tsc_driver);
- 
-diff --git a/drivers/mfd/ti_tscadc.c b/drivers/mfd/ti_tscadc.c
-index 9dbd6d0..2c84aed 100644
---- a/drivers/mfd/ti_tscadc.c
-+++ b/drivers/mfd/ti_tscadc.c
-@@ -170,6 +170,7 @@ static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
- 	if (err < 0)
- 		goto err_disable_clk;
- 
-+	device_init_wakeup(&pdev->dev, true);
- 	platform_set_drvdata(pdev, tscadc);
- 	return 0;
- 
-@@ -203,6 +204,35 @@ static int __devexit ti_tscadc_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static int tscadc_suspend(struct platform_device *pdev, pm_message_t state)
-+{
-+	struct ti_tscadc_dev	*tscadc_dev = platform_get_drvdata(pdev);
-+
-+	tscadc_writel(tscadc_dev, REG_SE, 0x00);
-+	pm_runtime_put_sync(&pdev->dev);
-+	return 0;
-+}
-+
-+static int tscadc_resume(struct platform_device *pdev)
-+{
-+	struct ti_tscadc_dev	*tscadc_dev = platform_get_drvdata(pdev);
-+	unsigned int restore, ctrl;
-+
-+	pm_runtime_get_sync(&pdev->dev);
-+
-+	/* context restore */
-+	ctrl = CNTRLREG_STEPCONFIGWRT | CNTRLREG_TSCENB |
-+			CNTRLREG_STEPID | CNTRLREG_4WIRE;
-+	tscadc_writel(tscadc_dev, REG_CTRL, ctrl);
-+	tscadc_idle_config(tscadc_dev);
-+	tscadc_writel(tscadc_dev, REG_SE, STPENB_STEPENB);
-+	restore = tscadc_readl(tscadc_dev, REG_CTRL);
-+	tscadc_writel(tscadc_dev, REG_CTRL,
-+			(restore | CNTRLREG_TSCSSENB));
-+
-+	return 0;
-+}
-+
- static struct platform_driver ti_tscadc_driver = {
- 	.driver = {
- 		.name   = "ti_tscadc",
-@@ -210,7 +240,8 @@ static struct platform_driver ti_tscadc_driver = {
- 	},
- 	.probe	= ti_tscadc_probe,
- 	.remove	= __devexit_p(ti_tscadc_remove),
--
-+	.suspend = tscadc_suspend,
-+	.resume = tscadc_resume,
- };
- 
- module_platform_driver(ti_tscadc_driver);
-diff --git a/include/linux/mfd/ti_tscadc.h b/include/linux/mfd/ti_tscadc.h
-index 67b7d5e..f4763a0 100644
---- a/include/linux/mfd/ti_tscadc.h
-+++ b/include/linux/mfd/ti_tscadc.h
-@@ -40,6 +40,9 @@
- #define REG_FIFO1		0x200
- 
- /*	Register Bitfields	*/
-+/* IRQ wakeup enable */
-+#define IRQWKUP_ENB		BIT(0)
-+
- /* Step Enable */
- #define STEPENB_MASK		(0x1FFFF << 0)
- #define STEPENB(val)		((val) << 0)
--- 
-1.7.0.4
-
+> 
+> 
+>> Steps to reproduce:
+>>
+>> #modprobe iio_dummy
+>> iio_dummy: module is from the staging directory, the quality is unknown, you 
+>> have been warned.
+>>
+>> Modules linked in: iio_dummy(C+) industrialio
+>> Pid: 615, comm: modprobe Tainted: G         C   3.6.0-rc6-00180-g68d0383-dirty
+>> RIP: 0033:[<00000000a089d846>]
+>> RSP: 000000009f4ffd30  EFLAGS: 00010206
+>> RAX: 0000000000000004 RBX: 00000000a08be6a0 RCX: 0000000000000000
+>> RDX: 000000006036a320 RSI: 0000000000000008 RDI: 0000000000000000
+>> RBP: 000000009f4ffda0 R08: 000000009f4ff900 R09: 0000000060406da8
+>> R10: 000000000000004a R11: 0000000000000246 R12: 00000000602a58bc
+>> R13: 0000000000000005 R14: 000000006005f170 R15: 000000009f6b0400
+>> Call Trace: 
+>> 603675d8:  [<6001d53d>] segv+0x1bd/0x340
+>> 603675f8:  [<6008b8ab>] handle_irq_event_percpu+0xab/0x1b0
+>> 60367620:  [<6008b9b0>] handle_irq_event+0x0/0x40
+>> 60367630:  [<6002e09c>] os_waiting_for_events+0x0/0xc5
+>> 60367658:  [<6008fccf>] rcu_irq_exit+0x5f/0xb0
+>> 603676a8:  [<6001d713>] segv_handler+0x53/0xb0
+>> 603676c8:  [<60019b5c>] sigio_handler+0xac/0xc0
+>> 603676f8:  [<6002ff5a>] sig_handler_common+0xa4/0xb9
+>> 60367708:  [<6005f170>] __mutex_init+0x0/0x20
+>> 60367718:  [<602a58bc>] printk+0x0/0xa8
+>> 60367780:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>> 60367818:  [<60016c34>] _einittext+0x2572/0x38f6
+>> 60367828:  [<60016728>] _einittext+0x2066/0x38f6
+>> 60367908:  [<60016c34>] _einittext+0x2572/0x38f6
+>> 603679a8:  [<60019b70>] to_irq_stack+0x0/0xe0
+>> 60367a28:  [<60019b70>] to_irq_stack+0x0/0xe0
+>> 60367a38:  [<600300b5>] sig_handler+0x4a/0x5d
+>> 60367a58:  [<6002fb81>] hard_handler+0x89/0xd8
+>> 60367a90:  [<602a58bc>] printk+0x0/0xa8
+>> 60367aa0:  [<6005f170>] __mutex_init+0x0/0x20
+>> 60367b08:  [<602a58bc>] printk+0x0/0xa8
+>> 60367b18:  [<6005f170>] __mutex_init+0x0/0x20
+>> 60367b68:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>>
+>> Kernel panic - not syncing: Kernel mode fault at addr 0x68, ip 0xa089d846
+>> Call Trace: 
+>> 603674b0:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>> 603674c8:  [<602a5751>] panic+0x146/0x2b1
+>> 60367500:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>> 60367508:  [<602a560b>] panic+0x0/0x2b1
+>> 60367520:  [<6007a4d4>] __module_text_address+0x14/0x70
+>> 60367538:  [<6007ec20>] is_module_text_address+0x10/0x20
+>> 60367548:  [<600582c7>] __kernel_text_address+0x87/0xc0
+>> 60367568:  [<6001bc1f>] show_trace+0x7f/0xf0
+>> 60367598:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>> 603675c0:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>> 603675d8:  [<6001d55b>] segv+0x1db/0x340
+>> 603675f8:  [<6008b8ab>] handle_irq_event_percpu+0xab/0x1b0
+>> 60367620:  [<6008b9b0>] handle_irq_event+0x0/0x40
+>> 60367630:  [<6002e09c>] os_waiting_for_events+0x0/0xc5
+>> 60367658:  [<6008fccf>] rcu_irq_exit+0x5f/0xb0
+>> 603676a8:  [<6001d713>] segv_handler+0x53/0xb0
+>> 603676c8:  [<60019b5c>] sigio_handler+0xac/0xc0
+>> 603676f8:  [<6002ff5a>] sig_handler_common+0xa4/0xb9
+>> 60367708:  [<6005f170>] __mutex_init+0x0/0x20
+>> 60367718:  [<602a58bc>] printk+0x0/0xa8
+>> 60367780:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>> 60367818:  [<60016c34>] _einittext+0x2572/0x38f6
+>> 60367828:  [<60016728>] _einittext+0x2066/0x38f6
+>> 60367908:  [<60016c34>] _einittext+0x2572/0x38f6
+>> 603679a8:  [<60019b70>] to_irq_stack+0x0/0xe0
+>> 60367a28:  [<60019b70>] to_irq_stack+0x0/0xe0
+>> 60367a38:  [<600300b5>] sig_handler+0x4a/0x5d
+>> 60367a58:  [<6002fb81>] hard_handler+0x89/0xd8
+>> 60367a90:  [<602a58bc>] printk+0x0/0xa8
+>> 60367aa0:  [<6005f170>] __mutex_init+0x0/0x20
+>> 60367b08:  [<602a58bc>] printk+0x0/0xa8
+>> 60367b18:  [<6005f170>] __mutex_init+0x0/0x20
+>> 60367b68:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>>
+>>
+>> Modules linked in: iio_dummy(C+) industrialio
+>> Pid: 615, comm: modprobe Tainted: G         C   3.6.0-rc6-00180-g68d0383-dirty
+>> RIP: 0033:[<00000000402eff9a>]
+>> RSP: 0000007fbfbf6798  EFLAGS: 00000246
+>> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: ffffffffffffffff
+>> RDX: 000000000060e110 RSI: 00000000000148c9 RDI: 0000000040024000
+>> RBP: 0000000000611b70 R08: 000000000060e100 R09: 0000000000000000
+>> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000060e110
+>> R13: 0000000000000000 R14: 000000000060e010 R15: 0000000000611b88
+>> Call Trace: 
+>> 60367448:  [<6001db1e>] panic_exit+0x3e/0x60
+>> 60367478:  [<600616ad>] notifier_call_chain+0x4d/0x70
+>> 603674a0:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>> 603674b8:  [<60061708>] atomic_notifier_call_chain+0x18/0x20
+>> 603674c8:  [<602a5784>] panic+0x179/0x2b1
+>> 60367500:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>> 60367508:  [<602a560b>] panic+0x0/0x2b1
+>> 60367520:  [<6007a4d4>] __module_text_address+0x14/0x70
+>> 60367538:  [<6007ec20>] is_module_text_address+0x10/0x20
+>> 60367548:  [<600582c7>] __kernel_text_address+0x87/0xc0
+>> 60367568:  [<6001bc1f>] show_trace+0x7f/0xf0
+>> 60367598:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>> 603675c0:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>> 603675d8:  [<6001d55b>] segv+0x1db/0x340
+>> 603675f8:  [<6008b8ab>] handle_irq_event_percpu+0xab/0x1b0
+>> 60367620:  [<6008b9b0>] handle_irq_event+0x0/0x40
+>> 60367630:  [<6002e09c>] os_waiting_for_events+0x0/0xc5
+>> 60367658:  [<6008fccf>] rcu_irq_exit+0x5f/0xb0
+>> 603676a8:  [<6001d713>] segv_handler+0x53/0xb0
+>> 603676c8:  [<60019b5c>] sigio_handler+0xac/0xc0
+>> 603676f8:  [<6002ff5a>] sig_handler_common+0xa4/0xb9
+>> 60367708:  [<6005f170>] __mutex_init+0x0/0x20
+>> 60367718:  [<602a58bc>] printk+0x0/0xa8
+>> 60367780:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>> 60367818:  [<60016c34>] _einittext+0x2572/0x38f6
+>> 60367828:  [<60016728>] _einittext+0x2066/0x38f6
+>> 60367908:  [<60016c34>] _einittext+0x2572/0x38f6
+>> 603679a8:  [<60019b70>] to_irq_stack+0x0/0xe0
+>> 60367a28:  [<60019b70>] to_irq_stack+0x0/0xe0
+>> 60367a38:  [<600300b5>] sig_handler+0x4a/0x5d
+>> 60367a58:  [<6002fb81>] hard_handler+0x89/0xd8
+>> 60367a90:  [<602a58bc>] printk+0x0/0xa8
+>> 60367aa0:  [<6005f170>] __mutex_init+0x0/0x20
+>> 60367b08:  [<602a58bc>] printk+0x0/0xa8
+>> 60367b18:  [<6005f170>] __mutex_init+0x0/0x20
+>> 60367b68:  [<a089d846>] iio_buffer_register+0x46/0x610 [industrialio]
+>>
+>>
+>> Tested on recent linus' tree (v3.6-rc6-176-gabef3bd)
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> Please read the FAQ at  http://www.tux.org/lkml/
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
