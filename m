@@ -1,167 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52899 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753285Ab2IVJaF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 05:30:05 -0400
-Message-ID: <505D851E.6060605@kernel.org>
-Date: Sat, 22 Sep 2012 10:30:06 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "Kim, Milo" <Milo.Kim@ti.com>, Jonathan Cameron <jic23@cam.ac.uk>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6] iio: adc: add new lp8788 adc driver
-References: <A874F61F95741C4A9BA573A70FE3998F41EF510C@DQHE02.ent.ti.com> <50582E77.3070808@metafoo.de> <5058D711.90803@kernel.org>
-In-Reply-To: <5058D711.90803@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtp-out-051.synserver.de ([212.40.185.51]:1067 "EHLO
+	smtp-out-051.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754503Ab2IVIz4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 04:55:56 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/8] staging:iio:adis16200: Do not return a error in remove function
+Date: Sat, 22 Sep 2012 10:56:31 +0200
+Message-Id: <1348304198-5793-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/18/2012 09:18 PM, Jonathan Cameron wrote:
-> On 09/18/2012 09:19 AM, Lars-Peter Clausen wrote:
->> On 09/17/2012 11:35 AM, Kim, Milo wrote:
->>>  TI LP8788 PMU provides regulators, battery charger, ADC,
->>>  RTC, backlight driver and current sinks.
->>>
->>>  This patch enables the LP8788 ADC functions.
->>>
->>>  The LP8788 ADC has several ADC input selection and supports 12bit resolution.
->>>  Internal operation of getting ADC is access to registers of LP8788.
->>>  The LP8788 ADC uses exported functions for accessing these registers.
->>>  (exported by LP8788 MFD device driver)
->>>
->>>  This driver supports IIO_CHAN_INFO_RAW and SCALE.
->>>  So the IIO consumer can calculate the value with raw and scale.
->>>  The unit of scale is micro.
->>>
->>>  (ADC Input Selection)
->>>
->>>  Voltage: battery voltage (MAX 5.0, 5.5 and 6.0V)
->>>           charger input voltage
->>>           four general ADC inputs
->>>           coin cell voltage
->>>  Current: battery charging current
->>>  Temperature: IC temperature
->>>
->>>  (The IIO map for the IIO consumer)
->>>
->>>  The ADC input is configurable in the platform side.
->>>  Even though this platform data is not defined,
->>>  the default IIO map is created for supporting the power supply driver.
->>>  The battery voltage and temperature are used inside this driver.
->>>
->>>  (History)
->>>
->>>  Patch v6.
->>>  (a) Fix scale value for each ADC input selection
->>>  Voltage and current type are mili unit and temperature is degree.
->>>  To calculate the IC temperature,
->>>  temp = raw * scaleint + (raw * scalepart)/ 1000000, scaleint is always 0.
->>>       = raw * 0.061050, raw: 0 ~ 4095
->>>  Then range of IC temperature(ADC result) is 0 ~ 250'C
->>>
->>>  (b) Reorganization of the IIO channel Spec
->>>  Remove address, scan_type and scan_index and rollback the datasheet name.
->>>  The reason why 'address' field is unnecessary is no relation with each channel.
->>>  Moreover, to get the raw ADC value, the address info is not only one register
->>>  but also several registers.
->>>  Therefore specific function(lp8788_get_adc_result) is called rather than
->>>  using one 'address' field.
->>>
->>>  (c) Fix coding style
->>>  Remove duplicated checking routine while unregistering the IIO map.
->>>  Fix code for space and parenthesis.
->>>
->>>  Patch v5.
->>>  Fix default consumer name as 'lp8788-charger'.
->>>  Add mutex for ADC read operation.
->>>  Reorganization on lp8788_adc_read_raw().
->>>
->>>  Patch v4.
->>>  Fix adc_raw function: support RAW and SCALE channel info.
->>>  Change LP8788 ADC platform data - iio map.
->>>  Enables the default IIO map.
->>>
->>>  Patch v3.
->>>  Fix wrong size of allocating iio private data.
->>>  Fix coding styles.
->>>
->>>  Patch v2.
->>>  Support RAW and SCALE interface for IIO consumer.
->>>  Clean up the iio channel spec macro.
->>>
->>> Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
->>
->> Looks good to me,
->>
->> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-> I've added this to my local tree but not pushed out just
-> yet on basis you might want to change the behaviour Lars
-> has pointed out...
-> 
-> I don't here it'll go as is in a day or so.
+In the Linux device driver model the remove callback is not allowed to fail and
+the device will be removed regardless of the return value of the remove
+callback. So if we abort in the remove function and do not free all resources we
+will create a resource leak. Also all kinds of undefined behaviour are expected
+to happen since the IIO device is still there while its parent is already gone.
 
-Added to togreg branch of iio.git
-> 
-> Jonathan
->>
->> One comment though, not sure if it is critical or not.
->>
->>> +static int lp8788_get_adc_result(struct lp8788_adc *adc, enum lp8788_adc_id id,
->>> +				int *val)
->>> +{
->>> +	unsigned int msb;
->>> +	unsigned int lsb;
->>> +	unsigned int result;
->>> +	u8 data;
->>> +	u8 rawdata[2];
->>> +	int size = ARRAY_SIZE(rawdata);
->>> +	int retry = 5;
->>> +	int ret;
->>> +
->>> +	data = (id << 1) | ADC_CONV_START;
->>> +	ret = lp8788_write_byte(adc->lp, LP8788_ADC_CONF, data);
->>> +	if (ret)
->>> +		goto err_io;
->>> +
->>> +	/* retry until adc conversion is done */
->>> +	data = 0;
->>> +	while (retry--) {
->>> +		usleep_range(100, 200);
->>> +
->>> +		ret = lp8788_read_byte(adc->lp, LP8788_ADC_DONE, &data);
->>> +		if (ret)
->>> +			goto err_io;
->>> +
->>> +		/* conversion done */
->>> +		if (data)
->>> +			break;
->>
->> Could as well go into the while header like this:
->>     while (!data && retry--)
->>
->>> +	}
->>> +
->>
->> You still sample the data, even if there was a timeout and ADC_DONE is not set.
->>
->>> +	ret = lp8788_read_multi_bytes(adc->lp, LP8788_ADC_RAW, rawdata, size);
->>> +	if (ret)
->>> +		goto err_io;
->>> +
->>> +	msb = (rawdata[0] << 4) & 0x00000ff0;
->>> +	lsb = (rawdata[1] >> 4) & 0x0000000f;
->>> +	result = msb | lsb;
->>> +	*val = result;
->>> +
->>> +	return 0;
->>> +
->>> +err_io:
->>> +	return ret;
->>> +}
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+The error which the driver tries to handle in the remove function is
+non-critical, so we can just ignore it and continue to free all resources and
+remove the IIO device.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/gyro/adis16260_core.c |   10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
+index 1d58d0e..9571c03 100644
+--- a/drivers/staging/iio/gyro/adis16260_core.c
++++ b/drivers/staging/iio/gyro/adis16260_core.c
+@@ -702,22 +702,16 @@ error_ret:
+ 
+ static int __devexit adis16260_remove(struct spi_device *spi)
+ {
+-	int ret;
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 
+ 	iio_device_unregister(indio_dev);
+-
+-	ret = adis16260_stop_device(indio_dev);
+-	if (ret)
+-		goto err_ret;
+-
++	adis16260_stop_device(indio_dev);
+ 	adis16260_remove_trigger(indio_dev);
+ 	iio_buffer_unregister(indio_dev);
+ 	adis16260_unconfigure_ring(indio_dev);
+ 	iio_device_free(indio_dev);
+ 
+-err_ret:
+-	return ret;
++	return 0;
+ }
+ 
+ /*
+-- 
+1.7.10.4
+
