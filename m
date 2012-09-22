@@ -1,517 +1,167 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:53042 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755848Ab2IUOuB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Sep 2012 10:50:01 -0400
-From: anish kumar <anish198519851985@gmail.com>
-To: cbou@mail.ru, dwmw2@infradead.org, lars@metafoo.de, jic23@cam.ac.uk
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	anish kumar <anish198519851985@gmail.com>
-Subject: [PATCH] [V3]power: battery: Generic battery driver using IIO
-Date: Fri, 21 Sep 2012 20:19:41 +0530
-Message-Id: <1348238981-31543-1-git-send-email-anish198519851985@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52899 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753285Ab2IVJaF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 05:30:05 -0400
+Message-ID: <505D851E.6060605@kernel.org>
+Date: Sat, 22 Sep 2012 10:30:06 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: "Kim, Milo" <Milo.Kim@ti.com>, Jonathan Cameron <jic23@cam.ac.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6] iio: adc: add new lp8788 adc driver
+References: <A874F61F95741C4A9BA573A70FE3998F41EF510C@DQHE02.ent.ti.com> <50582E77.3070808@metafoo.de> <5058D711.90803@kernel.org>
+In-Reply-To: <5058D711.90803@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: anish kumar <anish198519851985@gmail.com>
+On 09/18/2012 09:18 PM, Jonathan Cameron wrote:
+> On 09/18/2012 09:19 AM, Lars-Peter Clausen wrote:
+>> On 09/17/2012 11:35 AM, Kim, Milo wrote:
+>>>  TI LP8788 PMU provides regulators, battery charger, ADC,
+>>>  RTC, backlight driver and current sinks.
+>>>
+>>>  This patch enables the LP8788 ADC functions.
+>>>
+>>>  The LP8788 ADC has several ADC input selection and supports 12bit resolution.
+>>>  Internal operation of getting ADC is access to registers of LP8788.
+>>>  The LP8788 ADC uses exported functions for accessing these registers.
+>>>  (exported by LP8788 MFD device driver)
+>>>
+>>>  This driver supports IIO_CHAN_INFO_RAW and SCALE.
+>>>  So the IIO consumer can calculate the value with raw and scale.
+>>>  The unit of scale is micro.
+>>>
+>>>  (ADC Input Selection)
+>>>
+>>>  Voltage: battery voltage (MAX 5.0, 5.5 and 6.0V)
+>>>           charger input voltage
+>>>           four general ADC inputs
+>>>           coin cell voltage
+>>>  Current: battery charging current
+>>>  Temperature: IC temperature
+>>>
+>>>  (The IIO map for the IIO consumer)
+>>>
+>>>  The ADC input is configurable in the platform side.
+>>>  Even though this platform data is not defined,
+>>>  the default IIO map is created for supporting the power supply driver.
+>>>  The battery voltage and temperature are used inside this driver.
+>>>
+>>>  (History)
+>>>
+>>>  Patch v6.
+>>>  (a) Fix scale value for each ADC input selection
+>>>  Voltage and current type are mili unit and temperature is degree.
+>>>  To calculate the IC temperature,
+>>>  temp = raw * scaleint + (raw * scalepart)/ 1000000, scaleint is always 0.
+>>>       = raw * 0.061050, raw: 0 ~ 4095
+>>>  Then range of IC temperature(ADC result) is 0 ~ 250'C
+>>>
+>>>  (b) Reorganization of the IIO channel Spec
+>>>  Remove address, scan_type and scan_index and rollback the datasheet name.
+>>>  The reason why 'address' field is unnecessary is no relation with each channel.
+>>>  Moreover, to get the raw ADC value, the address info is not only one register
+>>>  but also several registers.
+>>>  Therefore specific function(lp8788_get_adc_result) is called rather than
+>>>  using one 'address' field.
+>>>
+>>>  (c) Fix coding style
+>>>  Remove duplicated checking routine while unregistering the IIO map.
+>>>  Fix code for space and parenthesis.
+>>>
+>>>  Patch v5.
+>>>  Fix default consumer name as 'lp8788-charger'.
+>>>  Add mutex for ADC read operation.
+>>>  Reorganization on lp8788_adc_read_raw().
+>>>
+>>>  Patch v4.
+>>>  Fix adc_raw function: support RAW and SCALE channel info.
+>>>  Change LP8788 ADC platform data - iio map.
+>>>  Enables the default IIO map.
+>>>
+>>>  Patch v3.
+>>>  Fix wrong size of allocating iio private data.
+>>>  Fix coding styles.
+>>>
+>>>  Patch v2.
+>>>  Support RAW and SCALE interface for IIO consumer.
+>>>  Clean up the iio channel spec macro.
+>>>
+>>> Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
+>>
+>> Looks good to me,
+>>
+>> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+> I've added this to my local tree but not pushed out just
+> yet on basis you might want to change the behaviour Lars
+> has pointed out...
+> 
+> I don't here it'll go as is in a day or so.
 
-In last version:
-Addressed concerns raised by lars:
-a. made the adc_bat per device.
-b. get the IIO channel using hardcoded channel names.
-c. Minor issues related to gpio_is_valid and some code
-   refactoring.
-
-In V1:
-Addressed concerns raised by Anton:
-a. changed the struct name to gab(generic adc battery).
-b. Added some functions to neaten the code.
-c. Some minor coding guidelines changes.
-d. Used the latest function introduce by lars:
-   iio_read_channel_processed to streamline the code.
-
-In V2:
-Addressed concerns by lars:
-a. No need of allocating memory for channels.Make it array.
-b. Code restructring, coding style and following kernel guidelines changes
-   suggested by him.
-
-In V3:
-Addressed conerns by Anton:
-a. Added the copyright.
-b. Coding guidelines changes suggested by him.
-
-Signed-off-by: anish kumar <anish198519851985@gmail.com>
----
- drivers/power/generic-adc-battery.c       |  422 +++++++++++++++++++++++++++++
- include/linux/power/generic-adc-battery.h |   29 ++
- 2 files changed, 451 insertions(+), 0 deletions(-)
- create mode 100644 drivers/power/generic-adc-battery.c
- create mode 100644 include/linux/power/generic-adc-battery.h
-
-diff --git a/drivers/power/generic-adc-battery.c b/drivers/power/generic-adc-battery.c
-new file mode 100644
-index 0000000..a34d52a
---- /dev/null
-+++ b/drivers/power/generic-adc-battery.c
-@@ -0,0 +1,422 @@
-+/*
-+ * Generic battery driver code using IIO
-+ * Copyright (C) 2012, Anish Kumar <anish198519851985@gmail.com>
-+ * based on jz4740-battery.c
-+ * based on s3c_adc_battery.c
-+ *
-+ * This file is subject to the terms and conditions of the GNU General Public
-+ * License.  See the file COPYING in the main directory of this archive for
-+ * more details.
-+ *
-+ */
-+#include <linux/interrupt.h>
-+#include <linux/platform_device.h>
-+#include <linux/power_supply.h>
-+#include <linux/gpio.h>
-+#include <linux/err.h>
-+#include <linux/timer.h>
-+#include <linux/jiffies.h>
-+#include <linux/errno.h>
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/iio/consumer.h>
-+#include <linux/iio/types.h>
-+#include <linux/power/generic-adc-battery.h>
-+
-+#define JITTER_DEFAULT 10 /* hope 10ms is enough */
-+
-+enum gab_chan_type {
-+	GAB_VOLTAGE = 0,
-+	GAB_CURRENT,
-+	GAB_POWER,
-+	GAB_MAX_CHAN_TYPE
-+};
-+
-+/*
-+ * gab_chan_name suggests the standard channel names for commonly used
-+ * channel types.
-+ */
-+static const char *const gab_chan_name[] = {
-+	[GAB_VOLTAGE]	= "voltage",
-+	[GAB_CURRENT]	= "current",
-+	[GAB_POWER]		= "power",
-+};
-+
-+struct gab {
-+	struct power_supply	psy;
-+	struct iio_channel	*channel[GAB_MAX_CHAN_TYPE];
-+	struct gab_platform_data	*pdata;
-+	struct delayed_work bat_work;
-+	int	level;
-+	int	status;
-+	bool cable_plugged;
-+};
-+
-+struct gab *to_generic_bat(struct power_supply *psy)
-+{
-+	return container_of(psy, struct gab, psy);
-+}
-+
-+static void gab_ext_power_changed(struct power_supply *psy)
-+{
-+	struct gab *adc_bat = to_generic_bat(psy);
-+
-+	schedule_delayed_work(&adc_bat->bat_work, msecs_to_jiffies(0));
-+}
-+
-+static const enum power_supply_property gab_props[] = {
-+	POWER_SUPPLY_PROP_STATUS,
-+	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
-+	POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN,
-+	POWER_SUPPLY_PROP_CHARGE_NOW,
-+	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-+	POWER_SUPPLY_PROP_CURRENT_NOW,
-+	POWER_SUPPLY_PROP_TECHNOLOGY,
-+	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
-+	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
-+	POWER_SUPPLY_PROP_MODEL_NAME,
-+};
-+
-+/*
-+ * This properties are set based on the received platform data and this
-+ * should correspond one-to-one with enum chan_type.
-+ */
-+static const enum power_supply_property gab_dyn_props[] = {
-+	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-+	POWER_SUPPLY_PROP_CURRENT_NOW,
-+	POWER_SUPPLY_PROP_POWER_NOW,
-+};
-+
-+static bool gab_charge_finished(struct gab *adc_bat)
-+{
-+	struct gab_platform_data *pdata = adc_bat->pdata;
-+	bool ret = gpio_get_value(pdata->gpio_charge_finished);
-+	bool inv = pdata->gpio_inverted;
-+
-+	if (!gpio_is_valid(pdata->gpio_charge_finished))
-+		return false;
-+	return ret ^ inv;
-+}
-+
-+static int gab_get_status(struct gab *adc_bat)
-+{
-+	struct gab_platform_data *pdata = adc_bat->pdata;
-+	struct power_supply_info *bat_info;
-+
-+	bat_info = &pdata->battery_info;
-+	if (adc_bat->level == bat_info->charge_full_design)
-+		return POWER_SUPPLY_STATUS_FULL;
-+	return adc_bat->status;
-+}
-+
-+enum gab_chan_type gab_prop_to_chan(enum power_supply_property psp)
-+{
-+	switch (psp) {
-+	case POWER_SUPPLY_PROP_POWER_NOW:
-+		return GAB_POWER;
-+	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-+		return GAB_VOLTAGE;
-+	case POWER_SUPPLY_PROP_CURRENT_NOW:
-+		return GAB_CURRENT;
-+	default:
-+		WARN_ON(1);
-+		break;
-+	}
-+	return GAB_POWER;
-+}
-+
-+static int read_channel(struct gab *adc_bat, enum power_supply_property psp,
-+		int *result)
-+{
-+	int ret;
-+	int chan_index;
-+
-+	chan_index = gab_prop_to_chan(psp);
-+	ret = iio_read_channel_processed(adc_bat->channel[chan_index],
-+			result);
-+	if (ret < 0)
-+		pr_err("read channel error\n");
-+	return ret;
-+}
-+
-+static int gab_get_property(struct power_supply *psy,
-+		enum power_supply_property psp, union power_supply_propval *val)
-+{
-+	struct gab *adc_bat;
-+	struct gab_platform_data *pdata;
-+	struct power_supply_info *bat_info;
-+	int result = 0;
-+	int ret = 0;
-+
-+	adc_bat = to_generic_bat(psy);
-+	if (!adc_bat) {
-+		dev_err(psy->dev, "no battery infos ?!\n");
-+		return -EINVAL;
-+	}
-+	pdata = adc_bat->pdata;
-+	bat_info = &pdata->battery_info;
-+
-+	switch (psp) {
-+	case POWER_SUPPLY_PROP_STATUS:
-+		gab_get_status(adc_bat);
-+		break;
-+	case POWER_SUPPLY_PROP_CHARGE_EMPTY_DESIGN:
-+		val->intval = 0;
-+		break;
-+	case POWER_SUPPLY_PROP_CHARGE_NOW:
-+		val->intval = pdata->cal_charge(result);
-+		break;
-+	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-+	case POWER_SUPPLY_PROP_CURRENT_NOW:
-+	case POWER_SUPPLY_PROP_POWER_NOW:
-+		ret = read_channel(adc_bat, psp, &result);
-+		if (ret < 0)
-+			goto err;
-+		val->intval = result;
-+		break;
-+	case POWER_SUPPLY_PROP_TECHNOLOGY:
-+		val->intval = bat_info->technology;
-+		break;
-+	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
-+		val->intval = bat_info->voltage_min_design;
-+		break;
-+	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
-+		val->intval = bat_info->voltage_max_design;
-+		break;
-+	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
-+		val->intval = bat_info->charge_full_design;
-+		break;
-+	case POWER_SUPPLY_PROP_MODEL_NAME:
-+		val->strval = bat_info->name;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+err:
-+	return ret;
-+}
-+
-+static void gab_work(struct work_struct *work)
-+{
-+	struct gab *adc_bat;
-+	struct gab_platform_data *pdata;
-+	struct delayed_work *delayed_work;
-+	bool is_plugged;
-+	int status;
-+
-+	delayed_work = container_of(work, struct delayed_work, work);
-+	adc_bat = container_of(delayed_work, struct gab, bat_work);
-+	pdata = adc_bat->pdata;
-+	status = adc_bat->status;
-+
-+	is_plugged = power_supply_am_i_supplied(&adc_bat->psy);
-+	adc_bat->cable_plugged = is_plugged;
-+
-+	if (!is_plugged)
-+		adc_bat->status =  POWER_SUPPLY_STATUS_DISCHARGING;
-+	else if (gab_charge_finished(adc_bat))
-+		adc_bat->status = POWER_SUPPLY_STATUS_NOT_CHARGING;
-+	else
-+		adc_bat->status = POWER_SUPPLY_STATUS_CHARGING;
-+
-+	if (status != adc_bat->status)
-+		power_supply_changed(&adc_bat->psy);
-+}
-+
-+static irqreturn_t gab_charged(int irq, void *dev_id)
-+{
-+	struct gab *adc_bat = dev_id;
-+	struct gab_platform_data *pdata = adc_bat->pdata;
-+	int delay;
-+
-+	delay = pdata->jitter_delay ? pdata->jitter_delay : JITTER_DEFAULT;
-+	schedule_delayed_work(&adc_bat->bat_work,
-+			msecs_to_jiffies(delay));
-+	return IRQ_HANDLED;
-+}
-+
-+static int __devinit gab_probe(struct platform_device *pdev)
-+{
-+	struct gab *adc_bat;
-+	struct power_supply *psy;
-+	struct gab_platform_data *pdata = pdev->dev.platform_data;
-+	enum power_supply_property *properties;
-+	int ret = 0;
-+	int chan;
-+	int index = 0;
-+
-+	adc_bat = devm_kzalloc(&pdev->dev, sizeof(*adc_bat), GFP_KERNEL);
-+	if (!adc_bat) {
-+		dev_err(&pdev->dev, "failed to allocate memory\n");
-+		return -ENOMEM;
-+	}
-+
-+	psy = &adc_bat->psy;
-+	psy->name = pdata->battery_info.name;
-+
-+	/* bootup default values for the battery */
-+	adc_bat->cable_plugged = false;
-+	adc_bat->status = POWER_SUPPLY_STATUS_DISCHARGING;
-+	psy->type = POWER_SUPPLY_TYPE_BATTERY;
-+	psy->get_property = gab_get_property;
-+	psy->external_power_changed = gab_ext_power_changed;
-+	adc_bat->pdata = pdata;
-+
-+	/* calculate the total number of channels */
-+	chan = ARRAY_SIZE(gab_chan_name);
-+
-+	/*
-+	 * copying the static properties and allocating extra memory for holding
-+	 * the extra configurable properties received from platform data.
-+	 */
-+	psy->properties = kcalloc(ARRAY_SIZE(gab_props) +
-+					ARRAY_SIZE(gab_chan_name),
-+					sizeof(*psy->properties), GFP_KERNEL);
-+	if (!psy->properties) {
-+		ret = -ENOMEM;
-+		goto first_mem_fail;
-+	}
-+
-+	memcpy(psy->properties, gab_props, sizeof(gab_props));
-+	properties = psy->properties + sizeof(gab_props);
-+
-+	/*
-+	 * getting channel from iio and copying the battery properties
-+	 * based on the channel supported by consumer device.
-+	 */
-+	for (chan = 0; chan < ARRAY_SIZE(gab_chan_name); chan++) {
-+		adc_bat->channel[chan] = iio_channel_get(dev_name(&pdev->dev),
-+						gab_chan_name[chan]);
-+		if (IS_ERR(adc_bat->channel[chan])) {
-+			ret = PTR_ERR(adc_bat->channel[chan]);
-+		} else {
-+			/* copying properties for supported channels only */
-+			memcpy(properties + sizeof(*(psy->properties)) * index,
-+					&gab_dyn_props[chan],
-+					sizeof(gab_dyn_props[chan]));
-+			index++;
-+		}
-+	}
-+
-+	/* none of the channels are supported so let's bail out */
-+	if (index == ARRAY_SIZE(gab_chan_name))
-+		goto second_mem_fail;
-+
-+	/*
-+	 * Total number of properties is equal to static properties
-+	 * plus the dynamic properties.Some properties may not be set
-+	 * as come channels may be not be supported by the device.So
-+	 * we need to take care of that.
-+	 */
-+	psy->num_properties = ARRAY_SIZE(gab_props) + index;
-+
-+	ret = power_supply_register(&pdev->dev, psy);
-+	if (ret)
-+		goto err_reg_fail;
-+
-+	INIT_DELAYED_WORK(&adc_bat->bat_work, gab_work);
-+
-+	if (gpio_is_valid(pdata->gpio_charge_finished)) {
-+		int irq;
-+		ret = gpio_request(pdata->gpio_charge_finished, "charged");
-+		if (ret)
-+			goto gpio_req_fail;
-+
-+		irq = gpio_to_irq(pdata->gpio_charge_finished);
-+		ret = request_any_context_irq(irq, gab_charged,
-+				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-+				"battery charged", adc_bat);
-+		if (ret)
-+			goto err_gpio;
-+	}
-+
-+	platform_set_drvdata(pdev, adc_bat);
-+
-+	/* Schedule timer to check current status */
-+	schedule_delayed_work(&adc_bat->bat_work,
-+			msecs_to_jiffies(0));
-+	return 0;
-+
-+err_gpio:
-+	gpio_free(pdata->gpio_charge_finished);
-+gpio_req_fail:
-+	power_supply_unregister(psy);
-+err_reg_fail:
-+	for (chan = 0; ARRAY_SIZE(gab_chan_name); chan++)
-+		iio_channel_release(adc_bat->channel[chan]);
-+second_mem_fail:
-+	kfree(psy->properties);
-+first_mem_fail:
-+	return ret;
-+}
-+
-+static int __devexit gab_remove(struct platform_device *pdev)
-+{
-+	int chan;
-+	struct gab *adc_bat = platform_get_drvdata(pdev);
-+	struct gab_platform_data *pdata = adc_bat->pdata;
-+
-+	power_supply_unregister(&adc_bat->psy);
-+
-+	if (gpio_is_valid(pdata->gpio_charge_finished)) {
-+		free_irq(gpio_to_irq(pdata->gpio_charge_finished), adc_bat);
-+		gpio_free(pdata->gpio_charge_finished);
-+	}
-+
-+	for (chan = 0; ARRAY_SIZE(gab_chan_name); chan++)
-+		iio_channel_release(adc_bat->channel[chan]);
-+
-+	kfree(adc_bat->psy.properties);
-+	cancel_delayed_work(&adc_bat->bat_work);
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM
-+static int gab_suspend(struct device *dev)
-+{
-+	struct gab *adc_bat = dev_get_drvdata(dev);
-+
-+	cancel_delayed_work_sync(&adc_bat->bat_work);
-+	adc_bat->status = POWER_SUPPLY_STATUS_UNKNOWN;
-+	return 0;
-+}
-+
-+static int gab_resume(struct device *dev)
-+{
-+	struct gab *adc_bat = dev_get_drvdata(dev);
-+	struct gab_platform_data *pdata = adc_bat->pdata;
-+	int delay;
-+
-+	delay = pdata->jitter_delay ? pdata->jitter_delay : JITTER_DEFAULT;
-+
-+	/* Schedule timer to check current status */
-+	schedule_delayed_work(&adc_bat->bat_work,
-+			msecs_to_jiffies(delay));
-+	return 0;
-+}
-+
-+static const struct dev_pm_ops gab_pm_ops = {
-+	.suspend        = gab_suspend,
-+	.resume         = gab_resume,
-+};
-+
-+#define GAB_PM_OPS       (&gab_pm_ops)
-+#else
-+#define GAB_PM_OPS       (NULL)
-+#endif
-+
-+static struct platform_driver gab_driver = {
-+	.driver		= {
-+		.name	= "generic-adc-battery",
-+		.owner	= THIS_MODULE,
-+		.pm	= GAB_PM_OPS
-+	},
-+	.probe		= gab_probe,
-+	.remove		= __devexit_p(gab_remove),
-+};
-+module_platform_driver(gab_driver);
-+
-+MODULE_AUTHOR("anish kumar <anish198519851985@gmail.com>");
-+MODULE_DESCRIPTION("generic battery driver using IIO");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/power/generic-adc-battery.h b/include/linux/power/generic-adc-battery.h
-new file mode 100644
-index 0000000..b1ebe08
---- /dev/null
-+++ b/include/linux/power/generic-adc-battery.h
-@@ -0,0 +1,29 @@
-+/*
-+ * Copyright (C) 2012, Anish Kumar <anish198519851985@gmail.com>
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#ifndef GENERIC_ADC_BATTERY_H
-+#define GENERIC_ADC_BATTERY_H
-+
-+/**
-+ * struct gab_platform_data - platform_data for generic adc iio battery driver.
-+ * @battery_info:         recommended structure to specify static power supply
-+ *			   parameters
-+ * @cal_charge:           calculate charge level.
-+ * @gpio_charge_finished: gpio for the charger.
-+ * @gpio_inverted:        Should be 1 if the GPIO is active low otherwise 0
-+ * @jitter_delay:         delay required after the interrupt to check battery
-+ *			  status.Default set is 10ms.
-+ */
-+struct gab_platform_data {
-+	struct power_supply_info battery_info;
-+	int	(*cal_charge)(long value);
-+	int	gpio_charge_finished;
-+	bool	gpio_inverted;
-+	int     jitter_delay;
-+};
-+
-+#endif /* GENERIC_ADC_BATTERY_H */
--- 
-1.7.1
-
+Added to togreg branch of iio.git
+> 
+> Jonathan
+>>
+>> One comment though, not sure if it is critical or not.
+>>
+>>> +static int lp8788_get_adc_result(struct lp8788_adc *adc, enum lp8788_adc_id id,
+>>> +				int *val)
+>>> +{
+>>> +	unsigned int msb;
+>>> +	unsigned int lsb;
+>>> +	unsigned int result;
+>>> +	u8 data;
+>>> +	u8 rawdata[2];
+>>> +	int size = ARRAY_SIZE(rawdata);
+>>> +	int retry = 5;
+>>> +	int ret;
+>>> +
+>>> +	data = (id << 1) | ADC_CONV_START;
+>>> +	ret = lp8788_write_byte(adc->lp, LP8788_ADC_CONF, data);
+>>> +	if (ret)
+>>> +		goto err_io;
+>>> +
+>>> +	/* retry until adc conversion is done */
+>>> +	data = 0;
+>>> +	while (retry--) {
+>>> +		usleep_range(100, 200);
+>>> +
+>>> +		ret = lp8788_read_byte(adc->lp, LP8788_ADC_DONE, &data);
+>>> +		if (ret)
+>>> +			goto err_io;
+>>> +
+>>> +		/* conversion done */
+>>> +		if (data)
+>>> +			break;
+>>
+>> Could as well go into the while header like this:
+>>     while (!data && retry--)
+>>
+>>> +	}
+>>> +
+>>
+>> You still sample the data, even if there was a timeout and ADC_DONE is not set.
+>>
+>>> +	ret = lp8788_read_multi_bytes(adc->lp, LP8788_ADC_RAW, rawdata, size);
+>>> +	if (ret)
+>>> +		goto err_io;
+>>> +
+>>> +	msb = (rawdata[0] << 4) & 0x00000ff0;
+>>> +	lsb = (rawdata[1] >> 4) & 0x0000000f;
+>>> +	result = msb | lsb;
+>>> +	*val = result;
+>>> +
+>>> +	return 0;
+>>> +
+>>> +err_io:
+>>> +	return ret;
+>>> +}
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
