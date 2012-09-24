@@ -1,88 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:57335 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757627Ab2INA7V convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Sep 2012 20:59:21 -0400
-From: "Kim, Milo" <Milo.Kim@ti.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 2/2] iio: inkern: add error case in iio_channel_get()
-Date: Fri, 14 Sep 2012 00:59:01 +0000
-Message-ID: <A874F61F95741C4A9BA573A70FE3998F41EF4C19@DQHE02.ent.ti.com>
-References: <A874F61F95741C4A9BA573A70FE3998F41EF45EB@DQHE02.ent.ti.com>
- <504DAFF7.1070902@jic23.retrosnub.co.uk>
-In-Reply-To: <504DAFF7.1070902@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset="us-ascii"
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:48433 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752932Ab2IXIKh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Sep 2012 04:10:37 -0400
+Received: from [81.138.163.57] (port=63297 helo=[10.0.2.15])
+	by ppsw-50.csi.cam.ac.uk (smtp.hermes.cam.ac.uk [131.111.8.157]:587)
+	with esmtpsa (PLAIN:jic23) (TLSv1:DHE-RSA-CAMELLIA256-SHA:256)
+	id 1TG3kR-0007Zx-qv (Exim 4.72) for linux-iio@vger.kernel.org
+	(return-path <jic23@hermes.cam.ac.uk>); Mon, 24 Sep 2012 09:10:35 +0100
+Message-ID: <5060157A.805@kernel.org>
+Date: Mon, 24 Sep 2012 09:10:34 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: IIO merge probably closed for 3.7 cycle.
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> On 10/09/12 09:02, Kim, Milo wrote:
-> >   The datasheet name is defined in the IIO driver.
-> >   On the other hand, the adc_channel_label is configured in
-> >   the platform machine side.
-> >   If the datasheet name is not matched with any adc_channel_label,
-> >   the iio_channel_get() should be returned as error for preventing
-> >   using invalid IIO channel data.
-> >
-> >   Moreover, this patch detects NULL pointer dereference problem at
-> early time.
-> >   In general, the IIO driver just accesses to any member of the
-> iio_chan_spec
-> >   in own xxx_read_raw() function.
-> >   If the iio_chan_spec is invalid pointer, NULL dereference problem
-> may occur
-> >   such like 'iio_chan_spec->channel' or 'iio_chan_spec->type'.
-> >   If the iio_channel_get() gets failed in the IIO consumer,
-> >   then no read_raw() operation proceeds.
+Linus has definitively stated that he won't do another release candidate 
+for 3.6, but his rc7 email implied it was unlikely.
 
-> I guess this is marginally cleaner, but either way it is up to the
-> calling driver to check whether the call succeeded.
+Anyhow, that means that I'll be queuing any new stuff up
+for the 3.8 cycle from now on. (Given we route through GregKH
+we have to obey his one week limit + I agree entirely with his
+policy on this so would apply such a limit anyway)
 
-IMO, it would be better if iio_channel_get() gets failed
-when the consumer tries to get the channel rather than when using it.
+Personally I'll be having another go at the multiple buffered
+support patches over the next week or so and really really hope
+I can finally get those merged. For the interested the current
+version (which is more or less ready for posting is in the wip
+branch of iio.git on kernel.org.
 
-The channel spec is retrieved when the channel is requested, - iio_channel_get()
-So it's reasonable if error returns in case of invalid channel spcec.
+I'd also hope that the 3.8 cycle carries on the process of
+moving individual drivers out of staging and given
+I haven't actually moved any of my own yet I will be
+spending some time doing that.
 
-And I just found similar handling in iio_channel_get_all().
-But my patch needs releasing the memory as Lars-Peter noted.
+There have been some nice new drivers and also a lot of good cleanup 
+work on the exiting code.  Nice to see has been the number of new
+contributors to the subsystem and in particular that more and more
+people have been willing to get their hands dirty in the core code :)
+I won't name any names as I'll just forget someone and the git
+log will do the job nicely for me!
 
-Thanks !
+Anyhow, looking forward to a productive 3.8 cycle, in particular
+merging the various drivers currently mid way through the review
+process.
 
-Best Regards,
-Milo 
-
-> >
-> > Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
-> > ---
-> >   drivers/iio/inkern.c |    6 +++++-
-> >   1 file changed, 5 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> > index 1faa240..a5caf6b 100644
-> > --- a/drivers/iio/inkern.c
-> > +++ b/drivers/iio/inkern.c
-> > @@ -136,11 +136,15 @@ struct iio_channel *iio_channel_get(const char
-> *name, const char *channel_name)
-> >
-> >   	channel->indio_dev = c->indio_dev;
-> >
-> > -	if (c->map->adc_channel_label)
-> > +	if (c->map->adc_channel_label) {
-> >   		channel->channel =
-> >   			iio_chan_spec_from_name(channel->indio_dev,
-> >   						c->map->adc_channel_label);
-> >
-> > +		if (channel->channel == NULL)
-> > +			return ERR_PTR(-ENODEV);
-> > +	}
-> > +
-> >   	return channel;
-> >   }
-> >   EXPORT_SYMBOL_GPL(iio_channel_get);
-> >
-
+Jonathan
