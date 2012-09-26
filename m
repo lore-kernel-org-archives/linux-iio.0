@@ -1,118 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:59417 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751850Ab2IZFjG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 26 Sep 2012 01:39:06 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v4 1/5] input: TSC: ti_tscadc: Rename the existing touchscreen driver
-Date: Wed, 26 Sep 2012 10:50:10 +0530
-Message-ID: <1348636814-14129-2-git-send-email-rachna@ti.com>
-In-Reply-To: <1348636814-14129-1-git-send-email-rachna@ti.com>
-References: <1348636814-14129-1-git-send-email-rachna@ti.com>
+Received: from mail-vb0-f46.google.com ([209.85.212.46]:55831 "EHLO
+	mail-vb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750964Ab2IZBjb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 25 Sep 2012 21:39:31 -0400
+Received: by vbbff1 with SMTP id ff1so78118vbb.19
+        for <linux-iio@vger.kernel.org>; Tue, 25 Sep 2012 18:39:30 -0700 (PDT)
+From: Ge Gao <ggao@invensense.com>
+References: <C0999E24-1BF1-4B7D-835B-8E3AC76C61F8@gmail.com>
+In-Reply-To: <C0999E24-1BF1-4B7D-835B-8E3AC76C61F8@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Date: Tue, 25 Sep 2012 18:32:51 -0700
+Message-ID: <5348d4d4e8f4766e2ed416b6b8318ee5@mail.gmail.com>
+Subject: RE: iio_buffer length
+To: Denis Ciocca <denis.ciocca@gmail.com>, jic23@jic23.retrosnub.co.uk
+Cc: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Make way for addition of MFD driver.
-The existing touchsreen driver is a MFD client.
-For better readability we rename the file to
-indicate its functionality as only touchscreen.
+To use KFIFO, you need Jonanthan's KFIFO poll patch,  you probably also
+need a patch from me that fixed the industrial-buffer.c. But that buffer
+is not well tested and is only used by me. The original KFIFO does not
+have poll functionality and has some other minor bug.
 
-Signed-off-by: Patil, Rachna <rachna@ti.com>
----
-Changes in v2:
-	Missed changing the name of touchscreen header file
-	in the previous version.
-	Adding the same.
+Ge
 
-Changes in v3:
-	no changes.
 
-Changes in v4:
-	no changes.
+-----Original Message-----
+From: linux-iio-owner@vger.kernel.org
+[mailto:linux-iio-owner@vger.kernel.org] On Behalf Of Denis Ciocca
+Sent: Tuesday, September 25, 2012 2:35 PM
+To: jic23@jic23.retrosnub.co.uk
+Cc: linux-iio@vger.kernel.org
+Subject: iio_buffer length
 
- drivers/input/touchscreen/Kconfig                  |    4 ++--
- drivers/input/touchscreen/Makefile                 |    2 +-
- .../touchscreen/{ti_tscadc.c => ti_am335x_tsc.c}   |    2 +-
- .../linux/input/{ti_tscadc.h => ti_am335x_tsc.h}   |    4 ++--
- 4 files changed, 6 insertions(+), 6 deletions(-)
- rename drivers/input/touchscreen/{ti_tscadc.c => ti_am335x_tsc.c} (99%)
- rename include/linux/input/{ti_tscadc.h => ti_am335x_tsc.h} (88%)
+Hi Jon,
 
-diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
-index 1ba232c..7bdb629 100644
---- a/drivers/input/touchscreen/Kconfig
-+++ b/drivers/input/touchscreen/Kconfig
-@@ -529,7 +529,7 @@ config TOUCHSCREEN_TOUCHWIN
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called touchwin.
- 
--config TOUCHSCREEN_TI_TSCADC
-+config TOUCHSCREEN_TI_AM335X_TSC
- 	tristate "TI Touchscreen Interface"
- 	depends on ARCH_OMAP2PLUS
- 	help
-@@ -539,7 +539,7 @@ config TOUCHSCREEN_TI_TSCADC
- 	  If unsure, say N.
- 
- 	  To compile this driver as a module, choose M here: the
--	  module will be called ti_tscadc.
-+	  module will be called ti_am335x_tsc.
- 
- config TOUCHSCREEN_ATMEL_TSADCC
- 	tristate "Atmel Touchscreen Interface"
-diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
-index 178eb12..7c4c78e 100644
---- a/drivers/input/touchscreen/Makefile
-+++ b/drivers/input/touchscreen/Makefile
-@@ -52,7 +52,7 @@ obj-$(CONFIG_TOUCHSCREEN_PIXCIR)	+= pixcir_i2c_ts.o
- obj-$(CONFIG_TOUCHSCREEN_S3C2410)	+= s3c2410_ts.o
- obj-$(CONFIG_TOUCHSCREEN_ST1232)	+= st1232.o
- obj-$(CONFIG_TOUCHSCREEN_STMPE)		+= stmpe-ts.o
--obj-$(CONFIG_TOUCHSCREEN_TI_TSCADC)	+= ti_tscadc.o
-+obj-$(CONFIG_TOUCHSCREEN_TI_AM335X_TSC)	+= ti_am335x_tsc.o
- obj-$(CONFIG_TOUCHSCREEN_TNETV107X)	+= tnetv107x-ts.o
- obj-$(CONFIG_TOUCHSCREEN_TOUCHIT213)	+= touchit213.o
- obj-$(CONFIG_TOUCHSCREEN_TOUCHRIGHT)	+= touchright.o
-diff --git a/drivers/input/touchscreen/ti_tscadc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-similarity index 99%
-rename from drivers/input/touchscreen/ti_tscadc.c
-rename to drivers/input/touchscreen/ti_am335x_tsc.c
-index ec0a442..e71dee6 100644
---- a/drivers/input/touchscreen/ti_tscadc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -24,7 +24,7 @@
- #include <linux/clk.h>
- #include <linux/platform_device.h>
- #include <linux/io.h>
--#include <linux/input/ti_tscadc.h>
-+#include <linux/input/ti_am335x_tsc.h>
- #include <linux/delay.h>
- 
- #define REG_RAWIRQSTATUS	0x024
-diff --git a/include/linux/input/ti_tscadc.h b/include/linux/input/ti_am335x_tsc.h
-similarity index 88%
-rename from include/linux/input/ti_tscadc.h
-rename to include/linux/input/ti_am335x_tsc.h
-index ad442a3..49269a2 100644
---- a/include/linux/input/ti_tscadc.h
-+++ b/include/linux/input/ti_am335x_tsc.h
-@@ -1,5 +1,5 @@
--#ifndef __LINUX_TI_TSCADC_H
--#define __LINUX_TI_TSCADC_H
-+#ifndef __LINUX_TI_AM335X_TSC_H
-+#define __LINUX_TI_AM335X_TSC_H
- 
- /**
-  * struct tsc_data	Touchscreen wire configuration
--- 
-1.7.0.4
+> Firstly please confirm you are using a kfifo buffer?
 
+No, I use sw-ring.
+
+
+> Swring is deprecated but will do precisely what you are seeing I think.
+It uses a half full watershead to decide to signal userspace.  If you wait
+till the buffer is full, unless your sampling is very slow you will have
+data coming in before userspace has read the whole buffer out. Hence you
+will loose data.
+
+You are right. I saw exatly what you said.
+
+
+> Kfifo has a more conventional poll and will fire off userspace
+> whenever
+any data is in the buffer. Hence kfifo will work for your usecase.  I
+would like to have a fill level capable buffer again in the future as they
+are very useful in high speed uses where latency doesn't matter.
+
+Ok, I will change my sw-ring buffer to kfifo!
+
+Thanks,
+Denis
+--
+To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+the body of a message to majordomo@vger.kernel.org More majordomo info at
+http://vger.kernel.org/majordomo-info.html
