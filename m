@@ -1,72 +1,132 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52835 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752189Ab2IVJVt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 05:21:49 -0400
-Message-ID: <505D832E.5000607@kernel.org>
-Date: Sat, 22 Sep 2012 10:21:50 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:58696 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751457Ab2IZOXG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Sep 2012 10:23:06 -0400
+Message-ID: <50630FC5.3010904@jic23.retrosnub.co.uk>
+Date: Wed, 26 Sep 2012 15:23:01 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/8] staging:iio:adis16200: Do not return a error in remove
- function
-References: <1348304198-5793-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1348304198-5793-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+To: Denis Ciocca <denis.ciocca@gmail.com>
+CC: Ge Gao <ggao@invensense.com>, linux-iio@vger.kernel.org
+Subject: Re: iio_buffer length
+References: <C0999E24-1BF1-4B7D-835B-8E3AC76C61F8@gmail.com> <5348d4d4e8f4766e2ed416b6b8318ee5@mail.gmail.com> <5062AE55.4060205@jic23.retrosnub.co.uk> <CAEE_umqapZP0g6-LOb1xxFgxtkRFuU14_+gKmq+vt=JsB38qLw@mail.gmail.com>
+In-Reply-To: <CAEE_umqapZP0g6-LOb1xxFgxtkRFuU14_+gKmq+vt=JsB38qLw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/22/2012 09:56 AM, Lars-Peter Clausen wrote:
-> In the Linux device driver model the remove callback is not allowed to fail and
-> the device will be removed regardless of the return value of the remove
-> callback. So if we abort in the remove function and do not free all resources we
-> will create a resource leak. Also all kinds of undefined behaviour are expected
-> to happen since the IIO device is still there while its parent is already gone.
-> 
-> The error which the driver tries to handle in the remove function is
-> non-critical, so we can just ignore it and continue to free all resources and
-> remove the IIO device.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Added all 8 to togreg branch of iio.git.
+On 26/09/12 13:37, Denis Ciocca wrote:
+> Hi Jon and Ge,
+>
+> I switched my driver code by using kfifo (using code on linux-next),
+> now what I see is:
+>
+> using generic-buffer application, I catch every sample independently
+> by the value of buffer length, is that what you tell me by "Kfifo has
+> a more conventional poll and will fire off userspace whenever any data
+> is in the buffer."?
+> To catch data only when the buffer is full, I must catch a particular
+> signal event in /dev/iio:deviceX?
+>
+You never want the buffer to be full.  If it is you WILL loose data
+due to unlucky timing sooner or later.
 
-Eariler in the cycle I'd have pushed these as fixes, but as they've been
-there a long time, lets just leave it to the next cycle.
+Only real option if you want to grab data in chunks from that buffer
+is to deadreckon the timing using a userspace timer.
 
-Good catch on these btw.
 
-> ---
->  drivers/staging/iio/gyro/adis16260_core.c |   10 ++--------
->  1 file changed, 2 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-> index 1d58d0e..9571c03 100644
-> --- a/drivers/staging/iio/gyro/adis16260_core.c
-> +++ b/drivers/staging/iio/gyro/adis16260_core.c
-> @@ -702,22 +702,16 @@ error_ret:
->  
->  static int __devexit adis16260_remove(struct spi_device *spi)
->  {
-> -	int ret;
->  	struct iio_dev *indio_dev = spi_get_drvdata(spi);
->  
->  	iio_device_unregister(indio_dev);
-> -
-> -	ret = adis16260_stop_device(indio_dev);
-> -	if (ret)
-> -		goto err_ret;
-> -
-> +	adis16260_stop_device(indio_dev);
->  	adis16260_remove_trigger(indio_dev);
->  	iio_buffer_unregister(indio_dev);
->  	adis16260_unconfigure_ring(indio_dev);
->  	iio_device_free(indio_dev);
->  
-> -err_ret:
-> -	return ret;
-> +	return 0;
->  }
->  
->  /*
-> 
+> Thanks
+>
+> Denis
+>
+>
+>
+>
+> 2012/9/26 Jonathan Cameron <jic23@jic23.retrosnub.co.uk>:
+>> On 26/09/12 02:32, Ge Gao wrote:
+>>>
+>>> To use KFIFO, you need Jonanthan's KFIFO poll patch,
+>>
+>> That's in staging-next now and will merge into mainline in the
+>> next merge window (about 1 to 2 weeks time).
+>>
+>>> you probably also
+>>> need a patch from me that fixed the industrial-buffer.c. But that buffer
+>>> is not well tested and is only used by me.
+>>
+>> There are a lot of drivers using kfifo. It's hidden in many of them as they
+>> use it via the industrialio-triggered-buffer helper functions that
+>> deal with the most common use cases.
+>>
+>> With that I count 9 in drivers/iio and 6 in drivers/staging/iio vs 10
+>> in total for sw_ring most of which will go away once someone has a spare
+>> couple of hours.
+>>
+>> Basically any driver that has come along since we moved to kfifo is the
+>> preferred choice and any that anyone has touched since then.
+>>
+>>
+>>> The original KFIFO does not
+>>> have poll functionality and has some other minor bug.
+>>
+>> If I've missed any patches from you on this (or just forgotten them ;)
+>> please do keep pestering me.
+>>
+>>>
+>>> Ge
+>>>
+>>>
+>>> -----Original Message-----
+>>> From: linux-iio-owner@vger.kernel.org
+>>> [mailto:linux-iio-owner@vger.kernel.org] On Behalf Of Denis Ciocca
+>>> Sent: Tuesday, September 25, 2012 2:35 PM
+>>> To: jic23@jic23.retrosnub.co.uk
+>>> Cc: linux-iio@vger.kernel.org
+>>> Subject: iio_buffer length
+>>>
+>>> Hi Jon,
+>>>
+>>>> Firstly please confirm you are using a kfifo buffer?
+>>>
+>>>
+>>> No, I use sw-ring.
+>>>
+>>>
+>>>> Swring is deprecated but will do precisely what you are seeing I think.
+>>>
+>>> It uses a half full watershead to decide to signal userspace.  If you wait
+>>> till the buffer is full, unless your sampling is very slow you will have
+>>> data coming in before userspace has read the whole buffer out. Hence you
+>>> will loose data.
+>>>
+>>> You are right. I saw exatly what you said.
+>>>
+>>>
+>>>> Kfifo has a more conventional poll and will fire off userspace
+>>>> whenever
+>>>
+>>> any data is in the buffer. Hence kfifo will work for your usecase.  I
+>>> would like to have a fill level capable buffer again in the future as they
+>>> are very useful in high speed uses where latency doesn't matter.
+>>>
+>>> Ok, I will change my sw-ring buffer to kfifo!
+>>>
+>>> Thanks,
+>>> Denis
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org More majordomo info at
+>>> http://vger.kernel.org/majordomo-info.html
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+
