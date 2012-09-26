@@ -1,44 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-da0-f46.google.com ([209.85.210.46]:34816 "EHLO
-	mail-da0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755278Ab2I0SXF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Sep 2012 14:23:05 -0400
-Received: by dady13 with SMTP id y13so449264dad.19
-        for <linux-iio@vger.kernel.org>; Thu, 27 Sep 2012 11:23:05 -0700 (PDT)
-Date: Thu, 27 Sep 2012 11:23:01 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Senna Tschudin <peter.senna@gmail.com>,
-	Marek Vasut <marex@denx.de>, trivial@kernel.org,
-	jic23@cam.ac.uk, michael.hennerich@analog.com,
-	w.sang@pengutronix.de, sfr@canb.auug.org.au, pmeerw@pmeerw.net,
-	shubhrajyoti@ti.com, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] drivers/staging/iio: Remove unnecessary semicolon
-Message-ID: <20120927182301.GA24086@kroah.com>
-References: <1348748175-11803-1-git-send-email-peter.senna@gmail.com>
- <1348752425-12818-1-git-send-email-peter.senna@gmail.com>
- <201209271544.06716.marex@denx.de>
- <CA+MoWDokfgH45TzB+bBqVasd67isq5sStXyRrLh-863V_DjUaA@mail.gmail.com>
- <506498F3.5050901@metafoo.de>
+Received: from smtp-out-055.synserver.de ([212.40.185.55]:1214 "EHLO
+	smtp-out-057.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752884Ab2IZIDd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Sep 2012 04:03:33 -0400
+Message-ID: <5062B6FD.2020302@metafoo.de>
+Date: Wed, 26 Sep 2012 10:04:13 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <506498F3.5050901@metafoo.de>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+CC: Ge Gao <ggao@invensense.com>,
+	Denis Ciocca <denis.ciocca@gmail.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: iio_buffer length
+References: <C0999E24-1BF1-4B7D-835B-8E3AC76C61F8@gmail.com> <5348d4d4e8f4766e2ed416b6b8318ee5@mail.gmail.com> <5062AE55.4060205@jic23.retrosnub.co.uk>
+In-Reply-To: <5062AE55.4060205@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Sep 27, 2012 at 08:20:35PM +0200, Lars-Peter Clausen wrote:
-> On 09/27/2012 04:40 PM, Peter Senna Tschudin wrote:
-> >>
-> >> The semantic patch is missing again ;-)
-> > 
-> > I know. The problem is that some people do not like to see semantic
-> > patches on the message, so I do not include it always... 
+On 09/26/2012 09:27 AM, Jonathan Cameron wrote:
+> On 26/09/12 02:32, Ge Gao wrote:
+>> To use KFIFO, you need Jonanthan's KFIFO poll patch,
+> That's in staging-next now and will merge into mainline in the
+> next merge window (about 1 to 2 weeks time).
+>> you probably also
+>> need a patch from me that fixed the industrial-buffer.c. But that buffer
+>> is not well tested and is only used by me.
+> There are a lot of drivers using kfifo. It's hidden in many of them as they
+> use it via the industrialio-triggered-buffer helper functions that
+> deal with the most common use cases.
 > 
-> But this is really the most important part of the commit message for
-> auto-generated patches. How can I reproduce the changes made by the commit.
-> Just "Found by http://coccinelle.lip6.fr/" is kind of pointless in my opinion.
+> With that I count 9 in drivers/iio and 6 in drivers/staging/iio vs 10
+> in total for sw_ring most of which will go away once someone has a spare
+> couple of hours.
 
-I agree, please put the semantic stuff in the patch, like others do.
+I've already converted all the adis* drivers locally, so it's basically down
+to 4 remaining users.
 
-greg k-h
+- Lars
