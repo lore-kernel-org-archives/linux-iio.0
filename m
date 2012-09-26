@@ -1,94 +1,115 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52753 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754918Ab2IVJOa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Sep 2012 05:14:30 -0400
-Message-ID: <505D8177.6050101@kernel.org>
-Date: Sat, 22 Sep 2012 10:14:31 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <denis.ciocca@gmail.com>
 MIME-Version: 1.0
-To: "Kim, Milo" <Milo.Kim@ti.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: inkern: clean up error return code
-References: <A874F61F95741C4A9BA573A70FE3998F41EF539F@DQHE02.ent.ti.com>
-In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F41EF539F@DQHE02.ent.ti.com>
+In-Reply-To: <5062AE55.4060205@jic23.retrosnub.co.uk>
+References: <C0999E24-1BF1-4B7D-835B-8E3AC76C61F8@gmail.com>
+	<5348d4d4e8f4766e2ed416b6b8318ee5@mail.gmail.com>
+	<5062AE55.4060205@jic23.retrosnub.co.uk>
+Date: Wed, 26 Sep 2012 14:37:49 +0200
+Message-ID: <CAEE_umqapZP0g6-LOb1xxFgxtkRFuU14_+gKmq+vt=JsB38qLw@mail.gmail.com>
+Subject: Re: iio_buffer length
+From: Denis Ciocca <denis.ciocca@gmail.com>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: Ge Gao <ggao@invensense.com>, linux-iio@vger.kernel.org
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/18/2012 05:56 AM, Kim, Milo wrote:
->  When the IIO consumer tries to get specific IIO channel,
->  few error cases can be happened.
->  (a) Memory allocation failure
->  (b) No matched ADC channel error
->  (c) Invalid input arguments
->  This patch enables cleaning up error handling in case of (a) and (b).
-> 
->  In error handling code,
->  (a): the reference count of the IIO device should be decreased.
->  (b): the allocated memory should be freed with restoring the reference count.
->  Therefore iio_deivce_put() is called in both cases.
->  This can be handled in the last error statement.
-> 
->  Additionally, integer variable is used for stating each error case explicitly.
->  Then, the error returns as ERR_PTR() with this value.
-> 
-> Signed-off-by: Milo(Woogyom) Kim <milo.kim@ti.com>
-Thanks,
-added to togreg branch of iio.git
-> ---
->  drivers/iio/inkern.c |   13 ++++++++-----
->  1 file changed, 8 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index aff034b..656d4d4 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -111,6 +111,7 @@ struct iio_channel *iio_channel_get(const char *name, const char *channel_name)
->  {
->  	struct iio_map_internal *c_i = NULL, *c = NULL;
->  	struct iio_channel *channel;
-> +	int err;
->  
->  	if (name == NULL && channel_name == NULL)
->  		return ERR_PTR(-ENODEV);
-> @@ -131,8 +132,10 @@ struct iio_channel *iio_channel_get(const char *name, const char *channel_name)
->  		return ERR_PTR(-ENODEV);
->  
->  	channel = kzalloc(sizeof(*channel), GFP_KERNEL);
-> -	if (channel == NULL)
-> +	if (channel == NULL) {
-> +		err = -ENOMEM;
->  		goto error_no_mem;
-> +	}
->  
->  	channel->indio_dev = c->indio_dev;
->  
-> @@ -141,19 +144,19 @@ struct iio_channel *iio_channel_get(const char *name, const char *channel_name)
->  			iio_chan_spec_from_name(channel->indio_dev,
->  						c->map->adc_channel_label);
->  
-> -		if (channel->channel == NULL)
-> +		if (channel->channel == NULL) {
-> +			err = -EINVAL;
->  			goto error_no_chan;
-> +		}
->  	}
->  
->  	return channel;
->  
->  error_no_chan:
-> -	iio_device_put(c->indio_dev);
->  	kfree(channel);
-> -	return ERR_PTR(-EINVAL);
->  error_no_mem:
->  	iio_device_put(c->indio_dev);
-> -	return ERR_PTR(-ENOMEM);
-> +	return ERR_PTR(err);
->  }
->  EXPORT_SYMBOL_GPL(iio_channel_get);
->  
-> 
+Hi Jon and Ge,
+
+I switched my driver code by using kfifo (using code on linux-next),
+now what I see is:
+
+using generic-buffer application, I catch every sample independently
+by the value of buffer length, is that what you tell me by "Kfifo has
+a more conventional poll and will fire off userspace whenever any data
+is in the buffer."?
+To catch data only when the buffer is full, I must catch a particular
+signal event in /dev/iio:deviceX?
+
+Thanks
+
+Denis
+
+
+
+
+2012/9/26 Jonathan Cameron <jic23@jic23.retrosnub.co.uk>:
+> On 26/09/12 02:32, Ge Gao wrote:
+>>
+>> To use KFIFO, you need Jonanthan's KFIFO poll patch,
+>
+> That's in staging-next now and will merge into mainline in the
+> next merge window (about 1 to 2 weeks time).
+>
+>> you probably also
+>> need a patch from me that fixed the industrial-buffer.c. But that buffer
+>> is not well tested and is only used by me.
+>
+> There are a lot of drivers using kfifo. It's hidden in many of them as they
+> use it via the industrialio-triggered-buffer helper functions that
+> deal with the most common use cases.
+>
+> With that I count 9 in drivers/iio and 6 in drivers/staging/iio vs 10
+> in total for sw_ring most of which will go away once someone has a spare
+> couple of hours.
+>
+> Basically any driver that has come along since we moved to kfifo is the
+> preferred choice and any that anyone has touched since then.
+>
+>
+>> The original KFIFO does not
+>> have poll functionality and has some other minor bug.
+>
+> If I've missed any patches from you on this (or just forgotten them ;)
+> please do keep pestering me.
+>
+>>
+>> Ge
+>>
+>>
+>> -----Original Message-----
+>> From: linux-iio-owner@vger.kernel.org
+>> [mailto:linux-iio-owner@vger.kernel.org] On Behalf Of Denis Ciocca
+>> Sent: Tuesday, September 25, 2012 2:35 PM
+>> To: jic23@jic23.retrosnub.co.uk
+>> Cc: linux-iio@vger.kernel.org
+>> Subject: iio_buffer length
+>>
+>> Hi Jon,
+>>
+>>> Firstly please confirm you are using a kfifo buffer?
+>>
+>>
+>> No, I use sw-ring.
+>>
+>>
+>>> Swring is deprecated but will do precisely what you are seeing I think.
+>>
+>> It uses a half full watershead to decide to signal userspace.  If you wait
+>> till the buffer is full, unless your sampling is very slow you will have
+>> data coming in before userspace has read the whole buffer out. Hence you
+>> will loose data.
+>>
+>> You are right. I saw exatly what you said.
+>>
+>>
+>>> Kfifo has a more conventional poll and will fire off userspace
+>>> whenever
+>>
+>> any data is in the buffer. Hence kfifo will work for your usecase.  I
+>> would like to have a fill level capable buffer again in the future as they
+>> are very useful in high speed uses where latency doesn't matter.
+>>
+>> Ok, I will change my sw-ring buffer to kfifo!
+>>
+>> Thanks,
+>> Denis
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org More majordomo info at
+>> http://vger.kernel.org/majordomo-info.html
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>
