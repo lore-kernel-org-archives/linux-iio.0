@@ -1,252 +1,277 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:56186 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753955Ab2INGMM convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Sep 2012 02:12:12 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38537 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752987Ab2I2JuT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Sep 2012 05:50:19 -0400
+Message-ID: <5066C45B.3000500@kernel.org>
+Date: Sat, 29 Sep 2012 10:50:19 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: "Patil, Rachna" <rachna@ti.com>
+CC: "Datta, Shubhrajyoti" <shubhrajyoti@ti.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	Samuel Ortiz <sameo@linux.intel.com>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 	Dmitry Torokhov <dtor@mail.ru>,
 	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: RE: [PATCH v3 4/5] IIO : ADC: tiadc: Add support of TI's ADC driver
-Date: Fri, 14 Sep 2012 06:11:50 +0000
-Message-ID: <4CE347531D4CA947960AF71FF095B9323E953D41@DBDE01.ent.ti.com>
-References: <1347532819-505-1-git-send-email-rachna@ti.com>
- <1347532819-505-5-git-send-email-rachna@ti.com> <5051D6C7.2010700@metafoo.de>
-In-Reply-To: <5051D6C7.2010700@metafoo.de>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Subject: Re: [PATCH v4 5/5] MFD: ti_tscadc: add suspend/resume functionality
+References: <1348636814-14129-1-git-send-email-rachna@ti.com> <1348636814-14129-6-git-send-email-rachna@ti.com> <5062A373.4000707@ti.com> <4CE347531D4CA947960AF71FF095B9323E95738D@DBDE01.ent.ti.com>
+In-Reply-To: <4CE347531D4CA947960AF71FF095B9323E95738D@DBDE01.ent.ti.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Sep 13, 2012 at 18:21:19, Lars-Peter Clausen wrote:
-> On 09/13/2012 12:40 PM, Patil, Rachna wrote:
-> > This patch adds support for TI's ADC driver.
-> > This is a multifunctional device.
-> > Analog input lines are provided on which voltage measurements can be 
-> > carried out.
-> > You can have upto 8 input lines.
-> > 
+On 09/26/2012 11:09 AM, Patil, Rachna wrote:
+> Hi Shubhrajyoti,
 > 
-> Hi,
+> On Wed, Sep 26, 2012 at 12:10:51, Datta, Shubhrajyoti wrote:
+>> On Wednesday 26 September 2012 10:50 AM, Patil, Rachna wrote:
+>>> This patch adds support for suspend/resume of
+>>> TSC/ADC MFDevice.
+>> this should be merged with the patch adding support else
+>> we may end up in a case where patch a does the runtime calls
+>> and the call back  handlers added later.
 > 
-> couple of minor issues inline.
+> I am adding both the runtime calls and the handlers in this patch.
+> I think maintaining this as a separate patch in better in terms
+> of readability as well.
+I would prefer this merged into patch 4 as it's a simple addition to
+a driver that should arguably have been there in the first place.
 
-Hi,
+Anyhow I don't actually care that much!
+> 
+> Regards,
+> Rachna
+> 
+>>>
+>>> Signed-off-by: Patil, Rachna <rachna@ti.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+(if someone else is picking this series up). I'll happily
+take it through IIO post merge window.
 
-Please find my comments inline.
+Sorry Rachna, I know this was ready a week ago, but that's still
+cutting it fine for the end of the cycle.
 
+Now if someone else wants to take it I'll not mind ;)
+>>> ---
+>>> Changes in v2:
+>>> 	Added this patch newly in this patch series.
+>>>
+>>> Changes in v3:
+>>> 	No changes.
+>>>
+>>> Changes in v4:
+>>> 	Replaced suspend/resume callbacks with dev_pm_ops.
+>>>
+>>>  drivers/iio/adc/ti_am335x_adc.c           |   42 +++++++++++++++++++++++++++++
+>>>  drivers/input/touchscreen/ti_am335x_tsc.c |   42 +++++++++++++++++++++++++++++
+>>>  drivers/mfd/ti_am335x_tscadc.c            |   41 +++++++++++++++++++++++++++-
+>>>  include/linux/mfd/ti_am335x_tscadc.h      |    3 ++
+>>>  4 files changed, 127 insertions(+), 1 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+>>> index 9e1b3ac..b16f944 100644
+>>> --- a/drivers/iio/adc/ti_am335x_adc.c
+>>> +++ b/drivers/iio/adc/ti_am335x_adc.c
+>>> @@ -200,10 +200,52 @@ static int __devexit tiadc_remove(struct platform_device *pdev)
+>>>  	return 0;
+>>>  }
+>>>  
+>>> +#ifdef CONFIG_PM
+>>> +static int tiadc_suspend(struct device *dev)
+>>> +{
+>>> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>>> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>>> +	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
+>>> +	unsigned int idle;
+>>> +
+>>> +	if (!device_may_wakeup(tscadc_dev->dev)) {
+>>> +		idle = adc_readl(adc_dev, REG_CTRL);
+>>> +		idle &= ~(CNTRLREG_TSCSSENB);
+>>> +		adc_writel(adc_dev, REG_CTRL, (idle |
+>>> +				CNTRLREG_POWERDOWN));
+>>> +	}
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int tiadc_resume(struct device *dev)
+>>> +{
+>>> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>>> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>>> +	unsigned int restore;
+>>> +
+>>> +	/* Make sure ADC is powered up */
+>>> +	restore = adc_readl(adc_dev, REG_CTRL);
+>>> +	restore &= ~(CNTRLREG_POWERDOWN);
+>>> +	adc_writel(adc_dev, REG_CTRL, restore);
+>>> +
+>>> +	adc_step_config(adc_dev);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static const struct dev_pm_ops tiadc_pm_ops = {
+>>> +	.suspend = tiadc_suspend,
+>>> +	.resume = tiadc_resume,
+>>> +};
+>>> +#define TIADC_PM_OPS (&tiadc_pm_ops)
+>>> +#else
+>>> +#define TIADC_PM_OPS NULL
+>>> +#endif
+>>> +
+>>>  static struct platform_driver tiadc_driver = {
+>>>  	.driver = {
+>>>  		.name   = "tiadc",
+>>>  		.owner = THIS_MODULE,
+>>> +		.pm	= TIADC_PM_OPS,
+>>>  	},
+>>>  	.probe	= tiadc_probe,
+>>>  	.remove	= __devexit_p(tiadc_remove),
+>>> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+>>> index 2d9dec1..b17dbe4 100644
+>>> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
+>>> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+>>> @@ -338,12 +338,54 @@ static int __devexit tscadc_remove(struct platform_device *pdev)
+>>>  	return 0;
+>>>  }
+>>>  
+>>> +#ifdef CONFIG_PM
+>>> +static int titsc_suspend(struct device *dev)
+>>> +{
+>>> +	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
+>>> +	struct tscadc *ts_dev = tscadc_dev->tsc;
+>>> +	unsigned int idle;
+>>> +
+>>> +	if (device_may_wakeup(tscadc_dev->dev)) {
+>>> +		idle = tscadc_readl(ts_dev, REG_IRQENABLE);
+>>> +		tscadc_writel(ts_dev, REG_IRQENABLE,
+>>> +				(idle | IRQENB_HW_PEN));
+>>> +		tscadc_writel(ts_dev, REG_IRQWAKEUP, IRQWKUP_ENB);
+>>> +	}
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int titsc_resume(struct device *dev)
+>>> +{
+>>> +	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
+>>> +	struct tscadc *ts_dev = tscadc_dev->tsc;
+>>> +
+>>> +	if (device_may_wakeup(tscadc_dev->dev)) {
+>>> +		tscadc_writel(ts_dev, REG_IRQWAKEUP,
+>>> +				0x00);
+>>> +		tscadc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
+>>> +	}
+>>> +	tscadc_step_config(ts_dev);
+>>> +	tscadc_writel(ts_dev, REG_FIFO0THR,
+>>> +			ts_dev->steps_to_configure);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static const struct dev_pm_ops titsc_pm_ops = {
+>>> +	.suspend = titsc_suspend,
+>>> +	.resume  = titsc_resume,
+>>> +};
+>>> +#define TITSC_PM_OPS (&titsc_pm_ops)
+>>> +#else
+>>> +#define TITSC_PM_OPS NULL
+>>> +#endif
+>>> +
+>>>  static struct platform_driver ti_tsc_driver = {
+>>>  	.probe	= tscadc_probe,
+>>>  	.remove	= __devexit_p(tscadc_remove),
+>>>  	.driver	= {
+>>>  		.name   = "tsc",
+>>>  		.owner	= THIS_MODULE,
+>>> +		.pm	= TITSC_PM_OPS,
+>>>  	},
+>>>  };
+>>>  module_platform_driver(ti_tsc_driver);
+>>> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+>>> index 45d66e5..7e949e8 100644
+>>> --- a/drivers/mfd/ti_am335x_tscadc.c
+>>> +++ b/drivers/mfd/ti_am335x_tscadc.c
+>>> @@ -170,6 +170,7 @@ static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
+>>>  	if (err < 0)
+>>>  		goto err_disable_clk;
+>>>  
+>>> +	device_init_wakeup(&pdev->dev, true);
+>>>  	platform_set_drvdata(pdev, tscadc);
+>>>  	return 0;
+>>>  
+>>> @@ -203,14 +204,52 @@ static int __devexit ti_tscadc_remove(struct platform_device *pdev)
+>>>  	return 0;
+>>>  }
+>>>  
+>>> +#ifdef CONFIG_PM
+>>> +static int tscadc_suspend(struct device *dev)
+>>> +{
+>>> +	struct ti_tscadc_dev	*tscadc_dev = dev_get_drvdata(dev);
+>>> +
+>>> +	tscadc_writel(tscadc_dev, REG_SE, 0x00);
+>>> +	pm_runtime_put_sync(dev);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int tscadc_resume(struct device *dev)
+>>> +{
+>>> +	struct ti_tscadc_dev	*tscadc_dev = dev_get_drvdata(dev);
+>>> +	unsigned int restore, ctrl;
+>>> +
+>>> +	pm_runtime_get_sync(dev);
+>>> +
+>>> +	/* context restore */
+>>> +	ctrl = CNTRLREG_STEPCONFIGWRT | CNTRLREG_TSCENB |
+>>> +			CNTRLREG_STEPID | CNTRLREG_4WIRE;
+>>> +	tscadc_writel(tscadc_dev, REG_CTRL, ctrl);
+>>> +	tscadc_idle_config(tscadc_dev);
+>>> +	tscadc_writel(tscadc_dev, REG_SE, STPENB_STEPENB);
+>>> +	restore = tscadc_readl(tscadc_dev, REG_CTRL);
+>>> +	tscadc_writel(tscadc_dev, REG_CTRL,
+>>> +			(restore | CNTRLREG_TSCSSENB));
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static const struct dev_pm_ops tscadc_pm_ops = {
+>>> +	.suspend = tscadc_suspend,
+>>> +	.resume = tscadc_resume,
+>>> +};
+>>> +#define TSCADC_PM_OPS (&tscadc_pm_ops)
+>>> +#else
+>>> +#define TSCADC_PM_OPS NULL
+>>> +#endif
+>>> +
+>>>  static struct platform_driver ti_tscadc_driver = {
+>>>  	.driver = {
+>>>  		.name   = "ti_tscadc",
+>>>  		.owner	= THIS_MODULE,
+>>> +		.pm	= TSCADC_PM_OPS,
+>>>  	},
+>>>  	.probe	= ti_tscadc_probe,
+>>>  	.remove	= __devexit_p(ti_tscadc_remove),
+>>> -
+>>>  };
+>>>  
+>>>  module_platform_driver(ti_tscadc_driver);
+>>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+>>> index bd9fe1d..c7facdc 100644
+>>> --- a/include/linux/mfd/ti_am335x_tscadc.h
+>>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+>>> @@ -40,6 +40,9 @@
+>>>  #define REG_FIFO1		0x200
+>>>  
+>>>  /*	Register Bitfields	*/
+>>> +/* IRQ wakeup enable */
+>>> +#define IRQWKUP_ENB		BIT(0)
+>>> +
+>>>  /* Step Enable */
+>>>  #define STEPENB_MASK		(0x1FFFF << 0)
+>>>  #define STEPENB(val)		((val) << 0)
+>>
+>>
 > 
-> > Signed-off-by: Patil, Rachna <rachna@ti.com>
-> > ---
-> > Changes in v2:
-> > 	Addressed review comments from Matthias Kaehlcke
-> > 
-> > Changes in v3:
-> > 	Addressed review comments from Jonathan Cameron.
-> > 	Added comments, new line appropriately.
-> > 
-> >  drivers/iio/adc/Kconfig              |    7 +
-> >  drivers/iio/adc/Makefile             |    1 +
-> >  drivers/iio/adc/ti_adc.c             |  223 ++++++++++++++++++++++++++++++++++
-> >  drivers/mfd/ti_tscadc.c              |   18 +++-
-> >  include/linux/mfd/ti_tscadc.h        |    9 ++-
-> >  include/linux/platform_data/ti_adc.h |   14 ++
-> >  6 files changed, 270 insertions(+), 2 deletions(-)  create mode 
-> > 100644 drivers/iio/adc/ti_adc.c  create mode 100644 
-> > include/linux/platform_data/ti_adc.h
-> > 
-> [...]
-> > +
-> > +struct adc_device {
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
-> Not really an issue, but I'd use a consistent function/struct prefix.
-> Currently you use both "adc" and "tiadc"
-
-Ok. I will update this.
-
-> 
-> > +	struct ti_tscadc_dev *mfd_tscadc;
-> > +	struct iio_dev *idev;
-> 
-> idev is used only once in the remove callback. But you can get a pointer to it easily using platform_get_drvdata. So I'd remove it from the adc_device struct.
-
-Ok. I will remove this.
-
-> 
-> > +	int channels;
-> > +};
-> > +
-> > +static unsigned int adc_readl(struct adc_device *adc, unsigned int 
-> > +reg) {
-> > +	return readl(adc->mfd_tscadc->tscadc_base + reg); }
-> > +
-> > +static void adc_writel(struct adc_device *adc, unsigned int reg,
-> > +					unsigned int val)
-> > +{
-> > +	writel(val, adc->mfd_tscadc->tscadc_base + reg); }
-> > +
-> > +static void adc_step_config(struct adc_device *adc_dev) {
-> > +	unsigned int    stepconfig;
-> 
-> extra whitespace
-
-Ok. I will remove this.
-
-> 
-> > +	int i, channels = 0, steps;
-> > +
-> > +	/*
-> > +	 * There are 16 configurable steps and 8 analog input
-> > +	 * lines available which are shared between Touchscreen and ADC.
-> > +	 *
-> > +	 * Steps backwards i.e. from 16 towards 0 are used by ADC
-> > +	 * depending on number of input lines needed.
-> > +	 * Channel would represent which analog input
-> > +	 * needs to be given to ADC to digitalize data.
-> > +	 */
-> > +
-> > +	steps = TOTAL_STEPS - adc_dev->channels;
-> > +	channels = TOTAL_CHANNELS - adc_dev->channels;
-> > +
-> > +	stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
-> > +
-> > +	for (i = (steps + 1); i <= TOTAL_STEPS; i++) {
-> > +		adc_writel(adc_dev, REG_STEPCONFIG(i),
-> > +				stepconfig | STEPCONFIG_INP(channels));
-> > +		adc_writel(adc_dev, REG_STEPDELAY(i),
-> > +				STEPCONFIG_OPENDLY);
-> > +		channels++;
-> > +	}
-> > +	adc_writel(adc_dev, REG_SE, STPENB_STEPENB); }
-> > +
-> > [...]
-> > +
-> > +static const struct iio_info tiadc_info = {
-> > +	.read_raw = &tiadc_read_raw,
-> 
->     .driver_module = THIS_MODULE,
-> 
-> > +};
-> > +
-> > +static int __devinit tiadc_probe(struct platform_device *pdev) {
-> > +	struct iio_dev		*idev;
-> 
-> For consistency with other drivers please rename idev to indio_dev throughout the driver.
-
-Ok. I will rename this.
-
-> 
-> > +	int			err;
-> > +	struct adc_device	*adc_dev;
-> > +	struct ti_tscadc_dev	*tscadc_dev = pdev->dev.platform_data;
-> > +	struct mfd_tscadc_board	*pdata;
-> > +
-> > +	pdata = (struct mfd_tscadc_board *)tscadc_dev->dev->platform_data;
-> 
-> The cast should not be necessary.
-
-True,
-I will correct this.
-
-> 
-> > +	if (!pdata || !pdata->adc_init) {
-> > +		dev_err(tscadc_dev->dev, "Could not find platform data\n");
-> 
-> I'd still use pdev->dev for the device parameter here. Seeing a message printed by this driver for another device might be confusing.
-
-Yes, I will correct this.
-
-> 
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	idev = iio_device_alloc(sizeof(struct adc_device));
-> > +	if (idev == NULL) {
-> > +		dev_err(&pdev->dev, "failed to allocate iio device.\n");
-> > +		err = -ENOMEM;
-> > +		goto err_ret;
-> > +	}
-> > +	adc_dev = iio_priv(idev);
-> > +
-> > +	tscadc_dev->adc = adc_dev;
-> 
-> This there any reason why you need to store a pointer to the adc struct in the mfd struct? Is it going to be used outside of the adc driver? Currently it is, as far as I can see, only used in the remove callback and suspend/resume handlers. But there you can use iio_priv just as easily to get the pointer to the adc device struct and it certainly will be also be cleaner to do it that way.
-
-Yes, currently it is used only in suspend/resume.
-I will drop this line.
-
-> 
-> > +	adc_dev->mfd_tscadc = tscadc_dev;
-> > +	adc_dev->idev = idev;
-> > +	adc_dev->channels = pdata->adc_init->adc_channels;
-> > +
-> > +	idev->dev.parent = &pdev->dev;
-> > +	idev->name = dev_name(&pdev->dev);
-> > +	idev->modes = INDIO_DIRECT_MODE;
-> > +	idev->info = &tiadc_info;
-> > +
-> > +	adc_step_config(adc_dev);
-> > +
-> > +	err = tiadc_channel_init(idev, adc_dev->channels);
-> > +	if (err < 0)
-> > +		goto err_free_device;
-> > +
-> > +	err = iio_device_register(idev);
-> > +	if (err)
-> > +		goto err_free_channels;
-> > +
-> > +	dev_info(&pdev->dev, "attached adc driver\n");
-> 
-> I'd remove that line, it's just noise.
-
-Ok. I will drop this.
-
-> 
-> > +	platform_set_drvdata(pdev, idev);
-> > +
-> > +	return 0;
-> > +
-> > +err_free_channels:
-> > +	tiadc_channels_remove(idev);
-> > +err_free_device:
-> > +	iio_device_free(idev);
-> > +err_ret:
-> > +	return err;
-> > +}
-> > +
-> 
-> [...]
-> > diff --git a/include/linux/platform_data/ti_adc.h 
-> > b/include/linux/platform_data/ti_adc.h
-> > new file mode 100644
-> > index 0000000..5a89f1d
-> > --- /dev/null
-> > +++ b/include/linux/platform_data/ti_adc.h
-> > @@ -0,0 +1,14 @@
-> > +#ifndef __LINUX_TI_ADC_H
-> > +#define __LINUX_TI_ADC_H
-> > +
-> > +/**
-> > + * struct adc_data	ADC Input information
-> > + * @adc_channels:	Number of analog inputs
-> > + *			available for ADC.
-> > + */
-> > +
-> > +struct adc_data {
-> 
-> The struct name might be a bit to generic.
-> 
-> > +	int adc_channels;
-> 
-> It does not really matter, but considering that there hardly ever going to be a negative number of channels I'd make this unsigned.
-
-Ok. I will update this.
-
-Regards,
-Rachna
-
