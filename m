@@ -1,85 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:52420 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753024Ab2JELfB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Oct 2012 07:35:01 -0400
-Message-ID: <506EC5F2.1000300@jic23.retrosnub.co.uk>
-Date: Fri, 05 Oct 2012 12:35:14 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Received: from smtp-out-070.synserver.de ([212.40.185.70]:1074 "EHLO
+	smtp-out-070.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753788Ab2JCJRv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Oct 2012 05:17:51 -0400
+Message-ID: <506C02F3.2050506@metafoo.de>
+Date: Wed, 03 Oct 2012 11:18:43 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk
-Subject: Re: Querry on IIO/ADC DT based consumer device probe
-References: <CAHfPSqCnBw1ed97greGdMz-qexWbB2b5_NrbT6FFUeawvygWWg@mail.gmail.com>
-In-Reply-To: <CAHfPSqCnBw1ed97greGdMz-qexWbB2b5_NrbT6FFUeawvygWWg@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org, 21cnbao@gmail.com
+Subject: Re: [PATCH] staging iio: use iio_trigger_generic_data_rdy_poll()
+ in accel/adis16209 driver
+References: <1348877262-8593-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1348877262-8593-1-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/10/12 10:07, Naveen Krishna Ch wrote:
-> Hello All,
->
-> I'm trying to add an ADC driver under IIO/ADC.
-> Machine is DT based so, passing the ADC device as tree node and
-> consumer devices (thermistors) as child nodes via DT.
->
-> I don't find a frame work to parse the child nodes and probe them like
-> I2C does using of/of_i2c.c
->
-> The DT snippet:
->         adc@12D10000 {
->                  thermistor@3 {
->                          compatible = "ntc,ncp15wb473";
->                          consumer-name = "ntc,ncp15wb473";
->                          consumer-channel = "adc-3";
->                          pullup-uV = <1800000>;
->                          pullup-ohm = <47000>;
->                          pulldown-ohm = <0>;
->                          connected-positive;
->                  };
->
->                  thermistor@4 {
->                          compatible = "ntc,ncp15wb473";
->                          consumer-name = "ntc,ncp15wb473";
->                          consumer-channel = "adc-4";
->                          pullup-uV = <1800000>;
->                          pullup-ohm = <47000>;
->                          pulldown-ohm = <0>;
->                          connected-positive;
->                  };
->      };
->
-> Parsing snippet:
->   for_each_child_of_node(node, client_node) {
->                  char *channel, *label = NULL;
->
->                  if (of_property_read_string(client_node,
-> "consumer-channel", &channel) != 0) {
->                          dev_err(&pdev->dev, "Missing consumer-channel
-> property in the DT.\n");
->                          return -EINVAL;
->                  }
->
->                  client_map[i].consumer_channel = channel;
->                  label = "lable-adc";      //TODO
->                  client_map[i].adc_channel_label = label;
->
->
->                  if (of_property_read_string(client_node,
-> "consumer-name", &client_map[i].consumer_dev_name) != 0) {
->                          dev_err(&pdev->dev, "Missing consumer-name
-> property in the DT.\n");
->                          return -EINVAL;
->                  }
->
->                  i++;
->          }
->
-> Can some one suggest a way to get the consumer thermistor driver to
-> get probed from iio framework via DT.
-> Kindly, point me towards any existing framework to do the same.
+On 09/29/2012 02:07 AM, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: 21cnbao@gmail.com
 
-Sorry, I don't think anyone has implemented a device tree version yet.
-Just comes down to no one until you having needed it. Feel free to
-send patches!
+Looks good,
+
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+
+> ---
+>  drivers/staging/iio/accel/adis16209_trigger.c |   11 +----------
+>  drivers/staging/iio/accel/adis16240_trigger.c |   11 +----------
+>  2 files changed, 2 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/accel/adis16209_trigger.c b/drivers/staging/iio/accel/adis16209_trigger.c
+> index 2ad93dc..1122803 100644
+> --- a/drivers/staging/iio/accel/adis16209_trigger.c
+> +++ b/drivers/staging/iio/accel/adis16209_trigger.c
+> @@ -8,15 +8,6 @@
+>  #include "adis16209.h"
+>  
+>  /**
+> - * adis16209_data_rdy_trig_poll() the event handler for the data rdy trig
+> - **/
+> -static irqreturn_t adis16209_data_rdy_trig_poll(int irq, void *trig)
+> -{
+> -	iio_trigger_poll(trig, iio_get_time_ns());
+> -	return IRQ_HANDLED;
+> -}
+> -
+> -/**
+>   * adis16209_data_rdy_trigger_set_state() set datardy interrupt state
+>   **/
+>  static int adis16209_data_rdy_trigger_set_state(struct iio_trigger *trig,
+> @@ -45,7 +36,7 @@ int adis16209_probe_trigger(struct iio_dev *indio_dev)
+>  	}
+>  
+>  	ret = request_irq(st->us->irq,
+> -			  adis16209_data_rdy_trig_poll,
+> +			  iio_trigger_generic_data_rdy_poll,
+>  			  IRQF_TRIGGER_RISING,
+>  			  "adis16209",
+>  			  st->trig);
+> diff --git a/drivers/staging/iio/accel/adis16240_trigger.c b/drivers/staging/iio/accel/adis16240_trigger.c
+> index fa90a22..f3caf09 100644
+> --- a/drivers/staging/iio/accel/adis16240_trigger.c
+> +++ b/drivers/staging/iio/accel/adis16240_trigger.c
+> @@ -8,15 +8,6 @@
+>  #include "adis16240.h"
+>  
+>  /**
+> - * adis16240_data_rdy_trig_poll() the event handler for the data rdy trig
+> - **/
+> -static irqreturn_t adis16240_data_rdy_trig_poll(int irq, void *trig)
+> -{
+> -	iio_trigger_poll(trig, iio_get_time_ns());
+> -	return IRQ_HANDLED;
+> -}
+> -
+> -/**
+>   * adis16240_data_rdy_trigger_set_state() set datardy interrupt state
+>   **/
+>  static int adis16240_data_rdy_trigger_set_state(struct iio_trigger *trig,
+> @@ -45,7 +36,7 @@ int adis16240_probe_trigger(struct iio_dev *indio_dev)
+>  	}
+>  
+>  	ret = request_irq(st->us->irq,
+> -			  adis16240_data_rdy_trig_poll,
+> +			  iio_trigger_generic_data_rdy_poll,
+>  			  IRQF_TRIGGER_RISING,
+>  			  "adis16240",
+>  			  st->trig);
 
