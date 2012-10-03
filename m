@@ -1,179 +1,70 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-072.synserver.de ([212.40.185.72]:1212 "EHLO
-	smtp-out-072.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756640Ab2JDNdD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Oct 2012 09:33:03 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] staging:iio: Remove unused DRIVER_NAME defines
-Date: Thu,  4 Oct 2012 15:33:55 +0200
-Message-Id: <1349357635-19910-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <rachna@ti.com>
+From: "Patil, Rachna" <rachna@ti.com>
+To: Samuel Ortiz <sameo@linux.intel.com>, Jonathan Cameron <jic23@kernel.org>
+CC: "Datta, Shubhrajyoti" <shubhrajyoti@ti.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Dmitry Torokhov
+	<dmitry.torokhov@gmail.com>,
+        Dmitry Torokhov <dtor@mail.ru>, Jonathan Cameron
+	<jic23@cam.ac.uk>
+Subject: RE: [PATCH v4 5/5] MFD: ti_tscadc: add suspend/resume functionality
+Date: Wed, 3 Oct 2012 06:49:19 +0000
+Message-ID: <4CE347531D4CA947960AF71FF095B9323E959D06@DBDE01.ent.ti.com>
+References: <1348636814-14129-1-git-send-email-rachna@ti.com>
+ <1348636814-14129-6-git-send-email-rachna@ti.com> <5062A373.4000707@ti.com>
+ <4CE347531D4CA947960AF71FF095B9323E95738D@DBDE01.ent.ti.com>
+ <5066C45B.3000500@kernel.org> <20120930232202.GF12231@sortiz-mobl>
+In-Reply-To: <20120930232202.GF12231@sortiz-mobl>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Some drivers define a DRIVER_NAME, but never use the define. This patch removes
-defines.
+Hi Samuel,
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/accel/adis16203_core.c |    2 --
- drivers/staging/iio/accel/adis16204_core.c |    2 --
- drivers/staging/iio/accel/adis16209_core.c |    2 --
- drivers/staging/iio/accel/adis16220_core.c |    2 --
- drivers/staging/iio/accel/adis16240_core.c |    2 --
- drivers/staging/iio/gyro/adis16260_core.c  |    2 --
- drivers/staging/iio/meter/ade7753.h        |    2 --
- drivers/staging/iio/meter/ade7754.h        |    2 --
- drivers/staging/iio/meter/ade7758.h        |    3 ---
- drivers/staging/iio/meter/ade7759.h        |    2 --
- drivers/staging/iio/meter/ade7854.h        |    2 --
- 11 files changed, 23 deletions(-)
+Hi On Mon, Oct 01, 2012 at 04:52:02, Samuel Ortiz wrote:
+> Hi Jonathan,
+>=20
+> On Sat, Sep 29, 2012 at 10:50:19AM +0100, Jonathan Cameron wrote:
+> > On 09/26/2012 11:09 AM, Patil, Rachna wrote:
+> > > Hi Shubhrajyoti,
+> > >=20
+> > > On Wed, Sep 26, 2012 at 12:10:51, Datta, Shubhrajyoti wrote:
+> > >> On Wednesday 26 September 2012 10:50 AM, Patil, Rachna wrote:
+> > >>> This patch adds support for suspend/resume of TSC/ADC MFDevice.
+> > >> this should be merged with the patch adding support else we may end=
+=20
+> > >> up in a case where patch a does the runtime calls and the call back =
+=20
+> > >> handlers added later.
+> > >=20
+> > > I am adding both the runtime calls and the handlers in this patch.
+> > > I think maintaining this as a separate patch in better in terms of=20
+> > > readability as well.
+> > I would prefer this merged into patch 4 as it's a simple addition to a=
+=20
+> > driver that should arguably have been there in the first place.
+> I agree. And I would even go as far as saying that having all the MFD par=
+ts from this patchset merged into patch #2 would make sense.
+> Rachna, could you please re-work this patchset in such way, and adress my=
+ comments on patch #2 ? I could then take the MFD parts and then Jonathan a=
+nd Dmitry take their parts. There are build time dependencies, but neither =
+the input nor the ADC driver could be actually built as long as the MFD one=
+ is not merged (provided that the subdevices driver comes with the right Kc=
+onfig dependecy).
 
-diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
-index 002fa9d..2064710 100644
---- a/drivers/staging/iio/accel/adis16203_core.c
-+++ b/drivers/staging/iio/accel/adis16203_core.c
-@@ -21,8 +21,6 @@
- 
- #include "adis16203.h"
- 
--#define DRIVER_NAME		"adis16203"
--
- /**
-  * adis16203_spi_write_reg_8() - write single byte to a register
-  * @indio_dev: iio device associated with child of actual device
-diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
-index 05bdb7c..bd99d90 100644
---- a/drivers/staging/iio/accel/adis16204_core.c
-+++ b/drivers/staging/iio/accel/adis16204_core.c
-@@ -24,8 +24,6 @@
- 
- #include "adis16204.h"
- 
--#define DRIVER_NAME		"adis16204"
--
- /**
-  * adis16204_spi_write_reg_8() - write single byte to a register
-  * @dev: device associated with child of actual device (iio_dev or iio_trig)
-diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-index b7333bf..693f65d 100644
---- a/drivers/staging/iio/accel/adis16209_core.c
-+++ b/drivers/staging/iio/accel/adis16209_core.c
-@@ -22,8 +22,6 @@
- 
- #include "adis16209.h"
- 
--#define DRIVER_NAME		"adis16209"
--
- /**
-  * adis16209_spi_write_reg_8() - write single byte to a register
-  * @indio_dev: iio device associated with actual device
-diff --git a/drivers/staging/iio/accel/adis16220_core.c b/drivers/staging/iio/accel/adis16220_core.c
-index c755089..adf70b7 100644
---- a/drivers/staging/iio/accel/adis16220_core.c
-+++ b/drivers/staging/iio/accel/adis16220_core.c
-@@ -20,8 +20,6 @@
- 
- #include "adis16220.h"
- 
--#define DRIVER_NAME		"adis16220"
--
- /**
-  * adis16220_spi_write_reg_8() - write single byte to a register
-  * @indio_dev: iio device associated with child of actual device
-diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-index 0fc26a4..9f48611 100644
---- a/drivers/staging/iio/accel/adis16240_core.c
-+++ b/drivers/staging/iio/accel/adis16240_core.c
-@@ -25,8 +25,6 @@
- 
- #include "adis16240.h"
- 
--#define DRIVER_NAME		"adis16240"
--
- static int adis16240_check_status(struct iio_dev *indio_dev);
- 
- /**
-diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-index 9571c03..9e22a50 100644
---- a/drivers/staging/iio/gyro/adis16260_core.c
-+++ b/drivers/staging/iio/gyro/adis16260_core.c
-@@ -24,8 +24,6 @@
- 
- #include "adis16260.h"
- 
--#define DRIVER_NAME		"adis16260"
--
- static int adis16260_check_status(struct iio_dev *indio_dev);
- 
- /**
-diff --git a/drivers/staging/iio/meter/ade7753.h b/drivers/staging/iio/meter/ade7753.h
-index 3f059d3..a9d93cc 100644
---- a/drivers/staging/iio/meter/ade7753.h
-+++ b/drivers/staging/iio/meter/ade7753.h
-@@ -55,8 +55,6 @@
- #define ADE7753_SPI_BURST	(u32)(1000 * 1000)
- #define ADE7753_SPI_FAST	(u32)(2000 * 1000)
- 
--#define DRIVER_NAME		"ade7753"
--
- /**
-  * struct ade7753_state - device instance specific data
-  * @us:			actual spi_device
-diff --git a/drivers/staging/iio/meter/ade7754.h b/drivers/staging/iio/meter/ade7754.h
-index 6121125..e42ffc3 100644
---- a/drivers/staging/iio/meter/ade7754.h
-+++ b/drivers/staging/iio/meter/ade7754.h
-@@ -73,8 +73,6 @@
- #define ADE7754_SPI_BURST	(u32)(1000 * 1000)
- #define ADE7754_SPI_FAST	(u32)(2000 * 1000)
- 
--#define DRIVER_NAME		"ade7754"
--
- /**
-  * struct ade7754_state - device instance specific data
-  * @us:			actual spi_device
-diff --git a/drivers/staging/iio/meter/ade7758.h b/drivers/staging/iio/meter/ade7758.h
-index 1e11ad5..0731820 100644
---- a/drivers/staging/iio/meter/ade7758.h
-+++ b/drivers/staging/iio/meter/ade7758.h
-@@ -105,9 +105,6 @@
- #define AD7758_APP_PWR		4
- #define AD7758_WT(p, w)		(((w) << 2) | (p))
- 
--#define DRIVER_NAME		"ade7758"
--
--
- /**
-  * struct ade7758_state - device instance specific data
-  * @us:			actual spi_device
-diff --git a/drivers/staging/iio/meter/ade7759.h b/drivers/staging/iio/meter/ade7759.h
-index c81d23d..f9ff1f8 100644
---- a/drivers/staging/iio/meter/ade7759.h
-+++ b/drivers/staging/iio/meter/ade7759.h
-@@ -36,8 +36,6 @@
- #define ADE7759_SPI_BURST	(u32)(1000 * 1000)
- #define ADE7759_SPI_FAST	(u32)(2000 * 1000)
- 
--#define DRIVER_NAME		"ade7759"
--
- /**
-  * struct ade7759_state - device instance specific data
-  * @us:			actual spi_device
-diff --git a/drivers/staging/iio/meter/ade7854.h b/drivers/staging/iio/meter/ade7854.h
-index 2c96e86..0653457 100644
---- a/drivers/staging/iio/meter/ade7854.h
-+++ b/drivers/staging/iio/meter/ade7854.h
-@@ -142,8 +142,6 @@
- #define ADE7854_SPI_BURST	(u32)(1000 * 1000)
- #define ADE7854_SPI_FAST	(u32)(2000 * 1000)
- 
--#define DRIVER_NAME		"ade7854"
--
- /**
-  * struct ade7854_state - device instance specific data
-  * @spi:			actual spi_device
--- 
-1.7.10.4
+I will re-work the patchset and address all the review comments accordingly=
+.
 
+Thanks & Regards,
+Rachna
+
+>=20
+> Cheers,
+> Samuel.
+>=20
+> --
+> Intel Open Source Technology Centre
+> http://oss.intel.com/
+>=20
