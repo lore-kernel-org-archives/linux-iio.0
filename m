@@ -1,117 +1,51 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 6/7] staging:iio:adc:max1363 cleanup regulator handling.
-Date: Sat, 13 Oct 2012 10:34:50 +0100
-Message-Id: <1350120891-28593-7-git-send-email-jic23@kernel.org>
-In-Reply-To: <1350120891-28593-1-git-send-email-jic23@kernel.org>
-References: <1350120891-28593-1-git-send-email-jic23@kernel.org>
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([88.190.12.23]:41766 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755643Ab2JDL7g (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Oct 2012 07:59:36 -0400
+Message-ID: <506D7A1E.8080303@free-electrons.com>
+Date: Thu, 04 Oct 2012 13:59:26 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: use iio_push_to_buffer() in at91 driver
+References: <1348875157-7793-1-git-send-email-pmeerw@pmeerw.net> <1348875157-7793-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1348875157-7793-2-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-For historical reasons the regulator handling was a little clunky. This
-patch brings it inline with a more standard ordering wrt to allocation
-of the iio_device.
+Hi Peter,
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/adc/max1363.c | 44 +++++++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 22 deletions(-)
+You can add my
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
 
-diff --git a/drivers/staging/iio/adc/max1363.c b/drivers/staging/iio/adc/max1363.c
-index 2f8d433..1e84b5b 100644
---- a/drivers/staging/iio/adc/max1363.c
-+++ b/drivers/staging/iio/adc/max1363.c
-@@ -1531,28 +1531,29 @@ static int __devinit max1363_probe(struct i2c_client *client,
- 	int ret;
- 	struct max1363_state *st;
- 	struct iio_dev *indio_dev;
--	struct regulator *reg;
--
--	reg = regulator_get(&client->dev, "vcc");
--	if (IS_ERR(reg)) {
--		ret = PTR_ERR(reg);
--		goto error_out;
--	}
--
--	ret = regulator_enable(reg);
--	if (ret)
--		goto error_put_reg;
- 
- 	indio_dev = iio_device_alloc(sizeof(struct max1363_state));
- 	if (indio_dev == NULL) {
- 		ret = -ENOMEM;
--		goto error_disable_reg;
-+		goto error_out;
- 	}
-+
- 	ret = iio_map_array_register(indio_dev, client->dev.platform_data);
- 	if (ret < 0)
- 		goto error_free_device;
-+
- 	st = iio_priv(indio_dev);
--	st->reg = reg;
-+
-+	st->reg = regulator_get(&client->dev, "vcc");
-+	if (IS_ERR(st->reg)) {
-+		ret = PTR_ERR(st->reg);
-+		goto error_unregister_map;
-+	}
-+
-+	ret = regulator_enable(st->reg);
-+	if (ret)
-+		goto error_put_reg;
-+
- 	/* this is only used for device removal purposes */
- 	i2c_set_clientdata(client, indio_dev);
- 
-@@ -1561,7 +1562,7 @@ static int __devinit max1363_probe(struct i2c_client *client,
- 
- 	ret = max1363_alloc_scan_masks(indio_dev);
- 	if (ret)
--		goto error_unregister_map;
-+		goto error_disable_reg;
- 
- 	/* Estabilish that the iio_dev is a child of the i2c device */
- 	indio_dev->dev.parent = &client->dev;
-@@ -1613,12 +1614,12 @@ error_free_available_scan_masks:
- 	kfree(indio_dev->available_scan_masks);
- error_unregister_map:
- 	iio_map_array_unregister(indio_dev, client->dev.platform_data);
--error_free_device:
--	iio_device_free(indio_dev);
- error_disable_reg:
--	regulator_disable(reg);
-+	regulator_disable(st->reg);
- error_put_reg:
--	regulator_put(reg);
-+	regulator_put(st->reg);
-+error_free_device:
-+	iio_device_free(indio_dev);
- error_out:
- 	return ret;
- }
-@@ -1627,7 +1628,6 @@ static int __devexit max1363_remove(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 	struct max1363_state *st = iio_priv(indio_dev);
--	struct regulator *reg = st->reg;
- 
- 	iio_device_unregister(indio_dev);
- 	if (client->irq)
-@@ -1635,9 +1635,9 @@ static int __devexit max1363_remove(struct i2c_client *client)
- 	iio_buffer_unregister(indio_dev);
- 	max1363_buffer_cleanup(indio_dev);
- 	kfree(indio_dev->available_scan_masks);
--	if (!IS_ERR(reg)) {
--		regulator_disable(reg);
--		regulator_put(reg);
-+	if (!IS_ERR(st->reg)) {
-+		regulator_disable(st->reg);
-+		regulator_put(st->reg);
- 	}
- 	iio_map_array_unregister(indio_dev, client->dev.platform_data);
- 	iio_device_free(indio_dev);
+Le 29/09/2012 01:32, Peter Meerwald a écrit :
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: maxime.ripard@free-electrons.com
+> ---
+>  drivers/iio/adc/at91_adc.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> index b3ba8af..2e2c9a8 100644
+> --- a/drivers/iio/adc/at91_adc.c
+> +++ b/drivers/iio/adc/at91_adc.c
+> @@ -81,7 +81,7 @@ static irqreturn_t at91_adc_trigger_handler(int irq, void *p)
+>  		*timestamp = pf->timestamp;
+>  	}
+>  
+> -	buffer->access->store_to(buffer, (u8 *)st->buffer);
+> +	iio_push_to_buffer(buffer, st->buffer);
+>  
+>  	iio_trigger_notify_done(idev->trig);
+>  
+> 
+
+
 -- 
-1.7.12.2
+Maxime Ripard, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
