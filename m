@@ -1,90 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:56804 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751160Ab2JEHwd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 5 Oct 2012 03:52:33 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v5 0/4] Support for TSC/ADC MFD driver
-Date: Fri, 5 Oct 2012 13:04:51 +0530
-Message-ID: <1349422495-27887-1-git-send-email-rachna@ti.com>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:52420 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753024Ab2JELfB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Oct 2012 07:35:01 -0400
+Message-ID: <506EC5F2.1000300@jic23.retrosnub.co.uk>
+Date: Fri, 05 Oct 2012 12:35:14 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk
+Subject: Re: Querry on IIO/ADC DT based consumer device probe
+References: <CAHfPSqCnBw1ed97greGdMz-qexWbB2b5_NrbT6FFUeawvygWWg@mail.gmail.com>
+In-Reply-To: <CAHfPSqCnBw1ed97greGdMz-qexWbB2b5_NrbT6FFUeawvygWWg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch set adds a MFD core driver which registers
-touchscreen and ADC as its client drivers.
-The existing touchscreen has been modified to work as
-a MFD client driver and a new ADC driver has been added
-in the IIO subsystem.
+On 05/10/12 10:07, Naveen Krishna Ch wrote:
+> Hello All,
+>
+> I'm trying to add an ADC driver under IIO/ADC.
+> Machine is DT based so, passing the ADC device as tree node and
+> consumer devices (thermistors) as child nodes via DT.
+>
+> I don't find a frame work to parse the child nodes and probe them like
+> I2C does using of/of_i2c.c
+>
+> The DT snippet:
+>         adc@12D10000 {
+>                  thermistor@3 {
+>                          compatible = "ntc,ncp15wb473";
+>                          consumer-name = "ntc,ncp15wb473";
+>                          consumer-channel = "adc-3";
+>                          pullup-uV = <1800000>;
+>                          pullup-ohm = <47000>;
+>                          pulldown-ohm = <0>;
+>                          connected-positive;
+>                  };
+>
+>                  thermistor@4 {
+>                          compatible = "ntc,ncp15wb473";
+>                          consumer-name = "ntc,ncp15wb473";
+>                          consumer-channel = "adc-4";
+>                          pullup-uV = <1800000>;
+>                          pullup-ohm = <47000>;
+>                          pulldown-ohm = <0>;
+>                          connected-positive;
+>                  };
+>      };
+>
+> Parsing snippet:
+>   for_each_child_of_node(node, client_node) {
+>                  char *channel, *label = NULL;
+>
+>                  if (of_property_read_string(client_node,
+> "consumer-channel", &channel) != 0) {
+>                          dev_err(&pdev->dev, "Missing consumer-channel
+> property in the DT.\n");
+>                          return -EINVAL;
+>                  }
+>
+>                  client_map[i].consumer_channel = channel;
+>                  label = "lable-adc";      //TODO
+>                  client_map[i].adc_channel_label = label;
+>
+>
+>                  if (of_property_read_string(client_node,
+> "consumer-name", &client_map[i].consumer_dev_name) != 0) {
+>                          dev_err(&pdev->dev, "Missing consumer-name
+> property in the DT.\n");
+>                          return -EINVAL;
+>                  }
+>
+>                  i++;
+>          }
+>
+> Can some one suggest a way to get the consumer thermistor driver to
+> get probed from iio framework via DT.
+> Kindly, point me towards any existing framework to do the same.
 
-There are 8 analog input lines, which can be used as:
-1. 8 general purpose ADC channels
-2. 4 wire TS, with 4 general purpose ADC channels
-3. 5 wire TS, with 3 general purpose ADC channels
-
-This patch set has been tested on AM335x EVM.
-
-These set of patches apply to linux-nxt branch and are based
-on top of Touchscreen patch set submitted viz.
-Subject: [PATCH 0/4] input: TSC: ti_tscadc: TI Touchscreen driver updates [1]
-
-[1] http://www.spinics.net/lists/linux-input/msg22107.html
-
-Changes in v2:
-	Dropped one patch send in the last version after
-	receiving internal comments. I have merged the changes
-	into existing patches.
-	Also added a new patch to support suspend/resume feature.
-	Fixed review comments by Matthias Kaehlcke.
-
-Changes in v3:
-	Addressed review comments by Jonathan Cameron.
-	Improved ADC driver with more readable labels,
-	spaces and comments.
-
-Changes in v4:
-	Renamed the drivers from ti_xxx to ti_am335x_xxx.
-	For consistency with other drivers renamed idev to indio_dev
-	in IIO ADC driver.
-	Replaced suspend/resume callbacks with dev_pm_ops.
-
-Changes in v5:
-	Merged suspend/resume part of code (present as separate patch)
-	into the respective driver.
-
-Patil, Rachna (4):
-  input: TSC: ti_tscadc: Rename the existing touchscreen driver
-  MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
-  input: TSC: ti_tsc: Convert TSC into a MFDevice
-  IIO : ADC: tiadc: Add support of TI's ADC driver
-
- drivers/iio/adc/Kconfig                            |    7 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/ti_am335x_adc.c                    |  260 ++++++++++
- drivers/input/touchscreen/Kconfig                  |    6 +-
- drivers/input/touchscreen/Makefile                 |    2 +-
- drivers/input/touchscreen/ti_am335x_tsc.c          |  398 +++++++++++++++
- drivers/input/touchscreen/ti_tscadc.c              |  522 --------------------
- drivers/mfd/Kconfig                                |   11 +
- drivers/mfd/Makefile                               |    1 +
- drivers/mfd/ti_am335x_tscadc.c                     |  277 +++++++++++
- .../linux/input/{ti_tscadc.h => ti_am335x_tsc.h}   |    4 +-
- include/linux/mfd/ti_am335x_tscadc.h               |  152 ++++++
- include/linux/platform_data/ti_am335x_adc.h        |   14 +
- 13 files changed, 1127 insertions(+), 528 deletions(-)
- create mode 100644 drivers/iio/adc/ti_am335x_adc.c
- create mode 100644 drivers/input/touchscreen/ti_am335x_tsc.c
- delete mode 100644 drivers/input/touchscreen/ti_tscadc.c
- create mode 100644 drivers/mfd/ti_am335x_tscadc.c
- rename include/linux/input/{ti_tscadc.h => ti_am335x_tsc.h} (88%)
- create mode 100644 include/linux/mfd/ti_am335x_tscadc.h
- create mode 100644 include/linux/platform_data/ti_am335x_adc.h
+Sorry, I don't think anyone has implemented a device tree version yet.
+Just comes down to no one until you having needed it. Feel free to
+send patches!
 
