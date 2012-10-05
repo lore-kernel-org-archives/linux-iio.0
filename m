@@ -1,40 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:35581 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751440Ab2JHUdz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Oct 2012 16:33:55 -0400
-Message-ID: <507338B5.60307@metafoo.de>
-Date: Mon, 08 Oct 2012 22:33:57 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail-vc0-f174.google.com ([209.85.220.174]:65259 "EHLO
+	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754770Ab2JEJHW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Oct 2012 05:07:22 -0400
+Received: by mail-vc0-f174.google.com with SMTP id fo13so1700033vcb.19
+        for <linux-iio@vger.kernel.org>; Fri, 05 Oct 2012 02:07:21 -0700 (PDT)
 MIME-Version: 1.0
-To: Pavel Machek <pavel@denx.de>
-CC: Denis CIOCCA <denis.ciocca@st.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"burman.yan@gmail.com" <burman.yan@gmail.com>
-Subject: Re: STMicroelectronics accelerometers driver.
-References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de> <20121008195007.GA32042@elf.ucw.cz>
-In-Reply-To: <20121008195007.GA32042@elf.ucw.cz>
+From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+Date: Fri, 5 Oct 2012 14:37:01 +0530
+Message-ID: <CAHfPSqCnBw1ed97greGdMz-qexWbB2b5_NrbT6FFUeawvygWWg@mail.gmail.com>
+Subject: Querry on IIO/ADC DT based consumer device probe
+To: linux-iio@vger.kernel.org, jic23@cam.ac.uk
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/08/2012 09:50 PM, Pavel Machek wrote:
-> 
->>> drivers/iio/accel/STMicroelectronics_accelerometers_iio_i2c.c
->>>   create mode 100644
->>> drivers/iio/accel/STMicroelectronics_accelerometers_iio_spi.c
->>>   create mode 100644
->>> drivers/iio/accel/STMicroelectronics_accelerometers_iio_trigger.c
->>
->> the file names are a bit excessive in my opinion. How about
->> st_accel_{buffer,core,i2c,...}.c?
-> 
-> drivers/iio/accel/st/iio_spi.c ?
+Hello All,
 
-Maybe. I'd still vote for st_accel though, since I think it is most
-descriptive. Since trigger and buffer should go down to a few lines it probably
-makes sense to put their content into the core file and I don't think we need a
-extra directory for the driver then.
+I'm trying to add an ADC driver under IIO/ADC.
+Machine is DT based so, passing the ADC device as tree node and
+consumer devices (thermistors) as child nodes via DT.
 
-- Lars
+I don't find a frame work to parse the child nodes and probe them like
+I2C does using of/of_i2c.c
+
+The DT snippet:
+       adc@12D10000 {
+                thermistor@3 {
+                        compatible = "ntc,ncp15wb473";
+                        consumer-name = "ntc,ncp15wb473";
+                        consumer-channel = "adc-3";
+                        pullup-uV = <1800000>;
+                        pullup-ohm = <47000>;
+                        pulldown-ohm = <0>;
+                        connected-positive;
+                };
+
+                thermistor@4 {
+                        compatible = "ntc,ncp15wb473";
+                        consumer-name = "ntc,ncp15wb473";
+                        consumer-channel = "adc-4";
+                        pullup-uV = <1800000>;
+                        pullup-ohm = <47000>;
+                        pulldown-ohm = <0>;
+                        connected-positive;
+                };
+    };
+
+Parsing snippet:
+ for_each_child_of_node(node, client_node) {
+                char *channel, *label = NULL;
+
+                if (of_property_read_string(client_node,
+"consumer-channel", &channel) != 0) {
+                        dev_err(&pdev->dev, "Missing consumer-channel
+property in the DT.\n");
+                        return -EINVAL;
+                }
+
+                client_map[i].consumer_channel = channel;
+                label = "lable-adc";      //TODO
+                client_map[i].adc_channel_label = label;
+
+
+                if (of_property_read_string(client_node,
+"consumer-name", &client_map[i].consumer_dev_name) != 0) {
+                        dev_err(&pdev->dev, "Missing consumer-name
+property in the DT.\n");
+                        return -EINVAL;
+                }
+
+                i++;
+        }
+
+Can some one suggest a way to get the consumer thermistor driver to
+get probed from iio framework via DT.
+Kindly, point me towards any existing framework to do the same.
+
+-- 
+Shine bright,
+(: Nav :)
