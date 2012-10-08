@@ -1,70 +1,40 @@
-Return-Path: <rachna@ti.com>
-From: "Patil, Rachna" <rachna@ti.com>
-To: Samuel Ortiz <sameo@linux.intel.com>, Jonathan Cameron <jic23@kernel.org>
-CC: "Datta, Shubhrajyoti" <shubhrajyoti@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Dmitry Torokhov
-	<dmitry.torokhov@gmail.com>,
-        Dmitry Torokhov <dtor@mail.ru>, Jonathan Cameron
-	<jic23@cam.ac.uk>
-Subject: RE: [PATCH v4 5/5] MFD: ti_tscadc: add suspend/resume functionality
-Date: Wed, 3 Oct 2012 06:49:19 +0000
-Message-ID: <4CE347531D4CA947960AF71FF095B9323E959D06@DBDE01.ent.ti.com>
-References: <1348636814-14129-1-git-send-email-rachna@ti.com>
- <1348636814-14129-6-git-send-email-rachna@ti.com> <5062A373.4000707@ti.com>
- <4CE347531D4CA947960AF71FF095B9323E95738D@DBDE01.ent.ti.com>
- <5066C45B.3000500@kernel.org> <20120930232202.GF12231@sortiz-mobl>
-In-Reply-To: <20120930232202.GF12231@sortiz-mobl>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:35581 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751440Ab2JHUdz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Oct 2012 16:33:55 -0400
+Message-ID: <507338B5.60307@metafoo.de>
+Date: Mon, 08 Oct 2012 22:33:57 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+To: Pavel Machek <pavel@denx.de>
+CC: Denis CIOCCA <denis.ciocca@st.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"burman.yan@gmail.com" <burman.yan@gmail.com>
+Subject: Re: STMicroelectronics accelerometers driver.
+References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de> <20121008195007.GA32042@elf.ucw.cz>
+In-Reply-To: <20121008195007.GA32042@elf.ucw.cz>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Samuel,
+On 10/08/2012 09:50 PM, Pavel Machek wrote:
+> 
+>>> drivers/iio/accel/STMicroelectronics_accelerometers_iio_i2c.c
+>>>   create mode 100644
+>>> drivers/iio/accel/STMicroelectronics_accelerometers_iio_spi.c
+>>>   create mode 100644
+>>> drivers/iio/accel/STMicroelectronics_accelerometers_iio_trigger.c
+>>
+>> the file names are a bit excessive in my opinion. How about
+>> st_accel_{buffer,core,i2c,...}.c?
+> 
+> drivers/iio/accel/st/iio_spi.c ?
 
-Hi On Mon, Oct 01, 2012 at 04:52:02, Samuel Ortiz wrote:
-> Hi Jonathan,
->=20
-> On Sat, Sep 29, 2012 at 10:50:19AM +0100, Jonathan Cameron wrote:
-> > On 09/26/2012 11:09 AM, Patil, Rachna wrote:
-> > > Hi Shubhrajyoti,
-> > >=20
-> > > On Wed, Sep 26, 2012 at 12:10:51, Datta, Shubhrajyoti wrote:
-> > >> On Wednesday 26 September 2012 10:50 AM, Patil, Rachna wrote:
-> > >>> This patch adds support for suspend/resume of TSC/ADC MFDevice.
-> > >> this should be merged with the patch adding support else we may end=
-=20
-> > >> up in a case where patch a does the runtime calls and the call back =
-=20
-> > >> handlers added later.
-> > >=20
-> > > I am adding both the runtime calls and the handlers in this patch.
-> > > I think maintaining this as a separate patch in better in terms of=20
-> > > readability as well.
-> > I would prefer this merged into patch 4 as it's a simple addition to a=
-=20
-> > driver that should arguably have been there in the first place.
-> I agree. And I would even go as far as saying that having all the MFD par=
-ts from this patchset merged into patch #2 would make sense.
-> Rachna, could you please re-work this patchset in such way, and adress my=
- comments on patch #2 ? I could then take the MFD parts and then Jonathan a=
-nd Dmitry take their parts. There are build time dependencies, but neither =
-the input nor the ADC driver could be actually built as long as the MFD one=
- is not merged (provided that the subdevices driver comes with the right Kc=
-onfig dependecy).
+Maybe. I'd still vote for st_accel though, since I think it is most
+descriptive. Since trigger and buffer should go down to a few lines it probably
+makes sense to put their content into the core file and I don't think we need a
+extra directory for the driver then.
 
-I will re-work the patchset and address all the review comments accordingly=
-.
-
-Thanks & Regards,
-Rachna
-
->=20
-> Cheers,
-> Samuel.
->=20
-> --
-> Intel Open Source Technology Centre
-> http://oss.intel.com/
->=20
+- Lars
