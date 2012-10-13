@@ -5,230 +5,102 @@ Cc: Michael.Hennerich@analog.com,
 	lars@metafoo.de,
 	srinivas.pandruvada@intel.com,
 	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 3/4] staging:iio: add a callback buffer for in kernel push interface
-Date: Sat, 13 Oct 2012 10:24:37 +0100
-Message-Id: <1350120278-26929-4-git-send-email-jic23@kernel.org>
-In-Reply-To: <1350120278-26929-1-git-send-email-jic23@kernel.org>
-References: <1350120278-26929-1-git-send-email-jic23@kernel.org>
+Subject: [PATCH 0/4 V5] staging:iio: Add support for multiple buffers (testing required!)
+Date: Sat, 13 Oct 2012 10:24:34 +0100
+Message-Id: <1350120278-26929-1-git-send-email-jic23@kernel.org>
 Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-This callback buffer is meant to be opaque to users, but basically
-adds a very simple pass through buffer to which data may be
-pushed when it is inserted into the buffer list.
+In quick summary this is needed to do interrupt driven in kernel
+clients as it adds the option to push to multiple 'buffer' interfaces.
+Note that some of these may not actually do any buffering but rather
+push directly into another subsytem (the example is input).
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/iio/Kconfig          |   6 +++
- drivers/iio/Makefile         |   1 +
- drivers/iio/buffer_cb.c      | 113 +++++++++++++++++++++++++++++++++++++++++++
- include/linux/iio/consumer.h |  46 ++++++++++++++++++
- 4 files changed, 166 insertions(+)
+I would like to merge at least the first 3 patches early in this cycle.
+What I need is some testing across a reasonable range of devices.  Review
+is welcome of course as well!
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 6e3f143..0aad08a 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -20,6 +20,12 @@ config IIO_BUFFER
- 
- if IIO_BUFFER
- 
-+config IIO_BUFFER_CB
-+       boolean "IIO callback buffer used for push in kernel interfaces"
-+       help
-+         Should be selected by any drivers that do inkernel push
-+	 usage.  That is, those where the data is pushed to the consumer.
-+
- config IIO_KFIFO_BUF
- 	select IIO_TRIGGER
- 	tristate "Industrial I/O buffering based on kfifo"
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index f7fa3c0..a27ec1c 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -6,6 +6,7 @@ obj-$(CONFIG_IIO) += industrialio.o
- industrialio-y := industrialio-core.o industrialio-event.o inkern.o
- industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
- industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
-+industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
- 
- obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
- obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
-diff --git a/drivers/iio/buffer_cb.c b/drivers/iio/buffer_cb.c
-new file mode 100644
-index 0000000..d1e4881
---- /dev/null
-+++ b/drivers/iio/buffer_cb.c
-@@ -0,0 +1,113 @@
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/err.h>
-+#include <linux/export.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/consumer.h>
-+
-+struct iio_cb_buffer {
-+	struct iio_buffer buffer;
-+	int (*cb)(u8 *data, void *private);
-+	void *private;
-+	struct iio_channel *channels;
-+};
-+
-+static int iio_buffer_cb_store_to(struct iio_buffer *buffer, u8 *data)
-+{
-+	struct iio_cb_buffer *cb_buff = container_of(buffer,
-+						     struct iio_cb_buffer,
-+						     buffer);
-+
-+	return cb_buff->cb(data, cb_buff->private);
-+}
-+
-+static struct iio_buffer_access_funcs iio_cb_access = {
-+	.store_to = &iio_buffer_cb_store_to,
-+};
-+
-+struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
-+					     int (*cb)(u8 *data,
-+						       void *private),
-+					     void *private)
-+{
-+	int ret;
-+	struct iio_cb_buffer *cb_buff;
-+	struct iio_dev *indio_dev;
-+	struct iio_channel *chan;
-+
-+	cb_buff = kzalloc(sizeof *cb_buff, GFP_KERNEL);
-+	if (cb_buff == NULL) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+
-+	cb_buff->private = private;
-+	cb_buff->cb = cb;
-+	cb_buff->buffer.access = &iio_cb_access;
-+	INIT_LIST_HEAD(&cb_buff->buffer.demux_list);
-+
-+	cb_buff->channels = iio_channel_get_all(name);
-+	if (IS_ERR(cb_buff->channels)) {
-+		ret = PTR_ERR(cb_buff->channels);
-+		goto error_free_cb_buff;
-+	}
-+
-+	indio_dev = cb_buff->channels[0].indio_dev;
-+	cb_buff->buffer.scan_mask
-+		= kzalloc(sizeof(long)*BITS_TO_LONGS(indio_dev->masklength),
-+			  GFP_KERNEL);
-+	if (cb_buff->buffer.scan_mask == NULL) {
-+		ret = -ENOMEM;
-+		goto error_release_channels;
-+	}
-+	chan = &cb_buff->channels[0];
-+	while (chan->indio_dev) {
-+		if (chan->indio_dev != indio_dev) {
-+			ret = -EINVAL;
-+			goto error_release_channels;
-+		}
-+		set_bit(chan->channel->scan_index,
-+			cb_buff->buffer.scan_mask);
-+		chan++;
-+	}
-+
-+	return cb_buff;
-+
-+error_release_channels:
-+	iio_channel_release_all(cb_buff->channels);
-+error_free_cb_buff:
-+	kfree(cb_buff);
-+error_ret:
-+	return ERR_PTR(ret);
-+}
-+EXPORT_SYMBOL_GPL(iio_channel_get_all_cb);
-+
-+int iio_channel_start_all_cb(struct iio_cb_buffer *cb_buff)
-+{
-+	return iio_update_buffers(cb_buff->channels[0].indio_dev,
-+				  &cb_buff->buffer,
-+				  NULL);
-+}
-+EXPORT_SYMBOL_GPL(iio_channel_start_all_cb);
-+
-+void iio_channel_stop_all_cb(struct iio_cb_buffer *cb_buff)
-+{
-+	iio_update_buffers(cb_buff->channels[0].indio_dev,
-+			   NULL,
-+			   &cb_buff->buffer);
-+}
-+EXPORT_SYMBOL_GPL(iio_channel_stop_all_cb);
-+
-+void iio_channel_release_all_cb(struct iio_cb_buffer *cb_buff)
-+{
-+	iio_channel_release_all(cb_buff->channels);
-+	kfree(cb_buff);
-+}
-+EXPORT_SYMBOL_GPL(iio_channel_release_all_cb);
-+
-+struct iio_channel
-+*iio_channel_cb_get_channels(const struct iio_cb_buffer *cb_buffer)
-+{
-+	return cb_buffer->channels;
-+}
-+EXPORT_SYMBOL_GPL(iio_channel_cb_get_channels);
-diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-index 57efee6..caf103b 100644
---- a/include/linux/iio/consumer.h
-+++ b/include/linux/iio/consumer.h
-@@ -61,6 +61,52 @@ struct iio_channel *iio_channel_get_all(const char *name);
-  */
- void iio_channel_release_all(struct iio_channel *chan);
- 
-+struct iio_cb_buffer;
-+/**
-+ * iio_channel_get_all_cb() - register callback for triggered capture
-+ * @name:		Name of client device.
-+ * @cb:			Callback function.
-+ * @private:		Private data passed to callback.
-+ *
-+ * NB right now we have no ability to mux data from multiple devices.
-+ * So if the channels requested come from different devices this will
-+ * fail.
-+ */
-+struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
-+					     int (*cb)(u8 *data,
-+						       void *private),
-+					     void *private);
-+/**
-+ * iio_channel_release_all_cb() - release and unregister the callback.
-+ * @cb_buffer:		The callback buffer that was allocated.
-+ */
-+void iio_channel_release_all_cb(struct iio_cb_buffer *cb_buffer);
-+
-+/**
-+ * iio_channel_start_all_cb() - start the flow of data through callback.
-+ * @cb_buff:		The callback buffer we are starting.
-+ */
-+int iio_channel_start_all_cb(struct iio_cb_buffer *cb_buff);
-+
-+/**
-+ * iio_channel_stop_all_cb() - stop the flow of data through the callback.
-+ * @cb_buff:		The callback buffer we are stopping.
-+ */
-+void iio_channel_stop_all_cb(struct iio_cb_buffer *cb_buff);
-+
-+/**
-+ * iio_channel_cb_get_channels() - get access to the underlying channels.
-+ * @cb_buff:		The callback buffers from whom we want the channel
-+ *			information.
-+ *
-+ * This function allows one to obtain information about the channels.
-+ * Whilst this may allow direct reading if all buffers are disabled, the
-+ * primary aim is to allow drivers that are consuming a channel to query
-+ * things like scaling of the channel.
-+ */
-+struct iio_channel
-+*iio_channel_cb_get_channels(const struct iio_cb_buffer *cb_buffer);
-+
- /**
-  * iio_read_channel_raw() - read from a given channel
-  * @chan:		The channel being queried.
+The complexity in this set is entirely in the changes to industrialio-buffer.c
+concerning how we go about adding and removing client buffers.  To do this
+we need to work out which scan mask is appropriate given the requests of
+all the given buffers (and whether we can satisfy it).  I've been testing
+with the max1363 driver which probably has the most complex set of available
+scan masks.  Thus when a new buffer is added or one is removed the whole
+buffer set are torn down and built up again.  This may be undesirable for
+some applications but should occur only rarely.
+
+The example driver is for bridging to the input subsystem and still needs
+some work, but that can occur later in this merge cycle whereas the changes
+to the core really want to go in asap.
+
+Changes since v3 
+
+Rebased and added other drivers that have occured whilst this patch series
+has been languishing in my local tree.
+
+Changes since V2.
+
+Improved handling of error conditions in the buffer insertion and
+removal code.  (suggested by Lars-Peter).  I want to take another
+look at these, but didn't want to keep people from testing this
+in the meantime.
+
+Also a number of minor fixes that came up during testing.
+
+Thanks,
+
+Jonathan
+
+Jonathan Cameron (4):
+  staging:iio: Add support for multiple buffers
+  staging:iio:in kernel users: Add a data field for channel specific
+    info.
+  staging:iio: add a callback buffer for in kernel push interface
+  staging:iio: Proof of concept input driver.
+
+ drivers/iio/Kconfig                             |   6 +
+ drivers/iio/Makefile                            |   1 +
+ drivers/iio/accel/hid-sensor-accel-3d.c         |  15 +-
+ drivers/iio/adc/ad7266.c                        |   3 +-
+ drivers/iio/adc/ad7476.c                        |   2 +-
+ drivers/iio/adc/ad_sigma_delta.c                |   2 +-
+ drivers/iio/adc/at91_adc.c                      |   3 +-
+ drivers/iio/buffer_cb.c                         | 113 +++++++
+ drivers/iio/gyro/hid-sensor-gyro-3d.c           |  15 +-
+ drivers/iio/industrialio-buffer.c               | 377 ++++++++++++++++--------
+ drivers/iio/industrialio-core.c                 |   1 +
+ drivers/iio/inkern.c                            |   1 +
+ drivers/iio/light/adjd_s311.c                   |   3 +-
+ drivers/iio/light/hid-sensor-als.c              |  15 +-
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c   |  15 +-
+ drivers/staging/iio/Kconfig                     |  11 +
+ drivers/staging/iio/Makefile                    |   1 +
+ drivers/staging/iio/accel/adis16201_ring.c      |   2 +-
+ drivers/staging/iio/accel/adis16203_ring.c      |   2 +-
+ drivers/staging/iio/accel/adis16204_ring.c      |   2 +-
+ drivers/staging/iio/accel/adis16209_ring.c      |   2 +-
+ drivers/staging/iio/accel/adis16240_ring.c      |   2 +-
+ drivers/staging/iio/accel/lis3l02dq_ring.c      |   2 +-
+ drivers/staging/iio/adc/ad7298_ring.c           |   2 +-
+ drivers/staging/iio/adc/ad7606_ring.c           |   2 +-
+ drivers/staging/iio/adc/ad7887_ring.c           |   2 +-
+ drivers/staging/iio/adc/ad799x_ring.c           |   2 +-
+ drivers/staging/iio/adc/max1363_ring.c          |   2 +-
+ drivers/staging/iio/gyro/adis16260_ring.c       |   2 +-
+ drivers/staging/iio/iio_input.c                 | 225 ++++++++++++++
+ drivers/staging/iio/iio_input.h                 |  23 ++
+ drivers/staging/iio/iio_simple_dummy_buffer.c   |   5 +-
+ drivers/staging/iio/impedance-analyzer/ad5933.c |   4 +-
+ drivers/staging/iio/imu/adis16400_ring.c        |   5 +-
+ drivers/staging/iio/meter/ade7758_ring.c        |   2 +-
+ include/linux/iio/buffer.h                      |  24 +-
+ include/linux/iio/consumer.h                    |  48 +++
+ include/linux/iio/iio.h                         |   2 +
+ include/linux/iio/machine.h                     |   2 +
+ 39 files changed, 740 insertions(+), 208 deletions(-)
+ create mode 100644 drivers/iio/buffer_cb.c
+ create mode 100644 drivers/staging/iio/iio_input.c
+ create mode 100644 drivers/staging/iio/iio_input.h
+
 -- 
 1.7.12.2
