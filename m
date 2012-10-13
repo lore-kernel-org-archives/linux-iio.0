@@ -1,142 +1,62 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-100.synserver.de ([212.40.185.100]:1106 "EHLO
-	smtp-out-100.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752046Ab2JOJej (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Oct 2012 05:34:39 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 10/11] staging:iio:adis16400: Report correct temperature scale and offset
-Date: Mon, 15 Oct 2012 11:35:33 +0200
-Message-Id: <1350293734-21951-10-git-send-email-lars@metafoo.de>
-In-Reply-To: <1350293734-21951-1-git-send-email-lars@metafoo.de>
-References: <1350293734-21951-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@hermes.cam.ac.uk>
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/7] iio:adc:max1363 cleanup and graduation from staging
+Date: Sat, 13 Oct 2012 10:34:44 +0100
+Message-Id: <1350120891-28593-1-git-send-email-jic23@kernel.org>
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Temperature scale and offset differ between the different devices supported by
-this driver. Right now the driver always reports the temperature scale and
-offset of the adis16400 regardless of which chip variant is used. This patch
-adds two new attributes to the chip_info struct, one for the temperature scale
-and one for the temperature offset.
+Dependent on the multiple buffers series just posted.
+(only for fuzz though afaik)
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/imu/adis16400.h      |    2 ++
- drivers/staging/iio/imu/adis16400_core.c |   23 ++++++++++++++++++++---
- 2 files changed, 22 insertions(+), 3 deletions(-)
+I have been a little slack in moving my own drivers out of staging.
+As ever it's do what I say, not what I do ;)
 
-diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
-index d59d7ac..77c601d 100644
---- a/drivers/staging/iio/imu/adis16400.h
-+++ b/drivers/staging/iio/imu/adis16400.h
-@@ -139,6 +139,8 @@ struct adis16400_chip_info {
- 	const long flags;
- 	unsigned int gyro_scale_micro;
- 	unsigned int accel_scale_micro;
-+	int temp_scale_nano;
-+	int temp_offset;
- 	unsigned long default_scan_mask;
- };
- 
-diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-index dccea95..eaed87f 100644
---- a/drivers/staging/iio/imu/adis16400_core.c
-+++ b/drivers/staging/iio/imu/adis16400_core.c
-@@ -570,8 +570,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 			*val2 = 500; /* 0.5 mgauss */
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_TEMP:
--			*val = 140; /* 0.14 C */
--			*val2 = 0;
-+			*val = st->variant->temp_scale_nano / 1000000;
-+			*val2 = (st->variant->temp_scale_nano % 1000000);
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		default:
- 			return -EINVAL;
-@@ -588,7 +588,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		*val = val16;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_OFFSET:
--		*val = 2500 / 14; /* 25 C = 0x00 */
-+		/* currently only temperature */
-+		*val = st->variant->temp_offset;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
- 		mutex_lock(&indio_dev->mlock);
-@@ -1061,6 +1062,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.num_channels = ARRAY_SIZE(adis16300_channels),
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = 5884,
-+		.temp_scale_nano = 140000000, /* 0.14 C */
-+		.temp_offset = 25000000 / 140000, /* 25 C = 0x00 */
- 		.default_scan_mask = (1 << ADIS16400_SCAN_SUPPLY) |
- 		(1 << ADIS16400_SCAN_GYRO_X) | (1 << ADIS16400_SCAN_ACC_X) |
- 		(1 << ADIS16400_SCAN_ACC_Y) | (1 << ADIS16400_SCAN_ACC_Z) |
-@@ -1073,6 +1076,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.num_channels = ARRAY_SIZE(adis16334_channels),
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
-+		.temp_scale_nano = 67850000, /* 0.06785 C */
-+		.temp_offset = 25000000 / 67850, /* 25 C = 0x00 */
- 		.default_scan_mask = (1 << ADIS16400_SCAN_GYRO_X) |
- 		(1 << ADIS16400_SCAN_GYRO_Y) | (1 << ADIS16400_SCAN_GYRO_Z) |
- 		(1 << ADIS16400_SCAN_ACC_X) | (1 << ADIS16400_SCAN_ACC_Y) |
-@@ -1083,6 +1088,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.num_channels = ARRAY_SIZE(adis16350_channels),
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(73260), /* 0.07326 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(2522), /* 0.002522 g */
-+		.temp_scale_nano = 145300000, /* 0.1453 C */
-+		.temp_offset = 25000000 / 145300, /* 25 C = 0x00 */
- 		.default_scan_mask = 0x7FF,
- 		.flags = ADIS16400_NO_BURST,
- 	},
-@@ -1093,6 +1100,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.product_id = 0x3FE8,
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
-+		.temp_scale_nano = 136000000, /* 0.136 C */
-+		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
- 		.default_scan_mask = 0x7FF,
- 	},
- 	[ADIS16362] = {
-@@ -1102,6 +1111,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.product_id = 0x3FEA,
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(333), /* 0.333 mg */
-+		.temp_scale_nano = 136000000, /* 0.136 C */
-+		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
- 		.default_scan_mask = 0x7FF,
- 	},
- 	[ADIS16364] = {
-@@ -1111,6 +1122,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.product_id = 0x3FEC,
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
-+		.temp_scale_nano = 136000000, /* 0.136 C */
-+		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
- 		.default_scan_mask = 0x7FF,
- 	},
- 	[ADIS16365] = {
-@@ -1120,6 +1133,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.product_id = 0x3FED,
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
-+		.temp_scale_nano = 136000000, /* 0.136 C */
-+		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
- 		.default_scan_mask = 0x7FF,
- 	},
- 	[ADIS16400] = {
-@@ -1130,6 +1145,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
- 		.default_scan_mask = 0xFFF,
-+		.temp_scale_nano = 140000000, /* 0.14 C */
-+		.temp_offset = 25000000 / 140000, /* 25 C = 0x00 */
- 	}
- };
- 
+Anyhow, the big bits here are moving max1363 over kfifo from sw_ring
+(I've been running this locally for at least 6 months).
+Given that it has been impossible to build this driver without buffered
+support for a long time and I have little motivation to make the work
+again, I've assumed it will never happened and hence consolidated the
+driver into a single file.
+
+The other patches are straight forward tidying up and moving to cleaner
+approaches taken in newer drivers + getting rid of some bit rot that
+had occured by making minimal changes in the driver during core abi
+changes.  This one has been with us from the start so it's hardly suprising
+that a few corners had gotten messy.
+
+Finally it moves the driver out of staging.
+
+If anyone has time to take a look at these it would be a great help.
+
+Jonathan
+
+Jonathan Cameron (7):
+  staging:iio:adc:max1363 ring_sw->kfifo conversion
+  staging:iio:adc:max1363 consolidate files.
+  staging:iio:adc:max1363 drop references to 'ring' given now using a
+    fifo
+  staging:iio:adc:max1363 make docs match the contents of
+    max1363_chip_info
+  staging:iio:adc:max1363 white space cleanup
+  staging:iio:adc:max1363 cleanup regulator handling.
+  iio:adc:max1363 move from staging.
+
+ drivers/iio/adc/Kconfig                |   18 +
+ drivers/iio/adc/Makefile               |    1 +
+ drivers/iio/adc/max1363.c              | 1700 ++++++++++++++++++++++++++++++++
+ drivers/staging/iio/adc/Kconfig        |   24 -
+ drivers/staging/iio/adc/Makefile       |    5 -
+ drivers/staging/iio/adc/max1363.h      |  177 ----
+ drivers/staging/iio/adc/max1363_core.c | 1444 ---------------------------
+ drivers/staging/iio/adc/max1363_ring.c |  139 ---
+ 8 files changed, 1719 insertions(+), 1789 deletions(-)
+ create mode 100644 drivers/iio/adc/max1363.c
+ delete mode 100644 drivers/staging/iio/adc/max1363.h
+ delete mode 100644 drivers/staging/iio/adc/max1363_core.c
+ delete mode 100644 drivers/staging/iio/adc/max1363_ring.c
+
 -- 
-1.7.10.4
-
+1.7.12.2
