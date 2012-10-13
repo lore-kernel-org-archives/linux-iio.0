@@ -1,68 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([88.190.12.23]:41592 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755348Ab2JDLvk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Oct 2012 07:51:40 -0400
-Message-ID: <506D783F.5040509@free-electrons.com>
-Date: Thu, 04 Oct 2012 13:51:27 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: remove useless irq_enabled variable in at91
-References: <1348875157-7793-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1348875157-7793-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@hermes.cam.ac.uk>
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 5/7] staging:iio:adc:max1363 white space cleanup
+Date: Sat, 13 Oct 2012 10:34:49 +0100
+Message-Id: <1350120891-28593-6-git-send-email-jic23@kernel.org>
+In-Reply-To: <1350120891-28593-1-git-send-email-jic23@kernel.org>
+References: <1350120891-28593-1-git-send-email-jic23@kernel.org>
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Peter,
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/adc/max1363.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-You can add my
-Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-
-Le 29/09/2012 01:32, Peter Meerwald a écrit :
-> irq_enabled is only set, but never read
-> 
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: maxime.ripard@free-electrons.com
-> ---
->  drivers/iio/adc/at91_adc.c |    3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> index 3ed94bf..b3ba8af 100644
-> --- a/drivers/iio/adc/at91_adc.c
-> +++ b/drivers/iio/adc/at91_adc.c
-> @@ -46,7 +46,6 @@ struct at91_adc_state {
->  	struct clk		*clk;
->  	bool			done;
->  	int			irq;
-> -	bool			irq_enabled;
->  	u16			last_value;
->  	struct mutex		lock;
->  	u8			num_channels;
-> @@ -85,7 +84,6 @@ static irqreturn_t at91_adc_trigger_handler(int irq, void *p)
->  	buffer->access->store_to(buffer, (u8 *)st->buffer);
->  
->  	iio_trigger_notify_done(idev->trig);
-> -	st->irq_enabled = true;
->  
->  	/* Needed to ACK the DRDY interruption */
->  	at91_adc_readl(st, AT91_ADC_LCDR);
-> @@ -106,7 +104,6 @@ static irqreturn_t at91_adc_eoc_trigger(int irq, void *private)
->  
->  	if (iio_buffer_enabled(idev)) {
->  		disable_irq_nosync(irq);
-> -		st->irq_enabled = false;
->  		iio_trigger_poll(idev->trig, iio_get_time_ns());
->  	} else {
->  		st->last_value = at91_adc_readl(st, AT91_ADC_LCDR);
-> 
-
-
+diff --git a/drivers/staging/iio/adc/max1363.c b/drivers/staging/iio/adc/max1363.c
+index 3217753..2f8d433 100644
+--- a/drivers/staging/iio/adc/max1363.c
++++ b/drivers/staging/iio/adc/max1363.c
+@@ -765,9 +765,9 @@ static int max1363_read_event_config(struct iio_dev *indio_dev,
+ 				     u64 event_code)
+ {
+ 	struct max1363_state *st = iio_priv(indio_dev);
+-
+ 	int val;
+ 	int number = IIO_EVENT_CODE_EXTRACT_CHAN(event_code);
++
+ 	mutex_lock(&indio_dev->mlock);
+ 	if (IIO_EVENT_CODE_EXTRACT_DIR(event_code) == IIO_EV_DIR_FALLING)
+ 		val = (1 << number) & st->mask_low;
+@@ -969,8 +969,6 @@ static struct attribute_group max1363_event_attribute_group = {
+ 	.name = "events",
+ };
+ 
+-#define MAX1363_EVENT_FUNCS						\
+-
+ static int max1363_update_scan_mode(struct iio_dev *indio_dev,
+ 				    const unsigned long *scan_mask)
+ {
+@@ -1388,8 +1386,6 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+ 	},
+ };
+ 
+-
+-
+ static int max1363_initial_setup(struct max1363_state *st)
+ {
+ 	st->setupbyte = MAX1363_SETUP_AIN3_IS_AIN3_REF_IS_VDD
 -- 
-Maxime Ripard, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+1.7.12.2
