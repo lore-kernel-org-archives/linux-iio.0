@@ -1,63 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:18669 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751201Ab2I3XWH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 30 Sep 2012 19:22:07 -0400
-Date: Mon, 1 Oct 2012 01:22:02 +0200
-From: Samuel Ortiz <sameo@linux.intel.com>
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: "Patil, Rachna" <rachna@ti.com>,
-	"Datta, Shubhrajyoti" <shubhrajyoti@ti.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH v4 5/5] MFD: ti_tscadc: add suspend/resume functionality
-Message-ID: <20120930232202.GF12231@sortiz-mobl>
-References: <1348636814-14129-1-git-send-email-rachna@ti.com>
- <1348636814-14129-6-git-send-email-rachna@ti.com>
- <5062A373.4000707@ti.com>
- <4CE347531D4CA947960AF71FF095B9323E95738D@DBDE01.ent.ti.com>
- <5066C45B.3000500@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5066C45B.3000500@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] staging iio: use iio_trigger_generic_data_rdy_poll() in accel/adis16209,adis16240 driver
+Date: Sat, 13 Oct 2012 10:06:34 +0200
+Message-Id: <1350115595-7107-3-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1350115595-7107-1-git-send-email-pmeerw@pmeerw.net>
+References: <1350115595-7107-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/accel/adis16209_trigger.c |   11 +----------
+ drivers/staging/iio/accel/adis16240_trigger.c |   11 +----------
+ 2 files changed, 2 insertions(+), 20 deletions(-)
 
-On Sat, Sep 29, 2012 at 10:50:19AM +0100, Jonathan Cameron wrote:
-> On 09/26/2012 11:09 AM, Patil, Rachna wrote:
-> > Hi Shubhrajyoti,
-> > 
-> > On Wed, Sep 26, 2012 at 12:10:51, Datta, Shubhrajyoti wrote:
-> >> On Wednesday 26 September 2012 10:50 AM, Patil, Rachna wrote:
-> >>> This patch adds support for suspend/resume of
-> >>> TSC/ADC MFDevice.
-> >> this should be merged with the patch adding support else
-> >> we may end up in a case where patch a does the runtime calls
-> >> and the call back  handlers added later.
-> > 
-> > I am adding both the runtime calls and the handlers in this patch.
-> > I think maintaining this as a separate patch in better in terms
-> > of readability as well.
-> I would prefer this merged into patch 4 as it's a simple addition to
-> a driver that should arguably have been there in the first place.
-I agree. And I would even go as far as saying that having all the MFD parts
-from this patchset merged into patch #2 would make sense.
-Rachna, could you please re-work this patchset in such way, and adress my
-comments on patch #2 ? I could then take the MFD parts and then Jonathan and
-Dmitry take their parts. There are build time dependencies, but neither the
-input nor the ADC driver could be actually built as long as the MFD one is not
-merged (provided that the subdevices driver comes with the right Kconfig
-dependecy).
-
-Cheers,
-Samuel.
-
+diff --git a/drivers/staging/iio/accel/adis16209_trigger.c b/drivers/staging/iio/accel/adis16209_trigger.c
+index 2ad93dc..1122803 100644
+--- a/drivers/staging/iio/accel/adis16209_trigger.c
++++ b/drivers/staging/iio/accel/adis16209_trigger.c
+@@ -8,15 +8,6 @@
+ #include "adis16209.h"
+ 
+ /**
+- * adis16209_data_rdy_trig_poll() the event handler for the data rdy trig
+- **/
+-static irqreturn_t adis16209_data_rdy_trig_poll(int irq, void *trig)
+-{
+-	iio_trigger_poll(trig, iio_get_time_ns());
+-	return IRQ_HANDLED;
+-}
+-
+-/**
+  * adis16209_data_rdy_trigger_set_state() set datardy interrupt state
+  **/
+ static int adis16209_data_rdy_trigger_set_state(struct iio_trigger *trig,
+@@ -45,7 +36,7 @@ int adis16209_probe_trigger(struct iio_dev *indio_dev)
+ 	}
+ 
+ 	ret = request_irq(st->us->irq,
+-			  adis16209_data_rdy_trig_poll,
++			  iio_trigger_generic_data_rdy_poll,
+ 			  IRQF_TRIGGER_RISING,
+ 			  "adis16209",
+ 			  st->trig);
+diff --git a/drivers/staging/iio/accel/adis16240_trigger.c b/drivers/staging/iio/accel/adis16240_trigger.c
+index fa90a22..f3caf09 100644
+--- a/drivers/staging/iio/accel/adis16240_trigger.c
++++ b/drivers/staging/iio/accel/adis16240_trigger.c
+@@ -8,15 +8,6 @@
+ #include "adis16240.h"
+ 
+ /**
+- * adis16240_data_rdy_trig_poll() the event handler for the data rdy trig
+- **/
+-static irqreturn_t adis16240_data_rdy_trig_poll(int irq, void *trig)
+-{
+-	iio_trigger_poll(trig, iio_get_time_ns());
+-	return IRQ_HANDLED;
+-}
+-
+-/**
+  * adis16240_data_rdy_trigger_set_state() set datardy interrupt state
+  **/
+ static int adis16240_data_rdy_trigger_set_state(struct iio_trigger *trig,
+@@ -45,7 +36,7 @@ int adis16240_probe_trigger(struct iio_dev *indio_dev)
+ 	}
+ 
+ 	ret = request_irq(st->us->irq,
+-			  adis16240_data_rdy_trig_poll,
++			  iio_trigger_generic_data_rdy_poll,
+ 			  IRQF_TRIGGER_RISING,
+ 			  "adis16240",
+ 			  st->trig);
 -- 
-Intel Open Source Technology Centre
-http://oss.intel.com/
+1.7.9.5
