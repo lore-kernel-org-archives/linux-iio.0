@@ -1,33 +1,77 @@
-Return-Path: <pmeerw@pmeerw.net>
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH] iio: fix spelling of Accelerometer in Kconfig
-Date: Sat, 13 Oct 2012 10:06:35 +0200
-Message-Id: <1350115595-7107-4-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1350115595-7107-1-git-send-email-pmeerw@pmeerw.net>
-References: <1350115595-7107-1-git-send-email-pmeerw@pmeerw.net>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:42681 "EHLO
+	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752502Ab2JMJYp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Oct 2012 05:24:45 -0400
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Michael.Hennerich@analog.com, lars@metafoo.de,
+	srinivas.pandruvada@intel.com, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 2/4] staging:iio:in kernel users: Add a data field for channel specific info.
+Date: Sat, 13 Oct 2012 10:24:36 +0100
+Message-Id: <1350120278-26929-3-git-send-email-jic23@kernel.org>
+In-Reply-To: <1350120278-26929-1-git-send-email-jic23@kernel.org>
+References: <1350120278-26929-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Acked-by: Srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+Used to allow information about a given channel mapping to be passed
+through from board files to the consumer drivers.
+
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/iio/accel/Kconfig |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/inkern.c         | 1 +
+ include/linux/iio/consumer.h | 2 ++
+ include/linux/iio/machine.h  | 2 ++
+ 3 files changed, 5 insertions(+)
 
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index b2510c4..fe4bcd7 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -8,7 +8,7 @@ config HID_SENSOR_ACCEL_3D
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	select HID_SENSOR_IIO_COMMON
--	tristate "HID Acelerometers 3D"
-+	tristate "HID Accelerometers 3D"
- 	help
- 	  Say yes here to build support for the HID SENSOR
- 	  accelerometers 3D.
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index f2b78d4..4113105 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -203,6 +203,7 @@ struct iio_channel *iio_channel_get_all(const char *name)
+ 		if (name && strcmp(name, c->map->consumer_dev_name) != 0)
+ 			continue;
+ 		chans[mapind].indio_dev = c->indio_dev;
++		chans[mapind].data = c->map->consumer_data;
+ 		chans[mapind].channel =
+ 			iio_chan_spec_from_name(chans[mapind].indio_dev,
+ 						c->map->adc_channel_label);
+diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+index e875bcf..57efee6 100644
+--- a/include/linux/iio/consumer.h
++++ b/include/linux/iio/consumer.h
+@@ -18,10 +18,12 @@ struct iio_chan_spec;
+  * struct iio_channel - everything needed for a consumer to use a channel
+  * @indio_dev:		Device on which the channel exists.
+  * @channel:		Full description of the channel.
++ * @data:		Data about the channel used by consumer.
+  */
+ struct iio_channel {
+ 	struct iio_dev *indio_dev;
+ 	const struct iio_chan_spec *channel;
++	void *data;
+ };
+ 
+ /**
+diff --git a/include/linux/iio/machine.h b/include/linux/iio/machine.h
+index 809a3f0..1601a2a 100644
+--- a/include/linux/iio/machine.h
++++ b/include/linux/iio/machine.h
+@@ -19,11 +19,13 @@
+  * @consumer_dev_name:	Name to uniquely identify the consumer device.
+  * @consumer_channel:	Unique name used to identify the channel on the
+  *			consumer side.
++ * @consumer_data:	Data about the channel for use by the consumer driver.
+  */
+ struct iio_map {
+ 	const char *adc_channel_label;
+ 	const char *consumer_dev_name;
+ 	const char *consumer_channel;
++	void *consumer_data;
+ };
+ 
+ #endif
 -- 
-1.7.9.5
+1.7.12.2
+
