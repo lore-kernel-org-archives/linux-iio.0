@@ -1,88 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:35678 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755006Ab2JPHm1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 16 Oct 2012 03:42:27 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH RESEND 3/8] input: TSC: ti_tscadc: set FIFO0 threshold Interrupt
-Date: Tue, 16 Oct 2012 12:55:40 +0530
-Message-ID: <1350372345-27108-4-git-send-email-rachna@ti.com>
-In-Reply-To: <1350372345-27108-1-git-send-email-rachna@ti.com>
-References: <1350372345-27108-1-git-send-email-rachna@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from smtp-out-100.synserver.de ([212.40.185.100]:1030 "EHLO
+	smtp-out-100.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752019Ab2JOJeh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Oct 2012 05:34:37 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 06/11] staging:iio: Fix adis16220 channel offsets and scales
+Date: Mon, 15 Oct 2012 11:35:29 +0200
+Message-Id: <1350293734-21951-6-git-send-email-lars@metafoo.de>
+In-Reply-To: <1350293734-21951-1-git-send-email-lars@metafoo.de>
+References: <1350293734-21951-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Code currently uses FIFO1 threshold interrupt.
-since this is a MFD, Dedicating FIFO0 to touchscreen
-and making way for other devices to use FIFO1 as well.
-The FIFO can be shared between 2 devices but since the
-interrupt used is threshold interrupt on FIFO1, we would
-end up having wrong interrupts. Hence changing the same.
+Most of the channel offsets and scales in the adis16220 are incorrect:
+	* Temperature scale is off by a factor of 1000
+	* Voltage scale is off by a factor of 1000
+	* Acceleration seems to have a typo "187042" since it should be instead of
+	  "1887042"
+	* Temperature offset is completely wrong
 
-Signed-off-by: Patil, Rachna <rachna@ti.com>
+This patch fixes these issues.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/input/touchscreen/ti_tscadc.c |   10 ++++++----
- 1 files changed, 6 insertions(+), 4 deletions(-)
+ drivers/staging/iio/accel/adis16220_core.c |   19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ti_tscadc.c b/drivers/input/touchscreen/ti_tscadc.c
-index c1bd8e5..2cc19b0 100644
---- a/drivers/input/touchscreen/ti_tscadc.c
-+++ b/drivers/input/touchscreen/ti_tscadc.c
-@@ -42,6 +42,7 @@
- #define REG_STEPCONFIG(n)	(0x64 + ((n - 1) * 8))
- #define REG_STEPDELAY(n)	(0x68 + ((n - 1) * 8))
- #define REG_FIFO0CNT		0xE4
-+#define REG_FIFO0THR		0xE8
- #define REG_FIFO1THR		0xF4
- #define REG_FIFO0		0x100
- #define REG_FIFO1		0x200
-@@ -55,6 +56,7 @@
- #define STPENB_STEPENB		STEPENB(0x7FFF)
- 
- /* IRQ enable */
-+#define IRQENB_FIFO0THRES	BIT(2)
- #define IRQENB_FIFO1THRES	BIT(5)
- #define IRQENB_PENUP		BIT(9)
- 
-@@ -277,7 +279,7 @@ static irqreturn_t tscadc_irq(int irq, void *dev)
- 	unsigned int fsm;
- 
- 	status = tscadc_readl(ts_dev, REG_IRQSTATUS);
--	if (status & IRQENB_FIFO1THRES) {
-+	if (status & IRQENB_FIFO0THRES) {
- 		tscadc_read_coordinates(ts_dev, &x, &y);
- 
- 		z1 = tscadc_readl(ts_dev, REG_FIFO0) & 0xfff;
-@@ -303,7 +305,7 @@ static irqreturn_t tscadc_irq(int irq, void *dev)
- 				input_sync(input_dev);
- 			}
+diff --git a/drivers/staging/iio/accel/adis16220_core.c b/drivers/staging/iio/accel/adis16220_core.c
+index c755089..eaadd9d 100644
+--- a/drivers/staging/iio/accel/adis16220_core.c
++++ b/drivers/staging/iio/accel/adis16220_core.c
+@@ -486,7 +486,7 @@ static int adis16220_read_raw(struct iio_dev *indio_dev,
+ 		break;
+ 	case IIO_CHAN_INFO_OFFSET:
+ 		if (chan->type == IIO_TEMP) {
+-			*val = 25;
++			*val = 25000 / -470 - 1278; /* 25 C = 1278 */
+ 			return IIO_VAL_INT;
  		}
--		irqclr |= IRQENB_FIFO1THRES;
-+		irqclr |= IRQENB_FIFO0THRES;
- 	}
- 
- 	/*
-@@ -446,9 +448,9 @@ static int __devinit tscadc_probe(struct platform_device *pdev)
- 	tscadc_writel(ts_dev, REG_CTRL, ctrl);
- 
- 	tscadc_idle_config(ts_dev);
--	tscadc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO1THRES);
-+	tscadc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO0THRES);
- 	tscadc_step_config(ts_dev);
--	tscadc_writel(ts_dev, REG_FIFO1THR, ts_dev->steps_to_configure);
-+	tscadc_writel(ts_dev, REG_FIFO0THR, ts_dev->steps_to_configure);
- 
- 	ctrl |= CNTRLREG_TSCSSENB;
- 	tscadc_writel(ts_dev, REG_CTRL, ctrl);
+ 		addrind = 1;
+@@ -495,19 +495,22 @@ static int adis16220_read_raw(struct iio_dev *indio_dev,
+ 		addrind = 2;
+ 		break;
+ 	case IIO_CHAN_INFO_SCALE:
+-		*val = 0;
+ 		switch (chan->type) {
+ 		case IIO_TEMP:
+-			*val2 = -470000;
++			*val = -470; /* -0.47 C */
++			*val2 = 0;
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		case IIO_ACCEL:
+-			*val2 = 1887042;
++			*val2 = IIO_G_TO_M_S_2(19073); /* 19.073 g */
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		case IIO_VOLTAGE:
+-			if (chan->channel == 0)
+-				*val2 = 0012221;
+-			else /* Should really be dependent on VDD */
+-				*val2 = 305;
++			if (chan->channel == 0) {
++				*val = 1;
++				*val2 = 220700; /* 1.2207 mV */
++			} else {
++				/* Should really be dependent on VDD */
++				*val2 = 305180; /* 305.18 uV */
++			}
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		default:
+ 			return -EINVAL;
 -- 
-1.7.0.4
+1.7.10.4
 
