@@ -1,174 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-100.synserver.de ([212.40.185.100]:1042 "EHLO
+Received: from smtp-out-100.synserver.de ([212.40.185.100]:1084 "EHLO
 	smtp-out-100.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752039Ab2JOJej (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Oct 2012 05:34:39 -0400
+	with ESMTP id S1751752Ab2JOJee (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Oct 2012 05:34:34 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 09/11] staging:iio: Fix adis16400 channel offsets and scales
-Date: Mon, 15 Oct 2012 11:35:32 +0200
-Message-Id: <1350293734-21951-9-git-send-email-lars@metafoo.de>
-In-Reply-To: <1350293734-21951-1-git-send-email-lars@metafoo.de>
-References: <1350293734-21951-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH 01/11] iio: Add some helper macros for unit conversion
+Date: Mon, 15 Oct 2012 11:35:24 +0200
+Message-Id: <1350293734-21951-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Most of the channel offsets and scales in the adis16400 are incorrect:
-    * Voltage scale is off by a factor of 1000
-    * Temperature scale is off by a factor of 1000
-	* Temperature offset is completely wrong
-	* Some of the acceleration scales are either completely wrong or have the
-	  wrong unit
-	* Some of the angular velocity scale are either completely wrong or have
-	  the wrong unit
+Some datasheets use a different unit to specify the channel scale than what IIO
+expects it to be. This patch adds two helper macros which allow to convert units
+commonly used in datasheets to IIO units:
 
-This patch fixes these issues. For consistency it also converts scales which are
-correct to use the IIO_G_TO_M_S_2 and IIO_DEGREE_TO_RAD macro. This makes it
-much easier to compare it to the value given in the datasheet.
+ * acceleration: g -> meter / second**2
+ * angular velocity: degree (/ second) -> rad (/ second)
+
+This makes it much more convenient to specify and also easier to verify a
+channel's scale attribute.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/imu/adis16400_core.c |   53 +++++++++++++++---------------
- 1 file changed, 27 insertions(+), 26 deletions(-)
+ include/linux/iio/iio.h |   16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-index b302c9b..dccea95 100644
---- a/drivers/staging/iio/imu/adis16400_core.c
-+++ b/drivers/staging/iio/imu/adis16400_core.c
-@@ -553,10 +553,13 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_VOLTAGE:
- 			*val = 0;
--			if (chan->channel == 0)
--				*val2 = 2418;
--			else
--				*val2 = 806;
-+			if (chan->channel == 0) {
-+				*val = 2;
-+				*val2 = 418000; /* 2.418 mV */
-+			} else {
-+				*val = 0;
-+				*val2 = 805800; /* 805.8 uV */
-+			}
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_ACCEL:
- 			*val = 0;
-@@ -564,11 +567,11 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_MAGN:
- 			*val = 0;
--			*val2 = 500;
-+			*val2 = 500; /* 0.5 mgauss */
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_TEMP:
--			*val = 0;
--			*val2 = 140000;
-+			*val = 140; /* 0.14 C */
-+			*val2 = 0;
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		default:
- 			return -EINVAL;
-@@ -585,10 +588,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		*val = val16;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_OFFSET:
--		/* currently only temperature */
--		*val = 198;
--		*val2 = 160000;
--		return IIO_VAL_INT_PLUS_MICRO;
-+		*val = 2500 / 14; /* 25 C = 0x00 */
-+		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
- 		mutex_lock(&indio_dev->mlock);
- 		/* Need both the number of taps and the sampling frequency */
-@@ -1058,7 +1059,7 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 	[ADIS16300] = {
- 		.channels = adis16300_channels,
- 		.num_channels = ARRAY_SIZE(adis16300_channels),
--		.gyro_scale_micro = 873,
-+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = 5884,
- 		.default_scan_mask = (1 << ADIS16400_SCAN_SUPPLY) |
- 		(1 << ADIS16400_SCAN_GYRO_X) | (1 << ADIS16400_SCAN_ACC_X) |
-@@ -1070,8 +1071,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 	[ADIS16334] = {
- 		.channels = adis16334_channels,
- 		.num_channels = ARRAY_SIZE(adis16334_channels),
--		.gyro_scale_micro = 873,
--		.accel_scale_micro = 981,
-+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
-+		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
- 		.default_scan_mask = (1 << ADIS16400_SCAN_GYRO_X) |
- 		(1 << ADIS16400_SCAN_GYRO_Y) | (1 << ADIS16400_SCAN_GYRO_Z) |
- 		(1 << ADIS16400_SCAN_ACC_X) | (1 << ADIS16400_SCAN_ACC_Y) |
-@@ -1080,8 +1081,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 	[ADIS16350] = {
- 		.channels = adis16350_channels,
- 		.num_channels = ARRAY_SIZE(adis16350_channels),
--		.gyro_scale_micro = 872664,
--		.accel_scale_micro = 24732,
-+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(73260), /* 0.07326 deg/s */
-+		.accel_scale_micro = IIO_G_TO_M_S_2(2522), /* 0.002522 g */
- 		.default_scan_mask = 0x7FF,
- 		.flags = ADIS16400_NO_BURST,
- 	},
-@@ -1090,8 +1091,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.num_channels = ARRAY_SIZE(adis16350_channels),
- 		.flags = ADIS16400_HAS_PROD_ID,
- 		.product_id = 0x3FE8,
--		.gyro_scale_micro = 1279,
--		.accel_scale_micro = 24732,
-+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
-+		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
- 		.default_scan_mask = 0x7FF,
- 	},
- 	[ADIS16362] = {
-@@ -1099,8 +1100,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.num_channels = ARRAY_SIZE(adis16350_channels),
- 		.flags = ADIS16400_HAS_PROD_ID,
- 		.product_id = 0x3FEA,
--		.gyro_scale_micro = 1279,
--		.accel_scale_micro = 24732,
-+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
-+		.accel_scale_micro = IIO_G_TO_M_S_2(333), /* 0.333 mg */
- 		.default_scan_mask = 0x7FF,
- 	},
- 	[ADIS16364] = {
-@@ -1108,8 +1109,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.num_channels = ARRAY_SIZE(adis16350_channels),
- 		.flags = ADIS16400_HAS_PROD_ID,
- 		.product_id = 0x3FEC,
--		.gyro_scale_micro = 1279,
--		.accel_scale_micro = 24732,
-+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
-+		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
- 		.default_scan_mask = 0x7FF,
- 	},
- 	[ADIS16365] = {
-@@ -1117,8 +1118,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.num_channels = ARRAY_SIZE(adis16350_channels),
- 		.flags = ADIS16400_HAS_PROD_ID,
- 		.product_id = 0x3FED,
--		.gyro_scale_micro = 1279,
--		.accel_scale_micro = 24732,
-+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
-+		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
- 		.default_scan_mask = 0x7FF,
- 	},
- 	[ADIS16400] = {
-@@ -1126,8 +1127,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.num_channels = ARRAY_SIZE(adis16400_channels),
- 		.flags = ADIS16400_HAS_PROD_ID,
- 		.product_id = 0x4015,
--		.gyro_scale_micro = 873,
--		.accel_scale_micro = 32656,
-+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
-+		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
- 		.default_scan_mask = 0xFFF,
- 	}
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index c0ae76a..7806c24 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -618,4 +618,20 @@ static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
  };
+ #endif
+ 
++/**
++ * IIO_DEGREE_TO_RAD() - Convert degree to rad
++ * @deg: A value in degree
++ *
++ * Returns the given value converted from degree to rad
++ */
++#define IIO_DEGREE_TO_RAD(deg) (((deg) * 314159ULL + 9000000ULL) / 18000000ULL)
++
++/**
++ * IIO_G_TO_M_S_2() - Convert g to meter / second**2
++ * @g: A value in g
++ *
++ * Returns the given value converted from g to meter / second**2
++ */
++#define IIO_G_TO_M_S_2(g) ((g) * 980665ULL / 100000ULL)
++
+ #endif /* _INDUSTRIAL_IO_H_ */
 -- 
 1.7.10.4
 
