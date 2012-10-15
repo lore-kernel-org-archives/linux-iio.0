@@ -1,85 +1,142 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-100.synserver.de ([212.40.185.100]:1152 "EHLO
+Received: from smtp-out-100.synserver.de ([212.40.185.100]:1106 "EHLO
 	smtp-out-100.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751947Ab2JOJeg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Oct 2012 05:34:36 -0400
+	with ESMTP id S1752046Ab2JOJej (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Oct 2012 05:34:39 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 05/11] staging:iio: Fix adis16209 channel offsets and scales
-Date: Mon, 15 Oct 2012 11:35:28 +0200
-Message-Id: <1350293734-21951-5-git-send-email-lars@metafoo.de>
+Subject: [PATCH 10/11] staging:iio:adis16400: Report correct temperature scale and offset
+Date: Mon, 15 Oct 2012 11:35:33 +0200
+Message-Id: <1350293734-21951-10-git-send-email-lars@metafoo.de>
 In-Reply-To: <1350293734-21951-1-git-send-email-lars@metafoo.de>
 References: <1350293734-21951-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Most of the channel offsets and scales in the adis16209 are incorrect:
-	* Temperature scale is of by a factor of 1000
-	* Voltage scale is of by a factor of 1000
-	* Temperature offset is completely wrong
-	* Rotational position scale is missing
-
-This patch fixes these issues. Also use the IIO_G_TO_M_S_2 macro for the
-acceleration scale since this makes it much easier to compare it with the value
-given in the datasheet.
+Temperature scale and offset differ between the different devices supported by
+this driver. Right now the driver always reports the temperature scale and
+offset of the adis16400 regardless of which chip variant is used. This patch
+adds two new attributes to the chip_info struct, one for the temperature scale
+and one for the temperature offset.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/accel/adis16209_core.c |   18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/staging/iio/imu/adis16400.h      |    2 ++
+ drivers/staging/iio/imu/adis16400_core.c |   23 ++++++++++++++++++++---
+ 2 files changed, 22 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-index b7333bf..7ee974b 100644
---- a/drivers/staging/iio/accel/adis16209_core.c
-+++ b/drivers/staging/iio/accel/adis16209_core.c
-@@ -343,28 +343,29 @@ static int adis16209_read_raw(struct iio_dev *indio_dev,
- 		case IIO_VOLTAGE:
- 			*val = 0;
- 			if (chan->channel == 0)
--				*val2 = 305180;
-+				*val2 = 305180; /* 0.30518 mV */
- 			else
--				*val2 = 610500;
-+				*val2 = 610500; /* 0.6105 mV */
+diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
+index d59d7ac..77c601d 100644
+--- a/drivers/staging/iio/imu/adis16400.h
++++ b/drivers/staging/iio/imu/adis16400.h
+@@ -139,6 +139,8 @@ struct adis16400_chip_info {
+ 	const long flags;
+ 	unsigned int gyro_scale_micro;
+ 	unsigned int accel_scale_micro;
++	int temp_scale_nano;
++	int temp_offset;
+ 	unsigned long default_scan_mask;
+ };
+ 
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index dccea95..eaed87f 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -570,8 +570,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 			*val2 = 500; /* 0.5 mgauss */
  			return IIO_VAL_INT_PLUS_MICRO;
  		case IIO_TEMP:
--			*val = 0;
--			*val2 = -470000;
-+			*val = -470; /* -0.47 C */
-+			*val2 = 0;
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_ACCEL:
- 			*val = 0;
--			*val2 = 2394;
--			return IIO_VAL_INT_PLUS_MICRO;
-+			*val2 = IIO_G_TO_M_S_2(244140); /* 0.244140 mg */
-+			return IIO_VAL_INT_PLUS_NANO;
- 		case IIO_INCLI:
-+		case IIO_ROT:
- 			*val = 0;
--			*val2 = 436;
-+			*val2 = 25000; /* 0.025 degree */
+-			*val = 140; /* 0.14 C */
+-			*val2 = 0;
++			*val = st->variant->temp_scale_nano / 1000000;
++			*val2 = (st->variant->temp_scale_nano % 1000000);
  			return IIO_VAL_INT_PLUS_MICRO;
  		default:
  			return -EINVAL;
- 		}
- 		break;
- 	case IIO_CHAN_INFO_OFFSET:
--		*val = 25;
-+		*val = 25000 / -470 - 0x4FE; /* 25 C = 0x4FE */
+@@ -588,7 +588,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 		*val = val16;
  		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_CALIBBIAS:
- 		switch (chan->type) {
-@@ -491,6 +492,7 @@ static const struct iio_chan_spec adis16209_channels[] = {
- 		.modified = 1,
- 		.channel2 = IIO_MOD_X,
- 		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+		IIO_CHAN_INFO_SCALE_SHARED_BIT,
- 		.address = rot,
- 		.scan_index = ADIS16209_SCAN_ROT,
- 		.scan_type = {
+ 	case IIO_CHAN_INFO_OFFSET:
+-		*val = 2500 / 14; /* 25 C = 0x00 */
++		/* currently only temperature */
++		*val = st->variant->temp_offset;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+ 		mutex_lock(&indio_dev->mlock);
+@@ -1061,6 +1062,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.num_channels = ARRAY_SIZE(adis16300_channels),
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = 5884,
++		.temp_scale_nano = 140000000, /* 0.14 C */
++		.temp_offset = 25000000 / 140000, /* 25 C = 0x00 */
+ 		.default_scan_mask = (1 << ADIS16400_SCAN_SUPPLY) |
+ 		(1 << ADIS16400_SCAN_GYRO_X) | (1 << ADIS16400_SCAN_ACC_X) |
+ 		(1 << ADIS16400_SCAN_ACC_Y) | (1 << ADIS16400_SCAN_ACC_Z) |
+@@ -1073,6 +1076,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.num_channels = ARRAY_SIZE(adis16334_channels),
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
++		.temp_scale_nano = 67850000, /* 0.06785 C */
++		.temp_offset = 25000000 / 67850, /* 25 C = 0x00 */
+ 		.default_scan_mask = (1 << ADIS16400_SCAN_GYRO_X) |
+ 		(1 << ADIS16400_SCAN_GYRO_Y) | (1 << ADIS16400_SCAN_GYRO_Z) |
+ 		(1 << ADIS16400_SCAN_ACC_X) | (1 << ADIS16400_SCAN_ACC_Y) |
+@@ -1083,6 +1088,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.num_channels = ARRAY_SIZE(adis16350_channels),
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(73260), /* 0.07326 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(2522), /* 0.002522 g */
++		.temp_scale_nano = 145300000, /* 0.1453 C */
++		.temp_offset = 25000000 / 145300, /* 25 C = 0x00 */
+ 		.default_scan_mask = 0x7FF,
+ 		.flags = ADIS16400_NO_BURST,
+ 	},
+@@ -1093,6 +1100,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.product_id = 0x3FE8,
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
++		.temp_scale_nano = 136000000, /* 0.136 C */
++		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+ 		.default_scan_mask = 0x7FF,
+ 	},
+ 	[ADIS16362] = {
+@@ -1102,6 +1111,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.product_id = 0x3FEA,
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(333), /* 0.333 mg */
++		.temp_scale_nano = 136000000, /* 0.136 C */
++		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+ 		.default_scan_mask = 0x7FF,
+ 	},
+ 	[ADIS16364] = {
+@@ -1111,6 +1122,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.product_id = 0x3FEC,
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
++		.temp_scale_nano = 136000000, /* 0.136 C */
++		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+ 		.default_scan_mask = 0x7FF,
+ 	},
+ 	[ADIS16365] = {
+@@ -1120,6 +1133,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.product_id = 0x3FED,
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
++		.temp_scale_nano = 136000000, /* 0.136 C */
++		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+ 		.default_scan_mask = 0x7FF,
+ 	},
+ 	[ADIS16400] = {
+@@ -1130,6 +1145,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
+ 		.default_scan_mask = 0xFFF,
++		.temp_scale_nano = 140000000, /* 0.14 C */
++		.temp_offset = 25000000 / 140000, /* 25 C = 0x00 */
+ 	}
+ };
+ 
 -- 
 1.7.10.4
 
