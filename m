@@ -1,71 +1,174 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:34667 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755000Ab2JPHm1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 16 Oct 2012 03:42:27 -0400
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH RESEND 0/8] TI Touchscreen driver updates and Support for TSC/ADC MFD driver
-Date: Tue, 16 Oct 2012 12:55:37 +0530
-Message-ID: <1350372345-27108-1-git-send-email-rachna@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from smtp-out-100.synserver.de ([212.40.185.100]:1042 "EHLO
+	smtp-out-100.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752039Ab2JOJej (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Oct 2012 05:34:39 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 09/11] staging:iio: Fix adis16400 channel offsets and scales
+Date: Mon, 15 Oct 2012 11:35:32 +0200
+Message-Id: <1350293734-21951-9-git-send-email-lars@metafoo.de>
+In-Reply-To: <1350293734-21951-1-git-send-email-lars@metafoo.de>
+References: <1350293734-21951-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch set is a cumulative set of [1] and [2] sent earlier.
-I have merged the patch set so that the MFD patches apply without
-any issues.
+Most of the channel offsets and scales in the adis16400 are incorrect:
+    * Voltage scale is off by a factor of 1000
+    * Temperature scale is off by a factor of 1000
+	* Temperature offset is completely wrong
+	* Some of the acceleration scales are either completely wrong or have the
+	  wrong unit
+	* Some of the angular velocity scale are either completely wrong or have
+	  the wrong unit
 
-Also Note that there are no code changes in either of the patch set,
-only rebased on top of linux-next to make sure that all the patches
-apply without any conflicts.
+This patch fixes these issues. For consistency it also converts scales which are
+correct to use the IIO_G_TO_M_S_2 and IIO_DEGREE_TO_RAD macro. This makes it
+much easier to compare it to the value given in the datasheet.
 
-This patch set has been tested on AM335x EVM.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/imu/adis16400_core.c |   53 +++++++++++++++---------------
+ 1 file changed, 27 insertions(+), 26 deletions(-)
 
-[1] "[PATCH 0/4] input: TSC: ti_tscadc: TI Touchscreen driver updates"
-(http://www.spinics.net/lists/linux-input/msg22107.html)
-
-[2] "[PATCH v5 0/4] Support for TSC/ADC MFD driver"
-(http://www.spinics.net/lists/linux-input/msg22832.html)
-
-Patil, Rachna (8):
-  input: TSC: ti_tscadc: Correct register usage
-  input: TSC: ti_tscadc: Add Step configuration as platform data
-  input: TSC: ti_tscadc: set FIFO0 threshold Interrupt
-  input: TSC: ti_tscadc: Remove definition of End Of Interrupt register
-  input: TSC: ti_tscadc: Rename the existing touchscreen driver
-  MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
-  input: TSC: ti_tsc: Convert TSC into a MFDevice
-  IIO : ADC: tiadc: Add support of TI's ADC driver
-
- drivers/iio/adc/Kconfig                     |    7 +
- drivers/iio/adc/Makefile                    |    1 +
- drivers/iio/adc/ti_am335x_adc.c             |  260 ++++++++++++++
- drivers/input/touchscreen/Kconfig           |    6 +-
- drivers/input/touchscreen/Makefile          |    2 +-
- drivers/input/touchscreen/ti_am335x_tsc.c   |  398 ++++++++++++++++++++++
- drivers/input/touchscreen/ti_tscadc.c       |  486 ---------------------------
- drivers/mfd/Kconfig                         |   11 +
- drivers/mfd/Makefile                        |    1 +
- drivers/mfd/ti_am335x_tscadc.c              |  277 +++++++++++++++
- include/linux/input/ti_am335x_tsc.h         |   23 ++
- include/linux/input/ti_tscadc.h             |   17 -
- include/linux/mfd/ti_am335x_tscadc.h        |  152 +++++++++
- include/linux/platform_data/ti_am335x_adc.h |   14 +
- 14 files changed, 1148 insertions(+), 507 deletions(-)
- create mode 100644 drivers/iio/adc/ti_am335x_adc.c
- create mode 100644 drivers/input/touchscreen/ti_am335x_tsc.c
- delete mode 100644 drivers/input/touchscreen/ti_tscadc.c
- create mode 100644 drivers/mfd/ti_am335x_tscadc.c
- create mode 100644 include/linux/input/ti_am335x_tsc.h
- delete mode 100644 include/linux/input/ti_tscadc.h
- create mode 100644 include/linux/mfd/ti_am335x_tscadc.h
- create mode 100644 include/linux/platform_data/ti_am335x_adc.h
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index b302c9b..dccea95 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -553,10 +553,13 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		case IIO_VOLTAGE:
+ 			*val = 0;
+-			if (chan->channel == 0)
+-				*val2 = 2418;
+-			else
+-				*val2 = 806;
++			if (chan->channel == 0) {
++				*val = 2;
++				*val2 = 418000; /* 2.418 mV */
++			} else {
++				*val = 0;
++				*val2 = 805800; /* 805.8 uV */
++			}
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		case IIO_ACCEL:
+ 			*val = 0;
+@@ -564,11 +567,11 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		case IIO_MAGN:
+ 			*val = 0;
+-			*val2 = 500;
++			*val2 = 500; /* 0.5 mgauss */
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		case IIO_TEMP:
+-			*val = 0;
+-			*val2 = 140000;
++			*val = 140; /* 0.14 C */
++			*val2 = 0;
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		default:
+ 			return -EINVAL;
+@@ -585,10 +588,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 		*val = val16;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_OFFSET:
+-		/* currently only temperature */
+-		*val = 198;
+-		*val2 = 160000;
+-		return IIO_VAL_INT_PLUS_MICRO;
++		*val = 2500 / 14; /* 25 C = 0x00 */
++		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+ 		mutex_lock(&indio_dev->mlock);
+ 		/* Need both the number of taps and the sampling frequency */
+@@ -1058,7 +1059,7 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 	[ADIS16300] = {
+ 		.channels = adis16300_channels,
+ 		.num_channels = ARRAY_SIZE(adis16300_channels),
+-		.gyro_scale_micro = 873,
++		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = 5884,
+ 		.default_scan_mask = (1 << ADIS16400_SCAN_SUPPLY) |
+ 		(1 << ADIS16400_SCAN_GYRO_X) | (1 << ADIS16400_SCAN_ACC_X) |
+@@ -1070,8 +1071,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 	[ADIS16334] = {
+ 		.channels = adis16334_channels,
+ 		.num_channels = ARRAY_SIZE(adis16334_channels),
+-		.gyro_scale_micro = 873,
+-		.accel_scale_micro = 981,
++		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
++		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
+ 		.default_scan_mask = (1 << ADIS16400_SCAN_GYRO_X) |
+ 		(1 << ADIS16400_SCAN_GYRO_Y) | (1 << ADIS16400_SCAN_GYRO_Z) |
+ 		(1 << ADIS16400_SCAN_ACC_X) | (1 << ADIS16400_SCAN_ACC_Y) |
+@@ -1080,8 +1081,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 	[ADIS16350] = {
+ 		.channels = adis16350_channels,
+ 		.num_channels = ARRAY_SIZE(adis16350_channels),
+-		.gyro_scale_micro = 872664,
+-		.accel_scale_micro = 24732,
++		.gyro_scale_micro = IIO_DEGREE_TO_RAD(73260), /* 0.07326 deg/s */
++		.accel_scale_micro = IIO_G_TO_M_S_2(2522), /* 0.002522 g */
+ 		.default_scan_mask = 0x7FF,
+ 		.flags = ADIS16400_NO_BURST,
+ 	},
+@@ -1090,8 +1091,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.num_channels = ARRAY_SIZE(adis16350_channels),
+ 		.flags = ADIS16400_HAS_PROD_ID,
+ 		.product_id = 0x3FE8,
+-		.gyro_scale_micro = 1279,
+-		.accel_scale_micro = 24732,
++		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
++		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
+ 		.default_scan_mask = 0x7FF,
+ 	},
+ 	[ADIS16362] = {
+@@ -1099,8 +1100,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.num_channels = ARRAY_SIZE(adis16350_channels),
+ 		.flags = ADIS16400_HAS_PROD_ID,
+ 		.product_id = 0x3FEA,
+-		.gyro_scale_micro = 1279,
+-		.accel_scale_micro = 24732,
++		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
++		.accel_scale_micro = IIO_G_TO_M_S_2(333), /* 0.333 mg */
+ 		.default_scan_mask = 0x7FF,
+ 	},
+ 	[ADIS16364] = {
+@@ -1108,8 +1109,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.num_channels = ARRAY_SIZE(adis16350_channels),
+ 		.flags = ADIS16400_HAS_PROD_ID,
+ 		.product_id = 0x3FEC,
+-		.gyro_scale_micro = 1279,
+-		.accel_scale_micro = 24732,
++		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
++		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
+ 		.default_scan_mask = 0x7FF,
+ 	},
+ 	[ADIS16365] = {
+@@ -1117,8 +1118,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.num_channels = ARRAY_SIZE(adis16350_channels),
+ 		.flags = ADIS16400_HAS_PROD_ID,
+ 		.product_id = 0x3FED,
+-		.gyro_scale_micro = 1279,
+-		.accel_scale_micro = 24732,
++		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
++		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
+ 		.default_scan_mask = 0x7FF,
+ 	},
+ 	[ADIS16400] = {
+@@ -1126,8 +1127,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.num_channels = ARRAY_SIZE(adis16400_channels),
+ 		.flags = ADIS16400_HAS_PROD_ID,
+ 		.product_id = 0x4015,
+-		.gyro_scale_micro = 873,
+-		.accel_scale_micro = 32656,
++		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
++		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
+ 		.default_scan_mask = 0xFFF,
+ 	}
+ };
+-- 
+1.7.10.4
 
