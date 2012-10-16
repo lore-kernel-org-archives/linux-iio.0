@@ -1,70 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:44370 "EHLO bear.ext.ti.com"
+Received: from bear.ext.ti.com ([192.94.94.41]:35678 "EHLO bear.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756228Ab2JQGLZ convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Oct 2012 02:11:25 -0400
+	id S1755006Ab2JPHm1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 16 Oct 2012 03:42:27 -0400
 From: "Patil, Rachna" <rachna@ti.com>
-To: Samuel Ortiz <sameo@linux.intel.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+To: <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>
+CC: Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dmitry Torokhov <dtor@mail.ru>,
 	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: RE: [PATCH RESEND 0/8] TI Touchscreen driver updates and Support
- for TSC/ADC MFD driver
-Date: Wed, 17 Oct 2012 06:11:13 +0000
-Message-ID: <4CE347531D4CA947960AF71FF095B9323E960D9B@DBDE01.ent.ti.com>
+	"Patil, Rachna" <rachna@ti.com>
+Subject: [PATCH RESEND 3/8] input: TSC: ti_tscadc: set FIFO0 threshold Interrupt
+Date: Tue, 16 Oct 2012 12:55:40 +0530
+Message-ID: <1350372345-27108-4-git-send-email-rachna@ti.com>
+In-Reply-To: <1350372345-27108-1-git-send-email-rachna@ti.com>
 References: <1350372345-27108-1-git-send-email-rachna@ti.com>
- <20121016174207.GA1833@core.coreip.homeip.net>
-In-Reply-To: <20121016174207.GA1833@core.coreip.homeip.net>
-Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Samuel,
+Code currently uses FIFO1 threshold interrupt.
+since this is a MFD, Dedicating FIFO0 to touchscreen
+and making way for other devices to use FIFO1 as well.
+The FIFO can be shared between 2 devices but since the
+interrupt used is threshold interrupt on FIFO1, we would
+end up having wrong interrupts. Hence changing the same.
 
-I have got an ACK from Jonathan and Dmitry on this patch series.
-Can you please pull in if there are no further review comments.
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+---
+ drivers/input/touchscreen/ti_tscadc.c |   10 ++++++----
+ 1 files changed, 6 insertions(+), 4 deletions(-)
 
-Regards,
-Rachna.
-
-On Tue, Oct 16, 2012 at 23:12:07, Dmitry Torokhov wrote:
-> Hi Rachna,
-> 
-> On Tue, Oct 16, 2012 at 12:55:37PM +0530, Patil, Rachna wrote:
-> > This patch set is a cumulative set of [1] and [2] sent earlier.
-> > I have merged the patch set so that the MFD patches apply without any 
-> > issues.
-> > 
-> > Also Note that there are no code changes in either of the patch set, 
-> > only rebased on top of linux-next to make sure that all the patches 
-> > apply without any conflicts.
-> > 
-> > This patch set has been tested on AM335x EVM.
-> > 
-> > [1] "[PATCH 0/4] input: TSC: ti_tscadc: TI Touchscreen driver updates"
-> > (http://www.spinics.net/lists/linux-input/msg22107.html)
-> > 
-> > [2] "[PATCH v5 0/4] Support for TSC/ADC MFD driver"
-> > (http://www.spinics.net/lists/linux-input/msg22832.html)
-> > 
-> > Patil, Rachna (8):
-> >   input: TSC: ti_tscadc: Correct register usage
-> >   input: TSC: ti_tscadc: Add Step configuration as platform data
-> >   input: TSC: ti_tscadc: set FIFO0 threshold Interrupt
-> >   input: TSC: ti_tscadc: Remove definition of End Of Interrupt register
-> >   input: TSC: ti_tscadc: Rename the existing touchscreen driver
-> >   MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
-> >   input: TSC: ti_tsc: Convert TSC into a MFDevice
-> >   IIO : ADC: tiadc: Add support of TI's ADC driver
-> 
-> I am fine with input portion of the patch series, please merge through MFD tree.
-> 
-> Thanks.
-> 
-> --
-> Dmitry
-> 
+diff --git a/drivers/input/touchscreen/ti_tscadc.c b/drivers/input/touchscreen/ti_tscadc.c
+index c1bd8e5..2cc19b0 100644
+--- a/drivers/input/touchscreen/ti_tscadc.c
++++ b/drivers/input/touchscreen/ti_tscadc.c
+@@ -42,6 +42,7 @@
+ #define REG_STEPCONFIG(n)	(0x64 + ((n - 1) * 8))
+ #define REG_STEPDELAY(n)	(0x68 + ((n - 1) * 8))
+ #define REG_FIFO0CNT		0xE4
++#define REG_FIFO0THR		0xE8
+ #define REG_FIFO1THR		0xF4
+ #define REG_FIFO0		0x100
+ #define REG_FIFO1		0x200
+@@ -55,6 +56,7 @@
+ #define STPENB_STEPENB		STEPENB(0x7FFF)
+ 
+ /* IRQ enable */
++#define IRQENB_FIFO0THRES	BIT(2)
+ #define IRQENB_FIFO1THRES	BIT(5)
+ #define IRQENB_PENUP		BIT(9)
+ 
+@@ -277,7 +279,7 @@ static irqreturn_t tscadc_irq(int irq, void *dev)
+ 	unsigned int fsm;
+ 
+ 	status = tscadc_readl(ts_dev, REG_IRQSTATUS);
+-	if (status & IRQENB_FIFO1THRES) {
++	if (status & IRQENB_FIFO0THRES) {
+ 		tscadc_read_coordinates(ts_dev, &x, &y);
+ 
+ 		z1 = tscadc_readl(ts_dev, REG_FIFO0) & 0xfff;
+@@ -303,7 +305,7 @@ static irqreturn_t tscadc_irq(int irq, void *dev)
+ 				input_sync(input_dev);
+ 			}
+ 		}
+-		irqclr |= IRQENB_FIFO1THRES;
++		irqclr |= IRQENB_FIFO0THRES;
+ 	}
+ 
+ 	/*
+@@ -446,9 +448,9 @@ static int __devinit tscadc_probe(struct platform_device *pdev)
+ 	tscadc_writel(ts_dev, REG_CTRL, ctrl);
+ 
+ 	tscadc_idle_config(ts_dev);
+-	tscadc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO1THRES);
++	tscadc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO0THRES);
+ 	tscadc_step_config(ts_dev);
+-	tscadc_writel(ts_dev, REG_FIFO1THR, ts_dev->steps_to_configure);
++	tscadc_writel(ts_dev, REG_FIFO0THR, ts_dev->steps_to_configure);
+ 
+ 	ctrl |= CNTRLREG_TSCSSENB;
+ 	tscadc_writel(ts_dev, REG_CTRL, ctrl);
+-- 
+1.7.0.4
 
