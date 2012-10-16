@@ -1,1393 +1,1815 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Wed, 17 Oct 2012 17:44:20 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: linux-iio@vger.kernel.org, lars@metafoo.de
-Subject: Re: [PATCH] iio: add driver for si114x ambient light / proximity
- sensors
-In-Reply-To: <5079CE35.2090103@kernel.org>
-Message-ID: <alpine.DEB.2.01.1210171645380.5597@pmeerw.net>
-References: <504B780F.8090305@kernel.org> <1348926332-13032-1-git-send-email-pmeerw@pmeerw.net> <5079CE35.2090103@kernel.org>
+Return-Path: <lars@metafoo.de>
+Message-ID: <507D9EA3.4070009@metafoo.de>
+Date: Tue, 16 Oct 2012 19:51:31 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: Denis Ciocca <denis.ciocca@gmail.com>
+CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+ Pavel Machek <pavel@denx.de>,
+ Denis CIOCCA <denis.ciocca@st.com>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>,
+ "burman.yan@gmail.com" <burman.yan@gmail.com>
+Subject: Re: STMicroelectronics accelerometers driver.
+References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de> <20121008195007.GA32042@elf.ucw.cz> <507338B5.60307@metafoo.de> <665718a4-de6b-4d09-ba80-35705fcf2595@email.android.com> <CAEE_umojW5OyB3yGgE54wH7_k__dBu9=Yew_0tCCf5--=C2g5g@mail.gmail.com>
+In-Reply-To: <CAEE_umojW5OyB3yGgE54wH7_k__dBu9=Yew_0tCCf5--=C2g5g@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello,
-
-> There is a slightly confusing divide between the trigger and the buffer
-> configuration but this is hardly the first device where that line has
-> been blurred.  Also why run with all channels enabled whenever the buffer
-> is turned off?
-
-thank you for the comments and the suggestion regarding the irq top/bottom 
-half handler;
-
-I'll change the all-channels-enabled default; more replies inline
-
-p.
-
-> > the si114x supports x=1,2,3 IR LEDs for proximity sensing together with
-> > visible and IR ambient light sensing (ALS)
-> >
-> > arranging 3 IR LEDs in a triangular shape can be used for detection of swipe
-> > gestures (the present driver only measures the intensities, it does not process
-> > the data); there is an affordable reference design (via Digikey), see
-> > http://www.silabs.com/products/sensors/Pages/HID-USB-to-IR-Reference-Design.aspx
-> >
-> > v2: based on comments by Jonathan Cameron and Lars-Peter Clausen
-> > * description of the chip's functionality (above) as requested
-> > * kerneldocs for the data structure
-> > * drop platform data (use of irq is determined by i2c_client->irq;
-> >   irq_flags is TRIGGER_FALLING always)
-> > * provide comment and referene for _compress()/_uncompress()
-> > * drop timestamp from iio_push_to_buffer() call
-> > * select from constant attribute structs, no dynamic allocation
-> > * use constant channels array with proximity channels last,
-> >   compute num_channels based on chip part
-> > * drop update_scan_mode(), use local buffer in trigger function
-> > * cleanup access function to chip parameter values
-> > * simplify switches for readability
-> > * more testing and fixes
-> >
-> > Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> > ---
-> >  drivers/iio/light/Kconfig  |   13 +
-> >  drivers/iio/light/si114x.c | 1185 ++++++++++++++++++++++++++++++++++++++++++++
-> >  2 files changed, 1198 insertions(+)
-> >  create mode 100644 drivers/iio/light/si114x.c
-> >
-> > diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> > index 1763c9b..9ad512f 100644
-> > --- a/drivers/iio/light/Kconfig
-> > +++ b/drivers/iio/light/Kconfig
-> > @@ -32,6 +32,19 @@ config SENSORS_LM3533
-> >  	  changes. The ALS-control output values can be set per zone for the
-> >  	  three current output channels.
-> >
-> > +config SI114X
-> > +	tristate "SI114x combined ALS and proximity sensor"
-> > +	depends on I2C
-> > +	default n
-> > +	---help---
-> > +	  Say Y here if you want to build a driver for the Silicon Labs SI114x
-> > +	  combined ambient light and proximity sensor chips (SI1141, SI1142,
-> > +	  SI1143). The driver supports forced (with and w/o IRQ) and autonomous
-> > +	  measurements (with IRQ only).
-> > +
-> > +	  To compile this driver as a module, choose M here: the
-> > +	  module will be called si114x.
-> > +
-> >  config VCNL4000
-> >  	tristate "VCNL4000 combined ALS and proximity sensor"
-> >  	depends on I2C
-> > diff --git a/drivers/iio/light/si114x.c b/drivers/iio/light/si114x.c
-> > new file mode 100644
-> > index 0000000..1636c0e
-> > --- /dev/null
-> > +++ b/drivers/iio/light/si114x.c
-> > @@ -0,0 +1,1185 @@
-> > +/*
-> > + * si114x.c - Support for Silabs si114x combined ambient light and
-> > + * proximity sensor
-> > + *
-> > + * Copyright 2012 Peter Meerwald <pmeerw@pmeerw.net>
-> > + *
-> > + * This file is subject to the terms and conditions of version 2 of
-> > + * the GNU General Public License.  See the file COPYING in the main
-> > + * directory of this archive for more details.
-> > + *
-> > + * IIO driver for si114x (7-bit I2C slave address 0x5a) with sequencer
-> > + * version >= A03
-> > + *
-> > + * driver supports IRQ and non-IRQ mode; an IRQ is required for
-> > + * autonomous measurement mode
-> > + * TODO:
-> > + *   thresholds
+On 10/14/2012 05:05 PM, Denis Ciocca wrote:
+> Hi guys,
 > 
-> Out of curiosity are thresholds the reason you enable all channels
-> when not in buffered mode?  Thinking about it, with the multiple buffer
-> code I haven't covered the case where the scan mode changes for reasons
-> other than the channels being wanted by some buffer.  That's going
-> to be 'interesting' to handle properly.  Might have to cheat with some
-> pseudo buffer just to enforce channels being read and then do rip down 
-> and setup as the enabled threshold interrupts
-> changes.  Oh well, one for another day.
+> according to your requests I have modified my driver. Only one things
+> about this function:
 
-the interrupt can be configured to fired 
-(i) upon each completed measurement (this is supported), or
-(ii) when a measurement value if above a threshold, or
-(iii) a measurement value crosses a threshold
+Hi,
 
-threshold can be per-channel
+you did not address all the issues addressed during the last review. Most
+importantly the functions, structs, defines, etc. are still no namespaced.
+Please add a st_acc_ prefix to your functions, etc. Add a st_acc_spi_
+st_acc_i2c_ prefix to functions which are spi or i2c specific.
 
-further, the chip supports different measurement rates: e.g. the proximity 
-channels are sampled 10 times/sec while the ALS is sampled only every 10th 
-measurement (not supported by the driver)
-
-> > + *   power management (measurement rate zero)
-> > + */
-> > +
-> > +#include <linux/module.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/err.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/delay.h>
-> > +#include <linux/irq.h>
-> > +#include <linux/gpio.h>
-> > +
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/iio/sysfs.h>
-> > +#include <linux/iio/trigger.h>
-> > +#include <linux/iio/trigger_consumer.h>
-> > +#include <linux/iio/triggered_buffer.h>
-> > +#include <linux/iio/buffer.h>
-> > +
-> > +#define SI114X_REG_PART_ID		0x00
-> > +#define SI114X_REG_REV_ID		0x01
-> > +#define SI114X_REG_SEQ_ID		0x02
-> > +#define SI114X_REG_INT_CFG		0x03
-> > +#define SI114X_REG_IRQ_ENABLE		0x04
-> > +#define SI114X_REG_IRQ_MODE1		0x05
-> > +#define SI114X_REG_IRQ_MODE2		0x06
-> > +#define SI114X_REG_HW_KEY		0x07
-> > +/* RATE stores a 16 bit value compressed to 8 bit */
-> > +#define SI114X_REG_MEAS_RATE		0x08
-> > +#define SI114X_REG_ALS_RATE		0x09
-> > +#define SI114X_REG_PS_RATE		0x0a
-> > +#define SI114X_REG_ALS_LOW_TH0		0x0b
-> > +#define SI114X_REG_ALS_LOW_TH1		0x0c
-> > +#define SI114X_REG_ALS_HI_TH0		0x0d
-> > +#define SI114X_REG_ALS_HI_TH1		0x0e
-> > +#define SI114X_REG_PS_LED21		0x0f
-> > +#define SI114X_REG_PS_LED3		0x10
-> > +/*
-> > + * for rev A10 and below TH0 stores a 16 bit value compressed to 8 bit and
-> > + * TH1 is not used; newer revision have the LSB in TH0 and the MSB in TH1
-> > + */
-> > +#define SI114X_REG_PS1_TH0		0x11
-> > +#define SI114X_REG_PS1_TH1		0x12
-> > +#define SI114X_REG_PS2_TH0		0x13
-> > +#define SI114X_REG_PS2_TH1		0x11
-> > +#define SI114X_REG_PS3_TH0		0x15
-> > +#define SI114X_REG_PS3_TH1		0x16
-> > +#define SI114X_REG_PARAM_WR		0x17
-> > +#define SI114X_REG_COMMAND		0x18
-> > +#define SI114X_REG_RESPONSE		0x20
-> > +#define SI114X_REG_IRQ_STATUS		0x21
-> > +#define SI114X_REG_ALSVIS_DATA0		0x22
-> > +#define SI114X_REG_ALSVIS_DATA1		0x23
-> > +#define SI114X_REG_ALSIR_DATA0		0x24
-> > +#define SI114X_REG_ALSIR_DATA1		0x25
-> > +#define SI114X_REG_PS1_DATA0		0x26
-> > +#define SI114X_REG_PS1_DATA1		0x27
-> > +#define SI114X_REG_PS2_DATA0		0x28
-> > +#define SI114X_REG_PS2_DATA1		0x29
-> > +#define SI114X_REG_PS3_DATA0		0x2a
-> > +#define SI114X_REG_PS3_DATA1		0x2b
-> > +#define SI114X_REG_AUX_DATA0		0x2c
-> > +#define SI114X_REG_AUX_DATA1		0x2d
-> > +#define SI114X_REG_PARAM_RD		0x2e
-> > +#define SI114X_REG_CHIP_STAT		0x30
-> > +
-> > +/* helper to figure out PS_LED register / shift per channel */
-> > +#define SI114X_PS_LED_REG(ch) \
-> > +	(((ch) == 2) ? SI114X_REG_PS_LED3 : SI114X_REG_PS_LED21)
-> > +#define SI114X_PS_LED_SHIFT(ch) \
-> > +	(((ch) == 1) ? 4 : 0)
-> > +
-> > +/* Parameter offsets */
-> > +#define SI114X_PARAM_I2C_ADDR		0x00
-> > +#define SI114X_PARAM_CHLIST		0x01
-> > +#define SI114X_PARAM_PSLED12_SELECT	0x02
-> > +#define SI114X_PARAM_PSLED3_SELECT	0x03
-> > +#define SI114X_PARAM_FILTER_EN		0x04
-> > +#define SI114X_PARAM_PS_ENCODING	0x05
-> > +#define SI114X_PARAM_ALS_ENCODING	0x06
-> > +#define SI114X_PARAM_PS1_ADC_MUX	0x07
-> > +#define SI114X_PARAM_PS2_ADC_MUX	0x08
-> > +#define SI114X_PARAM_PS3_ADC_MUX	0x09
-> > +#define SI114X_PARAM_PS_ADC_COUNTER	0x0a
-> > +#define SI114X_PARAM_PS_ADC_GAIN	0x0b
-> > +#define SI114X_PARAM_PS_ADC_MISC	0x0c
-> > +#define SI114X_PARAM_ALS_ADC_MUX	0x0d
-> > +#define SI114X_PARAM_ALSIR_ADC_MUX	0x0e
-> > +#define SI114X_PARAM_AUX_ADC_MUX	0x0f
-> > +#define SI114X_PARAM_ALSVIS_ADC_COUNTER	0x10
-> > +#define SI114X_PARAM_ALSVIS_ADC_GAIN	0x11
-> > +#define SI114X_PARAM_ALSVIS_ADC_MISC	0x12
-> > +#define SI114X_PARAM_ALS_HYST		0x16
-> > +#define SI114X_PARAM_PS_HYST		0x17
-> > +#define SI114X_PARAM_PS_HISTORY		0x18
-> > +#define SI114X_PARAM_ALS_HISTORY	0x19
-> > +#define SI114X_PARAM_ADC_OFFSET		0x1a
-> > +#define SI114X_PARAM_SLEEP_CTRL		0x1b
-> > +#define SI114X_PARAM_LED_RECOVERY	0x1c
-> > +#define SI114X_PARAM_ALSIR_ADC_COUNTER	0x1d
-> > +#define SI114X_PARAM_ALSIR_ADC_GAIN	0x1e
-> > +#define SI114X_PARAM_ALSIR_ADC_MISC	0x1f
-> > +
-> > +/* Channel enable masks for CHLIST parameter */
-> > +#define SI114X_CHLIST_EN_PS1		0x01
-> > +#define SI114X_CHLIST_EN_PS2		0x02
-> > +#define SI114X_CHLIST_EN_PS3		0x04
-> > +#define SI114X_CHLIST_EN_ALSVIS		0x10
-> > +#define SI114X_CHLIST_EN_ALSIR		0x20
-> > +#define SI114X_CHLIST_EN_AUX		0x40
-> > +
-> > +/* Signal range mask for ADC_MISC parameter */
-> > +#define SI114X_MISC_RANGE		0x20
-> > +
-> > +/* Commands for REG_COMMAND */
-> > +#define SI114X_CMD_NOP			0x00
-> > +#define SI114X_CMD_RESET		0x01
-> > +#define SI114X_CMD_BUSADDR		0x02
-> > +#define SI114X_CMD_PS_FORCE		0x05
-> > +#define SI114X_CMD_ALS_FORCE		0x06
-> > +#define SI114X_CMD_PSALS_FORCE		0x07
-> > +#define SI114X_CMD_PS_PAUSE		0x09
-> > +#define SI114X_CMD_ALS_PAUSE		0x0a
-> > +#define SI114X_CMD_PSALS_PAUSE		0x0b
-> > +#define SI114X_CMD_PS_AUTO		0x0d
-> > +#define SI114X_CMD_ALS_AUTO		0x0e
-> > +#define SI114X_CMD_PSALS_AUTO		0x0f
-> > +#define SI114X_CMD_PARAM_QUERY		0x80
-> > +#define SI114X_CMD_PARAM_SET		0xa0
-> > +#define SI114X_CMD_PARAM_AND		0xc0
-> > +#define SI114X_CMD_PARAM_OR		0xe0
-> > +
-> > +/* Interrupt configuration masks for INT_CFG register */
-> > +#define SI114X_INT_CFG_OE		0x01 /* enable interrupt */
-> > +#define SI114X_INT_CFG_MODE		0x02 /* auto reset interrupt pin */
-> > +
-> > +/* Interrupt enable masks for IRQ_ENABLE register */
-> > +#define SI114X_CMD_IE			0x20
-> > +#define SI114X_PS3_IE			0x10
-> > +#define SI114X_PS2_IE			0x08
-> > +#define SI114X_PS1_IE			0x04
-> > +#define SI114X_ALS_INT1_IE		0x02
-> > +#define SI114X_ALS_INT0_IE		0x01
-> > +
-> > +/* Interrupt mode masks for IRQ_MODE1 register */
-> > +#define SI114X_PS2_IM_GREATER		0xc0
-> > +#define SI114X_PS2_IM_CROSS		0x40
-> > +#define SI114X_PS1_IM_GREATER		0x30
-> > +#define SI114X_PS1_IM_CROSS		0x10
-> > +
-> > +/* Interrupt mode masks for IRQ_MODE2 register */
-> > +#define SI114X_CMD_IM_ERROR		0x04
-> > +#define SI114X_PS3_IM_GREATER		0x03
-> > +#define SI114X_PS3_IM_CROSS		0x01
-> > +
-> > +/* Measurement rate settings */
-> > +#define SI114X_MEAS_RATE_FORCED		0x00
-> > +#define SI114X_MEAS_RATE_10MS		0x84
-> > +#define SI114X_MEAS_RATE_20MS		0x94
-> > +#define SI114X_MEAS_RATE_100MS		0xb9
-> > +#define SI114X_MEAS_RATE_496MS		0xdf
-> > +#define SI114X_MEAS_RATE_1984MS		0xff
-> > +
-> > +/* ALS rate settings relative to measurement rate */
-> > +#define SI114X_ALS_RATE_OFF		0x00
-> > +#define SI114X_ALS_RATE_1X		0x08
-> > +#define SI114X_ALS_RATE_10X		0x32
-> > +#define SI114X_ALS_RATE_100X		0x69
-> > +
-> > +/* PS rate settings relative to measurement rate */
-> > +#define SI114X_PS_RATE_OFF		0x00
-> > +#define SI114X_PS_RATE_1X		0x08
-> > +#define SI114X_PS_RATE_10X		0x32
-> > +#define SI114X_PS_RATE_100X		0x69
-> > +
-> > +/* Sequencer revision from SEQ_ID */
-> > +#define SI114X_SEQ_REV_A01		0x01
-> > +#define SI114X_SEQ_REV_A02		0x02
-> > +#define SI114X_SEQ_REV_A03		0x03
-> > +#define SI114X_SEQ_REV_A10		0x08
-> > +#define SI114X_SEQ_REV_A11		0x09
-> > +
-> > +#define SI114X_DRV_NAME "si114x"
-> > +
-> > +/**
-> > + * struct si114x_data - si114x chip state data
-> > + * @client:	I2C client
-> > + * @mutex:	mutex to protect multi-step I2C accesses and state changes
-> > + * @part:	chip part number (0x41, 0x42, 0x43) for 1 to 3 LEDs version
-> > + * @seq:	sequencer firmware revision determines chip features
-> > + * @data_avail:	wait queue for single measurement IRQ completion
-> > + * @got_data:	wait condition variable
-> > + * @use_irq:	set when IRQ is available
-> > + * @autonomous:	set when chip performs autonomous measurements (only when
-> > + *		IRQ available)
-> > + * @trig:	IIO trigger (only when IRQ available)
-> > + *
-> > + * The driver supports polling and IRQ operation for single and buffered
-> > + * measurements. A device trigger enables autonomous measurements are when
-> > + * an IRQ is available.
-> > + **/
-> > +struct si114x_data {
-> > +	struct i2c_client *client;
-> > +	struct mutex mutex;
-> > +	u8 part;
-> > +	u8 seq;
-> > +	wait_queue_head_t data_avail;
-> > +	bool got_data;
-> > +	bool use_irq;
-> > +	bool autonomous;
-> > +	struct iio_trigger *trig;
-> > +};
-> > +
-> > +/* expand 8 bit compressed value to 16 bit, see Silabs AN498 */
-> > +static u16 si114x_uncompress(u8 x)
-> > +{
-> > +	u16 result = 0;
-> > +	u8 exponent = 0;
-> > +
-> > +	if (x < 8)
-> > +		return 0;
-> > +
-> > +	exponent = (x & 0xf0) >> 4;
-> > +	result = 0x10 | (x & 0x0f);
-> > +
-> > +	if (exponent >= 4)
-> > +		return result << (exponent - 4);
-> > +	return result >> (4 - exponent);
-> > +}
-> > +
-> > +/* compress 16 bit to 8 bit using 4 bit exponent and 4 bit fraction,
-> > + * see Silabs AN498 */
-> > +static u8 si114x_compress(u16 x)
-> > +{
-> > +	u32 exponent = 0;
-> > +	u32 significand = 0;
-> > +	u32 tmp = x;
-> > +
-> > +	if (x == 0x0000)
-> > +		return 0x00;
-> > +	if (x == 0x0001)
-> > +		return 0x08;
-> > +
-> > +	while (1) {
-> > +		tmp >>= 1;
-> > +		exponent += 1;
-> > +		if (tmp == 1)
-> > +			break;
-> > +	}
-> > +
-> > +	if (exponent < 5) {
-> > +		significand = x << (4 - exponent);
-> > +		return (exponent << 4) | (significand & 0xF);
-> > +	}
-> > +
-> > +	significand = x >> (exponent - 5);
-> > +	if (significand & 1) {
-> > +		significand += 2;
-> > +		if (significand & 0x0040) {
-> > +			exponent += 1;
-> > +			significand >>= 1;
-> > +		}
-> > +	}
-> > +
-> > +	return (exponent << 4) | ((significand >> 1) & 0xF);
-> > +}
-> > +
-> > +/* helper function to operate on parameter values: op can be query/set/or/and */
-> > +static int si114x_param_op(struct si114x_data *data, u8 op, u8 param, u8 value)
-> > +{
-> > +	struct i2c_client *client = data->client;
-> > +	int ret;
-> > +
-> > +	mutex_lock(&data->mutex);
-> > +
-> > +	if (op != SI114X_CMD_PARAM_QUERY) {
-> > +		ret = i2c_smbus_write_byte_data(client,
-> > +			SI114X_REG_PARAM_WR, value);
-> > +		if (ret < 0)
-> > +			goto error;
-> > +	}
-> > +
-> > +	ret = i2c_smbus_write_byte_data(client, SI114X_REG_COMMAND,
-> > +		op | (param & 0x1F));
-> > +	if (ret < 0)
-> > +		goto error;
-> > +
-> > +	ret = i2c_smbus_read_byte_data(client, SI114X_REG_PARAM_RD);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	mutex_unlock(&data->mutex);
-> > +
-> > +	return ret & 0xff;
-> > +error:
-> > +	mutex_unlock(&data->mutex);
-> > +	return ret;
-> > +}
-> > +
-> > +static irqreturn_t si114x_trigger_handler(int irq, void *private)
-> > +{
-> > +	struct iio_poll_func *pf = private;
-> > +	struct iio_dev *indio_dev = pf->indio_dev;
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	/* maximum buffer size:
-> > +	 * 6*2 bytes channels data + 4 bytes alignment +
-> > +	 * 8 bytes timestamp
-> > +	 */
-> > +	u8 buffer[24];
-> > +	int len = 0;
-> > +	int i, j = 0;
-> > +	int ret;
-
-> Can this actually happen?  Autonomous seems to be turned on as
-> part of trigger set state.  Also the trigger handler is running
-> in response to an interrupt that I'd assumed was comming from the device?
-> Or is this to do with whether the device is using it's own trigger?
-> If so that should be checked directly rather than via this route
-> that just means something is using that trigger (perhaps another driver).
-
-I am not sure if I understand correctly; the 
-"if (!data->autonomous)" block is here to handle the case when an external 
-trigger is used (such as iio-trig-sysfs)
-so si114x_trigger_handler() does not necessarily run in response to an 
-interrupt generated by the device
-
-"should be checked directly" is not clear to me
-
-> > +	if (!data->autonomous) {
-> > +		ret = i2c_smbus_write_byte_data(data->client,
-> > +			SI114X_REG_COMMAND, SI114X_CMD_PSALS_FORCE);
-> > +		if (ret < 0)
-> > +			goto done;
-> > +		msleep(20);
-> > +	}
-> > +
-> > +	for_each_set_bit(i, indio_dev->active_scan_mask,
-> > +		indio_dev->masklength) {
-> > +		ret = i2c_smbus_read_word_data(data->client,
-> > +			indio_dev->channels[i].address);
-> > +		if (ret < 0)
-> > +			goto done;
-> > +
-> > +		((u16 *) buffer)[j++] = ret & 0xffff;
-> > +		len += 2;
-> > +	}
-> > +
-> > +	if (indio_dev->scan_timestamp)
-> > +		*(s64 *)(buffer + ALIGN(len, sizeof(s64)))
-> > +			= iio_get_time_ns();
-> > +	iio_push_to_buffer(indio_dev->buffer, buffer);
-> > +
-> > +done:
-> > +	iio_trigger_notify_done(indio_dev->trig);
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> > +static irqreturn_t si114x_irq(int irq, void *private)
-> > +{
-> > +	struct iio_dev *indio_dev = private;
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	ret = i2c_smbus_read_byte_data(data->client,
-> > +		SI114X_REG_IRQ_STATUS);
-> > +	if (ret < 0 || !(ret & (SI114X_PS3_IE | SI114X_PS2_IE | SI114X_PS1_IE |
-> > +		SI114X_ALS_INT1_IE | SI114X_ALS_INT0_IE)))
-> > +		return IRQ_HANDLED;
-> > +
-> > +	if (iio_buffer_enabled(indio_dev))
-> > +		iio_trigger_poll_chained(indio_dev->trig, 0);
-> > +	else {
-> > +		data->got_data = true;
-> > +		wake_up_interruptible(&data->data_avail);
-> > +	}
-> > +
-> > +	/* clearing IRQ */
-> > +	ret = i2c_smbus_write_byte_data(data->client,
-> > +		SI114X_REG_IRQ_STATUS, ret & 0x1f);
-> > +	if (ret < 0)
-> > +		dev_err(&data->client->dev, "clearing irq failed\n");
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> > +static int si114x_trigger_set_state(struct iio_trigger *trig, bool 
-state)
-> > +{
-> > +	struct iio_dev *indio_dev = trig->private_data;
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +	int cmd;
-> > +
-> > +	/* configure autonomous mode */
-> > +	cmd = state ? SI114X_CMD_PSALS_AUTO :
-> > +		SI114X_CMD_PSALS_PAUSE;
-> > +
-> > +	ret = i2c_smbus_write_byte_data(data->client,
-> > +		SI114X_REG_COMMAND, cmd);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	data->autonomous = state;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct iio_trigger_ops si114x_trigger_ops = {
-> > +	.owner = THIS_MODULE,
-> > +	.set_trigger_state = si114x_trigger_set_state,
-> > +};
-> > +
-> > +static int si114x_probe_trigger(struct iio_dev *indio_dev)
-> > +{
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	data->trig = iio_trigger_alloc("si114x-dev%d", indio_dev->id);
-> > +	if (!data->trig)
-> > +		return -ENOMEM;
-> > +
-> > +	data->trig->dev.parent = &data->client->dev;
-> > +	data->trig->ops = &si114x_trigger_ops;
-> > +	data->trig->private_data = indio_dev;
-> > +	ret = iio_trigger_register(data->trig);
-> > +	if (ret)
-> > +		goto error_free_trig;
-> > +
-> > +	/* select default trigger */
-> > +	indio_dev->trig = data->trig;
-> > +
-> > +	return 0;
-> > +
-> > +error_free_trig:
-> > +	iio_trigger_free(data->trig);
-> > +	return ret;
-> > +}
-> > +
-> > +static void si114x_remove_trigger(struct iio_dev *indio_dev)
-> > +{
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +
-> > +	iio_trigger_unregister(data->trig);
-> > +	iio_trigger_free(data->trig);
-> > +}
-> > +
-> > +static int si114x_read_raw(struct iio_dev *indio_dev,
-> > +				struct iio_chan_spec const *chan,
-> > +				int *val, int *val2, long mask)
-> > +{
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	int ret = -EINVAL;
-> > +	u8 cmd, reg;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		switch (chan->type) {
-> > +		case IIO_INTENSITY:
-> > +		case IIO_PROXIMITY:
-> > +		case IIO_TEMP:
-> > +			if (iio_buffer_enabled(indio_dev))
-> > +				return -EBUSY;
-> > +
-> > +			if (chan->type == IIO_PROXIMITY)
-> > +				cmd = SI114X_CMD_PS_FORCE;
-> > +			else
-> > +				cmd = SI114X_CMD_ALS_FORCE;
-> > +			ret = i2c_smbus_write_byte_data(data->client,
-> > +				SI114X_REG_COMMAND, cmd);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +			if (data->use_irq) {
-> > +				ret = wait_event_interruptible_timeout(
-> > +					data->data_avail, data->got_data,
-> > +					msecs_to_jiffies(1000));
-> > +				data->got_data = false;
-> > +				if (ret == 0)
-> > +					ret = -ETIMEDOUT;
-> > +			} else
-> > +				msleep(20);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = i2c_smbus_read_word_data(data->client,
-> > +				chan->address);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			*val = ret & 0xffff;
-> > +
-> > +			ret = IIO_VAL_INT;
-> > +			break;
-> > +		case IIO_CURRENT:
-> > +			ret = i2c_smbus_read_byte_data(data->client,
-> > +				SI114X_PS_LED_REG(chan->channel));
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			*val = (ret >> SI114X_PS_LED_SHIFT(chan->channel))
-> > +				& 0x0f;
-> > +
-> > +			ret = IIO_VAL_INT;
-> > +			break;
-> > +		default:
-> > +			break;
-> > +		}
-> > +		break;
-> > +	case IIO_CHAN_INFO_HARDWAREGAIN:
-> > +		switch (chan->type) {
-> > +		case IIO_PROXIMITY:
-> > +			reg = SI114X_PARAM_PS_ADC_GAIN;
-> > +			break;
-> > +		case IIO_INTENSITY:
-> > +			if (chan->channel2 == IIO_MOD_LIGHT_IR)
-> > +				reg = SI114X_PARAM_ALSIR_ADC_GAIN;
-> > +			else
-> > +				reg = SI114X_PARAM_ALSVIS_ADC_GAIN;
-> > +			break;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +		ret = si114x_param_op(data, SI114X_CMD_PARAM_QUERY, reg, 0);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +
-> > +		*val = ret & 0x07;
-> > +
-> > +		ret = IIO_VAL_INT;
-> > +		break;
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int si114x_write_raw(struct iio_dev *indio_dev,
-> > +			       struct iio_chan_spec const *chan,
-> > +			       int val, int val2, long mask)
-> > +{
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	u8 reg1, reg2, shift;
-> > +	int ret = -EINVAL;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_HARDWAREGAIN:
-> > +		switch (chan->type) {
-> > +		case IIO_PROXIMITY:
-> > +			if (val < 0 || val > 5)
-> > +				return -EINVAL;
-> > +			reg1 = SI114X_PARAM_PS_ADC_GAIN;
-> > +			reg2 = SI114X_PARAM_PS_ADC_COUNTER;
-> > +			break;
-> > +		case IIO_INTENSITY:
-> > +			if (val < 0 || val > 7)
-> > +				return -EINVAL;
-> > +			if (chan->channel2 == IIO_MOD_LIGHT_IR) {
-> > +				reg1 = SI114X_PARAM_ALSIR_ADC_GAIN;
-> > +				reg2 = SI114X_PARAM_ALSIR_ADC_COUNTER;
-> > +			} else {
-> > +				reg1 = SI114X_PARAM_ALSVIS_ADC_GAIN;
-> > +				reg2 = SI114X_PARAM_ALSVIS_ADC_COUNTER;
-> > +			}
-> > +			break;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +		ret = si114x_param_op(data, SI114X_CMD_PARAM_SET,
-> > +			reg1, val);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +		/* set recovery period to one's complement of gain */
-> > +		ret = si114x_param_op(data, SI114X_CMD_PARAM_SET,
-> > +			reg2, (~val & 0x07) << 4);
-> > +		break;
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		if (chan->type != IIO_CURRENT)
-> > +			return -EINVAL;
-> > +
-> > +		if (val < 0 || val > 0xf)
-> > +			return -EINVAL;
-> > +
-> > +		reg1 = SI114X_PS_LED_REG(chan->channel);
-> > +		shift = SI114X_PS_LED_SHIFT(chan->channel);
-> > +		ret = i2c_smbus_read_byte_data(data->client, reg1);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +		ret = i2c_smbus_write_byte_data(data->client, reg1,
-> > +			(ret & ~(0x0f << shift)) |
-> > +			((val & 0x0f) << shift));
-> > +		break;
-> > +	}
-> > +	return ret;
-> > +}
-> > +
-> > +#if defined(CONFIG_DEBUG_FS)
-> > +static int si114x_reg_access(struct iio_dev *indio_dev,
-> > +			      unsigned reg, unsigned writeval,
-> > +			      unsigned *readval)
-> > +{
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	if (readval) {
-> > +		ret = i2c_smbus_read_byte_data(data->client, reg);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +		*readval = ret;
-> > +		ret = 0;
-> > +	} else
-> > +		ret = i2c_smbus_write_byte_data(data->client, reg, writeval);
-> > +
-> > +	return ret;
-> > +}
-> > +#endif
-> > +
-> > +static int si114x_revisions(struct si114x_data *data)
-> > +{
-> > +	int ret = i2c_smbus_read_byte_data(data->client, SI114X_REG_PART_ID);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	switch (ret) {
-> > +	case 0x41:
-> > +	case 0x42:
-> > +	case 0x43:
-> > +		data->part = ret;
-> > +		break;
-> > +	default:
-> > +		dev_err(&data->client->dev, "invalid part\n");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	ret = i2c_smbus_read_byte_data(data->client, SI114X_REG_SEQ_ID);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +	data->seq = ret;
-> > +
-> > +	if (data->seq < SI114X_SEQ_REV_A03)
-> > +		dev_info(&data->client->dev, "WARNING: old sequencer revision\n");
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static inline unsigned int si114x_leds(struct si114x_data *data)
-> > +{
-> > +	return data->part - 0x40;
-> > +}
-> > +
-> > +#define SI114X_INTENSITY_CHANNEL(_si) { \
-> > +	.type = IIO_INTENSITY, \
-> > +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
-> > +		IIO_CHAN_INFO_HARDWAREGAIN_SEPARATE_BIT, \
-> > +	.scan_type = IIO_ST('u', 16, 16, 0), \
-> > +	.scan_index = _si, \
-> > +	.address = SI114X_REG_ALSVIS_DATA0, \
-> > +}
-> > +
-> > +#define SI114X_INTENSITY_IR_CHANNEL(_si) { \
-> > +	.type = IIO_INTENSITY, \
-> > +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
-> > +		IIO_CHAN_INFO_HARDWAREGAIN_SEPARATE_BIT, \
-> > +	.modified = 1, \
-> > +	.channel2 = IIO_MOD_LIGHT_IR, \
-> > +	.scan_type = IIO_ST('u', 16, 16, 0), \
-> > +	.scan_index = _si, \
-> > +	.address = SI114X_REG_ALSIR_DATA0 \
-> > +}
-> > +
-> > +#define SI114X_TEMP_CHANNEL(_si) { \
-> > +	.type = IIO_TEMP, \
-> > +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT, \
-> > +	.scan_type = IIO_ST('u', 16, 16, 0), \
-> > +	.scan_index = _si, \
-> > +	.address = SI114X_REG_AUX_DATA0 \
-> > +}
-> > +
-> > +#define SI114X_PROXIMITY_CHANNEL(_si, _ch) { \
-> > +	.type = IIO_PROXIMITY, \
-> > +	.indexed = 1, \
-> > +	.channel = _ch, \
-> > +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
-> > +		IIO_CHAN_INFO_HARDWAREGAIN_SHARED_BIT, \
-> > +	.scan_type = IIO_ST('u', 16, 16, 0), \
-> > +	.scan_index = _si, \
-> > +	.address = SI114X_REG_PS1_DATA0 + _ch*2 \
-> > +}
-> > +
-> > +#define SI114X_CURRENT_CHANNEL(_ch) { \
-> > +	.type = IIO_CURRENT, \
-> > +	.indexed = 1, \
-> > +	.channel = _ch, \
-> > +	.output = 1, \
-> > +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT \
-> > +}
-> > +
-> > +static const struct iio_chan_spec si114x_channels[] = {
-> > +	IIO_CHAN_SOFT_TIMESTAMP(0),
-> > +	SI114X_INTENSITY_CHANNEL(1),
-> > +	SI114X_INTENSITY_IR_CHANNEL(2),
-> > +	SI114X_TEMP_CHANNEL(3),
-> > +	SI114X_PROXIMITY_CHANNEL(4, 0),
-> > +	SI114X_CURRENT_CHANNEL(0),
-> > +	SI114X_PROXIMITY_CHANNEL(5, 1),
-> > +	SI114X_CURRENT_CHANNEL(1),
-> > +	SI114X_PROXIMITY_CHANNEL(6, 2),
-> > +	SI114X_CURRENT_CHANNEL(2),
-> > +};
-> > +
-> > +static ssize_t si114x_range_store(struct device *dev,
-> > +				struct device_attribute *attr,
-> > +				const char *buf, size_t len)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	struct iio_dev_attr *dev_attr = to_iio_dev_attr(attr);
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	if (sysfs_streq(buf, "normal"))
-> > +		ret = si114x_param_op(data, SI114X_CMD_PARAM_AND,
-> > +			dev_attr->address, ~SI114X_MISC_RANGE);
-> > +	else if (sysfs_streq(buf, "high"))
-> > +		ret = si114x_param_op(data, SI114X_CMD_PARAM_OR,
-> > +			dev_attr->address, SI114X_MISC_RANGE);
-> > +	else
-> > +		return -EINVAL;
-> > +
-> > +	return ret ? ret : len;
-> > +}
-> > +
-> > +static ssize_t si114x_range_show(struct device *dev,
-> > +			struct device_attribute *attr,
-> > +			char *buf)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	struct iio_dev_attr *dev_attr = to_iio_dev_attr(attr);
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	ret = si114x_param_op(data, SI114X_CMD_PARAM_QUERY,
-> > +		dev_attr->address, 0);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	return sprintf(buf, "%s\n",
-> > +		(ret & SI114X_MISC_RANGE) ? "high" : "normal");
-> > +}
-> > +
-> > +static IIO_DEVICE_ATTR(in_proximity_range, S_IRUGO | S_IWUSR,
-> > +			si114x_range_show,
-> > +			si114x_range_store,
-> > +			SI114X_PARAM_PS_ADC_MISC);
-> > +
-> > +static IIO_DEVICE_ATTR(in_intensity_range, S_IRUGO | S_IWUSR,
-> > +			si114x_range_show,
-> > +			si114x_range_store,
-> > +			SI114X_PARAM_ALSVIS_ADC_MISC);
-> > +
-> > +static IIO_DEVICE_ATTR(in_intensity_ir_range, S_IRUGO | S_IWUSR,
-> > +			si114x_range_show,
-> > +			si114x_range_store,
-> > +			SI114X_PARAM_ALSIR_ADC_MISC);
-
-> Range is normally defined as numeric.  Any way of mapping these to appropriate
-> numbers?
-
-range is a bit that influences the ADC stage (there are two modes: 'normal 
-signal range' and 'high signal range', in the later case the gain is 
-internally divided by 14.5) -- so maybe rename the attribute to 'mode' 
-instead of 'range'?
-
-> > +static IIO_CONST_ATTR(in_proximity_range_available, "normal high");
-> > +static IIO_CONST_ATTR(in_intensity_range_available, "normal high");
-> > +static IIO_CONST_ATTR(in_intensity_ir_range_available, "normal high");
-> > +
-> > +static int si114x_set_chlist(struct iio_dev *indio_dev, bool all)
-> > +{
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	u8 reg = 0;
-> > +	int i;
-> > +
-> > +	if (all) {
-> > +		reg = SI114X_CHLIST_EN_ALSVIS | SI114X_CHLIST_EN_ALSIR |
-> > +			SI114X_CHLIST_EN_AUX;
-> > +		switch (si114x_leds(data)) {
-> > +		case 3:
-> > +			reg |= SI114X_CHLIST_EN_PS3;
-> > +		case 2:
-> > +			reg |= SI114X_CHLIST_EN_PS2;
-> > +		case 1:
-> > +			reg |= SI114X_CHLIST_EN_PS1;
-> > +			break;
-> > +		}
-> > +	} else
-> > +		for_each_set_bit(i, indio_dev->active_scan_mask,
-> > +			indio_dev->masklength) {
-> > +			switch (indio_dev->channels[i].address) {
-> > +			case SI114X_REG_ALSVIS_DATA0:
-> > +				reg |= SI114X_CHLIST_EN_ALSVIS;
-> > +				break;
-> > +			case SI114X_REG_ALSIR_DATA0:
-> > +				reg |= SI114X_CHLIST_EN_ALSIR;
-> > +				break;
-> > +			case SI114X_REG_PS1_DATA0:
-> > +				reg |= SI114X_CHLIST_EN_PS1;
-> > +				break;
-> > +			case SI114X_REG_PS2_DATA0:
-> > +				reg |= SI114X_CHLIST_EN_PS2;
-> > +				break;
-> > +			case SI114X_REG_PS3_DATA0:
-> > +				reg |= SI114X_CHLIST_EN_PS3;
-> > +				break;
-> > +			case SI114X_REG_AUX_DATA0:
-> > +				reg |= SI114X_CHLIST_EN_AUX;
-> > +				break;
-> > +			}
-> > +		}
-> > +
-> > +	return si114x_param_op(data, SI114X_CMD_PARAM_SET,
-> > +		SI114X_PARAM_CHLIST, reg);
-> > +}
-> > +
-> > +static int si114x_initialize(struct iio_dev *indio_dev)
-> > +{
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	struct i2c_client *client = data->client;
-> > +	int ret;
-> > +
-> > +	/* send reset command */
-> > +	ret = i2c_smbus_write_byte_data(client, SI114X_REG_COMMAND,
-> > +		SI114X_CMD_RESET);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +	msleep(20);
-> > +
-> > +	/* hardware key, magic value */
-> > +	ret = i2c_smbus_write_byte_data(client, SI114X_REG_HW_KEY, 0x17);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +	msleep(20);
-> > +
-> > +	/* interrupt configuration, interrupt output enable */
-> > +	ret = i2c_smbus_write_byte_data(client, SI114X_REG_INT_CFG,
-> > +		data->use_irq ? SI114X_INT_CFG_OE : 0);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	/* enable interrupt for certain activities */
-> A little odd if the interrupt isn't there?
-
-I'll rearrange the code to setup interrupts only when use_irq is true
-
-> > +	ret = i2c_smbus_write_byte_data(client, SI114X_REG_IRQ_ENABLE,
-> > +		SI114X_PS3_IE | SI114X_PS2_IE | SI114X_PS1_IE |
-> > +		SI114X_ALS_INT0_IE);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	/* in autonomous mode, wakeup every 100 ms */
-> > +	ret = i2c_smbus_write_byte_data(client, SI114X_REG_MEAS_RATE,
-> > +	    SI114X_MEAS_RATE_100MS);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	/* measure ALS every time device wakes up */
-> > +	ret = i2c_smbus_write_byte_data(client, SI114X_REG_ALS_RATE,
-> > +		SI114X_ALS_RATE_1X);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	/* measure proximity every time device wakes up */
-> > +	ret = i2c_smbus_write_byte_data(client, SI114X_REG_PS_RATE,
-> > +		SI114X_PS_RATE_1X);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	/* set LED currents to maximum */
-> > +	switch (si114x_leds(data)) {
-> > +	case 3:
-> > +		ret = i2c_smbus_write_byte_data(client,
-> > +			SI114X_REG_PS_LED3, 0x0f);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +		ret = i2c_smbus_write_byte_data(client,
-> > +			SI114X_REG_PS_LED21, 0xff);
-> > +		break;
-> > +	case 2:
-> > +		ret = i2c_smbus_write_byte_data(client,
-> > +			SI114X_REG_PS_LED21, 0xff);
-> > +		break;
-> > +	case 1:
-> > +		ret = i2c_smbus_write_byte_data(client,
-> > +			SI114X_REG_PS_LED21, 0x0f);
-> > +		break;
-> > +	}
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	ret = si114x_set_chlist(indio_dev, true);
-> > +	if (ret < 0)
-> > +		return ret;
-
-> Given this only effects slow sysfs reading I'd be tempted not
-> to put the device in autonomous mode but rather trigger a sample
-> whenever one is requested...  Is there a reason not to do this?
-
-set_chlist() configures the channels to sample during a measurement event 
-(a measurement can be forced (as is done for a sysfs read) or performed 
-automomously at a configured rate);
-the idea was to enable all channels per default so that no reprogramming 
-is necessary for a sysfs channel read (a bit wasteful since all channels 
-are sampled, but only one value is reported)
-
-I can change this behaviour: default to no enabled channels and do the 
-chlist() setup specific to each sysfs read (with proper locking)
-
-> > +
-> > +	/* set normal proximity measurement mode, set high signal range
-> > +	 * PS measurement */
-> > +	ret = si114x_param_op(data, SI114X_CMD_PARAM_SET,
-> > +		SI114X_PARAM_PS_ADC_MISC, 0x20 | 0x04);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static ssize_t si114x_read_frequency(struct device *dev,
-> > +					struct device_attribute *attr,
-> > +					char *buf)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +	u16 rate;
-> > +
-> > +	ret = i2c_smbus_read_byte_data(data->client, SI114X_REG_MEAS_RATE);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	if (ret == 0)
-> > +		rate = 0;
-> > +	else
-> > +		rate = 32000 / si114x_uncompress(ret);
-> > +
-> > +	return sprintf(buf, "%d\n", rate);
-> > +}
-> > +
-> > +static ssize_t si114x_write_frequency(struct device *dev,
-> > +					 struct device_attribute *attr,
-> > +					 const char *buf, size_t len)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +	unsigned long val;
-> > +	int ret;
-> > +	u8 rate;
-> > +
-> > +	ret = kstrtoul(buf, 10, &val);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	switch (val) {
-> > +	case 250:
-> > +	case 100:
-> > +	case 50:
-> > +	case 25:
-> > +	case 10:
-> > +	case 5:
-> > +	case 2:
-> > +	case 1:
-> > +		rate = si114x_compress(32000 / val);
-> > +		break;
-> > +	case 0:
-> > +		rate = 0;
-> > +		break;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	ret = i2c_smbus_write_byte_data(data->client, SI114X_REG_MEAS_RATE,
-> > +		rate);
-> > +
-> > +	return ret ? ret : len;
-> > +}
-> > +
-> > +/* sysfs attributes if IRQ available */
-> > +static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-> > +			      si114x_read_frequency,
-> > +			      si114x_write_frequency);
-> > +
-> > +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("1 2 5 10 25 50 100 250");
-> > +
-> > +static struct attribute *si114x_attrs_trigger[] = {
-> > +	&iio_dev_attr_in_proximity_range.dev_attr.attr,
-> > +	&iio_const_attr_in_proximity_range_available.dev_attr.attr,
-> > +	&iio_dev_attr_in_intensity_range.dev_attr.attr,
-> > +	&iio_const_attr_in_intensity_range_available.dev_attr.attr,
-> > +	&iio_dev_attr_in_intensity_ir_range.dev_attr.attr,
-> > +	&iio_const_attr_in_intensity_ir_range_available.dev_attr.attr,
-> > +	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-> > +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-
-> If sampling frequency has not other effect on the reading (other than
-> how often it is taken) it should probably be an attribute of the trigger
-> not the full device.  Often we have it here because it also effects
-> filtering etc and hence readings even when not using the trigger.
-
-I'll move the attribute to the trigger
-
-> > +	NULL
-> > +};
-> > +
-> > +static struct attribute_group si114x_attr_group_trigger = {
-> > +	.attrs = si114x_attrs_trigger
-> > +};
-> > +
-> > +static const struct iio_info si114x_info_trigger = {
-> > +	.read_raw = si114x_read_raw,
-> > +	.write_raw = si114x_write_raw,
-> > +#if defined(CONFIG_DEBUG_FS)
-> > +	.debugfs_reg_access = si114x_reg_access,
-> > +#endif
-> > +	.driver_module = THIS_MODULE,
-> > +	.attrs = &si114x_attr_group_trigger
-> > +};
-> > +
-> > +/* sysfs attributes if no IRQ available */
-> > +static struct attribute *si114x_attrs_no_trigger[] = {
-> > +	&iio_dev_attr_in_proximity_range.dev_attr.attr,
-> > +	&iio_const_attr_in_proximity_range_available.dev_attr.attr,
-> > +	&iio_dev_attr_in_intensity_range.dev_attr.attr,
-> > +	&iio_const_attr_in_intensity_range_available.dev_attr.attr,
-> > +	&iio_dev_attr_in_intensity_ir_range.dev_attr.attr,
-> > +	&iio_const_attr_in_intensity_ir_range_available.dev_attr.attr,
-> > +	NULL
-> > +};
-> > +
-> > +static struct attribute_group si114x_attr_group_no_trigger = {
-> > +	.attrs = si114x_attrs_no_trigger
-> > +};
-> > +
-> > +static const struct iio_info si114x_info_no_trigger = {
-> > +	.read_raw = si114x_read_raw,
-> > +	.write_raw = si114x_write_raw,
-> > +#if defined(CONFIG_DEBUG_FS)
-> > +	.debugfs_reg_access = si114x_reg_access,
-> > +#endif
-> > +	.driver_module = THIS_MODULE,
-> > +	.attrs = &si114x_attr_group_no_trigger
-> > +};
-> > +
-> > +static int si114x_buffer_preenable(struct iio_dev *indio_dev)
-> > +{
-> > +	struct iio_buffer *buffer = indio_dev->buffer;
-> > +
-> > +	/* at least one channel besides the timestamp must be enabled */
-
-> Why?  Presumably because the interrupt won't occur otherwise, but that
-> should be stated here.  Might be better to have the trigger start fail
-> unless the channel is enabled as it is there that the restriction occurs
-> not here in the buffer code.
-
-correct: no measurement, to interrupt
-
-> > +	if (!bitmap_weight(buffer->scan_mask, indio_dev->masklength))
-> > +		return -EINVAL;
-> > +
-> > +	return iio_sw_buffer_preenable(indio_dev);
-> > +}
-> > +
-> > +static int si114x_buffer_postenable(struct iio_dev *indio_dev)
-> > +{
-> > +	int ret;
-> > +
-> > +	ret = iio_triggered_buffer_postenable(indio_dev);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	/* measure only enabled channels */
-> Why would we measure other channels?  Very similar otherwise to
-> using the update_scan_mode callback.
-
-chlist is configured to all channels per default; this will change...
-
-> > +	ret = si114x_set_chlist(indio_dev, false);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int si114x_buffer_predisable(struct iio_dev *indio_dev)
-> > +{
-> > +	int ret;
-> > +
-> > +	/* measure all channels */
-> Why? Or do you mean set it to measure all channels on next request?
-> Why can't we set it to the approriate value on read request?
-
-will do as suggested (issue also discussed above)
-
-> > +	ret = si114x_set_chlist(indio_dev, true);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	return iio_triggered_buffer_predisable(indio_dev);
-> > +}
-> > +
-> > +static const struct iio_buffer_setup_ops si114x_buffer_setup_ops = {
-> > +	.preenable = si114x_buffer_preenable,
-> > +	.postenable = si114x_buffer_postenable,
-> > +	.predisable = si114x_buffer_predisable,
-> > +};
-> > +
-> > +static int __devinit si114x_probe(struct i2c_client *client,
-> > +					const struct i2c_device_id *id)
-> > +{
-> > +	struct si114x_data *data;
-> > +	struct iio_dev *indio_dev;
-> > +	int ret;
-> > +
-> > +	indio_dev = iio_device_alloc(sizeof(*data));
-> > +	if (!indio_dev)
-> > +		return -ENOMEM;
-> > +
-> > +	data = iio_priv(indio_dev);
-> > +	i2c_set_clientdata(client, indio_dev);
-> > +	data->client = client;
-> > +	data->use_irq = client->irq != 0;
-> > +
-> > +	ret = si114x_revisions(data);
-> > +	if (ret < 0)
-> > +		goto error_free_dev;
-> > +
-> > +	dev_info(&client->dev, "Si11%02x Ambient light/proximity sensor, Seq: %02x\n",
-> > +		data->part, data->seq);
-> > +
-> > +	indio_dev->dev.parent = &client->dev;
-> > +	indio_dev->name = SI114X_DRV_NAME;
-> > +	indio_dev->channels = si114x_channels;
-> /*
->  * Compute
 > 
-> > +	/* Compute number of channels: use of last six channels depends on
-> > +	 * the number of proximity LEDs supported (determined by the part
-> > +	 * number: si1141, si1142, si114x).
-> > +	 * Each proximity LED has an input intensity and output voltage
-> > +	 * channel.
-> > +	 */
-> > +	indio_dev->num_channels = ARRAY_SIZE(si114x_channels) -
-> > +		6 + si114x_leds(data)*2;
-> > +	indio_dev->info = data->use_irq ?
-> > +		&si114x_info_trigger : &si114x_info_no_trigger;
-> > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> static int acc_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+> 
+> You tell to me:
+> 
+>> In buffered mode the samples should not be postprocessed. Userspace expects the
+>> samples in the format as described by the scan_type. The buffer demuxing should
+>> be handled by the IIO core. If you set up available_scan_masks correctly it
+>> will automatically do the right thing.
+> 
+> I agree with you for the postprocessed samples part, but I don't understand very
+> well the second one.
+> I saw the other drivers, if I check only the available_scan_masks variable
+> I don't know which channels are actives and which not.
+> I will read every time all data channels, but I choose which channel
+> put in the buffer.
+> 
+> Thanks,
+> Denis
+> 
+> 
+> 
+> 
+> 
+> From 0917bcc1e22462db0469709d1020b5378d91959c Mon Sep 17 00:00:00 2001
+> From: userid <userid@MacBookAir.(none)>
 
-> Do you ever add the buffered mode to this?
-> Without that you won't get the trigger consumer stuff so won't be able
-> to change the trigger...
+This needs a proper from tag. See here
+http://git-scm.com/book/en/Customizing-Git-Git-Configuration how to setup
+your name and email for git.
 
-indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
-is done in iio_triggered_buffer_setup(), called below
+> Date: Sun, 14 Oct 2012 00:05:54 +0200
+> Subject: [PATCH] Add STMicroelectronics accelerometers driver to support I2C
+>  and SPI devices.
 
-> > +
-> > +	mutex_init(&data->mutex);
-> > +	init_waitqueue_head(&data->data_avail);
-> > +
-> > +	ret = si114x_initialize(indio_dev);
-> > +	if (ret < 0)
-> > +		goto error_free_dev;
-> > +
-> > +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> > +		si114x_trigger_handler, &si114x_buffer_setup_ops);
-> > +	if (ret < 0)
-> > +		goto error_free_dev;
-> > +
-> > +	if (data->use_irq) {
-> > +		ret = request_threaded_irq(client->irq,
-> > +			   NULL, si114x_irq,
-> > +			   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-> > +			   "si114x_irq", indio_dev);
-> > +		if (ret < 0) {
-> > +			dev_err(&client->dev, "irq request failed\n");
-> > +			goto error_free_buffer;
-> > +		}
-> > +
-> > +		ret = si114x_probe_trigger(indio_dev);
-> > +		if (ret < 0)
-> > +			goto error_free_irq;
-> > +	} else
-> > +		dev_info(&client->dev, "no irq, using polling\n");
+The title should start with the subsystem tag, in this case "iio:accel:"
+Also no fullstop at the end of the title, I'd also not include the "to
+support I2C  and SPI devices" to keep the title short.
 
-> I wonder if more detail would be useful in this message.  What
-> is it polling for?
+This also needs a short description of what the patch does.
 
-my suggestion: "no irq, using data ready polling"
+E.g. "This patch adds generic accelerometer driver for STMicroelectronics
+accelerometers, currently it supports ..."
 
-> > +
-> > +	ret = iio_device_register(indio_dev);
-> > +	if (ret < 0)
-> > +		goto error_free_trigger;
-> > +
-> > +	return 0;
-> > +
-> > +error_free_trigger:
-> > +	if (data->use_irq)
-> > +		si114x_remove_trigger(indio_dev);
-> > +error_free_irq:
-> > +	if (data->use_irq)
-> > +		free_irq(client->irq, indio_dev);
-> > +error_free_buffer:
-> > +	iio_triggered_buffer_cleanup(indio_dev);
-> > +error_free_dev:
-> > +	iio_device_free(indio_dev);
-> > +	return ret;
-> > +}
-> > +
-> > +static const struct i2c_device_id si114x_id[] = {
-> > +	{ "si114x", 0 },
-> > +	{ }
-> > +};
-> > +MODULE_DEVICE_TABLE(i2c, si114x_id);
-> > +
-> > +static int __devexit si114x_remove(struct i2c_client *client)
-> > +{
-> > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> > +	struct si114x_data *data = iio_priv(indio_dev);
-> > +
-> > +	iio_device_unregister(indio_dev);
-> > +	iio_triggered_buffer_cleanup(indio_dev);
-> > +	if (data->use_irq) {
-> > +		si114x_remove_trigger(indio_dev);
-> > +		free_irq(client->irq, indio_dev);
-> > +	}
-> small point but I'd normally expect the ordering in here to be the same as the
-> error conditions for probe (and hence reverse of the setup in probe). That
-> would I think mean the iio_triggered_buffer_cleanup would be after the
-> irq cleanup?
+Also it is helpful for reviews to include a small changelog of what was
+changed in this revision of the driver.
 
-will do
+> 
+> ---
+>  drivers/iio/accel/Kconfig                    |   32 +
+>  drivers/iio/accel/Makefile                   |    6 +
+>  drivers/iio/accel/ST_accel_buffer.c          |  122 +++
+>  drivers/iio/accel/ST_accel_core.c            | 1335 ++++++++++++++++++++++++++
+>  drivers/iio/accel/ST_accel_i2c.c             |  165 ++++
+>  drivers/iio/accel/ST_accel_spi.c             |  236 +++++
+>  drivers/iio/accel/ST_accel_trigger.c         |   87 ++
+>  include/linux/iio/accel/ST_accel.h           |  120 +++
+>  include/linux/platform_data/ST_accel_pdata.h |   34 +
+>  9 files changed, 2137 insertions(+)
+>  create mode 100644 drivers/iio/accel/ST_accel_buffer.c
+>  create mode 100644 drivers/iio/accel/ST_accel_core.c
+>  create mode 100644 drivers/iio/accel/ST_accel_i2c.c
+>  create mode 100644 drivers/iio/accel/ST_accel_spi.c
+>  create mode 100644 drivers/iio/accel/ST_accel_trigger.c
+>  create mode 100644 include/linux/iio/accel/ST_accel.h
+>  create mode 100644 include/linux/platform_data/ST_accel_pdata.h
+> 
 
-> > +	iio_device_free(indio_dev);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static struct i2c_driver si114x_driver = {
-> > +	.driver = {
-> > +		.name   = SI114X_DRV_NAME,
-> > +		.owner  = THIS_MODULE,
-> > +	},
-> > +	.probe  = si114x_probe,
-> > +	.remove = __devexit_p(si114x_remove),
-> > +	.id_table = si114x_id,
-> > +};
-> > +
-> > +module_i2c_driver(si114x_driver);
-> > +
-> > +MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
-> > +MODULE_DESCRIPTION("Silabs si114x proximity/ambient light sensor driver");
-> > +MODULE_LICENSE("GPL");
-> >
+Make the file names all lowercase
 
--- 
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index b2510c4..13cc44f 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -13,4 +13,36 @@ config HID_SENSOR_ACCEL_3D
+>  	  Say yes here to build support for the HID SENSOR
+>  	  accelerometers 3D.
+> 
+> +config ST_ACCEL_3AXIS
+> +	tristate "STMicroelectronics accelerometers 3-Axis Driver"
+> +	depends on (I2C || SPI)
+> +	help
+> +	  Say yes here to build support for STMicroelectronics accelerometers.
+> +
+> +choice
+> +	prompt "Bus type"
+> +	depends on ST_ACCEL_3AXIS
 
-Peter Meerwald
-+43-664-2444418 (mobile)
+I don't think there is a reason to make SPI and I2C support exclusive of
+each other. The driver should work just fine if both are built in.
+
+> +
+> +config ST_ACCEL_3AXIS_I2C
+> +	bool "support I2C bus connection"
+> +	depends on I2C && ST_ACCEL_3AXIS
+> +	help
+> +	  Say yes here to build I2C support for STMicroelectronics accelerometers.
+> +
+> +config ST_ACCEL_3AXIS_SPI
+> +	bool "support SPI bus connection"
+> +	depends on SPI && ST_ACCEL_3AXIS
+> +	help
+> +	Say yes here to build SPI support for STMicroelectronics accelerometers.
+> +
+> +endchoice
+> +
+> +config ST_ACCEL_3AXIS_TRIGGERED_BUFFER
+> +	tristate "support triggered buffer"
+> +	depends on ST_ACCEL_3AXIS
+> +	select IIO_TRIGGERED_BUFFER
+> +	select IIO_BUFFER
+> +	help
+> +	  Default trigger and buffer for STMicroelectronics accelerometers driver.
+> +
+>  endmenu
+> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+> index 5bc6855..b797db4 100644
+> --- a/drivers/iio/accel/Makefile
+> +++ b/drivers/iio/accel/Makefile
+> @@ -3,3 +3,9 @@
+>  #
+> 
+>  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+> +
+> +ST_accel-y := ST_accel_core.o
+> +obj-$(CONFIG_ST_ACCEL_3AXIS_I2C) += ST_accel_i2c.o
+> +obj-$(CONFIG_ST_ACCEL_3AXIS_SPI) += ST_accel_spi.o
+> +obj-$(CONFIG_ST_ACCEL_3AXIS_TRIGGERED_BUFFER) += ST_accel_trigger.o
+> ST_accel_buffer.o
+> +obj-$(CONFIG_ST_ACCEL_3AXIS) += ST_accel.o
+> \ No newline at end of file
+> diff --git a/drivers/iio/accel/ST_accel_buffer.c
+> b/drivers/iio/accel/ST_accel_buffer.c
+> new file mode 100644
+> index 0000000..61ee836
+> --- /dev/null
+> +++ b/drivers/iio/accel/ST_accel_buffer.c
+> @@ -0,0 +1,122 @@
+> +/*
+> + * STMicroelectronics accelerometers driver
+> + *
+> + * Copyright 2012 STMicroelectronics Inc.
+> + *
+> + * Denis Ciocca <denis.ciocca@st.com>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/stat.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/byteorder/generic.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +
+> +#include <linux/iio/accel/ST_accel.h>
+> +
+> +
+> +#define ST_ACCEL_NUMBER_DATA_CHANNELS		3
+> +
+> +static int acc_read_all(struct iio_dev *indio_dev, u8 *rx_array)
+> +{
+> +	int len;
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	len = adata->read_multiple_byte(adata,
+> +		indio_dev->channels[ST_ACC_SCAN_X].address,
+> +		ST_ACC_BYTE_FOR_CHANNEL*ST_ACCEL_NUMBER_DATA_CHANNELS,
+> +		rx_array);
+> +	if (len < 0)
+> +		goto read_error;
+> +
+> +	return len;
+> +
+> +read_error:
+> +	return -EIO;
+> +}
+> +
+> +static int acc_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+> +{
+> +	int ret, i, n = 0;
+> +	u8 *rx_array;
+> +	u8 mask = 0x01;
+> +	s16 *data = (s16 *)buf;
+> +	int scan_count = bitmap_weight(indio_dev->active_scan_mask,
+> +				       indio_dev->masklength);
+> +
+> +	rx_array = kzalloc(ST_ACC_BYTE_FOR_CHANNEL*
+> +				ST_ACCEL_NUMBER_DATA_CHANNELS, GFP_KERNEL);
+> +	if (rx_array == NULL)
+> +		return -ENOMEM;
+> +	ret = acc_read_all(indio_dev, rx_array);
+> +	if (ret < 0)
+> +		return ret;
+> +	for (i = 0; i < ST_ACCEL_NUMBER_DATA_CHANNELS; i++) {
+> +		if ((*indio_dev->active_scan_mask & mask) > 0) {
+> +			if (indio_dev->channels[i].scan_type.endianness ==
+> +								IIO_LE) {
+> +				data[n] = (s16)(cpu_to_le16(le16_to_cpu((
+> +				(__le16 *)rx_array)[i])));
+> +				n++;
+> +			} else {
+> +				data[n] = (s16)(cpu_to_be16(be16_to_cpu((
+> +				(__be16 *)rx_array)[i])));
+> +				n++;
+> +			}
+
+Don't do any endian conversion, userspace expects the data to be layed out
+as described by the scan_type
+
+> +		}
+> +		mask = mask << 1;
+> +	}
+> +	kfree(rx_array);
+> +	return i*sizeof(data[0]);
+> +}
+> +
+> +static irqreturn_t acc_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	int len = 0;
+> +	char *data;
+> +
+> +	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> +	if (data == NULL)
+> +		goto done;
+> +	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength))
+> +		len = acc_get_buffer_element(indio_dev, data);
+> +	else
+> +		goto done;
+> +	if (indio_dev->scan_timestamp)
+> +		*(s64 *)((u8 *)data + ALIGN(len, sizeof(s64))) = pf->timestamp;
+> +	iio_push_to_buffer(indio_dev->buffer, data);
+> +	kfree(data);
+> +
+> +done:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static const struct iio_buffer_setup_ops acc_buf_setup_ops = {
+> +	.preenable = &iio_sw_buffer_preenable,
+> +	.postenable = &iio_triggered_buffer_postenable,
+> +	.predisable = &iio_triggered_buffer_predisable,
+> +};
+
+This is just the default buffer_ops for triggered buffers. Just pass NULL as
+the last parameter to iio_triggered_buffer_setup.
+
+> +
+> +int acc_allocate_ring(struct iio_dev *indio_dev)
+> +{
+> +	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+> +			&acc_trigger_handler, &acc_buf_setup_ops);
+> +}
+> +EXPORT_SYMBOL(acc_allocate_ring);
+> +
+> +void acc_deallocate_ring(struct iio_dev *indio_dev)
+> +{
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +}
+> +EXPORT_SYMBOL(acc_deallocate_ring);
+> diff --git a/drivers/iio/accel/ST_accel_core.c
+> b/drivers/iio/accel/ST_accel_core.c
+> new file mode 100644
+> index 0000000..5b30155
+> --- /dev/null
+> +++ b/drivers/iio/accel/ST_accel_core.c
+> @@ -0,0 +1,1335 @@
+> +/*
+> + * STMicroelectronics accelerometers driver
+> + *
+> + * Copyright 2012 STMicroelectronics Inc.
+> + *
+> + * Denis Ciocca <denis.ciocca@st.com>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/errno.h>
+> +#include <linux/types.h>
+> +#include <linux/mutex.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/i2c.h>
+> +#include <linux/gpio.h>
+> +#include <linux/irq.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/buffer.h>
+> +
+> +#include <linux/iio/accel/ST_accel.h>
+> +
+> +
+[...]
+> +
+> +struct odr_available {
+> +	int hz;
+
+unsigned int some of the other structs memebers could also be made unsigned
+
+> +	u8 value;
+> +};
+> +
+> [...]
+> +
+> +/**
+> + * struct st_accel_sensors - ST accel sensors list
+> + * @wai: Contents of WhoAmI register.
+> + * @ch: IIO channels for the sensor.
+> + * @odr: Output data rate register and odr list available.
+> + * @pw: Power register of the sensor.
+> + * @fs: Full scale register and fs list available.
+> + * @bdu: Block data update register.
+> + * @drdy_irq: Data ready register of the sensor.
+> + * @ multi_read_bit: Use or not particular bit for [I2C/SPI] multiread.
+
+extra space
+
+> + */
+> +
+> +static const struct st_accel_sensors {
+> +	u8 wai;
+> +	struct iio_chan_spec *ch;
+> +	struct odr odr;
+> +	struct power pw;
+> +	struct fullscale fs;
+> +	struct bdu bdu;
+> +	struct data_ready_irq drdy_irq;
+> +	bool multi_read_bit;
+> +} st_accel_sensors[] = {
+> +	{
+
+An extra level of indention would be good after this line
+
+> +	.wai = S1_WAI_EXP,
+> +	.ch = (struct iio_chan_spec *)default_channels,
+[...]
+> }
+> +
+> +static int acc_write_data_with_mask(struct iio_dev *indio_dev, u8 reg_addr,
+> +						u8 mask, short num_bit, u8 data)
+> +{
+> +	int err, j, pos;
+> +	u8 prev_data;
+> +	u8 new_data;
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	pos = 7;
+> +	for (j = 128; j >= 0; j = j/2) {
+> +		if (mask/j > 0)
+
+Missing space around the "/"
+
+> +			break;
+> +		else
+
+I'd remove the else
+
+> +			pos--;
+> +	}
+> +
+> +	err = adata->read_byte(adata, reg_addr, &prev_data);
+> +	if (err < 0)
+> +		goto i2c_write_data_with_mask_error;
+> +
+> +	new_data = ((prev_data & (~mask)) | ((data << (pos-num_bit+1)) & mask));
+> +	err = adata->write_byte(adata, reg_addr, new_data);
+> +
+> +i2c_write_data_with_mask_error:
+
+Since this is not i2c specific I'd remove the "i2c" from the label name
+
+> +	return err;
+> +}
+> +
+> +static int match_odr(const struct st_accel_sensors *sensor, int odr,
+> +						struct odr_available *odr_out)
+> +{
+> +	int n, i, ret = -1;
+> +
+> +	n = ARRAY_SIZE(sensor->odr.odr_avl);
+> +	for (i = 0; i < n; i++)
+
+I'd put the ARRAY_SIZE in the for header, also brackets around the for body.
+
+> +		if (sensor->odr.odr_avl[i].hz == odr) {
+> +			odr_out->hz = sensor->odr.odr_avl[i].hz;
+> +			odr_out->value = sensor->odr.odr_avl[i].value;
+> +			ret = 0;
+> +			break;
+> +		}
+> +
+> +	return ret;
+> +}
+> +
+> +static int match_fs(const struct st_accel_sensors *sensor, int fs,
+> +					struct fullscale_available *fs_out)
+> +{
+> +	int n, i, ret = -1;
+> +
+> +	n = ARRAY_SIZE(sensor->fs.fs_avl);
+> +	for (i = 0; i < n; i++)
+
+same here
+
+> +		if (sensor->fs.fs_avl[i].num == fs) {
+> +			fs_out->num = sensor->fs.fs_avl[i].num;
+> +			fs_out->gain = sensor->fs.fs_avl[i].gain;
+> +			fs_out->value = sensor->fs.fs_avl[i].value;
+> +			ret = 0;
+> +			break;
+> +		}
+> +
+> +	return ret;
+> +}
+> +
+> +int acc_set_dataready_irq(struct iio_dev *indio_dev, bool enable)
+> +{
+> +	int err;
+> +	struct st_acc_data *adata;
+> +
+> +	adata = iio_priv(indio_dev);
+> +	if (st_accel_sensors[adata->index].drdy_irq.ig1.en_addr > 0) {
+> +		err = acc_write_data_with_mask(indio_dev,
+> +			st_accel_sensors[adata->index].drdy_irq.ig1.en_addr,
+> +			st_accel_sensors[adata->index].drdy_irq.ig1.en_mask, 1,
+> +			(int)enable);
+> +		if (err < 0)
+> +			goto acc_set_dataready_irq_error;
+> +	}
+> +
+> +	if (st_accel_sensors[adata->index].drdy_irq.ig1.latch_mask_addr > 0) {
+> +		err = acc_write_data_with_mask(indio_dev,
+> +		st_accel_sensors[adata->index].drdy_irq.ig1.latch_mask_addr,
+> +		st_accel_sensors[adata->index].drdy_irq.ig1.latching_mask, 1,
+> +			(int)enable);
+> +		if (err < 0)
+> +			goto acc_set_dataready_irq_error;
+> +	}
+> +
+> +	err = acc_write_data_with_mask(indio_dev,
+> +		st_accel_sensors[adata->index].drdy_irq.addr,
+> +		st_accel_sensors[adata->index].drdy_irq.mask, 1, (int)enable);
+> +	if (err < 0)
+> +		goto acc_set_dataready_irq_error;
+> +
+> +	return 0;
+> +
+> +acc_set_dataready_irq_error:
+> +	return -EIO;
+
+just pass on the error code in err.
+
+> +}
+> +EXPORT_SYMBOL(acc_set_dataready_irq);
+> +
+> +static int set_bdu(struct iio_dev *indio_dev, const struct bdu *bdu, u8 value)
+> +{
+> +	int err;
+> +
+> +	err = acc_write_data_with_mask(indio_dev,
+> +					bdu->addr,
+> +					bdu->mask,
+> +					1,
+> +					value);
+
+I think this would fit all in one line without hitting the 80 char limit
+
+> +
+> +	return err;
+> +}
+> +
+> +static int set_odr(struct iio_dev *indio_dev,
+> +					struct odr_available *odr_available)
+> +{
+> +	int err;
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	if ((st_accel_sensors[adata->index].odr.addr ==
+> +		st_accel_sensors[adata->index].pw.addr) &&
+> +			(st_accel_sensors[adata->index].odr.mask ==
+> +				st_accel_sensors[adata->index].pw.mask)) {
+> +		if (atomic_read(&adata->enabled) == ST_ACCEL_ON) {
+> +			err = acc_write_data_with_mask(indio_dev,
+> +				st_accel_sensors[adata->index].odr.addr,
+> +				st_accel_sensors[adata->index].odr.mask,
+> +				st_accel_sensors[adata->index].odr.num_bit,
+> +				odr_available->value);
+> +			if (err < 0)
+> +				goto set_odr_error;
+> +		} else {
+> +			adata->odr = odr_available->hz;
+> +			err = 0;
+> +		}
+> +	} else {
+> +		err = acc_write_data_with_mask(indio_dev,
+> +				st_accel_sensors[adata->index].odr.addr,
+> +				st_accel_sensors[adata->index].odr.mask,
+> +				st_accel_sensors[adata->index].odr.num_bit,
+> +				odr_available->value);
+> +		if (err < 0)
+> +			goto set_odr_error;
+> +	}
+> +
+> +set_odr_error:
+> +	return err;
+> +}
+> +
+> +static int set_enable(struct iio_dev *indio_dev, int enable)
+> +{
+> +	int found, err;
+> +	u8 tmp_value;
+> +	struct odr_available *odr_out;
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	odr_out = kzalloc(sizeof(*odr_out), GFP_KERNEL);
+> +	if (odr_out == NULL) {
+> +		err = -ENOMEM;
+> +		goto odr_out_allocate_memory_error;
+> +	}
+
+Allocate odr_out on the stack
+
+> +
+> +	switch (enable) {
+> +	case ST_ACCEL_ON:
+> +		found = 0;
+> +		tmp_value = st_accel_sensors[adata->index].pw.value_on;
+> +		if ((st_accel_sensors[adata->index].odr.addr ==
+> +				st_accel_sensors[adata->index].pw.addr) &&
+> +			(st_accel_sensors[adata->index].odr.mask ==
+> +				st_accel_sensors[adata->index].pw.mask)) {
+> +			err = match_odr(&st_accel_sensors[adata->index],
+> +							adata->odr, odr_out);
+> +			if (err < 0)
+> +				goto set_enable_error;
+> +			tmp_value = odr_out->value;
+> +			found = 1;
+> +		}
+> +		err = acc_write_data_with_mask(indio_dev,
+> +				st_accel_sensors[adata->index].pw.addr,
+> +				st_accel_sensors[adata->index].pw.mask,
+> +				st_accel_sensors[adata->index].pw.num_bit,
+> +				tmp_value);
+> +		if (err < 0)
+> +			goto set_enable_error;
+> +		atomic_set(&adata->enabled, ST_ACCEL_ON);
+> +		if (found == 1)
+> +			adata->odr = odr_out->hz;
+> +		break;
+> +	case ST_ACCEL_OFF:
+> +		err = acc_write_data_with_mask(indio_dev,
+> +				st_accel_sensors[adata->index].pw.addr,
+> +				st_accel_sensors[adata->index].pw.mask,
+> +				st_accel_sensors[adata->index].pw.num_bit,
+> +				st_accel_sensors[adata->index].pw.value_off);
+> +		if (err < 0)
+> +			goto set_enable_error;
+> +		atomic_set(&adata->enabled, ST_ACCEL_OFF);
+> +		break;
+> +	default:
+> +		err = -1;
+
+Use a proper error value e.g. -EINVAL
+
+> +		goto set_enable_error;
+> +	}
+> +
+> +set_enable_error:
+> +	kfree(odr_out);
+> +odr_out_allocate_memory_error:
+> +	return err;
+> +}
+> +
+> [...]
+> +
+> +static int acc_read_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *ch, int *val,
+> +							int *val2, long mask)
+> +{
+> +	int err;
+> +	int data_tmp;
+> +	u8 outdata[ST_ACC_BYTE_FOR_CHANNEL];
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
+> +			err = -EBUSY;
+> +			goto read_error;
+> +		} else {
+> +			err = atomic_read(&adata->enabled);
+> +			if (!err) {
+> +				err = -EHOSTDOWN;
+
+EHOSTDOWN is not a appropricate error in this case. This is not a socket!
+
+> +				goto read_error;
+> +			} else {
+> +				err = adata->read_multiple_byte(adata,
+> +					ch->address, ST_ACC_BYTE_FOR_CHANNEL,
+> +					outdata);
+> +				if (err < 0)
+> +					goto read_error;
+> +
+> +				if (ch->scan_type.endianness == IIO_LE)
+> +					*val = (s32)(s16)(cpu_to_le16(
+> +					le16_to_cpu(((__le16 *)outdata)[0])))
+> +					>> ch->scan_type.shift;
+> +				else
+> +					*val = (s32)(s16)(cpu_to_le16(
+> +					be16_to_cpu(((__be16 *)outdata)[0])))
+> +					>> ch->scan_type.shift;
+
+All these casts look kind of crazy.
+
+> +			}
+> +		}
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		data_tmp = UG_TO_MS2(adata->gain);
+> +		*val = 0;
+> +		*val2 = data_tmp;
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +read_error:
+> +	return err;
+> +}
+> +
+> +static int acc_check_irq(struct iio_dev *indio_dev)
+> +{
+> +	int err;
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	if (*adata->irq_data_ready <= 0)
+> +		err = -EINVAL;
+> +	else
+> +		err = 0;
+> +
+
+There is onlu one caller of this function, just inline the code int that
+function
+
+> +	return err;
+> +}
+> +
+> +static void register_channels(struct iio_dev *indio_dev)
+> +{
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	indio_dev->channels = st_accel_sensors[adata->index].ch;
+> +	indio_dev->num_channels = ST_ACC_NUMBER_ALL_CHANNELS;
+
+Same here
+
+> +}
+> +
+> +static void set_sensor_parameters(struct iio_dev *indio_dev)
+> +{
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	adata->multiread_bit = st_accel_sensors[adata->index].multi_read_bit;
+
+Same here
+
+> +}
+> +
+> +static int check_device_list(struct iio_dev *indio_dev, u8 wai)
+> +{
+> +	int i, sensor_length, found;
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	found = 0;
+> +	sensor_length = ARRAY_SIZE(st_accel_sensors);
+> +	for (i = 0; i < sensor_length; i++) {
+
+I'd just put the ARRAY_SIZE(...) in the for header and get rid of the extra
+variable.
+
+> +		if (st_accel_sensors[i].wai == wai) {
+> +			found = 1;
+> +			break;
+> +		}
+> +	}
+> +	if (found != 1)
+> +		goto check_device_error;
+> +	adata->index = i;
+> +	return i;
+> +
+> +check_device_error:
+> +	pr_err("%s: device not supported -> wai (0x%x).\n", adata->name, wai);
+
+dev_err. As a rule of thumb don't use the pr_ functions in device drivers.
+
+> +	return -ENODEV;
+> +}
+> +
+> +static int get_wai_device(struct iio_dev *indio_dev, u8 reg_addr, u8 *value)
+> +{
+> +	int ret;
+> +	u8 buf;
+> +	struct st_acc_data *adata;
+> +
+> +	adata = iio_priv(indio_dev);
+> +	buf = reg_addr;
+> +	ret = adata->read_byte(adata, reg_addr, value);
+> +	if (ret < 0)
+> +		goto read_byte_wai_error;
+> +
+> +	return 0;
+> +
+> +read_byte_wai_error:
+> +	pr_err("%s: failed to read wai register (0x%x).\n",
+> +							adata->name, reg_addr);
+
+dev_err, there are a few more pr_errs throughout the driver, those should be
+fixed up as well. Useing dev_err will also allow you to remove the name
+field from the st_acc_data struct
+
+> +	return -EIO;
+> +}
+> +
+> +static ssize_t sysfs_set_sampling_frequency(struct device *dev,
+> +		struct device_attribute *attr, const char *buf, size_t size)
+> +{
+> +	int err;
+> +	unsigned long freq;
+> +	struct odr_available *odr_out;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	err = kstrtoul(buf, 10, &freq);
+
+use kstrtoint instead of casting freq to int later on
+
+> +	if (err) {
+> +		pr_err("%s: input is not a number! (errn %d).\n",
+> +							adata->name, err);
+
+This message is just noise
+
+> +		goto sysfs_set_sampling_frequency_error;
+> +	}
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	odr_out = kzalloc(sizeof(*odr_out), GFP_KERNEL);
+
+Allocate odr_out on the stack
+
+> +	if (odr_out == NULL)
+> +		goto odr_out_allocate_memory_error;
+> +
+> +	err = match_odr(&st_accel_sensors[adata->index], (int)freq, odr_out);
+> +	if (err < 0)
+> +		goto sysfs_set_sampling_frequency_error;
+> +	err = set_odr(indio_dev, odr_out);
+> +	if (err < 0) {
+> +		pr_err("%s: failed to set sampling frequency to %d.\n",
+> +							adata->name, (int)freq);
+> +		goto sysfs_set_sampling_frequency_error;
+> +	}
+> +	adata->odr = odr_out->hz;
+> +	kfree(odr_out);
+> +
+> +odr_out_allocate_memory_error:
+> +	mutex_unlock(&indio_dev->mlock);
+> +sysfs_set_sampling_frequency_error:
+> +	return size;
+> +}
+> +
+> +static ssize_t sysfs_get_sampling_frequency(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
+> +{
+> +	ssize_t ret;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	ret = sprintf(buf, "%d\n", adata->odr);
+> +
+> +	return ret;
+
+I'd just do return sprintf(...)
+
+> +}
+> +
+> +static ssize_t sysfs_set_enable(struct device *dev,
+> +		struct device_attribute *attr, const char *buf, size_t size)
+> +{
+> +	int err;
+> +	unsigned long en;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+
+
+
+> +	err = kstrtoul(buf, 10, &en);
+> +	if (err) {
+> +		pr_err("%s: input is not a number! (errn %d).\n",
+> +							adata->name, err);
+> +		goto set_enable_error;
+> +	}
+
+strtobool
+
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	err = set_enable(indio_dev, (int)en);
+> +	if (err < 0)
+> +		pr_err("%s: failed to set enable to %d.\n",
+> +							adata->name, (int)en);
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +set_enable_error:
+> +	return size;
+> +}
+> +
+> +static ssize_t sysfs_get_enable(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
+> +{
+> +	ssize_t ret;
+> +	int status;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	status = atomic_read(&adata->enabled);
+> +	ret = sprintf(buf, "%d\n", status);
+
+I'd just do return sprintf(...)
+
+> +
+> +	return ret;
+> +}
+> +
+> +static ssize_t sysfs_get_fullscale(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
+> +{
+> +	ssize_t ret;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	ret = sprintf(buf, "%d\n", adata->fullscale);
+
+same here
+
+> +
+> +	return ret;
+> +}
+> +
+> +static ssize_t sysfs_set_fullscale(struct device *dev,
+> +		struct device_attribute *attr, const char *buf, size_t size)
+> +{
+> +	int err;
+> +	unsigned long fs;
+> +	struct fullscale_available *fs_out;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	err = kstrtoul(buf, 10, &fs);
+> +	if (err) {
+> +		pr_err("%s: input is not a number! (errn %d).\n",
+> +							adata->name, err);
+
+This is just noise, the caller will be notified by the error code that it's
+input was invalid.
+
+> +		goto set_fullscale_error;
+> +	}
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	fs_out = kzalloc(sizeof(*fs_out), GFP_KERNEL);
+
+Allocate fs_out on the stack
+
+> +	if (fs_out == NULL)
+> +		goto fs_out_allocate_memory_error;
+> +
+> +	err = match_fs(&st_accel_sensors[adata->index], fs, fs_out);
+> +	if (err < 0) {
+> +		pr_err("%s: input is not a valid fullscale! (errn %d).\n",
+> +							adata->name, err);
+
+This too
+
+> +		goto match_fullscale_error;
+> +	}
+> +	err = set_fullscale(indio_dev, fs_out);
+> +	if (err < 0) {
+> +		pr_err("%s: failed to set new fullscale. (errn %d).\n",
+> +							adata->name, err);
+> +	}
+> +
+> +match_fullscale_error:
+> +	kfree(fs_out);
+> +fs_out_allocate_memory_error:
+> +	mutex_unlock(&indio_dev->mlock);
+> +set_fullscale_error:
+> +	return size;
+> +}
+> +
+> +static ssize_t sysfs_fullscale_available(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
+> +{
+> +	int i, n, len;
+> +	char tmp[4];
+> +	char fullscale[30] = "";
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	n = ARRAY_SIZE(st_accel_sensors[adata->index].fs.fs_avl);
+> +	for (i = 0; i < n; i++) {
+> +		if (st_accel_sensors[adata->index].fs.fs_avl[i].num != 0) {
+> +			len = strlen(&fullscale[0]);
+> +			sprintf(tmp, "%d ",
+> +			st_accel_sensors[adata->index].fs.fs_avl[i].num);
+> +			strcpy(&fullscale[len], tmp);
+> +		} else
+> +			break;
+> +	}
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return sprintf(buf, "%s\n", fullscale);
+
+This function does still the crazy sprintf, strcpy, sprintf combo
+
+In general the same comments as to sysfs_sampling_frequency_available apply
+here.
+
+> +}
+> +
+> +static ssize_t sysfs_sampling_frequency_available(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
+> +{
+> +	int i, n, len;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	n = ARRAY_SIZE(st_accel_sensors[adata->index].odr.odr_avl);
+> +	for (i = 0; i < n; i++) {
+> +		if (st_accel_sensors[adata->index].odr.odr_avl[i].hz != 0) {
+
+I'd rewrite this as
+
+		if (st_accel_sensors[adata->index].odr.odr_avl[i].hz == 0)
+			break;
+		...
+
+
+> +			len = strlen(buf);
+> +			sprintf(buf+len, "%d ",
+> +			st_accel_sensors[adata->index].odr.odr_avl[i].hz);
+
+sprintf returns the number of characters written, so you don't need to run
+strlen each loop interation. Also use scnprint with a limit of PAGE_SIZE
+this avoids the (theoretical) buffer overflow. Your code could look
+something like this:
+
+len += scnprintf(buf+len, PAGE_SIZE, ...)
+
+> +		} else
+> +			break;
+> +	}
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	len = strlen(buf);
+> +	return sprintf(buf+len, "\n");
+
+This will return 1 instead of the actuall string length. I'd rewrite this as
+
+	buf[len] = "\n"
+	return len;
+
+This will replace the last space in the string with a newline, so you won't
+end up with a trailing space.
+
+
+> +}
+> +
+> +static IIO_DEVICE_ATTR(sampling_frequency_available, S_IRUGO,
+> +				sysfs_sampling_frequency_available, NULL , 0);
+> +static IIO_DEVICE_ATTR(fullscale_available, S_IRUGO,
+> +				sysfs_fullscale_available, NULL , 0);
+> +static IIO_DEVICE_ATTR(fullscale, S_IWUSR | S_IRUGO, sysfs_get_fullscale,
+> +				sysfs_set_fullscale , 0);
+> +static IIO_DEVICE_ATTR(enable, S_IWUSR | S_IRUGO, sysfs_get_enable,
+> +						sysfs_set_enable , 0);
+> +static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO, sysfs_get_sampling_frequency,
+> +				sysfs_set_sampling_frequency);
+> +
+> +static struct attribute *acc_attributes[] = {
+> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+> +	&iio_dev_attr_fullscale_available.dev_attr.attr,
+> +	&iio_dev_attr_fullscale.dev_attr.attr,
+> +	&iio_dev_attr_enable.dev_attr.attr,
+> +	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+> +	NULL,
+> +};
+
+Non standard attributes need to be documented.
+
+> +
+> +static int init_sensor(struct iio_dev *indio_dev)
+> +{
+> +	int err;
+> +	struct odr_available *odr_out;
+> +	struct fullscale_available *fs_out;
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	odr_out = kzalloc(sizeof(*odr_out), GFP_KERNEL);
+> +	if (odr_out == NULL)
+> +		goto odr_out_allocate_memory_error;
+> +	fs_out = kzalloc(sizeof(*fs_out), GFP_KERNEL);
+> +	if (fs_out == NULL)
+> +		goto fs_out_allocate_memory_error;
+> +	set_enable(indio_dev, ST_ACCEL_OFF);
+> +	match_fs(&st_accel_sensors[adata->index], adata->fullscale, fs_out);
+> +	err = set_fullscale(indio_dev, fs_out);
+> +	if (err < 0)
+> +		goto init_error;
+> +	match_odr(&st_accel_sensors[adata->index], adata->odr, odr_out);
+> +	err = set_odr(indio_dev, odr_out);
+> +	if (err < 0)
+> +		goto init_error;
+> +	err = set_bdu(indio_dev,
+> +			&st_accel_sensors[adata->index].bdu, (u8)ST_ACCEL_ON);
+> +	if (err < 0)
+> +		goto init_error;
+> +	kfree(odr_out);
+> +	kfree(fs_out);
+
+Allocate both odr_out and fs_out on the stack.
+
+Also this function could use a few newlines.
+
+> +
+> +	return 0;
+> +
+> +init_error:
+> +	kfree(fs_out);
+> +fs_out_allocate_memory_error:
+> +	kfree(odr_out);
+> +odr_out_allocate_memory_error:
+> +	return -EIO;
+> +}
+> +
+> +int acc_iio_probe(struct iio_dev *indio_dev)
+> +{
+> +	int err;
+> +	u8 wai;
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	mutex_init(&adata->slock);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &acc_info;
+> +
+> +	err = get_wai_device(indio_dev, ST_DEFAULT_WAI_ADDRESS, &wai);
+> +	if (err < 0)
+> +		goto get_wai_error;
+
+Missing newline
+
+> +	err = check_device_list(indio_dev, wai);
+> +	if (err < 0)
+> +		goto check_device_list_error;
+
+Missing newline
+
+> +	set_sensor_parameters(indio_dev);
+> +	register_channels(indio_dev);
+
+Missing newline
+
+> +	err = init_sensor(indio_dev);
+> +	if (err < 0)
+> +		goto init_sensor_error;
+> +
+> +	err = acc_check_irq(indio_dev);
+> +	if (err < 0)
+> +		goto gpio_check_error;
+
+Missing newline
+
+> +	err = acc_allocate_ring(indio_dev);
+> +	if (err < 0)
+> +		goto acc_allocate_ring_error;
+> +
+> +	err = acc_probe_trigger(indio_dev);
+> +	if (err < 0)
+> +		goto acc_probe_trigger_error;
+> +
+> +	err = iio_device_register(indio_dev);
+> +	if (err)
+> +		goto iio_device_register_error;
+> +
+> +	pr_info("%s: probe end correctly.\n", adata->name);
+
+This is just noise. Imagine every driver doing this you'd end up with quite
+a few lines of "Drivers has probed correctly" in your bootlog.
+
+> +
+> +	return err;
+> +
+> +iio_device_register_error:
+> +	acc_remove_trigger(indio_dev);
+> +acc_probe_trigger_error:
+> +	acc_deallocate_ring(indio_dev);
+> +acc_allocate_ring_error:
+> +gpio_check_error:
+> +init_sensor_error:
+> +check_device_list_error:
+> +get_wai_error:
+
+No need for all these labels
+
+> +	return err;
+> +}
+> +EXPORT_SYMBOL(acc_iio_probe);
+> +
+> +void acc_iio_remove(struct iio_dev *indio_dev)
+> +{
+> +	acc_remove_trigger(indio_dev);
+> +	acc_deallocate_ring(indio_dev);
+> +	iio_device_unregister(indio_dev);
+> +	iio_device_free(indio_dev);
+
+Rule of thumb: First iio_device_unregister then everything else and
+iio_device_free last
+
+> +}
+> +EXPORT_SYMBOL(acc_iio_remove);
+> +
+> +MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
+> +MODULE_DESCRIPTION("STMicroelectronics accelerometers driver");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/accel/ST_accel_i2c.c b/drivers/iio/accel/ST_accel_i2c.c
+> new file mode 100644
+> index 0000000..55bca3a
+> --- /dev/null
+> +++ b/drivers/iio/accel/ST_accel_i2c.c
+> @@ -0,0 +1,165 @@
+> +/*
+> + * STMicroelectronics accelerometers driver
+> + *
+> + * Copyright 2012 STMicroelectronics Inc.
+> + *
+> + * Denis Ciocca <denis.ciocca@st.com>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/trigger.h>
+> +
+> +#include <linux/iio/accel/ST_accel.h>
+> +#include <linux/platform_data/ST_accel_pdata.h>
+> +
+> +
+> +#define ST_ACCEL_I2C_MULTIREAD			0x80
+> +
+> +static inline s32 acc_i2c_read_byte(struct st_acc_data *adata, u8 reg_addr,
+> +								u8 *res_byte)
+
+
+This function obviously can not be inlined since it is used as a callback
+and use int for the return type
+
+> +{
+> +	s32 err;
+> +
+> +	err = i2c_smbus_read_byte_data(to_i2c_client(adata->dev), reg_addr);
+> +	if (err < 0)
+> +		goto acc_i2c_read_byte_error;
+> +	*res_byte = err & 0xff;
+> +	return err;
+> +
+> +acc_i2c_read_byte_error:
+> +	return -EIO;
+> +}
+> +
+> +static inline s32 acc_i2c_read_multiple_byte(struct st_acc_data *adata,
+> +						u8 reg_addr, int len, u8 *data)
+
+same here
+
+> +{
+> +	s32 err;
+> +
+> +	if (adata->multiread_bit == true)
+> +		reg_addr |= ST_ACCEL_I2C_MULTIREAD;
+> +
+> +	err = i2c_smbus_read_i2c_block_data(to_i2c_client(adata->dev),
+> +							reg_addr, len, data);
+> +	if (err < 0)
+> +		goto acc_i2c_read_multiple_byte_error;
+> +
+> +	return err;
+> +
+> +acc_i2c_read_multiple_byte_error:
+> +	return -EIO;
+> +}
+> +
+> +static inline s32 acc_i2c_write_byte(struct st_acc_data *adata,
+> +							u8 reg_addr, u8 data)
+
+same here
+
+> +{
+> +	return i2c_smbus_write_byte_data(to_i2c_client(adata->dev),
+> +								reg_addr, data);
+> +}
+> +
+[...]
+> +MODULE_DESCRIPTION("STMicroelectronics accelerometers i2c driver");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/accel/ST_accel_spi.c b/drivers/iio/accel/ST_accel_spi.c
+> new file mode 100644
+> index 0000000..c918715
+> --- /dev/null
+> +++ b/drivers/iio/accel/ST_accel_spi.c
+> @@ -0,0 +1,236 @@
+> +/*
+> + * STMicroelectronics accelerometers driver
+> + *
+> + * Copyright 2012 STMicroelectronics Inc.
+> + *
+> + * Denis Ciocca <denis.ciocca@st.com>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/trigger.h>
+> +
+> +#include <linux/iio/accel/ST_accel.h>
+> +#include <linux/platform_data/ST_accel_pdata.h>
+> +
+> +
+> +#define ACC_SPI_READ		0x80;
+> +#define ACC_SPI_MULTIREAD	0xc0
+> +
+> +static inline s32 acc_spi_read_byte(struct st_acc_data *adata, u8 reg_addr,
+> +								u8 *res_byte)
+
+This function obviously can not be inlined since it is used as a callback
+and use int for the return type
+
+> +{
+> +	struct spi_message msg;
+> +	int err;
+> +	u8 tx;
+> +
+> +	struct spi_transfer xfers[] = {
+> +		{
+> +			.tx_buf = &tx,
+> +			.bits_per_word = 8,
+> +			.len = 1,
+> +			.cs_change = 0,
+> +			.delay_usecs = 10,
+> +		},
+> +		{
+> +			.rx_buf = res_byte,
+> +			.bits_per_word = 8,
+> +			.len = 1,
+> +			.cs_change = 0,
+> +			.delay_usecs = 10,
+> +		}
+> +	};
+> +
+> +	mutex_lock(&adata->slock);
+> +	tx = reg_addr | ACC_SPI_READ;
+> +	spi_message_init(&msg);
+> +	spi_message_add_tail(&xfers[0], &msg);
+> +	spi_message_add_tail(&xfers[1], &msg);
+> +	err = spi_sync(to_spi_device(adata->dev), &msg);
+> +	mutex_unlock(&adata->slock);
+> +	if (err)
+> +		goto acc_spi_read_byte_error;
+> +
+> +
+
+Rule of thumb: You should never have multiple consecutive newlines
+
+> +	return err;
+> +
+> +acc_spi_read_byte_error:
+> +	return -EIO;
+> +}
+> +
+> +static inline s32 acc_spi_read_multiple_byte(struct st_acc_data *adata,
+> +						u8 reg_addr, int len, u8 *data)
+
+same here
+
+> +{
+> +	struct spi_message msg;
+> +	int err;
+> +	u8 tx;
+> +
+> +	struct spi_transfer xfers[] = {
+> +		{
+> +			.tx_buf = &tx,
+> +			.bits_per_word = 8,
+> +			.len = 1,
+> +			.cs_change = 0,
+> +			.delay_usecs = 10,
+> +		},
+> +		{
+> +			.rx_buf = data,
+> +			.bits_per_word = 8,
+> +			.len = len,
+> +			.cs_change = 0,
+> +			.delay_usecs = 10,
+> +		}
+> +	};
+> +
+> +	mutex_lock(&adata->slock);
+> +	if (adata->multiread_bit == true)
+> +		tx = reg_addr | ACC_SPI_MULTIREAD;
+> +	else
+> +		tx = reg_addr | ACC_SPI_READ;
+> +
+> +	spi_message_init(&msg);
+> +	spi_message_add_tail(&xfers[0], &msg);
+> +	spi_message_add_tail(&xfers[1], &msg);
+> +	err = spi_sync(to_spi_device(adata->dev), &msg);
+> +	mutex_unlock(&adata->slock);
+> +	if (err)
+> +		goto acc_spi_read_multiple_byte_error;
+> +	return len;
+> +
+> +acc_spi_read_multiple_byte_error:
+> +	return -EIO;
+> +}
+> +
+> +static inline s32 acc_spi_write_byte(struct st_acc_data *adata,
+> +							u8 reg_addr, u8 data)
+
+same here
+
+> +{
+> +	struct spi_message msg;
+> +	int err;
+> +	u8 tx[2];
+> +
+> +	struct spi_transfer xfers[] = {
+> +		{
+> +			.tx_buf = tx,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+> +			.cs_change = 0,
+
+Usually if cs_change is 0 it is not explicitly initalized.
+
+> +			.delay_usecs = 10,
+> +		}
+> +	};
+> +
+> +	mutex_lock(&adata->slock);
+> +	tx[0] = reg_addr;
+> +	tx[1] = data;
+> +	spi_message_init(&msg);
+> +	spi_message_add_tail(&xfers[0], &msg);
+> +	err = spi_sync(to_spi_device(adata->dev), &msg);
+> +	mutex_unlock(&adata->slock);
+> +
+> +	return err;
+> +}
+> +
+> +void set_platform_data(struct spi_device *client, struct st_acc_data *adata)
+> +{
+> +	if (client->dev.platform_data == NULL) {
+> +		adata->fullscale = st_acc_default_pdata.fullscale;
+> +		adata->odr = st_acc_default_pdata.sampling_frequency;
+> +	} else {
+> +		adata->fullscale = ((struct st_acc_platform_data *)
+> +			(client->dev.platform_data))->fullscale;
+> +		adata->odr = ((struct st_acc_platform_data *)
+> +			(client->dev.platform_data))->sampling_frequency;
+> +	}
+> +}
+
+I'd move this to the generic part of the driver, it's the same for both SPI
+and I2C. Also instead of the casting create a helper variale and use that.
+
+struct st_acc_platform_data *pdata = adata->dev->platform_data;
+adata->fullscale = pdata->fullscale;
+...
+
+> +
+> +void set_trigger_parent(struct iio_dev *indio_dev)
+> +{
+> +	struct spi_device *client;
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	client = to_spi_device(adata->dev);
+> +	adata->trig->dev.parent = &client->dev;
+> +}
+
+This should not be necessary. You convert your device to a SPI device and
+then read the device again from the spi device. So in the end adata->dev and
+&client->dev are the same. There is no need for this callback, just do
+adata->trig->dev.parent = ata->dev; in the generic code.
+
+> +
+> +static int __devinit acc_spi_probe(struct spi_device *client)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct st_acc_data *adata;
+> +	int err;
+> +
+> +	indio_dev = iio_device_alloc(sizeof(*adata));
+> +	if (indio_dev == NULL) {
+> +		err = -ENOMEM;
+> +		goto iio_device_alloc_error;
+> +	}
+> +
+> +	adata = iio_priv(indio_dev);
+> +	adata->dev = &client->dev;
+> +	spi_set_drvdata(client, indio_dev);
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->name = client->modalias;
+> +
+> +	adata->read_byte = acc_spi_read_byte;
+> +	adata->write_byte = acc_spi_write_byte;
+> +	adata->read_multiple_byte = acc_spi_read_multiple_byte;
+> +	adata->set_trigger_parent = set_trigger_parent;
+> +	adata->name = client->modalias;
+> +	adata->irq_data_ready = &client->irq;
+> +
+> +	set_platform_data(client, adata);
+> +	err = acc_iio_probe(indio_dev);
+> +	if (err < 0)
+> +		goto acc_iio_default_error;
+> +
+> +	return 0;
+> +
+> +acc_iio_default_error:
+> +	iio_device_free(indio_dev);
+> +iio_device_alloc_error:
+> +	return err;
+> +}
+> +
+> +static int __devexit acc_spi_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +
+> +	acc_iio_remove(indio_dev);
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id acc_id_table[] = {
+> +	{ LSM303DLH_ACC_IIO_DEV_NAME, 0 },
+> +	{ LSM303DLHC_ACC_IIO_DEV_NAME, 0 },
+> +	{ LIS3DH_ACC_IIO_DEV_NAME, 0 },
+> +	{ LSM330D_ACC_IIO_DEV_NAME, 0 },
+> +	{ LSM330DL_ACC_IIO_DEV_NAME, 0 },
+> +	{ LSM330DLC_ACC_IIO_DEV_NAME, 0 },
+> +	{ LSM303D_ACC_IIO_DEV_NAME, 0 },
+> +	{ LSM9DS0_ACC_IIO_DEV_NAME, 0 },
+> +	{ LIS331DLH_ACC_IIO_DEV_NAME, 0 },
+> +	{ LSM303DL_ACC_IIO_DEV_NAME, 0 },
+> +	{ LSM303DLM_ACC_IIO_DEV_NAME, 0 },
+> +	{ LSM330_ACC_IIO_DEV_NAME, 0 },
+> +	{},
+
+Since the second field won't be used in the driver you can just leave the it
+blank,
+e.g. { LSM330_ACC_IIO_DEV_NAME },
+
+> +};
+> +MODULE_DEVICE_TABLE(spi, acc_id_table);
+> +
+> +static struct spi_driver acc_driver = {
+> +	.driver = {
+> +		.owner = THIS_MODULE,
+> +		.name = "ST-accel-spi",
+> +	},
+> +	.probe = acc_spi_probe,
+> +	.remove = __devexit_p(acc_spi_remove),
+> +	.id_table = acc_id_table,
+> +};
+> +module_spi_driver(acc_driver);
+> +
+> +MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
+> +MODULE_DESCRIPTION("STMicroelectronics accelerometers spi driver");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/accel/ST_accel_trigger.c
+> b/drivers/iio/accel/ST_accel_trigger.c
+> new file mode 100644
+> index 0000000..4375c31
+> --- /dev/null
+> +++ b/drivers/iio/accel/ST_accel_trigger.c
+> @@ -0,0 +1,87 @@
+> +/*
+> + * STMicroelectronics accelerometers driver
+> + *
+> + * Copyright 2012 STMicroelectronics Inc.
+> + *
+> + * Denis Ciocca <denis.ciocca@st.com>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/stat.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/trigger.h>
+> +
+> +#include <linux/iio/accel/ST_accel.h>
+> +
+> +
+> +static int iio_trig_acc_set_state(struct iio_trigger *trig, bool state)
+> +{
+> +	struct iio_dev *indio_dev = trig->private_data;
+> +	return acc_set_dataready_irq(indio_dev, state);
+> +}
+> +
+> +static const struct iio_trigger_ops iio_acc_trigger_ops = {
+> +	.owner = THIS_MODULE,
+> +	.set_trigger_state = &iio_trig_acc_set_state,
+> +};
+> +
+> +int acc_probe_trigger(struct iio_dev *indio_dev)
+> +{
+> +	int err;
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	adata->trig = iio_trigger_alloc("%s-trigger", indio_dev->name);
+> +	if (adata->trig == NULL) {
+> +		err = -ENOMEM;
+> +		pr_err("%s: failed to allocate iio trigger.\n", adata->name);
+> +		goto iio_trigger_alloc_error;
+> +	}
+> +
+> +	err = request_threaded_irq(*adata->irq_data_ready,
+> +			iio_trigger_generic_data_rdy_poll,
+> +			NULL,
+> +			IRQF_TRIGGER_RISING,
+> +			adata->trig->name,
+> +			adata->trig);
+> +	if (err) {
+> +		pr_err("%s: failed to request threaded irq [%d].\n",
+> +					adata->name, *adata->irq_data_ready);
+> +		goto request_irq_error;
+> +	}
+> +	adata->trig->private_data = indio_dev;
+> +	adata->trig->ops = &iio_acc_trigger_ops;
+> +
+> +	adata->set_trigger_parent(indio_dev);
+> +
+> +	err = iio_trigger_register(adata->trig);
+> +	if (err < 0) {
+> +		pr_err("%s: failed to register iio trigger.\n", adata->name);
+> +		goto iio_trigger_register_error;
+> +	}
+> +	indio_dev->trig = adata->trig;
+> +	pr_info("%s: using [%s] trigger.\n", adata->name, adata->trig->name);
+> +	return 0;
+> +
+> +iio_trigger_register_error:
+> +	free_irq(*adata->irq_data_ready, adata->trig);
+> +request_irq_error:
+> +	iio_trigger_free(adata->trig);
+> +iio_trigger_alloc_error:
+> +	return err;
+> +}
+> +EXPORT_SYMBOL(acc_probe_trigger);
+> +
+> +void acc_remove_trigger(struct iio_dev *indio_dev)
+> +{
+> +	struct st_acc_data *adata = iio_priv(indio_dev);
+> +
+> +	iio_trigger_unregister(adata->trig);
+> +	free_irq(*adata->irq_data_ready, adata->trig);
+> +	iio_trigger_free(adata->trig);
+> +}
+> +EXPORT_SYMBOL(acc_remove_trigger);
+> diff --git a/include/linux/iio/accel/ST_accel.h
+> b/include/linux/iio/accel/ST_accel.h
+> new file mode 100644
+> index 0000000..20d1973
+> --- /dev/null
+> +++ b/include/linux/iio/accel/ST_accel.h
+> @@ -0,0 +1,120 @@
+> +/*
+> + * STMicroelectronics accelerometers driver
+> + *
+> + * Copyright 2012 STMicroelectronics Inc.
+> + *
+> + * Denis Ciocca <denis.ciocca@st.com>
+> + * v. 1.0.0
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +/*
+> + * Supported sensors:
+> + * LSM303DLH
+> + * LSM303DLHC
+> + * LIS3DH
+> + * LSM330D
+> + * LSM330DL
+> + * LSM330DLC
+> + * LSM303D
+> + * LSM9DS0
+> + * LIS331DLH
+> + * LSM303DL
+> + * LSM303DLM
+> + * LSM330
+> + */
+> +
+> +
+> +#ifndef ST_ACCELEROMETERS_IIO_ACC_H
+> +#define ST_ACCELEROMETERS_IIO_ACC_H
+> +
+> +#define LSM303DLH_ACC_IIO_DEV_NAME	"lsm303dlh_acc_iio"
+> +#define LSM303DLHC_ACC_IIO_DEV_NAME	"lsm303dlhc_acc_iio"
+> +#define LIS3DH_ACC_IIO_DEV_NAME		"lis3dh_acc_iio"
+> +#define LSM330D_ACC_IIO_DEV_NAME	"lsm330d_acc_iio"
+> +#define LSM330DL_ACC_IIO_DEV_NAME	"lsm330dl_acc_iio"
+> +#define LSM330DLC_ACC_IIO_DEV_NAME	"lsm330dlc_acc_iio"
+> +#define LSM303D_ACC_IIO_DEV_NAME	"lsm303d_iio"
+> +#define LSM9DS0_ACC_IIO_DEV_NAME	"lsm9ds0_iio"
+> +#define LIS331DLH_ACC_IIO_DEV_NAME	"lis331dlh_acc_iio"
+> +#define LSM303DL_ACC_IIO_DEV_NAME	"lsm303dl_acc_iio"
+> +#define LSM303DLM_ACC_IIO_DEV_NAME	"lsm303dlm_acc_iio"
+> +#define LSM330_ACC_IIO_DEV_NAME		"lsm330_acc_iio"
+
+The acc_iio prefixes on the driver names should not be necessary
+
+> +
+> +#define ST_ACC_NUMBER_ALL_CHANNELS	4
+> +#define ST_ACC_BYTE_FOR_CHANNEL		2
+> +#define ST_ACC_SCAN_X			0
+> +#define ST_ACC_SCAN_Y			1
+> +#define ST_ACC_SCAN_Z			2
+> +
+> +/**
+> + * struct st_acc_data - ST accel device status
+> + * @dev: Pointer to instance of struct device (I2C or SPI).
+> + * @name: Name of the sensor in use.
+> + * @enabled: Status of the sensor (0->off, 1->on).
+> + * @index: Number used to point the sensor being used in the
+> + *	st_accel_sensors struct.
+> + * @fullscale: Maximum range of measure by the sensor.
+> + * @gain: Sensitivity of the sensor [ug/LSB].
+> + * @odr: Output data rate of the sensor.
+> + * @multiread_bit: Use or not particular bit for [I2C/SPI] multiread.
+> + * @read_byte: Function used to read one byte.
+> + * @write_byte: Function used to write one byte.
+> + * @read_multiple_byte: Function used to read multiple byte.
+> + * @set_trigger_parent: Function used to set the trigger parent.
+> + * @trig: The trigger in use by the core driver.
+> + * @irq_data_ready: IRQ number for data ready on INT1 pin.
+> + * @slock: mutex for read and write operation.
+> + */
+> +
+> +struct st_acc_data {
+> +	struct device *dev;
+> +	char *name;
+> +	atomic_t enabled;
+
+Why does this have to be atomic?
+
+> +	short index;
+> +
+> +	int fullscale;
+> +	int gain;
+> +	int odr;
+> +
+> +	bool multiread_bit;
+> +	int (*read_byte) (struct st_acc_data *adata, u8 reg_addr, u8 *res_byte);
+> +	int (*write_byte) (struct st_acc_data *adata, u8 reg_addr, u8 data);
+> +	int (*read_multiple_byte) (struct st_acc_data *adata, u8 reg_addr,
+> +							int len, u8 *data);
+> +	void (*set_trigger_parent) (struct iio_dev *indio_dev);
+> +
+> +	struct iio_trigger *trig;
+> +	int *irq_data_ready;
+
+Why does this have to be a pointer?
+
+> +	struct mutex slock;
+> +};
+> +
+> +int acc_iio_probe(struct iio_dev *indio_dev);
+> +void acc_iio_remove(struct iio_dev *indio_dev);
+> +int acc_set_dataready_irq(struct iio_dev *indio_dev, bool enable);
+> +
+> +#ifdef CONFIG_IIO_BUFFER
+> +int acc_probe_trigger(struct iio_dev *indio_dev);
+> +void acc_remove_trigger(struct iio_dev *indio_dev);
+> +int acc_allocate_ring(struct iio_dev *indio_dev);
+> +void acc_deallocate_ring(struct iio_dev *indio_dev);
+> +#else /* CONFIG_IIO_BUFFER */
+> +static inline int acc_probe_trigger(struct iio_dev *indio_dev)
+> +{
+> +	return 0;
+> +}
+> +static inline void acc_remove_trigger(struct iio_dev *indio_dev)
+> +{
+> +	return;
+> +}
+> +static inline int acc_allocate_ring(struct iio_dev *indio_dev)
+> +{
+> +	return 0;
+> +}
+> +static inline void acc_deallocate_ring(struct iio_dev *indio_dev)
+> +{
+> +	return;
+> +}
+> +#endif /* CONFIG_IIO_BUFFER */
+> +
+> +#endif /* ST_ACCELEROMETERS_IIO_ACC_H */
+> diff --git a/include/linux/platform_data/ST_accel_pdata.h
+> b/include/linux/platform_data/ST_accel_pdata.h
+> new file mode 100644
+> index 0000000..51f7b2c
+> --- /dev/null
+> +++ b/include/linux/platform_data/ST_accel_pdata.h
+> @@ -0,0 +1,34 @@
+> +/*
+> + * STMicroelectronics accelerometers driver
+> + *
+> + * Copyright 2012 STMicroelectronics Inc.
+> + *
+> + * Denis Ciocca <denis.ciocca@st.com>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +
+> +#ifndef ST_ACCELEROMETERS_PDATA_ACC_H
+> +#define ST_ACCELEROMETERS_PDATA_ACC_H
+> +
+> +#define DEFAULT_ACCEL_ODR_AVL_100HZ		100
+> +#define DEFAULT_ACCEL_FS_AVL_2G			2
+> +
+> +/**
+> + * struct st_acc_platform_data - ST accel device platform data
+> + * @fullscale: Value of fullscale used for the sensor.
+> + * @sampling_frequency: Value of sampling frequency used for the sensor.
+> + */
+> +
+> +struct st_acc_platform_data {
+> +	int fullscale;
+> +	int sampling_frequency;
+> +};
+> +
+> +static const struct st_acc_platform_data st_acc_default_pdata = {
+> +	.fullscale = DEFAULT_ACCEL_FS_AVL_2G,
+> +	.sampling_frequency = DEFAULT_ACCEL_ODR_AVL_100HZ,
+> +};
+
+This one should clearly not be defined in the header.
+
+> +
+> +#endif /* ST_ACCELEROMETERS_PDATA_ACC_H */
