@@ -1,261 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:51230 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751784Ab2JQIwA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Oct 2012 04:52:00 -0400
-Message-ID: <507E71B0.7040706@jic23.retrosnub.co.uk>
-Date: Wed, 17 Oct 2012 09:52:00 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Michael.Hennerich@analog.com, srinivas.pandruvada@intel.com
-Subject: Re: [PATCH 3/4] staging:iio: add a callback buffer for in kernel
- push interface
-References: <1350120278-26929-1-git-send-email-jic23@kernel.org> <1350120278-26929-4-git-send-email-jic23@kernel.org> <507E7166.40802@metafoo.de>
-In-Reply-To: <507E7166.40802@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from smtp-out-105.synserver.de ([212.40.185.105]:1077 "EHLO
+	smtp-out-105.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754814Ab2JPQ2b (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Oct 2012 12:28:31 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/2] iio: Add a logarithmic fractional value type
+Date: Tue, 16 Oct 2012 18:29:38 +0200
+Message-Id: <1350404979-29253-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/10/12 09:50, Lars-Peter Clausen wrote:
-> On 10/13/2012 11:24 AM, Jonathan Cameron wrote:
->> This callback buffer is meant to be opaque to users, but basically
->> adds a very simple pass through buffer to which data may be
->> pushed when it is inserted into the buffer list.
->>
->> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
->> ---
->>   drivers/iio/Kconfig          |   6 +++
->>   drivers/iio/Makefile         |   1 +
->>   drivers/iio/buffer_cb.c      | 113 +++++++++++++++++++++++++++++++++++++++++++
->>   include/linux/iio/consumer.h |  46 ++++++++++++++++++
->>   4 files changed, 166 insertions(+)
->>
->> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
->> index 6e3f143..0aad08a 100644
->> --- a/drivers/iio/Kconfig
->> +++ b/drivers/iio/Kconfig
->> @@ -20,6 +20,12 @@ config IIO_BUFFER
->>
->>   if IIO_BUFFER
->>
->> +config IIO_BUFFER_CB
->> +       boolean "IIO callback buffer used for push in kernel interfaces"
->
-> Any specific reason why this has to be bool?
-Doesn't have it's own module as it's so small. Gets built in to the core.
+For ADCs or DACs the denominator for fractional types often is a power of two.
+In this case we can use a shift operation instead of the rather expensive 64 bit
+division. This patch adds a new fractional type which expects the denominator to
+be specified as the log2 of the actual denominator. E.g. for ADCs and DACs this
+will usually be the number of significant bits.
 
-Agreed to all the rest. Thanks for looking at these.
->
->> +       help
->> +         Should be selected by any drivers that do inkernel push
->> +	 usage.  That is, those where the data is pushed to the consumer.
->> +
->>   config IIO_KFIFO_BUF
->>   	select IIO_TRIGGER
->>   	tristate "Industrial I/O buffering based on kfifo"
->> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
->> index f7fa3c0..a27ec1c 100644
->> --- a/drivers/iio/Makefile
->> +++ b/drivers/iio/Makefile
->> @@ -6,6 +6,7 @@ obj-$(CONFIG_IIO) += industrialio.o
->>   industrialio-y := industrialio-core.o industrialio-event.o inkern.o
->>   industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
->>   industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
->> +industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
->>
->>   obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
->>   obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
->> diff --git a/drivers/iio/buffer_cb.c b/drivers/iio/buffer_cb.c
->> new file mode 100644
->> index 0000000..d1e4881
->> --- /dev/null
->> +++ b/drivers/iio/buffer_cb.c
->> @@ -0,0 +1,113 @@
->> +#include <linux/kernel.h>
->> +#include <linux/slab.h>
->> +#include <linux/err.h>
->> +#include <linux/export.h>
->> +#include <linux/iio/buffer.h>
->> +#include <linux/iio/consumer.h>
->> +
->> +struct iio_cb_buffer {
->> +	struct iio_buffer buffer;
->> +	int (*cb)(u8 *data, void *private);
->> +	void *private;
->> +	struct iio_channel *channels;
->> +};
->> +
->> +static int iio_buffer_cb_store_to(struct iio_buffer *buffer, u8 *data)
->> +{
->> +	struct iio_cb_buffer *cb_buff = container_of(buffer,
->> +						     struct iio_cb_buffer,
->> +						     buffer);
->> +
->> +	return cb_buff->cb(data, cb_buff->private);
->> +}
->> +
->> +static struct iio_buffer_access_funcs iio_cb_access = {
->> +	.store_to = &iio_buffer_cb_store_to,
->> +};
->> +
->> +struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
->> +					     int (*cb)(u8 *data,
->> +						       void *private),
->> +					     void *private)
->> +{
->> +	int ret;
->> +	struct iio_cb_buffer *cb_buff;
->> +	struct iio_dev *indio_dev;
->> +	struct iio_channel *chan;
->> +
->> +	cb_buff = kzalloc(sizeof *cb_buff, GFP_KERNEL);
->
-> sizeof(*cb_buff)
->
->> +	if (cb_buff == NULL) {
->> +		ret = -ENOMEM;
->> +		goto error_ret;
->> +	}
->> +
->> +	cb_buff->private = private;
->> +	cb_buff->cb = cb;
->> +	cb_buff->buffer.access = &iio_cb_access;
->> +	INIT_LIST_HEAD(&cb_buff->buffer.demux_list);
->
-> It probably makes sense to have some kind of iio_buffer_init(...) for this
->
->> +
->> +	cb_buff->channels = iio_channel_get_all(name);
->> +	if (IS_ERR(cb_buff->channels)) {
->> +		ret = PTR_ERR(cb_buff->channels);
->> +		goto error_free_cb_buff;
->> +	}
->> +
->> +	indio_dev = cb_buff->channels[0].indio_dev;
->> +	cb_buff->buffer.scan_mask
->> +		= kzalloc(sizeof(long)*BITS_TO_LONGS(indio_dev->masklength),
->> +			  GFP_KERNEL);
->
-> kcalloc
->
->> +	if (cb_buff->buffer.scan_mask == NULL) {
->> +		ret = -ENOMEM;
->> +		goto error_release_channels;
->> +	}
->> +	chan = &cb_buff->channels[0];
->> +	while (chan->indio_dev) {
->> +		if (chan->indio_dev != indio_dev) {
->> +			ret = -EINVAL;
->> +			goto error_release_channels;
->> +		}
->> +		set_bit(chan->channel->scan_index,
->> +			cb_buff->buffer.scan_mask);
->> +		chan++;
->> +	}
->> +
->> +	return cb_buff;
->> +
->> +error_release_channels:
->> +	iio_channel_release_all(cb_buff->channels);
->> +error_free_cb_buff:
->> +	kfree(cb_buff);
->> +error_ret:
->> +	return ERR_PTR(ret);
->> +}
->> +EXPORT_SYMBOL_GPL(iio_channel_get_all_cb);
->> +
->> +int iio_channel_start_all_cb(struct iio_cb_buffer *cb_buff)
->> +{
->> +	return iio_update_buffers(cb_buff->channels[0].indio_dev,
->> +				  &cb_buff->buffer,
->> +				  NULL);
->> +}
->> +EXPORT_SYMBOL_GPL(iio_channel_start_all_cb);
->> +
->> +void iio_channel_stop_all_cb(struct iio_cb_buffer *cb_buff)
->> +{
->> +	iio_update_buffers(cb_buff->channels[0].indio_dev,
->> +			   NULL,
->> +			   &cb_buff->buffer);
->> +}
->> +EXPORT_SYMBOL_GPL(iio_channel_stop_all_cb);
->> +
->> +void iio_channel_release_all_cb(struct iio_cb_buffer *cb_buff)
->> +{
->> +	iio_channel_release_all(cb_buff->channels);
->> +	kfree(cb_buff);
->> +}
->> +EXPORT_SYMBOL_GPL(iio_channel_release_all_cb);
->> +
->> +struct iio_channel
->> +*iio_channel_cb_get_channels(const struct iio_cb_buffer *cb_buffer)
->> +{
->> +	return cb_buffer->channels;
->> +}
->> +EXPORT_SYMBOL_GPL(iio_channel_cb_get_channels);
->> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
->> index 57efee6..caf103b 100644
->> --- a/include/linux/iio/consumer.h
->> +++ b/include/linux/iio/consumer.h
->> @@ -61,6 +61,52 @@ struct iio_channel *iio_channel_get_all(const char *name);
->>    */
->>   void iio_channel_release_all(struct iio_channel *chan);
->>
->> +struct iio_cb_buffer;
->> +/**
->> + * iio_channel_get_all_cb() - register callback for triggered capture
->> + * @name:		Name of client device.
->> + * @cb:			Callback function.
->> + * @private:		Private data passed to callback.
->> + *
->> + * NB right now we have no ability to mux data from multiple devices.
->> + * So if the channels requested come from different devices this will
->> + * fail.
->> + */
->> +struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
->> +					     int (*cb)(u8 *data,
->> +						       void *private),
->> +					     void *private);
->> +/**
->> + * iio_channel_release_all_cb() - release and unregister the callback.
->> + * @cb_buffer:		The callback buffer that was allocated.
->> + */
->> +void iio_channel_release_all_cb(struct iio_cb_buffer *cb_buffer);
->> +
->> +/**
->> + * iio_channel_start_all_cb() - start the flow of data through callback.
->> + * @cb_buff:		The callback buffer we are starting.
->> + */
->> +int iio_channel_start_all_cb(struct iio_cb_buffer *cb_buff);
->> +
->> +/**
->> + * iio_channel_stop_all_cb() - stop the flow of data through the callback.
->> + * @cb_buff:		The callback buffer we are stopping.
->> + */
->> +void iio_channel_stop_all_cb(struct iio_cb_buffer *cb_buff);
->> +
->> +/**
->> + * iio_channel_cb_get_channels() - get access to the underlying channels.
->> + * @cb_buff:		The callback buffers from whom we want the channel
->> + *			information.
->> + *
->> + * This function allows one to obtain information about the channels.
->> + * Whilst this may allow direct reading if all buffers are disabled, the
->> + * primary aim is to allow drivers that are consuming a channel to query
->> + * things like scaling of the channel.
->> + */
->> +struct iio_channel
->> +*iio_channel_cb_get_channels(const struct iio_cb_buffer *cb_buffer);
->> +
->>   /**
->>    * iio_read_channel_raw() - read from a given channel
->>    * @chan:		The channel being queried.
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-core.c |    5 +++++
+ drivers/iio/inkern.c            |    3 +++
+ include/linux/iio/types.h       |    1 +
+ 3 files changed, 9 insertions(+)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 6eb24db..37650a7 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -397,6 +397,11 @@ static ssize_t iio_read_channel_info(struct device *dev,
+ 		val2 = do_div(tmp, 1000000000LL);
+ 		val = tmp;
+ 		return sprintf(buf, "%d.%09u\n", val, val2);
++	case IIO_VAL_FRACTIONAL_LOG2:
++		tmp = (s64)val * 1000000000LL >> val2;
++		val2 = do_div(tmp, 1000000000LL);
++		val = tmp;
++		return sprintf(buf, "%d.%09u\n", val, val2);
+ 	default:
+ 		return 0;
+ 	}
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index f2b78d4..2ee4450 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -314,6 +314,9 @@ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
+ 		*processed = div_s64(raw64 * (s64)scale_val * scale,
+ 				     scale_val2);
+ 		break;
++	case IIO_VAL_FRACTIONAL_LOG2:
++		*processed = (raw64 * (s64)scale_val * scale) >> scale_val2;
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 5c647ec..87b196a 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -58,5 +58,6 @@ enum iio_modifier {
+ #define IIO_VAL_INT_PLUS_NANO 3
+ #define IIO_VAL_INT_PLUS_MICRO_DB 4
+ #define IIO_VAL_FRACTIONAL 10
++#define IIO_VAL_FRACTIONAL_LOG2 11
+ 
+ #endif /* _IIO_TYPES_H_ */
+-- 
+1.7.10.4
 
