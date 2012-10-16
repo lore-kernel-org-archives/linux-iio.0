@@ -1,496 +1,325 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58468 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759078Ab2JSRm7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Oct 2012 13:42:59 -0400
-Message-ID: <50817841.4040305@kernel.org>
-Date: Fri, 19 Oct 2012 16:56:49 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <poeschel@lemonage.de>
+From: Lars Poeschel <poeschel@lemonage.de>
+To: "Lars-Peter Clausen" <lars@metafoo.de>
+Subject: Re: [PATCH v2 4/4] iio: adc: add viperboard adc driver
+Date: Tue, 16 Oct 2012 09:11:43 +0200
+Cc: Lars Poeschel <larsi@wh2.tu-dresden.de>,
+ sameo@linux.intel.com,
+ linux-kernel@vger.kernel.org,
+ jic23@cam.ac.uk,
+ khali@linux-fr.org,
+ ben-linux@fluff.org,
+ w.sang@pengutronix.de,
+ grant.likely@secretlab.ca,
+ linus.walleij@linaro.org,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <20120925085559.GL28670@sortiz-mobl> <1350052469-27802-4-git-send-email-larsi@wh2.tu-dresden.de> <507C1D1C.2030607@metafoo.de>
+In-Reply-To: <507C1D1C.2030607@metafoo.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	drivers@analog.com
-Subject: Re: [PATCH 2/2] iio:dac: Add support for the ad5449
-References: <1350404979-29253-1-git-send-email-lars@metafoo.de> <1350404979-29253-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1350404979-29253-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Message-Id: <201210160911.44070.poeschel@lemonage.de>
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/16/2012 05:29 PM, Lars-Peter Clausen wrote:
-> This patch adds support for the AD5415, AD5426, AD5429, AD5432, AD5439, AD5443
-> and AD5449 single and dual channel DACs.
+On Monday 15 October 2012 at 16:26:36, Lars-Peter Clausen wrote:
+> Added linux-iio@vger.kernel.org to Cc.
 > 
-Clean, short and generally sweet. Just how I like it.
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Merged to togreg branch of iio.git.
-> ---
->  drivers/iio/dac/Kconfig              |   10 +
->  drivers/iio/dac/Makefile             |    1 +
->  drivers/iio/dac/ad5449.c             |  375 ++++++++++++++++++++++++++++++++++
->  include/linux/platform_data/ad5449.h |   40 ++++
->  4 files changed, 426 insertions(+)
->  create mode 100644 drivers/iio/dac/ad5449.c
->  create mode 100644 include/linux/platform_data/ad5449.h
+> On 10/12/2012 04:34 PM, Lars Poeschel wrote:
+> > From: Lars Poeschel <poeschel@lemonage.de>
+> > 
+> > This adds the mfd cell to use the adc part of the Nano River Technologies
+> > viperboard.
+> > 
+> > Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
 > 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index b1c0ee5..f68756e 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -67,6 +67,16 @@ config AD5446
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad5446.
->  
-> +config AD5449
-> +	tristate "Analog Device AD5449 and similar DACs driver"
-> +	depends on SPI_MASTER
-> +	help
-> +	  Say yes here to build support for Analog Devices AD5415, AD5426, AD5429,
-> +	  AD5432, AD5439, AD5443, AD5449 Digital to Analog Converters.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called ad5449.
-> +
->  config AD5504
->  	tristate "Analog Devices AD5504/AD5501 DAC SPI driver"
->  	depends on SPI
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index c0d333b..5b528eb 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -9,6 +9,7 @@ obj-$(CONFIG_AD5624R_SPI) += ad5624r_spi.o
->  obj-$(CONFIG_AD5064) += ad5064.o
->  obj-$(CONFIG_AD5504) += ad5504.o
->  obj-$(CONFIG_AD5446) += ad5446.o
-> +obj-$(CONFIG_AD5449) += ad5449.o
->  obj-$(CONFIG_AD5755) += ad5755.o
->  obj-$(CONFIG_AD5764) += ad5764.o
->  obj-$(CONFIG_AD5791) += ad5791.o
-> diff --git a/drivers/iio/dac/ad5449.c b/drivers/iio/dac/ad5449.c
-> new file mode 100644
-> index 0000000..5b43030
-> --- /dev/null
-> +++ b/drivers/iio/dac/ad5449.c
-> @@ -0,0 +1,375 @@
-> +/*
-> + * AD5415, AD5426, AD5429, AD5432, AD5439, AD5443, AD5449 Digital to Analog
-> + * Converter driver.
-> + *
-> + * Copyright 2012 Analog Devices Inc.
-> + *  Author: Lars-Peter Clausen <lars@metafoo.de>
-> + *
-> + * Licensed under the GPL-2.
-> + */
-> +
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/module.h>
-> +#include <linux/kernel.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <asm/unaligned.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#include <linux/platform_data/ad5449.h>
-> +
-> +#define AD5449_MAX_CHANNELS		2
-> +#define AD5449_MAX_VREFS		2
-> +
-> +#define AD5449_CMD_NOOP			0x0
-> +#define AD5449_CMD_LOAD_AND_UPDATE(x)	(0x1 + (x) * 3)
-> +#define AD5449_CMD_READ(x)		(0x2 + (x) * 3)
-> +#define AD5449_CMD_LOAD(x)		(0x3 + (x) * 3)
-> +#define AD5449_CMD_CTRL			13
-> +
-> +#define AD5449_CTRL_SDO_OFFSET		10
-> +#define AD5449_CTRL_DAISY_CHAIN		BIT(9)
-> +#define AD5449_CTRL_HCLR_TO_MIDSCALE	BIT(8)
-> +#define AD5449_CTRL_SAMPLE_RISING	BIT(7)
-> +
-> +/**
-> + * struct ad5449_chip_info - chip specific information
-> + * @channels:		Channel specification
-> + * @num_channels:	Number of channels
-> + * @has_ctrl:		Chip has a control register
-> + */
-> +struct ad5449_chip_info {
-> +	const struct iio_chan_spec *channels;
-> +	unsigned int num_channels;
-> +	bool has_ctrl;
-> +};
-> +
-> +/**
-> + * struct ad5449 - driver instance specific data
-> + * @spi:		the SPI device for this driver instance
-> + * @chip_info:		chip model specific constants, available modes etc
-> + * @vref_reg:		vref supply regulators
-> + * @has_sdo:		whether the SDO line is connected
-> + * @dac_cache:		Cache for the DAC values
-> + * @data:		spi transfer buffers
-> + */
-> +struct ad5449 {
-> +	struct spi_device		*spi;
-> +	const struct ad5449_chip_info	*chip_info;
-> +	struct regulator_bulk_data	vref_reg[AD5449_MAX_VREFS];
-> +
-> +	bool has_sdo;
-> +	uint16_t dac_cache[AD5449_MAX_CHANNELS];
-> +
-> +	/*
-> +	 * DMA (thus cache coherency maintenance) requires the
-> +	 * transfer buffers to live in their own cache lines.
-> +	 */
-> +	__be16 data[2] ____cacheline_aligned;
-> +};
-> +
-> +enum ad5449_type {
-> +	ID_AD5426,
-> +	ID_AD5429,
-> +	ID_AD5432,
-> +	ID_AD5439,
-> +	ID_AD5443,
-> +	ID_AD5449,
-> +};
-> +
-> +static int ad5449_write(struct iio_dev *indio_dev, unsigned int addr,
-> +	unsigned int val)
-> +{
-> +	struct ad5449 *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	mutex_lock(&indio_dev->mlock);
-> +	st->data[0] = cpu_to_be16((addr << 12) | val);
-> +	ret = spi_write(st->spi, st->data, 2);
-> +	mutex_unlock(&indio_dev->mlock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ad5449_read(struct iio_dev *indio_dev, unsigned int addr,
-> +	unsigned int *val)
-> +{
-> +	struct ad5449 *st = iio_priv(indio_dev);
-> +	int ret;
-> +	struct spi_message msg;
-> +	struct spi_transfer t[] = {
-> +		{
-> +			.tx_buf = &st->data[0],
-> +			.len = 2,
-> +			.cs_change = 1,
-> +		}, {
-> +			.tx_buf = &st->data[1],
-> +			.rx_buf = &st->data[1],
-> +			.len = 2,
-> +		},
-> +	};
-> +
-> +	spi_message_init(&msg);
-> +	spi_message_add_tail(&t[0], &msg);
-> +	spi_message_add_tail(&t[1], &msg);
-> +
-> +	mutex_lock(&indio_dev->mlock);
-> +	st->data[0] = cpu_to_be16(addr << 12);
-> +	st->data[1] = cpu_to_be16(AD5449_CMD_NOOP);
-> +
-> +	ret = spi_sync(st->spi, &msg);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*val = be16_to_cpu(st->data[1]);
-> +	mutex_unlock(&indio_dev->mlock);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ad5449_read_raw(struct iio_dev *indio_dev,
-> +	struct iio_chan_spec const *chan, int *val, int *val2, long info)
-> +{
-> +	struct ad5449 *st = iio_priv(indio_dev);
-> +	struct regulator_bulk_data *reg;
-> +	int scale_uv;
-> +	int ret;
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (st->has_sdo) {
-> +			ret = ad5449_read(indio_dev,
-> +				AD5449_CMD_READ(chan->address), val);
-> +			if (ret)
-> +				return ret;
-> +			*val &= 0xfff;
-> +		} else {
-> +			*val = st->dac_cache[chan->address];
-> +		}
-> +
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		reg = &st->vref_reg[chan->channel];
-> +		scale_uv = regulator_get_voltage(reg->consumer);
-> +		if (scale_uv < 0)
-> +			return scale_uv;
-> +
-> +		*val = scale_uv / 1000;
-> +		*val2 = chan->scan_type.realbits;
-> +
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int ad5449_write_raw(struct iio_dev *indio_dev,
-> +	struct iio_chan_spec const *chan, int val, int val2, long info)
-> +{
-> +	struct ad5449 *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (val < 0 || val >= (1 << chan->scan_type.realbits))
-> +			return -EINVAL;
-> +
-> +		ret = ad5449_write(indio_dev,
-> +			AD5449_CMD_LOAD_AND_UPDATE(chan->address),
-> +			val << chan->scan_type.shift);
-> +		if (ret == 0)
-> +			st->dac_cache[chan->address] = val;
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info ad5449_info = {
-> +	.read_raw = ad5449_read_raw,
-> +	.write_raw = ad5449_write_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +#define AD5449_CHANNEL(chan, bits) {				\
-> +	.type = IIO_VOLTAGE,					\
-> +	.indexed = 1,						\
-> +	.output = 1,						\
-> +	.channel = (chan),					\
-> +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
-> +		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,		\
-> +	.address = (chan),					\
-> +	.scan_type = IIO_ST('u', (bits), 16, 12 - (bits)),	\
-> +}
-> +
-> +#define DECLARE_AD5449_CHANNELS(name, bits) \
-> +const struct iio_chan_spec name[] = { \
-> +	AD5449_CHANNEL(0, bits), \
-> +	AD5449_CHANNEL(1, bits), \
-> +}
-> +
-> +static DECLARE_AD5449_CHANNELS(ad5429_channels, 8);
-> +static DECLARE_AD5449_CHANNELS(ad5439_channels, 10);
-> +static DECLARE_AD5449_CHANNELS(ad5449_channels, 12);
-> +
-> +static const struct ad5449_chip_info ad5449_chip_info[] = {
-> +	[ID_AD5426] = {
-> +		.channels = ad5429_channels,
-> +		.num_channels = 1,
-> +		.has_ctrl = false,
-> +	},
-> +	[ID_AD5429] = {
-> +		.channels = ad5429_channels,
-> +		.num_channels = 2,
-> +		.has_ctrl = true,
-> +	},
-> +	[ID_AD5432] = {
-> +		.channels = ad5439_channels,
-> +		.num_channels = 1,
-> +		.has_ctrl = false,
-> +	},
-> +	[ID_AD5439] = {
-> +		.channels = ad5439_channels,
-> +		.num_channels = 2,
-> +		.has_ctrl = true,
-> +	},
-> +	[ID_AD5443] = {
-> +		.channels = ad5449_channels,
-> +		.num_channels = 1,
-> +		.has_ctrl = false,
-> +	},
-> +	[ID_AD5449] = {
-> +		.channels = ad5449_channels,
-> +		.num_channels = 2,
-> +		.has_ctrl = true,
-> +	},
-> +};
-> +
-> +static const char *ad5449_vref_name(struct ad5449 *st, int n)
-> +{
-> +	if (st->chip_info->num_channels == 1)
-> +		return "VREF";
-> +
-> +	if (n == 0)
-> +		return "VREFA";
-> +	else
-> +		return "VREFB";
-> +}
-> +
-> +static int __devinit ad5449_spi_probe(struct spi_device *spi)
-> +{
-> +	struct ad5449_platform_data *pdata = spi->dev.platform_data;
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
-> +	struct iio_dev *indio_dev;
-> +	struct ad5449 *st;
-> +	unsigned int i;
-> +	int ret;
-> +
-> +	indio_dev = iio_device_alloc(sizeof(*st));
-> +	if (indio_dev == NULL)
-> +		return -ENOMEM;
-> +
-> +	st = iio_priv(indio_dev);
-> +	spi_set_drvdata(spi, indio_dev);
-> +
-> +	st->chip_info = &ad5449_chip_info[id->driver_data];
-> +	st->spi = spi;
-> +
-> +	for (i = 0; i < st->chip_info->num_channels; ++i)
-> +		st->vref_reg[i].supply = ad5449_vref_name(st, i);
-> +
-> +	ret = regulator_bulk_get(&spi->dev, st->chip_info->num_channels,
-> +				st->vref_reg);
-> +	if (ret)
-> +		goto error_free;
-> +
-> +	ret = regulator_bulk_enable(st->chip_info->num_channels, st->vref_reg);
-> +	if (ret)
-> +		goto error_free_reg;
-> +
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->name = id->name;
-> +	indio_dev->info = &ad5449_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = st->chip_info->channels;
-> +	indio_dev->num_channels = st->chip_info->num_channels;
-> +
-> +	if (st->chip_info->has_ctrl) {
-> +		unsigned int ctrl = 0x00;
-> +		if (pdata) {
-> +			if (pdata->hardware_clear_to_midscale)
-> +				ctrl |= AD5449_CTRL_HCLR_TO_MIDSCALE;
-> +			ctrl |= pdata->sdo_mode << AD5449_CTRL_SDO_OFFSET;
-> +			st->has_sdo = pdata->sdo_mode != AD5449_SDO_DISABLED;
-> +		} else {
-> +			st->has_sdo = true;
-> +		}
-> +		ad5449_write(indio_dev, AD5449_CMD_CTRL, ctrl);
-> +	}
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret)
-> +		goto error_disable_reg;
-> +
-> +	return 0;
-> +
-> +error_disable_reg:
-> +	regulator_bulk_disable(st->chip_info->num_channels, st->vref_reg);
-> +error_free_reg:
-> +	regulator_bulk_free(st->chip_info->num_channels, st->vref_reg);
-> +error_free:
-> +	iio_device_free(indio_dev);
-> +
-> +	return ret;
-> +}
-> +
-> +static int __devexit ad5449_spi_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +	struct ad5449 *st = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	regulator_bulk_disable(st->chip_info->num_channels, st->vref_reg);
-> +	regulator_bulk_free(st->chip_info->num_channels, st->vref_reg);
-> +
-> +	iio_device_free(indio_dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id ad5449_spi_ids[] = {
-> +	{ "ad5415", ID_AD5449 },
-> +	{ "ad5426", ID_AD5426 },
-> +	{ "ad5429", ID_AD5429 },
-> +	{ "ad5432", ID_AD5432 },
-> +	{ "ad5439", ID_AD5439 },
-> +	{ "ad5443", ID_AD5443 },
-> +	{ "ad5449", ID_AD5449 },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(spi, ad5449_spi_ids);
-> +
-> +static struct spi_driver ad5449_spi_driver = {
-> +	.driver = {
-> +		.name = "ad5449",
-> +		.owner = THIS_MODULE,
-> +	},
-> +	.probe = ad5449_spi_probe,
-> +	.remove = __devexit_p(ad5449_spi_remove),
-> +	.id_table = ad5449_spi_ids,
-> +};
-> +module_spi_driver(ad5449_spi_driver);
-> +
-> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
-> +MODULE_DESCRIPTION("Analog Devices AD5449 and similar DACs");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/include/linux/platform_data/ad5449.h b/include/linux/platform_data/ad5449.h
-> new file mode 100644
-> index 0000000..bd712bd
-> --- /dev/null
-> +++ b/include/linux/platform_data/ad5449.h
-> @@ -0,0 +1,40 @@
-> +/*
-> + * AD5415, AD5426, AD5429, AD5432, AD5439, AD5443, AD5449 Digital to Analog
-> + * Converter driver.
-> + *
-> + * Copyright 2012 Analog Devices Inc.
-> + *  Author: Lars-Peter Clausen <lars@metafoo.de>
-> + *
-> + * Licensed under the GPL-2.
-> + */
-> +
-> +#ifndef __LINUX_PLATFORM_DATA_AD5449_H__
-> +#define __LINUX_PLATFORM_DATA_AD5449_H__
-> +
-> +/**
-> + * enum ad5449_sdo_mode - AD5449 SDO pin configuration
-> + * @AD5449_SDO_DRIVE_FULL: Drive the SDO pin with full strength.
-> + * @AD5449_SDO_DRIVE_WEAK: Drive the SDO pin with not full strength.
-> + * @AD5449_SDO_OPEN_DRAIN: Operate the SDO pin in open-drain mode.
-> + * @AD5449_SDO_DISABLED: Disable the SDO pin, in this mode it is not possible to
-> + *			read back from the device.
-> + */
-> +enum ad5449_sdo_mode {
-> +	AD5449_SDO_DRIVE_FULL = 0x0,
-> +	AD5449_SDO_DRIVE_WEAK = 0x1,
-> +	AD5449_SDO_OPEN_DRAIN = 0x2,
-> +	AD5449_SDO_DISABLED = 0x3,
-> +};
-> +
-> +/**
-> + * struct ad5449_platform_data - Platform data for the ad5449 DAC driver
-> + * @sdo_mode: SDO pin mode
-> + * @hardware_clear_to_midscale: Whether asserting the hardware CLR pin sets the
-> + *			outputs to midscale (true) or to zero scale(false).
-> + */
-> +struct ad5449_platform_data {
-> +	enum ad5449_sdo_mode sdo_mode;
-> +	bool hardware_clear_to_midscale;
-> +};
-> +
-> +#endif
+> Looks good in general, just some minor code style issues.
 > 
+> > ---
+> > 
+> >  drivers/iio/adc/Kconfig          |    7 ++
+> >  drivers/iio/adc/Makefile         |    1 +
+> >  drivers/iio/adc/viperboard_adc.c |  185
+> >  ++++++++++++++++++++++++++++++++++++++ drivers/mfd/viperboard.c        
+> >  |    3 +
+> >  4 files changed, 196 insertions(+)
+> >  create mode 100644 drivers/iio/adc/viperboard_adc.c
+> 
+> [...]
+> 
+> > diff --git a/drivers/iio/adc/viperboard_adc.c
+> > b/drivers/iio/adc/viperboard_adc.c new file mode 100644
+> > index 0000000..8ae6634
+> > --- /dev/null
+> > +++ b/drivers/iio/adc/viperboard_adc.c
+> > @@ -0,0 +1,185 @@
+> > +/*
+> > + *  Nano River Technologies viperboard iio ADC driver
+> > + *
+> > + *  (C) 2012 by Lemonage GmbH
+> > + *  Author: Lars Poeschel <poeschel@lemonage.de>
+> > + *  All rights reserved.
+> > + *
+> > + *  This program is free software; you can redistribute  it and/or
+> > modify it + *  under  the terms of  the GNU General  Public License as
+> > published by the + *  Free Software Foundation;  either version 2 of
+> > the	License, or (at your + *  option) any later version.
+> > + *
+> > + */
+> > +
+> > +#include <linux/kernel.h>
+> > +#include <linux/errno.h>
+> > +#include <linux/module.h>
+> > +#include <linux/slab.h>
+> > +#include <linux/types.h>
+> > +#include <linux/mutex.h>
+> > +#include <linux/platform_device.h>
+> > +
+> > +#include <linux/usb.h>
+> > +#include <linux/iio/iio.h>
+> > +
+> > +#include <linux/mfd/viperboard.h>
+> > +
+> > +#define VPRBRD_ADC_CMD_GET		0x00
+> > +
+> > +struct __packed vprbrd_adc_msg {
+> > +	u8 cmd;
+> > +	u8 chan;
+> > +	u8 val;
+> > +};
+> 
+> put the __packed between } and ;
+
+GCC allows both alternatives, but you are right: Most kernel code is doing it 
+between } and ; so I will change this.
+
+> > +
+> > +struct vprbrd_adc {
+> > +	struct vprbrd *vb;
+> > +};
+> > +
+> > +#define VPRBRD_ADC_CHANNEL(_index) {			\
+> > +	.type = IIO_VOLTAGE,				\
+> > +	.indexed = 1,					\
+> > +	.channel = _index,				\
+> > +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,	\
+> 
+> It would be good if you could also report the channel scale.
+
+I saw that there is the possibility to supply a channel scale, which is way 
+cool. :-) The doc of the viperboard says nothing about the scale of the ADC. 
+At the moment I do not have the right measuring equipment here to measure a 
+scale myself. I would do another tiny patch if I have the oppotunity to 
+measure somewhere.
+
+> > +	.scan_index = _index,				\
+> > +	.scan_type.sign = 'u',				\
+> > +	.scan_type.realbits = 8,			\
+> > +	.scan_type.storagebits = 8,			\
+> 
+> Usually this is written as
+> 	.scan_type = {
+> 		.sign = 'u',
+> 		....
+> 	},
+> 
+> > +}
+> > +
+> > +static struct iio_chan_spec vprbrd_adc_iio_channels[] = {
+> 
+> const
+> 
+> > +	VPRBRD_ADC_CHANNEL(0),
+> > +	VPRBRD_ADC_CHANNEL(1),
+> > +	VPRBRD_ADC_CHANNEL(2),
+> > +	VPRBRD_ADC_CHANNEL(3),
+> > +};
+> > +
+> > +static int vprbrd_iio_read_raw(struct iio_dev *iio_dev,
+> > +				struct iio_chan_spec const *chan,
+> > +				int *val,
+> > +				int *val2,
+> > +				long mask)
+> 
+> 'mask' used to be a mask and that's why it is still called 'mask' in older
+> drivers. For new drivers we should use 'info'.
+> 
+> > +{
+> > +	int ret, error = 0;
+> > +	struct vprbrd_adc *adc = iio_priv(iio_dev);
+> > +	struct vprbrd *vb = adc->vb;
+> > +	struct vprbrd_adc_msg *admsg = (struct vprbrd_adc_msg *)vb->buf;
+> > +
+> > +	if (mask == IIO_CHAN_INFO_RAW) {
+> > +
+> 
+> Use switch instead of if. Otherwise you'd end up with if(mask == ...) else
+> if(mask == ...) else if (mask == ...) if you add support for more channel
+> attributes.
+> 
+> > +		mutex_lock(&vb->lock);
+> > +
+> > +		admsg->cmd = VPRBRD_ADC_CMD_GET;
+> > +		admsg->chan = chan->scan_index;
+> > +		admsg->val = 0x00;
+> > +
+> > +		ret = usb_control_msg(vb->usb_dev,
+> > +			usb_sndctrlpipe(vb->usb_dev, 0), 0xec, 0x40,
+> > +			0x0000, 0x0000, admsg,
+> > +			sizeof(struct vprbrd_adc_msg), 100);
+> > +		if (ret != sizeof(struct vprbrd_adc_msg)) {
+> > +			dev_err(&iio_dev->dev, "usb send error on adc read\n");
+> > +			error = -EREMOTEIO;
+> > +		}
+> 
+> Does it make sense to send out the second msg if the first one failed?
+
+This is a good question. I can not fully answer it, because I did not build 
+the hardware. I thought it is better to try send the second message, because 
+there is some chance it reaches the device. I would opt for trying it.
+
+> > +
+> > +		ret = usb_control_msg(vb->usb_dev,
+> > +			usb_rcvctrlpipe(vb->usb_dev, 0), 0xec, 0xc0,
+> > +			0x0000, 0x0000, admsg,
+> > +			sizeof(struct vprbrd_adc_msg), 100);
+> > +
+> 
+> It would be good to have some defines for the magic constants used for
+> request and request_type.
+> 
+> > +		*val = admsg->val;
+> > +
+> > +		mutex_unlock(&vb->lock);
+> > +
+> > +		if (ret != sizeof(struct vprbrd_adc_msg)) {
+> > +			dev_err(&iio_dev->dev, "usb recv error on adc read\n");
+> > +			error = -EREMOTEIO;
+> > +		}
+> > +
+> > +		if (error)
+> > +			goto error;
+> > +
+> > +		return IIO_VAL_INT;
+> > +	}
+> > +	error =  -EINVAL;
+> > +error:
+> > +	return error;
+> > +}
+> > +
+> > +static const struct iio_info vprbrd_adc_iio_info = {
+> > +	.read_raw = &vprbrd_iio_read_raw,
+> > +	.driver_module = THIS_MODULE,
+> > +};
+> > +
+> > +static int __devinit vprbrd_adc_probe(struct platform_device *pdev)
+> > +{
+> > +	struct vprbrd *vb = dev_get_drvdata(pdev->dev.parent);
+> > +	struct vprbrd_adc *adc;
+> > +	struct iio_dev *iodev;
+> 
+> Usually this is called indio_dev, would be good for consistency if you'd do
+> this as well.
+> 
+> > +	int ret;
+> > +
+> > +	/* registering iio */
+> > +	iodev = iio_device_alloc(sizeof(struct vprbrd_adc));
+> > +	if (!iodev) {
+> > +		dev_err(&pdev->dev, "failed allocating iio device\n");
+> > +		return -ENOMEM;
+> > +	}
+> > +
+> > +	adc = iio_priv(iodev);
+> > +	adc->vb = vb;
+> > +	iodev->name = "viperboard adc";
+> > +	iodev->dev.parent = &pdev->dev;
+> > +	iodev->info = &vprbrd_adc_iio_info;
+> > +	iodev->modes = INDIO_DIRECT_MODE;
+> > +	iodev->channels = vprbrd_adc_iio_channels;
+> > +	iodev->num_channels = ARRAY_SIZE(vprbrd_adc_iio_channels);
+> > +
+> > +	ret = iio_device_register(iodev);
+> > +	if (ret) {
+> > +		dev_err(&pdev->dev, "could not register iio (adc)");
+> > +		goto error;
+> > +	}
+> > +
+> > +	platform_set_drvdata(pdev, iodev);
+> > +
+> > +	return 0;
+> > +
+> > +error:
+> > +	iio_device_free(iodev);
+> > +	return ret;
+> > +}
+> > +
+> > +static int __devexit vprbrd_adc_remove(struct platform_device *pdev)
+> > +{
+> > +	struct iio_dev *iodev = platform_get_drvdata(pdev);
+> > +
+> > +	iio_device_unregister(iodev);
+> > +	iio_device_free(iodev);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static struct platform_driver vprbrd_adc_driver = {
+> > +	.driver.name	= "viperboard-adc",
+> > +	.driver.owner	= THIS_MODULE,
+> 
+> Same as with scan_type, usually this is written as
+> 
+> .driver = {
+> 	.name = ...
+> 	....
+> },
+> 
+> > +	.probe		= vprbrd_adc_probe,
+> > +	.remove		= __devexit_p(vprbrd_adc_remove),
+> > +};
+> > +
+> > +static int __init vprbrd_adc_init(void)
+> > +{
+> > +	return platform_driver_register(&vprbrd_adc_driver);
+> > +}
+> > +subsys_initcall(vprbrd_adc_init);
+> > +
+> > +static void __exit vprbrd_adc_exit(void)
+> > +{
+> > +	platform_driver_unregister(&vprbrd_adc_driver);
+> > +}
+> > +module_exit(vprbrd_adc_exit);
+> 
+> module_platform_driver(vprbrd_adc_driver);
+> 
+> > +
+> > +MODULE_AUTHOR("Lars Poeschel <poeschel@lemonage.de>");
+> > +MODULE_DESCRIPTION("IIO ADC driver for Nano River Techs Viperboard");
+> > +MODULE_LICENSE("GPL");
+> > +MODULE_ALIAS("platform:viperboard-adc");
+> > diff --git a/drivers/mfd/viperboard.c b/drivers/mfd/viperboard.c
+> > index a25e07e..eb1cf89 100644
+> > --- a/drivers/mfd/viperboard.c
+> > +++ b/drivers/mfd/viperboard.c
+> > @@ -55,6 +55,9 @@ static struct mfd_cell vprbrd_devs[] = {
+> > 
+> >  	{
+> >  	
+> >  		.name = "viperboard-i2c",
+> >  	
+> >  	},
+> > 
+> > +	{
+> > +		.name = "viperboard-adc",
+> > +	},
+> > 
+> >  };
+> >  
+> >  static int vprbrd_probe(struct usb_interface *interface,
+
+Thank you for your review. The other things you mention are clear. I will 
+change them. I will wait some time for some feedback from the other 
+maintainers and then do a version 3 of the whole patchset.
+
+Regards,
+Lars
