@@ -1,58 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45636 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752960Ab2JMJh5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Oct 2012 05:37:57 -0400
-Message-ID: <50793673.3020104@kernel.org>
-Date: Sat, 13 Oct 2012 10:37:55 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:44370 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756228Ab2JQGLZ convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Oct 2012 02:11:25 -0400
+From: "Patil, Rachna" <rachna@ti.com>
+To: Samuel Ortiz <sameo@linux.intel.com>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: RE: [PATCH RESEND 0/8] TI Touchscreen driver updates and Support
+ for TSC/ADC MFD driver
+Date: Wed, 17 Oct 2012 06:11:13 +0000
+Message-ID: <4CE347531D4CA947960AF71FF095B9323E960D9B@DBDE01.ent.ti.com>
+References: <1350372345-27108-1-git-send-email-rachna@ti.com>
+ <20121016174207.GA1833@core.coreip.homeip.net>
+In-Reply-To: <20121016174207.GA1833@core.coreip.homeip.net>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: remove useless irq_enabled variable in at91
-References: <1350115595-7107-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1350115595-7107-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/13/2012 09:06 AM, Peter Meerwald wrote:
-> irq_enabled is only set, but never read
-> 
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-Added to togreg branch of iio.git  thanks.
+Hi Samuel,
 
-> ---
->  drivers/iio/adc/at91_adc.c |    3 ---
->  1 file changed, 3 deletions(-)
+I have got an ACK from Jonathan and Dmitry on this patch series.
+Can you please pull in if there are no further review comments.
+
+Regards,
+Rachna.
+
+On Tue, Oct 16, 2012 at 23:12:07, Dmitry Torokhov wrote:
+> Hi Rachna,
 > 
-> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> index 3ed94bf..b3ba8af 100644
-> --- a/drivers/iio/adc/at91_adc.c
-> +++ b/drivers/iio/adc/at91_adc.c
-> @@ -46,7 +46,6 @@ struct at91_adc_state {
->  	struct clk		*clk;
->  	bool			done;
->  	int			irq;
-> -	bool			irq_enabled;
->  	u16			last_value;
->  	struct mutex		lock;
->  	u8			num_channels;
-> @@ -85,7 +84,6 @@ static irqreturn_t at91_adc_trigger_handler(int irq, void *p)
->  	buffer->access->store_to(buffer, (u8 *)st->buffer);
->  
->  	iio_trigger_notify_done(idev->trig);
-> -	st->irq_enabled = true;
->  
->  	/* Needed to ACK the DRDY interruption */
->  	at91_adc_readl(st, AT91_ADC_LCDR);
-> @@ -106,7 +104,6 @@ static irqreturn_t at91_adc_eoc_trigger(int irq, void *private)
->  
->  	if (iio_buffer_enabled(idev)) {
->  		disable_irq_nosync(irq);
-> -		st->irq_enabled = false;
->  		iio_trigger_poll(idev->trig, iio_get_time_ns());
->  	} else {
->  		st->last_value = at91_adc_readl(st, AT91_ADC_LCDR);
+> On Tue, Oct 16, 2012 at 12:55:37PM +0530, Patil, Rachna wrote:
+> > This patch set is a cumulative set of [1] and [2] sent earlier.
+> > I have merged the patch set so that the MFD patches apply without any 
+> > issues.
+> > 
+> > Also Note that there are no code changes in either of the patch set, 
+> > only rebased on top of linux-next to make sure that all the patches 
+> > apply without any conflicts.
+> > 
+> > This patch set has been tested on AM335x EVM.
+> > 
+> > [1] "[PATCH 0/4] input: TSC: ti_tscadc: TI Touchscreen driver updates"
+> > (http://www.spinics.net/lists/linux-input/msg22107.html)
+> > 
+> > [2] "[PATCH v5 0/4] Support for TSC/ADC MFD driver"
+> > (http://www.spinics.net/lists/linux-input/msg22832.html)
+> > 
+> > Patil, Rachna (8):
+> >   input: TSC: ti_tscadc: Correct register usage
+> >   input: TSC: ti_tscadc: Add Step configuration as platform data
+> >   input: TSC: ti_tscadc: set FIFO0 threshold Interrupt
+> >   input: TSC: ti_tscadc: Remove definition of End Of Interrupt register
+> >   input: TSC: ti_tscadc: Rename the existing touchscreen driver
+> >   MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
+> >   input: TSC: ti_tsc: Convert TSC into a MFDevice
+> >   IIO : ADC: tiadc: Add support of TI's ADC driver
 > 
+> I am fine with input portion of the patch series, please merge through MFD tree.
+> 
+> Thanks.
+> 
+> --
+> Dmitry
+> 
+
