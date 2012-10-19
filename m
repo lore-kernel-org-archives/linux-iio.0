@@ -1,56 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35993 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58455 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751762Ab2JTJtU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Oct 2012 05:49:20 -0400
-Message-ID: <5082739E.1000800@kernel.org>
-Date: Sat, 20 Oct 2012 10:49:18 +0100
+	with ESMTP id S1759117Ab2JSRm6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Oct 2012 13:42:58 -0400
+Message-ID: <5081783B.4020602@kernel.org>
+Date: Fri, 19 Oct 2012 16:56:43 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Derek Basehore <dbasehore@chromium.org>
-CC: jic23@cam.ac.uk, bleung@chromium.org,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jon Brenner - TAOS <jbrenner@taosinc.com>
-Subject: Re: [PATCH] tsl2563: fixed bug with disabling interrupts
-References: <1349394896-4856-1-git-send-email-dbasehore@chromium.org>
-In-Reply-To: <1349394896-4856-1-git-send-email-dbasehore@chromium.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH 1/2] iio: Add a logarithmic fractional value type
+References: <1350404979-29253-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1350404979-29253-1-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-cc'd iio mailing list and Jon Brenner.
-Being lazy I haven't dug out the datahsheet to check this (my board has a broken
-track to the interrupt line so can't easily test this!)
+On 10/16/2012 05:29 PM, Lars-Peter Clausen wrote:
+> For ADCs or DACs the denominator for fractional types often is a power of two.
+> In this case we can use a shift operation instead of the rather expensive 64 bit
+> division. This patch adds a new fractional type which expects the denominator to
+> be specified as the log2 of the actual denominator. E.g. for ADCs and DACs this
+> will usually be the number of significant bits.
+Only slight issue with this is that continual addition of these will eventually
+make for a mess.  Having said that, this one is sensible and as you say
+common.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Added to togreg branch of iio.git
 
-> In tsl_2563_write_interrupt_config and tsl2562_remove, interrupts are not
-> disabled where they should be. This seems to be from a mistake of using |=
-> instead of &= in 2 lines of code.
-> 
-> Signed-off-by: Derek Basehore <dbasehore@chromium.org>
 > ---
->  drivers/staging/iio/light/tsl2563.c |    4 ++--
->  1 files changed, 2 insertions(+), 2 deletions(-)
+>  drivers/iio/industrialio-core.c |    5 +++++
+>  drivers/iio/inkern.c            |    3 +++
+>  include/linux/iio/types.h       |    1 +
+>  3 files changed, 9 insertions(+)
 > 
-> diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio/light/tsl2563.c
-> index 954ca2c..3f72543 100644
-> --- a/drivers/staging/iio/light/tsl2563.c
-> +++ b/drivers/staging/iio/light/tsl2563.c
-> @@ -652,7 +652,7 @@ static int tsl2563_write_interrupt_config(struct iio_dev *indio_dev,
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 6eb24db..37650a7 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -397,6 +397,11 @@ static ssize_t iio_read_channel_info(struct device *dev,
+>  		val2 = do_div(tmp, 1000000000LL);
+>  		val = tmp;
+>  		return sprintf(buf, "%d.%09u\n", val, val2);
+> +	case IIO_VAL_FRACTIONAL_LOG2:
+> +		tmp = (s64)val * 1000000000LL >> val2;
+> +		val2 = do_div(tmp, 1000000000LL);
+> +		val = tmp;
+> +		return sprintf(buf, "%d.%09u\n", val, val2);
+>  	default:
+>  		return 0;
 >  	}
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index f2b78d4..2ee4450 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -314,6 +314,9 @@ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
+>  		*processed = div_s64(raw64 * (s64)scale_val * scale,
+>  				     scale_val2);
+>  		break;
+> +	case IIO_VAL_FRACTIONAL_LOG2:
+> +		*processed = (raw64 * (s64)scale_val * scale) >> scale_val2;
+> +		break;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 5c647ec..87b196a 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -58,5 +58,6 @@ enum iio_modifier {
+>  #define IIO_VAL_INT_PLUS_NANO 3
+>  #define IIO_VAL_INT_PLUS_MICRO_DB 4
+>  #define IIO_VAL_FRACTIONAL 10
+> +#define IIO_VAL_FRACTIONAL_LOG2 11
 >  
->  	if (!state && (chip->intr & 0x30)) {
-> -		chip->intr |= ~0x30;
-> +		chip->intr &= ~0x30;
->  		ret = i2c_smbus_write_byte_data(chip->client,
->  						TSL2563_CMD | TSL2563_REG_INT,
->  						chip->intr);
-> @@ -814,7 +814,7 @@ static int __devexit tsl2563_remove(struct i2c_client *client)
->  	if (!chip->int_enabled)
->  		cancel_delayed_work(&chip->poweroff_work);
->  	/* Ensure that interrupts are disabled - then flush any bottom halves */
-> -	chip->intr |= ~0x30;
-> +	chip->intr &= ~0x30;
->  	i2c_smbus_write_byte_data(chip->client, TSL2563_CMD | TSL2563_REG_INT,
->  				  chip->intr);
->  	flush_scheduled_work();
+>  #endif /* _IIO_TYPES_H_ */
 > 
