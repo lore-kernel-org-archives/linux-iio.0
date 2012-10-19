@@ -1,66 +1,112 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35882 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35809 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751795Ab2JTJh4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Oct 2012 05:37:56 -0400
-Message-ID: <508270F1.6080202@kernel.org>
-Date: Sat, 20 Oct 2012 10:37:53 +0100
+	with ESMTP id S1754472Ab2JTJZ1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Oct 2012 05:25:27 -0400
+Message-ID: <50816B19.4010105@kernel.org>
+Date: Fri, 19 Oct 2012 16:00:41 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO fixes for v3.7-rc1 set 1
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
+	"lars@metafoo.de" <lars@metafoo.de>
+Subject: Re: [PATCH 0/4 V5] staging:iio: Add support for multiple buffers
+ (testing required!)
+References: <1350120278-26929-1-git-send-email-jic23@kernel.org> <4FA419E87744DF4DAECD5BCE1214B7A919D5CEB1@ORSMSX108.amr.corp.intel.com>
+In-Reply-To: <4FA419E87744DF4DAECD5BCE1214B7A919D5CEB1@ORSMSX108.amr.corp.intel.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit ddffeb8c4d0331609ef2581d84de4d763607bd37:
-
-  Linux 3.7-rc1 (2012-10-14 14:41:04 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.7a
-
-for you to fetch changes up to 98f9c3c137cea016c57c9fd60b3caf88eb34e4cd:
-
-  iio: Remove duplicates for light/ in Kconfig and Makefile (2012-10-19 19:44:06 +0100)
-
-----------------------------------------------------------------
-First round of fixes for IIO in 3.7 cycle, applies to 3.7-rc1.
-
-Mostly a round of fixes for Analog Devices MEMs devices where some
-offset values were either completely incorrect, or in the wrong units.
-
-Also removal of an accidental duplicate entry in a Kconfig file.
-
-----------------------------------------------------------------
-Andreas Larsson (1):
-      iio: Remove duplicates for light/ in Kconfig and Makefile
-
-Lars-Peter Clausen (11):
-      iio: Add some helper macros for unit conversion
-      staging:iio: Fix adis16201 channel offsets and scales
-      staging:iio: Fix adis16203 channel offsets and scales
-      staging:iio: Fix adis16204 channel offsets and scales
-      staging:iio: Fix adis16209 channel offsets and scales
-      staging:iio: Fix adis16220 channel offsets and scales
-      staging:iio: Fix adis16240 channel offsets and scales
-      staging:iio: Fix adis16260 channel offsets and scales
-      staging:iio: Fix adis16400 channel offsets and scales
-      staging:iio:adis16400: Report correct temperature scale and offset
-      staging:iio:adis16400: Fixup adis16336 temp channel attributes
-
- drivers/iio/Kconfig                        |  1 -
- drivers/iio/Makefile                       |  1 -
- drivers/staging/iio/accel/adis16201_core.c | 24 +++++-----
- drivers/staging/iio/accel/adis16203_core.c | 20 +++++----
- drivers/staging/iio/accel/adis16204_core.c | 22 +++++-----
- drivers/staging/iio/accel/adis16209_core.c | 18 ++++----
- drivers/staging/iio/accel/adis16220_core.c | 19 ++++----
- drivers/staging/iio/accel/adis16240_core.c | 23 +++++-----
- drivers/staging/iio/gyro/adis16260_core.c  | 29 ++++++++-----
- drivers/staging/iio/imu/adis16400.h        |  2 +
- drivers/staging/iio/imu/adis16400_core.c   | 70 +++++++++++++++++++-----------
- include/linux/iio/iio.h                    | 16 +++++++
- 12 files changed, 148 insertions(+), 97 deletions(-)
+Thanks, I've added a tested-by tag for patch 0. The others shouldn't have any effect at
+all on your drivers (or any others!)
+> Hi Jonathan,
+> 
+> Tested hid sensor changes. They still work with this patchset.
+> 
+> Thanks,
+> Srinivas
+> 
+> -----Original Message-----
+> From: J.I. Cameron [mailto:jic23@hermes.cam.ac.uk] On Behalf Of Jonathan Cameron
+> Sent: Saturday, October 13, 2012 2:25 AM
+> To: linux-iio@vger.kernel.org
+> Cc: Michael.Hennerich@analog.com; lars@metafoo.de; Pandruvada, Srinivas; Jonathan Cameron
+> Subject: [PATCH 0/4 V5] staging:iio: Add support for multiple buffers (testing required!)
+> 
+> In quick summary this is needed to do interrupt driven in kernel clients as it adds the option to push to multiple 'buffer' interfaces.
+> Note that some of these may not actually do any buffering but rather push directly into another subsytem (the example is input).
+> 
+> I would like to merge at least the first 3 patches early in this cycle.
+> What I need is some testing across a reasonable range of devices.  Review is welcome of course as well!
+> 
+> The complexity in this set is entirely in the changes to industrialio-buffer.c concerning how we go about adding and removing client buffers.  To do this we need to work out which scan mask is appropriate given the requests of all the given buffers (and whether we can satisfy it).  I've been testing with the max1363 driver which probably has the most complex set of available scan masks.  Thus when a new buffer is added or one is removed the whole buffer set are torn down and built up again.  This may be undesirable for some applications but should occur only rarely.
+> 
+> The example driver is for bridging to the input subsystem and still needs some work, but that can occur later in this merge cycle whereas the changes to the core really want to go in asap.
+> 
+> Changes since v3 
+> 
+> Rebased and added other drivers that have occured whilst this patch series has been languishing in my local tree.
+> 
+> Changes since V2.
+> 
+> Improved handling of error conditions in the buffer insertion and removal code.  (suggested by Lars-Peter).  I want to take another look at these, but didn't want to keep people from testing this in the meantime.
+> 
+> Also a number of minor fixes that came up during testing.
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> Jonathan Cameron (4):
+>   staging:iio: Add support for multiple buffers
+>   staging:iio:in kernel users: Add a data field for channel specific
+>     info.
+>   staging:iio: add a callback buffer for in kernel push interface
+>   staging:iio: Proof of concept input driver.
+> 
+>  drivers/iio/Kconfig                             |   6 +
+>  drivers/iio/Makefile                            |   1 +
+>  drivers/iio/accel/hid-sensor-accel-3d.c         |  15 +-
+>  drivers/iio/adc/ad7266.c                        |   3 +-
+>  drivers/iio/adc/ad7476.c                        |   2 +-
+>  drivers/iio/adc/ad_sigma_delta.c                |   2 +-
+>  drivers/iio/adc/at91_adc.c                      |   3 +-
+>  drivers/iio/buffer_cb.c                         | 113 +++++++
+>  drivers/iio/gyro/hid-sensor-gyro-3d.c           |  15 +-
+>  drivers/iio/industrialio-buffer.c               | 377 ++++++++++++++++--------
+>  drivers/iio/industrialio-core.c                 |   1 +
+>  drivers/iio/inkern.c                            |   1 +
+>  drivers/iio/light/adjd_s311.c                   |   3 +-
+>  drivers/iio/light/hid-sensor-als.c              |  15 +-
+>  drivers/iio/magnetometer/hid-sensor-magn-3d.c   |  15 +-
+>  drivers/staging/iio/Kconfig                     |  11 +
+>  drivers/staging/iio/Makefile                    |   1 +
+>  drivers/staging/iio/accel/adis16201_ring.c      |   2 +-
+>  drivers/staging/iio/accel/adis16203_ring.c      |   2 +-
+>  drivers/staging/iio/accel/adis16204_ring.c      |   2 +-
+>  drivers/staging/iio/accel/adis16209_ring.c      |   2 +-
+>  drivers/staging/iio/accel/adis16240_ring.c      |   2 +-
+>  drivers/staging/iio/accel/lis3l02dq_ring.c      |   2 +-
+>  drivers/staging/iio/adc/ad7298_ring.c           |   2 +-
+>  drivers/staging/iio/adc/ad7606_ring.c           |   2 +-
+>  drivers/staging/iio/adc/ad7887_ring.c           |   2 +-
+>  drivers/staging/iio/adc/ad799x_ring.c           |   2 +-
+>  drivers/staging/iio/adc/max1363_ring.c          |   2 +-
+>  drivers/staging/iio/gyro/adis16260_ring.c       |   2 +-
+>  drivers/staging/iio/iio_input.c                 | 225 ++++++++++++++
+>  drivers/staging/iio/iio_input.h                 |  23 ++
+>  drivers/staging/iio/iio_simple_dummy_buffer.c   |   5 +-
+>  drivers/staging/iio/impedance-analyzer/ad5933.c |   4 +-
+>  drivers/staging/iio/imu/adis16400_ring.c        |   5 +-
+>  drivers/staging/iio/meter/ade7758_ring.c        |   2 +-
+>  include/linux/iio/buffer.h                      |  24 +-
+>  include/linux/iio/consumer.h                    |  48 +++
+>  include/linux/iio/iio.h                         |   2 +
+>  include/linux/iio/machine.h                     |   2 +
+>  39 files changed, 740 insertions(+), 208 deletions(-)  create mode 100644 drivers/iio/buffer_cb.c  create mode 100644 drivers/staging/iio/iio_input.c  create mode 100644 drivers/staging/iio/iio_input.h
+> 
+> --
+> 1.7.12.2
+> 
