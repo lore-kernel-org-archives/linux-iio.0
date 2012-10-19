@@ -1,154 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-183.synserver.de ([212.40.185.183]:1180 "EHLO
-	smtp-out-183.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1422975Ab2JaRwj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2012 13:52:39 -0400
-Message-ID: <50916563.8080704@metafoo.de>
-Date: Wed, 31 Oct 2012 18:52:35 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from ppsw-43.csi.cam.ac.uk ([131.111.8.143]:60336 "EHLO
+	ppsw-43.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753183Ab2JSR7R (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Oct 2012 13:59:17 -0400
+Message-ID: <508194EC.4050702@cam.ac.uk>
+Date: Fri, 19 Oct 2012 18:59:08 +0100
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-To: Pantelis Antoniou <panto@antoniou-consulting.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Koen Kooi <koen@dominion.thruhere.net>,
-	Matt Porter <mporter@ti.com>, Russ Dill <Russ.Dill@ti.com>,
-	linux-omap@vger.kernel.org
-Subject: Re: [PATCH 1/3] ti_adc: Update with IIO map interface
-References: <1351783496-11557-1-git-send-email-panto@antoniou-consulting.com>
-In-Reply-To: <1351783496-11557-1-git-send-email-panto@antoniou-consulting.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/4] staging:iio: Don't compare boolean values with true/false
+References: <1350571399-17723-1-git-send-email-lars@metafoo.de> <508170BE.4060103@kernel.org> <5081941A.8050305@metafoo.de>
+In-Reply-To: <5081941A.8050305@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/01/2012 04:24 PM, Pantelis Antoniou wrote:
-> Add an IIO map interface that consumers can use.
-
-Hi,
-
-Looks like you overlooked the review comments I had inline last time. I've
-put them in again, see below.
-
+On 10/19/2012 06:55 PM, Lars-Peter Clausen wrote:
+> On 10/19/2012 05:24 PM, Jonathan Cameron wrote:
+>> On 10/18/2012 03:43 PM, Lars-Peter Clausen wrote:
+>>> Fixes the following coccicheck warnings:
+>>> 	drivers/staging/iio/accel/lis3l02dq_ring.c:240:5-10: WARNING: Comparison to bool
+>>> 	drivers/staging/iio/iio_dummy_evgen.c:111:6-25: WARNING: Comparison to bool
+>>>
+>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>> Can't say I can summon much enthusiasm for this patch..
 > 
-> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
-> ---
->  drivers/iio/adc/ti_am335x_adc.c | 60 +++++++++++++++++++++++++++++++++--------
->  1 file changed, 49 insertions(+), 11 deletions(-)
+> Me neither, that's why I did not fix this up for the DAC drivers when I moved
+> them out of staging. But it turns out that existing coccicheck errors can cause
+> false positives in Fengguang Wu automated commit test scripts. We've seen a few
+> of these in the past. So I've to decided to just fix all coccicheck
+> warnings/error for IIO to avoid further false positives.
+Fair enough and aiming for a clean coccicheck, smatch, sparse set makes it easier
+to spot anything real that occurs locally. Also this is the correct time to do
+this sort of stuff - nothing particularly big in the way of abi changes queued up
+for these to cause fuzz in (for once ;)
 > 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index 02a43c8..8595a90 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -20,8 +20,9 @@
->  #include <linux/slab.h>
->  #include <linux/interrupt.h>
->  #include <linux/platform_device.h>
-> -#include <linux/io.h>
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/machine.h>
-> +#include <linux/iio/driver.h>
->  
->  #include <linux/mfd/ti_am335x_tscadc.h>
->  #include <linux/platform_data/ti_am335x_adc.h>
-> @@ -29,6 +30,8 @@
->  struct tiadc_device {
->  	struct ti_tscadc_dev *mfd_tscadc;
->  	int channels;
-> +	char *buf;
-
-buf doesn't seem to be used anywhere
-
-> +	struct iio_map *map;
->  };
->  
->  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
-> @@ -72,27 +75,62 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
->  	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
->  }
->  
-> -static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
-> +static int tiadc_channel_init(struct iio_dev *indio_dev,
-> +		struct tiadc_device *adc_dev)
->  {
->  	struct iio_chan_spec *chan_array;
-> -	int i;
-> -
-> -	indio_dev->num_channels = channels;
-> -	chan_array = kcalloc(indio_dev->num_channels,
-> -			sizeof(struct iio_chan_spec), GFP_KERNEL);
-> +	struct iio_chan_spec *chan;
-> +	char *s;
-> +	int i, len, size, ret;
-> +	int channels = adc_dev->channels;
->  
-> +	size = channels * (sizeof(struct iio_chan_spec) + 6);
-> +	chan_array = kzalloc(size, GFP_KERNEL);
->  	if (chan_array == NULL)
->  		return -ENOMEM;
->  
-> -	for (i = 0; i < (indio_dev->num_channels); i++) {
-> -		struct iio_chan_spec *chan = chan_array + i;
-> +	/* buffer space is after the array */
-> +	s = (char *)(chan_array + channels);
-> +	chan = chan_array;
-> +	for (i = 0; i < channels; i++, chan++, s += len + 1) {
-> +
-> +		len = sprintf(s, "AIN%d", i);
-> +
->  		chan->type = IIO_VOLTAGE;
->  		chan->indexed = 1;
->  		chan->channel = i;
-> -		chan->info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT;
-> +		chan->datasheet_name = s;
-> +		chan->scan_type.sign = 'u';
-> +		chan->scan_type.realbits = 12;
-> +		chan->scan_type.storagebits = 32;
-> +		chan->scan_type.shift = 0;
-
-The scan type assignment should go in a separate patch if possible.
-
->  	}
->  
->  	indio_dev->channels = chan_array;
-> +	indio_dev->num_channels = channels;
-> +
-> +	size = (channels + 1) * sizeof(struct iio_map);
-> +	adc_dev->map = kzalloc(size, GFP_KERNEL);
-> +	if (adc_dev->map == NULL) {
-> +		kfree(chan_array);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	for (i = 0; i < indio_dev->num_channels; i++) {
-> +		adc_dev->map[i].adc_channel_label = chan_array[i].datasheet_name;
-> +		adc_dev->map[i].consumer_dev_name = "any";
-> +		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
-> +	}
-> +	adc_dev->map[i].adc_channel_label = NULL;
-> +	adc_dev->map[i].consumer_dev_name = NULL;
-> +	adc_dev->map[i].consumer_channel = NULL;
-
-The map should be passed in via platform data or similar. All the fields of
-the map depend on the specific user, so you can't use a generic map. In fact
-if we were able to use a generic map, we wouldn't need a map at all.
-
-> +
-> +	ret = iio_map_array_register(indio_dev, adc_dev->map);
-> +	if (ret != 0) {
-> +		kfree(adc_dev->map);
-> +		kfree(chan_array);
-> +		return -ENOMEM;
-> +	}
->  
->  	return indio_dev->num_channels;
->  }
-> @@ -168,7 +206,7 @@ static int __devinit tiadc_probe(struct platform_device *pdev)
->  
->  	tiadc_step_config(adc_dev);
->  
-> -	err = tiadc_channel_init(indio_dev, adc_dev->channels);
-> +	err = tiadc_channel_init(indio_dev, adc_dev);
->  	if (err < 0)
->  		goto err_free_device;
->  
-
+>> Added to togreg branch.
+> 
+> Thanks.
+> 
+>>> ---
+>>>  drivers/staging/iio/accel/lis3l02dq_ring.c |    2 +-
+>>>  drivers/staging/iio/iio_dummy_evgen.c      |    2 +-
+>>>  2 files changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+>>> index fa4190d..ee887e9 100644
+>>> --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
+>>> +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+>>> @@ -237,7 +237,7 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>>>  	u8 t;
+>>>  
+>>>  	__lis3l02dq_write_data_ready_config(indio_dev, state);
+>>> -	if (state == false) {
+>>> +	if (!state) {
+>>>  		/*
+>>>  		 * A possible quirk with the handler is currently worked around
+>>>  		 * by ensuring outstanding read events are cleared.
+>>> diff --git a/drivers/staging/iio/iio_dummy_evgen.c b/drivers/staging/iio/iio_dummy_evgen.c
+>>> index 74e24e8..132d278 100644
+>>> --- a/drivers/staging/iio/iio_dummy_evgen.c
+>>> +++ b/drivers/staging/iio/iio_dummy_evgen.c
+>>> @@ -108,7 +108,7 @@ int iio_dummy_evgen_get_irq(void)
+>>>  
+>>>  	mutex_lock(&iio_evgen->lock);
+>>>  	for (i = 0; i < IIO_EVENTGEN_NO; i++)
+>>> -		if (iio_evgen->inuse[i] == false) {
+>>> +		if (!iio_evgen->inuse[i]) {
+>>>  			ret = iio_evgen->base + i;
+>>>  			iio_evgen->inuse[i] = true;
+>>>  			break;
+>>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
