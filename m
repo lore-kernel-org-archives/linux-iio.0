@@ -1,84 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-100.synserver.de ([212.40.185.100]:1081 "EHLO
-	smtp-out-100.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751968Ab2JOJei (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Oct 2012 05:34:38 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 08/11] staging:iio: Fix adis16260 channel offsets and scales
-Date: Mon, 15 Oct 2012 11:35:31 +0200
-Message-Id: <1350293734-21951-8-git-send-email-lars@metafoo.de>
-In-Reply-To: <1350293734-21951-1-git-send-email-lars@metafoo.de>
-References: <1350293734-21951-1-git-send-email-lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58451 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759053Ab2JSRmy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Oct 2012 13:42:54 -0400
+Message-ID: <50817172.9060006@kernel.org>
+Date: Fri, 19 Oct 2012 16:27:46 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 3/4] iio: Don't compare boolean values to true/false
+References: <1350571399-17723-1-git-send-email-lars@metafoo.de> <1350571399-17723-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1350571399-17723-3-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Most of the channel offsets and scales in the adis16260 are incorrect:
-	* Temperature scale is off by a factor of 1000
-	* Voltage scale is off by a factor of 1000
-	* Temperature offset is completely wrong
-
-This patch fixes these issues. Also use the IIO_DEGREE_TO_RAD for the angle
-velocity since this makes it much easier to compare it to the value given in the
-datasheet.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/gyro/adis16260_core.c |   29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-index 9571c03..aa964a2 100644
---- a/drivers/staging/iio/gyro/adis16260_core.c
-+++ b/drivers/staging/iio/gyro/adis16260_core.c
-@@ -498,28 +498,33 @@ static int adis16260_read_raw(struct iio_dev *indio_dev,
- 		switch (chan->type) {
- 		case IIO_ANGL_VEL:
- 			*val = 0;
--			if (spi_get_device_id(st->us)->driver_data)
--				*val2 = 320;
--			else
--				*val2 = 1278;
-+			if (spi_get_device_id(st->us)->driver_data) {
-+				/* 0.01832 degree / sec */
-+				*val2 = IIO_DEGREE_TO_RAD(18320);
-+			} else {
-+				/* 0.07326 degree / sec */
-+				*val2 = IIO_DEGREE_TO_RAD(73260);
-+			}
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_VOLTAGE:
--			*val = 0;
--			if (chan->channel == 0)
--				*val2 = 18315;
--			else
--				*val2 = 610500;
-+			if (chan->channel == 0) {
-+				*val = 1;
-+				*val2 = 831500; /* 1.8315 mV */
-+			} else {
-+				*val = 0;
-+				*val2 = 610500; /* 610.5 uV */
-+			}
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_TEMP:
--			*val = 0;
--			*val2 = 145300;
-+			*val = 145;
-+			*val2 = 300000; /* 0.1453 C */
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		default:
- 			return -EINVAL;
- 		}
- 		break;
- 	case IIO_CHAN_INFO_OFFSET:
--		*val = 25;
-+		*val = 250000 / 1453; /* 25 C = 0x00 */
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_CALIBBIAS:
- 		switch (chan->type) {
--- 
-1.7.10.4
-
+On 10/18/2012 03:43 PM, Lars-Peter Clausen wrote:
+> Fixes the following warnings from coccicheck:
+> 	drivers/iio/inkern.c:81:6-14: WARNING: Comparison to bool
+> 	drivers/iio/dac/ad5686.c:191:5-11: WARNING: Comparison to bool
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Another 'exciting patch'.  I guess it fills the time whilst on a train
+under the sea though... hohum.  Land soon and back to mindless websurfing...
+> ---
+>  drivers/iio/dac/ad5686.c |    2 +-
+>  drivers/iio/inkern.c     |    2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+> index 6948d75..bc92ff9 100644
+> --- a/drivers/iio/dac/ad5686.c
+> +++ b/drivers/iio/dac/ad5686.c
+> @@ -188,7 +188,7 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
+>  	if (ret)
+>  		return ret;
+>  
+> -	if (readin == true)
+> +	if (readin)
+>  		st->pwr_down_mask |= (0x3 << (chan->channel * 2));
+>  	else
+>  		st->pwr_down_mask &= ~(0x3 << (chan->channel * 2));
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index f2b78d4..5230a33 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -78,7 +78,7 @@ int iio_map_array_unregister(struct iio_dev *indio_dev,
+>  				found_it = true;
+>  				break;
+>  			}
+> -		if (found_it == false) {
+> +		if (!found_it) {
+>  			ret = -ENODEV;
+>  			goto error_ret;
+>  		}
+> 
