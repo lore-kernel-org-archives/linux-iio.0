@@ -1,54 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58449 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35882 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759052Ab2JSRmy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Oct 2012 13:42:54 -0400
-Message-ID: <50817118.80807@kernel.org>
-Date: Fri, 19 Oct 2012 16:26:16 +0100
+	with ESMTP id S1751795Ab2JTJh4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Oct 2012 05:37:56 -0400
+Message-ID: <508270F1.6080202@kernel.org>
+Date: Sat, 20 Oct 2012 10:37:53 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Roland Stigge <stigge@antcom.de>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/4] staging:iio:lpc32xx_adc: Use resource_size instead
- of opencoding it
-References: <1350571399-17723-1-git-send-email-lars@metafoo.de> <1350571399-17723-2-git-send-email-lars@metafoo.de> <50802B4F.3040709@antcom.de>
-In-Reply-To: <50802B4F.3040709@antcom.de>
-Content-Type: text/plain; charset=UTF-8
+To: greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for v3.7-rc1 set 1
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/18/2012 05:16 PM, Roland Stigge wrote:
-> On 10/18/2012 04:43 PM, Lars-Peter Clausen wrote:
->> Fixes the following error from coccicheck:
->> 	drivers/staging/iio/adc/lpc32xx_adc.c:153:43-46: ERROR: Missing resource_size with res
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> 
-> Acked-by: Roland Stigge <stigge@antcom.de>
-Applied to togreg branch of iio.git
-> 
->> Cc: Roland Stigge <stigge@antcom.de>
->> ---
->>  drivers/staging/iio/adc/lpc32xx_adc.c |    2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/staging/iio/adc/lpc32xx_adc.c b/drivers/staging/iio/adc/lpc32xx_adc.c
->> index 7e9bd00..10c5962 100644
->> --- a/drivers/staging/iio/adc/lpc32xx_adc.c
->> +++ b/drivers/staging/iio/adc/lpc32xx_adc.c
->> @@ -150,7 +150,7 @@ static int __devinit lpc32xx_adc_probe(struct platform_device *pdev)
->>  
->>  	info = iio_priv(iodev);
->>  
->> -	info->adc_base = ioremap(res->start, res->end - res->start + 1);
->> +	info->adc_base = ioremap(res->start, resource_size(res));
->>  	if (!info->adc_base) {
->>  		dev_err(&pdev->dev, "failed mapping memory\n");
->>  		retval = -EBUSY;
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+The following changes since commit ddffeb8c4d0331609ef2581d84de4d763607bd37:
+
+  Linux 3.7-rc1 (2012-10-14 14:41:04 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.7a
+
+for you to fetch changes up to 98f9c3c137cea016c57c9fd60b3caf88eb34e4cd:
+
+  iio: Remove duplicates for light/ in Kconfig and Makefile (2012-10-19 19:44:06 +0100)
+
+----------------------------------------------------------------
+First round of fixes for IIO in 3.7 cycle, applies to 3.7-rc1.
+
+Mostly a round of fixes for Analog Devices MEMs devices where some
+offset values were either completely incorrect, or in the wrong units.
+
+Also removal of an accidental duplicate entry in a Kconfig file.
+
+----------------------------------------------------------------
+Andreas Larsson (1):
+      iio: Remove duplicates for light/ in Kconfig and Makefile
+
+Lars-Peter Clausen (11):
+      iio: Add some helper macros for unit conversion
+      staging:iio: Fix adis16201 channel offsets and scales
+      staging:iio: Fix adis16203 channel offsets and scales
+      staging:iio: Fix adis16204 channel offsets and scales
+      staging:iio: Fix adis16209 channel offsets and scales
+      staging:iio: Fix adis16220 channel offsets and scales
+      staging:iio: Fix adis16240 channel offsets and scales
+      staging:iio: Fix adis16260 channel offsets and scales
+      staging:iio: Fix adis16400 channel offsets and scales
+      staging:iio:adis16400: Report correct temperature scale and offset
+      staging:iio:adis16400: Fixup adis16336 temp channel attributes
+
+ drivers/iio/Kconfig                        |  1 -
+ drivers/iio/Makefile                       |  1 -
+ drivers/staging/iio/accel/adis16201_core.c | 24 +++++-----
+ drivers/staging/iio/accel/adis16203_core.c | 20 +++++----
+ drivers/staging/iio/accel/adis16204_core.c | 22 +++++-----
+ drivers/staging/iio/accel/adis16209_core.c | 18 ++++----
+ drivers/staging/iio/accel/adis16220_core.c | 19 ++++----
+ drivers/staging/iio/accel/adis16240_core.c | 23 +++++-----
+ drivers/staging/iio/gyro/adis16260_core.c  | 29 ++++++++-----
+ drivers/staging/iio/imu/adis16400.h        |  2 +
+ drivers/staging/iio/imu/adis16400_core.c   | 70 +++++++++++++++++++-----------
+ include/linux/iio/iio.h                    | 16 +++++++
+ 12 files changed, 148 insertions(+), 97 deletions(-)
