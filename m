@@ -1,42 +1,32 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:40705 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753746Ab2JMQPp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 13 Oct 2012 12:15:45 -0400
-Date: Sat, 13 Oct 2012 18:15:43 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:59842 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756316Ab2JTR2t (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Oct 2012 13:28:49 -0400
+Received: by mail-pb0-f46.google.com with SMTP id rr4so1124522pbb.19
+        for <linux-iio@vger.kernel.org>; Sat, 20 Oct 2012 10:28:49 -0700 (PDT)
+Date: Sat, 20 Oct 2012 10:11:18 -0700
+From: greg KH <gregkh@linuxfoundation.org>
 To: Jonathan Cameron <jic23@kernel.org>
-cc: linux-iio@vger.kernel.org
-Subject: Re: WARNING: at kernel/irq/handle.c, irq_default_primary_handler
- enabled interrupts
-In-Reply-To: <5079914C.3030100@kernel.org>
-Message-ID: <alpine.DEB.2.01.1210131814360.21539@pmeerw.net>
-References: <alpine.DEB.2.01.1209280806040.15718@pmeerw.net> <alpine.DEB.2.01.1209290134230.8022@pmeerw.net> <5079914C.3030100@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO fixes for v3.7-rc1 set 1
+Message-ID: <20121020171118.GA14951@kroah.com>
+References: <508270F1.6080202@kernel.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <508270F1.6080202@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
-
-> > it should be iio_trigger_poll_chained(), not iio_trigger_poll(), since 
-> > this is an interrupt handler; this solves my WARN_ON()
-
-> That's not the reason, it's because you are calling it from a bottom half.
-> The nature of the trigger code is that it would normally be called from the
-> top half (as it's normally just calling a tree of other interrupt handlers
-> which may or may not have their own top halves.)
+On Sat, Oct 20, 2012 at 10:37:53AM +0100, Jonathan Cameron wrote:
+> The following changes since commit ddffeb8c4d0331609ef2581d84de4d763607bd37:
 > 
-> The chained call is probably ok, but does limit what other devices may use
-> this as a trigger source.  Lars-Peter had another approach that is used
-> in the sysfs trigger using irq_work_queues which might work here (I haven't
-> thought about it in much depth...) see drivers/staging/triggers/iio-trig-sysfs.c
+>   Linux 3.7-rc1 (2012-10-14 14:41:04 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.7a
 
-thank you for the pointer, will have a look
+Pulled and pushed out, thanks.
 
-p.
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+greg k-h
