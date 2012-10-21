@@ -1,208 +1,150 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from li42-95.members.linode.com ([209.123.162.95]:59049 "EHLO
-	li42-95.members.linode.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S934095Ab2J3SMq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Oct 2012 14:12:46 -0400
-From: Pantelis Antoniou <panto@antoniou-consulting.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Pantelis Antoniou <panto@antoniou-consulting.com>,
-	"Patil, Rachna" <rachna@ti.com>, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Koen Kooi <koen@dominion.thruhere.net>,
-	Matt Porter <mporter@ti.com>, Russ Dill <Russ.Dill@ti.com>,
-	linux-omap@vger.kernel.org
-Subject: [PATCH] ti_tscadc: Match mfd sub devices to regmap interface
-Date: Wed, 31 Oct 2012 17:55:45 +0200
-Message-Id: <1351698945-3881-1-git-send-email-panto@antoniou-consulting.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: Martin =?utf-8?q?Li=C5=A1ka?= <marxin.liska@gmail.com>
+Subject: Re: ACPI ambient light sensor
+Date: Sun, 21 Oct 2012 19:32:25 +0200
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+ platform-driver-x86@vger.kernel.org,
+ linux-iio@vger.kernel.org,
+ Zhang Rui <rui.zhang@intel.com>,
+ Corentin Chary <corentin.chary@gmail.com>,
+ joeyli <jlee@suse.com>,
+ Len Brown <len.brown@intel.com>,
+ pavel@denx.de,
+ Jonathan Cameron <jic23@kernel.org>,
+ Jon Brenner <jbrenner@taosinc.com>,
+ Peter Meerwald <pmeerw@pmeerw.net>
+References: <CAObPJ3PctmLP56NvmLvJd+4w9e4xeOGSyz24FyBDXBQQVhDhxQ@mail.gmail.com> <201209111121.34205.marex@denx.de> <CAObPJ3PB0VYNE9vhrwJRA9jpWX6p7_Kw8T2eCMgj0M0zJ9feUA@mail.gmail.com>
+In-Reply-To: <CAObPJ3PB0VYNE9vhrwJRA9jpWX6p7_Kw8T2eCMgj0M0zJ9feUA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="utf-8"
+Message-Id: <201210211932.26094.marex@denx.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-The MFD parent device now uses a regmap, instead of direct
-memory access. Use the same method in the sub devices to avoid
-nasty surprises.
+Dear Martin Li=C5=A1ka,
 
-Also rework the channel initialization of tiadc a bit.
+> Hello,
+>    my kernel driver is still unable to start capturing in a proper way.
+> First step for listening is
+>=20
+> * echo 1 >
+> /sys/bus/iio/devices/iio\:device0/scan_elements/in_illuminance1_en*
+> *
+> *
+> but
+>=20
+> *cat /sys/bus/iio/devices/iio\:device0/scan_elements/in_illuminance1_en*
+> *-1*
+> *
+> *
+> I tried to decorate all result codes with printf.
+> Dmesg dump:
+> *[    0.927335] XXX: trigger init called*
+> *[    0.928148] XXX: acpi_als_allocate_trigger: 0*
+> *[    0.928275] XXX: acpi_als_trigger_init: 0*
+> *[    3.255305] XXX: getting data for filling buffer*
+> *[    3.255352] XXX: buffer is ready*
+> *[   27.423650] XXX: getting data for filling buffer*
+> *[   27.423698] XXX: buffer is ready*
+> *[   30.444120] XXX: getting data for filling buffer*
+>=20
+> Do you have any advices how to figure out where is problem?
+>=20
+> Thank you,
+> Martin
+>=20
+>=20
+> /*
+>  * ACPI Ambient Light Sensor Driver
+>  *
+>  * This program is free software; you can redistribute it and/or modify it
+>  * under the terms and conditions of the GNU General Public License,
+>  * version 2, as published by the Free Software Foundation.
+>  *
+>  * This program is distributed in the hope it will be useful, but WITHOUT
+>  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+>  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+> for * more details.
+>  *
+>  * You should have received a copy of the GNU General Public License
+>  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+>  */
+>=20
+> #include <linux/module.h>
+> #include <linux/interrupt.h>
+> #include <trace/events/printk.h>
+> #include <acpi/acpi_bus.h>
+> #include <acpi/acpi_drivers.h>
+> #include <linux/err.h>
+> #include <linux/mutex.h>
+>=20
+> #include <linux/iio/iio.h>
+> #include <linux/iio/buffer.h>
+> #include <linux/iio/sysfs.h>
+> #include <linux/iio/trigger.h>
+> #include <linux/iio/trigger_consumer.h>
+> #include <linux/iio/triggered_buffer.h>
+>=20
+> #define PREFIX "ACPI: "
+>=20
+> #define ACPI_ALS_CLASS "als"
+> #define ACPI_ALS_DEVICE_NAME "acpi-als"
+> #define ACPI_ALS_NOTIFY_ILLUMINANCE 0x80
+> #define ACPI_ALS_NOTIFY_COLOR_TEMP 0x81
+> #define ACPI_ALS_NOTIFY_RESPONSE 0x82
+>=20
+> #define ACPI_ALS_OUTPUTS 3
+>=20
+> #define _COMPONENT ACPI_ALS_COMPONENT
+> ACPI_MODULE_NAME("acpi-als");
+>=20
+> MODULE_AUTHOR("Martin Liska");
+> MODULE_DESCRIPTION("ACPI Ambient Light Sensor Driver");
+> MODULE_LICENSE("GPL");
+>=20
+> struct acpi_als_chip {
+> struct acpi_device *device;
+> struct acpi_als_device *acpi_als_sys;
+> struct mutex lock;
+> struct iio_trigger *trig;
+>=20
+> int illuminance;
+> int temperature;
+> int chromaticity;
+> int polling;
+>=20
+> int count;
+> struct acpi_als_mapping *mappings;
+> };
+>=20
+> static int acpi_als_add(struct acpi_device *device);
+> static int acpi_als_remove(struct acpi_device *device, int type);
+> static void acpi_als_notify(struct acpi_device *device, u32 event);
+>=20
+> static const struct acpi_device_id acpi_als_device_ids[] =3D {
+> {"ACPI0008", 0},
+> {"", 0},
+> };
+>=20
+> MODULE_DEVICE_TABLE(acpi, acpi_als_device_ids);
+>=20
+> static struct acpi_driver acpi_als_driver =3D {
+> .name =3D "acpi_als",
+> .class =3D ACPI_ALS_CLASS,
+> .ids =3D acpi_als_device_ids,
+> .ops =3D {
+> .add =3D acpi_als_add,
+> .remove =3D acpi_als_remove,
+> .notify =3D acpi_als_notify,
+> },
+> };
+[...]
 
-Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
----
- drivers/iio/adc/ti_am335x_adc.c           | 27 +++++++++++++++++++--------
- drivers/input/touchscreen/ti_am335x_tsc.c | 16 +++++++++++++---
- drivers/mfd/ti_am335x_tscadc.c            |  7 +++++--
- 3 files changed, 37 insertions(+), 13 deletions(-)
+=2E.. again ...
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index d48fd79..5f325c1 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -23,7 +23,9 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/machine.h>
- #include <linux/iio/driver.h>
-+#include <linux/regmap.h>
- 
-+#include <linux/io.h>
- #include <linux/mfd/ti_am335x_tscadc.h>
- #include <linux/platform_data/ti_am335x_adc.h>
- 
-@@ -36,13 +38,17 @@ struct tiadc_device {
- 
- static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
- {
--	return readl(adc->mfd_tscadc->tscadc_base + reg);
-+	unsigned int val;
-+
-+	val = (unsigned int)-1;
-+	regmap_read(adc->mfd_tscadc->regmap_tscadc, reg, &val);
-+	return val;
- }
- 
- static void tiadc_writel(struct tiadc_device *adc, unsigned int reg,
- 					unsigned int val)
- {
--	writel(val, adc->mfd_tscadc->tscadc_base + reg);
-+	regmap_write(adc->mfd_tscadc->regmap_tscadc, reg, val);
- }
- 
- static void tiadc_step_config(struct tiadc_device *adc_dev)
-@@ -75,22 +81,24 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
- 	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
- }
- 
--static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
-+static int tiadc_channel_init(struct iio_dev *indio_dev,
-+		struct tiadc_device *adc_dev)
- {
- 	struct iio_chan_spec *chan_array;
- 	struct iio_chan_spec *chan;
- 	char *s;
- 	int i, len, size, ret;
-+	int channels = adc_dev->channels;
- 
--	size = indio_dev->num_channels * (sizeof(struct iio_chan_spec) + 6);
-+	size = channels * (sizeof(struct iio_chan_spec) + 6);
- 	chan_array = kzalloc(size, GFP_KERNEL);
- 	if (chan_array == NULL)
- 		return -ENOMEM;
- 
- 	/* buffer space is after the array */
--	s = (char *)(chan_array + indio_dev->num_channels);
-+	s = (char *)(chan_array + channels);
- 	chan = chan_array;
--	for (i = 0; i < indio_dev->num_channels; i++, chan++, s += len + 1) {
-+	for (i = 0; i < channels; i++, chan++, s += len + 1) {
- 
- 		len = sprintf(s, "AIN%d", i);
- 
-@@ -105,8 +113,9 @@ static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
- 	}
- 
- 	indio_dev->channels = chan_array;
-+	indio_dev->num_channels = channels;
- 
--	size = (indio_dev->num_channels + 1) * sizeof(struct iio_map);
-+	size = (channels + 1) * sizeof(struct iio_map);
- 	adc_dev->map = kzalloc(size, GFP_KERNEL);
- 	if (adc_dev->map == NULL) {
- 		kfree(chan_array);
-@@ -203,7 +212,7 @@ static int __devinit tiadc_probe(struct platform_device *pdev)
- 
- 	tiadc_step_config(adc_dev);
- 
--	err = tiadc_channel_init(indio_dev, adc_dev->channels);
-+	err = tiadc_channel_init(indio_dev, adc_dev);
- 	if (err < 0)
- 		goto err_free_device;
- 
-@@ -213,6 +222,8 @@ static int __devinit tiadc_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, indio_dev);
- 
-+	dev_info(&pdev->dev, "Initialized\n");
-+
- 	return 0;
- 
- err_free_channels:
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 7a26810..d09e1a7 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -26,6 +26,7 @@
- #include <linux/io.h>
- #include <linux/input/ti_am335x_tsc.h>
- #include <linux/delay.h>
-+#include <linux/regmap.h>
- 
- #include <linux/mfd/ti_am335x_tscadc.h>
- 
-@@ -64,13 +65,17 @@ struct titsc {
- 
- static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
- {
--	return readl(ts->mfd_tscadc->tscadc_base + reg);
-+	unsigned int val;
-+
-+	val = (unsigned int)-1;
-+	regmap_read(ts->mfd_tscadc->regmap_tscadc, reg, &val);
-+	return val;
- }
- 
- static void titsc_writel(struct titsc *tsc, unsigned int reg,
- 					unsigned int val)
- {
--	writel(val, tsc->mfd_tscadc->tscadc_base + reg);
-+	regmap_write(tsc->mfd_tscadc->regmap_tscadc, reg, val);
- }
- 
- /*
-@@ -455,10 +460,15 @@ static int __devinit titsc_probe(struct platform_device *pdev)
- 
- 	/* register to the input system */
- 	err = input_register_device(input_dev);
--	if (err)
-+	if (err) {
-+		dev_err(&pdev->dev, "Failed to register input device\n");
- 		goto err_free_irq;
-+	}
- 
- 	platform_set_drvdata(pdev, ts_dev);
-+
-+	dev_info(&pdev->dev, "Initialized OK\n");
-+
- 	return 0;
- 
- err_free_irq:
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index cbb8b70c..4a7041c 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -31,6 +31,7 @@ static unsigned int tscadc_readl(struct ti_tscadc_dev *tsadc, unsigned int reg)
- {
- 	unsigned int val;
- 
-+	val = (unsigned int)-1;
- 	regmap_read(tsadc->regmap_tscadc, reg, &val);
- 	return val;
- }
-@@ -68,7 +69,7 @@ static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
- 	int			irq;
- 	int			err, ctrl;
- 	int			clk_value, clock_rate;
--	int			tsc_wires, adc_channels = 0, total_channels;
-+	int			tsc_wires = 0, adc_channels = 0, total_channels;
- 
- 	if (!pdata) {
- 		dev_err(&pdev->dev, "Could not find platform data\n");
-@@ -78,7 +79,9 @@ static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
- 	if (pdata->adc_init)
- 		adc_channels = pdata->adc_init->adc_channels;
- 
--	tsc_wires = pdata->tsc_init->wires;
-+	if (pdata->tsc_init)
-+		tsc_wires = pdata->tsc_init->wires;
-+
- 	total_channels = tsc_wires + adc_channels;
- 
- 	if (total_channels > 8) {
--- 
-1.7.12
-
+_Please_ fix your mailer if you want to submit files inline, the indent is=
+=20
+completely fucked. This behavior of yours definitelly does _NOT_ help anyon=
+e, it=20
+only puts unnecessary burden on the reader!
