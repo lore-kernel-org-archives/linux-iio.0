@@ -1,26 +1,39 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Mon, 22 Oct 2012 15:00:12 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL]  IIO new device support and cleanups (set 1 for the 3.8
- cycle)
-Message-ID: <20121022220012.GA10852@kroah.com>
-References: <50827299.8000906@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <50827299.8000906@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-125.synserver.de ([212.40.185.125]:1106 "EHLO
+	smtp-out-125.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752530Ab2JVLPY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Oct 2012 07:15:24 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/3] iio: Do not accept multiple '.' in fixed point numbers
+Date: Mon, 22 Oct 2012 13:15:13 +0200
+Message-Id: <1350904515-696-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Oct 20, 2012 at 10:44:57AM +0100, Jonathan Cameron wrote:
-> The following changes since commit ddffeb8c4d0331609ef2581d84de4d763607bd37:
-> 
->   Linux 3.7-rc1 (2012-10-14 14:41:04 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.8a
+Currently when parsing a fix-point number we silently skip any additional '.'
+found in the string.  E.g. '1.2.3.4' gets parsed as '1.234'. This patch
+disallows this and returns an error if more than one '.' is encountered.
 
-Pulled and pushed out.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 6eb24db..a2e9953 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -449,7 +449,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 				break;
+ 			else
+ 				return -EINVAL;
+-		} else if (*buf == '.') {
++		} else if (*buf == '.' && integer_part) {
+ 			integer_part = false;
+ 		} else {
+ 			return -EINVAL;
+-- 
+1.7.10.4
+
