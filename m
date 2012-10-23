@@ -1,88 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-da0-f46.google.com ([209.85.210.46]:33273 "EHLO
-	mail-da0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752975Ab2JaFvg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2012 01:51:36 -0400
-Date: Tue, 30 Oct 2012 22:51:31 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Russ Dill <Russ.Dill@ti.com>
-Cc: Pantelis Antoniou <panto@antoniou-consulting.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Koen Kooi <koen@dominion.thruhere.net>,
-	Matt Porter <mporter@ti.com>, linux-omap@vger.kernel.org
-Subject: Re: [PATCH] ti_tscadc: Match mfd sub devices to regmap interface
-Message-ID: <20121031055131.GB31983@core.coreip.homeip.net>
-References: <1351698945-3881-1-git-send-email-panto@antoniou-consulting.com>
- <CA+Bv8XbCweGxKg-VsM2=g5KJEbLZhUA8F=iAG2st7c0JRLH58g@mail.gmail.com>
-MIME-Version: 1.0
+Received: from netconsequence.de ([85.214.40.104]:51683 "EHLO
+	mx.netconsequence.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932238Ab2JWI5P convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Oct 2012 04:57:15 -0400
+Subject: Re: i.MX28 die temperature
+Mime-Version: 1.0 (Apple Message framework v1084)
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CA+Bv8XbCweGxKg-VsM2=g5KJEbLZhUA8F=iAG2st7c0JRLH58g@mail.gmail.com>
+From: Peter Turczak <pt@netconsequence.de>
+In-Reply-To: <201206271400.11727.marex@denx.de>
+Date: Tue, 23 Oct 2012 10:48:32 +0200
+Cc: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Message-Id: <6E339FB7-3B7F-4D90-A472-D375F36755F1@netconsequence.de>
+References: <330B740BA662BF4E8386F534DF556ED819731A@AEDCEXC09.aei.com> <201206262102.15698.marek.vasut@gmail.com> <4FEAB48B.4010108@cam.ac.uk> <201206271400.11727.marex@denx.de>
+To: Marek Vasut <marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Oct 30, 2012 at 09:41:00PM -0700, Russ Dill wrote:
-> On Wed, Oct 31, 2012 at 8:55 AM, Pantelis Antoniou
-> <panto@antoniou-consulting.com> wrote:
-> > The MFD parent device now uses a regmap, instead of direct
-> > memory access. Use the same method in the sub devices to avoid
-> > nasty surprises.
-> >
-> > Also rework the channel initialization of tiadc a bit.
-> >
-> > Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
-> > ---
-> >  drivers/iio/adc/ti_am335x_adc.c           | 27 +++++++++++++++++++--------
-> >  drivers/input/touchscreen/ti_am335x_tsc.c | 16 +++++++++++++---
-> >  drivers/mfd/ti_am335x_tscadc.c            |  7 +++++--
-> >  3 files changed, 37 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> > index d48fd79..5f325c1 100644
-> > --- a/drivers/iio/adc/ti_am335x_adc.c
-> > +++ b/drivers/iio/adc/ti_am335x_adc.c
-> > @@ -23,7 +23,9 @@
-> >  #include <linux/iio/iio.h>
-> >  #include <linux/iio/machine.h>
-> >  #include <linux/iio/driver.h>
-> > +#include <linux/regmap.h>
-> >
-> > +#include <linux/io.h>
-> >  #include <linux/mfd/ti_am335x_tscadc.h>
-> >  #include <linux/platform_data/ti_am335x_adc.h>
-> >
-> > @@ -36,13 +38,17 @@ struct tiadc_device {
-> >
-> >  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
-> >  {
-> > -       return readl(adc->mfd_tscadc->tscadc_base + reg);
-> > +       unsigned int val;
-> > +
-> > +       val = (unsigned int)-1;
-> > +       regmap_read(adc->mfd_tscadc->regmap_tscadc, reg, &val);
-> > +       return val;
-> >  }
-> 
-> Would it be cleaner to instead do:
-> 
-> static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
-> {
->        unsigned int val;
-> 
->        return regmap_read(adc->mfd_tscadc->regmap_tscadc, reg, &val) ? : val;
-> }
-> 
-> or
->        int ret;
-> 
->        ret = regmap_read(adc->mfd_tscadc->regmap_tscadc, reg, &val);
->        return ret < 0 ret ? : val;
+Hi Marek,
+hi Jonathan,
 
-Also the function should not be returning unsigned int if it returns
-errors.
+while trying to implement a battery charger driver for the mx28 platform I came across your posts. Sorry to stir up an old thread but it was running the same way.
 
-Thanks.
+On Jun 27, 2012, at 2:00 PM, Marek Vasut wrote:
+Dear Jonathan Cameron,
+> 
+>> On 6/26/2012 8:02 PM, Marek Vasut wrote:
+>>> Dear Juergen Beisert,
+>>>> I tried a little bit with your driver. The disadvantage I see is, its
+>>>> claims all the free AD channels. But a few of them can also act as a
+>>>> touchscreen controller. Shouldn't be the driver handle the channel usage
+>>>> dynamically?
+>>> 
+>>> I wonder, I'd rather see this driver behave as a composite driver, what
+>>> do you think?
+>> 
+>> Alternative (though it's still in development) would be to use IIO
+>> as the ADC layer and sit the other parts on top.
+I am currently trying to go this route, the idea is to use the consumer api to get the required battery management data to the battery driver. As a foundation I used the driver provided by Freescale which uses the lradc directly which I found rather bad in the system context.
 
--- 
-Dmitry
+Maybe one could map all the driver muxing and use specific parameters in explicitly named iio channels? But this could lead to permanent reconfiguring of the LRADC and maybe quite difficult handling of the measurements that arrive asynchronously.
+
+Also I don't seem to quite get the usage of iio_map_array_register() which seems to enable the consumer api access to the device. I found only one use of it in an example in 
+max1363.c which confused me even more. How do I correctly provide the iio_map struct? What is the consumer_dev_name used for and which "namespace" should used there, is it the name used in a platform_driver struct or the instances name (given there can only be one internal mxs battery charger at a time)?
+
+Best regards,
+  Peter
