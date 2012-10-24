@@ -1,79 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-43.csi.cam.ac.uk ([131.111.8.143]:60336 "EHLO
-	ppsw-43.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753183Ab2JSR7R (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Oct 2012 13:59:17 -0400
-Message-ID: <508194EC.4050702@cam.ac.uk>
-Date: Fri, 19 Oct 2012 18:59:08 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Received: from acsinet15.oracle.com ([141.146.126.227]:44605 "EHLO
+	acsinet15.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S934374Ab2JXHNW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Oct 2012 03:13:22 -0400
+Date: Wed, 24 Oct 2012 10:13:07 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+	kernel-janitors@vger.kernel.org
+Subject: [patch] iio:dac:ad5449: unlock on error path
+Message-ID: <20121024071307.GC2536@elgon.mountain>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/4] staging:iio: Don't compare boolean values with true/false
-References: <1350571399-17723-1-git-send-email-lars@metafoo.de> <508170BE.4060103@kernel.org> <5081941A.8050305@metafoo.de>
-In-Reply-To: <5081941A.8050305@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/19/2012 06:55 PM, Lars-Peter Clausen wrote:
-> On 10/19/2012 05:24 PM, Jonathan Cameron wrote:
->> On 10/18/2012 03:43 PM, Lars-Peter Clausen wrote:
->>> Fixes the following coccicheck warnings:
->>> 	drivers/staging/iio/accel/lis3l02dq_ring.c:240:5-10: WARNING: Comparison to bool
->>> 	drivers/staging/iio/iio_dummy_evgen.c:111:6-25: WARNING: Comparison to bool
->>>
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> Can't say I can summon much enthusiasm for this patch..
-> 
-> Me neither, that's why I did not fix this up for the DAC drivers when I moved
-> them out of staging. But it turns out that existing coccicheck errors can cause
-> false positives in Fengguang Wu automated commit test scripts. We've seen a few
-> of these in the past. So I've to decided to just fix all coccicheck
-> warnings/error for IIO to avoid further false positives.
-Fair enough and aiming for a clean coccicheck, smatch, sparse set makes it easier
-to spot anything real that occurs locally. Also this is the correct time to do
-this sort of stuff - nothing particularly big in the way of abi changes queued up
-for these to cause fuzz in (for once ;)
-> 
->> Added to togreg branch.
-> 
-> Thanks.
-> 
->>> ---
->>>  drivers/staging/iio/accel/lis3l02dq_ring.c |    2 +-
->>>  drivers/staging/iio/iio_dummy_evgen.c      |    2 +-
->>>  2 files changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
->>> index fa4190d..ee887e9 100644
->>> --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
->>> +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
->>> @@ -237,7 +237,7 @@ static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
->>>  	u8 t;
->>>  
->>>  	__lis3l02dq_write_data_ready_config(indio_dev, state);
->>> -	if (state == false) {
->>> +	if (!state) {
->>>  		/*
->>>  		 * A possible quirk with the handler is currently worked around
->>>  		 * by ensuring outstanding read events are cleared.
->>> diff --git a/drivers/staging/iio/iio_dummy_evgen.c b/drivers/staging/iio/iio_dummy_evgen.c
->>> index 74e24e8..132d278 100644
->>> --- a/drivers/staging/iio/iio_dummy_evgen.c
->>> +++ b/drivers/staging/iio/iio_dummy_evgen.c
->>> @@ -108,7 +108,7 @@ int iio_dummy_evgen_get_irq(void)
->>>  
->>>  	mutex_lock(&iio_evgen->lock);
->>>  	for (i = 0; i < IIO_EVENTGEN_NO; i++)
->>> -		if (iio_evgen->inuse[i] == false) {
->>> +		if (!iio_evgen->inuse[i]) {
->>>  			ret = iio_evgen->base + i;
->>>  			iio_evgen->inuse[i] = true;
->>>  			break;
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+There is an unlock missing on this error path.
+
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+Only needed in linux-next.
+
+diff --git a/drivers/iio/dac/ad5449.c b/drivers/iio/dac/ad5449.c
+index 5b43030..0ee6f8e 100644
+--- a/drivers/iio/dac/ad5449.c
++++ b/drivers/iio/dac/ad5449.c
+@@ -124,12 +124,13 @@ static int ad5449_read(struct iio_dev *indio_dev, unsigned int addr,
+ 
+ 	ret = spi_sync(st->spi, &msg);
+ 	if (ret < 0)
+-		return ret;
++		goto out_unlock;
+ 
+ 	*val = be16_to_cpu(st->data[1]);
+-	mutex_unlock(&indio_dev->mlock);
+ 
+-	return 0;
++out_unlock:
++	mutex_unlock(&indio_dev->mlock);
++	return ret;
+ }
+ 
+ static int ad5449_read_raw(struct iio_dev *indio_dev,
