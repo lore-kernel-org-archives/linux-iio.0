@@ -1,339 +1,116 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-175.synserver.de ([212.40.185.175]:1144 "EHLO
-	smtp-out-175.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757604Ab2J3K03 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Oct 2012 06:26:29 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/4] staging:iio:adis16400: Fix adis16334 sampling frequency control
-Date: Tue, 30 Oct 2012 11:26:24 +0100
-Message-Id: <1351592787-2934-1-git-send-email-lars@metafoo.de>
+Received: from mail-qa0-f74.google.com ([209.85.216.74]:44482 "EHLO
+	mail-qa0-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755887Ab2JXXj0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Oct 2012 19:39:26 -0400
+Received: by mail-qa0-f74.google.com with SMTP id a16so284087qae.1
+        for <linux-iio@vger.kernel.org>; Wed, 24 Oct 2012 16:39:26 -0700 (PDT)
+From: Bryan Freed <bfreed@chromium.org>
+To: linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
+	gregkh@linuxfoundation.org, lars@metafoo.de,
+	Bryan Freed <bfreed@chromium.org>
+Subject: [PATCH] iio: isl29018: Support suspend and resume.
+Date: Wed, 24 Oct 2012 16:39:15 -0700
+Message-Id: <1351121955-25788-1-git-send-email-bfreed@chromium.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Setting the sampling frequency for the adis16334 differs from the other devices.
-This patch introduces two new callback functions to the adis16400 chip_info
-struct which are used to specify how to read and write the current sample rate.
-The patch also introduces the proper implementations for these callbacks for the
-adis16334.
+The driver leaves the device in power-down state anyway,
+so there is nothing to do on suspend.
+On resume, we just have to make sure the range and ADC
+values are updated in the device since it may have been
+powered down in suspend.
 
-Related to this is that the adis16334 has no slow mode and so we do not limit
-the SPI clock rate to 300kHz during initialization. The patch adds a new flag
-for devices which do have a slow mode.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Bryan Freed <bfreed@chromium.org>
 ---
- drivers/staging/iio/imu/adis16400.h      |  11 ++-
- drivers/staging/iio/imu/adis16400_core.c | 122 +++++++++++++++++++++++--------
- 2 files changed, 101 insertions(+), 32 deletions(-)
+ drivers/staging/iio/light/isl29018.c |   45 ++++++++++++++++++++++++++++++++++
+ 1 files changed, 45 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
-index 77c601d..07a6aea 100644
---- a/drivers/staging/iio/imu/adis16400.h
-+++ b/drivers/staging/iio/imu/adis16400.h
-@@ -123,6 +123,9 @@
- /* SLP_CNT */
- #define ADIS16400_SLP_CNT_POWER_OFF	(1<<8)
- 
-+#define ADIS16334_RATE_DIV_SHIFT 8
-+#define ADIS16334_RATE_INT_CLK BIT(0)
-+
- #define ADIS16400_MAX_TX 24
- #define ADIS16400_MAX_RX 24
- 
-@@ -130,8 +133,10 @@
- #define ADIS16400_SPI_BURST	(u32)(1000 * 1000)
- #define ADIS16400_SPI_FAST	(u32)(2000 * 1000)
- 
--#define ADIS16400_HAS_PROD_ID 1
--#define ADIS16400_NO_BURST 2
-+#define ADIS16400_HAS_PROD_ID		BIT(0)
-+#define ADIS16400_NO_BURST		BIT(1)
-+#define ADIS16400_HAS_SLOW_MODE		BIT(2)
-+
- struct adis16400_chip_info {
- 	const struct iio_chan_spec *channels;
- 	const int num_channels;
-@@ -142,6 +147,8 @@ struct adis16400_chip_info {
- 	int temp_scale_nano;
- 	int temp_offset;
- 	unsigned long default_scan_mask;
-+	int (*set_freq)(struct iio_dev *indio_dev, unsigned int freq);
-+	int (*get_freq)(struct iio_dev *indio_dev);
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 6ee5567..3b03f6f 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -67,6 +67,7 @@ struct isl29018_chip {
+ 	unsigned int		range;
+ 	unsigned int		adc_bit;
+ 	int			prox_scheme;
++	bool			suspended;
  };
  
- /**
-diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-index 3144a7b..4d03bdc 100644
---- a/drivers/staging/iio/imu/adis16400_core.c
-+++ b/drivers/staging/iio/imu/adis16400_core.c
-@@ -161,10 +161,39 @@ error_ret:
- 	return ret;
+ static int isl29018_set_range(struct isl29018_chip *chip, unsigned long range,
+@@ -368,6 +369,10 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+ 
+ 	mutex_lock(&chip->lock);
++	if (chip->suspended) {
++		mutex_unlock(&chip->lock);
++		return -EBUSY;
++	}
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 	case IIO_CHAN_INFO_PROCESSED:
+@@ -561,6 +566,7 @@ static int __devinit isl29018_probe(struct i2c_client *client,
+ 	chip->lux_scale = 1;
+ 	chip->range = 1000;
+ 	chip->adc_bit = 16;
++	chip->suspended = false;
+ 
+ 	chip->regmap = devm_regmap_init_i2c(client, &isl29018_regmap_config);
+ 	if (IS_ERR(chip->regmap)) {
+@@ -603,6 +609,44 @@ static int __devexit isl29018_remove(struct i2c_client *client)
+ 	return 0;
  }
  
--static int adis16400_get_freq(struct iio_dev *indio_dev)
-+static int adis16334_get_freq(struct iio_dev *indio_dev)
- {
-+	int ret;
- 	u16 t;
++#ifdef CONFIG_PM_SLEEP
++static int isl29018_suspend(struct device *dev)
++{
++	struct isl29018_chip *chip = iio_priv(dev_get_drvdata(dev));
 +
-+	ret = adis16400_spi_read_reg_16(indio_dev, ADIS16400_SMPL_PRD, &t);
-+	if (ret < 0)
-+		return ret;
++	mutex_lock(&chip->lock);
 +
-+	t >>= ADIS16334_RATE_DIV_SHIFT;
++	/* Since this driver uses only polling commands, we are by default in
++	 * auto shutdown (ie, power-down) mode.
++	 * So we do not have much to do here.
++	 */
++	chip->suspended = true;
 +
-+	return (8192 >> t) / 10;
++	mutex_unlock(&chip->lock);
++	return 0;
 +}
 +
-+static int adis16334_set_freq(struct iio_dev *indio_dev, unsigned int freq)
++static int isl29018_resume(struct device *dev)
 +{
-+	unsigned int t;
++	struct isl29018_chip *chip = iio_priv(dev_get_drvdata(dev));
++	int err;
 +
-+	t = ilog2(8192 / (freq * 10));
++	mutex_lock(&chip->lock);
 +
-+	if (t > 0x31)
-+		t = 0x31;
++	err = isl29018_chip_init(chip);
++	if (!err)
++		chip->suspended = false;
 +
-+	t <<= ADIS16334_RATE_DIV_SHIFT;
-+	t |= ADIS16334_RATE_INT_CLK;
-+
-+	return adis16400_spi_write_reg_16(indio_dev, ADIS16400_SMPL_PRD, t);
++	mutex_unlock(&chip->lock);
++	return err;
 +}
 +
-+static int adis16400_get_freq(struct iio_dev *indio_dev)
-+{
- 	int sps, ret;
-+	u16 t;
- 
- 	ret = adis16400_spi_read_reg_16(indio_dev, ADIS16400_SMPL_PRD, &t);
- 	if (ret < 0)
-@@ -175,13 +204,33 @@ static int adis16400_get_freq(struct iio_dev *indio_dev)
- 	return sps;
- }
- 
-+static int adis16400_set_freq(struct iio_dev *indio_dev, unsigned int freq)
-+{
-+	struct adis16400_state *st = iio_priv(indio_dev);
-+	unsigned int t;
++static SIMPLE_DEV_PM_OPS(isl29018_pm_ops, isl29018_suspend, isl29018_resume);
++#define ISL29018_PM_OPS (&isl29018_pm_ops)
++#else
++#define ISL29018_PM_OPS NULL
++#endif
 +
-+	t = 1638 / freq;
-+	if (t > 0)
-+		t--;
-+	t &= ADIS16400_SMPL_PRD_DIV_MASK;
-+	if ((t & ADIS16400_SMPL_PRD_DIV_MASK) >= 0x0A)
-+		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
-+	else
-+		st->us->max_speed_hz = ADIS16400_SPI_FAST;
-+
-+	return adis16400_spi_write_reg_8(indio_dev,
-+			ADIS16400_SMPL_PRD, t);
-+}
-+
- static ssize_t adis16400_read_frequency(struct device *dev,
- 		struct device_attribute *attr,
- 		char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct adis16400_state *st = iio_priv(indio_dev);
- 	int ret, len = 0;
--	ret = adis16400_get_freq(indio_dev);
-+
-+	ret = st->variant->get_freq(indio_dev);
- 	if (ret < 0)
- 		return ret;
- 	len = sprintf(buf, "%d SPS\n", ret);
-@@ -229,7 +278,6 @@ static ssize_t adis16400_write_frequency(struct device *dev,
- 	struct adis16400_state *st = iio_priv(indio_dev);
- 	long val;
- 	int ret;
--	u8 t;
- 
- 	ret = strict_strtol(buf, 10, &val);
- 	if (ret)
-@@ -239,18 +287,7 @@ static ssize_t adis16400_write_frequency(struct device *dev,
- 
- 	mutex_lock(&indio_dev->mlock);
- 
--	t = (1638 / val);
--	if (t > 0)
--		t--;
--	t &= ADIS16400_SMPL_PRD_DIV_MASK;
--	if ((t & ADIS16400_SMPL_PRD_DIV_MASK) >= 0x0A)
--		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
--	else
--		st->us->max_speed_hz = ADIS16400_SPI_FAST;
--
--	ret = adis16400_spi_write_reg_8(indio_dev,
--			ADIS16400_SMPL_PRD,
--			t);
-+	st->variant->set_freq(indio_dev, val);
- 
- 	/* Also update the filter */
- 	mutex_unlock(&indio_dev->mlock);
-@@ -380,8 +417,11 @@ static int adis16400_initial_setup(struct iio_dev *indio_dev)
- 	u16 prod_id, smp_prd;
- 	struct adis16400_state *st = iio_priv(indio_dev);
- 
--	/* use low spi speed for init */
--	st->us->max_speed_hz = ADIS16400_SPI_SLOW;
-+	/* use low spi speed for init if the device has a slow mode */
-+	if (st->variant->flags & ADIS16400_HAS_SLOW_MODE)
-+		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
-+	else
-+		st->us->max_speed_hz = ADIS16400_SPI_FAST;
- 	st->us->mode = SPI_MODE_3;
- 	spi_setup(st->us);
- 
-@@ -422,11 +462,16 @@ static int adis16400_initial_setup(struct iio_dev *indio_dev)
- 		       st->us->chip_select, st->us->irq);
- 	}
- 	/* use high spi speed if possible */
--	ret = adis16400_spi_read_reg_16(indio_dev,
--					ADIS16400_SMPL_PRD, &smp_prd);
--	if (!ret && (smp_prd & ADIS16400_SMPL_PRD_DIV_MASK) < 0x0A) {
--		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
--		spi_setup(st->us);
-+	if (st->variant->flags & ADIS16400_HAS_SLOW_MODE) {
-+		ret = adis16400_spi_read_reg_16(indio_dev,
-+						ADIS16400_SMPL_PRD, &smp_prd);
-+		if (ret)
-+			goto err_ret;
-+
-+		if ((smp_prd & ADIS16400_SMPL_PRD_DIV_MASK) < 0x0A) {
-+			st->us->max_speed_hz = ADIS16400_SPI_FAST;
-+			spi_setup(st->us);
-+		}
- 	}
- 
- err_ret:
-@@ -503,7 +548,7 @@ static int adis16400_write_raw(struct iio_dev *indio_dev,
- 		mutex_lock(&indio_dev->mlock);
- 		st->filt_int = val;
- 		/* Work out update to current value */
--		sps = adis16400_get_freq(indio_dev);
-+		sps = st->variant->get_freq(indio_dev);
- 		if (sps < 0) {
- 			mutex_unlock(&indio_dev->mlock);
- 			return sps;
-@@ -601,7 +646,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 			mutex_unlock(&indio_dev->mlock);
- 			return ret;
- 		}
--		ret = adis16400_get_freq(indio_dev);
-+		val16 = st->variant->get_freq(indio_dev);
- 		if (ret > 0)
- 			*val = ret/adis16400_3db_divisors[val16 & 0x03];
- 		*val2 = 0;
-@@ -1060,6 +1105,7 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 	[ADIS16300] = {
- 		.channels = adis16300_channels,
- 		.num_channels = ARRAY_SIZE(adis16300_channels),
-+		.flags = ADIS16400_HAS_SLOW_MODE,
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = 5884,
- 		.temp_scale_nano = 140000000, /* 0.14 C */
-@@ -1070,6 +1116,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		(1 << ADIS16400_SCAN_TEMP) | (1 << ADIS16400_SCAN_ADC_0) |
- 		(1 << ADIS16300_SCAN_INCLI_X) | (1 << ADIS16300_SCAN_INCLI_Y) |
- 		(1 << 14),
-+		.set_freq = adis16400_set_freq,
-+		.get_freq = adis16400_get_freq,
- 	},
- 	[ADIS16334] = {
- 		.channels = adis16334_channels,
-@@ -1082,6 +1130,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		(1 << ADIS16400_SCAN_GYRO_Y) | (1 << ADIS16400_SCAN_GYRO_Z) |
- 		(1 << ADIS16400_SCAN_ACC_X) | (1 << ADIS16400_SCAN_ACC_Y) |
- 		(1 << ADIS16400_SCAN_ACC_Z),
-+		.set_freq = adis16334_set_freq,
-+		.get_freq = adis16334_get_freq,
- 	},
- 	[ADIS16350] = {
- 		.channels = adis16350_channels,
-@@ -1091,62 +1141,74 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.temp_scale_nano = 145300000, /* 0.1453 C */
- 		.temp_offset = 25000000 / 145300, /* 25 C = 0x00 */
- 		.default_scan_mask = 0x7FF,
--		.flags = ADIS16400_NO_BURST,
-+		.flags = ADIS16400_NO_BURST | ADIS16400_HAS_SLOW_MODE,
-+		.set_freq = adis16400_set_freq,
-+		.get_freq = adis16400_get_freq,
- 	},
- 	[ADIS16360] = {
- 		.channels = adis16350_channels,
- 		.num_channels = ARRAY_SIZE(adis16350_channels),
--		.flags = ADIS16400_HAS_PROD_ID,
-+		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
- 		.product_id = 0x3FE8,
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
- 		.temp_scale_nano = 136000000, /* 0.136 C */
- 		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
- 		.default_scan_mask = 0x7FF,
-+		.set_freq = adis16400_set_freq,
-+		.get_freq = adis16400_get_freq,
- 	},
- 	[ADIS16362] = {
- 		.channels = adis16350_channels,
- 		.num_channels = ARRAY_SIZE(adis16350_channels),
--		.flags = ADIS16400_HAS_PROD_ID,
-+		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
- 		.product_id = 0x3FEA,
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(333), /* 0.333 mg */
- 		.temp_scale_nano = 136000000, /* 0.136 C */
- 		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
- 		.default_scan_mask = 0x7FF,
-+		.set_freq = adis16400_set_freq,
-+		.get_freq = adis16400_get_freq,
- 	},
- 	[ADIS16364] = {
- 		.channels = adis16350_channels,
- 		.num_channels = ARRAY_SIZE(adis16350_channels),
--		.flags = ADIS16400_HAS_PROD_ID,
-+		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
- 		.product_id = 0x3FEC,
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
- 		.temp_scale_nano = 136000000, /* 0.136 C */
- 		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
- 		.default_scan_mask = 0x7FF,
-+		.set_freq = adis16400_set_freq,
-+		.get_freq = adis16400_get_freq,
- 	},
- 	[ADIS16365] = {
- 		.channels = adis16350_channels,
- 		.num_channels = ARRAY_SIZE(adis16350_channels),
--		.flags = ADIS16400_HAS_PROD_ID,
-+		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
- 		.product_id = 0x3FED,
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
- 		.temp_scale_nano = 136000000, /* 0.136 C */
- 		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
- 		.default_scan_mask = 0x7FF,
-+		.set_freq = adis16400_set_freq,
-+		.get_freq = adis16400_get_freq,
- 	},
- 	[ADIS16400] = {
- 		.channels = adis16400_channels,
- 		.num_channels = ARRAY_SIZE(adis16400_channels),
--		.flags = ADIS16400_HAS_PROD_ID,
-+		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
- 		.product_id = 0x4015,
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
- 		.default_scan_mask = 0xFFF,
- 		.temp_scale_nano = 140000000, /* 0.14 C */
- 		.temp_offset = 25000000 / 140000, /* 25 C = 0x00 */
-+		.set_freq = adis16400_set_freq,
-+		.get_freq = adis16400_get_freq,
- 	}
- };
- 
+ static const struct i2c_device_id isl29018_id[] = {
+ 	{"isl29018", 0},
+ 	{}
+@@ -620,6 +664,7 @@ static struct i2c_driver isl29018_driver = {
+ 	.class	= I2C_CLASS_HWMON,
+ 	.driver	 = {
+ 			.name = "isl29018",
++			.pm = ISL29018_PM_OPS,
+ 			.owner = THIS_MODULE,
+ 			.of_match_table = isl29018_of_match,
+ 		    },
 -- 
-1.8.0
+1.7.7.3
 
