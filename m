@@ -1,122 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-da0-f46.google.com ([209.85.210.46]:36278 "EHLO
-	mail-da0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752187Ab2J0Osw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Oct 2012 10:48:52 -0400
-Received: by mail-da0-f46.google.com with SMTP id n41so1736379dak.19
-        for <linux-iio@vger.kernel.org>; Sat, 27 Oct 2012 07:48:52 -0700 (PDT)
-Message-ID: <1351349317.10004.1.camel@phoenix>
-Subject: [PATCH] iio: hid-sensor: Use __devexit annotation for remove()
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:63792 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755915Ab2J0PDj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Oct 2012 11:03:39 -0400
+Received: by mail-pa0-f46.google.com with SMTP id hz1so2525154pad.19
+        for <linux-iio@vger.kernel.org>; Sat, 27 Oct 2012 08:03:39 -0700 (PDT)
+Message-ID: <1351350210.10004.3.camel@phoenix>
+Subject: [PATCH] iio: hid-sensor: Return proper error if kmemdup fails
 From: Axel Lin <axel.lin@ingics.com>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: srinivas pandruvada <srinivas.pandruvada@intel.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Sat, 27 Oct 2012 22:48:37 +0800
+Date: Sat, 27 Oct 2012 23:03:30 +0800
 Content-Type: text/plain; charset="UTF-8"
 Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Use __devexit rather than __devinit annotation for remove().
-Also adds __devexit_p around remove callback.
+Return -ENOMEM instead of 0 if kmemdup fails.
 
 Signed-off-by: Axel Lin <axel.lin@ingics.com>
 ---
- drivers/iio/accel/hid-sensor-accel-3d.c       |    4 ++--
- drivers/iio/gyro/hid-sensor-gyro-3d.c         |    4 ++--
- drivers/iio/light/hid-sensor-als.c            |    4 ++--
- drivers/iio/magnetometer/hid-sensor-magn-3d.c |    4 ++--
- 4 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/iio/accel/hid-sensor-accel-3d.c       |    6 +++---
+ drivers/iio/gyro/hid-sensor-gyro-3d.c         |    6 +++---
+ drivers/iio/light/hid-sensor-als.c            |    5 ++---
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c |    6 +++---
+ 4 files changed, 11 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index 314a405..1b49931 100644
+index 1b49931..2046208 100644
 --- a/drivers/iio/accel/hid-sensor-accel-3d.c
 +++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -388,7 +388,7 @@ error_ret:
- }
+@@ -319,10 +319,10 @@ static int __devinit hid_accel_3d_probe(struct platform_device *pdev)
+ 		goto error_free_dev;
+ 	}
  
- /* Function to deinitialize the processing for usage id */
--static int __devinit hid_accel_3d_remove(struct platform_device *pdev)
-+static int __devexit hid_accel_3d_remove(struct platform_device *pdev)
- {
- 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-@@ -409,7 +409,7 @@ static struct platform_driver hid_accel_3d_platform_driver = {
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_accel_3d_probe,
--	.remove		= hid_accel_3d_remove,
-+	.remove		= __devexit_p(hid_accel_3d_remove),
- };
- module_platform_driver(hid_accel_3d_platform_driver);
- 
+-	channels = kmemdup(accel_3d_channels,
+-					sizeof(accel_3d_channels),
+-					GFP_KERNEL);
++	channels = kmemdup(accel_3d_channels, sizeof(accel_3d_channels),
++			   GFP_KERNEL);
+ 	if (!channels) {
++		ret = -ENOMEM;
+ 		dev_err(&pdev->dev, "failed to duplicate channels\n");
+ 		goto error_free_dev;
+ 	}
 diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-index 4c56ada..705dc49 100644
+index 705dc49..c93dd59 100644
 --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
 +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-@@ -388,7 +388,7 @@ error_ret:
- }
+@@ -319,10 +319,10 @@ static int __devinit hid_gyro_3d_probe(struct platform_device *pdev)
+ 		goto error_free_dev;
+ 	}
  
- /* Function to deinitialize the processing for usage id */
--static int __devinit hid_gyro_3d_remove(struct platform_device *pdev)
-+static int __devexit hid_gyro_3d_remove(struct platform_device *pdev)
- {
- 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-@@ -409,7 +409,7 @@ static struct platform_driver hid_gyro_3d_platform_driver = {
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_gyro_3d_probe,
--	.remove		= hid_gyro_3d_remove,
-+	.remove		= __devexit_p(hid_gyro_3d_remove),
- };
- module_platform_driver(hid_gyro_3d_platform_driver);
- 
+-	channels = kmemdup(gyro_3d_channels,
+-					sizeof(gyro_3d_channels),
+-					GFP_KERNEL);
++	channels = kmemdup(gyro_3d_channels, sizeof(gyro_3d_channels),
++			   GFP_KERNEL);
+ 	if (!channels) {
++		ret = -ENOMEM;
+ 		dev_err(&pdev->dev, "failed to duplicate channels\n");
+ 		goto error_free_dev;
+ 	}
 diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-index 96e3691..4c35ac7 100644
+index 4c35ac7..ea59daa 100644
 --- a/drivers/iio/light/hid-sensor-als.c
 +++ b/drivers/iio/light/hid-sensor-als.c
-@@ -355,7 +355,7 @@ error_ret:
- }
+@@ -285,10 +285,9 @@ static int __devinit hid_als_probe(struct platform_device *pdev)
+ 		goto error_free_dev;
+ 	}
  
- /* Function to deinitialize the processing for usage id */
--static int __devinit hid_als_remove(struct platform_device *pdev)
-+static int __devexit hid_als_remove(struct platform_device *pdev)
- {
- 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-@@ -376,7 +376,7 @@ static struct platform_driver hid_als_platform_driver = {
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_als_probe,
--	.remove		= hid_als_remove,
-+	.remove		= __devexit_p(hid_als_remove),
- };
- module_platform_driver(hid_als_platform_driver);
- 
+-	channels = kmemdup(als_channels,
+-					sizeof(als_channels),
+-					GFP_KERNEL);
++	channels = kmemdup(als_channels, sizeof(als_channels), GFP_KERNEL);
+ 	if (!channels) {
++		ret = -ENOMEM;
+ 		dev_err(&pdev->dev, "failed to duplicate channels\n");
+ 		goto error_free_dev;
+ 	}
 diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index c4f0d27..a02dc98 100644
+index a02dc98..63d0a38 100644
 --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
 +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -389,7 +389,7 @@ error_ret:
- }
+@@ -320,10 +320,10 @@ static int __devinit hid_magn_3d_probe(struct platform_device *pdev)
+ 		goto error_free_dev;
+ 	}
  
- /* Function to deinitialize the processing for usage id */
--static int __devinit hid_magn_3d_remove(struct platform_device *pdev)
-+static int __devexit hid_magn_3d_remove(struct platform_device *pdev)
- {
- 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-@@ -410,7 +410,7 @@ static struct platform_driver hid_magn_3d_platform_driver = {
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_magn_3d_probe,
--	.remove		= hid_magn_3d_remove,
-+	.remove		= __devexit_p(hid_magn_3d_remove),
- };
- module_platform_driver(hid_magn_3d_platform_driver);
- 
+-	channels = kmemdup(magn_3d_channels,
+-					sizeof(magn_3d_channels),
+-					GFP_KERNEL);
++	channels = kmemdup(magn_3d_channels, sizeof(magn_3d_channels),
++			   GFP_KERNEL);
+ 	if (!channels) {
++		ret = -ENOMEM;
+ 		dev_err(&pdev->dev, "failed to duplicate channels\n");
+ 		goto error_free_dev;
+ 	}
 -- 
 1.7.9.5
 
