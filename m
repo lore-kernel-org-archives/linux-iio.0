@@ -1,38 +1,73 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <508E3833.50003@metafoo.de>
-Date: Mon, 29 Oct 2012 09:02:59 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from devils.ext.ti.com ([198.47.26.153]:46744 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751661Ab2J2HNO convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 29 Oct 2012 03:13:14 -0400
+From: "Patil, Rachna" <rachna@ti.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: RE: [PATCH RESEND 0/8] TI Touchscreen driver updates and Support
+ for TSC/ADC MFD driver
+Date: Mon, 29 Oct 2012 07:13:05 +0000
+Message-ID: <4CE347531D4CA947960AF71FF095B9323E964CB5@DBDE01.ent.ti.com>
+References: <1350372345-27108-1-git-send-email-rachna@ti.com>
+ <20121016174207.GA1833@core.coreip.homeip.net>
+In-Reply-To: <20121016174207.GA1833@core.coreip.homeip.net>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Axel Lin <axel.lin@ingics.com>
-CC: Maxime Ripard <maxime.ripard@free-electrons.com>,
- Jonathan Cameron <jic23@kernel.org>,
- linux-iio@vger.kernel.org
-Subject: Re: iio: at91_adc.c build error
-References: <1351425686.12461.1.camel@phoenix>
-In-Reply-To: <1351425686.12461.1.camel@phoenix>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 10/28/2012 01:01 PM, Axel Lin wrote:
-> hi Lars-Peter,
+Hi Samuel,
+
+This is just a gentle reminder for the patch set I had submitted viz.
+"[PATCH RESEND 0/8] TI Touchscreen driver updates and Support for TSC/ADC MFD driver"
+I received an ACK from Jonathan and Dmitry on this patch set.
+Can you please pull in if there are no further comments.
+This patch set does not break anything existing, it just adds new driver.
+
+Thanks & Regards,
+Rachna.
+
+On Tue, Oct 16, 2012 at 23:12:07, Dmitry Torokhov wrote:
+> Hi Rachna,
 > 
-> Seems there is no devm_kcalloc API available at this moment (in linux-next tree).
+> On Tue, Oct 16, 2012 at 12:55:37PM +0530, Patil, Rachna wrote:
+> > This patch set is a cumulative set of [1] and [2] sent earlier.
+> > I have merged the patch set so that the MFD patches apply without any 
+> > issues.
+> > 
+> > Also Note that there are no code changes in either of the patch set, 
+> > only rebased on top of linux-next to make sure that all the patches 
+> > apply without any conflicts.
+> > 
+> > This patch set has been tested on AM335x EVM.
+> > 
+> > [1] "[PATCH 0/4] input: TSC: ti_tscadc: TI Touchscreen driver updates"
+> > (http://www.spinics.net/lists/linux-input/msg22107.html)
+> > 
+> > [2] "[PATCH v5 0/4] Support for TSC/ADC MFD driver"
+> > (http://www.spinics.net/lists/linux-input/msg22832.html)
+> > 
+> > Patil, Rachna (8):
+> >   input: TSC: ti_tscadc: Correct register usage
+> >   input: TSC: ti_tscadc: Add Step configuration as platform data
+> >   input: TSC: ti_tscadc: set FIFO0 threshold Interrupt
+> >   input: TSC: ti_tscadc: Remove definition of End Of Interrupt register
+> >   input: TSC: ti_tscadc: Rename the existing touchscreen driver
+> >   MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
+> >   input: TSC: ti_tsc: Convert TSC into a MFDevice
+> >   IIO : ADC: tiadc: Add support of TI's ADC driver
 > 
-> I got below build error:
-> drivers/iio/adc/at91_adc.c: In function 'at91_adc_channel_init':
-> drivers/iio/adc/at91_adc.c:126: error: implicit declaration of function 'devm_kcalloc'
-> drivers/iio/adc/at91_adc.c:127: warning: assignment makes pointer from integer without a cast
-> drivers/iio/adc/at91_adc.c: In function 'at91_adc_trigger_init':
-> drivers/iio/adc/at91_adc.c:272: warning: assignment makes pointer from integer without a cast
-> drivers/iio/adc/at91_adc.c: In function 'at91_adc_probe_dt':
-> drivers/iio/adc/at91_adc.c:455: warning: assignment makes pointer from integer without a cast
-> make[3]: *** [drivers/iio/adc/at91_adc.o] Error 1
-> make[2]: *** [drivers/iio/adc] Error 2
-> make[1]: *** [drivers/iio] Error 2
-> make: *** [drivers] Error 2
+> I am fine with input portion of the patch series, please merge through MFD tree.
+> 
+> Thanks.
+> 
+> --
+> Dmitry
+> 
 
-Ok, now I feel stupid...
-
-Do you want to sent a revert or should I do it?
-
-- Lars
