@@ -1,79 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:61500 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932520Ab2JaIMt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2012 04:12:49 -0400
-Message-ID: <5090DD86.7090204@metafoo.de>
-Date: Wed, 31 Oct 2012 09:12:54 +0100
+Received: from smtp-out-181.synserver.de ([212.40.185.181]:1076 "EHLO
+	smtp-out-181.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759673Ab2J3SVh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Oct 2012 14:21:37 -0400
+Message-ID: <50901AB1.6040005@metafoo.de>
+Date: Tue, 30 Oct 2012 19:21:37 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Russ Dill <Russ.Dill@ti.com>
-CC: Pantelis Antoniou <panto@antoniou-consulting.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
+To: Pantelis Antoniou <panto@antoniou-consulting.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
 	"Patil, Rachna" <rachna@ti.com>, linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Koen Kooi <koen@dominion.thruhere.net>,
-	Matt Porter <mporter@ti.com>, linux-omap@vger.kernel.org
+	Matt Porter <mporter@ti.com>, Russ Dill <Russ.Dill@ti.com>,
+	linux-omap@vger.kernel.org
 Subject: Re: [PATCH] ti_tscadc: Match mfd sub devices to regmap interface
-References: <1351698945-3881-1-git-send-email-panto@antoniou-consulting.com> <CA+Bv8XbCweGxKg-VsM2=g5KJEbLZhUA8F=iAG2st7c0JRLH58g@mail.gmail.com>
-In-Reply-To: <CA+Bv8XbCweGxKg-VsM2=g5KJEbLZhUA8F=iAG2st7c0JRLH58g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <1351698945-3881-1-git-send-email-panto@antoniou-consulting.com>
+In-Reply-To: <1351698945-3881-1-git-send-email-panto@antoniou-consulting.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/31/2012 05:41 AM, Russ Dill wrote:
-> On Wed, Oct 31, 2012 at 8:55 AM, Pantelis Antoniou
-> <panto@antoniou-consulting.com> wrote:
->> The MFD parent device now uses a regmap, instead of direct
->> memory access. Use the same method in the sub devices to avoid
->> nasty surprises.
->>
->> Also rework the channel initialization of tiadc a bit.
->>
->> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
->> ---
->>  drivers/iio/adc/ti_am335x_adc.c           | 27 +++++++++++++++++++--------
->>  drivers/input/touchscreen/ti_am335x_tsc.c | 16 +++++++++++++---
->>  drivers/mfd/ti_am335x_tscadc.c            |  7 +++++--
->>  3 files changed, 37 insertions(+), 13 deletions(-)
->>
->> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
->> index d48fd79..5f325c1 100644
->> --- a/drivers/iio/adc/ti_am335x_adc.c
->> +++ b/drivers/iio/adc/ti_am335x_adc.c
->> @@ -23,7 +23,9 @@
->>  #include <linux/iio/iio.h>
->>  #include <linux/iio/machine.h>
->>  #include <linux/iio/driver.h>
->> +#include <linux/regmap.h>
->>
->> +#include <linux/io.h>
->>  #include <linux/mfd/ti_am335x_tscadc.h>
->>  #include <linux/platform_data/ti_am335x_adc.h>
->>
->> @@ -36,13 +38,17 @@ struct tiadc_device {
->>
->>  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
->>  {
->> -       return readl(adc->mfd_tscadc->tscadc_base + reg);
->> +       unsigned int val;
->> +
->> +       val = (unsigned int)-1;
->> +       regmap_read(adc->mfd_tscadc->regmap_tscadc, reg, &val);
->> +       return val;
->>  }
+On 10/31/2012 04:55 PM, Pantelis Antoniou wrote:
+> The MFD parent device now uses a regmap, instead of direct
+> memory access. Use the same method in the sub devices to avoid
+> nasty surprises.
 > 
-> Would it be cleaner to instead do:
-> 
-> static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
-> {
->        unsigned int val;
-> 
->        return regmap_read(adc->mfd_tscadc->regmap_tscadc, reg, &val) ? : val;
-> }
+> Also rework the channel initialization of tiadc a bit.
 
-In my opinion the best would be to just mimic the regmap interface here. Return
-an error code or 0 and pass the value back through a pointer parameter.
+Those two bits are not even closely related, they should really go into
+separate patches.
 
+> 
+> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
+> ---
+>  drivers/iio/adc/ti_am335x_adc.c           | 27 +++++++++++++++++++--------
+>  drivers/input/touchscreen/ti_am335x_tsc.c | 16 +++++++++++++---
+>  drivers/mfd/ti_am335x_tscadc.c            |  7 +++++--
+>  3 files changed, 37 insertions(+), 13 deletions(-)
+> 
+[...]
+>  
+> @@ -213,6 +222,8 @@ static int __devinit tiadc_probe(struct platform_device *pdev)
+>  
+>  	platform_set_drvdata(pdev, indio_dev);
+>  
+> +	dev_info(&pdev->dev, "Initialized\n");
+
+That's just noise, please don't add it. Imagine every driver did this you'd
+end up with a lot of noise your debug log.
+
+> +
+>  	return 0;
+>  
+>  err_free_channels:
+> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+> index 7a26810..d09e1a7 100644
+> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
+> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+> @@ -26,6 +26,7 @@
+[...]
+>  /*
+> @@ -455,10 +460,15 @@ static int __devinit titsc_probe(struct platform_device *pdev)
+>  
+>  	/* register to the input system */
+>  	err = input_register_device(input_dev);
+> -	if (err)
+> +	if (err) {
+> +		dev_err(&pdev->dev, "Failed to register input device\n");
+>  		goto err_free_irq;
+> +	}
+>  
+>  	platform_set_drvdata(pdev, ts_dev);
+> +
+> +	dev_info(&pdev->dev, "Initialized OK\n");
+
+Same here
 
 
