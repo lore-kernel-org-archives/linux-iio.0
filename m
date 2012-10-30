@@ -1,154 +1,339 @@
-Return-Path: <dbasehore@google.com>
-MIME-Version: 1.0
-In-Reply-To: <5082739E.1000800@kernel.org>
-References: <1349394896-4856-1-git-send-email-dbasehore@chromium.org>
-	<5082739E.1000800@kernel.org>
-Date: Tue, 23 Oct 2012 14:47:32 -0700
-Message-ID: <CAGAzgsqN5J7Ot4NGOHW8E=38TjDYUBooJMXVYyd2obXdC5rABQ@mail.gmail.com>
-Subject: Re: [PATCH] tsl2563: fixed bug with disabling interrupts
-From: Derek Basehore <dbasehore@google.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: jic23@cam.ac.uk, bleung@chromium.org,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jon Brenner - TAOS <jbrenner@taosinc.com>
-Content-Type: multipart/alternative; boundary=f46d04448159d0d91204ccc0eab5
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-175.synserver.de ([212.40.185.175]:1144 "EHLO
+	smtp-out-175.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757604Ab2J3K03 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Oct 2012 06:26:29 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/4] staging:iio:adis16400: Fix adis16334 sampling frequency control
+Date: Tue, 30 Oct 2012 11:26:24 +0100
+Message-Id: <1351592787-2934-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---f46d04448159d0d91204ccc0eab5
-Content-Type: text/plain; charset=ISO-8859-1
+Setting the sampling frequency for the adis16334 differs from the other devices.
+This patch introduces two new callback functions to the adis16400 chip_info
+struct which are used to specify how to read and write the current sample rate.
+The patch also introduces the proper implementations for these callbacks for the
+adis16334.
 
-Here's the link to the data sheet
+Related to this is that the adis16334 has no slow mode and so we do not limit
+the SPI clock rate to 300kHz during initialization. The patch adds a new flag
+for devices which do have a slow mode.
 
-http://cfnewsads.thomasnet.com/pnn-pdf/478523.pdf
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/imu/adis16400.h      |  11 ++-
+ drivers/staging/iio/imu/adis16400_core.c | 122 +++++++++++++++++++++++--------
+ 2 files changed, 101 insertions(+), 32 deletions(-)
 
-We don't actually use this functionality for the ambient light sensor, so
-it's untested right now. I just happened to notice this while reading
-through the driver. The register in question has specifics starting on page
-15.
-
-Thanks
-
-
-On Sat, Oct 20, 2012 at 2:49 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-
-> cc'd iio mailing list and Jon Brenner.
-> Being lazy I haven't dug out the datahsheet to check this (my board has a
-> broken
-> track to the interrupt line so can't easily test this!)
->
-> > In tsl_2563_write_interrupt_config and tsl2562_remove, interrupts are not
-> > disabled where they should be. This seems to be from a mistake of using
-> |=
-> > instead of &= in 2 lines of code.
-> >
-> > Signed-off-by: Derek Basehore <dbasehore@chromium.org>
-> > ---
-> >  drivers/staging/iio/light/tsl2563.c |    4 ++--
-> >  1 files changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/staging/iio/light/tsl2563.c
-> b/drivers/staging/iio/light/tsl2563.c
-> > index 954ca2c..3f72543 100644
-> > --- a/drivers/staging/iio/light/tsl2563.c
-> > +++ b/drivers/staging/iio/light/tsl2563.c
-> > @@ -652,7 +652,7 @@ static int tsl2563_write_interrupt_config(struct
-> iio_dev *indio_dev,
-> >       }
-> >
-> >       if (!state && (chip->intr & 0x30)) {
-> > -             chip->intr |= ~0x30;
-> > +             chip->intr &= ~0x30;
-> >               ret = i2c_smbus_write_byte_data(chip->client,
-> >                                               TSL2563_CMD |
-> TSL2563_REG_INT,
-> >                                               chip->intr);
-> > @@ -814,7 +814,7 @@ static int __devexit tsl2563_remove(struct
-> i2c_client *client)
-> >       if (!chip->int_enabled)
-> >               cancel_delayed_work(&chip->poweroff_work);
-> >       /* Ensure that interrupts are disabled - then flush any bottom
-> halves */
-> > -     chip->intr |= ~0x30;
-> > +     chip->intr &= ~0x30;
-> >       i2c_smbus_write_byte_data(chip->client, TSL2563_CMD |
-> TSL2563_REG_INT,
-> >                                 chip->intr);
-> >       flush_scheduled_work();
-> >
->
-
-
-
+diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
+index 77c601d..07a6aea 100644
+--- a/drivers/staging/iio/imu/adis16400.h
++++ b/drivers/staging/iio/imu/adis16400.h
+@@ -123,6 +123,9 @@
+ /* SLP_CNT */
+ #define ADIS16400_SLP_CNT_POWER_OFF	(1<<8)
+ 
++#define ADIS16334_RATE_DIV_SHIFT 8
++#define ADIS16334_RATE_INT_CLK BIT(0)
++
+ #define ADIS16400_MAX_TX 24
+ #define ADIS16400_MAX_RX 24
+ 
+@@ -130,8 +133,10 @@
+ #define ADIS16400_SPI_BURST	(u32)(1000 * 1000)
+ #define ADIS16400_SPI_FAST	(u32)(2000 * 1000)
+ 
+-#define ADIS16400_HAS_PROD_ID 1
+-#define ADIS16400_NO_BURST 2
++#define ADIS16400_HAS_PROD_ID		BIT(0)
++#define ADIS16400_NO_BURST		BIT(1)
++#define ADIS16400_HAS_SLOW_MODE		BIT(2)
++
+ struct adis16400_chip_info {
+ 	const struct iio_chan_spec *channels;
+ 	const int num_channels;
+@@ -142,6 +147,8 @@ struct adis16400_chip_info {
+ 	int temp_scale_nano;
+ 	int temp_offset;
+ 	unsigned long default_scan_mask;
++	int (*set_freq)(struct iio_dev *indio_dev, unsigned int freq);
++	int (*get_freq)(struct iio_dev *indio_dev);
+ };
+ 
+ /**
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index 3144a7b..4d03bdc 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -161,10 +161,39 @@ error_ret:
+ 	return ret;
+ }
+ 
+-static int adis16400_get_freq(struct iio_dev *indio_dev)
++static int adis16334_get_freq(struct iio_dev *indio_dev)
+ {
++	int ret;
+ 	u16 t;
++
++	ret = adis16400_spi_read_reg_16(indio_dev, ADIS16400_SMPL_PRD, &t);
++	if (ret < 0)
++		return ret;
++
++	t >>= ADIS16334_RATE_DIV_SHIFT;
++
++	return (8192 >> t) / 10;
++}
++
++static int adis16334_set_freq(struct iio_dev *indio_dev, unsigned int freq)
++{
++	unsigned int t;
++
++	t = ilog2(8192 / (freq * 10));
++
++	if (t > 0x31)
++		t = 0x31;
++
++	t <<= ADIS16334_RATE_DIV_SHIFT;
++	t |= ADIS16334_RATE_INT_CLK;
++
++	return adis16400_spi_write_reg_16(indio_dev, ADIS16400_SMPL_PRD, t);
++}
++
++static int adis16400_get_freq(struct iio_dev *indio_dev)
++{
+ 	int sps, ret;
++	u16 t;
+ 
+ 	ret = adis16400_spi_read_reg_16(indio_dev, ADIS16400_SMPL_PRD, &t);
+ 	if (ret < 0)
+@@ -175,13 +204,33 @@ static int adis16400_get_freq(struct iio_dev *indio_dev)
+ 	return sps;
+ }
+ 
++static int adis16400_set_freq(struct iio_dev *indio_dev, unsigned int freq)
++{
++	struct adis16400_state *st = iio_priv(indio_dev);
++	unsigned int t;
++
++	t = 1638 / freq;
++	if (t > 0)
++		t--;
++	t &= ADIS16400_SMPL_PRD_DIV_MASK;
++	if ((t & ADIS16400_SMPL_PRD_DIV_MASK) >= 0x0A)
++		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
++	else
++		st->us->max_speed_hz = ADIS16400_SPI_FAST;
++
++	return adis16400_spi_write_reg_8(indio_dev,
++			ADIS16400_SMPL_PRD, t);
++}
++
+ static ssize_t adis16400_read_frequency(struct device *dev,
+ 		struct device_attribute *attr,
+ 		char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct adis16400_state *st = iio_priv(indio_dev);
+ 	int ret, len = 0;
+-	ret = adis16400_get_freq(indio_dev);
++
++	ret = st->variant->get_freq(indio_dev);
+ 	if (ret < 0)
+ 		return ret;
+ 	len = sprintf(buf, "%d SPS\n", ret);
+@@ -229,7 +278,6 @@ static ssize_t adis16400_write_frequency(struct device *dev,
+ 	struct adis16400_state *st = iio_priv(indio_dev);
+ 	long val;
+ 	int ret;
+-	u8 t;
+ 
+ 	ret = strict_strtol(buf, 10, &val);
+ 	if (ret)
+@@ -239,18 +287,7 @@ static ssize_t adis16400_write_frequency(struct device *dev,
+ 
+ 	mutex_lock(&indio_dev->mlock);
+ 
+-	t = (1638 / val);
+-	if (t > 0)
+-		t--;
+-	t &= ADIS16400_SMPL_PRD_DIV_MASK;
+-	if ((t & ADIS16400_SMPL_PRD_DIV_MASK) >= 0x0A)
+-		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
+-	else
+-		st->us->max_speed_hz = ADIS16400_SPI_FAST;
+-
+-	ret = adis16400_spi_write_reg_8(indio_dev,
+-			ADIS16400_SMPL_PRD,
+-			t);
++	st->variant->set_freq(indio_dev, val);
+ 
+ 	/* Also update the filter */
+ 	mutex_unlock(&indio_dev->mlock);
+@@ -380,8 +417,11 @@ static int adis16400_initial_setup(struct iio_dev *indio_dev)
+ 	u16 prod_id, smp_prd;
+ 	struct adis16400_state *st = iio_priv(indio_dev);
+ 
+-	/* use low spi speed for init */
+-	st->us->max_speed_hz = ADIS16400_SPI_SLOW;
++	/* use low spi speed for init if the device has a slow mode */
++	if (st->variant->flags & ADIS16400_HAS_SLOW_MODE)
++		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
++	else
++		st->us->max_speed_hz = ADIS16400_SPI_FAST;
+ 	st->us->mode = SPI_MODE_3;
+ 	spi_setup(st->us);
+ 
+@@ -422,11 +462,16 @@ static int adis16400_initial_setup(struct iio_dev *indio_dev)
+ 		       st->us->chip_select, st->us->irq);
+ 	}
+ 	/* use high spi speed if possible */
+-	ret = adis16400_spi_read_reg_16(indio_dev,
+-					ADIS16400_SMPL_PRD, &smp_prd);
+-	if (!ret && (smp_prd & ADIS16400_SMPL_PRD_DIV_MASK) < 0x0A) {
+-		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
+-		spi_setup(st->us);
++	if (st->variant->flags & ADIS16400_HAS_SLOW_MODE) {
++		ret = adis16400_spi_read_reg_16(indio_dev,
++						ADIS16400_SMPL_PRD, &smp_prd);
++		if (ret)
++			goto err_ret;
++
++		if ((smp_prd & ADIS16400_SMPL_PRD_DIV_MASK) < 0x0A) {
++			st->us->max_speed_hz = ADIS16400_SPI_FAST;
++			spi_setup(st->us);
++		}
+ 	}
+ 
+ err_ret:
+@@ -503,7 +548,7 @@ static int adis16400_write_raw(struct iio_dev *indio_dev,
+ 		mutex_lock(&indio_dev->mlock);
+ 		st->filt_int = val;
+ 		/* Work out update to current value */
+-		sps = adis16400_get_freq(indio_dev);
++		sps = st->variant->get_freq(indio_dev);
+ 		if (sps < 0) {
+ 			mutex_unlock(&indio_dev->mlock);
+ 			return sps;
+@@ -601,7 +646,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 			mutex_unlock(&indio_dev->mlock);
+ 			return ret;
+ 		}
+-		ret = adis16400_get_freq(indio_dev);
++		val16 = st->variant->get_freq(indio_dev);
+ 		if (ret > 0)
+ 			*val = ret/adis16400_3db_divisors[val16 & 0x03];
+ 		*val2 = 0;
+@@ -1060,6 +1105,7 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 	[ADIS16300] = {
+ 		.channels = adis16300_channels,
+ 		.num_channels = ARRAY_SIZE(adis16300_channels),
++		.flags = ADIS16400_HAS_SLOW_MODE,
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = 5884,
+ 		.temp_scale_nano = 140000000, /* 0.14 C */
+@@ -1070,6 +1116,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		(1 << ADIS16400_SCAN_TEMP) | (1 << ADIS16400_SCAN_ADC_0) |
+ 		(1 << ADIS16300_SCAN_INCLI_X) | (1 << ADIS16300_SCAN_INCLI_Y) |
+ 		(1 << 14),
++		.set_freq = adis16400_set_freq,
++		.get_freq = adis16400_get_freq,
+ 	},
+ 	[ADIS16334] = {
+ 		.channels = adis16334_channels,
+@@ -1082,6 +1130,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		(1 << ADIS16400_SCAN_GYRO_Y) | (1 << ADIS16400_SCAN_GYRO_Z) |
+ 		(1 << ADIS16400_SCAN_ACC_X) | (1 << ADIS16400_SCAN_ACC_Y) |
+ 		(1 << ADIS16400_SCAN_ACC_Z),
++		.set_freq = adis16334_set_freq,
++		.get_freq = adis16334_get_freq,
+ 	},
+ 	[ADIS16350] = {
+ 		.channels = adis16350_channels,
+@@ -1091,62 +1141,74 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.temp_scale_nano = 145300000, /* 0.1453 C */
+ 		.temp_offset = 25000000 / 145300, /* 25 C = 0x00 */
+ 		.default_scan_mask = 0x7FF,
+-		.flags = ADIS16400_NO_BURST,
++		.flags = ADIS16400_NO_BURST | ADIS16400_HAS_SLOW_MODE,
++		.set_freq = adis16400_set_freq,
++		.get_freq = adis16400_get_freq,
+ 	},
+ 	[ADIS16360] = {
+ 		.channels = adis16350_channels,
+ 		.num_channels = ARRAY_SIZE(adis16350_channels),
+-		.flags = ADIS16400_HAS_PROD_ID,
++		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
+ 		.product_id = 0x3FE8,
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
+ 		.temp_scale_nano = 136000000, /* 0.136 C */
+ 		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+ 		.default_scan_mask = 0x7FF,
++		.set_freq = adis16400_set_freq,
++		.get_freq = adis16400_get_freq,
+ 	},
+ 	[ADIS16362] = {
+ 		.channels = adis16350_channels,
+ 		.num_channels = ARRAY_SIZE(adis16350_channels),
+-		.flags = ADIS16400_HAS_PROD_ID,
++		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
+ 		.product_id = 0x3FEA,
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(333), /* 0.333 mg */
+ 		.temp_scale_nano = 136000000, /* 0.136 C */
+ 		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+ 		.default_scan_mask = 0x7FF,
++		.set_freq = adis16400_set_freq,
++		.get_freq = adis16400_get_freq,
+ 	},
+ 	[ADIS16364] = {
+ 		.channels = adis16350_channels,
+ 		.num_channels = ARRAY_SIZE(adis16350_channels),
+-		.flags = ADIS16400_HAS_PROD_ID,
++		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
+ 		.product_id = 0x3FEC,
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
+ 		.temp_scale_nano = 136000000, /* 0.136 C */
+ 		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+ 		.default_scan_mask = 0x7FF,
++		.set_freq = adis16400_set_freq,
++		.get_freq = adis16400_get_freq,
+ 	},
+ 	[ADIS16365] = {
+ 		.channels = adis16350_channels,
+ 		.num_channels = ARRAY_SIZE(adis16350_channels),
+-		.flags = ADIS16400_HAS_PROD_ID,
++		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
+ 		.product_id = 0x3FED,
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
+ 		.temp_scale_nano = 136000000, /* 0.136 C */
+ 		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+ 		.default_scan_mask = 0x7FF,
++		.set_freq = adis16400_set_freq,
++		.get_freq = adis16400_get_freq,
+ 	},
+ 	[ADIS16400] = {
+ 		.channels = adis16400_channels,
+ 		.num_channels = ARRAY_SIZE(adis16400_channels),
+-		.flags = ADIS16400_HAS_PROD_ID,
++		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
+ 		.product_id = 0x4015,
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
+ 		.default_scan_mask = 0xFFF,
+ 		.temp_scale_nano = 140000000, /* 0.14 C */
+ 		.temp_offset = 25000000 / 140000, /* 25 C = 0x00 */
++		.set_freq = adis16400_set_freq,
++		.get_freq = adis16400_get_freq,
+ 	}
+ };
+ 
 -- 
-Derek
+1.8.0
 
---f46d04448159d0d91204ccc0eab5
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Here&#39;s the link to the data sheet<div><br></div><div><a href=3D"http://=
-cfnewsads.thomasnet.com/pnn-pdf/478523.pdf">http://cfnewsads.thomasnet.com/=
-pnn-pdf/478523.pdf</a><br></div><div><br></div><div>We don&#39;t actually u=
-se this functionality for the ambient light sensor, so it&#39;s untested ri=
-ght now. I just happened to notice this while reading through the driver. T=
-he register in question has specifics starting on page 15.</div>
-<div><br></div><div>Thanks</div><div class=3D"gmail_extra"><br><br><div cla=
-ss=3D"gmail_quote">On Sat, Oct 20, 2012 at 2:49 AM, Jonathan Cameron <span =
-dir=3D"ltr">&lt;<a href=3D"mailto:jic23@kernel.org" target=3D"_blank">jic23=
-@kernel.org</a>&gt;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">cc&#39;d iio mailing list and Jon Brenner.<b=
-r>
-Being lazy I haven&#39;t dug out the datahsheet to check this (my board has=
- a broken<br>
-track to the interrupt line so can&#39;t easily test this!)<br>
-<div class=3D"HOEnZb"><div class=3D"h5"><br>
-&gt; In tsl_2563_write_interrupt_config and tsl2562_remove, interrupts are =
-not<br>
-&gt; disabled where they should be. This seems to be from a mistake of usin=
-g |=3D<br>
-&gt; instead of &amp;=3D in 2 lines of code.<br>
-&gt;<br>
-&gt; Signed-off-by: Derek Basehore &lt;<a href=3D"mailto:dbasehore@chromium=
-.org">dbasehore@chromium.org</a>&gt;<br>
-&gt; ---<br>
-&gt; =A0drivers/staging/iio/light/tsl2563.c | =A0 =A04 ++--<br>
-&gt; =A01 files changed, 2 insertions(+), 2 deletions(-)<br>
-&gt;<br>
-&gt; diff --git a/drivers/staging/iio/light/tsl2563.c b/drivers/staging/iio=
-/light/tsl2563.c<br>
-&gt; index 954ca2c..3f72543 100644<br>
-&gt; --- a/drivers/staging/iio/light/tsl2563.c<br>
-&gt; +++ b/drivers/staging/iio/light/tsl2563.c<br>
-&gt; @@ -652,7 +652,7 @@ static int tsl2563_write_interrupt_config(struct i=
-io_dev *indio_dev,<br>
-&gt; =A0 =A0 =A0 }<br>
-&gt;<br>
-&gt; =A0 =A0 =A0 if (!state &amp;&amp; (chip-&gt;intr &amp; 0x30)) {<br>
-&gt; - =A0 =A0 =A0 =A0 =A0 =A0 chip-&gt;intr |=3D ~0x30;<br>
-&gt; + =A0 =A0 =A0 =A0 =A0 =A0 chip-&gt;intr &amp;=3D ~0x30;<br>
-&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 ret =3D i2c_smbus_write_byte_data(chip-&gt=
-;client,<br>
-&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 TSL2563_CMD | TSL2563_REG_INT,<br>
-&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 chip-&gt;intr);<br>
-&gt; @@ -814,7 +814,7 @@ static int __devexit tsl2563_remove(struct i2c_cli=
-ent *client)<br>
-&gt; =A0 =A0 =A0 if (!chip-&gt;int_enabled)<br>
-&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 cancel_delayed_work(&amp;chip-&gt;poweroff=
-_work);<br>
-&gt; =A0 =A0 =A0 /* Ensure that interrupts are disabled - then flush any bo=
-ttom halves */<br>
-&gt; - =A0 =A0 chip-&gt;intr |=3D ~0x30;<br>
-&gt; + =A0 =A0 chip-&gt;intr &amp;=3D ~0x30;<br>
-&gt; =A0 =A0 =A0 i2c_smbus_write_byte_data(chip-&gt;client, TSL2563_CMD | T=
-SL2563_REG_INT,<br>
-&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 chip-&=
-gt;intr);<br>
-&gt; =A0 =A0 =A0 flush_scheduled_work();<br>
-&gt;<br>
-</div></div></blockquote></div><br><br clear=3D"all"><div><br></div>-- <br>=
-Derek<br>
-</div>
-
---f46d04448159d0d91204ccc0eab5--
