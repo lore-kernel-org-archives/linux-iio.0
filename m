@@ -1,289 +1,208 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <507C1D1C.2030607@metafoo.de>
-Date: Mon, 15 Oct 2012 16:26:36 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Lars Poeschel <larsi@wh2.tu-dresden.de>
-CC: sameo@linux.intel.com, linux-kernel@vger.kernel.org, jic23@cam.ac.uk,
- khali@linux-fr.org, ben-linux@fluff.org, w.sang@pengutronix.de,
- grant.likely@secretlab.ca, linus.walleij@linaro.org,
- Lars Poeschel <poeschel@lemonage.de>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v2 4/4] iio: adc: add viperboard adc driver
-References: <20120925085559.GL28670@sortiz-mobl> <1350052469-27802-1-git-send-email-larsi@wh2.tu-dresden.de> <1350052469-27802-4-git-send-email-larsi@wh2.tu-dresden.de>
-In-Reply-To: <1350052469-27802-4-git-send-email-larsi@wh2.tu-dresden.de>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from li42-95.members.linode.com ([209.123.162.95]:59049 "EHLO
+	li42-95.members.linode.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S934095Ab2J3SMq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Oct 2012 14:12:46 -0400
+From: Pantelis Antoniou <panto@antoniou-consulting.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Pantelis Antoniou <panto@antoniou-consulting.com>,
+	"Patil, Rachna" <rachna@ti.com>, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Koen Kooi <koen@dominion.thruhere.net>,
+	Matt Porter <mporter@ti.com>, Russ Dill <Russ.Dill@ti.com>,
+	linux-omap@vger.kernel.org
+Subject: [PATCH] ti_tscadc: Match mfd sub devices to regmap interface
+Date: Wed, 31 Oct 2012 17:55:45 +0200
+Message-Id: <1351698945-3881-1-git-send-email-panto@antoniou-consulting.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Added linux-iio@vger.kernel.org to Cc.
+The MFD parent device now uses a regmap, instead of direct
+memory access. Use the same method in the sub devices to avoid
+nasty surprises.
 
-On 10/12/2012 04:34 PM, Lars Poeschel wrote:
-> From: Lars Poeschel <poeschel@lemonage.de>
-> 
-> This adds the mfd cell to use the adc part of the Nano River Technologies
-> viperboard.
-> 
-> Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
+Also rework the channel initialization of tiadc a bit.
 
-Looks good in general, just some minor code style issues.
+Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
+---
+ drivers/iio/adc/ti_am335x_adc.c           | 27 +++++++++++++++++++--------
+ drivers/input/touchscreen/ti_am335x_tsc.c | 16 +++++++++++++---
+ drivers/mfd/ti_am335x_tscadc.c            |  7 +++++--
+ 3 files changed, 37 insertions(+), 13 deletions(-)
 
-> ---
->  drivers/iio/adc/Kconfig          |    7 ++
->  drivers/iio/adc/Makefile         |    1 +
->  drivers/iio/adc/viperboard_adc.c |  185 ++++++++++++++++++++++++++++++++++++++
->  drivers/mfd/viperboard.c         |    3 +
->  4 files changed, 196 insertions(+)
->  create mode 100644 drivers/iio/adc/viperboard_adc.c
-> 
-[...]
-> diff --git a/drivers/iio/adc/viperboard_adc.c b/drivers/iio/adc/viperboard_adc.c
-> new file mode 100644
-> index 0000000..8ae6634
-> --- /dev/null
-> +++ b/drivers/iio/adc/viperboard_adc.c
-> @@ -0,0 +1,185 @@
-> +/*
-> + *  Nano River Technologies viperboard iio ADC driver
-> + *
-> + *  (C) 2012 by Lemonage GmbH
-> + *  Author: Lars Poeschel <poeschel@lemonage.de>
-> + *  All rights reserved.
-> + *
-> + *  This program is free software; you can redistribute  it and/or modify it
-> + *  under  the terms of  the GNU General  Public License as published by the
-> + *  Free Software Foundation;  either version 2 of the	License, or (at your
-> + *  option) any later version.
-> + *
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/errno.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/types.h>
-> +#include <linux/mutex.h>
-> +#include <linux/platform_device.h>
-> +
-> +#include <linux/usb.h>
-> +#include <linux/iio/iio.h>
-> +
-> +#include <linux/mfd/viperboard.h>
-> +
-> +#define VPRBRD_ADC_CMD_GET		0x00
-> +
-> +struct __packed vprbrd_adc_msg {
-> +	u8 cmd;
-> +	u8 chan;
-> +	u8 val;
-> +};
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index d48fd79..5f325c1 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -23,7 +23,9 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/machine.h>
+ #include <linux/iio/driver.h>
++#include <linux/regmap.h>
+ 
++#include <linux/io.h>
+ #include <linux/mfd/ti_am335x_tscadc.h>
+ #include <linux/platform_data/ti_am335x_adc.h>
+ 
+@@ -36,13 +38,17 @@ struct tiadc_device {
+ 
+ static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
+ {
+-	return readl(adc->mfd_tscadc->tscadc_base + reg);
++	unsigned int val;
++
++	val = (unsigned int)-1;
++	regmap_read(adc->mfd_tscadc->regmap_tscadc, reg, &val);
++	return val;
+ }
+ 
+ static void tiadc_writel(struct tiadc_device *adc, unsigned int reg,
+ 					unsigned int val)
+ {
+-	writel(val, adc->mfd_tscadc->tscadc_base + reg);
++	regmap_write(adc->mfd_tscadc->regmap_tscadc, reg, val);
+ }
+ 
+ static void tiadc_step_config(struct tiadc_device *adc_dev)
+@@ -75,22 +81,24 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+ 	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
+ }
+ 
+-static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
++static int tiadc_channel_init(struct iio_dev *indio_dev,
++		struct tiadc_device *adc_dev)
+ {
+ 	struct iio_chan_spec *chan_array;
+ 	struct iio_chan_spec *chan;
+ 	char *s;
+ 	int i, len, size, ret;
++	int channels = adc_dev->channels;
+ 
+-	size = indio_dev->num_channels * (sizeof(struct iio_chan_spec) + 6);
++	size = channels * (sizeof(struct iio_chan_spec) + 6);
+ 	chan_array = kzalloc(size, GFP_KERNEL);
+ 	if (chan_array == NULL)
+ 		return -ENOMEM;
+ 
+ 	/* buffer space is after the array */
+-	s = (char *)(chan_array + indio_dev->num_channels);
++	s = (char *)(chan_array + channels);
+ 	chan = chan_array;
+-	for (i = 0; i < indio_dev->num_channels; i++, chan++, s += len + 1) {
++	for (i = 0; i < channels; i++, chan++, s += len + 1) {
+ 
+ 		len = sprintf(s, "AIN%d", i);
+ 
+@@ -105,8 +113,9 @@ static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
+ 	}
+ 
+ 	indio_dev->channels = chan_array;
++	indio_dev->num_channels = channels;
+ 
+-	size = (indio_dev->num_channels + 1) * sizeof(struct iio_map);
++	size = (channels + 1) * sizeof(struct iio_map);
+ 	adc_dev->map = kzalloc(size, GFP_KERNEL);
+ 	if (adc_dev->map == NULL) {
+ 		kfree(chan_array);
+@@ -203,7 +212,7 @@ static int __devinit tiadc_probe(struct platform_device *pdev)
+ 
+ 	tiadc_step_config(adc_dev);
+ 
+-	err = tiadc_channel_init(indio_dev, adc_dev->channels);
++	err = tiadc_channel_init(indio_dev, adc_dev);
+ 	if (err < 0)
+ 		goto err_free_device;
+ 
+@@ -213,6 +222,8 @@ static int __devinit tiadc_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
++	dev_info(&pdev->dev, "Initialized\n");
++
+ 	return 0;
+ 
+ err_free_channels:
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 7a26810..d09e1a7 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -26,6 +26,7 @@
+ #include <linux/io.h>
+ #include <linux/input/ti_am335x_tsc.h>
+ #include <linux/delay.h>
++#include <linux/regmap.h>
+ 
+ #include <linux/mfd/ti_am335x_tscadc.h>
+ 
+@@ -64,13 +65,17 @@ struct titsc {
+ 
+ static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
+ {
+-	return readl(ts->mfd_tscadc->tscadc_base + reg);
++	unsigned int val;
++
++	val = (unsigned int)-1;
++	regmap_read(ts->mfd_tscadc->regmap_tscadc, reg, &val);
++	return val;
+ }
+ 
+ static void titsc_writel(struct titsc *tsc, unsigned int reg,
+ 					unsigned int val)
+ {
+-	writel(val, tsc->mfd_tscadc->tscadc_base + reg);
++	regmap_write(tsc->mfd_tscadc->regmap_tscadc, reg, val);
+ }
+ 
+ /*
+@@ -455,10 +460,15 @@ static int __devinit titsc_probe(struct platform_device *pdev)
+ 
+ 	/* register to the input system */
+ 	err = input_register_device(input_dev);
+-	if (err)
++	if (err) {
++		dev_err(&pdev->dev, "Failed to register input device\n");
+ 		goto err_free_irq;
++	}
+ 
+ 	platform_set_drvdata(pdev, ts_dev);
++
++	dev_info(&pdev->dev, "Initialized OK\n");
++
+ 	return 0;
+ 
+ err_free_irq:
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index cbb8b70c..4a7041c 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -31,6 +31,7 @@ static unsigned int tscadc_readl(struct ti_tscadc_dev *tsadc, unsigned int reg)
+ {
+ 	unsigned int val;
+ 
++	val = (unsigned int)-1;
+ 	regmap_read(tsadc->regmap_tscadc, reg, &val);
+ 	return val;
+ }
+@@ -68,7 +69,7 @@ static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
+ 	int			irq;
+ 	int			err, ctrl;
+ 	int			clk_value, clock_rate;
+-	int			tsc_wires, adc_channels = 0, total_channels;
++	int			tsc_wires = 0, adc_channels = 0, total_channels;
+ 
+ 	if (!pdata) {
+ 		dev_err(&pdev->dev, "Could not find platform data\n");
+@@ -78,7 +79,9 @@ static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
+ 	if (pdata->adc_init)
+ 		adc_channels = pdata->adc_init->adc_channels;
+ 
+-	tsc_wires = pdata->tsc_init->wires;
++	if (pdata->tsc_init)
++		tsc_wires = pdata->tsc_init->wires;
++
+ 	total_channels = tsc_wires + adc_channels;
+ 
+ 	if (total_channels > 8) {
+-- 
+1.7.12
 
-put the __packed between } and ;
-
-> +
-> +struct vprbrd_adc {
-> +	struct vprbrd *vb;
-> +};
-> +
-> +#define VPRBRD_ADC_CHANNEL(_index) {			\
-> +	.type = IIO_VOLTAGE,				\
-> +	.indexed = 1,					\
-> +	.channel = _index,				\
-> +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,	\
-
-It would be good if you could also report the channel scale.
-
-> +	.scan_index = _index,				\
-> +	.scan_type.sign = 'u',				\
-> +	.scan_type.realbits = 8,			\
-> +	.scan_type.storagebits = 8,			\
-
-Usually this is written as
-	.scan_type = {
-		.sign = 'u',
-		....
-	},
-
-> +}
-> +
-> +static struct iio_chan_spec vprbrd_adc_iio_channels[] = {
-const
-
-> +	VPRBRD_ADC_CHANNEL(0),
-> +	VPRBRD_ADC_CHANNEL(1),
-> +	VPRBRD_ADC_CHANNEL(2),
-> +	VPRBRD_ADC_CHANNEL(3),
-> +};
-> +
-> +static int vprbrd_iio_read_raw(struct iio_dev *iio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val,
-> +				int *val2,
-> +				long mask)
-
-'mask' used to be a mask and that's why it is still called 'mask' in older
-drivers. For new drivers we should use 'info'.
-
-> +{
-> +	int ret, error = 0;
-> +	struct vprbrd_adc *adc = iio_priv(iio_dev);
-> +	struct vprbrd *vb = adc->vb;
-> +	struct vprbrd_adc_msg *admsg = (struct vprbrd_adc_msg *)vb->buf;
-> +
-> +	if (mask == IIO_CHAN_INFO_RAW) {
-> +
-
-Use switch instead of if. Otherwise you'd end up with if(mask == ...) else
-if(mask == ...) else if (mask == ...) if you add support for more channel
-attributes.
-
-> +		mutex_lock(&vb->lock);
-> +
-> +		admsg->cmd = VPRBRD_ADC_CMD_GET;
-> +		admsg->chan = chan->scan_index;
-> +		admsg->val = 0x00;
-> +
-> +		ret = usb_control_msg(vb->usb_dev,
-> +			usb_sndctrlpipe(vb->usb_dev, 0), 0xec, 0x40,
-> +			0x0000, 0x0000, admsg,
-> +			sizeof(struct vprbrd_adc_msg), 100);
-> +		if (ret != sizeof(struct vprbrd_adc_msg)) {
-> +			dev_err(&iio_dev->dev, "usb send error on adc read\n");
-> +			error = -EREMOTEIO;
-> +		}
-
-Does it make sense to send out the second msg if the first one failed?
-
-> +
-> +		ret = usb_control_msg(vb->usb_dev,
-> +			usb_rcvctrlpipe(vb->usb_dev, 0), 0xec, 0xc0,
-> +			0x0000, 0x0000, admsg,
-> +			sizeof(struct vprbrd_adc_msg), 100);
-> +
-
-It would be good to have some defines for the magic constants used for
-request and request_type.
-
-> +		*val = admsg->val;
-> +
-> +		mutex_unlock(&vb->lock);
-> +
-> +		if (ret != sizeof(struct vprbrd_adc_msg)) {
-> +			dev_err(&iio_dev->dev, "usb recv error on adc read\n");
-> +			error = -EREMOTEIO;
-> +		}
-> +
-> +		if (error)
-> +			goto error;
-> +
-> +		return IIO_VAL_INT;
-> +	}
-> +	error =  -EINVAL;
-> +error:
-> +	return error;
-> +}
-> +
-> +static const struct iio_info vprbrd_adc_iio_info = {
-> +	.read_raw = &vprbrd_iio_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int __devinit vprbrd_adc_probe(struct platform_device *pdev)
-> +{
-> +	struct vprbrd *vb = dev_get_drvdata(pdev->dev.parent);
-> +	struct vprbrd_adc *adc;
-> +	struct iio_dev *iodev;
-
-Usually this is called indio_dev, would be good for consistency if you'd do
-this as well.
-
-> +	int ret;
-> +
-> +	/* registering iio */
-> +	iodev = iio_device_alloc(sizeof(struct vprbrd_adc));
-> +	if (!iodev) {
-> +		dev_err(&pdev->dev, "failed allocating iio device\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	adc = iio_priv(iodev);
-> +	adc->vb = vb;
-> +	iodev->name = "viperboard adc";
-> +	iodev->dev.parent = &pdev->dev;
-> +	iodev->info = &vprbrd_adc_iio_info;
-> +	iodev->modes = INDIO_DIRECT_MODE;
-> +	iodev->channels = vprbrd_adc_iio_channels;
-> +	iodev->num_channels = ARRAY_SIZE(vprbrd_adc_iio_channels);
-> +
-> +	ret = iio_device_register(iodev);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "could not register iio (adc)");
-> +		goto error;
-> +	}
-> +
-> +	platform_set_drvdata(pdev, iodev);
-> +
-> +	return 0;
-> +
-> +error:
-> +	iio_device_free(iodev);
-> +	return ret;
-> +}
-> +
-> +static int __devexit vprbrd_adc_remove(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *iodev = platform_get_drvdata(pdev);
-> +
-> +	iio_device_unregister(iodev);
-> +	iio_device_free(iodev);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver vprbrd_adc_driver = {
-> +	.driver.name	= "viperboard-adc",
-> +	.driver.owner	= THIS_MODULE,
-
-Same as with scan_type, usually this is written as
-
-.driver = {
-	.name = ...
-	....
-},
-
-> +	.probe		= vprbrd_adc_probe,
-> +	.remove		= __devexit_p(vprbrd_adc_remove),
-> +};
-> +
-> +static int __init vprbrd_adc_init(void)
-> +{
-> +	return platform_driver_register(&vprbrd_adc_driver);
-> +}
-> +subsys_initcall(vprbrd_adc_init);
-> +
-> +static void __exit vprbrd_adc_exit(void)
-> +{
-> +	platform_driver_unregister(&vprbrd_adc_driver);
-> +}
-> +module_exit(vprbrd_adc_exit);
-
-module_platform_driver(vprbrd_adc_driver);
-
-> +
-> +MODULE_AUTHOR("Lars Poeschel <poeschel@lemonage.de>");
-> +MODULE_DESCRIPTION("IIO ADC driver for Nano River Techs Viperboard");
-> +MODULE_LICENSE("GPL");
-> +MODULE_ALIAS("platform:viperboard-adc");
-> diff --git a/drivers/mfd/viperboard.c b/drivers/mfd/viperboard.c
-> index a25e07e..eb1cf89 100644
-> --- a/drivers/mfd/viperboard.c
-> +++ b/drivers/mfd/viperboard.c
-> @@ -55,6 +55,9 @@ static struct mfd_cell vprbrd_devs[] = {
->  	{
->  		.name = "viperboard-i2c",
->  	},
-> +	{
-> +		.name = "viperboard-adc",
-> +	},
->  };
->  
->  static int vprbrd_probe(struct usb_interface *interface,
