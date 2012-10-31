@@ -1,104 +1,94 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Wed, 31 Oct 2012 15:40:06 +0100 (CET)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH 4/4] staging:iio: Proof of concept input driver.
-In-Reply-To: <1351679431-7963-5-git-send-email-jic23@kernel.org>
-Message-ID: <alpine.DEB.2.01.1210311513050.10186@pmeerw.net>
-References: <1351679431-7963-1-git-send-email-jic23@kernel.org> <1351679431-7963-5-git-send-email-jic23@kernel.org>
+Return-Path: <jic23@kernel.org>
+Message-ID: <50918B31.6010103@kernel.org>
+Date: Wed, 31 Oct 2012 20:33:53 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Denis CIOCCA <denis.ciocca@st.com>,
+ Denis Ciocca <denis.ciocca@gmail.com>,
+ Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+ Pavel Machek <pavel@denx.de>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "burman.yan@gmail.com" <burman.yan@gmail.com>
+Subject: Re: STMicroelectronics accelerometers driver.
+References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de> <20121008195007.GA32042@elf.ucw.cz> <507338B5.60307@metafoo.de> <665718a4-de6b-4d09-ba80-35705fcf2595@email.android.com> <CAEE_umojW5OyB3yGgE54wH7_k__dBu9=Yew_0tCCf5--=C2g5g@mail.gmail.com> <507D9EA3.4070009@metafoo.de> <5085128C.7020507@st.com> <50858B44.2080006@kernel.org> <5087E2A8.4070304@st.com> <508A7DA6.7050505@metafoo.de> <508E4492.8080000@st.com> <508E48D1.3000703@metafoo.de> <508E5978.5000907@st.com> <508E5AD5.1040907@metafoo.de> <50914366.4090000@st.com> <5091546D.9000601@metafoo.de>
+In-Reply-To: <5091546D.9000601@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-
-> +config IIO_ST_INPUT
-> +	tristate "Input driver that uses channels specified via iio maps"
-> +	depends on INPUT
-> +	depends on IIO_BUFFER
-> +	select IIO_BUFFER_CB
-> +	help
-> +	  Client driver for IIO via the push interfaces.  Used to provide
-> +	  and input interface for IIO devices that can feed a buffer on
-
-an input interface
-
-> + * Copyright (c) 2011 Jonathan Cameron
-
-2012 is almost over
-
-> +		case 32:
-> +			switch (chan->scan_type.endianness) {
-> +			case IIO_CPU:
-> +				value = *(s32 *)(data);
-> +				break;
-> +			case IIO_BE:
-> +				value = be32_to_cpu(*(__be32 *)data);
-> +				break;
-> +			case IIO_LE:
-> +				value = le32_to_cpu(*(__le32  *)data);
-> +				break;
-
-here's an extra space between le32 and *
-
-> +static struct platform_driver iio_input_driver = {
-> +	.driver = {
-> +		.name = "iio_input_bridge",
-> +		.owner = THIS_MODULE,
-> +	},
-> +	.probe = iio_input_probe,
-> +	.remove = __devexit_p(iio_input_remove),
-> +};
-> +
-> +module_platform_driver(iio_input_driver);
-> +
-> +MODULE_AUTHOR("Jonathan Cameron <jic23@cam.ac.uk>");
-> +MODULE_DESCRIPTION("IIO input buffer driver");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/staging/iio/iio_input.h b/drivers/staging/iio/iio_input.h
-> new file mode 100644
-> index 0000000..cfd1d34
-> --- /dev/null
-> +++ b/drivers/staging/iio/iio_input.h
-> @@ -0,0 +1,23 @@
-> +/*
-> + * The industrial I/O input client driver
-
-this thing is called 
-iio_input_bridge, 
-IIO input buffer_driver, 
-instrustrial I/O input client driver
-within a few lines of code -- now is the time to christen the driver :)
-
-> + *
-> + * Copyright (c) 2011 Jonathan Cameron
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published by
-> + * the Free Software Foundation.
-> + */
-> +
-> +/**
-> + * iio_input_channel_data - description of the channel for input subsystem
-> + * @code:	Absolute axis.
-> + * @min:	Minimum value.
-> + * @max:	Maximum value.
-> + * @fuzz:	Used to filter noise from the event stream.
-> + * @flat:	Values within this value will be discarded by joydev
-> + *		and reported as 0 instead.
-
-@flat: 	Values within the range [-flat, flat] will be discarded ...
-
-this is at least what I would guess it does; input.h is equally vague
-
-> + */
-> +struct iio_input_channel_data {
-> +	unsigned int code;
-> +	int min, max, fuzz, flat;
-> +};
+On 10/31/2012 04:40 PM, Lars-Peter Clausen wrote:
+> Hi,
 > 
+> On 10/31/2012 03:27 PM, Denis CIOCCA wrote:
+>> Hi Lars-Peter,
+>>
+>> I'm trying modified the driver to change the fullscale attribute and use 
+>> the in_accel_*_scale attribute.
+>> My question is that:
+>>
+>> - the in_accel_*_scale attribute rappresent the conversion value from 
+>> raw data sensor to m/s2, if I use only this value, how can I know what 
+>> is the maximum full scale associated to the value?
+> 
+> Unfortunately there is currently no way in IIO to specify minimum or maximum
+> values for a given channel. But you are welcome to come up with one, I think
+> this will be useful for other drivers as well.
+My personal preference would be an additional (for now optional) callback
+alongside read_raw and write_raw called something like available.  This would
+be used by additional xxxxx_available attributes to describe the possible
+values for info_mask element.  Exactly how to do this cleanly is a small
+'implemention detail' which means this will probably be rather more
+complex than this implies :)
 
--- 
+Interdependent info_mask elements will be 'interesting' (say a scale
+attribute for which the possible values change with the sampling frequency or
+visa-versa).
 
-Peter Meerwald
-+43-664-2444418 (mobile)
+I've been meaning to look at this for a while, but if anyone else fancies
+giving it a go, feel free!
+> 
+>>
+>> - how can I view a list of available values? I have to create scale 
+>> attribute on sysfs? If the last point is true, it is so redundant what I 
+>> did before?
+> 
+> You should add a scale_available attribute. Some ADC drivers implement this,
+> you could use them as an example.
+> 
+> - Lars
+> 
+>>
+>>
+>> Thanks,
+>>
+>> Denis
+>>
+>>
+>> On 10/29/2012 11:30 AM, Lars-Peter Clausen wrote:
+>>> On 10/29/2012 11:24 AM, Denis CIOCCA wrote:
+>>>>
+>>>>> There is no attachment attached to this mail.
+>>>> my was a question. You prefer I attach all source code or the last modified?
+>>>>
+>>>>
+>>>>>> I don't find IIO_G_TO_M_S_2 in the framework code, but I added this
+>>>>>> macro in my source code. It is exatly?
+>>>>>
+>>>>> It's in the latest IIO tree and also in staging/staging-next. The definition is
+>>>>>
+>>>>> +#define IIO_DEGREE_TO_RAD(deg) (((deg) * 314159ULL + 9000000ULL) \
+>>>>> 	/ 18000000ULL)
+>>>>
+>>>> Sorry but I'm lost. The relation from IIO_DEGREE_TO_RAD and IIO_G_TO_M_S_2?
+>>>>
+>>>
+>>> Sorry, too early in the morning, copied the wrong line.
+>>>
+>>> +#define IIO_G_TO_M_S_2(g) ((g) * 980665ULL / 100000ULL)
+>>>
+>>> Btw. the full patch can be found here:
+>>>   http://comments.gmane.org/gmane.linux.kernel.iio/5777
+>>>
+>>> - Lars
+>>>
+> 
