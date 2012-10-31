@@ -1,106 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:63792 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755915Ab2J0PDj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Oct 2012 11:03:39 -0400
-Received: by mail-pa0-f46.google.com with SMTP id hz1so2525154pad.19
-        for <linux-iio@vger.kernel.org>; Sat, 27 Oct 2012 08:03:39 -0700 (PDT)
-Message-ID: <1351350210.10004.3.camel@phoenix>
-Subject: [PATCH] iio: hid-sensor: Return proper error if kmemdup fails
-From: Axel Lin <axel.lin@ingics.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: srinivas pandruvada <srinivas.pandruvada@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Sat, 27 Oct 2012 23:03:30 +0800
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from smtp-out-183.synserver.de ([212.40.185.183]:1280 "EHLO
+	smtp-out-183.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753081Ab2JaSge (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2012 14:36:34 -0400
+Message-ID: <50916FA2.2000802@metafoo.de>
+Date: Wed, 31 Oct 2012 19:36:18 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Pantelis Antoniou <panto@antoniou-consulting.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	"Patil, Rachna" <rachna@ti.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Koen Kooi <koen@dominion.thruhere.net>,
+	Matt Porter <mporter@ti.com>, Russ Dill <Russ.Dill@ti.com>,
+	linux-omap@vger.kernel.org
+Subject: Re: [PATCH 1/3] ti_adc: Update with IIO map interface
+References: <1351783496-11557-1-git-send-email-panto@antoniou-consulting.com> <50916563.8080704@metafoo.de> <F29A4A48-CDFA-4058-BED1-C09242B23326@antoniou-consulting.com> <509168EF.9040000@metafoo.de> <C105B6BF-8407-4484-826A-A979E16B6B44@antoniou-consulting.com>
+In-Reply-To: <C105B6BF-8407-4484-826A-A979E16B6B44@antoniou-consulting.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Return -ENOMEM instead of 0 if kmemdup fails.
+On 10/31/2012 07:12 PM, Pantelis Antoniou wrote:
+> 
+> On Oct 31, 2012, at 8:07 PM, Lars-Peter Clausen wrote:
+> 
+>> On 10/31/2012 06:55 PM, Pantelis Antoniou wrote:
+>>> [...]
+>>>>> 	}
+>>>>>
+>>>>> 	indio_dev->channels = chan_array;
+>>>>> +	indio_dev->num_channels = channels;
+>>>>> +
+>>>>> +	size = (channels + 1) * sizeof(struct iio_map);
+>>>>> +	adc_dev->map = kzalloc(size, GFP_KERNEL);
+>>>>> +	if (adc_dev->map == NULL) {
+>>>>> +		kfree(chan_array);
+>>>>> +		return -ENOMEM;
+>>>>> +	}
+>>>>> +
+>>>>> +	for (i = 0; i < indio_dev->num_channels; i++) {
+>>>>> +		adc_dev->map[i].adc_channel_label = chan_array[i].datasheet_name;
+>>>>> +		adc_dev->map[i].consumer_dev_name = "any";
+>>>>> +		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
+>>>>> +	}
+>>>>> +	adc_dev->map[i].adc_channel_label = NULL;
+>>>>> +	adc_dev->map[i].consumer_dev_name = NULL;
+>>>>> +	adc_dev->map[i].consumer_channel = NULL;
+>>>>
+>>>> The map should be passed in via platform data or similar. All the fields of
+>>>> the map depend on the specific user, so you can't use a generic map. In fact
+>>>> if we were able to use a generic map, we wouldn't need a map at all.
+>>>
+>>> There's no platform data in the board I'm using. It's board-generic using
+>>> device tree only.
+>>
+>> That's the 'or similar' ;) Unfortunately we do not have a device tree
+>> binding for IIO yet. But I think we should aim at a interface similar like
+>> we have in other subsystems like the clk, regulator or dma framework.
+>>
+>> - Lars
+> 
+> So in the meantime no-one can use IIO ADC in any OF only platform.
 
-Signed-off-by: Axel Lin <axel.lin@ingics.com>
----
- drivers/iio/accel/hid-sensor-accel-3d.c       |    6 +++---
- drivers/iio/gyro/hid-sensor-gyro-3d.c         |    6 +++---
- drivers/iio/light/hid-sensor-als.c            |    5 ++---
- drivers/iio/magnetometer/hid-sensor-magn-3d.c |    6 +++---
- 4 files changed, 11 insertions(+), 12 deletions(-)
+Yes, nobody can use it until somebody implements it. So far nobody needed
+it, so that's why it hasn't been implemented yet. The whole in kernel
+consumer API for IIO is still very young and only a very few drivers support
+it yet.
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index 1b49931..2046208 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -319,10 +319,10 @@ static int __devinit hid_accel_3d_probe(struct platform_device *pdev)
- 		goto error_free_dev;
- 	}
- 
--	channels = kmemdup(accel_3d_channels,
--					sizeof(accel_3d_channels),
--					GFP_KERNEL);
-+	channels = kmemdup(accel_3d_channels, sizeof(accel_3d_channels),
-+			   GFP_KERNEL);
- 	if (!channels) {
-+		ret = -ENOMEM;
- 		dev_err(&pdev->dev, "failed to duplicate channels\n");
- 		goto error_free_dev;
- 	}
-diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-index 705dc49..c93dd59 100644
---- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-+++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-@@ -319,10 +319,10 @@ static int __devinit hid_gyro_3d_probe(struct platform_device *pdev)
- 		goto error_free_dev;
- 	}
- 
--	channels = kmemdup(gyro_3d_channels,
--					sizeof(gyro_3d_channels),
--					GFP_KERNEL);
-+	channels = kmemdup(gyro_3d_channels, sizeof(gyro_3d_channels),
-+			   GFP_KERNEL);
- 	if (!channels) {
-+		ret = -ENOMEM;
- 		dev_err(&pdev->dev, "failed to duplicate channels\n");
- 		goto error_free_dev;
- 	}
-diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-index 4c35ac7..ea59daa 100644
---- a/drivers/iio/light/hid-sensor-als.c
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -285,10 +285,9 @@ static int __devinit hid_als_probe(struct platform_device *pdev)
- 		goto error_free_dev;
- 	}
- 
--	channels = kmemdup(als_channels,
--					sizeof(als_channels),
--					GFP_KERNEL);
-+	channels = kmemdup(als_channels, sizeof(als_channels), GFP_KERNEL);
- 	if (!channels) {
-+		ret = -ENOMEM;
- 		dev_err(&pdev->dev, "failed to duplicate channels\n");
- 		goto error_free_dev;
- 	}
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index a02dc98..63d0a38 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -320,10 +320,10 @@ static int __devinit hid_magn_3d_probe(struct platform_device *pdev)
- 		goto error_free_dev;
- 	}
- 
--	channels = kmemdup(magn_3d_channels,
--					sizeof(magn_3d_channels),
--					GFP_KERNEL);
-+	channels = kmemdup(magn_3d_channels, sizeof(magn_3d_channels),
-+			   GFP_KERNEL);
- 	if (!channels) {
-+		ret = -ENOMEM;
- 		dev_err(&pdev->dev, "failed to duplicate channels\n");
- 		goto error_free_dev;
- 	}
--- 
-1.7.9.5
+> 
+> In the meantime, this is pretty reasonable IMO. This is only for a specific 
+> board with known channel mappings.
 
+Unfortunately it is not. It is adding a device specific hack to a generic
+driver and it is also completely misusing the API.
 
+> 
+> I'm not out to fix IIO, I'm out to fix a single board.
+> 
 
+It's not about fixing IIO, it's about extending IIO to be able to serve your
+needs. See, the issue is if everybody would work around the lack of DT
+bindings we'll never have DT bindings for IIO, so the right thing to do is
+to implement them instead of working around the lack of.
+
+- Lars
