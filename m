@@ -1,42 +1,102 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:33044 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S935637Ab2JaOKJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 31 Oct 2012 10:10:09 -0400
-Date: Wed, 31 Oct 2012 15:10:06 +0100 (CET)
+Return-Path: <pmeerw@pmeerw.net>
+Date: Wed, 31 Oct 2012 15:40:06 +0100 (CET)
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: Jonathan Cameron <jic23@kernel.org>
-cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/4] staging:iio: add a callback buffer for in kernel
- push interface
-In-Reply-To: <1351679431-7963-4-git-send-email-jic23@kernel.org>
-Message-ID: <alpine.DEB.2.01.1210311505340.10186@pmeerw.net>
-References: <1351679431-7963-1-git-send-email-jic23@kernel.org> <1351679431-7963-4-git-send-email-jic23@kernel.org>
+cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH 4/4] staging:iio: Proof of concept input driver.
+In-Reply-To: <1351679431-7963-5-git-send-email-jic23@kernel.org>
+Message-ID: <alpine.DEB.2.01.1210311513050.10186@pmeerw.net>
+References: <1351679431-7963-1-git-send-email-jic23@kernel.org> <1351679431-7963-5-git-send-email-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
 
-I'm sure you missed my spellchecking :)
+> +config IIO_ST_INPUT
+> +	tristate "Input driver that uses channels specified via iio maps"
+> +	depends on INPUT
+> +	depends on IIO_BUFFER
+> +	select IIO_BUFFER_CB
+> +	help
+> +	  Client driver for IIO via the push interfaces.  Used to provide
+> +	  and input interface for IIO devices that can feed a buffer on
 
-> +config IIO_BUFFER_CB
-> +       boolean "IIO callback buffer used for push in kernel interfaces"
-> +       help
-> +         Should be selected by any drivers that do inkernel push
-> +	 usage.  That is, those where the data is pushed to the consumer.
+an input interface
+
+> + * Copyright (c) 2011 Jonathan Cameron
+
+2012 is almost over
+
+> +		case 32:
+> +			switch (chan->scan_type.endianness) {
+> +			case IIO_CPU:
+> +				value = *(s32 *)(data);
+> +				break;
+> +			case IIO_BE:
+> +				value = be32_to_cpu(*(__be32 *)data);
+> +				break;
+> +			case IIO_LE:
+> +				value = le32_to_cpu(*(__le32  *)data);
+> +				break;
+
+here's an extra space between le32 and *
+
+> +static struct platform_driver iio_input_driver = {
+> +	.driver = {
+> +		.name = "iio_input_bridge",
+> +		.owner = THIS_MODULE,
+> +	},
+> +	.probe = iio_input_probe,
+> +	.remove = __devexit_p(iio_input_remove),
+> +};
 > +
+> +module_platform_driver(iio_input_driver);
+> +
+> +MODULE_AUTHOR("Jonathan Cameron <jic23@cam.ac.uk>");
+> +MODULE_DESCRIPTION("IIO input buffer driver");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/staging/iio/iio_input.h b/drivers/staging/iio/iio_input.h
+> new file mode 100644
+> index 0000000..cfd1d34
+> --- /dev/null
+> +++ b/drivers/staging/iio/iio_input.h
+> @@ -0,0 +1,23 @@
+> +/*
+> + * The industrial I/O input client driver
 
-is it 'in kernel' or 'inkernel'? I'd prefer in-kernel :)
-indentation seems inconsistent
+this thing is called 
+iio_input_bridge, 
+IIO input buffer_driver, 
+instrustrial I/O input client driver
+within a few lines of code -- now is the time to christen the driver :)
 
+> + *
+> + * Copyright (c) 2011 Jonathan Cameron
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + */
+> +
 > +/**
-> + * iio_channel_cb_get_channels() - get access to the underlying channels.
-> + * @cb_buff:		The callback buffers from whom we want the channel
-> + *			information.
+> + * iio_input_channel_data - description of the channel for input subsystem
+> + * @code:	Absolute axis.
+> + * @min:	Minimum value.
+> + * @max:	Maximum value.
+> + * @fuzz:	Used to filter noise from the event stream.
+> + * @flat:	Values within this value will be discarded by joydev
+> + *		and reported as 0 instead.
 
-buffers from which?
+@flat: 	Values within the range [-flat, flat] will be discarded ...
+
+this is at least what I would guess it does; input.h is equally vague
+
+> + */
+> +struct iio_input_channel_data {
+> +	unsigned int code;
+> +	int min, max, fuzz, flat;
+> +};
+> 
 
 -- 
 
