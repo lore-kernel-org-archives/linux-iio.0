@@ -1,39 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-125.synserver.de ([212.40.185.125]:1106 "EHLO
-	smtp-out-125.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752530Ab2JVLPY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Oct 2012 07:15:24 -0400
+Received: from smtp-out-183.synserver.de ([212.40.185.183]:1220 "EHLO
+	smtp-out-183.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933593Ab2JaSHn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2012 14:07:43 -0400
+Message-ID: <509168EF.9040000@metafoo.de>
+Date: Wed, 31 Oct 2012 19:07:43 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/3] iio: Do not accept multiple '.' in fixed point numbers
-Date: Mon, 22 Oct 2012 13:15:13 +0200
-Message-Id: <1350904515-696-1-git-send-email-lars@metafoo.de>
+MIME-Version: 1.0
+To: Pantelis Antoniou <panto@antoniou-consulting.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	"Patil, Rachna" <rachna@ti.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Koen Kooi <koen@dominion.thruhere.net>,
+	Matt Porter <mporter@ti.com>, Russ Dill <Russ.Dill@ti.com>,
+	linux-omap@vger.kernel.org
+Subject: Re: [PATCH 1/3] ti_adc: Update with IIO map interface
+References: <1351783496-11557-1-git-send-email-panto@antoniou-consulting.com> <50916563.8080704@metafoo.de> <F29A4A48-CDFA-4058-BED1-C09242B23326@antoniou-consulting.com>
+In-Reply-To: <F29A4A48-CDFA-4058-BED1-C09242B23326@antoniou-consulting.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently when parsing a fix-point number we silently skip any additional '.'
-found in the string.  E.g. '1.2.3.4' gets parsed as '1.234'. This patch
-disallows this and returns an error if more than one '.' is encountered.
+On 10/31/2012 06:55 PM, Pantelis Antoniou wrote:
+> [...]
+>>> 	}
+>>>
+>>> 	indio_dev->channels = chan_array;
+>>> +	indio_dev->num_channels = channels;
+>>> +
+>>> +	size = (channels + 1) * sizeof(struct iio_map);
+>>> +	adc_dev->map = kzalloc(size, GFP_KERNEL);
+>>> +	if (adc_dev->map == NULL) {
+>>> +		kfree(chan_array);
+>>> +		return -ENOMEM;
+>>> +	}
+>>> +
+>>> +	for (i = 0; i < indio_dev->num_channels; i++) {
+>>> +		adc_dev->map[i].adc_channel_label = chan_array[i].datasheet_name;
+>>> +		adc_dev->map[i].consumer_dev_name = "any";
+>>> +		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
+>>> +	}
+>>> +	adc_dev->map[i].adc_channel_label = NULL;
+>>> +	adc_dev->map[i].consumer_dev_name = NULL;
+>>> +	adc_dev->map[i].consumer_channel = NULL;
+>>
+>> The map should be passed in via platform data or similar. All the fields of
+>> the map depend on the specific user, so you can't use a generic map. In fact
+>> if we were able to use a generic map, we wouldn't need a map at all.
+> 
+> There's no platform data in the board I'm using. It's board-generic using
+> device tree only.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/industrialio-core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That's the 'or similar' ;) Unfortunately we do not have a device tree
+binding for IIO yet. But I think we should aim at a interface similar like
+we have in other subsystems like the clk, regulator or dma framework.
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 6eb24db..a2e9953 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -449,7 +449,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 				break;
- 			else
- 				return -EINVAL;
--		} else if (*buf == '.') {
-+		} else if (*buf == '.' && integer_part) {
- 			integer_part = false;
- 		} else {
- 			return -EINVAL;
--- 
-1.7.10.4
-
+- Lars
