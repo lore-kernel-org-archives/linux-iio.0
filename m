@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-181.synserver.de ([212.40.185.181]:1199 "EHLO
-	smtp-out-181.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760051Ab2J3S2l (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Oct 2012 14:28:41 -0400
-Message-ID: <50901C5A.8080502@metafoo.de>
-Date: Tue, 30 Oct 2012 19:28:42 +0100
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:40230 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1759798Ab2JaTKU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2012 15:10:20 -0400
+Message-ID: <509177B4.6010405@metafoo.de>
+Date: Wed, 31 Oct 2012 20:10:44 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
 To: Pantelis Antoniou <panto@antoniou-consulting.com>
@@ -14,209 +14,100 @@ CC: Jonathan Cameron <jic23@cam.ac.uk>,
 	Koen Kooi <koen@dominion.thruhere.net>,
 	Matt Porter <mporter@ti.com>, Russ Dill <Russ.Dill@ti.com>,
 	linux-omap@vger.kernel.org
-Subject: Re: [PATCH] ti_tscadc: Update with IIO map interface & deal with
- partial activation
-References: <1351698938-3839-1-git-send-email-panto@antoniou-consulting.com>
-In-Reply-To: <1351698938-3839-1-git-send-email-panto@antoniou-consulting.com>
+Subject: Re: [PATCH 1/3] ti_adc: Update with IIO map interface
+References: <1351783496-11557-1-git-send-email-panto@antoniou-consulting.com> <50916563.8080704@metafoo.de> <F29A4A48-CDFA-4058-BED1-C09242B23326@antoniou-consulting.com> <509168EF.9040000@metafoo.de> <C105B6BF-8407-4484-826A-A979E16B6B44@antoniou-consulting.com> <50916FA2.2000802@metafoo.de> <67596D26-26EC-483A-A83A-8A7F43BDE466@antoniou-consulting.com>
+In-Reply-To: <67596D26-26EC-483A-A83A-8A7F43BDE466@antoniou-consulting.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/31/2012 04:55 PM, Pantelis Antoniou wrote:
-> Add an IIO map interface that consumers can use.
-> Also make sure the mfd device doesn't activate a driver which
-> the configuration doesn't require.
-
-Same here, two completely different changes in the same patch.
-
+On 10/31/2012 07:43 PM, Pantelis Antoniou wrote:
 > 
-> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
-> ---
->  drivers/iio/adc/ti_am335x_adc.c      | 53 ++++++++++++++++++++++++++++++------
->  drivers/mfd/ti_am335x_tscadc.c       | 30 ++++++++++++++------
->  include/linux/mfd/ti_am335x_tscadc.h |  8 ++----
->  3 files changed, 68 insertions(+), 23 deletions(-)
+> On Oct 31, 2012, at 8:36 PM, Lars-Peter Clausen wrote:
 > 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index 02a43c8..d48fd79 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -20,8 +20,9 @@
->  #include <linux/slab.h>
->  #include <linux/interrupt.h>
->  #include <linux/platform_device.h>
-> -#include <linux/io.h>
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/machine.h>
-> +#include <linux/iio/driver.h>
->  
->  #include <linux/mfd/ti_am335x_tscadc.h>
->  #include <linux/platform_data/ti_am335x_adc.h>
-> @@ -29,6 +30,8 @@
->  struct tiadc_device {
->  	struct ti_tscadc_dev *mfd_tscadc;
->  	int channels;
-> +	char *buf;
+>> On 10/31/2012 07:12 PM, Pantelis Antoniou wrote:
+>>>
+>>> On Oct 31, 2012, at 8:07 PM, Lars-Peter Clausen wrote:
+>>>
+>>>> On 10/31/2012 06:55 PM, Pantelis Antoniou wrote:
+>>>>> [...]
+>>>>>>> 	}
+>>>>>>>
+>>>>>>> 	indio_dev->channels = chan_array;
+>>>>>>> +	indio_dev->num_channels = channels;
+>>>>>>> +
+>>>>>>> +	size = (channels + 1) * sizeof(struct iio_map);
+>>>>>>> +	adc_dev->map = kzalloc(size, GFP_KERNEL);
+>>>>>>> +	if (adc_dev->map == NULL) {
+>>>>>>> +		kfree(chan_array);
+>>>>>>> +		return -ENOMEM;
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>> +	for (i = 0; i < indio_dev->num_channels; i++) {
+>>>>>>> +		adc_dev->map[i].adc_channel_label = chan_array[i].datasheet_name;
+>>>>>>> +		adc_dev->map[i].consumer_dev_name = "any";
+>>>>>>> +		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
+>>>>>>> +	}
+>>>>>>> +	adc_dev->map[i].adc_channel_label = NULL;
+>>>>>>> +	adc_dev->map[i].consumer_dev_name = NULL;
+>>>>>>> +	adc_dev->map[i].consumer_channel = NULL;
+>>>>>>
+>>>>>> The map should be passed in via platform data or similar. All the fields of
+>>>>>> the map depend on the specific user, so you can't use a generic map. In fact
+>>>>>> if we were able to use a generic map, we wouldn't need a map at all.
+>>>>>
+>>>>> There's no platform data in the board I'm using. It's board-generic using
+>>>>> device tree only.
+>>>>
+>>>> That's the 'or similar' ;) Unfortunately we do not have a device tree
+>>>> binding for IIO yet. But I think we should aim at a interface similar like
+>>>> we have in other subsystems like the clk, regulator or dma framework.
+>>>>
+>>>> - Lars
+>>>
+>>> So in the meantime no-one can use IIO ADC in any OF only platform.
+>>
+>> Yes, nobody can use it until somebody implements it. So far nobody needed
+>> it, so that's why it hasn't been implemented yet. The whole in kernel
+>> consumer API for IIO is still very young and only a very few drivers support
+>> it yet.
+>>
+>>>
+>>> In the meantime, this is pretty reasonable IMO. This is only for a specific 
+>>> board with known channel mappings.
+>>
+>> Unfortunately it is not. It is adding a device specific hack to a generic
+>> driver and it is also completely misusing the API.
+>>
+>>>
+>>> I'm not out to fix IIO, I'm out to fix a single board.
+>>>
+>>
+>> It's not about fixing IIO, it's about extending IIO to be able to serve your
+>> needs. See, the issue is if everybody would work around the lack of DT
+>> bindings we'll never have DT bindings for IIO, so the right thing to do is
+>> to implement them instead of working around the lack of.
+>>
+>> - Lars
+> 
+> OK, OK,
+> 
 
-As far as I can see 'buf' is not used otherwise in this patch.
+ok :)
 
-> +	struct iio_map *map;
->  };
->  
->  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
-> @@ -75,25 +78,57 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
->  static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
->  {
->  	struct iio_chan_spec *chan_array;
-> -	int i;
-> -
-> -	indio_dev->num_channels = channels;
-> -	chan_array = kcalloc(indio_dev->num_channels,
-> -			sizeof(struct iio_chan_spec), GFP_KERNEL);
-> +	struct iio_chan_spec *chan;
-> +	char *s;
-> +	int i, len, size, ret;
->  
-> +	size = indio_dev->num_channels * (sizeof(struct iio_chan_spec) + 6);
-> +	chan_array = kzalloc(size, GFP_KERNEL);
->  	if (chan_array == NULL)
->  		return -ENOMEM;
->  
-> -	for (i = 0; i < (indio_dev->num_channels); i++) {
-> -		struct iio_chan_spec *chan = chan_array + i;
-> +	/* buffer space is after the array */
-> +	s = (char *)(chan_array + indio_dev->num_channels);
-> +	chan = chan_array;
-> +	for (i = 0; i < indio_dev->num_channels; i++, chan++, s += len + 1) {
-> +
-> +		len = sprintf(s, "AIN%d", i);
-> +
->  		chan->type = IIO_VOLTAGE;
->  		chan->indexed = 1;
->  		chan->channel = i;
-> -		chan->info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT;
-> +		chan->datasheet_name = s;
+> I see the point. It's just that I'm under the gun for more pressing matters ATM.
+> Can at least get a small write-up about how the bindings should look like?
+> 
+> There's absolutely nothing, not even a hint of one out there in the intertubes,
+> on how the channel mapping should look like.
 
-> +		chan->scan_type.sign = 'u';
-> +		chan->scan_type.realbits = 12;
-> +		chan->scan_type.storagebits = 32;
-> +		chan->scan_type.shift = 0;
+Again, that's because nobody probably has given this much though yet. As I said
+the in-kernel consumer framework is still young and so far only a tiny fraction
+of the drivers support it. If you want to I can try to give this some though
+and come up with a small proof of concept, but this would have to wait until
+next week, since I have a few other things on my desk as well.
 
-This part is another separate thing done by this patch and is not even in
-the patch description.
+I think a good start might be to take a closer look at the clk dt bindings
+(Documentation/devicetree/bindings/clock/clock-bindings.txt).
 
->  	}
->  
->  	indio_dev->channels = chan_array;
->  
-> +	size = (indio_dev->num_channels + 1) * sizeof(struct iio_map);
-> +	adc_dev->map = kzalloc(size, GFP_KERNEL);
-> +	if (adc_dev->map == NULL) {
-> +		kfree(chan_array);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	for (i = 0; i < indio_dev->num_channels; i++) {
-> +		adc_dev->map[i].adc_channel_label = chan_array[i].datasheet_name;
-> +		adc_dev->map[i].consumer_dev_name = "any";
-> +		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
-> +	}
-> +	adc_dev->map[i].adc_channel_label = NULL;
-> +	adc_dev->map[i].consumer_dev_name = NULL;
-> +	adc_dev->map[i].consumer_channel = NULL;
-> +
-> +	ret = iio_map_array_register(indio_dev, adc_dev->map);
-> +	if (ret != 0) {
-> +		kfree(adc_dev->map);
-> +		kfree(chan_array);
-> +		return -ENOMEM;
-> +	}
-
-The consumer data is supposed to be passed in by platform data, as it will
-depend on the actual consumer. E.g. the consumer_dev_name has to match the
-name of device which requests the channel. Same goes for the consumer
-channel attribute, this is consumer specific as well.
-
-> +
->  	return indio_dev->num_channels;
->  }
->  
-> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-> index e947dd8..cbb8b70c 100644
-> --- a/drivers/mfd/ti_am335x_tscadc.c
-> +++ b/drivers/mfd/ti_am335x_tscadc.c
-> @@ -176,26 +176,38 @@ static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
->  	ctrl |= CNTRLREG_TSCSSENB;
->  	tscadc_writel(tscadc, REG_CTRL, ctrl);
->  
-> +	tscadc->used_cells = 0;
-> +	tscadc->tsc_cell = -1;
-> +	tscadc->adc_cell = -1;
-> +
->  	/* TSC Cell */
-> -	cell = &tscadc->cells[TSC_CELL];
-> -	cell->name = "tsc";
-> -	cell->platform_data = tscadc;
-> -	cell->pdata_size = sizeof(*tscadc);
-> +	if (tsc_wires > 0) {
-> +		tscadc->tsc_cell = tscadc->used_cells;
-> +		cell = &tscadc->cells[tscadc->used_cells++];
-> +		cell->name = "tsc";
-> +		cell->platform_data = tscadc;
-> +		cell->pdata_size = sizeof(*tscadc);
-> +	}
->  
->  	/* ADC Cell */
-> -	cell = &tscadc->cells[ADC_CELL];
-> -	cell->name = "tiadc";
-> -	cell->platform_data = tscadc;
-> -	cell->pdata_size = sizeof(*tscadc);
-> +	if (adc_channels > 0) {
-> +		tscadc->adc_cell = tscadc->used_cells;
-> +		cell = &tscadc->cells[tscadc->used_cells++];
-> +		cell->name = "tiadc";
-> +		cell->platform_data = tscadc;
-> +		cell->pdata_size = sizeof(*tscadc);
-> +	}
->  
->  	err = mfd_add_devices(&pdev->dev, pdev->id, tscadc->cells,
-> -			TSCADC_CELLS, NULL, 0, NULL);
-> +			tscadc->used_cells, NULL, 0, NULL);
->  	if (err < 0)
->  		goto err_disable_clk;
->  
->  	device_init_wakeup(&pdev->dev, true);
->  	platform_set_drvdata(pdev, tscadc);
->  
-> +	dev_info(&pdev->dev, "Initialized OK.\n");
-> +
->  	return 0;
->  
->  err_disable_clk:
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> index 9624fea..50a245f 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -128,11 +128,6 @@
->  
->  #define TSCADC_CELLS		2
->  
-> -enum tscadc_cells {
-> -	TSC_CELL,
-> -	ADC_CELL,
-> -};
-> -
->  struct mfd_tscadc_board {
->  	struct tsc_data *tsc_init;
->  	struct adc_data *adc_init;
-> @@ -143,6 +138,9 @@ struct ti_tscadc_dev {
->  	struct regmap *regmap_tscadc;
->  	void __iomem *tscadc_base;
->  	int irq;
-> +	int used_cells;	/* 0-2 */
-> +	int tsc_cell;	/* -1 if not used */
-> +	int adc_cell;	/* -1 if not used */
->  	struct mfd_cell cells[TSCADC_CELLS];
->  
->  	/* tsc device */
-
+- Lars
