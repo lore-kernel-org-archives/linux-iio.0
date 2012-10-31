@@ -1,116 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qa0-f74.google.com ([209.85.216.74]:44482 "EHLO
-	mail-qa0-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755887Ab2JXXj0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Oct 2012 19:39:26 -0400
-Received: by mail-qa0-f74.google.com with SMTP id a16so284087qae.1
-        for <linux-iio@vger.kernel.org>; Wed, 24 Oct 2012 16:39:26 -0700 (PDT)
-From: Bryan Freed <bfreed@chromium.org>
-To: linux-kernel@vger.kernel.org
-Cc: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
-	gregkh@linuxfoundation.org, lars@metafoo.de,
-	Bryan Freed <bfreed@chromium.org>
-Subject: [PATCH] iio: isl29018: Support suspend and resume.
-Date: Wed, 24 Oct 2012 16:39:15 -0700
-Message-Id: <1351121955-25788-1-git-send-email-bfreed@chromium.org>
+Received: from li42-95.members.linode.com ([209.123.162.95]:40208 "EHLO
+	li42-95.members.linode.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S933431Ab2JaSMo convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 31 Oct 2012 14:12:44 -0400
+Subject: Re: [PATCH 1/3] ti_adc: Update with IIO map interface
+Mime-Version: 1.0 (Apple Message framework v1085)
+Content-Type: text/plain; charset=us-ascii
+From: Pantelis Antoniou <panto@antoniou-consulting.com>
+In-Reply-To: <509168EF.9040000@metafoo.de>
+Date: Wed, 31 Oct 2012 20:12:40 +0200
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	"Patil, Rachna" <rachna@ti.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Koen Kooi <koen@dominion.thruhere.net>,
+	Matt Porter <mporter@ti.com>, Russ Dill <Russ.Dill@ti.com>,
+	linux-omap@vger.kernel.org
+Message-Id: <C105B6BF-8407-4484-826A-A979E16B6B44@antoniou-consulting.com>
+References: <1351783496-11557-1-git-send-email-panto@antoniou-consulting.com> <50916563.8080704@metafoo.de> <F29A4A48-CDFA-4058-BED1-C09242B23326@antoniou-consulting.com> <509168EF.9040000@metafoo.de>
+To: Lars-Peter Clausen <lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The driver leaves the device in power-down state anyway,
-so there is nothing to do on suspend.
-On resume, we just have to make sure the range and ADC
-values are updated in the device since it may have been
-powered down in suspend.
 
-Signed-off-by: Bryan Freed <bfreed@chromium.org>
----
- drivers/staging/iio/light/isl29018.c |   45 ++++++++++++++++++++++++++++++++++
- 1 files changed, 45 insertions(+), 0 deletions(-)
+On Oct 31, 2012, at 8:07 PM, Lars-Peter Clausen wrote:
 
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 6ee5567..3b03f6f 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -67,6 +67,7 @@ struct isl29018_chip {
- 	unsigned int		range;
- 	unsigned int		adc_bit;
- 	int			prox_scheme;
-+	bool			suspended;
- };
- 
- static int isl29018_set_range(struct isl29018_chip *chip, unsigned long range,
-@@ -368,6 +369,10 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
- 	struct isl29018_chip *chip = iio_priv(indio_dev);
- 
- 	mutex_lock(&chip->lock);
-+	if (chip->suspended) {
-+		mutex_unlock(&chip->lock);
-+		return -EBUSY;
-+	}
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 	case IIO_CHAN_INFO_PROCESSED:
-@@ -561,6 +566,7 @@ static int __devinit isl29018_probe(struct i2c_client *client,
- 	chip->lux_scale = 1;
- 	chip->range = 1000;
- 	chip->adc_bit = 16;
-+	chip->suspended = false;
- 
- 	chip->regmap = devm_regmap_init_i2c(client, &isl29018_regmap_config);
- 	if (IS_ERR(chip->regmap)) {
-@@ -603,6 +609,44 @@ static int __devexit isl29018_remove(struct i2c_client *client)
- 	return 0;
- }
- 
-+#ifdef CONFIG_PM_SLEEP
-+static int isl29018_suspend(struct device *dev)
-+{
-+	struct isl29018_chip *chip = iio_priv(dev_get_drvdata(dev));
-+
-+	mutex_lock(&chip->lock);
-+
-+	/* Since this driver uses only polling commands, we are by default in
-+	 * auto shutdown (ie, power-down) mode.
-+	 * So we do not have much to do here.
-+	 */
-+	chip->suspended = true;
-+
-+	mutex_unlock(&chip->lock);
-+	return 0;
-+}
-+
-+static int isl29018_resume(struct device *dev)
-+{
-+	struct isl29018_chip *chip = iio_priv(dev_get_drvdata(dev));
-+	int err;
-+
-+	mutex_lock(&chip->lock);
-+
-+	err = isl29018_chip_init(chip);
-+	if (!err)
-+		chip->suspended = false;
-+
-+	mutex_unlock(&chip->lock);
-+	return err;
-+}
-+
-+static SIMPLE_DEV_PM_OPS(isl29018_pm_ops, isl29018_suspend, isl29018_resume);
-+#define ISL29018_PM_OPS (&isl29018_pm_ops)
-+#else
-+#define ISL29018_PM_OPS NULL
-+#endif
-+
- static const struct i2c_device_id isl29018_id[] = {
- 	{"isl29018", 0},
- 	{}
-@@ -620,6 +664,7 @@ static struct i2c_driver isl29018_driver = {
- 	.class	= I2C_CLASS_HWMON,
- 	.driver	 = {
- 			.name = "isl29018",
-+			.pm = ISL29018_PM_OPS,
- 			.owner = THIS_MODULE,
- 			.of_match_table = isl29018_of_match,
- 		    },
--- 
-1.7.7.3
+> On 10/31/2012 06:55 PM, Pantelis Antoniou wrote:
+>> [...]
+>>>> 	}
+>>>> 
+>>>> 	indio_dev->channels = chan_array;
+>>>> +	indio_dev->num_channels = channels;
+>>>> +
+>>>> +	size = (channels + 1) * sizeof(struct iio_map);
+>>>> +	adc_dev->map = kzalloc(size, GFP_KERNEL);
+>>>> +	if (adc_dev->map == NULL) {
+>>>> +		kfree(chan_array);
+>>>> +		return -ENOMEM;
+>>>> +	}
+>>>> +
+>>>> +	for (i = 0; i < indio_dev->num_channels; i++) {
+>>>> +		adc_dev->map[i].adc_channel_label = chan_array[i].datasheet_name;
+>>>> +		adc_dev->map[i].consumer_dev_name = "any";
+>>>> +		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
+>>>> +	}
+>>>> +	adc_dev->map[i].adc_channel_label = NULL;
+>>>> +	adc_dev->map[i].consumer_dev_name = NULL;
+>>>> +	adc_dev->map[i].consumer_channel = NULL;
+>>> 
+>>> The map should be passed in via platform data or similar. All the fields of
+>>> the map depend on the specific user, so you can't use a generic map. In fact
+>>> if we were able to use a generic map, we wouldn't need a map at all.
+>> 
+>> There's no platform data in the board I'm using. It's board-generic using
+>> device tree only.
+> 
+> That's the 'or similar' ;) Unfortunately we do not have a device tree
+> binding for IIO yet. But I think we should aim at a interface similar like
+> we have in other subsystems like the clk, regulator or dma framework.
+> 
+> - Lars
 
+So in the meantime no-one can use IIO ADC in any OF only platform.
+
+In the meantime, this is pretty reasonable IMO. This is only for a specific 
+board with known channel mappings.
+
+I'm not out to fix IIO, I'm out to fix a single board.
+
+Regards
+
+-- Pantelis 
