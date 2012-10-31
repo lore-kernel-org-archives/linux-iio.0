@@ -1,79 +1,350 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48702 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48796 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756752Ab2JaK6K (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2012 06:58:10 -0400
-Message-ID: <50910440.2060800@kernel.org>
-Date: Wed, 31 Oct 2012 10:58:08 +0000
+	with ESMTP id S933580Ab2JaLGk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2012 07:06:40 -0400
+Message-ID: <5091063C.3060302@kernel.org>
+Date: Wed, 31 Oct 2012 11:06:36 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Axel Lin <axel.lin@ingics.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH] Revert "iio: at91_adc: Use devm_kcalloc to allocate arrays"
-References: <1351499156.14725.1.camel@phoenix>
-In-Reply-To: <1351499156.14725.1.camel@phoenix>
-Content-Type: text/plain; charset=UTF-8
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH 1/4] staging:iio:adis16400: Fix adis16334 sampling frequency
+ control
+References: <1351592787-2934-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1351592787-2934-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/29/2012 08:25 AM, Axel Lin wrote:
-> This reverts commit 45259859492812c8b700ae1d157be01a8d2babfe.
-> This fixes build error because devm_kcalloc does not exist in current tree.
+On 10/30/2012 10:26 AM, Lars-Peter Clausen wrote:
+> Setting the sampling frequency for the adis16334 differs from the other devices.
+> This patch introduces two new callback functions to the adis16400 chip_info
+> struct which are used to specify how to read and write the current sample rate.
+> The patch also introduces the proper implementations for these callbacks for the
+> adis16334.
 > 
-> Signed-off-by: Axel Lin <axel.lin@ingics.com>
-Applied to togreg branch of
+> Related to this is that the adis16334 has no slow mode and so we do not limit
+> the SPI clock rate to 300kHz during initialization. The patch adds a new flag
+> for devices which do have a slow mode.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+All 4 added to fixes-togreg branch of iio.git
+They are a little more invasive that I'd normally like, but they
+are fixing real problems that could cause the new driver not to work
+(other than the duplicate entry removal and I could not be bothered
+to separate that one out)
 
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
 
-Thanks Axel and oops on my part as well - should probably
-have caught this one.
-
-Jonathan
 > ---
->  drivers/iio/adc/at91_adc.c |   16 ++++++++++------
->  1 file changed, 10 insertions(+), 6 deletions(-)
+>  drivers/staging/iio/imu/adis16400.h      |  11 ++-
+>  drivers/staging/iio/imu/adis16400_core.c | 122 +++++++++++++++++++++++--------
+>  2 files changed, 101 insertions(+), 32 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> index a917672..2e2c9a8 100644
-> --- a/drivers/iio/adc/at91_adc.c
-> +++ b/drivers/iio/adc/at91_adc.c
-> @@ -123,8 +123,10 @@ static int at91_adc_channel_init(struct iio_dev *idev)
->  	idev->num_channels = bitmap_weight(&st->channels_mask,
->  					   st->num_channels) + 1;
+> diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
+> index 77c601d..07a6aea 100644
+> --- a/drivers/staging/iio/imu/adis16400.h
+> +++ b/drivers/staging/iio/imu/adis16400.h
+> @@ -123,6 +123,9 @@
+>  /* SLP_CNT */
+>  #define ADIS16400_SLP_CNT_POWER_OFF	(1<<8)
 >  
-> -	chan_array = devm_kcalloc(&idev->dev, idev->num_channels + 1,
-> -					sizeof(*chan_array), GFP_KERNEL);
-> +	chan_array = devm_kzalloc(&idev->dev,
-> +				  ((idev->num_channels + 1) *
-> +					sizeof(struct iio_chan_spec)),
-> +				  GFP_KERNEL);
+> +#define ADIS16334_RATE_DIV_SHIFT 8
+> +#define ADIS16334_RATE_INT_CLK BIT(0)
+> +
+>  #define ADIS16400_MAX_TX 24
+>  #define ADIS16400_MAX_RX 24
 >  
->  	if (!chan_array)
->  		return -ENOMEM;
-> @@ -268,8 +270,9 @@ static int at91_adc_trigger_init(struct iio_dev *idev)
->  	struct at91_adc_state *st = iio_priv(idev);
->  	int i, ret;
+> @@ -130,8 +133,10 @@
+>  #define ADIS16400_SPI_BURST	(u32)(1000 * 1000)
+>  #define ADIS16400_SPI_FAST	(u32)(2000 * 1000)
 >  
-> -	st->trig = devm_kcalloc(&idev->dev, st->trigger_number,
-> -				sizeof(*st->trig), GFP_KERNEL);
-> +	st->trig = devm_kzalloc(&idev->dev,
-> +				st->trigger_number * sizeof(st->trig),
-> +				GFP_KERNEL);
+> -#define ADIS16400_HAS_PROD_ID 1
+> -#define ADIS16400_NO_BURST 2
+> +#define ADIS16400_HAS_PROD_ID		BIT(0)
+> +#define ADIS16400_NO_BURST		BIT(1)
+> +#define ADIS16400_HAS_SLOW_MODE		BIT(2)
+> +
+>  struct adis16400_chip_info {
+>  	const struct iio_chan_spec *channels;
+>  	const int num_channels;
+> @@ -142,6 +147,8 @@ struct adis16400_chip_info {
+>  	int temp_scale_nano;
+>  	int temp_offset;
+>  	unsigned long default_scan_mask;
+> +	int (*set_freq)(struct iio_dev *indio_dev, unsigned int freq);
+> +	int (*get_freq)(struct iio_dev *indio_dev);
+>  };
 >  
->  	if (st->trig == NULL) {
->  		ret = -ENOMEM;
-> @@ -451,8 +454,9 @@ static int at91_adc_probe_dt(struct at91_adc_state *st,
->  	st->registers->trigger_register = prop;
+>  /**
+> diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+> index 3144a7b..4d03bdc 100644
+> --- a/drivers/staging/iio/imu/adis16400_core.c
+> +++ b/drivers/staging/iio/imu/adis16400_core.c
+> @@ -161,10 +161,39 @@ error_ret:
+>  	return ret;
+>  }
 >  
->  	st->trigger_number = of_get_child_count(node);
-> -	st->trigger_list = devm_kcalloc(&idev->dev, st->trigger_number,
-> -					sizeof(*st->trigger_list), GFP_KERNEL);
-> +	st->trigger_list = devm_kzalloc(&idev->dev, st->trigger_number *
-> +					sizeof(struct at91_adc_trigger),
-> +					GFP_KERNEL);
->  	if (!st->trigger_list) {
->  		dev_err(&idev->dev, "Could not allocate trigger list memory.\n");
->  		ret = -ENOMEM;
+> -static int adis16400_get_freq(struct iio_dev *indio_dev)
+> +static int adis16334_get_freq(struct iio_dev *indio_dev)
+>  {
+> +	int ret;
+>  	u16 t;
+> +
+> +	ret = adis16400_spi_read_reg_16(indio_dev, ADIS16400_SMPL_PRD, &t);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	t >>= ADIS16334_RATE_DIV_SHIFT;
+> +
+> +	return (8192 >> t) / 10;
+> +}
+> +
+> +static int adis16334_set_freq(struct iio_dev *indio_dev, unsigned int freq)
+> +{
+> +	unsigned int t;
+> +
+> +	t = ilog2(8192 / (freq * 10));
+> +
+> +	if (t > 0x31)
+> +		t = 0x31;
+> +
+> +	t <<= ADIS16334_RATE_DIV_SHIFT;
+> +	t |= ADIS16334_RATE_INT_CLK;
+> +
+> +	return adis16400_spi_write_reg_16(indio_dev, ADIS16400_SMPL_PRD, t);
+> +}
+> +
+> +static int adis16400_get_freq(struct iio_dev *indio_dev)
+> +{
+>  	int sps, ret;
+> +	u16 t;
+>  
+>  	ret = adis16400_spi_read_reg_16(indio_dev, ADIS16400_SMPL_PRD, &t);
+>  	if (ret < 0)
+> @@ -175,13 +204,33 @@ static int adis16400_get_freq(struct iio_dev *indio_dev)
+>  	return sps;
+>  }
+>  
+> +static int adis16400_set_freq(struct iio_dev *indio_dev, unsigned int freq)
+> +{
+> +	struct adis16400_state *st = iio_priv(indio_dev);
+> +	unsigned int t;
+> +
+> +	t = 1638 / freq;
+> +	if (t > 0)
+> +		t--;
+> +	t &= ADIS16400_SMPL_PRD_DIV_MASK;
+> +	if ((t & ADIS16400_SMPL_PRD_DIV_MASK) >= 0x0A)
+> +		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
+> +	else
+> +		st->us->max_speed_hz = ADIS16400_SPI_FAST;
+> +
+> +	return adis16400_spi_write_reg_8(indio_dev,
+> +			ADIS16400_SMPL_PRD, t);
+> +}
+> +
+>  static ssize_t adis16400_read_frequency(struct device *dev,
+>  		struct device_attribute *attr,
+>  		char *buf)
+>  {
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct adis16400_state *st = iio_priv(indio_dev);
+>  	int ret, len = 0;
+> -	ret = adis16400_get_freq(indio_dev);
+> +
+> +	ret = st->variant->get_freq(indio_dev);
+>  	if (ret < 0)
+>  		return ret;
+>  	len = sprintf(buf, "%d SPS\n", ret);
+> @@ -229,7 +278,6 @@ static ssize_t adis16400_write_frequency(struct device *dev,
+>  	struct adis16400_state *st = iio_priv(indio_dev);
+>  	long val;
+>  	int ret;
+> -	u8 t;
+>  
+>  	ret = strict_strtol(buf, 10, &val);
+>  	if (ret)
+> @@ -239,18 +287,7 @@ static ssize_t adis16400_write_frequency(struct device *dev,
+>  
+>  	mutex_lock(&indio_dev->mlock);
+>  
+> -	t = (1638 / val);
+> -	if (t > 0)
+> -		t--;
+> -	t &= ADIS16400_SMPL_PRD_DIV_MASK;
+> -	if ((t & ADIS16400_SMPL_PRD_DIV_MASK) >= 0x0A)
+> -		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
+> -	else
+> -		st->us->max_speed_hz = ADIS16400_SPI_FAST;
+> -
+> -	ret = adis16400_spi_write_reg_8(indio_dev,
+> -			ADIS16400_SMPL_PRD,
+> -			t);
+> +	st->variant->set_freq(indio_dev, val);
+>  
+>  	/* Also update the filter */
+>  	mutex_unlock(&indio_dev->mlock);
+> @@ -380,8 +417,11 @@ static int adis16400_initial_setup(struct iio_dev *indio_dev)
+>  	u16 prod_id, smp_prd;
+>  	struct adis16400_state *st = iio_priv(indio_dev);
+>  
+> -	/* use low spi speed for init */
+> -	st->us->max_speed_hz = ADIS16400_SPI_SLOW;
+> +	/* use low spi speed for init if the device has a slow mode */
+> +	if (st->variant->flags & ADIS16400_HAS_SLOW_MODE)
+> +		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
+> +	else
+> +		st->us->max_speed_hz = ADIS16400_SPI_FAST;
+>  	st->us->mode = SPI_MODE_3;
+>  	spi_setup(st->us);
+>  
+> @@ -422,11 +462,16 @@ static int adis16400_initial_setup(struct iio_dev *indio_dev)
+>  		       st->us->chip_select, st->us->irq);
+>  	}
+>  	/* use high spi speed if possible */
+> -	ret = adis16400_spi_read_reg_16(indio_dev,
+> -					ADIS16400_SMPL_PRD, &smp_prd);
+> -	if (!ret && (smp_prd & ADIS16400_SMPL_PRD_DIV_MASK) < 0x0A) {
+> -		st->us->max_speed_hz = ADIS16400_SPI_SLOW;
+> -		spi_setup(st->us);
+> +	if (st->variant->flags & ADIS16400_HAS_SLOW_MODE) {
+> +		ret = adis16400_spi_read_reg_16(indio_dev,
+> +						ADIS16400_SMPL_PRD, &smp_prd);
+> +		if (ret)
+> +			goto err_ret;
+> +
+> +		if ((smp_prd & ADIS16400_SMPL_PRD_DIV_MASK) < 0x0A) {
+> +			st->us->max_speed_hz = ADIS16400_SPI_FAST;
+> +			spi_setup(st->us);
+> +		}
+>  	}
+>  
+>  err_ret:
+> @@ -503,7 +548,7 @@ static int adis16400_write_raw(struct iio_dev *indio_dev,
+>  		mutex_lock(&indio_dev->mlock);
+>  		st->filt_int = val;
+>  		/* Work out update to current value */
+> -		sps = adis16400_get_freq(indio_dev);
+> +		sps = st->variant->get_freq(indio_dev);
+>  		if (sps < 0) {
+>  			mutex_unlock(&indio_dev->mlock);
+>  			return sps;
+> @@ -601,7 +646,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+>  			mutex_unlock(&indio_dev->mlock);
+>  			return ret;
+>  		}
+> -		ret = adis16400_get_freq(indio_dev);
+> +		val16 = st->variant->get_freq(indio_dev);
+>  		if (ret > 0)
+>  			*val = ret/adis16400_3db_divisors[val16 & 0x03];
+>  		*val2 = 0;
+> @@ -1060,6 +1105,7 @@ static struct adis16400_chip_info adis16400_chips[] = {
+>  	[ADIS16300] = {
+>  		.channels = adis16300_channels,
+>  		.num_channels = ARRAY_SIZE(adis16300_channels),
+> +		.flags = ADIS16400_HAS_SLOW_MODE,
+>  		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+>  		.accel_scale_micro = 5884,
+>  		.temp_scale_nano = 140000000, /* 0.14 C */
+> @@ -1070,6 +1116,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+>  		(1 << ADIS16400_SCAN_TEMP) | (1 << ADIS16400_SCAN_ADC_0) |
+>  		(1 << ADIS16300_SCAN_INCLI_X) | (1 << ADIS16300_SCAN_INCLI_Y) |
+>  		(1 << 14),
+> +		.set_freq = adis16400_set_freq,
+> +		.get_freq = adis16400_get_freq,
+>  	},
+>  	[ADIS16334] = {
+>  		.channels = adis16334_channels,
+> @@ -1082,6 +1130,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+>  		(1 << ADIS16400_SCAN_GYRO_Y) | (1 << ADIS16400_SCAN_GYRO_Z) |
+>  		(1 << ADIS16400_SCAN_ACC_X) | (1 << ADIS16400_SCAN_ACC_Y) |
+>  		(1 << ADIS16400_SCAN_ACC_Z),
+> +		.set_freq = adis16334_set_freq,
+> +		.get_freq = adis16334_get_freq,
+>  	},
+>  	[ADIS16350] = {
+>  		.channels = adis16350_channels,
+> @@ -1091,62 +1141,74 @@ static struct adis16400_chip_info adis16400_chips[] = {
+>  		.temp_scale_nano = 145300000, /* 0.1453 C */
+>  		.temp_offset = 25000000 / 145300, /* 25 C = 0x00 */
+>  		.default_scan_mask = 0x7FF,
+> -		.flags = ADIS16400_NO_BURST,
+> +		.flags = ADIS16400_NO_BURST | ADIS16400_HAS_SLOW_MODE,
+> +		.set_freq = adis16400_set_freq,
+> +		.get_freq = adis16400_get_freq,
+>  	},
+>  	[ADIS16360] = {
+>  		.channels = adis16350_channels,
+>  		.num_channels = ARRAY_SIZE(adis16350_channels),
+> -		.flags = ADIS16400_HAS_PROD_ID,
+> +		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
+>  		.product_id = 0x3FE8,
+>  		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+>  		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
+>  		.temp_scale_nano = 136000000, /* 0.136 C */
+>  		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+>  		.default_scan_mask = 0x7FF,
+> +		.set_freq = adis16400_set_freq,
+> +		.get_freq = adis16400_get_freq,
+>  	},
+>  	[ADIS16362] = {
+>  		.channels = adis16350_channels,
+>  		.num_channels = ARRAY_SIZE(adis16350_channels),
+> -		.flags = ADIS16400_HAS_PROD_ID,
+> +		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
+>  		.product_id = 0x3FEA,
+>  		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+>  		.accel_scale_micro = IIO_G_TO_M_S_2(333), /* 0.333 mg */
+>  		.temp_scale_nano = 136000000, /* 0.136 C */
+>  		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+>  		.default_scan_mask = 0x7FF,
+> +		.set_freq = adis16400_set_freq,
+> +		.get_freq = adis16400_get_freq,
+>  	},
+>  	[ADIS16364] = {
+>  		.channels = adis16350_channels,
+>  		.num_channels = ARRAY_SIZE(adis16350_channels),
+> -		.flags = ADIS16400_HAS_PROD_ID,
+> +		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
+>  		.product_id = 0x3FEC,
+>  		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+>  		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
+>  		.temp_scale_nano = 136000000, /* 0.136 C */
+>  		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+>  		.default_scan_mask = 0x7FF,
+> +		.set_freq = adis16400_set_freq,
+> +		.get_freq = adis16400_get_freq,
+>  	},
+>  	[ADIS16365] = {
+>  		.channels = adis16350_channels,
+>  		.num_channels = ARRAY_SIZE(adis16350_channels),
+> -		.flags = ADIS16400_HAS_PROD_ID,
+> +		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
+>  		.product_id = 0x3FED,
+>  		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+>  		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
+>  		.temp_scale_nano = 136000000, /* 0.136 C */
+>  		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+>  		.default_scan_mask = 0x7FF,
+> +		.set_freq = adis16400_set_freq,
+> +		.get_freq = adis16400_get_freq,
+>  	},
+>  	[ADIS16400] = {
+>  		.channels = adis16400_channels,
+>  		.num_channels = ARRAY_SIZE(adis16400_channels),
+> -		.flags = ADIS16400_HAS_PROD_ID,
+> +		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
+>  		.product_id = 0x4015,
+>  		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+>  		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
+>  		.default_scan_mask = 0xFFF,
+>  		.temp_scale_nano = 140000000, /* 0.14 C */
+>  		.temp_offset = 25000000 / 140000, /* 25 C = 0x00 */
+> +		.set_freq = adis16400_set_freq,
+> +		.get_freq = adis16400_get_freq,
+>  	}
+>  };
+>  
 > 
