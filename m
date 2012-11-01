@@ -1,92 +1,135 @@
-Return-Path: <axel.lin@ingics.com>
-MIME-Version: 1.0
-In-Reply-To: <508E3833.50003@metafoo.de>
-References: <1351425686.12461.1.camel@phoenix>
-	<508E3833.50003@metafoo.de>
-Date: Mon, 29 Oct 2012 16:09:08 +0800
-Message-ID: <CAFRkauCY_Sw_j7Yr4saTG5jmcc1gB34C8o1maRDU=o7qoVZ1pQ@mail.gmail.com>
-Subject: Re: iio: at91_adc.c build error
-From: Axel Lin <axel.lin@ingics.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from li42-95.members.linode.com ([209.123.162.95]:51761 "EHLO
+	li42-95.members.linode.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752318Ab2JaRbx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2012 13:31:53 -0400
+From: Pantelis Antoniou <panto@antoniou-consulting.com>
 To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Content-Type: multipart/alternative; boundary=0016368e1e1808a5ba04cd2e2f58
-List-ID: <linux-iio@vger.kernel.org>
+Cc: Pantelis Antoniou <panto@antoniou-consulting.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	"Patil, Rachna" <rachna@ti.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Koen Kooi <koen@dominion.thruhere.net>,
+	Matt Porter <mporter@ti.com>, Russ Dill <Russ.Dill@ti.com>,
+	linux-omap@vger.kernel.org
+Subject: [PATCH 1/3] ti_adc: Update with IIO map interface
+Date: Thu,  1 Nov 2012 17:24:54 +0200
+Message-Id: <1351783496-11557-1-git-send-email-panto@antoniou-consulting.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---0016368e1e1808a5ba04cd2e2f58
-Content-Type: text/plain; charset=ISO-8859-1
+Add an IIO map interface that consumers can use.
 
-2012/10/29 Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
+---
+ drivers/iio/adc/ti_am335x_adc.c | 60 +++++++++++++++++++++++++++++++++--------
+ 1 file changed, 49 insertions(+), 11 deletions(-)
 
-> On 10/28/2012 01:01 PM, Axel Lin wrote:
-> > hi Lars-Peter,
-> >
-> > Seems there is no devm_kcalloc API available at this moment (in
-> linux-next tree).
-> >
-> > I got below build error:
-> > drivers/iio/adc/at91_adc.c: In function 'at91_adc_channel_init':
-> > drivers/iio/adc/at91_adc.c:126: error: implicit declaration of function
-> 'devm_kcalloc'
-> > drivers/iio/adc/at91_adc.c:127: warning: assignment makes pointer from
-> integer without a cast
-> > drivers/iio/adc/at91_adc.c: In function 'at91_adc_trigger_init':
-> > drivers/iio/adc/at91_adc.c:272: warning: assignment makes pointer from
-> integer without a cast
-> > drivers/iio/adc/at91_adc.c: In function 'at91_adc_probe_dt':
-> > drivers/iio/adc/at91_adc.c:455: warning: assignment makes pointer from
-> integer without a cast
-> > make[3]: *** [drivers/iio/adc/at91_adc.o] Error 1
-> > make[2]: *** [drivers/iio/adc] Error 2
-> > make[1]: *** [drivers/iio] Error 2
-> > make: *** [drivers] Error 2
->
-> Ok, now I feel stupid...
->
-> Do you want to sent a revert or should I do it?
->
-Ok. I'll send a revert patch right away.
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 02a43c8..8595a90 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -20,8 +20,9 @@
+ #include <linux/slab.h>
+ #include <linux/interrupt.h>
+ #include <linux/platform_device.h>
+-#include <linux/io.h>
+ #include <linux/iio/iio.h>
++#include <linux/iio/machine.h>
++#include <linux/iio/driver.h>
+ 
+ #include <linux/mfd/ti_am335x_tscadc.h>
+ #include <linux/platform_data/ti_am335x_adc.h>
+@@ -29,6 +30,8 @@
+ struct tiadc_device {
+ 	struct ti_tscadc_dev *mfd_tscadc;
+ 	int channels;
++	char *buf;
++	struct iio_map *map;
+ };
+ 
+ static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
+@@ -72,27 +75,62 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+ 	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
+ }
+ 
+-static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
++static int tiadc_channel_init(struct iio_dev *indio_dev,
++		struct tiadc_device *adc_dev)
+ {
+ 	struct iio_chan_spec *chan_array;
+-	int i;
+-
+-	indio_dev->num_channels = channels;
+-	chan_array = kcalloc(indio_dev->num_channels,
+-			sizeof(struct iio_chan_spec), GFP_KERNEL);
++	struct iio_chan_spec *chan;
++	char *s;
++	int i, len, size, ret;
++	int channels = adc_dev->channels;
+ 
++	size = channels * (sizeof(struct iio_chan_spec) + 6);
++	chan_array = kzalloc(size, GFP_KERNEL);
+ 	if (chan_array == NULL)
+ 		return -ENOMEM;
+ 
+-	for (i = 0; i < (indio_dev->num_channels); i++) {
+-		struct iio_chan_spec *chan = chan_array + i;
++	/* buffer space is after the array */
++	s = (char *)(chan_array + channels);
++	chan = chan_array;
++	for (i = 0; i < channels; i++, chan++, s += len + 1) {
++
++		len = sprintf(s, "AIN%d", i);
++
+ 		chan->type = IIO_VOLTAGE;
+ 		chan->indexed = 1;
+ 		chan->channel = i;
+-		chan->info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT;
++		chan->datasheet_name = s;
++		chan->scan_type.sign = 'u';
++		chan->scan_type.realbits = 12;
++		chan->scan_type.storagebits = 32;
++		chan->scan_type.shift = 0;
+ 	}
+ 
+ 	indio_dev->channels = chan_array;
++	indio_dev->num_channels = channels;
++
++	size = (channels + 1) * sizeof(struct iio_map);
++	adc_dev->map = kzalloc(size, GFP_KERNEL);
++	if (adc_dev->map == NULL) {
++		kfree(chan_array);
++		return -ENOMEM;
++	}
++
++	for (i = 0; i < indio_dev->num_channels; i++) {
++		adc_dev->map[i].adc_channel_label = chan_array[i].datasheet_name;
++		adc_dev->map[i].consumer_dev_name = "any";
++		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
++	}
++	adc_dev->map[i].adc_channel_label = NULL;
++	adc_dev->map[i].consumer_dev_name = NULL;
++	adc_dev->map[i].consumer_channel = NULL;
++
++	ret = iio_map_array_register(indio_dev, adc_dev->map);
++	if (ret != 0) {
++		kfree(adc_dev->map);
++		kfree(chan_array);
++		return -ENOMEM;
++	}
+ 
+ 	return indio_dev->num_channels;
+ }
+@@ -168,7 +206,7 @@ static int __devinit tiadc_probe(struct platform_device *pdev)
+ 
+ 	tiadc_step_config(adc_dev);
+ 
+-	err = tiadc_channel_init(indio_dev, adc_dev->channels);
++	err = tiadc_channel_init(indio_dev, adc_dev);
+ 	if (err < 0)
+ 		goto err_free_device;
+ 
+-- 
+1.7.12
 
-Axel
-
---0016368e1e1808a5ba04cd2e2f58
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<br><br><div class=3D"gmail_quote">2012/10/29 Lars-Peter Clausen <span dir=
-=3D"ltr">&lt;<a href=3D"mailto:lars@metafoo.de" target=3D"_blank">lars@meta=
-foo.de</a>&gt;</span><br><blockquote class=3D"gmail_quote" style=3D"margin:=
-0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<div class=3D"HOEnZb"><div class=3D"h5">On 10/28/2012 01:01 PM, Axel Lin wr=
-ote:<br>
-&gt; hi Lars-Peter,<br>
-&gt;<br>
-&gt; Seems there is no devm_kcalloc API available at this moment (in linux-=
-next tree).<br>
-&gt;<br>
-&gt; I got below build error:<br>
-&gt; drivers/iio/adc/at91_adc.c: In function &#39;at91_adc_channel_init&#39=
-;:<br>
-&gt; drivers/iio/adc/at91_adc.c:126: error: implicit declaration of functio=
-n &#39;devm_kcalloc&#39;<br>
-&gt; drivers/iio/adc/at91_adc.c:127: warning: assignment makes pointer from=
- integer without a cast<br>
-&gt; drivers/iio/adc/at91_adc.c: In function &#39;at91_adc_trigger_init&#39=
-;:<br>
-&gt; drivers/iio/adc/at91_adc.c:272: warning: assignment makes pointer from=
- integer without a cast<br>
-&gt; drivers/iio/adc/at91_adc.c: In function &#39;at91_adc_probe_dt&#39;:<b=
-r>
-&gt; drivers/iio/adc/at91_adc.c:455: warning: assignment makes pointer from=
- integer without a cast<br>
-&gt; make[3]: *** [drivers/iio/adc/at91_adc.o] Error 1<br>
-&gt; make[2]: *** [drivers/iio/adc] Error 2<br>
-&gt; make[1]: *** [drivers/iio] Error 2<br>
-&gt; make: *** [drivers] Error 2<br>
-<br>
-</div></div>Ok, now I feel stupid...<br>
-<br>
-Do you want to sent a revert or should I do it?<br></blockquote><div>Ok. I&=
-#39;ll send a revert patch right away.<br>=A0<br>Axel<br></div></div><br>
-
---0016368e1e1808a5ba04cd2e2f58--
