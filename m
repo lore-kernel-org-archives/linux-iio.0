@@ -1,238 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-222.synserver.de ([212.40.185.222]:1064 "EHLO
-	smtp-out-222.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755228Ab2KUQ1Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Nov 2012 11:27:25 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 07/11] staging:iio:ad7793: Move register definitions from header to source
-Date: Wed, 21 Nov 2012 17:27:12 +0100
-Message-Id: <1353515236-21843-7-git-send-email-lars@metafoo.de>
-In-Reply-To: <1353515236-21843-1-git-send-email-lars@metafoo.de>
-References: <1353515236-21843-1-git-send-email-lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45790 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755483Ab2KBKoj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Nov 2012 06:44:39 -0400
+Message-ID: <5093A416.1080409@kernel.org>
+Date: Fri, 02 Nov 2012 10:44:38 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for v3.7-rc1 set 2
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The only user of the register definitions is the driver itself, so move them
-from the header file to the driver source file. The header file now only
-contains the platform data struct.
+The following changes since commit 98f9c3c137cea016c57c9fd60b3caf88eb34e4cd:
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7793.c | 93 ++++++++++++++++++++++++++++++++++++++++
- drivers/staging/iio/adc/ad7793.h | 93 ----------------------------------------
- 2 files changed, 93 insertions(+), 93 deletions(-)
+  iio: Remove duplicates for light/ in Kconfig and Makefile (2012-10-19 19:44:06 +0100)
 
-diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index 1aa8e88..cbe8a02 100644
---- a/drivers/staging/iio/adc/ad7793.c
-+++ b/drivers/staging/iio/adc/ad7793.c
-@@ -28,6 +28,99 @@
- 
- #include "ad7793.h"
- 
-+/* Registers */
-+#define AD7793_REG_COMM		0 /* Communications Register (WO, 8-bit) */
-+#define AD7793_REG_STAT		0 /* Status Register	     (RO, 8-bit) */
-+#define AD7793_REG_MODE		1 /* Mode Register	     (RW, 16-bit */
-+#define AD7793_REG_CONF		2 /* Configuration Register  (RW, 16-bit) */
-+#define AD7793_REG_DATA		3 /* Data Register	     (RO, 16-/24-bit) */
-+#define AD7793_REG_ID		4 /* ID Register	     (RO, 8-bit) */
-+#define AD7793_REG_IO		5 /* IO Register	     (RO, 8-bit) */
-+#define AD7793_REG_OFFSET	6 /* Offset Register	     (RW, 16-bit
-+				   * (AD7792)/24-bit (AD7793)) */
-+#define AD7793_REG_FULLSALE	7 /* Full-Scale Register
-+				   * (RW, 16-bit (AD7792)/24-bit (AD7793)) */
-+
-+/* Communications Register Bit Designations (AD7793_REG_COMM) */
-+#define AD7793_COMM_WEN		(1 << 7) /* Write Enable */
-+#define AD7793_COMM_WRITE	(0 << 6) /* Write Operation */
-+#define AD7793_COMM_READ	(1 << 6) /* Read Operation */
-+#define AD7793_COMM_ADDR(x)	(((x) & 0x7) << 3) /* Register Address */
-+#define AD7793_COMM_CREAD	(1 << 2) /* Continuous Read of Data Register */
-+
-+/* Status Register Bit Designations (AD7793_REG_STAT) */
-+#define AD7793_STAT_RDY		(1 << 7) /* Ready */
-+#define AD7793_STAT_ERR		(1 << 6) /* Error (Overrange, Underrange) */
-+#define AD7793_STAT_CH3		(1 << 2) /* Channel 3 */
-+#define AD7793_STAT_CH2		(1 << 1) /* Channel 2 */
-+#define AD7793_STAT_CH1		(1 << 0) /* Channel 1 */
-+
-+/* Mode Register Bit Designations (AD7793_REG_MODE) */
-+#define AD7793_MODE_SEL(x)	(((x) & 0x7) << 13) /* Operation Mode Select */
-+#define AD7793_MODE_SEL_MASK	(0x7 << 13) /* Operation Mode Select mask */
-+#define AD7793_MODE_CLKSRC(x)	(((x) & 0x3) << 6) /* ADC Clock Source Select */
-+#define AD7793_MODE_RATE(x)	((x) & 0xF) /* Filter Update Rate Select */
-+
-+#define AD7793_MODE_CONT		0 /* Continuous Conversion Mode */
-+#define AD7793_MODE_SINGLE		1 /* Single Conversion Mode */
-+#define AD7793_MODE_IDLE		2 /* Idle Mode */
-+#define AD7793_MODE_PWRDN		3 /* Power-Down Mode */
-+#define AD7793_MODE_CAL_INT_ZERO	4 /* Internal Zero-Scale Calibration */
-+#define AD7793_MODE_CAL_INT_FULL	5 /* Internal Full-Scale Calibration */
-+#define AD7793_MODE_CAL_SYS_ZERO	6 /* System Zero-Scale Calibration */
-+#define AD7793_MODE_CAL_SYS_FULL	7 /* System Full-Scale Calibration */
-+
-+#define AD7793_CLK_INT		0 /* Internal 64 kHz Clock not
-+				   * available at the CLK pin */
-+#define AD7793_CLK_INT_CO	1 /* Internal 64 kHz Clock available
-+				   * at the CLK pin */
-+#define AD7793_CLK_EXT		2 /* External 64 kHz Clock */
-+#define AD7793_CLK_EXT_DIV2	3 /* External Clock divided by 2 */
-+
-+/* Configuration Register Bit Designations (AD7793_REG_CONF) */
-+#define AD7793_CONF_VBIAS(x)	(((x) & 0x3) << 14) /* Bias Voltage
-+						     * Generator Enable */
-+#define AD7793_CONF_BO_EN	(1 << 13) /* Burnout Current Enable */
-+#define AD7793_CONF_UNIPOLAR	(1 << 12) /* Unipolar/Bipolar Enable */
-+#define AD7793_CONF_BOOST	(1 << 11) /* Boost Enable */
-+#define AD7793_CONF_GAIN(x)	(((x) & 0x7) << 8) /* Gain Select */
-+#define AD7793_CONF_REFSEL(x)	((x) << 6) /* INT/EXT Reference Select */
-+#define AD7793_CONF_BUF		(1 << 4) /* Buffered Mode Enable */
-+#define AD7793_CONF_CHAN(x)	((x) & 0xf) /* Channel select */
-+#define AD7793_CONF_CHAN_MASK	0xf /* Channel select mask */
-+
-+#define AD7793_CH_AIN1P_AIN1M	0 /* AIN1(+) - AIN1(-) */
-+#define AD7793_CH_AIN2P_AIN2M	1 /* AIN2(+) - AIN2(-) */
-+#define AD7793_CH_AIN3P_AIN3M	2 /* AIN3(+) - AIN3(-) */
-+#define AD7793_CH_AIN1M_AIN1M	3 /* AIN1(-) - AIN1(-) */
-+#define AD7793_CH_TEMP		6 /* Temp Sensor */
-+#define AD7793_CH_AVDD_MONITOR	7 /* AVDD Monitor */
-+
-+#define AD7795_CH_AIN4P_AIN4M	4 /* AIN4(+) - AIN4(-) */
-+#define AD7795_CH_AIN5P_AIN5M	5 /* AIN5(+) - AIN5(-) */
-+#define AD7795_CH_AIN6P_AIN6M	6 /* AIN6(+) - AIN6(-) */
-+#define AD7795_CH_AIN1M_AIN1M	8 /* AIN1(-) - AIN1(-) */
-+
-+/* ID Register Bit Designations (AD7793_REG_ID) */
-+#define AD7792_ID		0xA
-+#define AD7793_ID		0xB
-+#define AD7795_ID		0xF
-+#define AD7793_ID_MASK		0xF
-+
-+/* IO (Excitation Current Sources) Register Bit Designations (AD7793_REG_IO) */
-+#define AD7793_IO_IEXC1_IOUT1_IEXC2_IOUT2	0 /* IEXC1 connect to IOUT1,
-+						   * IEXC2 connect to IOUT2 */
-+#define AD7793_IO_IEXC1_IOUT2_IEXC2_IOUT1	1 /* IEXC1 connect to IOUT2,
-+						   * IEXC2 connect to IOUT1 */
-+#define AD7793_IO_IEXC1_IEXC2_IOUT1		2 /* Both current sources
-+						   * IEXC1,2 connect to IOUT1 */
-+#define AD7793_IO_IEXC1_IEXC2_IOUT2		3 /* Both current sources
-+						   * IEXC1,2 connect to IOUT2 */
-+
-+#define AD7793_IO_IXCEN_10uA	(1 << 0) /* Excitation Current 10uA */
-+#define AD7793_IO_IXCEN_210uA	(2 << 0) /* Excitation Current 210uA */
-+#define AD7793_IO_IXCEN_1mA	(3 << 0) /* Excitation Current 1mA */
-+
- /* NOTE:
-  * The AD7792/AD7793 features a dual use data out ready DOUT/RDY output.
-  * In order to avoid contentions on the SPI bus, it's therefore necessary
-diff --git a/drivers/staging/iio/adc/ad7793.h b/drivers/staging/iio/adc/ad7793.h
-index 7f6acac..0e455de 100644
---- a/drivers/staging/iio/adc/ad7793.h
-+++ b/drivers/staging/iio/adc/ad7793.h
-@@ -12,99 +12,6 @@
-  * TODO: struct ad7793_platform_data needs to go into include/linux/iio
-  */
- 
--/* Registers */
--#define AD7793_REG_COMM		0 /* Communications Register (WO, 8-bit) */
--#define AD7793_REG_STAT		0 /* Status Register	     (RO, 8-bit) */
--#define AD7793_REG_MODE		1 /* Mode Register	     (RW, 16-bit */
--#define AD7793_REG_CONF		2 /* Configuration Register  (RW, 16-bit) */
--#define AD7793_REG_DATA		3 /* Data Register	     (RO, 16-/24-bit) */
--#define AD7793_REG_ID		4 /* ID Register	     (RO, 8-bit) */
--#define AD7793_REG_IO		5 /* IO Register	     (RO, 8-bit) */
--#define AD7793_REG_OFFSET	6 /* Offset Register	     (RW, 16-bit
--				   * (AD7792)/24-bit (AD7793)) */
--#define AD7793_REG_FULLSALE	7 /* Full-Scale Register
--				   * (RW, 16-bit (AD7792)/24-bit (AD7793)) */
--
--/* Communications Register Bit Designations (AD7793_REG_COMM) */
--#define AD7793_COMM_WEN		(1 << 7) /* Write Enable */
--#define AD7793_COMM_WRITE	(0 << 6) /* Write Operation */
--#define AD7793_COMM_READ	(1 << 6) /* Read Operation */
--#define AD7793_COMM_ADDR(x)	(((x) & 0x7) << 3) /* Register Address */
--#define AD7793_COMM_CREAD	(1 << 2) /* Continuous Read of Data Register */
--
--/* Status Register Bit Designations (AD7793_REG_STAT) */
--#define AD7793_STAT_RDY		(1 << 7) /* Ready */
--#define AD7793_STAT_ERR		(1 << 6) /* Error (Overrange, Underrange) */
--#define AD7793_STAT_CH3		(1 << 2) /* Channel 3 */
--#define AD7793_STAT_CH2		(1 << 1) /* Channel 2 */
--#define AD7793_STAT_CH1		(1 << 0) /* Channel 1 */
--
--/* Mode Register Bit Designations (AD7793_REG_MODE) */
--#define AD7793_MODE_SEL(x)	(((x) & 0x7) << 13) /* Operation Mode Select */
--#define AD7793_MODE_SEL_MASK	(0x7 << 13) /* Operation Mode Select mask */
--#define AD7793_MODE_CLKSRC(x)	(((x) & 0x3) << 6) /* ADC Clock Source Select */
--#define AD7793_MODE_RATE(x)	((x) & 0xF) /* Filter Update Rate Select */
--
--#define AD7793_MODE_CONT		0 /* Continuous Conversion Mode */
--#define AD7793_MODE_SINGLE		1 /* Single Conversion Mode */
--#define AD7793_MODE_IDLE		2 /* Idle Mode */
--#define AD7793_MODE_PWRDN		3 /* Power-Down Mode */
--#define AD7793_MODE_CAL_INT_ZERO	4 /* Internal Zero-Scale Calibration */
--#define AD7793_MODE_CAL_INT_FULL	5 /* Internal Full-Scale Calibration */
--#define AD7793_MODE_CAL_SYS_ZERO	6 /* System Zero-Scale Calibration */
--#define AD7793_MODE_CAL_SYS_FULL	7 /* System Full-Scale Calibration */
--
--#define AD7793_CLK_INT		0 /* Internal 64 kHz Clock not
--				   * available at the CLK pin */
--#define AD7793_CLK_INT_CO	1 /* Internal 64 kHz Clock available
--				   * at the CLK pin */
--#define AD7793_CLK_EXT		2 /* External 64 kHz Clock */
--#define AD7793_CLK_EXT_DIV2	3 /* External Clock divided by 2 */
--
--/* Configuration Register Bit Designations (AD7793_REG_CONF) */
--#define AD7793_CONF_VBIAS(x)	(((x) & 0x3) << 14) /* Bias Voltage
--						     * Generator Enable */
--#define AD7793_CONF_BO_EN	(1 << 13) /* Burnout Current Enable */
--#define AD7793_CONF_UNIPOLAR	(1 << 12) /* Unipolar/Bipolar Enable */
--#define AD7793_CONF_BOOST	(1 << 11) /* Boost Enable */
--#define AD7793_CONF_GAIN(x)	(((x) & 0x7) << 8) /* Gain Select */
--#define AD7793_CONF_REFSEL(x)	((x) << 6) /* INT/EXT Reference Select */
--#define AD7793_CONF_BUF		(1 << 4) /* Buffered Mode Enable */
--#define AD7793_CONF_CHAN(x)	((x) & 0xf) /* Channel select */
--#define AD7793_CONF_CHAN_MASK	0xf /* Channel select mask */
--
--#define AD7793_CH_AIN1P_AIN1M	0 /* AIN1(+) - AIN1(-) */
--#define AD7793_CH_AIN2P_AIN2M	1 /* AIN2(+) - AIN2(-) */
--#define AD7793_CH_AIN3P_AIN3M	2 /* AIN3(+) - AIN3(-) */
--#define AD7793_CH_AIN1M_AIN1M	3 /* AIN1(-) - AIN1(-) */
--#define AD7793_CH_TEMP		6 /* Temp Sensor */
--#define AD7793_CH_AVDD_MONITOR	7 /* AVDD Monitor */
--
--#define AD7795_CH_AIN4P_AIN4M	4 /* AIN4(+) - AIN4(-) */
--#define AD7795_CH_AIN5P_AIN5M	5 /* AIN5(+) - AIN5(-) */
--#define AD7795_CH_AIN6P_AIN6M	6 /* AIN6(+) - AIN6(-) */
--#define AD7795_CH_AIN1M_AIN1M	8 /* AIN1(-) - AIN1(-) */
--
--/* ID Register Bit Designations (AD7793_REG_ID) */
--#define AD7792_ID		0xA
--#define AD7793_ID		0xB
--#define AD7795_ID		0xF
--#define AD7793_ID_MASK		0xF
--
--/* IO (Excitation Current Sources) Register Bit Designations (AD7793_REG_IO) */
--#define AD7793_IO_IEXC1_IOUT1_IEXC2_IOUT2	0 /* IEXC1 connect to IOUT1,
--						   * IEXC2 connect to IOUT2 */
--#define AD7793_IO_IEXC1_IOUT2_IEXC2_IOUT1	1 /* IEXC1 connect to IOUT2,
--						   * IEXC2 connect to IOUT1 */
--#define AD7793_IO_IEXC1_IEXC2_IOUT1		2 /* Both current sources
--						   * IEXC1,2 connect to IOUT1 */
--#define AD7793_IO_IEXC1_IEXC2_IOUT2		3 /* Both current sources
--						   * IEXC1,2 connect to IOUT2 */
--
--#define AD7793_IO_IXCEN_10uA	(1 << 0) /* Excitation Current 10uA */
--#define AD7793_IO_IXCEN_210uA	(2 << 0) /* Excitation Current 210uA */
--#define AD7793_IO_IXCEN_1mA	(3 << 0) /* Excitation Current 1mA */
--
- /**
-  * enum ad7793_clock_source - AD7793 clock source selection
-  * @AD7793_CLK_SRC_INT: Internal 64 kHz clock, not available at the CLK pin.
--- 
-1.8.0
+are available in the git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.7b
+
+for you to fetch changes up to 7243b785c43d9aedc7a584dab81bb3f26989d6a1:
+
+  iio: hid-sensor: Use __devexit annotation for remove() (2012-11-02 09:57:57 +0000)
+
+----------------------------------------------------------------
+Second round of fixes for IIO in 3.7 cycle, applies to 3.7-rc1.
+
+A mixed bag of fixes mainly for drivers but with one core
+double free fix.
+
+* A couple of little fixlets for the hid-sensors drivers.
+* Incorrect return value in adt7410
+* Fix up support for the adis16334 in the adis16400 driver.
+  Turned out there were some bits and bobs that need to be
+  handled different for this part.  This seems like a large
+  patch series but this is mostly because an additional chip
+  specific callback is needed to handle the variations.
+* Double free in industrialio-event.c
+* Ancient bug in tsl2563 in which the interrupt disable code
+  was inverted (i.e. it enable the interrupts)
+
+Jonathan
+
+----------------------------------------------------------------
+Axel Lin (2):
+      iio: hid-sensor: Return proper error if kmemdup fails
+      iio: hid-sensor: Use __devexit annotation for remove()
+
+Derek Basehore (1):
+      tsl2563: fixed bug with disabling interrupts
+
+Julia Lawall (1):
+      drivers/iio/industrialio-event.c: eliminate possible double free
+
+Kirill A. Shutemov (1):
+      iio: hid-sensors: convert HID_SENSOR_ENUM_BASE_QUIRKS to bool
+
+Lars-Peter Clausen (5):
+      staging:iio:adt7410: Fix adt7410_set_mode return value
+      staging:iio:adis16400: Fix adis16334 sampling frequency control
+      staging:iio:adis16400: Fix product id check
+      staging:iio:adis16400: Remove now duplicated chip_table entry
+      staging:iio:adis16400: Set the PROD_ID flag for the adis16334
+
+ drivers/iio/accel/hid-sensor-accel-3d.c            |  10 +-
+ drivers/iio/common/hid-sensors/Kconfig             |   2 +-
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    |   6 +-
+ drivers/iio/gyro/hid-sensor-gyro-3d.c              |  10 +-
+ drivers/iio/industrialio-event.c                   |   7 +-
+ drivers/iio/light/hid-sensor-als.c                 |   9 +-
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c      |  10 +-
+ drivers/staging/iio/adc/adt7410.c                  |   2 +-
+ drivers/staging/iio/imu/adis16400.h                |  12 +-
+ drivers/staging/iio/imu/adis16400_core.c           | 145 ++++++++++++++-------
+ drivers/staging/iio/light/tsl2563.c                |   4 +-
+ 11 files changed, 132 insertions(+), 85 deletions(-)
