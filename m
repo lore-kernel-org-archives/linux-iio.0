@@ -1,80 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45790 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46177 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755483Ab2KBKoj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Nov 2012 06:44:39 -0400
-Message-ID: <5093A416.1080409@kernel.org>
-Date: Fri, 02 Nov 2012 10:44:38 +0000
+	with ESMTP id S1755635Ab2KBLGi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Nov 2012 07:06:38 -0400
+Message-ID: <5093A93D.70302@kernel.org>
+Date: Fri, 02 Nov 2012 11:06:37 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO fixes for v3.7-rc1 set 2
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Dan Carpenter <dan.carpenter@oracle.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	kernel-janitors@vger.kernel.org
+Subject: Re: [patch] iio:dac:ad5449: unlock on error path
+References: <20121024071307.GC2536@elgon.mountain> <5087A55C.6010202@metafoo.de>
+In-Reply-To: <5087A55C.6010202@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit 98f9c3c137cea016c57c9fd60b3caf88eb34e4cd:
+On 10/24/2012 09:22 AM, Lars-Peter Clausen wrote:
+> On 10/24/2012 09:13 AM, Dan Carpenter wrote:
+>> There is an unlock missing on this error path.
+>>
+>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> Thanks,
+> 
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Thanks applied to togreg branch of
+git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
 
-  iio: Remove duplicates for light/ in Kconfig and Makefile (2012-10-19 19:44:06 +0100)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.7b
-
-for you to fetch changes up to 7243b785c43d9aedc7a584dab81bb3f26989d6a1:
-
-  iio: hid-sensor: Use __devexit annotation for remove() (2012-11-02 09:57:57 +0000)
-
-----------------------------------------------------------------
-Second round of fixes for IIO in 3.7 cycle, applies to 3.7-rc1.
-
-A mixed bag of fixes mainly for drivers but with one core
-double free fix.
-
-* A couple of little fixlets for the hid-sensors drivers.
-* Incorrect return value in adt7410
-* Fix up support for the adis16334 in the adis16400 driver.
-  Turned out there were some bits and bobs that need to be
-  handled different for this part.  This seems like a large
-  patch series but this is mostly because an additional chip
-  specific callback is needed to handle the variations.
-* Double free in industrialio-event.c
-* Ancient bug in tsl2563 in which the interrupt disable code
-  was inverted (i.e. it enable the interrupts)
-
-Jonathan
-
-----------------------------------------------------------------
-Axel Lin (2):
-      iio: hid-sensor: Return proper error if kmemdup fails
-      iio: hid-sensor: Use __devexit annotation for remove()
-
-Derek Basehore (1):
-      tsl2563: fixed bug with disabling interrupts
-
-Julia Lawall (1):
-      drivers/iio/industrialio-event.c: eliminate possible double free
-
-Kirill A. Shutemov (1):
-      iio: hid-sensors: convert HID_SENSOR_ENUM_BASE_QUIRKS to bool
-
-Lars-Peter Clausen (5):
-      staging:iio:adt7410: Fix adt7410_set_mode return value
-      staging:iio:adis16400: Fix adis16334 sampling frequency control
-      staging:iio:adis16400: Fix product id check
-      staging:iio:adis16400: Remove now duplicated chip_table entry
-      staging:iio:adis16400: Set the PROD_ID flag for the adis16334
-
- drivers/iio/accel/hid-sensor-accel-3d.c            |  10 +-
- drivers/iio/common/hid-sensors/Kconfig             |   2 +-
- .../iio/common/hid-sensors/hid-sensor-trigger.c    |   6 +-
- drivers/iio/gyro/hid-sensor-gyro-3d.c              |  10 +-
- drivers/iio/industrialio-event.c                   |   7 +-
- drivers/iio/light/hid-sensor-als.c                 |   9 +-
- drivers/iio/magnetometer/hid-sensor-magn-3d.c      |  10 +-
- drivers/staging/iio/adc/adt7410.c                  |   2 +-
- drivers/staging/iio/imu/adis16400.h                |  12 +-
- drivers/staging/iio/imu/adis16400_core.c           | 145 ++++++++++++++-------
- drivers/staging/iio/light/tsl2563.c                |   4 +-
- 11 files changed, 132 insertions(+), 85 deletions(-)
+> 
+>> ---
+>> Only needed in linux-next.
+>>
+>> diff --git a/drivers/iio/dac/ad5449.c b/drivers/iio/dac/ad5449.c
+>> index 5b43030..0ee6f8e 100644
+>> --- a/drivers/iio/dac/ad5449.c
+>> +++ b/drivers/iio/dac/ad5449.c
+>> @@ -124,12 +124,13 @@ static int ad5449_read(struct iio_dev *indio_dev, unsigned int addr,
+>>  
+>>  	ret = spi_sync(st->spi, &msg);
+>>  	if (ret < 0)
+>> -		return ret;
+>> +		goto out_unlock;
+>>  
+>>  	*val = be16_to_cpu(st->data[1]);
+>> -	mutex_unlock(&indio_dev->mlock);
+>>  
+>> -	return 0;
+>> +out_unlock:
+>> +	mutex_unlock(&indio_dev->mlock);
+>> +	return ret;
+>>  }
+>>  
+>>  static int ad5449_read_raw(struct iio_dev *indio_dev,
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
