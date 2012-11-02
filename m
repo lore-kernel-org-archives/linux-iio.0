@@ -1,90 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-222.synserver.de ([212.40.185.222]:1101 "EHLO
-	smtp-out-222.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755239Ab2KUQ1Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Nov 2012 11:27:25 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 08/11] staging:iio:ad7793: Implement stricter id checking
-Date: Wed, 21 Nov 2012 17:27:13 +0100
-Message-Id: <1353515236-21843-8-git-send-email-lars@metafoo.de>
-In-Reply-To: <1353515236-21843-1-git-send-email-lars@metafoo.de>
-References: <1353515236-21843-1-git-send-email-lars@metafoo.de>
+Received: from mail-da0-f46.google.com ([209.85.210.46]:56247 "EHLO
+	mail-da0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759320Ab2KBQ3w (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Nov 2012 12:29:52 -0400
+Received: by mail-da0-f46.google.com with SMTP id n41so1714835dak.19
+        for <linux-iio@vger.kernel.org>; Fri, 02 Nov 2012 09:29:52 -0700 (PDT)
+Date: Fri, 2 Nov 2012 09:29:53 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO fixes for v3.7-rc1 set 2
+Message-ID: <20121102162953.GB13600@kroah.com>
+References: <5093A416.1080409@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5093A416.1080409@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Instead of checking whether the id of the current device matches the id of any
-device supported by the driver, check whether it matches the id of the device
-which the driver was instantiated for. This makes sure that the driver is not
-accidentally instantiated for the wrong device.
+On Fri, Nov 02, 2012 at 10:44:38AM +0000, Jonathan Cameron wrote:
+> The following changes since commit 98f9c3c137cea016c57c9fd60b3caf88eb34e4cd:
+> 
+>   iio: Remove duplicates for light/ in Kconfig and Makefile (2012-10-19 19:44:06 +0100)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.7b
+> 
+> for you to fetch changes up to 7243b785c43d9aedc7a584dab81bb3f26989d6a1:
+> 
+>   iio: hid-sensor: Use __devexit annotation for remove() (2012-11-02 09:57:57 +0000)
+> 
+> ----------------------------------------------------------------
+> Second round of fixes for IIO in 3.7 cycle, applies to 3.7-rc1.
+> 
+> A mixed bag of fixes mainly for drivers but with one core
+> double free fix.
+> 
+> * A couple of little fixlets for the hid-sensors drivers.
+> * Incorrect return value in adt7410
+> * Fix up support for the adis16334 in the adis16400 driver.
+>   Turned out there were some bits and bobs that need to be
+>   handled different for this part.  This seems like a large
+>   patch series but this is mostly because an additional chip
+>   specific callback is needed to handle the variations.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7793.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+That is a big patch so late in the release cycle, is it really needed?
+Is it a regression from 3.6?  Or does it just fix a problem with a new
+thing that showed up in 3.7-rc1?  If the latter, how about we postpone
+it and just mark the driver BROKEN or something?
 
-diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index cbe8a02..0bbfdf3 100644
---- a/drivers/staging/iio/adc/ad7793.c
-+++ b/drivers/staging/iio/adc/ad7793.c
-@@ -102,8 +102,10 @@
- #define AD7795_CH_AIN1M_AIN1M	8 /* AIN1(-) - AIN1(-) */
- 
- /* ID Register Bit Designations (AD7793_REG_ID) */
-+#define AD7785_ID		0xB
- #define AD7792_ID		0xA
- #define AD7793_ID		0xB
-+#define AD7794_ID		0xF
- #define AD7795_ID		0xF
- #define AD7793_ID_MASK		0xF
- 
-@@ -130,6 +132,7 @@
-  */
- 
- struct ad7793_chip_info {
-+	unsigned int id;
- 	const struct iio_chan_spec *channels;
- 	unsigned int num_channels;
- };
-@@ -231,7 +234,7 @@ static int ad7793_setup(struct iio_dev *indio_dev,
- 
- 	id &= AD7793_ID_MASK;
- 
--	if (!((id == AD7792_ID) || (id == AD7793_ID) || (id == AD7795_ID))) {
-+	if (id != st->chip_info->id) {
- 		dev_err(&st->sd.spi->dev, "device ID query failed\n");
- 		goto out;
- 	}
-@@ -531,22 +534,27 @@ static DECLARE_AD7795_CHANNELS(ad7795, 24, 32);
- 
- static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 	[ID_AD7785] = {
-+		.id = AD7785_ID,
- 		.channels = ad7785_channels,
- 		.num_channels = ARRAY_SIZE(ad7785_channels),
- 	},
- 	[ID_AD7792] = {
-+		.id = AD7792_ID,
- 		.channels = ad7792_channels,
- 		.num_channels = ARRAY_SIZE(ad7792_channels),
- 	},
- 	[ID_AD7793] = {
-+		.id = AD7793_ID,
- 		.channels = ad7793_channels,
- 		.num_channels = ARRAY_SIZE(ad7793_channels),
- 	},
- 	[ID_AD7794] = {
-+		.id = AD7794_ID,
- 		.channels = ad7794_channels,
- 		.num_channels = ARRAY_SIZE(ad7794_channels),
- 	},
- 	[ID_AD7795] = {
-+		.id = AD7795_ID,
- 		.channels = ad7795_channels,
- 		.num_channels = ARRAY_SIZE(ad7795_channels),
- 	},
--- 
-1.8.0
+thanks,
 
+greg k-h
