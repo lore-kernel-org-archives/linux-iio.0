@@ -1,42 +1,106 @@
-Return-Path: <alban.bedel@avionic-design.de>
-Date: Thu, 8 Nov 2012 17:56:17 +0100
-From: Alban Bedel <alban.bedel@avionic-design.de>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Roland Stigge <stigge@antcom.de>, linux-iio@vger.kernel.org, Lars-Peter
- Clausen <lars@metafoo.de>, Alban Bedel <alban.bedel@avionic-design.de>
-Subject: Re: [PATCH] staging:iio:lpc32xx_adc: Add scale/offset support
-Message-ID: <20121108175617.06429ab1@avionic-0020.adnet.avionic-design.de>
-In-Reply-To: <509BD1D9.20100@jic23.retrosnub.co.uk>
-References: <1352306690-25841-1-git-send-email-alban.bedel@avionic-design.de>
-	<509B7BF0.5050704@antcom.de>
-	<509BD1D9.20100@jic23.retrosnub.co.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45341 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1422708Ab2KBKF6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Nov 2012 06:05:58 -0400
+Message-ID: <50939B04.8060404@kernel.org>
+Date: Fri, 02 Nov 2012 10:05:56 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Axel Lin <axel.lin@ingics.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: hid-sensor: Return proper error if kmemdup fails
+References: <1351350210.10004.3.camel@phoenix>
+In-Reply-To: <1351350210.10004.3.camel@phoenix>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, 08 Nov 2012 15:38:01 +0000
-Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
-
-> Why not do this with regulators?  That would give a more flexible
-> system and all that stuff is already well supported (if fixed voltages
-> are supplied then used fixed regulators).
-
-I agree that would probably be better. But for me that raise the
-question of having this stuff in the ADC driver at all. Most ADC just
-return a value from 0 to MAX and have no way to find out their supply
-voltage. If we start with binding to regulators in the drivers we'll
-soon get a lots of non-flexible and duplicated code.
-
-It would be a lot nicer if the ADC channels could be bound to a
-regulator and a transform function that compute a real world voltage out
-of:
- - The ADC value
- - The ADC range
- - The regulator representing the ADC reference voltage
-
-The simplest transform would be a linear curve with an optional offset,
-but any kind of transform would also be possible allowing to represent
-about any circuit that might be between the supply regulator and the ADC
-input.
-
-Alban
+On 10/27/2012 04:03 PM, Axel Lin wrote:
+> Return -ENOMEM instead of 0 if kmemdup fails.
+> 
+> Signed-off-by: Axel Lin <axel.lin@ingics.com>
+Added to fixes-togreg branch of iio.git
+Thanks
+> ---
+>  drivers/iio/accel/hid-sensor-accel-3d.c       |    6 +++---
+>  drivers/iio/gyro/hid-sensor-gyro-3d.c         |    6 +++---
+>  drivers/iio/light/hid-sensor-als.c            |    5 ++---
+>  drivers/iio/magnetometer/hid-sensor-magn-3d.c |    6 +++---
+>  4 files changed, 11 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+> index 1b49931..2046208 100644
+> --- a/drivers/iio/accel/hid-sensor-accel-3d.c
+> +++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+> @@ -319,10 +319,10 @@ static int __devinit hid_accel_3d_probe(struct platform_device *pdev)
+>  		goto error_free_dev;
+>  	}
+>  
+> -	channels = kmemdup(accel_3d_channels,
+> -					sizeof(accel_3d_channels),
+> -					GFP_KERNEL);
+> +	channels = kmemdup(accel_3d_channels, sizeof(accel_3d_channels),
+> +			   GFP_KERNEL);
+>  	if (!channels) {
+> +		ret = -ENOMEM;
+>  		dev_err(&pdev->dev, "failed to duplicate channels\n");
+>  		goto error_free_dev;
+>  	}
+> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> index 705dc49..c93dd59 100644
+> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> @@ -319,10 +319,10 @@ static int __devinit hid_gyro_3d_probe(struct platform_device *pdev)
+>  		goto error_free_dev;
+>  	}
+>  
+> -	channels = kmemdup(gyro_3d_channels,
+> -					sizeof(gyro_3d_channels),
+> -					GFP_KERNEL);
+> +	channels = kmemdup(gyro_3d_channels, sizeof(gyro_3d_channels),
+> +			   GFP_KERNEL);
+>  	if (!channels) {
+> +		ret = -ENOMEM;
+>  		dev_err(&pdev->dev, "failed to duplicate channels\n");
+>  		goto error_free_dev;
+>  	}
+> diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+> index 4c35ac7..ea59daa 100644
+> --- a/drivers/iio/light/hid-sensor-als.c
+> +++ b/drivers/iio/light/hid-sensor-als.c
+> @@ -285,10 +285,9 @@ static int __devinit hid_als_probe(struct platform_device *pdev)
+>  		goto error_free_dev;
+>  	}
+>  
+> -	channels = kmemdup(als_channels,
+> -					sizeof(als_channels),
+> -					GFP_KERNEL);
+> +	channels = kmemdup(als_channels, sizeof(als_channels), GFP_KERNEL);
+>  	if (!channels) {
+> +		ret = -ENOMEM;
+>  		dev_err(&pdev->dev, "failed to duplicate channels\n");
+>  		goto error_free_dev;
+>  	}
+> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> index a02dc98..63d0a38 100644
+> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> @@ -320,10 +320,10 @@ static int __devinit hid_magn_3d_probe(struct platform_device *pdev)
+>  		goto error_free_dev;
+>  	}
+>  
+> -	channels = kmemdup(magn_3d_channels,
+> -					sizeof(magn_3d_channels),
+> -					GFP_KERNEL);
+> +	channels = kmemdup(magn_3d_channels, sizeof(magn_3d_channels),
+> +			   GFP_KERNEL);
+>  	if (!channels) {
+> +		ret = -ENOMEM;
+>  		dev_err(&pdev->dev, "failed to duplicate channels\n");
+>  		goto error_free_dev;
+>  	}
+> 
