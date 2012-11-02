@@ -1,61 +1,71 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44625 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752404Ab2KQKUl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 17 Nov 2012 05:20:41 -0500
-Message-ID: <50A764F4.3040008@kernel.org>
-Date: Sat, 17 Nov 2012 10:20:36 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <wharms@bfs.de>
+Message-ID: <5093FA4A.2010006@bfs.de>
+Date: Fri, 02 Nov 2012 17:52:26 +0100
+From: walter harms <wharms@bfs.de>
+Reply-To: wharms@bfs.de
 MIME-Version: 1.0
-To: Wei Yongjun <weiyj.lk@gmail.com>
-CC: jic23@cam.ac.uk, gregkh@linuxfoundation.org,
-	grant.likely@secretlab.ca, rob.herring@calxeda.com,
-	yongjun_wei@trendmicro.com.cn, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, devicetree-discuss@lists.ozlabs.org
-Subject: Re: [PATCH -next] iio: isl29018: fix to return error or 0 in isl29018_write_raw()
-References: <CAPgLHd873xAvToL7reBbxmS-iEoJ9OqvjEoXf8RsG2esbTyo1A@mail.gmail.com>
-In-Reply-To: <CAPgLHd873xAvToL7reBbxmS-iEoJ9OqvjEoXf8RsG2esbTyo1A@mail.gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+ Dan Carpenter <dan.carpenter@oracle.com>,
+ Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+ kernel-janitors@vger.kernel.org
+Subject: Re: [patch] iio:dac:ad5449: unlock on error path
+References: <20121024071307.GC2536@elgon.mountain> <5087A55C.6010202@metafoo.de> <5093A93D.70302@kernel.org>
+In-Reply-To: <5093A93D.70302@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
-
-On 11/08/2012 09:05 AM, Wei Yongjun wrote:
-> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
-> 
-> We had assigned the return value to 'ret' but ignored it when
-> return from isl29018_write_raw(), it's better to return 'ret'
-> instead of 0.
-> 
-> dpatch engine is used to auto generate this patch.
-> (https://github.com/weiyj/dpatch)
-> 
-Thanks - merged to togreg branch of
-
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+List-ID: <linux-iio@vger.kernel.org>
 
 
-> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
-> ---
->  drivers/staging/iio/light/isl29018.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Am 02.11.2012 12:06, schrieb Jonathan Cameron:
+> On 10/24/2012 09:22 AM, Lars-Peter Clausen wrote:
+>> On 10/24/2012 09:13 AM, Dan Carpenter wrote:
+>>> There is an unlock missing on this error path.
+>>>
+>>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>>
+>> Thanks,
+>>
+>> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+> Thanks applied to togreg branch of
+> git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
 > 
-> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-> index 3b03f6f..1d5b294 100644
-> --- a/drivers/staging/iio/light/isl29018.c
-> +++ b/drivers/staging/iio/light/isl29018.c
-> @@ -356,7 +356,7 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
->  	}
->  	mutex_unlock(&chip->lock);
->  
-> -	return 0;
-> +	return ret;
->  }
->  
->  static int isl29018_read_raw(struct iio_dev *indio_dev,
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>>
+>>> ---
+>>> Only needed in linux-next.
+>>>
+>>> diff --git a/drivers/iio/dac/ad5449.c b/drivers/iio/dac/ad5449.c
+>>> index 5b43030..0ee6f8e 100644
+>>> --- a/drivers/iio/dac/ad5449.c
+>>> +++ b/drivers/iio/dac/ad5449.c
+>>> @@ -124,12 +124,13 @@ static int ad5449_read(struct iio_dev *indio_dev, unsigned int addr,
+>>>  
+>>>  	ret = spi_sync(st->spi, &msg);
+>>>  	if (ret < 0)
+>>> -		return ret;
+>>> +		goto out_unlock;
+>>>  
+>>>  	*val = be16_to_cpu(st->data[1]);
+>>> -	mutex_unlock(&indio_dev->mlock);
+>>>  
+>>> -	return 0;
+>>> +out_unlock:
+>>> +	mutex_unlock(&indio_dev->mlock);
+>>> +	return ret;
+>>>  }
+>>>  
+>>>  static int ad5449_read_raw(struct iio_dev *indio_dev,
+>>> --
+
+
+if i understand the code correct you can simply the flow
+by turning the check on its head.
+
+ret = spi_sync(st->spi, &msg);
+if (ret>=0)
+    *val = be16_to_cpu(st->data[1]);
+mutex_unlock(&indio_dev->mlock);
+return ret;
+
+re,
+ wh
