@@ -1,74 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57012 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756702Ab2K3NNC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Nov 2012 08:13:02 -0500
-Message-ID: <50B8B0DE.4050908@kernel.org>
-Date: Fri, 30 Nov 2012 13:13:02 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Dan Carpenter <dan.carpenter@oracle.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [patch] iio:imu: adis16480: show_firmware() buffer too small
-References: <20121127073142.GC8239@elgon.mountain> <50B50944.2040801@metafoo.de>
-In-Reply-To: <50B50944.2040801@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from atlantis.wh2.tu-dresden.de ([141.30.228.39]:50446 "EHLO
+	atlantis.wh2.tu-dresden.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752404Ab2KEN4Z (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2012 08:56:25 -0500
+From: Lars Poeschel <larsi@wh2.tu-dresden.de>
+To: linus.walleij@linaro.org
+Cc: poeschel@lemonage.de, sameo@linux.intel.com,
+	linux-kernel@vger.kernel.org, jic23@cam.ac.uk, khali@linux-fr.org,
+	ben-linux@fluff.org, w.sang@pengutronix.de,
+	grant.likely@secretlab.ca, linux-iio@vger.kernel.org
+Subject: [PATCH v3 1/5] mfd: set device type of mfd platform devices to a mfd type
+Date: Mon,  5 Nov 2012 15:48:22 +0100
+Message-Id: <1352126906-4560-1-git-send-email-larsi@wh2.tu-dresden.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/27/2012 06:41 PM, Lars-Peter Clausen wrote:
-> On 11/27/2012 08:31 AM, Dan Carpenter wrote:
->> Smatch complains that snprintf() returns the number of characters,
->> not counting the NUL terminator, which *would* have been printed if
->> there were enough space.  In other words the return value could be more
->> than sizeof(buf).
->>
->> In this case, we are printing something like "ff.ff\n" which is at most
->> 6 characters and a NUL so that's not an issue.  I changed snprintf() to
->> scnprintf() to silence the warning.
->>
->> But since the buffer doesn't include space for the NUL terminator, we
->> need to make it bigger or the "\n" will be truncated off.
->>
-> 
-> 
-> Thanks,
-> 
-> Acked-By: Lars-Peter Clausen <lars@metafoo.de>
-> 
-Added to togreg branch of
+From: Lars Poeschel <poeschel@lemonage.de>
 
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+This sets the type of the platform devices that are added
+to the mfd core to some mfd-cell type. This enables us
+to add mfd cells to platform devices, that are in use by
+other cores (e.g. the usb core).
+Otherwise by removing the mfd cell from a platform device
+that already has some "childs" would remove all childs,
+not only the mfd ones.
+Thanks to Lars-Peter Clausen for proposing this.
 
->> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
->>
->> diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
->> index a080b35..150d7fa 100644
->> --- a/drivers/iio/imu/adis16480.c
->> +++ b/drivers/iio/imu/adis16480.c
->> @@ -125,7 +125,7 @@ static ssize_t adis16480_show_firmware_revision(struct file *file,
->>  		char __user *userbuf, size_t count, loff_t *ppos)
->>  {
->>  	struct adis16480 *adis16480 = file->private_data;
->> -	char buf[6];
->> +	char buf[7];
->>  	size_t len;
->>  	u16 rev;
->>  	int ret;
->> @@ -134,7 +134,7 @@ static ssize_t adis16480_show_firmware_revision(struct file *file,
->>  	if (ret < 0)
->>  		return ret;
->>  
->> -	len = snprintf(buf, sizeof(buf), "%x.%x\n", rev >> 8, rev & 0xff);
->> +	len = scnprintf(buf, sizeof(buf), "%x.%x\n", rev >> 8, rev & 0xff);
->>  
->>  	return simple_read_from_buffer(userbuf, count, ppos, buf, len);
->>  }
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
+---
+ drivers/mfd/mfd-core.c |   15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
+index f8b7771..d317b50 100644
+--- a/drivers/mfd/mfd-core.c
++++ b/drivers/mfd/mfd-core.c
+@@ -21,6 +21,10 @@
+ #include <linux/irqdomain.h>
+ #include <linux/of.h>
+ 
++static struct device_type const mfd_device_type = {
++	.name = "mfd-cell",
++};
++
+ int mfd_cell_enable(struct platform_device *pdev)
+ {
+ 	const struct mfd_cell *cell = mfd_get_cell(pdev);
+@@ -91,6 +95,7 @@ static int mfd_add_device(struct device *parent, int id,
+ 		goto fail_device;
+ 
+ 	pdev->dev.parent = parent;
++	pdev->dev.type = &mfd_device_type;
+ 
+ 	if (parent->of_node && cell->of_compatible) {
+ 		for_each_child_of_node(parent->of_node, np) {
+@@ -204,10 +209,16 @@ EXPORT_SYMBOL(mfd_add_devices);
+ 
+ static int mfd_remove_devices_fn(struct device *dev, void *c)
+ {
+-	struct platform_device *pdev = to_platform_device(dev);
+-	const struct mfd_cell *cell = mfd_get_cell(pdev);
++	struct platform_device *pdev;
++	const struct mfd_cell *cell;
+ 	atomic_t **usage_count = c;
+ 
++	if (dev->type != &mfd_device_type)
++		return 0;
++
++	pdev = to_platform_device(dev);
++	cell = mfd_get_cell(pdev);
++
+ 	/* find the base address of usage_count pointers (for freeing) */
+ 	if (!*usage_count || (cell->usage_count < *usage_count))
+ 		*usage_count = cell->usage_count;
+-- 
+1.7.10.4
+
