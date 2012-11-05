@@ -1,66 +1,167 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-191.synserver.de ([212.40.185.191]:1085 "EHLO
+Received: from smtp-out-191.synserver.de ([212.40.185.191]:1071 "EHLO
 	smtp-out-191.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753537Ab2KEJ5G (ORCPT
+	with ESMTP id S1753503Ab2KEJ5G (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2012 04:57:06 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 4/7] staging:iio:ad7887: Use proper kernel doc
-Date: Mon,  5 Nov 2012 10:56:43 +0100
-Message-Id: <1352109406-7206-4-git-send-email-lars@metafoo.de>
+Subject: [PATCH 2/7] staging:iio:ad7887: Rework regulator handling
+Date: Mon,  5 Nov 2012 10:56:41 +0100
+Message-Id: <1352109406-7206-2-git-send-email-lars@metafoo.de>
 In-Reply-To: <1352109406-7206-1-git-send-email-lars@metafoo.de>
 References: <1352109406-7206-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Use proper kernel doc to document the platform data struct.
+Rework the regulator handling of the ad7887 driver to match more closely what we
+do for other drivers. Only request the regulator if a external reference is
+used, but treat it as an error if requesting the regulator fails. Also remove
+the possibility to specify the reference voltage via platform data and always
+use the regulator for this.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad7887.h | 27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+ drivers/staging/iio/adc/ad7887.h      |  3 --
+ drivers/staging/iio/adc/ad7887_core.c | 52 ++++++++++++++++-------------------
+ 2 files changed, 24 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/ad7887.h b/drivers/staging/iio/adc/ad7887.h
-index b9078fc..78b06a3 100644
+index 71e5092..25d5b40 100644
 --- a/drivers/staging/iio/adc/ad7887.h
 +++ b/drivers/staging/iio/adc/ad7887.h
-@@ -12,21 +12,20 @@
-  * TODO: struct ad7887_platform_data needs to go into include/linux/iio
+@@ -30,8 +30,6 @@ enum ad7887_channels {
   */
  
-+
-+/**
-+ * struct ad7887_platform_data - AD7887 ADC driver platform data
-+ * @en_dual: Whether to use dual channel mode. If set to true AIN1 becomes the
-+ *	second input channel, and Vref is internally connected to Vdd. If set to
-+ *	false the device is used in single channel mode and AIN1/Vref is used as
-+ *	VREF input.
-+ * @use_onchip_ref: Whether to use the onchip reference. If set to true the
-+ *	internal 2.5V reference is used. If set to false a external reference is
-+ *	used.
-+ */
  struct ad7887_platform_data {
--	/*
--	 * AD7887:
--	 * In single channel mode en_dual = flase, AIN1/Vref pins assumes its
--	 * Vref function. In dual channel mode en_dual = true, AIN1 becomes the
--	 * second input channel, and Vref is internally connected to Vdd.
--	 */
--	bool				en_dual;
--	/*
--	 * AD7887:
--	 * use_onchip_ref = true, the Vref is internally connected to the 2.500V
--	 * Voltage reference. If use_onchip_ref = false, the reference voltage
--	 * is supplied by AIN1/Vref
--	 */
--	bool				use_onchip_ref;
-+	bool en_dual;
-+	bool use_onchip_ref;
- };
+-	/* External Vref voltage applied */
+-	u16				vref_mv;
+ 	/*
+ 	 * AD7887:
+ 	 * In single channel mode en_dual = flase, AIN1/Vref pins assumes its
+@@ -63,7 +61,6 @@ struct ad7887_state {
+ 	struct spi_device		*spi;
+ 	const struct ad7887_chip_info	*chip_info;
+ 	struct regulator		*reg;
+-	u16				int_vref_mv;
+ 	struct spi_transfer		xfer[4];
+ 	struct spi_message		msg[3];
+ 	struct spi_message		*ring_msg;
+diff --git a/drivers/staging/iio/adc/ad7887_core.c b/drivers/staging/iio/adc/ad7887_core.c
+index 5517905..cf33ba6 100644
+--- a/drivers/staging/iio/adc/ad7887_core.c
++++ b/drivers/staging/iio/adc/ad7887_core.c
+@@ -39,7 +39,6 @@ static int ad7887_read_raw(struct iio_dev *indio_dev,
+ {
+ 	int ret;
+ 	struct ad7887_state *st = iio_priv(indio_dev);
+-	unsigned int scale_uv;
  
- #endif /* IIO_ADC_AD7887_H_ */
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -56,11 +55,18 @@ static int ad7887_read_raw(struct iio_dev *indio_dev,
+ 			RES_MASK(st->chip_info->channel[0].scan_type.realbits);
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+-		scale_uv = (st->int_vref_mv * 1000)
+-			>> st->chip_info->channel[0].scan_type.realbits;
+-		*val =  scale_uv/1000;
+-		*val2 = (scale_uv%1000)*1000;
+-		return IIO_VAL_INT_PLUS_MICRO;
++		if (st->reg) {
++			*val = regulator_get_voltage(st->reg);
++			if (*val < 0)
++				return *val;
++			*val /= 1000;
++		} else {
++			*val = st->chip_info->int_vref_mv;
++		}
++
++		*val2 = st->chip_info->channel[0].scan_type.realbits;
++
++		return IIO_VAL_FRACTIONAL_LOG2;
+ 	}
+ 	return -EINVAL;
+ }
+@@ -105,21 +111,24 @@ static int __devinit ad7887_probe(struct spi_device *spi)
+ {
+ 	struct ad7887_platform_data *pdata = spi->dev.platform_data;
+ 	struct ad7887_state *st;
+-	int ret, voltage_uv = 0;
+ 	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
++	int ret;
+ 
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
+ 
+ 	st = iio_priv(indio_dev);
+ 
+-	st->reg = regulator_get(&spi->dev, "vcc");
+-	if (!IS_ERR(st->reg)) {
++	if (!pdata || !pdata->use_onchip_ref) {
++		st->reg = regulator_get(&spi->dev, "vref");
++		if (IS_ERR(st->reg)) {
++			ret = PTR_ERR(st->reg);
++			goto error_free;
++		}
++
+ 		ret = regulator_enable(st->reg);
+ 		if (ret)
+ 			goto error_put_reg;
+-
+-		voltage_uv = regulator_get_voltage(st->reg);
+ 	}
+ 
+ 	st->chip_info =
+@@ -176,23 +185,9 @@ static int __devinit ad7887_probe(struct spi_device *spi)
+ 		spi_message_init(&st->msg[AD7887_CH1]);
+ 		spi_message_add_tail(&st->xfer[3], &st->msg[AD7887_CH1]);
+ 
+-		if (pdata && pdata->vref_mv)
+-			st->int_vref_mv = pdata->vref_mv;
+-		else if (voltage_uv)
+-			st->int_vref_mv = voltage_uv / 1000;
+-		else
+-			dev_warn(&spi->dev, "reference voltage unspecified\n");
+-
+ 		indio_dev->channels = st->chip_info->channel;
+ 		indio_dev->num_channels = 3;
+ 	} else {
+-		if (pdata && pdata->vref_mv)
+-			st->int_vref_mv = pdata->vref_mv;
+-		else if (pdata && pdata->use_onchip_ref)
+-			st->int_vref_mv = st->chip_info->int_vref_mv;
+-		else
+-			dev_warn(&spi->dev, "reference voltage unspecified\n");
+-
+ 		indio_dev->channels = &st->chip_info->channel[1];
+ 		indio_dev->num_channels = 2;
+ 	}
+@@ -209,11 +204,12 @@ static int __devinit ad7887_probe(struct spi_device *spi)
+ error_unregister_ring:
+ 	ad7887_ring_cleanup(indio_dev);
+ error_disable_reg:
+-	if (!IS_ERR(st->reg))
++	if (st->reg)
+ 		regulator_disable(st->reg);
+ error_put_reg:
+-	if (!IS_ERR(st->reg))
++	if (st->reg)
+ 		regulator_put(st->reg);
++error_free:
+ 	iio_device_free(indio_dev);
+ 
+ 	return ret;
+@@ -226,7 +222,7 @@ static int __devexit ad7887_remove(struct spi_device *spi)
+ 
+ 	iio_device_unregister(indio_dev);
+ 	ad7887_ring_cleanup(indio_dev);
+-	if (!IS_ERR(st->reg)) {
++	if (st->reg) {
+ 		regulator_disable(st->reg);
+ 		regulator_put(st->reg);
+ 	}
 -- 
 1.8.0
 
