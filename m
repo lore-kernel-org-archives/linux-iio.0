@@ -1,77 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.17.8]:64778 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752190Ab2KXUwv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 Nov 2012 15:52:51 -0500
-Date: Sat, 24 Nov 2012 21:52:44 +0100
-From: Thierry Reding <thierry.reding@avionic-design.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: Add Texas Instruments ADC081C021/027 support
-Message-ID: <20121124205244.GA27042@avionic-0098.adnet.avionic-design.de>
-References: <1353683583-19779-1-git-send-email-thierry.reding@avionic-design.de>
- <50B0A74B.10707@kernel.org>
+Received: from smtp-out-191.synserver.de ([212.40.185.191]:1128 "EHLO
+	smtp-out-191.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751355Ab2KEP5w (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2012 10:57:52 -0500
+Message-ID: <5097E201.7040008@metafoo.de>
+Date: Mon, 05 Nov 2012 16:57:53 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="azLHFNyN32YCQGCU"
-In-Reply-To: <50B0A74B.10707@kernel.org>
+To: Lars Poeschel <larsi@wh2.tu-dresden.de>
+CC: linus.walleij@linaro.org, poeschel@lemonage.de,
+	sameo@linux.intel.com, linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk, khali@linux-fr.org, ben-linux@fluff.org,
+	w.sang@pengutronix.de, grant.likely@secretlab.ca,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 5/5] iio: adc: add viperboard adc driver
+References: <1352126906-4560-1-git-send-email-larsi@wh2.tu-dresden.de> <1352126906-4560-5-git-send-email-larsi@wh2.tu-dresden.de>
+In-Reply-To: <1352126906-4560-5-git-send-email-larsi@wh2.tu-dresden.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 11/05/2012 03:48 PM, Lars Poeschel wrote:
+> From: Lars Poeschel <poeschel@lemonage.de>
+> 
+> This adds the mfd cell to use the adc part of the Nano River Technologies
+> viperboard.
+> 
+> Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
 
---azLHFNyN32YCQGCU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Looks good to me.
 
-On Sat, Nov 24, 2012 at 10:54:03AM +0000, Jonathan Cameron wrote:
-> On 11/23/2012 03:13 PM, Thierry Reding wrote:
-> > Add support for reading conversion results from the ADC and provide them
-> > through a single IIO channel. A proper scaling factor is also exported
-> > based on the reference voltage provided by a regulator.
-> >
-> > Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
->=20
-> Looks good to me.  I think timing is against you (depending on what Linus
-> says with his next rc).  IIO patches are routed through Greg KH. His cut
-> off is 1 week before the merge window opens.  Mine tends to as a result
-> be a few days before that.  Linus stated in last rc message that the one =
-he'll
-> do today or tomorrow will be the last for this cycle (and hence merge win=
-dow
-> will open in a week from now). Hence this will probably hit linux next af=
-ter
-> the merge window closes and merge in the 3.9 cycle.
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 
-Not a problem. I wasn't relying on getting this merged for 3.8. Official
-support for the board that uses this driver is still some way out, so no
-need to hurry in any way.
+If you happen to resend the series there is one tiny bit that could be
+changed, but no need to resend the series just for this.
 
-Thanks for merging and thanks for reviewing, Lars-Peter.
+> ---
+>  drivers/iio/adc/Kconfig          |    7 ++
+>  drivers/iio/adc/Makefile         |    1 +
+>  drivers/iio/adc/viperboard_adc.c |  181 ++++++++++++++++++++++++++++++++++++++
+>  drivers/mfd/viperboard.c         |    3 +
+>  include/linux/mfd/viperboard.h   |    1 +
+>  5 files changed, 193 insertions(+)
+>  create mode 100644 drivers/iio/adc/viperboard_adc.c
+> 
 
-Thierry
+> +
+> +static int __devinit vprbrd_adc_probe(struct platform_device *pdev)
+> +{
+> +	struct vprbrd *vb = dev_get_drvdata(pdev->dev.parent);
+> +	struct vprbrd_adc *adc;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	/* registering iio */
+> +	indio_dev = iio_device_alloc(sizeof(struct vprbrd_adc));
 
---azLHFNyN32YCQGCU
-Content-Type: application/pgp-signature
+sizeof(*adc)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
+> +	if (!indio_dev) {
+> +		dev_err(&pdev->dev, "failed allocating iio device\n");
+> +		return -ENOMEM;
+> +	}
 
-iQIcBAEBAgAGBQJQsTOcAAoJEN0jrNd/PrOhe6EP/1edWQawxCXyL9BVzNxWnI8Z
-CoIUX4e2/4qWE/rWvcIYfOJHeW+JfDCVpE5KL5HkTw8z7pQHmHo+A3ZtmH3Fxd69
-Pt8h6WV8cGu97trRJrx2B7nQcZvfB9Y9LYb3oaUsp7+HqT2QS6bDKpSgkUDlc80n
-EhRAmH3ZmQsEo+JA/JbU7cpSDx89YejkMZBOY1qynZsIWn7/+gRN/1PLrDuY5W7S
-vq6MpNb9+E8In7TrziuCUgV1udHw7cA2/zhd9v5g3oooECp4Ss/My42d/8EETe5K
-nFwegC8U8AlW5XriveyjWst8HVBYfkaB38FyVHWMgE/3s12vj+3/Pdx3Igzym4/Q
-UHeDQzHCWryAytO/GMfv3ThJbC78e+dBMsi/ovUny9gYL1kPlTiVYU4YAnnDoPJb
-NLZhe7w5N1nEkBQwTsmJ2kgmCmofSp+Tc/3KerpJnRlm4m+57NCJW/0r/iQmjHvw
-VHm068X/lqGnbGR8q3qUC7jxuKfqwmol21A/SoPtWN5mGdt4sudbA7RbJr/fGz8t
-pnTxWPiGtNZYprXfnbpWScAsYQ2xFln2UoFp+1n/MrahrsPSBdztdqKrinMJQC6x
-ck4UupJEzEcWNW87c8vKQ20w2YtlhByM3SqrhhvvBoScIx4qsHDeT8Lg/pFSDKAu
-n1isXTzFd3KO7q+S/TeV
-=BMJJ
------END PGP SIGNATURE-----
-
---azLHFNyN32YCQGCU--
