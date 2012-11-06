@@ -1,27 +1,72 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Wed, 21 Nov 2012 12:34:46 -0800
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL]  IIO cleanups, new drivers and fixes (IIO set 5 for the
- 3.8 cycle)
-Message-ID: <20121121203446.GA26171@kroah.com>
-References: <50AD280B.7050904@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:58597 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753344Ab2KFEr4 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2012 23:47:56 -0500
+From: "Patil, Rachna" <rachna@ti.com>
+To: Samuel Ortiz <sameo@linux.intel.com>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dmitry Torokhov <dtor@mail.ru>,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: RE: [PATCH RESEND 0/8] TI Touchscreen driver updates and Support
+ for TSC/ADC MFD driver
+Date: Tue, 6 Nov 2012 04:47:41 +0000
+Message-ID: <4CE347531D4CA947960AF71FF095B9323E9684AC@DBDE01.ent.ti.com>
+References: <1350372345-27108-1-git-send-email-rachna@ti.com>
+ <20121105225524.GE7965@sortiz-mobl>
+In-Reply-To: <20121105225524.GE7965@sortiz-mobl>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <50AD280B.7050904@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Nov 21, 2012 at 07:14:19PM +0000, Jonathan Cameron wrote:
-> The following changes since commit acf1cf6a1c0966ef64a73083ca985605a12b032d:
-> 
->   Merge 3.7-rc6 into staging-next (2012-11-16 18:24:22 -0800)
-> 
-> are available in the git repository at:
-> 
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.8e
+Hi Samuel,
 
-Pulled and pushed out, thanks.
+On Tue, Nov 06, 2012 at 04:25:24, Samuel Ortiz wrote:
+> Hi Rachna,
+> 
+> On Tue, Oct 16, 2012 at 12:55:37PM +0530, Patil, Rachna wrote:
+> > This patch set is a cumulative set of [1] and [2] sent earlier.
+> > I have merged the patch set so that the MFD patches apply without any 
+> > issues.
+> > 
+> > Also Note that there are no code changes in either of the patch set, 
+> > only rebased on top of linux-next to make sure that all the patches 
+> > apply without any conflicts.
+> > 
+> > This patch set has been tested on AM335x EVM.
+> > 
+> > [1] "[PATCH 0/4] input: TSC: ti_tscadc: TI Touchscreen driver updates"
+> > (http://www.spinics.net/lists/linux-input/msg22107.html)
+> > 
+> > [2] "[PATCH v5 0/4] Support for TSC/ADC MFD driver"
+> > (http://www.spinics.net/lists/linux-input/msg22832.html)
+> > 
+> > Patil, Rachna (8):
+> >   input: TSC: ti_tscadc: Correct register usage
+> >   input: TSC: ti_tscadc: Add Step configuration as platform data
+> >   input: TSC: ti_tscadc: set FIFO0 threshold Interrupt
+> >   input: TSC: ti_tscadc: Remove definition of End Of Interrupt register
+> >   input: TSC: ti_tscadc: Rename the existing touchscreen driver
+> >   MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
+> >   input: TSC: ti_tsc: Convert TSC into a MFDevice
+> >   IIO : ADC: tiadc: Add support of TI's ADC driver
+> All patches applied now, thanks a lot.
 
-greg k-h
+Thanks for pulling this in.
+
+Regards,
+Rachna
+
+> 
+> Cheers,
+> Samuel.
+> 
+> --
+> Intel Open Source Technology Centre
+> http://oss.intel.com/
+> 
+
