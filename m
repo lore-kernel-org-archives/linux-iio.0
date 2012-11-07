@@ -1,119 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33971 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751069Ab2KJLF1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Nov 2012 06:05:27 -0500
-Message-ID: <509E34F4.40204@kernel.org>
-Date: Sat, 10 Nov 2012 11:05:24 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:59944 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750910Ab2KGHHj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 7 Nov 2012 02:07:39 -0500
+From: "Patil, Rachna" <rachna@ti.com>
+To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
+	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>
+CC: Rob Landley <rob@landley.net>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dmitry Torokhov <dtor@mail.ru>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	"Patil, Rachna" <rachna@ti.com>
+Subject: [PATCH RESEND 1/7] input: ti_am335x_tsc: Step enable bits made configurable
+Date: Wed, 7 Nov 2012 12:21:58 +0530
+Message-ID: <1352271124-5513-2-git-send-email-rachna@ti.com>
+In-Reply-To: <1352271124-5513-1-git-send-email-rachna@ti.com>
+References: <1352271124-5513-1-git-send-email-rachna@ti.com>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL]  IIO cleanups and fixes (IIO set 4 for the 3.8 cycle)
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit 3c7f0c2b1150eae8683a98a5a9143d81edfc2762:
+Current code has hard coded value written to
+step enable bits. Now the bits are updated based
+on how many steps are needed to be configured got
+from platform data.
 
-  staging:iio:adis16400: Set the PROD_ID flag for the adis16334 (2012-11-04 15:55:44 +0000)
+The user needs to take care not to exceed
+the count more than 16. While using ADC and TSC
+one should take care to set this parameter correctly.
 
-are available in the git repository at:
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |   10 ++++++++--
+ include/linux/mfd/ti_am335x_tscadc.h      |    1 -
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.8d
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 7a18a8a..4369224 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -39,6 +39,7 @@ struct titsc {
+ 	unsigned int		irq;
+ 	unsigned int		wires;
+ 	unsigned int		x_plate_resistance;
++	unsigned int		enable_bits;
+ 	bool			pen_down;
+ 	int			steps_to_configure;
+ };
+@@ -57,6 +58,7 @@ static void titsc_writel(struct titsc *tsc, unsigned int reg,
+ static void titsc_step_config(struct titsc *ts_dev)
+ {
+ 	unsigned int	config;
++	unsigned int	stepenable = 0;
+ 	int i, total_steps;
+ 
+ 	/* Configure the Step registers */
+@@ -128,7 +130,11 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 2),
+ 			STEPCONFIG_OPENDLY);
+ 
+-	titsc_writel(ts_dev, REG_SE, STPENB_STEPENB_TC);
++	for (i = 0; i <= (total_steps + 2); i++)
++		stepenable |= 1 << i;
++	ts_dev->enable_bits = stepenable;
++
++	titsc_writel(ts_dev, REG_SE, ts_dev->enable_bits);
+ }
+ 
+ static void titsc_read_coordinates(struct titsc *ts_dev,
+@@ -250,7 +256,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 
+ 	titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+ 
+-	titsc_writel(ts_dev, REG_SE, STPENB_STEPENB_TC);
++	titsc_writel(ts_dev, REG_SE, ts_dev->enable_bits);
+ 	return IRQ_HANDLED;
+ }
+ 
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index c79ad5d..23e4f33 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -47,7 +47,6 @@
+ #define STEPENB_MASK		(0x1FFFF << 0)
+ #define STEPENB(val)		((val) << 0)
+ #define STPENB_STEPENB		STEPENB(0x1FFFF)
+-#define STPENB_STEPENB_TC	STEPENB(0x1FFF)
+ 
+ /* IRQ enable */
+ #define IRQENB_HW_PEN		BIT(0)
+-- 
+1.7.0.4
 
-for you to fetch changes up to 168c9d95a94077a42e5bf5a4a660b45ccee4fc63:
-
-  iio:adc:max1363 move from staging. (2012-11-10 10:17:31 +0000)
-
-----------------------------------------------------------------
-4th set of IIO driver updates and new functionality for the 3.8 cycle.
-
-2 drivers going through final cleanup and moving out of staging.
-
-Addition to the core of support for multiple buffers from a single
-datastream.  This functionality is core in allowing multiple users
-of interrupt driven data streams from the devices.  First user
-will shortly be an input bridge driver.  This has been in review
-/ revision for over a year resulting in a far cleaner result.
-Much of the work had been in precursor patches. Here we just
-add the buffer set tear up and down support + switch to multiple
-buffer pushing in the drivers (a one line change in all users).
-Thanks to those who have tested / reviewed this set.
-
-----------------------------------------------------------------
-Jonathan Cameron (10):
-      staging:iio: Add support for multiple buffers
-      staging:iio:in kernel users: Add a data field for channel specific info.
-      staging:iio: add a callback buffer for in kernel push interface
-      staging:iio:adc:max1363 ring_sw->kfifo conversion
-      staging:iio:adc:max1363 consolidate files.
-      staging:iio:adc:max1363 drop references to 'ring' given now using a fifo
-      staging:iio:adc:max1363 make docs match the contents of max1363_chip_info
-      staging:iio:adc:max1363 white space cleanup
-      staging:iio:adc:max1363 cleanup regulator handling.
-      iio:adc:max1363 move from staging.
-
-Lars-Peter Clausen (7):
-      staging:iio:ad7887: Preallocate sample buffer
-      staging:iio:ad7887: Rework regulator handling
-      staging:iio:ad7887: Squash everything into one file
-      staging:iio:ad7887: Use proper kernel doc
-      staging:iio:ad7887: Allow to use internal ref in two channel mode
-      staging:iio:ad7887: Use passed in chan spec in ad7887_read_raw
-      staging:iio: Move the ad7887 driver out of staging
-
- drivers/iio/Kconfig                                |   6 +
- drivers/iio/Makefile                               |   1 +
- drivers/iio/accel/hid-sensor-accel-3d.c            |  15 +-
- drivers/iio/adc/Kconfig                            |  31 ++
- drivers/iio/adc/Makefile                           |   2 +
- drivers/iio/adc/ad7266.c                           |   3 +-
- drivers/iio/adc/ad7476.c                           |   2 +-
- .../iio/adc/ad7887_core.c => iio/adc/ad7887.c}     | 217 +++++++++---
- drivers/iio/adc/ad_sigma_delta.c                   |   2 +-
- drivers/iio/adc/at91_adc.c                         |   3 +-
- .../iio/adc/max1363_core.c => iio/adc/max1363.c}   | 330 ++++++++++++++++--
- drivers/iio/buffer_cb.c                            | 113 ++++++
- drivers/iio/gyro/hid-sensor-gyro-3d.c              |  15 +-
- drivers/iio/industrialio-buffer.c                  | 380 ++++++++++++++-------
- drivers/iio/industrialio-core.c                    |   1 +
- drivers/iio/inkern.c                               |   1 +
- drivers/iio/light/adjd_s311.c                      |   3 +-
- drivers/iio/light/hid-sensor-als.c                 |  15 +-
- drivers/iio/magnetometer/hid-sensor-magn-3d.c      |  15 +-
- drivers/staging/iio/accel/adis16201_ring.c         |   2 +-
- drivers/staging/iio/accel/adis16203_ring.c         |   2 +-
- drivers/staging/iio/accel/adis16204_ring.c         |   2 +-
- drivers/staging/iio/accel/adis16209_ring.c         |   2 +-
- drivers/staging/iio/accel/adis16240_ring.c         |   2 +-
- drivers/staging/iio/accel/lis3l02dq_ring.c         |   2 +-
- drivers/staging/iio/adc/Kconfig                    |  37 --
- drivers/staging/iio/adc/Makefile                   |   9 -
- drivers/staging/iio/adc/ad7298_ring.c              |   2 +-
- drivers/staging/iio/adc/ad7606_ring.c              |   2 +-
- drivers/staging/iio/adc/ad7887.h                   |  99 ------
- drivers/staging/iio/adc/ad7887_ring.c              | 122 -------
- drivers/staging/iio/adc/ad799x_ring.c              |   2 +-
- drivers/staging/iio/adc/max1363.h                  | 177 ----------
- drivers/staging/iio/adc/max1363_ring.c             | 139 --------
- drivers/staging/iio/adc/mxs-lradc.c                |   3 +-
- drivers/staging/iio/gyro/adis16260_ring.c          |   2 +-
- drivers/staging/iio/iio_simple_dummy_buffer.c      |   5 +-
- drivers/staging/iio/impedance-analyzer/ad5933.c    |   4 +-
- drivers/staging/iio/imu/adis16400_ring.c           |   5 +-
- drivers/staging/iio/meter/ade7758_ring.c           |   2 +-
- include/linux/iio/buffer.h                         |  24 +-
- include/linux/iio/consumer.h                       |  48 +++
- include/linux/iio/iio.h                            |   2 +
- include/linux/iio/machine.h                        |   2 +
- include/linux/platform_data/ad7887.h               |  26 ++
- 45 files changed, 1003 insertions(+), 876 deletions(-)
- rename drivers/{staging/iio/adc/ad7887_core.c => iio/adc/ad7887.c} (50%)
- rename drivers/{staging/iio/adc/max1363_core.c => iio/adc/max1363.c} (81%)
- create mode 100644 drivers/iio/buffer_cb.c
- delete mode 100644 drivers/staging/iio/adc/ad7887.h
- delete mode 100644 drivers/staging/iio/adc/ad7887_ring.c
- delete mode 100644 drivers/staging/iio/adc/max1363.h
- delete mode 100644 drivers/staging/iio/adc/max1363_ring.c
- create mode 100644 include/linux/platform_data/ad7887.h
