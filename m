@@ -1,341 +1,353 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-196.synserver.de ([212.40.185.196]:1095 "EHLO
-	smtp-out-196.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753879Ab2KIOsK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 9 Nov 2012 09:48:10 -0500
-Message-ID: <509D17A5.3060704@metafoo.de>
-Date: Fri, 09 Nov 2012 15:48:05 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from bear.ext.ti.com ([192.94.94.41]:50987 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751923Ab2KGHHk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 7 Nov 2012 02:07:40 -0500
+From: "Patil, Rachna" <rachna@ti.com>
+To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
+	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>
+CC: Rob Landley <rob@landley.net>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dmitry Torokhov <dtor@mail.ru>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	"Patil, Rachna" <rachna@ti.com>
+Subject: [PATCH RESEND 2/7] input: ti_am335x_tsc: Order of TSC wires, made configurable
+Date: Wed, 7 Nov 2012 12:21:59 +0530
+Message-ID: <1352271124-5513-3-git-send-email-rachna@ti.com>
+In-Reply-To: <1352271124-5513-1-git-send-email-rachna@ti.com>
+References: <1352271124-5513-1-git-send-email-rachna@ti.com>
 MIME-Version: 1.0
-To: Alban Bedel <alban.bedel@avionic-design.de>
-CC: linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
-Subject: Re: Querry on IIO/ADC DT based consumer device probe
-References: <CAHfPSqCnBw1ed97greGdMz-qexWbB2b5_NrbT6FFUeawvygWWg@mail.gmail.com> <20121108175318.1b79884f@avionic-0020.adnet.avionic-design.de>
-In-Reply-To: <20121108175318.1b79884f@avionic-0020.adnet.avionic-design.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/08/2012 05:53 PM, Alban Bedel wrote:
-> On Fri, 5 Oct 2012 14:37:01 +0530
-> Naveen Krishna Ch
-> <naveenkrishna.ch@gmail.com> wrote:
-> 
->> Hello All,
->>
->> I'm trying to add an ADC driver under IIO/ADC.
->> Machine is DT based so, passing the ADC device as tree node and
->> consumer devices (thermistors) as child nodes via DT.
->>
->> I don't find a frame work to parse the child nodes and probe them like
->> I2C does using of/of_i2c.c
-> 
-> Here is my take at DT support in IIO, I wanted to submit that later on
-> after some more test and cleanup but you can see if it help you.
-> 
-> Alban
-> 
-> From 15decde13239f09101673b08aa0bd7e67e970b3c Mon Sep 17 00:00:00 2001
-> From: Alban Bedel <alban.bedel@avionic-design.de>
-> Date: Thu, 18 Oct 2012 17:07:29 +0200
-> Subject: [PATCH] IIO: Add basic DT/devm support for in kernel users
-> 
-> Signed-off-by: Alban Bedel <alban.bedel@avionic-design.de>
-> ---
->  .../devicetree/bindings/iio/iio-channel.txt        |   27 ++++
->  drivers/iio/inkern.c                               |  154 ++++++++++++++++++++
->  include/linux/iio/consumer.h                       |   63 ++++++++
->  3 files changed, 244 insertions(+), 0 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/iio-channel.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/iio-channel.txt b/Documentation/devicetree/bindings/iio/iio-channel.txt
-> new file mode 100644
-> index 0000000..dc894f4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/iio-channel.txt
-> @@ -0,0 +1,27 @@
-> +Specifying IIO channels for devices
-> +===================================
-> +
-> +1) iio-channels property
-> +------------------------
-> +
-> +Nodes that makes use of IIO channels should specify them using one or more
-> +properties, each containing a iio-channels-list':
-> +
-> +	iio-channel-list ::= <single-iio-channel> [iio-channel-list]
-> +	single-iio-channel ::= <iio-channel-phandle> <iio-channel-specifier>
-> +	iio-channel-phandle : phandle to iio-channel controller node
-> +	iio-channel-specifier : Array of #iio-channel-cells specifying
-> +	                        specific IIO channel (controller specific)
+The current driver expected touchscreen input
+wires(XP,XN,YP,YN) to be connected in a particular order.
+Making changes to accept this as platform data.
 
-I'd prefer something that is more in sync with what we have for other
-subsystems which have a provider-consumer relationship, like for example the
-clk and dma frameworks. Something like:
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |  156 ++++++++++++++++++++++++++---
+ include/linux/input/ti_am335x_tsc.h       |   12 ++
+ include/linux/mfd/ti_am335x_tscadc.h      |   10 ++-
+ 3 files changed, 159 insertions(+), 19 deletions(-)
 
-iio-channels = <&phandle1 &phandle2>;
-iio-channel-names = "voltage", "current";
-
-Also there is another major issue here. Devicetree is supposed to be
-operating system independent, IIO on the other hand is a Linux specific
-term. I'm not sure though yet what could be used instead. Maybe just
-'io-...'. I've put the devicetree list on Cc.
-
-> +
-> +GPIO properties should be named "[<name>-]iio-channels".  Exact
-
-IIO ;)
-
-> +meaning of each gpios property must be documented in the device tree
-> +binding for each device.
-> +
-> +2) iio device nodes
-> +------------------------
-> +
-> +Every IIO device must have #iio-channel-cells contain the size of the
-> +iio-channel-specifier.
-> +
-> +Currently #iio-channel-cells will always be 1 but this will most
-> +propably change in the future.
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index 6d5194f..5986ef5 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -10,6 +10,7 @@
->  #include <linux/export.h>
->  #include <linux/slab.h>
->  #include <linux/mutex.h>
-> +#include <linux/of.h>
->  
->  #include <linux/iio/iio.h>
->  #include "iio_core.h"
-> @@ -404,3 +405,156 @@ err_unlock:
->  	return ret;
->  }
->  EXPORT_SYMBOL_GPL(iio_get_channel_type);
-> +
-> +#ifdef CONFIG_OF
-> +static int of_dev_node_match(struct device *dev, void *data)
-> +{
-> +        return dev->parent ? dev->parent->of_node == data : 0;
-> +}
-> +
-> +int __of_get_named_iio_channel(struct iio_channel* channel,
-> +			       struct device_node *np,
-> +			       const char *propname,
-> +			       int index)
-> +{
-> +	struct device *dev;
-> +	struct of_phandle_args ph;
-> +	struct iio_dev *indio_dev;
-> +	int ret, channel_id = -1;
-> +
-> +	ret = of_parse_phandle_with_args(np, propname, "#iio-channel-cells",
-> +					 index, &ph);
-> +	if (ret)
-> +		return ret;
-> +
-> +	dev = bus_find_device(&iio_bus_type, NULL, ph.np,
-> +			      of_dev_node_match);
-> +	if (!dev)
-> +		return -EPROBE_DEFER;
-> +
-> +	if (ph.args_count > 0)
-> +		channel_id = ph.args[0];
-> +
-> +	indio_dev = dev_to_iio_dev(dev);
-> +	if (channel_id < 0 || channel_id >= indio_dev->num_channels)
-> +		return -EINVAL;
-> +
-> +	iio_device_get(indio_dev);
-> +	channel->indio_dev = indio_dev;
-> +	channel->channel = &indio_dev->channels[channel_id];
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + * of_get_iio_channel() - get a iio channel from a device tree property
-> + * @np:           Device node to get the channel from
-> + * @propname:     The property to read
-> + * @index:        Index of the channel
-> + */
-> +struct iio_channel* of_get_named_iio_channel(struct device_node *np,
-> +                                             const char *propname,
-> +                                             int index)
-> +{
-> +	struct iio_channel* channel;
-> +	int ret;
-> +
-> +	channel = kzalloc(sizeof(*channel), GFP_KERNEL);
-> +	if (!channel)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	ret = __of_get_named_iio_channel(channel, np, propname, index);
-> +	if (ret) {
-> +		kfree(channel);
-> +		return ERR_PTR(ret);
-> +	}
-> +	return channel;
-> +}
-> +
-> +EXPORT_SYMBOL_GPL(of_get_named_iio_channel);
-> +
-> +struct iio_channel* of_get_named_all_iio_channels(struct device_node *np,
-> +						  const char *propname)
-> +{
-> +	int ret, i, cnt;
-> +	struct iio_channel* channels;
-> +
-> +	cnt = of_iio_channel_named_count(np, propname);
-> +	if (cnt == 0)
-> +		return NULL;
-> +
-> +	channels = kzalloc((cnt+1) * sizeof(*channels), GFP_KERNEL);
-> +	if (!channels)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	for (i = 0 ; i < cnt ; i += 1) {
-> +		ret = __of_get_named_iio_channel(&channels[i],
-> +						 np, propname, i);
-> +		if (ret)
-> +			break;
-> +	}
-> +
-> +	if (ret) {
-> +		for ( ; i >= 0 ; i -= 1)
-> +			iio_device_put(channels[i].indio_dev);
-> +		kfree(channels);
-> +		return ERR_PTR(ret);
-> +	}
-> +
-> +	return channels;
-> +
-> +}
-> +EXPORT_SYMBOL_GPL(of_get_named_all_iio_channels);
-> +
-> +unsigned int of_iio_channel_named_count(struct device_node *np,
-> +					const char *propname)
-> +{
-> +        unsigned int cnt = 0;
-> +
-> +        do {
-> +                int ret;
-> +
-> +                ret = of_parse_phandle_with_args(np, propname, "#iio-channel-cells",
-> +                                                 cnt, NULL);
-> +                /* A hole in the gpios = <> counts anyway. */
-> +                if (ret < 0 && ret != -EEXIST)
-> +                        break;
-> +        } while (++cnt);
-> +
-> +        return cnt;
-> +
-> +}
-> +EXPORT_SYMBOL_GPL(of_iio_channel_named_count);
-> +
-> +struct iio_channel_devres {
-> +	struct iio_channel*	channel;
-> +};
-> +
-> +static void devm_iio_channel_release(struct device *dev, void *res)
-> +{
-> +	struct iio_channel_devres *dr = res;
-> +	iio_channel_release(dr->channel);
-> +}
-> +
-> +struct iio_channel* devm_iio_channel_get(struct device* dev, int index)
-> +{
-> +	struct iio_channel_devres *dr;
-> +	struct iio_channel *channel;
-> +
-> +	channel = of_get_iio_channel(dev->of_node, index);
-> +	if (IS_ERR(channel))
-> +		return channel;
-> +
-> +	dr = devres_alloc(devm_iio_channel_release, sizeof(*dr), GFP_KERNEL);
-> +	if (!dr) {
-> +		iio_channel_release(channel);
-> +		return ERR_PTR(-ENOMEM);
-> +	}
-> +
-> +	dr->channel = channel;
-> +	devres_add(dev, dr);
-> +	return dr->channel;
-> +}
-> +EXPORT_SYMBOL_GPL(devm_iio_channel_get);
-> +
-> +#endif
-> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-> index e4ff665..e2f958a 100644
-> --- a/include/linux/iio/consumer.h
-> +++ b/include/linux/iio/consumer.h
-> @@ -131,4 +131,67 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val,
->  int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
->  	int *processed, unsigned int scale);
->  
-> +#ifdef CONFIG_OF
-> +struct iio_channel* of_get_named_iio_channel(struct device_node *np,
-> +                                             const char *propname,
-> +                                             int index);
-> +
-> +struct iio_channel* of_get_named_all_iio_channels(struct device_node *np,
-> +						  const char *propname);
-> +
-> +unsigned int of_iio_channel_named_count(struct device_node *np,
-> +					const char *propname);
-> +
-> +#else
-> +struct iio_channel* of_get_named_iio_channel(struct device_node *np,
-> +                                             const char *propname,
-> +                                             int index)
-> +{
-> +	return ERR_PTR(-ENODEV);
-> +}
-> +
-> +struct iio_channel* of_get_named_all_iio_channels(struct device_node *np,
-> +						  const char *propname)
-> +{
-> +	return ERR_PTR(-ENODEV);
-> +}
-> +
-> +unsigned int of_iio_channel_named_count(struct device_node *np,
-> +					const char *propname)
-> +{
-> +	return 0;
-> +}
-> +#endif
-> +
-> +/**
-> + * of_get_iio_channel() - get a iio channel from the device tree
-> + * @np:           Device node to get the channel from
-> + * @index:        Index of the channel
-> + */
-> +static inline struct iio_channel* of_get_iio_channel(struct device_node *np,
-> +						     int index)
-> +{
-> +	return of_get_named_iio_channel(np, "iio-channels", index);
-> +}
-> +
-> +/**
-> + * of_get_all_iio_channels() - get a iio channel from the device tree
-> + * @np:           Device node to get the channel from
-> + */
-> +static inline struct iio_channel* of_get_all_iio_channels(struct device_node *np)
-> +{
-> +	return of_get_named_all_iio_channels(np, "iio-channels");
-> +}
-> +
-> +/**
-> + * of_get_iio_channel() - get the number of iio channel from the device tree
-> + * @np:           Device node to get the number of channel from
-> + */
-> +static inline unsigned int of_iio_channel_count(struct device_node *np)
-> +{
-> +	return of_iio_channel_named_count(np, "iio-channels");
-> +}
-> +
-> +struct iio_channel* devm_iio_channel_get(struct device* dev, int index);
-> +
->  #endif
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 4369224..6a817a8 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -33,6 +33,17 @@
+ #define SEQ_SETTLE		275
+ #define MAX_12BIT		((1 << 12) - 1)
+ 
++/*
++ * Refer to function regbit_map() to
++ * map the values in the matrix.
++ */
++static int config[4][4] = {
++		{1,	0,	1,	0},
++		{2,	3,	2,	3},
++		{4,	5,	4,	5},
++		{0,	6,	0,	6}
++};
++
+ struct titsc {
+ 	struct input_dev	*input;
+ 	struct ti_tscadc_dev	*mfd_tscadc;
+@@ -42,6 +53,9 @@ struct titsc {
+ 	unsigned int		enable_bits;
+ 	bool			pen_down;
+ 	int			steps_to_configure;
++	int			config_inp[20];
++	int			bit_xp, bit_xn, bit_yp, bit_yn;
++	int			inp_xp, inp_xn, inp_yp, inp_yn;
+ };
+ 
+ static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
+@@ -55,6 +69,107 @@ static void titsc_writel(struct titsc *tsc, unsigned int reg,
+ 	writel(val, tsc->mfd_tscadc->tscadc_base + reg);
+ }
+ 
++/*
++ * Each of the analog lines are mapped
++ * with one or two register bits,
++ * which can be either pulled high/low
++ * depending on the value to be read.
++ */
++static int regbit_map(int val)
++{
++	int map_bits = 0;
++
++	switch (val) {
++	case 1:
++		map_bits = XPP;
++		break;
++	case 2:
++		map_bits = XNP;
++		break;
++	case 3:
++		map_bits = XNN;
++		break;
++	case 4:
++		map_bits = YPP;
++		break;
++	case 5:
++		map_bits = YPN;
++		break;
++	case 6:
++		map_bits = YNN;
++		break;
++	}
++
++	return map_bits;
++}
++
++static int titsc_config_wires(struct titsc *ts_dev)
++{
++	int		analog_line[10], wire_order[10];
++	int		i, temp_bits, err;
++
++	for (i = 0; i < 4; i++) {
++		/*
++		 * Get the order in which TSC wires are attached
++		 * w.r.t. each of the analog input lines on the EVM.
++		 */
++		analog_line[i] = ts_dev->config_inp[i] & 0xF0;
++		analog_line[i] = analog_line[i] >> 4;
++
++		wire_order[i] = ts_dev->config_inp[i] & 0x0F;
++	}
++
++	for (i = 0; i < 4; i++) {
++		switch (wire_order[i]) {
++		case 0:
++			temp_bits = config[analog_line[i]][0];
++			if (temp_bits == 0) {
++				err = -EINVAL;
++				goto ret;
++			} else {
++				ts_dev->bit_xp = regbit_map(temp_bits);
++				ts_dev->inp_xp = analog_line[i];
++				break;
++			}
++		case 1:
++			temp_bits = config[analog_line[i]][1];
++			if (temp_bits == 0) {
++				err = -EINVAL;
++				goto ret;
++			} else {
++				ts_dev->bit_xn = regbit_map(temp_bits);
++				ts_dev->inp_xn = analog_line[i];
++				break;
++			}
++		case 2:
++			temp_bits = config[analog_line[i]][2];
++			if (temp_bits == 0) {
++				err = -EINVAL;
++				goto ret;
++			} else {
++				ts_dev->bit_yp = regbit_map(temp_bits);
++				ts_dev->inp_yp = analog_line[i];
++				break;
++			}
++		case 3:
++			temp_bits = config[analog_line[i]][3];
++			if (temp_bits == 0) {
++				err = -EINVAL;
++				goto ret;
++			} else {
++				ts_dev->bit_yn = regbit_map(temp_bits);
++				ts_dev->inp_yn = analog_line[i];
++				break;
++			}
++		}
++	}
++
++	return 0;
++
++ret:
++	return err;
++}
++
+ static void titsc_step_config(struct titsc *ts_dev)
+ {
+ 	unsigned int	config;
+@@ -65,18 +180,18 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	total_steps = 2 * ts_dev->steps_to_configure;
+ 
+ 	config = STEPCONFIG_MODE_HWSYNC |
+-			STEPCONFIG_AVG_16 | STEPCONFIG_XPP;
++			STEPCONFIG_AVG_16 | ts_dev->bit_xp;
+ 	switch (ts_dev->wires) {
+ 	case 4:
+-		config |= STEPCONFIG_INP_AN2 | STEPCONFIG_XNN;
++		config |= STEPCONFIG_INP(ts_dev->inp_yp) | ts_dev->bit_xn;
+ 		break;
+ 	case 5:
+-		config |= STEPCONFIG_YNN |
+-				STEPCONFIG_INP_AN4 | STEPCONFIG_XNN |
+-				STEPCONFIG_YPP;
++		config |= ts_dev->bit_yn |
++				STEPCONFIG_INP_AN4 | ts_dev->bit_xn |
++				ts_dev->bit_yp;
+ 		break;
+ 	case 8:
+-		config |= STEPCONFIG_INP_AN2 | STEPCONFIG_XNN;
++		config |= STEPCONFIG_INP(ts_dev->inp_yp) | ts_dev->bit_xn;
+ 		break;
+ 	}
+ 
+@@ -87,18 +202,18 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 
+ 	config = 0;
+ 	config = STEPCONFIG_MODE_HWSYNC |
+-			STEPCONFIG_AVG_16 | STEPCONFIG_YNN |
++			STEPCONFIG_AVG_16 | ts_dev->bit_yn |
+ 			STEPCONFIG_INM_ADCREFM | STEPCONFIG_FIFO1;
+ 	switch (ts_dev->wires) {
+ 	case 4:
+-		config |= STEPCONFIG_YPP;
++		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
+ 		break;
+ 	case 5:
+-		config |= STEPCONFIG_XPP | STEPCONFIG_INP_AN4 |
+-				STEPCONFIG_XNP | STEPCONFIG_YPN;
++		config |= ts_dev->bit_xp | STEPCONFIG_INP_AN4 |
++				ts_dev->bit_xn | ts_dev->bit_yp;
+ 		break;
+ 	case 8:
+-		config |= STEPCONFIG_YPP;
++		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
+ 		break;
+ 	}
+ 
+@@ -109,9 +224,9 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 
+ 	config = 0;
+ 	/* Charge step configuration */
+-	config = STEPCONFIG_XPP | STEPCONFIG_YNN |
++	config = ts_dev->bit_xp | ts_dev->bit_yn |
+ 			STEPCHARGE_RFP_XPUL | STEPCHARGE_RFM_XNUR |
+-			STEPCHARGE_INM_AN1 | STEPCHARGE_INP_AN1;
++			STEPCHARGE_INM_AN1 | STEPCHARGE_INP(ts_dev->inp_yp);
+ 
+ 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
+ 	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
+@@ -119,13 +234,14 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	config = 0;
+ 	/* Configure to calculate pressure */
+ 	config = STEPCONFIG_MODE_HWSYNC |
+-			STEPCONFIG_AVG_16 | STEPCONFIG_YPP |
+-			STEPCONFIG_XNN | STEPCONFIG_INM_ADCREFM;
++			STEPCONFIG_AVG_16 | ts_dev->bit_yp |
++			ts_dev->bit_xn | STEPCONFIG_INM_ADCREFM |
++			STEPCONFIG_INP(ts_dev->inp_xp);
+ 	titsc_writel(ts_dev, REG_STEPCONFIG(total_steps + 1), config);
+ 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 1),
+ 			STEPCONFIG_OPENDLY);
+ 
+-	config |= STEPCONFIG_INP_AN3 | STEPCONFIG_FIFO1;
++	config |= STEPCONFIG_INP(ts_dev->inp_yn) | STEPCONFIG_FIFO1;
+ 	titsc_writel(ts_dev, REG_STEPCONFIG(total_steps + 2), config);
+ 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 2),
+ 			STEPCONFIG_OPENDLY);
+@@ -295,6 +411,8 @@ static int __devinit titsc_probe(struct platform_device *pdev)
+ 	ts_dev->wires = pdata->tsc_init->wires;
+ 	ts_dev->x_plate_resistance = pdata->tsc_init->x_plate_resistance;
+ 	ts_dev->steps_to_configure = pdata->tsc_init->steps_to_configure;
++	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
++			sizeof(pdata->tsc_init->wire_config));
+ 
+ 	err = request_irq(ts_dev->irq, titsc_irq,
+ 			  0, pdev->dev.driver->name, ts_dev);
+@@ -304,6 +422,11 @@ static int __devinit titsc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO0THRES);
++	err = titsc_config_wires(ts_dev);
++	if (err) {
++		dev_err(&pdev->dev, "wrong i/p wire configuration\n");
++		goto err_free_irq;
++	}
+ 	titsc_step_config(ts_dev);
+ 	titsc_writel(ts_dev, REG_FIFO0THR, ts_dev->steps_to_configure);
+ 
+@@ -373,6 +496,7 @@ static int titsc_resume(struct device *dev)
+ 				0x00);
+ 		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
+ 	}
++	titsc_config_wires(ts_dev);
+ 	titsc_step_config(ts_dev);
+ 	titsc_writel(ts_dev, REG_FIFO0THR,
+ 			ts_dev->steps_to_configure);
+diff --git a/include/linux/input/ti_am335x_tsc.h b/include/linux/input/ti_am335x_tsc.h
+index 49269a2..6a66b4d 100644
+--- a/include/linux/input/ti_am335x_tsc.h
++++ b/include/linux/input/ti_am335x_tsc.h
+@@ -12,12 +12,24 @@
+  *			A step configured to read a single
+  *			co-ordinate value, can be applied
+  *			more number of times for better results.
++ * @wire_config:	Different EVM's could have a different order
++ *			for connecting wires on touchscreen.
++ *			We need to provide an 8 bit number where in
++ *			the 1st four bits represent the analog lines
++ *			and the next 4 bits represent positive/
++ *			negative terminal on that input line.
++ *			Notations to represent the input lines and
++ *			terminals resoectively is as follows:
++ *			AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
++ *			XP  = 0, XN = 1, YP = 2, YN = 3.
++ *
+  */
+ 
+ struct tsc_data {
+ 	int wires;
+ 	int x_plate_resistance;
+ 	int steps_to_configure;
++	int wire_config[10];
+ };
+ 
+ #endif
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index 23e4f33..9624fea 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -72,8 +72,6 @@
+ #define STEPCONFIG_INM_ADCREFM	STEPCONFIG_INM(8)
+ #define STEPCONFIG_INP_MASK	(0xF << 19)
+ #define STEPCONFIG_INP(val)	((val) << 19)
+-#define STEPCONFIG_INP_AN2	STEPCONFIG_INP(2)
+-#define STEPCONFIG_INP_AN3	STEPCONFIG_INP(3)
+ #define STEPCONFIG_INP_AN4	STEPCONFIG_INP(4)
+ #define STEPCONFIG_INP_ADCREFM	STEPCONFIG_INP(8)
+ #define STEPCONFIG_FIFO1	BIT(26)
+@@ -95,7 +93,6 @@
+ #define STEPCHARGE_INM_AN1	STEPCHARGE_INM(1)
+ #define STEPCHARGE_INP_MASK	(0xF << 19)
+ #define STEPCHARGE_INP(val)	((val) << 19)
+-#define STEPCHARGE_INP_AN1	STEPCHARGE_INP(1)
+ #define STEPCHARGE_RFM_MASK	(3 << 23)
+ #define STEPCHARGE_RFM(val)	((val) << 23)
+ #define STEPCHARGE_RFM_XNUR	STEPCHARGE_RFM(1)
+@@ -117,6 +114,13 @@
+ #define CNTRLREG_8WIRE		CNTRLREG_AFE_CTRL(3)
+ #define CNTRLREG_TSCENB		BIT(7)
+ 
++#define XPP			STEPCONFIG_XPP
++#define XNP			STEPCONFIG_XNP
++#define XNN			STEPCONFIG_XNN
++#define YPP			STEPCONFIG_YPP
++#define YPN			STEPCONFIG_YPN
++#define YNN			STEPCONFIG_YNN
++
+ #define ADC_CLK			3000000
+ #define	MAX_CLK_DIV		7
+ #define TOTAL_STEPS		16
+-- 
+1.7.0.4
 
