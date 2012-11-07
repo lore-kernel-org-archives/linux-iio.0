@@ -1,116 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog110.obsmtp.com ([207.126.144.129]:52455 "EHLO
-	eu1sys200aog110.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750772Ab2KFLMG convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 6 Nov 2012 06:12:06 -0500
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Denis Ciocca <denis.ciocca@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	Pavel Machek <pavel@denx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"burman.yan@gmail.com" <burman.yan@gmail.com>
-Date: Tue, 6 Nov 2012 12:11:33 +0100
-Subject: Re: STMicroelectronics accelerometers driver.
-Message-ID: <5098F065.1090009@st.com>
-References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de>
- <20121008195007.GA32042@elf.ucw.cz> <507338B5.60307@metafoo.de>
- <665718a4-de6b-4d09-ba80-35705fcf2595@email.android.com>
- <CAEE_umojW5OyB3yGgE54wH7_k__dBu9=Yew_0tCCf5--=C2g5g@mail.gmail.com>
- <507D9EA3.4070009@metafoo.de> <5085128C.7020507@st.com>
- <50858B44.2080006@kernel.org> <5087E2A8.4070304@st.com>
- <508A7DA6.7050505@metafoo.de> <508E4492.8080000@st.com>
- <508E48D1.3000703@metafoo.de> <508E5978.5000907@st.com>
- <508E5AD5.1040907@metafoo.de> <50914366.4090000@st.com>
- <5091546D.9000601@metafoo.de>
- <CAEE_umoKvv9ciBfUSahDqsmcbHi9W=93o5YSpE-vxUduCmqWSQ@mail.gmail.com>
- <50982F71.3060606@kernel.org>
-In-Reply-To: <50982F71.3060606@kernel.org>
-Content-Type: text/plain; charset=US-ASCII
+Received: from comal.ext.ti.com ([198.47.26.152]:54031 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752585Ab2KGHHp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 7 Nov 2012 02:07:45 -0500
+From: "Patil, Rachna" <rachna@ti.com>
+To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
+	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>
+CC: Rob Landley <rob@landley.net>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dmitry Torokhov <dtor@mail.ru>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	"Patil, Rachna" <rachna@ti.com>
+Subject: [PATCH RESEND 5/7] MFD: ti_am335x_tscadc: Add DT support
+Date: Wed, 7 Nov 2012 12:22:02 +0530
+Message-ID: <1352271124-5513-6-git-send-email-rachna@ti.com>
+In-Reply-To: <1352271124-5513-1-git-send-email-rachna@ti.com>
+References: <1352271124-5513-1-git-send-email-rachna@ti.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+Make changes to add DT support in the MFD core driver.
 
-Thanks for your support!
-I have applied your comments, only two point I would check better.
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+---
+ drivers/mfd/ti_am335x_tscadc.c |   28 +++++++++++++++++++++++-----
+ 1 files changed, 23 insertions(+), 5 deletions(-)
 
-
-
->> +} st_accel_sensors[] = {
->> +     {
->> +             .wai = ST_ACCEL_1_WAI_EXP,
->> +             .ch = (struct iio_chan_spec *)st_accel_12bit_channels,
->> +             .odr = {
->> +                     .addr = ST_ACCEL_1_ODR_ADDR,
->> +                     .mask = ST_ACCEL_1_ODR_MASK,
->> +                     .num_bit = ST_ACCEL_1_ODR_N_BIT,
->> +                     .odr_avl = {
->    While sometimes c99 assignment helps with clarity - sometimes it just bloats the code.
->    Personally I'd do these as
->    .odr_avl = {{ST_ACCEL_ODR_AVL_1HZ, ST_ACCEL_1_ODR_AVL_1HZ_VAL},
->                {...}
-> etc
->
-> or for that matter take the view that the defines are largely pointless as they
-> are only used here and
-> just do
->       .odr_avl = {{1, 0x01},
->                   {10, 0x02},
-> etc.
-> Or maybe if it fits on the line
->     .odr_avl = {{ .hz = 1, .value = 0x01 } might be the clearest... Not sure.
->
-
-In my first version I have used about this compact approach but 
-Lars-Peter tell to me to use this style code:
- >I'd use
- > .odr_avl = {
- >        [0] = {
- >                ...
- >        },
- >        [1] = {
- >                ...
- >
- >Makes things a bit more readable in my opinion.
-
-Ok for me it is not a problem but you must tell me one definitive style 
-please. I think this style is more cleanly, though are necessary more rows.
-
-
-
->> +/**
->> + * struct st_accel_platform_data - ST accel device platform data
->> + * @fullscale: Value of fullscale used for the sensor.
->> + * @sampling_frequency: Value of sampling frequency used for the sensor.
->> + */
->> +
->> +struct st_accel_platform_data {
->> +     int fullscale;
->> +     int sampling_frequency;
->> +};
->
-> What is the purpose of having these as platform data?
->
-
-For now the purpose is to set only the initial values for fullscale and 
-sampling_frequency but I think it's good thing include the mapping of 
-axis. You think it's necessary to remove this for now?
-
-
-
-Thanks,
-
-Denis
-
-
-
-
-
-
-
-
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index 8ca3bf0..07b7788 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -22,6 +22,8 @@
+ #include <linux/regmap.h>
+ #include <linux/mfd/core.h>
+ #include <linux/pm_runtime.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
+ 
+ #include <linux/mfd/ti_am335x_tscadc.h>
+ #include <linux/input/ti_am335x_tsc.h>
+@@ -64,20 +66,31 @@ static	int __devinit ti_tscadc_probe(struct platform_device *pdev)
+ 	struct resource		*res;
+ 	struct clk		*clk;
+ 	struct mfd_tscadc_board	*pdata = pdev->dev.platform_data;
++	struct device_node	*node = pdev->dev.of_node;
+ 	struct mfd_cell		*cell;
+ 	int			err, ctrl;
+ 	int			clk_value, clock_rate;
+-	int			tsc_wires, adc_channels = 0, total_channels;
++	int			tsc_wires = 0, adc_channels = 0, total_channels;
+ 
+-	if (!pdata) {
++	if (!pdata && !pdev->dev.of_node) {
+ 		dev_err(&pdev->dev, "Could not find platform data\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	if (pdata->adc_init)
+-		adc_channels = pdata->adc_init->adc_channels;
++	if (pdev->dev.of_node) {
++		node = of_find_node_by_name(pdev->dev.of_node, "tsc");
++		of_property_read_u32(node, "wires", &tsc_wires);
++
++		node = of_find_node_by_name(pdev->dev.of_node, "adc");
++		of_property_read_u32(node, "adc-channels", &adc_channels);
++	} else {
++		if (pdata->tsc_init)
++			tsc_wires = pdata->tsc_init->wires;
++
++		if (pdata->adc_init)
++			adc_channels = pdata->adc_init->adc_channels;
++	}
+ 
+-	tsc_wires = pdata->tsc_init->wires;
+ 	total_channels = tsc_wires + adc_channels;
+ 
+ 	if (total_channels > 8) {
+@@ -256,11 +269,16 @@ static const struct dev_pm_ops tscadc_pm_ops = {
+ #define TSCADC_PM_OPS NULL
+ #endif
+ 
++static const struct of_device_id ti_tscadc_dt_ids[] = {
++	{ .compatible = "ti,ti-tscadc", },
++};
++
+ static struct platform_driver ti_tscadc_driver = {
+ 	.driver = {
+ 		.name   = "ti_tscadc",
+ 		.owner	= THIS_MODULE,
+ 		.pm	= TSCADC_PM_OPS,
++		.of_match_table = of_match_ptr(ti_tscadc_dt_ids),
+ 	},
+ 	.probe	= ti_tscadc_probe,
+ 	.remove	= __devexit_p(ti_tscadc_remove),
+-- 
+1.7.0.4
 
