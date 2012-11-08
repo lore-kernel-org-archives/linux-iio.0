@@ -1,73 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43027 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755351Ab2KHR3I (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 Nov 2012 12:29:08 -0500
-References: <1352306690-25841-1-git-send-email-alban.bedel@avionic-design.de> <509B7BF0.5050704@antcom.de> <509BD1D9.20100@jic23.retrosnub.co.uk> <20121108175617.06429ab1@avionic-0020.adnet.avionic-design.de>
-In-Reply-To: <20121108175617.06429ab1@avionic-0020.adnet.avionic-design.de>
+Received: from mail-qa0-f53.google.com ([209.85.216.53]:43844 "EHLO
+	mail-qa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751228Ab2KHJFY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 Nov 2012 04:05:24 -0500
+Received: by mail-qa0-f53.google.com with SMTP id k31so1114458qat.19
+        for <linux-iio@vger.kernel.org>; Thu, 08 Nov 2012 01:05:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] staging:iio:lpc32xx_adc: Add scale/offset support
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Thu, 08 Nov 2012 17:28:46 +0000
-To: Alban Bedel <alban.bedel@avionic-design.de>
-CC: Roland Stigge <stigge@antcom.de>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <f16ac222-cb36-4ada-bd00-c9166ea94dd3@email.android.com>
+Date: Thu, 8 Nov 2012 17:05:23 +0800
+Message-ID: <CAPgLHd873xAvToL7reBbxmS-iEoJ9OqvjEoXf8RsG2esbTyo1A@mail.gmail.com>
+Subject: [PATCH -next] iio: isl29018: fix to return error or 0 in isl29018_write_raw()
+From: Wei Yongjun <weiyj.lk@gmail.com>
+To: jic23@cam.ac.uk, gregkh@linuxfoundation.org,
+	grant.likely@secretlab.ca, rob.herring@calxeda.com
+Cc: yongjun_wei@trendmicro.com.cn, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, devicetree-discuss@lists.ozlabs.org
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+
+We had assigned the return value to 'ret' but ignored it when
+return from isl29018_write_raw(), it's better to return 'ret'
+instead of 0.
+
+dpatch engine is used to auto generate this patch.
+(https://github.com/weiyj/dpatch)
+
+Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+---
+ drivers/staging/iio/light/isl29018.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 3b03f6f..1d5b294 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -356,7 +356,7 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
+ 	}
+ 	mutex_unlock(&chip->lock);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int isl29018_read_raw(struct iio_dev *indio_dev,
 
 
-Alban Bedel <alban.bedel@avionic-design.de> wrote:
-
->On Thu, 08 Nov 2012 15:38:01 +0000
->Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
->
->> Why not do this with regulators?  That would give a more flexible
->> system and all that stuff is already well supported (if fixed
->voltages
->> are supplied then used fixed regulators).
->
->I agree that would probably be better. But for me that raise the
->question of having this stuff in the ADC driver at all. Most ADC just
->return a value from 0 to MAX and have no way to find out their supply
->voltage. 
-A lot of iio drivers require a regulator for exactly this reason.  Either it is fixed and can go in device tree or it isn't and can be queried or set.
-
-
-If we start with binding to regulators in the drivers we'll
->soon get a lots of non-flexible and duplicated code.
-Why? Duplication maybe but I don't see where inflexibility comes from.. duplication may mean some library functions would be useful.
-
->
->It would be a lot nicer if the ADC channels could be bound to a
->regulator and a transform function that compute a real world voltage
->out
->of:
-> - The ADC value
-> - The ADC range
-> - The regulator representing the ADC reference voltage
->
->The simplest transform would be a linear curve with an optional offset,
->but any kind of transform would also be possible allowing to represent
->about any circuit that might be between the supply regulator and the
->ADC
->input.
-This still sits in the realm of regulators.  Far as iio driver is concerned there is a voltage on a pin.  What that means wrt to resulting scale is device dependent.  It is an obscure use case where the reference inputs are changing frequently..
-
-Now I can see an arguement for a suitable regulator which takes one voltage in and does flexible transformations of it.  Also it can work the otherway with iio driver requesting a different reference value.
-
-Now there may be a case for transforms on incoming adc channels as they are inherently dynamic.  Right now we promise only to give what the adc saw not some way before it on the otherside of weirdness.
-
-So I am not yet convinced! Perhaps example configurations would help?
-
-Remember that we deliberately leave as much data transforming to userspace as possible. So far the only non linear stuff has been slow so it hasn't mattered.
-
-Jonathan
->
->Alban
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
