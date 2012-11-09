@@ -1,125 +1,341 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from antcom.de ([188.40.178.216]:35245 "EHLO chuck.antcom.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751704Ab2KHJcT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 8 Nov 2012 04:32:19 -0500
-Message-ID: <509B7BF0.5050704@antcom.de>
-Date: Thu, 08 Nov 2012 10:31:28 +0100
-From: Roland Stigge <stigge@antcom.de>
+Received: from smtp-out-196.synserver.de ([212.40.185.196]:1095 "EHLO
+	smtp-out-196.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753879Ab2KIOsK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 9 Nov 2012 09:48:10 -0500
+Message-ID: <509D17A5.3060704@metafoo.de>
+Date: Fri, 09 Nov 2012 15:48:05 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
 To: Alban Bedel <alban.bedel@avionic-design.de>
-CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH] staging:iio:lpc32xx_adc: Add scale/offset support
-References: <1352306690-25841-1-git-send-email-alban.bedel@avionic-design.de>
-In-Reply-To: <1352306690-25841-1-git-send-email-alban.bedel@avionic-design.de>
-Content-Type: text/plain; charset=UTF-8
+CC: linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org
+Subject: Re: Querry on IIO/ADC DT based consumer device probe
+References: <CAHfPSqCnBw1ed97greGdMz-qexWbB2b5_NrbT6FFUeawvygWWg@mail.gmail.com> <20121108175318.1b79884f@avionic-0020.adnet.avionic-design.de>
+In-Reply-To: <20121108175318.1b79884f@avionic-0020.adnet.avionic-design.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Alban,
-
-thanks for the patch. I can confirm that it compiles and runs fine, but
-maybe someone else can comment on the IIO part.
-
-Some nitpicking below.
-
-On 07/11/12 17:44, Alban Bedel wrote:
+On 11/08/2012 05:53 PM, Alban Bedel wrote:
+> On Fri, 5 Oct 2012 14:37:01 +0530
+> Naveen Krishna Ch
+> <naveenkrishna.ch@gmail.com> wrote:
+> 
+>> Hello All,
+>>
+>> I'm trying to add an ADC driver under IIO/ADC.
+>> Machine is DT based so, passing the ADC device as tree node and
+>> consumer devices (thermistors) as child nodes via DT.
+>>
+>> I don't find a frame work to parse the child nodes and probe them like
+>> I2C does using of/of_i2c.c
+> 
+> Here is my take at DT support in IIO, I wanted to submit that later on
+> after some more test and cleanup but you can see if it help you.
+> 
+> Alban
+> 
+> From 15decde13239f09101673b08aa0bd7e67e970b3c Mon Sep 17 00:00:00 2001
+> From: Alban Bedel <alban.bedel@avionic-design.de>
+> Date: Thu, 18 Oct 2012 17:07:29 +0200
+> Subject: [PATCH] IIO: Add basic DT/devm support for in kernel users
+> 
 > Signed-off-by: Alban Bedel <alban.bedel@avionic-design.de>
 > ---
->  .../bindings/staging/iio/adc/lpc32xx-adc.txt       |    6 ++++
->  drivers/staging/iio/adc/lpc32xx_adc.c              |   30 +++++++++++++++++++-
->  2 files changed, 35 insertions(+), 1 deletions(-)
+>  .../devicetree/bindings/iio/iio-channel.txt        |   27 ++++
+>  drivers/iio/inkern.c                               |  154 ++++++++++++++++++++
+>  include/linux/iio/consumer.h                       |   63 ++++++++
+>  3 files changed, 244 insertions(+), 0 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/iio-channel.txt
 > 
-> diff --git a/Documentation/devicetree/bindings/staging/iio/adc/lpc32xx-adc.txt b/Documentation/devicetree/bindings/staging/iio/adc/lpc32xx-adc.txt
-> index b3629d3..515c128 100644
-> --- a/Documentation/devicetree/bindings/staging/iio/adc/lpc32xx-adc.txt
-> +++ b/Documentation/devicetree/bindings/staging/iio/adc/lpc32xx-adc.txt
-> @@ -6,6 +6,11 @@ Required properties:
->    region.
->  - interrupts: The ADC interrupt
->  
-> +Optional properties:
-> +- reference-voltages: the 3 reference voltages value (in mV) to use
-> +  for scaling. If not given or 0 a scaling factor of 1 is used.
-> +- offsets: the 3 offsets to add to the raw value before scaling.
+> diff --git a/Documentation/devicetree/bindings/iio/iio-channel.txt b/Documentation/devicetree/bindings/iio/iio-channel.txt
+> new file mode 100644
+> index 0000000..dc894f4
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/iio-channel.txt
+> @@ -0,0 +1,27 @@
+> +Specifying IIO channels for devices
+> +===================================
 > +
->  Example:
+> +1) iio-channels property
+> +------------------------
+> +
+> +Nodes that makes use of IIO channels should specify them using one or more
+> +properties, each containing a iio-channels-list':
+> +
+> +	iio-channel-list ::= <single-iio-channel> [iio-channel-list]
+> +	single-iio-channel ::= <iio-channel-phandle> <iio-channel-specifier>
+> +	iio-channel-phandle : phandle to iio-channel controller node
+> +	iio-channel-specifier : Array of #iio-channel-cells specifying
+> +	                        specific IIO channel (controller specific)
+
+I'd prefer something that is more in sync with what we have for other
+subsystems which have a provider-consumer relationship, like for example the
+clk and dma frameworks. Something like:
+
+iio-channels = <&phandle1 &phandle2>;
+iio-channel-names = "voltage", "current";
+
+Also there is another major issue here. Devicetree is supposed to be
+operating system independent, IIO on the other hand is a Linux specific
+term. I'm not sure though yet what could be used instead. Maybe just
+'io-...'. I've put the devicetree list on Cc.
+
+> +
+> +GPIO properties should be named "[<name>-]iio-channels".  Exact
+
+IIO ;)
+
+> +meaning of each gpios property must be documented in the device tree
+> +binding for each device.
+> +
+> +2) iio device nodes
+> +------------------------
+> +
+> +Every IIO device must have #iio-channel-cells contain the size of the
+> +iio-channel-specifier.
+> +
+> +Currently #iio-channel-cells will always be 1 but this will most
+> +propably change in the future.
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index 6d5194f..5986ef5 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/export.h>
+>  #include <linux/slab.h>
+>  #include <linux/mutex.h>
+> +#include <linux/of.h>
 >  
->  	adc@40048000 {
-> @@ -13,4 +18,5 @@ Example:
->  		reg = <0x40048000 0x1000>;
->  		interrupt-parent = <&mic>;
->  		interrupts = <39 0>;
-> +		reference-voltages = <5000>, <3300>, <1200>;
->  	};
-> diff --git a/drivers/staging/iio/adc/lpc32xx_adc.c b/drivers/staging/iio/adc/lpc32xx_adc.c
-> index 10c5962..aaa23ac 100644
-> --- a/drivers/staging/iio/adc/lpc32xx_adc.c
-> +++ b/drivers/staging/iio/adc/lpc32xx_adc.c
-> @@ -64,6 +64,8 @@ struct lpc32xx_adc_info {
->  	struct completion completion;
->  
->  	u32 value;
-> +	u32 ref_voltage[3];
-> +	u32 offset[3];
->  };
->  
->  static int lpc32xx_read_raw(struct iio_dev *indio_dev,
-> @@ -91,6 +93,26 @@ static int lpc32xx_read_raw(struct iio_dev *indio_dev,
->  		return IIO_VAL_INT;
->  	}
->  
-> +	if (mask == IIO_CHAN_INFO_SCALE) {
-> +		if (info->ref_voltage[chan->channel]) {
-> +			unsigned factor;
-> +			factor = div_u64((u64)info->ref_voltage[chan->channel] *
-> +					 (u64)1000000,
-> +					 ADC_VALUE_MASK);
-> +			*val = factor / 1000000;
-> +			*val2 = factor % 1000000;
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		} else {
-> +			*val = 1;
-> +			return IIO_VAL_INT;
-> +		}
+>  #include <linux/iio/iio.h>
+>  #include "iio_core.h"
+> @@ -404,3 +405,156 @@ err_unlock:
+>  	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(iio_get_channel_type);
+> +
+> +#ifdef CONFIG_OF
+> +static int of_dev_node_match(struct device *dev, void *data)
+> +{
+> +        return dev->parent ? dev->parent->of_node == data : 0;
+> +}
+> +
+> +int __of_get_named_iio_channel(struct iio_channel* channel,
+> +			       struct device_node *np,
+> +			       const char *propname,
+> +			       int index)
+> +{
+> +	struct device *dev;
+> +	struct of_phandle_args ph;
+> +	struct iio_dev *indio_dev;
+> +	int ret, channel_id = -1;
+> +
+> +	ret = of_parse_phandle_with_args(np, propname, "#iio-channel-cells",
+> +					 index, &ph);
+> +	if (ret)
+> +		return ret;
+> +
+> +	dev = bus_find_device(&iio_bus_type, NULL, ph.np,
+> +			      of_dev_node_match);
+> +	if (!dev)
+> +		return -EPROBE_DEFER;
+> +
+> +	if (ph.args_count > 0)
+> +		channel_id = ph.args[0];
+> +
+> +	indio_dev = dev_to_iio_dev(dev);
+> +	if (channel_id < 0 || channel_id >= indio_dev->num_channels)
+> +		return -EINVAL;
+> +
+> +	iio_device_get(indio_dev);
+> +	channel->indio_dev = indio_dev;
+> +	channel->channel = &indio_dev->channels[channel_id];
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * of_get_iio_channel() - get a iio channel from a device tree property
+> + * @np:           Device node to get the channel from
+> + * @propname:     The property to read
+> + * @index:        Index of the channel
+> + */
+> +struct iio_channel* of_get_named_iio_channel(struct device_node *np,
+> +                                             const char *propname,
+> +                                             int index)
+> +{
+> +	struct iio_channel* channel;
+> +	int ret;
+> +
+> +	channel = kzalloc(sizeof(*channel), GFP_KERNEL);
+> +	if (!channel)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	ret = __of_get_named_iio_channel(channel, np, propname, index);
+> +	if (ret) {
+> +		kfree(channel);
+> +		return ERR_PTR(ret);
+> +	}
+> +	return channel;
+> +}
+> +
+> +EXPORT_SYMBOL_GPL(of_get_named_iio_channel);
+> +
+> +struct iio_channel* of_get_named_all_iio_channels(struct device_node *np,
+> +						  const char *propname)
+> +{
+> +	int ret, i, cnt;
+> +	struct iio_channel* channels;
+> +
+> +	cnt = of_iio_channel_named_count(np, propname);
+> +	if (cnt == 0)
+> +		return NULL;
+> +
+> +	channels = kzalloc((cnt+1) * sizeof(*channels), GFP_KERNEL);
+> +	if (!channels)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	for (i = 0 ; i < cnt ; i += 1) {
+> +		ret = __of_get_named_iio_channel(&channels[i],
+> +						 np, propname, i);
+> +		if (ret)
+> +			break;
 > +	}
 > +
-> +	if (mask == IIO_CHAN_INFO_OFFSET) {
-> +		*val = info->offset[chan->channel];
-> +		return IIO_VAL_INT;
+> +	if (ret) {
+> +		for ( ; i >= 0 ; i -= 1)
+> +			iio_device_put(channels[i].indio_dev);
+> +		kfree(channels);
+> +		return ERR_PTR(ret);
 > +	}
 > +
->  	return -EINVAL;
->  }
+> +	return channels;
+> +
+> +}
+> +EXPORT_SYMBOL_GPL(of_get_named_all_iio_channels);
+> +
+> +unsigned int of_iio_channel_named_count(struct device_node *np,
+> +					const char *propname)
+> +{
+> +        unsigned int cnt = 0;
+> +
+> +        do {
+> +                int ret;
+> +
+> +                ret = of_parse_phandle_with_args(np, propname, "#iio-channel-cells",
+> +                                                 cnt, NULL);
+> +                /* A hole in the gpios = <> counts anyway. */
+> +                if (ret < 0 && ret != -EEXIST)
+> +                        break;
+> +        } while (++cnt);
+> +
+> +        return cnt;
+> +
+> +}
+> +EXPORT_SYMBOL_GPL(of_iio_channel_named_count);
+> +
+> +struct iio_channel_devres {
+> +	struct iio_channel*	channel;
+> +};
+> +
+> +static void devm_iio_channel_release(struct device *dev, void *res)
+> +{
+> +	struct iio_channel_devres *dr = res;
+> +	iio_channel_release(dr->channel);
+> +}
+> +
+> +struct iio_channel* devm_iio_channel_get(struct device* dev, int index)
+> +{
+> +	struct iio_channel_devres *dr;
+> +	struct iio_channel *channel;
+> +
+> +	channel = of_get_iio_channel(dev->of_node, index);
+> +	if (IS_ERR(channel))
+> +		return channel;
+> +
+> +	dr = devres_alloc(devm_iio_channel_release, sizeof(*dr), GFP_KERNEL);
+> +	if (!dr) {
+> +		iio_channel_release(channel);
+> +		return ERR_PTR(-ENOMEM);
+> +	}
+> +
+> +	dr->channel = channel;
+> +	devres_add(dev, dr);
+> +	return dr->channel;
+> +}
+> +EXPORT_SYMBOL_GPL(devm_iio_channel_get);
+> +
+> +#endif
+> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+> index e4ff665..e2f958a 100644
+> --- a/include/linux/iio/consumer.h
+> +++ b/include/linux/iio/consumer.h
+> @@ -131,4 +131,67 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val,
+>  int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
+>  	int *processed, unsigned int scale);
 >  
-> @@ -103,7 +125,9 @@ static const struct iio_info lpc32xx_adc_iio_info = {
->  	.type = IIO_VOLTAGE,				\
->  	.indexed = 1,					\
->  	.channel = _index,				\
-> -	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,	\
-> +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
-> +	             IIO_CHAN_INFO_SCALE_SEPARATE_BIT |	\
-> +	             IIO_CHAN_INFO_OFFSET_SEPARATE_BIT,	\
-
-Shouldn't here be tabs instead of spaces? You can check with
-scripts/checkpatch.pl
-
->  	.address = AD_IN * _index,			\
->  	.scan_index = _index,				\
->  }
-> @@ -149,6 +173,10 @@ static int __devinit lpc32xx_adc_probe(struct platform_device *pdev)
->  	}
->  
->  	info = iio_priv(iodev);
-> +	of_property_read_u32_array(pdev->dev.of_node, "reference-voltages",
-> +				   info->ref_voltage, ARRAY_SIZE(info->ref_voltage));
-
-Considering that there is one line break already, maybe there should be
-another one for keeping line length.
-
-> +	of_property_read_u32_array(pdev->dev.of_node, "offsets",
-> +				   info->offset, ARRAY_SIZE(info->offset));
->  
->  	info->adc_base = ioremap(res->start, resource_size(res));
->  	if (!info->adc_base) {
+> +#ifdef CONFIG_OF
+> +struct iio_channel* of_get_named_iio_channel(struct device_node *np,
+> +                                             const char *propname,
+> +                                             int index);
+> +
+> +struct iio_channel* of_get_named_all_iio_channels(struct device_node *np,
+> +						  const char *propname);
+> +
+> +unsigned int of_iio_channel_named_count(struct device_node *np,
+> +					const char *propname);
+> +
+> +#else
+> +struct iio_channel* of_get_named_iio_channel(struct device_node *np,
+> +                                             const char *propname,
+> +                                             int index)
+> +{
+> +	return ERR_PTR(-ENODEV);
+> +}
+> +
+> +struct iio_channel* of_get_named_all_iio_channels(struct device_node *np,
+> +						  const char *propname)
+> +{
+> +	return ERR_PTR(-ENODEV);
+> +}
+> +
+> +unsigned int of_iio_channel_named_count(struct device_node *np,
+> +					const char *propname)
+> +{
+> +	return 0;
+> +}
+> +#endif
+> +
+> +/**
+> + * of_get_iio_channel() - get a iio channel from the device tree
+> + * @np:           Device node to get the channel from
+> + * @index:        Index of the channel
+> + */
+> +static inline struct iio_channel* of_get_iio_channel(struct device_node *np,
+> +						     int index)
+> +{
+> +	return of_get_named_iio_channel(np, "iio-channels", index);
+> +}
+> +
+> +/**
+> + * of_get_all_iio_channels() - get a iio channel from the device tree
+> + * @np:           Device node to get the channel from
+> + */
+> +static inline struct iio_channel* of_get_all_iio_channels(struct device_node *np)
+> +{
+> +	return of_get_named_all_iio_channels(np, "iio-channels");
+> +}
+> +
+> +/**
+> + * of_get_iio_channel() - get the number of iio channel from the device tree
+> + * @np:           Device node to get the number of channel from
+> + */
+> +static inline unsigned int of_iio_channel_count(struct device_node *np)
+> +{
+> +	return of_iio_channel_named_count(np, "iio-channels");
+> +}
+> +
+> +struct iio_channel* devm_iio_channel_get(struct device* dev, int index);
+> +
+>  #endif
 
