@@ -1,126 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45331 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33971 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965839Ab2KBKFo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Nov 2012 06:05:44 -0400
-Message-ID: <50939AF5.6080201@kernel.org>
-Date: Fri, 02 Nov 2012 10:05:41 +0000
+	with ESMTP id S1751069Ab2KJLF1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Nov 2012 06:05:27 -0500
+Message-ID: <509E34F4.40204@kernel.org>
+Date: Sat, 10 Nov 2012 11:05:24 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Axel Lin <axel.lin@ingics.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: hid-sensor: Use __devexit annotation for remove()
-References: <1351349317.10004.1.camel@phoenix>
-In-Reply-To: <1351349317.10004.1.camel@phoenix>
-Content-Type: text/plain; charset=UTF-8
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL]  IIO cleanups and fixes (IIO set 4 for the 3.8 cycle)
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/27/2012 03:48 PM, Axel Lin wrote:
-> Use __devexit rather than __devinit annotation for remove().
-> Also adds __devexit_p around remove callback.
-> 
-> Signed-off-by: Axel Lin <axel.lin@ingics.com>
-Added to fixes-togreg branch of iio.git
+The following changes since commit 3c7f0c2b1150eae8683a98a5a9143d81edfc2762:
 
-oops on this one. Should have picked that up in review.
-Thanks Axel!
-> ---
->  drivers/iio/accel/hid-sensor-accel-3d.c       |    4 ++--
->  drivers/iio/gyro/hid-sensor-gyro-3d.c         |    4 ++--
->  drivers/iio/light/hid-sensor-als.c            |    4 ++--
->  drivers/iio/magnetometer/hid-sensor-magn-3d.c |    4 ++--
->  4 files changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-> index 314a405..1b49931 100644
-> --- a/drivers/iio/accel/hid-sensor-accel-3d.c
-> +++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-> @@ -388,7 +388,7 @@ error_ret:
->  }
->  
->  /* Function to deinitialize the processing for usage id */
-> -static int __devinit hid_accel_3d_remove(struct platform_device *pdev)
-> +static int __devexit hid_accel_3d_remove(struct platform_device *pdev)
->  {
->  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> @@ -409,7 +409,7 @@ static struct platform_driver hid_accel_3d_platform_driver = {
->  		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_accel_3d_probe,
-> -	.remove		= hid_accel_3d_remove,
-> +	.remove		= __devexit_p(hid_accel_3d_remove),
->  };
->  module_platform_driver(hid_accel_3d_platform_driver);
->  
-> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> index 4c56ada..705dc49 100644
-> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> @@ -388,7 +388,7 @@ error_ret:
->  }
->  
->  /* Function to deinitialize the processing for usage id */
-> -static int __devinit hid_gyro_3d_remove(struct platform_device *pdev)
-> +static int __devexit hid_gyro_3d_remove(struct platform_device *pdev)
->  {
->  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> @@ -409,7 +409,7 @@ static struct platform_driver hid_gyro_3d_platform_driver = {
->  		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_gyro_3d_probe,
-> -	.remove		= hid_gyro_3d_remove,
-> +	.remove		= __devexit_p(hid_gyro_3d_remove),
->  };
->  module_platform_driver(hid_gyro_3d_platform_driver);
->  
-> diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-> index 96e3691..4c35ac7 100644
-> --- a/drivers/iio/light/hid-sensor-als.c
-> +++ b/drivers/iio/light/hid-sensor-als.c
-> @@ -355,7 +355,7 @@ error_ret:
->  }
->  
->  /* Function to deinitialize the processing for usage id */
-> -static int __devinit hid_als_remove(struct platform_device *pdev)
-> +static int __devexit hid_als_remove(struct platform_device *pdev)
->  {
->  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> @@ -376,7 +376,7 @@ static struct platform_driver hid_als_platform_driver = {
->  		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_als_probe,
-> -	.remove		= hid_als_remove,
-> +	.remove		= __devexit_p(hid_als_remove),
->  };
->  module_platform_driver(hid_als_platform_driver);
->  
-> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> index c4f0d27..a02dc98 100644
-> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> @@ -389,7 +389,7 @@ error_ret:
->  }
->  
->  /* Function to deinitialize the processing for usage id */
-> -static int __devinit hid_magn_3d_remove(struct platform_device *pdev)
-> +static int __devexit hid_magn_3d_remove(struct platform_device *pdev)
->  {
->  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> @@ -410,7 +410,7 @@ static struct platform_driver hid_magn_3d_platform_driver = {
->  		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_magn_3d_probe,
-> -	.remove		= hid_magn_3d_remove,
-> +	.remove		= __devexit_p(hid_magn_3d_remove),
->  };
->  module_platform_driver(hid_magn_3d_platform_driver);
->  
-> 
+  staging:iio:adis16400: Set the PROD_ID flag for the adis16334 (2012-11-04 15:55:44 +0000)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.8d
+
+for you to fetch changes up to 168c9d95a94077a42e5bf5a4a660b45ccee4fc63:
+
+  iio:adc:max1363 move from staging. (2012-11-10 10:17:31 +0000)
+
+----------------------------------------------------------------
+4th set of IIO driver updates and new functionality for the 3.8 cycle.
+
+2 drivers going through final cleanup and moving out of staging.
+
+Addition to the core of support for multiple buffers from a single
+datastream.  This functionality is core in allowing multiple users
+of interrupt driven data streams from the devices.  First user
+will shortly be an input bridge driver.  This has been in review
+/ revision for over a year resulting in a far cleaner result.
+Much of the work had been in precursor patches. Here we just
+add the buffer set tear up and down support + switch to multiple
+buffer pushing in the drivers (a one line change in all users).
+Thanks to those who have tested / reviewed this set.
+
+----------------------------------------------------------------
+Jonathan Cameron (10):
+      staging:iio: Add support for multiple buffers
+      staging:iio:in kernel users: Add a data field for channel specific info.
+      staging:iio: add a callback buffer for in kernel push interface
+      staging:iio:adc:max1363 ring_sw->kfifo conversion
+      staging:iio:adc:max1363 consolidate files.
+      staging:iio:adc:max1363 drop references to 'ring' given now using a fifo
+      staging:iio:adc:max1363 make docs match the contents of max1363_chip_info
+      staging:iio:adc:max1363 white space cleanup
+      staging:iio:adc:max1363 cleanup regulator handling.
+      iio:adc:max1363 move from staging.
+
+Lars-Peter Clausen (7):
+      staging:iio:ad7887: Preallocate sample buffer
+      staging:iio:ad7887: Rework regulator handling
+      staging:iio:ad7887: Squash everything into one file
+      staging:iio:ad7887: Use proper kernel doc
+      staging:iio:ad7887: Allow to use internal ref in two channel mode
+      staging:iio:ad7887: Use passed in chan spec in ad7887_read_raw
+      staging:iio: Move the ad7887 driver out of staging
+
+ drivers/iio/Kconfig                                |   6 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/accel/hid-sensor-accel-3d.c            |  15 +-
+ drivers/iio/adc/Kconfig                            |  31 ++
+ drivers/iio/adc/Makefile                           |   2 +
+ drivers/iio/adc/ad7266.c                           |   3 +-
+ drivers/iio/adc/ad7476.c                           |   2 +-
+ .../iio/adc/ad7887_core.c => iio/adc/ad7887.c}     | 217 +++++++++---
+ drivers/iio/adc/ad_sigma_delta.c                   |   2 +-
+ drivers/iio/adc/at91_adc.c                         |   3 +-
+ .../iio/adc/max1363_core.c => iio/adc/max1363.c}   | 330 ++++++++++++++++--
+ drivers/iio/buffer_cb.c                            | 113 ++++++
+ drivers/iio/gyro/hid-sensor-gyro-3d.c              |  15 +-
+ drivers/iio/industrialio-buffer.c                  | 380 ++++++++++++++-------
+ drivers/iio/industrialio-core.c                    |   1 +
+ drivers/iio/inkern.c                               |   1 +
+ drivers/iio/light/adjd_s311.c                      |   3 +-
+ drivers/iio/light/hid-sensor-als.c                 |  15 +-
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c      |  15 +-
+ drivers/staging/iio/accel/adis16201_ring.c         |   2 +-
+ drivers/staging/iio/accel/adis16203_ring.c         |   2 +-
+ drivers/staging/iio/accel/adis16204_ring.c         |   2 +-
+ drivers/staging/iio/accel/adis16209_ring.c         |   2 +-
+ drivers/staging/iio/accel/adis16240_ring.c         |   2 +-
+ drivers/staging/iio/accel/lis3l02dq_ring.c         |   2 +-
+ drivers/staging/iio/adc/Kconfig                    |  37 --
+ drivers/staging/iio/adc/Makefile                   |   9 -
+ drivers/staging/iio/adc/ad7298_ring.c              |   2 +-
+ drivers/staging/iio/adc/ad7606_ring.c              |   2 +-
+ drivers/staging/iio/adc/ad7887.h                   |  99 ------
+ drivers/staging/iio/adc/ad7887_ring.c              | 122 -------
+ drivers/staging/iio/adc/ad799x_ring.c              |   2 +-
+ drivers/staging/iio/adc/max1363.h                  | 177 ----------
+ drivers/staging/iio/adc/max1363_ring.c             | 139 --------
+ drivers/staging/iio/adc/mxs-lradc.c                |   3 +-
+ drivers/staging/iio/gyro/adis16260_ring.c          |   2 +-
+ drivers/staging/iio/iio_simple_dummy_buffer.c      |   5 +-
+ drivers/staging/iio/impedance-analyzer/ad5933.c    |   4 +-
+ drivers/staging/iio/imu/adis16400_ring.c           |   5 +-
+ drivers/staging/iio/meter/ade7758_ring.c           |   2 +-
+ include/linux/iio/buffer.h                         |  24 +-
+ include/linux/iio/consumer.h                       |  48 +++
+ include/linux/iio/iio.h                            |   2 +
+ include/linux/iio/machine.h                        |   2 +
+ include/linux/platform_data/ad7887.h               |  26 ++
+ 45 files changed, 1003 insertions(+), 876 deletions(-)
+ rename drivers/{staging/iio/adc/ad7887_core.c => iio/adc/ad7887.c} (50%)
+ rename drivers/{staging/iio/adc/max1363_core.c => iio/adc/max1363.c} (81%)
+ create mode 100644 drivers/iio/buffer_cb.c
+ delete mode 100644 drivers/staging/iio/adc/ad7887.h
+ delete mode 100644 drivers/staging/iio/adc/ad7887_ring.c
+ delete mode 100644 drivers/staging/iio/adc/max1363.h
+ delete mode 100644 drivers/staging/iio/adc/max1363_ring.c
+ create mode 100644 include/linux/platform_data/ad7887.h
