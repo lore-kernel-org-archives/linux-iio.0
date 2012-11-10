@@ -1,149 +1,143 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48886 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753598Ab2KKSjW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Nov 2012 13:39:22 -0500
-Message-ID: <509FF0D1.3000207@kernel.org>
-Date: Sun, 11 Nov 2012 18:39:13 +0000
+Return-Path: <jic23@kernel.org>
+Message-ID: <509E2BE4.6040109@kernel.org>
+Date: Sat, 10 Nov 2012 10:26:44 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL]  IIO cleanups and fixes (IIO set 4 for the 3.8 cycle)
-References: <509E34F4.40204@kernel.org> <509E4E50.7020707@metafoo.de>
-In-Reply-To: <509E4E50.7020707@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 0/4 V6] staging:iio: Add support for multiple buffers
+ (testing required!)
+References: <1351679431-7963-1-git-send-email-jic23@kernel.org> <5093A921.3080000@kernel.org>
+In-Reply-To: <5093A921.3080000@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/10/2012 12:53 PM, Lars-Peter Clausen wrote:
-> On 11/10/2012 12:05 PM, Jonathan Cameron wrote:
->> The following changes since commit 3c7f0c2b1150eae8683a98a5a9143d81edfc2762:
->>
->>   staging:iio:adis16400: Set the PROD_ID flag for the adis16334 (2012-11-04 15:55:44 +0000)
->>
->> are available in the git repository at:
->>
->>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.8d
-> 
-> Hi Jonathan,
-> 
-> Did you push this? There is only the iio-for-3.8c tag
-Gah, I pushed the tag, but not the branch.
+No one shouted so off it goes.
 
-Hence the pull request is fine but a little odd as it isn't actually to a branch.
+I did miss the imx driver previously so I've just made the trivial
+change from iio_push_to_buffer -> iio_push_to_buffers for that one.
+Picked that up in a final sanity check pass of the code.
 
-I've now pushed the branch (which just meant moving the togreg branch head).
+Also a trivial merge with the ad7887 move out of staging.
 
-Sorry about that.
+Hopefully this won't cause too much trouble *fingers crossed*
+
+Jonathan
+
+On 11/02/2012 11:06 AM, Jonathan Cameron wrote:
+> I've let this sit for nearly long enough I think.  If no one shouts
+> in the next few days (or asks for more time to take a look). I'll add
+> patches 1-3 of this the togreg branch of iio.git and send a pull request
+> for it to Greg.  The input client driver can wait for a bit.
 > 
-> Thanks,
-> - Lars
+> I'm really really keen to get this lot in place in time to have a few
+> weeks of testing in linux-next before the merge window opens.
 > 
+> (it's over a year old now as Peter noticed, and I'm getting serriously
+> bored of it ;)
+> 
+>> Same as V5 but with the changes from Lars-Peter's review to close some
+>> memory leaks and catch up with some changes in the subsystem that had
+>> passed this by.  It should also now be possible to disable the
+>> timestamp! (oops).
 >>
->> for you to fetch changes up to 168c9d95a94077a42e5bf5a4a660b45ccee4fc63:
+>> Thanks to Lars for his work reviewing my patches and also for his
+>> excellent work reviewing in general! Without him the whole subsystem
+>> would be moving a lot slower.
 >>
->>   iio:adc:max1363 move from staging. (2012-11-10 10:17:31 +0000)
 >>
->> ----------------------------------------------------------------
->> 4th set of IIO driver updates and new functionality for the 3.8 cycle.
+>> Again, more testing would be good (thanks for those who already
+>> have).
 >>
->> 2 drivers going through final cleanup and moving out of staging.
+>> In quick summary this is needed to do interrupt driven in kernel
+>> clients as it adds the option to push to multiple 'buffer' interfaces.
+>> Note that some of these may not actually do any buffering but rather
+>> push directly into another subsytem (the example is input).
 >>
->> Addition to the core of support for multiple buffers from a single
->> datastream.  This functionality is core in allowing multiple users
->> of interrupt driven data streams from the devices.  First user
->> will shortly be an input bridge driver.  This has been in review
->> / revision for over a year resulting in a far cleaner result.
->> Much of the work had been in precursor patches. Here we just
->> add the buffer set tear up and down support + switch to multiple
->> buffer pushing in the drivers (a one line change in all users).
->> Thanks to those who have tested / reviewed this set.
+>> I would like to merge at least the first 3 patches early in this cycle.
+>> What I need is some testing across a reasonable range of devices.  Review
+>> is welcome of course as well!
 >>
->> ----------------------------------------------------------------
->> Jonathan Cameron (10):
->>       staging:iio: Add support for multiple buffers
->>       staging:iio:in kernel users: Add a data field for channel specific info.
->>       staging:iio: add a callback buffer for in kernel push interface
->>       staging:iio:adc:max1363 ring_sw->kfifo conversion
->>       staging:iio:adc:max1363 consolidate files.
->>       staging:iio:adc:max1363 drop references to 'ring' given now using a fifo
->>       staging:iio:adc:max1363 make docs match the contents of max1363_chip_info
->>       staging:iio:adc:max1363 white space cleanup
->>       staging:iio:adc:max1363 cleanup regulator handling.
->>       iio:adc:max1363 move from staging.
+>> The complexity in this set is entirely in the changes to industrialio-buffer.c
+>> concerning how we go about adding and removing client buffers.  To do this
+>> we need to work out which scan mask is appropriate given the requests of
+>> all the given buffers (and whether we can satisfy it).  I've been testing
+>> with the max1363 driver which probably has the most complex set of available
+>> scan masks.  Thus when a new buffer is added or one is removed the whole
+>> buffer set are torn down and built up again.  This may be undesirable for
+>> some applications but should occur only rarely.
 >>
->> Lars-Peter Clausen (7):
->>       staging:iio:ad7887: Preallocate sample buffer
->>       staging:iio:ad7887: Rework regulator handling
->>       staging:iio:ad7887: Squash everything into one file
->>       staging:iio:ad7887: Use proper kernel doc
->>       staging:iio:ad7887: Allow to use internal ref in two channel mode
->>       staging:iio:ad7887: Use passed in chan spec in ad7887_read_raw
->>       staging:iio: Move the ad7887 driver out of staging
+>> The example driver is for bridging to the input subsystem and still needs
+>> some work, but that can occur later in this merge cycle whereas the changes
+>> to the core really want to go in asap.
 >>
->>  drivers/iio/Kconfig                                |   6 +
->>  drivers/iio/Makefile                               |   1 +
->>  drivers/iio/accel/hid-sensor-accel-3d.c            |  15 +-
->>  drivers/iio/adc/Kconfig                            |  31 ++
->>  drivers/iio/adc/Makefile                           |   2 +
->>  drivers/iio/adc/ad7266.c                           |   3 +-
->>  drivers/iio/adc/ad7476.c                           |   2 +-
->>  .../iio/adc/ad7887_core.c => iio/adc/ad7887.c}     | 217 +++++++++---
->>  drivers/iio/adc/ad_sigma_delta.c                   |   2 +-
->>  drivers/iio/adc/at91_adc.c                         |   3 +-
->>  .../iio/adc/max1363_core.c => iio/adc/max1363.c}   | 330 ++++++++++++++++--
->>  drivers/iio/buffer_cb.c                            | 113 ++++++
->>  drivers/iio/gyro/hid-sensor-gyro-3d.c              |  15 +-
->>  drivers/iio/industrialio-buffer.c                  | 380 ++++++++++++++-------
->>  drivers/iio/industrialio-core.c                    |   1 +
->>  drivers/iio/inkern.c                               |   1 +
->>  drivers/iio/light/adjd_s311.c                      |   3 +-
->>  drivers/iio/light/hid-sensor-als.c                 |  15 +-
->>  drivers/iio/magnetometer/hid-sensor-magn-3d.c      |  15 +-
->>  drivers/staging/iio/accel/adis16201_ring.c         |   2 +-
->>  drivers/staging/iio/accel/adis16203_ring.c         |   2 +-
->>  drivers/staging/iio/accel/adis16204_ring.c         |   2 +-
->>  drivers/staging/iio/accel/adis16209_ring.c         |   2 +-
->>  drivers/staging/iio/accel/adis16240_ring.c         |   2 +-
->>  drivers/staging/iio/accel/lis3l02dq_ring.c         |   2 +-
->>  drivers/staging/iio/adc/Kconfig                    |  37 --
->>  drivers/staging/iio/adc/Makefile                   |   9 -
->>  drivers/staging/iio/adc/ad7298_ring.c              |   2 +-
->>  drivers/staging/iio/adc/ad7606_ring.c              |   2 +-
->>  drivers/staging/iio/adc/ad7887.h                   |  99 ------
->>  drivers/staging/iio/adc/ad7887_ring.c              | 122 -------
->>  drivers/staging/iio/adc/ad799x_ring.c              |   2 +-
->>  drivers/staging/iio/adc/max1363.h                  | 177 ----------
->>  drivers/staging/iio/adc/max1363_ring.c             | 139 --------
->>  drivers/staging/iio/adc/mxs-lradc.c                |   3 +-
->>  drivers/staging/iio/gyro/adis16260_ring.c          |   2 +-
->>  drivers/staging/iio/iio_simple_dummy_buffer.c      |   5 +-
->>  drivers/staging/iio/impedance-analyzer/ad5933.c    |   4 +-
->>  drivers/staging/iio/imu/adis16400_ring.c           |   5 +-
->>  drivers/staging/iio/meter/ade7758_ring.c           |   2 +-
->>  include/linux/iio/buffer.h                         |  24 +-
->>  include/linux/iio/consumer.h                       |  48 +++
->>  include/linux/iio/iio.h                            |   2 +
->>  include/linux/iio/machine.h                        |   2 +
->>  include/linux/platform_data/ad7887.h               |  26 ++
->>  45 files changed, 1003 insertions(+), 876 deletions(-)
->>  rename drivers/{staging/iio/adc/ad7887_core.c => iio/adc/ad7887.c} (50%)
->>  rename drivers/{staging/iio/adc/max1363_core.c => iio/adc/max1363.c} (81%)
+>> Changes since v3 
+>>
+>> Rebased and added other drivers that have occured whilst this patch series
+>> has been languishing in my local tree.
+>>
+>> Changes since V2.
+>>
+>> Improved handling of error conditions in the buffer insertion and
+>> removal code.  (suggested by Lars-Peter).  I want to take another
+>> look at these, but didn't want to keep people from testing this
+>> in the meantime.
+>>
+>> Also a number of minor fixes that came up during testing.
+>>
+>> Thanks,
+>>
+>> Jonathan
+>>
+>>
+>> Jonathan Cameron (4):
+>>   staging:iio: Add support for multiple buffers
+>>   staging:iio:in kernel users: Add a data field for channel specific
+>>     info.
+>>   staging:iio: add a callback buffer for in kernel push interface
+>>   staging:iio: Proof of concept input driver.
+>>
+>>  drivers/iio/Kconfig                             |   6 +
+>>  drivers/iio/Makefile                            |   1 +
+>>  drivers/iio/accel/hid-sensor-accel-3d.c         |  15 +-
+>>  drivers/iio/adc/ad7266.c                        |   3 +-
+>>  drivers/iio/adc/ad7476.c                        |   2 +-
+>>  drivers/iio/adc/ad_sigma_delta.c                |   2 +-
+>>  drivers/iio/adc/at91_adc.c                      |   3 +-
+>>  drivers/iio/buffer_cb.c                         | 113 +++++++
+>>  drivers/iio/gyro/hid-sensor-gyro-3d.c           |  15 +-
+>>  drivers/iio/industrialio-buffer.c               | 380 ++++++++++++++++--------
+>>  drivers/iio/industrialio-core.c                 |   1 +
+>>  drivers/iio/inkern.c                            |   1 +
+>>  drivers/iio/light/adjd_s311.c                   |   3 +-
+>>  drivers/iio/light/hid-sensor-als.c              |  15 +-
+>>  drivers/iio/magnetometer/hid-sensor-magn-3d.c   |  15 +-
+>>  drivers/staging/iio/Kconfig                     |  11 +
+>>  drivers/staging/iio/Makefile                    |   1 +
+>>  drivers/staging/iio/accel/adis16201_ring.c      |   2 +-
+>>  drivers/staging/iio/accel/adis16203_ring.c      |   2 +-
+>>  drivers/staging/iio/accel/adis16204_ring.c      |   2 +-
+>>  drivers/staging/iio/accel/adis16209_ring.c      |   2 +-
+>>  drivers/staging/iio/accel/adis16240_ring.c      |   2 +-
+>>  drivers/staging/iio/accel/lis3l02dq_ring.c      |   2 +-
+>>  drivers/staging/iio/adc/ad7298_ring.c           |   2 +-
+>>  drivers/staging/iio/adc/ad7606_ring.c           |   2 +-
+>>  drivers/staging/iio/adc/ad7887_ring.c           |   2 +-
+>>  drivers/staging/iio/adc/ad799x_ring.c           |   2 +-
+>>  drivers/staging/iio/adc/max1363_ring.c          |   2 +-
+>>  drivers/staging/iio/gyro/adis16260_ring.c       |   2 +-
+>>  drivers/staging/iio/iio_input.c                 | 225 ++++++++++++++
+>>  drivers/staging/iio/iio_input.h                 |  23 ++
+>>  drivers/staging/iio/iio_simple_dummy_buffer.c   |   5 +-
+>>  drivers/staging/iio/impedance-analyzer/ad5933.c |   4 +-
+>>  drivers/staging/iio/imu/adis16400_ring.c        |   5 +-
+>>  drivers/staging/iio/meter/ade7758_ring.c        |   2 +-
+>>  include/linux/iio/buffer.h                      |  24 +-
+>>  include/linux/iio/consumer.h                    |  48 +++
+>>  include/linux/iio/iio.h                         |   2 +
+>>  include/linux/iio/machine.h                     |   2 +
+>>  39 files changed, 743 insertions(+), 208 deletions(-)
 >>  create mode 100644 drivers/iio/buffer_cb.c
->>  delete mode 100644 drivers/staging/iio/adc/ad7887.h
->>  delete mode 100644 drivers/staging/iio/adc/ad7887_ring.c
->>  delete mode 100644 drivers/staging/iio/adc/max1363.h
->>  delete mode 100644 drivers/staging/iio/adc/max1363_ring.c
->>  create mode 100644 include/linux/platform_data/ad7887.h
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>>  create mode 100644 drivers/staging/iio/iio_input.c
+>>  create mode 100644 drivers/staging/iio/iio_input.h
+>>
