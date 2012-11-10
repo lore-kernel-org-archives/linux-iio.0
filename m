@@ -1,129 +1,95 @@
-Return-Path: <denis.ciocca@st.com>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Denis Ciocca <denis.ciocca@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	Pavel Machek <pavel@denx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"burman.yan@gmail.com" <burman.yan@gmail.com>
-Date: Mon, 12 Nov 2012 18:10:36 +0100
-Subject: Re: STMicroelectronics accelerometers driver.
-Message-ID: <50A12D8C.6040207@st.com>
-References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de>
- <20121008195007.GA32042@elf.ucw.cz> <507338B5.60307@metafoo.de>
- <665718a4-de6b-4d09-ba80-35705fcf2595@email.android.com>
- <CAEE_umojW5OyB3yGgE54wH7_k__dBu9=Yew_0tCCf5--=C2g5g@mail.gmail.com>
- <507D9EA3.4070009@metafoo.de> <5085128C.7020507@st.com>
- <50858B44.2080006@kernel.org> <5087E2A8.4070304@st.com>
- <508A7DA6.7050505@metafoo.de> <508E4492.8080000@st.com>
- <508E48D1.3000703@metafoo.de> <508E5978.5000907@st.com>
- <508E5AD5.1040907@metafoo.de> <50914366.4090000@st.com>
- <5091546D.9000601@metafoo.de>
- <CAEE_umoKvv9ciBfUSahDqsmcbHi9W=93o5YSpE-vxUduCmqWSQ@mail.gmail.com>
- <50982F71.3060606@kernel.org> <5098F065.1090009@st.com>
-In-Reply-To: <5098F065.1090009@st.com>
-Content-Type: text/plain; charset="iso-8859-1"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33570 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751110Ab2KJKHK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Nov 2012 05:07:10 -0500
+Message-ID: <509E2749.2000709@kernel.org>
+Date: Sat, 10 Nov 2012 10:07:05 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH 1/7] staging:iio:ad7887: Preallocate sample buffer
+References: <1352109406-7206-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1352109406-7206-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+On 11/05/2012 09:56 AM, Lars-Peter Clausen wrote:
+> We know that the sample buffer will at most need to hold two 16 bit samples and
+> the 64 bit aligned 64 bit timestamp. Preallocate a buffer large enough to hold
+> this instead of allocating and freeing it each time a sample is read.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+All 7 applied to togreg branch.
 
-can you please provide me one direction to modify the part in question=20
-about the style of struct, in such a way I can do some modifications.
+A nice series and good to get this one out of staging as it's
+been pretty much clean for an awful long time!
 
-Thanks,
+Jonathan
 
-Denis Ciocca
-
-
-
-On 11/06/2012 12:11 PM, Denis Ciocca wrote:
-> Hi Jonathan,
->
-> Thanks for your support!
-> I have applied your comments, only two point I would check better.
->
->
->
->>> +} st_accel_sensors[] =3D {
->>> +     {
->>> +             .wai =3D ST_ACCEL_1_WAI_EXP,
->>> +             .ch =3D (struct iio_chan_spec *)st_accel_12bit_channels,
->>> +             .odr =3D {
->>> +                     .addr =3D ST_ACCEL_1_ODR_ADDR,
->>> +                     .mask =3D ST_ACCEL_1_ODR_MASK,
->>> +                     .num_bit =3D ST_ACCEL_1_ODR_N_BIT,
->>> +                     .odr_avl =3D {
->>    While sometimes c99 assignment helps with clarity - sometimes it
->> just bloats the code.
->>    Personally I'd do these as
->>    .odr_avl =3D {{ST_ACCEL_ODR_AVL_1HZ, ST_ACCEL_1_ODR_AVL_1HZ_VAL},
->>                {...}
->> etc
->>
->> or for that matter take the view that the defines are largely
->> pointless as they
->> are only used here and
->> just do
->>       .odr_avl =3D {{1, 0x01},
->>                   {10, 0x02},
->> etc.
->> Or maybe if it fits on the line
->>     .odr_avl =3D {{ .hz =3D 1, .value =3D 0x01 } might be the clearest..=
-.
->> Not sure.
->>
->
-> In my first version I have used about this compact approach but
-> Lars-Peter tell to me to use this style code:
->  >I'd use
->  > .odr_avl =3D {
->  >        [0] =3D {
->  >                ...
->  >        },
->  >        [1] =3D {
->  >                ...
->  >
->  >Makes things a bit more readable in my opinion.
->
-> Ok for me it is not a problem but you must tell me one definitive style
-> please. I think this style is more cleanly, though are necessary more row=
-s.
->
->
->
->>> +/**
->>> + * struct st_accel_platform_data - ST accel device platform data
->>> + * @fullscale: Value of fullscale used for the sensor.
->>> + * @sampling_frequency: Value of sampling frequency used for the
->>> sensor.
->>> + */
->>> +
->>> +struct st_accel_platform_data {
->>> +     int fullscale;
->>> +     int sampling_frequency;
->>> +};
->>
->> What is the purpose of having these as platform data?
->>
->
-> For now the purpose is to set only the initial values for fullscale and
-> sampling_frequency but I think it's good thing include the mapping of
-> axis. You think it's necessary to remove this for now?
->
->
->
-> Thanks,
->
-> Denis
->
->
->
->
->
->
->
->
->
->
+p.s. I thought I had sent this the other day but it appears not!
+> ---
+>  drivers/staging/iio/adc/ad7887.h      |  6 ++++--
+>  drivers/staging/iio/adc/ad7887_ring.c | 15 ++-------------
+>  2 files changed, 6 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7887.h b/drivers/staging/iio/adc/ad7887.h
+> index 2e09e54..71e5092 100644
+> --- a/drivers/staging/iio/adc/ad7887.h
+> +++ b/drivers/staging/iio/adc/ad7887.h
+> @@ -72,9 +72,11 @@ struct ad7887_state {
+>  	/*
+>  	 * DMA (thus cache coherency maintenance) requires the
+>  	 * transfer buffers to live in their own cache lines.
+> +	 * Buffer needs to be large enough to hold two 16 bit samples and a
+> +	 * 64 bit aligned 64 bit timestamp.
+>  	 */
+> -
+> -	unsigned char			data[4] ____cacheline_aligned;
+> +	unsigned char data[ALIGN(4, sizeof(s64)) + sizeof(s64)]
+> +		____cacheline_aligned;
+>  };
+>  
+>  enum ad7887_supported_device_ids {
+> diff --git a/drivers/staging/iio/adc/ad7887_ring.c b/drivers/staging/iio/adc/ad7887_ring.c
+> index b39923b..f11925e 100644
+> --- a/drivers/staging/iio/adc/ad7887_ring.c
+> +++ b/drivers/staging/iio/adc/ad7887_ring.c
+> @@ -73,31 +73,20 @@ static irqreturn_t ad7887_trigger_handler(int irq, void *p)
+>  	struct iio_dev *indio_dev = pf->indio_dev;
+>  	struct ad7887_state *st = iio_priv(indio_dev);
+>  	s64 time_ns;
+> -	__u8 *buf;
+>  	int b_sent;
+>  
+> -	unsigned int bytes = bitmap_weight(indio_dev->active_scan_mask,
+> -					   indio_dev->masklength) *
+> -		st->chip_info->channel[0].scan_type.storagebits / 8;
+> -
+> -	buf = kzalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> -	if (buf == NULL)
+> -		goto done;
+> -
+>  	b_sent = spi_sync(st->spi, st->ring_msg);
+>  	if (b_sent)
+>  		goto done;
+>  
+>  	time_ns = iio_get_time_ns();
+>  
+> -	memcpy(buf, st->data, bytes);
+>  	if (indio_dev->scan_timestamp)
+> -		memcpy(buf + indio_dev->scan_bytes - sizeof(s64),
+> +		memcpy(st->data + indio_dev->scan_bytes - sizeof(s64),
+>  		       &time_ns, sizeof(time_ns));
+>  
+> -	iio_push_to_buffer(indio_dev->buffer, buf);
+> +	iio_push_to_buffer(indio_dev->buffer, st->data);
+>  done:
+> -	kfree(buf);
+>  	iio_trigger_notify_done(indio_dev->trig);
+>  
+>  	return IRQ_HANDLED;
+> 
