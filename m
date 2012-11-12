@@ -1,143 +1,46 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <509E2BE4.6040109@kernel.org>
-Date: Sat, 10 Nov 2012 10:26:44 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:49229 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751848Ab2KLJEV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 12 Nov 2012 04:04:21 -0500
+Message-ID: <50A0BB98.2020802@jic23.retrosnub.co.uk>
+Date: Mon, 12 Nov 2012 09:04:24 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 0/4 V6] staging:iio: Add support for multiple buffers
- (testing required!)
-References: <1351679431-7963-1-git-send-email-jic23@kernel.org> <5093A921.3080000@kernel.org>
-In-Reply-To: <5093A921.3080000@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL V2] IIO fixes for v3.7-rc1 set 2 (tiny fixes and regressions
+ only)
+References: <50969678.6020700@kernel.org> <20121112023031.GB17405@kroah.com>
+In-Reply-To: <20121112023031.GB17405@kroah.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-No one shouted so off it goes.
+On 12/11/12 02:30, Greg KH wrote:
+> On Sun, Nov 04, 2012 at 04:23:20PM +0000, Jonathan Cameron wrote:
+>> Axel Lin (2):
+>>        iio: hid-sensor: Use __devexit annotation for remove()
+>
+> This one, while maybe nice, sure isn't necessary as CONFIG_HOTPLUG can't
+> be turned off anymore.  So it's not needed for 3.7, right?
+>
+Sorry that patch title doesn't mention why this is done. I should have
+cleaned it up before merging (or poked Axel to do so)
 
-I did miss the imx driver previously so I've just made the trivial
-change from iio_push_to_buffer -> iio_push_to_buffers for that one.
-Picked that up in a final sanity check pass of the code.
+Right now they are completely incorrectly marked as __devinit rather 
+than __devexit.
 
-Also a trivial merge with the ad7887 move out of staging.
+Hence if any platform is being clever about ditching init.text after
+module insertion it's not going to be there on removal.
 
-Hopefully this won't cause too much trouble *fingers crossed*
+If this was simply a case of adding __devexit I'd agree.
+
+If this annotation still doesn't actually matter I've definitely missed
+something.
+
+Thanks as ever for continued handling of the IIO tree!
 
 Jonathan
 
-On 11/02/2012 11:06 AM, Jonathan Cameron wrote:
-> I've let this sit for nearly long enough I think.  If no one shouts
-> in the next few days (or asks for more time to take a look). I'll add
-> patches 1-3 of this the togreg branch of iio.git and send a pull request
-> for it to Greg.  The input client driver can wait for a bit.
-> 
-> I'm really really keen to get this lot in place in time to have a few
-> weeks of testing in linux-next before the merge window opens.
-> 
-> (it's over a year old now as Peter noticed, and I'm getting serriously
-> bored of it ;)
-> 
->> Same as V5 but with the changes from Lars-Peter's review to close some
->> memory leaks and catch up with some changes in the subsystem that had
->> passed this by.  It should also now be possible to disable the
->> timestamp! (oops).
->>
->> Thanks to Lars for his work reviewing my patches and also for his
->> excellent work reviewing in general! Without him the whole subsystem
->> would be moving a lot slower.
->>
->>
->> Again, more testing would be good (thanks for those who already
->> have).
->>
->> In quick summary this is needed to do interrupt driven in kernel
->> clients as it adds the option to push to multiple 'buffer' interfaces.
->> Note that some of these may not actually do any buffering but rather
->> push directly into another subsytem (the example is input).
->>
->> I would like to merge at least the first 3 patches early in this cycle.
->> What I need is some testing across a reasonable range of devices.  Review
->> is welcome of course as well!
->>
->> The complexity in this set is entirely in the changes to industrialio-buffer.c
->> concerning how we go about adding and removing client buffers.  To do this
->> we need to work out which scan mask is appropriate given the requests of
->> all the given buffers (and whether we can satisfy it).  I've been testing
->> with the max1363 driver which probably has the most complex set of available
->> scan masks.  Thus when a new buffer is added or one is removed the whole
->> buffer set are torn down and built up again.  This may be undesirable for
->> some applications but should occur only rarely.
->>
->> The example driver is for bridging to the input subsystem and still needs
->> some work, but that can occur later in this merge cycle whereas the changes
->> to the core really want to go in asap.
->>
->> Changes since v3 
->>
->> Rebased and added other drivers that have occured whilst this patch series
->> has been languishing in my local tree.
->>
->> Changes since V2.
->>
->> Improved handling of error conditions in the buffer insertion and
->> removal code.  (suggested by Lars-Peter).  I want to take another
->> look at these, but didn't want to keep people from testing this
->> in the meantime.
->>
->> Also a number of minor fixes that came up during testing.
->>
->> Thanks,
->>
->> Jonathan
->>
->>
->> Jonathan Cameron (4):
->>   staging:iio: Add support for multiple buffers
->>   staging:iio:in kernel users: Add a data field for channel specific
->>     info.
->>   staging:iio: add a callback buffer for in kernel push interface
->>   staging:iio: Proof of concept input driver.
->>
->>  drivers/iio/Kconfig                             |   6 +
->>  drivers/iio/Makefile                            |   1 +
->>  drivers/iio/accel/hid-sensor-accel-3d.c         |  15 +-
->>  drivers/iio/adc/ad7266.c                        |   3 +-
->>  drivers/iio/adc/ad7476.c                        |   2 +-
->>  drivers/iio/adc/ad_sigma_delta.c                |   2 +-
->>  drivers/iio/adc/at91_adc.c                      |   3 +-
->>  drivers/iio/buffer_cb.c                         | 113 +++++++
->>  drivers/iio/gyro/hid-sensor-gyro-3d.c           |  15 +-
->>  drivers/iio/industrialio-buffer.c               | 380 ++++++++++++++++--------
->>  drivers/iio/industrialio-core.c                 |   1 +
->>  drivers/iio/inkern.c                            |   1 +
->>  drivers/iio/light/adjd_s311.c                   |   3 +-
->>  drivers/iio/light/hid-sensor-als.c              |  15 +-
->>  drivers/iio/magnetometer/hid-sensor-magn-3d.c   |  15 +-
->>  drivers/staging/iio/Kconfig                     |  11 +
->>  drivers/staging/iio/Makefile                    |   1 +
->>  drivers/staging/iio/accel/adis16201_ring.c      |   2 +-
->>  drivers/staging/iio/accel/adis16203_ring.c      |   2 +-
->>  drivers/staging/iio/accel/adis16204_ring.c      |   2 +-
->>  drivers/staging/iio/accel/adis16209_ring.c      |   2 +-
->>  drivers/staging/iio/accel/adis16240_ring.c      |   2 +-
->>  drivers/staging/iio/accel/lis3l02dq_ring.c      |   2 +-
->>  drivers/staging/iio/adc/ad7298_ring.c           |   2 +-
->>  drivers/staging/iio/adc/ad7606_ring.c           |   2 +-
->>  drivers/staging/iio/adc/ad7887_ring.c           |   2 +-
->>  drivers/staging/iio/adc/ad799x_ring.c           |   2 +-
->>  drivers/staging/iio/adc/max1363_ring.c          |   2 +-
->>  drivers/staging/iio/gyro/adis16260_ring.c       |   2 +-
->>  drivers/staging/iio/iio_input.c                 | 225 ++++++++++++++
->>  drivers/staging/iio/iio_input.h                 |  23 ++
->>  drivers/staging/iio/iio_simple_dummy_buffer.c   |   5 +-
->>  drivers/staging/iio/impedance-analyzer/ad5933.c |   4 +-
->>  drivers/staging/iio/imu/adis16400_ring.c        |   5 +-
->>  drivers/staging/iio/meter/ade7758_ring.c        |   2 +-
->>  include/linux/iio/buffer.h                      |  24 +-
->>  include/linux/iio/consumer.h                    |  48 +++
->>  include/linux/iio/iio.h                         |   2 +
->>  include/linux/iio/machine.h                     |   2 +
->>  39 files changed, 743 insertions(+), 208 deletions(-)
->>  create mode 100644 drivers/iio/buffer_cb.c
->>  create mode 100644 drivers/staging/iio/iio_input.c
->>  create mode 100644 drivers/staging/iio/iio_input.h
->>
