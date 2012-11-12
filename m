@@ -1,41 +1,129 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f46.google.com ([74.125.83.46]:42436 "EHLO
-	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754421Ab2KFIYA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 6 Nov 2012 03:24:00 -0500
-Received: by mail-ee0-f46.google.com with SMTP id b15so83710eek.19
-        for <linux-iio@vger.kernel.org>; Tue, 06 Nov 2012 00:23:59 -0800 (PST)
+Return-Path: <denis.ciocca@st.com>
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Denis Ciocca <denis.ciocca@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	Pavel Machek <pavel@denx.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"burman.yan@gmail.com" <burman.yan@gmail.com>
+Date: Mon, 12 Nov 2012 18:10:36 +0100
+Subject: Re: STMicroelectronics accelerometers driver.
+Message-ID: <50A12D8C.6040207@st.com>
+References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de>
+ <20121008195007.GA32042@elf.ucw.cz> <507338B5.60307@metafoo.de>
+ <665718a4-de6b-4d09-ba80-35705fcf2595@email.android.com>
+ <CAEE_umojW5OyB3yGgE54wH7_k__dBu9=Yew_0tCCf5--=C2g5g@mail.gmail.com>
+ <507D9EA3.4070009@metafoo.de> <5085128C.7020507@st.com>
+ <50858B44.2080006@kernel.org> <5087E2A8.4070304@st.com>
+ <508A7DA6.7050505@metafoo.de> <508E4492.8080000@st.com>
+ <508E48D1.3000703@metafoo.de> <508E5978.5000907@st.com>
+ <508E5AD5.1040907@metafoo.de> <50914366.4090000@st.com>
+ <5091546D.9000601@metafoo.de>
+ <CAEE_umoKvv9ciBfUSahDqsmcbHi9W=93o5YSpE-vxUduCmqWSQ@mail.gmail.com>
+ <50982F71.3060606@kernel.org> <5098F065.1090009@st.com>
+In-Reply-To: <5098F065.1090009@st.com>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-In-Reply-To: <1352126906-4560-3-git-send-email-larsi@wh2.tu-dresden.de>
-References: <1352126906-4560-1-git-send-email-larsi@wh2.tu-dresden.de>
-	<1352126906-4560-3-git-send-email-larsi@wh2.tu-dresden.de>
-Date: Tue, 6 Nov 2012 09:23:58 +0100
-Message-ID: <CACRpkda3w3x=uioWYZ_=CdMYBf_3Gsi6+V2im1umB6odDuSB8w@mail.gmail.com>
-Subject: Re: [PATCH v3 3/5] gpio: add viperboard gpio driver
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Lars Poeschel <larsi@wh2.tu-dresden.de>
-Cc: poeschel@lemonage.de, sameo@linux.intel.com,
-	linux-kernel@vger.kernel.org, jic23@cam.ac.uk, khali@linux-fr.org,
-	ben-linux@fluff.org, w.sang@pengutronix.de,
-	grant.likely@secretlab.ca, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Nov 5, 2012 at 3:48 PM, Lars Poeschel <larsi@wh2.tu-dresden.de> wrote:
+Hi Jonathan,
 
-> From: Lars Poeschel <poeschel@lemonage.de>
+can you please provide me one direction to modify the part in question=20
+about the style of struct, in such a way I can do some modifications.
+
+Thanks,
+
+Denis Ciocca
+
+
+
+On 11/06/2012 12:11 PM, Denis Ciocca wrote:
+> Hi Jonathan,
 >
-> This adds the mfd cell to use the gpio a and gpio b part
-> of the Nano River Technologies viperboard.
+> Thanks for your support!
+> I have applied your comments, only two point I would check better.
 >
-> Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
-
-OK I think we can maintain this.
-
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Please get Sam to merge this through his MFD tree.
-
-Yours,
-Linus Walleij
+>
+>
+>>> +} st_accel_sensors[] =3D {
+>>> +     {
+>>> +             .wai =3D ST_ACCEL_1_WAI_EXP,
+>>> +             .ch =3D (struct iio_chan_spec *)st_accel_12bit_channels,
+>>> +             .odr =3D {
+>>> +                     .addr =3D ST_ACCEL_1_ODR_ADDR,
+>>> +                     .mask =3D ST_ACCEL_1_ODR_MASK,
+>>> +                     .num_bit =3D ST_ACCEL_1_ODR_N_BIT,
+>>> +                     .odr_avl =3D {
+>>    While sometimes c99 assignment helps with clarity - sometimes it
+>> just bloats the code.
+>>    Personally I'd do these as
+>>    .odr_avl =3D {{ST_ACCEL_ODR_AVL_1HZ, ST_ACCEL_1_ODR_AVL_1HZ_VAL},
+>>                {...}
+>> etc
+>>
+>> or for that matter take the view that the defines are largely
+>> pointless as they
+>> are only used here and
+>> just do
+>>       .odr_avl =3D {{1, 0x01},
+>>                   {10, 0x02},
+>> etc.
+>> Or maybe if it fits on the line
+>>     .odr_avl =3D {{ .hz =3D 1, .value =3D 0x01 } might be the clearest..=
+.
+>> Not sure.
+>>
+>
+> In my first version I have used about this compact approach but
+> Lars-Peter tell to me to use this style code:
+>  >I'd use
+>  > .odr_avl =3D {
+>  >        [0] =3D {
+>  >                ...
+>  >        },
+>  >        [1] =3D {
+>  >                ...
+>  >
+>  >Makes things a bit more readable in my opinion.
+>
+> Ok for me it is not a problem but you must tell me one definitive style
+> please. I think this style is more cleanly, though are necessary more row=
+s.
+>
+>
+>
+>>> +/**
+>>> + * struct st_accel_platform_data - ST accel device platform data
+>>> + * @fullscale: Value of fullscale used for the sensor.
+>>> + * @sampling_frequency: Value of sampling frequency used for the
+>>> sensor.
+>>> + */
+>>> +
+>>> +struct st_accel_platform_data {
+>>> +     int fullscale;
+>>> +     int sampling_frequency;
+>>> +};
+>>
+>> What is the purpose of having these as platform data?
+>>
+>
+> For now the purpose is to set only the initial values for fullscale and
+> sampling_frequency but I think it's good thing include the mapping of
+> axis. You think it's necessary to remove this for now?
+>
+>
+>
+> Thanks,
+>
+> Denis
+>
+>
+>
+>
+>
+>
+>
+>
+>
+>
