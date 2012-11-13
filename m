@@ -1,316 +1,311 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-201.synserver.de ([212.40.185.201]:1062 "EHLO
+Received: from smtp-out-201.synserver.de ([212.40.185.201]:1104 "EHLO
 	smtp-out-201.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753431Ab2KMN2c (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Nov 2012 08:28:32 -0500
+	with ESMTP id S1753431Ab2KMN2e (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Nov 2012 08:28:34 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 10/11] staging:iio:adis: Preallocate transfer message
-Date: Tue, 13 Nov 2012 14:28:12 +0100
-Message-Id: <1352813293-17975-10-git-send-email-lars@metafoo.de>
+Subject: [PATCH 11/11] staging:iio: Move adis library out of staging
+Date: Tue, 13 Nov 2012 14:28:13 +0100
+Message-Id: <1352813293-17975-11-git-send-email-lars@metafoo.de>
 In-Reply-To: <1352813293-17975-1-git-send-email-lars@metafoo.de>
 References: <1352813293-17975-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently the driver reads out all sample registers of the device and throws
-away those which it does not need. Furthermore the SPI message is constructed
-each time the trigger handler is run, although it will be the same each time.
-This patch preallocates and pre-constructs the SPI message in the
-"update_scan_mode" callback. Only those register which are actually selected for
-sampling are included in the message. The patch also gets rid of the conversion
-of the sample data from big endian to the native endianness and instead marks
-the channel as big endian in its scan type. This allows to directly push the
-SPI transfer buffer to the IIO buffer without the need to post-process it.
+Now that the adis library no longer depends on the sw_ring buffer implementation
+we can move it out of staging.
+
+While we are at it also sort the entries in the iio Kconfig and Makefile to be
+in alphabetical order.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/accel/adis16201_core.c |   1 +
- drivers/staging/iio/accel/adis16203_core.c |   1 +
- drivers/staging/iio/accel/adis16204_core.c |   1 +
- drivers/staging/iio/accel/adis16209_core.c |   1 +
- drivers/staging/iio/accel/adis16240_core.c |   1 +
- drivers/staging/iio/gyro/adis16260_core.c  |   1 +
- drivers/staging/iio/imu/adis.h             |   8 ++
- drivers/staging/iio/imu/adis_buffer.c      | 114 +++++++++++++++++------------
- 8 files changed, 80 insertions(+), 48 deletions(-)
+ drivers/iio/Kconfig                               |  7 ++++---
+ drivers/iio/Makefile                              |  7 ++++---
+ drivers/iio/imu/Kconfig                           | 11 +++++++++++
+ drivers/iio/imu/Makefile                          |  8 ++++++++
+ drivers/{staging => }/iio/imu/adis.c              |  3 +--
+ drivers/{staging => }/iio/imu/adis_buffer.c       |  3 +--
+ drivers/{staging => }/iio/imu/adis_trigger.c      |  3 +--
+ drivers/staging/iio/accel/adis16201_core.c        |  2 +-
+ drivers/staging/iio/accel/adis16203_core.c        |  2 +-
+ drivers/staging/iio/accel/adis16204_core.c        |  2 +-
+ drivers/staging/iio/accel/adis16209_core.c        |  2 +-
+ drivers/staging/iio/accel/adis16220.h             |  2 +-
+ drivers/staging/iio/accel/adis16240_core.c        |  2 +-
+ drivers/staging/iio/gyro/adis16260.h              |  2 +-
+ drivers/staging/iio/imu/Kconfig                   | 12 ------------
+ drivers/staging/iio/imu/Makefile                  |  5 -----
+ {drivers/staging => include/linux}/iio/imu/adis.h |  0
+ 17 files changed, 37 insertions(+), 36 deletions(-)
+ create mode 100644 drivers/iio/imu/Kconfig
+ create mode 100644 drivers/iio/imu/Makefile
+ rename drivers/{staging => }/iio/imu/adis.c (99%)
+ rename drivers/{staging => }/iio/imu/adis_buffer.c (99%)
+ rename drivers/{staging => }/iio/imu/adis_trigger.c (98%)
+ rename {drivers/staging => include/linux}/iio/imu/adis.h (100%)
 
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 65ae734..b2f963b 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -63,11 +63,12 @@ config IIO_CONSUMERS_PER_TRIGGER
+ source "drivers/iio/accel/Kconfig"
+ source "drivers/iio/adc/Kconfig"
+ source "drivers/iio/amplifiers/Kconfig"
+-source "drivers/iio/light/Kconfig"
+-source "drivers/iio/frequency/Kconfig"
+-source "drivers/iio/dac/Kconfig"
+ source "drivers/iio/common/Kconfig"
++source "drivers/iio/dac/Kconfig"
++source "drivers/iio/frequency/Kconfig"
+ source "drivers/iio/gyro/Kconfig"
++source "drivers/iio/imu/Kconfig"
++source "drivers/iio/light/Kconfig"
+ source "drivers/iio/magnetometer/Kconfig"
+ 
+ endif # IIO
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 31d76a0..a0e8cdd 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -14,9 +14,10 @@ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
+ obj-y += accel/
+ obj-y += adc/
+ obj-y += amplifiers/
+-obj-y += light/
+-obj-y += frequency/
+-obj-y += dac/
+ obj-y += common/
++obj-y += dac/
+ obj-y += gyro/
++obj-y += frequency/
++obj-y += imu/
++obj-y += light/
+ obj-y += magnetometer/
+diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
+new file mode 100644
+index 0000000..9e4bc1a
+--- /dev/null
++++ b/drivers/iio/imu/Kconfig
+@@ -0,0 +1,11 @@
++config IIO_ADIS_LIB
++	tristate
++	help
++	  A set of IO helper functions for the Analog Devices ADIS* device family.
++
++config IIO_ADIS_LIB_BUFFER
++	bool
++	select IIO_TRIGGERED_BUFFER
++	help
++	  A set of buffer helper functions for the Analog Devices ADIS* device
++	  family.
+diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
+new file mode 100644
+index 0000000..97676ab
+--- /dev/null
++++ b/drivers/iio/imu/Makefile
+@@ -0,0 +1,8 @@
++#
++# Makefile for Inertial Measurement Units
++#
++
++adis_lib-y += adis.o
++adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_trigger.o
++adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_buffer.o
++obj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o
+diff --git a/drivers/staging/iio/imu/adis.c b/drivers/iio/imu/adis.c
+similarity index 99%
+rename from drivers/staging/iio/imu/adis.c
+rename to drivers/iio/imu/adis.c
+index 0bd21022..8259b77 100644
+--- a/drivers/staging/iio/imu/adis.c
++++ b/drivers/iio/imu/adis.c
+@@ -20,8 +20,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
+-
+-#include "adis.h"
++#include <linux/iio/imu/adis.h>
+ 
+ #define ADIS_MSC_CTRL_DATA_RDY_EN	BIT(2)
+ #define ADIS_MSC_CTRL_DATA_RDY_POL_HIGH	BIT(1)
+diff --git a/drivers/staging/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+similarity index 99%
+rename from drivers/staging/iio/imu/adis_buffer.c
+rename to drivers/iio/imu/adis_buffer.c
+index 342758c..a91b4cb 100644
+--- a/drivers/staging/iio/imu/adis_buffer.c
++++ b/drivers/iio/imu/adis_buffer.c
+@@ -18,8 +18,7 @@
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+-
+-#include  "adis.h"
++#include <linux/iio/imu/adis.h>
+ 
+ int adis_update_scan_mode(struct iio_dev *indio_dev,
+ 	const unsigned long *scan_mask)
+diff --git a/drivers/staging/iio/imu/adis_trigger.c b/drivers/iio/imu/adis_trigger.c
+similarity index 98%
+rename from drivers/staging/iio/imu/adis_trigger.c
+rename to drivers/iio/imu/adis_trigger.c
+index 3e89b2e..5a24c9c 100644
+--- a/drivers/staging/iio/imu/adis_trigger.c
++++ b/drivers/iio/imu/adis_trigger.c
+@@ -14,8 +14,7 @@
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
+-
+-#include "adis.h"
++#include <linux/iio/imu/adis.h>
+ 
+ static int adis_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 						bool state)
 diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
-index 0121501..833dd6b 100644
+index 833dd6b..ccdc8d2 100644
 --- a/drivers/staging/iio/accel/adis16201_core.c
 +++ b/drivers/staging/iio/accel/adis16201_core.c
-@@ -148,6 +148,7 @@ static const struct iio_chan_spec adis16201_channels[] = {
- static const struct iio_info adis16201_info = {
- 	.read_raw = &adis16201_read_raw,
- 	.write_raw = &adis16201_write_raw,
-+	.update_scan_mode = adis_update_scan_mode,
- 	.driver_module = THIS_MODULE,
- };
+@@ -18,9 +18,9 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
++#include <linux/iio/imu/adis.h>
  
+ #include "adis16201.h"
+-#include "../imu/adis.h"
+ 
+ static const u8 adis16201_addresses[] = {
+ 	[ADIS16201_SCAN_ACC_X] = ADIS16201_XACCL_OFFS,
 diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
-index 326b106..f631e57 100644
+index f631e57..202985e 100644
 --- a/drivers/staging/iio/accel/adis16203_core.c
 +++ b/drivers/staging/iio/accel/adis16203_core.c
-@@ -112,6 +112,7 @@ static const struct iio_chan_spec adis16203_channels[] = {
- static const struct iio_info adis16203_info = {
- 	.read_raw = &adis16203_read_raw,
- 	.write_raw = &adis16203_write_raw,
-+	.update_scan_mode = adis_update_scan_mode,
- 	.driver_module = THIS_MODULE,
- };
+@@ -18,9 +18,9 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
++#include <linux/iio/imu/adis.h>
+ 
+ #include "adis16203.h"
+-#include "../imu/adis.h"
+ 
+ #define DRIVER_NAME		"adis16203"
  
 diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
-index 4f69ead..dbec841 100644
+index dbec841..6dafad6 100644
 --- a/drivers/staging/iio/accel/adis16204_core.c
 +++ b/drivers/staging/iio/accel/adis16204_core.c
-@@ -153,6 +153,7 @@ static const struct iio_chan_spec adis16204_channels[] = {
- static const struct iio_info adis16204_info = {
- 	.read_raw = &adis16204_read_raw,
- 	.write_raw = &adis16204_write_raw,
-+	.update_scan_mode = adis_update_scan_mode,
- 	.driver_module = THIS_MODULE,
- };
+@@ -21,9 +21,9 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
++#include <linux/iio/imu/adis.h>
+ 
+ #include "adis16204.h"
+-#include "../imu/adis.h"
+ 
+ /* Unique to this driver currently */
  
 diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-index e203e96..f9f9d58 100644
+index f9f9d58..d2921c3 100644
 --- a/drivers/staging/iio/accel/adis16209_core.c
 +++ b/drivers/staging/iio/accel/adis16209_core.c
-@@ -146,6 +146,7 @@ static const struct iio_chan_spec adis16209_channels[] = {
- static const struct iio_info adis16209_info = {
- 	.read_raw = &adis16209_read_raw,
- 	.write_raw = &adis16209_write_raw,
-+	.update_scan_mode = adis_update_scan_mode,
- 	.driver_module = THIS_MODULE,
- };
+@@ -19,9 +19,9 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
++#include <linux/iio/imu/adis.h>
+ 
+ #include "adis16209.h"
+-#include "../imu/adis.h"
+ 
+ static const u8 adis16209_addresses[8][1] = {
+ 	[ADIS16209_SCAN_SUPPLY] = { },
+diff --git a/drivers/staging/iio/accel/adis16220.h b/drivers/staging/iio/accel/adis16220.h
+index 7cc4d2f..a894ad7 100644
+--- a/drivers/staging/iio/accel/adis16220.h
++++ b/drivers/staging/iio/accel/adis16220.h
+@@ -1,7 +1,7 @@
+ #ifndef SPI_ADIS16220_H_
+ #define SPI_ADIS16220_H_
+ 
+-#include "../imu/adis.h"
++#include <linux/iio/imu/adis.h>
+ 
+ #define ADIS16220_STARTUP_DELAY	220 /* ms */
  
 diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-index 019a31e..3d1a8a9 100644
+index 3d1a8a9..d098b49 100644
 --- a/drivers/staging/iio/accel/adis16240_core.c
 +++ b/drivers/staging/iio/accel/adis16240_core.c
-@@ -202,6 +202,7 @@ static const struct iio_info adis16240_info = {
- 	.attrs = &adis16240_attribute_group,
- 	.read_raw = &adis16240_read_raw,
- 	.write_raw = &adis16240_write_raw,
-+	.update_scan_mode = adis_update_scan_mode,
- 	.driver_module = THIS_MODULE,
- };
+@@ -22,9 +22,9 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
++#include <linux/iio/imu/adis.h>
  
-diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
-index 820547b..b988b4f 100644
---- a/drivers/staging/iio/gyro/adis16260_core.c
-+++ b/drivers/staging/iio/gyro/adis16260_core.c
-@@ -267,6 +267,7 @@ static const struct iio_info adis16260_info = {
- 	.attrs = &adis16260_attribute_group,
- 	.read_raw = &adis16260_read_raw,
- 	.write_raw = &adis16260_write_raw,
-+	.update_scan_mode = adis_update_scan_mode,
- 	.driver_module = THIS_MODULE,
- };
+ #include "adis16240.h"
+-#include "../imu/adis.h"
  
-diff --git a/drivers/staging/iio/imu/adis.h b/drivers/staging/iio/imu/adis.h
-index c84da7a..8c3304d 100644
---- a/drivers/staging/iio/imu/adis.h
-+++ b/drivers/staging/iio/imu/adis.h
-@@ -87,6 +87,7 @@ int adis_single_conversion(struct iio_dev *indio_dev,
- 		.sign = 'u', \
- 		.realbits = (bits), \
- 		.storagebits = 16, \
-+		.endianness = IIO_BE, \
- 	}, \
- }
+ static ssize_t adis16240_spi_read_signed(struct device *dev,
+ 		struct device_attribute *attr,
+diff --git a/drivers/staging/iio/gyro/adis16260.h b/drivers/staging/iio/gyro/adis16260.h
+index ea5eba2..df3c0b7 100644
+--- a/drivers/staging/iio/gyro/adis16260.h
++++ b/drivers/staging/iio/gyro/adis16260.h
+@@ -2,7 +2,7 @@
+ #define SPI_ADIS16260_H_
  
-@@ -109,6 +110,7 @@ int adis_single_conversion(struct iio_dev *indio_dev,
- 		.sign = 'u', \
- 		.realbits = (bits), \
- 		.storagebits = 16, \
-+		.endianness = IIO_BE, \
- 	}, \
- }
+ #include "adis16260_platform_data.h"
+-#include "../imu/adis.h"
++#include <linux/iio/imu/adis.h>
  
-@@ -125,6 +127,7 @@ int adis_single_conversion(struct iio_dev *indio_dev,
- 		.sign = 's', \
- 		.realbits = (bits), \
- 		.storagebits = 16, \
-+		.endianness = IIO_BE, \
- 	}, \
- }
+ #define ADIS16260_STARTUP_DELAY	220 /* ms */
  
-@@ -150,6 +153,9 @@ void adis_cleanup_buffer_and_trigger(struct adis *adis,
- int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev);
- void adis_remove_trigger(struct adis *adis);
+diff --git a/drivers/staging/iio/imu/Kconfig b/drivers/staging/iio/imu/Kconfig
+index 2c564ed..2c2f47d 100644
+--- a/drivers/staging/iio/imu/Kconfig
++++ b/drivers/staging/iio/imu/Kconfig
+@@ -15,15 +15,3 @@ config ADIS16400
+ 	  (adis16400 series also have magnetometers).
  
-+int adis_update_scan_mode(struct iio_dev *indio_dev,
-+	const unsigned long *scan_mask);
-+
- #else /* CONFIG_IIO_BUFFER */
- 
- static inline int adis_setup_buffer_and_trigger(struct adis *adis,
-@@ -173,6 +179,8 @@ static inline void adis_remove_trigger(struct adis *adis)
- {
- }
- 
-+#define adis_update_scan_mode NULL
-+
- #endif /* CONFIG_IIO_BUFFER */
- 
- #endif
-diff --git a/drivers/staging/iio/imu/adis_buffer.c b/drivers/staging/iio/imu/adis_buffer.c
-index 0fa8e80a..342758c 100644
---- a/drivers/staging/iio/imu/adis_buffer.c
-+++ b/drivers/staging/iio/imu/adis_buffer.c
-@@ -1,3 +1,12 @@
-+/*
-+ * Common library for ADIS16XXX devices
-+ *
-+ * Copyright 2012 Analog Devices Inc.
-+ *   Author: Lars-Peter Clausen <lars@metafoo.de>
-+ *
-+ * Licensed under the GPL-2 or later.
-+ */
-+
- #include <linux/export.h>
- #include <linux/interrupt.h>
- #include <linux/mutex.h>
-@@ -12,73 +21,80 @@
- 
- #include  "adis.h"
- 
--#define ADIS_MAX_OUTPUTS 12
+ endmenu
 -
--static int adis_read_buffer_data(struct adis *adis, struct iio_dev *indio_dev)
-+int adis_update_scan_mode(struct iio_dev *indio_dev,
-+	const unsigned long *scan_mask)
- {
--	int n_outputs = indio_dev->num_channels;
--	struct spi_transfer xfers[ADIS_MAX_OUTPUTS + 1];
--	struct spi_message msg;
--	int ret;
--	int i;
+-config IIO_ADIS_LIB
+-	tristate
+-	help
+-	  A set of IO helper functions for the Analog Devices ADIS* device family.
 -
--	mutex_lock(&adis->txrx_lock);
+-config IIO_ADIS_LIB_BUFFER
+-	bool
+-	select IIO_TRIGGERED_BUFFER
+-	help
+-	  A set of buffer helper functions for the Analog Devices ADIS* device
+-	  family.
+diff --git a/drivers/staging/iio/imu/Makefile b/drivers/staging/iio/imu/Makefile
+index 65dafba..3400a13 100644
+--- a/drivers/staging/iio/imu/Makefile
++++ b/drivers/staging/iio/imu/Makefile
+@@ -5,8 +5,3 @@
+ adis16400-y             := adis16400_core.o
+ adis16400-$(CONFIG_IIO_BUFFER) += adis16400_ring.o adis16400_trigger.o
+ obj-$(CONFIG_ADIS16400) += adis16400.o
 -
--	spi_message_init(&msg);
--
--	memset(xfers, 0, sizeof(xfers));
--	for (i = 0; i <= n_outputs; i++) {
--		xfers[i].bits_per_word = 8;
--		xfers[i].cs_change = 1;
--		xfers[i].len = 2;
--		xfers[i].delay_usecs = adis->data->read_delay;
--		if (i < n_outputs) {
--			xfers[i].tx_buf = adis->tx + 2 * i;
--			adis->tx[2 * i] = indio_dev->channels[i].address;
--			adis->tx[2 * i + 1] = 0;
--		}
--		if (i >= 1)
--			xfers[i].rx_buf = adis->rx + 2 * (i - 1);
--		spi_message_add_tail(&xfers[i], &msg);
--	}
-+	struct adis *adis = iio_device_get_drvdata(indio_dev);
-+	const struct iio_chan_spec *chan;
-+	unsigned int scan_count;
-+	unsigned int i, j;
-+	__be16 *tx, *rx;
- 
--	ret = spi_sync(adis->spi, &msg);
--	if (ret)
--		dev_err(&adis->spi->dev, "Failed to read data: %d", ret);
-+	kfree(adis->xfer);
-+	kfree(adis->buffer);
- 
--	mutex_unlock(&adis->txrx_lock);
-+	scan_count = indio_dev->scan_bytes / 2;
- 
--	return ret;
-+	adis->xfer = kcalloc(scan_count + 1, sizeof(*adis->xfer), GFP_KERNEL);
-+	if (!adis->xfer)
-+		return -ENOMEM;
-+
-+	adis->buffer = kzalloc(indio_dev->scan_bytes * 2, GFP_KERNEL);
-+	if (!adis->buffer)
-+		return -ENOMEM;
-+
-+	rx = adis->buffer;
-+	tx = rx + indio_dev->scan_bytes;
-+
-+	spi_message_init(&adis->msg);
-+
-+	for (j = 0; j <= scan_count; j++) {
-+		adis->xfer[j].bits_per_word = 8;
-+		if (j != scan_count)
-+			adis->xfer[j].cs_change = 1;
-+		adis->xfer[j].len = 2;
-+		adis->xfer[j].delay_usecs = adis->data->read_delay;
-+		if (j < scan_count)
-+			adis->xfer[j].tx_buf = &tx[j];
-+		if (j >= 1)
-+			adis->xfer[j].rx_buf = &rx[j - 1];
-+		spi_message_add_tail(&adis->xfer[j], &adis->msg);
-+	}
-+
-+	chan = indio_dev->channels;
-+	for (i = 0; i < indio_dev->num_channels; i++, chan++) {
-+		if (!test_bit(chan->scan_index, scan_mask))
-+			continue;
-+		*tx++ = cpu_to_be16(chan->address << 8);
-+	}
-+
-+	return 0;
- }
-+EXPORT_SYMBOL_GPL(adis_update_scan_mode);
- 
- static irqreturn_t adis_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct adis *adis = iio_device_get_drvdata(indio_dev);
--	u16 *data;
--	int i = 0;
-+	int ret;
- 
--	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
--	if (data == NULL) {
--		dev_err(&adis->spi->dev, "Failed to allocate memory.");
-+	if (!adis->buffer)
- 		return -ENOMEM;
--	}
- 
--	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength)
--	    && adis_read_buffer_data(adis, indio_dev) >= 0)
--		for (; i < bitmap_weight(indio_dev->active_scan_mask,
--					 indio_dev->masklength); i++)
--			data[i] = be16_to_cpup((__be16 *)&(adis->rx[i*2]));
-+	ret = spi_sync(adis->spi, &adis->msg);
-+	if (ret)
-+		dev_err(&adis->spi->dev, "Failed to read data: %d", ret);
- 
- 	/* Guaranteed to be aligned with 8 byte boundary */
--	if (indio_dev->scan_timestamp)
--		*((s64 *)(PTR_ALIGN(data, sizeof(s64)))) = pf->timestamp;
-+	if (indio_dev->scan_timestamp) {
-+		void *b = adis->buffer + indio_dev->scan_bytes - sizeof(s64);
-+		*(s64 *)b = pf->timestamp;
-+	}
- 
--	iio_push_to_buffers(indio_dev, (u8 *)data);
-+	iio_push_to_buffers(indio_dev, adis->buffer);
- 
- 	iio_trigger_notify_done(indio_dev->trig);
--	kfree(data);
- 
- 	return IRQ_HANDLED;
- }
-@@ -137,6 +153,8 @@ void adis_cleanup_buffer_and_trigger(struct adis *adis,
- {
- 	if (adis->spi->irq)
- 		adis_remove_trigger(adis);
-+	kfree(adis->buffer);
-+	kfree(adis->xfer);
- 	iio_triggered_buffer_cleanup(indio_dev);
- }
- EXPORT_SYMBOL_GPL(adis_cleanup_buffer_and_trigger);
+-adis_lib-y += adis.o
+-adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_trigger.o
+-adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_buffer.o
+-obj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o
+diff --git a/drivers/staging/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+similarity index 100%
+rename from drivers/staging/iio/imu/adis.h
+rename to include/linux/iio/imu/adis.h
 -- 
 1.8.0
 
