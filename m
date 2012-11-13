@@ -1,98 +1,489 @@
-Return-Path: <alban.bedel@avionic-design.de>
-Date: Wed, 14 Nov 2012 12:17:38 +0100
-From: Alban Bedel <alban.bedel@avionic-design.de>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Roland Stigge <stigge@antcom.de>, linux-iio@vger.kernel.org, Lars-Peter
- Clausen <lars@metafoo.de>, Alban Bedel <alban.bedel@avionic-design.de>
-Subject: Re: [PATCH] staging:iio:lpc32xx_adc: Add scale/offset support
-Message-ID: <20121114121738.05df9ef8@avionic-0020.adnet.avionic-design.de>
-In-Reply-To: <f16ac222-cb36-4ada-bd00-c9166ea94dd3@email.android.com>
-References: <1352306690-25841-1-git-send-email-alban.bedel@avionic-design.de>
-	<509B7BF0.5050704@antcom.de>
-	<509BD1D9.20100@jic23.retrosnub.co.uk>
-	<20121108175617.06429ab1@avionic-0020.adnet.avionic-design.de>
-	<f16ac222-cb36-4ada-bd00-c9166ea94dd3@email.android.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-201.synserver.de ([212.40.185.201]:1173 "EHLO
+	smtp-out-201.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753078Ab2KMN21 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Nov 2012 08:28:27 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 06/11] staging:iio:adis16220: Use adis library
+Date: Tue, 13 Nov 2012 14:28:08 +0100
+Message-Id: <1352813293-17975-6-git-send-email-lars@metafoo.de>
+In-Reply-To: <1352813293-17975-1-git-send-email-lars@metafoo.de>
+References: <1352813293-17975-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, 08 Nov 2012 17:28:46 +0000
-Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
+Use the new adis library for the adis16220 driver. The adis16220 driver is a bit
+special and so we can only make use of the generic register access and control
+functions for now.
 
-> 
-> 
-> Alban Bedel <alban.bedel@avionic-design.de> wrote:
-> 
-> >On Thu, 08 Nov 2012 15:38:01 +0000
-> >Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
-> >
-> >> Why not do this with regulators?  That would give a more flexible
-> >> system and all that stuff is already well supported (if fixed
-> >voltages
-> >> are supplied then used fixed regulators).
-> >
-> >I agree that would probably be better. But for me that raise the
-> >question of having this stuff in the ADC driver at all. Most ADC just
-> >return a value from 0 to MAX and have no way to find out their supply
-> >voltage.
->
-> A lot of iio drivers require a regulator for exactly this reason.  Either
-> it is fixed and can go in device tree or it isn't and can be queried
-> or set. 
-> 
-> > If we start with binding to regulators in the drivers we'll soon get a
-> > lots of non-flexible and duplicated code.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/accel/adis16220.h      |  20 +--
+ drivers/staging/iio/accel/adis16220_core.c | 280 ++++++-----------------------
+ 2 files changed, 60 insertions(+), 240 deletions(-)
 
-> Why? Duplication maybe but I don't see where inflexibility comes from..
-> duplication may mean some library functions would be useful.
+diff --git a/drivers/staging/iio/accel/adis16220.h b/drivers/staging/iio/accel/adis16220.h
+index 024313c..7cc4d2f 100644
+--- a/drivers/staging/iio/accel/adis16220.h
++++ b/drivers/staging/iio/accel/adis16220.h
+@@ -1,10 +1,9 @@
+ #ifndef SPI_ADIS16220_H_
+ #define SPI_ADIS16220_H_
+ 
+-#define ADIS16220_STARTUP_DELAY	220 /* ms */
++#include "../imu/adis.h"
+ 
+-#define ADIS16220_READ_REG(a)    a
+-#define ADIS16220_WRITE_REG(a) ((a) | 0x80)
++#define ADIS16220_STARTUP_DELAY	220 /* ms */
+ 
+ /* Flash memory write count */
+ #define ADIS16220_FLASH_CNT     0x00
+@@ -102,15 +101,15 @@
+ #define ADIS16220_DIAG_STAT_FLASH_CHK	(1<<6)
+ #define ADIS16220_DIAG_STAT_SELF_TEST	(1<<5)
+ /* Capture period violation/interruption */
+-#define ADIS16220_DIAG_STAT_VIOLATION	(1<<4)
++#define ADIS16220_DIAG_STAT_VIOLATION_BIT	4
+ /* SPI communications failure */
+-#define ADIS16220_DIAG_STAT_SPI_FAIL	(1<<3)
++#define ADIS16220_DIAG_STAT_SPI_FAIL_BIT	3
+ /* Flash update failure */
+-#define ADIS16220_DIAG_STAT_FLASH_UPT	(1<<2)
++#define ADIS16220_DIAG_STAT_FLASH_UPT_BIT	2
+ /* Power supply above 3.625 V */
+-#define ADIS16220_DIAG_STAT_POWER_HIGH	(1<<1)
++#define ADIS16220_DIAG_STAT_POWER_HIGH_BIT	1
+ /* Power supply below 3.15 V */
+-#define ADIS16220_DIAG_STAT_POWER_LOW	(1<<0)
++#define ADIS16220_DIAG_STAT_POWER_LOW_BIT	0
+ 
+ /* GLOB_CMD */
+ #define ADIS16220_GLOB_CMD_SW_RESET	(1<<7)
+@@ -125,13 +124,14 @@
+ 
+ /**
+  * struct adis16220_state - device instance specific data
+- * @us:			actual spi_device
++ * @adis:		adis device
+  * @tx:			transmit buffer
+  * @rx:			receive buffer
+  * @buf_lock:		mutex to protect tx and rx
+  **/
+ struct adis16220_state {
+-	struct spi_device	*us;
++	struct adis adis;
++
+ 	struct mutex		buf_lock;
+ 	u8			tx[ADIS16220_MAX_TX] ____cacheline_aligned;
+ 	u8			rx[ADIS16220_MAX_RX];
+diff --git a/drivers/staging/iio/accel/adis16220_core.c b/drivers/staging/iio/accel/adis16220_core.c
+index 22807ac..c39ce62 100644
+--- a/drivers/staging/iio/accel/adis16220_core.c
++++ b/drivers/staging/iio/accel/adis16220_core.c
+@@ -20,136 +20,19 @@
+ 
+ #include "adis16220.h"
+ 
+-/**
+- * adis16220_spi_write_reg_8() - write single byte to a register
+- * @indio_dev: iio device associated with child of actual device
+- * @reg_address: the address of the register to be written
+- * @val: the value to write
+- **/
+-static int adis16220_spi_write_reg_8(struct iio_dev *indio_dev,
+-		u8 reg_address,
+-		u8 val)
+-{
+-	int ret;
+-	struct adis16220_state *st = iio_priv(indio_dev);
+-
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = ADIS16220_WRITE_REG(reg_address);
+-	st->tx[1] = val;
+-
+-	ret = spi_write(st->us, st->tx, 2);
+-	mutex_unlock(&st->buf_lock);
+-
+-	return ret;
+-}
+-
+-/**
+- * adis16220_spi_write_reg_16() - write 2 bytes to a pair of registers
+- * @indio_dev:  iio device associated with child of actual device
+- * @reg_address: the address of the lower of the two registers. Second register
+- *               is assumed to have address one greater.
+- * @val: value to be written
+- **/
+-static int adis16220_spi_write_reg_16(struct iio_dev *indio_dev,
+-		u8 lower_reg_address,
+-		u16 value)
+-{
+-	int ret;
+-	struct spi_message msg;
+-	struct adis16220_state *st = iio_priv(indio_dev);
+-	struct spi_transfer xfers[] = {
+-		{
+-			.tx_buf = st->tx,
+-			.bits_per_word = 8,
+-			.len = 2,
+-			.cs_change = 1,
+-			.delay_usecs = 35,
+-		}, {
+-			.tx_buf = st->tx + 2,
+-			.bits_per_word = 8,
+-			.len = 2,
+-			.delay_usecs = 35,
+-		},
+-	};
+-
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = ADIS16220_WRITE_REG(lower_reg_address);
+-	st->tx[1] = value & 0xFF;
+-	st->tx[2] = ADIS16220_WRITE_REG(lower_reg_address + 1);
+-	st->tx[3] = (value >> 8) & 0xFF;
+-
+-	spi_message_init(&msg);
+-	spi_message_add_tail(&xfers[0], &msg);
+-	spi_message_add_tail(&xfers[1], &msg);
+-	ret = spi_sync(st->us, &msg);
+-	mutex_unlock(&st->buf_lock);
+-
+-	return ret;
+-}
+-
+-/**
+- * adis16220_spi_read_reg_16() - read 2 bytes from a 16-bit register
+- * @indio_dev: iio device associated with child of actual device
+- * @reg_address: the address of the lower of the two registers. Second register
+- *               is assumed to have address one greater.
+- * @val: somewhere to pass back the value read
+- **/
+-static int adis16220_spi_read_reg_16(struct iio_dev *indio_dev,
+-				     u8 lower_reg_address,
+-				     u16 *val)
+-{
+-	struct spi_message msg;
+-	struct adis16220_state *st = iio_priv(indio_dev);
+-	int ret;
+-	struct spi_transfer xfers[] = {
+-		{
+-			.tx_buf = st->tx,
+-			.bits_per_word = 8,
+-			.len = 2,
+-			.cs_change = 1,
+-			.delay_usecs = 35,
+-		}, {
+-			.rx_buf = st->rx,
+-			.bits_per_word = 8,
+-			.len = 2,
+-			.cs_change = 1,
+-			.delay_usecs = 35,
+-		},
+-	};
+-
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = ADIS16220_READ_REG(lower_reg_address);
+-	st->tx[1] = 0;
+-
+-	spi_message_init(&msg);
+-	spi_message_add_tail(&xfers[0], &msg);
+-	spi_message_add_tail(&xfers[1], &msg);
+-	ret = spi_sync(st->us, &msg);
+-	if (ret) {
+-		dev_err(&st->us->dev,
+-			"problem when reading 16 bit register 0x%02X",
+-			lower_reg_address);
+-		goto error_ret;
+-	}
+-	*val = (st->rx[0] << 8) | st->rx[1];
+-
+-error_ret:
+-	mutex_unlock(&st->buf_lock);
+-	return ret;
+-}
+-
+ static ssize_t adis16220_read_16bit(struct device *dev,
+ 		struct device_attribute *attr,
+ 		char *buf)
+ {
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct adis16220_state *st = iio_priv(indio_dev);
+ 	ssize_t ret;
+ 	s16 val = 0;
+ 
+ 	/* Take the iio_dev status lock */
+ 	mutex_lock(&indio_dev->mlock);
+-	ret = adis16220_spi_read_reg_16(indio_dev, this_attr->address,
++	ret = adis_read_reg_16(&st->adis, this_attr->address,
+ 					(u16 *)&val);
+ 	mutex_unlock(&indio_dev->mlock);
+ 	if (ret)
+@@ -164,13 +47,14 @@ static ssize_t adis16220_write_16bit(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct adis16220_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 	u16 val;
+ 
+ 	ret = kstrtou16(buf, 10, &val);
+ 	if (ret)
+ 		goto error_ret;
+-	ret = adis16220_spi_write_reg_16(indio_dev, this_attr->address, val);
++	ret = adis_write_reg_16(&st->adis, this_attr->address, val);
+ 
+ error_ret:
+ 	return ret ? ret : len;
+@@ -178,10 +62,11 @@ error_ret:
+ 
+ static int adis16220_capture(struct iio_dev *indio_dev)
+ {
++	struct adis16220_state *st = iio_priv(indio_dev);
+ 	int ret;
+-	ret = adis16220_spi_write_reg_16(indio_dev,
+-			ADIS16220_GLOB_CMD,
+-			0xBF08); /* initiates a manual data capture */
++
++	 /* initiates a manual data capture */
++	ret = adis_write_reg_16(&st->adis, ADIS16220_GLOB_CMD, 0xBF08);
+ 	if (ret)
+ 		dev_err(&indio_dev->dev, "problem beginning capture");
+ 
+@@ -190,18 +75,6 @@ static int adis16220_capture(struct iio_dev *indio_dev)
+ 	return ret;
+ }
+ 
+-static int adis16220_reset(struct iio_dev *indio_dev)
+-{
+-	int ret;
+-	ret = adis16220_spi_write_reg_8(indio_dev,
+-			ADIS16220_GLOB_CMD,
+-			ADIS16220_GLOB_CMD_SW_RESET);
+-	if (ret)
+-		dev_err(&indio_dev->dev, "problem resetting device");
+-
+-	return ret;
+-}
+-
+ static ssize_t adis16220_write_capture(struct device *dev,
+ 		struct device_attribute *attr,
+ 		const char *buf, size_t len)
+@@ -222,81 +95,6 @@ static ssize_t adis16220_write_capture(struct device *dev,
+ 	return len;
+ }
+ 
+-static int adis16220_check_status(struct iio_dev *indio_dev)
+-{
+-	u16 status;
+-	int ret;
+-
+-	ret = adis16220_spi_read_reg_16(indio_dev, ADIS16220_DIAG_STAT,
+-					&status);
+-
+-	if (ret < 0) {
+-		dev_err(&indio_dev->dev, "Reading status failed\n");
+-		goto error_ret;
+-	}
+-	ret = status & 0x7F;
+-
+-	if (status & ADIS16220_DIAG_STAT_VIOLATION)
+-		dev_err(&indio_dev->dev,
+-			"Capture period violation/interruption\n");
+-	if (status & ADIS16220_DIAG_STAT_SPI_FAIL)
+-		dev_err(&indio_dev->dev, "SPI failure\n");
+-	if (status & ADIS16220_DIAG_STAT_FLASH_UPT)
+-		dev_err(&indio_dev->dev, "Flash update failed\n");
+-	if (status & ADIS16220_DIAG_STAT_POWER_HIGH)
+-		dev_err(&indio_dev->dev, "Power supply above 3.625V\n");
+-	if (status & ADIS16220_DIAG_STAT_POWER_LOW)
+-		dev_err(&indio_dev->dev, "Power supply below 3.15V\n");
+-
+-error_ret:
+-	return ret;
+-}
+-
+-static int adis16220_self_test(struct iio_dev *indio_dev)
+-{
+-	int ret;
+-	ret = adis16220_spi_write_reg_16(indio_dev,
+-			ADIS16220_MSC_CTRL,
+-			ADIS16220_MSC_CTRL_SELF_TEST_EN);
+-	if (ret) {
+-		dev_err(&indio_dev->dev, "problem starting self test");
+-		goto err_ret;
+-	}
+-
+-	adis16220_check_status(indio_dev);
+-
+-err_ret:
+-	return ret;
+-}
+-
+-static int adis16220_initial_setup(struct iio_dev *indio_dev)
+-{
+-	int ret;
+-
+-	/* Do self test */
+-	ret = adis16220_self_test(indio_dev);
+-	if (ret) {
+-		dev_err(&indio_dev->dev, "self test failure");
+-		goto err_ret;
+-	}
+-
+-	/* Read status register to check the result */
+-	ret = adis16220_check_status(indio_dev);
+-	if (ret) {
+-		adis16220_reset(indio_dev);
+-		dev_err(&indio_dev->dev, "device not playing ball -> reset");
+-		msleep(ADIS16220_STARTUP_DELAY);
+-		ret = adis16220_check_status(indio_dev);
+-		if (ret) {
+-			dev_err(&indio_dev->dev, "giving up");
+-			goto err_ret;
+-		}
+-	}
+-
+-err_ret:
+-	return ret;
+-}
+-
+ static ssize_t adis16220_capture_buffer_read(struct iio_dev *indio_dev,
+ 					char *buf,
+ 					loff_t off,
+@@ -333,7 +131,7 @@ static ssize_t adis16220_capture_buffer_read(struct iio_dev *indio_dev,
+ 		count = ADIS16220_CAPTURE_SIZE - off;
+ 
+ 	/* write the begin position of capture buffer */
+-	ret = adis16220_spi_write_reg_16(indio_dev,
++	ret = adis_write_reg_16(&st->adis,
+ 					ADIS16220_CAPT_PNTR,
+ 					off > 1);
+ 	if (ret)
+@@ -342,8 +140,9 @@ static ssize_t adis16220_capture_buffer_read(struct iio_dev *indio_dev,
+ 	/* read count/2 values from capture buffer */
+ 	mutex_lock(&st->buf_lock);
+ 
++
+ 	for (i = 0; i < count; i += 2) {
+-		st->tx[i] = ADIS16220_READ_REG(addr);
++		st->tx[i] = ADIS_READ_REG(addr);
+ 		st->tx[i + 1] = 0;
+ 	}
+ 	xfers[1].len = count;
+@@ -351,7 +150,7 @@ static ssize_t adis16220_capture_buffer_read(struct iio_dev *indio_dev,
+ 	spi_message_init(&msg);
+ 	spi_message_add_tail(&xfers[0], &msg);
+ 	spi_message_add_tail(&xfers[1], &msg);
+-	ret = spi_sync(st->us, &msg);
++	ret = spi_sync(st->adis.spi, &msg);
+ 	if (ret) {
+ 
+ 		mutex_unlock(&st->buf_lock);
+@@ -472,6 +271,8 @@ static int adis16220_read_raw(struct iio_dev *indio_dev,
+ 			      int *val, int *val2,
+ 			      long mask)
+ {
++	struct adis16220_state *st = iio_priv(indio_dev);
++	const struct adis16220_address_spec *addr;
+ 	int ret = -EINVAL;
+ 	int addrind = 0;
+ 	u16 uval;
+@@ -516,28 +317,21 @@ static int adis16220_read_raw(struct iio_dev *indio_dev,
+ 	default:
+ 		return -EINVAL;
+ 	}
+-	if (adis16220_addresses[chan->address][addrind].sign) {
+-		ret = adis16220_spi_read_reg_16(indio_dev,
+-						adis16220_addresses[chan
+-								    ->address]
+-						[addrind].addr,
+-						&sval);
++	addr = &adis16220_addresses[chan->address][addrind];
++	if (addr->sign) {
++		ret = adis_read_reg_16(&st->adis, addr->addr, &sval);
+ 		if (ret)
+ 			return ret;
+-		bits = adis16220_addresses[chan->address][addrind].bits;
++		bits = addr->bits;
+ 		sval &= (1 << bits) - 1;
+ 		sval = (s16)(sval << (16 - bits)) >> (16 - bits);
+ 		*val = sval;
+ 		return IIO_VAL_INT;
+ 	} else {
+-		ret = adis16220_spi_read_reg_16(indio_dev,
+-						adis16220_addresses[chan
+-								    ->address]
+-						[addrind].addr,
+-						&uval);
++		ret = adis_read_reg_16(&st->adis, addr->addr, &uval);
+ 		if (ret)
+ 			return ret;
+-		bits = adis16220_addresses[chan->address][addrind].bits;
++		bits = addr->bits;
+ 		uval &= (1 << bits) - 1;
+ 		*val = uval;
+ 		return IIO_VAL_INT;
+@@ -601,6 +395,32 @@ static const struct iio_info adis16220_info = {
+ 	.read_raw = &adis16220_read_raw,
+ };
+ 
++static const char * const adis16220_status_error_msgs[] = {
++	[ADIS16220_DIAG_STAT_VIOLATION_BIT] = "Capture period violation/interruption",
++	[ADIS16220_DIAG_STAT_SPI_FAIL_BIT] = "SPI failure",
++	[ADIS16220_DIAG_STAT_FLASH_UPT_BIT] = "Flash update failed",
++	[ADIS16220_DIAG_STAT_POWER_HIGH_BIT] = "Power supply above 3.625V",
++	[ADIS16220_DIAG_STAT_POWER_LOW_BIT] = "Power supply below 3.15V",
++};
++
++static const struct adis_data adis16220_data = {
++	.read_delay = 35,
++	.write_delay = 35,
++	.msc_ctrl_reg = ADIS16220_MSC_CTRL,
++	.glob_cmd_reg = ADIS16220_GLOB_CMD,
++	.diag_stat_reg = ADIS16220_DIAG_STAT,
++
++	.self_test_mask = ADIS16220_MSC_CTRL_SELF_TEST_EN,
++	.startup_delay = ADIS16220_STARTUP_DELAY,
++
++	.status_error_msgs = adis16220_status_error_msgs,
++	.status_error_mask = BIT(ADIS16220_DIAG_STAT_VIOLATION_BIT) |
++		BIT(ADIS16220_DIAG_STAT_SPI_FAIL_BIT) |
++		BIT(ADIS16220_DIAG_STAT_FLASH_UPT_BIT) |
++		BIT(ADIS16220_DIAG_STAT_POWER_HIGH_BIT) |
++		BIT(ADIS16220_DIAG_STAT_POWER_LOW_BIT),
++};
++
+ static int __devinit adis16220_probe(struct spi_device *spi)
+ {
+ 	int ret;
+@@ -618,9 +438,6 @@ static int __devinit adis16220_probe(struct spi_device *spi)
+ 	/* this is only used for removal purposes */
+ 	spi_set_drvdata(spi, indio_dev);
+ 
+-	st->us = spi;
+-	mutex_init(&st->buf_lock);
+-
+ 	indio_dev->name = spi->dev.driver->name;
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->info = &adis16220_info;
+@@ -644,8 +461,11 @@ static int __devinit adis16220_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto error_rm_adc1_bin;
+ 
++	ret = adis_init(&st->adis, indio_dev, spi, &adis16220_data);
++	if (ret)
++		goto error_rm_adc2_bin;
+ 	/* Get the device into a sane initial state */
+-	ret = adis16220_initial_setup(indio_dev);
++	ret = adis_initial_startup(&st->adis);
+ 	if (ret)
+ 		goto error_rm_adc2_bin;
+ 	return 0;
+-- 
+1.8.0
 
-Inflexible because the drivers have to provide an information that they
-inherently don't have, and the consumers can't use relative values as
-they don't have access to the reference voltage.
-
-> >It would be a lot nicer if the ADC channels could be bound to a
-> >regulator and a transform function that compute a real world voltage
-> >out
-> >of:
-> > - The ADC value
-> > - The ADC range
-> > - The regulator representing the ADC reference voltage
-> >
-> >The simplest transform would be a linear curve with an optional offset,
-> >but any kind of transform would also be possible allowing to represent
-> >about any circuit that might be between the supply regulator and the
-> >ADC
-> >input.
-
-> This still sits in the realm of regulators.  Far as iio driver is concerned
-> there is a voltage on a pin.  What that means wrt to resulting scale
-> is device dependent.  It is an obscure use case where the reference
-> inputs are changing frequently..
-
-I was more thinking of an ADC measuring a value with a circuit that is
-not linear. But I now see that such thing should be part of the
-consumer not the ADC driver.
-
-> Now I can see an arguement for a suitable regulator which takes one voltage in
-> and does flexible transformations of it.  Also it can work the otherway with iio
-> driver requesting a different reference value.
-
-IMHO it would make much more sense if the ADC had nothing to do with
-the reference voltage. The only thing an ADC can reliably provide is
-the values it read and a function that convert a (value,ref_voltage)
-pair to a voltage. Anything else is IMHO beyond the scope of an ADC and
-shouldn't be part of the driver layer.
-
-> Now there may be a case for transforms on incoming adc channels as they are
-> inherently dynamic.  Right now we promise only to give what the adc saw not
-> some way before it on the otherside of weirdness.
-> 
-> So I am not yet convinced! Perhaps example configurations would help?
-> 
-> Remember that we deliberately leave as much data transforming to userspace as
-> possible. So far the only non linear stuff has been slow so it hasn't mattered.
-
-That I fully understand, what I don't get is why the ADC drivers are
-forced to provide an information they don't have.
-
-Alban
