@@ -1,1021 +1,2111 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-201.synserver.de ([212.40.185.201]:1058 "EHLO
-	smtp-out-201.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753200Ab2KMN23 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Nov 2012 08:28:29 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 07/11] staging:iio:adis16240: Use adis library
-Date: Tue, 13 Nov 2012 14:28:09 +0100
-Message-Id: <1352813293-17975-7-git-send-email-lars@metafoo.de>
-In-Reply-To: <1352813293-17975-1-git-send-email-lars@metafoo.de>
-References: <1352813293-17975-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <denis.ciocca@st.com>
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Denis Ciocca <denis.ciocca@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	Pavel Machek <pavel@denx.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"burman.yan@gmail.com" <burman.yan@gmail.com>
+Date: Tue, 13 Nov 2012 16:38:15 +0100
+Subject: Re: STMicroelectronics accelerometers driver.
+Message-ID: <50A26967.4050102@st.com>
+References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de>
+ <20121008195007.GA32042@elf.ucw.cz> <507338B5.60307@metafoo.de>
+ <665718a4-de6b-4d09-ba80-35705fcf2595@email.android.com>
+ <CAEE_umojW5OyB3yGgE54wH7_k__dBu9=Yew_0tCCf5--=C2g5g@mail.gmail.com>
+ <507D9EA3.4070009@metafoo.de> <5085128C.7020507@st.com>
+ <50858B44.2080006@kernel.org> <5087E2A8.4070304@st.com>
+ <508A7DA6.7050505@metafoo.de> <508E4492.8080000@st.com>
+ <508E48D1.3000703@metafoo.de> <508E5978.5000907@st.com>
+ <508E5AD5.1040907@metafoo.de> <50914366.4090000@st.com>
+ <5091546D.9000601@metafoo.de>
+ <CAEE_umoKvv9ciBfUSahDqsmcbHi9W=93o5YSpE-vxUduCmqWSQ@mail.gmail.com>
+ <50982F71.3060606@kernel.org> <5098F065.1090009@st.com>
+ <50A12D8C.6040207@st.com> <50A14485.2060902@kernel.org>
+In-Reply-To: <50A14485.2060902@kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Use the new adis library for the adis16240 driver. This allows us to completely
-scrap the adis16240 buffer and trigger code and more than half of the core
-driver code.
+Hi Jonathan,
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+I have reviewed my code and I applied your stylish comment to decrease
+the lines number of the code.
+For now I also deleted the platform_data, I will do this in a future patch.
+
+I attached to you the new patch, if the code is ok I will send this with
+git.
+
+Thanks,
+
+Denis
+
+
+
+
+ From 8bb6479aa8814ad4b82c359a0aaea99b04a7ecef Mon Sep 17 00:00:00 2001
+From: Denis Ciocca <denis.ciocca@st.com>
+Date: Mon, 22 Oct 2012 11:17:27 +0200
+Subject: [PATCH] iio:accel: Add STMicroelectronics accelerometers driver
+
+This patch adds generic accelerometer driver for STMicroelectronics
+accelerometers, currently it supports:
+LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC, LSM303D,
+LSM9DS0, LIS331DLH, LSM303DL, LSM303DLM, LSM330
+
+Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
 ---
- drivers/staging/iio/accel/Kconfig             |   5 +-
- drivers/staging/iio/accel/Makefile            |   1 -
- drivers/staging/iio/accel/adis16240.h         |  85 +----
- drivers/staging/iio/accel/adis16240_core.c    | 472 ++++----------------------
- drivers/staging/iio/accel/adis16240_ring.c    | 132 -------
- drivers/staging/iio/accel/adis16240_trigger.c |  73 ----
- 6 files changed, 77 insertions(+), 691 deletions(-)
- delete mode 100644 drivers/staging/iio/accel/adis16240_ring.c
- delete mode 100644 drivers/staging/iio/accel/adis16240_trigger.c
+  Documentation/ABI/testing/sysfs-bus-iio-accel-st |    7 +
+  drivers/iio/accel/Kconfig                        |   37 +
+  drivers/iio/accel/Makefile                       |    6 +
+  drivers/iio/accel/st_accel_buffer.c              |  176 ++++
+  drivers/iio/accel/st_accel_core.c                | 1154
+++++++++++++++++++++++
+  drivers/iio/accel/st_accel_i2c.c                 |  128 +++
+  drivers/iio/accel/st_accel_spi.c                 |  186 ++++
+  drivers/iio/accel/st_accel_trigger.c             |   83 ++
+  include/linux/iio/accel/st_accel.h               |  102 ++
+  9 files changed, 1879 insertions(+), 0 deletions(-)
+  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-accel-st
+  create mode 100644 drivers/iio/accel/st_accel_buffer.c
+  create mode 100644 drivers/iio/accel/st_accel_core.c
+  create mode 100644 drivers/iio/accel/st_accel_i2c.c
+  create mode 100644 drivers/iio/accel/st_accel_spi.c
+  create mode 100644 drivers/iio/accel/st_accel_trigger.c
+  create mode 100644 include/linux/iio/accel/st_accel.h
 
-diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
-index affa732..2b54430 100644
---- a/drivers/staging/iio/accel/Kconfig
-+++ b/drivers/staging/iio/accel/Kconfig
-@@ -42,6 +42,7 @@ config ADIS16209
- config ADIS16220
- 	tristate "Analog Devices ADIS16220 Programmable Digital Vibration Sensor"
- 	depends on SPI
-+	select IIO_ADIS_LIB
- 	help
- 	  Say yes here to build support for Analog Devices adis16220 programmable
- 	  digital vibration sensor.
-@@ -49,8 +50,8 @@ config ADIS16220
- config ADIS16240
- 	tristate "Analog Devices ADIS16240 Programmable Impact Sensor and Recorder"
- 	depends on SPI
--	select IIO_TRIGGER if IIO_BUFFER
--	select IIO_SW_RING if IIO_BUFFER
-+	select IIO_ADIS_LIB
-+	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
- 	help
- 	  Say yes here to build support for Analog Devices adis16240 programmable
- 	  impact Sensor and recorder.
-diff --git a/drivers/staging/iio/accel/Makefile b/drivers/staging/iio/accel/Makefile
-index 3cb9c67..8e7ee03 100644
---- a/drivers/staging/iio/accel/Makefile
-+++ b/drivers/staging/iio/accel/Makefile
-@@ -18,7 +18,6 @@ adis16220-y             := adis16220_core.o
- obj-$(CONFIG_ADIS16220) += adis16220.o
- 
- adis16240-y             := adis16240_core.o
--adis16240-$(CONFIG_IIO_BUFFER) += adis16240_ring.o adis16240_trigger.o
- obj-$(CONFIG_ADIS16240) += adis16240.o
- 
- obj-$(CONFIG_KXSD9)	+= kxsd9.o
-diff --git a/drivers/staging/iio/accel/adis16240.h b/drivers/staging/iio/accel/adis16240.h
-index 3fabcc0..d442d49 100644
---- a/drivers/staging/iio/accel/adis16240.h
-+++ b/drivers/staging/iio/accel/adis16240.h
-@@ -3,9 +3,6 @@
- 
- #define ADIS16240_STARTUP_DELAY	220 /* ms */
- 
--#define ADIS16240_READ_REG(a)    a
--#define ADIS16240_WRITE_REG(a) ((a) | 0x80)
--
- /* Flash memory write count */
- #define ADIS16240_FLASH_CNT      0x00
- /* Output, power supply */
-@@ -75,8 +72,6 @@
- /* System command */
- #define ADIS16240_GLOB_CMD       0x4A
- 
--#define ADIS16240_OUTPUTS        6
--
- /* MSC_CTRL */
- /* Enables sum-of-squares output (XYZPEAK_OUT) */
- #define ADIS16240_MSC_CTRL_XYZPEAK_OUT_EN	(1 << 15)
-@@ -101,17 +96,17 @@
- /* Flash test, checksum flag: 1 = mismatch, 0 = match */
- #define ADIS16240_DIAG_STAT_CHKSUM      (1<<6)
- /* Power-on, self-test flag: 1 = failure, 0 = pass */
--#define ADIS16240_DIAG_STAT_PWRON_FAIL  (1<<5)
-+#define ADIS16240_DIAG_STAT_PWRON_FAIL_BIT  5
- /* Power-on self-test: 1 = in-progress, 0 = complete */
- #define ADIS16240_DIAG_STAT_PWRON_BUSY  (1<<4)
- /* SPI communications failure */
--#define ADIS16240_DIAG_STAT_SPI_FAIL	(1<<3)
-+#define ADIS16240_DIAG_STAT_SPI_FAIL_BIT	3
- /* Flash update failure */
--#define ADIS16240_DIAG_STAT_FLASH_UPT	(1<<2)
-+#define ADIS16240_DIAG_STAT_FLASH_UPT_BIT	2
- /* Power supply above 3.625 V */
--#define ADIS16240_DIAG_STAT_POWER_HIGH	(1<<1)
-+#define ADIS16240_DIAG_STAT_POWER_HIGH_BIT	1
-  /* Power supply below 3.15 V */
--#define ADIS16240_DIAG_STAT_POWER_LOW	(1<<0)
-+#define ADIS16240_DIAG_STAT_POWER_LOW_BIT	0
- 
- /* GLOB_CMD */
- #define ADIS16240_GLOB_CMD_RESUME	(1<<8)
-@@ -120,77 +115,15 @@
- 
- #define ADIS16240_ERROR_ACTIVE          (1<<14)
- 
--#define ADIS16240_MAX_TX 24
--#define ADIS16240_MAX_RX 24
--
--/**
-- * struct adis16240_state - device instance specific data
-- * @us:			actual spi_device
-- * @trig:		data ready trigger registered with iio
-- * @tx:			transmit buffer
-- * @rx:			receive buffer
-- * @buf_lock:		mutex to protect tx and rx
-- **/
--struct adis16240_state {
--	struct spi_device	*us;
--	struct iio_trigger	*trig;
--	struct mutex		buf_lock;
--	u8			tx[ADIS16240_MAX_TX] ____cacheline_aligned;
--	u8			rx[ADIS16240_MAX_RX];
--};
--
--int adis16240_set_irq(struct iio_dev *indio_dev, bool enable);
--
- /* At the moment triggers are only used for ring buffer
-  * filling. This may change!
-  */
- 
--#define ADIS16240_SCAN_SUPPLY	0
--#define ADIS16240_SCAN_ACC_X	1
--#define ADIS16240_SCAN_ACC_Y	2
--#define ADIS16240_SCAN_ACC_Z	3
-+#define ADIS16240_SCAN_ACC_X	0
-+#define ADIS16240_SCAN_ACC_Y	1
-+#define ADIS16240_SCAN_ACC_Z	2
-+#define ADIS16240_SCAN_SUPPLY	3
- #define ADIS16240_SCAN_AUX_ADC	4
- #define ADIS16240_SCAN_TEMP	5
- 
--#ifdef CONFIG_IIO_BUFFER
--void adis16240_remove_trigger(struct iio_dev *indio_dev);
--int adis16240_probe_trigger(struct iio_dev *indio_dev);
--
--ssize_t adis16240_read_data_from_ring(struct device *dev,
--				      struct device_attribute *attr,
--				      char *buf);
--
--
--int adis16240_configure_ring(struct iio_dev *indio_dev);
--void adis16240_unconfigure_ring(struct iio_dev *indio_dev);
--
--#else /* CONFIG_IIO_BUFFER */
--
--static inline void adis16240_remove_trigger(struct iio_dev *indio_dev)
--{
--}
--
--static inline int adis16240_probe_trigger(struct iio_dev *indio_dev)
--{
--	return 0;
--}
--
--static inline ssize_t
--adis16240_read_data_from_ring(struct device *dev,
--			      struct device_attribute *attr,
--			      char *buf)
--{
--	return 0;
--}
--
--static int adis16240_configure_ring(struct iio_dev *indio_dev)
--{
--	return 0;
--}
--
--static inline void adis16240_unconfigure_ring(struct iio_dev *indio_dev)
--{
--}
--
--#endif /* CONFIG_IIO_BUFFER */
- #endif /* SPI_ADIS16240_H_ */
-diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-index 289f819..019a31e 100644
---- a/drivers/staging/iio/accel/adis16240_core.c
-+++ b/drivers/staging/iio/accel/adis16240_core.c
-@@ -24,128 +24,7 @@
- #include <linux/iio/buffer.h>
- 
- #include "adis16240.h"
--
--static int adis16240_check_status(struct iio_dev *indio_dev);
--
--/**
-- * adis16240_spi_write_reg_8() - write single byte to a register
-- * @indio_dev: iio_dev associated with device
-- * @reg_address: the address of the register to be written
-- * @val: the value to write
-- **/
--static int adis16240_spi_write_reg_8(struct iio_dev *indio_dev,
--				     u8 reg_address,
--				     u8 val)
--{
--	int ret;
--	struct adis16240_state *st = iio_priv(indio_dev);
--
--	mutex_lock(&st->buf_lock);
--	st->tx[0] = ADIS16240_WRITE_REG(reg_address);
--	st->tx[1] = val;
--
--	ret = spi_write(st->us, st->tx, 2);
--	mutex_unlock(&st->buf_lock);
--
--	return ret;
--}
--
--/**
-- * adis16240_spi_write_reg_16() - write 2 bytes to a pair of registers
-- * @indio_dev: iio_dev for this device
-- * @reg_address: the address of the lower of the two registers. Second register
-- *               is assumed to have address one greater.
-- * @val: value to be written
-- **/
--static int adis16240_spi_write_reg_16(struct iio_dev *indio_dev,
--				      u8 lower_reg_address,
--				      u16 value)
--{
--	int ret;
--	struct spi_message msg;
--	struct adis16240_state *st = iio_priv(indio_dev);
--	struct spi_transfer xfers[] = {
--		{
--			.tx_buf = st->tx,
--			.bits_per_word = 8,
--			.len = 2,
--			.cs_change = 1,
--			.delay_usecs = 35,
--		}, {
--			.tx_buf = st->tx + 2,
--			.bits_per_word = 8,
--			.len = 2,
--			.delay_usecs = 35,
--		},
--	};
--
--	mutex_lock(&st->buf_lock);
--	st->tx[0] = ADIS16240_WRITE_REG(lower_reg_address);
--	st->tx[1] = value & 0xFF;
--	st->tx[2] = ADIS16240_WRITE_REG(lower_reg_address + 1);
--	st->tx[3] = (value >> 8) & 0xFF;
--
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfers[0], &msg);
--	spi_message_add_tail(&xfers[1], &msg);
--	ret = spi_sync(st->us, &msg);
--	mutex_unlock(&st->buf_lock);
--
--	return ret;
--}
--
--/**
-- * adis16240_spi_read_reg_16() - read 2 bytes from a 16-bit register
-- * @indio_dev: iio_dev for this device
-- * @reg_address: the address of the lower of the two registers. Second register
-- *               is assumed to have address one greater.
-- * @val: somewhere to pass back the value read
-- **/
--static int adis16240_spi_read_reg_16(struct iio_dev *indio_dev,
--		u8 lower_reg_address,
--		u16 *val)
--{
--	struct spi_message msg;
--	struct adis16240_state *st = iio_priv(indio_dev);
--	int ret;
--	struct spi_transfer xfers[] = {
--		{
--			.tx_buf = st->tx,
--			.bits_per_word = 8,
--			.len = 2,
--			.cs_change = 1,
--			.delay_usecs = 35,
--		}, {
--			.rx_buf = st->rx,
--			.bits_per_word = 8,
--			.len = 2,
--			.cs_change = 1,
--			.delay_usecs = 35,
--		},
--	};
--
--	mutex_lock(&st->buf_lock);
--	st->tx[0] = ADIS16240_READ_REG(lower_reg_address);
--	st->tx[1] = 0;
--	st->tx[2] = 0;
--	st->tx[3] = 0;
--
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfers[0], &msg);
--	spi_message_add_tail(&xfers[1], &msg);
--	ret = spi_sync(st->us, &msg);
--	if (ret) {
--		dev_err(&st->us->dev,
--			"problem when reading 16 bit register 0x%02X",
--			lower_reg_address);
--		goto error_ret;
--	}
--	*val = (st->rx[0] << 8) | st->rx[1];
--
--error_ret:
--	mutex_unlock(&st->buf_lock);
--	return ret;
--}
-+#include "../imu/adis.h"
- 
- static ssize_t adis16240_spi_read_signed(struct device *dev,
- 		struct device_attribute *attr,
-@@ -153,18 +32,19 @@ static ssize_t adis16240_spi_read_signed(struct device *dev,
- 		unsigned bits)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct adis *st = iio_priv(indio_dev);
- 	int ret;
- 	s16 val = 0;
- 	unsigned shift = 16 - bits;
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 
--	ret = adis16240_spi_read_reg_16(indio_dev,
-+	ret = adis_read_reg_16(st,
- 					this_attr->address, (u16 *)&val);
- 	if (ret)
- 		return ret;
- 
- 	if (val & ADIS16240_ERROR_ACTIVE)
--		adis16240_check_status(indio_dev);
-+		adis_check_status(st);
- 
- 	val = ((s16)(val << shift) >> shift);
- 	return sprintf(buf, "%d\n", val);
-@@ -185,152 +65,16 @@ static ssize_t adis16240_read_12bit_signed(struct device *dev,
- 	return ret;
- }
- 
--static int adis16240_reset(struct iio_dev *indio_dev)
--{
--	int ret;
--	ret = adis16240_spi_write_reg_8(indio_dev,
--			ADIS16240_GLOB_CMD,
--			ADIS16240_GLOB_CMD_SW_RESET);
--	if (ret)
--		dev_err(&indio_dev->dev, "problem resetting device");
--
--	return ret;
--}
--
--int adis16240_set_irq(struct iio_dev *indio_dev, bool enable)
--{
--	int ret = 0;
--	u16 msc;
--
--	ret = adis16240_spi_read_reg_16(indio_dev,
--					ADIS16240_MSC_CTRL, &msc);
--	if (ret)
--		goto error_ret;
--
--	msc |= ADIS16240_MSC_CTRL_ACTIVE_HIGH;
--	msc &= ~ADIS16240_MSC_CTRL_DATA_RDY_DIO2;
--	if (enable)
--		msc |= ADIS16240_MSC_CTRL_DATA_RDY_EN;
--	else
--		msc &= ~ADIS16240_MSC_CTRL_DATA_RDY_EN;
--
--	ret = adis16240_spi_write_reg_16(indio_dev,
--					 ADIS16240_MSC_CTRL, msc);
--
--error_ret:
--	return ret;
--}
--
--static int adis16240_self_test(struct iio_dev *indio_dev)
--{
--	int ret;
--	ret = adis16240_spi_write_reg_16(indio_dev,
--			ADIS16240_MSC_CTRL,
--			ADIS16240_MSC_CTRL_SELF_TEST_EN);
--	if (ret) {
--		dev_err(&indio_dev->dev, "problem starting self test");
--		goto err_ret;
--	}
--
--	msleep(ADIS16240_STARTUP_DELAY);
--
--	adis16240_check_status(indio_dev);
--
--err_ret:
--	return ret;
--}
--
--static int adis16240_check_status(struct iio_dev *indio_dev)
--{
--	u16 status;
--	int ret;
--	struct device *dev = &indio_dev->dev;
--
--	ret = adis16240_spi_read_reg_16(indio_dev,
--					ADIS16240_DIAG_STAT, &status);
--
--	if (ret < 0) {
--		dev_err(dev, "Reading status failed\n");
--		goto error_ret;
--	}
--
--	ret = status & 0x2F;
--	if (status & ADIS16240_DIAG_STAT_PWRON_FAIL)
--		dev_err(dev, "Power-on, self-test fail\n");
--	if (status & ADIS16240_DIAG_STAT_SPI_FAIL)
--		dev_err(dev, "SPI failure\n");
--	if (status & ADIS16240_DIAG_STAT_FLASH_UPT)
--		dev_err(dev, "Flash update failed\n");
--	if (status & ADIS16240_DIAG_STAT_POWER_HIGH)
--		dev_err(dev, "Power supply above 3.625V\n");
--	if (status & ADIS16240_DIAG_STAT_POWER_LOW)
--		dev_err(dev, "Power supply below 2.225V\n");
--
--error_ret:
--	return ret;
--}
--
--static int adis16240_initial_setup(struct iio_dev *indio_dev)
--{
--	int ret;
--	struct device *dev = &indio_dev->dev;
--
--	/* Disable IRQ */
--	ret = adis16240_set_irq(indio_dev, false);
--	if (ret) {
--		dev_err(dev, "disable irq failed");
--		goto err_ret;
--	}
--
--	/* Do self test */
--	ret = adis16240_self_test(indio_dev);
--	if (ret) {
--		dev_err(dev, "self test failure");
--		goto err_ret;
--	}
--
--	/* Read status register to check the result */
--	ret = adis16240_check_status(indio_dev);
--	if (ret) {
--		adis16240_reset(indio_dev);
--		dev_err(dev, "device not playing ball -> reset");
--		msleep(ADIS16240_STARTUP_DELAY);
--		ret = adis16240_check_status(indio_dev);
--		if (ret) {
--			dev_err(dev, "giving up");
--			goto err_ret;
--		}
--	}
--
--err_ret:
--	return ret;
--}
--
- static IIO_DEVICE_ATTR(in_accel_xyz_squared_peak_raw, S_IRUGO,
- 		       adis16240_read_12bit_signed, NULL,
- 		       ADIS16240_XYZPEAK_OUT);
- 
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("4096");
- 
--enum adis16240_chan {
--	in_supply,
--	in_aux,
--	accel_x,
--	accel_y,
--	accel_z,
--	temp,
--};
--
--static const u8 adis16240_addresses[6][3] = {
--	[in_supply] = { ADIS16240_SUPPLY_OUT },
--	[in_aux] = { ADIS16240_AUX_ADC },
--	[accel_x] = { ADIS16240_XACCL_OUT, ADIS16240_XACCL_OFF,
--		      ADIS16240_XPEAK_OUT },
--	[accel_y] = { ADIS16240_YACCL_OUT, ADIS16240_YACCL_OFF,
--		      ADIS16240_YPEAK_OUT },
--	[accel_z] = { ADIS16240_ZACCL_OUT, ADIS16240_ZACCL_OFF,
--		      ADIS16240_ZPEAK_OUT },
--	[temp] = { ADIS16240_TEMP_OUT },
-+static const u8 adis16240_addresses[][2] = {
-+	[ADIS16240_SCAN_ACC_X] = { ADIS16240_XACCL_OFF, ADIS16240_XPEAK_OUT },
-+	[ADIS16240_SCAN_ACC_Y] = { ADIS16240_YACCL_OFF, ADIS16240_YPEAK_OUT },
-+	[ADIS16240_SCAN_ACC_Z] = { ADIS16240_ZACCL_OFF, ADIS16240_ZPEAK_OUT },
- };
- 
- static int adis16240_read_raw(struct iio_dev *indio_dev,
-@@ -338,6 +82,7 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
- 			      int *val, int *val2,
- 			      long mask)
- {
-+	struct adis *st = iio_priv(indio_dev);
- 	int ret;
- 	int bits;
- 	u8 addr;
-@@ -345,29 +90,8 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		mutex_lock(&indio_dev->mlock);
--		addr = adis16240_addresses[chan->address][0];
--		ret = adis16240_spi_read_reg_16(indio_dev, addr, &val16);
--		if (ret) {
--			mutex_unlock(&indio_dev->mlock);
--			return ret;
--		}
--
--		if (val16 & ADIS16240_ERROR_ACTIVE) {
--			ret = adis16240_check_status(indio_dev);
--			if (ret) {
--				mutex_unlock(&indio_dev->mlock);
--				return ret;
--			}
--		}
--		val16 = val16 & ((1 << chan->scan_type.realbits) - 1);
--		if (chan->scan_type.sign == 's')
--			val16 = (s16)(val16 <<
--				      (16 - chan->scan_type.realbits)) >>
--				(16 - chan->scan_type.realbits);
--		*val = val16;
--		mutex_unlock(&indio_dev->mlock);
--		return IIO_VAL_INT;
-+		return adis_single_conversion(indio_dev, chan,
-+				ADIS16240_ERROR_ACTIVE, val);
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
- 		case IIO_VOLTAGE:
-@@ -400,8 +124,8 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_CALIBBIAS:
- 		bits = 10;
- 		mutex_lock(&indio_dev->mlock);
--		addr = adis16240_addresses[chan->address][1];
--		ret = adis16240_spi_read_reg_16(indio_dev, addr, &val16);
-+		addr = adis16240_addresses[chan->scan_index][0];
-+		ret = adis_read_reg_16(st, addr, &val16);
- 		if (ret) {
- 			mutex_unlock(&indio_dev->mlock);
- 			return ret;
-@@ -414,8 +138,8 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_PEAK:
- 		bits = 10;
- 		mutex_lock(&indio_dev->mlock);
--		addr = adis16240_addresses[chan->address][2];
--		ret = adis16240_spi_read_reg_16(indio_dev, addr, &val16);
-+		addr = adis16240_addresses[chan->scan_index][1];
-+		ret = adis_read_reg_16(st, addr, &val16);
- 		if (ret) {
- 			mutex_unlock(&indio_dev->mlock);
- 			return ret;
-@@ -435,104 +159,32 @@ static int adis16240_write_raw(struct iio_dev *indio_dev,
- 			       int val2,
- 			       long mask)
- {
-+	struct adis *st = iio_priv(indio_dev);
- 	int bits = 10;
- 	s16 val16;
- 	u8 addr;
- 	switch (mask) {
- 	case IIO_CHAN_INFO_CALIBBIAS:
- 		val16 = val & ((1 << bits) - 1);
--		addr = adis16240_addresses[chan->address][1];
--		return adis16240_spi_write_reg_16(indio_dev, addr, val16);
-+		addr = adis16240_addresses[chan->scan_index][0];
-+		return adis_write_reg_16(st, addr, val16);
- 	}
- 	return -EINVAL;
- }
- 
- static const struct iio_chan_spec adis16240_channels[] = {
--	{
--		.type = IIO_VOLTAGE,
--		.indexed = 1,
--		.channel = 0,
--		.extend_name = "supply",
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
--		.address = in_supply,
--		.scan_index = ADIS16240_SCAN_SUPPLY,
--		.scan_type = {
--			.sign = 'u',
--			.realbits = 10,
--			.storagebits = 16,
--		},
--	}, {
--		.type = IIO_VOLTAGE,
--		.indexed = 1,
--		.channel = 1,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
--		.address = in_aux,
--		.scan_index = ADIS16240_SCAN_AUX_ADC,
--		.scan_type = {
--			.sign = 'u',
--			.realbits = 10,
--			.storagebits = 16,
--		},
--	}, {
--		.type = IIO_ACCEL,
--		.modified = 1,
--		.channel2 = IIO_MOD_X,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+	ADIS_SUPPLY_CHAN(ADIS16240_SUPPLY_OUT, ADIS16240_SCAN_SUPPLY, 10),
-+	ADIS_AUX_ADC_CHAN(ADIS16240_AUX_ADC, ADIS16240_SCAN_AUX_ADC, 10),
-+	ADIS_ACCEL_CHAN(X, ADIS16240_XACCL_OUT, ADIS16240_SCAN_ACC_X,
- 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
--		IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
--		.address = accel_x,
--		.scan_index = ADIS16240_SCAN_ACC_X,
--		.scan_type = {
--			.sign = 's',
--			.realbits = 10,
--			.storagebits = 16,
--		},
--	}, {
--		.type = IIO_ACCEL,
--		.modified = 1,
--		.channel2 = IIO_MOD_Y,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+		IIO_CHAN_INFO_PEAK_SEPARATE_BIT, 10),
-+	ADIS_ACCEL_CHAN(Y, ADIS16240_YACCL_OUT, ADIS16240_SCAN_ACC_Y,
- 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
--		IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
--		.address = accel_y,
--		.scan_index = ADIS16240_SCAN_ACC_Y,
--		.scan_type = {
--			.sign = 's',
--			.realbits = 10,
--			.storagebits = 16,
--		},
--	}, {
--		.type = IIO_ACCEL,
--		.modified = 1,
--		.channel2 = IIO_MOD_Z,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+		IIO_CHAN_INFO_PEAK_SEPARATE_BIT, 10),
-+	ADIS_ACCEL_CHAN(Z, ADIS16240_ZACCL_OUT, ADIS16240_SCAN_ACC_Z,
- 		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
--		IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
--		.address = accel_z,
--		.scan_index = ADIS16240_SCAN_ACC_Z,
--		.scan_type = {
--			.sign = 's',
--			.realbits = 10,
--			.storagebits = 16,
--		},
--	}, {
--		.type = IIO_TEMP,
--		.indexed = 1,
--		.channel = 0,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
--		.address = temp,
--		.scan_index = ADIS16240_SCAN_TEMP,
--		.scan_type = {
--			.sign = 'u',
--			.realbits = 10,
--			.storagebits = 16,
--		},
--	},
-+		IIO_CHAN_INFO_PEAK_SEPARATE_BIT, 10),
-+	ADIS_TEMP_CHAN(ADIS16240_TEMP_OUT, ADIS16240_SCAN_TEMP, 10),
- 	IIO_CHAN_SOFT_TIMESTAMP(6)
- };
- 
-@@ -553,10 +205,36 @@ static const struct iio_info adis16240_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
-+static const char * const adis16240_status_error_msgs[] = {
-+	[ADIS16240_DIAG_STAT_PWRON_FAIL_BIT] = "Power on, self-test failed",
-+	[ADIS16240_DIAG_STAT_SPI_FAIL_BIT] = "SPI failure",
-+	[ADIS16240_DIAG_STAT_FLASH_UPT_BIT] = "Flash update failed",
-+	[ADIS16240_DIAG_STAT_POWER_HIGH_BIT] = "Power supply above 3.625V",
-+	[ADIS16240_DIAG_STAT_POWER_LOW_BIT] = "Power supply below 2.225V",
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-accel-st
+b/Documentation/ABI/testing/sysfs-bus-iio-accel-st
+new file mode 100644
+index 0000000..f426c02
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-accel-st
+@@ -0,0 +1,7 @@
++What:          /sys/bus/iio/devices/iio:deviceX/powerdown
++KernelVersion: 3.7.0
++Contact:       linux-iio@vger.kernel.org
++Description:
++               Reading returns either '1' or '0'.
++               '1' means that the device in question is off.
++               '0' means that the devices in question is on.
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index b2510c4..d65e66a 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -13,4 +13,41 @@ config HID_SENSOR_ACCEL_3D
+          Say yes here to build support for the HID SENSOR
+          accelerometers 3D.
+
++config ST_ACCEL_3AXIS
++       tristate "STMicroelectronics accelerometers 3-Axis Driver"
++       depends on (I2C || SPI) && SYSFS
++       help
++         Say yes here to build support for STMicroelectronics acceleromete=
+rs:
++         LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC, LSM3=
+03D,
++         LSM9DS0, LIS331DLH, LSM303DL, LSM303DLM, LSM330.
++
++         This driver can also be built as a module. If so, the module
++         will be called st_accel.
++
++config ST_ACCEL_3AXIS_I2C
++       tristate "support I2C bus connection"
++       depends on ST_ACCEL_3AXIS && I2C
++       help
++         Say yes here to build I2C support for STMicroelectronics accelero=
+meters.
++
++         To compile this driver as a module, choose M here: the
++         module will be called st_accel_i2c.
++
++config ST_ACCEL_3AXIS_SPI
++       tristate "support SPI bus connection"
++       depends on ST_ACCEL_3AXIS && SPI_MASTER
++       help
++         Say yes here to build SPI support for STMicroelectronics accelero=
+meters.
++
++         To compile this driver as a module, choose M here: the
++         module will be called st_accel_spi.
++
++config ST_ACCEL_3AXIS_TRIGGERED_BUFFER
++       tristate "support triggered buffer"
++       depends on ST_ACCEL_3AXIS
++       select IIO_TRIGGERED_BUFFER
++       select IIO_BUFFER
++       help
++         Default trigger and buffer for STMicroelectronics accelerometers =
+driver.
++
+  endmenu
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index 5bc6855..1541236 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -3,3 +3,9 @@
+  #
+
+  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) +=3D hid-sensor-accel-3d.o
++
++st_accel-y :=3D st_accel_core.o
++obj-$(CONFIG_ST_ACCEL_3AXIS_I2C) +=3D st_accel_i2c.o
++obj-$(CONFIG_ST_ACCEL_3AXIS_SPI) +=3D st_accel_spi.o
++obj-$(CONFIG_ST_ACCEL_3AXIS_TRIGGERED_BUFFER) +=3D st_accel_trigger.o
+st_accel_buffer.o
++obj-$(CONFIG_ST_ACCEL_3AXIS) +=3D st_accel.o
+diff --git a/drivers/iio/accel/st_accel_buffer.c
+b/drivers/iio/accel/st_accel_buffer.c
+new file mode 100644
+index 0000000..af5d333
+--- /dev/null
++++ b/drivers/iio/accel/st_accel_buffer.c
+@@ -0,0 +1,176 @@
++/*
++ * STMicroelectronics accelerometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/stat.h>
++#include <linux/interrupt.h>
++#include <linux/byteorder/generic.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++#include <linux/iio/accel/st_accel.h>
++
++
++#define ST_ACCEL_ENABLE_ALL_CHANNELS           0x07
++
++static int st_accel_read_all(struct iio_dev *indio_dev, u8 *rx_array)
++{
++       int len =3D 0, i, n =3D 0;
++       u8 reg_addr[ST_ACCEL_NUMBER_DATA_CHANNELS];
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       for (i =3D 0; i < ST_ACCEL_NUMBER_DATA_CHANNELS; i++) {
++               if (test_bit(i, indio_dev->active_scan_mask)) {
++                       reg_addr[n] =3D indio_dev->channels[i].address;
++                       n++;
++               }
++       }
++       switch (n) {
++       case 1:
++               len =3D adata->read_multiple_byte(adata, reg_addr[0],
++                                       ST_ACCEL_BYTE_FOR_CHANNEL, rx_array=
+);
++               break;
++       case 2:
++               if ((reg_addr[1] - reg_addr[0]) =3D=3D ST_ACCEL_BYTE_FOR_CH=
+ANNEL) {
++                       len =3D adata->read_multiple_byte(adata, reg_addr[0=
+],
++                                       ST_ACCEL_BYTE_FOR_CHANNEL*n,
++                                       rx_array);
++               } else {
++                       len =3D adata->read_multiple_byte(adata, reg_addr[0=
+],
++                               ST_ACCEL_BYTE_FOR_CHANNEL*
++                               ST_ACCEL_NUMBER_DATA_CHANNELS,
++                               rx_array);
++                       rx_array[2] =3D rx_array[4];
++                       rx_array[3] =3D rx_array[5];
++                       len =3D ST_ACCEL_BYTE_FOR_CHANNEL*n;
++               }
++               break;
++       case 3:
++               len =3D adata->read_multiple_byte(adata, reg_addr[0],
++                       ST_ACCEL_BYTE_FOR_CHANNEL*ST_ACCEL_NUMBER_DATA_CHAN=
+NELS,
++                       rx_array);
++               break;
++       default:
++               break;
++       }
++
++       return len;
++}
++
++static int st_accel_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
++{
++       int ret, i, scan_count;
++       u8 rx_array[ST_ACCEL_BYTE_FOR_CHANNEL*ST_ACCEL_NUMBER_DATA_CHANNELS=
+];
++       s16 *data =3D (s16 *)buf;
++
++       ret =3D st_accel_read_all(indio_dev, rx_array);
++       if (ret < 0)
++               return ret;
++
++       scan_count =3D bitmap_weight(indio_dev->active_scan_mask,
++                                                       indio_dev->maskleng=
+th);
++
++       for (i =3D 0; i < scan_count; i++)
++               memcpy(data+i, &rx_array[i*2], sizeof(s16));
++
++       return i*sizeof(data[0]);
++}
++
++static irqreturn_t st_accel_trigger_handler(int irq, void *p)
++{
++       int len =3D 0;
++       struct iio_poll_func *pf =3D p;
++       struct iio_dev *indio_dev =3D pf->indio_dev;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       len =3D st_accel_get_buffer_element(indio_dev, adata->buffer_data);
++       if (indio_dev->scan_timestamp)
++               *(s64 *)((u8 *)adata->buffer_data +
++                               ALIGN(len, sizeof(s64))) =3D pf->timestamp;
++
++       iio_push_to_buffer(indio_dev->buffer, adata->buffer_data);
++       iio_trigger_notify_done(indio_dev->trig);
++
++       return IRQ_HANDLED;
++}
++
++static int st_accel_buffer_postenable(struct iio_dev *indio_dev)
++{
++       int err, i;
++       u8 active_bit =3D 0x00;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       adata->buffer_data =3D kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
++       if (adata->buffer_data =3D=3D NULL) {
++               err =3D -ENOMEM;
++               goto allocate_memory_error;
++       }
++
++       for (i =3D 0; i < ST_ACCEL_NUMBER_DATA_CHANNELS; i++)
++               if (test_bit(i, indio_dev->active_scan_mask))
++                       active_bit |=3D (1 << i);
++
++       err =3D st_accel_set_axis_enable(indio_dev, active_bit);
++       if (err < 0)
++               goto st_accel_buffer_postenable_error;
++
++       err =3D iio_triggered_buffer_postenable(indio_dev);
++
++       return err;
++
++allocate_memory_error:
++       kfree(adata->buffer_data);
++st_accel_buffer_postenable_error:
++       return err;
++}
++
++static int st_accel_buffer_predisable(struct iio_dev *indio_dev)
++{
++       int err;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       err =3D iio_triggered_buffer_predisable(indio_dev);
++       if (err < 0)
++               goto st_accel_buffer_predisable_error;
++
++       err =3D st_accel_set_axis_enable(indio_dev, ST_ACCEL_ENABLE_ALL_CHA=
+NNELS);
++       if (err < 0)
++               goto st_accel_buffer_predisable_error;
++
++       kfree(adata->buffer_data);
++
++st_accel_buffer_predisable_error:
++       return err;
++}
++
++static const struct iio_buffer_setup_ops st_accel_buffer_setup_ops =3D {
++       .preenable =3D &iio_sw_buffer_preenable,
++       .postenable =3D &st_accel_buffer_postenable,
++       .predisable =3D &st_accel_buffer_predisable,
 +};
 +
-+static const struct adis_data adis16240_data = {
-+	.write_delay = 35,
-+	.read_delay = 35,
-+	.msc_ctrl_reg = ADIS16240_MSC_CTRL,
-+	.glob_cmd_reg = ADIS16240_GLOB_CMD,
-+	.diag_stat_reg = ADIS16240_DIAG_STAT,
++int st_accel_allocate_ring(struct iio_dev *indio_dev)
++{
++       indio_dev->scan_timestamp =3D true;
++       return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_ti=
+me,
++                       &st_accel_trigger_handler, &st_accel_buffer_setup_o=
+ps);
++}
++EXPORT_SYMBOL(st_accel_allocate_ring);
 +
-+	.self_test_mask = ADIS16240_MSC_CTRL_SELF_TEST_EN,
-+	.startup_delay = ADIS16240_STARTUP_DELAY,
++void st_accel_deallocate_ring(struct iio_dev *indio_dev)
++{
++       iio_triggered_buffer_cleanup(indio_dev);
++}
++EXPORT_SYMBOL(st_accel_deallocate_ring);
+diff --git a/drivers/iio/accel/st_accel_core.c
+b/drivers/iio/accel/st_accel_core.c
+new file mode 100644
+index 0000000..0a787df
+--- /dev/null
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -0,0 +1,1154 @@
++/*
++ * STMicroelectronics accelerometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
 +
-+	.status_error_msgs = adis16240_status_error_msgs,
-+	.status_error_mask = BIT(ADIS16240_DIAG_STAT_PWRON_FAIL_BIT) |
-+		BIT(ADIS16240_DIAG_STAT_SPI_FAIL_BIT) |
-+		BIT(ADIS16240_DIAG_STAT_FLASH_UPT_BIT) |
-+		BIT(ADIS16240_DIAG_STAT_POWER_HIGH_BIT) |
-+		BIT(ADIS16240_DIAG_STAT_POWER_LOW_BIT),
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/errno.h>
++#include <linux/types.h>
++#include <linux/mutex.h>
++#include <linux/interrupt.h>
++#include <linux/i2c.h>
++#include <linux/gpio.h>
++#include <linux/irq.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/buffer.h>
++
++#include <linux/iio/accel/st_accel.h>
++
++
++#define ST_ACCEL_FULLSCALE_AVL_MAX             5
++#define ST_ACCEL_ODR_LIST_MAX                  10
++#define ST_ACCEL_ENABLE_ALL_CHANNELS           0x07
++
++/* DEFAULT VALUE FOR SENSORS */
++#define ST_ACCEL_DEFAULT_OUT_X_L_ADDR          0x28
++#define ST_ACCEL_DEFAULT_OUT_X_H_ADDR          0x29
++#define ST_ACCEL_DEFAULT_OUT_Y_L_ADDR          0x2a
++#define ST_ACCEL_DEFAULT_OUT_Y_H_ADDR          0x2b
++#define ST_ACCEL_DEFAULT_OUT_Z_L_ADDR          0x2c
++#define ST_ACCEL_DEFAULT_OUT_Z_H_ADDR          0x2d
++#define ST_ACCEL_DEFAULT_WAI_ADDRESS           0x0f
++#define ST_ACCEL_DEFAULT_POWER_ON_VALUE                0x01
++#define ST_ACCEL_DEFAULT_POWER_OFF_VALUE       0x00
++#define ST_ACCEL_DEFAULT_12_REALBITS           12
++#define ST_ACCEL_DEFAULT_16_REALBITS           16
++#define ST_ACCEL_DEFAULT_AXIS_ADDR             0x20
++#define ST_ACCEL_DEFAULT_AXIS_MASK             0x07
++#define ST_ACCEL_DEFAULT_AXIS_N_BIT            3
++
++/* FULLSCALE */
++#define ST_ACCEL_FS_AVL_2G                     2
++#define ST_ACCEL_FS_AVL_4G                     4
++#define ST_ACCEL_FS_AVL_6G                     6
++#define ST_ACCEL_FS_AVL_8G                     8
++#define ST_ACCEL_FS_AVL_16G                    16
++
++/* CUSTOM VALUES FOR SENSOR 1 */
++#define ST_ACCEL_1_WAI_EXP                     0x33
++#define ST_ACCEL_1_ODR_ADDR                    0x20
++#define ST_ACCEL_1_ODR_MASK                    0xf0
++#define ST_ACCEL_1_ODR_N_BIT                   4
++#define ST_ACCEL_1_ODR_AVL_1HZ_VAL             0x01
++#define ST_ACCEL_1_ODR_AVL_10HZ_VAL            0x02
++#define ST_ACCEL_1_ODR_AVL_25HZ_VAL            0x03
++#define ST_ACCEL_1_ODR_AVL_50HZ_VAL            0x04
++#define ST_ACCEL_1_ODR_AVL_100HZ_VAL           0x05
++#define ST_ACCEL_1_ODR_AVL_200HZ_VAL           0x06
++#define ST_ACCEL_1_ODR_AVL_400HZ_VAL           0x07
++#define ST_ACCEL_1_ODR_AVL_1600HZ_VAL          0x08
++#define ST_ACCEL_1_FS_N_BIT                    2
++#define ST_ACCEL_1_FS_ADDR                     0x23
++#define ST_ACCEL_1_FS_MASK                     0x30
++#define ST_ACCEL_1_FS_AVL_2_VAL                        0x00
++#define ST_ACCEL_1_FS_AVL_4_VAL                        0x01
++#define ST_ACCEL_1_FS_AVL_8_VAL                        0x02
++#define ST_ACCEL_1_FS_AVL_16_VAL               0x03
++#define ST_ACCEL_1_FS_AVL_2_GAIN               IIO_G_TO_M_S_2(1000)
++#define ST_ACCEL_1_FS_AVL_4_GAIN               IIO_G_TO_M_S_2(2000)
++#define ST_ACCEL_1_FS_AVL_8_GAIN               IIO_G_TO_M_S_2(4000)
++#define ST_ACCEL_1_FS_AVL_16_GAIN              IIO_G_TO_M_S_2(12000)
++#define ST_ACCEL_1_BDU_ADDR                    0x23
++#define ST_ACCEL_1_BDU_MASK                    0x80
++#define ST_ACCEL_1_DRDY_IRQ_ADDR               0x22
++#define ST_ACCEL_1_DRDY_IRQ_MASK               0x10
++#define ST_ACCEL_1_MULTIREAD_BIT               true
++
++/* CUSTOM VALUES FOR SENSOR 2 */
++#define ST_ACCEL_2_WAI_EXP                     0x49
++#define ST_ACCEL_2_ODR_ADDR                    0x20
++#define ST_ACCEL_2_ODR_MASK                    0xf0
++#define ST_ACCEL_2_ODR_N_BIT                   4
++#define ST_ACCEL_2_ODR_AVL_3HZ_VAL             0x01
++#define ST_ACCEL_2_ODR_AVL_6HZ_VAL             0x02
++#define ST_ACCEL_2_ODR_AVL_12HZ_VAL            0x03
++#define ST_ACCEL_2_ODR_AVL_25HZ_VAL            0x04
++#define ST_ACCEL_2_ODR_AVL_50HZ_VAL            0x05
++#define ST_ACCEL_2_ODR_AVL_100HZ_VAL           0x06
++#define ST_ACCEL_2_ODR_AVL_200HZ_VAL           0x07
++#define ST_ACCEL_2_ODR_AVL_400HZ_VAL           0x08
++#define ST_ACCEL_2_ODR_AVL_800HZ_VAL           0x09
++#define ST_ACCEL_2_ODR_AVL_1600HZ_VAL          0x0a
++#define ST_ACCEL_2_FS_N_BIT                    3
++#define ST_ACCEL_2_FS_ADDR                     0x21
++#define ST_ACCEL_2_FS_MASK                     0x38
++#define ST_ACCEL_2_FS_AVL_2_VAL                        0X00
++#define ST_ACCEL_2_FS_AVL_4_VAL                        0X01
++#define ST_ACCEL_2_FS_AVL_6_VAL                        0x02
++#define ST_ACCEL_2_FS_AVL_8_VAL                        0x03
++#define ST_ACCEL_2_FS_AVL_16_VAL               0x04
++#define ST_ACCEL_2_FS_AVL_2_GAIN               IIO_G_TO_M_S_2(61)
++#define ST_ACCEL_2_FS_AVL_4_GAIN               IIO_G_TO_M_S_2(122)
++#define ST_ACCEL_2_FS_AVL_6_GAIN               IIO_G_TO_M_S_2(183)
++#define ST_ACCEL_2_FS_AVL_8_GAIN               IIO_G_TO_M_S_2(244)
++#define ST_ACCEL_2_FS_AVL_16_GAIN              IIO_G_TO_M_S_2(732)
++#define ST_ACCEL_2_BDU_ADDR                    0x20
++#define ST_ACCEL_2_BDU_MASK                    0x08
++#define ST_ACCEL_2_DRDY_IRQ_ADDR               0x22
++#define ST_ACCEL_2_DRDY_IRQ_MASK               0x04
++#define ST_ACCEL_2_MULTIREAD_BIT               true
++
++/* CUSTOM VALUES FOR SENSOR 3 */
++#define ST_ACCEL_3_WAI_EXP                     0x32
++#define ST_ACCEL_3_ODR_ADDR                    0x20
++#define ST_ACCEL_3_ODR_MASK                    0x18
++#define ST_ACCEL_3_ODR_N_BIT                   2
++#define ST_ACCEL_3_ODR_AVL_50HZ_VAL            0x00
++#define ST_ACCEL_3_ODR_AVL_100HZ_VAL           0x01
++#define ST_ACCEL_3_ODR_AVL_400HZ_VAL           0x02
++#define ST_ACCEL_3_ODR_AVL_1000HZ_VAL          0x03
++#define ST_ACCEL_3_PW_ADDR                     0x20
++#define ST_ACCEL_3_PW_MASK                     0xe0
++#define ST_ACCEL_3_PW_N_BIT                    3
++#define ST_ACCEL_3_FS_N_BIT                    2
++#define ST_ACCEL_3_FS_ADDR                     0x23
++#define ST_ACCEL_3_FS_MASK                     0x30
++#define ST_ACCEL_3_FS_AVL_2_VAL                        0X00
++#define ST_ACCEL_3_FS_AVL_4_VAL                        0X01
++#define ST_ACCEL_3_FS_AVL_8_VAL                        0x03
++#define ST_ACCEL_3_FS_AVL_2_GAIN               IIO_G_TO_M_S_2(1000)
++#define ST_ACCEL_3_FS_AVL_4_GAIN               IIO_G_TO_M_S_2(2000)
++#define ST_ACCEL_3_FS_AVL_8_GAIN               IIO_G_TO_M_S_2(3900)
++#define ST_ACCEL_3_BDU_ADDR                    0x23
++#define ST_ACCEL_3_BDU_MASK                    0x80
++#define ST_ACCEL_3_DRDY_IRQ_ADDR               0x22
++#define ST_ACCEL_3_DRDY_IRQ_MASK               0x02
++#define ST_ACCEL_3_MULTIREAD_BIT               true
++
++/* CUSTOM VALUES FOR SENSOR 4 */
++#define ST_ACCEL_4_WAI_EXP                     0x40
++#define ST_ACCEL_4_ODR_ADDR                    0x20
++#define ST_ACCEL_4_ODR_MASK                    0xf0
++#define ST_ACCEL_4_ODR_N_BIT                   4
++#define ST_ACCEL_4_ODR_AVL_3HZ_VAL             0x01
++#define ST_ACCEL_4_ODR_AVL_6HZ_VAL             0x02
++#define ST_ACCEL_4_ODR_AVL_12HZ_VAL            0x03
++#define ST_ACCEL_4_ODR_AVL_25HZ_VAL            0x04
++#define ST_ACCEL_4_ODR_AVL_50HZ_VAL            0x05
++#define ST_ACCEL_4_ODR_AVL_100HZ_VAL           0x06
++#define ST_ACCEL_4_ODR_AVL_200HZ_VAL           0x07
++#define ST_ACCEL_4_ODR_AVL_400HZ_VAL           0x08
++#define ST_ACCEL_4_ODR_AVL_800HZ_VAL           0x09
++#define ST_ACCEL_4_ODR_AVL_1600HZ_VAL          0x0a
++#define ST_ACCEL_4_FS_N_BIT                    3
++#define ST_ACCEL_4_FS_ADDR                     0x24
++#define ST_ACCEL_4_FS_MASK                     0x38
++#define ST_ACCEL_4_FS_AVL_2_VAL                        0X00
++#define ST_ACCEL_4_FS_AVL_4_VAL                        0X01
++#define ST_ACCEL_4_FS_AVL_6_VAL                        0x02
++#define ST_ACCEL_4_FS_AVL_8_VAL                        0x03
++#define ST_ACCEL_4_FS_AVL_16_VAL               0x04
++#define ST_ACCEL_4_FS_AVL_2_GAIN               IIO_G_TO_M_S_2(61)
++#define ST_ACCEL_4_FS_AVL_4_GAIN               IIO_G_TO_M_S_2(122)
++#define ST_ACCEL_4_FS_AVL_6_GAIN               IIO_G_TO_M_S_2(183)
++#define ST_ACCEL_4_FS_AVL_8_GAIN               IIO_G_TO_M_S_2(244)
++#define ST_ACCEL_4_FS_AVL_16_GAIN              IIO_G_TO_M_S_2(732)
++#define ST_ACCEL_4_BDU_ADDR                    0x20
++#define ST_ACCEL_4_BDU_MASK                    0x08
++#define ST_ACCEL_4_DRDY_IRQ_ADDR               0x23
++#define ST_ACCEL_4_DRDY_IRQ_MASK               0x80
++#define ST_ACCEL_4_IG1_EN_ADDR                 0x23
++#define ST_ACCEL_4_IG1_EN_MASK                 0x08
++#define ST_ACCEL_4_MULTIREAD_BIT               false
++
++struct st_accel_odr_available {
++       unsigned int hz;
++       u8 value;
 +};
 +
- static int __devinit adis16240_probe(struct spi_device *spi)
- {
- 	int ret;
--	struct adis16240_state *st;
-+	struct adis *st;
- 	struct iio_dev *indio_dev;
- 
- 	/* setup the industrialio driver allocated elements */
-@@ -569,9 +247,6 @@ static int __devinit adis16240_probe(struct spi_device *spi)
- 	/* this is only used for removal purposes */
- 	spi_set_drvdata(spi, indio_dev);
- 
--	st->us = spi;
--	mutex_init(&st->buf_lock);
--
- 	indio_dev->name = spi->dev.driver->name;
- 	indio_dev->dev.parent = &spi->dev;
- 	indio_dev->info = &adis16240_info;
-@@ -579,39 +254,24 @@ static int __devinit adis16240_probe(struct spi_device *spi)
- 	indio_dev->num_channels = ARRAY_SIZE(adis16240_channels);
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
--	ret = adis16240_configure_ring(indio_dev);
-+	ret = adis_init(st, indio_dev, spi, &adis16240_data);
-+	if (ret)
-+		goto error_free_dev;
-+	ret = adis_setup_buffer_and_trigger(st, indio_dev, NULL);
- 	if (ret)
- 		goto error_free_dev;
--
--	ret = iio_buffer_register(indio_dev,
--				  adis16240_channels,
--				  ARRAY_SIZE(adis16240_channels));
--	if (ret) {
--		printk(KERN_ERR "failed to initialize the ring\n");
--		goto error_unreg_ring_funcs;
--	}
--
--	if (spi->irq) {
--		ret = adis16240_probe_trigger(indio_dev);
--		if (ret)
--			goto error_uninitialize_ring;
--	}
- 
- 	/* Get the device into a sane initial state */
--	ret = adis16240_initial_setup(indio_dev);
-+	ret = adis_initial_startup(st);
- 	if (ret)
--		goto error_remove_trigger;
-+		goto error_cleanup_buffer_trigger;
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
--		goto error_remove_trigger;
-+		goto error_cleanup_buffer_trigger;
- 	return 0;
- 
--error_remove_trigger:
--	adis16240_remove_trigger(indio_dev);
--error_uninitialize_ring:
--	iio_buffer_unregister(indio_dev);
--error_unreg_ring_funcs:
--	adis16240_unconfigure_ring(indio_dev);
-+error_cleanup_buffer_trigger:
-+	adis_cleanup_buffer_and_trigger(st, indio_dev);
- error_free_dev:
- 	iio_device_free(indio_dev);
- error_ret:
-@@ -620,13 +280,11 @@ error_ret:
- 
- static int __devexit adis16240_remove(struct spi_device *spi)
- {
--
- 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct adis *st = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
--	adis16240_remove_trigger(indio_dev);
--	iio_buffer_unregister(indio_dev);
--	adis16240_unconfigure_ring(indio_dev);
-+	adis_cleanup_buffer_and_trigger(st, indio_dev);
- 	iio_device_free(indio_dev);
- 
- 	return 0;
-diff --git a/drivers/staging/iio/accel/adis16240_ring.c b/drivers/staging/iio/accel/adis16240_ring.c
-deleted file mode 100644
-index e2ac8a8..0000000
---- a/drivers/staging/iio/accel/adis16240_ring.c
-+++ /dev/null
-@@ -1,132 +0,0 @@
--#include <linux/export.h>
--#include <linux/interrupt.h>
--#include <linux/mutex.h>
--#include <linux/kernel.h>
--#include <linux/spi/spi.h>
--#include <linux/slab.h>
--
--#include <linux/iio/iio.h>
--#include "../ring_sw.h"
--#include <linux/iio/trigger_consumer.h>
--#include "adis16240.h"
--
--/**
-- * adis16240_read_ring_data() read data registers which will be placed into ring
-- * @indio_dev: the IIO device
-- * @rx: somewhere to pass back the value read
-- **/
--static int adis16240_read_ring_data(struct iio_dev *indio_dev, u8 *rx)
--{
--	struct spi_message msg;
--	struct adis16240_state *st = iio_priv(indio_dev);
--	struct spi_transfer xfers[ADIS16240_OUTPUTS + 1];
--	int ret;
--	int i;
--
--	mutex_lock(&st->buf_lock);
--
--	spi_message_init(&msg);
--
--	memset(xfers, 0, sizeof(xfers));
--	for (i = 0; i <= ADIS16240_OUTPUTS; i++) {
--		xfers[i].bits_per_word = 8;
--		xfers[i].cs_change = 1;
--		xfers[i].len = 2;
--		xfers[i].delay_usecs = 30;
--		xfers[i].tx_buf = st->tx + 2 * i;
--		st->tx[2 * i]
--			= ADIS16240_READ_REG(ADIS16240_SUPPLY_OUT + 2 * i);
--		st->tx[2 * i + 1] = 0;
--		if (i >= 1)
--			xfers[i].rx_buf = rx + 2 * (i - 1);
--		spi_message_add_tail(&xfers[i], &msg);
--	}
--
--	ret = spi_sync(st->us, &msg);
--	if (ret)
--		dev_err(&st->us->dev, "problem when burst reading");
--
--	mutex_unlock(&st->buf_lock);
--
--	return ret;
--}
--
--static irqreturn_t adis16240_trigger_handler(int irq, void *p)
--{
--	struct iio_poll_func *pf = p;
--	struct iio_dev *indio_dev = pf->indio_dev;
--	struct adis16240_state *st = iio_priv(indio_dev);
--
--	int i = 0;
--	s16 *data;
--
--	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
--	if (data == NULL) {
--		dev_err(&st->us->dev, "memory alloc failed in ring bh");
--		goto done;
--	}
--
--	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength) &&
--	    adis16240_read_ring_data(indio_dev, st->rx) >= 0)
--		for (; i < bitmap_weight(indio_dev->active_scan_mask,
--					 indio_dev->masklength); i++)
--			data[i] = be16_to_cpup((__be16 *)&(st->rx[i*2]));
--
--	/* Guaranteed to be aligned with 8 byte boundary */
--	if (indio_dev->scan_timestamp)
--		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
--
--	iio_push_to_buffers(indio_dev, (u8 *)data);
--
--	kfree(data);
--done:
--	iio_trigger_notify_done(indio_dev->trig);
--
--	return IRQ_HANDLED;
--}
--
--void adis16240_unconfigure_ring(struct iio_dev *indio_dev)
--{
--	iio_dealloc_pollfunc(indio_dev->pollfunc);
--	iio_sw_rb_free(indio_dev->buffer);
--}
--
--static const struct iio_buffer_setup_ops adis16240_ring_setup_ops = {
--	.preenable = &iio_sw_buffer_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
--};
--
--int adis16240_configure_ring(struct iio_dev *indio_dev)
--{
--	int ret = 0;
--	struct iio_buffer *ring;
--
--	ring = iio_sw_rb_allocate(indio_dev);
--	if (!ring) {
--		ret = -ENOMEM;
--		return ret;
--	}
--	indio_dev->buffer = ring;
--	ring->scan_timestamp = true;
--	indio_dev->setup_ops = &adis16240_ring_setup_ops;
--
--	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
--						 &adis16240_trigger_handler,
--						 IRQF_ONESHOT,
--						 indio_dev,
--						 "%s_consumer%d",
--						 indio_dev->name,
--						 indio_dev->id);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
--		goto error_iio_sw_rb_free;
--	}
--
--	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
--	return 0;
--
--error_iio_sw_rb_free:
--	iio_sw_rb_free(indio_dev->buffer);
--	return ret;
--}
-diff --git a/drivers/staging/iio/accel/adis16240_trigger.c b/drivers/staging/iio/accel/adis16240_trigger.c
-deleted file mode 100644
-index f3caf09..0000000
---- a/drivers/staging/iio/accel/adis16240_trigger.c
-+++ /dev/null
-@@ -1,73 +0,0 @@
--#include <linux/interrupt.h>
--#include <linux/kernel.h>
--#include <linux/spi/spi.h>
--#include <linux/export.h>
--
--#include <linux/iio/iio.h>
--#include <linux/iio/trigger.h>
--#include "adis16240.h"
--
--/**
-- * adis16240_data_rdy_trigger_set_state() set datardy interrupt state
-- **/
--static int adis16240_data_rdy_trigger_set_state(struct iio_trigger *trig,
--						bool state)
--{
--	struct iio_dev *indio_dev = trig->private_data;
--
--	dev_dbg(&indio_dev->dev, "%s (%d)\n", __func__, state);
--	return adis16240_set_irq(indio_dev, state);
--}
--
--static const struct iio_trigger_ops adis16240_trigger_ops = {
--	.owner = THIS_MODULE,
--	.set_trigger_state = &adis16240_data_rdy_trigger_set_state,
--};
--
--int adis16240_probe_trigger(struct iio_dev *indio_dev)
--{
--	int ret;
--	struct adis16240_state *st = iio_priv(indio_dev);
--
--	st->trig = iio_trigger_alloc("adis16240-dev%d", indio_dev->id);
--	if (st->trig == NULL) {
--		ret = -ENOMEM;
--		goto error_ret;
--	}
--
--	ret = request_irq(st->us->irq,
--			  iio_trigger_generic_data_rdy_poll,
--			  IRQF_TRIGGER_RISING,
--			  "adis16240",
--			  st->trig);
--	if (ret)
--		goto error_free_trig;
--
--	st->trig->dev.parent = &st->us->dev;
--	st->trig->ops = &adis16240_trigger_ops;
--	st->trig->private_data = indio_dev;
--	ret = iio_trigger_register(st->trig);
--
--	/* select default trigger */
--	indio_dev->trig = st->trig;
--	if (ret)
--		goto error_free_irq;
--
--	return 0;
--
--error_free_irq:
--	free_irq(st->us->irq, st->trig);
--error_free_trig:
--	iio_trigger_free(st->trig);
--error_ret:
--	return ret;
--}
--
--void adis16240_remove_trigger(struct iio_dev *indio_dev)
--{
--	struct adis16240_state *st = iio_priv(indio_dev);
--
--	iio_trigger_unregister(st->trig);
--	free_irq(st->us->irq, st->trig);
--	iio_trigger_free(st->trig);
--}
--- 
-1.8.0
-
++struct st_accel_odr {
++       u8 addr;
++       u8 mask;
++       short num_bit;
++       struct st_accel_odr_available odr_avl[ST_ACCEL_ODR_LIST_MAX];
++};
++
++struct st_accel_power {
++       u8 addr;
++       u8 mask;
++       unsigned short num_bit;
++       u8 value_off;
++       u8 value_on;
++};
++
++struct st_accel_axis {
++       u8 addr;
++       u8 mask;
++};
++
++struct st_accel_fullscale_available {
++       unsigned int num;
++       u8 value;
++       unsigned int gain;
++};
++
++struct st_accel_fullscale {
++       u8 addr;
++       u8 mask;
++       unsigned short num_bit;
++       struct st_accel_fullscale_available fs_avl[ST_ACCEL_FULLSCALE_AVL_M=
+AX];
++};
++
++struct st_accel_bdu {
++       u8 addr;
++       u8 mask;
++};
++
++struct st_accel_interrupt_generator {
++       u8 en_addr;
++       u8 latch_mask_addr;
++       u8 en_mask;
++       u8 latching_mask;
++};
++
++struct st_accel_data_ready_irq {
++       u8 addr;
++       u8 mask;
++       struct st_accel_interrupt_generator ig1;
++};
++
++#define ST_ACCEL_LSM_CHANNELS(index, mod, endian, bits, addr) \
++{ \
++       .type =3D IIO_ACCEL, \
++       .modified =3D 1, \
++       .info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
++                                       IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
++       .scan_index =3D index, \
++       .channel2 =3D mod, \
++       .address =3D addr, \
++       .scan_type =3D { \
++               .sign =3D 's', \
++               .realbits =3D bits, \
++               .shift =3D 16 - bits, \
++               .storagebits =3D 16, \
++               .endianness =3D endian, \
++       }, \
++}
++
++static const struct iio_chan_spec st_accel_12bit_channels[] =3D {
++       ST_ACCEL_LSM_CHANNELS(ST_ACCEL_SCAN_X, IIO_MOD_X, IIO_LE,
++               ST_ACCEL_DEFAULT_12_REALBITS, ST_ACCEL_DEFAULT_OUT_X_L_ADDR=
+),
++       ST_ACCEL_LSM_CHANNELS(ST_ACCEL_SCAN_Y, IIO_MOD_Y, IIO_LE,
++               ST_ACCEL_DEFAULT_12_REALBITS, ST_ACCEL_DEFAULT_OUT_Y_L_ADDR=
+),
++       ST_ACCEL_LSM_CHANNELS(ST_ACCEL_SCAN_Z, IIO_MOD_Z, IIO_LE,
++               ST_ACCEL_DEFAULT_12_REALBITS, ST_ACCEL_DEFAULT_OUT_Z_L_ADDR=
+),
++       IIO_CHAN_SOFT_TIMESTAMP(3)
++};
++
++static const struct iio_chan_spec st_accel_16bit_channels[] =3D {
++       ST_ACCEL_LSM_CHANNELS(ST_ACCEL_SCAN_X, IIO_MOD_X, IIO_LE,
++               ST_ACCEL_DEFAULT_16_REALBITS, ST_ACCEL_DEFAULT_OUT_X_L_ADDR=
+),
++       ST_ACCEL_LSM_CHANNELS(ST_ACCEL_SCAN_Y, IIO_MOD_Y, IIO_LE,
++               ST_ACCEL_DEFAULT_16_REALBITS, ST_ACCEL_DEFAULT_OUT_Y_L_ADDR=
+),
++       ST_ACCEL_LSM_CHANNELS(ST_ACCEL_SCAN_Z, IIO_MOD_Z, IIO_LE,
++               ST_ACCEL_DEFAULT_16_REALBITS, ST_ACCEL_DEFAULT_OUT_Z_L_ADDR=
+),
++       IIO_CHAN_SOFT_TIMESTAMP(3)
++};
++
++/**
++ * struct st_accel_sensors - ST accel sensors list
++ * @wai: Contents of WhoAmI register.
++ * @ch: IIO channels for the sensor.
++ * @odr: Output data rate register and odr list available.
++ * @pw: Power register of the sensor.
++ * @enable_axis: Enable one or more axis of the sensor.
++ * @fs: Full scale register and fs list available.
++ * @bdu: Block data update register.
++ * @drdy_irq: Data ready register of the sensor.
++ * @multi_read_bit: Use or not particular bit for [I2C/SPI] multiread.
++ */
++static const struct st_accel_sensors {
++       u8 wai;
++       struct iio_chan_spec *ch;
++       struct st_accel_odr odr;
++       struct st_accel_power pw;
++       struct st_accel_axis enable_axis;
++       struct st_accel_fullscale fs;
++       struct st_accel_bdu bdu;
++       struct st_accel_data_ready_irq drdy_irq;
++       bool multi_read_bit;
++} st_accel_sensors[] =3D {
++       {
++               .wai =3D ST_ACCEL_1_WAI_EXP,
++               .ch =3D (struct iio_chan_spec *)st_accel_12bit_channels,
++               .odr =3D {
++                       .addr =3D ST_ACCEL_1_ODR_ADDR,
++                       .mask =3D ST_ACCEL_1_ODR_MASK,
++                       .num_bit =3D ST_ACCEL_1_ODR_N_BIT,
++                       .odr_avl =3D {
++                               { 1, ST_ACCEL_1_ODR_AVL_1HZ_VAL, },
++                               { 10, ST_ACCEL_1_ODR_AVL_10HZ_VAL, },
++                               { 25, ST_ACCEL_1_ODR_AVL_25HZ_VAL, },
++                               { 50, ST_ACCEL_1_ODR_AVL_50HZ_VAL, },
++                               { 100, ST_ACCEL_1_ODR_AVL_100HZ_VAL, },
++                               { 200, ST_ACCEL_1_ODR_AVL_200HZ_VAL, },
++                               { 400, ST_ACCEL_1_ODR_AVL_400HZ_VAL, },
++                               { 1600, ST_ACCEL_1_ODR_AVL_1600HZ_VAL, },
++                       },
++               },
++               .pw =3D {
++                       .addr =3D ST_ACCEL_1_ODR_ADDR,
++                       .mask =3D ST_ACCEL_1_ODR_MASK,
++                       .num_bit =3D ST_ACCEL_1_ODR_N_BIT,
++                       .value_off =3D ST_ACCEL_DEFAULT_POWER_OFF_VALUE,
++               },
++               .enable_axis =3D {
++                       .addr =3D ST_ACCEL_DEFAULT_AXIS_ADDR,
++                       .mask =3D ST_ACCEL_DEFAULT_AXIS_MASK,
++               },
++               .fs =3D {
++                       .addr =3D ST_ACCEL_1_FS_ADDR,
++                       .mask =3D ST_ACCEL_1_FS_MASK,
++                       .num_bit =3D ST_ACCEL_1_FS_N_BIT,
++                       .fs_avl =3D {
++                               [0] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_2G,
++                                       .value =3D ST_ACCEL_1_FS_AVL_2_VAL,
++                                       .gain =3D ST_ACCEL_1_FS_AVL_2_GAIN,
++                               },
++                               [1] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_4G,
++                                       .value =3D ST_ACCEL_1_FS_AVL_4_VAL,
++                                       .gain =3D ST_ACCEL_1_FS_AVL_4_GAIN,
++                               },
++                               [2] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_8G,
++                                       .value =3D ST_ACCEL_1_FS_AVL_8_VAL,
++                                       .gain =3D ST_ACCEL_1_FS_AVL_8_GAIN,
++                               },
++                               [3] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_16G,
++                                       .value =3D ST_ACCEL_1_FS_AVL_16_VAL=
+,
++                                       .gain =3D ST_ACCEL_1_FS_AVL_16_GAIN=
+,
++                               },
++                       },
++               },
++               .bdu =3D {
++                       .addr =3D ST_ACCEL_1_BDU_ADDR,
++                       .mask =3D ST_ACCEL_1_BDU_MASK,
++               },
++               .drdy_irq =3D {
++                       .addr =3D ST_ACCEL_1_DRDY_IRQ_ADDR,
++                       .mask =3D ST_ACCEL_1_DRDY_IRQ_MASK,
++               },
++               .multi_read_bit =3D ST_ACCEL_1_MULTIREAD_BIT,
++       },
++       {
++               .wai =3D ST_ACCEL_2_WAI_EXP,
++               .ch =3D (struct iio_chan_spec *)st_accel_16bit_channels,
++               .odr =3D {
++                       .addr =3D ST_ACCEL_2_ODR_ADDR,
++                       .mask =3D ST_ACCEL_2_ODR_MASK,
++                       .num_bit =3D ST_ACCEL_2_ODR_N_BIT,
++                       .odr_avl =3D {
++                               { 3, ST_ACCEL_2_ODR_AVL_3HZ_VAL, },
++                               { 6, ST_ACCEL_2_ODR_AVL_6HZ_VAL, },
++                               { 12, ST_ACCEL_2_ODR_AVL_12HZ_VAL, },
++                               { 25, ST_ACCEL_2_ODR_AVL_25HZ_VAL, },
++                               { 50, ST_ACCEL_2_ODR_AVL_50HZ_VAL, },
++                               { 100, ST_ACCEL_2_ODR_AVL_100HZ_VAL, },
++                               { 200, ST_ACCEL_2_ODR_AVL_200HZ_VAL, },
++                               { 400, ST_ACCEL_2_ODR_AVL_400HZ_VAL, },
++                               { 800, ST_ACCEL_2_ODR_AVL_800HZ_VAL, },
++                               { 1600, ST_ACCEL_2_ODR_AVL_1600HZ_VAL, },
++                       },
++               },
++               .pw =3D {
++                       .addr =3D ST_ACCEL_2_ODR_ADDR,
++                       .mask =3D ST_ACCEL_2_ODR_MASK,
++                       .num_bit =3D ST_ACCEL_2_ODR_N_BIT,
++                       .value_off =3D ST_ACCEL_DEFAULT_POWER_OFF_VALUE,
++               },
++               .enable_axis =3D {
++                       .addr =3D ST_ACCEL_DEFAULT_AXIS_ADDR,
++                       .mask =3D ST_ACCEL_DEFAULT_AXIS_MASK,
++               },
++               .fs =3D {
++                       .addr =3D ST_ACCEL_2_FS_ADDR,
++                       .mask =3D ST_ACCEL_2_FS_MASK,
++                       .num_bit =3D ST_ACCEL_2_FS_N_BIT,
++                       .fs_avl =3D {
++                               [0] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_2G,
++                                       .value =3D ST_ACCEL_2_FS_AVL_2_VAL,
++                                       .gain =3D ST_ACCEL_2_FS_AVL_2_GAIN,
++                               },
++                               [1] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_4G,
++                                       .value =3D ST_ACCEL_2_FS_AVL_4_VAL,
++                                       .gain =3D ST_ACCEL_2_FS_AVL_4_GAIN,
++                               },
++                               [2] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_6G,
++                                       .value =3D ST_ACCEL_2_FS_AVL_6_VAL,
++                                       .gain =3D ST_ACCEL_2_FS_AVL_6_GAIN,
++                               },
++                               [3] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_8G,
++                                       .value =3D ST_ACCEL_2_FS_AVL_8_VAL,
++                                       .gain =3D ST_ACCEL_2_FS_AVL_8_GAIN,
++                               },
++                               [4] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_16G,
++                                       .value =3D ST_ACCEL_2_FS_AVL_16_VAL=
+,
++                                       .gain =3D ST_ACCEL_2_FS_AVL_16_GAIN=
+,
++                               },
++                       },
++               },
++               .drdy_irq =3D {
++                       .addr =3D ST_ACCEL_2_DRDY_IRQ_ADDR,
++                       .mask =3D ST_ACCEL_2_DRDY_IRQ_MASK,
++               },
++               .bdu =3D {
++                       .addr =3D ST_ACCEL_2_BDU_ADDR,
++                       .mask =3D ST_ACCEL_2_BDU_MASK,
++               },
++               .multi_read_bit =3D ST_ACCEL_2_MULTIREAD_BIT,
++       },
++       {
++               .wai =3D ST_ACCEL_3_WAI_EXP,
++               .ch =3D (struct iio_chan_spec *)st_accel_12bit_channels,
++               .odr =3D {
++                       .addr =3D ST_ACCEL_3_ODR_ADDR,
++                       .mask =3D ST_ACCEL_3_ODR_MASK,
++                       .num_bit =3D ST_ACCEL_3_ODR_N_BIT,
++                       .odr_avl =3D {
++                               { 50, ST_ACCEL_3_ODR_AVL_50HZ_VAL, },
++                               { 100, ST_ACCEL_3_ODR_AVL_100HZ_VAL, },
++                               { 400, ST_ACCEL_3_ODR_AVL_400HZ_VAL, },
++                               { 1000, ST_ACCEL_3_ODR_AVL_1000HZ_VAL, },
++                       },
++               },
++               .pw =3D {
++                       .addr =3D ST_ACCEL_3_PW_ADDR,
++                       .mask =3D ST_ACCEL_3_PW_MASK,
++                       .num_bit =3D ST_ACCEL_3_PW_N_BIT,
++                       .value_on =3D ST_ACCEL_DEFAULT_POWER_ON_VALUE,
++                       .value_off =3D ST_ACCEL_DEFAULT_POWER_OFF_VALUE,
++               },
++               .enable_axis =3D {
++                       .addr =3D ST_ACCEL_DEFAULT_AXIS_ADDR,
++                       .mask =3D ST_ACCEL_DEFAULT_AXIS_MASK,
++               },
++               .fs =3D {
++                       .addr =3D ST_ACCEL_3_FS_ADDR,
++                       .mask =3D ST_ACCEL_3_FS_MASK,
++                       .num_bit =3D ST_ACCEL_3_FS_N_BIT,
++                       .fs_avl =3D {
++                               [0] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_2G,
++                                       .value =3D ST_ACCEL_3_FS_AVL_2_VAL,
++                                       .gain =3D ST_ACCEL_3_FS_AVL_2_GAIN,
++                               },
++                               [1] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_4G,
++                                       .value =3D ST_ACCEL_3_FS_AVL_4_VAL,
++                                       .gain =3D ST_ACCEL_3_FS_AVL_4_GAIN,
++                               },
++                               [2] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_8G,
++                                       .value =3D ST_ACCEL_3_FS_AVL_8_VAL,
++                                       .gain =3D ST_ACCEL_3_FS_AVL_8_GAIN,
++                               },
++                       },
++               },
++               .bdu =3D {
++                       .addr =3D ST_ACCEL_3_BDU_ADDR,
++                       .mask =3D ST_ACCEL_3_BDU_MASK,
++               },
++               .drdy_irq =3D {
++                       .addr =3D ST_ACCEL_3_DRDY_IRQ_ADDR,
++                       .mask =3D ST_ACCEL_3_DRDY_IRQ_MASK,
++               },
++               .multi_read_bit =3D ST_ACCEL_3_MULTIREAD_BIT,
++       },
++       {
++               .wai =3D ST_ACCEL_4_WAI_EXP,
++               .ch =3D (struct iio_chan_spec *)st_accel_16bit_channels,
++               .odr =3D {
++                       .addr =3D ST_ACCEL_4_ODR_ADDR,
++                       .mask =3D ST_ACCEL_4_ODR_MASK,
++                       .num_bit =3D ST_ACCEL_4_ODR_N_BIT,
++                       .odr_avl =3D {
++                               { 3, ST_ACCEL_4_ODR_AVL_3HZ_VAL },
++                               { 6, ST_ACCEL_4_ODR_AVL_6HZ_VAL, },
++                               { 12, ST_ACCEL_4_ODR_AVL_12HZ_VAL, },
++                               { 25, ST_ACCEL_4_ODR_AVL_25HZ_VAL, },
++                               { 50, ST_ACCEL_4_ODR_AVL_50HZ_VAL, },
++                               { 100, ST_ACCEL_4_ODR_AVL_100HZ_VAL, },
++                               { 200, ST_ACCEL_4_ODR_AVL_200HZ_VAL, },
++                               { 400, ST_ACCEL_4_ODR_AVL_400HZ_VAL, },
++                               { 800, ST_ACCEL_4_ODR_AVL_800HZ_VAL, },
++                               { 1600, ST_ACCEL_4_ODR_AVL_1600HZ_VAL, },
++                       },
++               },
++               .pw =3D {
++                       .addr =3D ST_ACCEL_4_ODR_ADDR,
++                       .mask =3D ST_ACCEL_4_ODR_MASK,
++                       .num_bit =3D ST_ACCEL_4_ODR_N_BIT,
++                       .value_off =3D ST_ACCEL_DEFAULT_POWER_OFF_VALUE,
++               },
++               .enable_axis =3D {
++                       .addr =3D ST_ACCEL_DEFAULT_AXIS_ADDR,
++                       .mask =3D ST_ACCEL_DEFAULT_AXIS_MASK,
++               },
++               .fs =3D {
++                       .addr =3D ST_ACCEL_4_FS_ADDR,
++                       .mask =3D ST_ACCEL_4_FS_MASK,
++                       .num_bit =3D ST_ACCEL_4_FS_N_BIT,
++                       .fs_avl =3D {
++                               [0] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_2G,
++                                       .value =3D ST_ACCEL_4_FS_AVL_2_VAL,
++                                       .gain =3D ST_ACCEL_4_FS_AVL_2_GAIN,
++                               },
++                               [1] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_4G,
++                                       .value =3D ST_ACCEL_4_FS_AVL_4_VAL,
++                                       .gain =3D ST_ACCEL_4_FS_AVL_4_GAIN,
++                               },
++                               [2] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_6G,
++                                       .value =3D ST_ACCEL_4_FS_AVL_6_VAL,
++                                       .gain =3D ST_ACCEL_4_FS_AVL_6_GAIN,
++                               },
++                               [3] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_8G,
++                                       .value =3D ST_ACCEL_4_FS_AVL_8_VAL,
++                                       .gain =3D ST_ACCEL_4_FS_AVL_8_GAIN,
++                               },
++                               [4] =3D {
++                                       .num =3D ST_ACCEL_FS_AVL_16G,
++                                       .value =3D ST_ACCEL_4_FS_AVL_16_VAL=
+,
++                                       .gain =3D ST_ACCEL_4_FS_AVL_16_GAIN=
+,
++                               },
++                       },
++               },
++               .bdu =3D {
++                       .addr =3D ST_ACCEL_4_BDU_ADDR,
++                       .mask =3D ST_ACCEL_4_BDU_MASK,
++               },
++               .drdy_irq =3D {
++                       .addr =3D ST_ACCEL_4_DRDY_IRQ_ADDR,
++                       .mask =3D ST_ACCEL_4_DRDY_IRQ_MASK,
++                       .ig1 =3D {
++                               .en_addr =3D ST_ACCEL_4_IG1_EN_ADDR,
++                               .en_mask =3D ST_ACCEL_4_IG1_EN_MASK,
++                       },
++               },
++               .multi_read_bit =3D ST_ACCEL_4_MULTIREAD_BIT,
++       },
++};
++
++static int st_accel_write_data_with_mask(struct iio_dev *indio_dev, u8
+reg_addr,
++                                               u8 mask, short num_bit, u8 =
+data)
++{
++       int err;
++       u8 prev_data;
++       u8 new_data;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       err =3D adata->read_byte(adata, reg_addr, &prev_data);
++       if (err < 0)
++               goto st_accel_write_data_with_mask_error;
++
++       new_data =3D ((prev_data & (~mask)) | ((data << __ffs(mask)) & mask=
+));
++       err =3D adata->write_byte(adata, reg_addr, new_data);
++
++st_accel_write_data_with_mask_error:
++       return err;
++}
++
++static int st_accel_match_odr(const struct st_accel_sensors *sensor,
++               unsigned int odr, struct st_accel_odr_available *odr_out)
++{
++       int i, ret =3D -EINVAL;
++
++       for (i =3D 0; i < ARRAY_SIZE(sensor->odr.odr_avl); i++) {
++               if (sensor->odr.odr_avl[i].hz =3D=3D odr) {
++                       odr_out->hz =3D sensor->odr.odr_avl[i].hz;
++                       odr_out->value =3D sensor->odr.odr_avl[i].value;
++                       ret =3D 0;
++                       break;
++               }
++       }
++
++       return ret;
++}
++
++static int st_accel_match_fs(const struct st_accel_sensors *sensor,
++               unsigned int fs, struct st_accel_fullscale_available *fs_ou=
+t)
++{
++       int i, ret =3D -EINVAL;
++
++       for (i =3D 0; i < ARRAY_SIZE(sensor->fs.fs_avl); i++) {
++               if (sensor->fs.fs_avl[i].num =3D=3D fs) {
++                       fs_out->num =3D sensor->fs.fs_avl[i].num;
++                       fs_out->gain =3D sensor->fs.fs_avl[i].gain;
++                       fs_out->value =3D sensor->fs.fs_avl[i].value;
++                       ret =3D 0;
++                       break;
++               }
++       }
++
++       return ret;
++}
++
++static int st_accel_match_scale(const struct st_accel_sensors *sensor,
++                       int scale, struct st_accel_fullscale_available *fs_=
+out)
++{
++       int i, ret =3D -EINVAL;
++
++       for (i =3D 0; i < ARRAY_SIZE(sensor->fs.fs_avl); i++) {
++               if (sensor->fs.fs_avl[i].gain =3D=3D scale) {
++                       fs_out->num =3D sensor->fs.fs_avl[i].num;
++                       fs_out->gain =3D sensor->fs.fs_avl[i].gain;
++                       fs_out->value =3D sensor->fs.fs_avl[i].value;
++                       ret =3D 0;
++                       break;
++               }
++       }
++
++       return ret;
++}
++
++int st_accel_set_dataready_irq(struct iio_dev *indio_dev, bool enable)
++{
++       int err;
++       struct st_accel_data *adata;
++
++       adata =3D iio_priv(indio_dev);
++       if (st_accel_sensors[adata->index].drdy_irq.ig1.en_addr > 0) {
++               err =3D st_accel_write_data_with_mask(indio_dev,
++                       st_accel_sensors[adata->index].drdy_irq.ig1.en_addr=
+,
++                       st_accel_sensors[adata->index].drdy_irq.ig1.en_mask=
+, 1,
++                       (int)enable);
++               if (err < 0)
++                       goto st_accel_set_dataready_irq_error;
++       }
++
++       if (st_accel_sensors[adata->index].drdy_irq.ig1.latch_mask_addr > 0=
+) {
++               err =3D st_accel_write_data_with_mask(indio_dev,
++               st_accel_sensors[adata->index].drdy_irq.ig1.latch_mask_addr=
+,
++               st_accel_sensors[adata->index].drdy_irq.ig1.latching_mask, =
+1,
++                       (int)enable);
++               if (err < 0)
++                       goto st_accel_set_dataready_irq_error;
++       }
++
++       err =3D st_accel_write_data_with_mask(indio_dev,
++               st_accel_sensors[adata->index].drdy_irq.addr,
++               st_accel_sensors[adata->index].drdy_irq.mask, 1, (int)enabl=
+e);
++
++st_accel_set_dataready_irq_error:
++       return err;
++}
++EXPORT_SYMBOL(st_accel_set_dataready_irq);
++
++static int st_accel_set_bdu(struct iio_dev *indio_dev,
++                               const struct st_accel_bdu *bdu, bool value)
++{
++       return st_accel_write_data_with_mask(indio_dev, bdu->addr, bdu->mas=
+k,
++                                                               1, (u8)valu=
+e);
++}
++
++static int st_accel_set_odr(struct iio_dev *indio_dev,
++                               struct st_accel_odr_available *odr_availabl=
+e)
++{
++       int err;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       if ((st_accel_sensors[adata->index].odr.addr =3D=3D
++               st_accel_sensors[adata->index].pw.addr) &&
++               (st_accel_sensors[adata->index].odr.mask =3D=3D
++                               st_accel_sensors[adata->index].pw.mask)) {
++               if (adata->enabled =3D=3D true) {
++                       err =3D st_accel_write_data_with_mask(indio_dev,
++                               st_accel_sensors[adata->index].odr.addr,
++                               st_accel_sensors[adata->index].odr.mask,
++                               st_accel_sensors[adata->index].odr.num_bit,
++                               odr_available->value);
++               } else {
++                       adata->odr =3D odr_available->hz;
++                       err =3D 0;
++               }
++       } else {
++               err =3D st_accel_write_data_with_mask(indio_dev,
++                               st_accel_sensors[adata->index].odr.addr,
++                               st_accel_sensors[adata->index].odr.mask,
++                               st_accel_sensors[adata->index].odr.num_bit,
++                               odr_available->value);
++       }
++
++       return err;
++}
++
++int st_accel_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable)
++{
++       int err;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       err =3D st_accel_write_data_with_mask(indio_dev,
++                       st_accel_sensors[adata->index].enable_axis.addr,
++                       st_accel_sensors[adata->index].enable_axis.mask,
++                       ST_ACCEL_DEFAULT_AXIS_N_BIT, axis_enable);
++
++       return err;
++}
++
++static int st_accel_set_enable(struct iio_dev *indio_dev, bool enable)
++{
++       int err =3D -EINVAL;
++       bool found;
++       u8 tmp_value;
++       struct st_accel_odr_available odr_out;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       if (enable) {
++               found =3D false;
++               tmp_value =3D st_accel_sensors[adata->index].pw.value_on;
++               if ((st_accel_sensors[adata->index].odr.addr =3D=3D
++                               st_accel_sensors[adata->index].pw.addr) &&
++                       (st_accel_sensors[adata->index].odr.mask =3D=3D
++                               st_accel_sensors[adata->index].pw.mask)) {
++                       err =3D st_accel_match_odr(
++                               &st_accel_sensors[adata->index], adata->odr=
+,
++                                       &odr_out);
++                       if (err < 0)
++                               goto set_enable_error;
++                       tmp_value =3D odr_out.value;
++                       found =3D true;
++               }
++               err =3D st_accel_write_data_with_mask(indio_dev,
++                               st_accel_sensors[adata->index].pw.addr,
++                               st_accel_sensors[adata->index].pw.mask,
++                               st_accel_sensors[adata->index].pw.num_bit,
++                               tmp_value);
++               if (err < 0)
++                       goto set_enable_error;
++               adata->enabled =3D true;
++               if (found)
++                       adata->odr =3D odr_out.hz;
++       } else {
++               err =3D st_accel_write_data_with_mask(indio_dev,
++                               st_accel_sensors[adata->index].pw.addr,
++                               st_accel_sensors[adata->index].pw.mask,
++                               st_accel_sensors[adata->index].pw.num_bit,
++                               st_accel_sensors[adata->index].pw.value_off=
+);
++               if (err < 0)
++                       goto set_enable_error;
++               adata->enabled =3D false;
++       }
++
++set_enable_error:
++       return err;
++}
++
++static int st_accel_set_fullscale(struct iio_dev *indio_dev,
++                               struct st_accel_fullscale_available *fs_avl=
+)
++{
++       int err;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       err =3D st_accel_write_data_with_mask(indio_dev,
++                               st_accel_sensors[adata->index].fs.addr,
++                               st_accel_sensors[adata->index].fs.mask,
++                               st_accel_sensors[adata->index].fs.num_bit,
++                               fs_avl->value);
++       if (err < 0)
++               goto st_accel_set_fullscale_error;
++
++       adata->fullscale =3D fs_avl->num;
++       adata->gain =3D fs_avl->gain;
++       return err;
++
++st_accel_set_fullscale_error:
++       dev_err(&indio_dev->dev, "failed to set new fullscale.\n");
++       return err;
++}
++
++static int st_accel_read_raw(struct iio_dev *indio_dev,
++                       struct iio_chan_spec const *ch, int *val,
++                                                       int *val2, long mas=
+k)
++{
++       int err;
++       u8 outdata[ST_ACCEL_BYTE_FOR_CHANNEL];
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       switch (mask) {
++       case IIO_CHAN_INFO_RAW:
++               mutex_lock(&indio_dev->mlock);
++               if (indio_dev->currentmode =3D=3D INDIO_BUFFER_TRIGGERED) {
++                       err =3D -EBUSY;
++                       goto read_error;
++               } else {
++                       if (!adata->enabled) {
++                               err =3D -EIO;
++                               goto read_error;
++                       } else {
++                               err =3D adata->read_multiple_byte(adata,
++                                       ch->address, ST_ACCEL_BYTE_FOR_CHAN=
+NEL,
++                                       outdata);
++                               if (err < 0)
++                                       goto read_error;
++
++                               *val =3D ((s16)cpu_to_le16p((u16 *)outdata)=
+)
++                                                       >> ch->scan_type.sh=
+ift;
++                       }
++               }
++               mutex_unlock(&indio_dev->mlock);
++               return IIO_VAL_INT;
++       case IIO_CHAN_INFO_SCALE:
++               *val =3D 0;
++               *val2 =3D adata->gain;
++               return IIO_VAL_INT_PLUS_MICRO;
++       default:
++               return -EINVAL;
++       }
++
++read_error:
++       mutex_unlock(&indio_dev->mlock);
++       return err;
++}
++
++static int st_accel_write_raw(struct iio_dev *indio_dev,
++               struct iio_chan_spec const *chan, int val, int val2, long m=
+ask)
++{
++       int err;
++       struct st_accel_fullscale_available fs_out;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       switch (mask) {
++       case IIO_CHAN_INFO_SCALE:
++               err =3D st_accel_match_scale(&st_accel_sensors[adata->index=
+],
++                                                               val2, &fs_o=
+ut);
++               if (err < 0)
++                       goto write_error;
++
++               err =3D st_accel_set_fullscale(indio_dev, &fs_out);
++               break;
++       default:
++               err =3D -EINVAL;
++       }
++
++write_error:
++       return err;
++}
++
++static int st_accel_check_device_list(struct iio_dev *indio_dev, u8 wai)
++{
++       int i;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       for (i =3D 0; i < ARRAY_SIZE(st_accel_sensors); i++) {
++               if (st_accel_sensors[i].wai =3D=3D wai)
++                       break;
++       }
++       if (i =3D=3D ARRAY_SIZE(st_accel_sensors))
++               goto check_device_error;
++
++       adata->index =3D i;
++
++       return i;
++
++check_device_error:
++       dev_err(&indio_dev->dev, "device not supported -> wai (0x%x).\n", w=
+ai);
++       return -ENODEV;
++}
++
++static int st_accel_get_wai_device(struct iio_dev *indio_dev, u8 reg_addr,
++                                                               u8 *value)
++{
++       int ret;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       ret =3D adata->read_byte(adata, reg_addr, value);
++       if (ret < 0)
++               goto read_byte_wai_error;
++
++       return 0;
++
++read_byte_wai_error:
++       dev_err(&indio_dev->dev,
++                       "failed to read WhoAmI (register 0x%x).\n", reg_add=
+r);
++       return -EIO;
++}
++
++static ssize_t st_accel_sysfs_set_sampling_frequency(struct device *dev,
++               struct device_attribute *attr, const char *buf, size_t size=
+)
++{
++       int err;
++       unsigned int freq;
++       struct st_accel_odr_available odr_out;
++       struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       err =3D kstrtoint(buf, 10, &freq);
++       if (err < 0)
++               goto conversion_error;
++
++       mutex_lock(&indio_dev->mlock);
++       err =3D st_accel_match_odr(&st_accel_sensors[adata->index],
++                                                               freq, &odr_=
+out);
++       if (err < 0)
++               goto st_accel_sysfs_set_sampling_frequency_error;
++
++       err =3D st_accel_set_odr(indio_dev, &odr_out);
++       if (err < 0) {
++               dev_err(&indio_dev->dev,
++                       "failed to set sampling frequency to %d.\n", freq);
++               goto st_accel_sysfs_set_sampling_frequency_error;
++       }
++       adata->odr =3D odr_out.hz;
++
++st_accel_sysfs_set_sampling_frequency_error:
++       mutex_unlock(&indio_dev->mlock);
++conversion_error:
++       return size;
++}
++
++static ssize_t st_accel_sysfs_get_sampling_frequency(struct device *dev,
++                               struct device_attribute *attr, char *buf)
++{
++       struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       return sprintf(buf, "%d\n", adata->odr);
++}
++
++static ssize_t st_accel_sysfs_set_powerdown(struct device *dev,
++               struct device_attribute *attr, const char *buf, size_t size=
+)
++{
++       int err;
++       bool powerdown;
++       struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
++
++       err =3D strtobool(buf, &powerdown);
++       if (err < 0)
++               goto set_enable_error;
++
++       mutex_lock(&indio_dev->mlock);
++       err =3D st_accel_set_enable(indio_dev, !powerdown);
++       if (err < 0)
++               dev_err(&indio_dev->dev,
++                       "failed to set powerdown to %d.\n", (int)(powerdown=
+));
++       mutex_unlock(&indio_dev->mlock);
++
++set_enable_error:
++       return size;
++}
++
++static ssize_t st_accel_sysfs_get_powerdown(struct device *dev,
++                               struct device_attribute *attr, char *buf)
++{
++       struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       return sprintf(buf, "%d\n", (int)(!adata->enabled));
++}
++
++static ssize_t st_accel_sysfs_scale_available(struct device *dev,
++                               struct device_attribute *attr, char *buf)
++{
++       int i, len =3D 0;
++       struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       mutex_lock(&indio_dev->mlock);
++       for (i =3D 0; i < ARRAY_SIZE(st_accel_sensors[adata->index].fs.fs_a=
+vl);
++                                                                       i++=
+) {
++               if (st_accel_sensors[adata->index].fs.fs_avl[i].num =3D=3D =
+0)
++                       break;
++
++               len +=3D sprintf(buf+len, "0.%06u ",
++                       st_accel_sensors[adata->index].fs.fs_avl[i].gain);
++       }
++       mutex_unlock(&indio_dev->mlock);
++       buf[len-1] =3D '\n';
++
++       return len;
++}
++
++static ssize_t st_accel_sysfs_sampling_frequency_available(struct
+device *dev,
++                               struct device_attribute *attr, char *buf)
++{
++       int i, len =3D 0;
++       struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       mutex_lock(&indio_dev->mlock);
++       for (i =3D 0; i < ARRAY_SIZE(st_accel_sensors[adata->index].odr.odr=
+_avl);
++                                                                       i++=
+) {
++               if (st_accel_sensors[adata->index].odr.odr_avl[i].hz =3D=3D=
+ 0)
++                       break;
++
++               len +=3D sprintf(buf + len, "%d ",
++                       st_accel_sensors[adata->index].odr.odr_avl[i].hz);
++       }
++       mutex_unlock(&indio_dev->mlock);
++       buf[len - 1] =3D '\n';
++
++       return len;
++}
++
++static IIO_DEVICE_ATTR(sampling_frequency_available, S_IRUGO,
++               st_accel_sysfs_sampling_frequency_available, NULL , 0);
++
++static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
++                               st_accel_sysfs_scale_available, NULL , 0);
++
++static IIO_DEVICE_ATTR(powerdown, S_IWUSR | S_IRUGO,
++               st_accel_sysfs_get_powerdown, st_accel_sysfs_set_powerdown =
+, 0);
++
++static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
++                       st_accel_sysfs_get_sampling_frequency,
++                                       st_accel_sysfs_set_sampling_frequen=
+cy);
++
++static struct attribute *st_accel_attributes[] =3D {
++       &iio_dev_attr_sampling_frequency_available.dev_attr.attr,
++       &iio_dev_attr_in_accel_scale_available.dev_attr.attr,
++       &iio_dev_attr_powerdown.dev_attr.attr,
++       &iio_dev_attr_sampling_frequency.dev_attr.attr,
++       NULL,
++};
++
++static const struct attribute_group st_accel_attribute_group =3D {
++       .attrs =3D st_accel_attributes,
++};
++
++static const struct iio_info acc_info =3D {
++       .driver_module =3D THIS_MODULE,
++       .attrs =3D &st_accel_attribute_group,
++       .read_raw =3D &st_accel_read_raw,
++       .write_raw =3D &st_accel_write_raw,
++};
++
++static int st_accel_init_sensor(struct iio_dev *indio_dev)
++{
++       int err;
++       struct st_accel_odr_available odr_out;
++       struct st_accel_fullscale_available fs_out;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       err =3D st_accel_set_enable(indio_dev, false);
++       if (err < 0)
++               goto init_error;
++
++       err =3D st_accel_set_axis_enable(indio_dev, ST_ACCEL_ENABLE_ALL_CHA=
+NNELS);
++       if (err < 0)
++               goto init_error;
++
++       st_accel_match_fs(&st_accel_sensors[adata->index],
++                                               adata->fullscale, &fs_out);
++       err =3D st_accel_set_fullscale(indio_dev, &fs_out);
++       if (err < 0)
++               goto init_error;
++
++       st_accel_match_odr(&st_accel_sensors[adata->index],
++                                                       adata->odr, &odr_ou=
+t);
++       err =3D st_accel_set_odr(indio_dev, &odr_out);
++       if (err < 0)
++               goto init_error;
++
++       err =3D st_accel_set_bdu(indio_dev,
++                               &st_accel_sensors[adata->index].bdu, true);
++
++init_error:
++       return err;
++}
++
++int st_accel_iio_probe(struct iio_dev *indio_dev, int irq)
++{
++       int err;
++       u8 wai;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       indio_dev->modes =3D INDIO_DIRECT_MODE;
++       indio_dev->info =3D &acc_info;
++
++       err =3D st_accel_get_wai_device(indio_dev,
++                                       ST_ACCEL_DEFAULT_WAI_ADDRESS, &wai)=
+;
++       if (err < 0)
++               goto st_accel_iio_probe_error;
++
++       err =3D st_accel_check_device_list(indio_dev, wai);
++       if (err < 0)
++               goto st_accel_iio_probe_error;
++
++       adata->multiread_bit =3D st_accel_sensors[adata->index].multi_read_=
+bit;
++       indio_dev->channels =3D st_accel_sensors[adata->index].ch;
++       indio_dev->num_channels =3D ST_ACCEL_NUMBER_ALL_CHANNELS;
++
++       adata->fullscale =3D ST_ACCEL_FS_AVL_2G;
++       adata->odr =3D 100;
++
++       err =3D st_accel_init_sensor(indio_dev);
++       if (err < 0)
++               goto st_accel_iio_probe_error;
++
++       err =3D st_accel_allocate_ring(indio_dev);
++       if (err < 0)
++               goto st_accel_iio_probe_error;
++
++       if (irq > 0) {
++               err =3D st_accel_probe_trigger(indio_dev, irq);
++               if (err < 0)
++                       goto acc_probe_trigger_error;
++       }
++
++       err =3D iio_device_register(indio_dev);
++       if (err)
++               goto iio_device_register_error;
++
++       return err;
++
++iio_device_register_error:
++       st_accel_remove_trigger(indio_dev, irq);
++acc_probe_trigger_error:
++       st_accel_deallocate_ring(indio_dev);
++st_accel_iio_probe_error:
++       return err;
++}
++EXPORT_SYMBOL(st_accel_iio_probe);
++
++void st_accel_iio_remove(struct iio_dev *indio_dev, int irq)
++{
++       iio_device_unregister(indio_dev);
++       st_accel_remove_trigger(indio_dev, irq);
++       st_accel_deallocate_ring(indio_dev);
++       iio_device_free(indio_dev);
++}
++EXPORT_SYMBOL(st_accel_iio_remove);
++
++MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics accelerometers driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/accel/st_accel_i2c.c
+b/drivers/iio/accel/st_accel_i2c.c
+new file mode 100644
+index 0000000..f4680a2
+--- /dev/null
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -0,0 +1,128 @@
++/*
++ * STMicroelectronics accelerometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++
++#include <linux/iio/accel/st_accel.h>
++
++#define ST_ACCEL_I2C_MULTIREAD                 0x80
++
++static int st_accel_i2c_read_byte(struct st_accel_data *adata,
++                                               u8 reg_addr, u8 *res_byte)
++{
++       int err;
++
++       err =3D i2c_smbus_read_byte_data(to_i2c_client(adata->dev), reg_add=
+r);
++       if (err < 0)
++               goto st_accel_i2c_read_byte_error;
++
++       *res_byte =3D err & 0xff;
++
++st_accel_i2c_read_byte_error:
++       return err;
++}
++
++static int st_accel_i2c_read_multiple_byte(struct st_accel_data *adata,
++                                               u8 reg_addr, int len, u8 *d=
+ata)
++{
++       if (adata->multiread_bit =3D=3D true)
++               reg_addr |=3D ST_ACCEL_I2C_MULTIREAD;
++
++       return i2c_smbus_read_i2c_block_data(to_i2c_client(adata->dev),
++                                                       reg_addr, len, data=
+);
++}
++
++static int st_accel_i2c_write_byte(struct st_accel_data *adata,
++                                                       u8 reg_addr, u8 dat=
+a)
++{
++       return i2c_smbus_write_byte_data(to_i2c_client(adata->dev),
++                                                               reg_addr, d=
+ata);
++}
++
++static int __devinit st_accel_i2c_probe(struct i2c_client *client,
++                               const struct i2c_device_id *id)
++{
++       struct iio_dev *indio_dev;
++       struct st_accel_data *adata;
++       int err;
++
++       indio_dev =3D iio_device_alloc(sizeof(*adata));
++       if (indio_dev =3D=3D NULL) {
++               err =3D -ENOMEM;
++               goto iio_device_alloc_error;
++       }
++
++       adata =3D iio_priv(indio_dev);
++       adata->dev =3D &client->dev;
++       i2c_set_clientdata(client, indio_dev);
++
++       indio_dev->dev.parent =3D &client->dev;
++       indio_dev->name =3D client->name;
++
++       adata->read_byte =3D st_accel_i2c_read_byte;
++       adata->write_byte =3D st_accel_i2c_write_byte;
++       adata->read_multiple_byte =3D st_accel_i2c_read_multiple_byte;
++
++       err =3D st_accel_iio_probe(indio_dev, client->irq);
++       if (err < 0)
++               goto acc_iio_default_error;
++
++       return 0;
++
++acc_iio_default_error:
++       iio_device_free(indio_dev);
++iio_device_alloc_error:
++       return err;
++}
++
++static int __devexit st_accel_i2c_remove(struct i2c_client *client)
++{
++       struct iio_dev *indio_dev =3D i2c_get_clientdata(client);
++       st_accel_iio_remove(indio_dev, client->irq);
++
++       return 0;
++}
++
++static const struct i2c_device_id st_accel_id_table[] =3D {
++       { LSM303DLH_ACCEL_DEV_NAME },
++       { LSM303DLHC_ACCEL_DEV_NAME },
++       { LIS3DH_ACCEL_DEV_NAME },
++       { LSM330D_ACCEL_DEV_NAME },
++       { LSM330DL_ACCEL_DEV_NAME },
++       { LSM330DLC_ACCEL_DEV_NAME },
++       { LSM303D_ACCEL_DEV_NAME },
++       { LSM9DS0_ACCEL_DEV_NAME },
++       { LIS331DLH_ACCEL_DEV_NAME },
++       { LSM303DL_ACCEL_DEV_NAME },
++       { LSM303DLM_ACCEL_DEV_NAME },
++       { LSM330_ACCEL_DEV_NAME },
++       {},
++};
++MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
++
++static struct i2c_driver st_accel_driver =3D {
++       .driver =3D {
++               .owner =3D THIS_MODULE,
++               .name =3D "st-accel-i2c",
++       },
++       .probe =3D st_accel_i2c_probe,
++       .remove =3D __devexit_p(st_accel_i2c_remove),
++       .id_table =3D st_accel_id_table,
++};
++module_i2c_driver(st_accel_driver);
++
++MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics accelerometers i2c driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/accel/st_accel_spi.c
+b/drivers/iio/accel/st_accel_spi.c
+new file mode 100644
+index 0000000..1f7f167
+--- /dev/null
++++ b/drivers/iio/accel/st_accel_spi.c
+@@ -0,0 +1,186 @@
++/*
++ * STMicroelectronics accelerometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/spi/spi.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++
++#include <linux/iio/accel/st_accel.h>
++
++
++#define ACC_SPI_READ           0x80;
++#define ACC_SPI_MULTIREAD      0xc0
++
++static int st_accel_spi_read_byte(struct st_accel_data *adata,
++                                               u8 reg_addr, u8 *res_byte)
++{
++       struct spi_message msg;
++       int err;
++       u8 tx;
++
++       struct spi_transfer xfers[] =3D {
++               {
++                       .tx_buf =3D &tx,
++                       .bits_per_word =3D 8,
++                       .len =3D 1,
++               },
++               {
++                       .rx_buf =3D res_byte,
++                       .bits_per_word =3D 8,
++                       .len =3D 1,
++               }
++       };
++
++       tx =3D reg_addr | ACC_SPI_READ;
++       spi_message_init(&msg);
++       spi_message_add_tail(&xfers[0], &msg);
++       spi_message_add_tail(&xfers[1], &msg);
++       err =3D spi_sync(to_spi_device(adata->dev), &msg);
++
++       return err;
++}
++
++static int st_accel_spi_read_multiple_byte(struct st_accel_data *adata,
++                                               u8 reg_addr, int len, u8 *d=
+ata)
++{
++       struct spi_message msg;
++       int err;
++       u8 tx;
++
++       struct spi_transfer xfers[] =3D {
++               {
++                       .tx_buf =3D &tx,
++                       .bits_per_word =3D 8,
++                       .len =3D 1,
++               },
++               {
++                       .rx_buf =3D data,
++                       .bits_per_word =3D 8,
++                       .len =3D len,
++               }
++       };
++
++       if (adata->multiread_bit =3D=3D true)
++               tx =3D reg_addr | ACC_SPI_MULTIREAD;
++       else
++               tx =3D reg_addr | ACC_SPI_READ;
++
++       spi_message_init(&msg);
++       spi_message_add_tail(&xfers[0], &msg);
++       spi_message_add_tail(&xfers[1], &msg);
++       err =3D spi_sync(to_spi_device(adata->dev), &msg);
++       if (err)
++               goto acc_spi_read_multiple_byte_error;
++
++       return len;
++
++acc_spi_read_multiple_byte_error:
++       return err;
++}
++
++static int st_accel_spi_write_byte(struct st_accel_data *adata,
++                                                       u8 reg_addr, u8 dat=
+a)
++{
++       struct spi_message msg;
++       int err;
++       u8 tx[2];
++
++       struct spi_transfer xfers =3D {
++               .tx_buf =3D tx,
++               .bits_per_word =3D 8,
++               .len =3D 2,
++       };
++
++       tx[0] =3D reg_addr;
++       tx[1] =3D data;
++       spi_message_init(&msg);
++       spi_message_add_tail(&xfers, &msg);
++       err =3D spi_sync(to_spi_device(adata->dev), &msg);
++
++       return err;
++}
++
++static int __devinit st_accel_spi_probe(struct spi_device *spi)
++{
++       struct iio_dev *indio_dev;
++       struct st_accel_data *adata;
++       int err;
++
++       indio_dev =3D iio_device_alloc(sizeof(*adata));
++       if (indio_dev =3D=3D NULL) {
++               err =3D -ENOMEM;
++               goto iio_device_alloc_error;
++       }
++
++       adata =3D iio_priv(indio_dev);
++       adata->dev =3D &spi->dev;
++       spi_set_drvdata(spi, indio_dev);
++
++       indio_dev->dev.parent =3D &spi->dev;
++       indio_dev->name =3D spi->modalias;
++
++       adata->read_byte =3D st_accel_spi_read_byte;
++       adata->write_byte =3D st_accel_spi_write_byte;
++       adata->read_multiple_byte =3D st_accel_spi_read_multiple_byte;
++
++       err =3D st_accel_iio_probe(indio_dev, spi->irq);
++       if (err < 0)
++               goto acc_iio_default_error;
++
++       return 0;
++
++acc_iio_default_error:
++       iio_device_free(indio_dev);
++iio_device_alloc_error:
++       return err;
++}
++
++static int __devexit st_accel_spi_remove(struct spi_device *spi)
++{
++       struct iio_dev *indio_dev =3D spi_get_drvdata(spi);
++       st_accel_iio_remove(indio_dev, spi->irq);
++
++       return 0;
++}
++
++static const struct spi_device_id st_accel_id_table[] =3D {
++       { LSM303DLH_ACCEL_DEV_NAME },
++       { LSM303DLHC_ACCEL_DEV_NAME },
++       { LIS3DH_ACCEL_DEV_NAME },
++       { LSM330D_ACCEL_DEV_NAME },
++       { LSM330DL_ACCEL_DEV_NAME },
++       { LSM330DLC_ACCEL_DEV_NAME },
++       { LSM303D_ACCEL_DEV_NAME },
++       { LSM9DS0_ACCEL_DEV_NAME },
++       { LIS331DLH_ACCEL_DEV_NAME },
++       { LSM303DL_ACCEL_DEV_NAME },
++       { LSM303DLM_ACCEL_DEV_NAME },
++       { LSM330_ACCEL_DEV_NAME },
++       {},
++};
++MODULE_DEVICE_TABLE(spi, st_accel_id_table);
++
++static struct spi_driver st_accel_driver =3D {
++       .driver =3D {
++               .owner =3D THIS_MODULE,
++               .name =3D "st-accel-spi",
++       },
++       .probe =3D st_accel_spi_probe,
++       .remove =3D __devexit_p(st_accel_spi_remove),
++       .id_table =3D st_accel_id_table,
++};
++module_spi_driver(st_accel_driver);
++
++MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics accelerometers spi driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/accel/st_accel_trigger.c
+b/drivers/iio/accel/st_accel_trigger.c
+new file mode 100644
+index 0000000..68813f7
+--- /dev/null
++++ b/drivers/iio/accel/st_accel_trigger.c
+@@ -0,0 +1,83 @@
++/*
++ * STMicroelectronics accelerometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/stat.h>
++#include <linux/interrupt.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++
++#include <linux/iio/accel/st_accel.h>
++
++static int st_accel_trig_acc_set_state(struct iio_trigger *trig, bool
+state)
++{
++       struct iio_dev *indio_dev =3D trig->private_data;
++       return st_accel_set_dataready_irq(indio_dev, state);
++}
++
++static const struct iio_trigger_ops st_accel_trigger_ops =3D {
++       .owner =3D THIS_MODULE,
++       .set_trigger_state =3D &st_accel_trig_acc_set_state,
++};
++
++int st_accel_probe_trigger(struct iio_dev *indio_dev, int irq)
++{
++       int err;
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       adata->trig =3D iio_trigger_alloc("%s-trigger", indio_dev->name);
++       if (adata->trig =3D=3D NULL) {
++               err =3D -ENOMEM;
++               dev_err(&indio_dev->dev, "failed to allocate iio trigger.\n=
+");
++               goto iio_trigger_alloc_error;
++       }
++
++       err =3D request_threaded_irq(irq,
++                       iio_trigger_generic_data_rdy_poll,
++                       NULL,
++                       IRQF_TRIGGER_RISING,
++                       adata->trig->name,
++                       adata->trig);
++       if (err)
++               goto request_irq_error;
++
++       adata->trig->private_data =3D indio_dev;
++       adata->trig->ops =3D &st_accel_trigger_ops;
++       adata->trig->dev.parent =3D adata->dev;
++
++       err =3D iio_trigger_register(adata->trig);
++       if (err < 0) {
++               dev_err(&indio_dev->dev, "failed to register iio trigger.\n=
+");
++               goto iio_trigger_register_error;
++       }
++       indio_dev->trig =3D adata->trig;
++
++       return 0;
++
++iio_trigger_register_error:
++       free_irq(irq, adata->trig);
++request_irq_error:
++       iio_trigger_free(adata->trig);
++iio_trigger_alloc_error:
++       return err;
++}
++EXPORT_SYMBOL(st_accel_probe_trigger);
++
++void st_accel_remove_trigger(struct iio_dev *indio_dev, int irq)
++{
++       struct st_accel_data *adata =3D iio_priv(indio_dev);
++
++       iio_trigger_unregister(adata->trig);
++       free_irq(irq, adata->trig);
++       iio_trigger_free(adata->trig);
++}
++EXPORT_SYMBOL(st_accel_remove_trigger);
+diff --git a/include/linux/iio/accel/st_accel.h
+b/include/linux/iio/accel/st_accel.h
+new file mode 100644
+index 0000000..9e0abd6
+--- /dev/null
++++ b/include/linux/iio/accel/st_accel.h
+@@ -0,0 +1,102 @@
++/*
++ * STMicroelectronics accelerometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ * v. 1.0.0
++ * Licensed under the GPL-2.
++ */
++
++#ifndef ST_ACCEL_H
++#define ST_ACCEL_H
++
++#define LSM303DLH_ACCEL_DEV_NAME       "lsm303dlh_accel"
++#define LSM303DLHC_ACCEL_DEV_NAME      "lsm303dlhc_accel"
++#define LIS3DH_ACCEL_DEV_NAME          "lis3dh"
++#define LSM330D_ACCEL_DEV_NAME         "lsm330d_accel"
++#define LSM330DL_ACCEL_DEV_NAME                "lsm330dl_accel"
++#define LSM330DLC_ACCEL_DEV_NAME       "lsm330dlc_accel"
++#define LSM303D_ACCEL_DEV_NAME         "lsm303d"
++#define LSM9DS0_ACCEL_DEV_NAME         "lsm9ds0"
++#define LIS331DLH_ACCEL_DEV_NAME       "lis331dlh"
++#define LSM303DL_ACCEL_DEV_NAME                "lsm303dl_accel"
++#define LSM303DLM_ACCEL_DEV_NAME       "lsm303dlm_accel"
++#define LSM330_ACCEL_DEV_NAME          "lsm330_accel"
++
++#define ST_ACCEL_NUMBER_ALL_CHANNELS   4
++#define ST_ACCEL_NUMBER_DATA_CHANNELS  3
++#define ST_ACCEL_BYTE_FOR_CHANNEL      2
++#define ST_ACCEL_SCAN_X                        0
++#define ST_ACCEL_SCAN_Y                        1
++#define ST_ACCEL_SCAN_Z                        2
++
++/**
++ * struct st_accel_data - ST accel device status
++ * @dev: Pointer to instance of struct device (I2C or SPI).
++ * @trig: The trigger in use by the core driver.
++ * @enabled: Status of the sensor (false->off, true->on).
++ * @multiread_bit: Use or not particular bit for [I2C/SPI] multiread.
++ * @index: Number used to point the sensor being used in the
++ *     st_accel_sensors struct.
++ * @buffer_data: Data used by buffer part.
++ * @fullscale: Maximum range of measure by the sensor.
++ * @gain: Sensitivity of the sensor [m/s^2/LSB].
++ * @odr: Output data rate of the sensor [Hz].
++ * @read_byte: Function used to read one byte.
++ * @write_byte: Function used to write one byte.
++ * @read_multiple_byte: Function used to read multiple byte.
++ */
++
++struct st_accel_data {
++       struct device *dev;
++       struct iio_trigger *trig;
++
++       bool enabled;
++       bool multiread_bit;
++
++       short index;
++
++       char *buffer_data;
++
++       unsigned int fullscale;
++       unsigned int gain;
++       unsigned int odr;
++
++       int (*read_byte) (struct st_accel_data *adata, u8 reg_addr,
++                                                               u8 *res_byt=
+e);
++       int (*write_byte) (struct st_accel_data *adata, u8 reg_addr, u8 dat=
+a);
++       int (*read_multiple_byte) (struct st_accel_data *adata, u8 reg_addr=
+,
++                                                       int len, u8 *data);
++};
++
++int st_accel_iio_probe(struct iio_dev *indio_dev, int irq);
++void st_accel_iio_remove(struct iio_dev *indio_dev, int irq);
++int st_accel_set_dataready_irq(struct iio_dev *indio_dev, bool enable);
++int st_accel_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable);
++
++#ifdef CONFIG_IIO_BUFFER
++int st_accel_probe_trigger(struct iio_dev *indio_dev, int irq);
++void st_accel_remove_trigger(struct iio_dev *indio_dev, int irq);
++int st_accel_allocate_ring(struct iio_dev *indio_dev);
++void st_accel_deallocate_ring(struct iio_dev *indio_dev);
++#else /* CONFIG_IIO_BUFFER */
++static inline int st_accel_probe_trigger(struct iio_dev *indio_dev, int
+irq)
++{
++       return 0;
++}
++static inline void st_accel_remove_trigger(struct iio_dev *indio_dev,
+int irq)
++{
++       return;
++}
++static inline int st_accel_allocate_ring(struct iio_dev *indio_dev)
++{
++       return 0;
++}
++static inline void st_accel_deallocate_ring(struct iio_dev *indio_dev)
++{
++       return;
++}
++#endif /* CONFIG_IIO_BUFFER */
++
++#endif /* ST_ACCEL_H */
+--
+1.7.0.4
