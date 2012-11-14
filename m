@@ -1,163 +1,98 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-201.synserver.de ([212.40.185.201]:1098 "EHLO
-	smtp-out-201.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753078Ab2KMN23 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Nov 2012 08:28:29 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 09/11] staging:iio:adis_lib: Use triggered buffer setup helper function
-Date: Tue, 13 Nov 2012 14:28:11 +0100
-Message-Id: <1352813293-17975-9-git-send-email-lars@metafoo.de>
-In-Reply-To: <1352813293-17975-1-git-send-email-lars@metafoo.de>
-References: <1352813293-17975-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <alban.bedel@avionic-design.de>
+Date: Wed, 14 Nov 2012 12:17:38 +0100
+From: Alban Bedel <alban.bedel@avionic-design.de>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: Roland Stigge <stigge@antcom.de>, linux-iio@vger.kernel.org, Lars-Peter
+ Clausen <lars@metafoo.de>, Alban Bedel <alban.bedel@avionic-design.de>
+Subject: Re: [PATCH] staging:iio:lpc32xx_adc: Add scale/offset support
+Message-ID: <20121114121738.05df9ef8@avionic-0020.adnet.avionic-design.de>
+In-Reply-To: <f16ac222-cb36-4ada-bd00-c9166ea94dd3@email.android.com>
+References: <1352306690-25841-1-git-send-email-alban.bedel@avionic-design.de>
+	<509B7BF0.5050704@antcom.de>
+	<509BD1D9.20100@jic23.retrosnub.co.uk>
+	<20121108175617.06429ab1@avionic-0020.adnet.avionic-design.de>
+	<f16ac222-cb36-4ada-bd00-c9166ea94dd3@email.android.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-Use the triggered buffer helper functions to setup and tear down the buffer for
-the adis library instead of doing this manually. This also means that we switch
-away from the deprecated sw_ring buffer and use the kfifo buffer now instead.
+On Thu, 08 Nov 2012 17:28:46 +0000
+Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/imu/Kconfig       |  3 +-
- drivers/staging/iio/imu/adis_buffer.c | 78 +++++------------------------------
- 2 files changed, 11 insertions(+), 70 deletions(-)
+> 
+> 
+> Alban Bedel <alban.bedel@avionic-design.de> wrote:
+> 
+> >On Thu, 08 Nov 2012 15:38:01 +0000
+> >Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
+> >
+> >> Why not do this with regulators?  That would give a more flexible
+> >> system and all that stuff is already well supported (if fixed
+> >voltages
+> >> are supplied then used fixed regulators).
+> >
+> >I agree that would probably be better. But for me that raise the
+> >question of having this stuff in the ADC driver at all. Most ADC just
+> >return a value from 0 to MAX and have no way to find out their supply
+> >voltage.
+>
+> A lot of iio drivers require a regulator for exactly this reason.  Either
+> it is fixed and can go in device tree or it isn't and can be queried
+> or set. 
+> 
+> > If we start with binding to regulators in the drivers we'll soon get a
+> > lots of non-flexible and duplicated code.
 
-diff --git a/drivers/staging/iio/imu/Kconfig b/drivers/staging/iio/imu/Kconfig
-index 89b9f25..2c564ed 100644
---- a/drivers/staging/iio/imu/Kconfig
-+++ b/drivers/staging/iio/imu/Kconfig
-@@ -23,8 +23,7 @@ config IIO_ADIS_LIB
- 
- config IIO_ADIS_LIB_BUFFER
- 	bool
--	select IIO_TRIGGER
--	select IIO_SW_RING
-+	select IIO_TRIGGERED_BUFFER
- 	help
- 	  A set of buffer helper functions for the Analog Devices ADIS* device
- 	  family.
-diff --git a/drivers/staging/iio/imu/adis_buffer.c b/drivers/staging/iio/imu/adis_buffer.c
-index 47bdea0..0fa8e80a 100644
---- a/drivers/staging/iio/imu/adis_buffer.c
-+++ b/drivers/staging/iio/imu/adis_buffer.c
-@@ -7,8 +7,8 @@
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/buffer.h>
--#include "../ring_sw.h"
- #include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
- 
- #include  "adis.h"
- 
-@@ -83,56 +83,6 @@ static irqreturn_t adis_trigger_handler(int irq, void *p)
- 	return IRQ_HANDLED;
- }
- 
--static const struct iio_buffer_setup_ops adis_buffer_setup_ops = {
--	.preenable = &iio_sw_buffer_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
--};
--
--static int adis_buffer_setup(struct iio_dev *indio_dev,
--	irqreturn_t (*trigger_handler)(int, void *))
--{
--	int ret = 0;
--	struct iio_buffer *buffer;
--
--	if (!trigger_handler)
--		trigger_handler = &adis_trigger_handler;
--
--	buffer = iio_sw_rb_allocate(indio_dev);
--	if (!buffer) {
--		ret = -ENOMEM;
--		return ret;
--	}
--
--	indio_dev->buffer = buffer;
--	indio_dev->setup_ops = &adis_buffer_setup_ops;
--
--	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
--						 trigger_handler,
--						 IRQF_ONESHOT,
--						 indio_dev,
--						 "%s_consumer%d",
--						 indio_dev->name,
--						 indio_dev->id);
--	if (indio_dev->pollfunc == NULL) {
--		ret = -ENOMEM;
--		goto error_iio_sw_rb_free;
--	}
--
--	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
--	return 0;
--
--error_iio_sw_rb_free:
--	iio_sw_rb_free(indio_dev->buffer);
--	return ret;
--}
--
--static void adis_buffer_cleanup(struct iio_dev *indio_dev)
--{
--	iio_dealloc_pollfunc(indio_dev->pollfunc);
--	iio_sw_rb_free(indio_dev->buffer);
--}
--
- /**
-  * adis_setup_buffer_and_trigger() - Sets up buffer and trigger for the adis device
-  * @adis: The adis device.
-@@ -154,30 +104,23 @@ int adis_setup_buffer_and_trigger(struct adis *adis, struct iio_dev *indio_dev,
- {
- 	int ret;
- 
--	ret = adis_buffer_setup(indio_dev, trigger_handler);
-+	if (!trigger_handler)
-+		trigger_handler = adis_trigger_handler;
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+		trigger_handler, NULL);
- 	if (ret)
- 		return ret;
- 
--	ret = iio_buffer_register(indio_dev,
--				  indio_dev->channels,
--				  indio_dev->num_channels);
--	if (ret) {
--		dev_err(&adis->spi->dev, "Failed to initialize buffer %d\n",
--			ret);
--		goto error_unreg_buffer_funcs;
--	}
--
- 	if (adis->spi->irq) {
- 		ret = adis_probe_trigger(adis, indio_dev);
- 		if (ret)
--			goto error_uninitialize_buffer;
-+			goto error_buffer_cleanup;
- 	}
- 	return 0;
- 
--error_uninitialize_buffer:
--	iio_buffer_unregister(indio_dev);
--error_unreg_buffer_funcs:
--	adis_buffer_cleanup(indio_dev);
-+error_buffer_cleanup:
-+	iio_triggered_buffer_cleanup(indio_dev);
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(adis_setup_buffer_and_trigger);
-@@ -194,7 +137,6 @@ void adis_cleanup_buffer_and_trigger(struct adis *adis,
- {
- 	if (adis->spi->irq)
- 		adis_remove_trigger(adis);
--	iio_buffer_unregister(indio_dev);
--	adis_buffer_cleanup(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
- }
- EXPORT_SYMBOL_GPL(adis_cleanup_buffer_and_trigger);
--- 
-1.8.0
+> Why? Duplication maybe but I don't see where inflexibility comes from..
+> duplication may mean some library functions would be useful.
 
+Inflexible because the drivers have to provide an information that they
+inherently don't have, and the consumers can't use relative values as
+they don't have access to the reference voltage.
+
+> >It would be a lot nicer if the ADC channels could be bound to a
+> >regulator and a transform function that compute a real world voltage
+> >out
+> >of:
+> > - The ADC value
+> > - The ADC range
+> > - The regulator representing the ADC reference voltage
+> >
+> >The simplest transform would be a linear curve with an optional offset,
+> >but any kind of transform would also be possible allowing to represent
+> >about any circuit that might be between the supply regulator and the
+> >ADC
+> >input.
+
+> This still sits in the realm of regulators.  Far as iio driver is concerned
+> there is a voltage on a pin.  What that means wrt to resulting scale
+> is device dependent.  It is an obscure use case where the reference
+> inputs are changing frequently..
+
+I was more thinking of an ADC measuring a value with a circuit that is
+not linear. But I now see that such thing should be part of the
+consumer not the ADC driver.
+
+> Now I can see an arguement for a suitable regulator which takes one voltage in
+> and does flexible transformations of it.  Also it can work the otherway with iio
+> driver requesting a different reference value.
+
+IMHO it would make much more sense if the ADC had nothing to do with
+the reference voltage. The only thing an ADC can reliably provide is
+the values it read and a function that convert a (value,ref_voltage)
+pair to a voltage. Anything else is IMHO beyond the scope of an ADC and
+shouldn't be part of the driver layer.
+
+> Now there may be a case for transforms on incoming adc channels as they are
+> inherently dynamic.  Right now we promise only to give what the adc saw not
+> some way before it on the otherside of weirdness.
+> 
+> So I am not yet convinced! Perhaps example configurations would help?
+> 
+> Remember that we deliberately leave as much data transforming to userspace as
+> possible. So far the only non linear stuff has been slow so it hasn't mattered.
+
+That I fully understand, what I don't get is why the ADC drivers are
+forced to provide an information they don't have.
+
+Alban
