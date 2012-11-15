@@ -1,93 +1,154 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57865 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758405Ab2K3OW6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Nov 2012 09:22:58 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 3/5] staging:iio:meter:ade7758 switch from sw_ring to kfifo
-Date: Fri, 30 Nov 2012 14:22:50 +0000
-Message-Id: <1354285372-11779-4-git-send-email-jic23@kernel.org>
-In-Reply-To: <1354285372-11779-1-git-send-email-jic23@kernel.org>
-References: <1354285372-11779-1-git-send-email-jic23@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/5] staging:iio:ad7298: Rework regulator handling
+Date: Thu, 15 Nov 2012 14:15:25 +0100
+Message-Id: <1352985328-24322-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1352985328-24322-1-git-send-email-lars@metafoo.de>
+References: <1352985328-24322-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-sw ring is going away so switch over to kfifo based buffer implementation.
-The only real change is that poll will return on some data there rather than
-buffer 50% full.
+Rework the regulator handling of the driver to match more closely what we do in
+other drivers. Make the regulator non-optional if a external reference is used.
+Also dispose the option of specifying the reference voltage via platform data.
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/meter/Kconfig        |  2 +-
- drivers/staging/iio/meter/ade7758_ring.c | 12 ++++++------
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/staging/iio/adc/ad7298.h      | 12 ++++------
+ drivers/staging/iio/adc/ad7298_core.c | 44 +++++++++++++++++++++--------------
+ 2 files changed, 31 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/staging/iio/meter/Kconfig b/drivers/staging/iio/meter/Kconfig
-index d290d27..e53274b 100644
---- a/drivers/staging/iio/meter/Kconfig
-+++ b/drivers/staging/iio/meter/Kconfig
-@@ -21,7 +21,7 @@ config ADE7758
- 	tristate "Analog Devices ADE7758 Poly Phase Multifunction Energy Metering IC Driver"
- 	depends on SPI
- 	select IIO_TRIGGER if IIO_BUFFER
--	select IIO_SW_RING if IIO_BUFFER
-+	select IIO_KFIFO_BUF if IIO_BUFFER
- 	help
- 	  Say yes here to build support for Analog Devices ADE7758 Polyphase
- 	  Multifunction Energy Metering IC with Per Phase Information Driver.
-diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
-index 4552a4c..b29e2d5 100644
---- a/drivers/staging/iio/meter/ade7758_ring.c
-+++ b/drivers/staging/iio/meter/ade7758_ring.c
-@@ -13,7 +13,7 @@
- #include <asm/unaligned.h>
+diff --git a/drivers/staging/iio/adc/ad7298.h b/drivers/staging/iio/adc/ad7298.h
+index 0ce9031..6523e01 100644
+--- a/drivers/staging/iio/adc/ad7298.h
++++ b/drivers/staging/iio/adc/ad7298.h
+@@ -26,19 +26,17 @@
  
- #include <linux/iio/iio.h>
--#include "../ring_sw.h"
-+#include <linux/iio/kfifo_buf.h>
- #include <linux/iio/trigger_consumer.h>
- #include "ade7758.h"
+ #define RES_MASK(bits)	((1 << (bits)) - 1)
  
-@@ -119,7 +119,7 @@ static const struct iio_buffer_setup_ops ade7758_ring_setup_ops = {
- void ade7758_unconfigure_ring(struct iio_dev *indio_dev)
+-/*
+- * TODO: struct ad7298_platform_data needs to go into include/linux/iio
+- */
+-
++/**
++ * struct ad7298_platform_data - Platform data for the ad7298 ADC driver
++ * @ext_ref: Whether to use an external reference voltage.
++ **/
+ struct ad7298_platform_data {
+-	/* External Vref voltage applied */
+-	u16				vref_mv;
++	bool ext_ref;
+ };
+ 
+ struct ad7298_state {
+ 	struct spi_device		*spi;
+ 	struct regulator		*reg;
+-	u16				int_vref_mv;
+ 	unsigned			ext_ref;
+ 	struct spi_transfer		ring_xfer[10];
+ 	struct spi_transfer		scan_single_xfer[3];
+diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
+index 67082ad..6dd696f 100644
+--- a/drivers/staging/iio/adc/ad7298_core.c
++++ b/drivers/staging/iio/adc/ad7298_core.c
+@@ -130,7 +130,7 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
  {
- 	iio_dealloc_pollfunc(indio_dev->pollfunc);
--	iio_sw_rb_free(indio_dev->buffer);
-+	iio_kfifo_free(indio_dev->buffer);
- }
+ 	int ret;
+ 	struct ad7298_state *st = iio_priv(indio_dev);
+-	unsigned int scale_uv;
++	int scale_mv;
  
- int ade7758_configure_ring(struct iio_dev *indio_dev)
-@@ -127,7 +127,7 @@ int ade7758_configure_ring(struct iio_dev *indio_dev)
- 	struct ade7758_state *st = iio_priv(indio_dev);
- 	int ret = 0;
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -155,10 +155,17 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->type) {
+ 		case IIO_VOLTAGE:
+-			scale_uv = (st->int_vref_mv * 1000) >> AD7298_BITS;
+-			*val =  scale_uv / 1000;
+-			*val2 = (scale_uv % 1000) * 1000;
+-			return IIO_VAL_INT_PLUS_MICRO;
++			if (st->ext_ref) {
++				scale_mv = regulator_get_voltage(st->reg);
++				if (scale_mv < 0)
++					return scale_mv;
++				scale_mv /= 1000;
++			} else {
++				scale_mv = AD7298_INTREF_mV;
++			}
++			*val =  scale_mv;
++			*val2 = chan->scan_type.realbits;
++			return IIO_VAL_FRACTIONAL_LOG2;
+ 		case IIO_TEMP:
+ 			*val =  1;
+ 			*val2 = 0;
+@@ -180,16 +187,23 @@ static int __devinit ad7298_probe(struct spi_device *spi)
+ {
+ 	struct ad7298_platform_data *pdata = spi->dev.platform_data;
+ 	struct ad7298_state *st;
+-	int ret;
+ 	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
++	int ret;
  
--	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
-+	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
- 	if (!indio_dev->buffer) {
- 		ret = -ENOMEM;
- 		return ret;
-@@ -143,7 +143,7 @@ int ade7758_configure_ring(struct iio_dev *indio_dev)
- 						 indio_dev->id);
- 	if (indio_dev->pollfunc == NULL) {
- 		ret = -ENOMEM;
--		goto error_iio_sw_rb_free;
-+		goto error_iio_kfifo_free;
- 	}
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
  
- 	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
-@@ -183,8 +183,8 @@ int ade7758_configure_ring(struct iio_dev *indio_dev)
+ 	st = iio_priv(indio_dev);
  
- 	return 0;
+-	st->reg = regulator_get(&spi->dev, "vcc");
+-	if (!IS_ERR(st->reg)) {
++	if (pdata && pdata->ext_ref)
++		st->ext_ref = AD7298_EXTREF;
++
++	if (st->ext_ref) {
++		st->reg = regulator_get(&spi->dev, "vref");
++		if (IS_ERR(st->reg)) {
++			ret = PTR_ERR(st->reg);
++			goto error_free;
++		}
+ 		ret = regulator_enable(st->reg);
+ 		if (ret)
+ 			goto error_put_reg;
+@@ -222,13 +236,6 @@ static int __devinit ad7298_probe(struct spi_device *spi)
+ 	spi_message_add_tail(&st->scan_single_xfer[1], &st->scan_single_msg);
+ 	spi_message_add_tail(&st->scan_single_xfer[2], &st->scan_single_msg);
  
--error_iio_sw_rb_free:
--	iio_sw_rb_free(indio_dev->buffer);
-+error_iio_kfifo_free:
-+	iio_kfifo_free(indio_dev->buffer);
+-	if (pdata && pdata->vref_mv) {
+-		st->int_vref_mv = pdata->vref_mv;
+-		st->ext_ref = AD7298_EXTREF;
+-	} else {
+-		st->int_vref_mv = AD7298_INTREF_mV;
+-	}
+-
+ 	ret = ad7298_register_ring_funcs_and_init(indio_dev);
+ 	if (ret)
+ 		goto error_disable_reg;
+@@ -242,11 +249,12 @@ static int __devinit ad7298_probe(struct spi_device *spi)
+ error_cleanup_ring:
+ 	ad7298_ring_cleanup(indio_dev);
+ error_disable_reg:
+-	if (!IS_ERR(st->reg))
++	if (st->ext_ref)
+ 		regulator_disable(st->reg);
+ error_put_reg:
+-	if (!IS_ERR(st->reg))
++	if (st->ext_ref)
+ 		regulator_put(st->reg);
++error_free:
+ 	iio_device_free(indio_dev);
+ 
  	return ret;
- }
+@@ -259,7 +267,7 @@ static int __devexit ad7298_remove(struct spi_device *spi)
  
+ 	iio_device_unregister(indio_dev);
+ 	ad7298_ring_cleanup(indio_dev);
+-	if (!IS_ERR(st->reg)) {
++	if (st->ext_ref) {
+ 		regulator_disable(st->reg);
+ 		regulator_put(st->reg);
+ 	}
 -- 
-1.8.0.1
-
+1.8.0
