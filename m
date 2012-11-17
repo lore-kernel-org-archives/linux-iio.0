@@ -1,135 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45202 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44625 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750742Ab2KQLTM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 17 Nov 2012 06:19:12 -0500
-Message-ID: <50A772AF.70006@kernel.org>
-Date: Sat, 17 Nov 2012 11:19:11 +0000
+	with ESMTP id S1752404Ab2KQKUl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 17 Nov 2012 05:20:41 -0500
+Message-ID: <50A764F4.3040008@kernel.org>
+Date: Sat, 17 Nov 2012 10:20:36 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	drivers@analog.com
-Subject: Re: [PATCH 3/5] staging:iio:ad7298: Fix temperature scale and offset
-References: <1352985328-24322-1-git-send-email-lars@metafoo.de> <1352985328-24322-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1352985328-24322-3-git-send-email-lars@metafoo.de>
+To: Wei Yongjun <weiyj.lk@gmail.com>
+CC: jic23@cam.ac.uk, gregkh@linuxfoundation.org,
+	grant.likely@secretlab.ca, rob.herring@calxeda.com,
+	yongjun_wei@trendmicro.com.cn, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, devicetree-discuss@lists.ozlabs.org
+Subject: Re: [PATCH -next] iio: isl29018: fix to return error or 0 in isl29018_write_raw()
+References: <CAPgLHd873xAvToL7reBbxmS-iEoJ9OqvjEoXf8RsG2esbTyo1A@mail.gmail.com>
+In-Reply-To: <CAPgLHd873xAvToL7reBbxmS-iEoJ9OqvjEoXf8RsG2esbTyo1A@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/15/2012 01:15 PM, Lars-Peter Clausen wrote:
-> The temperature scale and offset depend on the reference voltage, the current
-> formula used in the driver assumes a 2.5V reference. This patch modifies the
-> code to report the unprocessed value for the temperature channel "raw" property
-> and to provide proper "scale" and "offset" properties which depend on the
-> selected reference voltage.
-added to togreg branch of iio.git. Thanks.
+On 11/08/2012 09:05 AM, Wei Yongjun wrote:
+> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+> 
+> We had assigned the return value to 'ret' but ignored it when
+> return from isl29018_write_raw(), it's better to return 'ret'
+> instead of 0.
+> 
+> dpatch engine is used to auto generate this patch.
+> (https://github.com/weiyj/dpatch)
+> 
+Thanks - merged to togreg branch of
 
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+
+
+> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 > ---
->  drivers/staging/iio/adc/ad7298_core.c | 51 ++++++++++++++++-------------------
->  1 file changed, 23 insertions(+), 28 deletions(-)
+>  drivers/staging/iio/light/isl29018.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
-> index 6dd696f..b74b76f 100644
-> --- a/drivers/staging/iio/adc/ad7298_core.c
-> +++ b/drivers/staging/iio/adc/ad7298_core.c
-> @@ -45,7 +45,8 @@ static const struct iio_chan_spec ad7298_channels[] = {
->  		.indexed = 1,
->  		.channel = 0,
->  		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-> -		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-> +			IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
-> +			IIO_CHAN_INFO_OFFSET_SEPARATE_BIT,
->  		.address = AD7298_CH_TEMP,
->  		.scan_index = -1,
->  		.scan_type = {
-> @@ -80,7 +81,7 @@ static int ad7298_scan_direct(struct ad7298_state *st, unsigned ch)
->  
->  static int ad7298_scan_temp(struct ad7298_state *st, int *val)
->  {
-> -	int tmp, ret;
-> +	int ret;
->  	__be16 buf;
->  
->  	buf = cpu_to_be16(AD7298_WRITE | AD7298_TSENSE |
-> @@ -102,24 +103,24 @@ static int ad7298_scan_temp(struct ad7298_state *st, int *val)
->  	if (ret)
->  		return ret;
->  
-> -	tmp = be16_to_cpu(buf) & RES_MASK(AD7298_BITS);
-> +	*val = sign_extend32(be16_to_cpu(buf), 11);
->  
-> -	/*
-> -	 * One LSB of the ADC corresponds to 0.25 deg C.
-> -	 * The temperature reading is in 12-bit twos complement format
-> -	 */
-> +	return 0;
-> +}
-> +
-> +static int ad7298_get_ref_voltage(struct ad7298_state *st)
-> +{
-> +	int vref;
->  
-> -	if (tmp & (1 << (AD7298_BITS - 1))) {
-> -		tmp = (4096 - tmp) * 250;
-> -		tmp -= (2 * tmp);
-> +	if (st->ext_ref) {
-> +		vref = regulator_get_voltage(st->reg);
-> +		if (vref < 0)
-> +			return vref;
->  
-> +		return vref / 1000;
->  	} else {
-> -		tmp *= 250; /* temperature in milli degrees Celsius */
-> +		return AD7298_INTREF_mV;
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index 3b03f6f..1d5b294 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -356,7 +356,7 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
 >  	}
-> -
-> -	*val = tmp;
-> -
+>  	mutex_unlock(&chip->lock);
+>  
 > -	return 0;
+> +	return ret;
 >  }
 >  
->  static int ad7298_read_raw(struct iio_dev *indio_dev,
-> @@ -130,7 +131,6 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
->  {
->  	int ret;
->  	struct ad7298_state *st = iio_priv(indio_dev);
-> -	int scale_mv;
->  
->  	switch (m) {
->  	case IIO_CHAN_INFO_RAW:
-> @@ -155,24 +155,19 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_SCALE:
->  		switch (chan->type) {
->  		case IIO_VOLTAGE:
-> -			if (st->ext_ref) {
-> -				scale_mv = regulator_get_voltage(st->reg);
-> -				if (scale_mv < 0)
-> -					return scale_mv;
-> -				scale_mv /= 1000;
-> -			} else {
-> -				scale_mv = AD7298_INTREF_mV;
-> -			}
-> -			*val =  scale_mv;
-> +			*val = ad7298_get_ref_voltage(st);
->  			*val2 = chan->scan_type.realbits;
->  			return IIO_VAL_FRACTIONAL_LOG2;
->  		case IIO_TEMP:
-> -			*val =  1;
-> -			*val2 = 0;
-> -			return IIO_VAL_INT_PLUS_MICRO;
-> +			*val = ad7298_get_ref_voltage(st);
-> +			*val2 = 10;
-> +			return IIO_VAL_FRACTIONAL;
->  		default:
->  			return -EINVAL;
->  		}
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		*val = 1093 - 2732500 / ad7298_get_ref_voltage(st);
-> +		return IIO_VAL_INT;
->  	}
->  	return -EINVAL;
->  }
+>  static int isl29018_read_raw(struct iio_dev *indio_dev,
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
