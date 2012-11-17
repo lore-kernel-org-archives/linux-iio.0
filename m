@@ -1,579 +1,920 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from atlantis.wh2.tu-dresden.de ([141.30.228.39]:50449 "EHLO
-	atlantis.wh2.tu-dresden.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753563Ab2KEN4Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2012 08:56:25 -0500
-From: Lars Poeschel <larsi@wh2.tu-dresden.de>
-To: linus.walleij@linaro.org
-Cc: poeschel@lemonage.de, sameo@linux.intel.com,
-	linux-kernel@vger.kernel.org, jic23@cam.ac.uk, khali@linux-fr.org,
-	ben-linux@fluff.org, w.sang@pengutronix.de,
-	grant.likely@secretlab.ca, linux-iio@vger.kernel.org
-Subject: [PATCH v3 4/5] i2c: add viperboard i2c master driver
-Date: Mon,  5 Nov 2012 15:48:25 +0100
-Message-Id: <1352126906-4560-4-git-send-email-larsi@wh2.tu-dresden.de>
-In-Reply-To: <1352126906-4560-1-git-send-email-larsi@wh2.tu-dresden.de>
-References: <1352126906-4560-1-git-send-email-larsi@wh2.tu-dresden.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45001 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751243Ab2KQLB2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 17 Nov 2012 06:01:28 -0500
+Message-ID: <50A76E86.4060607@kernel.org>
+Date: Sat, 17 Nov 2012 11:01:26 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH 01/11] staging:iio: Add common ADIS library
+References: <1352813293-17975-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1352813293-17975-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Lars Poeschel <poeschel@lemonage.de>
+On 11/13/2012 01:28 PM, Lars-Peter Clausen wrote:
+> A lot of the devices from the ADIS family use the same methods for accessing
+> registers, sampling data and trigger handling. They also have similar register
+> layout for the control registers.
+> 
+> This patch adds a common library for these devices. The library implements
+> functions for reading and writing registers as buffer and trigger management. It
+> also provides a set functions for accessing the control registers and for
+> running the devices internal self-test. Having this common library code will
+> allow us to remove a lot of duplicated code.
 
-This adds the mfd cell to use the i2c part of the Nano River Technologies
-viperboard as i2c master.
+Excellent work. This series is exactly what I like to see. Nicely broken up with
+one step per patch.  I kept reading this and thinking 'why is he still using that?'
+only to notice the drivers you are working with are using the old methods / buffer,
+and that you change over to the more recent method with the cleanup patches at the end.
+(exactly as it should be done even if I am usually too lazy to do it myself sometimes ;)
 
-Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
----
- drivers/i2c/busses/Kconfig          |   10 +
- drivers/i2c/busses/Makefile         |    1 +
- drivers/i2c/busses/i2c-viperboard.c |  476 +++++++++++++++++++++++++++++++++++
- drivers/mfd/viperboard.c            |    3 +
- include/linux/mfd/viperboard.h      |    2 +
- 5 files changed, 492 insertions(+)
- create mode 100644 drivers/i2c/busses/i2c-viperboard.c
+So far all I've found is an 'a' where it should be an 'an'.  I think I'll just
+ignore that ;)
 
-diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index 65dd599..405a0fb 100644
---- a/drivers/i2c/busses/Kconfig
-+++ b/drivers/i2c/busses/Kconfig
-@@ -819,6 +819,16 @@ config I2C_TINY_USB
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called i2c-tiny-usb.
- 
-+config I2C_VIPERBOARD
-+	tristate "Viperboard I2C master support"
-+	depends on MFD_VIPERBOARD && USB
-+	help
-+	  Say yes here to access the I2C part of the Nano River
-+	  Technologies Viperboard as I2C master.
-+          See viperboard API specification and Nano
-+          River Tech's viperboard.h for detailed meaning
-+          of the module parameters.
-+
- comment "Other I2C/SMBus bus drivers"
- 
- config I2C_ACORN
-diff --git a/drivers/i2c/busses/Makefile b/drivers/i2c/busses/Makefile
-index 2d33d62..7e8befd 100644
---- a/drivers/i2c/busses/Makefile
-+++ b/drivers/i2c/busses/Makefile
-@@ -79,6 +79,7 @@ obj-$(CONFIG_I2C_PARPORT)	+= i2c-parport.o
- obj-$(CONFIG_I2C_PARPORT_LIGHT)	+= i2c-parport-light.o
- obj-$(CONFIG_I2C_TAOS_EVM)	+= i2c-taos-evm.o
- obj-$(CONFIG_I2C_TINY_USB)	+= i2c-tiny-usb.o
-+obj-$(CONFIG_I2C_VIPERBOARD)	+= i2c-viperboard.o
- 
- # Other I2C/SMBus bus drivers
- obj-$(CONFIG_I2C_ACORN)		+= i2c-acorn.o
-diff --git a/drivers/i2c/busses/i2c-viperboard.c b/drivers/i2c/busses/i2c-viperboard.c
-new file mode 100644
-index 0000000..6688d51
---- /dev/null
-+++ b/drivers/i2c/busses/i2c-viperboard.c
-@@ -0,0 +1,476 @@
-+/*
-+ *  Nano River Technologies viperboard i2c master driver
-+ *
-+ *  (C) 2012 by Lemonage GmbH
-+ *  Author: Lars Poeschel <poeschel@lemonage.de>
-+ *  All rights reserved.
-+ *
-+ *  This program is free software; you can redistribute  it and/or modify it
-+ *  under  the terms of  the GNU General  Public License as published by the
-+ *  Free Software Foundation;  either version 2 of the	License, or (at your
-+ *  option) any later version.
-+ *
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/errno.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+#include <linux/mutex.h>
-+#include <linux/platform_device.h>
-+
-+#include <linux/usb.h>
-+#include <linux/i2c.h>
-+
-+#include <linux/mfd/viperboard.h>
-+
-+struct vprbrd_i2c {
-+	struct i2c_adapter i2c;
-+};
-+
-+/* i2c bus frequency module parameter */
-+static unsigned char i2c_bus_param;
-+static unsigned int i2c_bus_freq = 100;
-+module_param(i2c_bus_freq, byte, 0);
-+MODULE_PARM_DESC(i2c_bus_freq,
-+	"i2c bus frequency in khz (default is 100) valid values: 10, 100, 200, 400, 1000, 3000, 6000");
-+
-+static int vprbrd_i2c_status(struct i2c_adapter *i2c,
-+	struct vprbrd_i2c_status *status, bool prev_error)
-+{
-+	u16 bytes_xfer;
-+	int ret;
-+	struct vprbrd *vb = (struct vprbrd *)i2c->algo_data;
-+
-+	/* check for protocol error */
-+	bytes_xfer = sizeof(struct vprbrd_i2c_status);
-+
-+	ret = usb_control_msg(vb->usb_dev, usb_rcvctrlpipe(vb->usb_dev, 0),
-+		VPRBRD_USB_REQUEST_I2C, VPRBRD_USB_TYPE_IN, 0x0000, 0x0000,
-+		status, bytes_xfer, VPRBRD_USB_TIMEOUT_MS);
-+
-+	if (ret != bytes_xfer)
-+		prev_error = true;
-+
-+	if (prev_error) {
-+		dev_err(&i2c->dev, "failure in usb communication\n");
-+		return -EREMOTEIO;
-+	}
-+
-+	dev_dbg(&i2c->dev, "  status = %d\n", status->status);
-+	if (status->status != 0x00) {
-+		dev_err(&i2c->dev, "failure: i2c protocol error\n");
-+		return -EPROTO;
-+	}
-+	return 0;
-+}
-+
-+static int vprbrd_i2c_receive(struct usb_device *usb_dev,
-+	struct vprbrd_i2c_read_msg *rmsg, int bytes_xfer)
-+{
-+	int ret, bytes_actual;
-+	int error = 0;
-+
-+	/* send the read request */
-+	ret = usb_bulk_msg(usb_dev,
-+		usb_sndbulkpipe(usb_dev, VPRBRD_EP_OUT), rmsg,
-+		sizeof(struct vprbrd_i2c_read_hdr), &bytes_actual,
-+		VPRBRD_USB_TIMEOUT_MS);
-+
-+	if ((ret < 0)
-+		|| (bytes_actual != sizeof(struct vprbrd_i2c_read_hdr))) {
-+		dev_err(&usb_dev->dev, "failure transmitting usb\n");
-+		error = -EREMOTEIO;
-+	}
-+
-+	/* read the actual data */
-+	ret = usb_bulk_msg(usb_dev,
-+		usb_rcvbulkpipe(usb_dev, VPRBRD_EP_IN), rmsg,
-+		bytes_xfer, &bytes_actual, VPRBRD_USB_TIMEOUT_MS);
-+
-+	if ((ret < 0) || (bytes_xfer != bytes_actual)) {
-+		dev_err(&usb_dev->dev, "failure receiving usb\n");
-+		error = -EREMOTEIO;
-+	}
-+	return error;
-+}
-+
-+static int vprbrd_i2c_addr(struct usb_device *usb_dev,
-+	struct vprbrd_i2c_addr_msg *amsg)
-+{
-+	int ret, bytes_actual;
-+
-+	ret = usb_bulk_msg(usb_dev,
-+		usb_sndbulkpipe(usb_dev, VPRBRD_EP_OUT), amsg,
-+		sizeof(struct vprbrd_i2c_addr_msg), &bytes_actual,
-+		VPRBRD_USB_TIMEOUT_MS);
-+
-+	if ((ret < 0) ||
-+			(sizeof(struct vprbrd_i2c_addr_msg) != bytes_actual)) {
-+		dev_err(&usb_dev->dev, "failure transmitting usb\n");
-+		return -EREMOTEIO;
-+	}
-+	return 0;
-+}
-+
-+static int vprbrd_i2c_read(struct vprbrd *vb, struct i2c_msg *msg)
-+{
-+	int ret;
-+	u16 remain_len, bytes_xfer, len1, len2,
-+		start = 0x0000;
-+	struct vprbrd_i2c_read_msg *rmsg =
-+		(struct vprbrd_i2c_read_msg *)vb->buf;
-+
-+	remain_len = msg->len;
-+	rmsg->header.cmd = VPRBRD_I2C_CMD_READ;
-+	while (remain_len > 0) {
-+		rmsg->header.addr = cpu_to_le16(start + 0x4000);
-+		if (remain_len <= 255) {
-+			len1 = remain_len;
-+			len2 = 0x00;
-+			rmsg->header.len0 = remain_len;
-+			rmsg->header.len1 = 0x00;
-+			rmsg->header.len2 = 0x00;
-+			rmsg->header.len3 = 0x00;
-+			rmsg->header.len4 = 0x00;
-+			rmsg->header.len5 = 0x00;
-+			remain_len = 0;
-+		} else if (remain_len <= 510) {
-+			len1 = remain_len;
-+			len2 = 0x00;
-+			rmsg->header.len0 = remain_len - 255;
-+			rmsg->header.len1 = 0xff;
-+			rmsg->header.len2 = 0x00;
-+			rmsg->header.len3 = 0x00;
-+			rmsg->header.len4 = 0x00;
-+			rmsg->header.len5 = 0x00;
-+			remain_len = 0;
-+		} else if (remain_len <= 512) {
-+			len1 = remain_len;
-+			len2 = 0x00;
-+			rmsg->header.len0 = remain_len - 510;
-+			rmsg->header.len1 = 0xff;
-+			rmsg->header.len2 = 0xff;
-+			rmsg->header.len3 = 0x00;
-+			rmsg->header.len4 = 0x00;
-+			rmsg->header.len5 = 0x00;
-+			remain_len = 0;
-+		} else if (remain_len <= 767) {
-+			len1 = 512;
-+			len2 = remain_len - 512;
-+			rmsg->header.len0 = 0x02;
-+			rmsg->header.len1 = 0xff;
-+			rmsg->header.len2 = 0xff;
-+			rmsg->header.len3 = remain_len - 512;
-+			rmsg->header.len4 = 0x00;
-+			rmsg->header.len5 = 0x00;
-+			bytes_xfer = remain_len;
-+			remain_len = 0;
-+		} else if (remain_len <= 1022) {
-+			len1 = 512;
-+			len2 = remain_len - 512;
-+			rmsg->header.len0 = 0x02;
-+			rmsg->header.len1 = 0xff;
-+			rmsg->header.len2 = 0xff;
-+			rmsg->header.len3 = remain_len - 767;
-+			rmsg->header.len4 = 0xff;
-+			rmsg->header.len5 = 0x00;
-+			remain_len = 0;
-+		} else if (remain_len <= 1024) {
-+			len1 = 512;
-+			len2 = remain_len - 512;
-+			rmsg->header.len0 = 0x02;
-+			rmsg->header.len1 = 0xff;
-+			rmsg->header.len2 = 0xff;
-+			rmsg->header.len3 = remain_len - 1022;
-+			rmsg->header.len4 = 0xff;
-+			rmsg->header.len5 = 0xff;
-+			remain_len = 0;
-+		} else {
-+			len1 = 512;
-+			len2 = 512;
-+			rmsg->header.len0 = 0x02;
-+			rmsg->header.len1 = 0xff;
-+			rmsg->header.len2 = 0xff;
-+			rmsg->header.len3 = 0x02;
-+			rmsg->header.len4 = 0xff;
-+			rmsg->header.len5 = 0xff;
-+			remain_len -= 1024;
-+			start += 1024;
-+		}
-+		rmsg->header.tf1 = cpu_to_le16(len1);
-+		rmsg->header.tf2 = cpu_to_le16(len2);
-+
-+		/* first read transfer */
-+		ret = vprbrd_i2c_receive(vb->usb_dev, rmsg, len1);
-+		if (ret < 0)
-+			return ret;
-+		/* copy the received data */
-+		memcpy(msg->buf + start, rmsg, len1);
-+
-+		/* second read transfer if neccessary */
-+		if (len2 > 0) {
-+			ret = vprbrd_i2c_receive(vb->usb_dev, rmsg, len2);
-+			if (ret < 0)
-+				return ret;
-+			/* copy the received data */
-+			memcpy(msg->buf + start + 512, rmsg, len2);
-+		}
-+	}
-+	return 0;
-+}
-+
-+static int vprbrd_i2c_write(struct vprbrd *vb, struct i2c_msg *msg)
-+{
-+	int ret, bytes_actual;
-+	u16 remain_len, bytes_xfer,
-+		start = 0x0000;
-+	struct vprbrd_i2c_write_msg *wmsg =
-+		(struct vprbrd_i2c_write_msg *)vb->buf;
-+
-+	remain_len = msg->len;
-+	wmsg->header.cmd = VPRBRD_I2C_CMD_WRITE;
-+	wmsg->header.last = 0x00;
-+	wmsg->header.chan = 0x00;
-+	wmsg->header.spi = 0x0000;
-+	while (remain_len > 0) {
-+		wmsg->header.addr = cpu_to_le16(start + 0x4000);
-+		if (remain_len > 503) {
-+			wmsg->header.len1 = 0xff;
-+			wmsg->header.len2 = 0xf8;
-+			remain_len -= 503;
-+			bytes_xfer = 503 + sizeof(struct vprbrd_i2c_write_hdr);
-+			start += 503;
-+		} else if (remain_len > 255) {
-+			wmsg->header.len1 = 0xff;
-+			wmsg->header.len2 = (remain_len - 255);
-+			bytes_xfer = remain_len +
-+				sizeof(struct vprbrd_i2c_write_hdr);
-+			remain_len = 0;
-+		} else {
-+			wmsg->header.len1 = remain_len;
-+			wmsg->header.len2 = 0x00;
-+			bytes_xfer = remain_len +
-+				sizeof(struct vprbrd_i2c_write_hdr);
-+			remain_len = 0;
-+		}
-+		memcpy(wmsg->data, msg->buf + start,
-+			bytes_xfer - sizeof(struct vprbrd_i2c_write_hdr));
-+
-+		ret = usb_bulk_msg(vb->usb_dev,
-+			usb_sndbulkpipe(vb->usb_dev,
-+			VPRBRD_EP_OUT), wmsg,
-+			bytes_xfer, &bytes_actual, VPRBRD_USB_TIMEOUT_MS);
-+		if ((ret < 0) || (bytes_xfer != bytes_actual))
-+			return -EREMOTEIO;
-+	}
-+	return 0;
-+}
-+
-+static int vprbrd_i2c_xfer(struct i2c_adapter *i2c, struct i2c_msg *msgs,
-+		int num)
-+{
-+	struct i2c_msg *pmsg;
-+	int i, ret,
-+		error = 0;
-+	struct vprbrd *vb = (struct vprbrd *)i2c->algo_data;
-+	struct vprbrd_i2c_addr_msg *amsg =
-+		(struct vprbrd_i2c_addr_msg *)vb->buf;
-+	struct vprbrd_i2c_status *smsg = (struct vprbrd_i2c_status *)vb->buf;
-+
-+	dev_dbg(&i2c->dev, "master xfer %d messages:\n", num);
-+
-+	for (i = 0 ; i < num ; i++) {
-+		pmsg = &msgs[i];
-+
-+		dev_dbg(&i2c->dev,
-+			"  %d: %s (flags %d) %d bytes to 0x%02x\n",
-+			i, pmsg->flags & I2C_M_RD ? "read" : "write",
-+			pmsg->flags, pmsg->len, pmsg->addr);
-+
-+		/* msgs longer than 2048 bytes are not supported by adapter */
-+		if (pmsg->len > 2048)
-+			return -EINVAL;
-+
-+		mutex_lock(&vb->lock);
-+		/* directly send the message */
-+		if (pmsg->flags & I2C_M_RD) {
-+			/* read data */
-+			amsg->cmd = VPRBRD_I2C_CMD_ADDR;
-+			amsg->unknown2 = 0x00;
-+			amsg->unknown3 = 0x00;
-+			amsg->addr = pmsg->addr;
-+			amsg->unknown1 = 0x01;
-+			amsg->len = cpu_to_le16(pmsg->len);
-+			/* send the addr and len, we're interested to board */
-+			ret = vprbrd_i2c_addr(vb->usb_dev, amsg);
-+			if (ret < 0)
-+				error = ret;
-+
-+			ret = vprbrd_i2c_read(vb, pmsg);
-+			if (ret < 0)
-+				error = ret;
-+
-+			ret = vprbrd_i2c_status(i2c, smsg, error);
-+			if (ret < 0)
-+				error = ret;
-+			/* in case of protocol error, return the error */
-+			if (error < 0)
-+				goto error;
-+		} else {
-+			/* write data */
-+			ret = vprbrd_i2c_write(vb, pmsg);
-+
-+			amsg->cmd = VPRBRD_I2C_CMD_ADDR;
-+			amsg->unknown2 = 0x00;
-+			amsg->unknown3 = 0x00;
-+			amsg->addr = pmsg->addr;
-+			amsg->unknown1 = 0x00;
-+			amsg->len = cpu_to_le16(pmsg->len);
-+			/* send the addr, the data goes to to board */
-+			ret = vprbrd_i2c_addr(vb->usb_dev, amsg);
-+			if (ret < 0)
-+				error = ret;
-+
-+			ret = vprbrd_i2c_status(i2c, smsg, error);
-+			if (ret < 0)
-+				error = ret;
-+
-+			if (error < 0)
-+				goto error;
-+		}
-+		mutex_unlock(&vb->lock);
-+	}
-+	return 0;
-+error:
-+	mutex_unlock(&vb->lock);
-+	return error;
-+}
-+
-+static u32 vprbrd_i2c_func(struct i2c_adapter *i2c)
-+{
-+	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL;
-+}
-+
-+/* This is the actual algorithm we define */
-+static const struct i2c_algorithm vprbrd_algorithm = {
-+	.master_xfer	= vprbrd_i2c_xfer,
-+	.functionality	= vprbrd_i2c_func,
-+};
-+
-+static int __devinit vprbrd_i2c_probe(struct platform_device *pdev)
-+{
-+	struct vprbrd *vb = dev_get_drvdata(pdev->dev.parent);
-+	struct vprbrd_i2c *vb_i2c;
-+	int ret;
-+	int pipe;
-+
-+	vb_i2c = kzalloc(sizeof(*vb_i2c), GFP_KERNEL);
-+	if (vb_i2c == NULL)
-+		return -ENOMEM;
-+
-+	/* setup i2c adapter description */
-+	vb_i2c->i2c.owner = THIS_MODULE;
-+	vb_i2c->i2c.class = I2C_CLASS_HWMON;
-+	vb_i2c->i2c.algo = &vprbrd_algorithm;
-+	vb_i2c->i2c.algo_data = vb;
-+	snprintf(vb_i2c->i2c.name, sizeof(vb_i2c->i2c.name),
-+		 "viperboard at bus %03d device %03d",
-+		 vb->usb_dev->bus->busnum, vb->usb_dev->devnum);
-+
-+	/* setting the bus frequency */
-+	if ((i2c_bus_param <= VPRBRD_I2C_FREQ_10KHZ)
-+		&& (i2c_bus_param >= VPRBRD_I2C_FREQ_6MHZ)) {
-+		pipe = usb_sndctrlpipe(vb->usb_dev, 0);
-+		ret = usb_control_msg(vb->usb_dev, pipe,
-+			VPRBRD_USB_REQUEST_I2C_FREQ, VPRBRD_USB_TYPE_OUT,
-+			0x0000, 0x0000, &i2c_bus_param, 1,
-+			VPRBRD_USB_TIMEOUT_MS);
-+	    if (ret != 1) {
-+		dev_err(&vb_i2c->i2c.dev,
-+			"failure setting i2c_bus_freq to %d\n", i2c_bus_freq);
-+		ret = -EIO;
-+		goto error;
-+	    }
-+	} else {
-+		dev_err(&vb_i2c->i2c.dev,
-+			"invalid i2c_bus_freq setting:%d\n", i2c_bus_freq);
-+		ret = -EIO;
-+		goto error;
-+	}
-+
-+	vb_i2c->i2c.dev.parent = &pdev->dev;
-+
-+	/* attach to i2c layer */
-+	i2c_add_adapter(&vb_i2c->i2c);
-+
-+	platform_set_drvdata(pdev, vb_i2c);
-+
-+	return 0;
-+
-+error:
-+	kfree(vb_i2c);
-+	return ret;
-+}
-+
-+static int __devexit vprbrd_i2c_remove(struct platform_device *pdev)
-+{
-+	struct vprbrd_i2c *vb_i2c = platform_get_drvdata(pdev);
-+	int ret;
-+
-+	ret = i2c_del_adapter(&vb_i2c->i2c);
-+
-+	return ret;
-+}
-+
-+static struct platform_driver vprbrd_i2c_driver = {
-+	.driver.name	= "viperboard-i2c",
-+	.driver.owner	= THIS_MODULE,
-+	.probe		= vprbrd_i2c_probe,
-+	.remove		= __devexit_p(vprbrd_i2c_remove),
-+};
-+
-+static int __init vprbrd_i2c_init(void)
-+{
-+	switch (i2c_bus_freq) {
-+	case 6000:
-+		i2c_bus_param = VPRBRD_I2C_FREQ_6MHZ;
-+		break;
-+	case 3000:
-+		i2c_bus_param = VPRBRD_I2C_FREQ_3MHZ;
-+		break;
-+	case 1000:
-+		i2c_bus_param = VPRBRD_I2C_FREQ_1MHZ;
-+		break;
-+	case 400:
-+		i2c_bus_param = VPRBRD_I2C_FREQ_400KHZ;
-+		break;
-+	case 200:
-+		i2c_bus_param = VPRBRD_I2C_FREQ_200KHZ;
-+		break;
-+	case 100:
-+		i2c_bus_param = VPRBRD_I2C_FREQ_100KHZ;
-+		break;
-+	case 10:
-+		i2c_bus_param = VPRBRD_I2C_FREQ_10KHZ;
-+		break;
-+	default:
-+		pr_warn("invalid i2c_bus_freq (%d)\n", i2c_bus_freq);
-+		i2c_bus_param = VPRBRD_I2C_FREQ_100KHZ;
-+	}
-+
-+	return platform_driver_register(&vprbrd_i2c_driver);
-+}
-+subsys_initcall(vprbrd_i2c_init);
-+
-+static void __exit vprbrd_i2c_exit(void)
-+{
-+	platform_driver_unregister(&vprbrd_i2c_driver);
-+}
-+module_exit(vprbrd_i2c_exit);
-+
-+MODULE_AUTHOR("Lars Poeschel <poeschel@lemonage.de>");
-+MODULE_DESCRIPTION("I2C master driver for Nano River Techs Viperboard");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:viperboard-i2c");
-diff --git a/drivers/mfd/viperboard.c b/drivers/mfd/viperboard.c
-index 4b2ffbf..a7b5b34 100644
---- a/drivers/mfd/viperboard.c
-+++ b/drivers/mfd/viperboard.c
-@@ -41,6 +41,9 @@ static struct mfd_cell vprbrd_devs[] = {
- 	{
- 		.name = "viperboard-gpio",
- 	},
-+	{
-+		.name = "viperboard-i2c",
-+	},
- };
- 
- static int vprbrd_probe(struct usb_interface *interface,
-diff --git a/include/linux/mfd/viperboard.h b/include/linux/mfd/viperboard.h
-index 42d339f..ef78514 100644
---- a/include/linux/mfd/viperboard.h
-+++ b/include/linux/mfd/viperboard.h
-@@ -42,6 +42,8 @@
- #define VPRBRD_USB_TYPE_OUT	    0x40
- #define VPRBRD_USB_TYPE_IN	    0xc0
- #define VPRBRD_USB_TIMEOUT_MS       100
-+#define VPRBRD_USB_REQUEST_I2C_FREQ 0xe6
-+#define VPRBRD_USB_REQUEST_I2C      0xe9
- #define VPRBRD_USB_REQUEST_MAJOR    0xea
- #define VPRBRD_USB_REQUEST_MINOR    0xeb
- #define VPRBRD_USB_REQUEST_GPIOA    0xed
--- 
-1.7.10.4
 
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+>  drivers/staging/iio/imu/Kconfig        |  13 ++
+>  drivers/staging/iio/imu/Makefile       |   5 +
+>  drivers/staging/iio/imu/adis.c         | 338 +++++++++++++++++++++++++++++++++
+>  drivers/staging/iio/imu/adis.h         | 178 +++++++++++++++++
+>  drivers/staging/iio/imu/adis_buffer.c  | 200 +++++++++++++++++++
+>  drivers/staging/iio/imu/adis_trigger.c |  90 +++++++++
+>  6 files changed, 824 insertions(+)
+>  create mode 100644 drivers/staging/iio/imu/adis.c
+>  create mode 100644 drivers/staging/iio/imu/adis.h
+>  create mode 100644 drivers/staging/iio/imu/adis_buffer.c
+>  create mode 100644 drivers/staging/iio/imu/adis_trigger.c
+> 
+> diff --git a/drivers/staging/iio/imu/Kconfig b/drivers/staging/iio/imu/Kconfig
+> index 2c2f47d..89b9f25 100644
+> --- a/drivers/staging/iio/imu/Kconfig
+> +++ b/drivers/staging/iio/imu/Kconfig
+> @@ -15,3 +15,16 @@ config ADIS16400
+>  	  (adis16400 series also have magnetometers).
+>  
+>  endmenu
+> +
+> +config IIO_ADIS_LIB
+> +	tristate
+> +	help
+> +	  A set of IO helper functions for the Analog Devices ADIS* device family.
+> +
+> +config IIO_ADIS_LIB_BUFFER
+> +	bool
+> +	select IIO_TRIGGER
+> +	select IIO_SW_RING
+> +	help
+> +	  A set of buffer helper functions for the Analog Devices ADIS* device
+> +	  family.
+> diff --git a/drivers/staging/iio/imu/Makefile b/drivers/staging/iio/imu/Makefile
+> index 3400a13..65dafba 100644
+> --- a/drivers/staging/iio/imu/Makefile
+> +++ b/drivers/staging/iio/imu/Makefile
+> @@ -5,3 +5,8 @@
+>  adis16400-y             := adis16400_core.o
+>  adis16400-$(CONFIG_IIO_BUFFER) += adis16400_ring.o adis16400_trigger.o
+>  obj-$(CONFIG_ADIS16400) += adis16400.o
+> +
+> +adis_lib-y += adis.o
+> +adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_trigger.o
+> +adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_buffer.o
+> +obj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o
+> diff --git a/drivers/staging/iio/imu/adis.c b/drivers/staging/iio/imu/adis.c
+> new file mode 100644
+> index 0000000..0bd21022
+> --- /dev/null
+> +++ b/drivers/staging/iio/imu/adis.c
+> @@ -0,0 +1,338 @@
+> +/*
+> + * Common library for ADIS16XXX devices
+> + *
+> + * Copyright 2012 Analog Devices Inc.
+> + *   Author: Lars-Peter Clausen <lars@metafoo.de>
+> + *
+> + * Licensed under the GPL-2 or later.
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/mutex.h>
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/module.h>
+> +#include <asm/unaligned.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/buffer.h>
+> +
+> +#include "adis.h"
+> +
+> +#define ADIS_MSC_CTRL_DATA_RDY_EN	BIT(2)
+> +#define ADIS_MSC_CTRL_DATA_RDY_POL_HIGH	BIT(1)
+> +#define ADIS_MSC_CTRL_DATA_RDY_DIO2	BIT(0)
+> +#define ADIS_GLOB_CMD_SW_RESET		BIT(7)
+> +
+> +/**
+> + * adis_write_reg_8() - Write single byte to a register
+> + * @adis: The adis device
+> + * @reg: The address of the register to be written
+> + * @val: The value to write
+> + */
+> +int adis_write_reg_8(struct adis *adis, unsigned int reg, uint8_t val)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&adis->txrx_lock);
+> +	adis->tx[0] = ADIS_WRITE_REG(reg);
+> +	adis->tx[1] = val;
+> +
+> +	ret = spi_write(adis->spi, adis->tx, 2);
+> +	mutex_unlock(&adis->txrx_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(adis_write_reg_8);
+> +
+> +/**
+> + * adis_write_reg_16() - Write 2 bytes to a pair of registers
+> + * @adis: The adis device
+> + * @reg: The address of the lower of the two registers
+> + * @val: Value to be written
+> + */
+> +int adis_write_reg_16(struct adis *adis, unsigned int reg, uint16_t value)
+> +{
+> +	int ret;
+> +	struct spi_message msg;
+> +	struct spi_transfer xfers[] = {
+> +		{
+> +			.tx_buf = adis->tx,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+> +			.cs_change = 1,
+> +			.delay_usecs = adis->data->write_delay,
+> +		}, {
+> +			.tx_buf = adis->tx + 2,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+> +			.delay_usecs = adis->data->write_delay,
+> +		},
+> +	};
+> +
+> +	mutex_lock(&adis->txrx_lock);
+> +	adis->tx[0] = ADIS_WRITE_REG(reg);
+> +	adis->tx[1] = value & 0xff;
+> +	adis->tx[2] = ADIS_WRITE_REG(reg + 1);
+> +	adis->tx[3] = (value >> 8) & 0xff;
+> +
+> +	spi_message_init(&msg);
+> +	spi_message_add_tail(&xfers[0], &msg);
+> +	spi_message_add_tail(&xfers[1], &msg);
+> +	ret = spi_sync(adis->spi, &msg);
+> +	mutex_unlock(&adis->txrx_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(adis_write_reg_16);
+> +
+> +/**
+> + * adis_read_reg_16() - read 2 bytes from a 16-bit register
+> + * @adis: The adis device
+> + * @reg: The address of the lower of the two registers
+> + * @val: The value read back from the device
+> + */
+> +int adis_read_reg_16(struct adis *adis, unsigned int reg, uint16_t *val)
+> +{
+> +	struct spi_message msg;
+> +	int ret;
+> +	struct spi_transfer xfers[] = {
+> +		{
+> +			.tx_buf = adis->tx,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+> +			.cs_change = 1,
+> +			.delay_usecs = adis->data->read_delay,
+> +		}, {
+> +			.rx_buf = adis->rx,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+> +			.delay_usecs = adis->data->read_delay,
+> +		},
+> +	};
+> +
+> +	mutex_lock(&adis->txrx_lock);
+> +	adis->tx[0] = ADIS_READ_REG(reg);
+> +	adis->tx[1] = 0;
+> +
+> +	spi_message_init(&msg);
+> +	spi_message_add_tail(&xfers[0], &msg);
+> +	spi_message_add_tail(&xfers[1], &msg);
+> +	ret = spi_sync(adis->spi, &msg);
+> +	if (ret) {
+> +		dev_err(&adis->spi->dev, "Failed to read 16 bit register 0x%02X: %d\n",
+> +				reg, ret);
+> +		goto error_ret;
+> +	}
+> +	*val = get_unaligned_be16(adis->rx);
+> +
+> +error_ret:
+> +	mutex_unlock(&adis->txrx_lock);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(adis_read_reg_16);
+> +
+> +/**
+> + * adis_enable_irq() - Enable or disable data ready IRQ
+> + * @adis: The adis device
+> + * @enable: Whether to enable the IRQ
+> + *
+> + * Returns 0 on success, negative error code otherwise
+> + */
+> +int adis_enable_irq(struct adis *adis, bool enable)
+> +{
+> +	int ret = 0;
+> +	uint16_t msc;
+> +
+> +	ret = adis_read_reg_16(adis, adis->data->msc_ctrl_reg, &msc);
+> +	if (ret)
+> +		goto error_ret;
+> +
+> +	msc |= ADIS_MSC_CTRL_DATA_RDY_POL_HIGH;
+> +	msc &= ~ADIS_MSC_CTRL_DATA_RDY_DIO2;
+> +	if (enable)
+> +		msc |= ADIS_MSC_CTRL_DATA_RDY_EN;
+> +	else
+> +		msc &= ~ADIS_MSC_CTRL_DATA_RDY_EN;
+> +
+> +	ret = adis_write_reg_16(adis, adis->data->msc_ctrl_reg, msc);
+> +
+> +error_ret:
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(adis_enable_irq);
+> +
+> +/**
+> + * adis_check_status() - Check the device for error conditions
+> + * @adis: The adis device
+> + *
+> + * Returns 0 on success, a negative error code otherwise
+> + */
+> +int adis_check_status(struct adis *adis)
+> +{
+> +	uint16_t status;
+> +	int ret;
+> +	int i;
+> +
+> +	ret = adis_read_reg_16(adis, adis->data->diag_stat_reg, &status);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	status &= adis->data->status_error_mask;
+> +
+> +	if (status == 0)
+> +		return 0;
+> +
+> +	for (i = 0; i < 16; ++i) {
+> +		if (status & BIT(i)) {
+> +			dev_err(&adis->spi->dev, "%s.\n",
+> +				adis->data->status_error_msgs[i]);
+> +		}
+> +	}
+> +
+> +	return -EIO;
+> +}
+> +EXPORT_SYMBOL_GPL(adis_check_status);
+> +
+> +/**
+> + * adis_reset() - Reset the device
+> + * @adis: The adis device
+> + *
+> + * Returns 0 on success, a negative error code otherwise
+> + */
+> +int adis_reset(struct adis *adis)
+> +{
+> +	int ret;
+> +
+> +	ret = adis_write_reg_8(adis, adis->data->glob_cmd_reg,
+> +			ADIS_GLOB_CMD_SW_RESET);
+> +	if (ret)
+> +		dev_err(&adis->spi->dev, "Failed to reset device: %d\n", ret);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(adis_reset);
+> +
+> +static int adis_self_test(struct adis *adis)
+> +{
+> +	int ret;
+> +
+> +	ret = adis_write_reg_16(adis, adis->data->msc_ctrl_reg,
+> +			adis->data->self_test_mask);
+> +	if (ret) {
+> +		dev_err(&adis->spi->dev, "Failed to initiate self test: %d\n",
+> +			ret);
+> +		return ret;
+> +	}
+> +
+> +	msleep(adis->data->startup_delay);
+> +
+> +	return adis_check_status(adis);
+> +}
+> +
+> +/**
+> + * adis_inital_startup() - Performs device self-test
+> + * @adis: The adis device
+> + *
+> + * Returns 0 if the device is operational, a negative error code otherwise.
+> + *
+> + * This function should be called early on in the device initialization sequence
+> + * to ensure that the device is in a sane and known state and that it is usable.
+> + */
+> +int adis_initial_startup(struct adis *adis)
+> +{
+> +	int ret;
+> +
+> +	ret = adis_self_test(adis);
+> +	if (ret) {
+> +		dev_err(&adis->spi->dev, "Self-test failed, trying reset.\n");
+> +		adis_reset(adis);
+> +		msleep(adis->data->startup_delay);
+> +		ret = adis_self_test(adis);
+> +		if (ret) {
+> +			dev_err(&adis->spi->dev, "Second self-test failed, giving up.\n");
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(adis_initial_startup);
+> +
+> +/**
+> + * adis_single_conversion() - Performs a single sample conversion
+> + * @indio_dev: The IIO device
+> + * @chan: The IIO channel
+> + * @error_mask: Mask for the error bit
+> + * @val: Result of the conversion
+> + *
+> + * Returns IIO_VAL_INT on success, a negative error code otherwise.
+> + *
+> + * The function performs a single conversion on a given channel and post
+> + * processes the value accordingly to the channel spec. If a error_mask is given
+> + * the function will check if the mask is set in the returned raw value. If it
+> + * is set the function will perform a self-check. If the device does not report
+> + * a error bit in the channels raw value set error_mask to 0.
+> + */
+> +int adis_single_conversion(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, unsigned int error_mask, int *val)
+> +{
+> +	struct adis *adis = iio_device_get_drvdata(indio_dev);
+> +	uint16_t val16;
+> +	int ret;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	ret = adis_read_reg_16(adis, chan->address, &val16);
+> +	if (ret)
+> +		goto err_unlock;
+> +
+> +	if (val16 & error_mask) {
+> +		ret = adis_check_status(adis);
+> +		if (ret)
+> +			goto err_unlock;
+> +	}
+> +
+> +	if (chan->scan_type.sign == 's')
+> +		*val = sign_extend32(val16, chan->scan_type.realbits - 1);
+> +	else
+> +		*val = val16 & ((1 << chan->scan_type.realbits) - 1);
+> +
+> +	ret = IIO_VAL_INT;
+> +err_unlock:
+> +	mutex_unlock(&indio_dev->mlock);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(adis_single_conversion);
+> +
+> +/**
+> + * adis_init() - Initialize adis device structure
+> + * @adis:	The adis device
+> + * @indio_dev:	The iio device
+> + * @spi:	The spi device
+> + * @data:	Chip specific data
+> + *
+> + * Returns 0 on success, a negative error code otherwise.
+> + *
+> + * This function must be called, before any other adis helper function may be
+> + * called.
+> + */
+> +int adis_init(struct adis *adis, struct iio_dev *indio_dev,
+> +	struct spi_device *spi, const struct adis_data *data)
+> +{
+> +	mutex_init(&adis->txrx_lock);
+> +	adis->spi = spi;
+> +	adis->data = data;
+> +	iio_device_set_drvdata(indio_dev, adis);
+> +
+> +	return adis_enable_irq(adis, false);
+> +}
+> +EXPORT_SYMBOL_GPL(adis_init);
+> +
+> +MODULE_LICENSE("GPL");
+> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
+> +MODULE_DESCRIPTION("Common library code for ADIS16XXX devices");
+> diff --git a/drivers/staging/iio/imu/adis.h b/drivers/staging/iio/imu/adis.h
+> new file mode 100644
+> index 0000000..c84da7a
+> --- /dev/null
+> +++ b/drivers/staging/iio/imu/adis.h
+> @@ -0,0 +1,178 @@
+> +/*
+> + * Common library for ADIS16XXX devices
+> + *
+> + * Copyright 2012 Analog Devices Inc.
+> + *   Author: Lars-Peter Clausen <lars@metafoo.de>
+> + *
+> + * Licensed under the GPL-2 or later.
+> + */
+> +
+> +#ifndef __IIO_ADIS_H__
+> +#define __IIO_ADIS_H__
+> +
+> +#include <linux/spi/spi.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/iio/types.h>
+> +
+> +#define ADIS_WRITE_REG(reg) (0x80 | (reg))
+> +#define ADIS_READ_REG(reg) (reg)
+> +
+> +/**
+> + * struct adis_data - ADIS chip variant specific data
+> + * @read_delay: SPI delay for read operations in us
+> + * @write_delay: SPI delay for write operations in us
+> + * @glob_cmd_reg: Register address of the GLOB_CMD register
+> + * @msc_ctrl_reg: Register address of the MSC_CTRL register
+> + * @diag_stat_reg: Register address of the DIAG_STAT register
+> + * @status_error_msgs: Array of error messgaes
+> + * @status_error_mask:
+> + */
+> +struct adis_data {
+> +	unsigned int read_delay;
+> +	unsigned int write_delay;
+> +
+> +	unsigned int glob_cmd_reg;
+> +	unsigned int msc_ctrl_reg;
+> +	unsigned int diag_stat_reg;
+> +
+> +	unsigned int self_test_mask;
+> +	unsigned int startup_delay;
+> +
+> +	const char * const *status_error_msgs;
+> +	unsigned int status_error_mask;
+> +};
+> +
+> +struct adis {
+> +	struct spi_device	*spi;
+> +	struct iio_trigger	*trig;
+> +
+> +	const struct adis_data	*data;
+> +
+> +	struct mutex		txrx_lock;
+> +	struct spi_message	msg;
+> +	struct spi_transfer	*xfer;
+> +	void			*buffer;
+> +
+> +	uint8_t			tx[8] ____cacheline_aligned;
+> +	uint8_t			rx[4];
+> +};
+> +
+> +int adis_init(struct adis *adis, struct iio_dev *indio_dev,
+> +	struct spi_device *spi, const struct adis_data *data);
+> +int adis_reset(struct adis *adis);
+> +
+> +int adis_write_reg_8(struct adis *adis, unsigned int reg, uint8_t val);
+> +int adis_write_reg_16(struct adis *adis, unsigned int reg, uint16_t val);
+> +int adis_read_reg_16(struct adis *adis, unsigned int reg, uint16_t *val);
+> +
+> +int adis_enable_irq(struct adis *adis, bool enable);
+> +int adis_check_status(struct adis *adis);
+> +
+> +int adis_initial_startup(struct adis *adis);
+> +
+> +int adis_single_conversion(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, unsigned int error_mask,
+> +	int *val);
+> +
+> +#define ADIS_VOLTAGE_CHAN(addr, si, chan, name, bits) { \
+> +	.type = IIO_VOLTAGE, \
+> +	.indexed = 1, \
+> +	.channel = (chan), \
+> +	.extend_name = name, \
+> +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+> +		IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
+> +	.address = (addr), \
+> +	.scan_index = (si), \
+> +	.scan_type = { \
+> +		.sign = 'u', \
+> +		.realbits = (bits), \
+> +		.storagebits = 16, \
+> +	}, \
+> +}
+> +
+> +#define ADIS_SUPPLY_CHAN(addr, si, bits) \
+> +	ADIS_VOLTAGE_CHAN(addr, si, 0, "supply", bits)
+> +
+> +#define ADIS_AUX_ADC_CHAN(addr, si, bits) \
+> +	ADIS_VOLTAGE_CHAN(addr, si, 1, NULL, bits)
+> +
+> +#define ADIS_TEMP_CHAN(addr, si, bits) { \
+> +	.type = IIO_TEMP, \
+> +	.indexed = 1, \
+> +	.channel = 0, \
+> +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+> +		IIO_CHAN_INFO_SCALE_SEPARATE_BIT | \
+> +		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT, \
+> +	.address = (addr), \
+> +	.scan_index = (si), \
+> +	.scan_type = { \
+> +		.sign = 'u', \
+> +		.realbits = (bits), \
+> +		.storagebits = 16, \
+> +	}, \
+> +}
+> +
+> +#define ADIS_MOD_CHAN(_type, mod, addr, si, info, bits) { \
+> +	.type = (_type), \
+> +	.modified = 1, \
+> +	.channel2 = IIO_MOD_ ## mod, \
+> +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+> +		 IIO_CHAN_INFO_SCALE_SHARED_BIT | \
+> +		 info, \
+> +	.address = (addr), \
+> +	.scan_index = (si), \
+> +	.scan_type = { \
+> +		.sign = 's', \
+> +		.realbits = (bits), \
+> +		.storagebits = 16, \
+> +	}, \
+> +}
+> +
+> +#define ADIS_ACCEL_CHAN(mod, addr, si, info, bits) \
+> +	ADIS_MOD_CHAN(IIO_ACCEL, mod, addr, si, info, bits)
+> +
+> +#define ADIS_GYRO_CHAN(mod, addr, si, info, bits) \
+> +	ADIS_MOD_CHAN(IIO_ANGL_VEL, mod, addr, si, info, bits)
+> +
+> +#define ADIS_INCLI_CHAN(mod, addr, si, info, bits) \
+> +	ADIS_MOD_CHAN(IIO_INCLI, mod, addr, si, info, bits)
+> +
+> +#define ADIS_ROT_CHAN(mod, addr, si, info, bits) \
+> +	ADIS_MOD_CHAN(IIO_ROT, mod, addr, si, info, bits)
+> +
+> +#ifdef CONFIG_IIO_ADIS_LIB_BUFFER
+> +
+> +int adis_setup_buffer_and_trigger(struct adis *adis,
+> +	struct iio_dev *indio_dev, irqreturn_t (*trigger_handler)(int, void *));
+> +void adis_cleanup_buffer_and_trigger(struct adis *adis,
+> +	struct iio_dev *indio_dev);
+> +
+> +int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev);
+> +void adis_remove_trigger(struct adis *adis);
+> +
+> +#else /* CONFIG_IIO_BUFFER */
+> +
+> +static inline int adis_setup_buffer_and_trigger(struct adis *adis,
+> +	struct iio_dev *indio_dev, irqreturn_t (*trigger_handler)(int, void *))
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline void adis_cleanup_buffer_and_trigger(struct adis *adis,
+> +	struct iio_dev *indio_dev)
+> +{
+> +}
+> +
+> +static inline int adis_probe_trigger(struct adis *adis,
+> +	struct iio_dev *indio_dev)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline void adis_remove_trigger(struct adis *adis)
+> +{
+> +}
+> +
+> +#endif /* CONFIG_IIO_BUFFER */
+> +
+> +#endif
+> diff --git a/drivers/staging/iio/imu/adis_buffer.c b/drivers/staging/iio/imu/adis_buffer.c
+> new file mode 100644
+> index 0000000..47bdea0
+> --- /dev/null
+> +++ b/drivers/staging/iio/imu/adis_buffer.c
+> @@ -0,0 +1,200 @@
+> +#include <linux/export.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/mutex.h>
+> +#include <linux/kernel.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/slab.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include "../ring_sw.h"
+> +#include <linux/iio/trigger_consumer.h>
+> +
+> +#include  "adis.h"
+> +
+> +#define ADIS_MAX_OUTPUTS 12
+> +
+> +static int adis_read_buffer_data(struct adis *adis, struct iio_dev *indio_dev)
+> +{
+> +	int n_outputs = indio_dev->num_channels;
+> +	struct spi_transfer xfers[ADIS_MAX_OUTPUTS + 1];
+> +	struct spi_message msg;
+> +	int ret;
+> +	int i;
+> +
+> +	mutex_lock(&adis->txrx_lock);
+> +
+> +	spi_message_init(&msg);
+> +
+> +	memset(xfers, 0, sizeof(xfers));
+> +	for (i = 0; i <= n_outputs; i++) {
+> +		xfers[i].bits_per_word = 8;
+> +		xfers[i].cs_change = 1;
+> +		xfers[i].len = 2;
+> +		xfers[i].delay_usecs = adis->data->read_delay;
+> +		if (i < n_outputs) {
+> +			xfers[i].tx_buf = adis->tx + 2 * i;
+> +			adis->tx[2 * i] = indio_dev->channels[i].address;
+> +			adis->tx[2 * i + 1] = 0;
+> +		}
+> +		if (i >= 1)
+> +			xfers[i].rx_buf = adis->rx + 2 * (i - 1);
+> +		spi_message_add_tail(&xfers[i], &msg);
+> +	}
+> +
+> +	ret = spi_sync(adis->spi, &msg);
+> +	if (ret)
+> +		dev_err(&adis->spi->dev, "Failed to read data: %d", ret);
+> +
+> +	mutex_unlock(&adis->txrx_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static irqreturn_t adis_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct adis *adis = iio_device_get_drvdata(indio_dev);
+> +	u16 *data;
+> +	int i = 0;
+> +
+> +	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> +	if (data == NULL) {
+> +		dev_err(&adis->spi->dev, "Failed to allocate memory.");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength)
+> +	    && adis_read_buffer_data(adis, indio_dev) >= 0)
+> +		for (; i < bitmap_weight(indio_dev->active_scan_mask,
+> +					 indio_dev->masklength); i++)
+> +			data[i] = be16_to_cpup((__be16 *)&(adis->rx[i*2]));
+> +
+> +	/* Guaranteed to be aligned with 8 byte boundary */
+> +	if (indio_dev->scan_timestamp)
+> +		*((s64 *)(PTR_ALIGN(data, sizeof(s64)))) = pf->timestamp;
+> +
+> +	iio_push_to_buffers(indio_dev, (u8 *)data);
+> +
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +	kfree(data);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static const struct iio_buffer_setup_ops adis_buffer_setup_ops = {
+> +	.preenable = &iio_sw_buffer_preenable,
+> +	.postenable = &iio_triggered_buffer_postenable,
+> +	.predisable = &iio_triggered_buffer_predisable,
+> +};
+> +
+> +static int adis_buffer_setup(struct iio_dev *indio_dev,
+> +	irqreturn_t (*trigger_handler)(int, void *))
+> +{
+> +	int ret = 0;
+> +	struct iio_buffer *buffer;
+> +
+> +	if (!trigger_handler)
+> +		trigger_handler = &adis_trigger_handler;
+> +
+> +	buffer = iio_sw_rb_allocate(indio_dev);
+> +	if (!buffer) {
+> +		ret = -ENOMEM;
+> +		return ret;
+> +	}
+> +
+> +	indio_dev->buffer = buffer;
+> +	indio_dev->setup_ops = &adis_buffer_setup_ops;
+> +
+> +	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+> +						 trigger_handler,
+> +						 IRQF_ONESHOT,
+> +						 indio_dev,
+> +						 "%s_consumer%d",
+> +						 indio_dev->name,
+> +						 indio_dev->id);
+> +	if (indio_dev->pollfunc == NULL) {
+> +		ret = -ENOMEM;
+> +		goto error_iio_sw_rb_free;
+> +	}
+> +
+> +	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
+> +	return 0;
+> +
+> +error_iio_sw_rb_free:
+> +	iio_sw_rb_free(indio_dev->buffer);
+> +	return ret;
+> +}
+> +
+> +static void adis_buffer_cleanup(struct iio_dev *indio_dev)
+> +{
+> +	iio_dealloc_pollfunc(indio_dev->pollfunc);
+> +	iio_sw_rb_free(indio_dev->buffer);
+> +}
+> +
+> +/**
+> + * adis_setup_buffer_and_trigger() - Sets up buffer and trigger for the adis device
+> + * @adis: The adis device.
+> + * @indio_dev: The IIO device.
+> + * @trigger_handler: Optional trigger handler, may be NULL.
+> + *
+> + * Returns 0 on success, a negative error code otherwise.
+> + *
+> + * This function sets up the buffer and trigger for a adis devices.  If
+> + * 'trigger_handler' is NULL the default trigger handler will be used. The
+> + * default trigger handler will simply read the registers assigned to the
+> + * currently active channels.
+> + *
+> + * adis_cleanup_buffer_and_trigger() should be called to free the resources
+> + * allocated by this function.
+> + */
+> +int adis_setup_buffer_and_trigger(struct adis *adis, struct iio_dev *indio_dev,
+> +	irqreturn_t (*trigger_handler)(int, void *))
+> +{
+> +	int ret;
+> +
+> +	ret = adis_buffer_setup(indio_dev, trigger_handler);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = iio_buffer_register(indio_dev,
+> +				  indio_dev->channels,
+> +				  indio_dev->num_channels);
+> +	if (ret) {
+> +		dev_err(&adis->spi->dev, "Failed to initialize buffer %d\n",
+> +			ret);
+> +		goto error_unreg_buffer_funcs;
+> +	}
+> +
+> +	if (adis->spi->irq) {
+> +		ret = adis_probe_trigger(adis, indio_dev);
+> +		if (ret)
+> +			goto error_uninitialize_buffer;
+> +	}
+> +	return 0;
+> +
+> +error_uninitialize_buffer:
+> +	iio_buffer_unregister(indio_dev);
+> +error_unreg_buffer_funcs:
+> +	adis_buffer_cleanup(indio_dev);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(adis_setup_buffer_and_trigger);
+> +
+> +/**
+> + * adis_cleanup_buffer_and_trigger() - Free buffer and trigger resources
+> + * @adis: The adis device.
+> + * @indio_dev: The IIO device.
+> + *
+> + * Frees resources allocated by adis_setup_buffer_and_trigger()
+> + */
+> +void adis_cleanup_buffer_and_trigger(struct adis *adis,
+> +	struct iio_dev *indio_dev)
+> +{
+> +	if (adis->spi->irq)
+> +		adis_remove_trigger(adis);
+> +	iio_buffer_unregister(indio_dev);
+> +	adis_buffer_cleanup(indio_dev);
+> +}
+> +EXPORT_SYMBOL_GPL(adis_cleanup_buffer_and_trigger);
+> diff --git a/drivers/staging/iio/imu/adis_trigger.c b/drivers/staging/iio/imu/adis_trigger.c
+> new file mode 100644
+> index 0000000..3e89b2e
+> --- /dev/null
+> +++ b/drivers/staging/iio/imu/adis_trigger.c
+> @@ -0,0 +1,90 @@
+> +/*
+> + * Common library for ADIS16XXX devices
+> + *
+> + * Copyright 2012 Analog Devices Inc.
+> + *   Author: Lars-Peter Clausen <lars@metafoo.de>
+> + *
+> + * Licensed under the GPL-2 or later.
+> + */
+> +
+> +#include <linux/interrupt.h>
+> +#include <linux/kernel.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/export.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/trigger.h>
+> +
+> +#include "adis.h"
+> +
+> +static int adis_data_rdy_trigger_set_state(struct iio_trigger *trig,
+> +						bool state)
+> +{
+> +	struct adis *adis = trig->private_data;
+> +
+> +	return adis_enable_irq(adis, state);
+> +}
+> +
+> +static const struct iio_trigger_ops adis_trigger_ops = {
+> +	.owner = THIS_MODULE,
+> +	.set_trigger_state = &adis_data_rdy_trigger_set_state,
+> +};
+> +
+> +/**
+> + * adis_probe_trigger() - Sets up trigger for a adis device
+> + * @adis: The adis device
+> + * @indio_dev: The IIO device
+> + *
+> + * Returns 0 on success or a negative error code
+> + *
+> + * adis_remove_trigger() should be used to free the trigger.
+> + */
+> +int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
+> +{
+> +	int ret;
+> +
+> +	adis->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
+> +					indio_dev->id);
+> +	if (adis->trig == NULL)
+> +		return -ENOMEM;
+> +
+> +	ret = request_irq(adis->spi->irq,
+> +			  &iio_trigger_generic_data_rdy_poll,
+> +			  IRQF_TRIGGER_RISING,
+> +			  indio_dev->name,
+> +			  adis->trig);
+> +	if (ret)
+> +		goto error_free_trig;
+> +
+> +	adis->trig->dev.parent = &adis->spi->dev;
+> +	adis->trig->ops = &adis_trigger_ops;
+> +	adis->trig->private_data = adis;
+> +	ret = iio_trigger_register(adis->trig);
+> +
+> +	indio_dev->trig = adis->trig;
+> +	if (ret)
+> +		goto error_free_irq;
+> +
+> +	return 0;
+> +
+> +error_free_irq:
+> +	free_irq(adis->spi->irq, adis->trig);
+> +error_free_trig:
+> +	iio_trigger_free(adis->trig);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(adis_probe_trigger);
+> +
+> +/**
+> + * adis_remove_trigger() - Remove trigger for a adis devices
+> + * @adis: The adis device
+> + *
+> + * Removes the trigger previously registered with adis_probe_trigger().
+> + */
+> +void adis_remove_trigger(struct adis *adis)
+> +{
+> +	iio_trigger_unregister(adis->trig);
+> +	free_irq(adis->spi->irq, adis->trig);
+> +	iio_trigger_free(adis->trig);
+> +}
+> +EXPORT_SYMBOL_GPL(adis_remove_trigger);
+> 
