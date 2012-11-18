@@ -1,209 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-222.synserver.de ([212.40.185.222]:1099 "EHLO
-	smtp-out-222.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755228Ab2KUQ1W (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Nov 2012 11:27:22 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 05/11] staging:iio:ad7793: Rework platform data
-Date: Wed, 21 Nov 2012 17:27:10 +0100
-Message-Id: <1353515236-21843-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1353515236-21843-1-git-send-email-lars@metafoo.de>
-References: <1353515236-21843-1-git-send-email-lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34400 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752093Ab2KRSsF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 18 Nov 2012 13:48:05 -0500
+Message-ID: <50A92D62.3060009@kernel.org>
+Date: Sun, 18 Nov 2012 18:48:02 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: kbuild test robot <fengguang.wu@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [iio:togreg 24/24] drivers/iio/adc/ad7298.c:125:23: sparse: incorrect
+ type in assignment (different base types)
+References: <50a787d6.NK04zL7PgCPbLOrx%fengguang.wu@intel.com> <50A8E5DF.7000607@kernel.org> <50A8EE71.8090302@metafoo.de> <50A92AB4.3050707@kernel.org>
+In-Reply-To: <50A92AB4.3050707@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently the platform data for the ad7793 consist just out of the raw default
-register settings. This has some downsides, for one we actually don't want to
-make all bits configurable and secondly not all register settings are actually
-valid. This patch exposes all the options which should be configurable via
-platform data as induvidual platform data struct fields. This also allows us to
-document the different settings via proper kernel doc.
+On 11/18/2012 06:36 PM, Jonathan Cameron wrote:
+> On 11/18/2012 02:19 PM, Lars-Peter Clausen wrote:
+>> On 11/18/2012 02:42 PM, Jonathan Cameron wrote:
+>>> Hi Lars-Peter
+>>>
+>>> Hmm. currious. I'd not normally have that check on - for reference
+>>> this only happens for me with CF="-D__CHECK_ENDIAN__" appeneded to my
+>>> normal make for the kernel.
+>>>
+>>> Anyhow, initial thought was to change rx_buf and tx_buf to __be16.
+>>> Can you see any issues with that?
+>>>
+>>
+>> I actually had such a patch initially in my series, but removed it again, since
+>> we are using the buffer as non __be16 in some places.
+>>
+>>> It clears the warnings out.
+>>
+>> But if sparse doesn't complain about those we are better of with the change I
+>> guess.
+> Hmm. I wonder if there is any marking for no endianness specified?
+> Either that or we'll need to play games with a union to pull this off
+> cleanly.
+>
+> For anyone reading this without the background.  This bit of code is filling
+> a buffer with a mixture of big and cpu endian elements.  This buffer is described
+> to userspace which can then do the conversions as necessary.
+>
+> For now I'm going to hold the patch I sent out as it's not a real fix, but
+> rather a nasty work around of the problem.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7793.c |  25 +++++++--
- drivers/staging/iio/adc/ad7793.h | 107 +++++++++++++++++++++++++++++++++++++--
- 2 files changed, 123 insertions(+), 9 deletions(-)
+As a quick stab at it, how about something like...
 
-diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-index 028473a..8b08693 100644
---- a/drivers/staging/iio/adc/ad7793.c
-+++ b/drivers/staging/iio/adc/ad7793.c
-@@ -118,6 +118,12 @@ static int ad7793_setup(struct iio_dev *indio_dev,
- 	unsigned long long scale_uv;
- 	u32 id;
- 
-+	if ((pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT1 ||
-+		pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT2) &&
-+		((pdata->exitation_current != AD7793_IX_10uA) &&
-+		(pdata->exitation_current != AD7793_IX_210uA)))
-+		return -EINVAL;
-+
- 	/* reset the serial interface */
- 	ret = spi_write(st->sd.spi, (u8 *)&ret, sizeof(ret));
- 	if (ret < 0)
-@@ -136,8 +142,18 @@ static int ad7793_setup(struct iio_dev *indio_dev,
- 		goto out;
- 	}
- 
--	st->mode = pdata->mode;
--	st->conf = pdata->conf;
-+	st->mode = AD7793_MODE_RATE(1);
-+	st->mode |= AD7793_MODE_CLKSRC(pdata->clock_src);
-+	st->conf = AD7793_CONF_REFSEL(pdata->refsel);
-+	st->conf |= AD7793_CONF_VBIAS(pdata->bias_voltage);
-+	if (pdata->buffered)
-+		st->conf |= AD7793_CONF_BUF;
-+	if (pdata->boost_enable)
-+		st->conf |= AD7793_CONF_BOOST;
-+	if (pdata->burnout_current)
-+		st->conf |= AD7793_CONF_BO_EN;
-+	if (pdata->unipolar)
-+		st->conf |= AD7793_CONF_UNIPOLAR;
- 
- 	ret = ad7793_set_mode(&st->sd, AD_SD_MODE_IDLE);
- 	if (ret)
-@@ -147,8 +163,9 @@ static int ad7793_setup(struct iio_dev *indio_dev,
- 	if (ret)
- 		goto out;
- 
--	ret = ad_sd_write_reg(&st->sd, AD7793_REG_IO,
--			       sizeof(pdata->io), pdata->io);
-+	ret = ad_sd_write_reg(&st->sd, AD7793_REG_IO, 1,
-+				   pdata->exitation_current |
-+			       (pdata->current_source_direction << 2));
- 	if (ret)
- 		goto out;
- 
-diff --git a/drivers/staging/iio/adc/ad7793.h b/drivers/staging/iio/adc/ad7793.h
-index 8fdd450..9e90590 100644
---- a/drivers/staging/iio/adc/ad7793.h
-+++ b/drivers/staging/iio/adc/ad7793.h
-@@ -68,7 +68,7 @@
- #define AD7793_CONF_UNIPOLAR	(1 << 12) /* Unipolar/Bipolar Enable */
- #define AD7793_CONF_BOOST	(1 << 11) /* Boost Enable */
- #define AD7793_CONF_GAIN(x)	(((x) & 0x7) << 8) /* Gain Select */
--#define AD7793_CONF_REFSEL	(1 << 7) /* INT/EXT Reference Select */
-+#define AD7793_CONF_REFSEL(x)	((x) << 6) /* INT/EXT Reference Select */
- #define AD7793_CONF_BUF		(1 << 4) /* Buffered Mode Enable */
- #define AD7793_CONF_CHAN(x)	((x) & 0xf) /* Channel select */
- #define AD7793_CONF_CHAN_MASK	0xf /* Channel select mask */
-@@ -105,11 +105,108 @@
- #define AD7793_IO_IXCEN_210uA	(2 << 0) /* Excitation Current 210uA */
- #define AD7793_IO_IXCEN_1mA	(3 << 0) /* Excitation Current 1mA */
- 
-+/**
-+ * enum ad7793_clock_source - AD7793 clock source selection
-+ * @AD7793_CLK_SRC_INT: Internal 64 kHz clock, not available at the CLK pin.
-+ * @AD7793_CLK_SRC_INT_CO: Internal 64 kHz clock, available at the CLK pin.
-+ * @AD7793_CLK_SRC_EXT: Use external clock.
-+ * @AD7793_CLK_SRC_EXT_DIV2: Use external clock divided by 2.
-+ */
-+enum ad7793_clock_source {
-+	AD7793_CLK_SRC_INT,
-+	AD7793_CLK_SRC_INT_CO,
-+	AD7793_CLK_SRC_EXT,
-+	AD7793_CLK_SRC_EXT_DIV2,
-+};
-+
-+/**
-+ * enum ad7793_bias_voltage - AD7793 bias voltage selection
-+ * @AD7793_BIAS_VOLTAGE_DISABLED: Bias voltage generator disabled
-+ * @AD7793_BIAS_VOLTAGE_AIN1: Bias voltage connected to AIN1(-).
-+ * @AD7793_BIAS_VOLTAGE_AIN2: Bias voltage connected to AIN2(-).
-+ * @AD7793_BIAS_VOLTAGE_AIN3: Bias voltage connected to AIN3(-).
-+ *	Only valid for AD7795/AD7796.
-+ */
-+enum ad7793_bias_voltage {
-+	AD7793_BIAS_VOLTAGE_DISABLED,
-+	AD7793_BIAS_VOLTAGE_AIN1,
-+	AD7793_BIAS_VOLTAGE_AIN2,
-+	AD7793_BIAS_VOLTAGE_AIN3,
-+};
-+
-+/**
-+ * enum ad7793_refsel - AD7793 reference voltage selection
-+ * @AD7793_REFSEL_REFIN1: External reference applied between REFIN1(+)
-+ *	and REFIN1(-).
-+ * @AD7793_REFSEL_REFIN2: External reference applied between REFIN2(+) and
-+ *	and REFIN1(-). Only valid for AD7795/AD7796.
-+ * @AD7793_REFSEL_INTERNAL: Internal 1.17 V reference.
-+ */
-+enum ad7793_refsel {
-+	AD7793_REFSEL_REFIN1 = 0,
-+	AD7793_REFSEL_REFIN2 = 1,
-+	AD7793_REFSEL_INTERNAL = 2,
-+};
-+
-+/**
-+ * enum ad7793_current_source_direction - AD7793 excitation current direction
-+ * @AD7793_IEXEC1_IOUT1_IEXEC2_IOUT2: Current source IEXC1 connected to pin
-+ *	IOUT1, current source IEXC2 connected to pin IOUT2.
-+ * @AD7793_IEXEC1_IOUT2_IEXEC2_IOUT1: Current source IEXC2 connected to pin
-+ *	IOUT1, current source IEXC1 connected to pin IOUT2.
-+ * @AD7793_IEXEC1_IEXEC2_IOUT1: Both current sources connected to pin IOUT1.
-+ *	Only valid when the current sources are set to 10 uA or 210 uA.
-+ * @AD7793_IEXEC1_IEXEC2_IOUT2: Both current sources connected to Pin IOUT2.
-+ *	Only valid when the current ources are set to 10 uA or 210 uA.
-+ */
-+enum ad7793_current_source_direction {
-+	AD7793_IEXEC1_IOUT1_IEXEC2_IOUT2 = 0,
-+	AD7793_IEXEC1_IOUT2_IEXEC2_IOUT1 = 1,
-+	AD7793_IEXEC1_IEXEC2_IOUT1 = 2,
-+	AD7793_IEXEC1_IEXEC2_IOUT2 = 3,
-+};
-+
-+/**
-+ * enum ad7793_excitation_current - AD7793 excitation current selection
-+ * @AD7793_IX_DISABLED: Excitation current Disabled.
-+ * @AD7793_IX_10uA: Enable 10 micro-ampere excitation current.
-+ * @AD7793_IX_210uA: Enable 210 micro-ampere excitation current.
-+ * @AD7793_IX_1mA: Enable 1 milli-Ampere excitation current.
-+ */
-+enum ad7793_excitation_current {
-+	AD7793_IX_DISABLED = 0,
-+	AD7793_IX_10uA = 1,
-+	AD7793_IX_210uA = 2,
-+	AD7793_IX_1mA = 3,
-+};
-+
-+/**
-+ * struct ad7793_platform_data - AD7793 platform data
-+ * @vref_mv: Reference voltage in milli-Volt
-+ * @clock_src: Clock source selection
-+ * @burnout_current: If set to true the 100nA burnout current is enabled.
-+ * @boost_enable: Enable boost for the bias voltage generator.
-+ * @buffered: If set to true configure the device for buffered input mode.
-+ * @unipolar: If set to true sample in unipolar mode, if set to false sample in
-+ *		bipolar mode.
-+ * @refsel: Reference voltage selection
-+ * @bias_voltage: Bias voltage selection
-+ * @exitation_current: Excitation current selection
-+ * @current_source_direction: Excitation current direction selection
-+ */
- struct ad7793_platform_data {
--	u16			vref_mv;
--	u16			mode;
--	u16			conf;
--	u8			io;
-+	u16 vref_mv;
-+
-+	enum ad7793_clock_source clock_src;
-+	bool burnout_current;
-+	bool boost_enable;
-+	bool buffered;
-+	bool unipolar;
-+
-+	enum ad7793_refsel refsel;
-+	enum ad7793_bias_voltage bias_voltage;
-+	enum ad7793_excitation_current exitation_current;
-+	enum ad7793_current_source_direction current_source_direction;
+diff --git a/drivers/iio/adc/ad7298.c b/drivers/iio/adc/ad7298.c
+index 441a9a2..258ba97 100644
+--- a/drivers/iio/adc/ad7298.c
++++ b/drivers/iio/adc/ad7298.c
+@@ -54,8 +54,11 @@ struct ad7298_state {
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+-	unsigned short			rx_buf[12] ____cacheline_aligned;
+-	unsigned short			tx_buf[2];
++	union {
++		__be16                  rx_buf[12];
++		s64                     rx_ts[3];
++	} ____cacheline_aligned;
++	__be16			tx_buf[2];
  };
- 
- #endif /* IIO_ADC_AD7793_H_ */
--- 
-1.8.0
+
+ #define AD7298_V_CHAN(index)						\
+@@ -159,18 +162,15 @@ static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad7298_state *st = iio_priv(indio_dev);
+-	s64 time_ns = 0;
+ 	int b_sent;
+
+ 	b_sent = spi_sync(st->spi, &st->ring_msg);
+ 	if (b_sent)
+ 		goto done;
+
+-	if (indio_dev->scan_timestamp) {
+-		time_ns = iio_get_time_ns();
+-		memcpy((u8 *)st->rx_buf + indio_dev->scan_bytes - sizeof(s64),
+-			&time_ns, sizeof(time_ns));
+-	}
++	if (indio_dev->scan_timestamp)
++		st->rx_ts[(indio_dev->scan_bytes + sizeof(s64) - 1) / sizeof(s64)]
++			= iio_get_time_ns();
+
+ 	iio_push_to_buffers(indio_dev, (u8 *)st->rx_buf);
 
