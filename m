@@ -1,190 +1,164 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54073 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34299 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755737Ab2KUTOW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Nov 2012 14:14:22 -0500
-Message-ID: <50AD280B.7050904@kernel.org>
-Date: Wed, 21 Nov 2012 19:14:19 +0000
+	with ESMTP id S1752256Ab2KRSgp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 18 Nov 2012 13:36:45 -0500
+Message-ID: <50A92AB4.3050707@kernel.org>
+Date: Sun, 18 Nov 2012 18:36:36 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL]  IIO cleanups, new drivers and fixes (IIO set 5 for the 3.8
- cycle)
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: kbuild test robot <fengguang.wu@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [iio:togreg 24/24] drivers/iio/adc/ad7298.c:125:23: sparse: incorrect
+ type in assignment (different base types)
+References: <50a787d6.NK04zL7PgCPbLOrx%fengguang.wu@intel.com> <50A8E5DF.7000607@kernel.org> <50A8EE71.8090302@metafoo.de>
+In-Reply-To: <50A8EE71.8090302@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit acf1cf6a1c0966ef64a73083ca985605a12b032d:
+On 11/18/2012 02:19 PM, Lars-Peter Clausen wrote:
+> On 11/18/2012 02:42 PM, Jonathan Cameron wrote:
+>> Hi Lars-Peter
+>>
+>> Hmm. currious. I'd not normally have that check on - for reference
+>> this only happens for me with CF="-D__CHECK_ENDIAN__" appeneded to my
+>> normal make for the kernel.
+>>
+>> Anyhow, initial thought was to change rx_buf and tx_buf to __be16.
+>> Can you see any issues with that?
+>>
+> 
+> I actually had such a patch initially in my series, but removed it again, since
+> we are using the buffer as non __be16 in some places.
+> 
+>> It clears the warnings out.
+> 
+> But if sparse doesn't complain about those we are better of with the change I
+> guess.
+Hmm. I wonder if there is any marking for no endianness specified?
+Either that or we'll need to play games with a union to pull this off
+cleanly.
 
-  Merge 3.7-rc6 into staging-next (2012-11-16 18:24:22 -0800)
+For anyone reading this without the background.  This bit of code is filling
+a buffer with a mixture of big and cpu endian elements.  This buffer is described
+to userspace which can then do the conversions as necessary.
 
-are available in the git repository at:
+For now I'm going to hold the patch I sent out as it's not a real fix, but
+rather a nasty work around of the problem.
 
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.8e
-
-for you to fetch changes up to be7fd3b86ad2f2a8db58decc15d2274b0c89c23b:
-
-  iio:adc:ad7298 make the tx and rx buffers __be16 (2012-11-21 18:24:26 +0000)
-
-----------------------------------------------------------------
-Fifth round of new IIO drivers, cleanups and fixes for the 3.8 cycle.
-
-Here we have a number of minor fixes.
-* a quirk for the hid sensor driver should be a boolean option.
-* return an error for a failed memdup in the hid sensor driver.
-* Fix a return value in adt7410.
-* A double free in the IIO event infrastructure.
-* Disabling interrupts in tsl2563 was wrong (never been correct!)
-* Incorrect signature for the iio_buffer_register stub
-* Incorrect return for isl29018 write_raw callback.
-* A number of minor fixes as part of the various rework series.
-
-New drivers and major rework.
-* Introduce and use extensively an adis library for numerous spi
-  Analog Devices mems sensors.  This then moves out of staging.
-* Lots of new stuff then added to this library to support newer
-  sensors.
-* New drivers for ADIS16136 and ADIS16480 and similar.
-* Core support for barometric pressure sensors.
-* ad7298 cleanup and move out of staging.
-
-The bulk of this is from Lars-Peter Clausen.  He's been rather
-busy!
-
-----------------------------------------------------------------
-Axel Lin (1):
-      iio: hid-sensor: Return proper error if kmemdup fails
-
-Derek Basehore (1):
-      tsl2563: fixed bug with disabling interrupts
-
-Jonathan Cameron (1):
-      iio:adc:ad7298 make the tx and rx buffers __be16
-
-Julia Lawall (1):
-      drivers/iio/industrialio-event.c: eliminate possible double free
-
-Kirill A. Shutemov (1):
-      iio: hid-sensors: convert HID_SENSOR_ENUM_BASE_QUIRKS to bool
-
-Lars-Peter Clausen (25):
-      staging:iio:adt7410: Fix adt7410_set_mode return value
-      iio: Fix iio_buffer_register stub signature
-      staging:iio: Add common ADIS library
-      staging:iio:adis16201: Use adis library
-      staging:iio:adis16203: Use adis library
-      staging:iio:adis16204: Use adis library
-      staging:iio:adis16209: Use adis library
-      staging:iio:adis16220: Use adis library
-      staging:iio:adis16240: Use adis library
-      staging:iio:adis16260: Use adis library
-      staging:iio:adis_lib: Use triggered buffer setup helper function
-      staging:iio:adis: Preallocate transfer message
-      staging:iio: Move adis library out of staging
-      staging:iio:ad7298: Do not perform endianness conversion in buffered mode
-      staging:iio:ad7298: Rework regulator handling
-      staging:iio:ad7298: Fix temperature scale and offset
-      staging:iio:ad7298: Squash everything into one file
-      staging:iio: Move the ad7298 driver out of staging
-      iio:imu:adis: Add debugfs register access support
-      iio:imu:adis: Add support for 32bit registers
-      iio:gyro: Add support for the ADIS16136 gyroscope
-      iio:imu:adis: Add paging support
-      iio: Add pressure channel type
-      iio: Factor out fixed point number parsing into its own function
-      iio:imu: Add support for the ADIS16480 and similar IMUs
-
-Wei Yongjun (1):
-      iio: isl29018: fix to return error or 0 in isl29018_write_raw()
-
- Documentation/ABI/testing/sysfs-bus-iio            |  24 +
- drivers/iio/Kconfig                                |   7 +-
- drivers/iio/Makefile                               |   7 +-
- drivers/iio/accel/hid-sensor-accel-3d.c            |   6 +-
- drivers/iio/adc/Kconfig                            |  12 +
- drivers/iio/adc/Makefile                           |   1 +
- .../iio/adc/ad7298_core.c => iio/adc/ad7298.c}     | 201 ++++-
- drivers/iio/common/hid-sensors/Kconfig             |   2 +-
- .../iio/common/hid-sensors/hid-sensor-trigger.c    |   6 +-
- drivers/iio/gyro/Kconfig                           |   9 +
- drivers/iio/gyro/Makefile                          |   1 +
- drivers/iio/gyro/adis16136.c                       | 581 +++++++++++++
- drivers/iio/gyro/hid-sensor-gyro-3d.c              |   6 +-
- drivers/iio/imu/Kconfig                            |  27 +
- drivers/iio/imu/Makefile                           |  10 +
- drivers/iio/imu/adis.c                             | 440 ++++++++++
- drivers/iio/imu/adis16480.c                        | 925 +++++++++++++++++++++
- drivers/iio/imu/adis_buffer.c                      | 176 ++++
- drivers/iio/imu/adis_trigger.c                     |  89 ++
- drivers/iio/industrialio-core.c                    |  99 ++-
- drivers/iio/industrialio-event.c                   |   7 +-
- drivers/iio/light/hid-sensor-als.c                 |   5 +-
- drivers/iio/magnetometer/hid-sensor-magn-3d.c      |   6 +-
- drivers/staging/iio/accel/Kconfig                  |  21 +-
- drivers/staging/iio/accel/Makefile                 |   5 -
- drivers/staging/iio/accel/adis16201.h              |  89 +-
- drivers/staging/iio/accel/adis16201_core.c         | 466 ++---------
- drivers/staging/iio/accel/adis16201_ring.c         | 136 ---
- drivers/staging/iio/accel/adis16201_trigger.c      |  71 --
- drivers/staging/iio/accel/adis16203.h              |  80 +-
- drivers/staging/iio/accel/adis16203_core.c         | 426 ++--------
- drivers/staging/iio/accel/adis16203_ring.c         | 136 ---
- drivers/staging/iio/accel/adis16203_trigger.c      |  73 --
- drivers/staging/iio/accel/adis16204.h              |  79 +-
- drivers/staging/iio/accel/adis16204_core.c         | 452 ++--------
- drivers/staging/iio/accel/adis16204_ring.c         | 134 ---
- drivers/staging/iio/accel/adis16204_trigger.c      |  73 --
- drivers/staging/iio/accel/adis16209.h              |  77 +-
- drivers/staging/iio/accel/adis16209_core.c         | 484 ++---------
- drivers/staging/iio/accel/adis16209_ring.c         | 134 ---
- drivers/staging/iio/accel/adis16209_trigger.c      |  72 --
- drivers/staging/iio/accel/adis16220.h              |  20 +-
- drivers/staging/iio/accel/adis16220_core.c         | 280 ++-----
- drivers/staging/iio/accel/adis16240.h              |  85 +-
- drivers/staging/iio/accel/adis16240_core.c         | 473 ++---------
- drivers/staging/iio/accel/adis16240_ring.c         | 132 ---
- drivers/staging/iio/accel/adis16240_trigger.c      |  73 --
- drivers/staging/iio/adc/Kconfig                    |  11 -
- drivers/staging/iio/adc/Makefile                   |   4 -
- drivers/staging/iio/adc/ad7298.h                   |  75 --
- drivers/staging/iio/adc/ad7298_ring.c              | 113 ---
- drivers/staging/iio/adc/adt7410.c                  |   2 +-
- drivers/staging/iio/gyro/Makefile                  |   1 -
- drivers/staging/iio/gyro/adis16260.h               |  84 +-
- drivers/staging/iio/gyro/adis16260_core.c          | 484 ++---------
- drivers/staging/iio/gyro/adis16260_ring.c          | 136 ---
- drivers/staging/iio/gyro/adis16260_trigger.c       |  75 --
- drivers/staging/iio/light/isl29018.c               |   2 +-
- drivers/staging/iio/light/tsl2563.c                |   4 +-
- include/linux/iio/buffer.h                         |   2 +-
- include/linux/iio/iio.h                            |   3 +
- include/linux/iio/imu/adis.h                       | 280 +++++++
- include/linux/iio/types.h                          |   1 +
- include/linux/platform_data/ad7298.h               |  20 +
- 64 files changed, 3366 insertions(+), 4649 deletions(-)
- rename drivers/{staging/iio/adc/ad7298_core.c => iio/adc/ad7298.c} (55%)
- create mode 100644 drivers/iio/gyro/adis16136.c
- create mode 100644 drivers/iio/imu/Kconfig
- create mode 100644 drivers/iio/imu/Makefile
- create mode 100644 drivers/iio/imu/adis.c
- create mode 100644 drivers/iio/imu/adis16480.c
- create mode 100644 drivers/iio/imu/adis_buffer.c
- create mode 100644 drivers/iio/imu/adis_trigger.c
- delete mode 100644 drivers/staging/iio/accel/adis16201_ring.c
- delete mode 100644 drivers/staging/iio/accel/adis16201_trigger.c
- delete mode 100644 drivers/staging/iio/accel/adis16203_ring.c
- delete mode 100644 drivers/staging/iio/accel/adis16203_trigger.c
- delete mode 100644 drivers/staging/iio/accel/adis16204_ring.c
- delete mode 100644 drivers/staging/iio/accel/adis16204_trigger.c
- delete mode 100644 drivers/staging/iio/accel/adis16209_ring.c
- delete mode 100644 drivers/staging/iio/accel/adis16209_trigger.c
- delete mode 100644 drivers/staging/iio/accel/adis16240_ring.c
- delete mode 100644 drivers/staging/iio/accel/adis16240_trigger.c
- delete mode 100644 drivers/staging/iio/adc/ad7298.h
- delete mode 100644 drivers/staging/iio/adc/ad7298_ring.c
- delete mode 100644 drivers/staging/iio/gyro/adis16260_ring.c
- delete mode 100644 drivers/staging/iio/gyro/adis16260_trigger.c
- create mode 100644 include/linux/iio/imu/adis.h
- create mode 100644 include/linux/platform_data/ad7298.h
+Jonathan
+> 
+>>
+>> Jonathan
+>>
+>> On 11/17/2012 12:49 PM, kbuild test robot wrote:
+>>> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+>>> head:   e3e10fa5760709eb9dcc05fc9bfd48f90e2abbd7
+>>> commit: e3e10fa5760709eb9dcc05fc9bfd48f90e2abbd7 [24/24] staging:iio: Move the ad7298 driver out of staging
+>>>
+>>>
+>>> sparse warnings:
+>>>
+>>> + drivers/iio/adc/ad7298.c:125:23: sparse: incorrect type in assignment (different base types)
+>>> drivers/iio/adc/ad7298.c:125:23:    expected unsigned short [unsigned] [short] <noident>
+>>> drivers/iio/adc/ad7298.c:125:23:    got restricted __be16 [usertype] <noident>
+>>> drivers/iio/adc/ad7298.c:186:23: sparse: incorrect type in assignment (different base types)
+>>> drivers/iio/adc/ad7298.c:186:23:    expected unsigned short [unsigned] [short] <noident>
+>>> drivers/iio/adc/ad7298.c:186:23:    got restricted __be16 [usertype] <noident>
+>>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
+>>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
+>>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
+>>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
+>>>
+>>> vim +125 drivers/iio/adc/ad7298.c
+>>>
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  119  	command = AD7298_WRITE | st->ext_ref;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  120  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  121  	for (i = 0, m = AD7298_CH(0); i < AD7298_MAX_CHAN; i++, m >>= 1)
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  122  		if (test_bit(i, active_scan_mask))
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  123  			command |= m;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  124  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15 @125  	st->tx_buf[0] = cpu_to_be16(command);
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  126  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  127  	/* build spi ring message */
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  128  	st->ring_xfer[0].tx_buf = &st->tx_buf[0];
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  129  	st->ring_xfer[0].len = 2;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  130  	st->ring_xfer[0].cs_change = 1;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  131  	st->ring_xfer[1].tx_buf = &st->tx_buf[1];
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  132  	st->ring_xfer[1].len = 2;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  133  	st->ring_xfer[1].cs_change = 1;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  134  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  135  	spi_message_init(&st->ring_msg);
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  136  	spi_message_add_tail(&st->ring_xfer[0], &st->ring_msg);
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  137  	spi_message_add_tail(&st->ring_xfer[1], &st->ring_msg);
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  138  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  139  	for (i = 0; i < scan_count; i++) {
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  140  		st->ring_xfer[i + 2].rx_buf = &st->rx_buf[i];
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  141  		st->ring_xfer[i + 2].len = 2;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  142  		st->ring_xfer[i + 2].cs_change = 1;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  143  		spi_message_add_tail(&st->ring_xfer[i + 2], &st->ring_msg);
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  144  	}
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  145  	/* make sure last transfer cs_change is not set */
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  146  	st->ring_xfer[i + 1].cs_change = 0;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  147  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  148  	return 0;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  149  }
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  150  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  151  /**
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  152   * ad7298_trigger_handler() bh of trigger launched polling to ring buffer
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  153   *
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  154   * Currently there is no option in this driver to disable the saving of
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  155   * timestamps within the ring.
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  156   **/
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  157  static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  158  {
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  159  	struct iio_poll_func *pf = p;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  160  	struct iio_dev *indio_dev = pf->indio_dev;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  161  	struct ad7298_state *st = iio_priv(indio_dev);
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  162  	s64 time_ns = 0;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  163  	int b_sent;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  164  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  165  	b_sent = spi_sync(st->spi, &st->ring_msg);
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  166  	if (b_sent)
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  167  		goto done;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  168  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  169  	if (indio_dev->scan_timestamp) {
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  170  		time_ns = iio_get_time_ns();
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  171  		memcpy((u8 *)st->rx_buf + indio_dev->scan_bytes - sizeof(s64),
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  172  			&time_ns, sizeof(time_ns));
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  173  	}
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  174  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  175  	iio_push_to_buffers(indio_dev, (u8 *)st->rx_buf);
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  176  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  177  done:
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  178  	iio_trigger_notify_done(indio_dev->trig);
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  179  
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  180  	return IRQ_HANDLED;
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  181  }
+>>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  182  
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  183  static int ad7298_scan_direct(struct ad7298_state *st, unsigned ch)
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  184  {
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  185  	int ret;
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24 @186  	st->tx_buf[0] = cpu_to_be16(AD7298_WRITE | st->ext_ref |
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  187  				   (AD7298_CH(0) >> ch));
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  188  
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  189  	ret = spi_sync(st->spi, &st->scan_single_msg);
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  190  	if (ret)
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  191  		return ret;
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  192  
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24 @193  	return be16_to_cpu(st->rx_buf[0]);
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  194  }
+>>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  195  
+>>> 01a99e18 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-05-18  196  static int ad7298_scan_temp(struct ad7298_state *st, int *val)
+>>>
+>>> ---
+>>> 0-DAY kernel build testing backend         Open Source Technology Center
+>>> Fengguang Wu, Yuanhan Liu                              Intel Corporation
+>>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
