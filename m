@@ -1,372 +1,146 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40676 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753081Ab2KTUzi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Nov 2012 15:55:38 -0500
-Message-ID: <50ABEE46.7020800@kernel.org>
-Date: Tue, 20 Nov 2012 20:55:34 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:59641 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751954Ab2KROSx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 18 Nov 2012 09:18:53 -0500
+Message-ID: <50A8EE71.8090302@metafoo.de>
+Date: Sun, 18 Nov 2012 15:19:29 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	drivers@analog.com
-Subject: Re: [PATCH 2/7] iio:imu:adis: Add support for 32bit registers
-References: <1353418611-17614-1-git-send-email-lars@metafoo.de> <1353418611-17614-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1353418611-17614-2-git-send-email-lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: kbuild test robot <fengguang.wu@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [iio:togreg 24/24] drivers/iio/adc/ad7298.c:125:23: sparse: incorrect
+ type in assignment (different base types)
+References: <50a787d6.NK04zL7PgCPbLOrx%fengguang.wu@intel.com> <50A8E5DF.7000607@kernel.org>
+In-Reply-To: <50A8E5DF.7000607@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/20/2012 01:36 PM, Lars-Peter Clausen wrote:
-> Some of the newer generation devices from the ADIS16XXX family have 32bit wide
-> register which spans two 16bit wide registers. This patch adds support for
-> reading and writing a 32bit wide register.
+On 11/18/2012 02:42 PM, Jonathan Cameron wrote:
+> Hi Lars-Peter
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-added to togreg branch of iio.git
-> ---
->  drivers/iio/imu/adis.c        | 145 +++++++++++++++++++++++++++---------------
->  drivers/iio/imu/adis_buffer.c |   2 +
->  include/linux/iio/imu/adis.h  |  81 +++++++++++++++++++++--
->  3 files changed, 171 insertions(+), 57 deletions(-)
+> Hmm. currious. I'd not normally have that check on - for reference
+> this only happens for me with CF="-D__CHECK_ENDIAN__" appeneded to my
+> normal make for the kernel.
 > 
-> diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
-> index 28d4df2..280a495 100644
-> --- a/drivers/iio/imu/adis.c
-> +++ b/drivers/iio/imu/adis.c
-> @@ -27,36 +27,10 @@
->  #define ADIS_MSC_CTRL_DATA_RDY_DIO2	BIT(0)
->  #define ADIS_GLOB_CMD_SW_RESET		BIT(7)
->  
-> -/**
-> - * adis_write_reg_8() - Write single byte to a register
-> - * @adis: The adis device
-> - * @reg: The address of the register to be written
-> - * @val: The value to write
-> - */
-> -int adis_write_reg_8(struct adis *adis, unsigned int reg, uint8_t val)
-> -{
-> -	int ret;
-> -
-> -	mutex_lock(&adis->txrx_lock);
-> -	adis->tx[0] = ADIS_WRITE_REG(reg);
-> -	adis->tx[1] = val;
-> -
-> -	ret = spi_write(adis->spi, adis->tx, 2);
-> -	mutex_unlock(&adis->txrx_lock);
-> -
-> -	return ret;
-> -}
-> -EXPORT_SYMBOL_GPL(adis_write_reg_8);
-> -
-> -/**
-> - * adis_write_reg_16() - Write 2 bytes to a pair of registers
-> - * @adis: The adis device
-> - * @reg: The address of the lower of the two registers
-> - * @val: Value to be written
-> - */
-> -int adis_write_reg_16(struct adis *adis, unsigned int reg, uint16_t value)
-> +int adis_write_reg(struct adis *adis, unsigned int reg,
-> +	unsigned int value, unsigned int size)
->  {
-> -	int ret;
-> +	int ret, i;
->  	struct spi_message msg;
->  	struct spi_transfer xfers[] = {
->  		{
-> @@ -69,33 +43,69 @@ int adis_write_reg_16(struct adis *adis, unsigned int reg, uint16_t value)
->  			.tx_buf = adis->tx + 2,
->  			.bits_per_word = 8,
->  			.len = 2,
-> +			.cs_change = 1,
-> +			.delay_usecs = adis->data->write_delay,
-> +		}, {
-> +			.tx_buf = adis->tx + 4,
-> +			.bits_per_word = 8,
-> +			.len = 2,
-> +			.cs_change = 1,
-> +			.delay_usecs = adis->data->write_delay,
-> +		}, {
-> +			.tx_buf = adis->tx + 6,
-> +			.bits_per_word = 8,
-> +			.len = 2,
->  			.delay_usecs = adis->data->write_delay,
->  		},
->  	};
->  
->  	mutex_lock(&adis->txrx_lock);
-> -	adis->tx[0] = ADIS_WRITE_REG(reg);
-> -	adis->tx[1] = value & 0xff;
-> -	adis->tx[2] = ADIS_WRITE_REG(reg + 1);
-> -	adis->tx[3] = (value >> 8) & 0xff;
->  
->  	spi_message_init(&msg);
-> -	spi_message_add_tail(&xfers[0], &msg);
-> -	spi_message_add_tail(&xfers[1], &msg);
-> +	switch (size) {
-> +	case 4:
-> +		adis->tx[6] = ADIS_WRITE_REG(reg + 3);
-> +		adis->tx[7] = (value >> 24) & 0xff;
-> +		adis->tx[4] = ADIS_WRITE_REG(reg + 2);
-> +		adis->tx[5] = (value >> 16) & 0xff;
-> +	case 2:
-> +		adis->tx[2] = ADIS_WRITE_REG(reg + 1);
-> +		adis->tx[3] = (value >> 8) & 0xff;
-> +	case 1:
-> +		adis->tx[0] = ADIS_WRITE_REG(reg);
-> +		adis->tx[1] = value & 0xff;
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		goto out_unlock;
-> +	}
-> +
-> +	xfers[size - 1].cs_change = 0;
-> +
-> +	for (i = 0; i < size; i++)
-> +		spi_message_add_tail(&xfers[i], &msg);
-> +
->  	ret = spi_sync(adis->spi, &msg);
-> +	if (ret) {
-> +		dev_err(&adis->spi->dev, "Failed to write register 0x%02X: %d\n",
-> +				reg, ret);
-> +	}
-> +
-> +out_unlock:
->  	mutex_unlock(&adis->txrx_lock);
->  
->  	return ret;
->  }
-> -EXPORT_SYMBOL_GPL(adis_write_reg_16);
-> +EXPORT_SYMBOL_GPL(adis_write_reg);
->  
->  /**
-> - * adis_read_reg_16() - read 2 bytes from a 16-bit register
-> + * adis_read_reg() - read 2 bytes from a 16-bit register
->   * @adis: The adis device
->   * @reg: The address of the lower of the two registers
->   * @val: The value read back from the device
->   */
-> -int adis_read_reg_16(struct adis *adis, unsigned int reg, uint16_t *val)
-> +int adis_read_reg(struct adis *adis, unsigned int reg,
-> +	unsigned int *val, unsigned int size)
->  {
->  	struct spi_message msg;
->  	int ret;
-> @@ -107,33 +117,61 @@ int adis_read_reg_16(struct adis *adis, unsigned int reg, uint16_t *val)
->  			.cs_change = 1,
->  			.delay_usecs = adis->data->read_delay,
->  		}, {
-> +			.tx_buf = adis->tx + 2,
->  			.rx_buf = adis->rx,
->  			.bits_per_word = 8,
->  			.len = 2,
-> +			.cs_change = 1,
-> +			.delay_usecs = adis->data->read_delay,
-> +		}, {
-> +			.rx_buf = adis->rx + 2,
-> +			.bits_per_word = 8,
-> +			.len = 2,
->  			.delay_usecs = adis->data->read_delay,
->  		},
->  	};
->  
->  	mutex_lock(&adis->txrx_lock);
-> -	adis->tx[0] = ADIS_READ_REG(reg);
-> -	adis->tx[1] = 0;
-> -
->  	spi_message_init(&msg);
-> -	spi_message_add_tail(&xfers[0], &msg);
-> -	spi_message_add_tail(&xfers[1], &msg);
-> +
-> +	switch (size) {
-> +	case 4:
-> +		adis->tx[0] = ADIS_READ_REG(reg + 2);
-> +		adis->tx[1] = 0;
-> +		spi_message_add_tail(&xfers[0], &msg);
-> +	case 2:
-> +		adis->tx[2] = ADIS_READ_REG(reg);
-> +		adis->tx[3] = 0;
-> +		spi_message_add_tail(&xfers[1], &msg);
-> +		spi_message_add_tail(&xfers[2], &msg);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		goto out_unlock;
-> +	}
-> +
->  	ret = spi_sync(adis->spi, &msg);
->  	if (ret) {
-> -		dev_err(&adis->spi->dev, "Failed to read 16 bit register 0x%02X: %d\n",
-> +		dev_err(&adis->spi->dev, "Failed to read register 0x%02X: %d\n",
->  				reg, ret);
-> -		goto error_ret;
-> +		goto out_unlock;
->  	}
-> -	*val = get_unaligned_be16(adis->rx);
->  
-> -error_ret:
-> +	switch (size) {
-> +	case 4:
-> +		*val = get_unaligned_be32(adis->rx);
-> +		break;
-> +	case 2:
-> +		*val = get_unaligned_be16(adis->rx + 2);
-> +		break;
-> +	}
-> +
-> +out_unlock:
->  	mutex_unlock(&adis->txrx_lock);
-> +
->  	return ret;
->  }
-> -EXPORT_SYMBOL_GPL(adis_read_reg_16);
-> +EXPORT_SYMBOL_GPL(adis_read_reg);
->  
->  #ifdef CONFIG_DEBUG_FS
->  
-> @@ -304,25 +342,26 @@ int adis_single_conversion(struct iio_dev *indio_dev,
->  	const struct iio_chan_spec *chan, unsigned int error_mask, int *val)
->  {
->  	struct adis *adis = iio_device_get_drvdata(indio_dev);
-> -	uint16_t val16;
-> +	unsigned int uval;
->  	int ret;
->  
->  	mutex_lock(&indio_dev->mlock);
->  
-> -	ret = adis_read_reg_16(adis, chan->address, &val16);
-> +	ret = adis_read_reg(adis, chan->address, &uval,
-> +			chan->scan_type.storagebits / 8);
->  	if (ret)
->  		goto err_unlock;
->  
-> -	if (val16 & error_mask) {
-> +	if (uval & error_mask) {
->  		ret = adis_check_status(adis);
->  		if (ret)
->  			goto err_unlock;
->  	}
->  
->  	if (chan->scan_type.sign == 's')
-> -		*val = sign_extend32(val16, chan->scan_type.realbits - 1);
-> +		*val = sign_extend32(uval, chan->scan_type.realbits - 1);
->  	else
-> -		*val = val16 & ((1 << chan->scan_type.realbits) - 1);
-> +		*val = uval & ((1 << chan->scan_type.realbits) - 1);
->  
->  	ret = IIO_VAL_INT;
->  err_unlock:
-> diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
-> index a91b4cb..7857133 100644
-> --- a/drivers/iio/imu/adis_buffer.c
-> +++ b/drivers/iio/imu/adis_buffer.c
-> @@ -64,6 +64,8 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
->  	for (i = 0; i < indio_dev->num_channels; i++, chan++) {
->  		if (!test_bit(chan->scan_index, scan_mask))
->  			continue;
-> +		if (chan->scan_type.storagebits == 32)
-> +			*tx++ = cpu_to_be16((chan->address + 2) << 8);
->  		*tx++ = cpu_to_be16(chan->address << 8);
->  	}
->  
-> diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-> index fce7bc3..6402a08 100644
-> --- a/include/linux/iio/imu/adis.h
-> +++ b/include/linux/iio/imu/adis.h
-> @@ -53,7 +53,7 @@ struct adis {
->  	struct spi_transfer	*xfer;
->  	void			*buffer;
->  
-> -	uint8_t			tx[8] ____cacheline_aligned;
-> +	uint8_t			tx[10] ____cacheline_aligned;
->  	uint8_t			rx[4];
->  };
->  
-> @@ -61,9 +61,82 @@ int adis_init(struct adis *adis, struct iio_dev *indio_dev,
->  	struct spi_device *spi, const struct adis_data *data);
->  int adis_reset(struct adis *adis);
->  
-> -int adis_write_reg_8(struct adis *adis, unsigned int reg, uint8_t val);
-> -int adis_write_reg_16(struct adis *adis, unsigned int reg, uint16_t val);
-> -int adis_read_reg_16(struct adis *adis, unsigned int reg, uint16_t *val);
-> +int adis_write_reg(struct adis *adis, unsigned int reg,
-> +	unsigned int val, unsigned int size);
-> +int adis_read_reg(struct adis *adis, unsigned int reg,
-> +	unsigned int *val, unsigned int size);
-> +
-> +/**
-> + * adis_write_reg_8() - Write single byte to a register
-> + * @adis: The adis device
-> + * @reg: The address of the register to be written
-> + * @value: The value to write
-> + */
-> +static inline int adis_write_reg_8(struct adis *adis, unsigned int reg,
-> +	uint8_t val)
-> +{
-> +	return adis_write_reg(adis, reg, val, 1);
-> +}
-> +
-> +/**
-> + * adis_write_reg_16() - Write 2 bytes to a pair of registers
-> + * @adis: The adis device
-> + * @reg: The address of the lower of the two registers
-> + * @value: Value to be written
-> + */
-> +static inline int adis_write_reg_16(struct adis *adis, unsigned int reg,
-> +	uint16_t val)
-> +{
-> +	return adis_write_reg(adis, reg, val, 2);
-> +}
-> +
-> +/**
-> + * adis_write_reg_32() - write 4 bytes to four registers
-> + * @adis: The adis device
-> + * @reg: The address of the lower of the four register
-> + * @value: Value to be written
-> + */
-> +static inline int adis_write_reg_32(struct adis *adis, unsigned int reg,
-> +	uint32_t val)
-> +{
-> +	return adis_write_reg(adis, reg, val, 4);
-> +}
-> +
-> +/**
-> + * adis_read_reg_16() - read 2 bytes from a 16-bit register
-> + * @adis: The adis device
-> + * @reg: The address of the lower of the two registers
-> + * @val: The value read back from the device
-> + */
-> +static inline int adis_read_reg_16(struct adis *adis, unsigned int reg,
-> +	uint16_t *val)
-> +{
-> +	unsigned int tmp;
-> +	int ret;
-> +
-> +	ret = adis_read_reg(adis, reg, &tmp, 2);
-> +	*val = tmp;
-> +
-> +	return ret;
-> +}
-> +
-> +/**
-> + * adis_read_reg_32() - read 4 bytes from a 32-bit register
-> + * @adis: The adis device
-> + * @reg: The address of the lower of the two registers
-> + * @val: The value read back from the device
-> + */
-> +static inline int adis_read_reg_32(struct adis *adis, unsigned int reg,
-> +	uint32_t *val)
-> +{
-> +	unsigned int tmp;
-> +	int ret;
-> +
-> +	ret = adis_read_reg(adis, reg, &tmp, 4);
-> +	*val = tmp;
-> +
-> +	return ret;
-> +}
->  
->  int adis_enable_irq(struct adis *adis, bool enable);
->  int adis_check_status(struct adis *adis);
+> Anyhow, initial thought was to change rx_buf and tx_buf to __be16.
+> Can you see any issues with that?
 > 
+
+I actually had such a patch initially in my series, but removed it again, since
+we are using the buffer as non __be16 in some places.
+
+> It clears the warnings out.
+
+But if sparse doesn't complain about those we are better of with the change I
+guess.
+
+> 
+> Jonathan
+> 
+> On 11/17/2012 12:49 PM, kbuild test robot wrote:
+>> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+>> head:   e3e10fa5760709eb9dcc05fc9bfd48f90e2abbd7
+>> commit: e3e10fa5760709eb9dcc05fc9bfd48f90e2abbd7 [24/24] staging:iio: Move the ad7298 driver out of staging
+>>
+>>
+>> sparse warnings:
+>>
+>> + drivers/iio/adc/ad7298.c:125:23: sparse: incorrect type in assignment (different base types)
+>> drivers/iio/adc/ad7298.c:125:23:    expected unsigned short [unsigned] [short] <noident>
+>> drivers/iio/adc/ad7298.c:125:23:    got restricted __be16 [usertype] <noident>
+>> drivers/iio/adc/ad7298.c:186:23: sparse: incorrect type in assignment (different base types)
+>> drivers/iio/adc/ad7298.c:186:23:    expected unsigned short [unsigned] [short] <noident>
+>> drivers/iio/adc/ad7298.c:186:23:    got restricted __be16 [usertype] <noident>
+>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
+>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
+>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
+>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
+>>
+>> vim +125 drivers/iio/adc/ad7298.c
+>>
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  119  	command = AD7298_WRITE | st->ext_ref;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  120  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  121  	for (i = 0, m = AD7298_CH(0); i < AD7298_MAX_CHAN; i++, m >>= 1)
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  122  		if (test_bit(i, active_scan_mask))
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  123  			command |= m;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  124  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15 @125  	st->tx_buf[0] = cpu_to_be16(command);
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  126  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  127  	/* build spi ring message */
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  128  	st->ring_xfer[0].tx_buf = &st->tx_buf[0];
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  129  	st->ring_xfer[0].len = 2;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  130  	st->ring_xfer[0].cs_change = 1;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  131  	st->ring_xfer[1].tx_buf = &st->tx_buf[1];
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  132  	st->ring_xfer[1].len = 2;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  133  	st->ring_xfer[1].cs_change = 1;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  134  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  135  	spi_message_init(&st->ring_msg);
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  136  	spi_message_add_tail(&st->ring_xfer[0], &st->ring_msg);
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  137  	spi_message_add_tail(&st->ring_xfer[1], &st->ring_msg);
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  138  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  139  	for (i = 0; i < scan_count; i++) {
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  140  		st->ring_xfer[i + 2].rx_buf = &st->rx_buf[i];
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  141  		st->ring_xfer[i + 2].len = 2;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  142  		st->ring_xfer[i + 2].cs_change = 1;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  143  		spi_message_add_tail(&st->ring_xfer[i + 2], &st->ring_msg);
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  144  	}
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  145  	/* make sure last transfer cs_change is not set */
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  146  	st->ring_xfer[i + 1].cs_change = 0;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  147  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  148  	return 0;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  149  }
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  150  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  151  /**
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  152   * ad7298_trigger_handler() bh of trigger launched polling to ring buffer
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  153   *
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  154   * Currently there is no option in this driver to disable the saving of
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  155   * timestamps within the ring.
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  156   **/
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  157  static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  158  {
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  159  	struct iio_poll_func *pf = p;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  160  	struct iio_dev *indio_dev = pf->indio_dev;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  161  	struct ad7298_state *st = iio_priv(indio_dev);
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  162  	s64 time_ns = 0;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  163  	int b_sent;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  164  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  165  	b_sent = spi_sync(st->spi, &st->ring_msg);
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  166  	if (b_sent)
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  167  		goto done;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  168  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  169  	if (indio_dev->scan_timestamp) {
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  170  		time_ns = iio_get_time_ns();
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  171  		memcpy((u8 *)st->rx_buf + indio_dev->scan_bytes - sizeof(s64),
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  172  			&time_ns, sizeof(time_ns));
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  173  	}
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  174  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  175  	iio_push_to_buffers(indio_dev, (u8 *)st->rx_buf);
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  176  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  177  done:
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  178  	iio_trigger_notify_done(indio_dev->trig);
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  179  
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  180  	return IRQ_HANDLED;
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  181  }
+>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  182  
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  183  static int ad7298_scan_direct(struct ad7298_state *st, unsigned ch)
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  184  {
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  185  	int ret;
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24 @186  	st->tx_buf[0] = cpu_to_be16(AD7298_WRITE | st->ext_ref |
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  187  				   (AD7298_CH(0) >> ch));
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  188  
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  189  	ret = spi_sync(st->spi, &st->scan_single_msg);
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  190  	if (ret)
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  191  		return ret;
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  192  
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24 @193  	return be16_to_cpu(st->rx_buf[0]);
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  194  }
+>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  195  
+>> 01a99e18 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-05-18  196  static int ad7298_scan_temp(struct ad7298_state *st, int *val)
+>>
+>> ---
+>> 0-DAY kernel build testing backend         Open Source Technology Center
+>> Fengguang Wu, Yuanhan Liu                              Intel Corporation
+>>
