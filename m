@@ -1,621 +1,460 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from atlantis.wh2.tu-dresden.de ([141.30.228.39]:50427 "EHLO
-	atlantis.wh2.tu-dresden.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751278Ab2KEN4Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2012 08:56:25 -0500
-From: Lars Poeschel <larsi@wh2.tu-dresden.de>
-To: linus.walleij@linaro.org
-Cc: poeschel@lemonage.de, sameo@linux.intel.com,
-	linux-kernel@vger.kernel.org, jic23@cam.ac.uk, khali@linux-fr.org,
-	ben-linux@fluff.org, w.sang@pengutronix.de,
-	grant.likely@secretlab.ca, linux-iio@vger.kernel.org
-Subject: [PATCH v3 3/5] gpio: add viperboard gpio driver
-Date: Mon,  5 Nov 2012 15:48:24 +0100
-Message-Id: <1352126906-4560-3-git-send-email-larsi@wh2.tu-dresden.de>
-In-Reply-To: <1352126906-4560-1-git-send-email-larsi@wh2.tu-dresden.de>
-References: <1352126906-4560-1-git-send-email-larsi@wh2.tu-dresden.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <wfp5p@viridian.itc.virginia.edu>
+From: Bill Pemberton <wfp5p@virginia.edu>
+To: gregkh@linuxfoundation.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk> ,
+	linux-iio@vger.kernel.org
+Subject: [PATCH 406/493] iio: remove use of __devexit
+Date: Mon, 19 Nov 2012 13:25:55 -0500
+Message-Id: <1353349642-3677-406-git-send-email-wfp5p@virginia.edu>
+In-Reply-To: <1353349642-3677-1-git-send-email-wfp5p@virginia.edu>
+References: <1353349642-3677-1-git-send-email-wfp5p@virginia.edu>
+List-ID: <linux-iio@vger.kernel.org>
 
-From: Lars Poeschel <poeschel@lemonage.de>
+CONFIG_HOTPLUG is going away as an option so __devexit is no
+longer needed.
 
-This adds the mfd cell to use the gpio a and gpio b part
-of the Nano River Technologies viperboard.
-
-Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
+Signed-off-by: Bill Pemberton <wfp5p@virginia.edu>
+Cc: Jonathan Cameron <jic23@cam.ac.uk> 
+Cc: linux-iio@vger.kernel.org 
 ---
- drivers/gpio/Kconfig           |   13 +
- drivers/gpio/Makefile          |    1 +
- drivers/gpio/gpio-viperboard.c |  517 ++++++++++++++++++++++++++++++++++++++++
- drivers/mfd/viperboard.c       |    3 +
- include/linux/mfd/viperboard.h |    2 +
- 5 files changed, 536 insertions(+)
- create mode 100644 drivers/gpio/gpio-viperboard.c
+ drivers/iio/adc/ad7266.c        | 2 +-
+ drivers/iio/adc/ad7476.c        | 2 +-
+ drivers/iio/adc/ad7791.c        | 2 +-
+ drivers/iio/adc/ad7887.c        | 2 +-
+ drivers/iio/adc/at91_adc.c      | 2 +-
+ drivers/iio/adc/lp8788_adc.c    | 2 +-
+ drivers/iio/adc/max1363.c       | 2 +-
+ drivers/iio/adc/ti_am335x_adc.c | 2 +-
+ drivers/iio/amplifiers/ad8366.c | 2 +-
+ drivers/iio/dac/ad5064.c        | 6 +++---
+ drivers/iio/dac/ad5360.c        | 2 +-
+ drivers/iio/dac/ad5380.c        | 6 +++---
+ drivers/iio/dac/ad5421.c        | 2 +-
+ drivers/iio/dac/ad5446.c        | 4 ++--
+ drivers/iio/dac/ad5449.c        | 2 +-
+ drivers/iio/dac/ad5504.c        | 2 +-
+ drivers/iio/dac/ad5624r_spi.c   | 2 +-
+ drivers/iio/dac/ad5686.c        | 2 +-
+ drivers/iio/dac/ad5755.c        | 2 +-
+ drivers/iio/dac/ad5764.c        | 2 +-
+ drivers/iio/dac/ad5791.c        | 2 +-
+ drivers/iio/dac/max517.c        | 2 +-
+ drivers/iio/dac/mcp4725.c       | 2 +-
+ drivers/iio/frequency/ad9523.c  | 2 +-
+ drivers/iio/frequency/adf4350.c | 2 +-
+ drivers/iio/light/adjd_s311.c   | 2 +-
+ drivers/iio/light/lm3533-als.c  | 2 +-
+ drivers/iio/light/vcnl4000.c    | 2 +-
+ 28 files changed, 33 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index d055cee..c3bbd08 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -649,4 +649,17 @@ config GPIO_MSIC
- 	  Enable support for GPIO on intel MSIC controllers found in
- 	  intel MID devices
+diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
+index f57a8d0..4a5f639b 100644
+--- a/drivers/iio/adc/ad7266.c
++++ b/drivers/iio/adc/ad7266.c
+@@ -494,7 +494,7 @@ error_put_reg:
+ 	return ret;
+ }
  
-+comment "USB GPIO expanders:"
-+
-+config GPIO_VIPERBOARD
-+	tristate "Viperboard GPIO a & b support"
-+	depends on MFD_VIPERBOARD && USB
-+	help
-+	  Say yes here to access the GPIO signals of Nano River
-+	  Technologies Viperboard. There are two GPIO chips on the
-+	  board: gpioa and gpiob.
-+          See viperboard API specification and Nano
-+          River Tech's viperboard.h for detailed meaning
-+          of the module parameters.
-+
- endif
-diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
-index 9aeed67..16a1385 100644
---- a/drivers/gpio/Makefile
-+++ b/drivers/gpio/Makefile
-@@ -71,6 +71,7 @@ obj-$(CONFIG_GPIO_TPS65912)	+= gpio-tps65912.o
- obj-$(CONFIG_GPIO_TWL4030)	+= gpio-twl4030.o
- obj-$(CONFIG_GPIO_TWL6040)	+= gpio-twl6040.o
- obj-$(CONFIG_GPIO_UCB1400)	+= gpio-ucb1400.o
-+obj-$(CONFIG_GPIO_VIPERBOARD)	+= gpio-viperboard.o
- obj-$(CONFIG_GPIO_VR41XX)	+= gpio-vr41xx.o
- obj-$(CONFIG_GPIO_VT8500)	+= gpio-vt8500.o
- obj-$(CONFIG_GPIO_VX855)	+= gpio-vx855.o
-diff --git a/drivers/gpio/gpio-viperboard.c b/drivers/gpio/gpio-viperboard.c
-new file mode 100644
-index 0000000..1377299
---- /dev/null
-+++ b/drivers/gpio/gpio-viperboard.c
-@@ -0,0 +1,517 @@
-+/*
-+ *  Nano River Technologies viperboard GPIO lib driver
-+ *
-+ *  (C) 2012 by Lemonage GmbH
-+ *  Author: Lars Poeschel <poeschel@lemonage.de>
-+ *  All rights reserved.
-+ *
-+ *  This program is free software; you can redistribute  it and/or modify it
-+ *  under  the terms of  the GNU General  Public License as published by the
-+ *  Free Software Foundation;  either version 2 of the	License, or (at your
-+ *  option) any later version.
-+ *
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/errno.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+#include <linux/mutex.h>
-+#include <linux/platform_device.h>
-+
-+#include <linux/usb.h>
-+#include <linux/gpio.h>
-+
-+#include <linux/mfd/viperboard.h>
-+
-+#define VPRBRD_GPIOA_CLK_1MHZ		0
-+#define VPRBRD_GPIOA_CLK_100KHZ		1
-+#define VPRBRD_GPIOA_CLK_10KHZ		2
-+#define VPRBRD_GPIOA_CLK_1KHZ		3
-+#define VPRBRD_GPIOA_CLK_100HZ		4
-+#define VPRBRD_GPIOA_CLK_10HZ		5
-+
-+#define VPRBRD_GPIOA_FREQ_DEFAULT	1000
-+
-+#define VPRBRD_GPIOA_CMD_CONT		0x00
-+#define VPRBRD_GPIOA_CMD_PULSE		0x01
-+#define VPRBRD_GPIOA_CMD_PWM		0x02
-+#define VPRBRD_GPIOA_CMD_SETOUT		0x03
-+#define VPRBRD_GPIOA_CMD_SETIN		0x04
-+#define VPRBRD_GPIOA_CMD_SETINT		0x05
-+#define VPRBRD_GPIOA_CMD_GETIN		0x06
-+
-+#define VPRBRD_GPIOB_CMD_SETDIR		0x00
-+#define VPRBRD_GPIOB_CMD_SETVAL		0x01
-+
-+struct vprbrd_gpioa_msg {
-+	u8 cmd;
-+	u8 clk;
-+	u8 offset;
-+	u8 t1;
-+	u8 t2;
-+	u8 invert;
-+	u8 pwmlevel;
-+	u8 outval;
-+	u8 risefall;
-+	u8 answer;
-+	u8 __fill;
-+} __packed;
-+
-+struct vprbrd_gpiob_msg {
-+	u8 cmd;
-+	u16 val;
-+	u16 mask;
-+} __packed;
-+
-+struct vprbrd_gpio {
-+	struct gpio_chip gpioa; /* gpio a related things */
-+	u32 gpioa_out;
-+	u32 gpioa_val;
-+	struct gpio_chip gpiob; /* gpio b related things */
-+	u32 gpiob_out;
-+	u32 gpiob_val;
-+	struct vprbrd *vb;
-+};
-+
-+/* gpioa sampling clock module parameter */
-+static unsigned char gpioa_clk;
-+static unsigned int gpioa_freq = VPRBRD_GPIOA_FREQ_DEFAULT;
-+module_param(gpioa_freq, uint, 0);
-+MODULE_PARM_DESC(gpioa_freq,
-+	"gpio-a sampling freq in Hz (default is 1000Hz) valid values: 10, 100, 1000, 10000, 100000, 1000000");
-+
-+/* ----- begin of gipo a chip -------------------------------------------- */
-+
-+static int vprbrd_gpioa_get(struct gpio_chip *chip,
-+		unsigned offset)
-+{
-+	int ret, answer, error = 0;
-+	struct vprbrd_gpio *gpio =
-+			container_of(chip, struct vprbrd_gpio, gpioa);
-+	struct vprbrd *vb = gpio->vb;
-+	struct vprbrd_gpioa_msg *gamsg = (struct vprbrd_gpioa_msg *)vb->buf;
-+
-+	/* if io is set to output, just return the saved value */
-+	if (gpio->gpioa_out & (1 << offset))
-+		return gpio->gpioa_val & (1 << offset);
-+
-+	mutex_lock(&vb->lock);
-+
-+	gamsg->cmd = VPRBRD_GPIOA_CMD_GETIN;
-+	gamsg->clk = 0x00;
-+	gamsg->offset = offset;
-+	gamsg->t1 = 0x00;
-+	gamsg->t2 = 0x00;
-+	gamsg->invert = 0x00;
-+	gamsg->pwmlevel = 0x00;
-+	gamsg->outval = 0x00;
-+	gamsg->risefall = 0x00;
-+	gamsg->answer = 0x00;
-+	gamsg->__fill = 0x00;
-+
-+	ret = usb_control_msg(vb->usb_dev, usb_sndctrlpipe(vb->usb_dev, 0),
-+		VPRBRD_USB_REQUEST_GPIOA, VPRBRD_USB_TYPE_OUT, 0x0000,
-+		0x0000, gamsg, sizeof(struct vprbrd_gpioa_msg),
-+		VPRBRD_USB_TIMEOUT_MS);
-+	if (ret != sizeof(struct vprbrd_gpioa_msg))
-+		error = -EREMOTEIO;
-+
-+	ret = usb_control_msg(vb->usb_dev, usb_rcvctrlpipe(vb->usb_dev, 0),
-+		VPRBRD_USB_REQUEST_GPIOA, VPRBRD_USB_TYPE_IN, 0x0000,
-+		0x0000, gamsg, sizeof(struct vprbrd_gpioa_msg),
-+		VPRBRD_USB_TIMEOUT_MS);
-+	answer = gamsg->answer & 0x01;
-+
-+	mutex_unlock(&vb->lock);
-+
-+	if (ret != sizeof(struct vprbrd_gpioa_msg))
-+		error = -EREMOTEIO;
-+
-+	if (error)
-+		return error;
-+
-+	return answer;
-+}
-+
-+static void vprbrd_gpioa_set(struct gpio_chip *chip,
-+		unsigned offset, int value)
-+{
-+	int ret;
-+	struct vprbrd_gpio *gpio =
-+			container_of(chip, struct vprbrd_gpio, gpioa);
-+	struct vprbrd *vb = gpio->vb;
-+	struct vprbrd_gpioa_msg *gamsg = (struct vprbrd_gpioa_msg *)vb->buf;
-+
-+	if (gpio->gpioa_out & (1 << offset)) {
-+		if (value)
-+			gpio->gpioa_val |= (1 << offset);
-+		else
-+			gpio->gpioa_val &= ~(1 << offset);
-+
-+		mutex_lock(&vb->lock);
-+
-+		gamsg->cmd = VPRBRD_GPIOA_CMD_SETOUT;
-+		gamsg->clk = 0x00;
-+		gamsg->offset = offset;
-+		gamsg->t1 = 0x00;
-+		gamsg->t2 = 0x00;
-+		gamsg->invert = 0x00;
-+		gamsg->pwmlevel = 0x00;
-+		gamsg->outval = value;
-+		gamsg->risefall = 0x00;
-+		gamsg->answer = 0x00;
-+		gamsg->__fill = 0x00;
-+
-+		ret = usb_control_msg(vb->usb_dev,
-+			usb_sndctrlpipe(vb->usb_dev, 0),
-+			VPRBRD_USB_REQUEST_GPIOA, VPRBRD_USB_TYPE_OUT,
-+			0x0000,	0x0000, gamsg,
-+			sizeof(struct vprbrd_gpioa_msg), VPRBRD_USB_TIMEOUT_MS);
-+
-+		mutex_unlock(&vb->lock);
-+
-+		if (ret != sizeof(struct vprbrd_gpioa_msg))
-+			dev_err(chip->dev, "usb error setting pin value\n");
-+	}
-+}
-+
-+static int vprbrd_gpioa_direction_input(struct gpio_chip *chip,
-+			unsigned offset)
-+{
-+	int ret;
-+	struct vprbrd_gpio *gpio =
-+			container_of(chip, struct vprbrd_gpio, gpioa);
-+	struct vprbrd *vb = gpio->vb;
-+	struct vprbrd_gpioa_msg *gamsg = (struct vprbrd_gpioa_msg *)vb->buf;
-+
-+	gpio->gpioa_out &= ~(1 << offset);
-+
-+	mutex_lock(&vb->lock);
-+
-+	gamsg->cmd = VPRBRD_GPIOA_CMD_SETIN;
-+	gamsg->clk = gpioa_clk;
-+	gamsg->offset = offset;
-+	gamsg->t1 = 0x00;
-+	gamsg->t2 = 0x00;
-+	gamsg->invert = 0x00;
-+	gamsg->pwmlevel = 0x00;
-+	gamsg->outval = 0x00;
-+	gamsg->risefall = 0x00;
-+	gamsg->answer = 0x00;
-+	gamsg->__fill = 0x00;
-+
-+	ret = usb_control_msg(vb->usb_dev, usb_sndctrlpipe(vb->usb_dev, 0),
-+		VPRBRD_USB_REQUEST_GPIOA, VPRBRD_USB_TYPE_OUT, 0x0000,
-+		0x0000, gamsg, sizeof(struct vprbrd_gpioa_msg),
-+		VPRBRD_USB_TIMEOUT_MS);
-+
-+	mutex_unlock(&vb->lock);
-+
-+	if (ret != sizeof(struct vprbrd_gpioa_msg))
-+		return -EREMOTEIO;
-+
-+	return 0;
-+}
-+
-+static int vprbrd_gpioa_direction_output(struct gpio_chip *chip,
-+			unsigned offset, int value)
-+{
-+	int ret;
-+	struct vprbrd_gpio *gpio =
-+			container_of(chip, struct vprbrd_gpio, gpioa);
-+	struct vprbrd *vb = gpio->vb;
-+	struct vprbrd_gpioa_msg *gamsg = (struct vprbrd_gpioa_msg *)vb->buf;
-+
-+	gpio->gpioa_out |= (1 << offset);
-+	if (value)
-+		gpio->gpioa_val |= (1 << offset);
-+	else
-+		gpio->gpioa_val &= ~(1 << offset);
-+
-+	mutex_lock(&vb->lock);
-+
-+	gamsg->cmd = VPRBRD_GPIOA_CMD_SETOUT;
-+	gamsg->clk = 0x00;
-+	gamsg->offset = offset;
-+	gamsg->t1 = 0x00;
-+	gamsg->t2 = 0x00;
-+	gamsg->invert = 0x00;
-+	gamsg->pwmlevel = 0x00;
-+	gamsg->outval = value;
-+	gamsg->risefall = 0x00;
-+	gamsg->answer = 0x00;
-+	gamsg->__fill = 0x00;
-+
-+	ret = usb_control_msg(vb->usb_dev, usb_sndctrlpipe(vb->usb_dev, 0),
-+		VPRBRD_USB_REQUEST_GPIOA, VPRBRD_USB_TYPE_OUT, 0x0000,
-+		0x0000, gamsg, sizeof(struct vprbrd_gpioa_msg),
-+		VPRBRD_USB_TIMEOUT_MS);
-+
-+	mutex_unlock(&vb->lock);
-+
-+	if (ret != sizeof(struct vprbrd_gpioa_msg))
-+		return -EREMOTEIO;
-+
-+	return 0;
-+}
-+
-+/* ----- end of gpio a chip ---------------------------------------------- */
-+
-+/* ----- begin of gipo b chip -------------------------------------------- */
-+
-+static int vprbrd_gpiob_setdir(struct vprbrd *vb, unsigned offset,
-+	unsigned dir)
-+{
-+	struct vprbrd_gpiob_msg *gbmsg = (struct vprbrd_gpiob_msg *)vb->buf;
-+	int ret;
-+
-+	gbmsg->cmd = VPRBRD_GPIOB_CMD_SETDIR;
-+	gbmsg->val = cpu_to_be16(dir << offset);
-+	gbmsg->mask = cpu_to_be16(0x0001 << offset);
-+
-+	ret = usb_control_msg(vb->usb_dev, usb_sndctrlpipe(vb->usb_dev, 0),
-+		VPRBRD_USB_REQUEST_GPIOB, VPRBRD_USB_TYPE_OUT, 0x0000,
-+		0x0000, gbmsg, sizeof(struct vprbrd_gpiob_msg),
-+		VPRBRD_USB_TIMEOUT_MS);
-+
-+	if (ret != sizeof(struct vprbrd_gpiob_msg))
-+		return -EREMOTEIO;
-+
-+	return 0;
-+}
-+
-+static int vprbrd_gpiob_get(struct gpio_chip *chip,
-+		unsigned offset)
-+{
-+	int ret;
-+	u16 val;
-+	struct vprbrd_gpio *gpio =
-+			container_of(chip, struct vprbrd_gpio, gpiob);
-+	struct vprbrd *vb = gpio->vb;
-+	struct vprbrd_gpiob_msg *gbmsg = (struct vprbrd_gpiob_msg *)vb->buf;
-+
-+	/* if io is set to output, just return the saved value */
-+	if (gpio->gpiob_out & (1 << offset))
-+		return gpio->gpiob_val & (1 << offset);
-+
-+	mutex_lock(&vb->lock);
-+
-+	ret = usb_control_msg(vb->usb_dev, usb_rcvctrlpipe(vb->usb_dev, 0),
-+		VPRBRD_USB_REQUEST_GPIOB, VPRBRD_USB_TYPE_IN, 0x0000,
-+		0x0000, gbmsg,	sizeof(struct vprbrd_gpiob_msg),
-+		VPRBRD_USB_TIMEOUT_MS);
-+	val = gbmsg->val;
-+
-+	mutex_unlock(&vb->lock);
-+
-+	if (ret != sizeof(struct vprbrd_gpiob_msg))
-+		return ret;
-+
-+	/* cache the read values */
-+	gpio->gpiob_val = be16_to_cpu(val);
-+
-+	return (gpio->gpiob_val >> offset) & 0x1;
-+}
-+
-+static void vprbrd_gpiob_set(struct gpio_chip *chip,
-+		unsigned offset, int value)
-+{
-+	int ret;
-+	struct vprbrd_gpio *gpio =
-+			container_of(chip, struct vprbrd_gpio, gpiob);
-+	struct vprbrd *vb = gpio->vb;
-+	struct vprbrd_gpiob_msg *gbmsg = (struct vprbrd_gpiob_msg *)vb->buf;
-+
-+	if (gpio->gpiob_out & (1 << offset)) {
-+		if (value)
-+			gpio->gpiob_val |= (1 << offset);
-+		else
-+			gpio->gpiob_val &= ~(1 << offset);
-+
-+		mutex_lock(&vb->lock);
-+
-+		gbmsg->cmd = VPRBRD_GPIOB_CMD_SETVAL;
-+		gbmsg->val = cpu_to_be16(value << offset);
-+		gbmsg->mask = cpu_to_be16(0x0001 << offset);
-+
-+		ret = usb_control_msg(vb->usb_dev,
-+			usb_sndctrlpipe(vb->usb_dev, 0),
-+			VPRBRD_USB_REQUEST_GPIOB, VPRBRD_USB_TYPE_OUT,
-+			0x0000,	0x0000, gbmsg,
-+			sizeof(struct vprbrd_gpiob_msg), VPRBRD_USB_TIMEOUT_MS);
-+
-+		mutex_unlock(&vb->lock);
-+
-+		if (ret != sizeof(struct vprbrd_gpiob_msg))
-+			dev_err(chip->dev, "usb error setting pin value\n");
-+	}
-+}
-+
-+static int vprbrd_gpiob_direction_input(struct gpio_chip *chip,
-+			unsigned offset)
-+{
-+	int ret;
-+	struct vprbrd_gpio *gpio =
-+			container_of(chip, struct vprbrd_gpio, gpiob);
-+	struct vprbrd *vb = gpio->vb;
-+
-+	gpio->gpiob_out &= ~(1 << offset);
-+
-+	mutex_lock(&vb->lock);
-+
-+	ret = vprbrd_gpiob_setdir(vb, offset, 0);
-+
-+	mutex_unlock(&vb->lock);
-+
-+	if (ret)
-+		dev_err(chip->dev, "usb error setting pin to input\n");
-+
-+	return ret;
-+}
-+
-+static int vprbrd_gpiob_direction_output(struct gpio_chip *chip,
-+			unsigned offset, int value)
-+{
-+	int ret;
-+	struct vprbrd_gpio *gpio =
-+			container_of(chip, struct vprbrd_gpio, gpiob);
-+	struct vprbrd *vb = gpio->vb;
-+
-+	gpio->gpiob_out |= (1 << offset);
-+	if (value)
-+		gpio->gpiob_val |= (1 << offset);
-+	else
-+		gpio->gpiob_val &= ~(1 << offset);
-+
-+	mutex_lock(&vb->lock);
-+
-+	ret = vprbrd_gpiob_setdir(vb, offset, 1);
-+	if (ret)
-+		dev_err(chip->dev, "usb error setting pin to output\n");
-+
-+	mutex_unlock(&vb->lock);
-+
-+	vprbrd_gpiob_set(chip, offset, value);
-+
-+	return ret;
-+}
-+
-+/* ----- end of gpio b chip ---------------------------------------------- */
-+
-+static int __devinit vprbrd_gpio_probe(struct platform_device *pdev)
-+{
-+	struct vprbrd *vb = dev_get_drvdata(pdev->dev.parent);
-+	struct vprbrd_gpio *vb_gpio;
-+	int ret;
-+
-+	vb_gpio = devm_kzalloc(&pdev->dev, sizeof(*vb_gpio), GFP_KERNEL);
-+	if (vb_gpio == NULL)
-+		return -ENOMEM;
-+
-+	vb_gpio->vb = vb;
-+	/* registering gpio a */
-+	vb_gpio->gpioa.label = "viperboard gpio a";
-+	vb_gpio->gpioa.dev = &pdev->dev;
-+	vb_gpio->gpioa.owner = THIS_MODULE;
-+	vb_gpio->gpioa.base = -1;
-+	vb_gpio->gpioa.ngpio = 16;
-+	vb_gpio->gpioa.can_sleep = 1;
-+	vb_gpio->gpioa.set = vprbrd_gpioa_set;
-+	vb_gpio->gpioa.get = vprbrd_gpioa_get;
-+	vb_gpio->gpioa.direction_input = vprbrd_gpioa_direction_input;
-+	vb_gpio->gpioa.direction_output = vprbrd_gpioa_direction_output;
-+	ret = gpiochip_add(&vb_gpio->gpioa);
-+	if (ret < 0) {
-+		dev_err(vb_gpio->gpioa.dev, "could not add gpio a");
-+		goto err_gpioa;
-+	}
-+
-+	/* registering gpio b */
-+	vb_gpio->gpiob.label = "viperboard gpio b";
-+	vb_gpio->gpiob.dev = &pdev->dev;
-+	vb_gpio->gpiob.owner = THIS_MODULE;
-+	vb_gpio->gpiob.base = -1;
-+	vb_gpio->gpiob.ngpio = 16;
-+	vb_gpio->gpiob.can_sleep = 1;
-+	vb_gpio->gpiob.set = vprbrd_gpiob_set;
-+	vb_gpio->gpiob.get = vprbrd_gpiob_get;
-+	vb_gpio->gpiob.direction_input = vprbrd_gpiob_direction_input;
-+	vb_gpio->gpiob.direction_output = vprbrd_gpiob_direction_output;
-+	ret = gpiochip_add(&vb_gpio->gpiob);
-+	if (ret < 0) {
-+		dev_err(vb_gpio->gpiob.dev, "could not add gpio b");
-+		goto err_gpiob;
-+	}
-+
-+	platform_set_drvdata(pdev, vb_gpio);
-+
-+	return ret;
-+
-+err_gpiob:
-+	ret = gpiochip_remove(&vb_gpio->gpioa);
-+
-+err_gpioa:
-+	return ret;
-+}
-+
-+static int __devexit vprbrd_gpio_remove(struct platform_device *pdev)
-+{
-+	struct vprbrd_gpio *vb_gpio = platform_get_drvdata(pdev);
-+	int ret;
-+
-+	ret = gpiochip_remove(&vb_gpio->gpiob);
-+	if (ret == 0)
-+		ret = gpiochip_remove(&vb_gpio->gpioa);
-+
-+	return ret;
-+}
-+
-+static struct platform_driver vprbrd_gpio_driver = {
-+	.driver.name	= "viperboard-gpio",
-+	.driver.owner	= THIS_MODULE,
-+	.probe		= vprbrd_gpio_probe,
-+	.remove		= __devexit_p(vprbrd_gpio_remove),
-+};
-+
-+static int __init vprbrd_gpio_init(void)
-+{
-+	switch (gpioa_freq) {
-+	case 1000000:
-+		gpioa_clk = VPRBRD_GPIOA_CLK_1MHZ;
-+		break;
-+	case 100000:
-+		gpioa_clk = VPRBRD_GPIOA_CLK_100KHZ;
-+		break;
-+	case 10000:
-+		gpioa_clk = VPRBRD_GPIOA_CLK_10KHZ;
-+		break;
-+	case 1000:
-+		gpioa_clk = VPRBRD_GPIOA_CLK_1KHZ;
-+		break;
-+	case 100:
-+		gpioa_clk = VPRBRD_GPIOA_CLK_100HZ;
-+		break;
-+	case 10:
-+		gpioa_clk = VPRBRD_GPIOA_CLK_10HZ;
-+		break;
-+	default:
-+		pr_warn("invalid gpioa_freq (%d)\n", gpioa_freq);
-+		gpioa_clk = VPRBRD_GPIOA_CLK_1KHZ;
-+	}
-+
-+	return platform_driver_register(&vprbrd_gpio_driver);
-+}
-+subsys_initcall(vprbrd_gpio_init);
-+
-+static void __exit vprbrd_gpio_exit(void)
-+{
-+	platform_driver_unregister(&vprbrd_gpio_driver);
-+}
-+module_exit(vprbrd_gpio_exit);
-+
-+MODULE_AUTHOR("Lars Poeschel <poeschel@lemonage.de>");
-+MODULE_DESCRIPTION("GPIO driver for Nano River Techs Viperboard");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:viperboard-gpio");
-diff --git a/drivers/mfd/viperboard.c b/drivers/mfd/viperboard.c
-index 34bc372..4b2ffbf 100644
---- a/drivers/mfd/viperboard.c
-+++ b/drivers/mfd/viperboard.c
-@@ -38,6 +38,9 @@ static const struct usb_device_id vprbrd_table[] = {
- MODULE_DEVICE_TABLE(usb, vprbrd_table);
+-static int __devexit ad7266_remove(struct spi_device *spi)
++static int ad7266_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad7266_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+index 72b7555..1491fa6 100644
+--- a/drivers/iio/adc/ad7476.c
++++ b/drivers/iio/adc/ad7476.c
+@@ -277,7 +277,7 @@ error_ret:
+ 	return ret;
+ }
  
- static struct mfd_cell vprbrd_devs[] = {
-+	{
-+		.name = "viperboard-gpio",
-+	},
- };
+-static int __devexit ad7476_remove(struct spi_device *spi)
++static int ad7476_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad7476_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/adc/ad7791.c b/drivers/iio/adc/ad7791.c
+index 0935c5f..26db7ae 100644
+--- a/drivers/iio/adc/ad7791.c
++++ b/drivers/iio/adc/ad7791.c
+@@ -418,7 +418,7 @@ err_iio_free:
+ 	return ret;
+ }
  
- static int vprbrd_probe(struct usb_interface *interface,
-diff --git a/include/linux/mfd/viperboard.h b/include/linux/mfd/viperboard.h
-index 0d13424..42d339f 100644
---- a/include/linux/mfd/viperboard.h
-+++ b/include/linux/mfd/viperboard.h
-@@ -44,6 +44,8 @@
- #define VPRBRD_USB_TIMEOUT_MS       100
- #define VPRBRD_USB_REQUEST_MAJOR    0xea
- #define VPRBRD_USB_REQUEST_MINOR    0xeb
-+#define VPRBRD_USB_REQUEST_GPIOA    0xed
-+#define VPRBRD_USB_REQUEST_GPIOB    0xdd
+-static int __devexit ad7791_remove(struct spi_device *spi)
++static int ad7791_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad7791_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
+index 88ee5dc..a33d5cd 100644
+--- a/drivers/iio/adc/ad7887.c
++++ b/drivers/iio/adc/ad7887.c
+@@ -340,7 +340,7 @@ error_free:
+ 	return ret;
+ }
  
- struct vprbrd_i2c_write_hdr {
- 	u8 cmd;
+-static int __devexit ad7887_remove(struct spi_device *spi)
++static int ad7887_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad7887_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 5975647..04b0135 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -678,7 +678,7 @@ error_ret:
+ 	return ret;
+ }
+ 
+-static int __devexit at91_adc_remove(struct platform_device *pdev)
++static int at91_adc_remove(struct platform_device *pdev)
+ {
+ 	struct iio_dev *idev = platform_get_drvdata(pdev);
+ 	struct at91_adc_state *st = iio_priv(idev);
+diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
+index e96c321..72955e4 100644
+--- a/drivers/iio/adc/lp8788_adc.c
++++ b/drivers/iio/adc/lp8788_adc.c
+@@ -236,7 +236,7 @@ err_iio_map:
+ 	return ret;
+ }
+ 
+-static int __devexit lp8788_adc_remove(struct platform_device *pdev)
++static int lp8788_adc_remove(struct platform_device *pdev)
+ {
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct lp8788_adc *adc = iio_priv(indio_dev);
+diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+index f3c244f..b5669be 100644
+--- a/drivers/iio/adc/max1363.c
++++ b/drivers/iio/adc/max1363.c
+@@ -1624,7 +1624,7 @@ error_out:
+ 	return ret;
+ }
+ 
+-static int __devexit max1363_remove(struct i2c_client *client)
++static int max1363_remove(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 	struct max1363_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 6a0b375..cd030e1 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -188,7 +188,7 @@ err_ret:
+ 	return err;
+ }
+ 
+-static int __devexit tiadc_remove(struct platform_device *pdev)
++static int tiadc_remove(struct platform_device *pdev)
+ {
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 
+diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
+index 1650df8..d6c0af2 100644
+--- a/drivers/iio/amplifiers/ad8366.c
++++ b/drivers/iio/amplifiers/ad8366.c
+@@ -182,7 +182,7 @@ error_put_reg:
+ 	return ret;
+ }
+ 
+-static int __devexit ad8366_remove(struct spi_device *spi)
++static int ad8366_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad8366_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+index c9ed785..b007313 100644
+--- a/drivers/iio/dac/ad5064.c
++++ b/drivers/iio/dac/ad5064.c
+@@ -495,7 +495,7 @@ error_free:
+ 	return ret;
+ }
+ 
+-static int __devexit ad5064_remove(struct device *dev)
++static int ad5064_remove(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5064_state *st = iio_priv(indio_dev);
+@@ -531,7 +531,7 @@ static int ad5064_spi_probe(struct spi_device *spi)
+ 				ad5064_spi_write);
+ }
+ 
+-static int __devexit ad5064_spi_remove(struct spi_device *spi)
++static int ad5064_spi_remove(struct spi_device *spi)
+ {
+ 	return ad5064_remove(&spi->dev);
+ }
+@@ -603,7 +603,7 @@ static int ad5064_i2c_probe(struct i2c_client *i2c,
+ 						ad5064_i2c_write);
+ }
+ 
+-static int __devexit ad5064_i2c_remove(struct i2c_client *i2c)
++static int ad5064_i2c_remove(struct i2c_client *i2c)
+ {
+ 	return ad5064_remove(&i2c->dev);
+ }
+diff --git a/drivers/iio/dac/ad5360.c b/drivers/iio/dac/ad5360.c
+index c0fae59..54b46fd 100644
+--- a/drivers/iio/dac/ad5360.c
++++ b/drivers/iio/dac/ad5360.c
+@@ -524,7 +524,7 @@ error_free:
+ 	return ret;
+ }
+ 
+-static int __devexit ad5360_remove(struct spi_device *spi)
++static int ad5360_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad5360_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c
+index 835bb7f..e61852e 100644
+--- a/drivers/iio/dac/ad5380.c
++++ b/drivers/iio/dac/ad5380.c
+@@ -441,7 +441,7 @@ error_out:
+ 	return ret;
+ }
+ 
+-static int __devexit ad5380_remove(struct device *dev)
++static int ad5380_remove(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad5380_state *st = iio_priv(indio_dev);
+@@ -491,7 +491,7 @@ static int ad5380_spi_probe(struct spi_device *spi)
+ 	return ad5380_probe(&spi->dev, regmap, id->driver_data, id->name);
+ }
+ 
+-static int __devexit ad5380_spi_remove(struct spi_device *spi)
++static int ad5380_spi_remove(struct spi_device *spi)
+ {
+ 	return ad5380_remove(&spi->dev);
+ }
+@@ -565,7 +565,7 @@ static int ad5380_i2c_probe(struct i2c_client *i2c,
+ 	return ad5380_probe(&i2c->dev, regmap, id->driver_data, id->name);
+ }
+ 
+-static int __devexit ad5380_i2c_remove(struct i2c_client *i2c)
++static int ad5380_i2c_remove(struct i2c_client *i2c)
+ {
+ 	return ad5380_remove(&i2c->dev);
+ }
+diff --git a/drivers/iio/dac/ad5421.c b/drivers/iio/dac/ad5421.c
+index 5026bfa..43be948 100644
+--- a/drivers/iio/dac/ad5421.c
++++ b/drivers/iio/dac/ad5421.c
+@@ -516,7 +516,7 @@ error_free:
+ 	return ret;
+ }
+ 
+-static int __devexit ad5421_remove(struct spi_device *spi)
++static int ad5421_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 
+diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
+index 02087a9..607126f 100644
+--- a/drivers/iio/dac/ad5446.c
++++ b/drivers/iio/dac/ad5446.c
+@@ -469,7 +469,7 @@ static int ad5446_spi_probe(struct spi_device *spi)
+ 		&ad5446_spi_chip_info[id->driver_data]);
+ }
+ 
+-static int __devexit ad5446_spi_remove(struct spi_device *spi)
++static int ad5446_spi_remove(struct spi_device *spi)
+ {
+ 	return ad5446_remove(&spi->dev);
+ }
+@@ -546,7 +546,7 @@ static int ad5446_i2c_probe(struct i2c_client *i2c,
+ 		&ad5446_i2c_chip_info[id->driver_data]);
+ }
+ 
+-static int __devexit ad5446_i2c_remove(struct i2c_client *i2c)
++static int ad5446_i2c_remove(struct i2c_client *i2c)
+ {
+ 	return ad5446_remove(&i2c->dev);
+ }
+diff --git a/drivers/iio/dac/ad5449.c b/drivers/iio/dac/ad5449.c
+index 4184be6..c4731b7 100644
+--- a/drivers/iio/dac/ad5449.c
++++ b/drivers/iio/dac/ad5449.c
+@@ -333,7 +333,7 @@ error_free:
+ 	return ret;
+ }
+ 
+-static int __devexit ad5449_spi_remove(struct spi_device *spi)
++static int ad5449_spi_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad5449 *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
+index 531c9f4..b2a31a0 100644
+--- a/drivers/iio/dac/ad5504.c
++++ b/drivers/iio/dac/ad5504.c
+@@ -352,7 +352,7 @@ error_ret:
+ 	return ret;
+ }
+ 
+-static int __devexit ad5504_remove(struct spi_device *spi)
++static int ad5504_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad5504_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
+index 4d7ff95..e994796 100644
+--- a/drivers/iio/dac/ad5624r_spi.c
++++ b/drivers/iio/dac/ad5624r_spi.c
+@@ -282,7 +282,7 @@ error_ret:
+ 	return ret;
+ }
+ 
+-static int __devexit ad5624r_remove(struct spi_device *spi)
++static int ad5624r_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad5624r_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index a153c680..36e5138 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -379,7 +379,7 @@ error_put_reg:
+ 	return ret;
+ }
+ 
+-static int __devexit ad5686_remove(struct spi_device *spi)
++static int ad5686_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad5686_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+index 3083d45..3d56620 100644
+--- a/drivers/iio/dac/ad5755.c
++++ b/drivers/iio/dac/ad5755.c
+@@ -614,7 +614,7 @@ error_free:
+ 	return ret;
+ }
+ 
+-static int __devexit ad5755_remove(struct spi_device *spi)
++static int ad5755_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 
+diff --git a/drivers/iio/dac/ad5764.c b/drivers/iio/dac/ad5764.c
+index 80302b0..7f9045e 100644
+--- a/drivers/iio/dac/ad5764.c
++++ b/drivers/iio/dac/ad5764.c
+@@ -340,7 +340,7 @@ error_free:
+ 	return ret;
+ }
+ 
+-static int __devexit ad5764_remove(struct spi_device *spi)
++static int ad5764_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad5764_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/dac/ad5791.c b/drivers/iio/dac/ad5791.c
+index 34f3c5f..c84180f 100644
+--- a/drivers/iio/dac/ad5791.c
++++ b/drivers/iio/dac/ad5791.c
+@@ -439,7 +439,7 @@ error_ret:
+ 	return ret;
+ }
+ 
+-static int __devexit ad5791_remove(struct spi_device *spi)
++static int ad5791_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad5791_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
+index 25b2e9c..e15fb7f 100644
+--- a/drivers/iio/dac/max517.c
++++ b/drivers/iio/dac/max517.c
+@@ -210,7 +210,7 @@ exit:
+ 	return err;
+ }
+ 
+-static int __devexit max517_remove(struct i2c_client *client)
++static int max517_remove(struct i2c_client *client)
+ {
+ 	iio_device_unregister(i2c_get_clientdata(client));
+ 	iio_device_free(i2c_get_clientdata(client));
+diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+index 1f5c99a..1ccb734 100644
+--- a/drivers/iio/dac/mcp4725.c
++++ b/drivers/iio/dac/mcp4725.c
+@@ -195,7 +195,7 @@ exit:
+ 	return err;
+ }
+ 
+-static int __devexit mcp4725_remove(struct i2c_client *client)
++static int mcp4725_remove(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 
+diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
+index 00c382d..8030747 100644
+--- a/drivers/iio/frequency/ad9523.c
++++ b/drivers/iio/frequency/ad9523.c
+@@ -1020,7 +1020,7 @@ error_put_reg:
+ 	return ret;
+ }
+ 
+-static int __devexit ad9523_remove(struct spi_device *spi)
++static int ad9523_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad9523_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index cdee2ee..e5033b4 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -440,7 +440,7 @@ error_put_reg:
+ 	return ret;
+ }
+ 
+-static int __devexit adf4350_remove(struct spi_device *spi)
++static int adf4350_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct adf4350_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/light/adjd_s311.c b/drivers/iio/light/adjd_s311.c
+index 4ad9b3d..bee3670 100644
+--- a/drivers/iio/light/adjd_s311.c
++++ b/drivers/iio/light/adjd_s311.c
+@@ -330,7 +330,7 @@ exit:
+ 	return err;
+ }
+ 
+-static int __devexit adjd_s311_remove(struct i2c_client *client)
++static int adjd_s311_remove(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 	struct adjd_s311_data *data = iio_priv(indio_dev);
+diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
+index 54d00ab..e2e54b0 100644
+--- a/drivers/iio/light/lm3533-als.c
++++ b/drivers/iio/light/lm3533-als.c
+@@ -901,7 +901,7 @@ err_free_dev:
+ 	return ret;
+ }
+ 
+-static int __devexit lm3533_als_remove(struct platform_device *pdev)
++static int lm3533_als_remove(struct platform_device *pdev)
+ {
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct lm3533_als *als = iio_priv(indio_dev);
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index 92b072e..a5fb5ee 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -190,7 +190,7 @@ error_free_dev:
+ 	return ret;
+ }
+ 
+-static int __devexit vcnl4000_remove(struct i2c_client *client)
++static int vcnl4000_remove(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 
 -- 
-1.7.10.4
-
+1.8.0
