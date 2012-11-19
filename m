@@ -3,678 +3,440 @@ From: Bill Pemberton <wfp5p@virginia.edu>
 To: gregkh@linuxfoundation.org
 Cc: Jonathan Cameron <jic23@cam.ac.uk> ,
 	linux-iio@vger.kernel.org
-Subject: [PATCH 209/493] iio: remove use of __devinit
-Date: Mon, 19 Nov 2012 13:22:38 -0500
-Message-Id: <1353349642-3677-209-git-send-email-wfp5p@virginia.edu>
+Subject: [PATCH 067/493] iio: remove use of __devexit_p
+Date: Mon, 19 Nov 2012 13:20:16 -0500
+Message-Id: <1353349642-3677-67-git-send-email-wfp5p@virginia.edu>
 In-Reply-To: <1353349642-3677-1-git-send-email-wfp5p@virginia.edu>
 References: <1353349642-3677-1-git-send-email-wfp5p@virginia.edu>
 List-ID: <linux-iio@vger.kernel.org>
 
-CONFIG_HOTPLUG is going away as an option so __devinit is no longer
+CONFIG_HOTPLUG is going away as an option so __devexit_p is no longer
 needed.
 
 Signed-off-by: Bill Pemberton <wfp5p@virginia.edu>
 Cc: Jonathan Cameron <jic23@cam.ac.uk> 
 Cc: linux-iio@vger.kernel.org 
 ---
- drivers/iio/accel/hid-sensor-accel-3d.c       |  4 ++--
- drivers/iio/adc/ad7266.c                      |  4 ++--
- drivers/iio/adc/ad7476.c                      |  2 +-
- drivers/iio/adc/ad7791.c                      |  4 ++--
- drivers/iio/adc/ad7887.c                      |  2 +-
- drivers/iio/adc/at91_adc.c                    |  2 +-
- drivers/iio/adc/lp8788_adc.c                  |  2 +-
- drivers/iio/adc/max1363.c                     |  6 +++---
- drivers/iio/adc/ti_am335x_adc.c               |  2 +-
- drivers/iio/amplifiers/ad8366.c               |  2 +-
- drivers/iio/dac/ad5064.c                      |  6 +++---
- drivers/iio/dac/ad5360.c                      |  4 ++--
- drivers/iio/dac/ad5380.c                      |  8 ++++----
- drivers/iio/dac/ad5421.c                      |  2 +-
- drivers/iio/dac/ad5446.c                      |  6 +++---
- drivers/iio/dac/ad5449.c                      |  2 +-
- drivers/iio/dac/ad5504.c                      |  2 +-
- drivers/iio/dac/ad5624r_spi.c                 |  2 +-
- drivers/iio/dac/ad5686.c                      |  2 +-
- drivers/iio/dac/ad5755.c                      |  8 ++++----
- drivers/iio/dac/ad5764.c                      |  2 +-
- drivers/iio/dac/ad5791.c                      |  2 +-
- drivers/iio/dac/max517.c                      |  2 +-
- drivers/iio/dac/mcp4725.c                     |  2 +-
- drivers/iio/frequency/ad9523.c                |  2 +-
- drivers/iio/frequency/adf4350.c               |  2 +-
- drivers/iio/gyro/hid-sensor-gyro-3d.c         |  4 ++--
- drivers/iio/light/adjd_s311.c                 |  2 +-
- drivers/iio/light/hid-sensor-als.c            |  4 ++--
- drivers/iio/light/lm3533-als.c                | 12 ++++++------
- drivers/iio/light/vcnl4000.c                  |  2 +-
- drivers/iio/magnetometer/hid-sensor-magn-3d.c |  4 ++--
- 32 files changed, 56 insertions(+), 56 deletions(-)
+ drivers/iio/adc/ad7266.c        | 2 +-
+ drivers/iio/adc/ad7476.c        | 2 +-
+ drivers/iio/adc/ad7791.c        | 2 +-
+ drivers/iio/adc/ad7887.c        | 2 +-
+ drivers/iio/adc/at91_adc.c      | 2 +-
+ drivers/iio/adc/lp8788_adc.c    | 2 +-
+ drivers/iio/adc/max1363.c       | 2 +-
+ drivers/iio/adc/ti_am335x_adc.c | 2 +-
+ drivers/iio/amplifiers/ad8366.c | 2 +-
+ drivers/iio/dac/ad5064.c        | 4 ++--
+ drivers/iio/dac/ad5360.c        | 2 +-
+ drivers/iio/dac/ad5380.c        | 4 ++--
+ drivers/iio/dac/ad5421.c        | 2 +-
+ drivers/iio/dac/ad5446.c        | 4 ++--
+ drivers/iio/dac/ad5449.c        | 2 +-
+ drivers/iio/dac/ad5504.c        | 2 +-
+ drivers/iio/dac/ad5624r_spi.c   | 2 +-
+ drivers/iio/dac/ad5686.c        | 2 +-
+ drivers/iio/dac/ad5755.c        | 2 +-
+ drivers/iio/dac/ad5764.c        | 2 +-
+ drivers/iio/dac/ad5791.c        | 2 +-
+ drivers/iio/dac/max517.c        | 2 +-
+ drivers/iio/dac/mcp4725.c       | 2 +-
+ drivers/iio/frequency/ad9523.c  | 2 +-
+ drivers/iio/frequency/adf4350.c | 2 +-
+ drivers/iio/light/adjd_s311.c   | 2 +-
+ drivers/iio/light/lm3533-als.c  | 2 +-
+ drivers/iio/light/vcnl4000.c    | 2 +-
+ 28 files changed, 31 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index a95cda0..4745158 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -278,7 +278,7 @@ static int accel_3d_parse_report(struct platform_device *pdev,
- }
- 
- /* Function to initialize the processing for usage id */
--static int __devinit hid_accel_3d_probe(struct platform_device *pdev)
-+static int hid_accel_3d_probe(struct platform_device *pdev)
- {
- 	int ret = 0;
- 	static const char *name = "accel_3d";
-@@ -375,7 +375,7 @@ error_ret:
- }
- 
- /* Function to deinitialize the processing for usage id */
--static int __devinit hid_accel_3d_remove(struct platform_device *pdev)
-+static int hid_accel_3d_remove(struct platform_device *pdev)
- {
- 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-index f872f7b..f57a8d0 100644
+index a6f4fc5..f872f7b 100644
 --- a/drivers/iio/adc/ad7266.c
 +++ b/drivers/iio/adc/ad7266.c
-@@ -367,7 +367,7 @@ static const struct ad7266_chan_info ad7266_chan_infos[] = {
+@@ -525,7 +525,7 @@ static struct spi_driver ad7266_driver = {
+ 		.owner	= THIS_MODULE,
  	},
+ 	.probe		= ad7266_probe,
+-	.remove		= __devexit_p(ad7266_remove),
++	.remove		= ad7266_remove,
+ 	.id_table	= ad7266_id,
  };
- 
--static void __devinit ad7266_init_channels(struct iio_dev *indio_dev)
-+static void ad7266_init_channels(struct iio_dev *indio_dev)
- {
- 	struct ad7266_state *st = iio_priv(indio_dev);
- 	bool is_differential, is_signed;
-@@ -391,7 +391,7 @@ static const char * const ad7266_gpio_labels[] = {
- 	"AD0", "AD1", "AD2",
- };
- 
--static int __devinit ad7266_probe(struct spi_device *spi)
-+static int ad7266_probe(struct spi_device *spi)
- {
- 	struct ad7266_platform_data *pdata = spi->dev.platform_data;
- 	struct iio_dev *indio_dev;
+ module_spi_driver(ad7266_driver);
 diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-index 2e88565..72b7555 100644
+index 330248b..2e88565 100644
 --- a/drivers/iio/adc/ad7476.c
 +++ b/drivers/iio/adc/ad7476.c
-@@ -207,7 +207,7 @@ static const struct iio_info ad7476_info = {
- 	.read_raw = &ad7476_read_raw,
+@@ -322,7 +322,7 @@ static struct spi_driver ad7476_driver = {
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad7476_probe,
+-	.remove		= __devexit_p(ad7476_remove),
++	.remove		= ad7476_remove,
+ 	.id_table	= ad7476_id,
  };
- 
--static int __devinit ad7476_probe(struct spi_device *spi)
-+static int ad7476_probe(struct spi_device *spi)
- {
- 	struct ad7476_state *st;
- 	struct iio_dev *indio_dev;
+ module_spi_driver(ad7476_driver);
 diff --git a/drivers/iio/adc/ad7791.c b/drivers/iio/adc/ad7791.c
-index 36dd192..0935c5f 100644
+index e937408..36dd192 100644
 --- a/drivers/iio/adc/ad7791.c
 +++ b/drivers/iio/adc/ad7791.c
-@@ -325,7 +325,7 @@ static const struct iio_info ad7791_no_filter_info = {
- 	.driver_module = THIS_MODULE,
+@@ -450,7 +450,7 @@ static struct spi_driver ad7791_driver = {
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad7791_probe,
+-	.remove		= __devexit_p(ad7791_remove),
++	.remove		= ad7791_remove,
+ 	.id_table	= ad7791_spi_ids,
  };
- 
--static int __devinit ad7791_setup(struct ad7791_state *st,
-+static int ad7791_setup(struct ad7791_state *st,
- 	struct ad7791_platform_data *pdata)
- {
- 	/* Set to poweron-reset default values */
-@@ -349,7 +349,7 @@ static int __devinit ad7791_setup(struct ad7791_state *st,
- 		st->mode);
- }
- 
--static int __devinit ad7791_probe(struct spi_device *spi)
-+static int ad7791_probe(struct spi_device *spi)
- {
- 	struct ad7791_platform_data *pdata = spi->dev.platform_data;
- 	struct iio_dev *indio_dev;
+ module_spi_driver(ad7791_driver);
 diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
-index 70e5e74..88ee5dc 100644
+index 81153fa..70e5e74 100644
 --- a/drivers/iio/adc/ad7887.c
 +++ b/drivers/iio/adc/ad7887.c
-@@ -233,7 +233,7 @@ static const struct iio_info ad7887_info = {
- 	.driver_module = THIS_MODULE,
+@@ -368,7 +368,7 @@ static struct spi_driver ad7887_driver = {
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad7887_probe,
+-	.remove		= __devexit_p(ad7887_remove),
++	.remove		= ad7887_remove,
+ 	.id_table	= ad7887_id,
  };
- 
--static int __devinit ad7887_probe(struct spi_device *spi)
-+static int ad7887_probe(struct spi_device *spi)
- {
- 	struct ad7887_platform_data *pdata = spi->dev.platform_data;
- 	struct ad7887_state *st;
+ module_spi_driver(ad7887_driver);
 diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 34201e6..5975647 100644
+index 03b8594..34201e6 100644
 --- a/drivers/iio/adc/at91_adc.c
 +++ b/drivers/iio/adc/at91_adc.c
-@@ -514,7 +514,7 @@ static const struct iio_info at91_adc_info = {
- 	.read_raw = &at91_adc_read_raw,
- };
+@@ -702,7 +702,7 @@ MODULE_DEVICE_TABLE(of, at91_adc_dt_ids);
  
--static int __devinit at91_adc_probe(struct platform_device *pdev)
-+static int at91_adc_probe(struct platform_device *pdev)
- {
- 	unsigned int prsc, mstrclk, ticks, adc_clk;
- 	int ret;
+ static struct platform_driver at91_adc_driver = {
+ 	.probe = at91_adc_probe,
+-	.remove = __devexit_p(at91_adc_remove),
++	.remove = at91_adc_remove,
+ 	.driver = {
+ 		   .name = "at91_adc",
+ 		   .of_match_table = of_match_ptr(at91_adc_dt_ids),
 diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
-index a053211..e96c321 100644
+index a93aaf0..a053211 100644
 --- a/drivers/iio/adc/lp8788_adc.c
 +++ b/drivers/iio/adc/lp8788_adc.c
-@@ -193,7 +193,7 @@ static inline void lp8788_iio_map_unregister(struct iio_dev *indio_dev,
- 	iio_map_array_unregister(indio_dev, adc->map);
- }
+@@ -250,7 +250,7 @@ static int __devexit lp8788_adc_remove(struct platform_device *pdev)
  
--static int __devinit lp8788_adc_probe(struct platform_device *pdev)
-+static int lp8788_adc_probe(struct platform_device *pdev)
- {
- 	struct lp8788 *lp = dev_get_drvdata(pdev->dev.parent);
- 	struct iio_dev *indio_dev;
+ static struct platform_driver lp8788_adc_driver = {
+ 	.probe = lp8788_adc_probe,
+-	.remove = __devexit_p(lp8788_adc_remove),
++	.remove = lp8788_adc_remove,
+ 	.driver = {
+ 		.name = LP8788_DEV_ADC,
+ 		.owner = THIS_MODULE,
 diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-index fe7bfa2..f3c244f 100644
+index 1e84b5b..fe7bfa2 100644
 --- a/drivers/iio/adc/max1363.c
 +++ b/drivers/iio/adc/max1363.c
-@@ -1402,7 +1402,7 @@ static int max1363_initial_setup(struct max1363_state *st)
- 	return max1363_set_scan_mode(st);
- }
- 
--static int __devinit max1363_alloc_scan_masks(struct iio_dev *indio_dev)
-+static int max1363_alloc_scan_masks(struct iio_dev *indio_dev)
- {
- 	struct max1363_state *st = iio_priv(indio_dev);
- 	unsigned long *masks;
-@@ -1525,8 +1525,8 @@ static void max1363_buffer_cleanup(struct iio_dev *indio_dev)
- 	iio_kfifo_free(indio_dev->buffer);
- }
- 
--static int __devinit max1363_probe(struct i2c_client *client,
--				   const struct i2c_device_id *id)
-+static int max1363_probe(struct i2c_client *client,
-+			 const struct i2c_device_id *id)
- {
- 	int ret;
- 	struct max1363_state *st;
+@@ -1690,7 +1690,7 @@ static struct i2c_driver max1363_driver = {
+ 		.name = "max1363",
+ 	},
+ 	.probe = max1363_probe,
+-	.remove = __devexit_p(max1363_remove),
++	.remove = max1363_remove,
+ 	.id_table = max1363_id,
+ };
+ module_i2c_driver(max1363_driver);
 diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 9d6c14a..6a0b375 100644
+index 02a43c8..9d6c14a 100644
 --- a/drivers/iio/adc/ti_am335x_adc.c
 +++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -136,7 +136,7 @@ static const struct iio_info tiadc_info = {
- 	.read_raw = &tiadc_read_raw,
+@@ -250,7 +250,7 @@ static struct platform_driver tiadc_driver = {
+ 		.pm	= TIADC_PM_OPS,
+ 	},
+ 	.probe	= tiadc_probe,
+-	.remove	= __devexit_p(tiadc_remove),
++	.remove	= tiadc_remove,
  };
  
--static int __devinit tiadc_probe(struct platform_device *pdev)
-+static int tiadc_probe(struct platform_device *pdev)
- {
- 	struct iio_dev		*indio_dev;
- 	struct tiadc_device	*adc_dev;
+ module_platform_driver(tiadc_driver);
 diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
-index e738add..1650df8 100644
+index d8281cd..e738add 100644
 --- a/drivers/iio/amplifiers/ad8366.c
 +++ b/drivers/iio/amplifiers/ad8366.c
-@@ -133,7 +133,7 @@ static const struct iio_chan_spec ad8366_channels[] = {
- 	AD8366_CHAN(1),
+@@ -211,7 +211,7 @@ static struct spi_driver ad8366_driver = {
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad8366_probe,
+-	.remove		= __devexit_p(ad8366_remove),
++	.remove		= ad8366_remove,
+ 	.id_table	= ad8366_id,
  };
  
--static int __devinit ad8366_probe(struct spi_device *spi)
-+static int ad8366_probe(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev;
- 	struct ad8366_state *st;
 diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-index 6c3881b..c9ed785 100644
+index eb281a2..6c3881b 100644
 --- a/drivers/iio/dac/ad5064.c
 +++ b/drivers/iio/dac/ad5064.c
-@@ -424,7 +424,7 @@ static const char * const ad5064_vref_name(struct ad5064_state *st,
- 	return st->chip_info->shared_vref ? "vref" : ad5064_vref_names[vref];
- }
+@@ -563,7 +563,7 @@ static struct spi_driver ad5064_spi_driver = {
+ 		   .owner = THIS_MODULE,
+ 	},
+ 	.probe = ad5064_spi_probe,
+-	.remove = __devexit_p(ad5064_spi_remove),
++	.remove = ad5064_spi_remove,
+ 	.id_table = ad5064_spi_ids,
+ };
  
--static int __devinit ad5064_probe(struct device *dev, enum ad5064_type type,
-+static int ad5064_probe(struct device *dev, enum ad5064_type type,
- 	const char *name, ad5064_write_func write)
- {
- 	struct iio_dev *indio_dev;
-@@ -523,7 +523,7 @@ static int ad5064_spi_write(struct ad5064_state *st, unsigned int cmd,
- 	return spi_write(spi, &st->data.spi, sizeof(st->data.spi));
- }
+@@ -625,7 +625,7 @@ static struct i2c_driver ad5064_i2c_driver = {
+ 		   .owner = THIS_MODULE,
+ 	},
+ 	.probe = ad5064_i2c_probe,
+-	.remove = __devexit_p(ad5064_i2c_remove),
++	.remove = ad5064_i2c_remove,
+ 	.id_table = ad5064_i2c_ids,
+ };
  
--static int __devinit ad5064_spi_probe(struct spi_device *spi)
-+static int ad5064_spi_probe(struct spi_device *spi)
- {
- 	const struct spi_device_id *id = spi_get_device_id(spi);
- 
-@@ -596,7 +596,7 @@ static int ad5064_i2c_write(struct ad5064_state *st, unsigned int cmd,
- 	return i2c_master_send(i2c, st->data.i2c, 3);
- }
- 
--static int __devinit ad5064_i2c_probe(struct i2c_client *i2c,
-+static int ad5064_i2c_probe(struct i2c_client *i2c,
- 	const struct i2c_device_id *id)
- {
- 	return ad5064_probe(&i2c->dev, id->driver_data, id->name,
 diff --git a/drivers/iio/dac/ad5360.c b/drivers/iio/dac/ad5360.c
-index e2c0635..c0fae59 100644
+index 8fce84f..e2c0635 100644
 --- a/drivers/iio/dac/ad5360.c
 +++ b/drivers/iio/dac/ad5360.c
-@@ -433,7 +433,7 @@ static const char * const ad5360_vref_name[] = {
- 	 "vref0", "vref1", "vref2"
+@@ -560,7 +560,7 @@ static struct spi_driver ad5360_driver = {
+ 		   .owner = THIS_MODULE,
+ 	},
+ 	.probe = ad5360_probe,
+-	.remove = __devexit_p(ad5360_remove),
++	.remove = ad5360_remove,
+ 	.id_table = ad5360_ids,
  };
- 
--static int __devinit ad5360_alloc_channels(struct iio_dev *indio_dev)
-+static int ad5360_alloc_channels(struct iio_dev *indio_dev)
- {
- 	struct ad5360_state *st = iio_priv(indio_dev);
- 	struct iio_chan_spec *channels;
-@@ -456,7 +456,7 @@ static int __devinit ad5360_alloc_channels(struct iio_dev *indio_dev)
- 	return 0;
- }
- 
--static int __devinit ad5360_probe(struct spi_device *spi)
-+static int ad5360_probe(struct spi_device *spi)
- {
- 	enum ad5360_type type = spi_get_device_id(spi)->driver_data;
- 	struct iio_dev *indio_dev;
+ module_spi_driver(ad5360_driver);
 diff --git a/drivers/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c
-index e93e120..835bb7f 100644
+index 14991ac..e93e120 100644
 --- a/drivers/iio/dac/ad5380.c
 +++ b/drivers/iio/dac/ad5380.c
-@@ -338,7 +338,7 @@ static const struct ad5380_chip_info ad5380_chip_info_tbl[] = {
+@@ -523,7 +523,7 @@ static struct spi_driver ad5380_spi_driver = {
+ 		   .owner = THIS_MODULE,
  	},
+ 	.probe = ad5380_spi_probe,
+-	.remove = __devexit_p(ad5380_spi_remove),
++	.remove = ad5380_spi_remove,
+ 	.id_table = ad5380_spi_ids,
  };
  
--static int __devinit ad5380_alloc_channels(struct iio_dev *indio_dev)
-+static int ad5380_alloc_channels(struct iio_dev *indio_dev)
- {
- 	struct ad5380_state *st = iio_priv(indio_dev);
- 	struct iio_chan_spec *channels;
-@@ -361,7 +361,7 @@ static int __devinit ad5380_alloc_channels(struct iio_dev *indio_dev)
- 	return 0;
- }
+@@ -597,7 +597,7 @@ static struct i2c_driver ad5380_i2c_driver = {
+ 		   .owner = THIS_MODULE,
+ 	},
+ 	.probe = ad5380_i2c_probe,
+-	.remove = __devexit_p(ad5380_i2c_remove),
++	.remove = ad5380_i2c_remove,
+ 	.id_table = ad5380_i2c_ids,
+ };
  
--static int __devinit ad5380_probe(struct device *dev, struct regmap *regmap,
-+static int ad5380_probe(struct device *dev, struct regmap *regmap,
- 	enum ad5380_type type, const char *name)
- {
- 	struct iio_dev *indio_dev;
-@@ -478,7 +478,7 @@ static const struct regmap_config ad5380_regmap_config = {
- 
- #if IS_ENABLED(CONFIG_SPI_MASTER)
- 
--static int __devinit ad5380_spi_probe(struct spi_device *spi)
-+static int ad5380_spi_probe(struct spi_device *spi)
- {
- 	const struct spi_device_id *id = spi_get_device_id(spi);
- 	struct regmap *regmap;
-@@ -552,7 +552,7 @@ static inline void ad5380_spi_unregister_driver(void)
- 
- #if IS_ENABLED(CONFIG_I2C)
- 
--static int __devinit ad5380_i2c_probe(struct i2c_client *i2c,
-+static int ad5380_i2c_probe(struct i2c_client *i2c,
- 	const struct i2c_device_id *id)
- {
- 	struct regmap *regmap;
 diff --git a/drivers/iio/dac/ad5421.c b/drivers/iio/dac/ad5421.c
-index cf80a7e..5026bfa 100644
+index cdbc5bf..cf80a7e 100644
 --- a/drivers/iio/dac/ad5421.c
 +++ b/drivers/iio/dac/ad5421.c
-@@ -449,7 +449,7 @@ static const struct iio_info ad5421_info = {
- 	.driver_module =	THIS_MODULE,
+@@ -534,7 +534,7 @@ static struct spi_driver ad5421_driver = {
+ 		   .owner = THIS_MODULE,
+ 	},
+ 	.probe = ad5421_probe,
+-	.remove = __devexit_p(ad5421_remove),
++	.remove = ad5421_remove,
  };
+ module_spi_driver(ad5421_driver);
  
--static int __devinit ad5421_probe(struct spi_device *spi)
-+static int ad5421_probe(struct spi_device *spi)
- {
- 	struct ad5421_platform_data *pdata = dev_get_platdata(&spi->dev);
- 	struct iio_dev *indio_dev;
 diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
-index 0b3c962..02087a9 100644
+index 3310cbb..0b3c962 100644
 --- a/drivers/iio/dac/ad5446.c
 +++ b/drivers/iio/dac/ad5446.c
-@@ -212,7 +212,7 @@ static const struct iio_info ad5446_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
--static int __devinit ad5446_probe(struct device *dev, const char *name,
-+static int ad5446_probe(struct device *dev, const char *name,
- 	const struct ad5446_chip_info *chip_info)
- {
- 	struct ad5446_state *st;
-@@ -461,7 +461,7 @@ static const struct spi_device_id ad5446_spi_ids[] = {
- };
- MODULE_DEVICE_TABLE(spi, ad5446_spi_ids);
- 
--static int __devinit ad5446_spi_probe(struct spi_device *spi)
-+static int ad5446_spi_probe(struct spi_device *spi)
- {
- 	const struct spi_device_id *id = spi_get_device_id(spi);
- 
-@@ -539,7 +539,7 @@ static const struct ad5446_chip_info ad5446_i2c_chip_info[] = {
+@@ -480,7 +480,7 @@ static struct spi_driver ad5446_spi_driver = {
+ 		.owner	= THIS_MODULE,
  	},
+ 	.probe		= ad5446_spi_probe,
+-	.remove		= __devexit_p(ad5446_spi_remove),
++	.remove		= ad5446_spi_remove,
+ 	.id_table	= ad5446_spi_ids,
  };
  
--static int __devinit ad5446_i2c_probe(struct i2c_client *i2c,
-+static int ad5446_i2c_probe(struct i2c_client *i2c,
- 	const struct i2c_device_id *id)
- {
- 	return ad5446_probe(&i2c->dev, id->name,
+@@ -568,7 +568,7 @@ static struct i2c_driver ad5446_i2c_driver = {
+ 		   .owner = THIS_MODULE,
+ 	},
+ 	.probe = ad5446_i2c_probe,
+-	.remove = __devexit_p(ad5446_i2c_remove),
++	.remove = ad5446_i2c_remove,
+ 	.id_table = ad5446_i2c_ids,
+ };
+ 
 diff --git a/drivers/iio/dac/ad5449.c b/drivers/iio/dac/ad5449.c
-index 01d4749..4184be6 100644
+index 0ee6f8e..01d4749 100644
 --- a/drivers/iio/dac/ad5449.c
 +++ b/drivers/iio/dac/ad5449.c
-@@ -266,7 +266,7 @@ static const char *ad5449_vref_name(struct ad5449 *st, int n)
- 		return "VREFB";
- }
- 
--static int __devinit ad5449_spi_probe(struct spi_device *spi)
-+static int ad5449_spi_probe(struct spi_device *spi)
- {
- 	struct ad5449_platform_data *pdata = spi->dev.platform_data;
- 	const struct spi_device_id *id = spi_get_device_id(spi);
+@@ -366,7 +366,7 @@ static struct spi_driver ad5449_spi_driver = {
+ 		.owner = THIS_MODULE,
+ 	},
+ 	.probe = ad5449_spi_probe,
+-	.remove = __devexit_p(ad5449_spi_remove),
++	.remove = ad5449_spi_remove,
+ 	.id_table = ad5449_spi_ids,
+ };
+ module_spi_driver(ad5449_spi_driver);
 diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-index 2c7a2e0..531c9f4 100644
+index 242bdc7..2c7a2e0 100644
 --- a/drivers/iio/dac/ad5504.c
 +++ b/drivers/iio/dac/ad5504.c
-@@ -277,7 +277,7 @@ static const struct iio_chan_spec ad5504_channels[] = {
- 	AD5504_CHANNEL(3),
+@@ -383,7 +383,7 @@ static struct spi_driver ad5504_driver = {
+ 		   .owner = THIS_MODULE,
+ 		   },
+ 	.probe = ad5504_probe,
+-	.remove = __devexit_p(ad5504_remove),
++	.remove = ad5504_remove,
+ 	.id_table = ad5504_id,
  };
- 
--static int __devinit ad5504_probe(struct spi_device *spi)
-+static int ad5504_probe(struct spi_device *spi)
- {
- 	struct ad5504_platform_data *pdata = spi->dev.platform_data;
- 	struct iio_dev *indio_dev;
+ module_spi_driver(ad5504_driver);
 diff --git a/drivers/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
-index cf75ded..4d7ff95 100644
+index 6a7d6a4..cf75ded 100644
 --- a/drivers/iio/dac/ad5624r_spi.c
 +++ b/drivers/iio/dac/ad5624r_spi.c
-@@ -220,7 +220,7 @@ static const struct ad5624r_chip_info ad5624r_chip_info_tbl[] = {
- 	},
+@@ -314,7 +314,7 @@ static struct spi_driver ad5624r_driver = {
+ 		   .owner = THIS_MODULE,
+ 		   },
+ 	.probe = ad5624r_probe,
+-	.remove = __devexit_p(ad5624r_remove),
++	.remove = ad5624r_remove,
+ 	.id_table = ad5624r_id,
  };
- 
--static int __devinit ad5624r_probe(struct spi_device *spi)
-+static int ad5624r_probe(struct spi_device *spi)
- {
- 	struct ad5624r_state *st;
- 	struct iio_dev *indio_dev;
+ module_spi_driver(ad5624r_driver);
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 061ddb1..a153c680 100644
+index bc92ff9..061ddb1 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -313,7 +313,7 @@ static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
+@@ -408,7 +408,7 @@ static struct spi_driver ad5686_driver = {
+ 		   .owner = THIS_MODULE,
+ 		   },
+ 	.probe = ad5686_probe,
+-	.remove = __devexit_p(ad5686_remove),
++	.remove = ad5686_remove,
+ 	.id_table = ad5686_id,
  };
- 
- 
--static int __devinit ad5686_probe(struct spi_device *spi)
-+static int ad5686_probe(struct spi_device *spi)
- {
- 	struct ad5686_state *st;
- 	struct iio_dev *indio_dev;
+ module_spi_driver(ad5686_driver);
 diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-index f9e112e..3083d45 100644
+index 5db3506..f9e112e 100644
 --- a/drivers/iio/dac/ad5755.c
 +++ b/drivers/iio/dac/ad5755.c
-@@ -447,7 +447,7 @@ static bool ad5755_is_valid_mode(struct ad5755_state *st, enum ad5755_mode mode)
- 	}
- }
- 
--static int __devinit ad5755_setup_pdata(struct iio_dev *indio_dev,
-+static int ad5755_setup_pdata(struct iio_dev *indio_dev,
- 	const struct ad5755_platform_data *pdata)
- {
- 	struct ad5755_state *st = iio_priv(indio_dev);
-@@ -503,7 +503,7 @@ static int __devinit ad5755_setup_pdata(struct iio_dev *indio_dev,
- 	return 0;
- }
- 
--static bool __devinit ad5755_is_voltage_mode(enum ad5755_mode mode)
-+static bool ad5755_is_voltage_mode(enum ad5755_mode mode)
- {
- 	switch (mode) {
- 	case AD5755_MODE_VOLTAGE_0V_5V:
-@@ -516,7 +516,7 @@ static bool __devinit ad5755_is_voltage_mode(enum ad5755_mode mode)
- 	}
- }
- 
--static int __devinit ad5755_init_channels(struct iio_dev *indio_dev,
-+static int ad5755_init_channels(struct iio_dev *indio_dev,
- 	const struct ad5755_platform_data *pdata)
- {
- 	struct ad5755_state *st = iio_priv(indio_dev);
-@@ -562,7 +562,7 @@ static const struct ad5755_platform_data ad5755_default_pdata = {
+@@ -640,7 +640,7 @@ static struct spi_driver ad5755_driver = {
+ 		.owner = THIS_MODULE,
  	},
+ 	.probe = ad5755_probe,
+-	.remove = __devexit_p(ad5755_remove),
++	.remove = ad5755_remove,
+ 	.id_table = ad5755_id,
  };
- 
--static int __devinit ad5755_probe(struct spi_device *spi)
-+static int ad5755_probe(struct spi_device *spi)
- {
- 	enum ad5755_type type = spi_get_device_id(spi)->driver_data;
- 	const struct ad5755_platform_data *pdata = dev_get_platdata(&spi->dev);
+ module_spi_driver(ad5755_driver);
 diff --git a/drivers/iio/dac/ad5764.c b/drivers/iio/dac/ad5764.c
-index 587e7b1..80302b0 100644
+index ffce304..587e7b1 100644
 --- a/drivers/iio/dac/ad5764.c
 +++ b/drivers/iio/dac/ad5764.c
-@@ -273,7 +273,7 @@ static const struct iio_info ad5764_info = {
- 	.driver_module = THIS_MODULE,
+@@ -372,7 +372,7 @@ static struct spi_driver ad5764_driver = {
+ 		.owner = THIS_MODULE,
+ 	},
+ 	.probe = ad5764_probe,
+-	.remove = __devexit_p(ad5764_remove),
++	.remove = ad5764_remove,
+ 	.id_table = ad5764_ids,
  };
- 
--static int __devinit ad5764_probe(struct spi_device *spi)
-+static int ad5764_probe(struct spi_device *spi)
- {
- 	enum ad5764_type type = spi_get_device_id(spi)->driver_data;
- 	struct iio_dev *indio_dev;
+ module_spi_driver(ad5764_driver);
 diff --git a/drivers/iio/dac/ad5791.c b/drivers/iio/dac/ad5791.c
-index f40aecd..34f3c5f 100644
+index 2bd2e37..f40aecd 100644
 --- a/drivers/iio/dac/ad5791.c
 +++ b/drivers/iio/dac/ad5791.c
-@@ -346,7 +346,7 @@ static const struct iio_info ad5791_info = {
- 	.driver_module = THIS_MODULE,
+@@ -475,7 +475,7 @@ static struct spi_driver ad5791_driver = {
+ 		   .owner = THIS_MODULE,
+ 		   },
+ 	.probe = ad5791_probe,
+-	.remove = __devexit_p(ad5791_remove),
++	.remove = ad5791_remove,
+ 	.id_table = ad5791_id,
  };
- 
--static int __devinit ad5791_probe(struct spi_device *spi)
-+static int ad5791_probe(struct spi_device *spi)
- {
- 	struct ad5791_platform_data *pdata = spi->dev.platform_data;
- 	struct iio_dev *indio_dev;
+ module_spi_driver(ad5791_driver);
 diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
-index cf281ff..25b2e9c 100644
+index c3d748c..cf281ff 100644
 --- a/drivers/iio/dac/max517.c
 +++ b/drivers/iio/dac/max517.c
-@@ -156,7 +156,7 @@ static const struct iio_chan_spec max517_channels[] = {
- 	MAX517_CHANNEL(1)
+@@ -232,7 +232,7 @@ static struct i2c_driver max517_driver = {
+ 		.pm		= MAX517_PM_OPS,
+ 	},
+ 	.probe		= max517_probe,
+-	.remove		=  __devexit_p(max517_remove),
++	.remove		=  max517_remove,
+ 	.id_table	= max517_id,
  };
- 
--static int __devinit max517_probe(struct i2c_client *client,
-+static int max517_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
- 	struct max517_data *data;
+ module_i2c_driver(max517_driver);
 diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-index aff873f..1f5c99a 100644
+index e0e168b..aff873f 100644
 --- a/drivers/iio/dac/mcp4725.c
 +++ b/drivers/iio/dac/mcp4725.c
-@@ -141,7 +141,7 @@ static const struct iio_info mcp4725_info = {
- 	.driver_module = THIS_MODULE,
+@@ -217,7 +217,7 @@ static struct i2c_driver mcp4725_driver = {
+ 		.pm	= MCP4725_PM_OPS,
+ 	},
+ 	.probe		= mcp4725_probe,
+-	.remove		= __devexit_p(mcp4725_remove),
++	.remove		= mcp4725_remove,
+ 	.id_table	= mcp4725_id,
  };
- 
--static int __devinit mcp4725_probe(struct i2c_client *client,
-+static int mcp4725_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
- 	struct mcp4725_data *data;
+ module_i2c_driver(mcp4725_driver);
 diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-index 73e2cd8..00c382d 100644
+index b737c64..73e2cd8 100644
 --- a/drivers/iio/frequency/ad9523.c
 +++ b/drivers/iio/frequency/ad9523.c
-@@ -959,7 +959,7 @@ static int ad9523_setup(struct iio_dev *indio_dev)
- 	return 0;
- }
- 
--static int __devinit ad9523_probe(struct spi_device *spi)
-+static int ad9523_probe(struct spi_device *spi)
- {
- 	struct ad9523_platform_data *pdata = spi->dev.platform_data;
- 	struct iio_dev *indio_dev;
+@@ -1049,7 +1049,7 @@ static struct spi_driver ad9523_driver = {
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= ad9523_probe,
+-	.remove		= __devexit_p(ad9523_remove),
++	.remove		= ad9523_remove,
+ 	.id_table	= ad9523_id,
+ };
+ module_spi_driver(ad9523_driver);
 diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-index 4c03d63..cdee2ee 100644
+index e35bb8f..4c03d63 100644
 --- a/drivers/iio/frequency/adf4350.c
 +++ b/drivers/iio/frequency/adf4350.c
-@@ -355,7 +355,7 @@ static const struct iio_info adf4350_info = {
- 	.driver_module = THIS_MODULE,
+@@ -476,7 +476,7 @@ static struct spi_driver adf4350_driver = {
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= adf4350_probe,
+-	.remove		= __devexit_p(adf4350_remove),
++	.remove		= adf4350_remove,
+ 	.id_table	= adf4350_id,
  };
- 
--static int __devinit adf4350_probe(struct spi_device *spi)
-+static int adf4350_probe(struct spi_device *spi)
- {
- 	struct adf4350_platform_data *pdata = spi->dev.platform_data;
- 	struct iio_dev *indio_dev;
-diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-index 02ef989..a54cadb 100644
---- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-+++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-@@ -278,7 +278,7 @@ static int gyro_3d_parse_report(struct platform_device *pdev,
- }
- 
- /* Function to initialize the processing for usage id */
--static int __devinit hid_gyro_3d_probe(struct platform_device *pdev)
-+static int hid_gyro_3d_probe(struct platform_device *pdev)
- {
- 	int ret = 0;
- 	static const char *name = "gyro_3d";
-@@ -375,7 +375,7 @@ error_ret:
- }
- 
- /* Function to deinitialize the processing for usage id */
--static int __devinit hid_gyro_3d_remove(struct platform_device *pdev)
-+static int hid_gyro_3d_remove(struct platform_device *pdev)
- {
- 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ module_spi_driver(adf4350_driver);
 diff --git a/drivers/iio/light/adjd_s311.c b/drivers/iio/light/adjd_s311.c
-index 82a6d71..4ad9b3d 100644
+index 36d210a..82a6d71 100644
 --- a/drivers/iio/light/adjd_s311.c
 +++ b/drivers/iio/light/adjd_s311.c
-@@ -286,7 +286,7 @@ static const struct iio_info adjd_s311_info = {
- 	.driver_module = THIS_MODULE,
+@@ -354,7 +354,7 @@ static struct i2c_driver adjd_s311_driver = {
+ 		.name	= ADJD_S311_DRV_NAME,
+ 	},
+ 	.probe		= adjd_s311_probe,
+-	.remove		= __devexit_p(adjd_s311_remove),
++	.remove		= adjd_s311_remove,
+ 	.id_table	= adjd_s311_id,
  };
- 
--static int __devinit adjd_s311_probe(struct i2c_client *client,
-+static int adjd_s311_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
- 	struct adjd_s311_data *data;
-diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-index 8e1f698..695d58b 100644
---- a/drivers/iio/light/hid-sensor-als.c
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -245,7 +245,7 @@ static int als_parse_report(struct platform_device *pdev,
- }
- 
- /* Function to initialize the processing for usage id */
--static int __devinit hid_als_probe(struct platform_device *pdev)
-+static int hid_als_probe(struct platform_device *pdev)
- {
- 	int ret = 0;
- 	static const char *name = "als";
-@@ -342,7 +342,7 @@ error_ret:
- }
- 
- /* Function to deinitialize the processing for usage id */
--static int __devinit hid_als_remove(struct platform_device *pdev)
-+static int hid_als_remove(struct platform_device *pdev)
- {
- 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ module_i2c_driver(adjd_s311_driver);
 diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
-index c56f537..54d00ab 100644
+index e45712a9..c56f537 100644
 --- a/drivers/iio/light/lm3533-als.c
 +++ b/drivers/iio/light/lm3533-als.c
-@@ -718,7 +718,7 @@ static struct attribute_group lm3533_als_attribute_group = {
- 	.attrs = lm3533_als_attributes
+@@ -922,7 +922,7 @@ static struct platform_driver lm3533_als_driver = {
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= lm3533_als_probe,
+-	.remove		= __devexit_p(lm3533_als_remove),
++	.remove		= lm3533_als_remove,
  };
+ module_platform_driver(lm3533_als_driver);
  
--static int __devinit lm3533_als_set_input_mode(struct lm3533_als *als,
-+static int lm3533_als_set_input_mode(struct lm3533_als *als,
- 								bool pwm_mode)
- {
- 	u8 mask = LM3533_ALS_INPUT_MODE_MASK;
-@@ -740,7 +740,7 @@ static int __devinit lm3533_als_set_input_mode(struct lm3533_als *als,
- 	return 0;
- }
- 
--static int __devinit lm3533_als_set_resistor(struct lm3533_als *als, u8 val)
-+static int lm3533_als_set_resistor(struct lm3533_als *als, u8 val)
- {
- 	int ret;
- 
-@@ -756,7 +756,7 @@ static int __devinit lm3533_als_set_resistor(struct lm3533_als *als, u8 val)
- 	return 0;
- }
- 
--static int __devinit lm3533_als_setup(struct lm3533_als *als,
-+static int lm3533_als_setup(struct lm3533_als *als,
- 					struct lm3533_als_platform_data *pdata)
- {
- 	int ret;
-@@ -775,7 +775,7 @@ static int __devinit lm3533_als_setup(struct lm3533_als *als,
- 	return 0;
- }
- 
--static int __devinit lm3533_als_setup_irq(struct lm3533_als *als, void *dev)
-+static int lm3533_als_setup_irq(struct lm3533_als *als, void *dev)
- {
- 	u8 mask = LM3533_ALS_INT_ENABLE_MASK;
- 	int ret;
-@@ -799,7 +799,7 @@ static int __devinit lm3533_als_setup_irq(struct lm3533_als *als, void *dev)
- 	return 0;
- }
- 
--static int __devinit lm3533_als_enable(struct lm3533_als *als)
-+static int lm3533_als_enable(struct lm3533_als *als)
- {
- 	u8 mask = LM3533_ALS_ENABLE_MASK;
- 	int ret;
-@@ -830,7 +830,7 @@ static const struct iio_info lm3533_als_info = {
- 	.read_raw	= &lm3533_als_read_raw,
- };
- 
--static int __devinit lm3533_als_probe(struct platform_device *pdev)
-+static int lm3533_als_probe(struct platform_device *pdev)
- {
- 	struct lm3533 *lm3533;
- 	struct lm3533_als_platform_data *pdata;
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index 2556788..92b072e 100644
+index e49cb97..2556788 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -150,7 +150,7 @@ static const struct iio_info vcnl4000_info = {
- 	.driver_module = THIS_MODULE,
+@@ -206,7 +206,7 @@ static struct i2c_driver vcnl4000_driver = {
+ 		.owner  = THIS_MODULE,
+ 	},
+ 	.probe  = vcnl4000_probe,
+-	.remove = __devexit_p(vcnl4000_remove),
++	.remove = vcnl4000_remove,
+ 	.id_table = vcnl4000_id,
  };
  
--static int __devinit vcnl4000_probe(struct i2c_client *client,
-+static int vcnl4000_probe(struct i2c_client *client,
- 					const struct i2c_device_id *id)
- {
- 	struct vcnl4000_data *data;
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index d1b5fb7..0de8084 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -279,7 +279,7 @@ static int magn_3d_parse_report(struct platform_device *pdev,
- }
- 
- /* Function to initialize the processing for usage id */
--static int __devinit hid_magn_3d_probe(struct platform_device *pdev)
-+static int hid_magn_3d_probe(struct platform_device *pdev)
- {
- 	int ret = 0;
- 	static char *name = "magn_3d";
-@@ -376,7 +376,7 @@ error_ret:
- }
- 
- /* Function to deinitialize the processing for usage id */
--static int __devinit hid_magn_3d_remove(struct platform_device *pdev)
-+static int hid_magn_3d_remove(struct platform_device *pdev)
- {
- 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 -- 
 1.8.0
