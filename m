@@ -1,126 +1,223 @@
 Return-Path: <thierry.reding@avionic-design.de>
-Date: Mon, 19 Nov 2012 10:50:57 +0100
 From: Thierry Reding <thierry.reding@avionic-design.de>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: Add Texas Instruments ADC081C021/027 support
-Message-ID: <20121119095053.GA3951@avionic-0098.mockup.avionic-design.de>
-References: <1353313289-983-1-git-send-email-thierry.reding@avionic-design.de>
- <50A9FCFC.60002@metafoo.de>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SUOF0GtieIMvvwua"
-In-Reply-To: <50A9FCFC.60002@metafoo.de>
+Subject: [PATCH] iio: adc: Add Texas Instruments ADC081C021/027 support
+Date: Mon, 19 Nov 2012 09:21:29 +0100
+Message-Id: <1353313289-983-1-git-send-email-thierry.reding@avionic-design.de>
 List-ID: <linux-iio@vger.kernel.org>
 
+Add support for reading conversion results from the ADC and provide them
+through a single IIO channel. A proper scaling factor is also exported
+based on the reference voltage provided by a regulator.
 
---SUOF0GtieIMvvwua
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
+---
+ drivers/iio/adc/Kconfig      |  10 +++
+ drivers/iio/adc/Makefile     |   1 +
+ drivers/iio/adc/ti-adc081c.c | 162 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 173 insertions(+)
+ create mode 100644 drivers/iio/adc/ti-adc081c.c
 
-On Mon, Nov 19, 2012 at 10:33:48AM +0100, Lars-Peter Clausen wrote:
-> On 11/19/2012 09:21 AM, Thierry Reding wrote:
-> > Add support for reading conversion results from the ADC and provide them
-> > through a single IIO channel. A proper scaling factor is also exported
-> > based on the reference voltage provided by a regulator.
-> >=20
-> > Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
-> > ---
-> [...]
-> > +static int adc081c_read_raw(struct iio_dev *iio,
-> > +			    struct iio_chan_spec const *channel, int *value,
-> > +			    int *micro, long mask)
-> > +{
-> > +	struct adc081c *adc =3D iio_priv(iio);
-> > +	int err, scale;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		err =3D i2c_smbus_read_word_swapped(adc->i2c, REG_CONV_RES);
-> > +		if (err < 0)
-> > +			return err;
-> > +
-> > +		*value =3D (err >> 4) & 0xff;
-> > +		return IIO_VAL_INT;
-> > +
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		err =3D regulator_get_voltage(adc->ref);
-> > +		if (err < 0)
-> > +			return err;
-> > +
-> > +		scale =3D err / 255;
->=20
-> Shouldn't this be 256?
-
-Well, the maximum value that the conversion register can contain is 255,
-so if we divide by 256 we'll always be slightly off, right? Or maybe I
-misunderstand what the scale factor is supposed to do. From reading the
-documentation it seems like user-space is supposed to multiply the raw
-value by the scale to obtain the real voltage.
-
-> > +
-> > +		*value =3D scale / 1000000;
-> > +		*micro =3D scale % 1000000;
->=20
-> scale for voltages is in microvolt, so I think it this is off by a factor=
- of
-> 1000.
-
-If scale is supposed to be in microvolts, then this is off by a factor
-of 1000000 since regulator_get_voltage() returns the voltage in
-microvolts as well.
-
-> For ADCs it often makes sense to use IIO_VAL_FRACTIONAL_LOG2 with the val
-> being set to the reference voltage (in mV) and val2 being set to the numb=
-er
-> of bits.
->=20
-> E.g in your case
->=20
-> 		*val =3D err / 1000;
-> 		*val2 =3D 8;
-
-I'm confused, IIO_VAL_FRACTIONAL_LOG2 is supposed to return mV, but
-IIO_VAL_INT_PLUS_MICRO will return uV?
-
-And setting val2 to 8 will cause the scaling factor to be 256, and not
-255, so the converted value will actually be off (as I mentioned above).
-
-> > +
-> > +		return IIO_VAL_INT_PLUS_MICRO;
-[...]
-> > +	adc->channel.type =3D IIO_VOLTAGE;
-> > +	adc->channel.info_mask =3D IIO_CHAN_INFO_SCALE_SHARED_BIT |
-> > +				 IIO_CHAN_INFO_RAW_SEPARATE_BIT;
->=20
-> nitpick: Since it is the same for each driver I'd make the channel static=
- const.
-
-Okay, that makes sense.
-
-Thierry
-
---SUOF0GtieIMvvwua
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQqgD9AAoJEN0jrNd/PrOhu88P/1AhUElPuroqbvwjWSriitg7
-fLTkFNMptS8MHISJTQWTR7fccjyQZ+SHLilRlFMIXklvdSIML9hg/vDV5y19Wsyj
-Xk+sd5JM7309kcSxfQ96n3wEvw8tVl7p32Tuj9IKW6jJ36XiS/ZCr4d9COXIJ4O1
-/+Mj0iAobaixpxCpa5UxDrkVa9nXcDh2jX/zuVrairK44MAMB9d+q0y4AXos/lMk
-PamkMLlrFwLokD5/LW6YIiV0S8mTw9o2m6P+j7NuJHiYLPm0J8uMCyEMxXM/HW6Y
-s8gY7p8lKlJ3LQ8//8X8GUpHCkAZp1IM5aKapkwG7BwAWo6vGba5S3gr2UJaPsaa
-q9mQfh/Qwu5U3n0HRbuZKPZOX8TyQmqNZbaVs+X0z9DGqZB2Btf0NZPVRAYYV3UW
-3yCPe/DDtqnQahdOL0wy1tIZhl/LlyMNi3Zul7NbFxhWM4/+uIrtfZfzmO4hymAt
-U2KAJM8pAbUCvDGgINKIgnzEo3FKCBRDeuUtVyNeW6fxgLzRdwQgYHob/5dUXd38
-2CBpiDsGU/9uW9OQmhktPF73C5aQ3L6RUW/xLEExhFkYNl5z/8tLLTk+8CornyJD
-yVP2eh/pgGR8x57OhIO3m6yEmsK7jEaDVpVhHtBntq/jbtRuvdmmXo8ukqYawOPK
-+ABmD8t9xziyGr80y+hP
-=SrHS
------END PGP SIGNATURE-----
-
---SUOF0GtieIMvvwua--
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index b719f3b..e8be025 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -91,6 +91,16 @@ config MAX1363
+ 	  max11646, max11647) Provides direct access via sysfs and buffered
+ 	  data via the iio dev interface.
+ 
++config TI_ADC081C
++	tristate "Texas Instruments ADC081C021/027"
++	depends on I2C
++	help
++	  If you say yes here you get support for Texas Instruments ADC081C021
++	  and ADC081C027 ADC chips.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called ti-adc081c.
++
+ config TI_AM335X_ADC
+ 	tristate "TI's ADC driver"
+ 	depends on MFD_TI_AM335X_TSCADC
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 19d709c..6ad20aa 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -10,4 +10,5 @@ obj-$(CONFIG_AD7887) += ad7887.o
+ obj-$(CONFIG_AT91_ADC) += at91_adc.o
+ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+ obj-$(CONFIG_MAX1363) += max1363.o
++obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+ obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
+new file mode 100644
+index 0000000..26fb7a6
+--- /dev/null
++++ b/drivers/iio/adc/ti-adc081c.c
+@@ -0,0 +1,162 @@
++/*
++ * Copyright (C) 2012 Avionic Design GmbH
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/err.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++
++#include <linux/iio/iio.h>
++#include <linux/regulator/consumer.h>
++
++struct adc081c {
++	struct iio_chan_spec channel;
++	struct i2c_client *i2c;
++	struct regulator *ref;
++};
++
++#define REG_CONV_RES 0x00
++
++static int adc081c_read_raw(struct iio_dev *iio,
++			    struct iio_chan_spec const *channel, int *value,
++			    int *micro, long mask)
++{
++	struct adc081c *adc = iio_priv(iio);
++	int err, scale;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		err = i2c_smbus_read_word_swapped(adc->i2c, REG_CONV_RES);
++		if (err < 0)
++			return err;
++
++		*value = (err >> 4) & 0xff;
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		err = regulator_get_voltage(adc->ref);
++		if (err < 0)
++			return err;
++
++		scale = err / 255;
++
++		*value = scale / 1000000;
++		*micro = scale % 1000000;
++
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	default:
++		break;
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info adc081c_info = {
++	.read_raw = adc081c_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int adc081c_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct iio_dev *iio;
++	struct adc081c *adc;
++	int err;
++
++	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
++		return -ENODEV;
++
++	iio = iio_device_alloc(sizeof(*adc));
++	if (!iio)
++		return -ENOMEM;
++
++	adc = iio_priv(iio);
++	adc->i2c = client;
++
++	adc->ref = regulator_get(&client->dev, "vref");
++	if (IS_ERR(adc->ref)) {
++		err = PTR_ERR(adc->ref);
++		goto iio_free;
++	}
++
++	err = regulator_enable(adc->ref);
++	if (err < 0)
++		goto regulator_put;
++
++	iio->dev.parent = &client->dev;
++	iio->name = dev_name(&client->dev);
++	iio->modes = INDIO_DIRECT_MODE;
++	iio->info = &adc081c_info;
++
++	adc->channel.type = IIO_VOLTAGE;
++	adc->channel.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
++				 IIO_CHAN_INFO_RAW_SEPARATE_BIT;
++
++	iio->channels = &adc->channel;
++	iio->num_channels = 1;
++
++	err = iio_device_register(iio);
++	if (err < 0)
++		goto regulator_disable;
++
++	i2c_set_clientdata(client, iio);
++
++	return 0;
++
++regulator_disable:
++	regulator_disable(adc->ref);
++regulator_put:
++	regulator_put(adc->ref);
++iio_free:
++	iio_device_free(iio);
++
++	return err;
++}
++
++static int adc081c_remove(struct i2c_client *client)
++{
++	struct iio_dev *iio = i2c_get_clientdata(client);
++	struct adc081c *adc = iio_priv(iio);
++
++	iio_device_unregister(iio);
++	regulator_disable(adc->ref);
++	regulator_put(adc->ref);
++	iio_device_free(iio);
++
++	return 0;
++}
++
++static const struct i2c_device_id adc081c_id[] = {
++	{ "adc081c", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, adc081c_id);
++
++#ifdef CONFIG_OF
++static const struct of_device_id adc081c_of_match[] = {
++	{ .compatible = "ti,adc081c" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, adc081c_of_match);
++#endif
++
++static struct i2c_driver adc081c_driver = {
++	.driver = {
++		.name = "adc081c",
++		.owner = THIS_MODULE,
++		.of_match_table = of_match_ptr(adc081c_of_match),
++	},
++	.probe = adc081c_probe,
++	.remove = adc081c_remove,
++	.id_table = adc081c_id,
++};
++module_i2c_driver(adc081c_driver);
++
++MODULE_AUTHOR("Thierry Reding <thierry.reding@avionic-design.de>");
++MODULE_DESCRIPTION("Texas Instruments ADC081C021/027 driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.8.0
