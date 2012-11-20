@@ -1,149 +1,171 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40910 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40932 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753470Ab2KTVNA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Nov 2012 16:13:00 -0500
-Message-ID: <50ABF25B.6090005@kernel.org>
-Date: Tue, 20 Nov 2012 21:12:59 +0000
+	with ESMTP id S1751933Ab2KTVOg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Nov 2012 16:14:36 -0500
+Message-ID: <50ABF2BA.5010902@kernel.org>
+Date: Tue, 20 Nov 2012 21:14:34 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
 	drivers@analog.com
-Subject: Re: [PATCH 5/7] iio: Add pressure channel type
-References: <1353418611-17614-1-git-send-email-lars@metafoo.de> <1353418611-17614-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1353418611-17614-5-git-send-email-lars@metafoo.de>
+Subject: Re: [PATCH 6/7] iio: Factor out fixed point number parsing into its
+ own function
+References: <1353418611-17614-1-git-send-email-lars@metafoo.de> <1353418611-17614-6-git-send-email-lars@metafoo.de>
+In-Reply-To: <1353418611-17614-6-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 11/20/2012 01:36 PM, Lars-Peter Clausen wrote:
-> This patch adds support for a new IIO channel type for pressure measurements.
-> This can for example be used for barometric pressure sensors.
+> Factor out the code for parsing fixed point numbers into its own function and
+> make this function globally available. This allows us to reuse the code to parse
+> fixed point numbers in individual IIO drivers.
 > 
+Sensible thing to do.
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Whilst we have had quite a few pressure drivers mentioned, it is nice
-to finally see one turn up!
 added to togreg branch of iio.git
 > ---
->  Documentation/ABI/testing/sysfs-bus-iio | 24 ++++++++++++++++++++++++
->  drivers/iio/industrialio-core.c         |  1 +
->  include/linux/iio/types.h               |  1 +
->  3 files changed, 26 insertions(+)
+>  drivers/iio/industrialio-core.c | 98 ++++++++++++++++++++++++++---------------
+>  include/linux/iio/iio.h         |  3 ++
+>  2 files changed, 66 insertions(+), 35 deletions(-)
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 2f06d40..f08d0f7 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -189,6 +189,14 @@ Description:
->  		A computed peak value based on the sum squared magnitude of
->  		the underlying value in the specified directions.
->  
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_raw
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_raw
-> +KernelVersion:	3.8
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Raw pressure measurement from channel Y. Units after
-> +		application of scale and offset are kilopascal.
-> +
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
-> @@ -197,6 +205,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_offset
->  KernelVersion:	2.6.35
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -226,6 +236,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
->  KernelVersion:	2.6.35
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -245,6 +257,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibbias
->  What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibbias
->  What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance0_calibbias
->  What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calibbias
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_calibbias
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_calibbias
->  KernelVersion:	2.6.35
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -262,6 +276,8 @@ What		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibscale
->  What		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibscale
->  what		/sys/bus/iio/devices/iio:deviceX/in_illuminance0_calibscale
->  what		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calibscale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_calibscale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_calibscale
->  KernelVersion:	2.6.35
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -275,6 +291,8 @@ What:		/sys/.../iio:deviceX/in_voltage-voltage_scale_available
->  What:		/sys/.../iio:deviceX/out_voltageX_scale_available
->  What:		/sys/.../iio:deviceX/out_altvoltageX_scale_available
->  What:		/sys/.../iio:deviceX/in_capacitance_scale_available
-> +What:		/sys/.../iio:deviceX/in_pressure_scale_available
-> +What:		/sys/.../iio:deviceX/in_pressureY_scale_available
->  KernelVersion:	2.6.35
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -694,6 +712,8 @@ What:		/sys/.../buffer/scan_elements/in_voltageY_en
->  What:		/sys/.../buffer/scan_elements/in_voltageY-voltageZ_en
->  What:		/sys/.../buffer/scan_elements/in_incli_x_en
->  What:		/sys/.../buffer/scan_elements/in_incli_y_en
-> +What:		/sys/.../buffer/scan_elements/in_pressureY_en
-> +What:		/sys/.../buffer/scan_elements/in_pressure_en
->  KernelVersion:	2.6.37
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -707,6 +727,8 @@ What:		/sys/.../buffer/scan_elements/in_voltageY_type
->  What:		/sys/.../buffer/scan_elements/in_voltage_type
->  What:		/sys/.../buffer/scan_elements/in_voltageY_supply_type
->  What:		/sys/.../buffer/scan_elements/in_timestamp_type
-> +What:		/sys/.../buffer/scan_elements/in_pressureY_type
-> +What:		/sys/.../buffer/scan_elements/in_pressure_type
->  KernelVersion:	2.6.37
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -751,6 +773,8 @@ What:		/sys/.../buffer/scan_elements/in_magn_z_index
->  What:		/sys/.../buffer/scan_elements/in_incli_x_index
->  What:		/sys/.../buffer/scan_elements/in_incli_y_index
->  What:		/sys/.../buffer/scan_elements/in_timestamp_index
-> +What:		/sys/.../buffer/scan_elements/in_pressureY_index
-> +What:		/sys/.../buffer/scan_elements/in_pressure_index
->  KernelVersion:	2.6.37
->  Contact:	linux-iio@vger.kernel.org
->  Description:
 > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 060a404..3dccd6c 100644
+> index 3dccd6c..8848f16 100644
 > --- a/drivers/iio/industrialio-core.c
 > +++ b/drivers/iio/industrialio-core.c
-> @@ -65,6 +65,7 @@ static const char * const iio_chan_type_name_spec[] = {
->  	[IIO_CAPACITANCE] = "capacitance",
->  	[IIO_ALTVOLTAGE] = "altvoltage",
->  	[IIO_CCT] = "cct",
-> +	[IIO_PRESSURE] = "pressure",
->  };
+> @@ -408,6 +408,64 @@ static ssize_t iio_read_channel_info(struct device *dev,
+>  	}
+>  }
 >  
->  static const char * const iio_modifier_names[] = {
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index 87b196a..88bf0f0 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -28,6 +28,7 @@ enum iio_chan_type {
->  	IIO_CAPACITANCE,
->  	IIO_ALTVOLTAGE,
->  	IIO_CCT,
-> +	IIO_PRESSURE,
->  };
+> +/**
+> + * iio_str_to_fixpoint() - Parse a fixed-point number from a string
+> + * @str: The string to parse
+> + * @fract_mult: Multiplier for the first decimal place, should be a power of 10
+> + * @integer: The integer part of the number
+> + * @fract: The fractional part of the number
+> + *
+> + * Returns 0 on success, or a negative error code if the string could not be
+> + * parsed.
+> + */
+> +int iio_str_to_fixpoint(const char *str, int fract_mult,
+> +	int *integer, int *fract)
+> +{
+> +	int i = 0, f = 0;
+> +	bool integer_part = true, negative = false;
+> +
+> +	if (str[0] == '-') {
+> +		negative = true;
+> +		str++;
+> +	} else if (str[0] == '+') {
+> +		str++;
+> +	}
+> +
+> +	while (*str) {
+> +		if ('0' <= *str && *str <= '9') {
+> +			if (integer_part) {
+> +				i = i * 10 + *str - '0';
+> +			} else {
+> +				f += fract_mult * (*str - '0');
+> +				fract_mult /= 10;
+> +			}
+> +		} else if (*str == '\n') {
+> +			if (*(str + 1) == '\0')
+> +				break;
+> +			else
+> +				return -EINVAL;
+> +		} else if (*str == '.' && integer_part) {
+> +			integer_part = false;
+> +		} else {
+> +			return -EINVAL;
+> +		}
+> +		str++;
+> +	}
+> +
+> +	if (negative) {
+> +		if (i)
+> +			i = -i;
+> +		else
+> +			f = -f;
+> +	}
+> +
+> +	*integer = i;
+> +	*fract = f;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(iio_str_to_fixpoint);
+> +
+>  static ssize_t iio_write_channel_info(struct device *dev,
+>  				      struct device_attribute *attr,
+>  				      const char *buf,
+> @@ -415,8 +473,8 @@ static ssize_t iio_write_channel_info(struct device *dev,
+>  {
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> -	int ret, integer = 0, fract = 0, fract_mult = 100000;
+> -	bool integer_part = true, negative = false;
+> +	int ret, fract_mult = 100000;
+> +	int integer, fract;
 >  
->  enum iio_modifier {
+>  	/* Assumes decimal - precision based on number of digits */
+>  	if (!indio_dev->info->write_raw)
+> @@ -435,39 +493,9 @@ static ssize_t iio_write_channel_info(struct device *dev,
+>  			return -EINVAL;
+>  		}
+>  
+> -	if (buf[0] == '-') {
+> -		negative = true;
+> -		buf++;
+> -	} else if (buf[0] == '+') {
+> -		buf++;
+> -	}
+> -
+> -	while (*buf) {
+> -		if ('0' <= *buf && *buf <= '9') {
+> -			if (integer_part)
+> -				integer = integer*10 + *buf - '0';
+> -			else {
+> -				fract += fract_mult*(*buf - '0');
+> -				fract_mult /= 10;
+> -			}
+> -		} else if (*buf == '\n') {
+> -			if (*(buf + 1) == '\0')
+> -				break;
+> -			else
+> -				return -EINVAL;
+> -		} else if (*buf == '.' && integer_part) {
+> -			integer_part = false;
+> -		} else {
+> -			return -EINVAL;
+> -		}
+> -		buf++;
+> -	}
+> -	if (negative) {
+> -		if (integer)
+> -			integer = -integer;
+> -		else
+> -			fract = -fract;
+> -	}
+> +	ret = iio_str_to_fixpoint(buf, fract_mult, &integer, &fract);
+> +	if (ret)
+> +		return ret;
+>  
+>  	ret = indio_dev->info->write_raw(indio_dev, this_attr->c,
+>  					 integer, fract, this_attr->address);
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index adca93a..da8c776 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -620,6 +620,9 @@ static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
+>  };
+>  #endif
+>  
+> +int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
+> +	int *fract);
+> +
+>  /**
+>   * IIO_DEGREE_TO_RAD() - Convert degree to rad
+>   * @deg: A value in degree
 > 
