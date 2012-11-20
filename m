@@ -1,82 +1,167 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57250 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1030416Ab2K3Nam (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Nov 2012 08:30:42 -0500
-Message-ID: <50B8B500.6040802@kernel.org>
-Date: Fri, 30 Nov 2012 13:30:40 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO cleanups, new drivers and fixes (IIO set 6 for the 3.8
- cycle)
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtp-out-219.synserver.de ([212.40.185.219]:1194 "EHLO
+	smtp-out-217.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752668Ab2KTNhE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Nov 2012 08:37:04 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 6/7] iio: Factor out fixed point number parsing into its own function
+Date: Tue, 20 Nov 2012 14:36:50 +0100
+Message-Id: <1353418611-17614-6-git-send-email-lars@metafoo.de>
+In-Reply-To: <1353418611-17614-1-git-send-email-lars@metafoo.de>
+References: <1353418611-17614-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit e143ef8f297d980037149fe2dc62af72621a0f5e:
+Factor out the code for parsing fixed point numbers into its own function and
+make this function globally available. This allows us to reuse the code to parse
+fixed point numbers in individual IIO drivers.
 
-  staging: gdm72xx: unlock on error in init_usb() (2012-11-29 18:16:15 -0800)
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-core.c | 98 ++++++++++++++++++++++++++---------------
+ include/linux/iio/iio.h         |  3 ++
+ 2 files changed, 66 insertions(+), 35 deletions(-)
 
-are available in the git repository at:
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 3dccd6c..8848f16 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -408,6 +408,64 @@ static ssize_t iio_read_channel_info(struct device *dev,
+ 	}
+ }
+ 
++/**
++ * iio_str_to_fixpoint() - Parse a fixed-point number from a string
++ * @str: The string to parse
++ * @fract_mult: Multiplier for the first decimal place, should be a power of 10
++ * @integer: The integer part of the number
++ * @fract: The fractional part of the number
++ *
++ * Returns 0 on success, or a negative error code if the string could not be
++ * parsed.
++ */
++int iio_str_to_fixpoint(const char *str, int fract_mult,
++	int *integer, int *fract)
++{
++	int i = 0, f = 0;
++	bool integer_part = true, negative = false;
++
++	if (str[0] == '-') {
++		negative = true;
++		str++;
++	} else if (str[0] == '+') {
++		str++;
++	}
++
++	while (*str) {
++		if ('0' <= *str && *str <= '9') {
++			if (integer_part) {
++				i = i * 10 + *str - '0';
++			} else {
++				f += fract_mult * (*str - '0');
++				fract_mult /= 10;
++			}
++		} else if (*str == '\n') {
++			if (*(str + 1) == '\0')
++				break;
++			else
++				return -EINVAL;
++		} else if (*str == '.' && integer_part) {
++			integer_part = false;
++		} else {
++			return -EINVAL;
++		}
++		str++;
++	}
++
++	if (negative) {
++		if (i)
++			i = -i;
++		else
++			f = -f;
++	}
++
++	*integer = i;
++	*fract = f;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(iio_str_to_fixpoint);
++
+ static ssize_t iio_write_channel_info(struct device *dev,
+ 				      struct device_attribute *attr,
+ 				      const char *buf,
+@@ -415,8 +473,8 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	int ret, integer = 0, fract = 0, fract_mult = 100000;
+-	bool integer_part = true, negative = false;
++	int ret, fract_mult = 100000;
++	int integer, fract;
+ 
+ 	/* Assumes decimal - precision based on number of digits */
+ 	if (!indio_dev->info->write_raw)
+@@ -435,39 +493,9 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 			return -EINVAL;
+ 		}
+ 
+-	if (buf[0] == '-') {
+-		negative = true;
+-		buf++;
+-	} else if (buf[0] == '+') {
+-		buf++;
+-	}
+-
+-	while (*buf) {
+-		if ('0' <= *buf && *buf <= '9') {
+-			if (integer_part)
+-				integer = integer*10 + *buf - '0';
+-			else {
+-				fract += fract_mult*(*buf - '0');
+-				fract_mult /= 10;
+-			}
+-		} else if (*buf == '\n') {
+-			if (*(buf + 1) == '\0')
+-				break;
+-			else
+-				return -EINVAL;
+-		} else if (*buf == '.' && integer_part) {
+-			integer_part = false;
+-		} else {
+-			return -EINVAL;
+-		}
+-		buf++;
+-	}
+-	if (negative) {
+-		if (integer)
+-			integer = -integer;
+-		else
+-			fract = -fract;
+-	}
++	ret = iio_str_to_fixpoint(buf, fract_mult, &integer, &fract);
++	if (ret)
++		return ret;
+ 
+ 	ret = indio_dev->info->write_raw(indio_dev, this_attr->c,
+ 					 integer, fract, this_attr->address);
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index adca93a..da8c776 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -620,6 +620,9 @@ static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
+ };
+ #endif
+ 
++int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
++	int *fract);
++
+ /**
+  * IIO_DEGREE_TO_RAD() - Convert degree to rad
+  * @deg: A value in degree
+-- 
+1.8.0
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.8f
-
-for you to fetch changes up to 583f2deb9349eb55d913eb92a31273f3907d72ea:
-
-  iio: imu: adis16480: remove duplicated include from adis16480.c (2012-11-30 13:11:46 +0000)
-
-----------------------------------------------------------------
-6th set of IIO new driver support, clean up and fixes for the 3.8 cycle
-(possibly wait until 3.9 cycle given timing).
-
-Here we have
-* the cleanup and move out of staging of ad7793.
-* addition support for additional parts to ad7793.
-* a basic new driver for TI ADC081C021/027
-* 4 little fixes for the recent addition of ad16136 and ad16480.
-
-So some nice work with nothing controversial or anything that
-will effect stuff outside the drivers in question.
-
-----------------------------------------------------------------
-Dan Carpenter (2):
-      iio:gyro: adis16136: divide by zero in write_frequency()
-      iio:imu: adis16480: show_firmware() buffer too small
-
-Lars-Peter Clausen (11):
-      staging:iio:ad7793: Fix VDD monitor scale
-      staging:iio:ad7793: Fix temperature scale
-      staging:iio:ad7793: Use usleep_range instead of msleep
-      staging:iio:ad7793: Use kstrtol instead of strict_strtol
-      staging:iio:ad7793: Rework platform data
-      staging:iio:ad7793: Rework regulator handling
-      staging:iio:ad7793: Move register definitions from header to source
-      staging:iio:ad7793: Implement stricter id checking
-      staging:iio: Move ad7793 driver out of staging
-      iio:ad7793: Add support for the ad7798 and ad7799
-      iio:ad7793: Add support for the ad7796 and ad7797
-
-Thierry Reding (1):
-      iio: adc: Add Texas Instruments ADC081C021/027 support
-
-Wei Yongjun (2):
-      iio: gyro: adis16136: remove duplicated include from adis16136.c
-      iio: imu: adis16480: remove duplicated include from adis16480.c
-
- drivers/iio/adc/Kconfig                |  22 ++
- drivers/iio/adc/Makefile               |   3 +
- drivers/{staging => }/iio/adc/ad7793.c | 384 +++++++++++++++++++++++++++++----
- drivers/iio/adc/ti-adc081c.c           | 161 ++++++++++++++
- drivers/iio/gyro/adis16136.c           |   5 +-
- drivers/iio/imu/adis16480.c            |   5 +-
- drivers/staging/iio/adc/Kconfig        |  12 --
- drivers/staging/iio/adc/Makefile       |   1 -
- drivers/staging/iio/adc/ad7793.h       | 115 ----------
- include/linux/platform_data/ad7793.h   | 112 ++++++++++
- 10 files changed, 649 insertions(+), 171 deletions(-)
- rename drivers/{staging => }/iio/adc/ad7793.c (50%)
- create mode 100644 drivers/iio/adc/ti-adc081c.c
- delete mode 100644 drivers/staging/iio/adc/ad7793.h
- create mode 100644 include/linux/platform_data/ad7793.h
