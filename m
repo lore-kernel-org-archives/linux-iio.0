@@ -1,370 +1,372 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-219.synserver.de ([212.40.185.219]:1107 "EHLO
-	smtp-out-217.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752544Ab2KTNhA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Nov 2012 08:37:00 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/7] iio:imu:adis: Add support for 32bit registers
-Date: Tue, 20 Nov 2012 14:36:46 +0100
-Message-Id: <1353418611-17614-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1353418611-17614-1-git-send-email-lars@metafoo.de>
-References: <1353418611-17614-1-git-send-email-lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40676 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753081Ab2KTUzi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Nov 2012 15:55:38 -0500
+Message-ID: <50ABEE46.7020800@kernel.org>
+Date: Tue, 20 Nov 2012 20:55:34 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	drivers@analog.com
+Subject: Re: [PATCH 2/7] iio:imu:adis: Add support for 32bit registers
+References: <1353418611-17614-1-git-send-email-lars@metafoo.de> <1353418611-17614-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1353418611-17614-2-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some of the newer generation devices from the ADIS16XXX family have 32bit wide
-register which spans two 16bit wide registers. This patch adds support for
-reading and writing a 32bit wide register.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/imu/adis.c        | 145 +++++++++++++++++++++++++++---------------
- drivers/iio/imu/adis_buffer.c |   2 +
- include/linux/iio/imu/adis.h  |  81 +++++++++++++++++++++--
- 3 files changed, 171 insertions(+), 57 deletions(-)
-
-diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
-index 28d4df2..280a495 100644
---- a/drivers/iio/imu/adis.c
-+++ b/drivers/iio/imu/adis.c
-@@ -27,36 +27,10 @@
- #define ADIS_MSC_CTRL_DATA_RDY_DIO2	BIT(0)
- #define ADIS_GLOB_CMD_SW_RESET		BIT(7)
- 
--/**
-- * adis_write_reg_8() - Write single byte to a register
-- * @adis: The adis device
-- * @reg: The address of the register to be written
-- * @val: The value to write
-- */
--int adis_write_reg_8(struct adis *adis, unsigned int reg, uint8_t val)
--{
--	int ret;
--
--	mutex_lock(&adis->txrx_lock);
--	adis->tx[0] = ADIS_WRITE_REG(reg);
--	adis->tx[1] = val;
--
--	ret = spi_write(adis->spi, adis->tx, 2);
--	mutex_unlock(&adis->txrx_lock);
--
--	return ret;
--}
--EXPORT_SYMBOL_GPL(adis_write_reg_8);
--
--/**
-- * adis_write_reg_16() - Write 2 bytes to a pair of registers
-- * @adis: The adis device
-- * @reg: The address of the lower of the two registers
-- * @val: Value to be written
-- */
--int adis_write_reg_16(struct adis *adis, unsigned int reg, uint16_t value)
-+int adis_write_reg(struct adis *adis, unsigned int reg,
-+	unsigned int value, unsigned int size)
- {
--	int ret;
-+	int ret, i;
- 	struct spi_message msg;
- 	struct spi_transfer xfers[] = {
- 		{
-@@ -69,33 +43,69 @@ int adis_write_reg_16(struct adis *adis, unsigned int reg, uint16_t value)
- 			.tx_buf = adis->tx + 2,
- 			.bits_per_word = 8,
- 			.len = 2,
-+			.cs_change = 1,
-+			.delay_usecs = adis->data->write_delay,
-+		}, {
-+			.tx_buf = adis->tx + 4,
-+			.bits_per_word = 8,
-+			.len = 2,
-+			.cs_change = 1,
-+			.delay_usecs = adis->data->write_delay,
-+		}, {
-+			.tx_buf = adis->tx + 6,
-+			.bits_per_word = 8,
-+			.len = 2,
- 			.delay_usecs = adis->data->write_delay,
- 		},
- 	};
- 
- 	mutex_lock(&adis->txrx_lock);
--	adis->tx[0] = ADIS_WRITE_REG(reg);
--	adis->tx[1] = value & 0xff;
--	adis->tx[2] = ADIS_WRITE_REG(reg + 1);
--	adis->tx[3] = (value >> 8) & 0xff;
- 
- 	spi_message_init(&msg);
--	spi_message_add_tail(&xfers[0], &msg);
--	spi_message_add_tail(&xfers[1], &msg);
-+	switch (size) {
-+	case 4:
-+		adis->tx[6] = ADIS_WRITE_REG(reg + 3);
-+		adis->tx[7] = (value >> 24) & 0xff;
-+		adis->tx[4] = ADIS_WRITE_REG(reg + 2);
-+		adis->tx[5] = (value >> 16) & 0xff;
-+	case 2:
-+		adis->tx[2] = ADIS_WRITE_REG(reg + 1);
-+		adis->tx[3] = (value >> 8) & 0xff;
-+	case 1:
-+		adis->tx[0] = ADIS_WRITE_REG(reg);
-+		adis->tx[1] = value & 0xff;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+
-+	xfers[size - 1].cs_change = 0;
-+
-+	for (i = 0; i < size; i++)
-+		spi_message_add_tail(&xfers[i], &msg);
-+
- 	ret = spi_sync(adis->spi, &msg);
-+	if (ret) {
-+		dev_err(&adis->spi->dev, "Failed to write register 0x%02X: %d\n",
-+				reg, ret);
-+	}
-+
-+out_unlock:
- 	mutex_unlock(&adis->txrx_lock);
- 
- 	return ret;
- }
--EXPORT_SYMBOL_GPL(adis_write_reg_16);
-+EXPORT_SYMBOL_GPL(adis_write_reg);
- 
- /**
-- * adis_read_reg_16() - read 2 bytes from a 16-bit register
-+ * adis_read_reg() - read 2 bytes from a 16-bit register
-  * @adis: The adis device
-  * @reg: The address of the lower of the two registers
-  * @val: The value read back from the device
-  */
--int adis_read_reg_16(struct adis *adis, unsigned int reg, uint16_t *val)
-+int adis_read_reg(struct adis *adis, unsigned int reg,
-+	unsigned int *val, unsigned int size)
- {
- 	struct spi_message msg;
- 	int ret;
-@@ -107,33 +117,61 @@ int adis_read_reg_16(struct adis *adis, unsigned int reg, uint16_t *val)
- 			.cs_change = 1,
- 			.delay_usecs = adis->data->read_delay,
- 		}, {
-+			.tx_buf = adis->tx + 2,
- 			.rx_buf = adis->rx,
- 			.bits_per_word = 8,
- 			.len = 2,
-+			.cs_change = 1,
-+			.delay_usecs = adis->data->read_delay,
-+		}, {
-+			.rx_buf = adis->rx + 2,
-+			.bits_per_word = 8,
-+			.len = 2,
- 			.delay_usecs = adis->data->read_delay,
- 		},
- 	};
- 
- 	mutex_lock(&adis->txrx_lock);
--	adis->tx[0] = ADIS_READ_REG(reg);
--	adis->tx[1] = 0;
--
- 	spi_message_init(&msg);
--	spi_message_add_tail(&xfers[0], &msg);
--	spi_message_add_tail(&xfers[1], &msg);
-+
-+	switch (size) {
-+	case 4:
-+		adis->tx[0] = ADIS_READ_REG(reg + 2);
-+		adis->tx[1] = 0;
-+		spi_message_add_tail(&xfers[0], &msg);
-+	case 2:
-+		adis->tx[2] = ADIS_READ_REG(reg);
-+		adis->tx[3] = 0;
-+		spi_message_add_tail(&xfers[1], &msg);
-+		spi_message_add_tail(&xfers[2], &msg);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+
- 	ret = spi_sync(adis->spi, &msg);
- 	if (ret) {
--		dev_err(&adis->spi->dev, "Failed to read 16 bit register 0x%02X: %d\n",
-+		dev_err(&adis->spi->dev, "Failed to read register 0x%02X: %d\n",
- 				reg, ret);
--		goto error_ret;
-+		goto out_unlock;
- 	}
--	*val = get_unaligned_be16(adis->rx);
- 
--error_ret:
-+	switch (size) {
-+	case 4:
-+		*val = get_unaligned_be32(adis->rx);
-+		break;
-+	case 2:
-+		*val = get_unaligned_be16(adis->rx + 2);
-+		break;
-+	}
-+
-+out_unlock:
- 	mutex_unlock(&adis->txrx_lock);
-+
- 	return ret;
- }
--EXPORT_SYMBOL_GPL(adis_read_reg_16);
-+EXPORT_SYMBOL_GPL(adis_read_reg);
- 
- #ifdef CONFIG_DEBUG_FS
- 
-@@ -304,25 +342,26 @@ int adis_single_conversion(struct iio_dev *indio_dev,
- 	const struct iio_chan_spec *chan, unsigned int error_mask, int *val)
- {
- 	struct adis *adis = iio_device_get_drvdata(indio_dev);
--	uint16_t val16;
-+	unsigned int uval;
- 	int ret;
- 
- 	mutex_lock(&indio_dev->mlock);
- 
--	ret = adis_read_reg_16(adis, chan->address, &val16);
-+	ret = adis_read_reg(adis, chan->address, &uval,
-+			chan->scan_type.storagebits / 8);
- 	if (ret)
- 		goto err_unlock;
- 
--	if (val16 & error_mask) {
-+	if (uval & error_mask) {
- 		ret = adis_check_status(adis);
- 		if (ret)
- 			goto err_unlock;
- 	}
- 
- 	if (chan->scan_type.sign == 's')
--		*val = sign_extend32(val16, chan->scan_type.realbits - 1);
-+		*val = sign_extend32(uval, chan->scan_type.realbits - 1);
- 	else
--		*val = val16 & ((1 << chan->scan_type.realbits) - 1);
-+		*val = uval & ((1 << chan->scan_type.realbits) - 1);
- 
- 	ret = IIO_VAL_INT;
- err_unlock:
-diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
-index a91b4cb..7857133 100644
---- a/drivers/iio/imu/adis_buffer.c
-+++ b/drivers/iio/imu/adis_buffer.c
-@@ -64,6 +64,8 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
- 	for (i = 0; i < indio_dev->num_channels; i++, chan++) {
- 		if (!test_bit(chan->scan_index, scan_mask))
- 			continue;
-+		if (chan->scan_type.storagebits == 32)
-+			*tx++ = cpu_to_be16((chan->address + 2) << 8);
- 		*tx++ = cpu_to_be16(chan->address << 8);
- 	}
- 
-diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-index fce7bc3..6402a08 100644
---- a/include/linux/iio/imu/adis.h
-+++ b/include/linux/iio/imu/adis.h
-@@ -53,7 +53,7 @@ struct adis {
- 	struct spi_transfer	*xfer;
- 	void			*buffer;
- 
--	uint8_t			tx[8] ____cacheline_aligned;
-+	uint8_t			tx[10] ____cacheline_aligned;
- 	uint8_t			rx[4];
- };
- 
-@@ -61,9 +61,82 @@ int adis_init(struct adis *adis, struct iio_dev *indio_dev,
- 	struct spi_device *spi, const struct adis_data *data);
- int adis_reset(struct adis *adis);
- 
--int adis_write_reg_8(struct adis *adis, unsigned int reg, uint8_t val);
--int adis_write_reg_16(struct adis *adis, unsigned int reg, uint16_t val);
--int adis_read_reg_16(struct adis *adis, unsigned int reg, uint16_t *val);
-+int adis_write_reg(struct adis *adis, unsigned int reg,
-+	unsigned int val, unsigned int size);
-+int adis_read_reg(struct adis *adis, unsigned int reg,
-+	unsigned int *val, unsigned int size);
-+
-+/**
-+ * adis_write_reg_8() - Write single byte to a register
-+ * @adis: The adis device
-+ * @reg: The address of the register to be written
-+ * @value: The value to write
-+ */
-+static inline int adis_write_reg_8(struct adis *adis, unsigned int reg,
-+	uint8_t val)
-+{
-+	return adis_write_reg(adis, reg, val, 1);
-+}
-+
-+/**
-+ * adis_write_reg_16() - Write 2 bytes to a pair of registers
-+ * @adis: The adis device
-+ * @reg: The address of the lower of the two registers
-+ * @value: Value to be written
-+ */
-+static inline int adis_write_reg_16(struct adis *adis, unsigned int reg,
-+	uint16_t val)
-+{
-+	return adis_write_reg(adis, reg, val, 2);
-+}
-+
-+/**
-+ * adis_write_reg_32() - write 4 bytes to four registers
-+ * @adis: The adis device
-+ * @reg: The address of the lower of the four register
-+ * @value: Value to be written
-+ */
-+static inline int adis_write_reg_32(struct adis *adis, unsigned int reg,
-+	uint32_t val)
-+{
-+	return adis_write_reg(adis, reg, val, 4);
-+}
-+
-+/**
-+ * adis_read_reg_16() - read 2 bytes from a 16-bit register
-+ * @adis: The adis device
-+ * @reg: The address of the lower of the two registers
-+ * @val: The value read back from the device
-+ */
-+static inline int adis_read_reg_16(struct adis *adis, unsigned int reg,
-+	uint16_t *val)
-+{
-+	unsigned int tmp;
-+	int ret;
-+
-+	ret = adis_read_reg(adis, reg, &tmp, 2);
-+	*val = tmp;
-+
-+	return ret;
-+}
-+
-+/**
-+ * adis_read_reg_32() - read 4 bytes from a 32-bit register
-+ * @adis: The adis device
-+ * @reg: The address of the lower of the two registers
-+ * @val: The value read back from the device
-+ */
-+static inline int adis_read_reg_32(struct adis *adis, unsigned int reg,
-+	uint32_t *val)
-+{
-+	unsigned int tmp;
-+	int ret;
-+
-+	ret = adis_read_reg(adis, reg, &tmp, 4);
-+	*val = tmp;
-+
-+	return ret;
-+}
- 
- int adis_enable_irq(struct adis *adis, bool enable);
- int adis_check_status(struct adis *adis);
--- 
-1.8.0
-
+On 11/20/2012 01:36 PM, Lars-Peter Clausen wrote:
+> Some of the newer generation devices from the ADIS16XXX family have 32bit wide
+> register which spans two 16bit wide registers. This patch adds support for
+> reading and writing a 32bit wide register.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+added to togreg branch of iio.git
+> ---
+>  drivers/iio/imu/adis.c        | 145 +++++++++++++++++++++++++++---------------
+>  drivers/iio/imu/adis_buffer.c |   2 +
+>  include/linux/iio/imu/adis.h  |  81 +++++++++++++++++++++--
+>  3 files changed, 171 insertions(+), 57 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
+> index 28d4df2..280a495 100644
+> --- a/drivers/iio/imu/adis.c
+> +++ b/drivers/iio/imu/adis.c
+> @@ -27,36 +27,10 @@
+>  #define ADIS_MSC_CTRL_DATA_RDY_DIO2	BIT(0)
+>  #define ADIS_GLOB_CMD_SW_RESET		BIT(7)
+>  
+> -/**
+> - * adis_write_reg_8() - Write single byte to a register
+> - * @adis: The adis device
+> - * @reg: The address of the register to be written
+> - * @val: The value to write
+> - */
+> -int adis_write_reg_8(struct adis *adis, unsigned int reg, uint8_t val)
+> -{
+> -	int ret;
+> -
+> -	mutex_lock(&adis->txrx_lock);
+> -	adis->tx[0] = ADIS_WRITE_REG(reg);
+> -	adis->tx[1] = val;
+> -
+> -	ret = spi_write(adis->spi, adis->tx, 2);
+> -	mutex_unlock(&adis->txrx_lock);
+> -
+> -	return ret;
+> -}
+> -EXPORT_SYMBOL_GPL(adis_write_reg_8);
+> -
+> -/**
+> - * adis_write_reg_16() - Write 2 bytes to a pair of registers
+> - * @adis: The adis device
+> - * @reg: The address of the lower of the two registers
+> - * @val: Value to be written
+> - */
+> -int adis_write_reg_16(struct adis *adis, unsigned int reg, uint16_t value)
+> +int adis_write_reg(struct adis *adis, unsigned int reg,
+> +	unsigned int value, unsigned int size)
+>  {
+> -	int ret;
+> +	int ret, i;
+>  	struct spi_message msg;
+>  	struct spi_transfer xfers[] = {
+>  		{
+> @@ -69,33 +43,69 @@ int adis_write_reg_16(struct adis *adis, unsigned int reg, uint16_t value)
+>  			.tx_buf = adis->tx + 2,
+>  			.bits_per_word = 8,
+>  			.len = 2,
+> +			.cs_change = 1,
+> +			.delay_usecs = adis->data->write_delay,
+> +		}, {
+> +			.tx_buf = adis->tx + 4,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+> +			.cs_change = 1,
+> +			.delay_usecs = adis->data->write_delay,
+> +		}, {
+> +			.tx_buf = adis->tx + 6,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+>  			.delay_usecs = adis->data->write_delay,
+>  		},
+>  	};
+>  
+>  	mutex_lock(&adis->txrx_lock);
+> -	adis->tx[0] = ADIS_WRITE_REG(reg);
+> -	adis->tx[1] = value & 0xff;
+> -	adis->tx[2] = ADIS_WRITE_REG(reg + 1);
+> -	adis->tx[3] = (value >> 8) & 0xff;
+>  
+>  	spi_message_init(&msg);
+> -	spi_message_add_tail(&xfers[0], &msg);
+> -	spi_message_add_tail(&xfers[1], &msg);
+> +	switch (size) {
+> +	case 4:
+> +		adis->tx[6] = ADIS_WRITE_REG(reg + 3);
+> +		adis->tx[7] = (value >> 24) & 0xff;
+> +		adis->tx[4] = ADIS_WRITE_REG(reg + 2);
+> +		adis->tx[5] = (value >> 16) & 0xff;
+> +	case 2:
+> +		adis->tx[2] = ADIS_WRITE_REG(reg + 1);
+> +		adis->tx[3] = (value >> 8) & 0xff;
+> +	case 1:
+> +		adis->tx[0] = ADIS_WRITE_REG(reg);
+> +		adis->tx[1] = value & 0xff;
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		goto out_unlock;
+> +	}
+> +
+> +	xfers[size - 1].cs_change = 0;
+> +
+> +	for (i = 0; i < size; i++)
+> +		spi_message_add_tail(&xfers[i], &msg);
+> +
+>  	ret = spi_sync(adis->spi, &msg);
+> +	if (ret) {
+> +		dev_err(&adis->spi->dev, "Failed to write register 0x%02X: %d\n",
+> +				reg, ret);
+> +	}
+> +
+> +out_unlock:
+>  	mutex_unlock(&adis->txrx_lock);
+>  
+>  	return ret;
+>  }
+> -EXPORT_SYMBOL_GPL(adis_write_reg_16);
+> +EXPORT_SYMBOL_GPL(adis_write_reg);
+>  
+>  /**
+> - * adis_read_reg_16() - read 2 bytes from a 16-bit register
+> + * adis_read_reg() - read 2 bytes from a 16-bit register
+>   * @adis: The adis device
+>   * @reg: The address of the lower of the two registers
+>   * @val: The value read back from the device
+>   */
+> -int adis_read_reg_16(struct adis *adis, unsigned int reg, uint16_t *val)
+> +int adis_read_reg(struct adis *adis, unsigned int reg,
+> +	unsigned int *val, unsigned int size)
+>  {
+>  	struct spi_message msg;
+>  	int ret;
+> @@ -107,33 +117,61 @@ int adis_read_reg_16(struct adis *adis, unsigned int reg, uint16_t *val)
+>  			.cs_change = 1,
+>  			.delay_usecs = adis->data->read_delay,
+>  		}, {
+> +			.tx_buf = adis->tx + 2,
+>  			.rx_buf = adis->rx,
+>  			.bits_per_word = 8,
+>  			.len = 2,
+> +			.cs_change = 1,
+> +			.delay_usecs = adis->data->read_delay,
+> +		}, {
+> +			.rx_buf = adis->rx + 2,
+> +			.bits_per_word = 8,
+> +			.len = 2,
+>  			.delay_usecs = adis->data->read_delay,
+>  		},
+>  	};
+>  
+>  	mutex_lock(&adis->txrx_lock);
+> -	adis->tx[0] = ADIS_READ_REG(reg);
+> -	adis->tx[1] = 0;
+> -
+>  	spi_message_init(&msg);
+> -	spi_message_add_tail(&xfers[0], &msg);
+> -	spi_message_add_tail(&xfers[1], &msg);
+> +
+> +	switch (size) {
+> +	case 4:
+> +		adis->tx[0] = ADIS_READ_REG(reg + 2);
+> +		adis->tx[1] = 0;
+> +		spi_message_add_tail(&xfers[0], &msg);
+> +	case 2:
+> +		adis->tx[2] = ADIS_READ_REG(reg);
+> +		adis->tx[3] = 0;
+> +		spi_message_add_tail(&xfers[1], &msg);
+> +		spi_message_add_tail(&xfers[2], &msg);
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		goto out_unlock;
+> +	}
+> +
+>  	ret = spi_sync(adis->spi, &msg);
+>  	if (ret) {
+> -		dev_err(&adis->spi->dev, "Failed to read 16 bit register 0x%02X: %d\n",
+> +		dev_err(&adis->spi->dev, "Failed to read register 0x%02X: %d\n",
+>  				reg, ret);
+> -		goto error_ret;
+> +		goto out_unlock;
+>  	}
+> -	*val = get_unaligned_be16(adis->rx);
+>  
+> -error_ret:
+> +	switch (size) {
+> +	case 4:
+> +		*val = get_unaligned_be32(adis->rx);
+> +		break;
+> +	case 2:
+> +		*val = get_unaligned_be16(adis->rx + 2);
+> +		break;
+> +	}
+> +
+> +out_unlock:
+>  	mutex_unlock(&adis->txrx_lock);
+> +
+>  	return ret;
+>  }
+> -EXPORT_SYMBOL_GPL(adis_read_reg_16);
+> +EXPORT_SYMBOL_GPL(adis_read_reg);
+>  
+>  #ifdef CONFIG_DEBUG_FS
+>  
+> @@ -304,25 +342,26 @@ int adis_single_conversion(struct iio_dev *indio_dev,
+>  	const struct iio_chan_spec *chan, unsigned int error_mask, int *val)
+>  {
+>  	struct adis *adis = iio_device_get_drvdata(indio_dev);
+> -	uint16_t val16;
+> +	unsigned int uval;
+>  	int ret;
+>  
+>  	mutex_lock(&indio_dev->mlock);
+>  
+> -	ret = adis_read_reg_16(adis, chan->address, &val16);
+> +	ret = adis_read_reg(adis, chan->address, &uval,
+> +			chan->scan_type.storagebits / 8);
+>  	if (ret)
+>  		goto err_unlock;
+>  
+> -	if (val16 & error_mask) {
+> +	if (uval & error_mask) {
+>  		ret = adis_check_status(adis);
+>  		if (ret)
+>  			goto err_unlock;
+>  	}
+>  
+>  	if (chan->scan_type.sign == 's')
+> -		*val = sign_extend32(val16, chan->scan_type.realbits - 1);
+> +		*val = sign_extend32(uval, chan->scan_type.realbits - 1);
+>  	else
+> -		*val = val16 & ((1 << chan->scan_type.realbits) - 1);
+> +		*val = uval & ((1 << chan->scan_type.realbits) - 1);
+>  
+>  	ret = IIO_VAL_INT;
+>  err_unlock:
+> diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+> index a91b4cb..7857133 100644
+> --- a/drivers/iio/imu/adis_buffer.c
+> +++ b/drivers/iio/imu/adis_buffer.c
+> @@ -64,6 +64,8 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
+>  	for (i = 0; i < indio_dev->num_channels; i++, chan++) {
+>  		if (!test_bit(chan->scan_index, scan_mask))
+>  			continue;
+> +		if (chan->scan_type.storagebits == 32)
+> +			*tx++ = cpu_to_be16((chan->address + 2) << 8);
+>  		*tx++ = cpu_to_be16(chan->address << 8);
+>  	}
+>  
+> diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+> index fce7bc3..6402a08 100644
+> --- a/include/linux/iio/imu/adis.h
+> +++ b/include/linux/iio/imu/adis.h
+> @@ -53,7 +53,7 @@ struct adis {
+>  	struct spi_transfer	*xfer;
+>  	void			*buffer;
+>  
+> -	uint8_t			tx[8] ____cacheline_aligned;
+> +	uint8_t			tx[10] ____cacheline_aligned;
+>  	uint8_t			rx[4];
+>  };
+>  
+> @@ -61,9 +61,82 @@ int adis_init(struct adis *adis, struct iio_dev *indio_dev,
+>  	struct spi_device *spi, const struct adis_data *data);
+>  int adis_reset(struct adis *adis);
+>  
+> -int adis_write_reg_8(struct adis *adis, unsigned int reg, uint8_t val);
+> -int adis_write_reg_16(struct adis *adis, unsigned int reg, uint16_t val);
+> -int adis_read_reg_16(struct adis *adis, unsigned int reg, uint16_t *val);
+> +int adis_write_reg(struct adis *adis, unsigned int reg,
+> +	unsigned int val, unsigned int size);
+> +int adis_read_reg(struct adis *adis, unsigned int reg,
+> +	unsigned int *val, unsigned int size);
+> +
+> +/**
+> + * adis_write_reg_8() - Write single byte to a register
+> + * @adis: The adis device
+> + * @reg: The address of the register to be written
+> + * @value: The value to write
+> + */
+> +static inline int adis_write_reg_8(struct adis *adis, unsigned int reg,
+> +	uint8_t val)
+> +{
+> +	return adis_write_reg(adis, reg, val, 1);
+> +}
+> +
+> +/**
+> + * adis_write_reg_16() - Write 2 bytes to a pair of registers
+> + * @adis: The adis device
+> + * @reg: The address of the lower of the two registers
+> + * @value: Value to be written
+> + */
+> +static inline int adis_write_reg_16(struct adis *adis, unsigned int reg,
+> +	uint16_t val)
+> +{
+> +	return adis_write_reg(adis, reg, val, 2);
+> +}
+> +
+> +/**
+> + * adis_write_reg_32() - write 4 bytes to four registers
+> + * @adis: The adis device
+> + * @reg: The address of the lower of the four register
+> + * @value: Value to be written
+> + */
+> +static inline int adis_write_reg_32(struct adis *adis, unsigned int reg,
+> +	uint32_t val)
+> +{
+> +	return adis_write_reg(adis, reg, val, 4);
+> +}
+> +
+> +/**
+> + * adis_read_reg_16() - read 2 bytes from a 16-bit register
+> + * @adis: The adis device
+> + * @reg: The address of the lower of the two registers
+> + * @val: The value read back from the device
+> + */
+> +static inline int adis_read_reg_16(struct adis *adis, unsigned int reg,
+> +	uint16_t *val)
+> +{
+> +	unsigned int tmp;
+> +	int ret;
+> +
+> +	ret = adis_read_reg(adis, reg, &tmp, 2);
+> +	*val = tmp;
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + * adis_read_reg_32() - read 4 bytes from a 32-bit register
+> + * @adis: The adis device
+> + * @reg: The address of the lower of the two registers
+> + * @val: The value read back from the device
+> + */
+> +static inline int adis_read_reg_32(struct adis *adis, unsigned int reg,
+> +	uint32_t *val)
+> +{
+> +	unsigned int tmp;
+> +	int ret;
+> +
+> +	ret = adis_read_reg(adis, reg, &tmp, 4);
+> +	*val = tmp;
+> +
+> +	return ret;
+> +}
+>  
+>  int adis_enable_irq(struct adis *adis, bool enable);
+>  int adis_check_status(struct adis *adis);
+> 
