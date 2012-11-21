@@ -1,672 +1,252 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41088 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753270Ab2KTV0Q (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Nov 2012 16:26:16 -0500
-Message-ID: <50ABF577.2010101@kernel.org>
-Date: Tue, 20 Nov 2012 21:26:15 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	drivers@analog.com
-Subject: Re: [PATCH 3/7] iio:gyro: Add support for the ADIS16136 gyroscope
-References: <1353418611-17614-1-git-send-email-lars@metafoo.de> <1353418611-17614-3-git-send-email-lars@metafoo.de> <50ABF084.1010304@kernel.org> <50ABF309.3020009@metafoo.de>
-In-Reply-To: <50ABF309.3020009@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtp-out-222.synserver.de ([212.40.185.222]:1045 "EHLO
+	smtp-out-222.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755239Ab2KUQ12 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Nov 2012 11:27:28 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 10/11] iio:ad7793: Add support for the ad7798 and ad7799
+Date: Wed, 21 Nov 2012 17:27:15 +0100
+Message-Id: <1353515236-21843-10-git-send-email-lars@metafoo.de>
+In-Reply-To: <1353515236-21843-1-git-send-email-lars@metafoo.de>
+References: <1353515236-21843-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/20/2012 09:15 PM, Lars-Peter Clausen wrote:
-> On 11/20/2012 10:05 PM, Jonathan Cameron wrote:
->> On 11/20/2012 01:36 PM, Lars-Peter Clausen wrote:
->>> This patch adds support for the ADIS16133, ADIS16135, ADIS16136 single channel
->>> gyroscopes. The main difference between them is the sensor precision.
->>>
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> A nice driver.
->>
->> The only thing I could pick up on was the 'interesting' comments alongside
->> the 3db divisors.
->>
->> Still I just wanted to comment on something really ;)
->>
->> added to togreg branch of iio.git
->>
-> 
-> just remembered that I wanted to remove the __devinit/__devexit annotations
-> before sending this patch out, but then forgot about it. Can you fix this up?
-> Otherwise I'll just sent a follow up patch. Same for the adis16480 driver.
-Will fixup.  I clean forgot that was going on...
-> 
-> Thanks,
-> - Lars
-> 
->>> ---
->>>  drivers/iio/gyro/Kconfig     |   9 +
->>>  drivers/iio/gyro/Makefile    |   1 +
->>>  drivers/iio/gyro/adis16136.c | 581 +++++++++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 591 insertions(+)
->>>  create mode 100644 drivers/iio/gyro/adis16136.c
->>>
->>> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
->>> index 21e27e2..48ed148 100644
->>> --- a/drivers/iio/gyro/Kconfig
->>> +++ b/drivers/iio/gyro/Kconfig
->>> @@ -3,6 +3,15 @@
->>>  #
->>>  menu "Digital gyroscope sensors"
->>>  
->>> +config ADIS16136
->>> +	tristate "Analog devices ADIS16136 and similar gyroscopes driver"
->>> +	depends on SPI_MASTER
->>> +	select IIO_ADIS_LIB
->>> +	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
->>> +	help
->>> +	  Say yes here to build support for the Analog Devices ADIS16133, ADIS16135,
->>> +	  ADIS16136 gyroscope devices.
->>> +
->>>  config HID_SENSOR_GYRO_3D
->>>  	depends on HID_SENSOR_HUB
->>>  	select IIO_BUFFER
->>> diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
->>> index 8a895d9..702a058 100644
->>> --- a/drivers/iio/gyro/Makefile
->>> +++ b/drivers/iio/gyro/Makefile
->>> @@ -2,4 +2,5 @@
->>>  # Makefile for industrial I/O gyroscope sensor drivers
->>>  #
->>>  
->>> +obj-$(CONFIG_ADIS16136) += adis16136.o
->>>  obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
->>> diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
->>> new file mode 100644
->>> index 0000000..277aa74
->>> --- /dev/null
->>> +++ b/drivers/iio/gyro/adis16136.c
->>> @@ -0,0 +1,581 @@
->>> +/*
->>> + * ADIS16133/ADIS16135/ADIS16136 gyroscope driver
->>> + *
->>> + * Copyright 2012 Analog Devices Inc.
->>> + *   Author: Lars-Peter Clausen <lars@metafoo.de>
->>> + *
->>> + * Licensed under the GPL-2.
->>> + */
->>> +
->>> +#include <linux/interrupt.h>
->>> +#include <linux/delay.h>
->>> +#include <linux/mutex.h>
->>> +#include <linux/device.h>
->>> +#include <linux/kernel.h>
->>> +#include <linux/spi/spi.h>
->>> +#include <linux/slab.h>
->>> +#include <linux/sysfs.h>
->>> +#include <linux/module.h>
->>> +
->>> +#include <linux/iio/iio.h>
->>> +#include <linux/iio/sysfs.h>
->>> +#include <linux/iio/buffer.h>
->>> +#include <linux/iio/imu/adis.h>
->>> +
->>> +#include <linux/iio/iio.h>
->>> +#include <linux/debugfs.h>
->>> +
->>> +#define ADIS16136_REG_FLASH_CNT		0x00
->>> +#define ADIS16136_REG_TEMP_OUT		0x02
->>> +#define ADIS16136_REG_GYRO_OUT2		0x04
->>> +#define ADIS16136_REG_GYRO_OUT		0x06
->>> +#define ADIS16136_REG_GYRO_OFF2		0x08
->>> +#define ADIS16136_REG_GYRO_OFF		0x0A
->>> +#define ADIS16136_REG_ALM_MAG1		0x10
->>> +#define ADIS16136_REG_ALM_MAG2		0x12
->>> +#define ADIS16136_REG_ALM_SAMPL1	0x14
->>> +#define ADIS16136_REG_ALM_SAMPL2	0x16
->>> +#define ADIS16136_REG_ALM_CTRL		0x18
->>> +#define ADIS16136_REG_GPIO_CTRL		0x1A
->>> +#define ADIS16136_REG_MSC_CTRL		0x1C
->>> +#define ADIS16136_REG_SMPL_PRD		0x1E
->>> +#define ADIS16136_REG_AVG_CNT		0x20
->>> +#define ADIS16136_REG_DEC_RATE		0x22
->>> +#define ADIS16136_REG_SLP_CTRL		0x24
->>> +#define ADIS16136_REG_DIAG_STAT		0x26
->>> +#define ADIS16136_REG_GLOB_CMD		0x28
->>> +#define ADIS16136_REG_LOT1		0x32
->>> +#define ADIS16136_REG_LOT2		0x34
->>> +#define ADIS16136_REG_LOT3		0x36
->>> +#define ADIS16136_REG_PROD_ID		0x38
->>> +#define ADIS16136_REG_SERIAL_NUM	0x3A
->>> +
->>> +#define ADIS16136_DIAG_STAT_FLASH_UPDATE_FAIL	2
->>> +#define ADIS16136_DIAG_STAT_SPI_FAIL		3
->>> +#define ADIS16136_DIAG_STAT_SELF_TEST_FAIL	5
->>> +#define ADIS16136_DIAG_STAT_FLASH_CHKSUM_FAIL	6
->>> +
->>> +#define ADIS16136_MSC_CTRL_MEMORY_TEST BIT(11)
->>> +#define ADIS16136_MSC_CTRL_SELF_TEST BIT(10)
->>> +
->>> +struct adis16136_chip_info {
->>> +	unsigned int precision;
->>> +	unsigned int fullscale;
->>> +};
->>> +
->>> +struct adis16136 {
->>> +	const struct adis16136_chip_info *chip_info;
->>> +
->>> +	struct adis adis;
->>> +};
->>> +
->>> +#ifdef CONFIG_DEBUG_FS
->>> +
->>> +static ssize_t adis16136_show_serial(struct file *file,
->>> +		char __user *userbuf, size_t count, loff_t *ppos)
->>> +{
->>> +	struct adis16136 *adis16136 = file->private_data;
->>> +	uint16_t lot1, lot2, lot3, serial;
->>> +	char buf[20];
->>> +	size_t len;
->>> +	int ret;
->>> +
->>> +	ret = adis_read_reg_16(&adis16136->adis, ADIS16136_REG_SERIAL_NUM,
->>> +		&serial);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	ret = adis_read_reg_16(&adis16136->adis, ADIS16136_REG_LOT1, &lot1);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	ret = adis_read_reg_16(&adis16136->adis, ADIS16136_REG_LOT2, &lot2);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	ret = adis_read_reg_16(&adis16136->adis, ADIS16136_REG_LOT3, &lot3);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	len = snprintf(buf, sizeof(buf), "%.4x%.4x%.4x-%.4x\n", lot1, lot2,
->>> +		lot3, serial);
->>> +
->>> +	return simple_read_from_buffer(userbuf, count, ppos, buf, len);
->>> +}
->>> +
->>> +static const struct file_operations adis16136_serial_fops = {
->>> +	.open = simple_open,
->>> +	.read = adis16136_show_serial,
->>> +	.llseek = default_llseek,
->>> +	.owner = THIS_MODULE,
->>> +};
->>> +
->>> +static int adis16136_show_product_id(void *arg, u64 *val)
->>> +{
->>> +	struct adis16136 *adis16136 = arg;
->>> +	u16 prod_id;
->>> +	int ret;
->>> +
->>> +	ret = adis_read_reg_16(&adis16136->adis, ADIS16136_REG_PROD_ID,
->>> +		&prod_id);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	*val = prod_id;
->>> +
->>> +	return 0;
->>> +}
->>> +DEFINE_SIMPLE_ATTRIBUTE(adis16136_product_id_fops,
->>> +	adis16136_show_product_id, NULL, "%llu\n");
->>> +
->>> +static int adis16136_show_flash_count(void *arg, u64 *val)
->>> +{
->>> +	struct adis16136 *adis16136 = arg;
->>> +	uint16_t flash_count;
->>> +	int ret;
->>> +
->>> +	ret = adis_read_reg_16(&adis16136->adis, ADIS16136_REG_FLASH_CNT,
->>> +		&flash_count);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	*val = flash_count;
->>> +
->>> +	return 0;
->>> +}
->>> +DEFINE_SIMPLE_ATTRIBUTE(adis16136_flash_count_fops,
->>> +	adis16136_show_flash_count, NULL, "%lld\n");
->>> +
->>> +static int adis16136_debugfs_init(struct iio_dev *indio_dev)
->>> +{
->>> +	struct adis16136 *adis16136 = iio_priv(indio_dev);
->>> +
->>> +	debugfs_create_file("serial_number", 0400, indio_dev->debugfs_dentry,
->>> +		adis16136, &adis16136_serial_fops);
->>> +	debugfs_create_file("product_id", 0400, indio_dev->debugfs_dentry,
->>> +		adis16136, &adis16136_product_id_fops);
->>> +	debugfs_create_file("flash_count", 0400, indio_dev->debugfs_dentry,
->>> +		adis16136, &adis16136_flash_count_fops);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +#else
->>> +
->>> +static int adis16136_debugfs_init(struct iio_dev *indio_dev)
->>> +{
->>> +	return 0;
->>> +}
->>> +
->>> +#endif
->>> +
->>> +static int adis16136_set_freq(struct adis16136 *adis16136, unsigned int freq)
->>> +{
->>> +	unsigned int t;
->>> +
->>> +	t = 32768 / freq;
->>> +	if (t < 0xf)
->>> +		t = 0xf;
->>> +	else if (t > 0xffff)
->>> +		t = 0xffff;
->>> +	else
->>> +		t--;
->>> +
->>> +	return adis_write_reg_16(&adis16136->adis, ADIS16136_REG_SMPL_PRD, t);
->>> +}
->>> +
->>> +static int adis16136_get_freq(struct adis16136 *adis16136, unsigned int *freq)
->>> +{
->>> +	uint16_t t;
->>> +	int ret;
->>> +
->>> +	ret = adis_read_reg_16(&adis16136->adis, ADIS16136_REG_SMPL_PRD, &t);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	*freq = 32768 / (t + 1);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static ssize_t adis16136_write_frequency(struct device *dev,
->>> +	struct device_attribute *attr, const char *buf, size_t len)
->>> +{
->>> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>> +	struct adis16136 *adis16136 = iio_priv(indio_dev);
->>> +	long val;
->>> +	int ret;
->>> +
->>> +	ret = kstrtol(buf, 10, &val);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	if (val == 0)
->>> +		return -EINVAL;
->>> +
->>> +	ret = adis16136_set_freq(adis16136, val);
->>> +
->>> +	return ret ? ret : len;
->>> +}
->>> +
->>> +static ssize_t adis16136_read_frequency(struct device *dev,
->>> +	struct device_attribute *attr, char *buf)
->>> +{
->>> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>> +	struct adis16136 *adis16136 = iio_priv(indio_dev);
->>> +	unsigned int freq;
->>> +	int ret;
->>> +
->>> +	ret = adis16136_get_freq(adis16136, &freq);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	return sprintf(buf, "%d\n", freq);
->>> +}
->>> +
->>> +static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
->>> +				  adis16136_read_frequency,
->>> +				  adis16136_write_frequency);
->>> +
->> I love the comments.  Useful sounding but I have no idea what
->> they actually mean!
->>> +static const unsigned adis16136_3db_divisors[] = {
->>> +	[0] = 2, /* Special case */
->>> +	[1] = 6,
->>> +	[2] = 12,
->>> +	[3] = 25,
->>> +	[4] = 50,
->>> +	[5] = 100,
->>> +	[6] = 200,
->>> +	[7] = 200, /* Not a valid setting */
->>> +};
->>> +
->>> +static int adis16136_set_filter(struct iio_dev *indio_dev, int val)
->>> +{
->>> +	struct adis16136 *adis16136 = iio_priv(indio_dev);
->>> +	unsigned int freq;
->>> +	int i, ret;
->>> +
->>> +	ret = adis16136_get_freq(adis16136, &freq);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	for (i = ARRAY_SIZE(adis16136_3db_divisors) - 1; i >= 1; i--) {
->>> +		if (freq / adis16136_3db_divisors[i] >= val)
->>> +			break;
->>> +	}
->>> +
->>> +	return adis_write_reg_16(&adis16136->adis, ADIS16136_REG_AVG_CNT, i);
->>> +}
->>> +
->>> +static int adis16136_get_filter(struct iio_dev *indio_dev, int *val)
->>> +{
->>> +	struct adis16136 *adis16136 = iio_priv(indio_dev);
->>> +	unsigned int freq;
->>> +	uint16_t val16;
->>> +	int ret;
->>> +
->>> +	mutex_lock(&indio_dev->mlock);
->>> +
->>> +	ret = adis_read_reg_16(&adis16136->adis, ADIS16136_REG_AVG_CNT, &val16);
->>> +	if (ret < 0)
->>> +		goto err_unlock;
->>> +
->>> +	ret = adis16136_get_freq(adis16136, &freq);
->>> +	if (ret < 0)
->>> +		goto err_unlock;
->>> +
->>> +	*val = freq / adis16136_3db_divisors[val16 & 0x07];
->>> +
->>> +err_unlock:
->>> +	mutex_unlock(&indio_dev->mlock);
->>> +
->>> +	return ret ? ret : IIO_VAL_INT;
->>> +}
->>> +
->>> +static int adis16136_read_raw(struct iio_dev *indio_dev,
->>> +	const struct iio_chan_spec *chan, int *val, int *val2, long info)
->>> +{
->>> +	struct adis16136 *adis16136 = iio_priv(indio_dev);
->>> +	uint32_t val32;
->>> +	int ret;
->>> +
->>> +	switch (info) {
->>> +	case IIO_CHAN_INFO_RAW:
->>> +		return adis_single_conversion(indio_dev, chan, 0, val);
->>> +	case IIO_CHAN_INFO_SCALE:
->>> +		switch (chan->type) {
->>> +		case IIO_ANGL_VEL:
->>> +			*val = adis16136->chip_info->precision;
->>> +			*val2 = (adis16136->chip_info->fullscale << 16);
->>> +			return IIO_VAL_FRACTIONAL;
->>> +		case IIO_TEMP:
->>> +			*val = 10;
->>> +			*val2 = 697000; /* 0.010697 degree Celsius */
->>> +			return IIO_VAL_INT_PLUS_MICRO;
->>> +		default:
->>> +			return -EINVAL;
->>> +		}
->>> +	case IIO_CHAN_INFO_CALIBBIAS:
->>> +		ret = adis_read_reg_32(&adis16136->adis,
->>> +			ADIS16136_REG_GYRO_OFF2, &val32);
->>> +		if (ret < 0)
->>> +			return ret;
->>> +
->>> +		*val = sign_extend32(val32, 31);
->>> +
->>> +		return IIO_VAL_INT;
->>> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
->>> +		return adis16136_get_filter(indio_dev, val);
->>> +	default:
->>> +		return -EINVAL;
->>> +	}
->>> +}
->>> +
->>> +static int adis16136_write_raw(struct iio_dev *indio_dev,
->>> +	const struct iio_chan_spec *chan, int val, int val2, long info)
->>> +{
->>> +	struct adis16136 *adis16136 = iio_priv(indio_dev);
->>> +
->>> +	switch (info) {
->>> +	case IIO_CHAN_INFO_CALIBBIAS:
->>> +		return adis_write_reg_32(&adis16136->adis,
->>> +			ADIS16136_REG_GYRO_OFF2, val);
->>> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
->>> +		return adis16136_set_filter(indio_dev, val);
->>> +	default:
->>> +		break;
->>> +	}
->>> +
->>> +	return -EINVAL;
->>> +}
->>> +
->>> +enum {
->>> +	ADIS16136_SCAN_GYRO,
->>> +	ADIS16136_SCAN_TEMP,
->>> +};
->>> +
->>> +static const struct iio_chan_spec adis16136_channels[] = {
->>> +	{
->>> +		.type = IIO_ANGL_VEL,
->>> +		.modified = 1,
->>> +		.channel2 = IIO_MOD_X,
->>> +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
->>> +			IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
->>> +			IIO_CHAN_INFO_SCALE_SHARED_BIT |
->>> +			IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SEPARATE_BIT,
->>> +		.address = ADIS16136_REG_GYRO_OUT2,
->>> +		.scan_index = ADIS16136_SCAN_GYRO,
->>> +		.scan_type = {
->>> +			.sign = 's',
->>> +			.realbits = 32,
->>> +			.storagebits = 32,
->>> +			.endianness = IIO_BE,
->>> +		},
->>> +	}, {
->>> +		.type = IIO_TEMP,
->>> +		.indexed = 1,
->>> +		.channel = 0,
->>> +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
->>> +			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
->>> +		.address = ADIS16136_REG_TEMP_OUT,
->>> +		.scan_index = ADIS16136_SCAN_TEMP,
->>> +		.scan_type = {
->>> +			.sign = 's',
->>> +			.realbits = 16,
->>> +			.storagebits = 16,
->>> +			.endianness = IIO_BE,
->>> +		},
->>> +	},
->>> +	IIO_CHAN_SOFT_TIMESTAMP(2),
->>> +};
->>> +
->>> +static struct attribute *adis16136_attributes[] = {
->>> +	&iio_dev_attr_sampling_frequency.dev_attr.attr,
->>> +	NULL
->>> +};
->>> +
->>> +static const struct attribute_group adis16136_attribute_group = {
->>> +	.attrs = adis16136_attributes,
->>> +};
->>> +
->>> +static const struct iio_info adis16136_info = {
->>> +	.driver_module = THIS_MODULE,
->>> +	.attrs = &adis16136_attribute_group,
->>> +	.read_raw = &adis16136_read_raw,
->>> +	.write_raw = &adis16136_write_raw,
->>> +	.update_scan_mode = adis_update_scan_mode,
->>> +	.debugfs_reg_access = adis_debugfs_reg_access,
->>> +};
->>> +
->>> +static int adis16136_stop_device(struct iio_dev *indio_dev)
->>> +{
->>> +	struct adis16136 *adis16136 = iio_priv(indio_dev);
->>> +	int ret;
->>> +
->>> +	ret = adis_write_reg_16(&adis16136->adis, ADIS16136_REG_SLP_CTRL, 0xff);
->>> +	if (ret)
->>> +		dev_err(&indio_dev->dev,
->>> +			"Could not power down device: %d\n", ret);
->>> +
->>> +	return ret;
->>> +}
->>> +
->>> +static int adis16136_initial_setup(struct iio_dev *indio_dev)
->>> +{
->>> +	struct adis16136 *adis16136 = iio_priv(indio_dev);
->>> +	unsigned int device_id;
->>> +	uint16_t prod_id;
->>> +	int ret;
->>> +
->>> +	ret = adis_initial_startup(&adis16136->adis);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	ret = adis_read_reg_16(&adis16136->adis, ADIS16136_REG_PROD_ID,
->>> +		&prod_id);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	sscanf(indio_dev->name, "adis%u\n", &device_id);
->>> +
->>> +	if (prod_id != device_id)
->>> +		dev_warn(&indio_dev->dev, "Device ID(%u) and product ID(%u) do not match.",
->>> +				device_id, prod_id);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static const char * const adis16136_status_error_msgs[] = {
->>> +	[ADIS16136_DIAG_STAT_FLASH_UPDATE_FAIL] = "Flash update failed",
->>> +	[ADIS16136_DIAG_STAT_SPI_FAIL] = "SPI failure",
->>> +	[ADIS16136_DIAG_STAT_SELF_TEST_FAIL] = "Self test error",
->>> +	[ADIS16136_DIAG_STAT_FLASH_CHKSUM_FAIL] = "Flash checksum error",
->>> +};
->>> +
->>> +static const struct adis_data adis16136_data = {
->>> +	.diag_stat_reg = ADIS16136_REG_DIAG_STAT,
->>> +	.glob_cmd_reg = ADIS16136_REG_GLOB_CMD,
->>> +	.msc_ctrl_reg = ADIS16136_REG_MSC_CTRL,
->>> +
->>> +	.self_test_mask = ADIS16136_MSC_CTRL_SELF_TEST,
->>> +	.startup_delay = 80,
->>> +
->>> +	.read_delay = 10,
->>> +	.write_delay = 10,
->>> +
->>> +	.status_error_msgs = adis16136_status_error_msgs,
->>> +	.status_error_mask = BIT(ADIS16136_DIAG_STAT_FLASH_UPDATE_FAIL) |
->>> +		BIT(ADIS16136_DIAG_STAT_SPI_FAIL) |
->>> +		BIT(ADIS16136_DIAG_STAT_SELF_TEST_FAIL) |
->>> +		BIT(ADIS16136_DIAG_STAT_FLASH_CHKSUM_FAIL),
->>> +};
->>> +
->>> +enum adis16136_id {
->>> +	ID_ADIS16133,
->>> +	ID_ADIS16135,
->>> +	ID_ADIS16136,
->>> +};
->>> +
->>> +static const struct adis16136_chip_info adis16136_chip_info[] = {
->>> +	[ID_ADIS16133] = {
->>> +		.precision = IIO_DEGREE_TO_RAD(1200),
->>> +		.fullscale = 24000,
->>> +	},
->>> +	[ID_ADIS16135] = {
->>> +		.precision = IIO_DEGREE_TO_RAD(300),
->>> +		.fullscale = 24000,
->>> +	},
->>> +	[ID_ADIS16136] = {
->>> +		.precision = IIO_DEGREE_TO_RAD(450),
->>> +		.fullscale = 24623,
->>> +	},
->>> +};
->>> +
->>> +static int __devinit adis16136_probe(struct spi_device *spi)
->>> +{
->>> +	const struct spi_device_id *id = spi_get_device_id(spi);
->>> +	struct adis16136 *adis16136;
->>> +	struct iio_dev *indio_dev;
->>> +	int ret;
->>> +
->>> +	indio_dev = iio_device_alloc(sizeof(*adis16136));
->>> +	if (indio_dev == NULL)
->>> +		return -ENOMEM;
->>> +
->>> +	spi_set_drvdata(spi, indio_dev);
->>> +
->>> +	adis16136 = iio_priv(indio_dev);
->>> +
->>> +	adis16136->chip_info = &adis16136_chip_info[id->driver_data];
->>> +	indio_dev->dev.parent = &spi->dev;
->>> +	indio_dev->name = spi_get_device_id(spi)->name;
->>> +	indio_dev->channels = adis16136_channels;
->>> +	indio_dev->num_channels = ARRAY_SIZE(adis16136_channels);
->>> +	indio_dev->info = &adis16136_info;
->>> +	indio_dev->modes = INDIO_DIRECT_MODE;
->>> +
->>> +	ret = adis_init(&adis16136->adis, indio_dev, spi, &adis16136_data);
->>> +	if (ret)
->>> +		goto error_free_dev;
->>> +
->>> +	ret = adis_setup_buffer_and_trigger(&adis16136->adis, indio_dev, NULL);
->>> +	if (ret)
->>> +		goto error_free_dev;
->>> +
->>> +	ret = adis16136_initial_setup(indio_dev);
->>> +	if (ret)
->>> +		goto error_cleanup_buffer;
->>> +
->>> +	ret = iio_device_register(indio_dev);
->>> +	if (ret)
->>> +		goto error_stop_device;
->>> +
->>> +	adis16136_debugfs_init(indio_dev);
->>> +
->>> +	return 0;
->>> +
->>> +error_stop_device:
->>> +	adis16136_stop_device(indio_dev);
->>> +error_cleanup_buffer:
->>> +	adis_cleanup_buffer_and_trigger(&adis16136->adis, indio_dev);
->>> +error_free_dev:
->>> +	iio_device_free(indio_dev);
->>> +	return ret;
->>> +}
->>> +
->>> +static int __devexit adis16136_remove(struct spi_device *spi)
->>> +{
->>> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
->>> +	struct adis16136 *adis16136 = iio_priv(indio_dev);
->>> +
->>> +	iio_device_unregister(indio_dev);
->>> +	adis16136_stop_device(indio_dev);
->>> +
->>> +	adis_cleanup_buffer_and_trigger(&adis16136->adis, indio_dev);
->>> +
->>> +	iio_device_free(indio_dev);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static const struct spi_device_id adis16136_ids[] = {
->>> +	{ "adis16133", ID_ADIS16133 },
->>> +	{ "adis16135", ID_ADIS16135 },
->>> +	{ "adis16136", ID_ADIS16136 },
->>> +	{ }
->>> +};
->>> +MODULE_DEVICE_TABLE(spi, adis16136_ids);
->>> +
->>> +static struct spi_driver adis16136_driver = {
->>> +	.driver = {
->>> +		.name = "adis16136",
->>> +		.owner = THIS_MODULE,
->>> +	},
->>> +	.id_table = adis16136_ids,
->>> +	.probe = adis16136_probe,
->>> +	.remove = __devexit_p(adis16136_remove),
->>> +};
->>> +module_spi_driver(adis16136_driver);
->>> +
->>> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
->>> +MODULE_DESCRIPTION("Analog Devices ADIS16133/ADIS16135/ADIS16136 gyroscope driver");
->>> +MODULE_LICENSE("GPL v2");
->>>
-> 
+The ad7798 and ad7799 are similar to the ad7792 and ad7793 but are missing some
+features like the temperature sensor, being able to use an external clocksource
+and a few other things. This patch adds a new 'flags' fields to the chip_info
+struct which allows to specify which features a certain chip variant supports.
+The setup code will then ignore any platform data fields which are related to
+non supported features.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/adc/ad7793.c | 116 +++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 102 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index 8bcda5d..4a7ee0b 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -106,6 +106,8 @@
+ #define AD7793_ID		0xB
+ #define AD7794_ID		0xF
+ #define AD7795_ID		0xF
++#define AD7798_ID		0x8
++#define AD7799_ID		0x9
+ #define AD7793_ID_MASK		0xF
+ 
+ /* IO (Excitation Current Sources) Register Bit Designations (AD7793_REG_IO) */
+@@ -130,10 +132,16 @@
+  * The DOUT/RDY output must also be wired to an interrupt capable GPIO.
+  */
+ 
++#define AD7793_FLAG_HAS_CLKSEL		BIT(0)
++#define AD7793_FLAG_HAS_REFSEL		BIT(1)
++#define AD7793_FLAG_HAS_VBIAS		BIT(2)
++#define AD7793_HAS_EXITATION_CURRENT	BIT(3)
++
+ struct ad7793_chip_info {
+ 	unsigned int id;
+ 	const struct iio_chan_spec *channels;
+ 	unsigned int num_channels;
++	unsigned int flags;
+ };
+ 
+ struct ad7793_state {
+@@ -154,6 +162,8 @@ enum ad7793_supported_device_ids {
+ 	ID_AD7793,
+ 	ID_AD7794,
+ 	ID_AD7795,
++	ID_AD7798,
++	ID_AD7799,
+ };
+ 
+ static struct ad7793_state *ad_sigma_delta_to_ad7793(struct ad_sigma_delta *sd)
+@@ -205,6 +215,34 @@ static int ad7793_calibrate_all(struct ad7793_state *st)
+ 				   ARRAY_SIZE(ad7793_calib_arr));
+ }
+ 
++static int ad7793_check_platform_data(struct ad7793_state *st,
++	const struct ad7793_platform_data *pdata)
++{
++	if ((pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT1 ||
++		pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT2) &&
++		((pdata->exitation_current != AD7793_IX_10uA) &&
++		(pdata->exitation_current != AD7793_IX_210uA)))
++		return -EINVAL;
++
++	if (!(st->chip_info->flags & AD7793_FLAG_HAS_CLKSEL) &&
++		pdata->clock_src != AD7793_CLK_SRC_INT)
++		return -EINVAL;
++
++	if (!(st->chip_info->flags & AD7793_FLAG_HAS_REFSEL) &&
++		pdata->refsel != AD7793_REFSEL_REFIN1)
++		return -EINVAL;
++
++	if (!(st->chip_info->flags & AD7793_FLAG_HAS_VBIAS) &&
++		pdata->bias_voltage != AD7793_BIAS_VOLTAGE_DISABLED)
++		return -EINVAL;
++
++	if (!(st->chip_info->flags & AD7793_HAS_EXITATION_CURRENT) &&
++		pdata->exitation_current != AD7793_IX_DISABLED)
++		return -EINVAL;
++
++	return 0;
++}
++
+ static int ad7793_setup(struct iio_dev *indio_dev,
+ 	const struct ad7793_platform_data *pdata,
+ 	unsigned int vref_mv)
+@@ -214,11 +252,9 @@ static int ad7793_setup(struct iio_dev *indio_dev,
+ 	unsigned long long scale_uv;
+ 	u32 id;
+ 
+-	if ((pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT1 ||
+-		pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT2) &&
+-		((pdata->exitation_current != AD7793_IX_10uA) &&
+-		(pdata->exitation_current != AD7793_IX_210uA)))
+-		return -EINVAL;
++	ret = ad7793_check_platform_data(st, pdata);
++	if (ret)
++		return ret;
+ 
+ 	/* reset the serial interface */
+ 	ret = spi_write(st->sd.spi, (u8 *)&ret, sizeof(ret));
+@@ -239,12 +275,18 @@ static int ad7793_setup(struct iio_dev *indio_dev,
+ 	}
+ 
+ 	st->mode = AD7793_MODE_RATE(1);
+-	st->mode |= AD7793_MODE_CLKSRC(pdata->clock_src);
+-	st->conf = AD7793_CONF_REFSEL(pdata->refsel);
+-	st->conf |= AD7793_CONF_VBIAS(pdata->bias_voltage);
++	st->conf = 0;
++
++	if (st->chip_info->flags & AD7793_FLAG_HAS_CLKSEL)
++		st->mode |= AD7793_MODE_CLKSRC(pdata->clock_src);
++	if (st->chip_info->flags & AD7793_FLAG_HAS_REFSEL)
++		st->conf |= AD7793_CONF_REFSEL(pdata->refsel);
++	if (st->chip_info->flags & AD7793_FLAG_HAS_VBIAS)
++		st->conf |= AD7793_CONF_VBIAS(pdata->bias_voltage);
+ 	if (pdata->buffered)
+ 		st->conf |= AD7793_CONF_BUF;
+-	if (pdata->boost_enable)
++	if (pdata->boost_enable &&
++		(st->chip_info->flags & AD7793_FLAG_HAS_VBIAS))
+ 		st->conf |= AD7793_CONF_BOOST;
+ 	if (pdata->burnout_current)
+ 		st->conf |= AD7793_CONF_BO_EN;
+@@ -259,11 +301,13 @@ static int ad7793_setup(struct iio_dev *indio_dev,
+ 	if (ret)
+ 		goto out;
+ 
+-	ret = ad_sd_write_reg(&st->sd, AD7793_REG_IO, 1,
+-				   pdata->exitation_current |
+-			       (pdata->current_source_direction << 2));
+-	if (ret)
+-		goto out;
++	if (st->chip_info->flags & AD7793_HAS_EXITATION_CURRENT) {
++		ret = ad_sd_write_reg(&st->sd, AD7793_REG_IO, 1,
++				pdata->exitation_current |
++				(pdata->current_source_direction << 2));
++		if (ret)
++			goto out;
++	}
+ 
+ 	ret = ad7793_calibrate_all(st);
+ 	if (ret)
+@@ -525,37 +569,79 @@ const struct iio_chan_spec _name##_channels[] = { \
+ 	IIO_CHAN_SOFT_TIMESTAMP(9), \
+ }
+ 
++#define DECLARE_AD7799_CHANNELS(_name, _b, _sb) \
++const struct iio_chan_spec _name##_channels[] = { \
++	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), 0), \
++	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), 0), \
++	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), 0), \
++	AD_SD_SHORTED_CHANNEL(3, 0, AD7793_CH_AIN1M_AIN1M, (_b), (_sb), 0), \
++	AD_SD_SUPPLY_CHANNEL(4, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), 0), \
++	IIO_CHAN_SOFT_TIMESTAMP(5), \
++}
++
+ static DECLARE_AD7793_CHANNELS(ad7785, 20, 32, 4);
+ static DECLARE_AD7793_CHANNELS(ad7792, 16, 32, 0);
+ static DECLARE_AD7793_CHANNELS(ad7793, 24, 32, 0);
+ static DECLARE_AD7795_CHANNELS(ad7794, 16, 32);
+ static DECLARE_AD7795_CHANNELS(ad7795, 24, 32);
++static DECLARE_AD7799_CHANNELS(ad7798, 16, 16);
++static DECLARE_AD7799_CHANNELS(ad7799, 24, 32);
+ 
+ static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
+ 	[ID_AD7785] = {
+ 		.id = AD7785_ID,
+ 		.channels = ad7785_channels,
+ 		.num_channels = ARRAY_SIZE(ad7785_channels),
++		.flags = AD7793_FLAG_HAS_CLKSEL |
++			AD7793_FLAG_HAS_REFSEL |
++			AD7793_FLAG_HAS_VBIAS |
++			AD7793_HAS_EXITATION_CURRENT,
+ 	},
+ 	[ID_AD7792] = {
+ 		.id = AD7792_ID,
+ 		.channels = ad7792_channels,
+ 		.num_channels = ARRAY_SIZE(ad7792_channels),
++		.flags = AD7793_FLAG_HAS_CLKSEL |
++			AD7793_FLAG_HAS_REFSEL |
++			AD7793_FLAG_HAS_VBIAS |
++			AD7793_HAS_EXITATION_CURRENT,
+ 	},
+ 	[ID_AD7793] = {
+ 		.id = AD7793_ID,
+ 		.channels = ad7793_channels,
+ 		.num_channels = ARRAY_SIZE(ad7793_channels),
++		.flags = AD7793_FLAG_HAS_CLKSEL |
++			AD7793_FLAG_HAS_REFSEL |
++			AD7793_FLAG_HAS_VBIAS |
++			AD7793_HAS_EXITATION_CURRENT,
+ 	},
+ 	[ID_AD7794] = {
+ 		.id = AD7794_ID,
+ 		.channels = ad7794_channels,
+ 		.num_channels = ARRAY_SIZE(ad7794_channels),
++		.flags = AD7793_FLAG_HAS_CLKSEL |
++			AD7793_FLAG_HAS_REFSEL |
++			AD7793_FLAG_HAS_VBIAS |
++			AD7793_HAS_EXITATION_CURRENT,
+ 	},
+ 	[ID_AD7795] = {
+ 		.id = AD7795_ID,
+ 		.channels = ad7795_channels,
+ 		.num_channels = ARRAY_SIZE(ad7795_channels),
++		.flags = AD7793_FLAG_HAS_CLKSEL |
++			AD7793_FLAG_HAS_REFSEL |
++			AD7793_FLAG_HAS_VBIAS |
++			AD7793_HAS_EXITATION_CURRENT,
++	},
++	[ID_AD7798] = {
++		.id = AD7798_ID,
++		.channels = ad7798_channels,
++		.num_channels = ARRAY_SIZE(ad7798_channels),
++	},
++	[ID_AD7799] = {
++		.id = AD7799_ID,
++		.channels = ad7799_channels,
++		.num_channels = ARRAY_SIZE(ad7799_channels),
+ 	},
+ };
+ 
+@@ -671,6 +757,8 @@ static const struct spi_device_id ad7793_id[] = {
+ 	{"ad7793", ID_AD7793},
+ 	{"ad7794", ID_AD7794},
+ 	{"ad7795", ID_AD7795},
++	{"ad7798", ID_AD7798},
++	{"ad7799", ID_AD7799},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(spi, ad7793_id);
+-- 
+1.8.0
+
