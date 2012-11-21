@@ -1,72 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:58597 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753344Ab2KFEr4 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2012 23:47:56 -0500
-From: "Patil, Rachna" <rachna@ti.com>
-To: Samuel Ortiz <sameo@linux.intel.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: RE: [PATCH RESEND 0/8] TI Touchscreen driver updates and Support
- for TSC/ADC MFD driver
-Date: Tue, 6 Nov 2012 04:47:41 +0000
-Message-ID: <4CE347531D4CA947960AF71FF095B9323E9684AC@DBDE01.ent.ti.com>
-References: <1350372345-27108-1-git-send-email-rachna@ti.com>
- <20121105225524.GE7965@sortiz-mobl>
-In-Reply-To: <20121105225524.GE7965@sortiz-mobl>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Received: from smtp-out-222.synserver.de ([212.40.185.222]:1058 "EHLO
+	smtp-out-222.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755211Ab2KUQ1T (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Nov 2012 11:27:19 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, drivers@analog.com,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 01/11] staging:iio:ad7793: Fix VDD monitor scale
+Date: Wed, 21 Nov 2012 17:27:06 +0100
+Message-Id: <1353515236-21843-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Samuel,
+The VDD monitor scale was off by a factor of 10.
 
-On Tue, Nov 06, 2012 at 04:25:24, Samuel Ortiz wrote:
-> Hi Rachna,
-> 
-> On Tue, Oct 16, 2012 at 12:55:37PM +0530, Patil, Rachna wrote:
-> > This patch set is a cumulative set of [1] and [2] sent earlier.
-> > I have merged the patch set so that the MFD patches apply without any 
-> > issues.
-> > 
-> > Also Note that there are no code changes in either of the patch set, 
-> > only rebased on top of linux-next to make sure that all the patches 
-> > apply without any conflicts.
-> > 
-> > This patch set has been tested on AM335x EVM.
-> > 
-> > [1] "[PATCH 0/4] input: TSC: ti_tscadc: TI Touchscreen driver updates"
-> > (http://www.spinics.net/lists/linux-input/msg22107.html)
-> > 
-> > [2] "[PATCH v5 0/4] Support for TSC/ADC MFD driver"
-> > (http://www.spinics.net/lists/linux-input/msg22832.html)
-> > 
-> > Patil, Rachna (8):
-> >   input: TSC: ti_tscadc: Correct register usage
-> >   input: TSC: ti_tscadc: Add Step configuration as platform data
-> >   input: TSC: ti_tscadc: set FIFO0 threshold Interrupt
-> >   input: TSC: ti_tscadc: Remove definition of End Of Interrupt register
-> >   input: TSC: ti_tscadc: Rename the existing touchscreen driver
-> >   MFD: ti_tscadc: Add support for TI's TSC/ADC MFDevice
-> >   input: TSC: ti_tsc: Convert TSC into a MFDevice
-> >   IIO : ADC: tiadc: Add support of TI's ADC driver
-> All patches applied now, thanks a lot.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+Last series before 3.8-rc1, I promise ;)
+---
+ drivers/staging/iio/adc/ad7793.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks for pulling this in.
-
-Regards,
-Rachna
-
-> 
-> Cheers,
-> Samuel.
-> 
-> --
-> Intel Open Source Technology Centre
-> http://oss.intel.com/
-> 
+diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
+index 691a7be..a6ea4d2 100644
+--- a/drivers/staging/iio/adc/ad7793.c
++++ b/drivers/staging/iio/adc/ad7793.c
+@@ -292,7 +292,7 @@ static int ad7793_read_raw(struct iio_dev *indio_dev,
+ 				return IIO_VAL_INT_PLUS_NANO;
+ 			} else {
+ 				/* 1170mV / 2^23 * 6 */
+-				scale_uv = (1170ULL * 100000000ULL * 6ULL);
++				scale_uv = (1170ULL * 1000000000ULL * 6ULL);
+ 			}
+ 			break;
+ 		case IIO_TEMP:
+-- 
+1.8.0
 
