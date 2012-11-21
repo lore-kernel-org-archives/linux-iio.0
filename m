@@ -1,252 +1,144 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-222.synserver.de ([212.40.185.222]:1045 "EHLO
+Received: from smtp-out-222.synserver.de ([212.40.185.222]:1066 "EHLO
 	smtp-out-222.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755239Ab2KUQ12 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Nov 2012 11:27:28 -0500
+	with ESMTP id S1755228Ab2KUQ10 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Nov 2012 11:27:26 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, drivers@analog.com,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 10/11] iio:ad7793: Add support for the ad7798 and ad7799
-Date: Wed, 21 Nov 2012 17:27:15 +0100
-Message-Id: <1353515236-21843-10-git-send-email-lars@metafoo.de>
+Subject: [PATCH 09/11] staging:iio: Move ad7793 driver out of staging
+Date: Wed, 21 Nov 2012 17:27:14 +0100
+Message-Id: <1353515236-21843-9-git-send-email-lars@metafoo.de>
 In-Reply-To: <1353515236-21843-1-git-send-email-lars@metafoo.de>
 References: <1353515236-21843-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ad7798 and ad7799 are similar to the ad7792 and ad7793 but are missing some
-features like the temperature sensor, being able to use an external clocksource
-and a few other things. This patch adds a new 'flags' fields to the chip_info
-struct which allows to specify which features a certain chip variant supports.
-The setup code will then ignore any platform data fields which are related to
-non supported features.
+The driver does not expose any custom API to userspace and none of the standard
+static code checker tools report any issues, so move it out of staging.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/adc/ad7793.c | 116 +++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 102 insertions(+), 14 deletions(-)
+ drivers/iio/adc/Kconfig                                      | 12 ++++++++++++
+ drivers/iio/adc/Makefile                                     |  1 +
+ drivers/{staging => }/iio/adc/ad7793.c                       |  3 +--
+ drivers/staging/iio/adc/Kconfig                              | 12 ------------
+ drivers/staging/iio/adc/Makefile                             |  1 -
+ .../staging/iio/adc => include/linux/platform_data}/ad7793.h |  8 ++------
+ 6 files changed, 16 insertions(+), 21 deletions(-)
+ rename drivers/{staging => }/iio/adc/ad7793.c (99%)
+ rename {drivers/staging/iio/adc => include/linux/platform_data}/ad7793.h (96%)
 
-diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
-index 8bcda5d..4a7ee0b 100644
---- a/drivers/iio/adc/ad7793.c
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index cd5eed6..408557b 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -42,6 +42,18 @@ config AD7791
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called ad7791.
+ 
++config AD7793
++	tristate "Analog Devices AD7793 and similar ADCs driver"
++	depends on SPI
++	select AD_SIGMA_DELTA
++	help
++	  Say yes here to build support for Analog Devices AD7785, AD7792, AD7793,
++	  AD7794 and AD7795 SPI analog to digital converters (ADC).
++	  If unsure, say N (but it's safe to say "Y").
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called AD7793.
++
+ config AD7476
+ 	tristate "Analog Devices AD7476 and similar 1-channel ADCs driver"
+ 	depends on SPI
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 3256dc6..78202d9 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -7,6 +7,7 @@ obj-$(CONFIG_AD7266) += ad7266.o
+ obj-$(CONFIG_AD7298) += ad7298.o
+ obj-$(CONFIG_AD7476) += ad7476.o
+ obj-$(CONFIG_AD7791) += ad7791.o
++obj-$(CONFIG_AD7793) += ad7793.o
+ obj-$(CONFIG_AD7887) += ad7887.o
+ obj-$(CONFIG_AT91_ADC) += at91_adc.o
+ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+similarity index 99%
+rename from drivers/staging/iio/adc/ad7793.c
+rename to drivers/iio/adc/ad7793.c
+index 0bbfdf3..8bcda5d 100644
+--- a/drivers/staging/iio/adc/ad7793.c
 +++ b/drivers/iio/adc/ad7793.c
-@@ -106,6 +106,8 @@
- #define AD7793_ID		0xB
- #define AD7794_ID		0xF
- #define AD7795_ID		0xF
-+#define AD7798_ID		0x8
-+#define AD7799_ID		0x9
- #define AD7793_ID_MASK		0xF
+@@ -25,8 +25,7 @@
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+ #include <linux/iio/adc/ad_sigma_delta.h>
+-
+-#include "ad7793.h"
++#include <linux/platform_data/ad7793.h>
  
- /* IO (Excitation Current Sources) Register Bit Designations (AD7793_REG_IO) */
-@@ -130,10 +132,16 @@
-  * The DOUT/RDY output must also be wired to an interrupt capable GPIO.
+ /* Registers */
+ #define AD7793_REG_COMM		0 /* Communications Register (WO, 8-bit) */
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index dc8582b..fb8c239 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -70,18 +70,6 @@ config AD7780
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7780.
+ 
+-config AD7793
+-	tristate "Analog Devices AD7793 and similar ADCs driver"
+-	depends on SPI
+-	select AD_SIGMA_DELTA
+-	help
+-	  Say yes here to build support for Analog Devices AD7785, AD7792, AD7793,
+-	  AD7794 and AD7795 SPI analog to digital converters (ADC).
+-	  If unsure, say N (but it's safe to say "Y").
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called AD7793.
+-
+ config AD7816
+ 	tristate "Analog Devices AD7816/7/8 temperature sensor and ADC driver"
+ 	depends on SPI
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index 7281451..d285596 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -14,7 +14,6 @@ obj-$(CONFIG_AD799X) += ad799x.o
+ 
+ obj-$(CONFIG_AD7291) += ad7291.o
+ obj-$(CONFIG_AD7780) += ad7780.o
+-obj-$(CONFIG_AD7793) += ad7793.o
+ obj-$(CONFIG_AD7816) += ad7816.o
+ obj-$(CONFIG_AD7192) += ad7192.o
+ obj-$(CONFIG_ADT7410) += adt7410.o
+diff --git a/drivers/staging/iio/adc/ad7793.h b/include/linux/platform_data/ad7793.h
+similarity index 96%
+rename from drivers/staging/iio/adc/ad7793.h
+rename to include/linux/platform_data/ad7793.h
+index 0e455de..7ea6751 100644
+--- a/drivers/staging/iio/adc/ad7793.h
++++ b/include/linux/platform_data/ad7793.h
+@@ -5,12 +5,8 @@
+  *
+  * Licensed under the GPL-2.
   */
+-#ifndef IIO_ADC_AD7793_H_
+-#define IIO_ADC_AD7793_H_
+-
+-/*
+- * TODO: struct ad7793_platform_data needs to go into include/linux/iio
+- */
++#ifndef __LINUX_PLATFORM_DATA_AD7793_H__
++#define __LINUX_PLATFORM_DATA_AD7793_H__
  
-+#define AD7793_FLAG_HAS_CLKSEL		BIT(0)
-+#define AD7793_FLAG_HAS_REFSEL		BIT(1)
-+#define AD7793_FLAG_HAS_VBIAS		BIT(2)
-+#define AD7793_HAS_EXITATION_CURRENT	BIT(3)
-+
- struct ad7793_chip_info {
- 	unsigned int id;
- 	const struct iio_chan_spec *channels;
- 	unsigned int num_channels;
-+	unsigned int flags;
- };
- 
- struct ad7793_state {
-@@ -154,6 +162,8 @@ enum ad7793_supported_device_ids {
- 	ID_AD7793,
- 	ID_AD7794,
- 	ID_AD7795,
-+	ID_AD7798,
-+	ID_AD7799,
- };
- 
- static struct ad7793_state *ad_sigma_delta_to_ad7793(struct ad_sigma_delta *sd)
-@@ -205,6 +215,34 @@ static int ad7793_calibrate_all(struct ad7793_state *st)
- 				   ARRAY_SIZE(ad7793_calib_arr));
- }
- 
-+static int ad7793_check_platform_data(struct ad7793_state *st,
-+	const struct ad7793_platform_data *pdata)
-+{
-+	if ((pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT1 ||
-+		pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT2) &&
-+		((pdata->exitation_current != AD7793_IX_10uA) &&
-+		(pdata->exitation_current != AD7793_IX_210uA)))
-+		return -EINVAL;
-+
-+	if (!(st->chip_info->flags & AD7793_FLAG_HAS_CLKSEL) &&
-+		pdata->clock_src != AD7793_CLK_SRC_INT)
-+		return -EINVAL;
-+
-+	if (!(st->chip_info->flags & AD7793_FLAG_HAS_REFSEL) &&
-+		pdata->refsel != AD7793_REFSEL_REFIN1)
-+		return -EINVAL;
-+
-+	if (!(st->chip_info->flags & AD7793_FLAG_HAS_VBIAS) &&
-+		pdata->bias_voltage != AD7793_BIAS_VOLTAGE_DISABLED)
-+		return -EINVAL;
-+
-+	if (!(st->chip_info->flags & AD7793_HAS_EXITATION_CURRENT) &&
-+		pdata->exitation_current != AD7793_IX_DISABLED)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
- static int ad7793_setup(struct iio_dev *indio_dev,
- 	const struct ad7793_platform_data *pdata,
- 	unsigned int vref_mv)
-@@ -214,11 +252,9 @@ static int ad7793_setup(struct iio_dev *indio_dev,
- 	unsigned long long scale_uv;
- 	u32 id;
- 
--	if ((pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT1 ||
--		pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT2) &&
--		((pdata->exitation_current != AD7793_IX_10uA) &&
--		(pdata->exitation_current != AD7793_IX_210uA)))
--		return -EINVAL;
-+	ret = ad7793_check_platform_data(st, pdata);
-+	if (ret)
-+		return ret;
- 
- 	/* reset the serial interface */
- 	ret = spi_write(st->sd.spi, (u8 *)&ret, sizeof(ret));
-@@ -239,12 +275,18 @@ static int ad7793_setup(struct iio_dev *indio_dev,
- 	}
- 
- 	st->mode = AD7793_MODE_RATE(1);
--	st->mode |= AD7793_MODE_CLKSRC(pdata->clock_src);
--	st->conf = AD7793_CONF_REFSEL(pdata->refsel);
--	st->conf |= AD7793_CONF_VBIAS(pdata->bias_voltage);
-+	st->conf = 0;
-+
-+	if (st->chip_info->flags & AD7793_FLAG_HAS_CLKSEL)
-+		st->mode |= AD7793_MODE_CLKSRC(pdata->clock_src);
-+	if (st->chip_info->flags & AD7793_FLAG_HAS_REFSEL)
-+		st->conf |= AD7793_CONF_REFSEL(pdata->refsel);
-+	if (st->chip_info->flags & AD7793_FLAG_HAS_VBIAS)
-+		st->conf |= AD7793_CONF_VBIAS(pdata->bias_voltage);
- 	if (pdata->buffered)
- 		st->conf |= AD7793_CONF_BUF;
--	if (pdata->boost_enable)
-+	if (pdata->boost_enable &&
-+		(st->chip_info->flags & AD7793_FLAG_HAS_VBIAS))
- 		st->conf |= AD7793_CONF_BOOST;
- 	if (pdata->burnout_current)
- 		st->conf |= AD7793_CONF_BO_EN;
-@@ -259,11 +301,13 @@ static int ad7793_setup(struct iio_dev *indio_dev,
- 	if (ret)
- 		goto out;
- 
--	ret = ad_sd_write_reg(&st->sd, AD7793_REG_IO, 1,
--				   pdata->exitation_current |
--			       (pdata->current_source_direction << 2));
--	if (ret)
--		goto out;
-+	if (st->chip_info->flags & AD7793_HAS_EXITATION_CURRENT) {
-+		ret = ad_sd_write_reg(&st->sd, AD7793_REG_IO, 1,
-+				pdata->exitation_current |
-+				(pdata->current_source_direction << 2));
-+		if (ret)
-+			goto out;
-+	}
- 
- 	ret = ad7793_calibrate_all(st);
- 	if (ret)
-@@ -525,37 +569,79 @@ const struct iio_chan_spec _name##_channels[] = { \
- 	IIO_CHAN_SOFT_TIMESTAMP(9), \
- }
- 
-+#define DECLARE_AD7799_CHANNELS(_name, _b, _sb) \
-+const struct iio_chan_spec _name##_channels[] = { \
-+	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), 0), \
-+	AD_SD_SHORTED_CHANNEL(3, 0, AD7793_CH_AIN1M_AIN1M, (_b), (_sb), 0), \
-+	AD_SD_SUPPLY_CHANNEL(4, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), 0), \
-+	IIO_CHAN_SOFT_TIMESTAMP(5), \
-+}
-+
- static DECLARE_AD7793_CHANNELS(ad7785, 20, 32, 4);
- static DECLARE_AD7793_CHANNELS(ad7792, 16, 32, 0);
- static DECLARE_AD7793_CHANNELS(ad7793, 24, 32, 0);
- static DECLARE_AD7795_CHANNELS(ad7794, 16, 32);
- static DECLARE_AD7795_CHANNELS(ad7795, 24, 32);
-+static DECLARE_AD7799_CHANNELS(ad7798, 16, 16);
-+static DECLARE_AD7799_CHANNELS(ad7799, 24, 32);
- 
- static const struct ad7793_chip_info ad7793_chip_info_tbl[] = {
- 	[ID_AD7785] = {
- 		.id = AD7785_ID,
- 		.channels = ad7785_channels,
- 		.num_channels = ARRAY_SIZE(ad7785_channels),
-+		.flags = AD7793_FLAG_HAS_CLKSEL |
-+			AD7793_FLAG_HAS_REFSEL |
-+			AD7793_FLAG_HAS_VBIAS |
-+			AD7793_HAS_EXITATION_CURRENT,
- 	},
- 	[ID_AD7792] = {
- 		.id = AD7792_ID,
- 		.channels = ad7792_channels,
- 		.num_channels = ARRAY_SIZE(ad7792_channels),
-+		.flags = AD7793_FLAG_HAS_CLKSEL |
-+			AD7793_FLAG_HAS_REFSEL |
-+			AD7793_FLAG_HAS_VBIAS |
-+			AD7793_HAS_EXITATION_CURRENT,
- 	},
- 	[ID_AD7793] = {
- 		.id = AD7793_ID,
- 		.channels = ad7793_channels,
- 		.num_channels = ARRAY_SIZE(ad7793_channels),
-+		.flags = AD7793_FLAG_HAS_CLKSEL |
-+			AD7793_FLAG_HAS_REFSEL |
-+			AD7793_FLAG_HAS_VBIAS |
-+			AD7793_HAS_EXITATION_CURRENT,
- 	},
- 	[ID_AD7794] = {
- 		.id = AD7794_ID,
- 		.channels = ad7794_channels,
- 		.num_channels = ARRAY_SIZE(ad7794_channels),
-+		.flags = AD7793_FLAG_HAS_CLKSEL |
-+			AD7793_FLAG_HAS_REFSEL |
-+			AD7793_FLAG_HAS_VBIAS |
-+			AD7793_HAS_EXITATION_CURRENT,
- 	},
- 	[ID_AD7795] = {
- 		.id = AD7795_ID,
- 		.channels = ad7795_channels,
- 		.num_channels = ARRAY_SIZE(ad7795_channels),
-+		.flags = AD7793_FLAG_HAS_CLKSEL |
-+			AD7793_FLAG_HAS_REFSEL |
-+			AD7793_FLAG_HAS_VBIAS |
-+			AD7793_HAS_EXITATION_CURRENT,
-+	},
-+	[ID_AD7798] = {
-+		.id = AD7798_ID,
-+		.channels = ad7798_channels,
-+		.num_channels = ARRAY_SIZE(ad7798_channels),
-+	},
-+	[ID_AD7799] = {
-+		.id = AD7799_ID,
-+		.channels = ad7799_channels,
-+		.num_channels = ARRAY_SIZE(ad7799_channels),
- 	},
- };
- 
-@@ -671,6 +757,8 @@ static const struct spi_device_id ad7793_id[] = {
- 	{"ad7793", ID_AD7793},
- 	{"ad7794", ID_AD7794},
- 	{"ad7795", ID_AD7795},
-+	{"ad7798", ID_AD7798},
-+	{"ad7799", ID_AD7799},
- 	{}
- };
- MODULE_DEVICE_TABLE(spi, ad7793_id);
+ /**
+  * enum ad7793_clock_source - AD7793 clock source selection
 -- 
 1.8.0
 
