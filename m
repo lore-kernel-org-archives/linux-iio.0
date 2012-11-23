@@ -1,268 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35715 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751275Ab2KXQLd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 Nov 2012 11:11:33 -0500
-Message-ID: <50B0F1B2.9070908@kernel.org>
-Date: Sat, 24 Nov 2012 16:11:30 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from smtp-out-223.synserver.de ([212.40.185.223]:1163 "EHLO
+	smtp-out-223.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1161025Ab2KWJyb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 23 Nov 2012 04:54:31 -0500
+Message-ID: <50AF47D1.3080900@metafoo.de>
+Date: Fri, 23 Nov 2012 10:54:25 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Thierry Reding <thierry.reding@avionic-design.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: Add Texas Instruments ADC081C021/027 support
-References: <1353683583-19779-1-git-send-email-thierry.reding@avionic-design.de> <50B0A74B.10707@kernel.org> <50B0EDC4.9000409@metafoo.de>
-In-Reply-To: <50B0EDC4.9000409@metafoo.de>
+To: Guido Del Vescovo <guido.delvescovo@gmail.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Patil, Rachna" <rachna@ti.com>
+Subject: Re: Beaglebone built-in ADC with IIO
+References: <CAE1ao5EKXn_aR_1PE_OyAeFYhYm86AAjAyaRH0yNb8c4fLr0fQ@mail.gmail.com>
+In-Reply-To: <CAE1ao5EKXn_aR_1PE_OyAeFYhYm86AAjAyaRH0yNb8c4fLr0fQ@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/24/2012 03:54 PM, Lars-Peter Clausen wrote:
-> On 11/24/2012 11:54 AM, Jonathan Cameron wrote:
->> On 11/23/2012 03:13 PM, Thierry Reding wrote:
->>> Add support for reading conversion results from the ADC and provide them
->>> through a single IIO channel. A proper scaling factor is also exported
->>> based on the reference voltage provided by a regulator.
->>>
->>> Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
->>
->> Looks good to me.  I think timing is against you (depending on what Linus
->> says with his next rc).  IIO patches are routed through Greg KH. His cut
->> off is 1 week before the merge window opens.  Mine tends to as a result
->> be a few days before that.  Linus stated in last rc message that the one he'll
->> do today or tomorrow will be the last for this cycle (and hence merge window
->> will open in a week from now). Hence this will probably hit linux next after
->> the merge window closes and merge in the 3.9 cycle.
->>
->> Shall I add a reviewed by from you Lars? Looks like Thierry has directly
->> addressed all your comments (thanks for doing the review by the way!)
-> 
-> Yes, Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-Added to togreg branch of iio.git.
+Hi,
 
-Note this was a little interesting as the patch was (I guess) generated against
-linux next.  The am35xx driver is coming in via a different tree so the context was
-wrong.  I've fixed up for iio.git but it'll cause trouble the other way around
-at some point...
-> 
->>
->>> ---
->>> Changes in v2:
->>> - use the more common IIO_VAL_FRACTIONAL_LOG2 instead of IIO_VAL_INT_PLUS_MICRO
->>>   for the ADC scale factor
->>> - make the channel specification static const since it is the same for
->>>   all devices
->>> - convert the scale factor such that the result of multiplying the raw
->>>   value with the scale factor yields a voltage in millivolts
->>>
->>>  drivers/iio/adc/Kconfig      |  10 +++
->>>  drivers/iio/adc/Makefile     |   1 +
->>>  drivers/iio/adc/ti-adc081c.c | 161 +++++++++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 172 insertions(+)
->>>  create mode 100644 drivers/iio/adc/ti-adc081c.c
->>>
->>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->>> index b719f3b..e8be025 100644
->>> --- a/drivers/iio/adc/Kconfig
->>> +++ b/drivers/iio/adc/Kconfig
->>> @@ -91,6 +91,16 @@ config MAX1363
->>>  	  max11646, max11647) Provides direct access via sysfs and buffered
->>>  	  data via the iio dev interface.
->>>
->>> +config TI_ADC081C
->>> +	tristate "Texas Instruments ADC081C021/027"
->>> +	depends on I2C
->>> +	help
->>> +	  If you say yes here you get support for Texas Instruments ADC081C021
->>> +	  and ADC081C027 ADC chips.
->>> +
->>> +	  This driver can also be built as a module. If so, the module will be
->>> +	  called ti-adc081c.
->>> +
->>>  config TI_AM335X_ADC
->>>  	tristate "TI's ADC driver"
->>>  	depends on MFD_TI_AM335X_TSCADC
->>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->>> index 19d709c..6ad20aa 100644
->>> --- a/drivers/iio/adc/Makefile
->>> +++ b/drivers/iio/adc/Makefile
->>> @@ -10,4 +10,5 @@ obj-$(CONFIG_AD7887) += ad7887.o
->>>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
->>>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->>>  obj-$(CONFIG_MAX1363) += max1363.o
->>> +obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
->>>  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
->>> diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
->>> new file mode 100644
->>> index 0000000..f4a46dd
->>> --- /dev/null
->>> +++ b/drivers/iio/adc/ti-adc081c.c
->>> @@ -0,0 +1,161 @@
->>> +/*
->>> + * Copyright (C) 2012 Avionic Design GmbH
->>> + *
->>> + * This program is free software; you can redistribute it and/or modify
->>> + * it under the terms of the GNU General Public License version 2 as
->>> + * published by the Free Software Foundation.
->>> + */
->>> +
->>> +#include <linux/err.h>
->>> +#include <linux/i2c.h>
->>> +#include <linux/module.h>
->>> +
->>> +#include <linux/iio/iio.h>
->>> +#include <linux/regulator/consumer.h>
->>> +
->>> +struct adc081c {
->>> +	struct i2c_client *i2c;
->>> +	struct regulator *ref;
->>> +};
->>> +
->>> +#define REG_CONV_RES 0x00
->>> +
->>> +static int adc081c_read_raw(struct iio_dev *iio,
->>> +			    struct iio_chan_spec const *channel, int *value,
->>> +			    int *shift, long mask)
->>> +{
->>> +	struct adc081c *adc = iio_priv(iio);
->>> +	int err;
->>> +
->>> +	switch (mask) {
->>> +	case IIO_CHAN_INFO_RAW:
->>> +		err = i2c_smbus_read_word_swapped(adc->i2c, REG_CONV_RES);
->>> +		if (err < 0)
->>> +			return err;
->>> +
->>> +		*value = (err >> 4) & 0xff;
->>> +		return IIO_VAL_INT;
->>> +
->>> +	case IIO_CHAN_INFO_SCALE:
->>> +		err = regulator_get_voltage(adc->ref);
->>> +		if (err < 0)
->>> +			return err;
->>> +
->>> +		*value = err / 1000;
->>> +		*shift = 8;
->>> +
->>> +		return IIO_VAL_FRACTIONAL_LOG2;
->>> +
->>> +	default:
->>> +		break;
->>> +	}
->>> +
->>> +	return -EINVAL;
->>> +}
->>> +
->>> +static const struct iio_chan_spec adc081c_channel = {
->>> +	.type = IIO_VOLTAGE,
->>> +	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
->>> +		     IIO_CHAN_INFO_RAW_SEPARATE_BIT,
->>> +};
->>> +
->>> +static const struct iio_info adc081c_info = {
->>> +	.read_raw = adc081c_read_raw,
->>> +	.driver_module = THIS_MODULE,
->>> +};
->>> +
->>> +static int adc081c_probe(struct i2c_client *client,
->>> +			 const struct i2c_device_id *id)
->>> +{
->>> +	struct iio_dev *iio;
->>> +	struct adc081c *adc;
->>> +	int err;
->>> +
->>> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
->>> +		return -ENODEV;
->>> +
->>> +	iio = iio_device_alloc(sizeof(*adc));
->>> +	if (!iio)
->>> +		return -ENOMEM;
->>> +
->>> +	adc = iio_priv(iio);
->>> +	adc->i2c = client;
->>> +
->>> +	adc->ref = regulator_get(&client->dev, "vref");
->>> +	if (IS_ERR(adc->ref)) {
->>> +		err = PTR_ERR(adc->ref);
->>> +		goto iio_free;
->>> +	}
->>> +
->>> +	err = regulator_enable(adc->ref);
->>> +	if (err < 0)
->>> +		goto regulator_put;
->>> +
->>> +	iio->dev.parent = &client->dev;
->>> +	iio->name = dev_name(&client->dev);
->>> +	iio->modes = INDIO_DIRECT_MODE;
->>> +	iio->info = &adc081c_info;
->>> +
->>> +	iio->channels = &adc081c_channel;
->>> +	iio->num_channels = 1;
->>> +
->>> +	err = iio_device_register(iio);
->>> +	if (err < 0)
->>> +		goto regulator_disable;
->>> +
->>> +	i2c_set_clientdata(client, iio);
->>> +
->>> +	return 0;
->>> +
->>> +regulator_disable:
->>> +	regulator_disable(adc->ref);
->>> +regulator_put:
->>> +	regulator_put(adc->ref);
->>> +iio_free:
->>> +	iio_device_free(iio);
->>> +
->>> +	return err;
->>> +}
->>> +
->>> +static int adc081c_remove(struct i2c_client *client)
->>> +{
->>> +	struct iio_dev *iio = i2c_get_clientdata(client);
->>> +	struct adc081c *adc = iio_priv(iio);
->>> +
->>> +	iio_device_unregister(iio);
->>> +	regulator_disable(adc->ref);
->>> +	regulator_put(adc->ref);
->>> +	iio_device_free(iio);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static const struct i2c_device_id adc081c_id[] = {
->>> +	{ "adc081c", 0 },
->>> +	{ }
->>> +};
->>> +MODULE_DEVICE_TABLE(i2c, adc081c_id);
->>> +
->>> +#ifdef CONFIG_OF
->>> +static const struct of_device_id adc081c_of_match[] = {
->>> +	{ .compatible = "ti,adc081c" },
->>> +	{ }
->>> +};
->>> +MODULE_DEVICE_TABLE(of, adc081c_of_match);
->>> +#endif
->>> +
->>> +static struct i2c_driver adc081c_driver = {
->>> +	.driver = {
->>> +		.name = "adc081c",
->>> +		.owner = THIS_MODULE,
->>> +		.of_match_table = of_match_ptr(adc081c_of_match),
->>> +	},
->>> +	.probe = adc081c_probe,
->>> +	.remove = adc081c_remove,
->>> +	.id_table = adc081c_id,
->>> +};
->>> +module_i2c_driver(adc081c_driver);
->>> +
->>> +MODULE_AUTHOR("Thierry Reding <thierry.reding@avionic-design.de>");
->>> +MODULE_DESCRIPTION("Texas Instruments ADC081C021/027 driver");
->>> +MODULE_LICENSE("GPL v2");
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+I added the IIO mailing list and Patil, Rachna, who is the author of the
+driver, to Cc.
+
+On 11/23/2012 09:42 AM, Guido Del Vescovo wrote:
+> Hi Lars. I'm trying to read the analog inputs of the beaglebone board at an
+> higher rate than the one which can be achieved through the *sysfs* method
+> (open the file with *fopen*, read a single value with *fscanf*, close the
+> file, repeat. C language, of course). In the #beagle IRC channel at
+> freenode, I was told to look at the IIO project. I was also told that the
+> latest kernel 3.7 for the beaglebone (angstrom distribution) was equipped
+> with IIO support for the built-in ADC, but that it is not tested yet. Well,
+> I would like to test it. The problem is, I have no idea about how to write
+> an hello world application reading data from the analog inputs. I guess I
+> should bypass the sysfs and talk directly to the IIO layer, but I'm having
+> hard times finding the proper documentation and examples, maybe I'm not
+> looking in the right direction.
+
+So yes, there is support for the AM335x ADC in IIO, but not for 3.7. It will
+be in 3.8. While IIO provides a character device interface which allows you
+to read multiple samples at once, the driver does not implement it yet. So
+as it is right now even with IIO you are stuck with reading sysfs files by hand.
+
+- Lars
