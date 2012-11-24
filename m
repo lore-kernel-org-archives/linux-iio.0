@@ -1,450 +1,252 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-237.synserver.de ([212.40.185.237]:1050 "EHLO
-	smtp-out-237.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751872Ab2K2KPr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Nov 2012 05:15:47 -0500
-Message-ID: <50B735D8.6000907@metafoo.de>
-Date: Thu, 29 Nov 2012 11:15:52 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33392 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750987Ab2KXKyG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 Nov 2012 05:54:06 -0500
+Message-ID: <50B0A74B.10707@kernel.org>
+Date: Sat, 24 Nov 2012 10:54:03 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: marxin.liska@gmail.com
-CC: corentin.chary@gmail.com, marex@denx.de, jic23@cam.ac.uk,
-	platform-driver-x86@vger.kernel.org, linux-iio@vger.kernel.org,
-	rui.zhang@intel.com, jlee@suse.com, len.brown@intel.com,
-	pavel@denx.de, jbrenner@taosinc.com, pmeerw@pmeerw.net
-Subject: Re: [PATCH] ACPI ALS driver for iio introduced.
-References: <CAHR064j_7Y3wYXVXmC4TqZHxkqa0Z2HK84-OaDTiC7oesB_TrQ@mail.gmail.com> <1354157205-2956-1-git-send-email-marxin.liska@gmail.com> <1354157205-2956-2-git-send-email-marxin.liska@gmail.com>
-In-Reply-To: <1354157205-2956-2-git-send-email-marxin.liska@gmail.com>
+To: Thierry Reding <thierry.reding@avionic-design.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: Add Texas Instruments ADC081C021/027 support
+References: <1353683583-19779-1-git-send-email-thierry.reding@avionic-design.de>
+In-Reply-To: <1353683583-19779-1-git-send-email-thierry.reding@avionic-design.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On 11/23/2012 03:13 PM, Thierry Reding wrote:
+> Add support for reading conversion results from the ADC and provide them
+> through a single IIO channel. A proper scaling factor is also exported
+> based on the reference voltage provided by a regulator.
+>
+> Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
 
-On 11/29/2012 03:46 AM, marxin.liska@gmail.com wrote:
-> From: marxin <marxin.liska@gmail.com>
+Looks good to me.  I think timing is against you (depending on what Linus
+says with his next rc).  IIO patches are routed through Greg KH. His cut
+off is 1 week before the merge window opens.  Mine tends to as a result
+be a few days before that.  Linus stated in last rc message that the one he'll
+do today or tomorrow will be the last for this cycle (and hence merge window
+will open in a week from now). Hence this will probably hit linux next after
+the merge window closes and merge in the 3.9 cycle.
 
-The from tag should contain your full name. Also you need to add a
-Signed-off-by tag. And a short description what the patch does wouldn't hurt
-either. And the subject line prefix should match that of the subsystem, in
-this case "iio:". Your subject line could for example be "iio: Add ACPI
-ambient light sensor driver".
+Shall I add a reviewed by from you Lars? Looks like Thierry has directly
+addressed all your comments (thanks for doing the review by the way!)
 
-Also what's up with all the TODOs in the driver, shouldn't these be
-addressed first before the driver is merged upstream? The driver looks a bit
-as if it is only half finished, which is fine if you just want to get some
-initial feedback, but you should definitely state this somewhere.
-
-> 
 > ---
->  drivers/iio/industrialio-buffer.c    |    4 +-
->  drivers/staging/iio/light/Kconfig    |    6 +
->  drivers/staging/iio/light/Makefile   |    1 +
->  drivers/staging/iio/light/acpi-als.c |  486 ++++++++++++++++++++++++++++++++++
->  4 files changed, 495 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/staging/iio/light/acpi-als.c
-> 
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index aaadd32..b8b377c 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -119,8 +119,8 @@ static ssize_t iio_scan_el_show(struct device *dev,
->  	int ret;
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  
-> -	ret = test_bit(to_iio_dev_attr(attr)->address,
-> -		       indio_dev->buffer->scan_mask);
-> +	ret = !!(test_bit(to_iio_dev_attr(attr)->address,
-> +		       indio_dev->buffer->scan_mask));
->  
->  	return sprintf(buf, "%d\n", ret);
->  }
-> diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-> index 4bed30e..a164ecc 100644
-> --- a/drivers/staging/iio/light/Kconfig
-> +++ b/drivers/staging/iio/light/Kconfig
-
-Unless you have a really good reason we shouldn't add new iio drivers to
-staging. Just put it in drivers/iio/light/
-
-> @@ -50,4 +50,10 @@ config TSL2x7x
->  	 tmd2672, tsl2772, tmd2772 devices.
->  	 Provides iio_events and direct access via sysfs.
->  
-> +config ACPI_ALS
-> +	tristate "ACPI Ambient Light Sensor"
-
-I suspect that the driver depends on CONFIG_ACPI
-
-
+> Changes in v2:
+> - use the more common IIO_VAL_FRACTIONAL_LOG2 instead of IIO_VAL_INT_PLUS_MICRO
+>   for the ADC scale factor
+> - make the channel specification static const since it is the same for
+>   all devices
+> - convert the scale factor such that the result of multiplying the raw
+>   value with the scale factor yields a voltage in millivolts
+>
+>  drivers/iio/adc/Kconfig      |  10 +++
+>  drivers/iio/adc/Makefile     |   1 +
+>  drivers/iio/adc/ti-adc081c.c | 161 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 172 insertions(+)
+>  create mode 100644 drivers/iio/adc/ti-adc081c.c
+>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index b719f3b..e8be025 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -91,6 +91,16 @@ config MAX1363
+>  	  max11646, max11647) Provides direct access via sysfs and buffered
+>  	  data via the iio dev interface.
+>
+> +config TI_ADC081C
+> +	tristate "Texas Instruments ADC081C021/027"
+> +	depends on I2C
 > +	help
-> +	 Support for ACPI0008 Light Sensor.
-> +	 Provides direct access via sysfs.
+> +	  If you say yes here you get support for Texas Instruments ADC081C021
+> +	  and ADC081C027 ADC chips.
 > +
->  endmenu
-> diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
-> index 141af1e..13090e6 100644
-> --- a/drivers/staging/iio/light/Makefile
-> +++ b/drivers/staging/iio/light/Makefile
-> @@ -7,3 +7,4 @@ obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
->  obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
->  obj-$(CONFIG_TSL2583)	+= tsl2583.o
->  obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
-> +obj-$(CONFIG_ACPI_ALS)	+= acpi-als.o
-> diff --git a/drivers/staging/iio/light/acpi-als.c b/drivers/staging/iio/light/acpi-als.c
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called ti-adc081c.
+> +
+>  config TI_AM335X_ADC
+>  	tristate "TI's ADC driver"
+>  	depends on MFD_TI_AM335X_TSCADC
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 19d709c..6ad20aa 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -10,4 +10,5 @@ obj-$(CONFIG_AD7887) += ad7887.o
+>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>  obj-$(CONFIG_MAX1363) += max1363.o
+> +obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+> diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
 > new file mode 100644
-> index 0000000..9ba0fc4
+> index 0000000..f4a46dd
 > --- /dev/null
-> +++ b/drivers/staging/iio/light/acpi-als.c
-> @@ -0,0 +1,486 @@
+> +++ b/drivers/iio/adc/ti-adc081c.c
+> @@ -0,0 +1,161 @@
 > +/*
-> + * ACPI Ambient Light Sensor Driver
+> + * Copyright (C) 2012 Avionic Design GmbH
 > + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + *
-> + * You should have received a copy of the GNU General Public License
-> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
 > + */
 > +
-> +#include <linux/module.h>
-> +#include <linux/interrupt.h>
-> +#include <trace/events/printk.h>
-> +#include <acpi/acpi_bus.h>
-> +#include <acpi/acpi_drivers.h>
 > +#include <linux/err.h>
-> +#include <linux/mutex.h>
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
 > +
 > +#include <linux/iio/iio.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/regulator/consumer.h>
 > +
-> +#define PREFIX "ACPI: "
-> +
-> +#define ACPI_ALS_CLASS			"als"
-> +#define ACPI_ALS_DEVICE_NAME		"acpi-als"
-> +#define ACPI_ALS_NOTIFY_ILLUMINANCE	0x80
-> +
-> +#define ACPI_ALS_OUTPUTS		1
-> +
-> +#define _COMPONENT			ACPI_ALS_COMPONENT
-> +ACPI_MODULE_NAME("acpi-als");
-> +
-> +MODULE_AUTHOR("Martin Liska <marxin.liska@gmail.com>");
-> +MODULE_DESCRIPTION("ACPI Ambient Light Sensor Driver");
-> +MODULE_LICENSE("GPL");
-> +
-> +struct acpi_als_chip {
-> +    struct acpi_device		*device;
-> +    struct acpi_als_device	*acpi_als_sys;
-
-Neither the struct is defined nor the field is used.
-
-> +    struct mutex		lock;
-> +    struct iio_trigger		*trig;
-> +
-> +    int				illuminance;
-> +    int				polling;
-
-Polling is only ever assigned, but never read.
-
-> +
-> +    int				count;
-> +    struct acpi_als_mapping	*mappings;
+> +struct adc081c {
+> +	struct i2c_client *i2c;
+> +	struct regulator *ref;
 > +};
 > +
-> +static int acpi_als_add(struct acpi_device *device);
-> +static int acpi_als_remove(struct acpi_device *device, int type);
-> +static void acpi_als_notify(struct acpi_device *device, u32 event);
+> +#define REG_CONV_RES 0x00
 > +
-> +static const struct acpi_device_id acpi_als_device_ids[] = {
-> +    {"ACPI0008", 0},
-> +    {"", 0},
-> +};
-> +
-> +MODULE_DEVICE_TABLE(acpi, acpi_als_device_ids);
-> +
-> +static struct acpi_driver acpi_als_driver = {
-> +    .name = "acpi_als",
-> +    .class = ACPI_ALS_CLASS,
-> +    .ids = acpi_als_device_ids,
-> +    .ops = {
-> +        .add = acpi_als_add,
-> +        .remove = acpi_als_remove,
-> +        .notify = acpi_als_notify,
-> +    },
-> +};
-> +
-> +struct acpi_als_mapping {
-> +    int adjustment;
-> +    int illuminance;
-> +};
-> +
-> +#define ALS_INVALID_VALUE_LOW		0
-> +#define ALS_INVALID_VALUE_HIGH		-1
-> +
-
-[...]
-> +/*
-> + * acpi_als_get_polling - get a recommended polling frequency
-> + * 			  for the Ambient Light Sensor device
-> + */
-> +static int acpi_als_get_polling(struct acpi_als_chip *chip)
+> +static int adc081c_read_raw(struct iio_dev *iio,
+> +			    struct iio_chan_spec const *channel, int *value,
+> +			    int *shift, long mask)
 > +{
-> +    acpi_status status;
-> +    unsigned long long polling;
+> +	struct adc081c *adc = iio_priv(iio);
+> +	int err;
 > +
-> +    status =
-> +        acpi_evaluate_integer(chip->device->handle, "_ALP", NULL, &polling);
-> +    if (ACPI_FAILURE(status)) {
-> +        ACPI_DEBUG_PRINT((ACPI_DB_INFO, "_ALP not available\n"));
-> +        return -ENODEV;
-> +    }
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		err = i2c_smbus_read_word_swapped(adc->i2c, REG_CONV_RES);
+> +		if (err < 0)
+> +			return err;
 > +
-> +    chip->polling = polling;
-> +    return 0;
-> +}
+> +		*value = (err >> 4) & 0xff;
+> +		return IIO_VAL_INT;
 > +
-> +/*
-> + * get_illuminance - wrapper for getting the currect ambient light illuminance
-> + */
-
-Why is this wrapper necessary?
-
-> +static int get_illuminance(struct acpi_als_chip *als, int *illuminance)
-> +{
-> +    int result;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		err = regulator_get_voltage(adc->ref);
+> +		if (err < 0)
+> +			return err;
 > +
-> +    result = acpi_als_get_illuminance(als);
-> +    if (!result)
-> +        *illuminance = als->illuminance;
+> +		*value = err / 1000;
+> +		*shift = 8;
 > +
-> +    return result;
-> +}
+> +		return IIO_VAL_FRACTIONAL_LOG2;
 > +
-> +static void acpi_als_notify(struct acpi_device *device, u32 event)
-> +{
-> +	int illuminance;
-> +	struct iio_dev *indio_dev = acpi_driver_data(device);
-> +	struct acpi_als_chip *chip = iio_priv(indio_dev);
-> +
-> +	s64 time_ns = iio_get_time_ns();
-> +	int len = sizeof(int);
-> +	u8 data[sizeof(s64) + ACPI_ALS_OUTPUTS * len];
-> +
-> +	switch(event) {
-> +	case ACPI_ALS_NOTIFY_ILLUMINANCE:
-> +		get_illuminance(chip, &illuminance);
-> +		*(int *)((u8 *)data) = illuminance;
-> +		*(s64 *)((u8 *)data + ALIGN(len, sizeof(s64))) = time_ns;
-
-You don't have a timestamp channel in your channel spec.
-
-> +		break;
 > +	default:
-> +		return;
+> +		break;
 > +	}
 > +
-> +	if (iio_buffer_enabled(indio_dev))
-> +		iio_push_to_buffers(indio_dev, data);
-> +
-> +	return;
+> +	return -EINVAL;
 > +}
 > +
-> +static int acpi_als_read_raw(struct iio_dev *indio_dev,
-> +                             struct iio_chan_spec const *chan, int *val, int *val2, long mask)
-> +{
-> +    struct acpi_als_chip *chip = iio_priv(indio_dev);
-> +    int ret = -EINVAL;
-> +
-> +    mutex_lock(&chip->lock);
-> +
-> +    switch (mask) {
-> +    case IIO_CHAN_INFO_RAW:
-
-You did not register a RAW attribute for this device.
-
-> +    case IIO_CHAN_INFO_PROCESSED:
-> +        switch(chan->type) {
-> +        case IIO_LIGHT:
-> +            ret = get_illuminance(chip, val);
-> +            break;
-> +        default:
-> +            break;
-> +        }
-> +
-> +        if(!ret)
-> +            ret = IIO_VAL_INT;
-> +
-> +        break;
-> +    default:
-> +        dev_err(&chip->device->dev, "mask value 0x%08lx not supported\n", mask);
-
-You did register a scale attribute for the device, so whenever somebody
-reads the scale attribute he will get this message. I don't think that makes
-much sense. Better just remove IIO_CHAN_INFO_SCALE_SEPARATE_BIT from the
-channel spec. And also remove this dev_err.
-
-> +        break;
-> +    }
-> +
-> +    mutex_unlock(&chip->lock);
-> +
-> +    return ret;
-> +}
-> +
-> +static const struct iio_chan_spec acpi_als_channels[] = {
-> +    {
-> +        .type = IIO_LIGHT,
-> +        .indexed = 1,
-> +        .channel = 1,
-> +        .scan_type.sign = 'u',
-> +        .scan_type.realbits = 10,
-> +        .scan_type.storagebits = 16,
-> +        .info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT |
-> +        IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-> +    },
+> +static const struct iio_chan_spec adc081c_channel = {
+> +	.type = IIO_VOLTAGE,
+> +	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
+> +		     IIO_CHAN_INFO_RAW_SEPARATE_BIT,
 > +};
 > +
-> +static const struct iio_info acpi_als_info = {
-> +    .driver_module = THIS_MODULE,
-> +    .read_raw = &acpi_als_read_raw,
-> +    .write_raw = NULL,
+> +static const struct iio_info adc081c_info = {
+> +	.read_raw = adc081c_read_raw,
+> +	.driver_module = THIS_MODULE,
 > +};
 > +
-> +static irqreturn_t acpi_als_trigger_handler(int irq, void *p)
+> +static int adc081c_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
 > +{
+> +	struct iio_dev *iio;
+> +	struct adc081c *adc;
+> +	int err;
 > +
-> +    struct iio_poll_func *pf = p;
-> +    struct iio_dev *idev = pf->indio_dev;
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
+> +		return -ENODEV;
 > +
+> +	iio = iio_device_alloc(sizeof(*adc));
+> +	if (!iio)
+> +		return -ENOMEM;
 > +
-> +    struct acpi_als_chip *chip = iio_priv(idev);
+> +	adc = iio_priv(iio);
+> +	adc->i2c = client;
 > +
-> +    printk("XXX: TRIGGER handler called :)");
-
-Aha?
-
-> +    iio_trigger_notify_done(chip->trig);
-> +    return IRQ_HANDLED;
+> +	adc->ref = regulator_get(&client->dev, "vref");
+> +	if (IS_ERR(adc->ref)) {
+> +		err = PTR_ERR(adc->ref);
+> +		goto iio_free;
+> +	}
+> +
+> +	err = regulator_enable(adc->ref);
+> +	if (err < 0)
+> +		goto regulator_put;
+> +
+> +	iio->dev.parent = &client->dev;
+> +	iio->name = dev_name(&client->dev);
+> +	iio->modes = INDIO_DIRECT_MODE;
+> +	iio->info = &adc081c_info;
+> +
+> +	iio->channels = &adc081c_channel;
+> +	iio->num_channels = 1;
+> +
+> +	err = iio_device_register(iio);
+> +	if (err < 0)
+> +		goto regulator_disable;
+> +
+> +	i2c_set_clientdata(client, iio);
+> +
+> +	return 0;
+> +
+> +regulator_disable:
+> +	regulator_disable(adc->ref);
+> +regulator_put:
+> +	regulator_put(adc->ref);
+> +iio_free:
+> +	iio_device_free(iio);
+> +
+> +	return err;
 > +}
 > +
-[...]
-> +
-> +static int acpi_als_add(struct acpi_device *device)
+> +static int adc081c_remove(struct i2c_client *client)
 > +{
-> +    int result;
-> +    struct acpi_als_chip *chip;
-> +    struct iio_dev *indio_dev;
+> +	struct iio_dev *iio = i2c_get_clientdata(client);
+> +	struct adc081c *adc = iio_priv(iio);
 > +
-> +    /*
-> +    if (unlikely(als_id >= 10)) {
-> +    	printk(KERN_WARNING PREFIX "Too many ALS device found\n");
-> +    	return -ENODEV;
-> +    }
-> +    */
-
-What's with this?
-
+> +	iio_device_unregister(iio);
+> +	regulator_disable(adc->ref);
+> +	regulator_put(adc->ref);
+> +	iio_device_free(iio);
 > +
-> +    indio_dev = iio_device_alloc(sizeof(*chip));
-> +    if (!indio_dev) {
-> +        dev_err(&device->dev, "iio allocation fails\n");
-> +        return -ENOMEM;
-> +    }
-> +
-> +    chip = iio_priv(indio_dev);
-> +
-> +    device->driver_data = indio_dev;
-> +    chip->device = device;
-> +    mutex_init(&chip->lock);
-> +
-> +    indio_dev->info = &acpi_als_info;
-> +    indio_dev->channels = acpi_als_channels;
-> +    indio_dev->num_channels = ARRAY_SIZE(acpi_als_channels);
-> +    indio_dev->name = ACPI_ALS_DEVICE_NAME;
-> +    indio_dev->dev.parent = &device->dev;
-> +    indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +    result = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> +                                        &acpi_als_trigger_handler, NULL);
-> +
-> +    if(result) {
-> +        printk("Could not setup buffer for iio device\n");
-
-dev_err
-
-> +        goto exit_iio_free;
-> +    }
-> +
-> +    result = acpi_als_trigger_init(indio_dev);
-> +    if (result) {
-> +        printk("Couldn't setup the triggers.\n");
-
-dev_err
-
-> +        // TODO
-> +        //goto error_unregister_buffer;
-> +    }
-> +
-> +    result = iio_device_register(indio_dev);
-> +    if (result < 0) {
-> +        dev_err(&chip->device->dev, "iio registration fails with error %d\n",
-> +                result);
-> +        goto exit_iio_free;
-> +    }
-> +
-> +    printk("ACPI ALS initialized");
-
-This is just noise, please remove it.
-
-> +    return 0;
-> +
-> +exit_iio_free:
-> +    iio_device_free(indio_dev);
-> +    return result;
+> +	return 0;
 > +}
 > +
-> +static int acpi_als_remove(struct acpi_device *device, int type)
-> +{
-> +    struct iio_dev *indio_dev;
+> +static const struct i2c_device_id adc081c_id[] = {
+> +	{ "adc081c", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, adc081c_id);
 > +
-> +    indio_dev = acpi_driver_data(device);
-> +    if(!indio_dev) {
-
-Can this ever happen? I suspect not.
-
-> +        dev_err(&device->dev, "could not get indio_dev for ACPI device\n");
-> +        return -1;
-> +    }
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id adc081c_of_match[] = {
+> +	{ .compatible = "ti,adc081c" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, adc081c_of_match);
+> +#endif
 > +
-> +    iio_device_unregister(indio_dev);
-> +    iio_device_free(indio_dev);
+> +static struct i2c_driver adc081c_driver = {
+> +	.driver = {
+> +		.name = "adc081c",
+> +		.owner = THIS_MODULE,
+> +		.of_match_table = of_match_ptr(adc081c_of_match),
+> +	},
+> +	.probe = adc081c_probe,
+> +	.remove = adc081c_remove,
+> +	.id_table = adc081c_id,
+> +};
+> +module_i2c_driver(adc081c_driver);
 > +
-> +    return 0;
-> +}
-> +
-> +static int __init acpi_als_init(void)
-> +{
-> +    return acpi_bus_register_driver(&acpi_als_driver);
-> +}
-> +
-> +static void __exit acpi_als_exit(void)
-> +{
-> +    acpi_bus_unregister_driver(&acpi_als_driver);
-> +}
-> +
-> +module_init(acpi_als_init);
-> +module_exit(acpi_als_exit);
-
-Hm, there is no module_acpi_driver? We should probably add one.
-
+> +MODULE_AUTHOR("Thierry Reding <thierry.reding@avionic-design.de>");
+> +MODULE_DESCRIPTION("Texas Instruments ADC081C021/027 driver");
+> +MODULE_LICENSE("GPL v2");
+>
