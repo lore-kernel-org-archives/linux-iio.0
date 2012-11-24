@@ -1,101 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-239.synserver.de ([212.40.185.239]:1120 "EHLO
-	smtp-out-239.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752774Ab2K3Ofe (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Nov 2012 09:35:34 -0500
-Message-ID: <50B8C441.1040407@metafoo.de>
-Date: Fri, 30 Nov 2012 15:35:45 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33051 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752151Ab2KXKSI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 Nov 2012 05:18:08 -0500
+Message-ID: <50B09EDC.4020200@kernel.org>
+Date: Sat, 24 Nov 2012 10:18:04 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 4/5] staging:iio:imu: adis16400 switch from sw_ring to
- kfifo
-References: <1354285372-11779-1-git-send-email-jic23@kernel.org> <1354285372-11779-5-git-send-email-jic23@kernel.org>
-In-Reply-To: <1354285372-11779-5-git-send-email-jic23@kernel.org>
+To: Guenter Roeck <linux@roeck-us.net>
+CC: linux-iio@vger.kernel.org, Jean Delvare <khali@linux-fr.org>,
+	lm-sensors@lm-sensors.org
+Subject: Re: MAX1363 IIO driver questions
+References: <20121124052707.GA17392@roeck-us.net>
+In-Reply-To: <20121124052707.GA17392@roeck-us.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/30/2012 03:22 PM, Jonathan Cameron wrote:
-> sw ring is going away so switch over to kfifo based buffer implementation.
-> The only real change is that poll will return on some data there rather than
-> buffer 50% full.
+On 11/24/2012 05:27 AM, Guenter Roeck wrote:
+> Hi all,
+Hi Guenter,
 > 
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> What would it take to move the MAX1363 driver out of staging ?
+>
+Nothing given it is already out of staging in linux-next (though only has been
+for about a week)
 
-Is is ok for you to drop this one and wait with the last patch in the series
-still a bit? I've patches to switch this driver over to the adislib and this
-patch would probably introduce a couple of conflicts.
+> Background is that I need a hardware monitoring driver for MAX1139, and would
+> like to avoid using a driver from staging if possible (after all, it might
+> go away anytime). Another option would be to submit a hwmon driver for it,
+> but that doesn't seem to be the best approach.
 
-The rest of the series looks good.
+The hwmon driver client driver for iio devices is still in staging, but mainly
+because I haven't had a chance to take a last look at it before posting it to
+the hmwon list.  IIRC you were more or less happy with what went into staging
+in the first place, so hopefully not too much left to do.
 
-Thanks,
-- Lars
-
-> ---
->  drivers/staging/iio/imu/Kconfig          |  2 +-
->  drivers/staging/iio/imu/adis16400_ring.c | 12 ++++++------
->  2 files changed, 7 insertions(+), 7 deletions(-)
+Jonathan
 > 
-> diff --git a/drivers/staging/iio/imu/Kconfig b/drivers/staging/iio/imu/Kconfig
-> index 2c2f47d..b9d9c14 100644
-> --- a/drivers/staging/iio/imu/Kconfig
-> +++ b/drivers/staging/iio/imu/Kconfig
-> @@ -6,7 +6,7 @@ menu "Inertial measurement units"
->  config ADIS16400
->  	tristate "Analog Devices ADIS16400 and similar IMU SPI driver"
->  	depends on SPI
-> -	select IIO_SW_RING if IIO_BUFFER
-> +	select IIO_KFIFO_BUF if IIO_BUFFER
->  	select IIO_TRIGGER if IIO_BUFFER
->  	help
->  	  Say yes here to build support for Analog Devices adis16300, adis16344,
-> diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
-> index d46c1e3..319c2c0 100644
-> --- a/drivers/staging/iio/imu/adis16400_ring.c
-> +++ b/drivers/staging/iio/imu/adis16400_ring.c
-> @@ -7,7 +7,7 @@
->  #include <linux/export.h>
->  
->  #include <linux/iio/iio.h>
-> -#include "../ring_sw.h"
-> +#include <linux/iio/kfifo_buf.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include "adis16400.h"
->  
-> @@ -161,7 +161,7 @@ done:
->  void adis16400_unconfigure_ring(struct iio_dev *indio_dev)
->  {
->  	iio_dealloc_pollfunc(indio_dev->pollfunc);
-> -	iio_sw_rb_free(indio_dev->buffer);
-> +	iio_kfifo_free(indio_dev->buffer);
->  }
->  
->  static const struct iio_buffer_setup_ops adis16400_ring_setup_ops = {
-> @@ -175,7 +175,7 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
->  	int ret = 0;
->  	struct iio_buffer *ring;
->  
-> -	ring = iio_sw_rb_allocate(indio_dev);
-> +	ring = iio_kfifo_allocate(indio_dev);
->  	if (!ring) {
->  		ret = -ENOMEM;
->  		return ret;
-> @@ -193,12 +193,12 @@ int adis16400_configure_ring(struct iio_dev *indio_dev)
->  						 indio_dev->id);
->  	if (indio_dev->pollfunc == NULL) {
->  		ret = -ENOMEM;
-> -		goto error_iio_sw_rb_free;
-> +		goto error_iio_kfifo_free;
->  	}
->  
->  	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
->  	return 0;
-> -error_iio_sw_rb_free:
-> -	iio_sw_rb_free(indio_dev->buffer);
-> +error_iio_kfifo_free:
-> +	iio_kfifo_free(indio_dev->buffer);
->  	return ret;
->  }
-
+> Thanks,
+> Guenter
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
