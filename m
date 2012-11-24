@@ -1,164 +1,214 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34299 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33129 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752256Ab2KRSgp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 18 Nov 2012 13:36:45 -0500
-Message-ID: <50A92AB4.3050707@kernel.org>
-Date: Sun, 18 Nov 2012 18:36:36 +0000
+	with ESMTP id S1750987Ab2KXK0P (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 Nov 2012 05:26:15 -0500
+Message-ID: <50B0A0C6.8050506@kernel.org>
+Date: Sat, 24 Nov 2012 10:26:14 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: kbuild test robot <fengguang.wu@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [iio:togreg 24/24] drivers/iio/adc/ad7298.c:125:23: sparse: incorrect
- type in assignment (different base types)
-References: <50a787d6.NK04zL7PgCPbLOrx%fengguang.wu@intel.com> <50A8E5DF.7000607@kernel.org> <50A8EE71.8090302@metafoo.de>
-In-Reply-To: <50A8EE71.8090302@metafoo.de>
+CC: linux-iio@vger.kernel.org, drivers@analog.com
+Subject: Re: [PATCH 05/11] staging:iio:ad7793: Rework platform data
+References: <1353515236-21843-1-git-send-email-lars@metafoo.de> <1353515236-21843-5-git-send-email-lars@metafoo.de>
+In-Reply-To: <1353515236-21843-5-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/18/2012 02:19 PM, Lars-Peter Clausen wrote:
-> On 11/18/2012 02:42 PM, Jonathan Cameron wrote:
->> Hi Lars-Peter
->>
->> Hmm. currious. I'd not normally have that check on - for reference
->> this only happens for me with CF="-D__CHECK_ENDIAN__" appeneded to my
->> normal make for the kernel.
->>
->> Anyhow, initial thought was to change rx_buf and tx_buf to __be16.
->> Can you see any issues with that?
->>
-> 
-> I actually had such a patch initially in my series, but removed it again, since
-> we are using the buffer as non __be16 in some places.
-> 
->> It clears the warnings out.
-> 
-> But if sparse doesn't complain about those we are better of with the change I
-> guess.
-Hmm. I wonder if there is any marking for no endianness specified?
-Either that or we'll need to play games with a union to pull this off
-cleanly.
+On 11/21/2012 04:27 PM, Lars-Peter Clausen wrote:
+> Currently the platform data for the ad7793 consist just out of the raw default
+> register settings. This has some downsides, for one we actually don't want to
+> make all bits configurable and secondly not all register settings are actually
+> valid. This patch exposes all the options which should be configurable via
+> platform data as induvidual platform data struct fields. This also allows us to
+> document the different settings via proper kernel doc.
+>
+Good to see this cleared up.
 
-For anyone reading this without the background.  This bit of code is filling
-a buffer with a mixture of big and cpu endian elements.  This buffer is described
-to userspace which can then do the conversions as necessary.
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+added (as have previous patches to togreg branch of iio.git)
 
-For now I'm going to hold the patch I sent out as it's not a real fix, but
-rather a nasty work around of the problem.
 
-Jonathan
-> 
->>
->> Jonathan
->>
->> On 11/17/2012 12:49 PM, kbuild test robot wrote:
->>> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
->>> head:   e3e10fa5760709eb9dcc05fc9bfd48f90e2abbd7
->>> commit: e3e10fa5760709eb9dcc05fc9bfd48f90e2abbd7 [24/24] staging:iio: Move the ad7298 driver out of staging
->>>
->>>
->>> sparse warnings:
->>>
->>> + drivers/iio/adc/ad7298.c:125:23: sparse: incorrect type in assignment (different base types)
->>> drivers/iio/adc/ad7298.c:125:23:    expected unsigned short [unsigned] [short] <noident>
->>> drivers/iio/adc/ad7298.c:125:23:    got restricted __be16 [usertype] <noident>
->>> drivers/iio/adc/ad7298.c:186:23: sparse: incorrect type in assignment (different base types)
->>> drivers/iio/adc/ad7298.c:186:23:    expected unsigned short [unsigned] [short] <noident>
->>> drivers/iio/adc/ad7298.c:186:23:    got restricted __be16 [usertype] <noident>
->>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
->>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
->>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
->>> + drivers/iio/adc/ad7298.c:193:16: sparse: cast to restricted __be16
->>>
->>> vim +125 drivers/iio/adc/ad7298.c
->>>
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  119  	command = AD7298_WRITE | st->ext_ref;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  120  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  121  	for (i = 0, m = AD7298_CH(0); i < AD7298_MAX_CHAN; i++, m >>= 1)
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  122  		if (test_bit(i, active_scan_mask))
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  123  			command |= m;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  124  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15 @125  	st->tx_buf[0] = cpu_to_be16(command);
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  126  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  127  	/* build spi ring message */
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  128  	st->ring_xfer[0].tx_buf = &st->tx_buf[0];
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  129  	st->ring_xfer[0].len = 2;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  130  	st->ring_xfer[0].cs_change = 1;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  131  	st->ring_xfer[1].tx_buf = &st->tx_buf[1];
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  132  	st->ring_xfer[1].len = 2;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  133  	st->ring_xfer[1].cs_change = 1;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  134  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  135  	spi_message_init(&st->ring_msg);
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  136  	spi_message_add_tail(&st->ring_xfer[0], &st->ring_msg);
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  137  	spi_message_add_tail(&st->ring_xfer[1], &st->ring_msg);
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  138  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  139  	for (i = 0; i < scan_count; i++) {
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  140  		st->ring_xfer[i + 2].rx_buf = &st->rx_buf[i];
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  141  		st->ring_xfer[i + 2].len = 2;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  142  		st->ring_xfer[i + 2].cs_change = 1;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  143  		spi_message_add_tail(&st->ring_xfer[i + 2], &st->ring_msg);
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  144  	}
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  145  	/* make sure last transfer cs_change is not set */
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  146  	st->ring_xfer[i + 1].cs_change = 0;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  147  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  148  	return 0;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  149  }
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  150  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  151  /**
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  152   * ad7298_trigger_handler() bh of trigger launched polling to ring buffer
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  153   *
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  154   * Currently there is no option in this driver to disable the saving of
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  155   * timestamps within the ring.
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  156   **/
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  157  static irqreturn_t ad7298_trigger_handler(int irq, void *p)
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  158  {
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  159  	struct iio_poll_func *pf = p;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  160  	struct iio_dev *indio_dev = pf->indio_dev;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  161  	struct ad7298_state *st = iio_priv(indio_dev);
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  162  	s64 time_ns = 0;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  163  	int b_sent;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  164  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  165  	b_sent = spi_sync(st->spi, &st->ring_msg);
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  166  	if (b_sent)
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  167  		goto done;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  168  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  169  	if (indio_dev->scan_timestamp) {
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  170  		time_ns = iio_get_time_ns();
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  171  		memcpy((u8 *)st->rx_buf + indio_dev->scan_bytes - sizeof(s64),
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  172  			&time_ns, sizeof(time_ns));
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  173  	}
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  174  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  175  	iio_push_to_buffers(indio_dev, (u8 *)st->rx_buf);
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  176  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  177  done:
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  178  	iio_trigger_notify_done(indio_dev->trig);
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  179  
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  180  	return IRQ_HANDLED;
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  181  }
->>> 8c4c8ffe drivers/staging/iio/adc/ad7298.c      Lars-Peter Clausen 2012-11-15  182  
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  183  static int ad7298_scan_direct(struct ad7298_state *st, unsigned ch)
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  184  {
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  185  	int ret;
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24 @186  	st->tx_buf[0] = cpu_to_be16(AD7298_WRITE | st->ext_ref |
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  187  				   (AD7298_CH(0) >> ch));
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  188  
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  189  	ret = spi_sync(st->spi, &st->scan_single_msg);
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  190  	if (ret)
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  191  		return ret;
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  192  
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24 @193  	return be16_to_cpu(st->rx_buf[0]);
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  194  }
->>> 7c31b984 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-02-24  195  
->>> 01a99e18 drivers/staging/iio/adc/ad7298_core.c Michael Hennerich  2011-05-18  196  static int ad7298_scan_temp(struct ad7298_state *st, int *val)
->>>
->>> ---
->>> 0-DAY kernel build testing backend         Open Source Technology Center
->>> Fengguang Wu, Yuanhan Liu                              Intel Corporation
->>>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+> ---
+>  drivers/staging/iio/adc/ad7793.c |  25 +++++++--
+>  drivers/staging/iio/adc/ad7793.h | 107 +++++++++++++++++++++++++++++++++++++--
+>  2 files changed, 123 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
+> index 028473a..8b08693 100644
+> --- a/drivers/staging/iio/adc/ad7793.c
+> +++ b/drivers/staging/iio/adc/ad7793.c
+> @@ -118,6 +118,12 @@ static int ad7793_setup(struct iio_dev *indio_dev,
+>  	unsigned long long scale_uv;
+>  	u32 id;
+>
+> +	if ((pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT1 ||
+> +		pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT2) &&
+> +		((pdata->exitation_current != AD7793_IX_10uA) &&
+> +		(pdata->exitation_current != AD7793_IX_210uA)))
+> +		return -EINVAL;
+> +
+>  	/* reset the serial interface */
+>  	ret = spi_write(st->sd.spi, (u8 *)&ret, sizeof(ret));
+>  	if (ret < 0)
+> @@ -136,8 +142,18 @@ static int ad7793_setup(struct iio_dev *indio_dev,
+>  		goto out;
+>  	}
+>
+> -	st->mode = pdata->mode;
+> -	st->conf = pdata->conf;
+> +	st->mode = AD7793_MODE_RATE(1);
+> +	st->mode |= AD7793_MODE_CLKSRC(pdata->clock_src);
+> +	st->conf = AD7793_CONF_REFSEL(pdata->refsel);
+> +	st->conf |= AD7793_CONF_VBIAS(pdata->bias_voltage);
+> +	if (pdata->buffered)
+> +		st->conf |= AD7793_CONF_BUF;
+> +	if (pdata->boost_enable)
+> +		st->conf |= AD7793_CONF_BOOST;
+> +	if (pdata->burnout_current)
+> +		st->conf |= AD7793_CONF_BO_EN;
+> +	if (pdata->unipolar)
+> +		st->conf |= AD7793_CONF_UNIPOLAR;
+>
+>  	ret = ad7793_set_mode(&st->sd, AD_SD_MODE_IDLE);
+>  	if (ret)
+> @@ -147,8 +163,9 @@ static int ad7793_setup(struct iio_dev *indio_dev,
+>  	if (ret)
+>  		goto out;
+>
+> -	ret = ad_sd_write_reg(&st->sd, AD7793_REG_IO,
+> -			       sizeof(pdata->io), pdata->io);
+> +	ret = ad_sd_write_reg(&st->sd, AD7793_REG_IO, 1,
+> +				   pdata->exitation_current |
+> +			       (pdata->current_source_direction << 2));
+>  	if (ret)
+>  		goto out;
+>
+> diff --git a/drivers/staging/iio/adc/ad7793.h b/drivers/staging/iio/adc/ad7793.h
+> index 8fdd450..9e90590 100644
+> --- a/drivers/staging/iio/adc/ad7793.h
+> +++ b/drivers/staging/iio/adc/ad7793.h
+> @@ -68,7 +68,7 @@
+>  #define AD7793_CONF_UNIPOLAR	(1 << 12) /* Unipolar/Bipolar Enable */
+>  #define AD7793_CONF_BOOST	(1 << 11) /* Boost Enable */
+>  #define AD7793_CONF_GAIN(x)	(((x) & 0x7) << 8) /* Gain Select */
+> -#define AD7793_CONF_REFSEL	(1 << 7) /* INT/EXT Reference Select */
+> +#define AD7793_CONF_REFSEL(x)	((x) << 6) /* INT/EXT Reference Select */
+>  #define AD7793_CONF_BUF		(1 << 4) /* Buffered Mode Enable */
+>  #define AD7793_CONF_CHAN(x)	((x) & 0xf) /* Channel select */
+>  #define AD7793_CONF_CHAN_MASK	0xf /* Channel select mask */
+> @@ -105,11 +105,108 @@
+>  #define AD7793_IO_IXCEN_210uA	(2 << 0) /* Excitation Current 210uA */
+>  #define AD7793_IO_IXCEN_1mA	(3 << 0) /* Excitation Current 1mA */
+>
+> +/**
+> + * enum ad7793_clock_source - AD7793 clock source selection
+> + * @AD7793_CLK_SRC_INT: Internal 64 kHz clock, not available at the CLK pin.
+> + * @AD7793_CLK_SRC_INT_CO: Internal 64 kHz clock, available at the CLK pin.
+> + * @AD7793_CLK_SRC_EXT: Use external clock.
+> + * @AD7793_CLK_SRC_EXT_DIV2: Use external clock divided by 2.
+> + */
+> +enum ad7793_clock_source {
+> +	AD7793_CLK_SRC_INT,
+> +	AD7793_CLK_SRC_INT_CO,
+> +	AD7793_CLK_SRC_EXT,
+> +	AD7793_CLK_SRC_EXT_DIV2,
+> +};
+> +
+> +/**
+> + * enum ad7793_bias_voltage - AD7793 bias voltage selection
+> + * @AD7793_BIAS_VOLTAGE_DISABLED: Bias voltage generator disabled
+> + * @AD7793_BIAS_VOLTAGE_AIN1: Bias voltage connected to AIN1(-).
+> + * @AD7793_BIAS_VOLTAGE_AIN2: Bias voltage connected to AIN2(-).
+> + * @AD7793_BIAS_VOLTAGE_AIN3: Bias voltage connected to AIN3(-).
+> + *	Only valid for AD7795/AD7796.
+> + */
+> +enum ad7793_bias_voltage {
+> +	AD7793_BIAS_VOLTAGE_DISABLED,
+> +	AD7793_BIAS_VOLTAGE_AIN1,
+> +	AD7793_BIAS_VOLTAGE_AIN2,
+> +	AD7793_BIAS_VOLTAGE_AIN3,
+> +};
+> +
+> +/**
+> + * enum ad7793_refsel - AD7793 reference voltage selection
+> + * @AD7793_REFSEL_REFIN1: External reference applied between REFIN1(+)
+> + *	and REFIN1(-).
+> + * @AD7793_REFSEL_REFIN2: External reference applied between REFIN2(+) and
+> + *	and REFIN1(-). Only valid for AD7795/AD7796.
+> + * @AD7793_REFSEL_INTERNAL: Internal 1.17 V reference.
+> + */
+> +enum ad7793_refsel {
+> +	AD7793_REFSEL_REFIN1 = 0,
+> +	AD7793_REFSEL_REFIN2 = 1,
+> +	AD7793_REFSEL_INTERNAL = 2,
+> +};
+> +
+> +/**
+> + * enum ad7793_current_source_direction - AD7793 excitation current direction
+> + * @AD7793_IEXEC1_IOUT1_IEXEC2_IOUT2: Current source IEXC1 connected to pin
+> + *	IOUT1, current source IEXC2 connected to pin IOUT2.
+> + * @AD7793_IEXEC1_IOUT2_IEXEC2_IOUT1: Current source IEXC2 connected to pin
+> + *	IOUT1, current source IEXC1 connected to pin IOUT2.
+> + * @AD7793_IEXEC1_IEXEC2_IOUT1: Both current sources connected to pin IOUT1.
+> + *	Only valid when the current sources are set to 10 uA or 210 uA.
+> + * @AD7793_IEXEC1_IEXEC2_IOUT2: Both current sources connected to Pin IOUT2.
+> + *	Only valid when the current ources are set to 10 uA or 210 uA.
+> + */
+> +enum ad7793_current_source_direction {
+> +	AD7793_IEXEC1_IOUT1_IEXEC2_IOUT2 = 0,
+> +	AD7793_IEXEC1_IOUT2_IEXEC2_IOUT1 = 1,
+> +	AD7793_IEXEC1_IEXEC2_IOUT1 = 2,
+> +	AD7793_IEXEC1_IEXEC2_IOUT2 = 3,
+> +};
+> +
+> +/**
+> + * enum ad7793_excitation_current - AD7793 excitation current selection
+> + * @AD7793_IX_DISABLED: Excitation current Disabled.
+> + * @AD7793_IX_10uA: Enable 10 micro-ampere excitation current.
+> + * @AD7793_IX_210uA: Enable 210 micro-ampere excitation current.
+> + * @AD7793_IX_1mA: Enable 1 milli-Ampere excitation current.
+> + */
+> +enum ad7793_excitation_current {
+> +	AD7793_IX_DISABLED = 0,
+> +	AD7793_IX_10uA = 1,
+> +	AD7793_IX_210uA = 2,
+> +	AD7793_IX_1mA = 3,
+> +};
+> +
+> +/**
+> + * struct ad7793_platform_data - AD7793 platform data
+> + * @vref_mv: Reference voltage in milli-Volt
+> + * @clock_src: Clock source selection
+> + * @burnout_current: If set to true the 100nA burnout current is enabled.
+> + * @boost_enable: Enable boost for the bias voltage generator.
+> + * @buffered: If set to true configure the device for buffered input mode.
+> + * @unipolar: If set to true sample in unipolar mode, if set to false sample in
+> + *		bipolar mode.
+> + * @refsel: Reference voltage selection
+> + * @bias_voltage: Bias voltage selection
+> + * @exitation_current: Excitation current selection
+> + * @current_source_direction: Excitation current direction selection
+> + */
+>  struct ad7793_platform_data {
+> -	u16			vref_mv;
+> -	u16			mode;
+> -	u16			conf;
+> -	u8			io;
+> +	u16 vref_mv;
+> +
+> +	enum ad7793_clock_source clock_src;
+> +	bool burnout_current;
+> +	bool boost_enable;
+> +	bool buffered;
+> +	bool unipolar;
+> +
+> +	enum ad7793_refsel refsel;
+> +	enum ad7793_bias_voltage bias_voltage;
+> +	enum ad7793_excitation_current exitation_current;
+> +	enum ad7793_current_source_direction current_source_direction;
+>  };
+>
+>  #endif /* IIO_ADC_AD7793_H_ */
+>
