@@ -7,9 +7,9 @@ Cc: Denis Ciocca <denis.ciocca@gmail.com>,
 	Pavel Machek <pavel@denx.de>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"burman.yan@gmail.com" <burman.yan@gmail.com>
-Date: Tue, 27 Nov 2012 12:52:10 +0100
+Date: Mon, 26 Nov 2012 17:57:27 +0100
 Subject: Re: STMicroelectronics accelerometers driver.
-Message-ID: <50B4A96A.3060505@st.com>
+Message-ID: <50B39F77.9000309@st.com>
 References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de>
  <20121008195007.GA32042@elf.ucw.cz> <507338B5.60307@metafoo.de>
  <665718a4-de6b-4d09-ba80-35705fcf2595@email.android.com>
@@ -30,9 +30,13 @@ Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi everybody,
+Hi Jonathan,
 
-I attach the new modified patch with corrections about DMA using SPI.
+> Comments on that below. It's much simpler than what you have done.
+
+sorry but I don't had understand very well what was the problem!
+Now, maybe, I have done the modification in the correct way.
+
 Best regards,
 
 Denis
@@ -40,7 +44,7 @@ Denis
 
 
 
- From 1b3c4eb307c1083cafa3dba6f1777f8438f4a6ad Mon Sep 17 00:00:00 2001
+ From c9c33e9cda2b6e23fb46f9f15eacf96babe729f8 Mon Sep 17 00:00:00 2001
 From: Denis Ciocca <denis.ciocca@st.com>
 Date: Mon, 22 Oct 2012 11:17:27 +0200
 Subject: [PATCH 3/3] iio:accel: Add STMicroelectronics accelerometers drive=
@@ -155,7 +159,7 @@ st_accel_buffer.o
 diff --git a/drivers/iio/accel/st_accel_buffer.c
 b/drivers/iio/accel/st_accel_buffer.c
 new file mode 100644
-index 0000000..e8419be
+index 0000000..d089f89
 --- /dev/null
 +++ b/drivers/iio/accel/st_accel_buffer.c
 @@ -0,0 +1,177 @@
@@ -267,7 +271,7 @@ NELS,
 +               *(s64 *)((u8 *)adata->buffer_data +
 +                               ALIGN(len, sizeof(s64))) =3D pf->timestamp;
 +
-+       iio_push_to_buffer(indio_dev->buffer, adata->buffer_data);
++       iio_push_to_buffers(indio_dev->buffer, adata->buffer_data);
 +
 +st_accel_get_buffer_element_error:
 +       iio_trigger_notify_done(indio_dev->trig);
@@ -348,7 +352,7 @@ ps);
 diff --git a/drivers/iio/accel/st_accel_core.c
 b/drivers/iio/accel/st_accel_core.c
 new file mode 100644
-index 0000000..791161e
+index 0000000..932cd96
 --- /dev/null
 +++ b/drivers/iio/accel/st_accel_core.c
 @@ -0,0 +1,1171 @@
@@ -946,7 +950,7 @@ data)
 +       u8 new_data;
 +       struct st_accel_data *adata =3D iio_priv(indio_dev);
 +
-+       prev_data =3D kmalloc(sizeof(*prev_data), GFP_KERNEL);
++       prev_data =3D kmalloc(sizeof(prev_data), GFP_KERNEL);
 +       if (prev_data =3D=3D NULL) {
 +               err =3D -ENOMEM;
 +               goto st_accel_write_data_with_mask_error;
@@ -1514,7 +1518,7 @@ t);
 +       indio_dev->modes =3D INDIO_DIRECT_MODE;
 +       indio_dev->info =3D &acc_info;
 +
-+       wai =3D kmalloc(sizeof(*wai), GFP_KERNEL);
++       wai =3D kmalloc(sizeof(wai), GFP_KERNEL);
 +       if (wai =3D=3D NULL) {
 +               err =3D -ENOMEM;
 +               goto st_accel_iio_probe_error;
@@ -1721,7 +1725,7 @@ ata);
 diff --git a/drivers/iio/accel/st_accel_spi.c
 b/drivers/iio/accel/st_accel_spi.c
 new file mode 100644
-index 0000000..6df1440
+index 0000000..51a00cc
 --- /dev/null
 +++ b/drivers/iio/accel/st_accel_spi.c
 @@ -0,0 +1,182 @@
@@ -1768,7 +1772,7 @@ ata)
 +               }
 +       };
 +
-+       tx =3D kmalloc(sizeof(*tx), GFP_KERNEL);
++       tx =3D kmalloc(sizeof(tx), GFP_KERNEL);
 +       if (tx =3D=3D NULL) {
 +               err =3D -ENOMEM;
 +               goto acc_spi_read_error;
@@ -1819,7 +1823,7 @@ a)
 +               .len =3D 2,
 +       };
 +
-+       tx =3D kmalloc(sizeof(*tx)*2, GFP_KERNEL);
++       tx =3D kmalloc(sizeof(tx)*2, GFP_KERNEL);
 +       if (tx =3D=3D NULL) {
 +               err =3D -ENOMEM;
 +               goto alloc_memory_error;
