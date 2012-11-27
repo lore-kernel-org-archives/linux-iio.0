@@ -1,223 +1,55 @@
-Return-Path: <thierry.reding@avionic-design.de>
-From: Thierry Reding <thierry.reding@avionic-design.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: Add Texas Instruments ADC081C021/027 support
-Date: Mon, 19 Nov 2012 09:21:29 +0100
-Message-Id: <1353313289-983-1-git-send-email-thierry.reding@avionic-design.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:64345 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756785Ab2K0SkJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Nov 2012 13:40:09 -0500
+Message-ID: <50B5092E.7060103@metafoo.de>
+Date: Tue, 27 Nov 2012 19:40:46 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Dan Carpenter <dan.carpenter@oracle.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	kernel-janitors@vger.kernel.org
+Subject: Re: [patch] iio:gyro: adis16136: divide by zero in write_frequency()
+References: <20121127072452.GA8239@elgon.mountain>
+In-Reply-To: <20121127072452.GA8239@elgon.mountain>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add support for reading conversion results from the ADC and provide them
-through a single IIO channel. A proper scaling factor is also exported
-based on the reference voltage provided by a regulator.
+On 11/27/2012 08:24 AM, Dan Carpenter wrote:
+> It's slightly cleaner to use kstrtouint() because we pass unsigned ints
+> to adis16136_set_freq().  On 64 bit systems, if the user passed LONG_MIN
+> then it we would get past the test against zero but crash in
+> adis16136_set_freq() because we truncate the high bits away.
+> 
+> 
 
-Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
----
- drivers/iio/adc/Kconfig      |  10 +++
- drivers/iio/adc/Makefile     |   1 +
- drivers/iio/adc/ti-adc081c.c | 162 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 173 insertions(+)
- create mode 100644 drivers/iio/adc/ti-adc081c.c
+Thanks,
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index b719f3b..e8be025 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -91,6 +91,16 @@ config MAX1363
- 	  max11646, max11647) Provides direct access via sysfs and buffered
- 	  data via the iio dev interface.
- 
-+config TI_ADC081C
-+	tristate "Texas Instruments ADC081C021/027"
-+	depends on I2C
-+	help
-+	  If you say yes here you get support for Texas Instruments ADC081C021
-+	  and ADC081C027 ADC chips.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called ti-adc081c.
-+
- config TI_AM335X_ADC
- 	tristate "TI's ADC driver"
- 	depends on MFD_TI_AM335X_TSCADC
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 19d709c..6ad20aa 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -10,4 +10,5 @@ obj-$(CONFIG_AD7887) += ad7887.o
- obj-$(CONFIG_AT91_ADC) += at91_adc.o
- obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
- obj-$(CONFIG_MAX1363) += max1363.o
-+obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
- obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
-diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
-new file mode 100644
-index 0000000..26fb7a6
---- /dev/null
-+++ b/drivers/iio/adc/ti-adc081c.c
-@@ -0,0 +1,162 @@
-+/*
-+ * Copyright (C) 2012 Avionic Design GmbH
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/regulator/consumer.h>
-+
-+struct adc081c {
-+	struct iio_chan_spec channel;
-+	struct i2c_client *i2c;
-+	struct regulator *ref;
-+};
-+
-+#define REG_CONV_RES 0x00
-+
-+static int adc081c_read_raw(struct iio_dev *iio,
-+			    struct iio_chan_spec const *channel, int *value,
-+			    int *micro, long mask)
-+{
-+	struct adc081c *adc = iio_priv(iio);
-+	int err, scale;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		err = i2c_smbus_read_word_swapped(adc->i2c, REG_CONV_RES);
-+		if (err < 0)
-+			return err;
-+
-+		*value = (err >> 4) & 0xff;
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		err = regulator_get_voltage(adc->ref);
-+		if (err < 0)
-+			return err;
-+
-+		scale = err / 255;
-+
-+		*value = scale / 1000000;
-+		*micro = scale % 1000000;
-+
-+		return IIO_VAL_INT_PLUS_MICRO;
-+
-+	default:
-+		break;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info adc081c_info = {
-+	.read_raw = adc081c_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int adc081c_probe(struct i2c_client *client,
-+			 const struct i2c_device_id *id)
-+{
-+	struct iio_dev *iio;
-+	struct adc081c *adc;
-+	int err;
-+
-+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-+		return -ENODEV;
-+
-+	iio = iio_device_alloc(sizeof(*adc));
-+	if (!iio)
-+		return -ENOMEM;
-+
-+	adc = iio_priv(iio);
-+	adc->i2c = client;
-+
-+	adc->ref = regulator_get(&client->dev, "vref");
-+	if (IS_ERR(adc->ref)) {
-+		err = PTR_ERR(adc->ref);
-+		goto iio_free;
-+	}
-+
-+	err = regulator_enable(adc->ref);
-+	if (err < 0)
-+		goto regulator_put;
-+
-+	iio->dev.parent = &client->dev;
-+	iio->name = dev_name(&client->dev);
-+	iio->modes = INDIO_DIRECT_MODE;
-+	iio->info = &adc081c_info;
-+
-+	adc->channel.type = IIO_VOLTAGE;
-+	adc->channel.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+				 IIO_CHAN_INFO_RAW_SEPARATE_BIT;
-+
-+	iio->channels = &adc->channel;
-+	iio->num_channels = 1;
-+
-+	err = iio_device_register(iio);
-+	if (err < 0)
-+		goto regulator_disable;
-+
-+	i2c_set_clientdata(client, iio);
-+
-+	return 0;
-+
-+regulator_disable:
-+	regulator_disable(adc->ref);
-+regulator_put:
-+	regulator_put(adc->ref);
-+iio_free:
-+	iio_device_free(iio);
-+
-+	return err;
-+}
-+
-+static int adc081c_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *iio = i2c_get_clientdata(client);
-+	struct adc081c *adc = iio_priv(iio);
-+
-+	iio_device_unregister(iio);
-+	regulator_disable(adc->ref);
-+	regulator_put(adc->ref);
-+	iio_device_free(iio);
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id adc081c_id[] = {
-+	{ "adc081c", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, adc081c_id);
-+
-+#ifdef CONFIG_OF
-+static const struct of_device_id adc081c_of_match[] = {
-+	{ .compatible = "ti,adc081c" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, adc081c_of_match);
-+#endif
-+
-+static struct i2c_driver adc081c_driver = {
-+	.driver = {
-+		.name = "adc081c",
-+		.owner = THIS_MODULE,
-+		.of_match_table = of_match_ptr(adc081c_of_match),
-+	},
-+	.probe = adc081c_probe,
-+	.remove = adc081c_remove,
-+	.id_table = adc081c_id,
-+};
-+module_i2c_driver(adc081c_driver);
-+
-+MODULE_AUTHOR("Thierry Reding <thierry.reding@avionic-design.de>");
-+MODULE_DESCRIPTION("Texas Instruments ADC081C021/027 driver");
-+MODULE_LICENSE("GPL v2");
--- 
-1.8.0
+Acked-By: Lars-Peter Clausen <lars@metafoo.de>
+
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
+> index 05486df..b4ee339 100644
+> --- a/drivers/iio/gyro/adis16136.c
+> +++ b/drivers/iio/gyro/adis16136.c
+> @@ -203,10 +203,10 @@ static ssize_t adis16136_write_frequency(struct device *dev,
+>  {
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct adis16136 *adis16136 = iio_priv(indio_dev);
+> -	long val;
+> +	unsigned int val;
+>  	int ret;
+>  
+> -	ret = kstrtol(buf, 10, &val);
+> +	ret = kstrtouint(buf, 10, &val);
+>  	if (ret)
+>  		return ret;
+>  
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
