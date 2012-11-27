@@ -1,236 +1,133 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from moutng.kundenserver.de ([212.227.126.187]:53516 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752289Ab2KWPNT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 23 Nov 2012 10:13:19 -0500
-From: Thierry Reding <thierry.reding@avionic-design.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: adc: Add Texas Instruments ADC081C021/027 support
-Date: Fri, 23 Nov 2012 16:13:03 +0100
-Message-Id: <1353683583-19779-1-git-send-email-thierry.reding@avionic-design.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <rachna@ti.com>
+From: "Patil, Rachna" <rachna@ti.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+CC: "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Rob Landley
+	<rob@landley.net>,
+        Grant Likely <grant.likely@secretlab.ca>,
+        Rob Herring
+	<rob.herring@calxeda.com>,
+        Samuel Ortiz <sameo@linux.intel.com>,
+        Jonathan
+ Cameron <jic23@cam.ac.uk>
+Subject: RE: [PATCH RESEND 6/7] input: ti_am335x_tsc: Add DT support
+Date: Tue, 27 Nov 2012 07:11:32 +0000
+Message-ID: <4CE347531D4CA947960AF71FF095B9323E96FBF1@DBDE01.ent.ti.com>
+References: <1352271124-5513-1-git-send-email-rachna@ti.com>
+ <1352271124-5513-7-git-send-email-rachna@ti.com>
+ <20121121183223.GA18950@core.coreip.homeip.net>
+In-Reply-To: <20121121183223.GA18950@core.coreip.homeip.net>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Add support for reading conversion results from the ADC and provide them
-through a single IIO channel. A proper scaling factor is also exported
-based on the reference voltage provided by a regulator.
+Hi Dmitry,
 
-Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
----
-Changes in v2:
-- use the more common IIO_VAL_FRACTIONAL_LOG2 instead of IIO_VAL_INT_PLUS_MICRO
-  for the ADC scale factor
-- make the channel specification static const since it is the same for
-  all devices
-- convert the scale factor such that the result of multiplying the raw
-  value with the scale factor yields a voltage in millivolts
+On Thu, Nov 22, 2012 at 00:02:23, Dmitry Torokhov wrote:
+> Hi Rachna,
+>=20
+> On Wed, Nov 07, 2012 at 12:22:03PM +0530, Patil, Rachna wrote:
+> > Add DT support for client touchscreen driver
+> >=20
+> > Signed-off-by: Patil, Rachna <rachna@ti.com>
+> > ---
+> >  drivers/input/touchscreen/ti_am335x_tsc.c |   60 +++++++++++++++++++++=
++++-----
+> >  1 files changed, 50 insertions(+), 10 deletions(-)
+> >=20
+> > diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c=20
+> > b/drivers/input/touchscreen/ti_am335x_tsc.c
+> > index 7a26810..c063cf6 100644
+> > --- a/drivers/input/touchscreen/ti_am335x_tsc.c
+> > +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+> > @@ -26,6 +26,8 @@
+> >  #include <linux/io.h>
+> >  #include <linux/input/ti_am335x_tsc.h>  #include <linux/delay.h>
+> > +#include <linux/of.h>
+> > +#include <linux/of_device.h>
+> > =20
+> >  #include <linux/mfd/ti_am335x_tscadc.h>
+> > =20
+> > @@ -398,12 +400,18 @@ static int __devinit titsc_probe(struct platform_=
+device *pdev)
+> >  	struct titsc *ts_dev;
+> >  	struct input_dev *input_dev;
+> >  	struct ti_tscadc_dev *tscadc_dev =3D pdev->dev.platform_data;
+> > -	struct mfd_tscadc_board	*pdata;
+> > -	int err;
+> > -
+> > -	pdata =3D tscadc_dev->dev->platform_data;
+> > -
+> > -	if (!pdata) {
+> > +	int err, i;
+> > +	struct mfd_tscadc_board	*pdata =3D NULL;
+> > +	struct device_node *node =3D NULL;
+> > +	u32 val32, wires_conf[4];
+> > +
+> > +	if (tscadc_dev->dev->of_node) {
+> > +		node =3D tscadc_dev->dev->of_node;
+> > +		node =3D of_find_node_by_name(node, "tsc");
+> > +	} else
+> > +		pdata =3D tscadc_dev->dev->platform_data;
+> > +
+> > +	if (!pdata && !node) {
+> >  		dev_err(&pdev->dev, "Could not find platform data\n");
+> >  		return -EINVAL;
+> >  	}
+> > @@ -421,11 +429,43 @@ static int __devinit titsc_probe(struct platform_=
+device *pdev)
+> >  	ts_dev->mfd_tscadc =3D tscadc_dev;
+> >  	ts_dev->input =3D input_dev;
+> >  	ts_dev->irq =3D tscadc_dev->irq;
+> > -	ts_dev->wires =3D pdata->tsc_init->wires;
+> > -	ts_dev->x_plate_resistance =3D pdata->tsc_init->x_plate_resistance;
+> > -	ts_dev->steps_to_configure =3D pdata->tsc_init->steps_to_configure;
+> > -	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
+> > +
+> > +	if (node) {
+> > +		err =3D of_property_read_u32(node, "wires", &val32);
+> > +		if (err < 0)
+> > +			goto err_free_mem;
+> > +		else
+> > +			ts_dev->wires =3D val32;
+> > +
+> > +		err =3D of_property_read_u32(node, "x-plate-resistance", &val32);
+> > +		if (err < 0)
+> > +			goto err_free_mem;
+> > +		else
+> > +			ts_dev->x_plate_resistance =3D val32;
+> > +
+> > +		err =3D of_property_read_u32(node, "steps-to-configure", &val32);
+> > +		if (err < 0)
+> > +			goto err_free_mem;
+> > +		else
+> > +			ts_dev->steps_to_configure =3D val32;
+> > +
+> > +		err =3D of_property_read_u32_array(node, "wire-config",
+> > +				wires_conf, ARRAY_SIZE(wires_conf));
+> > +		if (err < 0)
+> > +			goto err_free_mem;
+> > +		else {
+> > +			for (i =3D 0; i < ARRAY_SIZE(wires_conf); i++)
+> > +				ts_dev->config_inp[i] =3D wires_conf[i];
+> > +		}
+> > +	} else {
+> > +		ts_dev->wires =3D pdata->tsc_init->wires;
+> > +		ts_dev->x_plate_resistance =3D
+> > +			pdata->tsc_init->x_plate_resistance;
+> > +		ts_dev->steps_to_configure =3D
+> > +			pdata->tsc_init->steps_to_configure;
+> > +		memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
+> >  			sizeof(pdata->tsc_init->wire_config));
+>=20
+> I believe if platform data is supplied it should take precedence over DT =
+data so that parameters can be adjusted if really needed.
 
- drivers/iio/adc/Kconfig      |  10 +++
- drivers/iio/adc/Makefile     |   1 +
- drivers/iio/adc/ti-adc081c.c | 161 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 172 insertions(+)
- create mode 100644 drivers/iio/adc/ti-adc081c.c
+Ok. I will fix this is in v2.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index b719f3b..e8be025 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -91,6 +91,16 @@ config MAX1363
- 	  max11646, max11647) Provides direct access via sysfs and buffered
- 	  data via the iio dev interface.
- 
-+config TI_ADC081C
-+	tristate "Texas Instruments ADC081C021/027"
-+	depends on I2C
-+	help
-+	  If you say yes here you get support for Texas Instruments ADC081C021
-+	  and ADC081C027 ADC chips.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called ti-adc081c.
-+
- config TI_AM335X_ADC
- 	tristate "TI's ADC driver"
- 	depends on MFD_TI_AM335X_TSCADC
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 19d709c..6ad20aa 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -10,4 +10,5 @@ obj-$(CONFIG_AD7887) += ad7887.o
- obj-$(CONFIG_AT91_ADC) += at91_adc.o
- obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
- obj-$(CONFIG_MAX1363) += max1363.o
-+obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
- obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
-diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
-new file mode 100644
-index 0000000..f4a46dd
---- /dev/null
-+++ b/drivers/iio/adc/ti-adc081c.c
-@@ -0,0 +1,161 @@
-+/*
-+ * Copyright (C) 2012 Avionic Design GmbH
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/regulator/consumer.h>
-+
-+struct adc081c {
-+	struct i2c_client *i2c;
-+	struct regulator *ref;
-+};
-+
-+#define REG_CONV_RES 0x00
-+
-+static int adc081c_read_raw(struct iio_dev *iio,
-+			    struct iio_chan_spec const *channel, int *value,
-+			    int *shift, long mask)
-+{
-+	struct adc081c *adc = iio_priv(iio);
-+	int err;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		err = i2c_smbus_read_word_swapped(adc->i2c, REG_CONV_RES);
-+		if (err < 0)
-+			return err;
-+
-+		*value = (err >> 4) & 0xff;
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		err = regulator_get_voltage(adc->ref);
-+		if (err < 0)
-+			return err;
-+
-+		*value = err / 1000;
-+		*shift = 8;
-+
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+
-+	default:
-+		break;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_chan_spec adc081c_channel = {
-+	.type = IIO_VOLTAGE,
-+	.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
-+		     IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+};
-+
-+static const struct iio_info adc081c_info = {
-+	.read_raw = adc081c_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int adc081c_probe(struct i2c_client *client,
-+			 const struct i2c_device_id *id)
-+{
-+	struct iio_dev *iio;
-+	struct adc081c *adc;
-+	int err;
-+
-+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-+		return -ENODEV;
-+
-+	iio = iio_device_alloc(sizeof(*adc));
-+	if (!iio)
-+		return -ENOMEM;
-+
-+	adc = iio_priv(iio);
-+	adc->i2c = client;
-+
-+	adc->ref = regulator_get(&client->dev, "vref");
-+	if (IS_ERR(adc->ref)) {
-+		err = PTR_ERR(adc->ref);
-+		goto iio_free;
-+	}
-+
-+	err = regulator_enable(adc->ref);
-+	if (err < 0)
-+		goto regulator_put;
-+
-+	iio->dev.parent = &client->dev;
-+	iio->name = dev_name(&client->dev);
-+	iio->modes = INDIO_DIRECT_MODE;
-+	iio->info = &adc081c_info;
-+
-+	iio->channels = &adc081c_channel;
-+	iio->num_channels = 1;
-+
-+	err = iio_device_register(iio);
-+	if (err < 0)
-+		goto regulator_disable;
-+
-+	i2c_set_clientdata(client, iio);
-+
-+	return 0;
-+
-+regulator_disable:
-+	regulator_disable(adc->ref);
-+regulator_put:
-+	regulator_put(adc->ref);
-+iio_free:
-+	iio_device_free(iio);
-+
-+	return err;
-+}
-+
-+static int adc081c_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *iio = i2c_get_clientdata(client);
-+	struct adc081c *adc = iio_priv(iio);
-+
-+	iio_device_unregister(iio);
-+	regulator_disable(adc->ref);
-+	regulator_put(adc->ref);
-+	iio_device_free(iio);
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id adc081c_id[] = {
-+	{ "adc081c", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, adc081c_id);
-+
-+#ifdef CONFIG_OF
-+static const struct of_device_id adc081c_of_match[] = {
-+	{ .compatible = "ti,adc081c" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, adc081c_of_match);
-+#endif
-+
-+static struct i2c_driver adc081c_driver = {
-+	.driver = {
-+		.name = "adc081c",
-+		.owner = THIS_MODULE,
-+		.of_match_table = of_match_ptr(adc081c_of_match),
-+	},
-+	.probe = adc081c_probe,
-+	.remove = adc081c_remove,
-+	.id_table = adc081c_id,
-+};
-+module_i2c_driver(adc081c_driver);
-+
-+MODULE_AUTHOR("Thierry Reding <thierry.reding@avionic-design.de>");
-+MODULE_DESCRIPTION("Texas Instruments ADC081C021/027 driver");
-+MODULE_LICENSE("GPL v2");
--- 
-1.8.0
-
+Regards,
+Rachna
