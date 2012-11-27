@@ -1,121 +1,63 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <50A9FCFC.60002@metafoo.de>
-Date: Mon, 19 Nov 2012 10:33:48 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:64396 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751622Ab2K0Sk3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Nov 2012 13:40:29 -0500
+Message-ID: <50B50944.2040801@metafoo.de>
+Date: Tue, 27 Nov 2012 19:41:08 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Thierry Reding <thierry.reding@avionic-design.de>
+To: Dan Carpenter <dan.carpenter@oracle.com>
 CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: Add Texas Instruments ADC081C021/027 support
-References: <1353313289-983-1-git-send-email-thierry.reding@avionic-design.de>
-In-Reply-To: <1353313289-983-1-git-send-email-thierry.reding@avionic-design.de>
+	kernel-janitors@vger.kernel.org
+Subject: Re: [patch] iio:imu: adis16480: show_firmware() buffer too small
+References: <20121127073142.GC8239@elgon.mountain>
+In-Reply-To: <20121127073142.GC8239@elgon.mountain>
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 11/19/2012 09:21 AM, Thierry Reding wrote:
-> Add support for reading conversion results from the ADC and provide them
-> through a single IIO channel. A proper scaling factor is also exported
-> based on the reference voltage provided by a regulator.
+On 11/27/2012 08:31 AM, Dan Carpenter wrote:
+> Smatch complains that snprintf() returns the number of characters,
+> not counting the NUL terminator, which *would* have been printed if
+> there were enough space.  In other words the return value could be more
+> than sizeof(buf).
 > 
-> Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
-> ---
-[...]
-> +static int adc081c_read_raw(struct iio_dev *iio,
-> +			    struct iio_chan_spec const *channel, int *value,
-> +			    int *micro, long mask)
-> +{
-> +	struct adc081c *adc = iio_priv(iio);
-> +	int err, scale;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		err = i2c_smbus_read_word_swapped(adc->i2c, REG_CONV_RES);
-> +		if (err < 0)
-> +			return err;
-> +
-> +		*value = (err >> 4) & 0xff;
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		err = regulator_get_voltage(adc->ref);
-> +		if (err < 0)
-> +			return err;
-> +
-> +		scale = err / 255;
+> In this case, we are printing something like "ff.ff\n" which is at most
+> 6 characters and a NUL so that's not an issue.  I changed snprintf() to
+> scnprintf() to silence the warning.
+> 
+> But since the buffer doesn't include space for the NUL terminator, we
+> need to make it bigger or the "\n" will be truncated off.
+> 
 
-Shouldn't this be 256?
 
-> +
-> +		*value = scale / 1000000;
-> +		*micro = scale % 1000000;
+Thanks,
 
-scale for voltages is in microvolt, so I think it this is off by a factor of
-1000.
+Acked-By: Lars-Peter Clausen <lars@metafoo.de>
 
-For ADCs it often makes sense to use IIO_VAL_FRACTIONAL_LOG2 with the val
-being set to the reference voltage (in mV) and val2 being set to the number
-of bits.
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+> index a080b35..150d7fa 100644
+> --- a/drivers/iio/imu/adis16480.c
+> +++ b/drivers/iio/imu/adis16480.c
+> @@ -125,7 +125,7 @@ static ssize_t adis16480_show_firmware_revision(struct file *file,
+>  		char __user *userbuf, size_t count, loff_t *ppos)
+>  {
+>  	struct adis16480 *adis16480 = file->private_data;
+> -	char buf[6];
+> +	char buf[7];
+>  	size_t len;
+>  	u16 rev;
+>  	int ret;
+> @@ -134,7 +134,7 @@ static ssize_t adis16480_show_firmware_revision(struct file *file,
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	len = snprintf(buf, sizeof(buf), "%x.%x\n", rev >> 8, rev & 0xff);
+> +	len = scnprintf(buf, sizeof(buf), "%x.%x\n", rev >> 8, rev & 0xff);
+>  
+>  	return simple_read_from_buffer(userbuf, count, ppos, buf, len);
+>  }
 
-E.g in your case
-
-		*val = err / 1000;
-		*val2 = 8;
-
-> +
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info adc081c_info = {
-> +	.read_raw = adc081c_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int adc081c_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	struct iio_dev *iio;
-> +	struct adc081c *adc;
-> +	int err;
-> +
-> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-> +		return -ENODEV;
-> +
-> +	iio = iio_device_alloc(sizeof(*adc));
-> +	if (!iio)
-> +		return -ENOMEM;
-> +
-> +	adc = iio_priv(iio);
-> +	adc->i2c = client;
-> +
-> +	adc->ref = regulator_get(&client->dev, "vref");
-> +	if (IS_ERR(adc->ref)) {
-> +		err = PTR_ERR(adc->ref);
-> +		goto iio_free;
-> +	}
-> +
-> +	err = regulator_enable(adc->ref);
-> +	if (err < 0)
-> +		goto regulator_put;
-> +
-> +	iio->dev.parent = &client->dev;
-> +	iio->name = dev_name(&client->dev);
-> +	iio->modes = INDIO_DIRECT_MODE;
-> +	iio->info = &adc081c_info;
-> +
-> +	adc->channel.type = IIO_VOLTAGE;
-> +	adc->channel.info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
-> +				 IIO_CHAN_INFO_RAW_SEPARATE_BIT;
-
-nitpick: Since it is the same for each driver I'd make the channel static const.
-
-> +
-> +	iio->channels = &adc->channel;
-> +	iio->num_channels = 1;
-> +
-[...]
