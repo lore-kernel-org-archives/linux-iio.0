@@ -1,214 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33129 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750987Ab2KXK0P (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 Nov 2012 05:26:15 -0500
-Message-ID: <50B0A0C6.8050506@kernel.org>
-Date: Sat, 24 Nov 2012 10:26:14 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-qc0-f174.google.com ([209.85.216.174]:45637 "EHLO
+	mail-qc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754807Ab2K2C1t (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 28 Nov 2012 21:27:49 -0500
+Received: by mail-qc0-f174.google.com with SMTP id o22so10373868qcr.19
+        for <linux-iio@vger.kernel.org>; Wed, 28 Nov 2012 18:27:48 -0800 (PST)
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org, drivers@analog.com
-Subject: Re: [PATCH 05/11] staging:iio:ad7793: Rework platform data
-References: <1353515236-21843-1-git-send-email-lars@metafoo.de> <1353515236-21843-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1353515236-21843-5-git-send-email-lars@metafoo.de>
+Date: Wed, 28 Nov 2012 21:27:48 -0500
+Message-ID: <CAPgLHd-_56zxuFc4-SBEEED0q51xUyiaq7qkNQG=3som6imDuw@mail.gmail.com>
+Subject: [PATCH -next] iio: imu: adis16480: remove duplicated include from adis16480.c
+From: Wei Yongjun <weiyj.lk@gmail.com>
+To: jic23@cam.ac.uk
+Cc: yongjun_wei@trendmicro.com.cn, linux-iio@vger.kernel.org
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/21/2012 04:27 PM, Lars-Peter Clausen wrote:
-> Currently the platform data for the ad7793 consist just out of the raw default
-> register settings. This has some downsides, for one we actually don't want to
-> make all bits configurable and secondly not all register settings are actually
-> valid. This patch exposes all the options which should be configurable via
-> platform data as induvidual platform data struct fields. This also allows us to
-> document the different settings via proper kernel doc.
->
-Good to see this cleared up.
+From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-added (as have previous patches to togreg branch of iio.git)
+Remove duplicated include.
+
+Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+---
+ drivers/iio/imu/adis16480.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+index a080b35..3456d48 100644
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -24,7 +24,6 @@
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/imu/adis.h>
+ 
+-#include <linux/iio/iio.h>
+ #include <linux/debugfs.h>
+ 
+ #define ADIS16480_PAGE_SIZE 0x80
 
 
-> ---
->  drivers/staging/iio/adc/ad7793.c |  25 +++++++--
->  drivers/staging/iio/adc/ad7793.h | 107 +++++++++++++++++++++++++++++++++++++--
->  2 files changed, 123 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/staging/iio/adc/ad7793.c b/drivers/staging/iio/adc/ad7793.c
-> index 028473a..8b08693 100644
-> --- a/drivers/staging/iio/adc/ad7793.c
-> +++ b/drivers/staging/iio/adc/ad7793.c
-> @@ -118,6 +118,12 @@ static int ad7793_setup(struct iio_dev *indio_dev,
->  	unsigned long long scale_uv;
->  	u32 id;
->
-> +	if ((pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT1 ||
-> +		pdata->current_source_direction == AD7793_IEXEC1_IEXEC2_IOUT2) &&
-> +		((pdata->exitation_current != AD7793_IX_10uA) &&
-> +		(pdata->exitation_current != AD7793_IX_210uA)))
-> +		return -EINVAL;
-> +
->  	/* reset the serial interface */
->  	ret = spi_write(st->sd.spi, (u8 *)&ret, sizeof(ret));
->  	if (ret < 0)
-> @@ -136,8 +142,18 @@ static int ad7793_setup(struct iio_dev *indio_dev,
->  		goto out;
->  	}
->
-> -	st->mode = pdata->mode;
-> -	st->conf = pdata->conf;
-> +	st->mode = AD7793_MODE_RATE(1);
-> +	st->mode |= AD7793_MODE_CLKSRC(pdata->clock_src);
-> +	st->conf = AD7793_CONF_REFSEL(pdata->refsel);
-> +	st->conf |= AD7793_CONF_VBIAS(pdata->bias_voltage);
-> +	if (pdata->buffered)
-> +		st->conf |= AD7793_CONF_BUF;
-> +	if (pdata->boost_enable)
-> +		st->conf |= AD7793_CONF_BOOST;
-> +	if (pdata->burnout_current)
-> +		st->conf |= AD7793_CONF_BO_EN;
-> +	if (pdata->unipolar)
-> +		st->conf |= AD7793_CONF_UNIPOLAR;
->
->  	ret = ad7793_set_mode(&st->sd, AD_SD_MODE_IDLE);
->  	if (ret)
-> @@ -147,8 +163,9 @@ static int ad7793_setup(struct iio_dev *indio_dev,
->  	if (ret)
->  		goto out;
->
-> -	ret = ad_sd_write_reg(&st->sd, AD7793_REG_IO,
-> -			       sizeof(pdata->io), pdata->io);
-> +	ret = ad_sd_write_reg(&st->sd, AD7793_REG_IO, 1,
-> +				   pdata->exitation_current |
-> +			       (pdata->current_source_direction << 2));
->  	if (ret)
->  		goto out;
->
-> diff --git a/drivers/staging/iio/adc/ad7793.h b/drivers/staging/iio/adc/ad7793.h
-> index 8fdd450..9e90590 100644
-> --- a/drivers/staging/iio/adc/ad7793.h
-> +++ b/drivers/staging/iio/adc/ad7793.h
-> @@ -68,7 +68,7 @@
->  #define AD7793_CONF_UNIPOLAR	(1 << 12) /* Unipolar/Bipolar Enable */
->  #define AD7793_CONF_BOOST	(1 << 11) /* Boost Enable */
->  #define AD7793_CONF_GAIN(x)	(((x) & 0x7) << 8) /* Gain Select */
-> -#define AD7793_CONF_REFSEL	(1 << 7) /* INT/EXT Reference Select */
-> +#define AD7793_CONF_REFSEL(x)	((x) << 6) /* INT/EXT Reference Select */
->  #define AD7793_CONF_BUF		(1 << 4) /* Buffered Mode Enable */
->  #define AD7793_CONF_CHAN(x)	((x) & 0xf) /* Channel select */
->  #define AD7793_CONF_CHAN_MASK	0xf /* Channel select mask */
-> @@ -105,11 +105,108 @@
->  #define AD7793_IO_IXCEN_210uA	(2 << 0) /* Excitation Current 210uA */
->  #define AD7793_IO_IXCEN_1mA	(3 << 0) /* Excitation Current 1mA */
->
-> +/**
-> + * enum ad7793_clock_source - AD7793 clock source selection
-> + * @AD7793_CLK_SRC_INT: Internal 64 kHz clock, not available at the CLK pin.
-> + * @AD7793_CLK_SRC_INT_CO: Internal 64 kHz clock, available at the CLK pin.
-> + * @AD7793_CLK_SRC_EXT: Use external clock.
-> + * @AD7793_CLK_SRC_EXT_DIV2: Use external clock divided by 2.
-> + */
-> +enum ad7793_clock_source {
-> +	AD7793_CLK_SRC_INT,
-> +	AD7793_CLK_SRC_INT_CO,
-> +	AD7793_CLK_SRC_EXT,
-> +	AD7793_CLK_SRC_EXT_DIV2,
-> +};
-> +
-> +/**
-> + * enum ad7793_bias_voltage - AD7793 bias voltage selection
-> + * @AD7793_BIAS_VOLTAGE_DISABLED: Bias voltage generator disabled
-> + * @AD7793_BIAS_VOLTAGE_AIN1: Bias voltage connected to AIN1(-).
-> + * @AD7793_BIAS_VOLTAGE_AIN2: Bias voltage connected to AIN2(-).
-> + * @AD7793_BIAS_VOLTAGE_AIN3: Bias voltage connected to AIN3(-).
-> + *	Only valid for AD7795/AD7796.
-> + */
-> +enum ad7793_bias_voltage {
-> +	AD7793_BIAS_VOLTAGE_DISABLED,
-> +	AD7793_BIAS_VOLTAGE_AIN1,
-> +	AD7793_BIAS_VOLTAGE_AIN2,
-> +	AD7793_BIAS_VOLTAGE_AIN3,
-> +};
-> +
-> +/**
-> + * enum ad7793_refsel - AD7793 reference voltage selection
-> + * @AD7793_REFSEL_REFIN1: External reference applied between REFIN1(+)
-> + *	and REFIN1(-).
-> + * @AD7793_REFSEL_REFIN2: External reference applied between REFIN2(+) and
-> + *	and REFIN1(-). Only valid for AD7795/AD7796.
-> + * @AD7793_REFSEL_INTERNAL: Internal 1.17 V reference.
-> + */
-> +enum ad7793_refsel {
-> +	AD7793_REFSEL_REFIN1 = 0,
-> +	AD7793_REFSEL_REFIN2 = 1,
-> +	AD7793_REFSEL_INTERNAL = 2,
-> +};
-> +
-> +/**
-> + * enum ad7793_current_source_direction - AD7793 excitation current direction
-> + * @AD7793_IEXEC1_IOUT1_IEXEC2_IOUT2: Current source IEXC1 connected to pin
-> + *	IOUT1, current source IEXC2 connected to pin IOUT2.
-> + * @AD7793_IEXEC1_IOUT2_IEXEC2_IOUT1: Current source IEXC2 connected to pin
-> + *	IOUT1, current source IEXC1 connected to pin IOUT2.
-> + * @AD7793_IEXEC1_IEXEC2_IOUT1: Both current sources connected to pin IOUT1.
-> + *	Only valid when the current sources are set to 10 uA or 210 uA.
-> + * @AD7793_IEXEC1_IEXEC2_IOUT2: Both current sources connected to Pin IOUT2.
-> + *	Only valid when the current ources are set to 10 uA or 210 uA.
-> + */
-> +enum ad7793_current_source_direction {
-> +	AD7793_IEXEC1_IOUT1_IEXEC2_IOUT2 = 0,
-> +	AD7793_IEXEC1_IOUT2_IEXEC2_IOUT1 = 1,
-> +	AD7793_IEXEC1_IEXEC2_IOUT1 = 2,
-> +	AD7793_IEXEC1_IEXEC2_IOUT2 = 3,
-> +};
-> +
-> +/**
-> + * enum ad7793_excitation_current - AD7793 excitation current selection
-> + * @AD7793_IX_DISABLED: Excitation current Disabled.
-> + * @AD7793_IX_10uA: Enable 10 micro-ampere excitation current.
-> + * @AD7793_IX_210uA: Enable 210 micro-ampere excitation current.
-> + * @AD7793_IX_1mA: Enable 1 milli-Ampere excitation current.
-> + */
-> +enum ad7793_excitation_current {
-> +	AD7793_IX_DISABLED = 0,
-> +	AD7793_IX_10uA = 1,
-> +	AD7793_IX_210uA = 2,
-> +	AD7793_IX_1mA = 3,
-> +};
-> +
-> +/**
-> + * struct ad7793_platform_data - AD7793 platform data
-> + * @vref_mv: Reference voltage in milli-Volt
-> + * @clock_src: Clock source selection
-> + * @burnout_current: If set to true the 100nA burnout current is enabled.
-> + * @boost_enable: Enable boost for the bias voltage generator.
-> + * @buffered: If set to true configure the device for buffered input mode.
-> + * @unipolar: If set to true sample in unipolar mode, if set to false sample in
-> + *		bipolar mode.
-> + * @refsel: Reference voltage selection
-> + * @bias_voltage: Bias voltage selection
-> + * @exitation_current: Excitation current selection
-> + * @current_source_direction: Excitation current direction selection
-> + */
->  struct ad7793_platform_data {
-> -	u16			vref_mv;
-> -	u16			mode;
-> -	u16			conf;
-> -	u8			io;
-> +	u16 vref_mv;
-> +
-> +	enum ad7793_clock_source clock_src;
-> +	bool burnout_current;
-> +	bool boost_enable;
-> +	bool buffered;
-> +	bool unipolar;
-> +
-> +	enum ad7793_refsel refsel;
-> +	enum ad7793_bias_voltage bias_voltage;
-> +	enum ad7793_excitation_current exitation_current;
-> +	enum ad7793_current_source_direction current_source_direction;
->  };
->
->  #endif /* IIO_ADC_AD7793_H_ */
->
