@@ -1,130 +1,450 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <5093A921.3080000@kernel.org>
-Date: Fri, 02 Nov 2012 11:06:09 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-237.synserver.de ([212.40.185.237]:1050 "EHLO
+	smtp-out-237.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751872Ab2K2KPr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Nov 2012 05:15:47 -0500
+Message-ID: <50B735D8.6000907@metafoo.de>
+Date: Thu, 29 Nov 2012 11:15:52 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 0/4 V6] staging:iio: Add support for multiple buffers
- (testing required!)
-References: <1351679431-7963-1-git-send-email-jic23@kernel.org>
-In-Reply-To: <1351679431-7963-1-git-send-email-jic23@kernel.org>
+To: marxin.liska@gmail.com
+CC: corentin.chary@gmail.com, marex@denx.de, jic23@cam.ac.uk,
+	platform-driver-x86@vger.kernel.org, linux-iio@vger.kernel.org,
+	rui.zhang@intel.com, jlee@suse.com, len.brown@intel.com,
+	pavel@denx.de, jbrenner@taosinc.com, pmeerw@pmeerw.net
+Subject: Re: [PATCH] ACPI ALS driver for iio introduced.
+References: <CAHR064j_7Y3wYXVXmC4TqZHxkqa0Z2HK84-OaDTiC7oesB_TrQ@mail.gmail.com> <1354157205-2956-1-git-send-email-marxin.liska@gmail.com> <1354157205-2956-2-git-send-email-marxin.liska@gmail.com>
+In-Reply-To: <1354157205-2956-2-git-send-email-marxin.liska@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-I've let this sit for nearly long enough I think.  If no one shouts
-in the next few days (or asks for more time to take a look). I'll add
-patches 1-3 of this the togreg branch of iio.git and send a pull request
-for it to Greg.  The input client driver can wait for a bit.
+Hi,
 
-I'm really really keen to get this lot in place in time to have a few
-weeks of testing in linux-next before the merge window opens.
+On 11/29/2012 03:46 AM, marxin.liska@gmail.com wrote:
+> From: marxin <marxin.liska@gmail.com>
 
-(it's over a year old now as Peter noticed, and I'm getting serriously
-bored of it ;)
+The from tag should contain your full name. Also you need to add a
+Signed-off-by tag. And a short description what the patch does wouldn't hurt
+either. And the subject line prefix should match that of the subsystem, in
+this case "iio:". Your subject line could for example be "iio: Add ACPI
+ambient light sensor driver".
 
-> Same as V5 but with the changes from Lars-Peter's review to close some
-> memory leaks and catch up with some changes in the subsystem that had
-> passed this by.  It should also now be possible to disable the
-> timestamp! (oops).
+Also what's up with all the TODOs in the driver, shouldn't these be
+addressed first before the driver is merged upstream? The driver looks a bit
+as if it is only half finished, which is fine if you just want to get some
+initial feedback, but you should definitely state this somewhere.
+
 > 
-> Thanks to Lars for his work reviewing my patches and also for his
-> excellent work reviewing in general! Without him the whole subsystem
-> would be moving a lot slower.
+> ---
+>  drivers/iio/industrialio-buffer.c    |    4 +-
+>  drivers/staging/iio/light/Kconfig    |    6 +
+>  drivers/staging/iio/light/Makefile   |    1 +
+>  drivers/staging/iio/light/acpi-als.c |  486 ++++++++++++++++++++++++++++++++++
+>  4 files changed, 495 insertions(+), 2 deletions(-)
+>  create mode 100644 drivers/staging/iio/light/acpi-als.c
 > 
-> 
-> Again, more testing would be good (thanks for those who already
-> have).
-> 
-> In quick summary this is needed to do interrupt driven in kernel
-> clients as it adds the option to push to multiple 'buffer' interfaces.
-> Note that some of these may not actually do any buffering but rather
-> push directly into another subsytem (the example is input).
-> 
-> I would like to merge at least the first 3 patches early in this cycle.
-> What I need is some testing across a reasonable range of devices.  Review
-> is welcome of course as well!
-> 
-> The complexity in this set is entirely in the changes to industrialio-buffer.c
-> concerning how we go about adding and removing client buffers.  To do this
-> we need to work out which scan mask is appropriate given the requests of
-> all the given buffers (and whether we can satisfy it).  I've been testing
-> with the max1363 driver which probably has the most complex set of available
-> scan masks.  Thus when a new buffer is added or one is removed the whole
-> buffer set are torn down and built up again.  This may be undesirable for
-> some applications but should occur only rarely.
-> 
-> The example driver is for bridging to the input subsystem and still needs
-> some work, but that can occur later in this merge cycle whereas the changes
-> to the core really want to go in asap.
-> 
-> Changes since v3 
-> 
-> Rebased and added other drivers that have occured whilst this patch series
-> has been languishing in my local tree.
-> 
-> Changes since V2.
-> 
-> Improved handling of error conditions in the buffer insertion and
-> removal code.  (suggested by Lars-Peter).  I want to take another
-> look at these, but didn't want to keep people from testing this
-> in the meantime.
-> 
-> Also a number of minor fixes that came up during testing.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> 
-> Jonathan Cameron (4):
->   staging:iio: Add support for multiple buffers
->   staging:iio:in kernel users: Add a data field for channel specific
->     info.
->   staging:iio: add a callback buffer for in kernel push interface
->   staging:iio: Proof of concept input driver.
-> 
->  drivers/iio/Kconfig                             |   6 +
->  drivers/iio/Makefile                            |   1 +
->  drivers/iio/accel/hid-sensor-accel-3d.c         |  15 +-
->  drivers/iio/adc/ad7266.c                        |   3 +-
->  drivers/iio/adc/ad7476.c                        |   2 +-
->  drivers/iio/adc/ad_sigma_delta.c                |   2 +-
->  drivers/iio/adc/at91_adc.c                      |   3 +-
->  drivers/iio/buffer_cb.c                         | 113 +++++++
->  drivers/iio/gyro/hid-sensor-gyro-3d.c           |  15 +-
->  drivers/iio/industrialio-buffer.c               | 380 ++++++++++++++++--------
->  drivers/iio/industrialio-core.c                 |   1 +
->  drivers/iio/inkern.c                            |   1 +
->  drivers/iio/light/adjd_s311.c                   |   3 +-
->  drivers/iio/light/hid-sensor-als.c              |  15 +-
->  drivers/iio/magnetometer/hid-sensor-magn-3d.c   |  15 +-
->  drivers/staging/iio/Kconfig                     |  11 +
->  drivers/staging/iio/Makefile                    |   1 +
->  drivers/staging/iio/accel/adis16201_ring.c      |   2 +-
->  drivers/staging/iio/accel/adis16203_ring.c      |   2 +-
->  drivers/staging/iio/accel/adis16204_ring.c      |   2 +-
->  drivers/staging/iio/accel/adis16209_ring.c      |   2 +-
->  drivers/staging/iio/accel/adis16240_ring.c      |   2 +-
->  drivers/staging/iio/accel/lis3l02dq_ring.c      |   2 +-
->  drivers/staging/iio/adc/ad7298_ring.c           |   2 +-
->  drivers/staging/iio/adc/ad7606_ring.c           |   2 +-
->  drivers/staging/iio/adc/ad7887_ring.c           |   2 +-
->  drivers/staging/iio/adc/ad799x_ring.c           |   2 +-
->  drivers/staging/iio/adc/max1363_ring.c          |   2 +-
->  drivers/staging/iio/gyro/adis16260_ring.c       |   2 +-
->  drivers/staging/iio/iio_input.c                 | 225 ++++++++++++++
->  drivers/staging/iio/iio_input.h                 |  23 ++
->  drivers/staging/iio/iio_simple_dummy_buffer.c   |   5 +-
->  drivers/staging/iio/impedance-analyzer/ad5933.c |   4 +-
->  drivers/staging/iio/imu/adis16400_ring.c        |   5 +-
->  drivers/staging/iio/meter/ade7758_ring.c        |   2 +-
->  include/linux/iio/buffer.h                      |  24 +-
->  include/linux/iio/consumer.h                    |  48 +++
->  include/linux/iio/iio.h                         |   2 +
->  include/linux/iio/machine.h                     |   2 +
->  39 files changed, 743 insertions(+), 208 deletions(-)
->  create mode 100644 drivers/iio/buffer_cb.c
->  create mode 100644 drivers/staging/iio/iio_input.c
->  create mode 100644 drivers/staging/iio/iio_input.h
-> 
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index aaadd32..b8b377c 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -119,8 +119,8 @@ static ssize_t iio_scan_el_show(struct device *dev,
+>  	int ret;
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  
+> -	ret = test_bit(to_iio_dev_attr(attr)->address,
+> -		       indio_dev->buffer->scan_mask);
+> +	ret = !!(test_bit(to_iio_dev_attr(attr)->address,
+> +		       indio_dev->buffer->scan_mask));
+>  
+>  	return sprintf(buf, "%d\n", ret);
+>  }
+> diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
+> index 4bed30e..a164ecc 100644
+> --- a/drivers/staging/iio/light/Kconfig
+> +++ b/drivers/staging/iio/light/Kconfig
+
+Unless you have a really good reason we shouldn't add new iio drivers to
+staging. Just put it in drivers/iio/light/
+
+> @@ -50,4 +50,10 @@ config TSL2x7x
+>  	 tmd2672, tsl2772, tmd2772 devices.
+>  	 Provides iio_events and direct access via sysfs.
+>  
+> +config ACPI_ALS
+> +	tristate "ACPI Ambient Light Sensor"
+
+I suspect that the driver depends on CONFIG_ACPI
+
+
+> +	help
+> +	 Support for ACPI0008 Light Sensor.
+> +	 Provides direct access via sysfs.
+> +
+>  endmenu
+> diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
+> index 141af1e..13090e6 100644
+> --- a/drivers/staging/iio/light/Makefile
+> +++ b/drivers/staging/iio/light/Makefile
+> @@ -7,3 +7,4 @@ obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
+>  obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
+>  obj-$(CONFIG_TSL2583)	+= tsl2583.o
+>  obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
+> +obj-$(CONFIG_ACPI_ALS)	+= acpi-als.o
+> diff --git a/drivers/staging/iio/light/acpi-als.c b/drivers/staging/iio/light/acpi-als.c
+> new file mode 100644
+> index 0000000..9ba0fc4
+> --- /dev/null
+> +++ b/drivers/staging/iio/light/acpi-als.c
+> @@ -0,0 +1,486 @@
+> +/*
+> + * ACPI Ambient Light Sensor Driver
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms and conditions of the GNU General Public License,
+> + * version 2, as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+> + * more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/interrupt.h>
+> +#include <trace/events/printk.h>
+> +#include <acpi/acpi_bus.h>
+> +#include <acpi/acpi_drivers.h>
+> +#include <linux/err.h>
+> +#include <linux/mutex.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +
+> +#define PREFIX "ACPI: "
+> +
+> +#define ACPI_ALS_CLASS			"als"
+> +#define ACPI_ALS_DEVICE_NAME		"acpi-als"
+> +#define ACPI_ALS_NOTIFY_ILLUMINANCE	0x80
+> +
+> +#define ACPI_ALS_OUTPUTS		1
+> +
+> +#define _COMPONENT			ACPI_ALS_COMPONENT
+> +ACPI_MODULE_NAME("acpi-als");
+> +
+> +MODULE_AUTHOR("Martin Liska <marxin.liska@gmail.com>");
+> +MODULE_DESCRIPTION("ACPI Ambient Light Sensor Driver");
+> +MODULE_LICENSE("GPL");
+> +
+> +struct acpi_als_chip {
+> +    struct acpi_device		*device;
+> +    struct acpi_als_device	*acpi_als_sys;
+
+Neither the struct is defined nor the field is used.
+
+> +    struct mutex		lock;
+> +    struct iio_trigger		*trig;
+> +
+> +    int				illuminance;
+> +    int				polling;
+
+Polling is only ever assigned, but never read.
+
+> +
+> +    int				count;
+> +    struct acpi_als_mapping	*mappings;
+> +};
+> +
+> +static int acpi_als_add(struct acpi_device *device);
+> +static int acpi_als_remove(struct acpi_device *device, int type);
+> +static void acpi_als_notify(struct acpi_device *device, u32 event);
+> +
+> +static const struct acpi_device_id acpi_als_device_ids[] = {
+> +    {"ACPI0008", 0},
+> +    {"", 0},
+> +};
+> +
+> +MODULE_DEVICE_TABLE(acpi, acpi_als_device_ids);
+> +
+> +static struct acpi_driver acpi_als_driver = {
+> +    .name = "acpi_als",
+> +    .class = ACPI_ALS_CLASS,
+> +    .ids = acpi_als_device_ids,
+> +    .ops = {
+> +        .add = acpi_als_add,
+> +        .remove = acpi_als_remove,
+> +        .notify = acpi_als_notify,
+> +    },
+> +};
+> +
+> +struct acpi_als_mapping {
+> +    int adjustment;
+> +    int illuminance;
+> +};
+> +
+> +#define ALS_INVALID_VALUE_LOW		0
+> +#define ALS_INVALID_VALUE_HIGH		-1
+> +
+
+[...]
+> +/*
+> + * acpi_als_get_polling - get a recommended polling frequency
+> + * 			  for the Ambient Light Sensor device
+> + */
+> +static int acpi_als_get_polling(struct acpi_als_chip *chip)
+> +{
+> +    acpi_status status;
+> +    unsigned long long polling;
+> +
+> +    status =
+> +        acpi_evaluate_integer(chip->device->handle, "_ALP", NULL, &polling);
+> +    if (ACPI_FAILURE(status)) {
+> +        ACPI_DEBUG_PRINT((ACPI_DB_INFO, "_ALP not available\n"));
+> +        return -ENODEV;
+> +    }
+> +
+> +    chip->polling = polling;
+> +    return 0;
+> +}
+> +
+> +/*
+> + * get_illuminance - wrapper for getting the currect ambient light illuminance
+> + */
+
+Why is this wrapper necessary?
+
+> +static int get_illuminance(struct acpi_als_chip *als, int *illuminance)
+> +{
+> +    int result;
+> +
+> +    result = acpi_als_get_illuminance(als);
+> +    if (!result)
+> +        *illuminance = als->illuminance;
+> +
+> +    return result;
+> +}
+> +
+> +static void acpi_als_notify(struct acpi_device *device, u32 event)
+> +{
+> +	int illuminance;
+> +	struct iio_dev *indio_dev = acpi_driver_data(device);
+> +	struct acpi_als_chip *chip = iio_priv(indio_dev);
+> +
+> +	s64 time_ns = iio_get_time_ns();
+> +	int len = sizeof(int);
+> +	u8 data[sizeof(s64) + ACPI_ALS_OUTPUTS * len];
+> +
+> +	switch(event) {
+> +	case ACPI_ALS_NOTIFY_ILLUMINANCE:
+> +		get_illuminance(chip, &illuminance);
+> +		*(int *)((u8 *)data) = illuminance;
+> +		*(s64 *)((u8 *)data + ALIGN(len, sizeof(s64))) = time_ns;
+
+You don't have a timestamp channel in your channel spec.
+
+> +		break;
+> +	default:
+> +		return;
+> +	}
+> +
+> +	if (iio_buffer_enabled(indio_dev))
+> +		iio_push_to_buffers(indio_dev, data);
+> +
+> +	return;
+> +}
+> +
+> +static int acpi_als_read_raw(struct iio_dev *indio_dev,
+> +                             struct iio_chan_spec const *chan, int *val, int *val2, long mask)
+> +{
+> +    struct acpi_als_chip *chip = iio_priv(indio_dev);
+> +    int ret = -EINVAL;
+> +
+> +    mutex_lock(&chip->lock);
+> +
+> +    switch (mask) {
+> +    case IIO_CHAN_INFO_RAW:
+
+You did not register a RAW attribute for this device.
+
+> +    case IIO_CHAN_INFO_PROCESSED:
+> +        switch(chan->type) {
+> +        case IIO_LIGHT:
+> +            ret = get_illuminance(chip, val);
+> +            break;
+> +        default:
+> +            break;
+> +        }
+> +
+> +        if(!ret)
+> +            ret = IIO_VAL_INT;
+> +
+> +        break;
+> +    default:
+> +        dev_err(&chip->device->dev, "mask value 0x%08lx not supported\n", mask);
+
+You did register a scale attribute for the device, so whenever somebody
+reads the scale attribute he will get this message. I don't think that makes
+much sense. Better just remove IIO_CHAN_INFO_SCALE_SEPARATE_BIT from the
+channel spec. And also remove this dev_err.
+
+> +        break;
+> +    }
+> +
+> +    mutex_unlock(&chip->lock);
+> +
+> +    return ret;
+> +}
+> +
+> +static const struct iio_chan_spec acpi_als_channels[] = {
+> +    {
+> +        .type = IIO_LIGHT,
+> +        .indexed = 1,
+> +        .channel = 1,
+> +        .scan_type.sign = 'u',
+> +        .scan_type.realbits = 10,
+> +        .scan_type.storagebits = 16,
+> +        .info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT |
+> +        IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
+> +    },
+> +};
+> +
+> +static const struct iio_info acpi_als_info = {
+> +    .driver_module = THIS_MODULE,
+> +    .read_raw = &acpi_als_read_raw,
+> +    .write_raw = NULL,
+> +};
+> +
+> +static irqreturn_t acpi_als_trigger_handler(int irq, void *p)
+> +{
+> +
+> +    struct iio_poll_func *pf = p;
+> +    struct iio_dev *idev = pf->indio_dev;
+> +
+> +
+> +    struct acpi_als_chip *chip = iio_priv(idev);
+> +
+> +    printk("XXX: TRIGGER handler called :)");
+
+Aha?
+
+> +    iio_trigger_notify_done(chip->trig);
+> +    return IRQ_HANDLED;
+> +}
+> +
+[...]
+> +
+> +static int acpi_als_add(struct acpi_device *device)
+> +{
+> +    int result;
+> +    struct acpi_als_chip *chip;
+> +    struct iio_dev *indio_dev;
+> +
+> +    /*
+> +    if (unlikely(als_id >= 10)) {
+> +    	printk(KERN_WARNING PREFIX "Too many ALS device found\n");
+> +    	return -ENODEV;
+> +    }
+> +    */
+
+What's with this?
+
+> +
+> +    indio_dev = iio_device_alloc(sizeof(*chip));
+> +    if (!indio_dev) {
+> +        dev_err(&device->dev, "iio allocation fails\n");
+> +        return -ENOMEM;
+> +    }
+> +
+> +    chip = iio_priv(indio_dev);
+> +
+> +    device->driver_data = indio_dev;
+> +    chip->device = device;
+> +    mutex_init(&chip->lock);
+> +
+> +    indio_dev->info = &acpi_als_info;
+> +    indio_dev->channels = acpi_als_channels;
+> +    indio_dev->num_channels = ARRAY_SIZE(acpi_als_channels);
+> +    indio_dev->name = ACPI_ALS_DEVICE_NAME;
+> +    indio_dev->dev.parent = &device->dev;
+> +    indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +    result = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+> +                                        &acpi_als_trigger_handler, NULL);
+> +
+> +    if(result) {
+> +        printk("Could not setup buffer for iio device\n");
+
+dev_err
+
+> +        goto exit_iio_free;
+> +    }
+> +
+> +    result = acpi_als_trigger_init(indio_dev);
+> +    if (result) {
+> +        printk("Couldn't setup the triggers.\n");
+
+dev_err
+
+> +        // TODO
+> +        //goto error_unregister_buffer;
+> +    }
+> +
+> +    result = iio_device_register(indio_dev);
+> +    if (result < 0) {
+> +        dev_err(&chip->device->dev, "iio registration fails with error %d\n",
+> +                result);
+> +        goto exit_iio_free;
+> +    }
+> +
+> +    printk("ACPI ALS initialized");
+
+This is just noise, please remove it.
+
+> +    return 0;
+> +
+> +exit_iio_free:
+> +    iio_device_free(indio_dev);
+> +    return result;
+> +}
+> +
+> +static int acpi_als_remove(struct acpi_device *device, int type)
+> +{
+> +    struct iio_dev *indio_dev;
+> +
+> +    indio_dev = acpi_driver_data(device);
+> +    if(!indio_dev) {
+
+Can this ever happen? I suspect not.
+
+> +        dev_err(&device->dev, "could not get indio_dev for ACPI device\n");
+> +        return -1;
+> +    }
+> +
+> +    iio_device_unregister(indio_dev);
+> +    iio_device_free(indio_dev);
+> +
+> +    return 0;
+> +}
+> +
+> +static int __init acpi_als_init(void)
+> +{
+> +    return acpi_bus_register_driver(&acpi_als_driver);
+> +}
+> +
+> +static void __exit acpi_als_exit(void)
+> +{
+> +    acpi_bus_unregister_driver(&acpi_als_driver);
+> +}
+> +
+> +module_init(acpi_als_init);
+> +module_exit(acpi_als_exit);
+
+Hm, there is no module_acpi_driver? We should probably add one.
+
