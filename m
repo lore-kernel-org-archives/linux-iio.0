@@ -1,129 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57864 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758407Ab2K3OW6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Nov 2012 09:22:58 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 1/5] staging:iio:accel:lis3l02dq remove sw_ring support.
-Date: Fri, 30 Nov 2012 14:22:48 +0000
-Message-Id: <1354285372-11779-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1354285372-11779-1-git-send-email-jic23@kernel.org>
-References: <1354285372-11779-1-git-send-email-jic23@kernel.org>
+Received: from smtp-out-237.synserver.de ([212.40.185.237]:1070 "EHLO
+	smtp-out-237.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753308Ab2K2JvH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Nov 2012 04:51:07 -0500
+Message-ID: <50B73017.8080706@metafoo.de>
+Date: Thu, 29 Nov 2012 10:51:19 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Denis Ciocca <denis.ciocca@gmail.com>,
+	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	Pavel Machek <pavel@denx.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"burman.yan@gmail.com" <burman.yan@gmail.com>
+Subject: Re: STMicroelectronics gyroscopes driver.
+References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de> <20121008195007.GA32042@elf.ucw.cz> <507338B5.60307@metafoo.de> <665718a4-de6b-4d09-ba80-35705fcf2595@email.android.com> <CAEE_umojW5OyB3yGgE54wH7_k__dBu9=Yew_0tCCf5--=C2g5g@mail.gmail.com> <507D9EA3.4070009@metafoo.de> <5085128C.7020507@st.com> <50858B44.2080006@kernel.org> <5087E2A8.4070304@st.com> <508A7DA6.7050505@metafoo.de> <508E4492.8080000@st.com> <508E48D1.3000703@metafoo.de> <508E5978.5000907@st.com> <508E5AD5.1040907@metafoo.de> <50914366.4090000@st.com> <5091546D.9000601@metafoo.de> <CAEE_umoKvv9ciBfUSahDqsmcbHi9W=93o5YSpE-vxUduCmqWSQ@mail.gmail.com> <50982F71.3060606@kernel.org> <5098F065.1090009@st.com> <50A12D8C.6040207@st.com> <50A14485.2060902@kernel.org> <50A26967.4050102@st.com> <50A8E083.1050908@kernel.org> <50AFA000.3040906@st.com> <50B0F495.6040409@kernel.org> <50B4DDEC.9030903@st.com>
+In-Reply-To: <50B4DDEC.9030903@st.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The sw_ring buffer is being removed in favour of the kfifo version.
-This is one of only a couple of driver still supporting its use.
+On 11/27/2012 04:36 PM, Denis CIOCCA wrote:
+> Hi guys,
+> 
+> based on the driver for accelerometers, I wrote the driver for all our
+> last mems gyroscopes.
+> Best regards,
+> 
+> Denis
+> 
 
-This driver will hopefully also be removed in favour of supporting the
-part in the unified ST accelerometer driver.
+How different are the gyros from the accelerometers? On a first quick glance
+the looks as if you took the accelerometer driver and did a search and
+replace on "accel" with "gyro". Can both be supported by the same driver?
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/accel/Kconfig          | 23 +----------------------
- drivers/staging/iio/accel/lis3l02dq.h      |  8 --------
- drivers/staging/iio/accel/lis3l02dq_ring.c |  7 +++----
- 3 files changed, 4 insertions(+), 34 deletions(-)
-
-diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
-index 2b54430..fa772a9 100644
---- a/drivers/staging/iio/accel/Kconfig
-+++ b/drivers/staging/iio/accel/Kconfig
-@@ -67,34 +67,13 @@ config LIS3L02DQ
- 	tristate "ST Microelectronics LIS3L02DQ Accelerometer Driver"
- 	depends on SPI
- 	select IIO_TRIGGER if IIO_BUFFER
--	depends on !IIO_BUFFER || IIO_KFIFO_BUF || IIO_SW_RING
-+	depends on !IIO_BUFFER || IIO_KFIFO_BUF
- 	depends on GENERIC_GPIO
- 	help
- 	  Say yes here to build SPI support for the ST microelectronics
- 	  accelerometer. The driver supplies direct access via sysfs files
- 	  and an event interface via a character device.
- 
--choice
--	prompt "Buffer type"
--       	depends on LIS3L02DQ && IIO_BUFFER
--
--config LIS3L02DQ_BUF_KFIFO
--       depends on IIO_KFIFO_BUF
--       bool "Simple FIFO"
--       help
--         Kfifo based FIFO.  Does not provide any events so it is up
--	 to userspace to ensure it reads often enough that data is not
--	 lost.
--
--config LIS3L02DQ_BUF_RING_SW
--       depends on IIO_SW_RING
--       bool "IIO Software Ring"
--       help
--         Original IIO ring buffer implementation.  Provides simple
--	 buffer events, half full etc.
--
--endchoice
--
- config SCA3000
- 	depends on IIO_BUFFER
- 	depends on SPI
-diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
-index 2bac722..0a8ea82 100644
---- a/drivers/staging/iio/accel/lis3l02dq.h
-+++ b/drivers/staging/iio/accel/lis3l02dq.h
-@@ -185,14 +185,6 @@ int lis3l02dq_probe_trigger(struct iio_dev *indio_dev);
- int lis3l02dq_configure_buffer(struct iio_dev *indio_dev);
- void lis3l02dq_unconfigure_buffer(struct iio_dev *indio_dev);
- 
--#ifdef CONFIG_LIS3L02DQ_BUF_RING_SW
--#define lis3l02dq_free_buf iio_sw_rb_free
--#define lis3l02dq_alloc_buf iio_sw_rb_allocate
--#endif
--#ifdef CONFIG_LIS3L02DQ_BUF_KFIFO
--#define lis3l02dq_free_buf iio_kfifo_free
--#define lis3l02dq_alloc_buf iio_kfifo_allocate
--#endif
- irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private);
- #define lis3l02dq_th lis3l02dq_data_rdy_trig_poll
- 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index bc38651..6861877 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -7,7 +7,6 @@
- #include <linux/export.h>
- 
- #include <linux/iio/iio.h>
--#include "../ring_sw.h"
- #include <linux/iio/kfifo_buf.h>
- #include <linux/iio/trigger.h>
- #include <linux/iio/trigger_consumer.h>
-@@ -318,7 +317,7 @@ void lis3l02dq_remove_trigger(struct iio_dev *indio_dev)
- void lis3l02dq_unconfigure_buffer(struct iio_dev *indio_dev)
- {
- 	iio_dealloc_pollfunc(indio_dev->pollfunc);
--	lis3l02dq_free_buf(indio_dev->buffer);
-+	iio_kfifo_free(indio_dev->buffer);
- }
- 
- static int lis3l02dq_buffer_postenable(struct iio_dev *indio_dev)
-@@ -401,7 +400,7 @@ int lis3l02dq_configure_buffer(struct iio_dev *indio_dev)
- 	int ret;
- 	struct iio_buffer *buffer;
- 
--	buffer = lis3l02dq_alloc_buf(indio_dev);
-+	buffer = iio_kfifo_allocate(indio_dev);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -427,6 +426,6 @@ int lis3l02dq_configure_buffer(struct iio_dev *indio_dev)
- 	return 0;
- 
- error_iio_sw_rb_free:
--	lis3l02dq_free_buf(indio_dev->buffer);
-+	iio_kfifo_free(indio_dev->buffer);
- 	return ret;
- }
--- 
-1.8.0.1
-
+- Lars
