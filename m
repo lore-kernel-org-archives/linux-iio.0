@@ -1,127 +1,53 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 3/5] staging:iio:ad7298: Fix temperature scale and offset
-Date: Thu, 15 Nov 2012 14:15:26 +0100
-Message-Id: <1352985328-24322-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1352985328-24322-1-git-send-email-lars@metafoo.de>
-References: <1352985328-24322-1-git-send-email-lars@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56993 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756702Ab2K3NMn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Nov 2012 08:12:43 -0500
+Message-ID: <50B8B0CC.4000500@kernel.org>
+Date: Fri, 30 Nov 2012 13:12:44 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Wei Yongjun <weiyj.lk@gmail.com>
+CC: jic23@cam.ac.uk, yongjun_wei@trendmicro.com.cn,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH -next] iio: imu: adis16480: remove duplicated include
+ from adis16480.c
+References: <CAPgLHd-_56zxuFc4-SBEEED0q51xUyiaq7qkNQG=3som6imDuw@mail.gmail.com>
+In-Reply-To: <CAPgLHd-_56zxuFc4-SBEEED0q51xUyiaq7qkNQG=3som6imDuw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The temperature scale and offset depend on the reference voltage, the current
-formula used in the driver assumes a 2.5V reference. This patch modifies the
-code to report the unprocessed value for the temperature channel "raw" property
-and to provide proper "scale" and "offset" properties which depend on the
-selected reference voltage.
+On 11/29/2012 02:27 AM, Wei Yongjun wrote:
+> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+> 
+> Remove duplicated include.
+> 
+> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+Added to togreg branch of
+git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7298_core.c | 51 ++++++++++++++++-------------------
- 1 file changed, 23 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7298_core.c b/drivers/staging/iio/adc/ad7298_core.c
-index 6dd696f..b74b76f 100644
---- a/drivers/staging/iio/adc/ad7298_core.c
-+++ b/drivers/staging/iio/adc/ad7298_core.c
-@@ -45,7 +45,8 @@ static const struct iio_chan_spec ad7298_channels[] = {
- 		.indexed = 1,
- 		.channel = 0,
- 		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-+			IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
-+			IIO_CHAN_INFO_OFFSET_SEPARATE_BIT,
- 		.address = AD7298_CH_TEMP,
- 		.scan_index = -1,
- 		.scan_type = {
-@@ -80,7 +81,7 @@ static int ad7298_scan_direct(struct ad7298_state *st, unsigned ch)
- 
- static int ad7298_scan_temp(struct ad7298_state *st, int *val)
- {
--	int tmp, ret;
-+	int ret;
- 	__be16 buf;
- 
- 	buf = cpu_to_be16(AD7298_WRITE | AD7298_TSENSE |
-@@ -102,24 +103,24 @@ static int ad7298_scan_temp(struct ad7298_state *st, int *val)
- 	if (ret)
- 		return ret;
- 
--	tmp = be16_to_cpu(buf) & RES_MASK(AD7298_BITS);
-+	*val = sign_extend32(be16_to_cpu(buf), 11);
- 
--	/*
--	 * One LSB of the ADC corresponds to 0.25 deg C.
--	 * The temperature reading is in 12-bit twos complement format
--	 */
-+	return 0;
-+}
-+
-+static int ad7298_get_ref_voltage(struct ad7298_state *st)
-+{
-+	int vref;
- 
--	if (tmp & (1 << (AD7298_BITS - 1))) {
--		tmp = (4096 - tmp) * 250;
--		tmp -= (2 * tmp);
-+	if (st->ext_ref) {
-+		vref = regulator_get_voltage(st->reg);
-+		if (vref < 0)
-+			return vref;
- 
-+		return vref / 1000;
- 	} else {
--		tmp *= 250; /* temperature in milli degrees Celsius */
-+		return AD7298_INTREF_mV;
- 	}
--
--	*val = tmp;
--
--	return 0;
- }
- 
- static int ad7298_read_raw(struct iio_dev *indio_dev,
-@@ -130,7 +131,6 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
- {
- 	int ret;
- 	struct ad7298_state *st = iio_priv(indio_dev);
--	int scale_mv;
- 
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -155,24 +155,19 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
- 		case IIO_VOLTAGE:
--			if (st->ext_ref) {
--				scale_mv = regulator_get_voltage(st->reg);
--				if (scale_mv < 0)
--					return scale_mv;
--				scale_mv /= 1000;
--			} else {
--				scale_mv = AD7298_INTREF_mV;
--			}
--			*val =  scale_mv;
-+			*val = ad7298_get_ref_voltage(st);
- 			*val2 = chan->scan_type.realbits;
- 			return IIO_VAL_FRACTIONAL_LOG2;
- 		case IIO_TEMP:
--			*val =  1;
--			*val2 = 0;
--			return IIO_VAL_INT_PLUS_MICRO;
-+			*val = ad7298_get_ref_voltage(st);
-+			*val2 = 10;
-+			return IIO_VAL_FRACTIONAL;
- 		default:
- 			return -EINVAL;
- 		}
-+	case IIO_CHAN_INFO_OFFSET:
-+		*val = 1093 - 2732500 / ad7298_get_ref_voltage(st);
-+		return IIO_VAL_INT;
- 	}
- 	return -EINVAL;
- }
--- 
-1.8.0
+> ---
+>  drivers/iio/imu/adis16480.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+> index a080b35..3456d48 100644
+> --- a/drivers/iio/imu/adis16480.c
+> +++ b/drivers/iio/imu/adis16480.c
+> @@ -24,7 +24,6 @@
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/imu/adis.h>
+>  
+> -#include <linux/iio/iio.h>
+>  #include <linux/debugfs.h>
+>  
+>  #define ADIS16480_PAGE_SIZE 0x80
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
