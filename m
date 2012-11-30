@@ -1,145 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-219.synserver.de ([212.40.185.219]:1193 "EHLO
-	smtp-out-217.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753199Ab2KTNhD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Nov 2012 08:37:03 -0500
+Return-Path: <lars@metafoo.de>
+Message-ID: <50B88C20.4080402@metafoo.de>
+Date: Fri, 30 Nov 2012 11:36:16 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 5/7] iio: Add pressure channel type
-Date: Tue, 20 Nov 2012 14:36:49 +0100
-Message-Id: <1353418611-17614-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1353418611-17614-1-git-send-email-lars@metafoo.de>
-References: <1353418611-17614-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+MIME-Version: 1.0
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+ Denis Ciocca <denis.ciocca@gmail.com>,
+ Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+ Pavel Machek <pavel@denx.de>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "burman.yan@gmail.com" <burman.yan@gmail.com>
+Subject: Re: STMicroelectronics gyroscopes driver.
+References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de> <20121008195007.GA32042@elf.ucw.cz> <507338B5.60307@metafoo.de> <665718a4-de6b-4d09-ba80-35705fcf2595@email.android.com> <CAEE_umojW5OyB3yGgE54wH7_k__dBu9=Yew_0tCCf5--=C2g5g@mail.gmail.com> <507D9EA3.4070009@metafoo.de> <5085128C.7020507@st.com> <50858B44.2080006@kernel.org> <5087E2A8.4070304@st.com> <508A7DA6.7050505@metafoo.de> <508E4492.8080000@st.com> <508E48D1.3000703@metafoo.de> <508E5978.5000907@st.com> <508E5AD5.1040907@metafoo.de> <50914366.4090000@st.com> <5091546D.9000601@metafoo.de> <CAEE_umoKvv9ciBfUSahDqsmcbHi9W=93o5YSpE-vxUduCmqWSQ@mail.gmail.com> <50982F71.3060606@kernel.org> <5098F065.1090009@st.com> <50A12D8C.6040207@st.com> <50A14485.2060902@kernel.org> <50A26967.4050102@st.com> <50A8E083.1050908@kernel.org> <50AFA000.3040906@st.com> <50B0F495.6040409@kernel.org> <50B4DDEC.9030903@st.com> <50B73017.8080706@metafoo.de> <F8B002B1B3BA5342BA0E4153603A884DDEBE245AE0@SAFEX1MAIL1.st.com>
+In-Reply-To: <F8B002B1B3BA5342BA0E4153603A884DDEBE245AE0@SAFEX1MAIL1.st.com>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds support for a new IIO channel type for pressure measurements.
-This can for example be used for barometric pressure sensors.
+On 11/30/2012 10:13 AM, Denis CIOCCA wrote:
+> Hi Lars,
+> 
+> yes you have right, the main difference between accelerometers driver and this driver is the "find and replace". :)
+> Yes, for now it is possible use the same driver for both devices, but in the next patch I will add some functionality, for example the FIFO hardware used in the gyro, ecc.
+> What do you suggest?
+> 
+> In the future I will write also the drivers for the magnetometers and pressure sensors, I think the magnetometers driver is very similar to the accelerometers and magnetometers drivers, you suggest me to use the same code?
+> How it is possible to do this?
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- Documentation/ABI/testing/sysfs-bus-iio | 24 ++++++++++++++++++++++++
- drivers/iio/industrialio-core.c         |  1 +
- include/linux/iio/types.h               |  1 +
- 3 files changed, 26 insertions(+)
+If the different device categories share some common bits and add custom
+bits on top of it, it may make sense to have a common base library module
+which implements the common bits and than have one driver per device type
+which uses the common library and implements the device type specific bits
+on top of it.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 2f06d40..f08d0f7 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -189,6 +189,14 @@ Description:
- 		A computed peak value based on the sum squared magnitude of
- 		the underlying value in the specified directions.
- 
-+What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_raw
-+KernelVersion:	3.8
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw pressure measurement from channel Y. Units after
-+		application of scale and offset are kilopascal.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
-@@ -197,6 +205,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
-+What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
-+What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_offset
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -226,6 +236,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -245,6 +257,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibbias
- What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibbias
- What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance0_calibbias
- What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calibbias
-+What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_calibbias
-+What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_calibbias
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -262,6 +276,8 @@ What		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibscale
- What		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibscale
- what		/sys/bus/iio/devices/iio:deviceX/in_illuminance0_calibscale
- what		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calibscale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_calibscale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_calibscale
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -275,6 +291,8 @@ What:		/sys/.../iio:deviceX/in_voltage-voltage_scale_available
- What:		/sys/.../iio:deviceX/out_voltageX_scale_available
- What:		/sys/.../iio:deviceX/out_altvoltageX_scale_available
- What:		/sys/.../iio:deviceX/in_capacitance_scale_available
-+What:		/sys/.../iio:deviceX/in_pressure_scale_available
-+What:		/sys/.../iio:deviceX/in_pressureY_scale_available
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -694,6 +712,8 @@ What:		/sys/.../buffer/scan_elements/in_voltageY_en
- What:		/sys/.../buffer/scan_elements/in_voltageY-voltageZ_en
- What:		/sys/.../buffer/scan_elements/in_incli_x_en
- What:		/sys/.../buffer/scan_elements/in_incli_y_en
-+What:		/sys/.../buffer/scan_elements/in_pressureY_en
-+What:		/sys/.../buffer/scan_elements/in_pressure_en
- KernelVersion:	2.6.37
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -707,6 +727,8 @@ What:		/sys/.../buffer/scan_elements/in_voltageY_type
- What:		/sys/.../buffer/scan_elements/in_voltage_type
- What:		/sys/.../buffer/scan_elements/in_voltageY_supply_type
- What:		/sys/.../buffer/scan_elements/in_timestamp_type
-+What:		/sys/.../buffer/scan_elements/in_pressureY_type
-+What:		/sys/.../buffer/scan_elements/in_pressure_type
- KernelVersion:	2.6.37
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -751,6 +773,8 @@ What:		/sys/.../buffer/scan_elements/in_magn_z_index
- What:		/sys/.../buffer/scan_elements/in_incli_x_index
- What:		/sys/.../buffer/scan_elements/in_incli_y_index
- What:		/sys/.../buffer/scan_elements/in_timestamp_index
-+What:		/sys/.../buffer/scan_elements/in_pressureY_index
-+What:		/sys/.../buffer/scan_elements/in_pressure_index
- KernelVersion:	2.6.37
- Contact:	linux-iio@vger.kernel.org
- Description:
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 060a404..3dccd6c 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -65,6 +65,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_CAPACITANCE] = "capacitance",
- 	[IIO_ALTVOLTAGE] = "altvoltage",
- 	[IIO_CCT] = "cct",
-+	[IIO_PRESSURE] = "pressure",
- };
- 
- static const char * const iio_modifier_names[] = {
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 87b196a..88bf0f0 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -28,6 +28,7 @@ enum iio_chan_type {
- 	IIO_CAPACITANCE,
- 	IIO_ALTVOLTAGE,
- 	IIO_CCT,
-+	IIO_PRESSURE,
- };
- 
- enum iio_modifier {
--- 
-1.8.0
+- Lars
 
+> We can add a STMicroelectronics folder in the IIO tree to support all sensors?
+> 
+> Thanks
+> Best Regards,
+> 
+> Denis
+> 
+> 
+> -----Original Message-----
+> From: Lars-Peter Clausen [mailto:lars@metafoo.de] 
+> Sent: Thursday, November 29, 2012 10:51 AM
+> To: Denis CIOCCA
+> Cc: Jonathan Cameron; Denis Ciocca; Jonathan Cameron; Pavel Machek; linux-iio@vger.kernel.org; burman.yan@gmail.com
+> Subject: Re: STMicroelectronics gyroscopes driver.
+> 
+> On 11/27/2012 04:36 PM, Denis CIOCCA wrote:
+>> Hi guys,
+>>
+>> based on the driver for accelerometers, I wrote the driver for all our 
+>> last mems gyroscopes.
+>> Best regards,
+>>
+>> Denis
+>>
+> 
+> How different are the gyros from the accelerometers? On a first quick glance the looks as if you took the accelerometer driver and did a search and replace on "accel" with "gyro". Can both be supported by the same driver?
+> 
+> - Lars
