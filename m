@@ -1,54 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-191.synserver.de ([212.40.185.191]:1103 "EHLO
-	smtp-out-191.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753560Ab2KEJ5G (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2012 04:57:06 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, drivers@analog.com,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 6/7] staging:iio:ad7887: Use passed in chan spec in ad7887_read_raw
-Date: Mon,  5 Nov 2012 10:56:45 +0100
-Message-Id: <1352109406-7206-6-git-send-email-lars@metafoo.de>
-In-Reply-To: <1352109406-7206-1-git-send-email-lars@metafoo.de>
-References: <1352109406-7206-1-git-send-email-lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57012 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756702Ab2K3NNC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Nov 2012 08:13:02 -0500
+Message-ID: <50B8B0DE.4050908@kernel.org>
+Date: Fri, 30 Nov 2012 13:13:02 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Dan Carpenter <dan.carpenter@oracle.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	kernel-janitors@vger.kernel.org
+Subject: Re: [patch] iio:imu: adis16480: show_firmware() buffer too small
+References: <20121127073142.GC8239@elgon.mountain> <50B50944.2040801@metafoo.de>
+In-Reply-To: <50B50944.2040801@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Use the passed in chan spec in ad7887_read_raw instead of alawys using the first
-chan spec entry from the chip info data. Since all channels have the same shift
-and realbits from a functional point of view it does not matter which chan spec
-is used, but the patch makes the a bit more clear.
+On 11/27/2012 06:41 PM, Lars-Peter Clausen wrote:
+> On 11/27/2012 08:31 AM, Dan Carpenter wrote:
+>> Smatch complains that snprintf() returns the number of characters,
+>> not counting the NUL terminator, which *would* have been printed if
+>> there were enough space.  In other words the return value could be more
+>> than sizeof(buf).
+>>
+>> In this case, we are printing something like "ff.ff\n" which is at most
+>> 6 characters and a NUL so that's not an issue.  I changed snprintf() to
+>> scnprintf() to silence the warning.
+>>
+>> But since the buffer doesn't include space for the NUL terminator, we
+>> need to make it bigger or the "\n" will be truncated off.
+>>
+> 
+> 
+> Thanks,
+> 
+> Acked-By: Lars-Peter Clausen <lars@metafoo.de>
+> 
+Added to togreg branch of
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7887.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
 
-diff --git a/drivers/staging/iio/adc/ad7887.c b/drivers/staging/iio/adc/ad7887.c
-index 3ac0c30..72cfe19 100644
---- a/drivers/staging/iio/adc/ad7887.c
-+++ b/drivers/staging/iio/adc/ad7887.c
-@@ -177,8 +177,8 @@ static int ad7887_read_raw(struct iio_dev *indio_dev,
- 
- 		if (ret < 0)
- 			return ret;
--		*val = (ret >> st->chip_info->channel[0].scan_type.shift) &
--			RES_MASK(st->chip_info->channel[0].scan_type.realbits);
-+		*val = ret >> chan->scan_type.shift;
-+		*val &= RES_MASK(chan->scan_type.realbits);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		if (st->reg) {
-@@ -190,7 +190,7 @@ static int ad7887_read_raw(struct iio_dev *indio_dev,
- 			*val = st->chip_info->int_vref_mv;
- 		}
- 
--		*val2 = st->chip_info->channel[0].scan_type.realbits;
-+		*val2 = chan->scan_type.realbits;
- 
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 	}
--- 
-1.8.0
-
+>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>>
+>> diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+>> index a080b35..150d7fa 100644
+>> --- a/drivers/iio/imu/adis16480.c
+>> +++ b/drivers/iio/imu/adis16480.c
+>> @@ -125,7 +125,7 @@ static ssize_t adis16480_show_firmware_revision(struct file *file,
+>>  		char __user *userbuf, size_t count, loff_t *ppos)
+>>  {
+>>  	struct adis16480 *adis16480 = file->private_data;
+>> -	char buf[6];
+>> +	char buf[7];
+>>  	size_t len;
+>>  	u16 rev;
+>>  	int ret;
+>> @@ -134,7 +134,7 @@ static ssize_t adis16480_show_firmware_revision(struct file *file,
+>>  	if (ret < 0)
+>>  		return ret;
+>>  
+>> -	len = snprintf(buf, sizeof(buf), "%x.%x\n", rev >> 8, rev & 0xff);
+>> +	len = scnprintf(buf, sizeof(buf), "%x.%x\n", rev >> 8, rev & 0xff);
+>>  
+>>  	return simple_read_from_buffer(userbuf, count, ppos, buf, len);
+>>  }
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
