@@ -1,171 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40932 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751933Ab2KTVOg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Nov 2012 16:14:36 -0500
-Message-ID: <50ABF2BA.5010902@kernel.org>
-Date: Tue, 20 Nov 2012 21:14:34 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
+Received: from eu1sys200aog120.obsmtp.com ([207.126.144.149]:59486 "EHLO
+	eu1sys200aog120.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750888Ab2K3JOV convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 30 Nov 2012 04:14:21 -0500
+From: Denis CIOCCA <denis.ciocca@st.com>
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	drivers@analog.com
-Subject: Re: [PATCH 6/7] iio: Factor out fixed point number parsing into its
- own function
-References: <1353418611-17614-1-git-send-email-lars@metafoo.de> <1353418611-17614-6-git-send-email-lars@metafoo.de>
-In-Reply-To: <1353418611-17614-6-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Denis Ciocca <denis.ciocca@gmail.com>,
+	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	Pavel Machek <pavel@denx.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"burman.yan@gmail.com" <burman.yan@gmail.com>
+Date: Fri, 30 Nov 2012 10:13:36 +0100
+Subject: RE: STMicroelectronics gyroscopes driver.
+Message-ID: <F8B002B1B3BA5342BA0E4153603A884DDEBE245AE0@SAFEX1MAIL1.st.com>
+References: <5072F3B9.4050309@st.com> <5073260C.3010506@metafoo.de>
+ <20121008195007.GA32042@elf.ucw.cz> <507338B5.60307@metafoo.de>
+ <665718a4-de6b-4d09-ba80-35705fcf2595@email.android.com>
+ <CAEE_umojW5OyB3yGgE54wH7_k__dBu9=Yew_0tCCf5--=C2g5g@mail.gmail.com>
+ <507D9EA3.4070009@metafoo.de> <5085128C.7020507@st.com>
+ <50858B44.2080006@kernel.org> <5087E2A8.4070304@st.com>
+ <508A7DA6.7050505@metafoo.de> <508E4492.8080000@st.com>
+ <508E48D1.3000703@metafoo.de> <508E5978.5000907@st.com>
+ <508E5AD5.1040907@metafoo.de> <50914366.4090000@st.com>
+ <5091546D.9000601@metafoo.de>
+ <CAEE_umoKvv9ciBfUSahDqsmcbHi9W=93o5YSpE-vxUduCmqWSQ@mail.gmail.com>
+ <50982F71.3060606@kernel.org> <5098F065.1090009@st.com>
+ <50A12D8C.6040207@st.com> <50A14485.2060902@kernel.org>
+ <50A26967.4050102@st.com> <50A8E083.1050908@kernel.org>
+ <50AFA000.3040906@st.com> <50B0F495.6040409@kernel.org>
+ <50B4DDEC.9030903@st.com> <50B73017.8080706@metafoo.de>
+In-Reply-To: <50B73017.8080706@metafoo.de>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/20/2012 01:36 PM, Lars-Peter Clausen wrote:
-> Factor out the code for parsing fixed point numbers into its own function and
-> make this function globally available. This allows us to reuse the code to parse
-> fixed point numbers in individual IIO drivers.
+Hi Lars,
+
+yes you have right, the main difference between accelerometers driver and this driver is the "find and replace". :)
+Yes, for now it is possible use the same driver for both devices, but in the next patch I will add some functionality, for example the FIFO hardware used in the gyro, ecc.
+What do you suggest?
+
+In the future I will write also the drivers for the magnetometers and pressure sensors, I think the magnetometers driver is very similar to the accelerometers and magnetometers drivers, you suggest me to use the same code?
+How it is possible to do this?
+We can add a STMicroelectronics folder in the IIO tree to support all sensors?
+
+Thanks
+Best Regards,
+
+Denis
+
+
+-----Original Message-----
+From: Lars-Peter Clausen [mailto:lars@metafoo.de] 
+Sent: Thursday, November 29, 2012 10:51 AM
+To: Denis CIOCCA
+Cc: Jonathan Cameron; Denis Ciocca; Jonathan Cameron; Pavel Machek; linux-iio@vger.kernel.org; burman.yan@gmail.com
+Subject: Re: STMicroelectronics gyroscopes driver.
+
+On 11/27/2012 04:36 PM, Denis CIOCCA wrote:
+> Hi guys,
 > 
-Sensible thing to do.
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-added to togreg branch of iio.git
-> ---
->  drivers/iio/industrialio-core.c | 98 ++++++++++++++++++++++++++---------------
->  include/linux/iio/iio.h         |  3 ++
->  2 files changed, 66 insertions(+), 35 deletions(-)
+> based on the driver for accelerometers, I wrote the driver for all our 
+> last mems gyroscopes.
+> Best regards,
 > 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 3dccd6c..8848f16 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -408,6 +408,64 @@ static ssize_t iio_read_channel_info(struct device *dev,
->  	}
->  }
->  
-> +/**
-> + * iio_str_to_fixpoint() - Parse a fixed-point number from a string
-> + * @str: The string to parse
-> + * @fract_mult: Multiplier for the first decimal place, should be a power of 10
-> + * @integer: The integer part of the number
-> + * @fract: The fractional part of the number
-> + *
-> + * Returns 0 on success, or a negative error code if the string could not be
-> + * parsed.
-> + */
-> +int iio_str_to_fixpoint(const char *str, int fract_mult,
-> +	int *integer, int *fract)
-> +{
-> +	int i = 0, f = 0;
-> +	bool integer_part = true, negative = false;
-> +
-> +	if (str[0] == '-') {
-> +		negative = true;
-> +		str++;
-> +	} else if (str[0] == '+') {
-> +		str++;
-> +	}
-> +
-> +	while (*str) {
-> +		if ('0' <= *str && *str <= '9') {
-> +			if (integer_part) {
-> +				i = i * 10 + *str - '0';
-> +			} else {
-> +				f += fract_mult * (*str - '0');
-> +				fract_mult /= 10;
-> +			}
-> +		} else if (*str == '\n') {
-> +			if (*(str + 1) == '\0')
-> +				break;
-> +			else
-> +				return -EINVAL;
-> +		} else if (*str == '.' && integer_part) {
-> +			integer_part = false;
-> +		} else {
-> +			return -EINVAL;
-> +		}
-> +		str++;
-> +	}
-> +
-> +	if (negative) {
-> +		if (i)
-> +			i = -i;
-> +		else
-> +			f = -f;
-> +	}
-> +
-> +	*integer = i;
-> +	*fract = f;
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_str_to_fixpoint);
-> +
->  static ssize_t iio_write_channel_info(struct device *dev,
->  				      struct device_attribute *attr,
->  				      const char *buf,
-> @@ -415,8 +473,8 @@ static ssize_t iio_write_channel_info(struct device *dev,
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> -	int ret, integer = 0, fract = 0, fract_mult = 100000;
-> -	bool integer_part = true, negative = false;
-> +	int ret, fract_mult = 100000;
-> +	int integer, fract;
->  
->  	/* Assumes decimal - precision based on number of digits */
->  	if (!indio_dev->info->write_raw)
-> @@ -435,39 +493,9 @@ static ssize_t iio_write_channel_info(struct device *dev,
->  			return -EINVAL;
->  		}
->  
-> -	if (buf[0] == '-') {
-> -		negative = true;
-> -		buf++;
-> -	} else if (buf[0] == '+') {
-> -		buf++;
-> -	}
-> -
-> -	while (*buf) {
-> -		if ('0' <= *buf && *buf <= '9') {
-> -			if (integer_part)
-> -				integer = integer*10 + *buf - '0';
-> -			else {
-> -				fract += fract_mult*(*buf - '0');
-> -				fract_mult /= 10;
-> -			}
-> -		} else if (*buf == '\n') {
-> -			if (*(buf + 1) == '\0')
-> -				break;
-> -			else
-> -				return -EINVAL;
-> -		} else if (*buf == '.' && integer_part) {
-> -			integer_part = false;
-> -		} else {
-> -			return -EINVAL;
-> -		}
-> -		buf++;
-> -	}
-> -	if (negative) {
-> -		if (integer)
-> -			integer = -integer;
-> -		else
-> -			fract = -fract;
-> -	}
-> +	ret = iio_str_to_fixpoint(buf, fract_mult, &integer, &fract);
-> +	if (ret)
-> +		return ret;
->  
->  	ret = indio_dev->info->write_raw(indio_dev, this_attr->c,
->  					 integer, fract, this_attr->address);
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index adca93a..da8c776 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -620,6 +620,9 @@ static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
->  };
->  #endif
->  
-> +int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
-> +	int *fract);
-> +
->  /**
->   * IIO_DEGREE_TO_RAD() - Convert degree to rad
->   * @deg: A value in degree
+> Denis
 > 
+
+How different are the gyros from the accelerometers? On a first quick glance the looks as if you took the accelerometer driver and did a search and replace on "accel" with "gyro". Can both be supported by the same driver?
+
+- Lars
