@@ -1,47 +1,55 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33051 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752151Ab2KXKSI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 Nov 2012 05:18:08 -0500
-Message-ID: <50B09EDC.4020200@kernel.org>
-Date: Sat, 24 Nov 2012 10:18:04 +0000
+Return-Path: <jic23@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: linux-iio@vger.kernel.org, Jean Delvare <khali@linux-fr.org>,
-	lm-sensors@lm-sensors.org
-Subject: Re: MAX1363 IIO driver questions
-References: <20121124052707.GA17392@roeck-us.net>
-In-Reply-To: <20121124052707.GA17392@roeck-us.net>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/5] staging:iio: drop sw_ring buffer implementation.
+Date: Fri, 30 Nov 2012 14:22:47 +0000
+Message-Id: <1354285372-11779-1-git-send-email-jic23@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/24/2012 05:27 AM, Guenter Roeck wrote:
-> Hi all,
-Hi Guenter,
-> 
-> What would it take to move the MAX1363 driver out of staging ?
->
-Nothing given it is already out of staging in linux-next (though only has been
-for about a week)
+sw_ring was the original buffer implementation for IIO. It kind of evolved
+over a couple of late nights and even though I wrote it I was never
+convinced it was right.  Then a nice kfifo implementation came along
+and in the vast majority of IIO use cases whether we have a kfifo or
+a ring buffer is not as it turns out that important.
 
-> Background is that I need a hardware monitoring driver for MAX1139, and would
-> like to avoid using a driver from staging if possible (after all, it might
-> go away anytime). Another option would be to submit a hwmon driver for it,
-> but that doesn't seem to be the best approach.
+We have been telling people not to use this for quite some time now.
+Lets make that finally a really hard rule by dropping it.
+There are 4 remaining users. This patch drops support form lis3l02dq
+which had support for both this and kfifo.  For the other 3 users
+it simply switches over to kfifo.  We haven't seen any real problems
+doing this with any other driver so I can't see why these would cause
+trouble!
 
-The hwmon driver client driver for iio devices is still in staging, but mainly
-because I haven't had a chance to take a last look at it before posting it to
-the hmwon list.  IIRC you were more or less happy with what went into staging
-in the first place, so hopefully not too much left to do.
+Note my aim for this cycle ist to greatly cut down what we have left
+in staging by removing legacy cruft and getting other stuff cleaned up and
+out!
 
 Jonathan
-> 
-> Thanks,
-> Guenter
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+
+Jonathan Cameron (5):
+  staging:iio:accel:lis3l02dq remove sw_ring support.
+  staging:iio:impedance-analyzer switch from sw_ring to kfifo.
+  staging:iio:meter:ade7758 switch from sw_ring to kfifo
+  staging:iio:imu: adis16400 switch from sw_ring to kfifo
+  staging:iio: drop sw_ring buffer implementation.
+
+ drivers/staging/iio/Kconfig                     |  13 -
+ drivers/staging/iio/Makefile                    |   2 -
+ drivers/staging/iio/accel/Kconfig               |  23 +-
+ drivers/staging/iio/accel/lis3l02dq.h           |   8 -
+ drivers/staging/iio/accel/lis3l02dq_ring.c      |   7 +-
+ drivers/staging/iio/impedance-analyzer/Kconfig  |   2 +-
+ drivers/staging/iio/impedance-analyzer/ad5933.c |   8 +-
+ drivers/staging/iio/imu/Kconfig                 |   2 +-
+ drivers/staging/iio/imu/adis16400_ring.c        |  12 +-
+ drivers/staging/iio/meter/Kconfig               |   2 +-
+ drivers/staging/iio/meter/ade7758_ring.c        |  12 +-
+ drivers/staging/iio/ring_sw.c                   | 366 ------------------------
+ drivers/staging/iio/ring_sw.h                   |  30 --
+ 13 files changed, 23 insertions(+), 464 deletions(-)
+ delete mode 100644 drivers/staging/iio/ring_sw.c
+ delete mode 100644 drivers/staging/iio/ring_sw.h
+
+-- 
+1.8.0.1
