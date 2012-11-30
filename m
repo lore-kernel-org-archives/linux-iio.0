@@ -1,63 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-237.synserver.de ([212.40.185.237]:1065 "EHLO
-	smtp-out-237.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753803Ab2K2KSH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Nov 2012 05:18:07 -0500
-Message-ID: <50B7366A.9040800@metafoo.de>
-Date: Thu, 29 Nov 2012 11:18:18 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Corentin Chary <corentin.chary@gmail.com>
-CC: =?UTF-8?B?TWFydGluIExpxaFrYQ==?= <marxin.liska@gmail.com>,
-	=?UTF-8?B?TWFyZWsgVmHFoXV0?= <marex@denx.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"platform-driver-x86@vger.kernel.org"
-	<platform-driver-x86@vger.kernel.org>, linux-iio@vger.kernel.org,
-	"Zhang, Rui" <rui.zhang@intel.com>, joeyli <jlee@suse.com>,
-	Len Brown <len.brown@intel.com>, pavel@denx.de,
-	Jon Brenner <jbrenner@taosinc.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] ACPI ALS driver for iio introduced.
-References: <CAHR064j_7Y3wYXVXmC4TqZHxkqa0Z2HK84-OaDTiC7oesB_TrQ@mail.gmail.com> <1354157205-2956-1-git-send-email-marxin.liska@gmail.com> <1354157205-2956-2-git-send-email-marxin.liska@gmail.com> <CAHR064gj3CUUZyuGiw6WhLjGQrhq-eAOKr-=+UmpW2Ry3mce8g@mail.gmail.com>
-In-Reply-To: <CAHR064gj3CUUZyuGiw6WhLjGQrhq-eAOKr-=+UmpW2Ry3mce8g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57864 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758407Ab2K3OW6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Nov 2012 09:22:58 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 1/5] staging:iio:accel:lis3l02dq remove sw_ring support.
+Date: Fri, 30 Nov 2012 14:22:48 +0000
+Message-Id: <1354285372-11779-2-git-send-email-jic23@kernel.org>
+In-Reply-To: <1354285372-11779-1-git-send-email-jic23@kernel.org>
+References: <1354285372-11779-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/29/2012 09:02 AM, Corentin Chary wrote:
-> On Thu, Nov 29, 2012 at 2:46 AM,  <marxin.liska@gmail.com> wrote:
->> From: marxin <marxin.liska@gmail.com>
->>
->> ---
->>  drivers/iio/industrialio-buffer.c    |    4 +-
->>  drivers/staging/iio/light/Kconfig    |    6 +
->>  drivers/staging/iio/light/Makefile   |    1 +
->>  drivers/staging/iio/light/acpi-als.c |  486 ++++++++++++++++++++++++++++++++++
->>  4 files changed, 495 insertions(+), 2 deletions(-)
->>  create mode 100644 drivers/staging/iio/light/acpi-als.c
->>
->> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
->> index aaadd32..b8b377c 100644
->> --- a/drivers/iio/industrialio-buffer.c
->> +++ b/drivers/iio/industrialio-buffer.c
->> @@ -119,8 +119,8 @@ static ssize_t iio_scan_el_show(struct device *dev,
->>         int ret;
->>         struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>
->> -       ret = test_bit(to_iio_dev_attr(attr)->address,
->> -                      indio_dev->buffer->scan_mask);
->> +       ret = !!(test_bit(to_iio_dev_attr(attr)->address,
->> +                      indio_dev->buffer->scan_mask));
-> 
-> It's strange that you have to do that.
-> Can you give use the exact values that make test_bit return something
-> else that 1 or 0 ?
-> Maybe there is a bug to fix in test_bit here.
+The sw_ring buffer is being removed in favour of the kfifo version.
+This is one of only a couple of driver still supporting its use.
 
-Even if this was a bug in IIO this should be in a separate patch.
+This driver will hopefully also be removed in favour of supporting the
+part in the unified ST accelerometer driver.
 
-> 
->>
->>         return sprintf(buf, "%d\n", ret);
->>  }
-[...]
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/accel/Kconfig          | 23 +----------------------
+ drivers/staging/iio/accel/lis3l02dq.h      |  8 --------
+ drivers/staging/iio/accel/lis3l02dq_ring.c |  7 +++----
+ 3 files changed, 4 insertions(+), 34 deletions(-)
+
+diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
+index 2b54430..fa772a9 100644
+--- a/drivers/staging/iio/accel/Kconfig
++++ b/drivers/staging/iio/accel/Kconfig
+@@ -67,34 +67,13 @@ config LIS3L02DQ
+ 	tristate "ST Microelectronics LIS3L02DQ Accelerometer Driver"
+ 	depends on SPI
+ 	select IIO_TRIGGER if IIO_BUFFER
+-	depends on !IIO_BUFFER || IIO_KFIFO_BUF || IIO_SW_RING
++	depends on !IIO_BUFFER || IIO_KFIFO_BUF
+ 	depends on GENERIC_GPIO
+ 	help
+ 	  Say yes here to build SPI support for the ST microelectronics
+ 	  accelerometer. The driver supplies direct access via sysfs files
+ 	  and an event interface via a character device.
+ 
+-choice
+-	prompt "Buffer type"
+-       	depends on LIS3L02DQ && IIO_BUFFER
+-
+-config LIS3L02DQ_BUF_KFIFO
+-       depends on IIO_KFIFO_BUF
+-       bool "Simple FIFO"
+-       help
+-         Kfifo based FIFO.  Does not provide any events so it is up
+-	 to userspace to ensure it reads often enough that data is not
+-	 lost.
+-
+-config LIS3L02DQ_BUF_RING_SW
+-       depends on IIO_SW_RING
+-       bool "IIO Software Ring"
+-       help
+-         Original IIO ring buffer implementation.  Provides simple
+-	 buffer events, half full etc.
+-
+-endchoice
+-
+ config SCA3000
+ 	depends on IIO_BUFFER
+ 	depends on SPI
+diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
+index 2bac722..0a8ea82 100644
+--- a/drivers/staging/iio/accel/lis3l02dq.h
++++ b/drivers/staging/iio/accel/lis3l02dq.h
+@@ -185,14 +185,6 @@ int lis3l02dq_probe_trigger(struct iio_dev *indio_dev);
+ int lis3l02dq_configure_buffer(struct iio_dev *indio_dev);
+ void lis3l02dq_unconfigure_buffer(struct iio_dev *indio_dev);
+ 
+-#ifdef CONFIG_LIS3L02DQ_BUF_RING_SW
+-#define lis3l02dq_free_buf iio_sw_rb_free
+-#define lis3l02dq_alloc_buf iio_sw_rb_allocate
+-#endif
+-#ifdef CONFIG_LIS3L02DQ_BUF_KFIFO
+-#define lis3l02dq_free_buf iio_kfifo_free
+-#define lis3l02dq_alloc_buf iio_kfifo_allocate
+-#endif
+ irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private);
+ #define lis3l02dq_th lis3l02dq_data_rdy_trig_poll
+ 
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index bc38651..6861877 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -7,7 +7,6 @@
+ #include <linux/export.h>
+ 
+ #include <linux/iio/iio.h>
+-#include "../ring_sw.h"
+ #include <linux/iio/kfifo_buf.h>
+ #include <linux/iio/trigger.h>
+ #include <linux/iio/trigger_consumer.h>
+@@ -318,7 +317,7 @@ void lis3l02dq_remove_trigger(struct iio_dev *indio_dev)
+ void lis3l02dq_unconfigure_buffer(struct iio_dev *indio_dev)
+ {
+ 	iio_dealloc_pollfunc(indio_dev->pollfunc);
+-	lis3l02dq_free_buf(indio_dev->buffer);
++	iio_kfifo_free(indio_dev->buffer);
+ }
+ 
+ static int lis3l02dq_buffer_postenable(struct iio_dev *indio_dev)
+@@ -401,7 +400,7 @@ int lis3l02dq_configure_buffer(struct iio_dev *indio_dev)
+ 	int ret;
+ 	struct iio_buffer *buffer;
+ 
+-	buffer = lis3l02dq_alloc_buf(indio_dev);
++	buffer = iio_kfifo_allocate(indio_dev);
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
+@@ -427,6 +426,6 @@ int lis3l02dq_configure_buffer(struct iio_dev *indio_dev)
+ 	return 0;
+ 
+ error_iio_sw_rb_free:
+-	lis3l02dq_free_buf(indio_dev->buffer);
++	iio_kfifo_free(indio_dev->buffer);
+ 	return ret;
+ }
+-- 
+1.8.0.1
+
