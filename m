@@ -1,99 +1,27 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:56656 "EHLO
+Received: from h1446028.stratoserver.net ([85.214.92.142]:50177 "EHLO
 	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753406Ab2LEVIO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Dec 2012 16:08:14 -0500
-Message-ID: <50BFB7B5.4000403@ahsoftware.de>
-Date: Wed, 05 Dec 2012 22:08:05 +0100
+	with ESMTP id S1753804Ab2LESpO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Dec 2012 13:45:14 -0500
+Message-ID: <50BF961D.5080101@ahsoftware.de>
+Date: Wed, 05 Dec 2012 19:44:45 +0100
 From: Alexander Holler <holler@ahsoftware.de>
 MIME-Version: 1.0
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-Subject: Re: HID-sensor(-hub.c) and device IDs
-References: <50BF961D.5080101@ahsoftware.de> <4FA419E87744DF4DAECD5BCE1214B7A91C95FE7C@ORSMSX108.amr.corp.intel.com> <50BFAB5C.6060207@ahsoftware.de> <4FA419E87744DF4DAECD5BCE1214B7A91C95FEB6@ORSMSX108.amr.corp.intel.com>
-In-Reply-To: <4FA419E87744DF4DAECD5BCE1214B7A91C95FEB6@ORSMSX108.amr.corp.intel.com>
-Content-Type: text/plain; charset=us-ascii; format=flowed
+To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: HID-sensor(-hub.c) and device IDs
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 05.12.2012 21:24, schrieb Pandruvada, Srinivas:
-> Yes, We can have a black list instead of white list. Are you planning to submit changes?
+Hello,
 
-I've just have implemented my first version of a time sensor. So yes (at 
-least the time sensor).
+is there any special reason why vendor and devices IDs for HID-sensors 
+must be listed in drivers/hid/hid-sensor-hub.c and drivers/hid/hid-core.c?
 
-That's why I stumbled over that. I had to add a vendor and device ID to 
-those two files. I also noticed that hid-sensors(-hub) doesn't work with 
-combined HID devices (e.g. mouse/keyboard/sensor) and as a first 
-workaround I've just modified the HID-tree of my device. As I'm fairly 
-new to the HID stuff, I'm still in the evaluation phase (reading source 
-and such).
-
-In regard to a blacklist, I don't know how to fill it. I only have the 
-one sensor device I've build myself (it's a spare-time project).
-
-I think the first step would be to identify devices usable by 
-hid-sensor-hub, sensor_hub_check_for_sensor_page() looks like the way to 
-go, at least for the current state of the hid-sensor-framework.
+Maybe I'm missing something, but I don't think this is how HID is 
+supposed to work.
 
 Regards,
 
 Alexander
-
-> Thanks,
-> Srinivas
->
->
-> -----Original Message-----
-> From: Alexander Holler [mailto:holler@ahsoftware.de]
-> Sent: Wednesday, December 05, 2012 12:15 PM
-> To: Pandruvada, Srinivas
-> Cc: linux-iio@vger.kernel.org; linux-input@vger.kernel.org
-> Subject: Re: HID-sensor(-hub.c) and device IDs
->
-> Am 05.12.2012 20:21, schrieb Pandruvada, Srinivas:
->> We have not tested on sensor hubs from different vendors except few. It is possible that some vendors are using sensor hub as raw devices . We can remove vendor product ids once we have a good list for support.
->
-> Hmm, sorry, I don't understand that fully. Does that mean that the list is there to use the driver only with a small group of devices because otherwise some HID-sensors aren't usable as raw devices?
->
-> I don't know how many HID-sensor devices are already out in the wild, but because the standard looks fairly new, I don't think there are that many. And I wonder how you want to get the list larger, if nobody notifies that they should use hid-sensor-hub.c.
->
->
-> I think the correct way would be to build a blacklist instead of a whitelist.
->
-> Regards,
->
-> Alexander
->
->> Thanks,
->> Srinivas
->>
->> -----Original Message-----
->> From: Alexander Holler [mailto:holler@ahsoftware.de]
->> Sent: Wednesday, December 05, 2012 10:45 AM
->> To: linux-iio@vger.kernel.org; linux-input@vger.kernel.org;
->> Pandruvada, Srinivas
->> Subject: HID-sensor(-hub.c) and device IDs
->>
->> Hello,
->>
->> is there any special reason why vendor and devices IDs for HID-sensors must be listed in drivers/hid/hid-sensor-hub.c and drivers/hid/hid-core.c?
->>
->> Maybe I'm missing something, but I don't think this is how HID is supposed to work.
->>
->> Regards,
->>
->> Alexander
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->> in the body of a message to majordomo@vger.kernel.org More majordomo
->> info at  http://vger.kernel.org/majordomo-info.html
->>
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-
