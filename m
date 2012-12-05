@@ -1,72 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41993 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750823Ab2LJVme (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2012 16:42:34 -0500
-Message-ID: <50C65746.8030609@kernel.org>
-Date: Mon, 10 Dec 2012 21:42:30 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from h1446028.stratoserver.net ([85.214.92.142]:57891 "EHLO
+	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753992Ab2LEUPc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Dec 2012 15:15:32 -0500
+Message-ID: <50BFAB5C.6060207@ahsoftware.de>
+Date: Wed, 05 Dec 2012 21:15:24 +0100
+From: Alexander Holler <holler@ahsoftware.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Alexander Holler <holler@ahsoftware.de>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>, rtc-linux@googlegroups.com,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
-References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de> <50C63BBD.3080202@ahsoftware.de> <50C64484.4060306@metafoo.de> <50C65381.8010609@ahsoftware.de> <50C6567D.7080303@metafoo.de>
-In-Reply-To: <50C6567D.7080303@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+Subject: Re: HID-sensor(-hub.c) and device IDs
+References: <50BF961D.5080101@ahsoftware.de> <4FA419E87744DF4DAECD5BCE1214B7A91C95FE7C@ORSMSX108.amr.corp.intel.com>
+In-Reply-To: <4FA419E87744DF4DAECD5BCE1214B7A91C95FE7C@ORSMSX108.amr.corp.intel.com>
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/10/2012 09:39 PM, Lars-Peter Clausen wrote:
-> On 12/10/2012 10:26 PM, Alexander Holler wrote:
->> Am 10.12.2012 21:22, schrieb Lars-Peter Clausen:
->>> On 12/10/2012 08:45 PM, Alexander Holler wrote:
->>>> Am 10.12.2012 18:05, schrieb Lars-Peter Clausen:
->>>>
->>>>> Looks pretty good now. But there are still some IIO remnants which should be
->>>>> removed as well. Also the driver should move to drivers/rtc/ since, well,
->>>>> it's a rtc driver not a IIO driver.
->>>>
->>>> I think it still should be stick to iio, because that is where all HID
->>>> sensors currently are found and where the user would expect to find such
->>>> a driver.
->>>
->>> That's because all the current IIO sensor drivers fall in the IIO domain. This
->>> one clearly is a RTC driver, so it belongs in drivers/rtc/
->>
->> Where nobody will find it if he searches for drivers for his HID sensor.
->> I still see it as HID sensor driver and not a rtc-driver.
->> But ...
-> 
-> I can understand your position, but drivers are usually grouped by function not
-> by topology. If there is a proper Kconfig help text people should hopefully be
-> find it.
-Seconded on this. If it is a pure rtc driver then it definitely belongs in
-drivers/rtc.  Now there might have been ways of doing this as a consumer / provider
-with the provider being in IIO and the consumer in rtc, but that sounds like
-it is over compicating things, at least for now.
+Am 05.12.2012 20:21, schrieb Pandruvada, Srinivas:
+> We have not tested on sensor hubs from different vendors except few. It is possible that some vendors are using sensor hub as raw devices . We can remove vendor product ids once we have a good list for support.
 
-> 
->>
->>>
->>>>
->>>>>> +/* Channel definitions */
->>>>>> +static const struct iio_chan_spec hid_time_channels[TIME_RTC_CHANNEL_MAX] = {
->>>>
->>>> And that is imho the last remaining iio-stuff. If necessary I can remove
->>>> it too.
->>>
->>> That and the remaining bits of the read_raw callback.
->>
->> Ok. I will make a v3.
->>
-> 
-> Btw. have you seen the other comments I had inline in my response to your v2?
+Hmm, sorry, I don't understand that fully. Does that mean that the list 
+is there to use the driver only with a small group of devices because 
+otherwise some HID-sensors aren't usable as raw devices?
+
+I don't know how many HID-sensor devices are already out in the wild, 
+but because the standard looks fairly new, I don't think there are that 
+many. And I wonder how you want to get the list larger, if nobody 
+notifies that they should use hid-sensor-hub.c.
+
+I think the correct way would be to build a blacklist instead of a 
+whitelist.
+
+Regards,
+
+Alexander
+
+> Thanks,
+> Srinivas
+>
+> -----Original Message-----
+> From: Alexander Holler [mailto:holler@ahsoftware.de]
+> Sent: Wednesday, December 05, 2012 10:45 AM
+> To: linux-iio@vger.kernel.org; linux-input@vger.kernel.org; Pandruvada, Srinivas
+> Subject: HID-sensor(-hub.c) and device IDs
+>
+> Hello,
+>
+> is there any special reason why vendor and devices IDs for HID-sensors must be listed in drivers/hid/hid-sensor-hub.c and drivers/hid/hid-core.c?
+>
+> Maybe I'm missing something, but I don't think this is how HID is supposed to work.
+>
+> Regards,
+>
+> Alexander
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>
+
