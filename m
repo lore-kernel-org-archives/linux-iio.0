@@ -1,59 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:43555 "EHLO
-	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751353Ab2LJVfV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2012 16:35:21 -0500
-Message-ID: <50C6551B.1030107@ahsoftware.de>
-Date: Mon, 10 Dec 2012 22:33:15 +0100
-From: Alexander Holler <holler@ahsoftware.de>
-MIME-Version: 1.0
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"matteo.dameno@st.com" <matteo.dameno@st.com>
-Subject: Re: hid-sensor-hub and autoloading of HID sensor modules
-References: <50C64F29.9030200@ahsoftware.de> <4FA419E87744DF4DAECD5BCE1214B7A91C96075E@ORSMSX108.amr.corp.intel.com>
-In-Reply-To: <4FA419E87744DF4DAECD5BCE1214B7A91C96075E@ORSMSX108.amr.corp.intel.com>
-Content-Type: text/plain; charset=us-ascii
+Received: from smtp-out-243.synserver.de ([212.40.185.243]:1060 "EHLO
+	smtp-out-243.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1423570Ab2LFQJi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Dec 2012 11:09:38 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio:adf4350: Fix typo
+Date: Thu,  6 Dec 2012 17:09:31 +0100
+Message-Id: <1354810171-18780-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 10.12.2012 22:22, schrieb Pandruvada, Srinivas:
-> This will be a problem for current implementations, which are about to get shipped.
-> Once I get chance, I will start looking at this idea. Meanwhile, you need to add hook to vendor and product id in the table.
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Sorry, but I don't understand what that "shipped" has to do with the
-implementation in the kernel. And I don't seen any problems as only the
-implementation inside the kernel will change, nothing else.
+There is a typo in the adf4350 driver turning a shift into a compare. This patch
+fixes it.
 
-Regards,
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/frequency/adf4350.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Alexander
-
-> 
-> Thanks,
-> Srinivas
-> 
-> 
-> -----Original Message-----
-> From: Alexander Holler [mailto:holler@ahsoftware.de] 
-> Sent: Monday, December 10, 2012 1:08 PM
-> To: linux-iio@vger.kernel.org; linux-input@vger.kernel.org; Pandruvada, Srinivas; matteo.dameno@st.com
-> Subject: hid-sensor-hub and autoloading of HID sensor modules
-> 
-> Hello,
-> 
-> as I've just posted a patch to get rid of the vendor and device IDs for USB HID sensor hubs, there is still one problem left: hid-sensor-hub doesn't automatically load the necessary drivers (if they are modules).
-> 
-> Here is a suggestion about how to solve that:
-> 
-> Create HID groups HID_GROUP_SENSOR_ACCEL, HID_GROUP_SENSOR_TIME, ...) for every type of (supported) sensor (instead of the one HID_GROUP_SENSOR_HUB), scan for their usage pages (e.g.
-> HID_USAGE_SENSOR_ACCEL, HID_USAGE_SENSOR_TIME, ...) set the group and so load the final module and not hid-sensor-hub. hid-sensor-hub will then get loaded automatically.
-> 
-> As I don't have any real sensor hubs (and no business with them), I think others should implement such, if that idea got approved to make sense. ;) That just would be some few lines, but I couldn't test them with real-world stuff.
-> 
-> Regards,
-> 
-> Alexander
-> 
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index e35bb8f..c7de8b5 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -173,7 +173,7 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
+ 			} while ((st->r1_mod > ADF4350_MAX_MODULUS) && r_cnt);
+ 		} while (r_cnt == 0);
+ 
+-		tmp = freq * (u64)st->r1_mod + (st->fpfd > 1);
++		tmp = freq * (u64)st->r1_mod + (st->fpfd >> 1);
+ 		do_div(tmp, st->fpfd); /* Div round closest (n + d/2)/d */
+ 		st->r0_fract = do_div(tmp, st->r1_mod);
+ 		st->r0_int = tmp;
+-- 
+1.8.0
 
