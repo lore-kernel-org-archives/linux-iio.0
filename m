@@ -1,40 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:54393 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753483Ab2LLJmq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 12 Dec 2012 04:42:46 -0500
-Date: Wed, 12 Dec 2012 10:42:41 +0100 (CET)
-From: Jiri Kosina <jkosina@suse.cz>
-To: Alexander Holler <holler@ahsoftware.de>
-Cc: linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 1/2] HID: autodetect USB HID sensor hubs.
-In-Reply-To: <1355053470-3939-1-git-send-email-holler@ahsoftware.de>
-Message-ID: <alpine.LNX.2.00.1212121042100.19767@pobox.suse.cz>
-References: <50C47811.7010503@ahsoftware.de> <1355053470-3939-1-git-send-email-holler@ahsoftware.de>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Received: from mail-out.m-online.net ([212.18.0.10]:46453 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753532Ab2LGPZP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Dec 2012 10:25:15 -0500
+From: Marek Vasut <marex@denx.de>
+To: linux-iio@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, Marek Vasut <marex@denx.de>,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH 2/4] iio: mxs: Remove unused fields from mxs_lradc
+Date: Fri,  7 Dec 2012 16:24:51 +0100
+Message-Id: <1354893893-26338-2-git-send-email-marex@denx.de>
+In-Reply-To: <1354893893-26338-1-git-send-email-marex@denx.de>
+References: <1354893893-26338-1-git-send-email-marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 9 Dec 2012, Alexander Holler wrote:
+Remove unused "enable" field from struct mxs_lradc. This seems to be
+remnant of early development.
 
-> It should not be necessary to add IDs for HID sensor hubs to lists
-> in hid-core.c and hid-sensor-hub.c. So instead of a whitelist,
-> autodetect such USB HID sensor hubs, based on a collection of type
-> physical inside a useage page of type sensor. If some sensor hubs
-> stil must be usable as raw devices, a blacklist might be created.
-> 
-> Signed-off-by: Alexander Holler <holler@ahsoftware.de>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Fabio Estevam <fabio.estevam@freescale.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Shawn Guo <shawn.guo@linaro.org>
+---
+ drivers/staging/iio/adc/mxs-lradc.c |    2 --
+ 1 file changed, 2 deletions(-)
 
-I like this change and would like to merge it, but I'd appreciate Ack from 
-Srinivas first.
-
-Srinivas?
-
-Thanks,
-
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index 67abf50..6249957 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -85,8 +85,6 @@ struct mxs_lradc {
+ 
+ 	struct mutex		lock;
+ 
+-	uint8_t			enable;
+-
+ 	struct completion	completion;
+ };
+ 
 -- 
-Jiri Kosina
-SUSE Labs
+1.7.10.4
+
