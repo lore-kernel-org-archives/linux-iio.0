@@ -1,51 +1,69 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:50215 "EHLO
-	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933977Ab2LIMWt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 9 Dec 2012 07:22:49 -0500
-From: Alexander Holler <holler@ahsoftware.de>
-To: linux-kernel@vger.kernel.org
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	rtc-linux@googlegroups.com,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>,
-	Alexander Holler <holler@ahsoftware.de>
-Subject: [PATCH 2/3] iio: Add Usage IDs for HID time sensors.
-Date: Sun,  9 Dec 2012 13:21:38 +0100
-Message-Id: <1355055699-2965-3-git-send-email-holler@ahsoftware.de>
-In-Reply-To: <1355055699-2965-1-git-send-email-holler@ahsoftware.de>
-References: <1355055699-2965-1-git-send-email-holler@ahsoftware.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH 3/4] iio: mxs: Implement support for touchscreen
+Date: Sat, 8 Dec 2012 22:03:57 +0100
+Cc: linux-iio@vger.kernel.org,
+ Fabio Estevam <fabio.estevam@freescale.com>,
+ Shawn Guo <shawn.guo@linaro.org>,
+ Jonathan Cameron <jic23@kernel.org>,
+ linux-arm-kernel@lists.infradead.org
+References: <1354893893-26338-1-git-send-email-marex@denx.de> <1354893893-26338-3-git-send-email-marex@denx.de> <CAOMZO5B_Dx_+KRn6h+erCj+CY3zk06MXODX-Nm1tcpao9mL2zg@mail.gmail.com>
+In-Reply-To: <CAOMZO5B_Dx_+KRn6h+erCj+CY3zk06MXODX-Nm1tcpao9mL2zg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201212082203.57339.marex@denx.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-These are Usage IDs for the attributes year, month, day,
-hour, minute and second, needed to read HID time sensors.
+Dear Fabio Estevam,
 
-Signed-off-by: Alexander Holler <holler@ahsoftware.de>
----
- include/linux/hid-sensor-ids.h |    9 +++++++++
- 1 files changed, 9 insertions(+), 0 deletions(-)
+> On Fri, Dec 7, 2012 at 1:24 PM, Marek Vasut <marex@denx.de> wrote:
+> > This patch implements support for sampling of a touchscreen into
+> > the MXS LRADC driver. The LRADC block allows configuring some of
+> > it's channels into special mode where they either output the drive
+> > voltage or sample it, allowing it to operate a 4-wire or 5-wire
+> > resistive touchscreen.
+> > 
+> > In case the touchscreen mode is enabled, the LRADC slot #7 is
+> > reserved for touchscreen only, therefore it is not possible to
+> > sample 8 LRADC channels at time, but only 7 channels.
+> > 
+> > The touchscreen controller is configured such that the PENDOWN event
+> > disables touchscreen interrupts and triggers execution of worker
+> > thread, which then polls the touchscreen controller for X, Y and
+> > Pressure values. This reduces the overhead of interrupt-driven
+> > operation. Upon the PENUP event, the worker thread re-enables the
+> > PENDOWN detection interrupt and exits.
+> > 
+> > Signed-off-by: Marek Vasut <marex@denx.de>
+> > Cc: Fabio Estevam <fabio.estevam@freescale.com>
+> > Cc: Jonathan Cameron <jic23@kernel.org>
+> > Cc: Shawn Guo <shawn.guo@linaro.org>
+> > ---
+> > 
+> >  .../bindings/staging/iio/adc/mxs-lradc.txt         |    6 +
+> >  drivers/staging/iio/adc/mxs-lradc.c                |  435
+> >  +++++++++++++++++++-
+> 
+> What about adding the touchscreen support into a separate file, so
+> that users can select/deselect it via Kconfig option?
 
-diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-index 55f2773..6f24446 100644
---- a/include/linux/hid-sensor-ids.h
-+++ b/include/linux/hid-sensor-ids.h
-@@ -66,6 +66,15 @@
- #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS		0x200486
- #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS		0x200487
- 
-+/* Time (2000a0) */
-+#define HID_USAGE_SENSOR_TIME					0x2000a0
-+#define HID_USAGE_SENSOR_TIME_YEAR				0x200521
-+#define HID_USAGE_SENSOR_TIME_MONTH				0x200522
-+#define HID_USAGE_SENSOR_TIME_DAY				0x200523
-+#define HID_USAGE_SENSOR_TIME_HOUR				0x200525
-+#define HID_USAGE_SENSOR_TIME_MINUTE				0x200526
-+#define HID_USAGE_SENSOR_TIME_SECOND				0x200527
-+
- /* Units */
- #define HID_USAGE_SENSOR_UNITS_NOT_SPECIFIED			0x00
- #define HID_USAGE_SENSOR_UNITS_LUX				0x01
--- 
-1.7.8.6
+The touchscreen is way too intertwined with the LRADC, that's why I kept it in 
+single file. Separating it away would only spawn third lradc.h header file with 
+all the shared data etc.
 
+I'll elaborate on it more in the other email.
+
+> Not everyone using lradc would be necessarily interested in the
+> touchscreen functionality, so better to let it optional.
+
+You can actually disable it via device tree property (and it's disabled by 
+default).
+
+> Thanks,
+> 
+> Fabio Estevam
+
+Best regards,
+Marek Vasut
