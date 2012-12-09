@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:45006 "EHLO
+Received: from h1446028.stratoserver.net ([85.214.92.142]:34899 "EHLO
 	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933438Ab2LILpH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 9 Dec 2012 06:45:07 -0500
+	with ESMTP id S1751236Ab2LIBNO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Dec 2012 20:13:14 -0500
 From: Alexander Holler <holler@ahsoftware.de>
 To: linux-kernel@vger.kernel.org
 Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
@@ -10,33 +10,31 @@ Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
 	Jiri Kosina <jkosina@suse.cz>,
 	srinivas pandruvada <srinivas.pandruvada@intel.com>,
 	Alexander Holler <holler@ahsoftware.de>
-Subject: [PATCH 1/2] HID: autodetect USB HID sensor hubs.
-Date: Sun,  9 Dec 2012 12:44:30 +0100
-Message-Id: <1355053470-3939-1-git-send-email-holler@ahsoftware.de>
-In-Reply-To: <50C47811.7010503@ahsoftware.de>
-References: <50C47811.7010503@ahsoftware.de>
+Subject: [PATCH 1/2] HID: autodetect HID sensor hubs.
+Date: Sun,  9 Dec 2012 02:12:23 +0100
+Message-Id: <1355015544-31579-1-git-send-email-holler@ahsoftware.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 It should not be necessary to add IDs for HID sensor hubs to lists
 in hid-core.c and hid-sensor-hub.c. So instead of a whitelist,
-autodetect such USB HID sensor hubs, based on a collection of type
+autodetect such sensor hubs, based on a collection of type
 physical inside a useage page of type sensor. If some sensor hubs
 stil must be usable as raw devices, a blacklist might be created.
 
 Signed-off-by: Alexander Holler <holler@ahsoftware.de>
 ---
- drivers/hid/hid-core.c         |   11 ++++++++++-
+ drivers/hid/hid-core.c         |   10 +++++++++-
  drivers/hid/hid-sensor-hub.c   |   32 +-------------------------------
  include/linux/hid-sensor-ids.h |    1 -
  include/linux/hid.h            |    2 ++
- 4 files changed, 13 insertions(+), 33 deletions(-)
+ 4 files changed, 12 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index f4109fd..7df5399 100644
+index f4109fd..2085230 100644
 --- a/drivers/hid/hid-core.c
 +++ b/drivers/hid/hid-core.c
-@@ -713,7 +713,12 @@ static int hid_scan_report(struct hid_device *hid)
+@@ -713,7 +713,11 @@ static int hid_scan_report(struct hid_device *hid)
  					hid_scan_usage(hid, u);
  				break;
  			}
@@ -44,18 +42,17 @@ index f4109fd..7df5399 100644
 +		} else if (page == HID_UP_SENSOR &&
 +			item.type == HID_ITEM_TYPE_MAIN &&
 +			item.tag == HID_MAIN_ITEM_TAG_BEGIN_COLLECTION &&
-+			(item_udata(&item) & 0xff) == HID_COLLECTION_PHYSICAL &&
-+			hid->bus == BUS_USB)
++			(item_udata(&item) & 0xff) == HID_COLLECTION_PHYSICAL)
 +			hid->group = HID_GROUP_SENSOR_HUB;
  	}
  
  	return 0;
-@@ -1465,6 +1470,10 @@ EXPORT_SYMBOL_GPL(hid_disconnect);
+@@ -1465,6 +1469,10 @@ EXPORT_SYMBOL_GPL(hid_disconnect);
   * there is a proper autodetection and autoloading in place (based on presence
   * of HID_DG_CONTACTID), so those devices don't need to be added to this list,
   * as we are doing the right thing in hid_scan_usage().
 + *
-+ * Autodetection for (USB) HID sensor hubs exists too. If a collection of type
++ * Autodetection for HID sensor hubs exists too. If a collection of type
 + * physical is found inside a usage page of type sensor, hid-sensor-hub will be
 + * used as a driver. See hid_scan_report().
   */
