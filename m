@@ -1,37 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-245.synserver.de ([212.40.185.245]:1080 "EHLO
-	smtp-out-245.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751152Ab2LLKSw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Dec 2012 05:18:52 -0500
-Message-ID: <50C85A0F.3040606@metafoo.de>
-Date: Wed, 12 Dec 2012 11:18:55 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from h1446028.stratoserver.net ([85.214.92.142]:51046 "EHLO
+	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933438Ab2LILiH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 9 Dec 2012 06:38:07 -0500
+Message-ID: <50C47811.7010503@ahsoftware.de>
+Date: Sun, 09 Dec 2012 12:37:53 +0100
+From: Alexander Holler <holler@ahsoftware.de>
 MIME-Version: 1.0
 To: Alexander Holler <holler@ahsoftware.de>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>, rtc-linux@googlegroups.com,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>,
-	Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH 4/4 v3] rtc: add rtc-driver for HID sensors of type time
-References: <50C73AFC.1050904@jic23.retrosnub.co.uk> <1355250106-3114-1-git-send-email-holler@ahsoftware.de> <1355250106-3114-4-git-send-email-holler@ahsoftware.de> <50C8539C.1070509@metafoo.de> <50C8591A.3030301@ahsoftware.de>
-In-Reply-To: <50C8591A.3030301@ahsoftware.de>
-Content-Type: text/plain; charset=ISO-8859-1
+CC: linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	Jiri Kosina <jkosina@suse.cz>,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH 1/2] HID: autodetect HID sensor hubs.
+References: <1355015544-31579-1-git-send-email-holler@ahsoftware.de>
+In-Reply-To: <1355015544-31579-1-git-send-email-holler@ahsoftware.de>
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/12/2012 11:14 AM, Alexander Holler wrote:
-> Am 12.12.2012 10:51, schrieb Lars-Peter Clausen:
-> 
->> Looks good, but as I wrote during the last review the __devinits need to go.
->> A few other suggerstions online
-> 
-> Oh, have forgotten it. Ok, will make a v4, changing the other few things too.
-> 
->>> +    case HID_USAGE_SENSOR_TIME_MONTH:
->>> +        time_buf->tm_mon = --*(u8 *)raw_data;
-> 
-> Time sensors are sending the month in the range 1-12, not 0-11.
-> 
-Ah, sorry, I guess hadn't had enough coffee yet, I read this as -(-(*(u8
-*)raw_data))) and was a bit confused...
+Am 09.12.2012 02:12, schrieb Alexander Holler:
+> It should not be necessary to add IDs for HID sensor hubs to lists
+> in hid-core.c and hid-sensor-hub.c. So instead of a whitelist,
+> autodetect such sensor hubs, based on a collection of type
+> physical inside a useage page of type sensor. If some sensor hubs
+> stil must be usable as raw devices, a blacklist might be created.
+
+That patch didn't check if the device is a USB device and therfor
+blutooth hid sensor hubs wouldn't still be handled as raw devices.
+
+I send another patch 1/2 which checks the bus too.
+Patch 2/2 still should be applied.
+
+Regards,
+
+Alexander
