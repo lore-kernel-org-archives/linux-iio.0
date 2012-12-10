@@ -1,80 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:34920 "EHLO
-	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756347Ab2LIBNW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Dec 2012 20:13:22 -0500
-From: Alexander Holler <holler@ahsoftware.de>
-To: linux-kernel@vger.kernel.org
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Jiri Kosina <jkosina@suse.cz>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>,
-	Alexander Holler <holler@ahsoftware.de>
-Subject: [PATCH 2/2] Revert "HID: sensors: add to special driver list"
-Date: Sun,  9 Dec 2012 02:12:24 +0100
-Message-Id: <1355015544-31579-2-git-send-email-holler@ahsoftware.de>
-In-Reply-To: <1355015544-31579-1-git-send-email-holler@ahsoftware.de>
-References: <1355015544-31579-1-git-send-email-holler@ahsoftware.de>
+Received: from mga11.intel.com ([192.55.52.93]:23255 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751976Ab2LJVWh convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2012 16:22:37 -0500
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: Alexander Holler <holler@ahsoftware.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"matteo.dameno@st.com" <matteo.dameno@st.com>
+Subject: RE: hid-sensor-hub and autoloading of HID sensor modules
+Date: Mon, 10 Dec 2012 21:22:09 +0000
+Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A91C96075E@ORSMSX108.amr.corp.intel.com>
+References: <50C64F29.9030200@ahsoftware.de>
+In-Reply-To: <50C64F29.9030200@ahsoftware.de>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Those IDs aren't necessary anymore.
+This will be a problem for current implementations, which are about to get shipped.
+Once I get chance, I will start looking at this idea. Meanwhile, you need to add hook to vendor and product id in the table.
 
-This reverts commit c8147d9ea19bfe7d8e569351bc7239e118dd6997.
+Thanks,
+Srinivas
 
-Signed-off-by: Alexander Holler <holler@ahsoftware.de>
----
- drivers/hid/hid-core.c |    5 -----
- drivers/hid/hid-ids.h  |    6 ------
- 2 files changed, 0 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index 2085230..943a6bc 100644
---- a/drivers/hid/hid-core.c
-+++ b/drivers/hid/hid-core.c
-@@ -1579,10 +1579,6 @@ static const struct hid_device_id hid_have_special_driver[] = {
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_GYRATION, USB_DEVICE_ID_GYRATION_REMOTE_3) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_HOLTEK, USB_DEVICE_ID_HOLTEK_ON_LINE_GRIP) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_HOLTEK_ALT, USB_DEVICE_ID_HOLTEK_ALT_KEYBOARD) },
--	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086, USB_DEVICE_ID_SENSOR_HUB_1020) },
--	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8086, USB_DEVICE_ID_SENSOR_HUB_09FA) },
--	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087, USB_DEVICE_ID_SENSOR_HUB_1020) },
--	{ HID_USB_DEVICE(USB_VENDOR_ID_INTEL_8087, USB_DEVICE_ID_SENSOR_HUB_09FA) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_KENSINGTON, USB_DEVICE_ID_KS_SLIMBLADE) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_KEYTOUCH, USB_DEVICE_ID_KEYTOUCH_IEC) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_KYE, USB_DEVICE_ID_KYE_ERGO_525V) },
-@@ -1680,7 +1676,6 @@ static const struct hid_device_id hid_have_special_driver[] = {
- 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_PS3_CONTROLLER) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_VAIO_VGX_MOUSE) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_SUNPLUS, USB_DEVICE_ID_SUNPLUS_WDESKTOP) },
--	{ HID_USB_DEVICE(USB_VENDOR_ID_STANTUM_STM, USB_DEVICE_ID_SENSOR_HUB_7014) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb300) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb304) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb323) },
-diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index 9d7a428..8fd25d3 100644
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -432,11 +432,6 @@
- #define USB_VENDOR_ID_IMATION		0x0718
- #define USB_DEVICE_ID_DISC_STAKKA	0xd000
- 
--#define USB_VENDOR_ID_INTEL_8086	0x8086
--#define USB_VENDOR_ID_INTEL_8087	0x8087
--#define USB_DEVICE_ID_SENSOR_HUB_1020	0x1020
--#define USB_DEVICE_ID_SENSOR_HUB_09FA	0x09FA
--
- #define USB_VENDOR_ID_IRTOUCHSYSTEMS	0x6615
- #define USB_DEVICE_ID_IRTOUCH_INFRARED_USB	0x0070
- 
-@@ -714,7 +709,6 @@
- 
- #define USB_VENDOR_ID_STANTUM_STM		0x0483
- #define USB_DEVICE_ID_MTP_STM		0x3261
--#define USB_DEVICE_ID_SENSOR_HUB_7014	0x7014
- 
- #define USB_VENDOR_ID_STANTUM_SITRONIX		0x1403
- #define USB_DEVICE_ID_MTP_SITRONIX		0x5001
--- 
-1.7.8.6
+-----Original Message-----
+From: Alexander Holler [mailto:holler@ahsoftware.de] 
+Sent: Monday, December 10, 2012 1:08 PM
+To: linux-iio@vger.kernel.org; linux-input@vger.kernel.org; Pandruvada, Srinivas; matteo.dameno@st.com
+Subject: hid-sensor-hub and autoloading of HID sensor modules
 
+Hello,
+
+as I've just posted a patch to get rid of the vendor and device IDs for USB HID sensor hubs, there is still one problem left: hid-sensor-hub doesn't automatically load the necessary drivers (if they are modules).
+
+Here is a suggestion about how to solve that:
+
+Create HID groups HID_GROUP_SENSOR_ACCEL, HID_GROUP_SENSOR_TIME, ...) for every type of (supported) sensor (instead of the one HID_GROUP_SENSOR_HUB), scan for their usage pages (e.g.
+HID_USAGE_SENSOR_ACCEL, HID_USAGE_SENSOR_TIME, ...) set the group and so load the final module and not hid-sensor-hub. hid-sensor-hub will then get loaded automatically.
+
+As I don't have any real sensor hubs (and no business with them), I think others should implement such, if that idea got approved to make sense. ;) That just would be some few lines, but I couldn't test them with real-world stuff.
+
+Regards,
+
+Alexander
