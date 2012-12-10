@@ -1,44 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.32.191]:60884 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751827Ab2LTPvx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Dec 2012 10:51:53 -0500
-Message-ID: <50D3340F.3090209@free-electrons.com>
-Date: Thu, 20 Dec 2012 16:51:43 +0100
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Return-Path: <holler@ahsoftware.de>
+Message-ID: <50C6674D.1000901@ahsoftware.de>
+Date: Mon, 10 Dec 2012 23:50:53 +0100
+From: Alexander Holler <holler@ahsoftware.de>
 MIME-Version: 1.0
-To: "ludovic.desroches" <ludovic.desroches@atmel.com>
-CC: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH 1/3] ARM: AT91: IIO: add low and high res support for
- adc
-References: <20121219183236.GP23971@game.jcrosoft.org> <1355942232-26251-1-git-send-email-plagnioj@jcrosoft.com> <50D2EBA1.4050305@free-electrons.com> <50D2EDE6.3090706@atmel.com>
-In-Reply-To: <50D2EDE6.3090706@atmel.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+ rtc-linux@googlegroups.com, Alessandro Zummo <a.zummo@towertech.it>,
+ srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
+References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de> <50C63BBD.3080202@ahsoftware.de> <50C64484.4060306@metafoo.de> <50C65381.8010609@ahsoftware.de> <50C6567D.7080303@metafoo.de> <50C65746.8030609@kernel.org>
+In-Reply-To: <50C65746.8030609@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Ludovic,
+Am 10.12.2012 22:42, schrieb Jonathan Cameron:
+> On 12/10/2012 09:39 PM, Lars-Peter Clausen wrote:
+>> On 12/10/2012 10:26 PM, Alexander Holler wrote:
+>>> Am 10.12.2012 21:22, schrieb Lars-Peter Clausen:
+>>>> On 12/10/2012 08:45 PM, Alexander Holler wrote:
+>>>>> Am 10.12.2012 18:05, schrieb Lars-Peter Clausen:
+>>>>>
+>>>>>> Looks pretty good now. But there are still some IIO remnants which should be
+>>>>>> removed as well. Also the driver should move to drivers/rtc/ since, well,
+>>>>>> it's a rtc driver not a IIO driver.
+>>>>>
+>>>>> I think it still should be stick to iio, because that is where all HID
+>>>>> sensors currently are found and where the user would expect to find such
+>>>>> a driver.
+>>>>
+>>>> That's because all the current IIO sensor drivers fall in the IIO domain. This
+>>>> one clearly is a RTC driver, so it belongs in drivers/rtc/
+>>>
+>>> Where nobody will find it if he searches for drivers for his HID sensor.
+>>> I still see it as HID sensor driver and not a rtc-driver.
+>>> But ...
+>>
+>> I can understand your position, but drivers are usually grouped by function not
+>> by topology. If there is a proper Kconfig help text people should hopefully be
+>> find it.
+> Seconded on this. If it is a pure rtc driver then it definitely belongs in
+> drivers/rtc.  Now there might have been ways of doing this as a consumer / provider
+> with the provider being in IIO and the consumer in rtc, but that sounds like
+> it is over compicating things, at least for now.
 
-Le 20/12/2012 11:52, ludovic.desroches a écrit :
->> I'm wondering, why are you using such a complex dt parsing code, and
->> bindings, when you only requires a boolean to switch between 8 and 10
->> bits mode (which seem to be the only thing you support)?
-> 
-> We will have a 10 and 12 bits mode on future ADCs and I would like to
-> have something which could manage more than two resolutions if it
-> happens one day.
+Personally I just want to use it to have HID-USB_RTCs. ;)
 
-I see your point. I'm not fond at all of the existing bindings for the
-driver (putting things like registers offset in the dt is a non-sense to
-me, but hey...), so I'd like to still keep it as simple and non-bloated
-as possible, but it's true that in the current situation, we probably
-have no other choice.
+But in case of HID sensor hubs, the main usage of that driver will be to 
+set the time of such hubs (something I still have to make patches for), 
+and not to read it. So if you think as an HID sensor user, it should 
+belong to iio or wherever those sensor will finally end up (I think they 
+should end up in HID and should be usable by bluetooth devices too), but 
+if you creatively misuse the standard to get a driver for USB-RTCs, as I 
+want, then rtc is the correct place. ;)
 
-Maxime
--- 
-Maxime Ripard, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+Because I don't want to do a v4:
+
+the driver has an
+
+#include "../common/hid-sensors/hid-sensor-attributes.h"
+
+so moving it to drivers/rtc/ will make that even more ugly.
+
+Suggestions? I don't really care and as I'm currently at the order 
+receiving end ;) I would change it to whatever the maintainers are 
+wanting. Maybe moving that header to include/linux or even integrating 
+it into include/linux/hid-sensor-hubs.h makes sense.
+
+Regards,
+
+Alexander
