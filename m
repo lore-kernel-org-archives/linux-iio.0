@@ -1,69 +1,42 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH 3/4] iio: mxs: Implement support for touchscreen
-Date: Sat, 8 Dec 2012 22:03:57 +0100
-Cc: linux-iio@vger.kernel.org,
- Fabio Estevam <fabio.estevam@freescale.com>,
- Shawn Guo <shawn.guo@linaro.org>,
- Jonathan Cameron <jic23@kernel.org>,
- linux-arm-kernel@lists.infradead.org
-References: <1354893893-26338-1-git-send-email-marex@denx.de> <1354893893-26338-3-git-send-email-marex@denx.de> <CAOMZO5B_Dx_+KRn6h+erCj+CY3zk06MXODX-Nm1tcpao9mL2zg@mail.gmail.com>
-In-Reply-To: <CAOMZO5B_Dx_+KRn6h+erCj+CY3zk06MXODX-Nm1tcpao9mL2zg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201212082203.57339.marex@denx.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from plane.gmane.org ([80.91.229.3]:59086 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752415Ab2LJVy6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 10 Dec 2012 16:54:58 -0500
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <glki-linux-iio@m.gmane.org>)
+	id 1TiBJX-0006D2-L5
+	for linux-iio@vger.kernel.org; Mon, 10 Dec 2012 22:55:04 +0100
+Received: from 174-47-212-34.static.twtelecom.net ([174-47-212-34.static.twtelecom.net])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Mon, 10 Dec 2012 22:55:03 +0100
+Received: from james_robinson by 174-47-212-34.static.twtelecom.net with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Mon, 10 Dec 2012 22:55:03 +0100
+To: linux-iio@vger.kernel.org
+From: James Robinson <james_robinson@vuzix.com>
+Subject: Latest Git Repo
+Date: Mon, 10 Dec 2012 21:46:24 +0000 (UTC)
+Message-ID: <loom.20121210T224225-931@post.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Dear Fabio Estevam,
+I have looked around and I am unable to find the git rep. that everyone seems to
 
-> On Fri, Dec 7, 2012 at 1:24 PM, Marek Vasut <marex@denx.de> wrote:
-> > This patch implements support for sampling of a touchscreen into
-> > the MXS LRADC driver. The LRADC block allows configuring some of
-> > it's channels into special mode where they either output the drive
-> > voltage or sample it, allowing it to operate a 4-wire or 5-wire
-> > resistive touchscreen.
-> > 
-> > In case the touchscreen mode is enabled, the LRADC slot #7 is
-> > reserved for touchscreen only, therefore it is not possible to
-> > sample 8 LRADC channels at time, but only 7 channels.
-> > 
-> > The touchscreen controller is configured such that the PENDOWN event
-> > disables touchscreen interrupts and triggers execution of worker
-> > thread, which then polls the touchscreen controller for X, Y and
-> > Pressure values. This reduces the overhead of interrupt-driven
-> > operation. Upon the PENUP event, the worker thread re-enables the
-> > PENDOWN detection interrupt and exits.
-> > 
-> > Signed-off-by: Marek Vasut <marex@denx.de>
-> > Cc: Fabio Estevam <fabio.estevam@freescale.com>
-> > Cc: Jonathan Cameron <jic23@kernel.org>
-> > Cc: Shawn Guo <shawn.guo@linaro.org>
-> > ---
-> > 
-> >  .../bindings/staging/iio/adc/mxs-lradc.txt         |    6 +
-> >  drivers/staging/iio/adc/mxs-lradc.c                |  435
-> >  +++++++++++++++++++-
-> 
-> What about adding the touchscreen support into a separate file, so
-> that users can select/deselect it via Kconfig option?
+be posting patches against. I looked at 
 
-The touchscreen is way too intertwined with the LRADC, that's why I kept it in 
-single file. Separating it away would only spawn third lradc.h header file with 
-all the shared data etc.
+http://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging-2.6.git/info/refs
 
-I'll elaborate on it more in the other email.
+but I don't seem to see the [PATCH] [V5] Invensense MPU6050 Device Driver. 
 
-> Not everyone using lradc would be necessarily interested in the
-> touchscreen functionality, so better to let it optional.
+changes.
 
-You can actually disable it via device tree property (and it's disabled by 
-default).
+Am I pointing to the right place?
 
-> Thanks,
-> 
-> Fabio Estevam
+Thanks for your time,
 
-Best regards,
-Marek Vasut
+James
+
