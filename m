@@ -1,50 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:43244 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751309Ab2LNMGl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2012 07:06:41 -0500
-Received: by mail-pb0-f46.google.com with SMTP id wy7so2339951pbc.19
-        for <linux-iio@vger.kernel.org>; Fri, 14 Dec 2012 04:06:40 -0800 (PST)
-Message-ID: <1355486789.3475.1.camel@phoenix>
-Subject: [PATCH v2 3/6] iio: dac: ad5504: Don't set error code to voltage_uv
-From: Axel Lin <axel.lin@ingics.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Fri, 14 Dec 2012 20:06:29 +0800
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:39272 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751006Ab2LJWgO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2012 17:36:14 -0500
+Message-ID: <50C66406.9090606@metafoo.de>
+Date: Mon, 10 Dec 2012 23:36:54 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Alexander Holler <holler@ahsoftware.de>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>, rtc-linux@googlegroups.com,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
+References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de> <50C6603E.5070909@ahsoftware.de>
+In-Reply-To: <50C6603E.5070909@ahsoftware.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-regulator_get_voltage() may return negative error code.
-Add error checking to avoid setting error code to voltage_uv.
+On 12/10/2012 11:20 PM, Alexander Holler wrote:
+> [...]
+>>> +    init_completion(&time_state->comp_last_time);
+>>
+>> This needs to be INIT_COMPLETION. init_completion must be called exactly
+>> once on a completion, which should be from inside probe() in this case.
+> 
+> Ah, so I've misread http://lwn.net/Articles/23993/ . I've read it as
+> init_completion() is usable multiple times (I had the impression
+> INIT_COMPLETION got replaced by init_completion().
+> 
 
-Signed-off-by: Axel Lin <axel.lin@ingics.com>
----
-v2: check if ret is negative value
- drivers/iio/dac/ad5504.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Well, I've been exaggerating a bit, you can call it multiple times, but you
+need to make sure that the completion is not in use at the same time, since
+init_completion will completely reinitialize the struct and if it is in use at
+the same time you'll get undefined behavior. So it is a good rule of thumb to
+just use it once in probe(). INIT_COMPLETION on the other hand will just clear
+the done flag, so you know that between your call to INIT_COMPLETION and when
+wait_for_completion returns successfully your event has occurred at least once.
 
-diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-index 242bdc7..1e9a1f4 100644
---- a/drivers/iio/dac/ad5504.c
-+++ b/drivers/iio/dac/ad5504.c
-@@ -296,7 +296,11 @@ static int __devinit ad5504_probe(struct spi_device *spi)
- 		if (ret)
- 			goto error_put_reg;
- 
--		voltage_uv = regulator_get_voltage(reg);
-+		ret = regulator_get_voltage(reg);
-+		if (ret < 0)
-+			goto error_disable_reg;
-+
-+		voltage_uv = ret;
- 	}
- 
- 	spi_set_drvdata(spi, indio_dev);
--- 
-1.7.9.5
+>>> +    /* wait for all values (event) */
+>>> +   
+>>> wait_for_completion_interruptible_timeout(&time_state->comp_last_time,
+>>> +                            HZ*6);
+>>
+>> You should check the return value in case either a timeout happens or the
+>> sleep is interrupted.
+> 
+> Yes, I already wanted to do it, but it seems I've forgotten it.
+> 
+>>> +    struct hid_time_state *time_state =
+>>> +        kzalloc(sizeof(struct hid_time_state), GFP_KERNEL);
+>>
+>> You could use devm_kzalloc here. By doing so you don't have to take
+>> care of
+>> freeing it again since it will be auto-freed once the device is removed.
+> 
+> Thanks. I already searched such and wondered why such didn't exist. Just
+> to clarify, if I use devm_kzalloc, I don't have to free time_state here
+> 
+>>> +error_free_drvdata:
+>>> +    platform_set_drvdata(pdev, NULL);
+>>
+>> Setting the platform data to NULL should not be necessary. Some
+>> drivers do
+>> this but it's kind of the result of cargo-cult-coding.
+>>
+>>> +    kfree(time_state);
+>>> +error_ret:
+>>> +    return ret;
+>>> +}
+>>> +
+>>> +static int __devinit hid_time_remove(struct platform_device *pdev)
+>>> +{
+>>> +    struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
+>>> +    struct hid_time_state *time_state = platform_get_drvdata(pdev);
+>>> +
+>>> +    if (!IS_ERR(time_state->rtc))
+>>> +        rtc_device_unregister(time_state->rtc);
+>>> +    sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TIME);
+>>> +    platform_set_drvdata(pdev, NULL);
+>>
+> 
+> and here?
+> 
 
-
+yes.
 
