@@ -1,56 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.karo-electronics.de ([81.173.242.67]:60371 "EHLO
-	mail.karo-electronics.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751821Ab2LKIhP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2012 03:37:15 -0500
-Message-ID: <20678.60523.170336.920677@ipc1.ka-ro>
-Date: Tue, 11 Dec 2012 09:18:51 +0100
-From: =?utf-8?Q?Lothar_Wa=C3=9Fmann?= <LW@KARO-electronics.de>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Marek Vasut <marex@denx.de>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	linux-iio@vger.kernel.org,
-	"linux-input\@vger.kernel.org" <linux-input@vger.kernel.org>,
-	Shawn Guo <shawn.guo@linaro.org>,
-	linux-arm-kernel@lists.infradead.org
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Subject: Re: [PATCH 3/4] iio: mxs: Implement support for touchscreen
-In-Reply-To: <20121210222437.GA19008@core.coreip.homeip.net>
-References: <1354893893-26338-1-git-send-email-marex@denx.de>
-	<1354893893-26338-3-git-send-email-marex@denx.de>
-	<50C312D8.4050405@kernel.org>
-	<20121210222437.GA19008@core.coreip.homeip.net>
+Received: from h1446028.stratoserver.net ([85.214.92.142]:43694 "EHLO
+	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751146Ab2LKACX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2012 19:02:23 -0500
+Message-ID: <50C677D9.5070109@ahsoftware.de>
+Date: Tue, 11 Dec 2012 01:01:29 +0100
+From: Alexander Holler <holler@ahsoftware.de>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>, rtc-linux@googlegroups.com,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
+References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de> <50C6603E.5070909@ahsoftware.de> <50C66406.9090606@metafoo.de>
+In-Reply-To: <50C66406.9090606@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Am 10.12.2012 23:36, schrieb Lars-Peter Clausen:
+> Well, I've been exaggerating a bit, you can call it multiple times, but you
 
-Dmitry Torokhov writes:
-> Hi Marek, Jonathan,
-> 
-> On Sat, Dec 08, 2012 at 10:13:44AM +0000, Jonathan Cameron wrote:
-> > On 12/07/2012 03:24 PM, Marek Vasut wrote:
-[...]
-> > > +	int			use_touchbutton:1;
-> 
-> Why would someone not want to use it?
-> 
-> > > +	int			use_touchscreen_4wire:1;
-> > > +	int			use_touchscreen_5wire:1;
-> 
-bit fields should be of unsigned type, because otherwise the 'true'
-value will be '-1' rather than '1'.
+Thanks a lot for the explanation(s).
 
+>>>> +error_free_drvdata:
+>>>> +    platform_set_drvdata(pdev, NULL);
+>>>
+>>> Setting the platform data to NULL should not be necessary. Some
+>>> drivers do
+>>> this but it's kind of the result of cargo-cult-coding.
+>>>
+>>>> +    kfree(time_state);
 
-Lothar Waßmann
--- 
-___________________________________________________________
+Btw. I wouldn't call that cargo-cult-coding. It's more defensive 
+programming as people might not be sure, if there is something around 
+which still might access the platform data at that point. Ok, there 
+would be a need for a mutex or similiar if that really could happen, but 
+I wouldn't call such practices cargo-cult. ;)
 
-Ka-Ro electronics GmbH | Pascalstraße 22 | D - 52076 Aachen
-Phone: +49 2408 1402-0 | Fax: +49 2408 1402-10
-Geschäftsführer: Matthias Kaussen
-Handelsregistereintrag: Amtsgericht Aachen, HRB 4996
+Regards,
 
-www.karo-electronics.de | info@karo-electronics.de
-___________________________________________________________
+Alexander
+
