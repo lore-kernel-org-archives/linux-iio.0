@@ -1,45 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:52460 "EHLO
-	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754422Ab2LKSee (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2012 13:34:34 -0500
-Message-ID: <50C77CA9.2090803@ahsoftware.de>
-Date: Tue, 11 Dec 2012 19:34:17 +0100
-From: Alexander Holler <holler@ahsoftware.de>
+Received: from mailout-de.gmx.net ([213.165.64.22]:36708 "HELO
+	mailout-de.gmx.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1753308Ab2LKT5g (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2012 14:57:36 -0500
+Message-ID: <50C7902C.2060804@gmx.de>
+Date: Tue, 11 Dec 2012 20:57:32 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"matteo.dameno@st.com" <matteo.dameno@st.com>
-Subject: Re: hid-sensor-hub and autoloading of HID sensor modules
-References: <50C64F29.9030200@ahsoftware.de> <4FA419E87744DF4DAECD5BCE1214B7A91C96075E@ORSMSX108.amr.corp.intel.com> <50C6551B.1030107@ahsoftware.de> <4FA419E87744DF4DAECD5BCE1214B7A91C96077D@ORSMSX108.amr.corp.intel.com> <50C659C1.7060005@ahsoftware.de>
-In-Reply-To: <50C659C1.7060005@ahsoftware.de>
-Content-Type: text/plain; charset=us-ascii
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Sascha Hauer <s.hauer@pengutronix.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 0/2] fixes for adt7410
+References: <50032AD8.9040103@gmx.de> <50033218.7030602@metafoo.de> <20120716083428.GD30009@pengutronix.de> <5003D404.4040005@kernel.org>
+In-Reply-To: <5003D404.4040005@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 10.12.2012 22:53, schrieb Alexander Holler:
-> Am 10.12.2012 22:40, schrieb Pandruvada, Srinivas:
->> I mean if your patch is merged, when new kernel is synced in the product line, we can't depend on auto loading of hid-sensor-hub. So we need to do something similar as you suggested.
-> 
-> Those patches aren't meant for your product line (mor for 3.8). But
-> hid-sensor-hub currently (as in 3.7-rc) doesn't load the necessary
-> modules at all, only hid-sensor-hub is currently loaded automatically,
-> not the other modules. That is at least what I've experienced here.
+Jonathan Cameron schrieb:
+> On 7/16/2012 9:34 AM, Sascha Hauer wrote:
+>> On Sun, Jul 15, 2012 at 11:11:52PM +0200, Lars-Peter Clausen wrote:
+>>> On 07/15/2012 10:40 PM, Hartmut Knaack wrote:
+>>>> This patchset makes the ADT7410 usable. Main reason was the following error when trying to register one of these devices:
+>>>> [  180.945561] BUG: unable to handle kernel NULL pointer dereference at   (null)
+>>>> [  180.945592] IP: [<f84b1e80>] iio_device_register_eventset+0x380/0x3a0 [industrialio]
+>>>> This happens, since in industrialio-events.c __iio_add_event_config_attrs (which does a INIT_LIST_HEAD) is not called, if the channels attribute of the device is not set. As a result, list_for_each_entry causes those NULL pointer dereference problems. So, before trying to access those list elements, we check for their existence (also in unregister functions).
+>>>> Now the adt7410.c ended in some complex changes - my apologies for this:
+>>>>
+>>>>    * check for exact values provided through sysfs, otherwise output a verbose error/usage message for: sample mode, resolution, event mode
+>>>>    * adt7410_show_id: I don't see a point in masking out some LSBs, if they get shifted to oblivion, anyway -> no more need for ADT7410_MANUFACTORY_ID_MASK
+>>>>    * adt7410_convert_temperature: in 13 bit mode, the driver assumed the data to be stored in bits 0-12, but according to the data sheet, it is stored in bits 3-15. Temperature readings were always around 200(°C), while real temperature was something around 20(°C). Simple fix: mask out bits 0-2 in 13 bit mode and use the 16 bit routines from that point on.
+>>>>    * adt7410_set_t_bound: handle float values provided through sysfs properly. Also, simplify treatment of 13 bit values by masking out bits 0-2.
+>>>>    * adt7410_probe, adt7410_remove: fix another possible NULL pointer dereference issue, in case no platform data is provided. Sync chip->config with the config register
+>>> Hi,
+>>>
+>>> Sascha Hauer posted a couple of patches a while ago which seem to fix a
+>>> similar set of issues.
+>>>
+>>> See: http://www.spinics.net/lists/linux-iio/msg05947.html and
+>>> http://www.spinics.net/lists/linux-iio/msg05955.html
+>> Indeed, most if not all of the mentioned issues should be fixed already
+>> with these patches.
+>>
+> Just to reiterate what I said to Sascha at the time...  This driver does
+> not belong in IIO. It is very much a hardware monitoring part and so
+> wants to move to hwmon. We aren't going to take it out of staging into
+> drivers/iio and I'm rather unwilling to take any 'new' features into the
+> staging version. Someone with hardware who is interesting needs to bite
+> the bullet and convert / rewrite this driver as a hwmon device.
+>
+FYI, I created a basic hwmon driver for ADT7410, which now made it into linux 3.7.
+Take care
 
-As I'm not sure if I could describe clearly what I meant to say, I try
-it again: ;)
+Hartmut
 
-The problem that the necessary modules will not be loaded automatically
-already exists in kernel 3.7. This is indepent of my proposed patches to
-get rid of the vendor and device IDs and load hid-sensor-hub
-automatically for all USB HID sensor hubs.
-
-With or without my proposed patches, only hid-sensor-hub is loaded
-automatically, but not the other drivers like hid-sensor-accel-3d,
-hid-sensor-als, hid-sensor-gyro-3d or hid-sensor-magn-3d (if the are
-build as modules).
-
-Regards,
-
-Alexander
