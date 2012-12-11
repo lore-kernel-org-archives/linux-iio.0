@@ -1,93 +1,56 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-Message-ID: <50C6FD60.7080300@jic23.retrosnub.co.uk>
-Date: Tue, 11 Dec 2012 09:31:12 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-MIME-Version: 1.0
-To: Alexander Holler <holler@ahsoftware.de>
-CC: Jonathan Cameron <jic23@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- Jonathan Cameron <jic23@cam.ac.uk>,
- rtc-linux@googlegroups.com, Alessandro Zummo <a.zummo@towertech.it>,
- srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
-References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de> <50C63BBD.3080202@ahsoftware.de> <50C64484.4060306@metafoo.de> <50C65381.8010609@ahsoftware.de> <50C6567D.7080303@metafoo.de> <50C65746.8030609@kernel.org> <50C6674D.1000901@ahsoftware.de>
-In-Reply-To: <50C6674D.1000901@ahsoftware.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.karo-electronics.de ([81.173.242.67]:60371 "EHLO
+	mail.karo-electronics.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751821Ab2LKIhP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2012 03:37:15 -0500
+Message-ID: <20678.60523.170336.920677@ipc1.ka-ro>
+Date: Tue, 11 Dec 2012 09:18:51 +0100
+From: =?utf-8?Q?Lothar_Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Marek Vasut <marex@denx.de>,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	linux-iio@vger.kernel.org,
+	"linux-input\@vger.kernel.org" <linux-input@vger.kernel.org>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	linux-arm-kernel@lists.infradead.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Subject: Re: [PATCH 3/4] iio: mxs: Implement support for touchscreen
+In-Reply-To: <20121210222437.GA19008@core.coreip.homeip.net>
+References: <1354893893-26338-1-git-send-email-marex@denx.de>
+	<1354893893-26338-3-git-send-email-marex@denx.de>
+	<50C312D8.4050405@kernel.org>
+	<20121210222437.GA19008@core.coreip.homeip.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 10/12/12 22:50, Alexander Holler wrote:
-> Am 10.12.2012 22:42, schrieb Jonathan Cameron:
->> On 12/10/2012 09:39 PM, Lars-Peter Clausen wrote:
->>> On 12/10/2012 10:26 PM, Alexander Holler wrote:
->>>> Am 10.12.2012 21:22, schrieb Lars-Peter Clausen:
->>>>> On 12/10/2012 08:45 PM, Alexander Holler wrote:
->>>>>> Am 10.12.2012 18:05, schrieb Lars-Peter Clausen:
->>>>>>
->>>>>>> Looks pretty good now. But there are still some IIO remnants
->>>>>>> which should be
->>>>>>> removed as well. Also the driver should move to drivers/rtc/
->>>>>>> since, well,
->>>>>>> it's a rtc driver not a IIO driver.
->>>>>>
->>>>>> I think it still should be stick to iio, because that is where all
->>>>>> HID
->>>>>> sensors currently are found and where the user would expect to
->>>>>> find such
->>>>>> a driver.
->>>>>
->>>>> That's because all the current IIO sensor drivers fall in the IIO
->>>>> domain. This
->>>>> one clearly is a RTC driver, so it belongs in drivers/rtc/
->>>>
->>>> Where nobody will find it if he searches for drivers for his HID
->>>> sensor.
->>>> I still see it as HID sensor driver and not a rtc-driver.
->>>> But ...
->>>
->>> I can understand your position, but drivers are usually grouped by
->>> function not
->>> by topology. If there is a proper Kconfig help text people should
->>> hopefully be
->>> find it.
->> Seconded on this. If it is a pure rtc driver then it definitely
->> belongs in
->> drivers/rtc.  Now there might have been ways of doing this as a
->> consumer / provider
->> with the provider being in IIO and the consumer in rtc, but that
->> sounds like
->> it is over compicating things, at least for now.
->
-> Personally I just want to use it to have HID-USB_RTCs. ;)
->
-> But in case of HID sensor hubs, the main usage of that driver will be to
-> set the time of such hubs (something I still have to make patches for),
-> and not to read it. So if you think as an HID sensor user, it should
-> belong to iio or wherever those sensor will finally end up (I think they
-> should end up in HID and should be usable by bluetooth devices too), but
-> if you creatively misuse the standard to get a driver for USB-RTCs, as I
-> want, then rtc is the correct place. ;)
-I did wonder what you were up to ;)
->
-> Because I don't want to do a v4:
->
-> the driver has an
->
-> #include "../common/hid-sensors/hid-sensor-attributes.h"
->
-> so moving it to drivers/rtc/ will make that even more ugly.
->
+Hi,
 
-> Suggestions? I don't really care and as I'm currently at the order
-> receiving end ;) I would change it to whatever the maintainers are
-> wanting. Maybe moving that header to include/linux or even integrating
-> it into include/linux/hid-sensor-hubs.h makes sense.
-Yes, move the header or merge into existing one as makes sense.
-I'm not pulling this driver into the IIO tree (unless for some
-reason Alessandro wants me to and I can't think why he would...).
+Dmitry Torokhov writes:
+> Hi Marek, Jonathan,
+> 
+> On Sat, Dec 08, 2012 at 10:13:44AM +0000, Jonathan Cameron wrote:
+> > On 12/07/2012 03:24 PM, Marek Vasut wrote:
+[...]
+> > > +	int			use_touchbutton:1;
+> 
+> Why would someone not want to use it?
+> 
+> > > +	int			use_touchscreen_4wire:1;
+> > > +	int			use_touchscreen_5wire:1;
+> 
+bit fields should be of unsigned type, because otherwise the 'true'
+value will be '-1' rather than '1'.
 
->
-> Regards,
->
-> Alexander
+
+Lothar Waßmann
+-- 
+___________________________________________________________
+
+Ka-Ro electronics GmbH | Pascalstraße 22 | D - 52076 Aachen
+Phone: +49 2408 1402-0 | Fax: +49 2408 1402-10
+Geschäftsführer: Matthias Kaussen
+Handelsregistereintrag: Amtsgericht Aachen, HRB 4996
+
+www.karo-electronics.de | info@karo-electronics.de
+___________________________________________________________
