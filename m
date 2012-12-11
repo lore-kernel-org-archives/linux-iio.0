@@ -1,62 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:57891 "EHLO
-	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753992Ab2LEUPc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Dec 2012 15:15:32 -0500
-Message-ID: <50BFAB5C.6060207@ahsoftware.de>
-Date: Wed, 05 Dec 2012 21:15:24 +0100
-From: Alexander Holler <holler@ahsoftware.de>
-MIME-Version: 1.0
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Received: from mga01.intel.com ([192.55.52.88]:58682 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752857Ab2LKSkG convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2012 13:40:06 -0500
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: Alexander Holler <holler@ahsoftware.de>
 CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-Subject: Re: HID-sensor(-hub.c) and device IDs
-References: <50BF961D.5080101@ahsoftware.de> <4FA419E87744DF4DAECD5BCE1214B7A91C95FE7C@ORSMSX108.amr.corp.intel.com>
-In-Reply-To: <4FA419E87744DF4DAECD5BCE1214B7A91C95FE7C@ORSMSX108.amr.corp.intel.com>
-Content-Type: text/plain; charset=us-ascii; format=flowed
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"matteo.dameno@st.com" <matteo.dameno@st.com>
+Subject: RE: hid-sensor-hub and autoloading of HID sensor modules
+Date: Tue, 11 Dec 2012 18:40:04 +0000
+Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A91C9609AD@ORSMSX108.amr.corp.intel.com>
+References: <50C64F29.9030200@ahsoftware.de>
+ <4FA419E87744DF4DAECD5BCE1214B7A91C96075E@ORSMSX108.amr.corp.intel.com>
+ <50C6551B.1030107@ahsoftware.de>
+ <4FA419E87744DF4DAECD5BCE1214B7A91C96077D@ORSMSX108.amr.corp.intel.com>
+ <50C659C1.7060005@ahsoftware.de> <50C77CA9.2090803@ahsoftware.de>
+In-Reply-To: <50C77CA9.2090803@ahsoftware.de>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 05.12.2012 20:21, schrieb Pandruvada, Srinivas:
-> We have not tested on sensor hubs from different vendors except few. It is possible that some vendors are using sensor hub as raw devices . We can remove vendor product ids once we have a good list for support.
 
-Hmm, sorry, I don't understand that fully. Does that mean that the list 
-is there to use the driver only with a small group of devices because 
-otherwise some HID-sensors aren't usable as raw devices?
+Yes, only hid-sensor-hub is loaded automatically currently. IIO sensor driver needs to be loaded by modprobe or insmod. 
 
-I don't know how many HID-sensor devices are already out in the wild, 
-but because the standard looks fairly new, I don't think there are that 
-many. And I wonder how you want to get the list larger, if nobody 
-notifies that they should use hid-sensor-hub.c.
+Thanks,
+Srinivas
 
-I think the correct way would be to build a blacklist instead of a 
-whitelist.
+-----Original Message-----
+From: Alexander Holler [mailto:holler@ahsoftware.de] 
+Sent: Tuesday, December 11, 2012 10:34 AM
+To: Pandruvada, Srinivas
+Cc: linux-iio@vger.kernel.org; linux-input@vger.kernel.org; matteo.dameno@st.com
+Subject: Re: hid-sensor-hub and autoloading of HID sensor modules
+
+Am 10.12.2012 22:53, schrieb Alexander Holler:
+> Am 10.12.2012 22:40, schrieb Pandruvada, Srinivas:
+>> I mean if your patch is merged, when new kernel is synced in the product line, we can't depend on auto loading of hid-sensor-hub. So we need to do something similar as you suggested.
+> 
+> Those patches aren't meant for your product line (mor for 3.8). But 
+> hid-sensor-hub currently (as in 3.7-rc) doesn't load the necessary 
+> modules at all, only hid-sensor-hub is currently loaded automatically, 
+> not the other modules. That is at least what I've experienced here.
+
+As I'm not sure if I could describe clearly what I meant to say, I try it again: ;)
+
+The problem that the necessary modules will not be loaded automatically already exists in kernel 3.7. This is indepent of my proposed patches to get rid of the vendor and device IDs and load hid-sensor-hub automatically for all USB HID sensor hubs.
+
+With or without my proposed patches, only hid-sensor-hub is loaded automatically, but not the other drivers like hid-sensor-accel-3d, hid-sensor-als, hid-sensor-gyro-3d or hid-sensor-magn-3d (if the are build as modules).
 
 Regards,
 
 Alexander
-
-> Thanks,
-> Srinivas
->
-> -----Original Message-----
-> From: Alexander Holler [mailto:holler@ahsoftware.de]
-> Sent: Wednesday, December 05, 2012 10:45 AM
-> To: linux-iio@vger.kernel.org; linux-input@vger.kernel.org; Pandruvada, Srinivas
-> Subject: HID-sensor(-hub.c) and device IDs
->
-> Hello,
->
-> is there any special reason why vendor and devices IDs for HID-sensors must be listed in drivers/hid/hid-sensor-hub.c and drivers/hid/hid-core.c?
->
-> Maybe I'm missing something, but I don't think this is how HID is supposed to work.
->
-> Regards,
->
-> Alexander
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-
