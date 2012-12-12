@@ -1,233 +1,229 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 5.mo5.mail-out.ovh.net ([87.98.173.103]:53557 "EHLO
-	mo5.mail-out.ovh.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752626Ab2LSSsR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Dec 2012 13:48:17 -0500
-Received: from mail644.ha.ovh.net (b9.ovh.net [213.186.33.59])
-	by mo5.mail-out.ovh.net (Postfix) with SMTP id A3F6C108C037
-	for <linux-iio@vger.kernel.org>; Wed, 19 Dec 2012 19:47:38 +0100 (CET)
-From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-To: linux-arm-kernel@lists.infradead.org
-Cc: Ludovic Desroches <ludovic.desroches@atmel.com>,
-	Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>,
-	linux-iio@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: [PATCH 1/3] ARM: AT91: IIO: add low and high res support for adc
-Date: Wed, 19 Dec 2012 19:37:10 +0100
-Message-Id: <1355942232-26251-1-git-send-email-plagnioj@jcrosoft.com>
-In-Reply-To: <20121219183236.GP23971@game.jcrosoft.org>
-References: <20121219183236.GP23971@game.jcrosoft.org>
+Received: from mga02.intel.com ([134.134.136.20]:50044 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754169Ab2LLVEh convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Dec 2012 16:04:37 -0500
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: Alexander Holler <holler@ahsoftware.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Andrew Morton <akpm@linux-foundation.org>
+Subject: RE: [PATCHi 5/4] hid: iio: rename struct hid_sensor_iio_common to
+ hid_sensor_common
+Date: Wed, 12 Dec 2012 21:04:34 +0000
+Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A91C960CDA@ORSMSX108.amr.corp.intel.com>
+References: <50C8E49C.70106@ahsoftware.de>
+ <1355344082-15038-1-git-send-email-holler@ahsoftware.de>
+In-Reply-To: <1355344082-15038-1-git-send-email-holler@ahsoftware.de>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Ludovic Desroches <ludovic.desroches@atmel.com>
+Looks good.
 
-at91 adc offers the choice between two resolutions: low and high.
-The low and high resolution values depends on adc IP version, as many IP
-properties have been exposed through device tree, these settings have also
-been added to the dt bindings.
+-----Original Message-----
+From: Alexander Holler [mailto:holler@ahsoftware.de] 
+Sent: Wednesday, December 12, 2012 12:28 PM
+To: linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org; Jonathan Cameron; Lars-Peter Clausen; rtc-linux@googlegroups.com; Alessandro Zummo; Pandruvada, Srinivas; Andrew Morton; Alexander Holler
+Subject: [PATCHi 5/4] hid: iio: rename struct hid_sensor_iio_common to hid_sensor_common
 
-Update at the same time the dtsi.
+The structure with common attributes for hid-sensors isn't specific to the iio-subsystem, so rename it to hid_sensor_common.
 
-Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
-[plagnioj@jcrosoft.com: udpate current adc dt support]
-Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Cc: linux-iio@vger.kernel.org
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+Signed-off-by: Alexander Holler <holler@ahsoftware.de>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+
 ---
- .../devicetree/bindings/arm/atmel-adc.txt          |   11 +++
- arch/arm/boot/dts/at91sam9260.dtsi                 |    3 +
- arch/arm/boot/dts/at91sam9g45.dtsi                 |    3 +
- arch/arm/boot/dts/at91sam9x5.dtsi                  |    3 +
- drivers/iio/adc/at91_adc.c                         |   74 ++++++++++++++++++--
- 5 files changed, 90 insertions(+), 4 deletions(-)
+ drivers/iio/accel/hid-sensor-accel-3d.c            |    2 +-
+ .../iio/common/hid-sensors/hid-sensor-attributes.c |   10 +++++-----
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    |    4 ++--
+ .../iio/common/hid-sensors/hid-sensor-trigger.h    |    2 +-
+ drivers/iio/gyro/hid-sensor-gyro-3d.c              |    2 +-
+ drivers/iio/light/hid-sensor-als.c                 |    2 +-
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c      |    2 +-
+ drivers/rtc/rtc-hid-sensor-time.c                  |    2 +-
+ include/linux/hid-sensor-hub.h                     |   12 ++++++------
+ 9 files changed, 19 insertions(+), 19 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/atmel-adc.txt b/Documentation/devicetree/bindings/arm/atmel-adc.txt
-index c63097d..fd2d69e 100644
---- a/Documentation/devicetree/bindings/arm/atmel-adc.txt
-+++ b/Documentation/devicetree/bindings/arm/atmel-adc.txt
-@@ -14,9 +14,17 @@ Required properties:
-   - atmel,adc-status-register: Offset of the Interrupt Status Register
-   - atmel,adc-trigger-register: Offset of the Trigger Register
-   - atmel,adc-vref: Reference voltage in millivolts for the conversions
-+  - atmel,adc-res: List of resolution in bits supported by the ADC. List size
-+		   must be two at least.
-+  - atmel,adc-res-names: Contains one identifier string for each resolution
-+			 in atmel,adc-res property. "lowres" and "highres"
-+			 identifiers are required.
+diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+index 72371aa..2133da8 100644
+--- a/drivers/iio/accel/hid-sensor-accel-3d.c
++++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+@@ -43,7 +43,7 @@ enum accel_3d_channel {
  
- Optional properties:
-   - atmel,adc-use-external: Boolean to enable of external triggers
-+  - atmel,adc-use-res: String corresponding to an identifier from
-+		       atmel,adc-res-names property. If not specified, the highest
-+		       resolution will be used.
-  
- Optional trigger Nodes:
-   - Required properties:
-@@ -40,6 +48,9 @@ adc0: adc@fffb0000 {
- 	atmel,adc-trigger-register = <0x08>;
- 	atmel,adc-use-external;
- 	atmel,adc-vref = <3300>;
-+	atmel,adc-res = <8 10>;
-+	atmel,adc-res-names = "lowres", "highres";
-+	atmel,adc-use-res = "lowres";
- 
- 	trigger@0 {
- 		trigger-name = "external-rising";
-diff --git a/arch/arm/boot/dts/at91sam9260.dtsi b/arch/arm/boot/dts/at91sam9260.dtsi
-index cca34bc..7c605d2 100644
---- a/arch/arm/boot/dts/at91sam9260.dtsi
-+++ b/arch/arm/boot/dts/at91sam9260.dtsi
-@@ -506,6 +506,9 @@
- 				atmel,adc-drdy-mask = <0x10000>;
- 				atmel,adc-status-register = <0x1c>;
- 				atmel,adc-trigger-register = <0x04>;
-+				atmel,adc-res = <8 10>;
-+				atmel,adc-res-names = "lowres", "highres";
-+				atmel,adc-use-res = "highres";
- 
- 				trigger@0 {
- 					trigger-name = "timer-counter-0";
-diff --git a/arch/arm/boot/dts/at91sam9g45.dtsi b/arch/arm/boot/dts/at91sam9g45.dtsi
-index 253afed..70c776e 100644
---- a/arch/arm/boot/dts/at91sam9g45.dtsi
-+++ b/arch/arm/boot/dts/at91sam9g45.dtsi
-@@ -488,6 +488,9 @@
- 				atmel,adc-drdy-mask = <0x10000>;
- 				atmel,adc-status-register = <0x1c>;
- 				atmel,adc-trigger-register = <0x08>;
-+				atmel,adc-res = <8 10>;
-+				atmel,adc-res-names = "lowres", "highres";
-+				atmel,adc-use-res = "highres";
- 
- 				trigger@0 {
- 					trigger-name = "external-rising";
-diff --git a/arch/arm/boot/dts/at91sam9x5.dtsi b/arch/arm/boot/dts/at91sam9x5.dtsi
-index 70c1f5d..e52862d 100644
---- a/arch/arm/boot/dts/at91sam9x5.dtsi
-+++ b/arch/arm/boot/dts/at91sam9x5.dtsi
-@@ -469,6 +469,9 @@
- 				atmel,adc-drdy-mask = <0x1000000>;
- 				atmel,adc-status-register = <0x30>;
- 				atmel,adc-trigger-register = <0xc0>;
-+				atmel,adc-res = <8 10>;
-+				atmel,adc-res-names = "lowres", "highres";
-+				atmel,adc-use-res = "highres";
- 
- 				trigger@0 {
- 					trigger-name = "external-rising";
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 315bed1..f175a86 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -57,6 +57,8 @@ struct at91_adc_state {
- 	u32			trigger_number;
- 	bool			use_external;
- 	u32			vref_mv;
-+	u32			res;		/* resolution used for convertions */
-+	bool			low_res;	/* the resolution corresponds to the lowest one */
- 	wait_queue_head_t	wq_data_avail;
+ struct accel_3d_state {
+ 	struct hid_sensor_hub_callbacks callbacks;
+-	struct hid_sensor_iio_common common_attributes;
++	struct hid_sensor_common common_attributes;
+ 	struct hid_sensor_hub_attribute_info accel[ACCEL_3D_CHANNEL_MAX];
+ 	u32 accel_val[ACCEL_3D_CHANNEL_MAX];
  };
- 
-@@ -138,7 +140,7 @@ static int at91_adc_channel_init(struct iio_dev *idev)
- 		chan->channel = bit;
- 		chan->scan_index = idx;
- 		chan->scan_type.sign = 'u';
--		chan->scan_type.realbits = 10;
-+		chan->scan_type.realbits = st->res;
- 		chan->scan_type.storagebits = 16;
- 		chan->info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
- 			IIO_CHAN_INFO_RAW_SEPARATE_BIT;
-@@ -372,6 +374,59 @@ static int at91_adc_read_raw(struct iio_dev *idev,
- 	return -EINVAL;
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 5873f16..75b5473 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -113,7 +113,7 @@ static u32 convert_to_vtf_format(int size, int exp, int val1, int val2)
+ 	return value;
  }
  
-+static int at91_adc_of_get_resolution(struct at91_adc_state *st,
-+				      struct platform_device *pdev)
-+{
-+	struct iio_dev *idev = iio_priv_to_dev(st);
-+	struct device_node *np = pdev->dev.of_node;
-+	int count, i, ret = 0;
-+	char *res_name, *s;
-+	u32 *resolutions;
-+
-+	count = of_property_count_strings(np, "atmel,adc-res-names");
-+	if (count < 2) {
-+		dev_err(&idev->dev, "You must specified at least two resolution names for "
-+				    "adc-res-names property in the DT\n");
-+		return count;
-+	}
-+
-+	resolutions = kmalloc(count * sizeof(*resolutions), GFP_KERNEL);
-+	if (!resolutions)
-+		return -ENOMEM;
-+
-+	if (of_property_read_u32_array(np, "atmel,adc-res", resolutions, count)) {
-+		dev_err(&idev->dev, "Missing adc-res property in the DT.\n");
-+		ret = -ENODEV;
-+		goto ret;
-+	}
-+
-+	if (of_property_read_string(np, "atmel,adc-use-res", (const char **)&res_name))
-+		res_name = "highres";
-+
-+	for (i = 0; i < count; i++) {
-+		if (of_property_read_string_index(np, "atmel,adc-res-names", i, (const char **)&s))
-+			continue;
-+
-+		if (strcmp(res_name, s))
-+			continue;
-+
-+		st->res = resolutions[i];
-+		if (!strcmp(res_name, "lowres"))
-+			st->low_res = true;
-+		else
-+			st->low_res = false;
-+
-+		dev_info(&idev->dev, "Resolution used: %u bits\n", st->res);
-+		goto ret;
-+	}
-+
-+	dev_err(&idev->dev, "There is no resolution for %s\n", res_name);
-+
-+ret:
-+	kfree(resolutions);
-+	return ret;
-+}
-+
- static int at91_adc_probe_dt(struct at91_adc_state *st,
- 			     struct platform_device *pdev)
+-int hid_sensor_read_samp_freq_value(struct hid_sensor_iio_common *st,
++int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
+ 				int *val1, int *val2)
  {
-@@ -415,6 +470,10 @@ static int at91_adc_probe_dt(struct at91_adc_state *st,
- 	}
- 	st->vref_mv = prop;
+ 	s32 value;
+@@ -140,7 +140,7 @@ int hid_sensor_read_samp_freq_value(struct hid_sensor_iio_common *st,  }  EXPORT_SYMBOL(hid_sensor_read_samp_freq_value);
  
-+	ret = at91_adc_of_get_resolution(st, pdev);
-+	if (ret)
-+		goto error_ret;
-+
- 	st->registers = devm_kzalloc(&idev->dev,
- 				     sizeof(struct at91_adc_reg_desc),
- 				     GFP_KERNEL);
-@@ -628,9 +687,16 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
- 	 */
- 	ticks = round_up((st->startup_time * adc_clk /
- 			  1000000) - 1, 8) / 8;
--	at91_adc_writel(st, AT91_ADC_MR,
--			(AT91_ADC_PRESCAL_(prsc) & AT91_ADC_PRESCAL) |
--			(AT91_ADC_STARTUP_(ticks) & AT91_ADC_STARTUP));
-+
-+	if (st->low_res)
-+		at91_adc_writel(st, AT91_ADC_MR,
-+				AT91_ADC_LOWRES |
-+				(AT91_ADC_PRESCAL_(prsc) & AT91_ADC_PRESCAL) |
-+				(AT91_ADC_STARTUP_(ticks) & AT91_ADC_STARTUP));
-+	else
-+		at91_adc_writel(st, AT91_ADC_MR,
-+				(AT91_ADC_PRESCAL_(prsc) & AT91_ADC_PRESCAL) |
-+				(AT91_ADC_STARTUP_(ticks) & AT91_ADC_STARTUP));
+-int hid_sensor_write_samp_freq_value(struct hid_sensor_iio_common *st,
++int hid_sensor_write_samp_freq_value(struct hid_sensor_common *st,
+ 				int val1, int val2)
+ {
+ 	s32 value;
+@@ -168,7 +168,7 @@ int hid_sensor_write_samp_freq_value(struct hid_sensor_iio_common *st,  }  EXPORT_SYMBOL(hid_sensor_write_samp_freq_value);
  
- 	/* Setup the ADC channels available on the board */
- 	ret = at91_adc_channel_init(idev);
--- 
-1.7.10.4
+-int hid_sensor_read_raw_hyst_value(struct hid_sensor_iio_common *st,
++int hid_sensor_read_raw_hyst_value(struct hid_sensor_common *st,
+ 				int *val1, int *val2)
+ {
+ 	s32 value;
+@@ -190,7 +190,7 @@ int hid_sensor_read_raw_hyst_value(struct hid_sensor_iio_common *st,  }  EXPORT_SYMBOL(hid_sensor_read_raw_hyst_value);
+ 
+-int hid_sensor_write_raw_hyst_value(struct hid_sensor_iio_common *st,
++int hid_sensor_write_raw_hyst_value(struct hid_sensor_common *st,
+ 					int val1, int val2)
+ {
+ 	s32 value;
+@@ -211,7 +211,7 @@ EXPORT_SYMBOL(hid_sensor_write_raw_hyst_value);
+ 
+ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+ 					u32 usage_id,
+-					struct hid_sensor_iio_common *st)
++					struct hid_sensor_common *st)
+ {
+ 
+ 	sensor_hub_input_get_attribute_info(hsdev,
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index b097b68..58fc108 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -31,7 +31,7 @@
+ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 						bool state)
+ {
+-	struct hid_sensor_iio_common *st = trig->private_data;
++	struct hid_sensor_common *st = trig->private_data;
+ 	int state_val;
+ 
+ 	state_val = state ? 1 : 0;
+@@ -65,7 +65,7 @@ static const struct iio_trigger_ops hid_sensor_trigger_ops = {  };
+ 
+ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+-				struct hid_sensor_iio_common *attrb)
++				struct hid_sensor_common *attrb)
+ {
+ 	int ret;
+ 	struct iio_trigger *trig;
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.h b/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
+index fd98297..9a87314 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
+@@ -20,7 +20,7 @@
+ #define _HID_SENSOR_TRIGGER_H
+ 
+ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+-				struct hid_sensor_iio_common *attrb);
++				struct hid_sensor_common *attrb);
+ void hid_sensor_remove_trigger(struct iio_dev *indio_dev);
+ 
+ #endif
+diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+index b98cd70..85330ad 100644
+--- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
++++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+@@ -43,7 +43,7 @@ enum gyro_3d_channel {
+ 
+ struct gyro_3d_state {
+ 	struct hid_sensor_hub_callbacks callbacks;
+-	struct hid_sensor_iio_common common_attributes;
++	struct hid_sensor_common common_attributes;
+ 	struct hid_sensor_hub_attribute_info gyro[GYRO_3D_CHANNEL_MAX];
+ 	u32 gyro_val[GYRO_3D_CHANNEL_MAX];
+ };
+diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+index 9610989..051b88c 100644
+--- a/drivers/iio/light/hid-sensor-als.c
++++ b/drivers/iio/light/hid-sensor-als.c
+@@ -38,7 +38,7 @@
+ 
+ struct als_state {
+ 	struct hid_sensor_hub_callbacks callbacks;
+-	struct hid_sensor_iio_common common_attributes;
++	struct hid_sensor_common common_attributes;
+ 	struct hid_sensor_hub_attribute_info als_illum;
+ 	u32 illum;
+ };
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index 4957430..5c59044 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -43,7 +43,7 @@ enum magn_3d_channel {
+ 
+ struct magn_3d_state {
+ 	struct hid_sensor_hub_callbacks callbacks;
+-	struct hid_sensor_iio_common common_attributes;
++	struct hid_sensor_common common_attributes;
+ 	struct hid_sensor_hub_attribute_info magn[MAGN_3D_CHANNEL_MAX];
+ 	u32 magn_val[MAGN_3D_CHANNEL_MAX];
+ };
+diff --git a/drivers/rtc/rtc-hid-sensor-time.c b/drivers/rtc/rtc-hid-sensor-time.c
+index 41bc011..8050c5d 100644
+--- a/drivers/rtc/rtc-hid-sensor-time.c
++++ b/drivers/rtc/rtc-hid-sensor-time.c
+@@ -39,7 +39,7 @@ enum hid_time_channel {
+ 
+ struct hid_time_state {
+ 	struct hid_sensor_hub_callbacks callbacks;
+-	struct hid_sensor_iio_common common_attributes;
++	struct hid_sensor_common common_attributes;
+ 	struct hid_sensor_hub_attribute_info info[TIME_RTC_CHANNEL_MAX];
+ 	struct rtc_time last_time;
+ 	spinlock_t lock_last_time;
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h index e6265f9..ecefb73 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -161,7 +161,7 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+ /* hid-sensor-attributes */
+ 
+ /* Common hid sensor iio structure */
+-struct hid_sensor_iio_common {
++struct hid_sensor_common {
+ 	struct hid_sensor_hub_device *hsdev;
+ 	struct platform_device *pdev;
+ 	unsigned usage_id;
+@@ -185,14 +185,14 @@ static inline int hid_sensor_convert_exponent(int unit_expo)
+ 
+ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+ 					u32 usage_id,
+-					struct hid_sensor_iio_common *st);
+-int hid_sensor_write_raw_hyst_value(struct hid_sensor_iio_common *st,
++					struct hid_sensor_common *st);
++int hid_sensor_write_raw_hyst_value(struct hid_sensor_common *st,
+ 					int val1, int val2);
+-int hid_sensor_read_raw_hyst_value(struct hid_sensor_iio_common *st,
++int hid_sensor_read_raw_hyst_value(struct hid_sensor_common *st,
+ 					int *val1, int *val2);
+-int hid_sensor_write_samp_freq_value(struct hid_sensor_iio_common *st,
++int hid_sensor_write_samp_freq_value(struct hid_sensor_common *st,
+ 					int val1, int val2);
+-int hid_sensor_read_samp_freq_value(struct hid_sensor_iio_common *st,
++int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
+ 					int *val1, int *val2);
+ 
+ #endif
+--
+1.7.8.6
 
