@@ -1,60 +1,162 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:64200 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750823Ab2LJVia (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2012 16:38:30 -0500
-Message-ID: <50C6567D.7080303@metafoo.de>
-Date: Mon, 10 Dec 2012 22:39:09 +0100
+Return-Path: <lars@metafoo.de>
+Message-ID: <50C8BA3C.7040002@metafoo.de>
+Date: Wed, 12 Dec 2012 18:09:16 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Alexander Holler <holler@ahsoftware.de>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>, rtc-linux@googlegroups.com,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
-References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de> <50C63BBD.3080202@ahsoftware.de> <50C64484.4060306@metafoo.de> <50C65381.8010609@ahsoftware.de>
-In-Reply-To: <50C65381.8010609@ahsoftware.de>
+To: Guenter Roeck <groeck-dsl@sbcglobal.net>
+CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+ Hartmut Knaack <knaack.h@gmx.de>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Sascha Hauer <s.hauer@pengutronix.de>,
+ linux-iio@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+ lm-sensors@lm-sensors.org
+Subject: Re: [PATCH 0/2] fixes for adt7410
+References: <50032AD8.9040103@gmx.de> <50033218.7030602@metafoo.de> <20120716083428.GD30009@pengutronix.de> <5003D404.4040005@kernel.org> <50C7902C.2060804@gmx.de> <50C7932A.2030104@metafoo.de> <50C8478A.1070306@jic23.retrosnub.co.uk> <50C85797.5030501@metafoo.de> <20121212144728.GA4909@roeck-us.net> <50C89FAB.1060607@metafoo.de> <20121212165153.GA7181@roeck-us.net>
+In-Reply-To: <20121212165153.GA7181@roeck-us.net>
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 12/10/2012 10:26 PM, Alexander Holler wrote:
-> Am 10.12.2012 21:22, schrieb Lars-Peter Clausen:
->> On 12/10/2012 08:45 PM, Alexander Holler wrote:
->>> Am 10.12.2012 18:05, schrieb Lars-Peter Clausen:
+On 12/12/2012 05:51 PM, Guenter Roeck wrote:
+> On Wed, Dec 12, 2012 at 04:15:55PM +0100, Lars-Peter Clausen wrote:
+>> On 12/12/2012 03:47 PM, Guenter Roeck wrote:
+>>> On Wed, Dec 12, 2012 at 11:08:23AM +0100, Lars-Peter Clausen wrote:
+>>>> Added Guenter Roeck to Cc, since he merged the hwmon patch.
+>>>>
+>>>> On 12/12/2012 09:59 AM, Jonathan Cameron wrote:
+>>>>> On 11/12/12 20:10, Lars-Peter Clausen wrote:
+>>>>>> On 12/11/2012 08:57 PM, Hartmut Knaack wrote:
+>>>>>>> Jonathan Cameron schrieb:
+>>>>>>>> On 7/16/2012 9:34 AM, Sascha Hauer wrote:
+>>>>>>>>> On Sun, Jul 15, 2012 at 11:11:52PM +0200, Lars-Peter Clausen wrote:
+>>>>>>>>>> On 07/15/2012 10:40 PM, Hartmut Knaack wrote:
+>>>>>>>>>>> This patchset makes the ADT7410 usable. Main reason was the following
+>>>>>>>>>>> error when trying to register one of these devices:
+>>>>>>>>>>> [  180.945561] BUG: unable to handle kernel NULL pointer dereference
+>>>>>>>>>>> at   (null)
+>>>>>>>>>>> [  180.945592] IP: [<f84b1e80>]
+>>>>>>>>>>> iio_device_register_eventset+0x380/0x3a0 [industrialio]
+>>>>>>>>>>> This happens, since in industrialio-events.c
+>>>>>>>>>>> __iio_add_event_config_attrs (which does a INIT_LIST_HEAD) is not
+>>>>>>>>>>> called, if the channels attribute of the device is not set. As a
+>>>>>>>>>>> result, list_for_each_entry causes those NULL pointer dereference
+>>>>>>>>>>> problems. So, before trying to access those list elements, we check
+>>>>>>>>>>> for their existence (also in unregister functions).
+>>>>>>>>>>> Now the adt7410.c ended in some complex changes - my apologies for this:
+>>>>>>>>>>>
+>>>>>>>>>>>     * check for exact values provided through sysfs, otherwise output
+>>>>>>>>>>> a verbose error/usage message for: sample mode, resolution, event mode
+>>>>>>>>>>>     * adt7410_show_id: I don't see a point in masking out some LSBs,
+>>>>>>>>>>> if they get shifted to oblivion, anyway -> no more need for
+>>>>>>>>>>> ADT7410_MANUFACTORY_ID_MASK
+>>>>>>>>>>>     * adt7410_convert_temperature: in 13 bit mode, the driver assumed
+>>>>>>>>>>> the data to be stored in bits 0-12, but according to the data sheet,
+>>>>>>>>>>> it is stored in bits 3-15. Temperature readings were always around
+>>>>>>>>>>> 200(°C), while real temperature was something around 20(°C). Simple
+>>>>>>>>>>> fix: mask out bits 0-2 in 13 bit mode and use the 16 bit routines
+>>>>>>>>>>> from that point on.
+>>>>>>>>>>>     * adt7410_set_t_bound: handle float values provided through sysfs
+>>>>>>>>>>> properly. Also, simplify treatment of 13 bit values by masking out
+>>>>>>>>>>> bits 0-2.
+>>>>>>>>>>>     * adt7410_probe, adt7410_remove: fix another possible NULL
+>>>>>>>>>>> pointer dereference issue, in case no platform data is provided. Sync
+>>>>>>>>>>> chip->config with the config register
+>>>>>>>>>> Hi,
+>>>>>>>>>>
+>>>>>>>>>> Sascha Hauer posted a couple of patches a while ago which seem to fix a
+>>>>>>>>>> similar set of issues.
+>>>>>>>>>>
+>>>>>>>>>> See: http://www.spinics.net/lists/linux-iio/msg05947.html and
+>>>>>>>>>> http://www.spinics.net/lists/linux-iio/msg05955.html
+>>>>>>>>> Indeed, most if not all of the mentioned issues should be fixed already
+>>>>>>>>> with these patches.
+>>>>>>>>>
+>>>>>>>> Just to reiterate what I said to Sascha at the time...  This driver does
+>>>>>>>> not belong in IIO. It is very much a hardware monitoring part and so
+>>>>>>>> wants to move to hwmon. We aren't going to take it out of staging into
+>>>>>>>> drivers/iio and I'm rather unwilling to take any 'new' features into the
+>>>>>>>> staging version. Someone with hardware who is interesting needs to bite
+>>>>>>>> the bullet and convert / rewrite this driver as a hwmon device.
+>>>>>>>>
+>>>>>>> FYI, I created a basic hwmon driver for ADT7410, which now made it into
+>>>>>>> linux 3.7.
+>>>>>>> Take care
+>>>>>>
+>>>>>> Ah, great, now we have two drivers which bind to the same device...
+>>>>>>
+>>>>> Yup, can one of you take a look at the two drivers and see where they
+>>>>> differ in functionality. We obviously don't want this messy situation
+>>>>> to go on for long!  Then again, we don't want to end up with missing
+>>>>> functionality in one of them either...
+>>>>
+>>>> The IIO driver supports more. It has support for the similar adt7310 and it
+>>>> also has support for reporting over- or undertemperature, something which
+>>>> can't really be implemented that nicely in the hwmon framework. We did think
 >>>
->>>> Looks pretty good now. But there are still some IIO remnants which should be
->>>> removed as well. Also the driver should move to drivers/rtc/ since, well,
->>>> it's a rtc driver not a IIO driver.
+>>> hwmon supports configuring over- and undertemperature and supports attributes
+>>> for reporting it.
 >>>
->>> I think it still should be stick to iio, because that is where all HID
->>> sensors currently are found and where the user would expect to find such
->>> a driver.
+>>>> about moving this driver to hwmon, but since it does not really support
+>>>> threshold events and also is more meant for PC-style hardware monitoring and
+>>>
+>>> There is nothing preventing you from creating such events. See gpio-fan for an
+>>> example. That it isn't implemented for most drivers doesn't mean it is not
+>>> possible or supported.
+>>>
 >>
->> That's because all the current IIO sensor drivers fall in the IIO domain. This
->> one clearly is a RTC driver, so it belongs in drivers/rtc/
-> 
-> Where nobody will find it if he searches for drivers for his HID sensor.
-> I still see it as HID sensor driver and not a rtc-driver.
-> But ...
-
-I can understand your position, but drivers are usually grouped by function not
-by topology. If there is a proper Kconfig help text people should hopefully be
-find it.
-
-> 
+>> Ah ok, via kobject_uevent. Hadn't seen this before. This definitely lowers
+>> the barrier for moving the driver to hwmon.
 >>
+>>>> the adt7410 has primarily other applications I did decide against it.
+>>>> Another reason was that we do have the IIO-to-hwmon bridge which would allow
+>>>> to instantiate a hwmon userspace interface for the driver if necessary.
+>>>>
+>>>> Hartmut you knew of the existence of the IIO driver it would have really
+>>>> been nice if you had included us on Cc when you submitted the hwmon driver
+>>>> that would have allowed us to avoid this messy situation.
+>>>>
+>>>> One solution could be to just sent a patch to revert the hwmon driver patch,
+>>>> but I guess that would be kind of counterproductive.
+>>>>
 >>>
->>>>> +/* Channel definitions */
->>>>> +static const struct iio_chan_spec hid_time_channels[TIME_RTC_CHANNEL_MAX] = {
->>>
->>> And that is imho the last remaining iio-stuff. If necessary I can remove
->>> it too.
+>>> I see two contradicting comments above: "very much a hardware monitoring
+>>> part" and "needs to ... rewrite the driver as hwmon device" vs. "the adt7410
+>>> has primarily other applications". Which one is it ?
 >>
->> That and the remaining bits of the read_raw callback.
+>> My understanding is (or at least was) that the hwmon framework is primarily
+>> intended to be used for PC-like hardware monitoring. E.g. your CPU
+>> temperature or core voltage. The ADT7410 is a temperature sensor and while
+>> it also could be used as a CPU temperature monitor it not necessarily is.
+>> The datasheet list a wide variety of applications for example industrial
+>> process control.
+>>
+> No idea where the "PC-like" comes from. It is supposed to be used for hardware
+> monitoring on any hardware, and for anything that needs to be monitored
+> (voltage, current, power, energy, temperature, humidity, fans).
+
+Ok, maybe it's just my memory playing tricks on me.
+
 > 
-> Ok. I will make a v3.
+> Now, of course one can use all the associated sensors for other purposes,
+> such as for ambient or remote temperature measurements, external voltage/current
+> measurements, or remote humidity measurements, but that isn't really the point.
+> 
+>>>
+>>>> Hartmut any suggestions from your side how to solve this?
+>>>>
+>>> Sorry, I had assumed the discussion was closed and the decision was made to move
+>>> the driver to hwmon.
+>>>
+>>> Let me know if you want me to revert the hwmon driver; no problem.
+>>>
+>>
+>> Since hwmon has support for alarms we may as well add the missing
+>> functionality to the hwmon driver and than remove the IIO driver.
+>>
+> Ok with me as well. Just let me know if there is anything you want me to do.
 > 
 
-Btw. have you seen the other comments I had inline in my response to your v2?
+I'll try to send a couple of patches migrating the missing features from the
+IIO driver to the hwmon driver and then we can remove the IIO driver.
+Probably won't be getting to it before mid January though.
+
+- Lars
