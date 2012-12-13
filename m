@@ -1,110 +1,110 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog110.obsmtp.com ([207.126.144.129]:34232 "EHLO
-	eu1sys200aog110.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754074Ab2LMMMQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2012 07:12:16 -0500
+Received: from eu1sys200aog105.obsmtp.com ([207.126.144.119]:55151 "EHLO
+	eu1sys200aog105.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753401Ab2LMMMF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2012 07:12:05 -0500
 From: Denis CIOCCA <denis.ciocca@st.com>
 To: jic23@kernel.org, lars@metafoo.de
 Cc: linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 4/4] iio:magnetometer: Add STMicroelectronics magnetometers driver
-Date: Thu, 13 Dec 2012 14:11:42 +0100
-Message-Id: <1355404302-2239-5-git-send-email-denis.ciocca@st.com>
+Subject: [PATCH 3/4] iio:gyro: Add STMicroelectronics gyroscopes driver
+Date: Thu, 13 Dec 2012 14:11:41 +0100
+Message-Id: <1355404302-2239-4-git-send-email-denis.ciocca@st.com>
 In-Reply-To: <1355404302-2239-1-git-send-email-denis.ciocca@st.com>
 References: <1355404302-2239-1-git-send-email-denis.ciocca@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds generic magnetometer driver for STMicroelectronics
-magnetometers, currently it supports:
-LSM303DLHC, LSM303DLM, LIS3MDL.
+This patch adds generic gyroscope driver for STMicroelectronics
+gyroscopes, currently it supports:
+L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
 ---
- drivers/iio/magnetometer/Kconfig           |   40 +++
- drivers/iio/magnetometer/Makefile          |    6 +
- drivers/iio/magnetometer/st_magn_buffer.c  |  105 ++++++
- drivers/iio/magnetometer/st_magn_core.c    |  518 ++++++++++++++++++++++++++++
- drivers/iio/magnetometer/st_magn_i2c.c     |   81 +++++
- drivers/iio/magnetometer/st_magn_spi.c     |   80 +++++
- drivers/iio/magnetometer/st_magn_trigger.c |   62 ++++
- include/linux/iio/magnetometer/st_magn.h   |   49 +++
- 8 files changed, 941 insertions(+), 0 deletions(-)
- create mode 100644 drivers/iio/magnetometer/st_magn_buffer.c
- create mode 100644 drivers/iio/magnetometer/st_magn_core.c
- create mode 100644 drivers/iio/magnetometer/st_magn_i2c.c
- create mode 100644 drivers/iio/magnetometer/st_magn_spi.c
- create mode 100644 drivers/iio/magnetometer/st_magn_trigger.c
- create mode 100644 include/linux/iio/magnetometer/st_magn.h
+ drivers/iio/gyro/Kconfig           |   40 +++
+ drivers/iio/gyro/Makefile          |    6 +
+ drivers/iio/gyro/st_gyro_buffer.c  |  119 +++++++++
+ drivers/iio/gyro/st_gyro_core.c    |  481 ++++++++++++++++++++++++++++++++++++
+ drivers/iio/gyro/st_gyro_i2c.c     |   85 +++++++
+ drivers/iio/gyro/st_gyro_spi.c     |   84 +++++++
+ drivers/iio/gyro/st_gyro_trigger.c |   67 +++++
+ include/linux/iio/gyro/st_gyro.h   |   54 ++++
+ 8 files changed, 936 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/iio/gyro/st_gyro_buffer.c
+ create mode 100644 drivers/iio/gyro/st_gyro_core.c
+ create mode 100644 drivers/iio/gyro/st_gyro_i2c.c
+ create mode 100644 drivers/iio/gyro/st_gyro_spi.c
+ create mode 100644 drivers/iio/gyro/st_gyro_trigger.c
+ create mode 100644 include/linux/iio/gyro/st_gyro.h
 
-diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-index c1f0cdd..4f7cec2 100644
---- a/drivers/iio/magnetometer/Kconfig
-+++ b/drivers/iio/magnetometer/Kconfig
-@@ -13,4 +13,44 @@ config HID_SENSOR_MAGNETOMETER_3D
+diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+index 48ed148..6942cd8 100644
+--- a/drivers/iio/gyro/Kconfig
++++ b/drivers/iio/gyro/Kconfig
+@@ -22,4 +22,44 @@ config HID_SENSOR_GYRO_3D
  	  Say yes here to build support for the HID SENSOR
- 	  Magnetometer 3D.
+ 	  Gyroscope 3D.
  
-+config ST_MAGN_3AXIS
-+	tristate "STMicroelectronics magnetometers 3-Axis Driver"
++config ST_GYRO_3AXIS
++	tristate "STMicroelectronics gyroscopes 3-Axis Driver"
 +	depends on (I2C || SPI_MASTER) && SYSFS
 +	select ST_SENSORS_CORE
 +	help
-+	  Say yes here to build support for STMicroelectronics magnetometers:
-+	  LSM303DLHC, LSM303DLM, LIS3MDL.
++	  Say yes here to build support for STMicroelectronics gyroscopes:
++	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
 +
 +	  This driver can also be built as a module. If so, the module
-+	  will be called st_magn.
++	  will be called st_gyro.
 +
-+config ST_MAGN_3AXIS_I2C
++config ST_GYRO_3AXIS_I2C
 +	tristate "support I2C bus connection"
-+	depends on ST_MAGN_3AXIS && I2C
++	depends on ST_GYRO_3AXIS && I2C
 +	select ST_SENSORS_I2C
 +	help
-+	  Say yes here to build I2C support for STMicroelectronics magnetometers.
++	  Say yes here to build I2C support for STMicroelectronics gyroscopes.
 +
 +	  To compile this driver as a module, choose M here: the
-+	  module will be called st_magn_i2c.
++	  module will be called st_gyro_i2c.
 +
-+config ST_MAGN_3AXIS_SPI
++config ST_GYRO_3AXIS_SPI
 +	tristate "support SPI bus connection"
-+	depends on ST_MAGN_3AXIS && SPI_MASTER
++	depends on ST_GYRO_3AXIS && SPI_MASTER
 +	select ST_SENSORS_SPI
 +	help
-+	  Say yes here to build SPI support for STMicroelectronics magnetometers.
++	  Say yes here to build SPI support for STMicroelectronics gyroscopes.
 +
 +	  To compile this driver as a module, choose M here: the
-+	  module will be called st_magn_spi.
++	  module will be called st_gyro_spi.
 +
-+config ST_MAGN_3AXIS_TRIGGERED_BUFFER
++config ST_GYRO_3AXIS_TRIGGERED_BUFFER
 +	tristate "support triggered buffer"
-+	depends on ST_MAGN_3AXIS
++	depends on ST_GYRO_3AXIS
 +	select IIO_TRIGGERED_BUFFER
 +	select IIO_BUFFER
 +	select ST_SENSORS_TRIGGERED_BUFFER
 +	help
-+	  Default trigger and buffer for STMicroelectronics magnetometers driver.
++	  Default trigger and buffer for STMicroelectronics gyroscopes driver.
 +
  endmenu
-diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
-index 60dc4f2..9be7f48 100644
---- a/drivers/iio/magnetometer/Makefile
-+++ b/drivers/iio/magnetometer/Makefile
-@@ -3,3 +3,9 @@
- #
+diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
+index 702a058..59dca8b 100644
+--- a/drivers/iio/gyro/Makefile
++++ b/drivers/iio/gyro/Makefile
+@@ -4,3 +4,9 @@
  
- obj-$(CONFIG_HID_SENSOR_MAGNETOMETER_3D) += hid-sensor-magn-3d.o
+ obj-$(CONFIG_ADIS16136) += adis16136.o
+ obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
 +
-+st_magn-y := st_magn_core.o
-+obj-$(CONFIG_ST_MAGN_3AXIS_I2C) += st_magn_i2c.o
-+obj-$(CONFIG_ST_MAGN_3AXIS_SPI) += st_magn_spi.o
-+obj-$(CONFIG_ST_MAGN_3AXIS_TRIGGERED_BUFFER) += st_magn_trigger.o st_magn_buffer.o
-+obj-$(CONFIG_ST_MAGN_3AXIS) += st_magn.o
-diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
++st_gyro-y := st_gyro_core.o
++obj-$(CONFIG_ST_GYRO_3AXIS_I2C) += st_gyro_i2c.o
++obj-$(CONFIG_ST_GYRO_3AXIS_SPI) += st_gyro_spi.o
++obj-$(CONFIG_ST_GYRO_3AXIS_TRIGGERED_BUFFER) += st_gyro_trigger.o st_gyro_buffer.o
++obj-$(CONFIG_ST_GYRO_3AXIS) += st_gyro.o
+diff --git a/drivers/iio/gyro/st_gyro_buffer.c b/drivers/iio/gyro/st_gyro_buffer.c
 new file mode 100644
-index 0000000..f6221cc
+index 0000000..884a414
 --- /dev/null
-+++ b/drivers/iio/magnetometer/st_magn_buffer.c
-@@ -0,0 +1,105 @@
++++ b/drivers/iio/gyro/st_gyro_buffer.c
+@@ -0,0 +1,119 @@
 +/*
-+ * STMicroelectronics magnetometers driver
++ * STMicroelectronics gyroscopes driver
 + *
 + * Copyright 2012 STMicroelectronics Inc.
 + *
@@ -126,96 +126,110 @@ index 0000000..f6221cc
 +#include <linux/iio/trigger_consumer.h>
 +#include <linux/iio/triggered_buffer.h>
 +
-+#include <linux/iio/magnetometer/st_magn.h>
++#include <linux/iio/gyro/st_gyro.h>
 +#include <linux/iio/common/st_sensors.h>
 +
 +
-+static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
++static int st_gyro_buffer_preenable(struct iio_dev *indio_dev)
 +{
 +	int err;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
-+	err = st_magn_set_enable(indio_dev, true);
++	err = st_gyro_set_enable(indio_dev, true);
 +	if (err < 0)
-+		goto st_magn_set_enable_error;
++		goto st_gyro_set_enable_error;
 +
-+	msleep(1000/mdata->odr);
++	msleep(1000/gdata->odr);
 +
 +	err = iio_sw_buffer_preenable(indio_dev);
 +
-+st_magn_set_enable_error:
++st_gyro_set_enable_error:
 +	return err;
 +}
 +
-+static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
++static int st_gyro_buffer_postenable(struct iio_dev *indio_dev)
 +{
-+	int err;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	int err, i;
++	u8 active_bit = 0x00;
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
-+	mdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-+	if (mdata->buffer_data == NULL) {
++	gdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
++	if (gdata->buffer_data == NULL) {
 +		err = -ENOMEM;
 +		goto allocate_memory_error;
 +	}
 +
++	for (i = 0; i < ST_SENSORS_NUMBER_DATA_CHANNELS; i++)
++		if (test_bit(i, indio_dev->active_scan_mask))
++			active_bit |= (1 << i);
++
++	err = st_gyro_set_axis_enable(indio_dev, active_bit);
++	if (err < 0)
++		goto st_gyro_buffer_postenable_error;
++
 +	err = iio_triggered_buffer_postenable(indio_dev);
 +	if (err < 0)
-+		goto st_magn_buffer_postenable_error;
++		goto st_gyro_buffer_postenable_error;
 +
 +	return err;
 +
-+st_magn_buffer_postenable_error:
-+	kfree(mdata->buffer_data);
++st_gyro_buffer_postenable_error:
++	kfree(gdata->buffer_data);
 +allocate_memory_error:
 +	return err;
 +}
 +
-+static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
++static int st_gyro_buffer_predisable(struct iio_dev *indio_dev)
 +{
 +	int err;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
 +	err = iio_triggered_buffer_predisable(indio_dev);
 +	if (err < 0)
-+		goto st_magn_buffer_predisable_error;
++		goto st_gyro_buffer_predisable_error;
 +
-+	err = st_magn_set_enable(indio_dev, false);
++	err = st_gyro_set_axis_enable(indio_dev,
++						ST_SENSORS_ENABLE_ALL_CHANNELS);
++	if (err < 0)
++		goto st_gyro_buffer_predisable_error;
 +
-+st_magn_buffer_predisable_error:
-+	kfree(mdata->buffer_data);
++	err = st_gyro_set_enable(indio_dev, false);
++
++st_gyro_buffer_predisable_error:
++	kfree(gdata->buffer_data);
 +	return err;
 +}
 +
-+static const struct iio_buffer_setup_ops st_magn_buffer_setup_ops = {
-+	.preenable = &st_magn_buffer_preenable,
-+	.postenable = &st_magn_buffer_postenable,
-+	.predisable = &st_magn_buffer_predisable,
++static const struct iio_buffer_setup_ops st_gyro_buffer_setup_ops = {
++	.preenable = &st_gyro_buffer_preenable,
++	.postenable = &st_gyro_buffer_postenable,
++	.predisable = &st_gyro_buffer_predisable,
 +};
 +
-+int st_magn_allocate_ring(struct iio_dev *indio_dev)
++int st_gyro_allocate_ring(struct iio_dev *indio_dev)
 +{
 +	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+		&st_sensors_trigger_handler, &st_magn_buffer_setup_ops);
++		&st_sensors_trigger_handler, &st_gyro_buffer_setup_ops);
 +}
-+EXPORT_SYMBOL(st_magn_allocate_ring);
++EXPORT_SYMBOL(st_gyro_allocate_ring);
 +
-+void st_magn_deallocate_ring(struct iio_dev *indio_dev)
++void st_gyro_deallocate_ring(struct iio_dev *indio_dev)
 +{
 +	iio_triggered_buffer_cleanup(indio_dev);
 +}
-+EXPORT_SYMBOL(st_magn_deallocate_ring);
++EXPORT_SYMBOL(st_gyro_deallocate_ring);
 +
 +MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics magnetometers buffer");
++MODULE_DESCRIPTION("STMicroelectronics gyroscopes buffer");
 +MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
 new file mode 100644
-index 0000000..ed081e7
+index 0000000..8a257b8
 --- /dev/null
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -0,0 +1,518 @@
++++ b/drivers/iio/gyro/st_gyro_core.c
+@@ -0,0 +1,481 @@
 +/*
-+ * STMicroelectronics magnetometers driver
++ * STMicroelectronics gyroscopes driver
 + *
 + * Copyright 2012 STMicroelectronics Inc.
 + *
@@ -240,256 +254,210 @@ index 0000000..ed081e7
 +#include <linux/iio/trigger_consumer.h>
 +#include <linux/iio/buffer.h>
 +
-+#include <linux/iio/magnetometer/st_magn.h>
++#include <linux/iio/gyro/st_gyro.h>
 +#include <linux/iio/common/st_sensors.h>
 +
 +
 +/* DEFAULT VALUE FOR SENSORS */
-+#define ST_MAGN_DEFAULT_OUT_X_L_ADDR		0X04
-+#define ST_MAGN_DEFAULT_OUT_Y_L_ADDR		0X08
-+#define ST_MAGN_DEFAULT_OUT_Z_L_ADDR		0X06
++#define ST_GYRO_DEFAULT_OUT_X_L_ADDR		0x28
++#define ST_GYRO_DEFAULT_OUT_Y_L_ADDR		0x2a
++#define ST_GYRO_DEFAULT_OUT_Z_L_ADDR		0x2c
 +
 +/* FULLSCALE */
-+#define ST_MAGN_FS_AVL_1300MG			1300
-+#define ST_MAGN_FS_AVL_1900MG			1900
-+#define ST_MAGN_FS_AVL_2500MG			2500
-+#define ST_MAGN_FS_AVL_4000MG			4000
-+#define ST_MAGN_FS_AVL_4700MG			4700
-+#define ST_MAGN_FS_AVL_5600MG			5600
-+#define ST_MAGN_FS_AVL_8000MG			8000
-+#define ST_MAGN_FS_AVL_8100MG			8100
-+#define ST_MAGN_FS_AVL_10000MG			10000
++#define ST_GYRO_FS_AVL_250DPS			250
++#define ST_GYRO_FS_AVL_500DPS			500
++#define ST_GYRO_FS_AVL_2000DPS			2000
 +
 +/* CUSTOM VALUES FOR SENSOR 1 */
-+#define ST_MAGN_1_WAI_EXP			0x3c
-+#define ST_MAGN_1_ODR_ADDR			0x00
-+#define ST_MAGN_1_ODR_MASK			0x1c
-+#define ST_MAGN_1_ODR_N_BIT			3
-+#define ST_MAGN_1_ODR_AVL_1HZ_VAL		0x00
-+#define ST_MAGN_1_ODR_AVL_2HZ_VAL		0x01
-+#define ST_MAGN_1_ODR_AVL_3HZ_VAL		0x02
-+#define ST_MAGN_1_ODR_AVL_8HZ_VAL		0x03
-+#define ST_MAGN_1_ODR_AVL_15HZ_VAL		0x04
-+#define ST_MAGN_1_ODR_AVL_30HZ_VAL		0x05
-+#define ST_MAGN_1_ODR_AVL_75HZ_VAL		0x06
-+#define ST_MAGN_1_ODR_AVL_220HZ_VAL		0x07
-+#define ST_MAGN_1_PW_ADDR			0x02
-+#define ST_MAGN_1_PW_MASK			0x03
-+#define ST_MAGN_1_PW_N_BIT			2
-+#define ST_MAGN_1_PW_ON				0x00
-+#define ST_MAGN_1_PW_OFF			0x03
-+#define ST_MAGN_1_FS_N_BIT			3
-+#define ST_MAGN_1_FS_ADDR			0x01
-+#define ST_MAGN_1_FS_MASK			0xe0
-+#define ST_MAGN_1_FS_AVL_1300_VAL		0x01
-+#define ST_MAGN_1_FS_AVL_1900_VAL		0x02
-+#define ST_MAGN_1_FS_AVL_2500_VAL		0x03
-+#define ST_MAGN_1_FS_AVL_4000_VAL		0x04
-+#define ST_MAGN_1_FS_AVL_4700_VAL		0x05
-+#define ST_MAGN_1_FS_AVL_5600_VAL		0x06
-+#define ST_MAGN_1_FS_AVL_8100_VAL		0x07
-+#define ST_MAGN_1_FS_AVL_1300_GAIN_XY		1100
-+#define ST_MAGN_1_FS_AVL_1900_GAIN_XY		855
-+#define ST_MAGN_1_FS_AVL_2500_GAIN_XY		670
-+#define ST_MAGN_1_FS_AVL_4000_GAIN_XY		450
-+#define ST_MAGN_1_FS_AVL_4700_GAIN_XY		400
-+#define ST_MAGN_1_FS_AVL_5600_GAIN_XY		330
-+#define ST_MAGN_1_FS_AVL_8100_GAIN_XY		230
-+#define ST_MAGN_1_FS_AVL_1300_GAIN_Z		980
-+#define ST_MAGN_1_FS_AVL_1900_GAIN_Z		760
-+#define ST_MAGN_1_FS_AVL_2500_GAIN_Z		600
-+#define ST_MAGN_1_FS_AVL_4000_GAIN_Z		400
-+#define ST_MAGN_1_FS_AVL_4700_GAIN_Z		355
-+#define ST_MAGN_1_FS_AVL_5600_GAIN_Z		295
-+#define ST_MAGN_1_FS_AVL_8100_GAIN_Z		205
-+#define ST_MAGN_1_MULTIREAD_BIT			false
++#define ST_GYRO_1_WAI_EXP			0xd3
++#define ST_GYRO_1_ODR_ADDR			0x20
++#define ST_GYRO_1_ODR_MASK			0xc0
++#define ST_GYRO_1_ODR_N_BIT			2
++#define ST_GYRO_1_ODR_AVL_100HZ_VAL		0x00
++#define ST_GYRO_1_ODR_AVL_200HZ_VAL		0x01
++#define ST_GYRO_1_ODR_AVL_400HZ_VAL		0x02
++#define ST_GYRO_1_ODR_AVL_800HZ_VAL		0x03
++#define ST_GYRO_1_PW_ADDR			0x20
++#define ST_GYRO_1_PW_MASK			0x08
++#define ST_GYRO_1_PW_N_BIT			1
++#define ST_GYRO_1_FS_N_BIT			2
++#define ST_GYRO_1_FS_ADDR			0x23
++#define ST_GYRO_1_FS_MASK			0x30
++#define ST_GYRO_1_FS_AVL_250_VAL		0x00
++#define ST_GYRO_1_FS_AVL_500_VAL		0x01
++#define ST_GYRO_1_FS_AVL_2000_VAL		0x02
++#define ST_GYRO_1_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
++#define ST_GYRO_1_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
++#define ST_GYRO_1_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
++#define ST_GYRO_1_BDU_ADDR			0x23
++#define ST_GYRO_1_BDU_MASK			0x80
++#define ST_GYRO_1_DRDY_IRQ_ADDR			0x22
++#define ST_GYRO_1_DRDY_IRQ_MASK			0x08
++#define ST_GYRO_1_MULTIREAD_BIT			true
 +
 +/* CUSTOM VALUES FOR SENSOR 2 */
-+#define ST_MAGN_2_WAI_EXP			0x3d
-+#define ST_MAGN_2_ODR_ADDR			0x20
-+#define ST_MAGN_2_ODR_MASK			0x1c
-+#define ST_MAGN_2_ODR_N_BIT			3
-+#define ST_MAGN_2_ODR_AVL_1HZ_VAL		0x00
-+#define ST_MAGN_2_ODR_AVL_2HZ_VAL		0x01
-+#define ST_MAGN_2_ODR_AVL_3HZ_VAL		0x02
-+#define ST_MAGN_2_ODR_AVL_5HZ_VAL		0x03
-+#define ST_MAGN_2_ODR_AVL_10HZ_VAL		0x04
-+#define ST_MAGN_2_ODR_AVL_20HZ_VAL		0x05
-+#define ST_MAGN_2_ODR_AVL_40HZ_VAL		0x06
-+#define ST_MAGN_2_ODR_AVL_80HZ_VAL		0x07
-+#define ST_MAGN_2_PW_ADDR			0x22
-+#define ST_MAGN_2_PW_MASK			0x03
-+#define ST_MAGN_2_PW_N_BIT			2
-+#define ST_MAGN_2_PW_ON				0x00
-+#define ST_MAGN_2_PW_OFF			0x03
-+#define ST_MAGN_2_FS_N_BIT			2
-+#define ST_MAGN_2_FS_ADDR			0x21
-+#define ST_MAGN_2_FS_MASK			0x60
-+#define ST_MAGN_2_FS_AVL_4000_VAL		0x00
-+#define ST_MAGN_2_FS_AVL_8000_VAL		0x01
-+#define ST_MAGN_2_FS_AVL_10000_VAL		0x02
-+#define ST_MAGN_2_FS_AVL_4000_GAIN		430
-+#define ST_MAGN_2_FS_AVL_8000_GAIN		230
-+#define ST_MAGN_2_FS_AVL_10000_GAIN		230
-+#define ST_MAGN_2_MULTIREAD_BIT			false
-+#define ST_MAGN_2_OUT_X_L_ADDR			0x28
-+#define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
-+#define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
++#define ST_GYRO_2_WAI_EXP			0xd4
++#define ST_GYRO_2_ODR_ADDR			0x20
++#define ST_GYRO_2_ODR_MASK			0xc0
++#define ST_GYRO_2_ODR_N_BIT			2
++#define ST_GYRO_2_ODR_AVL_95HZ_VAL		0x00
++#define ST_GYRO_2_ODR_AVL_190HZ_VAL		0x01
++#define ST_GYRO_2_ODR_AVL_380HZ_VAL		0x02
++#define ST_GYRO_2_ODR_AVL_760HZ_VAL		0x03
++#define ST_GYRO_2_PW_ADDR			0x20
++#define ST_GYRO_2_PW_MASK			0x08
++#define ST_GYRO_2_PW_N_BIT			1
++#define ST_GYRO_2_FS_N_BIT			2
++#define ST_GYRO_2_FS_ADDR			0x23
++#define ST_GYRO_2_FS_MASK			0x30
++#define ST_GYRO_2_FS_AVL_250_VAL		0x00
++#define ST_GYRO_2_FS_AVL_500_VAL		0x01
++#define ST_GYRO_2_FS_AVL_2000_VAL		0x02
++#define ST_GYRO_2_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
++#define ST_GYRO_2_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
++#define ST_GYRO_2_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
++#define ST_GYRO_2_BDU_ADDR			0x23
++#define ST_GYRO_2_BDU_MASK			0x80
++#define ST_GYRO_2_DRDY_IRQ_ADDR			0x22
++#define ST_GYRO_2_DRDY_IRQ_MASK			0x08
++#define ST_GYRO_2_MULTIREAD_BIT			true
 +
-+static const struct iio_chan_spec st_magn_16bit_channels[] = {
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Z_L_ADDR),
++const struct iio_chan_spec st_gyro_16bit_channels[] = {
++	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_X,
++		IIO_MOD_X, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
++						ST_GYRO_DEFAULT_OUT_X_L_ADDR),
++	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Y,
++		IIO_MOD_Y, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
++						ST_GYRO_DEFAULT_OUT_Y_L_ADDR),
++	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Z,
++		IIO_MOD_Z, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
++						ST_GYRO_DEFAULT_OUT_Z_L_ADDR),
 +	IIO_CHAN_SOFT_TIMESTAMP(3)
 +};
 +
-+static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Z_L_ADDR),
-+	IIO_CHAN_SOFT_TIMESTAMP(3)
-+};
-+
-+static const struct st_sensors st_magn_sensors[] = {
++static const struct st_sensors st_gyro_sensors[] = {
 +	{
-+		.wai = ST_MAGN_1_WAI_EXP,
-+		.ch = (struct iio_chan_spec *)st_magn_16bit_channels,
++		.wai = ST_GYRO_1_WAI_EXP,
++		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
 +		.odr = {
-+			.addr = ST_MAGN_1_ODR_ADDR,
-+			.mask = ST_MAGN_1_ODR_MASK,
-+			.num_bit = ST_MAGN_1_ODR_N_BIT,
++			.addr = ST_GYRO_1_ODR_ADDR,
++			.mask = ST_GYRO_1_ODR_MASK,
++			.num_bit = ST_GYRO_1_ODR_N_BIT,
 +			.odr_avl = {
-+				{ 1, ST_MAGN_1_ODR_AVL_1HZ_VAL, },
-+				{ 2, ST_MAGN_1_ODR_AVL_2HZ_VAL, },
-+				{ 3, ST_MAGN_1_ODR_AVL_3HZ_VAL, },
-+				{ 8, ST_MAGN_1_ODR_AVL_8HZ_VAL, },
-+				{ 15, ST_MAGN_1_ODR_AVL_15HZ_VAL, },
-+				{ 30, ST_MAGN_1_ODR_AVL_30HZ_VAL, },
-+				{ 75, ST_MAGN_1_ODR_AVL_75HZ_VAL, },
-+				{ 220, ST_MAGN_1_ODR_AVL_220HZ_VAL, },
++				{ 100, ST_GYRO_1_ODR_AVL_100HZ_VAL, },
++				{ 200, ST_GYRO_1_ODR_AVL_200HZ_VAL, },
++				{ 400, ST_GYRO_1_ODR_AVL_400HZ_VAL, },
++				{ 800, ST_GYRO_1_ODR_AVL_800HZ_VAL, },
 +			},
 +		},
 +		.pw = {
-+			.addr = ST_MAGN_1_PW_ADDR,
-+			.mask = ST_MAGN_1_PW_MASK,
-+			.num_bit = ST_MAGN_1_PW_N_BIT,
-+			.value_on = ST_MAGN_1_PW_ON,
-+			.value_off = ST_MAGN_1_PW_OFF,
++			.addr = ST_GYRO_1_PW_ADDR,
++			.mask = ST_GYRO_1_PW_MASK,
++			.num_bit = ST_GYRO_1_PW_N_BIT,
++			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
++			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
++		},
++		.enable_axis = {
++			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
++			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
 +		},
 +		.fs = {
-+			.addr = ST_MAGN_1_FS_ADDR,
-+			.mask = ST_MAGN_1_FS_MASK,
-+			.num_bit = ST_MAGN_1_FS_N_BIT,
++			.addr = ST_GYRO_1_FS_ADDR,
++			.mask = ST_GYRO_1_FS_MASK,
++			.num_bit = ST_GYRO_1_FS_N_BIT,
 +			.fs_avl = {
 +				[0] = {
-+					.num = ST_MAGN_FS_AVL_1300MG,
-+					.value = ST_MAGN_1_FS_AVL_1300_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_1300_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_1300_GAIN_Z,
++					.num = ST_GYRO_FS_AVL_250DPS,
++					.value = ST_GYRO_1_FS_AVL_250_VAL,
++					.gain = ST_GYRO_1_FS_AVL_250_GAIN,
 +				},
 +				[1] = {
-+					.num = ST_MAGN_FS_AVL_1900MG,
-+					.value = ST_MAGN_1_FS_AVL_1900_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_1900_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_1900_GAIN_Z,
++					.num = ST_GYRO_FS_AVL_500DPS,
++					.value = ST_GYRO_1_FS_AVL_500_VAL,
++					.gain = ST_GYRO_1_FS_AVL_500_GAIN,
 +				},
 +				[2] = {
-+					.num = ST_MAGN_FS_AVL_2500MG,
-+					.value = ST_MAGN_1_FS_AVL_2500_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_2500_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_2500_GAIN_Z,
-+				},
-+				[3] = {
-+					.num = ST_MAGN_FS_AVL_4000MG,
-+					.value = ST_MAGN_1_FS_AVL_4000_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_4000_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_4000_GAIN_Z,
-+				},
-+				[4] = {
-+					.num = ST_MAGN_FS_AVL_4700MG,
-+					.value = ST_MAGN_1_FS_AVL_4700_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_4700_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_4700_GAIN_Z,
-+				},
-+				[5] = {
-+					.num = ST_MAGN_FS_AVL_5600MG,
-+					.value = ST_MAGN_1_FS_AVL_5600_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_5600_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_5600_GAIN_Z,
-+				},
-+				[6] = {
-+					.num = ST_MAGN_FS_AVL_8100MG,
-+					.value = ST_MAGN_1_FS_AVL_8100_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_8100_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_8100_GAIN_Z,
++					.num = ST_GYRO_FS_AVL_2000DPS,
++					.value = ST_GYRO_1_FS_AVL_2000_VAL,
++					.gain = ST_GYRO_1_FS_AVL_2000_GAIN,
 +				},
 +			},
 +		},
-+		.multi_read_bit = ST_MAGN_1_MULTIREAD_BIT,
++		.bdu = {
++			.addr = ST_GYRO_1_BDU_ADDR,
++			.mask = ST_GYRO_1_BDU_MASK,
++		},
++		.drdy_irq = {
++			.addr = ST_GYRO_1_DRDY_IRQ_ADDR,
++			.mask = ST_GYRO_1_DRDY_IRQ_MASK,
++		},
++		.multi_read_bit = ST_GYRO_1_MULTIREAD_BIT,
 +	},
 +	{
-+		.wai = ST_MAGN_2_WAI_EXP,
-+		.ch = (struct iio_chan_spec *)st_magn_2_16bit_channels,
++		.wai = ST_GYRO_2_WAI_EXP,
++		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
 +		.odr = {
-+			.addr = ST_MAGN_2_ODR_ADDR,
-+			.mask = ST_MAGN_2_ODR_MASK,
-+			.num_bit = ST_MAGN_2_ODR_N_BIT,
++			.addr = ST_GYRO_2_ODR_ADDR,
++			.mask = ST_GYRO_2_ODR_MASK,
++			.num_bit = ST_GYRO_2_ODR_N_BIT,
 +			.odr_avl = {
-+				{ 1, ST_MAGN_2_ODR_AVL_1HZ_VAL, },
-+				{ 2, ST_MAGN_2_ODR_AVL_2HZ_VAL, },
-+				{ 3, ST_MAGN_2_ODR_AVL_3HZ_VAL, },
-+				{ 5, ST_MAGN_2_ODR_AVL_5HZ_VAL, },
-+				{ 10, ST_MAGN_2_ODR_AVL_10HZ_VAL, },
-+				{ 20, ST_MAGN_2_ODR_AVL_20HZ_VAL, },
-+				{ 40, ST_MAGN_2_ODR_AVL_40HZ_VAL, },
-+				{ 80, ST_MAGN_2_ODR_AVL_80HZ_VAL, },
++				{ 95, ST_GYRO_2_ODR_AVL_95HZ_VAL, },
++				{ 190, ST_GYRO_2_ODR_AVL_190HZ_VAL, },
++				{ 380, ST_GYRO_2_ODR_AVL_380HZ_VAL, },
++				{ 760, ST_GYRO_2_ODR_AVL_760HZ_VAL, },
 +			},
 +		},
 +		.pw = {
-+			.addr = ST_MAGN_2_PW_ADDR,
-+			.mask = ST_MAGN_2_PW_MASK,
-+			.num_bit = ST_MAGN_2_PW_N_BIT,
-+			.value_on = ST_MAGN_2_PW_ON,
-+			.value_off = ST_MAGN_2_PW_OFF,
++			.addr = ST_GYRO_2_PW_ADDR,
++			.mask = ST_GYRO_2_PW_MASK,
++			.num_bit = ST_GYRO_2_PW_N_BIT,
++			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
++			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
++		},
++		.enable_axis = {
++			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
++			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
 +		},
 +		.fs = {
-+			.addr = ST_MAGN_2_FS_ADDR,
-+			.mask = ST_MAGN_2_FS_MASK,
-+			.num_bit = ST_MAGN_2_FS_N_BIT,
++			.addr = ST_GYRO_2_FS_ADDR,
++			.mask = ST_GYRO_2_FS_MASK,
++			.num_bit = ST_GYRO_2_FS_N_BIT,
 +			.fs_avl = {
 +				[0] = {
-+					.num = ST_MAGN_FS_AVL_4000MG,
-+					.value = ST_MAGN_2_FS_AVL_4000_VAL,
-+					.gain = ST_MAGN_2_FS_AVL_4000_GAIN,
++					.num = ST_GYRO_FS_AVL_250DPS,
++					.value = ST_GYRO_2_FS_AVL_250_VAL,
++					.gain = ST_GYRO_2_FS_AVL_250_GAIN,
 +				},
 +				[1] = {
-+					.num = ST_MAGN_FS_AVL_8000MG,
-+					.value = ST_MAGN_2_FS_AVL_8000_VAL,
-+					.gain = ST_MAGN_2_FS_AVL_8000_GAIN,
++					.num = ST_GYRO_FS_AVL_500DPS,
++					.value = ST_GYRO_2_FS_AVL_500_VAL,
++					.gain = ST_GYRO_2_FS_AVL_500_GAIN,
 +				},
 +				[2] = {
-+					.num = ST_MAGN_FS_AVL_10000MG,
-+					.value = ST_MAGN_2_FS_AVL_10000_VAL,
-+					.gain = ST_MAGN_2_FS_AVL_10000_GAIN,
++					.num = ST_GYRO_FS_AVL_2000DPS,
++					.value = ST_GYRO_2_FS_AVL_2000_VAL,
++					.gain = ST_GYRO_2_FS_AVL_2000_GAIN,
 +				},
 +			},
 +		},
-+		.multi_read_bit = ST_MAGN_2_MULTIREAD_BIT,
++		.bdu = {
++			.addr = ST_GYRO_2_BDU_ADDR,
++			.mask = ST_GYRO_2_BDU_MASK,
++		},
++		.drdy_irq = {
++			.addr = ST_GYRO_2_DRDY_IRQ_ADDR,
++			.mask = ST_GYRO_2_DRDY_IRQ_MASK,
++		},
++		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
 +	},
 +};
 +
-+static int st_magn_read_raw(struct iio_dev *indio_dev,
++static int st_gyro_read_raw(struct iio_dev *indio_dev,
 +			struct iio_chan_spec const *ch, int *val,
 +							int *val2, long mask)
 +{
 +	int err;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
 +	switch (mask) {
 +	case IIO_CHAN_INFO_RAW:
@@ -499,11 +467,11 @@ index 0000000..ed081e7
 +			goto read_error;
 +		} else {
 +			err = st_sensors_set_enable(indio_dev,
-+					&st_magn_sensors[mdata->index], true);
++					&st_gyro_sensors[gdata->index], true);
 +			if (err < 0)
 +				goto read_error;
 +
-+			msleep(2000/mdata->odr);
++			msleep(2000/gdata->odr);
 +			err = st_sensors_read_axis_data(indio_dev,
 +							ch->address, val);
 +			if (err < 0)
@@ -515,10 +483,7 @@ index 0000000..ed081e7
 +		return IIO_VAL_INT;
 +	case IIO_CHAN_INFO_SCALE:
 +		*val = 0;
-+		if (ch->scan_index != ST_SENSORS_SCAN_Z)
-+			*val2 = mdata->gain;
-+		else
-+			*val2 = mdata->gain2;
++		*val2 = gdata->gain;
 +		return IIO_VAL_INT_PLUS_MICRO;
 +	default:
 +		return -EINVAL;
@@ -529,16 +494,16 @@ index 0000000..ed081e7
 +	return err;
 +}
 +
-+static int st_magn_write_raw(struct iio_dev *indio_dev,
++static int st_gyro_write_raw(struct iio_dev *indio_dev,
 +		struct iio_chan_spec const *chan, int val, int val2, long mask)
 +{
 +	int err;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
 +	switch (mask) {
 +	case IIO_CHAN_INFO_SCALE:
 +		err = st_sensors_set_fullscale_by_gain(indio_dev,
-+					&st_magn_sensors[mdata->index], val2);
++					&st_gyro_sensors[gdata->index], val2);
 +		break;
 +	default:
 +		err = -EINVAL;
@@ -547,33 +512,45 @@ index 0000000..ed081e7
 +	return err;
 +}
 +
-+int st_magn_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit)
++int st_gyro_set_dataready_irq(struct iio_dev *indio_dev, bool state)
 +{
-+	return 0;
-+}
-+EXPORT_SYMBOL(st_magn_set_axis_enable);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
-+static int st_magn_check_device_support(struct iio_dev *indio_dev)
++	return st_sensors_set_dataready_irq(indio_dev,
++					&st_gyro_sensors[gdata->index], state);
++}
++EXPORT_SYMBOL(st_gyro_set_dataready_irq);
++
++int st_gyro_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit)
++{
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
++
++	return st_sensors_set_axis_enable(indio_dev,
++				&st_gyro_sensors[gdata->index], active_bit);
++}
++EXPORT_SYMBOL(st_gyro_set_axis_enable);
++
++static int st_gyro_check_device_support(struct iio_dev *indio_dev)
 +{
 +	int i, err;
 +	u8 wai;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
-+	err = mdata->tf.read_byte(&mdata->tf, mdata->dev,
++	err = gdata->tf.read_byte(&gdata->tf, gdata->dev,
 +					ST_SENSORS_DEFAULT_WAI_ADDRESS, &wai);
 +	if (err < 0) {
 +		dev_err(&indio_dev->dev, "failed to read Who-Am-I register.\n");
 +		goto read_wai_error;
 +	}
 +
-+	for (i = 0; i < ARRAY_SIZE(st_magn_sensors); i++) {
-+		if (st_magn_sensors[i].wai == wai)
++	for (i = 0; i < ARRAY_SIZE(st_gyro_sensors); i++) {
++		if (st_gyro_sensors[i].wai == wai)
 +			break;
 +	}
-+	if (i == ARRAY_SIZE(st_magn_sensors))
++	if (i == ARRAY_SIZE(st_gyro_sensors))
 +		goto check_device_error;
 +
-+	mdata->index = i;
++	gdata->index = i;
 +
 +	return i;
 +
@@ -584,22 +561,22 @@ index 0000000..ed081e7
 +	return err;
 +}
 +
-+int st_magn_set_enable(struct iio_dev *indio_dev, bool enable)
++int st_gyro_set_enable(struct iio_dev *indio_dev, bool enable)
 +{
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
 +	return st_sensors_set_enable(indio_dev,
-+				&st_magn_sensors[mdata->index], enable);
++				&st_gyro_sensors[gdata->index], enable);
 +}
-+EXPORT_SYMBOL(st_magn_set_enable);
++EXPORT_SYMBOL(st_gyro_set_enable);
 +
-+static ssize_t st_magn_sysfs_set_sampling_frequency(struct device *dev,
++static ssize_t st_gyro_sysfs_set_sampling_frequency(struct device *dev,
 +		struct device_attribute *attr, const char *buf, size_t size)
 +{
 +	int err;
 +	unsigned int odr;
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
 +	err = kstrtoint(buf, 10, &odr);
 +	if (err < 0)
@@ -607,100 +584,100 @@ index 0000000..ed081e7
 +
 +	mutex_lock(&indio_dev->mlock);
 +	err = st_sensors_set_odr(indio_dev,
-+					&st_magn_sensors[mdata->index], odr);
++					&st_gyro_sensors[gdata->index], odr);
 +	mutex_unlock(&indio_dev->mlock);
 +
 +conversion_error:
 +	return err < 0 ? err : size;
 +}
 +
-+static ssize_t st_magn_sysfs_get_sampling_frequency(struct device *dev,
++static ssize_t st_gyro_sysfs_get_sampling_frequency(struct device *dev,
 +				struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
-+	return sprintf(buf, "%d\n", mdata->odr);
++	return sprintf(buf, "%d\n", gdata->odr);
 +}
 +
-+static ssize_t st_magn_sysfs_scale_available(struct device *dev,
++static ssize_t st_gyro_sysfs_scale_available(struct device *dev,
 +				struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
 +	return st_sensors_get_fullscale_avl(indio_dev,
-+			st_magn_sensors[mdata->index].fs.fs_avl, buf);
++			st_gyro_sensors[gdata->index].fs.fs_avl, buf);
 +}
 +
-+static ssize_t st_magn_sysfs_sampling_frequency_available(struct device *dev,
++static ssize_t st_gyro_sysfs_sampling_frequency_available(struct device *dev,
 +				struct device_attribute *attr, char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
 +	return st_sensors_get_sampling_frequency_avl(indio_dev,
-+			st_magn_sensors[mdata->index].odr.odr_avl, buf);
++			st_gyro_sensors[gdata->index].odr.odr_avl, buf);
 +}
 +
 +static IIO_DEVICE_ATTR(sampling_frequency_available, S_IRUGO,
-+		st_magn_sysfs_sampling_frequency_available, NULL , 0);
++		st_gyro_sysfs_sampling_frequency_available, NULL , 0);
 +
-+static IIO_DEVICE_ATTR(in_magn_scale_available, S_IRUGO,
-+				st_magn_sysfs_scale_available, NULL , 0);
++static IIO_DEVICE_ATTR(in_anglvel_scale_available, S_IRUGO,
++				st_gyro_sysfs_scale_available, NULL , 0);
 +
 +static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-+			st_magn_sysfs_get_sampling_frequency,
-+					st_magn_sysfs_set_sampling_frequency);
++			st_gyro_sysfs_get_sampling_frequency,
++					st_gyro_sysfs_set_sampling_frequency);
 +
-+static struct attribute *st_magn_attributes[] = {
++static struct attribute *st_gyro_attributes[] = {
 +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_in_magn_scale_available.dev_attr.attr,
++	&iio_dev_attr_in_anglvel_scale_available.dev_attr.attr,
 +	&iio_dev_attr_sampling_frequency.dev_attr.attr,
 +	NULL,
 +};
 +
-+static const struct attribute_group st_magn_attribute_group = {
-+	.attrs = st_magn_attributes,
++static const struct attribute_group st_gyro_attribute_group = {
++	.attrs = st_gyro_attributes,
 +};
 +
 +static const struct iio_info acc_info = {
 +	.driver_module = THIS_MODULE,
-+	.attrs = &st_magn_attribute_group,
-+	.read_raw = &st_magn_read_raw,
-+	.write_raw = &st_magn_write_raw,
++	.attrs = &st_gyro_attribute_group,
++	.read_raw = &st_gyro_read_raw,
++	.write_raw = &st_gyro_write_raw,
 +};
 +
-+int st_magn_common_probe(struct iio_dev *indio_dev)
++int st_gyro_common_probe(struct iio_dev *indio_dev)
 +{
 +	int err;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
++	struct st_sensor_data *gdata = iio_priv(indio_dev);
 +
 +	indio_dev->modes = INDIO_DIRECT_MODE;
 +	indio_dev->info = &acc_info;
 +
-+	err = st_magn_check_device_support(indio_dev);
++	err = st_gyro_check_device_support(indio_dev);
 +	if (err < 0)
-+		goto st_magn_common_probe_error;
++		goto st_gyro_common_probe_error;
 +
-+	mdata->multiread_bit = st_magn_sensors[mdata->index].multi_read_bit;
-+	indio_dev->channels = st_magn_sensors[mdata->index].ch;
++	gdata->multiread_bit = st_gyro_sensors[gdata->index].multi_read_bit;
++	indio_dev->channels = st_gyro_sensors[gdata->index].ch;
 +	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
 +
-+	mdata->fullscale = st_magn_sensors[mdata->index].fs.fs_avl[0].num;
-+	mdata->odr = st_magn_sensors[mdata->index].odr.odr_avl[0].hz;
++	gdata->fullscale = st_gyro_sensors[gdata->index].fs.fs_avl[0].num;
++	gdata->odr = st_gyro_sensors[gdata->index].odr.odr_avl[0].hz;
 +
 +	err = st_sensors_init_sensor(indio_dev,
-+					&st_magn_sensors[mdata->index]);
++						&st_gyro_sensors[gdata->index]);
 +	if (err < 0)
-+		goto st_magn_common_probe_error;
++		goto st_gyro_common_probe_error;
 +
-+	err = st_magn_allocate_ring(indio_dev);
++	err = st_gyro_allocate_ring(indio_dev);
 +	if (err < 0)
-+		goto st_magn_common_probe_error;
++		goto st_gyro_common_probe_error;
 +
-+	if (mdata->get_irq_data_ready(indio_dev) > 0) {
-+		err = st_magn_probe_trigger(indio_dev);
++	if (gdata->get_irq_data_ready(indio_dev) > 0) {
++		err = st_gyro_probe_trigger(indio_dev);
 +		if (err < 0)
 +			goto acc_probe_trigger_error;
 +	}
@@ -712,34 +689,34 @@ index 0000000..ed081e7
 +	return err;
 +
 +iio_device_register_error:
-+	st_magn_remove_trigger(indio_dev);
++	st_gyro_remove_trigger(indio_dev);
 +acc_probe_trigger_error:
-+	st_magn_deallocate_ring(indio_dev);
-+st_magn_common_probe_error:
++	st_gyro_deallocate_ring(indio_dev);
++st_gyro_common_probe_error:
 +	return err;
 +}
-+EXPORT_SYMBOL(st_magn_common_probe);
++EXPORT_SYMBOL(st_gyro_common_probe);
 +
-+void st_magn_common_remove(struct iio_dev *indio_dev)
++void st_gyro_common_remove(struct iio_dev *indio_dev)
 +{
 +	iio_device_unregister(indio_dev);
-+	st_magn_remove_trigger(indio_dev);
-+	st_magn_deallocate_ring(indio_dev);
++	st_gyro_remove_trigger(indio_dev);
++	st_gyro_deallocate_ring(indio_dev);
 +	iio_device_free(indio_dev);
 +}
-+EXPORT_SYMBOL(st_magn_common_remove);
++EXPORT_SYMBOL(st_gyro_common_remove);
 +
 +MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics magnetometers driver");
++MODULE_DESCRIPTION("STMicroelectronics gyroscopes driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
+diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
 new file mode 100644
-index 0000000..d090104
+index 0000000..d8c1af4
 --- /dev/null
-+++ b/drivers/iio/magnetometer/st_magn_i2c.c
-@@ -0,0 +1,81 @@
++++ b/drivers/iio/gyro/st_gyro_i2c.c
+@@ -0,0 +1,85 @@
 +/*
-+ * STMicroelectronics magnetometers driver
++ * STMicroelectronics gyroscopes driver
 + *
 + * Copyright 2012 STMicroelectronics Inc.
 + *
@@ -755,78 +732,82 @@ index 0000000..d090104
 +#include <linux/iio/iio.h>
 +#include <linux/iio/trigger.h>
 +
-+#include <linux/iio/magnetometer/st_magn.h>
++#include <linux/iio/gyro/st_gyro.h>
 +#include <linux/iio/common/st_sensors.h>
 +
 +
-+static int st_magn_i2c_probe(struct i2c_client *client,
++static int st_gyro_i2c_probe(struct i2c_client *client,
 +						const struct i2c_device_id *id)
 +{
 +	struct iio_dev *indio_dev;
-+	struct st_sensor_data *mdata;
++	struct st_sensor_data *gdata;
 +	int err;
 +
-+	indio_dev = iio_device_alloc(sizeof(*mdata));
++	indio_dev = iio_device_alloc(sizeof(*gdata));
 +	if (indio_dev == NULL) {
 +		err = -ENOMEM;
 +		goto iio_device_alloc_error;
 +	}
 +
-+	mdata = iio_priv(indio_dev);
-+	mdata->dev = &client->dev;
++	gdata = iio_priv(indio_dev);
++	gdata->dev = &client->dev;
 +
-+	st_sensors_i2c_configure(indio_dev, client, mdata);
++	st_sensors_i2c_configure(indio_dev, client, gdata);
 +
-+	err = st_magn_common_probe(indio_dev);
++	err = st_gyro_common_probe(indio_dev);
 +	if (err < 0)
-+		goto st_magn_common_probe_error;
++		goto st_gyro_common_probe_error;
 +
 +	return 0;
 +
-+st_magn_common_probe_error:
++st_gyro_common_probe_error:
 +	iio_device_free(indio_dev);
 +iio_device_alloc_error:
 +	return err;
 +}
 +
-+static int st_magn_i2c_remove(struct i2c_client *client)
++static int st_gyro_i2c_remove(struct i2c_client *client)
 +{
 +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	st_magn_common_remove(indio_dev);
++	st_gyro_common_remove(indio_dev);
 +
 +	return 0;
 +}
 +
-+static const struct i2c_device_id st_magn_id_table[] = {
-+	{ LSM303DLHC_MAGN_DEV_NAME },
-+	{ LSM303DLM_MAGN_DEV_NAME },
-+	{ LIS3MDL_MAGN_DEV_NAME },
++static const struct i2c_device_id st_gyro_id_table[] = {
++	{ L3G4200D_GYRO_DEV_NAME },
++	{ LSM330DL_GYRO_DEV_NAME },
++	{ L3GD20_GYRO_DEV_NAME },
++	{ L3GD20H_GYRO_DEV_NAME },
++	{ LSM330DLC_GYRO_DEV_NAME },
++	{ L3G4IS_GYRO_DEV_NAME },
++	{ LSM330_GYRO_DEV_NAME },
 +	{},
 +};
-+MODULE_DEVICE_TABLE(i2c, st_magn_id_table);
++MODULE_DEVICE_TABLE(i2c, st_gyro_id_table);
 +
-+static struct i2c_driver st_magn_driver = {
++static struct i2c_driver st_gyro_driver = {
 +	.driver = {
 +		.owner = THIS_MODULE,
-+		.name = "st-magn-i2c",
++		.name = "st-gyro-i2c",
 +	},
-+	.probe = st_magn_i2c_probe,
-+	.remove = st_magn_i2c_remove,
-+	.id_table = st_magn_id_table,
++	.probe = st_gyro_i2c_probe,
++	.remove = st_gyro_i2c_remove,
++	.id_table = st_gyro_id_table,
 +};
-+module_i2c_driver(st_magn_driver);
++module_i2c_driver(st_gyro_driver);
 +
 +MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics magnetometers i2c driver");
++MODULE_DESCRIPTION("STMicroelectronics gyroscopes i2c driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
+diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
 new file mode 100644
-index 0000000..3d3cdc7
+index 0000000..5f807bc
 --- /dev/null
-+++ b/drivers/iio/magnetometer/st_magn_spi.c
-@@ -0,0 +1,80 @@
++++ b/drivers/iio/gyro/st_gyro_spi.c
+@@ -0,0 +1,84 @@
 +/*
-+ * STMicroelectronics magnetometers driver
++ * STMicroelectronics gyroscopes driver
 + *
 + * Copyright 2012 STMicroelectronics Inc.
 + *
@@ -842,77 +823,81 @@ index 0000000..3d3cdc7
 +#include <linux/iio/iio.h>
 +#include <linux/iio/trigger.h>
 +
-+#include <linux/iio/magnetometer/st_magn.h>
++#include <linux/iio/gyro/st_gyro.h>
 +#include <linux/iio/common/st_sensors.h>
 +
 +
-+static int st_magn_spi_probe(struct spi_device *spi)
++static int st_gyro_spi_probe(struct spi_device *spi)
 +{
 +	struct iio_dev *indio_dev;
-+	struct st_sensor_data *mdata;
++	struct st_sensor_data *gdata;
 +	int err;
 +
-+	indio_dev = iio_device_alloc(sizeof(*mdata));
++	indio_dev = iio_device_alloc(sizeof(*gdata));
 +	if (indio_dev == NULL) {
 +		err = -ENOMEM;
 +		goto iio_device_alloc_error;
 +	}
 +
-+	mdata = iio_priv(indio_dev);
-+	mdata->dev = &spi->dev;
++	gdata = iio_priv(indio_dev);
++	gdata->dev = &spi->dev;
 +
-+	st_sensors_spi_configure(indio_dev, spi, mdata);
++	st_sensors_spi_configure(indio_dev, spi, gdata);
 +
-+	err = st_magn_common_probe(indio_dev);
++	err = st_gyro_common_probe(indio_dev);
 +	if (err < 0)
-+		goto st_magn_common_probe_error;
++		goto st_gyro_common_probe_error;
 +
 +	return 0;
 +
-+st_magn_common_probe_error:
++st_gyro_common_probe_error:
 +	iio_device_free(indio_dev);
 +iio_device_alloc_error:
 +	return err;
 +}
 +
-+static int st_magn_spi_remove(struct spi_device *spi)
++static int st_gyro_spi_remove(struct spi_device *spi)
 +{
 +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	st_magn_common_remove(indio_dev);
++	st_gyro_common_remove(indio_dev);
 +
 +	return 0;
 +}
 +
-+static const struct spi_device_id st_magn_id_table[] = {
-+	{ LSM303DLHC_MAGN_DEV_NAME },
-+	{ LSM303DLM_MAGN_DEV_NAME },
-+	{ LIS3MDL_MAGN_DEV_NAME },
++static const struct spi_device_id st_gyro_id_table[] = {
++	{ L3G4200D_GYRO_DEV_NAME },
++	{ LSM330DL_GYRO_DEV_NAME },
++	{ L3GD20_GYRO_DEV_NAME },
++	{ L3GD20H_GYRO_DEV_NAME },
++	{ LSM330DLC_GYRO_DEV_NAME },
++	{ L3G4IS_GYRO_DEV_NAME },
++	{ LSM330_GYRO_DEV_NAME },
 +	{},
 +};
-+MODULE_DEVICE_TABLE(spi, st_magn_id_table);
++MODULE_DEVICE_TABLE(spi, st_gyro_id_table);
 +
-+static struct spi_driver st_magn_driver = {
++static struct spi_driver st_gyro_driver = {
 +	.driver = {
 +		.owner = THIS_MODULE,
-+		.name = "st-magn-spi",
++		.name = "st-gyro-spi",
 +	},
-+	.probe = st_magn_spi_probe,
-+	.remove = st_magn_spi_remove,
-+	.id_table = st_magn_id_table,
++	.probe = st_gyro_spi_probe,
++	.remove = st_gyro_spi_remove,
++	.id_table = st_gyro_id_table,
 +};
-+module_spi_driver(st_magn_driver);
++module_spi_driver(st_gyro_driver);
 +
 +MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics magnetometers spi driver");
++MODULE_DESCRIPTION("STMicroelectronics gyroscopes spi driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/magnetometer/st_magn_trigger.c b/drivers/iio/magnetometer/st_magn_trigger.c
+diff --git a/drivers/iio/gyro/st_gyro_trigger.c b/drivers/iio/gyro/st_gyro_trigger.c
 new file mode 100644
-index 0000000..4ac774d
+index 0000000..dd41405
 --- /dev/null
-+++ b/drivers/iio/magnetometer/st_magn_trigger.c
-@@ -0,0 +1,62 @@
++++ b/drivers/iio/gyro/st_gyro_trigger.c
+@@ -0,0 +1,67 @@
 +/*
-+ * STMicroelectronics magnetometers driver
++ * STMicroelectronics gyroscopes driver
 + *
 + * Copyright 2012 STMicroelectronics Inc.
 + *
@@ -926,16 +911,20 @@ index 0000000..4ac774d
 +#include <linux/stat.h>
 +#include <linux/interrupt.h>
 +#include <linux/i2c.h>
-+#include <linux/gpio.h>
-+#include <linux/irq.h>
 +#include <linux/iio/iio.h>
 +#include <linux/iio/trigger.h>
 +
-+#include <linux/iio/magnetometer/st_magn.h>
++#include <linux/iio/gyro/st_gyro.h>
 +#include <linux/iio/common/st_sensors.h>
 +
 +
-+static int st_magn_trig_try_reenable(struct iio_trigger *trig)
++int st_gyro_trig_acc_set_state(struct iio_trigger *trig, bool state)
++{
++	struct iio_dev *indio_dev = trig->private_data;
++	return st_gyro_set_dataready_irq(indio_dev, state);
++}
++
++static int st_gyro_trig_try_reenable(struct iio_trigger *trig)
 +{
 +	int err;
 +	struct iio_dev *indio_dev = trig->private_data;
@@ -953,34 +942,35 @@ index 0000000..4ac774d
 +	return 0;
 +}
 +
-+const struct iio_trigger_ops st_magn_trigger_ops = {
++const struct iio_trigger_ops st_gyro_trigger_ops = {
 +	.owner = THIS_MODULE,
-+	.try_reenable = &st_magn_trig_try_reenable,
++	.set_trigger_state = &st_gyro_trig_acc_set_state,
++	.try_reenable = &st_gyro_trig_try_reenable,
 +};
 +
-+int st_magn_probe_trigger(struct iio_dev *indio_dev)
++int st_gyro_probe_trigger(struct iio_dev *indio_dev)
 +{
-+	return st_sensors_allocate_trigger(indio_dev, &st_magn_trigger_ops);
++	return st_sensors_allocate_trigger(indio_dev, &st_gyro_trigger_ops);
 +}
-+EXPORT_SYMBOL(st_magn_probe_trigger);
++EXPORT_SYMBOL(st_gyro_probe_trigger);
 +
-+void st_magn_remove_trigger(struct iio_dev *indio_dev)
++void st_gyro_remove_trigger(struct iio_dev *indio_dev)
 +{
 +	st_sensors_deallocate_trigger(indio_dev);
 +}
-+EXPORT_SYMBOL(st_magn_remove_trigger);
++EXPORT_SYMBOL(st_gyro_remove_trigger);
 +
 +MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics magnetometers trigger");
++MODULE_DESCRIPTION("STMicroelectronics gyroscopes trigger");
 +MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/iio/magnetometer/st_magn.h b/include/linux/iio/magnetometer/st_magn.h
+diff --git a/include/linux/iio/gyro/st_gyro.h b/include/linux/iio/gyro/st_gyro.h
 new file mode 100644
-index 0000000..2bb06e3
+index 0000000..98be950
 --- /dev/null
-+++ b/include/linux/iio/magnetometer/st_magn.h
-@@ -0,0 +1,49 @@
++++ b/include/linux/iio/gyro/st_gyro.h
+@@ -0,0 +1,54 @@
 +/*
-+ * STMicroelectronics magnetometers driver
++ * STMicroelectronics gyroscopes driver
 + *
 + * Copyright 2012 STMicroelectronics Inc.
 + *
@@ -989,45 +979,50 @@ index 0000000..2bb06e3
 + * Licensed under the GPL-2.
 + */
 +
-+#ifndef ST_MAGN_H
-+#define ST_MAGN_H
++#ifndef ST_GYRO_H
++#define ST_GYRO_H
 +
 +#include <linux/types.h>
 +#include "../common/st_sensors.h"
 +
-+#define LSM303DLHC_MAGN_DEV_NAME	"lsm303dlhc_magn"
-+#define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
-+#define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
++#define L3G4200D_GYRO_DEV_NAME		"l3g4200d"
++#define LSM330DL_GYRO_DEV_NAME		"lsm330dl_gyro"
++#define L3GD20_GYRO_DEV_NAME		"l3gd20"
++#define L3GD20H_GYRO_DEV_NAME		"l3gd20h"
++#define LSM330DLC_GYRO_DEV_NAME		"lsm330dlc_gyro"
++#define L3G4IS_GYRO_DEV_NAME		"l3g4is_ui"
++#define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
 +
-+int st_magn_common_probe(struct iio_dev *indio_dev);
-+void st_magn_common_remove(struct iio_dev *indio_dev);
-+int st_magn_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit);
-+int st_magn_set_enable(struct iio_dev *indio_dev, bool enable);
++int st_gyro_common_probe(struct iio_dev *indio_dev);
++void st_gyro_common_remove(struct iio_dev *indio_dev);
++int st_gyro_set_dataready_irq(struct iio_dev *indio_dev, bool state);
++int st_gyro_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit);
++int st_gyro_set_enable(struct iio_dev *indio_dev, bool enable);
 +
 +#ifdef CONFIG_IIO_BUFFER
-+int st_magn_probe_trigger(struct iio_dev *indio_dev);
-+void st_magn_remove_trigger(struct iio_dev *indio_dev);
-+int st_magn_allocate_ring(struct iio_dev *indio_dev);
-+void st_magn_deallocate_ring(struct iio_dev *indio_dev);
++int st_gyro_probe_trigger(struct iio_dev *indio_dev);
++void st_gyro_remove_trigger(struct iio_dev *indio_dev);
++int st_gyro_allocate_ring(struct iio_dev *indio_dev);
++void st_gyro_deallocate_ring(struct iio_dev *indio_dev);
 +#else /* CONFIG_IIO_BUFFER */
-+static inline int st_magn_probe_trigger(struct iio_dev *indio_dev, int irq)
++static inline int st_gyro_probe_trigger(struct iio_dev *indio_dev)
 +{
 +	return 0;
 +}
-+static inline void st_magn_remove_trigger(struct iio_dev *indio_dev, int irq)
++static inline void st_gyro_remove_trigger(struct iio_dev *indio_dev)
 +{
 +	return;
 +}
-+static inline int st_magn_allocate_ring(struct iio_dev *indio_dev)
++static inline int st_gyro_allocate_ring(struct iio_dev *indio_dev)
 +{
 +	return 0;
 +}
-+static inline void st_magn_deallocate_ring(struct iio_dev *indio_dev)
++static inline void st_gyro_deallocate_ring(struct iio_dev *indio_dev)
 +{
 +}
 +#endif /* CONFIG_IIO_BUFFER */
 +
-+#endif /* ST_MAGN_H */
++#endif /* ST_GYRO_H */
 -- 
 1.7.0.4
 
