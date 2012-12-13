@@ -1,95 +1,68 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <50C6FF71.1010504@metafoo.de>
-Date: Tue, 11 Dec 2012 10:40:01 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:40912 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751461Ab2LMI5t (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2012 03:57:49 -0500
+Message-ID: <50C99889.3080708@jic23.retrosnub.co.uk>
+Date: Thu, 13 Dec 2012 08:57:45 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-CC: Alexander Holler <holler@ahsoftware.de>,
- Jonathan Cameron <jic23@kernel.org>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- Jonathan Cameron <jic23@cam.ac.uk>,
- rtc-linux@googlegroups.com, Alessandro Zummo <a.zummo@towertech.it>,
- srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
-References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de> <50C63BBD.3080202@ahsoftware.de> <50C64484.4060306@metafoo.de> <50C65381.8010609@ahsoftware.de> <50C6567D.7080303@metafoo.de> <50C65746.8030609@kernel.org> <50C6674D.1000901@ahsoftware.de> <50C6FD60.7080300@jic23.retrosnub.co.uk>
-In-Reply-To: <50C6FD60.7080300@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Denis Ciocca <denis.ciocca@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: Re: question about driver for different sensors in the same ASIC
+References: <3BE6D37A-6EDA-4E4C-808F-1DEAEDE86DA3@gmail.com>	<50C8DECC.7010706@metafoo.de> <CAEE_umopjN7C_jXhozc5r+uyCbO32E3NoLF=REvwtvPXYaR54w@mail.gmail.com> <50C8E7A7.2030901@metafoo.de> <50C99192.6060707@jic23.retrosnub.co.uk> <50C99640.7020901@jic23.retrosnub.co.uk>
+In-Reply-To: <50C99640.7020901@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 12/11/2012 10:31 AM, Jonathan Cameron wrote:
-> On 10/12/12 22:50, Alexander Holler wrote:
->> Am 10.12.2012 22:42, schrieb Jonathan Cameron:
->>> On 12/10/2012 09:39 PM, Lars-Peter Clausen wrote:
->>>> On 12/10/2012 10:26 PM, Alexander Holler wrote:
->>>>> Am 10.12.2012 21:22, schrieb Lars-Peter Clausen:
->>>>>> On 12/10/2012 08:45 PM, Alexander Holler wrote:
->>>>>>> Am 10.12.2012 18:05, schrieb Lars-Peter Clausen:
->>>>>>>
->>>>>>>> Looks pretty good now. But there are still some IIO remnants
->>>>>>>> which should be
->>>>>>>> removed as well. Also the driver should move to drivers/rtc/
->>>>>>>> since, well,
->>>>>>>> it's a rtc driver not a IIO driver.
->>>>>>>
->>>>>>> I think it still should be stick to iio, because that is where all
->>>>>>> HID
->>>>>>> sensors currently are found and where the user would expect to
->>>>>>> find such
->>>>>>> a driver.
->>>>>>
->>>>>> That's because all the current IIO sensor drivers fall in the IIO
->>>>>> domain. This
->>>>>> one clearly is a RTC driver, so it belongs in drivers/rtc/
+On 13/12/12 08:48, Jonathan Cameron wrote:
+> On 13/12/12 08:28, Jonathan Cameron wrote:
+>> On 12/12/12 20:23, Lars-Peter Clausen wrote:
+>>> On 12/12/2012 08:49 PM, Denis Ciocca wrote:
+>>>>> Usually you'd want to be able to sample both the accelerometer and
+>>>>> gyro
+>>>> sensors
+>>>>> at the same time, so just one driver should be fine.
 >>>>>
->>>>> Where nobody will find it if he searches for drivers for his HID
->>>>> sensor.
->>>>> I still see it as HID sensor driver and not a rtc-driver.
->>>>> But ...
+>>>>> Or have the gyro and accelerometer sensors completely separated
+>>>>> register
+>>>> maps
+>>>>> and don't share any functionality?
 >>>>
->>>> I can understand your position, but drivers are usually grouped by
->>>> function not
->>>> by topology. If there is a proper Kconfig help text people should
->>>> hopefully be
->>>> find it.
->>> Seconded on this. If it is a pure rtc driver then it definitely
->>> belongs in
->>> drivers/rtc.  Now there might have been ways of doing this as a
->>> consumer / provider
->>> with the provider being in IIO and the consumer in rtc, but that
->>> sounds like
->>> it is over compicating things, at least for now.
+>>>> Some sensors doesn't share any functionality, simply share the same
+>>>> interface or better the control registers for single sensor are
+>>>> separated.
+>>>> I test this with the current driver but the second proble doesn't
+>>>> start!
+>>>> Only one probe is mandatory?
+>>>
+>>> You can only have one device per I2C address and only one probe call per
+>>> device. If you really want to use two separated drivers you could
+>>> create a mfd
+>>> device and one subdevice for the gyro and accelerometer.
+>>>
+>>> - Lars
+>> Agreed, not much else you can do other than refactor the driver to
+>> handle them as two 'instances' of the iio bits called from a single
+>> probe function with callbacks to make the shared i2c element work
+>> reasonably...  Fiddly, but its got to be that or a fall blown mfd
+>> (not sure if the mfd side of things will bring enough benefits here...)
 >>
->> Personally I just want to use it to have HID-USB_RTCs. ;)
->>
->> But in case of HID sensor hubs, the main usage of that driver will be to
->> set the time of such hubs (something I still have to make patches for),
->> and not to read it. So if you think as an HID sensor user, it should
->> belong to iio or wherever those sensor will finally end up (I think they
->> should end up in HID and should be usable by bluetooth devices too), but
->> if you creatively misuse the standard to get a driver for USB-RTCs, as I
->> want, then rtc is the correct place. ;)
-> I did wonder what you were up to ;)
->>
->> Because I don't want to do a v4:
->>
->> the driver has an
->>
->> #include "../common/hid-sensors/hid-sensor-attributes.h"
->>
->> so moving it to drivers/rtc/ will make that even more ugly.
->>
-> 
->> Suggestions? I don't really care and as I'm currently at the order
->> receiving end ;) I would change it to whatever the maintainers are
->> wanting. Maybe moving that header to include/linux or even integrating
->> it into include/linux/hid-sensor-hubs.h makes sense.
-> Yes, move the header or merge into existing one as makes sense.
-> I'm not pulling this driver into the IIO tree (unless for some
-> reason Alessandro wants me to and I can't think why he would...).
-> 
+> Just to give us some real basis for this discussion, which part number
+> is it that does this?  The only ones I can immediately find (lsm330)
+> use different i2c addresses for the two parts.
+>
+> Obviously if we are discussing a part for which docs are not available,
+> we'll be pestering you for more information as we can't get it from
+> the datasheet :)
 
-Alessandro has been pretty quiet for quite some time now. Luckily Andrew
-Morton usually picks up the stuff for orphaned subsystems. So put him on Cc
-for v4.
+Ah, the lsm333 has magnetometer and accelerometer together.  In that 
+case though they go through the same datapath (fifo etc) I think
+so you want a single hybrid device.
 
-- Lars
+That datasheet is a little 'interesting' currently so I may well
+be misreading it baddly ;)
+
