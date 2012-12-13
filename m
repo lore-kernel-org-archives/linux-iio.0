@@ -1,186 +1,1033 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:37365 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755002Ab2LMRYE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2012 12:24:04 -0500
-From: Marek Vasut <marex@denx.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 3/4] iio: mxs: Implement support for touchscreen
-Date: Thu, 13 Dec 2012 17:56:32 +0100
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Shawn Guo <shawn.guo@linaro.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	Torokhov <dmitry.torokhov@gmail.com>
-References: <1354893893-26338-1-git-send-email-marex@denx.de> <201212082218.19338.marex@denx.de> <50C65A8C.7060304@kernel.org>
-In-Reply-To: <50C65A8C.7060304@kernel.org>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201212131756.33129.marex@denx.de>
+Received: from eu1sys200aog110.obsmtp.com ([207.126.144.129]:34232 "EHLO
+	eu1sys200aog110.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754074Ab2LMMMQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2012 07:12:16 -0500
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: jic23@kernel.org, lars@metafoo.de
+Cc: linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 4/4] iio:magnetometer: Add STMicroelectronics magnetometers driver
+Date: Thu, 13 Dec 2012 14:11:42 +0100
+Message-Id: <1355404302-2239-5-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1355404302-2239-1-git-send-email-denis.ciocca@st.com>
+References: <1355404302-2239-1-git-send-email-denis.ciocca@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear Jonathan Cameron,
+This patch adds generic magnetometer driver for STMicroelectronics
+magnetometers, currently it supports:
+LSM303DLHC, LSM303DLM, LIS3MDL.
+---
+ drivers/iio/magnetometer/Kconfig           |   40 +++
+ drivers/iio/magnetometer/Makefile          |    6 +
+ drivers/iio/magnetometer/st_magn_buffer.c  |  105 ++++++
+ drivers/iio/magnetometer/st_magn_core.c    |  518 ++++++++++++++++++++++++++++
+ drivers/iio/magnetometer/st_magn_i2c.c     |   81 +++++
+ drivers/iio/magnetometer/st_magn_spi.c     |   80 +++++
+ drivers/iio/magnetometer/st_magn_trigger.c |   62 ++++
+ include/linux/iio/magnetometer/st_magn.h   |   49 +++
+ 8 files changed, 941 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/iio/magnetometer/st_magn_buffer.c
+ create mode 100644 drivers/iio/magnetometer/st_magn_core.c
+ create mode 100644 drivers/iio/magnetometer/st_magn_i2c.c
+ create mode 100644 drivers/iio/magnetometer/st_magn_spi.c
+ create mode 100644 drivers/iio/magnetometer/st_magn_trigger.c
+ create mode 100644 include/linux/iio/magnetometer/st_magn.h
 
-> On 12/08/2012 09:18 PM, Marek Vasut wrote:
-> > Dear Jonathan Cameron,
-> > 
-> >> On 12/07/2012 03:24 PM, Marek Vasut wrote:
-> >>> This patch implements support for sampling of a touchscreen into
-> >>> the MXS LRADC driver. The LRADC block allows configuring some of
-> >>> it's channels into special mode where they either output the drive
-> >>> voltage or sample it, allowing it to operate a 4-wire or 5-wire
-> >>> resistive touchscreen.
-> >>> 
-> >>> In case the touchscreen mode is enabled, the LRADC slot #7 is
-> >>> reserved for touchscreen only, therefore it is not possible to
-> >>> sample 8 LRADC channels at time, but only 7 channels.
-> >>> 
-> >>> The touchscreen controller is configured such that the PENDOWN event
-> >>> disables touchscreen interrupts and triggers execution of worker
-> >>> thread, which then polls the touchscreen controller for X, Y and
-> >>> Pressure values. This reduces the overhead of interrupt-driven
-> >>> operation. Upon the PENUP event, the worker thread re-enables the
-> >>> PENDOWN detection interrupt and exits.
-> >>> 
-> >>> Signed-off-by: Marek Vasut <marex@denx.de>
-> >>> Cc: Fabio Estevam <fabio.estevam@freescale.com>
-> >>> Cc: Jonathan Cameron <jic23@kernel.org>
-> >>> Cc: Shawn Guo <shawn.guo@linaro.org>
-> >> 
-> >> cc added for linux input and Dmitry.
-> >> 
-> >> I'd like to gather some opinions on the best way to handle these touch
-> >> screen devices when are sharing some hardware with more generic adc's
-> >> as here.
-> >> 
-> >> What we have is effectively a weird mulitplexing of different signals?
-> >> 
-> >> So could we treat the various axis as separate channels of a normal
-> >> adc (even if they are infact coming from the same pins)?
-> > 
-> > You can not. You also need to control voltage output to various plates to
-> > be able to sample it from the other plate. See the comment in my patch
-> > close to the big table explaining all this mayhem.
-> 
-> Sure you need to play with the the 'real' channels to put voltages on the
-> right ones etc.  This is special purpose hardware though so what I was
-> suggesting was to create 'virtual' channels associated with each axis.
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+index c1f0cdd..4f7cec2 100644
+--- a/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
+@@ -13,4 +13,44 @@ config HID_SENSOR_MAGNETOMETER_3D
+ 	  Say yes here to build support for the HID SENSOR
+ 	  Magnetometer 3D.
+ 
++config ST_MAGN_3AXIS
++	tristate "STMicroelectronics magnetometers 3-Axis Driver"
++	depends on (I2C || SPI_MASTER) && SYSFS
++	select ST_SENSORS_CORE
++	help
++	  Say yes here to build support for STMicroelectronics magnetometers:
++	  LSM303DLHC, LSM303DLM, LIS3MDL.
++
++	  This driver can also be built as a module. If so, the module
++	  will be called st_magn.
++
++config ST_MAGN_3AXIS_I2C
++	tristate "support I2C bus connection"
++	depends on ST_MAGN_3AXIS && I2C
++	select ST_SENSORS_I2C
++	help
++	  Say yes here to build I2C support for STMicroelectronics magnetometers.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called st_magn_i2c.
++
++config ST_MAGN_3AXIS_SPI
++	tristate "support SPI bus connection"
++	depends on ST_MAGN_3AXIS && SPI_MASTER
++	select ST_SENSORS_SPI
++	help
++	  Say yes here to build SPI support for STMicroelectronics magnetometers.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called st_magn_spi.
++
++config ST_MAGN_3AXIS_TRIGGERED_BUFFER
++	tristate "support triggered buffer"
++	depends on ST_MAGN_3AXIS
++	select IIO_TRIGGERED_BUFFER
++	select IIO_BUFFER
++	select ST_SENSORS_TRIGGERED_BUFFER
++	help
++	  Default trigger and buffer for STMicroelectronics magnetometers driver.
++
+ endmenu
+diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
+index 60dc4f2..9be7f48 100644
+--- a/drivers/iio/magnetometer/Makefile
++++ b/drivers/iio/magnetometer/Makefile
+@@ -3,3 +3,9 @@
+ #
+ 
+ obj-$(CONFIG_HID_SENSOR_MAGNETOMETER_3D) += hid-sensor-magn-3d.o
++
++st_magn-y := st_magn_core.o
++obj-$(CONFIG_ST_MAGN_3AXIS_I2C) += st_magn_i2c.o
++obj-$(CONFIG_ST_MAGN_3AXIS_SPI) += st_magn_spi.o
++obj-$(CONFIG_ST_MAGN_3AXIS_TRIGGERED_BUFFER) += st_magn_trigger.o st_magn_buffer.o
++obj-$(CONFIG_ST_MAGN_3AXIS) += st_magn.o
+diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
+new file mode 100644
+index 0000000..f6221cc
+--- /dev/null
++++ b/drivers/iio/magnetometer/st_magn_buffer.c
+@@ -0,0 +1,105 @@
++/*
++ * STMicroelectronics magnetometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/stat.h>
++#include <linux/interrupt.h>
++#include <linux/byteorder/generic.h>
++#include <linux/i2c.h>
++#include <linux/delay.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++#include <linux/iio/magnetometer/st_magn.h>
++#include <linux/iio/common/st_sensors.h>
++
++
++static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
++{
++	int err;
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	err = st_magn_set_enable(indio_dev, true);
++	if (err < 0)
++		goto st_magn_set_enable_error;
++
++	msleep(1000/mdata->odr);
++
++	err = iio_sw_buffer_preenable(indio_dev);
++
++st_magn_set_enable_error:
++	return err;
++}
++
++static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
++{
++	int err;
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	mdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
++	if (mdata->buffer_data == NULL) {
++		err = -ENOMEM;
++		goto allocate_memory_error;
++	}
++
++	err = iio_triggered_buffer_postenable(indio_dev);
++	if (err < 0)
++		goto st_magn_buffer_postenable_error;
++
++	return err;
++
++st_magn_buffer_postenable_error:
++	kfree(mdata->buffer_data);
++allocate_memory_error:
++	return err;
++}
++
++static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
++{
++	int err;
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	err = iio_triggered_buffer_predisable(indio_dev);
++	if (err < 0)
++		goto st_magn_buffer_predisable_error;
++
++	err = st_magn_set_enable(indio_dev, false);
++
++st_magn_buffer_predisable_error:
++	kfree(mdata->buffer_data);
++	return err;
++}
++
++static const struct iio_buffer_setup_ops st_magn_buffer_setup_ops = {
++	.preenable = &st_magn_buffer_preenable,
++	.postenable = &st_magn_buffer_postenable,
++	.predisable = &st_magn_buffer_predisable,
++};
++
++int st_magn_allocate_ring(struct iio_dev *indio_dev)
++{
++	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
++		&st_sensors_trigger_handler, &st_magn_buffer_setup_ops);
++}
++EXPORT_SYMBOL(st_magn_allocate_ring);
++
++void st_magn_deallocate_ring(struct iio_dev *indio_dev)
++{
++	iio_triggered_buffer_cleanup(indio_dev);
++}
++EXPORT_SYMBOL(st_magn_deallocate_ring);
++
++MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics magnetometers buffer");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+new file mode 100644
+index 0000000..ed081e7
+--- /dev/null
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -0,0 +1,518 @@
++/*
++ * STMicroelectronics magnetometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/errno.h>
++#include <linux/types.h>
++#include <linux/mutex.h>
++#include <linux/interrupt.h>
++#include <linux/i2c.h>
++#include <linux/gpio.h>
++#include <linux/irq.h>
++#include <linux/delay.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/buffer.h>
++
++#include <linux/iio/magnetometer/st_magn.h>
++#include <linux/iio/common/st_sensors.h>
++
++
++/* DEFAULT VALUE FOR SENSORS */
++#define ST_MAGN_DEFAULT_OUT_X_L_ADDR		0X04
++#define ST_MAGN_DEFAULT_OUT_Y_L_ADDR		0X08
++#define ST_MAGN_DEFAULT_OUT_Z_L_ADDR		0X06
++
++/* FULLSCALE */
++#define ST_MAGN_FS_AVL_1300MG			1300
++#define ST_MAGN_FS_AVL_1900MG			1900
++#define ST_MAGN_FS_AVL_2500MG			2500
++#define ST_MAGN_FS_AVL_4000MG			4000
++#define ST_MAGN_FS_AVL_4700MG			4700
++#define ST_MAGN_FS_AVL_5600MG			5600
++#define ST_MAGN_FS_AVL_8000MG			8000
++#define ST_MAGN_FS_AVL_8100MG			8100
++#define ST_MAGN_FS_AVL_10000MG			10000
++
++/* CUSTOM VALUES FOR SENSOR 1 */
++#define ST_MAGN_1_WAI_EXP			0x3c
++#define ST_MAGN_1_ODR_ADDR			0x00
++#define ST_MAGN_1_ODR_MASK			0x1c
++#define ST_MAGN_1_ODR_N_BIT			3
++#define ST_MAGN_1_ODR_AVL_1HZ_VAL		0x00
++#define ST_MAGN_1_ODR_AVL_2HZ_VAL		0x01
++#define ST_MAGN_1_ODR_AVL_3HZ_VAL		0x02
++#define ST_MAGN_1_ODR_AVL_8HZ_VAL		0x03
++#define ST_MAGN_1_ODR_AVL_15HZ_VAL		0x04
++#define ST_MAGN_1_ODR_AVL_30HZ_VAL		0x05
++#define ST_MAGN_1_ODR_AVL_75HZ_VAL		0x06
++#define ST_MAGN_1_ODR_AVL_220HZ_VAL		0x07
++#define ST_MAGN_1_PW_ADDR			0x02
++#define ST_MAGN_1_PW_MASK			0x03
++#define ST_MAGN_1_PW_N_BIT			2
++#define ST_MAGN_1_PW_ON				0x00
++#define ST_MAGN_1_PW_OFF			0x03
++#define ST_MAGN_1_FS_N_BIT			3
++#define ST_MAGN_1_FS_ADDR			0x01
++#define ST_MAGN_1_FS_MASK			0xe0
++#define ST_MAGN_1_FS_AVL_1300_VAL		0x01
++#define ST_MAGN_1_FS_AVL_1900_VAL		0x02
++#define ST_MAGN_1_FS_AVL_2500_VAL		0x03
++#define ST_MAGN_1_FS_AVL_4000_VAL		0x04
++#define ST_MAGN_1_FS_AVL_4700_VAL		0x05
++#define ST_MAGN_1_FS_AVL_5600_VAL		0x06
++#define ST_MAGN_1_FS_AVL_8100_VAL		0x07
++#define ST_MAGN_1_FS_AVL_1300_GAIN_XY		1100
++#define ST_MAGN_1_FS_AVL_1900_GAIN_XY		855
++#define ST_MAGN_1_FS_AVL_2500_GAIN_XY		670
++#define ST_MAGN_1_FS_AVL_4000_GAIN_XY		450
++#define ST_MAGN_1_FS_AVL_4700_GAIN_XY		400
++#define ST_MAGN_1_FS_AVL_5600_GAIN_XY		330
++#define ST_MAGN_1_FS_AVL_8100_GAIN_XY		230
++#define ST_MAGN_1_FS_AVL_1300_GAIN_Z		980
++#define ST_MAGN_1_FS_AVL_1900_GAIN_Z		760
++#define ST_MAGN_1_FS_AVL_2500_GAIN_Z		600
++#define ST_MAGN_1_FS_AVL_4000_GAIN_Z		400
++#define ST_MAGN_1_FS_AVL_4700_GAIN_Z		355
++#define ST_MAGN_1_FS_AVL_5600_GAIN_Z		295
++#define ST_MAGN_1_FS_AVL_8100_GAIN_Z		205
++#define ST_MAGN_1_MULTIREAD_BIT			false
++
++/* CUSTOM VALUES FOR SENSOR 2 */
++#define ST_MAGN_2_WAI_EXP			0x3d
++#define ST_MAGN_2_ODR_ADDR			0x20
++#define ST_MAGN_2_ODR_MASK			0x1c
++#define ST_MAGN_2_ODR_N_BIT			3
++#define ST_MAGN_2_ODR_AVL_1HZ_VAL		0x00
++#define ST_MAGN_2_ODR_AVL_2HZ_VAL		0x01
++#define ST_MAGN_2_ODR_AVL_3HZ_VAL		0x02
++#define ST_MAGN_2_ODR_AVL_5HZ_VAL		0x03
++#define ST_MAGN_2_ODR_AVL_10HZ_VAL		0x04
++#define ST_MAGN_2_ODR_AVL_20HZ_VAL		0x05
++#define ST_MAGN_2_ODR_AVL_40HZ_VAL		0x06
++#define ST_MAGN_2_ODR_AVL_80HZ_VAL		0x07
++#define ST_MAGN_2_PW_ADDR			0x22
++#define ST_MAGN_2_PW_MASK			0x03
++#define ST_MAGN_2_PW_N_BIT			2
++#define ST_MAGN_2_PW_ON				0x00
++#define ST_MAGN_2_PW_OFF			0x03
++#define ST_MAGN_2_FS_N_BIT			2
++#define ST_MAGN_2_FS_ADDR			0x21
++#define ST_MAGN_2_FS_MASK			0x60
++#define ST_MAGN_2_FS_AVL_4000_VAL		0x00
++#define ST_MAGN_2_FS_AVL_8000_VAL		0x01
++#define ST_MAGN_2_FS_AVL_10000_VAL		0x02
++#define ST_MAGN_2_FS_AVL_4000_GAIN		430
++#define ST_MAGN_2_FS_AVL_8000_GAIN		230
++#define ST_MAGN_2_FS_AVL_10000_GAIN		230
++#define ST_MAGN_2_MULTIREAD_BIT			false
++#define ST_MAGN_2_OUT_X_L_ADDR			0x28
++#define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
++#define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
++
++static const struct iio_chan_spec st_magn_16bit_channels[] = {
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
++		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_X_L_ADDR),
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
++		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Y_L_ADDR),
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
++		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Z_L_ADDR),
++	IIO_CHAN_SOFT_TIMESTAMP(3)
++};
++
++static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
++		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_X_L_ADDR),
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
++		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Y_L_ADDR),
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
++		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Z_L_ADDR),
++	IIO_CHAN_SOFT_TIMESTAMP(3)
++};
++
++static const struct st_sensors st_magn_sensors[] = {
++	{
++		.wai = ST_MAGN_1_WAI_EXP,
++		.ch = (struct iio_chan_spec *)st_magn_16bit_channels,
++		.odr = {
++			.addr = ST_MAGN_1_ODR_ADDR,
++			.mask = ST_MAGN_1_ODR_MASK,
++			.num_bit = ST_MAGN_1_ODR_N_BIT,
++			.odr_avl = {
++				{ 1, ST_MAGN_1_ODR_AVL_1HZ_VAL, },
++				{ 2, ST_MAGN_1_ODR_AVL_2HZ_VAL, },
++				{ 3, ST_MAGN_1_ODR_AVL_3HZ_VAL, },
++				{ 8, ST_MAGN_1_ODR_AVL_8HZ_VAL, },
++				{ 15, ST_MAGN_1_ODR_AVL_15HZ_VAL, },
++				{ 30, ST_MAGN_1_ODR_AVL_30HZ_VAL, },
++				{ 75, ST_MAGN_1_ODR_AVL_75HZ_VAL, },
++				{ 220, ST_MAGN_1_ODR_AVL_220HZ_VAL, },
++			},
++		},
++		.pw = {
++			.addr = ST_MAGN_1_PW_ADDR,
++			.mask = ST_MAGN_1_PW_MASK,
++			.num_bit = ST_MAGN_1_PW_N_BIT,
++			.value_on = ST_MAGN_1_PW_ON,
++			.value_off = ST_MAGN_1_PW_OFF,
++		},
++		.fs = {
++			.addr = ST_MAGN_1_FS_ADDR,
++			.mask = ST_MAGN_1_FS_MASK,
++			.num_bit = ST_MAGN_1_FS_N_BIT,
++			.fs_avl = {
++				[0] = {
++					.num = ST_MAGN_FS_AVL_1300MG,
++					.value = ST_MAGN_1_FS_AVL_1300_VAL,
++					.gain = ST_MAGN_1_FS_AVL_1300_GAIN_XY,
++					.gain2 = ST_MAGN_1_FS_AVL_1300_GAIN_Z,
++				},
++				[1] = {
++					.num = ST_MAGN_FS_AVL_1900MG,
++					.value = ST_MAGN_1_FS_AVL_1900_VAL,
++					.gain = ST_MAGN_1_FS_AVL_1900_GAIN_XY,
++					.gain2 = ST_MAGN_1_FS_AVL_1900_GAIN_Z,
++				},
++				[2] = {
++					.num = ST_MAGN_FS_AVL_2500MG,
++					.value = ST_MAGN_1_FS_AVL_2500_VAL,
++					.gain = ST_MAGN_1_FS_AVL_2500_GAIN_XY,
++					.gain2 = ST_MAGN_1_FS_AVL_2500_GAIN_Z,
++				},
++				[3] = {
++					.num = ST_MAGN_FS_AVL_4000MG,
++					.value = ST_MAGN_1_FS_AVL_4000_VAL,
++					.gain = ST_MAGN_1_FS_AVL_4000_GAIN_XY,
++					.gain2 = ST_MAGN_1_FS_AVL_4000_GAIN_Z,
++				},
++				[4] = {
++					.num = ST_MAGN_FS_AVL_4700MG,
++					.value = ST_MAGN_1_FS_AVL_4700_VAL,
++					.gain = ST_MAGN_1_FS_AVL_4700_GAIN_XY,
++					.gain2 = ST_MAGN_1_FS_AVL_4700_GAIN_Z,
++				},
++				[5] = {
++					.num = ST_MAGN_FS_AVL_5600MG,
++					.value = ST_MAGN_1_FS_AVL_5600_VAL,
++					.gain = ST_MAGN_1_FS_AVL_5600_GAIN_XY,
++					.gain2 = ST_MAGN_1_FS_AVL_5600_GAIN_Z,
++				},
++				[6] = {
++					.num = ST_MAGN_FS_AVL_8100MG,
++					.value = ST_MAGN_1_FS_AVL_8100_VAL,
++					.gain = ST_MAGN_1_FS_AVL_8100_GAIN_XY,
++					.gain2 = ST_MAGN_1_FS_AVL_8100_GAIN_Z,
++				},
++			},
++		},
++		.multi_read_bit = ST_MAGN_1_MULTIREAD_BIT,
++	},
++	{
++		.wai = ST_MAGN_2_WAI_EXP,
++		.ch = (struct iio_chan_spec *)st_magn_2_16bit_channels,
++		.odr = {
++			.addr = ST_MAGN_2_ODR_ADDR,
++			.mask = ST_MAGN_2_ODR_MASK,
++			.num_bit = ST_MAGN_2_ODR_N_BIT,
++			.odr_avl = {
++				{ 1, ST_MAGN_2_ODR_AVL_1HZ_VAL, },
++				{ 2, ST_MAGN_2_ODR_AVL_2HZ_VAL, },
++				{ 3, ST_MAGN_2_ODR_AVL_3HZ_VAL, },
++				{ 5, ST_MAGN_2_ODR_AVL_5HZ_VAL, },
++				{ 10, ST_MAGN_2_ODR_AVL_10HZ_VAL, },
++				{ 20, ST_MAGN_2_ODR_AVL_20HZ_VAL, },
++				{ 40, ST_MAGN_2_ODR_AVL_40HZ_VAL, },
++				{ 80, ST_MAGN_2_ODR_AVL_80HZ_VAL, },
++			},
++		},
++		.pw = {
++			.addr = ST_MAGN_2_PW_ADDR,
++			.mask = ST_MAGN_2_PW_MASK,
++			.num_bit = ST_MAGN_2_PW_N_BIT,
++			.value_on = ST_MAGN_2_PW_ON,
++			.value_off = ST_MAGN_2_PW_OFF,
++		},
++		.fs = {
++			.addr = ST_MAGN_2_FS_ADDR,
++			.mask = ST_MAGN_2_FS_MASK,
++			.num_bit = ST_MAGN_2_FS_N_BIT,
++			.fs_avl = {
++				[0] = {
++					.num = ST_MAGN_FS_AVL_4000MG,
++					.value = ST_MAGN_2_FS_AVL_4000_VAL,
++					.gain = ST_MAGN_2_FS_AVL_4000_GAIN,
++				},
++				[1] = {
++					.num = ST_MAGN_FS_AVL_8000MG,
++					.value = ST_MAGN_2_FS_AVL_8000_VAL,
++					.gain = ST_MAGN_2_FS_AVL_8000_GAIN,
++				},
++				[2] = {
++					.num = ST_MAGN_FS_AVL_10000MG,
++					.value = ST_MAGN_2_FS_AVL_10000_VAL,
++					.gain = ST_MAGN_2_FS_AVL_10000_GAIN,
++				},
++			},
++		},
++		.multi_read_bit = ST_MAGN_2_MULTIREAD_BIT,
++	},
++};
++
++static int st_magn_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *ch, int *val,
++							int *val2, long mask)
++{
++	int err;
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&indio_dev->mlock);
++		if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
++			err = -EBUSY;
++			goto read_error;
++		} else {
++			err = st_sensors_set_enable(indio_dev,
++					&st_magn_sensors[mdata->index], true);
++			if (err < 0)
++				goto read_error;
++
++			msleep(2000/mdata->odr);
++			err = st_sensors_read_axis_data(indio_dev,
++							ch->address, val);
++			if (err < 0)
++				goto read_error;
++
++			*val = *val >> ch->scan_type.shift;
++		}
++		mutex_unlock(&indio_dev->mlock);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 0;
++		if (ch->scan_index != ST_SENSORS_SCAN_Z)
++			*val2 = mdata->gain;
++		else
++			*val2 = mdata->gain2;
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++
++read_error:
++	mutex_unlock(&indio_dev->mlock);
++	return err;
++}
++
++static int st_magn_write_raw(struct iio_dev *indio_dev,
++		struct iio_chan_spec const *chan, int val, int val2, long mask)
++{
++	int err;
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		err = st_sensors_set_fullscale_by_gain(indio_dev,
++					&st_magn_sensors[mdata->index], val2);
++		break;
++	default:
++		err = -EINVAL;
++	}
++
++	return err;
++}
++
++int st_magn_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit)
++{
++	return 0;
++}
++EXPORT_SYMBOL(st_magn_set_axis_enable);
++
++static int st_magn_check_device_support(struct iio_dev *indio_dev)
++{
++	int i, err;
++	u8 wai;
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	err = mdata->tf.read_byte(&mdata->tf, mdata->dev,
++					ST_SENSORS_DEFAULT_WAI_ADDRESS, &wai);
++	if (err < 0) {
++		dev_err(&indio_dev->dev, "failed to read Who-Am-I register.\n");
++		goto read_wai_error;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(st_magn_sensors); i++) {
++		if (st_magn_sensors[i].wai == wai)
++			break;
++	}
++	if (i == ARRAY_SIZE(st_magn_sensors))
++		goto check_device_error;
++
++	mdata->index = i;
++
++	return i;
++
++check_device_error:
++	dev_err(&indio_dev->dev, "device not supported -> wai (0x%x).\n", wai);
++	err = -ENODEV;
++read_wai_error:
++	return err;
++}
++
++int st_magn_set_enable(struct iio_dev *indio_dev, bool enable)
++{
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	return st_sensors_set_enable(indio_dev,
++				&st_magn_sensors[mdata->index], enable);
++}
++EXPORT_SYMBOL(st_magn_set_enable);
++
++static ssize_t st_magn_sysfs_set_sampling_frequency(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t size)
++{
++	int err;
++	unsigned int odr;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	err = kstrtoint(buf, 10, &odr);
++	if (err < 0)
++		goto conversion_error;
++
++	mutex_lock(&indio_dev->mlock);
++	err = st_sensors_set_odr(indio_dev,
++					&st_magn_sensors[mdata->index], odr);
++	mutex_unlock(&indio_dev->mlock);
++
++conversion_error:
++	return err < 0 ? err : size;
++}
++
++static ssize_t st_magn_sysfs_get_sampling_frequency(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	return sprintf(buf, "%d\n", mdata->odr);
++}
++
++static ssize_t st_magn_sysfs_scale_available(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	return st_sensors_get_fullscale_avl(indio_dev,
++			st_magn_sensors[mdata->index].fs.fs_avl, buf);
++}
++
++static ssize_t st_magn_sysfs_sampling_frequency_available(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	return st_sensors_get_sampling_frequency_avl(indio_dev,
++			st_magn_sensors[mdata->index].odr.odr_avl, buf);
++}
++
++static IIO_DEVICE_ATTR(sampling_frequency_available, S_IRUGO,
++		st_magn_sysfs_sampling_frequency_available, NULL , 0);
++
++static IIO_DEVICE_ATTR(in_magn_scale_available, S_IRUGO,
++				st_magn_sysfs_scale_available, NULL , 0);
++
++static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
++			st_magn_sysfs_get_sampling_frequency,
++					st_magn_sysfs_set_sampling_frequency);
++
++static struct attribute *st_magn_attributes[] = {
++	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
++	&iio_dev_attr_in_magn_scale_available.dev_attr.attr,
++	&iio_dev_attr_sampling_frequency.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group st_magn_attribute_group = {
++	.attrs = st_magn_attributes,
++};
++
++static const struct iio_info acc_info = {
++	.driver_module = THIS_MODULE,
++	.attrs = &st_magn_attribute_group,
++	.read_raw = &st_magn_read_raw,
++	.write_raw = &st_magn_write_raw,
++};
++
++int st_magn_common_probe(struct iio_dev *indio_dev)
++{
++	int err;
++	struct st_sensor_data *mdata = iio_priv(indio_dev);
++
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &acc_info;
++
++	err = st_magn_check_device_support(indio_dev);
++	if (err < 0)
++		goto st_magn_common_probe_error;
++
++	mdata->multiread_bit = st_magn_sensors[mdata->index].multi_read_bit;
++	indio_dev->channels = st_magn_sensors[mdata->index].ch;
++	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
++
++	mdata->fullscale = st_magn_sensors[mdata->index].fs.fs_avl[0].num;
++	mdata->odr = st_magn_sensors[mdata->index].odr.odr_avl[0].hz;
++
++	err = st_sensors_init_sensor(indio_dev,
++					&st_magn_sensors[mdata->index]);
++	if (err < 0)
++		goto st_magn_common_probe_error;
++
++	err = st_magn_allocate_ring(indio_dev);
++	if (err < 0)
++		goto st_magn_common_probe_error;
++
++	if (mdata->get_irq_data_ready(indio_dev) > 0) {
++		err = st_magn_probe_trigger(indio_dev);
++		if (err < 0)
++			goto acc_probe_trigger_error;
++	}
++
++	err = iio_device_register(indio_dev);
++	if (err)
++		goto iio_device_register_error;
++
++	return err;
++
++iio_device_register_error:
++	st_magn_remove_trigger(indio_dev);
++acc_probe_trigger_error:
++	st_magn_deallocate_ring(indio_dev);
++st_magn_common_probe_error:
++	return err;
++}
++EXPORT_SYMBOL(st_magn_common_probe);
++
++void st_magn_common_remove(struct iio_dev *indio_dev)
++{
++	iio_device_unregister(indio_dev);
++	st_magn_remove_trigger(indio_dev);
++	st_magn_deallocate_ring(indio_dev);
++	iio_device_free(indio_dev);
++}
++EXPORT_SYMBOL(st_magn_common_remove);
++
++MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics magnetometers driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
+new file mode 100644
+index 0000000..d090104
+--- /dev/null
++++ b/drivers/iio/magnetometer/st_magn_i2c.c
+@@ -0,0 +1,81 @@
++/*
++ * STMicroelectronics magnetometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++
++#include <linux/iio/magnetometer/st_magn.h>
++#include <linux/iio/common/st_sensors.h>
++
++
++static int st_magn_i2c_probe(struct i2c_client *client,
++						const struct i2c_device_id *id)
++{
++	struct iio_dev *indio_dev;
++	struct st_sensor_data *mdata;
++	int err;
++
++	indio_dev = iio_device_alloc(sizeof(*mdata));
++	if (indio_dev == NULL) {
++		err = -ENOMEM;
++		goto iio_device_alloc_error;
++	}
++
++	mdata = iio_priv(indio_dev);
++	mdata->dev = &client->dev;
++
++	st_sensors_i2c_configure(indio_dev, client, mdata);
++
++	err = st_magn_common_probe(indio_dev);
++	if (err < 0)
++		goto st_magn_common_probe_error;
++
++	return 0;
++
++st_magn_common_probe_error:
++	iio_device_free(indio_dev);
++iio_device_alloc_error:
++	return err;
++}
++
++static int st_magn_i2c_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	st_magn_common_remove(indio_dev);
++
++	return 0;
++}
++
++static const struct i2c_device_id st_magn_id_table[] = {
++	{ LSM303DLHC_MAGN_DEV_NAME },
++	{ LSM303DLM_MAGN_DEV_NAME },
++	{ LIS3MDL_MAGN_DEV_NAME },
++	{},
++};
++MODULE_DEVICE_TABLE(i2c, st_magn_id_table);
++
++static struct i2c_driver st_magn_driver = {
++	.driver = {
++		.owner = THIS_MODULE,
++		.name = "st-magn-i2c",
++	},
++	.probe = st_magn_i2c_probe,
++	.remove = st_magn_i2c_remove,
++	.id_table = st_magn_id_table,
++};
++module_i2c_driver(st_magn_driver);
++
++MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics magnetometers i2c driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
+new file mode 100644
+index 0000000..3d3cdc7
+--- /dev/null
++++ b/drivers/iio/magnetometer/st_magn_spi.c
+@@ -0,0 +1,80 @@
++/*
++ * STMicroelectronics magnetometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/spi/spi.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++
++#include <linux/iio/magnetometer/st_magn.h>
++#include <linux/iio/common/st_sensors.h>
++
++
++static int st_magn_spi_probe(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev;
++	struct st_sensor_data *mdata;
++	int err;
++
++	indio_dev = iio_device_alloc(sizeof(*mdata));
++	if (indio_dev == NULL) {
++		err = -ENOMEM;
++		goto iio_device_alloc_error;
++	}
++
++	mdata = iio_priv(indio_dev);
++	mdata->dev = &spi->dev;
++
++	st_sensors_spi_configure(indio_dev, spi, mdata);
++
++	err = st_magn_common_probe(indio_dev);
++	if (err < 0)
++		goto st_magn_common_probe_error;
++
++	return 0;
++
++st_magn_common_probe_error:
++	iio_device_free(indio_dev);
++iio_device_alloc_error:
++	return err;
++}
++
++static int st_magn_spi_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	st_magn_common_remove(indio_dev);
++
++	return 0;
++}
++
++static const struct spi_device_id st_magn_id_table[] = {
++	{ LSM303DLHC_MAGN_DEV_NAME },
++	{ LSM303DLM_MAGN_DEV_NAME },
++	{ LIS3MDL_MAGN_DEV_NAME },
++	{},
++};
++MODULE_DEVICE_TABLE(spi, st_magn_id_table);
++
++static struct spi_driver st_magn_driver = {
++	.driver = {
++		.owner = THIS_MODULE,
++		.name = "st-magn-spi",
++	},
++	.probe = st_magn_spi_probe,
++	.remove = st_magn_spi_remove,
++	.id_table = st_magn_id_table,
++};
++module_spi_driver(st_magn_driver);
++
++MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics magnetometers spi driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/magnetometer/st_magn_trigger.c b/drivers/iio/magnetometer/st_magn_trigger.c
+new file mode 100644
+index 0000000..4ac774d
+--- /dev/null
++++ b/drivers/iio/magnetometer/st_magn_trigger.c
+@@ -0,0 +1,62 @@
++/*
++ * STMicroelectronics magnetometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/stat.h>
++#include <linux/interrupt.h>
++#include <linux/i2c.h>
++#include <linux/gpio.h>
++#include <linux/irq.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++
++#include <linux/iio/magnetometer/st_magn.h>
++#include <linux/iio/common/st_sensors.h>
++
++
++static int st_magn_trig_try_reenable(struct iio_trigger *trig)
++{
++	int err;
++	struct iio_dev *indio_dev = trig->private_data;
++
++	char *buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
++	if (buffer_data == NULL) {
++		err = -ENOMEM;
++		goto allocate_memory_error;
++	}
++
++	st_sensors_get_buffer_element(indio_dev, buffer_data);
++	kfree(buffer_data);
++
++allocate_memory_error:
++	return 0;
++}
++
++const struct iio_trigger_ops st_magn_trigger_ops = {
++	.owner = THIS_MODULE,
++	.try_reenable = &st_magn_trig_try_reenable,
++};
++
++int st_magn_probe_trigger(struct iio_dev *indio_dev)
++{
++	return st_sensors_allocate_trigger(indio_dev, &st_magn_trigger_ops);
++}
++EXPORT_SYMBOL(st_magn_probe_trigger);
++
++void st_magn_remove_trigger(struct iio_dev *indio_dev)
++{
++	st_sensors_deallocate_trigger(indio_dev);
++}
++EXPORT_SYMBOL(st_magn_remove_trigger);
++
++MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics magnetometers trigger");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/iio/magnetometer/st_magn.h b/include/linux/iio/magnetometer/st_magn.h
+new file mode 100644
+index 0000000..2bb06e3
+--- /dev/null
++++ b/include/linux/iio/magnetometer/st_magn.h
+@@ -0,0 +1,49 @@
++/*
++ * STMicroelectronics magnetometers driver
++ *
++ * Copyright 2012 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ * v. 1.0.0
++ * Licensed under the GPL-2.
++ */
++
++#ifndef ST_MAGN_H
++#define ST_MAGN_H
++
++#include <linux/types.h>
++#include "../common/st_sensors.h"
++
++#define LSM303DLHC_MAGN_DEV_NAME	"lsm303dlhc_magn"
++#define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
++#define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
++
++int st_magn_common_probe(struct iio_dev *indio_dev);
++void st_magn_common_remove(struct iio_dev *indio_dev);
++int st_magn_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit);
++int st_magn_set_enable(struct iio_dev *indio_dev, bool enable);
++
++#ifdef CONFIG_IIO_BUFFER
++int st_magn_probe_trigger(struct iio_dev *indio_dev);
++void st_magn_remove_trigger(struct iio_dev *indio_dev);
++int st_magn_allocate_ring(struct iio_dev *indio_dev);
++void st_magn_deallocate_ring(struct iio_dev *indio_dev);
++#else /* CONFIG_IIO_BUFFER */
++static inline int st_magn_probe_trigger(struct iio_dev *indio_dev, int irq)
++{
++	return 0;
++}
++static inline void st_magn_remove_trigger(struct iio_dev *indio_dev, int irq)
++{
++	return;
++}
++static inline int st_magn_allocate_ring(struct iio_dev *indio_dev)
++{
++	return 0;
++}
++static inline void st_magn_deallocate_ring(struct iio_dev *indio_dev)
++{
++}
++#endif /* CONFIG_IIO_BUFFER */
++
++#endif /* ST_MAGN_H */
+-- 
+1.7.0.4
 
-Whew!
-
-> These would then effectively do exactly what you are doing here in that
-> a 3 numbers would be generated to push on to input.  It'd just be a little
-> less direct.... I'm not particularly sure it's a good idea, but it could
-> be done ;)
-
-See my previous email, maybe you can get one of those MX233 each-boards and 
-connect some touchscreen to it ? It will provide you with insane controller and 
-lot of fun for xmas ;-)
-
-> >> Then we could
-> >> have a go at having a generic touch screen driver acting as an IIO
-> >> consumer? (the interrupt driven IIO consumer stuff should be going in in
-> >> the comming merge window, but the example input driver didn't get
-> >> cleaned up in time.)
-> > 
-> > That'd be very nice indeed. But as I said above, you'd need to add
-> > ability to control ADC channels so you can configure them as voltage
-> > outputs. That'd be fine, but I need to do such configuration thrice in
-> > one TS sampling cycle (I need to configure the TS for sampling X-axis,
-> > Y-axis and pressure). Add the overhead of reading the ADC channels via
-> > some interface instead of being able to directly trigger them. I'd hate
-> > to have laggy touchscreen pointer or my system spending too much time in
-> > kernel -- the kthread that samples the touchscreen already does consume
-> > some power.
-> 
-> Yes there would indeed be some overhead and clearly you have some very
-> tight requirements here.  It might be possible to do this with a low
-> enough overhead, I'm really not sure without trying it!
-> 
-> > Also please consider the device with this LRADC is a 450MHz ARM system,
-> > so it has not much processing muscle.
-> > 
-> > Besides (inbound rant), I suspect all this would add even more complexity
-> > to this already complex IIO stuff.
-> :
-> :)
-
-Sorry ;-)
-
-> >> The tricks in here with switching from interrupt triggered to polled is
-> >> a little nasty but I'll take your word for it that it is necessary!
-> > 
-> > Let's bury this topic please, I'm still shedding bloody tears ... I spent
-> > two days trying to figure this part out. The hardware is nasty, period.
-> 
-> You have my sympathy.  Sometimes these hardware guys do seem to get carried
-> away :)
-
-They went all out here :(
-
-> >> As you have it sitting on a different delay channel you'd have to have
-> >> these 'magic channels' as a separate IIO device anyway.  The scan
-> >> would then include all the magic channels.
-> > 
-> > I got lost here. But anyway, this whole device behaves as a single IIO
-> > device so far providing only the ADCs, yes.
-> 
-> Sure.  If you did do the 'virtual' channel for each axis things suggested
-> above, it would be triggered separately from the adc channels.  As we have
-> only one trigger (and triggered scan setup) per IIO device, this would
-> require a pair of them.
-
-This took me a bit to gurk down ;-)
-
-> >> Hmm.  I'm not sure of the best way to handle this so fully
-> >> open to suggestions!
-> > 
-> > I'm all ears as well. On the other hand, I'd love to have some sort of
-> > this implementation in 3.8 (is that even possible anymore?).
-> 
-> Sadly no chance for 3.8 at this stage.  Couple of weeks too late now.
-
-Ah ok. It's be nice though, it's not any critical part of kernel too.
-
-> >> In some ways perhaps it is better to conclude
-> >> these channels are so touch screen specific (when the hardware is
-> >> enabled) that it's better to do as you have done here.
-> > 
-> > The idea sounds really good, I'm only afraid it's too much work with too
-> > little gain. And the overhead of this sollution is a bit worrying as
-> > well.
-> 
-> Agreed. The overhead may be a problem particularly if we involve triggers
-> (which would require interrupt handling etc).  Might be possible to work
-> without them here, but that would be fiddly.
-
-That reminds me of the ACPI ALS thing. Yep.
-
-> > NOTE: I'm a lazy bastard <--- does that count as a valid reason for not
-> > implementing it this way ? ;-)
-> 
-> It is certainly a reason ;)
-
-Hehe :)
-
-> I only really brought this suggestion up as it is roughly I'd 'like'
-> to see touch screens handled.  I have no issue with other solutions but
-> want to keep options open and if we were to change this over to something
-> close to what I suggest we would have an interesting issue as suddenly a
-> whole load more platform data would be needed (to tie the more generic
-> IIO bit to a touchscreen consumer driver).
-
-Yes, I agree with your point.
-
-> Anyhow, curriously enough none of my test boards have a screen let
-> alone a touch one so I'm hardly experienced in this area and so before
-> I merge this I would like some comments from the input side of things
-> (and an ACK from Dmitry).
-> 
-> At least we have plenty of time before 3.9!
-[...]
-
-Thanks for the review and discussion! I'll send V2 as soon as I'm back home to 
-test the adjustments!
