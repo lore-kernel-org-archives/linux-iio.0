@@ -1,45 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:43694 "EHLO
+Received: from h1446028.stratoserver.net ([85.214.92.142]:45338 "EHLO
 	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751146Ab2LKACX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2012 19:02:23 -0500
-Message-ID: <50C677D9.5070109@ahsoftware.de>
-Date: Tue, 11 Dec 2012 01:01:29 +0100
+	with ESMTP id S1756085Ab2LNO3o (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2012 09:29:44 -0500
+Message-ID: <50CB37C5.4050008@ahsoftware.de>
+Date: Fri, 14 Dec 2012 15:29:25 +0100
 From: Alexander Holler <holler@ahsoftware.de>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>, rtc-linux@googlegroups.com,
 	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
-References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de> <50C6603E.5070909@ahsoftware.de> <50C66406.9090606@metafoo.de>
-In-Reply-To: <50C66406.9090606@metafoo.de>
+	srinivas pandruvada <srinivas.pandruvada@intel.com>,
+	Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH 4/4 v4] rtc: add rtc-driver for HID sensors of type time
+References: <50C8591A.3030301@ahsoftware.de> <1355310680-2466-1-git-send-email-holler@ahsoftware.de> <50CAF473.6040901@metafoo.de> <50CB24D4.3030606@ahsoftware.de> <50CB347B.80305@ahsoftware.de>
+In-Reply-To: <50CB347B.80305@ahsoftware.de>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 10.12.2012 23:36, schrieb Lars-Peter Clausen:
-> Well, I've been exaggerating a bit, you can call it multiple times, but you
-
-Thanks a lot for the explanation(s).
-
->>>> +error_free_drvdata:
->>>> +    platform_set_drvdata(pdev, NULL);
+Am 14.12.2012 15:15, schrieb Alexander Holler:
+> Am 14.12.2012 14:08, schrieb Alexander Holler:
+>> Am 14.12.2012 10:42, schrieb Lars-Peter Clausen:
+>
+>>> And another thing I've overlooked before:
+>>> wait_for_completion_interruptible_timeout can either return a positive
+>>> number when the completion was completed, 0 in case of an timeout, or a
+>>> negative error code in case it was interrupted. You need to handle all
+>>> three. E.g. something like this.
 >>>
->>> Setting the platform data to NULL should not be necessary. Some
->>> drivers do
->>> this but it's kind of the result of cargo-cult-coding.
+>>> ret = wait_for_completion_interruptible_timeout(...)
+>>> if (ret == 0)
+>>>     return -EIO;
+>>> if (ret < 0)
+>>>     return ret
 >>>
->>>> +    kfree(time_state);
+>>
+>> Hmpf, the only working approach to use some in kernel functions really
+>> is to the read source yourself and don't trust anything else. :/
+>
+> Anyway, my approach doesn't work as it introduces a race condition:
+>
+>
+> /* get a report with all values through requesting one value */
+> sensor_hub_input_attr_get_raw_value(...)
+>
+> /* race if this task goes to slepp and the values were
+> received before it could call the below wait...
+>
+> /* wait for all values (event) */
+> if (!wait_for_completion_interruptible_timeout(...))
+>
+>
+> I'll have to look for a mechanism how to avoid that. So v5 might need
+> some time.
 
-Btw. I wouldn't call that cargo-cult-coding. It's more defensive 
-programming as people might not be sure, if there is something around 
-which still might access the platform data at that point. Ok, there 
-would be a need for a mutex or similiar if that really could happen, but 
-I wouldn't call such practices cargo-cult. ;)
+Sorry for the noise. That INIT_COMPLETION() before the sensor...() does 
+exactly that. So it's enough if I handle the different return situations 
+of wait_for...().
+
+I will just use if(wait...()<=0) return -EIO.
 
 Regards,
 
 Alexander
-
