@@ -1,51 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-011.synserver.de ([212.40.185.11]:1115 "EHLO
-	smtp-out-237.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1755209Ab2LNJ5A (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2012 04:57:00 -0500
-Message-ID: <50CAF7E9.7000905@metafoo.de>
-Date: Fri, 14 Dec 2012 10:56:57 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Axel Lin <axel.lin@ingics.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH 1/6] iio: adc: ad7266: Don't set error code to st->vref_uv
-References: <1355471245.11297.1.camel@phoenix>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:60281 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751827Ab2LNHvN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2012 02:51:13 -0500
+Received: by mail-pb0-f46.google.com with SMTP id wy7so2179525pbc.19
+        for <linux-iio@vger.kernel.org>; Thu, 13 Dec 2012 23:51:13 -0800 (PST)
+Message-ID: <1355471468.11297.6.camel@phoenix>
+Subject: [PATCH 3/6] iio: dac: ad5504: Don't set error code to voltage_uv
+From: Axel Lin <axel.lin@ingics.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Fri, 14 Dec 2012 15:51:08 +0800
 In-Reply-To: <1355471245.11297.1.camel@phoenix>
-Content-Type: text/plain; charset=UTF-8
+References: <1355471245.11297.1.camel@phoenix>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/14/2012 08:47 AM, Axel Lin wrote:
-> regulator_get_voltage() may return negative error code.
-> Add error checking to avoid setting error code to st->vref_uv.
-> 
-> Signed-off-by: Axel Lin <axel.lin@ingics.com>
+regulator_get_voltage() may return negative error code.
+Add error checking to avoid setting error code to voltage_uv.
 
-Thanks Axel, for the whole series:
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+ drivers/iio/dac/ad5504.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-> ---
->  drivers/iio/adc/ad7266.c |    6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-> index a6f4fc5..e36107d 100644
-> --- a/drivers/iio/adc/ad7266.c
-> +++ b/drivers/iio/adc/ad7266.c
-> @@ -411,7 +411,11 @@ static int __devinit ad7266_probe(struct spi_device *spi)
->  		if (ret)
->  			goto error_put_reg;
->  
-> -		st->vref_uv = regulator_get_voltage(st->reg);
-> +		ret = regulator_get_voltage(st->reg);
-> +		if (ret < 0)
-> +			goto error_disable_reg;
-> +
-> +		st->vref_uv = ret;
->  	} else {
->  		/* Use internal reference */
->  		st->vref_uv = 2500000;
+diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
+index 242bdc7..1e9a1f4 100644
+--- a/drivers/iio/dac/ad5504.c
++++ b/drivers/iio/dac/ad5504.c
+@@ -296,7 +296,11 @@ static int __devinit ad5504_probe(struct spi_device *spi)
+ 		if (ret)
+ 			goto error_put_reg;
+ 
+-		voltage_uv = regulator_get_voltage(reg);
++		ret = regulator_get_voltage(reg);
++		if (ret)
++			goto error_disable_reg;
++
++		voltage_uv = ret;
+ 	}
+ 
+ 	spi_set_drvdata(spi, indio_dev);
+-- 
+1.7.9.5
+
+
 
