@@ -1,72 +1,51 @@
-Return-Path: <holler@ahsoftware.de>
-Message-ID: <50C6674D.1000901@ahsoftware.de>
-Date: Mon, 10 Dec 2012 23:50:53 +0100
-From: Alexander Holler <holler@ahsoftware.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
- rtc-linux@googlegroups.com, Alessandro Zummo <a.zummo@towertech.it>,
- srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
-References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de> <50C63BBD.3080202@ahsoftware.de> <50C64484.4060306@metafoo.de> <50C65381.8010609@ahsoftware.de> <50C6567D.7080303@metafoo.de> <50C65746.8030609@kernel.org>
-In-Reply-To: <50C65746.8030609@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-da0-f46.google.com ([209.85.210.46]:63507 "EHLO
+	mail-da0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751312Ab2LNHsu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2012 02:48:50 -0500
+Received: by mail-da0-f46.google.com with SMTP id p5so1328680dak.19
+        for <linux-iio@vger.kernel.org>; Thu, 13 Dec 2012 23:48:50 -0800 (PST)
+Message-ID: <1355471324.11297.3.camel@phoenix>
+Subject: [PATCH 2/6] iio: dac: ad5380: Don't set error code to st->vref
+From: Axel Lin <axel.lin@ingics.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Date: Fri, 14 Dec 2012 15:48:44 +0800
+In-Reply-To: <1355471245.11297.1.camel@phoenix>
+References: <1355471245.11297.1.camel@phoenix>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Am 10.12.2012 22:42, schrieb Jonathan Cameron:
-> On 12/10/2012 09:39 PM, Lars-Peter Clausen wrote:
->> On 12/10/2012 10:26 PM, Alexander Holler wrote:
->>> Am 10.12.2012 21:22, schrieb Lars-Peter Clausen:
->>>> On 12/10/2012 08:45 PM, Alexander Holler wrote:
->>>>> Am 10.12.2012 18:05, schrieb Lars-Peter Clausen:
->>>>>
->>>>>> Looks pretty good now. But there are still some IIO remnants which should be
->>>>>> removed as well. Also the driver should move to drivers/rtc/ since, well,
->>>>>> it's a rtc driver not a IIO driver.
->>>>>
->>>>> I think it still should be stick to iio, because that is where all HID
->>>>> sensors currently are found and where the user would expect to find such
->>>>> a driver.
->>>>
->>>> That's because all the current IIO sensor drivers fall in the IIO domain. This
->>>> one clearly is a RTC driver, so it belongs in drivers/rtc/
->>>
->>> Where nobody will find it if he searches for drivers for his HID sensor.
->>> I still see it as HID sensor driver and not a rtc-driver.
->>> But ...
->>
->> I can understand your position, but drivers are usually grouped by function not
->> by topology. If there is a proper Kconfig help text people should hopefully be
->> find it.
-> Seconded on this. If it is a pure rtc driver then it definitely belongs in
-> drivers/rtc.  Now there might have been ways of doing this as a consumer / provider
-> with the provider being in IIO and the consumer in rtc, but that sounds like
-> it is over compicating things, at least for now.
+regulator_get_voltage() may return negative error code.
+Add error checking to avoid setting error code to st->vref_uv.
 
-Personally I just want to use it to have HID-USB_RTCs. ;)
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+ drivers/iio/dac/ad5380.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-But in case of HID sensor hubs, the main usage of that driver will be to 
-set the time of such hubs (something I still have to make patches for), 
-and not to read it. So if you think as an HID sensor user, it should 
-belong to iio or wherever those sensor will finally end up (I think they 
-should end up in HID and should be usable by bluetooth devices too), but 
-if you creatively misuse the standard to get a driver for USB-RTCs, as I 
-want, then rtc is the correct place. ;)
+diff --git a/drivers/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c
+index 14991ac..4aca189 100644
+--- a/drivers/iio/dac/ad5380.c
++++ b/drivers/iio/dac/ad5380.c
+@@ -406,7 +406,11 @@ static int __devinit ad5380_probe(struct device *dev, struct regmap *regmap,
+ 			goto error_free_reg;
+ 		}
+ 
+-		st->vref = regulator_get_voltage(st->vref_reg);
++		ret = regulator_get_voltage(st->vref_reg);
++		if (ret < 0)
++			goto error_disable_reg;
++
++		st->vref = ret;
+ 	} else {
+ 		st->vref = st->chip_info->int_vref;
+ 		ctrl |= AD5380_CTRL_INT_VREF_EN;
+-- 
+1.7.9.5
 
-Because I don't want to do a v4:
 
-the driver has an
 
-#include "../common/hid-sensors/hid-sensor-attributes.h"
-
-so moving it to drivers/rtc/ will make that even more ugly.
-
-Suggestions? I don't really care and as I'm currently at the order 
-receiving end ;) I would change it to whatever the maintainers are 
-wanting. Maybe moving that header to include/linux or even integrating 
-it into include/linux/hid-sensor-hubs.h makes sense.
-
-Regards,
-
-Alexander
