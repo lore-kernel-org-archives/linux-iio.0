@@ -1,67 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:45338 "EHLO
-	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756085Ab2LNO3o (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2012 09:29:44 -0500
-Message-ID: <50CB37C5.4050008@ahsoftware.de>
-Date: Fri, 14 Dec 2012 15:29:25 +0100
-From: Alexander Holler <holler@ahsoftware.de>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>, rtc-linux@googlegroups.com,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>,
-	Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH 4/4 v4] rtc: add rtc-driver for HID sensors of type time
-References: <50C8591A.3030301@ahsoftware.de> <1355310680-2466-1-git-send-email-holler@ahsoftware.de> <50CAF473.6040901@metafoo.de> <50CB24D4.3030606@ahsoftware.de> <50CB347B.80305@ahsoftware.de>
-In-Reply-To: <50CB347B.80305@ahsoftware.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:34960 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753023Ab2LNMHw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2012 07:07:52 -0500
+Received: by mail-pa0-f46.google.com with SMTP id bh2so2384050pad.19
+        for <linux-iio@vger.kernel.org>; Fri, 14 Dec 2012 04:07:52 -0800 (PST)
+Message-ID: <1355486867.3475.3.camel@phoenix>
+Subject: [PATCH v2 4/6] iio: dac: ad5624r_spi: Don't set error code to
+ voltage_uv
+From: Axel Lin <axel.lin@ingics.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Barry Song <21cnbao@gmail.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Date: Fri, 14 Dec 2012 20:07:47 +0800
+In-Reply-To: <1355486789.3475.1.camel@phoenix>
+References: <1355486789.3475.1.camel@phoenix>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 14.12.2012 15:15, schrieb Alexander Holler:
-> Am 14.12.2012 14:08, schrieb Alexander Holler:
->> Am 14.12.2012 10:42, schrieb Lars-Peter Clausen:
->
->>> And another thing I've overlooked before:
->>> wait_for_completion_interruptible_timeout can either return a positive
->>> number when the completion was completed, 0 in case of an timeout, or a
->>> negative error code in case it was interrupted. You need to handle all
->>> three. E.g. something like this.
->>>
->>> ret = wait_for_completion_interruptible_timeout(...)
->>> if (ret == 0)
->>>     return -EIO;
->>> if (ret < 0)
->>>     return ret
->>>
->>
->> Hmpf, the only working approach to use some in kernel functions really
->> is to the read source yourself and don't trust anything else. :/
->
-> Anyway, my approach doesn't work as it introduces a race condition:
->
->
-> /* get a report with all values through requesting one value */
-> sensor_hub_input_attr_get_raw_value(...)
->
-> /* race if this task goes to slepp and the values were
-> received before it could call the below wait...
->
-> /* wait for all values (event) */
-> if (!wait_for_completion_interruptible_timeout(...))
->
->
-> I'll have to look for a mechanism how to avoid that. So v5 might need
-> some time.
+regulator_get_voltage() may return negative error code.
+Add error checking to avoid setting error code to voltage_uv.
 
-Sorry for the noise. That INIT_COMPLETION() before the sensor...() does 
-exactly that. So it's enough if I handle the different return situations 
-of wait_for...().
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+v2: check if ret is negative value
+ drivers/iio/dac/ad5624r_spi.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-I will just use if(wait...()<=0) return -EIO.
+diff --git a/drivers/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
+index 6a7d6a4..ae7fb64 100644
+--- a/drivers/iio/dac/ad5624r_spi.c
++++ b/drivers/iio/dac/ad5624r_spi.c
+@@ -238,7 +238,11 @@ static int __devinit ad5624r_probe(struct spi_device *spi)
+ 		if (ret)
+ 			goto error_put_reg;
+ 
+-		voltage_uv = regulator_get_voltage(st->reg);
++		ret = regulator_get_voltage(st->reg);
++		if (ret < 0)
++			goto error_disable_reg;
++
++		voltage_uv = ret;
+ 	}
+ 
+ 	spi_set_drvdata(spi, indio_dev);
+-- 
+1.7.9.5
 
-Regards,
 
-Alexander
+
