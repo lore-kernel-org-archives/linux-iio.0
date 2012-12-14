@@ -1,107 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:39610 "EHLO
+Received: from h1446028.stratoserver.net ([85.214.92.142]:50963 "EHLO
 	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751550Ab2LJWVg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2012 17:21:36 -0500
-Message-ID: <50C6603E.5070909@ahsoftware.de>
-Date: Mon, 10 Dec 2012 23:20:46 +0100
+	with ESMTP id S932307Ab2LNVYb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2012 16:24:31 -0500
+Message-ID: <50CB98F3.9030509@ahsoftware.de>
+Date: Fri, 14 Dec 2012 22:24:03 +0100
 From: Alexander Holler <holler@ahsoftware.de>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>, rtc-linux@googlegroups.com,
 	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
-References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de>
-In-Reply-To: <50C61675.2000407@metafoo.de>
+	srinivas pandruvada <srinivas.pandruvada@intel.com>,
+	Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH 4/4 v4] rtc: add rtc-driver for HID sensors of type time
+References: <50C8591A.3030301@ahsoftware.de> <1355310680-2466-1-git-send-email-holler@ahsoftware.de> <50CAF473.6040901@metafoo.de> <50CB24D4.3030606@ahsoftware.de> <50CB347B.80305@ahsoftware.de> <50CB37C5.4050008@ahsoftware.de> <50CB38F2.4050806@metafoo.de> <50CB44B3.8040601@ahsoftware.de> <50CB54C3.1090409@metafoo.de>
+In-Reply-To: <50CB54C3.1090409@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 10.12.2012 18:05, schrieb Lars-Peter Clausen:
-> On 12/10/2012 03:51 PM, Alexander Holler wrote:
-
-> The channel spec is semi unused. You use it to lookup the scan index and the
-> name, but that could easily be implemented without the channel spec.
-> Especially considering that the scan index lookup is only ever done for
-> channel 0, which will always return CHANNEL_SCAN_INDEX_YEAR.
-
-Thats what I had in mind for v3.
-
-> Are the entries in info ordered in the same way as the addresses in
-> hid_time_addresses? If yes you could just use a lookup-table like
+Am 14.12.2012 17:33, schrieb Lars-Peter Clausen:
+> On 12/14/2012 04:24 PM, Alexander Holler wrote:
+>> Am 14.12.2012 15:34, schrieb Lars-Peter Clausen:
+>>> On 12/14/2012 03:29 PM, Alexander Holler wrote:
+>>>> Am 14.12.2012 15:15, schrieb Alexander Holler:
+>>>>> Am 14.12.2012 14:08, schrieb Alexander Holler:
+>>>>>> Am 14.12.2012 10:42, schrieb Lars-Peter Clausen:
+>>>>>
+>>>>>>> And another thing I've overlooked before:
+>>>>>>> wait_for_completion_interruptible_timeout can either return a positive
+>>>>>>> number when the completion was completed, 0 in case of an timeout, or a
+>>>>>>> negative error code in case it was interrupted. You need to handle all
+>>>>>>> three. E.g. something like this.
+>>>>>>>
+>>>>>>> ret = wait_for_completion_interruptible_timeout(...)
+>>>>>>> if (ret == 0)
+>>>>>>>      return -EIO;
+>>>>>>> if (ret < 0)
+>>>>>>>      return ret
+>>>>>>>
+>>>>>>
+>>>>>> Hmpf, the only working approach to use some in kernel functions really
+>>>>>> is to the read source yourself and don't trust anything else. :/
+>>>>>
+>>>>> Anyway, my approach doesn't work as it introduces a race condition:
+>>>>>
+>>>>>
+>>>>> /* get a report with all values through requesting one value */
+>>>>> sensor_hub_input_attr_get_raw_value(...)
+>>>>>
+>>>>> /* race if this task goes to slepp and the values were
+>>>>> received before it could call the below wait...
+>>>>>
+>>>>> /* wait for all values (event) */
+>>>>> if (!wait_for_completion_interruptible_timeout(...))
+>>>>>
+>>>>>
+>>>>> I'll have to look for a mechanism how to avoid that. So v5 might need
+>>>>> some time.
+>>>>
+>>>> Sorry for the noise. That INIT_COMPLETION() before the sensor...() does
+>>>> exactly that. So it's enough if I handle the different return situations of
+>>>> wait_for...().
+>>>>
+>>>> I will just use if(wait...()<=0) return -EIO.
+>>>>
+>>>
+>>> No, that's wrong. You should really return the error code returned by
+>>> wait_for_completion_interruptible_timeout(). This will make sure that
+>>> userspace restarts the syscall if necessary.
+>>
+>> Sorry for my ignorance, but which reasons for interruption do exist
+>> which doesn't kill the userspace too? The error number -ESYSRESTART
+>> doesn't offer a hint.
 >
-> static const char * const hid_time_attrib_names[] = {
-> 	"second",
-> 	...
-> };
 >
-> and just use 'i' to look them up.
+> Well I'm not an expert on this either, but as far as I know any signal the
+> process is listening on can cause an interruption. Most signals won't kill
+> the process though. More on the whole restart stuff:
+> http://lwn.net/Articles/528935/
 
-Again, what I had in mind for v3. It would have been better I wouldn't 
-have used one of the existing drivers as template and afterwards 
-removing tons of stuff. ;)
+I've come to the conclusion that using 
+wait_for_completion_interruptible_timeout() isn't what should be used 
+here and will switch to wait_for_completion_killable_timeout(). Here are 
+my reasons:
 
->> +	init_completion(&time_state->comp_last_time);
->
-> This needs to be INIT_COMPLETION. init_completion must be called exactly
-> once on a completion, which should be from inside probe() in this case.
+1. I don't think any caller of rtc_ops.read_time will be prepared to 
+handle -ESYSRESTART.
 
-Ah, so I've misread http://lwn.net/Articles/23993/ . I've read it as 
-init_completion() is usable multiple times (I had the impression 
-INIT_COMPLETION got replaced by init_completion().
+2. Someone wants the time. Beeing interruptible seems to mean the 
+process might be interrupted by signal processing with an unknown long 
+duration which could decrease the accuracy even below the desired one 
+second (which doesn't look unlikely, signal processing in userspace is 
+unpredictable and (mis)used for all kind of stuff).
 
->> +	/* wait for all values (event) */
->> +	wait_for_completion_interruptible_timeout(&time_state->comp_last_time,
->> +							HZ*6);
->
-> You should check the return value in case either a timeout happens or the
-> sleep is interrupted.
+3. I've primarily used it to be friendly in means of killable, but 
+didn't know that ..._killable() does exist. ;)
 
-Yes, I already wanted to do it, but it seems I've forgotten it.
+Btw., here is a imho good and especially short introduction about the 
+task states along with some pointers to more comprehensive resources:
+http://www.ibm.com/developerworks/linux/library/l-task-killable/
 
->> +	struct hid_time_state *time_state =
->> +		kzalloc(sizeof(struct hid_time_state), GFP_KERNEL);
->
-> You could use devm_kzalloc here. By doing so you don't have to take care of
-> freeing it again since it will be auto-freed once the device is removed.
-
-Thanks. I already searched such and wondered why such didn't exist. Just 
-to clarify, if I use devm_kzalloc, I don't have to free time_state here
-
->> +error_free_drvdata:
->> +	platform_set_drvdata(pdev, NULL);
->
-> Setting the platform data to NULL should not be necessary. Some drivers do
-> this but it's kind of the result of cargo-cult-coding.
->
->> +	kfree(time_state);
->> +error_ret:
->> +	return ret;
->> +}
->> +
->> +static int __devinit hid_time_remove(struct platform_device *pdev)
->> +{
->> +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
->> +	struct hid_time_state *time_state = platform_get_drvdata(pdev);
->> +
->> +	if (!IS_ERR(time_state->rtc))
->> +		rtc_device_unregister(time_state->rtc);
->> +	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TIME);
->> +	platform_set_drvdata(pdev, NULL);
->
-
-and here?
-
-> Same here.
->
->> +	kfree(time_state);
->> +
->> +	return 0;
->> +}
->> +
-> [...]
+v5 of that patch will follow. Hopefully the last one necessary.
 
 Regards,
 
