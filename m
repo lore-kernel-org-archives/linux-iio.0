@@ -1,59 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:50728 "EHLO
+Received: from mail-out.m-online.net ([212.18.0.10]:58713 "EHLO
 	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753485Ab2LNCEp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2012 21:04:45 -0500
+	with ESMTP id S1753485Ab2LNBq5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2012 20:46:57 -0500
 From: Marek Vasut <marex@denx.de>
-To: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH 2/3 V2] iio: mxs: Implement support for touchscreen
-Date: Fri, 14 Dec 2012 03:04:43 +0100
-Cc: linux-iio@vger.kernel.org,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Shawn Guo <shawn.guo@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-arm-kernel@lists.infradead.org
-References: <1355449598-15980-1-git-send-email-marex@denx.de> <1355449598-15980-2-git-send-email-marex@denx.de> <CAOMZO5DDcPpePEiJe0hg0Er60OBuJM+Rik1CSc9zcphycpEr4g@mail.gmail.com>
-In-Reply-To: <CAOMZO5DDcPpePEiJe0hg0Er60OBuJM+Rik1CSc9zcphycpEr4g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201212140304.43291.marex@denx.de>
+To: linux-iio@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, Marek Vasut <marex@denx.de>,
+	Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH 3/3] iio: mxs: Enable touchscreen on m28evk
+Date: Fri, 14 Dec 2012 02:46:38 +0100
+Message-Id: <1355449598-15980-3-git-send-email-marex@denx.de>
+In-Reply-To: <1355449598-15980-1-git-send-email-marex@denx.de>
+References: <1355449598-15980-1-git-send-email-marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear Fabio Estevam,
+This patch adds necessary DT properties to m28evk to enable touchscreen
+in the LRADC block. The M28EVK is shipped with 4-wire resistive touchscreen.
 
-> Hi Marek,
-> 
-> On Thu, Dec 13, 2012 at 11:46 PM, Marek Vasut <marex@denx.de> wrote:
-> > +static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
-> > +{
-> > +       struct input_dev *input;
-> > +       struct device *dev = lradc->dev;
-> > +       int ret;
-> > +
-> > +       if (!lradc->use_touchscreen)
-> > +               return 0;
-> 
-> Shouldn't we return an error code here?
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Shawn Guo <shawn.guo@linaro.org>
+---
+ arch/arm/boot/dts/imx28-m28evk.dts |    1 +
+ 1 file changed, 1 insertion(+)
 
-No, why ? No touchscreen present, we register nothing.
+diff --git a/arch/arm/boot/dts/imx28-m28evk.dts b/arch/arm/boot/dts/imx28-m28evk.dts
+index c718f91..712d99a 100644
+--- a/arch/arm/boot/dts/imx28-m28evk.dts
++++ b/arch/arm/boot/dts/imx28-m28evk.dts
+@@ -213,6 +213,7 @@
+ 
+ 			lradc@80050000 {
+ 				status = "okay";
++				fsl,lradc-touchscreen-wires = <4>;
+ 			};
+ 
+ 			duart: serial@80074000 {
+-- 
+1.7.10.4
 
-> > +
-> > +       input = input_allocate_device();
-> > +       if (!input) {
-> > +               dev_warn(dev, "Failed to allocate TS device,
-> > disabling.\n"); +               lradc->use_touchscreen =
-> > MXS_LRADC_TOUCHSCREEN_NONE; +               return 0;
-> > +       }
-> 
-> Shouldn't we return an error code here?
-
-Yes.
-
-> Regards,
-> 
-> Fabio Estevam
-
-Best regards,
-Marek Vasut
