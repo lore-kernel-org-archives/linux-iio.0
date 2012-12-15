@@ -1,53 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:58866 "EHLO
-	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751902Ab2LJV05 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2012 16:26:57 -0500
-Message-ID: <50C65381.8010609@ahsoftware.de>
-Date: Mon, 10 Dec 2012 22:26:25 +0100
-From: Alexander Holler <holler@ahsoftware.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38533 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756371Ab2LOLGK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Dec 2012 06:06:10 -0500
+Message-ID: <50CC599E.8060004@kernel.org>
+Date: Sat, 15 Dec 2012 11:06:06 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
+To: Alexander Holler <holler@ahsoftware.de>
 CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>, rtc-linux@googlegroups.com,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	rtc-linux@googlegroups.com,
 	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
-References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de> <50C63BBD.3080202@ahsoftware.de> <50C64484.4060306@metafoo.de>
-In-Reply-To: <50C64484.4060306@metafoo.de>
+	srinivas pandruvada <srinivas.pandruvada@intel.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jiri Kosina <jkosina@suse.cz>
+Subject: Re: [PATCH 2/4 RESEND] iio: Add Usage IDs for HID time sensors.
+References: <50C73AFC.1050904@jic23.retrosnub.co.uk> <1355250106-3114-1-git-send-email-holler@ahsoftware.de> <1355250106-3114-2-git-send-email-holler@ahsoftware.de>
+In-Reply-To: <1355250106-3114-2-git-send-email-holler@ahsoftware.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 10.12.2012 21:22, schrieb Lars-Peter Clausen:
-> On 12/10/2012 08:45 PM, Alexander Holler wrote:
->> Am 10.12.2012 18:05, schrieb Lars-Peter Clausen:
->>
->>> Looks pretty good now. But there are still some IIO remnants which should be
->>> removed as well. Also the driver should move to drivers/rtc/ since, well,
->>> it's a rtc driver not a IIO driver.
->>
->> I think it still should be stick to iio, because that is where all HID
->> sensors currently are found and where the user would expect to find such
->> a driver.
+On 12/11/2012 06:21 PM, Alexander Holler wrote:
+> These are Usage IDs for the attributes year, month, day,
+> hour, minute and second, needed to read HID time sensors.
 > 
-> That's because all the current IIO sensor drivers fall in the IIO domain. This
-> one clearly is a RTC driver, so it belongs in drivers/rtc/
+> Signed-off-by: Alexander Holler <holler@ahsoftware.de>
+This has gotten very messy to follow.  Could you resend the
+patches (without the first) with Jiri cc'd as well
+(as some of this is in his domain as HID maintainer).
 
-Where nobody will find it if he searches for drivers for his HID sensor.
-I still see it as HID sensor driver and not a rtc-driver.
-But ...
+Given this makes quite a few changes in IIO drivers I'm happy
+to take the lot through the IIO tree but to do that I would
+like a go ahead from Jiri + either Andrew or Alessandro
+(for rtc side of things).
 
+Alexander, you need to be careful with multi subsystem patches
+like these to ensure everyone relevant is in the cc list.
+
+
+> ---
+>  include/linux/hid-sensor-ids.h |    9 +++++++++
+>  1 files changed, 9 insertions(+), 0 deletions(-)
 > 
->>
->>>> +/* Channel definitions */
->>>> +static const struct iio_chan_spec hid_time_channels[TIME_RTC_CHANNEL_MAX] = {
->>
->> And that is imho the last remaining iio-stuff. If necessary I can remove
->> it too.
+> diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+> index ca8d7e9..3754ea9 100644
+> --- a/include/linux/hid-sensor-ids.h
+> +++ b/include/linux/hid-sensor-ids.h
+> @@ -67,6 +67,15 @@
+>  #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS		0x200486
+>  #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS		0x200487
+>  
+> +/* Time (2000a0) */
+> +#define HID_USAGE_SENSOR_TIME					0x2000a0
+> +#define HID_USAGE_SENSOR_TIME_YEAR				0x200521
+> +#define HID_USAGE_SENSOR_TIME_MONTH				0x200522
+> +#define HID_USAGE_SENSOR_TIME_DAY				0x200523
+> +#define HID_USAGE_SENSOR_TIME_HOUR				0x200525
+> +#define HID_USAGE_SENSOR_TIME_MINUTE				0x200526
+> +#define HID_USAGE_SENSOR_TIME_SECOND				0x200527
+> +
+>  /* Units */
+>  #define HID_USAGE_SENSOR_UNITS_NOT_SPECIFIED			0x00
+>  #define HID_USAGE_SENSOR_UNITS_LUX				0x01
 > 
-> That and the remaining bits of the read_raw callback.
-
-Ok. I will make a v3.
-
-Alexander
