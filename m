@@ -1,36 +1,226 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.32.191]:38647 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751504Ab2LUJJO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Dec 2012 04:09:14 -0500
-Message-ID: <50D4272A.1080702@free-electrons.com>
-Date: Fri, 21 Dec 2012 10:08:58 +0100
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-MIME-Version: 1.0
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-CC: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>
-Subject: Re: [PATCH 3/3] ARM: AT91: IIO: fix missing Sample and Hold time
-References: <20121219183236.GP23971@game.jcrosoft.org> <1355942232-26251-1-git-send-email-plagnioj@jcrosoft.com> <1355942232-26251-3-git-send-email-plagnioj@jcrosoft.com> <50D2EEA0.8040807@free-electrons.com> <20121220124909.GR23971@game.jcrosoft.org>
-In-Reply-To: <20121220124909.GR23971@game.jcrosoft.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from h1446028.stratoserver.net ([85.214.92.142]:57123 "EHLO
+	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755563Ab2LOMqy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Dec 2012 07:46:54 -0500
+From: Alexander Holler <holler@ahsoftware.de>
+To: linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	rtc-linux@googlegroups.com,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jiri Kosina <jkosina@suse.cz>,
+	Alexander Holler <holler@ahsoftware.de>
+Subject: [PATCH 2/4 RESEND] iio: merge hid-sensor-attributes.h into hid-sensor-hub.h
+Date: Sat, 15 Dec 2012 13:45:35 +0100
+Message-Id: <1355575537-10093-2-git-send-email-holler@ahsoftware.de>
+In-Reply-To: <1355575537-10093-1-git-send-email-holler@ahsoftware.de>
+References: <50CC6FE3.6060705@ahsoftware.de>
+ <1355575537-10093-1-git-send-email-holler@ahsoftware.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Le 20/12/2012 13:49, Jean-Christophe PLAGNIOL-VILLARD a écrit :
-> On 11:55 Thu 20 Dec     , Maxime Ripard wrote:
->> Since, from all the datasheet I have (G20, G45 and X5), the minimum time
->> is always 500ns, do we really need to add a dt property for that?
-> you must this is hardware specific it depend on the line capacity
+The stuff in hid-sensor-attributes.h is needed by every piece which
+uses hid-sensor-hub and merging it into hid-sensor-hub.h makes it accessible
+from outside the iio subdirectory.
 
-Ok, I see. The comment about adding the unit in the documentation is
-still valid though.
+Signed-off-by: Alexander Holler <holler@ahsoftware.de>
+---
+ drivers/iio/accel/hid-sensor-accel-3d.c            |    1 -
+ .../iio/common/hid-sensors/hid-sensor-attributes.c |    1 -
+ .../iio/common/hid-sensors/hid-sensor-attributes.h |   57 --------------------
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    |    1 -
+ drivers/iio/gyro/hid-sensor-gyro-3d.c              |    1 -
+ drivers/iio/light/hid-sensor-als.c                 |    1 -
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c      |    1 -
+ include/linux/hid-sensor-hub.h                     |   38 +++++++++++++
+ 8 files changed, 38 insertions(+), 63 deletions(-)
+ delete mode 100644 drivers/iio/common/hid-sensors/hid-sensor-attributes.h
 
-Maxime
-
+diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+index 314a405..72371aa 100644
+--- a/drivers/iio/accel/hid-sensor-accel-3d.c
++++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+@@ -28,7 +28,6 @@
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+-#include "../common/hid-sensors/hid-sensor-attributes.h"
+ #include "../common/hid-sensors/hid-sensor-trigger.h"
+ 
+ /*Format: HID-SENSOR-usage_id_in_hex*/
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 7537495..5873f16 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -25,7 +25,6 @@
+ #include <linux/hid-sensor-hub.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include "hid-sensor-attributes.h"
+ 
+ static int pow_10(unsigned power)
+ {
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.h b/drivers/iio/common/hid-sensors/hid-sensor-attributes.h
+deleted file mode 100644
+index a4676a0..0000000
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.h
++++ /dev/null
+@@ -1,57 +0,0 @@
+-/*
+- * HID Sensors Driver
+- * Copyright (c) 2012, Intel Corporation.
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms and conditions of the GNU General Public License,
+- * version 2, as published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope it will be useful, but WITHOUT
+- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+- * more details.
+- *
+- * You should have received a copy of the GNU General Public License along with
+- * this program; if not, write to the Free Software Foundation, Inc.,
+- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
+- *
+- */
+-#ifndef _HID_SENSORS_ATTRIBUTES_H
+-#define _HID_SENSORS_ATTRIBUTES_H
+-
+-/* Common hid sensor iio structure */
+-struct hid_sensor_iio_common {
+-	struct hid_sensor_hub_device *hsdev;
+-	struct platform_device *pdev;
+-	unsigned usage_id;
+-	bool data_ready;
+-	struct hid_sensor_hub_attribute_info poll;
+-	struct hid_sensor_hub_attribute_info report_state;
+-	struct hid_sensor_hub_attribute_info power_state;
+-	struct hid_sensor_hub_attribute_info sensitivity;
+-};
+-
+-/*Convert from hid unit expo to regular exponent*/
+-static inline int hid_sensor_convert_exponent(int unit_expo)
+-{
+-	if (unit_expo < 0x08)
+-		return unit_expo;
+-	else if (unit_expo <= 0x0f)
+-		return -(0x0f-unit_expo+1);
+-	else
+-		return 0;
+-}
+-
+-int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+-					u32 usage_id,
+-					struct hid_sensor_iio_common *st);
+-int hid_sensor_write_raw_hyst_value(struct hid_sensor_iio_common *st,
+-					int val1, int val2);
+-int hid_sensor_read_raw_hyst_value(struct hid_sensor_iio_common *st,
+-					int *val1, int *val2);
+-int hid_sensor_write_samp_freq_value(struct hid_sensor_iio_common *st,
+-					int val1, int val2);
+-int hid_sensor_read_samp_freq_value(struct hid_sensor_iio_common *st,
+-					int *val1, int *val2);
+-
+-#endif
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index d4b790d..b097b68 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -26,7 +26,6 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
+ #include <linux/iio/sysfs.h>
+-#include "hid-sensor-attributes.h"
+ #include "hid-sensor-trigger.h"
+ 
+ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+index 4c56ada..b98cd70 100644
+--- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
++++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+@@ -28,7 +28,6 @@
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+-#include "../common/hid-sensors/hid-sensor-attributes.h"
+ #include "../common/hid-sensors/hid-sensor-trigger.h"
+ 
+ /*Format: HID-SENSOR-usage_id_in_hex*/
+diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+index 96e3691..9610989 100644
+--- a/drivers/iio/light/hid-sensor-als.c
++++ b/drivers/iio/light/hid-sensor-als.c
+@@ -28,7 +28,6 @@
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+-#include "../common/hid-sensors/hid-sensor-attributes.h"
+ #include "../common/hid-sensors/hid-sensor-trigger.h"
+ 
+ /*Format: HID-SENSOR-usage_id_in_hex*/
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index c4f0d27..4957430 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -28,7 +28,6 @@
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+-#include "../common/hid-sensors/hid-sensor-attributes.h"
+ #include "../common/hid-sensors/hid-sensor-trigger.h"
+ 
+ /*Format: HID-SENSOR-usage_id_in_hex*/
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index 0aa5f4c..e6265f9 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -157,4 +157,42 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+ */
+ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+ 			u32 field_index, s32 *value);
++
++/* hid-sensor-attributes */
++
++/* Common hid sensor iio structure */
++struct hid_sensor_iio_common {
++	struct hid_sensor_hub_device *hsdev;
++	struct platform_device *pdev;
++	unsigned usage_id;
++	bool data_ready;
++	struct hid_sensor_hub_attribute_info poll;
++	struct hid_sensor_hub_attribute_info report_state;
++	struct hid_sensor_hub_attribute_info power_state;
++	struct hid_sensor_hub_attribute_info sensitivity;
++};
++
++/*Convert from hid unit expo to regular exponent*/
++static inline int hid_sensor_convert_exponent(int unit_expo)
++{
++	if (unit_expo < 0x08)
++		return unit_expo;
++	else if (unit_expo <= 0x0f)
++		return -(0x0f-unit_expo+1);
++	else
++		return 0;
++}
++
++int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
++					u32 usage_id,
++					struct hid_sensor_iio_common *st);
++int hid_sensor_write_raw_hyst_value(struct hid_sensor_iio_common *st,
++					int val1, int val2);
++int hid_sensor_read_raw_hyst_value(struct hid_sensor_iio_common *st,
++					int *val1, int *val2);
++int hid_sensor_write_samp_freq_value(struct hid_sensor_iio_common *st,
++					int val1, int val2);
++int hid_sensor_read_samp_freq_value(struct hid_sensor_iio_common *st,
++					int *val1, int *val2);
++
+ #endif
 -- 
-Maxime Ripard, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+1.7.8.6
+
