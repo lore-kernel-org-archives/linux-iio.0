@@ -1,41 +1,54 @@
-Return-Path: <holler@ahsoftware.de>
-Message-ID: <50C72967.5050807@ahsoftware.de>
-Date: Tue, 11 Dec 2012 13:39:03 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from h1446028.stratoserver.net ([85.214.92.142]:57098 "EHLO
+	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752631Ab2LOMqN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Dec 2012 07:46:13 -0500
 From: Alexander Holler <holler@ahsoftware.de>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- Jonathan Cameron <jic23@kernel.org>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- Jonathan Cameron <jic23@cam.ac.uk>,
- rtc-linux@googlegroups.com, Alessandro Zummo <a.zummo@towertech.it>,
- srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
-References: <50C5DFCC.60203@ahsoftware.de> <1355151119-2489-1-git-send-email-holler@ahsoftware.de> <50C61675.2000407@metafoo.de> <50C63BBD.3080202@ahsoftware.de> <50C64484.4060306@metafoo.de> <50C65381.8010609@ahsoftware.de> <50C6567D.7080303@metafoo.de> <50C65746.8030609@kernel.org> <50C6674D.1000901@ahsoftware.de> <50C6FD60.7080300@jic23.retrosnub.co.uk> <50C6FF71.1010504@metafoo.de>
-In-Reply-To: <50C6FF71.1010504@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	rtc-linux@googlegroups.com,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jiri Kosina <jkosina@suse.cz>,
+	Alexander Holler <holler@ahsoftware.de>
+Subject: [PATCH 1/4 RESEND] iio: Add Usage IDs for HID time sensors.
+Date: Sat, 15 Dec 2012 13:45:34 +0100
+Message-Id: <1355575537-10093-1-git-send-email-holler@ahsoftware.de>
+In-Reply-To: <50CC6FE3.6060705@ahsoftware.de>
+References: <50CC6FE3.6060705@ahsoftware.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Am 11.12.2012 10:40, schrieb Lars-Peter Clausen:
+These are Usage IDs for the attributes year, month, day,
+hour, minute and second, needed to read HID time sensors.
 
->> Yes, move the header or merge into existing one as makes sense.
->> I'm not pulling this driver into the IIO tree (unless for some
->> reason Alessandro wants me to and I can't think why he would...).
->>
->
-> Alessandro has been pretty quiet for quite some time now. Luckily Andrew
-> Morton usually picks up the stuff for orphaned subsystems. So put him on Cc
-> for v4.
+Signed-off-by: Alexander Holler <holler@ahsoftware.de>
+---
+ include/linux/hid-sensor-ids.h |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
 
-Will do it. Thanks a lot for your review.
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index ca8d7e9..3754ea9 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -67,6 +67,15 @@
+ #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS		0x200486
+ #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS		0x200487
+ 
++/* Time (2000a0) */
++#define HID_USAGE_SENSOR_TIME					0x2000a0
++#define HID_USAGE_SENSOR_TIME_YEAR				0x200521
++#define HID_USAGE_SENSOR_TIME_MONTH				0x200522
++#define HID_USAGE_SENSOR_TIME_DAY				0x200523
++#define HID_USAGE_SENSOR_TIME_HOUR				0x200525
++#define HID_USAGE_SENSOR_TIME_MINUTE				0x200526
++#define HID_USAGE_SENSOR_TIME_SECOND				0x200527
++
+ /* Units */
+ #define HID_USAGE_SENSOR_UNITS_NOT_SPECIFIED			0x00
+ #define HID_USAGE_SENSOR_UNITS_LUX				0x01
+-- 
+1.7.8.6
 
-I willl post the whole series (4 patches including the merge of 
-hid-sensor-attributes.h) again, when I've finished v3 of the driver 
-(hopefully this evening), marking some patches as RESEND. So 3 out of 
-those 4 patches will be for iio (as hid-sensor-hub is part of it), and 
-the last one, the rtc driver itself, will be for the rtc subsystem. I 
-don't know if they have to be pulled by different maintainers. ;)
-
-Regards,
-
-Alexander
