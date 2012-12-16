@@ -1,52 +1,62 @@
-Return-Path: <a.zummo@towertech.it>
-Date: Sun, 16 Dec 2012 23:15:52 +0100
-From: Alessandro Zummo <a.zummo@towertech.it>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, Alexander Holler
- <holler@ahsoftware.de>, Jonathan Cameron <jic23@kernel.org>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, Jonathan Cameron
- <jic23@cam.ac.uk>, rtc-linux@googlegroups.com, srinivas pandruvada
- <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
-Message-ID: <20121216231552.4ced4d25@linux.lan.towertech.it>
-In-Reply-To: <50C6FF71.1010504@metafoo.de>
-References: <50C5DFCC.60203@ahsoftware.de>
-	<1355151119-2489-1-git-send-email-holler@ahsoftware.de>
-	<50C61675.2000407@metafoo.de>
-	<50C63BBD.3080202@ahsoftware.de>
-	<50C64484.4060306@metafoo.de>
-	<50C65381.8010609@ahsoftware.de>
-	<50C6567D.7080303@metafoo.de>
-	<50C65746.8030609@kernel.org>
-	<50C6674D.1000901@ahsoftware.de>
-	<50C6FD60.7080300@jic23.retrosnub.co.uk>
-	<50C6FF71.1010504@metafoo.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46274 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752752Ab2LPLJu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Dec 2012 06:09:50 -0500
+Message-ID: <50CDABF9.3030403@kernel.org>
+Date: Sun, 16 Dec 2012 11:09:45 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Axel Lin <axel.lin@ingics.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	Michael Hennerich <hennerich@blackfin.uclinux.org>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/6] iio: dac: ad5504: Don't set error code to voltage_uv
+References: <1355486789.3475.1.camel@phoenix>
+In-Reply-To: <1355486789.3475.1.camel@phoenix>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, 11 Dec 2012 10:40:01 +0100
-Lars-Peter Clausen <lars@metafoo.de> wrote:
-  
-> > Yes, move the header or merge into existing one as makes sense.
-> > I'm not pulling this driver into the IIO tree (unless for some
-> > reason Alessandro wants me to and I can't think why he would...).
-> >   
+On 12/14/2012 12:06 PM, Axel Lin wrote:
+> regulator_get_voltage() may return negative error code.
+> Add error checking to avoid setting error code to voltage_uv.
 > 
-> Alessandro has been pretty quiet for quite some time now. Luckily Andrew
-> Morton usually picks up the stuff for orphaned subsystems. So put him on Cc
-> for v4.
+> Signed-off-by: Axel Lin <axel.lin@ingics.com>
+Axel,
 
- Still reading e-mails ;) Andrew monitors the rtc mailing list and picks up
- the patches that do not need to go in any arch's main tree, which is the suggested
- way as, with modern chipsets, the RTCs shares hw with many other drivers.
- 
+I would definitely have prefered a resend of the whole series rather than
+just the ones you have fixed up.
 
--- 
+I assumed Lars would have no objection to Acking these as well!
 
- Best regards,
+Anyhow 1,2,6 from v1 and 3,4,5 from v2 added to fixes-togreg branch of
+iio.git.
 
- Alessandro Zummo,
-  Tower Technologies - Torino, Italy
+Thanks for all these!
 
-  http://www.towertech.it
+Jonathan
+
+> ---
+> v2: check if ret is negative value
+>  drivers/iio/dac/ad5504.c |    6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
+> index 242bdc7..1e9a1f4 100644
+> --- a/drivers/iio/dac/ad5504.c
+> +++ b/drivers/iio/dac/ad5504.c
+> @@ -296,7 +296,11 @@ static int __devinit ad5504_probe(struct spi_device *spi)
+>  		if (ret)
+>  			goto error_put_reg;
+>  
+> -		voltage_uv = regulator_get_voltage(reg);
+> +		ret = regulator_get_voltage(reg);
+> +		if (ret < 0)
+> +			goto error_disable_reg;
+> +
+> +		voltage_uv = ret;
+>  	}
+>  
+>  	spi_set_drvdata(spi, indio_dev);
+> 
