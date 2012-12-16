@@ -1,396 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-011.synserver.de ([212.40.185.11]:1055 "EHLO
-	smtp-out-011.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753501Ab2LNJmH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2012 04:42:07 -0500
-Message-ID: <50CAF473.6040901@metafoo.de>
-Date: Fri, 14 Dec 2012 10:42:11 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46436 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752057Ab2LPL2a (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Dec 2012 06:28:30 -0500
+Message-ID: <50CDB05B.9000206@kernel.org>
+Date: Sun, 16 Dec 2012 11:28:27 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Alexander Holler <holler@ahsoftware.de>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>, rtc-linux@googlegroups.com,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>,
-	Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH 4/4 v4] rtc: add rtc-driver for HID sensors of type time
-References: <50C8591A.3030301@ahsoftware.de> <1355310680-2466-1-git-send-email-holler@ahsoftware.de>
-In-Reply-To: <1355310680-2466-1-git-send-email-holler@ahsoftware.de>
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: lars@metafoo.de, linux-iio@vger.kernel.org
+Subject: Re: STMicroelectronics sensors driver
+References: <1355404302-2239-1-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1355404302-2239-1-git-send-email-denis.ciocca@st.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/12/2012 12:11 PM, Alexander Holler wrote:
-> This driver makes the time from HID sensors (hubs) which are offering
-> such available like any other RTC does.
+On 12/13/2012 01:11 PM, Denis CIOCCA wrote:
+> Hi Jonathan & Lars-Peter,
 > 
-> Currently the time can only be read. Setting the time must be done
-> through sending a report, which currently isn't supported by
-> hid-sensor-hub. (I've planned to submit patches.)
+> I wrote this new patch to include the common library and device drivers
+> for accel, magn and gyro.
+> I didn't looked still for tx and rx buffers issue because I have to study
+> better the problem.
+Sure, though in this case it is just a case of making sure the cacheline
+aligned elements are at the end of the structure.
+
+> What do you think about this library?
 > 
-> It is necessary that all values like year, month etc, are send as
-> 8bit values (1 byte each) and all of them in 1 report. Also the
-> spec HUTRR39b doesn't define the range of the year field, we
-> tread it as 0 - 99 because that's what most RTCs I know about are
-> offering.
-> 
-> Signed-off-by: Alexander Holler <holler@ahsoftware.de>
+Couple of general things to do.
 
-Hi,
+Run one or more static checkers over the code before posting (just saves time
+in review by clearing out some standard issues)
+(good  choices are sparse, smatch and coccicheck (coccinelle wrapper)).
 
-sorry for the delay. There is still the __devinit in front of
-hid_time_remove left.
+Sparse gives:
 
-And another thing I've overlooked before:
-wait_for_completion_interruptible_timeout can either return a positive
-number when the completion was completed, 0 in case of an timeout, or a
-negative error code in case it was interrupted. You need to handle all
-three. E.g. something like this.
+drivers/iio/accel/st_accel_trigger.c:25:5: warning: symbol 'st_accel_trig_acc_set_state' was not declared. Should it be
+static?
+drivers/iio/accel/st_accel_trigger.c:49:30: warning: symbol 'st_accel_trigger_ops' was not declared. Should it be static?
+  CC [M]  drivers/iio/accel/st_accel_trigger.o
+  CHECK   drivers/iio/accel/st_accel_buffer.c
+  CC [M]  drivers/iio/accel/st_accel_buffer.o
+  CHECK   drivers/iio/accel/st_accel_core.c
+  CC [M]  drivers/iio/accel/st_accel_core.o
+  LD [M]  drivers/iio/accel/st_accel.o
+  CHECK   drivers/iio/common/st_sensors/st_sensors_core.c
+  CC [M]  drivers/iio/common/st_sensors/st_sensors_core.o
+drivers/iio/common/st_sensors/st_sensors_core.c: In function 'st_sensors_set_enable':
+drivers/iio/common/st_sensors/st_sensors_core.c:182:27: warning: 'odr_out.hz' may be used uninitialized in this function
+  CHECK   drivers/iio/common/st_sensors/st_sensors_i2c.c
+drivers/iio/common/st_sensors/st_sensors_i2c.c:21:14: warning: symbol 'st_sensors_i2c_get_irq' was not declared. Should
+it be static?
+  CC [M]  drivers/iio/common/st_sensors/st_sensors_i2c.o
+  CHECK   drivers/iio/common/st_sensors/st_sensors_spi.c
+drivers/iio/common/st_sensors/st_sensors_spi.c:22:14: warning: symbol 'st_sensors_spi_get_irq' was not declared. Should
+it be static?
+  CC [M]  drivers/iio/common/st_sensors/st_sensors_spi.o
+  CHECK   drivers/iio/common/st_sensors/st_sensors_trigger.c
+  CC [M]  drivers/iio/common/st_sensors/st_sensors_trigger.o
+  CHECK   drivers/iio/common/st_sensors/st_sensors_buffer.c
+  CC [M]  drivers/iio/common/st_sensors/st_sensors_buffer.o
+  LD [M]  drivers/iio/common/st_sensors/st_sensors_triggered_buffer.o
+  CHECK   drivers/iio/gyro/st_gyro_i2c.c
+  CC [M]  drivers/iio/gyro/st_gyro_i2c.o
+  CHECK   drivers/iio/gyro/st_gyro_spi.c
+  CC [M]  drivers/iio/gyro/st_gyro_spi.o
+  CHECK   drivers/iio/gyro/st_gyro_trigger.c
+drivers/iio/gyro/st_gyro_trigger.c:23:5: warning: symbol 'st_gyro_trig_acc_set_state' was not declared. Should it be static?
+drivers/iio/gyro/st_gyro_trigger.c:47:30: warning: symbol 'st_gyro_trigger_ops' was not declared. Should it be static?
+  CC [M]  drivers/iio/gyro/st_gyro_trigger.o
+  CHECK   drivers/iio/gyro/st_gyro_buffer.c
+  CC [M]  drivers/iio/gyro/st_gyro_buffer.o
+  CHECK   drivers/iio/gyro/st_gyro_core.c
+drivers/iio/gyro/st_gyro_core.c:95:28: warning: symbol 'st_gyro_16bit_channels' was not declared. Should it be static?
+  CC [M]  drivers/iio/gyro/st_gyro_core.o
+  LD [M]  drivers/iio/gyro/st_gyro.o
+  CHECK   drivers/iio/magnetometer/st_magn_i2c.c
+  CC [M]  drivers/iio/magnetometer/st_magn_i2c.o
+  CHECK   drivers/iio/magnetometer/st_magn_spi.c
+  CC [M]  drivers/iio/magnetometer/st_magn_spi.o
+  CHECK   drivers/iio/magnetometer/st_magn_trigger.c
+drivers/iio/magnetometer/st_magn_trigger.c:43:30: warning: symbol 'st_magn_trigger_ops' was not declared. Should it be
+static?
+  CC [M]  drivers/iio/magnetometer/st_magn_trigger.o
+  CHECK   drivers/iio/magnetometer/st_magn_buffer.c
+  CC [M]  drivers/iio/magnetometer/st_magn_buffer.o
+  CHECK   drivers/iio/magnetometer/st_magn_core.c
+  CC [M]  drivers/iio/magnetometer/st_magn_core.o
+  LD [M]  drivers/iio/magnetometer/st_magn.o
+  Kernel: arch/arm/boot/Image is ready
+  Kernel: arch/arm/boot/zImage is ready
+  Building modules, stage 2.
+  MODPOST 226 modules
 
-ret = wait_for_completion_interruptible_timeout(...)
-if (ret == 0)
-	return -EIO;
-if (ret < 0)
-	return ret
+
+Coccinelle picks up various things including...
+drivers/iio/common/st_sensors/st_sensors_spi.c:67:1-7: preceding lock on line 49
+(basically you don't release the mutex on an error path).
+
+Anyhow, these tools are a great help in catching some
+types of problems.
 
 
-Otherwise it looks fine now. Maybe add a prefix to attrib_name() to avoid
-potential clashes with the global namespace. E.g. hid_time_attrib_name()
-Same goes for rtc_ops, hid_time_rtc_ops would be a better name.
-
-- Lars
-
-> ---
->  drivers/rtc/Kconfig               |   16 ++
->  drivers/rtc/Makefile              |    1 +
->  drivers/rtc/rtc-hid-sensor-time.c |  283 +++++++++++++++++++++++++++++++++++++
->  3 files changed, 300 insertions(+), 0 deletions(-)
->  create mode 100644 drivers/rtc/rtc-hid-sensor-time.c
-> 
-> diff --git a/drivers/rtc/Kconfig b/drivers/rtc/Kconfig
-> index 19c03ab..e0d29b5 100644
-> --- a/drivers/rtc/Kconfig
-> +++ b/drivers/rtc/Kconfig
-> @@ -1144,4 +1144,20 @@ config RTC_DRV_SNVS
->  	   This driver can also be built as a module, if so, the module
->  	   will be called "rtc-snvs".
->  
-> +comment "HID Sensor RTC drivers"
-> +
-> +config RTC_DRV_HID_SENSOR_TIME
-> +	tristate "HID Sensor Time"
-> +	depends on USB_HID
-> +	select IIO
-> +	select HID_SENSOR_HUB
-> +	select HID_SENSOR_IIO_COMMON
-> +	help
-> +	  Say yes here to build support for the HID Sensors of type Time.
-> +	  This drivers makes such sensors available as RTCs.
-> +
-> +	  If this driver is compiled as a module, it will be named
-> +	  rtc-hid-sensor-time.
-> +
-> +
->  endif # RTC_CLASS
-> diff --git a/drivers/rtc/Makefile b/drivers/rtc/Makefile
-> index 56297f0..9d1658a 100644
-> --- a/drivers/rtc/Makefile
-> +++ b/drivers/rtc/Makefile
-> @@ -51,6 +51,7 @@ obj-$(CONFIG_RTC_DRV_EM3027)	+= rtc-em3027.o
->  obj-$(CONFIG_RTC_DRV_EP93XX)	+= rtc-ep93xx.o
->  obj-$(CONFIG_RTC_DRV_FM3130)	+= rtc-fm3130.o
->  obj-$(CONFIG_RTC_DRV_GENERIC)	+= rtc-generic.o
-> +obj-$(CONFIG_RTC_DRV_HID_SENSOR_TIME) += rtc-hid-sensor-time.o
->  obj-$(CONFIG_RTC_DRV_IMXDI)	+= rtc-imxdi.o
->  obj-$(CONFIG_RTC_DRV_ISL1208)	+= rtc-isl1208.o
->  obj-$(CONFIG_RTC_DRV_ISL12022)	+= rtc-isl12022.o
-> diff --git a/drivers/rtc/rtc-hid-sensor-time.c b/drivers/rtc/rtc-hid-sensor-time.c
-> new file mode 100644
-> index 0000000..41bc011
-> --- /dev/null
-> +++ b/drivers/rtc/rtc-hid-sensor-time.c
-> @@ -0,0 +1,283 @@
-> +/*
-> + * HID Sensor Time Driver
-> + * Copyright (c) 2012, Alexander Holler.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + *
-> + * You should have received a copy of the GNU General Public License along with
-> + * this program; if not, write to the Free Software Foundation, Inc.,
-> + * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-> + *
-> + */
-> +#include <linux/device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/module.h>
-> +#include <linux/hid-sensor-hub.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/rtc.h>
-> +
-> +/* Format: HID-SENSOR-usage_id_in_hex */
-> +/* Usage ID from spec for Time: 0x2000A0 */
-> +#define DRIVER_NAME "HID-SENSOR-2000a0" /* must be lowercase */
-> +
-> +enum hid_time_channel {
-> +	CHANNEL_SCAN_INDEX_YEAR,
-> +	CHANNEL_SCAN_INDEX_MONTH,
-> +	CHANNEL_SCAN_INDEX_DAY,
-> +	CHANNEL_SCAN_INDEX_HOUR,
-> +	CHANNEL_SCAN_INDEX_MINUTE,
-> +	CHANNEL_SCAN_INDEX_SECOND,
-> +	TIME_RTC_CHANNEL_MAX,
-> +};
-> +
-> +struct hid_time_state {
-> +	struct hid_sensor_hub_callbacks callbacks;
-> +	struct hid_sensor_iio_common common_attributes;
-> +	struct hid_sensor_hub_attribute_info info[TIME_RTC_CHANNEL_MAX];
-> +	struct rtc_time last_time;
-> +	spinlock_t lock_last_time;
-> +	struct completion comp_last_time;
-> +	struct rtc_time time_buf;
-> +	struct rtc_device *rtc;
-> +};
-> +
-> +static const u32 hid_time_addresses[TIME_RTC_CHANNEL_MAX] = {
-> +	HID_USAGE_SENSOR_TIME_YEAR,
-> +	HID_USAGE_SENSOR_TIME_MONTH,
-> +	HID_USAGE_SENSOR_TIME_DAY,
-> +	HID_USAGE_SENSOR_TIME_HOUR,
-> +	HID_USAGE_SENSOR_TIME_MINUTE,
-> +	HID_USAGE_SENSOR_TIME_SECOND,
-> +};
-> +
-> +/* Channel names for verbose error messages */
-> +static const char * const hid_time_channel_names[TIME_RTC_CHANNEL_MAX] = {
-> +	"year", "month", "day", "hour", "minute", "second",
-> +};
-> +
-> +/* Callback handler to send event after all samples are received and captured */
-> +static int hid_time_proc_event(struct hid_sensor_hub_device *hsdev,
-> +				unsigned usage_id, void *priv)
-> +{
-> +	unsigned long flags;
-> +	struct hid_time_state *time_state = platform_get_drvdata(priv);
-> +
-> +	spin_lock_irqsave(&time_state->lock_last_time, flags);
-> +	time_state->last_time = time_state->time_buf;
-> +	spin_unlock_irqrestore(&time_state->lock_last_time, flags);
-> +	complete(&time_state->comp_last_time);
-> +	return 0;
-> +}
-> +
-> +static int hid_time_capture_sample(struct hid_sensor_hub_device *hsdev,
-> +				unsigned usage_id, size_t raw_len,
-> +				char *raw_data, void *priv)
-> +{
-> +	struct hid_time_state *time_state = platform_get_drvdata(priv);
-> +	struct rtc_time *time_buf = &time_state->time_buf;
-> +
-> +	switch (usage_id) {
-> +	case HID_USAGE_SENSOR_TIME_YEAR:
-> +		time_buf->tm_year = *(u8 *)raw_data;
-> +		if (time_buf->tm_year < 70)
-> +			/* assume we are in 1970...2069 */
-> +			time_buf->tm_year += 100;
-> +		break;
-> +	case HID_USAGE_SENSOR_TIME_MONTH:
-> +		/* sensor sending the month as 1-12, we need 0-11 */
-> +		time_buf->tm_mon = *(u8 *)raw_data-1;
-> +		break;
-> +	case HID_USAGE_SENSOR_TIME_DAY:
-> +		time_buf->tm_mday = *(u8 *)raw_data;
-> +		break;
-> +	case HID_USAGE_SENSOR_TIME_HOUR:
-> +		time_buf->tm_hour = *(u8 *)raw_data;
-> +		break;
-> +	case HID_USAGE_SENSOR_TIME_MINUTE:
-> +		time_buf->tm_min = *(u8 *)raw_data;
-> +		break;
-> +	case HID_USAGE_SENSOR_TIME_SECOND:
-> +		time_buf->tm_sec = *(u8 *)raw_data;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +	return 0;
-> +}
-> +
-> +/* small helper, haven't found any other way */
-> +static const char *attrib_name(u32 attrib_id)
-> +{
-> +	static const char unknown[] = "unknown";
-> +	unsigned i;
-> +
-> +	for (i = 0; i < TIME_RTC_CHANNEL_MAX; ++i) {
-> +		if (hid_time_addresses[i] == attrib_id)
-> +			return hid_time_channel_names[i];
-> +	}
-> +	return unknown; /* should never happen */
-> +}
-> +
-> +static int hid_time_parse_report(struct platform_device *pdev,
-> +				struct hid_sensor_hub_device *hsdev,
-> +				unsigned usage_id,
-> +				struct hid_time_state *time_state)
-> +{
-> +	int report_id, i;
-> +
-> +	for (i = 0; i < TIME_RTC_CHANNEL_MAX; ++i)
-> +		if (sensor_hub_input_get_attribute_info(hsdev,
-> +				HID_INPUT_REPORT, usage_id,
-> +				hid_time_addresses[i],
-> +				&time_state->info[i]) < 0)
-> +			return -EINVAL;
-> +	/* Check the (needed) attributes for sanity */
-> +	report_id = time_state->info[0].report_id;
-> +	if (report_id < 0) {
-> +		dev_err(&pdev->dev, "bad report ID!\n");
-> +		return -EINVAL;
-> +	}
-> +	for (i = 0; i < TIME_RTC_CHANNEL_MAX; ++i) {
-> +		if (time_state->info[i].report_id != report_id) {
-> +			dev_err(&pdev->dev,
-> +				"not all needed attributes inside the same report!\n");
-> +			return -EINVAL;
-> +		}
-> +		if (time_state->info[i].size != 1) {
-> +			dev_err(&pdev->dev,
-> +				"attribute '%s' not 8 bits wide!\n",
-> +				attrib_name(time_state->info[i].attrib_id));
-> +			return -EINVAL;
-> +		}
-> +		if (time_state->info[i].units !=
-> +				HID_USAGE_SENSOR_UNITS_NOT_SPECIFIED &&
-> +				/* allow attribute seconds with unit seconds */
-> +				!(time_state->info[i].attrib_id ==
-> +				HID_USAGE_SENSOR_TIME_SECOND &&
-> +				time_state->info[i].units ==
-> +				HID_USAGE_SENSOR_UNITS_SECOND)) {
-> +			dev_err(&pdev->dev,
-> +				"attribute '%s' hasn't a unit of type 'none'!\n",
-> +				attrib_name(time_state->info[i].attrib_id));
-> +			return -EINVAL;
-> +		}
-> +		if (time_state->info[i].unit_expo) {
-> +			dev_err(&pdev->dev,
-> +				"attribute '%s' hasn't a unit exponent of 1!\n",
-> +				attrib_name(time_state->info[i].attrib_id));
-> +			return -EINVAL;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int hid_rtc_read_time(struct device *dev, struct rtc_time *tm)
-> +{
-> +	unsigned long flags;
-> +	struct hid_time_state *time_state =
-> +		platform_get_drvdata(to_platform_device(dev));
-> +
-> +	INIT_COMPLETION(time_state->comp_last_time);
-> +	/* get a report with all values through requesting one value */
-> +	sensor_hub_input_attr_get_raw_value(time_state->common_attributes.hsdev,
-> +			HID_USAGE_SENSOR_TIME, hid_time_addresses[0],
-> +			time_state->info[0].report_id);
-> +	/* wait for all values (event) */
-> +	if (!wait_for_completion_interruptible_timeout(
-> +			&time_state->comp_last_time, HZ*6))
-> +		return -EIO;
-> +	spin_lock_irqsave(&time_state->lock_last_time, flags);
-> +	*tm = time_state->last_time;
-> +	spin_unlock_irqrestore(&time_state->lock_last_time, flags);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct rtc_class_ops rtc_ops = {
-> +	.read_time = hid_rtc_read_time,
-> +};
-> +
-> +static int hid_time_probe(struct platform_device *pdev)
-> +{
-> +	int ret = 0;
-> +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> +	struct hid_time_state *time_state = devm_kzalloc(&pdev->dev,
-> +		sizeof(struct hid_time_state), GFP_KERNEL);
-> +
-> +	if (time_state == NULL)
-> +		return -ENOMEM;
-> +
-> +	platform_set_drvdata(pdev, time_state);
-> +
-> +	init_completion(&time_state->comp_last_time);
-> +	time_state->common_attributes.hsdev = hsdev;
-> +	time_state->common_attributes.pdev = pdev;
-> +
-> +	ret = hid_sensor_parse_common_attributes(hsdev,
-> +				HID_USAGE_SENSOR_TIME,
-> +				&time_state->common_attributes);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to setup common attributes!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = hid_time_parse_report(pdev, hsdev, HID_USAGE_SENSOR_TIME,
-> +					time_state);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to setup attributes!\n");
-> +		return ret;
-> +	}
-> +
-> +	time_state->callbacks.send_event = hid_time_proc_event;
-> +	time_state->callbacks.capture_sample = hid_time_capture_sample;
-> +	time_state->callbacks.pdev = pdev;
-> +	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_TIME,
-> +					&time_state->callbacks);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "register callback failed!\n");
-> +		return ret;
-> +	}
-> +
-> +	time_state->rtc = rtc_device_register("hid-sensor-time",
-> +				&pdev->dev, &rtc_ops, THIS_MODULE);
-> +
-> +	if (IS_ERR(time_state->rtc)) {
-> +		dev_err(&pdev->dev, "rtc device register failed!\n");
-> +		return PTR_ERR(time_state->rtc);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int __devinit hid_time_remove(struct platform_device *pdev)
-> +{
-> +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> +	struct hid_time_state *time_state = platform_get_drvdata(pdev);
-> +
-> +	rtc_device_unregister(time_state->rtc);
-> +	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TIME);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver hid_time_platform_driver = {
-> +	.driver = {
-> +		.name	= DRIVER_NAME,
-> +		.owner	= THIS_MODULE,
-> +	},
-> +	.probe		= hid_time_probe,
-> +	.remove		= hid_time_remove,
-> +};
-> +module_platform_driver(hid_time_platform_driver);
-> +
-> +MODULE_DESCRIPTION("HID Sensor Time");
-> +MODULE_AUTHOR("Alexander Holler <holler@ahsoftware.de>");
-> +MODULE_LICENSE("GPL");
 
