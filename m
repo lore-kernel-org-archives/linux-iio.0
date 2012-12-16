@@ -1,49 +1,52 @@
-Return-Path: <holler@ahsoftware.de>
-Message-ID: <50CC6FE3.6060705@ahsoftware.de>
-Date: Sat, 15 Dec 2012 13:41:07 +0100
-From: Alexander Holler <holler@ahsoftware.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- Lars-Peter Clausen <lars@metafoo.de>,
- rtc-linux@googlegroups.com, Alessandro Zummo <a.zummo@towertech.it>,
- srinivas pandruvada <srinivas.pandruvada@intel.com>,
- Andrew Morton <akpm@linux-foundation.org>, Jiri Kosina <jkosina@suse.cz>
-Subject: Re: [PATCH 2/4 RESEND] iio: Add Usage IDs for HID time sensors.
-References: <50C73AFC.1050904@jic23.retrosnub.co.uk> <1355250106-3114-1-git-send-email-holler@ahsoftware.de> <1355250106-3114-2-git-send-email-holler@ahsoftware.de> <50CC599E.8060004@kernel.org>
-In-Reply-To: <50CC599E.8060004@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Return-Path: <a.zummo@towertech.it>
+Date: Sun, 16 Dec 2012 23:15:52 +0100
+From: Alessandro Zummo <a.zummo@towertech.it>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, Alexander Holler
+ <holler@ahsoftware.de>, Jonathan Cameron <jic23@kernel.org>,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, Jonathan Cameron
+ <jic23@cam.ac.uk>, rtc-linux@googlegroups.com, srinivas pandruvada
+ <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH 3/3 v2] iio: add rtc-driver for HID sensors of type time
+Message-ID: <20121216231552.4ced4d25@linux.lan.towertech.it>
+In-Reply-To: <50C6FF71.1010504@metafoo.de>
+References: <50C5DFCC.60203@ahsoftware.de>
+	<1355151119-2489-1-git-send-email-holler@ahsoftware.de>
+	<50C61675.2000407@metafoo.de>
+	<50C63BBD.3080202@ahsoftware.de>
+	<50C64484.4060306@metafoo.de>
+	<50C65381.8010609@ahsoftware.de>
+	<50C6567D.7080303@metafoo.de>
+	<50C65746.8030609@kernel.org>
+	<50C6674D.1000901@ahsoftware.de>
+	<50C6FD60.7080300@jic23.retrosnub.co.uk>
+	<50C6FF71.1010504@metafoo.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-Am 15.12.2012 12:06, schrieb Jonathan Cameron:
-> On 12/11/2012 06:21 PM, Alexander Holler wrote:
->> These are Usage IDs for the attributes year, month, day,
->> hour, minute and second, needed to read HID time sensors.
->>
->> Signed-off-by: Alexander Holler <holler@ahsoftware.de>
-> This has gotten very messy to follow.  Could you resend the
+On Tue, 11 Dec 2012 10:40:01 +0100
+Lars-Peter Clausen <lars@metafoo.de> wrote:
+  
+> > Yes, move the header or merge into existing one as makes sense.
+> > I'm not pulling this driver into the IIO tree (unless for some
+> > reason Alessandro wants me to and I can't think why he would...).
+> >   
+> 
+> Alessandro has been pretty quiet for quite some time now. Luckily Andrew
+> Morton usually picks up the stuff for orphaned subsystems. So put him on Cc
+> for v4.
 
-I aggree. The workflow (ping-pong until a patch is almost perfect, 
-without typos and style glitches and makes the maintainers eyes happy) 
-is horrible and requires quite a lot goodwill and patience on every 
-side. Not the stuff people like to do on a voluntarily basis.
+ Still reading e-mails ;) Andrew monitors the rtc mailing list and picks up
+ the patches that do not need to go in any arch's main tree, which is the suggested
+ way as, with modern chipsets, the RTCs shares hw with many other drivers.
+ 
 
-So thanks to everyone who still follows.
+-- 
 
-The whole series (now 5 patches) follows. I mark all of them as RESEND 
-to indicate that no changes were done since I've send them the last time.
+ Best regards,
 
-> patches (without the first) with Jiri cc'd as well
-> (as some of this is in his domain as HID maintainer).
+ Alessandro Zummo,
+  Tower Technologies - Torino, Italy
 
-Sorry, almost the whole series (5-1 = 4) follows. ;)
-
->
-> Given this makes quite a few changes in IIO drivers I'm happy
-> to take the lot through the IIO tree but to do that I would
-> like a go ahead from Jiri + either Andrew or Alessandro
-> (for rtc side of things).
-
-Thanks again.
-
-Alexander
+  http://www.towertech.it
