@@ -1,59 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from nick.hrz.tu-chemnitz.de ([134.109.228.11]:50503 "EHLO
-	nick.hrz.tu-chemnitz.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751114Ab2LSSSa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Dec 2012 13:18:30 -0500
-From: Alexander Stein <alexander.stein@informatik.tu-chemnitz.de>
-To: linux-iio@vger.kernel.org
-Cc: trivial@kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	Alexander Stein <alexander.stein@informatik.tu-chemnitz.de>
-Subject: [PATCH] iio: Fix some comments
-Date: Wed, 19 Dec 2012 18:56:31 +0100
-Message-Id: <1355939791-18814-1-git-send-email-alexander.stein@informatik.tu-chemnitz.de>
+Received: from 17.mo5.mail-out.ovh.net ([46.105.56.132]:41999 "EHLO
+	mo5.mail-out.ovh.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750859Ab2LSS6T (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Dec 2012 13:58:19 -0500
+Received: from mail644.ha.ovh.net (b9.ovh.net [213.186.33.59])
+	by mo5.mail-out.ovh.net (Postfix) with SMTP id D2AA9108C176
+	for <linux-iio@vger.kernel.org>; Wed, 19 Dec 2012 19:47:38 +0100 (CET)
+From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>,
+	linux-iio@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Ludovic Desroches <ludovic.desroches@atmel.com>
+Subject: [PATCH 3/3] ARM: AT91: IIO: fix missing Sample and Hold time
+Date: Wed, 19 Dec 2012 19:37:12 +0100
+Message-Id: <1355942232-26251-3-git-send-email-plagnioj@jcrosoft.com>
+In-Reply-To: <1355942232-26251-1-git-send-email-plagnioj@jcrosoft.com>
+References: <20121219183236.GP23971@game.jcrosoft.org>
+ <1355942232-26251-1-git-send-email-plagnioj@jcrosoft.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Alexander Stein <alexander.stein@informatik.tu-chemnitz.de>
----
- drivers/staging/iio/iio_simple_dummy.c        | 4 ++--
- drivers/staging/iio/iio_simple_dummy_buffer.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+On the at91_adc a minimal Sample and Hold Time is necessary for the ADC to
+guarantee the best converted final value between two channels selection.
+This time has to be programmed through the bitfield SHTIM in the
+Mode Register ADC_MR.
 
-diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
-index a865adf..aee76c7 100644
---- a/drivers/staging/iio/iio_simple_dummy.c
-+++ b/drivers/staging/iio/iio_simple_dummy.c
-@@ -54,7 +54,7 @@ struct iio_dummy_accel_calibscale {
- static const struct iio_dummy_accel_calibscale dummy_scales[] = {
- 	{ 0, 100, 0x8 }, /* 0.000100 */
- 	{ 0, 133, 0x7 }, /* 0.000133 */
--	{ 733, 13, 0x9 }, /* 733.00013 */
-+	{ 733, 13, 0x9 }, /* 733.000013 */
- };
+Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+Cc: linux-iio@vger.kernel.org
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Ludovic Desroches <ludovic.desroches@atmel.com>
+---
+ Documentation/devicetree/bindings/arm/atmel-adc.txt |    1 +
+ drivers/iio/adc/at91_adc.c                          |   15 ++++++++++++++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/arm/atmel-adc.txt b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+index efb6f02..dd2ca90 100644
+--- a/Documentation/devicetree/bindings/arm/atmel-adc.txt
++++ b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+@@ -26,6 +26,7 @@ Optional properties:
+ 		       atmel,adc-res-names property. If not specified, the highest
+ 		       resolution will be used.
+   - atmel,atmel,adc-sleep-mode: Boolean to enable of sleep mode when no conversion
++  - atmel,adc-sample-hold-time: Sample and Hold Time
+  
+ Optional trigger Nodes:
+   - Required properties:
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index c563488..9481375 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -52,6 +52,7 @@ struct at91_adc_state {
+ 	void __iomem		*reg_base;
+ 	struct at91_adc_reg_desc *registers;
+ 	u8			startup_time;
++	u8			sample_hold_time;
+ 	bool			sleep_mode;
+ 	struct iio_trigger	**trig;
+ 	struct at91_adc_trigger	*trigger_list;
+@@ -465,6 +466,9 @@ static int at91_adc_probe_dt(struct at91_adc_state *st,
+ 	}
+ 	st->startup_time = prop;
  
- /*
-@@ -284,7 +284,7 @@ static int iio_dummy_read_raw(struct iio_dev *indio_dev,
- /**
-  * iio_dummy_write_raw() - data write function.
-  * @indio_dev:	the struct iio_dev associated with this device instance
-- * @chan:	the channel whose data is to be read
-+ * @chan:	the channel whose data is to be written
-  * @val:	first element of value to set (typically INT)
-  * @val2:	second element of value to set (typically MICRO)
-  * @mask:	what we actually want to write. 0 is the channel, everything else
-diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
-index dee16f0..72f400c 100644
---- a/drivers/staging/iio/iio_simple_dummy_buffer.c
-+++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
-@@ -155,7 +155,7 @@ int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev,
- 	 * occurs, this function is run. Typically this grabs data
- 	 * from the device.
- 	 *
--	 * NULL for the top half. This is normally implemented only if we
-+	 * NULL for the bottom half. This is normally implemented only if we
- 	 * either want to ping a capture now pin (no sleeping) or grab
- 	 * a timestamp as close as possible to a data ready trigger firing.
- 	 *
++	prop = 0;
++	of_property_read_u32(node, "atmel,adc-sample-hold-time", &prop);
++	st->sample_hold_time = prop;
+ 
+ 	if (of_property_read_u32(node, "atmel,adc-vref", &prop)) {
+ 		dev_err(&idev->dev, "Missing adc-vref property in the DT.\n");
+@@ -578,7 +582,7 @@ static const struct iio_info at91_adc_info = {
+ 
+ static int __devinit at91_adc_probe(struct platform_device *pdev)
+ {
+-	unsigned int prsc, mstrclk, ticks, adc_clk;
++	unsigned int prsc, mstrclk, ticks, adc_clk, shtim;
+ 	int ret;
+ 	struct iio_dev *idev;
+ 	struct at91_adc_state *st;
+@@ -691,12 +695,21 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+ 	 */
+ 	ticks = round_up((st->startup_time * adc_clk /
+ 			  1000000) - 1, 8) / 8;
++	/*
++	 * a minimal Sample and Hold Time is necessary for the ADC to guarantee
++	 * the best converted final value between two channels selection
++	 * The formula thus is : Sample and Hold Time = (shtim + 1) / ADCClock
++	 */
++	shtim = round_up((st->sample_hold_time * adc_clk /
++			  1000000) - 1, 1);
++
+ 	reg = AT91_ADC_PRESCAL_(prsc) & AT91_ADC_PRESCAL;
+ 	reg |= AT91_ADC_STARTUP_(ticks) & AT91_ADC_STARTUP;
+ 	if (st->low_res)
+ 		reg |= AT91_ADC_LOWRES;
+ 	if (st->sleep_mode)
+ 		reg |= AT91_ADC_SLEEP;
++	reg |= AT91_ADC_SHTIM_(shtim) & AT91_ADC_SHTIM;
+ 	at91_adc_writel(st, AT91_ADC_MR, reg);
+ 
+ 	/* Setup the ADC channels available on the board */
 -- 
-1.8.0.2
+1.7.10.4
 
