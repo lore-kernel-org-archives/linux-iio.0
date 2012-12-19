@@ -1,50 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44730 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753613Ab2LRTXL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Dec 2012 14:23:11 -0500
-Message-ID: <50D0C29D.3030209@kernel.org>
-Date: Tue, 18 Dec 2012 19:23:09 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from 17.mo5.mail-out.ovh.net ([46.105.56.132]:57461 "EHLO
+	mo5.mail-out.ovh.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751342Ab2LSSxT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Dec 2012 13:53:19 -0500
+Received: from mail644.ha.ovh.net (b9.ovh.net [213.186.33.59])
+	by mo5.mail-out.ovh.net (Postfix) with SMTP id 621C7108414E
+	for <linux-iio@vger.kernel.org>; Wed, 19 Dec 2012 19:43:00 +0100 (CET)
+Date: Wed, 19 Dec 2012 19:32:36 +0100
+From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: linux-iio@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Ludovic Desroches <ludovic.desroches@atmel.com>
+Subject: [PATCH 0/3] IIO: AT91: add lowres, sleep and sample&hold time
+ missing support
+Message-ID: <20121219183236.GP23971@game.jcrosoft.org>
 MIME-Version: 1.0
-To: Axel Lin <axel.lin@ingics.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	Michael Hennerich <hennerich@blackfin.uclinux.org>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: dac: ad5446: Don't set error code to voltage_uv
-References: <1355801617.11880.1.camel@phoenix>
-In-Reply-To: <1355801617.11880.1.camel@phoenix>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/18/2012 03:33 AM, Axel Lin wrote:
-> regulator_get_voltage() may return negative error code.
-> Add error checking to avoid setting error code to voltage_uv.
-> 
-> Signed-off-by: Axel Lin <axel.lin@ingics.com>
-added to fixes-togreg branch of iio.git
-> ---
-> Sorry. Just found I made the same mistake again.
-> Here is v2, should check if ret is negative value.
->  drivers/iio/dac/ad5446.c |    6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
-> index 3310cbb..607378f 100644
-> --- a/drivers/iio/dac/ad5446.c
-> +++ b/drivers/iio/dac/ad5446.c
-> @@ -226,7 +226,11 @@ static int __devinit ad5446_probe(struct device *dev, const char *name,
->  		if (ret)
->  			goto error_put_reg;
->  
-> -		voltage_uv = regulator_get_voltage(reg);
-> +		ret = regulator_get_voltage(reg);
-> +		if (ret < 0)
-> +			goto error_disable_reg;
-> +
-> +		voltage_uv = ret;
->  	}
->  
->  	indio_dev = iio_device_alloc(sizeof(*st));
-> 
+Hi,
+
+	The current adc driver is missing some key feature support
+	 - select high/low resolution support
+	 - sleep mode
+	 - Sample and Hold Time
+
+	 This patch seris fix it
+	 Without it the current driver is not usable in most of the case
+
+Jean-Christophe PLAGNIOL-VILLARD (2):
+      ARM: AT91: IIO: add sleep mode support
+      ARM: AT91: IIO: fix missing Sample and Hold time
+
+Ludovic Desroches (1):
+      ARM: AT91: IIO: add low and high res support for adc
+
+ Documentation/devicetree/bindings/arm/atmel-adc.txt |   13 ++++++++++++
+ arch/arm/boot/dts/at91sam9260.dtsi                  |    3 +++
+ arch/arm/boot/dts/at91sam9g45.dtsi                  |    3 +++
+ arch/arm/boot/dts/at91sam9x5.dtsi                   |    3 +++
+ drivers/iio/adc/at91_adc.c                          |   90 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-----
+ 5 files changed, 107 insertions(+), 5 deletions(-)
+
+Best Regards,
+J.
