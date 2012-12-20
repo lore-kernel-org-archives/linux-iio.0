@@ -1,68 +1,109 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:40912 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751461Ab2LMI5t (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2012 03:57:49 -0500
-Message-ID: <50C99889.3080708@jic23.retrosnub.co.uk>
-Date: Thu, 13 Dec 2012 08:57:45 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Received: from mo1.mail-out.ovh.net ([178.32.228.1]:54397 "EHLO
+	mo1.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751359Ab2LTN1s (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Dec 2012 08:27:48 -0500
+Received: from mail440.ha.ovh.net (b9.ovh.net [213.186.33.59])
+	by mo1.mail-out.ovh.net (Postfix) with SMTP id A7BE6FFBED5
+	for <linux-iio@vger.kernel.org>; Thu, 20 Dec 2012 14:03:31 +0100 (CET)
+Date: Thu, 20 Dec 2012 13:49:09 +0100
+From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Ludovic Desroches <ludovic.desroches@atmel.com>
+Subject: Re: [PATCH 3/3] ARM: AT91: IIO: fix missing Sample and Hold time
+Message-ID: <20121220124909.GR23971@game.jcrosoft.org>
+References: <20121219183236.GP23971@game.jcrosoft.org>
+ <1355942232-26251-1-git-send-email-plagnioj@jcrosoft.com>
+ <1355942232-26251-3-git-send-email-plagnioj@jcrosoft.com>
+ <50D2EEA0.8040807@free-electrons.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Denis Ciocca <denis.ciocca@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: Re: question about driver for different sensors in the same ASIC
-References: <3BE6D37A-6EDA-4E4C-808F-1DEAEDE86DA3@gmail.com>	<50C8DECC.7010706@metafoo.de> <CAEE_umopjN7C_jXhozc5r+uyCbO32E3NoLF=REvwtvPXYaR54w@mail.gmail.com> <50C8E7A7.2030901@metafoo.de> <50C99192.6060707@jic23.retrosnub.co.uk> <50C99640.7020901@jic23.retrosnub.co.uk>
-In-Reply-To: <50C99640.7020901@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <50D2EEA0.8040807@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/12/12 08:48, Jonathan Cameron wrote:
-> On 13/12/12 08:28, Jonathan Cameron wrote:
->> On 12/12/12 20:23, Lars-Peter Clausen wrote:
->>> On 12/12/2012 08:49 PM, Denis Ciocca wrote:
->>>>> Usually you'd want to be able to sample both the accelerometer and
->>>>> gyro
->>>> sensors
->>>>> at the same time, so just one driver should be fine.
->>>>>
->>>>> Or have the gyro and accelerometer sensors completely separated
->>>>> register
->>>> maps
->>>>> and don't share any functionality?
->>>>
->>>> Some sensors doesn't share any functionality, simply share the same
->>>> interface or better the control registers for single sensor are
->>>> separated.
->>>> I test this with the current driver but the second proble doesn't
->>>> start!
->>>> Only one probe is mandatory?
->>>
->>> You can only have one device per I2C address and only one probe call per
->>> device. If you really want to use two separated drivers you could
->>> create a mfd
->>> device and one subdevice for the gyro and accelerometer.
->>>
->>> - Lars
->> Agreed, not much else you can do other than refactor the driver to
->> handle them as two 'instances' of the iio bits called from a single
->> probe function with callbacks to make the shared i2c element work
->> reasonably...  Fiddly, but its got to be that or a fall blown mfd
->> (not sure if the mfd side of things will bring enough benefits here...)
->>
-> Just to give us some real basis for this discussion, which part number
-> is it that does this?  The only ones I can immediately find (lsm330)
-> use different i2c addresses for the two parts.
->
-> Obviously if we are discussing a part for which docs are not available,
-> we'll be pestering you for more information as we can't get it from
-> the datasheet :)
+On 11:55 Thu 20 Dec     , Maxime Ripard wrote:
+> Hi,
+> 
+> Le 19/12/2012 19:37, Jean-Christophe PLAGNIOL-VILLARD a écrit :
+> > On the at91_adc a minimal Sample and Hold Time is necessary for the ADC to
+> > guarantee the best converted final value between two channels selection.
+> > This time has to be programmed through the bitfield SHTIM in the
+> > Mode Register ADC_MR.
+> > 
+> > Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+> > Cc: linux-iio@vger.kernel.org
+> > Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+> > Cc: Ludovic Desroches <ludovic.desroches@atmel.com>
+> > ---
+> >  Documentation/devicetree/bindings/arm/atmel-adc.txt |    1 +
+> >  drivers/iio/adc/at91_adc.c                          |   15 ++++++++++++++-
+> >  2 files changed, 15 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/arm/atmel-adc.txt b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+> > index efb6f02..dd2ca90 100644
+> > --- a/Documentation/devicetree/bindings/arm/atmel-adc.txt
+> > +++ b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+> > @@ -26,6 +26,7 @@ Optional properties:
+> >  		       atmel,adc-res-names property. If not specified, the highest
+> >  		       resolution will be used.
+> >    - atmel,atmel,adc-sleep-mode: Boolean to enable of sleep mode when no conversion
+> > +  - atmel,adc-sample-hold-time: Sample and Hold Time
+> 
+> In which unit? nanoseconds? number of clock ticks?
+> 
+> >   
+> >  Optional trigger Nodes:
+> >    - Required properties:
+> > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> > index c563488..9481375 100644
+> > --- a/drivers/iio/adc/at91_adc.c
+> > +++ b/drivers/iio/adc/at91_adc.c
+> > @@ -52,6 +52,7 @@ struct at91_adc_state {
+> >  	void __iomem		*reg_base;
+> >  	struct at91_adc_reg_desc *registers;
+> >  	u8			startup_time;
+> > +	u8			sample_hold_time;
+> >  	bool			sleep_mode;
+> >  	struct iio_trigger	**trig;
+> >  	struct at91_adc_trigger	*trigger_list;
+> > @@ -465,6 +466,9 @@ static int at91_adc_probe_dt(struct at91_adc_state *st,
+> >  	}
+> >  	st->startup_time = prop;
+> >  
+> > +	prop = 0;
+> > +	of_property_read_u32(node, "atmel,adc-sample-hold-time", &prop);
+> > +	st->sample_hold_time = prop;
+> >  
+> >  	if (of_property_read_u32(node, "atmel,adc-vref", &prop)) {
+> >  		dev_err(&idev->dev, "Missing adc-vref property in the DT.\n");
+> > @@ -578,7 +582,7 @@ static const struct iio_info at91_adc_info = {
+> >  
+> >  static int __devinit at91_adc_probe(struct platform_device *pdev)
+> >  {
+> > -	unsigned int prsc, mstrclk, ticks, adc_clk;
+> > +	unsigned int prsc, mstrclk, ticks, adc_clk, shtim;
+> >  	int ret;
+> >  	struct iio_dev *idev;
+> >  	struct at91_adc_state *st;
+> > @@ -691,12 +695,21 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+> >  	 */
+> >  	ticks = round_up((st->startup_time * adc_clk /
+> >  			  1000000) - 1, 8) / 8;
+> > +	/*
+> > +	 * a minimal Sample and Hold Time is necessary for the ADC to guarantee
+> > +	 * the best converted final value between two channels selection
+> > +	 * The formula thus is : Sample and Hold Time = (shtim + 1) / ADCClock
+> > +	 */
+> > +	shtim = round_up((st->sample_hold_time * adc_clk /
+> > +			  1000000) - 1, 1);
+> > +
+> 
+> Since, from all the datasheet I have (G20, G45 and X5), the minimum time
+> is always 500ns, do we really need to add a dt property for that?
+you must this is hardware specific it depend on the line capacity
 
-Ah, the lsm333 has magnetometer and accelerometer together.  In that 
-case though they go through the same datapath (fifo etc) I think
-so you want a single hybrid device.
-
-That datasheet is a little 'interesting' currently so I may well
-be misreading it baddly ;)
-
+Best Regards,
+J.
