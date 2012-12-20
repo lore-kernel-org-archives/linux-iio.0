@@ -1,92 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39510 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751687Ab2L0LOq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2012 06:14:46 -0500
-Message-ID: <50DC2D9E.3030006@kernel.org>
-Date: Thu, 27 Dec 2012 11:14:38 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail.free-electrons.com ([94.23.32.191]:58288 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750809Ab2LTKzi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Dec 2012 05:55:38 -0500
+Message-ID: <50D2EEA0.8040807@free-electrons.com>
+Date: Thu, 20 Dec 2012 11:55:28 +0100
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
 MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: (max1363) Fix probe error path
-References: <1356330298-11443-1-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1356330298-11443-1-git-send-email-linux@roeck-us.net>
+To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+CC: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Ludovic Desroches <ludovic.desroches@atmel.com>
+Subject: Re: [PATCH 3/3] ARM: AT91: IIO: fix missing Sample and Hold time
+References: <20121219183236.GP23971@game.jcrosoft.org> <1355942232-26251-1-git-send-email-plagnioj@jcrosoft.com> <1355942232-26251-3-git-send-email-plagnioj@jcrosoft.com>
+In-Reply-To: <1355942232-26251-3-git-send-email-plagnioj@jcrosoft.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/24/2012 06:24 AM, Guenter Roeck wrote:
-> Instantiating the driver with no available regulator results in:
-> 
-> [39711.686393] i2c i2c-7: new_device: Instantiated device max1139 at 0x35
-> [39711.688687] BUG: unable to handle kernel paging request at fffffffffffffe13
-> [39711.688734] IP: [<ffffffff813e835b>] regulator_disable+0x1b/0x80
-> [39711.688788] PGD 1c0e067 PUD 1c0f067 PMD 0
-> [39711.688835] Oops: 0000 [#1] SMP
-> 
-> Caused by bad probe error path. Fix it.
-Oops.
-> 
-> Driver should also not attempt to free the interrupt in its error path if
-> none was allocated. Fix that problem as well.
-> 
-> Finally, testing if the regulator was allocated is not necessary in the
-> remove function, since the probe function bails out if this is the case.
-> Remove that check.
-> 
-Thanks Guenter. Added to the fixes-togreg branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+Hi,
 
-Might be the new year before I send Greg the pull request.
-
-Jonathan
-
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Le 19/12/2012 19:37, Jean-Christophe PLAGNIOL-VILLARD a écrit :
+> On the at91_adc a minimal Sample and Hold Time is necessary for the ADC to
+> guarantee the best converted final value between two channels selection.
+> This time has to be programmed through the bitfield SHTIM in the
+> Mode Register ADC_MR.
+> 
+> Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+> Cc: linux-iio@vger.kernel.org
+> Cc: Nicolas Ferre <nicolas.ferre@atmel.com>
+> Cc: Ludovic Desroches <ludovic.desroches@atmel.com>
 > ---
->  drivers/iio/adc/max1363.c |   13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
+>  Documentation/devicetree/bindings/arm/atmel-adc.txt |    1 +
+>  drivers/iio/adc/at91_adc.c                          |   15 ++++++++++++++-
+>  2 files changed, 15 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-> index 1e84b5b..31f3485 100644
-> --- a/drivers/iio/adc/max1363.c
-> +++ b/drivers/iio/adc/max1363.c
-> @@ -1605,19 +1605,20 @@ static int __devinit max1363_probe(struct i2c_client *client,
+> diff --git a/Documentation/devicetree/bindings/arm/atmel-adc.txt b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+> index efb6f02..dd2ca90 100644
+> --- a/Documentation/devicetree/bindings/arm/atmel-adc.txt
+> +++ b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+> @@ -26,6 +26,7 @@ Optional properties:
+>  		       atmel,adc-res-names property. If not specified, the highest
+>  		       resolution will be used.
+>    - atmel,atmel,adc-sleep-mode: Boolean to enable of sleep mode when no conversion
+> +  - atmel,adc-sample-hold-time: Sample and Hold Time
+
+In which unit? nanoseconds? number of clock ticks?
+
+>   
+>  Optional trigger Nodes:
+>    - Required properties:
+> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> index c563488..9481375 100644
+> --- a/drivers/iio/adc/at91_adc.c
+> +++ b/drivers/iio/adc/at91_adc.c
+> @@ -52,6 +52,7 @@ struct at91_adc_state {
+>  	void __iomem		*reg_base;
+>  	struct at91_adc_reg_desc *registers;
+>  	u8			startup_time;
+> +	u8			sample_hold_time;
+>  	bool			sleep_mode;
+>  	struct iio_trigger	**trig;
+>  	struct at91_adc_trigger	*trigger_list;
+> @@ -465,6 +466,9 @@ static int at91_adc_probe_dt(struct at91_adc_state *st,
+>  	}
+>  	st->startup_time = prop;
 >  
->  	return 0;
->  error_free_irq:
-> -	free_irq(st->client->irq, indio_dev);
-> +	if (client->irq)
-> +		free_irq(st->client->irq, indio_dev);
->  error_uninit_buffer:
->  	iio_buffer_unregister(indio_dev);
->  error_cleanup_buffer:
->  	max1363_buffer_cleanup(indio_dev);
->  error_free_available_scan_masks:
->  	kfree(indio_dev->available_scan_masks);
-> -error_unregister_map:
-> -	iio_map_array_unregister(indio_dev, client->dev.platform_data);
->  error_disable_reg:
->  	regulator_disable(st->reg);
->  error_put_reg:
->  	regulator_put(st->reg);
-> +error_unregister_map:
-> +	iio_map_array_unregister(indio_dev, client->dev.platform_data);
->  error_free_device:
->  	iio_device_free(indio_dev);
->  error_out:
-> @@ -1635,10 +1636,8 @@ static int __devexit max1363_remove(struct i2c_client *client)
->  	iio_buffer_unregister(indio_dev);
->  	max1363_buffer_cleanup(indio_dev);
->  	kfree(indio_dev->available_scan_masks);
-> -	if (!IS_ERR(st->reg)) {
-> -		regulator_disable(st->reg);
-> -		regulator_put(st->reg);
-> -	}
-> +	regulator_disable(st->reg);
-> +	regulator_put(st->reg);
->  	iio_map_array_unregister(indio_dev, client->dev.platform_data);
->  	iio_device_free(indio_dev);
+> +	prop = 0;
+> +	of_property_read_u32(node, "atmel,adc-sample-hold-time", &prop);
+> +	st->sample_hold_time = prop;
 >  
-> 
+>  	if (of_property_read_u32(node, "atmel,adc-vref", &prop)) {
+>  		dev_err(&idev->dev, "Missing adc-vref property in the DT.\n");
+> @@ -578,7 +582,7 @@ static const struct iio_info at91_adc_info = {
+>  
+>  static int __devinit at91_adc_probe(struct platform_device *pdev)
+>  {
+> -	unsigned int prsc, mstrclk, ticks, adc_clk;
+> +	unsigned int prsc, mstrclk, ticks, adc_clk, shtim;
+>  	int ret;
+>  	struct iio_dev *idev;
+>  	struct at91_adc_state *st;
+> @@ -691,12 +695,21 @@ static int __devinit at91_adc_probe(struct platform_device *pdev)
+>  	 */
+>  	ticks = round_up((st->startup_time * adc_clk /
+>  			  1000000) - 1, 8) / 8;
+> +	/*
+> +	 * a minimal Sample and Hold Time is necessary for the ADC to guarantee
+> +	 * the best converted final value between two channels selection
+> +	 * The formula thus is : Sample and Hold Time = (shtim + 1) / ADCClock
+> +	 */
+> +	shtim = round_up((st->sample_hold_time * adc_clk /
+> +			  1000000) - 1, 1);
+> +
+
+Since, from all the datasheet I have (G20, G45 and X5), the minimum time
+is always 500ns, do we really need to add a dt property for that?
+
+Maxime
+
+-- 
+Maxime Ripard, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
