@@ -1,52 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pb0-f46.google.com ([209.85.160.46]:46080 "EHLO
-	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751439Ab2LNHxA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2012 02:53:00 -0500
-Received: by mail-pb0-f46.google.com with SMTP id wy7so2180563pbc.19
-        for <linux-iio@vger.kernel.org>; Thu, 13 Dec 2012 23:53:00 -0800 (PST)
-Message-ID: <1355471573.11297.8.camel@phoenix>
-Subject: [PATCH 4/6] iio: dac: ad5624r_spi: Don't set error code to
- voltage_uv
-From: Axel Lin <axel.lin@ingics.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Barry Song <21cnbao@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Date: Fri, 14 Dec 2012 15:52:53 +0800
-In-Reply-To: <1355471245.11297.1.camel@phoenix>
-References: <1355471245.11297.1.camel@phoenix>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mail.free-electrons.com ([94.23.32.191]:60884 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751827Ab2LTPvx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Dec 2012 10:51:53 -0500
+Message-ID: <50D3340F.3090209@free-electrons.com>
+Date: Thu, 20 Dec 2012 16:51:43 +0100
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+MIME-Version: 1.0
+To: "ludovic.desroches" <ludovic.desroches@atmel.com>
+CC: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH 1/3] ARM: AT91: IIO: add low and high res support for
+ adc
+References: <20121219183236.GP23971@game.jcrosoft.org> <1355942232-26251-1-git-send-email-plagnioj@jcrosoft.com> <50D2EBA1.4050305@free-electrons.com> <50D2EDE6.3090706@atmel.com>
+In-Reply-To: <50D2EDE6.3090706@atmel.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-regulator_get_voltage() may return negative error code.
-Add error checking to avoid setting error code to voltage_uv.
+Hi Ludovic,
 
-Signed-off-by: Axel Lin <axel.lin@ingics.com>
----
- drivers/iio/dac/ad5624r_spi.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Le 20/12/2012 11:52, ludovic.desroches a écrit :
+>> I'm wondering, why are you using such a complex dt parsing code, and
+>> bindings, when you only requires a boolean to switch between 8 and 10
+>> bits mode (which seem to be the only thing you support)?
+> 
+> We will have a 10 and 12 bits mode on future ADCs and I would like to
+> have something which could manage more than two resolutions if it
+> happens one day.
 
-diff --git a/drivers/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
-index 6a7d6a4..ae7fb64 100644
---- a/drivers/iio/dac/ad5624r_spi.c
-+++ b/drivers/iio/dac/ad5624r_spi.c
-@@ -238,7 +238,11 @@ static int __devinit ad5624r_probe(struct spi_device *spi)
- 		if (ret)
- 			goto error_put_reg;
- 
--		voltage_uv = regulator_get_voltage(st->reg);
-+		ret = regulator_get_voltage(st->reg);
-+		if (ret)
-+			goto error_disable_reg;
-+
-+		voltage_uv = ret;
- 	}
- 
- 	spi_set_drvdata(spi, indio_dev);
+I see your point. I'm not fond at all of the existing bindings for the
+driver (putting things like registers offset in the dt is a non-sense to
+me, but hey...), so I'd like to still keep it as simple and non-bloated
+as possible, but it's true that in the current situation, we probably
+have no other choice.
+
+Maxime
 -- 
-1.7.9.5
-
-
-
+Maxime Ripard, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
