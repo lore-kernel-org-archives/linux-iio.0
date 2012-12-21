@@ -1,63 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42164 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751289Ab2LJWEG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2012 17:04:06 -0500
-Message-ID: <50C65C54.6010100@kernel.org>
-Date: Mon, 10 Dec 2012 22:04:04 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail.free-electrons.com ([94.23.32.191]:38625 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751339Ab2LUJH2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Dec 2012 04:07:28 -0500
+Message-ID: <50D426C1.5050807@free-electrons.com>
+Date: Fri, 21 Dec 2012 10:07:13 +0100
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
 MIME-Version: 1.0
-To: James Robinson <james_robinson@vuzix.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: Latest Git Repo
-References: <loom.20121210T224225-931@post.gmane.org>
-In-Reply-To: <loom.20121210T224225-931@post.gmane.org>
+To: "ludovic.desroches" <ludovic.desroches@atmel.com>
+CC: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH 1/3] ARM: AT91: IIO: add low and high res support for
+ adc
+References: <20121219183236.GP23971@game.jcrosoft.org> <1355942232-26251-1-git-send-email-plagnioj@jcrosoft.com> <50D2EBA1.4050305@free-electrons.com> <50D2EDE6.3090706@atmel.com> <50D3340F.3090209@free-electrons.com> <50D33940.4000607@atmel.com>
+In-Reply-To: <50D33940.4000607@atmel.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/10/2012 09:46 PM, James Robinson wrote:
-> I have looked around and I am unable to find the git rep. that everyone seems to
+Le 20/12/2012 17:13, ludovic.desroches a écrit :
+> On 12/20/2012 04:51 PM, Maxime Ripard wrote:
+>> Hi Ludovic,
+>>
+>> Le 20/12/2012 11:52, ludovic.desroches a écrit :
+>>>> I'm wondering, why are you using such a complex dt parsing code, and
+>>>> bindings, when you only requires a boolean to switch between 8 and 10
+>>>> bits mode (which seem to be the only thing you support)?
+>>>
+>>> We will have a 10 and 12 bits mode on future ADCs and I would like to
+>>> have something which could manage more than two resolutions if it
+>>> happens one day.
+>>
+>> I see your point. I'm not fond at all of the existing bindings for the
+>> driver (putting things like registers offset in the dt is a non-sense to
+>> me, but hey...), so I'd like to still keep it as simple and non-bloated
+>> as possible, but it's true that in the current situation, we probably
+>> have no other choice.
+>>
 > 
-> be posting patches against. I looked at 
+> I have the same feeling than you about ADC bindings, I think that there
+> are too many parameters exhibited. Moreover, most of them are chip
+> relative.
 > 
-> http://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging-2.6.git/info/refs
-> 
-> but I don't seem to see the [PATCH] [V5] Invensense MPU6050 Device Driver. 
->
-Indeed not. It's not been merged yet as it is still under review.
+> I have not found other ways to deal with it properly. I would like to
+> have them hidden into the driver (depending on the compatible string)
+> but it will be a mess if we split parameters into dt and driver.
 
-Personally I've not had time to spend on it since it was posted (a whole 3 days ago ;)
-and would need a go ahead from Lars-Peter on this one seeing as he has been doing
-much of the review work.
+I'm glad we feel the same way :)
 
-I believe it is very close to merging, but has unfortunately missed the 3.8 merge
-cycle, so will not hit mainline now until 3.9.  It will probably be a couple of weeks
-before it hits the staging-next tree as Greg tends to only start pulling stuff
-again once rc1 for a given cycle is out.
+> So the idea was to have a binding which could allow us to manage several
+> cases about resolution modes in the future.
 
-> changes.
-> 
-> Am I pointing to the right place?
-As long as you look at the staging-next branch of that tree then pretty much.
+Yes, I got the idea. Like I said, if we don't want to touch at the
+bindings and do want you suggested, then your patch is the best solution
+we have.
 
-Stuff tends to get queued up in the togreg branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
-
-though often doesn't sit there for longer than it takes me to catch up with
-my emails / Greg to decide to pull when he gets the request.
-
-
-> 
-> Thanks for your time,
-You are welcome.
-
-Looking forward to your patches!
-> 
-> James
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Maxime
+-- 
+Maxime Ripard, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
