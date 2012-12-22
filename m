@@ -1,49 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f46.google.com ([209.85.220.46]:45687 "EHLO
-	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753719Ab2LNHrf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2012 02:47:35 -0500
-Received: by mail-pa0-f46.google.com with SMTP id bh2so2220122pad.19
-        for <linux-iio@vger.kernel.org>; Thu, 13 Dec 2012 23:47:35 -0800 (PST)
-Message-ID: <1355471245.11297.1.camel@phoenix>
-Subject: [PATCH 1/6] iio: adc: ad7266: Don't set error code to st->vref_uv
-From: Axel Lin <axel.lin@ingics.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Date: Fri, 14 Dec 2012 15:47:25 +0800
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mo3.mail-out.ovh.net ([178.32.228.3]:59666 "EHLO
+	mo3.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751790Ab2LVRXO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Dec 2012 12:23:14 -0500
+Received: from mail417.ha.ovh.net (b6.ovh.net [213.186.33.56])
+	by mo3.mail-out.ovh.net (Postfix) with SMTP id 6DCEAFF9122
+	for <linux-iio@vger.kernel.org>; Sat, 22 Dec 2012 18:35:37 +0100 (CET)
+Date: Sat, 22 Dec 2012 18:21:33 +0100
+From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: "ludovic.desroches" <ludovic.desroches@atmel.com>,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH 1/3] ARM: AT91: IIO: add low and high res support for
+ adc
+Message-ID: <20121222172133.GT23971@game.jcrosoft.org>
+References: <20121219183236.GP23971@game.jcrosoft.org>
+ <1355942232-26251-1-git-send-email-plagnioj@jcrosoft.com>
+ <50D2EBA1.4050305@free-electrons.com>
+ <50D2EDE6.3090706@atmel.com>
+ <50D3340F.3090209@free-electrons.com>
+ <50D33940.4000607@atmel.com>
+ <50D426C1.5050807@free-electrons.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <50D426C1.5050807@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-regulator_get_voltage() may return negative error code.
-Add error checking to avoid setting error code to st->vref_uv.
+On 10:07 Fri 21 Dec     , Maxime Ripard wrote:
+> Le 20/12/2012 17:13, ludovic.desroches a écrit :
+> > On 12/20/2012 04:51 PM, Maxime Ripard wrote:
+> >> Hi Ludovic,
+> >>
+> >> Le 20/12/2012 11:52, ludovic.desroches a écrit :
+> >>>> I'm wondering, why are you using such a complex dt parsing code, and
+> >>>> bindings, when you only requires a boolean to switch between 8 and 10
+> >>>> bits mode (which seem to be the only thing you support)?
+> >>>
+> >>> We will have a 10 and 12 bits mode on future ADCs and I would like to
+> >>> have something which could manage more than two resolutions if it
+> >>> happens one day.
+> >>
+> >> I see your point. I'm not fond at all of the existing bindings for the
+> >> driver (putting things like registers offset in the dt is a non-sense to
+> >> me, but hey...), so I'd like to still keep it as simple and non-bloated
+> >> as possible, but it's true that in the current situation, we probably
+> >> have no other choice.
+> >>
+> > 
+> > I have the same feeling than you about ADC bindings, I think that there
+> > are too many parameters exhibited. Moreover, most of them are chip
+> > relative.
+> > 
+> > I have not found other ways to deal with it properly. I would like to
+> > have them hidden into the driver (depending on the compatible string)
+> > but it will be a mess if we split parameters into dt and driver.
+> 
+> I'm glad we feel the same way :)
+I'm not I fee; exactly this opposte way
 
-Signed-off-by: Axel Lin <axel.lin@ingics.com>
----
- drivers/iio/adc/ad7266.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+I do want to toucht the kernel code to add new soc
 
-diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-index a6f4fc5..e36107d 100644
---- a/drivers/iio/adc/ad7266.c
-+++ b/drivers/iio/adc/ad7266.c
-@@ -411,7 +411,11 @@ static int __devinit ad7266_probe(struct spi_device *spi)
- 		if (ret)
- 			goto error_put_reg;
- 
--		st->vref_uv = regulator_get_voltage(st->reg);
-+		ret = regulator_get_voltage(st->reg);
-+		if (ret < 0)
-+			goto error_disable_reg;
-+
-+		st->vref_uv = ret;
- 	} else {
- 		/* Use internal reference */
- 		st->vref_uv = 2500000;
--- 
-1.7.9.5
+so no I like this binding
 
-
-
+Best Regards,
+J.
