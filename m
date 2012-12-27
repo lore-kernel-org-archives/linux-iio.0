@@ -1,44 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.32.191]:58157 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751087Ab2LTKs4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Dec 2012 05:48:56 -0500
-Message-ID: <50D2EB04.9080804@free-electrons.com>
-Date: Thu, 20 Dec 2012 11:40:04 +0100
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39617 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752046Ab2L0LZR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2012 06:25:17 -0500
+Message-ID: <50DC301A.4040103@kernel.org>
+Date: Thu, 27 Dec 2012 11:25:14 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-CC: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>
-Subject: Re: [PATCH 0/3] IIO: AT91: add lowres, sleep and sample&hold time
- missing support
-References: <20121219183236.GP23971@game.jcrosoft.org>
-In-Reply-To: <20121219183236.GP23971@game.jcrosoft.org>
+To: Marek Vasut <marex@denx.de>
+CC: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH 1/3 V2] iio: mxs: Remove unused struct mxs_lradc_chan
+References: <1355449598-15980-1-git-send-email-marex@denx.de>
+In-Reply-To: <1355449598-15980-1-git-send-email-marex@denx.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
-
-Le 19/12/2012 19:32, Jean-Christophe PLAGNIOL-VILLARD a écrit :
-> Hi,
+On 12/14/2012 01:46 AM, Marek Vasut wrote:
+> This structure definition seems to be some kind of remnant from
+> previous development that accidentally made it mainline. Remove
+> it as it's unused.
 > 
-> 	The current adc driver is missing some key feature support
-> 	 - select high/low resolution support
-> 	 - sleep mode
-> 	 - Sample and Hold Time
+> Remove unused "enable" field from struct mxs_lradc as well. This
+> seems to be remnant of early development too.
 > 
-> 	 This patch seris fix it
-> 	 Without it the current driver is not usable in most of the case
+Added to togreg branch of
 
-Could you put me in Cc for the next iterations please?
+git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
 
-Thanks,
-Maxime
-
--- 
-Maxime Ripard, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+Jonathan
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Fabio Estevam <fabio.estevam@freescale.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Shawn Guo <shawn.guo@linaro.org>
+> ---
+>  drivers/staging/iio/adc/mxs-lradc.c |    7 -------
+>  1 file changed, 7 deletions(-)
+> 
+> V2: The patch is now combination of previously two separate patches:
+> [PATCH 1/4] iio: mxs: Remove unused struct mxs_lradc_chan
+> [PATCH 2/4] iio: mxs: Remove unused fields from mxs_lradc
+> 
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index ca7c1fa..6249957 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -75,11 +75,6 @@ static const char * const mxs_lradc_irq_name[] = {
+>  	"mxs-lradc-button1",
+>  };
+>  
+> -struct mxs_lradc_chan {
+> -	uint8_t				slot;
+> -	uint8_t				flags;
+> -};
+> -
+>  struct mxs_lradc {
+>  	struct device		*dev;
+>  	void __iomem		*base;
+> @@ -90,8 +85,6 @@ struct mxs_lradc {
+>  
+>  	struct mutex		lock;
+>  
+> -	uint8_t			enable;
+> -
+>  	struct completion	completion;
+>  };
+>  
+> 
