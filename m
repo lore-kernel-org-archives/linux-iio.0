@@ -1,76 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39905 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39596 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752293Ab2L0MO7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2012 07:14:59 -0500
-Message-ID: <50DC3BC1.4060909@kernel.org>
-Date: Thu, 27 Dec 2012 12:14:57 +0000
+	with ESMTP id S1751841Ab2L0LWz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2012 06:22:55 -0500
+Message-ID: <50DC2F8E.3010805@kernel.org>
+Date: Thu, 27 Dec 2012 11:22:54 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-CC: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>,
-	linux-iio@vger.kernel.org,
-	Ludovic Desroches <ludovic.desroches@atmel.com>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 0/3] IIO: AT91: add lowres, sleep and sample&hold time
- missing support
-References: <20121219183236.GP23971@game.jcrosoft.org> <50D2EDBE.3020805@atmel.com>
-In-Reply-To: <50D2EDBE.3020805@atmel.com>
+To: Alexander Stein <alexander.stein@informatik.tu-chemnitz.de>
+CC: linux-iio@vger.kernel.org, trivial@kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH] iio: Fix some comments
+References: <1355939791-18814-1-git-send-email-alexander.stein@informatik.tu-chemnitz.de>
+In-Reply-To: <1355939791-18814-1-git-send-email-alexander.stein@informatik.tu-chemnitz.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/20/2012 10:51 AM, Nicolas Ferre wrote:
-> On 12/19/2012 07:32 PM, Jean-Christophe PLAGNIOL-VILLARD :
->> Hi,
->>
->> 	The current adc driver is missing some key feature support
->> 	 - select high/low resolution support
->> 	 - sleep mode
->> 	 - Sample and Hold Time
->>
->> 	 This patch seris fix it
->> 	 Without it the current driver is not usable in most of the case
->>
->> Jean-Christophe PLAGNIOL-VILLARD (2):
->>       ARM: AT91: IIO: add sleep mode support
->>       ARM: AT91: IIO: fix missing Sample and Hold time
->>
->> Ludovic Desroches (1):
->>       ARM: AT91: IIO: add low and high res support for adc
->>
->>  Documentation/devicetree/bindings/arm/atmel-adc.txt |   13 ++++++++++++
->>  arch/arm/boot/dts/at91sam9260.dtsi                  |    3 +++
->>  arch/arm/boot/dts/at91sam9g45.dtsi                  |    3 +++
->>  arch/arm/boot/dts/at91sam9x5.dtsi                   |    3 +++
->>  drivers/iio/adc/at91_adc.c                          |   90 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-----
-> 
-> As this series is touching both a driver and the DT files, we will have
-> to pay attention to the path that we will take for upstream.
-> 
-> Arm-soc is my preferred location...
+On 12/19/2012 05:56 PM, Alexander Stein wrote:
+> Signed-off-by: Alexander Stein <alexander.stein@informatik.tu-chemnitz.de>
+Thanks,
 
-I don't particularly care as I don't know of anything else that is planned for
-this cycle that will touch this driver but generally I'd consider this series
-driver changes with additions to the device tree to support new functionality.
+Added to togreg branch of
 
-The only reason to merge through the arm-soc tree I can see is that there is
-likely to be more churn in the device tree files.
+git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
 
-There is also the question of whether that missing sample and hold time is
-a fix we want to push out this cycle, or whether it can wait for the next
-merge window.  I'm not clear from the description.
+
+I really ought to do something about moving this out of staging if
+people still find it useful/informative.
+
+hmm.
 
 Jonathan
-
+> ---
+>  drivers/staging/iio/iio_simple_dummy.c        | 4 ++--
+>  drivers/staging/iio/iio_simple_dummy_buffer.c | 2 +-
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 > 
-> 
-> Bye,
-> 
->>  5 files changed, 107 insertions(+), 5 deletions(-)
->>
->> Best Regards,
->> J.
->>
-> 
+> diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
+> index a865adf..aee76c7 100644
+> --- a/drivers/staging/iio/iio_simple_dummy.c
+> +++ b/drivers/staging/iio/iio_simple_dummy.c
+> @@ -54,7 +54,7 @@ struct iio_dummy_accel_calibscale {
+>  static const struct iio_dummy_accel_calibscale dummy_scales[] = {
+>  	{ 0, 100, 0x8 }, /* 0.000100 */
+>  	{ 0, 133, 0x7 }, /* 0.000133 */
+> -	{ 733, 13, 0x9 }, /* 733.00013 */
+> +	{ 733, 13, 0x9 }, /* 733.000013 */
+>  };
+>  
+>  /*
+> @@ -284,7 +284,7 @@ static int iio_dummy_read_raw(struct iio_dev *indio_dev,
+>  /**
+>   * iio_dummy_write_raw() - data write function.
+>   * @indio_dev:	the struct iio_dev associated with this device instance
+> - * @chan:	the channel whose data is to be read
+> + * @chan:	the channel whose data is to be written
+>   * @val:	first element of value to set (typically INT)
+>   * @val2:	second element of value to set (typically MICRO)
+>   * @mask:	what we actually want to write. 0 is the channel, everything else
+> diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
+> index dee16f0..72f400c 100644
+> --- a/drivers/staging/iio/iio_simple_dummy_buffer.c
+> +++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
+> @@ -155,7 +155,7 @@ int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev,
+>  	 * occurs, this function is run. Typically this grabs data
+>  	 * from the device.
+>  	 *
+> -	 * NULL for the top half. This is normally implemented only if we
+> +	 * NULL for the bottom half. This is normally implemented only if we
+>  	 * either want to ping a capture now pin (no sleeping) or grab
+>  	 * a timestamp as close as possible to a data ready trigger firing.
+>  	 *
 > 
