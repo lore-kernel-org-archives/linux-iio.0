@@ -1,54 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:21633 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751011Ab2LaFgI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 31 Dec 2012 00:36:08 -0500
-From: Yuanhan Liu <yuanhan.liu@linux.intel.com>
-To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Cc: linux-kernel@vger.kernel.org,
-	Yuanhan Liu <yuanhan.liu@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH] staging:iio:adis16260: select IIO_ADIS_LIB to fix build error
-Date: Mon, 31 Dec 2012 13:36:35 +0800
-Message-Id: <1356932195-31437-1-git-send-email-yuanhan.liu@linux.intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39905 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752293Ab2L0MO7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2012 07:14:59 -0500
+Message-ID: <50DC3BC1.4060909@kernel.org>
+Date: Thu, 27 Dec 2012 12:14:57 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+CC: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>,
+	linux-iio@vger.kernel.org,
+	Ludovic Desroches <ludovic.desroches@atmel.com>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 0/3] IIO: AT91: add lowres, sleep and sample&hold time
+ missing support
+References: <20121219183236.GP23971@game.jcrosoft.org> <50D2EDBE.3020805@atmel.com>
+In-Reply-To: <50D2EDBE.3020805@atmel.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Commit 9d5e9fdf turned the code to use adis library, so it depends on
-adis lib. But it forgot to select it at Kconfig file. Thus if adis is
-not enabled, it will produce following build errros(catched by Fengguang's
-0-DAY kernel build testing system):
-  ERROR: "adis_initial_startup" [drivers/staging/iio/gyro/adis16260.ko] undefined!
-  ERROR: "adis_init" [drivers/staging/iio/gyro/adis16260.ko] undefined!
-  ERROR: "adis_write_reg" [drivers/staging/iio/gyro/adis16260.ko] undefined!
-  ERROR: "adis_read_reg" [drivers/staging/iio/gyro/adis16260.ko] undefined!
-  ERROR: "adis_single_conversion" [drivers/staging/iio/gyro/adis16260.ko] undefined!
+On 12/20/2012 10:51 AM, Nicolas Ferre wrote:
+> On 12/19/2012 07:32 PM, Jean-Christophe PLAGNIOL-VILLARD :
+>> Hi,
+>>
+>> 	The current adc driver is missing some key feature support
+>> 	 - select high/low resolution support
+>> 	 - sleep mode
+>> 	 - Sample and Hold Time
+>>
+>> 	 This patch seris fix it
+>> 	 Without it the current driver is not usable in most of the case
+>>
+>> Jean-Christophe PLAGNIOL-VILLARD (2):
+>>       ARM: AT91: IIO: add sleep mode support
+>>       ARM: AT91: IIO: fix missing Sample and Hold time
+>>
+>> Ludovic Desroches (1):
+>>       ARM: AT91: IIO: add low and high res support for adc
+>>
+>>  Documentation/devicetree/bindings/arm/atmel-adc.txt |   13 ++++++++++++
+>>  arch/arm/boot/dts/at91sam9260.dtsi                  |    3 +++
+>>  arch/arm/boot/dts/at91sam9g45.dtsi                  |    3 +++
+>>  arch/arm/boot/dts/at91sam9x5.dtsi                   |    3 +++
+>>  drivers/iio/adc/at91_adc.c                          |   90 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-----
+> 
+> As this series is touching both a driver and the DT files, we will have
+> to pay attention to the path that we will take for upstream.
+> 
+> Arm-soc is my preferred location...
 
-Selecting IIO_ADIS_LIB at Kconfig file fixes this issue.
+I don't particularly care as I don't know of anything else that is planned for
+this cycle that will touch this driver but generally I'd consider this series
+driver changes with additions to the device tree to support new functionality.
 
-Reported-by: Fengguang Wu <fengguang.wu@intel.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Yuanhan Liu <yuanhan.liu@linux.intel.com>
----
- drivers/staging/iio/gyro/Kconfig |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+The only reason to merge through the arm-soc tree I can see is that there is
+likely to be more churn in the device tree files.
 
-diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
-index ea295b2..476207a 100644
---- a/drivers/staging/iio/gyro/Kconfig
-+++ b/drivers/staging/iio/gyro/Kconfig
-@@ -27,6 +27,7 @@ config ADIS16130
- config ADIS16260
- 	tristate "Analog Devices ADIS16260 Digital Gyroscope Sensor SPI driver"
- 	depends on SPI
-+	select IIO_ADIS_LIB
- 	select IIO_TRIGGER if IIO_BUFFER
- 	select IIO_SW_RING if IIO_BUFFER
- 	help
--- 
-1.7.7.6
+There is also the question of whether that missing sample and hold time is
+a fix we want to push out this cycle, or whether it can wait for the next
+merge window.  I'm not clear from the description.
 
+Jonathan
+
+> 
+> 
+> Bye,
+> 
+>>  5 files changed, 107 insertions(+), 5 deletions(-)
+>>
+>> Best Regards,
+>> J.
+>>
+> 
+> 
