@@ -1,75 +1,120 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39596 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751841Ab2L0LWz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2012 06:22:55 -0500
-Message-ID: <50DC2F8E.3010805@kernel.org>
-Date: Thu, 27 Dec 2012 11:22:54 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Alexander Stein <alexander.stein@informatik.tu-chemnitz.de>
-CC: linux-iio@vger.kernel.org, trivial@kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH] iio: Fix some comments
-References: <1355939791-18814-1-git-send-email-alexander.stein@informatik.tu-chemnitz.de>
-In-Reply-To: <1355939791-18814-1-git-send-email-alexander.stein@informatik.tu-chemnitz.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 1/2] iio: cleanup buffer setup code in max1363 driver
+Date: Mon, 31 Dec 2012 00:26:57 +0100
+Message-Id: <1356910018-14422-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 12/19/2012 05:56 PM, Alexander Stein wrote:
-> Signed-off-by: Alexander Stein <alexander.stein@informatik.tu-chemnitz.de>
-Thanks,
+use iio_triggered_buffer_setup(), iio_triggered_buffer_cleanup()
 
-Added to togreg branch of
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/adc/max1363.c |   59 ++++-----------------------------------------
+ 1 file changed, 5 insertions(+), 54 deletions(-)
 
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
-
-
-I really ought to do something about moving this out of staging if
-people still find it useful/informative.
-
-hmm.
-
-Jonathan
-> ---
->  drivers/staging/iio/iio_simple_dummy.c        | 4 ++--
->  drivers/staging/iio/iio_simple_dummy_buffer.c | 2 +-
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
-> index a865adf..aee76c7 100644
-> --- a/drivers/staging/iio/iio_simple_dummy.c
-> +++ b/drivers/staging/iio/iio_simple_dummy.c
-> @@ -54,7 +54,7 @@ struct iio_dummy_accel_calibscale {
->  static const struct iio_dummy_accel_calibscale dummy_scales[] = {
->  	{ 0, 100, 0x8 }, /* 0.000100 */
->  	{ 0, 133, 0x7 }, /* 0.000133 */
-> -	{ 733, 13, 0x9 }, /* 733.00013 */
-> +	{ 733, 13, 0x9 }, /* 733.000013 */
->  };
->  
->  /*
-> @@ -284,7 +284,7 @@ static int iio_dummy_read_raw(struct iio_dev *indio_dev,
->  /**
->   * iio_dummy_write_raw() - data write function.
->   * @indio_dev:	the struct iio_dev associated with this device instance
-> - * @chan:	the channel whose data is to be read
-> + * @chan:	the channel whose data is to be written
->   * @val:	first element of value to set (typically INT)
->   * @val2:	second element of value to set (typically MICRO)
->   * @mask:	what we actually want to write. 0 is the channel, everything else
-> diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
-> index dee16f0..72f400c 100644
-> --- a/drivers/staging/iio/iio_simple_dummy_buffer.c
-> +++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
-> @@ -155,7 +155,7 @@ int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev,
->  	 * occurs, this function is run. Typically this grabs data
->  	 * from the device.
->  	 *
-> -	 * NULL for the top half. This is normally implemented only if we
-> +	 * NULL for the bottom half. This is normally implemented only if we
->  	 * either want to ping a capture now pin (no sleeping) or grab
->  	 * a timestamp as close as possible to a data ready trigger firing.
->  	 *
-> 
+diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+index 1e84b5b..46d8365 100644
+--- a/drivers/iio/adc/max1363.c
++++ b/drivers/iio/adc/max1363.c
+@@ -39,6 +39,7 @@
+ #include <linux/iio/driver.h>
+ #include <linux/iio/kfifo_buf.h>
+ #include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ 
+ #define MAX1363_SETUP_BYTE(a) ((a) | 0x80)
+ 
+@@ -1483,48 +1484,6 @@ static const struct iio_buffer_setup_ops max1363_buffered_setup_ops = {
+ 	.predisable = &iio_triggered_buffer_predisable,
+ };
+ 
+-static int max1363_register_buffered_funcs_and_init(struct iio_dev *indio_dev)
+-{
+-	struct max1363_state *st = iio_priv(indio_dev);
+-	int ret = 0;
+-
+-	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
+-	if (!indio_dev->buffer) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-	indio_dev->pollfunc = iio_alloc_pollfunc(NULL,
+-						 &max1363_trigger_handler,
+-						 IRQF_ONESHOT,
+-						 indio_dev,
+-						 "%s_consumer%d",
+-						 st->client->name,
+-						 indio_dev->id);
+-	if (indio_dev->pollfunc == NULL) {
+-		ret = -ENOMEM;
+-		goto error_deallocate_sw_rb;
+-	}
+-	/* Buffer functions - here trigger setup related */
+-	indio_dev->setup_ops = &max1363_buffered_setup_ops;
+-
+-	/* Flag that polled buffering is possible */
+-	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
+-
+-	return 0;
+-
+-error_deallocate_sw_rb:
+-	iio_kfifo_free(indio_dev->buffer);
+-error_ret:
+-	return ret;
+-}
+-
+-static void max1363_buffer_cleanup(struct iio_dev *indio_dev)
+-{
+-	/* ensure that the trigger has been detached */
+-	iio_dealloc_pollfunc(indio_dev->pollfunc);
+-	iio_kfifo_free(indio_dev->buffer);
+-}
+-
+ static int __devinit max1363_probe(struct i2c_client *client,
+ 				   const struct i2c_device_id *id)
+ {
+@@ -1577,16 +1536,11 @@ static int __devinit max1363_probe(struct i2c_client *client,
+ 	if (ret < 0)
+ 		goto error_free_available_scan_masks;
+ 
+-	ret = max1363_register_buffered_funcs_and_init(indio_dev);
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++		&max1363_trigger_handler, &max1363_buffered_setup_ops);
+ 	if (ret)
+ 		goto error_free_available_scan_masks;
+ 
+-	ret = iio_buffer_register(indio_dev,
+-				  st->chip_info->channels,
+-				  st->chip_info->num_channels);
+-	if (ret)
+-		goto error_cleanup_buffer;
+-
+ 	if (client->irq) {
+ 		ret = request_threaded_irq(st->client->irq,
+ 					   NULL,
+@@ -1607,9 +1561,7 @@ static int __devinit max1363_probe(struct i2c_client *client,
+ error_free_irq:
+ 	free_irq(st->client->irq, indio_dev);
+ error_uninit_buffer:
+-	iio_buffer_unregister(indio_dev);
+-error_cleanup_buffer:
+-	max1363_buffer_cleanup(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
+ error_free_available_scan_masks:
+ 	kfree(indio_dev->available_scan_masks);
+ error_unregister_map:
+@@ -1632,8 +1584,7 @@ static int __devexit max1363_remove(struct i2c_client *client)
+ 	iio_device_unregister(indio_dev);
+ 	if (client->irq)
+ 		free_irq(st->client->irq, indio_dev);
+-	iio_buffer_unregister(indio_dev);
+-	max1363_buffer_cleanup(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
+ 	kfree(indio_dev->available_scan_masks);
+ 	if (!IS_ERR(st->reg)) {
+ 		regulator_disable(st->reg);
+-- 
+1.7.9.5
