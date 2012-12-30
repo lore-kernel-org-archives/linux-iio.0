@@ -1,62 +1,94 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:60319 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751648Ab2L0STF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2012 13:19:05 -0500
-From: Marek Vasut <marex@denx.de>
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
 To: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 2/3 V2] iio: mxs: Implement support for touchscreen
-Date: Thu, 27 Dec 2012 19:19:00 +0100
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Shawn Guo <shawn.guo@linaro.org>,
-	Torokhov <dmitry.torokhov@gmail.com>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-References: <1355449598-15980-1-git-send-email-marex@denx.de> <1355449598-15980-2-git-send-email-marex@denx.de> <50DC319B.1050607@kernel.org>
-In-Reply-To: <50DC319B.1050607@kernel.org>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201212271919.00794.marex@denx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 2/2] iio: max1363 comment and whitespace fixes
+Date: Mon, 31 Dec 2012 00:26:58 +0100
+Message-Id: <1356910018-14422-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1356910018-14422-1-git-send-email-pmeerw@pmeerw.net>
+References: <1356910018-14422-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-Dear Jonathan Cameron,
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/adc/max1363.c |   15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-> On 12/14/2012 01:46 AM, Marek Vasut wrote:
-> > This patch implements support for sampling of a touchscreen into
-> > the MXS LRADC driver. The LRADC block allows configuring some of
-> > it's channels into special mode where they either output the drive
-> > voltage or sample it, allowing it to operate a 4-wire or 5-wire
-> > resistive touchscreen.
-> > 
-> > In case the touchscreen mode is enabled, the LRADC slot #7 is
-> > reserved for touchscreen only, therefore it is not possible to
-> > sample 8 LRADC channels at time, but only 7 channels.
-> > 
-> > The touchscreen controller is configured such that the PENDOWN event
-> > disables touchscreen interrupts and triggers execution of worker
-> > thread, which then polls the touchscreen controller for X, Y and
-> > Pressure values. This reduces the overhead of interrupt-driven
-> > operation. Upon the PENUP event, the worker thread re-enables the
-> > PENDOWN detection interrupt and exits.
-> 
-> I still have a few reservations about this patch.  Firstly
-> I would love to see a more generic approach to this as I outlined
-> before.  Still we can't have everything we want sometimes :)
-> Also, this is a lot of input related code in a driver that isn't
-> in the input subsystem.  Really up to Dmitry on whether he is
-> happy with this, or whether he insists on an mfd.
-> 
-> So all in all, with reservations I'll add this to the IIO tree
-> IF Dmitry is happy with it and there are no other issues raised
-> in the meantime.
-
-Understood, I'll wait for Dmitry.
-
-> Jonathan
-> 
-> p.s. If anyone has time, I'd also like to get this out of staging
-> in the coming cycle.
-
-[...]
+diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+index 46d8365..0ba4fea 100644
+--- a/drivers/iio/adc/max1363.c
++++ b/drivers/iio/adc/max1363.c
+@@ -56,7 +56,7 @@
+ #define MAX1363_SETUP_POWER_UP_INT_REF		0x10
+ #define MAX1363_SETUP_POWER_DOWN_INT_REF	0x00
+ 
+-/* think about includeing max11600 etc - more settings */
++/* think about including max11600 etc - more settings */
+ #define MAX1363_SETUP_EXT_CLOCK			0x08
+ #define MAX1363_SETUP_INT_CLOCK			0x00
+ #define MAX1363_SETUP_UNIPOLAR			0x00
+@@ -87,7 +87,7 @@
+ /* max123{6-9} only */
+ #define MAX1236_SCAN_MID_TO_CHANNEL		0x40
+ 
+-/* max1363 only - merely part of channel selects or don't care for others*/
++/* max1363 only - merely part of channel selects or don't care for others */
+ #define MAX1363_CONFIG_EN_MON_MODE_READ 0x18
+ 
+ #define MAX1363_CHANNEL_SEL(a) ((a) << 1)
+@@ -134,7 +134,7 @@ enum max1363_modes {
+  * @mode_list:		array of available scan modes
+  * @default_mode:	the scan mode in which the chip starts up
+  * @int_vref_mv:	the internal reference voltage
+- * @num_channels:	number of channels
++ * @num_modes:		number of modes
+  * @bits:		accuracy of the adc in bits
+  */
+ struct max1363_chip_info {
+@@ -153,7 +153,7 @@ struct max1363_chip_info {
+  * @client:		i2c_client
+  * @setupbyte:		cache of current device setup byte
+  * @configbyte:		cache of current device config byte
+- * @chip_info:		chip model specific constants, available modes etc
++ * @chip_info:		chip model specific constants, available modes, etc.
+  * @current_mode:	the scan mode of this chip
+  * @requestedmask:	a valid requested set of channels
+  * @reg:		supply regulator
+@@ -294,7 +294,7 @@ static const struct max1363_mode max1363_mode_table[] = {
+ 
+ static const struct max1363_mode
+ *max1363_match_mode(const unsigned long *mask,
+-const struct max1363_chip_info *ci)
++	const struct max1363_chip_info *ci)
+ {
+ 	int i;
+ 	if (mask)
+@@ -1395,7 +1395,7 @@ static int max1363_initial_setup(struct max1363_state *st)
+ 		| MAX1363_SETUP_UNIPOLAR
+ 		| MAX1363_SETUP_NORESET;
+ 
+-	/* Set scan mode writes the config anyway so wait until then*/
++	/* Set scan mode writes the config anyway so wait until then */
+ 	st->setupbyte = MAX1363_SETUP_BYTE(st->setupbyte);
+ 	st->current_mode = &max1363_mode_table[st->chip_info->default_mode];
+ 	st->configbyte = MAX1363_CONFIG_BYTE(st->configbyte);
+@@ -1424,7 +1424,6 @@ static int __devinit max1363_alloc_scan_masks(struct iio_dev *indio_dev)
+ 	return 0;
+ }
+ 
+-
+ static irqreturn_t max1363_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+@@ -1523,7 +1522,7 @@ static int __devinit max1363_probe(struct i2c_client *client,
+ 	if (ret)
+ 		goto error_disable_reg;
+ 
+-	/* Estabilish that the iio_dev is a child of the i2c device */
++	/* Establish that the iio_dev is a child of the i2c device */
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->name = id->name;
+ 	indio_dev->channels = st->chip_info->channels;
+-- 
+1.7.9.5
