@@ -1,69 +1,82 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33040 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752386Ab3AARTR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Jan 2013 12:19:17 -0500
+Message-ID: <50E31A8E.4050008@kernel.org>
+Date: Tue, 01 Jan 2013 17:19:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: jbrenner@taosinc.com,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 2/3] staging:iio:light:tsl2583 apply in_ prefix to attributes.
-Date: Sun,  6 Jan 2013 16:23:02 +0000
-Message-Id: <1357489383-30811-3-git-send-email-jic23@kernel.org>
-In-Reply-To: <1357489383-30811-1-git-send-email-jic23@kernel.org>
-References: <1357489383-30811-1-git-send-email-jic23@kernel.org>
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+MIME-Version: 1.0
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for v3.8-rc1
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Bring the naming of remaining attributes in line with those
-created via the channel spec.
+The following changes since commit a49f0d1ea3ec94fc7cf33a7c36a16343b74bd565:
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/light/tsl2583.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+  Linux 3.8-rc1 (2012-12-21 17:19:00 -0800)
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 30c1a36..944db26 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -652,29 +652,29 @@ static ssize_t taos_luxtable_store(struct device *dev,
- static DEVICE_ATTR(power_state, S_IRUGO | S_IWUSR,
- 		taos_power_state_show, taos_power_state_store);
- 
--static DEVICE_ATTR(illuminance0_calibscale_available, S_IRUGO,
-+static DEVICE_ATTR(in_illuminance0_calibscale_available, S_IRUGO,
- 		taos_gain_available_show, NULL);
- 
--static DEVICE_ATTR(illuminance0_integration_time, S_IRUGO | S_IWUSR,
-+static DEVICE_ATTR(in_illuminance0_integration_time, S_IRUGO | S_IWUSR,
- 		taos_als_time_show, taos_als_time_store);
--static DEVICE_ATTR(illuminance0_integration_time_available, S_IRUGO,
-+static DEVICE_ATTR(in_illuminance0_integration_time_available, S_IRUGO,
- 		taos_als_time_available_show, NULL);
- 
--static DEVICE_ATTR(illuminance0_input_target, S_IRUGO | S_IWUSR,
-+static DEVICE_ATTR(in_illuminance0_input_target, S_IRUGO | S_IWUSR,
- 		taos_als_cal_target_show, taos_als_cal_target_store);
- 
--static DEVICE_ATTR(illuminance0_calibrate, S_IWUSR, NULL, taos_do_calibrate);
--static DEVICE_ATTR(illuminance0_lux_table, S_IRUGO | S_IWUSR,
-+static DEVICE_ATTR(in_illuminance0_calibrate, S_IWUSR, NULL, taos_do_calibrate);
-+static DEVICE_ATTR(in_illuminance0_lux_table, S_IRUGO | S_IWUSR,
- 		taos_luxtable_show, taos_luxtable_store);
- 
- static struct attribute *sysfs_attrs_ctrl[] = {
- 	&dev_attr_power_state.attr,
--	&dev_attr_illuminance0_calibscale_available.attr,
--	&dev_attr_illuminance0_integration_time.attr,	/* I time*/
--	&dev_attr_illuminance0_integration_time_available.attr,
--	&dev_attr_illuminance0_input_target.attr,
--	&dev_attr_illuminance0_calibrate.attr,
--	&dev_attr_illuminance0_lux_table.attr,
-+	&dev_attr_in_illuminance0_calibscale_available.attr,
-+	&dev_attr_in_illuminance0_integration_time.attr,	/* I time*/
-+	&dev_attr_in_illuminance0_integration_time_available.attr,
-+	&dev_attr_in_illuminance0_input_target.attr,
-+	&dev_attr_in_illuminance0_calibrate.attr,
-+	&dev_attr_in_illuminance0_lux_table.attr,
- 	NULL
- };
- 
--- 
-1.8.1
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.8a
+
+for you to fetch changes up to 678fb42e2b2c815c3475884017aac4da22124d0d:
+
+  iio: (max1363) Fix probe error path (2012-12-27 11:11:27 +0000)
+
+----------------------------------------------------------------
+First round of fixes for IIO post 3.8-rc1.
+
+A set of worthy if rather dull little fixes.
+
+* A whole set of incorrect error handling on regulator voltage requests.
+* An error in the probe path for max1363.
+* A couple of Kconfig issues with missing/ignored dependencies.
+* A nasty shift vs compare typo in adf4350
+* Bug fixes for a silly error that prevents at91_adc driver building.
+
+----------------------------------------------------------------
+Alexander Holler (1):
+      iio: hid-sensors: respect CONFIG_IIO_TRIGGER
+
+Axel Lin (7):
+      iio: adc: ad7266: Don't set error code to st->vref_uv
+      iio: dac: ad5380: Don't set error code to st->vref
+      iio: dac: ad5791: Don't set error code to [pos|neg]_voltage_uv
+      iio: dac: ad5504: Don't set error code to voltage_uv
+      iio: dac: ad5624r_spi: Don't set error code to voltage_uv
+      iio: dac: ad5686: Don't set error code to voltage_uv
+      iio: dac: ad5446: Don't set error code to voltage_uv
+
+Guenter Roeck (1):
+      iio: (max1363) Fix probe error path
+
+Jean-Christophe PLAGNIOL-VILLARD (1):
+      iio: at91: fix dev var name in at91_adc_trigger_handler
+
+Lars-Peter Clausen (1):
+      staging:iio:adis16260: Select adislib
+
+Michael Hennerich (1):
+      iio:adf4350: Fix typo
+
+ drivers/iio/accel/Kconfig               |  1 +
+ drivers/iio/adc/ad7266.c                |  6 +++++-
+ drivers/iio/adc/at91_adc.c              |  2 +-
+ drivers/iio/adc/max1363.c               | 13 ++++++-------
+ drivers/iio/common/hid-sensors/Kconfig  | 13 ++++++++++++-
+ drivers/iio/common/hid-sensors/Makefile |  3 ++-
+ drivers/iio/dac/ad5380.c                |  6 +++++-
+ drivers/iio/dac/ad5446.c                |  6 +++++-
+ drivers/iio/dac/ad5504.c                |  6 +++++-
+ drivers/iio/dac/ad5624r_spi.c           |  6 +++++-
+ drivers/iio/dac/ad5686.c                |  6 +++++-
+ drivers/iio/dac/ad5791.c                | 13 +++++++++++--
+ drivers/iio/frequency/adf4350.c         |  2 +-
+ drivers/iio/gyro/Kconfig                |  1 +
+ drivers/iio/light/Kconfig               |  1 +
+ drivers/iio/magnetometer/Kconfig        |  1 +
+ drivers/staging/iio/gyro/Kconfig        |  4 ++--
+ 17 files changed, 69 insertions(+), 21 deletions(-)
