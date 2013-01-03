@@ -1,51 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:60643 "EHLO mx2.suse.de"
+Received: from cantor2.suse.de ([195.135.220.15]:51077 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752910Ab3ADJS3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 4 Jan 2013 04:18:29 -0500
-Date: Fri, 4 Jan 2013 10:18:24 +0100 (CET)
+	id S1750915Ab3ACJk7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 3 Jan 2013 04:40:59 -0500
+Date: Thu, 3 Jan 2013 10:40:50 +0100 (CET)
 From: Jiri Kosina <jkosina@suse.cz>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Alexander Holler <holler@ahsoftware.de>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+To: Alexander Holler <holler@ahsoftware.de>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@cam.ac.uk>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	rtc-linux@googlegroups.com,
 	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/4 v5 RESEND] rtc: add rtc-driver for HID sensors of
- type time
-In-Reply-To: <20130103143913.16d4e867.akpm@linux-foundation.org>
-Message-ID: <alpine.LNX.2.00.1301041017540.9143@pobox.suse.cz>
-References: <50CC6FE3.6060705@ahsoftware.de> <1355575537-10093-1-git-send-email-holler@ahsoftware.de> <1355575537-10093-3-git-send-email-holler@ahsoftware.de> <20130103143913.16d4e867.akpm@linux-foundation.org>
+	srinivas pandruvada <srinivas.pandruvada@intel.com>,
+	Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH 1/4 RESEND] iio: Add Usage IDs for HID time sensors.
+In-Reply-To: <1355575537-10093-1-git-send-email-holler@ahsoftware.de>
+Message-ID: <alpine.LNX.2.00.1301031040260.27348@pobox.suse.cz>
+References: <50CC6FE3.6060705@ahsoftware.de> <1355575537-10093-1-git-send-email-holler@ahsoftware.de>
 MIME-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 3 Jan 2013, Andrew Morton wrote:
+On Sat, 15 Dec 2012, Alexander Holler wrote:
 
-> > This driver makes the time from HID sensors (hubs) which are offering
-> > such available like any other RTC does.
-> > 
-> > It is necessary that all values like year, month etc, are send as
-> > 8bit values (1 byte each) and all of them in 1 report. Also the
-> > spec HUTRR39b doesn't define the range of the year field, we
-> > tread it as 0 - 99 because that's what most RTCs I know about are
-> > offering.
-> > 
-> > Currently the time can only be read. Setting the time must be done
-> > through sending a report (or a feature). The spec currently doesn't
-> > define how and I'm not sure if I just should define something by myself.
-> > 
+> These are Usage IDs for the attributes year, month, day,
+> hour, minute and second, needed to read HID time sensors.
 > 
-> Looks OK to me.  It sounds like Jonathan will be merging these patches
-> when he's happy with them - please do proceed that way.
+> Signed-off-by: Alexander Holler <holler@ahsoftware.de>
 
-Yes, fine by me as well -- that's why I have provided by explicit Acks to 
-those.
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 
-Jonathan, are you taking those, please?
+> ---
+>  include/linux/hid-sensor-ids.h |    9 +++++++++
+>  1 files changed, 9 insertions(+), 0 deletions(-)
+> 
+> diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+> index ca8d7e9..3754ea9 100644
+> --- a/include/linux/hid-sensor-ids.h
+> +++ b/include/linux/hid-sensor-ids.h
+> @@ -67,6 +67,15 @@
+>  #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS		0x200486
+>  #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS		0x200487
+>  
+> +/* Time (2000a0) */
+> +#define HID_USAGE_SENSOR_TIME					0x2000a0
+> +#define HID_USAGE_SENSOR_TIME_YEAR				0x200521
+> +#define HID_USAGE_SENSOR_TIME_MONTH				0x200522
+> +#define HID_USAGE_SENSOR_TIME_DAY				0x200523
+> +#define HID_USAGE_SENSOR_TIME_HOUR				0x200525
+> +#define HID_USAGE_SENSOR_TIME_MINUTE				0x200526
+> +#define HID_USAGE_SENSOR_TIME_SECOND				0x200527
+> +
+>  /* Units */
+>  #define HID_USAGE_SENSOR_UNITS_NOT_SPECIFIED			0x00
+>  #define HID_USAGE_SENSOR_UNITS_LUX				0x01
+> -- 
+> 1.7.8.6
+> 
 
 -- 
 Jiri Kosina
