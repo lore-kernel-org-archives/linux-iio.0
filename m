@@ -1,42 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:37494 "EHLO plane.gmane.org"
+Received: from cantor2.suse.de ([195.135.220.15]:60643 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755313Ab3AFEez (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 5 Jan 2013 23:34:55 -0500
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <glki-linux-iio@m.gmane.org>)
-	id 1Trhwu-0000xY-NT
-	for linux-iio@vger.kernel.org; Sun, 06 Jan 2013 05:35:05 +0100
-Received: from pool-173-48-160-45.bstnma.fios.verizon.net ([173.48.160.45])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Sun, 06 Jan 2013 05:35:04 +0100
-Received: from arsenix by pool-173-48-160-45.bstnma.fios.verizon.net with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Sun, 06 Jan 2013 05:35:04 +0100
-To: linux-iio@vger.kernel.org
-From: James Peverill <arsenix@gmail.com>
-Subject: IIO for soft realtime control?
-Date: Sun, 6 Jan 2013 04:31:41 +0000 (UTC)
-Message-ID: <loom.20130106T050717-736@post.gmane.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+	id S1752910Ab3ADJS3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 4 Jan 2013 04:18:29 -0500
+Date: Fri, 4 Jan 2013 10:18:24 +0100 (CET)
+From: Jiri Kosina <jkosina@suse.cz>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Alexander Holler <holler@ahsoftware.de>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	rtc-linux@googlegroups.com,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH 3/4 v5 RESEND] rtc: add rtc-driver for HID sensors of
+ type time
+In-Reply-To: <20130103143913.16d4e867.akpm@linux-foundation.org>
+Message-ID: <alpine.LNX.2.00.1301041017540.9143@pobox.suse.cz>
+References: <50CC6FE3.6060705@ahsoftware.de> <1355575537-10093-1-git-send-email-holler@ahsoftware.de> <1355575537-10093-3-git-send-email-holler@ahsoftware.de> <20130103143913.16d4e867.akpm@linux-foundation.org>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Thu, 3 Jan 2013, Andrew Morton wrote:
 
-I have been working on realtime robotics under Linux, and just learned about
-iio. It seems like many great hardware drivers are being written (some of which
-I had started working on in parallel), and it would be great if I could
-integrate what I am working on with iio. It seems mostly targeted at streaming
-data acquisition and output, but also includes triggering and event support. Has
-there been any thought to running realtime control loops using the iio
-subsystem? For this application I would be reading from sensors (i2c interface
-accelerometers etc) in the 10's of hz (ideally at least 50) and then updating
-actuator outputs.
+> > This driver makes the time from HID sensors (hubs) which are offering
+> > such available like any other RTC does.
+> > 
+> > It is necessary that all values like year, month etc, are send as
+> > 8bit values (1 byte each) and all of them in 1 report. Also the
+> > spec HUTRR39b doesn't define the range of the year field, we
+> > tread it as 0 - 99 because that's what most RTCs I know about are
+> > offering.
+> > 
+> > Currently the time can only be read. Setting the time must be done
+> > through sending a report (or a feature). The spec currently doesn't
+> > define how and I'm not sure if I just should define something by myself.
+> > 
+> 
+> Looks OK to me.  It sounds like Jonathan will be merging these patches
+> when he's happy with them - please do proceed that way.
 
-Any thoughts on the feasibility? I would probably accomplish this by writing a
-kernel driver to glue the input iio devices to the output. I'm not sure what
-type of latency and jitter would result from this configuration, but this could
-limit the applications.
+Yes, fine by me as well -- that's why I have provided by explicit Acks to 
+those.
 
+Jonathan, are you taking those, please?
+
+-- 
+Jiri Kosina
+SUSE Labs
