@@ -1,236 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:51107 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751134Ab3ACJlj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 3 Jan 2013 04:41:39 -0500
-Date: Thu, 3 Jan 2013 10:41:35 +0100 (CET)
-From: Jiri Kosina <jkosina@suse.cz>
-To: Alexander Holler <holler@ahsoftware.de>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	rtc-linux@googlegroups.com,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>,
-	Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH 2/4 RESEND] iio: merge hid-sensor-attributes.h into
- hid-sensor-hub.h
-In-Reply-To: <1355575537-10093-2-git-send-email-holler@ahsoftware.de>
-Message-ID: <alpine.LNX.2.00.1301031041261.27348@pobox.suse.cz>
-References: <50CC6FE3.6060705@ahsoftware.de> <1355575537-10093-1-git-send-email-holler@ahsoftware.de> <1355575537-10093-2-git-send-email-holler@ahsoftware.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55811 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755264Ab3AFLcX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Jan 2013 06:32:23 -0500
+Message-ID: <50E960C4.80208@kernel.org>
+Date: Sun, 06 Jan 2013 11:32:20 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: James Peverill <arsenix@gmail.com>
+CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>
+Subject: Re: IIO for soft realtime control?
+References: <loom.20130106T050717-736@post.gmane.org>
+In-Reply-To: <loom.20130106T050717-736@post.gmane.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 15 Dec 2012, Alexander Holler wrote:
-
-> The stuff in hid-sensor-attributes.h is needed by every piece which
-> uses hid-sensor-hub and merging it into hid-sensor-hub.h makes it accessible
-> from outside the iio subdirectory.
+On 01/06/2013 04:31 AM, James Peverill wrote:
 > 
-> Signed-off-by: Alexander Holler <holler@ahsoftware.de>
-
-Acked-by: Jiri Kosina <jkosina@suse.cz>
-
-> ---
->  drivers/iio/accel/hid-sensor-accel-3d.c            |    1 -
->  .../iio/common/hid-sensors/hid-sensor-attributes.c |    1 -
->  .../iio/common/hid-sensors/hid-sensor-attributes.h |   57 --------------------
->  .../iio/common/hid-sensors/hid-sensor-trigger.c    |    1 -
->  drivers/iio/gyro/hid-sensor-gyro-3d.c              |    1 -
->  drivers/iio/light/hid-sensor-als.c                 |    1 -
->  drivers/iio/magnetometer/hid-sensor-magn-3d.c      |    1 -
->  include/linux/hid-sensor-hub.h                     |   38 +++++++++++++
->  8 files changed, 38 insertions(+), 63 deletions(-)
->  delete mode 100644 drivers/iio/common/hid-sensors/hid-sensor-attributes.h
+> I have been working on realtime robotics under Linux, and just learned about
+> iio. It seems like many great hardware drivers are being written (some of which
+> I had started working on in parallel), and it would be great if I could
+> integrate what I am working on with iio. It seems mostly targeted at streaming
+> data acquisition and output, but also includes triggering and event support. Has
+> there been any thought to running realtime control loops using the iio
+> subsystem? For this application I would be reading from sensors (i2c interface
+> accelerometers etc) in the 10's of hz (ideally at least 50) and then updating
+> actuator outputs.
 > 
-> diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-> index 314a405..72371aa 100644
-> --- a/drivers/iio/accel/hid-sensor-accel-3d.c
-> +++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-> @@ -28,7 +28,6 @@
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/iio/triggered_buffer.h>
-> -#include "../common/hid-sensors/hid-sensor-attributes.h"
->  #include "../common/hid-sensors/hid-sensor-trigger.h"
->  
->  /*Format: HID-SENSOR-usage_id_in_hex*/
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> index 7537495..5873f16 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> @@ -25,7 +25,6 @@
->  #include <linux/hid-sensor-hub.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> -#include "hid-sensor-attributes.h"
->  
->  static int pow_10(unsigned power)
->  {
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.h b/drivers/iio/common/hid-sensors/hid-sensor-attributes.h
-> deleted file mode 100644
-> index a4676a0..0000000
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.h
-> +++ /dev/null
-> @@ -1,57 +0,0 @@
-> -/*
-> - * HID Sensors Driver
-> - * Copyright (c) 2012, Intel Corporation.
-> - *
-> - * This program is free software; you can redistribute it and/or modify it
-> - * under the terms and conditions of the GNU General Public License,
-> - * version 2, as published by the Free Software Foundation.
-> - *
-> - * This program is distributed in the hope it will be useful, but WITHOUT
-> - * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> - * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> - * more details.
-> - *
-> - * You should have received a copy of the GNU General Public License along with
-> - * this program; if not, write to the Free Software Foundation, Inc.,
-> - * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-> - *
-> - */
-> -#ifndef _HID_SENSORS_ATTRIBUTES_H
-> -#define _HID_SENSORS_ATTRIBUTES_H
-> -
-> -/* Common hid sensor iio structure */
-> -struct hid_sensor_iio_common {
-> -	struct hid_sensor_hub_device *hsdev;
-> -	struct platform_device *pdev;
-> -	unsigned usage_id;
-> -	bool data_ready;
-> -	struct hid_sensor_hub_attribute_info poll;
-> -	struct hid_sensor_hub_attribute_info report_state;
-> -	struct hid_sensor_hub_attribute_info power_state;
-> -	struct hid_sensor_hub_attribute_info sensitivity;
-> -};
-> -
-> -/*Convert from hid unit expo to regular exponent*/
-> -static inline int hid_sensor_convert_exponent(int unit_expo)
-> -{
-> -	if (unit_expo < 0x08)
-> -		return unit_expo;
-> -	else if (unit_expo <= 0x0f)
-> -		return -(0x0f-unit_expo+1);
-> -	else
-> -		return 0;
-> -}
-> -
-> -int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
-> -					u32 usage_id,
-> -					struct hid_sensor_iio_common *st);
-> -int hid_sensor_write_raw_hyst_value(struct hid_sensor_iio_common *st,
-> -					int val1, int val2);
-> -int hid_sensor_read_raw_hyst_value(struct hid_sensor_iio_common *st,
-> -					int *val1, int *val2);
-> -int hid_sensor_write_samp_freq_value(struct hid_sensor_iio_common *st,
-> -					int val1, int val2);
-> -int hid_sensor_read_samp_freq_value(struct hid_sensor_iio_common *st,
-> -					int *val1, int *val2);
-> -
-> -#endif
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> index d4b790d..b097b68 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> @@ -26,7 +26,6 @@
->  #include <linux/iio/iio.h>
->  #include <linux/iio/trigger.h>
->  #include <linux/iio/sysfs.h>
-> -#include "hid-sensor-attributes.h"
->  #include "hid-sensor-trigger.h"
->  
->  static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> index 4c56ada..b98cd70 100644
-> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> @@ -28,7 +28,6 @@
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/iio/triggered_buffer.h>
-> -#include "../common/hid-sensors/hid-sensor-attributes.h"
->  #include "../common/hid-sensors/hid-sensor-trigger.h"
->  
->  /*Format: HID-SENSOR-usage_id_in_hex*/
-> diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-> index 96e3691..9610989 100644
-> --- a/drivers/iio/light/hid-sensor-als.c
-> +++ b/drivers/iio/light/hid-sensor-als.c
-> @@ -28,7 +28,6 @@
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/iio/triggered_buffer.h>
-> -#include "../common/hid-sensors/hid-sensor-attributes.h"
->  #include "../common/hid-sensors/hid-sensor-trigger.h"
->  
->  /*Format: HID-SENSOR-usage_id_in_hex*/
-> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> index c4f0d27..4957430 100644
-> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> @@ -28,7 +28,6 @@
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/iio/triggered_buffer.h>
-> -#include "../common/hid-sensors/hid-sensor-attributes.h"
->  #include "../common/hid-sensors/hid-sensor-trigger.h"
->  
->  /*Format: HID-SENSOR-usage_id_in_hex*/
-> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-> index 0aa5f4c..e6265f9 100644
-> --- a/include/linux/hid-sensor-hub.h
-> +++ b/include/linux/hid-sensor-hub.h
-> @@ -157,4 +157,42 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
->  */
->  int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
->  			u32 field_index, s32 *value);
-> +
-> +/* hid-sensor-attributes */
-> +
-> +/* Common hid sensor iio structure */
-> +struct hid_sensor_iio_common {
-> +	struct hid_sensor_hub_device *hsdev;
-> +	struct platform_device *pdev;
-> +	unsigned usage_id;
-> +	bool data_ready;
-> +	struct hid_sensor_hub_attribute_info poll;
-> +	struct hid_sensor_hub_attribute_info report_state;
-> +	struct hid_sensor_hub_attribute_info power_state;
-> +	struct hid_sensor_hub_attribute_info sensitivity;
-> +};
-> +
-> +/*Convert from hid unit expo to regular exponent*/
-> +static inline int hid_sensor_convert_exponent(int unit_expo)
-> +{
-> +	if (unit_expo < 0x08)
-> +		return unit_expo;
-> +	else if (unit_expo <= 0x0f)
-> +		return -(0x0f-unit_expo+1);
-> +	else
-> +		return 0;
-> +}
-> +
-> +int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
-> +					u32 usage_id,
-> +					struct hid_sensor_iio_common *st);
-> +int hid_sensor_write_raw_hyst_value(struct hid_sensor_iio_common *st,
-> +					int val1, int val2);
-> +int hid_sensor_read_raw_hyst_value(struct hid_sensor_iio_common *st,
-> +					int *val1, int *val2);
-> +int hid_sensor_write_samp_freq_value(struct hid_sensor_iio_common *st,
-> +					int val1, int val2);
-> +int hid_sensor_read_samp_freq_value(struct hid_sensor_iio_common *st,
-> +					int *val1, int *val2);
-> +
->  #endif
-> -- 
-> 1.7.8.6
+> Any thoughts on the feasibility? I would probably accomplish this by writing a
+> kernel driver to glue the input iio devices to the output. I'm not sure what
+> type of latency and jitter would result from this configuration, but this could
+> limit the applications.
 > 
+I don't know of anyone else doing this with IIO at the moment (though someone may
+well shout out in the near future!)
 
--- 
-Jiri Kosina
-SUSE Labs
+So based on 5 mins of thinking about it the situation at the moment is...
+
+We handle streaming inputs reasonably well and the just merged in kernel 'buffer'
+interfaces (which are really just hooks to get the stream of data from a device)
+should allow a kernel module to get hold of this data fairly efficiently (certainly
+50Hz shouldn't be a problem!).  We don't currently have interfaces for getting hold
+of events in kernel though (threshold etc) but that should be fairly trivial to
+add.
+
+Unfortunately streaming support on the output side is not currently there.  Right now
+you can set individual DAC outputs from other kernel drivers (though some nice
+but trivial util functions might be missing) but buffered writing support isn't
+there yet.  There is a lot of interest in adding this, but from what I recall there
+are some 'interesting' issues with actually supporting precisely timed writes to
+DAC chips (usually there is some dma involved).
+Some spi implementations are capable of doing this I believe but there isn't any
+kernel support for it as far as I know.
+I'm guessing some DAC chips have hardware fifos (right now I can only find a TI
+technote on a separate fifo for this purpose).
+
+I've cc'd Lars and Michael because I know this sort of support is of interest to them
+and they will doubtlessly be able to give some more informed comments!
+
+If the buffered output were present then using IIO for real time control should
+be straight forward.
+>From the level of interest I've seen in this functionality support will definitely
+occur at some point though this will happen faster obviously if someone
+(no hints at all :) takes on implementing such support!
+
+In the meantime, using IIO for your input drivers may make sense even if they
+more involved actuator side comes later.  Or possibliy the slow current dac
+interface will be 'good enough' timing wise for your application?
+
+If you are able to, I'd love to hear more about your project, both in terms
+of what you are doing (google gives me a fair idea as there aren't
+many James Peverill's in the world ;) and in terms of the
+control you are doing in kernel.
+
+Jonathan
