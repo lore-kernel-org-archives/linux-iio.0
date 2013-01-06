@@ -3,95 +3,67 @@ From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: jbrenner@taosinc.com,
 	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 3/3] staging:iio:light:tsl2583 switch to kstrto and strtobool
-Date: Sun,  6 Jan 2013 16:23:03 +0000
-Message-Id: <1357489383-30811-4-git-send-email-jic23@kernel.org>
+Subject: [PATCH 2/3] staging:iio:light:tsl2583 apply in_ prefix to attributes.
+Date: Sun,  6 Jan 2013 16:23:02 +0000
+Message-Id: <1357489383-30811-3-git-send-email-jic23@kernel.org>
 In-Reply-To: <1357489383-30811-1-git-send-email-jic23@kernel.org>
 References: <1357489383-30811-1-git-send-email-jic23@kernel.org>
 Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Doing this results in cleaner code and better error handling.
+Bring the naming of remaining attributes in line with those
+created via the channel spec.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/light/tsl2583.c | 36 ++++++++++++++++++++++--------------
- 1 file changed, 22 insertions(+), 14 deletions(-)
+ drivers/staging/iio/light/tsl2583.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 944db26..f45114f 100644
+index 30c1a36..944db26 100644
 --- a/drivers/staging/iio/light/tsl2583.c
 +++ b/drivers/staging/iio/light/tsl2583.c
-@@ -493,15 +493,17 @@ static ssize_t taos_power_state_store(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	unsigned long value;
-+	bool state;
-+	int ret;
+@@ -652,29 +652,29 @@ static ssize_t taos_luxtable_store(struct device *dev,
+ static DEVICE_ATTR(power_state, S_IRUGO | S_IWUSR,
+ 		taos_power_state_show, taos_power_state_store);
  
--	if (strict_strtoul(buf, 0, &value))
--		return -EINVAL;
-+	ret = strtobool(buf, &state);
-+	if (ret < 0)
-+		return ret;
+-static DEVICE_ATTR(illuminance0_calibscale_available, S_IRUGO,
++static DEVICE_ATTR(in_illuminance0_calibscale_available, S_IRUGO,
+ 		taos_gain_available_show, NULL);
  
--	if (value == 0)
--		taos_chip_off(indio_dev);
--	else
-+	if (state)
- 		taos_chip_on(indio_dev);
-+	else
-+		taos_chip_off(indio_dev);		
+-static DEVICE_ATTR(illuminance0_integration_time, S_IRUGO | S_IWUSR,
++static DEVICE_ATTR(in_illuminance0_integration_time, S_IRUGO | S_IWUSR,
+ 		taos_als_time_show, taos_als_time_store);
+-static DEVICE_ATTR(illuminance0_integration_time_available, S_IRUGO,
++static DEVICE_ATTR(in_illuminance0_integration_time_available, S_IRUGO,
+ 		taos_als_time_available_show, NULL);
  
- 	return len;
- }
-@@ -527,9 +529,11 @@ static ssize_t taos_als_time_store(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
-+	int ret;
+-static DEVICE_ATTR(illuminance0_input_target, S_IRUGO | S_IWUSR,
++static DEVICE_ATTR(in_illuminance0_input_target, S_IRUGO | S_IWUSR,
+ 		taos_als_cal_target_show, taos_als_cal_target_store);
  
--	if (strict_strtoul(buf, 0, &value))
--		return -EINVAL;
-+	ret = kstrtoul(buf, 0, &value);
-+	if (ret < 0)
-+		return ret;
+-static DEVICE_ATTR(illuminance0_calibrate, S_IWUSR, NULL, taos_do_calibrate);
+-static DEVICE_ATTR(illuminance0_lux_table, S_IRUGO | S_IWUSR,
++static DEVICE_ATTR(in_illuminance0_calibrate, S_IWUSR, NULL, taos_do_calibrate);
++static DEVICE_ATTR(in_illuminance0_lux_table, S_IRUGO | S_IWUSR,
+ 		taos_luxtable_show, taos_luxtable_store);
  
- 	if ((value < 50) || (value > 650))
- 		return -EINVAL;
-@@ -564,9 +568,11 @@ static ssize_t taos_als_cal_target_store(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	unsigned long value;
-+	int ret;
+ static struct attribute *sysfs_attrs_ctrl[] = {
+ 	&dev_attr_power_state.attr,
+-	&dev_attr_illuminance0_calibscale_available.attr,
+-	&dev_attr_illuminance0_integration_time.attr,	/* I time*/
+-	&dev_attr_illuminance0_integration_time_available.attr,
+-	&dev_attr_illuminance0_input_target.attr,
+-	&dev_attr_illuminance0_calibrate.attr,
+-	&dev_attr_illuminance0_lux_table.attr,
++	&dev_attr_in_illuminance0_calibscale_available.attr,
++	&dev_attr_in_illuminance0_integration_time.attr,	/* I time*/
++	&dev_attr_in_illuminance0_integration_time_available.attr,
++	&dev_attr_in_illuminance0_input_target.attr,
++	&dev_attr_in_illuminance0_calibrate.attr,
++	&dev_attr_in_illuminance0_lux_table.attr,
+ 	NULL
+ };
  
--	if (strict_strtoul(buf, 0, &value))
--		return -EINVAL;
-+	ret = kstrotoul(buf, 0, &value);
-+	if (ret < 0)
-+		return ret;
- 
- 	if (value)
- 		chip->taos_settings.als_cal_target = value;
-@@ -578,12 +584,14 @@ static ssize_t taos_do_calibrate(struct device *dev,
- 	struct device_attribute *attr, const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	unsigned long value;
-+	bool cal;
-+	int ret;
- 
--	if (strict_strtoul(buf, 0, &value))
--		return -EINVAL;
-+	ret = strtobool(buf, &cal);
-+	if (ret < 0)
-+		return ret;
- 
--	if (value == 1)
-+	if (cal)
- 		taos_als_calibrate(indio_dev);
- 
- 	return len;
 -- 
 1.8.1
