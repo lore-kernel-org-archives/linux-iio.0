@@ -1,82 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33040 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752386Ab3AARTR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Jan 2013 12:19:17 -0500
-Message-ID: <50E31A8E.4050008@kernel.org>
-Date: Tue, 01 Jan 2013 17:19:10 +0000
+Return-Path: <jic23@hermes.cam.ac.uk>
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO fixes for v3.8-rc1
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: jbrenner@taosinc.com,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/3] staging:iio:tsl2583 update interfaces
+Date: Sun,  6 Jan 2013 16:23:00 +0000
+Message-Id: <1357489383-30811-1-git-send-email-jic23@kernel.org>
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-The following changes since commit a49f0d1ea3ec94fc7cf33a7c36a16343b74bd565:
+This driver is now fairly old and has lagged a bit as we have brought
+in newer cleaner ways of doing things.  Anyhow, I was looking at
+it with a view to moving it out of staging and thought I would clean
+up a few bits whilst doing so.  Note I don't have one of these.
 
-  Linux 3.8-rc1 (2012-12-21 17:19:00 -0800)
+There are some 'unusual' interfaces in here still such as integrationtime.
+We need to have a think about whether we want to add these to the info
+mask and handle them through read/write_raw or not.
 
-are available in the git repository at:
+I'm also decidely unkeen on the manual power enable / disable that is
+still in this driver.  That should ideally be done on demand.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.8a
+Hence i am not proposing moving this out of staging just yet!
 
-for you to fetch changes up to 678fb42e2b2c815c3475884017aac4da22124d0d:
+Jonathan
 
-  iio: (max1363) Fix probe error path (2012-12-27 11:11:27 +0000)
+Jonathan Cameron (3):
+  staging:iio:light:tsl2583 use read_raw, write_raw hooks.
+  staging:iio:light:tsl2583 apply in_ prefix to attributes.
+  staging:iio:light:tsl2583 switch to kstrto and strtobool
 
-----------------------------------------------------------------
-First round of fixes for IIO post 3.8-rc1.
+ drivers/staging/iio/light/tsl2583.c | 247 +++++++++++++++++-------------------
+ 1 file changed, 119 insertions(+), 128 deletions(-)
 
-A set of worthy if rather dull little fixes.
-
-* A whole set of incorrect error handling on regulator voltage requests.
-* An error in the probe path for max1363.
-* A couple of Kconfig issues with missing/ignored dependencies.
-* A nasty shift vs compare typo in adf4350
-* Bug fixes for a silly error that prevents at91_adc driver building.
-
-----------------------------------------------------------------
-Alexander Holler (1):
-      iio: hid-sensors: respect CONFIG_IIO_TRIGGER
-
-Axel Lin (7):
-      iio: adc: ad7266: Don't set error code to st->vref_uv
-      iio: dac: ad5380: Don't set error code to st->vref
-      iio: dac: ad5791: Don't set error code to [pos|neg]_voltage_uv
-      iio: dac: ad5504: Don't set error code to voltage_uv
-      iio: dac: ad5624r_spi: Don't set error code to voltage_uv
-      iio: dac: ad5686: Don't set error code to voltage_uv
-      iio: dac: ad5446: Don't set error code to voltage_uv
-
-Guenter Roeck (1):
-      iio: (max1363) Fix probe error path
-
-Jean-Christophe PLAGNIOL-VILLARD (1):
-      iio: at91: fix dev var name in at91_adc_trigger_handler
-
-Lars-Peter Clausen (1):
-      staging:iio:adis16260: Select adislib
-
-Michael Hennerich (1):
-      iio:adf4350: Fix typo
-
- drivers/iio/accel/Kconfig               |  1 +
- drivers/iio/adc/ad7266.c                |  6 +++++-
- drivers/iio/adc/at91_adc.c              |  2 +-
- drivers/iio/adc/max1363.c               | 13 ++++++-------
- drivers/iio/common/hid-sensors/Kconfig  | 13 ++++++++++++-
- drivers/iio/common/hid-sensors/Makefile |  3 ++-
- drivers/iio/dac/ad5380.c                |  6 +++++-
- drivers/iio/dac/ad5446.c                |  6 +++++-
- drivers/iio/dac/ad5504.c                |  6 +++++-
- drivers/iio/dac/ad5624r_spi.c           |  6 +++++-
- drivers/iio/dac/ad5686.c                |  6 +++++-
- drivers/iio/dac/ad5791.c                | 13 +++++++++++--
- drivers/iio/frequency/adf4350.c         |  2 +-
- drivers/iio/gyro/Kconfig                |  1 +
- drivers/iio/light/Kconfig               |  1 +
- drivers/iio/magnetometer/Kconfig        |  1 +
- drivers/staging/iio/gyro/Kconfig        |  4 ++--
- 17 files changed, 69 insertions(+), 21 deletions(-)
+-- 
+1.8.1
