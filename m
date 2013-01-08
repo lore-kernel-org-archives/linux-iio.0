@@ -1,150 +1,454 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.ams.com ([212.166.112.31]:50591 "EHLO mail1.ams.com"
+Received: from pegase1.c-s.fr ([93.17.236.30]:48215 "EHLO mailhub1.si.c-s.fr"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757037Ab3ANQtD convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jan 2013 11:49:03 -0500
-From: Jon Brenner <Jon.Brenner@ams.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Mon, 14 Jan 2013 17:38:41 +0100
-Subject: RE: [PATCH] staging:iio:tsl2x7x: Use iio_str_to_fixedpoint instead
- of open-coding it
-Message-ID: <3C879D35B299F147B1DEDFBEE12F2E060129F8673A@SUX2182.office.amsiag.com>
-References: <1357834681-14126-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1357834681-14126-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+	id S1755184Ab3AHJAl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 8 Jan 2013 04:00:41 -0500
+Date: Tue, 8 Jan 2013 09:42:20 +0100
+Message-Id: <201301080842.r088gKWO031124@localhost.localdomain>
+From: Christophe Leroy <christophe.leroy@c-s.fr>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	patrick.vasseur@c-s.fr
+Subject: [PATCH] IIO ADC support for AD7923
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This patch adds support for Analog Devices AD7923 ADC in the IIO Subsystem.
 
+Signed-off-by: Patrick Vasseur <patrick.vasseur@c-s.fr>
+Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
 
-
-The tsl2x7x driver has a copy'n'pasted version of the iio_str_to_fixedpoint() function from the IIO core. Replace this custom copy and use iio_str_to_fixedpoint instead.
-
-The patch also introduces a slight functional change in that it makes sure that in case of a parsing error the error is reported back to userspace instead of silently ignoring it.
-Acked-by: Jon Brenner <jon.brenner@ams.com>
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
-Only compile tested.
----
- drivers/staging/iio/light/tsl2x7x_core.c | 78 +++++---------------------------
- 1 file changed, 12 insertions(+), 66 deletions(-)
-
-diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
-index 9e50fbba..a58731e 100644
---- a/drivers/staging/iio/light/tsl2x7x_core.c
-+++ b/drivers/staging/iio/light/tsl2x7x_core.c
-@@ -292,59 +292,6 @@ static const u8 device_channel_config[] = {  };
+diff -uN linux-3.7.1/drivers/staging/iio/adc/Kconfig linux/drivers/staging/iio/adc/Kconfig
+--- linux-3.7.1/drivers/staging/iio/adc/Kconfig	2012-12-17 20:14:54.000000000 +0100
++++ linux/drivers/staging/iio/adc/Kconfig	2012-12-13 19:52:10.000000000 +0100
+@@ -21,6 +21,17 @@
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7298.
  
- /**
-- * tsl2x7x_parse_buffer() - parse a decimal result from a buffer.
-- * @*buf:                   pointer to char buffer to parse
-- * @*result:                pointer to buffer to contain
-- *                          resulting interger / decimal as ints.
-- *
-- */
--static int
--tsl2x7x_parse_buffer(const char *buf, struct tsl2x7x_parse_result *result) -{
--	int integer = 0, fract = 0, fract_mult = 100000;
--	bool integer_part = true, negative = false;
--
--	if (buf[0] == '-') {
--		negative = true;
--		buf++;
--	}
--
--	while (*buf) {
--		if ('0' <= *buf && *buf <= '9') {
--			if (integer_part)
--				integer = integer*10 + *buf - '0';
--			else {
--				fract += fract_mult*(*buf - '0');
--				if (fract_mult == 1)
--					break;
--				fract_mult /= 10;
--			}
--		} else if (*buf == '\n') {
--			if (*(buf + 1) == '\0')
--				break;
--			else
--				return -EINVAL;
--		} else if (*buf == '.') {
--			integer_part = false;
--		} else {
--			return -EINVAL;
--		}
--		buf++;
--	}
--	if (negative) {
--		if (integer)
--			integer = -integer;
--		else
--			fract = -fract;
--	}
--
--	result->integer = integer;
--	result->fract = fract;
--
--	return 0;
--}
--
--/**
-  * tsl2x7x_i2c_read() - Read a byte from a register.
-  * @client:	i2c client
-  * @reg:	device register to read from
-@@ -1036,13 +983,12 @@ static ssize_t tsl2x7x_als_time_store(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
- 	struct tsl2x7x_parse_result result;
-+	int ret;
++config AD7923
++	tristate "Analog Devices AD7923 ADC driver"
++	depends on SPI
++	select IIO_TRIGGERED_BUFFER if IIO_BUFFER
++	help
++	  Say yes here to build support for Analog Devices AD7923
++	  4 Channel ADC.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7923.
++
+ config AD7606
+ 	tristate "Analog Devices AD7606 ADC driver"
+ 	depends on GPIOLIB
+diff -uN linux-3.7.1/drivers/staging/iio/adc/Makefile linux/drivers/staging/iio/adc/Makefile
+--- linux-3.7.1/drivers/staging/iio/adc/Makefile	2012-12-17 20:14:54.000000000 +0100
++++ linux/drivers/staging/iio/adc/Makefile	2012-12-13 19:52:10.000000000 +0100
+@@ -25,6 +25,10 @@
+ ad7298-$(CONFIG_IIO_BUFFER) += ad7298_ring.o
+ obj-$(CONFIG_AD7298) += ad7298.o
  
--	result.integer = 0;
--	result.fract = 0;
--
--	tsl2x7x_parse_buffer(buf, &result);
-+	ret = iio_str_to_fixpoint(buf, 100, &result.integer, &result.fract);
++ad7923-y := ad7923_core.o
++ad7923-$(CONFIG_IIO_BUFFER) += ad7923_ring.o
++obj-$(CONFIG_AD7923) += ad7923.o
++
+ obj-$(CONFIG_AD7291) += ad7291.o
+ obj-$(CONFIG_AD7780) += ad7780.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+diff -uN linux-3.7.1/drivers/staging/iio/adc/ad7923.h linux/drivers/staging/iio/adc/ad7923.h
+--- linux-3.7.1/drivers/staging/iio/adc/ad7923.h	1970-01-01 01:00:00.000000000 +0100
++++ linux/drivers/staging/iio/adc/ad7923.h	2013-01-05 17:53:53.000000000 +0100
+@@ -0,0 +1,72 @@
++/*
++ * AD7923 SPI ADC driver
++ *
++ * Copyright 2011 Analog Devices Inc (from AD7298 Driver)
++ * Copyright 2012 CS Systemes d'Information
++ *
++ * Licensed under the GPL-2 or later.
++ */
++#ifndef IIO_ADC_AD7923_H_
++#define IIO_ADC_AD7923_H_
++
++#define AD7923_WRITE_CR		(1 << 11)	/* write control register */
++#define AD7923_RANGE		(1 << 1)	/* range to REFin */
++#define AD7923_CODING		(1 << 0)	/* coding is straight binary */
++#define AD7923_PM_MODE_AS	(1)		/* auto shutdown */
++#define AD7923_PM_MODE_FS	(2)		/* full shutdown */
++#define AD7923_PM_MODE_OPS	(3)		/* normal operation */
++#define AD7923_CHANNEL_0	(0)		/* analog input 0 */
++#define AD7923_CHANNEL_1	(1)		/* analog input 1 */
++#define AD7923_CHANNEL_2	(2)		/* analog input 2 */
++#define AD7923_CHANNEL_3	(3)		/* analog input 3 */
++#define AD7923_SEQUENCE_OFF	(0)		/* no sequence fonction */
++#define AD7923_SEQUENCE_PROTECT	(2)		/* no interrupt write cycle */
++#define AD7923_SEQUENCE_ON	(3)		/* continuous sequence */
++
++#define AD7923_MAX_CHAN		4
++
++#define AD7923_PM_MODE_WRITE(mode)	(mode << 4)	/* write mode */
++#define AD7923_CHANNEL_WRITE(channel)	(channel << 6)	/* write channel */
++#define AD7923_SEQUENCE_WRITE(sequence)	(((sequence & 1) << 3) \
++					+ ((sequence & 2) << 9))
++						/* write sequence fonction */
++/* left shift for CR : bit 11 transmit in first */
++#define AD7923_SHIFT_REGISTER	4
++
++/* val = value, dec = left shift, bits = number of bits of the mask */
++#define EXTRACT(val, dec, bits)		((val >> dec) & ((1 << bits) - 1))
++/* val = value, bits = number of bits of the original value */
++#define EXTRACT_PERCENT(val, bits)	(((val + 1) * 100) >> bits)
++
++struct ad7923_state {
++	struct spi_device		*spi;
++	struct regulator		*reg;
++	struct spi_transfer		ring_xfer[6];
++	struct spi_transfer		scan_single_xfer[2];
++	struct spi_message		ring_msg;
++	struct spi_message		scan_single_msg;
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++	unsigned short			rx_buf[4] ____cacheline_aligned;
++	unsigned short			tx_buf[2];
++};
++
++#ifdef CONFIG_IIO_BUFFER
++int ad7923_register_ring_funcs_and_init(struct iio_dev *indio_dev);
++void ad7923_ring_cleanup(struct iio_dev *indio_dev);
++int ad7923_update_scan_mode(struct iio_dev *indio_dev,
++	const unsigned long *active_scan_mask);
++#else /* CONFIG_IIO_BUFFER */
++static inline int
++ad7923_register_ring_funcs_and_init(struct iio_dev *indio_dev)
++{
++	return 0;
++}
++static inline void ad7923_ring_cleanup(struct iio_dev *indio_dev)
++{
++}
++#define ad7923_update_scan_mode NULL
++#endif /* CONFIG_IIO_BUFFER */
++#endif /* IIO_ADC_AD7923_H_ */
+diff -uN linux-3.7.1/drivers/staging/iio/adc/ad7923_core.c linux/drivers/staging/iio/adc/ad7923_core.c
+--- linux-3.7.1/drivers/staging/iio/adc/ad7923_core.c	1970-01-01 01:00:00.000000000 +0100
++++ linux/drivers/staging/iio/adc/ad7923_core.c	2013-01-05 17:54:11.000000000 +0100
+@@ -0,0 +1,202 @@
++/*
++ * AD7923 SPI ADC driver
++ *
++ * Copyright 2011 Analog Devices Inc (from AD7298 Driver)
++ * Copyright 2012 CS Systemes d'Information
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/spi/spi.h>
++#include <linux/regulator/consumer.h>
++#include <linux/err.h>
++#include <linux/module.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++
++#include "ad7923.h"
++
++#define AD7923_V_CHAN(index)						\
++	{								\
++		.type = IIO_VOLTAGE,					\
++		.indexed = 1,						\
++		.channel = index,					\
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
++		.address = index,					\
++		.scan_index = index,					\
++		.scan_type = {						\
++			.sign = 'u',					\
++			.realbits = 12,					\
++			.storagebits = 16,				\
++		},							\
++	}
++
++static struct iio_chan_spec ad7923_channels[] = {
++	AD7923_V_CHAN(0),
++	AD7923_V_CHAN(1),
++	AD7923_V_CHAN(2),
++	AD7923_V_CHAN(3),
++	IIO_CHAN_SOFT_TIMESTAMP(4),
++};
++
++static int ad7923_scan_direct(struct ad7923_state *st, unsigned ch)
++{
++	int ret, cmd;
++
++	cmd = AD7923_WRITE_CR | AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS) |
++		AD7923_SEQUENCE_WRITE(AD7923_SEQUENCE_OFF) | AD7923_CODING |
++		AD7923_CHANNEL_WRITE(ch) | AD7923_RANGE;
++	cmd <<= AD7923_SHIFT_REGISTER;
++	st->tx_buf[0] = cpu_to_be16(cmd);
++
++	ret = spi_sync(st->spi, &st->scan_single_msg);
 +	if (ret)
 +		return ret;
- 
--	result.fract /= 1000;
- 	result.fract /= 3;
- 	chip->tsl2x7x_settings.als_time =
- 			(TSL2X7X_MAX_TIMER_CNT - (u8)result.fract); @@ -1109,12 +1055,12 @@ static ssize_t tsl2x7x_als_persistence_store(struct device *dev,
- 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
- 	struct tsl2x7x_parse_result result;
- 	int y, z, filter_delay;
++
++	return be16_to_cpu(st->rx_buf[0]);
++}
++
++static int ad7923_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val,
++			   int *val2,
++			   long m)
++{
 +	int ret;
- 
--	result.integer = 0;
--	result.fract = 0;
--	tsl2x7x_parse_buffer(buf, &result);
-+	ret = iio_str_to_fixpoint(buf, 100, &result.integer, &result.fract);
-+	if (ret)
-+		return ret;
- 
--	result.fract /= 1000;
- 	y = (TSL2X7X_MAX_TIMER_CNT - (u8)chip->tsl2x7x_settings.als_time) + 1;
- 	z = y * TSL2X7X_MIN_ITIME;
- 
-@@ -1155,12 +1101,12 @@ static ssize_t tsl2x7x_prox_persistence_store(struct device *dev,
- 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
- 	struct tsl2x7x_parse_result result;
- 	int y, z, filter_delay;
++	struct ad7923_state *st = iio_priv(indio_dev);
++
++	switch (m) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&indio_dev->mlock);
++		if (iio_buffer_enabled(indio_dev))
++			ret = -EBUSY;
++		else
++			ret = ad7923_scan_direct(st, chan->address);
++		mutex_unlock(&indio_dev->mlock);
++
++		if (ret < 0)
++			return ret;
++		if (chan->address == EXTRACT(ret, 12, 4)) {
++			*val = EXTRACT(ret, 0, 12);
++			*val2 = EXTRACT_PERCENT(*val, 12);
++		}
++		return IIO_VAL_INT;
++	}
++	return -EINVAL;
++}
++
++static const struct iio_info ad7923_info = {
++	.read_raw = &ad7923_read_raw,
++	.update_scan_mode = ad7923_update_scan_mode,
++	.driver_module = THIS_MODULE,
++};
++
++static int __devinit ad7923_probe(struct spi_device *spi)
++{
++	struct ad7923_state *st;
++	struct device *dev = &spi->dev;
 +	int ret;
- 
--	result.integer = 0;
--	result.fract = 0;
--	tsl2x7x_parse_buffer(buf, &result);
-+	ret = iio_str_to_fixpoint(buf, 100, &result.integer, &result.fract);
++	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
++
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++
++	st->reg = regulator_get(&spi->dev, "vcc");
++	if (!IS_ERR(st->reg)) {
++		ret = regulator_enable(st->reg);
++		if (ret)
++			goto error_put_reg;
++	}
++
++	spi_set_drvdata(spi, indio_dev);
++
++	st->spi = spi;
++
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ad7923_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ad7923_channels);
++	indio_dev->info = &ad7923_info;
++
++	/* Setup default message */
++	st->scan_single_xfer[0].tx_buf = &st->tx_buf[0];
++	st->scan_single_xfer[0].len = 2;
++	st->scan_single_xfer[0].cs_change = 1;
++	st->scan_single_xfer[1].rx_buf = &st->rx_buf[0];
++	st->scan_single_xfer[1].len = 2;
++
++	spi_message_init(&st->scan_single_msg);
++	spi_message_add_tail(&st->scan_single_xfer[0], &st->scan_single_msg);
++	spi_message_add_tail(&st->scan_single_xfer[1], &st->scan_single_msg);
++
++	ret = ad7923_register_ring_funcs_and_init(indio_dev);
 +	if (ret)
-+		return ret;
- 
--	result.fract /= 1000;
- 	y = (TSL2X7X_MAX_TIMER_CNT - (u8)chip->tsl2x7x_settings.prx_time) + 1;
- 	z = y * TSL2X7X_MIN_ITIME;
- 
---
-1.8.0
-
++		goto error_disable_reg;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_cleanup_ring;
++
++	dev_info(dev, "Driver AD7923 is added.\n");
++
++	return 0;
++
++error_cleanup_ring:
++	ad7923_ring_cleanup(indio_dev);
++error_disable_reg:
++	if (!IS_ERR(st->reg))
++		regulator_disable(st->reg);
++error_put_reg:
++	if (!IS_ERR(st->reg))
++		regulator_put(st->reg);
++	iio_device_free(indio_dev);
++
++	return ret;
++}
++
++static int __devexit ad7923_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct ad7923_state *st = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	ad7923_ring_cleanup(indio_dev);
++	if (!IS_ERR(st->reg)) {
++		regulator_disable(st->reg);
++		regulator_put(st->reg);
++	}
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++static const struct spi_device_id ad7923_id[] = {
++	{"ad7923", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(spi, ad7923_id);
++
++static struct spi_driver ad7923_driver = {
++	.driver = {
++		.name	= "ad7923",
++		.owner	= THIS_MODULE,
++	},
++	.probe		= ad7923_probe,
++	.remove		= __devexit_p(ad7923_remove),
++	.id_table	= ad7923_id,
++};
++module_spi_driver(ad7923_driver);
++
++MODULE_AUTHOR("Patrick Vasseur <patrick.vasseur@c-s.fr>");
++MODULE_DESCRIPTION("Analog Devices AD7923 ADC");
++MODULE_LICENSE("GPL v2");
+diff -uN linux-3.7.1/drivers/staging/iio/adc/ad7923_ring.c linux/drivers/staging/iio/adc/ad7923_ring.c
+--- linux-3.7.1/drivers/staging/iio/adc/ad7923_ring.c	1970-01-01 01:00:00.000000000 +0100
++++ linux/drivers/staging/iio/adc/ad7923_ring.c	2013-01-05 17:51:47.000000000 +0100
+@@ -0,0 +1,113 @@
++/*
++ * AD7923 SPI ADC driver
++ *
++ * Copyright 2011 Analog Devices Inc (from AD7298 Driver)
++ * Copyright 2012 CS Systemes d'Information
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/interrupt.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/spi/spi.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++#include "ad7923.h"
++
++/**
++ * ad7923_update_scan_mode() setup the spi transfer buffer for the new scan mask
++ **/
++int ad7923_update_scan_mode(struct iio_dev *indio_dev,
++	const unsigned long *active_scan_mask)
++{
++	struct ad7923_state *st = iio_priv(indio_dev);
++	int i, cmd, channel;
++	int scan_count;
++
++	/* Now compute overall size */
++	for (i = 0, channel = 0; i < AD7923_MAX_CHAN; i++)
++		if (test_bit(i, active_scan_mask))
++			channel = i;
++
++	cmd = AD7923_WRITE_CR | AD7923_CODING | AD7923_RANGE |
++		AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS) |
++		AD7923_SEQUENCE_WRITE(AD7923_SEQUENCE_ON) |
++		AD7923_CHANNEL_WRITE(channel);
++	cmd <<= AD7923_SHIFT_REGISTER;
++	st->tx_buf[0] = cpu_to_be16(cmd);
++
++	/* build spi ring message */
++	st->ring_xfer[0].tx_buf = &st->tx_buf[0];
++	st->ring_xfer[0].len = 2;
++	st->ring_xfer[0].cs_change = 1;
++
++	spi_message_init(&st->ring_msg);
++	spi_message_add_tail(&st->ring_xfer[0], &st->ring_msg);
++
++	for (i = 0; i < (channel + 1); i++) {
++		st->ring_xfer[i + 1].rx_buf = &st->rx_buf[i];
++		st->ring_xfer[i + 1].len = 2;
++		st->ring_xfer[i + 1].cs_change = 1;
++		spi_message_add_tail(&st->ring_xfer[i + 1], &st->ring_msg);
++	}
++	/* make sure last transfer cs_change is not set */
++	st->ring_xfer[i + 1].cs_change = 0;
++
++	return 0;
++}
++
++/**
++ * ad7923_trigger_handler() bh of trigger launched polling to ring buffer
++ *
++ * Currently there is no option in this driver to disable the saving of
++ * timestamps within the ring.
++ **/
++static irqreturn_t ad7923_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ad7923_state *st = iio_priv(indio_dev);
++	s64 time_ns = 0;
++	__u16 buf[16];
++	int b_sent, i, channel;
++
++	b_sent = spi_sync(st->spi, &st->ring_msg);
++	if (b_sent)
++		goto done;
++
++	if (indio_dev->scan_timestamp) {
++		time_ns = iio_get_time_ns();
++		memcpy((u8 *)buf + indio_dev->scan_bytes - sizeof(s64),
++			&time_ns, sizeof(time_ns));
++	}
++
++	for (i = 0, channel = 0; i < AD7923_MAX_CHAN; i++)
++		if (test_bit(i, indio_dev->active_scan_mask))
++			channel = i;
++
++	for (i = 0; i < (channel + 1); i++)
++		buf[i] = be16_to_cpu(st->rx_buf[i]);
++
++	iio_push_to_buffer(indio_dev->buffer, (u8 *)buf);
++
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++int ad7923_register_ring_funcs_and_init(struct iio_dev *indio_dev)
++{
++	return iio_triggered_buffer_setup(indio_dev, NULL,
++			&ad7923_trigger_handler, NULL);
++}
++
++void ad7923_ring_cleanup(struct iio_dev *indio_dev)
++{
++	iio_triggered_buffer_cleanup(indio_dev);
++}
