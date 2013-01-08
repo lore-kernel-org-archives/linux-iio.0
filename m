@@ -1,47 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:34266 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754389Ab3ACWjP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Jan 2013 17:39:15 -0500
-Date: Thu, 3 Jan 2013 14:39:13 -0800
-From: Andrew Morton <akpm@linux-foundation.org>
-To: Alexander Holler <holler@ahsoftware.de>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	rtc-linux@googlegroups.com,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	srinivas pandruvada <srinivas.pandruvada@intel.com>,
-	Jiri Kosina <jkosina@suse.cz>
-Subject: Re: [PATCH 3/4 v5 RESEND] rtc: add rtc-driver for HID sensors of
- type time
-Message-Id: <20130103143913.16d4e867.akpm@linux-foundation.org>
-In-Reply-To: <1355575537-10093-3-git-send-email-holler@ahsoftware.de>
-References: <50CC6FE3.6060705@ahsoftware.de>
-	<1355575537-10093-1-git-send-email-holler@ahsoftware.de>
-	<1355575537-10093-3-git-send-email-holler@ahsoftware.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-out.m-online.net ([212.18.0.10]:50412 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751393Ab3AHG55 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jan 2013 01:57:57 -0500
+From: Marek Vasut <marex@denx.de>
+To: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH] iio: mxs-lradc: indexes are unsigned
+Date: Tue, 8 Jan 2013 07:57:56 +0100
+Cc: jic23@cam.ac.uk, linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>
+References: <1357607117-5868-1-git-send-email-festevam@gmail.com>
+In-Reply-To: <1357607117-5868-1-git-send-email-festevam@gmail.com>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201301080757.56301.marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 15 Dec 2012 13:45:36 +0100
-Alexander Holler <holler@ahsoftware.de> wrote:
+Dear Fabio Estevam,
 
-> This driver makes the time from HID sensors (hubs) which are offering
-> such available like any other RTC does.
+> From: Fabio Estevam <fabio.estevam@freescale.com>
 > 
-> It is necessary that all values like year, month etc, are send as
-> 8bit values (1 byte each) and all of them in 1 report. Also the
-> spec HUTRR39b doesn't define the range of the year field, we
-> tread it as 0 - 99 because that's what most RTCs I know about are
-> offering.
+> Fix the following warning when building with W=1 option:
 > 
-> Currently the time can only be read. Setting the time must be done
-> through sending a report (or a feature). The spec currently doesn't
-> define how and I'm not sure if I just should define something by myself.
+> drivers/staging/iio/adc/mxs-lradc.c: In function
+> 'mxs_lradc_trigger_handler': drivers/staging/iio/adc/mxs-lradc.c:244:2:
+> warning: comparison between signed and unsigned integer expressions
+> [-Wsign-compare]
 > 
+> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 
-Looks OK to me.  It sounds like Jonathan will be merging these patches
-when he's happy with them - please do proceed that way.
+Maybe use "unsigned int" instead? Either way:
 
+Acked-by: Marek Vasut <marex@denx.de>
+
+> ---
+>  drivers/staging/iio/adc/mxs-lradc.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+> b/drivers/staging/iio/adc/mxs-lradc.c index fb31b45..6cf3af8 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -239,7 +239,7 @@ static irqreturn_t mxs_lradc_trigger_handler(int irq,
+> void *p) struct mxs_lradc *lradc = iio_priv(iio);
+>  	const uint32_t chan_value = LRADC_CH_ACCUMULATE |
+>  		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
+> -	int i, j = 0;
+> +	u32 i, j = 0;
+> 
+>  	for_each_set_bit(i, iio->active_scan_mask, iio->masklength) {
+>  		lradc->buffer[j] = readl(lradc->base + LRADC_CH(j));
+
+Best regards,
+Marek Vasut
