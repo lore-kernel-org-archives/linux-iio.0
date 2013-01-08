@@ -1,276 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-052.synserver.de ([212.40.185.52]:1027 "EHLO
-	smtp-out-052.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756709Ab3AIRae (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2013 12:30:34 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Grant Likely <grant.likely@secretlab.ca>
-Cc: Julia Lawall <Julia.Lawall@lip6.fr>,
-	spi-devel-general@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/3] iio: Use spi_sync_transfer()
-Date: Wed,  9 Jan 2013 18:31:10 +0100
-Message-Id: <1357752671-30222-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1357752671-30222-1-git-send-email-lars@metafoo.de>
-References: <1357752671-30222-1-git-send-email-lars@metafoo.de>
+Received: from mail-pa0-f49.google.com ([209.85.220.49]:39885 "EHLO
+	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756509Ab3AHSQv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jan 2013 13:16:51 -0500
+Date: Tue, 8 Jan 2013 10:16:46 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Yuanhan Liu <yuanhan.liu@linux.intel.com>
+Cc: linux-kernel@vger.kernel.org,
+	Stefani Seibold <stefani@seibold.net>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-omap@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	platform-driver-x86@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-rdma@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+	linux-mtd@lists.infradead.org, libertas-dev@lists.infradead.org,
+	linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+	linux-pci@vger.kernel.org, open-iscsi@googlegroups.com,
+	linux-scsi@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-mm@kvack.org, dccp@vger.kernel.org,
+	linux-sctp@vger.kernel.org
+Subject: Re: [PATCH 5/5] kfifo: log based kfifo API
+Message-ID: <20130108181645.GA7972@core.coreip.homeip.net>
+References: <1357657073-27352-1-git-send-email-yuanhan.liu@linux.intel.com>
+ <1357657073-27352-6-git-send-email-yuanhan.liu@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1357657073-27352-6-git-send-email-yuanhan.liu@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Use the new spi_sync_transfer() helper function instead of open-coding it.
+Hi Yuanhan,
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/dac/ad5360.c       |  7 +------
- drivers/iio/dac/ad5421.c       |  7 +------
- drivers/iio/dac/ad5504.c       |  6 +-----
- drivers/iio/dac/ad5686.c       |  7 +------
- drivers/iio/dac/ad5755.c       |  7 +------
- drivers/iio/dac/ad5764.c       |  7 +------
- drivers/iio/dac/ad5791.c       |  6 +-----
- drivers/iio/frequency/ad9523.c | 14 ++------------
- 8 files changed, 9 insertions(+), 52 deletions(-)
+On Tue, Jan 08, 2013 at 10:57:53PM +0800, Yuanhan Liu wrote:
+> The current kfifo API take the kfifo size as input, while it rounds
+>  _down_ the size to power of 2 at __kfifo_alloc. This may introduce
+> potential issue.
+> 
+> Take the code at drivers/hid/hid-logitech-dj.c as example:
+> 
+> 	if (kfifo_alloc(&djrcv_dev->notif_fifo,
+>                        DJ_MAX_NUMBER_NOTIFICATIONS * sizeof(struct dj_report),
+>                        GFP_KERNEL)) {
+> 
+> Where, DJ_MAX_NUMBER_NOTIFICATIONS is 8, and sizeo of(struct dj_report)
+> is 15.
+> 
+> Which means it wants to allocate a kfifo buffer which can store 8
+> dj_report entries at once. The expected kfifo buffer size would be
+> 8 * 15 = 120 then. While, in the end, __kfifo_alloc will turn the
+> size to rounddown_power_of_2(120) =  64, and then allocate a buf
+> with 64 bytes, which I don't think this is the original author want.
+> 
+> With the new log API, we can do like following:
+> 
+> 	int kfifo_size_order = order_base_2(DJ_MAX_NUMBER_NOTIFICATIONS *
+> 					    sizeof(struct dj_report));
+> 
+> 	if (kfifo_alloc(&djrcv_dev->notif_fifo, kfifo_size_order, GFP_KERNEL)) {
+> 
+> This make sure we will allocate enough kfifo buffer for holding
+> DJ_MAX_NUMBER_NOTIFICATIONS dj_report entries.
 
-diff --git a/drivers/iio/dac/ad5360.c b/drivers/iio/dac/ad5360.c
-index 8fce84f..8ae07a5 100644
---- a/drivers/iio/dac/ad5360.c
-+++ b/drivers/iio/dac/ad5360.c
-@@ -213,7 +213,6 @@ static int ad5360_read(struct iio_dev *indio_dev, unsigned int type,
- 	unsigned int addr)
- {
- 	struct ad5360_state *st = iio_priv(indio_dev);
--	struct spi_message m;
- 	int ret;
- 	struct spi_transfer t[] = {
- 		{
-@@ -226,10 +225,6 @@ static int ad5360_read(struct iio_dev *indio_dev, unsigned int type,
- 		},
- 	};
- 
--	spi_message_init(&m);
--	spi_message_add_tail(&t[0], &m);
--	spi_message_add_tail(&t[1], &m);
--
- 	mutex_lock(&indio_dev->mlock);
- 
- 	st->data[0].d32 = cpu_to_be32(AD5360_CMD(AD5360_CMD_SPECIAL_FUNCTION) |
-@@ -237,7 +232,7 @@ static int ad5360_read(struct iio_dev *indio_dev, unsigned int type,
- 		AD5360_READBACK_TYPE(type) |
- 		AD5360_READBACK_ADDR(addr));
- 
--	ret = spi_sync(st->spi, &m);
-+	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
- 	if (ret >= 0)
- 		ret = be32_to_cpu(st->data[1].d32) & 0xffff;
- 
-diff --git a/drivers/iio/dac/ad5421.c b/drivers/iio/dac/ad5421.c
-index cdbc5bf..e8f752f 100644
---- a/drivers/iio/dac/ad5421.c
-+++ b/drivers/iio/dac/ad5421.c
-@@ -127,7 +127,6 @@ static int ad5421_write(struct iio_dev *indio_dev, unsigned int reg,
- static int ad5421_read(struct iio_dev *indio_dev, unsigned int reg)
- {
- 	struct ad5421_state *st = iio_priv(indio_dev);
--	struct spi_message m;
- 	int ret;
- 	struct spi_transfer t[] = {
- 		{
-@@ -140,15 +139,11 @@ static int ad5421_read(struct iio_dev *indio_dev, unsigned int reg)
- 		},
- 	};
- 
--	spi_message_init(&m);
--	spi_message_add_tail(&t[0], &m);
--	spi_message_add_tail(&t[1], &m);
--
- 	mutex_lock(&indio_dev->mlock);
- 
- 	st->data[0].d32 = cpu_to_be32((1 << 23) | (reg << 16));
- 
--	ret = spi_sync(st->spi, &m);
-+	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
- 	if (ret >= 0)
- 		ret = be32_to_cpu(st->data[1].d32) & 0xffff;
- 
-diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-index 242bdc7..428a549 100644
---- a/drivers/iio/dac/ad5504.c
-+++ b/drivers/iio/dac/ad5504.c
-@@ -85,11 +85,7 @@ static int ad5504_spi_read(struct spi_device *spi, u8 addr)
- 			.rx_buf		= &val,
- 			.len		= 2,
- 		};
--	struct spi_message	m;
--
--	spi_message_init(&m);
--	spi_message_add_tail(&t, &m);
--	ret = spi_sync(spi, &m);
-+	ret = spi_sync_transfer(spi, &t, 1);
- 
- 	if (ret < 0)
- 		return ret;
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 6948d75..1bf32d8 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -117,18 +117,13 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
- 			.len = 3,
- 		},
- 	};
--	struct spi_message m;
- 	int ret;
- 
--	spi_message_init(&m);
--	spi_message_add_tail(&t[0], &m);
--	spi_message_add_tail(&t[1], &m);
--
- 	st->data[0].d32 = cpu_to_be32(AD5686_CMD(AD5686_CMD_READBACK_ENABLE) |
- 			      AD5686_ADDR(addr));
- 	st->data[1].d32 = cpu_to_be32(AD5686_CMD(AD5686_CMD_NOOP));
- 
--	ret = spi_sync(st->spi, &m);
-+	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
- 	if (ret < 0)
- 		return ret;
- 
-diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-index 5db3506..906b022 100644
---- a/drivers/iio/dac/ad5755.c
-+++ b/drivers/iio/dac/ad5755.c
-@@ -153,7 +153,6 @@ static int ad5755_write_ctrl(struct iio_dev *indio_dev, unsigned int channel,
- static int ad5755_read(struct iio_dev *indio_dev, unsigned int addr)
- {
- 	struct ad5755_state *st = iio_priv(indio_dev);
--	struct spi_message m;
- 	int ret;
- 	struct spi_transfer t[] = {
- 		{
-@@ -167,16 +166,12 @@ static int ad5755_read(struct iio_dev *indio_dev, unsigned int addr)
- 		},
- 	};
- 
--	spi_message_init(&m);
--	spi_message_add_tail(&t[0], &m);
--	spi_message_add_tail(&t[1], &m);
--
- 	mutex_lock(&indio_dev->mlock);
- 
- 	st->data[0].d32 = cpu_to_be32(AD5755_READ_FLAG | (addr << 16));
- 	st->data[1].d32 = cpu_to_be32(AD5755_NOOP);
- 
--	ret = spi_sync(st->spi, &m);
-+	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
- 	if (ret >= 0)
- 		ret = be32_to_cpu(st->data[1].d32) & 0xffff;
- 
-diff --git a/drivers/iio/dac/ad5764.c b/drivers/iio/dac/ad5764.c
-index ffce304..d3d334b 100644
---- a/drivers/iio/dac/ad5764.c
-+++ b/drivers/iio/dac/ad5764.c
-@@ -135,7 +135,6 @@ static int ad5764_read(struct iio_dev *indio_dev, unsigned int reg,
- 	unsigned int *val)
- {
- 	struct ad5764_state *st = iio_priv(indio_dev);
--	struct spi_message m;
- 	int ret;
- 	struct spi_transfer t[] = {
- 		{
-@@ -148,15 +147,11 @@ static int ad5764_read(struct iio_dev *indio_dev, unsigned int reg,
- 		},
- 	};
- 
--	spi_message_init(&m);
--	spi_message_add_tail(&t[0], &m);
--	spi_message_add_tail(&t[1], &m);
--
- 	mutex_lock(&indio_dev->mlock);
- 
- 	st->data[0].d32 = cpu_to_be32((1 << 23) | (reg << 16));
- 
--	ret = spi_sync(st->spi, &m);
-+	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
- 	if (ret >= 0)
- 		*val = be32_to_cpu(st->data[1].d32) & 0xffff;
- 
-diff --git a/drivers/iio/dac/ad5791.c b/drivers/iio/dac/ad5791.c
-index 2bd2e37..2cc0a8e 100644
---- a/drivers/iio/dac/ad5791.c
-+++ b/drivers/iio/dac/ad5791.c
-@@ -125,7 +125,6 @@ static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
- 		u8 d8[4];
- 	} data[3];
- 	int ret;
--	struct spi_message msg;
- 	struct spi_transfer xfers[] = {
- 		{
- 			.tx_buf = &data[0].d8[1],
-@@ -144,10 +143,7 @@ static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
- 			      AD5791_ADDR(addr));
- 	data[1].d32 = cpu_to_be32(AD5791_ADDR(AD5791_ADDR_NOOP));
- 
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfers[0], &msg);
--	spi_message_add_tail(&xfers[1], &msg);
--	ret = spi_sync(spi, &msg);
-+	ret = spi_sync_transfer(spi, xfers, ARRAY_SIZE(xfers));
- 
- 	*val = be32_to_cpu(data[2].d32);
- 
-diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-index b737c64..2a18405 100644
---- a/drivers/iio/frequency/ad9523.c
-+++ b/drivers/iio/frequency/ad9523.c
-@@ -287,7 +287,6 @@ struct ad9523_state {
- static int ad9523_read(struct iio_dev *indio_dev, unsigned addr)
- {
- 	struct ad9523_state *st = iio_priv(indio_dev);
--	struct spi_message m;
- 	int ret;
- 
- 	/* We encode the register size 1..3 bytes into the register address.
-@@ -305,15 +304,11 @@ static int ad9523_read(struct iio_dev *indio_dev, unsigned addr)
- 		},
- 	};
- 
--	spi_message_init(&m);
--	spi_message_add_tail(&t[0], &m);
--	spi_message_add_tail(&t[1], &m);
--
- 	st->data[0].d32 = cpu_to_be32(AD9523_READ |
- 				      AD9523_CNT(AD9523_TRANSF_LEN(addr)) |
- 				      AD9523_ADDR(addr));
- 
--	ret = spi_sync(st->spi, &m);
-+	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
- 	if (ret < 0)
- 		dev_err(&indio_dev->dev, "read failed (%d)", ret);
- 	else
-@@ -326,7 +321,6 @@ static int ad9523_read(struct iio_dev *indio_dev, unsigned addr)
- static int ad9523_write(struct iio_dev *indio_dev, unsigned addr, unsigned val)
- {
- 	struct ad9523_state *st = iio_priv(indio_dev);
--	struct spi_message m;
- 	int ret;
- 	struct spi_transfer t[] = {
- 		{
-@@ -338,16 +332,12 @@ static int ad9523_write(struct iio_dev *indio_dev, unsigned addr, unsigned val)
- 		},
- 	};
- 
--	spi_message_init(&m);
--	spi_message_add_tail(&t[0], &m);
--	spi_message_add_tail(&t[1], &m);
--
- 	st->data[0].d32 = cpu_to_be32(AD9523_WRITE |
- 				      AD9523_CNT(AD9523_TRANSF_LEN(addr)) |
- 				      AD9523_ADDR(addr));
- 	st->data[1].d32 = cpu_to_be32(val);
- 
--	ret = spi_sync(st->spi, &m);
-+	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
- 
- 	if (ret < 0)
- 		dev_err(&indio_dev->dev, "write failed (%d)", ret);
+Why don't you simply change __kfifo_alloc to round the allocation up
+instead of down?
+
+Thanks.
+
 -- 
-1.8.0
-
+Dmitry
