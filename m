@@ -1,471 +1,468 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-069.synserver.de ([212.40.185.69]:1119 "EHLO
-	smtp-out-069.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757439Ab3APMsS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Jan 2013 07:48:18 -0500
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:37641 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755668Ab3AHK0H (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jan 2013 05:26:07 -0500
+Message-ID: <50EBF48E.4040607@metafoo.de>
+Date: Tue, 08 Jan 2013 11:27:26 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 07/15] staging:iio:adis16400: Preallocate transfer message
-Date: Wed, 16 Jan 2013 13:48:43 +0100
-Message-Id: <1358340531-31350-7-git-send-email-lars@metafoo.de>
-In-Reply-To: <1358340531-31350-1-git-send-email-lars@metafoo.de>
-References: <1358340531-31350-1-git-send-email-lars@metafoo.de>
+MIME-Version: 1.0
+To: Christophe Leroy <christophe.leroy@c-s.fr>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, patrick.vasseur@c-s.fr
+Subject: Re: [PATCH] IIO ADC support for AD7923
+References: <201301080842.r088gKWO031124@localhost.localdomain>
+In-Reply-To: <201301080842.r088gKWO031124@localhost.localdomain>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Similar to like we already did for the generic adis library preallocate and
-pre-construct the SPI transfer message for the adis16400. For devices which do
-not support burst mode sampling does not differ from other adis devices and so
-we use the generic functions of the adis library in this case. In burst mode we
-can only sample all channels at once, so use the IIO cores demux facility
-instead of doing this manually.
+On 01/08/2013 09:42 AM, Christophe Leroy wrote:
+> This patch adds support for Analog Devices AD7923 ADC in the IIO Subsystem.
+> 
+> Signed-off-by: Patrick Vasseur <patrick.vasseur@c-s.fr>
+> Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/imu/adis16400.h      |  23 +---
- drivers/staging/iio/imu/adis16400_core.c |  89 ++++++++++----
- drivers/staging/iio/imu/adis16400_ring.c | 192 ++++++++++---------------------
- 3 files changed, 128 insertions(+), 176 deletions(-)
+Hi,
 
-diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
-index ce63ced..a3b9e56 100644
---- a/drivers/staging/iio/imu/adis16400.h
-+++ b/drivers/staging/iio/imu/adis16400.h
-@@ -190,27 +190,14 @@ ssize_t adis16400_read_data_from_ring(struct device *dev,
- 				      char *buf);
- 
- 
--int adis16400_configure_ring(struct iio_dev *indio_dev);
--void adis16400_unconfigure_ring(struct iio_dev *indio_dev);
-+int adis16400_update_scan_mode(struct iio_dev *indio_dev,
-+	const unsigned long *scan_mask);
-+irqreturn_t adis16400_trigger_handler(int irq, void *p);
- 
- #else /* CONFIG_IIO_BUFFER */
- 
--static inline ssize_t
--adis16400_read_data_from_ring(struct device *dev,
--			      struct device_attribute *attr,
--			      char *buf)
--{
--	return 0;
--}
--
--static int adis16400_configure_ring(struct iio_dev *indio_dev)
--{
--	return 0;
--}
--
--static inline void adis16400_unconfigure_ring(struct iio_dev *indio_dev)
--{
--}
-+#define adis16400_update_scan_mode NULL
-+#define adis16400_trigger_handler NULL
- 
- #endif /* CONFIG_IIO_BUFFER */
- 
-diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
-index f1d747a..aa4ffcf 100644
---- a/drivers/staging/iio/imu/adis16400_core.c
-+++ b/drivers/staging/iio/imu/adis16400_core.c
-@@ -384,7 +384,13 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
- 	.address = (addr), \
- 	.scan_index = (si), \
--	.scan_type = IIO_ST('u', (bits), 16, 0), \
-+	.scan_type = { \
-+		.sign = 'u', \
-+		.realbits = (bits), \
-+		.storagebits = 16, \
-+		.shift = 0, \
-+		.endianness = IIO_BE, \
-+	}, \
- }
- 
- #define ADIS16400_SUPPLY_CHAN(addr, bits) \
-@@ -403,7 +409,13 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
- 	.address = addr, \
- 	.scan_index = ADIS16400_SCAN_GYRO_ ## mod, \
--	.scan_type = IIO_ST('s', (bits), 16, 0), \
-+	.scan_type = { \
-+		.sign = 's', \
-+		.realbits = (bits), \
-+		.storagebits = 16, \
-+		.shift = 0, \
-+		.endianness = IIO_BE, \
-+	}, \
- }
- 
- #define ADIS16400_ACCEL_CHAN(mod, addr, bits) { \
-@@ -416,7 +428,13 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
- 	.address = (addr), \
- 	.scan_index = ADIS16400_SCAN_ACC_ ## mod, \
--	.scan_type = IIO_ST('s', (bits), 16, 0), \
-+	.scan_type = { \
-+		.sign = 's', \
-+		.realbits = (bits), \
-+		.storagebits = 16, \
-+		.shift = 0, \
-+		.endianness = IIO_BE, \
-+	}, \
- }
- 
- #define ADIS16400_MAGN_CHAN(mod, addr, bits) { \
-@@ -428,7 +446,13 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
- 	.address = (addr), \
- 	.scan_index = ADIS16400_SCAN_MAGN_ ## mod, \
--	.scan_type = IIO_ST('s', (bits), 16, 0), \
-+	.scan_type = { \
-+		.sign = 's', \
-+		.realbits = (bits), \
-+		.storagebits = 16, \
-+		.shift = 0, \
-+		.endianness = IIO_BE, \
-+	}, \
- }
- 
- #define ADIS16400_MOD_TEMP_NAME_X "x"
-@@ -446,7 +470,13 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
- 	.address = (addr), \
- 	.scan_index = ADIS16350_SCAN_TEMP_ ## mod, \
--	.scan_type = IIO_ST('s', (bits), 16, 0), \
-+	.scan_type = { \
-+		.sign = 's', \
-+		.realbits = (bits), \
-+		.storagebits = 16, \
-+		.shift = 0, \
-+		.endianness = IIO_BE, \
-+	}, \
- }
- 
- #define ADIS16400_TEMP_CHAN(addr, bits) { \
-@@ -458,7 +488,13 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
- 	.address = (addr), \
- 	.scan_index = ADIS16350_SCAN_TEMP_X, \
--	.scan_type = IIO_ST('s', (bits), 16, 0), \
-+	.scan_type = { \
-+		.sign = 's', \
-+		.realbits = (bits), \
-+		.storagebits = 16, \
-+		.shift = 0, \
-+		.endianness = IIO_BE, \
-+	}, \
- }
- 
- #define ADIS16400_INCLI_CHAN(mod, addr, bits) { \
-@@ -469,7 +505,13 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		IIO_CHAN_INFO_SCALE_SHARED_BIT, \
- 	.address = (addr), \
- 	.scan_index = ADIS16300_SCAN_INCLI_ ## mod, \
--	.scan_type = IIO_ST('s', (bits), 16, 0), \
-+	.scan_type = { \
-+		.sign = 's', \
-+		.realbits = (bits), \
-+		.storagebits = 16, \
-+		.shift = 0, \
-+		.endianness = IIO_BE, \
-+	}, \
- }
- 
- static const struct iio_chan_spec adis16400_channels[] = {
-@@ -625,6 +667,12 @@ static const struct iio_info adis16400_info = {
- 	.read_raw = &adis16400_read_raw,
- 	.write_raw = &adis16400_write_raw,
- 	.attrs = &adis16400_attribute_group,
-+	.update_scan_mode = adis16400_update_scan_mode,
-+};
-+
-+static const unsigned long adis16400_burst_scan_mask[] = {
-+	~0UL,
-+	0,
- };
- 
- static const char * const adis16400_status_error_msgs[] = {
-@@ -696,35 +744,30 @@ static int adis16400_probe(struct spi_device *spi)
- 	indio_dev->info = &adis16400_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
-+	if (!(st->variant->flags & ADIS16400_NO_BURST))
-+		indio_dev->available_scan_masks = adis16400_burst_scan_mask;
-+
- 	ret = adis_init(&st->adis, indio_dev, spi, &adis16400_data);
- 	if (ret)
- 		goto error_free_dev;
- 
--	ret = adis16400_configure_ring(indio_dev);
-+	ret = adis_setup_buffer_and_trigger(&st->adis, indio_dev,
-+			adis16400_trigger_handler);
- 	if (ret)
- 		goto error_free_dev;
- 
--	if (spi->irq) {
--		ret = adis_probe_trigger(&st->adis, indio_dev);
--		if (ret)
--			goto error_unreg_ring_funcs;
--	}
--
- 	/* Get the device into a sane initial state */
- 	ret = adis16400_initial_setup(indio_dev);
- 	if (ret)
--		goto error_remove_trigger;
-+		goto error_cleanup_buffer;
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
--		goto error_remove_trigger;
-+		goto error_cleanup_buffer;
- 
- 	return 0;
- 
--error_remove_trigger:
--	if (spi->irq)
--		adis_remove_trigger(&st->adis);
--error_unreg_ring_funcs:
--	adis16400_unconfigure_ring(indio_dev);
-+error_cleanup_buffer:
-+	adis_cleanup_buffer_and_trigger(&st->adis, indio_dev);
- error_free_dev:
- 	iio_device_free(indio_dev);
- error_ret:
-@@ -740,9 +783,7 @@ static int adis16400_remove(struct spi_device *spi)
- 	iio_device_unregister(indio_dev);
- 	adis16400_stop_device(indio_dev);
- 
--	if (spi->irq)
--		adis_remove_trigger(&st->adis);
--	adis16400_unconfigure_ring(indio_dev);
-+	adis_cleanup_buffer_and_trigger(&st->adis, indio_dev);
- 
- 	iio_device_free(indio_dev);
- 
-diff --git a/drivers/staging/iio/imu/adis16400_ring.c b/drivers/staging/iio/imu/adis16400_ring.c
-index e421278..054c01d 100644
---- a/drivers/staging/iio/imu/adis16400_ring.c
-+++ b/drivers/staging/iio/imu/adis16400_ring.c
-@@ -13,160 +13,84 @@
- 
- #include "adis16400.h"
- 
--/**
-- * adis16400_spi_read_burst() - read all data registers
-- * @indio_dev: the IIO device
-- * @rx: somewhere to pass back the value read (min size is 24 bytes)
-- **/
--static int adis16400_spi_read_burst(struct iio_dev *indio_dev, u8 *rx)
-+int adis16400_update_scan_mode(struct iio_dev *indio_dev,
-+	const unsigned long *scan_mask)
- {
--	struct spi_message msg;
- 	struct adis16400_state *st = iio_priv(indio_dev);
--	u32 old_speed_hz = st->adis.spi->max_speed_hz;
--	int ret;
-+	struct adis *adis = &st->adis;
-+	uint16_t *tx, *rx;
- 
--	struct spi_transfer xfers[] = {
--		{
--			.tx_buf = st->adis.tx,
--			.bits_per_word = 8,
--			.len = 2,
--		}, {
--			.rx_buf = rx,
--			.bits_per_word = 8,
--			.len = 24,
--		},
--	};
--
--	mutex_lock(&st->adis.txrx_lock);
--	st->adis.tx[0] = ADIS_READ_REG(ADIS16400_GLOB_CMD);
--	st->adis.tx[1] = 0;
--
--	spi_message_init(&msg);
--	spi_message_add_tail(&xfers[0], &msg);
--	spi_message_add_tail(&xfers[1], &msg);
--
--	st->adis.spi->max_speed_hz = min(ADIS16400_SPI_BURST, old_speed_hz);
--	spi_setup(st->adis.spi);
--
--	ret = spi_sync(st->adis.spi, &msg);
--	if (ret)
--		dev_err(&st->adis.spi->dev, "problem when burst reading");
-+	if (st->variant->flags & ADIS16400_NO_BURST)
-+		return adis_update_scan_mode(indio_dev, scan_mask);
- 
--	st->adis.spi->max_speed_hz = old_speed_hz;
--	spi_setup(st->adis.spi);
--	mutex_unlock(&st->adis.txrx_lock);
--	return ret;
--}
--
--static const u16 read_all_tx_array[] = {
--	cpu_to_be16(ADIS_READ_REG(ADIS16400_SUPPLY_OUT)),
--	cpu_to_be16(ADIS_READ_REG(ADIS16400_XGYRO_OUT)),
--	cpu_to_be16(ADIS_READ_REG(ADIS16400_YGYRO_OUT)),
--	cpu_to_be16(ADIS_READ_REG(ADIS16400_ZGYRO_OUT)),
--	cpu_to_be16(ADIS_READ_REG(ADIS16400_XACCL_OUT)),
--	cpu_to_be16(ADIS_READ_REG(ADIS16400_YACCL_OUT)),
--	cpu_to_be16(ADIS_READ_REG(ADIS16400_ZACCL_OUT)),
--	cpu_to_be16(ADIS_READ_REG(ADIS16350_XTEMP_OUT)),
--	cpu_to_be16(ADIS_READ_REG(ADIS16350_YTEMP_OUT)),
--	cpu_to_be16(ADIS_READ_REG(ADIS16350_ZTEMP_OUT)),
--	cpu_to_be16(ADIS_READ_REG(ADIS16400_AUX_ADC)),
--};
--
--static int adis16350_spi_read_all(struct iio_dev *indio_dev, u8 *rx)
--{
--	struct adis16400_state *st = iio_priv(indio_dev);
-+	kfree(adis->xfer);
-+	kfree(adis->buffer);
- 
--	struct spi_message msg;
--	int i, j = 0, ret;
--	struct spi_transfer *xfers;
--	int scan_count = bitmap_weight(indio_dev->active_scan_mask,
--				       indio_dev->masklength);
-+	adis->xfer = kcalloc(2, sizeof(*adis->xfer), GFP_KERNEL);
-+	if (!adis->xfer)
-+		return -ENOMEM;
- 
--	xfers = kzalloc(sizeof(*xfers)*(scan_count + 1),
--			GFP_KERNEL);
--	if (xfers == NULL)
-+	adis->buffer = kzalloc(indio_dev->scan_bytes + sizeof(u16),
-+		GFP_KERNEL);
-+	if (!adis->buffer)
- 		return -ENOMEM;
- 
--	for (i = 0; i < ARRAY_SIZE(read_all_tx_array); i++)
--		if (test_bit(i, indio_dev->active_scan_mask)) {
--			xfers[j].tx_buf = &read_all_tx_array[i];
--			xfers[j].bits_per_word = 16;
--			xfers[j].len = 2;
--			xfers[j + 1].rx_buf = rx + j*2;
--			j++;
--		}
--	xfers[j].bits_per_word = 16;
--	xfers[j].len = 2;
--
--	spi_message_init(&msg);
--	for (j = 0; j < scan_count + 1; j++)
--		spi_message_add_tail(&xfers[j], &msg);
--
--	ret = spi_sync(st->adis.spi, &msg);
--	kfree(xfers);
--
--	return ret;
-+	rx = adis->buffer;
-+	tx = adis->buffer + indio_dev->scan_bytes;
-+
-+	tx[0] = ADIS_READ_REG(ADIS16400_GLOB_CMD);
-+	tx[1] = 0;
-+
-+	adis->xfer[0].tx_buf = tx;
-+	adis->xfer[0].bits_per_word = 8;
-+	adis->xfer[0].len = 2;
-+	adis->xfer[1].tx_buf = tx;
-+	adis->xfer[1].bits_per_word = 8;
-+	adis->xfer[1].len = indio_dev->scan_bytes;
-+
-+	spi_message_init(&adis->msg);
-+	spi_message_add_tail(&adis->xfer[0], &adis->msg);
-+	spi_message_add_tail(&adis->xfer[1], &adis->msg);
-+
-+	return 0;
- }
- 
--/* Whilst this makes a lot of calls to iio_sw_ring functions - it is to device
-- * specific to be rolled into the core.
-- */
--static irqreturn_t adis16400_trigger_handler(int irq, void *p)
-+irqreturn_t adis16400_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct adis16400_state *st = iio_priv(indio_dev);
--	int i = 0, j, ret = 0;
--	s16 *data;
--
--	/* Asumption that long is enough for maximum channels */
--	unsigned long mask = *indio_dev->active_scan_mask;
--	int scan_count = bitmap_weight(indio_dev->active_scan_mask,
--				       indio_dev->masklength);
--	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
--	if (data == NULL) {
--		dev_err(&st->adis.spi->dev, "memory alloc failed in ring bh");
--		goto done;
-+	struct adis *adis = &st->adis;
-+	u32 old_speed_hz = st->adis.spi->max_speed_hz;
-+	int ret;
-+
-+	if (!adis->buffer)
-+		return -ENOMEM;
-+
-+	if (!(st->variant->flags & ADIS16400_NO_BURST) &&
-+		st->adis.spi->max_speed_hz > ADIS16400_SPI_BURST) {
-+		st->adis.spi->max_speed_hz = ADIS16400_SPI_BURST;
-+		spi_setup(st->adis.spi);
- 	}
- 
--	if (scan_count) {
--		if (st->variant->flags & ADIS16400_NO_BURST) {
--			ret = adis16350_spi_read_all(indio_dev, st->adis.rx);
--			if (ret < 0)
--				goto done;
--			for (; i < scan_count; i++)
--				data[i]	= *(s16 *)(st->adis.rx + i*2);
--		} else {
--			ret = adis16400_spi_read_burst(indio_dev, st->adis.rx);
--			if (ret < 0)
--				goto done;
--			for (; i < scan_count; i++) {
--				j = __ffs(mask);
--				mask &= ~(1 << j);
--				data[i] = be16_to_cpup(
--					(__be16 *)&(st->adis.rx[j*2]));
--			}
--		}
-+	ret = spi_sync(adis->spi, &adis->msg);
-+	if (ret)
-+		dev_err(&adis->spi->dev, "Failed to read data: %d\n", ret);
-+
-+	if (!(st->variant->flags & ADIS16400_NO_BURST)) {
-+		st->adis.spi->max_speed_hz = old_speed_hz;
-+		spi_setup(st->adis.spi);
- 	}
-+
- 	/* Guaranteed to be aligned with 8 byte boundary */
--	if (indio_dev->scan_timestamp)
--		*((s64 *)(data + ((i + 3)/4)*4)) = pf->timestamp;
--	iio_push_to_buffers(indio_dev, (u8 *) data);
-+	if (indio_dev->scan_timestamp) {
-+		void *b = adis->buffer + indio_dev->scan_bytes - sizeof(s64);
-+		*(s64 *)b = pf->timestamp;
-+	}
-+
-+	iio_push_to_buffers(indio_dev, adis->buffer);
- 
--done:
--	kfree(data);
- 	iio_trigger_notify_done(indio_dev->trig);
- 
- 	return IRQ_HANDLED;
- }
--
--int adis16400_configure_ring(struct iio_dev *indio_dev)
--{
--	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
--		&adis16400_trigger_handler, NULL);
--}
--
--void adis16400_unconfigure_ring(struct iio_dev *indio_dev)
--{
--	iio_triggered_buffer_cleanup(indio_dev);
--}
--- 
-1.8.0
+Thanks for the driver, looks pretty good. Some comments inline.
 
+- Lars
+
+> 
+> diff -uN linux-3.7.1/drivers/staging/iio/adc/Kconfig linux/drivers/staging/iio/adc/Kconfig
+> --- linux-3.7.1/drivers/staging/iio/adc/Kconfig	2012-12-17 20:14:54.000000000 +0100
+> +++ linux/drivers/staging/iio/adc/Kconfig	2012-12-13 19:52:10.000000000 +0100
+
+New IIO drivers should not be added to staging, unless there is a very good
+reason. Since this driver does not have any major issues it should directly go
+into drivers/iio/
+
+[...]
+
+> diff -uN linux-3.7.1/drivers/staging/iio/adc/ad7923.h linux/drivers/staging/iio/adc/ad7923.h
+> --- linux-3.7.1/drivers/staging/iio/adc/ad7923.h	1970-01-01 01:00:00.000000000 +0100
+> +++ linux/drivers/staging/iio/adc/ad7923.h	2013-01-05 17:53:53.000000000 +0100
+> @@ -0,0 +1,72 @@
+> +/*
+> + * AD7923 SPI ADC driver
+> + *
+> + * Copyright 2011 Analog Devices Inc (from AD7298 Driver)
+> + * Copyright 2012 CS Systemes d'Information
+> + *
+> + * Licensed under the GPL-2 or later.
+> + */
+> +#ifndef IIO_ADC_AD7923_H_
+> +#define IIO_ADC_AD7923_H_
+> +
+> +#define AD7923_WRITE_CR		(1 << 11)	/* write control register */
+> +#define AD7923_RANGE		(1 << 1)	/* range to REFin */
+> +#define AD7923_CODING		(1 << 0)	/* coding is straight binary */
+> +#define AD7923_PM_MODE_AS	(1)		/* auto shutdown */
+> +#define AD7923_PM_MODE_FS	(2)		/* full shutdown */
+> +#define AD7923_PM_MODE_OPS	(3)		/* normal operation */
+> +#define AD7923_CHANNEL_0	(0)		/* analog input 0 */
+> +#define AD7923_CHANNEL_1	(1)		/* analog input 1 */
+> +#define AD7923_CHANNEL_2	(2)		/* analog input 2 */
+> +#define AD7923_CHANNEL_3	(3)		/* analog input 3 */
+> +#define AD7923_SEQUENCE_OFF	(0)		/* no sequence fonction */
+> +#define AD7923_SEQUENCE_PROTECT	(2)		/* no interrupt write cycle */
+> +#define AD7923_SEQUENCE_ON	(3)		/* continuous sequence */
+> +
+> +#define AD7923_MAX_CHAN		4
+> +
+> +#define AD7923_PM_MODE_WRITE(mode)	(mode << 4)	/* write mode */
+> +#define AD7923_CHANNEL_WRITE(channel)	(channel << 6)	/* write channel */
+> +#define AD7923_SEQUENCE_WRITE(sequence)	(((sequence & 1) << 3) \
+> +					+ ((sequence & 2) << 9))
+> +						/* write sequence fonction */
+> +/* left shift for CR : bit 11 transmit in first */
+> +#define AD7923_SHIFT_REGISTER	4
+> +
+> +/* val = value, dec = left shift, bits = number of bits of the mask */
+> +#define EXTRACT(val, dec, bits)		((val >> dec) & ((1 << bits) - 1))
+> +/* val = value, bits = number of bits of the original value */
+> +#define EXTRACT_PERCENT(val, bits)	(((val + 1) * 100) >> bits)
+> +
+> +struct ad7923_state {
+> +	struct spi_device		*spi;
+> +	struct regulator		*reg;
+> +	struct spi_transfer		ring_xfer[6];
+> +	struct spi_transfer		scan_single_xfer[2];
+> +	struct spi_message		ring_msg;
+> +	struct spi_message		scan_single_msg;
+> +	/*
+> +	 * DMA (thus cache coherency maintenance) requires the
+> +	 * transfer buffers to live in their own cache lines.
+> +	 */
+> +	unsigned short			rx_buf[4] ____cacheline_aligned;
+> +	unsigned short			tx_buf[2];
+
+both buffers should of type __be16
+
+> +};
+> +
+> +#ifdef CONFIG_IIO_BUFFER
+> +int ad7923_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+> +void ad7923_ring_cleanup(struct iio_dev *indio_dev);
+> +int ad7923_update_scan_mode(struct iio_dev *indio_dev,
+> +	const unsigned long *active_scan_mask);
+> +#else /* CONFIG_IIO_BUFFER */
+> +static inline int
+> +ad7923_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+> +{
+> +	return 0;
+> +}
+> +static inline void ad7923_ring_cleanup(struct iio_dev *indio_dev)
+> +{
+> +}
+> +#define ad7923_update_scan_mode NULL
+> +#endif /* CONFIG_IIO_BUFFER */
+> +#endif /* IIO_ADC_AD7923_H_ */
+> diff -uN linux-3.7.1/drivers/staging/iio/adc/ad7923_core.c linux/drivers/staging/iio/adc/ad7923_core.c
+> --- linux-3.7.1/drivers/staging/iio/adc/ad7923_core.c	1970-01-01 01:00:00.000000000 +0100
+> +++ linux/drivers/staging/iio/adc/ad7923_core.c	2013-01-05 17:54:11.000000000 +0100
+> @@ -0,0 +1,202 @@
+> +/*
+> + * AD7923 SPI ADC driver
+> + *
+> + * Copyright 2011 Analog Devices Inc (from AD7298 Driver)
+> + * Copyright 2012 CS Systemes d'Information
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/err.h>
+> +#include <linux/module.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/buffer.h>
+> +
+> +#include "ad7923.h"
+> +
+> +#define AD7923_V_CHAN(index)						\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = index,					\
+> +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
+> +		IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
+> +		.address = index,					\
+> +		.scan_index = index,					\
+> +		.scan_type = {						\
+> +			.sign = 'u',					\
+> +			.realbits = 12,					\
+> +			.storagebits = 16,				\
+> +		},							\
+> +	}
+> +
+> +static struct iio_chan_spec ad7923_channels[] = {
+
+static const struct
+
+> +	AD7923_V_CHAN(0),
+> +	AD7923_V_CHAN(1),
+> +	AD7923_V_CHAN(2),
+> +	AD7923_V_CHAN(3),
+> +	IIO_CHAN_SOFT_TIMESTAMP(4),
+> +};
+> +
+[...]
+> +
+> +static int ad7923_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val,
+> +			   int *val2,
+> +			   long m)
+> +{
+> +	int ret;
+> +	struct ad7923_state *st = iio_priv(indio_dev);
+> +
+> +	switch (m) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&indio_dev->mlock);
+> +		if (iio_buffer_enabled(indio_dev))
+> +			ret = -EBUSY;
+> +		else
+> +			ret = ad7923_scan_direct(st, chan->address);
+> +		mutex_unlock(&indio_dev->mlock);
+> +
+> +		if (ret < 0)
+> +			return ret;
+> +		if (chan->address == EXTRACT(ret, 12, 4)) {
+> +			*val = EXTRACT(ret, 0, 12);
+> +			*val2 = EXTRACT_PERCENT(*val, 12);
+
+val2 is never used in the upper layers in this case.
+
+> +		}
+
+If the address does not match you should probably return an error
+
+> +		return IIO_VAL_INT;
+> +	}
+
+How about also reporting the scale attribute?
+
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info ad7923_info = {
+> +	.read_raw = &ad7923_read_raw,
+> +	.update_scan_mode = ad7923_update_scan_mode,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int __devinit ad7923_probe(struct spi_device *spi)
+
+__devinit/__devexit is being phased out in upstream, it should not be used in
+new drivers anymore.
+
+> +{
+> +	struct ad7923_state *st;
+> +	struct device *dev = &spi->dev;
+> +	int ret;
+> +	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
+> +
+> +	if (indio_dev == NULL)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+> +
+> +	st->reg = regulator_get(&spi->dev, "vcc");
+> +	if (!IS_ERR(st->reg)) {
+
+If the regulator could not be requested return an error.
+
+> +		ret = regulator_enable(st->reg);
+> +		if (ret)
+> +			goto error_put_reg;
+> +	}
+> +
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	st->spi = spi;
+> +
+> +	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = ad7923_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(ad7923_channels);
+> +	indio_dev->info = &ad7923_info;
+> +
+> +	/* Setup default message */
+> +	st->scan_single_xfer[0].tx_buf = &st->tx_buf[0];
+> +	st->scan_single_xfer[0].len = 2;
+> +	st->scan_single_xfer[0].cs_change = 1;
+> +	st->scan_single_xfer[1].rx_buf = &st->rx_buf[0];
+> +	st->scan_single_xfer[1].len = 2;
+> +
+> +	spi_message_init(&st->scan_single_msg);
+> +	spi_message_add_tail(&st->scan_single_xfer[0], &st->scan_single_msg);
+> +	spi_message_add_tail(&st->scan_single_xfer[1], &st->scan_single_msg);
+> +
+> +	ret = ad7923_register_ring_funcs_and_init(indio_dev);
+> +	if (ret)
+> +		goto error_disable_reg;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto error_cleanup_ring;
+> +
+> +	dev_info(dev, "Driver AD7923 is added.\n");
+
+This line is just noise, please remove it.
+
+> +
+> +	return 0;
+> +
+> +error_cleanup_ring:
+> +	ad7923_ring_cleanup(indio_dev);
+> +error_disable_reg:
+> +	if (!IS_ERR(st->reg))
+> +		regulator_disable(st->reg);
+> +error_put_reg:
+> +	if (!IS_ERR(st->reg))
+> +		regulator_put(st->reg);
+> +	iio_device_free(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int __devexit ad7923_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct ad7923_state *st = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	ad7923_ring_cleanup(indio_dev);
+> +	if (!IS_ERR(st->reg)) {
+> +		regulator_disable(st->reg);
+> +		regulator_put(st->reg);
+> +	}
+> +	iio_device_free(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id ad7923_id[] = {
+> +	{"ad7923", 0},
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, ad7923_id);
+> +
+> +static struct spi_driver ad7923_driver = {
+> +	.driver = {
+> +		.name	= "ad7923",
+> +		.owner	= THIS_MODULE,
+> +	},
+> +	.probe		= ad7923_probe,
+> +	.remove		= __devexit_p(ad7923_remove),
+> +	.id_table	= ad7923_id,
+> +};
+> +module_spi_driver(ad7923_driver);
+> +
+> +MODULE_AUTHOR("Patrick Vasseur <patrick.vasseur@c-s.fr>");
+> +MODULE_DESCRIPTION("Analog Devices AD7923 ADC");
+> +MODULE_LICENSE("GPL v2");
+> diff -uN linux-3.7.1/drivers/staging/iio/adc/ad7923_ring.c linux/drivers/staging/iio/adc/ad7923_ring.c
+> --- linux-3.7.1/drivers/staging/iio/adc/ad7923_ring.c	1970-01-01 01:00:00.000000000 +0100
+> +++ linux/drivers/staging/iio/adc/ad7923_ring.c	2013-01-05 17:51:47.000000000 +0100
+
+Considering the overall size of the driver I think it makes sense to put it all
+in just one file.
+
+> @@ -0,0 +1,113 @@
+> +/*
+> + * AD7923 SPI ADC driver
+> + *
+> + * Copyright 2011 Analog Devices Inc (from AD7298 Driver)
+> + * Copyright 2012 CS Systemes d'Information
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/interrupt.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/spi/spi.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +
+> +#include "ad7923.h"
+> +
+> +/**
+> + * ad7923_update_scan_mode() setup the spi transfer buffer for the new scan mask
+> + **/
+> +int ad7923_update_scan_mode(struct iio_dev *indio_dev,
+> +	const unsigned long *active_scan_mask)
+> +{
+> +	struct ad7923_state *st = iio_priv(indio_dev);
+> +	int i, cmd, channel;
+> +	int scan_count;
+> +
+> +	/* Now compute overall size */
+> +	for (i = 0, channel = 0; i < AD7923_MAX_CHAN; i++)
+> +		if (test_bit(i, active_scan_mask))
+> +			channel = i;
+> +
+> +	cmd = AD7923_WRITE_CR | AD7923_CODING | AD7923_RANGE |
+> +		AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS) |
+> +		AD7923_SEQUENCE_WRITE(AD7923_SEQUENCE_ON) |
+> +		AD7923_CHANNEL_WRITE(channel);
+
+Hm, ok this looks a bit strange. You lookup the first channel which is selected
+and then also sample all channels which come before it. E.g. if only channel 2
+is selected you sample channel 0, 1 and 2. In the trigger handler you push the
+buffer to the IIO core. But in your buffer you have the result of channel 0 in
+the position where IIO would expect channel 2.
+I think it is better if you send a cmd for each channel that needs to be
+samples. E.g.:
+
+	if (for_each_set_bit(i, active_scan_mask, AD7923_MAX_CHAN)) {
+		cmd = AD7923_WRITE_CR | AD7923_CODING | AD7923_RANGE |
+			AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS) |
+			AD7923_SEQUENCE_WRITE(AD7923_SEQUENCE_OFF) |
+			AD7923_CHANNEL_WRITE(i);
+		cmd <<= AD7923_SHIFT_REGISTER;
+		st->tx_buf[j++] = cpu_to_be16(cmd);
+	}
+
+
+> +	cmd <<= AD7923_SHIFT_REGISTER;
+> +	st->tx_buf[0] = cpu_to_be16(cmd);
+> +
+> +	/* build spi ring message */
+> +	st->ring_xfer[0].tx_buf = &st->tx_buf[0];
+> +	st->ring_xfer[0].len = 2;
+> +	st->ring_xfer[0].cs_change = 1;
+> +
+> +	spi_message_init(&st->ring_msg);
+> +	spi_message_add_tail(&st->ring_xfer[0], &st->ring_msg);
+> +
+> +	for (i = 0; i < (channel + 1); i++) {
+> +		st->ring_xfer[i + 1].rx_buf = &st->rx_buf[i];
+> +		st->ring_xfer[i + 1].len = 2;
+> +		st->ring_xfer[i + 1].cs_change = 1;
+> +		spi_message_add_tail(&st->ring_xfer[i + 1], &st->ring_msg);
+> +	}
+> +	/* make sure last transfer cs_change is not set */
+> +	st->ring_xfer[i + 1].cs_change = 0;
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * ad7923_trigger_handler() bh of trigger launched polling to ring buffer
+> + *
+> + * Currently there is no option in this driver to disable the saving of
+> + * timestamps within the ring.
+> + **/
+> +static irqreturn_t ad7923_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct ad7923_state *st = iio_priv(indio_dev);
+> +	s64 time_ns = 0;
+> +	__u16 buf[16];
+> +	int b_sent, i, channel;
+> +
+> +	b_sent = spi_sync(st->spi, &st->ring_msg);
+> +	if (b_sent)
+> +		goto done;
+> +
+> +	if (indio_dev->scan_timestamp) {
+> +		time_ns = iio_get_time_ns();
+> +		memcpy((u8 *)buf + indio_dev->scan_bytes - sizeof(s64),
+> +			&time_ns, sizeof(time_ns));
+> +	}
+> +
+> +	for (i = 0, channel = 0; i < AD7923_MAX_CHAN; i++)
+> +		if (test_bit(i, indio_dev->active_scan_mask))
+> +			channel = i;
+> +
+> +	for (i = 0; i < (channel + 1); i++)
+> +		buf[i] = be16_to_cpu(st->rx_buf[i]);
+
+No need to perform the endianness conversion here. Just mark the channel as IIO_BE.
+
+> +
+> +	iio_push_to_buffer(indio_dev->buffer, (u8 *)buf);
+> +
+> +done:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+[...]
