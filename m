@@ -1,37 +1,43 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <51068BAE.9090801@metafoo.de>
-Date: Mon, 28 Jan 2013 15:31:10 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-052.synserver.de ([212.40.185.52]:1040 "EHLO
+	smtp-out-052.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756240Ab3AIOid (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2013 09:38:33 -0500
+Message-ID: <50ED8112.5020808@metafoo.de>
+Date: Wed, 09 Jan 2013 15:39:14 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Denis Ciocca <denis.ciocca@gmail.com>
-CC: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: STMicroelectronics IIO driver
-References: <1359157488-15969-1-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1359157488-15969-1-git-send-email-denis.ciocca@st.com>
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: Re: IIO Trigger HR-Timer
+References: <50ED4E4E.8030603@st.com>
+In-Reply-To: <50ED4E4E.8030603@st.com>
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01/26/2013 12:44 AM, Denis Ciocca wrote:
-> Hi Jonathan, Lars,
+On 01/09/2013 12:02 PM, Denis CIOCCA wrote:
+> Hi all,
 > 
-> I modified the drivers following the advice of Lars (about code duplication) and Jonathan patches.
-> I also used coccicheck to verify the code. I couldn't test the drivers on the physical devices because I was not in office. I hope to do some tests Monday morning. 
+> Some time ago, I had seen one patch for hr_timer trigger for 
+> asynchronous data acquisition.
+> A lot of customers use the asynchronous data acquisition to avoid wired 
+> interrupt lines.
+> Can I create in st_sensors library one hr_trigger for this purpose or 
+> someone add this patch to the main iio trigger code?
 > 
-> Thanks and Best Regards,
-> 
-> Denis
->  
+> Thanks,
+> Denis--
 
 Hi,
 
-I think the driver is now in a state where we can merge it, good work.
-There are one or two rough edges left, but no blockers and nothing that
-can't be fixed in follow up patches. (And to be honest I'm kind of tired of
-reviewing the same code over and over again ;))
+I've pushed a version of the hr_timer trigger rebased onto iio/togreg to
+https://github.com/lclausen-adi/linux-2.6/tree/iio_highres_timer
 
-So for the whole series:
-
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-
+The trigger works fine, but it needs to be reworked before it can go into
+upstream. The issue is that it is currently instantiated via a platform
+device while it should be instantiated using some other method, for example
+sysfs.
 
 - Lars
