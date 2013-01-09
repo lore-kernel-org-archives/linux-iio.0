@@ -1,127 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38667 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38758 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932551Ab3AIT7T (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2013 14:59:19 -0500
-Message-ID: <50EDCC13.3040802@kernel.org>
-Date: Wed, 09 Jan 2013 19:59:15 +0000
+	with ESMTP id S932484Ab3AIUHU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2013 15:07:20 -0500
+Message-ID: <50EDCDF6.6040806@kernel.org>
+Date: Wed, 09 Jan 2013 20:07:18 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: James Peverill <arsenix@gmail.com>
-CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>
-Subject: Re: IIO for soft realtime control?
-References: <loom.20130106T050717-736@post.gmane.org> <50E960C4.80208@kernel.org> <50EA07D5.7060400@gmail.com>
-In-Reply-To: <50EA07D5.7060400@gmail.com>
+To: Marek Vasut <marex@denx.de>
+CC: Fabio Estevam <festevam@gmail.com>, linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Subject: Re: [PATCH] iio: mxs-lradc: indexes are unsigned
+References: <1357607117-5868-1-git-send-email-festevam@gmail.com> <201301080757.56301.marex@denx.de>
+In-Reply-To: <201301080757.56301.marex@denx.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/06/2013 11:25 PM, James Peverill wrote:
-> On 01/06/2013 06:32 AM, Jonathan Cameron wrote:
->> On 01/06/2013 04:31 AM, James Peverill wrote:
->>> I have been working on realtime robotics under Linux, and just learned about
->>> iio. It seems like many great hardware drivers are being written (some of which
->>> I had started working on in parallel), and it would be great if I could
->>> integrate what I am working on with iio. It seems mostly targeted at streaming
->>> data acquisition and output, but also includes triggering and event support. Has
->>> there been any thought to running realtime control loops using the iio
->>> subsystem? For this application I would be reading from sensors (i2c interface
->>> accelerometers etc) in the 10's of hz (ideally at least 50) and then updating
->>> actuator outputs.
->>>
->>> Any thoughts on the feasibility? I would probably accomplish this by writing a
->>> kernel driver to glue the input iio devices to the output. I'm not sure what
->>> type of latency and jitter would result from this configuration, but this could
->>> limit the applications.
->>>
->> I don't know of anyone else doing this with IIO at the moment (though someone may
->> well shout out in the near future!)
->>
->> So based on 5 mins of thinking about it the situation at the moment is...
->>
->> We handle streaming inputs reasonably well and the just merged in kernel 'buffer'
->> interfaces (which are really just hooks to get the stream of data from a device)
->> should allow a kernel module to get hold of this data fairly efficiently (certainly
->> 50Hz shouldn't be a problem!).  We don't currently have interfaces for getting hold
->> of events in kernel though (threshold etc) but that should be fairly trivial to
->> add.
->>
->> Unfortunately streaming support on the output side is not currently there.  Right now
->> you can set individual DAC outputs from other kernel drivers (though some nice
->> but trivial util functions might be missing) but buffered writing support isn't
->> there yet.  There is a lot of interest in adding this, but from what I recall there
->> are some 'interesting' issues with actually supporting precisely timed writes to
->> DAC chips (usually there is some dma involved).
->> Some spi implementations are capable of doing this I believe but there isn't any
->> kernel support for it as far as I know.
->> I'm guessing some DAC chips have hardware fifos (right now I can only find a TI
->> technote on a separate fifo for this purpose).
->>
->> I've cc'd Lars and Michael because I know this sort of support is of interest to them
->> and they will doubtlessly be able to give some more informed comments!
->>
->> If the buffered output were present then using IIO for real time control should
->> be straight forward.
->>  From the level of interest I've seen in this functionality support will definitely
->> occur at some point though this will happen faster obviously if someone
->> (no hints at all :) takes on implementing such support!
->>
->> In the meantime, using IIO for your input drivers may make sense even if they
->> more involved actuator side comes later.  Or possibliy the slow current dac
->> interface will be 'good enough' timing wise for your application?
->>
->> If you are able to, I'd love to hear more about your project, both in terms
->> of what you are doing (google gives me a fair idea as there aren't
->> many James Peverill's in the world ;) and in terms of the
->> control you are doing in kernel.
->>
->> Jonathan
-> My interest is in flying robots, as your google searches turned up! The ability to run control loops from within a Linux
-> system though has a lot of varied uses. Most flying vehicles and other real time robotics uses small microcontrollers
-> for the fast control, but I am of the opinion that there is no reason you can't run those on a Linux based system. I've
-> played around with Xenomai and other "hard" realtime Linux enhancements, and with these it is certainly possible to meet
-> the timing requirements to control most mechanical systems. Adding the realtime layers though adds quite a bit of
-> complexity and requires rewriting drivers to get the benefits. Now I'm investigating whether a standard kernel driver
-> will suffice. Currently my target hardware platform is the Raspberry Pi (700mhz Arm11), although I like to keep things
-> as hardware independent as possible.
+On 01/08/2013 06:57 AM, Marek Vasut wrote:
+> Dear Fabio Estevam,
 > 
-> In terms of IIO, what would be really cool is if there was a way to glue together the IIO blocks into a control chain.
-> Ie you could take an ADC device and chain it with a PID driver and an output device. Inside the ADC device driver it
-> would pass the data to the next chain element after a new value was read. This way you could chain together devices in a
-> user mode sysfs context and end up with a complete control loop running inside the kernel.
-Whilst this would be possible, if you want this to ultimately go in the mainline kernel
-you'll need to persuade people that such dynamic chaining has a significant enough benefit
-to justify some 'interesting' code. With more static bindings (device tree based probably)
-or at least some static 'this is available for reading, this for writing' bindings to a module
-that acts as glue, there isn't much to prevent you doing this now though as stated the
-output route for data is less well evolved than the input.
-
-> For most of the small flying
-> vehicles I deal with this type of input->PID->output would be adequate as long as it could run at 50hz with no more than
-> a few ms worst case latency between sample acquisition and output change. For hovering vehicles 100hz or 150hz can be
-> beneficial but those are the highest rates of interest for my applications.
+>> From: Fabio Estevam <fabio.estevam@freescale.com>
+>>
+>> Fix the following warning when building with W=1 option:
+>>
+>> drivers/staging/iio/adc/mxs-lradc.c: In function
+>> 'mxs_lradc_trigger_handler': drivers/staging/iio/adc/mxs-lradc.c:244:2:
+>> warning: comparison between signed and unsigned integer expressions
+>> [-Wsign-compare]
+>>
+>> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 > 
-> One critical difference for this type of application though is that "new" data is always preferred over older data, and
-> stale samples are discarded if there is some type of delay in the system.
-If you use the 'buffer' in kernel interfaces, you'll get the data the moment it arrives.
-It's rather misnamed as there isn't actually any buffering before the hook, but rather
-it's where buffers are fed by the raw device.
-So lets call it the 'source' hooks.
-> For data acquisition applications you don't
-> ever want to lose any samples so the focus is on high speed buffering.
-Agreed, those tend to be going to userspace though (and the buffering hooks in using our source
-interface.  Note that data is rather missleadingly sent to this interface by
-iio_push_to_buffers calls - for historical reasons and because right now all the clients
-that hook here do fill buffers using the stream ;)
+> Maybe use "unsigned int" instead? Either way:
+>
+Agreed, I've switched it over on the assumption no one will mind.
 
-So to do this now you'd need to setup iio_map based mappings to the input and ouput devices (these are
-registered typically by client device name).  Then an additional module would instantiate a platform
-device that grabs the input stream (which would probably be interrupt driven).  Your control
-loop would then run and feed outputs via the other iio_map.
-
-Thus a static setup would be easy to play with and would be a sensible first step
-on the way to an nice configurable arrangement.
-
-Jonathan
+If one of you wants to check I didn't do anything silly
+that would be great.
+> Acked-by: Marek Vasut <marex@denx.de>
+added to fixes-togreg branch of iio.git on git.kernel.org
+> 
+>> ---
+>>  drivers/staging/iio/adc/mxs-lradc.c |    2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+>> b/drivers/staging/iio/adc/mxs-lradc.c index fb31b45..6cf3af8 100644
+>> --- a/drivers/staging/iio/adc/mxs-lradc.c
+>> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+>> @@ -239,7 +239,7 @@ static irqreturn_t mxs_lradc_trigger_handler(int irq,
+>> void *p) struct mxs_lradc *lradc = iio_priv(iio);
+>>  	const uint32_t chan_value = LRADC_CH_ACCUMULATE |
+>>  		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
+>> -	int i, j = 0;
+>> +	u32 i, j = 0;
+>>
+>>  	for_each_set_bit(i, iio->active_scan_mask, iio->masklength) {
+>>  		lradc->buffer[j] = readl(lradc->base + LRADC_CH(j));
+> 
+> Best regards,
+> Marek Vasut
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
