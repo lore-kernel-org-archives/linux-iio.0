@@ -1,72 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:51452 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751300Ab3ARKrX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 18 Jan 2013 05:47:23 -0500
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
-	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Tony Lindgren <tony@atomide.com>,
-	Benit Cousson <b-cousson@ti.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Landley <rob@landley.net>,
-	Russell King <linux@arm.linux.org.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v3 3/8] input: touchscreen: ti_tsc: remove unwanted fifo flush
-Date: Fri, 18 Jan 2013 16:18:06 +0530
-Message-ID: <0110c0cb0cbd3c31dfd3f098f207cd5b765d247e.1358502134.git.rachna@ti.com>
-In-Reply-To: <cover.1358502134.git.rachna@ti.com>
-References: <cover.1358502134.git.rachna@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39380 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933621Ab3AIVQZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2013 16:16:25 -0500
+Message-ID: <50EDDE25.4040101@kernel.org>
+Date: Wed, 09 Jan 2013 21:16:21 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/7] staging:iio:adis16080: Perform sign extension
+References: <1357740079-12326-1-git-send-email-lars@metafoo.de> <50EDCE61.8000001@kernel.org> <50EDD472.7000604@metafoo.de>
+In-Reply-To: <50EDD472.7000604@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+On 01/09/2013 08:34 PM, Lars-Peter Clausen wrote:
+> On 01/09/2013 09:09 PM, Jonathan Cameron wrote:
+>> On 01/09/2013 02:01 PM, Lars-Peter Clausen wrote:
+>>> The adis16080 reports sample values in twos complement. So we need to perform a
+>>> sign extension on the result, otherwise negative values will be reported
+>>> incorrectly as large positive values.
+>>>
+>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>> Added to fixes-togreg branch of iio.git
+>>>
+>>> ---
+>>> This one should go into 3.8 if possible, the rest of the series is for 3.9
+>>> ---
+>>>  drivers/staging/iio/gyro/adis16080_core.c | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/staging/iio/gyro/adis16080_core.c b/drivers/staging/iio/gyro/adis16080_core.c
+>>> index 3525a68..149ff99 100644
+>>> --- a/drivers/staging/iio/gyro/adis16080_core.c
+>>> +++ b/drivers/staging/iio/gyro/adis16080_core.c
+>>> @@ -69,7 +69,7 @@ static int adis16080_spi_read(struct iio_dev *indio_dev,
+>>>  	ret = spi_read(st->us, st->buf, 2);
+>>>  
+>>>  	if (ret == 0)
+>>> -		*val = ((st->buf[0] & 0xF) << 8) | st->buf[1];
+>>> +		*val = sign_extend32(12, ((st->buf[0] & 0xF) << 8) | st->buf[1]);
+>>>  	mutex_unlock(&st->buf_lock);
+>>>  
+> 
+> Sorry, now that I look at it from a distance: This is completely wrong...
+> It needs to be,
+> 
+> sign_extend32((st->buf[0] & 0xF) << 8) | st->buf[1], 11);
+> 
+> Sorry again,
+> - Lars
+> 
+Fixed up.
 
-When touchscreen and ADC are used together, this
-unwanted fifo flush leads to loss of ADC data.
-
-Signed-off-by: Patil, Rachna <rachna@ti.com>
----
- drivers/input/touchscreen/ti_am335x_tsc.c |   10 ----------
- 1 file changed, 10 deletions(-)
-
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 0c460f9..064d2b2 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -308,8 +308,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	unsigned int x = 0, y = 0;
- 	unsigned int z1, z2, z;
- 	unsigned int fsm;
--	unsigned int fifo1count, fifo0count;
--	int i;
- 
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
- 	if (status & IRQENB_FIFO0THRES) {
-@@ -318,14 +316,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 		z1 = titsc_readl(ts_dev, REG_FIFO0) & 0xfff;
- 		z2 = titsc_readl(ts_dev, REG_FIFO1) & 0xfff;
- 
--		fifo1count = titsc_readl(ts_dev, REG_FIFO1CNT);
--		for (i = 0; i < fifo1count; i++)
--			titsc_readl(ts_dev, REG_FIFO1);
--
--		fifo0count = titsc_readl(ts_dev, REG_FIFO0CNT);
--		for (i = 0; i < fifo0count; i++)
--			titsc_readl(ts_dev, REG_FIFO0);
--
- 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
- 			/*
- 			 * Calculate pressure using formula
--- 
-1.7.9.5
-
+Hadn't pushed out yet anyway so only messing in my local tree.
