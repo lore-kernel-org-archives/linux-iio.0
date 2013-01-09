@@ -1,30 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog117.obsmtp.com ([207.126.144.143]:33305 "EHLO
-	eu1sys200aog117.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755295Ab3AHQbL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jan 2013 11:31:11 -0500
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org
-Subject: iio: STMicroelectronics iio drivers
-Date: Tue,  8 Jan 2013 17:30:22 +0100
-Message-Id: <1357662626-335-1-git-send-email-denis.ciocca@st.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+Message-ID: <50EDCCB6.1070405@jic23.retrosnub.co.uk>
+Date: Wed, 09 Jan 2013 20:01:58 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+MIME-Version: 1.0
+To: Marek Vasut <marex@denx.de>
+CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Fabio Estevam <fabio.estevam@freescale.com>,
+ Shawn Guo <shawn.guo@linaro.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [PATCH 2/3 V2] iio: mxs: Implement support for touchscreen
+References: <1355449598-15980-1-git-send-email-marex@denx.de> <201212191801.31920.marex@denx.de> <50DC3C1C.3060506@kernel.org> <201301082028.18440.marex@denx.de>
+In-Reply-To: <201301082028.18440.marex@denx.de>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi everybody,
+On 01/08/2013 07:28 PM, Marek Vasut wrote:
+> Dear Jonathan Cameron,
+>
+>> On 12/19/2012 05:01 PM, Marek Vasut wrote:
+>>> Ccing Dmitry.
+>>>
+>>> Also, Jonathan, can I get your review please?
+>> Dratt caught me hiding from this one and hoping it would
+>> go away ;)
+> Still not going away :)
+>
+> Did I miss your reply maybe?
+>
+I certainly remember writing one!
 
-I modified the ST drivers in accordance with Jonathan comments. I couldn't use
-coccicheck because I have some problem when I run 'make coccichek' (I'm working on to
-undestand why).
-
-The others major updates are: 
-- delete of try_reenable_callback (was not necessary);
-- trigger code moved to sensors common code;
-- bugfix DMA buffer cacheline-aligned;
-- check if the device probed is corrected to avoid confusion;
-- improvement of code style;
-
-Thanks,
-
-Denis
-
+http://marc.info/?l=linux-iio&m=135660790520224&w=2
+looks about right...
