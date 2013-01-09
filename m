@@ -1,43 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44995 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754438Ab3ALV7U (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2013 16:59:20 -0500
-Message-ID: <50F1DCB5.5030003@kernel.org>
-Date: Sat, 12 Jan 2013 21:59:17 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.9]:36232 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932106Ab3AIURt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2013 15:17:49 -0500
+From: Marek Vasut <marex@denx.de>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Subject: Re: [PATCH 2/3 V2] iio: mxs: Implement support for touchscreen
+Date: Wed, 9 Jan 2013 21:17:44 +0100
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>
+References: <1355449598-15980-1-git-send-email-marex@denx.de> <201301082028.18440.marex@denx.de> <50EDCCB6.1070405@jic23.retrosnub.co.uk>
+In-Reply-To: <50EDCCB6.1070405@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: lars@metafoo.de, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/4] iio:common: Add STMicroelectronics common library
-References: <1357733221-6248-1-git-send-email-denis.ciocca@st.com> <1357733221-6248-2-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1357733221-6248-2-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201301092117.44672.marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-...
-> +int st_sensors_read_axis_data(struct iio_dev *indio_dev, u8 ch_addr, int *data)
-> +{
-> +	int err;
-> +	u8 outdata[ST_SENSORS_BYTE_FOR_CHANNEL];
-> +	struct st_sensor_data *sdata = iio_priv(indio_dev);
-> +
-> +	err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
-> +			ch_addr, ST_SENSORS_BYTE_FOR_CHANNEL,
-> +						outdata, sdata->multiread_bit);
-> +	if (err < 0)
-> +		goto read_error;
-> +
+Dear Jonathan Cameron,
 
-If you want to keep the cast this way around, then make
-it __le16 instead of u16.  Personally I'd make outdata a __le16
-array and then do the cast the other way, but it is far from important.
+> On 01/08/2013 07:28 PM, Marek Vasut wrote:
+> > Dear Jonathan Cameron,
+> > 
+> >> On 12/19/2012 05:01 PM, Marek Vasut wrote:
+> >>> Ccing Dmitry.
+> >>> 
+> >>> Also, Jonathan, can I get your review please?
+> >> 
+> >> Dratt caught me hiding from this one and hoping it would
+> >> go away ;)
+> > 
+> > Still not going away :)
+> > 
+> > Did I miss your reply maybe?
+> 
+> I certainly remember writing one!
+> 
+> http://marc.info/?l=linux-iio&m=135660790520224&w=2
+> looks about right...
 
-> +	*data = ((s16)le16_to_cpup((u16 *)outdata));
-> +
-> +read_error:
-> +	return err;
-> +}
-> +EXPORT_SYMBOL(st_sensors_read_axis_data);
-...
+Damn, sorry. I don't see it in my mailer so maybe it got lost. Anyway, did I 
+miss the reply from Dmitry as well?
+
+Best regards,
+Marek Vasut
