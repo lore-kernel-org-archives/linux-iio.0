@@ -1,55 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48363 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39684 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753987Ab3AVMMY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jan 2013 07:12:24 -0500
-Message-ID: <50FE8226.5050209@kernel.org>
-Date: Tue, 22 Jan 2013 12:12:22 +0000
+	with ESMTP id S933124Ab3AIVoz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2013 16:44:55 -0500
+Message-ID: <50EDE4D6.4070703@kernel.org>
+Date: Wed, 09 Jan 2013 21:44:54 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Thierry Reding <thierry.reding@avionic-design.de>
-CC: linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Wolfram Sang <w.sang@pengutronix.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 11/33] iio: Convert to devm_ioremap_resource()
-References: <1358762966-20791-1-git-send-email-thierry.reding@avionic-design.de> <1358762966-20791-12-git-send-email-thierry.reding@avionic-design.de>
-In-Reply-To: <1358762966-20791-12-git-send-email-thierry.reding@avionic-design.de>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/7] staging:iio:adis16080: Add device id table entry
+ for the adis16100
+References: <1357740079-12326-1-git-send-email-lars@metafoo.de> <1357740079-12326-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1357740079-12326-2-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/21/2013 10:09 AM, Thierry Reding wrote:
-> Convert all uses of devm_request_and_ioremap() to the newly introduced
-> devm_ioremap_resource() which provides more consistent error handling.
+On 01/09/2013 02:01 PM, Lars-Peter Clausen wrote:
+> The adis16100 is very similar to the adis16080. The driver description already
+> states that the driver supports the adis16100 as-well. But so far the there is
+> no device id table for the adis16100 and the drivers does not bind to a device
+> named adis16100.
 > 
-> Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
-> Cc: Jonathan Cameron <jic23@cam.ac.uk>
-> Cc: linux-iio@vger.kernel.org
-Looks fine to me.
-
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+applied to togreg branch of iio.git
 > ---
->  drivers/iio/adc/at91_adc.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>  drivers/staging/iio/gyro/Kconfig          | 4 ++--
+>  drivers/staging/iio/gyro/adis16080_core.c | 9 ++++++++-
+>  2 files changed, 10 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> index a526c0e..83c836b 100644
-> --- a/drivers/iio/adc/at91_adc.c
-> +++ b/drivers/iio/adc/at91_adc.c
-> @@ -557,9 +557,9 @@ static int at91_adc_probe(struct platform_device *pdev)
+> diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
+> index ea295b2..2f9467e 100644
+> --- a/drivers/staging/iio/gyro/Kconfig
+> +++ b/drivers/staging/iio/gyro/Kconfig
+> @@ -14,8 +14,8 @@ config ADIS16080
+>  	tristate "Analog Devices ADIS16080/100 Yaw Rate Gyroscope with SPI driver"
+>  	depends on SPI
+>  	help
+> -	  Say yes here to build support for Analog Devices adis16080/100 Yaw Rate
+> -	  Gyroscope with SPI.
+> +	  Say yes here to build support for Analog Devices ADIS16080, ADIS16100 Yaw
+> +	  Rate Gyroscope with SPI.
 >  
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  config ADIS16130
+>  	tristate "Analog Devices ADIS16130 High Precision Angular Rate Sensor driver"
+> diff --git a/drivers/staging/iio/gyro/adis16080_core.c b/drivers/staging/iio/gyro/adis16080_core.c
+> index 149ff99..0268f2a 100644
+> --- a/drivers/staging/iio/gyro/adis16080_core.c
+> +++ b/drivers/staging/iio/gyro/adis16080_core.c
+> @@ -185,6 +185,13 @@ static int adis16080_remove(struct spi_device *spi)
+>  	return 0;
+>  }
 >  
-> -	st->reg_base = devm_request_and_ioremap(&pdev->dev, res);
-> -	if (!st->reg_base) {
-> -		ret = -ENOMEM;
-> +	st->reg_base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(st->reg_base)) {
-> +		ret = PTR_ERR(st->reg_base);
->  		goto error_free_device;
->  	}
+> +static const struct spi_device_id adis16080_ids[] = {
+> +	{ "adis16080", 0 },
+> +	{ "adis16100", 0 },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(spi, adis16080_ids);
+> +
+>  static struct spi_driver adis16080_driver = {
+>  	.driver = {
+>  		.name = "adis16080",
+> @@ -192,10 +199,10 @@ static struct spi_driver adis16080_driver = {
+>  	},
+>  	.probe = adis16080_probe,
+>  	.remove = adis16080_remove,
+> +	.id_table = adis16080_ids,
+>  };
+>  module_spi_driver(adis16080_driver);
 >  
+>  MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+>  MODULE_DESCRIPTION("Analog Devices ADIS16080/100 Yaw Rate Gyroscope Driver");
+>  MODULE_LICENSE("GPL v2");
+> -MODULE_ALIAS("spi:adis16080");
 > 
