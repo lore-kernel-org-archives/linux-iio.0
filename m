@@ -1,64 +1,63 @@
-Return-Path: <dmitry.torokhov@gmail.com>
-Date: Thu, 10 Jan 2013 09:46:30 -0800
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Marek Vasut <marex@denx.de>
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Shawn Guo <shawn.guo@linaro.org>
-Subject: Re: [PATCH 2/3 V2] iio: mxs: Implement support for touchscreen
-Message-ID: <20130110174630.GB2797@core.coreip.homeip.net>
-References: <1355449598-15980-1-git-send-email-marex@denx.de>
- <201212191801.31920.marex@denx.de>
- <20130110005748.GA947@core.coreip.homeip.net>
- <201301101048.38036.marex@denx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-052.synserver.de ([212.40.185.52]:1687 "EHLO
+	smtp-out-052.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751469Ab3AJJyb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jan 2013 04:54:31 -0500
+Message-ID: <50EE8FFD.2000000@metafoo.de>
+Date: Thu, 10 Jan 2013 10:55:09 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <201301101048.38036.marex@denx.de>
-List-ID: <linux-iio@vger.kernel.org>
+To: Julia Lawall <julia.lawall@lip6.fr>
+CC: Grant Likely <grant.likely@secretlab.ca>,
+	spi-devel-general@lists.sourceforge.net,
+	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/3] spi: Add helper functions for setting up transfers
+References: <1357752671-30222-1-git-send-email-lars@metafoo.de> <alpine.DEB.2.02.1301100951060.2063@localhost6.localdomain6>
+In-Reply-To: <alpine.DEB.2.02.1301100951060.2063@localhost6.localdomain6>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Jan 10, 2013 at 10:48:37AM +0100, Marek Vasut wrote:
-> Dear Dmitry Torokhov,
+On 01/10/2013 09:53 AM, Julia Lawall wrote:
+>> +@r1@
+>> +identifier fn;
+>> +identifier xfers;
+>> +@@
+>> +fn(...)
+>> +{
+>> +	...
+>> +(
+>> +	struct spi_transfer xfers[...];
+>> +|
+>> +	struct spi_transfer xfers[];
+>> +)
+>> +	...
+>> +}
 > 
-> [...]
-> > > > +	enum mxs_lradc_ts	use_touchscreen;
-> > > > +	unsigned int		stop_touchscreen:1;
-> > > > +	unsigned int		use_touchbutton:1;
-> > 
-> > Can we make them bools instead of bit fields?
+> Can it happen that there would be more than one spi_transfer or spi_message
+> variable per function?  This semantic patch will only treat the case where
+> there is only one, because the ... before an after the variable declaration
+> won't match another declaration of the same form.
 > 
-> Sure.
-> [...]
-> 
-> > > > +static void mxs_lradc_ts_close(struct input_dev *dev)
-> > > > +{
-> > > > +	struct mxs_lradc *lradc = input_get_drvdata(dev);
-> > > > +
-> > > > +	/* Indicate the touchscreen is stopping. */
-> > > > +	lradc->stop_touchscreen = 1;
-> > > > +
-> > > > +	/* Disable touchscreen touch-detect IRQ. */
-> > > > +	writel(LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
-> > > > +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
-> > > > +
-> > > > +	/* Power-down touchscreen touch-detect circuitry. */
-> > > > +	writel(LRADC_CTRL0_TOUCH_DETECT_ENABLE,
-> > > > +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
-> > 
-> > These 2 writes are racing with writes in mxs_lradc_ts_work(). I think
-> > you need to:
-> > 
-> > 	lradc->stop_touchscreen = true;
-> > 	mb();
-> 
-> Nice catch, do we need the memory barrier here though, is it not enough to 
-> reorder the cancel_work_sync() just before the register writes?
+> julia
 
-You really need to make sure that setting lradc->stop_touchscreen =
-true; is not reordered, because otherwise you may cancel the work,
-interrupt happens and reschedules it, and then you set up the flag.
+I guess it could happen, but I would consider it to be very rare. There are
+a few examples of multiple transfers in the kernel. But most of them look like
 
-Thanks.
+struct spi_message msg;
+struct spi_transfer xfer_foo;
+struct spi_transfer xfer_bar;
 
--- 
-Dmitry
+...
+spi_message_add_tail(&xfer_foo, &msg);
+spi_message_add_tail(&xfer_bar, &msg);
+
+So the transformation can't be applied here anyway.
+
+Do you have an idea how to change the rule to work with multiple
+transfers/messages per function? If it would make the cocci file more
+complex I wouldn't bother to take care of it, since it basically has no
+practical use.
+
+- Lars
