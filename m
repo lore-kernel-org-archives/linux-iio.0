@@ -1,71 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34026 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751545Ab3ASMvx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 19 Jan 2013 07:51:53 -0500
-Message-ID: <50FA96E0.2040604@kernel.org>
-Date: Sat, 19 Jan 2013 12:51:44 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: "Getz, Robin" <robin.getz@analog.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Alessandro Rubini <rubini@gnudd.com>,
-	"greg@kroah.com" <greg@kroah.com>,
-	"christophe.leroy@c-s.fr" <christophe.leroy@c-s.fr>,
-	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"patrick.vasseur@c-s.fr" <patrick.vasseur@c-s.fr>
-Subject: Re: [PATCH] IIO ADC support for AD7923
-References: <50F199F7.7020600@metafoo.de> <20130117171100.GA24398@mail.gnudd.com> <50F83695.506@metafoo.de> <201301181802.14382.robin.getz@analog.com>
-In-Reply-To: <201301181802.14382.robin.getz@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Fengguang Wu <fengguang.wu@intel.com>
+Subject: [PATCH] iio: fix Kconfig for max1363
+Date: Thu, 10 Jan 2013 18:29:50 +0100
+Message-Id: <1357838990-32503-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <20130110101642.GA18411@localhost>
+References: <20130110101642.GA18411@localhost>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 01/18/2013 11:02 PM, Getz, Robin wrote:
-> On Thu 17 Jan 2013 12:36, Lars-Peter Clausen pondered:
->> On 01/17/2013 06:11 PM, Alessandro Rubini wrote:
->>> [...]
->>>
->>> But yes, you are right. I'm working on another I/O subsystem. We are
->>> gong to release zio-1.0 in a few days, because the thing is mature
->>> and used in production.
-> 
-> Neither means it's a good idea for upstream :)
-> 
->> Still it's a very bad idea to have two subsystem which have a huge overlap
->> in both functionality and targeted devices. It will gives us all lots of
->> headaches later on. As IIO continues to evolve it will get support for some
->> of the features that only ZIO supports at the moment and as ZIO grows it
->> will get support for features currently only supported by IIO. So in the
->> end we have two frameworks for the very same purpose.
-> 
-> I want to strongly agree with Lars-Peter. Lets work together on one thing - 
-> which tries to solve all the our system level issues. As an end user - I 
-> don't want to re-write userspace for multiple interfaces to the same 
-> underlying ADC/DACs.
-> 
-> I don't know how Greg feels about another subsystem in the kernel which 
-> duplicates existing functionality/targetted devices - but it doesn't sound 
-> like a good idea to me.
-> 
->>> I hope to meet you in person at fosdem and be able to talk over a beer
->>> or two.
->>
->> Looking forward to meeting you :)
-> 
-> Hopefully you can come to some logical conclusions over a friendly beverage. 
-> Even if you can't decide on how to merge things (plan for adding missing 
-> features from one to the other), maybe it's just deciding on how to get as 
-> much reuse as possible (duplication of device register and bit definitions?)
-> 
+ERROR: "iio_triggered_buffer_setup" [drivers/iio/adc/max1363.ko] undefined!
+ERROR: "iio_triggered_buffer_cleanup" [drivers/iio/adc/max1363.ko] undefined!
 
-I second these comments from Lars and Robin (or third I suppose ;).
-Lets get the best possible result. The source of an idea or code
-really doesn't matter in the long run, what matters is that we
-get a solution that works well for all users.
+add select IIO_TRIGGERED_BUFFER
 
-Enjoy those beverages (and fosdem of course!)
+IIO_TRIGGERED_BUFFER in turn selects IIO_TRIGGER and IIO_KFIFO_BUF, so drop those
+MAX1363_RING_BUFFER is not used anymore
 
-Jonathan
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Fengguang Wu <fengguang.wu@intel.com>
+---
+ drivers/iio/adc/Kconfig | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index fe822a1..e372257 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -100,10 +100,8 @@ config LP8788_ADC
+ config MAX1363
+ 	tristate "Maxim max1363 ADC driver"
+ 	depends on I2C
+-	select IIO_TRIGGER
+-	select MAX1363_RING_BUFFER
+ 	select IIO_BUFFER
+-	select IIO_KFIFO_BUF
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say yes here to build support for many Maxim i2c analog to digital
+ 	  converters (ADC). (max1361, max1362, max1363, max1364, max1036,
+-- 
+1.8.0.3
