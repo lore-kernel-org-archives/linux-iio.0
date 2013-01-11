@@ -1,37 +1,39 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-43.csi.cam.ac.uk ([131.111.8.143]:42656 "EHLO
-	ppsw-43.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754363Ab3AVQQr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jan 2013 11:16:47 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de, denis.ciocca@st.com,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 08/10] iio:accel:st_accel drop incorrect line from kconfig comment
-Date: Tue, 22 Jan 2013 16:16:37 +0000
-Message-Id: <1358871399-11216-9-git-send-email-jic23@kernel.org>
-In-Reply-To: <1358871399-11216-1-git-send-email-jic23@kernel.org>
-References: <50FEBB20.7070407@kernel.org>
- <1358871399-11216-1-git-send-email-jic23@kernel.org>
+Received: from smtp-out-054.synserver.de ([212.40.185.54]:1101 "EHLO
+	smtp-out-054.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753911Ab3AKKsz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jan 2013 05:48:55 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:gyro: Remove stale Makefile entry
+Date: Fri, 11 Jan 2013 11:49:30 +0100
+Message-Id: <1357901370-1170-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
----
- drivers/iio/accel/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+Commit a301d425e ("staging:iio:gyro remove adis16251 driver as now supported by
+adis16260 driver") removed the adis16251, but left its Makefile entry intact.
+This patch removes the unused Makefile entry.
 
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 52b8956..bb59496 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -39,7 +39,6 @@ config IIO_ST_ACCEL_3AXIS
- 	  - st_accel (core functions for the driver [it is mandatory]);
- 	  - st_accel_i2c (necessary for the I2C devices [optional*]);
- 	  - st_accel_spi (necessary for the SPI devices [optional*]);
--	  - st_accel_buffer (necessary for triggered buffer [optional]);
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/gyro/Makefile | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
+index 1303569..79bef4e 100644
+--- a/drivers/staging/iio/gyro/Makefile
++++ b/drivers/staging/iio/gyro/Makefile
+@@ -14,8 +14,5 @@ obj-$(CONFIG_ADIS16130) += adis16130.o
+ adis16260-y             := adis16260_core.o
+ obj-$(CONFIG_ADIS16260) += adis16260.o
  
- 	  (*) one of these is necessary to do something.
- 
+-adis16251-y             := adis16251_core.o
+-obj-$(CONFIG_ADIS16251) += adis16251.o
+-
+ adxrs450-y             := adxrs450_core.o
+ obj-$(CONFIG_ADXRS450) += adxrs450.o
 -- 
-1.8.1.1
+1.8.0
 
