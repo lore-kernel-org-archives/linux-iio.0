@@ -1,51 +1,61 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:36998 "EHLO
-	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753199Ab3AZKXf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Jan 2013 05:23:35 -0500
-Message-ID: <5103A9C2.40206@cam.ac.uk>
-Date: Sat, 26 Jan 2013 10:02:42 +0000
-From: Jonathan Cameron <jic23@cam.ac.uk>
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: Lauri Hintsala <lauri.hintsala@bluegiga.com>
+Subject: Re: [PATCH 1/2 V3] iio: mxs: Implement support for touchscreen
+Date: Fri, 11 Jan 2013 10:06:03 +0100
+Cc: linux-iio@vger.kernel.org,
+ Fabio Estevam <fabio.estevam@freescale.com>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ linux-arm-kernel@lists.infradead.org,
+ Shawn Guo <shawn.guo@linaro.org>,
+ Jonathan Cameron <jic23@kernel.org>
+References: <1357861431-8978-1-git-send-email-marex@denx.de> <50EFCDF2.7090207@bluegiga.com>
+In-Reply-To: <50EFCDF2.7090207@bluegiga.com>
 MIME-Version: 1.0
-To: Randy Dunlap <rdunlap@infradead.org>
-CC: Herbert Xu <herbert@gondor.apana.org.au>,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, Artem Bityutskiy <dedekind1@gmail.com>,
-	linux-mtd@lists.infradead.org, linux-crypto@vger.kernel.org
-Subject: Re: linux-next: Tree for Jan 23 (mtd/ubi and iio and crypto/crc32[c])
-References: <20130123174336.47c0113740a14da7f6a92187@canb.auug.org.au> <51006DC9.30802@infradead.org> <20130123232316.GB25726@gondor.apana.org.au> <51007545.5040406@infradead.org>
-In-Reply-To: <51007545.5040406@infradead.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201301111006.03722.marex@denx.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 01/23/2013 11:41 PM, Randy Dunlap wrote:
-> On 01/23/13 15:23, Herbert Xu wrote:
->> On Wed, Jan 23, 2013 at 03:10:01PM -0800, Randy Dunlap wrote:
->>> On 01/22/13 22:43, Stephen Rothwell wrote:
->>>> Hi all,
->>>>
->>>> Changes since 20130122:
->>>>
->>>
->>>
->>> on i386:
->>>
->>> ERROR: "crc32_le" [drivers/mtd/ubi/ubi.ko] undefined!
->>> ERROR: "iio_triggered_buffer_setup" [drivers/iio/adc/max1363.ko] undefined!
->>> ERROR: "iio_triggered_buffer_cleanup" [drivers/iio/adc/max1363.ko] undefined!
->>> ERROR: "__crc32c_le" [crypto/crc32c.ko] undefined!
->>> ERROR: "crc32_le" [crypto/crc32.ko] undefined!
->>
->> Weird.  You do have CONFIG_CRC32 selected, so did it compile
->> a lib/crc32.ko or not?
+Dear Lauri Hintsala,
+
+> Hi,
 > 
-> Hmph, this seems to be some kind of rebuild problem.  It's not
-> reproducible, so the mtd/ubi and crypto reports above are incorrect --
-> please ignore them.  Only the iio one is reproducible.
+> On 01/11/2013 01:43 AM, Marek Vasut wrote:
+> > This patch implements support for sampling of a touchscreen into
+> > the MXS LRADC driver. The LRADC block allows configuring some of
+> > it's channels into special mode where they either output the drive
+> > voltage or sample it, allowing it to operate a 4-wire or 5-wire
+> > resistive touchscreen.
+> > 
+> > In case the touchscreen mode is enabled, the LRADC slot #7 is
+> > reserved for touchscreen only, therefore it is not possible to
+> > sample 8 LRADC channels at time, but only 7 channels.
+> > 
+> > The touchscreen controller is configured such that the PENDOWN event
+> > disables touchscreen interrupts and triggers execution of worker
+> > thread, which then polls the touchscreen controller for X, Y and
+> > Pressure values. This reduces the overhead of interrupt-driven
+> > operation. Upon the PENUP event, the worker thread re-enables the
+> > PENDOWN detection interrupt and exits.
+> > 
+> > Signed-off-by: Marek Vasut <marex@denx.de>
+> > Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> > Cc: Fabio Estevam <fabio.estevam@freescale.com>
+> > Cc: Jonathan Cameron <jic23@kernel.org>
+> > Cc: Shawn Guo <shawn.guo@linaro.org>
+> > ---
+> > 
+> >   .../bindings/staging/iio/adc/mxs-lradc.txt         |    6 +
+> >   drivers/staging/iio/adc/mxs-lradc.c                |  473
+> >   +++++++++++++++++++- 2 files changed, 455 insertions(+), 24
+> >   deletions(-)
 > 
-> Sorry about that.
+> Works fine with apx4devkit.
 > 
-For iio one had a patch for a while, just not had a chance to send
-a pull request to Greg until today.  Sorry for the slow response.
+> Tested-by: Lauri Hintsala <lauri.hintsala@bluegiga.com>
+
+Thanks Lauri :)
+
+Best regards,
+Marek Vasut
