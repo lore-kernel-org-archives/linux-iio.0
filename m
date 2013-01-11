@@ -1,370 +1,761 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-090.synserver.de ([212.40.185.90]:1092 "EHLO
-	smtp-out-088.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751124Ab3A3PVd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Jan 2013 10:21:33 -0500
-Message-ID: <51093AB8.2070809@metafoo.de>
-Date: Wed, 30 Jan 2013 16:22:32 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <dmitry.torokhov@gmail.com>
+Date: Fri, 11 Jan 2013 08:54:20 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Marek Vasut <marex@denx.de>
+Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH 1/2 V3] iio: mxs: Implement support for touchscreen
+Message-ID: <20130111165420.GA11224@core.coreip.homeip.net>
+References: <1357861431-8978-1-git-send-email-marex@denx.de>
 MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
-	Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
-Subject: Re: [PATCH] iio: gyro: Add itg3200
-References: <1345192038-5665-1-git-send-email-not@iis.fhg.de> <1359471547-32178-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
-In-Reply-To: <1359471547-32178-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1357861431-8978-1-git-send-email-marex@denx.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 01/29/2013 03:59 PM, Manuel Stahl wrote:
-> Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Hi Marek,
 
-Hi,
-
-Looks mostly good. One usage of outdated API and otherwise mostly just minor
-style issues.
-
-[...]
-> +obj-$(CONFIG_ITG3200)   += itg3200.o
-> diff --git a/drivers/iio/gyro/itg3200_buffer.c b/drivers/iio/gyro/itg3200_buffer.c
-> new file mode 100644
-> index 0000000..6242705
-> --- /dev/null
-> +++ b/drivers/iio/gyro/itg3200_buffer.c
-> @@ -0,0 +1,83 @@
+On Fri, Jan 11, 2013 at 12:43:50AM +0100, Marek Vasut wrote:
+> This patch implements support for sampling of a touchscreen into
+> the MXS LRADC driver. The LRADC block allows configuring some of
+> it's channels into special mode where they either output the drive
+> voltage or sample it, allowing it to operate a 4-wire or 5-wire
+> resistive touchscreen.
+> 
+> In case the touchscreen mode is enabled, the LRADC slot #7 is
+> reserved for touchscreen only, therefore it is not possible to
+> sample 8 LRADC channels at time, but only 7 channels.
+> 
+> The touchscreen controller is configured such that the PENDOWN event
+> disables touchscreen interrupts and triggers execution of worker
+> thread, which then polls the touchscreen controller for X, Y and
+> Pressure values. This reduces the overhead of interrupt-driven
+> operation. Upon the PENUP event, the worker thread re-enables the
+> PENDOWN detection interrupt and exits.
+> 
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: Fabio Estevam <fabio.estevam@freescale.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Shawn Guo <shawn.guo@linaro.org>
+> ---
+>  .../bindings/staging/iio/adc/mxs-lradc.txt         |    6 +
+>  drivers/staging/iio/adc/mxs-lradc.c                |  473 +++++++++++++++++++-
+>  2 files changed, 455 insertions(+), 24 deletions(-)
+> 
+> V2: - Replace the use_touchscreen* with enum mxs_lradc_ts, which now tracks
+>       touchscreen state (OFF, 4-wire, 5-wire)
+>     - Add "stop_touchscreen" bit, which indicates the touchscreen is going down
+>       and makes the driver not re-enable touchscreen interrupts and start any
+>       new touchscreen works.
+>     - Make all bitfields "unsigned int" instead of plain "int"
+>     - Use switch(plate) in mxs_lradc_ts_sample()
+>     - Cancel touchscreen thread in mxs_lradc_ts_close(), do this only after
+>       we are sure touchscreen interrupt is off and will never be re-enabled.
+>       This avoids serious race condition.
+>     - Call input_free_device() if input_register_device() fails to avoid memory
+>       leak.
+>     - Do not call input_free_device() after input_unregister_device() in
+>       mxs_lradc_ts_unregister() to avoid double-free
+> 
+> V3: - Replace bitfields with bools
+>     - Make sure touchscreen workQ doesn't cause race condition upon closing
+>       the input device
+>     - Make touchscreen allocation failure fatal
+>     - Remove redundant check for lradc->ts_input in mxs_lradc_ts_unregister()
+>     - Drop __devinit and __devexit
+> 
+> diff --git a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> index 801d58c..4688205 100644
+> --- a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> +++ b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> @@ -5,6 +5,12 @@ Required properties:
+>  - reg: Address and length of the register set for the device
+>  - interrupts: Should contain the LRADC interrupts
+>  
+> +Optional properties:
+> +- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
+> +                               to LRADC. Valid value is either 4 or 5. If this
+> +                               property is not present, then the touchscreen is
+> +                               disabled.
+> +
+>  Examples:
+>  
+>  	lradc@80050000 {
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index 6249957..2db344b 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -32,6 +32,8 @@
+>  #include <linux/stmp_device.h>
+>  #include <linux/bitops.h>
+>  #include <linux/completion.h>
+> +#include <linux/delay.h>
+> +#include <linux/input.h>
+>  
+>  #include <mach/mxs.h>
+>  #include <mach/common.h>
+> @@ -59,6 +61,21 @@
+>  #define LRADC_DELAY_TIMER_PER	200
+>  #define LRADC_DELAY_TIMER_LOOP	5
+>  
 > +/*
-> + * itg3200_ring.c -- support InvenSense ITG3200
-> + *                   Digital 3-Axis Gyroscope driver
-> + *
-> + * Copyright (c) 2011 Christian Strobel <christian.strobel@iis.fraunhofer.de>
-> + * Copyright (c) 2011 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-> + * Copyright (c) 2012 Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
+> + * Once the pen touches the touchscreen, the touchscreen switches from
+> + * IRQ-driven mode to polling mode to prevent interrupt storm. The polling
+> + * is realized by worker thread, which is called every 20 or so milliseconds.
+> + * This gives the touchscreen enough fluence and does not strain the system
+> + * too much.
 > + */
+> +#define LRADC_TS_SAMPLE_DELAY_MS	5
 > +
-> +#include <linux/slab.h>
-> +#include <linux/i2c.h>
-> +#include <linux/interrupt.h>
+> +/*
+> + * The LRADC reads the following amount of samples from each touchscreen
+> + * channel and the driver then computes avarage of these.
+> + */
+> +#define LRADC_TS_SAMPLE_AMOUNT		4
 > +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/gyro/itg3200.h>
+>  static const char * const mxs_lradc_irq_name[] = {
+>  	"mxs-lradc-touchscreen",
+>  	"mxs-lradc-thresh0",
+> @@ -75,6 +92,12 @@ static const char * const mxs_lradc_irq_name[] = {
+>  	"mxs-lradc-button1",
+>  };
+>  
+> +enum mxs_lradc_ts {
+> +	MXS_LRADC_TOUCHSCREEN_NONE = 0,
+> +	MXS_LRADC_TOUCHSCREEN_4WIRE,
+> +	MXS_LRADC_TOUCHSCREEN_5WIRE,
+> +};
 > +
-> +static irqreturn_t itg3200_trigger_handler(int irq, void *p)
+>  struct mxs_lradc {
+>  	struct device		*dev;
+>  	void __iomem		*base;
+> @@ -86,21 +109,69 @@ struct mxs_lradc {
+>  	struct mutex		lock;
+>  
+>  	struct completion	completion;
+> +
+> +	/*
+> +	 * Touchscreen LRADC channels receives a private slot in the CTRL4
+> +	 * register, the slot #7. Therefore only 7 slots instead of 8 in the
+> +	 * CTRL4 register can be mapped to LRADC channels when using the
+> +	 * touchscreen.
+> +	 *
+> +	 * Furthermore, certain LRADC channels are shared between touchscreen
+> +	 * and/or touch-buttons and generic LRADC block. Therefore when using
+> +	 * either of these, these channels are not available for the regular
+> +	 * sampling. The shared channels are as follows:
+> +	 *
+> +	 * CH0 -- Touch button #0
+> +	 * CH1 -- Touch button #1
+> +	 * CH2 -- Touch screen XPUL
+> +	 * CH3 -- Touch screen YPLL
+> +	 * CH4 -- Touch screen XNUL
+> +	 * CH5 -- Touch screen YNLR
+> +	 * CH6 -- Touch screen WIPER (5-wire only)
+> +	 *
+> +	 * The bitfields below represents which parts of the LRADC block are
+> +	 * switched into special mode of operation. These channels can not
+> +	 * be sampled as regular LRADC channels. The driver will refuse any
+> +	 * attempt to sample these channels.
+> +	 */
+> +#define CHAN_MASK_TOUCHBUTTON		(0x3 << 0)
+> +#define CHAN_MASK_TOUCHSCREEN_4WIRE	(0xf << 2)
+> +#define CHAN_MASK_TOUCHSCREEN_5WIRE	(0x1f << 2)
+> +	enum mxs_lradc_ts	use_touchscreen;
+> +	bool			stop_touchscreen;
+> +	bool			use_touchbutton;
+> +
+> +	struct input_dev	*ts_input;
+> +	struct work_struct	ts_work;
+>  };
+>  
+>  #define	LRADC_CTRL0				0x00
+> -#define LRADC_CTRL0_TOUCH_DETECT_ENABLE		(1 << 23)
+> -#define LRADC_CTRL0_TOUCH_SCREEN_TYPE		(1 << 22)
+> +#define	LRADC_CTRL0_TOUCH_DETECT_ENABLE		(1 << 23)
+> +#define	LRADC_CTRL0_TOUCH_SCREEN_TYPE		(1 << 22)
+> +#define	LRADC_CTRL0_YNNSW	/* YM */	(1 << 21)
+> +#define	LRADC_CTRL0_YPNSW	/* YP */	(1 << 20)
+> +#define	LRADC_CTRL0_YPPSW	/* YP */	(1 << 19)
+> +#define	LRADC_CTRL0_XNNSW	/* XM */	(1 << 18)
+> +#define	LRADC_CTRL0_XNPSW	/* XM */	(1 << 17)
+> +#define	LRADC_CTRL0_XPPSW	/* XP */	(1 << 16)
+> +#define	LRADC_CTRL0_PLATE_MASK			(0x3f << 16)
+>  
+>  #define	LRADC_CTRL1				0x10
+> -#define	LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
+> -#define	LRADC_CTRL1_LRADC_IRQ_MASK		0x1fff
+> +#define	LRADC_CTRL1_TOUCH_DETECT_IRQ_EN		(1 << 24)
+>  #define	LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
+>  #define	LRADC_CTRL1_LRADC_IRQ_EN_MASK		(0x1fff << 16)
+> +#define	LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
+> +#define	LRADC_CTRL1_TOUCH_DETECT_IRQ		(1 << 8)
+> +#define	LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
+> +#define	LRADC_CTRL1_LRADC_IRQ_MASK		0x1fff
+> +#define	LRADC_CTRL1_LRADC_IRQ_OFFSET		0
+>  
+>  #define	LRADC_CTRL2				0x20
+>  #define	LRADC_CTRL2_TEMPSENSE_PWD		(1 << 15)
+>  
+> +#define	LRADC_STATUS				0x40
+> +#define	LRADC_STATUS_TOUCH_DETECT_RAW		(1 << 0)
+> +
+>  #define	LRADC_CH(n)				(0x50 + (0x10 * (n)))
+>  #define	LRADC_CH_ACCUMULATE			(1 << 29)
+>  #define	LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
+> @@ -132,6 +203,7 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>  {
+>  	struct mxs_lradc *lradc = iio_priv(iio_dev);
+>  	int ret;
+> +	unsigned long mask;
+>  
+>  	if (m != IIO_CHAN_INFO_RAW)
+>  		return -EINVAL;
+> @@ -140,6 +212,12 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>  	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
+>  		return -EINVAL;
+>  
+> +	/* Validate the channel if it doesn't intersect with reserved chans. */
+> +	bitmap_set(&mask, chan->channel, 1);
+> +	ret = iio_validate_scan_mask_onehot(iio_dev, &mask);
+> +	if (ret)
+> +		return -EINVAL;
+> +
+>  	/*
+>  	 * See if there is no buffered operation in progess. If there is, simply
+>  	 * bail out. This can be improved to support both buffered and raw IO at
+> @@ -161,7 +239,11 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>  		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+>  	writel(0xff, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+>  
+> -	writel(chan->channel, lradc->base + LRADC_CTRL4);
+> +	/* Clean the slot's previous content, then set new one. */
+> +	writel(LRADC_CTRL4_LRADCSELECT_MASK(0),
+> +		lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_CLR);
+> +	writel(chan->channel, lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_SET);
+> +
+>  	writel(0, lradc->base + LRADC_CH(0));
+>  
+>  	/* Enable the IRQ and start sampling the channel. */
+> @@ -195,6 +277,270 @@ static const struct iio_info mxs_lradc_iio_info = {
+>  };
+>  
+>  /*
+> + * Touchscreen handling
+> + */
+> +enum lradc_ts_plate {
+> +	LRADC_SAMPLE_X,
+> +	LRADC_SAMPLE_Y,
+> +	LRADC_SAMPLE_PRESSURE,
+> +};
+> +
+> +static int mxs_lradc_ts_touched(struct mxs_lradc *lradc)
 > +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct itg3200 *st = iio_priv(indio_dev);
-> +	struct iio_buffer *buffer = indio_dev->buffer;
-> +	__be16 buf[ITG3200_SCAN_ELEMENTS + sizeof(s64)/sizeof(u16)];
+> +	uint32_t reg;
 > +
-> +	/* Clear IRQ */
-> +	itg3200_read_irq_status(indio_dev);
+> +	/* Enable touch detection. */
+> +	writel(LRADC_CTRL0_PLATE_MASK,
+> +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+> +	writel(LRADC_CTRL0_TOUCH_DETECT_ENABLE,
+> +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
 > +
-> +	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength)) {
-> +		int ret;
-> +		unsigned i, j = 0;
+> +	msleep(LRADC_TS_SAMPLE_DELAY_MS);
 > +
-> +		ret = itg3200_read_all_channels(st->i2c, buf);
-> +		if (ret < 0)
-> +			goto error_ret;
+> +	reg = readl(lradc->base + LRADC_STATUS);
 > +
-> +		/* Select only active scan elements */
-> +		for (i = 0; i < ITG3200_SCAN_ELEMENTS; i++)
-> +			if (iio_scan_mask_query(indio_dev, buffer, i))
-> +				buf[j++] = buf[i];
-
-The IIO core can take care of this kind of demuxing for you. If you set
-available_scan_masks to { 0xffff..., 0x0 } it will know that the device will
-only be able to sample all channels at once. A user will still be able to
-select a subset of channels and the IIO core will take care of picking the
-right samples.
-
-> +	}
-> +
-> +	if (indio_dev->scan_timestamp)
-> +		memcpy(buf + indio_dev->scan_bytes - sizeof(s64),
-> +				&pf->timestamp, sizeof(pf->timestamp));
-> +
-> +	iio_push_to_buffer(buffer, (u8 *)buf, pf->timestamp);
-
-This won't work in the latest version of IIO, use
-
-iio_push_to_buffers(indio_dev, (u8 *)buf); instead
-
-> +
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +error_ret:
-> +	return IRQ_HANDLED;
+> +	return reg & LRADC_STATUS_TOUCH_DETECT_RAW;
 > +}
 > +
-> +
-> +int itg3200_buffer_configure(struct iio_dev *indio_dev)
+> +static int32_t mxs_lradc_ts_sample(struct mxs_lradc *lradc,
+> +				enum lradc_ts_plate plate, int change)
 > +{
-> +	int ret;
+> +	unsigned long delay, jiff;
+> +	uint32_t reg, ctrl0 = 0, chan = 0;
+> +	/* The touchscreen always uses CTRL4 slot #7. */
+> +	const uint8_t slot = 7;
+> +	uint32_t val;
 > +
-> +	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> +		itg3200_trigger_handler, NULL);
-> +	if (ret)
-> +		return ret;
+> +	/*
+> +	 * There are three correct configurations of the controller sampling
+> +	 * the touchscreen, each of these configuration provides different
+> +	 * information from the touchscreen.
+> +	 *
+> +	 * The following table describes the sampling configurations:
+> +	 * +-------------+-------+-------+-------+
+> +	 * | Wire \ Axis |   X   |   Y   |   Z   |
+> +	 * +---------------------+-------+-------+
+> +	 * |   X+ (CH2)  |   HI  |   TS  |   TS  |
+> +	 * +-------------+-------+-------+-------+
+> +	 * |   X- (CH4)  |   LO  |   SH  |   HI  |
+> +	 * +-------------+-------+-------+-------+
+> +	 * |   Y+ (CH3)  |   SH  |   HI  |   HI  |
+> +	 * +-------------+-------+-------+-------+
+> +	 * |   Y- (CH5)  |   TS  |   LO  |   SH  |
+> +	 * +-------------+-------+-------+-------+
+> +	 *
+> +	 * HI ... strong '1'  ; LO ... strong '0'
+> +	 * SH ... sample here ; TS ... tri-state
+> +	 *
+> +	 * There are a few other ways of obtaining the Z coordinate
+> +	 * (aka. pressure), but the one in the table seems to be the
+> +	 * most reliable one.
+> +	 */
+> +	switch (plate) {
+> +	case LRADC_SAMPLE_X:
+> +		ctrl0 = LRADC_CTRL0_XPPSW | LRADC_CTRL0_XNNSW;
+> +		chan = 3;
+> +		break;
+> +	case LRADC_SAMPLE_Y:
+> +		ctrl0 = LRADC_CTRL0_YPPSW | LRADC_CTRL0_YNNSW;
+> +		chan = 4;
+> +		break;
+> +	case LRADC_SAMPLE_PRESSURE:
+> +		ctrl0 = LRADC_CTRL0_YPPSW | LRADC_CTRL0_XNNSW;
+> +		chan = 5;
+> +		break;
+> +	}
 > +
-> +	/* Set default scan mode */
-> +	iio_scan_mask_set(indio_dev, indio_dev->buffer, ITG3200_SCAN_TEMP);
-> +	iio_scan_mask_set(indio_dev, indio_dev->buffer, ITG3200_SCAN_GYRO_X);
-> +	iio_scan_mask_set(indio_dev, indio_dev->buffer, ITG3200_SCAN_GYRO_Y);
-> +	iio_scan_mask_set(indio_dev, indio_dev->buffer, ITG3200_SCAN_GYRO_Z);
-
-I think it's better to be consistent with other IIO device driver and just
-leave the default to all disabled.
-
+> +	if (change) {
+> +		writel(LRADC_CTRL0_PLATE_MASK,
+> +			lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+> +		writel(ctrl0, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
+> +
+> +		writel(LRADC_CTRL4_LRADCSELECT_MASK(slot),
+> +			lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_CLR);
+> +		writel(chan << LRADC_CTRL4_LRADCSELECT_OFFSET(slot),
+> +			lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_SET);
+> +	}
+> +
+> +	writel(0xffffffff, lradc->base + LRADC_CH(slot) + STMP_OFFSET_REG_CLR);
+> +	writel(1 << slot, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
+> +
+> +	delay = jiffies + msecs_to_jiffies(LRADC_TS_SAMPLE_DELAY_MS);
+> +	do {
+> +		jiff = jiffies;
+> +		reg = readl_relaxed(lradc->base + LRADC_CTRL1);
+> +		if (reg & LRADC_CTRL1_LRADC_IRQ(slot))
+> +			break;
+> +	} while (time_before(jiff, delay));
+> +
+> +	writel(LRADC_CTRL1_LRADC_IRQ(slot),
+> +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+> +
+> +	if (time_after_eq(jiff, delay))
+> +		return -ETIMEDOUT;
+> +
+> +	val = readl(lradc->base + LRADC_CH(slot));
+> +	val &= LRADC_CH_VALUE_MASK;
+> +
+> +	return val;
+> +}
+> +
+> +static int32_t mxs_lradc_ts_sample_filter(struct mxs_lradc *lradc,
+> +				enum lradc_ts_plate plate)
+> +{
+> +	int32_t val, tot = 0;
+> +	int i;
+> +
+> +	val = mxs_lradc_ts_sample(lradc, plate, 1);
+> +
+> +	/* Delay a bit so the touchscreen is stable. */
+> +	mdelay(2);
+> +
+> +	for (i = 0; i < LRADC_TS_SAMPLE_AMOUNT; i++) {
+> +		val = mxs_lradc_ts_sample(lradc, plate, 0);
+> +		tot += val;
+> +	}
+> +
+> +	return tot / LRADC_TS_SAMPLE_AMOUNT;
+> +}
+> +
+> +static void mxs_lradc_ts_work(struct work_struct *ts_work)
+> +{
+> +	struct mxs_lradc *lradc = container_of(ts_work,
+> +				struct mxs_lradc, ts_work);
+> +	int val_x, val_y, val_p;
+> +	bool valid = false;
+> +
+> +	while (mxs_lradc_ts_touched(lradc)) {
+> +		/* Disable touch detector so we can sample the touchscreen. */
+> +		writel(LRADC_CTRL0_TOUCH_DETECT_ENABLE,
+> +			lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+> +
+> +		if (likely(valid)) {
+> +			input_report_abs(lradc->ts_input, ABS_X, val_x);
+> +			input_report_abs(lradc->ts_input, ABS_Y, val_y);
+> +			input_report_abs(lradc->ts_input, ABS_PRESSURE, val_p);
+> +			input_report_key(lradc->ts_input, BTN_TOUCH, 1);
+> +			input_sync(lradc->ts_input);
+> +		}
+> +
+> +		valid = false;
+> +
+> +		val_x = mxs_lradc_ts_sample_filter(lradc, LRADC_SAMPLE_X);
+> +		if (val_x < 0)
+> +			continue;
+> +		val_y = mxs_lradc_ts_sample_filter(lradc, LRADC_SAMPLE_Y);
+> +		if (val_y < 0)
+> +			continue;
+> +		val_p = mxs_lradc_ts_sample_filter(lradc, LRADC_SAMPLE_PRESSURE);
+> +		if (val_p < 0)
+> +			continue;
+> +
+> +		valid = true;
+> +	}
+> +
+> +	input_report_abs(lradc->ts_input, ABS_PRESSURE, 0);
+> +	input_report_key(lradc->ts_input, BTN_TOUCH, 0);
+> +	input_sync(lradc->ts_input);
+> +
+> +	/* Do not restart the TS IRQ if the driver is shutting down. */
+> +	if (lradc->stop_touchscreen)
+> +		return;
+> +
+> +	/* Restart the touchscreen interrupts. */
+> +	writel(LRADC_CTRL1_TOUCH_DETECT_IRQ,
+> +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+> +	writel(LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
+> +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_SET);
+> +}
+> +
+> +static int mxs_lradc_ts_open(struct input_dev *dev)
+> +{
+> +	struct mxs_lradc *lradc = input_get_drvdata(dev);
+> +
+> +	/* The touchscreen is starting. */
+> +	lradc->stop_touchscreen = false;
+> +
+> +	/* Enable the touch-detect circuitry. */
+> +	writel(LRADC_CTRL0_TOUCH_DETECT_ENABLE,
+> +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
+> +
+> +	/* Enable the touch-detect IRQ. */
+> +	writel(LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
+> +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_SET);
 > +
 > +	return 0;
 > +}
 > +
-> +void itg3200_buffer_unconfigure(struct iio_dev *indio_dev)
+> +static void mxs_lradc_ts_close(struct input_dev *dev)
 > +{
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +}
-> diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
-> new file mode 100644
-> index 0000000..e1e835e
-> --- /dev/null
-> +++ b/drivers/iio/gyro/itg3200_core.c
-[...]
+> +	struct mxs_lradc *lradc = input_get_drvdata(dev);
 > +
-> +static int itg3200_read_raw(struct iio_dev *indio_dev,
-> +		const struct iio_chan_spec *chan,
-> +		int *val, int *val2, long info)
-> +{
-> +	ssize_t ret = 0;
-
-The return type of the function is ssize_t.
-
-> +	u8 reg;
+> +	/* Indicate the touchscreen is stopping. */
+> +	lradc->stop_touchscreen = true;
+> +	mb();
 > +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		reg = (u8)chan->address;
-> +		ret = itg3200_read_reg_s16(indio_dev, reg, val);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		if (chan->type == IIO_TEMP)
-> +			*val2 = 1000000000/280;
-> +		else
-> +			*val2 = 1214142; /* (1 / 14,375) * (PI / 180) */
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		/* Only the temperature channel has an offset */
-> +		*val = 23000;
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
+> +	/* Wait until touchscreen thread finishes any possible remnants. */
+> +	cancel_work_sync(&lradc->ts_work);
 > +
-> +	return ret;
+> +	/* Disable touchscreen touch-detect IRQ. */
+> +	writel(LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
+> +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+> +
+> +	/* Power-down touchscreen touch-detect circuitry. */
+> +	writel(LRADC_CTRL0_TOUCH_DETECT_ENABLE,
+> +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
 > +}
 > +
-> +static ssize_t itg3200_read_frequency(struct device *dev,
-> +		struct device_attribute *attr, char *buf)
+> +static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
 > +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	int ret, len = 0;
-> +	u8 val;
-> +	int sps;
-> +
-> +	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_DLPF, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	sps = (val & ITG3200_DLPF_CFG_MASK) ? 1000 : 8000;
-> +
-> +	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_SAMPLE_RATE_DIV, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	sps /= val + 1;
-> +
-> +	len = sprintf(buf, "%d\n", sps);
-> +	return len;
-
-A bit shorter:
-
-return sprintf(buf, "%d\n", sps);
-
-> +}
-> +
-[...]
-> +
-> +/* Reset device and internal registers to the power-up-default settings
-> + * Use the gyro clock as reference, as suggested by the datasheet */
-
-Normally multi-line comments look like:
-
-/*
- * ...
- * ...
- */
-
-> +static int itg3200_reset(struct iio_dev *indio_dev)
-> +{
-> +	struct itg3200 *st = iio_priv(indio_dev);
+> +	struct input_dev *input;
+> +	struct device *dev = lradc->dev;
 > +	int ret;
 > +
-> +	dev_dbg(&st->i2c->dev, "reset device");
+> +	if (!lradc->use_touchscreen)
+> +		return 0;
 > +
-> +	ret = itg3200_write_reg_8(indio_dev,
-> +			ITG3200_REG_POWER_MANAGEMENT,
-> +			ITG3200_RESET);
-> +	if (ret) {
-> +		dev_err(&st->i2c->dev, "error resetting device");
-> +		goto error_ret;
+> +	input = input_allocate_device();
+> +	if (!input) {
+> +		dev_err(dev, "Failed to allocate TS device!\n");
+> +		lradc->use_touchscreen = MXS_LRADC_TOUCHSCREEN_NONE;
+> +		return -ENOMEM;
+
+Since errors are now fatal you do not need to modify "use_touchscreen".
+
 > +	}
 > +
-> +	/* Wait for PLL (1ms according to datasheet) */
-> +	udelay(1500);
+> +	input->name = DRIVER_NAME;
+> +	input->id.bustype = BUS_HOST;
+> +	input->dev.parent = dev;
+> +	input->open = mxs_lradc_ts_open;
+> +	input->close = mxs_lradc_ts_close;
 > +
-> +	ret = itg3200_write_reg_8(indio_dev,
-> +			ITG3200_REG_IRQ_CONFIG,
-> +			ITG3200_IRQ_ACTIVE_HIGH |
-> +			ITG3200_IRQ_PUSH_PULL |
-> +			ITG3200_IRQ_LATCH_50US_PULSE |
-> +			ITG3200_IRQ_LATCH_CLEAR_ANY);
+> +	__set_bit(EV_ABS, input->evbit);
+> +	__set_bit(EV_KEY, input->evbit);
+> +	__set_bit(BTN_TOUCH, input->keybit);
+> +	input_set_abs_params(input, ABS_X, 0, LRADC_CH_VALUE_MASK, 0, 0);
+> +	input_set_abs_params(input, ABS_Y, 0, LRADC_CH_VALUE_MASK, 0, 0);
+> +	input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_CH_VALUE_MASK, 0, 0);
 > +
+> +	lradc->ts_input = input;
+> +	input_set_drvdata(input, lradc);
+> +	ret = input_register_device(input);
 > +	if (ret)
-> +		dev_err(&st->i2c->dev, "error init device");
+> +		input_free_device(lradc->ts_input);
 > +
-> +error_ret:
 > +	return ret;
 > +}
 > +
-> +/** itg3200_enable_full_scale() - Disables the digital low pass filter */
-
-'/**' is used for kernel doc comments.
-
-> +static int itg3200_enable_full_scale(struct iio_dev *indio_dev)
+> +static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
 > +{
-[...]
+> +	if (!lradc->use_touchscreen)
+> +		return;
+> +
+> +	cancel_work_sync(&lradc->ts_work);
+> +
+> +	input_unregister_device(lradc->ts_input);
 > +}
 > +
-> +static int itg3200_initial_setup(struct iio_dev *indio_dev)
-> +{
-> +	struct itg3200 *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	u8 val;
-> +	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_ADDRESS, &val);
-> +	if (ret)
-> +		goto err_ret;
-> +
-> +	if (((val >> 1) & 0x3f) != 0x34) {
-> +		dev_err(&st->i2c->dev, "invalid reg value 0x%02x", val);
-> +		ret = -ENXIO;
-> +		goto err_ret;
-> +	}
-> +
-> +	ret = itg3200_reset(indio_dev);
-> +	if (ret)
-> +		goto err_ret;
-> +
-> +	ret = itg3200_enable_full_scale(indio_dev);
-> +
-> +	pr_info("%s initialized", indio_dev->name);
-
-This line is just noise, please remove it.
-
-> +err_ret:
-> +	return ret;
-> +}
-> +
-[...]
-> +static struct i2c_driver itg3200_driver = {
-> +	.driver = {
-> +		.owner  = THIS_MODULE,
-> +		.name	= "itg3200",
-> +	},
-> +	.id_table	= itg3200_id,
-> +	.probe		= itg3200_probe,
-> +	.remove		= itg3200_remove,
-> +};
-> +
-> +static int __init itg3200_init(void)
-> +{
-> +	return i2c_add_driver(&itg3200_driver);
-> +}
-> +module_init(itg3200_init);
-> +
-> +static void __exit itg3200_exit(void)
-> +{
-> +	i2c_del_driver(&itg3200_driver);
-> +}
-> +module_exit(itg3200_exit);
-
-module_i2c_driver(itg3200_driver);
-
-> +
-> +MODULE_AUTHOR("Christian Strobel <christian.strobel@iis.fraunhofer.de>");
-> +MODULE_DESCRIPTION("ITG3200 Gyroscope I2C driver");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/gyro/itg3200_trigger.c b/drivers/iio/gyro/itg3200_trigger.c
-> new file mode 100644
-> index 0000000..bb72eab
-> --- /dev/null
-> +++ b/drivers/iio/gyro/itg3200_trigger.c
-> @@ -0,0 +1,78 @@
 > +/*
-> + * itg3200_trigger.c -- support InvenSense ITG3200
-> + *                      Digital 3-Axis Gyroscope driver
-> + *
-> + * Copyright (c) 2011 Christian Strobel <christian.strobel@iis.fraunhofer.de>
-> + * Copyright (c) 2011 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-> + * Copyright (c) 2012 Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
+>   * IRQ Handling
+>   */
+>  static irqreturn_t mxs_lradc_handle_irq(int irq, void *data)
+> @@ -202,14 +548,24 @@ static irqreturn_t mxs_lradc_handle_irq(int irq, void *data)
+>  	struct iio_dev *iio = data;
+>  	struct mxs_lradc *lradc = iio_priv(iio);
+>  	unsigned long reg = readl(lradc->base + LRADC_CTRL1);
+> +	const uint32_t ts_irq_mask =
+> +		LRADC_CTRL1_TOUCH_DETECT_IRQ_EN |
+> +		LRADC_CTRL1_TOUCH_DETECT_IRQ;
+>  
+>  	if (!(reg & LRADC_CTRL1_LRADC_IRQ_MASK))
+>  		return IRQ_NONE;
+>  
+>  	/*
+> -	 * Touchscreen IRQ handling code shall probably have priority
+> -	 * and therefore shall be placed here.
+> +	 * Touchscreen IRQ handling code has priority and therefore
+> +	 * is placed here. In case touchscreen IRQ arrives, disable
+> +	 * it ASAP
+>  	 */
+> +	if (reg & LRADC_CTRL1_TOUCH_DETECT_IRQ) {
+> +		writel(ts_irq_mask,
+> +			lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+> +		if (!lradc->stop_touchscreen)
+> +			schedule_work(&lradc->ts_work);
+> +	}
+>  
+>  	if (iio_buffer_enabled(iio))
+>  		iio_trigger_poll(iio->trig, iio_get_time_ns());
+> @@ -306,8 +662,10 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+>  {
+>  	struct mxs_lradc *lradc = iio_priv(iio);
+>  	struct iio_buffer *buffer = iio->buffer;
+> -	int ret = 0, chan, ofs = 0, enable = 0;
+> -	uint32_t ctrl4 = 0;
+> +	int ret = 0, chan, ofs = 0;
+> +	unsigned long enable = 0;
+> +	uint32_t ctrl4_set = 0;
+> +	uint32_t ctrl4_clr = 0;
+>  	uint32_t ctrl1_irq = 0;
+>  	const uint32_t chan_value = LRADC_CH_ACCUMULATE |
+>  		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
+> @@ -339,17 +697,20 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+>  	writel(0xff, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+>  
+>  	for_each_set_bit(chan, buffer->scan_mask, LRADC_MAX_TOTAL_CHANS) {
+> -		ctrl4 |= chan << LRADC_CTRL4_LRADCSELECT_OFFSET(ofs);
+> +		ctrl4_set |= chan << LRADC_CTRL4_LRADCSELECT_OFFSET(ofs);
+> +		ctrl4_clr |= LRADC_CTRL4_LRADCSELECT_MASK(ofs);
+>  		ctrl1_irq |= LRADC_CTRL1_LRADC_IRQ_EN(ofs);
+>  		writel(chan_value, lradc->base + LRADC_CH(ofs));
+> -		enable |= 1 << ofs;
+> +		bitmap_set(&enable, ofs, 1);
+>  		ofs++;
+>  	};
+>  
+>  	writel(LRADC_DELAY_TRIGGER_LRADCS_MASK | LRADC_DELAY_KICK,
+>  		lradc->base + LRADC_DELAY(0) + STMP_OFFSET_REG_CLR);
+>  
+> -	writel(ctrl4, lradc->base + LRADC_CTRL4);
+> +	writel(ctrl4_clr, lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_CLR);
+> +	writel(ctrl4_set, lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_SET);
 > +
-> +#include <linux/i2c.h>
-> +#include <linux/interrupt.h>
+>  	writel(ctrl1_irq, lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_SET);
+>  
+>  	writel(enable << LRADC_DELAY_TRIGGER_LRADCS_OFFSET,
+> @@ -384,9 +745,33 @@ static int mxs_lradc_buffer_postdisable(struct iio_dev *iio)
+>  static bool mxs_lradc_validate_scan_mask(struct iio_dev *iio,
+>  					const unsigned long *mask)
+>  {
+> -	const int mw = bitmap_weight(mask, iio->masklength);
+> -
+> -	return mw <= LRADC_MAX_MAPPED_CHANS;
+> +	struct mxs_lradc *lradc = iio_priv(iio);
+> +	const int len = iio->masklength;
+> +	const int map_chans = bitmap_weight(mask, len);
+> +	int rsvd_chans = 0;
+> +	unsigned long rsvd_mask = 0;
 > +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/gyro/itg3200.h>
+> +	if (lradc->use_touchbutton)
+> +		rsvd_mask |= CHAN_MASK_TOUCHBUTTON;
+> +	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_4WIRE)
+> +		rsvd_mask |= CHAN_MASK_TOUCHSCREEN_4WIRE;
+> +	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
+> +		rsvd_mask |= CHAN_MASK_TOUCHSCREEN_5WIRE;
 > +
+> +	if (lradc->use_touchbutton)
+> +		rsvd_chans++;
+> +	if (lradc->use_touchscreen)
+> +		rsvd_chans++;
 > +
-> +static int itg3200_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> +		bool state)
-> +{
-> +	return itg3200_set_irq_data_rdy(trig->private_data, state);
-> +}
+> +	/* Test for attempts to map channels with special mode of operation. */
+> +	if (bitmap_intersects(mask, &rsvd_mask, len))
+> +		return 0;
 
-Do we really need this wrapper? I think it might be better to move
-itg3200_set_irq_data_rdy here, especially considering that it is unused in
-case buffer support is not enabled.
+Since the fucntion's return type is bool it is better to do
 
-Similar I think it makes sense to move itg3200_read_all_channels and
-itg3200_read_irq_status to tg3200_buffer.c
+		return false;
 
-[...]
-> diff --git a/include/linux/iio/gyro/itg3200.h b/include/linux/iio/gyro/itg3200.h
-> new file mode 100644
-> index 0000000..8e79074
-> --- /dev/null
-> +++ b/include/linux/iio/gyro/itg3200.h
-> @@ -0,0 +1,78 @@
-[...]
-> +#define itg3200_free_buf iio_sw_rb_free
-> +#define itg3200_alloc_buf iio_sw_rb_allocate
-> +#define itg3200_access_funcs ring_sw_access_funcs
+> +
+> +	/* Test for attempts to map more channels then available slots. */
+> +	if (map_chans + rsvd_chans > LRADC_MAX_MAPPED_CHANS)
+> +		return 0;
 
-These three don't seem to be used anywhere.
+		return false;
+> +
+> +	return 1;
 
-[...]
+	return true;
+>  }
+>  
+>  static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
+> @@ -435,15 +820,29 @@ static const struct iio_chan_spec mxs_lradc_chan_spec[] = {
+>  
+>  static void mxs_lradc_hw_init(struct mxs_lradc *lradc)
+>  {
+> -	int i;
+> -	const uint32_t cfg =
+> +	/* The ADC always uses DELAY CHANNEL 0. */
+> +	const uint32_t adc_cfg =
+> +		(1 << (LRADC_DELAY_TRIGGER_DELAYS_OFFSET + 0)) |
+>  		(LRADC_DELAY_TIMER_PER << LRADC_DELAY_DELAY_OFFSET);
+>  
+>  	stmp_reset_block(lradc->base);
+>  
+> -	for (i = 0; i < LRADC_MAX_DELAY_CHANS; i++)
+> -		writel(cfg | (1 << (LRADC_DELAY_TRIGGER_DELAYS_OFFSET + i)),
+> -			lradc->base + LRADC_DELAY(i));
+> +	/* Configure DELAY CHANNEL 0 for generic ADC sampling. */
+> +	writel(adc_cfg, lradc->base + LRADC_DELAY(0));
+> +
+> +	/* Disable remaining DELAY CHANNELs */
+> +	writel(0, lradc->base + LRADC_DELAY(1));
+> +	writel(0, lradc->base + LRADC_DELAY(2));
+> +	writel(0, lradc->base + LRADC_DELAY(3));
+> +
+> +	/* Configure the touchscreen type */
+> +	writel(LRADC_CTRL0_TOUCH_SCREEN_TYPE,
+> +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+> +
+> +	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE) {
+> +		writel(LRADC_CTRL0_TOUCH_SCREEN_TYPE,
+> +			lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
+> +	}
+>  
+>  	/* Start internal temperature sensing. */
+>  	writel(0, lradc->base + LRADC_CTRL2);
+> @@ -460,12 +859,14 @@ static void mxs_lradc_hw_stop(struct mxs_lradc *lradc)
+>  		writel(0, lradc->base + LRADC_DELAY(i));
+>  }
+>  
+> -static int __devinit mxs_lradc_probe(struct platform_device *pdev)
+> +static int mxs_lradc_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+> +	struct device_node *node = dev->of_node;
+>  	struct mxs_lradc *lradc;
+>  	struct iio_dev *iio;
+>  	struct resource *iores;
+> +	uint32_t ts_wires = 0;
+>  	int ret = 0;
+>  	int i;
+>  
+> @@ -487,6 +888,21 @@ static int __devinit mxs_lradc_probe(struct platform_device *pdev)
+>  		goto err_addr;
+>  	}
+>  
+> +	INIT_WORK(&lradc->ts_work, mxs_lradc_ts_work);
+> +
+> +	/* Check if touchscreen is enabled in DT. */
+> +	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
+> +				&ts_wires);
+> +	if (ret)
+> +		dev_info(dev, "Touchscreen not enabled.\n");
+> +	else if (ts_wires == 4)
+> +		lradc->use_touchscreen = MXS_LRADC_TOUCHSCREEN_4WIRE;
+> +	else if (ts_wires == 5)
+> +		lradc->use_touchscreen = MXS_LRADC_TOUCHSCREEN_5WIRE;
+> +	else
+> +		dev_warn(dev, "Unsupported number of touchscreen wires (%d)\n",
+> +				ts_wires);
+> +
+>  	/* Grab all IRQ sources */
+>  	for (i = 0; i < 13; i++) {
+>  		lradc->irq[i] = platform_get_irq(pdev, i);
+> @@ -524,11 +940,16 @@ static int __devinit mxs_lradc_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto err_trig;
+>  
+> +	/* Register the touchscreen input device. */
+> +	ret = mxs_lradc_ts_register(lradc);
+> +	if (ret)
+> +		goto err_dev;
+> +
+>  	/* Register IIO device. */
+>  	ret = iio_device_register(iio);
+>  	if (ret) {
+>  		dev_err(dev, "Failed to register IIO device\n");
+> -		goto err_dev;
+> +		goto err_ts;
+>  	}
+>  
+>  	/* Configure the hardware. */
+> @@ -536,6 +957,8 @@ static int __devinit mxs_lradc_probe(struct platform_device *pdev)
+>  
+>  	return 0;
+>  
+> +err_ts:
+> +	mxs_lradc_ts_unregister(lradc);
+>  err_dev:
+>  	mxs_lradc_trigger_remove(iio);
+>  err_trig:
+> @@ -545,11 +968,13 @@ err_addr:
+>  	return ret;
+>  }
+>  
+> -static int __devexit mxs_lradc_remove(struct platform_device *pdev)
+> +static int mxs_lradc_remove(struct platform_device *pdev)
+>  {
+>  	struct iio_dev *iio = platform_get_drvdata(pdev);
+>  	struct mxs_lradc *lradc = iio_priv(iio);
+>  
+> +	mxs_lradc_ts_unregister(lradc);
+> +
+>  	mxs_lradc_hw_stop(lradc);
+>  
+>  	iio_device_unregister(iio);
+> @@ -573,7 +998,7 @@ static struct platform_driver mxs_lradc_driver = {
+>  		.of_match_table = mxs_lradc_dt_ids,
+>  	},
+>  	.probe	= mxs_lradc_probe,
+> -	.remove	= __devexit_p(mxs_lradc_remove),
+> +	.remove	= mxs_lradc_remove,
+>  };
+>  
+>  module_platform_driver(mxs_lradc_driver);
+> -- 
+> 1.7.10.4
+> 
+
+Besides the minor nits above,
+
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+
+Thanks!
+
+-- 
+Dmitry
