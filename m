@@ -1,105 +1,288 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:60617 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750813Ab3AVJbi convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jan 2013 04:31:38 -0500
-From: "Patil, Rachna" <rachna@ti.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"devicetree-discuss@lists.ozlabs.org"
-	<devicetree-discuss@lists.ozlabs.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Tony Lindgren <tony@atomide.com>,
-	"Cousson, Benoit" <b-cousson@ti.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Landley <rob@landley.net>,
-	Russell King <linux@arm.linux.org.uk>
-Subject: RE: [PATCH v3 4/8] MFD: ti_am335x_tscadc: add device tree binding
- information
-Date: Tue, 22 Jan 2013 09:31:02 +0000
-Message-ID: <4CE347531D4CA947960AF71FF095B9323E9AFB02@DBDE01.ent.ti.com>
-References: <cover.1358502134.git.rachna@ti.com>
- <daf18b4779ac3c6b69b1e7e2d1a4abd18b13fee5.1358502134.git.rachna@ti.com>
- <50FB1DFE.6090805@metafoo.de>
-In-Reply-To: <50FB1DFE.6090805@metafoo.de>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:52171 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751735Ab3ALKmY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2013 05:42:24 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: jbrenner@taosinc.com, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 1/3] staging:iio:light:tsl2583 use read_raw, write_raw hooks.
+Date: Sat, 12 Jan 2013 10:42:17 +0000
+Message-Id: <1357987339-11800-2-git-send-email-jic23@kernel.org>
+In-Reply-To: <1357987339-11800-1-git-send-email-jic23@kernel.org>
+References: <1357987339-11800-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+This driver predates the introduction of these hooks that both reduce
+the amount of code needed to provide basic interfaces and allow for
+inkernel access to these values from other drivers.
 
-On Sun, Jan 20, 2013 at 03:58:14, Lars-Peter Clausen wrote:
-> Hi,
-> 
-> On 01/18/2013 11:48 AM, Patil, Rachna wrote:
-> > From: "Patil, Rachna" <rachna@ti.com>
-> > 
-> > Signed-off-by: Patil, Rachna <rachna@ti.com>
-> > ---
-> >  .../devicetree/bindings/mfd/ti_am335x_tscadc.txt   |   35 ++++++++++++++++++++
-> >  1 file changed, 35 insertions(+)
-> >  create mode 100644 
-> > Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt
-> > 
-> > diff --git 
-> > a/Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt 
-> > b/Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt
-> > new file mode 100644
-> > index 0000000..c13c492
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt
-> > @@ -0,0 +1,35 @@
-> > +Texas Instruments - TSC / ADC multi-functional device
-> > +
-> > +ti_tscadc is a multi-function device with touchscreen and ADC on chip.
-> > +This document describes the binding for mfd device.
-> > +
-> > +Required properties:
-> > +- compatible: "ti,ti-tscadc"
-> > +- reg: Specifies the address of MFD block
-> > +- interrupts: IRQ line connected to the main SoC
-> > +- interrupt-parent: The parent interrupt controller
-> 
-> The subnodes and their properties also need documentation.
+This will change a few interfaces by applying an in_ prefix.
+The rest of the driver will be brought in line with this convention
+in a follow up patch.
 
-Ok. I Will add this.
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/light/tsl2583.c | 187 ++++++++++++++++--------------------
+ 1 file changed, 85 insertions(+), 102 deletions(-)
 
-> 
-> > +
-> > +Optional properties:
-> > +- ti,hwmods: Hardware information related to TSC/ADC MFD device
-> > +
-> > +Example:
-> > +
-> > +	tscadc: tscadc@44e0d000 {
-> > +		compatible = "ti,ti-tscadc";
-> > +		reg = <0x44e0d000 0x1000>;
-> > +
-> > +		interrupt-parent = <&intc>;
-> > +		interrupts = <16>;
-> > +		ti,hwmods = "adc_tsc";
-> > +
-> > +		tsc {
-> > +			wires = <4>;
-> > +			x-plate-resistance = <200>;
-> > +			steps-to-configure = <5>;
-> > +			wire-config = <0x00 0x11 0x22 0x33>;
-> 
-> Non-standard properties should have a vendor prefix.
-
-Ok. I will fix this in the next version of the patch set.
-
-Regards,
-Rachna
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index b377dd3..30c1a36 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -506,62 +506,6 @@ static ssize_t taos_power_state_store(struct device *dev,
+ 	return len;
+ }
+ 
+-static ssize_t taos_gain_show(struct device *dev,
+-	struct device_attribute *attr, char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-	char gain[4] = {0};
+-
+-	switch (chip->taos_settings.als_gain) {
+-	case 0:
+-		strcpy(gain, "001");
+-		break;
+-	case 1:
+-		strcpy(gain, "008");
+-		break;
+-	case 2:
+-		strcpy(gain, "016");
+-		break;
+-	case 3:
+-		strcpy(gain, "111");
+-		break;
+-	}
+-
+-	return sprintf(buf, "%s\n", gain);
+-}
+-
+-static ssize_t taos_gain_store(struct device *dev,
+-	struct device_attribute *attr, const char *buf, size_t len)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-	unsigned long value;
+-
+-	if (strict_strtoul(buf, 0, &value))
+-		return -EINVAL;
+-
+-	switch (value) {
+-	case 1:
+-		chip->taos_settings.als_gain = 0;
+-		break;
+-	case 8:
+-		chip->taos_settings.als_gain = 1;
+-		break;
+-	case 16:
+-		chip->taos_settings.als_gain = 2;
+-		break;
+-	case 111:
+-		chip->taos_settings.als_gain = 3;
+-		break;
+-	default:
+-		dev_err(dev, "Invalid Gain Index (must be 1,8,16,111)\n");
+-		return -1;
+-	}
+-
+-	return len;
+-}
+-
+ static ssize_t taos_gain_available_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+@@ -605,31 +549,6 @@ static ssize_t taos_als_time_available_show(struct device *dev,
+ 		"50 100 150 200 250 300 350 400 450 500 550 600 650");
+ }
+ 
+-static ssize_t taos_als_trim_show(struct device *dev,
+-	struct device_attribute *attr, char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-
+-	return sprintf(buf, "%d\n", chip->taos_settings.als_gain_trim);
+-}
+-
+-static ssize_t taos_als_trim_store(struct device *dev,
+-	struct device_attribute *attr, const char *buf, size_t len)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-	unsigned long value;
+-
+-	if (strict_strtoul(buf, 0, &value))
+-		return -EINVAL;
+-
+-	if (value)
+-		chip->taos_settings.als_gain_trim = value;
+-
+-	return len;
+-}
+-
+ static ssize_t taos_als_cal_target_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+@@ -655,18 +574,6 @@ static ssize_t taos_als_cal_target_store(struct device *dev,
+ 	return len;
+ }
+ 
+-static ssize_t taos_lux_show(struct device *dev, struct device_attribute *attr,
+-	char *buf)
+-{
+-	int ret;
+-
+-	ret = taos_get_lux(dev_to_iio_dev(dev));
+-	if (ret < 0)
+-		return ret;
+-
+-	return sprintf(buf, "%d\n", ret);
+-}
+-
+ static ssize_t taos_do_calibrate(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+ {
+@@ -745,8 +652,6 @@ static ssize_t taos_luxtable_store(struct device *dev,
+ static DEVICE_ATTR(power_state, S_IRUGO | S_IWUSR,
+ 		taos_power_state_show, taos_power_state_store);
+ 
+-static DEVICE_ATTR(illuminance0_calibscale, S_IRUGO | S_IWUSR,
+-		taos_gain_show, taos_gain_store);
+ static DEVICE_ATTR(illuminance0_calibscale_available, S_IRUGO,
+ 		taos_gain_available_show, NULL);
+ 
+@@ -755,26 +660,19 @@ static DEVICE_ATTR(illuminance0_integration_time, S_IRUGO | S_IWUSR,
+ static DEVICE_ATTR(illuminance0_integration_time_available, S_IRUGO,
+ 		taos_als_time_available_show, NULL);
+ 
+-static DEVICE_ATTR(illuminance0_calibbias, S_IRUGO | S_IWUSR,
+-		taos_als_trim_show, taos_als_trim_store);
+-
+ static DEVICE_ATTR(illuminance0_input_target, S_IRUGO | S_IWUSR,
+ 		taos_als_cal_target_show, taos_als_cal_target_store);
+ 
+-static DEVICE_ATTR(illuminance0_input, S_IRUGO, taos_lux_show, NULL);
+ static DEVICE_ATTR(illuminance0_calibrate, S_IWUSR, NULL, taos_do_calibrate);
+ static DEVICE_ATTR(illuminance0_lux_table, S_IRUGO | S_IWUSR,
+ 		taos_luxtable_show, taos_luxtable_store);
+ 
+ static struct attribute *sysfs_attrs_ctrl[] = {
+ 	&dev_attr_power_state.attr,
+-	&dev_attr_illuminance0_calibscale.attr,			/* Gain  */
+ 	&dev_attr_illuminance0_calibscale_available.attr,
+ 	&dev_attr_illuminance0_integration_time.attr,	/* I time*/
+ 	&dev_attr_illuminance0_integration_time_available.attr,
+-	&dev_attr_illuminance0_calibbias.attr,			/* trim  */
+ 	&dev_attr_illuminance0_input_target.attr,
+-	&dev_attr_illuminance0_input.attr,
+ 	&dev_attr_illuminance0_calibrate.attr,
+ 	&dev_attr_illuminance0_lux_table.attr,
+ 	NULL
+@@ -790,9 +688,92 @@ static int taos_tsl258x_device(unsigned char *bufp)
+ 	return ((bufp[TSL258X_CHIPID] & 0xf0) == 0x90);
+ }
+ 
++static const int tsl2583_scales[] = {1, 8, 16, 111 };
++
++static int tsl2583_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val,
++			     int val2, 
++			     long m)
++{
++	struct tsl2583_chip *chip = iio_priv(indio_dev);
++	int ret = 0;
++
++	switch (m) {
++	case IIO_CHAN_INFO_CALIBBIAS:
++		chip->taos_settings.als_gain_trim = val;
++		break;
++	case IIO_CHAN_INFO_CALIBSCALE:
++		switch (val) {
++		case 1:
++			chip->taos_settings.als_gain = 0;
++			break;
++		case 8:
++			chip->taos_settings.als_gain = 1;
++			break;
++		case 16:
++			chip->taos_settings.als_gain = 2;
++			break;
++		case 111:
++			chip->taos_settings.als_gain = 3;
++			break;
++		default:
++			ret = -EINVAL;
++		}
++	default:
++		ret = -EINVAL;
++	}
++	return ret;
++}
++
++static int tsl2583_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val,
++			    int *val2,
++			    long m)
++{
++	struct tsl2583_chip *chip = iio_priv(indio_dev);
++	int ret;
++
++	switch (m) {
++	case IIO_CHAN_INFO_PROCESSED:
++		ret = taos_get_lux(indio_dev);
++		if (ret < 0)
++			return ret;
++		*val = ret;
++		ret = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_CALIBBIAS:
++		*val = chip->taos_settings.als_gain_trim;
++		ret = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_CALIBSCALE:
++		*val = tsl2583_scales[chip->taos_settings.als_gain];
++		ret = IIO_VAL_INT;
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static const struct iio_chan_spec tsl2583_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.indexed = 1,
++		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
++		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
++		.channel = 0,
++	},
++};
++
+ static const struct iio_info tsl2583_info = {
+ 	.attrs = &tsl2583_attribute_group,
+ 	.driver_module = THIS_MODULE,
++	.read_raw = &tsl2583_read_raw,
++	.write_raw = &tsl2583_write_raw,
+ };
+ 
+ /*
+@@ -863,6 +844,8 @@ static int taos_probe(struct i2c_client *clientp,
+ 	indio_dev->info = &tsl2583_info;
+ 	indio_dev->dev.parent = &clientp->dev;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = tsl2583_channels;
++	indio_dev->num_channels = ARRAY_SIZE(tsl2583_channels);
+ 	indio_dev->name = chip->client->name;
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret) {
+-- 
+1.8.1
 
