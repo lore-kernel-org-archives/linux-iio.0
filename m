@@ -1,34 +1,102 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 2/3 V2] iio: mxs: Implement support for touchscreen
-Date: Tue, 8 Jan 2013 20:28:18 +0100
-Cc: linux-iio@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Fabio Estevam <fabio.estevam@freescale.com>,
- Shawn Guo <shawn.guo@linaro.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>
-References: <1355449598-15980-1-git-send-email-marex@denx.de> <201212191801.31920.marex@denx.de> <50DC3C1C.3060506@kernel.org>
-In-Reply-To: <50DC3C1C.3060506@kernel.org>
+Return-Path: <jic23@kernel.org>
+Message-ID: <50F13B6D.5010708@kernel.org>
+Date: Sat, 12 Jan 2013 10:31:09 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201301082028.18440.marex@denx.de>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, jbrenner@taosinc.com
+Subject: Re: [PATCH 3/3] staging:iio:light:tsl2583 switch to kstrto and strtobool
+References: <1357489383-30811-1-git-send-email-jic23@kernel.org> <1357489383-30811-4-git-send-email-jic23@kernel.org>
+In-Reply-To: <1357489383-30811-4-git-send-email-jic23@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Dear Jonathan Cameron,
-
-> On 12/19/2012 05:01 PM, Marek Vasut wrote:
-> > Ccing Dmitry.
-> > 
-> > Also, Jonathan, can I get your review please?
+On 01/06/2013 04:23 PM, Jonathan Cameron wrote:
+> Doing this results in cleaner code and better error handling.
 > 
-> Dratt caught me hiding from this one and hoping it would
-> go away ;)
+Ooops. kstotoul is a typo.  Not sure how I missed the build failure.
+Will repost with that fixed in a few mins.
 
-Still not going away :)
+Sorry about that.
 
-Did I miss your reply maybe?
-
-Best regards,
-Marek Vasut
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  drivers/staging/iio/light/tsl2583.c | 36 ++++++++++++++++++++++--------------
+>  1 file changed, 22 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+> index 944db26..f45114f 100644
+> --- a/drivers/staging/iio/light/tsl2583.c
+> +++ b/drivers/staging/iio/light/tsl2583.c
+> @@ -493,15 +493,17 @@ static ssize_t taos_power_state_store(struct device *dev,
+>  	struct device_attribute *attr, const char *buf, size_t len)
+>  {
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	unsigned long value;
+> +	bool state;
+> +	int ret;
+>  
+> -	if (strict_strtoul(buf, 0, &value))
+> -		return -EINVAL;
+> +	ret = strtobool(buf, &state);
+> +	if (ret < 0)
+> +		return ret;
+>  
+> -	if (value == 0)
+> -		taos_chip_off(indio_dev);
+> -	else
+> +	if (state)
+>  		taos_chip_on(indio_dev);
+> +	else
+> +		taos_chip_off(indio_dev);		
+>  
+>  	return len;
+>  }
+> @@ -527,9 +529,11 @@ static ssize_t taos_als_time_store(struct device *dev,
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>  	unsigned long value;
+> +	int ret;
+>  
+> -	if (strict_strtoul(buf, 0, &value))
+> -		return -EINVAL;
+> +	ret = kstrtoul(buf, 0, &value);
+> +	if (ret < 0)
+> +		return ret;
+>  
+>  	if ((value < 50) || (value > 650))
+>  		return -EINVAL;
+> @@ -564,9 +568,11 @@ static ssize_t taos_als_cal_target_store(struct device *dev,
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>  	unsigned long value;
+> +	int ret;
+>  
+> -	if (strict_strtoul(buf, 0, &value))
+> -		return -EINVAL;
+> +	ret = kstrotoul(buf, 0, &value);
+> +	if (ret < 0)
+> +		return ret;
+>  
+>  	if (value)
+>  		chip->taos_settings.als_cal_target = value;
+> @@ -578,12 +584,14 @@ static ssize_t taos_do_calibrate(struct device *dev,
+>  	struct device_attribute *attr, const char *buf, size_t len)
+>  {
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	unsigned long value;
+> +	bool cal;
+> +	int ret;
+>  
+> -	if (strict_strtoul(buf, 0, &value))
+> -		return -EINVAL;
+> +	ret = strtobool(buf, &cal);
+> +	if (ret < 0)
+> +		return ret;
+>  
+> -	if (value == 1)
+> +	if (cal)
+>  		taos_als_calibrate(indio_dev);
+>  
+>  	return len;
+> 
