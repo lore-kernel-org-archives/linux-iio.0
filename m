@@ -1,102 +1,44 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <50F13B6D.5010708@kernel.org>
-Date: Sat, 12 Jan 2013 10:31:09 +0000
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-41.csi.cam.ac.uk ([131.111.8.141]:52172 "EHLO
+	ppsw-41.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752618Ab3ALKmY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2013 05:42:24 -0500
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org, jbrenner@taosinc.com
-Subject: Re: [PATCH 3/3] staging:iio:light:tsl2583 switch to kstrto and strtobool
-References: <1357489383-30811-1-git-send-email-jic23@kernel.org> <1357489383-30811-4-git-send-email-jic23@kernel.org>
-In-Reply-To: <1357489383-30811-4-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: jbrenner@taosinc.com, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/3 V2]  staging:iio:tsl2583 update interfaces
+Date: Sat, 12 Jan 2013 10:42:16 +0000
+Message-Id: <1357987339-11800-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01/06/2013 04:23 PM, Jonathan Cameron wrote:
-> Doing this results in cleaner code and better error handling.
-> 
-Ooops. kstotoul is a typo.  Not sure how I missed the build failure.
-Will repost with that fixed in a few mins.
+Final patch fixed so it doesn't contain a typo that prevents it compiling.
+Sorry about that. 
 
-Sorry about that.
+This driver is now fairly old and has lagged a bit as we have brought
+in newer cleaner ways of doing things.  Anyhow, I was looking at
+it with a view to moving it out of staging and thought I would clean
+up a few bits whilst doing so.  Note I don't have one of these.
 
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/staging/iio/light/tsl2583.c | 36 ++++++++++++++++++++++--------------
->  1 file changed, 22 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-> index 944db26..f45114f 100644
-> --- a/drivers/staging/iio/light/tsl2583.c
-> +++ b/drivers/staging/iio/light/tsl2583.c
-> @@ -493,15 +493,17 @@ static ssize_t taos_power_state_store(struct device *dev,
->  	struct device_attribute *attr, const char *buf, size_t len)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	unsigned long value;
-> +	bool state;
-> +	int ret;
->  
-> -	if (strict_strtoul(buf, 0, &value))
-> -		return -EINVAL;
-> +	ret = strtobool(buf, &state);
-> +	if (ret < 0)
-> +		return ret;
->  
-> -	if (value == 0)
-> -		taos_chip_off(indio_dev);
-> -	else
-> +	if (state)
->  		taos_chip_on(indio_dev);
-> +	else
-> +		taos_chip_off(indio_dev);		
->  
->  	return len;
->  }
-> @@ -527,9 +529,11 @@ static ssize_t taos_als_time_store(struct device *dev,
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct tsl2583_chip *chip = iio_priv(indio_dev);
->  	unsigned long value;
-> +	int ret;
->  
-> -	if (strict_strtoul(buf, 0, &value))
-> -		return -EINVAL;
-> +	ret = kstrtoul(buf, 0, &value);
-> +	if (ret < 0)
-> +		return ret;
->  
->  	if ((value < 50) || (value > 650))
->  		return -EINVAL;
-> @@ -564,9 +568,11 @@ static ssize_t taos_als_cal_target_store(struct device *dev,
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct tsl2583_chip *chip = iio_priv(indio_dev);
->  	unsigned long value;
-> +	int ret;
->  
-> -	if (strict_strtoul(buf, 0, &value))
-> -		return -EINVAL;
-> +	ret = kstrotoul(buf, 0, &value);
-> +	if (ret < 0)
-> +		return ret;
->  
->  	if (value)
->  		chip->taos_settings.als_cal_target = value;
-> @@ -578,12 +584,14 @@ static ssize_t taos_do_calibrate(struct device *dev,
->  	struct device_attribute *attr, const char *buf, size_t len)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	unsigned long value;
-> +	bool cal;
-> +	int ret;
->  
-> -	if (strict_strtoul(buf, 0, &value))
-> -		return -EINVAL;
-> +	ret = strtobool(buf, &cal);
-> +	if (ret < 0)
-> +		return ret;
->  
-> -	if (value == 1)
-> +	if (cal)
->  		taos_als_calibrate(indio_dev);
->  
->  	return len;
-> 
+There are some 'unusual' interfaces in here still such as integrationtime.
+We need to have a think about whether we want to add these to the info
+mask and handle them through read/write_raw or not.
+
+I'm also decidely unkeen on the manual power enable / disable that is
+still in this driver.  That should ideally be done on demand.
+
+Hence i am not proposing moving this out of staging just yet!
+
+Jonathan
+
+Jonathan Cameron (3):
+  staging:iio:light:tsl2583 use read_raw, write_raw hooks.
+  staging:iio:light:tsl2583 apply in_ prefix to attributes.
+  staging:iio:light:tsl2583 switch to kstrto and strtobool
+
+ drivers/staging/iio/light/tsl2583.c | 247 +++++++++++++++++-------------------
+ 1 file changed, 119 insertions(+), 128 deletions(-)
+
+-- 
+1.8.1
+
