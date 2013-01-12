@@ -1,54 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44650 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44995 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754711Ab3ALUy7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2013 15:54:59 -0500
-Message-ID: <50F1CD9F.3030803@kernel.org>
-Date: Sat, 12 Jan 2013 20:54:55 +0000
+	with ESMTP id S1754438Ab3ALV7U (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2013 16:59:20 -0500
+Message-ID: <50F1DCB5.5030003@kernel.org>
+Date: Sat, 12 Jan 2013 21:59:17 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, Fengguang Wu <fengguang.wu@intel.com>
-Subject: Re: [PATCH] iio: fix Kconfig for max1363
-References: <20130110101642.GA18411@localhost> <1357838990-32503-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1357838990-32503-1-git-send-email-pmeerw@pmeerw.net>
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: lars@metafoo.de, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/4] iio:common: Add STMicroelectronics common library
+References: <1357733221-6248-1-git-send-email-denis.ciocca@st.com> <1357733221-6248-2-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1357733221-6248-2-git-send-email-denis.ciocca@st.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/10/2013 05:29 PM, Peter Meerwald wrote:
-> ERROR: "iio_triggered_buffer_setup" [drivers/iio/adc/max1363.ko] undefined!
-> ERROR: "iio_triggered_buffer_cleanup" [drivers/iio/adc/max1363.ko] undefined!
-> 
-> add select IIO_TRIGGERED_BUFFER
-> 
-> IIO_TRIGGERED_BUFFER in turn selects IIO_TRIGGER and IIO_KFIFO_BUF, so drop those
-> MAX1363_RING_BUFFER is not used anymore
-> 
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Fengguang Wu <fengguang.wu@intel.com>
-Thanks,
+...
+> +int st_sensors_read_axis_data(struct iio_dev *indio_dev, u8 ch_addr, int *data)
+> +{
+> +	int err;
+> +	u8 outdata[ST_SENSORS_BYTE_FOR_CHANNEL];
+> +	struct st_sensor_data *sdata = iio_priv(indio_dev);
+> +
+> +	err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
+> +			ch_addr, ST_SENSORS_BYTE_FOR_CHANNEL,
+> +						outdata, sdata->multiread_bit);
+> +	if (err < 0)
+> +		goto read_error;
+> +
 
-Have added a reported by tag for Fengguang Wu and added to togreg branch of
-iio.git
-> ---
->  drivers/iio/adc/Kconfig | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index fe822a1..e372257 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -100,10 +100,8 @@ config LP8788_ADC
->  config MAX1363
->  	tristate "Maxim max1363 ADC driver"
->  	depends on I2C
-> -	select IIO_TRIGGER
-> -	select MAX1363_RING_BUFFER
->  	select IIO_BUFFER
-> -	select IIO_KFIFO_BUF
-> +	select IIO_TRIGGERED_BUFFER
->  	help
->  	  Say yes here to build support for many Maxim i2c analog to digital
->  	  converters (ADC). (max1361, max1362, max1363, max1364, max1036,
-> 
+If you want to keep the cast this way around, then make
+it __le16 instead of u16.  Personally I'd make outdata a __le16
+array and then do the cast the other way, but it is far from important.
+
+> +	*data = ((s16)le16_to_cpup((u16 *)outdata));
+> +
+> +read_error:
+> +	return err;
+> +}
+> +EXPORT_SYMBOL(st_sensors_read_axis_data);
+...
