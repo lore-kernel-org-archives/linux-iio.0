@@ -1,67 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38758 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44683 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932484Ab3AIUHU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2013 15:07:20 -0500
-Message-ID: <50EDCDF6.6040806@kernel.org>
-Date: Wed, 09 Jan 2013 20:07:18 +0000
+	with ESMTP id S1754322Ab3ALU7P (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2013 15:59:15 -0500
+Message-ID: <50F1CEA1.6090606@kernel.org>
+Date: Sat, 12 Jan 2013 20:59:13 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Marek Vasut <marex@denx.de>
-CC: Fabio Estevam <festevam@gmail.com>, linux-iio@vger.kernel.org,
-	Fabio Estevam <fabio.estevam@freescale.com>
-Subject: Re: [PATCH] iio: mxs-lradc: indexes are unsigned
-References: <1357607117-5868-1-git-send-email-festevam@gmail.com> <201301080757.56301.marex@denx.de>
-In-Reply-To: <201301080757.56301.marex@denx.de>
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] [PULL] IIO fixes for v3.8-rc1 set 2
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/08/2013 06:57 AM, Marek Vasut wrote:
-> Dear Fabio Estevam,
-> 
->> From: Fabio Estevam <fabio.estevam@freescale.com>
->>
->> Fix the following warning when building with W=1 option:
->>
->> drivers/staging/iio/adc/mxs-lradc.c: In function
->> 'mxs_lradc_trigger_handler': drivers/staging/iio/adc/mxs-lradc.c:244:2:
->> warning: comparison between signed and unsigned integer expressions
->> [-Wsign-compare]
->>
->> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-> 
-> Maybe use "unsigned int" instead? Either way:
->
-Agreed, I've switched it over on the assumption no one will mind.
+The following changes since commit 678fb42e2b2c815c3475884017aac4da22124d0d:
 
-If one of you wants to check I didn't do anything silly
-that would be great.
-> Acked-by: Marek Vasut <marex@denx.de>
-added to fixes-togreg branch of iio.git on git.kernel.org
-> 
->> ---
->>  drivers/staging/iio/adc/mxs-lradc.c |    2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
->> b/drivers/staging/iio/adc/mxs-lradc.c index fb31b45..6cf3af8 100644
->> --- a/drivers/staging/iio/adc/mxs-lradc.c
->> +++ b/drivers/staging/iio/adc/mxs-lradc.c
->> @@ -239,7 +239,7 @@ static irqreturn_t mxs_lradc_trigger_handler(int irq,
->> void *p) struct mxs_lradc *lradc = iio_priv(iio);
->>  	const uint32_t chan_value = LRADC_CH_ACCUMULATE |
->>  		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
->> -	int i, j = 0;
->> +	u32 i, j = 0;
->>
->>  	for_each_set_bit(i, iio->active_scan_mask, iio->masklength) {
->>  		lradc->buffer[j] = readl(lradc->base + LRADC_CH(j));
-> 
-> Best regards,
-> Marek Vasut
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+  iio: (max1363) Fix probe error path (2012-12-27 11:11:27 +0000)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.8b
+
+for you to fetch changes up to a02a8c42b588059aa06dff6f614a7afcba12df69:
+
+  staging:iio:adis16080: Perform sign extension (2013-01-09 21:15:33 +0000)
+
+----------------------------------------------------------------
+Second round of fixes for IIO post 3.8-rc1
+
+Two tiny fixes
+* A build warning fix due to signed / unsigned comparison
+* Missing sign extension in adis16080
+
+----------------------------------------------------------------
+Fabio Estevam (1):
+      iio: mxs-lradc: indexes are unsigned
+
+Lars-Peter Clausen (1):
+      staging:iio:adis16080: Perform sign extension
+
+ drivers/staging/iio/adc/mxs-lradc.c       | 2 +-
+ drivers/staging/iio/gyro/adis16080_core.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
