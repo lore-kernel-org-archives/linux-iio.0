@@ -1,63 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-052.synserver.de ([212.40.185.52]:1687 "EHLO
-	smtp-out-052.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751469Ab3AJJyb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jan 2013 04:54:31 -0500
-Message-ID: <50EE8FFD.2000000@metafoo.de>
-Date: Thu, 10 Jan 2013 10:55:09 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Julia Lawall <julia.lawall@lip6.fr>
-CC: Grant Likely <grant.likely@secretlab.ca>,
-	spi-devel-general@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] spi: Add helper functions for setting up transfers
-References: <1357752671-30222-1-git-send-email-lars@metafoo.de> <alpine.DEB.2.02.1301100951060.2063@localhost6.localdomain6>
-In-Reply-To: <alpine.DEB.2.02.1301100951060.2063@localhost6.localdomain6>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:59642 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751285Ab3ALKfh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2013 05:35:37 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: jbrenner@taosinc.com, amit.kucheria@verdurent.com,
+	pmeerw@pmeerw.net, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/5] iio:light:tsl2563 cleanup and move out of staging.
+Date: Sat, 12 Jan 2013 10:35:19 +0000
+Message-Id: <1357986924-11471-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/10/2013 09:53 AM, Julia Lawall wrote:
->> +@r1@
->> +identifier fn;
->> +identifier xfers;
->> +@@
->> +fn(...)
->> +{
->> +	...
->> +(
->> +	struct spi_transfer xfers[...];
->> +|
->> +	struct spi_transfer xfers[];
->> +)
->> +	...
->> +}
-> 
-> Can it happen that there would be more than one spi_transfer or spi_message
-> variable per function?  This semantic patch will only treat the case where
-> there is only one, because the ... before an after the variable declaration
-> won't match another declaration of the same form.
-> 
-> julia
+This series more or less consists of the original move patch after
+some precursors fixing the various bits and bobs Peter found in his
+review.  I also dropped a few other unnecessary bits spotted
+whilst making Peter's changes.
 
-I guess it could happen, but I would consider it to be very rare. There are
-a few examples of multiple transfers in the kernel. But most of them look like
+Jonathan Cameron (5):
+  staging:iio:light:tsl2563 drop unnecessary brackets around constants.
+  staging:iio:light:tsl2563 clean comments up.
+  staging:iio:tsl2563 Simplify exit path on error in
+    read_interrupt_config.
+  staging:iio:tsl2563 drop pointless forward declaration
+  iio:light:tsl2563 move out of staging
 
-struct spi_message msg;
-struct spi_transfer xfer_foo;
-struct spi_transfer xfer_bar;
+ drivers/iio/light/Kconfig             |  10 +
+ drivers/iio/light/Makefile            |   1 +
+ drivers/iio/light/tsl2563.c           | 887 +++++++++++++++++++++++++++++++++
+ drivers/staging/iio/light/Kconfig     |  10 -
+ drivers/staging/iio/light/Makefile    |   1 -
+ drivers/staging/iio/light/tsl2563.c   | 899 ----------------------------------
+ drivers/staging/iio/light/tsl2563.h   |   9 -
+ include/linux/platform_data/tsl2563.h |   9 +
+ 8 files changed, 907 insertions(+), 919 deletions(-)
+ create mode 100644 drivers/iio/light/tsl2563.c
+ delete mode 100644 drivers/staging/iio/light/tsl2563.c
+ delete mode 100644 drivers/staging/iio/light/tsl2563.h
+ create mode 100644 include/linux/platform_data/tsl2563.h
 
-...
-spi_message_add_tail(&xfer_foo, &msg);
-spi_message_add_tail(&xfer_bar, &msg);
+-- 
+1.8.1
 
-So the transformation can't be applied here anyway.
-
-Do you have an idea how to change the rule to work with multiple
-transfers/messages per function? If it would make the cocci file more
-complex I wouldn't bother to take care of it, since it basically has no
-practical use.
-
-- Lars
