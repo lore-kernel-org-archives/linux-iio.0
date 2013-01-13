@@ -1,1262 +1,754 @@
-Return-Path: <denis.ciocca@st.com>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: jic23@kernel.org
-Cc: lars@metafoo.de, linux-iio@vger.kernel.org,
-	Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 1/4] iio:common: Add STMicroelectronics common library
-Date: Mon, 21 Jan 2013 09:36:17 +0100
-Message-Id: <1358757380-3187-2-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1358757380-3187-1-git-send-email-denis.ciocca@st.com>
-References: <1358757380-3187-1-git-send-email-denis.ciocca@st.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pa0-f42.google.com ([209.85.220.42]:43700 "EHLO
+	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754217Ab3AMDJH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2013 22:09:07 -0500
+Received: by mail-pa0-f42.google.com with SMTP id rl6so1664247pac.1
+        for <linux-iio@vger.kernel.org>; Sat, 12 Jan 2013 19:09:06 -0800 (PST)
+Date: Sat, 12 Jan 2013 19:09:03 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Marek Vasut <marex@denx.de>
+Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH 1/2 V4] iio: mxs: Implement support for touchscreen
+Message-ID: <20130113030903.GA27264@core.coreip.homeip.net>
+References: <1357947308-11226-1-git-send-email-marex@denx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1357947308-11226-1-git-send-email-marex@denx.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch add a generic library for STMicroelectronics 3-axis sensors.
+On Sat, Jan 12, 2013 at 12:35:07AM +0100, Marek Vasut wrote:
+> This patch implements support for sampling of a touchscreen into
+> the MXS LRADC driver. The LRADC block allows configuring some of
+> it's channels into special mode where they either output the drive
+> voltage or sample it, allowing it to operate a 4-wire or 5-wire
+> resistive touchscreen.
+> 
+> In case the touchscreen mode is enabled, the LRADC slot #7 is
+> reserved for touchscreen only, therefore it is not possible to
+> sample 8 LRADC channels at time, but only 7 channels.
+> 
+> The touchscreen controller is configured such that the PENDOWN event
+> disables touchscreen interrupts and triggers execution of worker
+> thread, which then polls the touchscreen controller for X, Y and
+> Pressure values. This reduces the overhead of interrupt-driven
+> operation. Upon the PENUP event, the worker thread re-enables the
+> PENDOWN detection interrupt and exits.
+> 
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/common/Kconfig                         |   1 +
- drivers/iio/common/Makefile                        |   1 +
- drivers/iio/common/st_sensors/Kconfig              |  14 +
- drivers/iio/common/st_sensors/Makefile             |  10 +
- drivers/iio/common/st_sensors/st_sensors_buffer.c  | 115 ++++++
- drivers/iio/common/st_sensors/st_sensors_core.c    | 411 +++++++++++++++++++++
- drivers/iio/common/st_sensors/st_sensors_i2c.c     |  81 ++++
- drivers/iio/common/st_sensors/st_sensors_spi.c     | 128 +++++++
- drivers/iio/common/st_sensors/st_sensors_trigger.c |  77 ++++
- include/linux/iio/common/st_sensors.h              | 266 +++++++++++++
- include/linux/iio/common/st_sensors_i2c.h          |  20 +
- include/linux/iio/common/st_sensors_spi.h          |  20 +
- 12 files changed, 1144 insertions(+)
- create mode 100644 drivers/iio/common/st_sensors/Kconfig
- create mode 100644 drivers/iio/common/st_sensors/Makefile
- create mode 100644 drivers/iio/common/st_sensors/st_sensors_buffer.c
- create mode 100644 drivers/iio/common/st_sensors/st_sensors_core.c
- create mode 100644 drivers/iio/common/st_sensors/st_sensors_i2c.c
- create mode 100644 drivers/iio/common/st_sensors/st_sensors_spi.c
- create mode 100644 drivers/iio/common/st_sensors/st_sensors_trigger.c
- create mode 100644 include/linux/iio/common/st_sensors.h
- create mode 100644 include/linux/iio/common/st_sensors_i2c.h
- create mode 100644 include/linux/iio/common/st_sensors_spi.h
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-diff --git a/drivers/iio/common/Kconfig b/drivers/iio/common/Kconfig
-index ed45ee5..0b6e97d 100644
---- a/drivers/iio/common/Kconfig
-+++ b/drivers/iio/common/Kconfig
-@@ -3,3 +3,4 @@
- #
- 
- source "drivers/iio/common/hid-sensors/Kconfig"
-+source "drivers/iio/common/st_sensors/Kconfig"
-diff --git a/drivers/iio/common/Makefile b/drivers/iio/common/Makefile
-index 8158400..c2352be 100644
---- a/drivers/iio/common/Makefile
-+++ b/drivers/iio/common/Makefile
-@@ -7,3 +7,4 @@
- #
- 
- obj-y += hid-sensors/
-+obj-y += st_sensors/
-diff --git a/drivers/iio/common/st_sensors/Kconfig b/drivers/iio/common/st_sensors/Kconfig
-new file mode 100644
-index 0000000..84b2dca
---- /dev/null
-+++ b/drivers/iio/common/st_sensors/Kconfig
-@@ -0,0 +1,14 @@
-+#
-+# Hid Sensor common modules
-+#
-+
-+config IIO_ST_SENSORS_I2C
-+	tristate
-+
-+config IIO_ST_SENSORS_SPI
-+	tristate
-+
-+config IIO_ST_SENSORS_CORE
-+	tristate
-+	select IIO_ST_SENSORS_I2C if I2C
-+	select IIO_ST_SENSORS_SPI if SPI_MASTER
-diff --git a/drivers/iio/common/st_sensors/Makefile b/drivers/iio/common/st_sensors/Makefile
-new file mode 100644
-index 0000000..9f3e24f
---- /dev/null
-+++ b/drivers/iio/common/st_sensors/Makefile
-@@ -0,0 +1,10 @@
-+#
-+# Makefile for the STMicroelectronics sensor common modules.
-+#
-+
-+obj-$(CONFIG_IIO_ST_SENSORS_I2C) += st_sensors_i2c.o
-+obj-$(CONFIG_IIO_ST_SENSORS_SPI) += st_sensors_spi.o
-+obj-$(CONFIG_IIO_ST_SENSORS_CORE) += st_sensors.o
-+st_sensors-y := st_sensors_core.o
-+st_sensors-$(CONFIG_IIO_BUFFER) += st_sensors_buffer.o
-+st_sensors-$(CONFIG_IIO_TRIGGER) += st_sensors_trigger.o
-diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-new file mode 100644
-index 0000000..f4a5adc
---- /dev/null
-+++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-@@ -0,0 +1,115 @@
-+/*
-+ * STMicroelectronics sensors buffer library driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/interrupt.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/irqreturn.h>
-+
-+#include <linux/iio/common/st_sensors.h>
-+
-+int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
-+{
-+	int i, n = 0, len;
-+	u8 addr[ST_SENSORS_NUMBER_DATA_CHANNELS];
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	for (i = 0; i < ST_SENSORS_NUMBER_DATA_CHANNELS; i++) {
-+		if (test_bit(i, indio_dev->active_scan_mask)) {
-+			addr[n] = indio_dev->channels[i].address;
-+			n++;
-+		}
-+	}
-+	switch (n) {
-+	case 1:
-+		len = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
-+			addr[0], ST_SENSORS_BYTE_FOR_CHANNEL, buf,
-+			sdata->multiread_bit);
-+		break;
-+	case 2:
-+		if ((addr[1] - addr[0]) == ST_SENSORS_BYTE_FOR_CHANNEL) {
-+			len = sdata->tf->read_multiple_byte(&sdata->tb,
-+					sdata->dev, addr[0],
-+					ST_SENSORS_BYTE_FOR_CHANNEL*n,
-+					buf, sdata->multiread_bit);
-+		} else {
-+			u8 rx_array[ST_SENSORS_BYTE_FOR_CHANNEL*
-+				    ST_SENSORS_NUMBER_DATA_CHANNELS];
-+			len = sdata->tf->read_multiple_byte(&sdata->tb,
-+				sdata->dev, addr[0],
-+				ST_SENSORS_BYTE_FOR_CHANNEL*
-+				ST_SENSORS_NUMBER_DATA_CHANNELS,
-+				rx_array, sdata->multiread_bit);
-+			if (len < 0)
-+				goto read_data_channels_error;
-+
-+			for (i = 0; i < n * ST_SENSORS_NUMBER_DATA_CHANNELS;
-+									i++) {
-+				if (i < n)
-+					buf[i] = rx_array[i];
-+				else
-+					buf[i] = rx_array[n + i];
-+			}
-+			len = ST_SENSORS_BYTE_FOR_CHANNEL*n;
-+		}
-+		break;
-+	case 3:
-+		len = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
-+			addr[0], ST_SENSORS_BYTE_FOR_CHANNEL*
-+			ST_SENSORS_NUMBER_DATA_CHANNELS,
-+			buf, sdata->multiread_bit);
-+		break;
-+	default:
-+		len = -EINVAL;
-+		goto read_data_channels_error;
-+	}
-+	if (len != ST_SENSORS_BYTE_FOR_CHANNEL*n) {
-+		len = -EIO;
-+		goto read_data_channels_error;
-+	}
-+
-+read_data_channels_error:
-+	return len;
-+}
-+EXPORT_SYMBOL(st_sensors_get_buffer_element);
-+
-+irqreturn_t st_sensors_trigger_handler(int irq, void *p)
-+{
-+	int len;
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	len = st_sensors_get_buffer_element(indio_dev, sdata->buffer_data);
-+	if (len < 0)
-+		goto st_sensors_get_buffer_element_error;
-+
-+	if (indio_dev->scan_timestamp)
-+		*(s64 *)((u8 *)sdata->buffer_data +
-+				ALIGN(len, sizeof(s64))) = pf->timestamp;
-+
-+	iio_push_to_buffers(indio_dev, sdata->buffer_data);
-+
-+st_sensors_get_buffer_element_error:
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+EXPORT_SYMBOL(st_sensors_trigger_handler);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics ST-sensors buffer");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-new file mode 100644
-index 0000000..661cc2b
---- /dev/null
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -0,0 +1,411 @@
-+/*
-+ * STMicroelectronics sensors core library driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/delay.h>
-+#include <linux/unaligned/le_byteshift.h>
-+#include <linux/iio/iio.h>
-+
-+#include <linux/iio/common/st_sensors.h>
-+
-+
-+#define ST_SENSORS_WAI_ADDRESS		0x0f
-+
-+int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
-+						u8 reg_addr, u8 mask, u8 data)
-+{
-+	int err;
-+	u8 new_data;
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	err = sdata->tf->read_byte(&sdata->tb, sdata->dev, reg_addr, &new_data);
-+	if (err < 0)
-+		goto st_sensors_write_data_with_mask_error;
-+
-+	new_data = ((new_data & (~mask)) | ((data << __ffs(mask)) & mask));
-+	err = sdata->tf->write_byte(&sdata->tb, sdata->dev, reg_addr, new_data);
-+
-+st_sensors_write_data_with_mask_error:
-+	return err;
-+}
-+EXPORT_SYMBOL(st_sensors_write_data_with_mask);
-+
-+int st_sensors_get_sampling_frequency_avl(struct iio_dev *indio_dev,
-+			const struct st_sensor_odr_avl *odr_avl, char *buf)
-+{
-+	int i, len = 0;
-+
-+	mutex_lock(&indio_dev->mlock);
-+	for (i = 0; i < ST_SENSORS_ODR_LIST_MAX; i++) {
-+		if (odr_avl[i].hz == 0)
-+			break;
-+
-+		len += scnprintf(buf + len, PAGE_SIZE - len,
-+							"%d ", odr_avl[i].hz);
-+	}
-+	mutex_unlock(&indio_dev->mlock);
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+EXPORT_SYMBOL(st_sensors_get_sampling_frequency_avl);
-+
-+int st_sensors_get_scale_avl(struct iio_dev *indio_dev,
-+		const struct st_sensor_fullscale_avl *fullscale_avl, char *buf)
-+{
-+	int i, len = 0;
-+
-+	mutex_lock(&indio_dev->mlock);
-+	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
-+		if (fullscale_avl[i].num == 0)
-+			break;
-+
-+		len += scnprintf(buf + len, PAGE_SIZE - len,
-+					"0.%06u ", fullscale_avl[i].gain);
-+	}
-+	mutex_unlock(&indio_dev->mlock);
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+EXPORT_SYMBOL(st_sensors_get_scale_avl);
-+
-+static int st_sensors_match_odr(const struct st_sensors *sensor,
-+			unsigned int odr, struct st_sensor_odr_avl *odr_out)
-+{
-+	int i, ret = -EINVAL;
-+
-+	for (i = 0; i < ST_SENSORS_ODR_LIST_MAX; i++) {
-+		if (sensor->odr.odr_avl[i].hz == 0)
-+			goto st_sensors_match_odr_error;
-+
-+		if (sensor->odr.odr_avl[i].hz == odr) {
-+			odr_out->hz = sensor->odr.odr_avl[i].hz;
-+			odr_out->value = sensor->odr.odr_avl[i].value;
-+			ret = 0;
-+			break;
-+		}
-+	}
-+
-+st_sensors_match_odr_error:
-+	return ret;
-+}
-+
-+int st_sensors_set_odr(struct iio_dev *indio_dev,
-+			const struct st_sensors *sensor, unsigned int odr)
-+{
-+	int err;
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+	struct st_sensor_odr_avl odr_out;
-+
-+	err = st_sensors_match_odr(sensor, odr, &odr_out);
-+	if (err < 0)
-+		goto st_sensors_match_odr_error;
-+
-+	if ((sensor->odr.addr == sensor->pw.addr) &&
-+				(sensor->odr.mask == sensor->pw.mask)) {
-+		if (sdata->enabled == true) {
-+			err = st_sensors_write_data_with_mask(indio_dev,
-+				sensor->odr.addr, sensor->odr.mask,
-+				odr_out.value);
-+		} else {
-+			err = 0;
-+		}
-+	} else {
-+		err = st_sensors_write_data_with_mask(indio_dev,
-+			sensor->odr.addr, sensor->odr.mask, odr_out.value);
-+	}
-+	if (err >= 0)
-+		sdata->odr = odr_out.hz;
-+
-+st_sensors_match_odr_error:
-+	return err;
-+}
-+EXPORT_SYMBOL(st_sensors_set_odr);
-+
-+static int st_sensors_match_fs(const struct st_sensors *sensor,
-+					unsigned int fs, int *index_fs_avl)
-+{
-+	int i, ret = -EINVAL;
-+
-+	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
-+		if (sensor->fs.fs_avl[i].num == 0)
-+			goto st_sensors_match_odr_error;
-+
-+		if (sensor->fs.fs_avl[i].num == fs) {
-+			*index_fs_avl = i;
-+			ret = 0;
-+			break;
-+		}
-+	}
-+
-+st_sensors_match_odr_error:
-+	return ret;
-+}
-+
-+int st_sensors_set_fullscale(struct iio_dev *indio_dev,
-+			const struct st_sensors *sensor, unsigned int fs)
-+{
-+	int err, i;
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	err = st_sensors_match_fs(sensor, fs, &i);
-+	if (err < 0)
-+		goto st_accel_set_fullscale_error;
-+
-+	err = st_sensors_write_data_with_mask(indio_dev,
-+		sensor->fs.addr, sensor->fs.mask, sensor->fs.fs_avl[i].value);
-+	if (err < 0)
-+		goto st_accel_set_fullscale_error;
-+
-+	sdata->current_fullscale = (struct st_sensor_fullscale_avl *)
-+							&sensor->fs.fs_avl[i];
-+	return err;
-+
-+st_accel_set_fullscale_error:
-+	dev_err(&indio_dev->dev, "failed to set new fullscale.\n");
-+	return err;
-+}
-+EXPORT_SYMBOL(st_sensors_set_fullscale);
-+
-+int st_sensors_set_enable(struct iio_dev *indio_dev,
-+				const struct st_sensors *sensor, bool enable)
-+{
-+	int err = -EINVAL;
-+	bool found;
-+	u8 tmp_value;
-+	struct st_sensor_odr_avl odr_out;
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	if (enable) {
-+		found = false;
-+		tmp_value = sensor->pw.value_on;
-+		if ((sensor->odr.addr == sensor->pw.addr) &&
-+				(sensor->odr.mask == sensor->pw.mask)) {
-+			err = st_sensors_match_odr(sensor,
-+							sdata->odr, &odr_out);
-+			if (err < 0)
-+				goto set_enable_error;
-+			tmp_value = odr_out.value;
-+			found = true;
-+		}
-+		err = st_sensors_write_data_with_mask(indio_dev,
-+				sensor->pw.addr, sensor->pw.mask, tmp_value);
-+		if (err < 0)
-+			goto set_enable_error;
-+		sdata->enabled = true;
-+		if (found)
-+			sdata->odr = odr_out.hz;
-+	} else {
-+			err = st_sensors_write_data_with_mask(indio_dev,
-+				sensor->pw.addr, sensor->pw.mask,
-+							sensor->pw.value_off);
-+		if (err < 0)
-+			goto set_enable_error;
-+		sdata->enabled = false;
-+	}
-+
-+set_enable_error:
-+	return err;
-+}
-+EXPORT_SYMBOL(st_sensors_set_enable);
-+
-+int st_sensors_set_axis_enable(struct iio_dev *indio_dev,
-+			const struct st_sensors *sensor, u8 axis_enable)
-+{
-+	return st_sensors_write_data_with_mask(indio_dev,
-+				sensor->enable_axis.addr,
-+					sensor->enable_axis.mask, axis_enable);
-+}
-+EXPORT_SYMBOL(st_sensors_set_axis_enable);
-+
-+int st_sensors_init_sensor(struct iio_dev *indio_dev,
-+						const struct st_sensors *sensor)
-+{
-+	int err;
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	mutex_init(&sdata->tb.buf_lock);
-+
-+	err = st_sensors_set_enable(indio_dev, sensor, false);
-+	if (err < 0)
-+		goto init_error;
-+
-+	err = st_sensors_set_fullscale(indio_dev, sensor,
-+						sdata->current_fullscale->num);
-+	if (err < 0)
-+		goto init_error;
-+
-+	err = st_sensors_set_odr(indio_dev, sensor, sdata->odr);
-+	if (err < 0)
-+		goto init_error;
-+
-+	/* set BDU */
-+	err = st_sensors_write_data_with_mask(indio_dev, sensor->bdu.addr,
-+							sensor->bdu.mask, true);
-+	if (err < 0)
-+		goto init_error;
-+
-+	err = st_sensors_set_axis_enable(indio_dev, sensor,
-+						ST_SENSORS_ENABLE_ALL_CHANNELS);
-+
-+init_error:
-+	return err;
-+}
-+EXPORT_SYMBOL(st_sensors_init_sensor);
-+
-+int st_sensors_set_dataready_irq(struct iio_dev *indio_dev,
-+				const struct st_sensors *sensor, bool enable)
-+{
-+	int err;
-+
-+	/* Enable/Disable the interrupt generator 1. */
-+	if (sensor->drdy_irq.ig1.en_addr > 0) {
-+		err = st_sensors_write_data_with_mask(indio_dev,
-+			sensor->drdy_irq.ig1.en_addr,
-+			sensor->drdy_irq.ig1.en_mask, (int)enable);
-+		if (err < 0)
-+			goto st_accel_set_dataready_irq_error;
-+	}
-+
-+	/* Enable/Disable the interrupt generator for data ready. */
-+	err = st_sensors_write_data_with_mask(indio_dev,
-+			sensor->drdy_irq.addr,
-+			sensor->drdy_irq.mask, (int)enable);
-+
-+st_accel_set_dataready_irq_error:
-+	return err;
-+}
-+EXPORT_SYMBOL(st_sensors_set_dataready_irq);
-+
-+int st_sensors_set_fullscale_by_gain(struct iio_dev *indio_dev,
-+				const struct st_sensors *sensor, int scale)
-+{
-+	int err = -EINVAL, i;
-+
-+	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
-+		if ((sensor->fs.fs_avl[i].gain == scale) &&
-+					(sensor->fs.fs_avl[i].gain != 0)) {
-+			err = 0;
-+			break;
-+		}
-+	}
-+	if (err < 0)
-+		goto st_sensors_match_scale_error;
-+
-+	err = st_sensors_set_fullscale(indio_dev,
-+					sensor, sensor->fs.fs_avl[i].num);
-+
-+st_sensors_match_scale_error:
-+	return err;
-+}
-+EXPORT_SYMBOL(st_sensors_set_fullscale_by_gain);
-+
-+static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
-+							u8 ch_addr, int *data)
-+{
-+	int err;
-+	u8 outdata[ST_SENSORS_BYTE_FOR_CHANNEL];
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
-+			ch_addr, ST_SENSORS_BYTE_FOR_CHANNEL,
-+						outdata, sdata->multiread_bit);
-+	if (err < 0)
-+		goto read_error;
-+
-+	*data = (s16)get_unaligned_le16(outdata);
-+
-+read_error:
-+	return err;
-+}
-+
-+int st_sensors_read_info_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *ch, int *val,
-+						const struct st_sensors *sensor)
-+{
-+	int err;
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	mutex_lock(&indio_dev->mlock);
-+	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
-+		err = -EBUSY;
-+		goto read_error;
-+	} else {
-+		err = st_sensors_set_enable(indio_dev, sensor, true);
-+		if (err < 0)
-+			goto read_error;
-+
-+		msleep((sensor->bootime * 1000) / sdata->odr);
-+		err = st_sensors_read_axis_data(indio_dev, ch->address, val);
-+		if (err < 0)
-+			goto read_error;
-+
-+		*val = *val >> ch->scan_type.shift;
-+	}
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return err;
-+
-+read_error:
-+	mutex_unlock(&indio_dev->mlock);
-+	return err;
-+}
-+EXPORT_SYMBOL(st_sensors_read_info_raw);
-+
-+int st_sensors_check_device_support(struct iio_dev *indio_dev,
-+			int num_sensors_list, const struct st_sensors *sensors)
-+{
-+	int i, n, err;
-+	u8 wai;
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	err = sdata->tf->read_byte(&sdata->tb, sdata->dev,
-+					ST_SENSORS_DEFAULT_WAI_ADDRESS, &wai);
-+	if (err < 0) {
-+		dev_err(&indio_dev->dev, "failed to read Who-Am-I register.\n");
-+		goto read_wai_error;
-+	}
-+
-+	for (i = 0; i < num_sensors_list; i++) {
-+		if (sensors[i].wai == wai)
-+			break;
-+	}
-+	if (i == num_sensors_list)
-+		goto device_not_supported;
-+
-+	for (n = 0; n < ARRAY_SIZE(sensors[i].sensors_supported); n++) {
-+		if (strcmp(indio_dev->name,
-+				&sensors[i].sensors_supported[n][0]) == 0)
-+			break;
-+	}
-+	if (n == ARRAY_SIZE(sensors[i].sensors_supported)) {
-+		dev_err(&indio_dev->dev, "device name and WhoAmI mismatch.\n");
-+		goto sensor_name_mismatch;
-+	}
-+
-+	sdata->index = i;
-+
-+	return i;
-+
-+device_not_supported:
-+	dev_err(&indio_dev->dev, "device not supported: WhoAmI (0x%x).\n", wai);
-+sensor_name_mismatch:
-+	err = -ENODEV;
-+read_wai_error:
-+	return err;
-+}
-+EXPORT_SYMBOL(st_sensors_check_device_support);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics ST-sensors core");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-new file mode 100644
-index 0000000..5683436
---- /dev/null
-+++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-@@ -0,0 +1,81 @@
-+/*
-+ * STMicroelectronics sensors i2c library driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/iio/iio.h>
-+
-+#include <linux/iio/common/st_sensors_i2c.h>
-+
-+
-+#define ST_SENSORS_I2C_MULTIREAD	0x80
-+
-+static unsigned int st_sensors_i2c_get_irq(struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	return to_i2c_client(sdata->dev)->irq;
-+}
-+
-+static int st_sensors_i2c_read_byte(struct st_sensor_transfer_buffer *tb,
-+				struct device *dev, u8 reg_addr, u8 *res_byte)
-+{
-+	int err;
-+
-+	err = i2c_smbus_read_byte_data(to_i2c_client(dev), reg_addr);
-+	if (err < 0)
-+		goto st_accel_i2c_read_byte_error;
-+
-+	*res_byte = err & 0xff;
-+
-+st_accel_i2c_read_byte_error:
-+	return err < 0 ? err : 0;
-+}
-+
-+static int st_sensors_i2c_read_multiple_byte(
-+		struct st_sensor_transfer_buffer *tb, struct device *dev,
-+			u8 reg_addr, int len, u8 *data, bool multiread_bit)
-+{
-+	if (multiread_bit == true)
-+		reg_addr |= ST_SENSORS_I2C_MULTIREAD;
-+
-+	return i2c_smbus_read_i2c_block_data(to_i2c_client(dev),
-+							reg_addr, len, data);
-+}
-+
-+static int st_sensors_i2c_write_byte(struct st_sensor_transfer_buffer *tb,
-+				struct device *dev, u8 reg_addr, u8 data)
-+{
-+	return i2c_smbus_write_byte_data(to_i2c_client(dev), reg_addr, data);
-+}
-+
-+static const struct st_sensor_transfer_function st_sensors_tf_i2c = {
-+	.read_byte = st_sensors_i2c_read_byte,
-+	.write_byte = st_sensors_i2c_write_byte,
-+	.read_multiple_byte = st_sensors_i2c_read_multiple_byte,
-+};
-+
-+void st_sensors_i2c_configure(struct iio_dev *indio_dev,
-+		struct i2c_client *client, struct st_sensor_data *sdata)
-+{
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->name = client->name;
-+
-+	sdata->tf = &st_sensors_tf_i2c;
-+	sdata->get_irq_data_ready = st_sensors_i2c_get_irq;
-+}
-+EXPORT_SYMBOL(st_sensors_i2c_configure);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics ST-sensors i2c driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
-new file mode 100644
-index 0000000..8a795f5
---- /dev/null
-+++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
-@@ -0,0 +1,128 @@
-+/*
-+ * STMicroelectronics sensors spi library driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/iio/iio.h>
-+
-+#include <linux/iio/common/st_sensors_spi.h>
-+
-+
-+#define ST_SENSORS_SPI_MULTIREAD	0xc0
-+#define ST_SENSORS_SPI_READ		0x80
-+
-+static unsigned int st_sensors_spi_get_irq(struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	return to_spi_device(sdata->dev)->irq;
-+}
-+
-+static int st_sensors_spi_read(struct st_sensor_transfer_buffer *tb,
-+	struct device *dev, u8 reg_addr, int len, u8 *data, bool multiread_bit)
-+{
-+	struct spi_message msg;
-+	int err;
-+
-+	struct spi_transfer xfers[] = {
-+		{
-+			.tx_buf = tb->tx_buf,
-+			.bits_per_word = 8,
-+			.len = 1,
-+		},
-+		{
-+			.rx_buf = tb->rx_buf,
-+			.bits_per_word = 8,
-+			.len = len,
-+		}
-+	};
-+
-+	mutex_lock(&tb->buf_lock);
-+	if ((multiread_bit == true) && (len > 1))
-+		tb->tx_buf[0] = reg_addr | ST_SENSORS_SPI_MULTIREAD;
-+	else
-+		tb->tx_buf[0] = reg_addr | ST_SENSORS_SPI_READ;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfers[0], &msg);
-+	spi_message_add_tail(&xfers[1], &msg);
-+	err = spi_sync(to_spi_device(dev), &msg);
-+	if (err)
-+		goto acc_spi_read_error;
-+
-+	memcpy(data, tb->rx_buf, len*sizeof(u8));
-+	mutex_unlock(&tb->buf_lock);
-+	return len;
-+
-+acc_spi_read_error:
-+	mutex_unlock(&tb->buf_lock);
-+	return err;
-+}
-+
-+static int st_sensors_spi_read_byte(struct st_sensor_transfer_buffer *tb,
-+				struct device *dev, u8 reg_addr, u8 *res_byte)
-+{
-+	return st_sensors_spi_read(tb, dev, reg_addr, 1, res_byte, false);
-+}
-+
-+static int st_sensors_spi_read_multiple_byte(
-+	struct st_sensor_transfer_buffer *tb, struct device *dev,
-+			u8 reg_addr, int len, u8 *data, bool multiread_bit)
-+{
-+	return st_sensors_spi_read(tb, dev, reg_addr, len, data, multiread_bit);
-+}
-+
-+static int st_sensors_spi_write_byte(struct st_sensor_transfer_buffer *tb,
-+				struct device *dev, u8 reg_addr, u8 data)
-+{
-+	struct spi_message msg;
-+	int err;
-+
-+	struct spi_transfer xfers = {
-+		.tx_buf = tb->tx_buf,
-+		.bits_per_word = 8,
-+		.len = 2,
-+	};
-+
-+	mutex_lock(&tb->buf_lock);
-+	tb->tx_buf[0] = reg_addr;
-+	tb->tx_buf[1] = data;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfers, &msg);
-+	err = spi_sync(to_spi_device(dev), &msg);
-+	mutex_unlock(&tb->buf_lock);
-+
-+	return err;
-+}
-+
-+static const struct st_sensor_transfer_function st_sensors_tf_spi = {
-+	.read_byte = st_sensors_spi_read_byte,
-+	.write_byte = st_sensors_spi_write_byte,
-+	.read_multiple_byte = st_sensors_spi_read_multiple_byte,
-+};
-+
-+void st_sensors_spi_configure(struct iio_dev *indio_dev,
-+			struct spi_device *spi, struct st_sensor_data *sdata)
-+{
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->name = spi->modalias;
-+
-+	sdata->tf = &st_sensors_tf_spi;
-+	sdata->get_irq_data_ready = st_sensors_spi_get_irq;
-+}
-+EXPORT_SYMBOL(st_sensors_spi_configure);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics ST-sensors spi driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-new file mode 100644
-index 0000000..9c62c6a
---- /dev/null
-+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-@@ -0,0 +1,77 @@
-+/*
-+ * STMicroelectronics sensors trigger library driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/interrupt.h>
-+
-+#include <linux/iio/common/st_sensors.h>
-+
-+
-+int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
-+					struct iio_trigger_ops *trigger_ops)
-+{
-+	int err;
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	sdata->trig = iio_trigger_alloc("%s-trigger", indio_dev->name);
-+	if (sdata->trig == NULL) {
-+		err = -ENOMEM;
-+		dev_err(&indio_dev->dev, "failed to allocate iio trigger.\n");
-+		goto iio_trigger_alloc_error;
-+	}
-+
-+	err = request_threaded_irq(sdata->get_irq_data_ready(indio_dev),
-+			iio_trigger_generic_data_rdy_poll,
-+			NULL,
-+			IRQF_TRIGGER_RISING,
-+			sdata->trig->name,
-+			sdata->trig);
-+	if (err)
-+		goto request_irq_error;
-+
-+	sdata->trig->private_data = indio_dev;
-+	sdata->trig->ops = trigger_ops;
-+	sdata->trig->dev.parent = sdata->dev;
-+
-+	err = iio_trigger_register(sdata->trig);
-+	if (err < 0) {
-+		dev_err(&indio_dev->dev, "failed to register iio trigger.\n");
-+		goto iio_trigger_register_error;
-+	}
-+	indio_dev->trig = sdata->trig;
-+
-+	return 0;
-+
-+iio_trigger_register_error:
-+	free_irq(sdata->get_irq_data_ready(indio_dev), sdata->trig);
-+request_irq_error:
-+	iio_trigger_free(sdata->trig);
-+iio_trigger_alloc_error:
-+	return err;
-+}
-+EXPORT_SYMBOL(st_sensors_allocate_trigger);
-+
-+void st_sensors_deallocate_trigger(struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	iio_trigger_unregister(sdata->trig);
-+	free_irq(sdata->get_irq_data_ready(indio_dev), sdata->trig);
-+	iio_trigger_free(sdata->trig);
-+}
-+EXPORT_SYMBOL(st_sensors_deallocate_trigger);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics ST-sensors trigger");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-new file mode 100644
-index 0000000..f27b1e0
---- /dev/null
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -0,0 +1,266 @@
-+/*
-+ * STMicroelectronics sensors library driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#ifndef ST_SENSORS_H
-+#define ST_SENSORS_H
-+
-+#include <linux/i2c.h>
-+#include <linux/spi/spi.h>
-+#include <linux/irqreturn.h>
-+#include <linux/iio/trigger.h>
-+
-+
-+#define ST_SENSORS_TX_MAX_LENGHT		2
-+#define ST_SENSORS_RX_MAX_LENGHT		6
-+
-+#define ST_SENSORS_ODR_LIST_MAX			10
-+#define ST_SENSORS_FULLSCALE_AVL_MAX		10
-+
-+#define ST_SENSORS_NUMBER_ALL_CHANNELS		4
-+#define ST_SENSORS_NUMBER_DATA_CHANNELS		3
-+#define ST_SENSORS_ENABLE_ALL_CHANNELS		0x07
-+#define ST_SENSORS_BYTE_FOR_CHANNEL		2
-+#define ST_SENSORS_SCAN_X			0
-+#define ST_SENSORS_SCAN_Y			1
-+#define ST_SENSORS_SCAN_Z			2
-+#define ST_SENSORS_DEFAULT_12_REALBITS		12
-+#define ST_SENSORS_DEFAULT_16_REALBITS		16
-+#define ST_SENSORS_DEFAULT_POWER_ON_VALUE	0x01
-+#define ST_SENSORS_DEFAULT_POWER_OFF_VALUE	0x00
-+#define ST_SENSORS_DEFAULT_WAI_ADDRESS		0x0f
-+#define ST_SENSORS_DEFAULT_AXIS_ADDR		0x20
-+#define ST_SENSORS_DEFAULT_AXIS_MASK		0x07
-+#define ST_SENSORS_DEFAULT_AXIS_N_BIT		3
-+
-+#define ST_SENSORS_MAX_NAME			17
-+#define ST_SENSORS_MAX_4WAI			7
-+
-+#define ST_SENSORS_LSM_CHANNELS(device_type, index, mod, endian, bits, addr) \
-+{ \
-+	.type = device_type, \
-+	.modified = 1, \
-+	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
-+			IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
-+	.scan_index = index, \
-+	.channel2 = mod, \
-+	.address = addr, \
-+	.scan_type = { \
-+		.sign = 's', \
-+		.realbits = bits, \
-+		.shift = 16 - bits, \
-+		.storagebits = 16, \
-+		.endianness = endian, \
-+	}, \
-+}
-+
-+struct st_sensor_odr_avl {
-+	unsigned int hz;
-+	u8 value;
-+};
-+
-+struct st_sensor_odr {
-+	u8 addr;
-+	u8 mask;
-+	struct st_sensor_odr_avl odr_avl[ST_SENSORS_ODR_LIST_MAX];
-+};
-+
-+struct st_sensor_power {
-+	u8 addr;
-+	u8 mask;
-+	u8 value_off;
-+	u8 value_on;
-+};
-+
-+struct st_sensor_axis {
-+	u8 addr;
-+	u8 mask;
-+};
-+
-+struct st_sensor_fullscale_avl {
-+	unsigned int num;
-+	u8 value;
-+	unsigned int gain;
-+	unsigned int gain2;
-+};
-+
-+struct st_sensor_fullscale {
-+	u8 addr;
-+	u8 mask;
-+	struct st_sensor_fullscale_avl fs_avl[ST_SENSORS_FULLSCALE_AVL_MAX];
-+};
-+
-+/**
-+ * struct st_sensor_bdu - ST sensor device block data update
-+ * @addr: address of the register.
-+ * @mask: mask to write the block data update flag.
-+ */
-+struct st_sensor_bdu {
-+	u8 addr;
-+	u8 mask;
-+};
-+
-+/**
-+ * struct st_sensor_data_ready_irq - ST sensor device data-ready interrupt
-+ * @addr: address of the register.
-+ * @mask: mask to write the on/off value.
-+ * struct ig1 - represents the Interrupt Generator 1 of sensors.
-+ * @en_addr: address of the enable ig1 register.
-+ * @en_mask: mask to write the on/off value for enable.
-+ */
-+struct st_sensor_data_ready_irq {
-+	u8 addr;
-+	u8 mask;
-+	struct {
-+		u8 en_addr;
-+		u8 en_mask;
-+	} ig1;
-+};
-+
-+/**
-+ * struct st_sensor_transfer_buffer - ST sensor device I/O buffer
-+ * @buf_lock: Mutex to protect rx and tx buffers.
-+ * @tx_buf: Buffer used by SPI transfer function to send data to the sensors.
-+ *	This buffer is used to avoid DMA not-aligned issue.
-+ * @rx_buf: Buffer used by SPI transfer to receive data from sensors.
-+ *	This buffer is used to avoid DMA not-aligned issue.
-+ */
-+struct st_sensor_transfer_buffer {
-+	struct mutex buf_lock;
-+	u8 rx_buf[ST_SENSORS_RX_MAX_LENGHT];
-+	u8 tx_buf[ST_SENSORS_TX_MAX_LENGHT] ____cacheline_aligned;
-+};
-+
-+/**
-+ * struct st_sensor_transfer_function - ST sensor device I/O function
-+ * @read_byte: Function used to read one byte.
-+ * @write_byte: Function used to write one byte.
-+ * @read_multiple_byte: Function used to read multiple byte.
-+ */
-+struct st_sensor_transfer_function {
-+	int (*read_byte) (struct st_sensor_transfer_buffer *tb,
-+				struct device *dev, u8 reg_addr, u8 *res_byte);
-+	int (*write_byte) (struct st_sensor_transfer_buffer *tb,
-+				struct device *dev, u8 reg_addr, u8 data);
-+	int (*read_multiple_byte) (struct st_sensor_transfer_buffer *tb,
-+		struct device *dev, u8 reg_addr, int len, u8 *data,
-+							bool multiread_bit);
-+};
-+
-+/**
-+ * struct st_sensor_data - ST sensor device status
-+ * @dev: Pointer to instance of struct device (I2C or SPI).
-+ * @trig: The trigger in use by the core driver.
-+ * @current_fullscale: Maximum range of measure by the sensor.
-+ * @enabled: Status of the sensor (false->off, true->on).
-+ * @multiread_bit: Use or not particular bit for [I2C/SPI] multiread.
-+ * @index: Number used to point the sensor being used in the st_sensors struct.
-+ * @buffer_data: Data used by buffer part.
-+ * @odr: Output data rate of the sensor [Hz].
-+ * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
-+ * @tf: Transfer function structure used by I/O operations.
-+ * @tb: Transfer buffers and mutex used by I/O operations.
-+ */
-+struct st_sensor_data {
-+	struct device *dev;
-+	struct iio_trigger *trig;
-+	struct st_sensor_fullscale_avl *current_fullscale;
-+
-+	bool enabled;
-+	bool multiread_bit;
-+
-+	short index;
-+
-+	char *buffer_data;
-+
-+	unsigned int odr;
-+
-+	unsigned int (*get_irq_data_ready) (struct iio_dev *indio_dev);
-+
-+	const struct st_sensor_transfer_function *tf;
-+	struct st_sensor_transfer_buffer tb;
-+};
-+
-+/**
-+ * struct st_sensors - ST sensors list
-+ * @wai: Contents of WhoAmI register.
-+ * @sensors_supported: List of supported sensors by struct itself.
-+ * @ch: IIO channels for the sensor.
-+ * @odr: Output data rate register and ODR list available.
-+ * @pw: Power register of the sensor.
-+ * @enable_axis: Enable one or more axis of the sensor.
-+ * @fs: Full scale register and full scale list available.
-+ * @bdu: Block data update register.
-+ * @drdy_irq: Data ready register of the sensor.
-+ * @multi_read_bit: Use or not particular bit for [I2C/SPI] multi-read.
-+ * @bootime: samples to discard when sensor passing from power-down to power-up.
-+ */
-+struct st_sensors {
-+	u8 wai;
-+	char sensors_supported[ST_SENSORS_MAX_4WAI][ST_SENSORS_MAX_NAME];
-+	struct iio_chan_spec *ch;
-+	struct st_sensor_odr odr;
-+	struct st_sensor_power pw;
-+	struct st_sensor_axis enable_axis;
-+	struct st_sensor_fullscale fs;
-+	struct st_sensor_bdu bdu;
-+	struct st_sensor_data_ready_irq drdy_irq;
-+	bool multi_read_bit;
-+	unsigned int bootime;
-+};
-+
-+#ifdef CONFIG_IIO_BUFFER
-+int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
-+					struct iio_trigger_ops *trigger_ops);
-+
-+void st_sensors_deallocate_trigger(struct iio_dev *indio_dev);
-+
-+irqreturn_t st_sensors_trigger_handler(int irq, void *p);
-+
-+int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf);
-+#endif
-+
-+int st_sensors_init_sensor(struct iio_dev *indio_dev,
-+					const struct st_sensors *sensor);
-+
-+int st_sensors_set_enable(struct iio_dev *indio_dev,
-+				const struct st_sensors *sensor, bool enable);
-+
-+int st_sensors_set_axis_enable(struct iio_dev *indio_dev,
-+			const struct st_sensors *sensor, u8 axis_enable);
-+
-+int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
-+						u8 reg_addr, u8 mask, u8 data);
-+
-+int st_sensors_get_sampling_frequency_avl(struct iio_dev *indio_dev,
-+			const struct st_sensor_odr_avl *odr_avl, char *buf);
-+
-+int st_sensors_get_scale_avl(struct iio_dev *indio_dev,
-+		const struct st_sensor_fullscale_avl *fullscale_avl, char *buf);
-+
-+int st_sensors_set_fullscale(struct iio_dev *indio_dev,
-+			const struct st_sensors *sensor, unsigned int fs);
-+
-+int st_sensors_set_odr(struct iio_dev *indio_dev,
-+			const struct st_sensors *sensor, unsigned int odr);
-+
-+int st_sensors_set_dataready_irq(struct iio_dev *indio_dev,
-+				const struct st_sensors *sensor, bool enable);
-+
-+int st_sensors_set_fullscale_by_gain(struct iio_dev *indio_dev,
-+				const struct st_sensors *sensor, int scale);
-+
-+int st_sensors_read_info_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *ch, int *val,
-+					const struct st_sensors *sensor);
-+
-+int st_sensors_check_device_support(struct iio_dev *indio_dev,
-+			int num_sensors_list, const struct st_sensors *sensors);
-+
-+#endif /* ST_SENSORS_H */
-diff --git a/include/linux/iio/common/st_sensors_i2c.h b/include/linux/iio/common/st_sensors_i2c.h
-new file mode 100644
-index 0000000..67d8453
---- /dev/null
-+++ b/include/linux/iio/common/st_sensors_i2c.h
-@@ -0,0 +1,20 @@
-+/*
-+ * STMicroelectronics sensors i2c library driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#ifndef ST_SENSORS_I2C_H
-+#define ST_SENSORS_I2C_H
-+
-+#include <linux/i2c.h>
-+#include <linux/iio/common/st_sensors.h>
-+
-+void st_sensors_i2c_configure(struct iio_dev *indio_dev,
-+		struct i2c_client *client, struct st_sensor_data *sdata);
-+
-+#endif /* ST_SENSORS_I2C_H */
-diff --git a/include/linux/iio/common/st_sensors_spi.h b/include/linux/iio/common/st_sensors_spi.h
-new file mode 100644
-index 0000000..d964a35
---- /dev/null
-+++ b/include/linux/iio/common/st_sensors_spi.h
-@@ -0,0 +1,20 @@
-+/*
-+ * STMicroelectronics sensors spi library driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#ifndef ST_SENSORS_SPI_H
-+#define ST_SENSORS_SPI_H
-+
-+#include <linux/spi/spi.h>
-+#include <linux/iio/common/st_sensors.h>
-+
-+void st_sensors_spi_configure(struct iio_dev *indio_dev,
-+			struct spi_device *spi, struct st_sensor_data *sdata);
-+
-+#endif /* ST_SENSORS_SPI_H */
+> Cc: Fabio Estevam <fabio.estevam@freescale.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Shawn Guo <shawn.guo@linaro.org>
+> ---
+>  .../bindings/staging/iio/adc/mxs-lradc.txt         |    6 +
+>  drivers/staging/iio/adc/mxs-lradc.c                |  472 +++++++++++++++++++-
+>  2 files changed, 454 insertions(+), 24 deletions(-)
+> 
+> V2: - Replace the use_touchscreen* with enum mxs_lradc_ts, which now tracks
+>       touchscreen state (OFF, 4-wire, 5-wire)
+>     - Add "stop_touchscreen" bit, which indicates the touchscreen is going down
+>       and makes the driver not re-enable touchscreen interrupts and start any
+>       new touchscreen works.
+>     - Make all bitfields "unsigned int" instead of plain "int"
+>     - Use switch(plate) in mxs_lradc_ts_sample()
+>     - Cancel touchscreen thread in mxs_lradc_ts_close(), do this only after
+>       we are sure touchscreen interrupt is off and will never be re-enabled.
+>       This avoids serious race condition.
+>     - Call input_free_device() if input_register_device() fails to avoid memory
+>       leak.
+>     - Do not call input_free_device() after input_unregister_device() in
+>       mxs_lradc_ts_unregister() to avoid double-free
+> 
+> V3: - Replace bitfields with bools
+>     - Make sure touchscreen workQ doesn't cause race condition upon closing
+>       the input device
+>     - Make touchscreen allocation failure fatal
+>     - Remove redundant check for lradc->ts_input in mxs_lradc_ts_unregister()
+>     - Drop __devinit and __devexit
+> 
+> V4: - Do not unconfigure lradc->use_touchscreen in mxs_lradc_ts_register()
+>       when the probe fails
+>     - Return true/false from mxs_lradc_validate_scan_mask() instead of 1/0
+> 
+> diff --git a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> index 801d58c..4688205 100644
+> --- a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> +++ b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> @@ -5,6 +5,12 @@ Required properties:
+>  - reg: Address and length of the register set for the device
+>  - interrupts: Should contain the LRADC interrupts
+>  
+> +Optional properties:
+> +- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
+> +                               to LRADC. Valid value is either 4 or 5. If this
+> +                               property is not present, then the touchscreen is
+> +                               disabled.
+> +
+>  Examples:
+>  
+>  	lradc@80050000 {
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index 6249957..5a544d4 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -32,6 +32,8 @@
+>  #include <linux/stmp_device.h>
+>  #include <linux/bitops.h>
+>  #include <linux/completion.h>
+> +#include <linux/delay.h>
+> +#include <linux/input.h>
+>  
+>  #include <mach/mxs.h>
+>  #include <mach/common.h>
+> @@ -59,6 +61,21 @@
+>  #define LRADC_DELAY_TIMER_PER	200
+>  #define LRADC_DELAY_TIMER_LOOP	5
+>  
+> +/*
+> + * Once the pen touches the touchscreen, the touchscreen switches from
+> + * IRQ-driven mode to polling mode to prevent interrupt storm. The polling
+> + * is realized by worker thread, which is called every 20 or so milliseconds.
+> + * This gives the touchscreen enough fluence and does not strain the system
+> + * too much.
+> + */
+> +#define LRADC_TS_SAMPLE_DELAY_MS	5
+> +
+> +/*
+> + * The LRADC reads the following amount of samples from each touchscreen
+> + * channel and the driver then computes avarage of these.
+> + */
+> +#define LRADC_TS_SAMPLE_AMOUNT		4
+> +
+>  static const char * const mxs_lradc_irq_name[] = {
+>  	"mxs-lradc-touchscreen",
+>  	"mxs-lradc-thresh0",
+> @@ -75,6 +92,12 @@ static const char * const mxs_lradc_irq_name[] = {
+>  	"mxs-lradc-button1",
+>  };
+>  
+> +enum mxs_lradc_ts {
+> +	MXS_LRADC_TOUCHSCREEN_NONE = 0,
+> +	MXS_LRADC_TOUCHSCREEN_4WIRE,
+> +	MXS_LRADC_TOUCHSCREEN_5WIRE,
+> +};
+> +
+>  struct mxs_lradc {
+>  	struct device		*dev;
+>  	void __iomem		*base;
+> @@ -86,21 +109,69 @@ struct mxs_lradc {
+>  	struct mutex		lock;
+>  
+>  	struct completion	completion;
+> +
+> +	/*
+> +	 * Touchscreen LRADC channels receives a private slot in the CTRL4
+> +	 * register, the slot #7. Therefore only 7 slots instead of 8 in the
+> +	 * CTRL4 register can be mapped to LRADC channels when using the
+> +	 * touchscreen.
+> +	 *
+> +	 * Furthermore, certain LRADC channels are shared between touchscreen
+> +	 * and/or touch-buttons and generic LRADC block. Therefore when using
+> +	 * either of these, these channels are not available for the regular
+> +	 * sampling. The shared channels are as follows:
+> +	 *
+> +	 * CH0 -- Touch button #0
+> +	 * CH1 -- Touch button #1
+> +	 * CH2 -- Touch screen XPUL
+> +	 * CH3 -- Touch screen YPLL
+> +	 * CH4 -- Touch screen XNUL
+> +	 * CH5 -- Touch screen YNLR
+> +	 * CH6 -- Touch screen WIPER (5-wire only)
+> +	 *
+> +	 * The bitfields below represents which parts of the LRADC block are
+> +	 * switched into special mode of operation. These channels can not
+> +	 * be sampled as regular LRADC channels. The driver will refuse any
+> +	 * attempt to sample these channels.
+> +	 */
+> +#define CHAN_MASK_TOUCHBUTTON		(0x3 << 0)
+> +#define CHAN_MASK_TOUCHSCREEN_4WIRE	(0xf << 2)
+> +#define CHAN_MASK_TOUCHSCREEN_5WIRE	(0x1f << 2)
+> +	enum mxs_lradc_ts	use_touchscreen;
+> +	bool			stop_touchscreen;
+> +	bool			use_touchbutton;
+> +
+> +	struct input_dev	*ts_input;
+> +	struct work_struct	ts_work;
+>  };
+>  
+>  #define	LRADC_CTRL0				0x00
+> -#define LRADC_CTRL0_TOUCH_DETECT_ENABLE		(1 << 23)
+> -#define LRADC_CTRL0_TOUCH_SCREEN_TYPE		(1 << 22)
+> +#define	LRADC_CTRL0_TOUCH_DETECT_ENABLE		(1 << 23)
+> +#define	LRADC_CTRL0_TOUCH_SCREEN_TYPE		(1 << 22)
+> +#define	LRADC_CTRL0_YNNSW	/* YM */	(1 << 21)
+> +#define	LRADC_CTRL0_YPNSW	/* YP */	(1 << 20)
+> +#define	LRADC_CTRL0_YPPSW	/* YP */	(1 << 19)
+> +#define	LRADC_CTRL0_XNNSW	/* XM */	(1 << 18)
+> +#define	LRADC_CTRL0_XNPSW	/* XM */	(1 << 17)
+> +#define	LRADC_CTRL0_XPPSW	/* XP */	(1 << 16)
+> +#define	LRADC_CTRL0_PLATE_MASK			(0x3f << 16)
+>  
+>  #define	LRADC_CTRL1				0x10
+> -#define	LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
+> -#define	LRADC_CTRL1_LRADC_IRQ_MASK		0x1fff
+> +#define	LRADC_CTRL1_TOUCH_DETECT_IRQ_EN		(1 << 24)
+>  #define	LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
+>  #define	LRADC_CTRL1_LRADC_IRQ_EN_MASK		(0x1fff << 16)
+> +#define	LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
+> +#define	LRADC_CTRL1_TOUCH_DETECT_IRQ		(1 << 8)
+> +#define	LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
+> +#define	LRADC_CTRL1_LRADC_IRQ_MASK		0x1fff
+> +#define	LRADC_CTRL1_LRADC_IRQ_OFFSET		0
+>  
+>  #define	LRADC_CTRL2				0x20
+>  #define	LRADC_CTRL2_TEMPSENSE_PWD		(1 << 15)
+>  
+> +#define	LRADC_STATUS				0x40
+> +#define	LRADC_STATUS_TOUCH_DETECT_RAW		(1 << 0)
+> +
+>  #define	LRADC_CH(n)				(0x50 + (0x10 * (n)))
+>  #define	LRADC_CH_ACCUMULATE			(1 << 29)
+>  #define	LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
+> @@ -132,6 +203,7 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>  {
+>  	struct mxs_lradc *lradc = iio_priv(iio_dev);
+>  	int ret;
+> +	unsigned long mask;
+>  
+>  	if (m != IIO_CHAN_INFO_RAW)
+>  		return -EINVAL;
+> @@ -140,6 +212,12 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>  	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
+>  		return -EINVAL;
+>  
+> +	/* Validate the channel if it doesn't intersect with reserved chans. */
+> +	bitmap_set(&mask, chan->channel, 1);
+> +	ret = iio_validate_scan_mask_onehot(iio_dev, &mask);
+> +	if (ret)
+> +		return -EINVAL;
+> +
+>  	/*
+>  	 * See if there is no buffered operation in progess. If there is, simply
+>  	 * bail out. This can be improved to support both buffered and raw IO at
+> @@ -161,7 +239,11 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>  		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+>  	writel(0xff, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+>  
+> -	writel(chan->channel, lradc->base + LRADC_CTRL4);
+> +	/* Clean the slot's previous content, then set new one. */
+> +	writel(LRADC_CTRL4_LRADCSELECT_MASK(0),
+> +		lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_CLR);
+> +	writel(chan->channel, lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_SET);
+> +
+>  	writel(0, lradc->base + LRADC_CH(0));
+>  
+>  	/* Enable the IRQ and start sampling the channel. */
+> @@ -195,6 +277,269 @@ static const struct iio_info mxs_lradc_iio_info = {
+>  };
+>  
+>  /*
+> + * Touchscreen handling
+> + */
+> +enum lradc_ts_plate {
+> +	LRADC_SAMPLE_X,
+> +	LRADC_SAMPLE_Y,
+> +	LRADC_SAMPLE_PRESSURE,
+> +};
+> +
+> +static int mxs_lradc_ts_touched(struct mxs_lradc *lradc)
+> +{
+> +	uint32_t reg;
+> +
+> +	/* Enable touch detection. */
+> +	writel(LRADC_CTRL0_PLATE_MASK,
+> +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+> +	writel(LRADC_CTRL0_TOUCH_DETECT_ENABLE,
+> +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
+> +
+> +	msleep(LRADC_TS_SAMPLE_DELAY_MS);
+> +
+> +	reg = readl(lradc->base + LRADC_STATUS);
+> +
+> +	return reg & LRADC_STATUS_TOUCH_DETECT_RAW;
+> +}
+> +
+> +static int32_t mxs_lradc_ts_sample(struct mxs_lradc *lradc,
+> +				enum lradc_ts_plate plate, int change)
+> +{
+> +	unsigned long delay, jiff;
+> +	uint32_t reg, ctrl0 = 0, chan = 0;
+> +	/* The touchscreen always uses CTRL4 slot #7. */
+> +	const uint8_t slot = 7;
+> +	uint32_t val;
+> +
+> +	/*
+> +	 * There are three correct configurations of the controller sampling
+> +	 * the touchscreen, each of these configuration provides different
+> +	 * information from the touchscreen.
+> +	 *
+> +	 * The following table describes the sampling configurations:
+> +	 * +-------------+-------+-------+-------+
+> +	 * | Wire \ Axis |   X   |   Y   |   Z   |
+> +	 * +---------------------+-------+-------+
+> +	 * |   X+ (CH2)  |   HI  |   TS  |   TS  |
+> +	 * +-------------+-------+-------+-------+
+> +	 * |   X- (CH4)  |   LO  |   SH  |   HI  |
+> +	 * +-------------+-------+-------+-------+
+> +	 * |   Y+ (CH3)  |   SH  |   HI  |   HI  |
+> +	 * +-------------+-------+-------+-------+
+> +	 * |   Y- (CH5)  |   TS  |   LO  |   SH  |
+> +	 * +-------------+-------+-------+-------+
+> +	 *
+> +	 * HI ... strong '1'  ; LO ... strong '0'
+> +	 * SH ... sample here ; TS ... tri-state
+> +	 *
+> +	 * There are a few other ways of obtaining the Z coordinate
+> +	 * (aka. pressure), but the one in the table seems to be the
+> +	 * most reliable one.
+> +	 */
+> +	switch (plate) {
+> +	case LRADC_SAMPLE_X:
+> +		ctrl0 = LRADC_CTRL0_XPPSW | LRADC_CTRL0_XNNSW;
+> +		chan = 3;
+> +		break;
+> +	case LRADC_SAMPLE_Y:
+> +		ctrl0 = LRADC_CTRL0_YPPSW | LRADC_CTRL0_YNNSW;
+> +		chan = 4;
+> +		break;
+> +	case LRADC_SAMPLE_PRESSURE:
+> +		ctrl0 = LRADC_CTRL0_YPPSW | LRADC_CTRL0_XNNSW;
+> +		chan = 5;
+> +		break;
+> +	}
+> +
+> +	if (change) {
+> +		writel(LRADC_CTRL0_PLATE_MASK,
+> +			lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+> +		writel(ctrl0, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
+> +
+> +		writel(LRADC_CTRL4_LRADCSELECT_MASK(slot),
+> +			lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_CLR);
+> +		writel(chan << LRADC_CTRL4_LRADCSELECT_OFFSET(slot),
+> +			lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_SET);
+> +	}
+> +
+> +	writel(0xffffffff, lradc->base + LRADC_CH(slot) + STMP_OFFSET_REG_CLR);
+> +	writel(1 << slot, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
+> +
+> +	delay = jiffies + msecs_to_jiffies(LRADC_TS_SAMPLE_DELAY_MS);
+> +	do {
+> +		jiff = jiffies;
+> +		reg = readl_relaxed(lradc->base + LRADC_CTRL1);
+> +		if (reg & LRADC_CTRL1_LRADC_IRQ(slot))
+> +			break;
+> +	} while (time_before(jiff, delay));
+> +
+> +	writel(LRADC_CTRL1_LRADC_IRQ(slot),
+> +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+> +
+> +	if (time_after_eq(jiff, delay))
+> +		return -ETIMEDOUT;
+> +
+> +	val = readl(lradc->base + LRADC_CH(slot));
+> +	val &= LRADC_CH_VALUE_MASK;
+> +
+> +	return val;
+> +}
+> +
+> +static int32_t mxs_lradc_ts_sample_filter(struct mxs_lradc *lradc,
+> +				enum lradc_ts_plate plate)
+> +{
+> +	int32_t val, tot = 0;
+> +	int i;
+> +
+> +	val = mxs_lradc_ts_sample(lradc, plate, 1);
+> +
+> +	/* Delay a bit so the touchscreen is stable. */
+> +	mdelay(2);
+> +
+> +	for (i = 0; i < LRADC_TS_SAMPLE_AMOUNT; i++) {
+> +		val = mxs_lradc_ts_sample(lradc, plate, 0);
+> +		tot += val;
+> +	}
+> +
+> +	return tot / LRADC_TS_SAMPLE_AMOUNT;
+> +}
+> +
+> +static void mxs_lradc_ts_work(struct work_struct *ts_work)
+> +{
+> +	struct mxs_lradc *lradc = container_of(ts_work,
+> +				struct mxs_lradc, ts_work);
+> +	int val_x, val_y, val_p;
+> +	bool valid = false;
+> +
+> +	while (mxs_lradc_ts_touched(lradc)) {
+> +		/* Disable touch detector so we can sample the touchscreen. */
+> +		writel(LRADC_CTRL0_TOUCH_DETECT_ENABLE,
+> +			lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+> +
+> +		if (likely(valid)) {
+> +			input_report_abs(lradc->ts_input, ABS_X, val_x);
+> +			input_report_abs(lradc->ts_input, ABS_Y, val_y);
+> +			input_report_abs(lradc->ts_input, ABS_PRESSURE, val_p);
+> +			input_report_key(lradc->ts_input, BTN_TOUCH, 1);
+> +			input_sync(lradc->ts_input);
+> +		}
+> +
+> +		valid = false;
+> +
+> +		val_x = mxs_lradc_ts_sample_filter(lradc, LRADC_SAMPLE_X);
+> +		if (val_x < 0)
+> +			continue;
+> +		val_y = mxs_lradc_ts_sample_filter(lradc, LRADC_SAMPLE_Y);
+> +		if (val_y < 0)
+> +			continue;
+> +		val_p = mxs_lradc_ts_sample_filter(lradc, LRADC_SAMPLE_PRESSURE);
+> +		if (val_p < 0)
+> +			continue;
+> +
+> +		valid = true;
+> +	}
+> +
+> +	input_report_abs(lradc->ts_input, ABS_PRESSURE, 0);
+> +	input_report_key(lradc->ts_input, BTN_TOUCH, 0);
+> +	input_sync(lradc->ts_input);
+> +
+> +	/* Do not restart the TS IRQ if the driver is shutting down. */
+> +	if (lradc->stop_touchscreen)
+> +		return;
+> +
+> +	/* Restart the touchscreen interrupts. */
+> +	writel(LRADC_CTRL1_TOUCH_DETECT_IRQ,
+> +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+> +	writel(LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
+> +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_SET);
+> +}
+> +
+> +static int mxs_lradc_ts_open(struct input_dev *dev)
+> +{
+> +	struct mxs_lradc *lradc = input_get_drvdata(dev);
+> +
+> +	/* The touchscreen is starting. */
+> +	lradc->stop_touchscreen = false;
+> +
+> +	/* Enable the touch-detect circuitry. */
+> +	writel(LRADC_CTRL0_TOUCH_DETECT_ENABLE,
+> +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
+> +
+> +	/* Enable the touch-detect IRQ. */
+> +	writel(LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
+> +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_SET);
+> +
+> +	return 0;
+> +}
+> +
+> +static void mxs_lradc_ts_close(struct input_dev *dev)
+> +{
+> +	struct mxs_lradc *lradc = input_get_drvdata(dev);
+> +
+> +	/* Indicate the touchscreen is stopping. */
+> +	lradc->stop_touchscreen = true;
+> +	mb();
+> +
+> +	/* Wait until touchscreen thread finishes any possible remnants. */
+> +	cancel_work_sync(&lradc->ts_work);
+> +
+> +	/* Disable touchscreen touch-detect IRQ. */
+> +	writel(LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
+> +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+> +
+> +	/* Power-down touchscreen touch-detect circuitry. */
+> +	writel(LRADC_CTRL0_TOUCH_DETECT_ENABLE,
+> +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+> +}
+> +
+> +static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
+> +{
+> +	struct input_dev *input;
+> +	struct device *dev = lradc->dev;
+> +	int ret;
+> +
+> +	if (!lradc->use_touchscreen)
+> +		return 0;
+> +
+> +	input = input_allocate_device();
+> +	if (!input) {
+> +		dev_err(dev, "Failed to allocate TS device!\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	input->name = DRIVER_NAME;
+> +	input->id.bustype = BUS_HOST;
+> +	input->dev.parent = dev;
+> +	input->open = mxs_lradc_ts_open;
+> +	input->close = mxs_lradc_ts_close;
+> +
+> +	__set_bit(EV_ABS, input->evbit);
+> +	__set_bit(EV_KEY, input->evbit);
+> +	__set_bit(BTN_TOUCH, input->keybit);
+> +	input_set_abs_params(input, ABS_X, 0, LRADC_CH_VALUE_MASK, 0, 0);
+> +	input_set_abs_params(input, ABS_Y, 0, LRADC_CH_VALUE_MASK, 0, 0);
+> +	input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_CH_VALUE_MASK, 0, 0);
+> +
+> +	lradc->ts_input = input;
+> +	input_set_drvdata(input, lradc);
+> +	ret = input_register_device(input);
+> +	if (ret)
+> +		input_free_device(lradc->ts_input);
+> +
+> +	return ret;
+> +}
+> +
+> +static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
+> +{
+> +	if (!lradc->use_touchscreen)
+> +		return;
+> +
+> +	cancel_work_sync(&lradc->ts_work);
+> +
+> +	input_unregister_device(lradc->ts_input);
+> +}
+> +
+> +/*
+>   * IRQ Handling
+>   */
+>  static irqreturn_t mxs_lradc_handle_irq(int irq, void *data)
+> @@ -202,14 +547,24 @@ static irqreturn_t mxs_lradc_handle_irq(int irq, void *data)
+>  	struct iio_dev *iio = data;
+>  	struct mxs_lradc *lradc = iio_priv(iio);
+>  	unsigned long reg = readl(lradc->base + LRADC_CTRL1);
+> +	const uint32_t ts_irq_mask =
+> +		LRADC_CTRL1_TOUCH_DETECT_IRQ_EN |
+> +		LRADC_CTRL1_TOUCH_DETECT_IRQ;
+>  
+>  	if (!(reg & LRADC_CTRL1_LRADC_IRQ_MASK))
+>  		return IRQ_NONE;
+>  
+>  	/*
+> -	 * Touchscreen IRQ handling code shall probably have priority
+> -	 * and therefore shall be placed here.
+> +	 * Touchscreen IRQ handling code has priority and therefore
+> +	 * is placed here. In case touchscreen IRQ arrives, disable
+> +	 * it ASAP
+>  	 */
+> +	if (reg & LRADC_CTRL1_TOUCH_DETECT_IRQ) {
+> +		writel(ts_irq_mask,
+> +			lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+> +		if (!lradc->stop_touchscreen)
+> +			schedule_work(&lradc->ts_work);
+> +	}
+>  
+>  	if (iio_buffer_enabled(iio))
+>  		iio_trigger_poll(iio->trig, iio_get_time_ns());
+> @@ -306,8 +661,10 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+>  {
+>  	struct mxs_lradc *lradc = iio_priv(iio);
+>  	struct iio_buffer *buffer = iio->buffer;
+> -	int ret = 0, chan, ofs = 0, enable = 0;
+> -	uint32_t ctrl4 = 0;
+> +	int ret = 0, chan, ofs = 0;
+> +	unsigned long enable = 0;
+> +	uint32_t ctrl4_set = 0;
+> +	uint32_t ctrl4_clr = 0;
+>  	uint32_t ctrl1_irq = 0;
+>  	const uint32_t chan_value = LRADC_CH_ACCUMULATE |
+>  		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
+> @@ -339,17 +696,20 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+>  	writel(0xff, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+>  
+>  	for_each_set_bit(chan, buffer->scan_mask, LRADC_MAX_TOTAL_CHANS) {
+> -		ctrl4 |= chan << LRADC_CTRL4_LRADCSELECT_OFFSET(ofs);
+> +		ctrl4_set |= chan << LRADC_CTRL4_LRADCSELECT_OFFSET(ofs);
+> +		ctrl4_clr |= LRADC_CTRL4_LRADCSELECT_MASK(ofs);
+>  		ctrl1_irq |= LRADC_CTRL1_LRADC_IRQ_EN(ofs);
+>  		writel(chan_value, lradc->base + LRADC_CH(ofs));
+> -		enable |= 1 << ofs;
+> +		bitmap_set(&enable, ofs, 1);
+>  		ofs++;
+>  	};
+>  
+>  	writel(LRADC_DELAY_TRIGGER_LRADCS_MASK | LRADC_DELAY_KICK,
+>  		lradc->base + LRADC_DELAY(0) + STMP_OFFSET_REG_CLR);
+>  
+> -	writel(ctrl4, lradc->base + LRADC_CTRL4);
+> +	writel(ctrl4_clr, lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_CLR);
+> +	writel(ctrl4_set, lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_SET);
+> +
+>  	writel(ctrl1_irq, lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_SET);
+>  
+>  	writel(enable << LRADC_DELAY_TRIGGER_LRADCS_OFFSET,
+> @@ -384,9 +744,33 @@ static int mxs_lradc_buffer_postdisable(struct iio_dev *iio)
+>  static bool mxs_lradc_validate_scan_mask(struct iio_dev *iio,
+>  					const unsigned long *mask)
+>  {
+> -	const int mw = bitmap_weight(mask, iio->masklength);
+> -
+> -	return mw <= LRADC_MAX_MAPPED_CHANS;
+> +	struct mxs_lradc *lradc = iio_priv(iio);
+> +	const int len = iio->masklength;
+> +	const int map_chans = bitmap_weight(mask, len);
+> +	int rsvd_chans = 0;
+> +	unsigned long rsvd_mask = 0;
+> +
+> +	if (lradc->use_touchbutton)
+> +		rsvd_mask |= CHAN_MASK_TOUCHBUTTON;
+> +	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_4WIRE)
+> +		rsvd_mask |= CHAN_MASK_TOUCHSCREEN_4WIRE;
+> +	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
+> +		rsvd_mask |= CHAN_MASK_TOUCHSCREEN_5WIRE;
+> +
+> +	if (lradc->use_touchbutton)
+> +		rsvd_chans++;
+> +	if (lradc->use_touchscreen)
+> +		rsvd_chans++;
+> +
+> +	/* Test for attempts to map channels with special mode of operation. */
+> +	if (bitmap_intersects(mask, &rsvd_mask, len))
+> +		return false;
+> +
+> +	/* Test for attempts to map more channels then available slots. */
+> +	if (map_chans + rsvd_chans > LRADC_MAX_MAPPED_CHANS)
+> +		return false;
+> +
+> +	return true;
+>  }
+>  
+>  static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
+> @@ -435,15 +819,29 @@ static const struct iio_chan_spec mxs_lradc_chan_spec[] = {
+>  
+>  static void mxs_lradc_hw_init(struct mxs_lradc *lradc)
+>  {
+> -	int i;
+> -	const uint32_t cfg =
+> +	/* The ADC always uses DELAY CHANNEL 0. */
+> +	const uint32_t adc_cfg =
+> +		(1 << (LRADC_DELAY_TRIGGER_DELAYS_OFFSET + 0)) |
+>  		(LRADC_DELAY_TIMER_PER << LRADC_DELAY_DELAY_OFFSET);
+>  
+>  	stmp_reset_block(lradc->base);
+>  
+> -	for (i = 0; i < LRADC_MAX_DELAY_CHANS; i++)
+> -		writel(cfg | (1 << (LRADC_DELAY_TRIGGER_DELAYS_OFFSET + i)),
+> -			lradc->base + LRADC_DELAY(i));
+> +	/* Configure DELAY CHANNEL 0 for generic ADC sampling. */
+> +	writel(adc_cfg, lradc->base + LRADC_DELAY(0));
+> +
+> +	/* Disable remaining DELAY CHANNELs */
+> +	writel(0, lradc->base + LRADC_DELAY(1));
+> +	writel(0, lradc->base + LRADC_DELAY(2));
+> +	writel(0, lradc->base + LRADC_DELAY(3));
+> +
+> +	/* Configure the touchscreen type */
+> +	writel(LRADC_CTRL0_TOUCH_SCREEN_TYPE,
+> +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+> +
+> +	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE) {
+> +		writel(LRADC_CTRL0_TOUCH_SCREEN_TYPE,
+> +			lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_SET);
+> +	}
+>  
+>  	/* Start internal temperature sensing. */
+>  	writel(0, lradc->base + LRADC_CTRL2);
+> @@ -460,12 +858,14 @@ static void mxs_lradc_hw_stop(struct mxs_lradc *lradc)
+>  		writel(0, lradc->base + LRADC_DELAY(i));
+>  }
+>  
+> -static int __devinit mxs_lradc_probe(struct platform_device *pdev)
+> +static int mxs_lradc_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+> +	struct device_node *node = dev->of_node;
+>  	struct mxs_lradc *lradc;
+>  	struct iio_dev *iio;
+>  	struct resource *iores;
+> +	uint32_t ts_wires = 0;
+>  	int ret = 0;
+>  	int i;
+>  
+> @@ -487,6 +887,21 @@ static int __devinit mxs_lradc_probe(struct platform_device *pdev)
+>  		goto err_addr;
+>  	}
+>  
+> +	INIT_WORK(&lradc->ts_work, mxs_lradc_ts_work);
+> +
+> +	/* Check if touchscreen is enabled in DT. */
+> +	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
+> +				&ts_wires);
+> +	if (ret)
+> +		dev_info(dev, "Touchscreen not enabled.\n");
+> +	else if (ts_wires == 4)
+> +		lradc->use_touchscreen = MXS_LRADC_TOUCHSCREEN_4WIRE;
+> +	else if (ts_wires == 5)
+> +		lradc->use_touchscreen = MXS_LRADC_TOUCHSCREEN_5WIRE;
+> +	else
+> +		dev_warn(dev, "Unsupported number of touchscreen wires (%d)\n",
+> +				ts_wires);
+> +
+>  	/* Grab all IRQ sources */
+>  	for (i = 0; i < 13; i++) {
+>  		lradc->irq[i] = platform_get_irq(pdev, i);
+> @@ -524,11 +939,16 @@ static int __devinit mxs_lradc_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto err_trig;
+>  
+> +	/* Register the touchscreen input device. */
+> +	ret = mxs_lradc_ts_register(lradc);
+> +	if (ret)
+> +		goto err_dev;
+> +
+>  	/* Register IIO device. */
+>  	ret = iio_device_register(iio);
+>  	if (ret) {
+>  		dev_err(dev, "Failed to register IIO device\n");
+> -		goto err_dev;
+> +		goto err_ts;
+>  	}
+>  
+>  	/* Configure the hardware. */
+> @@ -536,6 +956,8 @@ static int __devinit mxs_lradc_probe(struct platform_device *pdev)
+>  
+>  	return 0;
+>  
+> +err_ts:
+> +	mxs_lradc_ts_unregister(lradc);
+>  err_dev:
+>  	mxs_lradc_trigger_remove(iio);
+>  err_trig:
+> @@ -545,11 +967,13 @@ err_addr:
+>  	return ret;
+>  }
+>  
+> -static int __devexit mxs_lradc_remove(struct platform_device *pdev)
+> +static int mxs_lradc_remove(struct platform_device *pdev)
+>  {
+>  	struct iio_dev *iio = platform_get_drvdata(pdev);
+>  	struct mxs_lradc *lradc = iio_priv(iio);
+>  
+> +	mxs_lradc_ts_unregister(lradc);
+> +
+>  	mxs_lradc_hw_stop(lradc);
+>  
+>  	iio_device_unregister(iio);
+> @@ -573,7 +997,7 @@ static struct platform_driver mxs_lradc_driver = {
+>  		.of_match_table = mxs_lradc_dt_ids,
+>  	},
+>  	.probe	= mxs_lradc_probe,
+> -	.remove	= __devexit_p(mxs_lradc_remove),
+> +	.remove	= mxs_lradc_remove,
+>  };
+>  
+>  module_platform_driver(mxs_lradc_driver);
+> -- 
+> 1.7.10.4
+> 
+
 -- 
-1.8.0.3
+Dmitry
