@@ -1,58 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39380 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933621Ab3AIVQZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2013 16:16:25 -0500
-Message-ID: <50EDDE25.4040101@kernel.org>
-Date: Wed, 09 Jan 2013 21:16:21 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.9]:35541 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754797Ab3ANAxZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 13 Jan 2013 19:53:25 -0500
+From: Marek Vasut <marex@denx.de>
+To: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH 2/2] iio: mxs: Enable touchscreen on m28evk
+Date: Mon, 14 Jan 2013 01:53:19 +0100
+Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <1357947308-11226-1-git-send-email-marex@denx.de> <1357947308-11226-2-git-send-email-marex@denx.de> <20130114005026.GB24575@S2101-09.ap.freescale.net>
+In-Reply-To: <20130114005026.GB24575@S2101-09.ap.freescale.net>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/7] staging:iio:adis16080: Perform sign extension
-References: <1357740079-12326-1-git-send-email-lars@metafoo.de> <50EDCE61.8000001@kernel.org> <50EDD472.7000604@metafoo.de>
-In-Reply-To: <50EDD472.7000604@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201301140153.19393.marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/09/2013 08:34 PM, Lars-Peter Clausen wrote:
-> On 01/09/2013 09:09 PM, Jonathan Cameron wrote:
->> On 01/09/2013 02:01 PM, Lars-Peter Clausen wrote:
->>> The adis16080 reports sample values in twos complement. So we need to perform a
->>> sign extension on the result, otherwise negative values will be reported
->>> incorrectly as large positive values.
->>>
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> Added to fixes-togreg branch of iio.git
->>>
->>> ---
->>> This one should go into 3.8 if possible, the rest of the series is for 3.9
->>> ---
->>>  drivers/staging/iio/gyro/adis16080_core.c | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/staging/iio/gyro/adis16080_core.c b/drivers/staging/iio/gyro/adis16080_core.c
->>> index 3525a68..149ff99 100644
->>> --- a/drivers/staging/iio/gyro/adis16080_core.c
->>> +++ b/drivers/staging/iio/gyro/adis16080_core.c
->>> @@ -69,7 +69,7 @@ static int adis16080_spi_read(struct iio_dev *indio_dev,
->>>  	ret = spi_read(st->us, st->buf, 2);
->>>  
->>>  	if (ret == 0)
->>> -		*val = ((st->buf[0] & 0xF) << 8) | st->buf[1];
->>> +		*val = sign_extend32(12, ((st->buf[0] & 0xF) << 8) | st->buf[1]);
->>>  	mutex_unlock(&st->buf_lock);
->>>  
-> 
-> Sorry, now that I look at it from a distance: This is completely wrong...
-> It needs to be,
-> 
-> sign_extend32((st->buf[0] & 0xF) << 8) | st->buf[1], 11);
-> 
-> Sorry again,
-> - Lars
-> 
-Fixed up.
+Dear Shawn Guo,
 
-Hadn't pushed out yet anyway so only messing in my local tree.
+> On Sat, Jan 12, 2013 at 12:35:08AM +0100, Marek Vasut wrote:
+> > This patch adds necessary DT properties to m28evk to enable touchscreen
+> > in the LRADC block. The M28EVK is shipped with 4-wire resistive
+> > touchscreen.
+> > 
+> > Signed-off-by: Marek Vasut <marex@denx.de>
+> 
+> Changed the subject prefix to "ARM: mxs: ...", and applied the patch.
+
+I didn't screw up intentionally this time, really!
+
+> Shawn
+
+Best regards,
+Marek Vasut
