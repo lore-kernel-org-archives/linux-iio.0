@@ -1,102 +1,93 @@
-Return-Path: <mirqus@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47199 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932805Ab3AOXGh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jan 2013 18:06:37 -0500
+Message-ID: <50F5E0FC.2020703@kernel.org>
+Date: Tue, 15 Jan 2013 23:06:36 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <201301212232.52161.marex@denx.de>
-References: <1358798722-25102-1-git-send-email-marex@denx.de>
- <201301212200.36917.marex@denx.de> <CAHXqBFKzMgX48EJL_f6RF1tZYkdPLCZhip7M9jNuFkY+wjeQqA@mail.gmail.com>
- <201301212232.52161.marex@denx.de>
-From: =?ISO-8859-2?Q?Micha=B3_Miros=B3aw?= <mirqus@gmail.com>
-Date: Mon, 21 Jan 2013 22:48:36 +0100
-Message-ID: <CAHXqBFJ5=P2OHez74gK-DBT+3O=KHoHjffxRAe2u-9ppXOmExA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio: mxs: Add MX23 support into the IIO driver
-To: Marek Vasut <marex@denx.de>
-Cc: linux-iio@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>,
-	Shawn Guo <shawn.guo@linaro.org>, Jonathan Cameron <jic23@kernel.org>,
-	linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: lars@metafoo.de, linux-iio@vger.kernel.org
+Subject: Re: iio: STMicroelectronics iio drivers
+References: <1358238660-14929-1-git-send-email-denis.ciocca@st.com> <50F5D957.6010603@kernel.org> <50F5DFDE.4050607@kernel.org>
+In-Reply-To: <50F5DFDE.4050607@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-2013/1/21 Marek Vasut <marex@denx.de>:
-> Dear Micha=C5=82 Miros=C5=82aw,
->> 2013/1/21 Marek Vasut <marex@denx.de>:
->> > Dear Micha=C5=82 Miros=C5=82aw,
->> >> 2013/1/21 Marek Vasut <marex@denx.de>:
->> >> > This patch adds support for i.MX23 into the LRADC driver. The LRADC
->> >> > block on MX23 is not much different from the one on MX28, thus this
->> >> > is only a few changes fixing the parts that are specific to MX23.
->> >>
->> >> [...]
->> >>
->> >> > +struct mxs_lradc_of_config {
->> >> > +       const int               irq_count;
->> >> > +       const char * const      *irq_name;
->> >> > +};
->> >> > +
->> >> > +static const struct mxs_lradc_of_config const mxs_lradc_of_config[=
-] =3D
->> >> > { +       [IMX23_LRADC] =3D {
->> >> > +               .irq_count      =3D ARRAY_SIZE(mx23_lradc_irq_names=
-),
->> >> > +               .irq_name       =3D mx23_lradc_irq_names,
->> >> > +       },
->> >> > +       [IMX28_LRADC] =3D {
->> >> > +               .irq_count      =3D ARRAY_SIZE(mx28_lradc_irq_names=
-),
->> >> > +               .irq_name       =3D mx28_lradc_irq_names,
->> >> > +       },
->> >> > +};
->> >> > +
->> >> >
->> >> >  enum mxs_lradc_ts {
->> >> >
->> >> >         MXS_LRADC_TOUCHSCREEN_NONE =3D 0,
->> >> >         MXS_LRADC_TOUCHSCREEN_4WIRE,
->> >> >
->> >> > @@ -857,8 +890,19 @@ static void mxs_lradc_hw_stop(struct mxs_lradc
->> >> > *lradc)
->> >> >
->> >> >                 writel(0, lradc->base + LRADC_DELAY(i));
->> >> >
->> >> >  }
->> >> >
->> >> > +static const struct of_device_id mxs_lradc_dt_ids[] =3D {
->> >> > +       { .compatible =3D "fsl,imx23-lradc", .data =3D (void
->> >> > *)IMX23_LRADC, }, +       { .compatible =3D "fsl,imx28-lradc", .dat=
-a =3D
->> >> > (void
->> >> > *)IMX28_LRADC, }, +       { /* sentinel */ }
->> >> > +};
->> >> > +MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
->> >> > +
->> >>
->> >> Why not s/(void \*)\(IMX.._LRADC\)/\&mxs_lradc_of_config[\1]/ ?
->> >
->> > Check the register layout, it differs between MX23 and MX28, that's on=
-e
->> > reason, since were we to access differently placed registers, we can d=
-o
->> > it easily as in the SSP/I2C drivers.
->> >
->> > Moreover, there are some features on the MX28 that are not on the MX23
->> > (like voltage treshold triggers and touchbuttons), with this setup, we
->> > can easily check what we're running at at runtime and determine to
->> > disallow these.
->> >
->> > From my point of view, using the number (IMX23_LRADC / IMX28_LRADC) is
->> > much more convenient in the long run.
+On 01/15/2013 11:01 PM, Jonathan Cameron wrote:
+> On 01/15/2013 10:33 PM, Jonathan Cameron wrote:
+>> On 01/15/2013 08:30 AM, Denis CIOCCA wrote:
+>>> Hi Jonathan,
+>>>
+>>> I sent to you the new patches to fix the u8 casting and a little bugfix in the header files (functions within #ifdef).
+>>> Thanks,
+>>>
+>>> Denis
+>>>  
+>>>
+>> Denis,
 >>
->> I'm asking, because you don't use this number anywhere other than in
->> mxs_lradc_probe()
->> and there only to dereference the irq-names table. After that the
->> structure and number
->> are forgotten.
->
-> Certainly, so far it's used only this way. But please see my argument abo=
-ut
-> register layout, that's why I went down this road of abstraction.
+>> Just been running some build tests on this.  You need to
+>> do a lot more testing of the various possible combinations
+>> I think. Right now I can't build and so far I'm not entirely
+>> sure why.
+>>
+>>   CHECK   drivers/iio/accel/st_accel_i2c.c
+>> drivers/iio/accel/st_accel_i2c.c:38:9: error: undefined identifier 'st_sensors_i2c_configure'
+>>   CC [M]  drivers/iio/accel/st_accel_i2c.o
+>> drivers/iio/accel/st_accel_i2c.c: In function 'st_accel_i2c_probe':
+>> drivers/iio/accel/st_accel_i2c.c:38:2: error: implicit declaration of function 'st_sensors_i2c_configure'
+>> make[3]: *** [drivers/iio/accel/st_accel_i2c.o] Error 1
+>> make[2]: *** [drivers/iio/accel] Error 2
+>> make[1]: *** [drivers/iio] Error 2
+>> make: *** [drivers] Error 2
+>>
+>> For reasons that aren't immediately clear ifdef CONFIG statements don't
+>> seem to be working...
+> 
+> Of course, I had relevant bits compiling as modules.
+> 
+> I think we should rethink the module structure here so that this mess doesn't occur.
+> One core driver with multiple files seems right to me.
+> 
+> so a make file looking something like.
+> obj-$(CONFIG_IIO_ST_SENSORS_CORE) += st_sensors.o
+> st_sensors-y := st_sensors_core.o
+> st_sensors-$(CONFIG_IIO_ST_SENSORS_I2C) += st_sensors_i2c.o
+> st_sensors-$(CONFIG_IIO_ST_SENSORS_SPI) += st_sensors_spi.o
+> st_sensors-$(CONFIG_IIO_ST_SENSORS_TRIGGERED_BUFFER) += st_sensors_trigger.o st_sensors_buffer.o
+> 
+> and a kconfig where all by the sensors_core entry are boolean.
+> 
+> Similarly for the drivers.  Thus we end up with 4 modules rather than dozens and
+> hopefully the build logic will work fine in all cases.
+Ah, can't have two module init's so need separate i2c and spi drivers for each type
++ a core module.  Sorry, didn't think that through until I tried it out.
 
-Hmm. Then is IMX23 LRADC going to just work after this series
-(assuming I don't use unsupported features) or this needs more patches
-to be usable?
+Anyhow, unify everything under common/st_sensors + deal with the problems different
+combinations can give.
 
-Best Regards,
-Micha=C5=82 Miros=C5=82aw
+Jonathan
+> 
+> Also note that I think you can't have buffering for accel and not gyro etc.
+> 
+> 
+> 
+>>
+>> I also suspect we have too many complex build options in here in the first
+>> place. It's probably not unreasonable for instance to build in buffered support
+>> if buffering is enabled in general for IIO rather than explicitly.
+>>
+>> Jonathan
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
