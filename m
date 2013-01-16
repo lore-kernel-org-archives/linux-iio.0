@@ -1,70 +1,108 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <50F6B6B3.4030000@metafoo.de>
-Date: Wed, 16 Jan 2013 15:18:27 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-069.synserver.de ([212.40.185.69]:1266 "EHLO
+	smtp-out-069.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751474Ab3APMsI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Jan 2013 07:48:08 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/9] iio:common: Add STMicroelectronics common library
-References: <1358238660-14929-1-git-send-email-denis.ciocca@st.com> <1358238660-14929-2-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1358238660-14929-2-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 03/15] staging:iio:adis16400: Remove unused default_scan_mask
+Date: Wed, 16 Jan 2013 13:48:39 +0100
+Message-Id: <1358340531-31350-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1358340531-31350-1-git-send-email-lars@metafoo.de>
+References: <1358340531-31350-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Just noticed something else while going through the individual drivers.
+The chip_info struct for contains a defaul_scan_mask field. But it is never
+actually used in the code, so remove it from the chip_info struct.
 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> new file mode 100644
-> index 0000000..1c69c63
-> --- /dev/null
-> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> @@ -0,0 +1,83 @@
-[...]
-> +
-> +static struct iio_trigger_ops st_sensors_trigger_ops = {
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
-> +		int (*set_trigger_state)(struct iio_trigger *trig, bool state),
-> +		int (*try_reenable)(struct iio_trigger *trig))
-> +{
-> +	int err;
-> +	struct st_sensor_data *sdata = iio_priv(indio_dev);
-> +
-> +	sdata->trig = iio_trigger_alloc("%s-trigger", indio_dev->name);
-> +	if (sdata->trig == NULL) {
-> +		err = -ENOMEM;
-> +		dev_err(&indio_dev->dev, "failed to allocate iio trigger.\n");
-> +		goto iio_trigger_alloc_error;
-> +	}
-> +
-> +	err = request_threaded_irq(sdata->get_irq_data_ready(indio_dev),
-> +			iio_trigger_generic_data_rdy_poll,
-> +			NULL,
-> +			IRQF_TRIGGER_RISING,
-> +			sdata->trig->name,
-> +			sdata->trig);
-> +	if (err)
-> +		goto request_irq_error;
-> +
-> +	st_sensors_trigger_ops.set_trigger_state = set_trigger_state;
-> +	st_sensors_trigger_ops.try_reenable = try_reenable;
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/imu/adis16400.h      |  1 -
+ drivers/staging/iio/imu/adis16400_core.c | 15 ---------------
+ 2 files changed, 16 deletions(-)
 
-This is bad idea. It will break as soon as you have e.g. a gyro and and
-accel driver instantiated at the same time. If you need custom trigger ops
-callbacks define a custom trigger ops set per driver.
+diff --git a/drivers/staging/iio/imu/adis16400.h b/drivers/staging/iio/imu/adis16400.h
+index 7a105e9..3efafcb 100644
+--- a/drivers/staging/iio/imu/adis16400.h
++++ b/drivers/staging/iio/imu/adis16400.h
+@@ -145,7 +145,6 @@ struct adis16400_chip_info {
+ 	unsigned int accel_scale_micro;
+ 	int temp_scale_nano;
+ 	int temp_offset;
+-	unsigned long default_scan_mask;
+ 	int (*set_freq)(struct iio_dev *indio_dev, unsigned int freq);
+ 	int (*get_freq)(struct iio_dev *indio_dev);
+ };
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index 7114de9..24fca10 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -1116,12 +1116,6 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.accel_scale_micro = 5884,
+ 		.temp_scale_nano = 140000000, /* 0.14 C */
+ 		.temp_offset = 25000000 / 140000, /* 25 C = 0x00 */
+-		.default_scan_mask = (1 << ADIS16400_SCAN_SUPPLY) |
+-		(1 << ADIS16400_SCAN_GYRO_X) | (1 << ADIS16400_SCAN_ACC_X) |
+-		(1 << ADIS16400_SCAN_ACC_Y) | (1 << ADIS16400_SCAN_ACC_Z) |
+-		(1 << ADIS16400_SCAN_TEMP) | (1 << ADIS16400_SCAN_ADC_0) |
+-		(1 << ADIS16300_SCAN_INCLI_X) | (1 << ADIS16300_SCAN_INCLI_Y) |
+-		(1 << 14),
+ 		.set_freq = adis16400_set_freq,
+ 		.get_freq = adis16400_get_freq,
+ 	},
+@@ -1133,10 +1127,6 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
+ 		.temp_scale_nano = 67850000, /* 0.06785 C */
+ 		.temp_offset = 25000000 / 67850, /* 25 C = 0x00 */
+-		.default_scan_mask = (1 << ADIS16400_SCAN_GYRO_X) |
+-		(1 << ADIS16400_SCAN_GYRO_Y) | (1 << ADIS16400_SCAN_GYRO_Z) |
+-		(1 << ADIS16400_SCAN_ACC_X) | (1 << ADIS16400_SCAN_ACC_Y) |
+-		(1 << ADIS16400_SCAN_ACC_Z),
+ 		.set_freq = adis16334_set_freq,
+ 		.get_freq = adis16334_get_freq,
+ 	},
+@@ -1147,7 +1137,6 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(2522), /* 0.002522 g */
+ 		.temp_scale_nano = 145300000, /* 0.1453 C */
+ 		.temp_offset = 25000000 / 145300, /* 25 C = 0x00 */
+-		.default_scan_mask = 0x7FF,
+ 		.flags = ADIS16400_NO_BURST | ADIS16400_HAS_SLOW_MODE,
+ 		.set_freq = adis16400_set_freq,
+ 		.get_freq = adis16400_get_freq,
+@@ -1160,7 +1149,6 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
+ 		.temp_scale_nano = 136000000, /* 0.136 C */
+ 		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+-		.default_scan_mask = 0x7FF,
+ 		.set_freq = adis16400_set_freq,
+ 		.get_freq = adis16400_get_freq,
+ 	},
+@@ -1172,7 +1160,6 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(333), /* 0.333 mg */
+ 		.temp_scale_nano = 136000000, /* 0.136 C */
+ 		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+-		.default_scan_mask = 0x7FF,
+ 		.set_freq = adis16400_set_freq,
+ 		.get_freq = adis16400_get_freq,
+ 	},
+@@ -1184,7 +1171,6 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
+ 		.temp_scale_nano = 136000000, /* 0.136 C */
+ 		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+-		.default_scan_mask = 0x7FF,
+ 		.set_freq = adis16400_set_freq,
+ 		.get_freq = adis16400_get_freq,
+ 	},
+@@ -1194,7 +1180,6 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
+ 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
+-		.default_scan_mask = 0xFFF,
+ 		.temp_scale_nano = 140000000, /* 0.14 C */
+ 		.temp_offset = 25000000 / 140000, /* 25 C = 0x00 */
+ 		.set_freq = adis16400_set_freq,
+-- 
+1.8.0
 
-> +	sdata->trig->private_data = indio_dev;
-> +	sdata->trig->ops = &st_sensors_trigger_ops;
-> +	sdata->trig->dev.parent = sdata->dev;
-> +
-> +	err = iio_trigger_register(sdata->trig);
-> +	if (err < 0) {
-> +		dev_err(&indio_dev->dev, "failed to register iio trigger.\n");
-> +		goto iio_trigger_register_error;
-> +	}
-> +	indio_dev->trig = sdata->trig;
-> +
-> +	return 0;
-> 
