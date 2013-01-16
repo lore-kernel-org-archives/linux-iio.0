@@ -1,52 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46944 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758019Ab3AOWeH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jan 2013 17:34:07 -0500
-Message-ID: <50F5D957.6010603@kernel.org>
-Date: Tue, 15 Jan 2013 22:33:59 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: lars@metafoo.de, linux-iio@vger.kernel.org
-Subject: Re: iio: STMicroelectronics iio drivers
+Received: from eu1sys200aog111.obsmtp.com ([207.126.144.131]:56719 "EHLO
+	eu1sys200aog111.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1757539Ab3APQ4o convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 16 Jan 2013 11:56:44 -0500
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: "jic23@kernel.org" <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Wed, 16 Jan 2013 17:56:36 +0100
+Subject: Re: [PATCH 2/9] iio:accel: Add STMicroelectronics accelerometers
+ driver
+Message-ID: <50F6DBC4.4050107@st.com>
 References: <1358238660-14929-1-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1358238660-14929-1-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=ISO-8859-1
+ <1358238660-14929-3-git-send-email-denis.ciocca@st.com>
+ <50F6B90D.6020608@metafoo.de>
+In-Reply-To: <50F6B90D.6020608@metafoo.de>
+Content-Type: text/plain; charset=US-ASCII
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/15/2013 08:30 AM, Denis CIOCCA wrote:
-> Hi Jonathan,
-> 
-> I sent to you the new patches to fix the u8 casting and a little bugfix in the header files (functions within #ifdef).
-> Thanks,
-> 
-> Denis
->  
-> 
-Denis,
+Hi Lars-Peter,
 
-Just been running some build tests on this.  You need to
-do a lot more testing of the various possible combinations
-I think. Right now I can't build and so far I'm not entirely
-sure why.
 
-  CHECK   drivers/iio/accel/st_accel_i2c.c
-drivers/iio/accel/st_accel_i2c.c:38:9: error: undefined identifier 'st_sensors_i2c_configure'
-  CC [M]  drivers/iio/accel/st_accel_i2c.o
-drivers/iio/accel/st_accel_i2c.c: In function 'st_accel_i2c_probe':
-drivers/iio/accel/st_accel_i2c.c:38:2: error: implicit declaration of function 'st_sensors_i2c_configure'
-make[3]: *** [drivers/iio/accel/st_accel_i2c.o] Error 1
-make[2]: *** [drivers/iio/accel] Error 2
-make[1]: *** [drivers/iio] Error 2
-make: *** [drivers] Error 2
+>> diff --git a/drivers/iio/accel/st_accel_buffer.c b/drivers/iio/accel/st_accel_buffer.c
+>
+> This file looks pretty much the same for all drivers, any reason why it
+> can't be shared?
 
-For reasons that aren't immediately clear ifdef CONFIG statements don't
-seem to be working...
 
-I also suspect we have too many complex build options in here in the first
-place. It's probably not unreasonable for instance to build in buffered support
-if buffering is enabled in general for IIO rather than explicitly.
+>> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+>
+> Here again the function looks exactly the same in all three drivers and
+> could probably be moved to the common library.
 
-Jonathan
+
+You are right, but the idea is that:
+one common library for all common functions, but leave the code clear ( 
+easy to read).
+In the future I want to patch the current driver to support other features.
+What do you think about?
+
+
+Denis
