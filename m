@@ -1,29 +1,42 @@
-Return-Path: <manuel.stahl@iis.fraunhofer.de>
-From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Return-Path: <linux@roeck-us.net>
+Date: Tue, 15 Jan 2013 21:49:18 -0800
+From: Guenter Roeck <linux@roeck-us.net>
 To: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 10/15] staging:iio:adis16400: Code style cleanup
-Date: Thu, 17 Jan 2013 10:18:45 +0100
-Cc: "Lars-Peter Clausen" <lars@metafoo.de>,
- Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- Jonathan Cameron <jic23@cam.ac.uk>,
- linux-iio@vger.kernel.org
-References: <1358340531-31350-1-git-send-email-lars@metafoo.de> <201301161509.33730.manuel.stahl@iis.fraunhofer.de> <50F6F2A1.6030703@kernel.org>
-In-Reply-To: <50F6F2A1.6030703@kernel.org>
+Cc: linux-iio@vger.kernel.org, Jean Delvare <khali@linux-fr.org>,
+	lm-sensors@lm-sensors.org
+Subject: Re: MAX1363 IIO driver questions
+Message-ID: <20130116054918.GA7056@roeck-us.net>
+References: <20121124052707.GA17392@roeck-us.net>
+ <50B09EDC.4020200@kernel.org>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Message-Id: <201301171018.45252.manuel.stahl@iis.fraunhofer.de>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <50B09EDC.4020200@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Am Mittwoch, 16. Januar 2013, 19:34:09 schrieb Jonathan Cameron:
-> On 01/16/2013 02:09 PM, Manuel Stahl wrote:
-> > I must admit that the only thing I found was this one:
-> > http://yarchive.net/comp/linux/kernel_headers.html
-> Style guide says you are welcome to use either in new code but
-> should match whatever is in use in existing code.
+On Sat, Nov 24, 2012 at 10:18:04AM +0000, Jonathan Cameron wrote:
+> On 11/24/2012 05:27 AM, Guenter Roeck wrote:
+> > Hi all,
+> Hi Guenter,
+> > 
+> > What would it take to move the MAX1363 driver out of staging ?
+> >
+> Nothing given it is already out of staging in linux-next (though only has been
+> for about a week)
+> 
+> > Background is that I need a hardware monitoring driver for MAX1139, and would
+> > like to avoid using a driver from staging if possible (after all, it might
+> > go away anytime). Another option would be to submit a hwmon driver for it,
+> > but that doesn't seem to be the best approach.
+> 
+> The hwmon driver client driver for iio devices is still in staging, but mainly
+> because I haven't had a chance to take a last look at it before posting it to
+> the hmwon list.  IIRC you were more or less happy with what went into staging
+> in the first place, so hopefully not too much left to do.
+> 
+Jonathan,
 
-If that's the current policy I'm absolutely happy with the patch. uint8_t etc is what I'm used to in most projects ;)
+can you educate me how to actually use iio_hwmon ? I get it loaded,
+which registers the platform driver, but I have no idea how to instantiate it.
 
--- 
-Regards,
-Manuel Stahl
+Thanks,
+Guenter
