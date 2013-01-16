@@ -1,97 +1,168 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:49507 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751514Ab3AJKJh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jan 2013 05:09:37 -0500
-From: Marek Vasut <marex@denx.de>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH 2/3 V2] iio: mxs: Implement support for touchscreen
-Date: Thu, 10 Jan 2013 10:48:37 +0100
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Shawn Guo <shawn.guo@linaro.org>
-References: <1355449598-15980-1-git-send-email-marex@denx.de> <201212191801.31920.marex@denx.de> <20130110005748.GA947@core.coreip.homeip.net>
-In-Reply-To: <20130110005748.GA947@core.coreip.homeip.net>
+Return-Path: <lars@metafoo.de>
+Message-ID: <50F6ACF4.4070308@metafoo.de>
+Date: Wed, 16 Jan 2013 14:36:52 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201301101048.38036.marex@denx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+CC: Denis CIOCCA <denis.ciocca@st.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: iio: STMicroelectronics iio drivers
+References: <1358238660-14929-1-git-send-email-denis.ciocca@st.com> <50F5D957.6010603@kernel.org> <50F5DFDE.4050607@kernel.org> <50F66946.9090600@kernel.org> <50F69398.7080703@st.com> <50F69C4E.4080905@jic23.retrosnub.co.uk>
+In-Reply-To: <50F69C4E.4080905@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Dear Dmitry Torokhov,
-
-[...]
-> > > +	enum mxs_lradc_ts	use_touchscreen;
-> > > +	unsigned int		stop_touchscreen:1;
-> > > +	unsigned int		use_touchbutton:1;
+On 01/16/2013 01:25 PM, Jonathan Cameron wrote:
+> On 16/01/13 11:48, Denis CIOCCA wrote:
+>> Hi Jonathan,
+>>
+>> I'm working on the problems that you described, but why if I compile one
+>> file how module the #define IIO_CONFIG_*** aren't works?
+> Because ifdef will only work for booleans.  There are magic tricks to do
+> it for either y or m but I don't think we need them here.
 > 
-> Can we make them bools instead of bit fields?
-
-Sure.
-[...]
-
-> > > +static void mxs_lradc_ts_close(struct input_dev *dev)
-> > > +{
-> > > +	struct mxs_lradc *lradc = input_get_drvdata(dev);
-> > > +
-> > > +	/* Indicate the touchscreen is stopping. */
-> > > +	lradc->stop_touchscreen = 1;
-> > > +
-> > > +	/* Disable touchscreen touch-detect IRQ. */
-> > > +	writel(LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
-> > > +		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
-> > > +
-> > > +	/* Power-down touchscreen touch-detect circuitry. */
-> > > +	writel(LRADC_CTRL0_TOUCH_DETECT_ENABLE,
-> > > +		lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+>> For st_sensors I modified the Kconfig removing the description and
+>> changed tristate option to bool, in drivers I want to leave 4 modules
+>> (if it is possible) but if I compile as module the #define don't work.
+> As far as I can see there is no disadvantage in ending up with the following
+> modules
 > 
-> These 2 writes are racing with writes in mxs_lradc_ts_work(). I think
-> you need to:
+> st_sensors (with st_sensors.h as the header)
+> st_sensors_i2c  (with st_sensors_i2c.h as the header)
+> st_sensors_spi  (with st_sensors_spi.h as the header)
 > 
-> 	lradc->stop_touchscreen = true;
-> 	mb();
-
-Nice catch, do we need the memory barrier here though, is it not enough to 
-reorder the cancel_work_sync() just before the register writes?
-
-> 	cancel_work_sync(&lradc->ts_work);
-> 	writel(LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
-> 		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
-> 	...
-
-[...]
-
-> > > +	lradc->ts_input = input;
-> > > +	input_set_drvdata(input, lradc);
-> > > +	ret = input_register_device(input);
-> > > +	if (ret)
-> > > +		input_free_device(lradc->ts_input);
-> > > +
-> > > +	return ret;
+> st_accel
+> st_accel_i2c
+> st_accel_spi
 > 
-> So why is allocation failure is not fatal bur registration is? I'd make
-> both fatal.
-
-Since it's still possible to operate the block even if touchscreen fails to 
-probe. If that happens, certainly something is already weird. I'd say both 
-should be fatal.
-
-> > > +}
-> > > +
-> > > +static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
-> > > +{
-> > > +	if (!lradc->use_touchscreen)
-> > > +		return;
-> > > +
-> > > +	if (!lradc->ts_input)
-> > > +		return;
+> st_gyro
+> st_gyro_i2c
+> st_gyro_spi
 > 
-> Do we really need to check both conditions?
+> st_magnetometer
+> st_magnetometer_i2c
+> st_magnetometer_spi
 
-Better safe than sorry, but lradc->ts_input should be non-NULL in case lradc-
->use_touchscreen is set, so I'll remove it.
+As for the Kconfig entries what I would recommend doing is to have only one
+user-selectable Kconfig option per driver. I2C, SPI and buffer support can
+be auto-enabled if their dependencies are met. E.g. SPI support is enabled
+if the kernel has SPI master support.
 
-[...]
+The Kconfig entry for the common code should not be user selectable, since
+it doesn't do anything on it's own, just let the driver Kconfig entries
+select it.
 
+> 
+> What do you gain by not rolling the triggered buffer into the core
+> libraries at both levels?  If it's enabled for anything it has to
+> be there for all of them afaiks.  So have one boolean variable
+> to enable it across all st_sensors drivers.
+> The i2c/spi defs don't need protection if they are in their own
+> headers as we can guarantee they are present whenever they are
+> used, hence no need for ifdefs.
+> 
+> Jonathan
+>>
+>> Denis
+>>
+>>
+>> On 01/16/2013 09:48 AM, Jonathan Cameron wrote:
+>>> On 15/01/13 23:01, Jonathan Cameron wrote:
+>>>> On 01/15/2013 10:33 PM, Jonathan Cameron wrote:
+>>>>> On 01/15/2013 08:30 AM, Denis CIOCCA wrote:
+>>>>>> Hi Jonathan,
+>>>>>>
+>>>>>> I sent to you the new patches to fix the u8 casting and a little
+>>>>>> bugfix in the header files (functions within #ifdef).
+>>>>>> Thanks,
+>>>>>>
+>>>>>> Denis
+>>>>>>
+>>>>>>
+>>>>> Denis,
+>>>>>
+>>>>> Just been running some build tests on this.  You need to
+>>>>> do a lot more testing of the various possible combinations
+>>>>> I think. Right now I can't build and so far I'm not entirely
+>>>>> sure why.
+>>>>>
+>>>>>      CHECK   drivers/iio/accel/st_accel_i2c.c
+>>>>> drivers/iio/accel/st_accel_i2c.c:38:9: error: undefined identifier
+>>>>> 'st_sensors_i2c_configure'
+>>>>>      CC [M]  drivers/iio/accel/st_accel_i2c.o
+>>>>> drivers/iio/accel/st_accel_i2c.c: In function 'st_accel_i2c_probe':
+>>>>> drivers/iio/accel/st_accel_i2c.c:38:2: error: implicit declaration of
+>>>>> function 'st_sensors_i2c_configure'
+>>>>> make[3]: *** [drivers/iio/accel/st_accel_i2c.o] Error 1
+>>>>> make[2]: *** [drivers/iio/accel] Error 2
+>>>>> make[1]: *** [drivers/iio] Error 2
+>>>>> make: *** [drivers] Error 2
+>>>>>
+>>>>> For reasons that aren't immediately clear ifdef CONFIG statements don't
+>>>>> seem to be working...
+>>>>
+>>>> Of course, I had relevant bits compiling as modules.
+>>>>
+>>>> I think we should rethink the module structure here so that this mess
+>>>> doesn't occur.
+>>>> One core driver with multiple files seems right to me.
+>>>>
+>>>> so a make file looking something like.
+>>>> obj-$(CONFIG_IIO_ST_SENSORS_CORE) += st_sensors.o
+>>>> st_sensors-y := st_sensors_core.o
+>>>> st_sensors-$(CONFIG_IIO_ST_SENSORS_I2C) += st_sensors_i2c.o
+>>>> st_sensors-$(CONFIG_IIO_ST_SENSORS_SPI) += st_sensors_spi.o
+>>>> st_sensors-$(CONFIG_IIO_ST_SENSORS_TRIGGERED_BUFFER) +=
+>>>> st_sensors_trigger.o st_sensors_buffer.o
+>>>>
+>>>> and a kconfig where all by the sensors_core entry are boolean.
+>>>>
+>>>> Similarly for the drivers.  Thus we end up with 4 modules rather than
+>>>> dozens and
+>>>> hopefully the build logic will work fine in all cases.
+>>>>
+>>>> Also note that I think you can't have buffering for accel and not gyro etc.
+>>>>
+>>> Thinking a little more on this, I can see why you'd want separate
+>>> library drivers for the i2c and spi parts.  You would however benefit
+>>> from pulling the bits in the ifdefs out to separate headers without any
+>>> protection and then including them only where needed.  The triggered
+>>> buffer bit still wants to be in the main st_sensors module though via
+>>> the boolean suggestion above. You may even want to hide away the
+>>> config options for the library support (don't give them a description
+>>> and they won't show up in make menuconfig etc).  I can't see why
+>>> people would want to manually select them without the drivers.
+>>>
+>>>    From the buffered point of view, I'd go with the same trick for config
+>>> that most other drivers have and make it dependent on IIO_BUFFER on the
+>>> assumption that won't be there on a stripped down system anyway and it
+>>> makes life nice and simple without any interesting issues like will be
+>>> seen here.
+>>>
+>>> Jonathan
+>>>>
+>>>>
+>>>>>
+>>>>> I also suspect we have too many complex build options in here in the first
+>>>>> place. It's probably not unreasonable for instance to build in buffered
+>>>>> support
+>>>>> if buffering is enabled in general for IIO rather than explicitly.
+>>>>>
+>>>>> Jonathan
+>>>>> -- 
+>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>>>> the body of a message to majordomo@vger.kernel.org
+>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>>>
+>>>> -- 
+>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>>> the body of a message to majordomo@vger.kernel.org
+>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>>
+>>>
+> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
