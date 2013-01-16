@@ -1,55 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:60301 "EHLO
-	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932119Ab3APIl7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Jan 2013 03:41:59 -0500
-Message-ID: <50F667C9.6000106@jic23.retrosnub.co.uk>
-Date: Wed, 16 Jan 2013 08:41:45 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Received: from eu1sys200aog113.obsmtp.com ([207.126.144.135]:42385 "EHLO
+	eu1sys200aog113.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1757613Ab3APQaw convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 16 Jan 2013 11:30:52 -0500
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: "jic23@kernel.org" <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Wed, 16 Jan 2013 17:30:32 +0100
+Subject: Re: [PATCH 1/9] iio:common: Add STMicroelectronics common library
+Message-ID: <50F6D5A8.6050306@st.com>
+References: <1358238660-14929-1-git-send-email-denis.ciocca@st.com>
+ <1358238660-14929-2-git-send-email-denis.ciocca@st.com>
+ <50F6B410.6040207@metafoo.de>
+In-Reply-To: <50F6B410.6040207@metafoo.de>
+Content-Type: text/plain; charset=US-ASCII
 MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Jean Delvare <khali@linux-fr.org>, lm-sensors@lm-sensors.org
-Subject: Re: MAX1363 IIO driver questions
-References: <20121124052707.GA17392@roeck-us.net> <50B09EDC.4020200@kernel.org> <20130116054918.GA7056@roeck-us.net>
-In-Reply-To: <20130116054918.GA7056@roeck-us.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/01/13 05:49, Guenter Roeck wrote:
-> On Sat, Nov 24, 2012 at 10:18:04AM +0000, Jonathan Cameron wrote:
->> On 11/24/2012 05:27 AM, Guenter Roeck wrote:
->>> Hi all,
->> Hi Guenter,
->>>
->>> What would it take to move the MAX1363 driver out of staging ?
->>>
->> Nothing given it is already out of staging in linux-next (though only has been
->> for about a week)
->>
->>> Background is that I need a hardware monitoring driver for MAX1139, and would
->>> like to avoid using a driver from staging if possible (after all, it might
->>> go away anytime). Another option would be to submit a hwmon driver for it,
->>> but that doesn't seem to be the best approach.
->>
->> The hwmon driver client driver for iio devices is still in staging, but mainly
->> because I haven't had a chance to take a last look at it before posting it to
->> the hmwon list.  IIRC you were more or less happy with what went into staging
->> in the first place, so hopefully not too much left to do.
->>
-> Jonathan,
+Hi Lars-Peter,
+
+thank you very much for your review!
+
+>> +int st_sensors_read_axis_data(struct iio_dev *indio_dev, u8 ch_addr, int *data)
+>> +{
+>> +	int err;
+>> +	u8 outdata[ST_SENSORS_BYTE_FOR_CHANNEL];
+>> +	struct st_sensor_data *sdata = iio_priv(indio_dev);
+>> +
+>> +	err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
+>> +			ch_addr, ST_SENSORS_BYTE_FOR_CHANNEL,
+>> +						outdata, sdata->multiread_bit);
+>> +	if (err < 0)
+>> +		goto read_error;
+>> +
+>> +	*data = ((s16)le16_to_cpup((__le16 *)outdata));
 >
-> can you educate me how to actually use iio_hwmon ? I get it loaded,
-> which registers the platform driver, but I have no idea how to instantiate it.
->
-http://marc.info/?l=linux-iio&m=132933525705497&w=2
+> Either make outdata a __le16 or use get_unaligned_le16.
 
-[PATCH 6/6] stargate2: example of map configuration for iio to hwmon 
-example.
+get_unaligned_le16 doesn't do what I have done?
 
-Should give you a basic example.  Clearly a spot of documentation might
-be in order ;)
 
-Jonathan
-
+Denis
