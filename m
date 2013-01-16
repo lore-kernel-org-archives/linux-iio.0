@@ -1,46 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-50.csi.cam.ac.uk ([131.111.8.150]:33984 "EHLO
-	ppsw-50.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751177Ab3ARKny (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jan 2013 05:43:54 -0500
-Message-ID: <50F92764.30508@jic23.retrosnub.co.uk>
-Date: Fri, 18 Jan 2013 10:43:48 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org
-Subject: Re: STMicroelectronics drivers bugfix
-References: <1358501475-5797-1-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1358501475-5797-1-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from smtp-out-069.synserver.de ([212.40.185.69]:1057 "EHLO
+	smtp-out-069.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757440Ab3APMsS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Jan 2013 07:48:18 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 08/15] staging:iio:adis16400: Remove unit suffix from samplerate attribute
+Date: Wed, 16 Jan 2013 13:48:44 +0100
+Message-Id: <1358340531-31350-8-git-send-email-lars@metafoo.de>
+In-Reply-To: <1358340531-31350-1-git-send-email-lars@metafoo.de>
+References: <1358340531-31350-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/01/13 09:31, Denis CIOCCA wrote:
-> Hi Lars, Jonathan,
->
-> I review the driver code in accordance with Lars's review. What do you think about kconfig?
-Looking quickly at the library code, the kconfig is fine, but I'd expect
-the i2c and spi bits to be built into the main module if they are 
-present.  Right now unless I am reading it wrong they'll get built even 
-if the main module isn't.
+To be compliant to the IIO specification we should not include the "SPS" suffix
+in the "samplerate" attribute contents.
 
-For the drivers, the make file can be a simpler and easy to follow if we
-put back some the Kconfig symbols you had before but just have them 
-hidden. Basically it moves all the logic into Kconfig and means the
-resulting .config is easy to follow.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/imu/adis16400_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-To my mind that would be a little simpler.
-
-
-> I have yet to share some part of driver code in the library!
->
-> Denis
->
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+index aa4ffcf..9429072 100644
+--- a/drivers/staging/iio/imu/adis16400_core.c
++++ b/drivers/staging/iio/imu/adis16400_core.c
+@@ -116,7 +116,7 @@ static ssize_t adis16400_read_frequency(struct device *dev,
+ 	ret = st->variant->get_freq(st);
+ 	if (ret < 0)
+ 		return ret;
+-	len = sprintf(buf, "%d SPS\n", ret);
++	len = sprintf(buf, "%d\n", ret);
+ 	return len;
+ }
+ 
+-- 
+1.8.0
 
