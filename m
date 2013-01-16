@@ -1,83 +1,301 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-References: <20121124052707.GA17392@roeck-us.net> <50B09EDC.4020200@kernel.org> <20130116054918.GA7056@roeck-us.net> <50F667C9.6000106@jic23.retrosnub.co.uk> <20130117204549.GB22045@roeck-us.net>
-In-Reply-To: <20130117204549.GB22045@roeck-us.net>
+Return-Path: <lars@metafoo.de>
+Message-ID: <50F6B43F.4080306@metafoo.de>
+Date: Wed, 16 Jan 2013 15:07:59 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="----PRP77NSC6KHQ3QFZY5KVYDSKLYDXV8"
-Subject: Re: MAX1363 IIO driver questions
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Thu, 17 Jan 2013 21:03:58 +0000
-To: Guenter Roeck <linux@roeck-us.net>
-CC: Jonathan Cameron <jic23@kernel.org>,linux-iio@vger.kernel.org,Jean Delvare <khali@linux-fr.org>,lm-sensors@lm-sensors.org
-Message-ID: <8649d873-66ef-4b0f-a22d-8480e5aa1ead@email.android.com>
+To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+ Jonathan Cameron <jic23@cam.ac.uk>,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH 10/15] staging:iio:adis16400: Code style cleanup
+References: <1358340531-31350-1-git-send-email-lars@metafoo.de> <50F6A410.80708@jic23.retrosnub.co.uk> <50F6A6FC.6020800@metafoo.de> <201301161457.59987.manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <201301161457.59987.manuel.stahl@iis.fraunhofer.de>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-------PRP77NSC6KHQ3QFZY5KVYDSKLYDXV8
-Content-Type: text/plain;
- charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-
-Good point. New use case for us so suggestions on how to do the association cleanly would be most welcome. Is there anything similar out there? We could add a per iio device sysfs interface to add additional mappings but it is a little uggly...
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
-
-Guenter Roeck <linux@roeck-us.net> wrote:
-
-On Wed, Jan 16, 2013 at 08:41:45AM +0000, Jonathan Cameron wrote:
-> On 16/01/13 05:49, Guenter Roeck wrote:
-> >On Sat, Nov 24, 2012 at 10:18:04AM +0000, Jonathan Cameron wrote:
-> >>On 11/24/2012 05:27 AM, Guenter Roeck wrote:
-> >>>Hi all,
-> >>Hi Guenter,
-> >>>
-> >>>What would it take to move the MAX1363 driver out of staging ?
-> >>>
-> >>Nothing given it is already out of staging in linux-next (though only has been
-> >>for about a week)
-> >>
-> >>>Background is that I need a hardware monitoring driver for MAX1139, and would
-> >>>like to avoid using a driver from staging if possible (after all, it might
-> >>>go away anytime). Another option would be to submit a hwmon driver for it,
-> >>>but that doesn't seem to be the best approach.
-> >>
-> >>The hwmon driver client driver for iio devices is still in staging, but mainly
-> >>because I haven't had a chance to take a last look at it before posting it to
-> >>the hmwon list. IIRC you were more or less happy with what went into staging
-> >>in the first place, so hopefully not too much left to do.
-> >>
-> >Jonathan,
-> >
-> >can you educate me how to actually use iio_hwmon ? I get it loaded,
-> >which registers the platform driver, but I have no idea how to instantiate it.
-> >
-> http://marc.info/?l=linux-iio&m=132933525705497&w=2
+On 01/16/2013 02:57 PM, Manuel Stahl wrote:
+> Hi everyone,
 > 
-> [PATCH 6/6] stargate2: example of map configuration for iio to hwmon
-> example.
+> just cought that one up.
+> I think there was a strong policy to use u8 etc in the kernel. Linus wrote something about it some time ago.
 > 
-Hi Jonathan,
 
-In other words, I can not test it on a PC unless I write a driver to
-instantiate it. Not too helpful :(. It means that iio drivers can not
-be used / instantiated for hardware monitoring on PCs.
-
-Thanks,
-Guenter
+That's what the advocates of u8, etc like to tell ;)
 
 
-------PRP77NSC6KHQ3QFZY5KVYDSKLYDXV8
-Content-Type: text/html;
- charset=utf-8
-Content-Transfer-Encoding: 8bit
-
-<html><head></head><body><br>
-Good point.  New use case for us so suggestions on how to do the association cleanly would be most welcome.  Is there anything similar out there? We could add a per iio device sysfs interface to add additional mappings but it is a little uggly...<br>
-<br>
--- <br>
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.<br><br><div class="gmail_quote">Guenter Roeck &lt;linux@roeck-us.net&gt; wrote:<blockquote class="gmail_quote" style="margin: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
-<pre style="white-space: pre-wrap; word-wrap:break-word; font-family: monospace">On Wed, Jan 16, 2013 at 08:41:45AM +0000, Jonathan Cameron wrote:<br />&gt; On 16/01/13 05:49, Guenter Roeck wrote:<br />&gt; &gt;On Sat, Nov 24, 2012 at 10:18:04AM +0000, Jonathan Cameron wrote:<br />&gt; &gt;&gt;On 11/24/2012 05:27 AM, Guenter Roeck wrote:<br />&gt; &gt;&gt;&gt;Hi all,<br />&gt; &gt;&gt;Hi Guenter,<br />&gt; &gt;&gt;&gt;<br />&gt; &gt;&gt;&gt;What would it take to move the MAX1363 driver out of staging ?<br />&gt; &gt;&gt;&gt;<br />&gt; &gt;&gt;Nothing given it is already out of staging in linux-next (though only has been<br />&gt; &gt;&gt;for about a week)<br />&gt; &gt;&gt;<br />&gt; &gt;&gt;&gt;Background is that I need a hardware monitoring driver for MAX1139, and would<br />&gt; &gt;&gt;&gt;like to avoid using a driver from staging if possible (after all, it might<br />&gt; &gt;&gt;&gt;go away anytime). Another option would be to submit a hwmon driver for it,<br />&gt;
-&gt;&gt;&gt;but that doesn't seem to be the best approach.<br />&gt; &gt;&gt;<br />&gt; &gt;&gt;The hwmon driver client driver for iio devices is still in staging, but mainly<br />&gt; &gt;&gt;because I haven't had a chance to take a last look at it before posting it to<br />&gt; &gt;&gt;the hmwon list.  IIRC you were more or less happy with what went into staging<br />&gt; &gt;&gt;in the first place, so hopefully not too much left to do.<br />&gt; &gt;&gt;<br />&gt; &gt;Jonathan,<br />&gt; &gt;<br />&gt; &gt;can you educate me how to actually use iio_hwmon ? I get it loaded,<br />&gt; &gt;which registers the platform driver, but I have no idea how to instantiate it.<br />&gt; &gt;<br />&gt; <a href="http://marc.info/?l=linux-iio&amp;m=132933525705497&amp;w=2">http://marc.info/?l=linux-iio&amp;m=132933525705497&amp;w=2</a><br />&gt; <br />&gt; [PATCH 6/6] stargate2: example of map configuration for iio to hwmon<br />&gt; example.<br />&gt; <br />Hi Jonathan,<br /><br />In oth
- er
-words, I can not test it on a PC unless I write a driver to<br />instantiate it. Not too helpful :(. It means that iio drivers can not<br />be used / instantiated for hardware monitoring on PCs.<br /><br />Thanks,<br />Guenter<br /></pre></blockquote></div></body></html>
-------PRP77NSC6KHQ3QFZY5KVYDSKLYDXV8--
+> Am Mittwoch, 16. Januar 2013, 14:11:24 schrieb Lars-Peter Clausen:
+>> On 01/16/2013 01:58 PM, Jonathan Cameron wrote:
+>>> On 16/01/13 12:48, Lars-Peter Clausen wrote:
+>>>> Do a set of minor miscellaneous code style cleanups for the adis16400 before
+>>>> moving it out of staging. Delete outdated comments, removed excess
+>>>> whitespace,
+>>>> add missing whitespace, replace u{8,16} with uint{8,16}_t.
+>>>
+>>> Is there a move that I've missed to move away from u8 and friends?
+>>
+>> Unfortunately not. I think the policy is more or less use whichever you
+>> like. But I definitely prefer uint16_t and friends since it's the official C
+>> type for that type. Also most of the other adis drivers including the
+>> library use uint{8,16,32}_t so it's only consistent.
+>>
+>> I wouldn't have done this if it had been the only style issue, but since the
+>> file needed a cleanup anyway I thought I'd include this as well.
+>>
+>> - Lars
+>>
+>>>>
+>>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>>>> ---
+>>>>   drivers/staging/iio/imu/adis16400_core.c | 81
+>>>> +++++++++++++++-----------------
+>>>>   1 file changed, 37 insertions(+), 44 deletions(-)
+>>>>
+>>>> diff --git a/drivers/staging/iio/imu/adis16400_core.c
+>>>> b/drivers/staging/iio/imu/adis16400_core.c
+>>>> index c08490b..1bbe5ee 100644
+>>>> --- a/drivers/staging/iio/imu/adis16400_core.c
+>>>> +++ b/drivers/staging/iio/imu/adis16400_core.c
+>>>> @@ -45,7 +45,7 @@ enum adis16400_chip_variant {
+>>>>   static int adis16334_get_freq(struct adis16400_state *st)
+>>>>   {
+>>>>       int ret;
+>>>> -    u16 t;
+>>>> +    uint16_t t;
+>>>>
+>>>>       ret = adis_read_reg_16(&st->adis, ADIS16400_SMPL_PRD, &t);
+>>>>       if (ret < 0)
+>>>> @@ -78,12 +78,13 @@ static int adis16334_set_freq(struct adis16400_state
+>>>> *st, unsigned int freq)
+>>>>   static int adis16400_get_freq(struct adis16400_state *st)
+>>>>   {
+>>>>       int sps, ret;
+>>>> -    u16 t;
+>>>> +    uint16_t t;
+>>>>
+>>>>       ret = adis_read_reg_16(&st->adis, ADIS16400_SMPL_PRD, &t);
+>>>>       if (ret < 0)
+>>>>           return ret;
+>>>> -    sps =  (t & ADIS16400_SMPL_PRD_TIME_BASE) ? 53 : 1638;
+>>>> +
+>>>> +    sps = (t & ADIS16400_SMPL_PRD_TIME_BASE) ? 53 : 1638;
+>>>>       sps /= (t & ADIS16400_SMPL_PRD_DIV_MASK) + 1;
+>>>>
+>>>>       return sps;
+>>>> @@ -97,6 +98,7 @@ static int adis16400_set_freq(struct adis16400_state
+>>>> *st, unsigned int freq)
+>>>>       if (t > 0)
+>>>>           t--;
+>>>>       t &= ADIS16400_SMPL_PRD_DIV_MASK;
+>>>> +
+>>>>       if ((t & ADIS16400_SMPL_PRD_DIV_MASK) >= 0x0A)
+>>>>           st->adis.spi->max_speed_hz = ADIS16400_SPI_SLOW;
+>>>>       else
+>>>> @@ -111,13 +113,13 @@ static ssize_t adis16400_read_frequency(struct
+>>>> device *dev,
+>>>>   {
+>>>>       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>>>       struct adis16400_state *st = iio_priv(indio_dev);
+>>>> -    int ret, len = 0;
+>>>> +    int ret;
+>>>>
+>>>>       ret = st->variant->get_freq(st);
+>>>>       if (ret < 0)
+>>>>           return ret;
+>>>> -    len = sprintf(buf, "%d\n", ret);
+>>>> -    return len;
+>>>> +
+>>>> +    return sprintf(buf, "%d\n", ret);
+>>>>   }
+>>>>
+>>>>   static const unsigned adis16400_3db_divisors[] = {
+>>>> @@ -134,8 +136,8 @@ static const unsigned adis16400_3db_divisors[] = {
+>>>>   static int adis16400_set_filter(struct iio_dev *indio_dev, int sps, int
+>>>> val)
+>>>>   {
+>>>>       struct adis16400_state *st = iio_priv(indio_dev);
+>>>> +    uint16_t val16;
+>>>>       int i, ret;
+>>>> -    u16 val16;
+>>>>
+>>>>       for (i = ARRAY_SIZE(adis16400_3db_divisors) - 1; i >= 1; i--) {
+>>>>           if (sps / adis16400_3db_divisors[i] >= val)
+>>>> @@ -152,26 +154,22 @@ static int adis16400_set_filter(struct iio_dev
+>>>> *indio_dev, int sps, int val)
+>>>>   }
+>>>>
+>>>>   static ssize_t adis16400_write_frequency(struct device *dev,
+>>>> -        struct device_attribute *attr,
+>>>> -        const char *buf,
+>>>> -        size_t len)
+>>>> +    struct device_attribute *attr, const char *buf, size_t len)
+>>>>   {
+>>>>       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>>>       struct adis16400_state *st = iio_priv(indio_dev);
+>>>>       long val;
+>>>>       int ret;
+>>>>
+>>>> -    ret = strict_strtol(buf, 10, &val);
+>>>> +    ret = kstrtol(buf, 10, &val);
+>>>>       if (ret)
+>>>>           return ret;
+>>>> +
+>>>>       if (val == 0)
+>>>>           return -EINVAL;
+>>>>
+>>>>       mutex_lock(&indio_dev->mlock);
+>>>> -
+>>>>       st->variant->set_freq(st, val);
+>>>> -
+>>>> -    /* Also update the filter */
+>>>>       mutex_unlock(&indio_dev->mlock);
+>>>>
+>>>>       return ret ? ret : len;
+>>>> @@ -182,9 +180,9 @@ static int adis16400_stop_device(struct iio_dev
+>>>> *indio_dev)
+>>>>   {
+>>>>       struct adis16400_state *st = iio_priv(indio_dev);
+>>>>       int ret;
+>>>> -    u16 val = ADIS16400_SLP_CNT_POWER_OFF;
+>>>>
+>>>> -    ret = adis_write_reg_16(&st->adis, ADIS16400_SLP_CNT, val);
+>>>> +    ret = adis_write_reg_16(&st->adis, ADIS16400_SLP_CNT,
+>>>> +            ADIS16400_SLP_CNT_POWER_OFF);
+>>>>       if (ret)
+>>>>           dev_err(&indio_dev->dev,
+>>>>               "problem with turning device off: SLP_CNT");
+>>>> @@ -194,10 +192,10 @@ static int adis16400_stop_device(struct iio_dev
+>>>> *indio_dev)
+>>>>
+>>>>   static int adis16400_initial_setup(struct iio_dev *indio_dev)
+>>>>   {
+>>>> -    int ret;
+>>>> -    u16 prod_id, smp_prd;
+>>>> -    unsigned int device_id;
+>>>>       struct adis16400_state *st = iio_priv(indio_dev);
+>>>> +    uint16_t prod_id, smp_prd;
+>>>> +    unsigned int device_id;
+>>>> +    int ret;
+>>>>
+>>>>       /* use low spi speed for init if the device has a slow mode */
+>>>>       if (st->variant->flags & ADIS16400_HAS_SLOW_MODE)
+>>>> @@ -224,8 +222,8 @@ static int adis16400_initial_setup(struct iio_dev
+>>>> *indio_dev)
+>>>>                       device_id, prod_id);
+>>>>
+>>>>           dev_info(&indio_dev->dev, "%s: prod_id 0x%04x at CS%d (irq %d)\n",
+>>>> -               indio_dev->name, prod_id,
+>>>> -               st->adis.spi->chip_select, st->adis.spi->irq);
+>>>> +            indio_dev->name, prod_id,
+>>>> +            st->adis.spi->chip_select, st->adis.spi->irq);
+>>>>       }
+>>>>       /* use high spi speed if possible */
+>>>>       if (st->variant->flags & ADIS16400_HAS_SLOW_MODE) {
+>>>> @@ -247,7 +245,7 @@ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+>>>>                     adis16400_read_frequency,
+>>>>                     adis16400_write_frequency);
+>>>>
+>>>> -static const u8 adis16400_addresses[] = {
+>>>> +static const uint8_t adis16400_addresses[] = {
+>>>>       [ADIS16400_SCAN_GYRO_X] = ADIS16400_XGYRO_OFF,
+>>>>       [ADIS16400_SCAN_GYRO_Y] = ADIS16400_YGYRO_OFF,
+>>>>       [ADIS16400_SCAN_GYRO_Z] = ADIS16400_ZGYRO_OFF,
+>>>> @@ -257,15 +255,12 @@ static const u8 adis16400_addresses[] = {
+>>>>   };
+>>>>
+>>>>   static int adis16400_write_raw(struct iio_dev *indio_dev,
+>>>> -                   struct iio_chan_spec const *chan,
+>>>> -                   int val,
+>>>> -                   int val2,
+>>>> -                   long mask)
+>>>> +    struct iio_chan_spec const *chan, int val, int val2, long info)
+>>>>   {
+>>>>       struct adis16400_state *st = iio_priv(indio_dev);
+>>>>       int ret, sps;
+>>>>
+>>>> -    switch (mask) {
+>>>> +    switch (info) {
+>>>>       case IIO_CHAN_INFO_CALIBBIAS:
+>>>>           mutex_lock(&indio_dev->mlock);
+>>>>           ret = adis_write_reg_16(&st->adis,
+>>>> @@ -273,8 +268,10 @@ static int adis16400_write_raw(struct iio_dev
+>>>> *indio_dev,
+>>>>           mutex_unlock(&indio_dev->mlock);
+>>>>           return ret;
+>>>>       case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+>>>> -        /* Need to cache values so we can update if the frequency
+>>>> -           changes */
+>>>> +        /*
+>>>> +         * Need to cache values so we can update if the frequency
+>>>> +         * changes.
+>>>> +         */
+>>>>           mutex_lock(&indio_dev->mlock);
+>>>>           st->filt_int = val;
+>>>>           /* Work out update to current value */
+>>>> @@ -293,16 +290,13 @@ static int adis16400_write_raw(struct iio_dev
+>>>> *indio_dev,
+>>>>   }
+>>>>
+>>>>   static int adis16400_read_raw(struct iio_dev *indio_dev,
+>>>> -                  struct iio_chan_spec const *chan,
+>>>> -                  int *val,
+>>>> -                  int *val2,
+>>>> -                  long mask)
+>>>> +    struct iio_chan_spec const *chan, int *val, int *val2, long info)
+>>>>   {
+>>>>       struct adis16400_state *st = iio_priv(indio_dev);
+>>>> +    int16_t val16;
+>>>>       int ret;
+>>>> -    s16 val16;
+>>>>
+>>>> -    switch (mask) {
+>>>> +    switch (info) {
+>>>>       case IIO_CHAN_INFO_RAW:
+>>>>           return adis_single_conversion(indio_dev, chan, 0, val);
+>>>>       case IIO_CHAN_INFO_SCALE:
+>>>> @@ -721,13 +715,14 @@ static const struct adis_data adis16400_data = {
+>>>>
+>>>>   static int adis16400_probe(struct spi_device *spi)
+>>>>   {
+>>>> -    int ret;
+>>>>       struct adis16400_state *st;
+>>>> -    struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
+>>>> -    if (indio_dev == NULL) {
+>>>> -        ret =  -ENOMEM;
+>>>> -        goto error_ret;
+>>>> -    }
+>>>> +    struct iio_dev *indio_dev;
+>>>> +    int ret;
+>>>> +
+>>>> +    indio_dev = iio_device_alloc(sizeof(*st));
+>>>> +    if (indio_dev == NULL)
+>>>> +        return -ENOMEM;
+>>>> +
+>>>>       st = iio_priv(indio_dev);
+>>>>       /* this is only used for removal purposes */
+>>>>       spi_set_drvdata(spi, indio_dev);
+>>>> @@ -767,14 +762,12 @@ error_cleanup_buffer:
+>>>>       adis_cleanup_buffer_and_trigger(&st->adis, indio_dev);
+>>>>   error_free_dev:
+>>>>       iio_device_free(indio_dev);
+>>>> -error_ret:
+>>>>       return ret;
+>>>>   }
+>>>>
+>>>> -/* fixme, confirm ordering in this function */
+>>>>   static int adis16400_remove(struct spi_device *spi)
+>>>>   {
+>>>> -    struct iio_dev *indio_dev =  spi_get_drvdata(spi);
+>>>> +    struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>>>>       struct adis16400_state *st = iio_priv(indio_dev);
+>>>>
+>>>>       iio_device_unregister(indio_dev);
+>>>>
+>>>
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+> 
+> 
