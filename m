@@ -1,72 +1,70 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1-relais-roc.national.inria.fr ([192.134.164.82]:54944 "EHLO
-	mail1-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751344Ab3AJK2i (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jan 2013 05:28:38 -0500
-Date: Thu, 10 Jan 2013 11:28:32 +0100 (CET)
-From: Julia Lawall <julia.lawall@lip6.fr>
-To: Lars-Peter Clausen <lars@metafoo.de>
-cc: Julia Lawall <julia.lawall@lip6.fr>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	spi-devel-general@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] spi: Add helper functions for setting up transfers
-In-Reply-To: <50EE8FFD.2000000@metafoo.de>
-Message-ID: <alpine.DEB.2.02.1301101125520.2063@localhost6.localdomain6>
-References: <1357752671-30222-1-git-send-email-lars@metafoo.de> <alpine.DEB.2.02.1301100951060.2063@localhost6.localdomain6> <50EE8FFD.2000000@metafoo.de>
+Return-Path: <lars@metafoo.de>
+Message-ID: <50F6B6B3.4030000@metafoo.de>
+Date: Wed, 16 Jan 2013 15:18:27 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: jic23@kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/9] iio:common: Add STMicroelectronics common library
+References: <1358238660-14929-1-git-send-email-denis.ciocca@st.com> <1358238660-14929-2-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1358238660-14929-2-git-send-email-denis.ciocca@st.com>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 10 Jan 2013, Lars-Peter Clausen wrote:
+Just noticed something else while going through the individual drivers.
 
-> On 01/10/2013 09:53 AM, Julia Lawall wrote:
-> >> +@r1@
-> >> +identifier fn;
-> >> +identifier xfers;
-> >> +@@
-> >> +fn(...)
-> >> +{
-> >> +	...
-> >> +(
-> >> +	struct spi_transfer xfers[...];
-> >> +|
-> >> +	struct spi_transfer xfers[];
-> >> +)
-> >> +	...
-> >> +}
-> > 
-> > Can it happen that there would be more than one spi_transfer or spi_message
-> > variable per function?  This semantic patch will only treat the case where
-> > there is only one, because the ... before an after the variable declaration
-> > won't match another declaration of the same form.
-> > 
-> > julia
-> 
-> I guess it could happen, but I would consider it to be very rare. There are
-> a few examples of multiple transfers in the kernel. But most of them look like
-> 
-> struct spi_message msg;
-> struct spi_transfer xfer_foo;
-> struct spi_transfer xfer_bar;
-> 
-> ...
-> spi_message_add_tail(&xfer_foo, &msg);
-> spi_message_add_tail(&xfer_bar, &msg);
-> 
-> So the transformation can't be applied here anyway.
-> 
-> Do you have an idea how to change the rule to work with multiple
-> transfers/messages per function? If it would make the cocci file more
-> complex I wouldn't bother to take care of it, since it basically has no
-> practical use.
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> new file mode 100644
+> index 0000000..1c69c63
+> --- /dev/null
+> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> @@ -0,0 +1,83 @@
+[...]
+> +
+> +static struct iio_trigger_ops st_sensors_trigger_ops = {
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+> +		int (*set_trigger_state)(struct iio_trigger *trig, bool state),
+> +		int (*try_reenable)(struct iio_trigger *trig))
+> +{
+> +	int err;
+> +	struct st_sensor_data *sdata = iio_priv(indio_dev);
+> +
+> +	sdata->trig = iio_trigger_alloc("%s-trigger", indio_dev->name);
+> +	if (sdata->trig == NULL) {
+> +		err = -ENOMEM;
+> +		dev_err(&indio_dev->dev, "failed to allocate iio trigger.\n");
+> +		goto iio_trigger_alloc_error;
+> +	}
+> +
+> +	err = request_threaded_irq(sdata->get_irq_data_ready(indio_dev),
+> +			iio_trigger_generic_data_rdy_poll,
+> +			NULL,
+> +			IRQF_TRIGGER_RISING,
+> +			sdata->trig->name,
+> +			sdata->trig);
+> +	if (err)
+> +		goto request_irq_error;
+> +
+> +	st_sensors_trigger_ops.set_trigger_state = set_trigger_state;
+> +	st_sensors_trigger_ops.try_reenable = try_reenable;
 
-Probably the simplest thing is to put when any on all of the ...s
-It might get slower, though.
+This is bad idea. It will break as soon as you have e.g. a gyro and and
+accel driver instantiated at the same time. If you need custom trigger ops
+callbacks define a custom trigger ops set per driver.
 
-Alternatively you could have a rule at the end that prints a warning for 
-any cases that are not transformed.
-
-julia
+> +	sdata->trig->private_data = indio_dev;
+> +	sdata->trig->ops = &st_sensors_trigger_ops;
+> +	sdata->trig->dev.parent = sdata->dev;
+> +
+> +	err = iio_trigger_register(sdata->trig);
+> +	if (err < 0) {
+> +		dev_err(&indio_dev->dev, "failed to register iio trigger.\n");
+> +		goto iio_trigger_register_error;
+> +	}
+> +	indio_dev->trig = sdata->trig;
+> +
+> +	return 0;
+> 
