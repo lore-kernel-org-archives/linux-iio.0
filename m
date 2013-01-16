@@ -1,67 +1,151 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-052.synserver.de ([212.40.185.52]:1086 "EHLO
-	smtp-out-052.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757811Ab3AIOAs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2013 09:00:48 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 5/7] staging:iio:adis16080: Remove unnecessary lock
-Date: Wed,  9 Jan 2013 15:01:17 +0100
-Message-Id: <1357740079-12326-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1357740079-12326-1-git-send-email-lars@metafoo.de>
-References: <1357740079-12326-1-git-send-email-lars@metafoo.de>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:33323 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751046Ab3APMZz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Jan 2013 07:25:55 -0500
+Message-ID: <50F69C4E.4080905@jic23.retrosnub.co.uk>
+Date: Wed, 16 Jan 2013 12:25:50 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+MIME-Version: 1.0
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: iio: STMicroelectronics iio drivers
+References: <1358238660-14929-1-git-send-email-denis.ciocca@st.com> <50F5D957.6010603@kernel.org> <50F5DFDE.4050607@kernel.org> <50F66946.9090600@kernel.org> <50F69398.7080703@st.com>
+In-Reply-To: <50F69398.7080703@st.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-All sections in which the transfer buffer is accessed are already protected by
-the IIO device's mlock. So we do not need the extra mutex protecting the buffer.
+On 16/01/13 11:48, Denis CIOCCA wrote:
+> Hi Jonathan,
+>
+> I'm working on the problems that you described, but why if I compile one
+> file how module the #define IIO_CONFIG_*** aren't works?
+Because ifdef will only work for booleans.  There are magic tricks to do
+it for either y or m but I don't think we need them here.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/gyro/adis16080_core.c | 5 -----
- 1 file changed, 5 deletions(-)
+> For st_sensors I modified the Kconfig removing the description and
+> changed tristate option to bool, in drivers I want to leave 4 modules
+> (if it is possible) but if I compile as module the #define don't work.
+As far as I can see there is no disadvantage in ending up with the 
+following modules
 
-diff --git a/drivers/staging/iio/gyro/adis16080_core.c b/drivers/staging/iio/gyro/adis16080_core.c
-index 6ff9ffc..55ffe39 100644
---- a/drivers/staging/iio/gyro/adis16080_core.c
-+++ b/drivers/staging/iio/gyro/adis16080_core.c
-@@ -33,11 +33,9 @@
-  * struct adis16080_state - device instance specific data
-  * @us:			actual spi_device to write data
-  * @buf:		transmit or receive buffer
-- * @buf_lock:		mutex to protect tx and rx
-  **/
- struct adis16080_state {
- 	struct spi_device		*us;
--	struct mutex			buf_lock;
- 
- 	__be16 buf ____cacheline_aligned;
- };
-@@ -59,7 +57,6 @@ static int adis16080_read_sample(struct iio_dev *indio_dev,
- 		},
- 	};
- 
--	mutex_lock(&st->buf_lock);
- 	st->buf = cpu_to_be16(addr | ADIS16080_DIN_WRITE);
- 
- 	spi_message_init(&m);
-@@ -69,7 +66,6 @@ static int adis16080_read_sample(struct iio_dev *indio_dev,
- 	ret = spi_sync(st->us, &m);
- 	if (ret == 0)
- 		*val = sign_extend32(12, be16_to_cpu(st->buf));
--	mutex_unlock(&st->buf_lock);
- 
- 	return ret;
- }
-@@ -144,7 +140,6 @@ static int adis16080_probe(struct spi_device *spi)
- 
- 	/* Allocate the comms buffers */
- 	st->us = spi;
--	mutex_init(&st->buf_lock);
- 
- 	indio_dev->name = spi->dev.driver->name;
- 	indio_dev->channels = adis16080_channels;
--- 
-1.8.0
+st_sensors (with st_sensors.h as the header)
+st_sensors_i2c  (with st_sensors_i2c.h as the header)
+st_sensors_spi  (with st_sensors_spi.h as the header)
+
+st_accel
+st_accel_i2c
+st_accel_spi
+
+st_gyro
+st_gyro_i2c
+st_gyro_spi
+
+st_magnetometer
+st_magnetometer_i2c
+st_magnetometer_spi
+
+What do you gain by not rolling the triggered buffer into the core
+libraries at both levels?  If it's enabled for anything it has to
+be there for all of them afaiks.  So have one boolean variable
+to enable it across all st_sensors drivers.
+The i2c/spi defs don't need protection if they are in their own
+headers as we can guarantee they are present whenever they are
+used, hence no need for ifdefs.
+
+Jonathan
+>
+> Denis
+>
+>
+> On 01/16/2013 09:48 AM, Jonathan Cameron wrote:
+>> On 15/01/13 23:01, Jonathan Cameron wrote:
+>>> On 01/15/2013 10:33 PM, Jonathan Cameron wrote:
+>>>> On 01/15/2013 08:30 AM, Denis CIOCCA wrote:
+>>>>> Hi Jonathan,
+>>>>>
+>>>>> I sent to you the new patches to fix the u8 casting and a little bugfix in the header files (functions within #ifdef).
+>>>>> Thanks,
+>>>>>
+>>>>> Denis
+>>>>>
+>>>>>
+>>>> Denis,
+>>>>
+>>>> Just been running some build tests on this.  You need to
+>>>> do a lot more testing of the various possible combinations
+>>>> I think. Right now I can't build and so far I'm not entirely
+>>>> sure why.
+>>>>
+>>>>      CHECK   drivers/iio/accel/st_accel_i2c.c
+>>>> drivers/iio/accel/st_accel_i2c.c:38:9: error: undefined identifier 'st_sensors_i2c_configure'
+>>>>      CC [M]  drivers/iio/accel/st_accel_i2c.o
+>>>> drivers/iio/accel/st_accel_i2c.c: In function 'st_accel_i2c_probe':
+>>>> drivers/iio/accel/st_accel_i2c.c:38:2: error: implicit declaration of function 'st_sensors_i2c_configure'
+>>>> make[3]: *** [drivers/iio/accel/st_accel_i2c.o] Error 1
+>>>> make[2]: *** [drivers/iio/accel] Error 2
+>>>> make[1]: *** [drivers/iio] Error 2
+>>>> make: *** [drivers] Error 2
+>>>>
+>>>> For reasons that aren't immediately clear ifdef CONFIG statements don't
+>>>> seem to be working...
+>>>
+>>> Of course, I had relevant bits compiling as modules.
+>>>
+>>> I think we should rethink the module structure here so that this mess doesn't occur.
+>>> One core driver with multiple files seems right to me.
+>>>
+>>> so a make file looking something like.
+>>> obj-$(CONFIG_IIO_ST_SENSORS_CORE) += st_sensors.o
+>>> st_sensors-y := st_sensors_core.o
+>>> st_sensors-$(CONFIG_IIO_ST_SENSORS_I2C) += st_sensors_i2c.o
+>>> st_sensors-$(CONFIG_IIO_ST_SENSORS_SPI) += st_sensors_spi.o
+>>> st_sensors-$(CONFIG_IIO_ST_SENSORS_TRIGGERED_BUFFER) += st_sensors_trigger.o st_sensors_buffer.o
+>>>
+>>> and a kconfig where all by the sensors_core entry are boolean.
+>>>
+>>> Similarly for the drivers.  Thus we end up with 4 modules rather than dozens and
+>>> hopefully the build logic will work fine in all cases.
+>>>
+>>> Also note that I think you can't have buffering for accel and not gyro etc.
+>>>
+>> Thinking a little more on this, I can see why you'd want separate
+>> library drivers for the i2c and spi parts.  You would however benefit
+>> from pulling the bits in the ifdefs out to separate headers without any
+>> protection and then including them only where needed.  The triggered
+>> buffer bit still wants to be in the main st_sensors module though via
+>> the boolean suggestion above. You may even want to hide away the
+>> config options for the library support (don't give them a description
+>> and they won't show up in make menuconfig etc).  I can't see why
+>> people would want to manually select them without the drivers.
+>>
+>>    From the buffered point of view, I'd go with the same trick for config
+>> that most other drivers have and make it dependent on IIO_BUFFER on the
+>> assumption that won't be there on a stripped down system anyway and it
+>> makes life nice and simple without any interesting issues like will be
+>> seen here.
+>>
+>> Jonathan
+>>>
+>>>
+>>>>
+>>>> I also suspect we have too many complex build options in here in the first
+>>>> place. It's probably not unreasonable for instance to build in buffered support
+>>>> if buffering is enabled in general for IIO rather than explicitly.
+>>>>
+>>>> Jonathan
+>>>> --
+>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>>> the body of a message to majordomo@vger.kernel.org
+>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>
+>>
 
