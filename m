@@ -1,42 +1,72 @@
-Return-Path: <linux@roeck-us.net>
-Date: Tue, 15 Jan 2013 21:49:18 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Jean Delvare <khali@linux-fr.org>,
-	lm-sensors@lm-sensors.org
-Subject: Re: MAX1363 IIO driver questions
-Message-ID: <20130116054918.GA7056@roeck-us.net>
-References: <20121124052707.GA17392@roeck-us.net>
- <50B09EDC.4020200@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-070.synserver.de ([212.40.185.70]:1083 "EHLO
+	smtp-out-070.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754720Ab3AQRfe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jan 2013 12:35:34 -0500
+Message-ID: <50F83695.506@metafoo.de>
+Date: Thu, 17 Jan 2013 18:36:21 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <50B09EDC.4020200@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+To: Alessandro Rubini <rubini@gnudd.com>
+CC: christophe.leroy@c-s.fr, jic23@cam.ac.uk,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	patrick.vasseur@c-s.fr
+Subject: Re: [PATCH] IIO ADC support for AD7923
+References: <50F199F7.7020600@metafoo.de>  <201301080842.r088gKWO031124@localhost.localdomain> <20130108091414.GA28404@mail.gnudd.com> <20130117171100.GA24398@mail.gnudd.com>
+In-Reply-To: <20130117171100.GA24398@mail.gnudd.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Nov 24, 2012 at 10:18:04AM +0000, Jonathan Cameron wrote:
-> On 11/24/2012 05:27 AM, Guenter Roeck wrote:
-> > Hi all,
-> Hi Guenter,
-> > 
-> > What would it take to move the MAX1363 driver out of staging ?
-> >
-> Nothing given it is already out of staging in linux-next (though only has been
-> for about a week)
+On 01/17/2013 06:11 PM, Alessandro Rubini wrote:
+>>> I wonder if IIO config symbols should have IIO_ in their name, so
+>>> people looking at config files knows what they actually are.
+>>> Actually, all USB drivers have USB in their config name, which is
+>>> useful even if e.g. "PL2303" cannot be but USB.
+>>>
+>>> On the other hand, AD7923 and all the others can well be driven by
+>>> something else than IIO, even if currently this is the only mainstream
+>>> option.
+>>
+>> No, IIO is and should be the only option for these devices. We really don't
+>> want to drivers for the same device in different subsystems of the kernel.
 > 
-> > Background is that I need a hardware monitoring driver for MAX1139, and would
-> > like to avoid using a driver from staging if possible (after all, it might
-> > go away anytime). Another option would be to submit a hwmon driver for it,
-> > but that doesn't seem to be the best approach.
+> We really don't want a non-USB driver for a USB device, but still the
+> name is in the config symbol and is useful. And this is an hardware
+> constraint.
 > 
-> The hwmon driver client driver for iio devices is still in staging, but mainly
-> because I haven't had a chance to take a last look at it before posting it to
-> the hmwon list.  IIRC you were more or less happy with what went into staging
-> in the first place, so hopefully not too much left to do.
+> And your argument may well have applied to comedi. But they wisely
+> made the right choice and allowed iio to take over and possibly drive
+> the same devices.
 > 
-Jonathan,
+> But sure your code is perfect and no other subsystem will ever be needed.
+> 
 
-can you educate me how to actually use iio_hwmon ? I get it loaded,
-which registers the platform driver, but I have no idea how to instantiate it.
+I'm not implying IIO is perfect. IIO has certain shortcomings and some of
+these shortcomings have been addressed in ZIO.
 
-Thanks,
-Guenter
+Still it's a very bad idea to have two subsystem which have a huge overlap
+in both functionality and targeted devices. It will gives us all lots of
+headaches later on. As IIO continues to evolve it will get support for some
+of the features that only ZIO supports at the moment and as ZIO grows it
+will get support for features currently only supported by IIO. So in the end
+we have two frameworks for the very same purpose.
+
+Btw. I'd be arguing the same way if ZIO was currently inside the kernel and
+Jonathan came along and proposed to merge IIO.
+
+> 
+> [...]
+>
+> But yes, you are right. I'm working on another I/O subsystem. We are
+> gong to release zio-1.0 in a few days, because the thing is mature
+> and used in production.
+> 
+> I hope to meet you in person at fosdem and be able to talk over a beer
+> or two.
+> 
+
+Looking forward to meeting you :)
+
+- Lars
+
