@@ -1,172 +1,359 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:47148 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754001Ab3A1VcY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Jan 2013 16:32:24 -0500
-Message-ID: <5106EEBF.9020401@metafoo.de>
-Date: Mon, 28 Jan 2013 22:33:51 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:58175 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751596Ab3ARKrM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 18 Jan 2013 05:47:12 -0500
+From: "Patil, Rachna" <rachna@ti.com>
+To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
+	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>
+CC: Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dmitry Torokhov <dtor@mail.ru>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Tony Lindgren <tony@atomide.com>,
+	Benit Cousson <b-cousson@ti.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Landley <rob@landley.net>,
+	Russell King <linux@arm.linux.org.uk>,
+	"Patil, Rachna" <rachna@ti.com>
+Subject: [PATCH v3 2/8] input: ti_am335x_tsc: Order of TSC wires, made configurable
+Date: Fri, 18 Jan 2013 16:17:55 +0530
+Message-ID: <5f8e85b7554c6a8e4d1575b2e5ce1e3cec0c8ade.1358502134.git.rachna@ti.com>
+In-Reply-To: <cover.1358502134.git.rachna@ti.com>
+References: <cover.1358502134.git.rachna@ti.com>
 MIME-Version: 1.0
-To: Marek Vasut <marex@denx.de>
-CC: linux-iio@vger.kernel.org, Martin Liska <marxin.liska@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>
-Subject: Re: [PATCH V4] iio: acpi: Add ACPI0008 ALS driver
-References: <1359250167-782-1-git-send-email-marex@denx.de> <510686E7.3050605@metafoo.de> <201301281919.22795.marex@denx.de>
-In-Reply-To: <201301281919.22795.marex@denx.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/28/2013 07:19 PM, Marek Vasut wrote:
-> Dear Lars-Peter Clausen,
-> 
->> On 01/27/2013 02:29 AM, Marek Vasut wrote:
->>> From: Martin Liska <marxin.liska@gmail.com>
->>>
->>> Add basic implementation of the ACPI0008 Ambient Light Sensor driver.
->>> This driver currently supports only the ALI property, yet is ready to
->>> be easily extended to handle ALC, ALT, ALP ones as well.
->>>
->>> Signed-off-by: Martin Liska <marxin.liska@gmail.com>
->>> Signed-off-by: Marek Vasut <marex@denx.de>
->>> Cc: Jonathan Cameron <jic23@kernel.org>
->>> Cc: Zhang Rui <rui.zhang@intel.com>
->>
->> Hi,
->>
->> Looks good, except for the trigger/buffer support.
-> 
-> I'm not quite firm on that one either.
-> 
->> Which for one can't be
->> enabled since you didn't set the INDIO_BUFFER_TRIGGERED mode flag. But also
->> the implementation itself seems to have a few rough edges.
-> 
-> Good catch.
-> 
->>> ---
->>>
->>>  drivers/staging/iio/light/Kconfig    |   10 ++
->>>  drivers/staging/iio/light/Makefile   |    1 +
->>>  drivers/staging/iio/light/acpi-als.c |  320
->>>  ++++++++++++++++++++++++++++++++++ 3 files changed, 331 insertions(+)
->>>  create mode 100644 drivers/staging/iio/light/acpi-als.c
->>>
->>> V2: Fix the channel mask, so it's really reading RAW data.
->>> V3: Put scan timestamp into the buffer only when enabled,
->>>
->>>     Set the light sensor ID to 0 instead of 1
->>>
->>> V4: Select IIO_TRIGGERED_BUFFER as we need it here
->>>
->>> diff --git a/drivers/staging/iio/light/Kconfig
->>> b/drivers/staging/iio/light/Kconfig index 4bed30e..9c3d146 100644
->>> --- a/drivers/staging/iio/light/Kconfig
->>> +++ b/drivers/staging/iio/light/Kconfig
->>> @@ -50,4 +50,14 @@ config TSL2x7x
->>>
->>>  	 tmd2672, tsl2772, tmd2772 devices.
->>>  	 Provides iio_events and direct access via sysfs.
->>>
->>> +config ACPI_ALS
->>> +	tristate "ACPI Ambient Light Sensor"
->>> +	depends on ACPI
->>> +	select IIO_TRIGGERED_BUFFER
->>> +	help
->>> +	 Support for the ACPI0008 Ambient Light Sensor.
->>> +
->>> +	 This driver can also be built as a module.  If so, the module
->>> +	 will be called acpi-als.
->>> +
->>
->> Keep the entries in alphabetical order.
-> 
-> Fixed in my tree
-> 
->>>  endmenu
->>>
->>> diff --git a/drivers/staging/iio/light/Makefile
->>> b/drivers/staging/iio/light/Makefile index 141af1e..13090e6 100644
->>> --- a/drivers/staging/iio/light/Makefile
->>> +++ b/drivers/staging/iio/light/Makefile
->>> @@ -7,3 +7,4 @@ obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
->>>
->>>  obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
->>>  obj-$(CONFIG_TSL2583)	+= tsl2583.o
->>>  obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
->>>
->>> +obj-$(CONFIG_ACPI_ALS)	+= acpi-als.o
->>
->> Same here.
-> 
-> Fixed.
-> 
->>> diff --git a/drivers/staging/iio/light/acpi-als.c
->>> b/drivers/staging/iio/light/acpi-als.c new file mode 100644
->>> index 0000000..6140613
->>> --- /dev/null
->>> +++ b/drivers/staging/iio/light/acpi-als.c
->>> @@ -0,0 +1,320 @@
->>
->> [...]
->>
->>> +
->>> +static void acpi_als_notify(struct acpi_device *device, u32 event)
->>> +{
->>> +	struct iio_dev *iio = acpi_driver_data(device);
->>> +	struct acpi_als *als = iio_priv(iio);
->>> +	uint16_t *buffer = als->evt_buffer;
->>> +	s64 time_ns = iio_get_time_ns();
->>> +
->>> +	mutex_lock(&als->lock);
->>> +
->>> +	memset(buffer, 0, als->evt_buffer_len);
->>> +
->>> +	switch (event) {
->>> +	case ACPI_ALS_NOTIFY_ILLUMINANCE:
->>> +		*buffer++ = als_read_value(als, ACPI_ALS_ILLUMINANCE);
->>> +		break;
->>> +	default:
->>> +		/* Unhandled event */
->>> +		dev_dbg(&device->dev, "Unhandled ACPI ALS event (%08x)!\n",
->>> +			event);
->>> +		return;
->>> +	}
->>> +
->>> +	if (iio->scan_timestamp)
->>> +		*(s64 *)ALIGN((uintptr_t)buffer, sizeof(s64)) = time_ns;
->>> +
->>> +	if (iio_buffer_enabled(iio))
->>> +		iio_push_to_buffer(iio->buffer, (uint8_t *)als->evt_buffer);
->>> +
->>
->> Normally you'd call iio_trigger_poll here and have the buffer handling in
->> acpi_als_trigger_handler. This allows you for example to use other
->> triggers, e.g. a timer based trigger.
-> 
-> Good, but this is not called from interrupt context. I recall there was a 
-> discussion about this and IRQ context issues.
+From: "Patil, Rachna" <rachna@ti.com>
 
-Hm, yes. This is indeed a problem and I guess we really need to fix this at
-somepoint in the IIO core. In the sysfs trigger we use a irq_work to call
-iio_trigger_poll from IRQ context. Which is a bit hackish, but it works fine
-for the moment, but on the long run we really need to find a better solution.
-But I guess you could use it for now.
+The current driver expected touchscreen input
+wires(XP,XN,YP,YN) to be connected in a particular order.
+Making changes to accept this as platform data.
 
-[...]
->>> +	iio->name = ACPI_ALS_DEVICE_NAME;
->>> +	iio->dev.parent = dev;
->>> +	iio->info = &acpi_als_info;
->>> +	iio->modes = INDIO_DIRECT_MODE;
->>
->> INDIO_BUFFER_TRIGGERED
-> 
-> Will this not mess up the RAW mode? Or do you mean:
-> 
-> iio->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |  156 ++++++++++++++++++++++++++---
+ include/linux/input/ti_am335x_tsc.h       |   12 +++
+ include/linux/mfd/ti_am335x_tscadc.h      |   10 +-
+ 3 files changed, 159 insertions(+), 19 deletions(-)
 
-Yes, that's what I meant.
-
-- Lars
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index da652e0..0c460f9 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -33,6 +33,17 @@
+ #define SEQ_SETTLE		275
+ #define MAX_12BIT		((1 << 12) - 1)
+ 
++/*
++ * Refer to function regbit_map() to
++ * map the values in the matrix.
++ */
++static int config[4][4] = {
++		{1,	0,	1,	0},
++		{2,	3,	2,	3},
++		{4,	5,	4,	5},
++		{0,	6,	0,	6}
++};
++
+ struct titsc {
+ 	struct input_dev	*input;
+ 	struct ti_tscadc_dev	*mfd_tscadc;
+@@ -42,6 +53,9 @@ struct titsc {
+ 	unsigned int		enable_bits;
+ 	bool			pen_down;
+ 	int			steps_to_configure;
++	int			config_inp[20];
++	int			bit_xp, bit_xn, bit_yp, bit_yn;
++	int			inp_xp, inp_xn, inp_yp, inp_yn;
+ };
+ 
+ static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
+@@ -55,6 +69,107 @@ static void titsc_writel(struct titsc *tsc, unsigned int reg,
+ 	writel(val, tsc->mfd_tscadc->tscadc_base + reg);
+ }
+ 
++/*
++ * Each of the analog lines are mapped
++ * with one or two register bits,
++ * which can be either pulled high/low
++ * depending on the value to be read.
++ */
++static int regbit_map(int val)
++{
++	int map_bits = 0;
++
++	switch (val) {
++	case 1:
++		map_bits = XPP;
++		break;
++	case 2:
++		map_bits = XNP;
++		break;
++	case 3:
++		map_bits = XNN;
++		break;
++	case 4:
++		map_bits = YPP;
++		break;
++	case 5:
++		map_bits = YPN;
++		break;
++	case 6:
++		map_bits = YNN;
++		break;
++	}
++
++	return map_bits;
++}
++
++static int titsc_config_wires(struct titsc *ts_dev)
++{
++	int		analog_line[10], wire_order[10];
++	int		i, temp_bits, err;
++
++	for (i = 0; i < 4; i++) {
++		/*
++		 * Get the order in which TSC wires are attached
++		 * w.r.t. each of the analog input lines on the EVM.
++		 */
++		analog_line[i] = ts_dev->config_inp[i] & 0xF0;
++		analog_line[i] = analog_line[i] >> 4;
++
++		wire_order[i] = ts_dev->config_inp[i] & 0x0F;
++	}
++
++	for (i = 0; i < 4; i++) {
++		switch (wire_order[i]) {
++		case 0:
++			temp_bits = config[analog_line[i]][0];
++			if (temp_bits == 0) {
++				err = -EINVAL;
++				goto ret;
++			} else {
++				ts_dev->bit_xp = regbit_map(temp_bits);
++				ts_dev->inp_xp = analog_line[i];
++				break;
++			}
++		case 1:
++			temp_bits = config[analog_line[i]][1];
++			if (temp_bits == 0) {
++				err = -EINVAL;
++				goto ret;
++			} else {
++				ts_dev->bit_xn = regbit_map(temp_bits);
++				ts_dev->inp_xn = analog_line[i];
++				break;
++			}
++		case 2:
++			temp_bits = config[analog_line[i]][2];
++			if (temp_bits == 0) {
++				err = -EINVAL;
++				goto ret;
++			} else {
++				ts_dev->bit_yp = regbit_map(temp_bits);
++				ts_dev->inp_yp = analog_line[i];
++				break;
++			}
++		case 3:
++			temp_bits = config[analog_line[i]][3];
++			if (temp_bits == 0) {
++				err = -EINVAL;
++				goto ret;
++			} else {
++				ts_dev->bit_yn = regbit_map(temp_bits);
++				ts_dev->inp_yn = analog_line[i];
++				break;
++			}
++		}
++	}
++
++	return 0;
++
++ret:
++	return err;
++}
++
+ static void titsc_step_config(struct titsc *ts_dev)
+ {
+ 	unsigned int	config;
+@@ -65,18 +180,18 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	total_steps = 2 * ts_dev->steps_to_configure;
+ 
+ 	config = STEPCONFIG_MODE_HWSYNC |
+-			STEPCONFIG_AVG_16 | STEPCONFIG_XPP;
++			STEPCONFIG_AVG_16 | ts_dev->bit_xp;
+ 	switch (ts_dev->wires) {
+ 	case 4:
+-		config |= STEPCONFIG_INP_AN2 | STEPCONFIG_XNN;
++		config |= STEPCONFIG_INP(ts_dev->inp_yp) | ts_dev->bit_xn;
+ 		break;
+ 	case 5:
+-		config |= STEPCONFIG_YNN |
+-				STEPCONFIG_INP_AN4 | STEPCONFIG_XNN |
+-				STEPCONFIG_YPP;
++		config |= ts_dev->bit_yn |
++				STEPCONFIG_INP_AN4 | ts_dev->bit_xn |
++				ts_dev->bit_yp;
+ 		break;
+ 	case 8:
+-		config |= STEPCONFIG_INP_AN2 | STEPCONFIG_XNN;
++		config |= STEPCONFIG_INP(ts_dev->inp_yp) | ts_dev->bit_xn;
+ 		break;
+ 	}
+ 
+@@ -87,18 +202,18 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 
+ 	config = 0;
+ 	config = STEPCONFIG_MODE_HWSYNC |
+-			STEPCONFIG_AVG_16 | STEPCONFIG_YNN |
++			STEPCONFIG_AVG_16 | ts_dev->bit_yn |
+ 			STEPCONFIG_INM_ADCREFM | STEPCONFIG_FIFO1;
+ 	switch (ts_dev->wires) {
+ 	case 4:
+-		config |= STEPCONFIG_YPP;
++		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
+ 		break;
+ 	case 5:
+-		config |= STEPCONFIG_XPP | STEPCONFIG_INP_AN4 |
+-				STEPCONFIG_XNP | STEPCONFIG_YPN;
++		config |= ts_dev->bit_xp | STEPCONFIG_INP_AN4 |
++				ts_dev->bit_xn | ts_dev->bit_yp;
+ 		break;
+ 	case 8:
+-		config |= STEPCONFIG_YPP;
++		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
+ 		break;
+ 	}
+ 
+@@ -109,9 +224,9 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 
+ 	config = 0;
+ 	/* Charge step configuration */
+-	config = STEPCONFIG_XPP | STEPCONFIG_YNN |
++	config = ts_dev->bit_xp | ts_dev->bit_yn |
+ 			STEPCHARGE_RFP_XPUL | STEPCHARGE_RFM_XNUR |
+-			STEPCHARGE_INM_AN1 | STEPCHARGE_INP_AN1;
++			STEPCHARGE_INM_AN1 | STEPCHARGE_INP(ts_dev->inp_yp);
+ 
+ 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
+ 	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
+@@ -119,13 +234,14 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	config = 0;
+ 	/* Configure to calculate pressure */
+ 	config = STEPCONFIG_MODE_HWSYNC |
+-			STEPCONFIG_AVG_16 | STEPCONFIG_YPP |
+-			STEPCONFIG_XNN | STEPCONFIG_INM_ADCREFM;
++			STEPCONFIG_AVG_16 | ts_dev->bit_yp |
++			ts_dev->bit_xn | STEPCONFIG_INM_ADCREFM |
++			STEPCONFIG_INP(ts_dev->inp_xp);
+ 	titsc_writel(ts_dev, REG_STEPCONFIG(total_steps + 1), config);
+ 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 1),
+ 			STEPCONFIG_OPENDLY);
+ 
+-	config |= STEPCONFIG_INP_AN3 | STEPCONFIG_FIFO1;
++	config |= STEPCONFIG_INP(ts_dev->inp_yn) | STEPCONFIG_FIFO1;
+ 	titsc_writel(ts_dev, REG_STEPCONFIG(total_steps + 2), config);
+ 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 2),
+ 			STEPCONFIG_OPENDLY);
+@@ -295,6 +411,8 @@ static int titsc_probe(struct platform_device *pdev)
+ 	ts_dev->wires = pdata->tsc_init->wires;
+ 	ts_dev->x_plate_resistance = pdata->tsc_init->x_plate_resistance;
+ 	ts_dev->steps_to_configure = pdata->tsc_init->steps_to_configure;
++	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
++			sizeof(pdata->tsc_init->wire_config));
+ 
+ 	err = request_irq(ts_dev->irq, titsc_irq,
+ 			  0, pdev->dev.driver->name, ts_dev);
+@@ -304,6 +422,11 @@ static int titsc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO0THRES);
++	err = titsc_config_wires(ts_dev);
++	if (err) {
++		dev_err(&pdev->dev, "wrong i/p wire configuration\n");
++		goto err_free_irq;
++	}
+ 	titsc_step_config(ts_dev);
+ 	titsc_writel(ts_dev, REG_FIFO0THR, ts_dev->steps_to_configure);
+ 
+@@ -373,6 +496,7 @@ static int titsc_resume(struct device *dev)
+ 				0x00);
+ 		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
+ 	}
++	titsc_config_wires(ts_dev);
+ 	titsc_step_config(ts_dev);
+ 	titsc_writel(ts_dev, REG_FIFO0THR,
+ 			ts_dev->steps_to_configure);
+diff --git a/include/linux/input/ti_am335x_tsc.h b/include/linux/input/ti_am335x_tsc.h
+index 49269a2..6a66b4d 100644
+--- a/include/linux/input/ti_am335x_tsc.h
++++ b/include/linux/input/ti_am335x_tsc.h
+@@ -12,12 +12,24 @@
+  *			A step configured to read a single
+  *			co-ordinate value, can be applied
+  *			more number of times for better results.
++ * @wire_config:	Different EVM's could have a different order
++ *			for connecting wires on touchscreen.
++ *			We need to provide an 8 bit number where in
++ *			the 1st four bits represent the analog lines
++ *			and the next 4 bits represent positive/
++ *			negative terminal on that input line.
++ *			Notations to represent the input lines and
++ *			terminals resoectively is as follows:
++ *			AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
++ *			XP  = 0, XN = 1, YP = 2, YN = 3.
++ *
+  */
+ 
+ struct tsc_data {
+ 	int wires;
+ 	int x_plate_resistance;
+ 	int steps_to_configure;
++	int wire_config[10];
+ };
+ 
+ #endif
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index 23e4f33..9624fea 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -72,8 +72,6 @@
+ #define STEPCONFIG_INM_ADCREFM	STEPCONFIG_INM(8)
+ #define STEPCONFIG_INP_MASK	(0xF << 19)
+ #define STEPCONFIG_INP(val)	((val) << 19)
+-#define STEPCONFIG_INP_AN2	STEPCONFIG_INP(2)
+-#define STEPCONFIG_INP_AN3	STEPCONFIG_INP(3)
+ #define STEPCONFIG_INP_AN4	STEPCONFIG_INP(4)
+ #define STEPCONFIG_INP_ADCREFM	STEPCONFIG_INP(8)
+ #define STEPCONFIG_FIFO1	BIT(26)
+@@ -95,7 +93,6 @@
+ #define STEPCHARGE_INM_AN1	STEPCHARGE_INM(1)
+ #define STEPCHARGE_INP_MASK	(0xF << 19)
+ #define STEPCHARGE_INP(val)	((val) << 19)
+-#define STEPCHARGE_INP_AN1	STEPCHARGE_INP(1)
+ #define STEPCHARGE_RFM_MASK	(3 << 23)
+ #define STEPCHARGE_RFM(val)	((val) << 23)
+ #define STEPCHARGE_RFM_XNUR	STEPCHARGE_RFM(1)
+@@ -117,6 +114,13 @@
+ #define CNTRLREG_8WIRE		CNTRLREG_AFE_CTRL(3)
+ #define CNTRLREG_TSCENB		BIT(7)
+ 
++#define XPP			STEPCONFIG_XPP
++#define XNP			STEPCONFIG_XNP
++#define XNN			STEPCONFIG_XNN
++#define YPP			STEPCONFIG_YPP
++#define YPN			STEPCONFIG_YPN
++#define YNN			STEPCONFIG_YNN
++
+ #define ADC_CLK			3000000
+ #define	MAX_CLK_DIV		7
+ #define TOTAL_STEPS		16
+-- 
+1.7.9.5
 
