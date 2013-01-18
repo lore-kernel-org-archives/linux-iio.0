@@ -1,72 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:38586 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753575Ab3AXDp1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 23 Jan 2013 22:45:27 -0500
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
-	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Tony Lindgren <tony@atomide.com>,
-	Benit Cousson <b-cousson@ti.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Landley <rob@landley.net>,
-	Russell King <linux@arm.linux.org.uk>,
-	<gururaja.hebbar@ti.com>, "Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v4 3/8] input: touchscreen: ti_tsc: remove unwanted fifo flush
-Date: Thu, 24 Jan 2013 09:15:07 +0530
-Message-ID: <1358999112-31192-4-git-send-email-rachna@ti.com>
-In-Reply-To: <1358999112-31192-1-git-send-email-rachna@ti.com>
-References: <1358999112-31192-1-git-send-email-rachna@ti.com>
+Received: from co9ehsobe004.messaging.microsoft.com ([207.46.163.27]:44931
+	"EHLO co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751070Ab3ARXCM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jan 2013 18:02:12 -0500
+From: "Getz, Robin" <robin.getz@analog.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Alessandro Rubini <rubini@gnudd.com>,
+	"greg@kroah.com" <greg@kroah.com>
+Subject: Re: [PATCH] IIO ADC support for AD7923
+Date: Fri, 18 Jan 2013 18:02:12 -0500
+CC: "christophe.leroy@c-s.fr" <christophe.leroy@c-s.fr>,
+	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"patrick.vasseur@c-s.fr" <patrick.vasseur@c-s.fr>
+References: <50F199F7.7020600@metafoo.de> <20130117171100.GA24398@mail.gnudd.com> <50F83695.506@metafoo.de>
+In-Reply-To: <50F83695.506@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="iso-8859-1"
+Message-ID: <201301181802.14382.robin.getz@analog.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+On Thu 17 Jan 2013 12:36, Lars-Peter Clausen pondered:
+> On 01/17/2013 06:11 PM, Alessandro Rubini wrote:
+> > [...]
+> >
+> > But yes, you are right. I'm working on another I/O subsystem. We are
+> > gong to release zio-1.0 in a few days, because the thing is mature
+> > and used in production.
 
-When touchscreen and ADC are used together, this
-unwanted fifo flush leads to loss of ADC data.
+Neither means it's a good idea for upstream :)
 
-Signed-off-by: Patil, Rachna <rachna@ti.com>
----
- drivers/input/touchscreen/ti_am335x_tsc.c |   10 ----------
- 1 file changed, 10 deletions(-)
+> Still it's a very bad idea to have two subsystem which have a huge overlap
+> in both functionality and targeted devices. It will gives us all lots of
+> headaches later on. As IIO continues to evolve it will get support for some
+> of the features that only ZIO supports at the moment and as ZIO grows it
+> will get support for features currently only supported by IIO. So in the
+> end we have two frameworks for the very same purpose.
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 0c460f9..064d2b2 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -308,8 +308,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	unsigned int x = 0, y = 0;
- 	unsigned int z1, z2, z;
- 	unsigned int fsm;
--	unsigned int fifo1count, fifo0count;
--	int i;
- 
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
- 	if (status & IRQENB_FIFO0THRES) {
-@@ -318,14 +316,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 		z1 = titsc_readl(ts_dev, REG_FIFO0) & 0xfff;
- 		z2 = titsc_readl(ts_dev, REG_FIFO1) & 0xfff;
- 
--		fifo1count = titsc_readl(ts_dev, REG_FIFO1CNT);
--		for (i = 0; i < fifo1count; i++)
--			titsc_readl(ts_dev, REG_FIFO1);
--
--		fifo0count = titsc_readl(ts_dev, REG_FIFO0CNT);
--		for (i = 0; i < fifo0count; i++)
--			titsc_readl(ts_dev, REG_FIFO0);
--
- 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
- 			/*
- 			 * Calculate pressure using formula
--- 
-1.7.9.5
+I want to strongly agree with Lars-Peter. Lets work together on one thing - 
+which tries to solve all the our system level issues. As an end user - I 
+don't want to re-write userspace for multiple interfaces to the same 
+underlying ADC/DACs.
+
+I don't know how Greg feels about another subsystem in the kernel which 
+duplicates existing functionality/targetted devices - but it doesn't sound 
+like a good idea to me.
+
+> > I hope to meet you in person at fosdem and be able to talk over a beer
+> > or two.
+>
+> Looking forward to meeting you :)
+
+Hopefully you can come to some logical conclusions over a friendly beverage. 
+Even if you can't decide on how to merge things (plan for adding missing 
+features from one to the other), maybe it's just deciding on how to get as 
+much reuse as possible (duplication of device register and bit definitions?)
+
+-Robin
 
