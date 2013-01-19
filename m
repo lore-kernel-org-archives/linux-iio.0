@@ -1,156 +1,490 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:47704 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756137Ab3AUUF2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Jan 2013 15:05:28 -0500
-From: Marek Vasut <marex@denx.de>
-To: linux-iio@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, Marek Vasut <marex@denx.de>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH 1/2] iio: mxs: Add MX23 support into the IIO driver
-Date: Mon, 21 Jan 2013 21:05:21 +0100
-Message-Id: <1358798722-25102-1-git-send-email-marex@denx.de>
+Received: from pegase1.c-s.fr ([93.17.236.30]:42886 "EHLO mailhub1.si.c-s.fr"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751120Ab3ASPFO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 19 Jan 2013 10:05:14 -0500
+Message-ID: <50FAB623.5070006@c-s.fr>
+Date: Sat, 19 Jan 2013 16:05:07 +0100
+From: christophe leroy <christophe.leroy@c-s.fr>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, patrick.vasseur@c-s.fr
+Subject: Re: [PATCH] IIO ADC support for AD7923
+References: <201301080842.r088gKWO031124@localhost.localdomain> <50EBF48E.4040607@metafoo.de>
+In-Reply-To: <50EBF48E.4040607@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for i.MX23 into the LRADC driver. The LRADC
-block on MX23 is not much different from the one on MX28, thus this
-is only a few changes fixing the parts that are specific to MX23.
+Hi Lars,
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Fabio Estevam <fabio.estevam@freescale.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Shawn Guo <shawn.guo@linaro.org>
----
- drivers/staging/iio/adc/Kconfig     |    4 +--
- drivers/staging/iio/adc/mxs-lradc.c |   56 +++++++++++++++++++++++++++++------
- 2 files changed, 49 insertions(+), 11 deletions(-)
+Sorry to respond so late, I've been very busy lately.
+Please see answers/questions below
 
-diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index fb8c239..7b2a01d 100644
---- a/drivers/staging/iio/adc/Kconfig
-+++ b/drivers/staging/iio/adc/Kconfig
-@@ -119,12 +119,12 @@ config LPC32XX_ADC
- 	  via sysfs.
- 
- config MXS_LRADC
--	tristate "Freescale i.MX28 LRADC"
-+	tristate "Freescale i.MX23/i.MX28 LRADC"
- 	depends on ARCH_MXS
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
--	  Say yes here to build support for i.MX28 LRADC convertor
-+	  Say yes here to build support for i.MX23/i.MX28 LRADC convertor
- 	  built into these chips.
- 
- 	  To compile this driver as a module, choose M here: the
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index 829d043..bea8372 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -76,7 +76,24 @@
-  */
- #define LRADC_TS_SAMPLE_AMOUNT		4
- 
--static const char * const mxs_lradc_irq_name[] = {
-+enum mxs_lradc_id {
-+	IMX23_LRADC,
-+	IMX28_LRADC,
-+};
-+
-+static const char * const mx23_lradc_irq_names[] = {
-+	"mxs-lradc-touchscreen",
-+	"mxs-lradc-channel0",
-+	"mxs-lradc-channel1",
-+	"mxs-lradc-channel2",
-+	"mxs-lradc-channel3",
-+	"mxs-lradc-channel4",
-+	"mxs-lradc-channel5",
-+	"mxs-lradc-channel6",
-+	"mxs-lradc-channel7",
-+};
-+
-+static const char * const mx28_lradc_irq_names[] = {
- 	"mxs-lradc-touchscreen",
- 	"mxs-lradc-thresh0",
- 	"mxs-lradc-thresh1",
-@@ -92,6 +109,22 @@ static const char * const mxs_lradc_irq_name[] = {
- 	"mxs-lradc-button1",
- };
- 
-+struct mxs_lradc_of_config {
-+	const int		irq_count;
-+	const char * const	*irq_name;
-+};
-+
-+static const struct mxs_lradc_of_config const mxs_lradc_of_config[] = {
-+	[IMX23_LRADC] = {
-+		.irq_count	= ARRAY_SIZE(mx23_lradc_irq_names),
-+		.irq_name	= mx23_lradc_irq_names,
-+	},
-+	[IMX28_LRADC] = {
-+		.irq_count	= ARRAY_SIZE(mx28_lradc_irq_names),
-+		.irq_name	= mx28_lradc_irq_names,
-+	},
-+};
-+
- enum mxs_lradc_ts {
- 	MXS_LRADC_TOUCHSCREEN_NONE = 0,
- 	MXS_LRADC_TOUCHSCREEN_4WIRE,
-@@ -857,8 +890,19 @@ static void mxs_lradc_hw_stop(struct mxs_lradc *lradc)
- 		writel(0, lradc->base + LRADC_DELAY(i));
- }
- 
-+static const struct of_device_id mxs_lradc_dt_ids[] = {
-+	{ .compatible = "fsl,imx23-lradc", .data = (void *)IMX23_LRADC, },
-+	{ .compatible = "fsl,imx28-lradc", .data = (void *)IMX28_LRADC, },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
-+
- static int mxs_lradc_probe(struct platform_device *pdev)
- {
-+	const struct of_device_id *of_id =
-+		of_match_device(mxs_lradc_dt_ids, &pdev->dev);
-+	const struct mxs_lradc_of_config *of_cfg =
-+		&mxs_lradc_of_config[(enum mxs_lradc_id)of_id->data];
- 	struct device *dev = &pdev->dev;
- 	struct device_node *node = dev->of_node;
- 	struct mxs_lradc *lradc;
-@@ -902,7 +946,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 				ts_wires);
- 
- 	/* Grab all IRQ sources */
--	for (i = 0; i < 13; i++) {
-+	for (i = 0; i < of_cfg->irq_count; i++) {
- 		lradc->irq[i] = platform_get_irq(pdev, i);
- 		if (lradc->irq[i] < 0) {
- 			ret = -EINVAL;
-@@ -911,7 +955,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 
- 		ret = devm_request_irq(dev, lradc->irq[i],
- 					mxs_lradc_handle_irq, 0,
--					mxs_lradc_irq_name[i], iio);
-+					of_cfg->irq_name[i], iio);
- 		if (ret)
- 			goto err_addr;
- 	}
-@@ -983,12 +1027,6 @@ static int mxs_lradc_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
--static const struct of_device_id mxs_lradc_dt_ids[] = {
--	{ .compatible = "fsl,imx28-lradc", },
--	{ /* sentinel */ }
--};
--MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
--
- static struct platform_driver mxs_lradc_driver = {
- 	.driver	= {
- 		.name	= DRIVER_NAME,
--- 
-1.7.10.4
+Main point is that our driver is mainly copied and adapted from AD7298 
+driver, and your comments are on things that we have not modified from 
+AD7298, so what should we do really ?
+
+We are a bit new comers in Kernel Development, so thanks for your help.
+
+Christophe
+
+Le 08/01/2013 11:27, Lars-Peter Clausen a écrit :
+> On 01/08/2013 09:42 AM, Christophe Leroy wrote:
+>> This patch adds support for Analog Devices AD7923 ADC in the IIO Subsystem.
+>>
+>> Signed-off-by: Patrick Vasseur <patrick.vasseur@c-s.fr>
+>> Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+> Hi,
+>
+> Thanks for the driver, looks pretty good. Some comments inline.
+>
+> - Lars
+>
+>> diff -uN linux-3.7.1/drivers/staging/iio/adc/Kconfig linux/drivers/staging/iio/adc/Kconfig
+>> --- linux-3.7.1/drivers/staging/iio/adc/Kconfig	2012-12-17 20:14:54.000000000 +0100
+>> +++ linux/drivers/staging/iio/adc/Kconfig	2012-12-13 19:52:10.000000000 +0100
+> New IIO drivers should not be added to staging, unless there is a very good
+> reason. Since this driver does not have any major issues it should directly go
+> into drivers/iio/
+Our driver is based on AD7298 driver, which is today in staging. Should 
+we put ours in drivers/iio/ directly anyway ?
+>
+> [...]
+>
+>> diff -uN linux-3.7.1/drivers/staging/iio/adc/ad7923.h linux/drivers/staging/iio/adc/ad7923.h
+>> --- linux-3.7.1/drivers/staging/iio/adc/ad7923.h	1970-01-01 01:00:00.000000000 +0100
+>> +++ linux/drivers/staging/iio/adc/ad7923.h	2013-01-05 17:53:53.000000000 +0100
+>> @@ -0,0 +1,72 @@
+>> +/*
+>> + * AD7923 SPI ADC driver
+>> + *
+>> + * Copyright 2011 Analog Devices Inc (from AD7298 Driver)
+>> + * Copyright 2012 CS Systemes d'Information
+>> + *
+>> + * Licensed under the GPL-2 or later.
+>> + */
+>> +#ifndef IIO_ADC_AD7923_H_
+>> +#define IIO_ADC_AD7923_H_
+>> +
+>> +#define AD7923_WRITE_CR		(1 << 11)	/* write control register */
+>> +#define AD7923_RANGE		(1 << 1)	/* range to REFin */
+>> +#define AD7923_CODING		(1 << 0)	/* coding is straight binary */
+>> +#define AD7923_PM_MODE_AS	(1)		/* auto shutdown */
+>> +#define AD7923_PM_MODE_FS	(2)		/* full shutdown */
+>> +#define AD7923_PM_MODE_OPS	(3)		/* normal operation */
+>> +#define AD7923_CHANNEL_0	(0)		/* analog input 0 */
+>> +#define AD7923_CHANNEL_1	(1)		/* analog input 1 */
+>> +#define AD7923_CHANNEL_2	(2)		/* analog input 2 */
+>> +#define AD7923_CHANNEL_3	(3)		/* analog input 3 */
+>> +#define AD7923_SEQUENCE_OFF	(0)		/* no sequence fonction */
+>> +#define AD7923_SEQUENCE_PROTECT	(2)		/* no interrupt write cycle */
+>> +#define AD7923_SEQUENCE_ON	(3)		/* continuous sequence */
+>> +
+>> +#define AD7923_MAX_CHAN		4
+>> +
+>> +#define AD7923_PM_MODE_WRITE(mode)	(mode << 4)	/* write mode */
+>> +#define AD7923_CHANNEL_WRITE(channel)	(channel << 6)	/* write channel */
+>> +#define AD7923_SEQUENCE_WRITE(sequence)	(((sequence & 1) << 3) \
+>> +					+ ((sequence & 2) << 9))
+>> +						/* write sequence fonction */
+>> +/* left shift for CR : bit 11 transmit in first */
+>> +#define AD7923_SHIFT_REGISTER	4
+>> +
+>> +/* val = value, dec = left shift, bits = number of bits of the mask */
+>> +#define EXTRACT(val, dec, bits)		((val >> dec) & ((1 << bits) - 1))
+>> +/* val = value, bits = number of bits of the original value */
+>> +#define EXTRACT_PERCENT(val, bits)	(((val + 1) * 100) >> bits)
+>> +
+>> +struct ad7923_state {
+>> +	struct spi_device		*spi;
+>> +	struct regulator		*reg;
+>> +	struct spi_transfer		ring_xfer[6];
+>> +	struct spi_transfer		scan_single_xfer[2];
+>> +	struct spi_message		ring_msg;
+>> +	struct spi_message		scan_single_msg;
+>> +	/*
+>> +	 * DMA (thus cache coherency maintenance) requires the
+>> +	 * transfer buffers to live in their own cache lines.
+>> +	 */
+>> +	unsigned short			rx_buf[4] ____cacheline_aligned;
+>> +	unsigned short			tx_buf[2];
+> both buffers should of type __be16
+This part is copied unmodified from AD7298. Should we modify it ?
+>
+>> +};
+>> +
+>> +#ifdef CONFIG_IIO_BUFFER
+>> +int ad7923_register_ring_funcs_and_init(struct iio_dev *indio_dev);
+>> +void ad7923_ring_cleanup(struct iio_dev *indio_dev);
+>> +int ad7923_update_scan_mode(struct iio_dev *indio_dev,
+>> +	const unsigned long *active_scan_mask);
+>> +#else /* CONFIG_IIO_BUFFER */
+>> +static inline int
+>> +ad7923_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+>> +{
+>> +	return 0;
+>> +}
+>> +static inline void ad7923_ring_cleanup(struct iio_dev *indio_dev)
+>> +{
+>> +}
+>> +#define ad7923_update_scan_mode NULL
+>> +#endif /* CONFIG_IIO_BUFFER */
+>> +#endif /* IIO_ADC_AD7923_H_ */
+>> diff -uN linux-3.7.1/drivers/staging/iio/adc/ad7923_core.c linux/drivers/staging/iio/adc/ad7923_core.c
+>> --- linux-3.7.1/drivers/staging/iio/adc/ad7923_core.c	1970-01-01 01:00:00.000000000 +0100
+>> +++ linux/drivers/staging/iio/adc/ad7923_core.c	2013-01-05 17:54:11.000000000 +0100
+>> @@ -0,0 +1,202 @@
+>> +/*
+>> + * AD7923 SPI ADC driver
+>> + *
+>> + * Copyright 2011 Analog Devices Inc (from AD7298 Driver)
+>> + * Copyright 2012 CS Systemes d'Information
+>> + *
+>> + * Licensed under the GPL-2.
+>> + */
+>> +
+>> +#include <linux/device.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/sysfs.h>
+>> +#include <linux/spi/spi.h>
+>> +#include <linux/regulator/consumer.h>
+>> +#include <linux/err.h>
+>> +#include <linux/module.h>
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/sysfs.h>
+>> +#include <linux/iio/buffer.h>
+>> +
+>> +#include "ad7923.h"
+>> +
+>> +#define AD7923_V_CHAN(index)						\
+>> +	{								\
+>> +		.type = IIO_VOLTAGE,					\
+>> +		.indexed = 1,						\
+>> +		.channel = index,					\
+>> +		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
+>> +		IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
+>> +		.address = index,					\
+>> +		.scan_index = index,					\
+>> +		.scan_type = {						\
+>> +			.sign = 'u',					\
+>> +			.realbits = 12,					\
+>> +			.storagebits = 16,				\
+>> +		},							\
+>> +	}
+>> +
+>> +static struct iio_chan_spec ad7923_channels[] = {
+> static const struct
+Copied from AD7298. Do we change it anyway ?
+>
+>> +	AD7923_V_CHAN(0),
+>> +	AD7923_V_CHAN(1),
+>> +	AD7923_V_CHAN(2),
+>> +	AD7923_V_CHAN(3),
+>> +	IIO_CHAN_SOFT_TIMESTAMP(4),
+>> +};
+>> +
+> [...]
+>> +
+>> +static int ad7923_read_raw(struct iio_dev *indio_dev,
+>> +			   struct iio_chan_spec const *chan,
+>> +			   int *val,
+>> +			   int *val2,
+>> +			   long m)
+>> +{
+>> +	int ret;
+>> +	struct ad7923_state *st = iio_priv(indio_dev);
+>> +
+>> +	switch (m) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		mutex_lock(&indio_dev->mlock);
+>> +		if (iio_buffer_enabled(indio_dev))
+>> +			ret = -EBUSY;
+>> +		else
+>> +			ret = ad7923_scan_direct(st, chan->address);
+>> +		mutex_unlock(&indio_dev->mlock);
+>> +
+>> +		if (ret < 0)
+>> +			return ret;
+>> +		if (chan->address == EXTRACT(ret, 12, 4)) {
+>> +			*val = EXTRACT(ret, 0, 12);
+>> +			*val2 = EXTRACT_PERCENT(*val, 12);
+> val2 is never used in the upper layers in this case.
+I don't understand what you mean.
+Again, this is copied from AD7298
+>
+>> +		}
+> If the address does not match you should probably return an error
+ok
+>
+>> +		return IIO_VAL_INT;
+>> +	}
+> How about also reporting the scale attribute?
+Ok, we'll try and add it.
+>
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static const struct iio_info ad7923_info = {
+>> +	.read_raw = &ad7923_read_raw,
+>> +	.update_scan_mode = ad7923_update_scan_mode,
+>> +	.driver_module = THIS_MODULE,
+>> +};
+>> +
+>> +static int __devinit ad7923_probe(struct spi_device *spi)
+> __devinit/__devexit is being phased out in upstream, it should not be used in
+> new drivers anymore.
+Ok, but still is AD7298.
+>
+>> +{
+>> +	struct ad7923_state *st;
+>> +	struct device *dev = &spi->dev;
+>> +	int ret;
+>> +	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
+>> +
+>> +	if (indio_dev == NULL)
+>> +		return -ENOMEM;
+>> +
+>> +	st = iio_priv(indio_dev);
+>> +
+>> +	st->reg = regulator_get(&spi->dev, "vcc");
+>> +	if (!IS_ERR(st->reg)) {
+> If the regulator could not be requested return an error.
+Ok
+>
+>> +		ret = regulator_enable(st->reg);
+>> +		if (ret)
+>> +			goto error_put_reg;
+>> +	}
+>> +
+>> +	spi_set_drvdata(spi, indio_dev);
+>> +
+>> +	st->spi = spi;
+>> +
+>> +	indio_dev->name = spi_get_device_id(spi)->name;
+>> +	indio_dev->dev.parent = &spi->dev;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->channels = ad7923_channels;
+>> +	indio_dev->num_channels = ARRAY_SIZE(ad7923_channels);
+>> +	indio_dev->info = &ad7923_info;
+>> +
+>> +	/* Setup default message */
+>> +	st->scan_single_xfer[0].tx_buf = &st->tx_buf[0];
+>> +	st->scan_single_xfer[0].len = 2;
+>> +	st->scan_single_xfer[0].cs_change = 1;
+>> +	st->scan_single_xfer[1].rx_buf = &st->rx_buf[0];
+>> +	st->scan_single_xfer[1].len = 2;
+>> +
+>> +	spi_message_init(&st->scan_single_msg);
+>> +	spi_message_add_tail(&st->scan_single_xfer[0], &st->scan_single_msg);
+>> +	spi_message_add_tail(&st->scan_single_xfer[1], &st->scan_single_msg);
+>> +
+>> +	ret = ad7923_register_ring_funcs_and_init(indio_dev);
+>> +	if (ret)
+>> +		goto error_disable_reg;
+>> +
+>> +	ret = iio_device_register(indio_dev);
+>> +	if (ret)
+>> +		goto error_cleanup_ring;
+>> +
+>> +	dev_info(dev, "Driver AD7923 is added.\n");
+> This line is just noise, please remove it.
+Ok
+>
+>> +
+>> +	return 0;
+>> +
+>> +error_cleanup_ring:
+>> +	ad7923_ring_cleanup(indio_dev);
+>> +error_disable_reg:
+>> +	if (!IS_ERR(st->reg))
+>> +		regulator_disable(st->reg);
+>> +error_put_reg:
+>> +	if (!IS_ERR(st->reg))
+>> +		regulator_put(st->reg);
+>> +	iio_device_free(indio_dev);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int __devexit ad7923_remove(struct spi_device *spi)
+>> +{
+>> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>> +	struct ad7923_state *st = iio_priv(indio_dev);
+>> +
+>> +	iio_device_unregister(indio_dev);
+>> +	ad7923_ring_cleanup(indio_dev);
+>> +	if (!IS_ERR(st->reg)) {
+>> +		regulator_disable(st->reg);
+>> +		regulator_put(st->reg);
+>> +	}
+>> +	iio_device_free(indio_dev);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct spi_device_id ad7923_id[] = {
+>> +	{"ad7923", 0},
+>> +	{}
+>> +};
+>> +MODULE_DEVICE_TABLE(spi, ad7923_id);
+>> +
+>> +static struct spi_driver ad7923_driver = {
+>> +	.driver = {
+>> +		.name	= "ad7923",
+>> +		.owner	= THIS_MODULE,
+>> +	},
+>> +	.probe		= ad7923_probe,
+>> +	.remove		= __devexit_p(ad7923_remove),
+>> +	.id_table	= ad7923_id,
+>> +};
+>> +module_spi_driver(ad7923_driver);
+>> +
+>> +MODULE_AUTHOR("Patrick Vasseur <patrick.vasseur@c-s.fr>");
+>> +MODULE_DESCRIPTION("Analog Devices AD7923 ADC");
+>> +MODULE_LICENSE("GPL v2");
+>> diff -uN linux-3.7.1/drivers/staging/iio/adc/ad7923_ring.c linux/drivers/staging/iio/adc/ad7923_ring.c
+>> --- linux-3.7.1/drivers/staging/iio/adc/ad7923_ring.c	1970-01-01 01:00:00.000000000 +0100
+>> +++ linux/drivers/staging/iio/adc/ad7923_ring.c	2013-01-05 17:51:47.000000000 +0100
+> Considering the overall size of the driver I think it makes sense to put it all
+> in just one file.
+Ok, why not, but once again this is from AD7298. We have tried to keep 
+things homogeneous. Should we do differently ?
+>
+>> @@ -0,0 +1,113 @@
+>> +/*
+>> + * AD7923 SPI ADC driver
+>> + *
+>> + * Copyright 2011 Analog Devices Inc (from AD7298 Driver)
+>> + * Copyright 2012 CS Systemes d'Information
+>> + *
+>> + * Licensed under the GPL-2.
+>> + */
+>> +
+>> +#include <linux/interrupt.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/spi/spi.h>
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/trigger_consumer.h>
+>> +#include <linux/iio/triggered_buffer.h>
+>> +
+>> +#include "ad7923.h"
+>> +
+>> +/**
+>> + * ad7923_update_scan_mode() setup the spi transfer buffer for the new scan mask
+>> + **/
+>> +int ad7923_update_scan_mode(struct iio_dev *indio_dev,
+>> +	const unsigned long *active_scan_mask)
+>> +{
+>> +	struct ad7923_state *st = iio_priv(indio_dev);
+>> +	int i, cmd, channel;
+>> +	int scan_count;
+>> +
+>> +	/* Now compute overall size */
+>> +	for (i = 0, channel = 0; i < AD7923_MAX_CHAN; i++)
+>> +		if (test_bit(i, active_scan_mask))
+>> +			channel = i;
+>> +
+>> +	cmd = AD7923_WRITE_CR | AD7923_CODING | AD7923_RANGE |
+>> +		AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS) |
+>> +		AD7923_SEQUENCE_WRITE(AD7923_SEQUENCE_ON) |
+>> +		AD7923_CHANNEL_WRITE(channel);
+> Hm, ok this looks a bit strange. You lookup the first channel which is selected
+> and then also sample all channels which come before it. E.g. if only channel 2
+> is selected you sample channel 0, 1 and 2. In the trigger handler you push the
+> buffer to the IIO core. But in your buffer you have the result of channel 0 in
+> the position where IIO would expect channel 2.
+> I think it is better if you send a cmd for each channel that needs to be
+> samples. E.g.:
+>
+> 	if (for_each_set_bit(i, active_scan_mask, AD7923_MAX_CHAN)) {
+> 		cmd = AD7923_WRITE_CR | AD7923_CODING | AD7923_RANGE |
+> 			AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS) |
+> 			AD7923_SEQUENCE_WRITE(AD7923_SEQUENCE_OFF) |
+> 			AD7923_CHANNEL_WRITE(i);
+> 		cmd <<= AD7923_SHIFT_REGISTER;
+> 		st->tx_buf[j++] = cpu_to_be16(cmd);
+> 	}
+Ok, here we are trying to use the sequence mode. But unlike the AD7298, 
+here sequence mode is only able to go from channel 0 to a given channel. 
+Hence the reason why we try to identify the highest requested channel, 
+then we do a sequential read of all from 0 to this one.
+
+Wouldn't the use on non sequential mode be less performant ?
+
+>
+>> +	cmd <<= AD7923_SHIFT_REGISTER;
+>> +	st->tx_buf[0] = cpu_to_be16(cmd);
+>> +
+>> +	/* build spi ring message */
+>> +	st->ring_xfer[0].tx_buf = &st->tx_buf[0];
+>> +	st->ring_xfer[0].len = 2;
+>> +	st->ring_xfer[0].cs_change = 1;
+>> +
+>> +	spi_message_init(&st->ring_msg);
+>> +	spi_message_add_tail(&st->ring_xfer[0], &st->ring_msg);
+>> +
+>> +	for (i = 0; i < (channel + 1); i++) {
+>> +		st->ring_xfer[i + 1].rx_buf = &st->rx_buf[i];
+>> +		st->ring_xfer[i + 1].len = 2;
+>> +		st->ring_xfer[i + 1].cs_change = 1;
+>> +		spi_message_add_tail(&st->ring_xfer[i + 1], &st->ring_msg);
+>> +	}
+>> +	/* make sure last transfer cs_change is not set */
+>> +	st->ring_xfer[i + 1].cs_change = 0;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +/**
+>> + * ad7923_trigger_handler() bh of trigger launched polling to ring buffer
+>> + *
+>> + * Currently there is no option in this driver to disable the saving of
+>> + * timestamps within the ring.
+>> + **/
+>> +static irqreturn_t ad7923_trigger_handler(int irq, void *p)
+>> +{
+>> +	struct iio_poll_func *pf = p;
+>> +	struct iio_dev *indio_dev = pf->indio_dev;
+>> +	struct ad7923_state *st = iio_priv(indio_dev);
+>> +	s64 time_ns = 0;
+>> +	__u16 buf[16];
+>> +	int b_sent, i, channel;
+>> +
+>> +	b_sent = spi_sync(st->spi, &st->ring_msg);
+>> +	if (b_sent)
+>> +		goto done;
+>> +
+>> +	if (indio_dev->scan_timestamp) {
+>> +		time_ns = iio_get_time_ns();
+>> +		memcpy((u8 *)buf + indio_dev->scan_bytes - sizeof(s64),
+>> +			&time_ns, sizeof(time_ns));
+>> +	}
+>> +
+>> +	for (i = 0, channel = 0; i < AD7923_MAX_CHAN; i++)
+>> +		if (test_bit(i, indio_dev->active_scan_mask))
+>> +			channel = i;
+>> +
+>> +	for (i = 0; i < (channel + 1); i++)
+>> +		buf[i] = be16_to_cpu(st->rx_buf[i]);
+> No need to perform the endianness conversion here. Just mark the channel as IIO_BE.
+Ok, why not, but again this comes from AD7298 driver.
+>
+>> +
+>> +	iio_push_to_buffer(indio_dev->buffer, (u8 *)buf);
+>> +
+>> +done:
+>> +	iio_trigger_notify_done(indio_dev->trig);
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+> [...]
+>
 
