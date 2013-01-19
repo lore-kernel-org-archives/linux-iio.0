@@ -1,205 +1,166 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de,
-	denis.ciocca@st.com,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 02/10] iio:accel:st_accel move the header from include/iio/common to .
-Date: Tue, 22 Jan 2013 16:16:31 +0000
-Message-Id: <1358871399-11216-3-git-send-email-jic23@kernel.org>
-In-Reply-To: <1358871399-11216-1-git-send-email-jic23@kernel.org>
-References: <50FEBB20.7070407@kernel.org>
- <1358871399-11216-1-git-send-email-jic23@kernel.org>
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:39594 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751572Ab3AST6V (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 19 Jan 2013 14:58:21 -0500
+Message-ID: <50FAFB32.6040203@metafoo.de>
+Date: Sat, 19 Jan 2013 20:59:46 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: christophe leroy <christophe.leroy@c-s.fr>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, patrick.vasseur@c-s.fr
+Subject: Re: [PATCH] IIO ADC support for AD7923
+References: <201301080842.r088gKWO031124@localhost.localdomain> <50EBF48E.4040607@metafoo.de> <50FAB623.5070006@c-s.fr>
+In-Reply-To: <50FAB623.5070006@c-s.fr>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-I can't see why this header would want to be globaly visible.
----
- drivers/iio/accel/st_accel.h        | 52 +++++++++++++++++++++++++++++++++++++
- drivers/iio/accel/st_accel_buffer.c |  3 +--
- drivers/iio/accel/st_accel_core.c   |  3 +--
- drivers/iio/accel/st_accel_i2c.c    |  2 +-
- drivers/iio/accel/st_accel_spi.c    |  2 +-
- include/linux/iio/accel/st_accel.h  | 52 -------------------------------------
- 6 files changed, 56 insertions(+), 58 deletions(-)
- create mode 100644 drivers/iio/accel/st_accel.h
- delete mode 100644 include/linux/iio/accel/st_accel.h
+Hi,
 
-diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-new file mode 100644
-index 0000000..847b1ea
---- /dev/null
-+++ b/drivers/iio/accel/st_accel.h
-@@ -0,0 +1,52 @@
-+/*
-+ * STMicroelectronics accelerometers driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ * v. 1.0.0
-+ * Licensed under the GPL-2.
-+ */
-+
-+#ifndef ST_ACCEL_H
-+#define ST_ACCEL_H
-+
-+#include <linux/types.h>
-+#include <linux/iio/common/st_sensors.h>
-+
-+#define LSM303DLH_ACCEL_DEV_NAME	"lsm303dlh_accel"
-+#define LSM303DLHC_ACCEL_DEV_NAME	"lsm303dlhc_accel"
-+#define LIS3DH_ACCEL_DEV_NAME		"lis3dh"
-+#define LSM330D_ACCEL_DEV_NAME		"lsm330d_accel"
-+#define LSM330DL_ACCEL_DEV_NAME		"lsm330dl_accel"
-+#define LSM330DLC_ACCEL_DEV_NAME	"lsm330dlc_accel"
-+#define LIS331DLH_ACCEL_DEV_NAME	"lis331dlh"
-+#define LSM303DL_ACCEL_DEV_NAME		"lsm303dl_accel"
-+#define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm_accel"
-+#define LSM330_ACCEL_DEV_NAME		"lsm330_accel"
-+
-+int st_accel_common_probe(struct iio_dev *indio_dev);
-+void st_accel_common_remove(struct iio_dev *indio_dev);
-+int st_accel_set_dataready_irq(struct iio_dev *indio_dev, bool state);
-+int st_accel_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit);
-+int st_accel_set_enable(struct iio_dev *indio_dev, bool enable);
-+
-+#ifdef CONFIG_IIO_BUFFER
-+int st_accel_allocate_ring(struct iio_dev *indio_dev);
-+void st_accel_deallocate_ring(struct iio_dev *indio_dev);
-+int st_accel_trig_set_state(struct iio_trigger *trig, bool state);
-+#else /* CONFIG_IIO_BUFFER */
-+static inline int st_accel_allocate_ring(struct iio_dev *indio_dev)
-+{
-+	return 0;
-+}
-+static inline void st_accel_deallocate_ring(struct iio_dev *indio_dev)
-+{
-+}
-+static inline int st_accel_trig_set_state(struct iio_trigger *trig, bool state)
-+{
-+	return 0;
-+}
-+#endif /* CONFIG_IIO_BUFFER */
-+
-+#endif /* ST_ACCEL_H */
-diff --git a/drivers/iio/accel/st_accel_buffer.c b/drivers/iio/accel/st_accel_buffer.c
-index ac90903..4c76787 100644
---- a/drivers/iio/accel/st_accel_buffer.c
-+++ b/drivers/iio/accel/st_accel_buffer.c
-@@ -21,9 +21,8 @@
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
- 
--#include <linux/iio/accel/st_accel.h>
- #include <linux/iio/common/st_sensors.h>
--
-+#include "st_accel.h"
- 
- int st_accel_trig_set_state(struct iio_trigger *trig, bool state)
- {
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 4c32a4d..7af2f8e 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -23,9 +23,8 @@
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/buffer.h>
- 
--#include <linux/iio/accel/st_accel.h>
- #include <linux/iio/common/st_sensors.h>
--
-+#include "st_accel.h"
- 
- /* DEFAULT VALUE FOR SENSORS */
- #define ST_ACCEL_DEFAULT_OUT_X_L_ADDR		0x28
-diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-index f225a42..90b8ddf 100644
---- a/drivers/iio/accel/st_accel_i2c.c
-+++ b/drivers/iio/accel/st_accel_i2c.c
-@@ -15,9 +15,9 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/trigger.h>
- 
--#include <linux/iio/accel/st_accel.h>
- #include <linux/iio/common/st_sensors.h>
- #include <linux/iio/common/st_sensors_i2c.h>
-+#include "st_accel.h"
- 
- static int st_accel_i2c_probe(struct i2c_client *client,
- 						const struct i2c_device_id *id)
-diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-index 57e661f..dbd45c0 100644
---- a/drivers/iio/accel/st_accel_spi.c
-+++ b/drivers/iio/accel/st_accel_spi.c
-@@ -15,9 +15,9 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/trigger.h>
- 
--#include <linux/iio/accel/st_accel.h>
- #include <linux/iio/common/st_sensors.h>
- #include <linux/iio/common/st_sensors_spi.h>
-+#include "st_accel.h"
- 
- static int st_accel_spi_probe(struct spi_device *spi)
- {
-diff --git a/include/linux/iio/accel/st_accel.h b/include/linux/iio/accel/st_accel.h
-deleted file mode 100644
-index 847b1ea..0000000
---- a/include/linux/iio/accel/st_accel.h
-+++ /dev/null
-@@ -1,52 +0,0 @@
--/*
-- * STMicroelectronics accelerometers driver
-- *
-- * Copyright 2012-2013 STMicroelectronics Inc.
-- *
-- * Denis Ciocca <denis.ciocca@st.com>
-- * v. 1.0.0
-- * Licensed under the GPL-2.
-- */
--
--#ifndef ST_ACCEL_H
--#define ST_ACCEL_H
--
--#include <linux/types.h>
--#include <linux/iio/common/st_sensors.h>
--
--#define LSM303DLH_ACCEL_DEV_NAME	"lsm303dlh_accel"
--#define LSM303DLHC_ACCEL_DEV_NAME	"lsm303dlhc_accel"
--#define LIS3DH_ACCEL_DEV_NAME		"lis3dh"
--#define LSM330D_ACCEL_DEV_NAME		"lsm330d_accel"
--#define LSM330DL_ACCEL_DEV_NAME		"lsm330dl_accel"
--#define LSM330DLC_ACCEL_DEV_NAME	"lsm330dlc_accel"
--#define LIS331DLH_ACCEL_DEV_NAME	"lis331dlh"
--#define LSM303DL_ACCEL_DEV_NAME		"lsm303dl_accel"
--#define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm_accel"
--#define LSM330_ACCEL_DEV_NAME		"lsm330_accel"
--
--int st_accel_common_probe(struct iio_dev *indio_dev);
--void st_accel_common_remove(struct iio_dev *indio_dev);
--int st_accel_set_dataready_irq(struct iio_dev *indio_dev, bool state);
--int st_accel_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit);
--int st_accel_set_enable(struct iio_dev *indio_dev, bool enable);
--
--#ifdef CONFIG_IIO_BUFFER
--int st_accel_allocate_ring(struct iio_dev *indio_dev);
--void st_accel_deallocate_ring(struct iio_dev *indio_dev);
--int st_accel_trig_set_state(struct iio_trigger *trig, bool state);
--#else /* CONFIG_IIO_BUFFER */
--static inline int st_accel_allocate_ring(struct iio_dev *indio_dev)
--{
--	return 0;
--}
--static inline void st_accel_deallocate_ring(struct iio_dev *indio_dev)
--{
--}
--static inline int st_accel_trig_set_state(struct iio_trigger *trig, bool state)
--{
--	return 0;
--}
--#endif /* CONFIG_IIO_BUFFER */
--
--#endif /* ST_ACCEL_H */
--- 
-1.8.1.1
+On 01/19/2013 04:05 PM, christophe leroy wrote:
+> Hi Lars,
+> 
+> Sorry to respond so late, I've been very busy lately.
+> Please see answers/questions below
+> 
+> Main point is that our driver is mainly copied and adapted from AD7298
+> driver, and your comments are on things that we have not modified from
+> AD7298, so what should we do really ?
+
+The AD7288 driver has recently seen some updates. The issues which your driver
+inherited from the AD7288 driver have been fixed in the original driver. See:
+http://git.kernel.org/?p=linux/kernel/git/torvalds/linux.git;a=blob;f=drivers/iio/adc/ad7298.c;h=b34d754994d50d53f60fee694440658ba0b137dd;hb=HEAD
+
+> 
+> We are a bit new comers in Kernel Development, so thanks for your help.
+> 
+> Christophe
+> 
+> Le 08/01/2013 11:27, Lars-Peter Clausen a écrit :
+>> On 01/08/2013 09:42 AM, Christophe Leroy wrote:
+>>> This patch adds support for Analog Devices AD7923 ADC in the IIO
+>>> Subsystem.
+>>>
+>>> Signed-off-by: Patrick Vasseur <patrick.vasseur@c-s.fr>
+>>> Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+>> Hi,
+>>
+>> Thanks for the driver, looks pretty good. Some comments inline.
+>>
+>> - Lars
+>>
+>>> diff -uN linux-3.7.1/drivers/staging/iio/adc/Kconfig
+>>> linux/drivers/staging/iio/adc/Kconfig
+>>> --- linux-3.7.1/drivers/staging/iio/adc/Kconfig    2012-12-17
+>>> 20:14:54.000000000 +0100
+>>> +++ linux/drivers/staging/iio/adc/Kconfig    2012-12-13
+>>> 19:52:10.000000000 +0100
+>> New IIO drivers should not be added to staging, unless there is a very
+>> good
+>> reason. Since this driver does not have any major issues it should
+>> directly go
+>> into drivers/iio/
+> Our driver is based on AD7298 driver, which is today in staging. Should
+> we put ours in drivers/iio/ directly anyway ?
+>>
+>> [...]
+>>
+[...]
+>>> diff -uN linux-3.7.1/drivers/staging/iio/adc/ad7923_core.c
+>>> linux/drivers/staging/iio/adc/ad7923_core.c
+>>> --- linux-3.7.1/drivers/staging/iio/adc/ad7923_core.c    1970-01-01
+>>> 01:00:00.000000000 +0100
+>>> +++ linux/drivers/staging/iio/adc/ad7923_core.c    2013-01-05
+>> [...]
+>>> +
+>>> +static int ad7923_read_raw(struct iio_dev *indio_dev,
+>>> +               struct iio_chan_spec const *chan,
+>>> +               int *val,
+>>> +               int *val2,
+>>> +               long m)
+>>> +{
+>>> +    int ret;
+>>> +    struct ad7923_state *st = iio_priv(indio_dev);
+>>> +
+>>> +    switch (m) {
+>>> +    case IIO_CHAN_INFO_RAW:
+>>> +        mutex_lock(&indio_dev->mlock);
+>>> +        if (iio_buffer_enabled(indio_dev))
+>>> +            ret = -EBUSY;
+>>> +        else
+>>> +            ret = ad7923_scan_direct(st, chan->address);
+>>> +        mutex_unlock(&indio_dev->mlock);
+>>> +
+>>> +        if (ret < 0)
+>>> +            return ret;
+>>> +        if (chan->address == EXTRACT(ret, 12, 4)) {
+>>> +            *val = EXTRACT(ret, 0, 12);
+>>> +            *val2 = EXTRACT_PERCENT(*val, 12);
+>> val2 is never used in the upper layers in this case.
+> I don't understand what you mean.
+
+Just drop the *val2 = ... line. It doesn't make any sense in this context. Also
+make sure to remove the EXTRACT_PERCENT macro since it wont be used anymore.
+
+> Again, this is copied from AD7298
+>>
+[...]
+>>> +/**
+>>> + * ad7923_update_scan_mode() setup the spi transfer buffer for the
+>>> new scan mask
+>>> + **/
+>>> +int ad7923_update_scan_mode(struct iio_dev *indio_dev,
+>>> +    const unsigned long *active_scan_mask)
+>>> +{
+>>> +    struct ad7923_state *st = iio_priv(indio_dev);
+>>> +    int i, cmd, channel;
+>>> +    int scan_count;
+>>> +
+>>> +    /* Now compute overall size */
+>>> +    for (i = 0, channel = 0; i < AD7923_MAX_CHAN; i++)
+>>> +        if (test_bit(i, active_scan_mask))
+>>> +            channel = i;
+>>> +
+>>> +    cmd = AD7923_WRITE_CR | AD7923_CODING | AD7923_RANGE |
+>>> +        AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS) |
+>>> +        AD7923_SEQUENCE_WRITE(AD7923_SEQUENCE_ON) |
+>>> +        AD7923_CHANNEL_WRITE(channel);
+>> Hm, ok this looks a bit strange. You lookup the first channel which is
+>> selected
+>> and then also sample all channels which come before it. E.g. if only
+>> channel 2
+>> is selected you sample channel 0, 1 and 2. In the trigger handler you
+>> push the
+>> buffer to the IIO core. But in your buffer you have the result of
+>> channel 0 in
+>> the position where IIO would expect channel 2.
+>> I think it is better if you send a cmd for each channel that needs to be
+>> samples. E.g.:
+>>
+>>     if (for_each_set_bit(i, active_scan_mask, AD7923_MAX_CHAN)) {
+>>         cmd = AD7923_WRITE_CR | AD7923_CODING | AD7923_RANGE |
+>>             AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS) |
+>>             AD7923_SEQUENCE_WRITE(AD7923_SEQUENCE_OFF) |
+>>             AD7923_CHANNEL_WRITE(i);
+>>         cmd <<= AD7923_SHIFT_REGISTER;
+>>         st->tx_buf[j++] = cpu_to_be16(cmd);
+>>     }
+> Ok, here we are trying to use the sequence mode. But unlike the AD7298,
+> here sequence mode is only able to go from channel 0 to a given channel.
+> Hence the reason why we try to identify the highest requested channel,
+> then we do a sequential read of all from 0 to this one.
+> 
+
+The issue is that this doesn't work for all configurations. E.g. imagine
+channel 0 is not selected and channel 1 is selected. You are now going to
+sample both channel 0 and channel 1. Although you should only sample channel 1.
+
+> Wouldn't the use on non sequential mode be less performant ?
+
+I'm not sure whether the sequential mode actually gives you better performance
+or whether it's just for convenience. But you can add a special case to the
+sample function where it will use the sequential mode when possible.
+
+- Lars
