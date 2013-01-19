@@ -1,45 +1,52 @@
-Return-Path: <pmeerw@pmeerw.net>
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Fengguang Wu <fengguang.wu@intel.com>
-Subject: [PATCH] iio: fix Kconfig for max1363
-Date: Thu, 10 Jan 2013 18:29:50 +0100
-Message-Id: <1357838990-32503-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <20130110101642.GA18411@localhost>
-References: <20130110101642.GA18411@localhost>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34416 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751304Ab3ASNuo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 19 Jan 2013 08:50:44 -0500
+Message-ID: <50FAA4B2.1020200@kernel.org>
+Date: Sat, 19 Jan 2013 13:50:42 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 01/15] staging:iio:adis16400: Don't pass 0 to ilog2
+References: <1358340531-31350-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1358340531-31350-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-ERROR: "iio_triggered_buffer_setup" [drivers/iio/adc/max1363.ko] undefined!
-ERROR: "iio_triggered_buffer_cleanup" [drivers/iio/adc/max1363.ko] undefined!
+On 01/16/2013 12:48 PM, Lars-Peter Clausen wrote:
+> ilog2 is not defined for 0, so we need to handle the case where the requested
+> frequency is larger than the base sampling rate. In this case we'll round down
+> and set the sampling rate to the base sampling rate.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Added whole series to togreg branch of iio.git
 
-add select IIO_TRIGGERED_BUFFER
+Also, now these are in, I have applied the sw_ring removal series that
+I held at Lars-Peter's request as this series was on its way.
 
-IIO_TRIGGERED_BUFFER in turn selects IIO_TRIGGER and IIO_KFIFO_BUF, so drop those
-MAX1363_RING_BUFFER is not used anymore
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Fengguang Wu <fengguang.wu@intel.com>
----
- drivers/iio/adc/Kconfig | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index fe822a1..e372257 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -100,10 +100,8 @@ config LP8788_ADC
- config MAX1363
- 	tristate "Maxim max1363 ADC driver"
- 	depends on I2C
--	select IIO_TRIGGER
--	select MAX1363_RING_BUFFER
- 	select IIO_BUFFER
--	select IIO_KFIFO_BUF
-+	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Say yes here to build support for many Maxim i2c analog to digital
- 	  converters (ADC). (max1361, max1362, max1363, max1364, max1036,
--- 
-1.8.0.3
+> ---
+>  drivers/staging/iio/imu/adis16400_core.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/iio/imu/adis16400_core.c b/drivers/staging/iio/imu/adis16400_core.c
+> index 9c8f5ab..cb66225 100644
+> --- a/drivers/staging/iio/imu/adis16400_core.c
+> +++ b/drivers/staging/iio/imu/adis16400_core.c
+> @@ -178,7 +178,11 @@ static int adis16334_set_freq(struct iio_dev *indio_dev, unsigned int freq)
+>  {
+>  	unsigned int t;
+>  
+> -	t = ilog2(8192 / (freq * 10));
+> +	freq *= 10;
+> +	if (freq < 8192)
+> +		t = ilog2(8192 / freq);
+> +	else
+> +		t = 0;
+>  
+>  	if (t > 0x31)
+>  		t = 0x31;
+> 
