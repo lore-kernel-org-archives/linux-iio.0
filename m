@@ -1,84 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:51509 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754950Ab3ARKsN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 18 Jan 2013 05:48:13 -0500
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
-	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Tony Lindgren <tony@atomide.com>,
-	Benit Cousson <b-cousson@ti.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Landley <rob@landley.net>,
-	Russell King <linux@arm.linux.org.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v3 8/8] arm/dts: AM335x-evm: Add TSC/ADC MFD device support
-Date: Fri, 18 Jan 2013 16:18:59 +0530
-Message-ID: <1e33c3c4ac95fad513bf2785a5acff7a5f56d4b0.1358502134.git.rachna@ti.com>
-In-Reply-To: <cover.1358502134.git.rachna@ti.com>
-References: <cover.1358502134.git.rachna@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34026 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751545Ab3ASMvx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 19 Jan 2013 07:51:53 -0500
+Message-ID: <50FA96E0.2040604@kernel.org>
+Date: Sat, 19 Jan 2013 12:51:44 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: "Getz, Robin" <robin.getz@analog.com>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Alessandro Rubini <rubini@gnudd.com>,
+	"greg@kroah.com" <greg@kroah.com>,
+	"christophe.leroy@c-s.fr" <christophe.leroy@c-s.fr>,
+	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"patrick.vasseur@c-s.fr" <patrick.vasseur@c-s.fr>
+Subject: Re: [PATCH] IIO ADC support for AD7923
+References: <50F199F7.7020600@metafoo.de> <20130117171100.GA24398@mail.gnudd.com> <50F83695.506@metafoo.de> <201301181802.14382.robin.getz@analog.com>
+In-Reply-To: <201301181802.14382.robin.getz@analog.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+On 01/18/2013 11:02 PM, Getz, Robin wrote:
+> On Thu 17 Jan 2013 12:36, Lars-Peter Clausen pondered:
+>> On 01/17/2013 06:11 PM, Alessandro Rubini wrote:
+>>> [...]
+>>>
+>>> But yes, you are right. I'm working on another I/O subsystem. We are
+>>> gong to release zio-1.0 in a few days, because the thing is mature
+>>> and used in production.
+> 
+> Neither means it's a good idea for upstream :)
+> 
+>> Still it's a very bad idea to have two subsystem which have a huge overlap
+>> in both functionality and targeted devices. It will gives us all lots of
+>> headaches later on. As IIO continues to evolve it will get support for some
+>> of the features that only ZIO supports at the moment and as ZIO grows it
+>> will get support for features currently only supported by IIO. So in the
+>> end we have two frameworks for the very same purpose.
+> 
+> I want to strongly agree with Lars-Peter. Lets work together on one thing - 
+> which tries to solve all the our system level issues. As an end user - I 
+> don't want to re-write userspace for multiple interfaces to the same 
+> underlying ADC/DACs.
+> 
+> I don't know how Greg feels about another subsystem in the kernel which 
+> duplicates existing functionality/targetted devices - but it doesn't sound 
+> like a good idea to me.
+> 
+>>> I hope to meet you in person at fosdem and be able to talk over a beer
+>>> or two.
+>>
+>> Looking forward to meeting you :)
+> 
+> Hopefully you can come to some logical conclusions over a friendly beverage. 
+> Even if you can't decide on how to merge things (plan for adding missing 
+> features from one to the other), maybe it's just deciding on how to get as 
+> much reuse as possible (duplication of device register and bit definitions?)
+> 
 
-Add support for core multifunctional device along
-with its clients touchscreen and ADC.
+I second these comments from Lars and Robin (or third I suppose ;).
+Lets get the best possible result. The source of an idea or code
+really doesn't matter in the long run, what matters is that we
+get a solution that works well for all users.
 
-Signed-off-by: Patil, Rachna <rachna@ti.com>
----
- arch/arm/boot/dts/am335x-evm.dts |   13 +++++++++++++
- arch/arm/boot/dts/am33xx.dtsi    |    8 ++++++++
- 2 files changed, 21 insertions(+)
+Enjoy those beverages (and fosdem of course!)
 
-diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
-index d649644..ea28476 100644
---- a/arch/arm/boot/dts/am335x-evm.dts
-+++ b/arch/arm/boot/dts/am335x-evm.dts
-@@ -244,3 +244,16 @@
- &cpsw_emac1 {
- 	phy_id = <&davinci_mdio>, <1>;
- };
-+
-+&tscadc {
-+	tsc {
-+		wires = <4>;
-+		x-plate-resistance = <200>;
-+		steps-to-configure = <5>;
-+		wire-config = <0x00 0x11 0x22 0x33>;
-+	};
-+
-+	adc {
-+		adc-channels = <4>;
-+	};
-+};
-diff --git a/arch/arm/boot/dts/am33xx.dtsi b/arch/arm/boot/dts/am33xx.dtsi
-index c2f14e8..211ec42 100644
---- a/arch/arm/boot/dts/am33xx.dtsi
-+++ b/arch/arm/boot/dts/am33xx.dtsi
-@@ -385,5 +385,13 @@
- 				mac-address = [ 00 00 00 00 00 00 ];
- 			};
- 		};
-+
-+		tscadc: tscadc@44e0d000 {
-+			compatible = "ti,ti-tscadc";
-+			reg = <0x44e0d000 0x1000>;
-+			interrupt-parent = <&intc>;
-+			interrupts = <16>;
-+			ti,hwmods = "adc_tsc";
-+		};
- 	};
- };
--- 
-1.7.9.5
-
+Jonathan
