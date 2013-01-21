@@ -1,103 +1,105 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog115.obsmtp.com ([207.126.144.139]:42088 "EHLO
-	eu1sys200aog115.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751898Ab3ARQ7a (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jan 2013 11:59:30 -0500
+Return-Path: <denis.ciocca@st.com>
 From: Denis CIOCCA <denis.ciocca@st.com>
-To: jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 3/4] iio:gyro: Add STMicroelectronics gyroscopes driver
-Date: Fri, 18 Jan 2013 17:58:48 +0100
-Message-Id: <1358528329-2593-4-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1358528329-2593-1-git-send-email-denis.ciocca@st.com>
-References: <1358528329-2593-1-git-send-email-denis.ciocca@st.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: jic23@kernel.org
+Cc: lars@metafoo.de, linux-iio@vger.kernel.org,
+	Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 1/4] iio:common: Add STMicroelectronics common library
+Date: Mon, 21 Jan 2013 09:36:17 +0100
+Message-Id: <1358757380-3187-2-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1358757380-3187-1-git-send-email-denis.ciocca@st.com>
+References: <1358757380-3187-1-git-send-email-denis.ciocca@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds a generic gyroscope driver for STMicroelectronics
-gyroscopes, currently it supports:
-L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
+This patch add a generic library for STMicroelectronics 3-axis sensors.
 
 Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
 ---
- drivers/iio/gyro/Kconfig          |  34 +++
- drivers/iio/gyro/Makefile         |   5 +
- drivers/iio/gyro/st_gyro_buffer.c | 119 ++++++++++
- drivers/iio/gyro/st_gyro_core.c   | 448 ++++++++++++++++++++++++++++++++++++++
- drivers/iio/gyro/st_gyro_i2c.c    |  84 +++++++
- drivers/iio/gyro/st_gyro_spi.c    |  83 +++++++
- include/linux/iio/gyro/st_gyro.h  |  49 +++++
- 7 files changed, 822 insertions(+)
- create mode 100644 drivers/iio/gyro/st_gyro_buffer.c
- create mode 100644 drivers/iio/gyro/st_gyro_core.c
- create mode 100644 drivers/iio/gyro/st_gyro_i2c.c
- create mode 100644 drivers/iio/gyro/st_gyro_spi.c
- create mode 100644 include/linux/iio/gyro/st_gyro.h
+ drivers/iio/common/Kconfig                         |   1 +
+ drivers/iio/common/Makefile                        |   1 +
+ drivers/iio/common/st_sensors/Kconfig              |  14 +
+ drivers/iio/common/st_sensors/Makefile             |  10 +
+ drivers/iio/common/st_sensors/st_sensors_buffer.c  | 115 ++++++
+ drivers/iio/common/st_sensors/st_sensors_core.c    | 411 +++++++++++++++++++++
+ drivers/iio/common/st_sensors/st_sensors_i2c.c     |  81 ++++
+ drivers/iio/common/st_sensors/st_sensors_spi.c     | 128 +++++++
+ drivers/iio/common/st_sensors/st_sensors_trigger.c |  77 ++++
+ include/linux/iio/common/st_sensors.h              | 266 +++++++++++++
+ include/linux/iio/common/st_sensors_i2c.h          |  20 +
+ include/linux/iio/common/st_sensors_spi.h          |  20 +
+ 12 files changed, 1144 insertions(+)
+ create mode 100644 drivers/iio/common/st_sensors/Kconfig
+ create mode 100644 drivers/iio/common/st_sensors/Makefile
+ create mode 100644 drivers/iio/common/st_sensors/st_sensors_buffer.c
+ create mode 100644 drivers/iio/common/st_sensors/st_sensors_core.c
+ create mode 100644 drivers/iio/common/st_sensors/st_sensors_i2c.c
+ create mode 100644 drivers/iio/common/st_sensors/st_sensors_spi.c
+ create mode 100644 drivers/iio/common/st_sensors/st_sensors_trigger.c
+ create mode 100644 include/linux/iio/common/st_sensors.h
+ create mode 100644 include/linux/iio/common/st_sensors_i2c.h
+ create mode 100644 include/linux/iio/common/st_sensors_spi.h
 
-diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-index 96b68f6..6fb4225 100644
---- a/drivers/iio/gyro/Kconfig
-+++ b/drivers/iio/gyro/Kconfig
-@@ -23,4 +23,38 @@ config HID_SENSOR_GYRO_3D
- 	  Say yes here to build support for the HID SENSOR
- 	  Gyroscope 3D.
+diff --git a/drivers/iio/common/Kconfig b/drivers/iio/common/Kconfig
+index ed45ee5..0b6e97d 100644
+--- a/drivers/iio/common/Kconfig
++++ b/drivers/iio/common/Kconfig
+@@ -3,3 +3,4 @@
+ #
  
-+config IIO_ST_GYRO_3AXIS
-+	tristate "STMicroelectronics gyroscopes 3-Axis Driver"
-+	depends on (I2C || SPI_MASTER) && SYSFS
-+	select IIO_ST_SENSORS_CORE
-+	select IIO_ST_GYRO_I2C_3AXIS if (I2C)
-+	select IIO_ST_GYRO_SPI_3AXIS if (SPI_MASTER)
-+	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
-+	select IIO_ST_GYRO_BUFFER if (IIO_TRIGGERED_BUFFER)
-+	help
-+	  Say yes here to build support for STMicroelectronics gyroscopes:
-+	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
-+
-+	  This driver can also be built as a module. If so, will be created
-+	  these modules:
-+	  - st_gyro_core (core functions for the driver [it is mandatory]);
-+	  - st_gyro_i2c (necessary for the I2C devices [optional*]);
-+	  - st_gyro_spi (necessary for the SPI devices [optional*]);
-+	  - st_gyro_buffer (necessary for triggered buffer [optional]);
-+	  
-+	  (*) one of these is necessary to do something.
-+
-+config IIO_ST_GYRO_I2C_3AXIS
-+	tristate
-+	depends on IIO_ST_GYRO_3AXIS
-+
-+config IIO_ST_GYRO_SPI_3AXIS
-+	tristate
-+	depends on IIO_ST_GYRO_3AXIS
-+
-+config IIO_ST_GYRO_BUFFER
-+	tristate
-+	depends on IIO_ST_GYRO_3AXIS
-+	depends on (IIO_ST_GYRO_I2C_3AXIS || IIO_ST_GYRO_SPI_3AXIS)
-+
- endmenu
-diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-index 702a058..e800cd6 100644
---- a/drivers/iio/gyro/Makefile
-+++ b/drivers/iio/gyro/Makefile
-@@ -4,3 +4,8 @@
+ source "drivers/iio/common/hid-sensors/Kconfig"
++source "drivers/iio/common/st_sensors/Kconfig"
+diff --git a/drivers/iio/common/Makefile b/drivers/iio/common/Makefile
+index 8158400..c2352be 100644
+--- a/drivers/iio/common/Makefile
++++ b/drivers/iio/common/Makefile
+@@ -7,3 +7,4 @@
+ #
  
- obj-$(CONFIG_ADIS16136) += adis16136.o
- obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
-+
-+obj-$(CONFIG_IIO_ST_GYRO_3AXIS) += st_gyro_core.o
-+obj-$(CONFIG_IIO_ST_GYRO_I2C_3AXIS) += st_gyro_i2c.o
-+obj-$(CONFIG_IIO_ST_GYRO_SPI_3AXIS) += st_gyro_spi.o
-+obj-$(CONFIG_IIO_ST_GYRO_BUFFER) += st_gyro_buffer.o
-diff --git a/drivers/iio/gyro/st_gyro_buffer.c b/drivers/iio/gyro/st_gyro_buffer.c
+ obj-y += hid-sensors/
++obj-y += st_sensors/
+diff --git a/drivers/iio/common/st_sensors/Kconfig b/drivers/iio/common/st_sensors/Kconfig
 new file mode 100644
-index 0000000..c1fc390
+index 0000000..84b2dca
 --- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_buffer.c
-@@ -0,0 +1,119 @@
++++ b/drivers/iio/common/st_sensors/Kconfig
+@@ -0,0 +1,14 @@
++#
++# Hid Sensor common modules
++#
++
++config IIO_ST_SENSORS_I2C
++	tristate
++
++config IIO_ST_SENSORS_SPI
++	tristate
++
++config IIO_ST_SENSORS_CORE
++	tristate
++	select IIO_ST_SENSORS_I2C if I2C
++	select IIO_ST_SENSORS_SPI if SPI_MASTER
+diff --git a/drivers/iio/common/st_sensors/Makefile b/drivers/iio/common/st_sensors/Makefile
+new file mode 100644
+index 0000000..9f3e24f
+--- /dev/null
++++ b/drivers/iio/common/st_sensors/Makefile
+@@ -0,0 +1,10 @@
++#
++# Makefile for the STMicroelectronics sensor common modules.
++#
++
++obj-$(CONFIG_IIO_ST_SENSORS_I2C) += st_sensors_i2c.o
++obj-$(CONFIG_IIO_ST_SENSORS_SPI) += st_sensors_spi.o
++obj-$(CONFIG_IIO_ST_SENSORS_CORE) += st_sensors.o
++st_sensors-y := st_sensors_core.o
++st_sensors-$(CONFIG_IIO_BUFFER) += st_sensors_buffer.o
++st_sensors-$(CONFIG_IIO_TRIGGER) += st_sensors_trigger.o
+diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+new file mode 100644
+index 0000000..f4a5adc
+--- /dev/null
++++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+@@ -0,0 +1,115 @@
 +/*
-+ * STMicroelectronics gyroscopes driver
++ * STMicroelectronics sensors buffer library driver
 + *
 + * Copyright 2012-2013 STMicroelectronics Inc.
 + *
@@ -106,123 +108,119 @@ index 0000000..c1fc390
 + * Licensed under the GPL-2.
 + */
 +
-+#include <linux/module.h>
 +#include <linux/kernel.h>
++#include <linux/module.h>
 +#include <linux/slab.h>
-+#include <linux/stat.h>
-+#include <linux/interrupt.h>
-+#include <linux/byteorder/generic.h>
-+#include <linux/i2c.h>
-+#include <linux/delay.h>
 +#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++#include <linux/interrupt.h>
 +#include <linux/iio/buffer.h>
 +#include <linux/iio/trigger_consumer.h>
 +#include <linux/iio/triggered_buffer.h>
++#include <linux/irqreturn.h>
 +
-+#include <linux/iio/gyro/st_gyro.h>
 +#include <linux/iio/common/st_sensors.h>
 +
-+
-+int st_gyro_trig_set_state(struct iio_trigger *trig, bool state)
++int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
 +{
-+	struct iio_dev *indio_dev = trig->private_data;
-+	return st_gyro_set_dataready_irq(indio_dev, state);
-+}
-+EXPORT_SYMBOL(st_gyro_trig_set_state);
++	int i, n = 0, len;
++	u8 addr[ST_SENSORS_NUMBER_DATA_CHANNELS];
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
 +
-+static int st_gyro_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	int err;
++	for (i = 0; i < ST_SENSORS_NUMBER_DATA_CHANNELS; i++) {
++		if (test_bit(i, indio_dev->active_scan_mask)) {
++			addr[n] = indio_dev->channels[i].address;
++			n++;
++		}
++	}
++	switch (n) {
++	case 1:
++		len = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
++			addr[0], ST_SENSORS_BYTE_FOR_CHANNEL, buf,
++			sdata->multiread_bit);
++		break;
++	case 2:
++		if ((addr[1] - addr[0]) == ST_SENSORS_BYTE_FOR_CHANNEL) {
++			len = sdata->tf->read_multiple_byte(&sdata->tb,
++					sdata->dev, addr[0],
++					ST_SENSORS_BYTE_FOR_CHANNEL*n,
++					buf, sdata->multiread_bit);
++		} else {
++			u8 rx_array[ST_SENSORS_BYTE_FOR_CHANNEL*
++				    ST_SENSORS_NUMBER_DATA_CHANNELS];
++			len = sdata->tf->read_multiple_byte(&sdata->tb,
++				sdata->dev, addr[0],
++				ST_SENSORS_BYTE_FOR_CHANNEL*
++				ST_SENSORS_NUMBER_DATA_CHANNELS,
++				rx_array, sdata->multiread_bit);
++			if (len < 0)
++				goto read_data_channels_error;
 +
-+	err = st_gyro_set_enable(indio_dev, true);
-+	if (err < 0)
-+		goto st_gyro_set_enable_error;
-+
-+	err = iio_sw_buffer_preenable(indio_dev);
-+
-+st_gyro_set_enable_error:
-+	return err;
-+}
-+
-+static int st_gyro_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	gdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-+	if (gdata->buffer_data == NULL) {
-+		err = -ENOMEM;
-+		goto allocate_memory_error;
++			for (i = 0; i < n * ST_SENSORS_NUMBER_DATA_CHANNELS;
++									i++) {
++				if (i < n)
++					buf[i] = rx_array[i];
++				else
++					buf[i] = rx_array[n + i];
++			}
++			len = ST_SENSORS_BYTE_FOR_CHANNEL*n;
++		}
++		break;
++	case 3:
++		len = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
++			addr[0], ST_SENSORS_BYTE_FOR_CHANNEL*
++			ST_SENSORS_NUMBER_DATA_CHANNELS,
++			buf, sdata->multiread_bit);
++		break;
++	default:
++		len = -EINVAL;
++		goto read_data_channels_error;
++	}
++	if (len != ST_SENSORS_BYTE_FOR_CHANNEL*n) {
++		len = -EIO;
++		goto read_data_channels_error;
 +	}
 +
-+	err = st_gyro_set_axis_enable(indio_dev,
-+					(u8)indio_dev->active_scan_mask[0]);
-+	if (err < 0)
-+		goto st_gyro_buffer_postenable_error;
-+
-+	err = iio_triggered_buffer_postenable(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_buffer_postenable_error;
-+
-+	return err;
-+
-+st_gyro_buffer_postenable_error:
-+	kfree(gdata->buffer_data);
-+allocate_memory_error:
-+	return err;
++read_data_channels_error:
++	return len;
 +}
++EXPORT_SYMBOL(st_sensors_get_buffer_element);
 +
-+static int st_gyro_buffer_predisable(struct iio_dev *indio_dev)
++irqreturn_t st_sensors_trigger_handler(int irq, void *p)
 +{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
++	int len;
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
 +
-+	err = iio_triggered_buffer_predisable(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_buffer_predisable_error;
++	len = st_sensors_get_buffer_element(indio_dev, sdata->buffer_data);
++	if (len < 0)
++		goto st_sensors_get_buffer_element_error;
 +
-+	err = st_gyro_set_axis_enable(indio_dev,
-+						ST_SENSORS_ENABLE_ALL_CHANNELS);
-+	if (err < 0)
-+		goto st_gyro_buffer_predisable_error;
++	if (indio_dev->scan_timestamp)
++		*(s64 *)((u8 *)sdata->buffer_data +
++				ALIGN(len, sizeof(s64))) = pf->timestamp;
 +
-+	err = st_gyro_set_enable(indio_dev, false);
++	iio_push_to_buffers(indio_dev, sdata->buffer_data);
 +
-+st_gyro_buffer_predisable_error:
-+	kfree(gdata->buffer_data);
-+	return err;
++st_sensors_get_buffer_element_error:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
 +}
-+
-+static const struct iio_buffer_setup_ops st_gyro_buffer_setup_ops = {
-+	.preenable = &st_gyro_buffer_preenable,
-+	.postenable = &st_gyro_buffer_postenable,
-+	.predisable = &st_gyro_buffer_predisable,
-+};
-+
-+int st_gyro_allocate_ring(struct iio_dev *indio_dev)
-+{
-+	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+		&st_sensors_trigger_handler, &st_gyro_buffer_setup_ops);
-+}
-+EXPORT_SYMBOL(st_gyro_allocate_ring);
-+
-+void st_gyro_deallocate_ring(struct iio_dev *indio_dev)
-+{
-+	iio_triggered_buffer_cleanup(indio_dev);
-+}
-+EXPORT_SYMBOL(st_gyro_deallocate_ring);
++EXPORT_SYMBOL(st_sensors_trigger_handler);
 +
 +MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes buffer");
++MODULE_DESCRIPTION("STMicroelectronics ST-sensors buffer");
 +MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
 new file mode 100644
-index 0000000..28363d4
+index 0000000..661cc2b
 --- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -0,0 +1,448 @@
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -0,0 +1,411 @@
 +/*
-+ * STMicroelectronics gyroscopes driver
++ * STMicroelectronics sensors core library driver
 + *
 + * Copyright 2012-2013 STMicroelectronics Inc.
 + *
@@ -234,449 +232,633 @@ index 0000000..28363d4
 +#include <linux/kernel.h>
 +#include <linux/module.h>
 +#include <linux/slab.h>
-+#include <linux/errno.h>
-+#include <linux/types.h>
-+#include <linux/mutex.h>
-+#include <linux/interrupt.h>
-+#include <linux/i2c.h>
-+#include <linux/gpio.h>
-+#include <linux/irq.h>
 +#include <linux/delay.h>
++#include <linux/unaligned/le_byteshift.h>
 +#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/buffer.h>
 +
-+#include <linux/iio/gyro/st_gyro.h>
 +#include <linux/iio/common/st_sensors.h>
 +
 +
-+/* DEFAULT VALUE FOR SENSORS */
-+#define ST_GYRO_DEFAULT_OUT_X_L_ADDR		0x28
-+#define ST_GYRO_DEFAULT_OUT_Y_L_ADDR		0x2a
-+#define ST_GYRO_DEFAULT_OUT_Z_L_ADDR		0x2c
++#define ST_SENSORS_WAI_ADDRESS		0x0f
 +
-+/* FULLSCALE */
-+#define ST_GYRO_FS_AVL_250DPS			250
-+#define ST_GYRO_FS_AVL_500DPS			500
-+#define ST_GYRO_FS_AVL_2000DPS			2000
-+
-+/* CUSTOM VALUES FOR SENSOR 1 */
-+#define ST_GYRO_1_WAI_EXP			0xd3
-+#define ST_GYRO_1_ODR_ADDR			0x20
-+#define ST_GYRO_1_ODR_MASK			0xc0
-+#define ST_GYRO_1_ODR_AVL_100HZ_VAL		0x00
-+#define ST_GYRO_1_ODR_AVL_200HZ_VAL		0x01
-+#define ST_GYRO_1_ODR_AVL_400HZ_VAL		0x02
-+#define ST_GYRO_1_ODR_AVL_800HZ_VAL		0x03
-+#define ST_GYRO_1_PW_ADDR			0x20
-+#define ST_GYRO_1_PW_MASK			0x08
-+#define ST_GYRO_1_FS_ADDR			0x23
-+#define ST_GYRO_1_FS_MASK			0x30
-+#define ST_GYRO_1_FS_AVL_250_VAL		0x00
-+#define ST_GYRO_1_FS_AVL_500_VAL		0x01
-+#define ST_GYRO_1_FS_AVL_2000_VAL		0x02
-+#define ST_GYRO_1_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
-+#define ST_GYRO_1_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
-+#define ST_GYRO_1_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
-+#define ST_GYRO_1_BDU_ADDR			0x23
-+#define ST_GYRO_1_BDU_MASK			0x80
-+#define ST_GYRO_1_DRDY_IRQ_ADDR			0x22
-+#define ST_GYRO_1_DRDY_IRQ_MASK			0x08
-+#define ST_GYRO_1_MULTIREAD_BIT			true
-+
-+/* CUSTOM VALUES FOR SENSOR 2 */
-+#define ST_GYRO_2_WAI_EXP			0xd4
-+#define ST_GYRO_2_ODR_ADDR			0x20
-+#define ST_GYRO_2_ODR_MASK			0xc0
-+#define ST_GYRO_2_ODR_AVL_95HZ_VAL		0x00
-+#define ST_GYRO_2_ODR_AVL_190HZ_VAL		0x01
-+#define ST_GYRO_2_ODR_AVL_380HZ_VAL		0x02
-+#define ST_GYRO_2_ODR_AVL_760HZ_VAL		0x03
-+#define ST_GYRO_2_PW_ADDR			0x20
-+#define ST_GYRO_2_PW_MASK			0x08
-+#define ST_GYRO_2_FS_ADDR			0x23
-+#define ST_GYRO_2_FS_MASK			0x30
-+#define ST_GYRO_2_FS_AVL_250_VAL		0x00
-+#define ST_GYRO_2_FS_AVL_500_VAL		0x01
-+#define ST_GYRO_2_FS_AVL_2000_VAL		0x02
-+#define ST_GYRO_2_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
-+#define ST_GYRO_2_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
-+#define ST_GYRO_2_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
-+#define ST_GYRO_2_BDU_ADDR			0x23
-+#define ST_GYRO_2_BDU_MASK			0x80
-+#define ST_GYRO_2_DRDY_IRQ_ADDR			0x22
-+#define ST_GYRO_2_DRDY_IRQ_MASK			0x08
-+#define ST_GYRO_2_MULTIREAD_BIT			true
-+
-+static const struct iio_chan_spec st_gyro_16bit_channels[] = {
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_X,
-+		IIO_MOD_X, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
-+						ST_GYRO_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Y,
-+		IIO_MOD_Y, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
-+						ST_GYRO_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Z,
-+		IIO_MOD_Z, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
-+						ST_GYRO_DEFAULT_OUT_Z_L_ADDR),
-+	IIO_CHAN_SOFT_TIMESTAMP(3)
-+};
-+
-+static const struct st_sensors st_gyro_sensors[] = {
-+	{
-+		.wai = ST_GYRO_1_WAI_EXP,
-+		.sensors_supported = {
-+			[0] = L3G4200D_GYRO_DEV_NAME,
-+			[1] = LSM330DL_GYRO_DEV_NAME,
-+		},
-+		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
-+		.odr = {
-+			.addr = ST_GYRO_1_ODR_ADDR,
-+			.mask = ST_GYRO_1_ODR_MASK,
-+			.odr_avl = {
-+				{ 100, ST_GYRO_1_ODR_AVL_100HZ_VAL, },
-+				{ 200, ST_GYRO_1_ODR_AVL_200HZ_VAL, },
-+				{ 400, ST_GYRO_1_ODR_AVL_400HZ_VAL, },
-+				{ 800, ST_GYRO_1_ODR_AVL_800HZ_VAL, },
-+			},
-+		},
-+		.pw = {
-+			.addr = ST_GYRO_1_PW_ADDR,
-+			.mask = ST_GYRO_1_PW_MASK,
-+			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
-+			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-+		},
-+		.enable_axis = {
-+			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-+			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-+		},
-+		.fs = {
-+			.addr = ST_GYRO_1_FS_ADDR,
-+			.mask = ST_GYRO_1_FS_MASK,
-+			.fs_avl = {
-+				[0] = {
-+					.num = ST_GYRO_FS_AVL_250DPS,
-+					.value = ST_GYRO_1_FS_AVL_250_VAL,
-+					.gain = ST_GYRO_1_FS_AVL_250_GAIN,
-+				},
-+				[1] = {
-+					.num = ST_GYRO_FS_AVL_500DPS,
-+					.value = ST_GYRO_1_FS_AVL_500_VAL,
-+					.gain = ST_GYRO_1_FS_AVL_500_GAIN,
-+				},
-+				[2] = {
-+					.num = ST_GYRO_FS_AVL_2000DPS,
-+					.value = ST_GYRO_1_FS_AVL_2000_VAL,
-+					.gain = ST_GYRO_1_FS_AVL_2000_GAIN,
-+				},
-+			},
-+		},
-+		.bdu = {
-+			.addr = ST_GYRO_1_BDU_ADDR,
-+			.mask = ST_GYRO_1_BDU_MASK,
-+		},
-+		.drdy_irq = {
-+			.addr = ST_GYRO_1_DRDY_IRQ_ADDR,
-+			.mask = ST_GYRO_1_DRDY_IRQ_MASK,
-+		},
-+		.multi_read_bit = ST_GYRO_1_MULTIREAD_BIT,
-+		.bootime = 2,
-+	},
-+	{
-+		.wai = ST_GYRO_2_WAI_EXP,
-+		.sensors_supported = {
-+			[0] = L3GD20_GYRO_DEV_NAME,
-+			[1] = L3GD20H_GYRO_DEV_NAME,
-+			[2] = LSM330DLC_GYRO_DEV_NAME,
-+			[3] = L3G4IS_GYRO_DEV_NAME,
-+			[4] = LSM330_GYRO_DEV_NAME,
-+		},
-+		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
-+		.odr = {
-+			.addr = ST_GYRO_2_ODR_ADDR,
-+			.mask = ST_GYRO_2_ODR_MASK,
-+			.odr_avl = {
-+				{ 95, ST_GYRO_2_ODR_AVL_95HZ_VAL, },
-+				{ 190, ST_GYRO_2_ODR_AVL_190HZ_VAL, },
-+				{ 380, ST_GYRO_2_ODR_AVL_380HZ_VAL, },
-+				{ 760, ST_GYRO_2_ODR_AVL_760HZ_VAL, },
-+			},
-+		},
-+		.pw = {
-+			.addr = ST_GYRO_2_PW_ADDR,
-+			.mask = ST_GYRO_2_PW_MASK,
-+			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
-+			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-+		},
-+		.enable_axis = {
-+			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-+			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-+		},
-+		.fs = {
-+			.addr = ST_GYRO_2_FS_ADDR,
-+			.mask = ST_GYRO_2_FS_MASK,
-+			.fs_avl = {
-+				[0] = {
-+					.num = ST_GYRO_FS_AVL_250DPS,
-+					.value = ST_GYRO_2_FS_AVL_250_VAL,
-+					.gain = ST_GYRO_2_FS_AVL_250_GAIN,
-+				},
-+				[1] = {
-+					.num = ST_GYRO_FS_AVL_500DPS,
-+					.value = ST_GYRO_2_FS_AVL_500_VAL,
-+					.gain = ST_GYRO_2_FS_AVL_500_GAIN,
-+				},
-+				[2] = {
-+					.num = ST_GYRO_FS_AVL_2000DPS,
-+					.value = ST_GYRO_2_FS_AVL_2000_VAL,
-+					.gain = ST_GYRO_2_FS_AVL_2000_GAIN,
-+				},
-+			},
-+		},
-+		.bdu = {
-+			.addr = ST_GYRO_2_BDU_ADDR,
-+			.mask = ST_GYRO_2_BDU_MASK,
-+		},
-+		.drdy_irq = {
-+			.addr = ST_GYRO_2_DRDY_IRQ_ADDR,
-+			.mask = ST_GYRO_2_DRDY_IRQ_MASK,
-+		},
-+		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
-+		.bootime = 2,
-+	},
-+};
-+
-+static int st_gyro_read_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *ch, int *val,
-+							int *val2, long mask)
++int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
++						u8 reg_addr, u8 mask, u8 data)
 +{
 +	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
++	u8 new_data;
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
 +
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		err = st_sensors_read_info_raw(indio_dev, ch, val,
-+						&st_gyro_sensors[gdata->index]);
-+		if (err < 0)
-+			goto read_error;
++	err = sdata->tf->read_byte(&sdata->tb, sdata->dev, reg_addr, &new_data);
++	if (err < 0)
++		goto st_sensors_write_data_with_mask_error;
 +
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 0;
-+		*val2 = gdata->current_fullscale->gain;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
++	new_data = ((new_data & (~mask)) | ((data << __ffs(mask)) & mask));
++	err = sdata->tf->write_byte(&sdata->tb, sdata->dev, reg_addr, new_data);
++
++st_sensors_write_data_with_mask_error:
++	return err;
++}
++EXPORT_SYMBOL(st_sensors_write_data_with_mask);
++
++int st_sensors_get_sampling_frequency_avl(struct iio_dev *indio_dev,
++			const struct st_sensor_odr_avl *odr_avl, char *buf)
++{
++	int i, len = 0;
++
++	mutex_lock(&indio_dev->mlock);
++	for (i = 0; i < ST_SENSORS_ODR_LIST_MAX; i++) {
++		if (odr_avl[i].hz == 0)
++			break;
++
++		len += scnprintf(buf + len, PAGE_SIZE - len,
++							"%d ", odr_avl[i].hz);
 +	}
++	mutex_unlock(&indio_dev->mlock);
++	buf[len - 1] = '\n';
++
++	return len;
++}
++EXPORT_SYMBOL(st_sensors_get_sampling_frequency_avl);
++
++int st_sensors_get_scale_avl(struct iio_dev *indio_dev,
++		const struct st_sensor_fullscale_avl *fullscale_avl, char *buf)
++{
++	int i, len = 0;
++
++	mutex_lock(&indio_dev->mlock);
++	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
++		if (fullscale_avl[i].num == 0)
++			break;
++
++		len += scnprintf(buf + len, PAGE_SIZE - len,
++					"0.%06u ", fullscale_avl[i].gain);
++	}
++	mutex_unlock(&indio_dev->mlock);
++	buf[len - 1] = '\n';
++
++	return len;
++}
++EXPORT_SYMBOL(st_sensors_get_scale_avl);
++
++static int st_sensors_match_odr(const struct st_sensors *sensor,
++			unsigned int odr, struct st_sensor_odr_avl *odr_out)
++{
++	int i, ret = -EINVAL;
++
++	for (i = 0; i < ST_SENSORS_ODR_LIST_MAX; i++) {
++		if (sensor->odr.odr_avl[i].hz == 0)
++			goto st_sensors_match_odr_error;
++
++		if (sensor->odr.odr_avl[i].hz == odr) {
++			odr_out->hz = sensor->odr.odr_avl[i].hz;
++			odr_out->value = sensor->odr.odr_avl[i].value;
++			ret = 0;
++			break;
++		}
++	}
++
++st_sensors_match_odr_error:
++	return ret;
++}
++
++int st_sensors_set_odr(struct iio_dev *indio_dev,
++			const struct st_sensors *sensor, unsigned int odr)
++{
++	int err;
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
++	struct st_sensor_odr_avl odr_out;
++
++	err = st_sensors_match_odr(sensor, odr, &odr_out);
++	if (err < 0)
++		goto st_sensors_match_odr_error;
++
++	if ((sensor->odr.addr == sensor->pw.addr) &&
++				(sensor->odr.mask == sensor->pw.mask)) {
++		if (sdata->enabled == true) {
++			err = st_sensors_write_data_with_mask(indio_dev,
++				sensor->odr.addr, sensor->odr.mask,
++				odr_out.value);
++		} else {
++			err = 0;
++		}
++	} else {
++		err = st_sensors_write_data_with_mask(indio_dev,
++			sensor->odr.addr, sensor->odr.mask, odr_out.value);
++	}
++	if (err >= 0)
++		sdata->odr = odr_out.hz;
++
++st_sensors_match_odr_error:
++	return err;
++}
++EXPORT_SYMBOL(st_sensors_set_odr);
++
++static int st_sensors_match_fs(const struct st_sensors *sensor,
++					unsigned int fs, int *index_fs_avl)
++{
++	int i, ret = -EINVAL;
++
++	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
++		if (sensor->fs.fs_avl[i].num == 0)
++			goto st_sensors_match_odr_error;
++
++		if (sensor->fs.fs_avl[i].num == fs) {
++			*index_fs_avl = i;
++			ret = 0;
++			break;
++		}
++	}
++
++st_sensors_match_odr_error:
++	return ret;
++}
++
++int st_sensors_set_fullscale(struct iio_dev *indio_dev,
++			const struct st_sensors *sensor, unsigned int fs)
++{
++	int err, i;
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
++
++	err = st_sensors_match_fs(sensor, fs, &i);
++	if (err < 0)
++		goto st_accel_set_fullscale_error;
++
++	err = st_sensors_write_data_with_mask(indio_dev,
++		sensor->fs.addr, sensor->fs.mask, sensor->fs.fs_avl[i].value);
++	if (err < 0)
++		goto st_accel_set_fullscale_error;
++
++	sdata->current_fullscale = (struct st_sensor_fullscale_avl *)
++							&sensor->fs.fs_avl[i];
++	return err;
++
++st_accel_set_fullscale_error:
++	dev_err(&indio_dev->dev, "failed to set new fullscale.\n");
++	return err;
++}
++EXPORT_SYMBOL(st_sensors_set_fullscale);
++
++int st_sensors_set_enable(struct iio_dev *indio_dev,
++				const struct st_sensors *sensor, bool enable)
++{
++	int err = -EINVAL;
++	bool found;
++	u8 tmp_value;
++	struct st_sensor_odr_avl odr_out;
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
++
++	if (enable) {
++		found = false;
++		tmp_value = sensor->pw.value_on;
++		if ((sensor->odr.addr == sensor->pw.addr) &&
++				(sensor->odr.mask == sensor->pw.mask)) {
++			err = st_sensors_match_odr(sensor,
++							sdata->odr, &odr_out);
++			if (err < 0)
++				goto set_enable_error;
++			tmp_value = odr_out.value;
++			found = true;
++		}
++		err = st_sensors_write_data_with_mask(indio_dev,
++				sensor->pw.addr, sensor->pw.mask, tmp_value);
++		if (err < 0)
++			goto set_enable_error;
++		sdata->enabled = true;
++		if (found)
++			sdata->odr = odr_out.hz;
++	} else {
++			err = st_sensors_write_data_with_mask(indio_dev,
++				sensor->pw.addr, sensor->pw.mask,
++							sensor->pw.value_off);
++		if (err < 0)
++			goto set_enable_error;
++		sdata->enabled = false;
++	}
++
++set_enable_error:
++	return err;
++}
++EXPORT_SYMBOL(st_sensors_set_enable);
++
++int st_sensors_set_axis_enable(struct iio_dev *indio_dev,
++			const struct st_sensors *sensor, u8 axis_enable)
++{
++	return st_sensors_write_data_with_mask(indio_dev,
++				sensor->enable_axis.addr,
++					sensor->enable_axis.mask, axis_enable);
++}
++EXPORT_SYMBOL(st_sensors_set_axis_enable);
++
++int st_sensors_init_sensor(struct iio_dev *indio_dev,
++						const struct st_sensors *sensor)
++{
++	int err;
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
++
++	mutex_init(&sdata->tb.buf_lock);
++
++	err = st_sensors_set_enable(indio_dev, sensor, false);
++	if (err < 0)
++		goto init_error;
++
++	err = st_sensors_set_fullscale(indio_dev, sensor,
++						sdata->current_fullscale->num);
++	if (err < 0)
++		goto init_error;
++
++	err = st_sensors_set_odr(indio_dev, sensor, sdata->odr);
++	if (err < 0)
++		goto init_error;
++
++	/* set BDU */
++	err = st_sensors_write_data_with_mask(indio_dev, sensor->bdu.addr,
++							sensor->bdu.mask, true);
++	if (err < 0)
++		goto init_error;
++
++	err = st_sensors_set_axis_enable(indio_dev, sensor,
++						ST_SENSORS_ENABLE_ALL_CHANNELS);
++
++init_error:
++	return err;
++}
++EXPORT_SYMBOL(st_sensors_init_sensor);
++
++int st_sensors_set_dataready_irq(struct iio_dev *indio_dev,
++				const struct st_sensors *sensor, bool enable)
++{
++	int err;
++
++	/* Enable/Disable the interrupt generator 1. */
++	if (sensor->drdy_irq.ig1.en_addr > 0) {
++		err = st_sensors_write_data_with_mask(indio_dev,
++			sensor->drdy_irq.ig1.en_addr,
++			sensor->drdy_irq.ig1.en_mask, (int)enable);
++		if (err < 0)
++			goto st_accel_set_dataready_irq_error;
++	}
++
++	/* Enable/Disable the interrupt generator for data ready. */
++	err = st_sensors_write_data_with_mask(indio_dev,
++			sensor->drdy_irq.addr,
++			sensor->drdy_irq.mask, (int)enable);
++
++st_accel_set_dataready_irq_error:
++	return err;
++}
++EXPORT_SYMBOL(st_sensors_set_dataready_irq);
++
++int st_sensors_set_fullscale_by_gain(struct iio_dev *indio_dev,
++				const struct st_sensors *sensor, int scale)
++{
++	int err = -EINVAL, i;
++
++	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
++		if ((sensor->fs.fs_avl[i].gain == scale) &&
++					(sensor->fs.fs_avl[i].gain != 0)) {
++			err = 0;
++			break;
++		}
++	}
++	if (err < 0)
++		goto st_sensors_match_scale_error;
++
++	err = st_sensors_set_fullscale(indio_dev,
++					sensor, sensor->fs.fs_avl[i].num);
++
++st_sensors_match_scale_error:
++	return err;
++}
++EXPORT_SYMBOL(st_sensors_set_fullscale_by_gain);
++
++static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
++							u8 ch_addr, int *data)
++{
++	int err;
++	u8 outdata[ST_SENSORS_BYTE_FOR_CHANNEL];
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
++
++	err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
++			ch_addr, ST_SENSORS_BYTE_FOR_CHANNEL,
++						outdata, sdata->multiread_bit);
++	if (err < 0)
++		goto read_error;
++
++	*data = (s16)get_unaligned_le16(outdata);
 +
 +read_error:
 +	return err;
 +}
 +
-+static int st_gyro_write_raw(struct iio_dev *indio_dev,
-+		struct iio_chan_spec const *chan, int val, int val2, long mask)
++int st_sensors_read_info_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *ch, int *val,
++						const struct st_sensors *sensor)
 +{
 +	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		err = st_sensors_set_fullscale_by_gain(indio_dev,
-+					&st_gyro_sensors[gdata->index], val2);
-+		break;
-+	default:
-+		err = -EINVAL;
-+	}
-+
-+	return err;
-+}
-+
-+int st_gyro_set_dataready_irq(struct iio_dev *indio_dev, bool state)
-+{
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	return st_sensors_set_dataready_irq(indio_dev,
-+					&st_gyro_sensors[gdata->index], state);
-+}
-+EXPORT_SYMBOL(st_gyro_set_dataready_irq);
-+
-+int st_gyro_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit)
-+{
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	return st_sensors_set_axis_enable(indio_dev,
-+				&st_gyro_sensors[gdata->index], active_bit);
-+}
-+EXPORT_SYMBOL(st_gyro_set_axis_enable);
-+
-+int st_gyro_set_enable(struct iio_dev *indio_dev, bool enable)
-+{
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	return st_sensors_set_enable(indio_dev,
-+				&st_gyro_sensors[gdata->index], enable);
-+}
-+EXPORT_SYMBOL(st_gyro_set_enable);
-+
-+static ssize_t st_gyro_sysfs_set_sampling_frequency(struct device *dev,
-+		struct device_attribute *attr, const char *buf, size_t size)
-+{
-+	int err;
-+	unsigned int odr;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	err = kstrtoint(buf, 10, &odr);
-+	if (err < 0)
-+		goto conversion_error;
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
 +
 +	mutex_lock(&indio_dev->mlock);
-+	err = st_sensors_set_odr(indio_dev,
-+					&st_gyro_sensors[gdata->index], odr);
++	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
++		err = -EBUSY;
++		goto read_error;
++	} else {
++		err = st_sensors_set_enable(indio_dev, sensor, true);
++		if (err < 0)
++			goto read_error;
++
++		msleep((sensor->bootime * 1000) / sdata->odr);
++		err = st_sensors_read_axis_data(indio_dev, ch->address, val);
++		if (err < 0)
++			goto read_error;
++
++		*val = *val >> ch->scan_type.shift;
++	}
 +	mutex_unlock(&indio_dev->mlock);
 +
-+conversion_error:
-+	return err < 0 ? err : size;
++	return err;
++
++read_error:
++	mutex_unlock(&indio_dev->mlock);
++	return err;
 +}
++EXPORT_SYMBOL(st_sensors_read_info_raw);
 +
-+static ssize_t st_gyro_sysfs_get_sampling_frequency(struct device *dev,
-+				struct device_attribute *attr, char *buf)
++int st_sensors_check_device_support(struct iio_dev *indio_dev,
++			int num_sensors_list, const struct st_sensors *sensors)
 +{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
++	int i, n, err;
++	u8 wai;
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
 +
-+	return sprintf(buf, "%d\n", gdata->odr);
-+}
-+
-+static ssize_t st_gyro_sysfs_scale_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	return st_sensors_get_scale_avl(indio_dev,
-+				st_gyro_sensors[gdata->index].fs.fs_avl, buf);
-+}
-+
-+static ssize_t st_gyro_sysfs_sampling_frequency_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	return st_sensors_get_sampling_frequency_avl(indio_dev,
-+			st_gyro_sensors[gdata->index].odr.odr_avl, buf);
-+}
-+
-+static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(st_gyro_sysfs_sampling_frequency_avail);
-+
-+static IIO_DEVICE_ATTR(in_anglvel_scale_available, S_IRUGO,
-+					st_gyro_sysfs_scale_avail, NULL , 0);
-+
-+static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-+			st_gyro_sysfs_get_sampling_frequency,
-+					st_gyro_sysfs_set_sampling_frequency);
-+
-+static struct attribute *st_gyro_attributes[] = {
-+	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_in_anglvel_scale_available.dev_attr.attr,
-+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group st_gyro_attribute_group = {
-+	.attrs = st_gyro_attributes,
-+};
-+
-+static const struct iio_info gyro_info = {
-+	.driver_module = THIS_MODULE,
-+	.attrs = &st_gyro_attribute_group,
-+	.read_raw = &st_gyro_read_raw,
-+	.write_raw = &st_gyro_write_raw,
-+};
-+
-+static struct iio_trigger_ops st_gyro_trigger_ops = {
-+	.owner = THIS_MODULE,
-+	.set_trigger_state = &st_gyro_trig_set_state,
-+};
-+
-+int st_gyro_common_probe(struct iio_dev *indio_dev)
-+{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &gyro_info;
-+
-+	err = st_sensors_check_device_support(indio_dev,
-+				ARRAY_SIZE(st_gyro_sensors), st_gyro_sensors);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	gdata->multiread_bit = st_gyro_sensors[gdata->index].multi_read_bit;
-+	indio_dev->channels = st_gyro_sensors[gdata->index].ch;
-+	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
-+
-+	gdata->current_fullscale = (struct st_sensor_fullscale_avl *)
-+				&st_gyro_sensors[gdata->index].fs.fs_avl[0];
-+	gdata->odr = st_gyro_sensors[gdata->index].odr.odr_avl[0].hz;
-+
-+	err = st_sensors_init_sensor(indio_dev, &st_gyro_sensors[gdata->index]);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	if (gdata->get_irq_data_ready(indio_dev) > 0) {
-+		err = st_gyro_allocate_ring(indio_dev);
-+		if (err < 0)
-+			goto st_gyro_common_probe_error;
-+
-+		err = st_sensors_allocate_trigger(indio_dev,
-+							&st_gyro_trigger_ops);
-+		if (err < 0)
-+			goto st_gyro_probe_trigger_error;
++	err = sdata->tf->read_byte(&sdata->tb, sdata->dev,
++					ST_SENSORS_DEFAULT_WAI_ADDRESS, &wai);
++	if (err < 0) {
++		dev_err(&indio_dev->dev, "failed to read Who-Am-I register.\n");
++		goto read_wai_error;
 +	}
 +
-+	err = iio_device_register(indio_dev);
++	for (i = 0; i < num_sensors_list; i++) {
++		if (sensors[i].wai == wai)
++			break;
++	}
++	if (i == num_sensors_list)
++		goto device_not_supported;
++
++	for (n = 0; n < ARRAY_SIZE(sensors[i].sensors_supported); n++) {
++		if (strcmp(indio_dev->name,
++				&sensors[i].sensors_supported[n][0]) == 0)
++			break;
++	}
++	if (n == ARRAY_SIZE(sensors[i].sensors_supported)) {
++		dev_err(&indio_dev->dev, "device name and WhoAmI mismatch.\n");
++		goto sensor_name_mismatch;
++	}
++
++	sdata->index = i;
++
++	return i;
++
++device_not_supported:
++	dev_err(&indio_dev->dev, "device not supported: WhoAmI (0x%x).\n", wai);
++sensor_name_mismatch:
++	err = -ENODEV;
++read_wai_error:
++	return err;
++}
++EXPORT_SYMBOL(st_sensors_check_device_support);
++
++MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics ST-sensors core");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+new file mode 100644
+index 0000000..5683436
+--- /dev/null
++++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+@@ -0,0 +1,81 @@
++/*
++ * STMicroelectronics sensors i2c library driver
++ *
++ * Copyright 2012-2013 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/iio/iio.h>
++
++#include <linux/iio/common/st_sensors_i2c.h>
++
++
++#define ST_SENSORS_I2C_MULTIREAD	0x80
++
++static unsigned int st_sensors_i2c_get_irq(struct iio_dev *indio_dev)
++{
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
++
++	return to_i2c_client(sdata->dev)->irq;
++}
++
++static int st_sensors_i2c_read_byte(struct st_sensor_transfer_buffer *tb,
++				struct device *dev, u8 reg_addr, u8 *res_byte)
++{
++	int err;
++
++	err = i2c_smbus_read_byte_data(to_i2c_client(dev), reg_addr);
++	if (err < 0)
++		goto st_accel_i2c_read_byte_error;
++
++	*res_byte = err & 0xff;
++
++st_accel_i2c_read_byte_error:
++	return err < 0 ? err : 0;
++}
++
++static int st_sensors_i2c_read_multiple_byte(
++		struct st_sensor_transfer_buffer *tb, struct device *dev,
++			u8 reg_addr, int len, u8 *data, bool multiread_bit)
++{
++	if (multiread_bit == true)
++		reg_addr |= ST_SENSORS_I2C_MULTIREAD;
++
++	return i2c_smbus_read_i2c_block_data(to_i2c_client(dev),
++							reg_addr, len, data);
++}
++
++static int st_sensors_i2c_write_byte(struct st_sensor_transfer_buffer *tb,
++				struct device *dev, u8 reg_addr, u8 data)
++{
++	return i2c_smbus_write_byte_data(to_i2c_client(dev), reg_addr, data);
++}
++
++static const struct st_sensor_transfer_function st_sensors_tf_i2c = {
++	.read_byte = st_sensors_i2c_read_byte,
++	.write_byte = st_sensors_i2c_write_byte,
++	.read_multiple_byte = st_sensors_i2c_read_multiple_byte,
++};
++
++void st_sensors_i2c_configure(struct iio_dev *indio_dev,
++		struct i2c_client *client, struct st_sensor_data *sdata)
++{
++	i2c_set_clientdata(client, indio_dev);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = client->name;
++
++	sdata->tf = &st_sensors_tf_i2c;
++	sdata->get_irq_data_ready = st_sensors_i2c_get_irq;
++}
++EXPORT_SYMBOL(st_sensors_i2c_configure);
++
++MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics ST-sensors i2c driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
+new file mode 100644
+index 0000000..8a795f5
+--- /dev/null
++++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
+@@ -0,0 +1,128 @@
++/*
++ * STMicroelectronics sensors spi library driver
++ *
++ * Copyright 2012-2013 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/iio/iio.h>
++
++#include <linux/iio/common/st_sensors_spi.h>
++
++
++#define ST_SENSORS_SPI_MULTIREAD	0xc0
++#define ST_SENSORS_SPI_READ		0x80
++
++static unsigned int st_sensors_spi_get_irq(struct iio_dev *indio_dev)
++{
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
++
++	return to_spi_device(sdata->dev)->irq;
++}
++
++static int st_sensors_spi_read(struct st_sensor_transfer_buffer *tb,
++	struct device *dev, u8 reg_addr, int len, u8 *data, bool multiread_bit)
++{
++	struct spi_message msg;
++	int err;
++
++	struct spi_transfer xfers[] = {
++		{
++			.tx_buf = tb->tx_buf,
++			.bits_per_word = 8,
++			.len = 1,
++		},
++		{
++			.rx_buf = tb->rx_buf,
++			.bits_per_word = 8,
++			.len = len,
++		}
++	};
++
++	mutex_lock(&tb->buf_lock);
++	if ((multiread_bit == true) && (len > 1))
++		tb->tx_buf[0] = reg_addr | ST_SENSORS_SPI_MULTIREAD;
++	else
++		tb->tx_buf[0] = reg_addr | ST_SENSORS_SPI_READ;
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers[0], &msg);
++	spi_message_add_tail(&xfers[1], &msg);
++	err = spi_sync(to_spi_device(dev), &msg);
 +	if (err)
-+		goto st_gyro_device_register_error;
++		goto acc_spi_read_error;
 +
-+	return err;
++	memcpy(data, tb->rx_buf, len*sizeof(u8));
++	mutex_unlock(&tb->buf_lock);
++	return len;
 +
-+st_gyro_device_register_error:
-+	if (gdata->get_irq_data_ready(indio_dev) > 0)
-+		st_sensors_deallocate_trigger(indio_dev);
-+st_gyro_probe_trigger_error:
-+	if (gdata->get_irq_data_ready(indio_dev) > 0)
-+		st_gyro_deallocate_ring(indio_dev);
-+st_gyro_common_probe_error:
++acc_spi_read_error:
++	mutex_unlock(&tb->buf_lock);
 +	return err;
 +}
-+EXPORT_SYMBOL(st_gyro_common_probe);
 +
-+void st_gyro_common_remove(struct iio_dev *indio_dev)
++static int st_sensors_spi_read_byte(struct st_sensor_transfer_buffer *tb,
++				struct device *dev, u8 reg_addr, u8 *res_byte)
 +{
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+	if (gdata->get_irq_data_ready(indio_dev) > 0) {
-+		st_sensors_deallocate_trigger(indio_dev);
-+		st_gyro_deallocate_ring(indio_dev);
-+	}
-+	iio_device_free(indio_dev);
++	return st_sensors_spi_read(tb, dev, reg_addr, 1, res_byte, false);
 +}
-+EXPORT_SYMBOL(st_gyro_common_remove);
++
++static int st_sensors_spi_read_multiple_byte(
++	struct st_sensor_transfer_buffer *tb, struct device *dev,
++			u8 reg_addr, int len, u8 *data, bool multiread_bit)
++{
++	return st_sensors_spi_read(tb, dev, reg_addr, len, data, multiread_bit);
++}
++
++static int st_sensors_spi_write_byte(struct st_sensor_transfer_buffer *tb,
++				struct device *dev, u8 reg_addr, u8 data)
++{
++	struct spi_message msg;
++	int err;
++
++	struct spi_transfer xfers = {
++		.tx_buf = tb->tx_buf,
++		.bits_per_word = 8,
++		.len = 2,
++	};
++
++	mutex_lock(&tb->buf_lock);
++	tb->tx_buf[0] = reg_addr;
++	tb->tx_buf[1] = data;
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers, &msg);
++	err = spi_sync(to_spi_device(dev), &msg);
++	mutex_unlock(&tb->buf_lock);
++
++	return err;
++}
++
++static const struct st_sensor_transfer_function st_sensors_tf_spi = {
++	.read_byte = st_sensors_spi_read_byte,
++	.write_byte = st_sensors_spi_write_byte,
++	.read_multiple_byte = st_sensors_spi_read_multiple_byte,
++};
++
++void st_sensors_spi_configure(struct iio_dev *indio_dev,
++			struct spi_device *spi, struct st_sensor_data *sdata)
++{
++	spi_set_drvdata(spi, indio_dev);
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi->modalias;
++
++	sdata->tf = &st_sensors_tf_spi;
++	sdata->get_irq_data_ready = st_sensors_spi_get_irq;
++}
++EXPORT_SYMBOL(st_sensors_spi_configure);
 +
 +MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes driver");
++MODULE_DESCRIPTION("STMicroelectronics ST-sensors spi driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
+diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
 new file mode 100644
-index 0000000..d71a41d
+index 0000000..9c62c6a
 --- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_i2c.c
-@@ -0,0 +1,84 @@
++++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+@@ -0,0 +1,77 @@
 +/*
-+ * STMicroelectronics gyroscopes driver
++ * STMicroelectronics sensors trigger library driver
 + *
 + * Copyright 2012-2013 STMicroelectronics Inc.
 + *
@@ -688,221 +870,393 @@ index 0000000..d71a41d
 +#include <linux/kernel.h>
 +#include <linux/module.h>
 +#include <linux/slab.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++#include <linux/interrupt.h>
++
++#include <linux/iio/common/st_sensors.h>
++
++
++int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
++					struct iio_trigger_ops *trigger_ops)
++{
++	int err;
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
++
++	sdata->trig = iio_trigger_alloc("%s-trigger", indio_dev->name);
++	if (sdata->trig == NULL) {
++		err = -ENOMEM;
++		dev_err(&indio_dev->dev, "failed to allocate iio trigger.\n");
++		goto iio_trigger_alloc_error;
++	}
++
++	err = request_threaded_irq(sdata->get_irq_data_ready(indio_dev),
++			iio_trigger_generic_data_rdy_poll,
++			NULL,
++			IRQF_TRIGGER_RISING,
++			sdata->trig->name,
++			sdata->trig);
++	if (err)
++		goto request_irq_error;
++
++	sdata->trig->private_data = indio_dev;
++	sdata->trig->ops = trigger_ops;
++	sdata->trig->dev.parent = sdata->dev;
++
++	err = iio_trigger_register(sdata->trig);
++	if (err < 0) {
++		dev_err(&indio_dev->dev, "failed to register iio trigger.\n");
++		goto iio_trigger_register_error;
++	}
++	indio_dev->trig = sdata->trig;
++
++	return 0;
++
++iio_trigger_register_error:
++	free_irq(sdata->get_irq_data_ready(indio_dev), sdata->trig);
++request_irq_error:
++	iio_trigger_free(sdata->trig);
++iio_trigger_alloc_error:
++	return err;
++}
++EXPORT_SYMBOL(st_sensors_allocate_trigger);
++
++void st_sensors_deallocate_trigger(struct iio_dev *indio_dev)
++{
++	struct st_sensor_data *sdata = iio_priv(indio_dev);
++
++	iio_trigger_unregister(sdata->trig);
++	free_irq(sdata->get_irq_data_ready(indio_dev), sdata->trig);
++	iio_trigger_free(sdata->trig);
++}
++EXPORT_SYMBOL(st_sensors_deallocate_trigger);
++
++MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics ST-sensors trigger");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+new file mode 100644
+index 0000000..f27b1e0
+--- /dev/null
++++ b/include/linux/iio/common/st_sensors.h
+@@ -0,0 +1,266 @@
++/*
++ * STMicroelectronics sensors library driver
++ *
++ * Copyright 2012-2013 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#ifndef ST_SENSORS_H
++#define ST_SENSORS_H
++
 +#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+
-+#include <linux/iio/gyro/st_gyro.h>
-+#include <linux/iio/common/st_sensors.h>
-+
-+
-+static int st_gyro_i2c_probe(struct i2c_client *client,
-+						const struct i2c_device_id *id)
-+{
-+	struct iio_dev *indio_dev;
-+	struct st_sensor_data *gdata;
-+	int err;
-+
-+	indio_dev = iio_device_alloc(sizeof(*gdata));
-+	if (indio_dev == NULL) {
-+		err = -ENOMEM;
-+		goto iio_device_alloc_error;
-+	}
-+
-+	gdata = iio_priv(indio_dev);
-+	gdata->dev = &client->dev;
-+
-+	st_sensors_i2c_configure(indio_dev, client, gdata);
-+
-+	err = st_gyro_common_probe(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	return 0;
-+
-+st_gyro_common_probe_error:
-+	iio_device_free(indio_dev);
-+iio_device_alloc_error:
-+	return err;
-+}
-+
-+static int st_gyro_i2c_remove(struct i2c_client *client)
-+{
-+	st_gyro_common_remove(i2c_get_clientdata(client));
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id st_gyro_id_table[] = {
-+	{ L3G4200D_GYRO_DEV_NAME },
-+	{ LSM330DL_GYRO_DEV_NAME },
-+	{ L3GD20_GYRO_DEV_NAME },
-+	{ L3GD20H_GYRO_DEV_NAME },
-+	{ LSM330DLC_GYRO_DEV_NAME },
-+	{ L3G4IS_GYRO_DEV_NAME },
-+	{ LSM330_GYRO_DEV_NAME },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(i2c, st_gyro_id_table);
-+
-+static struct i2c_driver st_gyro_driver = {
-+	.driver = {
-+		.owner = THIS_MODULE,
-+		.name = "st-gyro-i2c",
-+	},
-+	.probe = st_gyro_i2c_probe,
-+	.remove = st_gyro_i2c_remove,
-+	.id_table = st_gyro_id_table,
-+};
-+module_i2c_driver(st_gyro_driver);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes i2c driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
-new file mode 100644
-index 0000000..cac4eef
---- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_spi.c
-@@ -0,0 +1,83 @@
-+/*
-+ * STMicroelectronics gyroscopes driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
 +#include <linux/spi/spi.h>
-+#include <linux/iio/iio.h>
++#include <linux/irqreturn.h>
 +#include <linux/iio/trigger.h>
 +
-+#include <linux/iio/gyro/st_gyro.h>
-+#include <linux/iio/common/st_sensors.h>
 +
++#define ST_SENSORS_TX_MAX_LENGHT		2
++#define ST_SENSORS_RX_MAX_LENGHT		6
 +
-+static int st_gyro_spi_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct st_sensor_data *gdata;
-+	int err;
++#define ST_SENSORS_ODR_LIST_MAX			10
++#define ST_SENSORS_FULLSCALE_AVL_MAX		10
 +
-+	indio_dev = iio_device_alloc(sizeof(*gdata));
-+	if (indio_dev == NULL) {
-+		err = -ENOMEM;
-+		goto iio_device_alloc_error;
-+	}
++#define ST_SENSORS_NUMBER_ALL_CHANNELS		4
++#define ST_SENSORS_NUMBER_DATA_CHANNELS		3
++#define ST_SENSORS_ENABLE_ALL_CHANNELS		0x07
++#define ST_SENSORS_BYTE_FOR_CHANNEL		2
++#define ST_SENSORS_SCAN_X			0
++#define ST_SENSORS_SCAN_Y			1
++#define ST_SENSORS_SCAN_Z			2
++#define ST_SENSORS_DEFAULT_12_REALBITS		12
++#define ST_SENSORS_DEFAULT_16_REALBITS		16
++#define ST_SENSORS_DEFAULT_POWER_ON_VALUE	0x01
++#define ST_SENSORS_DEFAULT_POWER_OFF_VALUE	0x00
++#define ST_SENSORS_DEFAULT_WAI_ADDRESS		0x0f
++#define ST_SENSORS_DEFAULT_AXIS_ADDR		0x20
++#define ST_SENSORS_DEFAULT_AXIS_MASK		0x07
++#define ST_SENSORS_DEFAULT_AXIS_N_BIT		3
 +
-+	gdata = iio_priv(indio_dev);
-+	gdata->dev = &spi->dev;
++#define ST_SENSORS_MAX_NAME			17
++#define ST_SENSORS_MAX_4WAI			7
 +
-+	st_sensors_spi_configure(indio_dev, spi, gdata);
-+
-+	err = st_gyro_common_probe(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	return 0;
-+
-+st_gyro_common_probe_error:
-+	iio_device_free(indio_dev);
-+iio_device_alloc_error:
-+	return err;
++#define ST_SENSORS_LSM_CHANNELS(device_type, index, mod, endian, bits, addr) \
++{ \
++	.type = device_type, \
++	.modified = 1, \
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
++			IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
++	.scan_index = index, \
++	.channel2 = mod, \
++	.address = addr, \
++	.scan_type = { \
++		.sign = 's', \
++		.realbits = bits, \
++		.shift = 16 - bits, \
++		.storagebits = 16, \
++		.endianness = endian, \
++	}, \
 +}
 +
-+static int st_gyro_spi_remove(struct spi_device *spi)
-+{
-+	st_gyro_common_remove(spi_get_drvdata(spi));
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id st_gyro_id_table[] = {
-+	{ L3G4200D_GYRO_DEV_NAME },
-+	{ LSM330DL_GYRO_DEV_NAME },
-+	{ L3GD20_GYRO_DEV_NAME },
-+	{ L3GD20H_GYRO_DEV_NAME },
-+	{ LSM330DLC_GYRO_DEV_NAME },
-+	{ L3G4IS_GYRO_DEV_NAME },
-+	{ LSM330_GYRO_DEV_NAME },
-+	{},
++struct st_sensor_odr_avl {
++	unsigned int hz;
++	u8 value;
 +};
-+MODULE_DEVICE_TABLE(spi, st_gyro_id_table);
 +
-+static struct spi_driver st_gyro_driver = {
-+	.driver = {
-+		.owner = THIS_MODULE,
-+		.name = "st-gyro-spi",
-+	},
-+	.probe = st_gyro_spi_probe,
-+	.remove = st_gyro_spi_remove,
-+	.id_table = st_gyro_id_table,
++struct st_sensor_odr {
++	u8 addr;
++	u8 mask;
++	struct st_sensor_odr_avl odr_avl[ST_SENSORS_ODR_LIST_MAX];
 +};
-+module_spi_driver(st_gyro_driver);
 +
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes spi driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/iio/gyro/st_gyro.h b/include/linux/iio/gyro/st_gyro.h
-new file mode 100644
-index 0000000..9bd7209
---- /dev/null
-+++ b/include/linux/iio/gyro/st_gyro.h
-@@ -0,0 +1,49 @@
-+/*
-+ * STMicroelectronics gyroscopes driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ * v. 1.0.0
-+ * Licensed under the GPL-2.
++struct st_sensor_power {
++	u8 addr;
++	u8 mask;
++	u8 value_off;
++	u8 value_on;
++};
++
++struct st_sensor_axis {
++	u8 addr;
++	u8 mask;
++};
++
++struct st_sensor_fullscale_avl {
++	unsigned int num;
++	u8 value;
++	unsigned int gain;
++	unsigned int gain2;
++};
++
++struct st_sensor_fullscale {
++	u8 addr;
++	u8 mask;
++	struct st_sensor_fullscale_avl fs_avl[ST_SENSORS_FULLSCALE_AVL_MAX];
++};
++
++/**
++ * struct st_sensor_bdu - ST sensor device block data update
++ * @addr: address of the register.
++ * @mask: mask to write the block data update flag.
 + */
++struct st_sensor_bdu {
++	u8 addr;
++	u8 mask;
++};
 +
-+#ifndef ST_GYRO_H
-+#define ST_GYRO_H
++/**
++ * struct st_sensor_data_ready_irq - ST sensor device data-ready interrupt
++ * @addr: address of the register.
++ * @mask: mask to write the on/off value.
++ * struct ig1 - represents the Interrupt Generator 1 of sensors.
++ * @en_addr: address of the enable ig1 register.
++ * @en_mask: mask to write the on/off value for enable.
++ */
++struct st_sensor_data_ready_irq {
++	u8 addr;
++	u8 mask;
++	struct {
++		u8 en_addr;
++		u8 en_mask;
++	} ig1;
++};
 +
-+#include <linux/types.h>
-+#include "../common/st_sensors.h"
++/**
++ * struct st_sensor_transfer_buffer - ST sensor device I/O buffer
++ * @buf_lock: Mutex to protect rx and tx buffers.
++ * @tx_buf: Buffer used by SPI transfer function to send data to the sensors.
++ *	This buffer is used to avoid DMA not-aligned issue.
++ * @rx_buf: Buffer used by SPI transfer to receive data from sensors.
++ *	This buffer is used to avoid DMA not-aligned issue.
++ */
++struct st_sensor_transfer_buffer {
++	struct mutex buf_lock;
++	u8 rx_buf[ST_SENSORS_RX_MAX_LENGHT];
++	u8 tx_buf[ST_SENSORS_TX_MAX_LENGHT] ____cacheline_aligned;
++};
 +
-+#define L3G4200D_GYRO_DEV_NAME		"l3g4200d"
-+#define LSM330DL_GYRO_DEV_NAME		"lsm330dl_gyro"
-+#define L3GD20_GYRO_DEV_NAME		"l3gd20"
-+#define L3GD20H_GYRO_DEV_NAME		"l3gd20h"
-+#define LSM330DLC_GYRO_DEV_NAME		"lsm330dlc_gyro"
-+#define L3G4IS_GYRO_DEV_NAME		"l3g4is_ui"
-+#define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
++/**
++ * struct st_sensor_transfer_function - ST sensor device I/O function
++ * @read_byte: Function used to read one byte.
++ * @write_byte: Function used to write one byte.
++ * @read_multiple_byte: Function used to read multiple byte.
++ */
++struct st_sensor_transfer_function {
++	int (*read_byte) (struct st_sensor_transfer_buffer *tb,
++				struct device *dev, u8 reg_addr, u8 *res_byte);
++	int (*write_byte) (struct st_sensor_transfer_buffer *tb,
++				struct device *dev, u8 reg_addr, u8 data);
++	int (*read_multiple_byte) (struct st_sensor_transfer_buffer *tb,
++		struct device *dev, u8 reg_addr, int len, u8 *data,
++							bool multiread_bit);
++};
 +
-+int st_gyro_common_probe(struct iio_dev *indio_dev);
-+void st_gyro_common_remove(struct iio_dev *indio_dev);
-+int st_gyro_set_dataready_irq(struct iio_dev *indio_dev, bool state);
-+int st_gyro_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit);
-+int st_gyro_set_enable(struct iio_dev *indio_dev, bool enable);
++/**
++ * struct st_sensor_data - ST sensor device status
++ * @dev: Pointer to instance of struct device (I2C or SPI).
++ * @trig: The trigger in use by the core driver.
++ * @current_fullscale: Maximum range of measure by the sensor.
++ * @enabled: Status of the sensor (false->off, true->on).
++ * @multiread_bit: Use or not particular bit for [I2C/SPI] multiread.
++ * @index: Number used to point the sensor being used in the st_sensors struct.
++ * @buffer_data: Data used by buffer part.
++ * @odr: Output data rate of the sensor [Hz].
++ * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
++ * @tf: Transfer function structure used by I/O operations.
++ * @tb: Transfer buffers and mutex used by I/O operations.
++ */
++struct st_sensor_data {
++	struct device *dev;
++	struct iio_trigger *trig;
++	struct st_sensor_fullscale_avl *current_fullscale;
++
++	bool enabled;
++	bool multiread_bit;
++
++	short index;
++
++	char *buffer_data;
++
++	unsigned int odr;
++
++	unsigned int (*get_irq_data_ready) (struct iio_dev *indio_dev);
++
++	const struct st_sensor_transfer_function *tf;
++	struct st_sensor_transfer_buffer tb;
++};
++
++/**
++ * struct st_sensors - ST sensors list
++ * @wai: Contents of WhoAmI register.
++ * @sensors_supported: List of supported sensors by struct itself.
++ * @ch: IIO channels for the sensor.
++ * @odr: Output data rate register and ODR list available.
++ * @pw: Power register of the sensor.
++ * @enable_axis: Enable one or more axis of the sensor.
++ * @fs: Full scale register and full scale list available.
++ * @bdu: Block data update register.
++ * @drdy_irq: Data ready register of the sensor.
++ * @multi_read_bit: Use or not particular bit for [I2C/SPI] multi-read.
++ * @bootime: samples to discard when sensor passing from power-down to power-up.
++ */
++struct st_sensors {
++	u8 wai;
++	char sensors_supported[ST_SENSORS_MAX_4WAI][ST_SENSORS_MAX_NAME];
++	struct iio_chan_spec *ch;
++	struct st_sensor_odr odr;
++	struct st_sensor_power pw;
++	struct st_sensor_axis enable_axis;
++	struct st_sensor_fullscale fs;
++	struct st_sensor_bdu bdu;
++	struct st_sensor_data_ready_irq drdy_irq;
++	bool multi_read_bit;
++	unsigned int bootime;
++};
 +
 +#ifdef CONFIG_IIO_BUFFER
-+int st_gyro_allocate_ring(struct iio_dev *indio_dev);
-+void st_gyro_deallocate_ring(struct iio_dev *indio_dev);
-+int st_gyro_trig_set_state(struct iio_trigger *trig, bool state);
-+#else /* CONFIG_IIO_BUFFER */
-+static inline int st_gyro_allocate_ring(struct iio_dev *indio_dev)
-+{
-+	return 0;
-+}
-+static inline void st_gyro_deallocate_ring(struct iio_dev *indio_dev)
-+{
-+}
-+static inline int st_gyro_trig_set_state(struct iio_trigger *trig, bool state)
-+{
-+	return 0;
-+}
-+#endif /* CONFIG_IIO_BUFFER */
++int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
++					struct iio_trigger_ops *trigger_ops);
 +
-+#endif /* ST_GYRO_H */
++void st_sensors_deallocate_trigger(struct iio_dev *indio_dev);
++
++irqreturn_t st_sensors_trigger_handler(int irq, void *p);
++
++int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf);
++#endif
++
++int st_sensors_init_sensor(struct iio_dev *indio_dev,
++					const struct st_sensors *sensor);
++
++int st_sensors_set_enable(struct iio_dev *indio_dev,
++				const struct st_sensors *sensor, bool enable);
++
++int st_sensors_set_axis_enable(struct iio_dev *indio_dev,
++			const struct st_sensors *sensor, u8 axis_enable);
++
++int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
++						u8 reg_addr, u8 mask, u8 data);
++
++int st_sensors_get_sampling_frequency_avl(struct iio_dev *indio_dev,
++			const struct st_sensor_odr_avl *odr_avl, char *buf);
++
++int st_sensors_get_scale_avl(struct iio_dev *indio_dev,
++		const struct st_sensor_fullscale_avl *fullscale_avl, char *buf);
++
++int st_sensors_set_fullscale(struct iio_dev *indio_dev,
++			const struct st_sensors *sensor, unsigned int fs);
++
++int st_sensors_set_odr(struct iio_dev *indio_dev,
++			const struct st_sensors *sensor, unsigned int odr);
++
++int st_sensors_set_dataready_irq(struct iio_dev *indio_dev,
++				const struct st_sensors *sensor, bool enable);
++
++int st_sensors_set_fullscale_by_gain(struct iio_dev *indio_dev,
++				const struct st_sensors *sensor, int scale);
++
++int st_sensors_read_info_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *ch, int *val,
++					const struct st_sensors *sensor);
++
++int st_sensors_check_device_support(struct iio_dev *indio_dev,
++			int num_sensors_list, const struct st_sensors *sensors);
++
++#endif /* ST_SENSORS_H */
+diff --git a/include/linux/iio/common/st_sensors_i2c.h b/include/linux/iio/common/st_sensors_i2c.h
+new file mode 100644
+index 0000000..67d8453
+--- /dev/null
++++ b/include/linux/iio/common/st_sensors_i2c.h
+@@ -0,0 +1,20 @@
++/*
++ * STMicroelectronics sensors i2c library driver
++ *
++ * Copyright 2012-2013 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#ifndef ST_SENSORS_I2C_H
++#define ST_SENSORS_I2C_H
++
++#include <linux/i2c.h>
++#include <linux/iio/common/st_sensors.h>
++
++void st_sensors_i2c_configure(struct iio_dev *indio_dev,
++		struct i2c_client *client, struct st_sensor_data *sdata);
++
++#endif /* ST_SENSORS_I2C_H */
+diff --git a/include/linux/iio/common/st_sensors_spi.h b/include/linux/iio/common/st_sensors_spi.h
+new file mode 100644
+index 0000000..d964a35
+--- /dev/null
++++ b/include/linux/iio/common/st_sensors_spi.h
+@@ -0,0 +1,20 @@
++/*
++ * STMicroelectronics sensors spi library driver
++ *
++ * Copyright 2012-2013 STMicroelectronics Inc.
++ *
++ * Denis Ciocca <denis.ciocca@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#ifndef ST_SENSORS_SPI_H
++#define ST_SENSORS_SPI_H
++
++#include <linux/spi/spi.h>
++#include <linux/iio/common/st_sensors.h>
++
++void st_sensors_spi_configure(struct iio_dev *indio_dev,
++			struct spi_device *spi, struct st_sensor_data *sdata);
++
++#endif /* ST_SENSORS_SPI_H */
 -- 
 1.8.0.3
-
